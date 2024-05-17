@@ -92,8 +92,7 @@ set_option linter.uppercaseLean3 false in
 
 end Hom
 
-instance largeCategory : LargeCategory Pointed
-    where
+instance largeCategory : LargeCategory Pointed where
   Hom := Pointed.Hom
   id := Hom.id
   comp := @Hom.comp

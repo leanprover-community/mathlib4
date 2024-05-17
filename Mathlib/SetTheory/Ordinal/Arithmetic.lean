@@ -636,8 +636,7 @@ theorem one_add_of_omega_le {o} (h : ω ≤ o) : 1 + o = o := by
 
 /-- The multiplication of ordinals `o₁` and `o₂` is the (well founded) lexicographic order on
 `o₂ × o₁`. -/
-instance monoid : Monoid Ordinal.{u}
-    where
+instance monoid : Monoid Ordinal.{u} where
   mul a b :=
     Quotient.liftOn₂ a b
       (fun ⟨α, r, wo⟩ ⟨β, s, wo'⟩ => ⟦⟨β × α, Prod.Lex s r, inferInstance⟩⟧ :

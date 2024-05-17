@@ -261,8 +261,7 @@ set_option linter.uppercaseLean3 false in
 /-- The forgetful functor `NonemptyFinLinOrd ⥤ FinPartOrd` and `OrderDual` commute. -/
 def nonemptyFinLinOrdDualCompForgetToFinPartOrd :
     NonemptyFinLinOrd.dual ⋙ forget₂ NonemptyFinLinOrd FinPartOrd ≅
-      forget₂ NonemptyFinLinOrd FinPartOrd ⋙ FinPartOrd.dual
-    where
+      forget₂ NonemptyFinLinOrd FinPartOrd ⋙ FinPartOrd.dual where
   hom := { app := fun X => OrderHom.id }
   inv := { app := fun X => OrderHom.id }
 set_option linter.uppercaseLean3 false in

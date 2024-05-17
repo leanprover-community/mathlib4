@@ -257,8 +257,7 @@ variable (F : OplaxFunctor B C)
 
 /-- Function between 1-morphisms as a functor. -/
 @[simps]
-def mapFunctor (a b : B) : (a ⟶ b) ⥤ (F.obj a ⟶ F.obj b)
-    where
+def mapFunctor (a b : B) : (a ⟶ b) ⥤ (F.obj a ⟶ F.obj b) where
   obj f := F.map f
   map η := F.map₂ η
 #align category_theory.oplax_functor.map_functor CategoryTheory.OplaxFunctor.mapFunctor

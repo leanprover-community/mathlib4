@@ -730,8 +730,7 @@ theorem card_eq_multiplicity [Fintype G] {p : ℕ} [hp : Fact p.Prime] (P : Sylo
 /-- A subgroup with cardinality `p ^ n` is a Sylow subgroup
  where `n` is the multiplicity of `p` in the group order. -/
 def ofCard [Fintype G] {p : ℕ} [Fact p.Prime] (H : Subgroup G) [Fintype H]
-    (card_eq : card H = p ^ (card G).factorization p) : Sylow p G
-    where
+    (card_eq : card H = p ^ (card G).factorization p) : Sylow p G where
   toSubgroup := H
   isPGroup' := IsPGroup.of_card card_eq
   is_maximal' := by

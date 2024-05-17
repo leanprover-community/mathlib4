@@ -387,8 +387,7 @@ instance rightRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (rightRel s
 
 /-- Right cosets are in bijection with left cosets. -/
 @[to_additive "Right cosets are in bijection with left cosets."]
-def quotientRightRelEquivQuotientLeftRel : Quotient (QuotientGroup.rightRel s) ≃ α ⧸ s
-    where
+def quotientRightRelEquivQuotientLeftRel : Quotient (QuotientGroup.rightRel s) ≃ α ⧸ s where
   toFun :=
     Quotient.map' (fun g => g⁻¹) fun a b => by
       rw [leftRel_apply, rightRel_apply]
@@ -606,8 +605,7 @@ variable {t : Subgroup α}
 
 /-- If two subgroups `M` and `N` of `G` are equal, their quotients are in bijection. -/
 @[to_additive "If two subgroups `M` and `N` of `G` are equal, their quotients are in bijection."]
-def quotientEquivOfEq (h : s = t) : α ⧸ s ≃ α ⧸ t
-    where
+def quotientEquivOfEq (h : s = t) : α ⧸ s ≃ α ⧸ t where
   toFun := Quotient.map' id fun _a _b h' => h ▸ h'
   invFun := Quotient.map' id fun _a _b h' => h.symm ▸ h'
   left_inv q := induction_on' q fun _g => rfl
@@ -626,8 +624,7 @@ of the quotient map `G → G/K`. The classical version is `Subgroup.quotientEqui
   "If `H ≤ K`, then `G/H ≃ G/K × K/H` constructively, using the provided right inverse
   of the quotient map `G → G/K`. The classical version is `AddSubgroup.quotientEquivSumOfLE`."]
 def quotientEquivProdOfLE' (h_le : s ≤ t) (f : α ⧸ t → α)
-    (hf : Function.RightInverse f QuotientGroup.mk) : α ⧸ s ≃ (α ⧸ t) × t ⧸ s.subgroupOf t
-    where
+    (hf : Function.RightInverse f QuotientGroup.mk) : α ⧸ s ≃ (α ⧸ t) × t ⧸ s.subgroupOf t where
   toFun a :=
     ⟨a.map' id fun b c h => leftRel_apply.mpr (h_le (leftRel_apply.mp h)),
       a.map' (fun g : α => ⟨(f (Quotient.mk'' g))⁻¹ * g, leftRel_apply.mp (Quotient.exact' (hf g))⟩)
@@ -668,8 +665,7 @@ noncomputable def quotientEquivProdOfLE (h_le : s ≤ t) : α ⧸ s ≃ (α ⧸ 
 @[to_additive "If `s ≤ t`, then there is an embedding
  `s ⧸ H.addSubgroupOf s ↪ t ⧸ H.addSubgroupOf t`."]
 def quotientSubgroupOfEmbeddingOfLE (H : Subgroup α) (h : s ≤ t) :
-    s ⧸ H.subgroupOf s ↪ t ⧸ H.subgroupOf t
-    where
+    s ⧸ H.subgroupOf s ↪ t ⧸ H.subgroupOf t where
   toFun :=
     Quotient.map' (inclusion h) fun a b => by
       simp_rw [leftRel_eq]
@@ -730,8 +726,7 @@ set_option backward.synthInstance.canonInstances false in -- See https://github.
 @[to_additive (attr := simps) "The natural embedding
  `H ⧸ (⨅ i, f i).addSubgroupOf H) ↪ Π i, H ⧸ (f i).addSubgroupOf H`."]
 def quotientiInfSubgroupOfEmbedding {ι : Type*} (f : ι → Subgroup α) (H : Subgroup α) :
-    H ⧸ (⨅ i, f i).subgroupOf H ↪ ∀ i, H ⧸ (f i).subgroupOf H
-    where
+    H ⧸ (⨅ i, f i).subgroupOf H ↪ ∀ i, H ⧸ (f i).subgroupOf H where
   toFun q i := quotientSubgroupOfMapOfLE H (iInf_le f i) q
   inj' :=
     Quotient.ind₂' <| by
@@ -752,8 +747,7 @@ theorem quotientiInfSubgroupOfEmbedding_apply_mk {ι : Type*} (f : ι → Subgro
 
 /-- The natural embedding `α ⧸ (⨅ i, f i) ↪ Π i, α ⧸ f i`. -/
 @[to_additive (attr := simps) "The natural embedding `α ⧸ (⨅ i, f i) ↪ Π i, α ⧸ f i`."]
-def quotientiInfEmbedding {ι : Type*} (f : ι → Subgroup α) : (α ⧸ ⨅ i, f i) ↪ ∀ i, α ⧸ f i
-    where
+def quotientiInfEmbedding {ι : Type*} (f : ι → Subgroup α) : (α ⧸ ⨅ i, f i) ↪ ∀ i, α ⧸ f i where
   toFun q i := quotientMapOfLE (iInf_le f i) q
   inj' :=
     Quotient.ind₂' <| by
@@ -835,8 +829,7 @@ variable [Group α]
  there is a (typically non-canonical) bijection between the preimage of `t` in `α` and the product
  `s × t`."]
 noncomputable def preimageMkEquivSubgroupProdSet (s : Subgroup α) (t : Set (α ⧸ s)) :
-    QuotientGroup.mk ⁻¹' t ≃ s × t
-    where
+    QuotientGroup.mk ⁻¹' t ≃ s × t where
   toFun a :=
     ⟨⟨((Quotient.out' (QuotientGroup.mk a)) : α)⁻¹ * a,
         leftRel_apply.mp (@Quotient.exact' _ (leftRel s) _ _ <| Quotient.out_eq' _)⟩,

@@ -449,8 +449,7 @@ instance : CommMonoid R[S⁻¹] :=
 variable (R S)
 
 /-- The morphism `numeratorHom` is a monoid localization map in the case of commutative `R`. -/
-protected def localizationMap : S.LocalizationMap R[S⁻¹]
-    where
+protected def localizationMap : S.LocalizationMap R[S⁻¹] where
   toFun := numeratorHom
   map_one' := rfl
   map_mul' r₁ r₂ := by simp

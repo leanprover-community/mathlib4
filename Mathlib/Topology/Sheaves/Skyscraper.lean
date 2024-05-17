@@ -174,8 +174,8 @@ noncomputable def skyscraperPresheafStalkOfSpecializes [HasColimits C] {y : X} (
 /-- The cocone at `*` for the stalk functor of `skyscraperPresheaf p₀ A` when `y ∉ closure {p₀}`
 -/
 @[simps]
-def skyscraperPresheafCocone (y : X) : Cocone ((OpenNhds.inclusion y).op ⋙ skyscraperPresheaf p₀ A)
-    where
+def skyscraperPresheafCocone (y : X) :
+    Cocone ((OpenNhds.inclusion y).op ⋙ skyscraperPresheaf p₀ A) where
   pt := terminal C
   ι :=
     { app := fun _ => terminal.from _
@@ -322,8 +322,8 @@ theorem fromStalk_to_skyscraper {𝓕 : Presheaf C X} {c : C} (f : 𝓕.stalk p�
 /-- The unit in `Presheaf.stalkFunctor ⊣ skyscraperPresheafFunctor`
 -/
 @[simps]
-protected def unit : 𝟭 (Presheaf C X) ⟶ Presheaf.stalkFunctor C p₀ ⋙ skyscraperPresheafFunctor p₀
-    where
+protected def unit :
+    𝟭 (Presheaf C X) ⟶ Presheaf.stalkFunctor C p₀ ⋙ skyscraperPresheafFunctor p₀ where
   app 𝓕 := toSkyscraperPresheaf _ <| 𝟙 _
   naturality 𝓕 𝓖 f := by
     ext U; dsimp

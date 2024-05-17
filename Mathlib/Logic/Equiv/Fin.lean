@@ -44,8 +44,7 @@ def finTwoEquiv : Fin 2 ≃ Bool where
 /-- `Π i : Fin 2, α i` is equivalent to `α 0 × α 1`. See also `finTwoArrowEquiv` for a
 non-dependent version and `prodEquivPiFinTwo` for a version with inputs `α β : Type u`. -/
 @[simps (config := .asFn)]
-def piFinTwoEquiv (α : Fin 2 → Type u) : (∀ i, α i) ≃ α 0 × α 1
-    where
+def piFinTwoEquiv (α : Fin 2 → Type u) : (∀ i, α i) ≃ α 0 × α 1 where
   toFun f := (f 0, f 1)
   invFun p := Fin.cons p.1 <| Fin.cons p.2 finZeroElim
   left_inv _ := funext <| Fin.forall_fin_two.2 ⟨rfl, rfl⟩
@@ -89,8 +88,7 @@ def finTwoArrowEquiv (α : Type*) : (Fin 2 → α) ≃ α × α :=
 
 /-- `Π i : Fin 2, α i` is order equivalent to `α 0 × α 1`. See also `OrderIso.finTwoArrowEquiv`
 for a non-dependent version. -/
-def OrderIso.piFinTwoIso (α : Fin 2 → Type u) [∀ i, Preorder (α i)] : (∀ i, α i) ≃o α 0 × α 1
-    where
+def OrderIso.piFinTwoIso (α : Fin 2 → Type u) [∀ i, Preorder (α i)] : (∀ i, α i) ≃o α 0 × α 1 where
   toEquiv := piFinTwoEquiv α
   map_rel_iff' := Iff.symm Fin.forall_fin_two
 #align order_iso.pi_fin_two_iso OrderIso.piFinTwoIso
@@ -126,8 +124,7 @@ theorem finCongr_symm_apply_coe (h : m = n) (k : Fin n) : ((finCongr h).symm k :
 /-- An equivalence that removes `i` and maps it to `none`.
 This is a version of `Fin.predAbove` that produces `Option (Fin n)` instead of
 mapping both `i.cast_succ` and `i.succ` to `i`. -/
-def finSuccEquiv' (i : Fin (n + 1)) : Fin (n + 1) ≃ Option (Fin n)
-    where
+def finSuccEquiv' (i : Fin (n + 1)) : Fin (n + 1) ≃ Option (Fin n) where
   toFun := i.insertNth none some
   invFun x := x.casesOn' i (Fin.succAbove i)
   left_inv x := Fin.succAboveCases i (by simp) (fun j => by simp) x
@@ -341,8 +338,7 @@ def Equiv.piFinCastSucc (n : ℕ) (β : Type u) : (Fin (n + 1) → β) ≃ β ×
   Equiv.piFinSuccAbove (fun _ => β) (.last _)
 
 /-- Equivalence between `Fin m ⊕ Fin n` and `Fin (m + n)` -/
-def finSumFinEquiv : Sum (Fin m) (Fin n) ≃ Fin (m + n)
-    where
+def finSumFinEquiv : Sum (Fin m) (Fin n) ≃ Fin (m + n) where
   toFun := Sum.elim (Fin.castAdd n) (Fin.natAdd m)
   invFun i := @Fin.addCases m n (fun _ => Sum (Fin m) (Fin n)) Sum.inl Sum.inr i
   left_inv x := by cases' x with y y <;> dsimp <;> simp
@@ -484,8 +480,7 @@ theorem coe_finRotate (i : Fin n.succ) :
 
 /-- Equivalence between `Fin m × Fin n` and `Fin (m * n)` -/
 @[simps]
-def finProdFinEquiv : Fin m × Fin n ≃ Fin (m * n)
-    where
+def finProdFinEquiv : Fin m × Fin n ≃ Fin (m * n) where
   toFun x :=
     ⟨x.2 + n * x.1,
       calc
@@ -552,8 +547,7 @@ def Int.divModEquiv (n : ℕ) [NeZero n] : ℤ ≃ ℤ × Fin n where
 /-- Promote a `Fin n` into a larger `Fin m`, as a subtype where the underlying
 values are retained. This is the `OrderIso` version of `Fin.castLE`. -/
 @[simps apply symm_apply]
-def Fin.castLEOrderIso {n m : ℕ} (h : n ≤ m) : Fin n ≃o { i : Fin m // (i : ℕ) < n }
-    where
+def Fin.castLEOrderIso {n m : ℕ} (h : n ≤ m) : Fin n ≃o { i : Fin m // (i : ℕ) < n } where
   toFun i := ⟨Fin.castLE h i, by simp⟩
   invFun i := ⟨i, i.prop⟩
   left_inv _ := by simp

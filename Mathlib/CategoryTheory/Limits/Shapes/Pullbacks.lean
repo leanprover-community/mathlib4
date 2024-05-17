@@ -1057,8 +1057,8 @@ end PushoutCocone
     If you're thinking about using this, have a look at `hasPullbacks_of_hasLimit_cospan`,
     which you may find to be an easier way of achieving your goal. -/
 @[simps]
-def Cone.ofPullbackCone {F : WalkingCospan ⥤ C} (t : PullbackCone (F.map inl) (F.map inr)) : Cone F
-    where
+def Cone.ofPullbackCone {F : WalkingCospan ⥤ C} (t : PullbackCone (F.map inl) (F.map inr)) :
+    Cone F where
   pt := t.pt
   π := t.π ≫ (diagramIsoCospan F).inv
 #align category_theory.limits.cone.of_pullback_cone CategoryTheory.Limits.Cone.ofPullbackCone
@@ -1080,8 +1080,8 @@ def Cocone.ofPushoutCocone {F : WalkingSpan ⥤ C} (t : PushoutCocone (F.map fst
 /-- Given `F : WalkingCospan ⥤ C`, which is really the same as `cospan (F.map inl) (F.map inr)`,
     and a cone on `F`, we get a pullback cone on `F.map inl` and `F.map inr`. -/
 @[simps]
-def PullbackCone.ofCone {F : WalkingCospan ⥤ C} (t : Cone F) : PullbackCone (F.map inl) (F.map inr)
-    where
+def PullbackCone.ofCone {F : WalkingCospan ⥤ C} (t : Cone F) :
+    PullbackCone (F.map inl) (F.map inr) where
   pt := t.pt
   π := t.π ≫ (diagramIsoCospan F).hom
 #align category_theory.limits.pullback_cone.of_cone CategoryTheory.Limits.PullbackCone.ofCone

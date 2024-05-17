@@ -637,8 +637,7 @@ theorem coeff_zero_X (i : σ) : coeff 0 (X i : MvPolynomial σ R) = 0 :=
 
 /-- `MvPolynomial.coeff m` but promoted to an `AddMonoidHom`. -/
 @[simps]
-def coeffAddMonoidHom (m : σ →₀ ℕ) : MvPolynomial σ R →+ R
-    where
+def coeffAddMonoidHom (m : σ →₀ ℕ) : MvPolynomial σ R →+ R where
   toFun := coeff m
   map_zero' := coeff_zero m
   map_add' := coeff_add m
@@ -881,8 +880,7 @@ section ConstantCoeff
 /-- `constantCoeff p` returns the constant term of the polynomial `p`, defined as `coeff 0 p`.
 This is a ring homomorphism.
 -/
-def constantCoeff : MvPolynomial σ R →+* R
-    where
+def constantCoeff : MvPolynomial σ R →+* R where
   toFun := coeff 0
   map_one' := by simp [AddMonoidAlgebra.one_def]
   map_mul' := by classical simp [coeff_mul, Finsupp.support_single_ne_zero]
@@ -1044,8 +1042,7 @@ theorem eval₂_pow {p : MvPolynomial σ R} : ∀ {n : ℕ}, (p ^ n).eval₂ f g
 #align mv_polynomial.eval₂_pow MvPolynomial.eval₂_pow
 
 /-- `MvPolynomial.eval₂` as a `RingHom`. -/
-def eval₂Hom (f : R →+* S₁) (g : σ → S₁) : MvPolynomial σ R →+* S₁
-    where
+def eval₂Hom (f : R →+* S₁) (g : σ → S₁) : MvPolynomial σ R →+* S₁ where
   toFun := eval₂ f g
   map_one' := eval₂_one _ _
   map_mul' _ _ := eval₂_mul _ _

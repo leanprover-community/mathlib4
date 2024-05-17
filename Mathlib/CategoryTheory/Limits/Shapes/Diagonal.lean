@@ -385,8 +385,7 @@ def pullbackFstFstIso {X Y S X' Y' S' : C} (f : X ⟶ S) (g : Y ⟶ S) (f' : X' 
     [Mono i₃] :
     pullback (pullback.fst : pullback (pullback.fst : pullback f' g' ⟶ _) i₁ ⟶ _)
         (pullback.fst : pullback (pullback.snd : pullback f' g' ⟶ _) i₂ ⟶ _) ≅
-      pullback f g
-    where
+      pullback f g where
   hom :=
     pullback.lift (pullback.fst ≫ pullback.snd) (pullback.snd ≫ pullback.snd)
       (by

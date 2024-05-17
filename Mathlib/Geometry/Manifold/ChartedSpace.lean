@@ -175,8 +175,8 @@ variable [TopologicalSpace H]
 instance : Membership (PartialHomeomorph H H) (StructureGroupoid H) :=
   ⟨fun (e : PartialHomeomorph H H) (G : StructureGroupoid H) ↦ e ∈ G.members⟩
 
-instance (H : Type u) [TopologicalSpace H] : SetLike (StructureGroupoid H) (PartialHomeomorph H H)
-    where
+instance (H : Type u) [TopologicalSpace H] :
+    SetLike (StructureGroupoid H) (PartialHomeomorph H H) where
   coe s := s.members
   coe_injective' N O h := by cases N; cases O; congr
 

@@ -718,8 +718,7 @@ theorem toList_getLast? {i j} (w : NeWord M i j) : w.toList.getLast? = Option.so
 #align free_product.neword.to_list_last' Monoid.CoprodI.NeWord.toList_getLast?
 
 /-- The `Word M` represented by a `NeWord M i j` -/
-def toWord {i j} (w : NeWord M i j) : Word M
-    where
+def toWord {i j} (w : NeWord M i j) : Word M where
   toList := w.toList
   ne_one := by
     induction w

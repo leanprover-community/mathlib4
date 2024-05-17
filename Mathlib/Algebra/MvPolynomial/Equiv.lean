@@ -236,8 +236,7 @@ variable {σ}
 def mvPolynomialEquivMvPolynomial [CommSemiring S₃] (f : MvPolynomial S₁ R →+* MvPolynomial S₂ S₃)
     (g : MvPolynomial S₂ S₃ →+* MvPolynomial S₁ R) (hfgC : (f.comp g).comp C = C)
     (hfgX : ∀ n, f (g (X n)) = X n) (hgfC : (g.comp f).comp C = C) (hgfX : ∀ n, g (f (X n)) = X n) :
-    MvPolynomial S₁ R ≃+* MvPolynomial S₂ S₃
-    where
+    MvPolynomial S₁ R ≃+* MvPolynomial S₂ S₃ where
   toFun := f
   invFun := g
   left_inv := is_id (RingHom.comp _ _) hgfC hgfX

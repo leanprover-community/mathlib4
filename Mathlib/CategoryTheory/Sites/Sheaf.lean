@@ -125,8 +125,8 @@ def _root_.CategoryTheory.Presieve.FamilyOfElements.SieveCompatible.cone :
 /-- Cone morphisms from the cone corresponding to a sieve_compatible family to the natural
     cone associated to a sieve `S` and a presheaf `P` are in 1-1 correspondence with amalgamations
     of the family. -/
-def homEquivAmalgamation : (hx.cone ⟶ P.mapCone S.arrows.cocone.op) ≃ { t // x.IsAmalgamation t }
-    where
+def homEquivAmalgamation :
+    (hx.cone ⟶ P.mapCone S.arrows.cocone.op) ≃ { t // x.IsAmalgamation t } where
   toFun l := ⟨l.hom, fun _ f hf => l.w (op ⟨Over.mk f, hf⟩)⟩
   invFun t := ⟨t.1, fun f => t.2 f.unop.1.hom f.unop.2⟩
   left_inv _ := rfl

@@ -68,8 +68,7 @@ structure YoungDiagram where
 
 namespace YoungDiagram
 
-instance : SetLike YoungDiagram (ℕ × ℕ)
-    where
+instance : SetLike YoungDiagram (ℕ × ℕ) where
   -- Porting note (#11215): TODO: figure out how to do this correctly
   coe := fun y => y.cells
   coe_injective' μ ν h := by rwa [YoungDiagram.ext_iff, ← Finset.coe_inj]
@@ -520,8 +519,7 @@ theorem rowLens_ofRowLens_eq_self {w : List ℕ} {hw : w.Sorted (· ≥ ·)} (hp
 /-- Equivalence between Young diagrams and weakly decreasing lists of positive natural numbers.
 A Young diagram `μ` is equivalent to a list of row lengths. -/
 @[simps]
-def equivListRowLens : YoungDiagram ≃ { w : List ℕ // w.Sorted (· ≥ ·) ∧ ∀ x ∈ w, 0 < x }
-    where
+def equivListRowLens : YoungDiagram ≃ { w : List ℕ // w.Sorted (· ≥ ·) ∧ ∀ x ∈ w, 0 < x } where
   toFun μ := ⟨μ.rowLens, μ.rowLens_sorted, μ.pos_of_mem_rowLens⟩
   invFun ww := ofRowLens ww.1 ww.2.1
   left_inv _ := ofRowLens_to_rowLens_eq_self

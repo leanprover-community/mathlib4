@@ -64,8 +64,8 @@ an equivalence between `Fin l.length` and `α`.
 See `List.Nodup.getBijectionOfForallMemList` for a version without
 decidable equality. -/
 @[simps]
-def getEquivOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, x ∈ l) : Fin l.length ≃ α
-    where
+def getEquivOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, x ∈ l) :
+    Fin l.length ≃ α where
   toFun i := l.get i
   invFun a := ⟨_, indexOf_lt_length.2 (h a)⟩
   left_inv i := by simp [List.get_indexOf, nd]

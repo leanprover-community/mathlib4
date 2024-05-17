@@ -609,8 +609,7 @@ variable [Unique β] (f : β → C)
 
 /-- The limit cone for the product over an index type with exactly one term. -/
 @[simps]
-def limitConeOfUnique : LimitCone (Discrete.functor f)
-    where
+def limitConeOfUnique : LimitCone (Discrete.functor f) where
   cone :=
     { pt := f default
       π := Discrete.natTrans (fun ⟨j⟩ => eqToHom (by
@@ -640,8 +639,7 @@ def productUniqueIso : ∏ f ≅ f default :=
 
 /-- The colimit cocone for the coproduct over an index type with exactly one term. -/
 @[simps]
-def colimitCoconeOfUnique : ColimitCocone (Discrete.functor f)
-    where
+def colimitCoconeOfUnique : ColimitCocone (Discrete.functor f) where
   cocone :=
     { pt := f default
       ι := Discrete.natTrans (fun ⟨j⟩ => eqToHom (by

@@ -25,8 +25,8 @@ variable {α G : Type*} [TopologicalSpace G] [LinearOrderedAddCommGroup G] [Orde
 variable {l : Filter α} {f g : α → G}
 
 -- see Note [lower instance priority]
-instance (priority := 100) LinearOrderedAddCommGroup.topologicalAddGroup : TopologicalAddGroup G
-    where
+instance (priority := 100) LinearOrderedAddCommGroup.topologicalAddGroup :
+    TopologicalAddGroup G where
   continuous_add := by
     refine' continuous_iff_continuousAt.2 _
     rintro ⟨a, b⟩

@@ -357,8 +357,7 @@ variable [Unique Mˣ] [Unique Nˣ]
 @[simps]
 def mkFactorOrderIsoOfFactorDvdEquiv {m : M} {n : N} {d : { l : M // l ∣ m } ≃ { l : N // l ∣ n }}
     (hd : ∀ l l', (d l : N) ∣ d l' ↔ (l : M) ∣ (l' : M)) :
-    Set.Iic (Associates.mk m) ≃o Set.Iic (Associates.mk n)
-    where
+    Set.Iic (Associates.mk m) ≃o Set.Iic (Associates.mk n) where
   toFun l :=
     ⟨Associates.mk
         (d

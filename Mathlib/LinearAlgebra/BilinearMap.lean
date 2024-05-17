@@ -59,8 +59,7 @@ See `mk₂'` and `mk₂` for the linear case. -/
 def mk₂'ₛₗ (f : M → N → P) (H1 : ∀ m₁ m₂ n, f (m₁ + m₂) n = f m₁ n + f m₂ n)
     (H2 : ∀ (c : R) (m n), f (c • m) n = ρ₁₂ c • f m n)
     (H3 : ∀ m n₁ n₂, f m (n₁ + n₂) = f m n₁ + f m n₂)
-    (H4 : ∀ (c : S) (m n), f m (c • n) = σ₁₂ c • f m n) : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P
-    where
+    (H4 : ∀ (c : S) (m n), f m (c • n) = σ₁₂ c • f m n) : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P where
   toFun m :=
     { toFun := f m
       map_add' := H3 m
@@ -169,8 +168,7 @@ theorem map_sum₂ {ι : Type*} (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂]
 #align linear_map.map_sum₂ LinearMap.map_sum₂
 
 /-- Restricting a bilinear map in the second entry -/
-def domRestrict₂ (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (q : Submodule S N) : M →ₛₗ[ρ₁₂] q →ₛₗ[σ₁₂] P
-    where
+def domRestrict₂ (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (q : Submodule S N) : M →ₛₗ[ρ₁₂] q →ₛₗ[σ₁₂] P where
   toFun m := (f m).domRestrict q
   map_add' m₁ m₂ := LinearMap.ext fun _ => by simp only [map_add, domRestrict_apply, add_apply]
   map_smul' c m :=
@@ -260,8 +258,7 @@ variable {R}
 
 /-- Given a linear map from `M` to linear maps from `N` to `P`, i.e., a bilinear map `M → N → P`,
 change the order of variables and get a linear map from `N` to linear maps from `M` to `P`. -/
-def lflip : (M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) →ₗ[R₃] N →ₛₗ[σ₂₃] M →ₛₗ[σ₁₃] P
-    where
+def lflip : (M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) →ₗ[R₃] N →ₛₗ[σ₂₃] M →ₛₗ[σ₁₃] P where
   toFun := flip
   map_add' _ _ := rfl
   map_smul' _ _ := rfl

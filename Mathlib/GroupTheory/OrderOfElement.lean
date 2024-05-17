@@ -1104,8 +1104,7 @@ lemma zpow_mod_natCard (a : G) (n : ℤ) : a ^ (n % Nat.card G : ℤ) = a ^ n :=
 
 /-- If `gcd(|G|,n)=1` then the `n`th power map is a bijection -/
 @[to_additive (attr := simps) "If `gcd(|G|,n)=1` then the smul by `n` is a bijection"]
-noncomputable def powCoprime {G : Type*} [Group G] (h : (Nat.card G).Coprime n) : G ≃ G
-    where
+noncomputable def powCoprime {G : Type*} [Group G] (h : (Nat.card G).Coprime n) : G ≃ G where
   toFun g := g ^ n
   invFun g := g ^ (Nat.card G).gcdB n
   left_inv g := by

@@ -601,8 +601,8 @@ variable [FunLike F R[X] S[X]]
 to a `RatFunc R →* RatFunc S`,
 on the condition that `φ` maps non zero divisors to non zero divisors,
 by mapping both the numerator and denominator and quotienting them. -/
-def map [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap φ) : RatFunc R →* RatFunc S
-    where
+def map [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap φ) :
+    RatFunc R →* RatFunc S where
   toFun f :=
     RatFunc.liftOn f
       (fun n d => if h : φ d ∈ S[X]⁰ then ofFractionRing (Localization.mk (φ n) ⟨φ d, h⟩) else 0)

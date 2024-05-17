@@ -138,8 +138,8 @@ end Polar
 /-- A quadratic form over a module.
 
 For a more familiar constructor when `R` is a ring, see `QuadraticForm.ofPolar`. -/
-structure QuadraticForm (R : Type u) (M : Type v) [CommSemiring R] [AddCommMonoid M] [Module R M]
-    where
+structure QuadraticForm (R : Type u) (M : Type v)
+    [CommSemiring R] [AddCommMonoid M] [Module R M] where
   toFun : M → R
   toFun_smul : ∀ (a : R) (x : M), toFun (a • x) = a * a * toFun x
   exists_companion' :

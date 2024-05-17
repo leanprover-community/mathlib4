@@ -391,23 +391,20 @@ theorem mem_vars_bind₁ (f : σ → MvPolynomial τ R) (φ : MvPolynomial σ R)
   simpa only [exists_prop, Finset.mem_biUnion, mem_support_iff, Ne] using vars_bind₁ f φ h
 #align mv_polynomial.mem_vars_bind₁ MvPolynomial.mem_vars_bind₁
 
-instance monad : Monad fun σ => MvPolynomial σ R
-    where
+instance monad : Monad fun σ => MvPolynomial σ R where
   map f p := rename f p
   pure := X
   bind p f := bind₁ f p
 #align mv_polynomial.monad MvPolynomial.monad
 
-instance lawfulFunctor : LawfulFunctor fun σ => MvPolynomial σ R
-    where
+instance lawfulFunctor : LawfulFunctor fun σ => MvPolynomial σ R where
   map_const := by intros; rfl
   -- Porting note: I guess `map_const` no longer has a default implementation?
   id_map := by intros; simp [(· <$> ·)]
   comp_map := by intros; simp [(· <$> ·)]
 #align mv_polynomial.is_lawful_functor MvPolynomial.lawfulFunctor
 
-instance lawfulMonad : LawfulMonad fun σ => MvPolynomial σ R
-    where
+instance lawfulMonad : LawfulMonad fun σ => MvPolynomial σ R where
   pure_bind := by intros; simp [pure, bind]
   bind_assoc := by intros; simp [bind, ← bind₁_comp_bind₁]
   seqLeft_eq := by intros; simp [SeqLeft.seqLeft, Seq.seq, (· <$> ·), bind₁_rename]; rfl

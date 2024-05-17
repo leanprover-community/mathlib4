@@ -72,8 +72,7 @@ variable (β)
 /-- The canonical bijection with the sigma type, showing that `WType` is a fixed point of
   the polynomial functor `X ↦ Σ a : α, β a → X`. -/
 @[simps]
-def equivSigma : WType β ≃ Σa : α, β a → WType β
-    where
+def equivSigma : WType β ≃ Σa : α, β a → WType β where
   toFun := toSigma
   invFun := ofSigma
   left_inv := ofSigma_toSigma

@@ -221,8 +221,7 @@ noncomputable def regularEpiOfKernelPair {B X : C} (f : X ⟶ B) [HasPullback f 
   isColimit := hc
 
 /-- Every split epimorphism is a regular epimorphism. -/
-instance (priority := 100) RegularEpi.ofSplitEpi (f : X ⟶ Y) [IsSplitEpi f] : RegularEpi f
-    where
+instance (priority := 100) RegularEpi.ofSplitEpi (f : X ⟶ Y) [IsSplitEpi f] : RegularEpi f where
   W := X
   left := 𝟙 X
   right := f ≫ section_ f

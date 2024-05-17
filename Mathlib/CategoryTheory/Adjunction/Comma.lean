@@ -43,8 +43,7 @@ which is helpful for constructing a left adjoint to `G`.
 -/
 @[simps]
 def leftAdjointOfStructuredArrowInitialsAux (A : C) (B : D) :
-    ((⊥_ StructuredArrow A G).right ⟶ B) ≃ (A ⟶ G.obj B)
-    where
+    ((⊥_ StructuredArrow A G).right ⟶ B) ≃ (A ⟶ G.obj B) where
   toFun g := (⊥_ StructuredArrow A G).hom ≫ G.map g
   invFun f := CommaMorphism.right (initial.to (StructuredArrow.mk f))
   left_inv g := by
@@ -92,8 +91,7 @@ which is helpful for constructing a right adjoint to `G`.
 -/
 @[simps]
 def rightAdjointOfCostructuredArrowTerminalsAux (B : D) (A : C) :
-    (G.obj B ⟶ A) ≃ (B ⟶ (⊤_ CostructuredArrow G A).left)
-    where
+    (G.obj B ⟶ A) ≃ (B ⟶ (⊤_ CostructuredArrow G A).left) where
   toFun g := CommaMorphism.left (terminal.from (CostructuredArrow.mk g))
   invFun g := G.map g ≫ (⊤_ CostructuredArrow G A).hom
   left_inv := by aesop_cat
@@ -140,8 +138,7 @@ variable {F : C ⥤ D}
 /-- Given a left adjoint to `G`, we can construct an initial object in each structured arrow
 category on `G`. -/
 def mkInitialOfLeftAdjoint (h : F ⊣ G) (A : C) :
-    IsInitial (StructuredArrow.mk (h.unit.app A) : StructuredArrow A G)
-    where
+    IsInitial (StructuredArrow.mk (h.unit.app A) : StructuredArrow A G) where
   desc B := StructuredArrow.homMk ((h.homEquiv _ _).symm B.pt.hom)
   uniq s m _ := by
     apply StructuredArrow.ext
@@ -154,8 +151,7 @@ def mkInitialOfLeftAdjoint (h : F ⊣ G) (A : C) :
 /-- Given a right adjoint to `F`, we can construct a terminal object in each costructured arrow
 category on `F`. -/
 def mkTerminalOfRightAdjoint (h : F ⊣ G) (A : D) :
-    IsTerminal (CostructuredArrow.mk (h.counit.app A) : CostructuredArrow F A)
-    where
+    IsTerminal (CostructuredArrow.mk (h.counit.app A) : CostructuredArrow F A) where
   lift B := CostructuredArrow.homMk (h.homEquiv _ _ B.pt.hom)
   uniq s m _ := by
     apply CostructuredArrow.ext

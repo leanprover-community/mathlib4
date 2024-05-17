@@ -310,8 +310,7 @@ set_option linter.uppercaseLean3 false in
 end Approx
 
 /-- constructor for M-types -/
-protected def mk (x : F (M F)) : M F
-    where
+protected def mk (x : F (M F)) : M F where
   approx := Approx.sMk x
   consistent := Approx.P_mk x
 set_option linter.uppercaseLean3 false in

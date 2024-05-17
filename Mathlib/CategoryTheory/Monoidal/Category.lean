@@ -812,8 +812,7 @@ def tensor : C × C ⥤ C where
 #align category_theory.monoidal_category.tensor CategoryTheory.MonoidalCategory.tensor
 
 /-- The left-associated triple tensor product as a functor. -/
-def leftAssocTensor : C × C × C ⥤ C
-    where
+def leftAssocTensor : C × C × C ⥤ C where
   obj X := (X.1 ⊗ X.2.1) ⊗ X.2.2
   map {X Y : C × C × C} (f : X ⟶ Y) := (f.1 ⊗ f.2.1) ⊗ f.2.2
 #align category_theory.monoidal_category.left_assoc_tensor CategoryTheory.MonoidalCategory.leftAssocTensor
@@ -829,8 +828,7 @@ theorem leftAssocTensor_map {X Y} (f : X ⟶ Y) : (leftAssocTensor C).map f = (f
 #align category_theory.monoidal_category.left_assoc_tensor_map CategoryTheory.MonoidalCategory.leftAssocTensor_map
 
 /-- The right-associated triple tensor product as a functor. -/
-def rightAssocTensor : C × C × C ⥤ C
-    where
+def rightAssocTensor : C × C × C ⥤ C where
   obj X := X.1 ⊗ X.2.1 ⊗ X.2.2
   map {X Y : C × C × C} (f : X ⟶ Y) := f.1 ⊗ f.2.1 ⊗ f.2.2
 #align category_theory.monoidal_category.right_assoc_tensor CategoryTheory.MonoidalCategory.rightAssocTensor

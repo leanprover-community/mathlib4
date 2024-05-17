@@ -86,8 +86,7 @@ instance limitModule :
 /-- `limit.π (F ⋙ forget (ModuleCat.{w} R)) j` as an `R`-linear map. -/
 def limitπLinearMap (j) :
     (Types.Small.limitCone (F ⋙ forget (ModuleCat.{w} R))).pt →ₗ[R]
-      (F ⋙ forget (ModuleCat R)).obj j
-    where
+      (F ⋙ forget (ModuleCat R)).obj j where
   toFun := (Types.Small.limitCone (F ⋙ forget (ModuleCat R))).π.app j
   map_smul' _ _ := by
     simp only [Types.Small.limitCone_π_app,
@@ -253,8 +252,7 @@ def directLimitCocone : Cocone (directLimitDiagram G f) where
 /-- The unbundled `directLimit` of modules is a colimit
 in the sense of `CategoryTheory`. -/
 @[simps]
-def directLimitIsColimit [IsDirected ι (· ≤ ·)] : IsColimit (directLimitCocone G f)
-    where
+def directLimitIsColimit [IsDirected ι (· ≤ ·)] : IsColimit (directLimitCocone G f) where
   desc s :=
     DirectLimit.lift R ι G f s.ι.app fun i j h x => by
       rw [← s.w (homOfLE h)]

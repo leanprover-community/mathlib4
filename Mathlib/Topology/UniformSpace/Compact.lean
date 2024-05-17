@@ -76,8 +76,7 @@ theorem unique_uniformity_of_compact [t : TopologicalSpace γ] [CompactSpace γ]
 #align unique_uniformity_of_compact unique_uniformity_of_compact
 
 /-- The unique uniform structure inducing a given compact topological structure. -/
-def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ] : UniformSpace γ
-    where
+def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ] : UniformSpace γ where
   uniformity := 𝓝ˢ (diagonal γ)
   symm := continuous_swap.tendsto_nhdsSet fun x => Eq.symm
   comp := by

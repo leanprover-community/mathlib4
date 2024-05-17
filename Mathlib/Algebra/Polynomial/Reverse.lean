@@ -56,8 +56,7 @@ theorem revAtFun_inj {N : ℕ} : Function.Injective (revAtFun N) := by
 Essentially, this embedding is only used for `i ≤ N`.
 The advantage of `revAt N i` over `N - i` is that `revAt` is an involution.
 -/
-def revAt (N : ℕ) : Function.Embedding ℕ ℕ
-    where
+def revAt (N : ℕ) : Function.Embedding ℕ ℕ where
   toFun i := ite (i ≤ N) (N - i) i
   inj' := revAtFun_inj
 #align polynomial.rev_at Polynomial.revAt

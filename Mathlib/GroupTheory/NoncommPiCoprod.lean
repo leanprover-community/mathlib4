@@ -106,8 +106,7 @@ namespace MonoidHom
 /-- The canonical homomorphism from a family of monoids. -/
 @[to_additive "The canonical homomorphism from a family of additive monoids. See also
 `LinearMap.lsum` for a linear version without the commutativity assumption."]
-def noncommPiCoprod : (∀ i : ι, N i) →* M
-    where
+def noncommPiCoprod : (∀ i : ι, N i) →* M where
   toFun f := Finset.univ.noncommProd (fun i => ϕ i (f i)) fun i _ j _ h => hcomm h _ _
   map_one' := by
     apply (Finset.noncommProd_eq_pow_card _ _ _ _ _).trans (one_pow _)
@@ -144,8 +143,8 @@ theorem noncommPiCoprod_mulSingle (i : ι) (y : N i) :
 /-- The universal property of `MonoidHom.noncommPiCoprod` -/
 @[to_additive "The universal property of `AddMonoidHom.noncommPiCoprod`"]
 def noncommPiCoprodEquiv :
-    { ϕ : ∀ i, N i →* M // Pairwise fun i j => ∀ x y, Commute (ϕ i x) (ϕ j y) } ≃ ((∀ i, N i) →* M)
-    where
+    { ϕ : ∀ i, N i →* M // Pairwise fun i j => ∀ x y, Commute (ϕ i x) (ϕ j y) } ≃
+      ((∀ i, N i) →* M) where
   toFun ϕ := noncommPiCoprod ϕ.1 ϕ.2
   invFun f :=
     ⟨fun i => f.comp (MonoidHom.mulSingle N i), fun i j hij x y =>

@@ -109,8 +109,7 @@ instance : Category (Localization W) := by
   infer_instance
 
 /-- The obvious functor `C ⥤ W.Localization` -/
-def Q : C ⥤ W.Localization
-    where
+def Q : C ⥤ W.Localization where
   obj X := (Quotient.functor _).obj (Paths.of.obj ⟨X⟩)
   map f := (Quotient.functor _).map (ψ₁ W f)
   map_id X := Quotient.sound _ (relations.id X)
@@ -126,8 +125,7 @@ namespace Construction
 
 variable {W}
 /-- The isomorphism in `W.Localization` associated to a morphism `w` in W -/
-def wIso {X Y : C} (w : X ⟶ Y) (hw : W w) : Iso (W.Q.obj X) (W.Q.obj Y)
-    where
+def wIso {X Y : C} (w : X ⟶ Y) (hw : W w) : Iso (W.Q.obj X) (W.Q.obj Y) where
   hom := W.Q.map w
   inv := (Quotient.functor _).map (by dsimp; exact Paths.of.map (Sum.inr ⟨w, hw⟩))
   hom_inv_id := Quotient.sound _ (relations.Winv₁ w hw)
@@ -290,8 +288,7 @@ end NatTransExtension
 /-- If `F₁` and `F₂` are functors `W.Localization ⥤ D`, a natural transformation `F₁ ⟶ F₂`
 can be obtained from a natural transformation `W.Q ⋙ F₁ ⟶ W.Q ⋙ F₂`. -/
 @[simps]
-def natTransExtension {F₁ F₂ : W.Localization ⥤ D} (τ : W.Q ⋙ F₁ ⟶ W.Q ⋙ F₂) : F₁ ⟶ F₂
-    where
+def natTransExtension {F₁ F₂ : W.Localization ⥤ D} (τ : W.Q ⋙ F₁ ⟶ W.Q ⋙ F₂) : F₁ ⟶ F₂ where
   app := NatTransExtension.app τ
   naturality := by
     suffices MorphismProperty.naturalityProperty (NatTransExtension.app τ) = ⊤ by
@@ -333,8 +330,7 @@ def functor : (W.Localization ⥤ D) ⥤ W.FunctorsInverting D :=
 /-- The function `(W.FunctorsInverting D) ⥤ (W.Localization ⥤ D)` induced by
 `Construction.lift`. -/
 @[simps!]
-def inverse : W.FunctorsInverting D ⥤ W.Localization ⥤ D
-    where
+def inverse : W.FunctorsInverting D ⥤ W.Localization ⥤ D where
   obj G := lift G.obj G.property
   map τ := natTransExtension (eqToHom (by rw [fac]) ≫ τ ≫ eqToHom (by rw [fac]))
   map_id G :=
@@ -388,8 +384,7 @@ end WhiskeringLeftEquivalence
 
 /-- The equivalence of categories `(W.localization ⥤ D) ≌ (W.FunctorsInverting D)`
 induced by the composition with `W.Q : C ⥤ W.localization`. -/
-def whiskeringLeftEquivalence : W.Localization ⥤ D ≌ W.FunctorsInverting D
-    where
+def whiskeringLeftEquivalence : W.Localization ⥤ D ≌ W.FunctorsInverting D where
   functor := WhiskeringLeftEquivalence.functor W D
   inverse := WhiskeringLeftEquivalence.inverse W D
   unitIso := WhiskeringLeftEquivalence.unitIso W D

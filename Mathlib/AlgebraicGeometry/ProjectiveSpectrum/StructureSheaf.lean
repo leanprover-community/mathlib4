@@ -172,8 +172,8 @@ variable {𝒜}
 
 /-- The functions satisfying `isLocallyFraction` form a subring of all dependent functions
 `Π x : U, HomogeneousLocalization 𝒜 x`. -/
-def sectionsSubring (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) : Subring (∀ x : U.unop, at x.1)
-    where
+def sectionsSubring (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) :
+    Subring (∀ x : U.unop, at x.1) where
   carrier := {f | (isLocallyFraction 𝒜).pred f}
   zero_mem' := zeroMem' U
   one_mem' := oneMem' U

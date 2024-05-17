@@ -245,8 +245,7 @@ theorem add_eq_max_of_ne {q r : ℚ} (hne : padicNorm p q ≠ padicNorm p r) :
 
 /-- The `p`-adic norm is an absolute value: positive-definite and multiplicative, satisfying the
 triangle inequality. -/
-instance : IsAbsoluteValue (padicNorm p)
-    where
+instance : IsAbsoluteValue (padicNorm p) where
   abv_nonneg' := padicNorm.nonneg
   abv_eq_zero' := ⟨zero_of_padicNorm_eq_zero, fun hx ↦ by simp [hx]⟩
   abv_add' := padicNorm.triangle_ineq

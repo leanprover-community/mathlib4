@@ -217,8 +217,8 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
 /-- The diagram in `opens X` indexed by pairwise intersections from `U` is isomorphic
 (in fact, equal) to the diagram factored through `OpensLeCover U`.
 -/
-def pairwiseDiagramIso : Pairwise.diagram U ≅ pairwiseToOpensLeCover U ⋙ fullSubcategoryInclusion _
-    where
+def pairwiseDiagramIso :
+    Pairwise.diagram U ≅ pairwiseToOpensLeCover U ⋙ fullSubcategoryInclusion _ where
   hom := { app := by rintro (i | ⟨i, j⟩) <;> exact 𝟙 _ }
   inv := { app := by rintro (i | ⟨i, j⟩) <;> exact 𝟙 _ }
 set_option linter.uppercaseLean3 false in

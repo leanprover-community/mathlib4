@@ -271,8 +271,7 @@ theorem card_boundaries_eq_succ_length : c.boundaries.card = c.length + 1 := by 
 
 /-- To `c : Composition n`, one can associate a `CompositionAsSet n` by registering the leftmost
 point of each block, and adding a virtual point at the right of the last block. -/
-def toCompositionAsSet : CompositionAsSet n
-    where
+def toCompositionAsSet : CompositionAsSet n where
   boundaries := c.boundaries
   zero_mem := by
     simp only [boundaries, Finset.mem_univ, exists_prop_of_true, Finset.mem_map]
@@ -431,8 +430,7 @@ theorem invEmbedding_comp (i : Fin c.length) (j : Fin (c.blocksFun i)) :
 
 /-- Equivalence between the disjoint union of the blocks (each of them seen as
 `Fin (c.blocks_fun i)`) with `Fin n`. -/
-def blocksFinEquiv : (Σi : Fin c.length, Fin (c.blocksFun i)) ≃ Fin n
-    where
+def blocksFinEquiv : (Σi : Fin c.length, Fin (c.blocksFun i)) ≃ Fin n where
   toFun x := c.embedding x.1 x.2
   invFun j := ⟨c.index j, c.invEmbedding j⟩
   left_inv x := by
@@ -773,8 +771,7 @@ Combinatorial viewpoints on compositions, seen as finite subsets of `Fin (n+1)` 
 
 /-- Bijection between compositions of `n` and subsets of `{0, ..., n-2}`, defined by
 considering the restriction of the subset to `{1, ..., n-1}` and shifting to the left by one. -/
-def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1))
-    where
+def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)) where
   toFun c :=
     { i : Fin (n - 1) |
         (⟨1 + (i : ℕ), by
@@ -1046,8 +1043,7 @@ theorem Composition.toCompositionAsSet_boundaries (c : Composition n) :
 #align composition.to_composition_as_set_boundaries Composition.toCompositionAsSet_boundaries
 
 /-- Equivalence between `Composition n` and `CompositionAsSet n`. -/
-def compositionEquiv (n : ℕ) : Composition n ≃ CompositionAsSet n
-    where
+def compositionEquiv (n : ℕ) : Composition n ≃ CompositionAsSet n where
   toFun c := c.toCompositionAsSet
   invFun c := c.toComposition
   left_inv c := by

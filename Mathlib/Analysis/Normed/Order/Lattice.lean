@@ -73,8 +73,8 @@ respect which `α` forms a lattice. Suppose that `α` is *solid*, that is to say
 `α`, with absolute values `|a|` and `|b|` respectively, `|a| ≤ |b|` implies `‖a‖ ≤ ‖b‖`. Then `α` is
 said to be a normed lattice ordered group.
 -/
-class NormedLatticeAddCommGroup (α : Type*) extends NormedAddCommGroup α, Lattice α, HasSolidNorm α
-  where
+class NormedLatticeAddCommGroup (α : Type*) extends
+    NormedAddCommGroup α, Lattice α, HasSolidNorm α where
   add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b
 #align normed_lattice_add_comm_group NormedLatticeAddCommGroup
 

@@ -541,8 +541,8 @@ protected theorem pow_induction_on_right {C : A → Prop} (hr : ∀ r : R, C (al
 
 /-- `Submonoid.map` as a `MonoidWithZeroHom`, when applied to `AlgHom`s. -/
 @[simps]
-def mapHom {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A') : Submodule R A →*₀ Submodule R A'
-    where
+def mapHom {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A') :
+    Submodule R A →*₀ Submodule R A' where
   toFun := map f.toLinearMap
   map_zero' := Submodule.map_bot _
   map_one' := Submodule.map_one _

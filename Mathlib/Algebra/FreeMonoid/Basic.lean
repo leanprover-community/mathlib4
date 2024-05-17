@@ -75,8 +75,7 @@ theorem ofList_comp_toList : @ofList α ∘ toList = id := rfl
 #align free_add_monoid.of_list_comp_to_list FreeAddMonoid.ofList_comp_toList
 
 @[to_additive]
-instance : CancelMonoid (FreeMonoid α)
-    where
+instance : CancelMonoid (FreeMonoid α) where
   one := ofList []
   mul x y := ofList (toList x ++ toList y)
   mul_one := List.append_nil
@@ -310,8 +309,7 @@ theorem of_smul (f : α → β → β) (x : α) (y : β) :
 each `of x` to `of (f x)`. -/
 @[to_additive "The unique additive monoid homomorphism `FreeAddMonoid α →+ FreeAddMonoid β`
 that sends each `of x` to `of (f x)`."]
-def map (f : α → β) : FreeMonoid α →* FreeMonoid β
-    where
+def map (f : α → β) : FreeMonoid α →* FreeMonoid β where
   toFun l := ofList <| l.toList.map f
   map_one' := rfl
   map_mul' _ _ := List.map_append _ _ _

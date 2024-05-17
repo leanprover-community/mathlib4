@@ -168,8 +168,7 @@ end DMatrix
 /-- The `AddMonoidHom` between spaces of dependently typed matrices
 induced by an `AddMonoidHom` between their coefficients. -/
 def AddMonoidHom.mapDMatrix [∀ i j, AddMonoid (α i j)] {β : m → n → Type w}
-    [∀ i j, AddMonoid (β i j)] (f : ∀ ⦃i j⦄, α i j →+ β i j) : DMatrix m n α →+ DMatrix m n β
-    where
+    [∀ i j, AddMonoid (β i j)] (f : ∀ ⦃i j⦄, α i j →+ β i j) : DMatrix m n α →+ DMatrix m n β where
   toFun M := M.map fun i j => @f i j
   map_zero' := by simp
   map_add' := DMatrix.map_add f

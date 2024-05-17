@@ -236,8 +236,7 @@ def decidableRangeEncode (α : Type*) [Encodable α] : DecidablePred (· ∈ Set
 #align encodable.decidable_range_encode Encodable.decidableRangeEncode
 
 /-- An encodable type is equivalent to the range of its encoding function. -/
-def equivRangeEncode (α : Type*) [Encodable α] : α ≃ Set.range (@encode α _)
-    where
+def equivRangeEncode (α : Type*) [Encodable α] : α ≃ Set.range (@encode α _) where
   toFun := fun a : α => ⟨encode a, Set.mem_range_self _⟩
   invFun n :=
     Option.get _

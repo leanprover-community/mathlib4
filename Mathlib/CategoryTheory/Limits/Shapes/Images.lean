@@ -116,8 +116,8 @@ theorem ext {F F' : MonoFactorisation f} (hI : F.I = F'.I)
 
 /-- Any mono factorisation of `f` gives a mono factorisation of `f ≫ g` when `g` is a mono. -/
 @[simps]
-def compMono (F : MonoFactorisation f) {Y' : C} (g : Y ⟶ Y') [Mono g] : MonoFactorisation (f ≫ g)
-    where
+def compMono (F : MonoFactorisation f) {Y' : C} (g : Y ⟶ Y') [Mono g] :
+    MonoFactorisation (f ≫ g) where
   I := F.I
   m := F.m ≫ g
   m_mono := mono_comp _ _
@@ -127,8 +127,8 @@ def compMono (F : MonoFactorisation f) {Y' : C} (g : Y ⟶ Y') [Mono g] : MonoFa
 /-- A mono factorisation of `f ≫ g`, where `g` is an isomorphism,
 gives a mono factorisation of `f`. -/
 @[simps]
-def ofCompIso {Y' : C} {g : Y ⟶ Y'} [IsIso g] (F : MonoFactorisation (f ≫ g)) : MonoFactorisation f
-    where
+def ofCompIso {Y' : C} {g : Y ⟶ Y'} [IsIso g] (F : MonoFactorisation (f ≫ g)) :
+    MonoFactorisation f where
   I := F.I
   m := F.m ≫ inv g
   m_mono := mono_comp _ _
@@ -137,8 +137,7 @@ def ofCompIso {Y' : C} {g : Y ⟶ Y'} [IsIso g] (F : MonoFactorisation (f ≫ g)
 
 /-- Any mono factorisation of `f` gives a mono factorisation of `g ≫ f`. -/
 @[simps]
-def isoComp (F : MonoFactorisation f) {X' : C} (g : X' ⟶ X) : MonoFactorisation (g ≫ f)
-    where
+def isoComp (F : MonoFactorisation f) {X' : C} (g : X' ⟶ X) : MonoFactorisation (g ≫ f) where
   I := F.I
   m := F.m
   e := g ≫ F.e
@@ -147,8 +146,8 @@ def isoComp (F : MonoFactorisation f) {X' : C} (g : X' ⟶ X) : MonoFactorisatio
 /-- A mono factorisation of `g ≫ f`, where `g` is an isomorphism,
 gives a mono factorisation of `f`. -/
 @[simps]
-def ofIsoComp {X' : C} (g : X' ⟶ X) [IsIso g] (F : MonoFactorisation (g ≫ f)) : MonoFactorisation f
-    where
+def ofIsoComp {X' : C} (g : X' ⟶ X) [IsIso g] (F : MonoFactorisation (g ≫ f)) :
+    MonoFactorisation f where
   I := F.I
   m := F.m
   e := inv g ≫ F.e
@@ -631,8 +630,7 @@ instance hasImage_comp_iso [HasImage f] [IsIso g] : HasImage (f ≫ g) :=
 #align category_theory.limits.has_image_comp_iso CategoryTheory.Limits.hasImage_comp_iso
 
 /-- Postcomposing by an isomorphism induces an isomorphism on the image. -/
-def image.compIso [HasImage f] [IsIso g] : image f ≅ image (f ≫ g)
-    where
+def image.compIso [HasImage f] [IsIso g] : image f ≅ image (f ≫ g) where
   hom := image.lift (Image.monoFactorisation (f ≫ g)).ofCompIso
   inv := image.lift ((Image.monoFactorisation f).compMono g)
 #align category_theory.limits.image.comp_iso CategoryTheory.Limits.image.compIso
@@ -969,8 +967,8 @@ section HasStrongEpiImages
 variable [HasImages C]
 
 /-- A category with strong epi images has image maps. -/
-instance (priority := 100) hasImageMapsOfHasStrongEpiImages [HasStrongEpiImages C] : HasImageMaps C
-    where
+instance (priority := 100) hasImageMapsOfHasStrongEpiImages [HasStrongEpiImages C] :
+    HasImageMaps C where
   has_image_map {f} {g} st :=
     HasImageMap.mk
       { map :=

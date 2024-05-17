@@ -528,8 +528,7 @@ variable (R A)
 
 /-- The canonical inclusion of rings `R →+* Unitization R A`. -/
 @[simps apply]
-def inlRingHom [Semiring R] [NonUnitalSemiring A] [Module R A] : R →+* Unitization R A
-    where
+def inlRingHom [Semiring R] [NonUnitalSemiring A] [Module R A] : R →+* Unitization R A where
   toFun := inl
   map_one' := inl_one A
   map_mul' := inl_mul A
@@ -572,8 +571,7 @@ theorem inr_star [AddMonoid R] [StarAddMonoid R] [Star A] (a : A) :
 #align unitization.coe_star Unitization.inr_star
 
 instance instStarAddMonoid [AddMonoid R] [AddMonoid A] [StarAddMonoid R] [StarAddMonoid A] :
-    StarAddMonoid (Unitization R A)
-    where
+    StarAddMonoid (Unitization R A) where
   star_involutive x := ext (star_star x.fst) (star_star x.snd)
   star_add x y := ext (star_add x.fst y.fst) (star_add x.snd y.snd)
 

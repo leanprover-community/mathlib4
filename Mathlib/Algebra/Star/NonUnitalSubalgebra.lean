@@ -105,8 +105,8 @@ instance instSetLike : SetLike (NonUnitalStarSubalgebra R A) A where
   coe {s} := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
-instance instNonUnitalSubsemiringClass : NonUnitalSubsemiringClass (NonUnitalStarSubalgebra R A) A
-    where
+instance instNonUnitalSubsemiringClass :
+    NonUnitalSubsemiringClass (NonUnitalStarSubalgebra R A) A where
   add_mem {s} := s.add_mem'
   mul_mem {s} := s.mul_mem'
   zero_mem {s} := s.zero_mem'
@@ -526,8 +526,7 @@ variable [NonUnitalSemiring B] [StarRing B] [Module R B]
 variable [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B]
 
 /-- The pointwise `star` of a non-unital subalgebra is a non-unital subalgebra. -/
-instance instInvolutiveStar : InvolutiveStar (NonUnitalSubalgebra R A)
-    where
+instance instInvolutiveStar : InvolutiveStar (NonUnitalSubalgebra R A) where
   star S :=
     { carrier := star S.carrier
       mul_mem' := @fun x y hx hy => by simpa only [Set.mem_star, NonUnitalSubalgebra.mem_carrier]

@@ -222,8 +222,8 @@ def AlgHom.extendScalars : @AlgHom B C D _ _ _ _ (f.restrictDomain B).toRingHom.
 variable {B}
 
 /-- `AlgHom`s from the top of a tower are equivalent to a pair of `AlgHom`s. -/
-def algHomEquivSigma : (C →ₐ[A] D) ≃ Σf : B →ₐ[A] D, @AlgHom B C D _ _ _ _ f.toRingHom.toAlgebra
-    where
+def algHomEquivSigma :
+    (C →ₐ[A] D) ≃ Σf : B →ₐ[A] D, @AlgHom B C D _ _ _ _ f.toRingHom.toAlgebra where
   toFun f := ⟨f.restrictDomain B, f.extendScalars B⟩
   invFun fg :=
     let _ := fg.1.toRingHom.toAlgebra

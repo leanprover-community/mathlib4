@@ -167,8 +167,8 @@ def Matrix.isRepresentation : Subalgebra R (Matrix ι ι R) where
 #align matrix.is_representation Matrix.isRepresentation
 
 /-- The map sending a matrix to the endomorphism it represents. This is an `R`-algebra morphism. -/
-noncomputable def Matrix.isRepresentation.toEnd : Matrix.isRepresentation R b →ₐ[R] Module.End R M
-    where
+noncomputable def Matrix.isRepresentation.toEnd :
+    Matrix.isRepresentation R b →ₐ[R] Module.End R M where
   toFun A := A.2.choose
   map_one' := (1 : Matrix.isRepresentation R b).2.choose_spec.eq hb Matrix.Represents.one
   map_mul' A₁ A₂ := (A₁ * A₂).2.choose_spec.eq hb (A₁.2.choose_spec.mul A₂.2.choose_spec)

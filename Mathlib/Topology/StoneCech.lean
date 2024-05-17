@@ -228,8 +228,7 @@ section StoneCech
   point of γ. -/
 variable (α : Type u) [TopologicalSpace α]
 
-instance stoneCechSetoid : Setoid (Ultrafilter α)
-    where
+instance stoneCechSetoid : Setoid (Ultrafilter α) where
   r x y :=
     ∀ (γ : Type u) [TopologicalSpace γ],
       ∀ [T2Space γ] [CompactSpace γ] (f : α → γ) (_ : Continuous f),

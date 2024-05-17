@@ -1176,8 +1176,8 @@ theorem measure_univ_pos : 0 < μ univ ↔ μ ≠ 0 :=
 /-- Lift a linear map between `OuterMeasure` spaces such that for each measure `μ` every measurable
 set is caratheodory-measurable w.r.t. `f μ` to a linear map between `Measure` spaces. -/
 def liftLinear {m0 : MeasurableSpace α} (f : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure β)
-    (hf : ∀ μ : Measure α, ‹_› ≤ (f μ.toOuterMeasure).caratheodory) : Measure α →ₗ[ℝ≥0∞] Measure β
-    where
+    (hf : ∀ μ : Measure α, ‹_› ≤ (f μ.toOuterMeasure).caratheodory) :
+    Measure α →ₗ[ℝ≥0∞] Measure β where
   toFun μ := (f μ.toOuterMeasure).toMeasure (hf μ)
   map_add' μ₁ μ₂ := ext fun s hs => by
     simp only [map_add, coe_add, Pi.add_apply, toMeasure_apply, add_toOuterMeasure,

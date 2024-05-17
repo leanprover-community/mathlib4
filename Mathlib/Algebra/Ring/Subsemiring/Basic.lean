@@ -153,13 +153,11 @@ add_decl_doc Subsemiring.toAddSubmonoid
 
 namespace Subsemiring
 
-instance : SetLike (Subsemiring R) R
-    where
+instance : SetLike (Subsemiring R) R where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
-instance : SubsemiringClass (Subsemiring R) R
-    where
+instance : SubsemiringClass (Subsemiring R) R where
   zero_mem := zero_mem'
   add_mem {s} := AddSubsemigroup.add_mem' s.toAddSubmonoid.toAddSubsemigroup
   one_mem {s} := Submonoid.one_mem' s.toSubmonoid
@@ -922,8 +920,7 @@ theorem mem_closure_iff_exists_list {R} [Semiring R] {s : Set R} {x} :
 variable (R)
 
 /-- `closure` forms a Galois insertion with the coercion to set. -/
-protected def gi : GaloisInsertion (@closure R _) (↑)
-    where
+protected def gi : GaloisInsertion (@closure R _) (↑) where
   choice s _ := closure s
   gc _ _ := closure_le
   le_l_u _ := subset_closure

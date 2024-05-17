@@ -255,8 +255,8 @@ protected abbrev IsEmpty.toLocallyFiniteOrder [Preorder α] [IsEmpty α] : Local
 /-- An empty type is locally finite.
 
 This is not an instance as it would not be defeq to more specific instances. -/
-protected abbrev IsEmpty.toLocallyFiniteOrderTop [Preorder α] [IsEmpty α] : LocallyFiniteOrderTop α
-    where
+protected abbrev IsEmpty.toLocallyFiniteOrderTop [Preorder α] [IsEmpty α] :
+    LocallyFiniteOrderTop α where
   finsetIci := isEmptyElim
   finsetIoi := isEmptyElim
   finset_mem_Ici := isEmptyElim
@@ -267,8 +267,8 @@ protected abbrev IsEmpty.toLocallyFiniteOrderTop [Preorder α] [IsEmpty α] : Lo
 /-- An empty type is locally finite.
 
 This is not an instance as it would not be defeq to more specific instances. -/
-protected abbrev IsEmpty.toLocallyFiniteOrderBot [Preorder α] [IsEmpty α] : LocallyFiniteOrderBot α
-    where
+protected abbrev IsEmpty.toLocallyFiniteOrderBot [Preorder α] [IsEmpty α] :
+    LocallyFiniteOrderBot α where
   finsetIic := isEmptyElim
   finsetIio := isEmptyElim
   finset_mem_Iic := isEmptyElim
@@ -454,8 +454,8 @@ section OrderBot
 variable [OrderBot α] [LocallyFiniteOrder α] {b x : α}
 
 -- See note [lower priority instance]
-instance (priority := 100) LocallyFiniteOrder.toLocallyFiniteOrderBot : LocallyFiniteOrderBot α
-    where
+instance (priority := 100) LocallyFiniteOrder.toLocallyFiniteOrderBot :
+    LocallyFiniteOrderBot α where
   finsetIic := Icc ⊥
   finsetIio := Ico ⊥
   finset_mem_Iic a x := by rw [mem_Icc, and_iff_right bot_le]

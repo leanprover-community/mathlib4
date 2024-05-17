@@ -216,8 +216,8 @@ variable [NormedRing C] [NormedAlgebra 𝕜 C] [CompleteSpace C] [StarRing C]
 /-- The functorial map taking `ψ : A →⋆ₐ[ℂ] B` to a continuous function
 `characterSpace ℂ B → characterSpace ℂ A` obtained by pre-composition with `ψ`. -/
 @[simps]
-noncomputable def compContinuousMap (ψ : A →⋆ₐ[𝕜] B) : C(characterSpace 𝕜 B, characterSpace 𝕜 A)
-    where
+noncomputable def compContinuousMap (ψ : A →⋆ₐ[𝕜] B) :
+    C(characterSpace 𝕜 B, characterSpace 𝕜 A) where
   toFun φ := equivAlgHom.symm ((equivAlgHom φ).comp ψ.toAlgHom)
   continuous_toFun :=
     Continuous.subtype_mk

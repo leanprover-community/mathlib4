@@ -357,8 +357,8 @@ theorem hasBinaryBiproduct_of_total {X Y : C} (b : BinaryBicone X Y)
 
 /-- We can turn any limit cone over a pair into a bicone. -/
 @[simps]
-def BinaryBicone.ofLimitCone {X Y : C} {t : Cone (pair X Y)} (ht : IsLimit t) : BinaryBicone X Y
-    where
+def BinaryBicone.ofLimitCone {X Y : C} {t : Cone (pair X Y)} (ht : IsLimit t) :
+    BinaryBicone X Y where
   pt := t.pt
   fst := t.π.app ⟨WalkingPair.left⟩
   snd := t.π.app ⟨WalkingPair.right⟩

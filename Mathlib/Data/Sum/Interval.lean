@@ -232,8 +232,7 @@ section Disjoint
 
 variable [Preorder α] [Preorder β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
 
-instance instLocallyFiniteOrder : LocallyFiniteOrder (Sum α β)
-    where
+instance instLocallyFiniteOrder : LocallyFiniteOrder (Sum α β) where
   finsetIcc := sumLift₂ Icc Icc
   finsetIco := sumLift₂ Ico Ico
   finsetIoc := sumLift₂ Ioc Ioc

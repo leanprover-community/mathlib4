@@ -88,8 +88,8 @@ structure ZeroHom (M : Type*) (N : Type*) [Zero M] [Zero N] where
 
 You should extend this typeclass when you extend `ZeroHom`.
 -/
-class ZeroHomClass (F : Type*) (M N : outParam Type*) [Zero M] [Zero N] [FunLike F M N] : Prop
-    where
+class ZeroHomClass (F : Type*) (M N : outParam Type*) [Zero M] [Zero N] [FunLike F M N] :
+    Prop where
   /-- The proposition that the function preserves 0 -/
   map_zero : ∀ f : F, f 0 = 0
 #align zero_hom_class ZeroHomClass

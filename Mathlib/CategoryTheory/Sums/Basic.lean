@@ -170,8 +170,7 @@ variable {A : Type u₁} [Category.{v₁} A] {B : Type u₁} [Category.{v₁} B]
 namespace Functor
 
 /-- The sum of two functors. -/
-def sum (F : A ⥤ B) (G : C ⥤ D) : Sum A C ⥤ Sum B D
-    where
+def sum (F : A ⥤ B) (G : C ⥤ D) : Sum A C ⥤ Sum B D where
   obj X :=
     match X with
     | inl X => inl (F.obj X)
@@ -188,8 +187,7 @@ def sum (F : A ⥤ B) (G : C ⥤ D) : Sum A C ⥤ Sum B D
 #align category_theory.functor.sum CategoryTheory.Functor.sum
 
 /-- Similar to `sum`, but both functors land in the same category `C` -/
-def sum' (F : A ⥤ C) (G : B ⥤ C) : Sum A B ⥤ C
-    where
+def sum' (F : A ⥤ C) (G : B ⥤ C) : Sum A B ⥤ C where
   obj X :=
     match X with
     | inl X => F.obj X
@@ -241,8 +239,7 @@ end Functor
 namespace NatTrans
 
 /-- The sum of two natural transformations. -/
-def sum {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.sum H ⟶ G.sum I
-    where
+def sum {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.sum H ⟶ G.sum I where
   app X :=
     match X with
     | inl X => α.app X

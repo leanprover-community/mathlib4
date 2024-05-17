@@ -150,8 +150,7 @@ theorem liftAlternating_ιMulti :
 
 /-- `ExteriorAlgebra.liftAlternating` is an equivalence. -/
 @[simps apply symm_apply]
-def liftAlternatingEquiv : (∀ i, M [⋀^Fin i]→ₗ[R] N) ≃ₗ[R] ExteriorAlgebra R M →ₗ[R] N
-    where
+def liftAlternatingEquiv : (∀ i, M [⋀^Fin i]→ₗ[R] N) ≃ₗ[R] ExteriorAlgebra R M →ₗ[R] N where
   toFun := liftAlternating (R := R)
   map_add' := map_add _
   map_smul' := map_smul _

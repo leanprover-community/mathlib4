@@ -186,14 +186,12 @@ section Group
 variable [Group E] [Group F] [Group G] {p q : GroupSeminorm E}
 
 @[to_additive]
-instance funLike : FunLike (GroupSeminorm E) E ℝ
-    where
+instance funLike : FunLike (GroupSeminorm E) E ℝ where
   coe f := f.toFun
   coe_injective' f g h := by cases f; cases g; congr
 
 @[to_additive]
-instance groupSeminormClass : GroupSeminormClass (GroupSeminorm E) E ℝ
-    where
+instance groupSeminormClass : GroupSeminormClass (GroupSeminorm E) E ℝ where
   map_one_eq_zero f := f.map_one'
   map_mul_le_add f := f.mul_le'
   map_inv_eq_map f := f.inv'
@@ -325,8 +323,7 @@ instance semilatticeSup : SemilatticeSup (GroupSeminorm E) :=
 /-- Composition of a group seminorm with a monoid homomorphism as a group seminorm. -/
 @[to_additive "Composition of an additive group seminorm with an additive monoid homomorphism as an
 additive group seminorm."]
-def comp (p : GroupSeminorm E) (f : F →* E) : GroupSeminorm F
-    where
+def comp (p : GroupSeminorm E) (f : F →* E) : GroupSeminorm F where
   toFun x := p (f x)
   map_one' := by simp_rw [f.map_one, map_one_eq_zero p]
   mul_le' _ _ := (congr_arg p <| f.map_mul _ _).trans_le <| map_mul_le_add p _ _
@@ -509,13 +506,12 @@ section AddGroup
 
 variable [AddGroup E] [AddGroup F] [AddGroup G] {p q : NonarchAddGroupSeminorm E}
 
-instance funLike : FunLike (NonarchAddGroupSeminorm E) E ℝ
-    where
+instance funLike : FunLike (NonarchAddGroupSeminorm E) E ℝ where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨_, _⟩, _, _⟩ := f; cases g; congr
 
-instance nonarchAddGroupSeminormClass : NonarchAddGroupSeminormClass (NonarchAddGroupSeminorm E) E
-    where
+instance nonarchAddGroupSeminormClass :
+    NonarchAddGroupSeminormClass (NonarchAddGroupSeminorm E) E where
   map_add_le_max f := f.add_le_max'
   map_zero f := f.map_zero'
   map_neg_eq_map' f := f.neg'
@@ -749,14 +745,12 @@ section Group
 variable [Group E] [Group F] [Group G] {p q : GroupNorm E}
 
 @[to_additive]
-instance funLike : FunLike (GroupNorm E) E ℝ
-    where
+instance funLike : FunLike (GroupNorm E) E ℝ where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨_, _, _, _⟩, _⟩ := f; cases g; congr
 
 @[to_additive]
-instance groupNormClass : GroupNormClass (GroupNorm E) E ℝ
-    where
+instance groupNormClass : GroupNormClass (GroupNorm E) E ℝ where
   map_one_eq_zero f := f.map_one'
   map_mul_le_add f := f.mul_le'
   map_inv_eq_map f := f.inv'
@@ -908,13 +902,11 @@ section AddGroup
 
 variable [AddGroup E] [AddGroup F] {p q : NonarchAddGroupNorm E}
 
-instance funLike : FunLike (NonarchAddGroupNorm E) E ℝ
-    where
+instance funLike : FunLike (NonarchAddGroupNorm E) E ℝ where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨⟨_, _⟩, _, _⟩, _⟩ := f; cases g; congr
 
-instance nonarchAddGroupNormClass : NonarchAddGroupNormClass (NonarchAddGroupNorm E) E
-    where
+instance nonarchAddGroupNormClass : NonarchAddGroupNormClass (NonarchAddGroupNorm E) E where
   map_add_le_max f := f.add_le_max'
   map_zero f := f.map_zero'
   map_neg_eq_map' f := f.neg'
