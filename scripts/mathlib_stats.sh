@@ -38,10 +38,7 @@ net=$(awk -v gd="${gdiff}" 'BEGIN{
   }
   print -tot }')
 
-## final report
-printf -- '---\n\n## Weekly stats (%s %(%Y-%m-%d)T)\n\n%s, %s total(insertions-deletions)\n\n---\n\n%s\n\n commits: old %s, current %s.\n\nTake also a look at the [`Mathlib` stats page](%s).\n' "${date}" -1 "${gdiff}" "${net}" "${percent}" "${oldCommitURL}" "${currentCommitURL}" "${statsURL}"
-
-sed 's=^--\(count_decls\)=\1=' scripts/count_decls.lean | lake env lean --stdin
+newDecls="$(sed 's=^--\(count_decls\)=\1=' scripts/count_decls.lean | lake env lean --stdin)"
 # { defs := 73590, thms := 230958, inductives := 2451, other := 6148 }
 # total: 313147
 git checkout "${oldCommit}"
@@ -53,6 +50,9 @@ lake exe cache get
 # update the count_decls script to the latest version
 git checkout adomani/periodic_reports_dev scripts/count_decls.lean
 
-sed 's=^--\(count_decls\)=\1=' scripts/count_decls.lean | lake env lean --stdin
+oldDecls="$(sed 's=^--\(count_decls\)=\1=' scripts/count_decls.lean | lake env lean --stdin)"
 # { defs := 73152, thms := 230061, inductives := 2430, other := 6080 }
 # total: 311723
+
+## final report
+printf -- '---\n\n## Weekly stats (%s %(%Y-%m-%d)T)\n\n%s, %s total(insertions-deletions)\n\n---\n\n%s\n\n commits: old %s, current %s.\n\nTake also a look at the [`Mathlib` stats page](%s).\nNew Declaration:\n%s\nOld Declarations:\n%s' "${date}" -1 "${gdiff}" "${net}" "${percent}" "${oldCommitURL}" "${currentCommitURL}" "${statsURL}" "${newDecls}" "${oldDecls}
