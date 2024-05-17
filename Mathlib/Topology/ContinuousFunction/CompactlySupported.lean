@@ -170,8 +170,7 @@ instance instZero [Zero β] : Zero C_c(α, β) where
             has_compact_support' := by
               rw [HasCompactSupport, tsupport]
               simp only [ContinuousMap.coe_zero, Function.support_zero', closure_empty,
-                isCompact_empty]
-}
+                isCompact_empty] }
 
 instance instInhabited [Zero β] : Inhabited C_c(α, β) :=
   ⟨0⟩
