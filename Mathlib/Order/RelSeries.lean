@@ -87,12 +87,12 @@ lemma coe_ofLE (x : RelSeries r) {s : Rel α α} (h : r ≤ s) :
     (x.ofLE h : _ → _) = x := rfl
 
 /-- Every relation series gives a list -/
-abbrev toList (x : RelSeries r) : List α := List.ofFn x
+def toList (x : RelSeries r) : List α := List.ofFn x
 
 lemma toList_chain' (x : RelSeries r) : x.toList.Chain' r := by
   rw [List.chain'_iff_get]
   intros i h
-  convert x.step ⟨i, by simpa using h⟩ <;> apply List.get_ofFn
+  convert x.step ⟨i, by simpa [toList] using h⟩ <;> apply List.get_ofFn
 
 lemma toList_ne_empty (x : RelSeries r) : x.toList ≠ [] := fun m =>
   List.eq_nil_iff_forall_not_mem.mp m (x 0) <| (List.mem_ofFn _ _).mpr ⟨_, rfl⟩
@@ -109,11 +109,11 @@ corresponds to each other. -/
 protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.Chain' r} where
   toFun x := ⟨_, x.toList_ne_empty, x.toList_chain'⟩
   invFun x := fromListChain' _ x.2.1 x.2.2
-  left_inv x := ext (by simp) <| by ext; apply List.get_ofFn
+  left_inv x := ext (by simp [toList]) <| by ext; apply List.get_ofFn
   right_inv x := by
     refine Subtype.ext (List.ext_get ?_ fun n hn1 _ => List.get_ofFn _ _)
     have := Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x.2.1
-    simp_all
+    simp_all [toList]
 
 -- TODO : build a similar bijection between `RelSeries α` and `Quiver.Path`
 
@@ -165,7 +165,7 @@ instance membership : Membership α (RelSeries r) :=
 theorem mem_def {x : α} {s : RelSeries r} : x ∈ s ↔ x ∈ Set.range s :=
   Iff.rfl
 
-@[simp high] theorem mem_toList {s : RelSeries r} {x : α} : x ∈ s.toList ↔ x ∈ s := by
+@[simp] theorem mem_toList {s : RelSeries r} {x : α} : x ∈ s.toList ↔ x ∈ s := by
   rw [RelSeries.toList, List.mem_ofFn, RelSeries.mem_def]
 
 variable {r} in
@@ -659,5 +659,3 @@ noncomputable def comap (p : LTSeries β) (f : α → β)
 end LTSeries
 
 end LTSeries
-
-#lint
