@@ -287,6 +287,7 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
 
 section TopCat
 
+set_option maxHeartbeats 250000 in
 /-- (Implementation) An auxiliary lemma for the proof that `TopCat` is finitary extensive. -/
 -- Porting note: needs to add noncomputable modifier
 noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
