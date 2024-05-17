@@ -88,7 +88,7 @@ instance comp {p : 𝒳 ⥤ 𝒮} {R S T : 𝒮} {a b c : 𝒳} {f : R ⟶ S}
 
 /-- If `φ : a ⟶ b` and `ψ : b ⟶ c` lift `𝟙 S`, then so does `φ ≫ ψ` -/
 instance lift_id_comp {p : 𝒳 ⥤ 𝒮} {R : 𝒮} {a b c : 𝒳} {φ : a ⟶ b} {ψ : b ⟶ c}
-    (hφ : IsHomLift p (𝟙 R) φ) [IsHomLift p (𝟙 R) ψ] : IsHomLift p (𝟙 R) (φ ≫ ψ) :=
+    [hφ : IsHomLift p (𝟙 R) φ] [IsHomLift p (𝟙 R) ψ] : IsHomLift p (𝟙 R) (φ ≫ ψ) :=
   comp_id (𝟙 R) ▸ hφ.comp
 
 /-- If `φ : a ⟶ b` lifts `f` and `ψ : b ⟶ c` lifts `𝟙 T`, then `φ  ≫ ψ` lifts `f` -/
