@@ -614,7 +614,7 @@ lemma eventually_nhds_one_measure_smul_diff_lt [LocallyCompactSpace G]
   filter_upwards [hV1] with g hg
   calc
     μ (g • k \ k) ≤ μ (U \ k) := by
-      refine measure_mono (diff_subset_diff_left ?_)
+      gcongr
       exact (smul_set_subset_smul hg).trans hVkU
     _ < ε := measure_diff_lt_of_lt_add h'k.measurableSet hUk hk.measure_lt_top.ne hμUk
 
