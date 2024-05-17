@@ -8,7 +8,7 @@ import Mathlib.Analysis.Seminorm
 /-!
 # The Minkowski functional, normed field version
 
-In tihs file we define `(egauge 𝕜 s ·)`
+In this file we define `(egauge 𝕜 s ·)`
 to be the Minkowski functional (gauge) of the set `s`
 in a topological vector space `E` over a normed field `𝕜`,
 as a function `E → ℝ≥0∞`.
