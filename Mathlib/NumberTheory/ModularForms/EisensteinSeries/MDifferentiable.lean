@@ -34,18 +34,16 @@ lemma complex_summand_differentiableOn (k : ℤ) (a : Fin 2 → ℤ) :
     · apply DifferentiableOn.zpow
       fun_prop
       left
-      exact fun z hz ↦
-        UpperHalfPlane.linear_ne_zero ((Int.cast (R := ℝ)) ∘ a) ⟨z, hz⟩
+      exact fun z hz ↦ linear_ne_zero ((Int.cast (R := ℝ)) ∘ a) ⟨z, hz⟩
         ((Function.comp_ne_zero_iff _ Int.cast_injective Int.cast_zero ).mpr ha)
-    · exact fun z hz ↦ zpow_ne_zero k (UpperHalfPlane.linear_ne_zero ((Int.cast (R := ℝ)) ∘ a)
-        ⟨z, hz⟩
-          ((Function.comp_ne_zero_iff _ Int.cast_injective Int.cast_zero ).mpr ha))
+    · exact fun z hz ↦ zpow_ne_zero k (linear_ne_zero ((Int.cast (R := ℝ)) ∘ a)
+        ⟨z, hz⟩ ((Function.comp_ne_zero_iff _ Int.cast_injective Int.cast_zero ).mpr ha))
   · rw [ne_eq, not_not] at ha
     simp only [ha, Fin.isValue, Pi.zero_apply, Int.cast_zero, zero_mul, add_zero, one_div,
       top_eq_univ, image_univ]
     exact differentiableOn_const (0 ^ k)⁻¹
 
-lemma eisSummad_complex_extension_differentiableOn (k : ℤ) (a : Fin 2 → ℤ) :
+lemma eisSummad_extension_differentiableOn (k : ℤ) (a : Fin 2 → ℤ) :
     DifferentiableOn ℂ (↑ₕeisSummand k a) {z : ℂ | 0 < z.im} := by
   apply DifferentiableOn.congr (complex_summand_differentiableOn k a)
   intro z hz
@@ -64,5 +62,5 @@ theorem eisensteinSeries_SIF_MDifferentiable  {k : ℤ} {N : ℕ} (hk : 3 ≤ k)
       ↑ₕ(fun (z : ℍ) => ∑ x in s, eisSummand k x z )) (↑ₕ((eisensteinSeries_SIF a k).toFun ))
         (by apply atTop_neBot) (eisensteinSeries_tendstoLocallyUniformlyOn hk a)
           ((eventually_of_forall fun s =>
-            DifferentiableOn.sum fun s _ ↦ eisSummad_complex_extension_differentiableOn _ _)) ?_
+            DifferentiableOn.sum fun s _ ↦ eisSummad_extension_differentiableOn _ _)) ?_
   simpa only [EReal.coe_pos] using Complex.isOpen_im_gt_EReal 0
