@@ -1480,14 +1480,6 @@ lemma t2Quotient.induction_on {motive : t2Quotient X → Prop} (q : t2Quotient X
 instance : TopologicalSpace (t2Quotient X) :=
 inferInstanceAs <| TopologicalSpace (Quotient _)
 
-lemma Continuous.disjoint_nhds_of_different_image {X Y Z : Type*}
-    [TopologicalSpace Y] [T2Space Y]
-    [TopologicalSpace Z] {f : X → Y} {k : X → Z} {g : Z → Y}
-    (hg : Continuous g) (h : g ∘ k = f) {x x' : X} (hxx' : f x ≠ f x') :
-    Disjoint (𝓝 (k x)) (𝓝 (k x')) := by
-  subst h
-  exact Tendsto.disjoint hg.continuousAt (disjoint_nhds_nhds.mpr hxx') hg.continuousAt
-
 instance : T2Space (t2Quotient X) := by
   rw [t2Space_iff_disjoint_nhds]
   rintro ⟨x⟩ ⟨y⟩ (h : ¬  t2Quotient.mk x = t2Quotient.mk y)
@@ -1495,9 +1487,9 @@ instance : T2Space (t2Quotient X) := by
     erw [quotient_mk_sInf_eq] at h
     simpa using h
   have hs' : s ∈ {s | T2Space (Quotient s)} := hs
-  apply (continuous_map_sInf hs').disjoint_nhds_of_different_image _ hsxy
-  ext
-  rfl
+  apply Tendsto.disjoint (continuous_map_sInf hs').continuousAt
+    (disjoint_nhds_nhds.mpr _) (continuous_map_sInf hs').continuousAt
+  exact hsxy
 
 lemma t2Quotient.compat {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [T2Space Y]
     {f : X → Y} (hf : Continuous f) : letI _ := t2Setoid X
@@ -1508,9 +1500,8 @@ lemma t2Quotient.compat {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] 
   change (Setoid.ker f).Rel x y
   apply hxy _ (t2Space_iff_disjoint_nhds.mpr _)
   rintro ⟨x⟩ ⟨x'⟩ (h : Quotient.mk _ x ≠ Quotient.mk _ x')
-  apply gcont.disjoint_nhds_of_different_image _ (by simpa using h)
-  ext
-  rfl
+  apply Tendsto.disjoint gcont.continuousAt (disjoint_nhds_nhds.mpr _) gcont.continuousAt
+  simpa using h
 
 def t2Quotient.lift {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [T2Space Y]
     {f : X → Y} (hf : Continuous f) : t2Quotient X → Y :=
