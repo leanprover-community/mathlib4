@@ -99,7 +99,7 @@ end Over
 
 @[deprecated (since := "2024-05-18")] noncomputable alias star := Over.star
 
-@[deprecated] noncomputable alias forgetAdjStar := Over.forgetAdjStar
+@[deprecated (since := "2024-05-18")] noncomputable alias forgetAdjStar := Over.forgetAdjStar
 
 
 end CategoryTheory
