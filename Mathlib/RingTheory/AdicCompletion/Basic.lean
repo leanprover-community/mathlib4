@@ -280,7 +280,8 @@ theorem val_add (n : ℕ) (f g : AdicCompletion I M) : (f + g).val n = f.val n +
 theorem val_sub (n : ℕ) (f g : AdicCompletion I M) : (f - g).val n = f.val n - g.val n :=
   rfl
 
-@[simp]
+/- No `simp` attribute, since it cases `simp` unification timeouts when considering
+the `AdicCompletion I R` module instance on `AdicCompletion I M` (see `AdicCompletion/Algebra`). -/
 theorem val_smul (n : ℕ) (r : R) (f : AdicCompletion I M) : (r • f).val n = r • f.val n :=
   rfl
 
@@ -395,6 +396,12 @@ theorem ext {x y : AdicCauchySequence I M} (h : ∀ n, x n = y n) : x = y :=
 theorem ext_iff {x y : AdicCauchySequence I M} : x = y ↔ ∀ n, x n = y n :=
   ⟨fun h ↦ congrFun (congrArg Subtype.val h), ext⟩
 
+/-- The defining property of an adic cauchy sequence unwrapped. -/
+theorem mk_eq_mk {m n : ℕ} (hmn : m ≤ n) (f : AdicCauchySequence I M) :
+    Submodule.Quotient.mk (p := (I ^ m • ⊤ : Submodule R M)) (f n) =
+      Submodule.Quotient.mk (p := (I ^ m • ⊤ : Submodule R M)) (f m) :=
+  (f.property hmn).symm
+
 end AdicCauchySequence
 
 /-- The `I`-adic cauchy condition can be checked on successive `n`.-/
@@ -427,6 +434,17 @@ def mk : AdicCauchySequence I M →ₗ[R] AdicCompletion I M where
     exact (f.property hmn).symm⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
+
+/-- Criterion for checking that an adic cauchy sequence is mapped to zero in the adic completion. -/
+theorem mk_zero_of (f : AdicCauchySequence I M)
+    (h : ∃ k : ℕ, ∀ n ≥ k, ∃ m ≥ n, ∃ l ≥ n, f m ∈ (I ^ l • ⊤ : Submodule R M)) :
+    AdicCompletion.mk I M f = 0 := by
+  obtain ⟨k, h⟩ := h
+  ext n
+  obtain ⟨m, hnm, l, hnl, hl⟩ := h (n + k) (by omega)
+  rw [mk_apply_coe, Submodule.mkQ_apply, val_zero,
+    ← AdicCauchySequence.mk_eq_mk (show n ≤ m by omega)]
+  simpa using (Submodule.smul_mono_left (Ideal.pow_le_pow_right (by omega))) hl
 
 /-- Every element in the adic completion is represented by a Cauchy sequence. -/
 theorem mk_surjective : Function.Surjective (mk I M) := by
