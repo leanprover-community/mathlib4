@@ -328,8 +328,7 @@ def homogeneousLocalizationToStalk (x : ProjectiveSpectrum.top 𝒜) (y : at x) 
       (ProjectiveSpectrum.basicOpen 𝒜 f.den.1 ⊓
         ProjectiveSpectrum.basicOpen 𝒜 g.den.1 ⊓ ProjectiveSpectrum.basicOpen 𝒜 c)
       ⟨⟨mem_basicOpen_den _ x f, mem_basicOpen_den _ x g⟩, hc⟩
-      (homOfLE inf_le_left ≫ homOfLE inf_le_left)
-      (homOfLE inf_le_left ≫ homOfLE inf_le_right)
+      (homOfLE inf_le_left ≫ homOfLE inf_le_left) (homOfLE inf_le_left ≫ homOfLE inf_le_right)
     apply Subtype.ext
     ext ⟨t, ⟨htf, htg⟩, ht'⟩
     apply HomogeneousLocalization.val_injective
@@ -364,13 +363,30 @@ lemma stalkToFiberRingHom_homogeneousLocalizationToStalk (x z) :
 /-- Using `homogeneousLocalizationToStalk`, we construct a ring isomorphism between stalk at `x`
 and homogeneous localization at `x` for any point `x` in `Proj`. -/
 def Proj.stalkIso' (x : ProjectiveSpectrum.top 𝒜) :
-    (Proj.structureSheaf 𝒜).presheaf.stalk x ≃+* CommRingCat.of (at x) where
+    (Proj.structureSheaf 𝒜).presheaf.stalk x ≃+* at x where
   __ := stalkToFiberRingHom _ x
   invFun := homogeneousLocalizationToStalk 𝒜 x
   left_inv := homogeneousLocalizationToStalk_stalkToFiberRingHom 𝒜 x
   right_inv := stalkToFiberRingHom_homogeneousLocalizationToStalk 𝒜 x
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Proj.stalk_iso' AlgebraicGeometry.Proj.stalkIso'
+
+@[simp]
+theorem Proj.stalkIso'_germ' (U : Opens (ProjectiveSpectrum.top 𝒜))
+    (x : ProjectiveSpectrum.top 𝒜) (hx : x ∈ U) (s : (Proj.structureSheaf 𝒜).1.obj (op U)) :
+    Proj.stalkIso' 𝒜 x ((Proj.structureSheaf 𝒜).presheaf.germ ⟨x, hx⟩ s) = (s.1 ⟨x, hx⟩ : _) :=
+  stalkToFiberRingHom_germ' 𝒜 U x hx s
+
+@[simp]
+theorem Proj.stalkIso'_germ (U : Opens (ProjectiveSpectrum.top 𝒜)) (x : U)
+    (s : (Proj.structureSheaf 𝒜).1.obj (op U)) :
+    Proj.stalkIso' 𝒜 x ((Proj.structureSheaf 𝒜).presheaf.germ x s) = s.1 x :=
+  stalkToFiberRingHom_germ' 𝒜 U x x.2 s
+
+@[simp]
+theorem Proj.stalkIso'_symm_mk'' (x) (f) :
+    ((Proj.stalkIso' 𝒜 x).symm (Quotient.mk'' f)) = (Proj.structureSheaf 𝒜).presheaf.germ
+      ⟨x, mem_basicOpen_den _ x f⟩ (sectionInBasicOpen _ x f) := rfl
 
 /-- `Proj` of a graded ring as a `LocallyRingedSpace`-/
 def Proj.toLocallyRingedSpace : LocallyRingedSpace :=
