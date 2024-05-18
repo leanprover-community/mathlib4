@@ -306,6 +306,7 @@ theorem uniformContinuous_comp_left [TopologicalSpace γ] (g : C(α, γ)) :
     UniformOnFun.precomp_uniformContinuous (fun _ hK ↦ hK.image g.continuous) |>.comp
       uniformEmbedding_toUniformOnFunIsCompact.uniformContinuous
 
+/-- Any isomorphism `Y ≃ᵤ Z` of uniform spaces gives rise to an isomorphism `C(X, Y) ≃ᵤ C(X, Z)`. -/
 protected def congrRightUniformEquiv [UniformSpace γ] (φ : β ≃ᵤ γ) : C(α, β) ≃ᵤ C(α, γ) where
   toFun := ContinuousMap.comp φ.toHomeomorph
   invFun := ContinuousMap.comp φ.symm.toHomeomorph
@@ -314,6 +315,8 @@ protected def congrRightUniformEquiv [UniformSpace γ] (φ : β ≃ᵤ γ) : C(�
   uniformContinuous_toFun := uniformContinuous_comp _ φ.uniformContinuous
   uniformContinuous_invFun := uniformContinuous_comp _ φ.symm.uniformContinuous
 
+/-- Any homeomorphism `X ≃ₜ Y` gives rise to an isomorphism `C(X, Z) ≃ᵤ C(Y, Z)` of uniform
+spaces. -/
 protected def congrLeftUniformEquiv [TopologicalSpace γ] (φ : α ≃ₜ γ) : C(α, β) ≃ᵤ C(γ, β) where
   toFun f := f.comp φ.symm
   invFun f := f.comp φ

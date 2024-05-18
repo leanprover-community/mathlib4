@@ -395,6 +395,16 @@ protected theorem postcomp_uniformInducing [UniformSpace γ] {f : γ → β} (hf
     UniformFun.hasBasis_uniformity_of_basis _ _ (hf.basis_uniformity (𝓤 β).basis_sets)⟩
 #align uniform_fun.postcomp_uniform_inducing UniformFun.postcomp_uniformInducing
 
+/-- Post-composition by a uniform embedding is
+a uniform embedding for the uniform structures of uniform convergence.
+
+More precisely, if `f : γ → β` is a uniform embedding,
+then `(f ∘ ·) : (α →ᵤ γ) → (α →ᵤ β)` is a uniform embedding. -/
+protected theorem postcomp_uniformEmbedding [UniformSpace γ] {f : γ → β} (hf : UniformEmbedding f) :
+    UniformEmbedding (ofFun ∘ (f ∘ ·) ∘ toFun : (α →ᵤ γ) → α →ᵤ β) where
+  toUniformInducing := UniformFun.postcomp_uniformInducing hf.toUniformInducing
+  inj _ _ H := funext fun _ ↦ hf.inj (congrFun H _)
+
 -- Porting note: had to add a type annotation at `((f ∘ ·) : ((α → γ) → (α → β)))`
 /-- If `u` is a uniform structures on `β` and `f : γ → β`, then
 `𝒰(α, γ, comap f u) = comap (fun g ↦ f ∘ g) 𝒰(α, γ, u₁)`. -/
@@ -846,10 +856,10 @@ protected theorem comap_eq {f : γ → β} :
   -- on `iInf`.
   simp_rw [UniformOnFun.uniformSpace, UniformSpace.comap_iInf, UniformFun.comap_eq, ←
     UniformSpace.comap_comap]
+  -- By definition, `∀ S ∈ 𝔖, (f ∘ —) ∘ S.restrict = S.restrict ∘ (f ∘ —)`.
   rfl
 #align uniform_on_fun.comap_eq UniformOnFun.comap_eq
 
--- by definition, `∀ S ∈ 𝔖, (f ∘ —) ∘ S.restrict = S.restrict ∘ (f ∘ —)`.
 /-- Post-composition by a uniformly continuous function is uniformly continuous for the
 uniform structures of `𝔖`-convergence.
 
