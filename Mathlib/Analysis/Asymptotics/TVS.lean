@@ -1,4 +1,5 @@
 import Mathlib.Analysis.Asymptotics.Asymptotics
+import Mathlib.Analysis.Convex.EGauge
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 import Mathlib.Analysis.Seminorm
@@ -8,16 +9,18 @@ open scoped Topology Pointwise ENNReal NNReal
 
 section TVS
 
-
 variable (𝕜)
 
-def IsLittleOTVS (f : α → E) (g : α → F) (l : Filter α) : Prop :=
+def IsLittleOTVS (𝕜 : Type*) {α E F : Type*} [NNNorm 𝕜] [TopologicalSpace E] [TopologicalSpace F]
+    [Zero E] [Zero F] [SMul 𝕜 E] [SMul 𝕜 F] (f : α → E) (g : α → F) (l : Filter α) : Prop :=
   ∀ U ∈ 𝓝 (0 : E), ∃ V ∈ 𝓝 (0 : F), ∀ ε ≠ (0 : ℝ≥0),
     ∀ᶠ x in l, egauge 𝕜 U (f x) ≤ ε * egauge 𝕜 V (g x)
 
-variable {𝕜}
+variable {α 𝕜 E F : Type*} [NormedDivisionRing 𝕜]
+  [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E]
+  [AddCommGroup F] [TopologicalSpace F] [Module 𝕜 F]
 
-theorem Filter.HasBasis.isLittleOTVS_iff {ιE ιF : Type _} {pE : ιE → Prop} {pF : ιF → Prop}
+theorem Filter.HasBasis.isLittleOTVS_iff {ιE ιF : Type*} {pE : ιE → Prop} {pF : ιF → Prop}
     {sE : ιE → Set E} {sF : ιF → Set F} (hE : HasBasis (𝓝 (0 : E)) pE sE)
     (hF : HasBasis (𝓝 (0 : F)) pF sF) {f : α → E} {g : α → F} {l : Filter α} :
     IsLittleOTVS 𝕜 f g l ↔ ∀ i, pE i → ∃ j, pF j ∧ ∀ ε ≠ (0 : ℝ≥0),
