@@ -22,7 +22,8 @@ This file expands on the development in the core library.
 * `Fin.valEmbedding` : coercion to natural numbers as an `Embedding`;
 * `Fin.valOrderEmb` : coercion to natural numbers as an `OrderEmbedding`;
 * `Fin.succOrderEmb` : `Fin.succ` as an `OrderEmbedding`;
-* `Fin.castLEOrderEmb h` : `Fin.castLE` as an `OrderEmbedding`, embed `Fin n` into `Fin m`, `h : n ≤ m`;
+* `Fin.castLEOrderEmb h` : `Fin.castLE` as an `OrderEmbedding`, embed `Fin n` into `Fin m` when
+  `h : n ≤ m`;
 * `Fin.castOrderIso` : `Fin.cast` as an `OrderIso`, order isomorphism between `Fin n` and `Fin m`
   provided that `n = m`, see also `Equiv.finCongr`;
 * `Fin.castAddOrderEmb m` : `Fin.castAdd` as an `OrderEmbedding`, embed `Fin n` into `Fin (n+m)`;

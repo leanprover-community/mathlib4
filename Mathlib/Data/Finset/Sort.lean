@@ -210,7 +210,8 @@ theorem orderEmbOfFin_last {s : Finset α} {k : ℕ} (h : s.card = k) (hz : 0 < 
 @[simp]
 theorem orderEmbOfFin_singleton (a : α) (i : Fin 1) :
     orderEmbOfFin {a} (card_singleton a) i = a := by
-  rw [Subsingleton.elim i ⟨0, Nat.zero_lt_one⟩, orderEmbOfFin_zero _ Nat.zero_lt_one, min'_singleton]
+  rw [Subsingleton.elim i ⟨0, Nat.zero_lt_one⟩, orderEmbOfFin_zero _ Nat.zero_lt_one,
+    min'_singleton]
 #align finset.order_emb_of_fin_singleton Finset.orderEmbOfFin_singleton
 
 /-- Any increasing map `f` from `Fin k` to a finset of cardinality `k` has to coincide with
