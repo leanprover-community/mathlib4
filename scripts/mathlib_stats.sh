@@ -41,12 +41,19 @@ getCountDecls () {
     sed -z 's=, *=,\n=g; s=[ [#]==g; s=]=,=g; s=\n\n*=\n=g'
 }
 
+tallyCountDecls () {
+  awk 'BEGIN{ count=0 }
+    /[^,]$/ { count++; type[count]=$0; acc[count]=0; }
+    /,$/ { acc[count]++ } END{
+    for(t=1; t<=count; t++) { printf("%s %s\n", type[t], acc[t]) }
+  }' "${1}"
+}
+
+# the output of `count_decls`
 newDeclsTots="$(getCountDecls)"
-newDecls="$(echo "${newDeclsTots}" | awk 'BEGIN{ count=0 }
-  /[^,]$/ { count++; type[count]=$0; acc[count]=0; }
-  /,$/ { acc[count]++ } END{
-  for(t=1; t<=count; t++) { printf("%s %s\n", type[t], acc[t]) }
-}')"
+
+# the tally of the output of `count_decls`
+newDecls="$(echo "${newDeclsTots}" | tallyCountDecls -)"
 # Definitions 73590...
 git checkout -q "${oldCommit}"
 # 'detached HEAD' state
@@ -64,11 +71,7 @@ git checkout -q origin/adomani/periodic_reports_dev_custom_action scripts/count_
 oldDeclsTots="$(getCountDecls)"
 
 # the tally of the output of `count_decls`
-oldDecls="$(echo "${oldDeclsTots}" | awk 'BEGIN{ count=0 }
-  /[^,]$/ { count++; type[count]=$0; acc[count]=0; }
-  /,$/ { acc[count]++ } END{
-  for(t=1; t<=count; t++) { printf("%s %s\n", type[t], acc[t]) }
-}')"
+oldDecls="$(echo "${oldDeclsTots}" | tallyCountDecls -)"
 # Definitions 73152...
 
 # produce the `+X -Y` report for the declarations in each category
