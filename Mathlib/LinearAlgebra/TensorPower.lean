@@ -112,8 +112,7 @@ theorem cast_tprod {i j} (h : i = j) (a : Fin i → M) :
 
 @[simp]
 theorem cast_refl {i} (h : i = i) : cast R M h = LinearEquiv.refl _ _ :=
-  ((congr_arg fun f => reindex R (fun _ ↦ M) (RelIso.toEquiv f)) (finCongr_refl h)).trans
-    reindex_refl
+  (congr_arg (reindex R fun _ ↦ M) <| finCongr_refl h).trans reindex_refl
 #align tensor_power.cast_refl TensorPower.cast_refl
 
 @[simp]

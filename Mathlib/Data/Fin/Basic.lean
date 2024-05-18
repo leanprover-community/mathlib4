@@ -706,6 +706,8 @@ def castLEEmb (h : n ≤ m) : Fin n ↪ Fin m where
   toFun := castLE h
   inj' := castLE_injective _
 
+@[simp, norm_cast] lemma coe_castLEEmb {m n} (hmn : m ≤ n) : castLEEmb hmn = castLE hmn := rfl
+
 #align fin.coe_cast_le Fin.coe_castLE
 #align fin.cast_le_mk Fin.castLE_mk
 #align fin.cast_le_zero Fin.castLE_zero

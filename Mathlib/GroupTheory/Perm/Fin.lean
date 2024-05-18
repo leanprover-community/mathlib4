@@ -158,7 +158,7 @@ namespace Fin
 /-- `Fin.cycleRange i` is the cycle `(0 1 2 ... i)` leaving `(i+1 ... (n-1))` unchanged. -/
 def cycleRange {n : ℕ} (i : Fin n) : Perm (Fin n) :=
   (finRotate (i + 1)).extendDomain
-    (Equiv.ofLeftInverse' (Fin.castLEEmb (Nat.succ_le_of_lt i.is_lt)).toEmbedding (↑)
+    (Equiv.ofLeftInverse' (Fin.castLEEmb (Nat.succ_le_of_lt i.is_lt)) (↑)
       (by
         intro x
         ext
@@ -181,7 +181,7 @@ theorem cycleRange_of_le {n : ℕ} {i j : Fin n.succ} (h : j ≤ i) :
   ext
   erw [this, cycleRange, ofLeftInverse'_eq_ofInjective, ←
     Function.Embedding.toEquivRange_eq_ofInjective, ← viaFintypeEmbedding,
-    viaFintypeEmbedding_apply_image, castLEEmb_toEmbedding, Function.Embedding.coeFn_mk,
+    viaFintypeEmbedding_apply_image, Function.Embedding.coeFn_mk,
     coe_castLE, coe_finRotate]
   simp only [Fin.ext_iff, val_last, val_mk, val_zero, Fin.eta, castLE_mk]
   split_ifs with heq
