@@ -228,7 +228,7 @@ open set is measurable. -/
 theorem exists_opensMeasurableSpace_of_hasCountableSeparatingOn (α : Type*)
     [m : MeasurableSpace α] [HasCountableSeparatingOn α MeasurableSet univ] :
     ∃ τ : TopologicalSpace α, SecondCountableTopology α ∧ T4Space α ∧ OpensMeasurableSpace α := by
-  rcases exists_countablyGenerated_le_of_hasCountableSeparatingOn α with ⟨m', _, _, m'le⟩
+  rcases exists_countablyGenerated_le_of_countablySeparated α with ⟨m', _, _, m'le⟩
   rcases exists_borelSpace_of_countablyGenerated_of_separatesPoints (m := m') with ⟨τ, _, _, τm'⟩
   exact ⟨τ, ‹_›, ‹_›, @OpensMeasurableSpace.mk _ _ m (τm'.measurable_eq.symm.le.trans m'le)⟩
 
