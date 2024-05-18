@@ -100,21 +100,23 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
     ext
     simp
 
+--spectrum of a matrix is a finite set, so C(σ(A), ℝ) might be finite-dimensional.
+--If this is the case, then Continuous.closedEmbedding might work...but I don't think
+--so, since the continuous functions will then only be Locally Compact...
+--But LinearMap.closedEmbedding_of_injective might work, in this case.
+--Otherwise, the best might be closedEmbedding_of_continuous_injective_closed.
+
 instance instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus ℝ (IsHermitian : Matrix n n 𝕜 → Prop) where
 exists_cfc_of_predicate := by
     intro A hA
     use (φ hA)
     constructor
-    apply closedEmbedding_of_continuous_injective_closed
-    · sorry
-    · sorry
-    · constructor
-      · sorry
-      · constructor
-        · sorry
-        · intro f
-          sorry --probably an easy lemma saying that *-homs preserve Hermitian elements...
+    · have h0 : FiniteDimensional ℝ C(spectrum ℝ A, ℝ) := by sorry
+      have hφ : LinearMap.ker hA.φ = ⊥ := by sorry
+      refine LinearMap.closedEmbedding_of_injective (𝕜 := ℝ) (E := C(spectrum ℝ A, ℝ)) hφ
+      sorry
+    · sorry--probably an easy lemma saying that *-homs preserve Hermitian elements...
 
 
 
