@@ -451,7 +451,6 @@ theorem length_pos_of_head_eq_head_of_last_eq_last_of_length_pos {s₁ s₂ : Co
 
 theorem eq_of_head_eq_head_of_last_eq_last_of_length_eq_zero {s₁ s₂ : CompositionSeries X}
     (hb : s₁.head = s₂.head) (ht : s₁.last = s₂.last) (hs₁0 : s₁.length = 0) : s₁ = s₂ := by
-  have := subsingleton_of_length_eq_zero hs₁0
   have : ∀ x, x ∈ s₁ ↔ x = s₁.last := fun x =>
     ⟨fun hx =>  subsingleton_of_length_eq_zero hs₁0 hx s₁.last_mem, fun hx => hx.symm ▸ s₁.last_mem⟩
   have : ∀ x, x ∈ s₂ ↔ x = s₂.last := fun x =>
