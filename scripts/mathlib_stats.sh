@@ -53,7 +53,7 @@ newDecls="$(echo "${newDeclsTots}" | awk 'BEGIN{ count=0 }
 git checkout -q "${oldCommit}"
 # 'detached HEAD' state
 
-lake exe cache get > /dev/null
+lake exe cache get #> /dev/null
 # stuff gets downloaded
 
 # update the `count_decls` and `mathlib_stats` scripts to the latest version
