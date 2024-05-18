@@ -195,28 +195,6 @@ theorem length_pos (irrefl : Irreflexive r) : 0 < s.length ↔ {x | x ∈ s}.Non
 lemma length_eq_zero (irrefl : Irreflexive r) : s.length = 0 ↔ {x | x ∈ s}.Subsingleton := by
   rw [← not_ne_iff, length_ne_zero irrefl, Set.not_nontrivial_iff]
 
-@[simp]
-theorem mem_toList {s : RelSeries r} {x : α} : x ∈ s.toList ↔ x ∈ s := by
-  rw [RelSeries.toList, List.mem_ofFn, RelSeries.mem_def]
-
-theorem length_pos_of_mem_ne {s : RelSeries r} {x y : α} (hx : x ∈ s) (hy : y ∈ s)
-    (hxy : x ≠ y) : 0 < s.length := by
-  obtain ⟨i, rfl⟩ := hx
-  obtain ⟨j, rfl⟩ := hy
-  contrapose! hxy
-  congr!
-  exact Fin.castIso (by rw [show s.length = 0 by simpa using hxy, zero_add] : s.length + 1 = 1)
-    |>.injective <| Subsingleton.elim (α := Fin 1) _ _
-
-variable {r} in
-lemma forall_mem_eq_of_length_eq_zero {s : RelSeries r} (hs : s.length = 0) {x y}
-    (hx : x ∈ s) (hy : y ∈ s) : x = y := by
-  rcases hx with ⟨i, rfl⟩
-  rcases hy with ⟨j, rfl⟩
-  congr!
-  exact Fin.castIso (by rw [hs, zero_add] : s.length + 1 = 1) |>.injective <|
-    Subsingleton.elim (α := Fin 1) _ _
-
 /-- Start of a series, i.e. for `a₀ -r→ a₁ -r→ ... -r→ aₙ`, its head is `a₀`.
 
 Since a relation series is assumed to be non-empty, this is well defined. -/
