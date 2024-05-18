@@ -41,7 +41,7 @@ def MathlibModIdxs (env : Environment) : IO (HashSet Nat) := do
   return modIdx
 
 /-- A command that prints a tally of definitions, theorems and inductives in `Mathlib`. -/
-elab "count_decls" descr:(str)? : command => do
+elab "count_decls" : command => do
   let env ← getEnv
   let maths ← MathlibModIdxs env
   let consts := env.constants
@@ -55,8 +55,7 @@ elab "count_decls" descr:(str)? : command => do
     | .inductInfo .. => return {s with inductives := s.inductives + 1}
     | _ => return {s with other := s.other + 1}
   let s : State ← consts.foldM update {}
-  let str := if let some str := descr then str.getString else ""
-  logInfo s!"{str} defs {s.defs}\n{str} thms {s.thms}\n{str} inductives {s.inductives}\n{str} other {s.other}"
+  logInfo s!"defs {s.defs}\nthms {s.thms}\ninductives {s.inductives}\nother {s.other}"
   --let total := s.defs + s.thms + s.inductives + s.other
   --logInfo s!"{repr s}\ntotal: {total}"
 
