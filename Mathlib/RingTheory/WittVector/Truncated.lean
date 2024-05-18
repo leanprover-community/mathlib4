@@ -270,11 +270,11 @@ theorem truncateFun_sub (x y : 𝕎 R) :
   witt_truncateFun_tac
 #align witt_vector.truncate_fun_sub WittVector.truncateFun_sub
 
-theorem truncateFun_nsmul (x : 𝕎 R) (m : ℕ) : truncateFun n (m • x) = m • truncateFun n x := by
+theorem truncateFun_nsmul (m : ℕ) (x : 𝕎 R) : truncateFun n (m • x) = m • truncateFun n x := by
   witt_truncateFun_tac
 #align witt_vector.truncate_fun_nsmul WittVector.truncateFun_nsmul
 
-theorem truncateFun_zsmul (x : 𝕎 R) (m : ℤ) : truncateFun n (m • x) = m • truncateFun n x := by
+theorem truncateFun_zsmul (m : ℤ) (x : 𝕎 R) : truncateFun n (m • x) = m • truncateFun n x := by
   witt_truncateFun_tac
 #align witt_vector.truncate_fun_zsmul WittVector.truncateFun_zsmul
 
@@ -282,11 +282,11 @@ theorem truncateFun_pow (x : 𝕎 R) (m : ℕ) : truncateFun n (x ^ m) = truncat
   witt_truncateFun_tac
 #align witt_vector.truncate_fun_pow WittVector.truncateFun_pow
 
-theorem truncateFun_nat_cast (m : ℕ) : truncateFun n (m : 𝕎 R) = m := rfl
-#align witt_vector.truncate_fun_nat_cast WittVector.truncateFun_nat_cast
+theorem truncateFun_natCast (m : ℕ) : truncateFun n (m : 𝕎 R) = m := rfl
+#align witt_vector.truncate_fun_nat_cast WittVector.truncateFun_natCast
 
-theorem truncateFun_int_cast (m : ℤ) : truncateFun n (m : 𝕎 R) = m := rfl
-#align witt_vector.truncate_fun_int_cast WittVector.truncateFun_int_cast
+theorem truncateFun_intCast (m : ℤ) : truncateFun n (m : 𝕎 R) = m := rfl
+#align witt_vector.truncate_fun_int_cast WittVector.truncateFun_intCast
 
 end WittVector
 
@@ -300,8 +300,8 @@ variable [CommRing R]
 instance instCommRing : CommRing (TruncatedWittVector p n R) :=
   (truncateFun_surjective p n R).commRing _ (truncateFun_zero p n R) (truncateFun_one p n R)
     (truncateFun_add n) (truncateFun_mul n) (truncateFun_neg n) (truncateFun_sub n)
-    (truncateFun_nsmul n) (truncateFun_zsmul n) (truncateFun_pow n) (truncateFun_nat_cast n)
-    (truncateFun_int_cast n)
+    (truncateFun_nsmul n) (truncateFun_zsmul n) (truncateFun_pow n) (truncateFun_natCast n)
+    (truncateFun_intCast n)
 
 end TruncatedWittVector
 

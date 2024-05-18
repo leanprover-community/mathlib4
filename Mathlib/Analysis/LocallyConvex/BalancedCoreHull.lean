@@ -53,7 +53,7 @@ section SMul
 
 variable (𝕜) [SMul 𝕜 E] {s t : Set E} {x : E}
 
-/-- The largest balanced subset of `s`.-/
+/-- The largest balanced subset of `s`. -/
 def balancedCore (s : Set E) :=
   ⋃₀ { t : Set E | Balanced 𝕜 t ∧ t ⊆ s }
 #align balanced_core balancedCore
@@ -63,7 +63,7 @@ def balancedCoreAux (s : Set E) :=
   ⋂ (r : 𝕜) (_ : 1 ≤ ‖r‖), r • s
 #align balanced_core_aux balancedCoreAux
 
-/-- The smallest balanced superset of `s`.-/
+/-- The smallest balanced superset of `s`. -/
 def balancedHull (s : Set E) :=
   ⋃ (r : 𝕜) (_ : ‖r‖ ≤ 1), r • s
 #align balanced_hull balancedHull
@@ -95,7 +95,7 @@ theorem balancedCore_balanced (s : Set E) : Balanced 𝕜 (balancedCore 𝕜 s) 
 #align balanced_core_balanced balancedCore_balanced
 
 /-- The balanced core of `t` is maximal in the sense that it contains any balanced subset
-`s` of `t`.-/
+`s` of `t`. -/
 theorem Balanced.subset_balancedCore_of_subset (hs : Balanced 𝕜 s) (h : s ⊆ t) :
     s ⊆ balancedCore 𝕜 t :=
   subset_sUnion_of_mem ⟨hs, h⟩

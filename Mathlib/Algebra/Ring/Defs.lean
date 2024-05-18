@@ -284,6 +284,17 @@ theorem add_mul_self_eq (a b : α) : (a + b) * (a + b) = a * a + 2 * a * b + b *
   simp only [two_mul, add_mul, mul_add, add_assoc, mul_comm b]
 #align add_mul_self_eq add_mul_self_eq
 
+lemma add_sq (a b : α) : (a + b) ^ 2 = a ^ 2 + 2 * a * b + b ^ 2 := by
+  simp only [sq, add_mul_self_eq]
+#align add_sq add_sq
+
+lemma add_sq' (a b : α) : (a + b) ^ 2 = a ^ 2 + b ^ 2 + 2 * a * b := by
+  rw [add_sq, add_assoc, add_comm _ (b ^ 2), add_assoc]
+#align add_sq' add_sq'
+
+alias add_pow_two := add_sq
+#align add_pow_two add_pow_two
+
 end CommSemiring
 
 section HasDistribNeg
@@ -429,7 +440,7 @@ instance (priority := 100) Ring.toNonAssocRing : NonAssocRing α :=
   { ‹Ring α› with }
 #align ring.to_non_assoc_ring Ring.toNonAssocRing
 
-/- The instance from `Ring` to `Semiring` happens often in linear algebra, for which all the basic
+/-- The instance from `Ring` to `Semiring` happens often in linear algebra, for which all the basic
 definitions are given in terms of semirings, but many applications use rings or fields. We increase
 a little bit its priority above 100 to try it quickly, but remaining below the default 1000 so that
 more specific instances are tried first. -/

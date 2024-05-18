@@ -231,7 +231,6 @@ def compression (a : α) (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
       exact this (mem_filter.1 h₁).1
 #align down.compression Down.compression
 
--- mathport name: down.compression
 @[inherit_doc]
 scoped[FinsetFamily] notation "𝓓 " => Down.compression
 -- Porting note: had to open this
