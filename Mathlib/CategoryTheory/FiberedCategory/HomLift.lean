@@ -73,8 +73,8 @@ lemma codomain_eq (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (�
   Functor.IsHomLift.codomain_eq f φ
 
 @[simp]
-lemma fac (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
-    [p.IsHomLift f φ] : f = eqToHom (domain_eq p f φ).symm ≫ p.map φ ≫ eqToHom (codomain_eq p f φ) :=
+lemma fac (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) [p.IsHomLift f φ] :
+    f = eqToHom (domain_eq p f φ).symm ≫ p.map φ ≫ eqToHom (codomain_eq p f φ) :=
   Functor.IsHomLift.fac
 
 @[simp]
@@ -225,15 +225,15 @@ protected instance inv_lift (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R
   apply CommSq.horiz_inv (f:=p.mapIso φ) (by simpa using (commSq p f φ.hom))
 
 /-- If `φ : a ⟶ b` lifts `f : R ⟶ S` and both are isomorphisms, then `φ⁻¹` lifts `f⁻¹`. -/
-protected instance inv (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
-    [p.IsHomLift f φ] [IsIso φ] [IsIso f] : p.IsHomLift (CategoryTheory.inv f) (CategoryTheory.inv φ) :=
+protected instance inv (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) [IsIso f]
+    [IsIso φ] [p.IsHomLift f φ] : p.IsHomLift (inv f) (inv φ) :=
   have : p.IsHomLift (asIso f).hom (asIso φ).hom := by simp; infer_instance
   IsHomLift.inv_lift_inv p (asIso f) (asIso φ)
 
 /-- If `φ : a ⟶ b` is an isomorphism, and lifts `𝟙 S` for some `S : 𝒮`, then `φ⁻¹` also
 lifts `𝟙 S` -/
-instance lift_id_inv {p : 𝒳 ⥤ 𝒮} {S : 𝒮} {a b : 𝒳} {φ : a ⟶ b} [IsIso φ]
-    [p.IsHomLift (𝟙 S) φ] : p.IsHomLift (𝟙 S) (CategoryTheory.inv φ) :=
+instance lift_id_inv {p : 𝒳 ⥤ 𝒮} {S : 𝒮} {a b : 𝒳} {φ : a ⟶ b} [IsIso φ] [p.IsHomLift (𝟙 S) φ] :
+    p.IsHomLift (𝟙 S) (inv φ) :=
   (IsIso.inv_id (X:=S)) ▸ (IsHomLift.inv p _ φ)
 
 end IsHomLift
