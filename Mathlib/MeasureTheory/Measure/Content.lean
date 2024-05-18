@@ -314,7 +314,7 @@ theorem outerMeasure_lt_top_of_isCompact [WeaklyLocallyCompactSpace G]
     μ.outerMeasure K < ∞ := by
   rcases exists_compact_superset hK with ⟨F, h1F, h2F⟩
   calc
-    μ.outerMeasure K ≤ μ.outerMeasure (interior F) := OuterMeasure.mono' _ h2F
+    μ.outerMeasure K ≤ μ.outerMeasure (interior F) := measure_mono h2F
     _ ≤ μ ⟨F, h1F⟩ := by
       apply μ.outerMeasure_le ⟨interior F, isOpen_interior⟩ ⟨F, h1F⟩ interior_subset
     _ < ⊤ := μ.lt_top _

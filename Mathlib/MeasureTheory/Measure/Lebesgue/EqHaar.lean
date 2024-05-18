@@ -766,14 +766,13 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero (s : Set E) (x : E)
           μ (s ∩ ({x} + r • (t ∩ closedBall 0 n)) ∪ s ∩ ({x} + r • (t \ closedBall 0 n))) :=
         by rw [← inter_union_distrib_left, ← add_union, ← smul_set_union, inter_union_diff]
       _ ≤ μ (s ∩ ({x} + r • (t ∩ closedBall 0 n))) + μ (s ∩ ({x} + r • (t \ closedBall 0 n))) :=
-        (measure_union_le _ _)
-      _ ≤ μ (s ∩ ({x} + r • (t ∩ closedBall 0 n))) + μ ({x} + r • (t \ closedBall 0 n)) :=
-        add_le_add le_rfl (measure_mono (inter_subset_right _ _))
+        measure_union_le _ _
+      _ ≤ μ (s ∩ ({x} + r • (t ∩ closedBall 0 n))) + μ ({x} + r • (t \ closedBall 0 n)) := by
+        gcongr; apply inter_subset_right
   calc
     μ (s ∩ ({x} + r • t)) / μ ({x} + r • t) ≤
         (μ (s ∩ ({x} + r • (t ∩ closedBall 0 n))) + μ ({x} + r • (t \ closedBall 0 n))) /
-          μ ({x} + r • t) :=
-      mul_le_mul_right' I _
+          μ ({x} + r • t) := by gcongr
     _ < ε / 2 + ε / 2 := by
       rw [ENNReal.add_div]
       apply ENNReal.add_lt_add hr _
@@ -848,8 +847,9 @@ theorem tendsto_addHaar_inter_smul_one_of_density_one (s : Set E) (x : E)
       tendsto_addHaar_inter_smul_one_of_density_one_aux μ _ (measurableSet_toMeasurable _ _) _ _
         t ht h't h''t
     apply tendsto_of_tendsto_of_tendsto_of_le_of_le' h tendsto_const_nhds
-    · refine' eventually_of_forall fun r => mul_le_mul_right' _ _
-      exact measure_mono (inter_subset_inter_left _ (subset_toMeasurable _ _))
+    · refine eventually_of_forall fun r ↦ ?_
+      gcongr
+      apply subset_toMeasurable
     · filter_upwards [self_mem_nhdsWithin]
       rintro r -
       apply ENNReal.div_le_of_le_mul

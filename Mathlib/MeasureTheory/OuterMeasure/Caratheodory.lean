@@ -55,7 +55,7 @@ def IsCaratheodory (s : Set α) : Prop :=
 
 theorem isCaratheodory_iff_le' {s : Set α} :
     IsCaratheodory m s ↔ ∀ t, m (t ∩ s) + m (t \ s) ≤ m t :=
-  forall_congr' fun _ => le_antisymm_iff.trans <| and_iff_right <| le_inter_add_diff _
+  forall_congr' fun _ => le_antisymm_iff.trans <| and_iff_right <| measure_le_inter_add_diff _ _ _
 #align measure_theory.outer_measure.is_caratheodory_iff_le' MeasureTheory.OuterMeasure.isCaratheodory_iff_le'
 
 @[simp]
