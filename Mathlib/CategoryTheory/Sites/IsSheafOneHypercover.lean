@@ -6,7 +6,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Sites.OneHypercover
 
 /-!
-# Characterizations of sheaves using 1-hypercovers
+# Characterization of sheaves using 1-hypercovers
 
 In this file, give a Grothendieck topology `J` on a category `C`,
 we define a type `J.OneHypercoverFamily` of families of 1-hypercovers.
