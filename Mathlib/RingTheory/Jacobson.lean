@@ -164,14 +164,6 @@ open IsLocalization Submonoid
 variable {R S : Type*} [CommRing R] [CommRing S] {I : Ideal R}
 variable (y : R) [Algebra R S] [IsLocalization.Away y S]
 
-theorem disjoint_powers_iff_not_mem (hI : I.IsRadical) :
-    Disjoint (Submonoid.powers y : Set R) ↑I ↔ y ∉ I.1 := by
-  refine'
-    ⟨fun h => Set.disjoint_left.1 h (mem_powers _), fun h => disjoint_iff.mpr (eq_bot_iff.mpr _)⟩
-  rintro x ⟨⟨n, rfl⟩, hx'⟩
-  exact h (hI <| mem_radical_of_pow_mem <| le_radical hx')
-#align ideal.disjoint_powers_iff_not_mem Ideal.disjoint_powers_iff_not_mem
-
 variable (S)
 
 /-- If `R` is a Jacobson ring, then maximal ideals in the localization at `y`
