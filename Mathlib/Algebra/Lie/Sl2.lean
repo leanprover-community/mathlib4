@@ -25,18 +25,6 @@ about `sl₂`.
 
 -/
 
--- TODO Find home for this, maybe generalise and put in `Mathlib.Order.SuccPred.Basic`?
-lemma Nat.exists_not_and_succ_of_exists_and_not_zero {p : ℕ → Prop} (H : ∃ n, p n) (H' : ¬ p 0) :
-    ∃ n, ¬ p n ∧ p (n + 1) := by
-  classical
-  let k := Nat.find H
-  have hk : p k := Nat.find_spec H
-  suffices 0 < k from
-    ⟨k - 1, Nat.find_min H <| Nat.pred_lt this.ne', by rwa [Nat.sub_add_cancel this]⟩
-  by_contra! contra
-  rw [nonpos_iff_eq_zero.mp contra] at hk
-  exact H' hk
-
 variable (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
@@ -56,7 +44,7 @@ Note that since `h = ⁅e, f⁆`, we do not include it as part of the data. -/
 
 namespace Sl2Triple
 
-variable {R L M}
+variable {L M}
 variable (t : Sl2Triple L)
 
 lemma lie_lie_smul_e : ⁅⁅t.e, t.f⁆, t.e⁆ = (2 : R) • t.e := by simp [t.lie_lie_nsmul_e, two_smul]
@@ -68,9 +56,9 @@ def h := ⁅t.e, t.f⁆
 
 lemma lie_e_f : ⁅t.e, t.f⁆ = t.h := rfl
 
-lemma lie_h_e : ⁅t.h, t.e⁆ = (2 : R) • t.e := by rw [← lie_e_f]; exact lie_lie_smul_e t
+lemma lie_h_e : ⁅t.h, t.e⁆ = (2 : R) • t.e := by rw [← lie_e_f]; exact lie_lie_smul_e R t
 
-lemma lie_h_f : ⁅t.h, t.f⁆ = - ((2 : R) • t.f) := by rw [← lie_e_f]; exact lie_lie_smul_f t
+lemma lie_h_f : ⁅t.h, t.f⁆ = - ((2 : R) • t.f) := by rw [← lie_e_f]; exact lie_lie_smul_f R t
 
 /-- Swapping the roles of `e` and `f` yields a natural involution on `sl₂` triples. -/
 @[simps] def symm : Sl2Triple L where
@@ -80,6 +68,8 @@ lemma lie_h_f : ⁅t.h, t.f⁆ = - ((2 : R) • t.f) := by rw [← lie_e_f]; exa
   lie_lie_nsmul_f := by rw [← lie_skew t.f _, neg_lie, neg_eq_iff_eq_neg, neg_neg, lie_lie_nsmul_e]
 
 @[simp] lemma symm_symm : t.symm.symm = t := rfl
+
+@[simp] lemma h_symm : t.symm.h = -t.h := by simp [← lie_e_f]
 
 instance instZero : Zero (Sl2Triple L) where zero := ⟨0, 0, by simp, by simp⟩
 
@@ -108,6 +98,8 @@ variable [NoZeroSMulDivisors ℤ L]
   · rw [← t.lie_e_f, t.e_eq_zero_iff.mpr hyp, zero_lie]
 
 end NoZeroSMulDivisors
+
+variable {R}
 
 /-- Given a representation of a Lie algebra with distinguished `sl₂` triple, a vector is said to be
 primitive if it is a simultaneous eigenvector for the action of both `h`, `e`, and the eigenvalue
@@ -160,13 +152,12 @@ lemma lie_e_pow_succ_toEndomorphism_f (n : ℕ) :
     congr
     ring
 
-open Module.End in
 /-- The eigenvalue of a primitive vector must be a natural number if the representation is
 finite-dimensional. -/
 lemma exists_nat [IsNoetherian R M] [NoZeroSMulDivisors R M] [IsDomain R] [CharZero R] :
-    ∃ z : ℕ, μ = z := by
+    ∃ n : ℕ, μ = n := by
   suffices ∃ n : ℕ, (ψ n) = 0 by
-    obtain ⟨n, hn₁, hn₂⟩ := Nat.exists_not_and_succ_of_exists_and_not_zero this P.ne_zero
+    obtain ⟨n, hn₁, hn₂⟩ := Nat.exists_not_and_succ_of_not_zero_of_exists P.ne_zero this
     refine ⟨n, ?_⟩
     have := lie_e_pow_succ_toEndomorphism_f t P n
     rw [hn₂, lie_zero, eq_comm, smul_eq_zero_iff_left hn₁, mul_eq_zero, sub_eq_zero] at this
@@ -179,7 +170,7 @@ lemma exists_nat [IsNoetherian R M] [NoZeroSMulDivisors R M] [IsDomain R] [CharZ
     {μ - 2 * n | n : ℕ}
     (fun ⟨s, hs⟩ ↦ ψ Classical.choose hs)
     (fun ⟨s, hs⟩ ↦ by simp [lie_h_pow_toEndomorphism_f t P, Classical.choose_spec hs, contra,
-      HasEigenvector, mem_eigenspace_iff])).finite
+      Module.End.HasEigenvector, Module.End.mem_eigenspace_iff])).finite
 
 end HasPrimitiveVectorWith
 

@@ -52,4 +52,10 @@ lemma IsSemisimple.generalizedEigenspace_eq_eigenspace
   refine le_antisymm (fun m hm ↦ mem_eigenspace_iff.mpr ?_) (eigenspace_le_generalizedEigenspace hk)
   exact apply_eq_of_mem_genEigenspace_of_comm_of_isSemisimple_of_isNilpotent_sub hm rfl hf (by simp)
 
+lemma IsSemisimple.maximalGeneralizedEigenspace_eq_eigenspace
+    (hf : f.IsSemisimple) (μ : R) :
+    f.maximalGeneralizedEigenspace μ = f.eigenspace μ := by
+  simp_rw [maximalGeneralizedEigenspace, ← (f.generalizedEigenspace μ).monotone.iSup_nat_add 1,
+    hf.generalizedEigenspace_eq_eigenspace μ (Nat.zero_lt_succ _), ciSup_const]
+
 end Module.End
