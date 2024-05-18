@@ -7,6 +7,7 @@ import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Ring.Cast
 import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Sign function

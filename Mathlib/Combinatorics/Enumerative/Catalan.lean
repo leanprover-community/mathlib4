@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
 import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Data.Finset.NatAntidiagonal

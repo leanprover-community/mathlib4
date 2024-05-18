@@ -5,6 +5,7 @@ Authors: Alexander Bentkamp
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Module.Pi
+import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Basic properties of holors

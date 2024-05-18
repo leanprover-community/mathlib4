@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Mathlib.Data.Finset.Basic
+import Mathlib.Logic.Equiv.Set
 
 /-!
 # Update a function on a set of values
@@ -14,7 +15,34 @@ This file defines `Function.updateFinset`, the operation that updates a function
 This is a very specific function used for `MeasureTheory.marginal`, and possibly not that useful
 for other purposes.
 -/
+
+open Finset
+
 variable {ι : Sort _} {π : ι → Sort _} {x : ∀ i, π i} [DecidableEq ι]
+variable {α : Type*} [DecidableEq α] {s t : Finset α}
+
+namespace Equiv.Finset
+
+/-- The disjoint union of finsets is a sum -/
+def union (s t : Finset α) (h : Disjoint s t) : s ⊕ t ≃ (s ∪ t : Finset α) :=
+  Equiv.Set.ofEq (coe_union _ _) |>.trans (Equiv.Set.union (disjoint_coe.mpr h).le_bot) |>.symm
+
+@[simp] lemma union_symm_inl (h : Disjoint s t) (x : s) :
+    Finset.union s t h (Sum.inl x) = ⟨x, Finset.mem_union.mpr <| Or.inl x.2⟩ := rfl
+
+@[simp] lemma union_symm_inr (h : Disjoint s t) (y : t) :
+    Finset.union s t h (Sum.inr y) = ⟨y, Finset.mem_union.mpr <| Or.inr y.2⟩ := rfl
+
+end Finset
+
+/-- The type of dependent functions on the disjoint union of finsets `s ∪ t` is equivalent to the
+type of pairs of functions on `s` and on `t`. This is similar to `Equiv.sumPiEquivProdPi`. -/
+def piFinsetUnion {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι} (h : Disjoint s t) :
+    ((∀ i : s, α i) × ∀ i : t, α i) ≃ ∀ i : (s ∪ t : Finset ι), α i :=
+  let e := Equiv.Finset.union s t h
+  sumPiEquivProdPi (fun b ↦ α (e b)) |>.symm.trans (.piCongrLeft (fun i : ↥(s ∪ t) ↦ α i) e)
+
+end Equiv
 
 namespace Function
 

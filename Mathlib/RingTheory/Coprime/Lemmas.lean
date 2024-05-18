@@ -6,6 +6,7 @@ Authors: Kenny Lau, Ken Lee, Chris Hughes
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Int.GCD
+import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.RingTheory.Coprime.Basic
 
 /-!

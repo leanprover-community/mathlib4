@@ -7,6 +7,7 @@ import Mathlib.Data.Fintype.Card
 import Mathlib.Data.List.MinMax
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Logic.Encodable.Basic
+import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Denumerable types

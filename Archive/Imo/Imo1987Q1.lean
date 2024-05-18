@@ -3,7 +3,7 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Data.Fintype.Perm
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Dynamics.FixedPoints.Basic

@@ -3,8 +3,9 @@ Copyright (c) 2022 Pim Otte. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Pim Otte
 -/
-import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Data.Nat.Factorial.Basic
 
 /-!
 # Factorial with big operators
