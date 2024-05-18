@@ -19,13 +19,15 @@ open Lean Elab Meta
 
 /-- A structure to tally declaration types:
 * `thms` are theorems;
-* `typesPreds` are types/predicates;
-* `other` is everything else.
+* `preds` are predicates;
+* `types` are types;
+* `data` is everything else.
 -/
 structure Tally where
   thms : Nat := 0
-  typesPreds : Nat := 0
-  other : Nat := 0
+  preds : Nat := 0
+  types : Nat := 0
+  data : Nat := 0
   deriving Repr
 
 /-- `MathlibModIdxs env` returns the `ModuleIdx`s corresponding to `Mathlib` files
@@ -37,21 +39,24 @@ def MathlibModIdxs (env : Environment) : IO (HashSet Nat) := do
       modIdx := modIdx.insert nm
   return modIdx
 
-/-- extend a `Tally` by the ConstantInfo `c`.  It is written to work with `Lean.SMap.foldM`,
-hence the unused `Name`. -/
-def updateTally (mods : HashSet Nat) (env : Environment) (s : Tally) (_ : Name) (c : ConstantInfo) :
+/-- Extend a `Tally` by the ConstantInfo `c`.  It is written to work with `Lean.SMap.foldM`. -/
+def updateTally (mods : HashSet Nat) (env : Environment) (s : Tally) (n : Name) (c : ConstantInfo) :
     MetaM Tally := do
-  let mod := env.getModuleIdxFor? c.name
+  let mod := env.getModuleIdxFor? n
   if !mods.contains (mod.getD default) then return s else
-  if c.isUnsafe then return s else
+  if c.isUnsafe || (← n.isBlackListed) then return s else
   let typ := c.type
   if (← isProp typ) then
     return {s with thms := s.thms + 1}
   else
-    if ← forallTelescopeReducing c.type fun _ e => return e.isSort then
-      return {s with typesPreds := s.typesPreds + 1}
+    let exp ← forallTelescopeReducing typ fun _ e => return e
+    if exp.isType then
+      return {s with types := s.types + 1}
     else
-      return {s with other := s.other + 1}
+    if exp.isSort then
+      return {s with preds := s.preds + 1}
+    else
+      return {s with data := s.data + 1}
 
 /-- extends a `Tally` all the ConstantInfos in the environment. -/
 def mkTally (s : Tally) : MetaM Tally := do
@@ -60,10 +65,10 @@ def mkTally (s : Tally) : MetaM Tally := do
   let consts := env.constants
   consts.foldM (updateTally maths env) s
 
-/-- `count_decls` prints a tally of theorems, types/predicates and everything else in `Mathlib`. -/
+/-- `count_decls` prints a tally of theorems, types, predicates and data in `Mathlib`. -/
 elab "count_decls" : command => do
   let (s, _) := ← Command.liftCoreM do Meta.MetaM.run do (mkTally {})
-  logInfo s!"Theorems {s.thms}\nTypes/predicates {s.typesPreds}\nOther {s.other}"
+  logInfo s!"Theorems {s.thms}\nTypes {s.types}\nPredicates {s.preds}\nData {s.data}"
 
 --count_decls
 
