@@ -5,7 +5,6 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Order.Basic
-import Mathlib.Tactic.GCongr.Core
 
 /-!
 # Preorder and partial order on bundled homs
@@ -32,7 +31,7 @@ theorem le_def : f ≤ g ↔ ∀ a, f a ≤ g a := PointwiseLE.le_iff
 
 @[simp, norm_cast] theorem coe_le_coe : coe f ≤ g ↔ f ≤ g := le_def.symm
 
-@[gcongr] theorem apply_mono (h : f ≤ g) (x : α) : f x ≤ g x := le_def.1 h x
+theorem apply_mono (h : f ≤ g) (x : α) : f x ≤ g x := le_def.1 h x
 
 end LE
 
