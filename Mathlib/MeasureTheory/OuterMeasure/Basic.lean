@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Countable.Basic
 import Mathlib.Data.Fin.VecNotation
+import Mathlib.Order.Disjointed
 import Mathlib.MeasureTheory.OuterMeasure.Defs
 
 #align_import measure_theory.measure.outer_measure from "leanprover-community/mathlib"@"343e80208d29d2d15f8050b929aa50fe4ce71b55"
@@ -59,8 +60,12 @@ theorem measure_mono_null (h : s ⊆ t) (ht : μ t = 0) : μ s = 0 :=
 theorem measure_pos_of_superset (h : s ⊆ t) (hs : μ s ≠ 0) : 0 < μ t :=
   hs.bot_lt.trans_le (measure_mono μ h)
 
-theorem measure_iUnion_le (μ : F) [Countable ι] (s : ι → Set α) : μ (⋃ i, s i) ≤ ∑' i, μ (s i) :=
-  rel_iSup_tsum μ (measure_empty μ) (· ≤ ·) (OuterMeasureClass.measure_iUnion_nat_le μ) s
+theorem measure_iUnion_le (μ : F) [Countable ι] (s : ι → Set α) : μ (⋃ i, s i) ≤ ∑' i, μ (s i) := by
+  refine rel_iSup_tsum m m.empty (· ≤ ·) (fun t ↦ ?_) _
+  calc
+    m (⋃ i, t i) = m (⋃ i, disjointed t i) := by rw [iUnion_disjointed]
+    _ ≤ ∑' i, m (disjointed t i) := measure_iUnion_nat_le _ (disjoint_disjointed _)
+    _ ≤ ∑' i, m (t i) := ENNReal.tsum_le_tsum fun _ ↦ measure_mono <| disjointed_subset _ _
 #align measure_theory.measure_Union_le MeasureTheory.measure_iUnion_le
 
 theorem measure_biUnion_le {I : Set ι} (μ : F) (hI : I.Countable) (s : ι → Set α) :

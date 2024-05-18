@@ -138,8 +138,8 @@ alias AlgEquiv.separableClosure := separableClosure.algEquivOfAlgEquiv
 variable (F E K)
 
 /-- The separable closure of `F` in `E` is algebraic over `F`. -/
-theorem separableClosure.isAlgebraic : Algebra.IsAlgebraic F (separableClosure F E) :=
-  fun x ↦ isAlgebraic_iff.2 x.2.isIntegral.isAlgebraic
+instance separableClosure.isAlgebraic : Algebra.IsAlgebraic F (separableClosure F E) :=
+  ⟨fun x ↦ isAlgebraic_iff.2 x.2.isIntegral.isAlgebraic⟩
 
 /-- The separable closure of `F` in `E` is separable over `F`. -/
 instance separableClosure.isSeparable : IsSeparable F (separableClosure F E) :=

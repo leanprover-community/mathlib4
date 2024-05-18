@@ -276,8 +276,7 @@ end PrimeMultiset
 namespace PNat
 
 /-- Positive integers biject with multisets of primes. -/
-def factorMultisetEquiv : ℕ+ ≃ PrimeMultiset
-    where
+def factorMultisetEquiv : ℕ+ ≃ PrimeMultiset where
   toFun := factorMultiset
   invFun := PrimeMultiset.prod
   left_inv := prod_factorMultiset

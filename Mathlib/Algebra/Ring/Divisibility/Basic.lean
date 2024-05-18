@@ -58,6 +58,15 @@ theorem two_dvd_bit0 [Semiring α] {a : α} : 2 ∣ bit0 a :=
   ⟨a, bit0_eq_two_mul _⟩
 #align two_dvd_bit0 two_dvd_bit0
 
+section Semiring
+variable [Semiring α] {a b c : α} {m n : ℕ}
+
+lemma min_pow_dvd_add (ha : c ^ m ∣ a) (hb : c ^ n ∣ b) : c ^ min m n ∣ a + b :=
+  ((pow_dvd_pow c (m.min_le_left n)).trans ha).add ((pow_dvd_pow c (m.min_le_right n)).trans hb)
+#align min_pow_dvd_add min_pow_dvd_add
+
+end Semiring
+
 section NonUnitalCommSemiring
 
 variable [NonUnitalCommSemiring α] [NonUnitalCommSemiring β] {a b c : α}

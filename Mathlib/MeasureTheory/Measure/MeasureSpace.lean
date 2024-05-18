@@ -454,7 +454,7 @@ theorem nonempty_inter_of_measure_lt_add {m : MeasurableSpace α} (μ : Measure 
   contrapose! h
   calc
     μ s + μ t = μ (s ∪ t) := (measure_union h ht).symm
-    _ ≤ μ u := measure_mono _ (union_subset h's h't)
+    _ ≤ μ u := measure_mono (union_subset h's h't)
 #align measure_theory.nonempty_inter_of_measure_lt_add MeasureTheory.nonempty_inter_of_measure_lt_add
 
 /-- If two sets `s` and `t` are included in a set `u`, and `μ s + μ t > μ u`,
@@ -540,7 +540,7 @@ theorem measure_iInter_eq_iInf [Countable ι] {s : ι → Set α} (h : ∀ i, Me
       rw [← measure_diff hjk (h _) (this _ hjk)]
       gcongr
     · rw [tsub_le_iff_right, ← measure_union, Set.union_comm]
-      · exact measure_mono _ (diff_subset_iff.1 <| Subset.refl _)
+      · exact measure_mono (diff_subset_iff.1 Subset.rfl)
       · apply disjoint_sdiff_left
       · apply h i
   · exact hd.mono_comp _ fun _ _ => diff_subset_diff_right
@@ -586,7 +586,7 @@ theorem tendsto_measure_iUnion' {α ι : Type*} [MeasurableSpace α] {μ : Measu
     [Preorder ι] [IsDirected ι (· ≤ ·)] {f : ι → Set α} :
     Tendsto (fun i ↦ μ (Accumulate f i)) atTop (𝓝 (μ (⋃ i, f i))) := by
   rw [measure_iUnion_eq_iSup']
-  exact tendsto_atTop_iSup fun i j hij ↦ measure_mono _ <| monotone_accumulate hij
+  exact tendsto_atTop_iSup fun i j hij ↦ by gcongr
 
 /-- Continuity from above: the measure of the intersection of a decreasing sequence of measurable
 sets is the limit of the measures. -/
@@ -784,14 +784,14 @@ then for any measurable set `s` one also has `μ (t ∩ s) = μ (u ∩ s)`. -/
 theorem measure_inter_eq_of_measure_eq {s t u : Set α} (hs : MeasurableSet s) (h : μ t = μ u)
     (htu : t ⊆ u) (ht_ne_top : μ t ≠ ∞) : μ (t ∩ s) = μ (u ∩ s) := by
   rw [h] at ht_ne_top
-  refine' le_antisymm (by gcongr) _
+  refine le_antisymm (by gcongr) ?_
   have A : μ (u ∩ s) + μ (u \ s) ≤ μ (t ∩ s) + μ (u \ s) :=
     calc
       μ (u ∩ s) + μ (u \ s) = μ u := measure_inter_add_diff _ hs
       _ = μ t := h.symm
       _ = μ (t ∩ s) + μ (t \ s) := (measure_inter_add_diff _ hs).symm
       _ ≤ μ (t ∩ s) + μ (u \ s) := by gcongr
-  have B : μ (u \ s) ≠ ∞ := (lt_of_le_of_lt (measure_mono _ (diff_subset _ _)) ht_ne_top.lt_top).ne
+  have B : μ (u \ s) ≠ ∞ := (lt_of_le_of_lt (measure_mono (diff_subset _ _)) ht_ne_top.lt_top).ne
   exact ENNReal.le_of_add_le_add_right B A
 #align measure_theory.measure.measure_inter_eq_of_measure_eq MeasureTheory.Measure.measure_inter_eq_of_measure_eq
 
@@ -981,8 +981,7 @@ theorem measure_eq_left_of_subset_of_measure_add_eq {s t : Set α} (h : (μ + ν
       μ t + ν t = μ s + ν s := h''.symm
       _ ≤ μ s + ν t := by gcongr
   apply ENNReal.le_of_add_le_add_right _ this
-  simp only [not_or, ENNReal.add_eq_top, Pi.add_apply, Ne, coe_add] at h
-  exact h.2
+  exact ne_top_of_le_ne_top h (le_add_left le_rfl)
 #align measure_theory.measure.measure_eq_left_of_subset_of_measure_add_eq MeasureTheory.Measure.measure_eq_left_of_subset_of_measure_add_eq
 
 theorem measure_eq_right_of_subset_of_measure_add_eq {s t : Set α} (h : (μ + ν) t ≠ ∞) (h' : s ⊆ t)
@@ -1169,8 +1168,8 @@ theorem measure_univ_pos : 0 < μ univ ↔ μ ≠ 0 :=
 /-- Lift a linear map between `OuterMeasure` spaces such that for each measure `μ` every measurable
 set is caratheodory-measurable w.r.t. `f μ` to a linear map between `Measure` spaces. -/
 def liftLinear {m0 : MeasurableSpace α} (f : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure β)
-    (hf : ∀ μ : Measure α, ‹_› ≤ (f μ.toOuterMeasure).caratheodory) : Measure α →ₗ[ℝ≥0∞] Measure β
-    where
+    (hf : ∀ μ : Measure α, ‹_› ≤ (f μ.toOuterMeasure).caratheodory) :
+    Measure α →ₗ[ℝ≥0∞] Measure β where
   toFun μ := (f μ.toOuterMeasure).toMeasure (hf μ)
   map_add' μ₁ μ₂ := ext fun s hs => by
     simp only [map_add, coe_add, Pi.add_apply, toMeasure_apply, add_toOuterMeasure,
@@ -1339,8 +1338,7 @@ theorem map_mono {f : α → β} (h : μ ≤ ν) (hf : Measurable f) : μ.map f 
   See also `MeasurableEquiv.map_apply`. -/
 theorem le_map_apply {f : α → β} (hf : AEMeasurable f μ) (s : Set β) : μ (f ⁻¹' s) ≤ μ.map f s :=
   calc
-    μ (f ⁻¹' s) ≤ μ (f ⁻¹' toMeasurable (μ.map f) s) :=
-      measure_mono _ <| preimage_mono <| subset_toMeasurable _ _
+    μ (f ⁻¹' s) ≤ μ (f ⁻¹' toMeasurable (μ.map f) s) := by gcongr; apply subset_toMeasurable
     _ = μ.map f (toMeasurable (μ.map f) s) :=
       (map_apply_of_aemeasurable hf <| measurableSet_toMeasurable _ _).symm
     _ = μ.map f s := measure_toMeasurable _
@@ -1487,7 +1485,7 @@ theorem sum_apply₀ (f : ι → Measure α) {s : Set α} (hs : NullMeasurableSe
   calc
   sum f s = sum f t := measure_congr ht.symm
   _ = ∑' i, f i t := sum_apply _ t_meas
-  _ ≤ ∑' i, f i s := ENNReal.tsum_le_tsum (fun i ↦ measure_mono _ ts)
+  _ ≤ ∑' i, f i s := ENNReal.tsum_le_tsum fun i ↦ measure_mono ts
 
 /-! For the next theorem, the countability assumption is necessary. For a counterexample, consider
 an uncountable space, with a distinguished point `x₀`, and the sigma-algebra made of countable sets
@@ -2056,8 +2054,7 @@ theorem tendsto_measure_Ico_atTop [SemilatticeSup α] [NoMaxOrder α]
     [(atTop : Filter α).IsCountablyGenerated] (μ : Measure α) (a : α) :
     Tendsto (fun x => μ (Ico a x)) atTop (𝓝 (μ (Ici a))) := by
   haveI : Nonempty α := ⟨a⟩
-  have h_mono : Monotone fun x => μ (Ico a x) := fun i j hij =>
-    measure_mono _ (Ico_subset_Ico_right hij)
+  have h_mono : Monotone fun x => μ (Ico a x) := fun i j hij => by simp only; gcongr
   convert tendsto_atTop_iSup h_mono
   obtain ⟨xs, hxs_mono, hxs_tendsto⟩ := exists_seq_monotone_tendsto_atTop_atTop α
   have h_Ici : Ici a = ⋃ n, Ico a (xs n) := by
@@ -2075,8 +2072,7 @@ theorem tendsto_measure_Ioc_atBot [SemilatticeInf α] [NoMinOrder α]
     [(atBot : Filter α).IsCountablyGenerated] (μ : Measure α) (a : α) :
     Tendsto (fun x => μ (Ioc x a)) atBot (𝓝 (μ (Iic a))) := by
   haveI : Nonempty α := ⟨a⟩
-  have h_mono : Antitone fun x => μ (Ioc x a) := fun i j hij =>
-    measure_mono _ (Ioc_subset_Ioc_left hij)
+  have h_mono : Antitone fun x => μ (Ioc x a) := fun i j hij => by simp only; gcongr
   convert tendsto_atBot_iSup h_mono
   obtain ⟨xs, hxs_mono, hxs_tendsto⟩ := exists_seq_antitone_tendsto_atTop_atBot α
   have h_Iic : Iic a = ⋃ n, Ioc (xs n) a := by
@@ -2097,7 +2093,7 @@ theorem tendsto_measure_Iic_atTop [SemilatticeSup α] [(atTop : Filter α).IsCou
     have h2 : (univ : Set α) = ∅ := Subsingleton.elim _ _
     simp_rw [h1, h2]
     exact tendsto_const_nhds
-  have h_mono : Monotone fun x ↦ μ (Iic x) := fun i j hij ↦ measure_mono _ (Iic_subset_Iic.mpr hij)
+  have h_mono : Monotone fun x => μ (Iic x) := fun i j hij => by simp only; gcongr
   convert tendsto_atTop_iSup h_mono
   obtain ⟨xs, hxs_mono, hxs_tendsto⟩ := exists_seq_monotone_tendsto_atTop_atTop α
   have h_univ : (univ : Set α) = ⋃ n, Iic (xs n) := by

@@ -45,12 +45,12 @@ variable {α : Type*} [TopologicalSpace α] [MeasurableSpace α]
 /-- A set `s` is *everywhere positive* (also called *self-supporting*) with respect to a
 measure `μ` if it has positive measure around each of its points, i.e., if all neighborhoods `n`
 of points of `s` satisfy `μ (s ∩ n) > 0`. -/
-@[pp_dot] def IsEverywherePos (μ : Measure α) (s : Set α) : Prop :=
+def IsEverywherePos (μ : Measure α) (s : Set α) : Prop :=
   ∀ x ∈ s, ∀ n ∈ 𝓝[s] x, 0 < μ n
 
 /-- * The everywhere positive subset of a set is the subset made of those points all of whose
 neighborhoods have positive measure inside the set. -/
-@[pp_dot] def everywherePosSubset (μ : Measure α) (s : Set α) : Set α :=
+def everywherePosSubset (μ : Measure α) (s : Set α) : Set α :=
   {x | x ∈ s ∧ ∀ n ∈ 𝓝[s] x, 0 < μ n}
 
 lemma everywherePosSubset_subset (μ : Measure α) (s : Set α) : μ.everywherePosSubset s ⊆ s :=

@@ -890,9 +890,10 @@ theorem measure_toMeasurable_inter_of_cover {s : Set α} (hs : MeasurableSet s) 
         apply measure_toMeasurable_inter hu
         apply ne_of_lt
         calc
-          μ (t ∩ disjointed w n) ≤ μ (t ∩ w n) :=
-            measure_mono _ (inter_subset_inter_right _ (disjointed_le w n))
-          _ ≤ μ (w n) := measure_mono _ (inter_subset_right _ _)
+          μ (t ∩ disjointed w n) ≤ μ (t ∩ w n) := by
+            gcongr
+            exact disjointed_le w n
+          _ ≤ μ (w n) := measure_mono (inter_subset_right _ _)
           _ < ∞ := hw n
       _ = ∑' n, μ.restrict (t ∩ u) (disjointed w n) := by
         congr 1

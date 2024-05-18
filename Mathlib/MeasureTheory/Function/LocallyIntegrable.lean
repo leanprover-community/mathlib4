@@ -601,9 +601,10 @@ theorem IntegrableOn.mul_continuousOn_of_subset (hg : IntegrableOn g A μ) (hg' 
   rw [IntegrableOn, ← memℒp_one_iff_integrable] at hg ⊢
   have : ∀ᵐ x ∂μ.restrict A, ‖g x * g' x‖ ≤ C * ‖g x‖ := by
     filter_upwards [ae_restrict_mem hA] with x hx
-    refine' (norm_mul_le _ _).trans _
+    refine (norm_mul_le _ _).trans ?_
     rw [mul_comm]
-    apply mul_le_mul_of_nonneg_right (hC x (hAK hx)) (norm_nonneg _)
+    gcongr
+    exact hC x (hAK hx)
   exact
     Memℒp.of_le_mul hg (hg.aestronglyMeasurable.mul <| (hg'.mono hAK).aestronglyMeasurable hA) this
 #align measure_theory.integrable_on.mul_continuous_on_of_subset MeasureTheory.IntegrableOn.mul_continuousOn_of_subset
@@ -620,8 +621,9 @@ theorem IntegrableOn.continuousOn_mul_of_subset (hg : ContinuousOn g K) (hg' : I
   rw [IntegrableOn, ← memℒp_one_iff_integrable] at hg' ⊢
   have : ∀ᵐ x ∂μ.restrict A, ‖g x * g' x‖ ≤ C * ‖g' x‖ := by
     filter_upwards [ae_restrict_mem hA] with x hx
-    refine' (norm_mul_le _ _).trans _
-    apply mul_le_mul_of_nonneg_right (hC x (hAK hx)) (norm_nonneg _)
+    refine (norm_mul_le _ _).trans ?_
+    gcongr
+    exact hC x (hAK hx)
   exact
     Memℒp.of_le_mul hg' (((hg.mono hAK).aestronglyMeasurable hA).mul hg'.aestronglyMeasurable) this
 #align measure_theory.integrable_on.continuous_on_mul_of_subset MeasureTheory.IntegrableOn.continuousOn_mul_of_subset
