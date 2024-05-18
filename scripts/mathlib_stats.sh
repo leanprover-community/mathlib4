@@ -100,10 +100,10 @@ plusMinus="$(for typ in $(echo "$newDeclsTots" | grep "[^,]$" | tr '\n' ' ');
 do
   comm -123 --total <(
     echo "${newDeclsTots}" | getKind "${typ}$" -)  <(
-    echo "${oldDeclsTots}" | getKind "${typ}$" -) #|
-    #awk '{ printf("%s %s\n", $1, $2)}'
+    echo "${oldDeclsTots}" | getKind "${typ}$" -)
 done)"
 
+# produces the table summary of the declarations split by type
 declSummary="$(paste -d' ' <(echo "${newDecls}") <(echo "${oldDecls}") <(echo "${plusMinus}") |
   LC_ALL=en_US.UTF-8 awk 'BEGIN{ print "|Type|New|+-|%|\n|:-:|:-:|:-:|:-:|" }{
     printf("| %s | %'"'"'d | +%'"'"'d -%'"'"'d | %4.2f%% |\n", $1, $2, $5, $6, ($2-$4)*100/$2)
