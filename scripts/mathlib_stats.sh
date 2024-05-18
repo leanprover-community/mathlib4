@@ -38,21 +38,23 @@ net=$(awk -v gd="${gdiff}" 'BEGIN{
   }
   print -tot }')
 
+######################
+# Lean-based reports #
+######################
+
 newDecls="$(sed 's=^--\(count_decls\)=\1=' scripts/count_decls.lean | lake env lean --stdin)"
-# { defs := 73590, thms := 230958, inductives := 2451, other := 6148 }
-# total: 313147
+# Definitions 73590...
 git checkout "${oldCommit}"
 # 'detached HEAD' state
 
 lake exe cache get > /dev/null
 # stuff gets downloaded
 
-# update the count_decls script to the latest version
+# update the `count_decls` and `mathlib_stats` scripts to the latest version
 git checkout -q origin/adomani/periodic_reports_dev_custom_action scripts/count_decls.lean scripts/mathlib_stats.sh
 
 oldDecls="$(sed 's=^--\(count_decls\)=\1=' scripts/count_decls.lean | lake env lean --stdin)"
-# { defs := 73152, thms := 230061, inductives := 2430, other := 6080 }
-# total: 311723
+# Definitions 73152...
 
 declSummary="$(paste -d' ' <(echo "${newDecls}") <(echo "${oldDecls}") |
   awk 'BEGIN{ print "|Type|New|Old|Change|\n|:-:|:-:|:-:|:-:|" }{
