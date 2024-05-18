@@ -255,7 +255,7 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
   -- the family `u` will be the desired family
   refine' ⟨u, fun a hat' => (ut' hat').1, u_count, u_disj, _⟩
   -- it suffices to show that it covers almost all `s` locally around each point `x`.
-  refine' null_of_locally_null _ fun x _ => _
+  refine' measure_null_of_locally_null _ fun x _ => _
   -- let `v` be the subfamily of `u` made of those sets intersecting the small ball `ball x (r x)`
   let v := { a ∈ u | (B a ∩ ball x (R x)).Nonempty }
   have vu : v ⊆ u := fun a ha => ha.1
