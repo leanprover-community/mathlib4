@@ -110,13 +110,21 @@ instance lift_id_comp {p : 𝒳 ⥤ 𝒮} {R : 𝒮} {a b c : 𝒳} {φ : a ⟶ 
   comp_id (𝟙 R) ▸ comp φ ψ
 
 /-- If `φ : a ⟶ b` lifts `f` and `ψ : b ⟶ c` lifts `𝟙 T`, then `φ  ≫ ψ` lifts `f` -/
-lemma comp_lift_id {p : 𝒳 ⥤ 𝒮} {R S T : 𝒮} {a b c : 𝒳} {f : R ⟶ S}
+lemma comp_lift_id_right {p : 𝒳 ⥤ 𝒮} {R S T : 𝒮} {a b c : 𝒳} {f : R ⟶ S}
     {φ : a ⟶ b} [p.IsHomLift f φ] {ψ : b ⟶ c} [hψ : p.IsHomLift (𝟙 T) ψ] :
     p.IsHomLift f (φ ≫ ψ) where
   -- TODO: this first one should be able to be automated?
   domain_eq := domain_eq p f φ
   codomain_eq := by rw [codomain_eq p (𝟙 T) ψ, ← domain_eq p (𝟙 T) ψ, codomain_eq p f φ]
   fac := by simp [fac p f φ, fac' p (𝟙 T) ψ]
+
+/-- If `φ : a ⟶ b` lifts `f` and `ψ : b ⟶ c` lifts `𝟙 T`, then `φ  ≫ ψ` lifts `f` -/
+lemma comp_lift_id_left {p : 𝒳 ⥤ 𝒮} {R S T : 𝒮} {a b c : 𝒳} {f : S ⟶ T}
+    {φ : a ⟶ b} [p.IsHomLift (𝟙 R) φ] {ψ : b ⟶ c} [hψ : p.IsHomLift f ψ] :
+    p.IsHomLift f (φ ≫ ψ) where
+  domain_eq := by rw [domain_eq p (𝟙 R) φ, ← codomain_eq p (𝟙 R) φ, domain_eq p f ψ]
+  codomain_eq := codomain_eq p f ψ
+  fac := by simp [fac p f ψ, fac' p (𝟙 R) φ]
 
 @[simp]
 lemma eqToHom_domain_lift_id (p : 𝒳 ⥤ 𝒮) {a b : 𝒳} (hab : a = b) {R : 𝒮}
