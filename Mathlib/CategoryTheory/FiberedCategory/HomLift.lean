@@ -62,22 +62,18 @@ instance (p : 𝒳 ⥤ 𝒮) (a : 𝒳) : p.IsHomLift (𝟙 (p.obj a)) (𝟙 a) 
 @[simp]
 protected lemma id {p : 𝒳 ⥤ 𝒮} {R : 𝒮} {a : 𝒳} (ha : p.obj a = R) : p.IsHomLift (𝟙 R) (𝟙 a) where
 
-@[simp]
 lemma domain_eq (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
     [p.IsHomLift f φ] : p.obj a = R :=
   Functor.IsHomLift.domain_eq f φ
 
-@[simp]
 lemma codomain_eq (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
     [p.IsHomLift f φ] : p.obj b = S :=
   Functor.IsHomLift.codomain_eq f φ
 
-@[simp]
 lemma fac (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) [p.IsHomLift f φ] :
     f = eqToHom (domain_eq p f φ).symm ≫ p.map φ ≫ eqToHom (codomain_eq p f φ) :=
   Functor.IsHomLift.fac
 
-@[simp]
 lemma fac' (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
     [p.IsHomLift f φ] : p.map φ = eqToHom (domain_eq p f φ) ≫ f ≫
       eqToHom (codomain_eq p f φ).symm := by
@@ -93,7 +89,6 @@ lemma of_commSq {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ 
       p.IsHomLift f φ where
   fac := by simp only [h.1, eqToHom_trans_assoc, eqToHom_refl, id_comp]
 
-@[simp]
 lemma eq_of_isHomLift {p : 𝒳 ⥤ 𝒮} (a b : 𝒳) {f : p.obj a ⟶ p.obj b} {φ : a ⟶ b}
     [p.IsHomLift f φ] : f = p.map φ := by
   simpa only [eqToHom_refl, comp_id, id_comp] using fac p f φ
@@ -111,7 +106,7 @@ instance lift_id_comp {p : 𝒳 ⥤ 𝒮} {R : 𝒮} {a b c : 𝒳} {φ : a ⟶ 
 
 /-- If `φ : a ⟶ b` lifts `f` and `ψ : b ⟶ c` lifts `𝟙 T`, then `φ  ≫ ψ` lifts `f` -/
 lemma comp_lift_id_right {p : 𝒳 ⥤ 𝒮} {R S T : 𝒮} {a b c : 𝒳} {f : R ⟶ S}
-    {φ : a ⟶ b} [p.IsHomLift f φ] {ψ : b ⟶ c} [hψ : p.IsHomLift (𝟙 T) ψ] :
+    {φ : a ⟶ b} [p.IsHomLift f φ] {ψ : b ⟶ c} [p.IsHomLift (𝟙 T) ψ] :
     p.IsHomLift f (φ ≫ ψ) where
   -- TODO: this first one should be able to be automated?
   domain_eq := domain_eq p f φ
@@ -120,7 +115,7 @@ lemma comp_lift_id_right {p : 𝒳 ⥤ 𝒮} {R S T : 𝒮} {a b c : 𝒳} {f : 
 
 /-- If `φ : a ⟶ b` lifts `𝟙 T` and `ψ : b ⟶ c` lifts `f`, then `φ  ≫ ψ` lifts `f` -/
 lemma comp_lift_id_left {p : 𝒳 ⥤ 𝒮} {R S T : 𝒮} {a b c : 𝒳} {f : S ⟶ T}
-    {φ : a ⟶ b} [p.IsHomLift (𝟙 R) φ] {ψ : b ⟶ c} [hψ : p.IsHomLift f ψ] :
+    {φ : a ⟶ b} [p.IsHomLift (𝟙 R) φ] {ψ : b ⟶ c} [p.IsHomLift f ψ] :
     p.IsHomLift f (φ ≫ ψ) where
   domain_eq := by rw [domain_eq p (𝟙 R) φ, ← codomain_eq p (𝟙 R) φ, domain_eq p f ψ]
   codomain_eq := codomain_eq p f ψ
