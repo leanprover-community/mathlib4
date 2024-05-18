@@ -51,10 +51,9 @@ often drawn as:
 class Functor.IsHomLift (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) : Prop where
   domain_eq : p.obj a = R := by aesop_cat
   codomain_eq : p.obj b = S := by aesop_cat
-  -- TODO: can I add eqToHom lemmas to aesop_cat here?
   fac : f = eqToHom domain_eq.symm ≫ p.map φ ≫ eqToHom codomain_eq := by aesop_cat
 
-namespace Functor.IsHomLift
+namespace IsHomLift
 
 /-- For any arrow `φ : a ⟶ b` in `𝒳`, `φ` lifts the arrow `p.map φ` in the base `𝒮`-/
 instance self (p : 𝒳 ⥤ 𝒮) {a b : 𝒳} (φ : a ⟶ b) : p.IsHomLift (p.map φ) φ where
@@ -64,46 +63,46 @@ instance (p : 𝒳 ⥤ 𝒮) (a : 𝒳) : p.IsHomLift (𝟙 (p.obj a)) (𝟙 a) 
 protected lemma id {p : 𝒳 ⥤ 𝒮} {R : 𝒮} {a : 𝒳} (ha : p.obj a = R) : p.IsHomLift (𝟙 R) (𝟙 a) where
 
 @[simp]
-lemma domain_eq_of_isHomLift (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
+lemma domain_eq (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
     [p.IsHomLift f φ] : p.obj a = R :=
-  domain_eq f φ
+  Functor.IsHomLift.domain_eq f φ
 
 @[simp]
-lemma codomain_eq_of_isHomLift (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
+lemma codomain_eq (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
     [p.IsHomLift f φ] : p.obj b = S :=
-  codomain_eq f φ
+  Functor.IsHomLift.codomain_eq f φ
 
 @[simp]
-lemma fac_of_isHomLift (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
-    [p.IsHomLift f φ] : f = eqToHom (domain_eq f φ).symm ≫ p.map φ ≫ eqToHom (codomain_eq f φ) :=
-  fac
+lemma fac (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
+    [p.IsHomLift f φ] : f = eqToHom (domain_eq p f φ).symm ≫ p.map φ ≫ eqToHom (codomain_eq p f φ) :=
+  Functor.IsHomLift.fac
 
 @[simp]
-lemma fac'_of_isHomLift (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
-    [hφ : p.IsHomLift f φ] : p.map φ = eqToHom (domain_eq f φ) ≫ f ≫
-      eqToHom (codomain_eq f φ).symm := by
-  simp [fac_of_isHomLift p f φ]
+lemma fac' (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
+    [p.IsHomLift f φ] : p.map φ = eqToHom (domain_eq p f φ) ≫ f ≫
+      eqToHom (codomain_eq p f φ).symm := by
+  simp [fac p f φ]
 
-lemma commSq_of_isHomLift (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
-    [p.IsHomLift f φ] : CommSq (p.map φ) (eqToHom (domain_eq f φ))
-      (eqToHom (codomain_eq f φ)) f where
-  w := by simp only [fac_of_isHomLift p f φ, eqToHom_trans_assoc, eqToHom_refl, id_comp]
+lemma commSq (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
+    [p.IsHomLift f φ] : CommSq (p.map φ) (eqToHom (domain_eq p f φ))
+      (eqToHom (codomain_eq p f φ)) f where
+  w := by simp only [fac p f φ, eqToHom_trans_assoc, eqToHom_refl, id_comp]
 
-lemma isHomLift_of_commSq {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : a ⟶ b}
+lemma of_commSq {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : a ⟶ b}
     (ha : p.obj a = R) (hb : p.obj b = S) (h : CommSq (p.map φ) (eqToHom ha) (eqToHom hb) f) :
       p.IsHomLift f φ where
   fac := by simp only [h.1, eqToHom_trans_assoc, eqToHom_refl, id_comp]
 
 @[simp]
 lemma eq_of_isHomLift {p : 𝒳 ⥤ 𝒮} (a b : 𝒳) {f : p.obj a ⟶ p.obj b} {φ : a ⟶ b}
-    [hφ : p.IsHomLift f φ] : f = p.map φ := by
-  simpa only [eqToHom_refl, comp_id, id_comp] using fac_of_isHomLift p f φ
+    [p.IsHomLift f φ] : f = p.map φ := by
+  simpa only [eqToHom_refl, comp_id, id_comp] using fac p f φ
 
 instance comp {p : 𝒳 ⥤ 𝒮} {R S T : 𝒮} {a b c : 𝒳} {f : R ⟶ S} {g : S ⟶ T} (φ : a ⟶ b)
     (ψ : b ⟶ c) [p.IsHomLift f φ] [p.IsHomLift g ψ] : p.IsHomLift (f ≫ g) (φ ≫ ψ) := by
-  apply isHomLift_of_commSq
+  apply of_commSq
   rw [p.map_comp]
-  apply CommSq.horiz_comp (commSq_of_isHomLift p f φ) (commSq_of_isHomLift p g ψ)
+  apply CommSq.horiz_comp (commSq p f φ) (commSq p g ψ)
 
 /-- If `φ : a ⟶ b` and `ψ : b ⟶ c` lift `𝟙 S`, then so does `φ ≫ ψ` -/
 instance lift_id_comp {p : 𝒳 ⥤ 𝒮} {R : 𝒮} {a b c : 𝒳} {φ : a ⟶ b} {ψ : b ⟶ c}
@@ -112,12 +111,12 @@ instance lift_id_comp {p : 𝒳 ⥤ 𝒮} {R : 𝒮} {a b c : 𝒳} {φ : a ⟶ 
 
 /-- If `φ : a ⟶ b` lifts `f` and `ψ : b ⟶ c` lifts `𝟙 T`, then `φ  ≫ ψ` lifts `f` -/
 lemma comp_lift_id {p : 𝒳 ⥤ 𝒮} {R S T : 𝒮} {a b c : 𝒳} {f : R ⟶ S}
-    {φ : a ⟶ b} [hφ : p.IsHomLift f φ] {ψ : b ⟶ c} [hψ : p.IsHomLift (𝟙 T) ψ] :
+    {φ : a ⟶ b} [p.IsHomLift f φ] {ψ : b ⟶ c} [hψ : p.IsHomLift (𝟙 T) ψ] :
     p.IsHomLift f (φ ≫ ψ) where
   -- TODO: this first one should be able to be automated?
-  domain_eq := hφ.domain_eq
-  codomain_eq := by rw [hψ.codomain_eq, ← hψ.domain_eq, hφ.codomain_eq]
-  fac := by simp [fac_of_isHomLift p f φ, fac'_of_isHomLift p (𝟙 T) ψ]
+  domain_eq := domain_eq p f φ
+  codomain_eq := by rw [codomain_eq p (𝟙 T) ψ, ← domain_eq p (𝟙 T) ψ, codomain_eq p f φ]
+  fac := by simp [fac p f φ, fac' p (𝟙 T) ψ]
 
 @[simp]
 lemma eqToHom_domain_lift_id (p : 𝒳 ⥤ 𝒮) {a b : 𝒳} (hab : a = b) {R : 𝒮}
@@ -141,22 +140,22 @@ lemma id_lift_eqToHom_codomain (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} (hRS : R = S)
 
 instance comp_eqToHom_lift {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a' a b : 𝒳} {f : R ⟶ S}
     (φ : a ⟶ b) (h : a' = a) [p.IsHomLift f φ] : p.IsHomLift f (eqToHom h ≫ φ) :=
-  have := eqToHom_codomain_lift_id p h (domain_eq f φ)
+  have := eqToHom_codomain_lift_id p h (domain_eq p f φ)
   id_comp f ▸ comp (eqToHom h) φ
 
 instance eqToHom_comp_lift {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b b' : 𝒳} {f : R ⟶ S}
     {φ : a ⟶ b} {h : b = b'} [p.IsHomLift f φ] : p.IsHomLift f (φ ≫ eqToHom h) :=
-  have := eqToHom_domain_lift_id p h (codomain_eq f φ)
+  have := eqToHom_domain_lift_id p h (codomain_eq p f φ)
   comp_id f ▸ comp φ (eqToHom h)
 
 instance lift_eqToHom_comp {p : 𝒳 ⥤ 𝒮} {R' R S : 𝒮} {a b : 𝒳} {f : R ⟶ S}
     {φ : a ⟶ b} (h : R' = R) [p.IsHomLift f φ] : p.IsHomLift ((eqToHom h) ≫ f) φ :=
-  have := id_lift_eqToHom_codomain p h (domain_eq f φ)
+  have := id_lift_eqToHom_codomain p h (domain_eq p f φ)
   id_comp φ ▸ comp (𝟙 a) φ
 
 instance lift_comp_eqToHom {p : 𝒳 ⥤ 𝒮} {R S S': 𝒮} {a b : 𝒳} {f : R ⟶ S}
     {φ : a ⟶ b} (h : S = S') [p.IsHomLift f φ] : p.IsHomLift (f ≫ (eqToHom h)) φ :=
-  have := id_lift_eqToHom_domain p h (codomain_eq f φ)
+  have := id_lift_eqToHom_domain p h (codomain_eq p f φ)
   comp_id φ ▸ comp φ (𝟙 b)
 
 @[simp]
@@ -186,13 +185,13 @@ lemma lift_comp_eqToHom_iff {p : 𝒳 ⥤ 𝒮} {R S S': 𝒮} {a b : 𝒳} {f :
 /-- The isomorphism `R ≅ S` obtained from an isomorphism `φ : a ≅ b` lifting `f` -/
 def isoOfIsoLift (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ≅ b)
     [p.IsHomLift f φ.hom] : R ≅ S :=
-  eqToIso (domain_eq_of_isHomLift p f φ.hom).symm ≪≫ p.mapIso φ ≪≫
-    eqToIso (codomain_eq_of_isHomLift p f φ.hom)
+  eqToIso (domain_eq p f φ.hom).symm ≪≫ p.mapIso φ ≪≫
+    eqToIso (codomain_eq p f φ.hom)
 
 @[simp]
 lemma isoOfIsoLift_hom {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : a ≅ b}
     [p.IsHomLift f φ.hom] : (isoOfIsoLift p f φ).hom = f := by
-  simp [isoOfIsoLift, fac_of_isHomLift p f φ.hom]
+  simp [isoOfIsoLift, fac p f φ.hom]
 
 @[simp]
 lemma isoOfIsoLift_comp {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : a ≅ b}
@@ -209,21 +208,21 @@ lemma comp_isoOfIsoLift {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶
 /-- If `φ : a ⟶ b` lifts `f : R ⟶ S` and `φ` is an isomorphism, then so is `f`. -/
 lemma isIso_of_lift_isIso {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : a ⟶ b}
     [p.IsHomLift f φ] [IsIso φ] : IsIso f :=
-  (fac_of_isHomLift p f φ) ▸ inferInstance
+  (fac p f φ) ▸ inferInstance
 
 /-- Given `φ : a ≅ b` and `f : R ≅ S`, such that `φ.hom` lifts `f.hom`, then `φ.inv` lifts
 `f.inv`. -/
 protected instance inv_lift_inv (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ≅ S) (φ : a ≅ b)
     [p.IsHomLift f.hom φ.hom] : p.IsHomLift f.inv φ.inv := by
-  apply isHomLift_of_commSq
-  apply CommSq.horiz_inv (f:=p.mapIso φ) (commSq_of_isHomLift p f.hom φ.hom)
+  apply of_commSq
+  apply CommSq.horiz_inv (f:=p.mapIso φ) (commSq p f.hom φ.hom)
 
 /-- Given `φ : a ≅ b` and `f : R ⟶ S`, such that `φ.hom` lifts `f`, then `φ.inv` lifts the
 inverse of `f` given by `isoOfIsoLift`. -/
 protected instance inv_lift (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ≅ b)
     [p.IsHomLift f φ.hom] : p.IsHomLift (isoOfIsoLift p f φ).inv φ.inv := by
-  apply isHomLift_of_commSq
-  apply CommSq.horiz_inv (f:=p.mapIso φ) (by simpa using (commSq_of_isHomLift p f φ.hom))
+  apply of_commSq
+  apply CommSq.horiz_inv (f:=p.mapIso φ) (by simpa using (commSq p f φ.hom))
 
 /-- If `φ : a ⟶ b` lifts `f : R ⟶ S` and both are isomorphisms, then `φ⁻¹` lifts `f⁻¹`. -/
 protected instance inv (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
@@ -237,6 +236,6 @@ instance lift_id_inv {p : 𝒳 ⥤ 𝒮} {S : 𝒮} {a b : 𝒳} {φ : a ⟶ b} 
     [p.IsHomLift (𝟙 S) φ] : p.IsHomLift (𝟙 S) (CategoryTheory.inv φ) :=
   (IsIso.inv_id (X:=S)) ▸ (IsHomLift.inv p _ φ)
 
-end Functor.IsHomLift
+end IsHomLift
 
 end CategoryTheory
