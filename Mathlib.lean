@@ -88,6 +88,7 @@ import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 import Mathlib.Algebra.Category.ModuleCat.Presheaf
+import Mathlib.Algebra.Category.ModuleCat.Presheaf.Abelian
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
 import Mathlib.Algebra.Category.ModuleCat.Products
@@ -247,7 +248,6 @@ import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.Group.WithOne.Basic
 import Mathlib.Algebra.Group.WithOne.Defs
-import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupPower.CovariantClass
 import Mathlib.Algebra.GroupPower.Identities
 import Mathlib.Algebra.GroupPower.IterateHom
@@ -257,7 +257,6 @@ import Mathlib.Algebra.GroupRingAction.Basic
 import Mathlib.Algebra.GroupRingAction.Invariant
 import Mathlib.Algebra.GroupRingAction.Subobjects
 import Mathlib.Algebra.GroupWithZero.Basic
-import Mathlib.Algebra.GroupWithZero.Bitwise
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.GroupWithZero.Divisibility
@@ -589,6 +588,7 @@ import Mathlib.Algebra.Polynomial.Monomial
 import Mathlib.Algebra.Polynomial.PartialFractions
 import Mathlib.Algebra.Polynomial.Reverse
 import Mathlib.Algebra.Polynomial.RingDivision
+import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.Algebra.Polynomial.Smeval
 import Mathlib.Algebra.Polynomial.SpecificDegree
 import Mathlib.Algebra.Polynomial.Splits
@@ -846,6 +846,7 @@ import Mathlib.Analysis.Complex.AbelLimit
 import Mathlib.Analysis.Complex.AbsMax
 import Mathlib.Analysis.Complex.Angle
 import Mathlib.Analysis.Complex.Arg
+import Mathlib.Analysis.Complex.Asymptotics
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Analysis.Complex.Circle
@@ -888,6 +889,7 @@ import Mathlib.Analysis.Convex.Cone.Pointed
 import Mathlib.Analysis.Convex.Cone.Proper
 import Mathlib.Analysis.Convex.Contractible
 import Mathlib.Analysis.Convex.Deriv
+import Mathlib.Analysis.Convex.EGauge
 import Mathlib.Analysis.Convex.Exposed
 import Mathlib.Analysis.Convex.Extrema
 import Mathlib.Analysis.Convex.Extreme
@@ -1792,6 +1794,7 @@ import Mathlib.Data.DFinsupp.Interval
 import Mathlib.Data.DFinsupp.Lex
 import Mathlib.Data.DFinsupp.Multiset
 import Mathlib.Data.DFinsupp.NeLocus
+import Mathlib.Data.DFinsupp.Notation
 import Mathlib.Data.DFinsupp.Order
 import Mathlib.Data.DFinsupp.WellFounded
 import Mathlib.Data.DList.Basic
@@ -2819,7 +2822,10 @@ import Mathlib.MeasureTheory.Category.MeasCat
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 import Mathlib.MeasureTheory.Constructions.Cylinders
 import Mathlib.MeasureTheory.Constructions.HaarToSphere
 import Mathlib.MeasureTheory.Constructions.Pi

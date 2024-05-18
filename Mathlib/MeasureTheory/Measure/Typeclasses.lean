@@ -70,7 +70,6 @@ theorem measure_compl_le_add_of_le_add [IsFiniteMeasure μ] (hs : MeasurableSet 
     μ univ = μ univ - μ s + μ s := (tsub_add_cancel_of_le <| measure_mono s.subset_univ).symm
     _ ≤ μ univ - μ s + (μ t + ε) := add_le_add_left h _
     _ = _ := by rw [add_right_comm, add_assoc]
-
 #align measure_theory.measure_compl_le_add_of_le_add MeasureTheory.measure_compl_le_add_of_le_add
 
 theorem measure_compl_le_add_iff [IsFiniteMeasure μ] (hs : MeasurableSet s) (ht : MeasurableSet t)
@@ -835,7 +834,7 @@ theorem measure_toMeasurable_inter_of_sum {s : Set α} (hs : MeasurableSet s) {t
     have M : MeasurableSet (⋂ n, w n) :=
       MeasurableSet.iInter (fun i ↦ measurableSet_toMeasurable (m i) t)
     refine ⟨⋂ n, w n, T, M, fun u hu ↦ ?_⟩
-    refine le_antisymm ?_ (measure_mono (inter_subset_inter_left _ T))
+    refine le_antisymm ?_ (by gcongr)
     rw [hμ, sum_apply _ (M.inter hu)]
     apply le_trans _ (le_sum_apply _ _)
     apply ENNReal.tsum_le_tsum (fun i ↦ ?_)
@@ -1061,7 +1060,7 @@ theorem sigmaFinite_bot_iff (μ : @Measure α ⊥) : SigmaFinite μ ↔ IsFinite
   have hs_meas : ∀ i, MeasurableSet[⊥] (s i) := measurable_spanningSets μ
   simp_rw [MeasurableSpace.measurableSet_bot_iff] at hs_meas
   by_cases h_univ_empty : (Set.univ : Set α) = ∅
-  · rw [h_univ_empty, @measure_empty α ⊥]
+  · rw [h_univ_empty, measure_empty]
     exact ENNReal.zero_ne_top.lt_top
   obtain ⟨i, hsi⟩ : ∃ i, s i = Set.univ := by
     by_contra! h_not_univ
@@ -1291,15 +1290,8 @@ theorem exists_pos_ball [PseudoMetricSpace α] (x : α) (hμ : μ ≠ 0) :
 
 /-- If a set has zero measure in a neighborhood of each of its points, then it has zero measure
 in a second-countable space. -/
-theorem null_of_locally_null [TopologicalSpace α] [SecondCountableTopology α] (s : Set α)
-    (hs : ∀ x ∈ s, ∃ u ∈ 𝓝[s] x, μ u = 0) : μ s = 0 :=
-  μ.toOuterMeasure.null_of_locally_null s hs
-#align measure_theory.null_of_locally_null MeasureTheory.null_of_locally_null
-
-theorem exists_mem_forall_mem_nhdsWithin_pos_measure [TopologicalSpace α]
-    [SecondCountableTopology α] {s : Set α} (hs : μ s ≠ 0) : ∃ x ∈ s, ∀ t ∈ 𝓝[s] x, 0 < μ t :=
-  μ.toOuterMeasure.exists_mem_forall_mem_nhds_within_pos hs
-#align measure_theory.exists_mem_forall_mem_nhds_within_pos_measure MeasureTheory.exists_mem_forall_mem_nhdsWithin_pos_measure
+@[deprecated (since := "2024-05-14")]
+alias null_of_locally_null := measure_null_of_locally_null
 
 theorem exists_ne_forall_mem_nhds_pos_measure_preimage {β} [TopologicalSpace β] [T1Space β]
     [SecondCountableTopology β] [Nonempty β] {f : α → β} (h : ∀ b, ∃ᵐ x ∂μ, f x ≠ b) :
