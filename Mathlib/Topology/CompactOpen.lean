@@ -109,6 +109,7 @@ theorem continuous_comp_left (f : C(X, Y)) : Continuous (fun g => g.comp f : C(Y
     simpa only [mapsTo_image_iff] using isOpen_setOf_mapsTo (hK.image f.2) hU
 #align continuous_map.continuous_comp_left ContinuousMap.continuous_comp_left
 
+/-- Any homeomorphism `Y ≃ₜ Z` gives rise to a homeomorphism `C(X, Y) ≃ₜ C(X, Z)`. -/
 protected def congrRightHomeomorph (φ : Y ≃ₜ Z) : C(X, Y) ≃ₜ C(X, Z) where
   toFun := ContinuousMap.comp φ
   invFun := ContinuousMap.comp φ.symm
@@ -117,6 +118,7 @@ protected def congrRightHomeomorph (φ : Y ≃ₜ Z) : C(X, Y) ≃ₜ C(X, Z) wh
   continuous_toFun := continuous_comp _
   continuous_invFun := continuous_comp _
 
+/-- Any homeomorphism `X ≃ₜ Y` gives rise to a homeomorphism `C(X, Z) ≃ₜ C(Y, Z)`. -/
 protected def congrLeftHomeomorph (φ : X ≃ₜ Y) : C(X, Z) ≃ₜ C(Y, Z) where
   toFun f := f.comp φ.symm
   invFun f := f.comp φ
