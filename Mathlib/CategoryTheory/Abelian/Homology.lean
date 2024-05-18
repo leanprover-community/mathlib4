@@ -41,7 +41,6 @@ noncomputable section
 universe v u
 
 variable {A : Type u} [Category.{v} A] [Abelian A]
-
 variable {X Y Z : A} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 0)
 
 namespace CategoryTheory.Abelian
@@ -87,11 +86,11 @@ instance : Epi (homologyCToK f g w) := by
   apply Pseudoelement.epi_of_pseudo_surjective
   intro a
   let b := kernel.ι (cokernel.desc f g w) a
-  obtain ⟨c, hc⟩ : ∃ c, cokernel.π f c = b
-  apply Pseudoelement.pseudo_surjective_of_epi (cokernel.π f)
+  obtain ⟨c, hc⟩ : ∃ c, cokernel.π f c = b := by
+    apply Pseudoelement.pseudo_surjective_of_epi (cokernel.π f)
   have : g c = 0 := by
     rw [show g = cokernel.π f ≫ cokernel.desc f g w by simp, Pseudoelement.comp_apply, hc]
-    simp [← Pseudoelement.comp_apply]
+    simp [b, ← Pseudoelement.comp_apply]
   obtain ⟨d, hd⟩ : ∃ d, kernel.ι g d = c := by
     apply (Pseudoelement.pseudo_exact_of_exact exact_kernel_ι).2 _ this
   use cokernel.π (kernel.lift g f w) d
@@ -113,7 +112,7 @@ def homology'IsoKernelDesc : homology' f g w ≅ kernel (cokernel.desc f g w) :=
 
 namespace homology'
 
--- `homology.π` is taken
+-- `homology'.π` is taken
 /-- The canonical map from the kernel of `g` to the homology of `f` and `g`. -/
 def π' : kernel g ⟶ homology' f g w :=
   cokernel.π _ ≫ (homology'IsoCokernelLift _ _ _).inv
@@ -362,10 +361,10 @@ noncomputable def homology'FunctorIso (i : ι) :
         F.mapHomologicalComplex_map_f, F.map_comp]
       dsimp [HomologicalComplex.dFrom, HomologicalComplex.Hom.next]
       rw [kernel_map_comp_preserves_kernel_iso_inv_assoc]
-      conv_lhs => erw [← F.map_comp_assoc]
-      rotate_right; simp
-      rw [← kernel_map_comp_kernelSubobjectIso_inv]
-      any_goals simp)
+      · conv_lhs => erw [← F.map_comp_assoc]
+        rw [← kernel_map_comp_kernelSubobjectIso_inv]
+        · simp
+        · simp)
 #align category_theory.functor.homology_functor_iso CategoryTheory.Functor.homology'FunctorIso
 
 end CategoryTheory.Functor

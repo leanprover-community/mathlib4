@@ -44,7 +44,6 @@ section Module
 section
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]
-
 variable (R M)
 
 /-- The rank of a module, defined as a term of type `Cardinal`.
@@ -102,12 +101,14 @@ theorem cardinal_le_rank' {s : Set M}
 
 end LinearIndependent
 
-@[deprecated]
+@[deprecated (since := "2023-12-27")]
 alias cardinal_lift_le_rank_of_linearIndependent := LinearIndependent.cardinal_lift_le_rank
-@[deprecated]
+@[deprecated (since := "2023-12-27")]
 alias cardinal_lift_le_rank_of_linearIndependent' := LinearIndependent.cardinal_lift_le_rank
-@[deprecated] alias cardinal_le_rank_of_linearIndependent := LinearIndependent.cardinal_le_rank
-@[deprecated] alias cardinal_le_rank_of_linearIndependent' := LinearIndependent.cardinal_le_rank'
+@[deprecated (since := "2023-12-27")]
+alias cardinal_le_rank_of_linearIndependent := LinearIndependent.cardinal_le_rank
+@[deprecated (since := "2023-12-27")]
+alias cardinal_le_rank_of_linearIndependent' := LinearIndependent.cardinal_le_rank'
 
 section SurjectiveInjective
 

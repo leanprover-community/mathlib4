@@ -82,14 +82,14 @@ theorem hallMatchingsOn.nonempty {ι : Type u} {α : Type v} [DecidableEq α] (t
     apply (all_card_le_biUnion_card_iff_existsInjective' fun i : ι' => t i).mp
     intro s'
     convert h (s'.image (↑)) using 1
-    simp only [card_image_of_injective s' Subtype.coe_injective]
-    rw [image_biUnion]
+    · simp only [card_image_of_injective s' Subtype.coe_injective]
+    · rw [image_biUnion]
 #align hall_matchings_on.nonempty hallMatchingsOn.nonempty
 
 /-- This is the `hallMatchingsOn` sets assembled into a directed system.
 -/
-def hallMatchingsFunctor {ι : Type u} {α : Type v} (t : ι → Finset α) : (Finset ι)ᵒᵖ ⥤ Type max u v
-    where
+def hallMatchingsFunctor {ι : Type u} {α : Type v} (t : ι → Finset α) :
+    (Finset ι)ᵒᵖ ⥤ Type max u v where
   obj ι' := hallMatchingsOn t ι'.unop
   map {ι' ι''} g f := hallMatchingsOn.restrict t (CategoryTheory.leOfHom g.unop) f
 #align hall_matchings_functor hallMatchingsFunctor
@@ -107,7 +107,7 @@ instance hallMatchingsOn.finite {ι : Type u} {α : Type v} (t : ι → Finset �
     intro f f' h
     ext a
     rw [Function.funext_iff] at h
-    simpa using h a
+    simpa [g] using h a
 #align hall_matchings_on.finite hallMatchingsOn.finite
 
 /-- This is the version of **Hall's Marriage Theorem** in terms of indexed
@@ -219,8 +219,8 @@ theorem Fintype.all_card_le_filter_rel_iff_exists_injective {α : Type u} {β : 
   have h : ∀ A : Finset α, (univ.filter fun b : β => ∃ a ∈ A, r a b) = A.biUnion r' := by
     intro A
     ext b
-    simp
-  have h' : ∀ (f : α → β) (x), r x (f x) ↔ f x ∈ r' x := by simp
+    simp [r']
+  have h' : ∀ (f : α → β) (x), r x (f x) ↔ f x ∈ r' x := by simp [r']
   simp_rw [h, h']
   apply Finset.all_card_le_biUnion_card_iff_exists_injective
 #align fintype.all_card_le_filter_rel_iff_exists_injective Fintype.all_card_le_filter_rel_iff_exists_injective

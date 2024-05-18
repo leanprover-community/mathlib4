@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mantas Bakšys
 -/
 import Mathlib.Data.Nat.Interval
-import Mathlib.Data.Nat.Sqrt
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Linarith
 
@@ -124,7 +123,7 @@ theorem imo2021_q1 :
   have hBsub : B ⊆ Finset.Icc n (2 * n) := by
     intro c hcB; simpa only [Finset.mem_Icc] using h₂ c hcB
   have hB' : 2 * 1 < (B ∩ (Finset.Icc n (2 * n) \ A) ∪ B ∩ A).card := by
-    rw [← inter_distrib_left, sdiff_union_self_eq_union, union_eq_left.2 hA,
+    rw [← inter_union_distrib_left, sdiff_union_self_eq_union, union_eq_left.2 hA,
       inter_eq_left.2 hBsub]
     exact Nat.succ_le_iff.mp hB
   -- Since B has cardinality greater or equal to 3, there must exist a subset C ⊆ B such that

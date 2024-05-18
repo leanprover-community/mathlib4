@@ -108,8 +108,8 @@ def FinsubgraphHom.restrict {G' G'' : G.Finsubgraph} (h : G'' ≤ G') (f : G' �
 #align simple_graph.finsubgraph_hom.restrict SimpleGraph.FinsubgraphHom.restrict
 
 /-- The inverse system of finite homomorphisms. -/
-def finsubgraphHomFunctor (G : SimpleGraph V) (F : SimpleGraph W) : G.Finsubgraphᵒᵖ ⥤ Type max u v
-    where
+def finsubgraphHomFunctor (G : SimpleGraph V) (F : SimpleGraph W) :
+    G.Finsubgraphᵒᵖ ⥤ Type max u v where
   obj G' := G'.unop →fg F
   map g f := f.restrict (CategoryTheory.leOfHom g.unop)
 #align simple_graph.finsubgraph_hom_functor SimpleGraph.finsubgraphHomFunctor
@@ -147,7 +147,7 @@ theorem nonempty_hom_of_forall_finite_subgraph_hom [Finite W]
     have hv' : Opposite.op (finsubgraphOfAdj e) ⟶ Opposite.op (singletonFinsubgraph v') :=
       Quiver.Hom.op (CategoryTheory.homOfLE singletonFinsubgraph_le_adj_right)
     rw [← hu hv, ← hu hv']
-    -- porting note: was `apply Hom.map_adj`
+    -- Porting note: was `apply Hom.map_adj`
     refine' Hom.map_adj (u (Opposite.op (finsubgraphOfAdj e))) _
     -- `v` and `v'` are definitionally adjacent in `finsubgraphOfAdj e`
     simp [finsubgraphOfAdj]

@@ -650,7 +650,7 @@ def Disjoint (s₁ s₂ : Finmap β) : Prop :=
 #align finmap.disjoint Finmap.Disjoint
 
 theorem disjoint_empty (x : Finmap β) : Disjoint ∅ x :=
-  fun.
+  nofun
 #align finmap.disjoint_empty Finmap.disjoint_empty
 
 @[symm]

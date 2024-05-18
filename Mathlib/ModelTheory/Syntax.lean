@@ -60,9 +60,7 @@ namespace FirstOrder
 namespace Language
 
 variable (L : Language.{u, v}) {L' : Language}
-
 variable {M : Type w} {N P : Type*} [L.Structure M] [L.Structure N] [L.Structure P]
-
 variable {α : Type u'} {β : Type v'} {γ : Type*}
 
 open FirstOrder
@@ -90,7 +88,7 @@ def varFinset [DecidableEq α] : L.Term α → Finset α
   | func _f ts => univ.biUnion fun i => (ts i).varFinset
 #align first_order.language.term.var_finset FirstOrder.Language.Term.varFinset
 
---Porting note: universes in different order
+-- Porting note: universes in different order
 /-- The `Finset` of variables from the left side of a sum used in a given term. -/
 @[simp]
 def varFinsetLeft [DecidableEq α] : L.Term (Sum α β) → Finset α
@@ -99,7 +97,7 @@ def varFinsetLeft [DecidableEq α] : L.Term (Sum α β) → Finset α
   | func _f ts => univ.biUnion fun i => (ts i).varFinsetLeft
 #align first_order.language.term.var_finset_left FirstOrder.Language.Term.varFinsetLeft
 
---Porting note: universes in different order
+-- Porting note: universes in different order
 @[simp]
 def relabel (g : α → β) : L.Term α → L.Term β
   | var i => var (g i)
@@ -137,7 +135,7 @@ def relabelEquiv (g : α ≃ β) : L.Term α ≃ L.Term β :=
   ⟨relabel g, relabel g.symm, fun t => by simp, fun t => by simp⟩
 #align first_order.language.term.relabel_equiv FirstOrder.Language.Term.relabelEquiv
 
---Porting note: universes in different order
+-- Porting note: universes in different order
 /-- Restricts a term to use only a set of the given variables. -/
 def restrictVar [DecidableEq α] : ∀ (t : L.Term α) (_f : t.varFinset → β), L.Term β
   | var a, f => var (f ⟨a, mem_singleton_self a⟩)
@@ -146,7 +144,7 @@ def restrictVar [DecidableEq α] : ∀ (t : L.Term α) (_f : t.varFinset → β)
       (subset_biUnion_of_mem (fun i => varFinset (ts i)) (mem_univ i)))
 #align first_order.language.term.restrict_var FirstOrder.Language.Term.restrictVar
 
---Porting note: universes in different order
+-- Porting note: universes in different order
 /-- Restricts a term to use only a set of the given variables on the left side of a sum. -/
 def restrictVarLeft [DecidableEq α] {γ : Type*} :
     ∀ (t : L.Term (Sum α γ)) (_f : t.varFinsetLeft → β), L.Term (Sum β γ)
@@ -177,7 +175,7 @@ def Functions.apply₂ (f : L.Functions 2) (t₁ t₂ : L.Term α) : L.Term α :
 
 namespace Term
 
---Porting note: universes in different order
+-- Porting note: universes in different order
 /-- Sends a term with constants to a term with extra variables. -/
 @[simp]
 def constantsToVars : L[[γ]].Term α → L.Term (Sum γ α)
@@ -188,7 +186,7 @@ def constantsToVars : L[[γ]].Term α → L.Term (Sum γ α)
     Sum.casesOn f (fun f => func f fun i => (ts i).constantsToVars) fun c => isEmptyElim c
 #align first_order.language.term.constants_to_vars FirstOrder.Language.Term.constantsToVars
 
---Porting note: universes in different order
+-- Porting note: universes in different order
 /-- Sends a term with extra variables to a term with constants. -/
 @[simp]
 def varsToConstants : L.Term (Sum γ α) → L[[γ]].Term α
@@ -247,7 +245,7 @@ def liftAt {n : ℕ} (n' m : ℕ) : L.Term (Sum α (Fin n)) → L.Term (Sum α (
   relabel (Sum.map id fun i => if ↑i < m then Fin.castAdd n' i else Fin.addNat i n')
 #align first_order.language.term.lift_at FirstOrder.Language.Term.liftAt
 
---Porting note: universes in different order
+-- Porting note: universes in different order
 /-- Substitutes the variables in a given term with terms. -/
 @[simp]
 def subst : L.Term α → (α → L.Term β) → L.Term β
@@ -263,7 +261,7 @@ namespace LHom
 
 open Term
 
---Porting note: universes in different order
+-- Porting note: universes in different order
 /-- Maps a term's symbols along a language map. -/
 @[simp]
 def onTerm (φ : L →ᴸ L') : L.Term α → L'.Term α
@@ -320,20 +318,17 @@ inductive BoundedFormula : ℕ → Type max u v u'
 #align first_order.language.bounded_formula FirstOrder.Language.BoundedFormula
 
 /-- `Formula α` is the type of formulas with all free variables indexed by `α`. -/
-@[reducible]
-def Formula :=
+abbrev Formula :=
   L.BoundedFormula α 0
 #align first_order.language.formula FirstOrder.Language.Formula
 
 /-- A sentence is a formula with no free variables. -/
-@[reducible]
-def Sentence :=
+abbrev Sentence :=
   L.Formula Empty
 #align first_order.language.sentence FirstOrder.Language.Sentence
 
 /-- A theory is a set of sentences. -/
-@[reducible]
-def Theory :=
+abbrev Theory :=
   Set L.Sentence
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Theory FirstOrder.Language.Theory
@@ -419,7 +414,7 @@ protected def iff (φ ψ : L.BoundedFormula α n) :=
 
 open Finset
 
---Porting note: universes in different order
+-- Porting note: universes in different order
 /-- The `Finset` of variables used in a given formula. -/
 @[simp]
 def freeVarFinset [DecidableEq α] : ∀ {n}, L.BoundedFormula α n → Finset α
@@ -430,7 +425,7 @@ def freeVarFinset [DecidableEq α] : ∀ {n}, L.BoundedFormula α n → Finset �
   | _n, all f => f.freeVarFinset
 #align first_order.language.bounded_formula.free_var_finset FirstOrder.Language.BoundedFormula.freeVarFinset
 
---Porting note: universes in different order
+-- Porting note: universes in different order
 /-- Casts `L.BoundedFormula α m` as `L.BoundedFormula α n`, where `m ≤ n`. -/
 @[simp]
 def castLE : ∀ {m n : ℕ} (_h : m ≤ n), L.BoundedFormula α m → L.BoundedFormula α n
@@ -474,7 +469,7 @@ theorem castLE_comp_castLE {k m n} (km : k ≤ m) (mn : m ≤ n) :
   funext (castLE_castLE km mn)
 #align first_order.language.bounded_formula.cast_le_comp_cast_le FirstOrder.Language.BoundedFormula.castLE_comp_castLE
 
---Porting note: universes in different order
+-- Porting note: universes in different order
 /-- Restricts a bounded formula to only use a particular set of free variables. -/
 def restrictFreeVar [DecidableEq α] :
     ∀ {n : ℕ} (φ : L.BoundedFormula α n) (_f : φ.freeVarFinset → β), L.BoundedFormula β n
@@ -491,21 +486,21 @@ def restrictFreeVar [DecidableEq α] :
   | _n, all φ, f => (φ.restrictFreeVar f).all
 #align first_order.language.bounded_formula.restrict_free_var FirstOrder.Language.BoundedFormula.restrictFreeVar
 
---Porting note: universes in different order
+-- Porting note: universes in different order
 /-- Places universal quantifiers on all extra variables of a bounded formula. -/
 def alls : ∀ {n}, L.BoundedFormula α n → L.Formula α
   | 0, φ => φ
   | _n + 1, φ => φ.all.alls
 #align first_order.language.bounded_formula.alls FirstOrder.Language.BoundedFormula.alls
 
---Porting note: universes in different order
+-- Porting note: universes in different order
 /-- Places existential quantifiers on all extra variables of a bounded formula. -/
 def exs : ∀ {n}, L.BoundedFormula α n → L.Formula α
   | 0, φ => φ
   | _n + 1, φ => φ.ex.exs
 #align first_order.language.bounded_formula.exs FirstOrder.Language.BoundedFormula.exs
 
---Porting note: universes in different order
+-- Porting note: universes in different order
 /-- Maps bounded formulas along a map of terms and a map of relations. -/
 def mapTermRel {g : ℕ → ℕ} (ft : ∀ n, L.Term (Sum α (Fin n)) → L'.Term (Sum β (Fin (g n))))
     (fr : ∀ n, L.Relations n → L'.Relations n)
@@ -654,7 +649,7 @@ def constantsVarsEquiv : L[[γ]].BoundedFormula α n ≃ L.BoundedFormula (Sum �
   mapTermRelEquiv (fun _ => Term.constantsVarsEquivLeft) fun _ => Equiv.sumEmpty _ _
 #align first_order.language.bounded_formula.constants_vars_equiv FirstOrder.Language.BoundedFormula.constantsVarsEquiv
 
---Porting note: universes in different order
+-- Porting note: universes in different order
 /-- Turns the extra variables of a bounded formula into free variables. -/
 @[simp]
 def toFormula : ∀ {n : ℕ}, L.BoundedFormula α n → L.Formula (Sum α (Fin n))
@@ -669,15 +664,14 @@ def toFormula : ∀ {n : ℕ}, L.BoundedFormula α n → L.Formula (Sum α (Fin 
 
 /-- take the disjunction of a finite set of formulas -/
 noncomputable def iSup (s : Finset β) (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
-  (s.toList.map f).foldr (. ⊔ .) ⊥
+  (s.toList.map f).foldr (· ⊔ ·) ⊥
 
 /-- take the conjunction of a finite set of formulas -/
 noncomputable def iInf (s : Finset β) (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
-  (s.toList.map f).foldr (. ⊓ .) ⊤
+  (s.toList.map f).foldr (· ⊓ ·) ⊤
 
 
 variable {l : ℕ} {φ ψ : L.BoundedFormula α l} {θ : L.BoundedFormula α l.succ}
-
 variable {v : α → M} {xs : Fin l → M}
 
 /-- An atomic formula is either equality or a relation symbol applied to terms.
@@ -794,7 +788,7 @@ theorem IsPrenex.liftAt {k m : ℕ} (h : IsPrenex φ) : (φ.liftAt k m).IsPrenex
     fun _ ih => ih.castLE.ex
 #align first_order.language.bounded_formula.is_prenex.lift_at FirstOrder.Language.BoundedFormula.IsPrenex.liftAt
 
---Porting note: universes in different order
+-- Porting note: universes in different order
 /-- An auxiliary operation to `FirstOrder.Language.BoundedFormula.toPrenex`.
   If `φ` is quantifier-free and `ψ` is in prenex normal form, then `φ.toPrenexImpRight ψ`
   is a prenex normal form for `φ.imp ψ`. -/
@@ -824,7 +818,7 @@ theorem isPrenex_toPrenexImpRight {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ
   · exact (ih2 hφ.liftAt).ex
 #align first_order.language.bounded_formula.is_prenex_to_prenex_imp_right FirstOrder.Language.BoundedFormula.isPrenex_toPrenexImpRight
 
---Porting note: universes in different order
+-- Porting note: universes in different order
 /-- An auxiliary operation to `FirstOrder.Language.BoundedFormula.toPrenex`.
   If `φ` and `ψ` are in prenex normal form, then `φ.toPrenexImp ψ`
   is a prenex normal form for `φ.imp ψ`. -/
@@ -854,7 +848,7 @@ theorem isPrenex_toPrenexImp {φ ψ : L.BoundedFormula α n} (hφ : IsPrenex φ)
   · exact (ih2 hψ.liftAt).all
 #align first_order.language.bounded_formula.is_prenex_to_prenex_imp FirstOrder.Language.BoundedFormula.isPrenex_toPrenexImp
 
---Porting note: universes in different order
+-- Porting note: universes in different order
 /-- For any bounded formula `φ`, `φ.toPrenex` is a semantically-equivalent formula in prenex normal
   form. -/
 def toPrenex : ∀ {n}, L.BoundedFormula α n → L.BoundedFormula α n
@@ -877,7 +871,7 @@ namespace LHom
 
 open BoundedFormula
 
---Porting note: universes in different order
+-- Porting note: universes in different order
 /-- Maps a bounded formula's symbols along a language map. -/
 @[simp]
 def onBoundedFormula (g : L →ᴸ L') : ∀ {k : ℕ}, L.BoundedFormula α k → L'.BoundedFormula α k
@@ -895,11 +889,11 @@ theorem id_onBoundedFormula :
   ext f
   induction' f with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3
   · rfl
-  · rw [onBoundedFormula, LHom.id_onTerm, id.def, id.def, id.def, Term.bdEqual]
+  · rw [onBoundedFormula, LHom.id_onTerm, id, id, id, Term.bdEqual]
   · rw [onBoundedFormula, LHom.id_onTerm]
     rfl
-  · rw [onBoundedFormula, ih1, ih2, id.def, id.def, id.def]
-  · rw [onBoundedFormula, ih3, id.def, id.def]
+  · rw [onBoundedFormula, ih1, ih2, id, id, id]
+  · rw [onBoundedFormula, ih3, id, id]
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Lhom.id_on_bounded_formula FirstOrder.Language.LHom.id_onBoundedFormula
 
@@ -989,7 +983,7 @@ set_option linter.uppercaseLean3 false in
 #align first_order.language.Lequiv.on_formula_symm FirstOrder.Language.LEquiv.onFormula_symm
 
 /-- Maps a sentence's symbols along a language equivalence. -/
-@[simps!] --Porting note: add `!` to `simps`
+@[simps!] -- Porting note: add `!` to `simps`
 def onSentence (φ : L ≃ᴸ L') : L.Sentence ≃ L'.Sentence :=
   φ.onFormula
 set_option linter.uppercaseLean3 false in
@@ -1144,9 +1138,13 @@ variable {L}
 
 open Set
 
+theorem distinctConstantsTheory_mono {s t : Set α} (h : s ⊆ t) :
+    L.distinctConstantsTheory s ⊆ L.distinctConstantsTheory t := by
+  unfold distinctConstantsTheory; gcongr
+
 theorem monotone_distinctConstantsTheory :
     Monotone (L.distinctConstantsTheory : Set α → L[[α]].Theory) := fun _s _t st =>
-  image_subset _ (inter_subset_inter_left _ (prod_mono st st))
+  L.distinctConstantsTheory_mono st
 #align first_order.language.monotone_distinct_constants_theory FirstOrder.Language.monotone_distinctConstantsTheory
 
 theorem directed_distinctConstantsTheory :
@@ -1161,7 +1159,7 @@ theorem distinctConstantsTheory_eq_iUnion (s : Set α) :
   classical
     simp only [distinctConstantsTheory]
     rw [← image_iUnion, ← iUnion_inter]
-    refine' congr rfl (congr (congr rfl _) rfl)
+    refine congr(_ '' ($(?_) ∩ _))
     ext ⟨i, j⟩
     simp only [prod_mk_mem_set_prod_eq, Finset.coe_map, Function.Embedding.coe_subtype, mem_iUnion,
       mem_image, Finset.mem_coe, Subtype.exists, Subtype.coe_mk, exists_and_right, exists_eq_right]

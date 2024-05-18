@@ -3,9 +3,10 @@ Copyright (c) 2021 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
+import Mathlib.Algebra.Group.Subgroup.Actions
 import Mathlib.Algebra.Order.Module.Algebra
-import Mathlib.GroupTheory.Subgroup.Actions
 import Mathlib.LinearAlgebra.LinearIndependent
+import Mathlib.Algebra.Ring.Subring.Units
 
 #align_import linear_algebra.ray from "leanprover-community/mathlib"@"0f6670b8af2dff699de1c0b4b49039b31bc13c46"
 
@@ -31,11 +32,8 @@ open BigOperators
 section StrictOrderedCommSemiring
 
 variable (R : Type*) [StrictOrderedCommSemiring R]
-
 variable {M : Type*} [AddCommMonoid M] [Module R M]
-
 variable {N : Type*} [AddCommMonoid N] [Module R N]
-
 variable (ι : Type*) [DecidableEq ι]
 
 /-- Two vectors are in the same ray if either one of them is zero or some positive multiples of them
@@ -212,7 +210,7 @@ theorem add_right (hy : SameRay R x y) (hz : SameRay R x z) : SameRay R x (y + z
 
 end SameRay
 
--- Porting note: removed has_nonempty_instance nolint, no such linter
+-- Porting note(#5171): removed has_nonempty_instance nolint, no such linter
 set_option linter.unusedVariables false in
 /-- Nonzero vectors, as used to define rays. This type depends on an unused argument `R` so that
 `RayVector.Setoid` can be an instance. -/
@@ -231,8 +229,7 @@ instance {R M : Type*} [Zero M] [Nontrivial M] : Nonempty (RayVector R M) :=
 variable (R M)
 
 /-- The setoid of the `SameRay` relation for the subtype of nonzero vectors. -/
-instance RayVector.Setoid : Setoid (RayVector R M)
-    where
+instance RayVector.Setoid : Setoid (RayVector R M) where
   r x y := SameRay R (x : M) y
   iseqv :=
     ⟨fun x => SameRay.refl _, fun h => h.symm, by
@@ -240,7 +237,7 @@ instance RayVector.Setoid : Setoid (RayVector R M)
       exact hxy.trans hyz fun hy => (y.2 hy).elim⟩
 
 /-- A ray (equivalence class of nonzero vectors with common positive multiples) in a module. -/
--- Porting note: removed has_nonempty_instance nolint, no such linter
+-- Porting note(#5171): removed has_nonempty_instance nolint, no such linter
 def Module.Ray :=
   Quotient (RayVector.Setoid R M)
 #align module.ray Module.Ray
@@ -317,8 +314,7 @@ variable {G : Type*} [Group G] [DistribMulAction G M]
 
 /-- Any invertible action preserves the non-zeroness of ray vectors. This is primarily of interest
 when `G = Rˣ` -/
-instance {R : Type*} : MulAction G (RayVector R M)
-    where
+instance {R : Type*} : MulAction G (RayVector R M) where
   smul r := Subtype.map (r • ·) fun _ => (smul_ne_zero_iff_ne _).2
   mul_smul a b _ := Subtype.ext <| mul_smul a b _
   one_smul _ := Subtype.ext <| one_smul _ _
@@ -327,8 +323,7 @@ variable [SMulCommClass R G M]
 
 /-- Any invertible action preserves the non-zeroness of rays. This is primarily of interest when
 `G = Rˣ` -/
-instance : MulAction G (Module.Ray R M)
-    where
+instance : MulAction G (Module.Ray R M) where
   smul r := Quotient.map (r • ·) fun _ _ h => h.smul _
   mul_smul a b := Quotient.ind fun _ => congr_arg Quotient.mk' <| mul_smul a b _
   one_smul := Quotient.ind fun _ => congr_arg Quotient.mk' <| one_smul _ _
@@ -393,7 +388,6 @@ end StrictOrderedCommSemiring
 section StrictOrderedCommRing
 
 variable {R : Type*} [StrictOrderedCommRing R]
-
 variable {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] {x y : M}
 
 /-- `SameRay.neg` as an `iff`. -/
@@ -439,8 +433,7 @@ theorem coe_neg {R : Type*} (v : RayVector R M) : ↑(-v) = -(v : M) :=
 #align ray_vector.coe_neg RayVector.coe_neg
 
 /-- Negating a nonzero vector twice produces the original vector. -/
-instance {R : Type*} : InvolutiveNeg (RayVector R M)
-    where
+instance {R : Type*} : InvolutiveNeg (RayVector R M) where
   neg := Neg.neg
   neg_neg v := by rw [Subtype.ext_iff, coe_neg, coe_neg, neg_neg]
 
@@ -470,8 +463,7 @@ namespace Module.Ray
 variable {R}
 
 /-- Negating a ray twice produces the original ray. -/
-instance : InvolutiveNeg (Module.Ray R M)
-    where
+instance : InvolutiveNeg (Module.Ray R M) where
   neg := Neg.neg
   neg_neg x := by apply ind R (by simp) x
   -- Quotient.ind (fun a => congr_arg Quotient.mk' <| neg_neg _) x
@@ -479,7 +471,7 @@ instance : InvolutiveNeg (Module.Ray R M)
 /-- A ray does not equal its own negation. -/
 theorem ne_neg_self [NoZeroSMulDivisors R M] (x : Module.Ray R M) : x ≠ -x := by
   induction' x using Module.Ray.ind with x hx
-  rw [neg_rayOfNeZero, Ne.def, ray_eq_iff]
+  rw [neg_rayOfNeZero, Ne, ray_eq_iff]
   exact mt eq_zero_of_sameRay_self_neg hx
 #align module.ray.ne_neg_self Module.Ray.ne_neg_self
 
@@ -508,7 +500,6 @@ end StrictOrderedCommRing
 section LinearOrderedCommRing
 
 variable {R : Type*} [LinearOrderedCommRing R]
-
 variable {M : Type*} [AddCommGroup M] [Module R M]
 
 -- Porting note: Needed to add coercion ↥ below
@@ -651,7 +642,6 @@ end LinearOrderedCommRing
 namespace SameRay
 
 variable {R : Type*} [LinearOrderedField R]
-
 variable {M : Type*} [AddCommGroup M] [Module R M] {x y v₁ v₂ : M}
 
 theorem exists_pos_left (h : SameRay R x y) (hx : x ≠ 0) (hy : y ≠ 0) :
@@ -708,7 +698,6 @@ end SameRay
 section LinearOrderedField
 
 variable {R : Type*} [LinearOrderedField R]
-
 variable {M : Type*} [AddCommGroup M] [Module R M] {x y : M}
 
 theorem exists_pos_left_iff_sameRay (hx : x ≠ 0) (hy : y ≠ 0) :

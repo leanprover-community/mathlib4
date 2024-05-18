@@ -3,9 +3,9 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Data.Polynomial.Taylor
+import Mathlib.Algebra.Polynomial.Taylor
 import Mathlib.RingTheory.Ideal.LocalRing
-import Mathlib.LinearAlgebra.AdicCompletion
+import Mathlib.RingTheory.AdicCompletion.Basic
 
 #align_import ring_theory.henselian from "leanprover-community/mathlib"@"d1accf4f9cddb3666c6e8e4da0ac2d19c4ed73f0"
 
@@ -155,8 +155,8 @@ theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [LocalRing R] :
   tfae_finish
 #align henselian_local_ring.tfae HenselianLocalRing.TFAE
 
-instance (R : Type*) [CommRing R] [hR : HenselianLocalRing R] : HenselianRing R (maximalIdeal R)
-    where
+instance (R : Type*) [CommRing R] [hR : HenselianLocalRing R] :
+    HenselianRing R (maximalIdeal R) where
   jac := by
     rw [Ideal.jacobson, le_sInf_iff]
     rintro I ⟨-, hI⟩
@@ -184,7 +184,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
       let c : ℕ → R := fun n => Nat.recOn n a₀ fun _ b => b - f.eval b * Ring.inverse (f'.eval b)
       have hc : ∀ n, c (n + 1) = c n - f.eval (c n) * Ring.inverse (f'.eval (c n)) := by
         intro n
-        simp only [Nat.rec_add_one]
+        simp only [c, Nat.rec_add_one]
       -- we now spend some time determining properties of the sequence `c : ℕ → R`
       -- `hc_mod`: for every `n`, we have `c n ≡ a₀ [SMOD I]`
       -- `hf'c`  : for every `n`, `f'.eval (c n)` is a unit
@@ -193,7 +193,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         intro n
         induction' n with n ih
         · rfl
-        rw [Nat.succ_eq_add_one, hc, sub_eq_add_neg, ← add_zero a₀]
+        rw [hc, sub_eq_add_neg, ← add_zero a₀]
         refine' ih.add _
         rw [SModEq.zero, Ideal.neg_mem_iff]
         refine' I.mul_mem_right _ _
@@ -209,7 +209,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         intro n
         induction' n with n ih
         · simpa only [Nat.zero_eq, Nat.rec_zero, zero_add, pow_one] using h₁
-        rw [Nat.succ_eq_add_one, ← taylor_eval_sub (c n), hc, sub_eq_add_neg, sub_eq_add_neg,
+        rw [← taylor_eval_sub (c n), hc, sub_eq_add_neg, sub_eq_add_neg,
           add_neg_cancel_comm]
         rw [eval_eq_sum, sum_over_range' _ _ _ (lt_add_of_pos_right _ zero_lt_two), ←
           Finset.sum_range_add_sum_Ico _ (Nat.le_add_left _ _)]
@@ -228,7 +228,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
           have aux : n + 2 ≤ i * (n + 1) := by trans 2 * (n + 1) <;> nlinarith only [h2i]
           refine' Ideal.mul_mem_left _ _ (Ideal.pow_le_pow_right aux _)
           rw [pow_mul']
-          refine' Ideal.pow_mem_pow ((Ideal.neg_mem_iff _).2 <| Ideal.mul_mem_right _ _ ih) _
+          exact Ideal.pow_mem_pow ((Ideal.neg_mem_iff _).2 <| Ideal.mul_mem_right _ _ ih) _
       -- we are now in the position to show that `c : ℕ → R` is a Cauchy sequence
       have aux : ∀ m n, m ≤ n → c m ≡ c n [SMOD (I ^ m • ⊤ : Ideal R)] := by
         intro m n hmn
@@ -236,8 +236,14 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn
         clear hmn
         induction' k with k ih
-        · rw [Nat.zero_eq, add_zero]
-        rw [Nat.succ_eq_add_one, ← add_assoc, hc, ← add_zero (c m), sub_eq_add_neg]
+        · rw [add_zero]
+        rw [← add_assoc]
+        -- Adaptation note: nightly-2024-03-11
+        -- I'm not sure why the `erw` is now needed here. It looks like it should work.
+        -- It looks like a diamond between `instHAdd` on `Nat` and `AddSemigroup.toAdd` which is
+        -- used by `instHAdd`
+        erw [hc]
+        rw [← add_zero (c m), sub_eq_add_neg]
         refine' ih.add _
         symm
         rw [SModEq.zero, Ideal.neg_mem_iff]
@@ -256,7 +262,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         rw [SModEq.zero]
         exact Ideal.pow_le_pow_right le_self_add (hfcI _)
       · show a - a₀ ∈ I
-        specialize ha 1
+        specialize ha (0 + 1)
         rw [hc, pow_one, ← Ideal.one_eq_top, Ideal.smul_eq_mul, mul_one, sub_eq_add_neg] at ha
         rw [← SModEq.sub_mem, ← add_zero a₀]
         refine' ha.symm.trans (SModEq.rfl.add _)

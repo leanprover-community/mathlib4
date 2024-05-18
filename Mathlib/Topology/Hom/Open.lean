@@ -78,7 +78,7 @@ theorem toFun_eq_coe {f : α →CO β} : f.toFun = (f : α → β) :=
   rfl
 #align continuous_open_map.to_fun_eq_coe ContinuousOpenMap.toFun_eq_coe
 
-@[simp] -- porting note: new, simpNF of `toFun_eq_coe`
+@[simp] -- Porting note: new, simpNF of `toFun_eq_coe`
 theorem coe_toContinuousMap (f : α →CO β) : (f.toContinuousMap : α → β) = f := rfl
 
 @[ext]

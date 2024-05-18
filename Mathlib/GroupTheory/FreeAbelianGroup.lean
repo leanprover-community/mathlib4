@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Defs
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.FreeGroup.Basic
 
@@ -139,7 +139,7 @@ end lift
 
 section
 
-open Classical
+open scoped Classical
 
 theorem of_injective : Function.Injective (of : α → FreeAbelianGroup α) :=
   fun x y hoxy ↦ Classical.by_contradiction fun hxy : x ≠ y ↦

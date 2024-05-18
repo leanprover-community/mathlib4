@@ -22,7 +22,7 @@ open scoped Real Topology
 namespace Complex
 
 theorem isOpenMap_exp : IsOpenMap exp :=
-  open_map_of_strict_deriv hasStrictDerivAt_exp exp_ne_zero
+  isOpenMap_of_hasStrictDerivAt hasStrictDerivAt_exp exp_ne_zero
 #align complex.is_open_map_exp Complex.isOpenMap_exp
 
 /-- `Complex.exp` as a `PartialHomeomorph` with `source = {z | -π < im z < π}` and

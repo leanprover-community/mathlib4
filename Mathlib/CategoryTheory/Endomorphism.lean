@@ -59,11 +59,11 @@ def of (f : X ⟶ X) : End X := f
 def asHom (f : End X) : X ⟶ X := f
 #align category_theory.End.as_hom CategoryTheory.End.asHom
 
-@[simp] -- porting note: todo: use `of`/`asHom`?
+@[simp] -- Porting note (#11215): TODO: use `of`/`asHom`?
 theorem one_def : (1 : End X) = 𝟙 X := rfl
 #align category_theory.End.one_def CategoryTheory.End.one_def
 
-@[simp] -- porting note: todo: use `of`/`asHom`?
+@[simp] -- Porting note (#11215): TODO: use `of`/`asHom`?
 theorem mul_def (xs ys : End X) : xs * ys = ys ≫ xs := rfl
 #align category_theory.End.mul_def CategoryTheory.End.mul_def
 
@@ -131,7 +131,7 @@ set_option linter.uppercaseLean3 false in
 
 namespace Aut
 
--- porting note: added because `Iso.ext` is not triggered automatically
+-- Porting note: added because `Iso.ext` is not triggered automatically
 @[ext]
 lemma ext {X : C} {φ₁ φ₂ : Aut X} (h : φ₁.hom = φ₂.hom) : φ₁ = φ₂ :=
   Iso.ext h
@@ -207,14 +207,14 @@ set_option linter.uppercaseLean3 false in
 
 /-- `equivOfFullyFaithful f` as an isomorphism between endomorphism monoids. -/
 @[simps!]
-def mulEquivOfFullyFaithful [Full f] [Faithful f] :
+noncomputable def mulEquivOfFullyFaithful [Full f] [Faithful f] :
     End X ≃* End (f.obj X) where
   toEquiv := equivOfFullyFaithful f
   __ := mapEnd X f
 
 /-- `isoEquivOfFullyFaithful f` as an isomorphism between automorphism groups. -/
 @[simps!]
-def autMulEquivOfFullyFaithful [Full f] [Faithful f] :
+noncomputable def autMulEquivOfFullyFaithful [Full f] [Faithful f] :
     Aut X ≃* Aut (f.obj X) where
   toEquiv := isoEquivOfFullyFaithful f
   __ := mapAut X f

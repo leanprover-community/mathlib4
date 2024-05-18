@@ -52,7 +52,7 @@ free group, free groupoid, Nielsen-Schreier
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 universe v u
 
@@ -63,7 +63,7 @@ open CategoryTheory CategoryTheory.ActionCategory CategoryTheory.SingleObj Quive
 /-- `IsFreeGroupoid.Generators G` is a type synonym for `G`. We think of this as
 the vertices of the generating quiver of `G` when `G` is free. We can't use `G` directly,
 since `G` already has a quiver instance from being a groupoid. -/
--- Porting note: @[nolint has_nonempty_instance]
+-- Porting note(#5171): @[nolint has_nonempty_instance]
 @[nolint unusedArguments]
 def IsFreeGroupoid.Generators (G) [Groupoid G] :=
   G
@@ -205,8 +205,8 @@ theorem loopOfHom_eq_id {a b : Generators G} (e) (H : e ∈ wideSubquiverSymmetr
 /-- Since a hom gives a loop, any homomorphism from the vertex group at the root
     extends to a functor on the whole groupoid. -/
 @[simps]
-def functorOfMonoidHom {X} [Monoid X] (f : End (root' T) →* X) : G ⥤ CategoryTheory.SingleObj X
-    where
+def functorOfMonoidHom {X} [Monoid X] (f : End (root' T) →* X) :
+    G ⥤ CategoryTheory.SingleObj X where
   obj _ := ()
   map p := f (loopOfHom T p)
   map_id := by

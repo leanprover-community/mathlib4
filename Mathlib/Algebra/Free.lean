@@ -8,6 +8,7 @@ import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
 import Mathlib.Data.List.Basic
 import Mathlib.Logic.Equiv.Defs
+import Mathlib.Tactic.AdaptationNote
 
 #align_import algebra.free from "leanprover-community/mathlib"@"6d0adfa76594f304b4650d098273d4366edeb61b"
 
@@ -85,10 +86,12 @@ theorem hom_ext {β : Type v} [Mul β] {f g : FreeMagma α →ₙ* β} (h : f �
 
 end FreeMagma
 
+#adaptation_note /-- around nightly-2024-02-25, we need to write `mul x y` in the second pattern,
+instead of `x * y`. --/
 /-- Lifts a function `α → β` to a magma homomorphism `FreeMagma α → β` given a magma `β`. -/
 def FreeMagma.liftAux {α : Type u} {β : Type v} [Mul β] (f : α → β) : FreeMagma α → β
   | FreeMagma.of x => f x
-  | x * y => liftAux f x * liftAux f y
+  | mul x y => liftAux f x * liftAux f y
 #align free_magma.lift_aux FreeMagma.liftAux
 
 /-- Lifts a function `α → β` to an additive magma homomorphism `FreeAddMagma α → β` given
@@ -205,11 +208,13 @@ end Category
 
 end FreeMagma
 
+#adaptation_note /-- around nightly-2024-02-25, we need to write `mul x y` in the second pattern,
+  instead of `x * y`. -/
 /-- `FreeMagma` is traversable. -/
 protected def FreeMagma.traverse {m : Type u → Type u} [Applicative m] {α β : Type u}
     (F : α → m β) : FreeMagma α → m (FreeMagma β)
   | FreeMagma.of x => FreeMagma.of <$> F x
-  | x * y => (· * ·) <$> x.traverse F <*> y.traverse F
+  | mul x y => (· * ·) <$> x.traverse F <*> y.traverse F
 #align free_magma.traverse FreeMagma.traverse
 
 /-- `FreeAddMagma` is traversable. -/
@@ -289,10 +294,12 @@ end Category
 end FreeMagma
 
 -- Porting note: changed String to Lean.Format
+#adaptation_note /-- around nightly-2024-02-25, we need to write `mul x y` in the second pattern,
+instead of `x * y`. -/
 /-- Representation of an element of a free magma. -/
 protected def FreeMagma.repr {α : Type u} [Repr α] : FreeMagma α → Lean.Format
   | FreeMagma.of x => repr x
-  | x * y => "( " ++ x.repr ++ " * " ++ y.repr ++ " )"
+  | mul x y => "( " ++ x.repr ++ " * " ++ y.repr ++ " )"
 #align free_magma.repr FreeMagma.repr
 
 /-- Representation of an element of a free additive magma. -/
@@ -306,10 +313,12 @@ attribute [to_additive existing] FreeMagma.repr
 @[to_additive]
 instance {α : Type u} [Repr α] : Repr (FreeMagma α) := ⟨fun o _ => FreeMagma.repr o⟩
 
+#adaptation_note /-- around nightly-2024-02-25, we need to write `mul x y` in the second pattern,
+instead of `x * y`. -/
 /-- Length of an element of a free magma. -/
 def FreeMagma.length {α : Type u} : FreeMagma α → ℕ
   | FreeMagma.of _x => 1
-  | x * y => x.length + y.length
+  | mul x y => x.length + y.length
 #align free_magma.length FreeMagma.length
 
 /-- Length of an element of a free additive magma. -/
@@ -319,6 +328,13 @@ def FreeAddMagma.length {α : Type u} : FreeAddMagma α → ℕ
 #align free_add_magma.length FreeAddMagma.length
 
 attribute [to_additive existing (attr := simp)] FreeMagma.length
+
+/-- The length of an element of a free magma is positive. -/
+@[to_additive "The length of an element of a free additive magma is positive."]
+lemma FreeMagma.length_pos {α : Type u} (x : FreeMagma α) : 0 < x.length :=
+  match x with
+  | FreeMagma.of _ => Nat.succ_pos 0
+  | mul y z => Nat.add_pos_left (length_pos y) z.length
 
 /-- Associativity relations for an additive magma. -/
 inductive AddMagma.AssocRel (α : Type u) [Add α] : α → α → Prop
@@ -490,7 +506,7 @@ def length (x : FreeSemigroup α) : ℕ := x.tail.length + 1
 
 @[to_additive (attr := simp)]
 theorem length_mul (x y : FreeSemigroup α) : (x * y).length = x.length + y.length := by
-  simp [length, ← add_assoc, add_right_comm, List.length, List.length_append]
+  simp [length, Nat.add_right_comm, List.length, List.length_append]
 #align free_semigroup.length_mul FreeSemigroup.length_mul
 
 @[to_additive (attr := simp)]
@@ -526,7 +542,7 @@ def lift : (α → β) ≃ (FreeSemigroup α →ₙ* β) where
   toFun f :=
     { toFun := fun x ↦ x.2.foldl (fun a b ↦ a * f b) (f x.1)
       map_mul' := fun x y ↦ by
-        simp only [head_mul, tail_mul, ← List.foldl_map f, List.foldl_append, List.foldl_cons,
+        simp [head_mul, tail_mul, ← List.foldl_map, List.foldl_append, List.foldl_cons,
           List.foldl_assoc] }
   invFun f := f ∘ of
   left_inv f := rfl

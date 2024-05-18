@@ -40,7 +40,6 @@ namespace ModuleCat.FilteredColimits
 section
 
 variable {R : Type u} [Ring R] {J : Type v} [SmallCategory J] [IsFiltered J]
-
 variable (F : J ⥤ ModuleCatMax.{v, u, u} R)
 
 /-- The colimit of `F ⋙ forget₂ (ModuleCat R) AddCommGroupCat` in the category `AddCommGroupCat`.
@@ -71,7 +70,7 @@ set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.colimit_smul_aux ModuleCat.FilteredColimits.colimitSMulAux
 
 theorem colimitSMulAux_eq_of_rel (r : R) (x y : Σ j, F.obj j)
-    (h : Types.FilteredColimit.Rel.{v, u} (F ⋙ forget (ModuleCat R)) x y) :
+    (h : Types.FilteredColimit.Rel (F ⋙ forget (ModuleCat R)) x y) :
     colimitSMulAux F r x = colimitSMulAux F r y := by
   apply M.mk_eq
   obtain ⟨k, f, g, hfg⟩ := h
@@ -104,7 +103,7 @@ private theorem colimitModule.one_smul (x : (M F)) : (1 : R) • x = x := by
   simp
   rfl
 
--- Porting note: writing directly the `Module` instance makes things very slow.
+-- Porting note (#11083): writing directly the `Module` instance makes things very slow.
 instance colimitMulAction : MulAction R (M F) where
   one_smul x := by
     refine' Quot.inductionOn x _; clear x; intro x; cases' x with j x
@@ -128,8 +127,9 @@ instance colimitSMulWithZero : SMulWithZero R (M F) :=
 private theorem colimitModule.add_smul (r s : R) (x : (M F)) : (r + s) • x = r • x + s • x := by
   refine' Quot.inductionOn x _; clear x; intro x; cases' x with j x
   erw [colimit_smul_mk_eq, _root_.add_smul, colimit_smul_mk_eq, colimit_smul_mk_eq,
-      colimit_add_mk_eq _ ⟨j, _⟩ ⟨j, _⟩ j (𝟙 j) (𝟙 j), CategoryTheory.Functor.map_id, id_apply,
-      id_apply]
+      colimit_add_mk_eq _ ⟨j, _⟩ ⟨j, _⟩ j (𝟙 j) (𝟙 j)]
+  simp only [Functor.comp_obj, forget₂_obj, Functor.comp_map, CategoryTheory.Functor.map_id,
+    forget₂_map]
   rfl
 
 instance colimitModule : Module R (M F) :=
@@ -167,7 +167,8 @@ def colimitCocone : Cocone F where
   ι :=
     { app := coconeMorphism F
       naturality := fun _ _' f =>
-        LinearMap.coe_injective ((Types.colimitCocone (F ⋙ forget (ModuleCat R))).ι.naturality f) }
+        LinearMap.coe_injective
+          ((Types.TypeMax.colimitCocone (F ⋙ forget (ModuleCat R))).ι.naturality f) }
 set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.colimit_cocone ModuleCat.FilteredColimits.colimitCocone
 
@@ -191,11 +192,11 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
   desc := colimitDesc F
   fac t j :=
     LinearMap.coe_injective <|
-      (Types.colimitCoconeIsColimit.{v, u} (F ⋙ forget (ModuleCat R))).fac
+      (Types.TypeMax.colimitCoconeIsColimit.{v, u} (F ⋙ forget (ModuleCat R))).fac
         ((forget (ModuleCat R)).mapCocone t) j
   uniq t _ h :=
     LinearMap.coe_injective <|
-      (Types.colimitCoconeIsColimit (F ⋙ forget (ModuleCat R))).uniq
+      (Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget (ModuleCat R))).uniq
         ((forget (ModuleCat R)).mapCocone t) _ fun j => funext fun x => LinearMap.congr_fun (h j) x
 set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.colimit_cocone_is_colimit ModuleCat.FilteredColimits.colimitCoconeIsColimit

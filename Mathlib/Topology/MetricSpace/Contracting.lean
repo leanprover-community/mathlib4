@@ -31,7 +31,8 @@ contracting map, fixed point, Banach fixed point theorem
 -/
 
 
-open NNReal Topology Classical ENNReal Filter Function
+open scoped Classical
+open NNReal Topology ENNReal Filter Function
 
 variable {α : Type*}
 
@@ -252,8 +253,8 @@ theorem efixedPoint_eq_of_edist_lt_top' (hf : ContractingWith K f) {s : Set α} 
   · apply Setoid.symm' -- Porting note: Originally `symm`
     apply edist_efixedPoint_lt_top'
   trans y
-  exact lt_top_iff_ne_top.2 hxy
-  apply edist_efixedPoint_lt_top'
+  · exact lt_top_iff_ne_top.2 hxy
+  · apply edist_efixedPoint_lt_top'
 #align contracting_with.efixed_point_eq_of_edist_lt_top' ContractingWith.efixedPoint_eq_of_edist_lt_top'
 
 end ContractingWith
@@ -293,13 +294,12 @@ theorem dist_fixedPoint_fixedPoint_of_dist_le' (g : α → α) {x y} (hx : IsFix
     (hy : IsFixedPt g y) {C} (hfg : ∀ z, dist (f z) (g z) ≤ C) : dist x y ≤ C / (1 - K) :=
   calc
     dist x y = dist y x := dist_comm x y
-    _ ≤ dist y (f y) / (1 - K) := (hf.dist_le_of_fixedPoint y hx)
+    _ ≤ dist y (f y) / (1 - K) := hf.dist_le_of_fixedPoint y hx
     _ = dist (f y) (g y) / (1 - K) := by rw [hy.eq, dist_comm]
     _ ≤ C / (1 - K) := (div_le_div_right hf.one_sub_K_pos).2 (hfg y)
 #align contracting_with.dist_fixed_point_fixed_point_of_dist_le' ContractingWith.dist_fixedPoint_fixedPoint_of_dist_le'
 
 variable [Nonempty α] [CompleteSpace α]
-
 variable (f)
 
 /-- The unique fixed point of a contracting map in a nonempty complete metric space. -/

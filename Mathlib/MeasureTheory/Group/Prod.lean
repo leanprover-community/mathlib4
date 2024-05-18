@@ -51,9 +51,7 @@ open Filter hiding map
 open scoped Classical ENNReal Pointwise MeasureTheory
 
 variable (G : Type*) [MeasurableSpace G]
-
 variable [Group G] [MeasurableMul₂ G]
-
 variable (μ ν : Measure G) [SigmaFinite ν] [SigmaFinite μ] {s : Set G}
 
 /-- The map `(x, y) ↦ (x, xy)` as a `MeasurableEquiv`. -/
@@ -330,7 +328,7 @@ theorem measure_lintegral_div_measure [IsMulLeftInvariant ν] (sm : MeasurableSe
   set g := fun y => f y⁻¹ / ν ((fun x => x * y⁻¹) ⁻¹' s)
   have hg : Measurable g :=
     (hf.comp measurable_inv).div ((measurable_measure_mul_right ν sm).comp measurable_inv)
-  simp_rw [measure_mul_lintegral_eq μ ν sm g hg, inv_inv]
+  simp_rw [measure_mul_lintegral_eq μ ν sm g hg, g, inv_inv]
   refine' lintegral_congr_ae _
   refine' (ae_measure_preimage_mul_right_lt_top_of_ne_zero μ ν sm h2s h3s).mono fun x hx => _
   simp_rw [ENNReal.mul_div_cancel' (measure_mul_right_ne_zero ν h2s _) hx.ne]
