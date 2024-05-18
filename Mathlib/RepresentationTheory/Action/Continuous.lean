@@ -11,15 +11,16 @@ import Mathlib.Topology.Category.TopCat.Basic
 
 # Topological subcategories of `Action V G`
 
-For a concrete category `V` and a monoid `G`, equipped with a topological space instance,
-we define the subcategory `ContAction V G` of all objects of `Action V G` with a
-`TopologicalSpace` instance on the underlying type such that the induced action
-is continuouos.
+For a concrete category `V`, where the forgetful functor factors via `TopCat`,
+and a monoid `G`, equipped with a topological space instance,
+we define the full subcategory `ContAction V G` of all objects of `Action V G`
+where the induced action is continuouos.
 
 We also define a category `DiscreteContAction V G` as the full subcategory of `ContAction V G`,
 where the underlying topological space is discrete.
 
-Finally we define inclusion functors into `Action V G` and `TopCat`.
+Finally we define inclusion functors into `Action V G` and `TopCat` in terms
+of `HasForget₂` instances.
 
 -/
 
@@ -29,140 +30,77 @@ open CategoryTheory Limits
 
 namespace Action
 
-variable (V : Type (u + 1)) [LargeCategory V] [ConcreteCategory V]
+variable (V : Type (u + 1)) [LargeCategory V] [ConcreteCategory V] [HasForget₂ V TopCat]
 variable (G : MonCat.{u}) [TopologicalSpace G]
 
-/-- The subcategory of `Action V G` where the underlying types are equipped with a
-`TopologicalSpace` instance and the action of `G` is continuous. -/
-structure ContAction extends Action V G where
-  /-- The topological space structure on the underlying type. -/
-  topologicalSpace : TopologicalSpace ((CategoryTheory.forget _).obj toAction)
-  actionContinuous : ContinuousSMul G ((CategoryTheory.forget _).obj toAction)
+instance : HasForget₂ (Action V G) TopCat :=
+  HasForget₂.trans (Action V G) V TopCat
+
+instance (X : Action V G) : MulAction G ((CategoryTheory.forget₂ _ TopCat).obj X) where
+  smul g x := ((CategoryTheory.forget₂ _ TopCat).map (X.ρ g)) x
+  one_smul x := by
+    show ((CategoryTheory.forget₂ _ TopCat).map (X.ρ 1)) x = x
+    simp
+  mul_smul g h x := by
+    show (CategoryTheory.forget₂ _ TopCat).map (X.ρ (g * h)) x =
+      ((CategoryTheory.forget₂ _ TopCat).map (X.ρ h)
+        ≫ (CategoryTheory.forget₂ _ TopCat).map (X.ρ g)) x
+    rw [← Functor.map_comp, map_mul]
+    rfl
+
+def IsContinuous (X : Action V G) : Prop :=
+  ContinuousSMul G ((CategoryTheory.forget₂ _ TopCat).obj X)
+
+def ContAction : Type _ := FullSubcategory (IsContinuous V G)
+
+instance : Category (ContAction V G) :=
+  FullSubcategory.category (IsContinuous V G)
+
+instance : ConcreteCategory (ContAction V G) :=
+  FullSubcategory.concreteCategory (IsContinuous V G)
+
+instance : HasForget₂ (ContAction V G) (Action V G) :=
+  FullSubcategory.hasForget₂ (IsContinuous V G)
+
+instance : HasForget₂ (ContAction V G) V :=
+  HasForget₂.trans (ContAction V G) (Action V G) V
+
+instance : HasForget₂ (ContAction V G) TopCat :=
+  HasForget₂.trans (ContAction V G) (Action V G) TopCat
 
 namespace ContAction
 
 instance : Coe (ContAction V G) (Action V G) where
-  coe X := X.toAction
-
-variable {V} {G}
-
-attribute [instance] topologicalSpace actionContinuous
-
-/-- A homomorphisms between two objects of `ContAction V G` is a continuous homomorphism
-of the underlying objects in `Action V G`. -/
-@[ext]
-structure Hom (X Y : ContAction V G) where
-  /-- The underlying homomorphism of objects of `Action V G`. -/
-  hom : X.toAction ⟶ Y.toAction
-  isContinuous : Continuous ((CategoryTheory.forget (Action V G)).map hom)
-
-/-- The identity homomorphism in `ContAction V G`. -/
-@[simps]
-def Hom.id (X : ContAction V G) : Hom X X where
-  hom := 𝟙 X.toAction
-  isContinuous := by
-    rw [CategoryTheory.Functor.map_id]
-    exact continuous_id
-
-/-- Composition of homomorphisms in `ContAction V G`. -/
-@[simps]
-def Hom.comp {X Y Z : ContAction V G} (f : Hom X Y) (g : Hom Y Z) : Hom X Z where
-  hom := f.hom ≫ g.hom
-  isContinuous := by
-    rw [Functor.map_comp, types_comp]
-    exact Continuous.comp g.isContinuous f.isContinuous
-
-variable (V G) in
-instance category : Category (ContAction V G) where
-  Hom X Y := Hom X Y
-  id X := Hom.id X
-  comp f g := Hom.comp f g
-
-@[ext]
-lemma hom_ext {X Y : ContAction V G} {f g : X ⟶ Y} (h : f.hom = g.hom) : f = g :=
-  Hom.ext f g h
-
-@[simp]
-lemma id_hom (X : ContAction V G) : Hom.hom (𝟙 X) = 𝟙 X.toAction :=
-  rfl
-
-@[simp]
-lemma comp_hom {X Y Z : ContAction V G} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g).hom = f.hom ≫ g.hom :=
-  rfl
-
-variable (V G)
-
-/-- The forgetful functor from `ContAction V G` to types. Do not use this directly, but use the
-`ConcreteCategory` API instead. -/
-@[simps]
-def forget : ContAction V G ⥤ Type u where
-  obj X := (CategoryTheory.forget (Action V G)).obj X
-  map {X Y} f := (CategoryTheory.forget (Action V G)).map f.hom
-
-instance : Functor.Faithful (forget V G) where
-  map_injective {_ _} _ _ h :=
-    hom_ext <| (CategoryTheory.forget (Action V G)).map_injective h
-
-instance concreteCategory : ConcreteCategory (ContAction V G) where
-  forget := forget V G
-
-variable {V G}
-
-instance (X : ContAction V G) : TopologicalSpace ((CategoryTheory.forget _).obj X) :=
-  X.topologicalSpace
-
-variable (V G)
-
-section Inclusions
-
-/-- The canonical inclusion in `Action V G`. -/
-@[simps]
-def incl : ContAction V G ⥤ Action V G where
-  obj X := X
-  map {X Y} f := f.hom
-
-instance : HasForget₂ (ContAction V G) (Action V G) where
-  forget₂ := incl V G
-
-/-- The canonical inclusion in `TopCat`. -/
-def toTopCat : ContAction V G ⥤ TopCat where
-  obj X := TopCat.of ((CategoryTheory.forget (ContAction V G)).obj X)
-  map {X Y} f := ⟨(CategoryTheory.forget (ContAction V G)).map f, f.isContinuous⟩
-
-@[simp]
-lemma toTopCat_map_apply {X Y : ContAction V G} (f : X ⟶ Y)
-    (a : (CategoryTheory.forget (ContAction V G)).obj X) :
-    (toTopCat V G).map f a = (CategoryTheory.forget (ContAction V G)).map f a := by
-  rfl
-
-instance : HasForget₂ (ContAction V G) TopCat where
-  forget₂ := toTopCat V G
-
-end Inclusions
+  coe X := X.obj
 
 section Discrete
 
 /-- A predicate on an `X : ContAction V G` saying that the topology on the underlying type of `X`
 is discrete. -/
-def isDiscrete (X : ContAction V G) : Prop := DiscreteTopology ((CategoryTheory.forget _).obj X)
+def IsDiscrete (X : ContAction V G) : Prop :=
+  DiscreteTopology ((CategoryTheory.forget₂ _ TopCat).obj X)
 
 /-- The subcategory of `ContAction V G` where the topology is discrete. -/
-def DiscreteContAction : Type _ := FullSubcategory (isDiscrete V G)
+def DiscreteContAction : Type _ := FullSubcategory (IsDiscrete V G)
 
 namespace DiscreteContAction
 
 instance : Category (DiscreteContAction V G) :=
-  FullSubcategory.category (isDiscrete V G)
+  FullSubcategory.category (IsDiscrete V G)
 
 instance : ConcreteCategory (DiscreteContAction V G) :=
-  FullSubcategory.concreteCategory (isDiscrete V G)
+  FullSubcategory.concreteCategory (IsDiscrete V G)
+
+instance : HasForget₂ (DiscreteContAction V G) (ContAction V G) :=
+  FullSubcategory.hasForget₂ (IsDiscrete V G)
+
+instance : HasForget₂ (DiscreteContAction V G) TopCat :=
+  HasForget₂.trans (DiscreteContAction V G) (ContAction V G) TopCat
 
 variable {V G}
 
-instance (X : DiscreteContAction V G) : TopologicalSpace ((CategoryTheory.forget _).obj X) :=
-  X.obj.topologicalSpace
-
-instance (X : DiscreteContAction V G) : DiscreteTopology ((CategoryTheory.forget _).obj X) :=
+instance (X : DiscreteContAction V G) :
+    DiscreteTopology ((CategoryTheory.forget₂ _ TopCat).obj X) :=
   X.property
 
 end DiscreteContAction
