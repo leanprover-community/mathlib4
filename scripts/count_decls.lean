@@ -55,7 +55,7 @@ elab "count_decls" : command => do
     | .inductInfo .. => return {s with inductives := s.inductives + 1}
     | _ => return {s with other := s.other + 1}
   let s : State ← consts.foldM update {}
-  logInfo s!"defs {s.defs}\nthms {s.thms}\ninductives {s.inductives}\nother {s.other}"
+  logInfo s!"Definitions {s.defs}\nTheorems {s.thms}\nInductives {s.inductives}\nOther {s.other}"
   --let total := s.defs + s.thms + s.inductives + s.other
   --logInfo s!"{repr s}\ntotal: {total}"
 
