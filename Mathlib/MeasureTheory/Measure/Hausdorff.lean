@@ -690,7 +690,7 @@ theorem one_le_hausdorffMeasure_zero_of_nonempty {s : Set X} (h : s.Nonempty) : 
   rcases h with ⟨x, hx⟩
   calc
     (1 : ℝ≥0∞) = μH[0] ({x} : Set X) := (hausdorffMeasure_zero_singleton x).symm
-    _ ≤ μH[0] s := measure_mono _ (singleton_subset_iff.2 hx)
+    _ ≤ μH[0] s := measure_mono (singleton_subset_iff.2 hx)
 #align measure_theory.measure.one_le_hausdorff_measure_zero_of_nonempty MeasureTheory.Measure.one_le_hausdorffMeasure_zero_of_nonempty
 
 theorem hausdorffMeasure_le_one_of_subsingleton {s : Set X} (hs : s.Subsingleton) {d : ℝ}
@@ -852,7 +852,7 @@ theorem hausdorffMeasure_preimage_le (hf : AntilipschitzWith K f) (hd : 0 ≤ d)
 theorem le_hausdorffMeasure_image (hf : AntilipschitzWith K f) (hd : 0 ≤ d) (s : Set X) :
     μH[d] s ≤ (K : ℝ≥0∞) ^ d * μH[d] (f '' s) :=
   calc
-    μH[d] s ≤ μH[d] (f ⁻¹' (f '' s)) := measure_mono _ (subset_preimage_image _ _)
+    μH[d] s ≤ μH[d] (f ⁻¹' (f '' s)) := measure_mono (subset_preimage_image _ _)
     _ ≤ (K : ℝ≥0∞) ^ d * μH[d] (f '' s) := hf.hausdorffMeasure_preimage_le hd (f '' s)
 #align antilipschitz_with.le_hausdorff_measure_image AntilipschitzWith.le_hausdorffMeasure_image
 

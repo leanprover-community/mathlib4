@@ -70,7 +70,7 @@ theorem withDensity_apply' [SFinite μ] (f : α → ℝ≥0∞) (s : Set α) :
   apply le_antisymm ?_ (withDensity_apply_le f s)
   let t := toMeasurable μ s
   calc
-  μ.withDensity f s ≤ μ.withDensity f t := measure_mono _ (subset_toMeasurable μ s)
+  μ.withDensity f s ≤ μ.withDensity f t := measure_mono (subset_toMeasurable μ s)
   _ = ∫⁻ a in t, f a ∂μ := withDensity_apply f (measurableSet_toMeasurable μ s)
   _ = ∫⁻ a in s, f a ∂μ := by congr 1; exact restrict_toMeasurable_of_sFinite s
 

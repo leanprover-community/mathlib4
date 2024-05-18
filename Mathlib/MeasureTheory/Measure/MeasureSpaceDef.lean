@@ -190,11 +190,11 @@ theorem measure_eq_extend (hs : MeasurableSet s) :
 #align measure_theory.measure_eq_extend MeasureTheory.measure_eq_extend
 
 theorem nonempty_of_measure_ne_zero (h : μ s ≠ 0) : s.Nonempty :=
-  nonempty_iff_ne_empty.2 fun h' => h <| h'.symm ▸ measure_empty μ
+  nonempty_iff_ne_empty.2 fun h' => h <| h'.symm ▸ measure_empty
 #align measure_theory.nonempty_of_measure_ne_zero MeasureTheory.nonempty_of_measure_ne_zero
 
 theorem measure_mono_top (h : s₁ ⊆ s₂) (h₁ : μ s₁ = ∞) : μ s₂ = ∞ :=
-  top_unique <| h₁ ▸ measure_mono μ h
+  top_unique <| h₁ ▸ measure_mono h
 #align measure_theory.measure_mono_top MeasureTheory.measure_mono_top
 
 @[simp, mono]
@@ -232,13 +232,12 @@ theorem exists_measurable_superset_iff_measure_eq_zero :
   ⟨fun ⟨_t, hst, _, ht⟩ => measure_mono_null hst ht, exists_measurable_superset_of_null⟩
 #align measure_theory.exists_measurable_superset_iff_measure_eq_zero MeasureTheory.exists_measurable_superset_iff_measure_eq_zero
 
-
 theorem measure_biUnion_lt_top {s : Set β} {f : β → Set α} (hs : s.Finite)
     (hfin : ∀ i ∈ s, μ (f i) ≠ ∞) : μ (⋃ i ∈ s, f i) < ∞ := by
-  convert (measure_biUnion_finset_le μ hs.toFinset f).trans_lt _ using 3
+  convert (measure_biUnion_finset_le (μ := μ) hs.toFinset f).trans_lt _ using 3
   · ext
     rw [Finite.mem_toFinset]
-  apply ENNReal.sum_lt_top; simpa only [Finite.mem_toFinset]
+  · apply ENNReal.sum_lt_top; simpa only [Finite.mem_toFinset]
 #align measure_theory.measure_bUnion_lt_top MeasureTheory.measure_biUnion_lt_top
 
 @[deprecated measure_iUnion_null_iff (since := "2024-01-14")]
@@ -250,14 +249,14 @@ lemma measure_null_iff_singleton {s : Set α} (hs : s.Countable) : μ s = 0 ↔ 
   rw [← measure_biUnion_null_iff hs, biUnion_of_singleton]
 
 theorem measure_union_lt_top (hs : μ s < ∞) (ht : μ t < ∞) : μ (s ∪ t) < ∞ :=
-  (measure_union_le μ s t).trans_lt (ENNReal.add_lt_top.mpr ⟨hs, ht⟩)
+  (measure_union_le s t).trans_lt (ENNReal.add_lt_top.mpr ⟨hs, ht⟩)
 #align measure_theory.measure_union_lt_top MeasureTheory.measure_union_lt_top
 
 @[simp]
 theorem measure_union_lt_top_iff : μ (s ∪ t) < ∞ ↔ μ s < ∞ ∧ μ t < ∞ := by
   refine' ⟨fun h => ⟨_, _⟩, fun h => measure_union_lt_top h.1 h.2⟩
-  · exact (measure_mono _ (Set.subset_union_left s t)).trans_lt h
-  · exact (measure_mono _ (Set.subset_union_right s t)).trans_lt h
+  · exact (measure_mono (Set.subset_union_left s t)).trans_lt h
+  · exact (measure_mono (Set.subset_union_right s t)).trans_lt h
 #align measure_theory.measure_union_lt_top_iff MeasureTheory.measure_union_lt_top_iff
 
 theorem measure_union_ne_top (hs : μ s ≠ ∞) (ht : μ t ≠ ∞) : μ (s ∪ t) ≠ ∞ :=
@@ -266,7 +265,7 @@ theorem measure_union_ne_top (hs : μ s ≠ ∞) (ht : μ t ≠ ∞) : μ (s ∪
 
 open scoped symmDiff in
 theorem measure_symmDiff_ne_top (hs : μ s ≠ ∞) (ht : μ t ≠ ∞) : μ (s ∆ t) ≠ ∞ :=
-  ne_top_of_le_ne_top (measure_union_ne_top hs ht) <| measure_mono _ symmDiff_subset_union
+  ne_top_of_le_ne_top (measure_union_ne_top hs ht) <| measure_mono symmDiff_subset_union
 
 @[simp]
 theorem measure_union_eq_top_iff : μ (s ∪ t) = ∞ ↔ μ s = ∞ ∨ μ t = ∞ :=
@@ -542,9 +541,9 @@ theorem _root_.Set.mulIndicator_ae_eq_one {M : Type*} [One M] {f : α → M} {s 
 @[mono]
 theorem measure_mono_ae (H : s ≤ᵐ[μ] t) : μ s ≤ μ t :=
   calc
-    μ s ≤ μ (s ∪ t) := measure_mono _ <| subset_union_left s t
+    μ s ≤ μ (s ∪ t) := measure_mono <| subset_union_left s t
     _ = μ (t ∪ s \ t) := by rw [union_diff_self, Set.union_comm]
-    _ ≤ μ t + μ (s \ t) := measure_union_le _ _ _
+    _ ≤ μ t + μ (s \ t) := measure_union_le _ _
     _ = μ t := by rw [ae_le_set.1 H, add_zero]
 #align measure_theory.measure_mono_ae MeasureTheory.measure_mono_ae
 

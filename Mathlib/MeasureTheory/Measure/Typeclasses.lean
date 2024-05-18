@@ -50,7 +50,7 @@ instance Restrict.isFiniteMeasure (μ : Measure α) [hs : Fact (μ s < ∞)] :
 #align measure_theory.restrict.is_finite_measure MeasureTheory.Restrict.isFiniteMeasure
 
 theorem measure_lt_top (μ : Measure α) [IsFiniteMeasure μ] (s : Set α) : μ s < ∞ :=
-  (measure_mono _ (subset_univ s)).trans_lt IsFiniteMeasure.measure_univ_lt_top
+  (measure_mono (subset_univ s)).trans_lt IsFiniteMeasure.measure_univ_lt_top
 #align measure_theory.measure_lt_top MeasureTheory.measure_lt_top
 
 instance isFiniteMeasureRestrict (μ : Measure α) (s : Set α) [h : IsFiniteMeasure μ] :
@@ -67,7 +67,7 @@ theorem measure_compl_le_add_of_le_add [IsFiniteMeasure μ] (hs : MeasurableSet 
   rw [measure_compl ht (measure_ne_top μ _), measure_compl hs (measure_ne_top μ _),
     tsub_le_iff_right]
   calc
-    μ univ = μ univ - μ s + μ s := (tsub_add_cancel_of_le <| measure_mono _ s.subset_univ).symm
+    μ univ = μ univ - μ s + μ s := (tsub_add_cancel_of_le <| measure_mono s.subset_univ).symm
     _ ≤ μ univ - μ s + (μ t + ε) := add_le_add_left h _
     _ = _ := by rw [add_right_comm, add_assoc]
 #align measure_theory.measure_compl_le_add_of_le_add MeasureTheory.measure_compl_le_add_of_le_add
@@ -243,7 +243,7 @@ theorem prob_add_prob_compl [IsProbabilityMeasure μ] (h : MeasurableSet s) : μ
 #align measure_theory.prob_add_prob_compl MeasureTheory.prob_add_prob_compl
 
 theorem prob_le_one [IsProbabilityMeasure μ] : μ s ≤ 1 :=
-  (measure_mono _ <| Set.subset_univ _).trans_eq measure_univ
+  (measure_mono <| Set.subset_univ _).trans_eq measure_univ
 #align measure_theory.prob_le_one MeasureTheory.prob_le_one
 
 -- Porting note: made an `instance`, using `NeZero`
@@ -341,7 +341,7 @@ variable [NoAtoms μ]
 
 theorem _root_.Set.Subsingleton.measure_zero (hs : s.Subsingleton) (μ : Measure α) [NoAtoms μ] :
     μ s = 0 :=
-  hs.induction_on (p := fun s => μ s = 0) (measure_empty _) measure_singleton
+  hs.induction_on (p := fun s => μ s = 0) measure_empty measure_singleton
 #align set.subsingleton.measure_zero Set.Subsingleton.measure_zero
 
 theorem Measure.restrict_singleton' {a : α} : μ.restrict {a} = 0 := by
@@ -492,7 +492,7 @@ theorem finiteAtFilter_of_finite {_m0 : MeasurableSpace α} (μ : Measure α) [I
 
 theorem FiniteAtFilter.exists_mem_basis {f : Filter α} (hμ : FiniteAtFilter μ f) {p : ι → Prop}
     {s : ι → Set α} (hf : f.HasBasis p s) : ∃ i, p i ∧ μ (s i) < ∞ :=
-  (hf.exists_iff fun {_s _t} hst ht => (measure_mono _ hst).trans_lt ht).1 hμ
+  (hf.exists_iff fun {_s _t} hst ht => (measure_mono hst).trans_lt ht).1 hμ
 #align measure_theory.measure.finite_at_filter.exists_mem_basis MeasureTheory.Measure.FiniteAtFilter.exists_mem_basis
 
 theorem finiteAtBot {m0 : MeasurableSpace α} (μ : Measure α) : μ.FiniteAtFilter ⊥ :=
@@ -685,7 +685,7 @@ theorem sum_restrict_disjointed_spanningSets (μ : Measure α) [SigmaFinite μ] 
 
 instance (priority := 100) [SigmaFinite μ] : SFinite μ := by
   have : ∀ n, Fact (μ (disjointed (spanningSets μ) n) < ∞) :=
-    fun n ↦ ⟨(measure_mono _ (disjointed_subset _ _)).trans_lt (measure_spanningSets_lt_top μ n)⟩
+    fun n ↦ ⟨(measure_mono (disjointed_subset _ _)).trans_lt (measure_spanningSets_lt_top μ n)⟩
   exact ⟨⟨fun n ↦ μ.restrict (disjointed (spanningSets μ) n), fun n ↦ by infer_instance,
     (sum_restrict_disjointed_spanningSets μ).symm⟩⟩
 
@@ -840,7 +840,7 @@ theorem measure_toMeasurable_inter_of_sum {s : Set α} (hs : MeasurableSet s) {t
     apply ENNReal.tsum_le_tsum (fun i ↦ ?_)
     calc
     m i ((⋂ n, w n) ∩ u) ≤ m i (w i ∩ u) :=
-      measure_mono _ (inter_subset_inter_left _ (iInter_subset _ _))
+      measure_mono (inter_subset_inter_left _ (iInter_subset _ _))
     _ = m i (t ∩ u) := measure_toMeasurable_inter hu (hv i)
   -- thanks to the definition of `toMeasurable`, the previous property will also be shared
   -- by `toMeasurable μ t`, which is enough to conclude the proof.
@@ -883,7 +883,7 @@ theorem measure_toMeasurable_inter_of_cover {s : Set α} (hs : MeasurableSet s) 
     calc
       μ (t' ∩ u) ≤ ∑' n, μ (toMeasurable μ (t ∩ disjointed w n) ∩ u) := by
         rw [ht', iUnion_inter]
-        exact measure_iUnion_le _ _
+        exact measure_iUnion_le _
       _ = ∑' n, μ (t ∩ disjointed w n ∩ u) := by
         congr 1
         ext1 n
@@ -907,7 +907,7 @@ theorem measure_toMeasurable_inter_of_cover {s : Set α} (hs : MeasurableSet s) 
         · intro i
           refine MeasurableSet.disjointed (fun n => ?_) i
           exact measurableSet_toMeasurable _ _
-      _ ≤ μ.restrict (t ∩ u) univ := measure_mono _ (subset_univ _)
+      _ ≤ μ.restrict (t ∩ u) univ := measure_mono (subset_univ _)
       _ = μ (t ∩ u) := by rw [restrict_apply MeasurableSet.univ, univ_inter]
   -- thanks to the definition of `toMeasurable`, the previous property will also be shared
   -- by `toMeasurable μ t`, which is enough to conclude the proof.
@@ -968,7 +968,7 @@ theorem exists_subset_measure_lt_top [SigmaFinite μ] {r : ℝ≥0∞} (hs : Mea
   simp only [restrict_apply hs] at hn
   refine'
     ⟨s ∩ spanningSets μ n, hs.inter (measurable_spanningSets _ _), inter_subset_left _ _, hn, _⟩
-  exact (measure_mono _ (inter_subset_right _ _)).trans_lt (measure_spanningSets_lt_top _ _)
+  exact (measure_mono (inter_subset_right _ _)).trans_lt (measure_spanningSets_lt_top _ _)
 #align measure_theory.measure.exists_subset_measure_lt_top MeasureTheory.Measure.exists_subset_measure_lt_top
 
 namespace FiniteSpanningSetsIn
@@ -1033,7 +1033,7 @@ theorem sigmaFinite_of_le (μ : Measure α) [hs : SigmaFinite μ] (h : ν ≤ μ
   rw [ext_iff_of_iUnion_eq_univ (iUnion_spanningSets μ)]
   intro i
   ext s hs
-  rw [← ENNReal.add_right_inj (measure_mono _ (inter_subset_right s _) |>.trans_lt <|
+  rw [← ENNReal.add_right_inj (measure_mono (inter_subset_right s _) |>.trans_lt <|
     measure_spanningSets_lt_top μ i).ne]
   simp only [ext_iff', coe_add, Pi.add_apply] at h
   simp [hs, h]
@@ -1075,7 +1075,7 @@ instance Restrict.sigmaFinite (μ : Measure α) [SigmaFinite μ] (s : Set α) :
     SigmaFinite (μ.restrict s) := by
   refine' ⟨⟨⟨spanningSets μ, fun _ => trivial, fun i => _, iUnion_spanningSets μ⟩⟩⟩
   rw [Measure.restrict_apply (measurable_spanningSets μ i)]
-  exact (measure_mono _ <| inter_subset_left _ _).trans_lt (measure_spanningSets_lt_top μ i)
+  exact (measure_mono <| inter_subset_left _ _).trans_lt (measure_spanningSets_lt_top μ i)
 #align measure_theory.restrict.sigma_finite MeasureTheory.Restrict.sigmaFinite
 
 instance sum.sigmaFinite {ι} [Finite ι] (μ : ι → Measure α) [∀ i, SigmaFinite (μ i)] :
@@ -1086,7 +1086,7 @@ instance sum.sigmaFinite {ι} [Finite ι] (μ : ι → Measure α) [∀ i, Sigma
   refine' ⟨⟨⟨fun n => ⋂ i, spanningSets (μ i) n, fun _ => trivial, fun n => _, _⟩⟩⟩
   · rw [sum_apply _ (this n), tsum_fintype, ENNReal.sum_lt_top_iff]
     rintro i -
-    exact (measure_mono _ <| iInter_subset _ i).trans_lt (measure_spanningSets_lt_top (μ i) n)
+    exact (measure_mono <| iInter_subset _ i).trans_lt (measure_spanningSets_lt_top (μ i) n)
   · rw [iUnion_iInter_of_monotone]
     · simp_rw [iUnion_spanningSets, iInter_univ]
     exact fun i => monotone_spanningSets (μ i)
@@ -1189,7 +1189,7 @@ protected theorem Measure.isTopologicalBasis_isOpen_lt_top [TopologicalSpace α]
   intro x s xs hs
   rcases μ.exists_isOpen_measure_lt_top x with ⟨v, xv, hv, μv⟩
   refine' ⟨v ∩ s, ⟨hv.inter hs, lt_of_le_of_lt _ μv⟩, ⟨xv, xs⟩, inter_subset_right _ _⟩
-  exact measure_mono _ (inter_subset_left _ _)
+  exact measure_mono (inter_subset_left _ _)
 #align measure_theory.measure.is_topological_basis_is_open_lt_top MeasureTheory.Measure.isTopologicalBasis_isOpen_lt_top
 
 /-- A measure `μ` is finite on compacts if any compact set `K` satisfies `μ K < ∞`. -/
@@ -1215,7 +1215,7 @@ theorem _root_.Bornology.IsBounded.measure_lt_top [PseudoMetricSpace α] [Proper
     {μ : Measure α} [IsFiniteMeasureOnCompacts μ] ⦃s : Set α⦄ (hs : Bornology.IsBounded s) :
     μ s < ∞ :=
   calc
-    μ s ≤ μ (closure s) := measure_mono _ subset_closure
+    μ s ≤ μ (closure s) := measure_mono subset_closure
     _ < ∞ := (Metric.isCompact_of_isClosed_isBounded isClosed_closure hs.closure).measure_lt_top
 #align metric.bounded.measure_lt_top Bornology.IsBounded.measure_lt_top
 
@@ -1347,7 +1347,7 @@ protected def FiniteSpanningSetsIn.disjointed {μ : Measure α}
     (S : μ.FiniteSpanningSetsIn { s | MeasurableSet s }) :
     μ.FiniteSpanningSetsIn { s | MeasurableSet s } :=
   ⟨disjointed S.set, MeasurableSet.disjointed S.set_mem, fun n =>
-    lt_of_le_of_lt (measure_mono _ (disjointed_subset S.set n)) (S.finite _),
+    lt_of_le_of_lt (measure_mono (disjointed_subset S.set n)) (S.finite _),
     S.spanning ▸ iUnion_disjointed⟩
 #align measure_theory.measure.finite_spanning_sets_in.disjointed MeasureTheory.Measure.FiniteSpanningSetsIn.disjointed
 
@@ -1408,13 +1408,12 @@ protected theorem mono (hf : f ≤ g) (hμ : μ ≤ ν) : ν.FiniteAtFilter g �
 #align measure_theory.measure.finite_at_filter.mono MeasureTheory.Measure.FiniteAtFilter.mono
 
 protected theorem eventually (h : μ.FiniteAtFilter f) : ∀ᶠ s in f.smallSets, μ s < ∞ :=
-  (eventually_smallSets' fun _s _t hst ht => (measure_mono _ hst).trans_lt ht).2 h
+  (eventually_smallSets' fun _s _t hst ht => (measure_mono hst).trans_lt ht).2 h
 #align measure_theory.measure.finite_at_filter.eventually MeasureTheory.Measure.FiniteAtFilter.eventually
 
 theorem filterSup : μ.FiniteAtFilter f → μ.FiniteAtFilter g → μ.FiniteAtFilter (f ⊔ g) :=
   fun ⟨s, hsf, hsμ⟩ ⟨t, htg, htμ⟩ =>
-  ⟨s ∪ t, union_mem_sup hsf htg,
-    (measure_union_le _ s t).trans_lt (ENNReal.add_lt_top.2 ⟨hsμ, htμ⟩)⟩
+  ⟨s ∪ t, union_mem_sup hsf htg, (measure_union_le s t).trans_lt (ENNReal.add_lt_top.2 ⟨hsμ, htμ⟩)⟩
 #align measure_theory.measure.finite_at_filter.filter_sup MeasureTheory.Measure.FiniteAtFilter.filterSup
 
 end FiniteAtFilter
@@ -1426,7 +1425,7 @@ theorem finiteAt_nhdsWithin [TopologicalSpace α] {_m0 : MeasurableSpace α} (μ
 
 @[simp]
 theorem finiteAt_principal : μ.FiniteAtFilter (𝓟 s) ↔ μ s < ∞ :=
-  ⟨fun ⟨_t, ht, hμ⟩ => (measure_mono _ ht).trans_lt hμ, fun h => ⟨s, mem_principal_self s, h⟩⟩
+  ⟨fun ⟨_t, ht, hμ⟩ => (measure_mono ht).trans_lt hμ, fun h => ⟨s, mem_principal_self s, h⟩⟩
 #align measure_theory.measure.finite_at_principal MeasureTheory.Measure.finiteAt_principal
 
 theorem isLocallyFiniteMeasure_of_le [TopologicalSpace α] {_m : MeasurableSpace α} {μ ν : Measure α}
@@ -1455,7 +1454,7 @@ theorem exists_open_superset_measure_lt_top' (h : IsCompact s)
   · rintro s t ⟨U, hsU, hUo, hU⟩ ⟨V, htV, hVo, hV⟩
     refine'
       ⟨U ∪ V, union_subset_union hsU htV, hUo.union hVo,
-        (measure_union_le _ _ _).trans_lt <| ENNReal.add_lt_top.2 ⟨hU, hV⟩⟩
+        (measure_union_le _ _).trans_lt <| ENNReal.add_lt_top.2 ⟨hU, hV⟩⟩
   · intro x hx
     rcases (hμ x hx).exists_mem_basis (nhds_basis_opens _) with ⟨U, ⟨hx, hUo⟩, hU⟩
     exact ⟨U, nhdsWithin_le_nhds (hUo.mem_nhds hx), U, Subset.rfl, hUo, hU⟩
@@ -1470,8 +1469,8 @@ theorem exists_open_superset_measure_lt_top (h : IsCompact s) (μ : Measure α)
 
 theorem measure_lt_top_of_nhdsWithin (h : IsCompact s) (hμ : ∀ x ∈ s, μ.FiniteAtFilter (𝓝[s] x)) :
     μ s < ∞ :=
-  IsCompact.induction_on h (by simp) (fun s t hst ht => (measure_mono _ hst).trans_lt ht)
-    (fun s t hs ht => (measure_union_le _ s t).trans_lt (ENNReal.add_lt_top.2 ⟨hs, ht⟩)) hμ
+  IsCompact.induction_on h (by simp) (fun s t hst ht => (measure_mono hst).trans_lt ht)
+    (fun s t hs ht => (measure_union_le s t).trans_lt (ENNReal.add_lt_top.2 ⟨hs, ht⟩)) hμ
 #align is_compact.measure_lt_top_of_nhds_within IsCompact.measure_lt_top_of_nhdsWithin
 
 theorem measure_zero_of_nhdsWithin (hs : IsCompact s) :
@@ -1576,15 +1575,15 @@ theorem measure_Icc_lt_top : μ (Icc a b) < ∞ :=
 #align measure_Icc_lt_top measure_Icc_lt_top
 
 theorem measure_Ico_lt_top : μ (Ico a b) < ∞ :=
-  (measure_mono _ Ico_subset_Icc_self).trans_lt measure_Icc_lt_top
+  (measure_mono Ico_subset_Icc_self).trans_lt measure_Icc_lt_top
 #align measure_Ico_lt_top measure_Ico_lt_top
 
 theorem measure_Ioc_lt_top : μ (Ioc a b) < ∞ :=
-  (measure_mono _ Ioc_subset_Icc_self).trans_lt measure_Icc_lt_top
+  (measure_mono Ioc_subset_Icc_self).trans_lt measure_Icc_lt_top
 #align measure_Ioc_lt_top measure_Ioc_lt_top
 
 theorem measure_Ioo_lt_top : μ (Ioo a b) < ∞ :=
-  (measure_mono _ Ioo_subset_Icc_self).trans_lt measure_Icc_lt_top
+  (measure_mono Ioo_subset_Icc_self).trans_lt measure_Icc_lt_top
 #align measure_Ioo_lt_top measure_Ioo_lt_top
 
 end MeasureIxx

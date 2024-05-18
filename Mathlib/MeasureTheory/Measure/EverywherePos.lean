@@ -97,7 +97,7 @@ protected lemma _root_.IsCompact.everywherePosSubset (hs : IsCompact s) :
 lemma measure_eq_zero_of_subset_diff_everywherePosSubset
     (hk : IsCompact k) (h'k : k ⊆ s \ μ.everywherePosSubset s) : μ k = 0 := by
   apply hk.induction_on (p := fun t ↦ μ t = 0)
-  · exact measure_empty _
+  · exact measure_empty
   · exact fun s t hst ht ↦ measure_mono_null hst ht
   · exact fun s t hs ht ↦ measure_union_null hs ht
   · intro x hx
@@ -120,7 +120,7 @@ lemma everywherePosSubset_ae_eq_of_measure_ne_top
     [OpensMeasurableSpace α] [InnerRegularCompactLTTop μ] (hs : MeasurableSet s) (h's : μ s ≠ ∞) :
     μ.everywherePosSubset s =ᵐ[μ] s := by
   have A : μ (s \ μ.everywherePosSubset s) ≠ ∞ :=
-    ((measure_mono _ (diff_subset _ _ )).trans_lt h's.lt_top).ne
+    ((measure_mono (diff_subset _ _ )).trans_lt h's.lt_top).ne
   simp only [ae_eq_set, diff_eq_empty.mpr (everywherePosSubset_subset μ s), measure_empty,
     true_and, (hs.diff hs.everywherePosSubset).measure_eq_iSup_isCompact_of_ne_top A,
     ENNReal.iSup_eq_zero]
@@ -142,7 +142,7 @@ lemma isEverywherePos_everywherePosSubset
   have B : (u ∩ μ.everywherePosSubset s : Set α) =ᵐ[μ] (u ∩ s : Set α) :=
     ae_eq_set_inter (ae_eq_refl _) (everywherePosSubset_ae_eq hs)
   rw [← B.measure_eq] at A
-  exact A.trans_le (measure_mono _ hu)
+  exact A.trans_le (measure_mono hu)
 
 /-- In a space with an inner regular measure for finite measure sets, the everywhere positive subset
 of a measurable set of finite measure is itself everywhere positive. This is not obvious as
@@ -160,7 +160,7 @@ lemma isEverywherePos_everywherePosSubset_of_measure_ne_top
   have B : (u ∩ μ.everywherePosSubset s : Set α) =ᵐ[μ] (u ∩ s : Set α) :=
     ae_eq_set_inter (ae_eq_refl _) (everywherePosSubset_ae_eq_of_measure_ne_top hs h's)
   rw [← B.measure_eq] at A
-  exact A.trans_le (measure_mono _ hu)
+  exact A.trans_le (measure_mono hu)
 
 lemma IsEverywherePos.smul_measure (hs : IsEverywherePos μ s) {c : ℝ≥0∞} (hc : c ≠ 0) :
     IsEverywherePos (c • μ) s :=
@@ -176,7 +176,7 @@ lemma IsEverywherePos.of_forall_exists_nhds_eq (hs : IsEverywherePos μ s)
     (h : ∀ x ∈ s, ∃ t ∈ 𝓝 x, ∀ u ⊆ t, ν u = μ u) : IsEverywherePos ν s := by
   intro x hx n hn
   rcases h x hx with ⟨t, t_mem, ht⟩
-  apply lt_of_lt_of_le _ (measure_mono _ (inter_subset_left n t))
+  apply lt_of_lt_of_le _ (measure_mono (inter_subset_left n t))
   rw [ht _ (inter_subset_right n t)]
   exact hs x hx _ (inter_mem hn (mem_nhdsWithin_of_mem_nhds t_mem))
 
@@ -193,7 +193,7 @@ lemma isEverywherePos_iff_of_forall_exists_nhds_eq (h : ∀ x ∈ s, ∃ t ∈ �
 lemma _root_.IsOpen.isEverywherePos [IsOpenPosMeasure μ] (hs : IsOpen s) : IsEverywherePos μ s := by
   intro x xs n hn
   rcases mem_nhdsWithin.1 hn with ⟨u, u_open, xu, hu⟩
-  apply lt_of_lt_of_le _ (measure_mono _ hu)
+  apply lt_of_lt_of_le _ (measure_mono hu)
   exact (u_open.inter hs).measure_pos μ ⟨x, ⟨xu, xs⟩⟩
 
 section TopologicalGroup

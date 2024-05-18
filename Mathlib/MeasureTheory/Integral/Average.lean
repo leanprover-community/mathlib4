@@ -593,7 +593,7 @@ avoiding a null set. -/
 theorem exists_not_mem_null_le_average (hμ : μ ≠ 0) (hf : Integrable f μ) (hN : μ N = 0) :
     ∃ x, x ∉ N ∧ f x ≤ ⨍ a, f a ∂μ := by
   have := measure_le_average_pos hμ hf
-  rw [← measure_diff_null _ _ hN] at this
+  rw [← measure_diff_null hN] at this
   obtain ⟨x, hx, hxN⟩ := nonempty_of_measure_ne_zero this.ne'
   exact ⟨x, hxN, hx⟩
 #align measure_theory.exists_not_mem_null_le_average MeasureTheory.exists_not_mem_null_le_average
@@ -668,8 +668,8 @@ theorem measure_le_setLaverage_pos (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞)
     (hf.aestronglyMeasurable.nullMeasurableSet_le aestronglyMeasurable_const)]
   rw [← setOf_inter_eq_sep, ← Measure.restrict_apply₀
     (hf.ennreal_toReal.aestronglyMeasurable.nullMeasurableSet_le aestronglyMeasurable_const),
-    ← measure_diff_null _ _ (measure_eq_top_of_lintegral_ne_top hf h)] at this
-  refine this.trans_le (measure_mono _ ?_)
+    ← measure_diff_null (measure_eq_top_of_lintegral_ne_top hf h)] at this
+  refine' this.trans_le (measure_mono _)
   rintro x ⟨hfx, hx⟩
   dsimp at hfx
   rwa [← toReal_laverage hf, toReal_le_toReal hx (setLaverage_lt_top h).ne] at hfx
@@ -689,9 +689,9 @@ theorem measure_setLaverage_le_pos (hμ : μ s ≠ 0) (hs : NullMeasurableSet s 
   have :=
     measure_setAverage_le_pos hμ hμ₁ (integrable_toReal_of_lintegral_ne_top hg.aemeasurable hint)
   simp_rw [← setOf_inter_eq_sep, ← Measure.restrict_apply₀' hs, hfg']
-  rw [← setOf_inter_eq_sep, ← Measure.restrict_apply₀' hs,
-    ← measure_diff_null _ _ (measure_eq_top_of_lintegral_ne_top hg.aemeasurable hint)] at this
-  refine this.trans_le (measure_mono _ ?_)
+  rw [← setOf_inter_eq_sep, ← Measure.restrict_apply₀' hs, ←
+    measure_diff_null (measure_eq_top_of_lintegral_ne_top hg.aemeasurable hint)] at this
+  refine' this.trans_le (measure_mono _)
   rintro x ⟨hfx, hx⟩
   dsimp at hfx
   rw [← toReal_laverage hg.aemeasurable, toReal_le_toReal (setLaverage_lt_top hint).ne hx] at hfx
@@ -733,7 +733,7 @@ avoiding a null set. -/
 theorem exists_not_mem_null_laverage_le (hμ : μ ≠ 0) (hint : ∫⁻ a : α, f a ∂μ ≠ ∞) (hN : μ N = 0) :
     ∃ x, x ∉ N ∧ ⨍⁻ a, f a ∂μ ≤ f x := by
   have := measure_laverage_le_pos hμ hint
-  rw [← measure_diff_null _ _ hN] at this
+  rw [← measure_diff_null hN] at this
   obtain ⟨x, hx, hxN⟩ := nonempty_of_measure_ne_zero this.ne'
   exact ⟨x, hxN, hx⟩
 #align measure_theory.exists_not_mem_null_laverage_le MeasureTheory.exists_not_mem_null_laverage_le
@@ -760,7 +760,7 @@ avoiding a null set. -/
 theorem exists_not_mem_null_le_laverage (hμ : μ ≠ 0) (hf : AEMeasurable f μ) (hN : μ N = 0) :
     ∃ x, x ∉ N ∧ f x ≤ ⨍⁻ a, f a ∂μ := by
   have := measure_le_laverage_pos hμ hf
-  rw [← measure_diff_null _ _ hN] at this
+  rw [← measure_diff_null hN] at this
   obtain ⟨x, hx, hxN⟩ := nonempty_of_measure_ne_zero this.ne'
   exact ⟨x, hxN, hx⟩
 #align measure_theory.exists_not_mem_null_le_laverage MeasureTheory.exists_not_mem_null_le_laverage

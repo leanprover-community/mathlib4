@@ -291,7 +291,7 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
         rcases (mem_image _ _ _).1 r'mem with ⟨a, hav, rfl⟩
         exact ⟨a, hav, hr'⟩
       refine' ⟨8 * R0, _, _⟩
-      · apply lt_of_le_of_lt (measure_mono _ _) (hRμ (c a))
+      · apply lt_of_le_of_lt (measure_mono _) (hRμ (c a))
         apply closedBall_subset_closedBall'
         rw [dist_comm]
         linarith [Idist_v a hav, (ut' (vu hav)).2]
@@ -310,7 +310,7 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
       (∑' a : v, μ (B a)) = μ (⋃ a ∈ v, B a) := by
         rw [measure_biUnion (u_count.mono vu) _ fun a ha => (h't _ (vu.trans ut ha)).measurableSet]
         exact u_disj.subset vu
-      _ ≤ μ (closedBall x K) := (measure_mono _ (iUnion₂_subset fun a ha => hK a (vu ha) ha.2))
+      _ ≤ μ (closedBall x K) := (measure_mono (iUnion₂_subset fun a ha => hK a (vu ha) ha.2))
       _ < ∞ := μK
   -- we can obtain a finite subfamily of `v`, such that the measures of the remaining elements
   -- add up to an arbitrarily small number, say `ε / C`.
@@ -382,8 +382,8 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
   haveI : Countable v := (u_count.mono vu).to_subtype
   calc
     μ ((s \ ⋃ a ∈ u, B a) ∩ ball x (R x)) ≤ μ (⋃ a : { a // a ∉ w }, closedBall (c a) (3 * r a)) :=
-      measure_mono _ M
-    _ ≤ ∑' a : { a // a ∉ w }, μ (closedBall (c a) (3 * r a)) := measure_iUnion_le _ _
+      measure_mono M
+    _ ≤ ∑' a : { a // a ∉ w }, μ (closedBall (c a) (3 * r a)) := measure_iUnion_le _
     _ ≤ ∑' a : { a // a ∉ w }, C * μ (B a) := (ENNReal.tsum_le_tsum fun a => μB a (ut (vu a.1.2)))
     _ = C * ∑' a : { a // a ∉ w }, μ (B a) := ENNReal.tsum_mul_left
     _ ≤ C * (ε / C) := by gcongr

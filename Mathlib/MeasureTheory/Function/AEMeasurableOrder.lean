@@ -63,7 +63,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
   have μt : μ t ≤ 0 :=
     calc
       μ t ≤ ∑' (p : s) (q : ↥(s ∩ Ioi p)), μ (u' p ∩ v p q) := by
-        refine (measure_iUnion_le _ _).trans ?_
+        refine (measure_iUnion_le _).trans ?_
         refine ENNReal.tsum_le_tsum fun p => ?_
         haveI := (s_count.mono (inter_subset_left _ (Ioi ↑p))).to_subtype
         apply measure_iUnion_le

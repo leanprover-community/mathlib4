@@ -576,7 +576,7 @@ theorem Monotone.locallyIntegrable [IsLocallyFiniteMeasure μ] (hmono : Monotone
   refine' ⟨Icc a b, hab, _⟩
   exact
     (hmono.monotoneOn _).integrableOn_of_measure_ne_top (isLeast_Icc ab) (isGreatest_Icc ab)
-      ((measure_mono _ abU).trans_lt h'U).ne measurableSet_Icc
+      ((measure_mono abU).trans_lt h'U).ne measurableSet_Icc
 #align monotone.locally_integrable Monotone.locallyIntegrable
 
 theorem Antitone.locallyIntegrable [IsLocallyFiniteMeasure μ] (hanti : Antitone f) :

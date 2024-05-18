@@ -51,7 +51,7 @@ instance (priority := 100) [Nonempty X] : NeZero μ :=
   ⟨measure_univ_pos.mp <| isOpen_univ.measure_pos μ univ_nonempty⟩
 
 theorem _root_.IsOpen.measure_pos_iff (hU : IsOpen U) : 0 < μ U ↔ U.Nonempty :=
-  ⟨fun h => nonempty_iff_ne_empty.2 fun he => h.ne' <| he.symm ▸ measure_empty _, hU.measure_pos μ⟩
+  ⟨fun h => nonempty_iff_ne_empty.2 fun he => h.ne' <| he.symm ▸ measure_empty, hU.measure_pos μ⟩
 #align is_open.measure_pos_iff IsOpen.measure_pos_iff
 
 theorem _root_.IsOpen.measure_eq_zero_iff (hU : IsOpen U) : μ U = 0 ↔ U = ∅ := by
@@ -60,7 +60,7 @@ theorem _root_.IsOpen.measure_eq_zero_iff (hU : IsOpen U) : μ U = 0 ↔ U = ∅
 #align is_open.measure_eq_zero_iff IsOpen.measure_eq_zero_iff
 
 theorem measure_pos_of_nonempty_interior (h : (interior s).Nonempty) : 0 < μ s :=
-  (isOpen_interior.measure_pos μ h).trans_le (measure_mono _ interior_subset)
+  (isOpen_interior.measure_pos μ h).trans_le (measure_mono interior_subset)
 #align measure_theory.measure.measure_pos_of_nonempty_interior MeasureTheory.Measure.measure_pos_of_nonempty_interior
 
 theorem measure_pos_of_mem_nhds (h : s ∈ 𝓝 x) : 0 < μ s :=
@@ -227,7 +227,7 @@ theorem measure_ball_pos (x : X) {r : ℝ} (hr : 0 < r) : 0 < μ (ball x r) :=
 
 /-- See also `Metric.measure_closedBall_pos_iff`. -/
 theorem measure_closedBall_pos (x : X) {r : ℝ} (hr : 0 < r) : 0 < μ (closedBall x r) :=
-  (measure_ball_pos μ x hr).trans_le (measure_mono _ ball_subset_closedBall)
+  (measure_ball_pos μ x hr).trans_le (measure_mono ball_subset_closedBall)
 #align metric.measure_closed_ball_pos Metric.measure_closedBall_pos
 
 @[simp] lemma measure_closedBall_pos_iff {X : Type*} [MetricSpace X] {m : MeasurableSpace X}
@@ -249,7 +249,7 @@ theorem measure_ball_pos (x : X) {r : ℝ≥0∞} (hr : r ≠ 0) : 0 < μ (ball 
 #align emetric.measure_ball_pos EMetric.measure_ball_pos
 
 theorem measure_closedBall_pos (x : X) {r : ℝ≥0∞} (hr : r ≠ 0) : 0 < μ (closedBall x r) :=
-  (measure_ball_pos μ x hr).trans_le (measure_mono _ ball_subset_closedBall)
+  (measure_ball_pos μ x hr).trans_le (measure_mono ball_subset_closedBall)
 #align emetric.measure_closed_ball_pos EMetric.measure_closedBall_pos
 
 end EMetric

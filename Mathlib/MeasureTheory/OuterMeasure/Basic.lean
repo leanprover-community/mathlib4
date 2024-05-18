@@ -45,27 +45,28 @@ variable {α ι F : Type*} [FunLike F (Set α) ℝ≥0∞] [OuterMeasureClass F 
   {μ : F} {s t : Set α}
 
 @[simp]
-theorem measure_empty (μ : F) : μ ∅ = 0 := OuterMeasureClass.measure_empty μ
+theorem measure_empty : μ ∅ = 0 := OuterMeasureClass.measure_empty μ
 #align measure_theory.measure_empty MeasureTheory.measure_empty
 
 @[mono, gcongr]
-theorem measure_mono (μ : F) (h : s ⊆ t) : μ s ≤ μ t :=
+theorem measure_mono (h : s ⊆ t) : μ s ≤ μ t :=
   OuterMeasureClass.measure_mono μ h
 #align measure_theory.measure_mono MeasureTheory.measure_mono
 
 theorem measure_mono_null (h : s ⊆ t) (ht : μ t = 0) : μ s = 0 :=
-  eq_bot_mono (measure_mono μ h) ht
+  eq_bot_mono (measure_mono h) ht
 #align measure_theory.measure_mono_null MeasureTheory.measure_mono_null
 
 theorem measure_pos_of_superset (h : s ⊆ t) (hs : μ s ≠ 0) : 0 < μ t :=
-  hs.bot_lt.trans_le (measure_mono μ h)
+  hs.bot_lt.trans_le (measure_mono h)
 
-theorem measure_iUnion_le (μ : F) [Countable ι] (s : ι → Set α) : μ (⋃ i, s i) ≤ ∑' i, μ (s i) := by
-  refine rel_iSup_tsum m m.empty (· ≤ ·) (fun t ↦ ?_) _
+theorem measure_iUnion_le [Countable ι] (s : ι → Set α) : μ (⋃ i, s i) ≤ ∑' i, μ (s i) := by
+  refine rel_iSup_tsum μ measure_empty (· ≤ ·) (fun t ↦ ?_) _
   calc
-    m (⋃ i, t i) = m (⋃ i, disjointed t i) := by rw [iUnion_disjointed]
-    _ ≤ ∑' i, m (disjointed t i) := measure_iUnion_nat_le _ (disjoint_disjointed _)
-    _ ≤ ∑' i, m (t i) := ENNReal.tsum_le_tsum fun _ ↦ measure_mono <| disjointed_subset _ _
+    μ (⋃ i, t i) = μ (⋃ i, disjointed t i) := by rw [iUnion_disjointed]
+    _ ≤ ∑' i, μ (disjointed t i) :=
+      OuterMeasureClass.measure_iUnion_nat_le _ _ (disjoint_disjointed _)
+    _ ≤ ∑' i, μ (t i) := by gcongr; apply disjointed_subset
 #align measure_theory.measure_Union_le MeasureTheory.measure_iUnion_le
 
 theorem measure_biUnion_le {I : Set ι} (μ : F) (hI : I.Countable) (s : ι → Set α) :
@@ -75,25 +76,25 @@ theorem measure_biUnion_le {I : Set ι} (μ : F) (hI : I.Countable) (s : ι → 
   apply measure_iUnion_le
 #align measure_theory.measure_bUnion_le MeasureTheory.measure_biUnion_le
 
-theorem measure_biUnion_finset_le (μ : F) (I : Finset ι) (s : ι → Set α) :
+theorem measure_biUnion_finset_le (I : Finset ι) (s : ι → Set α) :
     μ (⋃ i ∈ I, s i) ≤ ∑ i in I, μ (s i) :=
   (measure_biUnion_le μ I.countable_toSet s).trans_eq <| I.tsum_subtype (μ <| s ·)
 #align measure_theory.measure_bUnion_finset_le MeasureTheory.measure_biUnion_finset_le
 
 theorem measure_iUnion_fintype_le [Fintype ι] (μ : F) (s : ι → Set α) :
     μ (⋃ i, s i) ≤ ∑ i, μ (s i) := by
-  simpa using measure_biUnion_finset_le μ Finset.univ s
+  simpa using measure_biUnion_finset_le Finset.univ s
 #align measure_theory.measure_Union_fintype_le MeasureTheory.measure_iUnion_fintype_le
 
-theorem measure_union_le (μ : F) (s t : Set α) : μ (s ∪ t) ≤ μ s + μ t := by
+theorem measure_union_le (s t : Set α) : μ (s ∪ t) ≤ μ s + μ t := by
   simpa [union_eq_iUnion] using measure_iUnion_fintype_le μ (cond · s t)
 #align measure_theory.measure_union_le MeasureTheory.measure_union_le
 
 theorem measure_le_inter_add_diff (μ : F) (s t : Set α) : μ s ≤ μ (s ∩ t) + μ (s \ t) := by
-  simpa using measure_union_le μ (s ∩ t) (s \ t)
+  simpa using measure_union_le (s ∩ t) (s \ t)
 
-theorem measure_diff_null (μ : F) (s : Set α) (ht : μ t = 0) : μ (s \ t) = μ s :=
-  (measure_mono μ <| diff_subset _ _).antisymm <| calc
+theorem measure_diff_null (ht : μ t = 0) : μ (s \ t) = μ s :=
+  (measure_mono <| diff_subset _ _).antisymm <| calc
     μ s ≤ μ (s ∩ t) + μ (s \ t) := measure_le_inter_add_diff _ _ _
     _ ≤ μ t + μ (s \ t) := by gcongr; apply inter_subset_right
     _ = μ (s \ t) := by simp [ht]
@@ -103,7 +104,7 @@ theorem measure_biUnion_null_iff {I : Set ι} (hI : I.Countable) {s : ι → Set
     μ (⋃ i ∈ I, s i) = 0 ↔ ∀ i ∈ I, μ (s i) = 0 := by
   refine ⟨fun h i hi ↦ measure_mono_null (subset_biUnion_of_mem hi) h, fun h ↦ ?_⟩
   have _ := hI.to_subtype
-  simpa [h] using measure_iUnion_le μ fun x : I ↦ s x
+  simpa [h] using measure_iUnion_le (μ := μ) fun x : I ↦ s x
 #align measure_theory.measure_bUnion_null_iff MeasureTheory.measure_biUnion_null_iff
 
 theorem measure_sUnion_null_iff {S : Set (Set α)} (hS : S.Countable) :
@@ -133,7 +134,7 @@ If `μ (S \ s n)` tends to zero along some nontrivial filter (usually `Filter.at
 then `μ S = ⨆ n, μ (s n)`. -/
 theorem measure_iUnion_of_tendsto_zero {ι} (μ : F) {s : ι → Set α} (l : Filter ι) [NeBot l]
     (h0 : Tendsto (fun k => μ ((⋃ n, s n) \ s k)) l (𝓝 0)) : μ (⋃ n, s n) = ⨆ n, μ (s n) := by
-  refine le_antisymm ?_ <| iSup_le fun n ↦ measure_mono μ <| subset_iUnion _ _
+  refine le_antisymm ?_ <| iSup_le fun n ↦ measure_mono <| subset_iUnion _ _
   set S := ⋃ n, s n
   set M := ⨆ n, μ (s n)
   have A : ∀ k, μ S ≤ M + μ (S \ s k) := fun k ↦ calc
@@ -170,7 +171,7 @@ namespace OuterMeasure
 variable {α β : Type*} {m : OuterMeasure α}
 
 @[deprecated measure_empty (since := "2024-05-14")]
-theorem empty' (m : OuterMeasure α) : m ∅ = 0 := measure_empty m
+theorem empty' (m : OuterMeasure α) : m ∅ = 0 := measure_empty
 #align measure_theory.outer_measure.empty' MeasureTheory.OuterMeasure.empty'
 
 @[deprecated measure_mono (since := "2024-05-14")]
@@ -191,7 +192,7 @@ theorem pos_of_subset_ne_zero (m : OuterMeasure α) {a b : Set α} (hs : a ⊆ b
 @[deprecated measure_iUnion_le (since := "2024-05-14")]
 protected theorem iUnion (m : OuterMeasure α) {β} [Countable β] (s : β → Set α) :
     m (⋃ i, s i) ≤ ∑' i, m (s i) :=
-  measure_iUnion_le m s
+  measure_iUnion_le s
 #align measure_theory.outer_measure.Union MeasureTheory.OuterMeasure.iUnion
 
 @[deprecated measure_biUnion_null_iff (since := "2024-05-14")]
@@ -224,12 +225,12 @@ theorem iUnion_null_iff' (m : OuterMeasure α) {ι : Prop} {s : ι → Set α} :
 @[deprecated measure_biUnion_finset_le (since := "2024-05-14")]
 protected theorem iUnion_finset (m : OuterMeasure α) (s : β → Set α) (t : Finset β) :
     m (⋃ i ∈ t, s i) ≤ ∑ i in t, m (s i) :=
-  measure_biUnion_finset_le m t s
+  measure_biUnion_finset_le t s
 #align measure_theory.outer_measure.Union_finset MeasureTheory.OuterMeasure.iUnion_finset
 
 @[deprecated measure_union_le (since := "2024-05-14")]
 protected theorem union (m : OuterMeasure α) (s₁ s₂ : Set α) : m (s₁ ∪ s₂) ≤ m s₁ + m s₂ :=
-  measure_union_le m s₁ s₂
+  measure_union_le s₁ s₂
 #align measure_theory.outer_measure.union MeasureTheory.OuterMeasure.union
 
 /-- If a set has zero measure in a neighborhood of each of its points, then it has zero measure
@@ -285,7 +286,7 @@ theorem le_inter_add_diff {m : OuterMeasure α} {t : Set α} (s : Set α) :
 
 @[deprecated measure_diff_null (since := "2024-05-14")]
 theorem diff_null (m : OuterMeasure α) (s : Set α) {t : Set α} (ht : m t = 0) : m (s \ t) = m s :=
-  measure_diff_null m s ht
+  measure_diff_null ht
 #align measure_theory.outer_measure.diff_null MeasureTheory.OuterMeasure.diff_null
 
 @[deprecated measure_union_null (since := "2024-05-14")]

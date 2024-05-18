@@ -202,13 +202,13 @@ theorem exists_compl_positive_negative :
   refine' ⟨S, hS₁, _, _, hS₂, hS₃⟩
   · refine' restrict_le_restrict_of_subset_le _ _ fun A hA hA₁ => _
     rw [toSignedMeasure, toSignedMeasure_sub_apply hA,
-      show j.posPart A = 0 from nonpos_iff_eq_zero.1 (hS₂ ▸ measure_mono _ hA₁),
-      ENNReal.zero_toReal, zero_sub, neg_le, zero_apply, neg_zero]
+      show j.posPart A = 0 from nonpos_iff_eq_zero.1 (hS₂ ▸ measure_mono hA₁), ENNReal.zero_toReal,
+      zero_sub, neg_le, zero_apply, neg_zero]
     exact ENNReal.toReal_nonneg
   · refine' restrict_le_restrict_of_subset_le _ _ fun A hA hA₁ => _
     rw [toSignedMeasure, toSignedMeasure_sub_apply hA,
-      show j.negPart A = 0 from nonpos_iff_eq_zero.1 (hS₃ ▸ measure_mono _ hA₁),
-      ENNReal.zero_toReal, sub_zero]
+      show j.negPart A = 0 from nonpos_iff_eq_zero.1 (hS₃ ▸ measure_mono hA₁), ENNReal.zero_toReal,
+      sub_zero]
     exact ENNReal.toReal_nonneg
 #align measure_theory.jordan_decomposition.exists_compl_positive_negative MeasureTheory.JordanDecomposition.exists_compl_positive_negative
 
@@ -394,12 +394,12 @@ theorem toSignedMeasure_injective : Injective <| @JordanDecomposition.toSignedMe
   have hμ₁ : (j₁.posPart i).toReal = j₁.toSignedMeasure (i ∩ Sᶜ) := by
     rw [toSignedMeasure, toSignedMeasure_sub_apply (hi.inter hS₁.compl),
       show j₁.negPart (i ∩ Sᶜ) = 0 from
-        nonpos_iff_eq_zero.1 (hS₅ ▸ measure_mono _ (Set.inter_subset_right _ _)),
+        nonpos_iff_eq_zero.1 (hS₅ ▸ measure_mono (Set.inter_subset_right _ _)),
       ENNReal.zero_toReal, sub_zero]
     conv_lhs => rw [← Set.inter_union_compl i S]
     rw [measure_union,
       show j₁.posPart (i ∩ S) = 0 from
-        nonpos_iff_eq_zero.1 (hS₄ ▸ measure_mono _ (Set.inter_subset_right _ _)),
+        nonpos_iff_eq_zero.1 (hS₄ ▸ measure_mono (Set.inter_subset_right _ _)),
       zero_add]
     · refine'
         Set.disjoint_of_subset_left (Set.inter_subset_right _ _)
@@ -408,12 +408,12 @@ theorem toSignedMeasure_injective : Injective <| @JordanDecomposition.toSignedMe
   have hμ₂ : (j₂.posPart i).toReal = j₂.toSignedMeasure (i ∩ Tᶜ) := by
     rw [toSignedMeasure, toSignedMeasure_sub_apply (hi.inter hT₁.compl),
       show j₂.negPart (i ∩ Tᶜ) = 0 from
-        nonpos_iff_eq_zero.1 (hT₅ ▸ measure_mono _ (Set.inter_subset_right _ _)),
+        nonpos_iff_eq_zero.1 (hT₅ ▸ measure_mono (Set.inter_subset_right _ _)),
       ENNReal.zero_toReal, sub_zero]
     conv_lhs => rw [← Set.inter_union_compl i T]
     rw [measure_union,
       show j₂.posPart (i ∩ T) = 0 from
-        nonpos_iff_eq_zero.1 (hT₄ ▸ measure_mono _ (Set.inter_subset_right _ _)),
+        nonpos_iff_eq_zero.1 (hT₄ ▸ measure_mono (Set.inter_subset_right _ _)),
       zero_add]
     · exact
         Set.disjoint_of_subset_left (Set.inter_subset_right _ _)

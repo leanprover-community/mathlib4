@@ -246,7 +246,7 @@ theorem Memℒp.snormEssSup_indicator_norm_ge_eq_zero (hf : Memℒp f ∞ μ)
         · exact ENNReal.lt_add_right hbdd.ne one_ne_zero
         · exact (ENNReal.add_lt_top.2 ⟨hbdd, ENNReal.one_lt_top⟩).ne
       rw [← nonpos_iff_eq_zero]
-      refine' (measure_mono _ this).trans _
+      refine' (measure_mono this).trans _
       have hle := coe_nnnorm_ae_le_snormEssSup f μ
       simp_rw [ae_iff, not_le] at hle
       exact nonpos_iff_eq_zero.2 hle
@@ -539,7 +539,7 @@ theorem tendsto_Lp_of_tendsto_ae_of_meas [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp
       · refine' Real.rpow_le_rpow ENNReal.toReal_nonneg
           (ENNReal.toReal_le_of_le_ofReal (measureUnivNNReal_pos hμ).le _) hdivp
         rw [ENNReal.ofReal_coe_nnreal, coe_measureUnivNNReal]
-        exact measure_mono _ (Set.subset_univ _)
+        exact measure_mono (Set.subset_univ _)
       · exact Real.rpow_pos_of_pos (measureUnivNNReal_pos hμ) _
     · positivity
   have : ENNReal.ofReal (ε.toReal / 3) = ε / 3 := by

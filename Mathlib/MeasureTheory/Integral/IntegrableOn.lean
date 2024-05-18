@@ -554,7 +554,7 @@ lemma IntegrableAtFilter.eq_zero_of_tendsto
   let v := u ∩ {b | ε < ‖f b‖}
   have hv : IntegrableOn f v μ := hu.mono_set (inter_subset_left _ _)
   have vl : v ∈ l := inter_mem ul ((tendsto_order.1 hf.norm).1 _ hε)
-  have : μ.restrict v v < ∞ := lt_of_le_of_lt (measure_mono _ (inter_subset_right _ _))
+  have : μ.restrict v v < ∞ := lt_of_le_of_lt (measure_mono (inter_subset_right _ _))
     (Integrable.measure_gt_lt_top hv.norm εpos)
   have : μ v ≠ ∞ := ne_of_lt (by simpa only [Measure.restrict_apply_self])
   exact this (h' v vl)

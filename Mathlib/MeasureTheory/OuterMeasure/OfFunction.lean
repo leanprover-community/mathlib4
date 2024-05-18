@@ -140,7 +140,7 @@ theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
     (h : ∀ u, (s ∩ u).Nonempty → (t ∩ u).Nonempty → m u = ∞) :
     OuterMeasure.ofFunction m m_empty (s ∪ t) =
       OuterMeasure.ofFunction m m_empty s + OuterMeasure.ofFunction m m_empty t := by
-  refine' le_antisymm (OuterMeasure.union _ _ _) (le_iInf fun f => le_iInf fun hf => _)
+  refine le_antisymm (measure_union_le _ _) (le_iInf₂ fun f hf ↦ ?_)
   set μ := OuterMeasure.ofFunction m m_empty
   rcases Classical.em (∃ i, (s ∩ f i).Nonempty ∧ (t ∩ f i).Nonempty) with (⟨i, hs, ht⟩ | he)
   · calc
@@ -167,7 +167,6 @@ theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
       (tsum_le_tsum_of_inj (↑) Subtype.coe_injective (fun _ _ => zero_le _) (fun _ => le_rfl)
         ENNReal.summable ENNReal.summable)
     _ ≤ ∑' i, m (f i) := ENNReal.tsum_le_tsum fun i => ofFunction_le _
-
 #align measure_theory.outer_measure.of_function_union_of_top_of_nonempty_inter MeasureTheory.OuterMeasure.ofFunction_union_of_top_of_nonempty_inter
 
 theorem comap_ofFunction {β} (f : β → α) (h : Monotone m ∨ Surjective f) :

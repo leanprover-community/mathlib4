@@ -101,7 +101,7 @@ theorem volume_univ : volume (univ : Set ℝ) = ∞ :=
   ENNReal.eq_top_of_forall_nnreal_le fun r =>
     calc
       (r : ℝ≥0∞) = volume (Icc (0 : ℝ) r) := by simp
-      _ ≤ volume univ := measure_mono _ (subset_univ _)
+      _ ≤ volume univ := measure_mono (subset_univ _)
 #align real.volume_univ Real.volume_univ
 
 @[simp]
@@ -147,7 +147,7 @@ theorem volume_Ioi {a : ℝ} : volume (Ioi a) = ∞ :=
     le_of_tendsto' ENNReal.tendsto_nat_nhds_top fun n =>
       calc
         (n : ℝ≥0∞) = volume (Ioo a (a + n)) := by simp
-        _ ≤ volume (Ioi a) := measure_mono _ Ioo_subset_Ioi_self
+        _ ≤ volume (Ioi a) := measure_mono Ioo_subset_Ioi_self
 #align real.volume_Ioi Real.volume_Ioi
 
 @[simp]
@@ -160,7 +160,7 @@ theorem volume_Iio {a : ℝ} : volume (Iio a) = ∞ :=
     le_of_tendsto' ENNReal.tendsto_nat_nhds_top fun n =>
       calc
         (n : ℝ≥0∞) = volume (Ioo (a - n) a) := by simp
-        _ ≤ volume (Iio a) := measure_mono _ Ioo_subset_Iio_self
+        _ ≤ volume (Iio a) := measure_mono Ioo_subset_Iio_self
 #align real.volume_Iio Real.volume_Iio
 
 @[simp]
@@ -200,7 +200,7 @@ theorem volume_le_diam (s : Set ℝ) : volume s ≤ EMetric.diam s := by
 theorem _root_.Filter.Eventually.volume_pos_of_nhds_real {p : ℝ → Prop} {a : ℝ}
     (h : ∀ᶠ x in 𝓝 a, p x) : (0 : ℝ≥0∞) < volume { x | p x } := by
   rcases h.exists_Ioo_subset with ⟨l, u, hx, hs⟩
-  refine' lt_of_lt_of_le _ (measure_mono _ hs)
+  refine' lt_of_lt_of_le _ (measure_mono hs)
   simpa [-mem_Ioo] using hx.1.trans hx.2
 #align filter.eventually.volume_pos_of_nhds_real Filter.Eventually.volume_pos_of_nhds_real
 

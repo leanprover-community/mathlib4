@@ -860,7 +860,7 @@ lemma meas_le_lintegral₀ {f : α → ℝ≥0∞} (hf : AEMeasurable f μ)
     {s : Set α} (hs : ∀ x ∈ s, 1 ≤ f x) : μ s ≤ ∫⁻ a, f a ∂μ := by
   apply le_trans _ (mul_meas_ge_le_lintegral₀ hf 1)
   rw [one_mul]
-  exact measure_mono _ hs
+  exact measure_mono hs
 
 lemma lintegral_le_meas {s : Set α} {f : α → ℝ≥0∞} (hf : ∀ a, f a ≤ 1) (h'f : ∀ a ∈ sᶜ, f a = 0) :
     ∫⁻ a, f a ∂μ ≤ μ s := by
@@ -1802,7 +1802,7 @@ theorem exists_pos_lintegral_lt_of_sigmaFinite (μ : Measure α) [SigmaFinite μ
      is equal to `δ n` on `s n` is a positive function with integral less than `ε`. -/
   set s : ℕ → Set α := disjointed (spanningSets μ)
   have : ∀ n, μ (s n) < ∞ := fun n =>
-    (measure_mono _ <| disjointed_subset _ _).trans_lt (measure_spanningSets_lt_top μ n)
+    (measure_mono <| disjointed_subset _ _).trans_lt (measure_spanningSets_lt_top μ n)
   obtain ⟨δ, δpos, δsum⟩ : ∃ δ : ℕ → ℝ≥0, (∀ i, 0 < δ i) ∧ (∑' i, μ (s i) * δ i) < ε :=
     ENNReal.exists_pos_tsum_mul_lt_of_countable ε0 _ fun n => (this n).ne
   set N : α → ℕ := spanningSetsIndex μ

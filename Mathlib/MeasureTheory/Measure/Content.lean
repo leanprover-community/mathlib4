@@ -314,7 +314,7 @@ theorem outerMeasure_lt_top_of_isCompact [WeaklyLocallyCompactSpace G]
     μ.outerMeasure K < ∞ := by
   rcases exists_compact_superset hK with ⟨F, h1F, h2F⟩
   calc
-    μ.outerMeasure K ≤ μ.outerMeasure (interior F) := measure_mono _ h2F
+    μ.outerMeasure K ≤ μ.outerMeasure (interior F) := measure_mono h2F
     _ ≤ μ ⟨F, h1F⟩ := by
       apply μ.outerMeasure_le ⟨interior F, isOpen_interior⟩ ⟨F, h1F⟩ interior_subset
     _ < ⊤ := μ.lt_top _
@@ -413,7 +413,7 @@ instance outerRegular : μ.measure.OuterRegular := by
 instance regular [WeaklyLocallyCompactSpace G] : μ.measure.Regular := by
   have : IsFiniteMeasureOnCompacts μ.measure := by
     refine' ⟨fun K hK => _⟩
-    apply (measure_mono _ subset_closure).trans_lt _
+    apply (measure_mono subset_closure).trans_lt _
     rw [measure_apply _ isClosed_closure.measurableSet]
     exact μ.outerMeasure_lt_top_of_isCompact hK.closure
   refine' ⟨fun U hU r hr => _⟩
@@ -459,7 +459,7 @@ theorem measure_eq_content_of_regular (H : MeasureTheory.Content.ContentRegular 
     intro ε εpos _
     obtain ⟨K', K'_hyp⟩ := contentRegular_exists_compact μ H K (ne_bot_of_gt εpos)
     calc
-      μ.measure ↑K ≤ μ.measure (interior ↑K') := measure_mono _ K'_hyp.1
+      μ.measure ↑K ≤ μ.measure (interior ↑K') := measure_mono K'_hyp.1
       _ ≤ μ K' := by
         rw [μ.measure_apply (IsOpen.measurableSet isOpen_interior)]
         exact μ.outerMeasure_interior_compacts K'

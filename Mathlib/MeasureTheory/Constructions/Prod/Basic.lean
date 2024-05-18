@@ -368,7 +368,7 @@ theorem prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν 
     set f : α → ℝ≥0∞ := fun x => ν (Prod.mk x ⁻¹' ST)
     have hfm : Measurable f := measurable_measure_prod_mk_left hSTm
     set s' : Set α := { x | ν t ≤ f x }
-    have hss' : s ⊆ s' := fun x hx => measure_mono _ fun y hy => hST <| mk_mem_prod hx hy
+    have hss' : s ⊆ s' := fun x hx => measure_mono fun y hy => hST <| mk_mem_prod hx hy
     calc
       μ s * ν t ≤ μ s' * ν t := by gcongr
       _ = ∫⁻ _ in s', ν t ∂μ := by rw [set_lintegral_const, mul_comm]
@@ -392,7 +392,7 @@ instance prod.instIsOpenPosMeasure {X Y : Type*} [TopologicalSpace X] [Topologic
   constructor
   rintro U U_open ⟨⟨x, y⟩, hxy⟩
   rcases isOpen_prod_iff.1 U_open x y hxy with ⟨u, v, u_open, v_open, xu, yv, huv⟩
-  refine ne_of_gt (lt_of_lt_of_le ?_ (measure_mono _ huv))
+  refine' ne_of_gt (lt_of_lt_of_le _ (measure_mono huv))
   simp only [prod_prod, CanonicallyOrderedCommSemiring.mul_pos]
   constructor
   · exact u_open.measure_pos μ ⟨x, xu⟩
@@ -439,10 +439,11 @@ instance prod.instIsFiniteMeasureOnCompacts {α β : Type*} [TopologicalSpace α
     simp only [L, prod_mk_mem_set_prod_eq, mem_image, Prod.exists, exists_and_right,
       exists_eq_right]
     exact ⟨⟨y, hxy⟩, ⟨x, hxy⟩⟩
-  apply lt_of_le_of_lt (measure_mono _ this)
+  apply lt_of_le_of_lt (measure_mono this)
   rw [hL, prod_prod]
-  exact mul_lt_top (IsCompact.measure_lt_top (hK.image continuous_fst)).ne
-    (IsCompact.measure_lt_top (hK.image continuous_snd)).ne
+  exact
+    mul_lt_top (IsCompact.measure_lt_top (hK.image continuous_fst)).ne
+      (IsCompact.measure_lt_top (hK.image continuous_snd)).ne
 #align measure_theory.measure.prod.measure_theory.is_finite_measure_on_compacts MeasureTheory.Measure.prod.instIsFiniteMeasureOnCompacts
 
 instance {X Y : Type*}
@@ -482,7 +483,7 @@ theorem measure_ae_null_of_prod_null {s : Set (α × β)} (h : μ.prod ν s = 0)
   rw [measure_prod_null mt] at ht
   rw [eventuallyLE_antisymm_iff]
   exact
-    ⟨EventuallyLE.trans_eq (eventually_of_forall fun x => (measure_mono _ (preimage_mono hst) : _))
+    ⟨EventuallyLE.trans_eq (eventually_of_forall fun x => (measure_mono (preimage_mono hst) : _))
         ht,
       eventually_of_forall fun x => zero_le _⟩
 #align measure_theory.measure.measure_ae_null_of_prod_null MeasureTheory.Measure.measure_ae_null_of_prod_null

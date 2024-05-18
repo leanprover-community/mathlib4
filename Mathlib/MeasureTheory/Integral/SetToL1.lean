@@ -142,7 +142,7 @@ theorem smul_measure_iff (c : ℝ≥0∞) (hc_ne_zero : c ≠ 0) (hc_ne_top : c 
 
 theorem map_empty_eq_zero {β} [AddCancelMonoid β] {T : Set α → β} (hT : FinMeasAdditive μ T) :
     T ∅ = 0 := by
-  have h_empty : μ ∅ ≠ ∞ := ((measure_empty _).trans_lt ENNReal.coe_lt_top).ne
+  have h_empty : μ ∅ ≠ ∞ := (measure_empty.le.trans_lt ENNReal.coe_lt_top).ne
   specialize hT ∅ ∅ MeasurableSet.empty MeasurableSet.empty h_empty h_empty (Set.inter_empty ∅)
   rw [Set.union_empty] at hT
   nth_rw 1 [← add_zero (T ∅)] at hT
@@ -168,8 +168,9 @@ theorem map_iUnion_fin_meas_set_eq_sum (T : Set α → β) (T_empty : T ∅ = 0)
     h_add (S a) (⋃ i ∈ s, S i) (hS_meas a) (measurableSet_biUnion _ fun i _ => hS_meas i)
       (hps a (Finset.mem_insert_self a s))]
   · congr; convert Finset.iSup_insert a s S
-  · exact ((measure_biUnion_finset_le _ _ _).trans_lt <|
-      ENNReal.sum_lt_top fun i hi => hps i <| Finset.mem_insert_of_mem hi).ne
+  · exact
+      ((measure_biUnion_finset_le _ _).trans_lt <|
+          ENNReal.sum_lt_top fun i hi => hps i <| Finset.mem_insert_of_mem hi).ne
   · simp_rw [Set.inter_iUnion]
     refine' iUnion_eq_empty.mpr fun i => iUnion_eq_empty.mpr fun hi => _
     rw [← Set.disjoint_iff_inter_eq_empty]
@@ -809,7 +810,7 @@ theorem setToL1S_indicatorConst {T : Set α → E →L[ℝ] F} {s : Set α}
     (h_zero : ∀ s, MeasurableSet s → μ s = 0 → T s = 0) (h_add : FinMeasAdditive μ T)
     (hs : MeasurableSet s) (hμs : μ s < ∞) (x : E) :
     setToL1S T (simpleFunc.indicatorConst 1 hs hμs.ne x) = T s x := by
-  have h_empty : T ∅ = 0 := h_zero _ MeasurableSet.empty (measure_empty _)
+  have h_empty : T ∅ = 0 := h_zero _ MeasurableSet.empty measure_empty
   rw [setToL1S_eq_setToSimpleFunc]
   refine' Eq.trans _ (SimpleFunc.setToSimpleFunc_indicator T h_empty hs x)
   refine' SimpleFunc.setToSimpleFunc_congr T h_zero h_add (SimpleFunc.integrable _) _

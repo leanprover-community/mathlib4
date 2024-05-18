@@ -75,7 +75,7 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     rintro r ⟨s, _hs, rfl⟩
     refine' le_trans (sub_le_self _ <| NNReal.coe_nonneg _) _
     rw [NNReal.coe_le_coe, ← ENNReal.coe_le_coe, to_nnreal_μ, to_nnreal_μ]
-    exact measure_mono _ (subset_univ _)
+    exact measure_mono (subset_univ _)
   have c_nonempty : c.Nonempty := Nonempty.image _ ⟨_, MeasurableSet.empty⟩
   have d_le_γ : ∀ s, MeasurableSet s → d s ≤ γ := fun s hs => le_csSup bdd_c ⟨s, hs, rfl⟩
   have : ∀ n : ℕ, ∃ s : Set α, MeasurableSet s ∧ γ - (1 / 2) ^ n < d s := by

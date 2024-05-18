@@ -152,7 +152,7 @@ theorem IsFiniteKernel.bound_ne_top (κ : kernel α β) [IsFiniteKernel κ] :
 
 theorem kernel.measure_le_bound (κ : kernel α β) [h : IsFiniteKernel κ] (a : α) (s : Set β) :
     κ a s ≤ IsFiniteKernel.bound κ :=
-  (measure_mono _ (Set.subset_univ s)).trans (h.exists_univ_le.choose_spec.2 a)
+  (measure_mono (Set.subset_univ s)).trans (h.exists_univ_le.choose_spec.2 a)
 #align probability_theory.kernel.measure_le_bound ProbabilityTheory.kernel.measure_le_bound
 
 instance isFiniteKernel_zero (α β : Type*) {mα : MeasurableSpace α} {mβ : MeasurableSpace β} :

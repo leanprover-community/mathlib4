@@ -112,7 +112,7 @@ theorem condCount_eq_one_of (hs : s.Finite) (hs' : s.Nonempty) (ht : s ⊆ t) :
   haveI := condCount_isProbabilityMeasure hs hs'
   refine' eq_of_le_of_not_lt prob_le_one _
   rw [not_lt, ← condCount_self hs hs']
-  exact measure_mono _ ht
+  exact measure_mono ht
 #align probability_theory.cond_count_eq_one_of ProbabilityTheory.condCount_eq_one_of
 
 theorem pred_true_of_condCount_eq_one (h : condCount s t = 1) : s ⊆ t := by

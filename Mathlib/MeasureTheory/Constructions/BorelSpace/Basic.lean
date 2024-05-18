@@ -371,9 +371,9 @@ for a version that assumes `μ` to be outer regular
 but does not assume the `σ`-algebra to be Borel.  -/
 theorem IsCompact.measure_closure [R1Space γ] {K : Set γ} (hK : IsCompact K) (μ : Measure γ) :
     μ (closure K) = μ K := by
-  refine le_antisymm ?_ (measure_mono _ subset_closure)
+  refine le_antisymm ?_ (measure_mono subset_closure)
   calc
-    μ (closure K) ≤ μ (toMeasurable μ K) := measure_mono _ <|
+    μ (closure K) ≤ μ (toMeasurable μ K) := measure_mono <|
       hK.closure_subset_measurableSet (measurableSet_toMeasurable ..) (subset_toMeasurable ..)
     _ = μ K := measure_toMeasurable ..
 
@@ -2431,7 +2431,7 @@ theorem exists_spanning_measurableSet_le {m : MeasurableSpace α} {f : α → �
     · exact measurable_spanningSets μ n
     · exact hf measurableSet_Iic
   have h_finite : ∀ n, μ (sets n) < ∞ := by
-    refine' fun n => (measure_mono _ (Set.inter_subset_left _ _)).trans_lt _
+    refine' fun n => (measure_mono (Set.inter_subset_left _ _)).trans_lt _
     exact measure_spanningSets_lt_top μ n
   refine' ⟨sets, fun n => ⟨h_meas n, h_finite n, _⟩, _⟩
   · exact fun x hx => hx.2

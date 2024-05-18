@@ -46,9 +46,9 @@ theorem hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = fal
   /- First we choose a closed set `F ⊆ s ∩ I.Icc` and an open set `U ⊇ s` such that
     both `(s ∩ I.Icc) \ F` and `U \ s` have measure less than `ε`. -/
   have A : μ (s ∩ Box.Icc I) ≠ ∞ :=
-    ((measure_mono _ <| Set.inter_subset_right _ _).trans_lt (I.measure_Icc_lt_top μ)).ne
+    ((measure_mono <| Set.inter_subset_right _ _).trans_lt (I.measure_Icc_lt_top μ)).ne
   have B : μ (s ∩ I) ≠ ∞ :=
-    ((measure_mono _ <| Set.inter_subset_right _ _).trans_lt (I.measure_coe_lt_top μ)).ne
+    ((measure_mono <| Set.inter_subset_right _ _).trans_lt (I.measure_coe_lt_top μ)).ne
   obtain ⟨F, hFs, hFc, hμF⟩ : ∃ F, F ⊆ s ∩ Box.Icc I ∧ IsClosed F ∧ μ ((s ∩ Box.Icc I) \ F) < ε :=
     (hs.inter I.measurableSet_Icc).exists_isClosed_diff_lt A (ENNReal.coe_pos.2 ε0).ne'
   obtain ⟨U, hsU, hUo, hUt, hμU⟩ :
@@ -82,17 +82,16 @@ theorem hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = fal
     refine' fun J hJ hJs x hx => ⟨hrsU _ ⟨hJs, π.tag_mem_Icc J⟩ _, π.le_of_mem' J hJ hx⟩
     simpa only [r, s.piecewise_eq_of_mem _ _ hJs] using hπ.1 J hJ (Box.coe_subset_Icc hx)
   refine' abs_sub_le_iff.2 ⟨_, _⟩
-  · refine' (ENNReal.le_toReal_sub B).trans (ENNReal.toReal_le_coe_of_le_coe _)
-    refine' (tsub_le_tsub (measure_mono _ htU) le_rfl).trans (le_measure_diff.trans _)
-    refine' (measure_mono _ fun x hx => _).trans hμU.le
+  · refine (ENNReal.le_toReal_sub B).trans (ENNReal.toReal_le_coe_of_le_coe ?_)
+    refine (tsub_le_tsub (measure_mono htU) le_rfl).trans (le_measure_diff.trans ?_)
+    refine' (measure_mono fun x hx => _).trans hμU.le
     exact ⟨hx.1.1, fun hx' => hx.2 ⟨hx'.1, hx.1.2⟩⟩
-  · have hμt : μ t ≠ ∞ := ((measure_mono _ (htU.trans (inter_subset_left _ _))).trans_lt hUt).ne
+  · have hμt : μ t ≠ ∞ := ((measure_mono (htU.trans (inter_subset_left _ _))).trans_lt hUt).ne
     refine' (ENNReal.le_toReal_sub hμt).trans (ENNReal.toReal_le_coe_of_le_coe _)
-    refine' le_measure_diff.trans ((measure_mono _ _).trans hμF.le)
+    refine' le_measure_diff.trans ((measure_mono _).trans hμF.le)
     rintro x ⟨⟨hxs, hxI⟩, hxt⟩
     refine' ⟨⟨hxs, Box.coe_subset_Icc hxI⟩, fun hxF => hxt _⟩
-    simp only [t, TaggedPrepartition.iUnion_def, TaggedPrepartition.mem_filter, Set.mem_iUnion,
-      exists_prop]
+    simp only [t, TaggedPrepartition.iUnion_def, TaggedPrepartition.mem_filter, Set.mem_iUnion]
     rcases hπp x hxI with ⟨J, hJπ, hxJ⟩
     refine' ⟨J, ⟨hJπ, _⟩, hxJ⟩
     contrapose hxF
@@ -145,7 +144,7 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
   show m.toReal * ↑n ≤ ↑(δ n)
   have : m < δ n / n := by
     simp only [Measure.restrict_apply (hUo _).measurableSet] at hμU
-    refine' (measure_mono _ _).trans_lt (hμU _)
+    refine' (measure_mono _).trans_lt (hμU _)
     simp only [Set.subset_def, TaggedPrepartition.mem_iUnion, TaggedPrepartition.mem_filter]
     rintro x ⟨J, ⟨hJ, rfl⟩, hx⟩
     exact ⟨hrU _ (hπ.1 _ hJ (Box.coe_subset_Icc hx)), π.le_of_mem' J hJ hx⟩
