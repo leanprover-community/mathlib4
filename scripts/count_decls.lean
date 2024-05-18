@@ -9,7 +9,7 @@ import Mathlib
 # `count_decls` -- a tally of declarations in `Mathlib`
 
 This file is used by the `Periodic reports` script to generate a tally of declarations
-in `Mathlib`.
+in `Mathlib`, `Batteries` and core.
 
 Source: https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Metamathematics.3A.20Theorems.20by.20Domain.20Areas/near/374090639
 -/
@@ -39,11 +39,12 @@ def MathlibModIdxs (env : Environment) : IO (HashSet Nat) := do
       modIdx := modIdx.insert nm
   return modIdx
 
+variable (mods : HashSet Nat) (env : Environment) in
 /-- Extend a `Tally` by the ConstantInfo `c`.  It is written to work with `Lean.SMap.foldM`. -/
-def updateTally (mods : HashSet Nat) (env : Environment) (s : Tally) (n : Name) (c : ConstantInfo) :
+def updateTally (s : Tally) (n : Name) (c : ConstantInfo) :
     MetaM Tally := do
-  let mod := env.getModuleIdxFor? n
-  if !mods.contains (mod.getD default) then return s else
+--  let mod := env.getModuleIdxFor? n
+--  if !mods.contains (mod.getD default) then return s else
   if c.isUnsafe || (← n.isBlackListed) then return s else
   let typ := c.type
   if (← isProp typ) then
@@ -61,11 +62,12 @@ def updateTally (mods : HashSet Nat) (env : Environment) (s : Tally) (n : Name) 
 /-- extends a `Tally` all the ConstantInfos in the environment. -/
 def mkTally (s : Tally) : MetaM Tally := do
   let env ← getEnv
-  let maths ← MathlibModIdxs env
+--  let maths ← MathlibModIdxs env
   let consts := env.constants
-  consts.foldM (updateTally maths env) s
+  consts.foldM (updateTally /-maths env-/) s
 
-/-- `count_decls` prints a tally of theorems, types, predicates and data in `Mathlib`. -/
+/-- `count_decls` prints a tally of theorems, types, predicates and data in
+`Mathlib`, `Batteries` and core. -/
 elab "count_decls" : command => do
   let (s, _) := ← Command.liftCoreM do Meta.MetaM.run do (mkTally {})
   logInfo s!"Theorems {s.thms}\nTypes {s.types}\nPredicates {s.preds}\nData {s.data}"
