@@ -3,7 +3,7 @@ Copyright (c) 2024 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Damiano Testa
 -/
-import Mathlib.Data.Nat.Defs
+import Mathlib --.Data.Nat.Defs
 
 /-!
 # `count_decls` -- a tally of declarations in `Mathlib`
@@ -80,6 +80,6 @@ elab "count_decls" : command => do
   logInfo m!"{s.types.toArray}"
 --  logInfo s!"Theorems {s.thms}\nData {s.data}\nPredicates {s.preds}\nTypes {s.types}"
 
-count_decls
+--count_decls
 
 end PeriodicReports
