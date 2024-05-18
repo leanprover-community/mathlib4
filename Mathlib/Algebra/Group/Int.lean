@@ -5,6 +5,7 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Algebra.Group.Nat
 import Mathlib.Order.Monotone.Basic
+import Mathlib.Tactic.Common
 
 #align_import data.int.basic from "leanprover-community/mathlib"@"00d163e35035c3577c1c79fa53b68de17781ffc1"
 #align_import data.int.units from "leanprover-community/mathlib"@"641b6a82006416ec431b2987b354af9311fed4f2"

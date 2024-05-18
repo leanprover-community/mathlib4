@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johannes Hölzl, Chris Hughes, Jens Wagemaker, Jon Eugster
 -/
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.GroupPower.Basic
+import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Logic.Unique
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Lift
