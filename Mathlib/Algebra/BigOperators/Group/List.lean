@@ -352,7 +352,7 @@ lemma prod_erase_of_comm [DecidableEq M] (ha : a ∈ l) (comm : ∀ x ∈ l, ∀
     a * (l.erase a).prod = l.prod := by
   induction' l with b l ih
   · simp only [not_mem_nil] at ha
-  obtain rfl | ⟨ne, h⟩ := Decidable.List.eq_or_ne_mem_of_mem ha
+  obtain rfl | ⟨ne, h⟩ := List.eq_or_ne_mem_of_mem ha
   · simp only [erase_cons_head, prod_cons]
   rw [List.erase, beq_false_of_ne ne.symm, List.prod_cons, List.prod_cons, ← mul_assoc,
     comm a ha b (l.mem_cons_self b), mul_assoc,
@@ -409,7 +409,7 @@ lemma prod_erase [DecidableEq M] (ha : a ∈ l) : a * (l.erase a).prod = l.prod 
 lemma prod_map_erase [DecidableEq α] (f : α → M) {a} :
     ∀ {l : List α}, a ∈ l → f a * ((l.erase a).map f).prod = (l.map f).prod
   | b :: l, h => by
-    obtain rfl | ⟨ne, h⟩ := Decidable.List.eq_or_ne_mem_of_mem h
+    obtain rfl | ⟨ne, h⟩ := List.eq_or_ne_mem_of_mem h
     · simp only [map, erase_cons_head, prod_cons]
     · simp only [map, erase_cons_tail _ (not_beq_of_ne ne.symm), prod_cons, prod_map_erase _ h,
         mul_left_comm (f a) (f b)]
