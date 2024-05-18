@@ -67,6 +67,8 @@ printf -- '---\n\n## Weekly stats (%s %(%Y-%m-%d)T)\n\n' "${date}" -1
 
 printf -- ' Reference commits: old %s, new %s.\n\n' "${oldCommitURL}" "${currentCommitURL}"
 
-printf -- '%s, %s total(insertions-deletions)\n\n---\n\n%s\n\n' "${gdiff}" "${net}" "${percent}"
+printf -- '%s, %s total(insertions-deletions)\n\n' "${gdiff}" "${net}"
+
+#printf -- '---\n\n%s\n\n' "${percent}"
 
 printf -- 'Declarations:\n%s\n\nTake also a look at the [`Mathlib` stats page](%s).\n' "${declSummary}" "${statsURL}"
