@@ -421,13 +421,13 @@ lemma IsLimit.hom_ext (hK : IsLimit K) {T : C} {f g : T ⟶ K.pt}
 
 /-- Constructor for morphisms to the point of a limit multifork. -/
 def IsLimit.lift (hK : IsLimit K) {T : C} (k : ∀ a, T ⟶ I.left a)
-  (hk : ∀ b, k (I.fstTo b) ≫ I.fst b = k (I.sndTo b) ≫ I.snd b) :
+    (hk : ∀ b, k (I.fstTo b) ≫ I.fst b = k (I.sndTo b) ≫ I.snd b) :
     T ⟶ K.pt :=
   hK.lift (Multifork.ofι _ _ k hk)
 
 @[reassoc (attr := simp)]
 lemma IsLimit.fac (hK : IsLimit K) {T : C} (k : ∀ a, T ⟶ I.left a)
-  (hk : ∀ b, k (I.fstTo b) ≫ I.fst b = k (I.sndTo b) ≫ I.snd b) (a : I.L):
+    (hk : ∀ b, k (I.fstTo b) ≫ I.fst b = k (I.sndTo b) ≫ I.snd b) (a : I.L):
     IsLimit.lift hK k hk ≫ K.ι a = k a :=
   hK.fac _ _
 
