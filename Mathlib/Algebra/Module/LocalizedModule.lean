@@ -254,7 +254,8 @@ instance {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
           dsimp only at e₁ e₂ ⊢
           rw [eq_comm]
           trans (u₁ • t₁ • a₁) • u₂ • t₂ • a₂
-          rw [e₁, e₂]; swap; rw [eq_comm]
+          on_goal 1 => rw [e₁, e₂]
+          on_goal 2 => rw [eq_comm]
           all_goals
             rw [smul_smul, mul_mul_mul_comm, ← smul_eq_mul, ← smul_eq_mul A, smul_smul_smul_comm,
               mul_smul, mul_smul])
@@ -429,14 +430,12 @@ theorem smul'_mk (r : R) (s : S) (m : M) : r • mk m s = mk (r • m) s := by
 
 theorem smul'_mul {A : Type*} [Semiring A] [Algebra R A] (x : T) (p₁ p₂ : LocalizedModule S A) :
     x • p₁ * p₂ = x • (p₁ * p₂) := by
-  obtain ⟨⟨a₁, s₁⟩, rfl : mk a₁ s₁ = p₁⟩ := Quotient.exists_rep p₁
-  obtain ⟨⟨a₂, s₂⟩, rfl : mk a₂ s₂ = p₂⟩ := Quotient.exists_rep p₂
+  induction p₁, p₂ using induction_on₂ with | _ a₁ s₁ a₂ s₂ => _
   rw [mk_mul_mk, smul_def, smul_def, mk_mul_mk, mul_assoc, smul_mul_assoc]
 
 theorem mul_smul' {A : Type*} [Semiring A] [Algebra R A] (x : T) (p₁ p₂ : LocalizedModule S A) :
     p₁ * x • p₂ = x • (p₁ * p₂) := by
-  obtain ⟨⟨a₁, s₁⟩, rfl : mk a₁ s₁ = p₁⟩ := Quotient.exists_rep p₁
-  obtain ⟨⟨a₂, s₂⟩, rfl : mk a₂ s₂ = p₂⟩ := Quotient.exists_rep p₂
+  induction p₁, p₂ using induction_on₂ with | _ a₁ s₁ a₂ s₂ => _
   rw [smul_def, mk_mul_mk, mk_mul_mk, smul_def, mul_left_comm, mul_smul_comm]
 
 variable (T)
@@ -468,13 +467,13 @@ noncomputable instance algebra' {A : Type*} [Semiring A] [Algebra R A] :
     show Module R (LocalizedModule S A) by infer_instance with
     commutes' := by
       intro r x
-      obtain ⟨⟨a, s⟩, rfl : mk a s = x⟩ := Quotient.exists_rep x
+      induction x using induction_on with | _ a s => _
       dsimp
       rw [← Localization.mk_one_eq_algebraMap, algebraMap_mk, mk_mul_mk, mk_mul_mk, mul_comm,
         Algebra.commutes]
     smul_def' := by
       intro r x
-      obtain ⟨⟨a, s⟩, rfl : mk a s = x⟩ := Quotient.exists_rep x
+      induction x using induction_on with | _ a s => _
       dsimp
       rw [← Localization.mk_one_eq_algebraMap, algebraMap_mk, mk_mul_mk, smul'_mk,
         Algebra.smul_def, one_mul] }
@@ -690,8 +689,8 @@ If `g` is a linear map `M → M''` such that all scalar multiplication by `s : S
 there is a linear map `LocalizedModule S M → M''`.
 -/
 noncomputable def lift (g : M →ₗ[R] M'')
-    (h : ∀ x : S, IsUnit ((algebraMap R (Module.End R M'')) x)) : LocalizedModule S M →ₗ[R] M''
-    where
+    (h : ∀ x : S, IsUnit ((algebraMap R (Module.End R M'')) x)) :
+    LocalizedModule S M →ₗ[R] M'' where
   toFun := LocalizedModule.lift' S g h
   map_add' := LocalizedModule.lift'_add S g h
   map_smul' r x := by rw [LocalizedModule.lift'_smul, RingHom.id_apply]
@@ -735,8 +734,8 @@ theorem lift_unique (g : M →ₗ[R] M'') (h : ∀ x : S, IsUnit ((algebraMap R 
 
 end LocalizedModule
 
-instance localizedModuleIsLocalizedModule : IsLocalizedModule S (LocalizedModule.mkLinearMap S M)
-    where
+instance localizedModuleIsLocalizedModule :
+    IsLocalizedModule S (LocalizedModule.mkLinearMap S M) where
   map_units s :=
     ⟨⟨algebraMap R (Module.End R (LocalizedModule S M)) s, LocalizedModule.divBy s,
         DFunLike.ext _ _ <| LocalizedModule.mul_by_divBy s,
@@ -1158,5 +1157,7 @@ theorem mkOfAlgebra {R S S' : Type*} [CommRing R] [CommRing S] [CommRing S'] [Al
 #align is_localized_module.mk_of_algebra IsLocalizedModule.mkOfAlgebra
 
 end Algebra
+
+end IsLocalizedModule
 
 end IsLocalizedModule

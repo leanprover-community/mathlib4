@@ -356,21 +356,24 @@ theorem map_div_right_ae (μ : Measure G) [IsMulRightInvariant μ] (x : G) :
 @[to_additive]
 theorem eventually_mul_left_iff (μ : Measure G) [IsMulLeftInvariant μ] (t : G) {p : G → Prop} :
     (∀ᵐ x ∂μ, p (t * x)) ↔ ∀ᵐ x ∂μ, p x := by
-  conv_rhs => rw [Filter.Eventually, ← map_mul_left_ae μ t]; rfl
+  conv_rhs => rw [Filter.Eventually, ← map_mul_left_ae μ t]
+  rfl
 #align measure_theory.eventually_mul_left_iff MeasureTheory.eventually_mul_left_iff
 #align measure_theory.eventually_add_left_iff MeasureTheory.eventually_add_left_iff
 
 @[to_additive]
 theorem eventually_mul_right_iff (μ : Measure G) [IsMulRightInvariant μ] (t : G) {p : G → Prop} :
     (∀ᵐ x ∂μ, p (x * t)) ↔ ∀ᵐ x ∂μ, p x := by
-  conv_rhs => rw [Filter.Eventually, ← map_mul_right_ae μ t]; rfl
+  conv_rhs => rw [Filter.Eventually, ← map_mul_right_ae μ t]
+  rfl
 #align measure_theory.eventually_mul_right_iff MeasureTheory.eventually_mul_right_iff
 #align measure_theory.eventually_add_right_iff MeasureTheory.eventually_add_right_iff
 
 @[to_additive]
 theorem eventually_div_right_iff (μ : Measure G) [IsMulRightInvariant μ] (t : G) {p : G → Prop} :
     (∀ᵐ x ∂μ, p (x / t)) ↔ ∀ᵐ x ∂μ, p x := by
-  conv_rhs => rw [Filter.Eventually, ← map_div_right_ae μ t]; rfl
+  conv_rhs => rw [Filter.Eventually, ← map_div_right_ae μ t]
+  rfl
 #align measure_theory.eventually_div_right_iff MeasureTheory.eventually_div_right_iff
 #align measure_theory.eventually_sub_right_iff MeasureTheory.eventually_sub_right_iff
 
@@ -611,7 +614,7 @@ lemma eventually_nhds_one_measure_smul_diff_lt [LocallyCompactSpace G]
   filter_upwards [hV1] with g hg
   calc
     μ (g • k \ k) ≤ μ (U \ k) := by
-      refine measure_mono (diff_subset_diff_left ?_)
+      gcongr
       exact (smul_set_subset_smul hg).trans hVkU
     _ < ε := measure_diff_lt_of_lt_add h'k.measurableSet hUk hk.measure_lt_top.ne hμUk
 

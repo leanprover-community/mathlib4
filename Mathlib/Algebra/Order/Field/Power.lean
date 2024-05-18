@@ -3,9 +3,8 @@ Copyright (c) 2014 Robert Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Parity
 import Mathlib.Algebra.CharZero.Lemmas
-import Mathlib.Algebra.GroupWithZero.Power
+import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Ring.Pow
 import Mathlib.Data.Int.Bitwise
@@ -262,7 +261,7 @@ def evalZPow : PositivityExt where eval {u α} zα pα e := do
     | .app (.app (.app (.const `Neg.neg _) _) _) b' =>
       let b' ← whnfR b'
       let .true := b'.isAppOfArity ``OfNat.ofNat 3 | throwError "not a ^ -n where n is a literal"
-      let some n := (b'.getRevArg! 1).natLit? | throwError "not a ^ -n where n is a literal"
+      let some n := (b'.getRevArg! 1).rawNatLit? | throwError "not a ^ -n where n is a literal"
       guard (n % 2 = 0)
       have m : Q(ℕ) := mkRawNatLit (n / 2)
       haveI' : $b =Q (-$m) + (-$m) := ⟨⟩ -- b = bit0 (-m)

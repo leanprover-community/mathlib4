@@ -210,13 +210,13 @@ theorem IsConnected.of_induct [Nonempty J] {j₀ : J}
 instance [hc : IsConnected J] : IsConnected (ULiftHom.{v₂} (ULift.{u₂} J)) := by
   have : Nonempty (ULiftHom.{v₂} (ULift.{u₂} J)) := by simp [ULiftHom, hc.is_nonempty]
   apply IsConnected.of_induct
-  rintro p hj₀ h ⟨j⟩
-  let p' : Set J := {j : J | p ⟨j⟩}
-  have hj₀' : Classical.choice hc.is_nonempty ∈ p' := by
-    simp only [p', (eq_self p')]
-    exact hj₀
-  apply induct_on_objects p' hj₀' @fun _ _ f =>
-    h ((ULiftHomULiftCategory.equiv J).functor.map f)
+  · rintro p hj₀ h ⟨j⟩
+    let p' : Set J := {j : J | p ⟨j⟩}
+    have hj₀' : Classical.choice hc.is_nonempty ∈ p' := by
+      simp only [p', (eq_self p')]
+      exact hj₀
+    apply induct_on_objects p' hj₀' @fun _ _ f =>
+      h ((ULiftHomULiftCategory.equiv J).functor.map f)
 
 /-- Another induction principle for `IsPreconnected J`:
 given a type family `Z : J → Sort*` and
@@ -388,8 +388,7 @@ theorem isPreconnected_zigzag [IsPreconnected J] (j₁ j₂ : J) : Zigzag j₁ j
     (@fun _ _ f => Relation.ReflTransGen.single (Or.inl (Nonempty.intro f))) _ _
 #align category_theory.is_connected_zigzag CategoryTheory.isPreconnected_zigzag
 
--- deprecated on 2024-02-19
-@[deprecated] alias isConnected_zigzag := isPreconnected_zigzag
+@[deprecated (since := "2024-02-19")] alias isConnected_zigzag := isPreconnected_zigzag
 
 theorem zigzag_isPreconnected (h : ∀ j₁ j₂ : J, Zigzag j₁ j₂) : IsPreconnected J := by
   apply IsPreconnected.of_constant_of_preserves_morphisms

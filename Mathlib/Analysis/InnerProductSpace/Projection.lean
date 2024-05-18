@@ -98,69 +98,69 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
     use fun n => √(b n)
     constructor
     -- first goal :  `∀ (n : ℕ), 0 ≤ √(b n)`
-    intro n
-    exact sqrt_nonneg _
+    · intro n
+      exact sqrt_nonneg _
     constructor
     -- second goal : `∀ (n m N : ℕ), N ≤ n → N ≤ m → dist ↑(w n) ↑(w m) ≤ √(b N)`
-    intro p q N hp hq
-    let wp := (w p : F)
-    let wq := (w q : F)
-    let a := u - wq
-    let b := u - wp
-    let half := 1 / (2 : ℝ)
-    let div := 1 / ((N : ℝ) + 1)
-    have :
-      4 * ‖u - half • (wq + wp)‖ * ‖u - half • (wq + wp)‖ + ‖wp - wq‖ * ‖wp - wq‖ =
-        2 * (‖a‖ * ‖a‖ + ‖b‖ * ‖b‖) :=
-      calc
+    · intro p q N hp hq
+      let wp := (w p : F)
+      let wq := (w q : F)
+      let a := u - wq
+      let b := u - wp
+      let half := 1 / (2 : ℝ)
+      let div := 1 / ((N : ℝ) + 1)
+      have :
         4 * ‖u - half • (wq + wp)‖ * ‖u - half • (wq + wp)‖ + ‖wp - wq‖ * ‖wp - wq‖ =
-            2 * ‖u - half • (wq + wp)‖ * (2 * ‖u - half • (wq + wp)‖) + ‖wp - wq‖ * ‖wp - wq‖ :=
-          by ring
-        _ =
-            absR (2 : ℝ) * ‖u - half • (wq + wp)‖ * (absR (2 : ℝ) * ‖u - half • (wq + wp)‖) +
-              ‖wp - wq‖ * ‖wp - wq‖ := by
-          rw [_root_.abs_of_nonneg]
-          exact zero_le_two
-        _ =
-            ‖(2 : ℝ) • (u - half • (wq + wp))‖ * ‖(2 : ℝ) • (u - half • (wq + wp))‖ +
-              ‖wp - wq‖ * ‖wp - wq‖ :=
-          by simp [norm_smul]
-        _ = ‖a + b‖ * ‖a + b‖ + ‖a - b‖ * ‖a - b‖ := by
-          rw [smul_sub, smul_smul, mul_one_div_cancel (_root_.two_ne_zero : (2 : ℝ) ≠ 0), ←
-            one_add_one_eq_two, add_smul]
-          simp only [one_smul]
-          have eq₁ : wp - wq = a - b := (sub_sub_sub_cancel_left _ _ _).symm
-          have eq₂ : u + u - (wq + wp) = a + b := by
-            show u + u - (wq + wp) = u - wq + (u - wp)
-            abel
-          rw [eq₁, eq₂]
-        _ = 2 * (‖a‖ * ‖a‖ + ‖b‖ * ‖b‖) := parallelogram_law_with_norm ℝ _ _
-    have eq : δ ≤ ‖u - half • (wq + wp)‖ := by
-      rw [smul_add]
-      apply δ_le'
-      apply h₂
-      repeat' exact Subtype.mem _
-      repeat' exact le_of_lt one_half_pos
-      exact add_halves 1
-    have eq₁ : 4 * δ * δ ≤ 4 * ‖u - half • (wq + wp)‖ * ‖u - half • (wq + wp)‖ := by
-      simp_rw [mul_assoc]
-      gcongr
-    have eq₂ : ‖a‖ ≤ δ + div :=
-        le_trans (le_of_lt <| hw q) (add_le_add_left (Nat.one_div_le_one_div hq) _)
-    have eq₂' : ‖b‖ ≤ δ + div :=
-        le_trans (le_of_lt <| hw p) (add_le_add_left (Nat.one_div_le_one_div hp) _)
-    rw [dist_eq_norm]
-    apply nonneg_le_nonneg_of_sq_le_sq
-    · exact sqrt_nonneg _
-    rw [mul_self_sqrt]
-    calc
-      ‖wp - wq‖ * ‖wp - wq‖ =
-          2 * (‖a‖ * ‖a‖ + ‖b‖ * ‖b‖) - 4 * ‖u - half • (wq + wp)‖ * ‖u - half • (wq + wp)‖ := by
-        simp [← this]
-      _ ≤ 2 * (‖a‖ * ‖a‖ + ‖b‖ * ‖b‖) - 4 * δ * δ := by gcongr
-      _ ≤ 2 * ((δ + div) * (δ + div) + (δ + div) * (δ + div)) - 4 * δ * δ := by gcongr
-      _ = 8 * δ * div + 4 * div * div := by ring
-    positivity
+          2 * (‖a‖ * ‖a‖ + ‖b‖ * ‖b‖) :=
+        calc
+          4 * ‖u - half • (wq + wp)‖ * ‖u - half • (wq + wp)‖ + ‖wp - wq‖ * ‖wp - wq‖ =
+              2 * ‖u - half • (wq + wp)‖ * (2 * ‖u - half • (wq + wp)‖) + ‖wp - wq‖ * ‖wp - wq‖ :=
+            by ring
+          _ =
+              absR (2 : ℝ) * ‖u - half • (wq + wp)‖ * (absR (2 : ℝ) * ‖u - half • (wq + wp)‖) +
+                ‖wp - wq‖ * ‖wp - wq‖ := by
+            rw [_root_.abs_of_nonneg]
+            exact zero_le_two
+          _ =
+              ‖(2 : ℝ) • (u - half • (wq + wp))‖ * ‖(2 : ℝ) • (u - half • (wq + wp))‖ +
+                ‖wp - wq‖ * ‖wp - wq‖ :=
+            by simp [norm_smul]
+          _ = ‖a + b‖ * ‖a + b‖ + ‖a - b‖ * ‖a - b‖ := by
+            rw [smul_sub, smul_smul, mul_one_div_cancel (_root_.two_ne_zero : (2 : ℝ) ≠ 0), ←
+              one_add_one_eq_two, add_smul]
+            simp only [one_smul]
+            have eq₁ : wp - wq = a - b := (sub_sub_sub_cancel_left _ _ _).symm
+            have eq₂ : u + u - (wq + wp) = a + b := by
+              show u + u - (wq + wp) = u - wq + (u - wp)
+              abel
+            rw [eq₁, eq₂]
+          _ = 2 * (‖a‖ * ‖a‖ + ‖b‖ * ‖b‖) := parallelogram_law_with_norm ℝ _ _
+      have eq : δ ≤ ‖u - half • (wq + wp)‖ := by
+        rw [smul_add]
+        apply δ_le'
+        apply h₂
+        repeat' exact Subtype.mem _
+        repeat' exact le_of_lt one_half_pos
+        exact add_halves 1
+      have eq₁ : 4 * δ * δ ≤ 4 * ‖u - half • (wq + wp)‖ * ‖u - half • (wq + wp)‖ := by
+        simp_rw [mul_assoc]
+        gcongr
+      have eq₂ : ‖a‖ ≤ δ + div :=
+          le_trans (le_of_lt <| hw q) (add_le_add_left (Nat.one_div_le_one_div hq) _)
+      have eq₂' : ‖b‖ ≤ δ + div :=
+          le_trans (le_of_lt <| hw p) (add_le_add_left (Nat.one_div_le_one_div hp) _)
+      rw [dist_eq_norm]
+      apply nonneg_le_nonneg_of_sq_le_sq
+      · exact sqrt_nonneg _
+      rw [mul_self_sqrt]
+      · calc
+        ‖wp - wq‖ * ‖wp - wq‖ =
+            2 * (‖a‖ * ‖a‖ + ‖b‖ * ‖b‖) - 4 * ‖u - half • (wq + wp)‖ * ‖u - half • (wq + wp)‖ := by
+          simp [← this]
+        _ ≤ 2 * (‖a‖ * ‖a‖ + ‖b‖ * ‖b‖) - 4 * δ * δ := by gcongr
+        _ ≤ 2 * ((δ + div) * (δ + div) + (δ + div) * (δ + div)) - 4 * δ * δ := by gcongr
+        _ = 8 * δ * div + 4 * div * div := by ring
+      positivity
     -- third goal : `Tendsto (fun (n : ℕ) => √(b n)) atTop (𝓝 0)`
     suffices Tendsto (fun x ↦ √(8 * δ * x + 4 * x * x) : ℝ → ℝ) (𝓝 0) (𝓝 0)
       from this.comp tendsto_one_div_add_atTop_nhds_zero_nat
@@ -578,7 +578,7 @@ theorem LinearIsometry.map_orthogonalProjection {E E' : Type*} [NormedAddCommGro
     (p : Submodule 𝕜 E) [HasOrthogonalProjection p] [HasOrthogonalProjection (p.map f.toLinearMap)]
     (x : E) : f (orthogonalProjection p x) = orthogonalProjection (p.map f.toLinearMap) (f x) := by
   refine' (eq_orthogonalProjection_of_mem_of_inner_eq_zero _ fun y hy => _).symm
-  refine' Submodule.apply_coe_mem_map _ _
+  · refine' Submodule.apply_coe_mem_map _ _
   rcases hy with ⟨x', hx', rfl : f x' = y⟩
   rw [← f.map_sub, f.inner_map_map, orthogonalProjection_inner_eq_zero x x' hx']
 #align linear_isometry.map_orthogonal_projection LinearIsometry.map_orthogonalProjection
@@ -631,7 +631,7 @@ theorem orthogonalProjection_singleton {v : E} (w : E) :
     (orthogonalProjection (𝕜 ∙ v) w : E) = (⟪v, w⟫ / ((‖v‖ ^ 2 : ℝ) : 𝕜)) • v := by
   by_cases hv : v = 0
   · rw [hv, eq_orthogonalProjection_of_eq_submodule (Submodule.span_zero_singleton 𝕜)]
-    · simp
+    simp
   have hv' : ‖v‖ ≠ 0 := ne_of_gt (norm_pos_iff.mpr hv)
   have key :
     (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ((‖v‖ ^ 2 : ℝ) : 𝕜)) • ((orthogonalProjection (𝕜 ∙ v) w) : E) =
@@ -1172,8 +1172,7 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
   · -- Base case: `n = 0`, the fixed subspace is the whole space, so `φ = id`
     refine' ⟨[], rfl.le, show φ = 1 from _⟩
     have : ker (ContinuousLinearMap.id ℝ F - φ) = ⊤ := by
-      rwa [Nat.zero_eq, Nat.le_zero, Submodule.finrank_eq_zero,
-        Submodule.orthogonal_eq_bot_iff] at hn
+      rwa [le_zero_iff, Submodule.finrank_eq_zero, Submodule.orthogonal_eq_bot_iff] at hn
     symm
     ext x
     have := LinearMap.congr_fun (LinearMap.ker_eq_top.mp this) x
@@ -1337,11 +1336,9 @@ projection provides a means to decompose the space into its submodules.
 The projection function is `decompose V x i = orthogonalProjection (V i) x`.
 
 See note [reducible non-instances]. -/
-@[reducible]
-def OrthogonalFamily.decomposition [DecidableEq ι] [Fintype ι] {V : ι → Submodule 𝕜 E}
+abbrev OrthogonalFamily.decomposition [DecidableEq ι] [Fintype ι] {V : ι → Submodule 𝕜 E}
     [∀ i, CompleteSpace (V i)] (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ)
-    (h : iSup V = ⊤) : DirectSum.Decomposition V
-    where
+    (h : iSup V = ⊤) : DirectSum.Decomposition V where
   decompose' x := DFinsupp.equivFunOnFintype.symm fun i => orthogonalProjection (V i) x
   left_inv x := by
     dsimp only

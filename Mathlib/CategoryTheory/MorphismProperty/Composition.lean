@@ -8,13 +8,9 @@ import Mathlib.CategoryTheory.MorphismProperty.Basic
 /-!
 # Compatibilities of properties of morphisms with respect to composition
 
-Given `P : MorphismProperty C`, we define the predicate `P.StableUnderComposition`
+Given `P : MorphismProperty C`, we define the predicate `P.IsStableUnderComposition`
 which means that `P f → P g → P (f ≫ g)`. We also introduce the type classes
-`W.ContainsIdentities` and `W.IsMultiplicative`.
-
-## TODO
-* define the type class of morphism properties that satisfy the 2-out-of-3 property
-(which may require transforming `StableUnderComposition` into a type class)
+`W.ContainsIdentities`, `W.IsMultiplicative`, and `W.HasTwoOutOfThreeProperty`.
 
 -/
 
@@ -30,10 +26,10 @@ variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 /-- Typeclass expressing that a morphism property contain identities. -/
 class ContainsIdentities (W : MorphismProperty C) : Prop :=
   /-- for all `X : C`, the identity of `X` satisfies the morphism property -/
-  id_mem' : ∀ (X : C), W (𝟙 X)
+  id_mem : ∀ (X : C), W (𝟙 X)
 
 lemma id_mem (W : MorphismProperty C) [W.ContainsIdentities] (X : C) :
-    W (𝟙 X) := ContainsIdentities.id_mem' X
+    W (𝟙 X) := ContainsIdentities.id_mem X
 
 namespace ContainsIdentities
 
@@ -49,6 +45,10 @@ lemma of_op (W : MorphismProperty C) [W.op.ContainsIdentities] :
 lemma of_unop (W : MorphismProperty Cᵒᵖ) [W.unop.ContainsIdentities] :
     W.ContainsIdentities := (inferInstance : W.unop.op.ContainsIdentities)
 
+instance inverseImage {P : MorphismProperty D} [P.ContainsIdentities] (F : C ⥤ D) :
+    (P.inverseImage F).ContainsIdentities where
+  id_mem X := by simpa only [← F.map_id] using P.id_mem (F.obj X)
+
 end ContainsIdentities
 
 instance Prod.containsIdentities {C₁ C₂ : Type*} [Category C₁] [Category C₂]
@@ -61,19 +61,25 @@ instance Pi.containsIdentities {J : Type w} {C : J → Type u}
     (pi W).ContainsIdentities :=
   ⟨fun _ _ => MorphismProperty.id_mem _ _⟩
 
-/-- A morphism property is `StableUnderComposition` if the composition of two such morphisms
-still falls in the class. -/
-def StableUnderComposition (P : MorphismProperty C) : Prop :=
-  ∀ ⦃X Y Z⦄ (f : X ⟶ Y) (g : Y ⟶ Z), P f → P g → P (f ≫ g)
-#align category_theory.morphism_property.stable_under_composition CategoryTheory.MorphismProperty.StableUnderComposition
+/-- A morphism property satisfies `IsStableUnderComposition` if the composition of
+two such morphisms still falls in the class. -/
+class IsStableUnderComposition (P : MorphismProperty C) : Prop :=
+  comp_mem {X Y Z} (f : X ⟶ Y) (g : Y ⟶ Z) : P f → P g → P (f ≫ g)
+#align category_theory.morphism_property.stable_under_composition CategoryTheory.MorphismProperty.IsStableUnderComposition
 
-theorem StableUnderComposition.op {P : MorphismProperty C} (h : StableUnderComposition P) :
-    StableUnderComposition P.op := fun _ _ _ f g hf hg => h g.unop f.unop hg hf
-#align category_theory.morphism_property.stable_under_composition.op CategoryTheory.MorphismProperty.StableUnderComposition.op
+lemma comp_mem (W : MorphismProperty C) [W.IsStableUnderComposition]
+    {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (hf : W f) (hg : W g) : W (f ≫ g) :=
+  IsStableUnderComposition.comp_mem f g hf hg
 
-theorem StableUnderComposition.unop {P : MorphismProperty Cᵒᵖ} (h : StableUnderComposition P) :
-    StableUnderComposition P.unop := fun _ _ _ f g hf hg => h g.op f.op hg hf
-#align category_theory.morphism_property.stable_under_composition.unop CategoryTheory.MorphismProperty.StableUnderComposition.unop
+instance IsStableUnderComposition.op {P : MorphismProperty C} [P.IsStableUnderComposition] :
+    P.op.IsStableUnderComposition where
+  comp_mem f g hf hg := P.comp_mem g.unop f.unop hg hf
+#align category_theory.morphism_property.stable_under_composition.op CategoryTheory.MorphismProperty.IsStableUnderComposition.op
+
+instance IsStableUnderComposition.unop {P : MorphismProperty Cᵒᵖ} [P.IsStableUnderComposition] :
+    P.unop.IsStableUnderComposition where
+  comp_mem f g hf hg := P.comp_mem g.op f.op hg hf
+#align category_theory.morphism_property.stable_under_composition.unop CategoryTheory.MorphismProperty.IsStableUnderComposition.unop
 
 /-- A morphism property is `StableUnderInverse` if the inverse of a morphism satisfying
 the property still falls in the class. -/
@@ -89,39 +95,16 @@ theorem StableUnderInverse.unop {P : MorphismProperty Cᵒᵖ} (h : StableUnderI
     StableUnderInverse P.unop := fun _ _ e he => h e.op he
 #align category_theory.morphism_property.stable_under_inverse.unop CategoryTheory.MorphismProperty.StableUnderInverse.unop
 
-theorem StableUnderComposition.respectsIso {P : MorphismProperty C} (hP : StableUnderComposition P)
-    (hP' : ∀ {X Y} (e : X ≅ Y), P e.hom) : RespectsIso P :=
-  ⟨fun e _ hf => hP _ _ (hP' e) hf, fun e _ hf => hP _ _ hf (hP' e)⟩
-#align category_theory.morphism_property.stable_under_composition.respects_iso CategoryTheory.MorphismProperty.StableUnderComposition.respectsIso
+theorem respectsIso_of_isStableUnderComposition {P : MorphismProperty C}
+    [P.IsStableUnderComposition] (hP : isomorphisms C ≤ P) :
+    RespectsIso P :=
+  ⟨fun _ _ hf => P.comp_mem _ _ (hP _ (isomorphisms.infer_property _)) hf,
+    fun _ _ hf => P.comp_mem _ _ hf (hP _ (isomorphisms.infer_property _))⟩
+#align category_theory.morphism_property.stable_under_composition.respects_iso CategoryTheory.MorphismProperty.respectsIso_of_isStableUnderComposition
 
-theorem StableUnderComposition.isomorphisms : StableUnderComposition (isomorphisms C) :=
-  fun X Y Z f g hf hg => by
-  rw [isomorphisms.iff] at hf hg ⊢
-  haveI := hf
-  haveI := hg
-  infer_instance
-#align category_theory.morphism_property.stable_under_composition.isomorphisms CategoryTheory.MorphismProperty.StableUnderComposition.isomorphisms
-
-theorem StableUnderComposition.monomorphisms : StableUnderComposition (monomorphisms C) :=
-  fun X Y Z f g hf hg => by
-  rw [monomorphisms.iff] at hf hg ⊢
-  haveI := hf
-  haveI := hg
-  apply mono_comp
-#align category_theory.morphism_property.stable_under_composition.monomorphisms CategoryTheory.MorphismProperty.StableUnderComposition.monomorphisms
-
-theorem StableUnderComposition.epimorphisms : StableUnderComposition (epimorphisms C) :=
-  fun X Y Z f g hf hg => by
-  rw [epimorphisms.iff] at hf hg ⊢
-  haveI := hf
-  haveI := hg
-  apply epi_comp
-#align category_theory.morphism_property.stable_under_composition.epimorphisms CategoryTheory.MorphismProperty.StableUnderComposition.epimorphisms
-
-theorem StableUnderComposition.inverseImage {P : MorphismProperty D} (h : StableUnderComposition P)
-    (F : C ⥤ D) : StableUnderComposition (P.inverseImage F) := fun X Y Z f g hf hg => by
-  simpa only [← F.map_comp] using h (F.map f) (F.map g) hf hg
-#align category_theory.morphism_property.stable_under_composition.inverse_image CategoryTheory.MorphismProperty.StableUnderComposition.inverseImage
+instance IsStableUnderComposition.inverseImage {P : MorphismProperty D} [P.IsStableUnderComposition]
+    (F : C ⥤ D) : (P.inverseImage F).IsStableUnderComposition where
+  comp_mem f g hf hg := by simpa only [← F.map_comp] using P.comp_mem _ _ hf hg
 
 /-- Given `app : Π X, F₁.obj X ⟶ F₂.obj X` where `F₁` and `F₂` are two functors,
 this is the `morphism_property C` satisfied by the morphisms in `C` with respect
@@ -133,13 +116,14 @@ def naturalityProperty {F₁ F₂ : C ⥤ D} (app : ∀ X, F₁.obj X ⟶ F₂.o
 
 namespace naturalityProperty
 
-theorem stableUnderComposition {F₁ F₂ : C ⥤ D} (app : ∀ X, F₁.obj X ⟶ F₂.obj X) :
-    (naturalityProperty app).StableUnderComposition := fun X Y Z f g hf hg => by
-  simp only [naturalityProperty] at hf hg ⊢
-  simp only [Functor.map_comp, Category.assoc, hg]
-  slice_lhs 1 2 => rw [hf]
-  rw [Category.assoc]
-#align category_theory.morphism_property.naturality_property.is_stable_under_composition CategoryTheory.MorphismProperty.naturalityProperty.stableUnderComposition
+instance isStableUnderComposition {F₁ F₂ : C ⥤ D} (app : ∀ X, F₁.obj X ⟶ F₂.obj X) :
+    (naturalityProperty app).IsStableUnderComposition where
+  comp_mem f g hf hg := by
+    simp only [naturalityProperty] at hf hg ⊢
+    simp only [Functor.map_comp, Category.assoc, hg]
+    slice_lhs 1 2 => rw [hf]
+    rw [Category.assoc]
+#align category_theory.morphism_property.naturality_property.is_stable_under_composition CategoryTheory.MorphismProperty.naturalityProperty.isStableUnderComposition
 
 theorem stableUnderInverse {F₁ F₂ : C ⥤ D} (app : ∀ X, F₁.obj X ⟶ F₂.obj X) :
     (naturalityProperty app).StableUnderInverse := fun X Y e he => by
@@ -154,21 +138,17 @@ end naturalityProperty
 
 /-- A morphism property is multiplicative if it contains identities and is stable by
 composition. -/
-class IsMultiplicative (W : MorphismProperty C) extends W.ContainsIdentities : Prop :=
-  stableUnderComposition : W.StableUnderComposition
-
-lemma comp_mem (W : MorphismProperty C) {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (hf : W f) (hg : W g)
-    [IsMultiplicative W] : W (f ≫ g) :=
-  IsMultiplicative.stableUnderComposition f g hf hg
+class IsMultiplicative (W : MorphismProperty C)
+    extends W.ContainsIdentities, W.IsStableUnderComposition : Prop :=
 
 namespace IsMultiplicative
 
 instance op (W : MorphismProperty C) [IsMultiplicative W] : IsMultiplicative W.op where
-  stableUnderComposition := fun _ _ _ f g hf hg => W.comp_mem g.unop f.unop hg hf
+  comp_mem f g hf hg := W.comp_mem g.unop f.unop hg hf
 
 instance unop (W : MorphismProperty Cᵒᵖ) [IsMultiplicative W] : IsMultiplicative W.unop where
-  id_mem' _ := W.id_mem _
-  stableUnderComposition := fun _ _ _ f g hf hg => W.comp_mem g.op f.op hg hf
+  id_mem _ := W.id_mem _
+  comp_mem f g hf hg := W.comp_mem g.op f.op hg hf
 
 lemma of_op (W : MorphismProperty C) [IsMultiplicative W.op] : IsMultiplicative W :=
   (inferInstance : IsMultiplicative W.op.unop)
@@ -176,7 +156,68 @@ lemma of_op (W : MorphismProperty C) [IsMultiplicative W.op] : IsMultiplicative 
 lemma of_unop (W : MorphismProperty Cᵒᵖ) [IsMultiplicative W.unop] : IsMultiplicative W :=
   (inferInstance : IsMultiplicative W.unop.op)
 
+instance : (isomorphisms C).IsMultiplicative where
+  id_mem _ := isomorphisms.infer_property _
+  comp_mem f g hf hg := by
+    rw [isomorphisms.iff] at hf hg ⊢
+    infer_instance
+
+instance : (monomorphisms C).IsMultiplicative where
+  id_mem _ := monomorphisms.infer_property _
+  comp_mem f g hf hg := by
+    rw [monomorphisms.iff] at hf hg ⊢
+    apply mono_comp
+
+instance : (epimorphisms C).IsMultiplicative where
+  id_mem _ := epimorphisms.infer_property _
+  comp_mem f g hf hg := by
+    rw [epimorphisms.iff] at hf hg ⊢
+    apply epi_comp
+
+instance {P : MorphismProperty D} [P.IsMultiplicative] (F : C ⥤ D) :
+    (P.inverseImage F).IsMultiplicative where
+
 end IsMultiplicative
+
+/-- A class of morphisms `W` has the two-out-of-three property if whenever two out
+of three maps in `f`, `g`, `f ≫ g` are in `W`, then the third map is also in `W`. -/
+class HasTwoOutOfThreeProperty (W : MorphismProperty C)
+    extends W.IsStableUnderComposition : Prop where
+  of_postcomp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : W g → W (f ≫ g) → W f
+  of_precomp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : W f → W (f ≫ g) → W g
+
+section
+
+variable (W : MorphismProperty C) [W.HasTwoOutOfThreeProperty]
+
+lemma of_postcomp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (hg : W g) (hfg : W (f ≫ g)) :
+    W f :=
+  HasTwoOutOfThreeProperty.of_postcomp f g hg hfg
+
+lemma of_precomp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (hf : W f) (hfg : W (f ≫ g)) :
+    W g :=
+  HasTwoOutOfThreeProperty.of_precomp f g hf hfg
+
+lemma postcomp_iff {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (hg : W g) :
+    W (f ≫ g) ↔ W f :=
+  ⟨W.of_postcomp f g hg, fun hf => W.comp_mem _ _ hf hg⟩
+
+lemma precomp_iff {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (hf : W f) :
+    W (f ≫ g) ↔ W g :=
+  ⟨W.of_precomp f g hf, fun hg => W.comp_mem _ _ hf hg⟩
+
+end
+
+instance : (isomorphisms C).HasTwoOutOfThreeProperty where
+  of_postcomp f g := fun (hg : IsIso g) (hfg : IsIso (f ≫ g)) =>
+    by simpa using (inferInstance : IsIso ((f ≫ g) ≫ inv g))
+  of_precomp f g := fun (hf : IsIso f) (hfg : IsIso (f ≫ g)) =>
+    by simpa using (inferInstance : IsIso (inv f ≫ (f ≫ g)))
+
+instance (F : C ⥤ D) (W : MorphismProperty D) [W.HasTwoOutOfThreeProperty] :
+    (W.inverseImage F).HasTwoOutOfThreeProperty where
+  of_postcomp f g hg hfg := W.of_postcomp (F.map f) (F.map g) hg (by simpa using hfg)
+  of_precomp f g hf hfg := W.of_precomp (F.map f) (F.map g) hf (by simpa using hfg)
 
 end MorphismProperty
 

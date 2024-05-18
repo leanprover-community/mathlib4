@@ -60,7 +60,7 @@ theorem norm_exp_ofReal_mul_I (t : ℝ) : ‖exp (t * I)‖ = 1 := by
 set_option linter.uppercaseLean3 false in
 #align complex.norm_exp_of_real_mul_I Complex.norm_exp_ofReal_mul_I
 
-instance : NormedAddCommGroup ℂ :=
+instance instNormedAddCommGroup : NormedAddCommGroup ℂ :=
   AddGroupNorm.toNormedAddCommGroup
     { abs with
       map_zero' := map_zero abs

@@ -434,8 +434,7 @@ following data:
 * `-a` unfolds to `a`
 * `0` unfolds to `⊥`
 -/
-@[reducible]
-def GeneralizedBooleanAlgebra.toNonUnitalCommRing [GeneralizedBooleanAlgebra α] :
+abbrev GeneralizedBooleanAlgebra.toNonUnitalCommRing [GeneralizedBooleanAlgebra α] :
     NonUnitalCommRing α where
   add := (· ∆ ·)
   add_assoc := symmDiff_assoc
@@ -470,8 +469,7 @@ variable [BooleanAlgebra α] [BooleanAlgebra β] [BooleanAlgebra γ]
 * `0` unfolds to `⊥`
 * `1` unfolds to `⊤`
 -/
-@[reducible]
-def BooleanAlgebra.toBooleanRing : BooleanRing α where
+abbrev BooleanAlgebra.toBooleanRing : BooleanRing α where
   __ := GeneralizedBooleanAlgebra.toNonUnitalCommRing
   one := ⊤
   one_mul := top_inf_eq

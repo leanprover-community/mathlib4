@@ -406,7 +406,7 @@ protected theorem length_reverseAux {u v w : V} (p : G.Walk u v) (q : G.Walk u w
     (p.reverseAux q).length = p.length + q.length := by
   induction p with
   | nil => simp!
-  | cons _ _ ih => simp [ih, Nat.add_succ, Nat.succ_add]
+  | cons _ _ ih => simp [ih, Nat.succ_add, Nat.add_assoc]
 #align simple_graph.walk.length_reverse_aux SimpleGraph.Walk.length_reverseAux
 
 @[simp]
@@ -899,7 +899,7 @@ def tail (p : G.Walk u v) (hp : ¬ p.Nil) : G.Walk (p.sndOfNotNil hp) v :=
 def firstDart (p : G.Walk v w) (hp : ¬ p.Nil) : G.Dart where
   fst := v
   snd := p.sndOfNotNil hp
-  is_adj := p.adj_sndOfNotNil hp
+  adj := p.adj_sndOfNotNil hp
 
 lemma edge_firstDart (p : G.Walk v w) (hp : ¬ p.Nil) :
     (p.firstDart hp).edge = s(v, p.sndOfNotNil hp) := rfl
@@ -1150,7 +1150,10 @@ def takeUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Wa
     if hx : v = u then
       by subst u; exact Walk.nil
     else
-      cons r (takeUntil p u <| by cases h; exact (hx rfl).elim; assumption)
+      cons r (takeUntil p u <| by
+        cases h
+        · exact (hx rfl).elim
+        · assumption)
 #align simple_graph.walk.take_until SimpleGraph.Walk.takeUntil
 
 /-- Given a vertex in the support of a path, give the path from (and including) that vertex to
@@ -1162,7 +1165,10 @@ def dropUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Wa
     if hx : v = u then by
       subst u
       exact cons r p
-    else dropUntil p u <| by cases h; exact (hx rfl).elim; assumption
+    else dropUntil p u <| by
+      cases h
+      · exact (hx rfl).elim
+      · assumption
 #align simple_graph.walk.drop_until SimpleGraph.Walk.dropUntil
 
 /-- The `takeUntil` and `dropUntil` functions split a walk into two pieces.
@@ -1491,7 +1497,7 @@ theorem length_bypass_le {u v : V} (p : G.Walk u v) : p.bypass.length ≤ p.leng
     simp only [bypass]
     split_ifs
     · trans
-      apply length_dropUntil_le
+      · apply length_dropUntil_le
       rw [length_cons]
       exact le_add_right ih
     · rw [length_cons, length_cons]
@@ -1726,8 +1732,7 @@ theorem map_injective_of_injective {f : G →g G'} (hinj : Function.Injective f)
 #align simple_graph.walk.map_injective_of_injective SimpleGraph.Walk.map_injective_of_injective
 
 /-- The specialization of `SimpleGraph.Walk.map` for mapping walks to supergraphs. -/
-@[reducible]
-def mapLe {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} (p : G.Walk u v) : G'.Walk u v :=
+abbrev mapLe {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} (p : G.Walk u v) : G'.Walk u v :=
   p.map (Hom.mapSpanningSubgraphs h)
 #align simple_graph.walk.map_le SimpleGraph.Walk.mapLe
 
@@ -1904,9 +1909,8 @@ variable {G}
 
 /-- Given a walk that avoids a set of edges, produce a walk in the graph
 with those edges deleted. -/
-@[reducible]
-def toDeleteEdges (s : Set (Sym2 V)) {v w : V} (p : G.Walk v w) (hp : ∀ e, e ∈ p.edges → ¬e ∈ s) :
-    (G.deleteEdges s).Walk v w :=
+abbrev toDeleteEdges (s : Set (Sym2 V)) {v w : V} (p : G.Walk v w)
+    (hp : ∀ e, e ∈ p.edges → ¬e ∈ s) : (G.deleteEdges s).Walk v w :=
   p.transfer _ <| by
     simp only [edgeSet_deleteEdges, Set.mem_diff]
     exact fun e ep => ⟨edges_subset_edgeSet p ep, hp e ep⟩

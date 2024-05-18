@@ -3,6 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.GroupPower.CovariantClass
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Finset.Fold
 import Mathlib.Data.Finset.Option
 import Mathlib.Data.Finset.Pi
@@ -608,7 +611,7 @@ theorem inf_sup {κ : ι → Type*} (s : Finset ι) (t : ∀ i, Finset (κ i)) (
   -- Porting note: `simpa` doesn't support placeholders in proof terms
   have := h (fun j hj => if hji : j = i then cast (congr_arg κ hji.symm) a
       else g _ <| mem_of_mem_insert_of_ne hj hji) (fun j hj => ?_)
-  simpa only [cast_eq, dif_pos, Function.comp, Subtype.coe_mk, dif_neg, aux] using this
+  · simpa only [cast_eq, dif_pos, Function.comp, Subtype.coe_mk, dif_neg, aux] using this
   rw [mem_insert] at hj
   obtain (rfl | hj) := hj
   · simpa
@@ -1597,8 +1600,7 @@ theorem min'_lt_max' {i j} (H1 : i ∈ s) (H2 : j ∈ s) (H3 : i ≠ j) :
 `min'_lt_max'` which is sometimes more convenient.
 -/
 theorem min'_lt_max'_of_card (h₂ : 1 < card s) :
-    s.min' (Finset.card_pos.mp <| lt_trans zero_lt_one h₂) <
-      s.max' (Finset.card_pos.mp <| lt_trans zero_lt_one h₂) := by
+    s.min' (Finset.card_pos.1 <| by omega) < s.max' (Finset.card_pos.1 <| by omega) := by
   rcases one_lt_card.1 h₂ with ⟨a, ha, b, hb, hab⟩
   exact s.min'_lt_max' ha hb hab
 #align finset.min'_lt_max'_of_card Finset.min'_lt_max'_of_card

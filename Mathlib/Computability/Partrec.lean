@@ -138,9 +138,7 @@ theorem rfindOpt_dom {α} {f : ℕ → Option α} : (rfindOpt f).Dom ↔ ∃ n a
       ⟨Nat.find h', by simpa using s.symm, fun _ _ => trivial⟩
     refine' ⟨fd, _⟩
     have := rfind_spec (get_mem fd)
-    simp? at this ⊢ says simp only [coe_some, mem_some_iff, ofOption_dom] at this ⊢
-    cases' Option.isSome_iff_exists.1 this.symm with a e
-    rw [e]; trivial⟩
+    simpa using this⟩
 #align nat.rfind_opt_dom Nat.rfindOpt_dom
 
 theorem rfindOpt_mono {α} {f : ℕ → Option α} (H : ∀ {a m n}, m ≤ n → a ∈ f m → a ∈ f n) {a} :
@@ -737,7 +735,9 @@ theorem nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ
 theorem list_ofFn :
     ∀ {n} {f : Fin n → α → σ},
       (∀ i, Computable (f i)) → Computable fun a => List.ofFn fun i => f i a
-  | 0, _, _ => const []
+  | 0, _, _ => by
+    simp only [List.ofFn_zero]
+    exact const []
   | n + 1, f, hf => by
     simp only [List.ofFn_succ]
     exact list_cons.comp (hf 0) (list_ofFn fun i => hf i.succ)

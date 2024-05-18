@@ -9,7 +9,7 @@ import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.UniformSpace.UniformEmbedding
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Finsupp
@@ -1057,8 +1057,7 @@ theorem ker_codRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂
 #align continuous_linear_map.ker_cod_restrict ContinuousLinearMap.ker_codRestrict
 
 /-- Restrict the codomain of a continuous linear map `f` to `f.range`. -/
-@[reducible]
-def rangeRestrict [RingHomSurjective σ₁₂] (f : M₁ →SL[σ₁₂] M₂) :=
+abbrev rangeRestrict [RingHomSurjective σ₁₂] (f : M₁ →SL[σ₁₂] M₂) :=
   f.codRestrict (LinearMap.range f) (LinearMap.mem_range_self f)
 
 @[simp]
@@ -1259,8 +1258,7 @@ variable [ContinuousSMul R₁ M₁]
 
 /-- Given an element `x` of a topological space `M` over a semiring `R`, the natural continuous
 linear map from `R` to `M` by taking multiples of `x`. -/
-def toSpanSingleton (x : M₁) : R₁ →L[R₁] M₁
-    where
+def toSpanSingleton (x : M₁) : R₁ →L[R₁] M₁ where
   toLinearMap := LinearMap.toSpanSingleton R₁ M₁ x
   cont := continuous_id.smul continuous_const
 #align continuous_linear_map.to_span_singleton ContinuousLinearMap.toSpanSingleton
@@ -1366,8 +1364,8 @@ def _root_.Pi.compRightL {α : Type*} (f : α → ι) : ((i : ι) → φ i) →L
 of `φ` is linearly equivalent to the product over `I`. -/
 def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjoint I J)
     (hu : Set.univ ⊆ I ∪ J) :
-    (⨅ i ∈ J, ker (proj i : (∀ i, φ i) →L[R] φ i) : Submodule R (∀ i, φ i)) ≃L[R] ∀ i : I, φ i
-    where
+    (⨅ i ∈ J, ker (proj i : (∀ i, φ i) →L[R] φ i) :
+    Submodule R (∀ i, φ i)) ≃L[R] ∀ i : I, φ i where
   toLinearEquiv := LinearMap.iInfKerProjEquiv R φ hd hu
   continuous_toFun :=
     continuous_pi fun i => by
@@ -1639,7 +1637,7 @@ theorem comp_smulₛₗ [SMulCommClass R₂ R₂ M₂] [SMulCommClass R₃ R₃ 
 
 instance distribMulAction [ContinuousAdd M₂] : DistribMulAction S₃ (M →SL[σ₁₂] M₂) where
   smul_add a f g := ext fun x => smul_add a (f x) (g x)
-  smul_zero _a := ext fun _x => smul_zero _
+  smul_zero a := ext fun _ => smul_zero a
 #align continuous_linear_map.distrib_mul_action ContinuousLinearMap.distribMulAction
 
 end SMulMonoid
@@ -1682,7 +1680,7 @@ theorem prod_ext {f g : M × N₂ →L[R] N₃} (hl : f.comp (inl _ _ _) = g.com
 variable [ContinuousAdd M₂] [ContinuousAdd M₃] [ContinuousAdd N₂]
 
 instance module : Module S₃ (M →SL[σ₁₃] M₃) where
-  zero_smul _ := ext fun _ => zero_smul _ _
+  zero_smul _ := ext fun _ => zero_smul S₃ _
   add_smul _ _ _ := ext fun _ => add_smul _ _ _
 #align continuous_linear_map.module ContinuousLinearMap.module
 
@@ -1738,7 +1736,7 @@ def smulRightₗ (c : M →L[R] S) : M₂ →ₗ[T] M →L[R] M₂ where
   toFun := c.smulRight
   map_add' x y := by
     ext e
-    apply smul_add
+    apply smul_add (c e)
   map_smul' a x := by
     ext e
     dsimp

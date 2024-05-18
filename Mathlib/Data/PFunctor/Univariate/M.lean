@@ -249,7 +249,7 @@ def children (x : M F) (i : F.B (head x)) : M F :=
       have P' := x.2 (succ n)
       apply agree_children _ _ _ P'
       trans i
-      apply cast_heq
+      · apply cast_heq
       symm
       apply cast_heq }
 set_option linter.uppercaseLean3 false in
@@ -310,8 +310,7 @@ set_option linter.uppercaseLean3 false in
 end Approx
 
 /-- constructor for M-types -/
-protected def mk (x : F (M F)) : M F
-    where
+protected def mk (x : F (M F)) : M F where
   approx := Approx.sMk x
   consistent := Approx.P_mk x
 set_option linter.uppercaseLean3 false in
@@ -516,8 +515,8 @@ theorem iselect_eq_default [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) (x 
     induction' x using PFunctor.M.casesOn' with x_a x_f
     simp only [iselect, isubtree] at ps_ih ⊢
     by_cases h'' : a = x_a
-    subst x_a
-    · simp only [dif_pos, eq_self_iff_true, casesOn_mk']
+    · subst x_a
+      simp only [dif_pos, eq_self_iff_true, casesOn_mk']
       rw [ps_ih]
       intro h'
       apply h

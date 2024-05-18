@@ -200,7 +200,9 @@ lemma smul_def (q : ℚ≥0) (a : α) : q • a = q * a := DivisionSemiring.nnqs
 
 variable (α)
 
-@[simp] lemma smul_one_eq_coe (q : ℚ≥0) : q • (1 : α) = q := by rw [NNRat.smul_def, mul_one]
+@[simp] lemma smul_one_eq_cast (q : ℚ≥0) : q • (1 : α) = q := by rw [NNRat.smul_def, mul_one]
+
+@[deprecated (since := "2024-05-03")] alias smul_one_eq_coe := smul_one_eq_cast
 
 end NNRat
 
@@ -221,11 +223,15 @@ theorem smul_def (a : ℚ) (x : K) : a • x = ↑a * x := DivisionRing.qsmul_de
 #align rat.smul_def Rat.smul_def
 
 @[simp]
-theorem smul_one_eq_coe (A : Type*) [DivisionRing A] (m : ℚ) : m • (1 : A) = ↑m := by
+theorem smul_one_eq_cast (A : Type*) [DivisionRing A] (m : ℚ) : m • (1 : A) = ↑m := by
   rw [Rat.smul_def, mul_one]
-#align rat.smul_one_eq_coe Rat.smul_one_eq_coe
+#align rat.smul_one_eq_coe Rat.smul_one_eq_cast
+
+@[deprecated (since := "2024-05-03")] alias smul_one_eq_coe := smul_one_eq_cast
 
 end Rat
 
-instance RatCast.toOfScientific [RatCast K] : OfScientific K where
-  ofScientific (m : ℕ) (b : Bool) (d : ℕ) := Rat.ofScientific m b d
+/-- `OfScientific.ofScientific` is the simp-normal form. -/
+@[simp]
+theorem Rat.ofScientific_eq_ofScientific (m : ℕ) (s : Bool) (e : ℕ) :
+    Rat.ofScientific (OfNat.ofNat m) s (OfNat.ofNat e) = OfScientific.ofScientific m s e := rfl

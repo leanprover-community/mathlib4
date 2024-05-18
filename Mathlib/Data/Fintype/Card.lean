@@ -244,6 +244,7 @@ theorem toFinset_card {α : Type*} (s : Set α) [Fintype s] : s.toFinset.card = 
 
 end Set
 
+@[simp]
 theorem Finset.card_univ [Fintype α] : (Finset.univ : Finset α).card = Fintype.card α :=
   rfl
 #align finset.card_univ Finset.card_univ
@@ -318,9 +319,7 @@ theorem Fintype.card_fin_lt_of_le {m n : ℕ} (h : m ≤ n) :
           left_inv := fun i ↦ rfl
           right_inv := fun i ↦ rfl }
 
-@[simp]
-theorem Finset.card_fin (n : ℕ) : Finset.card (Finset.univ : Finset (Fin n)) = n := by
-  rw [Finset.card_univ, Fintype.card_fin]
+theorem Finset.card_fin (n : ℕ) : Finset.card (Finset.univ : Finset (Fin n)) = n := by simp
 #align finset.card_fin Finset.card_fin
 
 /-- `Fin` as a map from `ℕ` to `Type` is injective. Note that since this is a statement about
@@ -941,7 +940,7 @@ theorem wellFounded_of_trans_of_irrefl (r : α → α → Prop) [IsTrans α r] [
           Finset.subset_iff, mem_filter, true_and_iff, mem_univ, hxy];
       exact
         ⟨fun z hzx => _root_.trans hzx hxy,
-          not_forall_of_exists_not ⟨x, not_imp.2 ⟨hxy, irrefl x⟩⟩⟩
+          not_forall_of_exists_not ⟨x, Classical.not_imp.2 ⟨hxy, irrefl x⟩⟩⟩
   exact Subrelation.wf (this _ _) (measure _).wf
 #align finite.well_founded_of_trans_of_irrefl Finite.wellFounded_of_trans_of_irrefl
 
@@ -1178,7 +1177,7 @@ See also: `Fintype.exists_ne_map_eq_of_card_lt`, `Finite.exists_infinite_fiber`.
 -/
 theorem Finite.exists_ne_map_eq_of_infinite {α β} [Infinite α] [Finite β] (f : α → β) :
     ∃ x y : α, x ≠ y ∧ f x = f y := by
-  simpa only [Injective, not_forall, not_imp, and_comm] using not_injective_infinite_finite f
+  simpa [Injective, and_comm] using not_injective_infinite_finite f
 #align finite.exists_ne_map_eq_of_infinite Finite.exists_ne_map_eq_of_infinite
 
 instance Function.Embedding.is_empty {α β} [Infinite α] [Finite β] : IsEmpty (α ↪ β) :=
@@ -1294,31 +1293,3 @@ theorem Fintype.induction_subsingleton_or_nontrivial {P : ∀ (α) [Fintype α],
     rw [hn] at hlt
     exact ih (Fintype.card β) hlt _ rfl
 #align fintype.induction_subsingleton_or_nontrivial Fintype.induction_subsingleton_or_nontrivial
-
-namespace Tactic
-
---open Positivity
-
-private theorem card_univ_pos (α : Type*) [Fintype α] [Nonempty α] :
-    0 < (Finset.univ : Finset α).card :=
-  Finset.univ_nonempty.card_pos
-
---Porting note(https://github.com/leanprover-community/mathlib4/issues/6038): restore
--- /-- Extension for the `positivity` tactic: `Finset.card s` is positive if `s` is nonempty. -/
--- @[positivity]
--- unsafe def positivity_finset_card : expr → tactic strictness
---   | q(Finset.card $(s)) => do
---     let p
---       ← -- TODO: Partial decision procedure for `Finset.nonempty`
---             to_expr
---             ``(Finset.Nonempty $(s)) >>=
---           find_assumption
---     positive <$> mk_app `` Finset.Nonempty.card_pos [p]
---   | q(@Fintype.card $(α) $(i)) => positive <$> mk_mapp `` Fintype.card_pos [α, i, none]
---   | e =>
---     pp e >>=
---       fail ∘
---       format.bracket "The expression `" "` isn't of the form `Finset.card s` or `Fintype.card α`"
--- #align tactic.positivity_finset_card tactic.positivity_finset_card
-
-end Tactic

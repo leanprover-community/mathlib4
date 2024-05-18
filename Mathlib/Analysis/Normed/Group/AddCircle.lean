@@ -110,7 +110,7 @@ theorem norm_eq {x : ℝ} : ‖(x : AddCircle p)‖ = |x - round (p⁻¹ * x) * 
   · simp only [QuotientAddGroup.mk'_apply, Real.norm_eq_abs, le_csInf_iff h₁ h₂]
     rintro b' ⟨b, hb, rfl⟩
     simp only [mem_setOf, QuotientAddGroup.eq_iff_sub_mem, mem_zmultiples_iff,
-      smul_one_eq_coe] at hb
+      smul_one_eq_cast] at hb
     obtain ⟨z, hz⟩ := hb
     rw [(by rw [hz]; abel : x = b - z), fract_sub_int, ← abs_sub_round_eq_min]
     convert round_le b 0

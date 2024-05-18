@@ -137,7 +137,9 @@ theorem disjoint_mulSupport_iff {f : α → M} {s : Set α} :
 
 @[to_additive (attr := simp)]
 theorem mulSupport_eq_empty_iff {f : α → M} : mulSupport f = ∅ ↔ f = 1 := by
-  simp_rw [← subset_empty_iff, mulSupport_subset_iff', funext_iff]
+  -- Adaptation note: This used to be `simp_rw` rather than `rw`,
+  -- but this broke `to_additive` as of `nightly-2024-03-07`
+  rw [← subset_empty_iff, mulSupport_subset_iff', funext_iff]
   simp
 #align function.mul_support_eq_empty_iff Function.mulSupport_eq_empty_iff
 #align function.support_eq_empty_iff Function.support_eq_empty_iff
@@ -241,6 +243,16 @@ theorem mulSupport_along_fiber_subset (f : α × β → M) (a : α) :
   fun x hx => ⟨(a, x), by simpa using hx⟩
 #align function.mul_support_along_fiber_subset Function.mulSupport_along_fiber_subset
 #align function.support_along_fiber_subset Function.support_along_fiber_subset
+
+@[to_additive]
+theorem mulSupport_curry (f : α × β → M) :
+    (mulSupport f.curry) = (mulSupport f).image Prod.fst := by
+  simp [mulSupport, funext_iff, image]
+
+@[to_additive]
+theorem mulSupport_curry' (f : α × β → M) :
+    (mulSupport fun a b ↦ f (a, b)) = (mulSupport f).image Prod.fst :=
+  mulSupport_curry f
 
 end One
 

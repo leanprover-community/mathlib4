@@ -3,12 +3,11 @@ Copyright (c) 2022 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli, Junyan Xu
 -/
+import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.CategoryTheory.Groupoid.VertexGroup
 import Mathlib.CategoryTheory.Groupoid.Basic
 import Mathlib.CategoryTheory.Groupoid
-import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Set.Lattice
-import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.Order.GaloisConnection
 
 #align_import category_theory.groupoid.subgroupoid from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"

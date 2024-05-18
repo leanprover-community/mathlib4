@@ -119,8 +119,8 @@ theorem iSup_generalizedEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V
     -- Since the dimensions of `ER` and `ES` add up to the dimension of `V`, it follows that the
     -- span of all generalized eigenvectors is all of `V`.
     show ⨆ (μ : K) (k : ℕ), f.generalizedEigenspace μ k = ⊤
-    · rw [← top_le_iff, ← Submodule.eq_top_of_disjoint ER ES h_dim_add h_disjoint]
-      apply sup_le hER hES
+    rw [← top_le_iff, ← Submodule.eq_top_of_disjoint ER ES h_dim_add h_disjoint]
+    apply sup_le hER hES
 #align module.End.supr_generalized_eigenspace_eq_top Module.End.iSup_generalizedEigenspace_eq_top
 
 end Module.End
@@ -140,7 +140,8 @@ theorem inf_iSup_generalizedEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p,
   suffices ∀ μ, (m μ : V) ∈ p by
     exact (mem_iSup_iff_exists_finsupp _ _).mpr ⟨m, fun μ ↦ mem_inf.mp ⟨this μ, hm₂ μ⟩, rfl⟩
   intro μ
-  by_cases hμ : μ ∈ m.support; swap; simp only [Finsupp.not_mem_support_iff.mp hμ, p.zero_mem]
+  by_cases hμ : μ ∈ m.support; swap
+  · simp only [Finsupp.not_mem_support_iff.mp hμ, p.zero_mem]
   have h_comm : ∀ (μ₁ μ₂ : K),
     Commute ((f - algebraMap K (End K V) μ₁) ^ finrank K V)
             ((f - algebraMap K (End K V) μ₂) ^ finrank K V) := fun μ₁ μ₂ ↦

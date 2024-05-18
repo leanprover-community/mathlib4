@@ -324,8 +324,8 @@ instance : Preadditive (ModuleCat.{v} R) where
     erw [map_add]
     rfl
 
-instance forget₂_addCommGroupCat_additive : (forget₂ (ModuleCat.{v} R) AddCommGroupCat).Additive
-    where
+instance forget₂_addCommGroupCat_additive :
+    (forget₂ (ModuleCat.{v} R) AddCommGroupCat).Additive where
 #align Module.forget₂_AddCommGroup_additive ModuleCat.forget₂_addCommGroupCat_additive
 
 section
@@ -364,8 +364,8 @@ def smul : R →+* End ((forget₂ (ModuleCat R) AddCommGroupCat).obj M) where
     { toFun := fun (m : M) => r • m
       map_zero' := by dsimp; rw [smul_zero]
       map_add' := fun x y => by dsimp; rw [smul_add] }
-  map_one' := AddMonoidHom.ext (fun x => by dsimp; rw [one_smul])
-  map_zero' := AddMonoidHom.ext (fun x => by dsimp; rw [zero_smul])
+  map_one' := AddMonoidHom.ext (fun x => by dsimp; rw [one_smul]; rfl)
+  map_zero' := AddMonoidHom.ext (fun x => by dsimp; rw [zero_smul]; rfl)
   map_mul' r s := AddMonoidHom.ext (fun (x : M) => (smul_smul r s x).symm)
   map_add' r s := AddMonoidHom.ext (fun (x : M) => add_smul r s x)
 

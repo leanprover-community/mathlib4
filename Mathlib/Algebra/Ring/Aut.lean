@@ -30,8 +30,7 @@ RingAut
 
 
 /-- The group of ring automorphisms. -/
-@[reducible]
-def RingAut (R : Type*) [Mul R] [Add R] :=
+abbrev RingAut (R : Type*) [Mul R] [Add R] :=
   RingEquiv R R
 #align ring_aut RingAut
 

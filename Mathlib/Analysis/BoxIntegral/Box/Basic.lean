@@ -71,7 +71,9 @@ variable {ι : Type*}
 /-- A nontrivial rectangular box in `ι → ℝ` with corners `lower` and `upper`. Represents the product
 of half-open intervals `(lower i, upper i]`. -/
 structure Box (ι : Type*) where
+  /-- coordinates of the lower and upper corners of the box -/
   (lower upper : ι → ℝ)
+  /-- Each lower coordinate is less than its upper coordinate: i.e., the box is non-empty -/
   lower_lt_upper : ∀ i, lower i < upper i
 #align box_integral.box BoxIntegral.Box
 
@@ -96,6 +98,8 @@ instance : Membership (ι → ℝ) (Box ι) :=
   ⟨fun x I ↦ ∀ i, x i ∈ Ioc (I.lower i) (I.upper i)⟩
 
 -- Porting note: added
+/-- The set of points in this box: this is the product of half-open intervals `(lower i, upper i]`,
+where `lower` and `upper` are this box' corners. -/
 @[coe]
 def toSet (I : Box ι) : Set (ι → ℝ) := { x | x ∈ I }
 
@@ -152,12 +156,15 @@ theorem le_def : I ≤ J ↔ ∀ x ∈ I, x ∈ J := Iff.rfl
 
 theorem le_TFAE : List.TFAE [I ≤ J, (I : Set (ι → ℝ)) ⊆ J,
     Icc I.lower I.upper ⊆ Icc J.lower J.upper, J.lower ≤ I.lower ∧ I.upper ≤ J.upper] := by
-  tfae_have 1 ↔ 2; exact Iff.rfl
+  tfae_have 1 ↔ 2
+  · exact Iff.rfl
   tfae_have 2 → 3
   · intro h
     simpa [coe_eq_pi, closure_pi_set, lower_ne_upper] using closure_mono h
-  tfae_have 3 ↔ 4; exact Icc_subset_Icc_iff I.lower_le_upper
-  tfae_have 4 → 2; exact fun h x hx i ↦ Ioc_subset_Ioc (h.1 i) (h.2 i) (hx i)
+  tfae_have 3 ↔ 4
+  · exact Icc_subset_Icc_iff I.lower_le_upper
+  tfae_have 4 → 2
+  · exact fun h x hx i ↦ Ioc_subset_Ioc (h.1 i) (h.2 i) (hx i)
   tfae_finish
 #align box_integral.box.le_tfae BoxIntegral.Box.le_TFAE
 
@@ -264,6 +271,7 @@ In this section we define coercion from `WithBot (Box ι)` to `Set (ι → ℝ)`
 -/
 
 -- Porting note: added
+/-- The set underlying this box: `⊥` is mapped to `∅`. -/
 @[coe]
 def withBotToSet (o : WithBot (Box ι)) : Set (ι → ℝ) := o.elim ∅ (↑)
 

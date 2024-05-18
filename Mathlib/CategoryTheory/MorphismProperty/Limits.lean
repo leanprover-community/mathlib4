@@ -76,24 +76,24 @@ theorem StableUnderBaseChange.snd {P : MorphismProperty C} (hP : StableUnderBase
 
 theorem StableUnderBaseChange.baseChange_obj [HasPullbacks C] {P : MorphismProperty C}
     (hP : StableUnderBaseChange P) {S S' : C} (f : S' ⟶ S) (X : Over S) (H : P X.hom) :
-    P ((baseChange f).obj X).hom :=
+    P ((Over.baseChange f).obj X).hom :=
   hP.snd X.hom f H
 #align category_theory.morphism_property.stable_under_base_change.base_change_obj CategoryTheory.MorphismProperty.StableUnderBaseChange.baseChange_obj
 
 theorem StableUnderBaseChange.baseChange_map [HasPullbacks C] {P : MorphismProperty C}
     (hP : StableUnderBaseChange P) {S S' : C} (f : S' ⟶ S) {X Y : Over S} (g : X ⟶ Y)
-    (H : P g.left) : P ((baseChange f).map g).left := by
+    (H : P g.left) : P ((Over.baseChange f).map g).left := by
   let e :=
     pullbackRightPullbackFstIso Y.hom f g.left ≪≫
       pullback.congrHom (g.w.trans (Category.comp_id _)) rfl
-  have : e.inv ≫ pullback.snd = ((baseChange f).map g).left := by
+  have : e.inv ≫ pullback.snd = ((Over.baseChange f).map g).left := by
     ext <;> dsimp [e] <;> simp
   rw [← this, hP.respectsIso.cancel_left_isIso]
   exact hP.snd _ _ H
 #align category_theory.morphism_property.stable_under_base_change.base_change_map CategoryTheory.MorphismProperty.StableUnderBaseChange.baseChange_map
 
 theorem StableUnderBaseChange.pullback_map [HasPullbacks C] {P : MorphismProperty C}
-    (hP : StableUnderBaseChange P) (hP' : StableUnderComposition P) {S X X' Y Y' : C} {f : X ⟶ S}
+    (hP : StableUnderBaseChange P) [P.IsStableUnderComposition] {S X X' Y Y' : C} {f : X ⟶ S}
     {g : Y ⟶ S} {f' : X' ⟶ S} {g' : Y' ⟶ S} {i₁ : X ⟶ X'} {i₂ : Y ⟶ Y'} (h₁ : P i₁) (h₂ : P i₂)
     (e₁ : f = i₁ ≫ f') (e₂ : g = i₂ ≫ g') :
     P (pullback.map f g f' g' i₁ i₂ (𝟙 _) ((Category.comp_id _).trans e₁)
@@ -102,12 +102,12 @@ theorem StableUnderBaseChange.pullback_map [HasPullbacks C] {P : MorphismPropert
     pullback.map f g f' g' i₁ i₂ (𝟙 _) ((Category.comp_id _).trans e₁)
         ((Category.comp_id _).trans e₂) =
       ((pullbackSymmetry _ _).hom ≫
-          ((baseChange _).map (Over.homMk _ e₂.symm : Over.mk g ⟶ Over.mk g')).left) ≫
+          ((Over.baseChange _).map (Over.homMk _ e₂.symm : Over.mk g ⟶ Over.mk g')).left) ≫
         (pullbackSymmetry _ _).hom ≫
-          ((baseChange g').map (Over.homMk _ e₁.symm : Over.mk f ⟶ Over.mk f')).left :=
+          ((Over.baseChange g').map (Over.homMk _ e₁.symm : Over.mk f ⟶ Over.mk f')).left :=
     by ext <;> dsimp <;> simp
   rw [this]
-  apply hP' <;> rw [hP.respectsIso.cancel_left_isIso]
+  apply P.comp_mem <;> rw [hP.respectsIso.cancel_left_isIso]
   exacts [hP.baseChange_map _ (Over.homMk _ e₂.symm : Over.mk g ⟶ Over.mk g') h₂,
     hP.baseChange_map _ (Over.homMk _ e₁.symm : Over.mk f ⟶ Over.mk f') h₁]
 #align category_theory.morphism_property.stable_under_base_change.pullback_map CategoryTheory.MorphismProperty.StableUnderBaseChange.pullback_map
@@ -228,12 +228,12 @@ theorem RespectsIso.diagonal (hP : P.RespectsIso) : P.diagonal.RespectsIso := by
     rwa [pullback.diagonal_comp, hP.cancel_right_isIso]
 #align category_theory.morphism_property.respects_iso.diagonal CategoryTheory.MorphismProperty.RespectsIso.diagonal
 
-theorem StableUnderComposition.diagonal (hP : StableUnderComposition P) (hP' : RespectsIso P)
-    (hP'' : StableUnderBaseChange P) : P.diagonal.StableUnderComposition := by
-  introv X h₁ h₂
-  rw [diagonal_iff, pullback.diagonal_comp]
-  exact hP _ _ h₁ (by simpa [hP'.cancel_left_isIso] using hP''.snd _ _ h₂)
-#align category_theory.morphism_property.stable_under_composition.diagonal CategoryTheory.MorphismProperty.StableUnderComposition.diagonal
+theorem diagonal_isStableUnderComposition [P.IsStableUnderComposition] (hP' : RespectsIso P)
+    (hP'' : StableUnderBaseChange P) : P.diagonal.IsStableUnderComposition where
+  comp_mem _ _ h₁ h₂ := by
+    rw [diagonal_iff, pullback.diagonal_comp]
+    exact P.comp_mem _ _ h₁ (by simpa [hP'.cancel_left_isIso] using hP''.snd _ _ h₂)
+#align category_theory.morphism_property.stable_under_composition.diagonal CategoryTheory.MorphismProperty.diagonal_isStableUnderComposition
 
 theorem StableUnderBaseChange.diagonal (hP : StableUnderBaseChange P) (hP' : RespectsIso P) :
     P.diagonal.StableUnderBaseChange :=
@@ -273,27 +273,31 @@ theorem universally_stableUnderBaseChange (P : MorphismProperty C) :
   h₁ _ _ _ (H'.paste_vert H.flip)
 #align category_theory.morphism_property.universally_stable_under_base_change CategoryTheory.MorphismProperty.universally_stableUnderBaseChange
 
-theorem StableUnderComposition.universally [HasPullbacks C] {P : MorphismProperty C}
-    (hP : P.StableUnderComposition) : P.universally.StableUnderComposition := by
-  intro X Y Z f g hf hg X' Z' i₁ i₂ f' H
-  have := pullback.lift_fst _ _ (H.w.trans (Category.assoc _ _ _).symm)
-  rw [← this] at H ⊢
-  apply hP _ _ _ (hg _ _ _ <| IsPullback.of_hasPullback _ _)
-  exact hf _ _ _ (H.of_right (pullback.lift_snd _ _ _) (IsPullback.of_hasPullback i₂ g))
-#align category_theory.morphism_property.stable_under_composition.universally CategoryTheory.MorphismProperty.StableUnderComposition.universally
+instance IsStableUnderComposition.universally [HasPullbacks C] (P : MorphismProperty C)
+    [hP : P.IsStableUnderComposition] : P.universally.IsStableUnderComposition where
+  comp_mem {X Y Z} f g hf hg X' Z' i₁ i₂ f' H := by
+    have := pullback.lift_fst _ _ (H.w.trans (Category.assoc _ _ _).symm)
+    rw [← this] at H ⊢
+    apply P.comp_mem _ _ _ (hg _ _ _ <| IsPullback.of_hasPullback _ _)
+    exact hf _ _ _ (H.of_right (pullback.lift_snd _ _ _) (IsPullback.of_hasPullback i₂ g))
+#align category_theory.morphism_property.stable_under_composition.universally CategoryTheory.MorphismProperty.IsStableUnderComposition.universally
 
 theorem universally_le (P : MorphismProperty C) : P.universally ≤ P := by
   intro X Y f hf
   exact hf (𝟙 _) (𝟙 _) _ (IsPullback.of_vert_isIso ⟨by rw [Category.comp_id, Category.id_comp]⟩)
 #align category_theory.morphism_property.universally_le CategoryTheory.MorphismProperty.universally_le
 
+theorem universally_eq_iff {P : MorphismProperty C} :
+    P.universally = P ↔ P.StableUnderBaseChange :=
+  ⟨(· ▸ P.universally_stableUnderBaseChange),
+    fun hP ↦ P.universally_le.antisymm fun _ _ _ hf _ _ _ _ _ H => hP H.flip hf⟩
+
 theorem StableUnderBaseChange.universally_eq {P : MorphismProperty C}
-    (hP : P.StableUnderBaseChange) : P.universally = P :=
-  P.universally_le.antisymm fun _ _ _ hf _ _ _ _ _ H => hP H.flip hf
+    (hP : P.StableUnderBaseChange) : P.universally = P := universally_eq_iff.mpr hP
 #align category_theory.morphism_property.stable_under_base_change.universally_eq CategoryTheory.MorphismProperty.StableUnderBaseChange.universally_eq
 
 theorem universally_mono : Monotone (universally : MorphismProperty C → MorphismProperty C) :=
-  fun _ _ h _ _ _ h₁ _ _ _ _ _ H => h _ _ _ (h₁ _ _ _ H)
+  fun _ _ h _ _ _ h₁ _ _ _ _ _ H => h _ (h₁ _ _ _ H)
 #align category_theory.morphism_property.universally_mono CategoryTheory.MorphismProperty.universally_mono
 
 end Universally

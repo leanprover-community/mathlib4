@@ -145,6 +145,23 @@ theorem leval_eq_smeval.linearMap {R : Type*} [Semiring R] (r : R) :
 
 end Module
 
+section Neg
+
+variable (R : Type*) [Ring R] {S : Type*} [AddCommGroup S] [Pow S ℕ] [Module R S] (p q : R[X])
+  (x : S)
+
+@[simp]
+theorem smeval_neg : (-p).smeval x = - p.smeval x := by
+  have h : (p + -p).smeval x = 0 := by rw [add_neg_self, smeval_zero]
+  rw [smeval_add, add_eq_zero_iff_neg_eq] at h
+  exact id h.symm
+
+@[simp]
+theorem smeval_sub : (p - q).smeval x = p.smeval x - q.smeval x := by
+  rw [sub_eq_add_neg, smeval_add, smeval_neg, sub_eq_add_neg]
+
+end Neg
+
 section NatPowAssoc
 
 /-!
@@ -155,7 +172,7 @@ the defining structures independently.  For non-associative power-associative al
 octonions), we replace the `[Semiring S]` with `[NonAssocSemiring S] [Pow S ℕ] [NatPowAssoc S]`.
 -/
 
-variable (R : Type*) [CommSemiring R] {p : R[X]} (r : R) (p q : R[X]) {S : Type*}
+variable (R : Type*) [Semiring R] {p : R[X]} (r : R) (p q : R[X]) {S : Type*}
   [NonAssocSemiring S] [Module R S] [IsScalarTower R S S] [SMulCommClass R S S] [Pow S ℕ]
   [NatPowAssoc S] (x : S)
 
@@ -175,8 +192,8 @@ theorem smeval_at_zero : p.smeval (0 : S) = (p.coeff 0) • (1 : S)  := by
   | h_monomial n a =>
     cases n with
     | zero => simp only [Nat.zero_eq, monomial_zero_left, smeval_C, npow_zero, coeff_C_zero]
-    | succ n => rw [coeff_monomial_succ, smeval_monomial, ← Nat.add_one, npow_add, npow_one,
-      mul_zero, zero_smul, smul_zero]
+    | succ n => rw [coeff_monomial_succ, smeval_monomial, npow_add, npow_one, mul_zero, zero_smul,
+        smul_zero]
 
 theorem smeval_mul_X : (p * X).smeval x = p.smeval x * x := by
     induction p using Polynomial.induction_on' with

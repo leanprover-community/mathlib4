@@ -5,7 +5,6 @@ Authors: Michael Geißer, Michael Stoll
 -/
 import Mathlib.Algebra.ContinuedFractions.Computation.ApproximationCorollaries
 import Mathlib.Algebra.ContinuedFractions.Computation.Translations
-import Mathlib.Data.Int.Units
 import Mathlib.Data.Real.Irrational
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.Tactic.Basic
@@ -156,7 +155,7 @@ theorem exists_rat_abs_sub_le_and_den_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
   have hk₀' : (0 : ℝ) < k := Int.cast_pos.mpr hk₀
   have hden : ((j / k : ℚ).den : ℤ) ≤ k := by
     convert le_of_dvd hk₀ (Rat.den_dvd j k)
-    exact Rat.intCast_div_eq_divInt
+    exact Rat.intCast_div_eq_divInt _ _
   refine' ⟨j / k, _, Nat.cast_le.mp (hden.trans hk₁)⟩
   rw [← div_div, le_div_iff (Nat.cast_pos.mpr <| Rat.pos _ : (0 : ℝ) < _)]
   refine' (mul_le_mul_of_nonneg_left (Int.cast_le.mpr hden : _ ≤ (k : ℝ)) (abs_nonneg _)).trans _
@@ -586,7 +585,7 @@ theorem exists_rat_eq_convergent {q : ℚ} (h : |ξ - q| < 1 / (2 * (q.den : ℝ
   refine' q.num_div_den ▸ exists_rat_eq_convergent' ⟨_, fun hd => _, _⟩
   · exact coprime_iff_nat_coprime.mpr (natAbs_ofNat q.den ▸ q.reduced)
   · rw [← q.den_eq_one_iff.mp (Nat.cast_eq_one.mp hd)] at h
-    simpa only [Rat.coe_int_den, Nat.cast_one, one_pow, mul_one] using (abs_lt.mp h).1
+    simpa only [Rat.den_intCast, Nat.cast_one, one_pow, mul_one] using (abs_lt.mp h).1
   · obtain ⟨hq₀, hq₁⟩ := aux₀ (Nat.cast_pos.mpr q.pos)
     replace hq₁ := mul_pos hq₀ hq₁
     have hq₂ : (0 : ℝ) < 2 * (q.den * q.den) := mul_pos zero_lt_two (mul_pos hq₀ hq₀)
