@@ -65,10 +65,8 @@ declSummary="$(paste -d' ' <(echo "${newDecls}") <(echo "${oldDecls}") |
 ## final report
 printf -- '---\n\n## Weekly stats (%s %(%Y-%m-%d)T)\n\n' "${date}" -1
 
-printf -- '\n\n Reference commits: old %s, new %s.\n\n' "${oldCommitURL}" "${currentCommitURL}"
+printf -- ' Reference commits: old %s, new %s.\n\n' "${oldCommitURL}" "${currentCommitURL}"
 
-printf -- '%s, %s total(insertions-deletions)\n\n---\n\n%s' "${gdiff}" "${net}" "${percent}"
+printf -- '%s, %s total(insertions-deletions)\n\n---\n\n%s\n\n' "${gdiff}" "${net}" "${percent}"
 
 printf -- 'Declarations:\n%s\n\nTake also a look at the [`Mathlib` stats page](%s).\n' "${declSummary}" "${statsURL}"
-
-git checkout -q "${currentCommit}" > /dev/null
