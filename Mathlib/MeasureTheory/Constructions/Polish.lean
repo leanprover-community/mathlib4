@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel, Felix Weilacher
 -/
 import Mathlib.Data.Real.Cardinality
 import Mathlib.Topology.MetricSpace.Perfect
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
 import Mathlib.Topology.CountableSeparatingOn
 
 #align_import measure_theory.constructions.polish from "leanprover-community/mathlib"@"9f55d0d4363ae59948c33864cbc52e0b12e0e8ce"

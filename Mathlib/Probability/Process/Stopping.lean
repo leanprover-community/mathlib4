@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Rémy Degenne
 -/
 import Mathlib.Probability.Process.Adapted
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 
 #align_import probability.process.stopping from "leanprover-community/mathlib"@"ba074af83b6cf54c3104e59402b39410ddbd6dca"
 
@@ -31,7 +32,6 @@ Definition and properties of stopping times.
 stopping time, stochastic process
 
 -/
-
 
 open Filter Order TopologicalSpace
 
