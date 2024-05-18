@@ -73,7 +73,7 @@ theorem degree_eq_sum_if_adj [AddCommMonoidWithOne R] (i : V) :
 $$x^{\top} L x = \sum_{i \sim j} (x_{i}-x_{j})^{2}$$,
 where $\sim$ denotes the adjacency relation -/
 theorem lapMatrix_toLinearMap₂' [Field R] [CharZero R] (x : V → R) :
-    toLinearMap₂' (G.lapMatrix R) x x =
+    toLinearMap₂' (R := R) (G.lapMatrix R) x x =
     (∑ i : V, ∑ j : V, if G.Adj i j then (x i - x j)^2 else 0) / 2 := by
   simp_rw [toLinearMap₂'_apply', lapMatrix, sub_mulVec, dotProduct_sub, dotProduct_mulVec_degMatrix,
     dotProduct_mulVec_adjMatrix, ← sum_sub_distrib, degree_eq_sum_if_adj, sum_mul, ite_mul, one_mul,
@@ -99,7 +99,7 @@ theorem posSemidef_lapMatrix [LinearOrderedField R] [StarRing R] [StarOrderedRin
     · rfl
 
 theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj [LinearOrderedField R] (x : V → R) :
-    Matrix.toLinearMap₂' (G.lapMatrix R) x x = 0 ↔ ∀ i j : V, G.Adj i j → x i = x j := by
+    Matrix.toLinearMap₂' (R := R) (G.lapMatrix R) x x = 0 ↔ ∀ i j : V, G.Adj i j → x i = x j := by
   constructor
   · intro h i j
     by_contra! hn
