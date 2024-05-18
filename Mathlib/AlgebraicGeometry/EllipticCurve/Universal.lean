@@ -21,7 +21,7 @@ lemma eval_C_X_comp_eval₂_map_C_X :
     .id _ := by ext <;> simp
 
 lemma eval_C_X_eval₂_map_C_X {p : R[X][X]} :
-    (eval (C X)) (eval₂ (mapRingHom <| algebraMap R R[X][X]) (C X) p) = p :=
+    eval (C X) (eval₂ (mapRingHom <| algebraMap R R[X][X]) (C X) p) = p :=
   congr($eval_C_X_comp_eval₂_map_C_X p)
 
 end
