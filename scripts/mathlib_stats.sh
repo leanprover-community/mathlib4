@@ -44,7 +44,7 @@ net=$(awk -v gd="${gdiff}" 'BEGIN{
 
 newDecls="$(sed 's=^--\(count_decls\)=\1=' scripts/count_decls.lean | lake env lean --stdin)"
 # Definitions 73590...
-git checkout "${oldCommit}"
+git checkout -q "${oldCommit}"
 # 'detached HEAD' state
 
 lake exe cache get > /dev/null
