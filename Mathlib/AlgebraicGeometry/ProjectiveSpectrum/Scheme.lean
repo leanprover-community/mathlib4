@@ -203,6 +203,7 @@ variable (f)
 /-- The function between the basic open set `D(f)` in `Proj` to the corresponding basic open set in
 `Spec A⁰_f`. This is bundled into a continuous map in `TopComponent.forward`.
 -/
+@[simps (config := .lemmasOnly)]
 def toFun (x : Proj.T| pbo f) : Spec.T A⁰_ f :=
   ⟨carrier x, isPrime_carrier x⟩
 #align algebraic_geometry.Proj_iso_Spec_Top_component.to_Spec.to_fun AlgebraicGeometry.ProjIsoSpecTopComponent.ToSpec.toFun
@@ -212,15 +213,12 @@ The preimage of basic open set `D(a/f^n)` in `Spec A⁰_f` under the forward map
 `Spec A⁰_f` is the basic open set `D(a) ∩ D(f)` in `Proj A`. This lemma is used to prove that the
 forward map is continuous.
 -/
-theorem preimage_eq (a b : A) (k : ℕ) (a_mem : a ∈ 𝒜 k) (b_mem1 : b ∈ 𝒜 k)
-    (b_mem2 : b ∈ Submonoid.powers f) :
+theorem preimage_basicOpen (z) :
     toFun f ⁻¹'
-        (@PrimeSpectrum.basicOpen (A⁰_ f) _ (Quotient.mk'' ⟨k, ⟨a, a_mem⟩, ⟨b, b_mem1⟩, b_mem2⟩) :
-          Set (PrimeSpectrum (HomogeneousLocalization.Away 𝒜 f))) =
-      {x | x.1 ∈ pbo a} := by
+      (PrimeSpectrum.basicOpen (R := A⁰_ f) (Quotient.mk'' z) : Set (PrimeSpectrum (A⁰_ f))) =
+      Subtype.val ⁻¹' (pbo z.num.1 : Set (ProjectiveSpectrum 𝒜)) := by
   classical
   ext1 y
-  show Quotient.mk'' ⟨k, ⟨a, a_mem⟩, ⟨b, b_mem1⟩, b_mem2⟩ ∉ carrier y ↔ a ∉ y.1.asHomogeneousIdeal
   apply Iff.not
   constructor
   · rintro rid
@@ -233,12 +231,13 @@ theorem preimage_eq (a b : A) (k : ℕ) (a_mem : a ∈ 𝒜 k) (b_mem1 : b ∈ �
     rw [← hn']
     exact Ideal.mul_mem_right _ _ (Ideal.mul_mem_left _ _ hcy)
   · intro a_mem_y
-    rw [mem_carrier_iff_exists]
-    obtain ⟨n, rfl⟩ := b_mem2
-    refine ⟨a, a_mem_y, n, ?_⟩
-    simp only [HomogeneousLocalization.val_mk'', Localization.mk_eq_mk', IsLocalization.smul_mk']
+    rw [toFun_asIdeal, mem_carrier_iff_exists]
+    obtain ⟨n, hn⟩ := z.den_mem
+    refine ⟨z.num, a_mem_y, n, ?_⟩
+    simp only [HomogeneousLocalization.val_mk'',
+      Localization.mk_eq_mk', IsLocalization.smul_mk', hn]
     exact IsLocalization.mk'_mul_cancel_left _ ⟨_, _⟩
-#align algebraic_geometry.Proj_iso_Spec_Top_component.to_Spec.preimage_eq AlgebraicGeometry.ProjIsoSpecTopComponent.ToSpec.preimage_eq
+#align algebraic_geometry.Proj_iso_Spec_Top_component.to_Spec.preimage_eq AlgebraicGeometry.ProjIsoSpecTopComponent.ToSpec.preimage_basicOpen
 
 end ToSpec
 
@@ -251,19 +250,18 @@ def toSpec (f : A) : (Proj.T| pbo f) ⟶ Spec.T A⁰_ f where
   toFun := ToSpec.toFun f
   continuous_toFun := by
     rw [PrimeSpectrum.isTopologicalBasis_basic_opens.continuous_iff]
-    rintro _ ⟨⟨k, ⟨a, ha⟩, ⟨b, hb1⟩, ⟨k', hb2⟩⟩, rfl⟩; dsimp
-    erw [ToSpec.preimage_eq f a b k ha hb1 ⟨k', hb2⟩]
-    exact isOpen_induced_iff.mpr ⟨(pbo a).1, (pbo a).2, rfl⟩
+    rintro _ ⟨x, rfl⟩
+    obtain ⟨x, rfl⟩ := Quotient.surjective_Quotient_mk'' x
+    rw [ToSpec.preimage_basicOpen]
+    exact (pbo x.num).2.preimage continuous_subtype_val
 #align algebraic_geometry.Proj_iso_Spec_Top_component.to_Spec AlgebraicGeometry.ProjIsoSpecTopComponent.toSpec
 
 variable {𝒜} in
-lemma toSpec_preimage_eq {f : A} (a b : A) (k : ℕ) (a_mem : a ∈ 𝒜 k) (b_mem1 : b ∈ 𝒜 k)
-    (b_mem2 : b ∈ Submonoid.powers f) :
+lemma toSpec_preimage_basicOpen {f} (z) :
     toSpec 𝒜 f ⁻¹'
-        (@PrimeSpectrum.basicOpen (A⁰_ f) _ (Quotient.mk'' ⟨k, ⟨a, a_mem⟩, ⟨b, b_mem1⟩, b_mem2⟩) :
-          Set (PrimeSpectrum (HomogeneousLocalization.Away 𝒜 f))) =
-      {x | x.1 ∈ pbo a} :=
-  ToSpec.preimage_eq f a b k a_mem b_mem1 b_mem2
+      (PrimeSpectrum.basicOpen (R := A⁰_ f) (Quotient.mk'' z) : Set (PrimeSpectrum (A⁰_ f))) =
+      Subtype.val ⁻¹' (pbo z.num.1 : Set (ProjectiveSpectrum 𝒜)) :=
+  ToSpec.preimage_basicOpen f z
 
 end
 
@@ -585,13 +583,13 @@ variable {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m)
 
 variable {𝒜} in
 lemma image_basicOpen_eq_basicOpen (a : A) (i : ℕ) :
-    toSpec 𝒜 f '' {x | x.1 ∈ pbo (decompose 𝒜 a i)} =
+    toSpec 𝒜 f '' (Subtype.val ⁻¹' (pbo (decompose 𝒜 a i) : Set (ProjectiveSpectrum 𝒜))) =
     (PrimeSpectrum.basicOpen (R := A⁰_ f) <|
       Quotient.mk'' ⟨m * i, ⟨decompose 𝒜 a i ^ m, SetLike.pow_mem_graded _ (Submodule.coe_mem _)⟩,
         ⟨f^i, by rw [mul_comm]; exact SetLike.pow_mem_graded _ f_deg⟩, ⟨i, rfl⟩⟩).1 :=
   Set.preimage_injective.mpr (toSpec_surjective 𝒜 f_deg hm) <|
     Set.preimage_image_eq _ (toSpec_injective 𝒜 f_deg hm) ▸ by
-  rw [Opens.carrier_eq_coe, toSpec_preimage_eq, ProjectiveSpectrum.basicOpen_pow 𝒜 _ m hm]
+  rw [Opens.carrier_eq_coe, toSpec_preimage_basicOpen, ProjectiveSpectrum.basicOpen_pow 𝒜 _ m hm]
 
 end toSpec
 
@@ -606,14 +604,8 @@ def fromSpec {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
       |>.continuous_iff]
     rintro s ⟨_, ⟨a, rfl⟩, rfl⟩
     have h₁ : Subtype.val (p := (pbo f).1) ⁻¹' (pbo a) =
-        ⋃ i : ℕ, {x | x.1 ∈ pbo (decompose 𝒜 a i)} := by
-      ext ⟨x, (hx : f ∉ x.asHomogeneousIdeal)⟩
-      rw [ProjectiveSpectrum.basicOpen_eq_union_of_projection 𝒜 a]
-      change (∃ _, _) ↔ (∃ _, _)
-      simp only [GradedAlgebra.proj_apply, Set.mem_range, Set.iUnion_exists, exists_exists_eq_and,
-        Set.mem_iUnion, SetLike.mem_coe, exists_prop, exists_and_right,
-        ProjectiveSpectrum.mem_basicOpen, Opens.carrier_eq_coe, Set.mem_setOf_eq]
-
+        ⋃ i : ℕ, Subtype.val (p := (pbo f).1) ⁻¹' (pbo (decompose 𝒜 a i)) := by
+      simp [ProjectiveSpectrum.basicOpen_eq_union_of_projection 𝒜 a]
     let e : _ ≃ _ :=
       ⟨FromSpec.toFun f_deg hm, ToSpec.toFun f, toSpec_fromSpec _ _ _, fromSpec_toSpec _ _ _⟩
     change IsOpen <| e ⁻¹' _
