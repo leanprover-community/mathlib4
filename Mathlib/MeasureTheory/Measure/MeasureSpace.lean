@@ -229,10 +229,6 @@ theorem measure_diff_null' (h : μ (s₁ ∩ s₂) = 0) : μ (s₁ \ s₂) = μ 
   measure_congr <| diff_ae_eq_self.2 h
 #align measure_theory.measure_diff_null' MeasureTheory.measure_diff_null'
 
-theorem measure_diff_null (h : μ s₂ = 0) : μ (s₁ \ s₂) = μ s₁ :=
-  measure_diff_null' <| measure_mono_null (inter_subset_right _ _) h
-#align measure_theory.measure_diff_null MeasureTheory.measure_diff_null
-
 theorem measure_add_diff (hs : MeasurableSet s) (t : Set α) : μ s + μ (t \ s) = μ (s ∪ t) := by
   rw [← measure_union' disjoint_sdiff_right hs, union_diff_self]
 #align measure_theory.measure_add_diff MeasureTheory.measure_add_diff
@@ -247,12 +243,8 @@ theorem measure_diff (h : s₂ ⊆ s₁) (h₂ : MeasurableSet s₂) (h_fin : μ
 #align measure_theory.measure_diff MeasureTheory.measure_diff
 
 theorem le_measure_diff : μ s₁ - μ s₂ ≤ μ (s₁ \ s₂) :=
-  tsub_le_iff_left.2 <|
-    calc
-      μ s₁ ≤ μ (s₂ ∪ s₁) := measure_mono (subset_union_right _ _)
-      _ = μ (s₂ ∪ s₁ \ s₂) := congr_arg μ union_diff_self.symm
-      _ ≤ μ s₂ + μ (s₁ \ s₂) := measure_union_le _ _
-
+  tsub_le_iff_left.2 <| (measure_le_inter_add_diff μ s₁ s₂).trans <| by
+    gcongr; apply inter_subset_right
 #align measure_theory.le_measure_diff MeasureTheory.le_measure_diff
 
 /-- If the measure of the symmetric difference of two sets is finite,
@@ -1108,7 +1100,7 @@ instance instCompleteLattice [MeasurableSpace α] : CompleteLattice (Measure α)
       { toOuterMeasure := ⊤,
         m_iUnion := by
           intro f _ _
-          refine (OuterMeasure.iUnion _ _).antisymm ?_
+          refine (measure_iUnion_le _).antisymm ?_
           if hne : (⋃ i, f i).Nonempty then
             rw [OuterMeasure.top_apply hne]
             exact le_top
@@ -1176,8 +1168,8 @@ theorem measure_univ_pos : 0 < μ univ ↔ μ ≠ 0 :=
 /-- Lift a linear map between `OuterMeasure` spaces such that for each measure `μ` every measurable
 set is caratheodory-measurable w.r.t. `f μ` to a linear map between `Measure` spaces. -/
 def liftLinear {m0 : MeasurableSpace α} (f : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure β)
-    (hf : ∀ μ : Measure α, ‹_› ≤ (f μ.toOuterMeasure).caratheodory) : Measure α →ₗ[ℝ≥0∞] Measure β
-    where
+    (hf : ∀ μ : Measure α, ‹_› ≤ (f μ.toOuterMeasure).caratheodory) :
+    Measure α →ₗ[ℝ≥0∞] Measure β where
   toFun μ := (f μ.toOuterMeasure).toMeasure (hf μ)
   map_add' μ₁ μ₂ := ext fun s hs => by
     simp only [map_add, coe_add, Pi.add_apply, toMeasure_apply, add_toOuterMeasure,
@@ -2177,7 +2169,7 @@ nonrec theorem map_apply (μ : Measure α) (s : Set β) : μ.map f s = μ (f ⁻
     rw [preimage_union, preimage_compl, preimage_range, compl_univ, union_empty,
       hf.injective.preimage_image]
   calc
-    μ.map f s ≤ μ.map f t := measure_mono hst
+    μ.map f s ≤ μ.map f t := by gcongr
     _ = μ (f ⁻¹' s) := by rw [map_apply hf.measurable htm, hft, measure_toMeasurable]
 #align measurable_embedding.map_apply MeasurableEmbedding.map_apply
 

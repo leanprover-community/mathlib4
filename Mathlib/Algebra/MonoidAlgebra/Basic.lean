@@ -1026,8 +1026,7 @@ variable (k)
 
 /-- When `V` is a `k[G]`-module, multiplication by a group element `g` is a `k`-linear map. -/
 def GroupSMul.linearMap [Monoid G] [CommSemiring k] (V : Type u₃) [AddCommMonoid V] [Module k V]
-    [Module (MonoidAlgebra k G) V] [IsScalarTower k (MonoidAlgebra k G) V] (g : G) : V →ₗ[k] V
-    where
+    [Module (MonoidAlgebra k G) V] [IsScalarTower k (MonoidAlgebra k G) V] (g : G) : V →ₗ[k] V where
   toFun v := single g (1 : k) • v
   map_add' x y := smul_add (single g (1 : k)) x y
   map_smul' _c _x := smul_algebra_smul_comm _ _ _

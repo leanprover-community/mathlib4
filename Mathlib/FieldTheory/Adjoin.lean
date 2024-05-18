@@ -1165,12 +1165,12 @@ theorem adjoin_eq_top_of_adjoin_eq_top [Algebra E K] [IsScalarTower F E K]
 `F` adjoin the coefficients of `minpoly K α` is equal to `K` itself. -/
 theorem adjoin_minpoly_coeff_of_exists_primitive_element
     [FiniteDimensional F E] (hprim : adjoin F {α} = ⊤) (K : IntermediateField F E) :
-    adjoin F ((minpoly K α).map (algebraMap K E)).frange = K := by
+    adjoin F ((minpoly K α).map (algebraMap K E)).coeffs = K := by
   set g := (minpoly K α).map (algebraMap K E)
-  set K' : IntermediateField F E := adjoin F g.frange
+  set K' : IntermediateField F E := adjoin F g.coeffs
   have hsub : K' ≤ K := by
     refine adjoin_le_iff.mpr fun x ↦ ?_
-    rw [Finset.mem_coe, mem_frange_iff]
+    rw [Finset.mem_coe, mem_coeffs_iff]
     rintro ⟨n, -, rfl⟩
     rw [coeff_map]
     apply Subtype.mem
