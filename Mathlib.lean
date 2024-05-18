@@ -846,6 +846,7 @@ import Mathlib.Analysis.Complex.AbelLimit
 import Mathlib.Analysis.Complex.AbsMax
 import Mathlib.Analysis.Complex.Angle
 import Mathlib.Analysis.Complex.Arg
+import Mathlib.Analysis.Complex.Asymptotics
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Analysis.Complex.Circle
