@@ -405,7 +405,6 @@ protected theorem postcomp_uniformEmbedding [UniformSpace γ] {f : γ → β} (h
   toUniformInducing := UniformFun.postcomp_uniformInducing hf.toUniformInducing
   inj _ _ H := funext fun _ ↦ hf.inj (congrFun H _)
 
-
 -- Porting note: had to add a type annotation at `((f ∘ ·) : ((α → γ) → (α → β)))`
 /-- If `u` is a uniform structures on `β` and `f : γ → β`, then
 `𝒰(α, γ, comap f u) = comap (fun g ↦ f ∘ g) 𝒰(α, γ, u₁)`. -/
