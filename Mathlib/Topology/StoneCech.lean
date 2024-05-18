@@ -182,6 +182,12 @@ theorem ultrafilter_extend_extends (f : α → γ) : Ultrafilter.extend f ∘ pu
   exact funext (denseInducing_pure.extend_eq continuous_of_discreteTopology)
 #align ultrafilter_extend_extends ultrafilter_extend_extends
 
+theorem Continuous.eq_ultrafilter_extend {f : Ultrafilter α → γ} (hf : Continuous f) :
+    f = Ultrafilter.extend (f ∘ pure) := by
+  letI : TopologicalSpace α := ⊥
+  haveI : DiscreteTopology α := ⟨rfl⟩
+  exact .symm <| denseInducing_pure.extend_unique (fun x ↦ rfl) hf
+
 variable [CompactSpace γ]
 
 theorem continuous_ultrafilter_extend (f : α → γ) : Continuous (Ultrafilter.extend f) := by
@@ -238,6 +244,30 @@ instance stoneCechSetoid : Setoid (Ultrafilter α) where
       @fun _ _ _ xy yz γ _ _ _ f hf => (xy γ f hf).trans (yz γ f hf)⟩
 #align stone_cech_setoid stoneCechSetoid
 
+-- Do we really not have this ??
+lemma Continuous.closedEmbedding_of_compact_t2 {α β : Type*} [TopologicalSpace α]
+    [TopologicalSpace β] [CompactSpace α] [T2Space β] {f : α → β} (hf : Continuous f)
+    (hf' : Function.Injective f) : ClosedEmbedding f :=
+  closedEmbedding_of_continuous_injective_closed hf hf'
+    fun _ hK ↦ hK.isCompact.image hf |>.isClosed
+
+open Function Quotient in
+variable {α} in
+lemma extend_eq_of_stoneCech_rel {β : Type*} [TopologicalSpace β] [T2Space β] [CompactSpace β]
+    {x y : Ultrafilter α} (hxy : x ≈ y) {f : α → β} (hf : Continuous f) :
+    Ultrafilter.extend f x = Ultrafilter.extend f y := by
+  let s : Setoid (Ultrafilter α) := .ker (Ultrafilter.extend f)
+  let g : Quotient s → β := Quotient.lift (s := _) (Ultrafilter.extend f) (fun _ _ ↦ id)
+  suffices Quotient.mk' x = Quotient.mk' y from congrArg g this
+  have gemb : ClosedEmbedding g :=
+    (continuous_ultrafilter_extend _ |>.quotient_lift _).closedEmbedding_of_compact_t2
+    (Setoid.ker_lift_injective _)
+  have : T2Space (Quotient s) := gemb.t2Space
+  rw [continuous_quotient_mk'.eq_ultrafilter_extend]
+  have : Continuous (Quotient.mk s ∘ pure) := by
+    rwa [gemb.continuous_iff, ← comp.assoc, Quotient.lift_comp_mk, ultrafilter_extend_extends]
+  exact hxy (Quotient s) (Quotient.mk' ∘ pure) this
+
 /-- The Stone-Čech compactification of a topological space. -/
 def StoneCech : Type u :=
   Quotient (stoneCechSetoid α)
@@ -262,8 +292,8 @@ theorem denseRange_stoneCechUnit : DenseRange (stoneCechUnit : α → StoneCech 
 
 section Extension
 
-variable {γ : Type u} [TopologicalSpace γ] [T2Space γ] [CompactSpace γ]
-variable {γ' : Type u} [TopologicalSpace γ'] [T2Space γ']
+variable {γ : Type*} [TopologicalSpace γ] [T2Space γ] [CompactSpace γ]
+variable {γ' : Type*} [TopologicalSpace γ'] [T2Space γ']
 variable {f : α → γ} (hf : Continuous f)
 
 -- Porting note: missing attribute
@@ -272,7 +302,7 @@ variable {f : α → γ} (hf : Continuous f)
 /-- The extension of a continuous function from α to a compact
   Hausdorff space γ to the Stone-Čech compactification of α. -/
 def stoneCechExtend : StoneCech α → γ :=
-  Quotient.lift (Ultrafilter.extend f) fun _ _ xy => xy γ f hf
+  Quotient.lift (Ultrafilter.extend f) fun _ _ xy => extend_eq_of_stoneCech_rel xy hf
 #align stone_cech_extend stoneCechExtend
 
 theorem stoneCechExtend_extends : stoneCechExtend hf ∘ stoneCechUnit = f :=
