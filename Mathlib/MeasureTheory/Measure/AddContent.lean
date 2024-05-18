@@ -61,6 +61,18 @@ open Set Finset Filter
 open scoped ENNReal BigOperators Topology
 
 -- TODO: move this
+lemma sUnion_disjiUnion {α β : Type*} {f : α → Finset (Set β)} (I : Finset α)
+    (hf : (I : Set α).PairwiseDisjoint f) :
+    ⋃₀ (I.disjiUnion f hf : Set (Set β)) = ⋃ a ∈ I, ⋃₀ ↑(f a) := by
+  ext1 b
+  simp only [coe_disjiUnion, mem_coe, Set.mem_sUnion, Set.mem_iUnion, exists_prop]
+  constructor
+  · rintro ⟨t, ⟨a, haI, hatf⟩, hbt⟩
+    exact ⟨a, haI, t, hatf, hbt⟩
+  · rintro ⟨a, haI, t, hatf, hbt⟩
+    exact ⟨t, ⟨a, haI, hatf⟩, hbt⟩
+
+-- TODO: move this
 lemma Finset.sum_image_le_of_nonneg {ι α β : Type*} [DecidableEq α]
     [OrderedAddCommMonoid β] [SMulPosMono ℕ β]
     {J : Finset ι} {g : ι → α} {f : α → β} (hf : ∀ u ∈ J.image g, 0 ≤ f u) :
