@@ -168,6 +168,14 @@ instance lift_comp_eqToHom {R S S': 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶
     [p.IsHomLift f φ] : p.IsHomLift (f ≫ eqToHom h) φ := by
   subst h; simp_all
 
+/-- If `φ : a ⟶ b` lifts `f` and `ψ : b ⟶ c` lifts `𝟙 T`, then `φ  ≫ ψ` lifts `f` -/
+lemma comp_lift_id_left {p : 𝒳 ⥤ 𝒮} {R S T : 𝒮} {a b c : 𝒳} {f : S ⟶ T}
+    {φ : a ⟶ b} [p.IsHomLift (𝟙 R) φ] {ψ : b ⟶ c} [hψ : p.IsHomLift f ψ] :
+    p.IsHomLift f (φ ≫ ψ) where
+  domain_eq := by rw [domain_eq p (𝟙 R) φ, ← codomain_eq p (𝟙 R) φ, domain_eq p f ψ]
+  codomain_eq := codomain_eq p f ψ
+  fac := by simp [fac p f ψ, fac' p (𝟙 R) φ]
+
 @[simp]
 lemma comp_eqToHom_lift_iff {R S : 𝒮} {a' a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (h : a' = a) :
     p.IsHomLift f (eqToHom h ≫ φ) ↔ p.IsHomLift f φ where
