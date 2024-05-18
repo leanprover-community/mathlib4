@@ -11,18 +11,18 @@ import Mathlib.RingTheory.Ideal.Cotangent
 
 ## Main definition
 - `Algebra.Presentation`: A presentation of a `R`-algebra `S` consists of
-  1. `I`: The type of variables.
-  2. `val : I → S`: The assignment of each variable to a value.
-  3. `σ`: A section of `R[I] → S`.
+  1. `vars`: The type of variables.
+  2. `val : vars → S`: The assignment of each variable to a value.
+  3. `σ`: A section of `R[X] → S`.
 - `Algebra.Presentation.Hom`: Given a commuting square
   ```
-  R --→ P = R[I] ---→ S
+  R --→ P = R[X] ---→ S
   |                   |
   ↓                   ↓
-  R' -→ P' = R'[I'] → S
+  R' -→ P' = R'[X'] → S
   ```
-  A hom between `P` and `P'` is an assignment `I → P'` such that the arrows commute.
-- `Algebra.Presentation.Cotangent`: The cotangent spance of a presentation `P = R[I] → S`, I.e. the
+  A hom between `P` and `P'` is an assignment `X → P'` such that the arrows commute.
+- `Algebra.Presentation.Cotangent`: The cotangent spance of a presentation `P = R[X] → S`, I.e. the
   space `I/I²` with `I` being the kernel of the presentation.
 
 -/
@@ -34,16 +34,16 @@ open TensorProduct MvPolynomial
 variable (R : Type u) (S : Type v) [CommRing R] [CommRing S] [Algebra R S]
 
 /-- A presentation of a `R`-algebra `S` consists of
-1. `I`: The type of variables.
-2. `val : I → S`: The assignment of each variable to a value in `S`.
-3. `σ`: A section of `R[I] → S`. -/
+1. `vars`: The type of variables.
+2. `val : vars → S`: The assignment of each variable to a value in `S`.
+3. `σ`: A section of `R[X] → S`. -/
 structure Algebra.Presentation where
   /-- The type of variables.  -/
-  I : Type w
+  vars : Type w
   /-- The assignment of each variable to a value in `S`. -/
-  val : I → S
-  /-- A section of `R[I] → S`. -/
-  σ' : S → MvPolynomial I R
+  val : vars → S
+  /-- A section of `R[X] → S`. -/
+  σ' : S → MvPolynomial vars R
   aeval_val_σ' : ∀ s, aeval val (σ' s) = s
 
 namespace Algebra.Presentation
@@ -54,7 +54,7 @@ variable (P : Presentation.{w} R S)
 /-- The polynomial ring of a given presentation. -/
 @[pp_dot]
 protected
-abbrev Ring : Type (max w u) := MvPolynomial P.I R
+abbrev Ring : Type (max w u) := MvPolynomial P.vars R
 
 /-- The designated section of the presentation. -/
 @[pp_dot]
@@ -91,17 +91,17 @@ lemma algebraMap_surjective : Function.Surjective (algebraMap P.Ring S) := (⟨_
 
 section Construction
 
-/-- Construct a presentation from an assignment `I → S` such that `R[I] → S` is surjective. -/
-@[simps I val]
+/-- Construct a presentation from an assignment `I → S` such that `R[X] → S` is surjective. -/
+@[simps vars val]
 noncomputable
-def ofSurjective {I} (val : I → S) (h : Function.Surjective (aeval (R := R) val)) :
+def ofSurjective {vars} (val : vars → S) (h : Function.Surjective (aeval (R := R) val)) :
     Presentation R S where
-  I := I
+  vars := vars
   val := val
   σ' x := (h x).choose
   aeval_val_σ' x := (h x).choose_spec
 
-/-- Construct a presentation from an assignment `I → S` such that `R[I] → S` is surjective. -/
+/-- Construct a presentation from an assignment `I → S` such that `R[X] → S` is surjective. -/
 noncomputable
 def ofAlgHom {I} (f : MvPolynomial I R →ₐ[R] S) (h : Function.Surjective f) :
     Presentation R S :=
@@ -119,19 +119,19 @@ variable (R S) in
 @[simps]
 noncomputable
 def self : Presentation R S where
-  I := S
+  vars := S
   val := _root_.id
   σ' := X
   aeval_val_σ' := aeval_X _
 
 variable {T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
-/-- Given two presentations `S[I] → T` and `R[J] → S`,
-we may constuct the presentation `R[I, J] → T`. -/
-@[simps I val, simps (config := .lemmasOnly) σ]
+/-- Given two presentations `S[X] → T` and `R[Y] → S`,
+we may constuct the presentation `R[X, Y] → T`. -/
+@[simps vars val, simps (config := .lemmasOnly) σ]
 noncomputable
 def comp (Q : Presentation S T) (P : Presentation R S) : Presentation R T where
-  I := Q.I ⊕ P.I
+  vars := Q.vars ⊕ P.vars
   val := Sum.elim Q.val (algebraMap S T ∘ P.val)
   σ' x := (Q.σ x).sum (fun n r ↦ rename Sum.inr (P.σ r) * monomial (n.mapDomain Sum.inl) 1)
   aeval_val_σ' s := by
@@ -144,11 +144,11 @@ def comp (Q : Presentation S T) (P : Presentation R S) : Presentation R T where
 
 variable (S) in
 /-- If `R → S → T` is a tower of algebras,
-a presentation `R[I] → T` gives a presentation `S[I] → T`. -/
-@[simps I val]
+a presentation `R[X] → T` gives a presentation `S[X] → T`. -/
+@[simps vars val]
 noncomputable
 def extendScalars (P : Presentation R T) : Presentation S T where
-  I := P.I
+  vars := P.vars
   val := P.val
   σ' x := map (algebraMap R S) (P.σ x)
   aeval_val_σ' s := by simp [@aeval_def S, ← IsScalarTower.algebraMap_eq, ← @aeval_def R]
@@ -168,17 +168,17 @@ variable [IsScalarTower R' R'' R''] [IsScalarTower S S' S'']
 section Hom
 
 /-- Given a commuting square
-R --→ P = R[I] ---→ S
+R --→ P = R[X] ---→ S
 |                   |
 ↓                   ↓
-R' -→ P' = R'[I'] → S
+R' -→ P' = R'[X'] → S
 A hom between `P` and `P'` is an assignment `I → P'` such that the arrows commute.
 Also see `Algebra.Presentation.Hom.equivAlgHom`.
 -/
 @[ext]
 structure Hom where
-  /-- The assignment of each variable in `I` to a value in `P' = R'[I']`. -/
-  val : P.I → P'.Ring
+  /-- The assignment of each variable in `I` to a value in `P' = R'[X']`. -/
+  val : P.vars → P'.Ring
   aeval_val : ∀ i, aeval P'.val (val i) = algebraMap S S' (P.val i)
 
 attribute [simp] Hom.aeval_val
@@ -253,21 +253,21 @@ lemma Hom.id_comp (f : Hom P P') : (Hom.id P').comp f = f := by ext; simp [Hom.i
 
 variable {T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
-/-- Given presentations `Q = S[I] → T` and `P = R[J] → S`, there is a map `R[J] → R[I, J]`. -/
+/-- Given presentations `Q = S[X] → T` and `P = R[Y] → S`, there is a map `R[Y] → R[X, Y]`. -/
 @[simps]
 noncomputable
 def toComp (Q : Presentation S T) (P : Presentation R S) : Hom P (Q.comp P) where
   val i := X (.inr i)
   aeval_val i := by simp
 
-/-- Given presentations `Q = S[I] → T` and `P = R[J] → S`, there is a map `R[I, J] → S[I]`. -/
+/-- Given presentations `Q = S[X] → T` and `P = R[Y] → S`, there is a map `R[X, Y] → S[X]`. -/
 @[simps]
 noncomputable
 def ofComp (Q : Presentation S T) (P : Presentation R S) : Hom (Q.comp P) Q where
   val i := i.elim X (C ∘ P.val)
   aeval_val i := by cases i <;> simp
 
-/-- Given presentations `Q = S[I] → T` and `P = R[J] → S`, there is a map `R[I, J] → S[I]`. -/
+/-- Given presentation `P = R[X] → T`, there is a map `R[X] → S[X]`. -/
 @[simps]
 noncomputable
 def toExtendScalars (P : Presentation R T) : Hom P (P.extendScalars S) where
@@ -281,8 +281,8 @@ section Cotangent
 /-- The kernel of a presentation. -/
 abbrev ker : Ideal P.Ring := RingHom.ker (algebraMap P.Ring S)
 
-/-- The cotangent spance of a presentation.
-This is a type synonym so that `P = R[I]` can act on it through the action of `S` without creating
+/-- The cotangent space of a presentation.
+This is a type synonym so that `P = R[X]` can act on it through the action of `S` without creating
 a diamond. -/
 def Cotangent : Type _ := P.ker.Cotangent
 
@@ -366,7 +366,7 @@ lemma Cotangent.val_smul' (r : P.Ring) (x : P.Cotangent) : (r • x).val = r •
 lemma Cotangent.val_smul'' (r : R) (x : P.Cotangent) : (r • x).val = r • x.val := by
   rw [← algebraMap_smul P.Ring, val_smul', algebraMap_smul]
 
-/-- The quotient map from the kernel of `P = R[I] → S` onto the cotangent space. -/
+/-- The quotient map from the kernel of `P = R[X] → S` onto the cotangent space. -/
 def Cotangent.mk : P.ker →ₗ[P.Ring] P.Cotangent where
   toFun x := .of (Ideal.toCotangent _ x)
   map_add' x y := by simp
