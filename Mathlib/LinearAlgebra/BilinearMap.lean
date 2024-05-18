@@ -328,29 +328,10 @@ theorem llcomp_apply' (f : Nₗ →ₗ[R] Pₗ) (g : M →ₗ[R] Nₗ) : llcomp 
 
 end
 
-/-
-
-variable {R : Type*} [CommSemiring R] {R₂ : Type*} [CommSemiring R₂]
-variable {R₃ : Type*} [CommSemiring R₃] {R₄ : Type*} [CommSemiring R₄]
-variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*}
-variable {Mₗ : Type*} {Nₗ : Type*} {Pₗ : Type*} {Qₗ Qₗ' : Type*}
-variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
-variable [AddCommMonoid Mₗ] [AddCommMonoid Nₗ] [AddCommMonoid Pₗ]
-variable [AddCommMonoid Qₗ] [AddCommMonoid Qₗ']
-variable [Module R M] [Module R₂ N] [Module R₃ P] [Module R₄ Q]
-variable [Module R Mₗ] [Module R Nₗ] [Module R Pₗ] [Module R Qₗ] [Module R Qₗ']
-variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃}
-variable {σ₄₂ : R₄ →+* R₂} {σ₄₃ : R₄ →+* R₃}
-variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₄₂ σ₂₃ σ₄₃]
-variable (R)
--/
-
--- variable (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P)
-
 /-- Composing a linear map `Q → N` and a bilinear map `M → N → P` to
 form a bilinear map `M → Q → P`. -/
-def compl₂' {R₅ : Type*} [CommSemiring R₅] [Module R₅ P] [SMulCommClass R₃ R₅ P] [Module R₅ M]
-    {σ₁₅ : R →+* R₅} (h: M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) (g : Q →ₛₗ[σ₄₂] N) : M →ₛₗ[σ₁₅] Q →ₛₗ[σ₄₃] P where
+def compl₂ {R₅ : Type*} [CommSemiring R₅] [Module R₅ P] [SMulCommClass R₃ R₅ P] {σ₁₅ : R →+* R₅}
+    (h: M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) (g : Q →ₛₗ[σ₄₂] N) : M →ₛₗ[σ₁₅] Q →ₛₗ[σ₄₃] P where
   toFun a := (lcompₛₗ P σ₂₃ g) (h a)
   map_add' _ _ := by
     simp  [map_add]
@@ -360,19 +341,9 @@ def compl₂' {R₅ : Type*} [CommSemiring R₅] [Module R₅ P] [SMulCommClass 
 
 /-- Composing a linear map `Q → N` and a bilinear map `M → N → P` to
 form a bilinear map `M → Q → P`. -/
-def compl₂ (g : Q →ₛₗ[σ₄₂] N) : M →ₛₗ[σ₁₃] Q →ₛₗ[σ₄₃] P :=
+def compl₂' (g : Q →ₛₗ[σ₄₂] N) : M →ₛₗ[σ₁₃] Q →ₛₗ[σ₄₃] P :=
   (lcompₛₗ _ _ g).comp f
 #align linear_map.compl₂ LinearMap.compl₂
-
-/-
-
-def compl₁₂ {R₁ : Type*} [CommSemiring R₁] [Module R₂ N] [Module R₂ Pₗ] [Module R₁ Pₗ]
-    [Module R₁ Mₗ] [SMulCommClass R₁ R₂ Pₗ] [SMulCommClass R₂ R₁ Pₗ] [Module R₁ Qₗ] [Module R₂ Qₗ']
-    (f : Mₗ →ₗ[R₁] N →ₗ[R₂] Pₗ) (g : Qₗ →ₗ[R₁] Mₗ) (g' : Qₗ' →ₗ[R₂] N) :
-    Qₗ →ₗ[R₁] Qₗ' →ₗ[R₂] Pₗ :=
-  (f.comp g).compl₂' g'
-
--/
 
 @[simp]
 theorem compl₂_apply (g : Q →ₛₗ[σ₄₂] N) (m : M) (q : Q) : f.compl₂ g m q = f m (g q) := rfl
@@ -390,7 +361,7 @@ def compl₁₂ {R₁ : Type*} [CommSemiring R₁] [Module R₂ N] [Module R₂ 
     [Module R₁ Mₗ] [SMulCommClass R₁ R₂ Pₗ] [SMulCommClass R₂ R₁ Pₗ] [Module R₁ Qₗ] [Module R₂ Qₗ']
     (f : Mₗ →ₗ[R₁] N →ₗ[R₂] Pₗ) (g : Qₗ →ₗ[R₁] Mₗ) (g' : Qₗ' →ₗ[R₂] N) :
     Qₗ →ₗ[R₁] Qₗ' →ₗ[R₂] Pₗ :=
-  (f.comp g).compl₂' g'
+  (f.comp g).compl₂ g'
 #align linear_map.compl₁₂ LinearMap.compl₁₂
 
 @[simp]
