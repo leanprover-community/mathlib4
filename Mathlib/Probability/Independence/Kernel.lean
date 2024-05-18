@@ -809,6 +809,14 @@ theorem IndepFun.comp {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
   · exact ⟨φ ⁻¹' A, hφ hA, Set.preimage_comp.symm⟩
   · exact ⟨ψ ⁻¹' B, hψ hB, Set.preimage_comp.symm⟩
 
+theorem IndepFun.neg_right {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'} [Neg β']
+    [MeasurableNeg β'] (hfg : IndepFun f g κ μ)  :
+    IndepFun f (-g) κ μ := hfg.comp measurable_id measurable_neg
+
+theorem IndepFun.neg_left {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'} [Neg β]
+    [MeasurableNeg β] (hfg : IndepFun f g κ μ) :
+    IndepFun (-f) g κ μ := hfg.comp measurable_neg measurable_id
+
 section iIndepFun
 variable {β : ι → Type*} {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i}
 
