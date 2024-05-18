@@ -38,7 +38,7 @@ net=$(awk -v gd="${gdiff}" 'BEGIN{
   }
   print -tot }')
 
-newDecls="$(sed 's=^--\(count_decls\)=\1=' scripts/count_decls.lean | lake env lean --stdin)"
+newDecls="$(sed 's=^--\(count_decls\)=\1 "new"=' scripts/count_decls.lean | lake env lean --stdin)"
 # { defs := 73590, thms := 230958, inductives := 2451, other := 6148 }
 # total: 313147
 git checkout "${oldCommit}"
@@ -50,7 +50,7 @@ lake exe cache get
 # update the count_decls script to the latest version
 git checkout origin/adomani/periodic_reports_dev_custom_action scripts/count_decls.lean scripts/mathlib_stats.sh
 
-oldDecls="$(sed 's=^--\(count_decls\)=\1=' scripts/count_decls.lean | lake env lean --stdin)"
+oldDecls="$(sed 's=^--\(count_decls\)=\1 "old"=' scripts/count_decls.lean | lake env lean --stdin)"
 # { defs := 73152, thms := 230061, inductives := 2430, other := 6080 }
 # total: 311723
 
