@@ -409,6 +409,30 @@ def IsLimit.mk (lift : ∀ E : Multifork I, E.pt ⟶ K.pt)
       apply hm }
 #align category_theory.limits.multifork.is_limit.mk CategoryTheory.Limits.Multifork.IsLimit.mk
 
+variable {K}
+
+lemma IsLimit.hom_ext (hK : IsLimit K) {T : C} {f g : T ⟶ K.pt}
+    (h : ∀ a, f ≫ K.ι a = g ≫ K.ι a) : f = g := by
+  apply hK.hom_ext
+  rintro (_|b)
+  · apply h
+  · dsimp
+    rw [app_right_eq_ι_comp_fst, reassoc_of% h]
+
+/-- Constructor for morphisms to the point of a limit multifork. -/
+def IsLimit.lift (hK : IsLimit K) {T : C} (k : ∀ a, T ⟶ I.left a)
+    (hk : ∀ b, k (I.fstTo b) ≫ I.fst b = k (I.sndTo b) ≫ I.snd b) :
+    T ⟶ K.pt :=
+  hK.lift (Multifork.ofι _ _ k hk)
+
+@[reassoc (attr := simp)]
+lemma IsLimit.fac (hK : IsLimit K) {T : C} (k : ∀ a, T ⟶ I.left a)
+    (hk : ∀ b, k (I.fstTo b) ≫ I.fst b = k (I.sndTo b) ≫ I.snd b) (a : I.L):
+    IsLimit.lift hK k hk ≫ K.ι a = k a :=
+  hK.fac _ _
+
+variable (K)
+
 variable [HasProduct I.left] [HasProduct I.right]
 
 @[reassoc (attr := simp)]
@@ -801,11 +825,7 @@ theorem lift_ι (W : C) (k : ∀ a, W ⟶ I.left a)
 @[ext]
 theorem hom_ext {W : C} (i j : W ⟶ multiequalizer I)
     (h : ∀ a, i ≫ Multiequalizer.ι I a = j ≫ Multiequalizer.ι I a) : i = j :=
-  limit.hom_ext
-    (by
-      rintro (a | b)
-      · apply h
-      simp_rw [← limit.w I.multicospan (WalkingMulticospan.Hom.fst b), ← Category.assoc, h])
+  Multifork.IsLimit.hom_ext (limit.isLimit _) h
 #align category_theory.limits.multiequalizer.hom_ext CategoryTheory.Limits.Multiequalizer.hom_ext
 
 variable [HasProduct I.left] [HasProduct I.right]
