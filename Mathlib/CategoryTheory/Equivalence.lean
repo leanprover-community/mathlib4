@@ -295,8 +295,7 @@ variable {E : Type u₃} [Category.{v₃} E]
 
 /-- Equivalence of categories is transitive. -/
 @[trans, simps]
-def trans (e : C ≌ D) (f : D ≌ E) : C ≌ E
-    where
+def trans (e : C ≌ D) (f : D ≌ E) : C ≌ E where
   functor := e.functor ⋙ f.functor
   inverse := f.inverse ⋙ e.inverse
   unitIso := by
@@ -567,8 +566,7 @@ end IsEquivalence
 
 /-- A quasi-inverse `D ⥤ C` to a functor that `F : C ⥤ D` that is an equivalence,
 i.e. faithful, full, and essentially surjective. -/
-noncomputable def inv (F : C ⥤ D) [F.IsEquivalence] : D ⥤ C
-    where
+noncomputable def inv (F : C ⥤ D) [F.IsEquivalence] : D ⥤ C where
   obj X := F.objPreimage X
   map {X Y} f := F.preimage ((F.objObjPreimageIso X).hom ≫ f ≫ (F.objObjPreimageIso Y).inv)
   map_id X := by apply F.map_injective; aesop_cat
@@ -698,15 +696,19 @@ def isoInverseComp {G : C ≌ D} (i : G.functor ⋙ H ≅ F) : H ≅ G.inverse �
 
 end Iso
 
--- deprecated on 2024-04-06
-@[deprecated] alias IsEquivalence := Functor.IsEquivalence
-@[deprecated] alias IsEquivalence.fun_inv_map := Functor.fun_inv_map
-@[deprecated] alias IsEquivalence.inv_fun_map := Functor.inv_fun_map
-@[deprecated] alias IsEquivalence.ofIso := Equivalence.changeFunctor
-@[deprecated] alias IsEquivalence.ofIso_trans := Equivalence.changeFunctor_trans
-@[deprecated] alias IsEquivalence.ofIso_refl := Equivalence.changeFunctor_refl
-@[deprecated] alias IsEquivalence.equivOfIso := Functor.isEquivalence_iff_of_iso
-@[deprecated] alias IsEquivalence.cancelCompRight := Functor.isEquivalence_of_comp_right
-@[deprecated] alias IsEquivalence.cancelCompLeft := Functor.isEquivalence_of_comp_left
+@[deprecated (since := "2024-04-06")] alias IsEquivalence := Functor.IsEquivalence
+@[deprecated (since := "2024-04-06")] alias IsEquivalence.fun_inv_map := Functor.fun_inv_map
+@[deprecated (since := "2024-04-06")] alias IsEquivalence.inv_fun_map := Functor.inv_fun_map
+@[deprecated (since := "2024-04-06")] alias IsEquivalence.ofIso := Equivalence.changeFunctor
+@[deprecated (since := "2024-04-06")]
+alias IsEquivalence.ofIso_trans := Equivalence.changeFunctor_trans
+@[deprecated (since := "2024-04-06")]
+alias IsEquivalence.ofIso_refl := Equivalence.changeFunctor_refl
+@[deprecated (since := "2024-04-06")]
+alias IsEquivalence.equivOfIso := Functor.isEquivalence_iff_of_iso
+@[deprecated (since := "2024-04-06")]
+alias IsEquivalence.cancelCompRight := Functor.isEquivalence_of_comp_right
+@[deprecated (since := "2024-04-06")]
+alias IsEquivalence.cancelCompLeft := Functor.isEquivalence_of_comp_left
 
 end CategoryTheory

@@ -208,8 +208,7 @@ section LSubtypeDomain
 variable (s : Set α)
 
 /-- Interpret `Finsupp.subtypeDomain s` as a linear map. -/
-def lsubtypeDomain : (α →₀ M) →ₗ[R] s →₀ M
-    where
+def lsubtypeDomain : (α →₀ M) →ₗ[R] s →₀ M where
   toFun := subtypeDomain fun x => x ∈ s
   map_add' _ _ := subtypeDomain_add
   map_smul' _ _ := ext fun _ => rfl
@@ -556,8 +555,7 @@ section LMapDomain
 variable {α' : Type*} {α'' : Type*} (M R)
 
 /-- Interpret `Finsupp.mapDomain` as a linear map. -/
-def lmapDomain (f : α → α') : (α →₀ M) →ₗ[R] α' →₀ M
-    where
+def lmapDomain (f : α → α') : (α →₀ M) →ₗ[R] α' →₀ M where
   toFun := mapDomain f
   map_add' _ _ := mapDomain_add
   map_smul' := mapDomain_smul
@@ -641,8 +639,7 @@ sending `l : β →₀ M` to the finitely supported function from `α` to `M` gi
 `l` with `f`.
 
 This is the linear version of `Finsupp.comapDomain`. -/
-def lcomapDomain (f : α → β) (hf : Function.Injective f) : (β →₀ M) →ₗ[R] α →₀ M
-    where
+def lcomapDomain (f : α → β) (hf : Function.Injective f) : (β →₀ M) →ₗ[R] α →₀ M where
   toFun l := Finsupp.comapDomain f l (hf.injOn _)
   map_add' x y := by ext; simp
   map_smul' c x := by ext; simp

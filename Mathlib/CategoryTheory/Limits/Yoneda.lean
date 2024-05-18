@@ -39,8 +39,7 @@ def colimitCocone (X : Cᵒᵖ) : Cocone (coyoneda.obj X) where
 /-- The proposed colimit cocone over `coyoneda.obj X` is a colimit cocone.
 -/
 @[simps]
-def colimitCoconeIsColimit (X : Cᵒᵖ) : IsColimit (colimitCocone X)
-    where
+def colimitCoconeIsColimit (X : Cᵒᵖ) : IsColimit (colimitCocone X) where
   desc s _ := s.ι.app (unop X) (𝟙 _)
   fac s Y := by
     funext f
