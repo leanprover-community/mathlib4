@@ -8,6 +8,7 @@ import Mathlib.Order.Filter.Pointwise
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Algebra.Group.ULift
 
 #align_import topology.algebra.monoid from "leanprover-community/mathlib"@"1ac8d4304efba9d03fa720d06516fac845aa5353"
 
@@ -70,6 +71,13 @@ theorem continuous_mul : Continuous fun p : M × M => p.1 * p.2 :=
   ContinuousMul.continuous_mul
 #align continuous_mul continuous_mul
 #align continuous_add continuous_add
+
+@[to_additive]
+instance : ContinuousMul (ULift.{u} M) := by
+  constructor
+  apply continuous_uLift_up.comp
+  exact continuous_mul.comp₂ (continuous_uLift_down.comp continuous_fst)
+    (continuous_uLift_down.comp continuous_snd)
 
 @[to_additive]
 instance ContinuousMul.to_continuousSMul : ContinuousSMul M M :=
@@ -196,13 +204,32 @@ theorem Filter.TendstoNhdsWithinIio.mul_const [MulPosStrictMono 𝕜] [MulPosRef
 
 end tendsto_nhds
 
+@[to_additive]
+protected theorem Specializes.mul {a b c d : M} (hab : a ⤳ b) (hcd : c ⤳ d) : (a * c) ⤳ (b * d) :=
+  hab.smul hcd
+
+@[to_additive]
+protected theorem Inseparable.mul {a b c d : M} (hab : Inseparable a b) (hcd : Inseparable c d) :
+    Inseparable (a * c) (b * d) :=
+  hab.smul hcd
+
+@[to_additive]
+protected theorem Specializes.pow {M : Type*} [Monoid M] [TopologicalSpace M] [ContinuousMul M]
+    {a b : M} (h : a ⤳ b) (n : ℕ) : (a ^ n) ⤳ (b ^ n) :=
+  Nat.recOn n (by simp only [pow_zero, specializes_rfl]) fun _ ihn ↦ by
+    simpa only [pow_succ] using ihn.mul h
+
+@[to_additive]
+protected theorem Inseparable.pow {M : Type*} [Monoid M] [TopologicalSpace M] [ContinuousMul M]
+    {a b : M} (h : Inseparable a b) (n : ℕ) : Inseparable (a ^ n) (b ^ n) :=
+  (h.specializes.pow n).antisymm (h.specializes'.pow n)
+
 /-- Construct a unit from limits of units and their inverses. -/
 @[to_additive (attr := simps)
   "Construct an additive unit from limits of additive units and their negatives."]
 def Filter.Tendsto.units [TopologicalSpace N] [Monoid N] [ContinuousMul N] [T2Space N]
     {f : ι → Nˣ} {r₁ r₂ : N} {l : Filter ι} [l.NeBot] (h₁ : Tendsto (fun x => ↑(f x)) l (𝓝 r₁))
-    (h₂ : Tendsto (fun x => ↑(f x)⁻¹) l (𝓝 r₂)) : Nˣ
-    where
+    (h₂ : Tendsto (fun x => ↑(f x)⁻¹) l (𝓝 r₂)) : Nˣ where
   val := r₁
   inv := r₂
   val_inv := by
@@ -345,8 +372,7 @@ homomorphisms that has a `MonoidHomClass` instance) to `M₁ → M₂`. -/
 and a proof that it belongs to the closure of the range of the coercion from `M₁ →+ M₂` (or another
 type of bundled homomorphisms that has an `AddMonoidHomClass` instance) to `M₁ → M₂`."]
 def monoidHomOfMemClosureRangeCoe (f : M₁ → M₂)
-    (hf : f ∈ closure (range fun (f : F) (x : M₁) => f x)) : M₁ →* M₂
-    where
+    (hf : f ∈ closure (range fun (f : F) (x : M₁) => f x)) : M₁ →* M₂ where
   toFun := f
   map_one' := (isClosed_setOf_map_one M₁ M₂).closure_subset_iff.2 (range_subset_iff.2 map_one) hf
   map_mul' := (isClosed_setOf_map_mul M₁ M₂).closure_subset_iff.2 (range_subset_iff.2 map_mul) hf
@@ -640,7 +666,7 @@ theorem Filter.tendsto_cocompact_mul_left {a b : M} (ha : b * a = 1) :
   simp only [comp_mul_left, ha, one_mul]
   exact Filter.tendsto_id
   -- Porting note: changed proof, original proof was:
-  /-refine' Filter.Tendsto.of_tendsto_comp _ (Filter.comap_cocompact_le (continuous_mul_left b))
+  /- refine' Filter.Tendsto.of_tendsto_comp _ (Filter.comap_cocompact_le (continuous_mul_left b))
   convert Filter.tendsto_id
   ext x
   simp [ha]-/
@@ -673,7 +699,7 @@ instance (priority := 100) IsScalarTower.continuousConstSMul {R A : Type*} [Mono
 /-- If the action of `R` on `A` commutes with left-multiplication, then continuous multiplication
 implies continuous scalar multiplication by constants.
 
-Notably, this instances applies when `R = Aᵐᵒᵖ`.-/
+Notably, this instances applies when `R = Aᵐᵒᵖ`. -/
 @[to_additive "If the action of `R` on `A` commutes with left-addition, then
 continuous addition implies continuous affine addition by constants.
 

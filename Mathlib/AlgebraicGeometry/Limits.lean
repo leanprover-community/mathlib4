@@ -93,17 +93,13 @@ instance spec_punit_isEmpty : IsEmpty (Scheme.Spec.obj (op <| CommRingCat.of PUn
 instance (priority := 100) isOpenImmersion_of_isEmpty {X Y : Scheme} (f : X ⟶ Y)
     [IsEmpty X.carrier] : IsOpenImmersion f := by
   apply (config := { allowSynthFailures := true }) IsOpenImmersion.of_stalk_iso
-  · apply openEmbedding_of_continuous_injective_open
-    · continuity
-    · rintro (i : X.carrier); exact isEmptyElim i
-    · intro U _; convert isOpen_empty (X := Y); ext; rw [Set.mem_empty_iff_false, iff_false_iff]
-      exact fun x => isEmptyElim (show X.carrier from x.choose)
-  · rintro (i : X.carrier); exact isEmptyElim i
+  · exact .of_isEmpty (X := X.carrier) _
+  · intro (i : X.carrier); exact isEmptyElim i
 #align algebraic_geometry.is_open_immersion_of_is_empty AlgebraicGeometry.isOpenImmersion_of_isEmpty
 
 instance (priority := 100) isIso_of_isEmpty {X Y : Scheme} (f : X ⟶ Y) [IsEmpty Y.carrier] :
     IsIso f := by
-  haveI : IsEmpty X.carrier := ⟨fun x => isEmptyElim (show Y.carrier from f.1.base x)⟩
+  haveI : IsEmpty X.carrier := f.1.base.1.isEmpty
   have : Epi f.1.base := by
     rw [TopCat.epi_iff_surjective]; rintro (x : Y.carrier)
     exact isEmptyElim x

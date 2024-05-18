@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.WithTop
-import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Data.ENNReal.Basic
 
 #align_import data.real.ennreal from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
@@ -379,9 +378,9 @@ theorem sub_ne_top (ha : a ≠ ∞) : a - b ≠ ∞ := mt sub_eq_top_iff.mp <| m
 #align ennreal.sub_ne_top ENNReal.sub_ne_top
 
 @[simp, norm_cast]
-theorem nat_cast_sub (m n : ℕ) : ↑(m - n) = (m - n : ℝ≥0∞) := by
-  rw [← coe_nat, Nat.cast_tsub, coe_sub, coe_nat, coe_nat]
-#align ennreal.nat_cast_sub ENNReal.nat_cast_sub
+theorem natCast_sub (m n : ℕ) : ↑(m - n) = (m - n : ℝ≥0∞) := by
+  rw [← coe_natCast, Nat.cast_tsub, coe_sub, coe_natCast, coe_natCast]
+#align ennreal.nat_cast_sub ENNReal.natCast_sub
 
 protected theorem sub_eq_of_eq_add (hb : b ≠ ∞) : a = c + b → a - b = c :=
   (cancel_of_ne hb).tsub_eq_of_eq_add

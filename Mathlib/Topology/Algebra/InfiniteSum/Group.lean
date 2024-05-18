@@ -78,7 +78,7 @@ theorem HasProd.update (hf : HasProd f a₁) (b : β) [DecidableEq β] (a : α) 
   by_cases h : b' = b
   · rw [h, update_same]
     simp [eq_self_iff_true, if_true, sub_add_cancel]
-  · simp only [h, update_noteq, if_false, Ne.def, one_mul, not_false_iff]
+  · simp only [h, update_noteq, if_false, Ne, one_mul, not_false_iff]
 #align has_sum.update HasSum.update
 
 @[to_additive]
@@ -270,7 +270,7 @@ theorem Multipliable.multipliable_of_eq_one_or_self (hf : Multipliable f)
           ∏ b in t.filter fun b ↦ g b = f b, f b = ∏ b in t.filter fun b ↦ g b = f b, g b :=
             Finset.prod_congr rfl fun b hb ↦ (Finset.mem_filter.1 hb).2.symm
           _ = ∏ b in t, g b := by
-           {refine' Finset.prod_subset (Finset.filter_subset _ _) _
+           {refine Finset.prod_subset (Finset.filter_subset _ _) ?_
             intro b hbt hb
             simp only [Finset.mem_filter, and_iff_right hbt] at hb
             exact (h b).resolve_right hb}

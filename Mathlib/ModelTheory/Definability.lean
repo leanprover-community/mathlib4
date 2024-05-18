@@ -60,7 +60,7 @@ theorem Definable.map_expansion {L' : FirstOrder.Language} [L'.Structure M] (h :
 theorem definable_iff_exists_formula_sum :
     A.Definable L s ↔ ∃ φ : L.Formula (A ⊕ α), s = {v | φ.Realize (Sum.elim (↑) v)} := by
   rw [Definable, Equiv.exists_congr_left (BoundedFormula.constantsVarsEquiv)]
-  refine exists_congr (fun φ => iff_iff_eq.2 (congr_arg (s = .) ?_))
+  refine exists_congr (fun φ => iff_iff_eq.2 (congr_arg (s = ·) ?_))
   ext
   simp only [Formula.Realize, BoundedFormula.constantsVarsEquiv, constantsOn, mk₂_Relations,
     BoundedFormula.mapTermRelEquiv_symm_apply, mem_setOf_eq]
@@ -205,8 +205,8 @@ theorem definable_iff_finitely_definable :
         Set.mem_setOf_eq]
       apply Iff.symm
       convert BoundedFormula.realize_restrictFreeVar _
-      · ext a
-        rcases a with ⟨_ | _, _⟩ <;> simp
+      ext a
+      rcases a with ⟨_ | _, _⟩ <;> simp
   · rintro ⟨A0, hA0, hd⟩
     exact Definable.mono hd hA0
 

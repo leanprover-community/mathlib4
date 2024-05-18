@@ -220,7 +220,7 @@ def colimitCocone (F : J ⥤ PresheafedSpace.{_, _, v} C) : Cocone F where
             ← congr_arg NatTrans.app (limit.w (pushforwardDiagramToColimit F).leftOp f.op),
             NatTrans.comp_app, Functor.leftOp_map, pushforwardDiagramToColimit_map]
           dsimp [-Presheaf.comp_app]
-          rw [NatTrans.comp_app, NatTrans.comp_app, pushforwardEq_hom_app, id.def, eqToHom_op,
+          rw [NatTrans.comp_app, NatTrans.comp_app, pushforwardEq_hom_app, _root_.id, eqToHom_op,
             Pushforward.comp_inv_app, id_comp, pushforwardMap_app, ← assoc]
           congr 1 }
 set_option linter.uppercaseLean3 false in
@@ -394,7 +394,7 @@ def colimitPresheafObjIsoComponentwiseLimit (F : J ⥤ PresheafedSpace.{_, _, v}
     refine' (F.obj (unop X)).presheaf.mapIso (eqToIso _)
     simp only [Functor.op_obj, unop_op, op_inj_iff, Opens.map_coe, SetLike.ext'_iff,
       Set.preimage_preimage]
-    refine congr_arg (Set.preimage . U.1) (funext fun x => ?_)
+    refine congr_arg (Set.preimage · U.1) (funext fun x => ?_)
     erw [← TopCat.comp_app]
     congr
     exact ι_preservesColimitsIso_inv (forget C) F (unop X)

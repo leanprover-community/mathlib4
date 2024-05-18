@@ -18,8 +18,6 @@ convex hulls of finite sets.
 
 open Set
 
-open BigOperators
-
 variable {ι : Sort*} {𝕜 E : Type*}
 
 section OrderedSemiring

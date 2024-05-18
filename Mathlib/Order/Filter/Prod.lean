@@ -114,6 +114,10 @@ theorem prod_top : f ×ˢ (⊤ : Filter β) = f.comap Prod.fst := by
   rw [Filter.prod, comap_top, inf_top_eq]
 #align filter.prod_top Filter.prod_top
 
+theorem top_prod : (⊤ : Filter α) ×ˢ g = g.comap Prod.snd := by
+  dsimp only [SProd.sprod]
+  rw [Filter.prod, comap_top, top_inf_eq]
+
 theorem sup_prod (f₁ f₂ : Filter α) (g : Filter β) : (f₁ ⊔ f₂) ×ˢ g = (f₁ ×ˢ g) ⊔ (f₂ ×ˢ g) := by
   dsimp only [SProd.sprod]
   rw [Filter.prod, comap_sup, inf_sup_right, ← Filter.prod, ← Filter.prod]
@@ -239,16 +243,18 @@ theorem prod_iInf_right [Nonempty ι] {f : Filter α} {g : ι → Filter β} :
   simp only [Filter.prod, eq_self_iff_true]
 #align filter.prod_infi_right Filter.prod_iInf_right
 
-@[mono]
+@[mono, gcongr]
 theorem prod_mono {f₁ f₂ : Filter α} {g₁ g₂ : Filter β} (hf : f₁ ≤ f₂) (hg : g₁ ≤ g₂) :
     f₁ ×ˢ g₁ ≤ f₂ ×ˢ g₂ :=
   inf_le_inf (comap_mono hf) (comap_mono hg)
 #align filter.prod_mono Filter.prod_mono
 
+@[gcongr]
 theorem prod_mono_left (g : Filter β) {f₁ f₂ : Filter α} (hf : f₁ ≤ f₂) : f₁ ×ˢ g ≤ f₂ ×ˢ g :=
   Filter.prod_mono hf rfl.le
 #align filter.prod_mono_left Filter.prod_mono_left
 
+@[gcongr]
 theorem prod_mono_right (f : Filter α) {g₁ g₂ : Filter β} (hf : g₁ ≤ g₂) : f ×ˢ g₁ ≤ f ×ˢ g₂ :=
   Filter.prod_mono rfl.le hf
 #align filter.prod_mono_right Filter.prod_mono_right
@@ -388,8 +394,8 @@ protected theorem map_prod (m : α × β → γ) (f : Filter α) (g : Filter β)
   simp only [Filter.ext_iff, mem_map, mem_prod_iff, mem_map_seq_iff, exists_and_left]
   intro s
   constructor
-  exact fun ⟨t, ht, s, hs, h⟩ => ⟨s, hs, t, ht, fun x hx y hy => @h ⟨x, y⟩ ⟨hx, hy⟩⟩
-  exact fun ⟨s, hs, t, ht, h⟩ => ⟨t, ht, s, hs, fun ⟨x, y⟩ ⟨hx, hy⟩ => h x hx y hy⟩
+  · exact fun ⟨t, ht, s, hs, h⟩ => ⟨s, hs, t, ht, fun x hx y hy => @h ⟨x, y⟩ ⟨hx, hy⟩⟩
+  · exact fun ⟨s, hs, t, ht, h⟩ => ⟨t, ht, s, hs, fun ⟨x, y⟩ ⟨hx, hy⟩ => h x hx y hy⟩
 #align filter.map_prod Filter.map_prod
 
 theorem prod_eq : f ×ˢ g = (f.map Prod.mk).seq g := f.map_prod id g
@@ -493,6 +499,11 @@ variable {f : Filter α} {g : Filter β}
 protected def coprod (f : Filter α) (g : Filter β) : Filter (α × β) :=
   f.comap Prod.fst ⊔ g.comap Prod.snd
 #align filter.coprod Filter.coprod
+
+theorem coprod_eq_prod_top_sup_top_prod (f : Filter α) (g : Filter β) :
+    Filter.coprod f g = f ×ˢ ⊤ ⊔ ⊤ ×ˢ g := by
+  rw [prod_top, top_prod]
+  rfl
 
 theorem mem_coprod_iff {s : Set (α × β)} {f : Filter α} {g : Filter β} :
     s ∈ f.coprod g ↔ (∃ t₁ ∈ f, Prod.fst ⁻¹' t₁ ⊆ s) ∧ ∃ t₂ ∈ g, Prod.snd ⁻¹' t₂ ⊆ s := by
