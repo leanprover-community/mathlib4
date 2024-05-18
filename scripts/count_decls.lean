@@ -70,7 +70,7 @@ def mkTally (s : Tally) : MetaM Tally := do
 `Mathlib`, `Batteries` and core. -/
 elab "count_decls" : command => do
   let (s, _) := ← Command.liftCoreM do Meta.MetaM.run do (mkTally {})
-  logInfo s!"Theorems {s.thms}\nTypes {s.types}\nPredicates {s.preds}\nData {s.data}"
+  logInfo s!"Theorems {s.thms}\nData {s.data}\nPredicates {s.preds}\nTypes {s.types}"
 
 --count_decls
 
