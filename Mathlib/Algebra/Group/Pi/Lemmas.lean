@@ -18,8 +18,7 @@ imports.
 -/
 
 assert_not_exists AddMonoidWithOne
--- TODO (after #11855)
--- assert_not_exists MulZeroClass
+assert_not_exists MonoidWithZero
 
 universe u v w
 

@@ -678,6 +678,13 @@ lemma zpow_mul' (a : α) (m n : ℤ) : a ^ (m * n) = (a ^ n) ^ m := by rw [Int.m
 #align zpow_mul' zpow_mul'
 #align mul_zsmul mul_zsmul
 
+#noalign zpow_bit0
+#noalign bit0_zsmul
+#noalign zpow_bit0'
+#noalign bit0_zsmul'
+#noalign zpow_bit1
+#noalign bit1_zsmul
+
 variable (a b c)
 
 @[to_additive, field_simps] -- The attributes are out of order on purpose

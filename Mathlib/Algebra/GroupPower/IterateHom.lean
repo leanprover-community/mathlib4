@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Algebra.Group.Int
 import Mathlib.Algebra.Group.Nat
 import Mathlib.GroupTheory.GroupAction.Opposite
+import Mathlib.Tactic.Common
 
 #align_import algebra.hom.iterate from "leanprover-community/mathlib"@"792a2a264169d64986541c6f8f7e3bbb6acb6295"
 
