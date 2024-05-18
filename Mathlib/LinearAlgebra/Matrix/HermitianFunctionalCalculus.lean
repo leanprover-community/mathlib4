@@ -100,13 +100,28 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
     ext
     simp
 
+
+instance embedding_CtsFuns_into_Matrices : Embedding ⇑hA.φ where
+  induced := by
+      refine ((fun {X} {t t'} ↦ TopologicalSpace.ext_iff_nhds.mpr) ?_).symm
+      intro x
+      refine Filter.filter_eq ?_
+      refine (Set.ext ?h).symm
+      intro x1
+      simp only [Filter.mem_sets]
+      constructor
+  --how to prove this on paper?
+  inj := by sorry
+
+
+
 instance instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus ℝ (IsHermitian : Matrix n n 𝕜 → Prop) where
 exists_cfc_of_predicate := by
     intro A hA
     use (φ hA)
     constructor
-    refine {toEmbedding := ?h.left.toEmbedding, isClosed_range := ?h.left.isClosed_range}
+    apply closedEmbedding_of_continuous_injective_closed
     · sorry
     · sorry
     · constructor
