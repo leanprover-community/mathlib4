@@ -30,24 +30,13 @@ lemma CompletelyRegularSpace.exists_BCNN {X : Type*} [TopologicalSpace X] [Compl
     ∃ (f : X →ᵇ ℝ≥0), f x = 1 ∧ (∀ y ∈ K, f y = 0) := by
   obtain ⟨g, g_cont, gx_zero, g_one_on_K⟩ :=
     CompletelyRegularSpace.completely_regular x K K_closed x_notin_K
-  -- TODO: Golf the following once we have subtraction on BoundedContinuousFunction with ℝ≥0 values.
-  -- The only thing we want is `x ↦ 1 - g x` as `f : X →ᵇ ℝ≥0`.
-  set h := ContinuousMap.mk (fun x ↦ Real.toNNReal ((1 : ℝ) - g x))
-            (continuous_real_toNNReal.comp (continuous_const.sub g_cont.subtype_val))
-  set f := BoundedContinuousFunction.mkOfBound h 1 (by
-    intro x y
-    simp only [ContinuousMap.coe_mk, h]
-    apply (Real.lipschitzWith_toNNReal.dist_le_mul (1 - g x) (1 - g y)).trans
-    simp only [NNReal.coe_one, dist_sub_eq_dist_add_right, one_mul, Real.dist_eq]
-    ring_nf
-    simpa [neg_add_eq_sub, ← Real.dist_eq, dist_comm] using
-      Real.dist_le_of_mem_Icc_01 (Subtype.coe_prop (g x)) (Subtype.coe_prop (g y)))
-  refine ⟨f, ?_, ?_⟩
-  · simp only [mkOfBound_coe, ContinuousMap.coe_mk, gx_zero, Icc.coe_zero, sub_zero,
-               Real.toNNReal_one, f, h]
-  · intro y y_in_K
-    simp only [mkOfBound_coe, ContinuousMap.coe_mk, g_one_on_K y_in_K, Pi.one_apply, Icc.coe_one,
-               sub_self, Real.toNNReal_zero, f, h]
+  have g_bdd : ∀ x y, dist (Real.toNNReal (g x)) (Real.toNNReal (g y)) ≤ 1 := by
+    refine fun x y ↦ ((Real.lipschitzWith_toNNReal).dist_le_mul (g x) (g y)).trans ?_
+    simpa using Real.dist_le_of_mem_Icc_01 (g x).prop (g y).prop
+  set g' := BoundedContinuousFunction.mkOfBound
+      ⟨fun x ↦ Real.toNNReal (g x), continuous_real_toNNReal.comp g_cont.subtype_val⟩ 1 g_bdd
+  set f := 1 - g'
+  refine ⟨f, by simp [f, g', gx_zero], fun y y_in_K ↦ by simp [f, g', g_one_on_K y_in_K]⟩
 
 namespace MeasureTheory
 
