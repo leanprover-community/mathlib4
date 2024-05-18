@@ -148,16 +148,15 @@ def castOrderIso (eq : n = m) : Fin n ≃o Fin m where
 #align fin.cast Fin.castOrderIso
 
 @[simp]
-lemma symm_castOrderIso (h : n = m) : (castIso h).symm = castIso h.symm := by
-  simp [eq_iff_true_of_subsingleton]
+lemma symm_castOrderIso (h : n = m) : (castOrderIso h).symm = castOrderIso h.symm := by subst h; rfl
 #align fin.symm_cast Fin.symm_castOrderIso
 
 @[simp]
-lemma castOrderIso_refl (h : n = n := rfl) : castIso h = OrderIso.refl (Fin n) := by ext; simp
+lemma castOrderIso_refl (h : n = n := rfl) : castOrderIso h = OrderIso.refl (Fin n) := by ext; simp
 #align fin.cast_refl Fin.castOrderIso_refl
 
-/-- While in many cases `Fin.castIso` is better than `Equiv.cast`/`cast`, sometimes we want to apply
-a generic lemma about `cast`. -/
+/-- While in many cases `Fin.castOrderIso` is better than `Equiv.cast`/`cast`, sometimes we want to
+apply a generic lemma about `cast`. -/
 lemma castOrderIso_toEquiv (h : n = m) : (castOrderIso h).toEquiv = Equiv.cast (h ▸ rfl) := by
   subst h; rfl
 #align fin.cast_to_equiv Fin.castOrderIso_toEquiv

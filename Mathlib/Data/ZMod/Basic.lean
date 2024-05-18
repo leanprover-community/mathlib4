@@ -446,7 +446,7 @@ def ringEquivCongr {m n : ℕ} (h : m = n) : ZMod m ≃+* ZMod n := by
   · exfalso
     exact m.succ_ne_zero h
   · exact
-      { Fin.castIso h with
+      { finCongr h with
         map_mul' := fun a b => by
           dsimp [ZMod]
           ext

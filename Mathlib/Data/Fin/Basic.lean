@@ -47,8 +47,7 @@ This file expands on the development in the core library.
 * `Fin.valEmbedding` : coercion to natural numbers as an `Embedding`;
 * `Fin.succEmb` : `Fin.succ` as an `Embedding`;
 * `Fin.castLEEmb h` : `Fin.castLE` as an `Embedding`, embed `Fin n` into `Fin m`, `h : n ≤ m`;
-* `Fin.castIso` : `Fin.cast` as an `OrderIso`, order isomorphism between `Fin n` and `Fin m`
-  provided that `n = m`, see also `Equiv.finCongr`;
+* `finCongr` : `Fin.cast` as an `Equiv`, equivalence between `Fin n` and `Fin m` when `n = m`;
 * `Fin.castAddEmb m` : `Fin.castAdd` as an `Embedding`, embed `Fin n` into `Fin (n+m)`;
 * `Fin.castSuccEmb` : `Fin.castSucc` as an `Embedding`, embed `Fin n` into `Fin (n+1)`;
 * `Fin.addNatEmb m i` : `Fin.addNat` as an `Embedding`, add `m` on `i` on the right,
@@ -770,17 +769,34 @@ theorem rightInverse_cast (eq : n = m) : RightInverse (cast eq.symm) (cast eq) :
 theorem cast_le_cast (eq : n = m) {a b : Fin n} : cast eq a ≤ cast eq b ↔ a ≤ b :=
   Iff.rfl
 
-/-- `Fin.cast` as an `Equiv`.
-
-`castIso eq i` embeds `i` into an equal `Fin` type. -/
+/-- The 'identity' equivalence between `Fin m` and `Fin n` when `m = n`. -/
 @[simps]
-def castIso (eq : n = m) : Fin n ≃ Fin m where
+def _root_.finCongr (eq : n = m) : Fin n ≃ Fin m where
   toFun := cast eq
   invFun := cast eq.symm
   left_inv := leftInverse_cast eq
   right_inv := rightInverse_cast eq
+#align fin_congr finCongr
 
-@[simp] lemma symm_castIso (h : n = m) : (castIso h).symm = castIso h.symm := rfl
+@[simp] lemma _root_.finCongr_apply_mk (h : m = n) (k : ℕ) (hk : k < m) :
+    finCongr h ⟨k, hk⟩ = ⟨k, h ▸ hk⟩ := rfl
+#align fin_congr_apply_mk finCongr_apply_mk
+
+@[simp]
+lemma _root_.finCongr_refl (h : n = n := rfl) : finCongr h = Equiv.refl (Fin n) := by ext; simp
+
+@[simp] lemma _root_.finCongr_symm (h : m = n) : (finCongr h).symm = finCongr h.symm := rfl
+#align fin_congr_symm finCongr_symm
+
+@[simp] lemma _root_.finCongr_apply_coe (h : m = n) (k : Fin m) : (finCongr h k : ℕ) = k := rfl
+#align fin_congr_apply_coe finCongr_apply_coe
+
+lemma _root_.finCongr_symm_apply_coe (h : m = n) (k : Fin n) : ((finCongr h).symm k : ℕ) = k := rfl
+#align fin_congr_symm_apply_coe finCongr_symm_apply_coe
+
+/-- While in many cases `finCongr` is better than `Equiv.cast`/`cast`, sometimes we want to apply
+a generic theorem about `cast`. -/
+lemma _root_.finCongr_eq_equivCast (h : n = m) : finCongr h = .cast (h ▸ rfl) := by subst h; simp
 
 #align fin.coe_cast Fin.coe_castₓ
 
@@ -796,18 +812,7 @@ theorem cast_zero {n' : ℕ} [NeZero n] {h : n = n'} : cast h (0 : Fin n) =
 
 #align fin.cast_trans Fin.cast_transₓ
 
-@[simp]
-theorem castIso_refl (h : n = n := rfl) : castIso h = Equiv.refl (Fin n) := by
-  ext
-  simp
-
 #align fin.cast_le_of_eq Fin.castLE_of_eq
-
-/-- While in many cases `Fin.castIso` is better than `Equiv.cast`/`cast`, sometimes we want to apply
-a generic theorem about `cast`. -/
-theorem castIso_eq_equivCast (h : n = m) : castIso h = Equiv.cast (h ▸ rfl) := by
-  subst h
-  simp
 
 /-- While in many cases `Fin.cast` is better than `Equiv.cast`/`cast`, sometimes we want to apply
 a generic theorem about `cast`. -/
@@ -846,6 +851,8 @@ def castAddEmb (m) : Fin n ↪ Fin (n + m) := castLEEmb (le_add_right n m)
 /-- `Fin.castSucc` as an `Embedding`, `castSuccEmb i` embeds `i : Fin n` in `Fin (n+1)`. -/
 @[simps! apply]
 def castSuccEmb : Fin n ↪ Fin (n + 1) := castAddEmb _
+
+@[simp, norm_cast] lemma coe_castSuccEmb : (castSuccEmb : Fin n → Fin (n + 1)) = Fin.castSucc := rfl
 
 #align fin.coe_cast_succ Fin.coe_castSucc
 #align fin.cast_succ_mk Fin.castSucc_mk
