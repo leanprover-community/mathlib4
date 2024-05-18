@@ -846,6 +846,7 @@ import Mathlib.Analysis.Complex.AbelLimit
 import Mathlib.Analysis.Complex.AbsMax
 import Mathlib.Analysis.Complex.Angle
 import Mathlib.Analysis.Complex.Arg
+import Mathlib.Analysis.Complex.Asymptotics
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Analysis.Complex.Circle
@@ -2820,7 +2821,10 @@ import Mathlib.MeasureTheory.Category.MeasCat
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 import Mathlib.MeasureTheory.Constructions.Cylinders
 import Mathlib.MeasureTheory.Constructions.HaarToSphere
 import Mathlib.MeasureTheory.Constructions.Pi
