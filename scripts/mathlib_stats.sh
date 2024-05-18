@@ -57,8 +57,8 @@ oldDecls="$(sed 's=^--\(count_decls\)=\1=' scripts/count_decls.lean | lake env l
 # Definitions 73152...
 
 declSummary="$(paste -d' ' <(echo "${newDecls}") <(echo "${oldDecls}") |
-  awk 'BEGIN{ print "|Type|New|Old|Change|\n|:-:|:-:|:-:|:-:|" }{
-    printf("| %s | %s | %s | %s |\n", $1, $2, $4, $2-$4)
+  LC_ALL=en_US.UTF-8 awk 'BEGIN{ print "|Type|New|Old|Change|\n|:-:|:-:|:-:|:-:|" }{
+    printf("| %s | %'"'"'d | %'"'"'d | %'"'"'d |\n", $1, $2, $4, $2-$4)
   }'
 )"
 
