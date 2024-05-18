@@ -182,7 +182,7 @@ def Scheme.affineOpens (X : Scheme) : Set (Opens X) :=
 
 theorem rangeIsAffineOpenOfOpenImmersion {X Y : Scheme} [IsAffine X] (f : X ⟶ Y)
     [H : IsOpenImmersion f] : IsAffineOpen (Scheme.Hom.opensRange f) := by
-  refine' isAffineOfIso (IsOpenImmersion.isoOfRangeEq f (Y.ofRestrict _) _).inv
+  refine isAffineOfIso (IsOpenImmersion.isoOfRangeEq f (Y.ofRestrict _) ?_).inv
   exact Subtype.range_val.symm
 #align algebraic_geometry.range_is_affine_open_of_open_immersion AlgebraicGeometry.rangeIsAffineOpenOfOpenImmersion
 
@@ -299,8 +299,8 @@ theorem imageIsOpenImmersion (f : X ⟶ Y) [H : IsOpenImmersion f] :
 theorem _root_.AlgebraicGeometry.Scheme.Hom.isAffineOpen_iff_of_isOpenImmersion
     (f : AlgebraicGeometry.Scheme.Hom X Y) [H : IsOpenImmersion f] {U : Opens X} :
     IsAffineOpen (f.opensFunctor.obj U) ↔ IsAffineOpen U := by
-  refine' ⟨fun hU => @isAffineOfIso _ _
-    (IsOpenImmersion.isoOfRangeEq (X.ofRestrict U.openEmbedding ≫ f) (Y.ofRestrict _) _).hom ?_ hU,
+  refine ⟨fun hU => @isAffineOfIso _ _
+    (IsOpenImmersion.isoOfRangeEq (X.ofRestrict U.openEmbedding ≫ f) (Y.ofRestrict _) ?_).hom ?_ hU,
     fun hU => hU.imageIsOpenImmersion f⟩
   · rw [Scheme.comp_val_base, coe_comp, Set.range_comp]
     dsimp [Opens.coe_inclusion, Scheme.restrict]

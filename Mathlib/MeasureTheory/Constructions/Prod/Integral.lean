@@ -85,13 +85,13 @@ theorem MeasureTheory.StronglyMeasurable.integral_prod_right [SigmaFinite ν] �
   let s' : ℕ → α → SimpleFunc β E := fun n x => (s n).comp (Prod.mk x) measurable_prod_mk_left
   let f' : ℕ → α → E := fun n => {x | Integrable (f x) ν}.indicator fun x => (s' n x).integral ν
   have hf' : ∀ n, StronglyMeasurable (f' n) := by
-    intro n; refine' StronglyMeasurable.indicator _ (measurableSet_integrable hf)
+    intro n; refine StronglyMeasurable.indicator ?_ (measurableSet_integrable hf)
     have : ∀ x, ((s' n x).range.filter fun x => x ≠ 0) ⊆ (s n).range := by
-      intro x; refine' Finset.Subset.trans (Finset.filter_subset _ _) _; intro y
+      intro x; refine Finset.Subset.trans (Finset.filter_subset _ _) ?_; intro y
       simp_rw [SimpleFunc.mem_range]; rintro ⟨z, rfl⟩; exact ⟨(x, z), rfl⟩
     simp only [SimpleFunc.integral_eq_sum_of_subset (this _)]
-    refine' Finset.stronglyMeasurable_sum _ fun x _ => _
-    refine' (Measurable.ennreal_toReal _).stronglyMeasurable.smul_const _
+    refine Finset.stronglyMeasurable_sum _ fun x _ => ?_
+    refine (Measurable.ennreal_toReal ?_).stronglyMeasurable.smul_const _
     simp only [s', SimpleFunc.coe_comp, preimage_comp]
     apply measurable_measure_prod_mk_left
     exact (s n).measurableSet_fiber x
@@ -104,14 +104,14 @@ theorem MeasureTheory.StronglyMeasurable.integral_prod_right [SigmaFinite ν] �
         simp_rw [s', SimpleFunc.coe_comp]; exact SimpleFunc.norm_approxOn_zero_le _ _ (x, y) n
       simp only [f', hfx, SimpleFunc.integral_eq_integral _ (this _), indicator_of_mem,
         mem_setOf_eq]
-      refine'
+      refine
         tendsto_integral_of_dominated_convergence (fun y => ‖f x y‖ + ‖f x y‖)
-          (fun n => (s' n x).aestronglyMeasurable) (hfx.norm.add hfx.norm) _ _
+          (fun n => (s' n x).aestronglyMeasurable) (hfx.norm.add hfx.norm) ?_ ?_
       · refine' fun n => eventually_of_forall fun y => SimpleFunc.norm_approxOn_zero_le _ _ (x, y) n
         -- Porting note: Lean 3 solved the following two subgoals on its own
         · exact hf.measurable
         · simp
-      · refine' eventually_of_forall fun y => SimpleFunc.tendsto_approxOn _ _ _
+      · refine eventually_of_forall fun y => SimpleFunc.tendsto_approxOn ?_ ?_ ?_
         -- Porting note: Lean 3 solved the following two subgoals on its own
         · exact hf.measurable.of_uncurry_left
         · simp
