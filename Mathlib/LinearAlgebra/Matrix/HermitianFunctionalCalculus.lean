@@ -72,103 +72,6 @@ theorem eigenvalue_mem_real : ∀ (i : n), (hA.eigenvalues) i ∈ spectrum ℝ A
 
 noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) where
   toFun := fun g => (eigenvectorUnitary hA : Matrix n n 𝕜) *
-      diagonal (RCLike.ofReal ∘ g ∘
-      (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩))
-      * star (eigenvectorUnitary hA : Matrix n n 𝕜)
-  map_one' := by ---everything needs to be changed to continuous functions, so Lean doesn't have to coerce all of this!!!
-      have h1 : diagonal 1 = (1 : Matrix n n 𝕜) := rfl
-      simp only [h1, mul_one, Matrix.mem_unitaryGroup_iff.mp, SetLike.coe_mem,
-                 ContinuousMap.coe_one, Pi.one_comp, Pi.comp_one, algebraMap.coe_one,
-                 Function.const_one]
-  map_mul' := by
-      simp only [ContinuousMap.coe_mul]
-      intro f g
-     -- have h1 : diagonal 1 = (1 : Matrix n n 𝕜) := rfl
-      --have h2 : ∀(i : n), OfNat.ofNat 1 i = (1 : 𝕜) := rfl
-     -- have J : diagonal (φ.toFun (f * g)) =
-     --          diagonal (φ.toFun f) * diagonal (φ.toFun 1) * diagonal (φ.toFun g) := by
-     --       simp only [one_mul, mul_one, Matrix.diagonal_mul_diagonal']
-     --       refine diagonal_eq_diagonal_iff.mpr ?_
-     --       intro i
-            --simp only [ContinuousMap.coe_mul, φ.map_one']
-     --       simp only [mul_one, one_mul, Function.comp_apply, Pi.mul_apply, RCLike.ofReal_mul]
-      --rw [H, ←(hA.eigenvectorUnitary).2.1]
-      have H : diagonal ((RCLike.ofReal ∘ (⇑f * ⇑g) ∘
-      (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩))) = diagonal ((RCLike.ofReal ∘ ⇑f ∘
-      (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩))) * (1 : Matrix n n 𝕜)
-      * diagonal (RCLike.ofReal ∘ ⇑g ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩)) := by
-            simp only [mul_one ,Matrix.diagonal_mul_diagonal']
-            refine diagonal_eq_diagonal_iff.mpr ?_
-            intro i
-            simp only [Function.comp_apply, Pi.mul_apply, RCLike.ofReal_mul]
-      rw [H, ←(hA.eigenvectorUnitary).2.1]
-      simp only [mul_assoc]
-  map_zero' := by
-      dsimp
-      simp only [algebraMap.coe_zero, Function.const_zero, diagonal_zero, Pi.zero_def, zero_mul,
-      mul_zero]
-  map_add' := by
-    intro x y
-    dsimp
-    have h : (RCLike.ofReal ∘ (⇑x + ⇑y) ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩)) =
-            (RCLike.ofReal (K := 𝕜) ∘ ⇑x ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩)) +
-            (RCLike.ofReal (K := 𝕜) ∘ ⇑y ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩))
-            := by
-               apply funext
-               intro j
-               simp only [Pi.add_apply, Function.comp_apply]
-               exact
-                 RCLike.ofReal_add (x ⟨hA.eigenvalues j, eigenvalue_mem_real hA j⟩)
-                   (y ⟨hA.eigenvalues j, eigenvalue_mem_real hA j⟩)
-    rw [h]
-    have h1: (RCLike.ofReal (K := 𝕜) ∘ ⇑x ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩))
-        + (RCLike.ofReal (K := 𝕜) ∘ ⇑y ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩)) =
-        fun (j : n) => ((RCLike.ofReal (K := 𝕜) ∘ ⇑x ∘
-        (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩)) j) +
-        ((RCLike.ofReal (K := 𝕜) ∘ ⇑y ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩)) j)
-        := rfl
-    have h2 := diagonal_add (n := n) (α := 𝕜)
-      (RCLike.ofReal (K := 𝕜) ∘ ⇑x ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩))
-      (RCLike.ofReal (K := 𝕜) ∘ ⇑y ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩))
-    conv_lhs => rw [h1, ← h2]
-    simp only [add_mul, mul_add]
-  commutes' := by
-    intro r
-    simp only --cleans up so that pattern match works below
-    have h : RCLike.ofReal ∘ ⇑((algebraMap ℝ C(↑(spectrum ℝ A), ℝ)) r) ∘
-        (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩) =
-        RCLike.ofReal (K := 𝕜) ∘ (Function.const ↑(spectrum ℝ A) r) ∘
-        (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩) := rfl
-    conv_lhs => rw [h]; simp only [Function.const_comp, Function.comp_const]
-    dsimp [algebraMap]
-    rw [mul_assoc]
-    have h1 : Function.const n (r : 𝕜) = fun (_ : n) => (r : 𝕜) := rfl
-    conv_lhs => simp only [h1, ← Matrix.smul_eq_diagonal_mul
-                           (star (hA.eigenvectorUnitary : Matrix n n 𝕜)) (r : 𝕜)]
-    simp only [Matrix.mul_smul]
-    rw [unitary.mul_star_self_of_mem, Algebra.smul_def', mul_one]
-    exact rfl
-    simp only [hA.eigenvectorUnitary.2]
-  map_star' := by
-    intro g
-    simp only [star_trivial, StarMul.star_mul, star_star]
-    have H1 : star (RCLike.ofReal ∘ ⇑g ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩))
-            = RCLike.ofReal (K := 𝕜) ∘ star ⇑g ∘
-              (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩) := by
-        apply funext
-        intro x
-        simp only [Pi.star_apply, Function.comp_apply, RCLike.star_def, RCLike.conj_ofReal,
-          star_trivial]
-    have H2 :
-     star (diagonal (RCLike.ofReal ∘ ⇑g ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩))) =
-     diagonal (α := 𝕜) (RCLike.ofReal ∘ star ⇑g ∘
-     (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩)) := by
-     simp only [star_eq_conjTranspose, diagonal_conjTranspose, H1]
-    simp only [H2, mul_assoc]
-    exact rfl
-
-noncomputable def φ1 : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) where
-  toFun := fun g => (eigenvectorUnitary hA : Matrix n n 𝕜) *
     diagonal (RCLike.ofReal ∘ g ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalue_mem_real i⟩))
     * star (eigenvectorUnitary hA : Matrix n n 𝕜)
   map_one' := by simp [Pi.one_def (f := fun _ : n ↦ 𝕜)]
@@ -186,17 +89,16 @@ noncomputable def φ1 : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) 
     simp
   commutes' r := by
     simp only [Function.comp, algebraMap_apply, smul_eq_mul, mul_one]
-    rw [show ((fun _ : n ↦ (r : 𝕜)) = algebraMap 𝕜 (n → 𝕜) r) from rfl, ← algebraMap_eq_diagonal,
-      Algebra.right_comm]
-    simp only [SetLike.coe_mem, unitary.mul_star_self_of_mem, one_mul]
-    rw [IsScalarTower.algebraMap_apply ℝ 𝕜 _ r, RCLike.algebraMap_eq_ofReal]
+    rw [IsScalarTower.algebraMap_apply ℝ 𝕜 _ r, RCLike.algebraMap_eq_ofReal,
+      ← mul_one (algebraMap _ _ _), ← unitary.coe_mul_star_self hA.eigenvectorUnitary,
+      ← Algebra.left_comm, unitary.coe_star, mul_assoc]
+    congr!
   map_star' f := by
     simp only [star_trivial, StarMul.star_mul, star_star, star_eq_conjTranspose (diagonal _),
       diagonal_conjTranspose, mul_assoc]
     congr!
     ext
     simp
-
 
 instance instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus ℝ (IsHermitian : Matrix n n 𝕜 → Prop) where
