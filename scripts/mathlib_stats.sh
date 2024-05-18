@@ -42,7 +42,8 @@ net=$(awk -v gd="${gdiff}" 'BEGIN{
 # Lean-based reports #
 ######################
 
-newDecls="$(sed 's=^--\(count_decls\)=\1=' scripts/count_decls.lean | lake env lean --stdin)"
+newDeclsTots="$(sed 's=^--\(count_decls\)=\1=' scripts/count_decls.lean | lake env lean --stdin)"
+newDecls="$(echo "${newDeclsTots}" | awk '((NF == 2) && $2+0 == $2) { print $0 }')"
 # Definitions 73590...
 git checkout -q "${oldCommit}"
 # 'detached HEAD' state
@@ -53,7 +54,8 @@ lake exe cache get > /dev/null
 # update the `count_decls` and `mathlib_stats` scripts to the latest version
 git checkout -q origin/adomani/periodic_reports_dev_custom_action scripts/count_decls.lean scripts/mathlib_stats.sh
 
-oldDecls="$(sed 's=^--\(count_decls\)=\1=' scripts/count_decls.lean | lake env lean --stdin)"
+oldDeclsTots="$(sed 's=^--\(count_decls\)=\1=' scripts/count_decls.lean | lake env lean --stdin)"
+oldDecls="$(echo "${oldDeclsTots}" | awk '((NF == 2) && $2+0 == $2) { print $0 }')"
 # Definitions 73152...
 
 declSummary="$(paste -d' ' <(echo "${newDecls}") <(echo "${oldDecls}") |

@@ -3,7 +3,7 @@ Copyright (c) 2024 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Damiano Testa
 -/
-import Mathlib
+import Mathlib.Data.Nat.Defs
 
 /-!
 # `count_decls` -- a tally of declarations in `Mathlib`
@@ -30,6 +30,12 @@ structure Tally where
   data : Nat := 0
   deriving Repr
 
+structure TallyNames where
+  thms  : HashSet Name := {}
+  preds : HashSet Name := {}
+  types : HashSet Name := {}
+  data  : HashSet Name := {}
+
 /-- `MathlibModIdxs env` returns the `ModuleIdx`s corresponding to `Mathlib` files
 that are in the provided environment. -/
 def MathlibModIdxs (env : Environment) : IO (HashSet Nat) := do
@@ -41,37 +47,39 @@ def MathlibModIdxs (env : Environment) : IO (HashSet Nat) := do
 
 variable (mods : HashSet Nat) (env : Environment) in
 /-- Extend a `Tally` by the ConstantInfo `c`.  It is written to work with `Lean.SMap.foldM`. -/
-def updateTally (s : Tally) (n : Name) (c : ConstantInfo) :
-    MetaM Tally := do
+def updateTallyNames (s : TallyNames) (n : Name) (c : ConstantInfo) :
+    MetaM TallyNames := do
 --  let mod := env.getModuleIdxFor? n
 --  if !mods.contains (mod.getD default) then return s else
   if c.isUnsafe || (← n.isBlackListed) then return s else
   let typ := c.type
   if (← isProp typ) then
-    return {s with thms := s.thms + 1}
+    return {s with thms := s.thms.insert  n}
   else
     let exp ← forallTelescopeReducing typ fun _ e => return e
     if exp.isType then
-      return {s with types := s.types + 1}
+      return {s with types := s.types.insert n}
     else
     if exp.isSort then
-      return {s with preds := s.preds + 1}
+      return {s with preds := s.preds.insert n}
     else
-      return {s with data := s.data + 1}
+      return {s with data := s.data.insert n}
 
 /-- extends a `Tally` all the ConstantInfos in the environment. -/
-def mkTally (s : Tally) : MetaM Tally := do
+def mkTallyNames (s : TallyNames) : MetaM TallyNames := do
   let env ← getEnv
 --  let maths ← MathlibModIdxs env
   let consts := env.constants
-  consts.foldM (updateTally /-maths env-/) s
+  consts.foldM (updateTallyNames /-maths env-/) s
 
 /-- `count_decls` prints a tally of theorems, types, predicates and data in
 `Mathlib`, `Batteries` and core. -/
 elab "count_decls" : command => do
-  let (s, _) := ← Command.liftCoreM do Meta.MetaM.run do (mkTally {})
-  logInfo s!"Theorems {s.thms}\nData {s.data}\nPredicates {s.preds}\nTypes {s.types}"
+  let (s, _) ← Command.liftCoreM do Meta.MetaM.run do (mkTallyNames {})
+  logInfo s!"Theorems {s.thms.size}\n{s.thms.toArray}\nData {s.data.size}\n{s.data.toArray}\nPredicates {s.preds.size}\n{s.preds.toArray}\nTypes {s.types.size}\n{s.types.toArray}"
+  logInfo m!"{s.types.toArray}"
+--  logInfo s!"Theorems {s.thms}\nData {s.data}\nPredicates {s.preds}\nTypes {s.types}"
 
---count_decls
+count_decls
 
 end PeriodicReports
