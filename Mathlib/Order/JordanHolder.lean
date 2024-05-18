@@ -50,8 +50,7 @@ then they are `Equivalent`.
 
 ## TODO
 
-Provide instances of `JordanHolderLattice` for both subgroups, and potentially
-for modular lattices.
+Provide instances of `JordanHolderLattice` for subgroups, and potentially for modular lattices.
 
 It is not entirely clear how this should be done. Possibly there should be no global instances
 of `JordanHolderLattice`, and the instances should only be defined locally in order to prove
@@ -256,7 +255,7 @@ theorem mem_eraseLast_of_ne_of_mem {s : CompositionSeries X} {x : X}
     (hx : x ≠ s.last) (hxs : x ∈ s) : x ∈ s.eraseLast := by
   rcases hxs with ⟨i, rfl⟩
   have hi : (i : ℕ) < (s.length - 1).succ := by
-    conv_rhs => rw [← Nat.succ_sub (length_pos_of_mem_ne _ ⟨i, rfl⟩ s.last_mem hx),
+    conv_rhs => rw [← Nat.succ_sub (length_pos_of_nontrivial ⟨_, ⟨i, rfl⟩, _, s.last_mem, hx⟩),
       Nat.add_one_sub_one]
     exact lt_of_le_of_ne (Nat.le_of_lt_succ i.2) (by simpa [last, s.inj, Fin.ext_iff] using hx)
   refine' ⟨Fin.castSucc (n := s.length + 1) i, _⟩
@@ -452,11 +451,12 @@ theorem length_pos_of_head_eq_head_of_last_eq_last_of_length_pos {s₁ s₂ : Co
 
 theorem eq_of_head_eq_head_of_last_eq_last_of_length_eq_zero {s₁ s₂ : CompositionSeries X}
     (hb : s₁.head = s₂.head) (ht : s₁.last = s₂.last) (hs₁0 : s₁.length = 0) : s₁ = s₂ := by
+  have := subsingleton_of_length_eq_zero hs₁0
   have : ∀ x, x ∈ s₁ ↔ x = s₁.last := fun x =>
-    ⟨fun hx => forall_mem_eq_of_length_eq_zero hs₁0 hx s₁.last_mem, fun hx => hx.symm ▸ s₁.last_mem⟩
+    ⟨fun hx =>  subsingleton_of_length_eq_zero hs₁0 hx s₁.last_mem, fun hx => hx.symm ▸ s₁.last_mem⟩
   have : ∀ x, x ∈ s₂ ↔ x = s₂.last := fun x =>
     ⟨fun hx =>
-      forall_mem_eq_of_length_eq_zero
+      subsingleton_of_length_eq_zero
         (length_eq_zero_of_head_eq_head_of_last_eq_last_of_length_eq_zero hb ht
           hs₁0) hx s₂.last_mem,
       fun hx => hx.symm ▸ s₂.last_mem⟩
@@ -477,7 +477,7 @@ theorem exists_last_eq_snoc_equivalent (s : CompositionSeries X) (x : X) (hm : I
   induction' hn : s.length with n ih generalizing s x
   · exact
       (ne_of_gt (lt_of_le_of_lt hb (lt_of_isMaximal hm))
-          (forall_mem_eq_of_length_eq_zero hn s.last_mem s.head_mem)).elim
+          (subsingleton_of_length_eq_zero hn s.last_mem s.head_mem)).elim
   · have h0s : 0 < s.length := hn.symm ▸ Nat.succ_pos _
     by_cases hetx : s.eraseLast.last = x
     · use s.eraseLast
@@ -519,7 +519,7 @@ theorem jordan_holder (s₁ s₂ : CompositionSeries X)
       length_pos_of_head_eq_head_of_last_eq_last_of_length_pos hb ht (hle.symm ▸ Nat.succ_pos _)
     rcases exists_last_eq_snoc_equivalent s₁ s₂.eraseLast.last
         (ht.symm ▸ isMaximal_eraseLast_last h0s₂)
-        (hb.symm ▸ s₂.head_eraseLast ▸ head_le_of_mem (last_mem _ _)) with
+        (hb.symm ▸ s₂.head_eraseLast ▸ head_le_of_mem (last_mem _)) with
       ⟨t, htb, htl, htt, hteq⟩
     have := ih t s₂.eraseLast (by simp [htb, ← hb]) htt (Nat.succ_inj'.1 (htl.trans hle))
     refine' hteq.trans _
