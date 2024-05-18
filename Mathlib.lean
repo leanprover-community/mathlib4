@@ -220,6 +220,7 @@ import Mathlib.Algebra.Group.OrderSynonym
 import Mathlib.Algebra.Group.PNatPowAssoc
 import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Group.Pi.Lemmas
+import Mathlib.Algebra.Group.Pi.Lex
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Semiconj.Basic
 import Mathlib.Algebra.Group.Semiconj.Defs
@@ -2125,7 +2126,6 @@ import Mathlib.Data.PNat.Xgcd
 import Mathlib.Data.PSigma.Order
 import Mathlib.Data.Part
 import Mathlib.Data.Pi.Interval
-import Mathlib.Data.Pi.Lex
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Prod.Lex
 import Mathlib.Data.Prod.PProd
@@ -3275,6 +3275,7 @@ import Mathlib.Order.PFilter
 import Mathlib.Order.PartialSups
 import Mathlib.Order.Partition.Equipartition
 import Mathlib.Order.Partition.Finpartition
+import Mathlib.Order.PiLex
 import Mathlib.Order.PrimeIdeal
 import Mathlib.Order.PrimeSeparator
 import Mathlib.Order.PropInstances
