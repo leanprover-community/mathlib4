@@ -67,8 +67,7 @@ theorem exists_measure_closedBall_le_mul' :
 #align is_unif_loc_doubling_measure.exists_measure_closed_ball_le_mul' IsUnifLocDoublingMeasure.exists_measure_closedBall_le_mul'
 
 theorem exists_eventually_forall_measure_closedBall_le_mul (K : ℝ) :
-    ∃ C : ℝ≥0,
-      ∀ᶠ ε in 𝓝[>] 0, ∀ (x t) (_ : t ≤ K), μ (closedBall x (t * ε)) ≤ C * μ (closedBall x ε) := by
+    ∃ C : ℝ≥0, ∀ᶠ ε in 𝓝[>] 0, ∀ x, ∀ t ≤ K, μ (closedBall x (t * ε)) ≤ C * μ (closedBall x ε) := by
   let C := doublingConstant μ
   have hμ :
     ∀ n : ℕ, ∀ᶠ ε in 𝓝[>] 0, ∀ x,
