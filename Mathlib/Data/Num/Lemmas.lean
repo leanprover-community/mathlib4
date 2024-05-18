@@ -264,9 +264,9 @@ theorem ofNat'_succ : ∀ {n}, ofNat' (n + 1) = ofNat' n + 1 :=
 
 @[simp]
 theorem add_ofNat' (m n) : Num.ofNat' (m + n) = Num.ofNat' m + Num.ofNat' n := by
-  -- Porting note: `simp` fails to unify `ofNat' (n + 1)` with `ofNat' n.succ`
-  have : ∀ {n}, ofNat' n.succ = ofNat' n + 1 := ofNat'_succ
-  induction n <;> simp [Nat.add_zero, this, add_zero, Nat.add_succ, add_one, add_succ, *]
+  induction n
+  · simp only [Nat.add_zero, ofNat'_zero, add_zero]
+  · simp only [Nat.add_succ, Nat.add_zero, ofNat'_succ, add_one, add_succ, *]
 #align num.add_of_nat' Num.add_ofNat'
 
 @[simp, norm_cast]
@@ -982,7 +982,7 @@ theorem castNum_testBit (m n) : testBit m n = Nat.testBit m n := by
     · rfl
     · rw [PosNum.cast_bit1, ← Nat.bit_true, Nat.testBit_bit_zero]
     · rw [PosNum.cast_bit0, ← Nat.bit_false, Nat.testBit_bit_zero]
-    · rw [PosNum.cast_one', ← bit1_zero, ← Nat.bit_true, Nat.testBit_bit_succ, Nat.zero_testBit]
+    · simp
     · rw [PosNum.cast_bit1, ← Nat.bit_true, Nat.testBit_bit_succ, IH]
     · rw [PosNum.cast_bit0, ← Nat.bit_false, Nat.testBit_bit_succ, IH]
 #align num.test_bit_to_nat Num.castNum_testBit

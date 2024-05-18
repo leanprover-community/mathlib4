@@ -5,7 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Deprecated.Subgroup
 import Mathlib.Deprecated.Group
-import Mathlib.RingTheory.Subring.Basic
+import Mathlib.Algebra.Ring.Subring.Basic
 
 #align_import deprecated.subring from "leanprover-community/mathlib"@"2738d2ca56cbc63be80c3bd48e9ed90ad94e947d"
 
@@ -16,7 +16,7 @@ This file is deprecated, and is no longer imported by anything in mathlib other 
 deprecated files, and test files. You should not need to import it.
 
 This file defines predicates for unbundled subrings. Instead of using this file, please use
-`Subring`, defined in `RingTheory.Subring.Basic`, for subrings of rings.
+`Subring`, defined in `Mathlib.Algebra.Ring.Subring.Basic`, for subrings of rings.
 
 ## Main definitions
 

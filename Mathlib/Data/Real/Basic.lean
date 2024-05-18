@@ -241,7 +241,7 @@ set_option linter.uppercaseLean3 false in
  `Field ℝ` is found first, then decaying it to these typeclasses would result in a `noncomputable`
  version of them. -/
 
-instance : Ring ℝ := by infer_instance
+instance instRing : Ring ℝ := by infer_instance
 
 instance : CommSemiring ℝ := by infer_instance
 
@@ -639,3 +639,8 @@ theorem mk_near_of_forall_near {f : CauSeq ℚ abs} {x : ℝ} {ε : ℝ}
 #align real.mk_near_of_forall_near Real.mk_near_of_forall_near
 
 end Real
+
+/-- A function `f : R → ℝ≥0` is nonarchimedean if it satisfies the strong triangle inequality
+  `f (r + s) ≤ max (f r) (f s)` for all `r s : R`. -/
+def IsNonarchimedean {A : Type _} [Add A] (f : A → ℝ) : Prop :=
+  ∀ r s, f (r + s) ≤ max (f r) (f s)

@@ -74,7 +74,7 @@ theorem antidiagonalTuple_zero_zero : antidiagonalTuple 0 0 = [![]] :=
 #align list.nat.antidiagonal_tuple_zero_zero List.Nat.antidiagonalTuple_zero_zero
 
 @[simp]
-theorem antidiagonalTuple_zero_succ (n : ℕ) : antidiagonalTuple 0 n.succ = [] :=
+theorem antidiagonalTuple_zero_succ (n : ℕ) : antidiagonalTuple 0 (n + 1) = [] :=
   rfl
 #align list.nat.antidiagonal_tuple_zero_succ List.Nat.antidiagonalTuple_zero_succ
 
@@ -266,8 +266,7 @@ section EquivProd
 
 This is the tuple version of `Finset.sigmaAntidiagonalEquivProd`. -/
 @[simps]
-def sigmaAntidiagonalTupleEquivTuple (k : ℕ) : (Σ n, antidiagonalTuple k n) ≃ (Fin k → ℕ)
-    where
+def sigmaAntidiagonalTupleEquivTuple (k : ℕ) : (Σ n, antidiagonalTuple k n) ≃ (Fin k → ℕ) where
   toFun x := x.2
   invFun x := ⟨∑ i, x i, x, mem_antidiagonalTuple.mpr rfl⟩
   left_inv := fun ⟨_, _, h⟩ => Sigma.subtype_ext (mem_antidiagonalTuple.mp h) rfl

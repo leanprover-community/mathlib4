@@ -56,7 +56,7 @@ theorem X_pow_sub_X_sub_one_irreducible (hn1 : n ≠ 1) : Irreducible (X ^ n - X
   rw [hp]
   apply IsUnitTrinomial.irreducible_of_coprime' ⟨0, 1, n, zero_lt_one, hn, -1, -1, 1, rfl⟩
   rintro z ⟨h1, h2⟩
-  apply X_pow_sub_X_sub_one_irreducible_aux z
+  apply X_pow_sub_X_sub_one_irreducible_aux (n := n) z
   rw [trinomial_mirror zero_lt_one hn (-1 : ℤˣ).ne_zero (1 : ℤˣ).ne_zero] at h2
   simp_rw [trinomial, aeval_add, aeval_mul, aeval_X_pow, aeval_C,
     Units.val_neg, Units.val_one, map_neg, map_one] at h1 h2

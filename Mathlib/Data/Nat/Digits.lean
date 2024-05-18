@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Shing Tak Lam, Mario Carneiro
 -/
 import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.List.Lemmas
-import Mathlib.Algebra.Parity
+import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Log
@@ -13,6 +12,7 @@ import Mathlib.Data.List.Indexes
 import Mathlib.Data.List.Palindrome
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
 
 #align_import data.nat.digits from "leanprover-community/mathlib"@"369525b73f229ccd76a6ec0e0e0bf2be57599768"
 
@@ -193,6 +193,9 @@ theorem ofDigits_eq_sum_mapIdx (b : ℕ) (L : List ℕ) :
 #align nat.of_digits_eq_sum_map_with_index Nat.ofDigits_eq_sum_mapIdx
 
 @[simp]
+theorem ofDigits_nil {b : ℕ} : ofDigits b [] = 0 := rfl
+
+@[simp]
 theorem ofDigits_singleton {b n : ℕ} : ofDigits b [n] = n := by simp [ofDigits]
 #align nat.of_digits_singleton Nat.ofDigits_singleton
 
@@ -200,6 +203,9 @@ theorem ofDigits_singleton {b n : ℕ} : ofDigits b [n] = n := by simp [ofDigits
 theorem ofDigits_one_cons {α : Type*} [Semiring α] (h : ℕ) (L : List ℕ) :
     ofDigits (1 : α) (h :: L) = h + ofDigits 1 L := by simp [ofDigits]
 #align nat.of_digits_one_cons Nat.ofDigits_one_cons
+
+theorem ofDigits_cons {b hd} {tl : List ℕ} :
+    ofDigits b (hd :: tl) = hd + b * ofDigits b tl := rfl
 
 theorem ofDigits_append {b : ℕ} {l1 l2 : List ℕ} :
     ofDigits b (l1 ++ l2) = ofDigits b l1 + b ^ l1.length * ofDigits b l2 := by
@@ -267,7 +273,7 @@ theorem ofDigits_digits (b n : ℕ) : ofDigits b (digits b n) = n := by
   · cases' b with b
     · induction' n with n ih
       · rfl
-      · rw [show succ zero = 1 by rfl] at ih ⊢
+      · rw [Nat.zero_add] at ih ⊢
         simp only [ih, add_comm 1, ofDigits_one_cons, Nat.cast_id, digits_one_succ]
     · apply Nat.strongInductionOn n _
       clear n
@@ -357,7 +363,7 @@ theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
   · cases m
     · cases hm rfl
     rename ℕ => m
-    simp only [digits_one, List.getLast_replicate_succ m 1]
+    simp only [zero_add, digits_one, List.getLast_replicate_succ m 1]
     exact Nat.one_ne_zero
   revert hm
   apply Nat.strongInductionOn m
@@ -369,6 +375,29 @@ theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
     rw [← pos_iff_ne_zero]
     exact Nat.div_pos (le_of_not_lt hnb) (zero_lt_succ (succ b))
 #align nat.last_digit_ne_zero Nat.getLast_digit_ne_zero
+
+theorem mul_ofDigits (n : ℕ) {b : ℕ} {l : List ℕ} :
+    n * ofDigits b l = ofDigits b (l.map (n * ·)) := by
+  induction l with
+  | nil => rfl
+  | cons hd tl ih =>
+    rw [List.map_cons, ofDigits_cons, ofDigits_cons, ← ih]
+    ring
+
+/-- The addition of ofDigits of two lists is equal to ofDigits of digit-wise addition of them-/
+theorem ofDigits_add_ofDigits_eq_ofDigits_zipWith_of_length_eq {b : ℕ} {l1 l2 : List ℕ}
+    (h : l1.length = l2.length) :
+    ofDigits b l1 + ofDigits b l2 = ofDigits b (l1.zipWith (· + ·) l2) := by
+  induction l1 generalizing l2 with
+  | nil => simp_all [eq_comm, List.length_eq_zero, ofDigits]
+  | cons hd₁ tl₁ ih₁ =>
+    induction l2 generalizing tl₁ with
+    | nil => simp_all
+    | cons hd₂ tl₂ ih₂ =>
+      simp_all only [List.length_cons, succ_eq_add_one, ofDigits_cons, add_left_inj,
+        eq_comm, List.zipWith_cons_cons, add_eq]
+      rw [← ih₁ h.symm, mul_add]
+      ac_rfl
 
 /-- The digits in the base b+2 expansion of n are all less than b+2 -/
 theorem digits_lt_base' {b m : ℕ} : ∀ {d}, d ∈ digits (b + 2) m → d < b + 2 := by
@@ -384,7 +413,7 @@ theorem digits_lt_base' {b m : ℕ} : ∀ {d}, d ∈ digits (b + 2) m → d < b 
   -- Porting note: Previous code (single line) contained linarith.
   -- . exact IH _ (Nat.div_lt_self (Nat.succ_pos _) (by linarith)) hd
   · apply IH ((n + 1) / (b + 2))
-    · apply Nat.div_lt_self <;> simp
+    · apply Nat.div_lt_self <;> omega
     · assumption
 #align nat.digits_lt_base' Nat.digits_lt_base'
 
@@ -472,7 +501,7 @@ theorem digit_sum_le (p n : ℕ) : List.sum (digits p n) ≤ n := by
   · exact digits_zero _ ▸ Nat.le_refl (List.sum [])
   · induction' p with p
     · rw [digits_zero_succ, List.sum_cons, List.sum_nil, add_zero]
-    · nth_rw 2 [← ofDigits_digits p.succ n.succ]
+    · nth_rw 2 [← ofDigits_digits p.succ (n + 1)]
       rw [← ofDigits_one <| digits p.succ n.succ]
       exact ofDigits_monotone (digits p.succ n.succ) <| Nat.succ_pos p
 
@@ -561,7 +590,8 @@ theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits {p : ℕ}
         rw [← Ico_succ_singleton, List.drop_length, ofDigits] at this
         have h₁ : 1 ≤ tl.length := List.length_pos.mpr h'
         rw [← sum_range_add_sum_Ico _ <| h₁, ← add_zero (∑ x in Ico _ _, ofDigits p (tl.drop x)),
-            ← this, sum_Ico_consecutive _  h₁ <| le_succ tl.length, ← sum_Ico_add _ 0 tl.length 1,
+            ← this, sum_Ico_consecutive _  h₁ <| (le_add_right tl.length 1),
+            ← sum_Ico_add _ 0 tl.length 1,
             Ico_zero_eq_range, mul_add, mul_add, ih, range_one, sum_singleton, List.drop, ofDigits,
             mul_zero, add_zero, ← Nat.add_sub_assoc <| sum_le_ofDigits _ <| Nat.le_of_lt h]
         nth_rw 2 [← one_mul <| ofDigits p tl]
@@ -632,6 +662,19 @@ theorem ofDigits_modEq (b k : ℕ) (L : List ℕ) : ofDigits b L ≡ ofDigits (b
 theorem ofDigits_mod (b k : ℕ) (L : List ℕ) : ofDigits b L % k = ofDigits (b % k) L % k :=
   ofDigits_modEq b k L
 #align nat.of_digits_mod Nat.ofDigits_mod
+
+theorem ofDigits_mod_eq_head! (b : ℕ) (l : List ℕ) : ofDigits b l % b = l.head! % b := by
+  induction l <;> simp [Nat.ofDigits, Int.ModEq]
+
+theorem head!_digits {b n : ℕ} (h : b ≠ 1) : (Nat.digits b n).head! = n % b := by
+  by_cases hb : 1 < b
+  · rcases n with _ | n
+    · simp
+    · nth_rw 2 [← Nat.ofDigits_digits b (n + 1)]
+      rw [Nat.ofDigits_mod_eq_head! _ _]
+      exact (Nat.mod_eq_of_lt (Nat.digits_lt_base hb <| List.head!_mem_self <|
+          Nat.digits_ne_nil_iff_ne_zero.mpr <| Nat.succ_ne_zero n)).symm
+  · rcases n with _ | _ <;> simp_all [show b = 0 by omega]
 
 theorem ofDigits_zmodeq' (b b' : ℤ) (k : ℕ) (h : b ≡ b' [ZMOD k]) (L : List ℕ) :
     ofDigits b L ≡ ofDigits b' L [ZMOD k] := by

@@ -67,14 +67,14 @@ def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g)
     (by
       intro S
       constructor; swap
-      exact
-        { toFun := fun x =>
-            ⟨⟨S.fst x, S.snd x⟩, by simpa using ConcreteCategory.congr_hom S.condition x⟩
-          continuous_toFun := by
-            apply Continuous.subtype_mk <| Continuous.prod_mk ?_ ?_
-            · exact (PullbackCone.fst S)|>.continuous_toFun
-            · exact (PullbackCone.snd S)|>.continuous_toFun
-        }
+      · exact
+          { toFun := fun x =>
+              ⟨⟨S.fst x, S.snd x⟩, by simpa using ConcreteCategory.congr_hom S.condition x⟩
+            continuous_toFun := by
+              apply Continuous.subtype_mk <| Continuous.prod_mk ?_ ?_
+              · exact (PullbackCone.fst S)|>.continuous_toFun
+              · exact (PullbackCone.snd S)|>.continuous_toFun
+          }
       refine' ⟨_, _, _⟩
       · delta pullbackCone
         ext a
@@ -424,7 +424,7 @@ theorem pullback_fst_image_snd_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set Y) 
 end Pullback
 
 --TODO: Add analogous constructions for `pushout`.
-theorem coinduced_of_isColimit {F : J ⥤ TopCatMax.{v, u}} (c : Cocone F) (hc : IsColimit c) :
+theorem coinduced_of_isColimit {F : J ⥤ TopCat.{max v u}} (c : Cocone F) (hc : IsColimit c) :
     c.pt.str = ⨆ j, (F.obj j).str.coinduced (c.ι.app j) := by
   let homeo := homeoOfIso (hc.coconePointUniqueUpToIso (colimitCoconeIsColimit F))
   ext
@@ -432,12 +432,12 @@ theorem coinduced_of_isColimit {F : J ⥤ TopCatMax.{v, u}} (c : Cocone F) (hc :
   exact isOpen_iSup_iff
 #align Top.coinduced_of_is_colimit TopCat.coinduced_of_isColimit
 
-theorem colimit_topology (F : J ⥤ TopCatMax.{v, u}) :
+theorem colimit_topology (F : J ⥤ TopCat.{max v u}) :
     (colimit F).str = ⨆ j, (F.obj j).str.coinduced (colimit.ι F j) :=
   coinduced_of_isColimit _ (colimit.isColimit F)
 #align Top.colimit_topology TopCat.colimit_topology
 
-theorem colimit_isOpen_iff (F : J ⥤ TopCatMax.{v, u}) (U : Set ((colimit F : _) : Type max v u)) :
+theorem colimit_isOpen_iff (F : J ⥤ TopCat.{max v u}) (U : Set ((colimit F : _) : Type max v u)) :
     IsOpen U ↔ ∀ j, IsOpen (colimit.ι F j ⁻¹' U) := by
   dsimp [topologicalSpace_coe]
   conv_lhs => rw [colimit_topology F]

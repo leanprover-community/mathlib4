@@ -66,9 +66,8 @@ We currently only prove the equipartition version of SRL.
 
 open Finpartition Finset Fintype Function SzemerediRegularity
 
-open scoped Classical
-
-variable {α : Type*} [Fintype α] (G : SimpleGraph α) {ε : ℝ} {l : ℕ}
+variable {α : Type*} [DecidableEq α] [Fintype α] (G : SimpleGraph α) [DecidableRel G.Adj] {ε : ℝ}
+  {l : ℕ}
 
 /-- Effective **Szemerédi Regularity Lemma**: For any sufficiently large graph, there is an
 `ε`-uniform equipartition of bounded size (where the bound does not depend on the graph). -/

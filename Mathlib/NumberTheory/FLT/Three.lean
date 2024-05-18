@@ -5,6 +5,7 @@ Authors: Riccardo Brasca
 -/
 import Mathlib.NumberTheory.FLT.Basic
 import Mathlib.Data.ZMod.Basic
+import Mathlib.NumberTheory.Cyclotomic.Rat
 import Mathlib.RingTheory.Int.Basic
 
 /-!
@@ -97,7 +98,8 @@ theorem fermatLastTheoremThree_of_three_dvd_only_c
   rw [fermatLastTheoremFor_iff_int]
   refine fermatLastTheoremWith_of_fermatLastTheoremWith_coprime (fun a b c ha hb hc Hgcd hF ↦?_)
   by_cases h1 : 3 ∣ a * b * c
-  swap; exact fermatLastTheoremThree_case_1 h1 hF
+  swap
+  · exact fermatLastTheoremThree_case_1 h1 hF
   rw [(prime_three).dvd_mul, (prime_three).dvd_mul] at h1
   rw [← sub_eq_zero, sub_eq_add_neg, ← (show Odd 3 by decide).neg_pow] at hF
   rcases h1 with ((h3a | h3b) | h3c)
@@ -111,5 +113,40 @@ theorem fermatLastTheoremThree_of_three_dvd_only_c
       ?_ H hF
     rw [Finset.Insert.comm (-c), Finset.pair_comm (-c) b]
     simp only [← Hgcd, Insert.comm, gcd_insert, gcd_singleton, id_eq, ← abs_eq_normalize, abs_neg]
+
+section eisenstein
+
+open NumberField
+
+variable {K : Type*} [Field K] [NumberField K] [IsCyclotomicExtension {3} ℚ K]
+variable {ζ : K} (hζ : IsPrimitiveRoot ζ (3 : ℕ+))
+
+local notation3 "η" => hζ.toInteger
+local notation3 "λ" => η - 1
+
+/-- `FermatLastTheoremForThreeGen` is the statement that `a ^ 3 + b ^ 3 = u * c ^ 3` has no
+nontrivial solutions in `𝓞 K` for all `u : (𝓞 K)ˣ` such that `¬ λ ∣ a`, `¬ λ ∣ b` and `λ ∣ c`.
+The reason to consider `FermatLastTheoremForThreeGen` is to make a descent argument working. -/
+def FermatLastTheoremForThreeGen : Prop :=
+  ∀ a b c : 𝓞 K, ∀ u : (𝓞 K)ˣ, c ≠ 0 → ¬ λ ∣ a → ¬ λ ∣ b  → λ ∣ c → IsCoprime a b →
+    a ^ 3 + b ^ 3 ≠ u * c ^ 3
+
+/-- To prove `FermatLastTheoremFor 3`, it is enough to prove `FermatLastTheoremForThreeGen`. -/
+lemma FermatLastTheoremForThree_of_FermatLastTheoremThreeGen :
+    FermatLastTheoremForThreeGen hζ → FermatLastTheoremFor 3 := by
+  intro H
+  refine fermatLastTheoremThree_of_three_dvd_only_c (fun a b c hc ha hb ⟨x, hx⟩ hcoprime h ↦ ?_)
+  refine H a b c 1 (by simp [hc]) (fun hdvd ↦ ha ?_) (fun hdvd ↦ hb ?_) ?_ ?_ ?_
+  · rwa [← Ideal.norm_dvd_iff (hζ.prime_norm_toInteger_sub_one_of_prime_ne_two' (by decide)),
+      hζ.norm_toInteger_sub_one_of_prime_ne_two' (by decide)] at hdvd
+  · rwa [← Ideal.norm_dvd_iff (hζ.prime_norm_toInteger_sub_one_of_prime_ne_two' (by decide)),
+      hζ.norm_toInteger_sub_one_of_prime_ne_two' (by decide)] at hdvd
+  · exact dvd_trans hζ.toInteger_sub_one_dvd_prime' ⟨x, by simp [hx]⟩
+  · rw [show a = algebraMap _ (𝓞 K) a by simp, show b = algebraMap _ (𝓞 K) b by simp]
+    exact hcoprime.map _
+  · simp only [Units.val_one, one_mul]
+    exact_mod_cast h
+
+end eisenstein
 
 end case2

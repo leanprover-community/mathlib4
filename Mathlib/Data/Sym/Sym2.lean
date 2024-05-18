@@ -99,8 +99,7 @@ type of unordered pairs.
 It is equivalent in a natural way to multisets of cardinality 2 (see
 `Sym2.equivMultiset`).
 -/
-@[reducible]
-def Sym2 (α : Type u) := Quot (Sym2.Rel α)
+abbrev Sym2 (α : Type u) := Quot (Sym2.Rel α)
 #align sym2 Sym2
 
 /-- Constructor for `Sym2`. This is the quotient map `α × α → Sym2 α`. -/
@@ -198,8 +197,7 @@ theorem mk_eq_mk_iff {p q : α × α} : Sym2.mk p = Sym2.mk q ↔ p = q ∨ p = 
 /-- The universal property of `Sym2`; symmetric functions of two arguments are equivalent to
 functions from `Sym2`. Note that when `β` is `Prop`, it can sometimes be more convenient to use
 `Sym2.fromRel` instead. -/
-def lift : { f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ } ≃ (Sym2 α → β)
-    where
+def lift : { f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ } ≃ (Sym2 α → β) where
   toFun f :=
     Quot.lift (uncurry ↑f) <| by
       rintro _ _ ⟨⟩
@@ -225,8 +223,7 @@ theorem coe_lift_symm_apply (F : Sym2 α → β) (a₁ a₂ : α) :
 def lift₂ :
     { f : α → α → β → β → γ //
         ∀ a₁ a₂ b₁ b₂, f a₁ a₂ b₁ b₂ = f a₂ a₁ b₁ b₂ ∧ f a₁ a₂ b₁ b₂ = f a₁ a₂ b₂ b₁ } ≃
-      (Sym2 α → Sym2 β → γ)
-    where
+      (Sym2 α → Sym2 β → γ) where
   toFun f :=
     Quotient.lift₂ (s₁ := Sym2.Rel.setoid α) (s₂ := Sym2.Rel.setoid β)
       (fun (a : α × α) (b : β × β) => f.1 a.1 a.2 b.1 b.2)
@@ -588,8 +585,7 @@ private theorem perm_card_two_iff {a₁ b₁ a₂ b₂ : α} :
           first | done | apply List.Perm.swap'; rfl }
 
 /-- The symmetric square is equivalent to length-2 vectors up to permutations. -/
-def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2)
-    where
+def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2) where
   toFun :=
     Quot.map (fun x : α × α => ⟨[x.1, x.2], rfl⟩)
       (by

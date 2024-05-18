@@ -42,7 +42,7 @@ theorem totient_zero : φ 0 = 0 :=
 #align nat.totient_zero Nat.totient_zero
 
 @[simp]
-theorem totient_one : φ 1 = 1 := by simp [totient]
+theorem totient_one : φ 1 = 1 := rfl
 #align nat.totient_one Nat.totient_one
 
 theorem totient_eq_card_coprime (n : ℕ) : φ n = ((range n).filter n.Coprime).card :=
@@ -67,12 +67,14 @@ theorem totient_lt (n : ℕ) (hn : 1 < n) : φ n < n :=
   (card_lt_card (filter_ssubset.2 ⟨0, by simp [hn.ne', pos_of_gt hn]⟩)).trans_eq (card_range n)
 #align nat.totient_lt Nat.totient_lt
 
-theorem totient_pos : ∀ {n : ℕ}, 0 < n → 0 < φ n
+@[simp]
+theorem totient_eq_zero : ∀ {n : ℕ}, φ n = 0 ↔ n = 0
   | 0 => by decide
-  | 1 => by simp [totient]
-  | n + 2 => fun _ =>
-  -- Must qualify `Finset.card_pos` because of leanprover/lean4#2849
-    Finset.card_pos.2 ⟨1, mem_filter.2 ⟨mem_range.2 (by simp), coprime_one_right _⟩⟩
+  | n + 1 =>
+    suffices ∃ x < n + 1, (n + 1).gcd x = 1 by simpa [totient, filter_eq_empty_iff]
+    ⟨1 % (n + 1), mod_lt _ n.succ_pos, by rw [gcd_comm, ← gcd_rec, gcd_one_right]⟩
+
+@[simp] theorem totient_pos {n : ℕ} : 0 < φ n ↔ 0 < n := by simp [pos_iff_ne_zero]
 #align nat.totient_pos Nat.totient_pos
 
 theorem filter_coprime_Ico_eq_totient (a n : ℕ) :
@@ -100,8 +102,8 @@ theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_pos : 0 < a) :
         (Ico k (k + n % a + a * i) ∪ Ico (k + n % a + a * i) (k + n % a + a * i + a))).card := by
       congr
       rw [Ico_union_Ico_eq_Ico]
-      rw [add_assoc]
-      exact le_self_add
+      · rw [add_assoc]
+        exact le_self_add
       exact le_self_add
     _ ≤ (filter a.Coprime (Ico k (k + n % a + a * i))).card + a.totient := by
       rw [filter_union, ← filter_coprime_Ico_eq_totient a (k + n % a + a * i)]
@@ -277,7 +279,7 @@ theorem totient_eq_one_iff : ∀ {n : ℕ}, n.totient = 1 ↔ n = 1 ∨ n = 2
 #align nat.totient_eq_one_iff Nat.totient_eq_one_iff
 
 theorem dvd_two_of_totient_le_one {a : ℕ} (han : 0 < a) (ha : a.totient ≤ 1) : a ∣ 2 := by
-  rcases totient_eq_one_iff.mp <| le_antisymm ha <| totient_pos han with rfl | rfl <;> norm_num
+  rcases totient_eq_one_iff.mp <| le_antisymm ha <| totient_pos.2 han with rfl | rfl <;> norm_num
 
 /-! ### Euler's product formula for the totient function
 
@@ -345,9 +347,9 @@ theorem totient_gcd_mul_totient_mul (a b : ℕ) : φ (a.gcd b) * φ (a * b) = φ
   rw [shuffle, shuffle]
   rotate_left
   repeat' apply prod_primeFactors_dvd
-  · simp only [prod_primeFactors_gcd_mul_prod_primeFactors_mul]
-    rw [eq_comm, mul_comm, ← mul_assoc, ← Nat.mul_div_assoc]
-    exact mul_dvd_mul (prod_primeFactors_dvd a) (prod_primeFactors_dvd b)
+  simp only [prod_primeFactors_gcd_mul_prod_primeFactors_mul]
+  rw [eq_comm, mul_comm, ← mul_assoc, ← Nat.mul_div_assoc]
+  exact mul_dvd_mul (prod_primeFactors_dvd a) (prod_primeFactors_dvd b)
 #align nat.totient_gcd_mul_totient_mul Nat.totient_gcd_mul_totient_mul
 
 theorem totient_super_multiplicative (a b : ℕ) : φ a * φ b ≤ φ (a * b) := by
@@ -375,7 +377,7 @@ theorem totient_mul_of_prime_of_dvd {p n : ℕ} (hp : p.Prime) (h : p ∣ n) :
     (p * n).totient = p * n.totient := by
   have h1 := totient_gcd_mul_totient_mul p n
   rw [gcd_eq_left h, mul_assoc] at h1
-  simpa [(totient_pos hp.pos).ne', mul_comm] using h1
+  simpa [(totient_pos.2 hp.pos).ne', mul_comm] using h1
 #align nat.totient_mul_of_prime_of_dvd Nat.totient_mul_of_prime_of_dvd
 
 theorem totient_mul_of_prime_of_not_dvd {p n : ℕ} (hp : p.Prime) (h : ¬p ∣ n) :

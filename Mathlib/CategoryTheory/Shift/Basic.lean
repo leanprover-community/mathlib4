@@ -452,20 +452,6 @@ instance (i : A) : (shiftFunctor C i).IsEquivalence := by
   change (shiftEquiv C i).functor.IsEquivalence
   infer_instance
 
-@[simp]
-theorem shiftFunctor_inv (i : A) : (shiftFunctor C i).inv = shiftFunctor C (-i) :=
-  rfl
-#align category_theory.shift_functor_inv CategoryTheory.shiftFunctor_inv
-
-section
-
-/-- Shifting by `n` is an essentially surjective functor. -/
-instance shiftFunctor_essSurj (i : A) : (shiftFunctor C i).EssSurj :=
-  Equivalence.essSurj_of_equivalence _
-#align category_theory.shift_functor_ess_surj CategoryTheory.shiftFunctor_essSurj
-
-end
-
 variable {C}
 
 /-- Shifting by `i` and then shifting by `-i` is the identity. -/
