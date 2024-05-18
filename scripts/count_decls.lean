@@ -77,7 +77,7 @@ def mkTallyNames (s : TallyNames) : MetaM TallyNames := do
 elab "count_decls" : command => do
   let (s, _) ← Command.liftCoreM do Meta.MetaM.run do (mkTallyNames {})
   logInfo s!"Theorems\n{s.thms.toArray}\nData\n{s.data.toArray}\nPredicates\n{s.preds.toArray}\nTypes\n{s.types.toArray}"
-  logInfo m!"{s.types.toArray}"
+--  logInfo m!"{s.types.toArray}"
 --  logInfo s!"Theorems {s.thms}\nData {s.data}\nPredicates {s.preds}\nTypes {s.types}"
 
 count_decls
