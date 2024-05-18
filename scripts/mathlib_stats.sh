@@ -95,7 +95,7 @@ done)"
 
 declSummary="$(paste -d' ' <(echo "${newDecls}") <(echo "${oldDecls}") <(echo "${plusMinus}") |
   LC_ALL=en_US.UTF-8 awk 'BEGIN{ print "|Type|New|Change|%\n|:-:|:-:|:-:|:-:|" }{
-    printf("| %s | %'"'"'d | +%'"'"'d -%'"'"'d | %4.2f%% |\n", $1, $2, $5, $6, ($2-$4)*100/$2)
+    printf("| %s | %'"'"'d | +%'"'"'d -%'"'"'d | %'"'"'d | %4.2f%% |\n", $1, $2, $5, $6, $4, ($2-$4)*100/$2)
   }'
 )"
 
