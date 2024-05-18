@@ -118,7 +118,7 @@ lemma comp_lift_id_right {p : 𝒳 ⥤ 𝒮} {R S T : 𝒮} {a b c : 𝒳} {f : 
   codomain_eq := by rw [codomain_eq p (𝟙 T) ψ, ← domain_eq p (𝟙 T) ψ, codomain_eq p f φ]
   fac := by simp [fac p f φ, fac' p (𝟙 T) ψ]
 
-/-- If `φ : a ⟶ b` lifts `f` and `ψ : b ⟶ c` lifts `𝟙 T`, then `φ  ≫ ψ` lifts `f` -/
+/-- If `φ : a ⟶ b` lifts `𝟙 T` and `ψ : b ⟶ c` lifts `f`, then `φ  ≫ ψ` lifts `f` -/
 lemma comp_lift_id_left {p : 𝒳 ⥤ 𝒮} {R S T : 𝒮} {a b c : 𝒳} {f : S ⟶ T}
     {φ : a ⟶ b} [p.IsHomLift (𝟙 R) φ] {ψ : b ⟶ c} [hψ : p.IsHomLift f ψ] :
     p.IsHomLift f (φ ≫ ψ) where
