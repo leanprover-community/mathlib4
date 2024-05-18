@@ -223,6 +223,12 @@ theorem add_apply [AddZeroClass β] [ContinuousAdd β] (f g : C_c(α, β)) : (f 
 instance instAddZeroClass [AddZeroClass β] [ContinuousAdd β] : AddZeroClass C_c(α, β) :=
   DFunLike.coe_injective.addZeroClass _ coe_zero coe_add
 
+/-- Coercion to a function as a `AddMonoidHom`. Similar to `AddMonoidHom.coeFn`. -/
+def coeFnMonoidHom [AddMonoid β] [ContinuousAdd β] : C_c(α, β) →+ α → β where
+  toFun f := f
+  map_zero' := coe_zero
+  map_add' := coe_add
+
 instance instSMul [Zero β] {R : Type*} [Zero R] [SMulWithZero R β] [ContinuousConstSMul R β] :
     SMul R C_c(α, β) :=
   ⟨fun r f => ⟨⟨r • ⇑f, Continuous.const_smul f.continuous r⟩, HasCompactSupport.smul_left' f.2⟩⟩
@@ -249,6 +255,16 @@ variable [AddCommMonoid β] [ContinuousAdd β] (f g : C_c(α, β))
 
 instance instAddCommMonoid [AddCommMonoid β] [ContinuousAdd β] : AddCommMonoid C_c(α, β) :=
   DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => rfl
+
+open BigOperators
+
+@[simp]
+theorem coe_sum [AddZeroClass β] [ContinuousAdd β] {ι : Type*} (s : Finset ι) (f : ι → C_c(α, β)) :
+    ⇑(∑ i in s, f i) = ∑ i in s, (f i : α → β) :=
+  map_sum coeFnMonoidHom f s
+
+theorem sum_apply [AddCommMonoid β] [ContinuousAdd β] {ι : Type*} (s : Finset ι) (f : ι → C_c(α, β))
+    (a : α) : (∑ i in s, f i) a = ∑ i in s, f i a := by simp
 
 section AddGroup
 
