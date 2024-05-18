@@ -839,8 +839,7 @@ theorem measure_toMeasurable_inter_of_sum {s : Set α} (hs : MeasurableSet s) {t
     apply le_trans _ (le_sum_apply _ _)
     apply ENNReal.tsum_le_tsum (fun i ↦ ?_)
     calc
-    m i ((⋂ n, w n) ∩ u) ≤ m i (w i ∩ u) :=
-      measure_mono (inter_subset_inter_left _ (iInter_subset _ _))
+    m i ((⋂ n, w n) ∩ u) ≤ m i (w i ∩ u) := by gcongr; apply iInter_subset
     _ = m i (t ∩ u) := measure_toMeasurable_inter hu (hv i)
   -- thanks to the definition of `toMeasurable`, the previous property will also be shared
   -- by `toMeasurable μ t`, which is enough to conclude the proof.
