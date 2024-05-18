@@ -54,11 +54,8 @@ theorem univ_fin2 : (univ : Finset (Fin 2)) = {0, 1} := by
 #align finset.univ_fin2 Finset.univ_fin2
 
 variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
-
 variable [S : AffineSpace V P]
-
 variable {ι : Type*} (s : Finset ι)
-
 variable {ι₂ : Type*} (s₂ : Finset ι₂)
 
 /-- A weighted sum of the results of subtracting a base point from the
@@ -368,8 +365,7 @@ the weights.  This is intended to be used when the sum of the weights
 is 1, in which case it is an affine combination (barycenter) of the
 points with the given weights; that condition is specified as a
 hypothesis on those lemmas that require it. -/
-def affineCombination (p : ι → P) : (ι → k) →ᵃ[k] P
-    where
+def affineCombination (p : ι → P) : (ι → k) →ᵃ[k] P where
   toFun w := s.weightedVSubOfPoint p (Classical.choice S.nonempty) w +ᵥ Classical.choice S.nonempty
   linear := s.weightedVSub p
   map_vadd' w₁ w₂ := by simp_rw [vadd_vadd, weightedVSub, vadd_eq_add, LinearMap.map_add]
@@ -435,7 +431,7 @@ theorem affineCombination_vsub (w₁ w₂ : ι → k) (p : ι → P) :
 theorem attach_affineCombination_of_injective [DecidableEq P] (s : Finset P) (w : P → k) (f : s → P)
     (hf : Function.Injective f) :
     s.attach.affineCombination k f (w ∘ f) = (image f univ).affineCombination k id w := by
-  simp only [affineCombination, weightedVSubOfPoint_apply, id.def, vadd_right_cancel_iff,
+  simp only [affineCombination, weightedVSubOfPoint_apply, id, vadd_right_cancel_iff,
     Function.comp_apply, AffineMap.coe_mk]
   let g₁ : s → V := fun i => w (f i) • (f i -ᵥ Classical.choice S.nonempty)
   let g₂ : P → V := fun i => w i • (i -ᵥ Classical.choice S.nonempty)
@@ -444,8 +440,8 @@ theorem attach_affineCombination_of_injective [DecidableEq P] (s : Finset P) (w 
     ext
     simp
   rw [hgf, sum_image]
-  simp only [Function.comp_apply]
-  exact fun _ _ _ _ hxy => hf hxy
+  · simp only [Function.comp_apply]
+  · exact fun _ _ _ _ hxy => hf hxy
 #align finset.attach_affine_combination_of_injective Finset.attach_affineCombination_of_injective
 
 theorem attach_affineCombination_coe (s : Finset P) (w : P → k) :
@@ -775,7 +771,6 @@ end Finset
 namespace Finset
 
 variable (k : Type*) {V : Type*} {P : Type*} [DivisionRing k] [AddCommGroup V] [Module k V]
-
 variable [AffineSpace V P] {ι : Type*} (s : Finset ι) {ι₂ : Type*} (s₂ : Finset ι₂)
 
 /-- The weights for the centroid of some points. -/
@@ -1002,7 +997,7 @@ theorem weightedVSub_mem_vectorSpan {s : Finset ι} {w : ι → k} (h : ∑ i in
       rw [Finsupp.total_apply, Finsupp.onFinset_sum hwx]
       · apply Finset.sum_congr rfl
         intro i hi
-        simp [Set.indicator_apply, if_pos hi]
+        simp [w', Set.indicator_apply, if_pos hi]
       · exact fun _ => zero_smul k _
 #align weighted_vsub_mem_vector_span weightedVSub_mem_vectorSpan
 
@@ -1018,7 +1013,7 @@ theorem affineCombination_mem_affineSpan [Nontrivial k] {s : Finset ι} {w : ι 
     cases' hn with i1 hi1
     let w1 : ι → k := Function.update (Function.const ι 0) i1 1
     have hw1 : ∑ i in s, w1 i = 1 := by
-      simp only [Pi.const_zero, Finset.sum_update_of_mem hi1, Pi.zero_apply,
+      simp only [Function.const_zero, Finset.sum_update_of_mem hi1, Pi.zero_apply,
           Finset.sum_const_zero, add_zero]
     have hw1s : s.affineCombination k p w1 = p i1 :=
       s.affineCombination_of_eq_one_of_eq_zero w1 p hi1 (Function.update_same _ _ _) fun _ _ hne =>
@@ -1161,7 +1156,7 @@ theorem mem_affineSpan_iff_eq_weightedVSubOfPoint_vadd [Nontrivial k] (p : ι �
         · simp [Finset.sum_insert hj, Finset.sum_update_of_not_mem hj, hj]
       have hww : ∀ i, i ≠ j → w i = w' i := by
         intro i hij
-        simp [hij]
+        simp [w', hij]
       rw [s.weightedVSubOfPoint_eq_of_weights_eq p j w w' hww, ←
         s.weightedVSubOfPoint_insert w' p j, ←
         (insert j s).affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one w' p h₁ (p j)]
@@ -1194,7 +1189,6 @@ end AffineSpace'
 section DivisionRing
 
 variable {k : Type*} {V : Type*} {P : Type*} [DivisionRing k] [AddCommGroup V] [Module k V]
-
 variable [AffineSpace V P] {ι : Type*}
 
 open Set Finset
@@ -1234,7 +1228,6 @@ end DivisionRing
 namespace AffineMap
 
 variable {k : Type*} {V : Type*} (P : Type*) [CommRing k] [AddCommGroup V] [Module k V]
-
 variable [AffineSpace V P] {ι : Type*} (s : Finset ι)
 
 -- TODO: define `affineMap.proj`, `affineMap.fst`, `affineMap.snd`

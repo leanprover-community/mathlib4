@@ -3,6 +3,7 @@ Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
+import Mathlib.CategoryTheory.Functor.Currying
 import Mathlib.CategoryTheory.Limits.Preserves.Limits
 
 #align_import category_theory.limits.functor_category from "leanprover-community/mathlib"@"e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b"
@@ -30,7 +31,6 @@ universe w' w v₁ v₂ u₁ u₂ v v' u u'
 namespace CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
-
 variable {J : Type u₁} [Category.{v₁} J] {K : Type u₂} [Category.{v₂} K]
 
 @[reassoc (attr := simp)]
@@ -50,8 +50,7 @@ it suffices to show that each evaluation cone is a limit. In other words, to pro
 limiting you can show it's pointwise limiting.
 -/
 def evaluationJointlyReflectsLimits {F : J ⥤ K ⥤ C} (c : Cone F)
-    (t : ∀ k : K, IsLimit (((evaluation K C).obj k).mapCone c)) : IsLimit c
-    where
+    (t : ∀ k : K, IsLimit (((evaluation K C).obj k).mapCone c)) : IsLimit c where
   lift s :=
     { app := fun k => (t k).lift ⟨s.pt.obj k, whiskerRight s.π ((evaluation K C).obj k)⟩
       naturality := fun X Y f =>
@@ -73,8 +72,7 @@ them together to give a cone for the diagram `F`.
 (essentially) made up of the original cones.
 -/
 @[simps]
-def combineCones (F : J ⥤ K ⥤ C) (c : ∀ k : K, LimitCone (F.flip.obj k)) : Cone F
-    where
+def combineCones (F : J ⥤ K ⥤ C) (c : ∀ k : K, LimitCone (F.flip.obj k)) : Cone F where
   pt :=
     { obj := fun k => (c k).cone.pt
       map := fun {k₁} {k₂} f => (c k₂).isLimit.lift ⟨_, (c k₁).cone.π ≫ F.flip.map f⟩
@@ -106,8 +104,7 @@ it suffices to show that each evaluation cocone is a colimit. In other words, to
 colimiting you can show it's pointwise colimiting.
 -/
 def evaluationJointlyReflectsColimits {F : J ⥤ K ⥤ C} (c : Cocone F)
-    (t : ∀ k : K, IsColimit (((evaluation K C).obj k).mapCocone c)) : IsColimit c
-    where
+    (t : ∀ k : K, IsColimit (((evaluation K C).obj k).mapCocone c)) : IsColimit c where
   desc s :=
     { app := fun k => (t k).desc ⟨s.pt.obj k, whiskerRight s.ι ((evaluation K C).obj k)⟩
       naturality := fun X Y f =>
@@ -132,8 +129,7 @@ them together to give a cocone for the diagram `F`.
 (essentially) made up of the original cocones.
 -/
 @[simps]
-def combineCocones (F : J ⥤ K ⥤ C) (c : ∀ k : K, ColimitCocone (F.flip.obj k)) : Cocone F
-    where
+def combineCocones (F : J ⥤ K ⥤ C) (c : ∀ k : K, ColimitCocone (F.flip.obj k)) : Cocone F where
   pt :=
     { obj := fun k => (c k).cocone.pt
       map := fun {k₁} {k₂} f => (c k₁).isColimit.desc ⟨_, F.flip.map f ≫ (c k₂).cocone.ι⟩
@@ -169,8 +165,8 @@ instance functorCategoryHasLimitsOfShape [HasLimitsOfShape J C] : HasLimitsOfSha
         isLimit := combinedIsLimit _ _ }
 #align category_theory.limits.functor_category_has_limits_of_shape CategoryTheory.Limits.functorCategoryHasLimitsOfShape
 
-instance functorCategoryHasColimitsOfShape [HasColimitsOfShape J C] : HasColimitsOfShape J (K ⥤ C)
-    where
+instance functorCategoryHasColimitsOfShape [HasColimitsOfShape J C] :
+    HasColimitsOfShape J (K ⥤ C) where
   has_colimit _ :=
     HasColimit.mk
       { cocone := combineCocones _ fun _ => getColimitCocone _
@@ -321,7 +317,7 @@ theorem colimit_obj_ext {H : J ⥤ K ⥤ C} [HasColimitsOfShape J C] {k : K} {W 
 
 instance evaluationPreservesLimits [HasLimits C] (k : K) :
     PreservesLimits ((evaluation K C).obj k) where
-  preservesLimitsOfShape {J} 𝒥 := by skip; infer_instance
+  preservesLimitsOfShape {_} _𝒥 := inferInstance
 #align category_theory.limits.evaluation_preserves_limits CategoryTheory.Limits.evaluationPreservesLimits
 
 /-- `F : D ⥤ K ⥤ C` preserves the limit of some `G : J ⥤ D` if it does for each `k : K`. -/
@@ -358,7 +354,7 @@ instance preservesLimitsConst : PreservesLimitsOfSize.{w', w} (const D : C ⥤ _
 
 instance evaluationPreservesColimits [HasColimits C] (k : K) :
     PreservesColimits ((evaluation K C).obj k) where
-  preservesColimitsOfShape := by skip; infer_instance
+  preservesColimitsOfShape := inferInstance
 #align category_theory.limits.evaluation_preserves_colimits CategoryTheory.Limits.evaluationPreservesColimits
 
 /-- `F : D ⥤ K ⥤ C` preserves the colimit of some `G : J ⥤ D` if it does for each `k : K`. -/

@@ -37,7 +37,6 @@ open CategoryTheory.Limits
 universe v₁ u₁ u₂
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {X Y : C}
 
 /-- A regular monomorphism is a morphism which is the equalizer of some parallel pair. -/
@@ -222,8 +221,7 @@ noncomputable def regularEpiOfKernelPair {B X : C} (f : X ⟶ B) [HasPullback f 
   isColimit := hc
 
 /-- Every split epimorphism is a regular epimorphism. -/
-instance (priority := 100) RegularEpi.ofSplitEpi (f : X ⟶ Y) [IsSplitEpi f] : RegularEpi f
-    where
+instance (priority := 100) RegularEpi.ofSplitEpi (f : X ⟶ Y) [IsSplitEpi f] : RegularEpi f where
   W := X
   left := 𝟙 X
   right := f ≫ section_ f

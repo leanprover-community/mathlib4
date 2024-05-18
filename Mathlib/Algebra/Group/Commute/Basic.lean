@@ -91,5 +91,13 @@ lemma inv_mul_cancel_assoc (h : Commute a b) : a⁻¹ * (b * a) = b := by
 #align commute.inv_mul_cancel_assoc Commute.inv_mul_cancel_assoc
 #align add_commute.neg_add_cancel_assoc AddCommute.neg_add_cancel_assoc
 
+@[to_additive (attr := simp)]
+protected theorem conj_iff (h : G) : Commute (h * a * h⁻¹) (h * b * h⁻¹) ↔ Commute a b :=
+  SemiconjBy.conj_iff
+
+@[to_additive]
+protected theorem conj (comm : Commute a b) (h : G) : Commute (h * a * h⁻¹) (h * b * h⁻¹) :=
+  (Commute.conj_iff h).mpr comm
+
 end Group
 end Commute

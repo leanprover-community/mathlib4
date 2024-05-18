@@ -6,6 +6,7 @@ Authors: Chris Birkbeck
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
+import Mathlib.Algebra.Ring.Subring.Units
 
 #align_import linear_algebra.matrix.general_linear_group from "leanprover-community/mathlib"@"2705404e701abc6b3127da906f40bae062a169c9"
 
@@ -45,7 +46,7 @@ abbrev GeneralLinearGroup (n : Type u) (R : Type v) [DecidableEq n] [Fintype n] 
   (Matrix n n R)ˣ
 #align matrix.general_linear_group Matrix.GeneralLinearGroup
 
-notation "GL" => GeneralLinearGroup
+@[inherit_doc] notation "GL" => GeneralLinearGroup
 
 namespace GeneralLinearGroup
 
@@ -128,10 +129,10 @@ def toLinear : GeneralLinearGroup n R ≃* LinearMap.GeneralLinearGroup R (n →
   Units.mapEquiv Matrix.toLinAlgEquiv'.toRingEquiv.toMulEquiv
 #align matrix.general_linear_group.to_linear Matrix.GeneralLinearGroup.toLinear
 
--- Note that without the `@` and `‹_›`, lean infers `λ a b, _inst a b` instead of `_inst` as the
+-- Note that without the `@` and `‹_›`, Lean infers `fun a b ↦ _inst a b` instead of `_inst` as the
 -- decidability argument, which prevents `simp` from obtaining the instance by unification.
--- These `λ a b, _inst a b` terms also appear in the type of `A`, but simp doesn't get confused by
--- them so for now we do not care.
+-- These `fun a b ↦ _inst a b` terms also appear in the type of `A`, but simp doesn't get confused
+-- by them so for now we do not care.
 @[simp]
 theorem coe_toLinear : (@toLinear n ‹_› ‹_› _ _ A : (n → R) →ₗ[R] n → R) = Matrix.mulVecLin A :=
   rfl

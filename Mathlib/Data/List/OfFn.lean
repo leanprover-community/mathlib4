@@ -36,23 +36,28 @@ namespace List
 
 #noalign list.length_of_fn_aux
 
+@[simp]
+theorem length_ofFn_go {n} (f : Fin n → α) (i j h) : length (ofFn.go f i j h) = i := by
+  induction i generalizing j <;> simp_all [ofFn.go]
+
 /-- The length of a list converted from a function is the size of the domain. -/
 @[simp]
 theorem length_ofFn {n} (f : Fin n → α) : length (ofFn f) = n := by
-  simp [ofFn]
+  simp [ofFn, length_ofFn_go]
 #align list.length_of_fn List.length_ofFn
 
 #noalign list.nth_of_fn_aux
 
---Porting note: new theorem
+theorem get_ofFn_go {n} (f : Fin n → α) (i j h) (k) (hk) :
+    get (ofFn.go f i j h) ⟨k, hk⟩ = f ⟨j + k, by simp at hk; omega⟩ := by
+  let i+1 := i
+  cases k <;> simp [ofFn.go, get_ofFn_go (i := i)]
+  congr 2; omega
+
+-- Porting note (#10756): new theorem
 @[simp]
 theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f (Fin.cast (by simp) i) := by
-  have := Array.getElem_ofFn f i (by simpa using i.2)
-  cases' i with i hi
-  simp only [getElem, Array.get] at this
-  simp only [Fin.cast_mk]
-  rw [← this]
-  congr <;> simp [ofFn]
+  cases i; simp [ofFn, get_ofFn_go]
 
 /-- The `n`th element of a list -/
 @[simp]
@@ -60,21 +65,21 @@ theorem get?_ofFn {n} (f : Fin n → α) (i) : get? (ofFn f) i = ofFnNthVal f i 
   if h : i < (ofFn f).length
   then by
     rw [get?_eq_get h, get_ofFn]
-    · simp at h; simp [ofFnNthVal, h]
+    · simp only [length_ofFn] at h; simp [ofFnNthVal, h]
   else by
     rw [ofFnNthVal, dif_neg] <;>
     simpa using h
 #align list.nth_of_fn List.get?_ofFn
 
 set_option linter.deprecated false in
-@[deprecated get_ofFn]
+@[deprecated get_ofFn] -- 2023-01-17
 theorem nthLe_ofFn {n} (f : Fin n → α) (i : Fin n) :
     nthLe (ofFn f) i ((length_ofFn f).symm ▸ i.2) = f i := by
   simp [nthLe]
 #align list.nth_le_of_fn List.nthLe_ofFn
 
 set_option linter.deprecated false in
-@[simp, deprecated get_ofFn]
+@[simp, deprecated get_ofFn] -- 2023-01-17
 theorem nthLe_ofFn' {n} (f : Fin n → α) {i : ℕ} (h : i < (ofFn f).length) :
     nthLe (ofFn f) i h = f ⟨i, length_ofFn f ▸ h⟩ :=
   nthLe_ofFn f ⟨i, length_ofFn f ▸ h⟩
@@ -86,7 +91,7 @@ theorem map_ofFn {β : Type*} {n : ℕ} (f : Fin n → α) (g : α → β) :
   ext_get (by simp) fun i h h' => by simp
 #align list.map_of_fn List.map_ofFn
 
---Porting note: we don't have Array' in mathlib4
+-- Porting note: we don't have Array' in mathlib4
 -- /-- Arrays converted to lists are the same as `of_fn` on the indexing function of the array. -/
 -- theorem array_eq_of_fn {n} (a : Array' n α) : a.toList = ofFn a.read :=
 --   by
@@ -107,14 +112,14 @@ theorem ofFn_congr {m n : ℕ} (h : m = n) (f : Fin m → α) :
 /-- `ofFn` on an empty domain is the empty list. -/
 @[simp]
 theorem ofFn_zero (f : Fin 0 → α) : ofFn f = [] :=
-  rfl
+  ext_get (by simp) (fun i hi₁ hi₂ => by contradiction)
 #align list.of_fn_zero List.ofFn_zero
 
 @[simp]
 theorem ofFn_succ {n} (f : Fin (succ n) → α) : ofFn f = f 0 :: ofFn fun i => f i.succ :=
   ext_get (by simp) (fun i hi₁ hi₂ => by
     cases i
-    · simp
+    · simp; rfl
     · simp)
 #align list.of_fn_succ List.ofFn_succ
 
@@ -181,15 +186,20 @@ theorem ofFn_mul' {m n} (f : Fin (m * n) → α) :
   simp_rw [mul_comm m n, mul_comm m, ofFn_mul, Fin.cast_mk]
 #align list.of_fn_mul' List.ofFn_mul'
 
+@[simp]
 theorem ofFn_get : ∀ l : List α, (ofFn (get l)) = l
-  | [] => rfl
+  | [] => by rw [ofFn_zero]
   | a :: l => by
     rw [ofFn_succ]
     congr
     exact ofFn_get l
 
+@[simp]
+theorem ofFn_get_eq_map {β : Type*} (l : List α) (f : α → β) : ofFn (f <| l.get ·) = l.map f := by
+  rw [← Function.comp_def, ← map_ofFn, ofFn_get]
+
 set_option linter.deprecated false in
-@[deprecated ofFn_get]
+@[deprecated ofFn_get] -- 2023-01-17
 theorem ofFn_nthLe : ∀ l : List α, (ofFn fun i => nthLe l i i.2) = l :=
   ofFn_get
 #align list.of_fn_nth_le List.ofFn_nthLe
@@ -203,12 +213,12 @@ theorem mem_ofFn {n} (f : Fin n → α) (a : α) : a ∈ ofFn f ↔ a ∈ Set.ra
 
 @[simp]
 theorem forall_mem_ofFn_iff {n : ℕ} {f : Fin n → α} {P : α → Prop} :
-    (∀ i ∈ ofFn f, P i) ↔ ∀ j : Fin n, P (f j) := by simp only [mem_ofFn, Set.forall_range_iff]
+    (∀ i ∈ ofFn f, P i) ↔ ∀ j : Fin n, P (f j) := by simp only [mem_ofFn, Set.forall_mem_range]
 #align list.forall_mem_of_fn_iff List.forall_mem_ofFn_iff
 
 @[simp]
 theorem ofFn_const : ∀ (n : ℕ) (c : α), (ofFn fun _ : Fin n => c) = replicate n c
-  | 0, c => rfl
+  | 0, c => by rw [ofFn_zero, replicate_zero]
   | n+1, c => by rw [replicate, ← ofFn_const n]; simp
 #align list.of_fn_const List.ofFn_const
 
@@ -251,7 +261,7 @@ def ofFnRec {C : List α → Sort*} (h : ∀ (n) (f : Fin n → α), C (List.ofF
 @[simp]
 theorem ofFnRec_ofFn {C : List α → Sort*} (h : ∀ (n) (f : Fin n → α), C (List.ofFn f)) {n : ℕ}
     (f : Fin n → α) : @ofFnRec _ C h (List.ofFn f) = h _ f := by
-  --Porting note: Old proof was
+  -- Porting note: Old proof was
   -- equivSigmaTuple.rightInverse_symm.cast_eq (fun s => h s.1 s.2) ⟨n, f⟩
   have := (@equivSigmaTuple α).rightInverse_symm
   dsimp [equivSigmaTuple] at this

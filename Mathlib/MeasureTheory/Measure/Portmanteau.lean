@@ -7,7 +7,6 @@ import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.MeasureTheory.Integral.Layercake
 import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
-import Mathlib.Topology.Order.Bounded
 
 #align_import measure_theory.measure.portmanteau from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -403,7 +402,7 @@ theorem exists_null_frontier_thickening (μ : Measure Ω) [SigmaFinite μ] (s : 
     fun r => isClosed_frontier.measurableSet
   have disjs := Metric.frontier_thickening_disjoint s
   have key := Measure.countable_meas_pos_of_disjoint_iUnion (μ := μ) mbles disjs
-  have aux := measure_diff_null (s₁ := Ioo a b) (Set.Countable.measure_zero key volume)
+  have aux := measure_diff_null (s := Ioo a b) (Set.Countable.measure_zero key volume)
   have len_pos : 0 < ENNReal.ofReal (b - a) := by simp only [hab, ENNReal.ofReal_pos, sub_pos]
   rw [← Real.volume_Ioo, ← aux] at len_pos
   rcases nonempty_of_measure_ne_zero len_pos.ne.symm with ⟨r, ⟨r_in_Ioo, hr⟩⟩
@@ -542,32 +541,6 @@ lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
       rw [aux]
       congr
       exact (Real.norm_of_nonneg (f_nn x)).symm
-
-lemma tendsto_integral_of_forall_integral_le_liminf_integral {ι : Type*} {L : Filter ι}
-    {μ : Measure Ω} [IsProbabilityMeasure μ] {μs : ι → Measure Ω} [∀ i, IsProbabilityMeasure (μs i)]
-    (h : ∀ f : Ω →ᵇ ℝ, 0 ≤ f → ∫ x, (f x) ∂μ ≤ L.liminf (fun i ↦ ∫ x, (f x) ∂ (μs i)))
-    (f : Ω →ᵇ ℝ) :
-    Tendsto (fun i ↦ ∫ x, (f x) ∂ (μs i)) L (𝓝 (∫ x, (f x) ∂μ)) := by
-  rcases eq_or_neBot L with rfl|hL
-  · simp only [tendsto_bot]
-  have obs := BoundedContinuousFunction.isBounded_range_integral μs f
-  have bdd_above : IsBoundedUnder (· ≤ ·) L (fun i ↦ ∫ (x : Ω), f x ∂μs i) :=
-    isBounded_le_map_of_bounded_range _ obs
-  have bdd_below : IsBoundedUnder (· ≥ ·) L (fun i ↦ ∫ (x : Ω), f x ∂μs i) :=
-    isBounded_ge_map_of_bounded_range _ obs
-  apply @tendsto_of_le_liminf_of_limsup_le ℝ ι _ _ _ L (fun i ↦ ∫ x, (f x) ∂ (μs i)) (∫ x, (f x) ∂μ)
-  · have key := h _ (f.add_norm_nonneg)
-    simp_rw [f.integral_add_const ‖f‖] at key
-    simp only [measure_univ, ENNReal.one_toReal, smul_eq_mul, one_mul] at key
-    have := liminf_add_const L (fun i ↦ ∫ x, (f x) ∂ (μs i)) ‖f‖ bdd_above bdd_below
-    rwa [this, add_le_add_iff_right] at key
-  · have key := h _ (f.norm_sub_nonneg)
-    simp_rw [f.integral_const_sub ‖f‖] at key
-    simp only [measure_univ, ENNReal.one_toReal, smul_eq_mul, one_mul] at key
-    have := liminf_const_sub L (fun i ↦ ∫ x, (f x) ∂ (μs i)) ‖f‖ bdd_above bdd_below
-    rwa [this, sub_le_sub_iff_left] at key
-  · exact bdd_above
-  · exact bdd_below
 
 /-- One implication of the portmanteau theorem:
 If for all open sets G we have the liminf condition `μ(G) ≤ liminf μsₙ(G)`, then the measures

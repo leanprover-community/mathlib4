@@ -3,6 +3,7 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
+import Mathlib.Algebra.Group.Even
 import Mathlib.Algebra.GroupPower.CovariantClass
 import Mathlib.Algebra.Order.Group.Lattice
 
@@ -152,10 +153,10 @@ lemma mabs_mabs_div_mabs_le (a b : α) : |(|a|ₘ / |b|ₘ)|ₘ ≤ |a / b|ₘ :
   constructor
   · apply div_le_iff_le_mul.2
     convert mabs_mul_le (a / b) b
-    rw [div_mul_cancel']
+    rw [div_mul_cancel]
   · rw [div_eq_mul_inv, mul_inv_rev, inv_inv, mul_inv_le_iff_le_mul, mabs_div_comm]
     convert mabs_mul_le (b / a) a
-    · rw [div_mul_cancel']
+    · rw [div_mul_cancel]
 #align lattice_ordered_comm_group.abs_abs_div_abs_le mabs_mabs_div_mabs_le
 #align lattice_ordered_comm_group.abs_abs_sub_abs_le abs_abs_sub_abs_le
 
@@ -183,7 +184,7 @@ lemma inf_sq_eq_mul_div_mabs_div (a b : α) : (a ⊓ b) ^ 2 = a * b / |b / a|ₘ
 -- See, e.g. Zaanen, Lectures on Riesz Spaces
 -- 3rd lecture
 @[to_additive]
-lemma mabs_div_sup_mul_mabs_div_inf [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) :
+lemma mabs_div_sup_mul_mabs_div_inf (a b c : α) :
     |(a ⊔ c) / (b ⊔ c)|ₘ * |(a ⊓ c) / (b ⊓ c)|ₘ = |a / b|ₘ := by
   letI : DistribLattice α := CommGroup.toDistribLattice α
   calc
@@ -193,8 +194,8 @@ lemma mabs_div_sup_mul_mabs_div_inf [CovariantClass α α (· * ·) (· ≤ ·)]
     _ = (b ⊔ c ⊔ (a ⊔ c)) / ((b ⊔ c) ⊓ (a ⊔ c)) * ((b ⊓ c ⊔ a ⊓ c) / (b ⊓ c ⊓ (a ⊓ c))) := by
         rw [sup_div_inf_eq_mabs_div (b ⊓ c) (a ⊓ c)]
     _ = (b ⊔ a ⊔ c) / (b ⊓ a ⊔ c) * (((b ⊔ a) ⊓ c) / (b ⊓ a ⊓ c)) := by
-        rw [← sup_inf_right, ← inf_sup_right, sup_assoc, @sup_comm _ _ c (a ⊔ c), sup_right_idem,
-          sup_assoc, inf_assoc, @inf_comm _ _ c (a ⊓ c), inf_right_idem, inf_assoc]
+        rw [← sup_inf_right, ← inf_sup_right, sup_assoc, sup_comm c (a ⊔ c), sup_right_idem,
+          sup_assoc, inf_assoc, inf_comm c (a ⊓ c), inf_right_idem, inf_assoc]
     _ = (b ⊔ a ⊔ c) * ((b ⊔ a) ⊓ c) / ((b ⊓ a ⊔ c) * (b ⊓ a ⊓ c)) := by rw [div_mul_div_comm]
     _ = (b ⊔ a) * c / ((b ⊓ a) * c) := by
         rw [mul_comm, inf_mul_sup, mul_comm (b ⊓ a ⊔ c), inf_mul_sup]
@@ -252,10 +253,14 @@ variable [Group α] [LinearOrder α] {a b : α}
 #align eq_or_eq_neg_of_abs_eq eq_or_eq_neg_of_abs_eq
 
 @[to_additive] lemma mabs_eq_mabs : |a|ₘ = |b|ₘ ↔ a = b ∨ a = b⁻¹ := by
-  refine' ⟨fun h ↦ ?_, by rintro (h | h) <;> simp [h, abs_neg]⟩
+  refine ⟨fun h ↦ ?_, by rintro (h | h) <;> simp [h, abs_neg]⟩
   obtain rfl | rfl := eq_or_eq_inv_of_mabs_eq h <;>
-    simpa only [inv_eq_iff_eq_inv (a := |b|ₘ), inv_inj, or_comm] using mabs_choice b
+    simpa only [inv_eq_iff_eq_inv (a := |b|ₘ), inv_inv, inv_inj, or_comm] using mabs_choice b
 #align abs_eq_abs abs_eq_abs
+
+@[to_additive] lemma isSquare_mabs : IsSquare |a|ₘ ↔ IsSquare a :=
+  mabs_by_cases (IsSquare · ↔ _) Iff.rfl isSquare_inv
+#align even_abs even_abs
 
 variable [CovariantClass α α (· * ·) (· ≤ ·)] {a b c : α}
 
@@ -456,6 +461,18 @@ theorem abs_abs_sub_abs_le_abs_sub (a b : α) : |(|a| - |b|)| ≤ |a - b| :=
     ⟨abs_sub_abs_le_abs_sub _ _, by rw [abs_sub_comm]; apply abs_sub_abs_le_abs_sub⟩
 #align abs_abs_sub_abs_le_abs_sub abs_abs_sub_abs_le_abs_sub
 
+/-- `|a - b| ≤ n` if `0 ≤ a ≤ n` and `0 ≤ b ≤ n`. -/
+theorem abs_sub_le_of_nonneg_of_le {a b n : α} (a_nonneg : 0 ≤ a) (a_le_n : a ≤ n)
+    (b_nonneg : 0 ≤ b) (b_le_n : b ≤ n) : |a - b| ≤ n := by
+  rw [abs_sub_le_iff, sub_le_iff_le_add, sub_le_iff_le_add]
+  exact ⟨le_add_of_le_of_nonneg a_le_n b_nonneg, le_add_of_le_of_nonneg b_le_n a_nonneg⟩
+
+/-- `|a - b| < n` if `0 ≤ a < n` and `0 ≤ b < n`. -/
+theorem abs_sub_lt_of_nonneg_of_lt {a b n : α} (a_nonneg : 0 ≤ a) (a_lt_n : a < n)
+    (b_nonneg : 0 ≤ b) (b_lt_n : b < n) : |a - b| < n := by
+  rw [abs_sub_lt_iff, sub_lt_iff_lt_add, sub_lt_iff_lt_add]
+  exact ⟨lt_add_of_lt_of_nonneg a_lt_n b_nonneg, lt_add_of_lt_of_nonneg b_lt_n a_nonneg⟩
+
 theorem abs_eq (hb : 0 ≤ b) : |a| = b ↔ a = b ∨ a = -b := by
   refine' ⟨eq_or_eq_neg_of_abs_eq, _⟩
   rintro (rfl | rfl) <;> simp only [abs_neg, abs_of_nonneg hb]
@@ -510,6 +527,12 @@ theorem eq_of_abs_sub_nonpos (h : |a - b| ≤ 0) : a = b :=
   eq_of_abs_sub_eq_zero (le_antisymm h (abs_nonneg (a - b)))
 #align eq_of_abs_sub_nonpos eq_of_abs_sub_nonpos
 
+theorem abs_sub_nonpos : |a - b| ≤ 0 ↔ a = b :=
+  ⟨eq_of_abs_sub_nonpos, by rintro rfl; rw [sub_self, abs_zero]⟩
+
+theorem abs_sub_pos : 0 < |a - b| ↔ a ≠ b :=
+  not_le.symm.trans abs_sub_nonpos.not
+
 @[simp]
 theorem abs_eq_self : |a| = a ↔ 0 ≤ a := by
   rw [abs_eq_max_neg, max_eq_left_iff, neg_le_self_iff]
@@ -561,6 +584,15 @@ lemma solidClosure_min (hst : s ⊆ t) (ht : IsSolid t) : solidClosure s ⊆ t :
 #align lattice_ordered_add_comm_group.solid_closure_min LatticeOrderedAddCommGroup.solidClosure_min
 
 end LatticeOrderedAddCommGroup
+
+namespace Pi
+variable {ι : Type*} {α : ι → Type*} [∀ i, AddGroup (α i)] [∀ i, Lattice (α i)]
+
+@[simp] lemma abs_apply (f : ∀ i, α i) (i : ι) : |f| i = |f i| := rfl
+
+lemma abs_def (f : ∀ i, α i) : |f| = fun i ↦ |f i| := rfl
+
+end Pi
 
 @[deprecated] alias neg_le_abs_self := neg_le_abs
 @[deprecated] alias neg_abs_le_self := neg_abs_le

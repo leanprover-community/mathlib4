@@ -82,7 +82,7 @@ such that
 We can then glue the schemes `U i` together by identifying `V i j` with `V j i`, such
 that the `U i`'s are open subschemes of the glued space.
 -/
--- Porting note: @[nolint has_nonempty_instance]
+-- Porting note(#5171): @[nolint has_nonempty_instance]; linter not ported yet
 structure GlueData extends CategoryTheory.GlueData Scheme where
   f_open : ∀ i j, IsOpenImmersion (f i j)
 #align algebraic_geometry.Scheme.glue_data AlgebraicGeometry.Scheme.GlueData
@@ -129,7 +129,8 @@ def gluedScheme : Scheme := by
   intro x
   obtain ⟨i, y, rfl⟩ := D.toLocallyRingedSpaceGlueData.ι_jointly_surjective x
   refine' ⟨_, _ ≫ D.toLocallyRingedSpaceGlueData.toGlueData.ι i, _⟩
-  swap; exact (D.U i).affineCover.map y
+  swap
+  · exact (D.U i).affineCover.map y
   constructor
   · dsimp [-Set.mem_range]
     rw [coe_comp, Set.range_comp]
@@ -180,7 +181,7 @@ theorem ι_jointly_surjective (x : 𝖣.glued.carrier) :
   𝖣.ι_jointly_surjective (forgetToTop ⋙ forget TopCat) x
 #align algebraic_geometry.Scheme.glue_data.ι_jointly_surjective AlgebraicGeometry.Scheme.GlueData.ι_jointly_surjective
 
--- Porting note : promote to higher priority to short circuit simplifier
+-- Porting note: promote to higher priority to short circuit simplifier
 @[simp (high), reassoc]
 theorem glue_condition (i j : D.J) : D.t i j ≫ D.f j i ≫ D.ι j = D.f i j ≫ D.ι i :=
   𝖣.glue_condition i j
@@ -262,6 +263,7 @@ theorem isOpen_iff (U : Set D.glued.carrier) : IsOpen U ↔ ∀ i, IsOpen ((D.ι
 #align algebraic_geometry.Scheme.glue_data.is_open_iff AlgebraicGeometry.Scheme.GlueData.isOpen_iff
 
 /-- The open cover of the glued space given by the glue data. -/
+@[simps (config := .lemmasOnly)]
 def openCover (D : Scheme.GlueData) : OpenCover D.glued where
   J := D.J
   obj := D.U
@@ -329,8 +331,8 @@ theorem glued_cover_cocycle_snd (x y z : 𝒰.J) :
 theorem glued_cover_cocycle (x y z : 𝒰.J) :
     gluedCoverT' 𝒰 x y z ≫ gluedCoverT' 𝒰 y z x ≫ gluedCoverT' 𝒰 z x y = 𝟙 _ := by
   apply pullback.hom_ext <;> simp_rw [Category.id_comp, Category.assoc]
-  apply glued_cover_cocycle_fst
-  apply glued_cover_cocycle_snd
+  · apply glued_cover_cocycle_fst
+  · apply glued_cover_cocycle_snd
 #align algebraic_geometry.Scheme.open_cover.glued_cover_cocycle AlgebraicGeometry.Scheme.OpenCover.glued_cover_cocycle
 
 /-- The glue data associated with an open cover.
@@ -355,7 +357,7 @@ def gluedCover : Scheme.GlueData.{u} where
 This is an isomorphism, as witnessed by an `IsIso` instance. -/
 def fromGlued : 𝒰.gluedCover.glued ⟶ X := by
   fapply Multicoequalizer.desc
-  exact fun x => 𝒰.map x
+  · exact fun x => 𝒰.map x
   rintro ⟨x, y⟩
   change pullback.fst ≫ _ = ((pullbackSymmetry _ _).hom ≫ pullback.fst) ≫ _
   simpa using pullback.condition
@@ -379,12 +381,8 @@ theorem fromGlued_injective : Function.Injective 𝒰.fromGlued.1.base := by
   right
   use e.hom ⟨⟨x, y⟩, h⟩
   constructor
-  -- Porting note: in the two subproofs below, added the `change` lines
-  · change (e.hom ≫ _) ⟨(x, y), h⟩ = x
-    erw [IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.left]; rfl
-  · change (e.hom ≫ ((gluedCover 𝒰).toGlueData.t i j ≫
-      (gluedCover 𝒰).toGlueData.f j i).val.base) ⟨(x, y), h⟩ = y
-    erw [pullbackSymmetry_hom_comp_fst,
+  · erw [← comp_apply e.hom, IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.left]; rfl
+  · erw [← comp_apply e.hom, pullbackSymmetry_hom_comp_fst,
       IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.right]
     rfl
 #align algebraic_geometry.Scheme.open_cover.from_glued_injective AlgebraicGeometry.Scheme.OpenCover.fromGlued_injective
@@ -414,7 +412,7 @@ theorem fromGlued_open_map : IsOpenMap 𝒰.fromGlued.1.base := by
     convert hU (𝒰.f x) using 1
     rw [← ι_fromGlued]; erw [coe_comp]; rw [Set.preimage_comp]
     congr! 1
-    refine' Set.preimage_image_eq _ 𝒰.fromGlued_injective
+    exact Set.preimage_image_eq _ 𝒰.fromGlued_injective
   · exact ⟨hx, 𝒰.Covers x⟩
 #align algebraic_geometry.Scheme.open_cover.from_glued_open_map AlgebraicGeometry.Scheme.OpenCover.fromGlued_open_map
 
@@ -457,7 +455,7 @@ def glueMorphisms {Y : Scheme} (f : ∀ x, 𝒰.obj x ⟶ Y)
     X ⟶ Y := by
   refine' inv 𝒰.fromGlued ≫ _
   fapply Multicoequalizer.desc
-  exact f
+  · exact f
   rintro ⟨i, j⟩
   change pullback.fst ≫ f i = (_ ≫ _) ≫ f j
   erw [pullbackSymmetry_hom_comp_fst]

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.Data.SetLike.Basic
+import Mathlib.Data.Finset.Preimage
 import Mathlib.ModelTheory.Semantics
 
 #align_import model_theory.definability from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
@@ -59,7 +60,7 @@ theorem Definable.map_expansion {L' : FirstOrder.Language} [L'.Structure M] (h :
 theorem definable_iff_exists_formula_sum :
     A.Definable L s ↔ ∃ φ : L.Formula (A ⊕ α), s = {v | φ.Realize (Sum.elim (↑) v)} := by
   rw [Definable, Equiv.exists_congr_left (BoundedFormula.constantsVarsEquiv)]
-  refine exists_congr (fun φ => iff_iff_eq.2 (congr_arg (s = .) ?_))
+  refine exists_congr (fun φ => iff_iff_eq.2 (congr_arg (s = ·) ?_))
   ext
   simp only [Formula.Realize, BoundedFormula.constantsVarsEquiv, constantsOn, mk₂_Relations,
     BoundedFormula.mapTermRelEquiv_symm_apply, mem_setOf_eq]
@@ -193,19 +194,19 @@ theorem definable_iff_finitely_definable :
     rintro ⟨φ, rfl⟩
     let A0 := (φ.freeVarFinset.preimage Sum.inl
       (Function.Injective.injOn Sum.inl_injective _)).image Subtype.val
-    have hA0 : (A0 : Set M) ⊆ A := by simp
+    have hA0 : (A0 : Set M) ⊆ A := by simp [A0]
     refine ⟨A0, hA0, (φ.restrictFreeVar
       (Set.inclusion (Set.Subset.refl _))).relabel ?_, ?_⟩
     · rintro ⟨a | a, ha⟩
-      · exact Sum.inl (Sum.inl ⟨a, by simpa using ha⟩)
+      · exact Sum.inl (Sum.inl ⟨a, by simpa [A0] using ha⟩)
       · exact Sum.inl (Sum.inr a)
     · ext v
       simp only [Formula.Realize, BoundedFormula.realize_relabel,
         Set.mem_setOf_eq]
       apply Iff.symm
       convert BoundedFormula.realize_restrictFreeVar _
-      · ext a
-        rcases a with ⟨_ | _, _⟩ <;> simp
+      ext a
+      rcases a with ⟨_ | _, _⟩ <;> simp
   · rintro ⟨A0, hA0, hd⟩
     exact Definable.mono hd hA0
 

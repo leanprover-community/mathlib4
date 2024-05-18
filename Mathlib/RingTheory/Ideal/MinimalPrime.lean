@@ -3,6 +3,7 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.RingTheory.Ideal.IsPrimary
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.Order.Minimal
 
@@ -25,7 +26,8 @@ We provide various results concerning the minimal primes above an ideal
   preimage of some minimal prime over `I`.
 - `Ideal.minimalPrimes_eq_comap`: The minimal primes over `I` are precisely the preimages of
   minimal primes of `R ⧸ I`.
-
+- `Localization.AtPrime.prime_unique_of_minimal`: When localizing at a minimal prime ideal `I`,
+  the resulting ring only has a single prime ideal.
 
 -/
 
@@ -39,14 +41,14 @@ protected def Ideal.minimalPrimes : Set (Ideal R) :=
   minimals (· ≤ ·) { p | p.IsPrime ∧ I ≤ p }
 #align ideal.minimal_primes Ideal.minimalPrimes
 
+variable (R) in
 /-- `minimalPrimes R` is the set of minimal primes of `R`.
 This is defined as `Ideal.minimalPrimes ⊥`. -/
-def minimalPrimes (R : Type*) [CommSemiring R] : Set (Ideal R) :=
+def minimalPrimes : Set (Ideal R) :=
   Ideal.minimalPrimes ⊥
 #align minimal_primes minimalPrimes
 
-lemma minimalPrimes_eq_minimals {R} [CommSemiring R] :
-    minimalPrimes R = minimals (· ≤ ·) (setOf Ideal.IsPrime) :=
+lemma minimalPrimes_eq_minimals : minimalPrimes R = minimals (· ≤ ·) (setOf Ideal.IsPrime) :=
   congr_arg (minimals (· ≤ ·)) (by simp)
 
 variable {I J}
@@ -75,15 +77,14 @@ theorem Ideal.exists_minimalPrimes_le [J.IsPrime] (e : I ≤ J) : ∃ p ∈ I.mi
 @[simp]
 theorem Ideal.radical_minimalPrimes : I.radical.minimalPrimes = I.minimalPrimes := by
   rw [Ideal.minimalPrimes, Ideal.minimalPrimes]
-  congr
   ext p
   refine' ⟨_, _⟩ <;> rintro ⟨⟨a, ha⟩, b⟩
   · refine' ⟨⟨a, a.radical_le_iff.1 ha⟩, _⟩
-    · simp only [Set.mem_setOf_eq, and_imp] at *
-      exact fun _ h2 h3 h4 => b h2 (h2.radical_le_iff.2 h3) h4
+    simp only [Set.mem_setOf_eq, and_imp] at *
+    exact fun _ h2 h3 h4 => b h2 (h2.radical_le_iff.2 h3) h4
   · refine' ⟨⟨a, a.radical_le_iff.2 ha⟩, _⟩
-    · simp only [Set.mem_setOf_eq, and_imp] at *
-      exact fun _ h2 h3 h4 => b h2 (h2.radical_le_iff.1 h3) h4
+    simp only [Set.mem_setOf_eq, and_imp] at *
+    exact fun _ h2 h3 h4 => b h2 (h2.radical_le_iff.1 h3) h4
 #align ideal.radical_minimal_primes Ideal.radical_minimalPrimes
 
 @[simp]
@@ -218,7 +219,35 @@ theorem Ideal.minimalPrimes_eq_subsingleton_self [I.IsPrime] : I.minimalPrimes =
   constructor
   · exact fun H => (H.2 ⟨inferInstance, rfl.le⟩ H.1.2).antisymm H.1.2
   · rintro (rfl : J = I)
-    refine' ⟨⟨inferInstance, rfl.le⟩, fun _ h _ => h.2⟩
+    exact ⟨⟨inferInstance, rfl.le⟩, fun _ h _ => h.2⟩
 #align ideal.minimal_primes_eq_subsingleton_self Ideal.minimalPrimes_eq_subsingleton_self
 
 end
+
+namespace Localization.AtPrime
+
+variable {R : Type*} [CommSemiring R] {I : Ideal R} [hI : I.IsPrime] (hMin : I ∈ minimalPrimes R)
+
+theorem _root_.IsLocalization.AtPrime.prime_unique_of_minimal {S} [CommSemiring S] [Algebra R S]
+    [IsLocalization.AtPrime S I] {J K : Ideal S} [J.IsPrime] [K.IsPrime] : J = K :=
+  haveI : Subsingleton {i : Ideal R // i.IsPrime ∧ i ≤ I} := ⟨fun i₁ i₂ ↦ Subtype.ext <| by
+    rw [minimalPrimes_eq_minimals] at hMin
+    rw [← eq_of_mem_minimals hMin i₁.2.1 i₁.2.2, ← eq_of_mem_minimals hMin i₂.2.1 i₂.2.2]⟩
+  Subtype.ext_iff.mp <| (IsLocalization.AtPrime.orderIsoOfPrime S I).injective
+    (a₁ := ⟨J, ‹_›⟩) (a₂ := ⟨K, ‹_›⟩) (Subsingleton.elim _ _)
+
+theorem prime_unique_of_minimal (J : Ideal (Localization I.primeCompl)) [J.IsPrime] :
+    J = LocalRing.maximalIdeal (Localization I.primeCompl) :=
+  IsLocalization.AtPrime.prime_unique_of_minimal hMin
+
+theorem nilpotent_iff_mem_maximal_of_minimal {x : _} :
+    IsNilpotent x ↔ x ∈ LocalRing.maximalIdeal (Localization I.primeCompl) := by
+  rw [nilpotent_iff_mem_prime]
+  exact ⟨(· (LocalRing.maximalIdeal _) (Ideal.IsMaximal.isPrime' _)), fun _ J _ =>
+    by simpa [prime_unique_of_minimal hMin J]⟩
+
+theorem nilpotent_iff_not_unit_of_minimal {x : Localization I.primeCompl} :
+    IsNilpotent x ↔ x ∈ nonunits _ := by
+  simpa only [← LocalRing.mem_maximalIdeal] using nilpotent_iff_mem_maximal_of_minimal hMin
+
+end Localization.AtPrime

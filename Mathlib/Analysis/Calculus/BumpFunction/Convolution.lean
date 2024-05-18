@@ -58,7 +58,6 @@ theorem convolution_eq_right {x₀ : G} (hg : ∀ x ∈ ball x₀ φ.rOut, g x =
 
 variable [BorelSpace G]
 variable [IsLocallyFiniteMeasure μ] [μ.IsOpenPosMeasure]
-
 variable [FiniteDimensional ℝ G]
 
 /-- If `φ` is a normed bump function, compute `φ ⋆ g`
@@ -124,13 +123,12 @@ theorem ae_convolution_tendsto_right_of_locallyIntegrable
   have := (h₀.comp (Besicovitch.tendsto_filterAt μ x₀)).comp hφ'
   simp only [Function.comp] at this
   apply tendsto_integral_smul_of_tendsto_average_norm_sub (K ^ (FiniteDimensional.finrank ℝ G)) this
-  · apply eventually_of_forall (fun i ↦ ?_)
-    apply hg.integrableOn_isCompact
-    exact isCompact_closedBall _ _
+  · filter_upwards with i using
+      hg.integrableOn_isCompact (isCompact_closedBall _ _)
   · apply tendsto_const_nhds.congr (fun i ↦ ?_)
     rw [← integral_neg_eq_self]
     simp only [sub_neg_eq_add, integral_add_left_eq_self, integral_normed]
-  · apply eventually_of_forall (fun i ↦ ?_)
+  · filter_upwards with i
     change support ((ContDiffBump.normed (φ i) μ) ∘ (fun y ↦ x₀ - y)) ⊆ closedBall x₀ (φ i).rOut
     simp only [support_comp_eq_preimage, support_normed_eq]
     intro x hx

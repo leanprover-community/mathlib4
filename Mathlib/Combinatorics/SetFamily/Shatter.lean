@@ -3,9 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Combinatorics.SetFamily.Compression.Down
 import Mathlib.Data.Nat.Interval
 import Mathlib.Order.UpperLower.Basic
-import Mathlib.Combinatorics.SetFamily.Compression.Down
 
 /-!
 # Shattering families
@@ -113,16 +114,16 @@ lemma card_le_card_shatterer (𝒜 : Finset (Finset α)) : 𝒜.card ≤ 𝒜.sh
   set ℬ : Finset (Finset α) :=
     ((memberSubfamily a 𝒜).shatterer ∩ (nonMemberSubfamily a 𝒜).shatterer).image (insert a)
   have hℬ :
-    ℬ.card = ((memberSubfamily a 𝒜).shatterer ∩ (nonMemberSubfamily a 𝒜).shatterer).card
-  · refine card_image_of_injOn <| insert_erase_invOn.2.injOn.mono ?_
+      ℬ.card = ((memberSubfamily a 𝒜).shatterer ∩ (nonMemberSubfamily a 𝒜).shatterer).card := by
+    refine card_image_of_injOn <| insert_erase_invOn.2.injOn.mono ?_
     simp only [coe_inter, Set.subset_def, Set.mem_inter_iff, mem_coe, Set.mem_setOf_eq, and_imp,
       mem_shatterer]
     exact fun s _ ↦ aux (fun t ht ↦ (mem_filter.1 ht).2)
   rw [← card_memberSubfamily_add_card_nonMemberSubfamily a]
   refine (add_le_add ih₁ ih₀).trans ?_
-  rw [← card_union_add_card_inter, ← hℬ, ← card_disjoint_union]
+  rw [← card_union_add_card_inter, ← hℬ, ← card_union_of_disjoint]
   swap
-  · simp only [disjoint_left, mem_union, mem_shatterer, mem_image, not_exists, not_and]
+  · simp only [ℬ, disjoint_left, mem_union, mem_shatterer, mem_image, not_exists, not_and]
     rintro _ (hs | hs) s - rfl
     · exact aux (fun t ht ↦ (mem_memberSubfamily.1 ht).2) hs <| mem_insert_self _ _
     · exact aux (fun t ht ↦ (mem_nonMemberSubfamily.1 ht).2) hs <| mem_insert_self _ _

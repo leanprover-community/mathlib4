@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Data.Set.Pairwise.Basic
+import Mathlib.Data.Set.Lattice
 import Mathlib.Order.SuccPred.Basic
 
 #align_import order.succ_pred.interval_succ from "leanprover-community/mathlib"@"c227d107bbada5d0d9d20287e3282c0a7f1651a0"

@@ -78,7 +78,7 @@ example : natDegree (X + X ^ 2 : ℕ[X]) = 0 := by compute_degree!
 
 /--
 error: 'compute_degree' inapplicable. The goal
-  natDegree X ≠ 0
+  X.natDegree ≠ 0
 is expected to be '≤' or '='.
 -/
 #guard_msgs in
@@ -212,7 +212,7 @@ example : natDegree ((5 * X * C 3 : _root_.Rat[X]) ^ 4) ≤ 4 := by compute_degr
 
 example : natDegree ((C a * X) ^ 4) ≤ 4 := by compute_degree
 
-example : degree ((X : ℤ[X]) ^ 4) ≤ 4 := by compute_degree
+example : degree ((X : ℤ[X]) ^ 4) ≤ 4 := by compute_degree; rfl
 
 example : natDegree ((X : ℤ[X]) ^ 4) ≤ 40 := by compute_degree!
 
@@ -220,15 +220,15 @@ example : natDegree (C a * C b + X + monomial 3 4 * X) ≤ 4 := by compute_degre
 
 example {F} [Ring F] {a : F} : natDegree (X ^ 3 + C a * X ^ 10 : F[X]) ≤ 10 := by compute_degree
 
-example [Semiring R] : natDegree (7 * X : R[X]) ≤ 1 := by compute_degree
+example : natDegree (7 * X : R[X]) ≤ 1 := by compute_degree
 
-example [Semiring R] {a : R} : natDegree (a • X ^ 5 : R[X]) ≤ 5 := by
+example {a : R} : natDegree (a • X ^ 5 : R[X]) ≤ 5 := by
   compute_degree
 
-example [Semiring R] {a : R} (a0 : a ≠ 0) : natDegree (a • X ^ 5 + X : R[X]) = 5 := by
+example {a : R} (a0 : a ≠ 0) : natDegree (a • X ^ 5 + X : R[X]) = 5 := by
   compute_degree!
 
-example [Semiring R] {a : R} (a0 : a ≠ 0) : degree (a • X ^ 5 + X ^ 2 : R[X]) = 5 := by
-  compute_degree!
+example {a : R} (a0 : a ≠ 0) : degree (a • X ^ 5 + X ^ 2 : R[X]) = 5 := by
+  compute_degree!; rfl
 
 end tests_from_mathlib3

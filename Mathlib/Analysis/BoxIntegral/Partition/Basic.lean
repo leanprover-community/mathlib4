@@ -41,7 +41,8 @@ rectangular box, partition
 
 open Set Finset Function
 
-open Classical NNReal BigOperators
+open scoped Classical
+open NNReal BigOperators
 
 noncomputable section
 
@@ -52,8 +53,11 @@ variable {ι : Type*}
 /-- A prepartition of `I : BoxIntegral.Box ι` is a finite set of pairwise disjoint subboxes of
 `I`. -/
 structure Prepartition (I : Box ι) where
+  /-- The underlying set of boxes -/
   boxes : Finset (Box ι)
+  /-- Each box is a sub-box of `I` -/
   le_of_mem' : ∀ J ∈ boxes, J ≤ I
+  /-- The boxes in a prepartition are pairwise disjoint. -/
   pairwiseDisjoint : Set.Pairwise (↑boxes) (Disjoint on ((↑) : Box ι → Set (ι → ℝ)))
 #align box_integral.prepartition BoxIntegral.Prepartition
 
@@ -134,12 +138,14 @@ instance partialOrder : PartialOrder (Prepartition I) where
     let ⟨I₃, hI₃, hI₂₃⟩ := h₂₃ hI₂
     ⟨I₃, hI₃, hI₁₂.trans hI₂₃⟩
   le_antisymm := by
-    suffices : ∀ {π₁ π₂ : Prepartition I}, π₁ ≤ π₂ → π₂ ≤ π₁ → π₁.boxes ⊆ π₂.boxes
-    exact fun π₁ π₂ h₁ h₂ => injective_boxes (Subset.antisymm (this h₁ h₂) (this h₂ h₁))
+    suffices ∀ {π₁ π₂ : Prepartition I}, π₁ ≤ π₂ → π₂ ≤ π₁ → π₁.boxes ⊆ π₂.boxes from
+      fun π₁ π₂ h₁ h₂ => injective_boxes (Subset.antisymm (this h₁ h₂) (this h₂ h₁))
     intro π₁ π₂ h₁ h₂ J hJ
     rcases h₁ hJ with ⟨J', hJ', hle⟩; rcases h₂ hJ' with ⟨J'', hJ'', hle'⟩
-    obtain rfl : J = J''; exact π₁.eq_of_le hJ hJ'' (hle.trans hle')
-    obtain rfl : J' = J; exact le_antisymm ‹_› ‹_›
+    obtain rfl : J = J''
+    · exact π₁.eq_of_le hJ hJ'' (hle.trans hle')
+    obtain rfl : J' = J
+    · exact le_antisymm ‹_› ‹_›
     assumption
 
 instance : OrderTop (Prepartition I) where
@@ -303,8 +309,8 @@ def biUnion (πi : ∀ J : Box ι, Prepartition J) : Prepartition I where
     rw [Function.onFun, Set.disjoint_left]
     rintro x hx₁ hx₂; apply Hne
     obtain rfl : J₁ = J₂
-    exact π.eq_of_mem_of_mem hJ₁ hJ₂ ((πi J₁).le_of_mem hJ₁' hx₁) ((πi J₂).le_of_mem hJ₂' hx₂)
-    exact (πi J₁).eq_of_mem_of_mem hJ₁' hJ₂' hx₁ hx₂
+    · exact π.eq_of_mem_of_mem hJ₁ hJ₂ ((πi J₁).le_of_mem hJ₁' hx₁) ((πi J₂).le_of_mem hJ₂' hx₂)
+    · exact (πi J₁).eq_of_mem_of_mem hJ₁' hJ₂' hx₁ hx₂
 #align box_integral.prepartition.bUnion BoxIntegral.Prepartition.biUnion
 
 variable {πi πi₁ πi₂ : ∀ J : Box ι, Prepartition J}
@@ -534,8 +540,8 @@ theorem restrict_biUnion (πi : ∀ J, Prepartition J) (hJ : J ∈ π) :
   · simp only [iUnion_restrict, iUnion_biUnion, Set.subset_def, Set.mem_inter_iff, Set.mem_iUnion]
     rintro x ⟨hxJ, J₁, h₁, hx⟩
     obtain rfl : J = J₁
-    exact π.eq_of_mem_of_mem hJ h₁ hxJ (iUnion_subset _ hx)
-    exact hx
+    · exact π.eq_of_mem_of_mem hJ h₁ hxJ (iUnion_subset _ hx)
+    · exact hx
 #align box_integral.prepartition.restrict_bUnion BoxIntegral.Prepartition.restrict_biUnion
 
 theorem biUnion_le_iff {πi : ∀ J, Prepartition J} {π' : Prepartition I} :
@@ -741,9 +747,9 @@ theorem iUnion_subset (h : π.IsPartition) (π₁ : Prepartition I) : π₁.iUni
 #align box_integral.prepartition.is_partition.Union_subset BoxIntegral.Prepartition.IsPartition.iUnion_subset
 
 protected theorem existsUnique (h : π.IsPartition) (hx : x ∈ I) :
-    ∃! (J : _) (_ : J ∈ π), x ∈ J := by
+    ∃! J ∈ π, x ∈ J := by
   rcases h x hx with ⟨J, h, hx⟩
-  exact ExistsUnique.intro₂ J h hx fun J' h' hx' => π.eq_of_mem_of_mem h' h hx' hx
+  exact ExistsUnique.intro J ⟨h, hx⟩ fun J' ⟨h', hx'⟩ => π.eq_of_mem_of_mem h' h hx' hx
 #align box_integral.prepartition.is_partition.exists_unique BoxIntegral.Prepartition.IsPartition.existsUnique
 
 theorem nonempty_boxes (h : π.IsPartition) : π.boxes.Nonempty :=

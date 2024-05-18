@@ -27,6 +27,7 @@ open CategoryTheory
 
 /-- The category of sup-semilattices with a bottom element. -/
 structure SemilatSupCat : Type (u + 1) where
+  /-- The underlying type of a sup-semilattice with a bottom element. -/
   protected X : Type u
   [isSemilatticeSup : SemilatticeSup X]
   [isOrderBot : OrderBot.{u} X]
@@ -34,6 +35,7 @@ structure SemilatSupCat : Type (u + 1) where
 
 /-- The category of inf-semilattices with a top element. -/
 structure SemilatInfCat : Type (u + 1) where
+  /-- The underlying type of an inf-semilattice with a top element. -/
   protected X : Type u
   [isSemilatticeInf : SemilatticeInf X]
   [isOrderTop : OrderTop.{u} X]
@@ -122,7 +124,7 @@ instance : LargeCategory.{u} SemilatInfCat where
   comp_id := InfTopHom.id_comp
   assoc _ _ _ := InfTopHom.comp_assoc _ _ _
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance instFunLike (X Y : SemilatInfCat) : FunLike (X ⟶ Y) X Y :=
   show FunLike (InfTopHom X Y) X Y from inferInstance
 

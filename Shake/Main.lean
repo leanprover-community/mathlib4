@@ -87,7 +87,7 @@ structure State where
   /-- Maps a module index to the module data. -/
   mods : Array ModuleData := #[]
   /-- `j ∈ deps[i]` if module `j` is a direct dependency of module `i` -/
-  deps : Array Bitset := #[]
+  deps : Array (Array USize) := #[]
   /-- `j ∈ transDeps[i]` is the reflexive transitive closure of `deps` -/
   transDeps : Array Bitset := #[]
   /-- `j ∈ needs[i]` if module `i` uses a constant declared in module `j`.
@@ -96,10 +96,21 @@ structure State where
   /-- Maps a constant name to the module index containing it. -/
   constToIdx : HashMap Name USize := {}
 
+/-- Returns `true` if this is a constant whose body should not be considered for dependency
+tracking purposes. -/
+def isBlacklisted (name : Name) : Bool :=
+  -- Compiler-produced definitions are skipped, because they can sometimes pick up spurious
+  -- dependencies due to specializations in unrelated files. Even if we remove these modules
+  -- from the import path, the compiler will still just find another way to compile the definition.
+  if let .str _ "_cstage2" := name then true else
+  if let .str _ "_cstage1" := name then true else
+  false
+
 /-- Calculates the value of the `needs[i]` bitset for a given module `mod`.
 Bit `j` is set in the result if some constant from module `j` is used in this module. -/
 def calcNeeds (constToIdx : HashMap Name USize) (mod : ModuleData) : Bitset :=
   mod.constants.foldl (init := 0) fun deps ci =>
+    if isBlacklisted ci.name then deps else
     let deps := visitExpr ci.type deps
     match ci.value? with
     | some e => visitExpr e deps
@@ -111,19 +122,43 @@ where
       | some i => deps ||| (1 <<< i.toNat)
       | none => deps
 
+/-- Calculates the same as `calcNeeds` but tracing each module to a specific constant. -/
+def getExplanations (constToIdx : HashMap Name USize) (mod : ModuleData) :
+    HashMap USize (Name × Name) :=
+  mod.constants.foldl (init := {}) fun deps ci =>
+    if isBlacklisted ci.name then deps else
+    let deps := visitExpr ci.name ci.type deps
+    match ci.value? with
+    | some e => visitExpr ci.name e deps
+    | none => deps
+where
+  /-- Accumulate the results from expression `e` into `deps`. -/
+  visitExpr name e deps :=
+    Lean.Expr.foldConsts e deps fun c deps => match constToIdx.find? c with
+      | some i =>
+        if
+          if let some (name', _) := deps.find? i then
+            decide (name.toString.length < name'.toString.length)
+          else true
+        then
+          deps.insert i (name, c)
+        else
+          deps
+      | none => deps
+
 /-- Load all the modules in `imports` into the `State`, as well as their transitive dependencies.
 Returns a pair `(imps, transImps)` where:
 
 * `j ∈ imps` if `j` is one of the module indexes in `imports`
 * `j ∈ transImps` if module `j` is transitively reachable from `imports`
  -/
-partial def loadModules (imports : Array Import) : StateT State IO (Bitset × Bitset) := do
-  let mut imps := 0
+partial def loadModules (imports : Array Import) : StateT State IO (Array USize × Bitset) := do
+  let mut imps := #[]
   let mut transImps := 0
   for imp in imports do
     let s ← get
     if let some i := s.toIdx.find? imp.module then
-      imps := imps ||| (1 <<< i.toNat)
+      imps := imps.push i
       transImps := transImps ||| s.transDeps[i]!
     else
       let mFile ← findOLean imp.module
@@ -134,7 +169,7 @@ partial def loadModules (imports : Array Import) : StateT State IO (Bitset × Bi
       let s ← get
       let n := s.mods.size.toUSize
       let transDeps := transDeps ||| (1 <<< n.toNat)
-      imps := imps ||| (1 <<< n.toNat)
+      imps := imps.push n
       transImps := transImps ||| transDeps
       set (σ := State) {
         toIdx := s.toIdx.insert imp.module n
@@ -167,6 +202,27 @@ def Edits.add (ed : Edits) (src : Name) (tgt : Nat) : Edits :=
   | none => ed.insert src (∅, 1 <<< tgt)
   | some (a, b) => ed.insert src (a, b ||| (1 <<< tgt))
 
+/-- Parse a source file to extract the location of the import lines, for edits and error messages.
+
+Returns `(path, inputCtx, headerStx, endPos)` where `headerStx` is the `Lean.Parser.Module.header`
+and `endPos` is the position of the end of the header.
+-/
+def parseHeader (srcSearchPath : SearchPath) (mod : Name) :
+    IO (System.FilePath × Parser.InputContext × Syntax × String.Pos) := do
+  -- Parse the input file
+  let some path ← srcSearchPath.findModuleWithExt "lean" mod
+    | throw <| .userError "error: failed to find source file for {mod}"
+  let text ← IO.FS.readFile path
+  let inputCtx := Parser.mkInputContext text path.toString
+  let (header, parserState, msgs) ← Parser.parseHeader inputCtx
+  if !msgs.isEmpty then -- skip this file if there are parse errors
+    msgs.forM fun msg => msg.toString >>= IO.println
+    throw <| .userError "parse errors in file"
+  -- the insertion point for `add` is the first newline after the imports
+  let insertion := header.getTailPos?.getD parserState.pos
+  let insertion := text.findAux (· == '\n') text.endPos insertion + ⟨1⟩
+  pure (path, inputCtx, header, insertion)
+
 /-- Analyze and report issues from module `i`. Arguments:
 
 * `s`: The main state (contains all the modules and dependency information)
@@ -179,15 +235,16 @@ def Edits.add (ed : Edits) (src : Name) (tgt : Nat) : Edits :=
 * `downstream`: if true, then we report downstream files that need to be fixed too
  -/
 def visitModule (s : State) (srcSearchPath : SearchPath) (ignoreImps : Bitset)
-    (i : Nat) (needs : Bitset) (edits : Edits) (downstream := true) : IO Edits := do
+    (i : Nat) (needs : Bitset) (edits : Edits)
+    (downstream := true) (githubStyle := false) (explain := false) : IO Edits := do
   -- Do transitive reduction of `needs` in `deps` and transitive closure in `transDeps`.
   -- Include the `ignoreImps` in `transDeps`
   let mut deps := needs
   let mut transDeps := needs ||| ignoreImps
-  for i in [0:s.mods.size] do
-    if deps &&& (1 <<< i) != 0 then
-      let deps2 := s.transDeps[i]!
-      deps := deps ^^^ (deps &&& deps2) ^^^ (1 <<< i)
+  for j in [0:s.mods.size] do
+    if deps &&& (1 <<< j) != 0 then
+      let deps2 := s.transDeps[j]!
+      deps := deps ^^^ (deps &&& deps2) ^^^ (1 <<< j)
       transDeps := transDeps ||| deps2
 
   -- Any import which is not in `transDeps` was unused.
@@ -195,11 +252,11 @@ def visitModule (s : State) (srcSearchPath : SearchPath) (ignoreImps : Bitset)
   let mut toRemove := #[]
   let mut newDeps := 0
   for imp in s.mods[i]!.imports do
-    let i := s.toIdx.find! imp.module
-    if transDeps &&& (1 <<< i.toNat) == 0 then
-      toRemove := toRemove.push i
+    let j := s.toIdx.find! imp.module
+    if transDeps &&& (1 <<< j.toNat) == 0 then
+      toRemove := toRemove.push j
     else
-      newDeps := newDeps ||| s.transDeps[i]!
+      newDeps := newDeps ||| s.transDeps[j]!
 
   if toRemove.isEmpty then return edits -- nothing to do
 
@@ -207,14 +264,28 @@ def visitModule (s : State) (srcSearchPath : SearchPath) (ignoreImps : Bitset)
   -- To minimize new imports we pick only new imports which are not transitively implied by
   -- another new import
   let mut toAdd := #[]
-  for i in [0:s.mods.size] do
-    if deps &&& (1 <<< i) != 0 && newDeps &&& (1 <<< i) == 0 then
-      toAdd := toAdd.push i
-      newDeps := newDeps ||| s.transDeps[i]!
+  for j in [0:s.mods.size] do
+    if deps &&& (1 <<< j) != 0 && newDeps &&& (1 <<< j) == 0 then
+      toAdd := toAdd.push j
+      newDeps := newDeps ||| s.transDeps[j]!
 
   -- mark and report the removals
   let mut edits := toRemove.foldl (init := edits) fun edits n =>
     edits.remove s.modNames[i]! s.modNames[n]!
+  if githubStyle then
+    try
+      let (path, inputCtx, header, endHeader) ← parseHeader srcSearchPath s.modNames[i]!
+      for stx in header[1].getArgs do
+        if toRemove.any fun i => s.modNames[i]! == stx[2].getId then
+          let pos := inputCtx.fileMap.toPosition stx.getPos?.get!
+          println! "{path}:{pos.line}:{pos.column+1}: warning: unused import \
+            (use `lake exe shake --fix` to fix this, or `lake exe shake --update` to ignore)"
+      if !toAdd.isEmpty then
+        -- we put the insert message on the beginning of the last import line
+        let pos := inputCtx.fileMap.toPosition endHeader
+        println! "{path}:{pos.line-1}:1: warning: \
+          import {toAdd.map (s.modNames[·]!)} instead"
+    catch _ => pure ()
   if let some path ← srcSearchPath.findModuleWithExt "lean" s.modNames[i]! then
     println! "{path}:"
   else
@@ -227,28 +298,65 @@ def visitModule (s : State) (srcSearchPath : SearchPath) (ignoreImps : Bitset)
       edits.add s.modNames[i]! n
     println! "  add {toAdd.map (s.modNames[·]!)}"
 
-  if downstream then
+  if downstream && !toRemove.isEmpty then
     -- In `downstream` mode, we should also check all the other modules to find out if
-    -- we have a situation like `A -/> B -> C`, where we are removing the `A -> B` import
-    -- but `C` depends on `A` and only directly imports `B`.
-    -- This situation occurs when `A ∈ needs[C]` and `B ∈ transDeps[C]`.
-    for r in toRemove do
-      let mut toFix := 0
-      for j in [0:s.mods.size] do
-        if j != i && s.needs[j]! &&& (1 <<< r.toNat) != 0 && s.transDeps[j]! &&& (1 <<< i) != 0 then
-          toFix := toFix ||| (1 <<< j)
-      if toFix != 0 then
-        -- `toFix` is the list of all files that need to have the import of `A` added back in,
-        -- but some of them might be importing others, for example if `A -/> B -> C -> D` where
-        -- `A ∈ needs[C]` and `A ∈ needs[D]`, adding the `A` import to `C` fixes the issue with `D`
-        -- for free. So we take only the minimal elements of `toFix` to actually fix.
-        let mut toFixArr := #[]
-        for j in [0:s.mods.size] do
-          if toFix &&& s.transDeps[j]! == 1 <<< j then
-            toFixArr := toFixArr.push j
-        edits := toFixArr.foldl (init := edits) fun edits n =>
-          edits.add s.modNames[n]! r.toNat
-        println! "  fix {s.modNames[r]!}: {toFixArr.map (s.modNames[·]!)}"
+    -- we have a situation like `A -> B -/> C -> D`, where we are removing the `B -> C` import
+    -- but `D` depends on `A` and only directly imports `C`.
+    -- This situation occurs when `A ∈ needs[D]`, `C ∈ transDeps[D]`, and `A ∉ newTransDeps[D]`,
+    -- where `newTransDeps` is the result of recalculating `transDeps` after breaking the `B -> C`
+    -- link.
+
+    -- calculate `newTransDeps[C]`, removing all `B -> C` links from `toRemove` and adding `toAdd`
+    let mut newTransDepsI := 1 <<< i
+    for j in s.deps[i]! do
+      if !toRemove.contains j then
+        newTransDepsI := newTransDepsI ||| s.transDeps[j]!
+    for j in toAdd do
+      newTransDepsI := newTransDepsI ||| s.transDeps[j]!
+
+    let mut newTransDeps := s.transDeps.set! i newTransDepsI -- deep copy
+    let mut reAdded := #[]
+    for j in [i+1:s.mods.size] do -- for each module `D`
+      if s.transDeps[j]! &&& (1 <<< i) != 0 then -- which imports `C`
+        -- calculate `newTransDeps[D]` assuming no change to the imports of `D`
+        let mut newTransDepsJ := s.deps[j]!.foldl (init := 1 <<< j) fun d k =>
+          d ||| newTransDeps[k]!
+        let diff := s.transDeps[j]! ^^^ newTransDepsJ
+        if diff != 0 then -- if the dependency closure of `D` changed
+          let mut reAdd := diff &&& s.needs[j]!
+          if reAdd != 0 then -- and there are things from `needs[D]` which were lost:
+            -- Add them back.
+            -- `reAdd` is the set of all files `A` which have to be added back
+            -- to the closure of `D`, but some of them might be importing others,
+            -- so we take the transitive reduction of `reAdd`.
+            let mut reAddArr := []
+            let mut k := j
+            while reAdd != 0 do -- note: this loop terminates because `reAdd ⊆ [0:k]`
+              k := k - 1
+              if reAdd &&& (1 <<< k) != 0 then
+                reAddArr := k :: reAddArr
+                reAdd := reAdd ^^^ (reAdd &&& newTransDeps[k]!)
+                -- add these to `newTransDeps[D]` so that files downstream of `D`
+                -- (later in the `for j` loop) will take this into account
+                newTransDepsJ := newTransDepsJ ||| newTransDeps[k]!
+            edits := reAddArr.foldl (init := edits) (·.add s.modNames[j]! ·)
+            reAdded := reAdded.push (j, reAddArr)
+          newTransDeps := newTransDeps.set! j newTransDepsJ
+    if !reAdded.isEmpty then
+      println! "  instead"
+      for (j, reAddArr) in reAdded do
+        println! "    import {reAddArr.map (s.modNames[·]!)} in {s.modNames[j]!}"
+
+  if explain then
+    let explanation := getExplanations s.constToIdx s.mods[i]!
+    let sanitize n := if n.hasMacroScopes then (sanitizeName n).run' { options := {} } else n
+    let run j := do
+      if let some (n, c) := explanation.find? j then
+        println! "  note: {s.modNames[i]!} requires {s.modNames[j]!}\
+          \n    because {sanitize n} refers to {sanitize c}"
+    for imp in s.mods[i]!.imports do run <| s.toIdx.find! imp.module
+    for i in toAdd do run i.toUSize
+
   return edits
 
 /-- Convert a list of module names to a bitset of module indexes -/
@@ -264,10 +372,16 @@ structure Args where
   help : Bool := false
   /-- `--no-downstream`: disables downstream mode -/
   downstream : Bool := true
+  /-- `--gh-style`: output messages that can be parsed by `gh-problem-matcher-wrap` -/
+  githubStyle : Bool := false
+  /-- `--explain`: give constants explaining why each module is needed -/
+  explain : Bool := false
   /-- `--fix`: apply the fixes directly -/
   fix : Bool := false
   /-- `--update`: update the config file -/
   update : Bool := false
+  /-- `--global`: with `--update`, add imports to `ignoreImport` instead of `ignore` -/
+  global : Bool := false
   /-- `--cfg FILE`: choose a custom location for the config file -/
   cfg : Option String := none
   /-- `<MODULE>..`: the list of root modules to check -/
@@ -292,7 +406,7 @@ structure ShakeCfg where
   deriving FromJson, ToJson
 
 /-- The main entry point. See `help` for more information on arguments. -/
-def main (args : List String) : IO Unit := do
+def main (args : List String) : IO UInt32 := do
   initSearchPath (← findSysroot)
   -- Parse the arguments
   let rec parseArgs (args : Args) : List String → Args
@@ -300,7 +414,10 @@ def main (args : List String) : IO Unit := do
     | "--help" :: rest => parseArgs { args with help := true } rest
     | "--no-downstream" :: rest => parseArgs { args with downstream := false } rest
     | "--fix" :: rest => parseArgs { args with fix := true } rest
+    | "--explain" :: rest => parseArgs { args with explain := true } rest
+    | "--gh-style" :: rest => parseArgs { args with githubStyle := true } rest
     | "--update" :: rest => parseArgs { args with update := true } rest
+    | "--global" :: rest => parseArgs { args with global := true } rest
     | "--cfg" :: cfg :: rest => parseArgs { args with cfg := cfg } rest
     | "--" :: rest => { args with mods := args.mods ++ rest.map (·.toName) }
     | other :: rest => parseArgs { args with mods := args.mods.push other.toName } rest
@@ -310,6 +427,10 @@ def main (args : List String) : IO Unit := do
   if args.help then
     IO.println help
     IO.Process.exit 0
+
+  if (← IO.Process.output { cmd := "lake", args := #["build", "--no-build"] }).exitCode != 0 then
+    IO.println "There are out of date oleans. Run `lake build` or `lake exe cache get` first"
+    IO.Process.exit 1
 
   -- Parse the `--cfg` argument
   let srcSearchPath ← initSrcSearchPath
@@ -350,11 +471,16 @@ def main (args : List String) : IO Unit := do
   -- Run the calculation of the `needs` array in parallel
   let needs := s.mods.mapIdx fun i mod =>
     if args.downstream || noIgnore i then
-      some <| Task.spawn fun _ => calcNeeds s.constToIdx mod
+      some <| Task.spawn fun _ =>
+        -- remove the module from its own `needs`
+        (calcNeeds s.constToIdx mod ||| (1 <<< i.1)) ^^^ (1 <<< i.1)
     else
       none
   if args.downstream then
     s := { s with needs := needs.map (·.get!.get) }
+
+  if args.fix then
+    println! "The following changes will be made automatically:"
 
   -- Check all selected modules
   let mut edits : Edits := mkHashMap
@@ -362,66 +488,97 @@ def main (args : List String) : IO Unit := do
     if let some t := t then
       if noIgnore i then
         let ignoreImps := ignoreImps ||| ignore.findD s.modNames[i]! 0
-        edits ← visitModule s srcSearchPath ignoreImps i t.get edits args.downstream
+        edits ← visitModule s srcSearchPath ignoreImps i t.get edits
+          args.downstream args.githubStyle args.explain
 
   -- Write the config file
   if args.update then
     if let some cfgFile := cfgFile then
-      let mut map := cfg.ignore?.getD {}
+      let mut ignore := cfg.ignore?.getD {}
+      let ignoreImport := cfg.ignoreImport?.getD {}
+      let mut ignoreImportSet : NameSet := ignoreImport.foldl .insert {}
       -- if `args.fix` is true then we assume the errors will be fixed after,
       -- so it's just reformatting the existing file
       if !args.fix then
-        map := edits.fold (init := map) fun ignore mod (remove, _) =>
-          let ns := (ignore.findD mod #[]).foldl (init := remove) (·.insert ·)
-          if ns.isEmpty then ignore.erase mod else ignore.insert mod (ns.toArray.qsort Name.lt)
+        if args.global then
+          -- in global mode all the edits are added to `ignoreImport`
+          ignoreImportSet := edits.fold (init := ignoreImportSet)
+            (fun ignore _ (remove, _) => ignore.union remove)
+        else
+          -- in local mode all the edits are added to `ignore`
+          ignore := edits.fold (init := ignore) fun ignore mod (remove, _) =>
+            let ns := (ignore.findD mod #[]).foldl (init := remove) (·.insert ·)
+            if ns.isEmpty then ignore.erase mod else
+              ignore.insert mod ns.toArray
+      -- If an entry is in `ignoreAll`, the `ignore` key is redundant
+      for i in cfg.ignoreAll?.getD {} do
+        if ignore.contains i then
+          ignore := ignore.erase i
+      -- If an entry is in `ignoreImport`, the `ignore` value is redundant
+      ignore := ignore.fold (init := {}) fun ignore mod ns =>
+        let ns := ns.filter (!ignoreImportSet.contains ·)
+        if ns.isEmpty then ignore else ignore.insert mod (ns.qsort (·.toString < ·.toString))
+      -- Sort the lists alphabetically
+      let ignoreImport := (ignoreImportSet.toArray.qsort (·.toString < ·.toString)).toList
       let cfg : ShakeCfg := {
         ignoreAll? := cfg.ignoreAll?.filter (!·.isEmpty)
-        ignoreImport? := cfg.ignoreImport?.filter (!·.isEmpty)
-        ignore? := (some map).filter (!·.isEmpty)
+        ignoreImport? := (some ignoreImport).filter (!·.isEmpty)
+        ignore? := (some ignore).filter (!·.isEmpty)
       }
-      IO.FS.writeFile cfgFile <| toJson cfg |>.pretty
+      IO.FS.writeFile cfgFile <| toJson cfg |>.pretty.push '\n'
+
+  if !args.fix then
+    -- return error if any issues were found
+    return if edits.isEmpty then 0 else 1
 
   -- Apply the edits to existing files
-  if !args.fix then return
-  edits.forM fun mod (remove, add) => do
+  let count ← edits.foldM (init := 0) fun count mod (remove, add) => do
     -- Only edit files in the current package
-    if pkg.isPrefixOf mod then
-      -- Compute the transitive reduction of `add` and convert to a list of names
-      let add := if add == 0 then #[] else Id.run do
-        let mut val := add
-        for i in [0:s.mods.size] do
-          if val &&& (1 <<< i) != 0 then
-            val := val ^^^ (val &&& s.transDeps[i]!) ^^^ (1 <<< i)
-        let mut out := #[]
-        for i in [0:s.mods.size] do
-          if val &&& (1 <<< i) != 0 then
-            out := out.push s.modNames[i]!
-        out.qsort Name.lt
+    if !pkg.isPrefixOf mod then
+      return count
+    -- Compute the transitive reduction of `add` and convert to a list of names
+    let add := if add == 0 then #[] else Id.run do
+      let mut val := add
+      for i in [0:s.mods.size] do
+        if val &&& (1 <<< i) != 0 then
+          val := val ^^^ (val &&& s.transDeps[i]!) ^^^ (1 <<< i)
+      let mut out := #[]
+      for i in [0:s.mods.size] do
+        if val &&& (1 <<< i) != 0 then
+          out := out.push s.modNames[i]!
+      out.qsort Name.lt
 
-      -- Parse the input file
-      let some path ← srcSearchPath.findModuleWithExt "lean" mod
-        | println! "error: failed to find source file for {mod}"
-      let text ← IO.FS.readFile path
-      let inputCtx := Parser.mkInputContext text path.toString
-      let (header, parserState, msgs) ← Parser.parseHeader inputCtx
-      if !msgs.isEmpty then -- skip this file if there are parse errors
-        msgs.forM fun msg => msg.toString >>= IO.println
-        return
+    -- Parse the input file
+    let (path, inputCtx, header, insertion) ←
+      try parseHeader srcSearchPath mod
+      catch e => println! e.toString; return count
+    let text := inputCtx.input
 
-      -- Calculate the edit result
-      let mut pos : String.Pos := 0
-      let mut out : String := ""
-      for stx in header[1].getArgs do
-        if remove.contains stx[2].getId then
-          out := out ++ text.extract pos stx.getPos?.get!
-          -- We use the end position of the syntax, but include whitespace up to the first newline
-          pos := text.findAux (· == '\n') text.endPos stx.getTailPos?.get! + ⟨1⟩
-      -- the insertion point for `add` is the first newline after the imports
-      let insertion := header.getTailPos?.getD parserState.pos
-      let insertion := text.findAux (· == '\n') text.endPos insertion + ⟨1⟩
-      out := out ++ text.extract pos insertion
-      for mod in add do
+    -- Calculate the edit result
+    let mut pos : String.Pos := 0
+    let mut out : String := ""
+    let mut seen : NameSet := {}
+    for stx in header[1].getArgs do
+      let mod := stx[2].getId
+      if remove.contains mod || seen.contains mod then
+        out := out ++ text.extract pos stx.getPos?.get!
+        -- We use the end position of the syntax, but include whitespace up to the first newline
+        pos := text.findAux (· == '\n') text.endPos stx.getTailPos?.get! + ⟨1⟩
+      seen := seen.insert mod
+    out := out ++ text.extract pos insertion
+    for mod in add do
+      if !seen.contains mod then
+        seen := seen.insert mod
         out := out ++ s!"import {mod}\n"
-      out := out ++ text.extract insertion text.endPos
+    out := out ++ text.extract insertion text.endPos
 
-      IO.FS.writeFile path out
+    IO.FS.writeFile path out
+    return count + 1
+
+  -- Since we throw an error upon encountering issues, we can be sure that everything worked
+  -- if we reach this point of the script.
+  if count > 0 then
+    println! "Successfully applied {count} suggestions."
+  else
+    println! "No edits required."
+  return 0

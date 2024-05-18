@@ -27,6 +27,11 @@ lemma stabilizer_empty : stabilizer G (∅ : Set α) = ⊤ :=
   Subgroup.coe_eq_univ.1 <| eq_univ_of_forall fun _a ↦ smul_set_empty
 
 @[to_additive (attr := simp)]
+lemma stabilizer_univ : stabilizer G (Set.univ : Set α) = ⊤ := by
+  ext
+  simp
+
+@[to_additive (attr := simp)]
 lemma stabilizer_singleton (b : α) : stabilizer G ({b} : Set α) = stabilizer G b := by ext; simp
 
 @[to_additive]
@@ -69,7 +74,7 @@ lemma stabilizer_subgroup (s : Subgroup G) : stabilizer G (s : Set G) = s := by
 @[to_additive (attr := simp)]
 lemma stabilizer_op_subgroup (s : Subgroup G) : stabilizer Gᵐᵒᵖ (s : Set G) = s.op := by
   simp_rw [SetLike.ext_iff, mem_stabilizer_set]
-  simp
+  simp? says simp only [smul_eq_mul_unop, SetLike.mem_coe, Subgroup.mem_op]
   refine fun a ↦ ⟨fun h ↦ ?_, fun ha b ↦ s.mul_mem_cancel_right ha⟩
   simpa only [op_smul_eq_mul, SetLike.mem_coe, one_mul] using (h 1).2 s.one_mem
 
@@ -94,6 +99,11 @@ lemma stabilizer_coe_finset (s : Finset α) : stabilizer G (s : Set α) = stabil
 @[to_additive (attr := simp)]
 lemma stabilizer_finset_empty : stabilizer G (∅ : Finset α) = ⊤ :=
   Subgroup.coe_eq_univ.1 <| eq_univ_of_forall Finset.smul_finset_empty
+
+@[to_additive (attr := simp)]
+lemma stabilizer_finset_univ [Fintype α] : stabilizer G (Finset.univ : Finset α) = ⊤ := by
+  ext
+  simp
 
 @[to_additive (attr := simp)]
 lemma stabilizer_finset_singleton (b : α) : stabilizer G ({b} : Finset α) = stabilizer G b := by

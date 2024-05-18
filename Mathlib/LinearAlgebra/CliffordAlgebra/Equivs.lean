@@ -81,19 +81,19 @@ instance : CommRing (CliffordAlgebra (0 : QuadraticForm R Unit)) :=
   { CliffordAlgebra.instRing _ with
     mul_comm := fun x y => by
       induction x using CliffordAlgebra.induction with
-      | h_grade0 r => apply Algebra.commutes
-      | h_grade1 x => simp
-      | h_add x₁ x₂ hx₁ hx₂ => rw [mul_add, add_mul, hx₁, hx₂]
-      | h_mul x₁ x₂ hx₁ hx₂ => rw [mul_assoc, hx₂, ← mul_assoc, hx₁, ← mul_assoc] }
+      | algebraMap r => apply Algebra.commutes
+      | ι x => simp
+      | add x₁ x₂ hx₁ hx₂ => rw [mul_add, add_mul, hx₁, hx₂]
+      | mul x₁ x₂ hx₁ hx₂ => rw [mul_assoc, hx₂, ← mul_assoc, hx₁, ← mul_assoc] }
 
 -- Porting note: Changed `x.reverse` to `reverse (R := R) x`
 theorem reverse_apply (x : CliffordAlgebra (0 : QuadraticForm R Unit)) :
     reverse (R := R) x = x := by
   induction x using CliffordAlgebra.induction with
-  | h_grade0 r => exact reverse.commutes _
-  | h_grade1 x => rw [ι_eq_zero, LinearMap.zero_apply, reverse.map_zero]
-  | h_mul x₁ x₂ hx₁ hx₂ => rw [reverse.map_mul, mul_comm, hx₁, hx₂]
-  | h_add x₁ x₂ hx₁ hx₂ => rw [reverse.map_add, hx₁, hx₂]
+  | algebraMap r => exact reverse.commutes _
+  | ι x => rw [ι_eq_zero, LinearMap.zero_apply, reverse.map_zero]
+  | mul x₁ x₂ hx₁ hx₂ => rw [reverse.map_mul, mul_comm, hx₁, hx₂]
+  | add x₁ x₂ hx₁ hx₂ => rw [reverse.map_add, hx₁, hx₂]
 #align clifford_algebra_ring.reverse_apply CliffordAlgebraRing.reverse_apply
 
 @[simp]
@@ -222,10 +222,10 @@ instance : CommRing (CliffordAlgebra Q) :=
 /-- `reverse` is a no-op over `CliffordAlgebraComplex.Q`. -/
 theorem reverse_apply (x : CliffordAlgebra Q) : reverse (R := ℝ) x = x := by
   induction x using CliffordAlgebra.induction with
-  | h_grade0 r => exact reverse.commutes _
-  | h_grade1 x => rw [reverse_ι]
-  | h_mul x₁ x₂ hx₁ hx₂ => rw [reverse.map_mul, mul_comm, hx₁, hx₂]
-  | h_add x₁ x₂ hx₁ hx₂ => rw [reverse.map_add, hx₁, hx₂]
+  | algebraMap r => exact reverse.commutes _
+  | ι x => rw [reverse_ι]
+  | mul x₁ x₂ hx₁ hx₂ => rw [reverse.map_mul, mul_comm, hx₁, hx₂]
+  | add x₁ x₂ hx₁ hx₂ => rw [reverse.map_add, hx₁, hx₂]
 #align clifford_algebra_complex.reverse_apply CliffordAlgebraComplex.reverse_apply
 
 @[simp]
@@ -295,7 +295,7 @@ def toQuaternion : CliffordAlgebra (Q c₁ c₂) →ₐ[R] ℍ[R,c₁,c₂] :=
   CliffordAlgebra.lift (Q c₁ c₂)
     ⟨{  toFun := fun v => (⟨0, v.1, v.2, 0⟩ : ℍ[R,c₁,c₂])
         map_add' := fun v₁ v₂ => by simp
-        map_smul' := fun r v => by dsimp; rw [mul_zero]; rfl }, fun v => by
+        map_smul' := fun r v => by dsimp; rw [mul_zero] }, fun v => by
       dsimp
       ext
       all_goals dsimp; ring⟩
@@ -312,14 +312,14 @@ theorem toQuaternion_star (c : CliffordAlgebra (Q c₁ c₂)) :
     toQuaternion (star c) = star (toQuaternion c) := by
   simp only [CliffordAlgebra.star_def']
   induction c using CliffordAlgebra.induction with
-  | h_grade0 r =>
+  | algebraMap r =>
     simp only [reverse.commutes, AlgHom.commutes, QuaternionAlgebra.coe_algebraMap,
       QuaternionAlgebra.star_coe]
-  | h_grade1 x =>
+  | ι x =>
     rw [reverse_ι, involute_ι, toQuaternion_ι, AlgHom.map_neg, toQuaternion_ι,
       QuaternionAlgebra.neg_mk, star_mk, neg_zero]
-  | h_mul x₁ x₂ hx₁ hx₂ => simp only [reverse.map_mul, AlgHom.map_mul, hx₁, hx₂, star_mul]
-  | h_add x₁ x₂ hx₁ hx₂ => simp only [reverse.map_add, AlgHom.map_add, hx₁, hx₂, star_add]
+  | mul x₁ x₂ hx₁ hx₂ => simp only [reverse.map_mul, AlgHom.map_mul, hx₁, hx₂, star_mul]
+  | add x₁ x₂ hx₁ hx₂ => simp only [reverse.map_add, AlgHom.map_add, hx₁, hx₂, star_add]
 #align clifford_algebra_quaternion.to_quaternion_star CliffordAlgebraQuaternion.toQuaternion_star
 
 /-- Map a quaternion into the clifford algebra. -/
@@ -415,9 +415,17 @@ protected def equiv : CliffordAlgebra (0 : QuadraticForm R R) ≃ₐ[R] R[ε] :=
     (by
       ext : 1
       -- This used to be a single `simp` before leanprover/lean4#2644
-      simp; erw [lift_ι_apply]; simp)
+      simp only [QuadraticForm.zero_apply, AlgHom.coe_comp, Function.comp_apply, lift_apply_eps,
+        AlgHom.coe_id, id_eq]
+      erw [lift_ι_apply]
+      simp)
     -- This used to be a single `simp` before leanprover/lean4#2644
-    (by ext : 2; simp; erw [lift_ι_apply]; simp)
+    (by
+      ext : 2
+      simp only [QuadraticForm.zero_apply, AlgHom.comp_toLinearMap, LinearMap.coe_comp,
+        Function.comp_apply, AlgHom.toLinearMap_apply, AlgHom.toLinearMap_id, LinearMap.id_comp]
+      erw [lift_ι_apply]
+      simp)
 #align clifford_algebra_dual_number.equiv CliffordAlgebraDualNumber.equiv
 
 @[simp]

@@ -14,7 +14,7 @@ import Mathlib.Probability.ProbabilityMassFunction.Basic
 Define the Poisson measure over the natural numbers
 
 ## Main definitions
-* `poissonPMFReal`: the function `λ n ↦ exp (- λ) * λ ^ n / n!`
+* `poissonPMFReal`: the function `fun n ↦ exp (- λ) * λ ^ n / n!`
   for `n ∈ ℕ`, which is the probability density function of a Poisson distribution with
   rate `λ > 0`.
 * `poissonPMF`: `ℝ≥0∞`-valued pdf,
@@ -32,7 +32,7 @@ section PoissonPMF
 
 /-- The pmf of the Poisson distribution depending on its rate, as a function to ℝ -/
 noncomputable
-def poissonPMFReal (r : ℝ≥0) (n : ℕ) : ℝ := (exp (- r) * r ^ n / n !)
+def poissonPMFReal (r : ℝ≥0) (n : ℕ) : ℝ := exp (- r) * r ^ n / n !
 
 lemma poissonPMFRealSum (r : ℝ≥0) : HasSum (fun n ↦ poissonPMFReal r n) 1 := by
   let r := r.toReal

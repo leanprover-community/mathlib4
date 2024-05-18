@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
 import Lean
-import Std.Lean.Command
 
 /-!
 # Attribute to pretty-print universe level parameters by default
@@ -28,8 +27,7 @@ def delabWithUniv : Delab :=
     let expr := subExpr.expr
     let expr := mkAppN (expr.getAppFn.setOption pp.universes.name true) expr.getAppArgs
     { subExpr with expr }
-  withTheReader SubExpr enablePPUnivOnHead <|
-    delabAppImplicit <|> delabAppExplicit
+  withTheReader SubExpr enablePPUnivOnHead delabApp
 
 /--
 `attribute [pp_with_univ] Ordinal` instructs the pretty-printer to
