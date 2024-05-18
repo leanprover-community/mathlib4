@@ -182,7 +182,7 @@ lemma continuous_diracProbaEquivSymm [T0Space X] [CompletelyRegularSpace X] :
 
 /-- In a completely regular T0 topological space `X`, `diracProbaEquiv` is a homeomorphism to
 its image in `ProbabilityMeasure X`. -/
-noncomputable def homeomorph_diracProba [T0Space X] [CompletelyRegularSpace X]
+noncomputable def diracProbaHomeomorph [T0Space X] [CompletelyRegularSpace X]
     [MeasurableSpace X] [OpensMeasurableSpace X] : X ≃ₜ range (diracProba (X := X)) :=
   @Homeomorph.mk X _ _ _ diracProbaEquiv continuous_diracProbaEquiv continuous_diracProbaEquivSymm
 
@@ -191,6 +191,6 @@ that takes a point `x : X` to the delta-measure `diracProba x` is an embedding
 `X → ProbabilityMeasure X`. -/
 theorem embedding_diracProba [T0Space X] [CompletelyRegularSpace X]
     [MeasurableSpace X] [OpensMeasurableSpace X] : Embedding (fun (x : X) ↦ diracProba x) :=
-  embedding_subtype_val.comp homeomorph_diracProba.embedding
+  embedding_subtype_val.comp diracProbaHomeomorph.embedding
 
 end embed_to_probabilityMeasure
