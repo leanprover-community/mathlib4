@@ -350,8 +350,7 @@ Note that for general (neither symmetric nor antisymmetric) bilinear maps this d
 chirality; in addition to this "left" orthogonal complement one could define a "right" orthogonal
 complement for which, for all `y` in `N`, `B y x = 0`.  This variant definition is not currently
 provided in mathlib. -/
-def orthogonalBilin (N : Submodule R₁ M₁) (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M) : Submodule R₁ M₁
-    where
+def orthogonalBilin (N : Submodule R₁ M₁) (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M) : Submodule R₁ M₁ where
   carrier := { m | ∀ n ∈ N, B.IsOrtho n m }
   zero_mem' x _ := B.isOrtho_zero_right x
   add_mem' hx hy n hn := by

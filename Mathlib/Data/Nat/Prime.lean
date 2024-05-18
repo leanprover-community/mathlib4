@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Algebra.Associated
-import Mathlib.Data.Int.Dvd.Basic
-import Mathlib.Data.Int.Units
+import Mathlib.Algebra.GroupPower.CovariantClass
+import Mathlib.Algebra.Order.Ring.CharZero
+import Mathlib.Algebra.Ring.Int
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Data.Nat.Parity
 import Mathlib.Order.Bounds.Basic
 
 #align_import data.nat.prime from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
@@ -248,13 +248,13 @@ theorem minFac_lemma (n k : ℕ) (h : ¬n < k * k) : sqrt n - k < sqrt n + 2 - k
   If `n` is odd and `1 < n`, then `minFacAux n 3` is the smallest prime factor of `n`. -/
 def minFacAux (n : ℕ) : ℕ → ℕ
   | k =>
-    if h : n < k * k then n
+    if n < k * k then n
     else
       if k ∣ n then k
       else
-        have := minFac_lemma n k h
         minFacAux n (k + 2)
 termination_by k => sqrt n + 2 - k
+decreasing_by simp_wf; apply minFac_lemma n k; assumption
 #align nat.min_fac_aux Nat.minFacAux
 
 /-- Returns the smallest prime factor of `n ≠ 1`. -/
@@ -268,9 +268,13 @@ theorem minFac_zero : minFac 0 = 2 :=
 #align nat.min_fac_zero Nat.minFac_zero
 
 @[simp]
-theorem minFac_one : minFac 1 = 1 :=
-  rfl
+theorem minFac_one : minFac 1 = 1 := by
+  simp [minFac, minFacAux]
 #align nat.min_fac_one Nat.minFac_one
+
+@[simp]
+theorem minFac_two : minFac 2 = 2 := by
+  simp [minFac, minFacAux]
 
 theorem minFac_eq (n : ℕ) : minFac n = if 2 ∣ n then 2 else minFacAux n 3 := rfl
 #align nat.min_fac_eq Nat.minFac_eq
@@ -333,12 +337,12 @@ theorem minFac_prime {n : ℕ} (n1 : n ≠ 1) : Prime (minFac n) :=
 #align nat.min_fac_prime Nat.minFac_prime
 
 theorem minFac_le_of_dvd {n : ℕ} : ∀ {m : ℕ}, 2 ≤ m → m ∣ n → minFac n ≤ m := by
-  by_cases n1 : n = 1 <;> [exact fun m2 _ => n1.symm ▸ le_trans (by decide) m2;
+  by_cases n1 : n = 1 <;> [exact fun m2 _ => n1.symm ▸ le_trans (by simp) m2;
     apply (minFac_has_prop n1).2.2]
 #align nat.min_fac_le_of_dvd Nat.minFac_le_of_dvd
 
 theorem minFac_pos (n : ℕ) : 0 < minFac n := by
-  by_cases n1 : n = 1 <;> [exact n1.symm ▸ (by decide); exact (minFac_prime n1).pos]
+  by_cases n1 : n = 1 <;> [exact n1.symm ▸ (by simp); exact (minFac_prime n1).pos]
 #align nat.min_fac_pos Nat.minFac_pos
 
 theorem minFac_le {n : ℕ} (H : 0 < n) : minFac n ≤ n :=
