@@ -6,6 +6,7 @@ Authors: David Spivak, Shaowei Lin
 import Init.Prelude
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Monoidal.Category
+import Mathlib.CategoryTheory.Closed.Monoidal
 
 /-!
 # Polynomial Functors
@@ -64,6 +65,7 @@ structure Poly where
   dir : pos -> Type v
 
 /-- The type of lenses/maps from one polynomial functor to another. -/
+@[ext]
 structure polymap (p q : Poly.{u, v}) : Type max u v where
   onPos : p.pos -> q.pos
   onDir : (x : p.pos) -> q.dir (onPos x) -> p.dir x
@@ -348,14 +350,14 @@ instance Poly.subst.monoidal : MonoidalCategory Poly where
 
 def coproduct (p q : Poly.{u, u}) : Poly.{u, u} where
   pos := p.pos ⊕ q.pos
-  dir := λ x ↦ 
+  dir := λ x ↦
     match x with
       | .inl ppos => p.dir ppos
       | .inr qpos => q.dir qpos
 
 infixr:75 " + " => coproduct
 
-def coproduct.map (p q r z : Poly.{u, u}) (f : p ⟶ q) (g : r ⟶ z) : (p + r) ⟶ (q + z) := 
+def coproduct.map (p q r z : Poly.{u, u}) (f : p ⟶ q) (g : r ⟶ z) : (p + r) ⟶ (q + z) :=
     { onPos := λ pos ↦
       match pos with
         | .inl ppos => .inl (f.onPos ppos)
@@ -371,13 +373,13 @@ def coproduct.whiskerLeft (p : Poly) {q q' : Poly} (f : q ⟶ q') : p + q ⟶ p 
 
 def coproduct.whiskerRight {p p' : Poly} (f : p ⟶ p') (q : Poly) : p + q ⟶ p' + q :=
   (coproduct.map p p' q q) f (polyid q)
-  
-def coproduct.split.l {p : Poly.{u, u}} : p ⟶ p + p := 
+
+def coproduct.split.l {p : Poly.{u, u}} : p ⟶ p + p :=
   { onPos := λ ppos ↦ .inl ppos
   , onDir := λ _ppos ↦ id
   }
-  
-def coproduct.split.r {p : Poly.{u, u}} : p ⟶ p + p := 
+
+def coproduct.split.r {p : Poly.{u, u}} : p ⟶ p + p :=
   { onPos := λ ppos ↦ .inr ppos
   , onDir := λ _ppos pdir ↦ pdir
   }
@@ -386,22 +388,42 @@ def coproduct.leftUnitor.hom (p : Poly) : (𝟬 + p) ⟶ p where
   onPos := λ pos ↦
   match pos with
   | .inr ppos => ppos
-  onDir := λ pos ↦
+  onDir := λ pos dir ↦
   match pos with
-  | .inr _ppos => id
+  | .inr _ppos => dir
 
 def coproduct.leftUnitor.inv (p : Poly) : p ⟶ (𝟬 + p) where
   onPos := λ ppos ↦ .inr ppos
   onDir := λ _ppos pdir ↦ pdir
 
--- TODO:
--- def coproduct.leftUnitor (p : Poly) : (𝟬 + p) ≅ p where
---   hom := coproduct.leftUnitor.hom p
---   inv := coproduct.leftUnitor.inv p
---   hom_inv_id := _
---   inv_hom_id := by {
---     _
---   }
+
+def coproduct.leftUnitor.inv_hom_id : composemap (leftUnitor.inv p) (leftUnitor.hom p) = polyid p :=
+  by
+  unfold composemap
+  unfold polyid
+  simp
+  exact (And.intro rfl rfl)
+
+def coproduct.leftUnitor.hom_inv_id :
+    composemap (leftUnitor.hom p) (leftUnitor.inv p) = polyid (𝟬 + p) := by
+  ext d
+  . cases d
+    . contradiction
+    . rfl
+  . cases p
+    simp only [hom, inv, composemap, polyid, Function.comp_apply, id_eq]
+    congr!
+    · split
+      assumption
+    · split
+      assumption
+
+
+def coproduct.leftUnitor (p : Poly) : (𝟬 + p) ≅ p where
+  hom := coproduct.leftUnitor.hom p
+  inv := coproduct.leftUnitor.inv p
+  hom_inv_id := coproduct.leftUnitor.hom_inv_id
+  inv_hom_id := coproduct.leftUnitor.inv_hom_id
 
 -- TODO:
 -- instance Poly.coproduct.monoidalStruct : MonoidalCategoryStruct Poly where
@@ -412,7 +434,7 @@ def coproduct.leftUnitor.inv (p : Poly) : p ⟶ (𝟬 + p) where
 --   leftUnitor   := _
 --   rightUnitor  := _
 --   associator   := _
-  
+
 /-!
 ## Cartesian product
 -/
@@ -423,31 +445,31 @@ def product (p q : Poly.{u, u}) : Poly.{u, u} where
 
 infixr:85 " × " => product
 
-def product.map (p q r z : Poly.{u, u}) (f : p ⟶ q) (g : r ⟶ z) : (p × r) ⟶ (q × z) := 
+def product.map (p q r z : Poly.{u, u}) (f : p ⟶ q) (g : r ⟶ z) : (p × r) ⟶ (q × z) :=
     { onPos := λ (ppos , rpos) => (f.onPos ppos , g.onPos rpos)
     , onDir := λ (ppos , rpos) dir =>
       match dir with
         | .inl qdir => .inl (f.onDir ppos qdir)
         | .inr zdir => .inr (g.onDir rpos zdir)
     }
-    
+
 def product.whiskerLeft (p : Poly) {q q' : Poly} (f : q ⟶ q') : p × q ⟶ p × q' :=
   (product.map p p q q' ) (polyid p) f
 
 def product.whiskerRight {p p' : Poly} (f : p ⟶ p') (q : Poly) : p × q ⟶ p' × q :=
   (product.map p p' q q) f (polyid q)
 
-def product.fst {p q : Poly} : (p × q) ⟶ p := 
+def product.fst {p q : Poly} : (p × q) ⟶ p :=
   { onPos := λ (ppos , _qpos) => ppos
   , onDir := λ (_ppos , _qpos) pdir => .inl pdir
   }
 
-def product.snd {p q : Poly} : (p × q) ⟶ q := 
+def product.snd {p q : Poly} : (p × q) ⟶ q :=
   { onPos := λ (_ppos , qpos) => qpos
   , onDir := λ (_ppos , _qpos) qdir => .inr qdir
   }
 
-def product.swap {p q : Poly} : (p × q) ⟶ (q × p) := 
+def product.swap {p q : Poly} : (p × q) ⟶ (q × p) :=
   { onPos := λ (ppos , qpos) => (qpos , ppos)
   , onDir := λ (_ppos , _qpos) dir =>
         match dir with
@@ -455,7 +477,7 @@ def product.swap {p q : Poly} : (p × q) ⟶ (q × p) :=
           | .inr pdir => .inl pdir
   }
 
-def product.dupe {p : Poly} : p ⟶ p × p := 
+def product.dupe {p : Poly} : p ⟶ p × p :=
   { onPos := λ ppos => (ppos , ppos)
   , onDir := λ _pos dir =>
         match dir with
@@ -472,23 +494,35 @@ def product.fanout {p q r : Poly} (f : r ⟶ p) (g : r ⟶ q) : r ⟶ p × q :=
   }
 
 def product.leftUnitor.hom (p : Poly) : (𝟭 × p) ⟶ p where
-  onPos := λ (_Unit , ppos) ↦ ppos
-  onDir := λ (_Unit , _ppos) pdir ↦ .inr pdir
+  onPos := λ (() , ppos) ↦ ppos
+  onDir := λ (() , _ppos) pdir ↦ .inr pdir
 
 def product.leftUnitor.inv (p : Poly) : p ⟶ (𝟭 × p) where
   onPos := λ ppos ↦ (.unit , ppos)
   onDir := λ _ppos dir ↦
   match dir with
   | .inr pfib => pfib
-  
--- TODO:
--- def product.leftUnitor (p : Poly) : (𝟭 × p) ≅ p where
---   hom := product.leftUnitor.hom p
---   inv := product.leftUnitor.inv p
---   hom_inv_id := _
---   inv_hom_id := by {
---     _
---   }
+
+def product.leftUnitor.hom_inv_id : composemap (leftUnitor.hom p) (leftUnitor.inv p) = 𝟙 (𝟭 × p)
+  := by
+      unfold composemap
+      ext
+      . rfl
+      . simp
+        funext _ dir
+        cases dir
+        . contradiction
+        . rfl
+
+def product.leftUnitor (p : Poly) : (𝟭 × p) ≅ p :=
+  { hom := product.leftUnitor.hom p
+  , inv := product.leftUnitor.inv p
+  , hom_inv_id := product.leftUnitor.hom_inv_id -- extracted so that we may unfold composemap
+  , inv_hom_id := by
+      unfold product.leftUnitor.hom
+      simp
+      rfl
+  }
 
 /-!
 ## Parallel product
@@ -497,14 +531,14 @@ def product.leftUnitor.inv (p : Poly) : p ⟶ (𝟭 × p) where
 def tensor (p q : Poly.{u, u}) : Poly.{u, u} where
   pos := p.pos × q.pos
   dir := λ (ppos , qpos) =>  (p.dir ppos) × (q.dir qpos)
-  
+
 infixr:90 " ⊗ " => tensor
 
-def tensor.map (p q r z : Poly.{u, u}) (f : p ⟶ q) (g : r ⟶ z) : p ⊗ r ⟶ q ⊗ z := 
+def tensor.map (p q r z : Poly.{u, u}) (f : p ⟶ q) (g : r ⟶ z) : p ⊗ r ⟶ q ⊗ z :=
     { onPos := λ (ppos , rpos) => (f.onPos ppos , g.onPos rpos)
-    , onDir := λ (ppos , rpos) (qdir , zdir) => (f.onDir ppos qdir , g.onDir rpos zdir) 
+    , onDir := λ (ppos , rpos) (qdir , zdir) => (f.onDir ppos qdir , g.onDir rpos zdir)
     }
-    
+
 def tensor.whiskerLeft (p : Poly) {q q' : Poly} (f : q ⟶ q') : p ⊗ q ⟶ p ⊗ q' :=
   (tensor.map p p q q' ) (polyid p) f
 
@@ -562,15 +596,129 @@ def tensor.unit.r.bwd {P : Poly} : P ⟶ P ⊗ y :=
   , onDir := λ _ (pdir , _) => pdir
   }
 
+def tensor.leftUnitor (p : Poly) : (y ⊗ p) ≅ p :=
+  { hom := tensor.unit.l.fwd
+  , inv := tensor.unit.l.bwd
+  }
+
+def tensor.rightUnitor (p : Poly) : (p ⊗ y) ≅ p :=
+  { hom := tensor.unit.r.fwd
+  , inv := tensor.unit.r.bwd
+  }
+
+def tensor.associator (p q r : Poly) : (p ⊗ q) ⊗ r ≅ p ⊗ (q ⊗ r) :=
+  { hom := tensor.assoc.bwd
+  , inv := tensor.assoc.fwd
+  }
+
+instance Poly.tensor.monoidalStruct : MonoidalCategoryStruct Poly where
+  tensorObj    := tensor
+  whiskerLeft  := tensor.whiskerLeft
+  whiskerRight := tensor.whiskerRight
+  tensorUnit   := y
+  leftUnitor   := tensor.leftUnitor
+  rightUnitor  := tensor.rightUnitor
+  associator   := tensor.associator
+
+/-- All hypotheses proven automatically so none provided. -/
+instance Poly.tensor.monoidal : MonoidalCategory Poly where
+
+
+-- /-!
+-- ## ⊗-closure
+-- -/
+
+-- /--
+-- The internal hom-object under ⊗.
+-- I don't know enough about universes but I suppose
+-- they should remain constant (the Us in {u, u} below).
+-- -/
+
+def homTensor (q r : Poly.{u, u}) : Poly.{u, u} where
+  pos := q ⟶ r
+  dir := λ φ ↦ Σ (j : q.pos), (r.dir (φ.onPos j))
+
+scoped notation:95 "⟦" A:80 "," B:80 "⟧"  => homTensor A B
+
+def homTensor.closed.right.fmap {p q r : Poly} (f : q ⟶ r) :
+    (⟦p, q⟧ ⟶ ⟦p, r⟧) where
+  onPos := (· ≫ f)
+  onDir | _, (Sigma.mk pPos toDirR) => Sigma.mk pPos (f.onDir _ toDirR)
+
+-- The functor ⟦r, -⟧
+def homTensor.closed.right (r : Poly) : Poly ⥤ Poly where
+  obj := λ x ↦ ⟦r, x⟧
+  map := λ f ↦ homTensor.closed.right.fmap f
+
+-- TODO: Shouldn't this be used somewhere to prove something about
+-- the internal hom?
+def homTensor.eval (p r : Poly) : ⟦ p, r ⟧ ⊗ p ⟶ r where
+  onPos := λ (φ, pPos) ↦ φ.onPos pPos
+  onDir := λ (φ, pPos) dirR ↦ (⟨pPos, dirR⟩, φ.onDir pPos dirR)
+
+def homTensor.closed.adjunction.homEquiv.toFun {p : Poly} (φ : (p ⊗ X ⟶ Y)) : (X ⟶ ⟦p, Y⟧ ) :=
+    let curriedOnPos (xPos : X.pos) : p ⟶ Y :=
+        { onPos := λ pPos ↦ φ.onPos (pPos, xPos)
+        -- We have to bee explicit about φ.onPos here; if we pattern match on φ
+        -- to extract onPos, we get a type mismatch error.
+        , onDir := λ (pPos : p.pos) (yDir : Poly.dir Y (φ.onPos (pPos, xPos)))  ↦
+            let ⟨dirp, _⟩  := φ.onDir (pPos, xPos) yDir
+            dirp }
+    let curriedOnDir (xPos : X.pos) (homDir : (⟦p, Y⟧).dir (curriedOnPos xPos)) : X.dir xPos := match homDir with
+        | ⟨pPos, ydir⟩ =>
+            let ⟨_, dirx⟩  := φ.onDir (pPos, xPos) ydir
+            dirx
+      { onPos := curriedOnPos
+        onDir := curriedOnDir }
+
+def homTensor.closed.adjunction.homEquiv.invFun {p : Poly} (ψ : X ⟶ ⟦p, Y⟧ ) : (p ⊗ X ⟶ Y) :=
+  let uncurriedOnPos (pxPos : (p ⊗ X).pos) : Y.pos :=
+    let ⟨pPos, xPos⟩ := pxPos
+    let intermediate := ψ.onPos xPos
+    intermediate.onPos pPos
+  let uncurriedOnDir (pxPos : (p ⊗ X).pos) (pyDir : Y.dir (uncurriedOnPos pxPos)) : (p ⊗ X).dir pxPos :=
+    let ⟨pPos, xPos⟩ := pxPos
+    let intermediate := ψ.onPos xPos
+    ⟨intermediate.onDir pPos pyDir, ψ.onDir xPos ⟨pPos, pyDir⟩⟩
+  { onPos := uncurriedOnPos,
+    onDir := uncurriedOnDir }
+
+
+def homTensor.closed.adjunction.homEquiv (p X Y : Poly) :
+  (p ⊗ X ⟶ Y)  -- Hom(p ⊗ X, Y)  (same as X ⊗ p because ⊗ is symmetric)
+  ≃
+  (X ⟶ ⟦p, Y⟧ ) -- Hom (X, ⟦p, Y⟧)
+  where
+   toFun := homTensor.closed.adjunction.homEquiv.toFun
+   invFun := homTensor.closed.adjunction.homEquiv.invFun
+   left_inv := by
+    intro ψ
+    unfold homTensor.closed.adjunction.homEquiv.toFun
+    unfold homTensor.closed.adjunction.homEquiv.invFun
+    simp
+    rfl
+   right_inv := by
+    intro ψ
+    unfold homTensor.closed.adjunction.homEquiv.toFun
+    unfold homTensor.closed.adjunction.homEquiv.invFun
+    simp
+    rfl
+
+def homTensor.closed.adjunction (p : Poly) : MonoidalCategory.tensorLeft p ⊣ homTensor.closed.right p :=
+  Adjunction.mkOfHomEquiv {homEquiv := homTensor.closed.adjunction.homEquiv p}
+
+instance : Closed (p : Poly) where
+  isAdj := {right := homTensor.closed.right p, adj := homTensor.closed.adjunction p}
+
 /-!
 ## Or product
 -/
-  
+
 def or (p q : Poly.{u, u}) : Poly.{u, u} := p + (p × q) + q
 
 infixr:75 " ∨ " => or
 
-def or.map (p q r z : Poly.{u, u}) (f : p ⟶ q) (g : r ⟶ z) : (p ∨ r) ⟶ (q ∨ z) := 
+def or.map (p q r z : Poly.{u, u}) (f : p ⟶ q) (g : r ⟶ z) : (p ∨ r) ⟶ (q ∨ z) :=
     { onPos := λ pos =>
       match pos with
       | .inl ppos => .inl (f.onPos ppos)
@@ -591,7 +739,7 @@ def or.whiskerLeft (p : Poly) {q q' : Poly} (f : q ⟶ q') : p ∨ q ⟶ p ∨ q
 
 def or.whiskerRight {p p' : Poly} (f : p ⟶ p') (q : Poly) : p ∨ q ⟶ p' ∨ q :=
   (or.map p p' q q) f (polyid q)
-  
+
 
 -- | _∨_ This Inclusion
 def This {p q : Poly} : p ⟶ p ∨ q :=
@@ -613,7 +761,7 @@ def These {p q : Poly} : (p × q) ⟶ p ∨ q :=
 
 -- | _∨_ Eliminator
 def these {p q r : Poly} (f : p ⟶ r) (g : q ⟶ r) (h : (p × q) ⟶ r) : ((p ∨ q) ⟶ r) :=
-  { onPos := λ pos => 
+  { onPos := λ pos =>
     match pos with
     | .inl ppos => f.onPos ppos
     | .inr (.inl (ppos , qpos)) => h.onPos (ppos , qpos)
