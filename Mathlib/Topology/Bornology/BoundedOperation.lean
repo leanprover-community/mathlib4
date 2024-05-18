@@ -190,11 +190,6 @@ noncomputable instance : BoundedSub ℝ≥0 where
     simp only [NNReal.ball_zero_eq_Ico, ← z_eq, Set.mem_Ico, zero_le, true_and, gt_iff_lt] at *
     exact tsub_lt_of_lt key
 
-instance NNReal.instProperSpace : ProperSpace ℝ≥0 where
-  isCompact_closedBall x r := by
-    have emb : ClosedEmbedding ((↑) : ℝ≥0 → ℝ) := Isometry.closedEmbedding fun _ ↦ congrFun rfl
-    exact emb.isCompact_preimage (K := Metric.closedBall x r) (isCompact_closedBall _ _)
-
 open Metric in
 instance : BoundedMul ℝ≥0 where
   isBounded_mul := by
