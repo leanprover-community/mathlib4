@@ -68,9 +68,34 @@ oldDecls="$(echo "${oldDeclsTots}" | awk 'BEGIN{ count=0 }
 }')"
 # Definitions 73152...
 
-declSummary="$(paste -d' ' <(echo "${newDecls}") <(echo "${oldDecls}") |
+plusMinus="$(for typ in $(echo "$newDeclsTots" | grep "[^,]$" | tr '\n' ' ');
+do
+  comm -123 --total <(echo "${newDeclsTots}" |
+    awk -v typ="${typ}$" 'BEGIN{ found=0 }
+      /[^,]$/ { found=0 }
+      (found == 1) { print $0 }
+      ($0 ~ typ) { found=1 }' | sort)  <(echo "${oldDeclsTots}" |
+    awk -v typ="${typ}$" 'BEGIN{ found=0 }
+      /[^,]$/ { found=0 }
+      (found == 1) { print $0 }
+      ($0 ~ typ) { found=1 }' | sort) | awk '{ printf("%s %s\n", $1, $2)}'
+done)"
+
+#awk 'BEGIN{ count=0 }
+#  ((NFR == NR) && (/[^,]$/))  { count++; newType[count]=$0 }
+#  ((NFR == NR) && (!/[^,]$/)) { newAcc[$0]=count }
+##
+#  ((NFR != NR) && (/[^,]$/))  { for(t in type) { if(type[t]==$0) { count=t } }; oldType[count]=$0 }
+#  ((NFR != NR) && (!/[^,]$/)) { oldAcc[$0]=count }
+##
+#  END{
+#
+#  }
+#  ' <(echo "${newDeclsTots}") <(echo "${oldDeclsTots}")
+
+declSummary="$(paste -d' ' <(echo "${newDecls}") <(echo "${oldDecls}") <(echo "${plusMinus}") |
   LC_ALL=en_US.UTF-8 awk 'BEGIN{ print "|Type|New|Change|%\n|:-:|:-:|:-:|:-:|" }{
-    printf("| %s | %'"'"'d | %'"'"'d | %4.2f%% |\n", $1, $2, $2-$4, ($2-$4)*100/$2)
+    printf("| %s | %'"'"'d | +%'"'"'d -%'"'"'d | %4.2f%% |\n", $1, $2, $5, $6, ($2-$4)*100/$2)
   }'
 )"
 
