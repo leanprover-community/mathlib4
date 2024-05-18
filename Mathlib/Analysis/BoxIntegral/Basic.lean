@@ -686,7 +686,8 @@ theorem oscillation_zero_of_continuousAt {f : ℝⁿ → E} {x : ℝⁿ} (hf : C
     oscillation f x = 0 := by
   refine le_antisymm (ENNReal.le_of_forall_pos_le_add fun ε hε _ ↦ ?_) (zero_le _)
   rw [zero_add]
-  have : EMetric.ball (f x) (ε / 2) ∈ (𝓝 x).map f := hf <| EMetric.ball_mem_nhds _ (by simp [ne_of_gt hε])
+  have : EMetric.ball (f x) (ε / 2) ∈ (𝓝 x).map f :=
+    hf <| EMetric.ball_mem_nhds _ (by simp [ne_of_gt hε])
   refine (biInf_le EMetric.diam this).trans (le_of_le_of_eq diam_ball ?_)
   refine (ENNReal.mul_div_cancel' ?_ ?_) <;> norm_num
 
@@ -805,7 +806,8 @@ theorem integrable_of_bounded_and_ae_continuous (l : IntegrationParams) [Complet
             h₂.isSubordinate.infPrepartition π₁.toPrepartition J ?_ (Box.coe_subset_Icc xJ))
         rwa [BoxIntegral.TaggedPrepartition.mem_infPrepartition_comm]
       simpa only [edist_le_ofReal (le_of_lt ε₁0), dist_eq_norm, (Finset.mem_sdiff.1 hJ).1] using
-        (edist_le_diam_of_mem (Set.mem_image_of_mem f hy) (Set.mem_image_of_mem f hz)).trans (hr x hx)
+        (edist_le_diam_of_mem (Set.mem_image_of_mem f hy) (Set.mem_image_of_mem f hz)).trans
+        (hr x hx)
     refine (norm_sum_le _ _).trans <| (Finset.sum_le_sum this).trans ?_
     rw [← Finset.sum_mul]
     trans μ.toBoxAdditive I * ε₁; swap
@@ -821,7 +823,8 @@ theorem integrable_of_bounded_and_ae_continuous (l : IntegrationParams) [Complet
       refine measure_biUnion (Finset.countable_toSet _) ?_ (fun J _ ↦ J.measurableSet_coe)
       intro J hJ J' hJ' hJJ'
       exact pairwiseDisjoint _ (Finset.mem_sdiff.1 hJ).1 (Finset.mem_sdiff.1 hJ').1 hJJ'
-  · have : ∀ J ∈ B.filter p, ‖μ.toBoxAdditive J • (f ((π₁.infPrepartition π₂.toPrepartition).tag J) -
+  · have : ∀ J ∈ B.filter p, ‖μ.toBoxAdditive J •
+        (f ((π₁.infPrepartition π₂.toPrepartition).tag J) -
         f ((π₂.infPrepartition π₁.toPrepartition).tag J))‖ ≤ μ.toBoxAdditive J * (2 * C) := by
       intro J _
       rw [norm_smul, μ.toBoxAdditive_apply, Real.norm_of_nonneg ENNReal.toReal_nonneg, two_mul]
