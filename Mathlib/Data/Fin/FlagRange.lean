@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Algebra.Group.Fin
 import Mathlib.Order.Chain
 import Mathlib.Order.Cover
+import Mathlib.Order.Fin
 
 /-!
 # Range of `f : Fin (n + 1) → α` as a `Flag`

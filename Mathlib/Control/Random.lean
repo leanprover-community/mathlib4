@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving
 -/
 import Mathlib.Algebra.Group.Fin
-import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Control.ULiftable
+import Mathlib.Order.Fin
 
 #align_import control.random from "leanprover-community/mathlib"@"fdc286cc6967a012f41b87f76dcd2797b53152af"
 
