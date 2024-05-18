@@ -857,7 +857,7 @@ More precisely, if `f : γ → β` is uniformly continuous, then
 `(fun g ↦ f ∘ g) : (α →ᵤ[𝔖] γ) → (α →ᵤ[𝔖] β)` is uniformly continuous. -/
 protected theorem postcomp_uniformContinuous [UniformSpace γ] {f : γ → β}
     (hf : UniformContinuous f) : UniformContinuous (ofFun 𝔖 ∘ (f ∘ ·) ∘ toFun 𝔖) := by
-  -- This is a direct consequence of `UniformFun.comap_eq`
+  -- This is a direct consequence of `UniformOnFun.comap_eq`
   rw [uniformContinuous_iff]
   exact (UniformOnFun.mono (uniformContinuous_iff.mp hf) subset_rfl).trans_eq UniformOnFun.comap_eq
 #align uniform_on_fun.postcomp_uniform_continuous UniformOnFun.postcomp_uniformContinuous
@@ -869,7 +869,7 @@ More precisely, if `f : γ → β` is a uniform inducing, then
 `(fun g ↦ f ∘ g) : (α →ᵤ[𝔖] γ) → (α →ᵤ[𝔖] β)` is a uniform inducing. -/
 protected theorem postcomp_uniformInducing [UniformSpace γ] {f : γ → β} (hf : UniformInducing f) :
     UniformInducing (ofFun 𝔖 ∘ (f ∘ ·) ∘ toFun 𝔖) := by
-  -- This is a direct consequence of `UniformFun.comap_eq`
+  -- This is a direct consequence of `UniformOnFun.comap_eq`
   constructor
   replace hf : (𝓤 β).comap (Prod.map f f) = _ := hf.comap_uniformity
   change comap (Prod.map (ofFun 𝔖 ∘ (f ∘ ·) ∘ toFun 𝔖) (ofFun 𝔖 ∘ (f ∘ ·) ∘ toFun 𝔖)) _ = _
@@ -878,6 +878,16 @@ protected theorem postcomp_uniformInducing [UniformSpace γ] {f : γ → β} (hf
   rw [← UniformSpace.ext hf, UniformOnFun.comap_eq]
   rfl
 #align uniform_on_fun.postcomp_uniform_inducing UniformOnFun.postcomp_uniformInducing
+
+/-- Post-composition by a uniform embedding is a uniform embedding for the
+uniform structures of `𝔖`-convergence.
+
+More precisely, if `f : γ → β` is a uniform embedding, then
+`(fun g ↦ f ∘ g) : (α →ᵤ[𝔖] γ) → (α →ᵤ[𝔖] β)` is a uniform embedding. -/
+protected theorem postcomp_uniformEmbedding [UniformSpace γ] {f : γ → β} (hf : UniformEmbedding f) :
+    UniformEmbedding (ofFun 𝔖 ∘ (f ∘ ·) ∘ toFun 𝔖) where
+  toUniformInducing := UniformOnFun.postcomp_uniformInducing hf.toUniformInducing
+  inj _ _ H := funext fun _ ↦ hf.inj (congrFun H _)
 
 /-- Turn a uniform isomorphism `γ ≃ᵤ β` into a uniform isomorphism `(α →ᵤ[𝔖] γ) ≃ᵤ (α →ᵤ[𝔖] β)`
 by post-composing. -/

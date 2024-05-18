@@ -109,6 +109,22 @@ theorem continuous_comp_left (f : C(X, Y)) : Continuous (fun g => g.comp f : C(Y
     simpa only [mapsTo_image_iff] using isOpen_setOf_mapsTo (hK.image f.2) hU
 #align continuous_map.continuous_comp_left ContinuousMap.continuous_comp_left
 
+protected def congrRightHomeomorph (φ : Y ≃ₜ Z) : C(X, Y) ≃ₜ C(X, Z) where
+  toFun := ContinuousMap.comp φ
+  invFun := ContinuousMap.comp φ.symm
+  left_inv _ := ext fun _ ↦ φ.left_inv _
+  right_inv _ := ext fun _ ↦ φ.right_inv _
+  continuous_toFun := continuous_comp _
+  continuous_invFun := continuous_comp _
+
+protected def congrLeftHomeomorph (φ : X ≃ₜ Y) : C(X, Z) ≃ₜ C(Y, Z) where
+  toFun f := f.comp φ.symm
+  invFun f := f.comp φ
+  left_inv _ := ext fun _ ↦ congrArg _ (φ.left_inv _)
+  right_inv _ := ext fun _ ↦ congrArg _ (φ.right_inv _)
+  continuous_toFun := continuous_comp_left _
+  continuous_invFun := continuous_comp_left _
+
 variable [LocallyCompactPair Y Z]
 
 /-- Composition is a continuous map from `C(X, Y) × C(Y, Z)` to `C(X, Z)`,

@@ -278,6 +278,52 @@ theorem tendstoLocallyUniformly_of_tendsto [WeaklyLocallyCompactSpace α] (h : T
   tendsto_iff_tendstoLocallyUniformly.1 h
 #align continuous_map.tendsto_locally_uniformly_of_tendsto ContinuousMap.tendstoLocallyUniformly_of_tendsto
 
+section Functorial
+
+variable {γ : Type*}
+
+theorem uniformContinuous_comp [UniformSpace γ] (g : C(β, γ)) (hg : UniformContinuous g) :
+    UniformContinuous (ContinuousMap.comp g : C(α, β) → C(α, γ)) :=
+  uniformEmbedding_toUniformOnFunIsCompact.uniformContinuous_iff.mpr <|
+    UniformOnFun.postcomp_uniformContinuous hg |>.comp
+      uniformEmbedding_toUniformOnFunIsCompact.uniformContinuous
+
+theorem uniformInducing_comp [UniformSpace γ] (g : C(β, γ)) (hg : UniformInducing g) :
+    UniformInducing (ContinuousMap.comp g : C(α, β) → C(α, γ)) :=
+  uniformEmbedding_toUniformOnFunIsCompact.toUniformInducing.of_comp_iff.mp <|
+    UniformOnFun.postcomp_uniformInducing hg |>.comp
+      uniformEmbedding_toUniformOnFunIsCompact.toUniformInducing
+
+theorem uniformEmbedding_comp [UniformSpace γ] (g : C(β, γ)) (hg : UniformEmbedding g) :
+    UniformEmbedding (ContinuousMap.comp g : C(α, β) → C(α, γ)) :=
+  uniformEmbedding_toUniformOnFunIsCompact.of_comp_iff.mp <|
+    UniformOnFun.postcomp_uniformEmbedding hg |>.comp
+      uniformEmbedding_toUniformOnFunIsCompact
+
+theorem uniformContinuous_comp_left [TopologicalSpace γ] (g : C(α, γ)) :
+    UniformContinuous (fun f ↦ f.comp g : C(γ, β) → C(α, β)) :=
+  uniformEmbedding_toUniformOnFunIsCompact.uniformContinuous_iff.mpr <|
+    UniformOnFun.precomp_uniformContinuous (fun _ hK ↦ hK.image g.continuous) |>.comp
+      uniformEmbedding_toUniformOnFunIsCompact.uniformContinuous
+
+protected def congrRightUniformEquiv [UniformSpace γ] (φ : β ≃ᵤ γ) : C(α, β) ≃ᵤ C(α, γ) where
+  toFun := ContinuousMap.comp φ.toHomeomorph
+  invFun := ContinuousMap.comp φ.symm.toHomeomorph
+  left_inv _ := ext fun _ ↦ φ.left_inv _
+  right_inv _ := ext fun _ ↦ φ.right_inv _
+  uniformContinuous_toFun := uniformContinuous_comp _ φ.uniformContinuous
+  uniformContinuous_invFun := uniformContinuous_comp _ φ.symm.uniformContinuous
+
+protected def congrLeftUniformEquiv [TopologicalSpace γ] (φ : α ≃ₜ γ) : C(α, β) ≃ᵤ C(γ, β) where
+  toFun f := f.comp φ.symm
+  invFun f := f.comp φ
+  left_inv _ := ext fun _ ↦ congrArg _ (φ.left_inv _)
+  right_inv _ := ext fun _ ↦ congrArg _ (φ.right_inv _)
+  uniformContinuous_toFun := uniformContinuous_comp_left _
+  uniformContinuous_invFun := uniformContinuous_comp_left _
+
+end Functorial
+
 section CompactDomain
 
 variable [CompactSpace α]
