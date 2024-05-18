@@ -703,6 +703,14 @@ theorem CondIndepFun.comp {γ γ' : Type*} {_mβ : MeasurableSpace β} {_mβ' : 
     CondIndepFun m' hm' (φ ∘ f) (ψ ∘ g) μ :=
   kernel.IndepFun.comp hfg hφ hψ
 
+theorem CondIndepFun.neg_right {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'} [Neg β']
+    [MeasurableNeg β'] (hfg : CondIndepFun m' hm' f g μ)  :
+    CondIndepFun m' hm' f (-g) μ := hfg.comp measurable_id measurable_neg
+
+theorem CondIndepFun.neg_left {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'} [Neg β]
+    [MeasurableNeg β] (hfg : CondIndepFun m' hm' f g μ) :
+    CondIndepFun m' hm' (-f) g μ := hfg.comp measurable_neg measurable_id
+
 section iCondIndepFun
 variable {β : ι → Type*} {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i}
 
