@@ -115,6 +115,7 @@ variable (Γ) (R) [PartialOrder Γ] [AddCommMonoid R]
   The requirements for this are that the union of the supports of the series is well-founded,
   and that only finitely many series are nonzero at any given coefficient. -/
 structure SummableFamily (α : Type*) where
+  /-- A parametrized family of Hahn series. -/
   toFun : α → HahnSeries Γ R
   isPWO_iUnion_support' : Set.IsPWO (⋃ a : α, (toFun a).support)
   finite_co_support' : ∀ g : Γ, { a | (toFun a).coeff g ≠ 0 }.Finite
@@ -536,31 +537,29 @@ section IsDomain
 
 variable [CommRing R] [IsDomain R]
 
-theorem unit_aux (x : HahnSeries Γ R) {r : R} (hr : r * x.coeff x.order = 1) :
-    0 < addVal Γ R (1 - C r * single (-x.order) 1 * x) := by
-  have h10 : (1 : R) ≠ 0 := one_ne_zero
-  have x0 : x ≠ 0 := ne_zero_of_coeff_ne_zero (right_ne_zero_of_mul_eq_one hr)
+theorem unit_aux (x : HahnSeries Γ R) {r : R} (hr : r * x.leadingCoeff = 1) :
+    0 < addVal Γ R (1 - single (-x.order) r * x) := by
+  have x0 : x ≠ 0 := leadingCoeff_ne_iff.mp (right_ne_zero_of_mul_eq_one hr)
   refine' lt_of_le_of_ne ((addVal Γ R).map_le_sub (ge_of_eq (addVal Γ R).map_one) _) _
   · simp only [AddValuation.map_mul]
-    rw [addVal_apply_of_ne x0, addVal_apply_of_ne (single_ne_zero h10), addVal_apply_of_ne _,
-      order_C, order_single h10, WithTop.coe_zero, zero_add, ← WithTop.coe_add, neg_add_self,
-      WithTop.coe_zero]
-    exact C_ne_zero (left_ne_zero_of_mul_eq_one hr)
+    rw [addVal_apply_of_ne x0, addVal_apply_of_ne _, order_single (left_ne_zero_of_mul_eq_one hr),
+      ← WithTop.coe_add, neg_add_self, WithTop.coe_zero]
+    exact single_ne_zero (left_ne_zero_of_mul_eq_one hr)
   · rw [addVal_apply, ← WithTop.coe_zero]
     split_ifs with h
     · apply WithTop.coe_ne_top
     rw [Ne, WithTop.coe_eq_coe]
     intro con
     apply coeff_order_ne_zero h
-    rw [← con, mul_assoc, sub_coeff, one_coeff, if_pos rfl, C_mul_eq_smul, smul_coeff, smul_eq_mul,
-      ← add_neg_self x.order, single_mul_coeff_add, one_mul, hr, sub_self]
+    rw [← con, sub_coeff, one_coeff, if_pos rfl, ← add_neg_self x.order, single_mul_coeff_add,
+      ← leadingCoeff_eq, hr, sub_self]
 #align hahn_series.unit_aux HahnSeries.unit_aux
 
-theorem isUnit_iff {x : HahnSeries Γ R} : IsUnit x ↔ IsUnit (x.coeff x.order) := by
+theorem isUnit_iff {x : HahnSeries Γ R} : IsUnit x ↔ IsUnit (x.leadingCoeff) := by
   constructor
   · rintro ⟨⟨u, i, ui, iu⟩, rfl⟩
     refine'
-      isUnit_of_mul_eq_one (u.coeff u.order) (i.coeff i.order)
+      isUnit_of_mul_eq_one (u.leadingCoeff) (i.leadingCoeff)
         ((mul_coeff_order_add_order u i).symm.trans _)
     rw [ui, one_coeff, if_pos]
     rw [← order_mul (left_ne_zero_of_mul_eq_one ui) (right_ne_zero_of_mul_eq_one ui), ui, order_one]
@@ -579,13 +578,13 @@ instance instField [Field R] : Field (HahnSeries Γ R) where
   inv x :=
     if x0 : x = 0 then 0
     else
-      C (x.coeff x.order)⁻¹ * (single (-x.order)) 1 *
-        (SummableFamily.powers _ (unit_aux x (inv_mul_cancel (coeff_order_ne_zero x0)))).hsum
+      (single (-x.order)) (x.leadingCoeff)⁻¹ *
+        (SummableFamily.powers _ (unit_aux x (inv_mul_cancel (leadingCoeff_ne_iff.mpr x0)))).hsum
   inv_zero := dif_pos rfl
   mul_inv_cancel x x0 := (congr rfl (dif_neg x0)).trans $ by
     have h :=
       SummableFamily.one_sub_self_mul_hsum_powers
-        (unit_aux x (inv_mul_cancel (coeff_order_ne_zero x0)))
+        (unit_aux x (inv_mul_cancel (leadingCoeff_ne_iff.mpr x0)))
     rw [sub_sub_cancel] at h
     rw [← mul_assoc, mul_comm x, h]
   nnqsmul := _
