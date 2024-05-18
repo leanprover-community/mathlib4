@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bhavik Mehta
+Authors: Bhavik Mehta, Andrew Yang, Emily Riehl
 -/
 import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
@@ -34,8 +34,6 @@ variable {C : Type u} [Category.{v} C] (X : C)
 namespace Over
 
 open Limits
-
-variable {C : Type u} [Category.{v} C]
 
 -- Porting note: removed semireducible from the simps config
 /-- Given a morphism `f : X ⟶ Y`, the functor `baseChange f` takes morphisms over `Y` to morphisms
@@ -74,29 +72,34 @@ def mapAdjunction [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over.map f ⊣ base
         · simp
         · simpa using Over.w v |>.symm } }
 
-end Over
-
 /--
 The functor from `C` to `Over X` which sends `Y : C` to `π₁ : X ⨯ Y ⟶ X`, sometimes denoted `X*`.
 -/
 @[simps! obj_left obj_hom map_left]
 def star [HasBinaryProducts C] : C ⥤ Over X :=
   cofree _ ⋙ coalgebraToOver X
-#align category_theory.star CategoryTheory.star
+#align category_theory.star CategoryTheory.Over.star
 
 /-- The functor `Over.forget X : Over X ⥤ C` has a right adjoint given by `star X`.
 
 Note that the binary products assumption is necessary: the existence of a right adjoint to
 `Over.forget X` is equivalent to the existence of each binary product `X ⨯ -`.
 -/
-def forgetAdjStar [HasBinaryProducts C] : Over.forget X ⊣ star X :=
+def forgetAdjStar [HasBinaryProducts C] : forget X ⊣ star X :=
   (coalgebraEquivOver X).symm.toAdjunction.comp (adj _)
-#align category_theory.forget_adj_star CategoryTheory.forgetAdjStar
+#align category_theory.forget_adj_star CategoryTheory.Over.forgetAdjStar
 
 /-- Note that the binary products assumption is necessary: the existence of a right adjoint to
 `Over.forget X` is equivalent to the existence of each binary product `X ⨯ -`.
 -/
-instance [HasBinaryProducts C] : (Over.forget X).IsLeftAdjoint  :=
+instance [HasBinaryProducts C] : (forget X).IsLeftAdjoint  :=
   ⟨_, ⟨forgetAdjStar X⟩⟩
+
+end Over
+
+@[deprecated] noncomputable alias star := Over.star
+
+@[deprecated] noncomputable alias forgetAdjStar := Over.forgetAdjStar
+
 
 end CategoryTheory
