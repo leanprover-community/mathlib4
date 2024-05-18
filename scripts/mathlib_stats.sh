@@ -36,17 +36,38 @@ net=$(awk -v gd="${gdiff}" 'BEGIN{
 # Lean-based reports #
 ######################
 
+# produces a string of the form
+# ```
+# Theorems
+# <one_decl_name_per_row>,
+# ...
+# Predicates
+# <one_decl_name_per_row>,
+# ...
+# ```
 getCountDecls () {
   sed 's=^--\(count_decls\)=\1=' scripts/count_decls.lean | lake env lean --stdin |
     sed -z 's=, *=,\n=g; s=[ [#]==g; s=]=,=g; s=\n\n*=\n=g'
 }
 
+# extracts
+# Theorems xx
+# Predicates yy
+# ...
 tallyCountDecls () {
   awk 'BEGIN{ count=0 }
     /[^,]$/ { count++; type[count]=$0; acc[count]=0; }
     /,$/ { acc[count]++ } END{
     for(t=1; t<=count; t++) { printf("%s %s\n", type[t], acc[t]) }
   }' "${1}"
+}
+
+# `getKind type file` extracts all declaration names of type `type` from `file`
+getKind () {
+  awk -v typ="${1}$" 'BEGIN{ found=0 }
+      /[^,]$/ { found=0 }
+      (found == 1) { print $0 }
+      ($0 ~ typ) { found=1 }' "${2}" | sort
 }
 
 # the output of `count_decls`
@@ -77,15 +98,10 @@ oldDecls="$(echo "${oldDeclsTots}" | tallyCountDecls -)"
 # produce the `+X -Y` report for the declarations in each category
 plusMinus="$(for typ in $(echo "$newDeclsTots" | grep "[^,]$" | tr '\n' ' ');
 do
-  comm -123 --total <(echo "${newDeclsTots}" |
-    awk -v typ="${typ}$" 'BEGIN{ found=0 }
-      /[^,]$/ { found=0 }
-      (found == 1) { print $0 }
-      ($0 ~ typ) { found=1 }' | sort)  <(echo "${oldDeclsTots}" |
-    awk -v typ="${typ}$" 'BEGIN{ found=0 }
-      /[^,]$/ { found=0 }
-      (found == 1) { print $0 }
-      ($0 ~ typ) { found=1 }' | sort) | awk '{ printf("%s %s\n", $1, $2)}'
+  comm -123 --total <(
+    echo "${newDeclsTots}" | getKind "${typ}$" -)  <(
+    echo "${oldDeclsTots}" | getKind "${typ}$" -) #|
+    #awk '{ printf("%s %s\n", $1, $2)}'
 done)"
 
 declSummary="$(paste -d' ' <(echo "${newDecls}") <(echo "${oldDecls}") <(echo "${plusMinus}") |
