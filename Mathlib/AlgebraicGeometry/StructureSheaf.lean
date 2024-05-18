@@ -410,8 +410,8 @@ theorem const_mul_cancel' (f g₁ g₂ : R) (U hu₁ hu₂) :
 
 /-- The canonical ring homomorphism interpreting an element of `R` as
 a section of the structure sheaf. -/
-def toOpen (U : Opens (PrimeSpectrum.Top R)) : CommRingCat.of R ⟶ (structureSheaf R).1.obj (op U)
-    where
+def toOpen (U : Opens (PrimeSpectrum.Top R)) :
+    CommRingCat.of R ⟶ (structureSheaf R).1.obj (op U) where
   toFun f :=
     ⟨fun x => algebraMap R _ f, fun x =>
       ⟨U, x.2, 𝟙 _, f, 1, fun y =>

@@ -150,7 +150,7 @@ theorem exists_disjoint_subfamily_covering_enlargment (B : ι → Set α) (t : S
         calc
           δ c ≤ m := le_csSup bddA (mem_image_of_mem _ ⟨ct, H⟩)
           _ = τ * (m / τ) := by field_simp [(zero_lt_one.trans hτ).ne']
-          _ ≤ τ * δ b := mul_le_mul_of_nonneg_left ha' (zero_le_one.trans hτ.le)
+          _ ≤ τ * δ b := by gcongr
       · rw [← not_disjoint_iff_nonempty_inter] at hcb
         exact (hcb (H _ H')).elim
 #align vitali.exists_disjoint_subfamily_covering_enlargment Vitali.exists_disjoint_subfamily_covering_enlargment
@@ -386,7 +386,7 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
     _ ≤ ∑' a : { a // a ∉ w }, μ (closedBall (c a) (3 * r a)) := measure_iUnion_le _
     _ ≤ ∑' a : { a // a ∉ w }, C * μ (B a) := (ENNReal.tsum_le_tsum fun a => μB a (ut (vu a.1.2)))
     _ = C * ∑' a : { a // a ∉ w }, μ (B a) := ENNReal.tsum_mul_left
-    _ ≤ C * (ε / C) := mul_le_mul_left' hw.le _
+    _ ≤ C * (ε / C) := by gcongr
     _ ≤ ε := ENNReal.mul_div_le
 #align vitali.exists_disjoint_covering_ae Vitali.exists_disjoint_covering_ae
 
@@ -418,10 +418,11 @@ protected def vitaliFamily [MetricSpace α] [MeasurableSpace α] [OpensMeasurabl
       intro x xs ε εpos
       rcases ffine x xs ε εpos with ⟨a, ha, h'a⟩
       rcases fsubset x xs ha with ⟨a_closed, a_int, ⟨r, ar, μr⟩⟩
-      refine' ⟨⟨min r ε, x, a⟩, ⟨_, _, a_int, a_closed, ha, xs⟩, min_le_right _ _, rfl⟩
+      refine ⟨⟨min r ε, x, a⟩, ⟨?_, ?_, a_int, a_closed, ha, xs⟩, min_le_right _ _, rfl⟩
       · rcases min_cases r ε with (h' | h') <;> rwa [h'.1]
-      · apply le_trans (measure_mono (closedBall_subset_closedBall _)) μr
-        exact mul_le_mul_of_nonneg_left (min_le_left _ _) zero_le_three
+      · apply le_trans ?_ μr
+        gcongr
+        apply min_le_left
     rcases exists_disjoint_covering_ae μ s t C (fun p => p.1) (fun p => p.2.1) (fun p => p.2.2)
         (fun p hp => hp.1) (fun p hp => hp.2.1) (fun p hp => hp.2.2.1) (fun p hp => hp.2.2.2.1) A
       with ⟨t', t't, _, t'_disj, μt'⟩

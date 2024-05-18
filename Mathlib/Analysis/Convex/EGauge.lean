@@ -8,7 +8,7 @@ import Mathlib.Analysis.Seminorm
 /-!
 # The Minkowski functional, normed field version
 
-In tihs file we define `(egauge 𝕜 s ·)`
+In this file we define `(egauge 𝕜 s ·)`
 to be the Minkowski functional (gauge) of the set `s`
 in a topological vector space `E` over a normed field `𝕜`,
 as a function `E → ℝ≥0∞`.
@@ -16,6 +16,9 @@ as a function `E → ℝ≥0∞`.
 It is defined as the infimum of the norms of `c : 𝕜` such that `x ∈ c • s`.
 In particular, for `𝕜 = ℝ≥0` this definition gives an `ℝ≥0∞`-valued version of `gauge`
 defined in `Mathlib/Analysis/Convex/Gauge.lean`.
+
+This definition can be used to generalize the notion of Fréchet derivative
+to maps between topological vector spaces without norms.
 
 Currently, we can't reuse results about `egauge` for `gauge`,
 because we lack a theory of normed semifields.
@@ -77,11 +80,18 @@ section Module
 variable {𝕜 : Type*} [NormedDivisionRing 𝕜] {α E : Type*} [AddCommGroup E] [Module 𝕜 E]
     {c : 𝕜} {s t : Set E} {x y : E} {r : ℝ≥0∞}
 
-lemma egauge_le_of_smul_mem_of_ne (h : c • x ∈ s) (hc : c ≠ 0) : egauge 𝕜 s x ≤ ‖c‖₊⁻¹ := by
+/-- If `c • x ∈ s` and `c ≠ 0`, then `egauge 𝕜 s x` is at most `((‖c‖₊⁻¹ : ℝ≥0) : ℝ≥0∞).
+
+See also `egauge_le_of_smul_mem`. -/
+lemma egauge_le_of_smul_mem_of_ne (h : c • x ∈ s) (hc : c ≠ 0) :
+    egauge 𝕜 s x ≤ ↑(‖c‖₊⁻¹ : ℝ≥0) := by
   rw [← nnnorm_inv]
   exact egauge_le_of_mem_smul <| (mem_inv_smul_set_iff₀ hc _ _).2 h
 
-lemma egauge_le_of_smul_mem (h : c • x ∈ s) : egauge 𝕜 s x ≤ (↑‖c‖₊)⁻¹ := by
+/-- If `c • x ∈ s`, then `egauge 𝕜 s x` is at most `(‖c‖₊ : ℝ≥0∞)⁻¹.
+
+See also `egauge_le_of_smul_mem_of_ne`. -/
+lemma egauge_le_of_smul_mem (h : c • x ∈ s) : egauge 𝕜 s x ≤ (‖c‖₊ : ℝ≥0∞)⁻¹ := by
   rcases eq_or_ne c 0 with rfl | hc
   · simp
   · exact (egauge_le_of_smul_mem_of_ne h hc).trans ENNReal.coe_inv_le
@@ -89,9 +99,10 @@ lemma egauge_le_of_smul_mem (h : c • x ∈ s) : egauge 𝕜 s x ≤ (↑‖c�
 lemma mem_of_egauge_lt_one (hs : Balanced 𝕜 s) (hx : egauge 𝕜 s x < 1) : x ∈ s :=
   let ⟨c, hxc, hc⟩ := egauge_lt_iff.1 hx
   hs c (mod_cast hc.le) hxc
-  
+
 variable (𝕜)
 
+@[simp]
 lemma egauge_zero_right (hs : s.Nonempty) : egauge 𝕜 s 0 = 0 := by
   have : 0 ∈ (0 : 𝕜) • s := by simp [zero_smul_set hs]
   simpa using egauge_le_of_mem_smul this

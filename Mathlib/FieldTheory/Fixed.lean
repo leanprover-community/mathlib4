@@ -275,13 +275,14 @@ section Finite
 
 variable [Finite G]
 
-instance normal : Normal (FixedPoints.subfield G F) F :=
-  ⟨fun x => (isIntegral G F x).isAlgebraic, fun x =>
+instance normal : Normal (FixedPoints.subfield G F) F where
+  isAlgebraic x := (isIntegral G F x).isAlgebraic
+  splits' x :=
     (Polynomial.splits_id_iff_splits _).1 <| by
       cases nonempty_fintype G
       rw [← minpoly_eq_minpoly, minpoly, coe_algebraMap, ← Subfield.toSubring_subtype_eq_subtype,
         Polynomial.map_toSubring _ (subfield G F).toSubring, prodXSubSMul]
-      exact Polynomial.splits_prod _ fun _ _ => Polynomial.splits_X_sub_C _⟩
+      exact Polynomial.splits_prod _ fun _ _ => Polynomial.splits_X_sub_C _
 #align fixed_points.normal FixedPoints.normal
 
 instance separable : IsSeparable (FixedPoints.subfield G F) F :=
