@@ -42,8 +42,13 @@ net=$(awk -v gd="${gdiff}" 'BEGIN{
 # Lean-based reports #
 ######################
 
-newDeclsTots="$(sed 's=^--\(count_decls\)=\1=' scripts/count_decls.lean | lake env lean --stdin)"
-newDecls="$(echo "${newDeclsTots}" | awk '((NF == 2) && $2+0 == $2) { print $0 }')"
+newDeclsTots="$(sed 's=^--\(count_decls\)=\1=' scripts/count_decls.lean | lake env lean --stdin |
+  sed -z 's=, *=,\n=g; s=[ [#]==g; s=]=,=g; s=\n\n*=\n=g')"
+newDecls="$(echo "${newDeclsTots}" | awk 'BEGIN{ count=0 }
+  /[^,]$/ { count++; type[count]=$0; acc[count]=0; }
+  /,$/ { acc[count]++ } END{
+  for(t=1; t<=count; t++) { printf("%s %s\n", type[t], acc[t]) }
+}')"
 # Definitions 73590...
 git checkout -q "${oldCommit}"
 # 'detached HEAD' state
@@ -54,8 +59,13 @@ lake exe cache get > /dev/null
 # update the `count_decls` and `mathlib_stats` scripts to the latest version
 git checkout -q origin/adomani/periodic_reports_dev_custom_action scripts/count_decls.lean scripts/mathlib_stats.sh
 
-oldDeclsTots="$(sed 's=^--\(count_decls\)=\1=' scripts/count_decls.lean | lake env lean --stdin)"
-oldDecls="$(echo "${oldDeclsTots}" | awk '((NF == 2) && $2+0 == $2) { print $0 }')"
+oldDeclsTots="$(sed 's=^--\(count_decls\)=\1=' scripts/count_decls.lean | lake env lean --stdin |
+  sed -z 's=, *=,\n=g; s=[ [#]==g; s=]=,=g; s=\n\n*=\n=g')"
+oldDecls="$(echo "${oldDeclsTots}" | awk 'BEGIN{ count=0 }
+  /[^,]$/ { count++; type[count]=$0; acc[count]=0; }
+  /,$/ { acc[count]++ } END{
+  for(t=1; t<=count; t++) { printf("%s %s\n", type[t], acc[t]) }
+}')"
 # Definitions 73152...
 
 declSummary="$(paste -d' ' <(echo "${newDecls}") <(echo "${oldDecls}") |
