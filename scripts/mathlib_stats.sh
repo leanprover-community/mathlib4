@@ -63,7 +63,7 @@ declSummary="$(paste -d' ' <(echo "${newDecls}") <(echo "${oldDecls}") |
 )"
 
 ## final report
-printf -- '---\n\n## Weekly stats (%s %(%Y-%m-%d)T)\n\n' "${date}" -1
+printf -- '---\n\n## Weekly stats (%s...%(%Y-%m-%d)T)\n\n' "${date}" -1
 
 printf -- ' Reference commits: old %s, new %s.\n\n' "${oldCommitURL}" "${currentCommitURL}"
 
