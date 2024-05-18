@@ -53,11 +53,11 @@ newDecls="$(echo "${newDeclsTots}" | awk 'BEGIN{ count=0 }
 git checkout -q "${oldCommit}"
 # 'detached HEAD' state
 
-lake exe cache get #> /dev/null
+lake exe cache get > /dev/null
 # stuff gets downloaded
-# just in case some part of
-lake build
 
+# just in case some part of the cache is corrupted
+lake build
 
 # update the `count_decls` and `mathlib_stats` scripts to the latest version
 git checkout -q origin/adomani/periodic_reports_dev_custom_action scripts/count_decls.lean scripts/mathlib_stats.sh
