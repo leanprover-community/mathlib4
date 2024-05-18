@@ -533,8 +533,8 @@ private theorem mul_smul' [Semiring R] [Module R V] (x y : HahnSeries Γ R)
     (fun ⟨⟨i, _j⟩, ⟨k, l⟩⟩ ↦ ⟨(i + k, l), (i, k)⟩) <;>
     aesop (add safe [Set.vAdd_mem_vAdd, Set.add_mem_add]) (add simp [add_vadd, mul_smul])
 
-instance instBaseModule [Semiring R] [Module R V] : Module R (HahnModule Γ R V) :=
-  inferInstanceAs <| Module R (HahnSeries Γ V)
+instance instBaseModule [Semiring R] [Module R V] : Module R (HahnModule Γ' R V) :=
+  inferInstanceAs <| Module R (HahnSeries Γ' V)
 
 instance instModule [Semiring R] [Module R V] : Module (HahnSeries Γ R)
     (HahnModule Γ' R V) := {
