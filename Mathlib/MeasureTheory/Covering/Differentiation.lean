@@ -924,7 +924,7 @@ theorem ae_tendsto_average_norm_sub {f : α → E} (hf : LocallyIntegrable f μ)
     simp_rw [coe_nnnorm]
     exact (h''a.sub (integrableOn_const.2 (Or.inr h'a))).norm
   rw [lintegral_coe_eq_integral _ A, ENNReal.toReal_ofReal (by positivity)]
-  rfl
+  simp only [coe_nnnorm, smul_eq_mul]
 
 /-- *Lebesgue differentiation theorem*: for almost every point `x`, the
 average of `f` on `a` tends to `f x` as `a` shrinks to `x` along a Vitali family. -/

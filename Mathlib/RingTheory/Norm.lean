@@ -306,9 +306,7 @@ theorem norm_eq_prod_automorphisms [FiniteDimensional K L] [IsGalois K L] (x : L
   apply NoZeroSMulDivisors.algebraMap_injective L (AlgebraicClosure L)
   rw [map_prod (algebraMap L (AlgebraicClosure L))]
   rw [← Fintype.prod_equiv (Normal.algHomEquivAut K (AlgebraicClosure L) L)]
-  · rw [← norm_eq_prod_embeddings]
-    · simp only [algebraMap_eq_smul_one, smul_one_smul]
-      rfl
+  · rw [← norm_eq_prod_embeddings _ _ x, ← IsScalarTower.algebraMap_apply]
   · intro σ
     simp only [Normal.algHomEquivAut, AlgHom.restrictNormal', Equiv.coe_fn_mk,
       AlgEquiv.coe_ofBijective, AlgHom.restrictNormal_commutes, id.map_eq_id, RingHom.id_apply]
