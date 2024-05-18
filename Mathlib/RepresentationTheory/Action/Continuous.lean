@@ -48,9 +48,13 @@ instance (X : Action V G) : MulAction G ((CategoryTheory.forget₂ _ TopCat).obj
     rw [← Functor.map_comp, map_mul]
     rfl
 
+/-- For `HasForget₂ V TopCat` a predicate on an `X : Action V G` saying that the induced action on
+the underlying topological space is continuous. -/
 def IsContinuous (X : Action V G) : Prop :=
   ContinuousSMul G ((CategoryTheory.forget₂ _ TopCat).obj X)
 
+/-- For `HasForget₂ V TopCat`, this is the full subcategory of `Action V G` where the induced
+action is continuous. -/
 def ContAction : Type _ := FullSubcategory (IsContinuous V G)
 
 instance : Category (ContAction V G) :=
