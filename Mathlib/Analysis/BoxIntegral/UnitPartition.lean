@@ -6,6 +6,8 @@ Authors: Xavier Roblot
 import Mathlib.Algebra.Module.Zlattice.Basic
 import Mathlib.Analysis.BoxIntegral.Integrability
 
+import Mathlib.Sandbox
+
  /-!
 # Unit Partition
 
@@ -258,7 +260,7 @@ open Submodule Pointwise BigOperators
 
 open scoped Pointwise
 
-variable (c : ℝ) (s : Set (ι → ℝ)) (F : (ι → ℝ) → ℝ) (hF : Continuous F)
+variable (c : ℝ) (s : Set (ι → ℝ)) (F : (ι → ℝ) → ℝ)
 
 local notation "L" => span ℤ (Set.range (Pi.basisFun ℝ ι))
 
@@ -317,7 +319,9 @@ theorem integralSum_eq_tsum_div {B : Box ι} (hB : hasIntegralVertices B) (hs₀
       tag_index_eq_self_of_mem_smul_span n hx.2, ENNReal.toReal_div,
       ENNReal.one_toReal, ENNReal.toReal_pow, ENNReal.toReal_nat, mul_comm_div, one_mul]
 
-variable (hs₁ : Bornology.IsBounded s) (hs₂ : MeasurableSet s)
+variable (hs₁ : Bornology.IsBounded s) (hs₂ : MeasurableSet s) (hs₃ : volume (frontier s) = 0)
+
+variable (hF : Continuous F)
 
 open Filter
 
@@ -325,11 +329,25 @@ open Filter
 theorem tendsto_tsum_div_pow :
     Tendsto (fun n : ℕ ↦ (∑' x : ↑(s ∩ (n:ℝ)⁻¹ • L), F x) / n ^ card ι)
       atTop (nhds (∫ x in s, F x)) := by
+  classical
   obtain ⟨B, hB, hs₀⟩ := le_hasIntegralVertices_of_isBounded hs₁
+  have h₁ : ∃ C, ∀ x ∈ Box.Icc B, ‖Set.indicator s F x‖ ≤ C := by
+    obtain ⟨C, hC⟩ := B.isCompact_Icc.exists_bound_of_continuousOn hF.continuousOn
+    refine ⟨C, fun x hx ↦ ?_⟩
+    rw [norm_indicator_eq_indicator_norm, Set.indicator_apply]
+    split_ifs
+    · exact hC x hx
+    · obtain ⟨x, hx⟩ := Box.exists_mem B
+      exact le_trans (norm_nonneg _) (hC x (Box.coe_subset_Icc hx))
+  have h₂ : ∀ᵐ x, ContinuousAt (fun x ↦ Set.indicator s F x) x := by
+    refine ae_iff.mpr (measure_mono_null (fun _ h ↦ ?_) hs₃)
+    contrapose! h
+    rw [Set.mem_setOf_eq, not_not]
+    exact Set.continuous_indicator_of_not_mem_frontier hF.continuousOn h
   refine Metric.tendsto_atTop.mpr fun ε hε ↦ ?_
-  have : ContinuousOn (Set.indicator s (fun x ↦ F x)) (BoxIntegral.Box.Icc B) := sorry
-  obtain ⟨r, hr₁, hr₂⟩ := (BoxIntegral.hasIntegral_iff.mp <| ContinuousOn.hasBoxIntegral
-    (volume : Measure (ι → ℝ)) this BoxIntegral.IntegrationParams.Riemann) (ε / 2) (half_pos hε)
+  obtain ⟨r, hr₁, hr₂⟩ := (BoxIntegral.hasIntegral_iff.mp <|
+    hasBoxIntegral_of_bounded_and_ae_continuous (volume : Measure (ι → ℝ)) h₁ h₂
+      BoxIntegral.IntegrationParams.Riemann) (ε / 2) (half_pos hε)
   refine ⟨⌈(r 0 0 : ℝ)⁻¹⌉₊, fun n hn ↦ lt_of_le_of_lt ?_ (half_lt_self_iff.mpr hε)⟩
   lift n to ℕ+ using lt_of_lt_of_le (Nat.ceil_pos.mpr (inv_pos.mpr (by convert (r 0 0).prop))) hn
   erw [← integralSum_eq_tsum_div _ s F hB hs₀]
@@ -346,11 +364,11 @@ theorem tendsto_tsum_div_pow :
 theorem tendsto_card_div_pow' :
     Tendsto (fun n : ℕ ↦ (Nat.card ↑(s ∩ (n:ℝ)⁻¹ • L) : ℝ) / n ^ card ι)
       atTop (nhds (volume s).toReal) := by
-  convert tendsto_tsum_div_pow s (fun _ ↦ 1) hs₁ hs₂
+  convert tendsto_tsum_div_pow s (fun _ ↦ 1) hs₁ hs₂ hs₃ continuous_const
   · rw [tsum_const, nsmul_eq_mul, mul_one, Nat.cast_inj]
   · rw [MeasureTheory.setIntegral_const, smul_eq_mul, mul_one]
 
-variable (hs₃ : ∀ ⦃x y : ℝ⦄, 0 < x → x ≤ y → x • s ⊆ y • s)
+variable (hs₄ : ∀ ⦃x y : ℝ⦄, 0 < x → x ≤ y → x • s ⊆ y • s)
 
 theorem tendsto_card_div_pow :
     Tendsto (fun x : ℝ ↦ (Nat.card ↑(s ∩ x⁻¹ • L) : ℝ) / x ^ card ι)
@@ -366,7 +384,7 @@ theorem tendsto_card_div_pow :
     refine Nat.card_mono ?_ ?_
     · exact Zspan.setFinite_inter _ (IsBounded.smul₀ hs₁ y)
     · gcongr
-      exact hs₃ hx hy
+      exact hs₄ hx hy
   have ineq₁ : ∀ᶠ x : ℝ in atTop,
       (Nat.card ↑(s ∩ (⌊x⌋₊ : ℝ)⁻¹ • L) : ℝ) / x ^ card ι ≤
         (Nat.card ↑(s ∩ x⁻¹ • L) : ℝ) / x ^ card ι := by
@@ -390,7 +408,7 @@ theorem tendsto_card_div_pow :
       field_simp [hx]
     rw [show (volume s).toReal = (volume s).toReal * 1 ^ card ι by ring]
     refine Tendsto.congr' this (Tendsto.mul ?_ (Tendsto.pow ?_ _))
-    · exact Tendsto.comp (tendsto_card_div_pow' s hs₁ hs₂) tendsto_nat_floor_atTop
+    · exact Tendsto.comp (tendsto_card_div_pow' s hs₁ hs₂ hs₃) tendsto_nat_floor_atTop
     · exact tendsto_nat_floor_div_atTop
   · have :
         (fun x ↦ (Nat.card ↑(s ∩ (⌈x⌉₊ : ℝ)⁻¹ • L) : ℝ) / ⌈x⌉₊ ^ card ι * (⌈x⌉₊ / x) ^ card ι)
@@ -399,7 +417,7 @@ theorem tendsto_card_div_pow :
       field_simp [hx]
     rw [show (volume s).toReal = (volume s).toReal * 1 ^ card ι by ring]
     refine Tendsto.congr' this (Tendsto.mul ?_ (Tendsto.pow ?_ _))
-    · exact Tendsto.comp (tendsto_card_div_pow' s hs₁ hs₂) tendsto_nat_ceil_atTop
+    · exact Tendsto.comp (tendsto_card_div_pow' s hs₁ hs₂ hs₃) tendsto_nat_ceil_atTop
     · exact tendsto_nat_ceil_div_atTop
 
 end BoxIntegral.unitPartition
