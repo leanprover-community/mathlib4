@@ -44,7 +44,7 @@ newDecls="$(sed 's=^--\(count_decls\)=\1=' scripts/count_decls.lean | lake env l
 git checkout "${oldCommit}"
 # 'detached HEAD' state
 
-lake exe cache get
+lake exe cache get > /dev/null
 # stuff gets downloaded
 
 # update the count_decls script to the latest version
