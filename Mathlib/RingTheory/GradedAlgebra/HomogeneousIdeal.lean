@@ -61,6 +61,13 @@ def Ideal.IsHomogeneous : Prop :=
   ∀ (i : ι) ⦃r : A⦄, r ∈ I → (DirectSum.decompose 𝒜 r i : A) ∈ I
 #align ideal.is_homogeneous Ideal.IsHomogeneous
 
+theorem Ideal.IsHomogeneous.mem_iff {I} (hI : Ideal.IsHomogeneous 𝒜 I) {x} :
+    x ∈ I ↔ ∀ i, (decompose 𝒜 x i : A) ∈ I := by
+  classical
+  refine ⟨fun hx i ↦ hI i hx, fun hx ↦ ?_⟩
+  rw [← DirectSum.sum_support_decompose 𝒜 x]
+  exact Ideal.sum_mem _ (fun i _ ↦ hx i)
+
 /-- For any `Semiring A`, we collect the homogeneous ideals of `A` into a type. -/
 structure HomogeneousIdeal extends Submodule A A where
   is_homogeneous' : Ideal.IsHomogeneous 𝒜 toSubmodule
@@ -91,6 +98,13 @@ instance HomogeneousIdeal.setLike : SetLike (HomogeneousIdeal 𝒜) A where
 theorem HomogeneousIdeal.ext {I J : HomogeneousIdeal 𝒜} (h : I.toIdeal = J.toIdeal) : I = J :=
   HomogeneousIdeal.toIdeal_injective h
 #align homogeneous_ideal.ext HomogeneousIdeal.ext
+
+theorem HomogeneousIdeal.ext' {I J : HomogeneousIdeal 𝒜} (h : ∀ i, ∀ x ∈ 𝒜 i, x ∈ I ↔ x ∈ J) :
+    I = J := by
+  ext
+  rw [I.isHomogeneous.mem_iff, J.isHomogeneous.mem_iff]
+  apply forall_congr'
+  exact fun i ↦ h i _ (decompose 𝒜 _ i).2
 
 @[simp]
 theorem HomogeneousIdeal.mem_iff {I : HomogeneousIdeal 𝒜} {x : A} : x ∈ I.toIdeal ↔ x ∈ I :=

@@ -767,8 +767,83 @@ theorem comp_eq_zero_iff : p.comp q = 0 ↔ p = 0 ∨ p.eval (q.coeff 0) = 0 ∧
       Or.rec (fun h => by rw [h, zero_comp]) (fun h => by rw [h.2, comp_C, h.1, C_0]) h
 #align polynomial.comp_eq_zero_iff Polynomial.comp_eq_zero_iff
 
-end CommRing
+theorem isCoprime_X_sub_C_of_isUnit_sub {R} [CommRing R] {a b : R} (h : IsUnit (a - b)) :
+    IsCoprime (X - C a) (X - C b) :=
+  ⟨-C h.unit⁻¹.val, C h.unit⁻¹.val, by
+    rw [neg_mul_comm, ← left_distrib, neg_add_eq_sub, sub_sub_sub_cancel_left, ← C_sub, ← C_mul]
+    rw [← C_1]
+    congr
+    exact h.val_inv_mul⟩
+set_option linter.uppercaseLean3 false in
+#align polynomial.prime_X_sub_C Polynomial.prime_X_sub_C
 
+theorem prime_X : Prime (X : R[X]) := by
+  convert prime_X_sub_C (0 : R)
+  simp
+set_option linter.uppercaseLean3 false in
+#align polynomial.prime_X Polynomial.prime_X
+
+<<<<<<< HEAD
+theorem Monic.prime_of_degree_eq_one (hp1 : degree p = 1) (hm : Monic p) : Prime p :=
+  have : p = X - C (-p.coeff 0) := by simpa [hm.leadingCoeff] using eq_X_add_C_of_degree_eq_one hp1
+  have hp : p ≠ 0 := left_ne_zero_of_mul hpq
+  have hq : q ≠ 0 := right_ne_zero_of_mul hpq
+  rw [rootMultiplicity_eq_multiplicity (p * q), dif_neg hpq, rootMultiplicity_eq_multiplicity p,
+    dif_neg hp, rootMultiplicity_eq_multiplicity q, dif_neg hq,
+    multiplicity.mul' (prime_X_sub_C x)]
+#align polynomial.root_multiplicity_mul Polynomial.rootMultiplicity_mul
+
+open Multiset in
+theorem exists_multiset_roots [DecidableEq R] :
+    ∀ {p : R[X]} (_ : p ≠ 0), ∃ s : Multiset R,
+      (Multiset.card s : WithBot ℕ) ≤ degree p ∧ ∀ a, s.count a = rootMultiplicity a p
+  | p, hp =>
+    haveI := Classical.propDecidable (∃ x, IsRoot p x)
+    if h : ∃ x, IsRoot p x then
+      let ⟨x, hx⟩ := h
+      have hpd : 0 < degree p := degree_pos_of_root hp hx
+      have hd0 : p /ₘ (X - C x) ≠ 0 := fun h => by
+        rw [← mul_divByMonic_eq_iff_isRoot.2 hx, h, mul_zero] at hp; exact hp rfl
+      have wf : degree (p /ₘ (X - C x)) < degree p :=
+        degree_divByMonic_lt _ (monic_X_sub_C x) hp ((degree_X_sub_C x).symm ▸ by decide)
+      let ⟨t, htd, htr⟩ := @exists_multiset_roots _ (p /ₘ (X - C x)) hd0
+      have hdeg : degree (X - C x) ≤ degree p := by
+        rw [degree_X_sub_C, degree_eq_natDegree hp]
+        rw [degree_eq_natDegree hp] at hpd
+        exact WithBot.coe_le_coe.2 (WithBot.coe_lt_coe.1 hpd)
+      have hdiv0 : p /ₘ (X - C x) ≠ 0 :=
+        mt (divByMonic_eq_zero_iff (monic_X_sub_C x)).1 <| not_lt.2 hdeg
+      ⟨x ::ₘ t,
+        calc
+          (card (x ::ₘ t) : WithBot ℕ) = Multiset.card t + 1 := by
+            congr
+            exact mod_cast Multiset.card_cons _ _
+          _ ≤ degree p := by
+            rw [← degree_add_divByMonic (monic_X_sub_C x) hdeg, degree_X_sub_C, add_comm];
+              exact add_le_add (le_refl (1 : WithBot ℕ)) htd,
+        by
+          change ∀ (a : R), count a (x ::ₘ t) = rootMultiplicity a p
+          intro a
+          conv_rhs => rw [← mul_divByMonic_eq_iff_isRoot.mpr hx]
+          rw [rootMultiplicity_mul (mul_ne_zero (X_sub_C_ne_zero x) hdiv0),
+            rootMultiplicity_X_sub_C, ← htr a]
+          split_ifs with ha
+          · rw [ha, count_cons_self, add_comm]
+          · rw [count_cons_of_ne ha, zero_add]⟩
+    else
+      ⟨0, (degree_eq_natDegree hp).symm ▸ WithBot.coe_le_coe.2 (Nat.zero_le _), by
+        intro a
+        rw [count_zero, rootMultiplicity_eq_zero (not_exists.mp h a)]⟩
+termination_by p => natDegree p
+decreasing_by {
+  simp_wf
+  apply (Nat.cast_lt (α := WithBot ℕ)).mp
+  simp only [degree_eq_natDegree hp, degree_eq_natDegree hd0] at wf;
+  assumption}
+#align polynomial.exists_multiset_roots Polynomial.exists_multiset_roots
+>>>>>>> origin/master
+
+end CommRing
 section
 
 variable [Semiring R] [CommRing S] [IsDomain S] (φ : R →+* S)

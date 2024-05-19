@@ -197,8 +197,7 @@ variable [DecidableEq N]
 
 /-- Loop from a generalized loop by currying $I^N → X$ into $I → (I^{N\setminus\{j\}} → X)$. -/
 @[simps]
-def toLoop (i : N) (p : Ω^ N X x) : Ω (Ω^ { j // j ≠ i } X x) const
-    where
+def toLoop (i : N) (p : Ω^ N X x) : Ω (Ω^ { j // j ≠ i } X x) const where
   toFun t :=
     ⟨(p.val.comp (Cube.insertAt i).toContinuousMap).curry t, fun y yH =>
       p.property (Cube.insertAt i (t, y)) (Cube.insertAt_boundary i <| Or.inr yH)⟩
@@ -250,8 +249,7 @@ theorem to_from (i : N) (p : Ω (Ω^ { j // j ≠ i } X x) const) : toLoop i (fr
   `n`-dimensional loops with base point `const`.
   We allow an arbitrary indexing type `N` in place of `Fin n` here. -/
 @[simps]
-def loopHomeo (i : N) : Ω^ N X x ≃ₜ Ω (Ω^ { j // j ≠ i } X x) const
-    where
+def loopHomeo (i : N) : Ω^ N X x ≃ₜ Ω (Ω^ { j // j ≠ i } X x) const where
   toFun := toLoop i
   invFun := fromLoop i
   left_inv p := by ext; exact congr_arg p (by dsimp; exact Equiv.apply_symm_apply _ _)
@@ -508,10 +506,9 @@ abbrev auxGroup (i : N) : Group (HomotopyGroup N X x) :=
 #align homotopy_group.aux_group HomotopyGroup.auxGroup
 
 theorem isUnital_auxGroup (i : N) :
-    EckmannHilton.IsUnital (auxGroup i).mul (⟦const⟧ : HomotopyGroup N X x) := {
-    left_id := (auxGroup i).one_mul,
-    right_id := (auxGroup i).mul_one
-  }
+    EckmannHilton.IsUnital (auxGroup i).mul (⟦const⟧ : HomotopyGroup N X x) where
+  left_id := (auxGroup i).one_mul
+  right_id := (auxGroup i).mul_one
 #align homotopy_group.is_unital_aux_group HomotopyGroup.isUnital_auxGroup
 
 theorem auxGroup_indep (i j : N) : (auxGroup i : Group (HomotopyGroup N X x)) = auxGroup j := by
