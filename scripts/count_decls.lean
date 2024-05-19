@@ -59,14 +59,14 @@ def updateTally (s : Tally) (n : Name) (c : ConstantInfo) :
   if (← isProp typ) then
     return {s with thms := s.thms.insert  n}
   else
-    let exp ← forallTelescopeReducing typ fun _ e => return e
-    if exp.isType then
-      return {s with types := s.types.insert n}
-    else
-    if exp.isSort then
-      return {s with preds := s.preds.insert n}
-    else
-      return {s with data := s.data.insert n}
+    forallTelescopeReducing typ fun _ exp' => do
+      if exp'.isType then
+        return {s with types := s.types.insert n}
+      else
+      if exp'.isSort then
+        return {s with preds := s.preds.insert n}
+      else
+        return {s with data := s.data.insert n}
 
 /-- extends a `Tally` all the `ConstantInfos` in the environment. -/
 def mkTally (s : Tally) : MetaM Tally := do
