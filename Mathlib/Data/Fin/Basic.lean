@@ -752,11 +752,11 @@ theorem range_castLE {n k : ℕ} (h : n ≤ k) : Set.range (castLE h) = { i : Fi
 #align fin.range_cast_le Fin.range_castLE
 
 @[simp]
-theorem coe_of_injective_castLEEmb_symm {n k : ℕ} (h : n ≤ k) (i : Fin k) (hi) :
-    ((Equiv.ofInjective _ (castLEEmb h).injective).symm ⟨i, hi⟩ : ℕ) = i := by
+theorem coe_of_injective_castLE_symm {n k : ℕ} (h : n ≤ k) (i : Fin k) (hi) :
+    ((Equiv.ofInjective _ (castLE_injective h)).symm ⟨i, hi⟩ : ℕ) = i := by
   rw [← coe_castLE h]
   exact congr_arg Fin.val (Equiv.apply_ofInjective_symm _ _)
-#align fin.coe_of_injective_cast_le_symm Fin.coe_of_injective_castLEEmb_symm
+#align fin.coe_of_injective_cast_le_symm Fin.coe_of_injective_castLE_symm
 
 #align fin.cast_le_succ Fin.castLE_succ
 #align fin.cast_le_cast_le Fin.castLE_castLE
