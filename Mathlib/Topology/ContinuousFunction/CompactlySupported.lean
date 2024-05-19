@@ -7,8 +7,6 @@ import Mathlib.Topology.ContinuousFunction.Bounded
 import Mathlib.Topology.ContinuousFunction.CocompactMap
 import Mathlib.Topology.ContinuousFunction.Compact
 import Mathlib.Topology.ContinuousFunction.ZeroAtInfty
--- make coercion from C₀ to C_c
--- show the density of C_c in C₀
 
 /-!
 # Compactly supported continuous functions
@@ -325,19 +323,17 @@ instance instModule [AddCommMonoid β] [ContinuousAdd β] {R : Type*} [Semiring 
     [ContinuousConstSMul R β] : Module R C_c(α, β) :=
   Function.Injective.module R ⟨⟨_, coe_zero⟩, coe_add⟩ DFunLike.coe_injective coe_smul
 
--- TODO: solve type class instance problem
--- related with the assumption `[AddCommMonoid β] [ContinuousAdd β]` in `Add`?
--- instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring β] [TopologicalSemiring β] :
---     NonUnitalNonAssocSemiring C_c(α, β) :=
---   DFunLike.coe_injective.nonUnitalNonAssocSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
+instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring β] [TopologicalSemiring β] :
+    NonUnitalNonAssocSemiring C_c(α, β) :=
+  DFunLike.coe_injective.nonUnitalNonAssocSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
 
--- instance instNonUnitalSemiring [NonUnitalSemiring β] [TopologicalSemiring β] :
---     NonUnitalSemiring C_c(α, β) :=
---   DFunLike.coe_injective.nonUnitalSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
+instance instNonUnitalSemiring [NonUnitalSemiring β] [TopologicalSemiring β] :
+    NonUnitalSemiring C_c(α, β) :=
+  DFunLike.coe_injective.nonUnitalSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
 
--- instance instNonUnitalCommSemiring [NonUnitalCommSemiring β] [TopologicalSemiring β] :
---     NonUnitalCommSemiring C_c(α, β) :=
---   DFunLike.coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
+instance instNonUnitalCommSemiring [NonUnitalCommSemiring β] [TopologicalSemiring β] :
+    NonUnitalCommSemiring C_c(α, β) :=
+  DFunLike.coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
 
 instance instNonUnitalNonAssocRing [NonUnitalNonAssocRing β] [TopologicalRing β] :
     NonUnitalNonAssocRing C_c(α, β) :=
@@ -353,21 +349,21 @@ instance instNonUnitalCommRing [NonUnitalCommRing β] [TopologicalRing β] :
   DFunLike.coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ => rfl) fun _ _ => rfl
 
--- instance instIsScalarTower {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring β]
---     [TopologicalSemiring β] [Module R β] [ContinuousConstSMul R β] [IsScalarTower R β β] :
---     IsScalarTower R C_c(α, β) C_c(α, β) where
---   smul_assoc r f g := by
---     ext
---     simp only [smul_eq_mul, coe_mul, coe_smul, Pi.mul_apply, Pi.smul_apply]
---     rw [← smul_eq_mul, ← smul_eq_mul, smul_assoc]
+instance instIsScalarTower {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring β]
+    [TopologicalSemiring β] [Module R β] [ContinuousConstSMul R β] [IsScalarTower R β β] :
+    IsScalarTower R C_c(α, β) C_c(α, β) where
+  smul_assoc r f g := by
+    ext
+    simp only [smul_eq_mul, coe_mul, coe_smul, Pi.mul_apply, Pi.smul_apply]
+    rw [← smul_eq_mul, ← smul_eq_mul, smul_assoc]
 
--- instance instSMulCommClass {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring β]
---     [TopologicalSemiring β] [Module R β] [ContinuousConstSMul R β] [SMulCommClass R β β] :
---     SMulCommClass R C_c(α, β) C_c(α, β) where
---   smul_comm r f g := by
---     ext
---     simp only [smul_eq_mul, coe_smul, coe_mul, Pi.smul_apply, Pi.mul_apply]
---     rw [← smul_eq_mul, ← smul_eq_mul, smul_comm]
+instance instSMulCommClass {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring β]
+    [TopologicalSemiring β] [Module R β] [ContinuousConstSMul R β] [SMulCommClass R β β] :
+    SMulCommClass R C_c(α, β) C_c(α, β) where
+  smul_comm r f g := by
+    ext
+    simp only [smul_eq_mul, coe_smul, coe_mul, Pi.smul_apply, Pi.mul_apply]
+    rw [← smul_eq_mul, ← smul_eq_mul, smul_comm]
 
 end AlgebraicStructure
 
@@ -607,17 +603,17 @@ section StarRing
 variable [NonUnitalSemiring β] [StarRing β] [TopologicalSpace β] [ContinuousStar β]
   [TopologicalSemiring β]
 
--- instance instStarRing : StarRing C_c(α, β) :=
---   { CompactlySupportedContinuousMap.instStarAddMonoid with
---     star_mul := fun f g => ext fun x => star_mul (f x) (g x) }
+instance instStarRing : StarRing C_c(α, β) :=
+  { CompactlySupportedContinuousMap.instStarAddMonoid with
+    star_mul := fun f g => ext fun x => star_mul (f x) (g x) }
 
 end StarRing
 
 section CstarRing
 
--- instance instCstarRing [NonUnitalNormedRing β] [StarRing β] [CstarRing β] :
---     CstarRing C_c(α, β) where
---   norm_star_mul_self {f} := CstarRing.norm_star_mul_self (x := f.toBCF)
+instance instCstarRing [NonUnitalNormedRing β] [StarRing β] [CstarRing β] :
+    CstarRing C_c(α, β) where
+  norm_star_mul_self {f} := CstarRing.norm_star_mul_self (x := f.toBCF)
 
 end CstarRing
 
@@ -700,14 +696,14 @@ def compLinearMap [AddCommMonoid δ] [ContinuousAdd δ] {R : Type*} [Semiring R]
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
--- /-- Composition as a non-unital algebra homomorphism. -/
--- def compNonUnitalAlgHom {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring δ]
---     [TopologicalSemiring δ] [Module R δ] [ContinuousConstSMul R δ] (g : β →co γ) :
---     C_c(γ, δ) →ₙₐ[R] C_c(β, δ) where
---   toFun f := f.comp g
---   map_smul' _ _ := rfl
---   map_zero' := rfl
---   map_add' _ _ := rfl
---   map_mul' _ _ := rfl
+/-- Composition as a non-unital algebra homomorphism. -/
+def compNonUnitalAlgHom {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring δ]
+    [TopologicalSemiring δ] [Module R δ] [ContinuousConstSMul R δ] (g : β →co γ) :
+    C_c(γ, δ) →ₙₐ[R] C_c(β, δ) where
+  toFun f := f.comp g
+  map_smul' _ _ := rfl
+  map_zero' := rfl
+  map_add' _ _ := rfl
+  map_mul' _ _ := rfl
 
 end CompactlySupportedContinuousMap
