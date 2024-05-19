@@ -264,6 +264,10 @@ theorem isIso_map_iff {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) {X Y : C} (f : X
 
 end NatIso
 
+lemma NatTrans.isIso_iff_isIso_app {F G : C ⥤ D} (τ : F ⟶ G) :
+    IsIso τ ↔ ∀ X, IsIso (τ.app X) :=
+  ⟨fun _ ↦ inferInstance, fun _ ↦ NatIso.isIso_of_isIso_app _⟩
+
 namespace Functor
 
 variable (F : C ⥤ D) (obj : C → D) (e : ∀ X, F.obj X ≅ obj X)
