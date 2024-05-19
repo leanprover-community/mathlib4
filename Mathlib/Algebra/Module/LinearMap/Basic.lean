@@ -774,8 +774,8 @@ end AddCommGroup
 end IsLinearMap
 
 /-- Reinterpret an additive homomorphism as an `ℕ`-linear map. -/
-def AddMonoidHom.toNatLinearMap [AddCommMonoid M] [AddCommMonoid M₂] (f : M →+ M₂) : M →ₗ[ℕ] M₂
-    where
+def AddMonoidHom.toNatLinearMap [AddCommMonoid M] [AddCommMonoid M₂] (f : M →+ M₂) :
+    M →ₗ[ℕ] M₂ where
   toFun := f
   map_add' := f.map_add
   map_smul' := map_nsmul f
@@ -789,8 +789,7 @@ theorem AddMonoidHom.toNatLinearMap_injective [AddCommMonoid M] [AddCommMonoid M
 #align add_monoid_hom.to_nat_linear_map_injective AddMonoidHom.toNatLinearMap_injective
 
 /-- Reinterpret an additive homomorphism as a `ℤ`-linear map. -/
-def AddMonoidHom.toIntLinearMap [AddCommGroup M] [AddCommGroup M₂] (f : M →+ M₂) : M →ₗ[ℤ] M₂
-    where
+def AddMonoidHom.toIntLinearMap [AddCommGroup M] [AddCommGroup M₂] (f : M →+ M₂) : M →ₗ[ℤ] M₂ where
   toFun := f
   map_add' := f.map_add
   map_smul' := map_zsmul f
@@ -1050,8 +1049,7 @@ variable [Monoid S] [DistribMulAction S M₂] [SMulCommClass R₂ S M₂]
 variable [Monoid S₃] [DistribMulAction S₃ M₃] [SMulCommClass R₃ S₃ M₃]
 variable [Monoid T] [DistribMulAction T M₂] [SMulCommClass R₂ T M₂]
 
-instance : DistribMulAction S (M →ₛₗ[σ₁₂] M₂)
-    where
+instance : DistribMulAction S (M →ₛₗ[σ₁₂] M₂) where
   one_smul _ := ext fun _ ↦ one_smul _ _
   mul_smul _ _ _ := ext fun _ ↦ mul_smul _ _ _
   smul_add _ _ _ := ext fun _ ↦ smul_add _ _ _
