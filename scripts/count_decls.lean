@@ -25,9 +25,9 @@ open Lean Elab Meta
 -/
 structure Tally where
   thms  : HashSet Name := {}
+  data  : HashSet Name := {}
   preds : HashSet Name := {}
   types : HashSet Name := {}
-  data  : HashSet Name := {}
 
 /-- `toString t` produces a string where each line is either
 * the (human-readable) name of a field of `t : Tally`, or
@@ -40,7 +40,8 @@ def toString (t : Tally) : String :=
   let print (h : HashSet Name) : String :=
     let tot := h.toList.map (·.toString)
     String.intercalate ",\n" tot ++ ","
-  s!"Theorems
+  s!"\
+Theorems
 {print t.thms}
 Data
 {print t.data}
