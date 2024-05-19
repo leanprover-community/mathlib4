@@ -294,8 +294,7 @@ section
 variable (R M)
 
 /-- `span` forms a Galois insertion with the coercion from submodule to set. -/
-protected def gi : GaloisInsertion (@span R M _ _ _) (↑)
-    where
+protected def gi : GaloisInsertion (@span R M _ _ _) (↑) where
   choice s _ := span R s
   gc _ _ := span_le
   le_l_u _ := subset_span
