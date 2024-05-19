@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Group.Aut
-import Mathlib.Algebra.GroupWithZero.Invertible
+import Mathlib.Algebra.Group.Invertible.Basic
 import Mathlib.GroupTheory.GroupAction.Units
 
 #align_import group_theory.group_action.group from "leanprover-community/mathlib"@"3b52265189f3fb43aa631edffce5d060fafaf82f"

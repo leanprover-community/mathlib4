@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Jireh Loreaux
 -/
 import Mathlib.Algebra.Group.Commute.Units
-import Mathlib.Algebra.GroupWithZero.Invertible
+import Mathlib.Algebra.Group.Invertible.Basic
+import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Data.Set.Basic
 import Mathlib.Logic.Basic
 
