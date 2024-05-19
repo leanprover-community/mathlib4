@@ -39,7 +39,7 @@ universe w t v₁ v₂ v₃ u₁ u₂ u₃ u
 
 namespace CategoryTheory
 
-open Limits
+open Category Limits
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   {E : Type u₃} [Category.{v₃} E]
@@ -64,6 +64,22 @@ def map : PreOneHypercover (F.obj X) where
 then `(E.map F).multifork P` is limit iff `E.multifork (F.op ⋙ P)`. -/
 def isLimitMapMultiforkEquiv {A : Type u} [Category.{t} A] (P : Dᵒᵖ ⥤ A) :
     IsLimit ((E.map F).multifork P) ≃ IsLimit (E.multifork (F.op ⋙ P)) := by rfl
+
+lemma map_sieve₀ :
+    (E.map F).sieve₀ = E.sieve₀.functorPushforward F :=
+  (Sieve.functorPushforward_ofArrows _ _ _).symm
+
+variable {F} in
+lemma le_map_sieve₁ {W' : C} {W : D} (e : F.obj W' ≅ W) {i₁ i₂ : E.I₀} (p₁ : W ⟶ F.obj (E.X i₁))
+    (p₂ : W ⟶ F.obj (E.X i₂)) (q₁ : W' ⟶ E.X i₁) (q₂ : W' ⟶ E.X i₂)
+    (fac₁ : e.hom ≫ p₁ = F.map q₁) (fac₂ : e.hom ≫ p₂ = F.map q₂) :
+    ((E.sieve₁ q₁ q₂).functorPushforward F).pullback e.inv ≤ (E.map F).sieve₁ p₁ p₂ := by
+  rintro T g ⟨U, a, b, ⟨j, c, fac₃, fac₄⟩, fac₅⟩
+  refine' ⟨j, b ≫ F.map c, _, _⟩
+  · rw [assoc, map_p₁, ← F.map_comp, ← fac₃, F.map_comp, ← reassoc_of% fac₅, ← fac₁,
+      Iso.inv_hom_id_assoc]
+  · rw [assoc, map_p₂, ← F.map_comp, ← fac₄, F.map_comp, ← reassoc_of% fac₅, ← fac₂,
+      Iso.inv_hom_id_assoc]
 
 end PreOneHypercover
 
