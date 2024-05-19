@@ -297,19 +297,32 @@ private local instance : AddCommMonoid V := Finsupp.instAddCommMonoid
 
 /-- The standard geometric representation on `B →₀ ℝ`. For `i : B`, the simple reflection `sᵢ`
 acts by `sᵢ v = v - 2 ⟪αᵢ, v⟫ * αᵢ`, where {αᵢ} is the standard basis of `B →₀ ℝ`. -/
-def standardGeometricRepresentation : Representation ℝ W V := cs.lift ⟨M.simpleOrthoReflection, by
-  intro i i'
-  rcases em (i = i') with rfl | ne
-  · simp [simpleOrthoReflection, orthoReflection_sq, ← LinearMap.one_eq_id]
-  · apply M.orthoReflection_mul_orthoReflection_pow_order
-    · exact M.standardBilinForm_simpleRoot_simpleRoot i i'
-    · exact M.off_diagonal i i' ne⟩
+def standardGeometricRepresentation : Representation ℝ W V :=
+  LinearEquiv.automorphismGroup.toLinearMapMonoidHom.comp <| cs.lift ⟨M.simpleOrthoReflection, by
+    intro i i'
+    rcases em (i = i') with rfl | ne
+    · simp [simpleOrthoReflection, orthoReflection_sq]
+      rfl
+    · apply M.orthoReflection_mul_orthoReflection_pow_order
+      · exact M.standardBilinForm_simpleRoot_self i
+      · exact M.standardBilinForm_simpleRoot_self i'
+      · exact M.standardBilinForm_simpleRoot_simpleRoot i i'
+      · exact M.off_diagonal i i' ne⟩
 
 noncomputable alias sgr := standardGeometricRepresentation
 
 local prefix:100 "ρ" => cs.sgr
 
-theorem sgr_simple (i : B) : ρ (s i) = σ i := cs.lift_apply_simple _ i
+theorem sgr_simple (i : B) : ρ (s i) = σ i :=
+  congr_arg LinearEquiv.automorphismGroup.toLinearMapMonoidHom (cs.lift_apply_simple _ i)
+
+@[simp]
+theorem sgr_simple_apply_simpleRoot_self (i : B) : (ρ (s i)) (α i) = -α i := by
+  simp [sgr_simple]
+
+theorem sgr_simple_apply_simpleRoot (i i' : B) :
+    (ρ (s i)) (α i') = α i' + (2 * cos (π / M i i')) • α i := by
+  simp [sgr_simple, simpleOrthoReflection_simpleRoot, M.symmetric]
 
 /-- The standard geometric representation preserves the standard bilinear form. -/
 @[simp]
@@ -343,10 +356,12 @@ theorem sgr_alternatingWord_apply_simpleRoot (i i' : B) (m : ℕ) (hM : 1 < M i 
         + (sin ((m + 1) * (π / M i i')) / sin (π / M i i')) • (α i') := by
   rw [prod_alternatingWord_eq_mul_pow, map_mul, map_pow, map_mul, apply_ite cs.sgr, map_one,
     mul_apply]
-  simp only [sgr_simple]
-  nth_rw 3 [simpleOrthoReflection]
-  nth_rw 2 [simpleOrthoReflection]
-  rw [orthoReflection_mul_orthoReflection_pow_apply
+  nth_rw 3 [sgr_simple]
+  nth_rw 2 [sgr_simple]
+  unfold simpleOrthoReflection
+  rw [← LinearEquiv.coe_toLinearMap_mul, ← LinearEquiv.coe_toLinearMap_pow,
+      LinearEquiv.coe_toLinearMap, orthoReflection_mul_orthoReflection_pow_apply
+    (hv := M.standardBilinForm_simpleRoot_self i) (hv' := M.standardBilinForm_simpleRoot_self i')
     (hvv' := M.standardBilinForm_simpleRoot_simpleRoot i i') (hm := hM)]
   rcases Nat.even_or_odd m with ⟨k, rfl⟩ | ⟨k, rfl⟩
   · rw [if_pos (by use k), if_pos (by use k), one_apply]
@@ -362,7 +377,7 @@ theorem sgr_alternatingWord_apply_simpleRoot (i i' : B) (m : ℕ) (hM : 1 < M i 
       rw [Nat.cast_add, h₂, Nat.cast_one]
     simp only [h₁, h₂, h₃]
     simp only [map_add, map_smul, map_smul]
-    rw [simpleOrthoReflection_simpleRoot_self, simpleOrthoReflection_simpleRoot]
+    rw [sgr_simple_apply_simpleRoot, sgr_simple_apply_simpleRoot_self]
     rw [smul_neg, ← neg_smul, smul_add, smul_smul, add_assoc, ← add_smul]
     congr
     have : (2 * ↑k + 1 + 1) * (π / M i i') = (2 * k + 1) * (π / M i i') + π / M i i' := by
@@ -394,16 +409,19 @@ theorem sgr_alternatingWord_apply_simpleRoot' (i i' : B) (m : ℕ) (hM : M i i' 
     rcases em (Even m) with even | not_even
     · have succ_not_even : ¬ Even (Nat.succ m) := by tauto
       simp only [if_pos even, if_neg succ_not_even]
-      simp only [sgr_simple, map_add, map_smul, h₁, simpleOrthoReflection_simpleRoot_self]
+      simp only [map_add, map_smul, h₁, sgr_simple_apply_simpleRoot_self,
+        sgr_simple_apply_simpleRoot]
+      simp only [M.symmetric i i' ▸ hM, Nat.cast_zero, div_zero, cos_zero]
       rw [Nat.cast_succ, smul_add, smul_smul, smul_neg, ← neg_smul, add_assoc, ← add_smul]
-      congr 2
-      ring
+      ring_nf
     · have succ_even : Even (Nat.succ m) := by tauto
       simp only [if_neg not_even, if_pos succ_even]
-      simp only [sgr_simple, map_add, map_smul, h₂, simpleOrthoReflection_simpleRoot_self]
-      rw [Nat.cast_succ, smul_add, smul_smul, smul_neg, ← neg_smul, ← add_assoc, ← add_smul]
-      congr 2
-      ring
+      simp only [map_add, map_smul, h₂, sgr_simple_apply_simpleRoot_self,
+        sgr_simple_apply_simpleRoot]
+      simp only [hM, Nat.cast_zero, div_zero, cos_zero]
+      rw [Nat.cast_succ, smul_add, smul_smul, smul_neg, ← neg_smul, add_comm (_ • α i'),
+        ← add_assoc, ← add_smul]
+      ring_nf
 
 theorem sgr_alternatingWord_apply_simpleRoot_eq_nonneg_smul_add_nonneg_smul
     (i i' : B) (m : ℕ) (hm : m < M i i' ∨ M i i' = 0) :
@@ -656,7 +674,7 @@ theorem sgr_apply_simpleRoot_neg_of {w : W} {i : B} (h : cs.IsRightDescent w i) 
     (ρ w) (α i) < 0 := by
   apply cs.isRightDescent_iff_not_isRightDescent_mul.mp at h
   apply sgr_apply_simpleRoot_pos_of at h
-  rw [map_mul, mul_apply, sgr_simple, simpleOrthoReflection_simpleRoot_self, map_neg] at h
+  rw [map_mul, mul_apply, sgr_simple_apply_simpleRoot_self, map_neg] at h
   exact neg_pos.mp h
 
 theorem sgr_apply_simpleRoot_pos_iff {w : W} {i : B} :

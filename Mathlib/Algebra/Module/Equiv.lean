@@ -672,6 +672,13 @@ lemma coe_toLinearMap_mul {e₁ e₂ : M ≃ₗ[R] M} :
     (↑(e₁ * e₂) : M →ₗ[R] M) = (e₁ : M →ₗ[R] M) * (e₂ : M →ₗ[R] M) := by
   rfl
 
+@[simp]
+lemma coe_toLinearMap_pow {e : M ≃ₗ[R] M} {n : ℕ} :
+    (↑(e ^ n) : M →ₗ[R] M) = (e : M →ₗ[R] M) ^ n := by
+  induction n with
+  | zero => rfl
+  | succ n ih => rw [pow_succ, pow_succ, ← ih]; rfl
+
 theorem coe_pow (e : M ≃ₗ[R] M) (n : ℕ) : ⇑(e ^ n) = e^[n] := hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
 
 theorem pow_apply (e : M ≃ₗ[R] M) (n : ℕ) (m : M) : (e ^ n) m = e^[n] m := congr_fun (coe_pow e n) m
