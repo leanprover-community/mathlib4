@@ -689,8 +689,8 @@ If `g` is a linear map `M → M''` such that all scalar multiplication by `s : S
 there is a linear map `LocalizedModule S M → M''`.
 -/
 noncomputable def lift (g : M →ₗ[R] M'')
-    (h : ∀ x : S, IsUnit ((algebraMap R (Module.End R M'')) x)) : LocalizedModule S M →ₗ[R] M''
-    where
+    (h : ∀ x : S, IsUnit ((algebraMap R (Module.End R M'')) x)) :
+    LocalizedModule S M →ₗ[R] M'' where
   toFun := LocalizedModule.lift' S g h
   map_add' := LocalizedModule.lift'_add S g h
   map_smul' r x := by rw [LocalizedModule.lift'_smul, RingHom.id_apply]
@@ -734,8 +734,8 @@ theorem lift_unique (g : M →ₗ[R] M'') (h : ∀ x : S, IsUnit ((algebraMap R 
 
 end LocalizedModule
 
-instance localizedModuleIsLocalizedModule : IsLocalizedModule S (LocalizedModule.mkLinearMap S M)
-    where
+instance localizedModuleIsLocalizedModule :
+    IsLocalizedModule S (LocalizedModule.mkLinearMap S M) where
   map_units s :=
     ⟨⟨algebraMap R (Module.End R (LocalizedModule S M)) s, LocalizedModule.divBy s,
         DFunLike.ext _ _ <| LocalizedModule.mul_by_divBy s,
