@@ -570,9 +570,7 @@ end Neg
 section CommSemiring
 
 variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
-
 variable {R₁ R₂ : Type*} [Semiring R₁] [Semiring R₂]
-
 variable [Module R M] [Module R M₂] [Module R M₃]
 
 open LinearMap

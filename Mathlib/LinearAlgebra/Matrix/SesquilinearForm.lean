@@ -96,7 +96,6 @@ variable [AddCommMonoid M₁] [Module R₁ M₁] [AddCommMonoid M₂] [Module R�
   [Module R N₂] [Module S₁ N₂] [Module S₂ N₂] [SMulCommClass S₁ R N₂] [SMulCommClass S₂ R N₂]
   [SMulCommClass S₂ S₁ N₂]
 variable {σ₁ : R₁ →+* S₁} {σ₂ : R₂ →+* S₂}
-
 variable (R)
 
 /-- The linear map from sesquilinear maps to `Matrix n m N₂` given an `n`-indexed basis for `M₁`
@@ -109,7 +108,6 @@ def LinearMap.toMatrix₂Aux (b₁ : n → M₁) (b₂ : m → M₂) :
   map_add' _f _g := rfl
   map_smul' _f _g := rfl
 #align linear_map.to_matrix₂_aux LinearMap.toMatrix₂Aux
-
 
 @[simp]
 theorem LinearMap.toMatrix₂Aux_apply (f : M₁ →ₛₗ[σ₁] M₂ →ₛₗ[σ₂] N₂) (b₁ : n → M₁) (b₂ : m → M₂)
@@ -148,7 +146,6 @@ section ToMatrix'
 This section deals with the conversion between matrices and sesquilinear maps on `n → R`.
 -/
 
-
 variable [CommSemiring R] [AddCommMonoid N₂] [Module R N₂] [Semiring R₁] [Semiring R₂]
   [SMulCommClass R R N₂] [Semiring S₁] [Semiring S₂] [Module S₁ N₂] [Module S₂ N₂]
   [SMulCommClass S₁ R N₂] [SMulCommClass S₂ R N₂] [SMulCommClass S₂ S₁ N₂]
@@ -158,8 +155,7 @@ variable [DecidableEq n] [DecidableEq m]
 
 /-- The linear equivalence between sesquilinear maps and `n × m` matrices -/
 def LinearMap.toMatrixₛₗ₂' : ((n → R₁) →ₛₗ[σ₁] (m → R₂) →ₛₗ[σ₂] N₂) ≃ₗ[R] Matrix n m N₂ :=
-  {
-    LinearMap.toMatrix₂Aux (R := R) (fun i => stdBasis R₁ (fun _ => R₁) i 1) fun j =>
+  { LinearMap.toMatrix₂Aux (R := R) (fun i => stdBasis R₁ (fun _ => R₁) i 1) fun j =>
       stdBasis R₂ (fun _ => R₂) j
         1 with
     toFun := LinearMap.toMatrix₂Aux (R := R) _ _
@@ -285,11 +281,8 @@ section CommToMatrix'
 -- TODO: Introduce matirx multiplication by matrices of scalars
 
 variable {R : Type*} [CommSemiring R]
-
 variable [Fintype n] [Fintype m]
-
 variable [DecidableEq n] [DecidableEq m]
-
 variable [Fintype n'] [Fintype m']
 variable [DecidableEq n'] [DecidableEq m']
 

@@ -335,11 +335,6 @@ def compl₂ {R₅ : Type*} [CommSemiring R₅] [Module R₅ P] [SMulCommClass R
   map_smul' _ _ := by
     simp only [LinearMap.map_smulₛₗ, lcompₛₗ]
     rfl
-
-/-- Composing a linear map `Q → N` and a bilinear map `M → N → P` to
-form a bilinear map `M → Q → P`. -/
-def compl₂' (g : Q →ₛₗ[σ₄₂] N) : M →ₛₗ[σ₁₃] Q →ₛₗ[σ₄₃] P :=
-  (lcompₛₗ _ _ g).comp f
 #align linear_map.compl₂ LinearMap.compl₂
 
 @[simp]
