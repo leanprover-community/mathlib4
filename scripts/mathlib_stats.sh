@@ -118,10 +118,10 @@ declSummary="$(paste -d' ' <(echo "${newDecls}") <(echo "${oldDecls}") <(echo "$
 ## final report
 printf -- '---\n\n## Weekly stats ([%s...%(%Y-%m-%d)T](%s))\n\n' "${date}" -1 "${gcompare}"
 
-printf -- ' Reference commits: old %s, new %s.\n\n' "${oldCommitURL}" "${currentCommitURL}"
+printf -- '%s\n\n' "${declSummary}"
 
 printf -- '%s, %s total(insertions-deletions)\n\n' "${gdiff}" "${net}"
 
-printf -- 'Declarations:\n%s\n\n'
+printf -- 'Reference commits: old %s, new %s.\n\n' "${oldCommitURL}" "${currentCommitURL}"
 
-printf -- 'Take also a look at the [`Mathlib` stats page](%s).\n' "${declSummary}" "${statsURL}"
+printf -- 'Take also a look at the [`Mathlib` stats page](%s).\n' "${statsURL}"
