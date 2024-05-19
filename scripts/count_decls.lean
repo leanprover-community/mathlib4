@@ -42,14 +42,14 @@ def toString (t : Tally) : String :=
     let tot := h.toList.map (·.toString)
     String.intercalate ",\n" tot ++ ","
   s!"\
-Theorems\n\
-{print t.thms}\n\
-Data\n\
-{print t.data}\n\
-Predicates\n\
-{print t.preds}\n\
-Types\n\
-{print t.types}"
+  Theorems\n\
+  {print t.thms}\n\
+  Data\n\
+  {print t.data}\n\
+  Predicates\n\
+  {print t.preds}\n\
+  Types\n\
+  {print t.types}"
 
 /-- Extend a `Tally` by the ConstantInfo `c`.  It is written to work with `Lean.SMap.foldM`. -/
 def updateTally (s : Tally) (n : Name) (c : ConstantInfo) :
