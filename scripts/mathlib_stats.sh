@@ -26,13 +26,22 @@ gcompare="${mlURL}/compare/${oldCommit}...${currentCommit}"
 printf -v today '%(%Y-%m-%d)T\n' -1
 
 ## insertions-deletions
-net=$(awk -v gd="${gdiff}" 'BEGIN{
-  tot=0
-  n=split(gd, gda, " ")
-  for(i=2; i<=n; i++) {
-    if(gda[i]+0 == gda[i]){ tot=gda[i]-tot }
+#net=$(awk -v gd="${gdiff}" 'BEGIN{
+#  tot=0
+#  n=split(gd, gda, " ")
+#  for(i=2; i<=n; i++) {
+#    if(gda[i]+0 == gda[i]){ tot=gda[i]-tot }
+#  }
+#  print -tot }')
+
+net=$(git diff --shortstat "${oldCommit}"..."${currentCommit}" |
+  awk 'BEGIN{ con=0 }{
+  for(i=1; i<=NF; i++) {
+    if($i+0 == $i){ con++; nums[con]=$i } ## nums= [files changed, insertions, deletions]
   }
-  print -tot }')
+  if(con != 3) { print "Expected 3 fields from `git diff`" }
+  printf("%s files changed, %s lines changed (+%s -%s)\n",
+          nums[1],          nums[2]-nums[3],   nums[2], nums[3]) }')
 
 ######################
 # Lean-based reports #
@@ -120,7 +129,7 @@ printf -- '---\n\n## Weekly stats ([%s...%(%Y-%m-%d)T](%s))\n\n' "${date}" -1 "$
 
 printf -- '%s\n\n' "${declSummary}"
 
-printf -- '%s, %s total(insertions-deletions)\n\n' "${gdiff}" "${net}"
+printf -- '%s\n\n' "${net}"
 
 printf -- 'Reference commits: old %s, new %s.\n\n' "${oldCommitURL}" "${currentCommitURL}"
 
