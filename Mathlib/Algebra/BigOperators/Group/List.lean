@@ -542,6 +542,24 @@ theorem prod_set' (L : List G) (n : ℕ) (a : G) :
 #align list.prod_update_nth' List.prod_set'
 #align list.sum_update_nth' List.sum_set'
 
+@[to_additive]
+lemma prod_map_ite_eq {A : Type} [DecidableEq A] (l : List A) (f g : A → G) (a : A) :
+    (l.map (fun x => ite (x = a) (f x) (g x))).prod
+      =
+    (f a / g a) ^ (l.count a) * (l.map g).prod := by
+  induction l with
+  | nil => simp
+  | cons x xs ih =>
+    simp only [map_cons, prod_cons, nodup_cons, ne_eq, mem_cons, count_cons] at ih ⊢
+    rw [ih]
+    clear ih
+    by_cases hx : x = a
+    · simp only [hx, ↓reduceIte, div_pow, pow_add, pow_one]
+      -- TODO replace with `abel`
+      simp only [mul_assoc, mul_comm (f a / g a) _, mul_comm (f a) _]
+      simp only [mul_right_inj, mul_assoc, mul_comm (g a) _, div_mul_cancel]
+    · simp only [hx, ite_false, ne_comm.mp hx, add_zero, mul_assoc, mul_comm (g x) _]
+
 end CommGroup
 
 theorem sum_const_nat (m n : ℕ) : sum (replicate m n) = m * n :=
