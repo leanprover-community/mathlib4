@@ -2731,49 +2731,4 @@ instance (priority := 100) hasPushouts_of_hasWidePushouts (D : Type u) [h : Cate
 
 end Limits
 
-namespace Over
-
-open Limits
-
-variable {C : Type u} [Category.{v} C]
-
--- Porting note: removed semireducible from the simps config
-/-- Given a morphism `f : X ⟶ Y`, we can take morphisms over `Y` to morphisms over `X` via
-pullbacks. -/
-@[simps! (config := { simpRhs := true}) obj_left obj_hom map_left]
-def baseChange [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X where
-  obj g := Over.mk (pullback.snd : pullback g.hom f ⟶ _)
-  map i := Over.homMk (pullback.map _ _ _ _ i.left (𝟙 _) (𝟙 _) (by simp) (by simp))
-  map_id Z := by
-    apply Over.OverMorphism.ext; apply pullback.hom_ext
-    · dsimp; simp
-    · dsimp; simp
-  map_comp f g := by
-    apply Over.OverMorphism.ext; apply pullback.hom_ext
-    · dsimp; simp
-    · dsimp; simp
-#align category_theory.limits.base_change CategoryTheory.Over.baseChange
-
--- deprecated on 2024-05-15
-@[deprecated] noncomputable alias Limits.baseChange := Over.baseChange
-
-/-- The adjunction `Over.map ⊣ baseChange` -/
-@[simps! unit_app counit_app]
-def mapAdjunction [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over.map f ⊣ baseChange f :=
-  .mkOfHomEquiv <| {
-    homEquiv := fun X Y => {
-      toFun := fun u => Over.homMk (pullback.lift u.left X.hom <| by simp)
-      invFun := fun v => Over.homMk (v.left ≫ pullback.fst) <|
-        by simp [← Over.w v, pullback.condition]
-      left_inv := by aesop_cat
-      right_inv := by
-        intro v
-        ext
-        dsimp
-        ext
-        · simp
-        · simpa using Over.w v |>.symm  } }
-
-end Over
-
 end CategoryTheory
