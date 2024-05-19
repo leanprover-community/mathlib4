@@ -128,7 +128,7 @@ section bounded_mul
 
 open Pointwise Set
 
-/-- A typeclass saying that `(p : R × R) ↦ p.1 * p.2` maps any product of bounded sets to a bounded
+/-- A typeclass saying that `(p : R × R) ↦ p.1 * p.2` maps any pair of bounded sets to a bounded
 set. This property automatically holds for non-unital seminormed rings, but it also holds, e.g.,
 for `ℝ≥0`. -/
 class BoundedMul (R : Type*) [Bornology R] [Mul R] : Prop where
@@ -252,11 +252,6 @@ noncomputable instance : BoundedSub ℝ≥0 where
     have key := hc a_in_s
     simp only [NNReal.ball_zero_eq_Ico, ← z_eq, Set.mem_Ico, zero_le, true_and, gt_iff_lt] at *
     exact tsub_lt_of_lt key
-
-instance NNReal.instProperSpace : ProperSpace ℝ≥0 where
-  isCompact_closedBall x r := by
-    have emb : ClosedEmbedding ((↑) : ℝ≥0 → ℝ) := Isometry.closedEmbedding fun _ ↦ congrFun rfl
-    exact emb.isCompact_preimage (K := Metric.closedBall x r) (isCompact_closedBall _ _)
 
 open Metric in
 instance : BoundedMul ℝ≥0 where

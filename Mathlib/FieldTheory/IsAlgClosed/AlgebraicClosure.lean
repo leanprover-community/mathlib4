@@ -142,10 +142,10 @@ theorem AdjoinMonic.isIntegral (z : AdjoinMonic k) : IsIntegral k z := by
     | h_C => exact isIntegral_algebraMap
     | h_add _ _ ha hb => exact (ha _ rfl).add (hb _ rfl)
     | h_X p f ih =>
-      · refine @IsIntegral.mul k _ _ _ _ _ (Ideal.Quotient.mk (maxIdeal k) _) (ih _ rfl) ?_
-        refine ⟨f, f.2.1, ?_⟩
-        erw [AdjoinMonic.algebraMap, ← hom_eval₂, Ideal.Quotient.eq_zero_iff_mem]
-        exact le_maxIdeal k (Ideal.subset_span ⟨f, rfl⟩)
+      refine @IsIntegral.mul k _ _ _ _ _ (Ideal.Quotient.mk (maxIdeal k) _) (ih _ rfl) ?_
+      refine ⟨f, f.2.1, ?_⟩
+      erw [AdjoinMonic.algebraMap, ← hom_eval₂, Ideal.Quotient.eq_zero_iff_mem]
+      exact le_maxIdeal k (Ideal.subset_span ⟨f, rfl⟩)
 #align algebraic_closure.adjoin_monic.is_integral AlgebraicClosure.AdjoinMonic.isIntegral
 
 theorem AdjoinMonic.exists_root {f : k[X]} (hfm : f.Monic) (hfi : Irreducible f) :
@@ -380,10 +380,11 @@ def ofStepHom (n) : Step k n →ₐ[k] AlgebraicClosureAux k :=
           0 n n.zero_le x }
 #noalign algebraic_closure.of_step_hom
 
-theorem isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosureAux k) := fun z =>
-  IsIntegral.isAlgebraic <|
-    let ⟨n, x, hx⟩ := exists_ofStep k z
-    hx ▸ (Step.isIntegral k n x).map (ofStepHom k n)
+instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosureAux k) :=
+  ⟨fun z =>
+    IsIntegral.isAlgebraic <|
+      let ⟨n, x, hx⟩ := exists_ofStep k z
+      hx ▸ (Step.isIntegral k n x).map (ofStepHom k n)⟩
 
 @[local instance] theorem isAlgClosure : IsAlgClosure k (AlgebraicClosureAux k) :=
   ⟨AlgebraicClosureAux.instIsAlgClosed k, isAlgebraic k⟩
@@ -451,10 +452,9 @@ instance isAlgClosed : IsAlgClosed (AlgebraicClosure k) :=
 
 instance : IsAlgClosure k (AlgebraicClosure k) := by
   rw [isAlgClosure_iff]
-  refine ⟨inferInstance, (algEquivAlgebraicClosureAux k).symm.isAlgebraic <|
-    AlgebraicClosureAux.isAlgebraic _⟩
+  exact ⟨inferInstance, (algEquivAlgebraicClosureAux k).symm.isAlgebraic⟩
 
-theorem isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) :=
+instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) :=
   IsAlgClosure.algebraic
 #align algebraic_closure.is_algebraic AlgebraicClosure.isAlgebraic
 
