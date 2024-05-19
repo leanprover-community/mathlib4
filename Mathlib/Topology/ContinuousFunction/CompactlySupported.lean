@@ -249,17 +249,13 @@ instance instAddMonoid [AddMonoid β] [ContinuousAdd β] : AddMonoid C_c(α, β)
 
 end AddMonoid
 
-variable [TopologicalSpace β] (x : α)
-
-variable [AddCommMonoid β] [ContinuousAdd β] (f g : C_c(α, β))
-
 instance instAddCommMonoid [AddCommMonoid β] [ContinuousAdd β] : AddCommMonoid C_c(α, β) :=
   DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => rfl
 
 open BigOperators
 
 @[simp]
-theorem coe_sum [AddZeroClass β] [ContinuousAdd β] {ι : Type*} (s : Finset ι) (f : ι → C_c(α, β)) :
+theorem coe_sum [AddCommMonoid β] [ContinuousAdd β] {ι : Type*} (s : Finset ι) (f : ι → C_c(α, β)) :
     ⇑(∑ i in s, f i) = ∑ i in s, (f i : α → β) :=
   map_sum coeFnMonoidHom f s
 
