@@ -42,13 +42,13 @@ def toString (t : Tally) : String :=
     let tot := h.toList.map (·.toString)
     String.intercalate ",\n" tot ++ ","
   s!"\
-Theorems
-{print t.thms}
-Data
-{print t.data}
-Predicates
-{print t.preds}
-Types
+Theorems\n\
+{print t.thms}\n\
+Data\n\
+{print t.data}\n\
+Predicates\n\
+{print t.preds}\n\
+Types\n\
 {print t.types}"
 
 variable (mods : HashSet Nat) (env : Environment) in
