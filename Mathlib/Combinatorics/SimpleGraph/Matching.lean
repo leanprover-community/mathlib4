@@ -191,7 +191,7 @@ theorem IsPerfectMatching.even_card [Fintype V] (h : M.IsPerfectMatching) :
 
 lemma IsMatching.induce_connectedComponent (h : M.IsMatching) (c : ConnectedComponent G) :
     (M.induce (M.verts ∩ c.supp)).IsMatching := by
-intro _ hv
+  intro _ hv
   obtain ⟨hv, rfl⟩ := hv
   obtain ⟨w, hvw, hw⟩ := h hv
   use w
