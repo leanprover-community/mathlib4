@@ -107,8 +107,8 @@ done)"
 
 # produces the table summary of the declarations split by type
 declSummary="$(paste -d' ' <(echo "${newDecls}") <(echo "${oldDecls}") <(echo "${plusMinus}") |
-  LC_ALL=en_US.UTF-8 awk 'BEGIN{ print "|Type|New|+-|%|\n|:-:|:-:|:-:|:-:|" }{
-    printf("| %s | %'"'"'d | +%'"'"'d -%'"'"'d | %4.2f%% |\n", $1, $2, $5, $6, ($2-$4)*100/$2)
+  LC_ALL=en_US.UTF-8 awk 'BEGIN{ print "|Type|Total|%|\n|:-:|:-:|:-:|" }{
+    printf("| %s | %'"'"'d (+%'"'"'d -%'"'"'d) | %4.2f%% |\n", $1, $2, $5, $6, ($2-$4)*100/$2)
   }'
 )"
 
