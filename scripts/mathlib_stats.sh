@@ -1,16 +1,17 @@
 #!/usr/bin/env bash
 
 statsURL="https://leanprover-community.github.io/mathlib_stats.html"
+mlURL="https://github.com/leanprover-community/mathlib4"
 
 ## results in 'hash YYYY-MM-DD'
 hashAndDate="$(git log master --since='one week ago' --date=short --pretty="%H %ad" | tail -1)"
 
 ## just the commit hash
 oldCommit="${hashAndDate/% */}"
-oldCommitURL="[${oldCommit:0:10}](https://github.com/leanprover-community/mathlib4/commit/${oldCommit})"
+oldCommitURL="[${oldCommit:0:10}](${mlURL}/commit/${oldCommit})"
 
 currentCommit="$(git rev-parse HEAD)"
-currentCommitURL="[${currentCommit:0:10}](https://github.com/leanprover-community/mathlib4/commit/${currentCommit})"
+currentCommitURL="[${currentCommit:0:10}](${mlURL}/commit/${currentCommit})"
 ## just the date
 date=${hashAndDate/#* /}
 
@@ -19,7 +20,8 @@ date=${hashAndDate/#* /}
 #####################
 
 ## 'x files changed, y insertions(+), z deletions(-)'
-gdiff="$(git diff --shortstat "${oldCommit}"...${currentCommit})"
+gdiff="$(git diff --shortstat "${oldCommit}"..."${currentCommit}")"
+gcompare="${mlURL}/compare/${oldCommit}...${currentCommit}"
 
 printf -v today '%(%Y-%m-%d)T\n' -1
 
@@ -111,7 +113,7 @@ declSummary="$(paste -d' ' <(echo "${newDecls}") <(echo "${oldDecls}") <(echo "$
 )"
 
 ## final report
-printf -- '---\n\n## Weekly stats (%s...%(%Y-%m-%d)T)\n\n' "${date}" -1
+printf -- '---\n\n## Weekly stats ([%s...%(%Y-%m-%d)T](%s))\n\n' "${date}" -1 "${gcompare}"
 
 printf -- ' Reference commits: old %s, new %s.\n\n' "${oldCommitURL}" "${currentCommitURL}"
 
