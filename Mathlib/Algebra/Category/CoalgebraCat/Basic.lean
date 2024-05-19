@@ -98,9 +98,9 @@ abbrev ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Modu
 instance concreteCategory : ConcreteCategory.{v} (CoalgebraCat.{v} R) where
   forget :=
     { obj := fun M => M
-      map := @fun M N f => f.toCoalgHom }
+      map := fun f => f.toCoalgHom }
   forget_faithful :=
-    { map_injective := @fun M N => DFunLike.coe_injective.comp <| Hom.toCoalgHom_injective _ _ }
+    { map_injective := fun {M N} => DFunLike.coe_injective.comp <| Hom.toCoalgHom_injective _ _ }
 
 instance hasForgetToModule : HasForget₂ (CoalgebraCat R) (ModuleCat R) where
   forget₂ :=
