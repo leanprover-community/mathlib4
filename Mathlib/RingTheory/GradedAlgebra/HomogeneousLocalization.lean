@@ -301,6 +301,7 @@ open HomogeneousLocalization HomogeneousLocalization.NumDenSameDeg
 
 variable {𝒜} {x}
 
+/-- Construct an element of `HomogeneousLocalization 𝒜 x` from a homogeneous fraction. -/
 abbrev mk (y : HomogeneousLocalization.NumDenSameDeg 𝒜 x) : HomogeneousLocalization 𝒜 x :=
   Quotient.mk'' y
 
