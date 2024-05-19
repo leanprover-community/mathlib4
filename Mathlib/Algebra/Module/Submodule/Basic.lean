@@ -498,9 +498,9 @@ end Submodule
 
 namespace SubmoduleClass
 
-instance module' {T : Type*} [Semiring R] [AddCommMonoid M] [Semiring S] [Module R M] [SMul S R]
-    [Module S M] [IsScalarTower S R M] [SetLike T M] [AddSubmonoidClass T M] [SMulMemClass T R M]
-    (t : T) : Module S t where
+instance (priority := 75) module' {T : Type*} [Semiring R] [AddCommMonoid M] [Semiring S]
+    [Module R M] [SMul S R] [Module S M] [IsScalarTower S R M] [SetLike T M] [AddSubmonoidClass T M]
+    [SMulMemClass T R M] (t : T) : Module S t where
   one_smul _ := by ext; simp
   mul_smul _ _ _ := by ext; simp [mul_smul]
   smul_zero _ := by ext; simp
@@ -508,8 +508,8 @@ instance module' {T : Type*} [Semiring R] [AddCommMonoid M] [Semiring S] [Module
   add_smul _ _ _ := by ext; simp [add_smul]
   smul_add _ _ _ := by ext; simp [smul_add]
 
-instance module [Semiring R] [AddCommMonoid M] [Module R M] [SetLike S M] [AddSubmonoidClass S M]
-    [SMulMemClass S R M] (s : S) : Module R s :=
+instance (priority := 75) module [Semiring R] [AddCommMonoid M] [Module R M] [SetLike S M]
+    [AddSubmonoidClass S M] [SMulMemClass S R M] (s : S) : Module R s :=
   module' s
 
 end SubmoduleClass
