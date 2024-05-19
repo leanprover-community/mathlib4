@@ -147,7 +147,7 @@ lemma lintegral_exponentialPDF_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ) :
         (f := fun a ↦ -1 * rexp (-(r * a))) _ _]
       · rw [ENNReal.toReal_ofReal_eq_iff.2
           (by set_option tactic.skipAssignedInstances false in norm_num; positivity)]
-        · norm_num; ring
+        norm_num; ring
       · simp only [intervalIntegrable_iff, uIoc_of_le h]
         exact Integrable.const_mul (exp_neg_integrableOn_Ioc hr) _
       · have : Continuous (fun a ↦ rexp (-(r * a))) := by

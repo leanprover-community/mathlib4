@@ -266,8 +266,7 @@ section EquivProd
 
 This is the tuple version of `Finset.sigmaAntidiagonalEquivProd`. -/
 @[simps]
-def sigmaAntidiagonalTupleEquivTuple (k : ℕ) : (Σ n, antidiagonalTuple k n) ≃ (Fin k → ℕ)
-    where
+def sigmaAntidiagonalTupleEquivTuple (k : ℕ) : (Σ n, antidiagonalTuple k n) ≃ (Fin k → ℕ) where
   toFun x := x.2
   invFun x := ⟨∑ i, x i, x, mem_antidiagonalTuple.mpr rfl⟩
   left_inv := fun ⟨_, _, h⟩ => Sigma.subtype_ext (mem_antidiagonalTuple.mp h) rfl

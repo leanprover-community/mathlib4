@@ -304,7 +304,7 @@ def lift' [T0Space β] (f : α → β) : SeparationQuotient α → β :=
 #align uniform_space.separation_quotient.lift SeparationQuotient.lift'
 
 theorem lift'_mk [T0Space β] {f : α → β} (h : UniformContinuous f) (a : α) :
-    lift' f (mk a) = f a := by rw [lift', dif_pos h]; rfl
+    lift' f (mk a) = f a := by rw [lift', dif_pos h, lift_mk]
 #align uniform_space.separation_quotient.lift_mk SeparationQuotient.lift'_mk
 
 theorem uniformContinuous_lift' [T0Space β] (f : α → β) : UniformContinuous (lift' f) := by

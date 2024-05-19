@@ -639,3 +639,8 @@ theorem mk_near_of_forall_near {f : CauSeq ℚ abs} {x : ℝ} {ε : ℝ}
 #align real.mk_near_of_forall_near Real.mk_near_of_forall_near
 
 end Real
+
+/-- A function `f : R → ℝ≥0` is nonarchimedean if it satisfies the strong triangle inequality
+  `f (r + s) ≤ max (f r) (f s)` for all `r s : R`. -/
+def IsNonarchimedean {A : Type _} [Add A] (f : A → ℝ) : Prop :=
+  ∀ r s, f (r + s) ≤ max (f r) (f s)
