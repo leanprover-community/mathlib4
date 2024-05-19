@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Ring.OrderSynonym
+import Mathlib.Algebra.Order.Ring.Synonym
 
 /-!
 # Action instances for `OrderDual`
@@ -15,7 +15,7 @@ are already defined in `Mathlib.Algebra.Order.Group.Synonym`.
 ## See also
 
 * `Mathlib.Algebra.Order.Group.Synonym`
-* `Mathlib.Algebra.Ring.OrderSynonym`
+* `Mathlib.Algebra.Order.Ring.Synonym`
 -/
 
 namespace OrderDual
