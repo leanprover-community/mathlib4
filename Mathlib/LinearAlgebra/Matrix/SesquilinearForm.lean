@@ -344,8 +344,8 @@ variable (b₁ : Basis n R M₁) (b₂ : Basis m R M₂)
 `n`-by-`m` matrices with entries in `R`, if `b₁` and `b₂` are `R`-bases for `M₁` and `M₂`,
 respectively. -/
 noncomputable def LinearMap.toMatrix₂ : (M₁ →ₗ[R] M₂ →ₗ[R] R) ≃ₗ[R] Matrix n m R :=
-  (b₁.equivFun.arrowCongr (b₂.equivFun.arrowCongr (LinearEquiv.refl R R))).trans
-    LinearMap.toMatrix₂'
+  (b₁.equivFun.arrowCongr (b₂.equivFun.arrowCongr (LinearEquiv.refl R R) (fun _ ↦ congrFun rfl))
+    (fun _ ↦ congrFun (by exact rfl))).trans LinearMap.toMatrix₂'
 #align linear_map.to_matrix₂ LinearMap.toMatrix₂
 
 /-- `Matrix.toLinearMap₂ b₁ b₂` is the equivalence between `R`-bilinear forms on `M` and
