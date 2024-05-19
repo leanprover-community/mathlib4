@@ -7,8 +7,6 @@ jobs:
   mathlib-report:
     runs-on: pr
     steps:
-    runs-on: ubuntu-latest
-    steps:
 
       - name: Checkout master branch
         uses: adomani/get_mathlib4_with_cache@v1
