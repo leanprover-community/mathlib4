@@ -191,9 +191,8 @@ The preimage of basic open set `D(a/f^n)` in `Spec A⁰_f` under the forward map
 `Spec A⁰_f` is the basic open set `D(a) ∩ D(f)` in `Proj A`. This lemma is used to prove that the
 forward map is continuous.
 -/
-theorem preimage_basicOpen (z) :
-    toFun f ⁻¹'
-      (PrimeSpectrum.basicOpen (R := A⁰_ f) (Quotient.mk'' z) : Set (PrimeSpectrum (A⁰_ f))) =
+theorem preimage_basicOpen (z : HomogeneousLocalization.NumDenSameDeg 𝒜 (.powers f)) :
+    toFun f ⁻¹' (sbo (HomogeneousLocalization.mk z) : Set (PrimeSpectrum (A⁰_ f))) =
       Subtype.val ⁻¹' (pbo z.num.1 : Set (ProjectiveSpectrum 𝒜)) :=
   Set.ext fun y ↦ (mk_mem_carrier y z).not
 #align algebraic_geometry.Proj_iso_Spec_Top_component.to_Spec.preimage_eq AlgebraicGeometry.ProjIsoSpecTopComponent.ToSpec.preimage_basicOpen
@@ -216,9 +215,8 @@ def toSpec (f : A) : (Proj.T| pbo f) ⟶ Spec.T A⁰_ f where
 #align algebraic_geometry.Proj_iso_Spec_Top_component.to_Spec AlgebraicGeometry.ProjIsoSpecTopComponent.toSpec
 
 variable {𝒜} in
-lemma toSpec_preimage_basicOpen {f} (z) :
-    toSpec 𝒜 f ⁻¹'
-      (PrimeSpectrum.basicOpen (R := A⁰_ f) (Quotient.mk'' z) : Set (PrimeSpectrum (A⁰_ f))) =
+lemma toSpec_preimage_basicOpen {f} (z : HomogeneousLocalization.NumDenSameDeg 𝒜 (.powers f)) :
+    toSpec 𝒜 f ⁻¹' (sbo (HomogeneousLocalization.mk z) : Set (PrimeSpectrum (A⁰_ f))) =
       Subtype.val ⁻¹' (pbo z.num.1 : Set (ProjectiveSpectrum 𝒜)) :=
   ToSpec.preimage_basicOpen f z
 
@@ -258,12 +256,12 @@ The set `{a | aᵢᵐ/fⁱ ∈ q}`
 * is relevant, as proved in `carrier.relevant`.
 -/
 def carrier (q : Spec.T A⁰_ f) : Set A :=
-  {a | ∀ i, (Quotient.mk'' ⟨m * i, ⟨proj 𝒜 i a ^ m, by mem_tac⟩,
+  {a | ∀ i, (HomogeneousLocalization.mk ⟨m * i, ⟨proj 𝒜 i a ^ m, by mem_tac⟩,
               ⟨f ^ i, by rw [mul_comm]; mem_tac⟩, ⟨_, rfl⟩⟩ : A⁰_ f) ∈ q.1}
 #align algebraic_geometry.Proj_iso_Spec_Top_component.from_Spec.carrier AlgebraicGeometry.ProjIsoSpecTopComponent.FromSpec.carrier
 
 theorem mem_carrier_iff (q : Spec.T A⁰_ f) (a : A) :
-    a ∈ carrier f_deg q ↔ ∀ i, (Quotient.mk'' ⟨m * i, ⟨proj 𝒜 i a ^ m, by mem_tac⟩,
+    a ∈ carrier f_deg q ↔ ∀ i, (HomogeneousLocalization.mk ⟨m * i, ⟨proj 𝒜 i a ^ m, by mem_tac⟩,
       ⟨f ^ i, by rw [mul_comm]; mem_tac⟩, ⟨_, rfl⟩⟩ : A⁰_ f) ∈ q.1 :=
   Iff.rfl
 #align algebraic_geometry.Proj_iso_Spec_Top_component.from_Spec.mem_carrier_iff AlgebraicGeometry.ProjIsoSpecTopComponent.FromSpec.mem_carrier_iff
@@ -285,9 +283,9 @@ theorem mem_carrier_iff' (q : Spec.T A⁰_ f) (a : A) :
 
 theorem mem_carrier_iff_of_mem (hm : 0 < m) (q : Spec.T A⁰_ f) (a : A) {n} (hn : a ∈ 𝒜 n) :
     a ∈ carrier f_deg q ↔
-      (Quotient.mk'' ⟨m * n, ⟨a ^ m, pow_mem_graded m hn⟩,
+      (HomogeneousLocalization.mk ⟨m * n, ⟨a ^ m, pow_mem_graded m hn⟩,
         ⟨f ^ n, by rw [mul_comm]; mem_tac⟩, ⟨_, rfl⟩⟩ : A⁰_ f) ∈ q.asIdeal := by
-  trans (Quotient.mk'' ⟨m * n, ⟨proj 𝒜 n a ^ m, by mem_tac⟩,
+  trans (HomogeneousLocalization.mk ⟨m * n, ⟨proj 𝒜 n a ^ m, by mem_tac⟩,
     ⟨f ^ n, by rw [mul_comm]; mem_tac⟩, ⟨_, rfl⟩⟩ : A⁰_ f) ∈ q.asIdeal
   · refine ⟨fun h ↦ h n, fun h i ↦ if hi : i = n then hi ▸ h else ?_⟩
     convert zero_mem q.asIdeal
@@ -298,7 +296,7 @@ theorem mem_carrier_iff_of_mem (hm : 0 < m) (q : Spec.T A⁰_ f) (a : A) {n} (hn
 
 theorem mem_carrier_iff_of_mem_mul (hm : 0 < m)
     (q : Spec.T A⁰_ f) (a : A) {n} (hn : a ∈ 𝒜 (n * m)) :
-    a ∈ carrier f_deg q ↔ (Quotient.mk'' ⟨m * n, ⟨a, mul_comm n m ▸ hn⟩,
+    a ∈ carrier f_deg q ↔ (HomogeneousLocalization.mk ⟨m * n, ⟨a, mul_comm n m ▸ hn⟩,
         ⟨f ^ n, by rw [mul_comm]; mem_tac⟩, ⟨_, rfl⟩⟩ : A⁰_ f) ∈ q.asIdeal := by
   rw [mem_carrier_iff_of_mem f_deg hm q a hn, iff_iff_eq, eq_comm,
     ← Ideal.IsPrime.pow_mem_iff_mem (α := A⁰_ f) inferInstance m hm]
@@ -323,25 +321,25 @@ theorem num_mem_carrier_iff (hm : 0 < m) (q : Spec.T A⁰_ f)
 theorem carrier.add_mem (q : Spec.T A⁰_ f) {a b : A} (ha : a ∈ carrier f_deg q)
     (hb : b ∈ carrier f_deg q) : a + b ∈ carrier f_deg q := by
   refine' fun i => (q.2.mem_or_mem _).elim id id
-  change (Quotient.mk'' ⟨_, _, _, _⟩ : A⁰_ f) ∈ q.1; dsimp only [Subtype.coe_mk]
+  change (HomogeneousLocalization.mk ⟨_, _, _, _⟩ : A⁰_ f) ∈ q.1; dsimp only [Subtype.coe_mk]
   simp_rw [← pow_add, map_add, add_pow, mul_comm, ← nsmul_eq_mul]
   let g : ℕ → A⁰_ f := fun j => (m + m).choose j •
       if h2 : m + m < j then (0 : A⁰_ f)
       else
         -- Porting note: inlining `l`, `r` causes a "can't synth HMul A⁰_ f A⁰_ f ?" error
         if h1 : j ≤ m then
-          letI l : A⁰_ f := Quotient.mk''
+          letI l : A⁰_ f := HomogeneousLocalization.mk
             ⟨m * i, ⟨proj 𝒜 i a ^ j * proj 𝒜 i b ^ (m - j), ?_⟩,
               ⟨_, by rw [mul_comm]; mem_tac⟩, ⟨i, rfl⟩⟩
-          letI r : A⁰_ f := Quotient.mk''
+          letI r : A⁰_ f := HomogeneousLocalization.mk
             ⟨m * i, ⟨proj 𝒜 i b ^ m, by mem_tac⟩,
               ⟨_, by rw [mul_comm]; mem_tac⟩, ⟨i, rfl⟩⟩
           l * r
         else
-          letI l : A⁰_ f := Quotient.mk''
+          letI l : A⁰_ f := HomogeneousLocalization.mk
             ⟨m * i, ⟨proj 𝒜 i a ^ m, by mem_tac⟩,
               ⟨_, by rw [mul_comm]; mem_tac⟩, ⟨i, rfl⟩⟩
-          letI r : A⁰_ f := Quotient.mk''
+          letI r : A⁰_ f := HomogeneousLocalization.mk
             ⟨m * i, ⟨proj 𝒜 i a ^ (j - m) * proj 𝒜 i b ^ (m + m - j), ?_⟩,
               ⟨_, by rw [mul_comm]; mem_tac⟩, ⟨i, rfl⟩⟩
           l * r
@@ -390,8 +388,8 @@ theorem carrier.smul_mem (c x : A) (hx : x ∈ carrier f_deg q) : c • x ∈ ca
     simp_rw [proj_apply, smul_eq_mul, coe_decompose_mul_of_left_mem 𝒜 i ha]
     -- Porting note: having trouble with Mul instance
     let product : A⁰_ f :=
-      Mul.mul (Quotient.mk'' ⟨_, ⟨a ^ m, pow_mem_graded m ha⟩, ⟨_, ?_⟩, ⟨n, rfl⟩⟩ : A⁰_ f)
-          (Quotient.mk'' ⟨_, ⟨proj 𝒜 (i - n) x ^ m, by mem_tac⟩, ⟨_, ?_⟩, ⟨i - n, rfl⟩⟩ : A⁰_ f)
+      Mul.mul (HomogeneousLocalization.mk ⟨_, ⟨a ^ m, pow_mem_graded m ha⟩, ⟨_, ?_⟩, ⟨n, rfl⟩⟩)
+        (HomogeneousLocalization.mk ⟨_, ⟨proj 𝒜 (i - n) x ^ m, by mem_tac⟩, ⟨_, ?_⟩, ⟨i - n, rfl⟩⟩)
     · split_ifs with h
       · convert_to product ∈ q.1
         · dsimp [product]
@@ -535,8 +533,9 @@ variable {𝒜} in
 lemma image_basicOpen_eq_basicOpen (a : A) (i : ℕ) :
     toSpec 𝒜 f '' (Subtype.val ⁻¹' (pbo (decompose 𝒜 a i) : Set (ProjectiveSpectrum 𝒜))) =
     (PrimeSpectrum.basicOpen (R := A⁰_ f) <|
-      Quotient.mk'' ⟨m * i, ⟨decompose 𝒜 a i ^ m, SetLike.pow_mem_graded _ (Submodule.coe_mem _)⟩,
-        ⟨f^i, by rw [mul_comm]; exact SetLike.pow_mem_graded _ f_deg⟩, ⟨i, rfl⟩⟩).1 :=
+      HomogeneousLocalization.mk
+        ⟨m * i, ⟨decompose 𝒜 a i ^ m, SetLike.pow_mem_graded _ (Submodule.coe_mem _)⟩,
+          ⟨f^i, by rw [mul_comm]; exact SetLike.pow_mem_graded _ f_deg⟩, ⟨i, rfl⟩⟩).1 :=
   Set.preimage_injective.mpr (toSpec_surjective 𝒜 f_deg hm) <|
     Set.preimage_image_eq _ (toSpec_injective 𝒜 f_deg hm) ▸ by
   rw [Opens.carrier_eq_coe, toSpec_preimage_basicOpen, ProjectiveSpectrum.basicOpen_pow 𝒜 _ m hm]

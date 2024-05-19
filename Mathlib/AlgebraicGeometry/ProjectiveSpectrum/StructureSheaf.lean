@@ -73,7 +73,7 @@ variable {𝒜}
 -/
 def IsFraction {U : Opens (ProjectiveSpectrum.top 𝒜)} (f : ∀ x : U, at x.1) : Prop :=
   ∃ (i : ℕ) (r s : 𝒜 i) (s_nin : ∀ x : U, s.1 ∉ x.1.asHomogeneousIdeal),
-    ∀ x : U, f x = Quotient.mk'' ⟨i, r, s, s_nin x⟩
+    ∀ x : U, f x = .mk ⟨i, r, s, by exact s_nin x⟩
 #align algebraic_geometry.projective_spectrum.structure_sheaf.is_fraction AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.IsFraction
 variable (𝒜)
 
@@ -319,7 +319,7 @@ def sectionInBasicOpen (x : ProjectiveSpectrum.top 𝒜) :
     ∀ f : HomogeneousLocalization.NumDenSameDeg 𝒜 x.asHomogeneousIdeal.toIdeal.primeCompl,
     (Proj.structureSheaf 𝒜).1.obj (op (ProjectiveSpectrum.basicOpen 𝒜 f.den)) :=
   fun f =>
-  ⟨fun y => Quotient.mk'' ⟨f.deg, f.num, f.den, y.2⟩, fun y =>
+  ⟨fun y => HomogeneousLocalization.mk ⟨f.deg, f.num, f.den, y.2⟩, fun y =>
     ⟨ProjectiveSpectrum.basicOpen 𝒜 f.den, y.2,
       ⟨𝟙 _, ⟨f.deg, ⟨f.num, f.den, _, fun _ => rfl⟩⟩⟩⟩⟩
 #align algebraic_geometry.section_in_basic_open AlgebraicGeometry.sectionInBasicOpen
@@ -394,8 +394,8 @@ theorem Proj.stalkIso'_germ (U : Opens (ProjectiveSpectrum.top 𝒜)) (x : U)
   stalkToFiberRingHom_germ' 𝒜 U x x.2 s
 
 @[simp]
-theorem Proj.stalkIso'_symm_mk'' (x) (f) :
-    ((Proj.stalkIso' 𝒜 x).symm (Quotient.mk'' f)) = (Proj.structureSheaf 𝒜).presheaf.germ
+theorem Proj.stalkIso'_symm_mk (x) (f) :
+    (Proj.stalkIso' 𝒜 x).symm (.mk f) = (Proj.structureSheaf 𝒜).presheaf.germ
       ⟨x, mem_basicOpen_den _ x f⟩ (sectionInBasicOpen _ x f) := rfl
 
 /-- `Proj` of a graded ring as a `LocallyRingedSpace`-/
