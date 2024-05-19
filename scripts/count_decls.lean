@@ -36,6 +36,26 @@ structure TallyNames where
   types : HashSet Name := {}
   data  : HashSet Name := {}
 
+/-- `toString t` produces a string where each line is either
+* the (human-readable) name of a field of `t : TallyNames`, or
+* the name of a single declaration followed by `,`.
+
+This format (`,` or not at the end, single declaration per line) is used
+by the script to extract comparison data.
+-/
+def toString (t : TallyNames) : String :=
+  let print (h : HashSet Name) : String :=
+    let tot := h.toList.map (·.toString)
+    String.intercalate ",\n" tot ++ ","
+  s!"Theorems
+{print t.thms}
+Data
+{print t.data}
+Predicates
+{print t.preds}
+Types
+{print t.types}"
+
 /-- `MathlibModIdxs env` returns the `ModuleIdx`s corresponding to `Mathlib` files
 that are in the provided environment. -/
 def MathlibModIdxs (env : Environment) : IO (HashSet Nat) := do
@@ -75,11 +95,9 @@ def mkTallyNames (s : TallyNames) : MetaM TallyNames := do
 /-- `count_decls` prints a tally of theorems, types, predicates and data in
 `Mathlib`, `Batteries` and core. -/
 elab "count_decls" : command => do
-  let (s, _) ← Command.liftCoreM do Meta.MetaM.run do (mkTallyNames {})
-  logInfo s!"Theorems\n{s.thms.toArray}\nData\n{s.data.toArray}\nPredicates\n{s.preds.toArray}\nTypes\n{s.types.toArray}"
---  logInfo m!"{s.types.toArray}"
---  logInfo s!"Theorems {s.thms}\nData {s.data}\nPredicates {s.preds}\nTypes {s.types}"
+  let (s, _) ← Command.liftCoreM do MetaM.run do (mkTallyNames {})
+  IO.println (toString s)
 
-count_decls
+--count_decls
 
 end PeriodicReports

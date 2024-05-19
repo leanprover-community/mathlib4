@@ -48,8 +48,7 @@ net=$(awk -v gd="${gdiff}" 'BEGIN{
 # ...
 # ```
 getCountDecls () {
-  sed 's=^--\(count_decls\)=\1=' scripts/count_decls.lean | lake env lean --stdin |
-    sed -z 's=, *=,\n=g; s=[ [#]==g; s=]=,=g; s=\n\n*=\n=g'
+  sed 's=^--\(count_decls\)=\1=' scripts/count_decls.lean | lake env lean --stdin
 }
 
 # extracts
@@ -57,8 +56,12 @@ getCountDecls () {
 # Predicates yy
 # ...
 tallyCountDecls () {
+              # `count` is the index of the various `type`s -- the fields of `TallyNames`
   awk 'BEGIN{ count=0 }
+    # lines that do not end in `,` represent types and we accumulate them in `type`
+    # we also start a tally of them in `acc[count]`
     /[^,]$/ { count++; type[count]=$0; acc[count]=0; }
+    # lines that end in `,` represent declarations to be tallied
     /,$/ { acc[count]++ } END{
     for(t=1; t<=count; t++) { printf("%s %s\n", type[t], acc[t]) }
   }' "${1}"
