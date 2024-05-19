@@ -278,9 +278,8 @@ theorem algebraMap (r : R) : (algebraMap R (K_hat R K) r).IsFiniteAdele := by
     simp [h]
   intro v
   letI : Valued K ℤₘ₀ := adicValued v
-  rw [mem_adicCompletionIntegers, ProdAdicCompletions.algebraMap_apply]
-  unfold IsDedekindDomain.HeightOneSpectrum.adicCompletion
-  rw [Valued.valuedCompletion_apply]
+  rw [mem_adicCompletionIntegers, ProdAdicCompletions.algebraMap_apply,
+    Valued.valuedCompletion_apply]
   exact v.valuation_le_one _
 
 theorem algebraMap' (k : K) : (_root_.algebraMap K (K_hat R K) k).IsFiniteAdele := by
