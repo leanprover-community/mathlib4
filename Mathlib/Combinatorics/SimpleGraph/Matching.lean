@@ -79,30 +79,26 @@ theorem IsMatching.toEdge_eq_toEdge_of_adj (h : M.IsMatching)
 
 lemma IsMatching.map_hom_ofLE_IsMatching (h : M.IsMatching) (hGG' : G ≤ G') :
     (M.map (Hom.ofLE hGG')).IsMatching := by
-  intro v hv
-  obtain ⟨ v' , ⟨ hv' , hv'' ⟩ ⟩ := (Set.mem_image _ _ _).mp hv
-  obtain ⟨ w' , hw' ⟩ := h hv'
-  use w'
-  dsimp at hw' ⊢
-  simpa only [Relation.map_id_id] using hv'' ▸ hw'
+  intro _ hv
+  obtain ⟨_, hv, hv'⟩ := Set.mem_image _ _ _ |>.mp hv
+  obtain ⟨w, hw⟩ := h hv
+  use w
+  simpa using hv' ▸ hw
 
 lemma sup_IsMatching (hM : M.IsMatching) (hM' : M'.IsMatching)
-    (hd : Disjoint (M.support) (M'.support)) : (M ⊔ M').IsMatching := by
+    (hd : Disjoint M.support M'.support) : (M ⊔ M').IsMatching := by
   intro v hv
-  rw [SimpleGraph.Subgraph.verts_sup] at hv
-  have aux {N N' : Subgraph G} (hN : N.IsMatching) (hd : Disjoint (N.support) (N'.support))
+  have aux {N N' : Subgraph G} (hN : N.IsMatching) (hd : Disjoint N.support N'.support)
     (hmN: v ∈ N.verts) : ∃! w, (N ⊔ N').Adj v w := by
-    obtain ⟨ w , hw ⟩ := hN hmN
+    obtain ⟨w, hw⟩ := hN hmN
     use w
-    refine ⟨SimpleGraph.Subgraph.sup_adj.mpr (.inl hw.1), ?_⟩
+    refine ⟨sup_adj.mpr (.inl hw.1), ?_⟩
     intro y hy
-    rw [SimpleGraph.Subgraph.sup_adj] at hy
     cases hy with
-    | inl h1 => exact hw.2 y h1
-    | inr h2 =>
+    | inl h => exact hw.2 y h
+    | inr h =>
       rw [Set.disjoint_left] at hd
-      simpa [(SimpleGraph.Subgraph.mem_support _).mpr ⟨w, hw.1⟩,
-        (SimpleGraph.Subgraph.mem_support _).mpr ⟨y, h2⟩] using @hd v
+      simpa [(mem_support _).mpr ⟨w, hw.1⟩, (mem_support _).mpr ⟨y, h⟩] using @hd v
   cases Set.mem_or_mem_of_mem_union hv with
   | inl hmM => exact aux hM hd hmM
   | inr hmM' =>
@@ -113,52 +109,36 @@ lemma iSup_IsMatching {ι : Sort _} {f : ι → Subgraph G} (hM : (i : ι) → (
     (hd : (i j : ι) → (i ≠ j) →  Disjoint ((f i).support) ((f j).support)) :
     (⨆ i , f i).IsMatching := by
   intro v hv
-  obtain ⟨ i , hi ⟩ := Set.mem_iUnion.mp (SimpleGraph.Subgraph.verts_iSup ▸ hv)
-  obtain ⟨ w , hw ⟩ := hM i hi
+  obtain ⟨i , hi⟩ := Set.mem_iUnion.mp (verts_iSup ▸ hv)
+  obtain ⟨w , hw⟩ := hM i hi
   use w
-  refine ⟨SimpleGraph.Subgraph.iSup_adj.mpr ⟨i, hw.1⟩, ?_⟩
+  refine ⟨iSup_adj.mpr ⟨i, hw.1⟩, ?_⟩
   intro y hy
-  obtain ⟨ i' , hi' ⟩ := SimpleGraph.Subgraph.iSup_adj.mp hy
-  if heq : i = i' then
-    exact hw.2 y (heq.symm ▸ hi')
-  else
-    have := hd _ _ heq
+  obtain ⟨i' , hi'⟩ := iSup_adj.mp hy
+  by_cases heq : i = i'
+  · exact hw.2 y (heq.symm ▸ hi')
+  · have := hd _ _ heq
     rw [Set.disjoint_left] at this
-    simpa [(SimpleGraph.Subgraph.mem_support _).mpr ⟨w, hw.1⟩,
-        (SimpleGraph.Subgraph.mem_support _).mpr ⟨y, hi'⟩] using @this v
+    simpa [(mem_support _).mpr ⟨w, hw.1⟩, (mem_support _).mpr ⟨y, hi'⟩] using @this v
 
 lemma subgraphOfAdj_IsMatching (h : G.Adj v w) : (G.subgraphOfAdj h).IsMatching := by
-  intro v' hv'
-  simp only [subgraphOfAdj_verts, Set.mem_insert_iff, Set.mem_singleton_iff] at hv'
-  cases hv' with
-  | inl hl =>
-    use w
-    simp only [subgraphOfAdj_adj, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, and_true,
-      Prod.swap_prod_mk]
-    refine ⟨.inl hl.symm, ?_⟩
-    intro y hy
-    aesop
-  | inr hr =>
-    use v
-    simp only [subgraphOfAdj_adj, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk,
-      true_and]
-    refine ⟨.inr hr.symm, ?_⟩
-    intro y hy
-    aesop
+  intro _ hv
+  rw [subgraphOfAdj_verts, Set.mem_insert_iff, Set.mem_singleton_iff] at hv
+  cases hv with
+  | inl => use w; aesop
+  | inr => use v; aesop
 
 lemma coe_IsMatching {G' : Subgraph G} {M : Subgraph G'.coe} (hM : M.IsMatching) :
     M.coeSubgraph.IsMatching := by
-  intro v hv
-  obtain ⟨ w , hw ⟩ := hM (Set.mem_of_mem_image_val ((Subgraph.coeSubgraph_verts M).symm ▸ hv))
+  intro _ hv
+  obtain ⟨w, hw⟩ := hM <| Set.mem_of_mem_image_val <| M.coeSubgraph_verts.symm ▸ hv
   use w
-  constructor
-  · simp_rw [Subgraph.coeSubgraph_adj]
-    simp only [Subtype.forall, Subtype.coe_eta, Subtype.coe_prop, exists_const] at *
-    obtain ⟨ v' , hv' ⟩ := (Set.mem_image _ _ _).mp ((Subgraph.coeSubgraph_verts M).symm ▸ hv)
-    exact ⟨hv'.2 ▸ v'.2, hw.1⟩
-  · intro y hy
-    obtain ⟨ hv' , ⟨ hw' , hvw ⟩ ⟩ := (SimpleGraph.Subgraph.coeSubgraph_adj _ _ _).mp hy
-    rw [← hw.2 ⟨ y , hw' ⟩ hvw]
+  refine ⟨?_, fun y hy => ?_⟩
+  · obtain ⟨v, hv⟩ := (Set.mem_image _ _ _).mp <| (coeSubgraph_verts M).symm ▸ hv
+    simp only [coeSubgraph_adj, Subtype.coe_eta, Subtype.coe_prop, exists_const]
+    exact ⟨hv.2 ▸ v.2, hw.1⟩
+  · obtain ⟨_, hw', hvw⟩ := (coeSubgraph_adj _ _ _).mp hy
+    rw [← hw.2 ⟨y, hw'⟩ hvw]
 
 /--
 The subgraph `M` of `G` is a perfect matching on `G` if it's a matching and every vertex `G` is
@@ -211,14 +191,11 @@ theorem IsPerfectMatching.even_card [Fintype V] (h : M.IsPerfectMatching) :
 
 lemma IsMatching.induce_connectedComponent (h : M.IsMatching) (c : ConnectedComponent G) :
     (M.induce (M.verts ∩ c.supp)).IsMatching := by
-  intro v hv
-  simp only [induce_verts, Set.mem_inter_iff, ConnectedComponent.mem_supp_iff] at hv
+intro _ hv
   obtain ⟨hv, rfl⟩ := hv
   obtain ⟨w, hvw, hw⟩ := h hv
   use w
-  simp only [induce_adj, Set.mem_inter_iff, hv, ConnectedComponent.mem_supp_iff, and_self, and_imp,
-    true_and, ConnectedComponent.eq, hw, hvw, M.edge_vert hvw.symm, (M.adj_sub hvw).symm.reachable]
-  exact fun _ _ _ ↦ hw _
+  simpa [hv, hvw, M.edge_vert hvw.symm, (M.adj_sub hvw).symm.reachable] using fun _ _ _ ↦ hw _
 
 
 lemma IsPerfectMatching.induce_connectedComponent_isMatching (h : M.IsPerfectMatching)
@@ -234,8 +211,7 @@ section Finite
 variable [Fintype V] [DecidableEq V] [DecidableRel G.Adj]
 
 instance instDecidableMemSupp (c : G.ConnectedComponent) (v : V) : Decidable (v ∈ c.supp) :=
-  c.recOn (fun w ↦ decidable_of_iff (G.Reachable v w) $ by simp)
-    (fun _ _ _ _ ↦ Subsingleton.elim _ _)
+  c.recOn fun w ↦ decidable_of_iff (G.Reachable v w) <| by simp fun _ _ _ _ ↦ Subsingleton.elim _ _
 
 lemma even_card_of_isPerfectMatching (c : ConnectedComponent G) (hM : M.IsPerfectMatching) :
     Even (Fintype.card c.supp) := by
@@ -248,23 +224,20 @@ lemma odd_matches_node_outside {u : Set V} {c : ConnectedComponent (Subgraph.del
     have hMmatch : (M.induce c.supp).IsMatching := by
       intro v hv
       obtain ⟨w, hw⟩ := hM.1 (hM.2 v)
-      obtain ⟨⟨v', hv'⟩, ⟨hv , rfl⟩⟩ := hv
+      obtain ⟨⟨v', hv'⟩, hv , rfl⟩ := hv
       use w
-      have hwnu : w ∉ u := fun hw' ↦ h w hw' ⟨v', hv'⟩ (hw.1) hv
-      refine ⟨⟨⟨⟨v', hv'⟩, ⟨hv, rfl⟩⟩, ⟨?_, hw.1⟩⟩, fun _ hy ↦ hw.2 _ hy.2.2⟩
-      apply ConnectedComponent.mem_coe_supp_of_adj ⟨⟨v', hv'⟩, ⟨hv, rfl⟩⟩ ⟨by trivial, hwnu⟩
+      have hwnu : w ∉ u := fun hw' ↦ h w hw' ⟨v', hv'⟩ hw.1 hv
+      refine ⟨⟨⟨⟨v', hv'⟩, hv, rfl⟩, ?_, hw.1⟩, fun _ hy ↦ hw.2 _ hy.2.2⟩
+      apply mem_coe_supp_of_adj ⟨⟨v', hv'⟩, ⟨hv, rfl⟩⟩ ⟨by trivial, hwnu⟩
       simp only [Subgraph.induce_verts, Subgraph.verts_top, Set.mem_diff, Set.mem_univ, true_and,
-        Subgraph.induce_adj, hwnu, not_false_eq_true, and_self, Subgraph.top_adj, M.adj_sub hw.1,
-        and_true] at hv' ⊢
+        Subgraph.induce_adj, Subgraph.top_adj, M.adj_sub hw.1] at hv' ⊢
       trivial
-
     apply Nat.odd_iff_not_even.mp codd
-    haveI : Fintype ↑(Subgraph.induce M (Subtype.val '' supp c)).verts := Fintype.ofFinite _
+    haveI : Fintype (Subgraph.induce M (Subtype.val '' c.supp)).verts := Fintype.ofFinite _
+    haveI : Fintype c.supp := Fintype.ofFinite _
     have hMeven := Subgraph.IsMatching.even_card hMmatch
-    haveI : Fintype (c.supp) := Fintype.ofFinite _
-    simp only [Subgraph.induce_verts, Subgraph.verts_top, Set.toFinset_image,
-      Nat.card_eq_fintype_card, Set.toFinset_image,
-      Finset.card_image_of_injective _ (Subtype.val_injective), Set.toFinset_card] at hMeven ⊢
+    simp only [Subgraph.induce_verts, Set.toFinset_image, Nat.card_eq_fintype_card,
+      Set.toFinset_card, Finset.card_image_of_injective _ (Subtype.val_injective)] at hMeven ⊢
     exact hMeven
 
 end Finite

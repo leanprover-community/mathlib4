@@ -983,16 +983,14 @@ theorem singletonSubgraph_snd_le_subgraphOfAdj {u v : V} {h : G.Adj u v} :
   exact fun _ _ ↦ False.elim
 #align simple_graph.singleton_subgraph_snd_le_subgraph_of_adj SimpleGraph.singletonSubgraph_snd_le_subgraphOfAdj
 
-lemma subgraphOfAdj_support {u v : V}
-    (h : G.Adj u v) : (G.subgraphOfAdj h).support = {u , v} := by
-  ext v'
-  rw [SimpleGraph.Subgraph.mem_support]
-  simp only [Set.mem_insert_iff, Set.mem_singleton_iff,
-    subgraphOfAdj_adj, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
-  constructor
-  · rintro ⟨ w , hw ⟩
-    exact hw.elim (fun h1 ↦ .inl h1.1.symm) (fun hr ↦ .inr hr.2.symm)
-  · exact fun hv' ↦ hv'.elim (fun hl ↦ ⟨v, .inl ⟨hl.symm, rfl⟩⟩) (fun hr ↦ ⟨u, .inr ⟨rfl, hr.symm⟩⟩)
+lemma subgraphOfAdj_support {u v : V} (h : G.Adj u v) :
+    (G.subgraphOfAdj h).support = {u , v} := by
+  ext
+  rw [Subgraph.mem_support]
+  simp only [subgraphOfAdj_adj, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
+  refine ⟨?_, fun h ↦ h.elim (fun hl ↦ ⟨v, .inl ⟨hl.symm, rfl⟩⟩) fun hr ↦ ⟨u, .inr ⟨rfl, hr.symm⟩⟩⟩
+  rintro ⟨_, hw⟩
+  exact hw.elim (fun h1 ↦ .inl h1.1.symm) fun hr ↦ .inr hr.2.symm
 
 end MkProperties
 

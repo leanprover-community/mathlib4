@@ -2297,16 +2297,10 @@ def isoEquivSupp (φ : G ≃g G') (C : G.ConnectedComponent) :
 lemma mem_coe_supp_of_adj {H : Subgraph G} {c : ConnectedComponent H.coe}
     (hv : v ∈ (c.supp : Set V)) (hw : w ∈ H.verts)
     (hadj : H.Adj v w) : w ∈ (c.supp : Set V) := by
-  rw [Set.mem_image]
-  obtain ⟨v' , hv'⟩ := hv
+  obtain ⟨_, h⟩ := hv
   use ⟨w, hw⟩
-  rw [ConnectedComponent.mem_supp_iff]
-  refine ⟨?_, rfl⟩
-  rw [← (ConnectedComponent.mem_supp_iff _ _).mp hv'.1]
-  apply ConnectedComponent.connectedComponentMk_eq_of_adj
-  apply SimpleGraph.Subgraph.Adj.coe
-  rw [hv'.2]
-  exact hadj.symm
+  rw [← (mem_supp_iff _ _).mp h.1]
+  exact ⟨connectedComponentMk_eq_of_adj <| Subgraph.Adj.coe <| h.2 ▸ hadj.symm, rfl⟩
 
 end ConnectedComponent
 
