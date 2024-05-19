@@ -75,9 +75,7 @@ theorem inv_nonzero {J : FractionalIdeal R₁⁰ K} (h : J ≠ 0) :
 
 theorem coe_inv_of_nonzero {J : FractionalIdeal R₁⁰ K} (h : J ≠ 0) :
     (↑J⁻¹ : Submodule R₁ K) = IsLocalization.coeSubmodule K ⊤ / (J : Submodule R₁ K) := by
-  rw [inv_nonzero]
-  · rfl
-  · assumption
+  simp_rw [inv_nonzero _ h, coe_one, coe_mk, IsLocalization.coeSubmodule_top]
 #align fractional_ideal.coe_inv_of_nonzero FractionalIdeal.coe_inv_of_nonzero
 
 variable {K}
@@ -972,8 +970,8 @@ theorem irreducible_pow_sup_of_ge (hI : I ≠ ⊥) (hJ : Irreducible J) (n : ℕ
     (hn : multiplicity J I ≤ n) :
     J ^ n ⊔ I = J ^ (multiplicity J I).get (PartENat.dom_of_le_natCast hn) := by
   rw [irreducible_pow_sup hI hJ, min_eq_left]
-  congr
-  · rw [← PartENat.natCast_inj, PartENat.natCast_get,
+  · congr
+    rw [← PartENat.natCast_inj, PartENat.natCast_get,
       multiplicity_eq_count_normalizedFactors hJ hI, normalize_eq J]
   · rwa [multiplicity_eq_count_normalizedFactors hJ hI, PartENat.coe_le_coe, normalize_eq J] at hn
 #align irreducible_pow_sup_of_ge irreducible_pow_sup_of_ge
@@ -1042,7 +1040,7 @@ theorem iInf_localization_eq_bot [Algebra R K] [hK : IsFractionRing R K] :
   ext x
   rw [Algebra.mem_iInf]
   constructor
-  by_cases hR : IsField R
+  on_goal 1 => by_cases hR : IsField R
   · rcases Function.bijective_iff_has_inverse.mp
       (IsField.localization_map_bijective (Rₘ := K) (flip nonZeroDivisors.ne_zero rfl : 0 ∉ R⁰) hR)
       with ⟨algebra_map_inv, _, algebra_map_right_inv⟩
@@ -1474,7 +1472,7 @@ theorem multiplicity_eq_multiplicity_span [DecidableRel ((· ∣ ·) : R → R �
     refine (multiplicity.unique
       (show Ideal.span {a} ^ (multiplicity a b).get h ∣ Ideal.span {b} from ?_) ?_).symm <;>
       rw [Ideal.span_singleton_pow, span_singleton_dvd_span_singleton_iff_dvd]
-    exact pow_multiplicity_dvd h
+    · exact pow_multiplicity_dvd h
     · exact multiplicity.is_greatest
         ((PartENat.lt_coe_iff _ _).mpr (Exists.intro (finite_iff_dom.mp h) (Nat.lt_succ_self _)))
   · suffices ¬Finite (Ideal.span ({a} : Set R)) (Ideal.span ({b} : Set R)) by

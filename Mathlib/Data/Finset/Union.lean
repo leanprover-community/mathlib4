@@ -101,7 +101,8 @@ private lemma pairwiseDisjoint_fibers : Set.PairwiseDisjoint ↑t fun a ↦ s.fi
   ext fun b => by simpa using and_comm
 
 lemma disjiUnion_filter_eq_of_maps_to (h : ∀ x ∈ s, f x ∈ t) :
-    t.disjiUnion (fun a ↦ s.filter (f · = a)) pairwiseDisjoint_fibers = s := by simpa
+    t.disjiUnion (fun a ↦ s.filter (f · = a)) pairwiseDisjoint_fibers = s := by
+  simpa [filter_eq_self]
 #align finset.disj_Union_filter_eq_of_maps_to Finset.disjiUnion_filter_eq_of_maps_to
 
 end DisjiUnion
