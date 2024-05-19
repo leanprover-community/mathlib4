@@ -5,6 +5,7 @@ Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Order.Monoid.Lemmas
 import Mathlib.Tactic.NthRewrite
 

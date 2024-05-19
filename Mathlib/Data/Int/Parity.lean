@@ -3,8 +3,8 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Benjamin Davidson
 -/
-import Mathlib.Data.Nat.Parity
 import Mathlib.Algebra.Group.Int
+import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.Int.Sqrt
 import Mathlib.Tactic.Abel
 

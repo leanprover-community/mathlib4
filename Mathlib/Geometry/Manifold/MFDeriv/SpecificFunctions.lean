@@ -416,7 +416,7 @@ theorem mfderiv_prod_eq_add {f : M × M' → M''} {p : M × M'}
     mfderiv_snd, mfderiv_const, mfderiv_const]
   symm
   convert ContinuousLinearMap.comp_id <| mfderiv (.prod I I') I'' f (p.1, p.2)
-  · exact ContinuousLinearMap.coprod_inl_inr
+  exact ContinuousLinearMap.coprod_inl_inr
 #align mfderiv_prod_eq_add mfderiv_prod_eq_add
 
 end Prod

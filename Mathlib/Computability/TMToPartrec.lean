@@ -1333,8 +1333,7 @@ theorem move_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k₁
   induction' L₁ with a L₁ IH generalizing S s
   · rw [(_ : [].reverseAux _ = _), Function.update_eq_self]
     swap
-    · rw [Function.update_noteq h₁.symm]
-      rfl
+    · rw [Function.update_noteq h₁.symm, List.reverseAux_nil]
     refine' TransGen.head' rfl _
     simp only [TM2.step, Option.mem_def, TM2.stepAux, Option.elim, ne_eq]
     revert e; cases' S k₁ with a Sk <;> intro e

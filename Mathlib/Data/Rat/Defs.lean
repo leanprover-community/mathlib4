@@ -385,7 +385,7 @@ instance commRing : CommRing ℚ where
   npow_succ n q := by
     dsimp
     rw [← q.mk'_num_den, mk'_pow, mk'_mul_mk']
-    congr
+    · congr
     · rw [mk'_pow, Int.natAbs_pow]
       exact q.reduced.pow_left _
     · rw [mk'_pow]
@@ -524,6 +524,8 @@ theorem divInt_eq_div (n d : ℤ) : n /. d = (n : ℚ) / d := by simp [div_def']
 lemma intCast_div_eq_divInt (n d : ℤ) : (n : ℚ) / (d) = n /. d := by rw [divInt_eq_div]
 #align rat.coe_int_div_eq_mk Rat.intCast_div_eq_divInt
 
+theorem natCast_div_eq_divInt (n d : ℕ) : (n : ℚ) / d = n /. d := Rat.intCast_div_eq_divInt n d
+
 theorem divInt_mul_divInt_cancel {x : ℤ} (hx : x ≠ 0) (n d : ℤ) : n /. x * (x /. d) = n /. d := by
   by_cases hd : d = 0
   · rw [hd]
@@ -573,6 +575,16 @@ instance canLift : CanLift ℚ ℤ (↑) fun q => q.den = 1 :=
 theorem natCast_eq_divInt (n : ℕ) : ↑n = n /. 1 := by
   rw [← Int.cast_natCast, intCast_eq_divInt]
 #align rat.coe_nat_eq_mk Rat.natCast_eq_divInt
+
+@[simp] lemma mul_den_eq_num (q : ℚ) : q * q.den = q.num := by
+  suffices (q.num /. ↑q.den) * (↑q.den /. 1) = q.num /. 1 by
+    conv => pattern (occs := 1) q; (rw [← num_divInt_den q])
+    simp only [intCast_eq_divInt, natCast_eq_divInt, num_divInt_den] at this ⊢; assumption
+  have : (q.den : ℤ) ≠ 0 := mod_cast q.den_ne_zero
+  rw [divInt_mul_divInt _ _ this one_ne_zero, mul_comm (q.den : ℤ) 1, divInt_mul_right this]
+#align rat.mul_denom_eq_num Rat.mul_den_eq_num
+
+@[simp] lemma den_mul_eq_num (q : ℚ) : q.den * q = q.num := by rw [mul_comm, mul_den_eq_num]
 
 -- 2024-04-05
 @[deprecated] alias coe_int_eq_divInt := intCast_eq_divInt
