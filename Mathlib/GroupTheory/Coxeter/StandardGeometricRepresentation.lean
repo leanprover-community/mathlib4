@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Mitchell Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mitchell Lee
+Authors: Mitchell Lee, Johan Commelin
 -/
 import Mathlib.LinearAlgebra.Reflection
 import Mathlib.GroupTheory.Coxeter.Matrix
@@ -163,12 +163,6 @@ private lemma sin_pi_div_m_ne_zero {m : ℕ} (hm : 1 < m) : sin (π / m) ≠ 0 :
   have h₀ : 0 < π / m := div_pos pi_pos (zero_lt_one.trans (by exact_mod_cast hm))
   have h₁ : π / m < π := div_lt_self pi_pos (by exact_mod_cast hm)
   exact ne_of_gt (sin_pos_of_pos_of_lt_pi h₀ h₁)
-
--- move this
-@[simp]
-lemma _root_.LinearEquiv.mul_apply
-    {R : Type*} [Semiring R] {M : Type*} [AddCommMonoid M] [Module R M]
-    (f : M ≃ₗ[R] M) (g : M ≃ₗ[R] M) (x : M) : (f * g) x = f (g x) := rfl
 
 theorem orthoReflection_mul_orthoReflection_pow_apply {v v' : V} {m : ℕ} (k : ℕ) (hm : 1 < m)
     (hv : ⟪v, v⟫ = 1) (hv' : ⟪v', v'⟫ = 1) (hvv' : ⟪v, v'⟫ = - cos (π / m)) :
