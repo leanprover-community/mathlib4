@@ -703,7 +703,7 @@ theorem sup_toSubalgebra_of_left [FiniteDimensional K E1] :
   sup_toSubalgebra_of_isAlgebraic_left E1 E2
 #align intermediate_field.sup_to_subalgebra IntermediateField.sup_toSubalgebra_of_left
 
-@[deprecated] alias sup_toSubalgebra := sup_toSubalgebra_of_left
+@[deprecated (since := "2024-01-19")] alias sup_toSubalgebra := sup_toSubalgebra_of_left
 
 theorem sup_toSubalgebra_of_right [FiniteDimensional K E2] :
     (E1 ⊔ E2).toSubalgebra = E1.toSubalgebra ⊔ E2.toSubalgebra :=
@@ -957,9 +957,8 @@ theorem adjoin_natCast (n : ℕ) : F⟮(n : E)⟯ = ⊥ :=
   adjoin_simple_eq_bot_iff.mpr (natCast_mem ⊥ n)
 #align intermediate_field.adjoin_nat IntermediateField.adjoin_natCast
 
--- 2024-04-05
-@[deprecated] alias adjoin_int := adjoin_intCast
-@[deprecated] alias adjoin_nat := adjoin_natCast
+@[deprecated (since := "2024-04-05")] alias adjoin_int := adjoin_intCast
+@[deprecated (since := "2024-04-05")] alias adjoin_nat := adjoin_natCast
 
 section AdjoinRank
 
@@ -1166,12 +1165,12 @@ theorem adjoin_eq_top_of_adjoin_eq_top [Algebra E K] [IsScalarTower F E K]
 `F` adjoin the coefficients of `minpoly K α` is equal to `K` itself. -/
 theorem adjoin_minpoly_coeff_of_exists_primitive_element
     [FiniteDimensional F E] (hprim : adjoin F {α} = ⊤) (K : IntermediateField F E) :
-    adjoin F ((minpoly K α).map (algebraMap K E)).frange = K := by
+    adjoin F ((minpoly K α).map (algebraMap K E)).coeffs = K := by
   set g := (minpoly K α).map (algebraMap K E)
-  set K' : IntermediateField F E := adjoin F g.frange
+  set K' : IntermediateField F E := adjoin F g.coeffs
   have hsub : K' ≤ K := by
     refine adjoin_le_iff.mpr fun x ↦ ?_
-    rw [Finset.mem_coe, mem_frange_iff]
+    rw [Finset.mem_coe, mem_coeffs_iff]
     rintro ⟨n, -, rfl⟩
     rw [coeff_map]
     apply Subtype.mem
