@@ -95,8 +95,7 @@ class IsFiltered extends IsFilteredOrEmpty C : Prop where
 #align category_theory.is_filtered CategoryTheory.IsFiltered
 
 instance (priority := 100) isFilteredOrEmpty_of_semilatticeSup (α : Type u) [SemilatticeSup α] :
-    IsFilteredOrEmpty α
-    where
+    IsFilteredOrEmpty α where
   cocone_objs X Y := ⟨X ⊔ Y, homOfLE le_sup_left, homOfLE le_sup_right, trivial⟩
   cocone_maps X Y f g := ⟨Y, 𝟙 _, by
     apply ULift.ext
@@ -221,8 +220,8 @@ theorem of_right_adjoint {L : D ⥤ C} {R : C ⥤ D} (h : L ⊣ R) : IsFilteredO
 
 /-- If `C` is filtered or empty, and we have a right adjoint functor `R : C ⥤ D`, then `D` is
 filtered or empty. -/
-theorem of_isRightAdjoint (R : C ⥤ D) [IsRightAdjoint R] : IsFilteredOrEmpty D :=
-  of_right_adjoint (Adjunction.ofRightAdjoint R)
+theorem of_isRightAdjoint (R : C ⥤ D) [R.IsRightAdjoint] : IsFilteredOrEmpty D :=
+  of_right_adjoint (Adjunction.ofIsRightAdjoint R)
 
 /-- Being filtered or empty is preserved by equivalence of categories. -/
 theorem of_equivalence (h : C ≌ D) : IsFilteredOrEmpty D :=
@@ -353,8 +352,8 @@ theorem of_right_adjoint {L : D ⥤ C} {R : C ⥤ D} (h : L ⊣ R) : IsFiltered 
 #align category_theory.is_filtered.of_right_adjoint CategoryTheory.IsFiltered.of_right_adjoint
 
 /-- If `C` is filtered, and we have a right adjoint functor `R : C ⥤ D`, then `D` is filtered. -/
-theorem of_isRightAdjoint (R : C ⥤ D) [IsRightAdjoint R] : IsFiltered D :=
-  of_right_adjoint (Adjunction.ofRightAdjoint R)
+theorem of_isRightAdjoint (R : C ⥤ D) [R.IsRightAdjoint] : IsFiltered D :=
+  of_right_adjoint (Adjunction.ofIsRightAdjoint R)
 #align category_theory.is_filtered.of_is_right_adjoint CategoryTheory.IsFiltered.of_isRightAdjoint
 
 /-- Being filtered is preserved by equivalence of categories. -/
@@ -705,8 +704,8 @@ theorem of_left_adjoint {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R) : IsCofiltered
 
 /-- If `C` is cofiltered or empty, and we have a left adjoint functor `L : C ⥤ D`, then `D` is
 cofiltered or empty. -/
-theorem of_isLeftAdjoint (L : C ⥤ D) [IsLeftAdjoint L] : IsCofilteredOrEmpty D :=
-  of_left_adjoint (Adjunction.ofLeftAdjoint L)
+theorem of_isLeftAdjoint (L : C ⥤ D) [L.IsLeftAdjoint] : IsCofilteredOrEmpty D :=
+  of_left_adjoint (Adjunction.ofIsLeftAdjoint L)
 
 /-- Being cofiltered or empty is preserved by equivalence of categories. -/
 theorem of_equivalence (h : C ≌ D) : IsCofilteredOrEmpty D :=
@@ -839,8 +838,8 @@ theorem of_left_adjoint {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R) : IsCofiltered
 #align category_theory.is_cofiltered.of_left_adjoint CategoryTheory.IsCofiltered.of_left_adjoint
 
 /-- If `C` is cofiltered, and we have a left adjoint functor `L : C ⥤ D`, then `D` is cofiltered. -/
-theorem of_isLeftAdjoint (L : C ⥤ D) [IsLeftAdjoint L] : IsCofiltered D :=
-  of_left_adjoint (Adjunction.ofLeftAdjoint L)
+theorem of_isLeftAdjoint (L : C ⥤ D) [L.IsLeftAdjoint] : IsCofiltered D :=
+  of_left_adjoint (Adjunction.ofIsLeftAdjoint L)
 #align category_theory.is_cofiltered.of_is_left_adjoint CategoryTheory.IsCofiltered.of_isLeftAdjoint
 
 /-- Being cofiltered is preserved by equivalence of categories. -/

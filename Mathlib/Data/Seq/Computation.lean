@@ -575,7 +575,7 @@ theorem of_results_think {s : Computation α} {a n} (h : Results (think s) a n) 
 theorem results_think_iff {s : Computation α} {a n} : Results (think s) a (n + 1) ↔ Results s a n :=
   ⟨fun h => by
     let ⟨n', r, e⟩ := of_results_think h
-    injection e with h'; rw [Nat.add, Nat.add] at h'; rwa [h'], results_think⟩
+    injection e with h'; rwa [h'], results_think⟩
 #align computation.results_think_iff Computation.results_think_iff
 
 theorem results_thinkN {s : Computation α} {a m} :

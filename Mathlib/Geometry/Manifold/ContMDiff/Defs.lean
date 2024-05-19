@@ -182,8 +182,7 @@ def ContMDiffWithinAt (n : ℕ∞) (f : M → M') (s : Set M) (x : M) :=
 
 /-- Abbreviation for `ContMDiffWithinAt I I' ⊤ f s x`. See also documentation for `Smooth`.
 -/
-@[reducible]
-def SmoothWithinAt (f : M → M') (s : Set M) (x : M) :=
+abbrev SmoothWithinAt (f : M → M') (s : Set M) (x : M) :=
   ContMDiffWithinAt I I' ⊤ f s x
 #align smooth_within_at SmoothWithinAt
 
@@ -203,8 +202,7 @@ theorem contMDiffAt_iff {n : ℕ∞} {f : M → M'} {x : M} :
 #align cont_mdiff_at_iff contMDiffAt_iff
 
 /-- Abbreviation for `ContMDiffAt I I' ⊤ f x`. See also documentation for `Smooth`. -/
-@[reducible]
-def SmoothAt (f : M → M') (x : M) :=
+abbrev SmoothAt (f : M → M') (x : M) :=
   ContMDiffAt I I' ⊤ f x
 #align smooth_at SmoothAt
 
@@ -216,8 +214,7 @@ def ContMDiffOn (n : ℕ∞) (f : M → M') (s : Set M) :=
 #align cont_mdiff_on ContMDiffOn
 
 /-- Abbreviation for `ContMDiffOn I I' ⊤ f s`. See also documentation for `Smooth`. -/
-@[reducible]
-def SmoothOn (f : M → M') (s : Set M) :=
+abbrev SmoothOn (f : M → M') (s : Set M) :=
   ContMDiffOn I I' ⊤ f s
 #align smooth_on SmoothOn
 
@@ -235,8 +232,7 @@ If the consequence `bar` of the lemma involves `ContDiff`, it is still better to
 the lemma replacing `ContDiff` with `Smooth` both in the assumption and in the conclusion,
 to make it possible to use `Smooth` consistently.
 This also applies to `SmoothAt`, `SmoothOn` and `SmoothWithinAt`. -/
-@[reducible]
-def Smooth (f : M → M') :=
+abbrev Smooth (f : M → M') :=
   ContMDiff I I' ⊤ f
 #align smooth Smooth
 

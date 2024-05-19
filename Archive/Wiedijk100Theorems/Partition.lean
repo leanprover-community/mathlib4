@@ -3,15 +3,15 @@ Copyright (c) 2020 Bhavik Mehta, Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Aaron Anderson
 -/
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Combinatorics.Enumerative.Partition
+import Mathlib.Data.Finset.NatAntidiagonal
+import Mathlib.Data.Finset.PiAntidiagonal
+import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Order
-import Mathlib.Combinatorics.Enumerative.Partition
-import Mathlib.Data.Nat.Parity
-import Mathlib.Data.Finset.NatAntidiagonal
-import Mathlib.Data.Fin.Tuple.NatAntidiagonal
-import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.ApplyFun
-import Mathlib.Data.Finset.PiAntidiagonal
+import Mathlib.Tactic.IntervalCases
 
 #align_import wiedijk_100_theorems.partition from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 
@@ -147,7 +147,7 @@ theorem num_series' [Field α] (i : ℕ) :
       symm
       split_ifs with h
       · suffices
-          ((antidiagonal n.succ).filter fun a : ℕ × ℕ => i + 1 ∣ a.fst ∧ a.snd = i + 1).card =
+          ((antidiagonal (n+1)).filter fun a : ℕ × ℕ => i + 1 ∣ a.fst ∧ a.snd = i + 1).card =
             1 by
           simp only [Set.mem_setOf_eq]; convert congr_arg ((↑) : ℕ → α) this; norm_cast
         rw [card_eq_one]
@@ -164,7 +164,7 @@ theorem num_series' [Field α] (i : ℕ) :
           | 0 => rw [mul_zero] at hp; cases hp
           | p + 1 => rw [hp]; simp [mul_add]
       · suffices
-          (filter (fun a : ℕ × ℕ => i + 1 ∣ a.fst ∧ a.snd = i + 1) (antidiagonal n.succ)).card =
+          (filter (fun a : ℕ × ℕ => i + 1 ∣ a.fst ∧ a.snd = i + 1) (antidiagonal (n+1))).card =
             0 by
           simp only [Set.mem_setOf_eq]; convert congr_arg ((↑) : ℕ → α) this; norm_cast
         rw [card_eq_zero]
@@ -373,7 +373,6 @@ theorem same_gf [Field α] (m : ℕ) :
   rw [partialOddGF, partialDistinctGF]
   induction' m with m ih
   · simp
-  rw [Nat.succ_eq_add_one]
   set! π₀ : PowerSeries α := ∏ i in range m, (1 - X ^ (m + 1 + i + 1)) with hπ₀
   set! π₁ : PowerSeries α := ∏ i in range m, (1 - X ^ (2 * i + 1))⁻¹ with hπ₁
   set! π₂ : PowerSeries α := ∏ i in range m, (1 - X ^ (m + i + 1)) with hπ₂

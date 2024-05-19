@@ -239,7 +239,8 @@ theorem coe_factor_orderIso_map_eq_one_iff {m u : Associates M} {n : Associates 
     conv_rhs => rw [← factor_orderIso_map_one_eq_bot d.symm]
     congr, fun hu => by
     simp_rw [hu]
-    conv_rhs => rw [← factor_orderIso_map_one_eq_bot d]⟩
+    conv_rhs => rw [← factor_orderIso_map_one_eq_bot d]
+    rfl⟩
 #align coe_factor_order_iso_map_eq_one_iff coe_factor_orderIso_map_eq_one_iff
 
 section
@@ -356,8 +357,7 @@ variable [Unique Mˣ] [Unique Nˣ]
 @[simps]
 def mkFactorOrderIsoOfFactorDvdEquiv {m : M} {n : N} {d : { l : M // l ∣ m } ≃ { l : N // l ∣ n }}
     (hd : ∀ l l', (d l : N) ∣ d l' ↔ (l : M) ∣ (l' : M)) :
-    Set.Iic (Associates.mk m) ≃o Set.Iic (Associates.mk n)
-    where
+    Set.Iic (Associates.mk m) ≃o Set.Iic (Associates.mk n) where
   toFun l :=
     ⟨Associates.mk
         (d

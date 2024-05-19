@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mitchell Rowett, Scott Morrison, Johan Commelin, Mario Carneiro,
   Michael Howes
 -/
-import Mathlib.GroupTheory.Subgroup.Basic
+import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Deprecated.Submonoid
 
 #align_import deprecated.subgroup from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
@@ -16,7 +16,7 @@ This file is deprecated, and is no longer imported by anything in mathlib other 
 deprecated files, and test files. You should not need to import it.
 
 This file defines unbundled multiplicative and additive subgroups. Instead of using this file,
-please use `Subgroup G` and `AddSubgroup A`, defined in `GroupTheory.Subgroup.Basic`.
+please use `Subgroup G` and `AddSubgroup A`, defined in `Mathlib.Algebra.Group.Subgroup.Basic`.
 
 ## Main definitions
 
@@ -746,8 +746,7 @@ end Group
 
 /-- Create a bundled subgroup from a set `s` and `[IsSubgroup s]`. -/
 @[to_additive "Create a bundled additive subgroup from a set `s` and `[IsAddSubgroup s]`."]
-def Subgroup.of [Group G] {s : Set G} (h : IsSubgroup s) : Subgroup G
-    where
+def Subgroup.of [Group G] {s : Set G} (h : IsSubgroup s) : Subgroup G where
   carrier := s
   one_mem' := h.1.1
   mul_mem' := h.1.2

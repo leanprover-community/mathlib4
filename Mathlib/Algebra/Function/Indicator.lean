@@ -127,7 +127,7 @@ theorem mulIndicator_eq_one' : mulIndicator s f = 1 ↔ Disjoint (mulSupport f) 
 
 @[to_additive]
 theorem mulIndicator_apply_ne_one {a : α} : s.mulIndicator f a ≠ 1 ↔ a ∈ s ∩ mulSupport f := by
-  simp only [Ne, mulIndicator_apply_eq_one, not_imp, mem_inter_iff, mem_mulSupport]
+  simp only [Ne, mulIndicator_apply_eq_one, Classical.not_imp, mem_inter_iff, mem_mulSupport]
 #align set.mul_indicator_apply_ne_one Set.mulIndicator_apply_ne_one
 #align set.indicator_apply_ne_zero Set.indicator_apply_ne_zero
 
@@ -455,8 +455,7 @@ theorem mulIndicator_mul_compl_eq_piecewise [DecidablePred (· ∈ s)] (f g : α
 
 /-- `Set.mulIndicator` as a `monoidHom`. -/
 @[to_additive "`Set.indicator` as an `addMonoidHom`."]
-noncomputable def mulIndicatorHom {α} (M) [MulOneClass M] (s : Set α) : (α → M) →* α → M
-    where
+noncomputable def mulIndicatorHom {α} (M) [MulOneClass M] (s : Set α) : (α → M) →* α → M where
   toFun := mulIndicator s
   map_one' := mulIndicator_one M s
   map_mul' := mulIndicator_mul s

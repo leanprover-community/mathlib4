@@ -385,6 +385,7 @@ theorem coe_equivIco_mk_apply (x : 𝕜) :
   toIcoMod_eq_fract_mul _ x
 #align add_circle.coe_equiv_Ico_mk_apply AddCircle.coe_equivIco_mk_apply
 
+set_option backward.isDefEq.lazyProjDelta false in -- See https://github.com/leanprover-community/mathlib4/issues/12535
 instance : DivisibleBy (AddCircle p) ℤ where
   div x n := (↑((n : 𝕜)⁻¹ * (equivIco p 0 x : 𝕜)) : AddCircle p)
   div_zero x := by
@@ -528,9 +529,7 @@ theorem card_addOrderOf_eq_totient {n : ℕ} :
 
 theorem finite_setOf_add_order_eq {n : ℕ} (hn : 0 < n) :
     { u : AddCircle p | addOrderOf u = n }.Finite :=
-  finite_coe_iff.mp <|
-    Nat.finite_of_card_ne_zero <| by
-      simpa only [coe_setOf, card_addOrderOf_eq_totient p] using (Nat.totient_pos hn).ne'
+  finite_coe_iff.mp <| Nat.finite_of_card_ne_zero <| by simp [hn.ne']
 #align add_circle.finite_set_of_add_order_eq AddCircle.finite_setOf_add_order_eq
 
 end FiniteOrderPoints

@@ -180,6 +180,14 @@ theorem restrict_apply {f : M →ₗ[R] M₁} {p : Submodule R M} {q : Submodule
   rfl
 #align linear_map.restrict_apply LinearMap.restrict_apply
 
+lemma restrict_sub {R M M₁ : Type*}
+    [Ring R] [AddCommGroup M] [AddCommGroup M₁] [Module R M] [Module R M₁]
+    {p : Submodule R M} {q : Submodule R M₁} {f g : M →ₗ[R] M₁}
+    (hf : MapsTo f p q) (hg : MapsTo g p q)
+    (hfg : MapsTo (f - g) p q := fun _ hx ↦ q.sub_mem (hf hx) (hg hx)) :
+    f.restrict hf - g.restrict hg = (f - g).restrict hfg := by
+  ext; simp
+
 lemma restrict_comp
     {M₂ M₃ : Type*} [AddCommMonoid M₂] [AddCommMonoid M₃] [Module R M₂] [Module R M₃]
     {p : Submodule R M} {p₂ : Submodule R M₂} {p₃ : Submodule R M₃}
@@ -193,6 +201,7 @@ lemma restrict_commute {f g : M →ₗ[R] M} (h : Commute f g) {p : Submodule R 
     Commute (f.restrict hf) (g.restrict hg) := by
   change _ * _ = _ * _
   conv_lhs => rw [mul_eq_comp, ← restrict_comp]; congr; rw [← mul_eq_comp, h.eq]
+  rfl
 
 theorem subtype_comp_restrict {f : M →ₗ[R] M₁} {p : Submodule R M} {q : Submodule R M₁}
     (hf : ∀ x ∈ p, f x ∈ q) : q.subtype.comp (f.restrict hf) = f.domRestrict p :=

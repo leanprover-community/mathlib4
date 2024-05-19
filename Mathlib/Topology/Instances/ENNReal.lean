@@ -433,7 +433,7 @@ protected theorem continuous_div_const (c : ℝ≥0∞) (c_ne_zero : c ≠ 0) :
 theorem continuous_pow (n : ℕ) : Continuous fun a : ℝ≥0∞ => a ^ n := by
   induction' n with n IH
   · simp [continuous_const]
-  simp_rw [Nat.succ_eq_add_one, pow_add, pow_one, continuous_iff_continuousAt]
+  simp_rw [pow_add, pow_one, continuous_iff_continuousAt]
   intro x
   refine' ENNReal.Tendsto.mul (IH.tendsto _) _ tendsto_id _ <;> by_cases H : x = 0
   · simp only [H, zero_ne_top, Ne, or_true_iff, not_false_iff]
@@ -850,6 +850,10 @@ protected theorem tsum_add : ∑' a, (f a + g a) = ∑' a, f a + ∑' a, g a :=
 protected theorem tsum_le_tsum (h : ∀ a, f a ≤ g a) : ∑' a, f a ≤ ∑' a, g a :=
   tsum_le_tsum h ENNReal.summable ENNReal.summable
 #align ennreal.tsum_le_tsum ENNReal.tsum_le_tsum
+
+@[gcongr]
+protected theorem _root_.GCongr.ennreal_tsum_le_tsum (h : ∀ a, f a ≤ g a) : tsum f ≤ tsum g :=
+  ENNReal.tsum_le_tsum h
 
 protected theorem sum_le_tsum {f : α → ℝ≥0∞} (s : Finset α) : ∑ x in s, f x ≤ ∑' x, f x :=
   sum_le_tsum s (fun _ _ => zero_le _) ENNReal.summable
