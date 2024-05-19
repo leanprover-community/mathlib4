@@ -465,7 +465,7 @@ instance : NoZeroSMulDivisors R (v.adicCompletionIntegers K) where
       IsFractionRing.injective R K (UniformSpace.Completion.coe_injective K (Subtype.ext_iff.mp hc))
 
 -- Working around a possible bug: see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/erw.20and.20IsDedekindDomain.2EHeightOneSpectrum.2EadicCompletion/near/439391917
-
+-- If #13032 lands then probably this can be removed.
 instance : Algebra (v.adicCompletion K) (v.adicCompletion K) := Algebra.id _
 
 instance AdicCompletion.instIsScalarTower' :
