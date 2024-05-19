@@ -197,7 +197,6 @@ lemma IsMatching.induce_connectedComponent (h : M.IsMatching) (c : ConnectedComp
   use w
   simpa [hv, hvw, M.edge_vert hvw.symm, (M.adj_sub hvw).symm.reachable] using fun _ _ _ ↦ hw _
 
-
 lemma IsPerfectMatching.induce_connectedComponent_isMatching (h : M.IsPerfectMatching)
     (c : ConnectedComponent G) : (M.induce c.supp).IsMatching := by
   simpa [h.2.verts_eq_univ] using h.1.induce_connectedComponent c
