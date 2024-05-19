@@ -373,7 +373,7 @@ instance : Bot (sSupHom α β) :=
 
 instance : OrderBot (sSupHom α β) where
   bot := ⊥
-  bot_le := fun _ _ ↦ bot_le
+  bot_le _ _ := bot_le
 
 @[simp]
 theorem coe_bot : ⇑(⊥ : sSupHom α β) = ⊥ :=
