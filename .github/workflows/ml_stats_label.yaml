@@ -28,3 +28,14 @@ jobs:
           GH_REPO: ${{ github.repository }}
           NUMBER: ${{ github.event.pull_request.number }}
           BODY: ${{ steps.mathlib_stats.outputs.summary }}
+
+      - name: Post report on Zulip
+        uses: zulip/github-actions-zulip/send-message@v1
+        with:
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          organization-url: 'https://leanprover.zulipchat.com'
+          to: 'mathlib4'
+          type: 'stream'
+          topic: 'Mathlib weekly change report'
+          content: ${{ steps.mathlib_stats.outputs.summary }}
