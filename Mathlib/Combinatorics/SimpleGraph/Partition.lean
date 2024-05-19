@@ -125,8 +125,7 @@ variable {G}
 
 /-- Creates a partition from a coloring. -/
 @[simps]
-def Coloring.toPartition {α : Type v} (C : G.Coloring α) : G.Partition
-    where
+def Coloring.toPartition {α : Type v} (C : G.Coloring α) : G.Partition where
   parts := C.colorClasses
   isPartition := C.colorClasses_isPartition
   independent := by

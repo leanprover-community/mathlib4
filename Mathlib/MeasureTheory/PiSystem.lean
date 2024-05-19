@@ -603,8 +603,7 @@ instance : PartialOrder (DynkinSystem α) :=
     le_antisymm := fun a b h₁ h₂ => ext fun s => ⟨h₁ s, h₂ s⟩ }
 
 /-- Every measurable space (σ-algebra) forms a Dynkin system -/
-def ofMeasurableSpace (m : MeasurableSpace α) : DynkinSystem α
-    where
+def ofMeasurableSpace (m : MeasurableSpace α) : DynkinSystem α where
   Has := m.MeasurableSet'
   has_empty := m.measurableSet_empty
   has_compl {a} := m.measurableSet_compl a
@@ -634,8 +633,7 @@ theorem generateHas_compl {C : Set (Set α)} {s : Set α} : GenerateHas C sᶜ �
 #align measurable_space.dynkin_system.generate_has_compl MeasurableSpace.DynkinSystem.generateHas_compl
 
 /-- The least Dynkin system containing a collection of basic sets. -/
-def generate (s : Set (Set α)) : DynkinSystem α
-    where
+def generate (s : Set (Set α)) : DynkinSystem α where
   Has := GenerateHas s
   has_empty := GenerateHas.empty
   has_compl {_} := GenerateHas.compl

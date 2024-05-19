@@ -5,7 +5,6 @@ Authors: Michael Geißer, Michael Stoll
 -/
 import Mathlib.Algebra.ContinuedFractions.Computation.ApproximationCorollaries
 import Mathlib.Algebra.ContinuedFractions.Computation.Translations
-import Mathlib.Data.Int.Units
 import Mathlib.Data.Real.Irrational
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.Tactic.Basic
