@@ -11,9 +11,34 @@ import Mathlib.Sandbox
  /-!
 # Unit Partition
 
-## Main definitions and results
+`BoxIntegral.unitPartition.Box` are boxes in `ι → ℝ` obtained by dividing the unit box
+into smaller boxes with sides of length `1 / n` and then translating by the lattice `ι → ℤ` so
+that they cover the whole space. There are indexed by the positive integer `n` and a
+vector `ν : ι → ℤ`.
 
- -/
+Let `B` be a `BoxIntegral`. A `unitPartition.Box` is admissible for `B` (more precisely its index is
+admissible) if it is contained in `B`. There are finitely many admissible `unitPartition.Box` for
+`B` and thus we can form the corresponing tagged prepartition, see
+`BoxIntegral.unitPartition.prepartition` (note that each `unitPartition.Box` coming with its
+tag situed at its "upper most" corner). If `B` satifies `BoxIntegral.hasIntegralVertices`, that
+is its vertices are in `ι → ℤ`, then the corresponding prepartition is actually a partition.
+
+## Main results
+
+* `BoxIntegral.unitPartition.tendsto_tsum_div_pow`: let `s` be a bounded, measurable set of `ι → ℝ`
+whose frontier has volume zero and let `F` be a continuous function. Then the limit as `n → ∞`
+of `∑ F x / n ^ card ι`, where the sum is over the points in `s ∩ n⁻¹ • (ι → ℤ)`, tends to the
+integral of `F` over `s`.
+
+* `BoxIntegral.unitPartition.tendsto_card_div_pow'`: let `s` be a bounded, measurable set of
+`ι → ℝ` whose frontier has volume zero. Then the limit as `n → ∞` of
+`card (s ∩ n⁻¹ • (ι → ℤ)) / n ^ card ι` tends to the volume of `s`.
+
+* `BoxIntegral.unitPartition.tendsto_card_div_pow`: a version of `tendsto_card_div_pow` where we
+assume furthermore that `x • s ⊆ y • s` whenever `0 < x ≤ y`. Then we get the same limit
+`card (s ∩ x⁻¹ • (ι → ℤ)) / x ^ card ι → volume s` but the limit is over a real variable `x`.
+
+-/
 
 noncomputable section
 
@@ -23,7 +48,7 @@ section hasIntegralVertices
 
 open Bornology
 
-/-- A `BoxIntegral.Box` has integral devices if its corners has coordinates in `ℤ`. -/
+/-- A `BoxIntegral.Box` has integral devices if its vertices has coordinates in `ℤ`. -/
 def BoxIntegral.hasIntegralVertices (B : Box ι) : Prop :=
   ∃ l u : ι → ℤ, (∀ i, B.lower i = l i) ∧ (∀ i, B.upper i = u i)
 
@@ -50,8 +75,8 @@ open Bornology MeasureTheory Fintype BoxIntegral
 
 variable (n : ℕ+)
 
-/-- The `BoxIntegral.unitPartition.Box` are the boxes obtained by dividing the unit box into `n`
-parts and then translating so that they cover the whole space. -/
+/-- The `BoxIntegral.unitPartition.Box` are the boxes obtained by dividing the unit box into boxes
+with sides of length `1 / n` and then translating by a vector in the lattice `ι → ℤ`. -/
 def box (ν : ι → ℤ) : Box ι where
   lower := fun i ↦ ν i / n
   upper := fun i ↦ ν i / n + 1 / n
@@ -225,7 +250,7 @@ theorem prepartition_isSubordinate (B : Box ι) {r : ℝ} (hr : 0 < r) (hn : 1 /
   · exact le_trans (diam_boxIcc n ν) hn
 
 /-- If `B : BoxIntegral.Box` has integral vertices and contains the point `x`, then it contains the
-`BoxIntegral.unitPartition.Box` if index `index n x`. -/
+`BoxIntegral.unitPartition.Box` of index `index n x`. -/
 theorem mem_admissibleIndex_of_mem_box {B : Box ι} (hB : hasIntegralVertices B) {x : ι → ℝ}
     (hx : x ∈ B) : index n x ∈ admissibleIndex n B := by
   have h : (0 : ℝ) < n := by aesop
@@ -325,7 +350,9 @@ variable (hF : Continuous F)
 
 open Filter
 
-/-- Let `s` be a bounded, measurable set of `ι → ℝ` ** complete ** -/
+/-- Let `s` be a bounded, measurable set of `ι → ℝ` whose frontier has volume zero and let `F` be
+a continuous function. Then the limit as `n → ∞` of `∑ F x / n ^ card ι`, where the sum is over the
+points in `s ∩ n⁻¹ • (ι → ℤ)`, tends to the integral of `F` over `s`. -/
 theorem tendsto_tsum_div_pow :
     Tendsto (fun n : ℕ ↦ (∑' x : ↑(s ∩ (n:ℝ)⁻¹ • L), F x) / n ^ card ι)
       atTop (nhds (∫ x in s, F x)) := by
@@ -361,6 +388,9 @@ theorem tendsto_tsum_div_pow :
   · simp only [IntegrationParams.Riemann] at h
   · simp only [IntegrationParams.Riemann] at h
 
+/-- Let `s` be a bounded, measurable set of `ι → ℝ` whose frontier has volume zero. Then the
+limit as `n → ∞` of `card (s ∩ n⁻¹ • (ι → ℤ)) / n ^ card ι` tends to the volume of `s`. See
+`tendsto_card_div_pow` for a version where the limit variable is a real number. -/
 theorem tendsto_card_div_pow' :
     Tendsto (fun n : ℕ ↦ (Nat.card ↑(s ∩ (n:ℝ)⁻¹ • L) : ℝ) / n ^ card ι)
       atTop (nhds (volume s).toReal) := by
@@ -370,6 +400,10 @@ theorem tendsto_card_div_pow' :
 
 variable (hs₄ : ∀ ⦃x y : ℝ⦄, 0 < x → x ≤ y → x • s ⊆ y • s)
 
+/-- Let `s` be a bounded, measurable set of `ι → ℝ` whose frontier has volume zero and such that
+`x • s ⊆ y • s` whenever `0 < x ≤ y`. Then the limit as `x → ∞` of
+`card (s ∩ x⁻¹ • (ι → ℤ)) / x ^ card ι` tends to the volume of `s`. Here, as opposed to
+`tendsto_card_div_pow` the limit is over a real variable `x`. -/
 theorem tendsto_card_div_pow :
     Tendsto (fun x : ℝ ↦ (Nat.card ↑(s ∩ x⁻¹ • L) : ℝ) / x ^ card ι)
       atTop (nhds (volume s).toReal) := by
