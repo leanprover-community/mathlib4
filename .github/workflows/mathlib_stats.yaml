@@ -1,0 +1,30 @@
+name: Post Mathlib report on Zulip
+on:
+  schedule:
+    - cron: "0 0 * * Sun"  # post at midnight on Sunday UTC
+
+jobs:
+  mathlib-report:
+    runs-on: pr
+    steps:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout master branch
+        uses: adomani/get_mathlib4_with_cache@v1
+
+      - id: mathlib_stats
+        run: |
+          git checkout origin/adomani/weekly_change_report scripts/mathlib_stats.sh scripts/count_decls.lean
+          printf $'summary<<EOF\n%s\nEOF' "$(./scripts/mathlib_stats.sh)" >> "$GITHUB_OUTPUT"
+
+      - name: Post report on Zulip
+        uses: zulip/github-actions-zulip/send-message@v1
+        with:
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          organization-url: 'https://leanprover.zulipchat.com'
+          to: 'mathlib4'
+          type: 'stream'
+          topic: 'Mathlib weekly change report'
+          content: ${{ steps.mathlib_stats.outputs.summary }}
