@@ -79,7 +79,7 @@ def updateTally (s : Tally) (n : Name) (c : ConstantInfo) :
     else
       return {s with data := s.data.insert n}
 
-/-- extends a `Tally` all the ConstantInfos in the environment. -/
+/-- extends a `Tally` all the `ConstantInfos` in the environment. -/
 def mkTally (s : Tally) : MetaM Tally := do
   let env ← getEnv
 --  let maths ← MathlibModIdxs env
