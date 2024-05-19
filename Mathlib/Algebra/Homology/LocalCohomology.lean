@@ -250,8 +250,8 @@ instance ideal_powers_initial [hR : IsNoetherian R R] :
       -- The inclusions `J^n1 ≤ J'` and `J^n2 ≤ J'` always form a triangle, based on
       -- which exponent is larger.
       rcases le_total (unop j1.left) (unop j2.left) with h | h
-      right; exact ⟨CostructuredArrow.homMk (homOfLE h).op (AsTrue.get trivial)⟩
-      left; exact ⟨CostructuredArrow.homMk (homOfLE h).op (AsTrue.get trivial)⟩
+      · right; exact ⟨CostructuredArrow.homMk (homOfLE h).op (AsTrue.get trivial)⟩
+      · left; exact ⟨CostructuredArrow.homMk (homOfLE h).op (AsTrue.get trivial)⟩
 #align local_cohomology.ideal_powers_initial localCohomology.ideal_powers_initial
 
 example : HasColimitsOfSize.{0, 0, u, u + 1} (ModuleCat.{u, u} R) := inferInstance
@@ -273,12 +273,19 @@ def SelfLERadical.cast (hJK : J.radical = K.radical) : SelfLERadical J ⥤ SelfL
 #align local_cohomology.self_le_radical.cast localCohomology.SelfLERadical.cast
 
 -- TODO generalize this to the equivalence of full categories for any `iff`.
-instance SelfLERadical.castIsEquivalence (hJK : J.radical = K.radical) :
-    (SelfLERadical.cast hJK).IsEquivalence where
+/-- The equivalence of categories `SelfLERadical J ≌ SelfLERadical K`
+when `J.radical = K.radical`. -/
+def SelfLERadical.castEquivalence (hJK : J.radical = K.radical) :
+    SelfLERadical J ≌ SelfLERadical K where
+  functor := SelfLERadical.cast hJK
   inverse := SelfLERadical.cast hJK.symm
   unitIso := Iso.refl _
   counitIso := Iso.refl _
-#align local_cohomology.self_le_radical.cast_is_equivalence localCohomology.SelfLERadical.castIsEquivalence
+
+instance SelfLERadical.cast_isEquivalence (hJK : J.radical = K.radical) :
+    (SelfLERadical.cast hJK).IsEquivalence :=
+  (castEquivalence hJK).isEquivalence_functor
+#align local_cohomology.self_le_radical.cast_is_equivalence localCohomology.SelfLERadical.cast_isEquivalence
 
 /-- The natural isomorphism between local cohomology defined using the `of_self_le_radical`
 diagram, assuming `J.radical = K.radical`. -/

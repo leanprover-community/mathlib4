@@ -145,7 +145,7 @@ theorem pullback_base (i j k : D.J) (S : Set (D.V (i, j)).carrier) :
   -- Porting note: `rw` to `erw` on `coe_comp`
   erw [coe_comp]
   rw [Set.preimage_comp, Set.image_preimage_eq, TopCat.pullback_snd_image_fst_preimage]
-  rfl
+  · rfl
   rw [← TopCat.epi_iff_surjective]
   infer_instance
 #align algebraic_geometry.PresheafedSpace.glue_data.pullback_base AlgebraicGeometry.PresheafedSpace.GlueData.pullback_base
@@ -218,8 +218,8 @@ theorem snd_invApp_t_app' (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)
     simp_rw [Category.assoc]
     erw [IsOpenImmersion.inv_naturality, IsOpenImmersion.inv_naturality_assoc,
       IsOpenImmersion.app_inv_app'_assoc]
-    simp_rw [← (𝖣.V (k, i)).presheaf.map_comp, eqToHom_map (Functor.op _), eqToHom_op,
-      eqToHom_trans]
+    · simp_rw [← (𝖣.V (k, i)).presheaf.map_comp, eqToHom_map (Functor.op _), eqToHom_op,
+        eqToHom_trans]
     rintro x ⟨y, -, eq⟩
     replace eq := ConcreteCategory.congr_arg (𝖣.t i k).base eq
     change ((π₂ i, j, k) ≫ D.t i k).base y = (D.t k i ≫ D.t i k).base x at eq
@@ -290,16 +290,16 @@ theorem opensImagePreimageMap_app' (i j k : D.J) (U : Opens (D.U i).carrier) :
         ((π₁ j, i, k) ≫ D.t j i ≫ D.f i j).c.app (op U) ≫
           (π₂⁻¹ j, i, k) (unop _) ≫ (D.V (j, k)).presheaf.map (eqToHom eq) := by
   constructor
-  delta opensImagePreimageMap
-  simp_rw [Category.assoc]
-  rw [(D.f j k).c.naturality, f_invApp_f_app_assoc]
-  erw [← (D.V (j, k)).presheaf.map_comp]
-  simp_rw [← Category.assoc]
-  erw [← comp_c_app, ← comp_c_app]
-  simp_rw [Category.assoc]
-  dsimp only [Functor.op, unop_op, Quiver.Hom.unop_op]
-  rw [eqToHom_map (Opens.map _), eqToHom_op, eqToHom_trans]
-  congr
+  · delta opensImagePreimageMap
+    simp_rw [Category.assoc]
+    rw [(D.f j k).c.naturality, f_invApp_f_app_assoc]
+    · erw [← (D.V (j, k)).presheaf.map_comp]
+      · simp_rw [← Category.assoc]
+        erw [← comp_c_app, ← comp_c_app]
+        · simp_rw [Category.assoc]
+          dsimp only [Functor.op, unop_op, Quiver.Hom.unop_op]
+          rw [eqToHom_map (Opens.map _), eqToHom_op, eqToHom_trans]
+          congr
 #align algebraic_geometry.PresheafedSpace.glue_data.opens_image_preimage_map_app' AlgebraicGeometry.PresheafedSpace.GlueData.opensImagePreimageMap_app'
 
 /-- The red and the blue arrows in ![this diagram](https://i.imgur.com/mBzV1Rx.png) commute. -/
@@ -464,8 +464,8 @@ theorem π_ιInvApp_π (i j : D.J) (U : Opens (D.U i).carrier) :
     change Mono ((_ ≫ D.f j i).c.app _)
     rw [comp_c_app]
     apply (config := { allowSynthFailures := true }) mono_comp
-    erw [D.ι_image_preimage_eq i j U]
-    · infer_instance
+    · erw [D.ι_image_preimage_eq i j U]
+      infer_instance
     · have : IsIso (D.t i j).c := by apply c_isIso_of_iso
       infer_instance)]
   simp_rw [Category.assoc]

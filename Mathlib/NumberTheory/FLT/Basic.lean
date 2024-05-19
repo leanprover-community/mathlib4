@@ -5,9 +5,10 @@ Authors: Kevin Buzzard, Yaël Dillies
 -/
 import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Algebra.GroupPower.Ring
-import Mathlib.Data.Nat.Parity
+import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.Rat.Defs
 import Mathlib.RingTheory.Int.Basic
+import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Positivity.Basic
 import Mathlib.Tactic.TFAE

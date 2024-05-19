@@ -442,11 +442,11 @@ theorem iSup_torsionBy_eq_torsionBy_prod :
   rw [← torsionBySet_span_singleton_eq, Ideal.submodule_span_eq, ←
     Ideal.finset_inf_span_singleton _ _ hq, Finset.inf_eq_iInf, ←
     iSup_torsionBySet_ideal_eq_torsionBySet_iInf]
-  congr
-  ext : 1
-  congr
-  ext : 1
-  exact (torsionBySet_span_singleton_eq _).symm
+  · congr
+    ext : 1
+    congr
+    ext : 1
+    exact (torsionBySet_span_singleton_eq _).symm
   exact fun i hi j hj ij => (Ideal.sup_eq_top_iff_isCoprime _ _).mpr (hq hi hj ij)
 #align submodule.supr_torsion_by_eq_torsion_by_prod Submodule.iSup_torsionBy_eq_torsionBy_prod
 
@@ -546,6 +546,12 @@ instance : Module (R ⧸ I) (M ⧸ I • (⊤ : Submodule R M)) :=
     induction x using Quotient.inductionOn
     refine' (Submodule.Quotient.mk_eq_zero _).mpr (Submodule.smul_mem_smul r.prop _)
     trivial
+
+lemma Quotient.mk_smul_mk (r : R) (m : M) :
+    Ideal.Quotient.mk I r •
+      Submodule.Quotient.mk (p := (I • ⊤ : Submodule R M)) m =
+      Submodule.Quotient.mk (p := (I • ⊤ : Submodule R M)) (r • m) :=
+  rfl
 
 end Module
 

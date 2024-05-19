@@ -8,7 +8,7 @@ import Batteries.Data.Rat.Lemmas
 import Mathlib.Mathport.Rename
 
 /-!
-# Align statements for declarations from Std
+# Align statements for declarations from Batteries
 -/
 
 #align rat.ext Rat.ext

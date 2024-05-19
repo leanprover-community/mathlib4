@@ -154,7 +154,10 @@ set_option linter.uppercaseLean3 false in
 
 /-- Isomorphic presheaves have isomorphic sheaf condition diagrams. -/
 def diagram.isoOfIso (α : F ≅ G) : diagram F U ≅ diagram.{v'} G U :=
-  NatIso.ofComponents (by rintro ⟨⟩; exact piOpens.isoOfIso U α; exact piInters.isoOfIso U α)
+  NatIso.ofComponents (by
+    rintro ⟨⟩
+    · exact piOpens.isoOfIso U α
+    · exact piInters.isoOfIso U α)
     (by
       rintro ⟨⟩ ⟨⟩ ⟨⟩
       · simp
@@ -272,8 +275,8 @@ section
 /-- Implementation of `SheafConditionPairwiseIntersections.coneEquiv`. -/
 @[simps!]
 def coneEquivFunctor :
-    Limits.Cone ((diagram U).op ⋙ F) ⥤ Limits.Cone (SheafConditionEqualizerProducts.diagram F U)
-    where
+    Limits.Cone ((diagram U).op ⋙ F) ⥤
+      Limits.Cone (SheafConditionEqualizerProducts.diagram F U) where
   obj c := coneEquivFunctorObj F U c
   map {c c'} f :=
     { hom := f.hom
@@ -340,8 +343,8 @@ set_option linter.uppercaseLean3 false in
 /-- Implementation of `SheafConditionPairwiseIntersections.coneEquiv`. -/
 @[simps!]
 def coneEquivInverse :
-    Limits.Cone (SheafConditionEqualizerProducts.diagram F U) ⥤ Limits.Cone ((diagram U).op ⋙ F)
-    where
+    Limits.Cone (SheafConditionEqualizerProducts.diagram F U) ⥤
+      Limits.Cone ((diagram U).op ⋙ F) where
   obj c := coneEquivInverseObj F U c
   map {c c'} f :=
     { hom := f.hom
@@ -360,8 +363,8 @@ set_option linter.uppercaseLean3 false in
 /-- Implementation of `SheafConditionPairwiseIntersections.coneEquiv`. -/
 @[simps]
 def coneEquivUnitIsoApp (c : Cone ((diagram U).op ⋙ F)) :
-    (𝟭 (Cone ((diagram U).op ⋙ F))).obj c ≅ (coneEquivFunctor F U ⋙ coneEquivInverse F U).obj c
-    where
+    (𝟭 (Cone ((diagram U).op ⋙ F))).obj c ≅
+      (coneEquivFunctor F U ⋙ coneEquivInverse F U).obj c where
   hom :=
     { hom := 𝟙 _
       w := fun j => by
@@ -434,8 +437,8 @@ Cones over `diagram U ⋙ F` are the same as a cones over the usual sheaf condit
 -/
 @[simps]
 def coneEquiv :
-    Limits.Cone ((diagram U).op ⋙ F) ≌ Limits.Cone (SheafConditionEqualizerProducts.diagram F U)
-    where
+    Limits.Cone ((diagram U).op ⋙ F) ≌
+      Limits.Cone (SheafConditionEqualizerProducts.diagram F U) where
   functor := coneEquivFunctor F U
   inverse := coneEquivInverse F U
   unitIso := coneEquivUnitIso F U

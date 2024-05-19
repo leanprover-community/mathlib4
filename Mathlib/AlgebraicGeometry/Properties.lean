@@ -23,8 +23,10 @@ We provide some basic properties of schemes
   are reduced.
 -/
 
-universe u
 
+-- Explicit universe annotations were used in this file to improve perfomance #12737
+
+universe u
 
 open TopologicalSpace Opposite CategoryTheory CategoryTheory.Limits TopCat
 
