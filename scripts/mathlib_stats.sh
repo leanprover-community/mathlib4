@@ -122,4 +122,6 @@ printf -- ' Reference commits: old %s, new %s.\n\n' "${oldCommitURL}" "${current
 
 printf -- '%s, %s total(insertions-deletions)\n\n' "${gdiff}" "${net}"
 
-printf -- 'Declarations:\n%s\n\nTake also a look at the [`Mathlib` stats page](%s).\n' "${declSummary}" "${statsURL}"
+printf -- 'Declarations:\n%s\n\n'
+
+printf -- 'Take also a look at the [`Mathlib` stats page](%s).\n' "${declSummary}" "${statsURL}"
