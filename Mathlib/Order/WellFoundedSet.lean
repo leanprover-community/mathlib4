@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.Init.Data.Sigma.Lex
+import Mathlib.Data.Prod.Lex
 import Mathlib.Data.Sigma.Lex
 import Mathlib.Order.Antichain
 import Mathlib.Order.OrderIsoNat
@@ -830,6 +831,62 @@ theorem partiallyWellOrderedOn_sublistForall₂ (r : α → α → Prop) [IsRefl
       rw [← List.cons_head!_tail (hnil (g (m - g 0))), ← List.cons_head!_tail (hnil (g n'))]
       exact List.SublistForall₂.cons (hg _ _ (le_of_lt mn)) hmn
 #align set.partially_well_ordered_on.partially_well_ordered_on_sublist_forall₂ Set.PartiallyWellOrderedOn.partiallyWellOrderedOn_sublistForall₂
+
+theorem subsetProdLex [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)}
+    (hα : ((fun (x : α ×ₗ β) => (ofLex x).1)'' s).IsPWO)
+    (hβ : ∀ a, {y | toLex (a, y) ∈ s}.IsPWO) : s.IsPWO := by
+  intro f hf
+  rw [isPWO_iff_exists_monotone_subseq] at hα
+  obtain ⟨g, hg⟩ : ∃ (g : (ℕ ↪o ℕ)), Monotone fun n => (ofLex f (g n)).1 :=
+    hα (fun n => (ofLex f n).1) (fun k => mem_image_of_mem (fun x => (ofLex x).1) (hf k))
+  have hhg : ∀ n, (ofLex f (g 0)).1 ≤ (ofLex f (g n)).1 := fun n => hg n.zero_le
+  by_cases hc : ∃ n, (ofLex f (g 0)).1 < (ofLex f (g n)).1
+  · obtain ⟨n, hn⟩ := hc
+    use (g 0), (g n)
+    constructor
+    · by_contra hx
+      simp_all
+    · exact (Prod.Lex.le_iff (f (g 0)) _).mpr <| Or.inl hn
+  · have hhc : ∀ n, (ofLex f (g 0)).1 = (ofLex f (g n)).1 := by
+      intro n
+      rw [not_exists] at hc
+      exact (hhg n).eq_of_not_lt (hc n)
+    obtain ⟨g', hg'⟩ : ∃ g' : ℕ ↪o ℕ, Monotone ((fun n ↦ (ofLex f (g (g' n))).2)) := by
+      simp_rw [isPWO_iff_exists_monotone_subseq] at hβ
+      apply hβ (ofLex f (g 0)).1 fun n ↦ (ofLex f (g n)).2
+      intro n
+      rw [hhc n]
+      simpa using hf _
+    use (g (g' 0)), (g (g' 1))
+    suffices (f (g (g' 0))) ≤ (f (g (g' 1))) by simpa
+    · refine (Prod.Lex.le_iff (f (g (g' 0))) (f (g (g' 1)))).mpr ?_
+      right
+      constructor
+      · exact (hhc (g' 0)).symm.trans (hhc (g' 1))
+      · exact hg' zero_le_one
+
+theorem imageProdLex [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)}
+    (hαβ : s.IsPWO) : ((fun (x : α ×ₗ β) => (ofLex x).1)'' s).IsPWO :=
+  IsPWO.image_of_monotone hαβ Prod.Lex.monotone_fst
+
+theorem fiberProdLex [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)}
+    (hαβ : s.IsPWO) (a : α) : {y | toLex (a, y) ∈ s}.IsPWO := by
+  let f : α ×ₗ β → β := fun x => (ofLex x).2
+  have h : {y | toLex (a, y) ∈ s} = f '' (s ∩ (fun x ↦ (ofLex x).1) ⁻¹' {a}) := by
+    ext x
+    simp [f]
+  rw [h]
+  apply IsPWO.image_of_monotoneOn (hαβ.mono (inter_subset_left s _))
+  rintro b ⟨-, hb⟩ c ⟨-, hc⟩ hbc
+  simp only [mem_preimage, mem_singleton_iff] at hb hc
+  have : (ofLex b).1 < (ofLex c).1 ∨ (ofLex b).1 = (ofLex c).1 ∧ f b ≤ f c :=
+    (Prod.Lex.le_iff b c).mp hbc
+  simp_all only [lt_self_iff_false, true_and, false_or]
+
+theorem ProdLex_iff [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)} :
+    s.IsPWO ↔
+      ((fun (x : α ×ₗ β) ↦ (ofLex x).1) '' s).IsPWO ∧ ∀ a, {y | toLex (a, y) ∈ s}.IsPWO :=
+  ⟨fun h ↦ ⟨imageProdLex h, fiberProdLex h⟩, fun h ↦ subsetProdLex h.1 h.2⟩
 
 end Set.PartiallyWellOrderedOn
 

@@ -64,51 +64,20 @@ radius at `1`. -/
 def centerAndRescale : SatelliteConfig E N τ where
   c i := (a.r (last N))⁻¹ • (a.c i - a.c (last N))
   r i := (a.r (last N))⁻¹ * a.r i
-  rpos i := mul_pos (inv_pos.2 (a.rpos _)) (a.rpos _)
+  rpos i := by positivity
   h i j hij := by
-    rcases a.h hij with (H | H)
-    · left
-      constructor
-      · rw [dist_eq_norm, ← smul_sub, norm_smul, Real.norm_eq_abs,
-          abs_of_nonneg (inv_nonneg.2 (a.rpos _).le)]
-        refine' mul_le_mul_of_nonneg_left _ (inv_nonneg.2 (a.rpos _).le)
-        rw [dist_eq_norm] at H
-        convert H.1 using 2
-        abel
-      · rw [← mul_assoc, mul_comm τ, mul_assoc]
-        refine' mul_le_mul_of_nonneg_left _ (inv_nonneg.2 (a.rpos _).le)
-        exact H.2
-    · right
-      constructor
-      · rw [dist_eq_norm, ← smul_sub, norm_smul, Real.norm_eq_abs,
-          abs_of_nonneg (inv_nonneg.2 (a.rpos _).le)]
-        refine' mul_le_mul_of_nonneg_left _ (inv_nonneg.2 (a.rpos _).le)
-        rw [dist_eq_norm] at H
-        convert H.1 using 2
-        abel
-      · rw [← mul_assoc, mul_comm τ, mul_assoc]
-        refine' mul_le_mul_of_nonneg_left _ (inv_nonneg.2 (a.rpos _).le)
-        exact H.2
+    simp (disch := positivity) only [dist_smul₀, dist_sub_right, mul_left_comm τ,
+      Real.norm_of_nonneg]
+    rcases a.h hij with (⟨H₁, H₂⟩ | ⟨H₁, H₂⟩) <;> [left; right] <;> constructor <;> gcongr
   hlast i hi := by
-    have H := a.hlast i hi
-    constructor
-    · rw [dist_eq_norm, ← smul_sub, norm_smul, Real.norm_eq_abs,
-        abs_of_nonneg (inv_nonneg.2 (a.rpos _).le)]
-      refine' mul_le_mul_of_nonneg_left _ (inv_nonneg.2 (a.rpos _).le)
-      rw [dist_eq_norm] at H
-      convert H.1 using 2
-      abel
-    · rw [← mul_assoc, mul_comm τ, mul_assoc]
-      refine' mul_le_mul_of_nonneg_left _ (inv_nonneg.2 (a.rpos _).le)
-      exact H.2
+    simp (disch := positivity) only [dist_smul₀, dist_sub_right, mul_left_comm τ,
+      Real.norm_of_nonneg]
+    have ⟨H₁, H₂⟩ := a.hlast i hi
+    constructor <;> gcongr
   inter i hi := by
-    have H := a.inter i hi
-    rw [dist_eq_norm, ← smul_sub, norm_smul, Real.norm_eq_abs,
-      abs_of_nonneg (inv_nonneg.2 (a.rpos _).le), ← mul_add]
-    refine' mul_le_mul_of_nonneg_left _ (inv_nonneg.2 (a.rpos _).le)
-    rw [dist_eq_norm] at H
-    convert H using 2
-    abel
+    simp (disch := positivity) only [dist_smul₀, ← mul_add, dist_sub_right, Real.norm_of_nonneg]
+    gcongr
+    exact a.inter i hi
 #align besicovitch.satellite_config.center_and_rescale Besicovitch.SatelliteConfig.centerAndRescale
 
 theorem centerAndRescale_center : a.centerAndRescale.c (last N) = 0 := by
@@ -362,7 +331,7 @@ theorem exists_normalized_aux1 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
   have τpos : 0 < τ := _root_.zero_lt_one.trans_le hτ
   have I : (1 - δ / 4) * τ ≤ 1 :=
     calc
-      (1 - δ / 4) * τ ≤ (1 - δ / 4) * (1 + δ / 4) := mul_le_mul_of_nonneg_left hδ1 D
+      (1 - δ / 4) * τ ≤ (1 - δ / 4) * (1 + δ / 4) := by gcongr
       _ = (1 : ℝ) - δ ^ 2 / 16 := by ring
       _ ≤ 1 := by linarith only [sq_nonneg δ]
   have J : 1 - δ ≤ 1 - δ / 4 := by linarith only [δnonneg]
@@ -396,7 +365,6 @@ theorem exists_normalized_aux2 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
     simpa only [dist_eq_norm] using a.h
   have δnonneg : 0 ≤ δ := by linarith only [hτ, hδ1]
   have D : 0 ≤ 1 - δ / 4 := by linarith only [hδ2]
-  have τpos : 0 < τ := _root_.zero_lt_one.trans_le hτ
   have hcrj : ‖a.c j‖ ≤ a.r j + 1 := by simpa only [lastc, lastr, dist_zero_right] using a.inter' j
   have I : a.r i ≤ 2 := by
     rcases lt_or_le i (last N) with (H | H)
@@ -407,7 +375,7 @@ theorem exists_normalized_aux2 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
       exact one_le_two
   have J : (1 - δ / 4) * τ ≤ 1 :=
     calc
-      (1 - δ / 4) * τ ≤ (1 - δ / 4) * (1 + δ / 4) := mul_le_mul_of_nonneg_left hδ1 D
+      (1 - δ / 4) * τ ≤ (1 - δ / 4) * (1 + δ / 4) := by gcongr
       _ = (1 : ℝ) - δ ^ 2 / 16 := by ring
       _ ≤ 1 := by linarith only [sq_nonneg δ]
   have A : a.r j - δ ≤ ‖a.c i - a.c j‖ := by
@@ -415,17 +383,17 @@ theorem exists_normalized_aux2 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
     have C : a.r j ≤ 4 :=
       calc
         a.r j ≤ τ * a.r i := H.2
-        _ ≤ τ * 2 := mul_le_mul_of_nonneg_left I τpos.le
-        _ ≤ 5 / 4 * 2 := (mul_le_mul_of_nonneg_right (by linarith only [hδ1, hδ2]) zero_le_two)
+        _ ≤ τ * 2 := by gcongr
+        _ ≤ 5 / 4 * 2 := by gcongr; linarith only [hδ1, hδ2]
         _ ≤ 4 := by norm_num
     calc
       a.r j - δ ≤ a.r j - a.r j / 4 * δ := by
-        refine' sub_le_sub le_rfl _
+        gcongr _ - ?_
         refine' mul_le_of_le_one_left δnonneg _
         linarith only [C]
       _ = (1 - δ / 4) * a.r j := by ring
       _ ≤ (1 - δ / 4) * (τ * a.r i) := mul_le_mul_of_nonneg_left H.2 D
-      _ ≤ 1 * a.r i := by rw [← mul_assoc]; apply mul_le_mul_of_nonneg_right J (a.rpos _).le
+      _ ≤ 1 * a.r i := by rw [← mul_assoc]; gcongr
       _ ≤ ‖a.c i - a.c j‖ := by rw [one_mul]; exact H.1
   set d := (2 / ‖a.c j‖) • a.c j with hd
   have : a.r j - δ ≤ ‖a.c i - d‖ + (a.r j - 1) :=

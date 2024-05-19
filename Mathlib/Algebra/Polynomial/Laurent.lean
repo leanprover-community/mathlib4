@@ -110,9 +110,8 @@ theorem Polynomial.toLaurent_apply [Semiring R] (p : R[X]) :
 
 /-- The `R`-algebra map, taking a polynomial with coefficients in `R` to a Laurent polynomial
 with coefficients in `R`. -/
-def Polynomial.toLaurentAlg [CommSemiring R] : R[X] →ₐ[R] R[T;T⁻¹] := by
-  refine' AlgHom.comp _ (toFinsuppIsoAlg R).toAlgHom
-  exact mapDomainAlgHom R R Int.ofNatHom
+def Polynomial.toLaurentAlg [CommSemiring R] : R[X] →ₐ[R] R[T;T⁻¹] :=
+  (mapDomainAlgHom R R Int.ofNatHom).comp (toFinsuppIsoAlg R).toAlgHom
 #align polynomial.to_laurent_alg Polynomial.toLaurentAlg
 
 @[simp] lemma Polynomial.coe_toLaurentAlg [CommSemiring R] :

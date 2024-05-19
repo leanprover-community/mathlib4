@@ -44,6 +44,7 @@ if the same property holds for `J ≤ I`. We formalize these two notions in the 
 using `I : WithBot (Box ι)`: the value `I = ⊤` corresponds to functions box additive on the whole
 space. -/
 structure BoxAdditiveMap (ι M : Type*) [AddCommMonoid M] (I : WithTop (Box ι)) where
+  /-- The function underlying this additive map. -/
   toFun : Box ι → M
   sum_partition_boxes' : ∀ J : Box ι, ↑J ≤ I → ∀ π : Prepartition J, π.IsPartition →
     ∑ Ji in π.boxes, toFun Ji = toFun J

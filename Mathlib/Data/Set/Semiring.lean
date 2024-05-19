@@ -237,8 +237,7 @@ instance [CommMonoid α] : CanonicallyOrderedCommSemiring (SetSemiring α) :=
 
 /-- The image of a set under a multiplicative homomorphism is a ring homomorphism
 with respect to the pointwise operations on sets. -/
-def imageHom [MulOneClass α] [MulOneClass β] (f : α →* β) : SetSemiring α →+* SetSemiring β
-    where
+def imageHom [MulOneClass α] [MulOneClass β] (f : α →* β) : SetSemiring α →+* SetSemiring β where
   toFun s := up (image f (down s))
   map_zero' := image_empty _
   map_one' := by
