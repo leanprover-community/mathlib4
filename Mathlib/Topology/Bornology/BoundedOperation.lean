@@ -241,18 +241,6 @@ lemma NNReal.lipschitzWith_sub : LipschitzWith 2 (fun (p : ℝ≥0 × ℝ≥0) �
 
 instance : BoundedSub ℝ≥0 := boundedSub_of_lipschitzWith_sub NNReal.lipschitzWith_sub
 
-noncomputable instance : BoundedSub ℝ≥0 where
-  isBounded_sub := by
-    intro s t hs _
-    obtain ⟨c, hc⟩ := (Metric.isBounded_iff_subset_ball 0).mp hs
-    apply (Metric.isBounded_iff_subset_ball 0).mpr
-    use c
-    intro z hz
-    obtain ⟨a, a_in_s, b, _, z_eq⟩ := Set.mem_sub.mp hz
-    have key := hc a_in_s
-    simp only [NNReal.ball_zero_eq_Ico, ← z_eq, Set.mem_Ico, zero_le, true_and, gt_iff_lt] at *
-    exact tsub_lt_of_lt key
-
 open Metric in
 instance : BoundedMul ℝ≥0 where
   isBounded_mul := by
