@@ -138,6 +138,9 @@ instance ProdAdicCompletions.algebra' : Algebra R (K_hat R K) :=
   (by infer_instance : Algebra R <| ∀ v : HeightOneSpectrum R, v.adicCompletion K)
 #align dedekind_domain.prod_adic_completions.algebra' DedekindDomain.ProdAdicCompletions.algebra'
 
+lemma ProdAdicCompletions.algebraMap_apply (r : R) :
+    algebraMap R (K_hat R K) r v = (algebraMap R K r : v.adicCompletion K) := rfl
+
 instance : IsScalarTower R K (K_hat R K) :=
   (by infer_instance : IsScalarTower R K <| ∀ v : HeightOneSpectrum R, v.adicCompletion K)
 
@@ -266,6 +269,27 @@ theorem one : (1 : K_hat R K).IsFiniteAdele := by
   convert finite_empty
 #align dedekind_domain.prod_adic_completions.is_finite_adele.one DedekindDomain.ProdAdicCompletions.IsFiniteAdele.one
 
+open scoped DiscreteValuation
+
+theorem algebraMap (r : R) : (algebraMap R (K_hat R K) r).IsFiniteAdele := by
+  rw [IsFiniteAdele, Filter.eventually_cofinite]
+  suffices h : ∀ v : HeightOneSpectrum R,
+      _root_.algebraMap R (K_hat R K) r v ∈ v.adicCompletionIntegers K by
+    simp [h]
+  intro v
+  letI : Valued K ℤₘ₀ := adicValued v
+  rw [mem_adicCompletionIntegers, ProdAdicCompletions.algebraMap_apply]
+  unfold IsDedekindDomain.HeightOneSpectrum.adicCompletion
+  rw [Valued.valuedCompletion_apply]
+  exact v.valuation_le_one _
+
+theorem algebraMap' (k : K) : (_root_.algebraMap K (K_hat R K) k).IsFiniteAdele := by
+  rw [IsFiniteAdele, Filter.eventually_cofinite]
+  simp_rw [mem_adicCompletionIntegers]
+  obtain ⟨⟨n, ⟨d, hd⟩⟩, hk⟩ := IsLocalization.surj (nonZeroDivisors R) k
+  dsimp at hk
+  sorry
+
 end IsFiniteAdele
 
 end ProdAdicCompletions
@@ -274,20 +298,18 @@ open ProdAdicCompletions.IsFiniteAdele
 
 /-- The finite adèle ring of `R` is the restricted product over all maximal ideals `v` of `R`
 of `adicCompletion` with respect to `adicCompletionIntegers`. -/
-noncomputable def finiteAdeleRing : Subring (K_hat R K) where
-  carrier := {x : K_hat R K | x.IsFiniteAdele}
-  mul_mem' hx hy := mul hx hy
-  one_mem' := one
-  add_mem' hx hy := add hx hy
-  zero_mem' := zero
-  neg_mem' hx := neg hx
+def finiteAdeleRing : Type _ := (
+  { carrier := {x : K_hat R K | x.IsFiniteAdele}
+    mul_mem' := mul
+    one_mem' := one
+    add_mem' := add
+    zero_mem' := zero
+    algebraMap_mem' := algebraMap'
+  } : Subalgebra K (K_hat R K))
 #align dedekind_domain.finite_adele_ring DedekindDomain.finiteAdeleRing
 
-variable {R K}
+instance : CommRing (finiteAdeleRing R K) := Subalgebra.toCommRing _
 
-@[simp]
-theorem mem_finiteAdeleRing_iff (x : K_hat R K) : x ∈ finiteAdeleRing R K ↔ x.IsFiniteAdele :=
-  Iff.rfl
-#align dedekind_domain.mem_finite_adele_ring_iff DedekindDomain.mem_finiteAdeleRing_iff
+instance : Algebra K (finiteAdeleRing R K) := Subalgebra.algebra _
 
 end DedekindDomain
