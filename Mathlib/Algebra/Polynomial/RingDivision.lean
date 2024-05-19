@@ -705,7 +705,7 @@ set_option linter.uppercaseLean3 false in
 theorem Monic.prime_of_degree_eq_one (hp1 : degree p = 1) (hm : Monic p) : Prime p :=
   have : p = X - C (-p.coeff 0) := by simpa [hm.leadingCoeff] using eq_X_add_C_of_degree_eq_one hp1
   this.symm ▸ prime_X_sub_C _
-#align polynomial.is_coprime_X_sub_C_of_is_unit_sub Polynomial.isCoprime_X_sub_C_of_isUnit_sub
+#align polynomial.monic.prime_of_degree_eq_one Polynomial.Monic.prime_of_degree_eq_one
 
 theorem irreducible_X_sub_C (r : R) : Irreducible (X - C r) :=
   (prime_X_sub_C r).irreducible
@@ -774,7 +774,7 @@ theorem isCoprime_X_sub_C_of_isUnit_sub {R} [CommRing R] {a b : R} (h : IsUnit (
     congr
     exact h.val_inv_mul⟩
 set_option linter.uppercaseLean3 false in
-#align polynomial.is_coprime_X_sub_C_of_is_unit_sub
+#align polynomial.is_coprime_X_sub_C_of_is_unit_sub Polynomial.isCoprime_X_sub_C_of_isUnit_sub
 
 theorem pairwise_coprime_X_sub_C {K} [Field K] {I : Type v} {s : I → K} (H : Function.Injective s) :
     Pairwise (IsCoprime on fun i : I => X - C (s i)) := fun _ _ hij =>
@@ -842,6 +842,7 @@ decreasing_by {
 #align polynomial.exists_multiset_roots Polynomial.exists_multiset_roots
 
 end CommRing
+
 section
 
 variable [Semiring R] [CommRing S] [IsDomain S] (φ : R →+* S)
