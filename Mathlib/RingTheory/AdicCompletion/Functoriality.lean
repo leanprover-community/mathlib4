@@ -19,6 +19,9 @@ In this file we establish functorial properties of the adic completion.
 
 ## Main results
 
+- `sumEquivOfFintype`: adic completion commutes with finite sums
+- `piEquivOfFintype`: adic completion commutes with finite products
+
 -/
 
 variable {R : Type*} [CommRing R] (I : Ideal R)
