@@ -51,7 +51,7 @@ getCountDecls () {
   sed 's=^--\(count_decls\)=\1=' scripts/count_decls.lean | lake env lean --stdin
 }
 
-# extracts
+# `tallyCountDecls file` extracts from `file`
 # Theorems xx
 # Predicates yy
 # ...
@@ -80,7 +80,7 @@ newDeclsTots="$(getCountDecls)"
 
 # the tally of the output of `count_decls`
 newDecls="$(echo "${newDeclsTots}" | tallyCountDecls -)"
-# Definitions 73590...
+# Theorems 73590...
 git checkout -q "${oldCommit}"
 # 'detached HEAD' state
 
@@ -98,7 +98,7 @@ oldDeclsTots="$(getCountDecls)"
 
 # the tally of the output of `count_decls`
 oldDecls="$(echo "${oldDeclsTots}" | tallyCountDecls -)"
-# Definitions 73152...
+# Theorems 73152...
 
 # produce the `+X -Y` report for the declarations in each category
 plusMinus="$(for typ in $(echo "$newDeclsTots" | grep "[^,]$" | tr '\n' ' ');
