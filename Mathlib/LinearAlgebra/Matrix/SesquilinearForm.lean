@@ -372,10 +372,8 @@ variable (b₁ : Basis n R₁ M₁) (b₂ : Basis m R₂ M₂)
 `n`-by-`m` matrices with entries in `R`, if `b₁` and `b₂` are `R`-bases for `M₁` and `M₂`,
 respectively. -/
 noncomputable def LinearMap.toMatrix₂ : (M₁ →ₗ[R₁] M₂ →ₗ[R₂] N₂) ≃ₗ[R] Matrix n m N₂ :=
-  (b₁.equivFun.arrowCongr' (b₂.equivFun.arrowCongr' (LinearEquiv.refl R₂ N₂)
-    ({ map_add := fun _ ↦ congrFun rfl, map_smul := fun _ ↦ congrFun rfl })) (
-      { map_add := fun x ↦ congrFun rfl, map_smul := fun c ↦ congrFun (by exact rfl) })).trans
-    LinearMap.toMatrix₂'
+  (b₁.equivFun.arrowCongr (b₂.equivFun.arrowCongr (LinearEquiv.refl R₂ N₂)
+    (fun _ ↦ congrFun rfl)) (fun _ ↦ congrFun (by exact rfl))).trans LinearMap.toMatrix₂'
 #align linear_map.to_matrix₂ LinearMap.toMatrix₂
 
 /-- `Matrix.toLinearMap₂ b₁ b₂` is the equivalence between `R`-bilinear maps on `M` and
@@ -389,7 +387,7 @@ noncomputable def Matrix.toLinearMap₂ : Matrix n m N₂ ≃ₗ[R] M₁ →ₗ[
 @[simp]
 theorem LinearMap.toMatrix₂_apply (B : M₁ →ₗ[R₁] M₂ →ₗ[R₂] N₂) (i : n) (j : m) :
     LinearMap.toMatrix₂ (R := R) b₁ b₂ B i j = B (b₁ i) (b₂ j) := by
-  simp only [toMatrix₂, LinearEquiv.trans_apply, toMatrix₂'_apply, LinearEquiv.arrowCongr_apply',
+  simp only [toMatrix₂, LinearEquiv.trans_apply, toMatrix₂'_apply, LinearEquiv.arrowCongr_apply,
     Basis.equivFun_symm_apply, stdBasis_apply', ite_smul, one_smul, zero_smul, sum_ite_eq, mem_univ,
     ↓reduceIte, LinearEquiv.refl_apply]
 #align linear_map.to_matrix₂_apply LinearMap.toMatrix₂_apply

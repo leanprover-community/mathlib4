@@ -293,7 +293,7 @@ between the two is given by `homTensorHomEquiv_toLinearMap` and `homTensorHomEqu
 -/
 noncomputable def homTensorHomEquiv : (M →ₗ[R] P) ⊗[R] (N →ₗ[R] Q) ≃ₗ[R] M ⊗[R] N →ₗ[R] P ⊗[R] Q :=
   rTensorHomEquivHomRTensor R M P _ ≪≫ₗ
-      (LinearEquiv.refl R M).arrowCongr (lTensorHomEquivHomLTensor R N _ Q) ≪≫ₗ
+      (LinearEquiv.refl R M).arrowCongr (lTensorHomEquivHomLTensor R N _ Q) (map_smul _) ≪≫ₗ
     lift.equiv R M N _
 #align hom_tensor_hom_equiv homTensorHomEquiv
 
