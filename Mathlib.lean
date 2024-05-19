@@ -193,7 +193,6 @@ import Mathlib.Algebra.Group.AddChar
 import Mathlib.Algebra.Group.Aut
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Center
-import Mathlib.Algebra.Group.Centralizer
 import Mathlib.Algebra.Group.Commutator
 import Mathlib.Algebra.Group.Commute.Basic
 import Mathlib.Algebra.Group.Commute.Defs
@@ -258,6 +257,7 @@ import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Algebra.GroupWithZero.Center
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Conj
 import Mathlib.Algebra.GroupWithZero.Defs

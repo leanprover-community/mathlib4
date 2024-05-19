@@ -34,7 +34,7 @@ in `M` -/
       in `M`"]
 def center : Submonoid M where
   carrier := Set.center M
-  one_mem' := Set.one_mem_center M
+  one_mem' := Set.one_mem_center
   mul_mem' := Set.mul_mem_center
 #align submonoid.center Submonoid.center
 #align add_submonoid.center AddSubmonoid.center
