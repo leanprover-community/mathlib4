@@ -258,6 +258,7 @@ import Mathlib.Algebra.GroupRingAction.Invariant
 import Mathlib.Algebra.GroupRingAction.Subobjects
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.GroupWithZero.Commute
+import Mathlib.Algebra.GroupWithZero.Conj
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.GroupWithZero.Hom
