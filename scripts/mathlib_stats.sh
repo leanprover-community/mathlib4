@@ -34,14 +34,22 @@ printf -v today '%(%Y-%m-%d)T\n' -1
 #  }
 #  print -tot }')
 
+# produce output `(+X -Y ~Z)` for the files added (+), deleted (-), modified (~)
+filesPlusMinus="$(git diff --name-status "${oldCommit}"..."${currentCommit}" |
+  awk '/^A/ { added++ }
+       /^M/ { modified++}
+       /^D/ {deleted++} END{
+        printf("(+%d -%d ~%d)\n", added, deleted, modified)
+  }')"
+
 net=$(git diff --shortstat "${oldCommit}"..."${currentCommit}" |
-  awk 'BEGIN{ con=0 }{
+  awk -v filesPlusMinus="${filesPlusMinus}" 'BEGIN{ con=0 }{
   for(i=1; i<=NF; i++) {
     if($i+0 == $i){ con++; nums[con]=$i } ## nums= [files changed, insertions, deletions]
   }
   if(con != 3) { print "Expected 3 fields from `git diff`" }
-  printf("%s files changed, %s lines changed (+%s -%s)\n",
-          nums[1],          nums[2]-nums[3],   nums[2], nums[3]) }')
+  printf("%s files changed %s, %s lines changed (+%s -%s)\n",
+     nums[1],  filesPlusMinus, nums[2]-nums[3],  nums[2], nums[3]) }')
 
 ######################
 # Lean-based reports #
