@@ -599,8 +599,6 @@ import Mathlib.Algebra.Quaternion
 import Mathlib.Algebra.QuaternionBasis
 import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Regular.Basic
-import Mathlib.Algebra.Regular.Basic
-import Mathlib.Algebra.Regular.Basic
 import Mathlib.Algebra.Regular.Pow
 import Mathlib.Algebra.Regular.SMul
 import Mathlib.Algebra.Ring.AddAut
