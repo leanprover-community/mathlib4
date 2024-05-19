@@ -21,7 +21,7 @@ jobs:
 
       - id: mathlib_stats
         run: |
-          git checkout origin/adomani/periodic_reports_dev_custom_action scripts/mathlib_stats.sh scripts/count_decls.lean
+          git checkout origin/adomani/weekly_change_report scripts/mathlib_stats.sh scripts/count_decls.lean
           printf $'summary<<EOF\n%s\nEOF' "$(./scripts/mathlib_stats.sh)" >> "$GITHUB_OUTPUT"
 
           printf '%s\n' "$(./scripts/mathlib_stats.sh)"

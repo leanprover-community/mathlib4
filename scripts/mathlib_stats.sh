@@ -138,7 +138,7 @@ lake exe cache get > /dev/null
 lake build --quiet
 
 # update the `count_decls` and `mathlib_stats` scripts to the latest version
-git checkout -q origin/adomani/periodic_reports_dev_custom_action scripts/count_decls.lean scripts/mathlib_stats.sh
+git checkout -q origin/adomani/weekly_change_report scripts/count_decls.lean scripts/mathlib_stats.sh
 
 # the output of `count_decls`
 oldDeclsTots="$(getCountDecls)"
