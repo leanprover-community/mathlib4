@@ -375,6 +375,7 @@ theorem const_add (f₁ f₂ g₁ g₂ : R) (U hu₁ hu₂) :
     ⟨g₁, hu₁ x x.2⟩ ⟨g₂, hu₂ x x.2⟩
 #align algebraic_geometry.structure_sheaf.const_add AlgebraicGeometry.StructureSheaf.const_add
 
+attribute [instance 1000] Algebra.id in
 theorem const_mul (f₁ f₂ g₁ g₂ : R) (U hu₁ hu₂) :
     const R f₁ g₁ U hu₁ * const R f₂ g₂ U hu₂ =
       const R (f₁ * f₂) (g₁ * g₂) U fun x hx => Submonoid.mul_mem _ (hu₁ x hx) (hu₂ x hx) :=

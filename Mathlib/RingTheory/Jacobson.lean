@@ -514,6 +514,7 @@ theorem isMaximal_comap_C_of_isMaximal [Nontrivial R] (hP' : ∀ x : R, C x ∈ 
 set_option linter.uppercaseLean3 false in
 #align ideal.polynomial.is_maximal_comap_C_of_is_maximal Ideal.Polynomial.isMaximal_comap_C_of_isMaximal
 
+attribute [instance 1000] Algebra.id in
 /-- Used to bootstrap the more general `quotient_mk_comp_C_isIntegral_of_jacobson` -/
 private theorem quotient_mk_comp_C_isIntegral_of_jacobson' [Nontrivial R] (hR : IsJacobson R)
     (hP' : ∀ x : R, C x ∈ P → x = 0) : ((Quotient.mk P).comp C : R →+* R[X] ⧸ P).IsIntegral := by
