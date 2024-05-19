@@ -3,7 +3,8 @@
  : <<'DOC_MODULE'
 This file contains code to compute certain "global" statistics of Mathlib.
 
-The information is typically posted to Zulip in #mathlib4 "Mathlib weekly change report".
+The information is typically posted to Zulip in
+[#mathlib4 "Mathlib weekly change report"](https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Mathlib.20weekly.20change.20report).
 
 The main discussion for these statistics is [this thread](https://leanprover.zulipchat.com/#narrow/stream/113488-general).
 
@@ -50,20 +51,9 @@ date=${hashAndDate/#* /}
 # Git-based reports #
 #####################
 
-## 'x files changed, y insertions(+), z deletions(-)'
-gdiff="$(git diff --shortstat "${oldCommit}"..."${currentCommit}")"
 gcompare="${mlURL}/compare/${oldCommit}...${currentCommit}"
 
 printf -v today '%(%Y-%m-%d)T\n' -1
-
-## insertions-deletions
-#net=$(awk -v gd="${gdiff}" 'BEGIN{
-#  tot=0
-#  n=split(gd, gda, " ")
-#  for(i=2; i<=n; i++) {
-#    if(gda[i]+0 == gda[i]){ tot=gda[i]-tot }
-#  }
-#  print -tot }')
 
 # produce output `(+X -Y ~Z)` for the files added (+), deleted (-), modified (~)
 filesPlusMinus="$(git diff --name-status "${oldCommit}"..."${currentCommit}" |
@@ -73,6 +63,9 @@ filesPlusMinus="$(git diff --name-status "${oldCommit}"..."${currentCommit}" |
         printf("(+%d -%d ~%d)\n", added, deleted, modified)
   }')"
 
+# `shortstat`: 'x files changed, y insertions(+), z deletions(-)'
+# we extract `nums=[x, y, z]` and print
+# `x files changed (+A -D ~M), y-z lines changed (+y -z)`
 net=$(git diff --shortstat "${oldCommit}"..."${currentCommit}" |
   awk -v filesPlusMinus="${filesPlusMinus}" 'BEGIN{ con=0 }{
   for(i=1; i<=NF; i++) {

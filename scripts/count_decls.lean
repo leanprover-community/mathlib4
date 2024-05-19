@@ -52,8 +52,7 @@ def toString (t : Tally) : String :=
   {print t.types}"
 
 /-- Extend a `Tally` by the ConstantInfo `c`.  It is written to work with `Lean.SMap.foldM`. -/
-def updateTally (s : Tally) (n : Name) (c : ConstantInfo) :
-    MetaM Tally := do
+def updateTally (s : Tally) (n : Name) (c : ConstantInfo) : MetaM Tally := do
   if c.isUnsafe || (← n.isBlackListed) then return s else
   let typ := c.type
   if (← isProp typ) then
@@ -68,7 +67,7 @@ def updateTally (s : Tally) (n : Name) (c : ConstantInfo) :
       else
         return {s with data := s.data.insert n}
 
-/-- extends a `Tally` all the `ConstantInfos` in the environment. -/
+/-- `mkTally s` extends the `Tally` `s` using all the `ConstantInfos` in the environment. -/
 def mkTally (s : Tally) : MetaM Tally := do
   let env ← getEnv
   let consts := env.constants
