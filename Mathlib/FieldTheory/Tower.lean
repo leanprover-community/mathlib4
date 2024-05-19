@@ -82,7 +82,8 @@ theorem Subalgebra.isSimpleOrder_of_finrank_prime (F A) [Field F] [Ring A] [IsDo
 #align finite_dimensional.subalgebra.is_simple_order_of_finrank_prime FiniteDimensional.Subalgebra.isSimpleOrder_of_finrank_prime
 -- TODO: `IntermediateField` version
 
-@[deprecated] alias finrank_linear_map' := FiniteDimensional.finrank_linearMap_self
+@[deprecated (since := "2024-01-12")]
+alias finrank_linear_map' := FiniteDimensional.finrank_linearMap_self
 #align finite_dimensional.finrank_linear_map' FiniteDimensional.finrank_linear_map'
 
 end FiniteDimensional

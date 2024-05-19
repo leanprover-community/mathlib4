@@ -248,8 +248,8 @@ theorem ι_of_isLimit {f : J → C} {t : Bicone f} (ht : IsLimit t.toCone) (j : 
 
 /-- We can turn any colimit cocone over a discrete collection of objects into a bicone. -/
 @[simps]
-def ofColimitCocone {f : J → C} {t : Cocone (Discrete.functor f)} (ht : IsColimit t) : Bicone f
-    where
+def ofColimitCocone {f : J → C} {t : Cocone (Discrete.functor f)} (ht : IsColimit t) :
+    Bicone f where
   pt := t.pt
   π j := ht.desc (Cofan.mk _ fun j' => if h : j' = j then eqToHom (congr_arg f h) else 0)
   ι j := t.ι.app ⟨j⟩
@@ -922,8 +922,8 @@ variable {K : Type} [Finite K] [HasFiniteBiproducts C] (f : K → C)
 /-- The limit cone exhibiting `⨁ Subtype.restrict pᶜ f` as the kernel of
 `biproduct.toSubtype f p` -/
 @[simps]
-def kernelForkBiproductToSubtype (p : Set K) : LimitCone (parallelPair (biproduct.toSubtype f p) 0)
-    where
+def kernelForkBiproductToSubtype (p : Set K) :
+    LimitCone (parallelPair (biproduct.toSubtype f p) 0) where
   cone :=
     KernelFork.ofι (biproduct.fromSubtype f pᶜ)
       (by
@@ -1448,8 +1448,7 @@ def BinaryBicone.toBiconeIsBilimit {X Y : C} (b : BinaryBicone X Y) :
 /-- A bicone over a pair is a bilimit bicone if and only if the corresponding binary bicone is a
     bilimit. -/
 def Bicone.toBinaryBiconeIsBilimit {X Y : C} (b : Bicone (pairFunction X Y)) :
-    b.toBinaryBicone.IsBilimit ≃ b.IsBilimit
-    where
+    b.toBinaryBicone.IsBilimit ≃ b.IsBilimit where
   toFun h := ⟨b.toBinaryBiconeIsLimit h.isLimit, b.toBinaryBiconeIsColimit h.isColimit⟩
   invFun h := ⟨b.toBinaryBiconeIsLimit.symm h.isLimit, b.toBinaryBiconeIsColimit.symm h.isColimit⟩
   left_inv := fun ⟨h, h'⟩ => by dsimp only; simp
@@ -2091,8 +2090,7 @@ def isoBiprodZero {X Y : C} [HasBinaryBiproduct X Y] (hY : IsZero Y) : X ≅ X �
 
 /-- If `X` is a zero object, `Y ≅ X ⊞ Y` for any `Y`. -/
 @[simps]
-def isoZeroBiprod {X Y : C} [HasBinaryBiproduct X Y] (hY : IsZero X) : Y ≅ X ⊞ Y
-    where
+def isoZeroBiprod {X Y : C} [HasBinaryBiproduct X Y] (hY : IsZero X) : Y ≅ X ⊞ Y where
   hom := biprod.inr
   inv := biprod.snd
   inv_hom_id := by
