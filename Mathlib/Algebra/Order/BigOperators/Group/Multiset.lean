@@ -16,6 +16,10 @@ This file contains the results concerning the interaction of multiset big operat
 groups.
 -/
 
+assert_not_exists Ring
+-- TODO: After #12974,
+-- assert_not_exists MonoidWithZero
+
 variable {ι α β : Type*}
 
 namespace Multiset

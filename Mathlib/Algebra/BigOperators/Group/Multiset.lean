@@ -23,6 +23,8 @@ and sums indexed by finite sets.
 -/
 
 assert_not_exists Ring
+-- TODO: After #12974,
+-- assert_not_exists MonoidWithZero
 
 variable {F ι α β γ : Type*}
 
