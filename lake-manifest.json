@@ -7,7 +7,7 @@
    "rev": "d4d9f5538f22dc3c8364e517e5394cfd941da0e9",
    "name": "batteries",
    "manifestFile": "lake-manifest.json",
-   "inputRev": "nightly-testing",
+   "inputRev": "lean-pr-testing-3929",
    "inherited": false,
    "configFile": "lakefile.lean"},
   {"url": "https://github.com/leanprover-community/quote4",
