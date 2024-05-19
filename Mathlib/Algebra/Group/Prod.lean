@@ -31,8 +31,7 @@ We also prove trivial `simp` lemmas, and define the following operations on `Mon
 * `divMonoidHom`: Division bundled as a monoid homomorphism.
 -/
 
--- TODO: After #11855,
--- assert_not_exists MonoidWithZero
+assert_not_exists MonoidWithZero
 -- TODO:
 -- assert_not_exists AddMonoidWithOne
 

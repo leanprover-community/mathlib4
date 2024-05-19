@@ -10,8 +10,7 @@ import Mathlib.Algebra.Order.Sub.Defs
 # Products of `OrderedSub` types.
 -/
 
--- TODO: After #11855,
--- assert_not_exists MonoidWithZero
+assert_not_exists MonoidWithZero
 
 variable {α β : Type*}
 

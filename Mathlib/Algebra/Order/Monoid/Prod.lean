@@ -13,8 +13,7 @@ import Mathlib.Data.Prod.Lex
 
 /-! # Products of ordered monoids -/
 
--- TODO: After #11855,
--- assert_not_exists MonoidWithZero
+assert_not_exists MonoidWithZero
 
 namespace Prod
 

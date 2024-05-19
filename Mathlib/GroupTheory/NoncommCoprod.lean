@@ -28,8 +28,7 @@ There is an analogue `MulHom.noncommCoprod` when `f` and `g` are only `MulHom`s.
 For a product of a family of morphisms of monoids, see `MonoidHom.noncommPiCoprod`.
 -/
 
--- TODO: After #11855,
--- assert_not_exists MonoidWithZero
+assert_not_exists MonoidWithZero
 
 namespace MulHom
 

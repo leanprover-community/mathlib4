@@ -64,8 +64,7 @@ necessary.
 subsemigroup, range, product, map, comap
 -/
 
--- TODO: After #11855,
--- assert_not_exists MonoidWithZero
+assert_not_exists MonoidWithZero
 
 variable {M N P σ : Type*}
 

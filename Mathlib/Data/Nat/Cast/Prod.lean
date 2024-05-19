@@ -11,8 +11,7 @@ import Mathlib.Algebra.Group.Prod
 # The product of two `AddMonoidWithOne`s.
 -/
 
--- TODO: After #11855,
--- assert_not_exists MonoidWithZero
+assert_not_exists MonoidWithZero
 
 variable {α β : Type*}
 
