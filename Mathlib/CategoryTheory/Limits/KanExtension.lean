@@ -348,7 +348,7 @@ theorem coreflective [ι.Full] [ι.Faithful] [∀ F : S ⥤ D, ∀ x, HasColimit
   dsimp [adjunction, equiv]
   simp only [Category.comp_id]
   exact
-    IsIso.of_iso
+    Iso.isIso_hom
       ((colimit.isColimit _).coconePointUniqueUpToIso
           (colimitOfDiagramTerminal CostructuredArrow.mkIdTerminal _)).symm
 set_option linter.uppercaseLean3 false in
