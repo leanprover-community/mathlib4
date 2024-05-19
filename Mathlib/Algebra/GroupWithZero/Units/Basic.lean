@@ -228,15 +228,12 @@ theorem exists0' {p : ∀ g : G₀, g ≠ 0 → Prop} :
 #align units.exists0' Units.exists0'
 
 @[simp]
-theorem exists_iff_ne_zero {x : G₀} : (∃ u : G₀ˣ, ↑u = x) ↔ x ≠ 0 := by simp [exists0]
+theorem exists_iff_ne_zero {p : G₀ → Prop} : (∃ u : G₀ˣ, p u) ↔ ∃ x ≠ 0, p x := by
+  simp [exists0]
 #align units.exists_iff_ne_zero Units.exists_iff_ne_zero
 
 theorem _root_.GroupWithZero.eq_zero_or_unit (a : G₀) : a = 0 ∨ ∃ u : G₀ˣ, a = u := by
-  by_cases h : a = 0
-  · left
-    exact h
-  · right
-    simpa only [eq_comm] using Units.exists_iff_ne_zero.mpr h
+  simpa using em _
 #align group_with_zero.eq_zero_or_unit GroupWithZero.eq_zero_or_unit
 
 end Units
@@ -250,7 +247,7 @@ theorem IsUnit.mk0 (x : G₀) (hx : x ≠ 0) : IsUnit x :=
 
 @[simp]
 theorem isUnit_iff_ne_zero : IsUnit a ↔ a ≠ 0 :=
-  Units.exists_iff_ne_zero
+  (Units.exists_iff_ne_zero (p := (· = a))).trans (by simp)
 #align is_unit_iff_ne_zero isUnit_iff_ne_zero
 
 alias ⟨_, Ne.isUnit⟩ := isUnit_iff_ne_zero
