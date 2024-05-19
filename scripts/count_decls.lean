@@ -51,7 +51,6 @@ Predicates\n\
 Types\n\
 {print t.types}"
 
-variable (mods : HashSet Nat) (env : Environment) in
 /-- Extend a `Tally` by the ConstantInfo `c`.  It is written to work with `Lean.SMap.foldM`. -/
 def updateTally (s : Tally) (n : Name) (c : ConstantInfo) :
     MetaM Tally := do
