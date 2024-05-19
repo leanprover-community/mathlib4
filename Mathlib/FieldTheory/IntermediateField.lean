@@ -119,8 +119,8 @@ theorem mem_toSubfield (s : IntermediateField K L) (x : L) : x ∈ s.toSubfield 
 
 /-- Copy of an intermediate field with a new `carrier` equal to the old one. Useful to fix
 definitional equalities. -/
-protected def copy (S : IntermediateField K L) (s : Set L) (hs : s = ↑S) : IntermediateField K L
-    where
+protected def copy (S : IntermediateField K L) (s : Set L) (hs : s = ↑S) :
+    IntermediateField K L where
   toSubalgebra := S.toSubalgebra.copy s (hs : s = S.toSubalgebra.carrier)
   inv_mem' :=
     have hs' : (S.toSubalgebra.copy s hs).carrier = S.toSubalgebra.carrier := hs

@@ -350,8 +350,8 @@ theorem IndepFun.variance_sum [@IsProbabilityMeasure Ω _ ℙ] {ι : Type*} {X :
         variance_def' (memℒp_finset_sum' _ fun i hi => hs _ (mem_insert_of_mem hi))]
       ring
     _ = Var[X k] + Var[∑ i in s, X i] := by
-      simp only [mul_assoc, integral_mul_left, Pi.mul_apply, Pi.one_apply, sum_apply,
-        add_right_eq_self, mul_sum]
+      simp_rw [Pi.mul_apply, Pi.ofNat_apply, Nat.cast_ofNat, sum_apply, mul_sum, mul_assoc,
+        add_right_eq_self]
       rw [integral_finset_sum s fun i hi => ?_]; swap
       · apply Integrable.const_mul _ (2 : ℝ)
         apply IndepFun.integrable_mul _ (Memℒp.integrable one_le_two (hs _ (mem_insert_self _ _)))
@@ -362,8 +362,6 @@ theorem IndepFun.variance_sum [@IsProbabilityMeasure Ω _ ℙ] {ι : Type*} {X :
           Memℒp.integrable one_le_two (hs _ (mem_insert_of_mem hi)),
         mul_sum, mul_sum, ← sum_sub_distrib]
       apply Finset.sum_eq_zero fun i hi => ?_
-      have : ∀ (a : Ω), @OfNat.ofNat (Ω → ℝ) 2 instOfNatAtLeastTwo a = (2 : ℝ) := fun a => rfl
-      conv_lhs => enter [1, 2, a]; rw [this]
       rw [integral_mul_left, IndepFun.integral_mul', sub_self]
       · apply h (mem_insert_self _ _) (mem_insert_of_mem hi)
         exact fun hki => ks (hki.symm ▸ hi)

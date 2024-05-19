@@ -518,8 +518,7 @@ theorem coe_vadd (f : E →ₗ[R] F) (g : E →ₗ.[R] F) : ⇑(f +ᵥ g) = ⇑(
   rfl
 #align linear_pmap.coe_vadd LinearPMap.coe_vadd
 
-instance instAddAction : AddAction (E →ₗ[R] F) (E →ₗ.[R] F)
-    where
+instance instAddAction : AddAction (E →ₗ[R] F) (E →ₗ.[R] F) where
   vadd := (· +ᵥ ·)
   zero_vadd := fun ⟨_s, _f⟩ => ext' <| zero_add _
   add_vadd := fun _f₁ _f₂ ⟨_s, _g⟩ => ext' <| LinearMap.ext fun _x => add_assoc _ _ _
@@ -699,8 +698,7 @@ end LinearMap
 namespace LinearPMap
 
 /-- Restrict codomain of a `LinearPMap` -/
-def codRestrict (f : E →ₗ.[R] F) (p : Submodule R F) (H : ∀ x, f x ∈ p) : E →ₗ.[R] p
-    where
+def codRestrict (f : E →ₗ.[R] F) (p : Submodule R F) (H : ∀ x, f x ∈ p) : E →ₗ.[R] p where
   domain := f.domain
   toFun := f.toFun.codRestrict p H
 #align linear_pmap.cod_restrict LinearPMap.codRestrict
@@ -1015,8 +1013,7 @@ open scoped Classical in
 
 In the case that the submodule is not a graph of a `LinearPMap` then the underlying linear map
 is just the zero map. -/
-noncomputable def toLinearPMap (g : Submodule R (E × F)) : E →ₗ.[R] F
-    where
+noncomputable def toLinearPMap (g : Submodule R (E × F)) : E →ₗ.[R] F where
   domain := g.map (LinearMap.fst R E F)
   toFun := if hg : ∀ (x : E × F) (_hx : x ∈ g) (_hx' : x.fst = 0), x.snd = 0 then
     g.toLinearPMapAux hg else 0
