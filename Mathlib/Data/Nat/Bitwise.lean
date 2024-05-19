@@ -49,8 +49,8 @@ section
 variable {f : Bool → Bool → Bool}
 
 @[simp]
-lemma bitwise_zero_left (m : Nat) : bitwise f 0 m = if f false true then m else 0 :=
-  rfl
+lemma bitwise_zero_left (m : Nat) : bitwise f 0 m = if f false true then m else 0 := by
+  simp [bitwise]
 #align nat.bitwise_zero_left Nat.bitwise_zero_left
 
 @[simp]

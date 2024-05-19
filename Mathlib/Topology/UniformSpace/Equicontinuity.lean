@@ -198,7 +198,7 @@ lemma UniformEquicontinuous.uniformEquicontinuousOn {F : ι → β → α} (H : 
 
 lemma UniformEquicontinuousOn.mono {F : ι → β → α} {S T : Set β}
     (H : UniformEquicontinuousOn F T) (hST : S ⊆ T) : UniformEquicontinuousOn F S :=
-  fun U hU ↦ (H U hU).filter_mono <| inf_le_inf_left _ <| principal_mono.mpr <| prod_mono hST hST
+  fun U hU ↦ (H U hU).filter_mono <| by gcongr
 
 lemma uniformEquicontinuousOn_univ (F : ι → β → α) :
     UniformEquicontinuousOn F univ ↔ UniformEquicontinuous F := by

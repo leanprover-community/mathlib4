@@ -372,7 +372,7 @@ theorem trace_eq_sum_embeddings_gen (pb : PowerBasis K L)
       (@Finset.univ _ (PowerBasis.AlgHom.fintype pb)).sum fun σ => σ pb.gen := by
   letI := Classical.decEq E
   -- Porting note: the following `letI` was not needed.
-  letI : Fintype (L →ₐ[K] E) := (PowerBasis.AlgHom.fintype pb)
+  letI : Fintype (L →ₐ[K] E) := PowerBasis.AlgHom.fintype pb
   rw [pb.trace_gen_eq_sum_roots hE, Fintype.sum_equiv pb.liftEquiv', Finset.sum_mem_multiset,
     Finset.sum_eq_multiset_sum, Multiset.toFinset_val, Multiset.dedup_eq_self.mpr _,
     Multiset.map_id]
@@ -595,9 +595,9 @@ theorem det_traceMatrix_ne_zero' [IsSeparable K L] : det (traceMatrix K pb.basis
       traceMatrix_eq_embeddingsMatrixReindex_mul_trans K _ _ e,
       embeddingsMatrixReindex_eq_vandermonde, det_mul, det_transpose]
     refine mt mul_self_eq_zero.mp ?_
-    · simp only [det_vandermonde, Finset.prod_eq_zero_iff, not_exists, sub_eq_zero]
-      rintro i ⟨_, j, hij, h⟩
-      exact (Finset.mem_Ioi.mp hij).ne' (e.injective <| pb.algHom_ext h)
+    simp only [det_vandermonde, Finset.prod_eq_zero_iff, not_exists, sub_eq_zero]
+    rintro i ⟨_, j, hij, h⟩
+    exact (Finset.mem_Ioi.mp hij).ne' (e.injective <| pb.algHom_ext h)
   · rw [AlgHom.card, pb.finrank]
 #align det_trace_matrix_ne_zero' det_traceMatrix_ne_zero'
 

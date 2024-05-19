@@ -229,8 +229,7 @@ protected theorem Inseparable.pow {M : Type*} [Monoid M] [TopologicalSpace M] [C
   "Construct an additive unit from limits of additive units and their negatives."]
 def Filter.Tendsto.units [TopologicalSpace N] [Monoid N] [ContinuousMul N] [T2Space N]
     {f : ι → Nˣ} {r₁ r₂ : N} {l : Filter ι} [l.NeBot] (h₁ : Tendsto (fun x => ↑(f x)) l (𝓝 r₁))
-    (h₂ : Tendsto (fun x => ↑(f x)⁻¹) l (𝓝 r₂)) : Nˣ
-    where
+    (h₂ : Tendsto (fun x => ↑(f x)⁻¹) l (𝓝 r₂)) : Nˣ where
   val := r₁
   inv := r₂
   val_inv := by
@@ -373,8 +372,7 @@ homomorphisms that has a `MonoidHomClass` instance) to `M₁ → M₂`. -/
 and a proof that it belongs to the closure of the range of the coercion from `M₁ →+ M₂` (or another
 type of bundled homomorphisms that has an `AddMonoidHomClass` instance) to `M₁ → M₂`."]
 def monoidHomOfMemClosureRangeCoe (f : M₁ → M₂)
-    (hf : f ∈ closure (range fun (f : F) (x : M₁) => f x)) : M₁ →* M₂
-    where
+    (hf : f ∈ closure (range fun (f : F) (x : M₁) => f x)) : M₁ →* M₂ where
   toFun := f
   map_one' := (isClosed_setOf_map_one M₁ M₂).closure_subset_iff.2 (range_subset_iff.2 map_one) hf
   map_mul' := (isClosed_setOf_map_mul M₁ M₂).closure_subset_iff.2 (range_subset_iff.2 map_mul) hf
