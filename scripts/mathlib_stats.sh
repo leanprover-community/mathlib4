@@ -56,7 +56,7 @@ getCountDecls () {
 # Predicates yy
 # ...
 tallyCountDecls () {
-              # `count` is the index of the various `type`s -- the fields of `TallyNames`
+              # `count` is the index of the various `type`s -- the fields of `Tally`
   awk 'BEGIN{ count=0 }
     # lines that do not end in `,` represent types and we accumulate them in `type`
     # we also start a tally of them in `acc[count]`

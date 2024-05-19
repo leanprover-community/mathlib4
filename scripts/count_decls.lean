@@ -24,26 +24,19 @@ open Lean Elab Meta
 * `data` is everything else.
 -/
 structure Tally where
-  thms : Nat := 0
-  preds : Nat := 0
-  types : Nat := 0
-  data : Nat := 0
-  deriving Repr
-
-structure TallyNames where
   thms  : HashSet Name := {}
   preds : HashSet Name := {}
   types : HashSet Name := {}
   data  : HashSet Name := {}
 
 /-- `toString t` produces a string where each line is either
-* the (human-readable) name of a field of `t : TallyNames`, or
+* the (human-readable) name of a field of `t : Tally`, or
 * the name of a single declaration followed by `,`.
 
 This format (`,` or not at the end, single declaration per line) is used
 by the script to extract comparison data.
 -/
-def toString (t : TallyNames) : String :=
+def toString (t : Tally) : String :=
   let print (h : HashSet Name) : String :=
     let tot := h.toList.map (·.toString)
     String.intercalate ",\n" tot ++ ","
@@ -67,8 +60,8 @@ def MathlibModIdxs (env : Environment) : IO (HashSet Nat) := do
 
 variable (mods : HashSet Nat) (env : Environment) in
 /-- Extend a `Tally` by the ConstantInfo `c`.  It is written to work with `Lean.SMap.foldM`. -/
-def updateTallyNames (s : TallyNames) (n : Name) (c : ConstantInfo) :
-    MetaM TallyNames := do
+def updateTally (s : Tally) (n : Name) (c : ConstantInfo) :
+    MetaM Tally := do
 --  let mod := env.getModuleIdxFor? n
 --  if !mods.contains (mod.getD default) then return s else
   if c.isUnsafe || (← n.isBlackListed) then return s else
@@ -86,16 +79,16 @@ def updateTallyNames (s : TallyNames) (n : Name) (c : ConstantInfo) :
       return {s with data := s.data.insert n}
 
 /-- extends a `Tally` all the ConstantInfos in the environment. -/
-def mkTallyNames (s : TallyNames) : MetaM TallyNames := do
+def mkTally (s : Tally) : MetaM Tally := do
   let env ← getEnv
 --  let maths ← MathlibModIdxs env
   let consts := env.constants
-  consts.foldM (updateTallyNames /-maths env-/) s
+  consts.foldM (updateTally /-maths env-/) s
 
 /-- `count_decls` prints a tally of theorems, types, predicates and data in
 `Mathlib`, `Batteries` and core. -/
 elab "count_decls" : command => do
-  let (s, _) ← Command.liftCoreM do MetaM.run do (mkTallyNames {})
+  let (s, _) ← Command.liftCoreM do MetaM.run do (mkTally {})
   IO.println (toString s)
 
 --count_decls
