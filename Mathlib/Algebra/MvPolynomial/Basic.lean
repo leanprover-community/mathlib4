@@ -749,7 +749,7 @@ lemma coeff_single_X_pow [DecidableEq σ] (s s' : σ) (n n' : ℕ) :
 
 @[simp]
 lemma coeff_single_X [DecidableEq σ] (s s' : σ) (n : ℕ) :
-     (X s).coeff (R := R) (Finsupp.single s' n) = if n = 1 ∧ s = s' then 1 else 0 := by
+    (X s).coeff (R := R) (Finsupp.single s' n) = if n = 1 ∧ s = s' then 1 else 0 := by
   rw [← pow_one (X s), coeff_single_X_pow]
   simp [eq_comm]
 
