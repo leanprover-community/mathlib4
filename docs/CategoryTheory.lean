@@ -116,8 +116,8 @@ def abelianize : GroupCat.{u} ⥤ CommGroupCat.{u} where
   map_id := by
     -- aesop_cat
     intros--; simp only [MonoidHom.mk_coe, coe_id]
-    ext
-    dsimp -- but doesn't work `at *`!
+    ext x
+    dsimp at x ⊢  -- but doesn't work `at *`!
     simp [CommGroupCat.coe_of] -- but if we use this in `dsimp`, we get stuck!
   map_comp := by
     intros
