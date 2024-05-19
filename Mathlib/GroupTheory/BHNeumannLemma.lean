@@ -6,10 +6,6 @@ Authors: Mitchell Rowett, Scott Morrison
 import Mathlib.GroupTheory.Coset
 import Mathlib.GroupTheory.Index
 
-open scoped Pointwise
-
-set_option autoImplicit true
-
 /-!
 
 The main result (TODO) is a lemma of B. H. Neumann [1][2],
@@ -28,6 +24,10 @@ The result is also needed to show an algebraic extension of fields is
 determined by the set of all minimal polynomials.
 
 -/
+
+set_option autoImplicit true
+
+open scoped Pointwise
 
 /-- If `H` is a subgroup of `G` and `G` is the union of a finite family of left cosets of `H`
 then `H` has finite index. -/
@@ -84,7 +84,7 @@ theorem Fintype.finiteIndex_of_iUnion_leftCoset_eq_univ_aux
     have ⟨k, hk⟩ := hH C
     -- If `G = ⋃ k ∈ {k : H k = C}, g k • C` then `C` has finite index.
     by_cases h : (⋃ k ∈ Finset.univ.filter (H · = C), g k • (H k : Set G)) = Set.univ
-    . rewrite [Set.iUnion₂_congr fun i hi => by rw [(Finset.mem_filter.mp hi).2]] at h
+    · rewrite [Set.iUnion₂_congr fun i hi => by rw [(Finset.mem_filter.mp hi).2]] at h
       exact ⟨k, hk ▸ Finset.finiteIndex_of_iUnion_leftCoset_same_subgroup_eq_univ
          (Finset.univ.filter (H · = C)) g h⟩
     -- Otherwise there exists `x ∈ ⋃ k ∈ {k : H k = C}, g k • H k`.
