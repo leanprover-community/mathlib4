@@ -596,6 +596,10 @@ theorem not_mem_support_iff {p : MvPolynomial σ R} {m : σ →₀ ℕ} : m ∉ 
   by simp
 #align mv_polynomial.not_mem_support_iff MvPolynomial.not_mem_support_iff
 
+@[simp]
+lemma coeff_zero_of_not_mem_support {p : MvPolynomial σ R} {m : σ →₀ ℕ} (h : m ∉ p.support) :
+    coeff m p = 0 := not_mem_support_iff.mp h
+
 theorem sum_def {A} [AddCommMonoid A] {p : MvPolynomial σ R} {b : (σ →₀ ℕ) → R → A} :
     p.sum b = ∑ m in p.support, b m (p.coeff m) := by simp [support, Finsupp.sum, coeff]
 #align mv_polynomial.sum_def MvPolynomial.sum_def
