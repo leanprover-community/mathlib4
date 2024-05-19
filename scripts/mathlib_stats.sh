@@ -56,18 +56,18 @@ getCountDecls () {
 # Predicates yy
 # ...
 tallyCountDecls () {
-              # `count` is the index of the various `type`s -- the fields of `Tally`
+              # `count` is the index of the various `kind`s -- the fields of `Tally`
   awk 'BEGIN{ count=0 }
-    # lines that do not end in `,` represent types and we accumulate them in `type`
+    # lines that do not end in `,` represent kinds and we accumulate them in `kind`
     # we also start a tally of them in `acc[count]`
-    /[^,]$/ { count++; type[count]=$0; acc[count]=0; }
+    /[^,]$/ { count++; kind[count]=$0; acc[count]=0; }
     # lines that end in `,` represent declarations to be tallied
     /,$/ { acc[count]++ } END{
-    for(t=1; t<=count; t++) { printf("%s %s\n", type[t], acc[t]) }
+    for(t=1; t<=count; t++) { printf("%s %s\n", kind[t], acc[t]) }
   }' "${1}"
 }
 
-# `getKind type file` extracts all declaration names of type `type` from `file`
+# `getKind kind file` extracts all declaration names of kind `kind` from `file`
 getKind () {
   awk -v typ="${1}$" 'BEGIN{ found=0 }
       /[^,]$/ { found=0 }
@@ -108,7 +108,7 @@ do
     echo "${oldDeclsTots}" | getKind "${typ}$" -)
 done)"
 
-# produces the table summary of the declarations split by type
+# produces the table summary of the declarations split by kind
 declSummary="$(paste -d' ' <(echo "${newDecls}") <(echo "${oldDecls}") <(echo "${plusMinus}") |
   LC_ALL=en_US.UTF-8 awk 'BEGIN{ print "|Type|Total|%|\n|:-:|:-:|:-:|" }{
     printf("| %s | %'"'"'d (+%'"'"'d -%'"'"'d) | %4.2f%% |\n", $1, $2, $5, $6, ($2-$4)*100/$2)
