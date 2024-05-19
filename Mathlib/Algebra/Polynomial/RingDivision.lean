@@ -332,7 +332,6 @@ variable [Ring R] [IsDomain R] {p q : R[X]}
 instance : IsDomain R[X] :=
   NoZeroDivisors.to_isDomain _
 
-
 end Ring
 
 section CommSemiring
@@ -775,17 +774,17 @@ theorem isCoprime_X_sub_C_of_isUnit_sub {R} [CommRing R] {a b : R} (h : IsUnit (
     congr
     exact h.val_inv_mul⟩
 set_option linter.uppercaseLean3 false in
-#align polynomial.prime_X_sub_C Polynomial.prime_X_sub_C
+#align polynomial.is_coprime_X_sub_C_of_is_unit_sub
 
-theorem prime_X : Prime (X : R[X]) := by
-  convert prime_X_sub_C (0 : R)
-  simp
+theorem pairwise_coprime_X_sub_C {K} [Field K] {I : Type v} {s : I → K} (H : Function.Injective s) :
+    Pairwise (IsCoprime on fun i : I => X - C (s i)) := fun _ _ hij =>
+  isCoprime_X_sub_C_of_isUnit_sub (sub_ne_zero_of_ne <| H.ne hij).isUnit
 set_option linter.uppercaseLean3 false in
-#align polynomial.prime_X Polynomial.prime_X
+#align polynomial.pairwise_coprime_X_sub_C Polynomial.pairwise_coprime_X_sub_C
 
-<<<<<<< HEAD
-theorem Monic.prime_of_degree_eq_one (hp1 : degree p = 1) (hm : Monic p) : Prime p :=
-  have : p = X - C (-p.coeff 0) := by simpa [hm.leadingCoeff] using eq_X_add_C_of_degree_eq_one hp1
+theorem rootMultiplicity_mul {p q : R[X]} {x : R} (hpq : p * q ≠ 0) :
+    rootMultiplicity x (p * q) = rootMultiplicity x p + rootMultiplicity x q := by
+  classical
   have hp : p ≠ 0 := left_ne_zero_of_mul hpq
   have hq : q ≠ 0 := right_ne_zero_of_mul hpq
   rw [rootMultiplicity_eq_multiplicity (p * q), dif_neg hpq, rootMultiplicity_eq_multiplicity p,
