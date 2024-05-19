@@ -104,22 +104,22 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 namespace Equivalence
 
 /-- The unit of an equivalence of categories. -/
-@[pp_dot] abbrev unit (e : C ≌ D) : 𝟭 C ⟶ e.functor ⋙ e.inverse :=
+abbrev unit (e : C ≌ D) : 𝟭 C ⟶ e.functor ⋙ e.inverse :=
   e.unitIso.hom
 #align category_theory.equivalence.unit CategoryTheory.Equivalence.unit
 
 /-- The counit of an equivalence of categories. -/
-@[pp_dot] abbrev counit (e : C ≌ D) : e.inverse ⋙ e.functor ⟶ 𝟭 D :=
+abbrev counit (e : C ≌ D) : e.inverse ⋙ e.functor ⟶ 𝟭 D :=
   e.counitIso.hom
 #align category_theory.equivalence.counit CategoryTheory.Equivalence.counit
 
 /-- The inverse of the unit of an equivalence of categories. -/
-@[pp_dot] abbrev unitInv (e : C ≌ D) : e.functor ⋙ e.inverse ⟶ 𝟭 C :=
+abbrev unitInv (e : C ≌ D) : e.functor ⋙ e.inverse ⟶ 𝟭 C :=
   e.unitIso.inv
 #align category_theory.equivalence.unit_inv CategoryTheory.Equivalence.unitInv
 
 /-- The inverse of the counit of an equivalence of categories. -/
-@[pp_dot] abbrev counitInv (e : C ≌ D) : 𝟭 D ⟶ e.inverse ⋙ e.functor :=
+abbrev counitInv (e : C ≌ D) : 𝟭 D ⟶ e.inverse ⋙ e.functor :=
   e.counitIso.inv
 #align category_theory.equivalence.counit_inv CategoryTheory.Equivalence.counitInv
 
@@ -286,7 +286,7 @@ instance : Inhabited (C ≌ C) :=
   ⟨refl⟩
 
 /-- Equivalence of categories is symmetric. -/
-@[symm, simps, pp_dot]
+@[symm, simps]
 def symm (e : C ≌ D) : D ≌ C :=
   ⟨e.inverse, e.functor, e.counitIso.symm, e.unitIso.symm, e.inverse_counitInv_comp⟩
 #align category_theory.equivalence.symm CategoryTheory.Equivalence.symm
@@ -294,9 +294,8 @@ def symm (e : C ≌ D) : D ≌ C :=
 variable {E : Type u₃} [Category.{v₃} E]
 
 /-- Equivalence of categories is transitive. -/
-@[trans, simps, pp_dot]
-def trans (e : C ≌ D) (f : D ≌ E) : C ≌ E
-    where
+@[trans, simps]
+def trans (e : C ≌ D) (f : D ≌ E) : C ≌ E where
   functor := e.functor ⋙ f.functor
   inverse := f.inverse ⋙ e.inverse
   unitIso := by
@@ -567,8 +566,7 @@ end IsEquivalence
 
 /-- A quasi-inverse `D ⥤ C` to a functor that `F : C ⥤ D` that is an equivalence,
 i.e. faithful, full, and essentially surjective. -/
-noncomputable def inv (F : C ⥤ D) [F.IsEquivalence] : D ⥤ C
-    where
+noncomputable def inv (F : C ⥤ D) [F.IsEquivalence] : D ⥤ C where
   obj X := F.objPreimage X
   map {X Y} f := F.preimage ((F.objObjPreimageIso X).hom ≫ f ≫ (F.objObjPreimageIso Y).inv)
   map_id X := by apply F.map_injective; aesop_cat
@@ -698,15 +696,19 @@ def isoInverseComp {G : C ≌ D} (i : G.functor ⋙ H ≅ F) : H ≅ G.inverse �
 
 end Iso
 
--- deprecated on 2024-04-06
-@[deprecated] alias IsEquivalence := Functor.IsEquivalence
-@[deprecated] alias IsEquivalence.fun_inv_map := Functor.fun_inv_map
-@[deprecated] alias IsEquivalence.inv_fun_map := Functor.inv_fun_map
-@[deprecated] alias IsEquivalence.ofIso := Equivalence.changeFunctor
-@[deprecated] alias IsEquivalence.ofIso_trans := Equivalence.changeFunctor_trans
-@[deprecated] alias IsEquivalence.ofIso_refl := Equivalence.changeFunctor_refl
-@[deprecated] alias IsEquivalence.equivOfIso := Functor.isEquivalence_iff_of_iso
-@[deprecated] alias IsEquivalence.cancelCompRight := Functor.isEquivalence_of_comp_right
-@[deprecated] alias IsEquivalence.cancelCompLeft := Functor.isEquivalence_of_comp_left
+@[deprecated (since := "2024-04-06")] alias IsEquivalence := Functor.IsEquivalence
+@[deprecated (since := "2024-04-06")] alias IsEquivalence.fun_inv_map := Functor.fun_inv_map
+@[deprecated (since := "2024-04-06")] alias IsEquivalence.inv_fun_map := Functor.inv_fun_map
+@[deprecated (since := "2024-04-06")] alias IsEquivalence.ofIso := Equivalence.changeFunctor
+@[deprecated (since := "2024-04-06")]
+alias IsEquivalence.ofIso_trans := Equivalence.changeFunctor_trans
+@[deprecated (since := "2024-04-06")]
+alias IsEquivalence.ofIso_refl := Equivalence.changeFunctor_refl
+@[deprecated (since := "2024-04-06")]
+alias IsEquivalence.equivOfIso := Functor.isEquivalence_iff_of_iso
+@[deprecated (since := "2024-04-06")]
+alias IsEquivalence.cancelCompRight := Functor.isEquivalence_of_comp_right
+@[deprecated (since := "2024-04-06")]
+alias IsEquivalence.cancelCompLeft := Functor.isEquivalence_of_comp_left
 
 end CategoryTheory

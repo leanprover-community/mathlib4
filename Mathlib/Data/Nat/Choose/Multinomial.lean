@@ -99,7 +99,6 @@ result a binomial coefficient. We use `binomial` in the names of lemmas that
 involves `Nat.multinomial {a, b}`.
 -/
 
-
 theorem binomial_eq [DecidableEq α] (h : a ≠ b) :
     multinomial {a, b} f = (f a + f b)! / ((f a)! * (f b)!) := by
   simp [multinomial, Finset.sum_pair h, Finset.prod_pair h]
@@ -214,7 +213,8 @@ theorem multinomial_filter_ne [DecidableEq α] (a : α) (m : Multiset α) :
 #align multiset.multinomial_filter_ne Multiset.multinomial_filter_ne
 
 @[simp]
-theorem multinomial_zero [DecidableEq α] : multinomial (0 : Multiset α) = 1 := rfl
+theorem multinomial_zero [DecidableEq α] : multinomial (0 : Multiset α) = 1 := by
+  simp [multinomial, Finsupp.multinomial]
 
 end Multiset
 
@@ -247,7 +247,6 @@ theorem sum_pow_of_commute [Semiring R] (x : α → R)
       · have : Zero (Sym α 0) := Sym.instZeroSym
         exact ⟨0, by simp [eq_iff_true_of_subsingleton]⟩
       convert (@one_mul R _ _).symm
-      dsimp only
       convert @Nat.cast_one R _
     · rw [_root_.pow_succ, mul_zero]
       -- Porting note: Lean cannot infer this instance by itself

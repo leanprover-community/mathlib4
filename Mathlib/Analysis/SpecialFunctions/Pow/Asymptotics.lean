@@ -272,13 +272,28 @@ theorem IsBigO.rpow (hr : 0 ≤ r) (hg : 0 ≤ᶠ[l] g) (h : f =O[l] g) :
   (h'.rpow hc hr hg).isBigO
 #align asymptotics.is_O.rpow Asymptotics.IsBigO.rpow
 
+theorem IsTheta.rpow (hr : 0 ≤ r) (hf : 0 ≤ᶠ[l] f) (hg : 0 ≤ᶠ[l] g) (h : f =Θ[l] g) :
+    (fun x => f x ^ r) =Θ[l] fun x => g x ^ r :=
+  ⟨h.1.rpow hr hg, h.2.rpow hr hf⟩
+
 theorem IsLittleO.rpow (hr : 0 < r) (hg : 0 ≤ᶠ[l] g) (h : f =o[l] g) :
-    (fun x => f x ^ r) =o[l] fun x => g x ^ r :=
-  IsLittleO.of_isBigOWith fun c hc =>
-    ((h.forall_isBigOWith (rpow_pos_of_pos hc r⁻¹)).rpow (rpow_nonneg hc.le _) hr.le
-          hg).congr_const
-      (by rw [← rpow_mul hc.le, inv_mul_cancel hr.ne', Real.rpow_one])
+    (fun x => f x ^ r) =o[l] fun x => g x ^ r := by
+  refine .of_isBigOWith fun c hc ↦ ?_
+  rw [← rpow_inv_rpow hc.le hr.ne']
+  refine (h.forall_isBigOWith ?_).rpow ?_ ?_ hg <;> positivity
 #align asymptotics.is_o.rpow Asymptotics.IsLittleO.rpow
+
+protected lemma IsBigO.sqrt (hfg : f =O[l] g) (hg : 0 ≤ᶠ[l] g) :
+    (Real.sqrt <| f ·) =O[l] (Real.sqrt <| g ·) := by
+  simpa [Real.sqrt_eq_rpow] using hfg.rpow one_half_pos.le hg
+
+protected lemma IsLittleO.sqrt (hfg : f =o[l] g) (hg : 0 ≤ᶠ[l] g) :
+    (Real.sqrt <| f ·) =o[l] (Real.sqrt <| g ·) := by
+  simpa [Real.sqrt_eq_rpow] using hfg.rpow one_half_pos hg
+
+protected lemma IsTheta.sqrt (hfg : f =Θ[l] g) (hf : 0 ≤ᶠ[l] f) (hg : 0 ≤ᶠ[l] g) :
+    (Real.sqrt <| f ·) =Θ[l] (Real.sqrt <| g ·) :=
+  ⟨hfg.1.sqrt hg, hfg.2.sqrt hf⟩
 
 end Asymptotics
 
@@ -287,7 +302,7 @@ open Asymptotics
 /-- `x ^ s = o(exp(b * x))` as `x → ∞` for any real `s` and positive `b`. -/
 theorem isLittleO_rpow_exp_pos_mul_atTop (s : ℝ) {b : ℝ} (hb : 0 < b) :
     (fun x : ℝ => x ^ s) =o[atTop] fun x => exp (b * x) :=
-  Iff.mpr (isLittleO_iff_tendsto fun x h => absurd h (exp_pos _).ne') <| by
+  isLittleO_of_tendsto (fun x h => absurd h (exp_pos _).ne') <| by
     simpa only [div_eq_mul_inv, exp_neg, neg_mul] using
       tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero s b hb
 #align is_o_rpow_exp_pos_mul_at_top isLittleO_rpow_exp_pos_mul_atTop
@@ -313,13 +328,12 @@ theorem isLittleO_rpow_exp_atTop (s : ℝ) : (fun x : ℝ => x ^ s) =o[atTop] ex
 theorem isLittleO_exp_neg_mul_rpow_atTop {a : ℝ} (ha : 0 < a) (b : ℝ) :
     IsLittleO atTop (fun x : ℝ => exp (-a * x)) fun x : ℝ => x ^ b := by
   apply isLittleO_of_tendsto'
-  · refine' (eventually_gt_atTop 0).mp (eventually_of_forall fun t ht h => _)
+  · refine (eventually_gt_atTop 0).mono fun t ht h => ?_
     rw [rpow_eq_zero_iff_of_nonneg ht.le] at h
     exact (ht.ne' h.1).elim
-  · refine' (tendsto_exp_mul_div_rpow_atTop (-b) a ha).inv_tendsto_atTop.congr' _
-    refine' (eventually_ge_atTop 0).mp (eventually_of_forall fun t ht => _)
-    dsimp only
-    rw [Pi.inv_apply, inv_div, ← inv_div_inv, neg_mul, Real.exp_neg, rpow_neg ht, inv_inv]
+  · refine (tendsto_exp_mul_div_rpow_atTop (-b) a ha).inv_tendsto_atTop.congr' ?_
+    refine (eventually_ge_atTop 0).mono fun t ht => ?_
+    field_simp [Real.exp_neg, rpow_neg ht]
 #align is_o_exp_neg_mul_rpow_at_top isLittleO_exp_neg_mul_rpow_atTop
 
 theorem isLittleO_log_rpow_atTop {r : ℝ} (hr : 0 < r) : log =o[atTop] fun x => x ^ r :=

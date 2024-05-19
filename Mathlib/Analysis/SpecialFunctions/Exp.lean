@@ -3,8 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 -/
-import Mathlib.Analysis.Asymptotics.Theta
-import Mathlib.Analysis.Complex.Basic
+import Mathlib.Analysis.Complex.Asymptotics
 import Mathlib.Analysis.SpecificLimits.Normed
 
 #align_import analysis.special_functions.exp from "leanprover-community/mathlib"@"ba5ff5ad5d120fb0ef094ad2994967e9bfaf5112"
@@ -25,7 +24,7 @@ noncomputable section
 
 open Finset Filter Metric Asymptotics Set Function Bornology
 
-open scoped Classical Topology
+open scoped Classical Topology BigOperators Nat
 
 namespace Complex
 
@@ -78,6 +77,20 @@ theorem continuousOn_exp {s : Set ℂ} : ContinuousOn exp s :=
   continuous_exp.continuousOn
 #align complex.continuous_on_exp Complex.continuousOn_exp
 
+lemma exp_sub_sum_range_isBigO_pow (n : ℕ) :
+    (fun x ↦ exp x - ∑ i in Finset.range n, x ^ i / i !) =O[𝓝 0] (· ^ n) := by
+  rcases (zero_le n).eq_or_lt with rfl | hn
+  · simpa using continuous_exp.continuousAt.norm.isBoundedUnder_le
+  · refine .of_bound (n.succ / (n ! * n)) ?_
+    rw [NormedAddCommGroup.nhds_zero_basis_norm_lt.eventually_iff]
+    refine ⟨1, one_pos, fun x hx ↦ ?_⟩
+    convert exp_bound hx.out.le hn using 1
+    field_simp [mul_comm]
+
+lemma exp_sub_sum_range_succ_isLittleO_pow (n : ℕ) :
+    (fun x ↦ exp x - ∑ i in Finset.range (n + 1), x ^ i / i !) =o[𝓝 0] (· ^ n) :=
+  (exp_sub_sum_range_isBigO_pow (n + 1)).trans_isLittleO <| isLittleO_pow_pow n.lt_succ_self
+
 end Complex
 
 section ComplexContinuousExpComp
@@ -127,6 +140,17 @@ theorem continuous_exp : Continuous exp :=
 theorem continuousOn_exp {s : Set ℝ} : ContinuousOn exp s :=
   continuous_exp.continuousOn
 #align real.continuous_on_exp Real.continuousOn_exp
+
+lemma exp_sub_sum_range_isBigO_pow (n : ℕ) :
+    (fun x ↦ exp x - ∑ i in Finset.range n, x ^ i / i !) =O[𝓝 0] (· ^ n) := by
+  have := (Complex.exp_sub_sum_range_isBigO_pow n).comp_tendsto
+    (Complex.continuous_ofReal.tendsto' 0 0 rfl)
+  simp only [(· ∘ ·)] at this
+  norm_cast at this
+
+lemma exp_sub_sum_range_succ_isLittleO_pow (n : ℕ) :
+    (fun x ↦ exp x - ∑ i in Finset.range (n + 1), x ^ i / i !) =o[𝓝 0] (· ^ n) :=
+  (exp_sub_sum_range_isBigO_pow (n + 1)).trans_isLittleO <| isLittleO_pow_pow n.lt_succ_self
 
 end Real
 

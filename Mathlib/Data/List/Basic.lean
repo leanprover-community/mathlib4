@@ -862,8 +862,6 @@ theorem tail_append_of_ne_nil (l l' : List α) (h : l ≠ []) : (l ++ l').tail =
   · simp
 #align list.tail_append_of_ne_nil List.tail_append_of_ne_nil
 
-theorem get_eq_iff {l : List α} {n : Fin l.length} {x : α} : l.get n = x ↔ l.get? n.1 = some x := by
-  simp [get?_eq_some]
 #align list.nth_le_eq_iff List.get_eq_iff
 
 theorem get_eq_get? (l : List α) (i : Fin l.length) :
@@ -928,18 +926,19 @@ def reverseRecOn {motive : List α → Sort*} (l : List α) (nil : motive [])
   | [] => cast (congr_arg motive <| by simpa using congr(reverse $h.symm)) <|
       nil
   | head :: tail =>
-    have : tail.length < l.length := by
-      rw [← length_reverse l, h, length_cons]
-      simp [Nat.lt_succ]
     cast (congr_arg motive <| by simpa using congr(reverse $h.symm)) <|
       append_singleton _ head <| reverseRecOn (reverse tail) nil append_singleton
 termination_by l.length
+decreasing_by
+  simp_wf
+  rw [← length_reverse l, h, length_cons]
+  simp [Nat.lt_succ]
 #align list.reverse_rec_on List.reverseRecOn
 
 @[simp]
 theorem reverseRecOn_nil {motive : List α → Sort*} (nil : motive [])
     (append_singleton : ∀ (l : List α) (a : α), motive l → motive (l ++ [a])) :
-    reverseRecOn [] nil append_singleton = nil := rfl
+    reverseRecOn [] nil append_singleton = nil := reverseRecOn.eq_1 ..
 
 -- `unusedHavesSuffices` is getting confused by the unfolding of `reverseRecOn`
 @[simp, nolint unusedHavesSuffices]
@@ -985,15 +984,15 @@ termination_by l => l.length
 theorem bidirectionalRec_nil {motive : List α → Sort*}
     (nil : motive []) (singleton : ∀ a : α, motive [a])
     (cons_append : ∀ (a : α) (l : List α) (b : α), motive l → motive (a :: (l ++ [b]))) :
-    bidirectionalRec nil singleton cons_append [] = nil :=
-  rfl
+    bidirectionalRec nil singleton cons_append [] = nil := bidirectionalRec.eq_1 ..
+
 
 @[simp]
 theorem bidirectionalRec_singleton {motive : List α → Sort*}
     (nil : motive []) (singleton : ∀ a : α, motive [a])
     (cons_append : ∀ (a : α) (l : List α) (b : α), motive l → motive (a :: (l ++ [b]))) (a : α):
     bidirectionalRec nil singleton cons_append [a] = singleton a :=
-  rfl
+  by simp [bidirectionalRec]
 
 @[simp]
 theorem bidirectionalRec_cons_append {motive : List α → Sort*}
@@ -3121,15 +3120,6 @@ theorem erase_get [DecidableEq ι] {l : List ι} (i : Fin l.length) :
       by_cases ha : a = l.get i
       · simpa [ha] using .trans (perm_cons_erase (l.get_mem i i.isLt)) (.cons _ (IH i))
       · simpa [ha] using IH i
-
-theorem eraseIdx_eq_take_drop_succ {l : List ι} {i : ℕ} :
-    l.eraseIdx i = l.take i ++ l.drop i.succ := by
-  induction l generalizing i with
-  | nil => simp
-  | cons a l IH =>
-    cases i with
-    | zero => simp
-    | succ i => simp [IH]
 
 end Erase
 
