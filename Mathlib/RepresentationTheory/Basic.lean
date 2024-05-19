@@ -57,30 +57,43 @@ end
 
 namespace Representation
 
+section Group
+
+variable {k G V : Type*} [CommSemiring k] [Group G]
+variable [AddCommMonoid V] [Module k V] (ρ : Representation k G V)
+
+@[simp]
+theorem ρ_inv_self_apply  (g : G) (x : V) :
+    ρ g⁻¹ (ρ g x) = x := by
+  simp [← LinearMap.mul_apply, ← map_mul]
+
+@[simp]
+theorem ρ_self_inv_apply  (g : G) (x : V) :
+    ρ g (ρ g⁻¹ x) = x := by
+  simp [← LinearMap.mul_apply, ← map_mul]
+
+end Group
 section trivial
 
-variable (k : Type*) {G V : Type*} [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
+variable (k G V : Type*) [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
 
 /-- The trivial representation of `G` on a `k`-module V.
 -/
+@[simps! apply]
 def trivial : Representation k G V :=
   1
 #align representation.trivial Representation.trivial
 
--- Porting note: why is `V` implicit
-theorem trivial_def (g : G) (v : V) : trivial k (V := V) g v = v :=
-  rfl
-#align representation.trivial_def Representation.trivial_def
-
-variable {k}
+variable {k G V}
 
 /-- A predicate for representations that fix every element. -/
 class IsTrivial (ρ : Representation k G V) : Prop where
   out : ∀ g x, ρ g x = x := by aesop
 
-instance : IsTrivial (trivial k (G := G) (V := V)) where
+instance : IsTrivial (trivial k G V) where
 
-@[simp] theorem apply_eq_self
+@[simp]
+theorem apply_eq_self
     (ρ : Representation k G V) (g : G) (x : V) [h : IsTrivial ρ] :
     ρ g x = x := h.out g x
 
@@ -271,6 +284,7 @@ section MulAction
 variable (k : Type*) [CommSemiring k] (G : Type*) [Monoid G] (H : Type*) [MulAction G H]
 
 /-- A `G`-action on `H` induces a representation `G →* End(k[H])` in the natural way. -/
+@[simps]
 noncomputable def ofMulAction : Representation k G (H →₀ k) where
   toFun g := Finsupp.lmapDomain k k (g • ·)
   map_one' := by
@@ -284,14 +298,18 @@ noncomputable def ofMulAction : Representation k G (H →₀ k) where
 
 variable {k G H}
 
-theorem ofMulAction_def (g : G) : ofMulAction k G H g = Finsupp.lmapDomain k k (g • ·) :=
-  rfl
-#align representation.of_mul_action_def Representation.ofMulAction_def
-
 theorem ofMulAction_single (g : G) (x : H) (r : k) :
-    ofMulAction k G H g (Finsupp.single x r) = Finsupp.single (g • x) r :=
-  Finsupp.mapDomain_single
+    ofMulAction k G H g (Finsupp.single x r) = Finsupp.single (g • x) r := by
+  simp
 #align representation.of_mul_action_single Representation.ofMulAction_single
+
+variable (k G)
+
+noncomputable abbrev leftRegular : Representation k G (G →₀ k) :=
+  ofMulAction k G G
+
+noncomputable abbrev diagonal (ι : Type*) : Representation k G ((ι → G) →₀ k) :=
+  ofMulAction k G (ι → G)
 
 end MulAction
 section DistribMulAction
@@ -333,7 +351,7 @@ variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k 
 variable (ρ : Representation k G V)
 
 @[simp]
-theorem ofMulAction_apply {H : Type*} [MulAction G H] (g : G) (f : H →₀ k) (h : H) :
+theorem ofMulAction_apply_apply {H : Type*} [MulAction G H] (g : G) (f : H →₀ k) (h : H) :
     ofMulAction k G H g f h = f (g⁻¹ • h) := by
   conv_lhs => rw [← smul_inv_smul g h]
   let h' := g⁻¹ • h
@@ -341,7 +359,7 @@ theorem ofMulAction_apply {H : Type*} [MulAction G H] (g : G) (f : H →₀ k) (
   have hg : Function.Injective (g • · : H → H) := by
     intro h₁ h₂
     simp
-  simp only [ofMulAction_def, Finsupp.lmapDomain_apply, Finsupp.mapDomain_apply, hg]
+  simp [Finsupp.mapDomain_apply, hg]
 #align representation.of_mul_action_apply Representation.ofMulAction_apply
 
 -- Porting note: did not need this in ML3; noncomputable because IR check complains
@@ -356,7 +374,7 @@ theorem ofMulAction_self_smul_eq_mul (x : MonoidAlgebra k G) (y : (ofMulAction k
     (fun g => by
       show asAlgebraHom (ofMulAction k G G) _ _ = _; ext;
       simp only [MonoidAlgebra.of_apply, asAlgebraHom_single, one_smul,
-        ofMulAction_apply, smul_eq_mul]
+        ofMulAction_apply_apply, smul_eq_mul]
       -- Porting note: single_mul_apply not firing in simp
       rw [MonoidAlgebra.single_mul_apply, one_mul]
     )
@@ -505,5 +523,36 @@ theorem dualTensorHom_comm (g : G) :
 #align representation.dual_tensor_hom_comm Representation.dualTensorHom_comm
 
 end LinearHom
+
+section Finsupp
+
+variable {k G A : Type*} [CommSemiring k] [Monoid G] [AddCommMonoid A] [Module k A]
+variable {ρ : Representation k G A} {α : Type*}
+
+variable (ρ α) in
+@[simps]
+noncomputable def finsupp (α : Type*) :
+    Representation k G (α →₀ A) where
+  toFun := fun g => Finsupp.lsum k fun i => (Finsupp.lsingle i).comp (ρ g)
+  map_one' := Finsupp.lhom_ext (fun i x => by simp)
+  map_mul' := fun g h => Finsupp.lhom_ext (fun i x => by simp)
+
+@[simp]
+theorem finsupp_single (g : G) (x : α) (a : A) :
+    ρ.finsupp α g (Finsupp.single x a) = Finsupp.single x (ρ g a) := by
+  simp
+
+variable (k G α) in
+noncomputable def free :
+    Representation k G (α →₀ G →₀ k) :=
+  finsupp (leftRegular k G) α
+
+@[simp]
+theorem free_single_single (g h : G) (i : α) (r : k) :
+    free k G α g (Finsupp.single i (Finsupp.single h r)) =
+      Finsupp.single i (Finsupp.single (g * h) r) := by
+  simp [free]
+
+end Finsupp
 
 end Representation

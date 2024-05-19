@@ -9,7 +9,7 @@ import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 import Mathlib.CategoryTheory.Elementwise
 import Mathlib.RepresentationTheory.Action.Monoidal
-import Mathlib.RepresentationTheory.Basic
+import Mathlib.RepresentationTheory.Equiv
 
 #align_import representation_theory.Rep from "leanprover-community/mathlib"@"cec81510e48e579bde6acd8568c06a87af045b63"
 
@@ -121,7 +121,212 @@ theorem hom_comm_apply {A B : Rep k G} (f : A ⟶ B) (g : G) (x : A) :
 set_option linter.uppercaseLean3 false in
 #align Rep.hom_comm_apply Rep.hom_comm_apply
 
+end
+end Rep
+namespace RepresentationHom
+
+variable {k G : Type u} [CommRing k] [Monoid G]
+variable {V W : Type u} [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
+variable {ρ : Representation k G V} {τ : Representation k G W}
+variable {A B : Rep k G}
+open Rep
+
+-- idk about naming. or which of these should exist
+-- I will just do a bunch of stuff and find out which ones I never use.........?
+-- or something.
+@[simps]
+def toRepHom (f : ρ →ₑₗ τ) : of ρ ⟶ of τ :=
+  { hom := ModuleCat.ofHom f
+    comm := f.comm }
+
+@[simps]
+def toRepHom' (f : A.ρ →ₑₗ B.ρ) : A ⟶ B :=
+  { hom := (f : A →ₗ[k] B)
+    comm := f.comm }
+
+@[simp]
+def toRepHomLeft (f : A.ρ →ₑₗ ρ) : A ⟶ of ρ :=
+  { hom := ModuleCat.asHomLeft (f : A →ₗ[k] V)
+    comm := f.comm }
+
+@[simp]
+def toRepHomRight (f : ρ →ₑₗ A.ρ) : of ρ ⟶ A :=
+  { hom := ModuleCat.asHomRight (f : V →ₗ[k] A)
+    comm := f.comm }
+
+@[simps! toLinearMap]
+def ofRepHom (f : A ⟶ B) : A.ρ →ₑₗ B.ρ :=
+  { toLinearMap := f.hom
+    comm := f.comm }
+
+@[simps! toLinearMap]
+def ofRepHom' (f : of ρ ⟶ of τ) : ρ →ₑₗ τ :=
+  { toLinearMap := f.hom
+    comm := f.comm }
+
+@[simps! toLinearMap]
+def ofRepHomLeft (f : A ⟶ of τ) : A.ρ →ₑₗ τ :=
+  { toLinearMap := f.hom
+    comm := f.comm }
+
+@[simps! toLinearMap]
+def ofRepHomRight (f : of ρ ⟶ A) : ρ →ₑₗ A.ρ :=
+  { toLinearMap := f.hom
+    comm := f.comm }
+
+-- at least I have copilot.
+
+@[simp]
+theorem toRepHom_ofRepHom' (f : ρ →ₑₗ τ) :
+    ofRepHom' (toRepHom f) = f :=
+  rfl
+
+@[simp]
+theorem ofRepHom_toRepHom' (f : A ⟶ B) :
+    toRepHom' (ofRepHom f) = f :=
+  rfl
+
+@[simp]
+theorem toRepHom'_ofRepHom (f : A.ρ →ₑₗ B.ρ) :
+    ofRepHom (toRepHom' f) = f :=
+  rfl
+
+@[simp]
+theorem ofRepHom'_toRepHom (f : of ρ ⟶ of τ) :
+    toRepHom (ofRepHom' f) = f :=
+  rfl
+
+@[simp]
+theorem toRepHomLeft_ofRepHomLeft (f : A.ρ →ₑₗ ρ) :
+    ofRepHomLeft (toRepHomLeft f) = f :=
+  rfl
+
+@[simp]
+theorem ofRepHomLeft_toRepHomLeft (f : A ⟶ of ρ) :
+    toRepHomLeft (ofRepHomLeft f) = f :=
+  rfl
+
+@[simp]
+theorem toRepHomRight_ofRepHomRight (f : ρ →ₑₗ A.ρ) :
+    ofRepHomRight (toRepHomRight f) = f :=
+  rfl
+
+@[simp]
+theorem ofRepHomRight_toRepHomRight (f : of ρ ⟶ A) :
+    toRepHomRight (ofRepHomRight f) = f :=
+  rfl
+
+end RepresentationHom
+namespace RepresentationEquiv
+
+variable {k G : Type u} [CommRing k] [Monoid G]
+variable {V W : Type u} [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
+variable {ρ : Representation k G V} {τ : Representation k G W}
+variable {A B : Rep k G}
+open Rep RepresentationHom
+
+@[simps]
+def toRepIso
+    (f : ρ ≃ₑₗ τ) : of ρ ≅ of τ :=
+  { hom := toRepHom f
+    inv := toRepHom f.symm
+    hom_inv_id := by ext; exact f.left_inv _
+    inv_hom_id := by ext; exact f.right_inv _ }
+
+@[simps]
+def toRepIso' (f : A.ρ ≃ₑₗ B.ρ) : A ≅ B :=
+  { hom := toRepHom' f
+    inv := toRepHom' f.symm
+    hom_inv_id := by ext; exact f.left_inv _
+    inv_hom_id := by ext; exact f.right_inv _ }
+
+@[simps! toRepresentationHom]
+def ofRepIso (f : A ≅ B) : A.ρ ≃ₑₗ B.ρ :=
+  { ofRepHom f.hom with
+    invFun := ofRepHom f.inv
+    left_inv := fun x => congr($(congr(ofRepHom $f.hom_inv_id)) x)
+    right_inv := fun x => congr($(congr(ofRepHom $f.inv_hom_id)) x) }
+
+@[simps! toRepresentationHom]
+def ofRepIso' (f : of ρ ≅ of τ) : ρ ≃ₑₗ τ :=
+  { ofRepHom' f.hom with
+    invFun := ofRepHom' f.inv
+    left_inv := fun x => congr($(congr(ofRepHom' $f.hom_inv_id)) x)
+    right_inv := fun x => congr($(congr(ofRepHom' $f.inv_hom_id)) x) }
+
+@[simps]
+def toRepIsoLeft (f : A.ρ ≃ₑₗ ρ) : A ≅ of ρ :=
+  { hom := toRepHomLeft f
+    inv := toRepHomRight f.symm
+    hom_inv_id := by ext; exact f.left_inv _
+    inv_hom_id := by ext; exact f.right_inv _ }
+
+@[simps]
+def toRepIsoRight (f : ρ ≃ₑₗ A.ρ) : of ρ ≅ A :=
+  { hom := toRepHomRight f
+    inv := toRepHomLeft f.symm
+    hom_inv_id := by ext; exact f.left_inv _
+    inv_hom_id := by ext; exact f.right_inv _ }
+
+@[simps! toRepresentationHom]
+def ofRepIsoLeft (f : A ≅ of τ) : A.ρ ≃ₑₗ τ :=
+  { ofRepHomLeft f.hom with
+    invFun := ofRepHomRight f.inv
+    left_inv := fun x => congr($(congr(ofRepHomRight $f.hom_inv_id)) x)
+    right_inv := fun x => congr($(congr(ofRepHomRight $f.inv_hom_id)) x) }
+
+@[simps! toRepresentationHom]
+def ofRepIsoRight (f : of ρ ≅ A) : ρ ≃ₑₗ A.ρ :=
+  { ofRepHomRight f.hom with
+    invFun := ofRepHomLeft f.inv
+    left_inv := fun x => congr($(congr(ofRepHomLeft $f.hom_inv_id)) x)
+    right_inv := fun x => congr($(congr(ofRepHomLeft $f.inv_hom_id)) x) }
+
+@[simp]
+theorem toRepIso_ofRepIso' (f : ρ ≃ₑₗ τ) :
+    ofRepIso' (toRepIso f) = f :=
+  rfl
+
+@[simp]
+theorem ofRepIso_toRepIso' (f : A ≅ B) :
+    toRepIso' (ofRepIso f) = f :=
+  rfl
+
+@[simp]
+theorem toRepIso'_ofRepIso (f : A.ρ ≃ₑₗ B.ρ) :
+    ofRepIso (toRepIso' f) = f :=
+  rfl
+
+@[simp]
+theorem ofRepIso'_toRepIso (f : of ρ ≅ of τ) :
+    toRepIso (ofRepIso' f) = f :=
+  rfl
+
+@[simp]
+theorem toRepIsoLeft_ofRepIsoLeft (f : A.ρ ≃ₑₗ ρ) :
+    ofRepIsoLeft (toRepIsoLeft f) = f :=
+  rfl
+
+@[simp]
+theorem ofRepIsoLeft_toRepIsoLeft (f : A ≅ of ρ) :
+    toRepIsoLeft (ofRepIsoLeft f) = f :=
+  rfl
+
+@[simp]
+theorem toRepIsoRight_ofRepIsoRight (f : ρ ≃ₑₗ A.ρ) :
+    ofRepIsoRight (toRepIsoRight f) = f :=
+  rfl
+
+@[simp]
+theorem ofRepIsoRight_toRepIsoRight (f : of ρ ≅ A) :
+    toRepIsoRight (ofRepIsoRight f) = f :=
+  rfl
+
+end RepresentationEquiv
+namespace Rep
+
 variable (k G)
+variable [Monoid G] [CommRing k]
 
 /-- The trivial `k`-linear `G`-representation on a `k`-module `V.` -/
 def trivial (V : Type u) [AddCommGroup V] [Module k V] : Rep k G :=
@@ -152,6 +357,11 @@ noncomputable instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{u} k))
 
 noncomputable instance : PreservesColimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
   Action.instPreservesColimitsForget.{u} _ _
+
+open MonoidalCategory
+
+theorem MonoidalCategory.braiding_toRepresentationEquiv {A B : Rep k G} :
+    RepresentationEquiv.ofRepIso (β_ A B) = Representation.tprodComm A.ρ B.ρ := rfl
 
 /- Porting note: linter complains `simp` unfolds some types in the LHS, so
 have removed `@[simp]`. -/
@@ -202,6 +412,9 @@ theorem linearization_single (X : Action (Type u) (MonCat.of G)) (g : G) (x : X.
   by rw [linearization_obj_ρ, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single]
 
 variable {X Y : Action (Type u) (MonCat.of G)} (f : X ⟶ Y)
+
+-- needs Action API
+-- theorem linearization_map_toRepresentationHom
 
 @[simp]
 theorem linearization_map_hom : ((linearization k G).map f).hom = Finsupp.lmapDomain k k f.hom :=
@@ -320,24 +533,14 @@ def ofMulDistribMulAction : Rep ℤ M := Rep.of (Representation.ofMulDistribMulA
     Rep ℤ (S ≃ₐ[R] S) := Rep.ofMulDistribMulAction (S ≃ₐ[R] S) Sˣ
 
 end
-
+#exit
 variable {k G}
 
 /-- Given an element `x : A`, there is a natural morphism of representations `k[G] ⟶ A` sending
 `g ↦ A.ρ(g)(x).` -/
 @[simps]
 noncomputable def leftRegularHom (A : Rep k G) (x : A) : Rep.ofMulAction k G G ⟶ A where
-  hom := Finsupp.lift _ _ _ fun g => A.ρ g x
-  comm g := by
-    refine Finsupp.lhom_ext' fun y => LinearMap.ext_ring ?_
-/- Porting note: rest of broken proof was
-    simpa only [LinearMap.comp_apply, ModuleCat.comp_def, Finsupp.lsingle_apply, Finsupp.lift_apply,
-      Action_ρ_eq_ρ, of_ρ_apply, Representation.ofMulAction_single, Finsupp.sum_single_index,
-      zero_smul, one_smul, smul_eq_mul, A.ρ.map_mul] -/
-    simp only [LinearMap.comp_apply, ModuleCat.comp_def, Finsupp.lsingle_apply]
-    erw [Finsupp.lift_apply, Finsupp.lift_apply, Representation.ofMulAction_single (G := G)]
-    simp only [Finsupp.sum_single_index, zero_smul, one_smul, smul_eq_mul, A.ρ.map_mul, of_ρ]
-    rfl
+  ofRepresentationHom
 set_option linter.uppercaseLean3 false in
 #align Rep.left_regular_hom Rep.leftRegularHom
 
