@@ -607,42 +607,4 @@ theorem Away.eventually_smul_mem {m} (hf : f ∈ 𝒜 m) (z : Away 𝒜 f) :
 
 end
 
-section
-
-variable (𝒜)
-variable {B C : Type*} [CommRing B] [Algebra R B]
-variable (ℬ : ι → Submodule R B) [GradedAlgebra ℬ]
-variable (P : Submonoid A) (Q : Submonoid B)
-variable [CommRing C]
-
-def map (g : A →+* B)
-    (comap_le : P ≤ Q.comap g) (hg : ∀ i, ∀ a ∈ 𝒜 i, g a ∈ ℬ i) :
-    HomogeneousLocalization 𝒜 P →+* HomogeneousLocalization ℬ Q where
-  toFun := Quotient.map'
-    (fun x ↦ ⟨x.1, ⟨_, hg _ _ x.2.2⟩, ⟨_, hg _ _ x.3.2⟩, comap_le x.4⟩)
-    fun x y (e : x.embedding = y.embedding) ↦ by
-      apply_fun IsLocalization.map (Localization Q) g comap_le at e
-      simp_rw [HomogeneousLocalization.NumDenSameDeg.embedding, Localization.mk_eq_mk',
-        IsLocalization.map_mk', ← Localization.mk_eq_mk'] at e
-      exact e
-  map_add' := Quotient.ind₂' fun x y ↦ by
-    simp only [← mk_add, Quotient.map'_mk'', num_add, map_add, map_mul, den_add]; rfl
-  map_mul' := Quotient.ind₂' fun x y ↦ by
-    simp only [← mk_mul, Quotient.map'_mk'', num_mul, map_mul, den_mul]; rfl
-  map_zero' := by simp only [← mk_zero (𝒜 := 𝒜), Quotient.map'_mk'', deg_zero,
-    num_zero, ZeroMemClass.coe_zero, map_zero, den_zero, map_one]; rfl
-  map_one' := by simp only [← mk_one (𝒜 := 𝒜), Quotient.map'_mk'', deg_zero,
-    num_one, ZeroMemClass.coe_zero, map_zero, den_one, map_one]; rfl
-
-abbrev mapId {P Q : Submonoid A} (h : P ≤ Q) :
-    HomogeneousLocalization 𝒜 P →+* HomogeneousLocalization 𝒜 Q :=
-  map 𝒜 𝒜 P Q (RingHom.id _) h (fun _ _ ↦ id)
-
-lemma map_mk (g : A →+* B)
-    (comap_le : P ≤ Q.comap g) (hg : ∀ i, ∀ a ∈ 𝒜 i, g a ∈ ℬ i) (x) :
-    map 𝒜 ℬ P Q g comap_le hg (mk x) =
-      mk ⟨x.1, ⟨_, hg _ _ x.2.2⟩, ⟨_, hg _ _ x.3.2⟩, comap_le x.4⟩ := rfl
-
-end
-
 end HomogeneousLocalization
