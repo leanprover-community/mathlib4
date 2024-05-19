@@ -145,13 +145,11 @@ def unopFunctor : RelCatᵒᵖ ⥤ RelCat where
   obj X := unop X
   map {X Y} r x y := unop r y x
   map_id X := by
-    congr
     dsimp
     ext x y
     exact Eq.comm
   map_comp {X Y Z} f g := by
     unfold Category.opposite
-    congr
     ext x y
     apply exists_congr
     exact fun a => And.comm

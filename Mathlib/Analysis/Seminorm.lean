@@ -1039,19 +1039,19 @@ protected theorem absorbent_ball_zero (hr : 0 < r) : Absorbent 𝕜 (ball p (0 :
 
 /-- Closed seminorm-balls at the origin are absorbent. -/
 protected theorem absorbent_closedBall_zero (hr : 0 < r) : Absorbent 𝕜 (closedBall p (0 : E) r) :=
-  (p.absorbent_ball_zero hr).subset (p.ball_subset_closedBall _ _)
+  (p.absorbent_ball_zero hr).mono (p.ball_subset_closedBall _ _)
 #align seminorm.absorbent_closed_ball_zero Seminorm.absorbent_closedBall_zero
 
 /-- Seminorm-balls containing the origin are absorbent. -/
 protected theorem absorbent_ball (hpr : p x < r) : Absorbent 𝕜 (ball p x r) := by
-  refine' (p.absorbent_ball_zero <| sub_pos.2 hpr).subset fun y hy => _
+  refine' (p.absorbent_ball_zero <| sub_pos.2 hpr).mono fun y hy => _
   rw [p.mem_ball_zero] at hy
   exact p.mem_ball.2 ((map_sub_le_add p _ _).trans_lt <| add_lt_of_lt_sub_right hy)
 #align seminorm.absorbent_ball Seminorm.absorbent_ball
 
 /-- Seminorm-balls containing the origin are absorbent. -/
 protected theorem absorbent_closedBall (hpr : p x < r) : Absorbent 𝕜 (closedBall p x r) := by
-  refine' (p.absorbent_closedBall_zero <| sub_pos.2 hpr).subset fun y hy => _
+  refine' (p.absorbent_closedBall_zero <| sub_pos.2 hpr).mono fun y hy => _
   rw [p.mem_closedBall_zero] at hy
   exact p.mem_closedBall.2 ((map_sub_le_add p _ _).trans <| add_le_of_le_sub_right hy)
 #align seminorm.absorbent_closed_ball Seminorm.absorbent_closedBall

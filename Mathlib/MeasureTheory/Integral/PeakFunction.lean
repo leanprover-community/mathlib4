@@ -372,7 +372,7 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_integrabl
   calc
     0 < μ (u ∩ interior s) :=
       (u_open.inter isOpen_interior).measure_pos μ (_root_.mem_closure_iff.1 h₀ u u_open x₀_u)
-    _ ≤ μ (u ∩ s) := measure_mono (inter_subset_inter_right _ interior_subset)
+    _ ≤ μ (u ∩ s) := by gcongr; apply interior_subset
 #align tendsto_set_integral_pow_smul_of_unique_maximum_of_is_compact_of_integrable_on tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_integrableOn
 
 /-- If a continuous function `c` realizes its maximum at a unique point `x₀` in a compact set `s`,

@@ -1182,7 +1182,6 @@ def trNat (n : ℕ) : List Γ' :=
 theorem trNat_zero : trNat 0 = [] := by rw [trNat, Nat.cast_zero]; rfl
 #align turing.partrec_to_TM2.tr_nat_zero Turing.PartrecToTM2.trNat_zero
 
-@[simp]
 theorem trNat_default : trNat default = [] :=
   trNat_zero
 #align turing.partrec_to_TM2.tr_nat_default Turing.PartrecToTM2.trNat_default
@@ -1334,8 +1333,7 @@ theorem move_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k₁
   induction' L₁ with a L₁ IH generalizing S s
   · rw [(_ : [].reverseAux _ = _), Function.update_eq_self]
     swap
-    · rw [Function.update_noteq h₁.symm]
-      rfl
+    · rw [Function.update_noteq h₁.symm, List.reverseAux_nil]
     refine' TransGen.head' rfl _
     simp only [TM2.step, Option.mem_def, TM2.stepAux, Option.elim, ne_eq]
     revert e; cases' S k₁ with a Sk <;> intro e
@@ -1550,7 +1548,6 @@ theorem pred_ok (q₁ q₂ s v) (c d : List Γ') : ∃ s',
   rcases v with (_ | ⟨_ | n, v⟩)
   · refine' ⟨none, TransGen.single _⟩
     simp
-    rfl
   · refine' ⟨some Γ'.cons, TransGen.single _⟩
     simp
   refine' ⟨none, _⟩

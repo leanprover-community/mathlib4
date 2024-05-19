@@ -80,8 +80,8 @@ instance funLike : FunLike (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i
   coe f := f.toFun
   coe_injective' _ _ h := toMultilinearMap_injective <| MultilinearMap.coe_injective h
 
-instance continuousMapClass : ContinuousMapClass (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂
-    where
+instance continuousMapClass :
+    ContinuousMapClass (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
   map_continuous := ContinuousMultilinearMap.cont
 #align continuous_multilinear_map.continuous_map_class ContinuousMultilinearMap.continuousMapClass
 

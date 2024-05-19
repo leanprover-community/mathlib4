@@ -655,7 +655,7 @@ lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
   apply Function.HasTemperateGrowth.of_fderiv ?_ f.differentiable (k := 1) (C := ‖f‖) (fun x ↦ ?_)
   · have : fderiv ℝ f = fun _ ↦ f := by ext1 v; simp only [ContinuousLinearMap.fderiv]
     simpa [this] using .const _
-  · exact (f.le_op_norm x).trans (by simp [mul_add])
+  · exact (f.le_opNorm x).trans (by simp [mul_add])
 
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
 variable [MeasurableSpace D] [BorelSpace D] [SecondCountableTopology D] [FiniteDimensional ℝ D]
@@ -693,7 +693,6 @@ integral in terms of suitable seminorms of `f`. -/
 lemma pow_mul_le_of_le_of_pow_mul_le {C₁ C₂ : ℝ} {k l : ℕ} {x f : ℝ} (hx : 0 ≤ x) (hf : 0 ≤ f)
     (h₁ : f ≤ C₁) (h₂ : x ^ (k + l) * f ≤ C₂) :
     x ^ k * f ≤ 2 ^ l * (C₁ + C₂) * (1 + x) ^ (- (l : ℝ)) := by
-  have : 0 ≤ C₁ := le_trans (by positivity) h₁
   have : 0 ≤ C₂ := le_trans (by positivity) h₂
   have : 2 ^ l * (C₁ + C₂) * (1 + x) ^ (- (l : ℝ)) = ((1 + x) / 2) ^ (-(l:ℝ)) * (C₁ + C₂) := by
     rw [Real.div_rpow (by linarith) zero_le_two]

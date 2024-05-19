@@ -1008,8 +1008,7 @@ end LowerSet
 
 /-- Upper sets are order-isomorphic to lower sets under complementation. -/
 @[simps]
-def upperSetIsoLowerSet : UpperSet α ≃o LowerSet α
-    where
+def upperSetIsoLowerSet : UpperSet α ≃o LowerSet α where
   toFun := UpperSet.compl
   invFun := LowerSet.compl
   left_inv := UpperSet.compl_compl

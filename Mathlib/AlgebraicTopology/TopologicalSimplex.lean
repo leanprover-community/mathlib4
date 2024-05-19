@@ -55,10 +55,7 @@ def toTopMap {x y : SimplexCategory} (f : x ⟶ y) (g : x.toTopObj) : y.toTopObj
     · apply Set.pairwiseDisjoint_filter⟩
 #align simplex_category.to_Top_map SimplexCategory.toTopMap
 
--- Adaptation note: nightly-2024-04-23
--- The simpNF linter now times out on this lemma.
--- See https://github.com/leanprover-community/mathlib4/issues/12227
-@[simp, nolint simpNF]
+@[simp]
 theorem coe_toTopMap {x y : SimplexCategory} (f : x ⟶ y) (g : x.toTopObj) (i : y) :
     toTopMap f g i = ∑ j in Finset.univ.filter (f · = i), g j :=
   rfl
@@ -72,7 +69,7 @@ theorem continuous_toTopMap {x y : SimplexCategory} (f : x ⟶ y) : Continuous (
 #align simplex_category.continuous_to_Top_map SimplexCategory.continuous_toTopMap
 
 /-- The functor associating the topological `n`-simplex to `[n] : SimplexCategory`. -/
-@[simps]
+@[simps obj map]
 def toTop : SimplexCategory ⥤ TopCat where
   obj x := TopCat.of x.toTopObj
   map f := ⟨toTopMap f, by fun_prop⟩
@@ -98,8 +95,5 @@ def toTop : SimplexCategory ⥤ TopCat where
       · tauto
     · apply Set.pairwiseDisjoint_filter
 #align simplex_category.to_Top SimplexCategory.toTop
-
--- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
-attribute [nolint simpNF] SimplexCategory.toTop_map_apply
 
 end SimplexCategory

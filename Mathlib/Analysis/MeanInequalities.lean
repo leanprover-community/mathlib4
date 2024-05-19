@@ -468,7 +468,7 @@ theorem rpow_sum_le_const_mul_sum_rpow (f : ι → ℝ≥0) {p : ℝ} (hp : 1 �
     rw [← hpq.div_conj_eq_sub_one]
     ring
   simpa only [NNReal.mul_rpow, ← NNReal.rpow_mul, hp₁, hq, one_mul, one_rpow, rpow_one,
-    Pi.one_apply, sum_const, Nat.smul_one_eq_coe] using
+    Pi.one_apply, sum_const, Nat.smul_one_eq_cast] using
     NNReal.rpow_le_rpow (inner_le_Lp_mul_Lq s 1 f hpq.symm) hpq.nonneg
 #align nnreal.rpow_sum_le_const_mul_sum_rpow NNReal.rpow_sum_le_const_mul_sum_rpow
 
@@ -834,7 +834,7 @@ theorem rpow_sum_le_const_mul_sum_rpow (hp : 1 ≤ p) :
     rw [← hpq.div_conj_eq_sub_one]
     ring
   simpa only [ENNReal.mul_rpow_of_nonneg _ _ hpq.nonneg, ← ENNReal.rpow_mul, hp₁, hq, coe_one,
-    one_mul, one_rpow, rpow_one, Pi.one_apply, sum_const, Nat.smul_one_eq_coe] using
+    one_mul, one_rpow, rpow_one, Pi.one_apply, sum_const, Nat.smul_one_eq_cast] using
     ENNReal.rpow_le_rpow (inner_le_Lp_mul_Lq s 1 f hpq.symm) hpq.nonneg
 #align ennreal.rpow_sum_le_const_mul_sum_rpow ENNReal.rpow_sum_le_const_mul_sum_rpow
 

@@ -403,29 +403,25 @@ theorem map_eq {X Y : TopCat} {x₀ x₁ : X} (f : C(X, Y)) (p : Path.Homotopic.
 
 /-- Help the typechecker by converting a point in a groupoid back to a point in
 the underlying topological space. -/
-@[reducible]
-def toTop {X : TopCat} (x : πₓ X) : X := x.as
+abbrev toTop {X : TopCat} (x : πₓ X) : X := x.as
 #align fundamental_groupoid.to_top FundamentalGroupoid.toTop
 
 /-- Help the typechecker by converting a point in a topological space to a
 point in the fundamental groupoid of that space. -/
-@[reducible]
-def fromTop {X : TopCat} (x : X) : πₓ X := ⟨x⟩
+abbrev fromTop {X : TopCat} (x : X) : πₓ X := ⟨x⟩
 #align fundamental_groupoid.from_top FundamentalGroupoid.fromTop
 
 /-- Help the typechecker by converting an arrow in the fundamental groupoid of
 a topological space back to a path in that space (i.e., `Path.Homotopic.Quotient`). -/
 -- Porting note: Added `(X := X)` to the type.
-@[reducible]
-def toPath {X : TopCat} {x₀ x₁ : πₓ X} (p : x₀ ⟶ x₁) :
+abbrev toPath {X : TopCat} {x₀ x₁ : πₓ X} (p : x₀ ⟶ x₁) :
     Path.Homotopic.Quotient (X := X) x₀.as x₁.as :=
   p
 #align fundamental_groupoid.to_path FundamentalGroupoid.toPath
 
 /-- Help the typechecker by converting a path in a topological space to an arrow in the
 fundamental groupoid of that space. -/
-@[reducible]
-def fromPath {X : TopCat} {x₀ x₁ : X} (p : Path.Homotopic.Quotient x₀ x₁) :
+abbrev fromPath {X : TopCat} {x₀ x₁ : X} (p : Path.Homotopic.Quotient x₀ x₁) :
     FundamentalGroupoid.mk x₀ ⟶ FundamentalGroupoid.mk x₁ := p
 #align fundamental_groupoid.from_path FundamentalGroupoid.fromPath
 

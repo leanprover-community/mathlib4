@@ -31,7 +31,7 @@ open scoped BigOperators
 theorem eval_one_cyclotomic_prime {R : Type*} [CommRing R] {p : ℕ} [hn : Fact p.Prime] :
     eval 1 (cyclotomic p R) = p := by
   simp only [cyclotomic_prime, eval_X, one_pow, Finset.sum_const, eval_pow, eval_finset_sum,
-    Finset.card_range, smul_one_eq_coe]
+    Finset.card_range, smul_one_eq_cast]
 #align polynomial.eval_one_cyclotomic_prime Polynomial.eval_one_cyclotomic_prime
 
 -- @[simp] -- Porting note (#10618): simp already proves this
@@ -43,7 +43,7 @@ theorem eval₂_one_cyclotomic_prime {R S : Type*} [CommRing R] [Semiring S] (f 
 theorem eval_one_cyclotomic_prime_pow {R : Type*} [CommRing R] {p : ℕ} (k : ℕ)
     [hn : Fact p.Prime] : eval 1 (cyclotomic (p ^ (k + 1)) R) = p := by
   simp only [cyclotomic_prime_pow_eq_geom_sum hn.out, eval_X, one_pow, Finset.sum_const, eval_pow,
-    eval_finset_sum, Finset.card_range, smul_one_eq_coe]
+    eval_finset_sum, Finset.card_range, smul_one_eq_cast]
 #align polynomial.eval_one_cyclotomic_prime_pow Polynomial.eval_one_cyclotomic_prime_pow
 
 -- @[simp] -- Porting note (#10618): simp already proves this
@@ -307,7 +307,7 @@ theorem cyclotomic_eval_le_add_one_pow_totient {q : ℝ} (hq' : 1 < q) :
 theorem sub_one_pow_totient_lt_natAbs_cyclotomic_eval {n : ℕ} {q : ℕ} (hn' : 1 < n) (hq : q ≠ 1) :
     (q - 1) ^ totient n < ((cyclotomic n ℤ).eval ↑q).natAbs := by
   rcases hq.lt_or_lt.imp_left Nat.lt_one_iff.mp with (rfl | hq')
-  · rw [zero_tsub, zero_pow (Nat.totient_pos (pos_of_gt hn')).ne', pos_iff_ne_zero,
+  · rw [zero_tsub, zero_pow (Nat.totient_pos.2 (pos_of_gt hn')).ne', pos_iff_ne_zero,
       Int.natAbs_ne_zero, Nat.cast_zero, ← coeff_zero_eq_eval_zero, cyclotomic_coeff_zero _ hn']
     exact one_ne_zero
   rw [← @Nat.cast_lt ℝ, Nat.cast_pow, Nat.cast_sub hq'.le, Nat.cast_one, Int.cast_natAbs]
@@ -319,7 +319,7 @@ theorem sub_one_pow_totient_lt_natAbs_cyclotomic_eval {n : ℕ} {q : ℕ} (hn' :
 theorem sub_one_lt_natAbs_cyclotomic_eval {n : ℕ} {q : ℕ} (hn' : 1 < n) (hq : q ≠ 1) :
     q - 1 < ((cyclotomic n ℤ).eval ↑q).natAbs :=
   calc
-    q - 1 ≤ (q - 1) ^ totient n := Nat.le_self_pow (Nat.totient_pos <| pos_of_gt hn').ne' _
+    q - 1 ≤ (q - 1) ^ totient n := Nat.le_self_pow (Nat.totient_pos.2 <| pos_of_gt hn').ne' _
     _ < ((cyclotomic n ℤ).eval ↑q).natAbs := sub_one_pow_totient_lt_natAbs_cyclotomic_eval hn' hq
 #align polynomial.sub_one_lt_nat_abs_cyclotomic_eval Polynomial.sub_one_lt_natAbs_cyclotomic_eval
 

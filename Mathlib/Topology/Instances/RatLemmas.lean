@@ -58,7 +58,7 @@ theorem not_countably_generated_cocompact : ¬IsCountablyGenerated (cocompact �
   rcases exists_seq_tendsto (cocompact ℚ ⊓ 𝓝 0) with ⟨x, hx⟩
   rw [tendsto_inf] at hx; rcases hx with ⟨hxc, hx0⟩
   obtain ⟨n, hn⟩ : ∃ n : ℕ, x n ∉ insert (0 : ℚ) (range x)
-  exact (hxc.eventually hx0.isCompact_insert_range.compl_mem_cocompact).exists
+  · exact (hxc.eventually hx0.isCompact_insert_range.compl_mem_cocompact).exists
   exact hn (Or.inr ⟨n, rfl⟩)
 #align rat.not_countably_generated_cocompact Rat.not_countably_generated_cocompact
 

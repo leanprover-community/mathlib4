@@ -397,7 +397,7 @@ lemma integral_toReal_rnDeriv [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ 
 
 end integral
 
-lemma rnDeriv_mul_rnDeriv {μ ν κ : Measure α} [SigmaFinite μ] [SigmaFinite ν] [SigmaFinite κ]
+lemma rnDeriv_mul_rnDeriv {κ : Measure α} [SigmaFinite μ] [SigmaFinite ν] [SigmaFinite κ]
     (hμν : μ ≪ ν) :
     μ.rnDeriv ν * ν.rnDeriv κ =ᵐ[κ] μ.rnDeriv κ := by
   refine (rnDeriv_withDensity_left ?_ ?_ ?_).symm.trans ?_
@@ -405,6 +405,12 @@ lemma rnDeriv_mul_rnDeriv {μ ν κ : Measure α} [SigmaFinite μ] [SigmaFinite 
   · exact (Measure.measurable_rnDeriv _ _).aemeasurable
   · exact rnDeriv_ne_top _ _
   · rw [Measure.withDensity_rnDeriv_eq _ _ hμν]
+
+lemma rnDeriv_le_one_of_le (hμν : μ ≤ ν) [SigmaFinite ν] : μ.rnDeriv ν ≤ᵐ[ν] 1 := by
+  refine ae_le_of_forall_set_lintegral_le_of_sigmaFinite (μ.measurable_rnDeriv ν) measurable_const
+    (fun s _ _ ↦ ?_)
+  simp only [Pi.one_apply, MeasureTheory.set_lintegral_one]
+  exact (Measure.set_lintegral_rnDeriv_le s).trans (hμν s)
 
 end Measure
 

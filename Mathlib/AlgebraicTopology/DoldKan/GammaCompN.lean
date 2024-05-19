@@ -191,7 +191,7 @@ lemma whiskerLeft_toKaroubi_N₂Γ₂_hom :
     whiskerLeft (toKaroubi (ChainComplex C ℕ)) N₂Γ₂.hom = N₂Γ₂ToKaroubiIso.hom ≫ N₁Γ₀.hom := by
   let e : _ ≅ toKaroubi (ChainComplex C ℕ) ⋙ 𝟭 _ := N₂Γ₂ToKaroubiIso ≪≫ N₁Γ₀
   have h := ((whiskeringLeft _ _ (Karoubi (ChainComplex C ℕ))).obj
-    (toKaroubi (ChainComplex C ℕ))).image_preimage e.hom
+    (toKaroubi (ChainComplex C ℕ))).map_preimage e.hom
   dsimp only [whiskeringLeft, N₂Γ₂, Functor.preimageIso] at h ⊢
   exact h
 

@@ -735,7 +735,9 @@ theorem nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ
 theorem list_ofFn :
     ∀ {n} {f : Fin n → α → σ},
       (∀ i, Computable (f i)) → Computable fun a => List.ofFn fun i => f i a
-  | 0, _, _ => const []
+  | 0, _, _ => by
+    simp only [List.ofFn_zero]
+    exact const []
   | n + 1, f, hf => by
     simp only [List.ofFn_succ]
     exact list_cons.comp (hf 0) (list_ofFn fun i => hf i.succ)

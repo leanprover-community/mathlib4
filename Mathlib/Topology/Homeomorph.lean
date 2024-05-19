@@ -768,8 +768,7 @@ variable {ι : Type*}
   depending on whether they satisfy a predicate p or not. -/
 @[simps!]
 def piEquivPiSubtypeProd (p : ι → Prop) (Y : ι → Type*) [∀ i, TopologicalSpace (Y i)]
-    [DecidablePred p] : (∀ i, Y i) ≃ₜ (∀ i : { x // p x }, Y i) × ∀ i : { x // ¬p x }, Y i
-    where
+    [DecidablePred p] : (∀ i, Y i) ≃ₜ (∀ i : { x // p x }, Y i) × ∀ i : { x // ¬p x }, Y i where
   toEquiv := Equiv.piEquivPiSubtypeProd p Y
   continuous_toFun := by
     apply Continuous.prod_mk <;> exact continuous_pi fun j => continuous_apply j.1
@@ -785,8 +784,7 @@ variable [DecidableEq ι] (i : ι)
   the product of all the remaining spaces. -/
 @[simps!]
 def piSplitAt (Y : ι → Type*) [∀ j, TopologicalSpace (Y j)] :
-    (∀ j, Y j) ≃ₜ Y i × ∀ j : { j // j ≠ i }, Y j
-    where
+    (∀ j, Y j) ≃ₜ Y i × ∀ j : { j // j ≠ i }, Y j where
   toEquiv := Equiv.piSplitAt i Y
   continuous_toFun := (continuous_apply i).prod_mk (continuous_pi fun j => continuous_apply j.1)
   continuous_invFun :=

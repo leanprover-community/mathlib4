@@ -356,8 +356,7 @@ structure and the bornology by the product ones using this pseudometric space,
 `PseudoMetricSpace.replaceUniformity`, and `PseudoMetricSpace.replaceBornology`.
 
 See note [reducible non-instances] -/
-@[reducible]
-def prodPseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
+abbrev prodPseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
     PseudoMetricSpace (WithLp p (α × β)) :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist
     (fun f g => by

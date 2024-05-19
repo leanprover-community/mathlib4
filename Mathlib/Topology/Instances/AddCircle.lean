@@ -529,9 +529,7 @@ theorem card_addOrderOf_eq_totient {n : ℕ} :
 
 theorem finite_setOf_add_order_eq {n : ℕ} (hn : 0 < n) :
     { u : AddCircle p | addOrderOf u = n }.Finite :=
-  finite_coe_iff.mp <|
-    Nat.finite_of_card_ne_zero <| by
-      simpa only [coe_setOf, card_addOrderOf_eq_totient p] using (Nat.totient_pos hn).ne'
+  finite_coe_iff.mp <| Nat.finite_of_card_ne_zero <| by simp [hn.ne']
 #align add_circle.finite_set_of_add_order_eq AddCircle.finite_setOf_add_order_eq
 
 end FiniteOrderPoints
