@@ -839,7 +839,7 @@ theorem indicatorConstLp_empty :
   simp only [indicatorConstLp, Set.indicator_empty', Memℒp.toLp_zero]
 #align measure_theory.indicator_const_empty MeasureTheory.indicatorConstLp_empty
 
-theorem indicatorConstLp_left_injective {s t : Set α} (hs : MeasurableSet s) (hsμ : μ s ≠ ∞)
+theorem indicatorConstLp_injective {s t : Set α} (hs : MeasurableSet s) (hsμ : μ s ≠ ∞)
     (ht : MeasurableSet t) (htμ : μ t ≠ ∞) {c : E} (hc : c ≠ 0)
     (h : indicatorConstLp p hs hsμ c = indicatorConstLp p ht htμ c) : s =ᵐ[μ] t :=
   .of_indicator_const hc <|
