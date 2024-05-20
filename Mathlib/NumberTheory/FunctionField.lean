@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Ashvni Narayanan
 -/
 import Mathlib.Algebra.Order.Group.TypeTags
-import Mathlib.FieldTheory.RatFunc
+import Mathlib.FieldTheory.RatFunc.Degree
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 import Mathlib.RingTheory.IntegrallyClosed
 import Mathlib.Topology.Algebra.ValuedField

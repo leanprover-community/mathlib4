@@ -746,8 +746,7 @@ end Group
 
 /-- Create a bundled subgroup from a set `s` and `[IsSubgroup s]`. -/
 @[to_additive "Create a bundled additive subgroup from a set `s` and `[IsAddSubgroup s]`."]
-def Subgroup.of [Group G] {s : Set G} (h : IsSubgroup s) : Subgroup G
-    where
+def Subgroup.of [Group G] {s : Set G} (h : IsSubgroup s) : Subgroup G where
   carrier := s
   one_mem' := h.1.1
   mul_mem' := h.1.2

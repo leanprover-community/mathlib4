@@ -163,7 +163,7 @@ theorem CG.of_map_embedding {N : Type*} [L.Structure N] (f : M ↪[L] N) {s : L.
     (hs : (s.map f.toHom).CG) : s.CG := by
   rcases hs with ⟨t, h1, h2⟩
   rw [cg_def]
-  refine' ⟨f ⁻¹' t, h1.preimage f.injective, _⟩
+  refine ⟨f ⁻¹' t, h1.preimage f.injective, ?_⟩
   have hf : Function.Injective f.toHom := f.injective
   refine' map_injective_of_injective hf _
   rw [← h2, map_closure, Embedding.coe_toHom, image_preimage_eq_of_subset]

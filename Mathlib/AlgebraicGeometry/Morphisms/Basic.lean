@@ -262,7 +262,7 @@ theorem AffineTargetMorphismProperty.IsLocal.affine_openCover_TFAE
   · rintro ⟨𝒰, h𝒰, H⟩; exact targetAffineLocallyOfOpenCover hP f 𝒰 H
   tfae_have 5 → 2
   · rintro ⟨ι, U, hU, hU', H⟩
-    refine' ⟨Y.openCoverOfSuprEqTop U hU, hU', _⟩
+    refine ⟨Y.openCoverOfSuprEqTop U hU, hU', ?_⟩
     intro i
     specialize H i
     -- Porting note (#10754): added these two instances manually
@@ -294,7 +294,7 @@ theorem AffineTargetMorphismProperty.isLocalOfOpenCoverImply (P : AffineTargetMo
     haveI : IsAffine _ := (topIsAffineOpen Y).basicOpenIsAffine r
     delta morphismRestrict
     rw [affine_cancel_left_isIso hP]
-    refine' @H _ _ f ⟨Scheme.openCoverOfIsIso (𝟙 Y), _, _⟩ _ (Y.ofRestrict _) _ _
+    refine @H _ _ f ⟨Scheme.openCoverOfIsIso (𝟙 Y), ?_, ?_⟩ _ (Y.ofRestrict _) _ _
     · intro i; dsimp; infer_instance
     · intro i; dsimp
       rwa [← Category.comp_id pullback.snd, ← pullback.condition, affine_cancel_left_isIso hP]
@@ -418,7 +418,7 @@ theorem PropertyIsLocalAtTarget.openCover_TFAE {P : MorphismProperty Scheme}
   · intro H; exact ⟨PUnit, fun _ => ⊤, ciSup_const, fun _ => H _⟩
   tfae_have 6 → 2
   · rintro ⟨ι, U, hU, H⟩
-    refine' ⟨Y.openCoverOfSuprEqTop U hU, _⟩
+    refine ⟨Y.openCoverOfSuprEqTop U hU, ?_⟩
     intro i
     rw [← hP.1.arrow_mk_iso_iff (morphismRestrictOpensRange f _)]
     convert H i
@@ -526,7 +526,7 @@ theorem diagonalTargetAffineLocallyOfOpenCover (P : AffineTargetMorphismProperty
   let 𝒱 := (Scheme.Pullback.openCoverOfBase 𝒰 f f).bind fun i =>
     Scheme.Pullback.openCoverOfLeftRight.{u} (𝒰' i) (𝒰' i) pullback.snd pullback.snd
   have i1 : ∀ i, IsAffine (𝒱.obj i) := fun i => by dsimp [𝒱]; infer_instance
-  refine' (hP.affine_openCover_iff _ _).mpr _
+  refine' (hP.affine_openCover_iff _ 𝒱).mpr _
   rintro ⟨i, j, k⟩
   dsimp [𝒱]
   convert (affine_cancel_left_isIso hP.1
@@ -607,8 +607,8 @@ theorem universallyIsLocalAtTarget (P : MorphismProperty Scheme)
     (hP : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) (𝒰 : Scheme.OpenCover.{u} Y),
       (∀ i : 𝒰.J, P (pullback.snd : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i)) → P f) :
     PropertyIsLocalAtTarget P.universally := by
-  refine' ⟨P.universally_respectsIso, fun {X Y} f U =>
-    P.universally_stableUnderBaseChange (isPullback_morphismRestrict f U).flip, _⟩
+  refine ⟨P.universally_respectsIso, fun {X Y} f U =>
+    P.universally_stableUnderBaseChange (isPullback_morphismRestrict f U).flip, ?_⟩
   intro X Y f 𝒰 h X' Y' i₁ i₂ f' H
   apply hP _ (𝒰.pullbackCover i₂)
   intro i
