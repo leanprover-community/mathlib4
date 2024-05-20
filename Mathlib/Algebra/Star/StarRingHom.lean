@@ -136,8 +136,7 @@ instance : EquivLike (A ≃⋆+* B) A B where
     rcases g with ⟨⟨⟨_, _, _⟩, _⟩, _⟩
     congr
 
-instance : RingEquivClass (A ≃⋆+* B) A B
-    where
+instance : RingEquivClass (A ≃⋆+* B) A B where
   map_mul f := f.map_mul'
   map_add f := f.map_add'
 
