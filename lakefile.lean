@@ -70,6 +70,16 @@ lean_exe pole where
   root := `LongestPole.Main
   supportInterpreter := true
 
+/--
+`lake exe test` is a thin wrapper around `lake exe batteries/test`, until
+https://github.com/leanprover/lean4/issues/4121 is resolved.
+
+You can also use it as e.g. `lake exe test conv eval_elab` to only run the named tests.
+-/
+@[test_runner]
+lean_exe test where
+  srcDir := "scripts"
+
 /-!
 ## Other configuration
 -/
