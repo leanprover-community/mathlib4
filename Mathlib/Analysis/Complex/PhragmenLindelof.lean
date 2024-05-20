@@ -283,7 +283,7 @@ theorem vertical_strip (hfd : DiffContOnCl ℂ f (re ⁻¹' Ioo a b))
     (hzb : re z ≤ b) : ‖f z‖ ≤ C := by
   suffices ‖f (z * I * -I)‖ ≤ C by simpa [mul_assoc] using this
   have H : MapsTo (· * -I) (im ⁻¹' Ioo a b) (re ⁻¹' Ioo a b) := fun z hz ↦ by simpa using hz
-  refine horizontal?_strip (f := fun z ↦ f (z * -I))
+  refine horizontal_strip (f := fun z ↦ f (z * -I))
     (hfd.comp (differentiable_id.mul_const _).diffContOnCl H) _ (fun z hz => hle_a _ _)
     (fun z hz => hle_b _ _) _ _
   · rcases hB with ⟨c, hc, B, hO⟩

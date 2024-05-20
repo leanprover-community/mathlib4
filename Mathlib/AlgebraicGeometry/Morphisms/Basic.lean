@@ -607,7 +607,7 @@ theorem universallyIsLocalAtTarget (P : MorphismProperty Scheme)
     (hP : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) (𝒰 : Scheme.OpenCover.{u} Y),
       (∀ i : 𝒰.J, P (pullback.snd : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i)) → P f) :
     PropertyIsLocalAtTarget P.universally := by
-  refine ⟨P.universally?_respectsIso, fun {X Y} f U =>
+  refine ⟨P.universally_respectsIso, fun {X Y} f U =>
     P.universally_stableUnderBaseChange (isPullback_morphismRestrict f U).flip, _⟩
   intro X Y f 𝒰 h X' Y' i₁ i₂ f' H
   apply hP _ (𝒰.pullbackCover i₂)

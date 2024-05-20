@@ -462,7 +462,7 @@ theorem supermartingale_nat [IsFiniteMeasure μ] {f : ℕ → Ω → ℝ} (hadp 
     (hint : ∀ i, Integrable (f i) μ) (hf : ∀ i, μ[f (i + 1)|𝒢 i] ≤ᵐ[μ] f i) :
     Supermartingale f 𝒢 μ := by
   rw [← neg_neg f]
-  refine (submartingale?_nat hadp.neg (fun i => (hint i).neg) fun i =>
+  refine (submartingale_nat hadp.neg (fun i => (hint i).neg) fun i =>
     EventuallyLE.trans _ (condexp_neg _).symm.le).neg
   filter_upwards [hf i] with x hx using neg_le_neg hx
 #align measure_theory.supermartingale_nat MeasureTheory.supermartingale_nat

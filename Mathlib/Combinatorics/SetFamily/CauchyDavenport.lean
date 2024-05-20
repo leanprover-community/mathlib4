@@ -119,7 +119,7 @@ lemma Finset.min_le_card_mul (hs : s.Nonempty) (ht : t.Nonempty) :
   clear_value x
   simp only [Prod.ext_iff] at hx
   obtain ⟨rfl, rfl⟩ := hx
-  refine wellFoundedOn?_devosMulRel.induction (P := fun x : Finset α × Finset α ↦
+  refine wellFoundedOn_devosMulRel.induction (P := fun x : Finset α × Finset α ↦
     min (minOrder α) ↑(card x.1 + card x.2 - 1) ≤ card (x.1 * x.2)) ⟨hs, ht⟩ _
   clear! x
   rintro ⟨s, t⟩ ⟨hs, ht⟩ ih

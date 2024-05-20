@@ -190,7 +190,7 @@ instance VectorBundle.pullback [∀ x, TopologicalSpace (E x)] [FiberBundle F E]
     infer_instance
   continuousOn_coordChange' := by
     rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩
-    refine ((continuousOn?_coordChange 𝕜 e e').comp
+    refine ((continuousOn_coordChange 𝕜 e e').comp
       (map_continuous f).continuousOn fun b hb => hb).congr _
     rintro b (hb : f b ∈ e.baseSet ∩ e'.baseSet); ext v
     show ((e.pullback f).coordChangeL 𝕜 (e'.pullback f) b) v = (e.coordChangeL 𝕜 e' (f b)) v

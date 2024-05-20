@@ -266,7 +266,7 @@ private theorem closed_candidatesB : IsClosed (candidatesB X Y) := by
 
 /-- Compactness of candidates (in `BoundedContinuousFunction`s) follows. -/
 private theorem isCompact_candidatesB : IsCompact (candidatesB X Y) := by
-  refine arzela?_ascoli₂
+  refine arzela_ascoli₂
       (Icc 0 (maxVar X Y) : Set ℝ) isCompact_Icc (candidatesB X Y) closed_candidatesB _ _
   · rintro f ⟨x1, x2⟩ hf
     simp only [Set.mem_Icc]

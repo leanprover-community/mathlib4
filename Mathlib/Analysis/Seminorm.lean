@@ -553,7 +553,7 @@ noncomputable instance instSupSet : SupSet (Seminorm 𝕜 E) where
           · simp [Real.iSup_of_isEmpty]
           haveI : Nonempty ↑s := h.coe_sort
           simp only [iSup_apply]
-          refine ciSup?_le fun i =>
+          refine ciSup_le fun i =>
             ((i : Seminorm 𝕜 E).add_le' x y).trans <| add_le_add
               -- Porting note: `f` is provided to force `Subtype.val` to appear.
               -- A type ascription on `_` would have also worked, but would have been more verbose.

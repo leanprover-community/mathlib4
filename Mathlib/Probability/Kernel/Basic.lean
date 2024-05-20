@@ -228,7 +228,7 @@ protected theorem measurable_coe (κ : kernel α β) {s : Set β} (hs : Measurab
 lemma IsFiniteKernel.integrable (μ : Measure α) [IsFiniteMeasure μ]
     (κ : kernel α β) [IsFiniteKernel κ] {s : Set β} (hs : MeasurableSet s) :
     Integrable (fun x => (κ x s).toReal) μ := by
-  refine Integrable.mono' (integrable?_const (IsFiniteKernel.bound κ).toReal)
+  refine Integrable.mono' (integrable_const (IsFiniteKernel.bound κ).toReal)
     ((kernel.measurable_coe κ hs).ennreal_toReal.aestronglyMeasurable)
     (ae_of_all μ fun x => _)
   rw [Real.norm_eq_abs, abs_of_nonneg ENNReal.toReal_nonneg,
