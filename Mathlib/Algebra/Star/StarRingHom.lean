@@ -127,8 +127,7 @@ section Basic
 
 variable {A B : Type*} [Add A] [Add B] [Mul A] [Mul B] [Star A] [Star B]
 
-instance : EquivLike (A ≃⋆+* B) A B
-    where
+instance : EquivLike (A ≃⋆+* B) A B where
   coe f := f.toFun
   inv f := f.invFun
   left_inv f := f.left_inv
