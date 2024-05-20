@@ -363,7 +363,7 @@ theorem Pairwise.sublists' {R} :
   | _, @Pairwise.cons _ _ a l H₁ H₂ => by
     simp only [sublists'_cons, pairwise_append, pairwise_map, mem_sublists', mem_map, exists_imp,
       and_imp]
-    refine' ⟨H₂.sublists', H₂.sublists'.imp fun l₁ => Lex.cons l₁, _⟩
+    refine ⟨H₂.sublists', H₂.sublists'.imp fun l₁ => Lex.cons l₁, ?_⟩
     rintro l₁ sl₁ x l₂ _ rfl
     cases' l₁ with b l₁; · constructor
     exact Lex.rel (H₁ _ <| sl₁.subset <| mem_cons_self _ _)

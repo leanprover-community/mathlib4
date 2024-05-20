@@ -156,7 +156,7 @@ theorem TFAE_exists_lt_isLittleO_pow (f : ℕ → ℝ) (R : ℝ) :
   tfae_have 4 → 6
   · rintro ⟨a, ha, H⟩
     rcases bound_of_isBigO_nat_atTop H with ⟨C, hC₀, hC⟩
-    refine' ⟨a, ha, C, hC₀, fun n ↦ _⟩
+    refine ⟨a, ha, C, hC₀, fun n ↦ ?_⟩
     simpa only [Real.norm_eq_abs, abs_pow, abs_of_nonneg ha.1.le] using hC (pow_ne_zero n ha.1.ne')
   tfae_have 6 → 5
   · exact fun ⟨a, ha, C, H₀, H⟩ ↦ ⟨a, ha.2, C, Or.inl H₀, H⟩
@@ -649,7 +649,7 @@ theorem Monotone.cauchySeq_series_mul_of_tendsto_zero_of_bounded (hfa : Monotone
     tsub_zero]
   apply (NormedField.tendsto_zero_smul_of_tendsto_zero_of_bounded hf0
     ⟨b, eventually_map.mpr <| eventually_of_forall fun n ↦ hgb <| n + 1⟩).cauchySeq.add
-  refine' CauchySeq.neg _
+  refine CauchySeq.neg ?_
   refine' cauchySeq_range_of_norm_bounded _ _
     (fun n ↦ _ : ∀ n, ‖(f (n + 1) + -f n) • (Finset.range (n + 1)).sum z‖ ≤ b * |f (n + 1) - f n|)
   · simp_rw [abs_of_nonneg (sub_nonneg_of_le (hfa (Nat.le_succ _))), ← mul_sum]

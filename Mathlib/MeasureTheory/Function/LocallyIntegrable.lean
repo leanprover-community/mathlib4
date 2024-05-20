@@ -152,7 +152,7 @@ theorem locallyIntegrableOn_iff [LocallyCompactSpace X] [T2Space X] (hs : IsClos
           (hK.of_isClosed_subset (hs.inter hK.isClosed) (inter_subset_right _ _))⟩
   | inr hs =>
     obtain ⟨K, hK, h2K, h3K⟩ := exists_compact_subset hs hx
-    refine' ⟨K, _, hf K h3K hK⟩
+    refine ⟨K, ?_, hf K h3K hK⟩
     simpa only [IsOpen.nhdsWithin_eq hs hx, interior_eq_nhds'] using h2K
 #align measure_theory.locally_integrable_on_iff MeasureTheory.locallyIntegrableOn_iff
 
@@ -278,7 +278,7 @@ theorem Memℒp.locallyIntegrable [IsLocallyFiniteMeasure μ] {f : X → E} {p :
   intro x
   rcases μ.finiteAt_nhds x with ⟨U, hU, h'U⟩
   have : Fact (μ U < ⊤) := ⟨h'U⟩
-  refine' ⟨U, hU, _⟩
+  refine ⟨U, hU, ?_⟩
   rw [IntegrableOn, ← memℒp_one_iff_integrable]
   apply (hf.restrict U).memℒp_of_exponent_le hp
 
@@ -573,7 +573,7 @@ theorem Monotone.locallyIntegrable [IsLocallyFiniteMeasure μ] (hmono : Monotone
   obtain ⟨a, b, xab, hab, abU⟩ : ∃ a b : X, x ∈ Icc a b ∧ Icc a b ∈ 𝓝 x ∧ Icc a b ⊆ U :=
     exists_Icc_mem_subset_of_mem_nhds hU
   have ab : a ≤ b := xab.1.trans xab.2
-  refine' ⟨Icc a b, hab, _⟩
+  refine ⟨Icc a b, hab, ?_⟩
   exact
     (hmono.monotoneOn _).integrableOn_of_measure_ne_top (isLeast_Icc ab) (isGreatest_Icc ab)
       ((measure_mono abU).trans_lt h'U).ne measurableSet_Icc

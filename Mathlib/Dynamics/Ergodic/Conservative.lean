@@ -158,7 +158,7 @@ theorem ae_forall_image_mem_imp_frequently_image_mem (hf : Conservative f μ)
   refine' ae_all_iff.2 fun k => _
   refine' (hf.ae_mem_imp_frequently_image_mem (hf.measurable.iterate k hs)).mono fun x hx hk => _
   rw [← map_add_atTop_eq_nat k, frequently_map]
-  refine' (hx hk).mono fun n hn => _
+  refine (hx hk).mono fun n hn => ?_
   rwa [add_comm, iterate_add_apply]
 #align measure_theory.conservative.ae_forall_image_mem_imp_frequently_image_mem MeasureTheory.Conservative.ae_forall_image_mem_imp_frequently_image_mem
 
