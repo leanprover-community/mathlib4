@@ -271,8 +271,7 @@ theorem card_boundaries_eq_succ_length : c.boundaries.card = c.length + 1 := by 
 
 /-- To `c : Composition n`, one can associate a `CompositionAsSet n` by registering the leftmost
 point of each block, and adding a virtual point at the right of the last block. -/
-def toCompositionAsSet : CompositionAsSet n
-    where
+def toCompositionAsSet : CompositionAsSet n where
   boundaries := c.boundaries
   zero_mem := by
     simp only [boundaries, Finset.mem_univ, exists_prop_of_true, Finset.mem_map]
@@ -431,8 +430,7 @@ theorem invEmbedding_comp (i : Fin c.length) (j : Fin (c.blocksFun i)) :
 
 /-- Equivalence between the disjoint union of the blocks (each of them seen as
 `Fin (c.blocks_fun i)`) with `Fin n`. -/
-def blocksFinEquiv : (Σi : Fin c.length, Fin (c.blocksFun i)) ≃ Fin n
-    where
+def blocksFinEquiv : (Σi : Fin c.length, Fin (c.blocksFun i)) ≃ Fin n where
   toFun x := c.embedding x.1 x.2
   invFun j := ⟨c.index j, c.invEmbedding j⟩
   left_inv x := by
@@ -459,7 +457,7 @@ theorem blocksFun_congr {n₁ n₂ : ℕ} (c₁ : Composition n₁) (c₂ : Comp
 same sequence of blocks. -/
 theorem sigma_eq_iff_blocks_eq {c : Σn, Composition n} {c' : Σn, Composition n} :
     c = c' ↔ c.2.blocks = c'.2.blocks := by
-  refine' ⟨fun H => by rw [H], fun H => _⟩
+  refine ⟨fun H => by rw [H], fun H => ?_⟩
   rcases c with ⟨n, c⟩
   rcases c' with ⟨n', c'⟩
   have : n = n' := by rw [← c.blocks_sum, ← c'.blocks_sum, H]
@@ -773,8 +771,7 @@ Combinatorial viewpoints on compositions, seen as finite subsets of `Fin (n+1)` 
 
 /-- Bijection between compositions of `n` and subsets of `{0, ..., n-2}`, defined by
 considering the restriction of the subset to `{1, ..., n-1}` and shifting to the left by one. -/
-def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1))
-    where
+def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)) where
   toFun c :=
     { i : Fin (n - 1) |
         (⟨1 + (i : ℕ), by
@@ -946,7 +943,7 @@ theorem mem_boundaries_iff_exists_blocks_sum_take_eq {j : Fin (n + 1)} :
   · intro hj
     rcases (c.boundaries.orderIsoOfFin rfl).surjective ⟨j, hj⟩ with ⟨i, hi⟩
     rw [Subtype.ext_iff, Subtype.coe_mk] at hi
-    refine' ⟨i.1, i.2, _⟩
+    refine ⟨i.1, i.2, ?_⟩
     dsimp at hi
     rw [← hi, c.blocks_partial_sum i.2]
     rfl
@@ -1034,7 +1031,7 @@ theorem CompositionAsSet.toComposition_boundaries (c : CompositionAsSet n) :
     · simpa [c.card_boundaries_eq_succ_length] using i.2
     · simp [Composition.boundary, Composition.sizeUpTo, ← hi]
   · rintro ⟨i, i_lt, hi⟩
-    refine' ⟨i, by simp, _⟩
+    refine ⟨i, by simp, ?_⟩
     rw [c.card_boundaries_eq_succ_length] at i_lt
     simp [Composition.boundary, Nat.mod_eq_of_lt i_lt, Composition.sizeUpTo, hi]
 #align composition_as_set.to_composition_boundaries CompositionAsSet.toComposition_boundaries
@@ -1046,8 +1043,7 @@ theorem Composition.toCompositionAsSet_boundaries (c : Composition n) :
 #align composition.to_composition_as_set_boundaries Composition.toCompositionAsSet_boundaries
 
 /-- Equivalence between `Composition n` and `CompositionAsSet n`. -/
-def compositionEquiv (n : ℕ) : Composition n ≃ CompositionAsSet n
-    where
+def compositionEquiv (n : ℕ) : Composition n ≃ CompositionAsSet n where
   toFun c := c.toCompositionAsSet
   invFun c := c.toComposition
   left_inv c := by

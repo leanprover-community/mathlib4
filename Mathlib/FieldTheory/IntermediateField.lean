@@ -119,8 +119,8 @@ theorem mem_toSubfield (s : IntermediateField K L) (x : L) : x ∈ s.toSubfield 
 
 /-- Copy of an intermediate field with a new `carrier` equal to the old one. Useful to fix
 definitional equalities. -/
-protected def copy (S : IntermediateField K L) (s : Set L) (hs : s = ↑S) : IntermediateField K L
-    where
+protected def copy (S : IntermediateField K L) (s : Set L) (hs : s = ↑S) :
+    IntermediateField K L where
   toSubalgebra := S.toSubalgebra.copy s (hs : s = S.toSubalgebra.carrier)
   inv_mem' :=
     have hs' : (S.toSubalgebra.copy s hs).carrier = S.toSubalgebra.carrier := hs
@@ -559,7 +559,7 @@ theorem coe_isIntegral_iff {R : Type*} [CommRing R] [Algebra R K] [Algebra R L]
       IsScalarTower.algebraMap_eq, ← eval₂_eq_eval_map]
     exact hProot
   · obtain ⟨P, hPmo, hProot⟩ := h
-    refine' ⟨P, hPmo, _⟩
+    refine ⟨P, hPmo, ?_⟩
     rw [← aeval_def, aeval_coe, aeval_def, hProot, ZeroMemClass.coe_zero]
 #align intermediate_field.coe_is_integral_iff IntermediateField.coe_isIntegral_iff
 

@@ -1131,7 +1131,7 @@ theorem closure_induction' {p : ∀ x, x ∈ closure k → Prop}
     (mem : ∀ (x) (h : x ∈ k), p x (subset_closure h)) (one : p 1 (one_mem _))
     (mul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
     (inv : ∀ x hx, p x hx → p x⁻¹ (inv_mem hx)) {x} (hx : x ∈ closure k) : p x hx := by
-  refine' Exists.elim _ fun (hx : x ∈ closure k) (hc : p x hx) => hc
+  refine Exists.elim ?_ fun (hx : x ∈ closure k) (hc : p x hx) => hc
   exact
     closure_induction hx (fun x hx => ⟨_, mem x hx⟩) ⟨_, one⟩
       (fun x y ⟨hx', hx⟩ ⟨hy', hy⟩ => ⟨_, mul _ _ _ _ hx hy⟩) fun x ⟨hx', hx⟩ => ⟨_, inv _ _ hx⟩
@@ -1191,8 +1191,7 @@ variable (G)
 
 /-- `closure` forms a Galois insertion with the coercion to set. -/
 @[to_additive "`closure` forms a Galois insertion with the coercion to set."]
-protected def gi : GaloisInsertion (@closure G _) (↑)
-    where
+protected def gi : GaloisInsertion (@closure G _) (↑) where
   choice s _ := closure s
   gc s t := @closure_le _ _ t s
   le_l_u _s := subset_closure
@@ -3222,8 +3221,7 @@ See `MonoidHom.eq_liftOfRightInverse` for the uniqueness lemma.
             ∃!φ
       ```"]
 def liftOfRightInverse (hf : Function.RightInverse f_inv f) :
-    { g : G₁ →* G₃ // f.ker ≤ g.ker } ≃ (G₂ →* G₃)
-    where
+    { g : G₁ →* G₃ // f.ker ≤ g.ker } ≃ (G₂ →* G₃) where
   toFun g := f.liftOfRightInverseAux f_inv hf g.1 g.2
   invFun φ := ⟨φ.comp f, fun x hx => (mem_ker _).mpr <| by simp [(mem_ker _).mp hx]⟩
   left_inv g := by

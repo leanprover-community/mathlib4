@@ -550,7 +550,7 @@ theorem AffineBasis.convexHull_eq_nonneg_coord {ι : Type*} (b : AffineBasis ι 
       rw [b.tot]
       exact AffineSubspace.mem_top R E x
     obtain ⟨s, w, hw₁, rfl⟩ := (mem_affineSpan_iff_eq_affineCombination R E).mp hx'
-    refine' ⟨s, w, _, hw₁, rfl⟩
+    refine ⟨s, w, ?_, hw₁, rfl⟩
     intro i hi
     specialize hx i
     rw [b.coord_apply_combination_of_mem hi hw₁] at hx

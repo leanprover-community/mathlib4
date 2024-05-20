@@ -148,7 +148,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
       -- simp only [Finset.mem_range]
       -- linarith
       simpa only [Finset.mem_range, Nat.lt_add_one_iff]
-    refine' ⟨M⁻¹ * δ n, by positivity, fun i hi x => _⟩
+    refine ⟨M⁻¹ * δ n, by positivity, fun i hi x => ?_⟩
     calc
       ‖iteratedFDeriv ℝ i ((M⁻¹ * δ n) • g n) x‖ = ‖(M⁻¹ * δ n) • iteratedFDeriv ℝ i (g n) x‖ := by
         rw [iteratedFDeriv_const_smul_apply]; exact (g_smooth n).of_le le_top
@@ -504,7 +504,7 @@ end HelperDefinitions
 
 instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] : HasContDiffBump E := by
-  refine' ⟨⟨_⟩⟩
+  refine ⟨⟨?_⟩⟩
   borelize E
   have IR : ∀ R : ℝ, 1 < R → 0 < (R - 1) / (R + 1) := by intro R hR; apply div_pos <;> linarith
   exact
