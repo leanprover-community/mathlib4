@@ -148,7 +148,18 @@ exists_cfc_of_predicate := by
       have H := ha.compact_spectrum
       apply LinearMap.closedEmbedding_of_injective (𝕜 := ℝ) (E := C(spectrum ℝ a, ℝ))
                 (F := Matrix n n 𝕜) (f := ha.φ) hφ
-    · sorry--probably an easy lemma saying that *-homs preserve Hermitian elements...
+    · constructor
+      · conv_rhs => rw [ha.spectral_theorem]
+        congr!
+      · constructor
+        intro f
+        refine Set.ext ?h.right.right.left.h
+        intro x
+        constructor
+
+
+
+
 
 
 
