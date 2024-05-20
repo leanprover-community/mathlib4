@@ -118,7 +118,7 @@ def limitCone : Cone F where
 (Internal use only; use the limits API.)
 -/
 def limitConeIsLimit : IsLimit (limitCone.{v, w} F) := by
-  refine' IsLimit.ofFaithful (forget (ModuleCat R)) (Types.Small.limitConeIsLimit.{v, w} _)
+  refine IsLimit.ofFaithful (forget (ModuleCat R)) (Types.Small.limitConeIsLimit.{v, w} _?)
     (fun s => ⟨⟨(Types.Small.limitConeIsLimit.{v, w} _).lift
                 ((forget (ModuleCat R)).mapCone s), _⟩, _⟩)
     (fun s => rfl)

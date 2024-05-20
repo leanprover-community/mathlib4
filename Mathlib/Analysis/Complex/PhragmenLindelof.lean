@@ -283,7 +283,7 @@ theorem vertical_strip (hfd : DiffContOnCl ℂ f (re ⁻¹' Ioo a b))
     (hzb : re z ≤ b) : ‖f z‖ ≤ C := by
   suffices ‖f (z * I * -I)‖ ≤ C by simpa [mul_assoc] using this
   have H : MapsTo (· * -I) (im ⁻¹' Ioo a b) (re ⁻¹' Ioo a b) := fun z hz ↦ by simpa using hz
-  refine' horizontal_strip (f := fun z ↦ f (z * -I))
+  refine horizontal_?strip (f := fun z ↦ f (z * -I))
     (hfd.comp (differentiable_id.mul_const _).diffContOnCl H) _ (fun z hz => hle_a _ _)
     (fun z hz => hle_b _ _) _ _
   · rcases hB with ⟨c, hc, B, hO⟩
@@ -376,10 +376,10 @@ nonrec theorem quadrant_I (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Ioi 0))
     -- `f ∘ exp` with the same `c` and `B' = max B 0`.
     rw [sub_zero, div_div_cancel' Real.pi_pos.ne']
     rcases hB with ⟨c, hc, B, hO⟩
-    refine' ⟨c, hc, max B 0, _⟩
+    refine ⟨c, hc, max B 0, _?⟩
     rw [← comap_comap, comap_abs_atTop, comap_sup, inf_sup_right]
     -- We prove separately the estimates as `ζ.re → ∞` and as `ζ.re → -∞`
-    refine' IsBigO.sup _
+    refine IsBigO.sup _?
       ((hO.comp_tendsto <| tendsto_exp_comap_re_atTop.inf H.tendsto).trans <| .of_bound 1 _)
     · -- For the estimate as `ζ.re → -∞`, note that `f` is continuous within the first quadrant at
       -- zero, hence `f (exp ζ)` has a limit as `ζ.re → -∞`, `0 < ζ.im < π / 2`.

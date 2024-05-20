@@ -132,7 +132,7 @@ instance Bifunctor.flip : Bifunctor (flip F) where
 #align bifunctor.flip Bifunctor.flip
 
 instance LawfulBifunctor.flip [LawfulBifunctor F] : LawfulBifunctor (flip F) := by
-  refine' { .. } <;> intros <;> simp [bimap, functor_norm]
+  refine { .. } <;> intros <;> simp [bimap, functor_?norm]
 #align is_lawful_bifunctor.flip LawfulBifunctor.flip
 
 instance Sum.bifunctor : Bifunctor Sum where bimap := @Sum.map

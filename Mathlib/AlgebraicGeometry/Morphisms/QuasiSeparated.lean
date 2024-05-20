@@ -364,7 +364,7 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
   apply compact_open_induction_on (P := _) U hU
   · intro _ f x
     use 0, f
-    refine' @Subsingleton.elim _
+    refine @Subsingleton.elim _?
       (CommRingCat.subsingleton_of_isTerminal (X.sheaf.isTerminalOfEqEmpty _)) _ _
     erw [eq_bot_iff]
     exact X.basicOpen_le f
