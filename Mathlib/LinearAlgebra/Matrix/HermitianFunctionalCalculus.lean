@@ -153,10 +153,13 @@ exists_cfc_of_predicate := by
         congr!
       · constructor
         intro f
-        refine Set.ext ?h.right.right.left.h
-        intro x
+        rw [← ContinuousMap.spectrum_eq_range (𝕜 := ℝ) (X := spectrum ℝ a) f]
+        congr!
+        --apply AlgEquiv.spectrum_eq (f := ha.φ)
+        apply Set.eq_of_subset_of_subset
+        apply AlgHom.spectrum_apply_subset
         sorry
-        sorry
+      ·   sorry
 
 
 
