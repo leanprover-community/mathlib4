@@ -9,8 +9,8 @@ import Mathlib.Order.Basic
 /-!
 # Preorder and partial order on bundled homs
 
-In this file we define `LE`, `Preorder`, and `PartialOrder` instances
-on any type with `DFunLike` instance and appropriate instances on the codomains.
+In this file we provide a Prop-valued mixin stating that a `DFunLike` type is
+equipped with its pointwise order.
 -/
 
 namespace DFunLike

@@ -202,7 +202,7 @@ theorem cancel_left {g : β →Co γ} {f₁ f₂ : α →Co β} (hg : Injective 
 instance : Preorder (α →Co β) :=
   Preorder.lift ((↑) : (α →Co β) → α → β)
 
-instance : DFunLike.PointwiseLE (α →Co β) where
+instance instPointwiseLE : DFunLike.PointwiseLE (α →Co β) where
 
 end Preorder
 

@@ -40,7 +40,7 @@ variable [∀ i, LE (α i)] {f g : Π₀ i, α i}
 instance : LE (Π₀ i, α i) :=
   ⟨fun f g ↦ ∀ i, f i ≤ g i⟩
 
-instance : DFunLike.PointwiseLE (Π₀ i, α i) where
+instance instPointwiseLE : DFunLike.PointwiseLE (Π₀ i, α i) where
 
 lemma le_def : f ≤ g ↔ ∀ i, f i ≤ g i := Iff.rfl
 #align dfinsupp.le_def DFinsupp.le_def
