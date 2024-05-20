@@ -3,9 +3,9 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Group.OrderSynonym
 import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Group.Synonym
 import Mathlib.Order.PiLex
 
 /-!
