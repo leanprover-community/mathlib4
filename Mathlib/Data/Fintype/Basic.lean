@@ -3,7 +3,6 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Ring.Hom.Defs -- FIXME: This import is bogus
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.Fin.OrderHom
 import Mathlib.Data.List.FinRange
@@ -370,37 +369,6 @@ instance decidableEqEquivFintype [DecidableEq β] [Fintype α] : DecidableEq (α
 instance decidableEqEmbeddingFintype [DecidableEq β] [Fintype α] : DecidableEq (α ↪ β) := fun a b =>
   decidable_of_iff ((a : α → β) = b) Function.Embedding.coe_injective.eq_iff
 #align fintype.decidable_eq_embedding_fintype Fintype.decidableEqEmbeddingFintype
-
-@[to_additive]
-instance decidableEqOneHomFintype [DecidableEq β] [Fintype α] [One α] [One β] :
-    DecidableEq (OneHom α β) := fun a b =>
-  decidable_of_iff ((a : α → β) = b) (Injective.eq_iff DFunLike.coe_injective)
-#align fintype.decidable_eq_one_hom_fintype Fintype.decidableEqOneHomFintype
-#align fintype.decidable_eq_zero_hom_fintype Fintype.decidableEqZeroHomFintype
-
-@[to_additive]
-instance decidableEqMulHomFintype [DecidableEq β] [Fintype α] [Mul α] [Mul β] :
-    DecidableEq (α →ₙ* β) := fun a b =>
-  decidable_of_iff ((a : α → β) = b) (Injective.eq_iff DFunLike.coe_injective)
-#align fintype.decidable_eq_mul_hom_fintype Fintype.decidableEqMulHomFintype
-#align fintype.decidable_eq_add_hom_fintype Fintype.decidableEqAddHomFintype
-
-@[to_additive]
-instance decidableEqMonoidHomFintype [DecidableEq β] [Fintype α] [MulOneClass α] [MulOneClass β] :
-    DecidableEq (α →* β) := fun a b =>
-  decidable_of_iff ((a : α → β) = b) (Injective.eq_iff DFunLike.coe_injective)
-#align fintype.decidable_eq_monoid_hom_fintype Fintype.decidableEqMonoidHomFintype
-#align fintype.decidable_eq_add_monoid_hom_fintype Fintype.decidableEqAddMonoidHomFintype
-
-instance decidableEqMonoidWithZeroHomFintype [DecidableEq β] [Fintype α] [MulZeroOneClass α]
-    [MulZeroOneClass β] : DecidableEq (α →*₀ β) := fun a b =>
-  decidable_of_iff ((a : α → β) = b) (Injective.eq_iff DFunLike.coe_injective)
-#align fintype.decidable_eq_monoid_with_zero_hom_fintype Fintype.decidableEqMonoidWithZeroHomFintype
-
-instance decidableEqRingHomFintype [DecidableEq β] [Fintype α] [Semiring α] [Semiring β] :
-    DecidableEq (α →+* β) := fun a b =>
-  decidable_of_iff ((a : α → β) = b) (Injective.eq_iff RingHom.coe_inj)
-#align fintype.decidable_eq_ring_hom_fintype Fintype.decidableEqRingHomFintype
 
 end BundledHoms
 
@@ -1059,8 +1027,7 @@ variable (α)
 
 /-- The `αˣ` type is equivalent to a subtype of `α × α`. -/
 @[simps]
-def unitsEquivProdSubtype [Monoid α] : αˣ ≃ { p : α × α // p.1 * p.2 = 1 ∧ p.2 * p.1 = 1 }
-    where
+def unitsEquivProdSubtype [Monoid α] : αˣ ≃ { p : α × α // p.1 * p.2 = 1 ∧ p.2 * p.1 = 1 } where
   toFun u := ⟨(u, ↑u⁻¹), u.val_inv, u.inv_val⟩
   invFun p := Units.mk (p : α × α).1 (p : α × α).2 p.prop.1 p.prop.2
   left_inv _ := Units.ext rfl
@@ -1305,7 +1272,7 @@ theorem exists_seq_of_forall_finset_exists {α : Type*} (P : α → Prop) (r : �
         (Classical.choose_spec
             (h' (Finset.image (fun i : Fin n => f i) (Finset.univ : Finset (Fin n))))
             (by simp [IH'])).1
-    refine' ⟨f, A, fun m n hmn => _⟩
+    refine ⟨f, A, fun m n hmn => ?_⟩
     conv_rhs => rw [hf]
     rw [seqOfForallFinsetExistsAux]
     apply
@@ -1325,7 +1292,7 @@ theorem exists_seq_of_forall_finset_exists' {α : Type*} (P : α → Prop) (r : 
     [IsSymm α r] (h : ∀ s : Finset α, (∀ x ∈ s, P x) → ∃ y, P y ∧ ∀ x ∈ s, r x y) :
     ∃ f : ℕ → α, (∀ n, P (f n)) ∧ Pairwise fun m n => r (f m) (f n) := by
   rcases exists_seq_of_forall_finset_exists P r h with ⟨f, hf, hf'⟩
-  refine' ⟨f, hf, fun m n hmn => _⟩
+  refine ⟨f, hf, fun m n hmn => ?_⟩
   rcases lt_trichotomy m n with (h | rfl | h)
   · exact hf' m n h
   · exact (hmn rfl).elim

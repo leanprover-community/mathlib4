@@ -292,7 +292,7 @@ theorem exists_max_im : ∃ g : SL(2, ℤ), ∀ g' : SL(2, ℤ), (g' • z).im �
   obtain ⟨p, hp_coprime, hp⟩ :=
     Filter.Tendsto.exists_within_forall_le hs (tendsto_normSq_coprime_pair z)
   obtain ⟨g, -, hg⟩ := bottom_row_surj hp_coprime
-  refine' ⟨g, fun g' => _⟩
+  refine ⟨g, fun g' => ?_⟩
   rw [ModularGroup.im_smul_eq_div_normSq, ModularGroup.im_smul_eq_div_normSq,
     div_le_div_left]
   · simpa [← hg] using hp ((↑ₘg') 1) (bottom_row_coprime g')
@@ -310,7 +310,7 @@ theorem exists_row_one_eq_and_min_re {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0
     let ⟨x, hx⟩ := bottom_row_surj hcd
     ⟨⟨x, hx.2⟩⟩
   obtain ⟨g, hg⟩ := Filter.Tendsto.exists_forall_le (tendsto_abs_re_smul z hcd)
-  refine' ⟨g, g.2, _⟩
+  refine ⟨g, g.2, ?_⟩
   intro g1 hg1
   have : g1 ∈ (fun g : SL(2, ℤ) => (↑ₘg) 1) ⁻¹' {cd} := by
     rw [Set.mem_preimage, Set.mem_singleton_iff]
@@ -365,7 +365,7 @@ theorem exists_eq_T_zpow_of_c_eq_zero (hc : (↑ₘg) 1 0 = 0) :
 theorem g_eq_of_c_eq_one (hc : (↑ₘg) 1 0 = 1) : g = T ^ (↑ₘg) 0 0 * S * T ^ (↑ₘg) 1 1 := by
   have hg := g.det_coe.symm
   replace hg : (↑ₘg) 0 1 = (↑ₘg) 0 0 * (↑ₘg) 1 1 - 1 := by rw [det_fin_two, hc] at hg; linarith
-  refine' Subtype.ext _
+  refine Subtype.ext ?_
   conv_lhs => rw [Matrix.eta_fin_two (↑ₘg)]
   rw [hc, hg]
   simp only [coe_mul, coe_T_zpow, coe_S, mul_fin_two]
@@ -445,7 +445,7 @@ theorem exists_smul_mem_fd (z : ℍ) : ∃ g : SL(2, ℤ), g • z ∈ 𝒟 := b
   obtain ⟨g₀, hg₀⟩ := exists_max_im z
   -- then among those, minimize re
   obtain ⟨g, hg, hg'⟩ := exists_row_one_eq_and_min_re z (bottom_row_coprime g₀)
-  refine' ⟨g, _⟩
+  refine ⟨g, ?_⟩
   -- `g` has same max im property as `g₀`
   have hg₀' : ∀ g' : SL(2, ℤ), (g' • z).im ≤ (g • z).im := by
     have hg'' : (g • z).im = (g₀ • z).im := by
@@ -455,7 +455,7 @@ theorem exists_smul_mem_fd (z : ℍ) : ∃ g : SL(2, ℤ), g • z ∈ 𝒟 := b
   constructor
   · -- Claim: `1 ≤ ⇑norm_sq ↑(g • z)`. If not, then `S•g•z` has larger imaginary part
     contrapose! hg₀'
-    refine' ⟨S * g, _⟩
+    refine ⟨S * g, ?_⟩
     rw [mul_smul]
     exact im_lt_im_S_smul hg₀'
   · show |(g • z).re| ≤ 1 / 2

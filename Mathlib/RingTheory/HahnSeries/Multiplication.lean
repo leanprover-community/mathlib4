@@ -34,13 +34,13 @@ open BigOperators Pointwise
 
 noncomputable section
 
-variable {Γ R : Type*}
+variable {Γ Γ' R : Type*}
 
 section Multiplication
 
-variable [OrderedCancelAddCommMonoid Γ]
-
 namespace HahnSeries
+
+variable [Zero Γ] [PartialOrder Γ]
 
 instance [Zero R] [One R] : One (HahnSeries Γ R) :=
   ⟨single 0 1⟩
@@ -80,25 +80,34 @@ def HahnModule (Γ R V : Type*) [PartialOrder Γ] [Zero V] [SMul R V] :=
 
 namespace HahnModule
 
+section
+
+variable {Γ R V : Type*} [PartialOrder Γ] [Zero V] [SMul R V]
+
 /-- The casting function to the type synonym. -/
 def of {Γ : Type*} (R : Type*) {V : Type*} [PartialOrder Γ] [Zero V] [SMul R V] :
     HahnSeries Γ V ≃ HahnModule Γ R V := Equiv.refl _
 
 /-- Recursion principle to reduce a result about the synonym to the original type. -/
 @[elab_as_elim]
-def rec {Γ R V : Type*} [PartialOrder Γ] [Zero V] [SMul R V] {motive : HahnModule Γ R V → Sort*}
-    (h : ∀ x : HahnSeries Γ V, motive (of R x)) : ∀ x, motive x :=
+def rec {motive : HahnModule Γ R V → Sort*} (h : ∀ x : HahnSeries Γ V, motive (of R x)) :
+    ∀ x, motive x :=
   fun x => h <| (of R).symm x
 
 @[ext]
-theorem ext {Γ R V : Type*} [PartialOrder Γ] [Zero V] [SMul R V]
-    (x y : HahnModule Γ R V) (h : ((of R).symm x).coeff = ((of R).symm y).coeff) : x = y :=
+theorem ext (x y : HahnModule Γ R V) (h : ((of R).symm x).coeff = ((of R).symm y).coeff) : x = y :=
   (of R).symm.injective <| HahnSeries.coeff_inj.1 h
 
 variable {V : Type*} [AddCommMonoid V] [SMul R V]
 
 instance instAddCommMonoid : AddCommMonoid (HahnModule Γ R V) :=
   inferInstanceAs <| AddCommMonoid (HahnSeries Γ V)
+instance instBaseSMul {V} [Monoid R] [AddMonoid V] [DistribMulAction R V] :
+    SMul R (HahnModule Γ R V) :=
+  inferInstanceAs <| SMul R (HahnSeries Γ V)
+
+instance instBaseModule [Semiring R] [Module R V] : Module R (HahnModule Γ R V) :=
+  inferInstanceAs <| Module R (HahnSeries Γ V)
 
 @[simp] theorem of_zero : of R (0 : HahnSeries Γ V) = 0 := rfl
 @[simp] theorem of_add (x y : HahnSeries Γ V) : of R (x + y) = of R x + of R y := rfl
@@ -106,6 +115,10 @@ instance instAddCommMonoid : AddCommMonoid (HahnModule Γ R V) :=
 @[simp] theorem of_symm_zero : (of R).symm (0 : HahnModule Γ R V) = 0 := rfl
 @[simp] theorem of_symm_add (x y : HahnModule Γ R V) :
   (of R).symm (x + y) = (of R).symm x + (of R).symm y := rfl
+
+end
+
+variable {Γ R V : Type*} [OrderedCancelAddCommMonoid Γ] [AddCommMonoid V] [SMul R V]
 
 instance instSMul [Zero R] : SMul (HahnSeries Γ R) (HahnModule Γ R V) where
   smul x y := {
@@ -162,6 +175,8 @@ theorem smul_coeff_left [SMulWithZero R W] {x : HahnSeries Γ R}
   rw [hb.2 ⟨hb.1.2.1, hb.1.2.2⟩, zero_smul]
 
 end HahnModule
+
+variable [OrderedCancelAddCommMonoid Γ]
 
 namespace HahnSeries
 
@@ -392,7 +407,7 @@ instance {Γ} [LinearOrderedCancelAddCommMonoid Γ] [NonUnitalNonAssocSemiring R
     eq_zero_or_eq_zero_of_mul_eq_zero {x y} xy := by
       contrapose! xy
       rw [Ne, HahnSeries.ext_iff, Function.funext_iff, not_forall]
-      refine' ⟨x.order + y.order, _⟩
+      refine ⟨x.order + y.order, ?_⟩
       rw [mul_coeff_order_add_order x y, zero_coeff, mul_eq_zero]
       simp [coeff_order_ne_zero, xy]
 
@@ -449,7 +464,7 @@ variable [Semiring R]
 @[simp]
 theorem single_pow (a : Γ) (n : ℕ) (r : R) : single a r ^ n = single (n • a) (r ^ n) := by
   induction' n with n IH
-  · simp; rfl
+  · ext; simp only [pow_zero, one_coeff, zero_smul, single_coeff]
   · rw [pow_succ, pow_succ, IH, single_mul_single, succ_nsmul]
 
 end Semiring
@@ -601,11 +616,11 @@ instance [Nontrivial Γ] [Nontrivial R] : Nontrivial (Subalgebra R (HahnSeries �
   ⟨⟨⊥, ⊤, by
       rw [Ne, SetLike.ext_iff, not_forall]
       obtain ⟨a, ha⟩ := exists_ne (0 : Γ)
-      refine' ⟨single a 1, _⟩
+      refine ⟨single a 1, ?_⟩
       simp only [Algebra.mem_bot, not_exists, Set.mem_range, iff_true_iff, Algebra.mem_top]
       intro x
       rw [HahnSeries.ext_iff, Function.funext_iff, not_forall]
-      refine' ⟨a, _⟩
+      refine ⟨a, ?_⟩
       rw [single_coeff_same, algebraMap_apply, C_apply, single_coeff_of_ne ha]
       exact zero_ne_one⟩⟩
 

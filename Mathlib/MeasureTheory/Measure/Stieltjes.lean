@@ -3,7 +3,7 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov, Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 import Mathlib.Topology.Order.LeftRightLim
 
 #align_import measure_theory.measure.stieltjes from "leanprover-community/mathlib"@"20d5763051978e9bc6428578ed070445df6a18b3"
@@ -84,7 +84,7 @@ theorem iInf_rat_gt_eq (f : StieltjesFunction) (x : ℝ) :
     ⨅ r : { r' : ℚ // x < r' }, f r = f x := by
   rw [← iInf_Ioi_eq f x]
   refine' (Real.iInf_Ioi_eq_iInf_rat_gt _ _ f.mono).symm
-  refine' ⟨f x, fun y => _⟩
+  refine ⟨f x, fun y => ?_⟩
   rintro ⟨y, hy_mem, rfl⟩
   exact f.mono (le_of_lt hy_mem)
 #align stieltjes_function.infi_rat_gt_eq StieltjesFunction.iInf_rat_gt_eq
@@ -202,7 +202,7 @@ theorem length_subadditive_Icc_Ioo {a b : ℝ} {c d : ℕ → ℝ} (ss : Icc a b
     refine' le_trans _ (le_iSup _ hf.toFinset)
     exact this hf.toFinset _ (by simpa only [e] )
   clear ss b
-  refine' fun s => Finset.strongInductionOn s fun s IH b cv => _
+  refine fun s => Finset.strongInductionOn s fun s IH b cv => ?_
   rcases le_total b a with ab | ab
   · rw [ENNReal.ofReal_eq_zero.2 (sub_nonpos.2 (f.mono ab))]
     exact zero_le _
@@ -342,11 +342,10 @@ theorem borel_le_measurable : borel ℝ ≤ f.outer.caratheodory := by
 
 /-- The measure associated to a Stieltjes function, giving mass `f b - f a` to the
 interval `(a, b]`. -/
-protected irreducible_def measure : Measure ℝ :=
-  { toOuterMeasure := f.outer
-    m_iUnion := fun _s hs =>
-      f.outer.iUnion_eq_of_caratheodory fun i => f.borel_le_measurable _ (hs i)
-    trim_le := f.outer_trim.le }
+protected irreducible_def measure : Measure ℝ where
+  toOuterMeasure := f.outer
+  m_iUnion _s hs := f.outer.iUnion_eq_of_caratheodory fun i => f.borel_le_measurable _ (hs i)
+  trim_le := f.outer_trim.le
 #align stieltjes_function.measure StieltjesFunction.measure
 
 @[simp]

@@ -164,14 +164,6 @@ open IsLocalization Submonoid
 variable {R S : Type*} [CommRing R] [CommRing S] {I : Ideal R}
 variable (y : R) [Algebra R S] [IsLocalization.Away y S]
 
-theorem disjoint_powers_iff_not_mem (hI : I.IsRadical) :
-    Disjoint (Submonoid.powers y : Set R) ↑I ↔ y ∉ I.1 := by
-  refine'
-    ⟨fun h => Set.disjoint_left.1 h (mem_powers _), fun h => disjoint_iff.mpr (eq_bot_iff.mpr _)⟩
-  rintro x ⟨⟨n, rfl⟩, hx'⟩
-  exact h (hI <| mem_radical_of_pow_mem <| le_radical hx')
-#align ideal.disjoint_powers_iff_not_mem Ideal.disjoint_powers_iff_not_mem
-
 variable (S)
 
 /-- If `R` is a Jacobson ring, then maximal ideals in the localization at `y`
@@ -202,7 +194,7 @@ theorem isMaximal_iff_isMaximal_disjoint [H : IsJacobson R] (J : Ideal S) :
     · rwa [eq_top_iff, ← (IsLocalization.orderEmbedding (powers y) S).le_iff_le] at hJ
     · have := congr_arg (map (algebraMap R S)) (h.1.1.2 _ ⟨comap_mono (le_of_lt hI), ?_⟩)
       · rwa [map_comap (powers y) S I, map_top] at this
-      refine' fun hI' => hI.right _
+      refine fun hI' => hI.right ?_
       rw [← map_comap (powers y) S I, ← map_comap (powers y) S J]
       exact map_mono hI'
 #align ideal.is_maximal_iff_is_maximal_disjoint Ideal.isMaximal_iff_isMaximal_disjoint
@@ -242,8 +234,8 @@ theorem isJacobson_localization [H : IsJacobson R] : IsJacobson S := by
   refine' fun P' hP' => le_antisymm _ le_jacobson
   obtain ⟨hP', hPM⟩ := (IsLocalization.isPrime_iff_isPrime_disjoint (powers y) S P').mp hP'
   have hP := H.out hP'.isRadical
-  refine' (IsLocalization.map_comap (powers y) S P'.jacobson).ge.trans
-    ((map_mono _).trans (IsLocalization.map_comap (powers y) S P').le)
+  refine (IsLocalization.map_comap (powers y) S P'.jacobson).ge.trans
+    ((map_mono ?_).trans (IsLocalization.map_comap (powers y) S P').le)
   have : sInf { I : Ideal R | comap (algebraMap R S) P' ≤ I ∧ I.IsMaximal ∧ y ∉ I } ≤
       comap (algebraMap R S) P' := by
     intro x hx
@@ -499,7 +491,7 @@ theorem isMaximal_comap_C_of_isMaximal [Nontrivial R] (hP' : ∀ x : R, C x ∈ 
   suffices (⊥ : Ideal (Localization M)).IsMaximal by
     rw [← IsLocalization.comap_map_of_isPrime_disjoint M (Localization M) ⊥ bot_prime
       (disjoint_iff_inf_le.mpr fun x hx => hM (hx.2 ▸ hx.1))]
-    refine' ((isMaximal_iff_isMaximal_disjoint (Localization M) _ _).mp (by rwa [map_bot])).1
+    refine' ((isMaximal_iff_isMaximal_disjoint (Localization M) a _).mp (by rwa [map_bot])).1
   let M' : Submonoid (R[X] ⧸ P) := M.map φ
   have hM' : (0 : R[X] ⧸ P) ∉ M' := fun ⟨z, hz⟩ =>
     hM (quotientMap_injective (_root_.trans hz.2 φ.map_zero.symm) ▸ hz.1)
@@ -720,7 +712,7 @@ theorem comp_C_integral_of_surjective_of_jacobson {R : Type*} [CommRing R] [IsJa
     exact Function.Surjective.of_comp hf'
   rw [RingHom.comp_assoc] at this
   convert this
-  refine' RingHom.ext fun x => _
+  refine RingHom.ext fun x => ?_
   exact ((renameEquiv R e).commutes' x).symm
 set_option linter.uppercaseLean3 false in
 #align ideal.mv_polynomial.comp_C_integral_of_surjective_of_jacobson Ideal.MvPolynomial.comp_C_integral_of_surjective_of_jacobson

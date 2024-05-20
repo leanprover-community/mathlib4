@@ -185,8 +185,7 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
       · rcases ((nhdsWithin_hasBasis nhds_basis_closedBall _).tendsto_iff nhds_basis_closedBall).1
             (Hs x hx.2) _ (half_pos <| half_pos ε0) with ⟨δ₁, δ₁0, hδ₁⟩
         filter_upwards [Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, δ₁0⟩] with δ hδ y₁ hy₁ y₂ hy₂
-        have : closedBall x δ ∩ (Box.Icc I) ⊆ closedBall x δ₁ ∩ (Box.Icc I) :=
-          inter_subset_inter_left _ (closedBall_subset_closedBall hδ.2)
+        have : closedBall x δ ∩ (Box.Icc I) ⊆ closedBall x δ₁ ∩ (Box.Icc I) := by gcongr; exact hδ.2
         rw [← dist_eq_norm]
         calc
           dist (f y₁) (f y₂) ≤ dist (f y₁) (f x) + dist (f y₂) (f x) := dist_triangle_right _ _ _
@@ -244,7 +243,7 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
     rcases exists_pos_mul_lt ε0 (2 * c) with ⟨ε', ε'0, hlt⟩
     rcases (nhdsWithin_hasBasis nhds_basis_closedBall _).mem_iff.1
       ((Hd x hx).isLittleO.def ε'0) with ⟨δ, δ0, Hδ⟩
-    refine' ⟨δ, δ0, fun J hle hJδ hxJ hJc => _⟩
+    refine ⟨δ, δ0, fun J hle hJδ hxJ hJc => ?_⟩
     simp only [BoxAdditiveMap.volume_apply, Box.volume_apply, dist_eq_norm]
     refine' (norm_volume_sub_integral_face_upper_sub_lower_smul_le _
       (Hc.mono <| Box.le_iff_Icc.1 hle) hxJ ε'0 (fun y hy => Hδ _) (hJc rfl)).trans _

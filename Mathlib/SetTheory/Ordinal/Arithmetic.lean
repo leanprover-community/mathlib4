@@ -378,7 +378,7 @@ theorem bounded_singleton {r : α → α → Prop} [IsWellOrder α r] (hr : (typ
 theorem type_subrel_lt (o : Ordinal.{u}) :
     type (Subrel ((· < ·) : Ordinal → Ordinal → Prop) { o' : Ordinal | o' < o })
       = Ordinal.lift.{u + 1} o := by
-  refine' Quotient.inductionOn o _
+  refine Quotient.inductionOn o ?_
   rintro ⟨α, r, wo⟩; apply Quotient.sound
   -- Porting note: `symm; refine' [term]` → `refine' [term].symm`
   constructor; refine' ((RelIso.preimage Equiv.ulift r).trans (enumIso r).symm).symm
@@ -636,8 +636,7 @@ theorem one_add_of_omega_le {o} (h : ω ≤ o) : 1 + o = o := by
 
 /-- The multiplication of ordinals `o₁` and `o₂` is the (well founded) lexicographic order on
 `o₂ × o₁`. -/
-instance monoid : Monoid Ordinal.{u}
-    where
+instance monoid : Monoid Ordinal.{u} where
   mul a b :=
     Quotient.liftOn₂ a b
       (fun ⟨α, r, wo⟩ ⟨β, s, wo'⟩ => ⟦⟨β × α, Prod.Lex s r, inferInstance⟩⟧ :

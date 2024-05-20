@@ -146,13 +146,11 @@ namespace NonUnitalSubring
 def toSubsemigroup (s : NonUnitalSubring R) : Subsemigroup R :=
   { s.toNonUnitalSubsemiring.toSubsemigroup with carrier := s.carrier }
 
-instance : SetLike (NonUnitalSubring R) R
-    where
+instance : SetLike (NonUnitalSubring R) R where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
-instance : NonUnitalSubringClass (NonUnitalSubring R) R
-    where
+instance : NonUnitalSubringClass (NonUnitalSubring R) R where
   zero_mem s := s.zero_mem'
   add_mem {s} := s.add_mem'
   mul_mem {s} := s.mul_mem'
@@ -694,7 +692,7 @@ theorem closure_induction' {s : Set R} {p : closure s → Prop} (a : closure s)
     (add : ∀ x y, p x → p y → p (x + y)) (neg : ∀ x, p x → p (-x))
     (mul : ∀ x y, p x → p y → p (x * y)) : p a :=
   Subtype.recOn a fun b hb => by
-    refine' Exists.elim _ fun (hb : b ∈ closure s) (hc : p ⟨b, hb⟩) => hc
+    refine Exists.elim ?_ fun (hb : b ∈ closure s) (hc : p ⟨b, hb⟩) => hc
     refine'
       closure_induction hb (fun x hx => ⟨subset_closure hx, mem x hx⟩)
         ⟨zero_mem (closure s), zero⟩ _ _ _
@@ -768,8 +766,7 @@ def closureNonUnitalCommRingOfComm {R : Type u} [NonUnitalRing R] {s : Set R}
 variable (R)
 
 /-- `closure` forms a Galois insertion with the coercion to set. -/
-protected def gi : GaloisInsertion (@closure R _) SetLike.coe
-    where
+protected def gi : GaloisInsertion (@closure R _) SetLike.coe where
   choice s _ := closure s
   gc _s _t := closure_le
   le_l_u _s := subset_closure
