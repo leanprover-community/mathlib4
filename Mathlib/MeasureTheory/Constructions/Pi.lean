@@ -337,8 +337,8 @@ def FiniteSpanningSetsIn.pi {C : ∀ i, Set (Set (α i))}
     (Measure.pi μ).FiniteSpanningSetsIn (pi univ '' pi univ C) := by
   haveI := fun i => (hμ i).sigmaFinite
   haveI := Fintype.toEncodable ι
-  refine ⟨fun n => Set.pi univ fun i => (hμ i).set ((@decode (ι → ℕ) ?_ n).iget i),
-    fun n => _, fun n => _, _⟩ <;>
+  refine ⟨fun n => Set.pi univ fun i => (hμ i).set ((@decode (ι → ℕ) _ n).iget i),
+    fun n => ?_, fun n => ?_, ?_⟩ <;>
   -- TODO (kmill) If this let comes before the refine, while the noncomputability checker
   -- correctly sees this definition is computable, the Lean VM fails to see the binding is
   -- computationally irrelevant. The `noncomputable section` doesn't help because all it does

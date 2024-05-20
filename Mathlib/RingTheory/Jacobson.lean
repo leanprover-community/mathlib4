@@ -235,7 +235,7 @@ theorem isJacobson_localization [H : IsJacobson R] : IsJacobson S := by
   obtain ⟨hP', hPM⟩ := (IsLocalization.isPrime_iff_isPrime_disjoint (powers y) S P').mp hP'
   have hP := H.out hP'.isRadical
   refine (IsLocalization.map_comap (powers y) S P'.jacobson).ge.trans
-    ((map_mono _).trans (IsLocalization.map_comap (powers y) S P').le)
+    ((map_mono ?_).trans (IsLocalization.map_comap (powers y) S P').le)
   have : sInf { I : Ideal R | comap (algebraMap R S) P' ≤ I ∧ I.IsMaximal ∧ y ∉ I } ≤
       comap (algebraMap R S) P' := by
     intro x hx
