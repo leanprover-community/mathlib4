@@ -217,7 +217,7 @@ theorem openEmbedding_of_injective (hf : IsLocalHomeomorph f) (hi : f.Injective)
 /-- A bijective local homeomorphism is a homeomorphism. -/
 noncomputable def toHomeomorph_of_bijective (hf : IsLocalHomeomorph f) (hb : f.Bijective) :
     X ≃ₜ Y :=
-  .ofContinuousOpenEquiv (Equiv.ofBijective f hb) hf.continuous hf.isOpenMap
+  (Equiv.ofBijective f hb).toHomeomorphOfContinuousOpen hf.continuous hf.isOpenMap
 
 /-- Continuous local sections of a local homeomorphism are open embeddings. -/
 theorem openEmbedding_of_comp (hf : IsLocalHomeomorph g) (hgf : OpenEmbedding (g ∘ f))

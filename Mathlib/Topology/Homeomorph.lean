@@ -24,7 +24,7 @@ directions continuous. We denote homeomorphisms with the notation `≃ₜ`.
 # Main results
 
 * Pretty much every topological property is preserved under homeomorphisms.
-* `Homeomorph.ofContinuousOpenEquiv`: A continuous bijection that is
+* `Equiv.toHomeomorphOfContinuousOpen`: A continuous bijection that is
   an open map is a homeomorphism.
 
 -/

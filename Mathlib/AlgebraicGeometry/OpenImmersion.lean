@@ -436,10 +436,8 @@ theorem _root_.AlgebraicGeometry.isIso_iff_stalk_iso {X Y : Scheme.{u}} (f : X �
   · rintro ⟨h₁, h₂⟩
     convert_to
       IsIso
-        (TopCat.isoOfHomeo
-            (.ofContinuousOpenEquiv
-              (Equiv.ofBijective _ ⟨h₂.inj, (TopCat.epi_iff_surjective _).mp h₁⟩) h₂.continuous
-              h₂.isOpenMap)).hom
+        (TopCat.isoOfHomeo <| Equiv.ofBijective _ ⟨h₂.inj, (TopCat.epi_iff_surjective _).mp h₁⟩
+          |>.toHomeomorphOfContinuousOpen h₂.continuous h₂.isOpenMap).hom
     infer_instance
   · intro H; exact ⟨inferInstance, (TopCat.homeoOfIso (asIso f.1.base)).openEmbedding⟩
 #align algebraic_geometry.is_iso_iff_stalk_iso AlgebraicGeometry.isIso_iff_stalk_iso

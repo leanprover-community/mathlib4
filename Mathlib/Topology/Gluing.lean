@@ -537,11 +537,9 @@ set_option linter.uppercaseLean3 false in
 /-- The gluing of an open cover is homeomomorphic to the original space. -/
 def openCoverGlueHomeo (h : ⋃ i, (U i : Set α) = Set.univ) :
     (ofOpenSubsets U).toGlueData.glued ≃ₜ α :=
-  .ofContinuousOpenEquiv
-    (Equiv.ofBijective (fromOpenSubsetsGlue U)
-      ⟨fromOpenSubsetsGlue_injective U,
-        Set.range_iff_surjective.mp ((range_fromOpenSubsetsGlue U).symm ▸ h)⟩)
-    (fromOpenSubsetsGlue U).2 (fromOpenSubsetsGlue_isOpenMap U)
+  Equiv.ofBijective (fromOpenSubsetsGlue U) ⟨fromOpenSubsetsGlue_injective U,
+      Set.range_iff_surjective.mp ((range_fromOpenSubsetsGlue U).symm ▸ h)⟩
+    |>.toHomeomorphOfContinuousOpen (fromOpenSubsetsGlue U).2 (fromOpenSubsetsGlue_isOpenMap U)
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.open_cover_glue_homeo TopCat.GlueData.openCoverGlueHomeo
 
