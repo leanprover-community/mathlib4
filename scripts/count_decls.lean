@@ -18,22 +18,14 @@ namespace PeriodicReports
 open Lean Elab Meta
 
 /-- A structure to tally declaration types.
-* `dprop` are `def`s that are in `Prop`;
-* `dpred` are `def`s that are predicates;
-* `dtype` are `def`s that are types;
-* `ddata` are all remaining `def`s;
-* `thms`  are non-`def`s that are in `Prop`;
-* `preds` are non-`def`s that are predicates;
-* `types` are non-`def`s that are types;
-* `data` is everything else.
+* `props` are declarations that are in `Prop`;
+* `preds` are declarations that are predicates;
+* `types` are declarations that are types;
+* `defns` are all remaining declarations.
 -/
 structure Tally where
-  dprop : HashSet Name := {}
-  dtype : HashSet Name := {}
-  dpred : HashSet Name := {}
-  ddata : HashSet Name := {}
-  thms  : HashSet Name := {}
-  data  : HashSet Name := {}
+  props : HashSet Name := {}
+  defns : HashSet Name := {}
   preds : HashSet Name := {}
   types : HashSet Name := {}
 
@@ -50,69 +42,25 @@ def toString (t : Tally) : String :=
     let tot := h.toList.map (·.toString)
     String.intercalate ",\n" tot ++ ","
   s!"\
-  Theorems\n\
-  {print t.thms}\n\
-  Definitions:Data\n\
-  {print t.ddata}\n\
-  Data\n\
-  {print t.data}\n\
-  Definitions:Props\n\
-  {print t.dprop}\n\
-  Types\n\
-  {print t.types}\n\
-  Definitions:Types\n\
-  {print t.dtype}\n\
+  Propositions\n\
+  {print t.props}\n\
+  Definitions\n\
+  {print t.defns}\n\
   Predicates\n\
   {print t.preds}\n\
-  Definitions:Predicates\n\
-  {print t.dpred}"
-
-/-- `declKind` is the inductive enumerating the possibilities for a declaration. -/
-inductive declKind
-  /-- `dprop` is a `def` that is in `Prop` -/
-  | dprop
-  /-- `dpred` is a `def` that is predicates -/
-  | dpred
-  /-- `dtype` is a `def` that is types -/
-  | dtype
-  /-- `ddata` are all remaining `def`s -/
-  | ddata
-  /-- `thm` is non-`def` that is in `Prop` -/
-  | thm
-  /-- `pred` is non-`def` that is a predicate -/
-  | pred
-  /-- `type` is non-`def` that is a type -/
-  | type
-  /-- `data` is everything else -/
-  | data
-
-/-- `toDeclKind c` classifies the `ConstantInfo` `c` into its `declKind`. -/
-def toDeclKind (c : ConstantInfo) : MetaM declKind := do
-  let typ := c.type
-  if let .defnInfo .. := c then
-    if (← isProp typ) then return .dprop else
-    if typ.isType then return .dtype else
-    if typ.isSort then return .dpred
-    else return .ddata
-  else
-    if (← isProp typ) then return .thm else
-    if typ.isType then return .type else
-    if typ.isSort then return .pred
-    else return .data
+  Types\n\
+  {print t.types}"
 
 /-- Extend a `Tally` by the ConstantInfo `c`.  It is written to work with `Lean.SMap.foldM`. -/
 def updateTally (s : Tally) (_ : Name) (c : ConstantInfo) : MetaM Tally := do
   let n := c.name
   if c.isUnsafe || (← n.isBlackListed) then return s else
-  match ← toDeclKind c with
-    | .thm   => return {s with thms  := s.thms.insert n}
-    | .type  => return {s with types := s.types.insert n}
-    | .pred  => return {s with preds := s.preds.insert n}
-    | .data  => return {s with data  := s.data.insert n}
-    | .dprop => return {s with dprop := s.dprop.insert n}
-    | .dtype => return {s with dtype := s.dtype.insert n}
-    | .dpred => return {s with dpred := s.dpred.insert n}
-    | .ddata => return {s with ddata := s.ddata.insert n}
+  let typ := c.type
+  if ← isProp typ then return {s with props := s.props.insert n}
+  forallTelescopeReducing typ fun _ exp => do
+    if exp.isType then return {s with types := s.types.insert n}
+    if exp.isSort then return {s with preds := s.preds.insert n}
+    else               return {s with defns := s.defns.insert n}
 
 /-- `mkTally s` extends the `Tally` `s` using all the `ConstantInfos` in the environment. -/
 def mkTally (s : Tally) : MetaM Tally := do
