@@ -883,6 +883,103 @@ end LinearMap
 
 namespace LinearMap
 
+-- NOTE: the tunnel and tailing APIs are removed
+
+#noalign linear_map.tunnel_aux
+#noalign linear_map.tunnel_aux_injective
+#noalign linear_map.tunnel'
+#noalign linear_map.tunnel
+#noalign linear_map.tailing
+#noalign linear_map.tailing_linear_equiv
+#noalign linear_map.tailing_le_tunnel
+#noalign linear_map.tailing_disjoint_tunnel_succ
+#noalign linear_map.tailing_sup_tunnel_succ_le_tunnel
+#noalign linear_map.tailings
+#noalign linear_map.tailings_zero
+#noalign linear_map.tailings_succ
+#noalign linear_map.tailings_disjoint_tunnel
+#noalign linear_map.tailings_disjoint_tailing
+
+/-!
+
+## Iterate maps and comaps of submodules
+
+Some preliminary work for establishing the strong rank condition for noetherian rings.
+
+Given two linear maps `f i : M →ₗ[R] M₂` and a submodule `K : Submodule R M`, we can define
+`iterateMapComapAux f i n K : Submodule R M` to be `f⁻¹(i(⋯(f⁻¹(i(K)))))` (`n` times).
+If `f(K) ≤ i(K)`, then this sequence is non-decreasing (`iterateMapComap f i K`).
+If moreover `f` is surjective, `i` is injective, there exists some `n` such that
+`iterateMapComapAux f i n K = iterateMapComapAux f i (n + 1) K`,
+then the kernel of `f` is contained in `K`. As a special case, if one can take `K` to be zero,
+then `f` is injective. This is the key result for establishing the strong rank condition
+for noetherian rings.
+
+The construction here is adapted from the proof in Djoković's paper
+*Epimorphisms of modules which must be isomorphisms* [djokovic1973].
+
+-/
+
+noncomputable section IterateMapComap
+
+open Function Submodule
+
+variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M₂] [Module R M₂]
+  (f i : M →ₗ[R] M₂)
+
+/-- The `iterateMapComapAux f i n K : Submodule R M` is `f⁻¹(i(⋯(f⁻¹(i(K)))))` (`n` times). -/
+def iterateMapComapAux (n : ℕ) := (fun K : Submodule R M ↦ (K.map i).comap f)^[n]
+
+/-- If `f(K) ≤ i(K)`, then `iterateMapComapAux` is not decreasing. -/
+theorem iterateMapComapAux_le_succ (n : ℕ) (K : Submodule R M)
+    (h : K.map f ≤ K.map i) : f.iterateMapComapAux i n K ≤ f.iterateMapComapAux i (n + 1) K := by
+  nth_rw 2 [iterateMapComapAux]
+  rw [iterate_succ', Function.comp_apply, ← iterateMapComapAux, ← map_le_iff_le_comap]
+  induction n with
+  | zero => exact h
+  | succ n ih =>
+    simp_rw [iterateMapComapAux, iterate_succ', Function.comp_apply]
+    calc
+      _ ≤ (f.iterateMapComapAux i n K).map i := map_comap_le _ _
+      _ ≤ (((f.iterateMapComapAux i n K).map f).comap f).map i := map_mono (le_comap_map _ _)
+      _ ≤ _ := map_mono (comap_mono ih)
+
+/-- If `f(K) ≤ i(K)`, then `iterateMapComapAux` is not decreasing. -/
+@[simps]
+def iterateMapComap (K : Submodule R M) (h : K.map f ≤ K.map i) : ℕ →o Submodule R M where
+  toFun n := f.iterateMapComapAux i n K
+  monotone' := monotone_nat_of_le_succ fun n ↦ iterateMapComapAux_le_succ f i n K h
+
+/-- If `iterateMapComapAux f i 0 K < iterateMapComapAux f i 1 K`, `f` is surjective,
+`i` is injective, then `iterateMapComapAux` is strictly increasing. -/
+theorem iterateMapComapAux_lt_succ (n : ℕ) (K : Submodule R M)
+    (h : f.iterateMapComapAux i 0 K < f.iterateMapComapAux i 1 K)
+    (hf : Surjective f) (hi : Injective i) :
+    f.iterateMapComapAux i n K < f.iterateMapComapAux i (n + 1) K := by
+  induction n with
+  | zero => exact h
+  | succ n ih =>
+    refine Ne.lt_of_le (fun H ↦ ?_)
+      (iterateMapComapAux_le_succ f i (n + 1) K (map_le_iff_le_comap.2 h.le))
+    rw [iterateMapComapAux, iterateMapComapAux, iterate_succ', iterate_succ'] at H
+    exact ih.ne (map_injective_of_injective hi (comap_injective_of_surjective hf H))
+
+/-- If `f(K) ≤ i(K)`, `f` is surjective, `i` is injective, there exists some `n` such that
+`iterateMapComapAux f i n K = iterateMapComapAux f i (n + 1) K`,
+then the kernel of `f` is contained in `K`. As a special case, if one can take `K` to be zero,
+then `f` is injective. This is the key result for establishing the strong rank condition
+for noetherian rings. -/
+theorem ker_le_of_iterateMapComapAux_eq (n : ℕ) (K : Submodule R M)
+    (h : K.map f ≤ K.map i) (heq : f.iterateMapComapAux i n K = f.iterateMapComapAux i (n + 1) K)
+    (hf : Surjective f) (hi : Injective i) : LinearMap.ker f ≤ K := fun x hx ↦ by
+  by_contra hx'
+  refine (iterateMapComapAux_lt_succ f i n K ?_ hf hi).ne heq
+  refine Ne.lt_of_le (fun H ↦ ?_) (map_le_iff_le_comap.1 h)
+  simp_rw [iterateMapComapAux, iterate_zero_apply, iterate_one] at H
+  exact (H ▸ hx') (f.ker_le_comap hx)
+
+end IterateMapComap
+
 section Graph
 
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommGroup M₃] [AddCommGroup M₄]

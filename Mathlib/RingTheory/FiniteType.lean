@@ -715,7 +715,7 @@ This is a consequence of Noetherian case
 (`IsNoetherian.injective_of_surjective_of_injective`), which requires that `M` is a
 Noetherian module, but allows `R` to be non-commutative. The proof of this result from
 Noetherian case is adapted from <https://math.stackexchange.com/a/1066110>.
-See also Orzech's original paper: *Onto endomorphisms are isomorphisms*. -/
+See also Orzech's original paper: *Onto endomorphisms are isomorphisms* [orzech1971]. -/
 theorem Module.Finite.injective_of_surjective_of_injective
     {R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [Module.Finite R M]
     [AddCommGroup N] [Module R N] (i f : N →ₗ[R] M)
@@ -791,7 +791,7 @@ end Orzech
 section Vasconcelos
 
 /-- A theorem/proof by Vasconcelos, given a finite module `M` over a commutative ring, any
-surjective endomorphism of `M` is also injective. The original proof is based on
+surjective endomorphism of `M` is also injective. The original proof was based on
 <https://math.stackexchange.com/a/239419/31917> and
 <https://www.ams.org/journals/tran/1969-138-00/S0002-9947-1969-0238839-5/>;
 now it is a corollary of `Module.Finite.injective_of_surjective_of_injective`.
