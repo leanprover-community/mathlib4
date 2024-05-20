@@ -3,11 +3,8 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Group.OrderSynonym
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Order.WellFounded
-import Mathlib.Mathport.Notation
+import Mathlib.Tactic.Common
 
 #align_import data.pi.lex from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 
@@ -31,6 +28,7 @@ Related files are:
 * `Data.Prod.Lex`: Lexicographic order on `α × β`.
 -/
 
+assert_not_exists Monoid
 
 variable {ι : Type*} {β : ι → Type*} (r : ι → ι → Prop) (s : ∀ {i}, β i → β i → Prop)
 
@@ -218,43 +216,6 @@ instance [LinearOrder ι] [IsWellOrder ι (· < ·)] [Nonempty ι] [∀ i, Parti
   ⟨fun a =>
     let ⟨_, hb⟩ := exists_lt (ofLex a)
     ⟨_, toLex_strictMono hb⟩⟩
-
-section OrderedMonoid
-
-variable [LinearOrder ι]
-
-@[to_additive]
-instance Lex.orderedCancelCommMonoid [∀ i, OrderedCancelCommMonoid (β i)] :
-    OrderedCancelCommMonoid (Lex (∀ i, β i)) where
-  mul_le_mul_left _ _ hxy z :=
-    hxy.elim (fun hxyz => hxyz ▸ le_rfl) fun ⟨i, hi⟩ =>
-      Or.inr ⟨i, fun j hji => congr_arg (z j * ·) (hi.1 j hji), mul_lt_mul_left' hi.2 _⟩
-  le_of_mul_le_mul_left _ _ _ hxyz :=
-    hxyz.elim (fun h => (mul_left_cancel h).le) fun ⟨i, hi⟩ =>
-      Or.inr ⟨i, fun j hj => (mul_left_cancel <| hi.1 j hj), lt_of_mul_lt_mul_left' hi.2⟩
-
-@[to_additive]
-instance Lex.orderedCommGroup [∀ i, OrderedCommGroup (β i)] :
-    OrderedCommGroup (Lex (∀ i, β i)) where
-  mul_le_mul_left _ _ := mul_le_mul_left'
-#align pi.lex.ordered_comm_group Pi.Lex.orderedCommGroup
-#align pi.lex.ordered_add_comm_group Pi.Lex.orderedAddCommGroup
-
-@[to_additive]
-noncomputable instance Lex.linearOrderedCancelCommMonoid [IsWellOrder ι (· < ·)]
-    [∀ i, LinearOrderedCancelCommMonoid (β i)] :
-    LinearOrderedCancelCommMonoid (Lex (∀ i, β i)) where
-  __ : LinearOrder (Lex (∀ i, β i)) := inferInstance
-  __ : OrderedCancelCommMonoid (Lex (∀ i, β i)) := inferInstance
-
-@[to_additive]
-noncomputable instance Lex.linearOrderedCommGroup [IsWellOrder ι (· < ·)]
-    [∀ i, LinearOrderedCommGroup (β i)] :
-    LinearOrderedCommGroup (Lex (∀ i, β i)) where
-  __ : LinearOrder (Lex (∀ i, β i)) := inferInstance
-  mul_le_mul_left _ _ := mul_le_mul_left'
-
-end OrderedMonoid
 
 /-- If we swap two strictly decreasing values in a function, then the result is lexicographically
 smaller than the original function. -/
