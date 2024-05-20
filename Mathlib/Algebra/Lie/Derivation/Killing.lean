@@ -23,7 +23,7 @@ Killing form, the range of the adjoint action is full,
 Killing form, any derivation is an inner derivation.
 -/
 
-namespace LieDerivation.Killing
+namespace LieDerivation.IsKilling
 
 section
 

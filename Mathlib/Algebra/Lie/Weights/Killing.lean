@@ -3,8 +3,11 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Algebra.Lie.Derivation.Killing
 import Mathlib.Algebra.Lie.Killing
 import Mathlib.Algebra.Lie.Weights.Chain
+import Mathlib.LinearAlgebra.Eigenspace.Semisimple
+import Mathlib.LinearAlgebra.JordanChevalley
 
 /-!
 # Roots of Lie algebras with non-degenerate Killing forms
@@ -17,6 +20,8 @@ forms.
    a Lie algebra is non-singular, it remains non-singular when restricted to a Cartan subalgebra.
  * `LieAlgebra.IsKilling.instIsLieAbelianOfIsCartanSubalgebra`: if the Killing form of a Lie
    algebra is non-singular, then its Cartan subalgebras are Abelian.
+ * `LieAlgebra.IsKilling.isSemisimple_ad_of_mem_isCartanSubalgebra`: over a perfect field, if a Lie
+   algebra has non-degenerate Killing form, Cartan subalgebras contain only semisimple elements.
  * `LieAlgebra.IsKilling.span_weight_eq_top`: given a splitting Cartan subalgebra `H` of a
    finite-dimensional Lie algebra with non-singular Killing form, the corresponding roots span the
    dual space of `H`.
@@ -115,17 +120,88 @@ lemma mem_ker_killingForm_of_mem_rootSpace_of_forall_rootSpace_neg
   rw [LinearMap.mem_ker]
   ext y
   have hy : y ∈ ⨆ β, rootSpace H β := by simp [iSup_weightSpace_eq_top K H L]
-  induction hy using LieSubmodule.iSup_induction'
-  · next β y hy =>
+  induction hy using LieSubmodule.iSup_induction' with
+  | hN β y hy =>
     by_cases hαβ : α + β = 0
     · exact hx' _ (add_eq_zero_iff_neg_eq.mp hαβ ▸ hy)
     · exact killingForm_apply_eq_zero_of_mem_rootSpace_of_add_ne_zero K L H hx hy hαβ
-  · simp
-  · simp_all
+  | h0 => simp
+  | hadd => simp_all
 
 namespace IsKilling
 
 variable [IsKilling K L]
+
+/-- If a Lie algebra `L` has non-degenerate Killing form, the only element of a Cartan subalgebra
+whose adjoint action on `L` is nilpotent, is the zero element.
+
+Over a perfect field a much stronger result is true, see
+`LieAlgebra.IsKilling.isSemisimple_ad_of_mem_isCartanSubalgebra`. -/
+lemma eq_zero_of_isNilpotent_ad_of_mem_isCartanSubalgebra {x : L} (hx : x ∈ H)
+    (hx' : _root_.IsNilpotent (ad K L x)) : x = 0 := by
+  suffices ⟨x, hx⟩ ∈ LinearMap.ker (traceForm K H L) by simpa using this
+  simp only [LinearMap.mem_ker]
+  ext y
+  have comm : Commute (toEndomorphism K H L ⟨x, hx⟩) (toEndomorphism K H L y) := by
+    rw [commute_iff_lie_eq, ← LieHom.map_lie, trivial_lie_zero, LieHom.map_zero]
+  rw [traceForm_apply_apply, ← LinearMap.mul_eq_comp, LinearMap.zero_apply]
+  exact (LinearMap.isNilpotent_trace_of_isNilpotent (comm.isNilpotent_mul_left hx')).eq_zero
+
+open Module.End in
+lemma isSemisimple_ad_of_mem_isCartanSubalgebra [PerfectField K] {x : L} (hx : x ∈ H) :
+    (ad K L x).IsSemisimple := by
+  /- Using Jordan-Chevalley, write `ad K L x` as a sum of its semisimple and nilpotent parts. -/
+  obtain ⟨N, -, S, hS₀, hN, hS, hSN⟩ := (ad K L x).exists_isNilpotent_isSemisimple
+  replace hS₀ : Commute (ad K L x) S := Algebra.commute_of_mem_adjoin_self hS₀
+  set x' : H := ⟨x, hx⟩
+  rw [eq_sub_of_add_eq hSN.symm] at hN
+  /- Note that the semisimple part `S` is just a scalar action on each root space. -/
+  have aux {α : H → K} {y : L} (hy : y ∈ rootSpace H α) : S y = α x' • y := by
+    replace hy : y ∈ (ad K L x).maximalGeneralizedEigenspace (α x') :=
+      (weightSpace_le_weightSpaceOf L x' α) hy
+    rw [maximalGeneralizedEigenspace_eq] at hy
+    set k := maximalGeneralizedEigenspaceIndex (ad K L x) (α x')
+    rw [apply_eq_of_mem_genEigenspace_of_comm_of_isSemisimple_of_isNilpotent_sub hy hS₀ hS hN]
+  /- So `S` obeys the derivation axiom if we restrict to root spaces. -/
+  have h_der (y z : L) (α β : H → K) (hy : y ∈ rootSpace H α) (hz : z ∈ rootSpace H β) :
+      S ⁅y, z⁆ = ⁅S y, z⁆ + ⁅y, S z⁆ := by
+    have hyz : ⁅y, z⁆ ∈ rootSpace H (α + β) :=
+      mapsTo_toEndomorphism_weightSpace_add_of_mem_rootSpace K L H L α β hy hz
+    rw [aux hy, aux hz, aux hyz, smul_lie, lie_smul, ← add_smul, ← Pi.add_apply]
+  /- Thus `S` is a derivation since root spaces span. -/
+  replace h_der (y z : L) : S ⁅y, z⁆ = ⁅S y, z⁆ + ⁅y, S z⁆ := by
+    have hy : y ∈ ⨆ α : H → K, rootSpace H α := by simp [iSup_weightSpace_eq_top]
+    have hz : z ∈ ⨆ α : H → K, rootSpace H α := by simp [iSup_weightSpace_eq_top]
+    induction hy using LieSubmodule.iSup_induction'
+    · induction hz using LieSubmodule.iSup_induction'
+      · next α y hy β z hz => exact h_der y z α β hy hz
+      · simp
+      · next h h' => simp only [lie_add, map_add, h, h']; abel
+    · simp
+    · next h h' => simp only [add_lie, map_add, h, h']; abel
+  /- An equivalent form of the derivation axiom used in `LieDerivation`. -/
+  replace h_der : ∀ y z : L, S ⁅y, z⁆ = ⁅y, S z⁆ - ⁅z, S y⁆ := by
+    simp_rw [← lie_skew (S _) _, add_comm, ← sub_eq_add_neg] at h_der; assumption
+  /- Bundle `S` as a `LieDerivation`. -/
+  let S' : LieDerivation K L L := ⟨S, h_der⟩
+  /- Since `L` has non-degenerate Killing form, `S` must be inner, corresponding to some `y : L`. -/
+  obtain ⟨y, hy⟩ := LieDerivation.IsKilling.exists_eq_ad S'
+  /- `y` commutes with all elements of `H` because `S` has eigenvalue 0 on `H`, `S = ad K L y`. -/
+  have hy' (z : L) (hz : z ∈ H) : ⁅y, z⁆ = 0 := by
+    rw [← LieSubalgebra.mem_toLieSubmodule, ← rootSpace_zero_eq] at hz
+    simp [← ad_apply (R := K), ← LieDerivation.coe_ad_apply_eq_ad_apply, hy, aux hz]
+  /- Thus `y` belongs to `H` since `H` is self-normalizing. -/
+  replace hy' : y ∈ H := by
+    suffices y ∈ H.normalizer by rwa [LieSubalgebra.IsCartanSubalgebra.self_normalizing] at this
+    exact (H.mem_normalizer_iff y).mpr fun z hz ↦ hy' z hz ▸ LieSubalgebra.zero_mem H
+  /- It suffices to show `x = y` since `S = ad K L y` is semisimple. -/
+  suffices x = y by rwa [this, ← LieDerivation.coe_ad_apply_eq_ad_apply y, hy]
+  rw [← sub_eq_zero]
+  /- This will follow if we can show that `ad K L (x - y)` is nilpotent. -/
+  apply eq_zero_of_isNilpotent_ad_of_mem_isCartanSubalgebra K L H (H.sub_mem hx hy')
+  /- Which is true because `ad K L (x - y) = N`. -/
+  replace hy : S = ad K L y := by rw [← LieDerivation.coe_ad_apply_eq_ad_apply y, hy]
+  rwa [LieHom.map_sub, hSN, hy, add_sub_cancel_right, eq_sub_of_add_eq hSN.symm]
 
 variable {K L} in
 /-- The restriction of the Killing form to a Cartan subalgebra, as a linear equivalence to the

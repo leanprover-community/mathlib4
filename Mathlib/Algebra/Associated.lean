@@ -3,7 +3,13 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
 -/
-import Mathlib.Algebra.Parity
+import Mathlib.Algebra.Group.Even
+import Mathlib.Algebra.GroupWithZero.Divisibility
+import Mathlib.Algebra.GroupWithZero.Hom
+import Mathlib.Algebra.Group.Commute.Units
+import Mathlib.Algebra.Group.Units.Hom
+import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+import Mathlib.Algebra.Ring.Units
 
 #align_import algebra.associated from "leanprover-community/mathlib"@"2f3994e1b117b1e1da49bcfb67334f33460c3ce4"
 
@@ -1034,7 +1040,7 @@ theorem mk_le_mk_of_dvd {a b : α} : a ∣ b → Associates.mk a ≤ Associates.
 theorem mk_le_mk_iff_dvd {a b : α} : Associates.mk a ≤ Associates.mk b ↔ a ∣ b := mk_dvd_mk
 #align associates.mk_le_mk_iff_dvd_iff Associates.mk_le_mk_iff_dvd
 
-@[deprecated] alias mk_le_mk_iff_dvd_iff := mk_le_mk_iff_dvd
+@[deprecated (since := "2024-03-16")] alias mk_le_mk_iff_dvd_iff := mk_le_mk_iff_dvd
 
 @[simp]
 theorem isPrimal_mk {a : α} : IsPrimal (Associates.mk a) ↔ IsPrimal a := by
@@ -1044,7 +1050,7 @@ theorem isPrimal_mk {a : α} : IsPrimal (Associates.mk a) ↔ IsPrimal a := by
     exact ⟨a₁, a₂ * u, h₁, Units.mul_right_dvd.mpr h₂, mul_assoc _ _ _⟩
   · exact ⟨a₁, a₂, h₁, h₂, congr_arg _ eq⟩
 
-@[deprecated] alias isPrimal_iff := isPrimal_mk -- 2024-03-16
+@[deprecated (since := "2024-03-16")] alias isPrimal_iff := isPrimal_mk
 
 @[simp]
 theorem decompositionMonoid_iff : DecompositionMonoid (Associates α) ↔ DecompositionMonoid α := by

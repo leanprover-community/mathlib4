@@ -95,8 +95,7 @@ class IsFiltered extends IsFilteredOrEmpty C : Prop where
 #align category_theory.is_filtered CategoryTheory.IsFiltered
 
 instance (priority := 100) isFilteredOrEmpty_of_semilatticeSup (α : Type u) [SemilatticeSup α] :
-    IsFilteredOrEmpty α
-    where
+    IsFilteredOrEmpty α where
   cocone_objs X Y := ⟨X ⊔ Y, homOfLE le_sup_left, homOfLE le_sup_right, trivial⟩
   cocone_maps X Y f g := ⟨Y, 𝟙 _, by
     apply ULift.ext
