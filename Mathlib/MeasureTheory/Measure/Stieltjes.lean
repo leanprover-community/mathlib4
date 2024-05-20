@@ -328,7 +328,7 @@ theorem outer_trim : f.outer.trim = f.outer := by
   apply iInf_le_of_le (iUnion g) _
   apply iInf_le_of_le (ht.trans <| iUnion_mono fun i => (hg i).1) _
   apply iInf_le_of_le (MeasurableSet.iUnion fun i => (hg i).2.1) _
-  exact le_trans (f.outer.iUnion _) (ENNReal.tsum_le_tsum fun i => (hg i).2.2)
+  exact le_trans (measure_iUnion_le _) (ENNReal.tsum_le_tsum fun i => (hg i).2.2)
 #align stieltjes_function.outer_trim StieltjesFunction.outer_trim
 
 theorem borel_le_measurable : borel ℝ ≤ f.outer.caratheodory := by
