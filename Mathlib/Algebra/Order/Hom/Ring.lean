@@ -326,7 +326,7 @@ instance [Preorder β] : Preorder (OrderRingHom α β) :=
 instance instPointwiseLE [Preorder β] : DFunLike.PointwiseLE (OrderRingHom α β) where
 
 instance [PartialOrder β] : PartialOrder (OrderRingHom α β) :=
-  DFunLike.instPartialOrder
+  DFunLike.toPartialOrder
 
 end OrderRingHom
 

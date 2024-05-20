@@ -84,7 +84,7 @@ lemma coe_strictMono : Monotone (Finsupp.toFun : (ι →₀ α) → ι → α) :
 end Preorder
 
 instance instPartialOrder [PartialOrder α] : PartialOrder (ι →₀ α) :=
-  DFunLike.instPartialOrder
+  DFunLike.toPartialOrder
 
 instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (ι →₀ α) :=
   { instPartialOrder with

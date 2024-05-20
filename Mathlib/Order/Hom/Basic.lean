@@ -294,7 +294,7 @@ instance : Preorder (α →o β) :=
 instance : DFunLike.PointwiseLE (α →o β) where
 
 instance {β : Type*} [PartialOrder β] : PartialOrder (α →o β) :=
-  DFunLike.instPartialOrder
+  DFunLike.toPartialOrder
 
 theorem le_def {f g : α →o β} : f ≤ g ↔ ∀ x, f x ≤ g x :=
   Iff.rfl

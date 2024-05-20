@@ -207,6 +207,6 @@ instance instPointwiseLE : DFunLike.PointwiseLE (α →Co β) where
 end Preorder
 
 instance [PartialOrder β] : PartialOrder (α →Co β) :=
-  DFunLike.instPartialOrder
+  DFunLike.toPartialOrder
 
 end ContinuousOrderHom

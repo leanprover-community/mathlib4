@@ -316,7 +316,7 @@ instance instPreorder [Preorder β] [Top β] : Preorder (TopHom α β) :=
   Preorder.lift (DFunLike.coe : TopHom α β → α → β)
 
 instance instPartialOrder [PartialOrder β] [Top β] : PartialOrder (TopHom α β) :=
-  DFunLike.instPartialOrder
+  DFunLike.toPartialOrder
 
 section OrderTop
 
@@ -514,7 +514,7 @@ instance instPreorder [Preorder β] [Bot β] : Preorder (BotHom α β) :=
   Preorder.lift (DFunLike.coe : BotHom α β → α → β)
 
 instance instPartialOrder [PartialOrder β] [Bot β] : PartialOrder (BotHom α β) :=
-  DFunLike.instPartialOrder
+  DFunLike.toPartialOrder
 
 section OrderBot
 
