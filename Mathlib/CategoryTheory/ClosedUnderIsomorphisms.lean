@@ -44,6 +44,9 @@ variable {P} in
 lemma mem_isoClosure {X Y : C} (h : P X) (e : X ⟶ Y) [IsIso e] : isoClosure P Y :=
   ⟨X, h, ⟨(asIso e).symm⟩⟩
 
+lemma subset_isoClosure : P ≤ isoClosure P :=
+  fun X hX => ⟨X, hX, ⟨Iso.refl X⟩⟩
+
 lemma le_isoClosure : P ≤ isoClosure P :=
   fun X hX => ⟨X, hX, ⟨Iso.refl X⟩⟩
 

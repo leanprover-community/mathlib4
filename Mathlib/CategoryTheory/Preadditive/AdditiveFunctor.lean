@@ -111,6 +111,9 @@ lemma additive_of_iso {G : C ⥤ D} (e : F ≅ G) : G.Additive := by
   simp only [← NatIso.naturality_1 e (f + g), map_add, Preadditive.add_comp,
     NatTrans.naturality, Preadditive.comp_add, Iso.inv_hom_id_app_assoc]
 
+lemma additive_iff_of_iso {G : C ⥤ D} (e : F ≅ G) : F.Additive ↔ G.Additive :=
+  ⟨fun _ => additive_of_iso e, fun _ => additive_of_iso e.symm⟩
+
 variable (F)
 
 lemma additive_of_full_essSurj_comp [Full F] [EssSurj F] (G : D ⥤ E)
@@ -132,6 +135,11 @@ lemma additive_of_comp_faithful
     F.Additive where
   map_add {_ _ f₁ f₂} := G.map_injective (by
     rw [← Functor.comp_map, G.map_add, (F ⋙ G).map_add, Functor.comp_map, Functor.comp_map])
+
+open ZeroObject Limits in
+lemma hasZeroObject_of_additive [HasZeroObject C] :
+    HasZeroObject D where
+  zero := ⟨F.obj 0, by rw [IsZero.iff_id_eq_zero, ← F.map_id, id_zero, F.map_zero]⟩
 
 end
 
