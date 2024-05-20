@@ -3,6 +3,7 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
+import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Data.Set.Function
 import Mathlib.Logic.Pairwise
@@ -17,8 +18,7 @@ imports.
 -/
 
 assert_not_exists AddMonoidWithOne
--- TODO (after #11855)
--- assert_not_exists MulZeroClass
+assert_not_exists MonoidWithZero
 
 universe u v w
 

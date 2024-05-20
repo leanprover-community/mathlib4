@@ -3,7 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.BigOperators.List.Basic
+import Mathlib.Algebra.BigOperators.Group.List
 import Mathlib.Data.Vector
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.OfFn
@@ -78,7 +78,7 @@ theorem exists_eq_cons (v : Vector α n.succ) : ∃ (a : α) (as : Vector α n),
 
 @[simp]
 theorem toList_ofFn : ∀ {n} (f : Fin n → α), toList (ofFn f) = List.ofFn f
-  | 0, f => rfl
+  | 0, f => by rw [ofFn, List.ofFn_zero, toList, nil]
   | n + 1, f => by rw [ofFn, List.ofFn_succ, toList_cons, toList_ofFn]
 #align vector.to_list_of_fn Vector.toList_ofFn
 

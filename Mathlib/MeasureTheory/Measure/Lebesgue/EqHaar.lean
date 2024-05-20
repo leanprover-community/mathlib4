@@ -8,6 +8,7 @@ import Mathlib.MeasureTheory.Group.Pointwise
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.MeasureTheory.Measure.Haar.Basic
 import Mathlib.MeasureTheory.Measure.Doubling
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
 
 #align_import measure_theory.measure.lebesgue.eq_haar from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -377,8 +378,7 @@ theorem addHaar_preimage_smul {r : ℝ} (hr : r ≠ 0) (s : Set E) :
     μ ((r • ·) ⁻¹' s) = Measure.map (r • ·) μ s :=
       ((Homeomorph.smul (isUnit_iff_ne_zero.2 hr).unit).toMeasurableEquiv.map_apply s).symm
     _ = ENNReal.ofReal (abs (r ^ finrank ℝ E)⁻¹) * μ s := by
-      rw [map_addHaar_smul μ hr, smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply,
-        smul_eq_mul]
+      rw [map_addHaar_smul μ hr, coe_smul, Pi.smul_apply, smul_eq_mul]
 #align measure_theory.measure.add_haar_preimage_smul MeasureTheory.Measure.addHaar_preimage_smul
 
 /-- Rescaling a set by a factor `r` multiplies its measure by `abs (r ^ dim)`. -/
@@ -650,13 +650,9 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero_aux1 (s : Set E) (x : E)
         (eventually_of_forall fun b => zero_le _)
     filter_upwards [self_mem_nhdsWithin]
     rintro r (rpos : 0 < r)
-    apply mul_le_mul_right' (measure_mono (inter_subset_inter_right _ _)) _
-    intro y hy
-    have : y - x ∈ r • closedBall (0 : E) 1 := by
-      apply smul_set_mono t_bound
-      simpa [neg_add_eq_sub] using hy
-    simpa only [smul_closedBall _ _ zero_le_one, Real.norm_of_nonneg rpos.le,
-      mem_closedBall_iff_norm, mul_one, sub_zero, smul_zero]
+    rw [← affinity_unitClosedBall rpos.le, singleton_add, ← image_vadd]
+    gcongr
+    exact smul_set_mono t_bound
   have B :
     Tendsto (fun r : ℝ => μ (closedBall x r) / μ ({x} + r • u)) (𝓝[>] 0)
       (𝓝 (μ (closedBall x 1) / μ ({x} + u))) := by
@@ -771,14 +767,13 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero (s : Set E) (x : E)
           μ (s ∩ ({x} + r • (t ∩ closedBall 0 n)) ∪ s ∩ ({x} + r • (t \ closedBall 0 n))) :=
         by rw [← inter_union_distrib_left, ← add_union, ← smul_set_union, inter_union_diff]
       _ ≤ μ (s ∩ ({x} + r • (t ∩ closedBall 0 n))) + μ (s ∩ ({x} + r • (t \ closedBall 0 n))) :=
-        (measure_union_le _ _)
-      _ ≤ μ (s ∩ ({x} + r • (t ∩ closedBall 0 n))) + μ ({x} + r • (t \ closedBall 0 n)) :=
-        add_le_add le_rfl (measure_mono (inter_subset_right _ _))
+        measure_union_le _ _
+      _ ≤ μ (s ∩ ({x} + r • (t ∩ closedBall 0 n))) + μ ({x} + r • (t \ closedBall 0 n)) := by
+        gcongr; apply inter_subset_right
   calc
     μ (s ∩ ({x} + r • t)) / μ ({x} + r • t) ≤
         (μ (s ∩ ({x} + r • (t ∩ closedBall 0 n))) + μ ({x} + r • (t \ closedBall 0 n))) /
-          μ ({x} + r • t) :=
-      mul_le_mul_right' I _
+          μ ({x} + r • t) := by gcongr
     _ < ε / 2 + ε / 2 := by
       rw [ENNReal.add_div]
       apply ENNReal.add_lt_add hr _
@@ -853,8 +848,9 @@ theorem tendsto_addHaar_inter_smul_one_of_density_one (s : Set E) (x : E)
       tendsto_addHaar_inter_smul_one_of_density_one_aux μ _ (measurableSet_toMeasurable _ _) _ _
         t ht h't h''t
     apply tendsto_of_tendsto_of_tendsto_of_le_of_le' h tendsto_const_nhds
-    · refine' eventually_of_forall fun r => mul_le_mul_right' _ _
-      exact measure_mono (inter_subset_inter_left _ (subset_toMeasurable _ _))
+    · refine eventually_of_forall fun r ↦ ?_
+      gcongr
+      apply subset_toMeasurable
     · filter_upwards [self_mem_nhdsWithin]
       rintro r -
       apply ENNReal.div_le_of_le_mul

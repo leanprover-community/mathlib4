@@ -518,8 +518,7 @@ theorem coe_vadd (f : E →ₗ[R] F) (g : E →ₗ.[R] F) : ⇑(f +ᵥ g) = ⇑(
   rfl
 #align linear_pmap.coe_vadd LinearPMap.coe_vadd
 
-instance instAddAction : AddAction (E →ₗ[R] F) (E →ₗ.[R] F)
-    where
+instance instAddAction : AddAction (E →ₗ[R] F) (E →ₗ.[R] F) where
   vadd := (· +ᵥ ·)
   zero_vadd := fun ⟨_s, _f⟩ => ext' <| zero_add _
   add_vadd := fun _f₁ _f₂ ⟨_s, _g⟩ => ext' <| LinearMap.ext fun _x => add_assoc _ _ _
@@ -699,8 +698,7 @@ end LinearMap
 namespace LinearPMap
 
 /-- Restrict codomain of a `LinearPMap` -/
-def codRestrict (f : E →ₗ.[R] F) (p : Submodule R F) (H : ∀ x, f x ∈ p) : E →ₗ.[R] p
-    where
+def codRestrict (f : E →ₗ.[R] F) (p : Submodule R F) (H : ∀ x, f x ∈ p) : E →ₗ.[R] p where
   domain := f.domain
   toFun := f.toFun.codRestrict p H
 #align linear_pmap.cod_restrict LinearPMap.codRestrict
@@ -952,8 +950,8 @@ theorem le_graph_iff {f g : E →ₗ.[R] F} : f.graph ≤ g.graph ↔ f ≤ g :=
 theorem eq_of_eq_graph {f g : E →ₗ.[R] F} (h : f.graph = g.graph) : f = g := by
   -- Porting note: `ext` → `refine ext ..`
   refine ext (Submodule.ext fun x => ?_) (fun x y h' => ?_)
-  exact mem_domain_iff_of_eq_graph h
-  exact (le_of_le_graph h.le).2 h'
+  · exact mem_domain_iff_of_eq_graph h
+  · exact (le_of_le_graph h.le).2 h'
 #align linear_pmap.eq_of_eq_graph LinearPMap.eq_of_eq_graph
 
 end Graph
@@ -1015,8 +1013,7 @@ open scoped Classical in
 
 In the case that the submodule is not a graph of a `LinearPMap` then the underlying linear map
 is just the zero map. -/
-noncomputable def toLinearPMap (g : Submodule R (E × F)) : E →ₗ.[R] F
-    where
+noncomputable def toLinearPMap (g : Submodule R (E × F)) : E →ₗ.[R] F where
   domain := g.map (LinearMap.fst R E F)
   toFun := if hg : ∀ (x : E × F) (_hx : x ∈ g) (_hx' : x.fst = 0), x.snd = 0 then
     g.toLinearPMapAux hg else 0
