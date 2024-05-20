@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Data.Finset.Sym
-import Mathlib.Data.Nat.Parity
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Positivity.Finset

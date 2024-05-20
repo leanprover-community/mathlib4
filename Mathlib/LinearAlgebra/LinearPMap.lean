@@ -518,8 +518,7 @@ theorem coe_vadd (f : E →ₗ[R] F) (g : E →ₗ.[R] F) : ⇑(f +ᵥ g) = ⇑(
   rfl
 #align linear_pmap.coe_vadd LinearPMap.coe_vadd
 
-instance instAddAction : AddAction (E →ₗ[R] F) (E →ₗ.[R] F)
-    where
+instance instAddAction : AddAction (E →ₗ[R] F) (E →ₗ.[R] F) where
   vadd := (· +ᵥ ·)
   zero_vadd := fun ⟨_s, _f⟩ => ext' <| zero_add _
   add_vadd := fun _f₁ _f₂ ⟨_s, _g⟩ => ext' <| LinearMap.ext fun _x => add_assoc _ _ _
@@ -699,8 +698,7 @@ end LinearMap
 namespace LinearPMap
 
 /-- Restrict codomain of a `LinearPMap` -/
-def codRestrict (f : E →ₗ.[R] F) (p : Submodule R F) (H : ∀ x, f x ∈ p) : E →ₗ.[R] p
-    where
+def codRestrict (f : E →ₗ.[R] F) (p : Submodule R F) (H : ∀ x, f x ∈ p) : E →ₗ.[R] p where
   domain := f.domain
   toFun := f.toFun.codRestrict p H
 #align linear_pmap.cod_restrict LinearPMap.codRestrict
@@ -927,7 +925,7 @@ theorem le_of_le_graph {f g : E →ₗ.[R] F} (h : f.graph ≤ g.graph) : f ≤ 
     exact h hx
   rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
   rw [image_iff]
-  refine' h _
+  refine h ?_
   simp only [Submodule.coe_mk] at hxy
   rw [hxy] at hx
   rw [← image_iff hx]
@@ -941,7 +939,7 @@ theorem le_graph_of_le {f g : E →ₗ.[R] F} (h : f ≤ g) : f.graph ≤ g.grap
   use ⟨y, h.1 y.2⟩
   simp only [hx, Submodule.coe_mk, eq_self_iff_true, true_and_iff]
   convert hx.2 using 1
-  refine' (h.2 _).symm
+  refine (h.2 ?_).symm
   simp only [hx.1, Submodule.coe_mk]
 #align linear_pmap.le_graph_of_le LinearPMap.le_graph_of_le
 
@@ -1015,8 +1013,7 @@ open scoped Classical in
 
 In the case that the submodule is not a graph of a `LinearPMap` then the underlying linear map
 is just the zero map. -/
-noncomputable def toLinearPMap (g : Submodule R (E × F)) : E →ₗ.[R] F
-    where
+noncomputable def toLinearPMap (g : Submodule R (E × F)) : E →ₗ.[R] F where
   domain := g.map (LinearMap.fst R E F)
   toFun := if hg : ∀ (x : E × F) (_hx : x ∈ g) (_hx' : x.fst = 0), x.snd = 0 then
     g.toLinearPMapAux hg else 0

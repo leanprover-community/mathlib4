@@ -1570,6 +1570,15 @@ theorem Disjoint.preimage (f : α → β) {s t : Set β} (h : Disjoint s t) :
   disjoint_iff_inf_le.mpr fun _ hx => h.le_bot hx
 #align disjoint.preimage Disjoint.preimage
 
+lemma Codisjoint.preimage (f : α → β) {s t : Set β} (h : Codisjoint s t) :
+    Codisjoint (f ⁻¹' s) (f ⁻¹' t) := by
+  simp only [codisjoint_iff_le_sup, Set.sup_eq_union, top_le_iff, ← Set.preimage_union] at h ⊢
+  rw [h]; rfl
+
+lemma IsCompl.preimage (f : α → β) {s t : Set β} (h : IsCompl s t) :
+    IsCompl (f ⁻¹' s) (f ⁻¹' t) :=
+  ⟨h.1.preimage f, h.2.preimage f⟩
+
 namespace Set
 
 theorem disjoint_image_image {f : β → α} {g : γ → α} {s : Set β} {t : Set γ}

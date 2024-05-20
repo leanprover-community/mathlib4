@@ -3,7 +3,7 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Multiset.Basic
+import Mathlib.Algebra.BigOperators.Group.Multiset
 import Mathlib.Algebra.Order.BigOperators.Group.List
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Data.List.MinMax
@@ -15,6 +15,10 @@ import Mathlib.Data.Multiset.Fold
 This file contains the results concerning the interaction of multiset big operators with ordered
 groups.
 -/
+
+assert_not_exists Ring
+-- TODO: After #12974,
+-- assert_not_exists MonoidWithZero
 
 variable {ι α β : Type*}
 
