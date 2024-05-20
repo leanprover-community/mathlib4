@@ -111,7 +111,7 @@ theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
         set g2 : { x // x ≠ i1 } → V := fun x => g x • (p x -ᵥ p i1)
         have hf2g2 : ∀ x : { x // x ≠ i1 }, f2 x = g2 x := by
           simp only [g2, hf2def]
-          refine' fun x => _
+          refine fun x => ?_
           rw [hfg]
         rw [Finset.weightedVSub_eq_weightedVSubOfPoint_of_sum_eq_zero s2 f p hf (p i1),
           Finset.weightedVSubOfPoint_insert, Finset.weightedVSubOfPoint_apply,
@@ -526,7 +526,7 @@ theorem weightedVSub_mem_vectorSpan_pair {p : ι → P} (h : AffineIndependent k
   rw [mem_vectorSpan_pair]
   refine' ⟨fun h => _, fun h => _⟩
   · rcases h with ⟨r, hr⟩
-    refine' ⟨r, fun i hi => _⟩
+    refine ⟨r, fun i hi => ?_⟩
     rw [s.affineCombination_vsub, ← s.weightedVSub_const_smul, ← sub_eq_zero, ← map_sub] at hr
     have hw' : (∑ j in s, (r • (w₁ - w₂) - w) j) = 0 := by
       simp_rw [Pi.sub_apply, Pi.smul_apply, Pi.sub_apply, smul_sub, Finset.sum_sub_distrib, ←
@@ -535,7 +535,7 @@ theorem weightedVSub_mem_vectorSpan_pair {p : ι → P} (h : AffineIndependent k
     rw [eq_comm, ← sub_eq_zero, ← smul_eq_mul]
     exact hr'
   · rcases h with ⟨r, hr⟩
-    refine' ⟨r, _⟩
+    refine ⟨r, ?_⟩
     let w' i := r * (w₁ i - w₂ i)
     change ∀ i ∈ s, w i = w' i at hr
     rw [s.weightedVSub_congr hr fun _ _ => rfl, s.affineCombination_vsub, ←

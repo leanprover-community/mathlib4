@@ -445,7 +445,7 @@ theorem exists_Icc_mem_subset_of_mem_nhds {a : α} {s : Set α} (hs : s ∈ 𝓝
     ⟨b, hba, hb_nhds, hbs⟩
   rcases exists_Icc_mem_subset_of_mem_nhdsWithin_Ici (nhdsWithin_le_nhds hs) with
     ⟨c, hac, hc_nhds, hcs⟩
-  refine' ⟨b, c, ⟨hba, hac⟩, _⟩
+  refine ⟨b, c, ⟨hba, hac⟩, ?_⟩
   rw [← Icc_union_Icc_eq_Icc hba hac, ← nhds_left_sup_nhds_right]
   exact ⟨union_mem_sup hb_nhds hc_nhds, union_subset hbs hcs⟩
 #align exists_Icc_mem_subset_of_mem_nhds exists_Icc_mem_subset_of_mem_nhds

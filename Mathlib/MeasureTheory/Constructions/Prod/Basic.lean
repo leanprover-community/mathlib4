@@ -274,8 +274,8 @@ lemma measurableEmbedding_prod_mk_right [MeasurableSingletonClass α] (x : α) :
 theorem Measurable.lintegral_prod_right' [SFinite ν] :
     ∀ {f : α × β → ℝ≥0∞}, Measurable f → Measurable fun x => ∫⁻ y, f (x, y) ∂ν := by
   have m := @measurable_prod_mk_left
-  refine' Measurable.ennreal_induction (P := fun f => Measurable fun (x : α) => ∫⁻ y, f (x, y) ∂ν)
-    _ _ _
+  refine Measurable.ennreal_induction (P := fun f => Measurable fun (x : α) => ∫⁻ y, f (x, y) ∂ν)
+    ?_ ?_ ?_
   · intro c s hs
     simp only [← indicator_comp_right]
     suffices Measurable fun x => c * ν (Prod.mk x ⁻¹' s) by simpa [lintegral_indicator _ (m hs)]
@@ -349,15 +349,15 @@ do not need the sets to be measurable. -/
 @[simp]
 theorem prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν t := by
   apply le_antisymm
-  · set ST := toMeasurable μ s ×ˢ toMeasurable ν t
-    have hSTm : MeasurableSet ST :=
+  · set S := toMeasurable μ s
+    set T := toMeasurable ν t
+    have hSTm : MeasurableSet (S ×ˢ T) :=
       (measurableSet_toMeasurable _ _).prod (measurableSet_toMeasurable _ _)
     calc
-      μ.prod ν (s ×ˢ t) ≤ μ.prod ν ST :=
-        measure_mono <| Set.prod_mono (subset_toMeasurable _ _) (subset_toMeasurable _ _)
-      _ = μ (toMeasurable μ s) * ν (toMeasurable ν t) := by
+      μ.prod ν (s ×ˢ t) ≤ μ.prod ν (S ×ˢ T) := by gcongr <;> apply subset_toMeasurable
+      _ = μ S * ν T := by
         rw [prod_apply hSTm]
-        simp_rw [ST, mk_preimage_prod_right_eq_if, measure_if,
+        simp_rw [mk_preimage_prod_right_eq_if, measure_if,
           lintegral_indicator _ (measurableSet_toMeasurable _ _), lintegral_const,
           restrict_apply_univ, mul_comm]
       _ = μ s * ν t := by rw [measure_toMeasurable, measure_toMeasurable]
@@ -370,7 +370,7 @@ theorem prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν 
     set s' : Set α := { x | ν t ≤ f x }
     have hss' : s ⊆ s' := fun x hx => measure_mono fun y hy => hST <| mk_mem_prod hx hy
     calc
-      μ s * ν t ≤ μ s' * ν t := mul_le_mul_right' (measure_mono hss') _
+      μ s * ν t ≤ μ s' * ν t := by gcongr
       _ = ∫⁻ _ in s', ν t ∂μ := by rw [set_lintegral_const, mul_comm]
       _ ≤ ∫⁻ x in s', f x ∂μ := set_lintegral_mono measurable_const hfm fun x => id
       _ ≤ ∫⁻ x, f x ∂μ := lintegral_mono' restrict_le_self le_rfl
@@ -432,7 +432,7 @@ instance prod.instIsFiniteMeasureOnCompacts {α β : Type*} [TopologicalSpace α
     {mα : MeasurableSpace α} {mβ : MeasurableSpace β} (μ : Measure α) (ν : Measure β)
     [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts ν] [SFinite ν] :
     IsFiniteMeasureOnCompacts (μ.prod ν) := by
-  refine' ⟨fun K hK => _⟩
+  refine ⟨fun K hK => ?_⟩
   set L := (Prod.fst '' K) ×ˢ (Prod.snd '' K) with hL
   have : K ⊆ L := by
     rintro ⟨x, y⟩ hxy
@@ -490,7 +490,7 @@ theorem measure_ae_null_of_prod_null {s : Set (α × β)} (h : μ.prod ν s = 0)
 
 theorem AbsolutelyContinuous.prod [SFinite ν'] (h1 : μ ≪ μ') (h2 : ν ≪ ν') :
     μ.prod ν ≪ μ'.prod ν' := by
-  refine' AbsolutelyContinuous.mk fun s hs h2s => _
+  refine AbsolutelyContinuous.mk fun s hs h2s => ?_
   rw [measure_prod_null hs] at h2s ⊢
   exact (h2s.filter_mono h1.ae_le).mono fun _ h => h2 h
 #align measure_theory.measure.absolutely_continuous.prod MeasureTheory.Measure.AbsolutelyContinuous.prod
@@ -533,8 +533,7 @@ lemma set_prod_ae_eq {s s' : Set α} {t t' : Set β} (hs : s =ᵐ[μ] s') (ht : 
 lemma measure_prod_compl_eq_zero {s : Set α} {t : Set β}
     (s_ae_univ : μ sᶜ = 0) (t_ae_univ : ν tᶜ = 0) :
     μ.prod ν (s ×ˢ t)ᶜ = 0 := by
-  rw [Set.compl_prod_eq_union]
-  apply le_antisymm ((measure_union_le _ _).trans _) (zero_le _)
+  rw [Set.compl_prod_eq_union, measure_union_null_iff]
   simp [s_ae_univ, t_ae_univ]
 
 lemma _root_.MeasureTheory.NullMeasurableSet.prod {s : Set α} {t : Set β}
@@ -878,8 +877,8 @@ theorem prod_of_right {f : α × β → γ} {μ : Measure α} {ν : Measure β} 
     (hf : Measurable f) [SFinite ν]
     (h2f : ∀ᵐ x ∂μ, QuasiMeasurePreserving (fun y => f (x, y)) ν τ) :
     QuasiMeasurePreserving f (μ.prod ν) τ := by
-  refine' ⟨hf, _⟩
-  refine' AbsolutelyContinuous.mk fun s hs h2s => _
+  refine ⟨hf, ?_⟩
+  refine AbsolutelyContinuous.mk fun s hs h2s => ?_
   rw [map_apply hf hs, prod_apply (hf hs)]; simp_rw [preimage_preimage]
   rw [lintegral_congr_ae (h2f.mono fun x hx => hx.preimage_null h2s), lintegral_zero]
 #align measure_theory.quasi_measure_preserving.prod_of_right MeasureTheory.QuasiMeasurePreserving.prod_of_right

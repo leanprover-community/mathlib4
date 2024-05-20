@@ -244,7 +244,7 @@ theorem card (p : ℕ) [CharP K p] : ∃ n : ℕ+, Nat.Prime p ∧ q = p ^ (n : 
   letI : Module (ZMod p) K := { (ZMod.castHom dvd_rfl K : ZMod p →+* _).toModule with }
   obtain ⟨n, h⟩ := VectorSpace.card_fintype (ZMod p) K
   rw [ZMod.card] at h
-  refine' ⟨⟨n, _⟩, hp.1, h⟩
+  refine ⟨⟨n, ?_⟩, hp.1, h⟩
   apply Or.resolve_left (Nat.eq_zero_or_pos n)
   rintro rfl
   rw [pow_zero] at h
@@ -308,8 +308,8 @@ theorem sum_pow_lt_card_sub_one (i : ℕ) (h : i < q - 1) : ∑ x : K, x ^ i = 0
     let φ : Kˣ ↪ K := ⟨fun x ↦ x, Units.ext⟩
     have : univ.map φ = univ \ {0} := by
       ext x
-      simp only [φ, true_and_iff, Function.Embedding.coeFn_mk, mem_sdiff, Units.exists_iff_ne_zero,
-        mem_univ, mem_map, exists_prop_of_true, mem_singleton]
+      simpa only [mem_map, mem_univ, Function.Embedding.coeFn_mk, true_and_iff, mem_sdiff,
+        mem_singleton, φ] using isUnit_iff_ne_zero
     calc
       ∑ x : K, x ^ i = ∑ x in univ \ {(0 : K)}, x ^ i := by
         rw [← sum_sdiff ({0} : Finset K).subset_univ, sum_singleton, zero_pow hi, add_zero]
@@ -411,7 +411,7 @@ theorem sq_add_sq (p : ℕ) [hp : Fact p.Prime] (x : ZMod p) : ∃ a b : ZMod p,
   obtain ⟨a, b, hab⟩ : ∃ a b, f.eval a + g.eval b = 0 :=
     @exists_root_sum_quadratic _ _ _ _ f g (degree_X_pow 2) (degree_X_pow_sub_C (by decide) _)
       (by rw [ZMod.card, hp_odd])
-  refine' ⟨a, b, _⟩
+  refine ⟨a, b, ?_⟩
   rw [← sub_eq_zero]
   simpa only [f, g, eval_C, eval_X, eval_pow, eval_sub, ← add_sub_assoc] using hab
 #align zmod.sq_add_sq ZMod.sq_add_sq
@@ -444,7 +444,7 @@ theorem sq_add_sq (R : Type*) [CommRing R] [IsDomain R] (p : ℕ) [NeZero p] [Ch
     ∃ a b : ℕ, ((a : R) ^ 2 + (b : R) ^ 2) = x := by
   haveI := char_is_prime_of_pos R p
   obtain ⟨a, b, hab⟩ := ZMod.sq_add_sq p x
-  refine' ⟨a.val, b.val, _⟩
+  refine ⟨a.val, b.val, ?_⟩
   simpa using congr_arg (ZMod.castHom dvd_rfl R) hab
 #align char_p.sq_add_sq CharP.sq_add_sq
 
@@ -634,7 +634,7 @@ theorem unit_isSquare_iff (hF : ringChar F ≠ 2) (a : Fˣ) :
         apply orderOf_dvd_of_pow_eq_one h
       have : 0 < Fintype.card F / 2 := Nat.div_pos Fintype.one_lt_card (by norm_num)
       obtain ⟨m, rfl⟩ := Nat.dvd_of_mul_dvd_mul_right this key
-      refine' ⟨g ^ m, _⟩
+      refine ⟨g ^ m, ?_⟩
       dsimp
       rw [mul_comm, pow_mul, pow_two]
 #align finite_field.unit_is_square_iff FiniteField.unit_isSquare_iff
@@ -649,7 +649,7 @@ theorem isSquare_iff (hF : ringChar F ≠ 2) {a : F} (ha : a ≠ 0) :
   · rintro ⟨y, hy⟩; exact ⟨y, hy⟩
   · rintro ⟨y, rfl⟩
     have hy : y ≠ 0 := by rintro rfl; simp at ha
-    refine' ⟨Units.mk0 y hy, _⟩; simp
+    refine ⟨Units.mk0 y hy, ?_⟩; simp
 #align finite_field.is_square_iff FiniteField.isSquare_iff
 
 end FiniteField

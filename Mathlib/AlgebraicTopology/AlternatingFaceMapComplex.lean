@@ -227,7 +227,7 @@ def ε [Limits.HasZeroObject C] :
       SimplicialObject.Augmented.point ⋙ ChainComplex.single₀ C where
   app X := by
     refine' (ChainComplex.toSingle₀Equiv _ _).symm _
-    refine' ⟨X.hom.app (op [0]), _⟩
+    refine ⟨X.hom.app (op [0]), ?_⟩
     dsimp
     rw [alternatingFaceMapComplex_obj_d, objD, Fin.sum_univ_two, Fin.val_zero,
       pow_zero, one_smul, Fin.val_one, pow_one, neg_smul, one_smul, add_comp,

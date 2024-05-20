@@ -138,7 +138,7 @@ theorem cauchySeq_iff_le_tendsto_0 {s : ℕ → α} :
     let S N := (fun p : ℕ × ℕ => dist (s p.1) (s p.2)) '' { p | p.1 ≥ N ∧ p.2 ≥ N }
     have hS : ∀ N, ∃ x, ∀ y ∈ S N, y ≤ x := by
       rcases cauchySeq_bdd hs with ⟨R, -, hR⟩
-      refine' fun N => ⟨R, _⟩
+      refine fun N => ⟨R, ?_⟩
       rintro _ ⟨⟨m, n⟩, _, rfl⟩
       exact le_of_lt (hR m n)
     -- Prove that it bounds the distances of points in the Cauchy sequence
