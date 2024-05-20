@@ -314,7 +314,7 @@ theorem outerMeasure_lt_top_of_isCompact [WeaklyLocallyCompactSpace G]
     μ.outerMeasure K < ∞ := by
   rcases exists_compact_superset hK with ⟨F, h1F, h2F⟩
   calc
-    μ.outerMeasure K ≤ μ.outerMeasure (interior F) := OuterMeasure.mono' _ h2F
+    μ.outerMeasure K ≤ μ.outerMeasure (interior F) := measure_mono h2F
     _ ≤ μ ⟨F, h1F⟩ := by
       apply μ.outerMeasure_le ⟨interior F, isOpen_interior⟩ ⟨F, h1F⟩ interior_subset
     _ < ⊤ := μ.lt_top _
@@ -412,11 +412,11 @@ instance outerRegular : μ.measure.OuterRegular := by
 /-- In a locally compact space, any measure constructed from a content is regular. -/
 instance regular [WeaklyLocallyCompactSpace G] : μ.measure.Regular := by
   have : IsFiniteMeasureOnCompacts μ.measure := by
-    refine' ⟨fun K hK => _⟩
+    refine ⟨fun K hK => ?_⟩
     apply (measure_mono subset_closure).trans_lt _
     rw [measure_apply _ isClosed_closure.measurableSet]
     exact μ.outerMeasure_lt_top_of_isCompact hK.closure
-  refine' ⟨fun U hU r hr => _⟩
+  refine ⟨fun U hU r hr => ?_⟩
   rw [measure_apply _ hU.measurableSet, μ.outerMeasure_of_isOpen U hU] at hr
   simp only [innerContent, lt_iSup_iff] at hr
   rcases hr with ⟨K, hKU, hr⟩

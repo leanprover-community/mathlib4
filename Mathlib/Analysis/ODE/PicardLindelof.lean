@@ -403,7 +403,7 @@ theorem exists_isPicardLindelof_const_of_contDiffAt (hv : ContDiffAt ℝ 1 v x�
   set ε := min R₁ R₂ / 2 / (1 + ‖v x₀‖) with hε
   have hε0 : 0 < ε := hε ▸ div_pos (half_pos <| lt_min hR₁ hR₂)
     (add_pos_of_pos_of_nonneg zero_lt_one (norm_nonneg _))
-  refine' ⟨ε, hε0, L, min R₁ R₂ / 2, 1 + ‖v x₀‖, _⟩
+  refine ⟨ε, hε0, L, min R₁ R₂ / 2, 1 + ‖v x₀‖, ?_⟩
   exact
     { ht₀ := Real.closedBall_eq_Icc ▸ mem_closedBall_self hε0.le
       hR := by positivity
