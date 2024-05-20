@@ -214,8 +214,7 @@ theorem inv_hom_whiskerRight {f g : a ⟶ b} (η : f ≅ g) (h : b ⟶ c) :
 
 /-- The left whiskering of a 2-isomorphism is a 2-isomorphism. -/
 @[simps]
-def whiskerLeftIso (f : a ⟶ b) {g h : b ⟶ c} (η : g ≅ h) : f ≫ g ≅ f ≫ h
-    where
+def whiskerLeftIso (f : a ⟶ b) {g h : b ⟶ c} (η : g ≅ h) : f ≫ g ≅ f ≫ h where
   hom := f ◁ η.hom
   inv := f ◁ η.inv
 #align category_theory.bicategory.whisker_left_iso CategoryTheory.Bicategory.whiskerLeftIso
@@ -233,8 +232,7 @@ theorem inv_whiskerLeft (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) [IsIso η] 
 
 /-- The right whiskering of a 2-isomorphism is a 2-isomorphism. -/
 @[simps!]
-def whiskerRightIso {f g : a ⟶ b} (η : f ≅ g) (h : b ⟶ c) : f ≫ h ≅ g ≫ h
-    where
+def whiskerRightIso {f g : a ⟶ b} (η : f ≅ g) (h : b ⟶ c) : f ≫ h ≅ g ≫ h where
   hom := η.hom ▷ h
   inv := η.inv ▷ h
 #align category_theory.bicategory.whisker_right_iso CategoryTheory.Bicategory.whiskerRightIso

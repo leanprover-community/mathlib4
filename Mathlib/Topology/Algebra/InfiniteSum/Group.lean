@@ -270,7 +270,7 @@ theorem Multipliable.multipliable_of_eq_one_or_self (hf : Multipliable f)
           ∏ b in t.filter fun b ↦ g b = f b, f b = ∏ b in t.filter fun b ↦ g b = f b, g b :=
             Finset.prod_congr rfl fun b hb ↦ (Finset.mem_filter.1 hb).2.symm
           _ = ∏ b in t, g b := by
-           {refine' Finset.prod_subset (Finset.filter_subset _ _) _
+           {refine Finset.prod_subset (Finset.filter_subset _ _) ?_
             intro b hbt hb
             simp only [Finset.mem_filter, and_iff_right hbt] at hb
             exact (h b).resolve_right hb}

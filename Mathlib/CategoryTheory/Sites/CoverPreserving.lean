@@ -4,36 +4,31 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Functor.Flat
-import Mathlib.CategoryTheory.Sites.Sheaf
+import Mathlib.CategoryTheory.Sites.Continuous
 import Mathlib.Tactic.ApplyFun
 
 #align_import category_theory.sites.cover_preserving from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 /-!
-# Cover-preserving and continuous functors between sites.
-
-We define the notion of continuous functor between sites: these are functors `G` such that
-the precomposition with `G.op` preserves sheaves of types (and actually sheaves in any
-category).
+# Cover-preserving functor between sites.
 
 In order to show that a functor is continuous, we define cover-preserving functors
 between sites as functors that push covering sieves to covering sieves.
-Then, a cover-preserving and compatible-preserving functor is continuous.
+We provide various lemmas which shows that a functor preserves 1-hypercovers
+or is continuous if it is cover-preserving and satisfy some additional condition.
 
 ## Main definitions
 
-* `CategoryTheory.Functor.IsContinuous`: a functor between sites is continuous if the
-precomposition with this functor preserves sheaves.
 * `CategoryTheory.CoverPreserving`: a functor between sites is cover-preserving if it
 pushes covering sieves to covering sieves
 * `CategoryTheory.CompatiblePreserving`: a functor between sites is compatible-preserving
 if it pushes compatible families of elements to compatible families.
-* `CategoryTheory.Functor.sheafPushforwardContinuous`: the induced functor
-`Sheaf K A ⥤ Sheaf J A` for a continuous functor `G : (C, J) ⥤ (D, K)`. In case this is
-part of a morphism of sites, this would be understood as the pushforward functor
-even though it goes in the opposite direction as the functor `G`.
 
 ## Main results
 
+- `CoverPreserving.preservesOneHypercovers_of_downward_closed` and
+`CoverPreserving.preservesOneHypercovers_of_representablyFlat`: under an additional condition,
+a cover-preserving functor preserves 1-hypercovers (which implies that is is continuous,
+thanks to `Functor.isContinuous_of_preservesOneHypercovers` from `Sites.Continuous`).
 - `CategoryTheory.isContinuous_of_coverPreserving`: If `G : C ⥤ D` is
 cover-preserving and compatible-preserving, then `G` is a continuous functor,
 i.e. `G.op ⋙ -` as a functor `(Dᵒᵖ ⥤ A) ⥤ (Cᵒᵖ ⥤ A)` of presheaves maps sheaves to sheaves.
@@ -50,8 +45,7 @@ universe w v₁ v₂ v₃ u₁ u₂ u₃
 
 noncomputable section
 
-open CategoryTheory Opposite CategoryTheory.Presieve.FamilyOfElements CategoryTheory.Presieve
-  CategoryTheory.Limits
+open CategoryTheory Limits Category Opposite Presieve FamilyOfElements
 
 namespace CategoryTheory
 
@@ -59,6 +53,10 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 variable {A : Type u₃} [Category.{v₃} A]
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
 variable {L : GrothendieckTopology A}
+
+-- to be moved
+lemma Functor.congr_map {X Y : C} {f g : X ⟶ Y} (h : f = g) : F.map f = F.map g :=
+  Prefunctor.congr_map F.toPrefunctor h
 
 /-- A functor `G : (C, J) ⥤ (D, K)` between sites is *cover-preserving*
 if for all covering sieves `R` in `C`, `R.functorPushforward G` is a covering sieve in `D`.
@@ -80,6 +78,42 @@ theorem CoverPreserving.comp {F} (hF : CoverPreserving J K F) {G} (hG : CoverPre
     rw [Sieve.functorPushforward_comp]
     exact hG.cover_preserve (hF.cover_preserve hS)⟩
 #align category_theory.cover_preserving.comp CategoryTheory.CoverPreserving.comp
+
+theorem CoverPreserving.preservesOneHypercovers_of_downward_closed
+    {G : C ⥤ D} (hG : CoverPreserving J K G) [G.Full] [G.Faithful]
+    (hG' : ∀ {c : C} {d : D} (_ : d ⟶ G.obj c), Σc', G.obj c' ≅ d) :
+    Functor.PreservesOneHypercovers.{w} G J K := fun {X} E =>
+  { mem₀ := by simpa only [E.map_sieve₀] using hG.cover_preserve E.mem₀
+    mem₁ := fun i₁ i₂ W p₁ p₂ w => by
+      obtain ⟨W', e⟩ := hG' p₁
+      apply K.superset_covering (E.le_map_sieve₁ e p₁ p₂ (G.preimage (e.hom ≫ p₁))
+        (G.preimage (e.hom ≫ p₂)) (by simp) (by simp))
+      apply K.pullback_stable
+      apply hG.cover_preserve
+      apply E.mem₁
+      apply G.map_injective
+      simpa using w }
+
+theorem CoverPreserving.preservesOneHypercovers_of_representablyFlat
+    {G : C ⥤ D} (hG : CoverPreserving J K G) [RepresentablyFlat G] :
+    Functor.PreservesOneHypercovers.{w} G J K := fun {X} E =>
+  { mem₀ := by simpa only [E.map_sieve₀] using hG.cover_preserve E.mem₀
+    mem₁ := fun i₁ i₂ W p₁ p₂ w => by
+      obtain ⟨A₃, q₁, q₂, fac⟩ := IsCofiltered.cospan
+        (StructuredArrow.homMk (E.f i₁) :
+          StructuredArrow.mk p₁ ⟶ StructuredArrow.mk (p₁ ≫ G.map (E.f i₁)))
+        (StructuredArrow.homMk (E.f i₂) :
+          StructuredArrow.mk p₂ ⟶ StructuredArrow.mk (p₁ ≫ G.map (E.f i₁)))
+      replace fac := (StructuredArrow.proj _ _).congr_map fac
+      have fac₁ := StructuredArrow.w q₁
+      have fac₂ := StructuredArrow.w q₂
+      dsimp at fac₁ fac₂
+      refine K.superset_covering ?_
+        (K.pullback_stable A₃.hom (hG.cover_preserve (E.mem₁ i₁ i₂ q₁.right q₂.right fac)))
+      rintro T f ⟨U, a, b, ⟨j, c, fac₃, fac₄⟩ , h⟩
+      refine' ⟨j, b ≫ G.map c, _, _⟩
+      · rw [E.map_p₁, ← fac₁, reassoc_of% h, ← G.map_comp, fac₃, G.map_comp, assoc]
+      · rw [E.map_p₂, ← fac₂, reassoc_of% h, ← G.map_comp, fac₄, G.map_comp, assoc] }
 
 /-- A functor `G : (C, J) ⥤ (D, K)` between sites is called compatible preserving if for each
 compatible family of elements at `C` and valued in `G.op ⋙ ℱ`, and each commuting diagram
@@ -172,43 +206,6 @@ theorem compatiblePreservingOfDownwardsClosed (F : C ⥤ D) [F.Full] [F.Faithful
 
 variable (J K)
 
-/-- A functor `F` is continuous if the precomposition with `F.op` sends sheaves of `Type w`
-to sheaves. -/
-class Functor.IsContinuous : Prop where
-  op_comp_isSheafOfTypes (G : SheafOfTypes.{w} K) : Presieve.IsSheaf J (F.op ⋙ G.val)
-
-lemma Functor.op_comp_isSheafOfTypes [Functor.IsContinuous.{w} F J K]
-    (G : SheafOfTypes.{w} K) :
-    Presieve.IsSheaf J (F.op ⋙ G.val) :=
-  Functor.IsContinuous.op_comp_isSheafOfTypes _
-
-lemma Functor.isContinuous_of_iso {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂)
-    (J : GrothendieckTopology C) (K : GrothendieckTopology D)
-    [Functor.IsContinuous.{w} F₁ J K] : Functor.IsContinuous.{w} F₂ J K where
-  op_comp_isSheafOfTypes G :=
-    Presieve.isSheaf_iso J (isoWhiskerRight (NatIso.op e.symm) _)
-      (F₁.op_comp_isSheafOfTypes J K G)
-
-instance Functor.isContinuous_id : Functor.IsContinuous.{w} (𝟭 C) J J where
-  op_comp_isSheafOfTypes G := G.2
-
-lemma Functor.isContinuous_comp (F₁ : C ⥤ D) (F₂ : D ⥤ A) (J : GrothendieckTopology C)
-    (K : GrothendieckTopology D) (L : GrothendieckTopology A)
-    [Functor.IsContinuous.{w} F₁ J K] [Functor.IsContinuous.{w} F₂ K L] :
-    Functor.IsContinuous.{w} (F₁ ⋙ F₂) J L where
-  op_comp_isSheafOfTypes G := F₁.op_comp_isSheafOfTypes J K ⟨_, F₂.op_comp_isSheafOfTypes K L G⟩
-
-lemma Functor.isContinuous_comp' {F₁ : C ⥤ D} {F₂ : D ⥤ A} {F₁₂ : C ⥤ A}
-    (e : F₁ ⋙ F₂ ≅ F₁₂) (J : GrothendieckTopology C)
-    (K : GrothendieckTopology D) (L : GrothendieckTopology A)
-    [Functor.IsContinuous.{w} F₁ J K] [Functor.IsContinuous.{w} F₂ K L] :
-    Functor.IsContinuous.{w} F₁₂ J L := by
-  have := Functor.isContinuous_comp F₁ F₂ J K L
-  apply Functor.isContinuous_of_iso e
-
-lemma Functor.op_comp_isSheaf [Functor.IsContinuous.{v₃} F J K] (G : Sheaf K A) :
-    Presheaf.IsSheaf J (F.op ⋙ G.val) :=
-  fun T => F.op_comp_isSheafOfTypes J K ⟨_, G.cond T⟩
 
 variable {F J K}
 
@@ -233,22 +230,5 @@ lemma Functor.isContinuous_of_coverPreserving (hF₁ : CompatiblePreserving.{w} 
       have H := (hy₁ g hg).trans (hy₂ g hg).symm
       dsimp at H
       rw [H]
-
-variable (F J K A)
-
-/-- The induced functor `Sheaf K A ⥤ Sheaf J A` given by `G.op ⋙ _`
-if `G` is a continuous functor.
--/
-def Functor.sheafPushforwardContinuous [Functor.IsContinuous.{v₃} F J K] :
-    Sheaf K A ⥤ Sheaf J A where
-  obj ℱ := ⟨F.op ⋙ ℱ.val, F.op_comp_isSheaf J K ℱ⟩
-  map f := ⟨((whiskeringLeft _ _ _).obj F.op).map f.val⟩
-  map_id ℱ := by
-    ext1
-    apply ((whiskeringLeft _ _ _).obj F.op).map_id
-  map_comp f g := by
-    ext1
-    apply ((whiskeringLeft _ _ _).obj F.op).map_comp
-#align category_theory.sites.pullback CategoryTheory.Functor.sheafPushforwardContinuous
 
 end CategoryTheory
