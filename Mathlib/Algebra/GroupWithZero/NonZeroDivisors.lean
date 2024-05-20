@@ -276,7 +276,7 @@ lemma nonZeroSMulDivisors_mulOpposite_eq_op_nonZeroDivisors :
 
 end nonZeroSMulDivisors
 
-noncomputable section Associated
+section Associated
 
 open nonZeroDivisors
 
@@ -285,7 +285,7 @@ section MonoidWithZero
 variable (α : Type*) [MonoidWithZero α]
 
 /-- The units of the monoid of non-zero divisors of `α` are equivalent to the units of `α`. -/
-def nonZeroDivisorsUnitsEquiv : α⁰ˣ ≃* αˣ :=
+noncomputable def nonZeroDivisorsUnitsEquiv : α⁰ˣ ≃* αˣ :=
   MulEquiv.ofBijective (Units.map α⁰.subtype) ⟨Units.map_injective Subtype.val_injective,
     fun u ↦ ⟨IsUnit.unit ⟨⟨⟨u, IsUnit.mem_nonZeroDivisors u.isUnit⟩, ⟨(u⁻¹ : αˣ),
         IsUnit.mem_nonZeroDivisors u⁻¹.isUnit⟩, by simp, by simp⟩, rfl⟩,
@@ -338,7 +338,7 @@ theorem AssociatesNonZeroDivisorsMonoidHom_apply (a : α⁰) :
     (AssociatesNonZeroDivisorsMonoidHom α ⟦a⟧ : Associates α) = Associates.mk (a : α) := rfl
 
 /-- This is the `MulEquiv` version of `AssociatesNonZeroDivisorsMonoidHom`. -/
-def AssociatesNonZeroDivisorsMulEquiv :
+noncomputable def associatesNonZeroDivisorsMulEquiv :
     Associates α⁰ ≃* (Associates α)⁰ := by
   refine MulEquiv.ofBijective (AssociatesNonZeroDivisorsMonoidHom α) ⟨?_, ?_⟩
   · rintro ⟨_⟩ ⟨_⟩ h
@@ -355,8 +355,8 @@ def AssociatesNonZeroDivisorsMulEquiv :
     · rw [Subtype.ext_iff, AssociatesNonZeroDivisorsMonoidHom_apply, ← Associates.quot_mk_eq_mk]
 
 @[simp]
-theorem AssociatesNonZeroDivisorsMulEquiv_apply (a : α⁰) :
-    (AssociatesNonZeroDivisorsMulEquiv α ⟦a⟧ : Associates α) = Associates.mk (a : α) := rfl
+theorem associatesNonZeroDivisorsMulEquiv_apply (a : α⁰) :
+    (associatesNonZeroDivisorsMulEquiv α ⟦a⟧ : Associates α) = Associates.mk (a : α) := rfl
 
 end CommMonoidWithZero
 
