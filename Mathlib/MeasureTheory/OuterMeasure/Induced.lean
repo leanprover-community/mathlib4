@@ -329,7 +329,7 @@ theorem le_trim : m ≤ m.trim := le_trim_iff.2 fun _ _ ↦ le_rfl
 
 @[simp] -- Porting note: added `simp`
 theorem trim_eq {s : Set α} (hs : MeasurableSet s) : m.trim s = m s :=
-  inducedOuterMeasure_eq' MeasurableSet.iUnion (fun f _hf => m.iUnion f)
+  inducedOuterMeasure_eq' MeasurableSet.iUnion (fun f _hf => measure_iUnion_le f)
     (fun _ _ _ _ h => measure_mono h) hs
 #align measure_theory.outer_measure.trim_eq MeasureTheory.OuterMeasure.trim_eq
 
@@ -363,7 +363,7 @@ theorem trim_eq_trim_iff {m₁ m₂ : OuterMeasure α} :
 theorem trim_eq_iInf (s : Set α) : m.trim s = ⨅ (t) (_ : s ⊆ t) (_ : MeasurableSet t), m t := by
   simp (config := { singlePass := true }) only [iInf_comm]
   exact
-    inducedOuterMeasure_eq_iInf MeasurableSet.iUnion (fun f _ => m.iUnion f)
+    inducedOuterMeasure_eq_iInf MeasurableSet.iUnion (fun f _ => measure_iUnion_le f)
       (fun _ _ _ _ h => measure_mono h) s
 #align measure_theory.outer_measure.trim_eq_infi MeasureTheory.OuterMeasure.trim_eq_iInf
 
@@ -417,7 +417,7 @@ theorem exists_measurable_superset_eq_trim (m : OuterMeasure α) (s : Set α) :
       tendsto_const_nhds.add ENNReal.tendsto_inv_nat_nhds_zero
     rw [add_zero] at this
     refine' le_antisymm (ge_of_tendsto' this fun n => _) _
-    · exact le_trans (m.mono' <| iInter_subset t n) (hm' n).le
+    · exact le_trans (measure_mono <| iInter_subset t n) (hm' n).le
     · refine' iInf_le_of_le (⋂ n, t n) _
       refine' iInf_le_of_le (subset_iInter hsub) _
       exact iInf_le _ (MeasurableSet.iInter hm)
