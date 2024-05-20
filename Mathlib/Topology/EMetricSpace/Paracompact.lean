@@ -45,7 +45,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
   have hpow_le : ∀ {m n : ℕ}, m ≤ n → (2⁻¹ : ℝ≥0∞) ^ n ≤ 2⁻¹ ^ m := @fun m n h =>
     pow_le_pow_right_of_le_one' (ENNReal.inv_le_one.2 ENNReal.one_lt_two.le) h
   have h2pow : ∀ n : ℕ, 2 * (2⁻¹ : ℝ≥0∞) ^ (n + 1) = 2⁻¹ ^ n := fun n => by
-    simp [pow_succ, ← mul_assoc, ENNReal.mul_inv_cancel two_ne_zero two_ne_top]
+    simp [pow_succ', ← mul_assoc, ENNReal.mul_inv_cancel two_ne_zero two_ne_top]
   -- Consider an open covering `S : Set (Set α)`
   refine' ⟨fun ι s ho hcov => _⟩
   simp only [iUnion_eq_univ_iff] at hcov
@@ -131,7 +131,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
       apply this
       calc
         edist z x ≤ edist y z + edist y x := edist_triangle_left _ _ _
-        _ < 2⁻¹ ^ m + 2⁻¹ ^ (n + k + 1) := (ENNReal.add_lt_add hz hyx)
+        _ < 2⁻¹ ^ m + 2⁻¹ ^ (n + k + 1) := ENNReal.add_lt_add hz hyx
         _ ≤ 2⁻¹ ^ (k + 1) + 2⁻¹ ^ (k + 1) :=
           (add_le_add (hpow_le <| by omega) (hpow_le <| by omega))
         _ = 2⁻¹ ^ k := by rw [← two_mul, h2pow]

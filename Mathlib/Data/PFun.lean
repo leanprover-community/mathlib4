@@ -328,11 +328,9 @@ theorem fix_fwd {f : α →. Sum β α} {b : β} {a a' : α} (hb : b ∈ f.fix a
 def fixInduction {C : α → Sort*} {f : α →. Sum β α} {b : β} {a : α} (h : b ∈ f.fix a)
     (H : ∀ a', b ∈ f.fix a' → (∀ a'', Sum.inr a'' ∈ f a' → C a'') → C a') : C a := by
   have h₂ := (Part.mem_assert_iff.1 h).snd
-  -- Porting note: revert/intro trick required to address `generalize_proofs` bug
-  revert h₂
-  generalize_proofs h₁
-  intro h₂; clear h
-  induction' h₁ with a ha IH
+  generalize_proofs at h₂
+  clear h
+  induction' ‹Acc _ _› with a ha IH
   have h : b ∈ f.fix a := Part.mem_assert_iff.2 ⟨⟨a, ha⟩, h₂⟩
   exact H a h fun a' fa' => IH a' fa' (Part.mem_assert_iff.1 (fix_fwd h fa')).snd
 #align pfun.fix_induction PFun.fixInduction
@@ -341,9 +339,8 @@ theorem fixInduction_spec {C : α → Sort*} {f : α →. Sum β α} {b : β} {a
     (H : ∀ a', b ∈ f.fix a' → (∀ a'', Sum.inr a'' ∈ f a' → C a'') → C a') :
     @fixInduction _ _ C _ _ _ h H = H a h fun a' h' => fixInduction (fix_fwd h h') H := by
   unfold fixInduction
-  -- Porting note: `generalize` required to address `generalize_proofs` bug
-  generalize @fixInduction.proof_1 α β f b a h = ha
-  induction ha
+  generalize_proofs
+  induction ‹Acc _ _›
   rfl
 #align pfun.fix_induction_spec PFun.fixInduction_spec
 
@@ -369,9 +366,8 @@ theorem fixInduction'_stop {C : α → Sort*} {f : α →. Sum β α} {b : β} {
   unfold fixInduction'
   rw [fixInduction_spec]
   -- Porting note: the explicit motive required because `simp` behaves differently
-  refine' Eq.rec (motive := fun x e =>
-      Sum.casesOn (motive := fun y => (f a).get (dom_of_mem_fix h) = y → C a) x _ _
-      (Eq.trans (Part.get_eq_of_mem fa (dom_of_mem_fix h)) e) = hbase a fa) _
+  refine' Eq.rec (motive := fun x e ↦
+      Sum.casesOn x _ _ (Eq.trans (Part.get_eq_of_mem fa (dom_of_mem_fix h)) e) = hbase a fa) _
     (Part.get_eq_of_mem fa (dom_of_mem_fix h)).symm
   simp
 #align pfun.fix_induction'_stop PFun.fixInduction'_stop
@@ -516,7 +512,7 @@ theorem preimage_eq (f : α →. β) (s : Set β) : f.preimage s = f.core s ∩ 
 #align pfun.preimage_eq PFun.preimage_eq
 
 theorem core_eq (f : α →. β) (s : Set β) : f.core s = f.preimage s ∪ f.Domᶜ := by
-  rw [preimage_eq, Set.union_distrib_right, Set.union_comm (Dom f), Set.compl_union_self,
+  rw [preimage_eq, Set.inter_union_distrib_right, Set.union_comm (Dom f), Set.compl_union_self,
     Set.inter_univ, Set.union_eq_self_of_subset_right (f.compl_dom_subset_core s)]
 #align pfun.core_eq PFun.core_eq
 

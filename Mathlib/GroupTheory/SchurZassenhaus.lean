@@ -122,7 +122,8 @@ theorem isComplement'_stabilizer_of_coprime {α : H.QuotientDiff}
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem exists_right_complement'_of_coprime_aux (hH : Nat.Coprime (Nat.card H) H.index) :
     ∃ K : Subgroup G, IsComplement' H K :=
-  instNonempty.elim fun α => ⟨stabilizer G α, isComplement'_stabilizer_of_coprime hH⟩
+  have ne : Nonempty (QuotientDiff H) := inferInstance
+  ne.elim fun α => ⟨stabilizer G α, isComplement'_stabilizer_of_coprime hH⟩
 
 end SchurZassenhausAbelian
 
@@ -163,6 +164,7 @@ private theorem step0 : N ≠ ⊥ := by
   rintro rfl
   exact h3 ⊤ isComplement'_bot_top
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step1 (K : Subgroup G) (hK : K ⊔ N = ⊤) : K = ⊤ := by
   contrapose! h3
@@ -214,7 +216,7 @@ private theorem step2 (K : Subgroup G) [K.Normal] (hK : K ≤ N) : K = ⊥ ∨ K
     intro hH'
     rw [comap_injective this hH', isComplement'_top_right, map_eq_bot_iff,
       QuotientGroup.ker_mk'] at hH
-    · exact h4.2 (le_antisymm hK hH)
+    exact h4.2 (le_antisymm hK hH)
 
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step3 (K : Subgroup N) [(K.map N.subtype).Normal] : K = ⊥ ∨ K = ⊤ := by

@@ -48,10 +48,6 @@ namespace FiniteDimensional
 
 open IsNoetherian
 
-theorem trans [FiniteDimensional F K] [FiniteDimensional K A] : FiniteDimensional F A :=
-  Module.Finite.trans K A
-#align finite_dimensional.trans FiniteDimensional.trans
-
 /-- In a tower of field extensions `A / K / F`, if `A / F` is finite, so is `K / F`.
 
 (In fact, it suffices that `A` is a nontrivial ring.)
@@ -86,7 +82,8 @@ theorem Subalgebra.isSimpleOrder_of_finrank_prime (F A) [Field F] [Ring A] [IsDo
 #align finite_dimensional.subalgebra.is_simple_order_of_finrank_prime FiniteDimensional.Subalgebra.isSimpleOrder_of_finrank_prime
 -- TODO: `IntermediateField` version
 
-@[deprecated] alias finrank_linear_map' := FiniteDimensional.finrank_linearMap_self
+@[deprecated (since := "2024-01-12")]
+alias finrank_linear_map' := FiniteDimensional.finrank_linearMap_self
 #align finite_dimensional.finrank_linear_map' FiniteDimensional.finrank_linear_map'
 
 end FiniteDimensional

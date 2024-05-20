@@ -40,7 +40,7 @@ The conditional expectation and its properties
   with respect to `m`.
 * `integrable_condexp` : `condexp` is integrable.
 * `stronglyMeasurable_condexp` : `condexp` is `m`-strongly-measurable.
-* `set_integral_condexp (hf : Integrable f μ) (hs : MeasurableSet[m] s)` : if `m ≤ m0` (the
+* `setIntegral_condexp (hf : Integrable f μ) (hs : MeasurableSet[m] s)` : if `m ≤ m0` (the
   σ-algebra over which the measure is defined), then the conditional expectation verifies
   `∫ x in s, condexp m μ f x ∂μ = ∫ x in s, f x ∂μ` for any `m`-measurable set `s`.
 
@@ -49,7 +49,7 @@ linear map `condexpL1CLM` from `L1` to `L1`. `condexp` should be used in most ca
 
 Uniqueness of the conditional expectation
 
-* `ae_eq_condexp_of_forall_set_integral_eq`: an a.e. `m`-measurable function which verifies the
+* `ae_eq_condexp_of_forall_setIntegral_eq`: an a.e. `m`-measurable function which verifies the
   equality of integrals is a.e. equal to `condexp`.
 
 ## Notations
@@ -71,7 +71,7 @@ open scoped ENNReal Topology BigOperators MeasureTheory
 
 namespace MeasureTheory
 
-variable {α F F' 𝕜 : Type*} {p : ℝ≥0∞} [IsROrC 𝕜]
+variable {α F F' 𝕜 : Type*} {p : ℝ≥0∞} [RCLike 𝕜]
   -- 𝕜 for ℝ or ℂ
   -- F for a Lp submodule
   [NormedAddCommGroup F]
@@ -117,7 +117,7 @@ theorem condexp_of_sigmaFinite (hm : m ≤ m0) [hμm : SigmaFinite (μ.trim hm)]
         else aestronglyMeasurable'_condexpL1.mk (condexpL1 hm μ f)
       else 0 := by
   rw [condexp, dif_pos hm]
-  simp only [hμm, Ne.def, true_and_iff]
+  simp only [hμm, Ne, true_and_iff]
   by_cases hf : Integrable f μ
   · rw [dif_pos hf, if_pos hf]
   · rw [dif_neg hf, if_neg hf]
@@ -218,32 +218,40 @@ theorem integrable_condexp : Integrable (μ[f|m]) μ := by
 
 /-- The integral of the conditional expectation `μ[f|hm]` over an `m`-measurable set is equal to
 the integral of `f` on that set. -/
-theorem set_integral_condexp (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (hf : Integrable f μ)
+theorem setIntegral_condexp (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (hf : Integrable f μ)
     (hs : MeasurableSet[m] s) : ∫ x in s, (μ[f|m]) x ∂μ = ∫ x in s, f x ∂μ := by
-  rw [set_integral_congr_ae (hm s hs) ((condexp_ae_eq_condexpL1 hm f).mono fun x hx _ => hx)]
-  exact set_integral_condexpL1 hf hs
-#align measure_theory.set_integral_condexp MeasureTheory.set_integral_condexp
+  rw [setIntegral_congr_ae (hm s hs) ((condexp_ae_eq_condexpL1 hm f).mono fun x hx _ => hx)]
+  exact setIntegral_condexpL1 hf hs
+#align measure_theory.set_integral_condexp MeasureTheory.setIntegral_condexp
+
+@[deprecated]
+alias set_integral_condexp :=
+  setIntegral_condexp -- deprecated on 2024-04-17
 
 theorem integral_condexp (hm : m ≤ m0) [hμm : SigmaFinite (μ.trim hm)] (hf : Integrable f μ) :
     ∫ x, (μ[f|m]) x ∂μ = ∫ x, f x ∂μ := by
   suffices ∫ x in Set.univ, (μ[f|m]) x ∂μ = ∫ x in Set.univ, f x ∂μ by
     simp_rw [integral_univ] at this; exact this
-  exact set_integral_condexp hm hf (@MeasurableSet.univ _ m)
+  exact setIntegral_condexp hm hf (@MeasurableSet.univ _ m)
 #align measure_theory.integral_condexp MeasureTheory.integral_condexp
 
 /-- **Uniqueness of the conditional expectation**
 If a function is a.e. `m`-measurable, verifies an integrability condition and has same integral
 as `f` on all `m`-measurable sets, then it is a.e. equal to `μ[f|hm]`. -/
-theorem ae_eq_condexp_of_forall_set_integral_eq (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
+theorem ae_eq_condexp_of_forall_setIntegral_eq (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
     {f g : α → F'} (hf : Integrable f μ)
     (hg_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn g s μ)
     (hg_eq : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → ∫ x in s, g x ∂μ = ∫ x in s, f x ∂μ)
     (hgm : AEStronglyMeasurable' m g μ) : g =ᵐ[μ] μ[f|m] := by
-  refine' ae_eq_of_forall_set_integral_eq_of_sigmaFinite' hm hg_int_finite
+  refine' ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' hm hg_int_finite
     (fun s _ _ => integrable_condexp.integrableOn) (fun s hs hμs => _) hgm
     (StronglyMeasurable.aeStronglyMeasurable' stronglyMeasurable_condexp)
-  rw [hg_eq s hs hμs, set_integral_condexp hm hf hs]
-#align measure_theory.ae_eq_condexp_of_forall_set_integral_eq MeasureTheory.ae_eq_condexp_of_forall_set_integral_eq
+  rw [hg_eq s hs hμs, setIntegral_condexp hm hf hs]
+#align measure_theory.ae_eq_condexp_of_forall_set_integral_eq MeasureTheory.ae_eq_condexp_of_forall_setIntegral_eq
+
+@[deprecated]
+alias ae_eq_condexp_of_forall_set_integral_eq :=
+  ae_eq_condexp_of_forall_setIntegral_eq -- deprecated on 2024-04-17
 
 theorem condexp_bot' [hμ : NeZero μ] (f : α → F') :
     μ[f|⊥] = fun _ => (μ Set.univ).toReal⁻¹ • ∫ x, f x ∂μ := by
@@ -262,7 +270,7 @@ theorem condexp_bot' [hμ : NeZero μ] (f : α → F') :
   have h_integral : ∫ x, (μ[f|⊥]) x ∂μ = ∫ x, f x ∂μ := integral_condexp bot_le hf
   simp_rw [h_eq, integral_const] at h_integral
   rw [← h_integral, ← smul_assoc, smul_eq_mul, inv_mul_cancel, one_smul]
-  rw [Ne.def, ENNReal.toReal_eq_zero_iff, not_or]
+  rw [Ne, ENNReal.toReal_eq_zero_iff, not_or]
   exact ⟨NeZero.ne _, measure_ne_top μ Set.univ⟩
 #align measure_theory.condexp_bot' MeasureTheory.condexp_bot'
 
@@ -280,9 +288,9 @@ theorem condexp_bot [IsProbabilityMeasure μ] (f : α → F') : μ[f|⊥] = fun 
 theorem condexp_add (hf : Integrable f μ) (hg : Integrable g μ) :
     μ[f + g|m] =ᵐ[μ] μ[f|m] + μ[g|m] := by
   by_cases hm : m ≤ m0
-  swap; · simp_rw [condexp_of_not_le hm]; simp; rfl
+  swap; · simp_rw [condexp_of_not_le hm]; simp
   by_cases hμm : SigmaFinite (μ.trim hm)
-  swap; · simp_rw [condexp_of_not_sigmaFinite hm hμm]; simp; rfl
+  swap; · simp_rw [condexp_of_not_sigmaFinite hm hμm]; simp
   haveI : SigmaFinite (μ.trim hm) := hμm
   refine' (condexp_ae_eq_condexpL1 hm _).trans _
   rw [condexpL1_add hf hg]
@@ -302,9 +310,9 @@ theorem condexp_finset_sum {ι : Type*} {s : Finset ι} {f : ι → α → F'}
 
 theorem condexp_smul (c : 𝕜) (f : α → F') : μ[c • f|m] =ᵐ[μ] c • μ[f|m] := by
   by_cases hm : m ≤ m0
-  swap; · simp_rw [condexp_of_not_le hm]; simp; rfl
+  swap; · simp_rw [condexp_of_not_le hm]; simp
   by_cases hμm : SigmaFinite (μ.trim hm)
-  swap; · simp_rw [condexp_of_not_sigmaFinite hm hμm]; simp; rfl
+  swap; · simp_rw [condexp_of_not_sigmaFinite hm hμm]; simp
   haveI : SigmaFinite (μ.trim hm) := hμm
   refine' (condexp_ae_eq_condexpL1 hm _).trans _
   rw [condexpL1_smul c f]
@@ -317,7 +325,7 @@ theorem condexp_neg (f : α → F') : μ[-f|m] =ᵐ[μ] -μ[f|m] := by
   letI : Module ℝ (α → F') := @Pi.module α (fun _ => F') ℝ _ _ fun _ => inferInstance
   calc
     μ[-f|m] = μ[(-1 : ℝ) • f|m] := by rw [neg_one_smul ℝ f]
-    _ =ᵐ[μ] (-1 : ℝ) • μ[f|m] := (condexp_smul (-1) f)
+    _ =ᵐ[μ] (-1 : ℝ) • μ[f|m] := condexp_smul (-1) f
     _ = -μ[f|m] := neg_one_smul ℝ (μ[f|m])
 #align measure_theory.condexp_neg MeasureTheory.condexp_neg
 
@@ -334,14 +342,14 @@ theorem condexp_condexp_of_le {m₁ m₂ m0 : MeasurableSpace α} {μ : Measure 
   haveI : SigmaFinite (μ.trim (hm₁₂.trans hm₂)) := hμm₁
   by_cases hf : Integrable f μ
   swap; · simp_rw [condexp_undef hf, condexp_zero]; rfl
-  refine' ae_eq_of_forall_set_integral_eq_of_sigmaFinite' (hm₁₂.trans hm₂)
+  refine' ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' (hm₁₂.trans hm₂)
     (fun s _ _ => integrable_condexp.integrableOn)
     (fun s _ _ => integrable_condexp.integrableOn) _
     (StronglyMeasurable.aeStronglyMeasurable' stronglyMeasurable_condexp)
     (StronglyMeasurable.aeStronglyMeasurable' stronglyMeasurable_condexp)
   intro s hs _
-  rw [set_integral_condexp (hm₁₂.trans hm₂) integrable_condexp hs]
-  rw [set_integral_condexp (hm₁₂.trans hm₂) hf hs, set_integral_condexp hm₂ hf (hm₁₂ s hs)]
+  rw [setIntegral_condexp (hm₁₂.trans hm₂) integrable_condexp hs]
+  rw [setIntegral_condexp (hm₁₂.trans hm₂) hf hs, setIntegral_condexp hm₂ hf (hm₁₂ s hs)]
 #align measure_theory.condexp_condexp_of_le MeasureTheory.condexp_condexp_of_le
 
 theorem condexp_mono {E} [NormedLatticeAddCommGroup E] [CompleteSpace E] [NormedSpace ℝ E]

@@ -126,7 +126,7 @@ theorem IsLindelof.adherence_nhdset {f : Filter X} [CountableInterFilter f] (hs 
     have : 𝓝[tᶜ] x ≠ ⊥ := hfx.of_inf_right.ne
     absurd A this
 
-/--For every open cover of a Lindelöf set, there exists a countable subcover. -/
+/-- For every open cover of a Lindelöf set, there exists a countable subcover. -/
 theorem IsLindelof.elim_countable_subcover {ι : Type v} (hs : IsLindelof s) (U : ι → Set X)
     (hUo : ∀ i, IsOpen (U i)) (hsU : s ⊆ ⋃ i, U i) :
     ∃ r : Set ι, r.Countable ∧ (s ⊆ ⋃ i ∈ r, U i) := by
@@ -219,7 +219,7 @@ theorem IsLindelof.elim_countable_subfamily_closed {ι : Type v} (hs : IsLindelo
   simp only [U, Pi.compl_apply, compl_iUnion, compl_compl] at husub
   exact disjoint_iff_inter_eq_empty.mp (Disjoint.symm husub)
 
-/--To show that a Lindelöf set intersects the intersection of a family of closed sets,
+/-- To show that a Lindelöf set intersects the intersection of a family of closed sets,
   it is sufficient to show that it intersects every countable subfamily. -/
 theorem IsLindelof.inter_iInter_nonempty {ι : Type v} (hs : IsLindelof s) (t : ι → Set X)
     (htc : ∀ i, IsClosed (t i)) (hst : ∀ u : Set ι, u.Countable ∧ (s ∩ ⋂ i ∈ u, t i).Nonempty) :
@@ -461,7 +461,7 @@ theorem IsLindeof.compl_mem_coclosedLindelof_of_isClosed (hs : IsLindelof s) (hs
     sᶜ ∈ Filter.coclosedLindelof X :=
   hasBasis_coclosedLindelof.mem_of_mem ⟨hs', hs⟩
 
-/-- X is a Lindelöf space iff every open cover has a countable subcover.-/
+/-- X is a Lindelöf space iff every open cover has a countable subcover. -/
 class LindelofSpace (X : Type*) [TopologicalSpace X] : Prop where
   /-- In a Lindelöf space, `Set.univ` is a Lindelöf set. -/
   isLindelof_univ : IsLindelof (univ : Set X)
@@ -719,13 +719,13 @@ instance SecondCountableTopology.ofPseudoMetrizableSpaceLindelofSpace [PseudoMet
       intro z
       have : IsOpen (U z) := Metric.isOpen_ball
       refine IsOpen.mem_nhds this ?hx
-      simp_all only [U, gt_iff_lt, Metric.mem_ball, dist_self, zero_lt_two, mul_pos_iff_of_pos_left]
+      simp only [U, Metric.mem_ball, dist_self, hpos]
     have ⟨t, hct, huniv⟩ := LindelofSpace.elim_nhds_subcover U hU
     refine ⟨t, hct, ?_⟩
     intro z
     have ⟨y, ht, hzy⟩ : ∃ y ∈ t, z ∈ U y := exists_set_mem_of_union_eq_top t (fun i ↦ U i) huniv z
-    use y, ht
-    exact LT.lt.le hzy
+    simp only [Metric.mem_ball, U] at hzy
+    exact ⟨y, ht, hzy.le⟩
   exact Metric.secondCountable_of_almost_dense_set h_dense
 
 lemma eq_open_union_countable [HereditarilyLindelofSpace X] {ι : Type u} (U : ι → Set X)

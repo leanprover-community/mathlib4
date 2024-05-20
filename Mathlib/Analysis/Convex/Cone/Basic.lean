@@ -59,6 +59,7 @@ variable [OrderedSemiring 𝕜]
 /-- A convex cone is a subset `s` of a `𝕜`-module such that `a • x + b • y ∈ s` whenever `a, b > 0`
 and `x, y ∈ s`. -/
 structure ConvexCone [AddCommMonoid E] [SMul 𝕜 E] where
+  /-- The **carrier set** underlying this cone: the set of points contained in it -/
   carrier : Set E
   smul_mem' : ∀ ⦃c : 𝕜⦄, 0 < c → ∀ ⦃x : E⦄, x ∈ carrier → c • x ∈ carrier
   add_mem' : ∀ ⦃x⦄ (_ : x ∈ carrier) ⦃y⦄ (_ : y ∈ carrier), x + y ∈ carrier
@@ -568,7 +569,7 @@ theorem salient_positive : Salient (positive 𝕜 E) := fun x xs hx hx' =>
   lt_irrefl (0 : E)
     (calc
       0 < x := lt_of_le_of_ne xs hx.symm
-      _ ≤ x + -x := (le_add_of_nonneg_right hx')
+      _ ≤ x + -x := le_add_of_nonneg_right hx'
       _ = 0 := add_neg_self x
       )
 #align convex_cone.salient_positive ConvexCone.salient_positive
@@ -632,7 +633,7 @@ def toCone (s : Set E) (hs : Convex 𝕜 s) : ConvexCone 𝕜 E := by
   · rintro _ ⟨cx, cx_pos, x, hx, rfl⟩ _ ⟨cy, cy_pos, y, hy, rfl⟩
     have : 0 < cx + cy := add_pos cx_pos cy_pos
     refine' ⟨_, this, _, convex_iff_div.1 hs hx hy cx_pos.le cy_pos.le this, _⟩
-    simp only [smul_add, smul_smul, mul_div_assoc', mul_div_cancel_left _ this.ne']
+    simp only [smul_add, smul_smul, mul_div_assoc', mul_div_cancel_left₀ _ this.ne']
 #align convex.to_cone Convex.toCone
 
 variable {s : Set E} (hs : Convex 𝕜 s) {x : E}

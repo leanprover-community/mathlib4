@@ -8,6 +8,7 @@ import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup
+import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.LinearCombination
 
 #align_import analysis.complex.upper_half_plane.basic from "leanprover-community/mathlib"@"34d3797325d202bd7250431275bb871133cdb611"
@@ -137,6 +138,18 @@ theorem ne_zero (z : ℍ) : (z : ℂ) ≠ 0 :=
   mt (congr_arg Complex.im) z.im_ne_zero
 #align upper_half_plane.ne_zero UpperHalfPlane.ne_zero
 
+/-- Define I := √-1 as an element on the upper half plane. -/
+def I : ℍ := ⟨Complex.I, by simp⟩
+
+@[simp]
+lemma I_im : I.im = 1 := rfl
+
+@[simp]
+lemma I_re : I.re = 0 := rfl
+
+@[simp, norm_cast]
+lemma coe_I : I = Complex.I := rfl
+
 end UpperHalfPlane
 
 namespace Mathlib.Meta.Positivity
@@ -230,9 +243,9 @@ def smulAux' (g : GL(2, ℝ)⁺) (z : ℍ) : ℂ :=
   num g z / denom g z
 #align upper_half_plane.smul_aux' UpperHalfPlane.smulAux'
 
--- Adaptation note: after v4.7.0-rc1, there is a performance problem in `field_simp`.
--- (Part of the code was ignoring the `maxDischargeDepth` setting: now that we have to increase it,
--- other paths becomes slow.)
+#adaptation_note /-- after v4.7.0-rc1, there is a performance problem in `field_simp`.
+(Part of the code was ignoring the `maxDischargeDepth` setting:
+ now that we have to increase it, other paths become slow.) -/
 set_option maxHeartbeats 400000 in
 theorem smulAux'_im (g : GL(2, ℝ)⁺) (z : ℍ) :
     (smulAux' g z).im = det ↑ₘg * z.im / Complex.normSq (denom g z) := by
@@ -301,14 +314,13 @@ def coe' : SL(2, ℤ) → GL(2, ℝ)⁺ := fun g => ((g : SL(2, ℝ)) : GL(2, �
 instance : Coe SL(2, ℤ) GL(2, ℝ)⁺ :=
   ⟨coe'⟩
 
-set_option autoImplicit true in
 @[simp]
-theorem coe'_apply_complex : (Units.val <| Subtype.val <| coe' g) i j = (Subtype.val g i j : ℂ) :=
+theorem coe'_apply_complex {g : SL(2, ℤ)} {i j : Fin 2} :
+    (Units.val <| Subtype.val <| coe' g) i j = (Subtype.val g i j : ℂ) :=
   rfl
 
-set_option autoImplicit true in
 @[simp]
-theorem det_coe' : det (Units.val <| Subtype.val <| coe' g) = 1 := by
+theorem det_coe' {g : SL(2, ℤ)} : det (Units.val <| Subtype.val <| coe' g) = 1 := by
   simp only [SpecialLinearGroup.coe_GLPos_coe_GL_coe_matrix, SpecialLinearGroup.det_coe, coe']
 
 instance SLOnGLPos : SMul SL(2, ℤ) GL(2, ℝ)⁺ :=

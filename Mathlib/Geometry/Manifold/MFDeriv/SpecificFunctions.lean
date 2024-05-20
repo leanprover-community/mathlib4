@@ -166,7 +166,7 @@ theorem tangentMap_id : tangentMap I I (id : M → M) = id := by ext1 ⟨x, v⟩
 
 theorem tangentMapWithin_id {p : TangentBundle I M} (hs : UniqueMDiffWithinAt I s p.proj) :
     tangentMapWithin I I (id : M → M) s p = p := by
-  simp only [tangentMapWithin, id.def]
+  simp only [tangentMapWithin, id]
   rw [mfderivWithin_id]
   · rcases p with ⟨⟩; rfl
   · exact hs
@@ -377,7 +377,8 @@ theorem MDifferentiableAt.mfderiv_prod {f : M → M'} {g : M → M''} {x : M}
       (mfderiv I I' f x).prod (mfderiv I I'' g x) := by
   classical
   simp_rw [mfderiv, if_pos (hf.prod_mk hg), if_pos hf, if_pos hg]
-  exact hf.2.fderivWithin_prod hg.2 (I.unique_diff _ (mem_range_self _))
+  exact hf.differentiableWithinAt_writtenInExtChartAt.fderivWithin_prod
+    hg.differentiableWithinAt_writtenInExtChartAt (I.unique_diff _ (mem_range_self _))
 #align mdifferentiable_at.mfderiv_prod MDifferentiableAt.mfderiv_prod
 
 variable (I I' I'')
@@ -415,7 +416,7 @@ theorem mfderiv_prod_eq_add {f : M × M' → M''} {p : M × M'}
     mfderiv_snd, mfderiv_const, mfderiv_const]
   symm
   convert ContinuousLinearMap.comp_id <| mfderiv (.prod I I') I'' f (p.1, p.2)
-  · exact ContinuousLinearMap.coprod_inl_inr
+  exact ContinuousLinearMap.coprod_inl_inr
 #align mfderiv_prod_eq_add mfderiv_prod_eq_add
 
 end Prod

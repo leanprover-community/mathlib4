@@ -72,6 +72,22 @@ lemma prod_Iio_mul_eq_prod_Iic (a : α) : (∏ x in Iio a, f x) * f a = ∏ x in
 end LocallyFiniteOrderBot
 end PartialOrder
 
+section LinearOrder
+variable [Fintype α] [LinearOrder α] [LocallyFiniteOrderTop α] [LocallyFiniteOrderBot α]
+  [CommMonoid M]
+
+@[to_additive]
+lemma prod_prod_Ioi_mul_eq_prod_prod_off_diag (f : α → α → M) :
+    ∏ i, ∏ j in Ioi i, f j i * f i j = ∏ i, ∏ j in {i}ᶜ, f j i := by
+  simp_rw [← Ioi_disjUnion_Iio, prod_disjUnion, prod_mul_distrib]
+  congr 1
+  rw [prod_sigma', prod_sigma']
+  refine' prod_nbij' (fun i ↦ ⟨i.2, i.1⟩) (fun i ↦ ⟨i.2, i.1⟩) _ _ _ _ _ <;> simp
+#align finset.prod_prod_Ioi_mul_eq_prod_prod_off_diag Finset.prod_prod_Ioi_mul_eq_prod_prod_off_diag
+#align finset.sum_sum_Ioi_add_eq_sum_sum_off_diag Finset.sum_sum_Ioi_add_eq_sum_sum_off_diag
+
+end LinearOrder
+
 section Generic
 variable [CommMonoid M] {s₂ s₁ s : Finset α} {a : α} {g f : α → M}
 
@@ -279,7 +295,7 @@ lemma prod_range_diag_flip (n : ℕ) (f : ℕ → ℕ → M) :
       Nat.lt_succ_iff, le_add_iff_nonneg_right, Nat.zero_le, and_true, and_imp, imp_self,
       implies_true, Sigma.forall, forall_const, add_tsub_cancel_of_le, Sigma.mk.inj_iff,
       add_tsub_cancel_left, heq_eq_eq]
-  · exact fun a b han hba ↦ lt_of_le_of_lt hba han
+  exact fun a b han hba ↦ lt_of_le_of_lt hba han
 #align sum_range_diag_flip Finset.sum_range_diag_flip
 
 end Generic

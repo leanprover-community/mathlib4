@@ -191,7 +191,7 @@ theorem inverse_add_norm_diff_nth_order (x : Rˣ) (n : ℕ) :
     (fun t : R => inverse (↑x + t) - (∑ i in range n, (-↑x⁻¹ * t) ^ i) * ↑x⁻¹) =O[𝓝 (0 : R)]
       fun t => ‖t‖ ^ n := by
   refine EventuallyEq.trans_isBigO (.sub (inverse_add_nth_order x n) (.refl _ _)) ?_
-  simp only [add_sub_cancel']
+  simp only [add_sub_cancel_left]
   refine ((isBigO_refl _ _).norm_right.mul (inverse_add_norm x)).trans ?_
   simp only [mul_one, isBigO_norm_left]
   exact ((isBigO_refl _ _).norm_right.const_mul_left _).pow _
@@ -256,7 +256,7 @@ theorem eq_top_of_norm_lt_one (I : Ideal R) {x : R} (hxI : x ∈ I) (hx : ‖1 -
 /-- The `Ideal.closure` of a proper ideal in a complete normed ring is proper. -/
 theorem closure_ne_top (I : Ideal R) (hI : I ≠ ⊤) : I.closure ≠ ⊤ := by
   have h := closure_minimal (coe_subset_nonunits hI) nonunits.isClosed
-  simpa only [I.closure.eq_top_iff_one, Ne.def] using mt (@h 1) one_not_mem_nonunits
+  simpa only [I.closure.eq_top_iff_one, Ne] using mt (@h 1) one_not_mem_nonunits
 #align ideal.closure_ne_top Ideal.closure_ne_top
 
 /-- The `Ideal.closure` of a maximal ideal in a complete normed ring is the ideal itself. -/

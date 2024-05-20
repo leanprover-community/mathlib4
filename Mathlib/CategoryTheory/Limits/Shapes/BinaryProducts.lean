@@ -1440,14 +1440,14 @@ def Over.coprod [HasBinaryCoproducts C] {A : C} : Over A ⥤ Over A ⥤ Over A w
     { app := fun g => Over.homMk (coprod.map k.left (𝟙 _)) (by
         dsimp; rw [coprod.map_desc, Category.id_comp, Over.w k])
       naturality := fun f g k => by
-        ext;
-          · dsimp; simp }
+        ext
+        dsimp; simp }
   map_id X := by
     ext
-    · dsimp; simp
+    dsimp; simp
   map_comp f g := by
     ext
-    · dsimp; simp
+    dsimp; simp
 #align category_theory.over.coprod CategoryTheory.Over.coprod
 
 end CategoryTheory
