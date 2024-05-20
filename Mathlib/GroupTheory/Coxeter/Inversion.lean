@@ -79,7 +79,7 @@ theorem inv : t⁻¹ = t := by
 
 theorem isReflection_inv : cs.IsReflection t⁻¹ := by rwa [ht.inv]
 
-theorem length_odd : Odd (ℓ t) := by
+theorem odd_length : Odd (ℓ t) := by
   suffices cs.lengthParity t = Multiplicative.ofAdd 1 by
     simpa [lengthParity_eq_ofAdd_length, ZMod.eq_one_iff_odd]
   rcases ht with ⟨w, i, rfl⟩
