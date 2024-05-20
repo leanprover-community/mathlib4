@@ -168,7 +168,7 @@ theorem mem_span_map {x : S} {a : Set R} :
   constructor
   · rw [← coeSubmodule_span]
     rintro ⟨_, ⟨y, hy, rfl⟩, z, hz⟩
-    refine' ⟨y, hy, z, _⟩
+    refine ⟨y, hy, z, ?_⟩
     rw [hz, Algebra.linearMap_apply, smul_eq_mul, mul_comm, mul_mk'_eq_mk'_of_mul, mul_one]
   · rintro ⟨y, hy, z, hz⟩
     refine' ⟨algebraMap R S y, Submodule.map_mem_span_algebraMap_image _ _ hy, z, _⟩

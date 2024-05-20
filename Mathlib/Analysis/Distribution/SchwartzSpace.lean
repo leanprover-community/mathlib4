@@ -252,7 +252,7 @@ instance instSMul : SMul 𝕜 𝓢(E, F) :=
     { toFun := c • (f : E → F)
       smooth' := (f.smooth _).const_smul c
       decay' := fun k n => by
-        refine' ⟨f.seminormAux k n * (‖c‖ + 1), fun x => _⟩
+        refine ⟨f.seminormAux k n * (‖c‖ + 1), fun x => ?_⟩
         have hc : 0 ≤ ‖c‖ := by positivity
         refine' le_trans _ ((mul_le_mul_of_nonneg_right (f.le_seminormAux k n x) hc).trans _)
         · apply Eq.le
@@ -386,7 +386,7 @@ instance instSub : Sub 𝓢(E, F) :=
   ⟨fun f g =>
     ⟨f - g, (f.smooth _).sub (g.smooth _), by
       intro k n
-      refine' ⟨f.seminormAux k n + g.seminormAux k n, fun x => _⟩
+      refine ⟨f.seminormAux k n + g.seminormAux k n, fun x => ?_⟩
       refine' le_trans _ (add_le_add (f.le_seminormAux k n x) (g.le_seminormAux k n x))
       rw [sub_eq_add_neg]
       rw [← decay_neg_aux k n g x]
@@ -795,7 +795,7 @@ def mkCLM [RingHomIsometric σ] (A : (D → E) → F → G)
       Seminorm.continuous_from_bounded (schwartz_withSeminorms 𝕜 D E)
         (schwartz_withSeminorms 𝕜' F G) _ fun n => _
     rcases hbound n with ⟨s, C, hC, h⟩
-    refine' ⟨s, ⟨C, hC⟩, fun f => _⟩
+    refine ⟨s, ⟨C, hC⟩, fun f => ?_⟩
     exact (mkLM A hadd hsmul hsmooth hbound f).seminorm_le_bound 𝕜' n.1 n.2 (by positivity) (h f)
   toLinearMap := mkLM A hadd hsmul hsmooth hbound
 #align schwartz_map.mk_clm SchwartzMap.mkCLM
@@ -950,7 +950,7 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
       have hgrowth' : ∀ N : ℕ, 1 ≤ N → N ≤ n →
           ‖iteratedFDeriv ℝ N g x‖ ≤ ((C + 1) * (1 + ‖x‖) ^ l) ^ N := by
         intro N hN₁ hN₂
-        refine' (hgrowth N hN₂ x).trans _
+        refine (hgrowth N hN₂ x).trans ?_
         rw [mul_pow]
         have hN₁' := (lt_of_lt_of_le zero_lt_one hN₁).ne'
         gcongr

@@ -54,7 +54,7 @@ theorem card_functions_sum_skolem₁ :
   rw [add_comm, add_eq_max, max_eq_left]
   · refine' sum_le_sum _ _ fun n => _
     rw [← lift_le.{_, max u v}, lift_lift, lift_mk_le.{v}]
-    refine' ⟨⟨fun f => (func f default).bdEqual (func f default), fun f g h => _⟩⟩
+    refine ⟨⟨fun f => (func f default).bdEqual (func f default), fun f g h => ?_⟩⟩
     rcases h with ⟨rfl, ⟨rfl⟩⟩
     rfl
   · rw [← mk_sigma]
@@ -151,7 +151,7 @@ theorem exists_elementarySubstructure_card_eq (s : Set M) (κ : Cardinal.{w'}) (
       exact max_le le_rfl h2
     · rw [lift_max, lift_aleph0, max_le_iff, aleph0_le_lift, and_comm, ← lift_le.{w'},
         lift_lift, lift_lift, ← aleph0_le_lift, h]
-      refine' ⟨_, h1⟩
+      refine ⟨?_, h1⟩
       rw [← lift_lift.{w', w}]
       refine' _root_.trans (lift_le.{w}.2 h3) _
       rw [lift_lift, ← lift_lift.{w, max u v}, ← hs', ← h, lift_lift]

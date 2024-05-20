@@ -202,7 +202,7 @@ theorem Memℒp.integral_indicator_norm_ge_le (hf : Memℒp f 1 μ) (hmeas : Str
   obtain ⟨M, hM⟩ := this (ENNReal.ofReal ε) (ENNReal.ofReal_pos.2 hε)
   simp only [true_and_iff, ge_iff_le, zero_tsub, zero_le, sub_zero, zero_add, coe_nnnorm,
     Set.mem_Icc] at hM
-  refine' ⟨M, _⟩
+  refine ⟨M, ?_⟩
   convert hM M le_rfl
   simp only [coe_nnnorm, ENNReal.ofReal_eq_coe_nnreal (norm_nonneg _)]
   rfl
@@ -232,7 +232,7 @@ theorem Memℒp.snormEssSup_indicator_norm_ge_eq_zero (hf : Memℒp f ∞ μ)
     (hmeas : StronglyMeasurable f) :
     ∃ M : ℝ, snormEssSup ({ x | M ≤ ‖f x‖₊ }.indicator f) μ = 0 := by
   have hbdd : snormEssSup f μ < ∞ := hf.snorm_lt_top
-  refine' ⟨(snorm f ∞ μ + 1).toReal, _⟩
+  refine ⟨(snorm f ∞ μ + 1).toReal, ?_⟩
   rw [snormEssSup_indicator_eq_snormEssSup_restrict]
   · have : μ.restrict { x : α | (snorm f ⊤ μ + 1).toReal ≤ ‖f x‖₊ } = 0 := by
       simp only [coe_nnnorm, snorm_exponent_top, Measure.restrict_eq_zero]
@@ -264,11 +264,11 @@ theorem Memℒp.snorm_indicator_norm_ge_le (hf : Memℒp f p μ) (hmeas : Strong
   by_cases hp_ne_top : p = ∞
   · subst hp_ne_top
     obtain ⟨M, hM⟩ := hf.snormEssSup_indicator_norm_ge_eq_zero hmeas
-    refine' ⟨M, _⟩
+    refine ⟨M, ?_⟩
     simp only [snorm_exponent_top, hM, zero_le]
   obtain ⟨M, hM', hM⟩ := Memℒp.integral_indicator_norm_ge_nonneg_le
     (μ := μ) (hf.norm_rpow hp_ne_zero hp_ne_top) (Real.rpow_pos_of_pos hε p.toReal)
-  refine' ⟨M ^ (1 / p.toReal), _⟩
+  refine ⟨M ^ (1 / p.toReal), ?_⟩
   rw [snorm_eq_lintegral_rpow_nnnorm hp_ne_zero hp_ne_top, ← ENNReal.rpow_one (ENNReal.ofReal ε)]
   conv_rhs => rw [← mul_one_div_cancel (ENNReal.toReal_pos hp_ne_zero hp_ne_top).ne.symm]
   rw [ENNReal.rpow_mul,
@@ -354,7 +354,7 @@ theorem Memℒp.snorm_indicator_le' (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (hf 
       rw [norm_indicator_eq_indicator_norm, Set.indicator_apply]
       · split_ifs with h
         exacts [h, hMpos])
-  refine' ⟨δ, hδpos, fun s hs hμs => _⟩
+  refine ⟨δ, hδpos, fun s hs hμs => ?_⟩
   rw [(_ : f = { x : α | M ≤ ‖f x‖₊ }.indicator f + { x : α | ‖f x‖ < M }.indicator f)]
   · rw [snorm_indicator_eq_snorm_restrict hs]
     refine' le_trans (snorm_add_le _ _ hp_one) _
@@ -393,7 +393,7 @@ theorem Memℒp.snorm_indicator_le (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (hf :
   have hℒp := hf
   obtain ⟨⟨f', hf', heq⟩, _⟩ := hf
   obtain ⟨δ, hδpos, hδ⟩ := (hℒp.ae_eq heq).snorm_indicator_le_of_meas hp_one hp_top hf' hε
-  refine' ⟨δ, hδpos, fun s hs hμs => _⟩
+  refine ⟨δ, hδpos, fun s hs hμs => ?_⟩
   convert hδ s hs hμs using 1
   rw [snorm_indicator_eq_snorm_restrict hs, snorm_indicator_eq_snorm_restrict hs]
   exact snorm_congr_ae heq.restrict
@@ -414,7 +414,7 @@ theorem unifIntegrable_subsingleton [Subsingleton ι] (hp_one : 1 ≤ p) (hp_top
   by_cases hι : Nonempty ι
   · cases' hι with i
     obtain ⟨δ, hδpos, hδ⟩ := (hf i).snorm_indicator_le hp_one hp_top hε
-    refine' ⟨δ, hδpos, fun j s hs hμs => _⟩
+    refine ⟨δ, hδpos, fun j s hs hμs => ?_⟩
     convert hδ s hs hμs
   · exact ⟨1, zero_lt_one, fun i => False.elim <| hι <| Nonempty.intro i⟩
 #align measure_theory.unif_integrable_subsingleton MeasureTheory.unifIntegrable_subsingleton
@@ -455,7 +455,7 @@ theorem unifIntegrable_finite [Finite ι] (hp_one : 1 ≤ p) (hp_top : p ≠ ∞
   let g : Fin n → α → β := f ∘ hn.some.symm
   have hg : ∀ i, Memℒp (g i) p μ := fun _ => hf _
   obtain ⟨δ, hδpos, hδ⟩ := unifIntegrable_fin hp_one hp_top hg hε
-  refine' ⟨δ, hδpos, fun i s hs hμs => _⟩
+  refine ⟨δ, hδpos, fun i s hs hμs => ?_⟩
   specialize hδ (hn.some i) s hs hμs
   simp_rw [g, Function.comp_apply, Equiv.symm_apply_apply] at hδ
   assumption
@@ -510,7 +510,7 @@ theorem tendsto_Lp_of_tendsto_ae_of_meas [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp
   specialize ht₂ (ε.toReal / (3 * measureUnivNNReal μ ^ (1 / p.toReal)))
     (div_pos (ENNReal.toReal_pos (gt_iff_lt.1 hε).ne.symm h.ne) (mul_pos (by norm_num) hpow))
   obtain ⟨N, hN⟩ := eventually_atTop.1 ht₂; clear ht₂
-  refine' ⟨N, fun n hn => _⟩
+  refine ⟨N, fun n hn => ?_⟩
   rw [← t.indicator_self_add_compl (f n - g)]
   refine' le_trans (snorm_add_le (((hf n).sub hg).indicator htm).aestronglyMeasurable
     (((hf n).sub hg).indicator htm.compl).aestronglyMeasurable hp) _
@@ -582,7 +582,7 @@ theorem unifIntegrable_of_tendsto_Lp_zero (hp : 1 ≤ p) (hp' : p ≠ ∞) (hf :
   let F : Fin N → α → β := fun n => f n
   have hF : ∀ n, Memℒp (F n) p μ := fun n => hf n
   obtain ⟨δ₁, hδpos₁, hδ₁⟩ := unifIntegrable_fin hp hp' hF hε
-  refine' ⟨δ₁, hδpos₁, fun n s hs hμs => _⟩
+  refine ⟨δ₁, hδpos₁, fun n s hs hμs => ?_⟩
   by_cases hn : n < N
   · exact hδ₁ ⟨n, hn⟩ s hs hμs
   · exact (snorm_indicator_le _).trans (hN n (not_lt.1 hn))
@@ -765,7 +765,7 @@ theorem uniformIntegrable_finite [Finite ι] (hp_one : 1 ≤ p) (hp_top : p ≠ 
   · choose _ hf using hf
     set C := (Finset.univ.image fun i : ι => snorm (f i) p μ).max'
       ⟨snorm (f hι.some) p μ, Finset.mem_image.2 ⟨hι.some, Finset.mem_univ _, rfl⟩⟩
-    refine' ⟨C.toNNReal, fun i => _⟩
+    refine ⟨C.toNNReal, fun i => ?_⟩
     rw [ENNReal.coe_toNNReal]
     · exact Finset.le_max' (α := ℝ≥0∞) _ _ (Finset.mem_image.2 ⟨i, Finset.mem_univ _, rfl⟩)
     · refine' ne_of_lt ((Finset.max'_lt_iff _ _).2 fun y hy => _)
@@ -798,7 +798,7 @@ theorem uniformIntegrable_of' [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ �
   refine' ⟨fun i => (hf i).aestronglyMeasurable,
     unifIntegrable_of hp hp' (fun i => (hf i).aestronglyMeasurable) h, _⟩
   obtain ⟨C, hC⟩ := h 1 one_pos
-  refine' ⟨((C : ℝ≥0∞) * μ Set.univ ^ p.toReal⁻¹ + 1).toNNReal, fun i => _⟩
+  refine ⟨((C : ℝ≥0∞) * μ Set.univ ^ p.toReal⁻¹ + 1).toNNReal, fun i => ?_⟩
   calc
     snorm (f i) p μ ≤
         snorm ({ x : α | ‖f i x‖₊ < C }.indicator (f i)) p μ +
@@ -924,7 +924,7 @@ theorem uniformIntegrable_average
   refine' ⟨fun n => _, fun ε hε => _, _⟩
   · exact (Finset.aestronglyMeasurable_sum' _ fun i _ => hf₁ i).const_smul _
   · obtain ⟨δ, hδ₁, hδ₂⟩ := hf₂ hε
-    refine' ⟨δ, hδ₁, fun n s hs hle => _⟩
+    refine ⟨δ, hδ₁, fun n s hs hle => ?_⟩
     simp_rw [Finset.smul_sum, Finset.indicator_sum]
     refine' le_trans (snorm_sum_le (fun i _ => ((hf₁ i).const_smul _).indicator hs) hp) _
     have : ∀ i, s.indicator ((n : ℝ) ⁻¹ • f i) = (↑n : ℝ)⁻¹ • s.indicator (f i) :=

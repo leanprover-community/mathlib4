@@ -135,7 +135,7 @@ attribute [local simp] add_assoc add_comm add_left_comm mul_comm
 theorem vieta_formula_quadratic {b c x : α} (h : x * x - b * x + c = 0) :
     ∃ y : α, y * y - b * y + c = 0 ∧ x + y = b ∧ x * y = c := by
   have : c = x * (b - x) := (eq_neg_of_add_eq_zero_right h).trans (by simp [mul_sub, mul_comm])
-  refine' ⟨b - x, _, by simp, by rw [this]⟩
+  refine ⟨b - x, ?_, by simp, by rw [this]⟩
   rw [this, sub_add, ← sub_mul, sub_self]
 set_option linter.uppercaseLean3 false in
 #align Vieta_formula_quadratic vieta_formula_quadratic

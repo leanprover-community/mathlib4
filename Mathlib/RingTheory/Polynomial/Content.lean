@@ -108,7 +108,7 @@ theorem content_one : content (1 : R[X]) = 1 := by rw [← C_1, content_C, norma
 
 theorem content_X_mul {p : R[X]} : content (X * p) = content p := by
   rw [content, content, Finset.gcd_def, Finset.gcd_def]
-  refine' congr rfl _
+  refine congr rfl ?_
   have h : (X * p).support = p.support.map ⟨Nat.succ, Nat.succ_injective⟩ := by
     ext a
     simp only [exists_prop, Finset.mem_map, Function.Embedding.coeFn_mk, Ne, mem_support_iff]
@@ -123,7 +123,7 @@ theorem content_X_mul {p : R[X]} : content (X * p) = content p := by
       apply h1
   rw [h]
   simp only [Finset.map_val, Function.comp_apply, Function.Embedding.coeFn_mk, Multiset.map_map]
-  refine' congr (congr rfl _) rfl
+  refine congr (congr rfl ?_) rfl
   ext a
   rw [mul_comm]
   simp [coeff_mul_X]
@@ -431,7 +431,7 @@ theorem exists_primitive_lcm_of_isPrimitive {p q : R[X]} (hp : p.IsPrimitive) (h
     have h : ∃ (n : ℕ) (r : R[X]), r.natDegree = n ∧ r.IsPrimitive ∧ p ∣ r ∧ q ∣ r :=
       ⟨(p * q).natDegree, p * q, rfl, hp.mul hq, dvd_mul_right _ _, dvd_mul_left _ _⟩
     rcases Nat.find_spec h with ⟨r, rdeg, rprim, pr, qr⟩
-    refine' ⟨r, rprim, fun s => ⟨_, fun rs => ⟨pr.trans rs, qr.trans rs⟩⟩⟩
+    refine ⟨r, rprim, fun s => ⟨?_, fun rs => ⟨pr.trans rs, qr.trans rs⟩⟩⟩
     suffices hs : ∀ (n : ℕ) (s : R[X]), s.natDegree = n → p ∣ s ∧ q ∣ s → r ∣ s from
       hs s.natDegree s rfl
     clear s
@@ -484,7 +484,7 @@ noncomputable instance (priority := 100) normalizedGcdMonoid : NormalizedGCDMono
     rcases exists_primitive_lcm_of_isPrimitive p.isPrimitive_primPart
         q.isPrimitive_primPart with
       ⟨r, rprim, hr⟩
-    refine' ⟨C (lcm p.content q.content) * r, fun s => _⟩
+    refine ⟨C (lcm p.content q.content) * r, fun s => ?_⟩
     by_cases hs : s = 0
     · simp [hs]
     by_cases hpq : C (lcm p.content q.content) = 0

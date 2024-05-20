@@ -1095,13 +1095,13 @@ theorem num_mul_dvd (x y : RatFunc K) : num (x * y) ∣ num x * num y := by
 
 theorem denom_mul_dvd (x y : RatFunc K) : denom (x * y) ∣ denom x * denom y := by
   rw [denom_dvd (mul_ne_zero (denom_ne_zero x) (denom_ne_zero y))]
-  refine' ⟨x.num * y.num, _⟩
+  refine ⟨x.num * y.num, ?_⟩
   rw [RingHom.map_mul, RingHom.map_mul, ← div_mul_div_comm, num_div_denom, num_div_denom]
 #align ratfunc.denom_mul_dvd RatFunc.denom_mul_dvd
 
 theorem denom_add_dvd (x y : RatFunc K) : denom (x + y) ∣ denom x * denom y := by
   rw [denom_dvd (mul_ne_zero (denom_ne_zero x) (denom_ne_zero y))]
-  refine' ⟨x.num * y.denom + x.denom * y.num, _⟩
+  refine ⟨x.num * y.denom + x.denom * y.num, ?_⟩
   rw [RingHom.map_mul, RingHom.map_add, RingHom.map_mul, RingHom.map_mul, ← div_add_div,
     num_div_denom, num_div_denom]
   · exact algebraMap_ne_zero (denom_ne_zero x)

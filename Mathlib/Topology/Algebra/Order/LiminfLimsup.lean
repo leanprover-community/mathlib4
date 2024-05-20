@@ -92,7 +92,7 @@ instance Prod.instBoundedLENhdsClass : BoundedLENhdsClass (α × β) := by
 
 instance Pi.instBoundedLENhdsClass [Finite ι] [∀ i, Preorder (π i)] [∀ i, TopologicalSpace (π i)]
     [∀ i, BoundedLENhdsClass (π i)] : BoundedLENhdsClass (∀ i, π i) := by
-  refine' ⟨fun x ↦ _⟩
+  refine ⟨fun x ↦ ?_⟩
   rw [nhds_pi]
   choose f hf using fun i ↦ isBounded_le_nhds (x i)
   exact ⟨f, eventually_pi hf⟩
@@ -262,7 +262,7 @@ theorem tendsto_of_no_upcrossings [DenselyOrdered α] {f : Filter β} {u : β �
     ∃ c : α, Tendsto u f (𝓝 c) := by
   rcases f.eq_or_neBot with rfl | hbot
   · exact ⟨sInf ∅, tendsto_bot⟩
-  refine' ⟨limsup u f, _⟩
+  refine ⟨limsup u f, ?_⟩
   apply tendsto_of_le_liminf_of_limsup_le _ le_rfl h h'
   by_contra! hlt
   obtain ⟨a, ⟨⟨la, au⟩, as⟩⟩ : ∃ a, (f.liminf u < a ∧ a < f.limsup u) ∧ a ∈ s :=
@@ -523,8 +523,8 @@ theorem limsup_eq_tendsto_sum_indicator_nat_atTop (s : ℕ → Set α) :
     simp only [mem_upperBounds, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff] at h
     induction' i with k hk
     · obtain ⟨j, hj₁, hj₂⟩ := hω 1
-      refine' not_lt.2 (h <| j + 1)
-        (lt_of_le_of_lt (Finset.sum_const_zero.symm : 0 = ∑ k in Finset.range (j + 1), 0).le _)
+      refine not_lt.2 (h <| j + 1)
+        (lt_of_le_of_lt (Finset.sum_const_zero.symm : 0 = ∑ k in Finset.range (j + 1), 0).le ?_)
       refine' Finset.sum_lt_sum (fun m _ ↦ Set.indicator_nonneg (fun _ _ ↦ zero_le_one) _)
         ⟨j - 1, Finset.mem_range.2 (lt_of_le_of_lt (Nat.sub_le _ _) j.lt_succ_self), _⟩
       rw [Nat.sub_add_cancel hj₁, Set.indicator_of_mem hj₂]

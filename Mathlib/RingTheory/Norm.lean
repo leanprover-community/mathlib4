@@ -390,7 +390,7 @@ theorem norm_norm [Algebra L F] [IsScalarTower K L F] [IsSeparable K F] (x : F) 
   · rw [norm_eq_one_of_not_module_finite hKF]
     by_cases hKL : FiniteDimensional K L
     · have hLF : ¬FiniteDimensional L F := by
-        refine' (mt _) hKF
+        refine (mt ?_) hKF
         intro hKF
         exact FiniteDimensional.trans K L F
       rw [norm_eq_one_of_not_module_finite hLF, _root_.map_one]

@@ -261,7 +261,7 @@ theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [CommRing R] (k : ℕ)
 
 -- TODO: link with `X_pow_dvd_iff`
 theorem X_pow_order_dvd (h : (order φ).Dom) : X ^ (order φ).get h ∣ φ := by
-  refine' ⟨PowerSeries.mk fun n => coeff R (n + (order φ).get h) φ, _⟩
+  refine ⟨PowerSeries.mk fun n => coeff R (n + (order φ).get h) φ, ?_⟩
   ext n
   simp only [coeff_mul, coeff_X_pow, coeff_mk, boole_mul, Finset.sum_ite,
     Finset.sum_const_zero, add_zero]

@@ -137,7 +137,7 @@ theorem trans (C : Type w) [CommRing C] [Algebra A C] [Algebra B C] [IsScalarTow
   refine' ⟨fun hn => _, fun x => _⟩
   · cases' hn with hn hn
     · obtain ⟨b, hb⟩ := ((isCyclotomicExtension_iff _ _ _).1 hS).1 hn
-      refine' ⟨algebraMap B C b, _⟩
+      refine ⟨algebraMap B C b, ?_⟩
       exact hb.map_of_injective h
     · exact ((isCyclotomicExtension_iff _ _ _).1 hT).1 hn
   · refine' adjoin_induction (((isCyclotomicExtension_iff T B _).1 hT).2 x)
@@ -217,7 +217,7 @@ theorem of_union_of_dvd (h : ∀ s ∈ S, n ∣ s) (hS : S.Nonempty) [H : IsCycl
     · obtain ⟨m, hm⟩ := hS
       obtain ⟨x, rfl⟩ := h m hm
       obtain ⟨ζ, hζ⟩ := H.exists_prim_root hm
-      refine' ⟨ζ ^ (x : ℕ), _⟩
+      refine ⟨ζ ^ (x : ℕ), ?_⟩
       convert hζ.pow_of_dvd x.ne_zero (dvd_mul_left (x : ℕ) s)
       simp only [PNat.mul_coe, Nat.mul_div_left, PNat.pos]
   · refine' _root_.eq_top_iff.2 _
@@ -240,7 +240,7 @@ theorem iff_union_of_dvd (h : ∀ s ∈ S, n ∣ s) (hS : S.Nonempty) :
     simp only [union_singleton, mem_insert_iff, mem_setOf_eq] at hx ⊢
     obtain ⟨m, rfl | hm, hxpow⟩ := hx
     · obtain ⟨y, hy⟩ := hS
-      refine' ⟨y, ⟨hy, _⟩⟩
+      refine ⟨y, ⟨hy, ?_⟩⟩
       obtain ⟨z, rfl⟩ := h y hy
       simp only [PNat.mul_coe, pow_mul, hxpow, one_pow]
     · exact ⟨m, ⟨hm, hxpow⟩⟩
@@ -468,7 +468,7 @@ theorem isSplittingField_X_pow_sub_one : IsSplittingField K L (X ^ (n : ℕ) - 1
     adjoin_rootSet' := by
       rw [← ((iff_adjoin_eq_top {n} K L).1 inferInstance).2]
       congr
-      refine' Set.ext fun x => _
+      refine Set.ext fun x => ?_
       simp only [Polynomial.map_pow, mem_singleton_iff, Multiset.mem_toFinset, exists_eq_left,
         mem_setOf_eq, Polynomial.map_X, Polynomial.map_one, Finset.mem_coe, Polynomial.map_sub]
       simp only [mem_rootSet', map_sub, map_pow, aeval_one, aeval_X, sub_eq_zero, map_X,
@@ -731,7 +731,7 @@ theorem IsAlgClosed.isCyclotomicExtension (h : ∀ a ∈ S, NeZero ((a : ℕ) : 
     IsCyclotomicExtension S K K := by
   refine' ⟨@fun a ha => _, Algebra.eq_top_iff.mp <| Subsingleton.elim _ _⟩
   obtain ⟨r, hr⟩ := IsAlgClosed.exists_aeval_eq_zero K _ (degree_cyclotomic_pos a K a.pos).ne'
-  refine' ⟨r, _⟩
+  refine ⟨r, ?_⟩
   haveI := h a ha
   rwa [coe_aeval_eq_eval, ← IsRoot.def, isRoot_cyclotomic_iff] at hr
 #align is_alg_closed.is_cyclotomic_extension IsAlgClosed.isCyclotomicExtension

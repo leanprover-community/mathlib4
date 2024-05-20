@@ -131,7 +131,7 @@ theorem isEquivalent_zero_iff_eventually_zero : u ~[l] 0 ↔ u =ᶠ[l] 0 := by
 #align asymptotics.is_equivalent_zero_iff_eventually_zero Asymptotics.isEquivalent_zero_iff_eventually_zero
 
 theorem isEquivalent_zero_iff_isBigO_zero : u ~[l] 0 ↔ u =O[l] (0 : α → β) := by
-  refine' ⟨IsEquivalent.isBigO, fun h ↦ _⟩
+  refine ⟨IsEquivalent.isBigO, fun h ↦ ?_⟩
   rw [isEquivalent_zero_iff_eventually_zero, eventuallyEq_iff_exists_mem]
   exact ⟨{ x : α | u x = 0 }, isBigO_zero_right_iff.mp h, fun x hx ↦ hx⟩
 set_option linter.uppercaseLean3 false in
@@ -263,7 +263,7 @@ theorem IsEquivalent.smul {α E 𝕜 : Type*} [NormedField 𝕜] [NormedAddCommG
   intro c hc
   specialize hφ (c / 2 / C) (div_pos (div_pos hc zero_lt_two) hC)
   specialize huv (div_pos hc zero_lt_two)
-  refine' hφ.mp (huv.mp <| hCuv.mono fun x hCuvx huvx hφx ↦ _)
+  refine hφ.mp (huv.mp <| hCuv.mono fun x hCuvx huvx hφx ↦ ?_)
   have key :=
     calc
       ‖φ x - 1‖ * ‖u x‖ ≤ c / 2 / C * ‖u x‖ := by gcongr

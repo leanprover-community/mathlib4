@@ -280,7 +280,7 @@ theorem isLittleO_iff_nat_mul_le_aux (h₀ : (∀ x, 0 ≤ ‖f x‖) ∨ ∀ x,
   · rintro H (_ | n)
     · refine' (H.def one_pos).mono fun x h₀' => _
       rw [Nat.cast_zero, zero_mul]
-      refine' h₀.elim (fun hf => (hf x).trans _) fun hg => hg x
+      refine h₀.elim (fun hf => (hf x).trans ?_) fun hg => hg x
       rwa [one_mul] at h₀'
     · have : (0 : ℝ) < n.succ := Nat.cast_pos.2 n.succ_pos
       exact (isBigOWith_inv this).1 (H.def' <| inv_pos.2 this)
@@ -1989,7 +1989,7 @@ theorem isBigOWith_of_eq_mul {u v : α → R} (φ : α → R) (hφ : ∀ᶠ x in
     (h : u =ᶠ[l] φ * v) :
     IsBigOWith c l u v := by
   simp only [IsBigOWith_def]
-  refine' h.symm.rw (fun x a => ‖a‖ ≤ c * ‖v x‖) (hφ.mono fun x hx => _)
+  refine h.symm.rw (fun x a => ‖a‖ ≤ c * ‖v x‖) (hφ.mono fun x hx => ?_)
   simp only [Pi.mul_apply]
   refine (norm_mul_le _ _).trans ?_
   gcongr

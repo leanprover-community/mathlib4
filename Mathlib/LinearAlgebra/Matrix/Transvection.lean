@@ -555,7 +555,7 @@ theorem exists_isTwoBlockDiagonal_of_ne_zero (hM : M (inr unit) (inr unit) ≠ 0
   let L' : List (TransvectionStruct (Sum (Fin r) Unit) 𝕜) :=
     List.ofFn fun i : Fin r =>
       ⟨inr unit, inl i, by simp, -M (inr unit) (inl i) / M (inr unit) (inr unit)⟩
-  refine' ⟨L, L', _⟩
+  refine ⟨L, L', ?_⟩
   have A : L.map toMatrix = listTransvecCol M := by simp [L, listTransvecCol, (· ∘ ·)]
   have B : L'.map toMatrix = listTransvecRow M := by simp [L', listTransvecRow, (· ∘ ·)]
   rw [A, B]
@@ -591,14 +591,14 @@ theorem exists_isTwoBlockDiagonal_list_transvec_mul_mul_list_transvec
     have hM' : M' (inr unit) (inr unit) ≠ 0 := by simpa [M', hM]
     rcases exists_isTwoBlockDiagonal_of_ne_zero M' hM' with ⟨L, L', hLL'⟩
     rw [Matrix.mul_assoc] at hLL'
-    refine' ⟨L ++ [⟨inr unit, inl i, by simp, 1⟩], L', _⟩
+    refine ⟨L ++ [⟨inr unit, inl i, by simp, 1⟩], L', ?_⟩
     simp only [List.map_append, List.prod_append, Matrix.mul_one, toMatrix_mk, List.prod_cons,
       List.prod_nil, List.map, Matrix.mul_assoc (L.map toMatrix).prod]
     exact hLL'
   · let M' := M * transvection (inl i) (inr unit) 1
     have hM' : M' (inr unit) (inr unit) ≠ 0 := by simpa [M', hM]
     rcases exists_isTwoBlockDiagonal_of_ne_zero M' hM' with ⟨L, L', hLL'⟩
-    refine' ⟨L, ⟨inl i, inr unit, by simp, 1⟩::L', _⟩
+    refine ⟨L, ⟨inl i, inr unit, by simp, 1⟩::L', ?_⟩
     simp only [← Matrix.mul_assoc, toMatrix_mk, List.prod_cons, List.map]
     rw [Matrix.mul_assoc (L.map toMatrix).prod]
     exact hLL'
@@ -645,7 +645,7 @@ theorem reindex_exists_list_transvec_mul_mul_list_transvec_eq_diagonal (M : Matr
     ∃ (L L' : List (TransvectionStruct p 𝕜)) (D : p → 𝕜),
       (L.map toMatrix).prod * M * (L'.map toMatrix).prod = diagonal D := by
   rcases H with ⟨L₀, L₀', D₀, h₀⟩
-  refine' ⟨L₀.map (reindexEquiv e.symm), L₀'.map (reindexEquiv e.symm), D₀ ∘ e, _⟩
+  refine ⟨L₀.map (reindexEquiv e.symm), L₀'.map (reindexEquiv e.symm), D₀ ∘ e, ?_⟩
   have : M = reindexAlgEquiv 𝕜 e.symm (reindexAlgEquiv 𝕜 e M) := by
     simp only [Equiv.symm_symm, submatrix_submatrix, reindex_apply, submatrix_id_id,
       Equiv.symm_comp_self, reindexAlgEquiv_apply]
@@ -669,7 +669,7 @@ theorem exists_list_transvec_mul_mul_list_transvec_eq_diagonal_aux (n : Type) [F
     rw [Fintype.card_eq_zero_iff] at hn
     exact hn.elim' i
   · have e : n ≃ Sum (Fin r) Unit := by
-      refine' Fintype.equivOfCardEq _
+      refine Fintype.equivOfCardEq ?_
       rw [hn]
       rw [@Fintype.card_sum (Fin r) Unit _ _]
       simp
@@ -694,7 +694,7 @@ theorem exists_list_transvec_mul_diagonal_mul_list_transvec (M : Matrix n n 𝕜
     ∃ (L L' : List (TransvectionStruct n 𝕜)) (D : n → 𝕜),
       M = (L.map toMatrix).prod * diagonal D * (L'.map toMatrix).prod := by
   rcases exists_list_transvec_mul_mul_list_transvec_eq_diagonal M with ⟨L, L', D, h⟩
-  refine' ⟨L.reverse.map TransvectionStruct.inv, L'.reverse.map TransvectionStruct.inv, D, _⟩
+  refine ⟨L.reverse.map TransvectionStruct.inv, L'.reverse.map TransvectionStruct.inv, D, ?_⟩
   suffices
     M =
       (L.reverse.map (toMatrix ∘ TransvectionStruct.inv)).prod * (L.map toMatrix).prod * M *

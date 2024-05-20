@@ -332,7 +332,7 @@ set_option linter.uppercaseLean3 false in
 -/
 def iccHomeoI (a b : 𝕜) (h : a < b) : Set.Icc a b ≃ₜ Set.Icc (0 : 𝕜) (1 : 𝕜) := by
   let e := Homeomorph.image (affineHomeomorph (b - a) a (sub_pos.mpr h).ne.symm) (Set.Icc 0 1)
-  refine' (e.trans _).symm
+  refine (e.trans ?_).symm
   apply Homeomorph.setCongr
   rw [affineHomeomorph_image_I _ _ (sub_pos.2 h)]
   simp

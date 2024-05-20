@@ -228,7 +228,7 @@ theorem measure_mul_right_ne_zero (h2s : μ s ≠ 0) (y : G) : μ ((fun x => x *
 
 @[to_additive]
 theorem absolutelyContinuous_map_mul_right (g : G) : μ ≪ map (· * g) μ := by
-  refine' AbsolutelyContinuous.mk fun s hs => _
+  refine AbsolutelyContinuous.mk fun s hs => ?_
   rw [map_apply (measurable_mul_const g) hs, measure_mul_right_null]; exact id
 #align measure_theory.absolutely_continuous_map_mul_right MeasureTheory.absolutelyContinuous_map_mul_right
 #align measure_theory.absolutely_continuous_map_add_right MeasureTheory.absolutelyContinuous_map_add_right
@@ -267,7 +267,7 @@ theorem measure_mul_lintegral_eq [IsMulLeftInvariant ν] (sm : MeasurableSet s) 
 @[to_additive
 " Any two nonzero left-invariant measures are absolutely continuous w.r.t. each other. "]
 theorem absolutelyContinuous_of_isMulLeftInvariant [IsMulLeftInvariant ν] (hν : ν ≠ 0) : μ ≪ ν := by
-  refine' AbsolutelyContinuous.mk fun s sm hνs => _
+  refine AbsolutelyContinuous.mk fun s sm hνs => ?_
   have h1 := measure_mul_lintegral_eq μ ν sm 1 measurable_one
   simp_rw [Pi.one_apply, lintegral_one, mul_one, (measure_mul_right_null ν _).mpr hνs,
     lintegral_zero, mul_eq_zero (M₀ := ℝ≥0∞), measure_univ_eq_zero.not.mpr hν, or_false_iff] at h1
@@ -298,7 +298,7 @@ theorem ae_measure_preimage_mul_right_lt_top_of_ne_zero [IsMulLeftInvariant ν]
     ∀ᵐ x ∂μ, ν ((fun y => y * x) ⁻¹' s) < ∞ := by
   refine' (ae_measure_preimage_mul_right_lt_top ν ν sm h3s).filter_mono _
   refine' (absolutelyContinuous_of_isMulLeftInvariant μ ν _).ae_le
-  refine' mt _ h2s
+  refine mt ?_ h2s
   intro hν
   rw [hν, Measure.coe_zero, Pi.zero_apply]
 #align measure_theory.ae_measure_preimage_mul_right_lt_top_of_ne_zero MeasureTheory.ae_measure_preimage_mul_right_lt_top_of_ne_zero

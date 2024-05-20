@@ -394,13 +394,13 @@ theorem formPerm_eq_formPerm_iff {l l' : List α} (hl : l.Nodup) (hl' : l'.Nodup
   rcases l with (_ | ⟨x, _ | ⟨y, l⟩⟩)
   · suffices l'.length ≤ 1 ↔ l' = nil ∨ l'.length ≤ 1 by
       simpa [eq_comm, formPerm_eq_one_iff, hl, hl', length_eq_zero]
-    refine' ⟨fun h => Or.inr h, _⟩
+    refine ⟨fun h => Or.inr h, ?_⟩
     rintro (rfl | h)
     · simp
     · exact h
   · suffices l'.length ≤ 1 ↔ [x] ~r l' ∨ l'.length ≤ 1 by
       simpa [eq_comm, formPerm_eq_one_iff, hl, hl', length_eq_zero, le_rfl]
-    refine' ⟨fun h => Or.inr h, _⟩
+    refine ⟨fun h => Or.inr h, ?_⟩
     rintro (h | h)
     · simp [← h.perm.length_eq]
     · exact h
@@ -428,7 +428,7 @@ theorem formPerm_pow_length_eq_one_of_nodup (hl : Nodup l) : formPerm l ^ length
     simp [formPerm_pow_apply_nthLe _ hl, Nat.mod_eq_of_lt hk]
   · have : x ∉ { x | (l.formPerm ^ l.length) x ≠ x } := by
       intro H
-      refine' hx _
+      refine hx ?_
       replace H := set_support_zpow_subset l.formPerm l.length H
       simpa using support_formPerm_le' _ H
     simpa using this

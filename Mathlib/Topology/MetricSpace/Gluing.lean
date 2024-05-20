@@ -411,7 +411,7 @@ protected theorem isOpen_iff (s : Set (Σi, E i)) :
   · refine fun H => isOpen_sigma_iff.2 fun i => Metric.isOpen_iff.2 fun x hx => ?_
     obtain ⟨ε, εpos, hε⟩ : ∃ ε > 0, ∀ y, dist (⟨i, x⟩ : Σj, E j) y < ε → y ∈ s :=
       H ⟨i, x⟩ hx
-    refine' ⟨ε, εpos, fun y hy => _⟩
+    refine ⟨ε, εpos, fun y hy => ?_⟩
     apply hε ⟨i, y⟩
     rw [Sigma.dist_same]
     exact mem_ball'.1 hy

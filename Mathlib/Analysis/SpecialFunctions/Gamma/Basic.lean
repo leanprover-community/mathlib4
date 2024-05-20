@@ -244,7 +244,7 @@ theorem GammaIntegral_add_one {s : ℂ} (hs : 0 < s.re) :
     intro X hX
     rw [partialGamma_add_one hs (mem_Ici.mp hX)]
     ring_nf
-  refine' Tendsto.congr' this _
+  refine Tendsto.congr' this ?_
   suffices Tendsto (fun X => -X ^ s * (-X).exp : ℝ → ℂ) atTop (𝓝 0) by
     simpa using Tendsto.add (Tendsto.const_mul s (tendsto_partialGamma hs)) this
   rw [tendsto_zero_iff_norm_tendsto_zero]
@@ -471,7 +471,7 @@ theorem differentiableAt_Gamma (s : ℂ) (hs : ∀ m : ℕ, s ≠ -m) : Differen
   let S := {t : ℂ | 1 - t.re < n}
   have : S ∈ 𝓝 s := by
     rw [mem_nhds_iff]; use S
-    refine' ⟨Subset.rfl, _, hn⟩
+    refine ⟨Subset.rfl, ?_, hn⟩
     have : S = re ⁻¹' Ioi (1 - n : ℝ) := by
       ext; rw [preimage, Ioi, mem_setOf_eq, mem_setOf_eq, mem_setOf_eq]; exact sub_lt_comm
     rw [this]

@@ -289,7 +289,7 @@ theorem IsIntegral.exists_multiple_integral_of_isLocalization [Algebra Rₘ S] [
   have :=
     lifts_and_natDegree_eq_and_monic (IsLocalization.scaleRoots_commonDenom_mem_lifts M p ?_) ?_
   · obtain ⟨p', hp'₁, -, hp'₂⟩ := this
-    refine' ⟨IsLocalization.commonDenom M p.support p.coeff, p', hp'₂, _⟩
+    refine ⟨IsLocalization.commonDenom M p.support p.coeff, p', hp'₂, ?_⟩
     rw [IsScalarTower.algebraMap_eq R Rₘ S, ← Polynomial.eval₂_map, hp'₁, Submonoid.smul_def,
       Algebra.smul_def, IsScalarTower.algebraMap_apply R Rₘ S]
     exact Polynomial.scaleRoots_eval₂_eq_zero _ hp₂

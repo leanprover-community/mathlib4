@@ -377,7 +377,7 @@ theorem _root_.MeasurableSet.exists_isOpen_diff_lt [OuterRegular μ] {A : Set α
 protected theorem map [OpensMeasurableSpace α] [MeasurableSpace β] [TopologicalSpace β]
     [BorelSpace β] (f : α ≃ₜ β) (μ : Measure α) [OuterRegular μ] :
     (Measure.map f μ).OuterRegular := by
-  refine' ⟨fun A hA r hr => _⟩
+  refine ⟨fun A hA r hr => ?_⟩
   rw [map_apply f.measurable hA, ← f.image_symm] at hr
   rcases Set.exists_isOpen_lt_of_lt _ r hr with ⟨U, hAU, hUo, hU⟩
   have : IsOpen (f.symm ⁻¹' U) := hUo.preimage f.symm.continuous
@@ -404,7 +404,7 @@ outer regular, then the measure itself is outer regular. -/
 lemma of_restrict [OpensMeasurableSpace α] {μ : Measure α} {s : ℕ → Set α}
     (h : ∀ n, OuterRegular (μ.restrict (s n))) (h' : ∀ n, IsOpen (s n)) (h'' : univ ⊆ ⋃ n, s n) :
     OuterRegular μ := by
-  refine' ⟨fun A hA r hr => _⟩
+  refine ⟨fun A hA r hr => ?_⟩
   have HA : μ A < ∞ := lt_of_lt_of_le hr le_top
   have hm : ∀ n, MeasurableSet (s n) := fun n => (h' n).measurableSet
   -- Note that `A = ⋃ n, A ∩ disjointed s n`. We replace `A` with this sequence.
@@ -500,7 +500,7 @@ theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [IsFiniteMeasu
         innerRegular := H }
     rcases exists_between hr with ⟨r', hsr', hr'r⟩
     rcases this s hs _ (tsub_pos_iff_lt.2 hsr').ne' with ⟨-, -, U, hsU, -, hUo, -, H⟩
-    refine' ⟨U, hsU, hUo, _⟩
+    refine ⟨U, hsU, hUo, ?_⟩
     rw [add_tsub_cancel_of_le hsr'.le] at H
     exact H.trans_lt hr'r
   refine' MeasurableSet.induction_on_open _ _ _
@@ -925,7 +925,7 @@ instance (priority := 100) of_pseudoMetrizableSpace_secondCountable_of_locallyFi
     [TopologicalSpace X] [PseudoMetrizableSpace X] [SecondCountableTopology X] [MeasurableSpace X]
     [BorelSpace X] (μ : Measure X) [IsLocallyFiniteMeasure μ] : WeaklyRegular μ :=
   have : OuterRegular μ := by
-    refine' (μ.finiteSpanningSetsInOpen'.mono' fun U hU => _).outerRegular
+    refine (μ.finiteSpanningSetsInOpen'.mono' fun U hU => ?_).outerRegular
     have : Fact (μ U < ∞) := ⟨hU.2⟩
     exact ⟨hU.1, inferInstance⟩
   ⟨InnerRegularWRT.of_pseudoMetrizableSpace μ⟩

@@ -57,7 +57,7 @@ theorem Nat.sq_add_sq_mul {a b x y u v : ℕ} (ha : a = x ^ 2 + y ^ 2) (hb : b =
     ∃ r s : ℕ, a * b = r ^ 2 + s ^ 2 := by
   zify at ha hb ⊢
   obtain ⟨r, s, h⟩ := _root_.sq_add_sq_mul ha hb
-  refine' ⟨r.natAbs, s.natAbs, _⟩
+  refine ⟨r.natAbs, s.natAbs, ?_⟩
   simpa only [Int.natCast_natAbs, sq_abs]
 #align nat.sq_add_sq_mul Nat.sq_add_sq_mul
 
@@ -166,7 +166,7 @@ theorem ZMod.isSquare_neg_one_of_eq_sq_add_sq_of_isCoprime {n x y : ℤ} (h : n 
     exact (IsCoprime.pow_left_iff zero_lt_two).mp hc2.of_add_mul_right_right
   have H : u * y * (u * y) - -1 = n * (-v ^ 2 * n + u ^ 2 + 2 * v) := by
     linear_combination -u ^ 2 * h + (n * v - u * x - 1) * huv
-  refine' ⟨u * y, _⟩
+  refine ⟨u * y, ?_⟩
   conv_rhs => tactic => norm_cast
   rw [(by norm_cast : (-1 : ZMod n.natAbs) = (-1 : ℤ))]
   exact (ZMod.intCast_eq_intCast_iff_dvd_sub _ _ _).mpr (Int.natAbs_dvd.mpr ⟨_, H⟩)

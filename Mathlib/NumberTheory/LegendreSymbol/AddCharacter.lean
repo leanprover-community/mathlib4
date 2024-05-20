@@ -169,7 +169,7 @@ end ZModCharDef
 /-- An additive character on `ZMod n` is nontrivial iff it takes a value `≠ 1` on `1`. -/
 theorem zmod_char_isNontrivial_iff (n : ℕ+) (ψ : AddChar (ZMod n) C) :
     IsNontrivial ψ ↔ ψ 1 ≠ 1 := by
-  refine' ⟨_, fun h => ⟨1, h⟩⟩
+  refine ⟨?_, fun h => ⟨1, h⟩⟩
   contrapose!
   rintro h₁ ⟨a, ha⟩
   have ha₁ : a = a.val • (1 : ZMod ↑n) := by

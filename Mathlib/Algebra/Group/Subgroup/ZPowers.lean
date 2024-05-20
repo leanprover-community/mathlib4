@@ -188,7 +188,7 @@ theorem ofMul_image_zpowers_eq_zmultiples_ofMul {x : G} :
     simp only at *
     rwa [← ofMul_zpow, hm]
   · rintro ⟨n, hn⟩
-    refine' ⟨x ^ n, ⟨n, rfl⟩, _⟩
+    refine ⟨x ^ n, ⟨n, rfl⟩, ?_⟩
     rwa [ofMul_zpow]
 #align of_mul_image_zpowers_eq_zmultiples_of_mul ofMul_image_zpowers_eq_zmultiples_ofMul
 

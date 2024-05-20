@@ -331,7 +331,7 @@ difference of those points and the radius vector is positive unless the points a
 theorem inner_pos_or_eq_of_dist_le_radius {s : Sphere P} {p₁ p₂ : P} (hp₁ : p₁ ∈ s)
     (hp₂ : dist p₂ s.center ≤ s.radius) : 0 < ⟪p₁ -ᵥ p₂, p₁ -ᵥ s.center⟫ ∨ p₁ = p₂ := by
   by_cases h : p₁ = p₂; · exact Or.inr h
-  refine' Or.inl _
+  refine Or.inl ?_
   rw [mem_sphere] at hp₁
   rw [← vsub_sub_vsub_cancel_right p₁ p₂ s.center, inner_sub_left,
     real_inner_self_eq_norm_mul_norm, sub_pos]
@@ -352,7 +352,7 @@ theorem inner_pos_or_eq_of_dist_le_radius {s : Sphere P} {p₁ p₂ : P} (hp₁ 
         vsub_sub_vsub_cancel_right, ← Ne, smul_ne_zero_iff, vsub_ne_zero,
         and_iff_left (Ne.symm h), norm_ne_zero_iff, vsub_ne_zero]
       rintro rfl
-      refine' h (Eq.symm _)
+      refine h (Eq.symm ?_)
       simpa using hp₂'
 #align euclidean_geometry.inner_pos_or_eq_of_dist_le_radius EuclideanGeometry.inner_pos_or_eq_of_dist_le_radius
 

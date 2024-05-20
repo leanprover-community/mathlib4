@@ -85,7 +85,7 @@ theorem IsUpperSet.mem_interior_of_forall_lt (hs : IsUpperSet s) (hx : x ∈ clo
   obtain ⟨δ, hδ, hyz⟩ := Pi.exists_forall_pos_add_lt hyz
   refine' mem_interior.2 ⟨ball y δ, _, isOpen_ball, mem_ball_self hδ⟩
   rintro w hw
-  refine' hs (fun i => _) hz
+  refine hs (fun i => ?_) hz
   simp_rw [ball_pi _ hδ, Real.ball_eq_Ioo] at hw
   exact ((lt_sub_iff_add_lt.2 <| hyz _).trans (hw _ <| mem_univ _).1).le
 #align is_upper_set.mem_interior_of_forall_lt IsUpperSet.mem_interior_of_forall_lt
@@ -104,7 +104,7 @@ theorem IsLowerSet.mem_interior_of_forall_lt (hs : IsLowerSet s) (hx : x ∈ clo
   obtain ⟨δ, hδ, hyz⟩ := Pi.exists_forall_pos_add_lt hyz
   refine' mem_interior.2 ⟨ball y δ, _, isOpen_ball, mem_ball_self hδ⟩
   rintro w hw
-  refine' hs (fun i => _) hz
+  refine hs (fun i => ?_) hz
   simp_rw [ball_pi _ hδ, Real.ball_eq_Ioo] at hw
   exact ((hw _ <| mem_univ _).2.trans <| hyz _).le
 #align is_lower_set.mem_interior_of_forall_lt IsLowerSet.mem_interior_of_forall_lt

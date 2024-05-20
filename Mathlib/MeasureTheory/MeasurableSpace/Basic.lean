@@ -408,7 +408,7 @@ instance Rat.instMeasurableSpace : MeasurableSpace ℚ := ⊤
 
 instance Subsingleton.measurableSingletonClass {α} [MeasurableSpace α] [Subsingleton α] :
     MeasurableSingletonClass α := by
-  refine' ⟨fun i => _⟩
+  refine ⟨fun i => ?_⟩
   convert MeasurableSet.univ
   simp [Set.eq_univ_iff_forall, eq_iff_true_of_subsingleton]
 #noalign empty.measurable_singleton_class
@@ -430,7 +430,7 @@ instance Rat.instMeasurableSingletonClass : MeasurableSingletonClass ℚ := ⟨f
 theorem measurable_to_countable [MeasurableSpace α] [Countable α] [MeasurableSpace β] {f : β → α}
     (h : ∀ y, MeasurableSet (f ⁻¹' {f y})) : Measurable f := fun s _ => by
   rw [← biUnion_preimage_singleton]
-  refine' MeasurableSet.iUnion fun y => MeasurableSet.iUnion fun hy => _
+  refine MeasurableSet.iUnion fun y => MeasurableSet.iUnion fun hy => ?_
   by_cases hyf : y ∈ range f
   · rcases hyf with ⟨y, rfl⟩
     apply h
@@ -836,7 +836,7 @@ protected theorem MeasurableSet.prod {s : Set α} {t : Set β} (hs : MeasurableS
 theorem measurableSet_prod_of_nonempty {s : Set α} {t : Set β} (h : (s ×ˢ t).Nonempty) :
     MeasurableSet (s ×ˢ t) ↔ MeasurableSet s ∧ MeasurableSet t := by
   rcases h with ⟨⟨x, y⟩, hx, hy⟩
-  refine' ⟨fun hst => _, fun h => h.1.prod h.2⟩
+  refine ⟨fun hst => ?_, fun h => h.1.prod h.2⟩
   have : MeasurableSet ((fun x => (x, y)) ⁻¹' s ×ˢ t) := measurable_prod_mk_right hst
   have : MeasurableSet (Prod.mk x ⁻¹' s ×ˢ t) := measurable_prod_mk_left hst
   simp_all
@@ -1047,7 +1047,7 @@ theorem measurableSet_pi_of_nonempty {s : Set δ} {t : ∀ i, Set (π i)} (hs : 
     (h : (pi s t).Nonempty) : MeasurableSet (pi s t) ↔ ∀ i ∈ s, MeasurableSet (t i) := by
   classical
     rcases h with ⟨f, hf⟩
-    refine' ⟨fun hst i hi => _, MeasurableSet.pi hs⟩
+    refine ⟨fun hst i hi => ?_, MeasurableSet.pi hs⟩
     convert measurable_update f (a := i) hst
     rw [update_preimage_pi hi]
     exact fun j hj _ => hf j hj
@@ -1380,7 +1380,7 @@ theorem exists_measurable_extend (hf : MeasurableEmbedding f) {g : α → γ} (h
 #align measurable_embedding.exists_measurable_extend MeasurableEmbedding.exists_measurable_extend
 
 theorem measurable_comp_iff (hg : MeasurableEmbedding g) : Measurable (g ∘ f) ↔ Measurable f := by
-  refine' ⟨fun H => _, hg.measurable.comp⟩
+  refine ⟨fun H => ?_, hg.measurable.comp⟩
   suffices Measurable ((rangeSplitting g ∘ rangeFactorization g) ∘ f) by
     rwa [(rightInverse_rangeSplitting hg.injective).comp_eq_id] at this
   exact hg.measurable_rangeSplitting.comp H.subtype_mk
@@ -2071,7 +2071,7 @@ alias ⟨_, _root_.MeasurableSet.principal_isMeasurablyGenerated⟩ :=
 
 instance iInf_isMeasurablyGenerated {f : ι → Filter α} [∀ i, IsMeasurablyGenerated (f i)] :
     IsMeasurablyGenerated (⨅ i, f i) := by
-  refine' ⟨fun s hs => _⟩
+  refine ⟨fun s hs => ?_⟩
   rw [← Equiv.plift.surjective.iInf_comp, mem_iInf] at hs
   rcases hs with ⟨t, ht, ⟨V, hVf, rfl⟩⟩
   choose U hUf hU using fun i => IsMeasurablyGenerated.exists_measurable_subset (hVf i)

@@ -44,7 +44,7 @@ theorem card_roots_toFinset_le_card_roots_derivative_diff_roots_succ (p : ℝ[X]
   refine' Finset.card_le_diff_of_interleaved fun x hx y hy hxy hxy' => _
   rw [Multiset.mem_toFinset, mem_roots hp] at hx hy
   obtain ⟨z, hz1, hz2⟩ := exists_deriv_eq_zero hxy p.continuousOn (hx.trans hy.symm)
-  refine' ⟨z, _, hz1⟩
+  refine ⟨z, ?_, hz1⟩
   rwa [Multiset.mem_toFinset, mem_roots hp', IsRoot, ← p.deriv]
 #align polynomial.card_roots_to_finset_le_card_roots_derivative_diff_roots_succ Polynomial.card_roots_toFinset_le_card_roots_derivative_diff_roots_succ
 

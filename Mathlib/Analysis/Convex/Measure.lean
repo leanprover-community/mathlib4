@@ -68,8 +68,8 @@ theorem addHaar_frontier (hs : Convex ℝ s) : μ (frontier s) = 0 := by
     where `d = finrank ℝ E`. -/
   set d : ℕ := FiniteDimensional.finrank ℝ E
   have : ∀ r : ℝ≥0, 1 < r → μ (closure s) ≤ ↑(r ^ d) * μ (interior s) := fun r hr ↦ by
-    refine' (measure_mono <|
-      hs.closure_subset_image_homothety_interior_of_one_lt hx r hr).trans_eq _
+    refine (measure_mono <|
+      hs.closure_subset_image_homothety_interior_of_one_lt hx r hr).trans_eq ?_
     rw [addHaar_image_homothety, ← NNReal.coe_pow, NNReal.abs_eq, ENNReal.ofReal_coe_nnreal]
   have : ∀ᶠ (r : ℝ≥0) in 𝓝[>] 1, μ (closure s) ≤ ↑(r ^ d) * μ (interior s) :=
     mem_of_superset self_mem_nhdsWithin this

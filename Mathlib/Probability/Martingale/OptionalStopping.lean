@@ -46,7 +46,7 @@ theorem Submartingale.expected_stoppedValue_mono [SigmaFiniteFiltration μ 𝒢]
   · simp only [Finset.sum_apply]
     have : ∀ i, MeasurableSet[𝒢 i] {ω : Ω | τ ω ≤ i ∧ i < π ω} := by
       intro i
-      refine' (hτ i).inter _
+      refine (hτ i).inter ?_
       convert (hπ i).compl using 1
       ext x
       simp; rfl

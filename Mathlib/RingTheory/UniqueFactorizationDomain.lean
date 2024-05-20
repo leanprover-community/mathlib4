@@ -327,7 +327,7 @@ theorem WfDvdMonoid.of_exists_prime_factors : WfDvdMonoid α :=
       · rw [dif_neg h]
         erw [WithTop.coe_lt_coe]
         have cne0 : c ≠ 0 := by
-          refine' mt (fun con => _) h
+          refine mt (fun con => ?_) h
           rw [b_eq, con, mul_zero]
         calc
           Multiset.card (Classical.choose (pf a ane0)) <
@@ -355,7 +355,7 @@ theorem WfDvdMonoid.of_exists_prime_factors : WfDvdMonoid α :=
 theorem irreducible_iff_prime_of_exists_prime_factors {p : α} : Irreducible p ↔ Prime p := by
   by_cases hp0 : p = 0
   · simp [hp0]
-  refine' ⟨fun h => _, Prime.irreducible⟩
+  refine ⟨fun h => ?_, Prime.irreducible⟩
   obtain ⟨f, hf⟩ := pf p hp0
   obtain ⟨q, hq, rfl⟩ := prime_factors_irreducible h hf
   rw [hq.prime_iff]
@@ -708,7 +708,7 @@ theorem normalizedFactors_mul {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
     Multiset.map_congr rfl normalize_normalized_factor, ←
     Multiset.map_congr rfl normalize_normalized_factor, ← Multiset.map_add, h, ←
     Multiset.map_map Associates.out, eq_comm, ← Multiset.map_map Associates.out]
-  refine' congr rfl _
+  refine congr rfl ?_
   apply Multiset.map_mk_eq_map_mk_of_rel
   apply factors_unique
   · intro x hx
@@ -2019,7 +2019,7 @@ noncomputable def fintypeSubtypeDvd {M : Type*} [CancelCommMonoidWithZero M]
     exact Multiset.prod_dvd_prod_of_le hs
   · rintro (h : x ∣ y)
     have hx : x ≠ 0 := by
-      refine' mt (fun hx => _) hy
+      refine mt (fun hx => ?_) hy
       rwa [hx, zero_dvd_iff] at h
     obtain ⟨u, hu⟩ := normalizedFactors_prod hx
     refine' ⟨⟨normalizedFactors x, u⟩, _, (mul_comm _ _).trans hu⟩

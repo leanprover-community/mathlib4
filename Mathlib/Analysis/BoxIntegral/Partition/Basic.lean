@@ -396,10 +396,10 @@ theorem biUnion_assoc (πi : ∀ J, Prepartition J) (πi' : Box ι → ∀ J : B
   simp only [mem_biUnion, exists_prop]
   constructor
   · rintro ⟨J₁, hJ₁, J₂, hJ₂, hJ⟩
-    refine' ⟨J₂, ⟨J₁, hJ₁, hJ₂⟩, _⟩
+    refine ⟨J₂, ⟨J₁, hJ₁, hJ₂⟩, ?_⟩
     rwa [π.biUnionIndex_of_mem hJ₁ hJ₂]
   · rintro ⟨J₁, ⟨J₂, hJ₂, hJ₁⟩, hJ⟩
-    refine' ⟨J₂, hJ₂, J₁, hJ₁, _⟩
+    refine ⟨J₂, hJ₂, J₁, hJ₁, ?_⟩
     rwa [π.biUnionIndex_of_mem hJ₂ hJ₁] at hJ
 #align box_integral.prepartition.bUnion_assoc BoxIntegral.Prepartition.biUnion_assoc
 

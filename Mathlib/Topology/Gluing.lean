@@ -371,7 +371,7 @@ def MkCore.t' (h : MkCore.{u}) (i j k : h.J) :
       pullback (h.V j k).inclusion (h.V j i).inclusion := by
   refine' (pullbackIsoProdSubtype _ _).hom ≫ ⟨_, _⟩ ≫ (pullbackIsoProdSubtype _ _).inv
   · intro x
-    refine' ⟨⟨⟨(h.t i j x.1.1).1, _⟩, h.t i j x.1.1⟩, rfl⟩
+    refine ⟨⟨⟨(h.t i j x.1.1).1, ?_⟩, h.t i j x.1.1⟩, rfl⟩
     rcases x with ⟨⟨⟨x, hx⟩, ⟨x', hx'⟩⟩, rfl : x = x'⟩
     exact h.t_inter _ ⟨x, hx⟩ hx'
   -- Porting note: was `continuity`, see https://github.com/leanprover-community/mathlib4/issues/5030

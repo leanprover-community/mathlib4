@@ -167,7 +167,7 @@ instance mvPolynomial (σ : Type u) : FormallySmooth R (MvPolynomial σ R) := by
   have : ∀ s : σ, ∃ c : C, Ideal.Quotient.mk I c = f (MvPolynomial.X s) := fun s =>
     Ideal.Quotient.mk_surjective _
   choose g hg using this
-  refine' ⟨MvPolynomial.aeval g, _⟩
+  refine ⟨MvPolynomial.aeval g, ?_⟩
   ext s
   rw [← hg, AlgHom.comp_apply, MvPolynomial.aeval_X]
   rfl
@@ -326,7 +326,7 @@ theorem localization_base [FormallySmooth R Sₘ] : FormallySmooth Rₘ Sₘ := 
   letI := ((algebraMap Rₘ Q).comp (algebraMap R Rₘ)).toAlgebra
   letI : IsScalarTower R Rₘ Q := IsScalarTower.of_algebraMap_eq' rfl
   let f : Sₘ →ₐ[Rₘ] Q := by
-    refine' { FormallySmooth.lift I ⟨2, e⟩ (f.restrictScalars R) with commutes' := _ }
+    refine { FormallySmooth.lift I ⟨2, e⟩ (f.restrictScalars R) with commutes' := ?_ }
     intro r
     change
       (RingHom.comp (FormallySmooth.lift I ⟨2, e⟩ (f.restrictScalars R) : Sₘ →+* Q)

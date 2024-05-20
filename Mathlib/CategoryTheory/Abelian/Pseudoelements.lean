@@ -301,7 +301,7 @@ theorem eq_zero_iff {P Q : C} (f : P ⟶ Q) : f = 0 ↔ ∀ a, f a = 0 :=
 /-- A monomorphism is injective on pseudoelements. -/
 theorem pseudo_injective_of_mono {P Q : C} (f : P ⟶ Q) [Mono f] : Function.Injective f := by
   intro abar abar'
-  refine' Quotient.inductionOn₂ abar abar' fun a a' ha => _
+  refine Quotient.inductionOn₂ abar abar' fun a a' ha => ?_
   apply Quotient.sound
   have : ⟦(a.hom ≫ f : Over Q)⟧ = ⟦↑(a'.hom ≫ f)⟧ := by convert ha
   have ⟨R, p, q, ep, Eq, comm⟩ := Quotient.exact this
@@ -483,13 +483,13 @@ theorem ModuleCat.eq_range_of_pseudoequal {R : Type*} [CommRing R] {G : ModuleCa
   refine' Submodule.ext fun a => ⟨fun ha => _, fun ha => _⟩
   · obtain ⟨a', ha'⟩ := ha
     obtain ⟨a'', ha''⟩ := (ModuleCat.epi_iff_surjective p).1 hp a'
-    refine' ⟨q a'', _⟩
+    refine ⟨q a'', ?_⟩
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [← LinearMap.comp_apply, ← ModuleCat.comp_def, ← H,
       ModuleCat.comp_def, LinearMap.comp_apply, ha'', ha']
   · obtain ⟨a', ha'⟩ := ha
     obtain ⟨a'', ha''⟩ := (ModuleCat.epi_iff_surjective q).1 hq a'
-    refine' ⟨p a'', _⟩
+    refine ⟨p a'', ?_⟩
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [← LinearMap.comp_apply, ← ModuleCat.comp_def, H, ModuleCat.comp_def, LinearMap.comp_apply,
       ha'', ha']

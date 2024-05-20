@@ -266,7 +266,7 @@ theorem mem_toList_iff {y : α} : y ∈ toList p x ↔ SameCycle p x y ∧ x ∈
   simp only [toList, mem_range, mem_map]
   constructor
   · rintro ⟨n, hx, rfl⟩
-    refine' ⟨⟨n, rfl⟩, _⟩
+    refine ⟨⟨n, rfl⟩, ?_⟩
     contrapose! hx
     rw [← support_cycleOf_eq_nil_iff] at hx
     simp [hx]
@@ -485,7 +485,7 @@ theorem IsCycle.existsUnique_cycle {f : Perm α} (hf : IsCycle f) :
 theorem IsCycle.existsUnique_cycle_subtype {f : Perm α} (hf : IsCycle f) :
     ∃! s : { s : Cycle α // s.Nodup }, (s : Cycle α).formPerm s.prop = f := by
   obtain ⟨s, ⟨hs, rfl⟩, hs'⟩ := hf.existsUnique_cycle
-  refine' ⟨⟨s, hs⟩, rfl, _⟩
+  refine ⟨⟨s, hs⟩, rfl, ?_⟩
   rintro ⟨t, ht⟩ ht'
   simpa using hs' _ ⟨ht, ht'⟩
 #align equiv.perm.is_cycle.exists_unique_cycle_subtype Equiv.Perm.IsCycle.existsUnique_cycle_subtype

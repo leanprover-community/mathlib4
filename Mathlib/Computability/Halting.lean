@@ -110,7 +110,7 @@ theorem merge {f g : α →. σ} (hf : Partrec f) (hg : Partrec g)
   ⟨k, hk, fun a x =>
     ⟨(K _).1 _, fun h => by
       have : (k a).Dom := (K _).2.2 (h.imp Exists.fst Exists.fst)
-      refine' ⟨this, _⟩
+      refine ⟨this, ?_⟩
       cases' h with h h <;> cases' (K _).1 _ ⟨this, rfl⟩ with h' h'
       · exact mem_unique h' h
       · exact (H _ _ h _ h').symm

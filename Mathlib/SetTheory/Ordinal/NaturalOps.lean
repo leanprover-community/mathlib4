@@ -696,7 +696,7 @@ theorem lt_nmul_iff₃ :
   · intro h
     rcases lt_nmul_iff.1 h with ⟨e, he, c', hc, H₁⟩
     rcases lt_nmul_iff.1 he with ⟨a', ha, b', hb, H₂⟩
-    refine' ⟨a', ha, b', hb, c', hc, _⟩
+    refine ⟨a', ha, b', hb, c', hc, ?_⟩
     have := nadd_le_nadd H₁ (nmul_nadd_le H₂ hc.le)
     simp only [nadd_nmul, nadd_assoc] at this
     rw [nadd_left_comm, nadd_left_comm d, nadd_left_comm, nadd_le_nadd_iff_left,

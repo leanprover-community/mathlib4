@@ -101,7 +101,7 @@ theorem not_mem_iff (p : T.CompleteType α) (φ : L[[α]].Sentence) : φ.not ∈
       rintro ⟨@⟨_, _, h, _⟩⟩
       simp only [model_iff, mem_insert_iff, mem_singleton_iff, forall_eq_or_imp, forall_eq] at h
       exact h.2 h.1
-    refine' h (p.isMaximal.1.mono _)
+    refine h (p.isMaximal.1.mono ?_)
     rw [insert_subset_iff, singleton_subset_iff]
     exact ⟨ht, hf⟩, (p.mem_or_not_mem φ).resolve_left⟩
 #align first_order.language.Theory.complete_type.not_mem_iff FirstOrder.Language.Theory.CompleteType.not_mem_iff
@@ -214,8 +214,8 @@ attribute [-instance] FirstOrder.Language.withConstants_expansion
 theorem exists_modelType_is_realized_in (p : T.CompleteType α) :
     ∃ M : Theory.ModelType.{u, v, max u v w} T, p ∈ T.realizedTypes M α := by
   obtain ⟨M⟩ := p.isMaximal.1
-  refine' ⟨(M.subtheoryModel p.subset).reduct (L.lhomWithConstants α), fun a => (L.con a : M), _⟩
-  refine' SetLike.ext fun φ => _
+  refine ⟨(M.subtheoryModel p.subset).reduct (L.lhomWithConstants α), fun a => (L.con a : M), ?_⟩
+  refine SetLike.ext fun φ => ?_
   simp only [CompleteType.mem_typeOf]
   refine'
     (@Formula.realize_equivSentence_symm_con _

@@ -577,7 +577,7 @@ theorem Filter.comap_coLindelof_le {f : X → Y} (hf : Continuous f) :
     (Filter.coLindelof Y).comap f ≤ Filter.coLindelof X := by
   rw [(hasBasis_coLindelof.comap f).le_basis_iff hasBasis_coLindelof]
   intro t ht
-  refine' ⟨f '' t, ht.image hf, _⟩
+  refine ⟨f '' t, ht.image hf, ?_⟩
   simpa using t.subset_preimage_image f
 
 theorem isLindelof_range [LindelofSpace X] {f : X → Y} (hf : Continuous f) : IsLindelof (range f) :=

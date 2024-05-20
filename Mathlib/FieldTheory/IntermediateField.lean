@@ -559,7 +559,7 @@ theorem coe_isIntegral_iff {R : Type*} [CommRing R] [Algebra R K] [Algebra R L]
       IsScalarTower.algebraMap_eq, ← eval₂_eq_eval_map]
     exact hProot
   · obtain ⟨P, hPmo, hProot⟩ := h
-    refine' ⟨P, hPmo, _⟩
+    refine ⟨P, hPmo, ?_⟩
     rw [← aeval_def, aeval_coe, aeval_def, hProot, ZeroMemClass.coe_zero]
 #align intermediate_field.coe_is_integral_iff IntermediateField.coe_isIntegral_iff
 

@@ -132,7 +132,7 @@ theorem generator_maximal_submoduleImage_dvd {N O : Submodule R M} (hNO : N ≤ 
     let ψ' : O →ₗ[R] R := r₁ • ϕ + r₂ • ψ
     have : span R {d} ≤ ψ'.submoduleImage N := by
       rw [span_le, singleton_subset_iff, SetLike.mem_coe, LinearMap.mem_submoduleImage_of_le hNO]
-      refine' ⟨y, yN, _⟩
+      refine ⟨y, yN, ?_⟩
       change r₁ * ϕ ⟨y, hNO yN⟩ + r₂ * ψ ⟨y, hNO yN⟩ = d
       rw [d_eq, ϕy_eq]
     refine'
@@ -267,7 +267,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
       rfl
   -- It remains to show the extended bases are compatible with each other.
   intro as h
-  refine' ⟨Fin.cons a as, _⟩
+  refine ⟨Fin.cons a as, ?_⟩
   intro i
   rw [Basis.coe_mkFinConsOfLE, Basis.coe_mkFinConsOfLE]
   refine' Fin.cases _ (fun i ↦ _) i

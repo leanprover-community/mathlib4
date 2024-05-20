@@ -360,7 +360,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
     replace hgf : ∀ x, (g + dg) (e x) = f x := by
       intro x
       simp [dg0 (Or.inl <| mem_range_self _), ← hgf]
-    refine' ⟨g + dg, fun y => _, funext hgf⟩
+    refine ⟨g + dg, fun y => ?_, funext hgf⟩
     have hay : a < (g + dg) y := by
       rcases (hg_mem y).1.eq_or_lt with (rfl | hlt)
       · refine' (lt_add_iff_pos_right _).2 _
@@ -369,7 +369,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
           _ = dg y := (dga rfl).symm
       · exact hlt.trans_le ((le_add_iff_nonneg_right _).2 <| (dgmem y).1)
     rcases ha.exists_between hay with ⟨_, ⟨x, rfl⟩, _, hxy⟩
-    refine' ⟨x, hxy.le, _⟩
+    refine ⟨x, hxy.le, ?_⟩
     rcases le_total c (g y) with hc | hc
     · simp [dg0 (Or.inr hc), (hg_mem y).2]
     · calc
@@ -393,7 +393,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
   replace hgf : ∀ x, (g - dg) (e x) = f x := by
     intro x
     simp [dg0 (Or.inl <| mem_range_self _), ← hgf]
-  refine' ⟨g - dg, fun y => _, funext hgf⟩
+  refine ⟨g - dg, fun y => ?_, funext hgf⟩
   have hyb : (g - dg) y < b := by
     rcases (hgb y).eq_or_lt with (rfl | hlt)
     · refine' (sub_lt_self_iff _).2 _
@@ -433,7 +433,7 @@ theorem exists_extension_forall_mem_of_closedEmbedding (f : X →ᵇ ℝ) {t : S
   · rcases hne with ⟨c, hc⟩
     exact ⟨const Y c, fun _ => hc, funext fun x => isEmptyElim x⟩
   rcases exists_extension_forall_exists_le_ge_of_closedEmbedding f he with ⟨g, hg, hgf⟩
-  refine' ⟨g, fun y => _, hgf⟩
+  refine ⟨g, fun y => ?_, hgf⟩
   rcases hg y with ⟨xl, xu, h⟩
   exact hs.out (hf _) (hf _) h
 #align bounded_continuous_function.exists_extension_forall_mem_of_closed_embedding BoundedContinuousFunction.exists_extension_forall_mem_of_closedEmbedding

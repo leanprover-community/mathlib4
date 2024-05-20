@@ -109,7 +109,7 @@ theorem parallelepiped_orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ
   have A : Icc (0 : Fin 1 → ℝ) 1 = F '' Icc (0 : ℝ) 1 := by
     apply Subset.antisymm
     · intro x hx
-      refine' ⟨x 0, ⟨hx.1 0, hx.2 0⟩, _⟩
+      refine ⟨x 0, ⟨hx.1 0, hx.2 0⟩, ?_⟩
       ext j
       simp only [Subsingleton.elim j 0]
     · rintro x ⟨y, hy, rfl⟩

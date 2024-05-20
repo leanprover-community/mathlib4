@@ -243,7 +243,7 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
     rcases exists_pos_mul_lt ε0 (2 * c) with ⟨ε', ε'0, hlt⟩
     rcases (nhdsWithin_hasBasis nhds_basis_closedBall _).mem_iff.1
       ((Hd x hx).isLittleO.def ε'0) with ⟨δ, δ0, Hδ⟩
-    refine' ⟨δ, δ0, fun J hle hJδ hxJ hJc => _⟩
+    refine ⟨δ, δ0, fun J hle hJδ hxJ hJc => ?_⟩
     simp only [BoxAdditiveMap.volume_apply, Box.volume_apply, dist_eq_norm]
     refine' (norm_volume_sub_integral_face_upper_sub_lower_smul_le _
       (Hc.mono <| Box.le_iff_Icc.1 hle) hxJ ε'0 (fun y hy => Hδ _) (hJc rfl)).trans _

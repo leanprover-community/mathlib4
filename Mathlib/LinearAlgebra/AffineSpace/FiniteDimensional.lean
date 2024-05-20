@@ -582,7 +582,7 @@ theorem Collinear.mem_affineSpan_of_mem_of_ne {s : Set P} (h : Collinear k s) {p
   rcases h p₂ hp₂ with ⟨r₂, rfl⟩
   rcases h p₃ hp₃ with ⟨r₃, rfl⟩
   rw [vadd_left_mem_affineSpan_pair]
-  refine' ⟨r₃ / r₂, _⟩
+  refine ⟨r₃ / r₂, ?_⟩
   have h₂ : r₂ ≠ 0 := by
     rintro rfl
     simp at hp₁p₂
@@ -770,7 +770,7 @@ theorem finrank_vectorSpan_insert_le (s : AffineSubspace k P) (p : P) :
     have h := v.property
     rw [Submodule.mem_span_singleton] at h
     rcases h with ⟨c, hc⟩
-    refine' ⟨c, _⟩
+    refine ⟨c, ?_⟩
     ext
     exact hc
 #align finrank_vector_span_insert_le finrank_vectorSpan_insert_le
@@ -852,7 +852,7 @@ theorem exists_affineBasis_of_finiteDimensional [Fintype ι] [FiniteDimensional 
     (h : Fintype.card ι = FiniteDimensional.finrank k V + 1) : Nonempty (AffineBasis ι k P) := by
   obtain ⟨s, b, hb⟩ := AffineBasis.exists_affineBasis k V P
   lift s to Finset P using b.finite_set
-  refine' ⟨b.reindex <| Fintype.equivOfCardEq _⟩
+  refine ⟨b.reindex <| Fintype.equivOfCardEq ?_⟩
   rw [h, ← b.card_eq_finrank_add_one]
 #align affine_basis.exists_affine_basis_of_finite_dimensional AffineBasis.exists_affineBasis_of_finiteDimensional
 

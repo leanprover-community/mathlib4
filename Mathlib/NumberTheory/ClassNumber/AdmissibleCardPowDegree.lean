@@ -238,7 +238,7 @@ theorem exists_partition_polynomial_aux (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b :
     rw [AbsoluteValue.map_sub]
     exact hj _ hi
   -- And otherwise, we can just take any `j`, since those are empty.
-  refine' ⟨j, fun i => ⟨hj i, fun hi => _⟩⟩
+  refine ⟨j, fun i => ⟨hj i, fun hi => ?_⟩⟩
   have := exists_nonempty_j ⟨t' i, ⟨i, rfl⟩, fun i' hi' => anti_archim' hi ((ht' _ _).mp hi')⟩
   contradiction
 #align polynomial.exists_partition_polynomial_aux Polynomial.exists_partition_polynomial_aux

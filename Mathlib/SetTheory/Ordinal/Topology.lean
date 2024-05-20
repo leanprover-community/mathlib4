@@ -197,7 +197,7 @@ theorem isNormal_iff_strictMono_and_continuous (f : Ordinal.{u} → Ordinal.{u})
         Set.mem_preimage.2 (has ⟨hab.trans (h.strictMono hc.1), h.strictMono hc.2⟩)⟩
   · rw [isNormal_iff_strictMono_limit]
     rintro ⟨h, h'⟩
-    refine' ⟨h, fun o ho a h => _⟩
+    refine ⟨h, fun o ho a h => ?_⟩
     suffices o ∈ f ⁻¹' Set.Iic a from Set.mem_preimage.1 this
     rw [mem_closed_iff_sup (IsClosed.preimage h' (@isClosed_Iic _ _ _ _ a))]
     exact

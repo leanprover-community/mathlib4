@@ -230,7 +230,7 @@ protected theorem IsClosed.intrinsicClosure (hs : IsClosed ((↑) ⁻¹' s : Set
 @[simp]
 theorem intrinsicClosure_idem (s : Set P) :
     intrinsicClosure 𝕜 (intrinsicClosure 𝕜 s) = intrinsicClosure 𝕜 s := by
-  refine' IsClosed.intrinsicClosure _
+  refine IsClosed.intrinsicClosure ?_
   set t := affineSpan 𝕜 (intrinsicClosure 𝕜 s) with ht
   clear_value t
   obtain rfl := ht.trans (affineSpan_intrinsicClosure _)

@@ -360,7 +360,7 @@ theorem IsCompactOperator.continuous {f : M₁ →ₛₗ[σ₁₂] M₂} (hf : I
   rw [map_inv₀, ← subset_set_smul_iff₀ ((map_ne_zero σ₁₂).mpr hcnz)]
   -- But `σ₁₂` is isometric, so `‖σ₁₂ c‖ = ‖c‖ > r`, which concludes the argument since
   -- `∀ a : 𝕜₂, r ≤ ‖a‖ → K ⊆ a • U`.
-  refine' hrU (σ₁₂ c) _
+  refine hrU (σ₁₂ c) ?_
   rw [RingHomIsometric.is_iso]
   exact hc.le
 #align is_compact_operator.continuous IsCompactOperator.continuous
@@ -418,13 +418,13 @@ theorem isClosed_setOf_isCompactOperator {𝕜₁ 𝕜₂ : Type*} [Nontrivially
       (hv.isCompact_closure_image_closedBall 1).totallyBounded V hV with
     ⟨T, hT, hTv⟩
   have hTv : v '' closedBall 0 1 ⊆ _ := subset_closure.trans hTv
-  refine' ⟨T, hT, _⟩
+  refine ⟨T, hT, ?_⟩
   rw [image_subset_iff, preimage_iUnion₂] at hTv ⊢
   intro x hx
   specialize hTv hx
   rw [mem_iUnion₂] at hTv ⊢
   rcases hTv with ⟨t, ht, htx⟩
-  refine' ⟨t, ht, _⟩
+  refine ⟨t, ht, ?_⟩
   rw [mem_preimage, mem_vadd_set_iff_neg_vadd_mem, vadd_eq_add, neg_add_eq_sub] at htx ⊢
   convert hVU _ htx _ (huv x hx) using 1
   rw [ContinuousLinearMap.sub_apply]

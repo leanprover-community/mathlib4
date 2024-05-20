@@ -162,7 +162,7 @@ theorem totient_div_of_dvd {n d : ℕ} (hnd : d ∣ n) :
     rw [gcd_mul_left, ha2, mul_one]
   · simp [hd0.ne']
   · simp only [mem_filter, mem_range, exists_prop, and_imp]
-    refine' fun b hb1 hb2 => _
+    refine fun b hb1 hb2 => ?_
     have : d ∣ b := by
       rw [← hb2]
       apply gcd_dvd_right

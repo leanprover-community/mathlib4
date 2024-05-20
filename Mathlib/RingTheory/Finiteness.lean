@@ -101,7 +101,7 @@ theorem exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul {R : Type*} [CommRi
   revert this
   refine' Set.Finite.dinduction_on _ hfs (fun H => _) @fun i s _ _ ih H => _
   · rcases H with ⟨r, hr1, hrn, _⟩
-    refine' ⟨r, hr1, fun n hn => _⟩
+    refine ⟨r, hr1, fun n hn => ?_⟩
     specialize hrn hn
     rwa [mem_comap, span_empty, smul_bot, mem_bot] at hrn
   apply ih
@@ -313,7 +313,7 @@ theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type*} [Ring R] [AddCommGroup M] [Mo
     refine' ⟨_, _, rfl⟩
     haveI : Inhabited P := ⟨0⟩
     rw [← Finsupp.lmapDomain_supported _ _ g, mem_map]
-    refine' ⟨l, hl1, _⟩
+    refine ⟨l, hl1, ?_⟩
     rfl
   rw [ht2, mem_inf]
   constructor
@@ -495,7 +495,7 @@ theorem FG.map {R S : Type*} [Semiring R] [Semiring S] {I : Ideal R} (h : I.FG) 
     (I.map f).FG := by
   classical
     obtain ⟨s, hs⟩ := h
-    refine' ⟨s.image f, _⟩
+    refine ⟨s.image f, ?_⟩
     rw [Finset.coe_image, ← Ideal.map_span, hs]
 #align ideal.fg.map Ideal.FG.map
 

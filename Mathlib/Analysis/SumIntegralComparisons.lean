@@ -50,7 +50,7 @@ theorem AntitoneOn.integral_le_sum (hf : AntitoneOn f (Icc x₀ (x₀ + a))) :
     (∫ x in x₀..x₀ + a, f x) ≤ ∑ i in Finset.range a, f (x₀ + i) := by
   have hint : ∀ k : ℕ, k < a → IntervalIntegrable f volume (x₀ + k) (x₀ + (k + 1 : ℕ)) := by
     intro k hk
-    refine' (hf.mono _).intervalIntegrable
+    refine (hf.mono ?_).intervalIntegrable
     rw [uIcc_of_le]
     · apply Icc_subset_Icc
       · simp only [le_add_iff_nonneg_right, Nat.cast_nonneg]
@@ -101,7 +101,7 @@ theorem AntitoneOn.sum_le_integral (hf : AntitoneOn f (Icc x₀ (x₀ + a))) :
     (∑ i in Finset.range a, f (x₀ + (i + 1 : ℕ))) ≤ ∫ x in x₀..x₀ + a, f x := by
   have hint : ∀ k : ℕ, k < a → IntervalIntegrable f volume (x₀ + k) (x₀ + (k + 1 : ℕ)) := by
     intro k hk
-    refine' (hf.mono _).intervalIntegrable
+    refine (hf.mono ?_).intervalIntegrable
     rw [uIcc_of_le]
     · apply Icc_subset_Icc
       · simp only [le_add_iff_nonneg_right, Nat.cast_nonneg]

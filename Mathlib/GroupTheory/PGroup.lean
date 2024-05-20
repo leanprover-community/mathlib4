@@ -85,7 +85,7 @@ theorem to_subgroup (H : Subgroup G) : IsPGroup p H :=
 
 theorem of_surjective {H : Type*} [Group H] (ϕ : G →* H) (hϕ : Function.Surjective ϕ) :
     IsPGroup p H := by
-  refine' fun h => Exists.elim (hϕ h) fun g hg => Exists.imp (fun k hk => _) (hG g)
+  refine fun h => Exists.elim (hϕ h) fun g hg => Exists.imp (fun k hk => ?_) (hG g)
   rw [← hg, ← ϕ.map_pow, hk, ϕ.map_one]
 #align is_p_group.of_surjective IsPGroup.of_surjective
 

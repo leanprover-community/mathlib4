@@ -612,7 +612,7 @@ def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2) where
         apply Sym2.Rel.swap)
   left_inv := by apply Sym2.ind; aesop (add norm unfold [Sym2.fromVector])
   right_inv x := by
-    refine' x.recOnSubsingleton fun x => _
+    refine x.recOnSubsingleton fun x => ?_
     cases' x with x hx
     cases' x with _ x
     · simp at hx

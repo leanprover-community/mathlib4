@@ -343,9 +343,9 @@ theorem _root_.HasCompactSupport.convolutionExistsAt {x₀ : G}
 theorem _root_.HasCompactSupport.convolutionExists_right (hcg : HasCompactSupport g)
     (hf : LocallyIntegrable f μ) (hg : Continuous g) : ConvolutionExists f g L μ := by
   intro x₀
-  refine' HasCompactSupport.convolutionExistsAt L _ hf hg
+  refine HasCompactSupport.convolutionExistsAt L ?_ hf hg
   refine' (hcg.comp_homeomorph (Homeomorph.subLeft x₀)).mono _
-  refine' fun t => mt fun ht : g (x₀ - t) = 0 => _
+  refine fun t => mt fun ht : g (x₀ - t) = 0 => ?_
   simp_rw [ht, (L _).map_zero]
 #align has_compact_support.convolution_exists_right HasCompactSupport.convolutionExists_right
 
@@ -353,9 +353,9 @@ theorem _root_.HasCompactSupport.convolutionExists_left_of_continuous_right
     (hcf : HasCompactSupport f) (hf : LocallyIntegrable f μ) (hg : Continuous g) :
     ConvolutionExists f g L μ := by
   intro x₀
-  refine' HasCompactSupport.convolutionExistsAt L _ hf hg
-  refine' hcf.mono _
-  refine' fun t => mt fun ht : f t = 0 => _
+  refine HasCompactSupport.convolutionExistsAt L ?_ hf hg
+  refine hcf.mono ?_
+  refine fun t => mt fun ht : f t = 0 => ?_
   simp_rw [ht, L.map_zero₂]
 #align has_compact_support.convolution_exists_left_of_continuous_right HasCompactSupport.convolutionExists_left_of_continuous_right
 
@@ -800,7 +800,7 @@ theorem dist_convolution_le' {x₀ : G} {R ε : ℝ} {z₀ : E'} (hε : 0 ≤ ε
       hif.integrableOn hmg
     swap; · refine' fun t => mt fun ht : f t = 0 => _; simp_rw [ht, L.map_zero₂]
     rw [bddAbove_def]
-    refine' ⟨‖z₀‖ + ε, _⟩
+    refine ⟨‖z₀‖ + ε, ?_⟩
     rintro _ ⟨x, hx, rfl⟩
     refine' norm_le_norm_add_const_of_dist_le (hg x _)
     rwa [mem_ball_iff_norm, norm_sub_rev, ← mem_ball_zero_iff]
@@ -970,7 +970,7 @@ theorem convolution_assoc (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z =
     refine' L₄.aestronglyMeasurable_comp₂ hg.fst _
     refine' (hk.mono_ac _).comp_measurable
       ((measurable_const.sub measurable_snd).sub measurable_fst)
-    refine' QuasiMeasurePreserving.absolutelyContinuous _
+    refine QuasiMeasurePreserving.absolutelyContinuous ?_
     refine' QuasiMeasurePreserving.prod_of_left
       ((measurable_const.sub measurable_snd).sub measurable_fst) (eventually_of_forall fun y => _)
     dsimp only
@@ -1146,7 +1146,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
       · exact Subset.trans (thickening_mono (min_le_left _ _) _) hε
       · exact Subset.trans (ball_subset_ball (min_le_right _ _)) hδ
     obtain ⟨C, Cpos, hC⟩ : ∃ C, 0 < C ∧ g' '' t ⊆ closedBall 0 C := ht.subset_closedBall_lt 0 0
-    refine' ⟨ε, C, εpos, h'ε, fun p x hp => _⟩
+    refine ⟨ε, C, εpos, h'ε, fun p x hp => ?_⟩
     have hps : p ∈ s := h'ε (mem_ball_iff_norm.2 hp)
     by_cases hx : x ∈ k
     · have H : (p, x) ∈ t := by

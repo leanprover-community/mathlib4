@@ -96,7 +96,7 @@ protected theorem mem_uniformity_dist (s : Set (Completion α × Completion α))
     have A : { x : α × α | (↑x.1, ↑x.2) ∈ t } ∈ uniformity α :=
       uniformContinuous_def.1 (uniformContinuous_coe α) t ht
     rcases mem_uniformity_dist.1 A with ⟨ε, εpos, hε⟩
-    refine' ⟨ε, εpos, @fun x y hxy ↦ _⟩
+    refine ⟨ε, εpos, @fun x y hxy ↦ ?_⟩
     have : ε ≤ dist x y ∨ (x, y) ∈ t := by
       refine' induction_on₂ x y _ _
       · have : { x : Completion α × Completion α | ε ≤ dist x.fst x.snd ∨ (x.fst, x.snd) ∈ t } =

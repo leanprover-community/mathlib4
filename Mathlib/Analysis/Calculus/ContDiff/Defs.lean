@@ -203,7 +203,7 @@ theorem HasFTaylorSeriesUpToOn.zero_eq' (h : HasFTaylorSeriesUpToOn n f p s) {x 
 Taylor series for the second one. -/
 theorem HasFTaylorSeriesUpToOn.congr (h : HasFTaylorSeriesUpToOn n f p s)
     (h₁ : ∀ x ∈ s, f₁ x = f x) : HasFTaylorSeriesUpToOn n f₁ p s := by
-  refine' ⟨fun x hx => _, h.fderivWithin, h.cont⟩
+  refine ⟨fun x hx => ?_, h.fderivWithin, h.cont⟩
   rw [h₁ x hx]
   exact h.zero_eq x hx
 #align has_ftaylor_series_up_to_on.congr HasFTaylorSeriesUpToOn.congr
@@ -695,7 +695,7 @@ theorem contDiffOn_top : ContDiffOn 𝕜 ∞ f s ↔ ∀ n : ℕ, ContDiffOn �
 #align cont_diff_on_top contDiffOn_top
 
 theorem contDiffOn_all_iff_nat : (∀ n, ContDiffOn 𝕜 n f s) ↔ ∀ n : ℕ, ContDiffOn 𝕜 n f s := by
-  refine' ⟨fun H n => H n, _⟩
+  refine ⟨fun H n => H n, ?_⟩
   rintro H (_ | n)
   exacts [contDiffOn_top.2 H, H n]
 #align cont_diff_on_all_iff_nat contDiffOn_all_iff_nat
@@ -976,7 +976,7 @@ theorem iteratedFDerivWithin_inter_open {n : ℕ} (hu : IsOpen u) (hx : x ∈ u)
 
 @[simp]
 theorem contDiffOn_zero : ContDiffOn 𝕜 0 f s ↔ ContinuousOn f s := by
-  refine' ⟨fun H => H.continuousOn, fun H => _⟩
+  refine ⟨fun H => H.continuousOn, fun H => ?_⟩
   intro x hx m hm
   have : (m : ℕ∞) = 0 := le_antisymm hm bot_le
   rw [this]
@@ -1161,9 +1161,9 @@ theorem contDiffOn_succ_iff_hasFDerivWithin {n : ℕ} (hs : UniqueDiffOn 𝕜 s)
     ContDiffOn 𝕜 (n + 1 : ℕ) f s ↔
       ∃ f' : E → E →L[𝕜] F, ContDiffOn 𝕜 n f' s ∧ ∀ x, x ∈ s → HasFDerivWithinAt f (f' x) s x := by
   rw [contDiffOn_succ_iff_fderivWithin hs]
-  refine' ⟨fun h => ⟨fderivWithin 𝕜 f s, h.2, fun x hx => (h.1 x hx).hasFDerivWithinAt⟩, fun h => _⟩
+  refine ⟨fun h => ⟨fderivWithin 𝕜 f s, h.2, fun x hx => (h.1 x hx).hasFDerivWithinAt⟩, fun h => ?_⟩
   rcases h with ⟨f', h1, h2⟩
-  refine' ⟨fun x hx => (h2 x hx).differentiableWithinAt, fun x hx => _⟩
+  refine ⟨fun x hx => (h2 x hx).differentiableWithinAt, fun x hx => ?_⟩
   exact (h1 x hx).congr' (fun y hy => (h2 y hy).fderivWithin (hs y hy)) hx
 #align cont_diff_on_succ_iff_has_fderiv_within contDiffOn_succ_iff_hasFDerivWithin
 

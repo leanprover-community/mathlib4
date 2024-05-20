@@ -86,7 +86,7 @@ theorem isRadical [IsReduced B] : IsRadical (minpoly A x) := fun n p dvd ↦ by
 theorem dvd_map_of_isScalarTower (A K : Type*) {R : Type*} [CommRing A] [Field K] [CommRing R]
     [Algebra A K] [Algebra A R] [Algebra K R] [IsScalarTower A K R] (x : R) :
     minpoly K x ∣ (minpoly A x).map (algebraMap A K) := by
-  refine' minpoly.dvd K x _
+  refine minpoly.dvd K x ?_
   rw [aeval_map_algebraMap, minpoly.aeval]
 #align minpoly.dvd_map_of_is_scalar_tower minpoly.dvd_map_of_isScalarTower
 

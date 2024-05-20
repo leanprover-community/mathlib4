@@ -249,7 +249,7 @@ theorem kernel.indep_limsup_atTop_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIn
   · simp only [mem_atTop_sets, ge_iff_le, Set.mem_compl_iff, BddAbove, upperBounds, Set.Nonempty]
     rintro t ⟨a, ha⟩
     obtain ⟨b, hb⟩ : ∃ b, a < b := exists_gt a
-    refine' ⟨b, fun c hc hct => _⟩
+    refine ⟨b, fun c hc hct => ?_⟩
     suffices ∀ i ∈ t, i < c from lt_irrefl c (this c hct)
     exact fun i hi => (ha hi).trans_lt (hb.trans_le hc)
   · exact Monotone.directed_le fun i j hij k hki => le_trans hki hij
@@ -303,7 +303,7 @@ theorem kernel.indep_limsup_atBot_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIn
   · simp only [mem_atBot_sets, ge_iff_le, Set.mem_compl_iff, BddBelow, lowerBounds, Set.Nonempty]
     rintro t ⟨a, ha⟩
     obtain ⟨b, hb⟩ : ∃ b, b < a := exists_lt a
-    refine' ⟨b, fun c hc hct => _⟩
+    refine ⟨b, fun c hc hct => ?_⟩
     suffices ∀ i ∈ t, c < i from lt_irrefl c (this c hct)
     exact fun i hi => hc.trans_lt (hb.trans_le (ha hi))
   · exact Antitone.directed_le fun _ _ ↦ Set.Ici_subset_Ici.2

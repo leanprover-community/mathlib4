@@ -156,7 +156,7 @@ theorem with_gaugeSeminormFamily : WithSeminorms (gaugeSeminormFamily 𝕜 E) :=
   · refine' ⟨s, ⟨_, rfl.subset⟩⟩
     convert (gaugeSeminormFamily _ _).basisSets_singleton_mem ⟨s, hs⟩ one_pos
     rw [gaugeSeminormFamily_ball, Subtype.coe_mk]
-  refine' ⟨s, ⟨_, rfl.subset⟩⟩
+  refine ⟨s, ⟨?_, rfl.subset⟩⟩
   rw [SeminormFamily.basisSets_iff] at hs
   rcases hs with ⟨t, r, hr, rfl⟩
   rw [Seminorm.ball_finset_sup_eq_iInter _ _ _ hr]

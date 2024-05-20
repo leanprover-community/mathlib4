@@ -469,7 +469,7 @@ theorem tendsto_log_comp_add_sub_log (y : ℝ) :
   have : Tendsto (fun x ↦ 1 + y / x) atTop (𝓝 (1 + 0)) :=
     tendsto_const_nhds.add (tendsto_const_nhds.div_atTop tendsto_id)
   rw [← comap_exp_nhds_exp, exp_zero, tendsto_comap_iff, ← add_zero (1 : ℝ)]
-  refine' this.congr' _
+  refine this.congr' ?_
   filter_upwards [eventually_gt_atTop (0 : ℝ), eventually_gt_atTop (-y)] with x hx₀ hxy
   rw [comp_apply, exp_sub, exp_log, exp_log, one_add_div] <;> linarith
 #align real.tendsto_log_comp_add_sub_log Real.tendsto_log_comp_add_sub_log

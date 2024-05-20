@@ -34,7 +34,7 @@ def Quotient.finChoiceAux {ι : Type*} [DecidableEq ι] {α : ι → Type*} [S :
         (Quotient.finChoiceAux l fun j h => f j (List.mem_cons_of_mem _ h)) _ _
     · exact fun a l => ⟦fun j h =>
         if e : j = i then by rw [e]; exact a else l _ ((List.mem_cons.1 h).resolve_left e)⟧
-    refine' fun a₁ l₁ a₂ l₂ h₁ h₂ => Quotient.sound fun j h => _
+    refine fun a₁ l₁ a₂ l₂ h₁ h₂ => Quotient.sound fun j h => ?_
     by_cases e : j = i <;> simp [e]
     · subst j
       exact h₁
@@ -47,7 +47,7 @@ theorem Quotient.finChoiceAux_eq {ι : Type*} [DecidableEq ι] {α : ι → Type
   | [], f => Quotient.sound fun i h => nomatch List.not_mem_nil _ h
   | i :: l, f => by
     simp only [finChoiceAux, Quotient.finChoiceAux_eq l, eq_mpr_eq_cast, lift_mk]
-    refine' Quotient.sound fun j h => _
+    refine Quotient.sound fun j h => ?_
     by_cases e : j = i <;> simp [e] <;> try exact Setoid.refl _
     subst j; exact Setoid.refl _
 #align quotient.fin_choice_aux_eq Quotient.finChoiceAux_eq

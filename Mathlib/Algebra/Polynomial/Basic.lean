@@ -1246,7 +1246,7 @@ variable [Semiring R] [Nontrivial R]
 instance nontrivial : Nontrivial R[X] := by
   have h : Nontrivial R[ℕ] := by infer_instance
   rcases h.exists_pair_ne with ⟨x, y, hxy⟩
-  refine' ⟨⟨⟨x⟩, ⟨y⟩, _⟩⟩
+  refine ⟨⟨⟨x⟩, ⟨y⟩, ?_⟩⟩
   simp [hxy]
 #align polynomial.nontrivial Polynomial.nontrivial
 

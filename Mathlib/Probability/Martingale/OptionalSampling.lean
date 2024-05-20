@@ -77,7 +77,7 @@ theorem condexp_stopping_time_ae_eq_restrict_eq_const_of_le_const (h : Martingal
 theorem stoppedValue_ae_eq_restrict_eq (h : Martingale f ℱ μ) (hτ : IsStoppingTime ℱ τ)
     (hτ_le : ∀ x, τ x ≤ n) [SigmaFinite (μ.trim (hτ.measurableSpace_le_of_le hτ_le))] (i : ι) :
     stoppedValue f τ =ᵐ[μ.restrict {x | τ x = i}] μ[f n|hτ.measurableSpace] := by
-  refine' Filter.EventuallyEq.trans _
+  refine Filter.EventuallyEq.trans ?_
     (condexp_stopping_time_ae_eq_restrict_eq_const_of_le_const h hτ hτ_le i).symm
   rw [Filter.EventuallyEq, ae_restrict_iff' (ℱ.le _ _ (hτ.measurableSet_eq i))]
   refine' Filter.eventually_of_forall fun x hx => _
@@ -122,8 +122,8 @@ theorem stoppedValue_ae_eq_condexp_of_le_of_countable_range (h : Martingale f �
   have : μ[stoppedValue f τ|hσ.measurableSpace] =ᵐ[μ]
       μ[μ[f n|hτ.measurableSpace]|hσ.measurableSpace] := condexp_congr_ae
     (h.stoppedValue_ae_eq_condexp_of_le_const_of_countable_range hτ hτ_le hτ_countable_range)
-  refine' (Filter.EventuallyEq.trans _
-    (condexp_condexp_of_le _ (hτ.measurableSpace_le_of_le hτ_le)).symm).trans this.symm
+  refine (Filter.EventuallyEq.trans ?_
+    (condexp_condexp_of_le ?_ (hτ.measurableSpace_le_of_le hτ_le)).symm).trans this.symm
   · exact h.stoppedValue_ae_eq_condexp_of_le_const_of_countable_range hσ
       (fun x => (hσ_le_τ x).trans (hτ_le x)) hσ_countable_range
   · exact hσ.measurableSpace_mono hτ hσ_le_τ
@@ -168,7 +168,7 @@ theorem condexp_stoppedValue_stopping_time_ae_eq_restrict_le (h : Martingale f �
     exact hτ.measurableSpace_le _ (hτ.measurableSet_le_stopping_time hσ)
   have h_meas : AEStronglyMeasurable' hσ.measurableSpace
       ({ω : Ω | τ ω ≤ σ ω}.indicator (stoppedValue (fun n : ι => f n) τ)) μ := by
-    refine' StronglyMeasurable.aeStronglyMeasurable' _
+    refine StronglyMeasurable.aeStronglyMeasurable' ?_
     refine' StronglyMeasurable.stronglyMeasurable_of_measurableSpace_le_on
       (hτ.measurableSet_le_stopping_time hσ) _ _ _
     · intro t ht
@@ -176,7 +176,7 @@ theorem condexp_stoppedValue_stopping_time_ae_eq_restrict_le (h : Martingale f �
       rw [hτ.measurableSet_inter_le_iff hσ, IsStoppingTime.measurableSet_min_iff hτ hσ] at ht
       exact ht.2
     · refine' StronglyMeasurable.indicator _ (hτ.measurableSet_le_stopping_time hσ)
-      refine' Measurable.stronglyMeasurable _
+      refine Measurable.stronglyMeasurable ?_
       exact measurable_stoppedValue h.adapted.progMeasurable_of_discrete hτ
     · intro x hx
       simp only [hx, Set.indicator_of_not_mem, not_false_iff]

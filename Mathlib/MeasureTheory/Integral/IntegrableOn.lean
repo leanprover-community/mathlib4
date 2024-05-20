@@ -364,7 +364,7 @@ theorem IntegrableOn.integrable_of_forall_not_mem_eq_zero (hf : IntegrableOn f s
 
 theorem integrableOn_iff_integrable_of_support_subset (h1s : support f ⊆ s) :
     IntegrableOn f s μ ↔ Integrable f μ := by
-  refine' ⟨fun h => _, fun h => h.integrableOn⟩
+  refine ⟨fun h => ?_, fun h => h.integrableOn⟩
   refine h.integrable_of_forall_not_mem_eq_zero fun x hx => ?_
   contrapose! hx
   exact h1s (mem_support.2 hx)
