@@ -300,7 +300,7 @@ theorem exists_code {n} {f : Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
       obtain ⟨cf, hf⟩ := IHf
       obtain ⟨cg, hg⟩ := IHg
       simp only [Part.map_eq_map, Part.map_some, PFun.coe_val] at hf hg
-      refine' ⟨prec cf cg, fun v => _⟩
+      refine ⟨prec cf cg, fun v => ?_⟩
       rw [← v.cons_head_tail]
       specialize hf v.tail
       replace hg := fun a b => hg (a ::ᵥ b ::ᵥ v.tail)
@@ -339,7 +339,7 @@ theorem exists_code {n} {f : Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
     replace hf := fun a => hf (a ::ᵥ v)
     simp only [Part.map_eq_map, Part.map_some, Vector.cons_val, PFun.coe_val,
       show ∀ x, pure x = [x] from fun _ => rfl] at hf ⊢
-    refine' Part.ext fun x => _
+    refine Part.ext fun x => ?_
     simp only [rfind, Part.bind_eq_bind, Part.pure_eq_some, Part.map_eq_map, Part.bind_some,
       exists_prop, cons_eval, comp_eval, fix_eval, tail_eval, succ_eval, zero'_eval,
       List.headI_nil, List.headI_cons, pred_eval, Part.map_some, false_eq_decide_iff,
@@ -357,7 +357,7 @@ theorem exists_code {n} {f : Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
         by exact this _ h1 0 rfl (by rintro _ ⟨⟩)
       clear h1
       intro v₀ h1
-      refine' PFun.fixInduction h1 fun v₁ h2 IH => _
+      refine PFun.fixInduction h1 fun v₁ h2 IH => ?_
       clear h1
       rintro n rfl hm
       have := PFun.mem_fix_iff.1 h2
@@ -371,7 +371,7 @@ theorem exists_code {n} {f : Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
         obtain h | rfl := Nat.lt_succ_iff_lt_or_eq.1 h'
         exacts [hm _ h, h]
     · rintro ⟨n, ⟨hn, hm⟩, rfl⟩
-      refine' ⟨n.succ::v.1, _, rfl⟩
+      refine ⟨n.succ::v.1, ?_, rfl⟩
       have : (n.succ::v.1 : List ℕ) ∈
         PFun.fix (fun v =>
           (cf.eval v).bind fun y =>
@@ -570,7 +570,7 @@ theorem stepNormal_then (c) (k k' : Cont) (v) :
   induction c generalizing k v with simp only [Cont.then, stepNormal, *]
   | cons c c' ih _ => rw [← ih, Cont.then]
   | comp c c' _ ih' => rw [← ih', Cont.then]
-  | case => cases v.headI <;> simp only [Nat.rec]
+  | case => cases v.headI <;> simp only [Nat.rec_zero]
   | fix c ih => rw [← ih, Cont.then]
   | _ => simp only [Cfg.then]
 #align turing.to_partrec.step_normal_then Turing.ToPartrec.stepNormal_then
@@ -618,7 +618,7 @@ theorem stepNormal.is_ret (c k v) : ∃ k' v', stepNormal c k v = Cfg.ret k' v' 
   | case f g IHf IHg =>
     rw [stepNormal]
     simp only []
-    cases v.headI <;> simp only [] <;> [apply IHf; apply IHg]
+    cases v.headI <;> [apply IHf; apply IHg]
   | fix f IHf => apply IHf
   | _ => exact ⟨_, _, rfl⟩
 #align turing.to_partrec.step_normal.is_ret Turing.ToPartrec.stepNormal.is_ret
@@ -626,7 +626,7 @@ theorem stepNormal.is_ret (c k v) : ∃ k' v', stepNormal c k v = Cfg.ret k' v' 
 theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
     Turing.eval step (stepNormal f (Cont.fix f k) v) =
       f.fix.eval v >>= fun v => Turing.eval step (Cfg.ret k v) := by
-  refine' Part.ext fun x => _
+  refine Part.ext fun x => ?_
   simp only [Part.bind_eq_bind, Part.mem_bind_iff]
   constructor
   · suffices ∀ c, x ∈ eval step c → ∀ v c', c = Cfg.then c' (Cont.fix f k) →
@@ -642,22 +642,22 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
       · rw [Part.mem_some_iff.1 hv₂]
         exact Or.inl (Part.mem_some _)
       · exact Or.inr ⟨_, Part.mem_some _, hv₂⟩
-    refine' fun c he => evalInduction he fun y h IH => _
+    refine fun c he => evalInduction he fun y h IH => ?_
     rintro v (⟨v'⟩ | ⟨k', v'⟩) rfl hr <;> rw [Cfg.then] at h IH <;> simp only [] at h IH
     · have := mem_eval.2 ⟨hr, rfl⟩
       rw [fok, Part.bind_eq_bind, Part.mem_bind_iff] at this
       obtain ⟨v'', h₁, h₂⟩ := this
       rw [reaches_eval] at h₂
       swap
-      exact ReflTransGen.single rfl
+      · exact ReflTransGen.single rfl
       cases Part.mem_unique h₂ (mem_eval.2 ⟨ReflTransGen.refl, rfl⟩)
-      refine' ⟨v', h₁, _⟩
+      refine ⟨v', h₁, ?_⟩
       rw [stepRet] at h
       revert h
       by_cases he : v'.headI = 0 <;> simp only [exists_prop, if_pos, if_false, he] <;> intro h
       · refine' ⟨_, Part.mem_some _, _⟩
         rw [reaches_eval]
-        exact h
+        · exact h
         exact ReflTransGen.single rfl
       · obtain ⟨k₀, v₀, e₀⟩ := stepNormal.is_ret f Cont.halt v'.tail
         have e₁ := stepNormal_then f Cont.halt (Cont.fix f k) v'.tail
@@ -666,16 +666,16 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
         obtain ⟨v₁, hv₁, v₂, hv₂, h₃⟩ :=
           IH (stepRet (k₀.then (Cont.fix f k)) v₀) (by rw [stepRet, if_neg he, e₁]; rfl)
             v'.tail _ stepRet_then (by apply ReflTransGen.single; rw [e₀]; rfl)
-        · refine' ⟨_, PFun.mem_fix_iff.2 _, h₃⟩
-          simp only [Part.eq_some_iff.2 hv₁, Part.map_some, Part.mem_some_iff]
-          split_ifs at hv₂ ⊢ <;> [exact Or.inl (congr_arg Sum.inl (Part.mem_some_iff.1 hv₂));
-            exact Or.inr ⟨_, rfl, hv₂⟩]
+        refine' ⟨_, PFun.mem_fix_iff.2 _, h₃⟩
+        simp only [Part.eq_some_iff.2 hv₁, Part.map_some, Part.mem_some_iff]
+        split_ifs at hv₂ ⊢ <;> [exact Or.inl (congr_arg Sum.inl (Part.mem_some_iff.1 hv₂));
+          exact Or.inr ⟨_, rfl, hv₂⟩]
     · exact IH _ rfl _ _ stepRet_then (ReflTransGen.tail hr rfl)
   · rintro ⟨v', he, hr⟩
     rw [reaches_eval] at hr
     swap
-    exact ReflTransGen.single rfl
-    refine' PFun.fixInduction he fun v (he : v' ∈ f.fix.eval v) IH => _
+    · exact ReflTransGen.single rfl
+    refine PFun.fixInduction he fun v (he : v' ∈ f.fix.eval v) IH => ?_
     rw [fok, Part.bind_eq_bind, Part.mem_bind_iff]
     obtain he | ⟨v'', he₁', _⟩ := PFun.mem_fix_iff.1 he
     · obtain ⟨v', he₁, he₂⟩ := (Part.mem_map_iff _).1 he
@@ -683,7 +683,7 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
       refine' ⟨_, he₁, _⟩
       rw [reaches_eval]
       swap
-      exact ReflTransGen.single rfl
+      · exact ReflTransGen.single rfl
       rwa [stepRet, if_pos h]
     · obtain ⟨v₁, he₁, he₂⟩ := (Part.mem_map_iff _).1 he₁'
       split_ifs at he₂ with h; cases he₂
@@ -691,7 +691,7 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
       refine' ⟨_, he₁, _⟩
       rw [reaches_eval]
       swap
-      exact ReflTransGen.single rfl
+      · exact ReflTransGen.single rfl
       rw [stepRet, if_neg h]
       exact IH v₁.tail ((Part.mem_map_iff _).2 ⟨_, he₁, if_neg h⟩)
 #align turing.to_partrec.cont_eval_fix Turing.ToPartrec.cont_eval_fix
@@ -701,17 +701,19 @@ theorem code_is_ok (c) : Code.Ok c := by
   | cons f fs IHf IHfs =>
     rw [Code.eval, IHf]
     simp only [bind_assoc, Cont.eval, pure_bind]; congr; funext v
-    rw [reaches_eval]; swap; exact ReflTransGen.single rfl
+    rw [reaches_eval]; swap
+    · exact ReflTransGen.single rfl
     rw [stepRet, IHfs]; congr; funext v'
     refine' Eq.trans _ (Eq.symm _) <;> try exact reaches_eval (ReflTransGen.single rfl)
   | comp f g IHf IHg =>
     rw [Code.eval, IHg]
     simp only [bind_assoc, Cont.eval, pure_bind]; congr; funext v
-    rw [reaches_eval]; swap; exact ReflTransGen.single rfl
+    rw [reaches_eval]; swap
+    · exact ReflTransGen.single rfl
     rw [stepRet, IHf]
   | case f g IHf IHg =>
     simp only [Code.eval]
-    cases v.headI <;> simp only [Code.eval] <;> [apply IHf; apply IHg]
+    cases v.headI <;> simp only [Nat.rec_zero, Part.bind_eq_bind] <;> [apply IHf; apply IHg]
   | fix f IHf => rw [cont_eval_fix IHf]
   | _ => simp only [Code.eval, pure_bind]
 #align turing.to_partrec.code_is_ok Turing.ToPartrec.code_is_ok
@@ -728,13 +730,15 @@ theorem stepRet_eval {k v} : eval step (stepRet k v) = Cfg.halt <$> k.eval v := 
   | cons₁ fs as k IH =>
     rw [Cont.eval, stepRet, code_is_ok]
     simp only [← bind_pure_comp, bind_assoc]; congr; funext v'
-    rw [reaches_eval]; swap; exact ReflTransGen.single rfl
+    rw [reaches_eval]; swap
+    · exact ReflTransGen.single rfl
     rw [stepRet, IH, bind_pure_comp]
   | cons₂ ns k IH => rw [Cont.eval, stepRet]; exact IH
   | comp f k IH =>
     rw [Cont.eval, stepRet, code_is_ok]
     simp only [← bind_pure_comp, bind_assoc]; congr; funext v'
-    rw [reaches_eval]; swap; exact ReflTransGen.single rfl
+    rw [reaches_eval]; swap
+    · exact ReflTransGen.single rfl
     rw [IH, bind_pure_comp]
   | fix f k IH =>
     rw [Cont.eval, stepRet]; simp only [bind_pure_comp]
@@ -1178,7 +1182,6 @@ def trNat (n : ℕ) : List Γ' :=
 theorem trNat_zero : trNat 0 = [] := by rw [trNat, Nat.cast_zero]; rfl
 #align turing.partrec_to_TM2.tr_nat_zero Turing.PartrecToTM2.trNat_zero
 
-@[simp]
 theorem trNat_default : trNat default = [] :=
   trNat_zero
 #align turing.partrec_to_TM2.tr_nat_default Turing.PartrecToTM2.trNat_default
@@ -1330,9 +1333,8 @@ theorem move_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k₁
   induction' L₁ with a L₁ IH generalizing S s
   · rw [(_ : [].reverseAux _ = _), Function.update_eq_self]
     swap
-    · rw [Function.update_noteq h₁.symm]
-      rfl
-    refine' TransGen.head' rfl _
+    · rw [Function.update_noteq h₁.symm, List.reverseAux_nil]
+    refine TransGen.head' rfl ?_
     simp only [TM2.step, Option.mem_def, TM2.stepAux, Option.elim, ne_eq]
     revert e; cases' S k₁ with a Sk <;> intro e
     · cases e
@@ -1340,8 +1342,8 @@ theorem move_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k₁
     simp only [splitAtPred, Option.elim, List.head?, List.tail_cons, Option.iget_some] at e ⊢
     revert e; cases p a <;> intro e <;>
       simp only [cond_false, cond_true, Prod.mk.injEq, true_and, false_and] at e ⊢
-    · simp only [e]
-      rfl
+    simp only [e]
+    rfl
   · refine' TransGen.head rfl _
     simp only [TM2.step, Option.mem_def, TM2.stepAux, Option.elim, ne_eq, List.reverseAux_cons]
     cases' e₁ : S k₁ with a' Sk <;> rw [e₁, splitAtPred] at e
@@ -1398,8 +1400,8 @@ theorem clear_ok {p k q s L₁ o L₂} {S : K' → List Γ'} (e : splitAtPred p 
     simp only [splitAtPred, Option.elim, List.head?, List.tail_cons] at e ⊢
     revert e; cases p a <;> intro e <;>
       simp only [cond_false, cond_true, Prod.mk.injEq, true_and, false_and] at e ⊢
-    · rcases e with ⟨e₁, e₂⟩
-      rw [e₁, e₂]
+    rcases e with ⟨e₁, e₂⟩
+    rw [e₁, e₂]
   · refine' TransGen.head rfl _
     simp only [TM2.step, Option.mem_def, TM2.stepAux, Option.elim]
     cases' e₁ : S k with a' Sk <;> rw [e₁, splitAtPred] at e
@@ -1420,7 +1422,7 @@ theorem copy_ok (q s a b c d) :
   induction' b with x b IH generalizing a d s
   · refine' TransGen.single _
     simp
-  refine' TransGen.head rfl _
+  refine TransGen.head rfl ?_
   simp only [TM2.step, Option.mem_def, TM2.stepAux, elim_rev, List.head?_cons, Option.isSome_some,
     List.tail_cons, elim_update_rev, ne_eq, Function.update_noteq, elim_main, elim_update_main,
     elim_stack, elim_update_stack, cond_true, List.reverseAux_cons]
@@ -1507,7 +1509,7 @@ theorem head_stack_ok {q s L₁ L₂ L₃} :
 theorem succ_ok {q s n} {c d : List Γ'} :
     Reaches₁ (TM2.step tr) ⟨some (Λ'.succ q), s, K'.elim (trList [n]) [] c d⟩
       ⟨some q, none, K'.elim (trList [n.succ]) [] c d⟩ := by
-  simp only [TM2.step, trList, trNat._eq_1, Nat.cast_succ, Num.add_one]
+  simp only [TM2.step, trList, trNat.eq_1, Nat.cast_succ, Num.add_one]
   cases' (n : Num) with a
   · refine' TransGen.head rfl _
     simp only [Option.mem_def, TM2.stepAux, elim_main, decide_False, elim_update_main, ne_eq,
@@ -1523,14 +1525,14 @@ theorem succ_ok {q s n} {c d : List Γ'} :
           ⟨some (unrev q), s', K'.elim (l₂' ++ [Γ'.cons]) l₁' c d⟩ by
     obtain ⟨l₁', l₂', s', e, h⟩ := this []
     simp? [List.reverseAux] at e says simp only [List.reverseAux] at e
-    refine' h.trans _
+    refine h.trans ?_
     convert unrev_ok using 2
     simp [e, List.reverseAux_eq]
   induction' a with m IH m _ generalizing s <;> intro l₁
   · refine' ⟨Γ'.bit0 :: l₁, [Γ'.bit1], some Γ'.cons, rfl, TransGen.head rfl (TransGen.single _)⟩
     simp [trPosNum]
   · obtain ⟨l₁', l₂', s', e, h⟩ := IH (Γ'.bit0 :: l₁)
-    refine' ⟨l₁', l₂', s', e, TransGen.head _ h⟩
+    refine ⟨l₁', l₂', s', e, TransGen.head ?_ h⟩
     simp [PosNum.succ, trPosNum]
     rfl
   · refine' ⟨l₁, _, some Γ'.bit0, rfl, TransGen.single _⟩
@@ -1546,15 +1548,14 @@ theorem pred_ok (q₁ q₂ s v) (c d : List Γ') : ∃ s',
   rcases v with (_ | ⟨_ | n, v⟩)
   · refine' ⟨none, TransGen.single _⟩
     simp
-    rfl
   · refine' ⟨some Γ'.cons, TransGen.single _⟩
     simp
-  refine' ⟨none, _⟩
-  simp only [TM2.step, trList, trNat._eq_1, trNum, Nat.cast_succ, Num.add_one, Num.succ,
+  refine ⟨none, ?_⟩
+  simp only [TM2.step, trList, trNat.eq_1, trNum, Nat.cast_succ, Num.add_one, Num.succ,
     List.tail_cons, List.headI_cons]
   cases' (n : Num) with a
   · simp [trPosNum, trNum, show Num.zero.succ' = PosNum.one from rfl]
-    refine' TransGen.head rfl _
+    refine TransGen.head rfl ?_
     simp only [Option.mem_def, TM2.stepAux, elim_main, List.head?_cons, Option.some.injEq,
       decide_False, List.tail_cons, elim_update_main, ne_eq, Function.update_noteq, elim_rev,
       elim_update_rev, natEnd, Function.update_same,  cond_true, cond_false]
@@ -1568,14 +1569,14 @@ theorem pred_ok (q₁ q₂ s v) (c d : List Γ') : ∃ s',
         ⟨some (unrev q₂), s', K'.elim (l₂' ++ Γ'.cons :: trList v) l₁' c d⟩ by
     obtain ⟨l₁', l₂', s', e, h⟩ := this []
     simp only [List.reverseAux] at e
-    refine' h.trans _
+    refine h.trans ?_
     convert unrev_ok using 2
     simp [e, List.reverseAux_eq]
   induction' a with m IH m IH generalizing s <;> intro l₁
   · refine' ⟨Γ'.bit1::l₁, [], some Γ'.cons, rfl, TransGen.head rfl (TransGen.single _)⟩
     simp [trPosNum, show PosNum.one.succ = PosNum.one.bit0 from rfl]
   · obtain ⟨l₁', l₂', s', e, h⟩ := IH (some Γ'.bit0) (Γ'.bit1 :: l₁)
-    refine' ⟨l₁', l₂', s', e, TransGen.head _ h⟩
+    refine ⟨l₁', l₂', s', e, TransGen.head ?_ h⟩
     simp
     rfl
   · obtain ⟨a, l, e, h⟩ : ∃ a l, (trPosNum m = a::l) ∧ natEnd a = false := by
@@ -1596,7 +1597,9 @@ theorem trNormal_respects (c k v s) :
   | succ => refine' ⟨_, ⟨none, rfl⟩, head_main_ok.trans succ_ok⟩
   | tail =>
     let o : Option Γ' := List.casesOn v none fun _ _ => some Γ'.cons
-    refine' ⟨_, ⟨o, rfl⟩, _⟩; convert clear_ok _ using 2; simp; rfl; swap
+    refine' ⟨_, ⟨o, rfl⟩, _⟩; convert clear_ok _ using 2
+    · simp; rfl
+    swap
     refine' splitAtPred_eq _ _ (trNat v.headI) _ _ (trNat_natEnd _) _
     cases v <;> simp [o]
   | cons f fs IHf _ =>
@@ -1628,12 +1631,14 @@ theorem tr_ret_respects (k v s) : ∃ b₂,
   | halt => exact ⟨_, rfl, TransGen.single rfl⟩
   | cons₁ fs as k _ =>
     obtain ⟨s', h₁, h₂⟩ := trNormal_respects fs (Cont.cons₂ v k) as none
-    refine' ⟨s', h₁, TransGen.head rfl _⟩; simp
+    refine ⟨s', h₁, TransGen.head rfl ?_⟩; simp
     refine' (move₂_ok (by decide) _ (splitAtPred_false _)).trans _; · rfl
     simp only [TM2.step, Option.mem_def, Option.elim, id_eq, elim_update_main, elim_main, elim_aux,
       List.append_nil, elim_update_aux]
-    refine' (move₂_ok (by decide) _ _).trans _; pick_goal 4; · rfl
-    pick_goal 4;
+    refine' (move₂_ok (by decide) _ _).trans _
+    pick_goal 4
+    · rfl
+    pick_goal 4
     · exact
         splitAtPred_eq _ _ _ (some Γ'.consₗ) _
           (fun x h => Bool.decide_false (trList_ne_consₗ _ _ h)) ⟨rfl, rfl⟩
@@ -1663,7 +1668,7 @@ theorem tr_ret_respects (k v s) : ∃ b₂,
       cases (n : Num).succ' <;> exact ⟨rfl, rfl⟩
     by_cases h : v.headI = 0 <;> simp only [h, ite_true, ite_false] at this ⊢
     · obtain ⟨c, h₁, h₂⟩ := IH v.tail (trList v).head?
-      refine' ⟨c, h₁, TransGen.head rfl _⟩
+      refine ⟨c, h₁, TransGen.head rfl ?_⟩
       simp only [Option.mem_def, TM2.stepAux, trContStack, contStack, elim_main, this, cond_true,
         elim_update_main]
       exact h₂
@@ -1695,7 +1700,7 @@ theorem tr_init (c v) :
 
 theorem tr_eval (c v) : eval (TM2.step tr) (init c v) = halt <$> Code.eval c v := by
   obtain ⟨i, h₁, h₂⟩ := tr_init c v
-  refine' Part.ext fun x => _
+  refine Part.ext fun x => ?_
   rw [reaches_eval h₂.to_reflTransGen]; simp [-TM2.step]
   refine' ⟨fun h => _, _⟩
   · obtain ⟨c, hc₁, hc₂⟩ := tr_eval_rev tr_respects h₁ h
@@ -1726,7 +1731,7 @@ theorem trStmts₁_trans {q q'} : q' ∈ trStmts₁ q → trStmts₁ q' ⊆ trSt
   induction' q with _ _ _ q q_ih _ _ q q_ih q q_ih _ _ q q_ih q q_ih q q_ih q₁ q₂ q₁_ih q₂_ih _ <;>
     simp (config := { contextual := true }) only [trStmts₁, Finset.mem_insert, Finset.mem_union,
       or_imp, Finset.mem_singleton, Finset.Subset.refl, imp_true_iff, true_and_iff]
-  iterate 4 exact fun h => Finset.Subset.trans (q_ih h) (Finset.subset_insert _ _)
+  repeat exact fun h => Finset.Subset.trans (q_ih h) (Finset.subset_insert _ _)
   · simp
     intro s h x h'
     simp only [Finset.mem_biUnion, Finset.mem_univ, true_and, Finset.mem_insert]

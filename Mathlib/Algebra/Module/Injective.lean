@@ -176,7 +176,7 @@ def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
         chain_linearPMap_of_chain_extensionOf
           hchain) with
     le := by
-      refine' le_trans hnonempty.some.le <|
+      refine le_trans hnonempty.some.le <|
         (LinearPMap.le_sSup _ <|
             (Set.mem_image _ _ _).mpr ⟨hnonempty.some, hnonempty.choose_spec, rfl⟩).1
     is_extension := fun m => by
@@ -241,8 +241,7 @@ set_option linter.uppercaseLean3 false in
 
 -- Porting note: helper function. Lean looks for an instance of `Sup (Type u)` when the
 -- right hand side is substituted in directly
-@[reducible]
-def supExtensionOfMaxSingleton (y : N) : Submodule R N :=
+abbrev supExtensionOfMaxSingleton (y : N) : Submodule R N :=
   (extensionOfMax i f).domain ⊔ (Submodule.span R {y})
 
 variable {f}

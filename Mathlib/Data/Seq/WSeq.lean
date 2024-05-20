@@ -400,7 +400,7 @@ def scanl (f : α → β → α) (a : α) (s : WSeq β) : WSeq α :=
 /-- Get the weak sequence of initial segments of the input sequence -/
 def inits (s : WSeq α) : WSeq (List α) :=
   cons [] <|
-    @Seq.corec (Option (List α)) (Std.DList α × WSeq α)
+    @Seq.corec (Option (List α)) (Batteries.DList α × WSeq α)
       (fun ⟨l, s⟩ =>
         match Seq.destruct s with
         | none => none
@@ -408,7 +408,7 @@ def inits (s : WSeq α) : WSeq (List α) :=
         | some (some a, s') =>
           let l' := l.push a
           some (some l'.toList, l', s'))
-      (Std.DList.empty, s)
+      (Batteries.DList.empty, s)
 #align stream.wseq.inits Stream'.WSeq.inits
 
 /-- Like take, but does not wait for a result. Calculates `n` steps of
@@ -509,8 +509,8 @@ theorem liftRel_destruct_iff {R : α → β → Prop} {s : WSeq α} {t : WSeq β
       Or.inr h, fun {s t} h => by
       have h : Computation.LiftRel (LiftRelO R (LiftRel R)) (destruct s) (destruct t) := by
         cases' h with h h
-        exact liftRel_destruct h
-        assumption
+        · exact liftRel_destruct h
+        · assumption
       apply Computation.LiftRel.imp _ _ _ h
       intro a b
       apply LiftRelO.imp_right
@@ -532,7 +532,7 @@ theorem destruct_congr_iff {s t : WSeq α} :
 #align stream.wseq.destruct_congr_iff Stream'.WSeq.destruct_congr_iff
 
 theorem LiftRel.refl (R : α → α → Prop) (H : Reflexive R) : Reflexive (LiftRel R) := fun s => by
-  refine' ⟨(· = ·), rfl, fun {s t} (h : s = t) => _⟩
+  refine ⟨(· = ·), rfl, fun {s t} (h : s = t) => ?_⟩
   rw [← h]
   apply Computation.LiftRel.refl
   intro a
@@ -551,7 +551,7 @@ theorem LiftRelO.swap (R : α → β → Prop) (C) :
 
 theorem LiftRel.swap_lem {R : α → β → Prop} {s1 s2} (h : LiftRel R s1 s2) :
     LiftRel (swap R) s2 s1 := by
-  refine' ⟨swap (LiftRel R), h, fun {s t} (h : LiftRel R t s) => _⟩
+  refine ⟨swap (LiftRel R), h, fun {s t} (h : LiftRel R t s) => ?_⟩
   rw [← LiftRelO.swap, Computation.LiftRel.swap]
   apply liftRel_destruct h
 #align stream.wseq.lift_rel.swap_lem Stream'.WSeq.LiftRel.swap_lem
@@ -566,7 +566,7 @@ theorem LiftRel.symm (R : α → α → Prop) (H : Symmetric R) : Symmetric (Lif
 
 theorem LiftRel.trans (R : α → α → Prop) (H : Transitive R) : Transitive (LiftRel R) :=
   fun s t u h1 h2 => by
-  refine' ⟨fun s u => ∃ t, LiftRel R s t ∧ LiftRel R t u, ⟨t, h1, h2⟩, fun {s u} h => _⟩
+  refine ⟨fun s u => ∃ t, LiftRel R s t ∧ LiftRel R t u, ⟨t, h1, h2⟩, fun {s u} h => ?_⟩
   rcases h with ⟨t, h1, h2⟩
   have h1 := liftRel_destruct h1
   have h2 := liftRel_destruct h2
@@ -1041,7 +1041,7 @@ theorem liftRel_dropn_destruct {R : α → β → Prop} {s t} (H : LiftRel R s t
   | n + 1 => by
     simp only [LiftRelO, drop, Nat.add_eq, Nat.add_zero, destruct_tail, tail.aux]
     apply liftRel_bind
-    apply liftRel_dropn_destruct H n
+    · apply liftRel_dropn_destruct H n
     exact fun {a b} o =>
       match a, b, o with
       | none, none, _ => by
@@ -1219,7 +1219,7 @@ theorem Equiv.ext {s t : WSeq α} (h : ∀ n, get? s n ~ get? t n) : s ~ʷ t :=
         cases' b with b t'
         injection mem_unique (Computation.mem_map _ ma) ((h 0 _).2 (Computation.mem_map _ mb)) with
           ab
-        refine' ⟨ab, fun n => _⟩
+        refine ⟨ab, fun n => ?_⟩
         refine'
           (get?_congr (flatten_equiv (Computation.mem_map _ ma)) n).symm.trans
             ((_ : get? (tail s) n ~ get? (tail t) n).trans
@@ -1623,7 +1623,7 @@ theorem liftRel_join.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β
             apply lt_of_lt_of_le _ (Nat.le_add_right _ _)
             apply Nat.lt_succ_of_le (Nat.le_add_right _ _)
           let ⟨ob, mb, rob⟩ := IH _ this ST' rs5'
-          refine' ⟨ob, _, rob⟩
+          refine ⟨ob, ?_, rob⟩
           · simp (config := { unfoldPartialApp := true }) only [destruct_join, destruct_join.aux]
             apply mem_bind mT
             simp only [destruct_append, destruct_append.aux]
@@ -1692,7 +1692,7 @@ theorem join_ret (s : WSeq α) : join (ret s) ~ʷ s := by simpa [ret] using thin
 
 @[simp]
 theorem join_map_ret (s : WSeq α) : join (map ret s) ~ʷ s := by
-  refine' ⟨fun s1 s2 => join (map ret s2) = s1, rfl, _⟩
+  refine ⟨fun s1 s2 => join (map ret s2) = s1, rfl, ?_⟩
   intro s' s h; rw [← h]
   apply liftRel_rec fun c1 c2 => ∃ s, c1 = destruct (join (map ret s)) ∧ c2 = destruct s
   · exact fun {c1 c2} h =>

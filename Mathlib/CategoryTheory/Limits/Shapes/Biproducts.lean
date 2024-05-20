@@ -159,12 +159,12 @@ def functoriality (G : C ⥤ D) [Functor.PreservesZeroMorphisms G] :
 
 variable (G : C ⥤ D)
 
-instance functorialityFull [G.PreservesZeroMorphisms] [G.Full] [G.Faithful] :
+instance functoriality_full [G.PreservesZeroMorphisms] [G.Full] [G.Faithful] :
     (functoriality F G).Full where
-  preimage t :=
-    { hom := G.preimage t.hom
+  map_surjective t :=
+   ⟨{ hom := G.preimage t.hom
       wι := fun j => G.map_injective (by simpa using t.wι j)
-      wπ := fun j => G.map_injective (by simpa using t.wπ j) }
+      wπ := fun j => G.map_injective (by simpa using t.wπ j) }, by aesop_cat⟩
 
 instance functoriality_faithful [G.PreservesZeroMorphisms] [G.Faithful] :
     (functoriality F G).Faithful where
@@ -248,8 +248,8 @@ theorem ι_of_isLimit {f : J → C} {t : Bicone f} (ht : IsLimit t.toCone) (j : 
 
 /-- We can turn any colimit cocone over a discrete collection of objects into a bicone. -/
 @[simps]
-def ofColimitCocone {f : J → C} {t : Cocone (Discrete.functor f)} (ht : IsColimit t) : Bicone f
-    where
+def ofColimitCocone {f : J → C} {t : Cocone (Discrete.functor f)} (ht : IsColimit t) :
+    Bicone f where
   pt := t.pt
   π j := ht.desc (Cofan.mk _ fun j' => if h : j' = j then eqToHom (congr_arg f h) else 0)
   ι j := t.ι.app ⟨j⟩
@@ -922,8 +922,8 @@ variable {K : Type} [Finite K] [HasFiniteBiproducts C] (f : K → C)
 /-- The limit cone exhibiting `⨁ Subtype.restrict pᶜ f` as the kernel of
 `biproduct.toSubtype f p` -/
 @[simps]
-def kernelForkBiproductToSubtype (p : Set K) : LimitCone (parallelPair (biproduct.toSubtype f p) 0)
-    where
+def kernelForkBiproductToSubtype (p : Set K) :
+    LimitCone (parallelPair (biproduct.toSubtype f p) 0) where
   cone :=
     KernelFork.ofι (biproduct.fromSubtype f pᶜ)
       (by
@@ -968,8 +968,8 @@ def cokernelCoforkBiproductFromSubtype (p : Set K) :
         simp only [Category.assoc, Pi.compl_apply, biproduct.ι_fromSubtype_assoc,
           biproduct.ι_toSubtype_assoc, comp_zero, zero_comp]
         rw [dif_neg]
-        simp only [zero_comp]
-        exact not_not.mpr k.2)
+        · simp only [zero_comp]
+        · exact not_not.mpr k.2)
   isColimit :=
     CokernelCofork.IsColimit.ofπ _ _ (fun {W} g _ => biproduct.fromSubtype f pᶜ ≫ g)
       (by
@@ -1252,13 +1252,13 @@ def functoriality : BinaryBicone P Q ⥤ BinaryBicone (F.obj P) (F.obj Q) where
       winl := by simp [-BinaryBiconeMorphism.winl, ← f.winl]
       winr := by simp [-BinaryBiconeMorphism.winr, ← f.winr] }
 
-instance functorialityFull [F.Full] [F.Faithful] : (functoriality P Q F).Full where
-  preimage t :=
-    { hom := F.preimage t.hom
+instance functoriality_full [F.Full] [F.Faithful] : (functoriality P Q F).Full where
+  map_surjective t :=
+   ⟨{ hom := F.preimage t.hom
       winl := F.map_injective (by simpa using t.winl)
       winr := F.map_injective (by simpa using t.winr)
       wfst := F.map_injective (by simpa using t.wfst)
-      wsnd := F.map_injective (by simpa using t.wsnd) }
+      wsnd := F.map_injective (by simpa using t.wsnd) }, by aesop_cat⟩
 
 instance functoriality_faithful [F.Faithful] : (functoriality P Q F).Faithful where
   map_injective {_X} {_Y} f g h :=
@@ -1448,8 +1448,7 @@ def BinaryBicone.toBiconeIsBilimit {X Y : C} (b : BinaryBicone X Y) :
 /-- A bicone over a pair is a bilimit bicone if and only if the corresponding binary bicone is a
     bilimit. -/
 def Bicone.toBinaryBiconeIsBilimit {X Y : C} (b : Bicone (pairFunction X Y)) :
-    b.toBinaryBicone.IsBilimit ≃ b.IsBilimit
-    where
+    b.toBinaryBicone.IsBilimit ≃ b.IsBilimit where
   toFun h := ⟨b.toBinaryBiconeIsLimit h.isLimit, b.toBinaryBiconeIsColimit h.isColimit⟩
   invFun h := ⟨b.toBinaryBiconeIsLimit.symm h.isLimit, b.toBinaryBiconeIsColimit.symm h.isColimit⟩
   left_inv := fun ⟨h, h'⟩ => by dsimp only; simp
@@ -2091,8 +2090,7 @@ def isoBiprodZero {X Y : C} [HasBinaryBiproduct X Y] (hY : IsZero Y) : X ≅ X �
 
 /-- If `X` is a zero object, `Y ≅ X ⊞ Y` for any `Y`. -/
 @[simps]
-def isoZeroBiprod {X Y : C} [HasBinaryBiproduct X Y] (hY : IsZero X) : Y ≅ X ⊞ Y
-    where
+def isoZeroBiprod {X Y : C} [HasBinaryBiproduct X Y] (hY : IsZero X) : Y ≅ X ⊞ Y where
   hom := biprod.inr
   inv := biprod.snd
   inv_hom_id := by

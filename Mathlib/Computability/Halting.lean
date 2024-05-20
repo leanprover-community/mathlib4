@@ -110,7 +110,7 @@ theorem merge {f g : α →. σ} (hf : Partrec f) (hg : Partrec g)
   ⟨k, hk, fun a x =>
     ⟨(K _).1 _, fun h => by
       have : (k a).Dom := (K _).2.2 (h.imp Exists.fst Exists.fst)
-      refine' ⟨this, _⟩
+      refine ⟨this, ?_⟩
       cases' h with h h <;> cases' (K _).1 _ ⟨this, rfl⟩ with h' h'
       · exact mem_unique h' h
       · exact (H _ _ h _ h').symm
@@ -206,7 +206,14 @@ theorem rice (C : Set (ℕ →. ℕ)) (h : ComputablePred fun c => eval c ∈ C)
     fixed_point₂
       (Partrec.cond (h.comp fst) ((Partrec.nat_iff.2 hg).comp snd).to₂
           ((Partrec.nat_iff.2 hf).comp snd).to₂).to₂
-  aesop
+  simp only [Bool.cond_decide] at e
+  by_cases H : eval c ∈ C
+  · simp only [H, if_true] at e
+    change (fun b => g b) ∈ C
+    rwa [← e]
+  · simp only [H, if_false] at e
+    rw [e] at H
+    contradiction
 #align computable_pred.rice ComputablePred.rice
 
 theorem rice₂ (C : Set Code) (H : ∀ cf cg, eval cf = eval cg → (cf ∈ C ↔ cg ∈ C)) :
@@ -252,11 +259,11 @@ theorem computable_iff_re_compl_re {p : α → Prop} [DecidablePred p] :
           simp only [Part.mem_map_iff, Part.mem_assert_iff, Part.mem_some_iff, exists_prop,
             and_true, exists_const] at hx hy
           cases hy.1 hx.1)
-      · refine' Partrec.of_eq pk fun n => Part.eq_some_iff.2 _
-        rw [hk]
-        simp only [Part.mem_map_iff, Part.mem_assert_iff, Part.mem_some_iff, exists_prop, and_true,
-          true_eq_decide_iff, and_self, exists_const, false_eq_decide_iff]
-        apply Decidable.em⟩⟩
+      refine' Partrec.of_eq pk fun n => Part.eq_some_iff.2 _
+      rw [hk]
+      simp only [Part.mem_map_iff, Part.mem_assert_iff, Part.mem_some_iff, exists_prop, and_true,
+        true_eq_decide_iff, and_self, exists_const, false_eq_decide_iff]
+      apply Decidable.em⟩⟩
 #align computable_pred.computable_iff_re_compl_re ComputablePred.computable_iff_re_compl_re
 
 theorem computable_iff_re_compl_re' {p : α → Prop} :

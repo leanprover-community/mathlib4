@@ -41,8 +41,8 @@ instance (J : SingleObj M ⥤ Type u) : MulAction M (J.obj (SingleObj.star M)) w
   mul_smul g h x := by
     show J.map (g * h) x = (J.map h ≫ J.map g) x
     rw [← SingleObj.comp_as_mul]
-    simp only [FunctorToTypes.map_comp_apply, types_comp_apply]
-    rfl
+    · simp only [FunctorToTypes.map_comp_apply, types_comp_apply]
+      rfl
 
 section Limits
 

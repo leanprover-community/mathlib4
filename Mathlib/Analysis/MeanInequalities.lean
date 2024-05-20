@@ -419,7 +419,7 @@ theorem inner_le_Lp_mul_Lq_tsum {f g : ι → ℝ≥0} {p q : ℝ} (hpq : p.IsCo
     · rw [NNReal.rpow_le_rpow_iff (one_div_pos.mpr hpq.symm.pos)]
       exact sum_le_tsum _ (fun _ _ => zero_le _) hg
   have bdd : BddAbove (Set.range fun s => ∑ i in s, f i * g i) := by
-    refine' ⟨(∑' i, f i ^ p) ^ (1 / p) * (∑' i, g i ^ q) ^ (1 / q), _⟩
+    refine ⟨(∑' i, f i ^ p) ^ (1 / p) * (∑' i, g i ^ q) ^ (1 / q), ?_⟩
     rintro a ⟨s, rfl⟩
     exact H₁ s
   have H₂ : Summable _ := (hasSum_of_isLUB _ (isLUB_ciSup bdd)).summable
@@ -468,7 +468,7 @@ theorem rpow_sum_le_const_mul_sum_rpow (f : ι → ℝ≥0) {p : ℝ} (hp : 1 �
     rw [← hpq.div_conj_eq_sub_one]
     ring
   simpa only [NNReal.mul_rpow, ← NNReal.rpow_mul, hp₁, hq, one_mul, one_rpow, rpow_one,
-    Pi.one_apply, sum_const, Nat.smul_one_eq_coe] using
+    Pi.one_apply, sum_const, Nat.smul_one_eq_cast] using
     NNReal.rpow_le_rpow (inner_le_Lp_mul_Lq s 1 f hpq.symm) hpq.nonneg
 #align nnreal.rpow_sum_le_const_mul_sum_rpow NNReal.rpow_sum_le_const_mul_sum_rpow
 
@@ -533,11 +533,11 @@ theorem Lp_add_le_tsum {f g : ι → ℝ≥0} {p : ℝ} (hp : 1 ≤ p) (hf : Sum
       refine sum_le_tsum _ (fun _ _ => zero_le _) ?_
     exacts [hf, hg]
   have bdd : BddAbove (Set.range fun s => ∑ i in s, (f i + g i) ^ p) := by
-    refine' ⟨((∑' i, f i ^ p) ^ (1 / p) + (∑' i, g i ^ p) ^ (1 / p)) ^ p, _⟩
+    refine ⟨((∑' i, f i ^ p) ^ (1 / p) + (∑' i, g i ^ p) ^ (1 / p)) ^ p, ?_⟩
     rintro a ⟨s, rfl⟩
     exact H₁ s
   have H₂ : Summable _ := (hasSum_of_isLUB _ (isLUB_ciSup bdd)).summable
-  refine' ⟨H₂, _⟩
+  refine ⟨H₂, ?_⟩
   rw [NNReal.rpow_one_div_le_iff pos]
   exact tsum_le_of_sum_le H₂ H₁
 #align nnreal.Lp_add_le_tsum NNReal.Lp_add_le_tsum
@@ -681,7 +681,7 @@ theorem inner_le_Lp_mul_Lq_hasSum_of_nonneg (hpq : p.IsConjExponent q) {A B : �
   beta_reduce at *
   norm_cast at hf_sum hg_sum
   obtain ⟨C, hC, H⟩ := NNReal.inner_le_Lp_mul_Lq_hasSum hpq hf_sum hg_sum
-  refine' ⟨C, C.prop, hC, _⟩
+  refine ⟨C, C.prop, hC, ?_⟩
   norm_cast
 #align real.inner_le_Lp_mul_Lq_has_sum_of_nonneg Real.inner_le_Lp_mul_Lq_hasSum_of_nonneg
 
@@ -834,7 +834,7 @@ theorem rpow_sum_le_const_mul_sum_rpow (hp : 1 ≤ p) :
     rw [← hpq.div_conj_eq_sub_one]
     ring
   simpa only [ENNReal.mul_rpow_of_nonneg _ _ hpq.nonneg, ← ENNReal.rpow_mul, hp₁, hq, coe_one,
-    one_mul, one_rpow, rpow_one, Pi.one_apply, sum_const, Nat.smul_one_eq_coe] using
+    one_mul, one_rpow, rpow_one, Pi.one_apply, sum_const, Nat.smul_one_eq_cast] using
     ENNReal.rpow_le_rpow (inner_le_Lp_mul_Lq s 1 f hpq.symm) hpq.nonneg
 #align ennreal.rpow_sum_le_const_mul_sum_rpow ENNReal.rpow_sum_le_const_mul_sum_rpow
 

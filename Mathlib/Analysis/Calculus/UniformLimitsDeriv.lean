@@ -214,7 +214,7 @@ theorem uniformCauchySeqOn_ball_of_fderiv {r : ℝ} (hf' : UniformCauchySeqOn f'
     refine' Metric.tendstoUniformlyOn_iff.mpr fun ε hε => _
     obtain ⟨t, ht, ht'⟩ := (Metric.cauchy_iff.mp hfg).2 ε hε
     rw [eventually_prod_iff]
-    refine' ⟨fun n => f n x ∈ t, ht, fun n => f n x ∈ t, ht, _⟩
+    refine ⟨fun n => f n x ∈ t, ht, fun n => f n x ∈ t, ht, ?_⟩
     intro n hn n' hn' z _
     rw [dist_eq_norm, Pi.zero_apply, zero_sub, norm_neg, ← dist_eq_norm]
     exact ht' _ hn _ hn'
@@ -350,8 +350,8 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
   have : 𝓝 (0 : G) = 𝓝 (0 + 0 + 0) := by simp only [add_zero]
   rw [this]
   refine' Tendsto.add (Tendsto.add _ _) _
-  simp only
-  · have := difference_quotients_converge_uniformly hf' hf hfg
+  · simp only
+    have := difference_quotients_converge_uniformly hf' hf hfg
     rw [Metric.tendstoUniformlyOnFilter_iff] at this
     rw [Metric.tendsto_nhds]
     intro ε hε
@@ -364,10 +364,10 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     rw [Metric.tendsto_nhds]
     intro ε hε
     rw [eventually_curry_iff]
-    refine' hf.curry.mono fun n hn => _
+    refine hf.curry.mono fun n hn => ?_
     have := hn.self_of_nhds
     rw [hasFDerivAt_iff_tendsto, Metric.tendsto_nhds] at this
-    refine' (this ε hε).mono fun y hy => _
+    refine (this ε hε).mono fun y hy => ?_
     rw [dist_eq_norm] at hy ⊢
     simp only [sub_zero, map_sub, norm_mul, norm_inv, norm_norm] at hy ⊢
     rw [norm_smul, norm_inv, RCLike.norm_coe_norm]

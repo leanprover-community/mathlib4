@@ -177,7 +177,7 @@ theorem exists_floor (x : α) : ∃ fl : ℤ, ∀ z : ℤ, z ≤ fl ↔ (z : α)
       ⟨n, fun z h' => Int.cast_le.1 <| le_trans h' <| le_of_lt hn⟩)
       (let ⟨n, hn⟩ := exists_int_lt x
       ⟨n, le_of_lt hn⟩)
-  refine' this.imp fun fl h z => _
+  refine this.imp fun fl h z => ?_
   cases' h with h₁ h₂
   exact ⟨fun h => le_trans (Int.cast_le.2 h) h₁, h₂ z⟩
 #align exists_floor exists_floor
@@ -287,15 +287,15 @@ theorem exists_rat_lt (x : α) : ∃ q : ℚ, (q : α) < x :=
 theorem exists_rat_btwn {x y : α} (h : x < y) : ∃ q : ℚ, x < q ∧ (q : α) < y := by
   cases' exists_nat_gt (y - x)⁻¹ with n nh
   cases' exists_floor (x * n) with z zh
-  refine' ⟨(z + 1 : ℤ) / n, _⟩
+  refine ⟨(z + 1 : ℤ) / n, ?_⟩
   have n0' := (inv_pos.2 (sub_pos.2 h)).trans nh
   have n0 := Nat.cast_pos.1 n0'
   rw [Rat.cast_div_of_ne_zero, Rat.cast_natCast, Rat.cast_intCast, div_lt_iff n0']
-  refine' ⟨(lt_div_iff n0').2 <| (lt_iff_lt_of_le_iff_le (zh _)).1 (lt_add_one _), _⟩
-  rw [Int.cast_add, Int.cast_one]
-  refine' lt_of_le_of_lt (add_le_add_right ((zh _).1 le_rfl) _) _
-  rwa [← lt_sub_iff_add_lt', ← sub_mul, ← div_lt_iff' (sub_pos.2 h), one_div]
-  · rw [Rat.coe_int_den, Nat.cast_one]
+  · refine' ⟨(lt_div_iff n0').2 <| (lt_iff_lt_of_le_iff_le (zh _)).1 (lt_add_one _), _⟩
+    rw [Int.cast_add, Int.cast_one]
+    refine' lt_of_le_of_lt (add_le_add_right ((zh _).1 le_rfl) _) _
+    rwa [← lt_sub_iff_add_lt', ← sub_mul, ← div_lt_iff' (sub_pos.2 h), one_div]
+  · rw [Rat.den_intCast, Nat.cast_one]
     exact one_ne_zero
   · intro H
     rw [Rat.num_natCast, Int.cast_natCast, Nat.cast_eq_zero] at H

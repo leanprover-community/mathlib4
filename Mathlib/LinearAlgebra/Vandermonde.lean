@@ -51,8 +51,8 @@ theorem vandermonde_cons {n : ℕ} (v0 : R) (v : Fin n → R) :
       Fin.cons (fun (j : Fin n.succ) => v0 ^ (j : ℕ)) fun i => Fin.cons 1
       fun j => v i * vandermonde v i j := by
   ext i j
-  refine' Fin.cases (by simp) (fun i => _) i
-  refine' Fin.cases (by simp) (fun j => _) j
+  refine Fin.cases (by simp) (fun i => ?_) i
+  refine Fin.cases (by simp) (fun j => ?_) j
   simp [pow_succ']
 #align matrix.vandermonde_cons Matrix.vandermonde_cons
 
@@ -61,6 +61,7 @@ theorem vandermonde_succ {n : ℕ} (v : Fin n.succ → R) :
       Fin.cons (fun (j : Fin n.succ) => v 0 ^ (j : ℕ)) fun i =>
         Fin.cons 1 fun j => v i.succ * vandermonde (Fin.tail v) i j := by
   conv_lhs => rw [← Fin.cons_self_tail v, vandermonde_cons]
+  rfl
 #align matrix.vandermonde_succ Matrix.vandermonde_succ
 
 theorem vandermonde_mul_vandermonde_transpose {n : ℕ} (v w : Fin n → R) (i j) :

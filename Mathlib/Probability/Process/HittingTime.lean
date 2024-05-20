@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Rémy Degenne
 -/
 import Mathlib.Probability.Process.Stopping
+import Mathlib.Tactic.AdaptationNote
 
 #align_import probability.process.hitting_time from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -52,7 +53,7 @@ noncomputable def hitting [Preorder ι] [InfSet ι] (u : ι → Ω → β) (s : 
   fun x => if ∃ j ∈ Set.Icc n m, u j x ∈ s then sInf (Set.Icc n m ∩ {i : ι | u i x ∈ s}) else m
 #align measure_theory.hitting MeasureTheory.hitting
 
--- Adaptation note: nightly-2024-03-16: added to replace simp [hitting]
+#adaptation_note /-- nightly-2024-03-16: added to replace simp [hitting] -/
 theorem hitting_def [Preorder ι] [InfSet ι] (u : ι → Ω → β) (s : Set β) (n m : ι) :
     hitting u s n m =
     fun x => if ∃ j ∈ Set.Icc n m, u j x ∈ s then sInf (Set.Icc n m ∩ {i : ι | u i x ∈ s}) else m :=

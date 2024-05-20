@@ -3,12 +3,11 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-
+import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.Data.Finset.Fin
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Int.Order.Units
 import Mathlib.GroupTheory.Perm.Support
-import Mathlib.GroupTheory.Subgroup.Finite
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Tactic.NormNum.Ineq
 
@@ -249,8 +248,8 @@ theorem signAux_mul {n : ℕ} (f g : Perm (Fin n)) : signAux (f * g) = signAux f
 private theorem signAux_swap_zero_one' (n : ℕ) : signAux (swap (0 : Fin (n + 2)) 1) = -1 :=
   show _ = ∏ x : Σ_a : Fin (n + 2), Fin (n + 2) in {(⟨1, 0⟩ : Σa : Fin (n + 2), Fin (n + 2))},
       if (Equiv.swap 0 1) x.1 ≤ swap 0 1 x.2 then (-1 : ℤˣ) else 1 by
-    refine' Eq.symm (prod_subset (fun ⟨x₁, x₂⟩ => by
-      simp (config := { contextual := true }) [mem_finPairsLT, Fin.one_pos]) fun a ha₁ ha₂ => _)
+    refine Eq.symm (prod_subset (fun ⟨x₁, x₂⟩ => by
+      simp (config := { contextual := true }) [mem_finPairsLT, Fin.one_pos]) fun a ha₁ ha₂ => ?_)
     rcases a with ⟨a₁, a₂⟩
     replace ha₁ : a₂ < a₁ := mem_finPairsLT.1 ha₁
     dsimp only
@@ -340,7 +339,7 @@ theorem signAux3_mul_and_swap [Finite α] (f g : Perm α) (s : Multiset α) (hs 
     signAux3 (f * g) hs = signAux3 f hs * signAux3 g hs ∧
       Pairwise fun x y => signAux3 (swap x y) hs = -1 := by
   obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin α
-  obtain ⟨l, rfl⟩ := Quotient.exists_rep s
+  induction s using Quotient.inductionOn with | _ l => ?_
   show
     signAux2 l (f * g) = signAux2 l f * signAux2 l g ∧
     Pairwise fun x y => signAux2 l (swap x y) = -1

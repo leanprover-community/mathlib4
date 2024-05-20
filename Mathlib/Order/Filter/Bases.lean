@@ -542,7 +542,7 @@ theorem hasBasis_iInf_of_directed' {ι : Type*} {ι' : ι → Sort _} [Nonempty 
     (s : ∀ i, ι' i → Set α) (p : ∀ i, ι' i → Prop) (hl : ∀ i, (l i).HasBasis (p i) (s i))
     (h : Directed (· ≥ ·) l) :
     (⨅ i, l i).HasBasis (fun ii' : Σi, ι' i => p ii'.1 ii'.2) fun ii' => s ii'.1 ii'.2 := by
-  refine' ⟨fun t => _⟩
+  refine ⟨fun t => ?_⟩
   rw [mem_iInf_of_directed h, Sigma.exists]
   exact exists_congr fun i => (hl i).mem_iff
 #align filter.has_basis_infi_of_directed' Filter.hasBasis_iInf_of_directed'
@@ -551,7 +551,7 @@ theorem hasBasis_iInf_of_directed {ι : Type*} {ι' : Sort _} [Nonempty ι] {l :
     (s : ι → ι' → Set α) (p : ι → ι' → Prop) (hl : ∀ i, (l i).HasBasis (p i) (s i))
     (h : Directed (· ≥ ·) l) :
     (⨅ i, l i).HasBasis (fun ii' : ι × ι' => p ii'.1 ii'.2) fun ii' => s ii'.1 ii'.2 := by
-  refine' ⟨fun t => _⟩
+  refine ⟨fun t => ?_⟩
   rw [mem_iInf_of_directed h, Prod.exists]
   exact exists_congr fun i => (hl i).mem_iff
 #align filter.has_basis_infi_of_directed Filter.hasBasis_iInf_of_directed
@@ -561,7 +561,7 @@ theorem hasBasis_biInf_of_directed' {ι : Type*} {ι' : ι → Sort _} {dom : Se
     (hl : ∀ i ∈ dom, (l i).HasBasis (p i) (s i)) (h : DirectedOn (l ⁻¹'o GE.ge) dom) :
     (⨅ i ∈ dom, l i).HasBasis (fun ii' : Σi, ι' i => ii'.1 ∈ dom ∧ p ii'.1 ii'.2) fun ii' =>
       s ii'.1 ii'.2 := by
-  refine' ⟨fun t => _⟩
+  refine ⟨fun t => ?_⟩
   rw [mem_biInf_of_directed h hdom, Sigma.exists]
   refine' exists_congr fun i => ⟨_, _⟩
   · rintro ⟨hi, hti⟩
@@ -576,7 +576,7 @@ theorem hasBasis_biInf_of_directed {ι : Type*} {ι' : Sort _} {dom : Set ι} (h
     (hl : ∀ i ∈ dom, (l i).HasBasis (p i) (s i)) (h : DirectedOn (l ⁻¹'o GE.ge) dom) :
     (⨅ i ∈ dom, l i).HasBasis (fun ii' : ι × ι' => ii'.1 ∈ dom ∧ p ii'.1 ii'.2) fun ii' =>
       s ii'.1 ii'.2 := by
-  refine' ⟨fun t => _⟩
+  refine ⟨fun t => ?_⟩
   rw [mem_biInf_of_directed h hdom, Prod.exists]
   refine' exists_congr fun i => ⟨_, _⟩
   · rintro ⟨hi, hti⟩
@@ -659,7 +659,7 @@ theorem HasBasis.inf_principal_neBot_iff (hl : l.HasBasis p s) {t : Set α} :
 -- Porting note: use `∃ i, p i ∧ _` instead of `∃ i (hi : p i), _`.
 theorem HasBasis.disjoint_iff (hl : l.HasBasis p s) (hl' : l'.HasBasis p' s') :
     Disjoint l l' ↔ ∃ i, p i ∧ ∃ i', p' i' ∧ Disjoint (s i) (s' i') :=
-  not_iff_not.mp <| by simp only [_root_.disjoint_iff, ← Ne.def, ← neBot_iff, inf_eq_inter,
+  not_iff_not.mp <| by simp only [_root_.disjoint_iff, ← Ne.eq_def, ← neBot_iff, inf_eq_inter,
     hl.inf_basis_neBot_iff hl', not_exists, not_and, bot_eq_empty, ← nonempty_iff_ne_empty]
 #align filter.has_basis.disjoint_iff Filter.HasBasis.disjoint_iffₓ
 
@@ -1111,7 +1111,7 @@ theorem HasBasis.exists_antitone_subbasis {f : Filter α} [h : f.IsCountablyGene
   have x_subset : ∀ i, s (x i).1 ⊆ x' i := by
     rintro (_ | i)
     exacts [hs.set_index_subset _, (hs.set_index_subset _).trans (inter_subset_left _ _)]
-  refine' ⟨fun i => (x i).1, fun i => (x i).2, _⟩
+  refine ⟨fun i => (x i).1, fun i => (x i).2, ?_⟩
   have : (⨅ i, 𝓟 (s (x i).1)).HasAntitoneBasis fun i => s (x i).1 := .iInf_principal x_anti
   convert this
   exact

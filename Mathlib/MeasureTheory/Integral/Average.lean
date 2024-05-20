@@ -526,12 +526,12 @@ theorem measure_le_setAverage_pos (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞) (hf
   haveI := Fact.mk hμ₁.lt_top
   refine' (integral_sub_average (μ.restrict s) f).not_gt _
   refine' (setIntegral_pos_iff_support_of_nonneg_ae _ _).2 _
-  · refine' eq_bot_mono (measure_mono fun x hx => _) H
+  · refine measure_mono_null (fun x hx ↦ ?_) H
     simp only [Pi.zero_apply, sub_nonneg, mem_compl_iff, mem_setOf_eq, not_le] at hx
     exact hx.le
   · exact hf.sub (integrableOn_const.2 <| Or.inr <| lt_top_iff_ne_top.2 hμ₁)
   · rwa [pos_iff_ne_zero, inter_comm, ← diff_compl, ← diff_inter_self_eq_diff, measure_diff_null]
-    refine' eq_bot_mono (measure_mono _) (measure_inter_eq_zero_of_restrict H)
+    refine measure_mono_null ?_ (measure_inter_eq_zero_of_restrict H)
     exact inter_subset_inter_left _ fun a ha => (sub_eq_zero.1 <| of_not_not ha).le
 #align measure_theory.measure_le_set_average_pos MeasureTheory.measure_le_setAverage_pos
 
@@ -673,8 +673,8 @@ theorem measure_le_setLaverage_pos (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞)
   rintro x ⟨hfx, hx⟩
   dsimp at hfx
   rwa [← toReal_laverage hf, toReal_le_toReal hx (setLaverage_lt_top h).ne] at hfx
-  · simp_rw [ae_iff, not_ne_iff]
-    exact measure_eq_top_of_lintegral_ne_top hf h
+  simp_rw [ae_iff, not_ne_iff]
+  exact measure_eq_top_of_lintegral_ne_top hf h
 #align measure_theory.measure_le_set_laverage_pos MeasureTheory.measure_le_setLaverage_pos
 
 /-- **First moment method**. A measurable function is greater than its mean on a set of positive
@@ -695,7 +695,7 @@ theorem measure_setLaverage_le_pos (hμ : μ s ≠ 0) (hs : NullMeasurableSet s 
   rintro x ⟨hfx, hx⟩
   dsimp at hfx
   rw [← toReal_laverage hg.aemeasurable, toReal_le_toReal (setLaverage_lt_top hint).ne hx] at hfx
-  exact hfx.trans (hgf _)
+  · exact hfx.trans (hgf _)
   · simp_rw [ae_iff, not_ne_iff]
     exact measure_eq_top_of_lintegral_ne_top hg.aemeasurable hint
 #align measure_theory.measure_set_laverage_le_pos MeasureTheory.measure_setLaverage_le_pos

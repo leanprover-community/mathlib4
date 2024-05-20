@@ -3,11 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Christopher Hoskin
 -/
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Module.Hom
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
-import Mathlib.RingTheory.Subsemiring.Basic
+import Mathlib.Algebra.Ring.Subsemiring.Basic
 
 #align_import algebra.hom.centroid from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
@@ -658,8 +658,8 @@ variable [NonUnitalRing α]
 -- Porting note: Not sure why Lean didn't like `CentroidHom.Ring`
 -- See note [reducible non instances]
 /-- A prime associative ring has commutative centroid. -/
-@[reducible]
-def commRing (h : ∀ a b : α, (∀ r : α, a * r * b = 0) → a = 0 ∨ b = 0) : CommRing (CentroidHom α) :=
+abbrev commRing
+    (h : ∀ a b : α, (∀ r : α, a * r * b = 0) → a = 0 ∨ b = 0) : CommRing (CentroidHom α) :=
   { CentroidHom.instRing with
     mul_comm := fun f g ↦ by
       ext

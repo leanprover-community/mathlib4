@@ -966,7 +966,7 @@ protected theorem Infinite.prod_right (ht : t.Infinite) (hs : s.Nonempty) : (s �
 protected theorem infinite_prod :
     (s ×ˢ t).Infinite ↔ s.Infinite ∧ t.Nonempty ∨ t.Infinite ∧ s.Nonempty := by
   refine' ⟨fun h => _, _⟩
-  · simp_rw [Set.Infinite, @and_comm ¬_, ← not_imp]
+  · simp_rw [Set.Infinite, @and_comm ¬_, ← Classical.not_imp]
     by_contra!
     exact h ((this.1 h.nonempty.snd).prod <| this.2 h.nonempty.fst)
   · rintro (h | h)
@@ -1231,7 +1231,7 @@ theorem seq_of_forall_finite_exists {γ : Type*} {P : γ → Set γ → Prop}
   choose! c hc using h
   set f : (n : ℕ) → (g : (m : ℕ) → m < n → γ) → γ := fun n g => c (range fun k : Iio n => g k.1 k.2)
   set u : ℕ → γ := fun n => Nat.strongRecOn' n f
-  refine' ⟨u, fun n => _⟩
+  refine ⟨u, fun n => ?_⟩
   convert hc (u '' Iio n) ((finite_lt_nat _).image _)
   rw [image_eq_range]
   exact Nat.strongRecOn'_beta

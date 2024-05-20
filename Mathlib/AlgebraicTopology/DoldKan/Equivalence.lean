@@ -165,12 +165,8 @@ set_option linter.uppercaseLean3 false in
 
 /-- The Dold-Kan equivalence for abelian categories -/
 @[simps! functor]
-def equivalence : SimplicialObject A ≌ ChainComplex A ℕ := by
-  let F : SimplicialObject A ⥤ _ := Idempotents.DoldKan.N
-  let hF : F.IsEquivalence := Functor.IsEquivalence.ofEquivalence Idempotents.DoldKan.equivalence
-  letI : (N : SimplicialObject A ⥤ _).IsEquivalence :=
-    Functor.IsEquivalence.ofIso comparisonN.symm hF
-  exact N.asEquivalence
+def equivalence : SimplicialObject A ≌ ChainComplex A ℕ :=
+  (Idempotents.DoldKan.equivalence (C := A)).changeFunctor comparisonN.symm
 #align category_theory.abelian.dold_kan.equivalence CategoryTheory.Abelian.DoldKan.equivalence
 
 theorem equivalence_inverse : (equivalence : SimplicialObject A ≌ _).inverse = Γ :=

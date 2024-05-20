@@ -317,7 +317,7 @@ theorem repr_apply_eq (f : M → ι → R) (hadd : ∀ x y, f (x + y) = f x + f 
       map_add' := fun _ _ => by beta_reduce; rw [hadd, Pi.add_apply]
       map_smul' := fun _ _ => by simp [hsmul, Pi.smul_apply] }
   have : Finsupp.lapply i ∘ₗ ↑b.repr = f_i := by
-    refine' b.ext fun j => _
+    refine b.ext fun j => ?_
     show b.repr (b j) i = f (b j) i
     rw [b.repr_self, f_eq]
   calc
@@ -611,13 +611,13 @@ def constr : (ι → M') ≃ₗ[S] M →ₗ[R] M' where
     ext
     simp
   right_inv f := by
-    refine' b.ext fun i => _
+    refine b.ext fun i => ?_
     simp
   map_add' f g := by
-    refine' b.ext fun i => _
+    refine b.ext fun i => ?_
     simp
   map_smul' c f := by
-    refine' b.ext fun i => _
+    refine b.ext fun i => ?_
     simp
 #align basis.constr Basis.constr
 
@@ -1191,7 +1191,7 @@ theorem groupSMul_span_eq_top {G : Type*} [Group G] [DistribMulAction G R] [Dist
   intro j hj
   rw [← hv] at hj
   rw [Submodule.mem_span] at hj ⊢
-  refine' fun p hp => hj p fun u hu => _
+  refine fun p hp => hj p fun u hu => ?_
   obtain ⟨i, rfl⟩ := hu
   have : ((w i)⁻¹ • (1 : R)) • w i • v i ∈ p := p.smul_mem ((w i)⁻¹ • (1 : R)) (hp ⟨i, rfl⟩)
   rwa [smul_one_smul, inv_smul_smul] at this
@@ -1537,7 +1537,7 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
     ⋃ k, ((b.repr (v k)).support : Set ι) = Set.univ := by
   -- If that's not the case,
   by_contra h
-  simp only [← Ne.def, ne_univ_iff_exists_not_mem, mem_iUnion, not_exists_not,
+  simp only [← Ne.eq_def, ne_univ_iff_exists_not_mem, mem_iUnion, not_exists_not,
     Finsupp.mem_support_iff, Finset.mem_coe] at h
   -- We have some basis element `b b'` which is not in the support of any of the `v i`.
   obtain ⟨b', w⟩ := h
@@ -1573,8 +1573,8 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
       rw [← eq_neg_iff_add_eq_zero] at z
       replace z := neg_eq_iff_eq_neg.mpr z
       apply_fun fun x => b.repr x b' at z
-      simp only [repr_self, LinearEquiv.map_smul, mul_one, Finsupp.single_eq_same, Pi.neg_apply,
-        Finsupp.smul_single', LinearEquiv.map_neg, Finsupp.coe_neg] at z
+      simp only [repr_self, map_smul, mul_one, Finsupp.single_eq_same, Pi.neg_apply,
+        Finsupp.smul_single', map_neg, Finsupp.coe_neg] at z
       erw [DFunLike.congr_fun (Finsupp.apply_total R (b.repr : M →ₗ[R] ι →₀ R) v l.some) b'] at z
       simpa [Finsupp.total_apply, w] using z
     -- Then all the other coefficients are zero, because `v` is linear independent.

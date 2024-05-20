@@ -125,8 +125,7 @@ variable {G}
 
 /-- Creates a partition from a coloring. -/
 @[simps]
-def Coloring.toPartition {α : Type v} (C : G.Coloring α) : G.Partition
-    where
+def Coloring.toPartition {α : Type v} (C : G.Coloring α) : G.Partition where
   parts := C.colorClasses
   isPartition := C.colorClasses_isPartition
   independent := by
@@ -147,7 +146,8 @@ theorem partitionable_iff_colorable {n : ℕ} : G.Partitionable n ↔ G.Colorabl
   · rintro ⟨C⟩
     refine' ⟨C.toPartition, C.colorClasses_finite, le_trans _ (Fintype.card_fin n).le⟩
     generalize_proofs h
-    haveI : Fintype C.colorClasses := C.colorClasses_finite.fintype
+    change Set.Finite (Coloring.colorClasses C) at h
+    have : Fintype C.colorClasses := C.colorClasses_finite.fintype
     rw [h.card_toFinset]
     exact C.card_colorClasses_le
 #align simple_graph.partitionable_iff_colorable SimpleGraph.partitionable_iff_colorable

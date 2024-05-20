@@ -140,9 +140,7 @@ theorem drop_take_succ_eq_cons_nthLe (L : List α) {i : ℕ} (hi : i < L.length)
   cases' i with i hi
   · simp
     rfl
-  have : i < tail.length := by
-    simp? at hi says simp only [length_cons] at hi
-    exact Nat.lt_of_succ_lt_succ hi
+  have : i < tail.length := by simpa using hi
   simp [*]
   rfl
 #align list.drop_take_succ_eq_cons_nth_le List.drop_take_succ_eq_cons_nthLe
@@ -169,7 +167,7 @@ theorem drop_take_succ_join_eq_get' (L : List (List α)) (i : Fin L.length) :
 sublists. -/
 theorem eq_iff_join_eq (L L' : List (List α)) :
     L = L' ↔ L.join = L'.join ∧ map length L = map length L' := by
-  refine' ⟨fun H => by simp [H], _⟩
+  refine ⟨fun H => by simp [H], ?_⟩
   rintro ⟨join_eq, length_eq⟩
   apply ext_get
   · have : length (map length L) = length (map length L') := by rw [length_eq]

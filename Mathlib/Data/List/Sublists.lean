@@ -84,9 +84,10 @@ theorem mem_sublists' {s t : List α} : s ∈ sublists' t ↔ s <+ t := by
   · simp only [sublists'_nil, mem_singleton]
     exact ⟨fun h => by rw [h], eq_nil_of_sublist_nil⟩
   simp only [sublists'_cons, mem_append, IH, mem_map]
-  constructor <;> intro h; rcases h with (h | ⟨s, h, rfl⟩)
-  · exact sublist_cons_of_sublist _ h
-  · exact h.cons_cons _
+  constructor <;> intro h
+  · rcases h with (h | ⟨s, h, rfl⟩)
+    · exact sublist_cons_of_sublist _ h
+    · exact h.cons_cons _
   · cases' h with _ _ _ h s _ _ h
     · exact Or.inl h
     · exact Or.inr ⟨s, h, rfl⟩
@@ -362,7 +363,7 @@ theorem Pairwise.sublists' {R} :
   | _, @Pairwise.cons _ _ a l H₁ H₂ => by
     simp only [sublists'_cons, pairwise_append, pairwise_map, mem_sublists', mem_map, exists_imp,
       and_imp]
-    refine' ⟨H₂.sublists', H₂.sublists'.imp fun l₁ => Lex.cons l₁, _⟩
+    refine ⟨H₂.sublists', H₂.sublists'.imp fun l₁ => Lex.cons l₁, ?_⟩
     rintro l₁ sl₁ x l₂ _ rfl
     cases' l₁ with b l₁; · constructor
     exact Lex.rel (H₁ _ <| sl₁.subset <| mem_cons_self _ _)

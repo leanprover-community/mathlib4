@@ -6,7 +6,7 @@ Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 import Mathlib.Algebra.Polynomial.Inductions
 import Mathlib.Algebra.Polynomial.Monic
 import Mathlib.RingTheory.Multiplicity
-import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.RingTheory.Ideal.Maps
 
 #align_import data.polynomial.div from "leanprover-community/mathlib"@"e1e7190efdcefc925cb36f257a8362ef22944204"
 
@@ -249,7 +249,7 @@ theorem modByMonic_eq_sub_mul_div :
       dsimp
       rw [dif_pos hq, if_pos h]
       rw [modByMonic, dif_pos hq] at ih
-      refine' ih.trans _
+      refine ih.trans ?_
       unfold divByMonic
       rw [dif_pos hq, dif_pos hq, if_pos h, mul_add, sub_add_eq_sub_sub]
     else by
@@ -556,7 +556,8 @@ theorem rootMultiplicity_C (r a : R) : rootMultiplicity a (C r) = 0 := by
   · rw [Subsingleton.elim (C r) 0, rootMultiplicity_zero]
   classical
   rw [rootMultiplicity_eq_multiplicity]
-  split_ifs with hr; rfl
+  split_ifs with hr
+  · rfl
   have h : natDegree (C r) < natDegree (X - C a) := by simp
   simp_rw [multiplicity.multiplicity_eq_zero.mpr ((monic_X_sub_C a).not_dvd_of_natDegree_lt hr h)]
   rfl
@@ -681,7 +682,7 @@ theorem rootMultiplicity_eq_zero {p : R[X]} {x : R} (h : ¬IsRoot p x) : rootMul
 
 @[simp]
 theorem rootMultiplicity_pos' {p : R[X]} {x : R} : 0 < rootMultiplicity x p ↔ p ≠ 0 ∧ IsRoot p x :=
-  by rw [pos_iff_ne_zero, Ne, rootMultiplicity_eq_zero_iff, not_imp, and_comm]
+  by rw [pos_iff_ne_zero, Ne, rootMultiplicity_eq_zero_iff, Classical.not_imp, and_comm]
 #align polynomial.root_multiplicity_pos' Polynomial.rootMultiplicity_pos'
 
 theorem rootMultiplicity_pos {p : R[X]} (hp : p ≠ 0) {x : R} :

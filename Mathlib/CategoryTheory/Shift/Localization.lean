@@ -43,6 +43,7 @@ variable {A}
 
 lemma iff {X Y : C} (f : X ⟶ Y) (a : A) : W (f⟦a⟧') ↔ W f := by
   conv_rhs => rw [← @IsCompatibleWithShift.condition _ _ W A _ _ _ a]
+  rfl
 
 lemma shiftFunctor_comp_inverts (a : A) :
     W.IsInvertedBy (shiftFunctor C a ⋙ L) := fun _ _ f hf =>
@@ -58,17 +59,20 @@ variable [W.IsCompatibleWithShift A]
 that is compatible with the shift by a monoid `A` on `C`, this is the induced
 shift on the category `D`. -/
 noncomputable def HasShift.localized : HasShift D A :=
+  have := Localization.full_whiskeringLeft L W D
+  have := Localization.faithful_whiskeringLeft L W D
   HasShift.induced L A
     (fun a => Localization.lift (shiftFunctor C a ⋙ L)
       (MorphismProperty.IsCompatibleWithShift.shiftFunctor_comp_inverts L W a) L)
     (fun _ => Localization.fac _ _ _)
-    ⟨⟨(inferInstance : (Localization.whiskeringLeftFunctor' L W D).Full)⟩,
-      (inferInstance : (Localization.whiskeringLeftFunctor' L W D).Faithful)⟩
 
 /-- The localization functor `L : C ⥤ D` is compatible with the shift. -/
+@[nolint unusedHavesSuffices]
 noncomputable def Functor.CommShift.localized :
     @Functor.CommShift _ _ _ _ L A _ _ (HasShift.localized L W A) :=
-  Functor.CommShift.ofInduced _ _ _ _ _
+  have := Localization.full_whiskeringLeft L W D
+  have := Localization.faithful_whiskeringLeft L W D
+  Functor.CommShift.ofInduced _ _ _ _
 
 attribute [irreducible] HasShift.localized Functor.CommShift.localized
 

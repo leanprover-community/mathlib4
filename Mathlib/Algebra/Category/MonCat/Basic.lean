@@ -366,8 +366,7 @@ add_decl_doc addEquivIsoAddMonCatIso
 in `CommMonCat` -/
 @[to_additive addEquivIsoAddCommMonCatIso]
 def mulEquivIsoCommMonCatIso {X Y : Type u} [CommMonoid X] [CommMonoid Y] :
-    X ≃* Y ≅ CommMonCat.of X ≅ CommMonCat.of Y
-    where
+    X ≃* Y ≅ CommMonCat.of X ≅ CommMonCat.of Y where
   hom e := e.toCommMonCatIso
   inv i := i.commMonCatIsoToMulEquiv
 set_option linter.uppercaseLean3 false in
@@ -409,6 +408,7 @@ set_option linter.uppercaseLean3 false in
 -- automatically reflects isomorphisms
 -- we could have used `CategoryTheory.ConcreteCategory.ReflectsIso` alternatively
 @[to_additive]
-instance CommMonCat.forget₂Full : (forget₂ CommMonCat MonCat).Full where preimage f := f
+instance CommMonCat.forget₂_full : (forget₂ CommMonCat MonCat).Full where
+  map_surjective f := ⟨f, rfl⟩
 
 example : (forget₂ CommMonCat MonCat).ReflectsIsomorphisms := inferInstance

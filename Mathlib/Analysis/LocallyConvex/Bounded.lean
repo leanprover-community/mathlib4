@@ -205,7 +205,7 @@ theorem isVonNBounded_of_smul_tendsto_zero {ε : ι → 𝕝} {l : Filter ι} [l
     push_neg at hVS
     rcases hVS ‖(ε n)⁻¹‖ with ⟨a, haε, haS⟩
     rcases Set.not_subset.mp haS with ⟨x, hxS, hx⟩
-    refine' ⟨⟨x, hxS⟩, fun hnx => _⟩
+    refine ⟨⟨x, hxS⟩, fun hnx => ?_⟩
     rw [← Set.mem_inv_smul_set_iff₀ hn] at hnx
     exact hx (hVb.smul_mono haε hnx)
   rcases this.choice with ⟨x, hx⟩
@@ -311,8 +311,7 @@ variable (𝕜 E)
 
 Note that this is not registered as an instance, in order to avoid diamonds with the
 metric bornology. -/
-@[reducible]
-def vonNBornology : Bornology E :=
+abbrev vonNBornology : Bornology E :=
   Bornology.ofBounded (setOf (IsVonNBounded 𝕜)) (isVonNBounded_empty 𝕜 E)
     (fun _ hs _ ht => hs.subset ht) (fun _ hs _ => hs.union) isVonNBounded_singleton
 #align bornology.vonN_bornology Bornology.vonNBornology

@@ -71,8 +71,8 @@ instance (priority := 100) DivisionRing.isPrincipalIdealRing (K : Type u) [Divis
     IsPrincipalIdealRing K where
   principal S := by
     rcases Ideal.eq_bot_or_top S with (rfl | rfl)
-    apply bot_isPrincipal
-    apply top_isPrincipal
+    · apply bot_isPrincipal
+    · apply top_isPrincipal
 #align division_ring.is_principal_ideal_ring DivisionRing.isPrincipalIdealRing
 
 end
@@ -221,6 +221,10 @@ noncomputable def toGCDDomain [IsBezout R] [IsDomain R] [DecidableEq R] : GCDMon
 
 instance nonemptyGCDMonoid [IsBezout R] [IsDomain R] : Nonempty (GCDMonoid R) := by
   classical exact ⟨toGCDDomain R⟩
+
+theorem associated_gcd_gcd [IsDomain R] [GCDMonoid R] :
+    Associated (IsBezout.gcd x y) (GCDMonoid.gcd x y) :=
+  gcd_greatest_associated (gcd_dvd_left _ _ ) (gcd_dvd_right _ _) (fun _ => dvd_gcd)
 
 end IsBezout
 

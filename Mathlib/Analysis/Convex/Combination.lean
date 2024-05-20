@@ -115,11 +115,11 @@ theorem Finset.centerMass_segment (s : Finset ι) (w₁ w₂ : ι → R) (z : ι
 theorem Finset.centerMass_ite_eq (hi : i ∈ t) :
     t.centerMass (fun j => if i = j then (1 : R) else 0) z = z i := by
   rw [Finset.centerMass_eq_of_sum_1]
-  trans ∑ j in t, if i = j then z i else 0
-  · congr with i
-    split_ifs with h
-    exacts [h ▸ one_smul _ _, zero_smul _ _]
-  · rw [sum_ite_eq, if_pos hi]
+  · trans ∑ j in t, if i = j then z i else 0
+    · congr with i
+      split_ifs with h
+      exacts [h ▸ one_smul _ _, zero_smul _ _]
+    · rw [sum_ite_eq, if_pos hi]
   · rw [sum_ite_eq, if_pos hi]
 #align finset.center_mass_ite_eq Finset.centerMass_ite_eq
 
@@ -550,7 +550,7 @@ theorem AffineBasis.convexHull_eq_nonneg_coord {ι : Type*} (b : AffineBasis ι 
       rw [b.tot]
       exact AffineSubspace.mem_top R E x
     obtain ⟨s, w, hw₁, rfl⟩ := (mem_affineSpan_iff_eq_affineCombination R E).mp hx'
-    refine' ⟨s, w, _, hw₁, rfl⟩
+    refine ⟨s, w, ?_, hw₁, rfl⟩
     intro i hi
     specialize hx i
     rw [b.coord_apply_combination_of_mem hi hw₁] at hx

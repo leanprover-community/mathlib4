@@ -34,7 +34,7 @@ lemma isNilpotent_C_mul_pow_X_of_isNilpotent (n : ℕ) (hnil : IsNilpotent r) :
     IsNilpotent ((C r) * X ^ n) := by
   refine' Commute.isNilpotent_mul_left (commute_X_pow _ _).symm _
   obtain ⟨m, hm⟩ := hnil
-  refine' ⟨m, _⟩
+  refine ⟨m, ?_⟩
   rw [← C_pow, hm, C_0]
 
 lemma isNilpotent_pow_X_mul_C_of_isNilpotent (n : ℕ) (hnil : IsNilpotent r) :
@@ -121,8 +121,8 @@ theorem isUnit_of_coeff_isUnit_isNilpotent (hunit : IsUnit (P.coeff 0))
   · simp_rw [← h, hdeg₂]
   · simp_rw [eraseLead_coeff_of_ne _ (Ne.symm hdeg), hunit]
   · by_cases H : i ≤ P₁.natDegree
-    simp_rw [eraseLead_coeff_of_ne _ (ne_of_lt (lt_of_le_of_lt H hdeg₂)), hnil i hi]
-    simp_rw [coeff_eq_zero_of_natDegree_lt (lt_of_not_ge H), IsNilpotent.zero]
+    · simp_rw [eraseLead_coeff_of_ne _ (ne_of_lt (lt_of_le_of_lt H hdeg₂)), hnil i hi]
+    · simp_rw [coeff_eq_zero_of_natDegree_lt (lt_of_not_ge H), IsNilpotent.zero]
 
 /-- Let `P` be a polynomial over `R`. If `P` is a unit, then all its coefficients are nilpotent,
 except its constant term which is a unit.

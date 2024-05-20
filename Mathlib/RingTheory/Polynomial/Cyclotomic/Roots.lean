@@ -148,9 +148,7 @@ theorem cyclotomic_injective [CharZero R] : Function.Injective fun n => cyclotom
   rcases eq_or_ne n 0 with (rfl | hzero)
   · rw [cyclotomic_zero] at hnm
     replace hnm := congr_arg natDegree hnm
-    rw [natDegree_one, natDegree_cyclotomic] at hnm
-    by_contra h
-    exact (Nat.totient_pos (zero_lt_iff.2 (Ne.symm h))).ne hnm
+    rwa [natDegree_one, natDegree_cyclotomic, eq_comm, Nat.totient_eq_zero, eq_comm] at hnm
   · haveI := NeZero.mk hzero
     rw [← map_cyclotomic_int _ R, ← map_cyclotomic_int _ R] at hnm
     replace hnm := map_injective (Int.castRingHom R) Int.cast_injective hnm

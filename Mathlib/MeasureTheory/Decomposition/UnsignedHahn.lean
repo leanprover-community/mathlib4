@@ -58,8 +58,8 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     intro s hm
     refine' Tendsto.sub _ _ <;>
       refine' NNReal.tendsto_coe.2 <| (ENNReal.tendsto_toNNReal _).comp <| tendsto_measure_iUnion hm
-    exact hμ _
-    exact hν _
+    · exact hμ _
+    · exact hν _
   have d_Inter :
     ∀ s : ℕ → Set α,
       (∀ n, MeasurableSet (s n)) →
@@ -110,11 +110,9 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     · intro n (hmn : m ≤ n) ih
       have : γ + (γ - 2 * (1 / 2) ^ m + (1 / 2) ^ (n + 1)) ≤ γ + d (f m (n + 1)) := by
         calc
-          γ + (γ - 2 * (1 / 2) ^ m + (1 / 2) ^ (n + 1)) ≤
+          γ + (γ - 2 * (1 / 2) ^ m + (1 / 2) ^ (n + 1)) =
               γ + (γ - 2 * (1 / 2) ^ m + ((1 / 2) ^ n - (1 / 2) ^ (n + 1))) := by
-            refine' add_le_add_left (add_le_add_left _ _) γ
-            simp only [pow_add, pow_one, le_sub_iff_add_le]
-            linarith
+            rw [pow_succ, mul_one_div, _root_.sub_half]
           _ = γ - (1 / 2) ^ (n + 1) + (γ - 2 * (1 / 2) ^ m + (1 / 2) ^ n) := by
             simp only [sub_eq_add_neg]; abel
           _ ≤ d (e (n + 1)) + d (f m n) := add_le_add (le_of_lt <| he₂ _) ih
@@ -122,11 +120,10 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
             rw [f_succ _ _ hmn, d_split (f m n) (e (n + 1)) (hf _ _) (he₁ _), add_assoc]
           _ = d (e (n + 1) ∪ f m n) + d (f m (n + 1)) := by
             rw [d_split (e (n + 1) ∪ f m n) (e (n + 1)), union_diff_left, union_inter_cancel_left]
-            abel
-            exact (he₁ _).union (hf _ _)
-            exact he₁ _
+            · abel
+            · exact (he₁ _).union (hf _ _)
+            · exact he₁ _
           _ ≤ γ + d (f m (n + 1)) := add_le_add_right (d_le_γ _ <| (he₁ _).union (hf _ _)) _
-
       exact (add_le_add_iff_left γ).1 this
   let s := ⋃ m, ⋂ n, f m n
   have γ_le_d_s : γ ≤ d s := by
@@ -169,7 +166,7 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     have : d t ≤ 0 :=
       (add_le_add_iff_left γ).1 <|
         calc
-          γ + d t ≤ d s + d t := add_le_add γ_le_d_s le_rfl
+          γ + d t ≤ d s + d t := by gcongr
           _ = d (s ∪ t) := by
             rw [d_split _ _ (hs.union ht) ht, union_diff_right, union_inter_cancel_right,
               (subset_compl_iff_disjoint_left.1 hts).sdiff_eq_left]

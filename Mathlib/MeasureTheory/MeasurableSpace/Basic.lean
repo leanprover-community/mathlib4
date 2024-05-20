@@ -408,7 +408,7 @@ instance Rat.instMeasurableSpace : MeasurableSpace ℚ := ⊤
 
 instance Subsingleton.measurableSingletonClass {α} [MeasurableSpace α] [Subsingleton α] :
     MeasurableSingletonClass α := by
-  refine' ⟨fun i => _⟩
+  refine ⟨fun i => ?_⟩
   convert MeasurableSet.univ
   simp [Set.eq_univ_iff_forall, eq_iff_true_of_subsingleton]
 #noalign empty.measurable_singleton_class
@@ -430,7 +430,7 @@ instance Rat.instMeasurableSingletonClass : MeasurableSingletonClass ℚ := ⟨f
 theorem measurable_to_countable [MeasurableSpace α] [Countable α] [MeasurableSpace β] {f : β → α}
     (h : ∀ y, MeasurableSet (f ⁻¹' {f y})) : Measurable f := fun s _ => by
   rw [← biUnion_preimage_singleton]
-  refine' MeasurableSet.iUnion fun y => MeasurableSet.iUnion fun hy => _
+  refine MeasurableSet.iUnion fun y => MeasurableSet.iUnion fun hy => ?_
   by_cases hyf : y ∈ range f
   · rcases hyf with ⟨y, rfl⟩
     apply h
@@ -717,7 +717,7 @@ lemma measurableAtom_subset {s : Set β} {x : β} (hs : MeasurableSet s) (hx : x
 
 lemma MeasurableSet.measurableAtom_of_countable [Countable β] (x : β) :
     MeasurableSet (measurableAtom x) := by
-  have : ∀ (y : β), y ∉ measurableAtom x → ∃ s, MeasurableSet s ∧ x ∈ s ∧ y ∉ s :=
+  have : ∀ (y : β), y ∉ measurableAtom x → ∃ s, x ∈ s ∧ MeasurableSet s ∧ y ∉ s :=
     fun y hy ↦ by simpa [measurableAtom] using hy
   choose! s hs using this
   have : measurableAtom x = ⋂ (y ∈ (measurableAtom x)ᶜ), s y := by
@@ -726,13 +726,13 @@ lemma MeasurableSet.measurableAtom_of_countable [Countable β] (x : β) :
       simp only [mem_iInter, mem_compl_iff]
       intro i hi
       show z ∈ s i
-      exact mem_of_mem_measurableAtom hz (hs i hi).1 (hs i hi).2.1
+      exact mem_of_mem_measurableAtom hz (hs i hi).2.1 (hs i hi).1
     · apply compl_subset_compl.1
       intro z hz
       simp only [compl_iInter, mem_iUnion, mem_compl_iff, exists_prop]
       exact ⟨z, hz, (hs z hz).2.2⟩
   rw [this]
-  exact MeasurableSet.biInter (to_countable (measurableAtom x)ᶜ) (fun i hi ↦ (hs i hi).1)
+  exact MeasurableSet.biInter (to_countable (measurableAtom x)ᶜ) (fun i hi ↦ (hs i hi).2.1)
 
 end Atoms
 
@@ -836,7 +836,7 @@ protected theorem MeasurableSet.prod {s : Set α} {t : Set β} (hs : MeasurableS
 theorem measurableSet_prod_of_nonempty {s : Set α} {t : Set β} (h : (s ×ˢ t).Nonempty) :
     MeasurableSet (s ×ˢ t) ↔ MeasurableSet s ∧ MeasurableSet t := by
   rcases h with ⟨⟨x, y⟩, hx, hy⟩
-  refine' ⟨fun hst => _, fun h => h.1.prod h.2⟩
+  refine ⟨fun hst => ?_, fun h => h.1.prod h.2⟩
   have : MeasurableSet ((fun x => (x, y)) ⁻¹' s ×ˢ t) := measurable_prod_mk_right hst
   have : MeasurableSet (Prod.mk x ⁻¹' s ×ˢ t) := measurable_prod_mk_left hst
   simp_all
@@ -1047,7 +1047,7 @@ theorem measurableSet_pi_of_nonempty {s : Set δ} {t : ∀ i, Set (π i)} (hs : 
     (h : (pi s t).Nonempty) : MeasurableSet (pi s t) ↔ ∀ i ∈ s, MeasurableSet (t i) := by
   classical
     rcases h with ⟨f, hf⟩
-    refine' ⟨fun hst i hi => _, MeasurableSet.pi hs⟩
+    refine ⟨fun hst i hi => ?_, MeasurableSet.pi hs⟩
     convert measurable_update f (a := i) hst
     rw [update_preimage_pi hi]
     exact fun j hj _ => hf j hj
@@ -1128,8 +1128,8 @@ theorem measurable_tProd_elim' [DecidableEq δ] {l : List δ} (h : ∀ i, i ∈ 
 theorem MeasurableSet.tProd (l : List δ) {s : ∀ i, Set (π i)} (hs : ∀ i, MeasurableSet (s i)) :
     MeasurableSet (Set.tprod l s) := by
   induction' l with i l ih
-  exact MeasurableSet.univ
-  exact (hs i).prod ih
+  · exact MeasurableSet.univ
+  · exact (hs i).prod ih
 #align measurable_set.tprod MeasurableSet.tProd
 
 end TProd
@@ -1380,7 +1380,7 @@ theorem exists_measurable_extend (hf : MeasurableEmbedding f) {g : α → γ} (h
 #align measurable_embedding.exists_measurable_extend MeasurableEmbedding.exists_measurable_extend
 
 theorem measurable_comp_iff (hg : MeasurableEmbedding g) : Measurable (g ∘ f) ↔ Measurable f := by
-  refine' ⟨fun H => _, hg.measurable.comp⟩
+  refine ⟨fun H => ?_, hg.measurable.comp⟩
   suffices Measurable ((rangeSplitting g ∘ rangeFactorization g) ∘ f) by
     rwa [(rightInverse_rangeSplitting hg.injective).comp_eq_id] at this
   exact hg.measurable_rangeSplitting.comp H.subtype_mk
@@ -1450,7 +1450,6 @@ def refl (α : Type*) [MeasurableSpace α] : α ≃ᵐ α where
 instance instInhabited : Inhabited (α ≃ᵐ α) := ⟨refl α⟩
 
 /-- The composition of equivalences between measurable spaces. -/
-@[pp_dot]
 def trans (ab : α ≃ᵐ β) (bc : β ≃ᵐ γ) : α ≃ᵐ γ where
   toEquiv := ab.toEquiv.trans bc.toEquiv
   measurable_toFun := bc.measurable_toFun.comp ab.measurable_toFun
@@ -1460,7 +1459,6 @@ def trans (ab : α ≃ᵐ β) (bc : β ≃ᵐ γ) : α ≃ᵐ γ where
 theorem coe_trans (ab : α ≃ᵐ β) (bc : β ≃ᵐ γ) : ⇑(ab.trans bc) = bc ∘ ab := rfl
 
 /-- The inverse of an equivalence between measurable spaces. -/
-@[pp_dot]
 def symm (ab : α ≃ᵐ β) : β ≃ᵐ α where
   toEquiv := ab.toEquiv.symm
   measurable_toFun := ab.measurable_invFun
@@ -1835,14 +1833,30 @@ def sumPiEquivProdPi (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)]
   · refine Measurable.prod ?_ ?_ <;>
       rw [measurable_pi_iff] <;> rintro i <;> apply measurable_pi_apply
   · rw [measurable_pi_iff]; rintro (i|i)
-    exact measurable_pi_iff.1 measurable_fst _
-    exact measurable_pi_iff.1 measurable_snd _
+    · exact measurable_pi_iff.1 measurable_fst _
+    · exact measurable_pi_iff.1 measurable_snd _
 
 theorem coe_sumPiEquivProdPi (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)] :
     ⇑(MeasurableEquiv.sumPiEquivProdPi α) = Equiv.sumPiEquivProdPi α := by rfl
 
 theorem coe_sumPiEquivProdPi_symm (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)] :
     ⇑(MeasurableEquiv.sumPiEquivProdPi α).symm = (Equiv.sumPiEquivProdPi α).symm := by rfl
+
+/-- The measurable equivalence for (dependent) functions on an Option type
+  `(∀ i : Option δ, α i) ≃ᵐ (∀ (i : δ), α i) × α none`. -/
+def piOptionEquivProd {δ : Type*} (α : Option δ → Type*) [∀ i, MeasurableSpace (α i)] :
+    (∀ i, α i) ≃ᵐ (∀ (i : δ), α i) × α none :=
+  let e : Option δ ≃ δ ⊕ Unit := Equiv.optionEquivSumPUnit δ
+  let em1 : ((i : δ ⊕ Unit) → α (e.symm i)) ≃ᵐ ((a : Option δ) → α a) :=
+    MeasurableEquiv.piCongrLeft α e.symm
+  let em2 : ((i : δ ⊕ Unit) → α (e.symm i)) ≃ᵐ ((i : δ) → α (e.symm (Sum.inl i)))
+      × ((i' : Unit) → α (e.symm (Sum.inr i'))) :=
+    MeasurableEquiv.sumPiEquivProdPi (fun i ↦ α (e.symm i))
+  let em3 : ((i : δ) → α (e.symm (Sum.inl i))) × ((i' : Unit) → α (e.symm (Sum.inr i')))
+      ≃ᵐ ((i : δ) → α (some i)) × α none :=
+    MeasurableEquiv.prodCongr (MeasurableEquiv.refl ((i : δ) → α (e.symm (Sum.inl i))))
+      (MeasurableEquiv.piUnique fun i ↦ α (e.symm (Sum.inr i)))
+  em1.symm.trans <| em2.trans em3
 
 /-- The measurable equivalence `(∀ i : s, π i) × (∀ i : t, π i) ≃ᵐ (∀ i : s ∪ t, π i)`
   for disjoint finsets `s` and `t`. `Equiv.piFinsetUnion` as a measurable equivalence. -/
@@ -2057,7 +2071,7 @@ alias ⟨_, _root_.MeasurableSet.principal_isMeasurablyGenerated⟩ :=
 
 instance iInf_isMeasurablyGenerated {f : ι → Filter α} [∀ i, IsMeasurablyGenerated (f i)] :
     IsMeasurablyGenerated (⨅ i, f i) := by
-  refine' ⟨fun s hs => _⟩
+  refine ⟨fun s hs => ?_⟩
   rw [← Equiv.plift.surjective.iInf_comp, mem_iInf] at hs
   rcases hs with ⟨t, ht, ⟨V, hVf, rfl⟩⟩
   choose U hUf hU using fun i => IsMeasurablyGenerated.exists_measurable_subset (hVf i)

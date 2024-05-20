@@ -1524,7 +1524,7 @@ instance (priority := 100) IsWellOrder.toIsPredArchimedean [h : IsWellOrder α (
     · cases (min_of_le_pred hb).not_lt hab
     dsimp at ih
     obtain ⟨k, hk⟩ := ih (pred b) hb (le_pred_of_lt hab)
-    refine' ⟨k + 1, _⟩
+    refine ⟨k + 1, ?_⟩
     rw [iterate_add_apply, iterate_one, hk]⟩
 #align is_well_order.to_is_pred_archimedean IsWellOrder.toIsPredArchimedean
 

@@ -1170,7 +1170,7 @@ lemma strictMono_iff_forall_covBy [Preorder α] [LocallyFiniteOrder α] [Preorde
   refine ⟨fun hf _ _ h ↦ hf h.lt, fun h a b hab ↦ ?_⟩
   have := Relation.TransGen.lift f h (a := a) (b := b)
   rw [← lt_iff_transGen_covBy, transGen_eq_self (@lt_trans β _)] at this
-  · exact this hab
+  exact this hab
 
 /-- A function from a locally finite preorder is antitone if and only if it is antitone when
 restricted to pairs satisfying `a ⩿ b`. -/

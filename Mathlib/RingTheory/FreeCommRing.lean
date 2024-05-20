@@ -131,7 +131,7 @@ private def liftToMultiset : (α → R) ≃ (Multiplicative (Multiset α) →* R
     let x' := Multiplicative.toAdd x
     show (Multiset.map (fun a => F' {a}) x').sum = F' x' by
       erw [← Multiset.map_map (fun x => F' x) (fun x => {x}), ← AddMonoidHom.map_multiset_sum]
-      exact F.congr_arg (Multiset.sum_map_singleton x')
+      exact DFunLike.congr_arg F (Multiset.sum_map_singleton x')
 
 /-- Lift a map `α → R` to an additive group homomorphism `FreeCommRing α → R`. -/
 def lift : (α → R) ≃ (FreeCommRing α →+* R) :=
@@ -250,7 +250,7 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
       rw [RingHom.map_mul, lift_of, if_pos hzs, zero_mul]
       norm_cast
     · rintro x y ⟨q, hq⟩ ⟨r, hr⟩
-      refine' ⟨q + r, _⟩
+      refine ⟨q + r, ?_⟩
       rw [RingHom.map_add, hq, hr]
       norm_cast
   specialize this (of p) hps
@@ -387,6 +387,7 @@ theorem coe_eq : ((↑) : FreeRing α → FreeCommRing α) =
     FreeMonoid.recOn L rfl fun hd tl ih => by
       rw [(FreeMonoid.lift _).map_mul, FreeMonoid.lift_eval_of, ih]
       conv_lhs => reduce
+      rfl
 #align free_ring.coe_eq FreeRing.coe_eq
 
 /-- If α has size at most 1 then the natural map from the free ring on `α` to the

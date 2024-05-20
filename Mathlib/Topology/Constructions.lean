@@ -793,11 +793,11 @@ theorem isOpen_prod_iff' {s : Set X} {t : Set Y} :
     constructor
     · intro (H : IsOpen (s ×ˢ t))
       refine' Or.inl ⟨_, _⟩
-      show IsOpen s
-      · rw [← fst_image_prod s st.2]
+      · show IsOpen s
+        rw [← fst_image_prod s st.2]
         exact isOpenMap_fst _ H
-      show IsOpen t
-      · rw [← snd_image_prod st.1 t]
+      · show IsOpen t
+        rw [← snd_image_prod st.1 t]
         exact isOpenMap_snd _ H
     · intro H
       simp only [st.1.ne_empty, st.2.ne_empty, not_false_iff, or_false_iff] at H
@@ -1490,7 +1490,7 @@ theorem exists_finset_piecewise_mem_of_mem_nhds [DecidableEq ι] {s : Set (∀ a
     (hs : s ∈ 𝓝 x) (y : ∀ a, π a) : ∃ I : Finset ι, I.piecewise x y ∈ s := by
   simp only [nhds_pi, Filter.mem_pi'] at hs
   rcases hs with ⟨I, t, htx, hts⟩
-  refine' ⟨I, hts fun i hi => _⟩
+  refine ⟨I, hts fun i hi => ?_⟩
   simpa [Finset.mem_coe.1 hi] using mem_of_mem_nhds (htx i)
 #align exists_finset_piecewise_mem_of_mem_nhds exists_finset_piecewise_mem_of_mem_nhds
 

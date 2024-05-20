@@ -131,7 +131,7 @@ theorem cast_zero : ((0 : ℕ) : R) = 0 :=
 -- Lemmas about `Nat.succ` need to get a low priority, so that they are tried last.
 -- This is because `Nat.succ _` matches `1`, `3`, `x+1`, etc.
 -- Rewriting would then produce really wrong terms.
-@[simp 500, norm_cast 500]
+@[norm_cast 500]
 theorem cast_succ (n : ℕ) : ((succ n : ℕ) : R) = n + 1 :=
   AddMonoidWithOne.natCast_succ _
 #align nat.cast_succ Nat.cast_succ
@@ -157,7 +157,9 @@ theorem cast_one [AddMonoidWithOne R] : ((1 : ℕ) : R) = 1 := by
 
 @[simp, norm_cast]
 theorem cast_add [AddMonoidWithOne R] (m n : ℕ) : ((m + n : ℕ) : R) = m + n := by
-  induction n <;> simp [add_succ, add_assoc, Nat.add_zero, Nat.cast_one, Nat.cast_zero, *]
+  induction n with
+  | zero => simp
+  | succ n ih => rw [add_succ, cast_succ, ih, cast_succ, add_assoc]
 #align nat.cast_add Nat.cast_addₓ
 
 /-- Computationally friendlier cast than `Nat.unaryCast`, using binary representation. -/
@@ -178,10 +180,10 @@ theorem binCast_eq [AddMonoidWithOne R] (n : ℕ) :
   | succ k =>
       rw [Nat.binCast]
       by_cases h : (k + 1) % 2 = 0
-      · rw [← Nat.mod_add_div (succ k) 2]
+      · conv => rhs; rw [← Nat.mod_add_div (k+1) 2]
         rw [if_pos h, hk _ <| Nat.div_lt_self (Nat.succ_pos k) (Nat.le_refl 2), ← Nat.cast_add]
-        rw [Nat.succ_eq_add_one, h, Nat.zero_add, Nat.succ_mul, Nat.one_mul]
-      · rw [← Nat.mod_add_div (succ k) 2]
+        rw [h, Nat.zero_add, Nat.succ_mul, Nat.one_mul]
+      · conv => rhs; rw [← Nat.mod_add_div (k+1) 2]
         rw [if_neg h, hk _ <| Nat.div_lt_self (Nat.succ_pos k) (Nat.le_refl 2), ← Nat.cast_add]
         have h1 := Or.resolve_left (Nat.mod_two_eq_zero_or_one (succ k)) h
         rw [h1, Nat.add_comm 1, Nat.succ_mul, Nat.one_mul]
@@ -211,14 +213,12 @@ attribute [simp, norm_cast] Int.natAbs_ofNat
 end Nat
 
 /-- `AddMonoidWithOne` implementation using unary recursion. -/
-@[reducible]
-protected def AddMonoidWithOne.unary [AddMonoid R] [One R] : AddMonoidWithOne R :=
+protected abbrev AddMonoidWithOne.unary [AddMonoid R] [One R] : AddMonoidWithOne R :=
   { ‹One R›, ‹AddMonoid R› with }
 #align add_monoid_with_one.unary AddMonoidWithOne.unary
 
 /-- `AddMonoidWithOne` implementation using binary recursion. -/
-@[reducible]
-protected def AddMonoidWithOne.binary [AddMonoid R] [One R] : AddMonoidWithOne R :=
+protected abbrev AddMonoidWithOne.binary [AddMonoid R] [One R] : AddMonoidWithOne R :=
   { ‹One R›, ‹AddMonoid R› with
     natCast := Nat.binCast,
     natCast_zero := by simp only [Nat.binCast, Nat.cast],

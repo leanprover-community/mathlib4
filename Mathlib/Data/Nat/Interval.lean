@@ -3,7 +3,6 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Nat.Cast.Order
 import Mathlib.Order.Interval.Finset.Basic
 import Mathlib.Order.Interval.Multiset
 import Mathlib.Algebra.Order.Interval.Finset
@@ -122,12 +121,8 @@ theorem card_uIcc : (uIcc a b).card = (b - a : ℤ).natAbs + 1 := by
   refine' (card_Icc _ _).trans (Int.ofNat.inj _)
   change ((↑) : ℕ → ℤ) _ = _
   rw [sup_eq_max, inf_eq_min, Int.ofNat_sub]
-  · rw [add_comm, Int.ofNat_add, add_sub_assoc]
-    -- Porting note: `norm_cast` puts a `Int.subSubNat` in the goal
-    -- norm_cast
-    change _ = ↑(Int.natAbs (b - a) + 1)
-    push_cast
-    rw [max_sub_min_eq_abs, add_comm]
+  · change _ = ↑(Int.natAbs (b - a) + 1)
+    omega
   · exact min_le_max.trans le_self_add
 #align nat.card_uIcc Nat.card_uIcc
 
@@ -259,10 +254,10 @@ theorem Ico_image_const_sub_eq_Ico (hac : a ≤ c) :
     rw [lt_tsub_iff_left, Nat.lt_succ_iff] at ha
     have hx : x ≤ c := (Nat.le_add_left _ _).trans ha
     refine' ⟨c - x, _, tsub_tsub_cancel_of_le hx⟩
-    · rw [mem_Ico]
-      exact
-        ⟨le_tsub_of_add_le_right ha,
-          (tsub_lt_iff_left hx).2 <| succ_le_iff.1 <| tsub_le_iff_right.1 hb⟩
+    rw [mem_Ico]
+    exact
+      ⟨le_tsub_of_add_le_right ha,
+        (tsub_lt_iff_left hx).2 <| succ_le_iff.1 <| tsub_le_iff_right.1 hb⟩
 #align nat.Ico_image_const_sub_eq_Ico Nat.Ico_image_const_sub_eq_Ico
 
 theorem Ico_succ_left_eq_erase_Ico : Ico a.succ b = erase (Ico a b) a := by
@@ -288,11 +283,11 @@ theorem mod_injOn_Ico (n a : ℕ) : Set.InjOn (· % a) (Finset.Ico n (n + a)) :=
   rcases hk with ⟨hkn, rfl | hk⟩ <;> rcases hl with ⟨hln, rfl | hl⟩
   · rfl
   · rw [add_mod_right] at hkl
-    refine' (hln <| ih hl _ hkl.symm).elim
+    refine (hln <| ih hl ?_ hkl.symm).elim
     simp only [lt_add_iff_pos_right, Set.left_mem_Ico, Finset.coe_Ico, ha]
   · rw [add_mod_right] at hkl
     suffices k = n by contradiction
-    refine' ih hk _ hkl
+    refine ih hk ?_ hkl
     simp only [lt_add_iff_pos_right, Set.left_mem_Ico, Finset.coe_Ico, ha]
   · refine' ih _ _ hkl <;> simp only [Finset.mem_coe, hk, hl]
 #align nat.mod_inj_on_Ico Nat.mod_injOn_Ico

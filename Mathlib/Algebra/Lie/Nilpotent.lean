@@ -175,7 +175,8 @@ theorem iterate_toEndomorphism_mem_lowerCentralSeries (x : L) (m : M) (k : ℕ) 
 theorem iterate_toEndomorphism_mem_lowerCentralSeries₂ (x y : L) (m : M) (k : ℕ) :
     (toEndomorphism R L M x ∘ₗ toEndomorphism R L M y)^[k] m ∈
       lowerCentralSeries R L M (2 * k) := by
-  induction' k with k ih; simp
+  induction' k with k ih
+  · simp
   have hk : 2 * k.succ = (2 * k + 1) + 1 := rfl
   simp only [lowerCentralSeries_succ, Function.comp_apply, Function.iterate_succ', hk,
       toEndomorphism_apply_apply, LinearMap.coe_comp, toEndomorphism_apply_apply]
@@ -597,7 +598,7 @@ theorem Equiv.lieModule_isNilpotent_iff (f : L ≃ₗ⁅R⁆ L₂) (g : M ≃ₗ
   · have hg : Surjective (g : M →ₗ[R] M₂) := g.surjective
     exact f.surjective.lieModuleIsNilpotent hg hfg
   · have hg : Surjective (g.symm : M₂ →ₗ[R] M) := g.symm.surjective
-    refine' f.symm.surjective.lieModuleIsNilpotent hg fun x m => _
+    refine f.symm.surjective.lieModuleIsNilpotent hg fun x m => ?_
     rw [LinearEquiv.coe_coe, LieEquiv.coe_to_lieHom, ← g.symm_apply_apply ⁅f.symm x, g.symm m⁆, ←
       hfg, f.apply_symm_apply, g.apply_symm_apply]
 #align equiv.lie_module_is_nilpotent_iff Equiv.lieModule_isNilpotent_iff
@@ -860,7 +861,8 @@ variable (R A L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
 lemma LieSubmodule.lowerCentralSeries_tensor_eq_baseChange (k : ℕ) :
     lowerCentralSeries A (A ⊗[R] L) (A ⊗[R] M) k =
     (lowerCentralSeries R L M k).baseChange A := by
-  induction' k with k ih; simp
+  induction' k with k ih
+  · simp
   simp only [lowerCentralSeries_succ, ih, ← baseChange_top, lie_baseChange]
 
 instance LieModule.instIsNilpotentTensor [IsNilpotent R L M] :

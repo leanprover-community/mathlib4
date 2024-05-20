@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Basic
-import Mathlib.Algebra.BigOperators.Multiset.Lemmas
+import Mathlib.Algebra.BigOperators.Ring.Multiset
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Int.Cast.Lemmas
@@ -170,11 +170,11 @@ lemma prod_univ_sum [Fintype ι] (t : ∀ i, Finset (κ i)) (f : ∀ i, κ i →
 
 lemma sum_prod_piFinset {κ : Type*} [Fintype ι] (s : Finset κ) (g : ι → κ → α) :
     ∑ f in piFinset fun _ : ι ↦ s, ∏ i, g i (f i) = ∏ i, ∑ j in s, g i j := by
-  classical rw [← prod_univ_sum]
+  rw [← prod_univ_sum]
 
 lemma sum_pow' (s : Finset ι) (f : ι → α) (n : ℕ) :
     (∑ a in s, f a) ^ n = ∑ p in piFinset fun _i : Fin n ↦ s, ∏ i, f (p i) := by
-  classical convert @prod_univ_sum (Fin n) _ _ _ _ _ (fun _i ↦ s) fun _i d ↦ f d; simp
+  convert @prod_univ_sum (Fin n) _ _ _ _ _ (fun _i ↦ s) fun _i d ↦ f d; simp
 
 /-- The product of `f a + g a` over all of `s` is the sum over the powerset of `s` of the product of
 `f` over a subset `t` times the product of `g` over the complement of `t`  -/
@@ -297,7 +297,31 @@ lemma sum_div (s : Finset ι) (f : ι → α) (a : α) :
 end DivisionSemiring
 end Finset
 
+open Finset
+
+namespace Fintype
+variable {ι κ α : Type*} [DecidableEq ι] [Fintype ι] [Fintype κ] [CommSemiring α]
+
+lemma sum_pow (f : ι → α) (n : ℕ) : (∑ a, f a) ^ n = ∑ p : Fin n → ι, ∏ i, f (p i) := by
+  simp [sum_pow']
+
+lemma sum_mul_sum (f : ι → α) (g : κ → α) : (∑ i, f i) * ∑ j, g j = ∑ i, ∑ j, f i * g j :=
+  Finset.sum_mul_sum _ _ _ _
+
+lemma prod_add (f g : ι → α) : ∏ a, (f a + g a) = ∑ t, (∏ a in t, f a) * ∏ a in tᶜ, g a := by
+  simpa [compl_eq_univ_sdiff] using Finset.prod_add f g univ
+
+end Fintype
+
 namespace Nat
+variable {ι : Type*} {s : Finset ι} {f : ι → ℕ} {n : ℕ}
+
+protected lemma sum_div (hf : ∀ i ∈ s, n ∣ f i) : (∑ i in s, f i) / n = ∑ i in s, f i / n := by
+  obtain rfl | hn := n.eq_zero_or_pos
+  · simp
+  rw [Nat.div_eq_iff_eq_mul_left hn (dvd_sum hf), sum_mul]
+  refine' sum_congr rfl fun s hs ↦ _
+  rw [Nat.div_mul_cancel (hf _ hs)]
 
 @[simp, norm_cast]
 lemma cast_list_sum [AddMonoidWithOne β] (s : List ℕ) : (↑s.sum : β) = (s.map (↑)).sum :=

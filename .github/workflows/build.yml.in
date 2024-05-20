@@ -65,10 +65,6 @@ jobs:
         run: |
           git ls-files 'Mathlib/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
 
-      - name: update MathlibExtras.lean
-        run: |
-          git ls-files 'MathlibExtras/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > MathlibExtras.lean
-
       - name: update Mathlib/Tactic.lean
         run: |
           git ls-files 'Mathlib/Tactic/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib/Tactic.lean
@@ -102,6 +98,23 @@ jobs:
 
       - name: check that workflows were consistent
         run: git diff --exit-code
+
+  summarize_declarations:
+    if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
+    name: summarize_declarations
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ## fetch the whole repository, useful to find a common fork
+          fetch-depth: 0
+      - name: print_lost_declarations
+        run: |
+          ## back and forth to settle a "detached head" (maybe?)
+          git checkout -q master
+          git checkout -q -
+          printf '###  Summary\n\n' > "${GITHUB_STEP_SUMMARY}"
+          ./scripts/no_lost_declarations.sh >> "${GITHUB_STEP_SUMMARY}"
 
   build:
     if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
@@ -175,10 +188,7 @@ jobs:
         with:
           linters: gcc
           run: |
-            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build -KCI | tee stdout.log"
-
-      - name: build library_search cache
-        run: lake build -KCI MathlibExtras
+            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
 
       - name: upload cache
         # We only upload the cache if the build ran (either succeeding or failing),
@@ -203,9 +213,7 @@ jobs:
             lake exe cache clean!
             rm -rf .lake/build/lib/Mathlib
             lake exe cache get || (sleep 1; lake exe cache get)
-            # We pipe the output of `lake build` to a file,
-            # and if we find " Building Mathlib" in that file we kill `lake build`, and error.
-            lake build > tmp & tail --pid=$! -n +1 -F tmp | (! (grep -m 1 " Building Mathlib" && kill $! ))
+            lake build --no-build
           fi
 
       - name: find `#`-commands
@@ -225,7 +233,7 @@ jobs:
           # storing and transferring oleans over the network.
           # Hopefully a future re-implementation of `cache` will obviate the present need for this hack.
           lake exe cache get Archive.lean
-          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build Archive | tee --append stdout.log"
+          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build Archive"
           lake exe cache put Archive.lean
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
@@ -235,7 +243,7 @@ jobs:
         id: counterexamples
         run: |
           lake exe cache get Counterexamples.lean
-          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build Counterexamples | tee --append stdout.log"
+          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build Counterexamples"
           lake exe cache put Counterexamples.lean
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
@@ -244,9 +252,19 @@ jobs:
       - name: check for noisy stdout lines
         id: noisy
         run: |
-          grep --after-context=1 "stdout" stdout.log && ret=0
-          grep --after-context=1 "stderr" stdout.log && new=0
-          if [ "${ret}" == "0" ] || [ "${new}"  == "0" ]; then exit 1; fi
+          buildMsgs="$(
+            ##  we exploit `lake`s replay feature: since the cache is present, running
+            ##  `lake build` will reproduce all the outputs without having to recompute
+            lake build Mathlib Archive Counterexamples |
+            ##  we filter out the output lines that begin with `[xx/yy]`, where xx, yy
+            ##  are either numbers or ?
+            ##  we keep the rest, which are actual outputs of the files
+            awk '!($1 ~ "^[[?0-9]*/[?0-9]*]"){ print $0 }')"
+          if [ -n "${buildMsgs}" ]
+          then
+            printf $'%s\n' "${buildMsgs}"
+            exit 1
+          fi
 
       - name: check declarations in db files
         run: |
@@ -263,9 +281,7 @@ jobs:
         uses: liskin/gh-problem-matcher-wrap@v3
         with:
           linters: gcc
-          run: |
-            bash -o pipefail -c "
-            make -k -j 8 test"
+          run: lake test
 
       - name: check for unused imports
         id: shake
@@ -282,19 +298,10 @@ jobs:
           linters: gcc
           run: env LEAN_ABORT_ON_PANIC=1 lake exe runLinter Mathlib
 
-      - name: check environments using lean4checker
-        id: lean4checker
-        run: |
-          git clone https://github.com/leanprover/lean4checker
-          cd lean4checker
-          git checkout toolchain/v4.7.0
-          # Now that the git hash is embedded in each olean,
-          # we need to compile lean4checker on the same toolchain
-          cp ../lean-toolchain .
-          lake build
-          ./test.sh
-          cd ..
-          lake env lean4checker/.lake/build/bin/lean4checker
+      # We no longer run `lean4checker` in regular CI, as it is quite expensive for little benefit.
+      # Instead we run it in a cron job on master: see `lean4checker.yml`.
+      # Output is posted to the zulip topic
+      # https://leanprover.zulipchat.com/#narrow/stream/345428-mathlib-reviewers/topic/lean4checker
 
       - name: Post comments for lean-pr-testing branch
         if: always()
@@ -308,7 +315,6 @@ jobs:
           COUNTEREXAMPLE_OUTCOME: ${{ steps.counterexamples.outcome }}
           LINT_OUTCOME: ${{ steps.lint.outcome }}
           TEST_OUTCOME: ${{ steps.test.outcome }}
-          CHECK_OUTCOME: ${{ steps.lean4checker.outcome }}
         run: |
           scripts/lean-pr-testing-comments.sh
 

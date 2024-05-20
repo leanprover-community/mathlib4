@@ -336,8 +336,8 @@ theorem tendsto_lintegral_norm_of_dominated_convergence {F : ℕ → α → β} 
     calc
       ENNReal.ofReal ‖F n a - f a‖ ≤ ENNReal.ofReal ‖F n a‖ + ENNReal.ofReal ‖f a‖ := by
         rw [← ENNReal.ofReal_add]
-        apply ofReal_le_ofReal
-        · apply norm_sub_le
+        · apply ofReal_le_ofReal
+          apply norm_sub_le
         · exact norm_nonneg _
         · exact norm_nonneg _
       _ ≤ ENNReal.ofReal (bound a) + ENNReal.ofReal (bound a) := add_le_add h₁ h₂
@@ -773,7 +773,7 @@ theorem Integrable.essSup_smul {𝕜 : Type*} [NormedField 𝕜] [NormedSpace �
   have hg' : snorm g ∞ μ ≠ ∞ := by rwa [snorm_exponent_top]
   calc
     snorm (fun x : α => g x • f x) 1 μ ≤ _ :=
-      MeasureTheory.snorm_smul_le_mul_snorm hf.1 g_aestronglyMeasurable h
+      by simpa using MeasureTheory.snorm_smul_le_mul_snorm hf.1 g_aestronglyMeasurable h
     _ < ∞ := ENNReal.mul_lt_top hg' hf.2.ne
 #align measure_theory.integrable.ess_sup_smul MeasureTheory.Integrable.essSup_smul
 
@@ -790,7 +790,7 @@ theorem Integrable.smul_essSup {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 β]
   have hg' : snorm g ∞ μ ≠ ∞ := by rwa [snorm_exponent_top]
   calc
     snorm (fun x : α => f x • g x) 1 μ ≤ _ :=
-      MeasureTheory.snorm_smul_le_mul_snorm g_aestronglyMeasurable hf.1 h
+      by simpa using MeasureTheory.snorm_smul_le_mul_snorm g_aestronglyMeasurable hf.1 h
     _ < ∞ := ENNReal.mul_lt_top hf.2.ne hg'
 #align measure_theory.integrable.smul_ess_sup MeasureTheory.Integrable.smul_essSup
 
@@ -1174,7 +1174,7 @@ theorem integrable_mul_const_iff {c : 𝕜} (hc : IsUnit c) (f : α → 𝕜) :
 theorem Integrable.bdd_mul' {f g : α → 𝕜} {c : ℝ} (hg : Integrable g μ)
     (hf : AEStronglyMeasurable f μ) (hf_bound : ∀ᵐ x ∂μ, ‖f x‖ ≤ c) :
     Integrable (fun x => f x * g x) μ := by
-  refine' Integrable.mono' (hg.norm.smul c) (hf.mul hg.1) _
+  refine Integrable.mono' (hg.norm.smul c) (hf.mul hg.1) ?_
   filter_upwards [hf_bound] with x hx
   rw [Pi.smul_apply, smul_eq_mul]
   exact (norm_mul_le _ _).trans (mul_le_mul_of_nonneg_right hx (norm_nonneg _))
@@ -1227,7 +1227,7 @@ variable {H : Type*} [NormedAddCommGroup H] {m0 : MeasurableSpace α} {μ' : Mea
 
 theorem Integrable.trim (hm : m ≤ m0) (hf_int : Integrable f μ') (hf : StronglyMeasurable[m] f) :
     Integrable f (μ'.trim hm) := by
-  refine' ⟨hf.aestronglyMeasurable, _⟩
+  refine ⟨hf.aestronglyMeasurable, ?_⟩
   rw [HasFiniteIntegral, lintegral_trim hm _]
   · exact hf_int.2
   · exact @StronglyMeasurable.ennnorm _ m _ _ f hf
@@ -1324,7 +1324,8 @@ section BoundedSMul
 variable {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 β] [BoundedSMul 𝕜 β]
 
 theorem Integrable.smul {c : 𝕜} {f : α →ₘ[μ] β} : Integrable f → Integrable (c • f) :=
-  induction_on f fun _f hfm hfi => (integrable_mk _).2 <| ((integrable_mk hfm).1 hfi).smul _
+  induction_on f fun _f hfm hfi => (integrable_mk _).2 <|
+    by simpa using ((integrable_mk hfm).1 hfi).smul c
 #align measure_theory.ae_eq_fun.integrable.smul MeasureTheory.AEEqFun.Integrable.smul
 
 end BoundedSMul

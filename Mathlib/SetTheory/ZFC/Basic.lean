@@ -618,13 +618,13 @@ noncomputable def allDefinable : ∀ {n} (F : OfArity ZFSet ZFSet n), Definable 
     let p := @Quotient.exists_rep PSet _ F
     @Definable.EqMk 0 ⟨choose p, Equiv.rfl⟩ _ (choose_spec p)
   | n + 1, (F : OfArity ZFSet ZFSet (n + 1)) => by
-    have I : (x : ZFSet) → Definable (Nat.add n 0) (F x) := fun x => allDefinable (F x)
+    have I : (x : ZFSet) → Definable n (F x) := fun x => allDefinable (F x)
     refine' @Definable.EqMk (n + 1) ⟨fun x : PSet => (@Definable.Resp _ _ (I ⟦x⟧)).1, _⟩ _ _
     · dsimp [Arity.Equiv]
       intro x y h
       rw [@Quotient.sound PSet _ _ _ h]
       exact (Definable.Resp (F ⟦y⟧)).2
-    refine' funext fun q => Quotient.inductionOn q fun x => _
+    refine funext fun q => Quotient.inductionOn q fun x => ?_
     simp_rw [Resp.eval_val, Resp.f]
     exact @Definable.eq _ (F ⟦x⟧) (I ⟦x⟧)
 #align classical.all_definable Classical.allDefinable
@@ -804,7 +804,7 @@ theorem not_nonempty_empty : ¬ZFSet.Nonempty ∅ := by simp [ZFSet.Nonempty]
 
 @[simp]
 theorem nonempty_mk_iff {x : PSet} : (mk x).Nonempty ↔ x.Nonempty := by
-  refine' ⟨_, fun ⟨a, h⟩ => ⟨mk a, h⟩⟩
+  refine ⟨?_, fun ⟨a, h⟩ => ⟨mk a, h⟩⟩
   rintro ⟨a, h⟩
   induction a using Quotient.inductionOn
   exact ⟨_, h⟩
@@ -1495,9 +1495,9 @@ theorem mem_wf : @WellFounded Class.{u} (· ∈ ·) :=
       refine' fun a => ZFSet.inductionOn a fun x IH => ⟨_, _⟩
       rintro A ⟨z, rfl, hz⟩
       exact IH z hz
-    · refine' fun A => ⟨A, _⟩
-      rintro B ⟨x, rfl, _⟩
-      exact H x⟩
+    refine fun A => ⟨A, ?_⟩
+    rintro B ⟨x, rfl, _⟩
+    exact H x⟩
 #align Class.mem_wf Class.mem_wf
 
 instance : WellFoundedRelation Class :=
@@ -1679,7 +1679,7 @@ theorem mem_sInter {x y : Class.{u}} (h : x.Nonempty) : y ∈ ⋂₀ x ↔ ∀ z
   simp_rw [mem_def, sInter_apply]
   obtain ⟨z, hz⟩ := h
   obtain ⟨y, rfl, _⟩ := H z (coe_mem.2 hz)
-  refine' ⟨y, rfl, fun w hxw => _⟩
+  refine ⟨y, rfl, fun w hxw => ?_⟩
   simpa only [coe_mem, coe_apply] using H w (coe_mem.2 hxw)
 #align Class.mem_sInter Class.mem_sInter
 

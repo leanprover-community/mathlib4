@@ -3,7 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Aaron Anderson, Yakov Pechersky
 -/
-
+import Mathlib.Algebra.Group.Commute.Basic
 import Mathlib.Data.Fintype.Card
 import Mathlib.GroupTheory.Perm.Basic
 
@@ -226,10 +226,10 @@ theorem ofSubtype_swap_eq {p : α → Prop} [DecidablePred p] (x y : Subtype p) 
       · rw [swap_apply_of_ne_of_ne] <;>
         simp [Subtype.ext_iff, *]
     · rw [ofSubtype_apply_of_not_mem _ hz, swap_apply_of_ne_of_ne]
-      intro h
-      apply hz
-      rw [h]
-      exact Subtype.prop x
+      · intro h
+        apply hz
+        rw [h]
+        exact Subtype.prop x
       intro h
       apply hz
       rw [h]
@@ -343,9 +343,9 @@ theorem exists_mem_support_of_mem_support_prod {l : List (Perm α)} {x : α}
   induction' l with f l ih
   · rfl
   · rw [List.prod_cons, mul_apply, ih, hx]
-    simp only [List.find?, List.mem_cons, true_or]
+    · simp only [List.find?, List.mem_cons, true_or]
     intros f' hf'
-    refine' hx f' _
+    refine hx f' ?_
     simp only [List.find?, List.mem_cons]
     exact Or.inr hf'
 #align equiv.perm.exists_mem_support_of_mem_support_prod Equiv.Perm.exists_mem_support_of_mem_support_prod
@@ -506,8 +506,8 @@ theorem mem_support_swap_mul_imp_mem_support_ne {x y : α} (hy : y ∈ support (
   · constructor <;> intro <;> simp_all only [if_true, eq_self_iff_true, not_true, Ne]
   · split_ifs at hy with hf heq <;>
     simp_all only [not_true]
-    exact ⟨h, hy⟩
-    exact ⟨hy, heq⟩
+    · exact ⟨h, hy⟩
+    · exact ⟨hy, heq⟩
 #align equiv.perm.mem_support_swap_mul_imp_mem_support_ne Equiv.Perm.mem_support_swap_mul_imp_mem_support_ne
 
 theorem Disjoint.mem_imp (h : Disjoint f g) {x : α} (hx : x ∈ f.support) : x ∉ g.support :=
@@ -555,7 +555,7 @@ theorem support_extend_domain (f : α ≃ Subtype p) {g : Perm α} :
   · rw [extendDomain_apply_subtype _ _ pb]
     constructor
     · rintro h
-      refine' ⟨f.symm ⟨b, pb⟩, _, by simp⟩
+      refine ⟨f.symm ⟨b, pb⟩, ?_, by simp⟩
       contrapose! h
       simp [h]
     · rintro ⟨a, ha, hb⟩
@@ -626,7 +626,7 @@ theorem card_support_eq_two {f : Perm α} : f.support.card = 2 ↔ IsSwap f := b
   · obtain ⟨x, t, hmem, hins, ht⟩ := card_eq_succ.1 h
     obtain ⟨y, rfl⟩ := card_eq_one.1 ht
     rw [mem_singleton] at hmem
-    refine' ⟨x, y, hmem, _⟩
+    refine ⟨x, y, hmem, ?_⟩
     ext a
     have key : ∀ b, f b ≠ b ↔ _ := fun b => by rw [← mem_support, ← hins, mem_insert, mem_singleton]
     by_cases ha : f a = a
