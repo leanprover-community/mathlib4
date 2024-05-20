@@ -412,11 +412,11 @@ instance outerRegular : μ.measure.OuterRegular := by
 /-- In a locally compact space, any measure constructed from a content is regular. -/
 instance regular [WeaklyLocallyCompactSpace G] : μ.measure.Regular := by
   have : IsFiniteMeasureOnCompacts μ.measure := by
-    refine' ⟨fun K hK => _⟩
+    refine ⟨fun K hK => ?_⟩
     apply (measure_mono subset_closure).trans_lt _
     rw [measure_apply _ isClosed_closure.measurableSet]
     exact μ.outerMeasure_lt_top_of_isCompact hK.closure
-  refine' ⟨fun U hU r hr => _⟩
+  refine ⟨fun U hU r hr => ?_⟩
   rw [measure_apply _ hU.measurableSet, μ.outerMeasure_of_isOpen U hU] at hr
   simp only [innerContent, lt_iSup_iff] at hr
   rcases hr with ⟨K, hKU, hr⟩

@@ -390,7 +390,7 @@ protected theorem induction_on {motive : (⨂[R] i, s i) → Prop} (z : ⨂[R] i
 @[ext]
 theorem ext {φ₁ φ₂ : (⨂[R] i, s i) →ₗ[R] E}
     (H : φ₁.compMultilinearMap (tprod R) = φ₂.compMultilinearMap (tprod R)) : φ₁ = φ₂ := by
-  refine' LinearMap.ext _
+  refine LinearMap.ext ?_
   refine' fun z ↦
     PiTensorProduct.induction_on' z _ fun {x y} hx hy ↦ by rw [φ₁.map_add, φ₂.map_add, hx, hy]
   · intro r f

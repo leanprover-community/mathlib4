@@ -217,7 +217,7 @@ theorem HasCompactMulSupport.is_one_at_infty {f : α → γ} [TopologicalSpace �
   -- Porting note: move to src/topology/support.lean once the port is over
   intro N hN
   rw [mem_map, mem_cocompact']
-  refine' ⟨mulTSupport f, h.isCompact, _⟩
+  refine ⟨mulTSupport f, h.isCompact, ?_⟩
   rw [compl_subset_comm]
   intro v hv
   rw [mem_preimage, image_eq_one_of_nmem_mulTSupport hv]
