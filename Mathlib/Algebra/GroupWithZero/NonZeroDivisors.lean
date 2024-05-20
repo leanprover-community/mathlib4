@@ -285,11 +285,10 @@ section MonoidWithZero
 variable (α : Type*) [MonoidWithZero α]
 
 /-- The units of the monoid of non-zero divisors of `α` are equivalent to the units of `α`. -/
-noncomputable def nonZeroDivisorsUnitsEquiv : α⁰ˣ ≃* αˣ :=
-  MulEquiv.ofBijective (Units.map α⁰.subtype) ⟨Units.map_injective Subtype.val_injective,
-    fun u ↦ ⟨IsUnit.unit ⟨⟨⟨u, IsUnit.mem_nonZeroDivisors u.isUnit⟩, ⟨(u⁻¹ : αˣ),
-        IsUnit.mem_nonZeroDivisors u⁻¹.isUnit⟩, by simp, by simp⟩, rfl⟩,
-      by rw [Units.ext_iff, IsUnit.unit_of_val_units, Units.coe_map, Submonoid.coe_subtype]⟩⟩
+def nonZeroDivisorsUnitsEquiv : α⁰ˣ ≃* αˣ :=
+  MulHom.toMulEquiv (Units.map α⁰.subtype) ⟨fun u ↦ ⟨⟨u, IsUnit.mem_nonZeroDivisors u.isUnit⟩,
+      ⟨(u⁻¹ : αˣ), IsUnit.mem_nonZeroDivisors u⁻¹.isUnit⟩, by simp, by simp⟩,
+      fun _ _ ↦ by simp_rw [Units.ext_iff, Units.val_mul, Submonoid.mk_mul_mk]⟩ rfl rfl
 
 @[simp]
 theorem nonZeroDivisorsUnitsEquiv_apply (u : α⁰ˣ) :
@@ -297,9 +296,7 @@ theorem nonZeroDivisorsUnitsEquiv_apply (u : α⁰ˣ) :
 
 @[simp]
 theorem nonZeroDivisorsUnitsEquiv_symm_apply (u : αˣ) :
-    ((nonZeroDivisorsUnitsEquiv α).symm u : α) = (u : α) := by
-  obtain ⟨v, rfl⟩ := (nonZeroDivisorsUnitsEquiv α).surjective u
-  rw [MulEquiv.symm_apply_apply, nonZeroDivisorsUnitsEquiv_apply]
+    ((nonZeroDivisorsUnitsEquiv α).symm u : α) = (u : α) := rfl
 
 end MonoidWithZero
 
