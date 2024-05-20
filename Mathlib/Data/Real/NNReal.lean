@@ -3,9 +3,8 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Algebra.BigOperators.Order
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.Field.Canonical.Basic
 import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Algebra.Order.Nonneg.Floor
@@ -13,7 +12,7 @@ import Mathlib.Data.Real.Pointwise
 import Mathlib.Order.ConditionallyCompleteLattice.Group
 import Mathlib.Tactic.GCongr.Core
 
-#align_import data.real.nnreal from "leanprover-community/mathlib"@"de29c328903507bb7aff506af9135f4bdaf1849c"
+#align_import data.real.nnreal from "leanprover-community/mathlib"@"b1abe23ae96fef89ad30d9f4362c307f72a55010"
 
 /-!
 # Nonnegative real numbers
@@ -65,11 +64,10 @@ def NNReal := { r : ℝ // 0 ≤ r } deriving
 
 namespace NNReal
 
--- mathport name: nnreal
 scoped notation "ℝ≥0" => NNReal
 
 noncomputable instance : FloorSemiring ℝ≥0 := Nonneg.floorSemiring
-instance : DenselyOrdered ℝ≥0 := Nonneg.densely_ordered
+instance instDenselyOrdered : DenselyOrdered ℝ≥0 := Nonneg.instDenselyOrdered
 instance : OrderBot ℝ≥0 := inferInstance
 instance : Archimedean ℝ≥0 := Nonneg.archimedean
 noncomputable instance : Sub ℝ≥0 := Nonneg.sub
@@ -163,19 +161,16 @@ example : Nontrivial ℝ≥0 := by infer_instance
 protected theorem coe_injective : Injective ((↑) : ℝ≥0 → ℝ) := Subtype.coe_injective
 #align nnreal.coe_injective NNReal.coe_injective
 
-@[simp, norm_cast]
-protected theorem coe_eq {r₁ r₂ : ℝ≥0} : (r₁ : ℝ) = r₂ ↔ r₁ = r₂ :=
+@[simp, norm_cast] lemma coe_inj {r₁ r₂ : ℝ≥0} : (r₁ : ℝ) = r₂ ↔ r₁ = r₂ :=
   NNReal.coe_injective.eq_iff
-#align nnreal.coe_eq NNReal.coe_eq
+#align nnreal.coe_eq NNReal.coe_inj
 
-@[simp, norm_cast]
-protected theorem coe_zero : ((0 : ℝ≥0) : ℝ) = 0 :=
-  rfl
+@[deprecated] protected alias coe_eq := coe_inj -- 2024-02-03
+
+@[simp, norm_cast] lemma coe_zero : ((0 : ℝ≥0) : ℝ) = 0 := rfl
 #align nnreal.coe_zero NNReal.coe_zero
 
-@[simp, norm_cast]
-protected theorem coe_one : ((1 : ℝ≥0) : ℝ) = 1 :=
-  rfl
+@[simp, norm_cast] lemma coe_one : ((1 : ℝ≥0) : ℝ) = 1 := rfl
 #align nnreal.coe_one NNReal.coe_one
 
 @[simp, norm_cast]
@@ -209,25 +204,24 @@ protected theorem coe_sub {r₁ r₂ : ℝ≥0} (h : r₂ ≤ r₁) : ((r₁ - r
   max_eq_left <| le_sub_comm.2 <| by simp [show (r₂ : ℝ) ≤ r₁ from h]
 #align nnreal.coe_sub NNReal.coe_sub
 
-@[simp, norm_cast]
-protected theorem coe_eq_zero (r : ℝ≥0) : ↑r = (0 : ℝ) ↔ r = 0 := by
-  rw [← NNReal.coe_zero, NNReal.coe_eq]
-#align nnreal.coe_eq_zero NNReal.coe_eq_zero
+variable {r r₁ r₂ : ℝ≥0} {x y : ℝ}
 
-@[simp, norm_cast]
-protected theorem coe_eq_one (r : ℝ≥0) : ↑r = (1 : ℝ) ↔ r = 1 := by
-  rw [← NNReal.coe_one, NNReal.coe_eq]
-#align nnreal.coe_eq_one NNReal.coe_eq_one
+@[simp, norm_cast] lemma coe_eq_zero : (r : ℝ) = 0 ↔ r = 0 := by rw [← coe_zero, coe_inj]
+#align coe_eq_zero NNReal.coe_eq_zero
 
--- porting note: why `norm_cast` fails?
-theorem coe_ne_zero {r : ℝ≥0} : (r : ℝ) ≠ 0 ↔ r ≠ 0 := r.coe_eq_zero.not
+@[simp, norm_cast] lemma coe_eq_one : (r : ℝ) = 1 ↔ r = 1 := by rw [← coe_one, coe_inj]
+#align coe_inj_one NNReal.coe_eq_one
+
+@[norm_cast] lemma coe_ne_zero : (r : ℝ) ≠ 0 ↔ r ≠ 0 := coe_eq_zero.not
 #align nnreal.coe_ne_zero NNReal.coe_ne_zero
+
+@[norm_cast] lemma coe_ne_one : (r : ℝ) ≠ 1 ↔ r ≠ 1 := coe_eq_one.not
 
 example : CommSemiring ℝ≥0 := by infer_instance
 
 /-- Coercion `ℝ≥0 → ℝ` as a `RingHom`.
 
-Porting note: todo: what if we define `Coe ℝ≥0 ℝ` using this function? -/
+Porting note (#11215): TODO: what if we define `Coe ℝ≥0 ℝ` using this function? -/
 def toRealHom : ℝ≥0 →+* ℝ where
   toFun := (↑)
   map_one' := NNReal.coe_one
@@ -268,7 +262,7 @@ instance {M : Type*} [AddMonoid M] [DistribMulAction ℝ M] : DistribMulAction �
 instance {M : Type*} [AddCommMonoid M] [Module ℝ M] : Module ℝ≥0 M :=
   Module.compHom M toRealHom
 
--- porting note: TODO: after this line, `↑` uses `Algebra.cast` instead of `toReal`
+-- Porting note (#11215): TODO: after this line, `↑` uses `Algebra.cast` instead of `toReal`
 /-- An `Algebra` over `ℝ` restricts to an `Algebra` over `ℝ≥0`. -/
 instance {A : Type*} [Semiring A] [Algebra ℝ A] : Algebra ℝ≥0 A where
   smul := (· • ·)
@@ -276,11 +270,7 @@ instance {A : Type*} [Semiring A] [Algebra ℝ A] : Algebra ℝ≥0 A where
   smul_def' r x := by simp [← Algebra.smul_def (r : ℝ) x, smul_def]
   toRingHom := (algebraMap ℝ A).comp (toRealHom : ℝ≥0 →+* ℝ)
 
-instance : StarRing ℝ≥0 where
-  star := id
-  star_involutive _ := rfl
-  star_mul := mul_comm
-  star_add _ _ := rfl
+instance : StarRing ℝ≥0 := starRingOfComm
 
 instance : TrivialStar ℝ≥0 where
   star_trivial _ := rfl
@@ -317,56 +307,56 @@ theorem coe_zpow (r : ℝ≥0) (n : ℤ) : ((r ^ n : ℝ≥0) : ℝ) = (r : ℝ)
 
 @[norm_cast]
 theorem coe_list_sum (l : List ℝ≥0) : ((l.sum : ℝ≥0) : ℝ) = (l.map (↑)).sum :=
-  toRealHom.map_list_sum l
+  map_list_sum toRealHom l
 #align nnreal.coe_list_sum NNReal.coe_list_sum
 
 @[norm_cast]
 theorem coe_list_prod (l : List ℝ≥0) : ((l.prod : ℝ≥0) : ℝ) = (l.map (↑)).prod :=
-  toRealHom.map_list_prod l
+  map_list_prod toRealHom l
 #align nnreal.coe_list_prod NNReal.coe_list_prod
 
 @[norm_cast]
 theorem coe_multiset_sum (s : Multiset ℝ≥0) : ((s.sum : ℝ≥0) : ℝ) = (s.map (↑)).sum :=
-  toRealHom.map_multiset_sum s
+  map_multiset_sum toRealHom s
 #align nnreal.coe_multiset_sum NNReal.coe_multiset_sum
 
 @[norm_cast]
 theorem coe_multiset_prod (s : Multiset ℝ≥0) : ((s.prod : ℝ≥0) : ℝ) = (s.map (↑)).prod :=
-  toRealHom.map_multiset_prod s
+  map_multiset_prod toRealHom s
 #align nnreal.coe_multiset_prod NNReal.coe_multiset_prod
 
 @[norm_cast]
 theorem coe_sum {α} {s : Finset α} {f : α → ℝ≥0} : ↑(∑ a in s, f a) = ∑ a in s, (f a : ℝ) :=
-  toRealHom.map_sum _ _
+  map_sum toRealHom _ _
 #align nnreal.coe_sum NNReal.coe_sum
 
 theorem _root_.Real.toNNReal_sum_of_nonneg {α} {s : Finset α} {f : α → ℝ}
     (hf : ∀ a, a ∈ s → 0 ≤ f a) :
     Real.toNNReal (∑ a in s, f a) = ∑ a in s, Real.toNNReal (f a) := by
-  rw [← NNReal.coe_eq, NNReal.coe_sum, Real.coe_toNNReal _ (Finset.sum_nonneg hf)]
+  rw [← coe_inj, NNReal.coe_sum, Real.coe_toNNReal _ (Finset.sum_nonneg hf)]
   exact Finset.sum_congr rfl fun x hxs => by rw [Real.coe_toNNReal _ (hf x hxs)]
 #align real.to_nnreal_sum_of_nonneg Real.toNNReal_sum_of_nonneg
 
 @[norm_cast]
 theorem coe_prod {α} {s : Finset α} {f : α → ℝ≥0} : ↑(∏ a in s, f a) = ∏ a in s, (f a : ℝ) :=
-  toRealHom.map_prod _ _
+  map_prod toRealHom _ _
 #align nnreal.coe_prod NNReal.coe_prod
 
 theorem _root_.Real.toNNReal_prod_of_nonneg {α} {s : Finset α} {f : α → ℝ}
     (hf : ∀ a, a ∈ s → 0 ≤ f a) :
     Real.toNNReal (∏ a in s, f a) = ∏ a in s, Real.toNNReal (f a) := by
-  rw [← NNReal.coe_eq, NNReal.coe_prod, Real.coe_toNNReal _ (Finset.prod_nonneg hf)]
+  rw [← coe_inj, NNReal.coe_prod, Real.coe_toNNReal _ (Finset.prod_nonneg hf)]
   exact Finset.prod_congr rfl fun x hxs => by rw [Real.coe_toNNReal _ (hf x hxs)]
 #align real.to_nnreal_prod_of_nonneg Real.toNNReal_prod_of_nonneg
 
--- porting note: todo: `simp`? `norm_cast`?
+-- Porting note (#11215): TODO: `simp`? `norm_cast`?
 theorem coe_nsmul (r : ℝ≥0) (n : ℕ) : ↑(n • r) = n • (r : ℝ) := rfl
 #align nnreal.nsmul_coe NNReal.coe_nsmul
 
 @[simp, norm_cast]
-protected theorem coe_nat_cast (n : ℕ) : (↑(↑n : ℝ≥0) : ℝ) = n :=
+protected theorem coe_natCast (n : ℕ) : (↑(↑n : ℝ≥0) : ℝ) = n :=
   map_natCast toRealHom n
-#align nnreal.coe_nat_cast NNReal.coe_nat_cast
+#align nnreal.coe_nat_cast NNReal.coe_natCast
 
 -- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
@@ -374,28 +364,32 @@ protected theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
     (no_index (OfNat.ofNat n : ℝ≥0) : ℝ) = OfNat.ofNat n :=
   rfl
 
+@[simp, norm_cast]
+protected theorem coe_ofScientific (m : ℕ) (s : Bool) (e : ℕ) :
+    ↑(OfScientific.ofScientific m s e : ℝ≥0) = (OfScientific.ofScientific m s e : ℝ) :=
+  rfl
+
 noncomputable example : LinearOrder ℝ≥0 := by infer_instance
 
-@[simp, norm_cast]
-protected theorem coe_le_coe {r₁ r₂ : ℝ≥0} : (r₁ : ℝ) ≤ r₂ ↔ r₁ ≤ r₂ :=
-  Iff.rfl
+@[simp, norm_cast] lemma coe_le_coe : (r₁ : ℝ) ≤ r₂ ↔ r₁ ≤ r₂ := Iff.rfl
 #align nnreal.coe_le_coe NNReal.coe_le_coe
 
-@[simp, norm_cast]
-protected theorem coe_lt_coe {r₁ r₂ : ℝ≥0} : (r₁ : ℝ) < r₂ ↔ r₁ < r₂ :=
-  Iff.rfl
+@[simp, norm_cast] lemma coe_lt_coe : (r₁ : ℝ) < r₂ ↔ r₁ < r₂ := Iff.rfl
 #align nnreal.coe_lt_coe NNReal.coe_lt_coe
 
-@[simp, norm_cast]
-protected theorem coe_pos {r : ℝ≥0} : (0 : ℝ) < r ↔ 0 < r :=
-  Iff.rfl
+@[simp, norm_cast] lemma coe_pos : (0 : ℝ) < r ↔ 0 < r := Iff.rfl
 #align nnreal.coe_pos NNReal.coe_pos
 
-protected theorem coe_mono : Monotone ((↑) : ℝ≥0 → ℝ) := fun _ _ => NNReal.coe_le_coe.2
+@[simp, norm_cast] lemma one_le_coe : 1 ≤ (r : ℝ) ↔ 1 ≤ r := by rw [← coe_le_coe, coe_one]
+@[simp, norm_cast] lemma one_lt_coe : 1 < (r : ℝ) ↔ 1 < r := by rw [← coe_lt_coe, coe_one]
+@[simp, norm_cast] lemma coe_le_one : (r : ℝ) ≤ 1 ↔ r ≤ 1 := by rw [← coe_le_coe, coe_one]
+@[simp, norm_cast] lemma coe_lt_one : (r : ℝ) < 1 ↔ r < 1 := by rw [← coe_lt_coe, coe_one]
+
+@[mono] lemma coe_mono : Monotone ((↑) : ℝ≥0 → ℝ) := fun _ _ => NNReal.coe_le_coe.2
 #align nnreal.coe_mono NNReal.coe_mono
 
-@[gcongr]
-theorem _root_.NNReal.toReal_le_toReal {x y : NNReal} (h : x ≤ y) : (x : ℝ) ≤ y := NNReal.coe_mono h
+/-- Alias for the use of `gcongr` -/
+@[gcongr] alias ⟨_, GCongr.toReal_le_toReal⟩ := coe_le_coe
 
 protected theorem _root_.Real.toNNReal_mono : Monotone Real.toNNReal := fun _ _ h =>
   max_le_max h (le_refl 0)
@@ -407,9 +401,11 @@ theorem _root_.Real.toNNReal_coe {r : ℝ≥0} : Real.toNNReal r = r :=
 #align real.to_nnreal_coe Real.toNNReal_coe
 
 @[simp]
-theorem mk_coe_nat (n : ℕ) : @Eq ℝ≥0 (⟨(n : ℝ), n.cast_nonneg⟩ : ℝ≥0) n :=
-  NNReal.eq (NNReal.coe_nat_cast n).symm
-#align nnreal.mk_coe_nat NNReal.mk_coe_nat
+theorem mk_natCast (n : ℕ) : @Eq ℝ≥0 (⟨(n : ℝ), n.cast_nonneg⟩ : ℝ≥0) n :=
+  NNReal.eq (NNReal.coe_natCast n).symm
+#align nnreal.mk_coe_nat NNReal.mk_natCast
+
+@[deprecated] alias mk_coe_nat := mk_natCast -- 2024-04-05
 
 -- Porting note: place this in the `Real` namespace
 @[simp]
@@ -461,9 +457,17 @@ example : DenselyOrdered ℝ≥0 := by infer_instance
 
 example : NoMaxOrder ℝ≥0 := by infer_instance
 
+instance instPosSMulStrictMono {α} [Preorder α] [MulAction ℝ α] [PosSMulStrictMono ℝ α] :
+    PosSMulStrictMono ℝ≥0 α where
+  elim _r hr _a₁ _a₂ ha := (smul_lt_smul_of_pos_left ha (coe_pos.2 hr):)
+
+instance instSMulPosStrictMono {α} [Zero α] [Preorder α] [MulAction ℝ α] [SMulPosStrictMono ℝ α] :
+    SMulPosStrictMono ℝ≥0 α where
+  elim _a ha _r₁ _r₂ hr := (smul_lt_smul_of_pos_right (coe_lt_coe.2 hr) ha:)
+
 /-- If `a` is a nonnegative real number, then the closed interval `[0, a]` in `ℝ` is order
 isomorphic to the interval `Set.Iic a`. -/
--- porting note: todo: restore once `simps` supports `ℝ≥0` @[simps!? apply_coe_coe]
+-- Porting note (#11215): TODO: restore once `simps` supports `ℝ≥0` @[simps!? apply_coe_coe]
 def orderIsoIccZeroCoe (a : ℝ≥0) : Set.Icc (0 : ℝ) a ≃o Set.Iic a where
   toEquiv := Equiv.Set.sep (Set.Ici 0) fun x : ℝ => x ≤ a
   map_rel_iff' := Iff.rfl
@@ -517,7 +521,7 @@ theorem coe_sSup (s : Set ℝ≥0) : (↑(sSup s) : ℝ) = sSup (((↑) : ℝ≥
     exact bddAbove_coe.1 H
 #align nnreal.coe_Sup NNReal.coe_sSup
 
-@[simp, norm_cast] -- porting note: add `simp`
+@[simp, norm_cast] -- Porting note: add `simp`
 theorem coe_iSup {ι : Sort*} (s : ι → ℝ≥0) : (↑(⨆ i, s i) : ℝ) = ⨆ i, ↑(s i) := by
   rw [iSup, iSup, coe_sSup, ← Set.range_comp]; rfl
 #align nnreal.coe_supr NNReal.coe_iSup
@@ -525,7 +529,7 @@ theorem coe_iSup {ι : Sort*} (s : ι → ℝ≥0) : (↑(⨆ i, s i) : ℝ) = �
 @[norm_cast]
 theorem coe_sInf (s : Set ℝ≥0) : (↑(sInf s) : ℝ) = sInf (((↑) : ℝ≥0 → ℝ) '' s) := by
   rcases Set.eq_empty_or_nonempty s with rfl|hs
-  · simp only [Set.image_empty, Real.sInf_empty, NNReal.coe_eq_zero]
+  · simp only [Set.image_empty, Real.sInf_empty, coe_eq_zero]
     exact @subset_sInf_emptyset ℝ (Set.Ici (0 : ℝ)) _ _ (_)
   have A : sInf (Subtype.val '' s) ∈ Set.Ici 0 := by
     apply Real.sInf_nonneg
@@ -536,7 +540,7 @@ theorem coe_sInf (s : Set ℝ≥0) : (↑(sInf s) : ℝ) = sInf (((↑) : ℝ≥
 
 @[simp]
 theorem sInf_empty : sInf (∅ : Set ℝ≥0) = 0 := by
-  rw [← NNReal.coe_eq_zero, coe_sInf, Set.image_empty, Real.sInf_empty]
+  rw [← coe_eq_zero, coe_sInf, Set.image_empty, Real.sInf_empty]
 #align nnreal.Inf_empty NNReal.sInf_empty
 
 @[norm_cast]
@@ -552,7 +556,7 @@ theorem le_iInf_add_iInf {ι ι' : Sort*} [Nonempty ι] [Nonempty ι'] {f : ι �
 
 example : Archimedean ℝ≥0 := by infer_instance
 
--- porting note: TODO: remove?
+-- Porting note (#11215): TODO: remove?
 instance covariant_add : CovariantClass ℝ≥0 ℝ≥0 (· + ·) (· ≤ ·) := inferInstance
 #align nnreal.covariant_add NNReal.covariant_add
 
@@ -562,7 +566,7 @@ instance contravariant_add : ContravariantClass ℝ≥0 ℝ≥0 (· + ·) (· < 
 instance covariant_mul : CovariantClass ℝ≥0 ℝ≥0 (· * ·) (· ≤ ·) := inferInstance
 #align nnreal.covariant_mul NNReal.covariant_mul
 
--- porting note: TODO: delete?
+-- Porting note (#11215): TODO: delete?
 nonrec theorem le_of_forall_pos_le_add {a b : ℝ≥0} (h : ∀ ε, 0 < ε → a ≤ b + ε) : a ≤ b :=
   le_of_forall_pos_le_add h
 #align nnreal.le_of_forall_pos_le_add NNReal.le_of_forall_pos_le_add
@@ -618,6 +622,12 @@ theorem zero_le_coe {q : ℝ≥0} : 0 ≤ (q : ℝ) :=
   q.2
 #align nnreal.zero_le_coe NNReal.zero_le_coe
 
+instance instOrderedSMul {M : Type*} [OrderedAddCommMonoid M] [Module ℝ M] [OrderedSMul ℝ M] :
+    OrderedSMul ℝ≥0 M where
+  smul_lt_smul_of_pos hab hc := (smul_lt_smul_of_pos_left hab (NNReal.coe_pos.2 hc) : _)
+  lt_of_smul_lt_smul_of_pos {a b c} hab _ :=
+    lt_of_smul_lt_smul_of_nonneg_left (by exact hab) (NNReal.coe_nonneg c)
+
 end NNReal
 
 open NNReal
@@ -661,13 +671,13 @@ lemma toNNReal_eq_iff_eq_coe {r : ℝ} {p : ℝ≥0} (hp : p ≠ 0) : r.toNNReal
 lemma toNNReal_eq_one {r : ℝ} : r.toNNReal = 1 ↔ r = 1 := toNNReal_eq_iff_eq_coe one_ne_zero
 
 @[simp]
-lemma toNNReal_eq_nat_cast {r : ℝ} {n : ℕ} (hn : n ≠ 0) : r.toNNReal = n ↔ r = n :=
+lemma toNNReal_eq_natCast {r : ℝ} {n : ℕ} (hn : n ≠ 0) : r.toNNReal = n ↔ r = n :=
   mod_cast toNNReal_eq_iff_eq_coe <| Nat.cast_ne_zero.2 hn
 
 @[simp]
-lemma toNNReal_eq_ofNat {r : ℝ} {n : ℕ} [h : n.AtLeastTwo] :
+lemma toNNReal_eq_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
     r.toNNReal = no_index (OfNat.ofNat n) ↔ r = OfNat.ofNat n :=
-  toNNReal_eq_nat_cast h.ne_zero
+  toNNReal_eq_natCast (NeZero.ne n)
 
 @[simp]
 theorem toNNReal_le_toNNReal_iff {r p : ℝ} (hp : 0 ≤ p) :
@@ -683,26 +693,26 @@ lemma one_lt_toNNReal {r : ℝ} : 1 < r.toNNReal ↔ 1 < r := by
   simpa only [not_le] using toNNReal_le_one.not
 
 @[simp]
-lemma toNNReal_le_nat_cast {r : ℝ} {n : ℕ} : r.toNNReal ≤ n ↔ r ≤ n := by
+lemma toNNReal_le_natCast {r : ℝ} {n : ℕ} : r.toNNReal ≤ n ↔ r ≤ n := by
   simpa using toNNReal_le_toNNReal_iff n.cast_nonneg
 
 @[simp]
-lemma nat_cast_lt_toNNReal {r : ℝ} {n : ℕ} : n < r.toNNReal ↔ n < r := by
-  simpa only [not_le] using toNNReal_le_nat_cast.not
+lemma natCast_lt_toNNReal {r : ℝ} {n : ℕ} : n < r.toNNReal ↔ n < r := by
+  simpa only [not_le] using toNNReal_le_natCast.not
 
 @[simp]
 lemma toNNReal_le_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
     r.toNNReal ≤ no_index (OfNat.ofNat n) ↔ r ≤ n :=
-  toNNReal_le_nat_cast
+  toNNReal_le_natCast
 
 @[simp]
 lemma ofNat_lt_toNNReal {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
     no_index (OfNat.ofNat n) < r.toNNReal ↔ n < r :=
-  nat_cast_lt_toNNReal
+  natCast_lt_toNNReal
 
 @[simp]
 theorem toNNReal_eq_toNNReal_iff {r p : ℝ} (hr : 0 ≤ r) (hp : 0 ≤ p) :
-    toNNReal r = toNNReal p ↔ r = p := by simp [← NNReal.coe_eq, coe_toNNReal, hr, hp]
+    toNNReal r = toNNReal p ↔ r = p := by simp [← coe_inj, coe_toNNReal, hr, hp]
 #align real.to_nnreal_eq_to_nnreal_iff Real.toNNReal_eq_toNNReal_iff
 
 @[simp]
@@ -714,6 +724,9 @@ theorem toNNReal_lt_toNNReal_iff {r p : ℝ} (h : 0 < p) :
     Real.toNNReal r < Real.toNNReal p ↔ r < p :=
   toNNReal_lt_toNNReal_iff'.trans (and_iff_left h)
 #align real.to_nnreal_lt_to_nnreal_iff Real.toNNReal_lt_toNNReal_iff
+
+theorem lt_of_toNNReal_lt {r p : ℝ} (h : r.toNNReal < p.toNNReal) : r < p :=
+  (Real.toNNReal_lt_toNNReal_iff <| Real.toNNReal_pos.1 (ne_bot_of_gt h).bot_lt).1 h
 
 theorem toNNReal_lt_toNNReal_iff_of_nonneg {r p : ℝ} (hr : 0 ≤ r) :
     Real.toNNReal r < Real.toNNReal p ↔ r < p :=
@@ -734,26 +747,26 @@ lemma one_le_toNNReal {r : ℝ} : 1 ≤ r.toNNReal ↔ 1 ≤ r := by
 lemma toNNReal_lt_one {r : ℝ} : r.toNNReal < 1 ↔ r < 1 := by simp only [← not_le, one_le_toNNReal]
 
 @[simp]
-lemma nat_cast_le_toNNReal' {n : ℕ} {r : ℝ} : ↑n ≤ r.toNNReal ↔ n ≤ r ∨ n = 0 := by
+lemma natCastle_toNNReal' {n : ℕ} {r : ℝ} : ↑n ≤ r.toNNReal ↔ n ≤ r ∨ n = 0 := by
   simpa [n.cast_nonneg.le_iff_eq] using toNNReal_le_toNNReal_iff' (r := n)
 
 @[simp]
-lemma toNNReal_lt_nat_cast' {n : ℕ} {r : ℝ} : r.toNNReal < n ↔ r < n ∧ n ≠ 0 := by
+lemma toNNReal_lt_natCast' {n : ℕ} {r : ℝ} : r.toNNReal < n ↔ r < n ∧ n ≠ 0 := by
   simpa [pos_iff_ne_zero] using toNNReal_lt_toNNReal_iff' (r := r) (p := n)
 
-lemma nat_cast_le_toNNReal {n : ℕ} {r : ℝ} (hn : n ≠ 0) : ↑n ≤ r.toNNReal ↔ n ≤ r := by simp [hn]
+lemma natCast_le_toNNReal {n : ℕ} {r : ℝ} (hn : n ≠ 0) : ↑n ≤ r.toNNReal ↔ n ≤ r := by simp [hn]
 
-lemma toNNReal_lt_nat_cast {r : ℝ} {n : ℕ} (hn : n ≠ 0) : r.toNNReal < n ↔ r < n := by simp [hn]
+lemma toNNReal_lt_natCast {r : ℝ} {n : ℕ} (hn : n ≠ 0) : r.toNNReal < n ↔ r < n := by simp [hn]
 
 @[simp]
-lemma toNNReal_lt_ofNat {r : ℝ} {n : ℕ} [h : n.AtLeastTwo] :
+lemma toNNReal_lt_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
     r.toNNReal < no_index (OfNat.ofNat n) ↔ r < OfNat.ofNat n :=
-  toNNReal_lt_nat_cast h.ne_zero
+  toNNReal_lt_natCast (NeZero.ne n)
 
 @[simp]
-lemma ofNat_le_toNNReal {n : ℕ} {r : ℝ} [h : n.AtLeastTwo] :
+lemma ofNat_le_toNNReal {n : ℕ} {r : ℝ} [n.AtLeastTwo] :
     no_index (OfNat.ofNat n) ≤ r.toNNReal ↔ OfNat.ofNat n ≤ r :=
-  nat_cast_le_toNNReal h.ne_zero
+  natCast_le_toNNReal (NeZero.ne n)
 
 @[simp]
 theorem toNNReal_add {r p : ℝ} (hr : 0 ≤ r) (hp : 0 ≤ p) :
@@ -799,7 +812,7 @@ theorem lt_toNNReal_iff_coe_lt {r : ℝ≥0} {p : ℝ} : r < Real.toNNReal p ↔
 #noalign real.to_nnreal_bit1
 
 theorem toNNReal_pow {x : ℝ} (hx : 0 ≤ x) (n : ℕ) : (x ^ n).toNNReal = x.toNNReal ^ n := by
-  rw [← NNReal.coe_eq, NNReal.coe_pow, Real.coe_toNNReal _ (pow_nonneg hx _),
+  rw [← coe_inj, NNReal.coe_pow, Real.coe_toNNReal _ (pow_nonneg hx _),
     Real.coe_toNNReal x hx]
 #align real.to_nnreal_pow Real.toNNReal_pow
 
@@ -950,10 +963,9 @@ theorem mul_lt_of_lt_div {a b r : ℝ≥0} (h : a < b / r) : a * r < b :=
   (lt_div_iff fun hr => False.elim <| by simp [hr] at h).1 h
 #align nnreal.mul_lt_of_lt_div NNReal.mul_lt_of_lt_div
 
--- porting note: drop an unneeded assumption, assume `≠ 0`
 theorem div_le_div_left_of_le {a b c : ℝ≥0} (c0 : c ≠ 0) (cb : c ≤ b) :
     a / b ≤ a / c :=
-  div_le_div_of_le_left (zero_le _) c0.bot_lt cb
+  div_le_div_of_nonneg_left (zero_le _) c0.bot_lt cb
 #align nnreal.div_le_div_left_of_le NNReal.div_le_div_left_of_leₓ
 
 nonrec theorem div_le_div_left {a b c : ℝ≥0} (a0 : 0 < a) (b0 : 0 < b) (c0 : 0 < c) :
@@ -964,7 +976,7 @@ nonrec theorem div_le_div_left {a b c : ℝ≥0} (a0 : 0 < a) (b0 : 0 < b) (c0 :
 theorem le_of_forall_lt_one_mul_le {x y : ℝ≥0} (h : ∀ a < 1, a * x ≤ y) : x ≤ y :=
   le_of_forall_ge_of_dense fun a ha => by
     have hx : x ≠ 0 := pos_iff_ne_zero.1 (lt_of_le_of_lt (zero_le _) ha)
-    have hx' : x⁻¹ ≠ 0 := by rwa [Ne.def, inv_eq_zero]
+    have hx' : x⁻¹ ≠ 0 := by rwa [Ne, inv_eq_zero]
     have : a * x⁻¹ < 1 := by rwa [← lt_inv_iff_mul_lt hx', inv_inv]
     have : a * x⁻¹ * x ≤ y := h _ this
     rwa [mul_assoc, inv_mul_cancel hx, mul_one] at this
@@ -1031,7 +1043,7 @@ theorem le_toNNReal_of_coe_le {x : ℝ≥0} {y : ℝ} (h : ↑x ≤ y) : x ≤ y
 
 nonrec theorem sSup_of_not_bddAbove {s : Set ℝ≥0} (hs : ¬BddAbove s) : SupSet.sSup s = 0 := by
   rw [← bddAbove_coe] at hs
-  rw [← NNReal.coe_eq, coe_sSup, NNReal.coe_zero]
+  rw [← coe_inj, coe_sSup, NNReal.coe_zero]
   exact sSup_of_not_bddAbove hs
 #align nnreal.Sup_of_not_bdd_above NNReal.sSup_of_not_bddAbove
 
@@ -1047,12 +1059,12 @@ theorem iInf_empty [IsEmpty ι] (f : ι → ℝ≥0) : ⨅ i, f i = 0 := by
 
 @[simp]
 theorem iInf_const_zero {α : Sort*} : ⨅ _ : α, (0 : ℝ≥0) = 0 := by
-  rw [← NNReal.coe_eq, coe_iInf]
+  rw [← coe_inj, coe_iInf]
   exact Real.ciInf_const_zero
 #align nnreal.infi_const_zero NNReal.iInf_const_zero
 
 theorem iInf_mul (f : ι → ℝ≥0) (a : ℝ≥0) : iInf f * a = ⨅ i, f i * a := by
-  rw [← NNReal.coe_eq, NNReal.coe_mul, coe_iInf, coe_iInf]
+  rw [← coe_inj, NNReal.coe_mul, coe_iInf, coe_iInf]
   exact Real.iInf_mul_of_nonneg (NNReal.coe_nonneg _) _
 #align nnreal.infi_mul NNReal.iInf_mul
 
@@ -1061,7 +1073,7 @@ theorem mul_iInf (f : ι → ℝ≥0) (a : ℝ≥0) : a * iInf f = ⨅ i, a * f 
 #align nnreal.mul_infi NNReal.mul_iInf
 
 theorem mul_iSup (f : ι → ℝ≥0) (a : ℝ≥0) : (a * ⨆ i, f i) = ⨆ i, a * f i := by
-  rw [← NNReal.coe_eq, NNReal.coe_mul, NNReal.coe_iSup, NNReal.coe_iSup]
+  rw [← coe_inj, NNReal.coe_mul, NNReal.coe_iSup, NNReal.coe_iSup]
   exact Real.mul_iSup_of_nonneg (NNReal.coe_nonneg _) _
 #align nnreal.mul_supr NNReal.mul_iSup
 
@@ -1074,19 +1086,19 @@ theorem iSup_div (f : ι → ℝ≥0) (a : ℝ≥0) : (⨆ i, f i) / a = ⨆ i, 
   simp only [div_eq_mul_inv, iSup_mul]
 #align nnreal.supr_div NNReal.iSup_div
 
--- porting note: generalized to allow empty `ι`
+-- Porting note: generalized to allow empty `ι`
 theorem mul_iSup_le {a : ℝ≥0} {g : ℝ≥0} {h : ι → ℝ≥0} (H : ∀ j, g * h j ≤ a) : g * iSup h ≤ a := by
   rw [mul_iSup]
   exact ciSup_le' H
 #align nnreal.mul_supr_le NNReal.mul_iSup_le
 
--- porting note: generalized to allow empty `ι`
+-- Porting note: generalized to allow empty `ι`
 theorem iSup_mul_le {a : ℝ≥0} {g : ι → ℝ≥0} {h : ℝ≥0} (H : ∀ i, g i * h ≤ a) : iSup g * h ≤ a := by
   rw [iSup_mul]
   exact ciSup_le' H
 #align nnreal.supr_mul_le NNReal.iSup_mul_le
 
--- porting note: generalized to allow empty `ι`
+-- Porting note: generalized to allow empty `ι`
 theorem iSup_mul_iSup_le {a : ℝ≥0} {g h : ι → ℝ≥0} (H : ∀ i j, g i * h j ≤ a) :
     iSup g * iSup h ≤ a :=
   iSup_mul_le fun _ => mul_iSup_le <| H _
@@ -1124,13 +1136,13 @@ theorem preimage_coe_nnreal_real (h : s.OrdConnected) : ((↑) ⁻¹' s : Set �
 #align set.ord_connected.preimage_coe_nnreal_real Set.OrdConnected.preimage_coe_nnreal_real
 
 theorem image_coe_nnreal_real (h : t.OrdConnected) : ((↑) '' t : Set ℝ).OrdConnected :=
-  ⟨ball_image_iff.2 fun x hx =>
-      ball_image_iff.2 fun _y hy z hz => ⟨⟨z, x.2.trans hz.1⟩, h.out hx hy hz, rfl⟩⟩
+  ⟨forall_mem_image.2 fun x hx =>
+      forall_mem_image.2 fun _y hy z hz => ⟨⟨z, x.2.trans hz.1⟩, h.out hx hy hz, rfl⟩⟩
 #align set.ord_connected.image_coe_nnreal_real Set.OrdConnected.image_coe_nnreal_real
 
--- porting note: todo: does it generalize to a `GaloisInsertion`?
+-- Porting note (#11215): TODO: does it generalize to a `GaloisInsertion`?
 theorem image_real_toNNReal (h : s.OrdConnected) : (Real.toNNReal '' s).OrdConnected := by
-  refine' ⟨ball_image_iff.2 fun x hx => ball_image_iff.2 fun y hy z hz => _⟩
+  refine' ⟨forall_mem_image.2 fun x hx => forall_mem_image.2 fun y hy z hz => _⟩
   rcases le_total y 0 with hy₀ | hy₀
   · rw [mem_Icc, Real.toNNReal_of_nonpos hy₀, nonpos_iff_eq_zero] at hz
     exact ⟨y, hy, (toNNReal_of_nonpos hy₀).trans hz.2.symm⟩
@@ -1150,7 +1162,7 @@ end Set
 namespace Real
 
 /-- The absolute value on `ℝ` as a map to `ℝ≥0`. -/
--- porting note: removed @[pp_nodot]
+-- Porting note (#11180): removed @[pp_nodot]
 def nnabs : ℝ →*₀ ℝ≥0 where
   toFun x := ⟨|x|, abs_nonneg x⟩
   map_zero' := by ext; simp
@@ -1176,30 +1188,67 @@ theorem coe_toNNReal_le (x : ℝ) : (toNNReal x : ℝ) ≤ |x| :=
   max_le (le_abs_self _) (abs_nonneg _)
 #align real.coe_to_nnreal_le Real.coe_toNNReal_le
 
+@[simp] lemma toNNReal_abs (x : ℝ) : |x|.toNNReal = nnabs x := NNReal.coe_injective <| by simp
+#align real.to_nnreal_abs Real.toNNReal_abs
+
 theorem cast_natAbs_eq_nnabs_cast (n : ℤ) : (n.natAbs : ℝ≥0) = nnabs n := by
   ext
-  rw [NNReal.coe_nat_cast, Int.cast_natAbs, Real.coe_nnabs, Int.cast_abs]
+  rw [NNReal.coe_natCast, Int.cast_natAbs, Real.coe_nnabs, Int.cast_abs]
 #align real.cast_nat_abs_eq_nnabs_cast Real.cast_natAbs_eq_nnabs_cast
 
 end Real
+
+section StrictMono
+
+open NNReal
+
+variable {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+
+/-- If `Γ₀ˣ` is nontrivial and `f : Γ₀ →*₀ ℝ≥0` is a strict monomorphism, then for any positive
+  `r : ℝ≥0`, there exists `d : Γ₀ˣ` with `f d < r`. -/
+theorem NNReal.exists_lt_of_strictMono [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*₀ ℝ≥0} (hf : StrictMono f)
+    {r : ℝ≥0} (hr : 0 < r) : ∃ d : Γ₀ˣ, f d < r := by
+  obtain ⟨g, hg1⟩ := (nontrivial_iff_exists_ne (1 : Γ₀ˣ)).mp h
+  set u : Γ₀ˣ := if g < 1 then g else g⁻¹ with hu
+  have hfu : f u < 1 := by
+    rw [hu]
+    split_ifs with hu1
+    · rw [← _root_.map_one f]; exact hf hu1
+    · have hfg0 : f g ≠ 0 :=
+        fun h0 ↦ (Units.ne_zero g) ((map_eq_zero f).mp h0)
+      have hg1' : 1 < g := lt_of_le_of_ne (not_lt.mp hu1) hg1.symm
+      rw [Units.val_inv_eq_inv_val, map_inv₀, inv_lt_one_iff hfg0, ← _root_.map_one f]
+      exact hf hg1'
+  obtain ⟨n, hn⟩ := exists_pow_lt_of_lt_one hr hfu
+  use u ^ n
+  rwa [Units.val_pow_eq_pow_val, _root_.map_pow]
+
+/-- If `Γ₀ˣ` is nontrivial and `f : Γ₀ →*₀ ℝ≥0` is a strict monomorphism, then for any positive
+  real `r`, there exists `d : Γ₀ˣ` with `f d < r`. -/
+theorem Real.exists_lt_of_strictMono [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*₀ ℝ≥0} (hf : StrictMono f)
+    {r : ℝ} (hr : 0 < r) : ∃ d : Γ₀ˣ, (f d : ℝ) < r := by
+  set s : NNReal := ⟨r, le_of_lt hr⟩
+  have hs : 0 < s := hr
+  exact NNReal.exists_lt_of_strictMono hf hs
+
+end StrictMono
 
 namespace Mathlib.Meta.Positivity
 
 open Lean Meta Qq Function
 
-private theorem nnreal_coe_pos {r : ℝ≥0} : 0 < r → 0 < (r : ℝ) :=
-  NNReal.coe_pos.2
+private alias ⟨_, nnreal_coe_pos⟩ := coe_pos
 
 /-- Extension for the `positivity` tactic: cast from `ℝ≥0` to `ℝ`. -/
 @[positivity NNReal.toReal _]
-def evalNNRealtoReal : PositivityExt where eval {_ _} _zα _pα e := do
-  let (.app _ (a : Q(NNReal))) ← whnfR e | throwError "not NNReal.toReal"
-  let zα' ← synthInstanceQ (q(Zero NNReal) : Q(Type))
-  let pα' ← synthInstanceQ (q(PartialOrder NNReal) : Q(Type))
-  let ra ← core zα' pα' a
-  assertInstancesCommute
-  match ra with
-  | .positive pa => pure (.positive (q(nnreal_coe_pos $pa) : Expr))
-  | _ => pure (.nonnegative (q(NNReal.coe_nonneg $a) : Expr))
+def evalNNRealtoReal : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(NNReal.toReal $a) =>
+    let ra ← core q(inferInstance) q(inferInstance) a
+    assertInstancesCommute
+    match ra with
+    | .positive pa => pure (.positive q(nnreal_coe_pos $pa))
+    | _ => pure (.nonnegative q(NNReal.coe_nonneg $a))
+  | _, _, _ => throwError "not NNReal.toReal"
 
 end Mathlib.Meta.Positivity

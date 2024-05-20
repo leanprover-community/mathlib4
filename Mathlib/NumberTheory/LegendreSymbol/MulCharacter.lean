@@ -260,10 +260,10 @@ the source has a zero and another element. -/
 @[coe, simps]
 def toMonoidWithZeroHom {R : Type*} [CommMonoidWithZero R] [Nontrivial R] (χ : MulChar R R') :
     R →*₀ R' where
-      toFun := χ.toFun
-      map_zero' := χ.map_zero
-      map_one' := χ.map_one'
-      map_mul' := χ.map_mul'
+  toFun := χ.toFun
+  map_zero' := χ.map_zero
+  map_one' := χ.map_one'
+  map_mul' := χ.map_mul'
 
 /-- If the domain is a ring `R`, then `χ (ringChar R) = 0`. -/
 theorem map_ringChar {R : Type u} [CommRing R] [Nontrivial R] (χ : MulChar R R') :
@@ -365,7 +365,7 @@ theorem inv_apply' {R : Type u} [Field R] (χ : MulChar R R') (a : R) : χ⁻¹ 
 #align mul_char.inv_apply' MulChar.inv_apply'
 
 /-- The product of a character with its inverse is the trivial character. -/
--- Porting note: @[simp] can prove this (later)
+-- Porting note (#10618): @[simp] can prove this (later)
 theorem inv_mul (χ : MulChar R R') : χ⁻¹ * χ = 1 := by
   ext x
   rw [coeToFun_mul, Pi.mul_apply, inv_apply_eq_inv]
@@ -419,7 +419,7 @@ end DefinitionAndGroup
 We introduce the properties of being nontrivial or quadratic and prove
 some basic facts about them.
 
-We now assume that domain and target are commutative rings.
+We now (mostly) assume that the target is a commutative ring.
 -/
 
 
@@ -429,7 +429,9 @@ namespace MulChar
 
 universe u v w
 
-variable {R : Type u} [CommRing R] {R' : Type v} [CommRing R'] {R'' : Type w} [CommRing R'']
+section nontrivial
+
+variable {R : Type u} [CommMonoid R] {R' : Type v} [CommMonoidWithZero R']
 
 /-- A multiplicative character is *nontrivial* if it takes a value `≠ 1` on a unit. -/
 def IsNontrivial (χ : MulChar R R') : Prop :=
@@ -438,8 +440,14 @@ def IsNontrivial (χ : MulChar R R') : Prop :=
 
 /-- A multiplicative character is nontrivial iff it is not the trivial character. -/
 theorem isNontrivial_iff (χ : MulChar R R') : χ.IsNontrivial ↔ χ ≠ 1 := by
-  simp only [IsNontrivial, Ne.def, ext_iff, not_forall, one_apply_coe]
+  simp only [IsNontrivial, Ne, ext_iff, not_forall, one_apply_coe]
 #align mul_char.is_nontrivial_iff MulChar.isNontrivial_iff
+
+end nontrivial
+
+section quadratic_and_comp
+
+variable {R : Type u} [CommMonoid R] {R' : Type v} [CommRing R'] {R'' : Type w} [CommRing R'']
 
 /-- A multiplicative character is *quadratic* if it takes only the values `0`, `1`, `-1`. -/
 def IsQuadratic (χ : MulChar R R') : Prop :=
@@ -522,27 +530,33 @@ theorem IsQuadratic.pow_odd {χ : MulChar R R'} (hχ : χ.IsQuadratic) {n : ℕ}
   rw [pow_add, pow_one, hχ.pow_even (even_two_mul _), one_mul]
 #align mul_char.is_quadratic.pow_odd MulChar.IsQuadratic.pow_odd
 
+end quadratic_and_comp
+
 open BigOperators
+
+section sum
+
+variable {R : Type u} [CommMonoid R] [Fintype R] {R' : Type v} [CommRing R']
 
 /-- The sum over all values of a nontrivial multiplicative character on a finite ring is zero
 (when the target is a domain). -/
-theorem IsNontrivial.sum_eq_zero [Fintype R] [IsDomain R'] {χ : MulChar R R'}
+theorem IsNontrivial.sum_eq_zero [IsDomain R'] {χ : MulChar R R'}
     (hχ : χ.IsNontrivial) : ∑ a, χ a = 0 := by
   rcases hχ with ⟨b, hb⟩
   refine' eq_zero_of_mul_eq_self_left hb _
   -- POrting note: `map_mul` isn't applied
   simp only [Finset.mul_sum, ← map_mul]
-  refine Fintype.sum_bijective _ (Units.mulLeft_bijective b) _ _ fun x => rfl
+  exact Fintype.sum_bijective _ (Units.mulLeft_bijective b) _ _ fun x => rfl
 #align mul_char.is_nontrivial.sum_eq_zero MulChar.IsNontrivial.sum_eq_zero
 
 /-- The sum over all values of the trivial multiplicative character on a finite ring is
 the cardinality of its unit group. -/
-theorem sum_one_eq_card_units [Fintype R] [DecidableEq R] :
+theorem sum_one_eq_card_units [DecidableEq R] :
     (∑ a, (1 : MulChar R R') a) = Fintype.card Rˣ := by
   calc
     (∑ a, (1 : MulChar R R') a) = ∑ a : R, if IsUnit a then 1 else 0 :=
       Finset.sum_congr rfl fun a _ => ?_
-    _ = ((Finset.univ : Finset R).filter IsUnit).card := Finset.sum_boole
+    _ = ((Finset.univ : Finset R).filter IsUnit).card := Finset.sum_boole _ _
     _ = (Finset.univ.map ⟨((↑) : Rˣ → R), Units.ext⟩).card := ?_
     _ = Fintype.card Rˣ := congr_arg _ (Finset.card_map _)
   · split_ifs with h
@@ -553,6 +567,8 @@ theorem sum_one_eq_card_units [Fintype R] [DecidableEq R] :
     simp only [Finset.mem_filter, Finset.mem_univ, true_and_iff, Finset.mem_map,
       Function.Embedding.coeFn_mk, exists_true_left, IsUnit]
 #align mul_char.sum_one_eq_card_units MulChar.sum_one_eq_card_units
+
+end sum
 
 end MulChar
 

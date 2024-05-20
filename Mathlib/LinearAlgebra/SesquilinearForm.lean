@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andreas Swerdlow
 -/
 import Mathlib.Algebra.Module.LinearMap.Basic
-import Mathlib.LinearAlgebra.BilinearMap
-import Mathlib.Algebra.EuclideanDomain.Instances
+import Mathlib.LinearAlgebra.Basic
 import Mathlib.LinearAlgebra.Basis
+import Mathlib.LinearAlgebra.BilinearMap
 
 #align_import linear_algebra.sesquilinear_form from "leanprover-community/mathlib"@"87c54600fe3cdc7d32ff5b50873ac724d86aef8d"
 
@@ -242,12 +242,16 @@ theorem domRestrict (H : B.IsSymm) (p : Submodule R M) : (B.domRestrict₁₂ p 
 
 end IsSymm
 
-theorem isSymm_iff_eq_flip {B : M →ₗ[R] M →ₗ[R] R} : B.IsSymm ↔ B = B.flip := by
+@[simp]
+theorem isSymm_zero : (0 : M →ₛₗ[I] M →ₗ[R] R).IsSymm := fun _ _ => map_zero _
+
+theorem isSymm_iff_eq_flip {B : LinearMap.BilinForm R M} : B.IsSymm ↔ B = B.flip := by
   constructor <;> intro h
   · ext
     rw [← h, flip_apply, RingHom.id_apply]
   intro x y
   conv_lhs => rw [h]
+  rfl
 #align linear_map.is_symm_iff_eq_flip LinearMap.isSymm_iff_eq_flip
 
 end Symmetric
@@ -257,7 +261,11 @@ end Symmetric
 
 section Alternating
 
-variable [CommRing R] [AddCommGroup M] [Module R M] [CommSemiring R₁] [AddCommMonoid M₁]
+section CommSemiring
+
+section AddCommMonoid
+
+variable [CommSemiring R] [AddCommMonoid M] [Module R M] [CommSemiring R₁] [AddCommMonoid M₁]
   [Module R₁ M₁] {I₁ : R₁ →+* R} {I₂ : R₁ →+* R} {I : R₁ →+* R} {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M}
 
 /-- The proposition that a sesquilinear map is alternating -/
@@ -265,13 +273,22 @@ def IsAlt (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M) : Prop :=
   ∀ x, B x x = 0
 #align linear_map.is_alt LinearMap.IsAlt
 
-namespace IsAlt
-
 variable (H : B.IsAlt)
 
-theorem self_eq_zero (x : M₁) : B x x = 0 :=
+theorem IsAlt.self_eq_zero (x : M₁) : B x x = 0 :=
   H x
 #align linear_map.is_alt.self_eq_zero LinearMap.IsAlt.self_eq_zero
+
+end AddCommMonoid
+
+section AddCommGroup
+
+namespace IsAlt
+
+variable [CommSemiring R] [AddCommGroup M] [Module R M] [CommSemiring R₁] [AddCommMonoid M₁]
+  [Module R₁ M₁] {I₁ : R₁ →+* R} {I₂ : R₁ →+* R} {I : R₁ →+* R} {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M}
+
+variable (H : B.IsAlt)
 
 theorem neg (x y : M₁) : -B x y = B y x := by
   have H1 : B (y + x) (y + x) = 0 := self_eq_zero H (y + x)
@@ -292,6 +309,15 @@ theorem ortho_comm {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
 
 end IsAlt
 
+end AddCommGroup
+
+end CommSemiring
+
+section Semiring
+
+variable [CommRing R] [AddCommGroup M] [Module R M] [CommSemiring R₁] [AddCommMonoid M₁]
+  [Module R₁ M₁] {I : R₁ →+* R}
+
 theorem isAlt_iff_eq_neg_flip [NoZeroDivisors R] [CharZero R] {B : M₁ →ₛₗ[I] M₁ →ₛₗ[I] R} :
     B.IsAlt ↔ B = -B.flip := by
   constructor <;> intro h
@@ -303,6 +329,8 @@ theorem isAlt_iff_eq_neg_flip [NoZeroDivisors R] [CharZero R] {B : M₁ →ₛ�
   simp only [neg_apply, flip_apply, ← add_eq_zero_iff_eq_neg] at h'
   exact add_self_eq_zero.mp h'
 #align linear_map.is_alt_iff_eq_neg_flip LinearMap.isAlt_iff_eq_neg_flip
+
+end Semiring
 
 end Alternating
 
@@ -322,8 +350,7 @@ Note that for general (neither symmetric nor antisymmetric) bilinear maps this d
 chirality; in addition to this "left" orthogonal complement one could define a "right" orthogonal
 complement for which, for all `y` in `N`, `B y x = 0`.  This variant definition is not currently
 provided in mathlib. -/
-def orthogonalBilin (N : Submodule R₁ M₁) (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M) : Submodule R₁ M₁
-    where
+def orthogonalBilin (N : Submodule R₁ M₁) (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M) : Submodule R₁ M₁ where
   carrier := { m | ∀ n ∈ N, B.IsOrtho n m }
   zero_mem' x _ := B.isOrtho_zero_right x
   add_mem' hx hy n hn := by
@@ -365,8 +392,7 @@ theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →�
   rcases mem_span_finset.1 h.1 with ⟨μ, rfl⟩
   replace h := h.2 x (by simp [Submodule.mem_span] : x ∈ Submodule.span K₁ ({x} : Finset V₁))
   rw [Finset.sum_singleton] at h ⊢
-  suffices hμzero : μ x = 0
-  · rw [hμzero, zero_smul, Submodule.mem_bot]
+  suffices hμzero : μ x = 0 by rw [hμzero, zero_smul, Submodule.mem_bot]
   rw [isOrtho_def, map_smulₛₗ] at h
   exact Or.elim (smul_eq_zero.mp h)
       (fun y ↦ by simpa using y)
@@ -411,21 +437,13 @@ section AdjointPair
 section AddCommMonoid
 
 variable [CommSemiring R]
-
 variable [AddCommMonoid M] [Module R M]
-
 variable [AddCommMonoid M₁] [Module R M₁]
-
 variable [AddCommMonoid M₂] [Module R M₂]
-
 variable [AddCommMonoid M₃] [Module R M₃]
-
 variable {I : R →+* R}
-
 variable {B F : M →ₗ[R] M →ₛₗ[I] M₃} {B' : M₁ →ₗ[R] M₁ →ₛₗ[I] M₃} {B'' : M₂ →ₗ[R] M₂ →ₛₗ[I] M₃}
-
 variable {f f' : M →ₗ[R] M₁} {g g' : M₁ →ₗ[R] M}
-
 variable (B B' f g)
 
 /-- Given a pair of modules equipped with bilinear maps, this is the condition for a pair of
@@ -471,15 +489,10 @@ end AddCommMonoid
 section AddCommGroup
 
 variable [CommRing R]
-
 variable [AddCommGroup M] [Module R M]
-
 variable [AddCommGroup M₁] [Module R M₁]
-
 variable [AddCommGroup M₂] [Module R M₂]
-
 variable {B F : M →ₗ[R] M →ₗ[R] M₂} {B' : M₁ →ₗ[R] M₁ →ₗ[R] M₂}
-
 variable {f f' : M →ₗ[R] M₁} {g g' : M₁ →ₗ[R] M}
 
 theorem IsAdjointPair.sub (h : IsAdjointPair B B' f g) (h' : IsAdjointPair B B' f' g') :
@@ -504,13 +517,9 @@ section SelfadjointPair
 section AddCommMonoid
 
 variable [CommSemiring R]
-
 variable [AddCommMonoid M] [Module R M]
-
 variable [AddCommMonoid M₁] [Module R M₁]
-
 variable {I : R →+* R}
-
 variable (B F : M →ₗ[R] M →ₛₗ[I] M₁)
 
 /-- The condition for an endomorphism to be "self-adjoint" with respect to a pair of bilinear maps
@@ -532,9 +541,7 @@ end AddCommMonoid
 section AddCommGroup
 
 variable [CommRing R]
-
 variable [AddCommGroup M] [Module R M] [AddCommGroup M₁] [Module R M₁]
-
 variable [AddCommGroup M₂] [Module R M₂] (B F : M →ₗ[R] M →ₗ[R] M₂)
 
 /-- The set of pair-self-adjoint endomorphisms are a submodule of the type of all endomorphisms. -/
@@ -625,7 +632,7 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M] [CommSemiring R₁] [Ad
 
 /-- A bilinear map is called left-separating if
 the only element that is left-orthogonal to every other element is `0`; i.e.,
-for every nonzero `x` in `M₁`, there exists `y` in `M₂` with `B x y ≠ 0`.-/
+for every nonzero `x` in `M₁`, there exists `y` in `M₂` with `B x y ≠ 0`. -/
 def SeparatingLeft (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) : Prop :=
   ∀ x : M₁, (∀ y : M₂, B x y = 0) → x = 0
 #align linear_map.separating_left LinearMap.SeparatingLeft
@@ -647,10 +654,8 @@ theorem SeparatingLeft.ne_zero [Nontrivial M₁] {B : M₁ →ₛₗ[I₁] M₂ 
 section Linear
 
 variable [AddCommMonoid Mₗ₁] [AddCommMonoid Mₗ₂] [AddCommMonoid Mₗ₁'] [AddCommMonoid Mₗ₂']
-  [AddCommMonoid M]
 
-variable [Module R Mₗ₁] [Module R Mₗ₂] [Module R Mₗ₁'] [Module R Mₗ₂'] [Module R M]
-
+variable [Module R Mₗ₁] [Module R Mₗ₂] [Module R Mₗ₁'] [Module R Mₗ₂']
 variable {B : Mₗ₁ →ₗ[R] Mₗ₂ →ₗ[R] M} (e₁ : Mₗ₁ ≃ₗ[R] Mₗ₁') (e₂ : Mₗ₂ ≃ₗ[R] Mₗ₂')
 
 theorem SeparatingLeft.congr (h : B.SeparatingLeft) :
@@ -678,7 +683,7 @@ end Linear
 
 /-- A bilinear map is called right-separating if
 the only element that is right-orthogonal to every other element is `0`; i.e.,
-for every nonzero `y` in `M₂`, there exists `x` in `M₁` with `B x y ≠ 0`.-/
+for every nonzero `y` in `M₂`, there exists `x` in `M₁` with `B x y ≠ 0`. -/
 def SeparatingRight (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) : Prop :=
   ∀ y : M₂, (∀ x : M₁, B x y = 0) → y = 0
 #align linear_map.separating_right LinearMap.SeparatingRight
@@ -780,8 +785,7 @@ theorem IsOrthoᵢ.not_isOrtho_basis_self_of_separatingLeft [Nontrivial R]
   apply Finset.sum_eq_zero
   rintro j -
   rw [map_smulₛₗ]
-  suffices : B (v i) (v j) = 0
-  · rw [this, smul_zero]
+  suffices B (v i) (v j) = 0 by rw [this, smul_zero]
   obtain rfl | hij := eq_or_ne i j
   · exact ho
   · exact h hij

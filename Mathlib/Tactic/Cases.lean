@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Lean.Elab.Tactic.Induction
-import Std.Tactic.OpenPrivate
-import Std.Data.List.Basic
+import Batteries.Tactic.OpenPrivate
+import Batteries.Data.List.Basic
 import Mathlib.Lean.Expr.Basic
 
 /-!
@@ -38,7 +38,12 @@ Prefer `cases` or `rcases` when possible, because these tactics promote structur
 namespace Mathlib.Tactic
 open Lean Meta Elab Elab.Tactic
 
-open private getAltNumFields in evalCases ElimApp.evalAlts.go in
+private def getAltNumFields (elimInfo : ElimInfo) (altName : Name) : TermElabM Nat := do
+  for altInfo in elimInfo.altsInfo do
+    if altInfo.name == altName then
+      return altInfo.numFields
+  throwError "unknown alternative name '{altName}'"
+
 def ElimApp.evalNames (elimInfo : ElimInfo) (alts : Array ElimApp.Alt) (withArg : Syntax)
     (numEqs := 0) (generalized : Array FVarId := #[]) (toClear : Array FVarId := #[])
     (toTag : Array (Ident × FVarId) := #[]) :

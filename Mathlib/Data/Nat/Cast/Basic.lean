@@ -7,7 +7,7 @@ import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.TypeTags
 import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Data.Nat.Basic
+import Mathlib.Algebra.Ring.Nat
 
 #align_import data.nat.cast.basic from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
 
@@ -63,13 +63,15 @@ def castRingHom : ℕ →+* α :=
 #align nat.coe_cast_ring_hom Nat.coe_castRingHom
 
 lemma _root_.nsmul_eq_mul' (a : α) (n : ℕ) : n • a = a * n := by
-  induction' n with n ih <;> [rw [zero_nsmul, Nat.cast_zero, mul_zero];
-    rw [succ_nsmul', ih, Nat.cast_succ, mul_add, mul_one]]
+  induction n with
+  | zero => rw [zero_nsmul, Nat.cast_zero, mul_zero]
+  | succ n ih => rw [succ_nsmul, ih, Nat.cast_succ, mul_add, mul_one]
 #align nsmul_eq_mul' nsmul_eq_mul'
 
 @[simp] lemma _root_.nsmul_eq_mul (n : ℕ) (a : α) : n • a = n * a := by
-  induction' n with n ih <;> [rw [zero_nsmul, Nat.cast_zero, zero_mul];
-    rw [succ_nsmul', ih, Nat.cast_succ, add_mul, one_mul]]
+  induction n with
+  | zero => rw [zero_nsmul, Nat.cast_zero, zero_mul]
+  | succ n ih => rw [succ_nsmul, ih, Nat.cast_succ, add_mul, one_mul]
 #align nsmul_eq_mul nsmul_eq_mul
 
 end NonAssocSemiring
@@ -83,10 +85,10 @@ lemma cast_pow (m : ℕ) : ∀ n : ℕ, ↑(m ^ n) = (m ^ n : α)
   | n + 1 => by rw [_root_.pow_succ', _root_.pow_succ', cast_mul, cast_pow m n]
 #align nat.cast_pow Nat.cast_pow
 
-lemma coe_nat_dvd (h : m ∣ n) : (m : α) ∣ (n : α) := map_dvd (Nat.castRingHom α) h
-#align nat.coe_nat_dvd Nat.coe_nat_dvd
+lemma cast_dvd_cast (h : m ∣ n) : (m : α) ∣ (n : α) := map_dvd (Nat.castRingHom α) h
+#align nat.coe_nat_dvd Nat.cast_dvd_cast
 
-alias _root_.Dvd.dvd.natCast := coe_nat_dvd
+alias _root_.Dvd.dvd.natCast := cast_dvd_cast
 
 end Semiring
 end Nat
@@ -99,9 +101,9 @@ theorem ext_nat' [AddMonoid A] [AddMonoidHomClass F ℕ A] (f g : F) (h : f 1 = 
   DFunLike.ext f g <| by
     intro n
     induction n with
-    | zero => simp_rw [Nat.zero_eq, map_zero f, map_zero g]
+    | zero => simp_rw [map_zero f, map_zero g]
     | succ n ihn =>
-      simp [Nat.succ_eq_add_one, h, ihn]
+      simp [h, ihn]
 #align ext_nat' ext_nat'
 
 @[ext]
@@ -125,12 +127,16 @@ theorem map_natCast' {A} [AddMonoidWithOne A] [FunLike F A B] [AddMonoidHomClass
     rw [Nat.cast_add, map_add, Nat.cast_add, map_natCast' f h n, Nat.cast_one, h, Nat.cast_one]
 #align map_nat_cast' map_natCast'
 
+theorem map_ofNat' {A} [AddMonoidWithOne A] [FunLike F A B] [AddMonoidHomClass F A B]
+    (f : F) (h : f 1 = 1) (n : ℕ) [n.AtLeastTwo] : f (OfNat.ofNat n) = OfNat.ofNat n :=
+  map_natCast' f h n
+
 @[simp] lemma nsmul_one {A} [AddMonoidWithOne A] : ∀ n : ℕ, n • (1 : A) = n := by
   let f : ℕ →+ A :=
   { toFun := fun n ↦ n • (1 : A)
     map_zero' := zero_nsmul _
     map_add' := add_nsmul _ }
-  exact eq_natCast' f $ by simp
+  exact eq_natCast' f $ by simp [f]
 #align nsmul_one nsmul_one
 
 end AddMonoidHomClass
@@ -169,7 +175,7 @@ theorem map_natCast [FunLike F R S] [RingHomClass F R S] (f : F) : ∀ n : ℕ, 
   map_natCast' f <| map_one f
 #align map_nat_cast map_natCast
 
---Porting note: new theorem
+-- Porting note (#10756): new theorem
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem map_ofNat [FunLike F R S] [RingHomClass F R S] (f : F) (n : ℕ) [Nat.AtLeastTwo n] :
@@ -229,7 +235,7 @@ def multiplesHom : α ≃ (ℕ →+ α) where
 
 /-- Monoid homomorphisms from `Multiplicative ℕ` are defined by the image
 of `Multiplicative.ofAdd 1`. -/
-@[to_additive existing multiplesHom]
+@[to_additive existing]
 def powersHom : α ≃ (Multiplicative ℕ →* α) :=
   Additive.ofMul.trans <| (multiplesHom _).trans <| AddMonoidHom.toMultiplicative''
 
@@ -240,7 +246,7 @@ variable {α}
 lemma multiplesHom_apply (x : α) (n : ℕ) : multiplesHom α x n = n • x := rfl
 #align multiples_hom_apply multiplesHom_apply
 
-@[to_additive existing (attr := simp) multiplesHom_apply]
+@[to_additive existing (attr := simp)]
 lemma powersHom_apply (x : α) (n : Multiplicative ℕ) :
     powersHom α x n = x ^ Multiplicative.toAdd n := rfl
 #align powers_hom_apply powersHom_apply
@@ -248,7 +254,7 @@ lemma powersHom_apply (x : α) (n : Multiplicative ℕ) :
 lemma multiplesHom_symm_apply (f : ℕ →+ α) : (multiplesHom α).symm f = f 1 := rfl
 #align multiples_hom_symm_apply multiplesHom_symm_apply
 
-@[to_additive existing (attr := simp) multiplesHom_symm_apply]
+@[to_additive existing (attr := simp)]
 lemma powersHom_symm_apply (f : Multiplicative ℕ →* α) :
     (powersHom α).symm f = f (Multiplicative.ofAdd 1) := rfl
 #align powers_hom_symm_apply powersHom_symm_apply
@@ -305,16 +311,20 @@ variable {π : α → Type*} [∀ a, NatCast (π a)]
 
 /- Porting note: manually wrote this instance.
 Was `by refine_struct { .. } <;> pi_instance_derive_field` -/
-instance natCast : NatCast (∀ a, π a) := { natCast := fun n _ ↦ n }
+instance instNatCast : NatCast (∀ a, π a) where natCast n _ := n
 
-theorem nat_apply (n : ℕ) (a : α) : (n : ∀ a, π a) a = n :=
+theorem natCast_apply (n : ℕ) (a : α) : (n : ∀ a, π a) a = n :=
   rfl
-#align pi.nat_apply Pi.nat_apply
+#align pi.nat_apply Pi.natCast_apply
 
 @[simp]
-theorem coe_nat (n : ℕ) : (n : ∀ a, π a) = fun _ ↦ ↑n :=
+theorem natCast_def (n : ℕ) : (n : ∀ a, π a) = fun _ ↦ ↑n :=
   rfl
-#align pi.coe_nat Pi.coe_nat
+#align pi.coe_nat Pi.natCast_def
+
+-- 2024-04-05
+@[deprecated] alias nat_apply := natCast_apply
+@[deprecated] alias coe_nat := natCast_def
 
 @[simp]
 theorem ofNat_apply (n : ℕ) [n.AtLeastTwo] (a : α) : (OfNat.ofNat n : ∀ a, π a) a = n := rfl

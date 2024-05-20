@@ -98,7 +98,7 @@ theorem const_smul [SMul 𝕜 β] [ContinuousConstSMul 𝕜 β] (c : 𝕜) (hf :
   exact EventuallyEq.fun_comp hff' fun x => c • x
 #align measure_theory.ae_strongly_measurable'.const_smul MeasureTheory.AEStronglyMeasurable'.const_smul
 
-theorem const_inner {𝕜 β} [IsROrC 𝕜] [NormedAddCommGroup β] [InnerProductSpace 𝕜 β] {f : α → β}
+theorem const_inner {𝕜 β} [RCLike 𝕜] [NormedAddCommGroup β] [InnerProductSpace 𝕜 β] {f : α → β}
     (hfm : AEStronglyMeasurable' m f μ) (c : β) :
     AEStronglyMeasurable' m (fun x => (inner c (f x) : 𝕜)) μ := by
   rcases hfm with ⟨f', hf'_meas, hf_ae⟩
@@ -178,8 +178,8 @@ theorem AEStronglyMeasurable'.aeStronglyMeasurable'_of_measurableSpace_le_on {α
     by_cases hxs : x ∈ s
     · simp [hxs, hx]
     · simp [hxs]
-  suffices : StronglyMeasurable[m₂] (s.indicator (hf.mk f))
-  exact AEStronglyMeasurable'.congr this.aeStronglyMeasurable' h_ind_eq
+  suffices StronglyMeasurable[m₂] (s.indicator (hf.mk f)) from
+    AEStronglyMeasurable'.congr this.aeStronglyMeasurable' h_ind_eq
   have hf_ind : StronglyMeasurable[m] (s.indicator (hf.mk f)) :=
     hf.stronglyMeasurable_mk.indicator hs_m
   exact
@@ -187,7 +187,7 @@ theorem AEStronglyMeasurable'.aeStronglyMeasurable'_of_measurableSpace_le_on {α
       Set.indicator_of_not_mem hxs _
 #align measure_theory.ae_strongly_measurable'.ae_strongly_measurable'_of_measurable_space_le_on MeasureTheory.AEStronglyMeasurable'.aeStronglyMeasurable'_of_measurableSpace_le_on
 
-variable {α E' F F' 𝕜 : Type*} {p : ℝ≥0∞} [IsROrC 𝕜]
+variable {α E' F F' 𝕜 : Type*} {p : ℝ≥0∞} [RCLike 𝕜]
   -- 𝕜 for ℝ or ℂ
   -- E' for an inner product space on which we compute integrals
   [NormedAddCommGroup E']
@@ -406,7 +406,7 @@ theorem lpMeasSubgroupToLpTrim_add (hm : m ≤ m0) (f g : lpMeasSubgroup F m p �
         (lpMeasSubgroupToLpTrim_ae_eq hm g).symm)
   refine' (Lp.coeFn_add _ _).trans _
   simp_rw [lpMeasSubgroup_coe]
-  exact eventually_of_forall fun x => by rfl
+  filter_upwards with x using rfl
 #align measure_theory.Lp_meas_subgroup_to_Lp_trim_add MeasureTheory.lpMeasSubgroupToLpTrim_add
 
 theorem lpMeasSubgroupToLpTrim_neg (hm : m ≤ m0) (f : lpMeasSubgroup F m p μ) :
@@ -438,7 +438,7 @@ theorem lpMeasToLpTrim_smul (hm : m ≤ m0) (c : 𝕜) (f : lpMeas F 𝕜 m p μ
   refine' (lpMeasToLpTrim_ae_eq hm _).trans _
   refine' (Lp.coeFn_smul _ _).trans _
   refine' (lpMeasToLpTrim_ae_eq hm f).mono fun x hx => _
-  rw [Pi.smul_apply, Pi.smul_apply, hx]
+  simp only [Pi.smul_apply, hx]
 #align measure_theory.Lp_meas_to_Lp_trim_smul MeasureTheory.lpMeasToLpTrim_smul
 
 /-- `lpMeasSubgroupToLpTrim` preserves the norm. -/
@@ -495,7 +495,7 @@ instance [hm : Fact (m ≤ m0)] [CompleteSpace F] [hp : Fact (1 ≤ p)] :
   rw [(lpMeasSubgroupToLpTrimIso F p μ hm.elim).completeSpace_iff]; infer_instance
 
 -- For now just no-lint this; lean4's tree-based logging will make this easier to debug.
--- One possible change might be to generalize `𝕜` from `IsROrC` to `NormedField`, as this
+-- One possible change might be to generalize `𝕜` from `RCLike` to `NormedField`, as this
 -- result may well hold there.
 -- Porting note: removed @[nolint fails_quickly]
 instance [hm : Fact (m ≤ m0)] [CompleteSpace F] [hp : Fact (1 ≤ p)] :
@@ -580,7 +580,7 @@ theorem Lp.induction_stronglyMeasurable_aux (hm : m ≤ m0) (hp_ne_top : p ≠ �
   let f' := (⟨f, hf⟩ : lpMeas F ℝ m p μ)
   let g := lpMeasToLpTrimLie F ℝ p μ hm f'
   have hfg : f' = (lpMeasToLpTrimLie F ℝ p μ hm).symm g := by
-    simp only [LinearIsometryEquiv.symm_apply_apply]
+    simp only [f', g, LinearIsometryEquiv.symm_apply_apply]
   change P ↑f'
   rw [hfg]
   refine'
@@ -633,10 +633,10 @@ theorem Lp.induction_stronglyMeasurable (hm : m ≤ m0) (hp_ne_top : p ≠ ∞) 
   suffices h_add_ae :
     ∀ ⦃f g⦄, ∀ hf : Memℒp f p μ, ∀ hg : Memℒp g p μ, AEStronglyMeasurable' m f μ →
       AEStronglyMeasurable' m g μ → Disjoint (Function.support f) (Function.support g) →
-        P (hf.toLp f) → P (hg.toLp g) → P (hf.toLp f + hg.toLp g)
+        P (hf.toLp f) → P (hg.toLp g) → P (hf.toLp f + hg.toLp g) from
   -- Porting note: `P` should be an explicit argument to `Lp.induction_stronglyMeasurable_aux`, but
   -- it isn't?
-  exact Lp.induction_stronglyMeasurable_aux hm hp_ne_top h_ind h_add_ae h_closed f hf
+    Lp.induction_stronglyMeasurable_aux hm hp_ne_top h_ind h_add_ae h_closed f hf
   intro f g hf hg hfm hgm h_disj hPf hPg
   let s_f : Set α := Function.support (hfm.mk f)
   have hs_f : MeasurableSet[m] s_f := hfm.stronglyMeasurable_mk.measurableSet_support

@@ -30,7 +30,7 @@ variable {𝕜 E F β : Type*}
 
 open LinearMap Set
 
-open BigOperators Classical Convex Pointwise
+open scoped BigOperators Convex Pointwise
 
 /-! ### Convexity of sets -/
 
@@ -101,7 +101,7 @@ theorem convex_sInter {S : Set (Set E)} (h : ∀ s ∈ S, Convex 𝕜 s) : Conve
 
 theorem convex_iInter {ι : Sort*} {s : ι → Set E} (h : ∀ i, Convex 𝕜 (s i)) :
     Convex 𝕜 (⋂ i, s i) :=
-  sInter_range s ▸ convex_sInter <| forall_range_iff.2 h
+  sInter_range s ▸ convex_sInter <| forall_mem_range.2 h
 #align convex_Inter convex_iInter
 
 theorem convex_iInter₂ {ι : Sort*} {κ : ι → Sort*} {s : ∀ i, κ i → Set E}
@@ -187,10 +187,8 @@ theorem convex_segment (x y : E) : Convex 𝕜 [x -[𝕜] y] := by
 #align convex_segment convex_segment
 
 theorem Convex.linear_image (hs : Convex 𝕜 s) (f : E →ₗ[𝕜] F) : Convex 𝕜 (f '' s) := by
-  intro x hx y hy a b ha hb hab
-  obtain ⟨x', hx', rfl⟩ := mem_image_iff_bex.1 hx
-  obtain ⟨y', hy', rfl⟩ := mem_image_iff_bex.1 hy
-  exact ⟨a • x' + b • y', hs hx' hy' ha hb hab, by rw [f.map_add, f.map_smul, f.map_smul]⟩
+  rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ a b ha hb hab
+  exact ⟨a • x + b • y, hs hx hy ha hb hab, by rw [f.map_add, f.map_smul, f.map_smul]⟩
 #align convex.linear_image Convex.linear_image
 
 theorem Convex.is_linear_image (hs : Convex 𝕜 s) {f : E → F} (hf : IsLinearMap 𝕜 f) :
@@ -599,7 +597,7 @@ theorem Convex.exists_mem_add_smul_eq (h : Convex 𝕜 s) {x y : E} {p q : 𝕜}
     simp
   · replace hpq : 0 < p + q := (add_nonneg hp hq).lt_of_ne' (mt (add_eq_zero_iff' hp hq).1 hpq)
     refine ⟨_, convex_iff_div.1 h hx hy hp hq hpq, ?_⟩
-    simp only [smul_add, smul_smul, mul_div_cancel' _ hpq.ne']
+    simp only [smul_add, smul_smul, mul_div_cancel₀ _ hpq.ne']
 
 theorem Convex.add_smul (h_conv : Convex 𝕜 s) {p q : 𝕜} (hp : 0 ≤ p) (hq : 0 ≤ q) :
     (p + q) • s = p • s + q • s := (add_smul_subset _ _ _).antisymm <| by
@@ -665,6 +663,8 @@ end Submodule
 
 section Simplex
 
+section OrderedSemiring
+
 variable (𝕜) (ι : Type*) [OrderedSemiring 𝕜] [Fintype ι]
 
 /-- The standard simplex in the space of functions `ι → 𝕜` is the set of vectors with non-negative
@@ -688,11 +688,65 @@ theorem convex_stdSimplex : Convex 𝕜 (stdSimplex 𝕜 ι) := by
     exact hab
 #align convex_std_simplex convex_stdSimplex
 
-variable {ι}
+@[nontriviality] lemma stdSimplex_of_subsingleton [Subsingleton 𝕜] : stdSimplex 𝕜 ι = univ :=
+  eq_univ_of_forall fun _ ↦ ⟨fun _ ↦ (Subsingleton.elim _ _).le, Subsingleton.elim _ _⟩
 
-theorem ite_eq_mem_stdSimplex (i : ι) : (fun j => ite (i = j) (1 : 𝕜) 0) ∈ stdSimplex 𝕜 ι :=
-  ⟨fun j => by simp only; split_ifs <;> norm_num, by
-    rw [Finset.sum_ite_eq, if_pos (Finset.mem_univ _)]⟩
+/-- The standard simplex in the zero-dimensional space is empty. -/
+lemma stdSimplex_of_isEmpty_index [IsEmpty ι] [Nontrivial 𝕜] : stdSimplex 𝕜 ι = ∅ :=
+  eq_empty_of_forall_not_mem <| by rintro f ⟨-, hf⟩; simp at hf
+
+lemma stdSimplex_unique [Unique ι] : stdSimplex 𝕜 ι = {fun _ ↦ 1} := by
+  refine eq_singleton_iff_unique_mem.2 ⟨⟨fun _ ↦ zero_le_one, Fintype.sum_unique _⟩, ?_⟩
+  rintro f ⟨-, hf⟩
+  rw [Fintype.sum_unique] at hf
+  exact funext (Unique.forall_iff.2 hf)
+
+variable {ι} [DecidableEq ι]
+
+theorem single_mem_stdSimplex (i : ι) : Pi.single i 1 ∈ stdSimplex 𝕜 ι :=
+  ⟨le_update_iff.2 ⟨zero_le_one, fun _ _ ↦ le_rfl⟩, by simp⟩
+
+theorem ite_eq_mem_stdSimplex (i : ι) : (if i = · then (1 : 𝕜) else 0) ∈ stdSimplex 𝕜 ι := by
+  simpa only [@eq_comm _ i, ← Pi.single_apply] using single_mem_stdSimplex 𝕜 i
 #align ite_eq_mem_std_simplex ite_eq_mem_stdSimplex
+
+-- Adaptation note: as of `nightly-2024-03-11`, we need a type annotation on the segment in the
+-- following two lemmas.
+
+/-- The edges are contained in the simplex. -/
+lemma segment_single_subset_stdSimplex (i j : ι) :
+    ([Pi.single i 1 -[𝕜] Pi.single j 1] : Set (ι → 𝕜)) ⊆ stdSimplex 𝕜 ι :=
+  (convex_stdSimplex 𝕜 ι).segment_subset (single_mem_stdSimplex _ _) (single_mem_stdSimplex _ _)
+
+lemma stdSimplex_fin_two :
+    stdSimplex 𝕜 (Fin 2) = ([Pi.single 0 1 -[𝕜] Pi.single 1 1] : Set (Fin 2 → 𝕜)) := by
+  refine Subset.antisymm ?_ (segment_single_subset_stdSimplex 𝕜 (0 : Fin 2) 1)
+  rintro f ⟨hf₀, hf₁⟩
+  rw [Fin.sum_univ_two] at hf₁
+  refine ⟨f 0, f 1, hf₀ 0, hf₀ 1, hf₁, funext <| Fin.forall_fin_two.2 ?_⟩
+  simp
+
+end OrderedSemiring
+
+section OrderedRing
+
+variable (𝕜) [OrderedRing 𝕜]
+
+/-- The standard one-dimensional simplex in `Fin 2 → 𝕜` is equivalent to the unit interval. -/
+@[simps (config := .asFn)]
+def stdSimplexEquivIcc : stdSimplex 𝕜 (Fin 2) ≃ Icc (0 : 𝕜) 1 where
+  toFun f := ⟨f.1 0, f.2.1 _, f.2.2 ▸
+    Finset.single_le_sum (fun i _ ↦ f.2.1 i) (Finset.mem_univ _)⟩
+  invFun x := ⟨![x, 1 - x], Fin.forall_fin_two.2 ⟨x.2.1, sub_nonneg.2 x.2.2⟩,
+    calc
+      ∑ i : Fin 2, ![(x : 𝕜), 1 - x] i = x + (1 - x) := Fin.sum_univ_two _
+      _ = 1 := add_sub_cancel _ _⟩
+  left_inv f := Subtype.eq <| funext <| Fin.forall_fin_two.2 <| .intro rfl <|
+      calc
+        (1 : 𝕜) - f.1 0 = f.1 0 + f.1 1 - f.1 0 := by rw [← Fin.sum_univ_two f.1, f.2.2]
+        _ = f.1 1 := add_sub_cancel_left _ _
+  right_inv x := Subtype.eq rfl
+
+end OrderedRing
 
 end Simplex

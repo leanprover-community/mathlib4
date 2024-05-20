@@ -64,7 +64,7 @@ example {x y z : ℕ} : true := by
   trivial
 
 example {x y z : ℕ} : true := by
-  suffices _this : x + y ≤ z + y; trivial
+  suffices _this : x + y ≤ z + y by trivial
   mono
   guard_target = x ≤ z
   exact test_sorry

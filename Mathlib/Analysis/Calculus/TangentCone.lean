@@ -73,11 +73,8 @@ def UniqueDiffOn (s : Set E) : Prop :=
 end TangentCone
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
 variable {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
-
 variable {𝕜} {x y : E} {s t : Set E}
 
 section TangentCone
@@ -115,7 +112,7 @@ theorem tangentConeAt.lim_zero {α : Type*} (l : Filter α) {c : α → 𝕜} {d
   have : ∀ᶠ n in l, ‖c n‖⁻¹ * ‖c n • d n‖ = ‖d n‖ := by
     refine (eventually_ne_of_tendsto_norm_atTop hc 0).mono fun n hn => ?_
     rw [norm_smul, ← mul_assoc, inv_mul_cancel, one_mul]
-    rwa [Ne.def, norm_eq_zero]
+    rwa [Ne, norm_eq_zero]
   have D : Tendsto (fun n => ‖d n‖) l (𝓝 0) := Tendsto.congr' this C
   rw [tendsto_zero_iff_norm_tendsto_zero]
   exact D
@@ -125,8 +122,8 @@ theorem tangentCone_mono_nhds (h : 𝓝[s] x ≤ 𝓝[t] x) :
     tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := by
   rintro y ⟨c, d, ds, ctop, clim⟩
   refine' ⟨c, d, _, ctop, clim⟩
-  suffices : Tendsto (fun n => x + d n) atTop (𝓝[t] x)
-  exact tendsto_principal.1 (tendsto_inf.1 this).2
+  suffices Tendsto (fun n => x + d n) atTop (𝓝[t] x) from
+    tendsto_principal.1 (tendsto_inf.1 this).2
   refine' (tendsto_inf.2 ⟨_, tendsto_principal.2 ds⟩).mono_right h
   simpa only [add_zero] using tendsto_const_nhds.add (tangentConeAt.lim_zero atTop ctop clim)
 #align tangent_cone_mono_nhds tangentCone_mono_nhds
@@ -153,8 +150,8 @@ theorem subset_tangentCone_prod_left {t : Set F} {y : F} (ht : y ∈ closure t) 
     exact ⟨z - y, by simpa using hzt, by simpa using hz⟩
   choose d' hd' using this
   refine' ⟨c, fun n => (d n, d' n), _, hc, _⟩
-  show ∀ᶠ n in atTop, (x, y) + (d n, d' n) ∈ s ×ˢ t
-  · filter_upwards [hd] with n hn
+  · show ∀ᶠ n in atTop, (x, y) + (d n, d' n) ∈ s ×ˢ t
+    filter_upwards [hd] with n hn
     simp [hn, (hd' n).1]
   · apply Tendsto.prod_mk_nhds hy _
     refine' squeeze_zero_norm (fun n => (hd' n).2.le) _
@@ -173,8 +170,8 @@ theorem subset_tangentCone_prod_right {t : Set F} {y : F} (hs : x ∈ closure s)
     exact ⟨z - x, by simpa using hzs, by simpa using hz⟩
   choose d' hd' using this
   refine' ⟨c, fun n => (d' n, d n), _, hc, _⟩
-  show ∀ᶠ n in atTop, (x, y) + (d' n, d n) ∈ s ×ˢ t
-  · filter_upwards [hd] with n hn
+  · show ∀ᶠ n in atTop, (x, y) + (d' n, d n) ∈ s ×ˢ t
+    filter_upwards [hd] with n hn
     simp [hn, (hd' n).1]
   · apply Tendsto.prod_mk_nhds _ hy
     refine' squeeze_zero_norm (fun n => (hd' n).2.le) _

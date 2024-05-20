@@ -32,9 +32,11 @@ giry monad
 
 noncomputable section
 
-open Classical BigOperators ENNReal
+open scoped Classical
+open BigOperators ENNReal
 
-open Classical Set Filter
+open scoped Classical
+open Set Filter
 
 variable {α β : Type*}
 
@@ -191,6 +193,7 @@ theorem bind_bind {γ} [MeasurableSpace γ] {m : Measure α} {f : α → Measure
   erw [bind_apply hs hg, bind_apply hs ((measurable_bind' hg).comp hf),
     lintegral_bind hf ((measurable_coe hs).comp hg)]
   conv_rhs => enter [2, a]; erw [bind_apply hs hg]
+  rfl
 #align measure_theory.measure.bind_bind MeasureTheory.Measure.bind_bind
 
 theorem bind_dirac {f : α → Measure β} (hf : Measurable f) (a : α) : bind (dirac a) f = f a := by

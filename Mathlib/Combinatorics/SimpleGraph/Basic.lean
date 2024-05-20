@@ -25,9 +25,6 @@ This module defines simple graphs on a vertex type `V` as an irreflexive symmetr
 
 * `SimpleGraph.incidenceSet` is the `Set` of edges containing a given vertex
 
-* `SimpleGraph.Dart` is an ordered pair of adjacent vertices, thought of as being an
-  orientated edge. These are also known as "half-edges" or "bonds."
-
 * `CompleteAtomicBooleanAlgebra` instance: Under the subgraph relation, `SimpleGraph` forms a
   `CompleteAtomicBooleanAlgebra`. In other words, this is the complete lattice of spanning subgraphs
   of the complete graph.
@@ -41,13 +38,13 @@ This module defines simple graphs on a vertex type `V` as an irreflexive symmetr
   look like.
 -/
 
--- porting note: using `aesop` for automation
+-- Porting note: using `aesop` for automation
 
--- porting note: These attributes are needed to use `aesop` as a replacement for `obviously`
-attribute [aesop norm unfold (rule_sets [SimpleGraph])] Symmetric
-attribute [aesop norm unfold (rule_sets [SimpleGraph])] Irreflexive
+-- Porting note: These attributes are needed to use `aesop` as a replacement for `obviously`
+attribute [aesop norm unfold (rule_sets := [SimpleGraph])] Symmetric
+attribute [aesop norm unfold (rule_sets := [SimpleGraph])] Irreflexive
 
--- porting note: a thin wrapper around `aesop` for graph lemmas, modelled on `aesop_cat`
+-- Porting note: a thin wrapper around `aesop` for graph lemmas, modelled on `aesop_cat`
 /--
 A variant of the `aesop` tactic for use in the graph library. Changes relative
 to standard `aesop`:
@@ -61,7 +58,7 @@ macro (name := aesop_graph) "aesop_graph" c:Aesop.tactic_clause* : tactic =>
   `(tactic|
     aesop $c*
       (config := { introsTransparency? := some .default, terminal := true })
-      (rule_sets [$(Lean.mkIdent `SimpleGraph):ident]))
+      (rule_sets := [$(Lean.mkIdent `SimpleGraph):ident]))
 
 /--
 Use `aesop_graph?` to pass along a `Try this` suggestion when using `aesop_graph`
@@ -70,7 +67,7 @@ macro (name := aesop_graph?) "aesop_graph?" c:Aesop.tactic_clause* : tactic =>
   `(tactic|
     aesop $c*
       (config := { introsTransparency? := some .default, terminal := true })
-      (rule_sets [$(Lean.mkIdent `SimpleGraph):ident]))
+      (rule_sets := [$(Lean.mkIdent `SimpleGraph):ident]))
 
 /--
 A variant of `aesop_graph` which does not fail if it is unable to solve the
@@ -81,7 +78,7 @@ macro (name := aesop_graph_nonterminal) "aesop_graph_nonterminal" c:Aesop.tactic
   `(tactic|
     aesop $c*
       (config := { introsTransparency? := some .default, warnOnNonterminal := false })
-      (rule_sets [$(Lean.mkIdent `SimpleGraph):ident]))
+      (rule_sets := [$(Lean.mkIdent `SimpleGraph):ident]))
 
 open Finset Function
 
@@ -92,14 +89,14 @@ The relation describes which pairs of vertices are adjacent.
 There is exactly one edge for every pair of adjacent vertices;
 see `SimpleGraph.edgeSet` for the corresponding edge set.
 -/
-@[ext, aesop safe constructors (rule_sets [SimpleGraph])]
+@[ext, aesop safe constructors (rule_sets := [SimpleGraph])]
 structure SimpleGraph (V : Type u) where
   /-- The adjacency relation of a simple graph. -/
   Adj : V → V → Prop
   symm : Symmetric Adj := by aesop_graph
   loopless : Irreflexive Adj := by aesop_graph
 #align simple_graph SimpleGraph
--- porting note: changed `obviously` to `aesop` in the `structure`
+-- Porting note: changed `obviously` to `aesop` in the `structure`
 
 initialize_simps_projections SimpleGraph (Adj → adj)
 
@@ -131,8 +128,7 @@ instance {V : Type u} [Fintype V] [DecidableEq V] : Fintype (SimpleGraph V) wher
 
 /-- Construct the simple graph induced by the given relation. It
 symmetrizes the relation and makes it irreflexive. -/
-def SimpleGraph.fromRel {V : Type u} (r : V → V → Prop) : SimpleGraph V
-    where
+def SimpleGraph.fromRel {V : Type u} (r : V → V → Prop) : SimpleGraph V where
   Adj a b := a ≠ b ∧ (r a b ∨ r b a)
   symm := fun _ _ ⟨hn, hr⟩ => ⟨hn.symm, hr.symm⟩
   loopless := fun _ ⟨hn, _⟩ => hn rfl
@@ -144,9 +140,9 @@ theorem SimpleGraph.fromRel_adj {V : Type u} (r : V → V → Prop) (v w : V) :
   Iff.rfl
 #align simple_graph.from_rel_adj SimpleGraph.fromRel_adj
 
--- porting note: attributes needed for `completeGraph`
-attribute [aesop safe (rule_sets [SimpleGraph])] Ne.symm
-attribute [aesop safe (rule_sets [SimpleGraph])] Ne.irrefl
+-- Porting note: attributes needed for `completeGraph`
+attribute [aesop safe (rule_sets := [SimpleGraph])] Ne.symm
+attribute [aesop safe (rule_sets := [SimpleGraph])] Ne.irrefl
 
 /-- The complete graph on a type `V` is the simple graph with all pairs of distinct vertices
 adjacent. In `Mathlib`, this is usually referred to as `⊤`. -/
@@ -321,7 +317,7 @@ theorem sInf_adj_of_nonempty {s : Set (SimpleGraph V)} (hs : s.Nonempty) :
 
 theorem iInf_adj_of_nonempty [Nonempty ι] {f : ι → SimpleGraph V} :
     (⨅ i, f i).Adj a b ↔ ∀ i, (f i).Adj a b := by
-  rw [iInf, sInf_adj_of_nonempty (Set.range_nonempty _), Set.forall_range_iff]
+  rw [iInf, sInf_adj_of_nonempty (Set.range_nonempty _), Set.forall_mem_range]
 #align simple_graph.infi_adj_of_nonempty SimpleGraph.iInf_adj_of_nonempty
 
 /-- For graphs `G`, `H`, `G ≤ H` iff `∀ a b, G.Adj a b → H.Adj a b`. -/
@@ -457,10 +453,10 @@ variable {G₁ G₂ : SimpleGraph V}
 `G.Adj`. This is the order embedding; for the edge set of a particular graph, see
 `SimpleGraph.edgeSet`.
 
-The way `edgeSet` is defined is such that `mem_edgeSet` is proved by `refl`.
+The way `edgeSet` is defined is such that `mem_edgeSet` is proved by `Iff.rfl`.
 (That is, `s(v, w) ∈ G.edgeSet` is definitionally equal to `G.Adj v w`.)
 -/
--- porting note: We need a separate definition so that dot notation works.
+-- Porting note: We need a separate definition so that dot notation works.
 def edgeSetEmbedding (V : Type*) : SimpleGraph V ↪o Set (Sym2 V) :=
   OrderEmbedding.ofMapLEIff (fun G => Sym2.fromRel G.symm) fun _ _ =>
     ⟨fun h a b => @h s(a, b), fun h e => Sym2.ind @h e⟩
@@ -666,7 +662,7 @@ theorem fromEdgeSet_univ : fromEdgeSet (Set.univ : Set (Sym2 V)) = ⊤ := by
 theorem fromEdgeSet_inf (s t : Set (Sym2 V)) :
     fromEdgeSet s ⊓ fromEdgeSet t = fromEdgeSet (s ∩ t) := by
   ext v w
-  simp only [fromEdgeSet_adj, Set.mem_inter_iff, Ne.def, inf_adj]
+  simp only [fromEdgeSet_adj, Set.mem_inter_iff, Ne, inf_adj]
   tauto
 #align simple_graph.from_edge_set_inf SimpleGraph.fromEdgeSet_inf
 
@@ -687,7 +683,7 @@ theorem fromEdgeSet_sdiff (s t : Set (Sym2 V)) :
 @[mono]
 theorem fromEdgeSet_mono {s t : Set (Sym2 V)} (h : s ⊆ t) : fromEdgeSet s ≤ fromEdgeSet t := by
   rintro v w
-  simp (config := { contextual := true }) only [fromEdgeSet_adj, Ne.def, not_false_iff,
+  simp (config := { contextual := true }) only [fromEdgeSet_adj, Ne, not_false_iff,
     and_true_iff, and_imp]
   exact fun vws _ => h vws
 #align simple_graph.from_edge_set_mono SimpleGraph.fromEdgeSet_mono
@@ -707,145 +703,6 @@ instance [DecidableEq V] [Fintype s] : Fintype (fromEdgeSet s).edgeSet := by
   infer_instance
 
 end FromEdgeSet
-
-/-! ## Darts -/
-
-/-- A `Dart` is an oriented edge, implemented as an ordered pair of adjacent vertices.
-This terminology comes from combinatorial maps, and they are also known as "half-edges"
-or "bonds." -/
-structure Dart extends V × V where
-  is_adj : G.Adj fst snd
-  deriving DecidableEq
-#align simple_graph.dart SimpleGraph.Dart
-
-initialize_simps_projections Dart (+toProd, -fst, -snd)
-
-section Darts
-
-variable {G}
-
-theorem Dart.ext_iff (d₁ d₂ : G.Dart) : d₁ = d₂ ↔ d₁.toProd = d₂.toProd := by
-  cases d₁; cases d₂; simp
-#align simple_graph.dart.ext_iff SimpleGraph.Dart.ext_iff
-
-@[ext]
-theorem Dart.ext (d₁ d₂ : G.Dart) (h : d₁.toProd = d₂.toProd) : d₁ = d₂ :=
-  (Dart.ext_iff d₁ d₂).mpr h
-#align simple_graph.dart.ext SimpleGraph.Dart.ext
-
--- Porting note: deleted `Dart.fst` and `Dart.snd` since they are now invalid declaration names,
--- even though there is not actually a `SimpleGraph.Dart.fst` or `SimpleGraph.Dart.snd`.
-
-theorem Dart.toProd_injective : Function.Injective (Dart.toProd : G.Dart → V × V) :=
-  Dart.ext
-#align simple_graph.dart.to_prod_injective SimpleGraph.Dart.toProd_injective
-
-instance Dart.fintype [Fintype V] [DecidableRel G.Adj] : Fintype G.Dart :=
-  Fintype.ofEquiv (Σ v, G.neighborSet v)
-    { toFun := fun s => ⟨(s.fst, s.snd), s.snd.property⟩
-      invFun := fun d => ⟨d.fst, d.snd, d.is_adj⟩
-      left_inv := fun s => by ext <;> simp
-      right_inv := fun d => by ext <;> simp }
-#align simple_graph.dart.fintype SimpleGraph.Dart.fintype
-
-/-- The edge associated to the dart. -/
-def Dart.edge (d : G.Dart) : Sym2 V :=
-  Sym2.mk d.toProd
-#align simple_graph.dart.edge SimpleGraph.Dart.edge
-
-@[simp]
-theorem Dart.edge_mk {p : V × V} (h : G.Adj p.1 p.2) : (Dart.mk p h).edge = Sym2.mk p :=
-  rfl
-#align simple_graph.dart.edge_mk SimpleGraph.Dart.edge_mk
-
-@[simp]
-theorem Dart.edge_mem (d : G.Dart) : d.edge ∈ G.edgeSet :=
-  d.is_adj
-#align simple_graph.dart.edge_mem SimpleGraph.Dart.edge_mem
-
-/-- The dart with reversed orientation from a given dart. -/
-@[simps]
-def Dart.symm (d : G.Dart) : G.Dart :=
-  ⟨d.toProd.swap, G.symm d.is_adj⟩
-#align simple_graph.dart.symm SimpleGraph.Dart.symm
-
-@[simp]
-theorem Dart.symm_mk {p : V × V} (h : G.Adj p.1 p.2) : (Dart.mk p h).symm = Dart.mk p.swap h.symm :=
-  rfl
-#align simple_graph.dart.symm_mk SimpleGraph.Dart.symm_mk
-
-@[simp]
-theorem Dart.edge_symm (d : G.Dart) : d.symm.edge = d.edge :=
-  Sym2.mk_prod_swap_eq
-#align simple_graph.dart.edge_symm SimpleGraph.Dart.edge_symm
-
-@[simp]
-theorem Dart.edge_comp_symm : Dart.edge ∘ Dart.symm = (Dart.edge : G.Dart → Sym2 V) :=
-  funext Dart.edge_symm
-#align simple_graph.dart.edge_comp_symm SimpleGraph.Dart.edge_comp_symm
-
-@[simp]
-theorem Dart.symm_symm (d : G.Dart) : d.symm.symm = d :=
-  Dart.ext _ _ <| Prod.swap_swap _
-#align simple_graph.dart.symm_symm SimpleGraph.Dart.symm_symm
-
-@[simp]
-theorem Dart.symm_involutive : Function.Involutive (Dart.symm : G.Dart → G.Dart) :=
-  Dart.symm_symm
-#align simple_graph.dart.symm_involutive SimpleGraph.Dart.symm_involutive
-
-theorem Dart.symm_ne (d : G.Dart) : d.symm ≠ d :=
-  ne_of_apply_ne (Prod.snd ∘ Dart.toProd) d.is_adj.ne
-#align simple_graph.dart.symm_ne SimpleGraph.Dart.symm_ne
-
-theorem dart_edge_eq_iff : ∀ d₁ d₂ : G.Dart, d₁.edge = d₂.edge ↔ d₁ = d₂ ∨ d₁ = d₂.symm := by
-  rintro ⟨p, hp⟩ ⟨q, hq⟩
-  simp
-#align simple_graph.dart_edge_eq_iff SimpleGraph.dart_edge_eq_iff
-
-theorem dart_edge_eq_mk'_iff :
-    ∀ {d : G.Dart} {p : V × V}, d.edge = Sym2.mk p ↔ d.toProd = p ∨ d.toProd = p.swap := by
-  rintro ⟨p, h⟩
-  apply Sym2.mk_eq_mk_iff
-#align simple_graph.dart_edge_eq_mk_iff SimpleGraph.dart_edge_eq_mk'_iff
-
-theorem dart_edge_eq_mk'_iff' :
-    ∀ {d : G.Dart} {u v : V},
-      d.edge = s(u, v) ↔ d.fst = u ∧ d.snd = v ∨ d.fst = v ∧ d.snd = u := by
-  rintro ⟨⟨a, b⟩, h⟩ u v
-  rw [dart_edge_eq_mk'_iff]
-  simp
-#align simple_graph.dart_edge_eq_mk_iff' SimpleGraph.dart_edge_eq_mk'_iff'
-
-variable (G)
-
-/-- Two darts are said to be adjacent if they could be consecutive
-darts in a walk -- that is, the first dart's second vertex is equal to
-the second dart's first vertex. -/
-def DartAdj (d d' : G.Dart) : Prop :=
-  d.snd = d'.fst
-#align simple_graph.dart_adj SimpleGraph.DartAdj
-
-/-- For a given vertex `v`, this is the bijective map from the neighbor set at `v`
-to the darts `d` with `d.fst = v`. -/
-@[simps]
-def dartOfNeighborSet (v : V) (w : G.neighborSet v) : G.Dart :=
-  ⟨(v, w), w.property⟩
-#align simple_graph.dart_of_neighbor_set SimpleGraph.dartOfNeighborSet
-
-theorem dartOfNeighborSet_injective (v : V) : Function.Injective (G.dartOfNeighborSet v) :=
-  fun e₁ e₂ h =>
-  Subtype.ext <| by
-    injection h with h'
-    convert congr_arg Prod.snd h'
-#align simple_graph.dart_of_neighbor_set_injective SimpleGraph.dartOfNeighborSet_injective
-
-instance nonempty_dart_top [Nontrivial V] : Nonempty (⊤ : SimpleGraph V).Dart := by
-  obtain ⟨v, w, h⟩ := exists_pair_ne V
-  exact ⟨⟨(v, w), h⟩⟩
-#align simple_graph.nonempty_dart_top SimpleGraph.nonempty_dart_top
-
-end Darts
 
 /-! ### Incidence set -/
 
@@ -1038,8 +895,7 @@ theorem incidence_other_neighbor_edge {v w : V} (h : w ∈ G.neighborSet v) :
 /-- There is an equivalence between the set of edges incident to a given
 vertex and the set of vertices adjacent to the vertex. -/
 @[simps]
-def incidenceSetEquivNeighborSet (v : V) : G.incidenceSet v ≃ G.neighborSet v
-    where
+def incidenceSetEquivNeighborSet (v : V) : G.incidenceSet v ≃ G.neighborSet v where
   toFun e := ⟨G.otherVertexOfIncident e.2, G.incidence_other_prop e.2⟩
   invFun w := ⟨s(v, w.1), G.mem_incidence_iff_neighbor.mpr w.2⟩
   left_inv x := by simp [otherVertexOfIncident]
@@ -1057,11 +913,10 @@ end Incidence
 graph's edge set, if present.
 
 See also: `SimpleGraph.Subgraph.deleteEdges`. -/
-def deleteEdges (s : Set (Sym2 V)) : SimpleGraph V
-    where
+def deleteEdges (s : Set (Sym2 V)) : SimpleGraph V where
   Adj := G.Adj \ Sym2.ToRel s
   symm a b := by simp [adj_comm, Sym2.eq_swap]
-  loopless a := by simp [SDiff.sdiff] -- porting note: used to be handled by `obviously`
+  loopless a := by simp [SDiff.sdiff] -- Porting note: used to be handled by `obviously`
 #align simple_graph.delete_edges SimpleGraph.deleteEdges
 
 @[simp]

@@ -88,7 +88,7 @@ variable {ι κ X X' Y Z α α' β β' γ 𝓕 : Type*} [tX : TopologicalSpace X
   [tZ : TopologicalSpace Z] [uα : UniformSpace α] [uβ : UniformSpace β] [uγ : UniformSpace γ]
 
 /-- A family `F : ι → X → α` of functions from a topological space to a uniform space is
-*equicontinuous at `x₀ : X`* if, for all entourage `U ∈ 𝓤 α`, there is a neighborhood `V` of `x₀`
+*equicontinuous at `x₀ : X`* if, for all entourages `U ∈ 𝓤 α`, there is a neighborhood `V` of `x₀`
 such that, for all `x ∈ V` and for all `i : ι`, `F i x` is `U`-close to `F i x₀`. -/
 def EquicontinuousAt (F : ι → X → α) (x₀ : X) : Prop :=
   ∀ U ∈ 𝓤 α, ∀ᶠ x in 𝓝 x₀, ∀ i, (F i x₀, F i x) ∈ U
@@ -101,7 +101,7 @@ protected abbrev Set.EquicontinuousAt (H : Set <| X → α) (x₀ : X) : Prop :=
 #align set.equicontinuous_at Set.EquicontinuousAt
 
 /-- A family `F : ι → X → α` of functions from a topological space to a uniform space is
-*equicontinuous at `x₀ : X` within `S : Set X`* if, for all entourage `U ∈ 𝓤 α`, there is a
+*equicontinuous at `x₀ : X` within `S : Set X`* if, for all entourages `U ∈ 𝓤 α`, there is a
 neighborhood `V` of `x₀` within `S` such that, for all `x ∈ V` and for all `i : ι`, `F i x` is
 `U`-close to `F i x₀`. -/
 def EquicontinuousWithinAt (F : ι → X → α) (S : Set X) (x₀ : X) : Prop :=
@@ -135,7 +135,7 @@ protected abbrev Set.EquicontinuousOn (H : Set <| X → α) (S : Set X) : Prop :
   EquicontinuousOn ((↑) : H → X → α) S
 
 /-- A family `F : ι → β → α` of functions between uniform spaces is *uniformly equicontinuous* if,
-for all entourage `U ∈ 𝓤 α`, there is an entourage `V ∈ 𝓤 β` such that, whenever `x` and `y` are
+for all entourages `U ∈ 𝓤 α`, there is an entourage `V ∈ 𝓤 β` such that, whenever `x` and `y` are
 `V`-close, we have that, *for all `i : ι`*, `F i x` is `U`-close to `F i y`. -/
 def UniformEquicontinuous (F : ι → β → α) : Prop :=
   ∀ U ∈ 𝓤 α, ∀ᶠ xy : β × β in 𝓤 β, ∀ i, (F i xy.1, F i xy.2) ∈ U
@@ -148,7 +148,7 @@ protected abbrev Set.UniformEquicontinuous (H : Set <| β → α) : Prop :=
 #align set.uniform_equicontinuous Set.UniformEquicontinuous
 
 /-- A family `F : ι → β → α` of functions between uniform spaces is
-*uniformly equicontinuous on `S : Set β`* if, for all entourage `U ∈ 𝓤 α`, there is a relative
+*uniformly equicontinuous on `S : Set β`* if, for all entourages `U ∈ 𝓤 α`, there is a relative
 entourage `V ∈ 𝓤 β ⊓ 𝓟 (S ×ˢ S)` such that, whenever `x` and `y` are `V`-close, we have that,
 *for all `i : ι`*, `F i x` is `U`-close to `F i y`. -/
 def UniformEquicontinuousOn (F : ι → β → α) (S : Set β) : Prop :=
@@ -198,7 +198,7 @@ lemma UniformEquicontinuous.uniformEquicontinuousOn {F : ι → β → α} (H : 
 
 lemma UniformEquicontinuousOn.mono {F : ι → β → α} {S T : Set β}
     (H : UniformEquicontinuousOn F T) (hST : S ⊆ T) : UniformEquicontinuousOn F S :=
-  fun U hU ↦ (H U hU).filter_mono <| inf_le_inf_left _ <| principal_mono.mpr <| prod_mono hST hST
+  fun U hU ↦ (H U hU).filter_mono <| by gcongr
 
 lemma uniformEquicontinuousOn_univ (F : ι → β → α) :
     UniformEquicontinuousOn F univ ↔ UniformEquicontinuous F := by
@@ -208,6 +208,7 @@ lemma uniformEquicontinuous_restrict_iff (F : ι → β → α) {S : Set β} :
     UniformEquicontinuous (S.restrict ∘ F) ↔ UniformEquicontinuousOn F S := by
   rw [UniformEquicontinuous, UniformEquicontinuousOn]
   conv in _ ⊓ _ => rw [← Subtype.range_val (s := S), ← range_prod_map, ← map_comap]
+  rfl
 
 /-!
 ### Empty index type
@@ -909,7 +910,7 @@ protected theorem Set.UniformEquicontinuous.closure {A : Set <| β → α}
 
 /-- If a set of functions is uniformly equicontinuous on a set `S`, its closure for the product
 topology is also uniformly equicontinuous. This would also be true for the coarser topology of
-pointwise convergence on `S`, see `UniformEquicontinuousOn.closure'`.-/
+pointwise convergence on `S`, see `UniformEquicontinuousOn.closure'`. -/
 protected theorem Set.UniformEquicontinuousOn.closure {A : Set <| β → α} {S : Set β}
     (hA : A.UniformEquicontinuousOn S) : (closure A).UniformEquicontinuousOn S :=
   UniformEquicontinuousOn.closure' (u := id) hA (Pi.continuous_restrict _)

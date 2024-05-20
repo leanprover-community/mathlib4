@@ -3,8 +3,8 @@ Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Gabriel Ebner, Floris van Doorn
 -/
-import Std.Tactic.OpenPrivate
-import Std.Lean.Meta.DiscrTree
+import Batteries.Tactic.OpenPrivate
+import Lean.Elab.Tactic.Simp
 
 /-!
 # Helper functions for using the simplifier.
@@ -79,10 +79,11 @@ def mkSimpTheoremsFromConst' (declName : Name) (post : Bool) (inv : Bool) (prio 
         auxNames := auxNames.push auxName
         r := r.push <| ← mkSimpTheoremCore (.decl declName)
           (mkConst auxName (cinfo.levelParams.map mkLevelParam)) #[] (mkConst auxName) post prio
+          false
       return (auxNames, r)
     else
       return (#[], #[← mkSimpTheoremCore (.decl declName) (mkConst declName <|
-        cinfo.levelParams.map mkLevelParam) #[] (mkConst declName) post prio])
+        cinfo.levelParams.map mkLevelParam) #[] (mkConst declName) post prio false])
 
 /-- Similar to `addSimpTheorem` except that it returns an array of all auto-generated
   simp-theorems. -/
@@ -132,10 +133,10 @@ end Simp
 def simpTheoremsOfNames (lemmas : List Name := []) (simpOnly : Bool := false) :
     MetaM SimpTheorems := do
   lemmas.foldlM (·.addConst ·)
-    (if simpOnly then
-      ← simpOnlyBuiltins.foldlM (·.addConst ·) {}
+    (← if simpOnly then
+      simpOnlyBuiltins.foldlM (·.addConst ·) {}
     else
-      ← getSimpTheorems)
+      getSimpTheorems)
 
 -- TODO We need to write a `mkSimpContext` in `MetaM`
 -- that supports all the bells and whistles in `simp`.
@@ -159,10 +160,10 @@ and an expression `e : Expr`, run `S` on the type of `e`, and then
 convert `e` into that simplified type, using a combination of type hints and `Eq.mp`.
 -/
 def simpType (S : Expr → MetaM Simp.Result) (e : Expr) : MetaM Expr := do
-  match (← S (← inferType e)) with
-  | ⟨ty', none, _, _⟩ => mkExpectedTypeHint e ty'
+  match ← S (← inferType e) with
+  | ⟨ty', none, _⟩ => mkExpectedTypeHint e ty'
   -- We use `mkExpectedTypeHint` in this branch as well, in order to preserve the binder types.
-  | ⟨ty', some prf, _, _⟩ => mkExpectedTypeHint (← mkEqMP prf e) ty'
+  | ⟨ty', some prf, _⟩ => mkExpectedTypeHint (← mkEqMP prf e) ty'
 
 /-- Independently simplify both the left-hand side and the right-hand side
 of an equality. The equality is allowed to be under binders.
@@ -170,8 +171,8 @@ Returns the simplified equality and a proof of it. -/
 def simpEq (S : Expr → MetaM Simp.Result) (type pf : Expr) : MetaM (Expr × Expr) := do
   forallTelescope type fun fvars type => do
     let .app (.app (.app (.const `Eq [u]) α) lhs) rhs := type | throwError "simpEq expecting Eq"
-    let ⟨lhs', lhspf?, _, _⟩ ← S lhs
-    let ⟨rhs', rhspf?, _, _⟩ ← S rhs
+    let ⟨lhs', lhspf?, _⟩ ← S lhs
+    let ⟨rhs', rhspf?, _⟩ ← S rhs
     let mut pf' := mkAppN pf fvars
     if let some lhspf := lhspf? then
       pf' ← mkEqTrans (← mkEqSymm lhspf) pf'

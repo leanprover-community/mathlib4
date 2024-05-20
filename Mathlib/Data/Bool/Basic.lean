@@ -22,24 +22,19 @@ bool, boolean, Bool, De Morgan
 namespace Bool
 
 theorem decide_True {h} : @decide True h = true :=
-  decide_eq_true True.intro
+  _root_.decide_eq_true True.intro
 #align bool.to_bool_true Bool.decide_True
 
 theorem decide_False {h} : @decide False h = false :=
-  decide_eq_false id
+  _root_.decide_eq_false id
 #align bool.to_bool_false Bool.decide_False
 
-@[simp]
-theorem decide_coe (b : Bool) {h} : @decide b h = b := by
-  cases b
-  · exact decide_eq_false <| λ j => by cases j
-  · exact decide_eq_true <| rfl
 #align bool.to_bool_coe Bool.decide_coe
 
 theorem coe_decide (p : Prop) [d : Decidable p] : decide p ↔ p :=
   match d with
-  | isTrue hp => ⟨λ _ => hp, λ _ => rfl⟩
-  | isFalse hnp => ⟨λ h => Bool.noConfusion h, λ hp => (hnp hp).elim⟩
+  | isTrue hp => ⟨fun _ ↦ hp, fun _ ↦ rfl⟩
+  | isFalse hnp => ⟨fun h ↦ Bool.noConfusion h, fun hp ↦ (hnp hp).elim⟩
 #align bool.coe_to_bool Bool.coe_decide
 
 theorem of_decide_iff {p : Prop} [Decidable p] : decide p ↔ p :=
@@ -53,58 +48,38 @@ theorem decide_not (p : Prop) [Decidable p] : (decide ¬p) = !(decide p) := by
   by_cases p <;> simp [*]
 #align bool.to_bool_not Bool.decide_not
 
-@[simp]
-theorem decide_and (p q : Prop) [Decidable p] [Decidable q] : decide (p ∧ q) = (p && q) := by
-  by_cases p <;> by_cases q <;> simp [*]
 #align bool.to_bool_and Bool.decide_and
-
-@[simp]
-theorem decide_or (p q : Prop) [Decidable p] [Decidable q] : decide (p ∨ q) = (p || q) := by
-  by_cases p <;> by_cases q <;> simp [*]
 #align bool.to_bool_or Bool.decide_or
 
 #align bool.to_bool_eq decide_eq_decide
 
-theorem not_false' : ¬false := fun.
+theorem not_false' : ¬false := nofun
 #align bool.not_ff Bool.not_false'
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 theorem eq_iff_eq_true_iff {a b : Bool} : a = b ↔ ((a = true) ↔ (b = true)) := by
   cases a <;> cases b <;> simp
 
--- Porting note: new theorem
-/- Even though `DecidableEq α` implies an instance of (`Lawful`)`BEq α`, we keep the seemingly
-redundant typeclass assumptions so that the theorem is also applicable for types that have
-overridden this default instance of `LawfulBEq α` -/
-theorem beq_eq_decide_eq {α} [BEq α] [LawfulBEq α] [DecidableEq α]
-    (a b : α) : (a == b) = decide (a = b) := by
-  cases h : a == b
-  · simp [ne_of_beq_false h]
-  · simp [eq_of_beq h]
-
--- Porting note: new theorem
-theorem beq_comm {α} [BEq α] [LawfulBEq α] {a b : α} : (a == b) = (b == a) :=
-  eq_iff_eq_true_iff.2 (by simp [@eq_comm α])
-
-@[simp]
-theorem default_bool : default = false :=
-  rfl
 #align bool.default_bool Bool.default_bool
 
 theorem dichotomy (b : Bool) : b = false ∨ b = true := by cases b <;> simp
 #align bool.dichotomy Bool.dichotomy
 
+theorem forall_bool' {p : Bool → Prop} (b : Bool) : (∀ x, p x) ↔ p b ∧ p !b :=
+  ⟨fun h ↦ ⟨h _, h _⟩, fun ⟨h₁, h₂⟩ x ↦ by cases b <;> cases x <;> assumption⟩
+
 @[simp]
 theorem forall_bool {p : Bool → Prop} : (∀ b, p b) ↔ p false ∧ p true :=
-  ⟨fun h ↦ by simp [h], fun ⟨h₁, h₂⟩ b ↦ by cases b <;> assumption⟩
+  forall_bool' false
 #align bool.forall_bool Bool.forall_bool
+
+theorem exists_bool' {p : Bool → Prop} (b : Bool) : (∃ x, p x) ↔ p b ∨ p !b :=
+  ⟨fun ⟨x, hx⟩ ↦ by cases x <;> cases b <;> first | exact .inl ‹_› | exact .inr ‹_›,
+    fun h ↦ by cases h <;> exact ⟨_, ‹_›⟩⟩
 
 @[simp]
 theorem exists_bool {p : Bool → Prop} : (∃ b, p b) ↔ p false ∨ p true :=
-  ⟨fun ⟨b, h⟩ ↦ by cases b; exact Or.inl h; exact Or.inr h,
-  fun h ↦ match h with
-  | .inl h => ⟨_, h⟩
-  | .inr h => ⟨_, h⟩⟩
+  exists_bool' false
 #align bool.exists_bool Bool.exists_bool
 
 /-- If `p b` is decidable for all `b : Bool`, then `∀ b, p b` is decidable -/
@@ -117,24 +92,13 @@ instance decidableExistsBool {p : Bool → Prop} [∀ b, Decidable (p b)] : Deci
   decidable_of_decidable_of_iff exists_bool.symm
 #align bool.decidable_exists_bool Bool.decidableExistsBool
 
-theorem cond_eq_ite {α} (b : Bool) (t e : α) : cond b t e = if b then t else e := by
-  cases b <;> simp
 #align bool.cond_eq_ite Bool.cond_eq_ite
-
-@[simp]
-theorem cond_decide {α} (p : Prop) [Decidable p] (t e : α) :
-    cond (decide p) t e = if p then t else e := by
-  by_cases p <;> simp [*]
 #align bool.cond_to_bool Bool.cond_decide
-
-@[simp]
-theorem cond_not {α} (b : Bool) (t e : α) : cond (!b) t e = cond b e t := by cases b <;> rfl
 #align bool.cond_bnot Bool.cond_not
 
 theorem not_ne_id : not ≠ id := fun h ↦ false_ne_true <| congrFun h true
 #align bool.bnot_ne_id Bool.not_ne_id
 
-theorem coe_iff_coe : ∀ {a b : Bool}, (a ↔ b) ↔ a = b := by decide
 #align bool.coe_bool_iff Bool.coe_iff_coe
 
 theorem eq_true_of_ne_false : ∀ {a : Bool}, a ≠ false → a = true := by decide
@@ -179,16 +143,7 @@ lemma eq_not_iff : ∀ {a b : Bool}, a = !b ↔ a ≠ b := by decide
 lemma not_eq_iff : ∀ {a b : Bool}, !a = b ↔ a ≠ b := by decide
 #align bool.bnot_eq_iff Bool.not_eq_iff
 
--- Porting note: this is a case where our naming scheme is less than ideal.
--- The two `not`s in this name are different.
--- For now we're going with consistency at the expense of ambiguity.
-@[simp]
-theorem not_eq_not : ∀ {a b : Bool}, ¬a = !b ↔ a = b := by decide
 #align bool.not_eq_bnot Bool.not_eq_not
-
--- Porting note: and here again.
-@[simp]
-theorem not_not_eq : ∀ {a b : Bool}, ¬(!a) = b ↔ a = b := by decide
 #align bool.bnot_not_eq Bool.not_not_eq
 
 theorem ne_not {a b : Bool} : a ≠ !b ↔ a = b :=
@@ -261,6 +216,8 @@ instance linearOrder : LinearOrder Bool where
   le_antisymm := by decide
   le_total := by decide
   decidableLE := inferInstance
+  decidableEq := inferInstance
+  decidableLT := inferInstance
   lt_iff_le_not_le := by decide
   max_def := by decide
   min_def := by decide
@@ -315,10 +272,10 @@ def ofNat (n : Nat) : Bool :=
 theorem ofNat_le_ofNat {n m : Nat} (h : n ≤ m) : ofNat n ≤ ofNat m := by
   simp only [ofNat, ne_eq, _root_.decide_not]
   cases Nat.decEq n 0 with
-  | isTrue hn => rw [decide_eq_true hn]; exact Bool.false_le _
+  | isTrue hn => rw [_root_.decide_eq_true hn]; exact Bool.false_le _
   | isFalse hn =>
     cases Nat.decEq m 0 with
-    | isFalse hm => rw [decide_eq_false hm]; exact Bool.le_true _
+    | isFalse hm => rw [_root_.decide_eq_false hm]; exact Bool.le_true _
     | isTrue hm => subst hm; have h := le_antisymm h (Nat.zero_le n); contradiction
 #align bool.of_nat_le_of_nat Bool.ofNat_le_ofNat
 

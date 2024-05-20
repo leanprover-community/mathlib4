@@ -34,7 +34,7 @@ set_option linter.uppercaseLean3 false in
 
 namespace TopCat
 
--- porting note: had to add in the last two proofs
+-- Porting note: had to add in the last two proofs
 instance bundledHom : BundledHom @ContinuousMap :=
   ⟨@ContinuousMap.toFun, @ContinuousMap.id, @ContinuousMap.comp, @ContinuousMap.coe_injective,
     fun _ => rfl, fun _ _ _ _ _ => rfl⟩
@@ -63,12 +63,12 @@ attribute [instance] ConcreteCategory.instFunLike in
 instance (X Y : TopCat.{u}) : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe f := f
 
--- Porting note: simp can prove this; removed simp
+-- Porting note (#10618): simp can prove this; removed simp
 theorem id_app (X : TopCat.{u}) (x : ↑X) : (𝟙 X : X ⟶ X) x = x := rfl
 set_option linter.uppercaseLean3 false in
 #align Top.id_app TopCat.id_app
 
--- Porting note: simp can prove this; removed simp
+-- Porting note (#10618): simp can prove this; removed simp
 theorem comp_app {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
     (f ≫ g : X → Z) x = g (f x) := rfl
 set_option linter.uppercaseLean3 false in
@@ -85,8 +85,8 @@ instance topologicalSpace_coe (X : TopCat) : TopologicalSpace X :=
   X.str
 
 -- Porting note: cannot see through forget; made reducible to get closer to Lean 3 behavior
-@[reducible]
-instance topologicalSpace_forget (X : TopCat) : TopologicalSpace <| (forget TopCat).obj X :=
+@[instance] abbrev topologicalSpace_forget
+    (X : TopCat) : TopologicalSpace <| (forget TopCat).obj X :=
   X.str
 
 @[simp]
@@ -97,7 +97,7 @@ set_option linter.uppercaseLean3 false in
 instance inhabited : Inhabited TopCat :=
   ⟨TopCat.of Empty⟩
 
--- porting note: added to ease the port of `AlgebraicTopology.TopologicalSimplex`
+-- Porting note: added to ease the port of `AlgebraicTopology.TopologicalSimplex`
 lemma hom_apply {X Y : TopCat} (f : X ⟶ Y) (x : X) : f x = ContinuousMap.toFun f x := rfl
 
 /-- The discrete topology on any type. -/

@@ -39,9 +39,6 @@ multiplicative group actions).
 
 -/
 
-set_option autoImplicit true
-
-
 /-- An `AddTorsor G P` gives a structure to the nonempty type `P`,
 acted on by an `AddGroup G` with a transitive and free action given
 by the `+ᵥ` operation and a corresponding subtraction given by the
@@ -56,18 +53,19 @@ class AddTorsor (G : outParam (Type*)) (P : Type*) [outParam <| AddGroup G] exte
   vadd_vsub' : ∀ (g : G) (p : P), g +ᵥ p -ᵥ p = g
 #align add_torsor AddTorsor
 
-attribute [instance 100] AddTorsor.nonempty -- porting note: removers `nolint instance_priority`
+ -- Porting note(#12096): removed `nolint instance_priority`; lint not ported yet
+attribute [instance 100] AddTorsor.nonempty
 
---Porting note: removed
+-- Porting note(#12094): removed nolint; dangerous_instance linter not ported yet
 --attribute [nolint dangerous_instance] AddTorsor.toVSub
 
 /-- An `AddGroup G` is a torsor for itself. -/
---@[nolint instance_priority] Porting note: linter does not exist
-instance addGroupIsAddTorsor (G : Type*) [AddGroup G] : AddTorsor G G
-    where
+-- Porting note(#12096): linter not ported yet
+--@[nolint instance_priority]
+instance addGroupIsAddTorsor (G : Type*) [AddGroup G] : AddTorsor G G where
   vsub := Sub.sub
   vsub_vadd' := sub_add_cancel
-  vadd_vsub' := add_sub_cancel
+  vadd_vsub' := add_sub_cancel_right
 #align add_group_is_add_torsor addGroupIsAddTorsor
 
 /-- Simplify subtraction for a torsor for an `AddGroup G` over
@@ -191,7 +189,7 @@ namespace Set
 
 open Pointwise
 
--- Porting note: simp can prove this
+-- porting note (#10618): simp can prove this
 --@[simp]
 theorem singleton_vsub_self (p : P) : ({p} : Set P) -ᵥ {p} = {(0 : G)} := by
   rw [Set.singleton_vsub_singleton, vsub_self]
@@ -248,9 +246,6 @@ section comm
 
 variable {G : Type*} {P : Type*} [AddCommGroup G] [AddTorsor G P]
 
--- Porting note: Removed:
--- include G
-
 /-- Cancellation subtracting the results of two subtractions. -/
 @[simp]
 theorem vsub_sub_vsub_cancel_left (p₁ p₂ p₃ : P) : p₃ -ᵥ p₂ - (p₃ -ᵥ p₁) = p₁ -ᵥ p₂ := by
@@ -259,7 +254,7 @@ theorem vsub_sub_vsub_cancel_left (p₁ p₂ p₃ : P) : p₃ -ᵥ p₂ - (p₃ 
 
 @[simp]
 theorem vadd_vsub_vadd_cancel_left (v : G) (p₁ p₂ : P) : v +ᵥ p₁ -ᵥ (v +ᵥ p₂) = p₁ -ᵥ p₂ := by
-  rw [vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, add_sub_cancel']
+  rw [vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, add_sub_cancel_left]
 #align vadd_vsub_vadd_cancel_left vadd_vsub_vadd_cancel_left
 
 theorem vsub_vadd_comm (p₁ p₂ p₃ : P) : (p₁ -ᵥ p₂ : G) +ᵥ p₃ = p₃ -ᵥ p₂ +ᵥ p₁ := by
@@ -280,7 +275,7 @@ end comm
 
 namespace Prod
 
-variable {G : Type*} [AddGroup G] [AddGroup G'] [AddTorsor G P] [AddTorsor G' P']
+variable {G G' P P' : Type*} [AddGroup G] [AddGroup G'] [AddTorsor G P] [AddTorsor G' P']
 
 instance instAddTorsor : AddTorsor (G × G') (P × P') where
   vadd v p := (v.1 +ᵥ p.1, v.2 +ᵥ p.2)
@@ -355,9 +350,6 @@ end Pi
 namespace Equiv
 
 variable {G : Type*} {P : Type*} [AddGroup G] [AddTorsor G P]
-
--- Porting note: Removed:
--- include G
 
 /-- `v ↦ v +ᵥ p` as an equivalence. -/
 def vaddConst (p : P) : G ≃ P where
@@ -480,9 +472,6 @@ theorem pointReflection_fixed_iff_of_injective_bit0 {x y : P} (h : Injective (bi
   rw [pointReflection_apply, eq_comm, eq_vadd_iff_vsub_eq, ← neg_vsub_eq_vsub_rev,
     neg_eq_iff_add_eq_zero, ← bit0, ← bit0_zero, h.eq_iff, vsub_eq_zero_iff_eq, eq_comm]
 #align equiv.point_reflection_fixed_iff_of_injective_bit0 Equiv.pointReflection_fixed_iff_of_injective_bit0
-
--- Porting note: Removed:
--- omit G
 
 -- Porting note: need this to calm down CI
 theorem injective_pointReflection_left_of_injective_bit0 {G P : Type*} [AddCommGroup G]

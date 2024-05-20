@@ -154,14 +154,13 @@ theorem infEdist_closure : infEdist x (closure s) = infEdist x s := by
   have ε0 : 0 < (ε / 2 : ℝ≥0∞) := by simpa [pos_iff_ne_zero] using εpos
   have : infEdist x (closure s) < infEdist x (closure s) + ε / 2 :=
     ENNReal.lt_add_right h.ne ε0.ne'
-  rcases infEdist_lt_iff.mp this with ⟨y, ycs, hy⟩
-  -- y : α, ycs : y ∈ closure s, hy : edist x y < infEdist x (closure s) + ↑ε / 2
-  rcases EMetric.mem_closure_iff.1 ycs (ε / 2) ε0 with ⟨z, zs, dyz⟩
-  -- z : α, zs : z ∈ s, dyz : edist y z < ↑ε / 2
+  obtain ⟨y : α, ycs : y ∈ closure s, hy : edist x y < infEdist x (closure s) + ↑ε / 2⟩ :=
+    infEdist_lt_iff.mp this
+  obtain ⟨z : α, zs : z ∈ s, dyz : edist y z < ↑ε / 2⟩ := EMetric.mem_closure_iff.1 ycs (ε / 2) ε0
   calc
     infEdist x s ≤ edist x z := infEdist_le_edist_of_mem zs
-    _ ≤ edist x y + edist y z := (edist_triangle _ _ _)
-    _ ≤ infEdist x (closure s) + ε / 2 + ε / 2 := (add_le_add (le_of_lt hy) (le_of_lt dyz))
+    _ ≤ edist x y + edist y z := edist_triangle _ _ _
+    _ ≤ infEdist x (closure s) + ε / 2 + ε / 2 := add_le_add (le_of_lt hy) (le_of_lt dyz)
     _ = infEdist x (closure s) + ↑ε := by rw [add_assoc, ENNReal.add_halves]
 #align emetric.inf_edist_closure EMetric.infEdist_closure
 
@@ -230,8 +229,8 @@ theorem _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
     have : infEdist x Uᶜ ≠ 0 := ((ENNReal.pow_pos a_pos _).trans_le hx).ne'
     exact this (infEdist_zero_of_mem h)
   refine ⟨F, fun n => IsClosed.preimage continuous_infEdist isClosed_Ici, F_subset, ?_, ?_⟩
-  show ⋃ n, F n = U
-  · refine' Subset.antisymm (by simp only [iUnion_subset_iff, F_subset, forall_const]) fun x hx => _
+  · show ⋃ n, F n = U
+    refine' Subset.antisymm (by simp only [iUnion_subset_iff, F_subset, forall_const]) fun x hx => _
     have : ¬x ∈ Uᶜ := by simpa using hx
     rw [mem_iff_infEdist_zero_of_closed hU.isClosed_compl] at this
     have B : 0 < infEdist x Uᶜ := by simpa [pos_iff_ne_zero] using this
@@ -241,16 +240,15 @@ theorem _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
     simp only [mem_iUnion, mem_Ici, mem_preimage]
     exact ⟨n, hn.le⟩
   show Monotone F
-  · intro m n hmn x hx
-    simp only [mem_Ici, mem_preimage] at hx ⊢
-    apply le_trans (pow_le_pow_right_of_le_one' a_lt_one.le hmn) hx
+  intro m n hmn x hx
+  simp only [F, mem_Ici, mem_preimage] at hx ⊢
+  apply le_trans (pow_le_pow_right_of_le_one' a_lt_one.le hmn) hx
 #align is_open.exists_Union_is_closed IsOpen.exists_iUnion_isClosed
 
 theorem _root_.IsCompact.exists_infEdist_eq_edist (hs : IsCompact s) (hne : s.Nonempty) (x : α) :
     ∃ y ∈ s, infEdist x s = edist x y := by
   have A : Continuous fun y => edist x y := continuous_const.edist continuous_id
-  obtain ⟨y, ys, hy⟩ : ∃ y ∈ s, ∀ z, z ∈ s → edist x y ≤ edist x z :=
-    hs.exists_forall_le hne A.continuousOn
+  obtain ⟨y, ys, hy⟩ := hs.exists_isMinOn hne A.continuousOn
   exact ⟨y, ys, le_antisymm (infEdist_le_edist_of_mem ys) (by rwa [le_infEdist])⟩
 #align is_compact.exists_inf_edist_eq_edist IsCompact.exists_infEdist_eq_edist
 
@@ -259,12 +257,11 @@ theorem exists_pos_forall_lt_edist (hs : IsCompact s) (ht : IsClosed t) (hst : D
   rcases s.eq_empty_or_nonempty with (rfl | hne)
   · use 1
     simp
-  obtain ⟨x, hx, h⟩ : ∃ x ∈ s, ∀ y ∈ s, infEdist x t ≤ infEdist y t :=
-    hs.exists_forall_le hne continuous_infEdist.continuousOn
+  obtain ⟨x, hx, h⟩ := hs.exists_isMinOn hne continuous_infEdist.continuousOn
   have : 0 < infEdist x t :=
     pos_iff_ne_zero.2 fun H => hst.le_bot ⟨hx, (mem_iff_infEdist_zero_of_closed ht).mpr H⟩
   rcases ENNReal.lt_iff_exists_nnreal_btwn.1 this with ⟨r, h₀, hr⟩
-  exact ⟨r, ENNReal.coe_pos.mp h₀, fun y hy z hz => hr.trans_le <| le_infEdist.1 (h y hy) z hz⟩
+  exact ⟨r, ENNReal.coe_pos.mp h₀, fun y hy z hz => hr.trans_le <| le_infEdist.1 (h hy) z hz⟩
 #align emetric.exists_pos_forall_lt_edist EMetric.exists_pos_forall_lt_edist
 
 end InfEdist
@@ -339,16 +336,15 @@ theorem infEdist_le_infEdist_add_hausdorffEdist :
     have ε0 : (ε / 2 : ℝ≥0∞) ≠ 0 := by simpa [pos_iff_ne_zero] using εpos
     have : infEdist x s < infEdist x s + ε / 2 :=
       ENNReal.lt_add_right (ENNReal.add_lt_top.1 h).1.ne ε0
-    rcases infEdist_lt_iff.mp this with ⟨y, ys, dxy⟩
-    -- y : α, ys : y ∈ s, dxy : edist x y < infEdist x s + ↑ε / 2
+    obtain ⟨y : α, ys : y ∈ s, dxy : edist x y < infEdist x s + ↑ε / 2⟩ := infEdist_lt_iff.mp this
     have : hausdorffEdist s t < hausdorffEdist s t + ε / 2 :=
       ENNReal.lt_add_right (ENNReal.add_lt_top.1 h).2.ne ε0
-    rcases exists_edist_lt_of_hausdorffEdist_lt ys this with ⟨z, zt, dyz⟩
-    -- z : α, zt : z ∈ t, dyz : edist y z < Hausdorff_edist s t + ↑ε / 2
+    obtain ⟨z : α, zt : z ∈ t, dyz : edist y z < hausdorffEdist s t + ↑ε / 2⟩ :=
+      exists_edist_lt_of_hausdorffEdist_lt ys this
     calc
       infEdist x t ≤ edist x z := infEdist_le_edist_of_mem zt
-      _ ≤ edist x y + edist y z := (edist_triangle _ _ _)
-      _ ≤ infEdist x s + ε / 2 + (hausdorffEdist s t + ε / 2) := (add_le_add dxy.le dyz.le)
+      _ ≤ edist x y + edist y z := edist_triangle _ _ _
+      _ ≤ infEdist x s + ε / 2 + (hausdorffEdist s t + ε / 2) := add_le_add dxy.le dyz.le
       _ = infEdist x s + hausdorffEdist s t + ε := by
         simp [ENNReal.add_halves, add_comm, add_left_comm]
 #align emetric.inf_edist_le_inf_edist_add_Hausdorff_edist EMetric.infEdist_le_infEdist_add_hausdorffEdist
@@ -425,7 +421,7 @@ theorem hausdorffEdist_closure₂ : hausdorffEdist s (closure t) = hausdorffEdis
 #align emetric.Hausdorff_edist_closure₂ EMetric.hausdorffEdist_closure₂
 
 /-- The Hausdorff edistance between sets or their closures is the same. -/
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem hausdorffEdist_closure : hausdorffEdist (closure s) (closure t) = hausdorffEdist s t := by
   simp
 #align emetric.Hausdorff_edist_closure EMetric.hausdorffEdist_closure
@@ -508,7 +504,8 @@ theorem infEdist_ne_top (h : s.Nonempty) : infEdist x s ≠ ⊤ := by
   exact ne_top_of_le_ne_top (edist_ne_top _ _) (infEdist_le_edist_of_mem hy)
 #align metric.inf_edist_ne_top Metric.infEdist_ne_top
 
--- porting note: new lemma; todo: make it a `simp` lemma
+-- Porting note (#10756): new lemma;
+-- Porting note (#11215): TODO: make it a `simp` lemma
 theorem infEdist_eq_top_iff : infEdist x s = ∞ ↔ s = ∅ := by
   rcases s.eq_empty_or_nonempty with rfl | hs <;> simp [*, Nonempty.ne_empty, infEdist_ne_top]
 
@@ -622,13 +619,13 @@ theorem _root_.IsClosed.not_mem_iff_infDist_pos (h : IsClosed s) (hs : s.Nonempt
   simp [h.mem_iff_infDist_zero hs, infDist_nonneg.gt_iff_ne]
 #align is_closed.not_mem_iff_inf_dist_pos IsClosed.not_mem_iff_infDist_pos
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem continuousAt_inv_infDist_pt (h : x ∉ closure s) :
     ContinuousAt (fun x ↦ (infDist x s)⁻¹) x := by
   rcases s.eq_empty_or_nonempty with (rfl | hs)
   · simp only [infDist_empty, continuousAt_const]
   · refine (continuous_infDist_pt s).continuousAt.inv₀ ?_
-    rwa [Ne.def, ← mem_closure_iff_infDist_zero hs]
+    rwa [Ne, ← mem_closure_iff_infDist_zero hs]
 
 /-- The infimum distance is invariant under isometries. -/
 theorem infDist_image (hΦ : Isometry Φ) : infDist (Φ x) (Φ '' t) = infDist x t := by
@@ -885,7 +882,7 @@ theorem hausdorffDist_closure₂ : hausdorffDist s (closure t) = hausdorffDist s
 #align metric.Hausdorff_dist_closure₂ Metric.hausdorffDist_closure₂
 
 /-- The Hausdorff distances between two sets and their closures coincide. -/
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem hausdorffDist_closure : hausdorffDist (closure s) (closure t) = hausdorffDist s t := by
   simp [hausdorffDist]
 #align metric.Hausdorff_dist_closure Metric.hausdorffDist_closure

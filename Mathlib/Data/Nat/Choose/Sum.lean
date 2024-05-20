@@ -3,13 +3,13 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Patrick Stevens
 -/
-import Mathlib.Data.Nat.Choose.Basic
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.Linarith
-import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
+import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Data.Nat.Choose.Basic
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
 
 #align_import data.nat.choose.sum from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
@@ -41,32 +41,32 @@ theorem add_pow (h : Commute x y) (n : ℕ) :
   let t : ℕ → ℕ → R := fun n m ↦ x ^ m * y ^ (n - m) * choose n m
   change (x + y) ^ n = ∑ m in range (n + 1), t n m
   have h_first : ∀ n, t n 0 = y ^ n := fun n ↦ by
-    simp only [choose_zero_right, _root_.pow_zero, Nat.cast_one, mul_one, one_mul, tsub_zero]
+    simp only [t, choose_zero_right, _root_.pow_zero, Nat.cast_one, mul_one, one_mul, tsub_zero]
   have h_last : ∀ n, t n n.succ = 0 := fun n ↦ by
-    simp only [ge_iff_le, choose_succ_self, cast_zero, mul_zero]
+    simp only [t, ge_iff_le, choose_succ_self, cast_zero, mul_zero]
   have h_middle :
     ∀ n i : ℕ, i ∈ range n.succ → (t n.succ ∘ Nat.succ) i =
       x * t n i + y * t n i.succ := by
     intro n i h_mem
     have h_le : i ≤ n := Nat.le_of_lt_succ (mem_range.mp h_mem)
-    dsimp only
+    dsimp only [t]
     rw [Function.comp_apply, choose_succ_succ, Nat.cast_add, mul_add]
     congr 1
-    · rw [pow_succ x, succ_sub_succ, mul_assoc, mul_assoc, mul_assoc]
+    · rw [pow_succ' x, succ_sub_succ, mul_assoc, mul_assoc, mul_assoc]
     · rw [← mul_assoc y, ← mul_assoc y, (h.symm.pow_right i.succ).eq]
       by_cases h_eq : i = n
       · rw [h_eq, choose_succ_self, Nat.cast_zero, mul_zero, mul_zero]
       · rw [succ_sub (lt_of_le_of_ne h_le h_eq)]
-        rw [pow_succ y, mul_assoc, mul_assoc, mul_assoc, mul_assoc]
+        rw [pow_succ' y, mul_assoc, mul_assoc, mul_assoc, mul_assoc]
   induction' n with n ih
   · rw [_root_.pow_zero, sum_range_succ, range_zero, sum_empty, zero_add]
-    dsimp only
+    dsimp only [t]
     rw [_root_.pow_zero, _root_.pow_zero, choose_self, Nat.cast_one, mul_one, mul_one]
   · rw [sum_range_succ', h_first]
     erw [sum_congr rfl (h_middle n), sum_add_distrib, add_assoc]
-    rw [pow_succ (x + y), ih, add_mul, mul_sum, mul_sum]
+    rw [pow_succ' (x + y), ih, add_mul, mul_sum, mul_sum]
     congr 1
-    rw [sum_range_succ', sum_range_succ, h_first, h_last, mul_zero, add_zero, _root_.pow_succ]
+    rw [sum_range_succ', sum_range_succ, h_first, h_last, mul_zero, add_zero, _root_.pow_succ']
 #align commute.add_pow Commute.add_pow
 
 /-- A version of `Commute.add_pow` that avoids ℕ-subtraction by summing over the antidiagonal and
@@ -106,20 +106,20 @@ theorem sum_range_choose_halfway (m : Nat) : (∑ i in range (m + 1), choose (2 
             ∑ i in Ico (m + 1) (2 * m + 2), choose (2 * m + 1) i := by
         { rw [range_eq_Ico, sum_Ico_reflect]
           · congr
-            have A : m + 1 ≤ 2 * m + 1 := by linarith
+            have A : m + 1 ≤ 2 * m + 1 := by omega
             rw [add_comm, add_tsub_assoc_of_le A, ← add_comm]
             congr
             rw [tsub_eq_iff_eq_add_of_le A]
             ring
-          · linarith }
-      _ = ∑ i in range (2 * m + 2), choose (2 * m + 1) i := sum_range_add_sum_Ico _ (by linarith)
+          · omega }
+      _ = ∑ i in range (2 * m + 2), choose (2 * m + 1) i := sum_range_add_sum_Ico _ (by omega)
       _ = 2 ^ (2 * m + 1) := sum_range_choose (2 * m + 1)
-      _ = 2 * 4 ^ m := by rw [pow_succ, pow_mul, mul_comm]; rfl
+      _ = 2 * 4 ^ m := by rw [Nat.pow_succ, pow_mul, mul_comm]; rfl
 #align nat.sum_range_choose_halfway Nat.sum_range_choose_halfway
 
 theorem choose_middle_le_pow (n : ℕ) : choose (2 * n + 1) n ≤ 4 ^ n := by
   have t : choose (2 * n + 1) n ≤ ∑ i in range (n + 1), choose (2 * n + 1) i :=
-    single_le_sum (fun x _ ↦ by linarith) (self_mem_range_succ n)
+    single_le_sum (fun x _ ↦ by omega) (self_mem_range_succ n)
   simpa [sum_range_choose_halfway n] using t
 #align nat.choose_middle_le_pow Nat.choose_middle_le_pow
 
@@ -136,9 +136,9 @@ theorem four_pow_le_two_mul_add_one_mul_central_binom (n : ℕ) :
 theorem sum_Icc_choose (n k : ℕ) : ∑ m in Icc k n, m.choose k = (n + 1).choose (k + 1) := by
   cases' le_or_gt k n with h h
   · induction' n, h using le_induction with n _ ih; · simp
-    rw [← Ico_insert_right (by linarith), sum_insert (by simp),
+    rw [← Ico_insert_right (by omega), sum_insert (by simp),
       show Ico k (n + 1) = Icc k n by rfl, ih, choose_succ_succ' (n + 1)]
-  · rw [choose_eq_zero_of_lt (by linarith), Icc_eq_empty_of_lt h, sum_empty]
+  · rw [choose_eq_zero_of_lt (by omega), Icc_eq_empty_of_lt h, sum_empty]
 
 end Nat
 
@@ -183,26 +183,26 @@ theorem sum_powerset_neg_one_pow_card_of_nonempty {α : Type*} {x : Finset α} (
     (∑ m in x.powerset, (-1 : ℤ) ^ m.card) = 0 := by
   classical
     rw [sum_powerset_neg_one_pow_card, if_neg]
-    rw [← Ne.def, ← nonempty_iff_ne_empty]
+    rw [← Ne, ← nonempty_iff_ne_empty]
     apply h0
 #align finset.sum_powerset_neg_one_pow_card_of_nonempty Finset.sum_powerset_neg_one_pow_card_of_nonempty
 
 variable {M R : Type*} [CommMonoid M] [NonAssocSemiring R]
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 @[to_additive sum_choose_succ_nsmul]
 theorem prod_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) (n : ℕ) :
     (∏ i in range (n + 2), f i (n + 1 - i) ^ (n + 1).choose i) =
       (∏ i in range (n + 1), f i (n + 1 - i) ^ n.choose i) *
         ∏ i in range (n + 1), f (i + 1) (n - i) ^ n.choose i := by
   have A : (∏ i in range (n + 1), f (i + 1) (n - i) ^ (n.choose (i + 1))) * f 0 (n + 1) =
-    ∏ i in range (n + 1), f i (n + 1 - i) ^ (n.choose i)
-  · rw [prod_range_succ, prod_range_succ']
+      ∏ i in range (n + 1), f i (n + 1 - i) ^ (n.choose i) := by
+    rw [prod_range_succ, prod_range_succ']
     simp
   rw [prod_range_succ']
   simpa [Nat.choose_succ_succ, pow_add, prod_mul_distrib, A, mul_assoc] using mul_comm _ _
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 @[to_additive sum_antidiagonal_choose_succ_nsmul]
 theorem prod_antidiagonal_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) (n : ℕ) :
     (∏ ij in antidiagonal (n + 1), f ij.1 ij.2 ^ (n + 1).choose ij.1) =
@@ -216,7 +216,7 @@ theorem prod_antidiagonal_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ �
   · refine prod_congr rfl fun i hi ↦ ?_
     rw [Nat.choose_symm (this _ hi)]
 
--- porting note: moved from `Mathlib.Analysis.Calculus.ContDiff`
+-- Porting note: moved from `Mathlib.Analysis.Calculus.ContDiff`
 /-- The sum of `(n+1).choose i * f i (n+1-i)` can be split into two sums at rank `n`,
 respectively of `n.choose i * f i (n+1-i)` and `n.choose i * f (i+1) (n-i)`. -/
 theorem sum_choose_succ_mul (f : ℕ → ℕ → R) (n : ℕ) :
@@ -234,5 +234,12 @@ theorem sum_antidiagonal_choose_succ_mul (f : ℕ → ℕ → R) (n : ℕ) :
         ∑ ij in antidiagonal n, (n.choose ij.2 : R) * f (ij.1 + 1) ij.2 := by
   simpa only [nsmul_eq_mul] using sum_antidiagonal_choose_succ_nsmul f n
 #align finset.sum_antidiagonal_choose_succ_mul Finset.sum_antidiagonal_choose_succ_mul
+
+theorem sum_antidiagonal_choose_add (d n : ℕ) :
+    (Finset.sum (antidiagonal n) fun ij => (d + ij.2).choose d) =
+    (d + n).choose d + (d + n).choose (succ d) := by
+  induction n with
+  | zero => simp
+  | succ n hn => simpa [Nat.sum_antidiagonal_succ] using hn
 
 end Finset

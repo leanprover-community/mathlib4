@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Sum.Order
-import Mathlib.Order.LocallyFinite
+import Mathlib.Order.Interval.Finset.Defs
 
 #align_import data.sum.interval from "leanprover-community/mathlib"@"48a058d7e39a80ed56858505719a0b2197900999"
 
@@ -60,7 +60,7 @@ theorem mem_sumLift₂ :
 theorem inl_mem_sumLift₂ {c₁ : γ₁} :
     inl c₁ ∈ sumLift₂ f g a b ↔ ∃ a₁ b₁, a = inl a₁ ∧ b = inl b₁ ∧ c₁ ∈ f a₁ b₁ := by
   rw [mem_sumLift₂, or_iff_left]
-  simp only [inl.injEq, exists_and_left, exists_eq_left']
+  · simp only [inl.injEq, exists_and_left, exists_eq_left']
   rintro ⟨_, _, c₂, _, _, h, _⟩
   exact inl_ne_inr h
 #align finset.inl_mem_sum_lift₂ Finset.inl_mem_sumLift₂
@@ -68,7 +68,7 @@ theorem inl_mem_sumLift₂ {c₁ : γ₁} :
 theorem inr_mem_sumLift₂ {c₂ : γ₂} :
     inr c₂ ∈ sumLift₂ f g a b ↔ ∃ a₂ b₂, a = inr a₂ ∧ b = inr b₂ ∧ c₂ ∈ g a₂ b₂ := by
   rw [mem_sumLift₂, or_iff_right]
-  simp only [inr.injEq, exists_and_left, exists_eq_left']
+  · simp only [inr.injEq, exists_and_left, exists_eq_left']
   rintro ⟨_, _, c₂, _, _, h, _⟩
   exact inr_ne_inl h
 #align finset.inr_mem_sum_lift₂ Finset.inr_mem_sumLift₂
@@ -92,7 +92,7 @@ theorem sumLift₂_nonempty :
     (sumLift₂ f g a b).Nonempty ↔
       (∃ a₁ b₁, a = inl a₁ ∧ b = inl b₁ ∧ (f a₁ b₁).Nonempty) ∨
         ∃ a₂ b₂, a = inr a₂ ∧ b = inr b₂ ∧ (g a₂ b₂).Nonempty := by
-  simp only [nonempty_iff_ne_empty, Ne, sumLift₂_eq_empty, not_and_or, not_forall, not_imp]
+  simp only [nonempty_iff_ne_empty, Ne, sumLift₂_eq_empty, not_and_or, not_forall, exists_prop]
 #align finset.sum_lift₂_nonempty Finset.sumLift₂_nonempty
 
 theorem sumLift₂_mono (h₁ : ∀ a b, f₁ a b ⊆ g₁ a b) (h₂ : ∀ a b, f₂ a b ⊆ g₂ a b) :
@@ -210,9 +210,9 @@ lemma sumLexLift_nonempty :
       (∃ a₁ b₁, a = inl a₁ ∧ b = inl b₁ ∧ (f₁ a₁ b₁).Nonempty) ∨
         (∃ a₁ b₂, a = inl a₁ ∧ b = inr b₂ ∧ ((g₁ a₁ b₂).Nonempty ∨ (g₂ a₁ b₂).Nonempty)) ∨
           ∃ a₂ b₂, a = inr a₂ ∧ b = inr b₂ ∧ (f₂ a₂ b₂).Nonempty := by
-  -- porting note: was `simp [nonempty_iff_ne_empty, sumLexLift_eq_empty, not_and_or]`. Could
-  -- add `-exists_and_left, -not_and, -exists_and_right` but easier to squeeze.
-  simp only [nonempty_iff_ne_empty, Ne.def, sumLexLift_eq_empty, not_and_or, exists_prop,
+  -- porting note (#10745): was `simp [nonempty_iff_ne_empty, sumLexLift_eq_empty, not_and_or]`.
+  -- Could add `-exists_and_left, -not_and, -exists_and_right` but easier to squeeze.
+  simp only [nonempty_iff_ne_empty, Ne, sumLexLift_eq_empty, not_and_or, exists_prop,
     not_forall]
 #align finset.sum_lex_lift_nonempty Finset.sumLexLift_nonempty
 
@@ -232,8 +232,7 @@ section Disjoint
 
 variable [Preorder α] [Preorder β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
 
-instance : LocallyFiniteOrder (Sum α β)
-    where
+instance instLocallyFiniteOrder : LocallyFiniteOrder (Sum α β) where
   finsetIcc := sumLift₂ Icc Icc
   finsetIco := sumLift₂ Ico Ico
   finsetIoc := sumLift₂ Ioc Ioc
@@ -276,7 +275,7 @@ theorem Ioc_inl_inr : Ioc (inl a₁) (inr b₂) = ∅ :=
   rfl
 #align sum.Ioc_inl_inr Sum.Ioc_inl_inr
 
-@[simp, nolint simpNF] -- Porting note: dsimp can not prove this
+@[simp, nolint simpNF] -- Porting note (#10675): dsimp can not prove this
 theorem Ioo_inl_inr : Ioo (inl a₁) (inr b₂) = ∅ := by
   rfl
 #align sum.Ioo_inl_inr Sum.Ioo_inl_inr
@@ -296,7 +295,7 @@ theorem Ioc_inr_inl : Ioc (inr b₁) (inl a₂) = ∅ :=
   rfl
 #align sum.Ioc_inr_inl Sum.Ioc_inr_inl
 
-@[simp, nolint simpNF] -- Porting note: dsimp can not prove this
+@[simp, nolint simpNF] -- Porting note (#10675): dsimp can not prove this
 theorem Ioo_inr_inl : Ioo (inr b₁) (inl a₂) = ∅ := by
   rfl
 #align sum.Ioo_inr_inl Sum.Ioo_inr_inl
@@ -336,7 +335,7 @@ local elab "simp_lex" : tactic => do
         mem_Iic, mem_Iio, Equiv.coe_toEmbedding, toLex_inj, exists_false, and_false, false_and,
         map_empty, not_mem_empty, true_and, inl_mem_disjSum, inr_mem_disjSum, and_true, ofLex_toLex,
         mem_map, Embedding.coeFn_mk, exists_prop, exists_eq_right, Embedding.inl_apply,
-        -- porting note: added
+        -- Porting note: added
         inl.injEq, inr.injEq]
   )
 
@@ -393,19 +392,19 @@ lemma Ioc_inl_inr : Ioc (inlₗ a) (inrₗ b) = ((Ioi a).disjSum (Iic b)).map to
 lemma Ioo_inl_inr : Ioo (inlₗ a) (inrₗ b) = ((Ioi a).disjSum (Iio b)).map toLex.toEmbedding := rfl
 #align sum.lex.Ioo_inl_inr Sum.Lex.Ioo_inl_inr
 
-@[simp, nolint simpNF] -- Porting note: dsimp cannot prove this
+@[simp, nolint simpNF] -- Porting note (#10675): dsimp cannot prove this
 lemma Icc_inr_inl : Icc (inrₗ b) (inlₗ a) = ∅ := rfl
 #align sum.lex.Icc_inr_inl Sum.Lex.Icc_inr_inl
 
-@[simp, nolint simpNF] -- Porting note: dsimp cannot prove this
+@[simp, nolint simpNF] -- Porting note (#10675): dsimp cannot prove this
 lemma Ico_inr_inl : Ico (inrₗ b) (inlₗ a) = ∅ := rfl
 #align sum.lex.Ico_inr_inl Sum.Lex.Ico_inr_inl
 
-@[simp, nolint simpNF] -- Porting note: dsimp cannot prove this
+@[simp, nolint simpNF] -- Porting note (#10675): dsimp cannot prove this
 lemma Ioc_inr_inl : Ioc (inrₗ b) (inlₗ a) = ∅ := rfl
 #align sum.lex.Ioc_inr_inl Sum.Lex.Ioc_inr_inl
 
-@[simp, nolint simpNF] -- Porting note: dsimp cannot prove this
+@[simp, nolint simpNF] -- Porting note (#10675): dsimp cannot prove this
 lemma Ioo_inr_inl : Ioo (inrₗ b) (inlₗ a) = ∅ := rfl
 #align sum.lex.Ioo_inr_inl Sum.Lex.Ioo_inr_inl
 

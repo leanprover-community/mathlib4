@@ -3,12 +3,12 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.RingTheory.Adjoin.Basic
+import Mathlib.Algebra.MvPolynomial.Equiv
+import Mathlib.Algebra.MvPolynomial.Supported
 import Mathlib.LinearAlgebra.LinearIndependent
-import Mathlib.RingTheory.MvPolynomial.Basic
-import Mathlib.Data.MvPolynomial.Supported
+import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.Algebraic
-import Mathlib.Data.MvPolynomial.Equiv
+import Mathlib.RingTheory.MvPolynomial.Basic
 
 #align_import ring_theory.algebraic_independent from "leanprover-community/mathlib"@"949dc57e616a621462062668c9f39e4e17b64b69"
 
@@ -44,20 +44,16 @@ noncomputable section
 
 open Function Set Subalgebra MvPolynomial Algebra
 
-open Classical BigOperators
+open scoped Classical
+open BigOperators
 
 universe x u v w
 
 variable {ι : Type*} {ι' : Type*} (R : Type*) {K : Type*}
-
 variable {A : Type*} {A' A'' : Type*} {V : Type u} {V' : Type*}
-
 variable (x : ι → A)
-
 variable [CommRing R] [CommRing A] [CommRing A'] [CommRing A'']
-
 variable [Algebra R A] [Algebra R A'] [Algebra R A'']
-
 variable {a b : R}
 
 /-- `AlgebraicIndependent R x` states the family of elements `x`
@@ -106,7 +102,7 @@ namespace AlgebraicIndependent
 variable (hx : AlgebraicIndependent R x)
 
 theorem algebraMap_injective : Injective (algebraMap R A) := by
-  simpa [← MvPolynomial.algebraMap_eq, Function.comp] using
+  simpa [Function.comp] using
     (Injective.of_comp_iff (algebraicIndependent_iff_injective_aeval.1 hx) MvPolynomial.C).2
       (MvPolynomial.C_injective _ _)
 #align algebraic_independent.algebra_map_injective AlgebraicIndependent.algebraMap_injective
@@ -237,7 +233,7 @@ theorem algebraicIndependent_finset_map_embedding_subtype (s : Set A)
   rw [Finset.mem_map] at hx hy
   obtain ⟨a, _, rfl⟩ := hx
   obtain ⟨b, _, rfl⟩ := hy
-  simp only [imp_self, Subtype.mk_eq_mk]
+  simp only [f, imp_self, Subtype.mk_eq_mk]
 #align algebraic_independent_finset_map_embedding_subtype algebraicIndependent_finset_map_embedding_subtype
 
 /-- If every finite set of algebraically independent element has cardinality at most `n`,
@@ -444,7 +440,7 @@ theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_C
 set_option linter.uppercaseLean3 false in
 #align algebraic_independent.mv_polynomial_option_equiv_polynomial_adjoin_C AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_C
 
---@[simp] Porting note: simp can prove it
+--@[simp] Porting note (#10618): simp can prove it
 theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_X_none
     (hx : AlgebraicIndependent R x) :
     hx.mvPolynomialOptionEquivPolynomialAdjoin (X none) = Polynomial.X := by
@@ -453,7 +449,7 @@ theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_X_none
 set_option linter.uppercaseLean3 false in
 #align algebraic_independent.mv_polynomial_option_equiv_polynomial_adjoin_X_none AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_X_none
 
---@[simp] Porting note: simp can prove it
+--@[simp] Porting note (#10618): simp can prove it
 theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_X_some
     (hx : AlgebraicIndependent R x) (i) :
     hx.mvPolynomialOptionEquivPolynomialAdjoin (X (some i)) =
@@ -536,7 +532,8 @@ theorem AlgebraicIndependent.isTranscendenceBasis_iff {ι : Type w} {R : Type u}
 #align algebraic_independent.is_transcendence_basis_iff AlgebraicIndependent.isTranscendenceBasis_iff
 
 theorem IsTranscendenceBasis.isAlgebraic [Nontrivial R] (hx : IsTranscendenceBasis R x) :
-    IsAlgebraic (adjoin R (range x)) A := by
+    Algebra.IsAlgebraic (adjoin R (range x)) A := by
+  constructor
   intro a
   rw [← not_iff_comm.1 (hx.1.option_iff _).symm]
   intro ai
@@ -559,7 +556,7 @@ section Field
 
 variable [Field K] [Algebra K A]
 
-/-Porting note: removing `simp`, not in simp normal form. Could make `Function.Injective f` a
+/- Porting note: removing `simp`, not in simp normal form. Could make `Function.Injective f` a
 simp lemma when `f` is a field hom, and then simp would prove this -/
 theorem algebraicIndependent_empty_type [IsEmpty ι] [Nontrivial A] : AlgebraicIndependent K x := by
   rw [algebraicIndependent_empty_type_iff]

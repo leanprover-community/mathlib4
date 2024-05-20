@@ -212,8 +212,8 @@ theorem compression_idem (u v : α) (s : Finset α) : 𝓒 u v (𝓒 u v s) = �
 /-- Compressing a family doesn't change its size. -/
 @[simp]
 theorem card_compression (u v : α) (s : Finset α) : (𝓒 u v s).card = s.card := by
-  rw [compression, card_disjoint_union compress_disjoint, filter_image,
-    card_image_of_injOn compress_injOn, ← card_disjoint_union (disjoint_filter_filter_neg s _ _),
+  rw [compression, card_union_of_disjoint compress_disjoint, filter_image,
+    card_image_of_injOn compress_injOn, ← card_union_of_disjoint (disjoint_filter_filter_neg s _ _),
     filter_union_filter_neg_eq]
 #align uv.card_compression UV.card_compression
 
@@ -297,7 +297,7 @@ variable [DecidableEq α] {𝒜 : Finset (Finset α)} {u v a : Finset α} {r : �
 theorem card_compress (huv : u.card = v.card) (a : Finset α) : (compress u v a).card = a.card := by
   unfold compress
   split_ifs with h
-  · rw [card_sdiff (h.2.trans le_sup_left), sup_eq_union, card_disjoint_union h.1.symm, huv,
+  · rw [card_sdiff (h.2.trans le_sup_left), sup_eq_union, card_union_of_disjoint h.1.symm, huv,
       add_tsub_cancel_right]
   · rfl
 #align uv.card_compress UV.card_compress
@@ -321,8 +321,8 @@ theorem shadow_compression_subset_compression_shadow (u v : Finset α)
     ∂ (𝓒 u v 𝒜) ⊆ 𝓒 u v (∂ 𝒜) := by
   set 𝒜' := 𝓒 u v 𝒜
   suffices H : ∀ s ∈ ∂ 𝒜',
-      s ∉ ∂ 𝒜 → u ⊆ s ∧ Disjoint v s ∧ (s ∪ v) \ u ∈ ∂ 𝒜 ∧ (s ∪ v) \ u ∉ ∂ 𝒜'
-  · rintro s hs'
+      s ∉ ∂ 𝒜 → u ⊆ s ∧ Disjoint v s ∧ (s ∪ v) \ u ∈ ∂ 𝒜 ∧ (s ∪ v) \ u ∉ ∂ 𝒜' by
+    rintro s hs'
     rw [mem_compression]
     by_cases hs : s ∈ 𝒜.shadow
     swap
@@ -411,7 +411,7 @@ theorem shadow_compression_subset_compression_shadow (u v : Finset α)
       sdiff_union_of_subset (hus.trans <| subset_union_left _ _),
       sdiff_erase (mem_union_right _ ‹z ∈ v›), union_sdiff_cancel_right hsv]
   -- If `w ∉ u`, we contradict `m` again
-  rw [mem_sdiff, ← not_imp, Classical.not_not] at hwB
+  rw [mem_sdiff, ← Classical.not_imp, Classical.not_not] at hwB
   apply m w (hwu ∘ hwB ∘ mem_union_left _)
   have : (insert w ((s ∪ v) \ u) ∪ u) \ v ∈ 𝒜 :=
     sup_sdiff_mem_of_mem_compression ‹insert w ((s ∪ v) \ u) ∈ 𝒜'› ‹_›

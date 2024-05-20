@@ -44,7 +44,7 @@ class PerfectRing (R : Type*) (p : ℕ) [CommSemiring R] [ExpChar R p] : Prop wh
 
 section PerfectRing
 
-variable (R : Type*) (p n : ℕ) [CommSemiring R] [ExpChar R p]
+variable (R : Type*) (p m n : ℕ) [CommSemiring R] [ExpChar R p]
 
 /-- For a reduced ring, surjectivity of the Frobenius map is a sufficient condition for perfection.
 -/
@@ -81,6 +81,8 @@ noncomputable def frobeniusEquiv : R ≃+* R :=
 theorem coe_frobeniusEquiv : ⇑(frobeniusEquiv R p) = frobenius R p := rfl
 #align coe_frobenius_equiv coe_frobeniusEquiv
 
+theorem frobeniusEquiv_def (x : R) : frobeniusEquiv R p x = x ^ p := rfl
+
 /-- The iterated Frobenius automorphism for a perfect ring. -/
 @[simps! apply]
 noncomputable def iterateFrobeniusEquiv : R ≃+* R :=
@@ -88,6 +90,47 @@ noncomputable def iterateFrobeniusEquiv : R ≃+* R :=
 
 @[simp]
 theorem coe_iterateFrobeniusEquiv : ⇑(iterateFrobeniusEquiv R p n) = iterateFrobenius R p n := rfl
+
+theorem iterateFrobeniusEquiv_def (x : R) : iterateFrobeniusEquiv R p n x = x ^ p ^ n := rfl
+
+theorem iterateFrobeniusEquiv_add_apply (x : R) : iterateFrobeniusEquiv R p (m + n) x =
+    iterateFrobeniusEquiv R p m (iterateFrobeniusEquiv R p n x) :=
+  iterateFrobenius_add_apply R p m n x
+
+theorem iterateFrobeniusEquiv_add : iterateFrobeniusEquiv R p (m + n) =
+    (iterateFrobeniusEquiv R p n).trans (iterateFrobeniusEquiv R p m) :=
+  RingEquiv.ext (iterateFrobeniusEquiv_add_apply R p m n)
+
+theorem iterateFrobeniusEquiv_symm_add_apply (x : R) : (iterateFrobeniusEquiv R p (m + n)).symm x =
+    (iterateFrobeniusEquiv R p m).symm ((iterateFrobeniusEquiv R p n).symm x) :=
+  (iterateFrobeniusEquiv R p (m + n)).injective <| by rw [RingEquiv.apply_symm_apply, add_comm,
+    iterateFrobeniusEquiv_add_apply, RingEquiv.apply_symm_apply, RingEquiv.apply_symm_apply]
+
+theorem iterateFrobeniusEquiv_symm_add : (iterateFrobeniusEquiv R p (m + n)).symm =
+    (iterateFrobeniusEquiv R p n).symm.trans (iterateFrobeniusEquiv R p m).symm :=
+  RingEquiv.ext (iterateFrobeniusEquiv_symm_add_apply R p m n)
+
+theorem iterateFrobeniusEquiv_zero_apply (x : R) : iterateFrobeniusEquiv R p 0 x = x := by
+  rw [iterateFrobeniusEquiv_def, pow_zero, pow_one]
+
+theorem iterateFrobeniusEquiv_one_apply (x : R) : iterateFrobeniusEquiv R p 1 x = x ^ p := by
+  rw [iterateFrobeniusEquiv_def, pow_one]
+
+@[simp]
+theorem iterateFrobeniusEquiv_zero  : iterateFrobeniusEquiv R p 0 = RingEquiv.refl R :=
+  RingEquiv.ext (iterateFrobeniusEquiv_zero_apply R p)
+
+@[simp]
+theorem iterateFrobeniusEquiv_one : iterateFrobeniusEquiv R p 1 = frobeniusEquiv R p :=
+  RingEquiv.ext (iterateFrobeniusEquiv_one_apply R p)
+
+theorem iterateFrobeniusEquiv_eq_pow : iterateFrobeniusEquiv R p n = frobeniusEquiv R p ^ n :=
+  DFunLike.ext' <| show _ = ⇑(RingAut.toPerm _ _) by
+    rw [map_pow, Equiv.Perm.coe_pow]; exact (pow_iterate p n).symm
+
+theorem iterateFrobeniusEquiv_symm :
+    (iterateFrobeniusEquiv R p n).symm = (frobeniusEquiv R p).symm ^ n := by
+  rw [iterateFrobeniusEquiv_eq_pow]; exact (inv_pow _ _).symm
 
 @[simp]
 theorem frobeniusEquiv_symm_apply_frobenius (x : R) :
@@ -130,43 +173,6 @@ theorem not_irreducible_expand (R p) [CommSemiring R] [Fact p.Prime] [CharP R p]
 instance instPerfectRingProd (S : Type*) [CommSemiring S] [ExpChar S p] [PerfectRing S p] :
     PerfectRing (R × S) p where
   bijective_frobenius := (bijective_frobenius R p).Prod_map (bijective_frobenius S p)
-
-namespace Polynomial
-
-open scoped Classical
-
-variable {R : Type*} [CommRing R] [IsDomain R] (p : ℕ) [ExpChar R p] [PerfectRing R p] (f : R[X])
-
-/-- If `f` is a polynomial over a perfect integral domain `R` of characteristic `p`, then there is
-a bijection from the set of roots of `Polynomial.expand R p f` to the set of roots of `f`.
-It's given by `x ↦ x ^ p`, see `rootsExpandEquivRoots_apply`. -/
-noncomputable def rootsExpandEquivRoots : (expand R p f).roots.toFinset ≃ f.roots.toFinset :=
-  ((frobeniusEquiv R p).image _).trans <| Equiv.Set.ofEq <| show _ '' (setOf _) = setOf _ by
-    ext r; obtain ⟨r, rfl⟩ := surjective_frobenius R p r
-    simp [expand_eq_zero (expChar_pos R p), (frobenius_inj R p).eq_iff, ← frobenius_def]
-
-@[simp]
-theorem rootsExpandEquivRoots_apply (x) : (rootsExpandEquivRoots p f x : R) = x ^ p := rfl
-
-/-- If `f` is a polynomial over a perfect integral domain `R` of characteristic `p`, then there is
-a bijection from the set of roots of `Polynomial.expand R (p ^ n) f` to the set of roots of `f`.
-It's given by `x ↦ x ^ (p ^ n)`, see `rootsExpandPowEquivRoots_apply`. -/
-noncomputable def rootsExpandPowEquivRoots :
-    (n : ℕ) → (expand R (p ^ n) f).roots.toFinset ≃ f.roots.toFinset
-  | 0 => Equiv.Set.ofEq <| by rw [pow_zero, expand_one]
-  | n + 1 => (Equiv.Set.ofEq <| by rw [pow_succ, ← expand_expand]).trans
-    (rootsExpandEquivRoots p (expand R (p ^ n) f)) |>.trans (rootsExpandPowEquivRoots n)
-
-@[simp]
-theorem rootsExpandPowEquivRoots_apply (n : ℕ) (x) :
-    (rootsExpandPowEquivRoots p f n x : R) = x ^ p ^ n := by
-  induction' n with n ih
-  · simp only [pow_zero, pow_one]
-    rfl
-  simp_rw [rootsExpandPowEquivRoots, Equiv.trans_apply, ih, pow_succ, pow_mul]
-  rfl
-
-end Polynomial
 
 end PerfectRing
 
@@ -211,8 +217,8 @@ instance toPerfectRing (p : ℕ) [ExpChar K p] : PerfectRing K p := by
   have hfa : aeval a f = 0 := by rw [aeval_def, map_rootOfSplits _ (SplittingField.splits f) hf_deg]
   have ha_pow : a ^ p = ι y := by rwa [AlgHom.map_sub, aeval_X_pow, aeval_C, sub_eq_zero] at hfa
   let g : K[X] := minpoly K a
-  suffices : (g.map ι).natDegree = 1
-  · rw [g.natDegree_map, ← degree_eq_iff_natDegree_eq_of_pos Nat.one_pos] at this
+  suffices (g.map ι).natDegree = 1 by
+    rw [g.natDegree_map, ← degree_eq_iff_natDegree_eq_of_pos Nat.one_pos] at this
     obtain ⟨a' : K, ha' : ι a' = a⟩ := minpoly.mem_range_of_degree_eq_one K a this
     refine' ⟨a', NoZeroSMulDivisors.algebraMap_injective K L _⟩
     rw [RingHom.map_frobenius, ha', frobenius_def, ha_pow]
@@ -241,12 +247,154 @@ theorem separable_iff_squarefree {g : K[X]} : g.Separable ↔ Squarefree g := by
 end PerfectField
 
 /-- If `L / K` is an algebraic extension, `K` is a perfect field, then `L / K` is separable. -/
-theorem Algebra.IsAlgebraic.isSeparable_of_perfectField {K L : Type*} [Field K] [Field L]
-    [Algebra K L] [PerfectField K] (halg : Algebra.IsAlgebraic K L) : IsSeparable K L :=
-  ⟨fun x ↦ PerfectField.separable_of_irreducible <| minpoly.irreducible (halg x).isIntegral⟩
+instance Algebra.IsAlgebraic.isSeparable_of_perfectField {K L : Type*} [Field K] [Field L]
+    [Algebra K L] [Algebra.IsAlgebraic K L] [PerfectField K] : IsSeparable K L :=
+  ⟨fun x ↦ PerfectField.separable_of_irreducible <|
+    minpoly.irreducible (Algebra.IsIntegral.isIntegral x)⟩
 
 /-- If `L / K` is an algebraic extension, `K` is a perfect field, then so is `L`. -/
 theorem Algebra.IsAlgebraic.perfectField {K L : Type*} [Field K] [Field L] [Algebra K L]
-    [PerfectField K] (halg : Algebra.IsAlgebraic K L) : PerfectField L := ⟨fun {f} hf ↦ by
-  obtain ⟨_, _, hi, h⟩ := hf.exists_dvd_monic_irreducible_of_isIntegral halg.isIntegral
+    [Algebra.IsAlgebraic K L] [PerfectField K] : PerfectField L := ⟨fun {f} hf ↦ by
+  obtain ⟨_, _, hi, h⟩ := hf.exists_dvd_monic_irreducible_of_isIntegral (K := K)
   exact (PerfectField.separable_of_irreducible hi).map |>.of_dvd h⟩
+
+namespace Polynomial
+
+variable {R : Type*} [CommRing R] [IsDomain R] (p n : ℕ) [ExpChar R p] (f : R[X])
+
+open Multiset
+
+theorem roots_expand_pow_map_iterateFrobenius_le :
+    (expand R (p ^ n) f).roots.map (iterateFrobenius R p n) ≤ p ^ n • f.roots := by
+  classical
+  refine le_iff_count.2 fun r ↦ ?_
+  by_cases h : ∃ s, r = s ^ p ^ n
+  · obtain ⟨s, rfl⟩ := h
+    simp_rw [count_nsmul, count_roots, ← rootMultiplicity_expand_pow, ← count_roots, count_map,
+      count_eq_card_filter_eq]
+    exact card_le_card (monotone_filter_right _ fun _ h ↦ iterateFrobenius_inj R p n h)
+  convert Nat.zero_le _
+  simp_rw [count_map, card_eq_zero]
+  exact ext' fun t ↦ count_zero t ▸ count_filter_of_neg fun h' ↦ h ⟨t, h'⟩
+
+theorem roots_expand_map_frobenius_le :
+    (expand R p f).roots.map (frobenius R p) ≤ p • f.roots := by
+  rw [← iterateFrobenius_one]
+  convert ← roots_expand_pow_map_iterateFrobenius_le p 1 f <;> apply pow_one
+
+theorem roots_expand_pow_image_iterateFrobenius_subset [DecidableEq R] :
+    (expand R (p ^ n) f).roots.toFinset.image (iterateFrobenius R p n) ⊆ f.roots.toFinset := by
+  rw [Finset.image_toFinset, ← (roots f).toFinset_nsmul _ (expChar_pow_pos R p n).ne',
+    toFinset_subset]
+  exact subset_of_le (roots_expand_pow_map_iterateFrobenius_le p n f)
+
+theorem roots_expand_image_frobenius_subset [DecidableEq R] :
+    (expand R p f).roots.toFinset.image (frobenius R p) ⊆ f.roots.toFinset := by
+  rw [← iterateFrobenius_one]
+  convert ← roots_expand_pow_image_iterateFrobenius_subset p 1 f
+  apply pow_one
+
+variable {p n f}
+variable [PerfectRing R p]
+
+theorem roots_expand_pow :
+    (expand R (p ^ n) f).roots = p ^ n • f.roots.map (iterateFrobeniusEquiv R p n).symm := by
+  classical
+  refine ext' fun r ↦ ?_
+  rw [count_roots, rootMultiplicity_expand_pow, ← count_roots, count_nsmul, count_map,
+    count_eq_card_filter_eq]; congr; ext
+  exact (iterateFrobeniusEquiv R p n).eq_symm_apply.symm
+
+theorem roots_expand : (expand R p f).roots = p • f.roots.map (frobeniusEquiv R p).symm := by
+  conv_lhs => rw [← pow_one p, roots_expand_pow, iterateFrobeniusEquiv_eq_pow, pow_one]
+  rfl
+
+theorem roots_X_pow_char_pow_sub_C {y : R} :
+    (X ^ p ^ n - C y).roots = p ^ n • {(iterateFrobeniusEquiv R p n).symm y} := by
+  have H := roots_expand_pow (p := p) (n := n) (f := X - C y)
+  rwa [roots_X_sub_C, Multiset.map_singleton, map_sub, expand_X, expand_C] at H
+
+theorem roots_X_pow_char_pow_sub_C_pow {y : R} {m : ℕ} :
+    ((X ^ p ^ n - C y) ^ m).roots = (m * p ^ n) • {(iterateFrobeniusEquiv R p n).symm y} := by
+  rw [roots_pow, roots_X_pow_char_pow_sub_C, mul_smul]
+
+theorem roots_X_pow_char_sub_C {y : R} :
+    (X ^ p - C y).roots = p • {(frobeniusEquiv R p).symm y} := by
+  have H := roots_X_pow_char_pow_sub_C (p := p) (n := 1) (y := y)
+  rwa [pow_one, iterateFrobeniusEquiv_one] at H
+
+theorem roots_X_pow_char_sub_C_pow {y : R} {m : ℕ} :
+    ((X ^ p - C y) ^ m).roots = (m * p) • {(frobeniusEquiv R p).symm y} := by
+  have H := roots_X_pow_char_pow_sub_C_pow (p := p) (n := 1) (y := y) (m := m)
+  rwa [pow_one, iterateFrobeniusEquiv_one] at H
+
+theorem roots_expand_pow_map_iterateFrobenius :
+    (expand R (p ^ n) f).roots.map (iterateFrobenius R p n) = p ^ n • f.roots := by
+  simp_rw [← coe_iterateFrobeniusEquiv, roots_expand_pow, Multiset.map_nsmul,
+    Multiset.map_map, comp_apply, RingEquiv.apply_symm_apply, map_id']
+
+theorem roots_expand_map_frobenius : (expand R p f).roots.map (frobenius R p) = p • f.roots := by
+  simp [roots_expand, Multiset.map_nsmul]
+
+theorem roots_expand_image_iterateFrobenius [DecidableEq R] :
+    (expand R (p ^ n) f).roots.toFinset.image (iterateFrobenius R p n) = f.roots.toFinset := by
+  rw [Finset.image_toFinset, roots_expand_pow_map_iterateFrobenius,
+    (roots f).toFinset_nsmul _ (expChar_pow_pos R p n).ne']
+
+theorem roots_expand_image_frobenius [DecidableEq R] :
+    (expand R p f).roots.toFinset.image (frobenius R p) = f.roots.toFinset := by
+  rw [Finset.image_toFinset, roots_expand_map_frobenius,
+      (roots f).toFinset_nsmul _ (expChar_pos R p).ne']
+
+variable (p n f) [DecidableEq R]
+
+/-- If `f` is a polynomial over an integral domain `R` of characteristic `p`, then there is
+a map from the set of roots of `Polynomial.expand R p f` to the set of roots of `f`.
+It's given by `x ↦ x ^ p`, see `rootsExpandToRoots_apply`. -/
+noncomputable def rootsExpandToRoots : (expand R p f).roots.toFinset ↪ f.roots.toFinset where
+  toFun x := ⟨x ^ p, roots_expand_image_frobenius_subset p f (Finset.mem_image_of_mem _ x.2)⟩
+  inj' _ _ h := Subtype.ext (frobenius_inj R p <| Subtype.ext_iff.1 h)
+
+@[simp]
+theorem rootsExpandToRoots_apply (x) : (rootsExpandToRoots p f x : R) = x ^ p := rfl
+
+open scoped Classical in
+/-- If `f` is a polynomial over an integral domain `R` of characteristic `p`, then there is
+a map from the set of roots of `Polynomial.expand R (p ^ n) f` to the set of roots of `f`.
+It's given by `x ↦ x ^ (p ^ n)`, see `rootsExpandPowToRoots_apply`. -/
+noncomputable def rootsExpandPowToRoots :
+    (expand R (p ^ n) f).roots.toFinset ↪ f.roots.toFinset where
+  toFun x := ⟨x ^ p ^ n,
+    roots_expand_pow_image_iterateFrobenius_subset p n f (Finset.mem_image_of_mem _ x.2)⟩
+  inj' _ _ h := Subtype.ext (iterateFrobenius_inj R p n <| Subtype.ext_iff.1 h)
+
+@[simp]
+theorem rootsExpandPowToRoots_apply (x) : (rootsExpandPowToRoots p n f x : R) = x ^ p ^ n := rfl
+
+/-- If `f` is a polynomial over a perfect integral domain `R` of characteristic `p`, then there is
+a bijection from the set of roots of `Polynomial.expand R p f` to the set of roots of `f`.
+It's given by `x ↦ x ^ p`, see `rootsExpandEquivRoots_apply`. -/
+noncomputable def rootsExpandEquivRoots : (expand R p f).roots.toFinset ≃ f.roots.toFinset :=
+  ((frobeniusEquiv R p).image _).trans <| .Set.ofEq <| show _ '' (setOf _) = setOf _ by
+    classical simp_rw [← roots_expand_image_frobenius (p := p) (f := f), Finset.mem_val,
+      Finset.setOf_mem, Finset.coe_image, RingEquiv.toEquiv_eq_coe, EquivLike.coe_coe,
+      frobeniusEquiv_apply]
+
+@[simp]
+theorem rootsExpandEquivRoots_apply (x) : (rootsExpandEquivRoots p f x : R) = x ^ p := rfl
+
+/-- If `f` is a polynomial over a perfect integral domain `R` of characteristic `p`, then there is
+a bijection from the set of roots of `Polynomial.expand R (p ^ n) f` to the set of roots of `f`.
+It's given by `x ↦ x ^ (p ^ n)`, see `rootsExpandPowEquivRoots_apply`. -/
+noncomputable def rootsExpandPowEquivRoots (n : ℕ) :
+    (expand R (p ^ n) f).roots.toFinset ≃ f.roots.toFinset :=
+  ((iterateFrobeniusEquiv R p n).image _).trans <| .Set.ofEq <| show _ '' (setOf _) = setOf _ by
+    classical simp_rw [← roots_expand_image_iterateFrobenius (p := p) (f := f) (n := n),
+      Finset.mem_val, Finset.setOf_mem, Finset.coe_image, RingEquiv.toEquiv_eq_coe,
+      EquivLike.coe_coe, iterateFrobeniusEquiv_apply]
+
+@[simp]
+theorem rootsExpandPowEquivRoots_apply (n : ℕ) (x) :
+    (rootsExpandPowEquivRoots p f n x : R) = x ^ p ^ n := rfl
+
+end Polynomial

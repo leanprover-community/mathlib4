@@ -6,6 +6,7 @@ Authors: Frédéric Dupuis
 import Mathlib.Topology.Algebra.Module.WeakDual
 import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.Topology.ContinuousFunction.Algebra
+import Mathlib.Data.Set.Lattice
 
 #align_import topology.algebra.module.character_space from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
@@ -45,7 +46,7 @@ def characterSpace (𝕜 : Type*) (A : Type*) [CommSemiring 𝕜] [TopologicalSp
 
 variable {𝕜 : Type*} {A : Type*}
 
--- porting note: even though the capitalization of the namespace differs, it doesn't matter
+-- Porting note: even though the capitalization of the namespace differs, it doesn't matter
 -- because there is no dot notation since `characterSpace` is only a type via `CoeSort`.
 namespace CharacterSpace
 
@@ -64,7 +65,7 @@ instance instContinuousLinearMapClass : ContinuousLinearMapClass (characterSpace
   map_add φ := (φ : WeakDual 𝕜 A).map_add
   map_continuous φ := (φ : WeakDual 𝕜 A).cont
 
--- porting note: moved because Lean 4 doesn't see the `DFunLike` instance on `characterSpace 𝕜 A`
+-- Porting note: moved because Lean 4 doesn't see the `DFunLike` instance on `characterSpace 𝕜 A`
 -- until the `ContinuousLinearMapClass` instance is declared
 @[simp, norm_cast]
 protected theorem coe_coe (φ : characterSpace 𝕜 A) : ⇑(φ : WeakDual 𝕜 A) = (φ : A → 𝕜) :=
@@ -89,7 +90,7 @@ theorem coe_toCLM (φ : characterSpace 𝕜 A) : ⇑(toCLM φ) = φ :=
 /-- Elements of the character space are non-unital algebra homomorphisms. -/
 instance instNonUnitalAlgHomClass : NonUnitalAlgHomClass (characterSpace 𝕜 A) 𝕜 A 𝕜 :=
   { CharacterSpace.instContinuousLinearMapClass with
-    map_smul := fun φ => map_smulₛₗ φ
+    map_smulₛₗ := fun φ => map_smul φ
     map_zero := fun φ => map_zero φ
     map_mul := fun φ => φ.prop.2 }
 
@@ -209,7 +210,6 @@ end CharacterSpace
 section Kernel
 
 variable [Field 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜] [ContinuousConstSMul 𝕜 𝕜]
-
 variable [Ring A] [TopologicalSpace A] [Algebra 𝕜 A]
 
 /-- The `RingHom.ker` of `φ : characterSpace 𝕜 A` is maximal. -/

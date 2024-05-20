@@ -56,7 +56,8 @@ Vector bundle
 
 noncomputable section
 
-open Bundle Set Classical
+open scoped Classical
+open Bundle Set
 open scoped Topology
 
 variable (R : Type*) {B : Type*} (F : Type*) (E : B → Type*)
@@ -289,8 +290,8 @@ def coordChangeL (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.IsLinear 
       by_cases hb : b ∈ e.baseSet ∩ e'.baseSet
       · rw [dif_pos hb]
         refine' (e.continuousOn.comp_continuous _ _).snd
-        exact e'.continuousOn_symm.comp_continuous (Continuous.Prod.mk b) fun y =>
-          mk_mem_prod hb.2 (mem_univ y)
+        · exact e'.continuousOn_symm.comp_continuous (Continuous.Prod.mk b) fun y =>
+            mk_mem_prod hb.2 (mem_univ y)
         exact fun y => e.mem_source.mpr hb.1
       · rw [dif_neg hb]
         exact continuous_id }
@@ -432,7 +433,7 @@ def continuousLinearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B)
     cont := by
       dsimp
       rw [e.coe_linearMapAt b]
-      refine' continuous_if_const _ (fun hb => _) fun _ => continuous_zero
+      refine continuous_if_const _ (fun hb => ?_) fun _ => continuous_zero
       exact (e.continuousOn.comp_continuous (FiberBundle.totalSpaceMk_inducing F E b).continuous
         fun x => e.mem_source.mpr hb).snd }
 #align trivialization.continuous_linear_map_at Trivialization.continuousLinearMapAt
@@ -520,8 +521,8 @@ variable {R}
 theorem symm_apply_eq_mk_continuousLinearEquivAt_symm (e : Trivialization F (π F E)) [e.IsLinear R]
     (b : B) (hb : b ∈ e.baseSet) (z : F) :
     e.toPartialHomeomorph.symm ⟨b, z⟩ = ⟨b, (e.continuousLinearEquivAt R b hb).symm z⟩ := by
-  have h : (b, z) ∈ e.target
-  · rw [e.target_eq]
+  have h : (b, z) ∈ e.target := by
+    rw [e.target_eq]
     exact ⟨hb, mem_univ _⟩
   apply e.injOn (e.map_target h)
   · simpa only [e.source_eq, mem_preimage]
@@ -590,7 +591,7 @@ def toFiberBundleCore : FiberBundleCore ι B F :=
         ((Z.continuousOn_coordChange i j).prod_map continuousOn_id) }
 #align vector_bundle_core.to_fiber_bundle_core VectorBundleCore.toFiberBundleCore
 
--- porting note: TODO: restore coercion
+-- Porting note (#11215): TODO: restore coercion
 -- instance toFiberBundleCoreCoe : Coe (VectorBundleCore R B F ι) (FiberBundleCore ι B F) :=
 --   ⟨toFiberBundleCore⟩
 -- #align vector_bundle_core.to_fiber_bundle_core_coe VectorBundleCore.toFiberBundleCoreCoe
@@ -604,7 +605,7 @@ theorem coordChange_linear_comp (i j k : ι) :
 #align vector_bundle_core.coord_change_linear_comp VectorBundleCore.coordChange_linear_comp
 
 /-- The index set of a vector bundle core, as a convenience function for dot notation -/
-@[nolint unusedArguments] -- porting note: was `nolint has_nonempty_instance`
+@[nolint unusedArguments] -- Porting note(#5171): was `nolint has_nonempty_instance`
 def Index := ι
 #align vector_bundle_core.index VectorBundleCore.Index
 
@@ -615,7 +616,7 @@ def Base := B
 
 /-- The fiber of a vector bundle core, as a convenience function for dot notation and
 typeclass inference -/
-@[nolint unusedArguments] -- porting note: was `nolint has_nonempty_instance`
+@[nolint unusedArguments] -- Porting note(#5171): was `nolint has_nonempty_instance`
 def Fiber : B → Type _ :=
   Z.toFiberBundleCore.Fiber
 #align vector_bundle_core.fiber VectorBundleCore.Fiber
@@ -624,7 +625,7 @@ instance topologicalSpaceFiber (x : B) : TopologicalSpace (Z.Fiber x) :=
   Z.toFiberBundleCore.topologicalSpaceFiber x
 #align vector_bundle_core.topological_space_fiber VectorBundleCore.topologicalSpaceFiber
 
--- porting note: fixed: used to assume both `[NormedAddCommGroup F]` and `[AddCommGroupCat F]`
+-- Porting note: fixed: used to assume both `[NormedAddCommGroup F]` and `[AddCommGroupCat F]`
 instance addCommGroupFiber (x : B) : AddCommGroup (Z.Fiber x) :=
   inferInstanceAs (AddCommGroup F)
 #align vector_bundle_core.add_comm_group_fiber VectorBundleCore.addCommGroupFiber
@@ -676,7 +677,7 @@ def localTriv (i : ι) : Trivialization F (π F Z.Fiber) :=
   Z.toFiberBundleCore.localTriv i
 #align vector_bundle_core.local_triv VectorBundleCore.localTriv
 
--- porting note: moved from below to fix the next instance
+-- Porting note: moved from below to fix the next instance
 @[simp, mfld_simps]
 theorem localTriv_apply {i : ι} (p : Z.TotalSpace) :
     (Z.localTriv i) p = ⟨p.1, Z.coordChange (Z.indexAt p.1) i p.1 p.2⟩ :=
@@ -853,7 +854,7 @@ The field `exists_coordChange` is stated as an existential statement (instead of
 fields), since it depends on propositional information (namely `e e' ∈ pretrivializationAtlas`).
 This makes it inconvenient to explicitly define a `coordChange` function when constructing a
 `VectorPrebundle`. -/
--- porting note: was @[nolint has_nonempty_instance]
+-- Porting note(#5171): was @[nolint has_nonempty_instance]
 structure VectorPrebundle where
   pretrivializationAtlas : Set (Pretrivialization F (π F E))
   pretrivialization_linear' : ∀ e, e ∈ pretrivializationAtlas → e.IsLinear R
@@ -977,7 +978,7 @@ theorem toVectorBundle : @VectorBundle R _ F E _ _ _ _ _ _ a.totalSpaceTopology 
       rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩
       refine (a.continuousOn_coordChange he he').congr fun b hb ↦ ?_
       ext v
-      -- porting note: help `rw` find instances
+      -- Porting note: help `rw` find instances
       haveI h₁ := a.linear_trivializationOfMemPretrivializationAtlas he
       haveI h₂ := a.linear_trivializationOfMemPretrivializationAtlas he'
       rw [trivializationOfMemPretrivializationAtlas] at h₁ h₂
@@ -991,20 +992,14 @@ end VectorPrebundle
 namespace ContinuousLinearMap
 
 variable {𝕜₁ 𝕜₂ : Type*} [NontriviallyNormedField 𝕜₁] [NontriviallyNormedField 𝕜₂]
-
 variable {σ : 𝕜₁ →+* 𝕜₂}
-
 variable {B' : Type*} [TopologicalSpace B']
-
 variable [NormedSpace 𝕜₁ F] [∀ x, Module 𝕜₁ (E x)] [TopologicalSpace (TotalSpace F E)]
-
 variable {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕜₂ F'] {E' : B' → Type*}
   [∀ x, AddCommMonoid (E' x)] [∀ x, Module 𝕜₂ (E' x)] [TopologicalSpace (TotalSpace F' E')]
 
 variable [FiberBundle F E] [VectorBundle 𝕜₁ F E]
-
 variable [∀ x, TopologicalSpace (E' x)] [FiberBundle F' E'] [VectorBundle 𝕜₂ F' E']
-
 variable (F' E')
 
 /-- When `ϕ` is a continuous (semi)linear map between the fibers `E x` and `E' y` of two vector

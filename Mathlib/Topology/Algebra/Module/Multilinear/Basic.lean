@@ -80,8 +80,8 @@ instance funLike : FunLike (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i
   coe f := f.toFun
   coe_injective' _ _ h := toMultilinearMap_injective <| MultilinearMap.coe_injective h
 
-instance continuousMapClass : ContinuousMapClass (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂
-    where
+instance continuousMapClass :
+    ContinuousMapClass (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
   map_continuous := ContinuousMultilinearMap.cont
 #align continuous_multilinear_map.continuous_map_class ContinuousMultilinearMap.continuousMapClass
 
@@ -649,5 +649,47 @@ def smulRight : ContinuousMultilinearMap R M₁ M₂ where
 #align continuous_multilinear_map.smul_right ContinuousMultilinearMap.smulRight
 
 end SMulRight
+
+section CommRing
+variable {M : Type*}
+variable [Fintype ι] [CommRing R] [AddCommMonoid M] [Module R M]
+variable [TopologicalSpace R] [TopologicalSpace M]
+variable [ContinuousMul R] [ContinuousSMul R M]
+
+variable (R ι) in
+/-- The canonical continuous multilinear map on `R^ι`, associating to `m` the product of all the
+`m i` (multiplied by a fixed reference element `z` in the target module) -/
+protected def mkPiRing (z : M) : ContinuousMultilinearMap R (fun _ : ι => R) M :=
+  (ContinuousMultilinearMap.mkPiAlgebra R ι R).smulRight z
+#align continuous_multilinear_map.mk_pi_field ContinuousMultilinearMap.mkPiRing
+
+
+@[simp]
+theorem mkPiRing_apply (z : M) (m : ι → R) :
+    (ContinuousMultilinearMap.mkPiRing R ι z : (ι → R) → M) m = (∏ i, m i) • z :=
+  rfl
+#align continuous_multilinear_map.mk_pi_field_apply ContinuousMultilinearMap.mkPiRing_apply
+
+theorem mkPiRing_apply_one_eq_self (f : ContinuousMultilinearMap R (fun _ : ι => R) M) :
+    ContinuousMultilinearMap.mkPiRing R ι (f fun _ => 1) = f :=
+  toMultilinearMap_injective f.toMultilinearMap.mkPiRing_apply_one_eq_self
+#align continuous_multilinear_map.mk_pi_field_apply_one_eq_self ContinuousMultilinearMap.mkPiRing_apply_one_eq_self
+
+theorem mkPiRing_eq_iff {z₁ z₂ : M} :
+    ContinuousMultilinearMap.mkPiRing R ι z₁ = ContinuousMultilinearMap.mkPiRing R ι z₂ ↔
+      z₁ = z₂ := by
+  rw [← toMultilinearMap_injective.eq_iff]
+  exact MultilinearMap.mkPiRing_eq_iff
+#align continuous_multilinear_map.mk_pi_field_eq_iff ContinuousMultilinearMap.mkPiRing_eq_iff
+
+theorem mkPiRing_zero : ContinuousMultilinearMap.mkPiRing R ι (0 : M) = 0 := by
+  ext; rw [mkPiRing_apply, smul_zero, ContinuousMultilinearMap.zero_apply]
+#align continuous_multilinear_map.mk_pi_field_zero ContinuousMultilinearMap.mkPiRing_zero
+
+theorem mkPiRing_eq_zero_iff (z : M) : ContinuousMultilinearMap.mkPiRing R ι z = 0 ↔ z = 0 := by
+  rw [← mkPiRing_zero, mkPiRing_eq_iff]
+#align continuous_multilinear_map.mk_pi_field_eq_zero_iff ContinuousMultilinearMap.mkPiRing_eq_zero_iff
+
+end CommRing
 
 end ContinuousMultilinearMap
