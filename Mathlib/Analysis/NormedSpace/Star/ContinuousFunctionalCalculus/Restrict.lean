@@ -79,7 +79,7 @@ lemma closedEmbedding_starAlgHom {a : A} {φ : C(spectrum S a, S) →⋆ₐ[S] A
   have := h.compactSpace
   hφ.comp <| UniformEmbedding.toClosedEmbedding <| .comp
     (ContinuousMap.uniformEmbedding_comp _ halg)
-    (ContinuousMap.congrLeftUniformEquiv h.homeomorph.symm |>.uniformEmbedding)
+    (UniformEquiv.continuousMapCongr h.homeomorph.symm (.refl _) |>.uniformEmbedding)
 
 lemma starAlgHom_id {a : A} {φ : C(spectrum S a, S) →⋆ₐ[S] A} {f : C(S, R)}
     (h : SpectrumRestricts a f) (h_id : φ (.restrict (spectrum S a) <| .id S) = a) :
