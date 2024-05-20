@@ -66,8 +66,7 @@ instance : FunLike (A →⋆ₙ+* B) A B where
   coe f := f.toFun
   coe_injective' := by rintro ⟨⟨⟨f, _⟩,  _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
 
-instance : NonUnitalRingHomClass (A →⋆ₙ+* B) A B
-    where
+instance : NonUnitalRingHomClass (A →⋆ₙ+* B) A B where
   map_mul f := f.map_mul'
   map_add f := f.map_add'
   map_zero f := f.map_zero'
