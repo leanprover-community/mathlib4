@@ -251,7 +251,7 @@ theorem closure_induction' {p : ∀ x, x ∈ span R s → Prop}
 theorem span_span_coe_preimage : span R (((↑) : span R s → M) ⁻¹' s) = ⊤ :=
   eq_top_iff.2 fun x ↦ Subtype.recOn x fun x hx _ ↦ by
     refine span_induction' (p := fun x hx ↦ (⟨x, hx⟩ : span R s) ∈ span R (Subtype.val ⁻¹' s))
-      (fun x' hx' ↦ subset_span hx') _ (fun x _ y _ ↦ _) (fun r x _ ↦ _) hx
+      (fun x' hx' ↦ subset_span hx') ?_ (fun x _ y _ ↦ ?_) (fun r x _ ↦ ?_) hx
     · exact zero_mem _
     · exact add_mem
     · exact smul_mem _ _
@@ -720,7 +720,7 @@ theorem iSup_induction' {ι : Sort*} (p : ι → Submodule R M) {C : ∀ x, (x �
     (hx : x ∈ ⨆ i, p i) : C x hx := by
   refine Exists.elim ?_ fun (hx : x ∈ ⨆ i, p i) (hc : C x hx) => hc
   refine iSup_induction p (C := fun x : M ↦ ∃ (hx : x ∈ ⨆ i, p i), C x hx) hx
-    (fun i x hx => _) _ fun x y => _
+    (fun i x hx => ?_) ?_ fun x y => ?_
   · exact ⟨_, mem _ _ hx⟩
   · exact ⟨_, zero⟩
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
