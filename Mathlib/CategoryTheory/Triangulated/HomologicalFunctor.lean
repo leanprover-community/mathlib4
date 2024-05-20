@@ -124,6 +124,143 @@ noncomputable instance (priority := 100) [F.IsHomological] :
 instance (priority := 100) [F.IsHomological] : F.Additive :=
   F.additive_of_preserves_binary_products
 
+
+instance (L : C ⥤ D) [CommShift L ℤ] [IsTriangulated L]
+  (F : D ⥤ A) [F.PreservesZeroMorphisms] [F.IsHomological] :
+    (L ⋙ F).IsHomological :=
+  ⟨fun T hT => F.map_distinguished_exact _ (L.map_distinguished T hT)⟩
+
+lemma isHomological_of_localization (L : C ⥤ D)
+    [L.CommShift ℤ] [L.IsTriangulated] [EssSurj L.mapArrow] (F : D ⥤ A)
+    (G : C ⥤ A) (e : L ⋙ F ≅ G) [G.PreservesZeroMorphisms] [G.IsHomological]
+    [F.PreservesZeroMorphisms] : F.IsHomological := by
+  have : (L ⋙ F).IsHomological := IsHomological.of_iso e.symm
+  refine' IsHomological.mk' _ (fun T hT => _)
+  rw [Triangulated.Localization.distTriang_iff L] at hT
+  obtain ⟨T₀, e, hT₀⟩ := hT
+  exact ⟨L.mapTriangle.obj T₀, e, (L ⋙ F).map_distinguished_exact _ hT₀⟩
+
+section
+
+variable [F.IsHomological] [F.ShiftSequence ℤ] (T T' : Triangle C) (hT : T ∈ distTriang C)
+  (hT' : T' ∈ distTriang C) (φ : T ⟶ T') (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
+
+/-- The connecting homomorphism in the long exact sequence attached to an homological
+functor and a distinguished triangle. -/
+noncomputable def homologySequenceδ :
+    (F.shift n₀).obj T.obj₃ ⟶ (F.shift n₁).obj T.obj₁ :=
+  F.shiftMap T.mor₃ n₀ n₁ (by rw [add_comm 1, h])
+
+variable {T T'}
+
+@[reassoc]
+lemma homologySequenceδ_naturality :
+    (F.shift n₀).map φ.hom₃ ≫ F.homologySequenceδ T' n₀ n₁ h =
+      F.homologySequenceδ T n₀ n₁ h ≫ (F.shift n₁).map φ.hom₁ := by
+  dsimp only [homologySequenceδ]
+  rw [← shiftMap_comp', ← φ.comm₃, shiftMap_comp]
+
+variable (T)
+
+@[reassoc]
+lemma comp_homologySequenceδ :
+    (F.shift n₀).map T.mor₂ ≫ F.homologySequenceδ T n₀ n₁ h = 0 := by
+  dsimp only [homologySequenceδ]
+  rw [← F.shiftMap_comp', comp_distTriang_mor_zero₂₃ _ hT, shiftMap_zero]
+
+@[reassoc]
+lemma homologySequenceδ_comp :
+    F.homologySequenceδ T n₀ n₁ h ≫ (F.shift n₁).map T.mor₁ = 0 := by
+  dsimp only [homologySequenceδ]
+  rw [← F.shiftMap_comp, comp_distTriang_mor_zero₃₁ _ hT, shiftMap_zero]
+
+@[reassoc]
+lemma homologySequence_comp  :
+    (F.shift n₀).map T.mor₁ ≫ (F.shift n₀).map T.mor₂ = 0 := by
+  rw [← Functor.map_comp, comp_distTriang_mor_zero₁₂ _ hT, Functor.map_zero]
+
+attribute [local simp] smul_smul
+
+lemma homologySequence_exact₂ :
+    (ShortComplex.mk _ _ (F.homologySequence_comp T hT n₀)).Exact := by
+  refine' ShortComplex.exact_of_iso _ (F.map_distinguished_exact _
+    (Triangle.shift_distinguished _ hT n₀))
+  exact ShortComplex.isoMk ((F.isoShift n₀).app _)
+    (n₀.negOnePow • ((F.isoShift n₀).app _)) ((F.isoShift n₀).app _) (by simp) (by simp)
+
+lemma homologySequence_exact₃ :
+    (ShortComplex.mk _ _ (F.comp_homologySequenceδ T hT _ _ h)).Exact := by
+  refine ShortComplex.exact_of_iso ?_ (F.homologySequence_exact₂ _ (rot_of_distTriang _ hT) n₀)
+  exact ShortComplex.isoMk (Iso.refl _) (Iso.refl _)
+    ((F.shiftIso 1 n₀ n₁ (by linarith)).app _) (by simp) (by simp [homologySequenceδ, shiftMap])
+
+lemma homologySequence_exact₁ :
+    (ShortComplex.mk _ _ (F.homologySequenceδ_comp T hT _ _ h)).Exact := by
+  refine' ShortComplex.exact_of_iso _ (F.homologySequence_exact₂ _ (inv_rot_of_distTriang _ hT) n₁)
+  refine' ShortComplex.isoMk (-((F.shiftIso (-1) n₁ n₀ (by linarith)).app _))
+    (Iso.refl _) (Iso.refl _) _ (by simp)
+  dsimp
+  simp only [homologySequenceδ, neg_comp, map_neg, comp_id,
+    F.shiftIso_hom_app_comp_shiftMap_of_add_eq_zero T.mor₃ (-1) (neg_add_self 1) n₀ n₁ (by omega)]
+
+lemma homologySequence_epi_shift_map_mor₁_iff :
+    Epi ((F.shift n₀).map T.mor₁) ↔ (F.shift n₀).map T.mor₂ = 0 :=
+  (F.homologySequence_exact₂ T hT n₀).epi_f_iff
+
+lemma homologySequence_mono_shift_map_mor₁_iff :
+    Mono ((F.shift n₁).map T.mor₁) ↔ F.homologySequenceδ T n₀ n₁ h = 0 :=
+  (F.homologySequence_exact₁ T hT n₀ n₁ h).mono_g_iff
+
+lemma homologySequence_epi_shift_map_mor₂_iff :
+    Epi ((F.shift n₀).map T.mor₂) ↔ F.homologySequenceδ T n₀ n₁ h = 0 :=
+  (F.homologySequence_exact₃ T hT n₀ n₁ h).epi_f_iff
+
+lemma homologySequence_mono_shift_map_mor₂_iff :
+    Mono ((F.shift n₀).map T.mor₂) ↔ (F.shift n₀).map T.mor₁ = 0 :=
+  (F.homologySequence_exact₂ T hT n₀).mono_g_iff
+
+lemma homologySequence_isIso_shift_map_mor₁_iff :
+    IsIso ((F.shift n₁).map T.mor₁) ↔
+      F.homologySequenceδ T n₀ n₁ h = 0 ∧ (F.shift n₁).map T.mor₂ = 0 := by
+  rw [← F.homologySequence_mono_shift_map_mor₁_iff T hT n₀ n₁ h,
+    ← F.homologySequence_epi_shift_map_mor₁_iff T hT n₁]
+  constructor
+  · intro
+    constructor <;> infer_instance
+  · rintro ⟨_, _⟩
+    apply isIso_of_mono_of_epi
+
+lemma homologySequence_isIso_shift_map_mor₂_iff :
+    IsIso ((F.shift n₀).map T.mor₂) ↔
+      F.homologySequenceδ T n₀ n₁ h = 0 ∧ (F.shift n₀).map T.mor₁ = 0 := by
+  rw [← F.homologySequence_mono_shift_map_mor₂_iff T hT n₀,
+    ← F.homologySequence_epi_shift_map_mor₂_iff T hT n₀ n₁ h]
+  constructor
+  · intro
+    constructor <;> infer_instance
+  · rintro ⟨_, _⟩
+    apply isIso_of_mono_of_epi
+
+lemma mem_homologicalKernel_W_iff {X Y : C} (f : X ⟶ Y) :
+    F.homologicalKernel.W f ↔ ∀ (n : ℤ), IsIso ((F.shift n).map f) := by
+  obtain ⟨Z, g, h, hT⟩ := distinguished_cocone_triangle f
+  apply (F.homologicalKernel.mem_W_iff_of_distinguished _ hT).trans
+  have h₁ := fun n => (F.homologySequence_exact₃ _ hT n _ rfl).isZero_X₂_iff
+  have h₂ := fun n => F.homologySequence_mono_shift_map_mor₁_iff _ hT n _ rfl
+  have h₃ := fun n => F.homologySequence_epi_shift_map_mor₁_iff _ hT n
+  dsimp at h₁ h₂ h₃ ⊢
+  simp only [mem_homologicalKernel_iff, h₁, ← h₂, ← h₃]
+  constructor
+  · intro h n
+    obtain ⟨m, rfl⟩ : ∃ (m : ℤ), n = m + 1 := ⟨n - 1, by simp⟩
+    have := (h (m + 1)).1
+    have := (h m).2
+    apply isIso_of_mono_of_epi
+  · intros
+    constructor <;> infer_instance
+
+end
+
 end Functor
 
 end CategoryTheory

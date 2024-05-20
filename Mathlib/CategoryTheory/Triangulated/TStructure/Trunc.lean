@@ -669,7 +669,7 @@ lemma truncGEδLT_mk (n : ℤ) :
     t.abstractSpectralObject.truncGEδLT.app (ℤt.mk n) =
       t.truncGEδLT n := rfl
 
-lemma triangleLTGEIso (n : ℤ) (X : C) :
+noncomputable def triangleLTGEIso (n : ℤ) (X : C) :
     (t.abstractSpectralObject.triangleLTGE.obj (ℤt.mk n)).obj X ≅
       (t.triangleLTGE n).obj X := by
   refine' Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) _ _ _
@@ -695,7 +695,7 @@ lemma truncGEπ_bot_app (X : C) :
   erw [Functor.map_id]
   simp only [truncGEt_obj_bot, NatTrans.id_app, Functor.id_obj, comp_id]
 
-lemma triangleLTGETopIso (X : C) :
+noncomputable def triangleLTGETopIso (X : C) :
   (t.abstractSpectralObject.triangleLTGE.obj ⊤).obj X ≅
     Pretriangulated.contractibleTriangle X := by
   refine' Triangle.isoMk _ _ (((abstractSpectralObject t).truncLTObjTopIso).app X)
@@ -706,7 +706,7 @@ lemma triangleLTGETopIso (X : C) :
   · refine' IsZero.eq_of_src _ _ _
     exact IsZero.obj (isZero_zero _) _
 
-lemma triangleLTGEBotIso (X : C) :
+noncomputable def triangleLTGEBotIso (X : C) :
   (t.abstractSpectralObject.triangleLTGE.obj ⊥).obj X ≅
     (Pretriangulated.contractibleTriangle X).invRotate := by
   refine' Triangle.isoMk _ _ ((isZero_truncLT_obj_bot_obj t X).isoZero ≪≫

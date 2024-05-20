@@ -345,7 +345,8 @@ noncomputable def spectralObject (X : C) :
       map_comp := fun {D₁ D₂ d₃} f g => by
         dsimp
         conv_rhs =>
-          rw [← NatTrans.comp_app, ← Functor.map_comp] }
+          rw [← NatTrans.comp_app, ← Functor.map_comp]
+        rfl}
   δ' :=
     { app := fun D => (F.truncGELTδ.app (Arrow₂.mk (D.map' 0 1) (D.map' 1 2))).app X
       naturality := fun {D₁ D₂} f => by

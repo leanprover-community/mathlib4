@@ -27,7 +27,6 @@ lemma isGE_obj (X : C) (n : ℤ) [t₁.IsGE X n] [h : F.RightTExact t₁ t₂] :
 lemma isLE_obj (X : C) (n : ℤ) [t₁.IsLE X n] [h : F.LeftTExact t₁ t₂] : t₂.IsLE (F.obj X) n :=
   h.objLE X n
 
-@[pp_dot]
 class TExact : Prop where
   rightTExact : F.RightTExact t₁ t₂
   leftTExact : F.LeftTExact t₁ t₂

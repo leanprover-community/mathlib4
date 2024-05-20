@@ -31,7 +31,7 @@ variable {X₁ X₂ : A} {f₁ : X₁ ⟶ X₂} {X₃ : C} (f₂ : ι.obj X₂ �
 
 noncomputable def ιK : K ⟶ X₁ := (ι ⋙ shiftFunctor C (1 : ℤ)).preimage (α ≫ f₃)
 
-def πQ : X₂ ⟶ Q := ι.preimage (f₂ ≫ β)
+noncomputable def πQ : X₂ ⟶ Q := ι.preimage (f₂ ≫ β)
 
 @[simp, reassoc]
 lemma shift_ι_map_ιK : (ι.map (ιK f₃ α))⟦(1 : ℤ)⟧' = α ≫ f₃ := by
@@ -100,7 +100,7 @@ lemma ιK_lift {B : A} (x₁ : B ⟶ X₁) (hx₁ : x₁ ≫ f₁ = 0) :
     obtain ⟨k', hk'⟩ := this
     refine' ⟨(ι ⋙ shiftFunctor C (1 : ℤ)).preimage k', _⟩
     apply (ι ⋙ shiftFunctor C (1 : ℤ)).map_injective
-    rw [Functor.map_comp, Functor.image_preimage, Functor.comp_map, shift_ι_map_ιK,
+    rw [Functor.map_comp, Functor.map_preimage, Functor.comp_map, shift_ι_map_ιK,
       Functor.comp_map, hk']
   obtain ⟨x₃, hx₃⟩ := Triangle.coyoneda_exact₁ _ hT ((ι.map x₁)⟦(1 : ℤ)⟧')
     (by
@@ -129,7 +129,7 @@ lemma πQ_desc {B : A} (x₂ : X₂ ⟶ B) (hx₂ : f₁ ≫ x₂ = 0) :
   dsimp at k hk hx₁
   refine' ⟨ι.preimage k, _⟩
   apply ι.map_injective
-  simp only [Functor.map_comp, ι_map_πQ, Functor.image_preimage, assoc, hx₁, hk]
+  simp only [Functor.map_comp, ι_map_πQ, Functor.map_preimage, assoc, hx₁, hk]
 
 noncomputable def isColimitCokernelCofork : IsColimit (CokernelCofork.ofπ _ (mor₁_πQ hT β)) :=
   CokernelCofork.IsColimit.ofπ _ _
@@ -251,10 +251,10 @@ noncomputable def abelian : Abelian A := by
   have H := someOctahedron comm (rot_of_distTriang _ hT) (rot_of_distTriang _ hT')
     (rot_of_distTriang _ hI)
   obtain ⟨m₁, hm₁⟩ : ∃ (m₁ : X₁ ⟶ I), (shiftFunctor C (1 : ℤ)).map (ι.map m₁) = H.m₁ :=
-    ⟨(ι ⋙ shiftFunctor C (1 : ℤ)).preimage H.m₁, Functor.image_preimage (ι ⋙ _) _⟩
+    ⟨(ι ⋙ shiftFunctor C (1 : ℤ)).preimage H.m₁, Functor.map_preimage (ι ⋙ _) _⟩
   obtain ⟨m₃ : ι.obj I ⟶ (ι.obj K)⟦(1 : ℤ)⟧, hm₃⟩ :
       ∃ m₃, (shiftFunctor C (1 : ℤ)).map m₃ = H.m₃ :=
-    ⟨(shiftFunctor C (1 : ℤ)).preimage H.m₃, Functor.image_preimage _ _⟩
+    ⟨(shiftFunctor C (1 : ℤ)).preimage H.m₃, Functor.map_preimage _ _⟩
   have Hmem' : Triangle.mk (ι.map (ιK f₃ α)) (ι.map m₁) (-m₃) ∈ distTriang C := by
     rw [rotate_distinguished_triangle, ← Triangle.shift_distinguished_iff _ 1]
     refine' isomorphic_distinguished _ H.mem _ _
