@@ -42,14 +42,14 @@ Note that most computational proofs follow from their analogous proofs for affin
  * `WeierstrassCurve.Jacobian.Nonsingular`: the nonsingular condition on a point representative.
  * `WeierstrassCurve.Jacobian.NonsingularLift`: the nonsingular condition on a point class.
  * `WeierstrassCurve.Jacobian.neg`: the negation operation on a point representative.
- * `WeierstrassCurve.Jacobian.neg_map`: the negation operation on a point class.
+ * `WeierstrassCurve.Jacobian.negMap`: the negation operation on a point class.
  * `WeierstrassCurve.Jacobian.add`: the addition operation on a point representative.
- * `WeierstrassCurve.Jacobian.add_map`: the addition operation on a point class.
+ * `WeierstrassCurve.Jacobian.addMap`: the addition operation on a point class.
 
 ## Main statements
 
- * `WeierstrassCurve.Jacobian.nonsingular_neg`: negation preserves the nonsingular condition.
- * `WeierstrassCurve.Jacobian.nonsingular_add`: addition preserves the nonsingular condition.
+ * `WeierstrassCurve.Jacobian.NonsingularNeg`: negation preserves the nonsingular condition.
+ * `WeierstrassCurve.Jacobian.NonsingularAdd`: addition preserves the nonsingular condition.
 
 ## Implementation notes
 
