@@ -33,6 +33,7 @@ In fact they automatically intertwine the antipodes, proved below.
 -/
 instance : Category (Hopf_ C) := inferInstanceAs <| Category (InducedCategory (Bimon_ C) Hopf_.X)
 
-
+-- TODO morphisms intertwine the antipodes.
+-- TODO the antipode is an antihomomorphism.
 
 end

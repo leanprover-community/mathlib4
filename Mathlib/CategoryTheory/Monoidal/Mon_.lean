@@ -81,9 +81,9 @@ theorem mul_one_hom {Z : C} (f : Z ⟶ M.X) : (f ⊗ M.one) ≫ M.mul = (ρ_ Z).
   rw [tensorHom_def_assoc, M.mul_one, rightUnitor_naturality]
 #align Mon_.mul_one_hom Mon_.mul_one_hom
 
-theorem assoc_flip :
+theorem mul_assoc_flip :
     (M.X ◁ M.mul) ≫ M.mul = (α_ M.X M.X M.X).inv ≫ (M.mul ▷ M.X) ≫ M.mul := by simp
-#align Mon_.assoc_flip Mon_.assoc_flip
+#align Mon_.assoc_flip Mon_.mul_assoc_flip
 
 /-- A morphism of monoid objects. -/
 @[ext]

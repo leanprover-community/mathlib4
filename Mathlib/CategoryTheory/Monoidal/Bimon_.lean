@@ -119,27 +119,57 @@ def equivMon_Comon_ : Bimon_ C ≌ Mon_ (Comon_ C) where
     M.comul.hom ≫ (M.counit.hom ▷ _) = (λ_ _).inv := by
   simpa [- Comon_.counit_comul] using congr_arg Mon_.Hom.hom M.counit_comul
 
-/-! # The convolution monoid of a bimonoid. -/
+@[reassoc (attr := simp)] theorem comul_assoc_hom (M : Bimon_ C) :
+    M.comul.hom ≫ (M.X.X ◁ M.comul.hom) =
+      M.comul.hom ≫ (M.comul.hom ▷ M.X.X) ≫ (α_ M.X.X M.X.X M.X.X).hom := by
+  simpa [- Comon_.comul_assoc] using congr_arg Mon_.Hom.hom M.comul_assoc
+
+@[reassoc] theorem comul_assoc_flip_hom (M : Bimon_ C) :
+    M.comul.hom ≫ (M.comul.hom ▷ M.X.X) =
+      M.comul.hom ≫ (M.X.X ◁ M.comul.hom) ≫ (α_ M.X.X M.X.X M.X.X).inv := by
+  simp
+
+/-! # The convolution monoid of a pair of bimonoids. -/
 
 variable {C}
 
-def Conv (M : Bimon_ C) : Type v₁ := M.X.X ⟶ M.X.X
+/--
+The morphisms in `C` between the underlying objects of a pair of bimonoids in `C` naturally has a
+(set-theoretic) monoid structure. -/
+def Conv (M N : Bimon_ C) : Type v₁ := M.X.X ⟶ N.X.X
 
-variable {M : Bimon_ C}
+variable {M N : Bimon_ C}
 
-instance : One (Conv M) where
-  one := M.counit.hom ≫ M.X.one
+instance : One (Conv M N) where
+  one := M.counit.hom ≫ N.X.one
 
-@[simp] theorem one_eq : (1 : Conv M) = M.counit.hom ≫ M.X.one := rfl
+@[simp] theorem one_eq : (1 : Conv M N) = M.counit.hom ≫ N.X.one := rfl
 
-instance : Mul (Conv M) where
-  mul := fun f g => M.comul.hom ≫ f ▷ M.X.X ≫ M.X.X ◁ g ≫ M.X.mul
+instance : Mul (Conv M N) where
+  mul := fun f g => M.comul.hom ≫ f ▷ M.X.X ≫ N.X.X ◁ g ≫ N.X.mul
 
-@[simp] theorem mul_eq (f g : Conv M) : f * g = M.comul.hom ≫ f ▷ M.X.X ≫ M.X.X ◁ g ≫ M.X.mul := rfl
+@[simp] theorem mul_eq (f g : Conv M N) : f * g = M.comul.hom ≫ f ▷ M.X.X ≫ N.X.X ◁ g ≫ N.X.mul := rfl
 
-instance : Monoid (Conv M) where
+instance : Monoid (Conv M N) where
   one_mul f := by simp [← whisker_exchange_assoc]
   mul_one f := by simp [← whisker_exchange_assoc]
-  mul_assoc f g h := sorry
+  mul_assoc f g h := by
+    simp only [mul_eq]
+    simp only [comp_whiskerRight, whisker_assoc, Category.assoc,
+      MonoidalCategory.whiskerLeft_comp]
+    slice_lhs 7 8 =>
+      rw [← whisker_exchange]
+    slice_rhs 2 3 =>
+      rw [← whisker_exchange]
+    slice_rhs 1 2 =>
+      rw [M.comul_assoc_hom]
+    simp only [Mon_.monMonoidalStruct_tensorObj_X]
+    slice_rhs 3 4 =>
+      rw [← associator_naturality_left]
+    slice_lhs 6 7 =>
+      rw [← associator_inv_naturality_right]
+    slice_lhs 8 9 =>
+      rw [N.X.mul_assoc]
+    simp
 
 end Bimon_
