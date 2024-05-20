@@ -283,12 +283,20 @@ theorem uniformContinuous_compareEquiv_symm : UniformContinuous (pkg.compareEqui
   pkg'.uniformContinuous_compare pkg
 #align abstract_completion.uniform_continuous_compare_equiv_symm AbstractCompletion.uniformContinuous_compareEquiv_symm
 
-/-Let `f : α → β` be a continuous function between a uniform space `α` and a regular topological
+/-Let `f : α → γ` be a continuous function between a uniform space `α` and a regular topological
 space `γ`, and let `pkg, pkg'` be two abstract completions of `α`. Then
 if for every point `a : pkg` the filter `f.map (coe⁻¹ (𝓝 a))` obtained by pushing forward with `f`
 the preimage in `α` of `𝓝 a` tends to `𝓝 (f.extend a : β)`, then the comparison map
 between `pkg` and `pkg'` composed with the extension of `f` to `pkg`` coincides with the
-extension of `f` to `pkg'` -/
+extension of `f` to `pkg'`: the situation is described in the following diagram, where the
+two diagonal arrows are the extensions of `f` to the two different completions `pkg` and `pkg'`:
+`α^`=`pkg` ≅ `α^'`=`pkg'`   *here `≅` is `compare`*
+  ∧     \        /
+  |      \      /
+  |       \    /
+  |        V  ∨
+ α ---f---> γ
+ -/
 
 open scoped Topology
 
