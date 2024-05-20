@@ -163,7 +163,6 @@ theorem Fintype.finiteIndex_of_iUnion_leftCoset_eq_univ_aux
         specialize this (g k) (hk' ▸ hy)
         rw [Set.mem_iUnion₂] at this
         obtain ⟨i, hi, hy⟩ := this
-        have : κ := Sum.inl ⟨⟨k, hk⟩, ⟨i, hi⟩⟩
         refine ⟨Sum.inl ⟨⟨k, hk⟩, ⟨i, hi⟩⟩, hy⟩
     have ⟨k, h⟩ := ih
     exact match k with | Sum.inl ⟨_, i⟩ => ⟨i, h⟩ | Sum.inr i => ⟨i, h⟩
