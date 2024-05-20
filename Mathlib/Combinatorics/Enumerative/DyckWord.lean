@@ -50,8 +50,8 @@ open DyckStep
 
 lemma dyckStep_cases (s : DyckStep) : s = U ∨ s = D := by cases' s <;> tauto
 
-/-- A Dyck word is a list of `DyckStep`s with _as many_ `U`s as `D`s and with every prefix having
-_at least as many_ `U`s as `D`s. -/
+/-- A Dyck word is a list of `DyckStep`s with as many `U`s as `D`s and with every prefix having
+**at least** as many `U`s as `D`s. -/
 @[ext]
 structure DyckWord where
   /-- The underlying list -/
@@ -59,7 +59,7 @@ structure DyckWord where
   /-- There are as many `U`s as `D`s -/
   bal : l.count U = l.count D
   /-- Each prefix has as least as many `U`s as `D`s -/
-  nonneg : ∀ i, (l.take i).count D ≤ (l.take i).count U
+  nonneg i : (l.take i).count D ≤ (l.take i).count U
 
 instance : Add DyckWord where
   add p q := ⟨p.l ++ q.l, by simp only [count_append, p.bal, q.bal], by
@@ -74,6 +74,45 @@ instance : AddMonoid DyckWord where
   zero_add p := by ext1; rfl
   add_assoc p q r := by ext1; apply append_assoc
   nsmul := nsmulRec
+
+namespace DyckWord
+
+variable (p q : DyckWord)
+
+/-- Nest `p` in one pair of brackets, i.e. `x` becomes `(x)`. -/
+def nest : DyckWord where
+  l := [U] ++ p.l ++ [D]
+  bal := by simp [p.bal]
+  nonneg i := by
+    simp only [take_append_eq_append_take, count_append]
+    rw [← add_rotate (count D _), ← add_rotate (count U _)]
+    apply add_le_add _ (p.nonneg _)
+    cases' i.eq_zero_or_pos with hi hi; · simp [hi]
+    rw [take_all_of_le (show [U].length ≤ i by rwa [length_singleton]), count_singleton']
+    simp only [ite_true, ite_false]
+    rw [add_comm]
+    exact add_le_add (zero_le _) ((count_le_length _ _).trans (by simp))
+
+/-- The semilength of a Dyck word is half of the number of `DyckStep`s in it, or equivalently
+its number of `U`s. -/
+def semilength : ℕ := p.l.count U
+
+@[simp] lemma semilength_zero : semilength 0 = 0 := by rfl
+@[simp] lemma semilength_add : (p + q).semilength = p.semilength + q.semilength := count_append ..
+@[simp] lemma semilength_nest : p.nest.semilength = p.semilength + 1 := by simp [semilength, nest]
+
+@[simp]
+lemma two_mul_semilength_eq_length : 2 * p.semilength = p.l.length := by
+  nth_rw 1 [two_mul, semilength, p.bal, semilength]
+  convert (p.l.length_eq_countP_add_countP (· == D)).symm
+  rw [count]; congr!; rename_i s; cases' s <;> tauto
+
+/-- `p.firstReturn` is 0 for `p = 0` and otherwise the smallest index (which will be an odd number)
+for which `p`'s prefix up to **and including** that index is also a Dyck word. -/
+def firstReturn : ℕ :=
+  (range p.l.length).findIdx (fun i ↦ (p.l.take (i + 1)).count U = (p.l.take (i + 1)).count D)
+
+end DyckWord
 
 end
 
