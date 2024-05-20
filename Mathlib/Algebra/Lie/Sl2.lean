@@ -50,9 +50,9 @@ lemma symm (ht : IsSl2Triple h e f) : IsSl2Triple (-h) f e where
   lie_h_e_nsmul := by rw [neg_lie, neg_eq_iff_eq_neg, ht.lie_h_f_nsmul]
   lie_h_f_nsmul := by rw [neg_lie, neg_inj, ht.lie_h_e_nsmul]
 
-lemma symm_iff : IsSl2Triple h e f ↔ IsSl2Triple (-h) f e := by
+@[simp] lemma symm_iff : IsSl2Triple (-h) f e ↔ IsSl2Triple h e f := by
   suffices ∀ h e f : L, IsSl2Triple h e f → IsSl2Triple (-h) f e from
-    ⟨this h e f, fun t ↦ neg_neg h ▸ this (-h) f e t⟩
+    ⟨fun t ↦ neg_neg h ▸ this (-h) f e t, this h e f⟩
   exact fun h e f ↦ symm
 
 lemma lie_h_e_smul (t : IsSl2Triple h e f) : ⁅h, e⁆ = (2 : R) • e :=
