@@ -38,9 +38,11 @@ example : (0 : UInt8) = ⟨0⟩ := rfl
 
 set_option hygiene false in
 run_cmd
-  for typeName in [`UInt8, `UInt16, `UInt32, `UInt64, `USize].map Lean.mkIdent do
+  for typeName in [`UInt8, `UInt16, `UInt32, `UInt64].map Lean.mkIdent do -- FIXME restore USize when the next toolchain is ready
   Lean.Elab.Command.elabCommand (← `(
     namespace $typeName
+      open $typeName (eq_of_val_eq)
+
       instance : Inhabited $typeName where
         default := 0
 
@@ -86,13 +88,7 @@ run_cmd
 
       lemma intCast_def (z : ℤ) : (z : $typeName) = ⟨z⟩ := rfl
 
-      lemma eq_of_val_eq : ∀ {a b : $typeName}, a.val = b.val -> a = b
-      | ⟨_⟩, ⟨_⟩, h => congrArg mk h
-
       lemma val_injective : Function.Injective val := @eq_of_val_eq
-
-      lemma val_eq_of_eq : ∀ {a b : $typeName}, a = b -> a.val = b.val
-      | ⟨_⟩, ⟨_⟩, h => congrArg val h
 
       @[simp] lemma mk_val_eq : ∀ (a : $typeName), mk a.val = a
       | ⟨_, _⟩ => rfl
