@@ -3,6 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+import Mathlib.Algebra.Algebra.Tower
 import Mathlib.RingTheory.Ideal.Operations
 
 #align_import ring_theory.ideal.operations from "leanprover-community/mathlib"@"e7f0ddbf65bd7181a85edb74b64bdc35ba4bdc74"
@@ -247,20 +248,14 @@ theorem smul_restrictScalars_eq_restrictScalars_map_smul {R S M}
     [CommSemiring R] [CommSemiring S] [Algebra R S] [AddCommMonoid M]
     [Module R M] [Module S M] [IsScalarTower R S M]
     (I : Ideal R) (N : Submodule S M) :
-    I • N.restrictScalars R = (I.map (algebraMap R S) • N).restrictScalars R :=
-  let A := I • N.restrictScalars R
-  let B := I.map (algebraMap R S) • N
-  have H₁ (f : S) : A ≤ A.comap (DistribMulAction.toLinearMap R M f) :=
-    Submodule.smul_le.mpr fun r hr x hx => show f • r • x ∈ A from
-      smul_comm f r x ▸ Submodule.smul_mem_smul hr (N.smul_mem f hx)
-  let C : Submodule S M := ⟨A.toAddSubmonoid, H₁⟩
-  have H₂ x hx : I.map (algebraMap R S) ≤ C.comap (LinearMap.id.smulRight x) :=
-    map_le_iff_le_comap.mpr fun r hr => show algebraMap R S r • x ∈ A from
-      algebra_compatible_smul S r x ▸ Submodule.smul_mem_smul hr hx
-  have H₃ r hr x hx := algebra_compatible_smul S r x ▸
-    Submodule.smul_mem_smul (mem_map_of_mem _ hr) hx
-  le_antisymm (Submodule.smul_le.mpr H₃) <|
-    show B ≤ C from Submodule.smul_le.mpr fun _ hr x hx => H₂ x hx hr
+    I • N.restrictScalars R = (I.map (algebraMap R S) • N).restrictScalars R := by
+  simp_rw [← Submodule.toAddSubmonoid_injective.eq_iff, map,
+    Submodule.span_smul_eq, Submodule.toAddSubmonoid_restrictScalars,
+    ← Submodule.coe_set_smul, Submodule.set_smul_eq_iSup, Set.mem_image,
+    SetLike.mem_coe, iSup_exists, iSup_and, @iSup_comm _ S, iSup_iSup_eq_right,
+    Algebra.algebraMap_eq_smul_one, smul_assoc, one_smul,
+    Submodule.iSup_toAddSubmonoid, Submodule.pointwise_smul_toAddSubmonoid,
+    Submodule.toAddSubmonoid_restrictScalars]
 
 @[simp]
 theorem smul_top_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
