@@ -53,8 +53,11 @@ variable {ι : Type*}
 /-- A prepartition of `I : BoxIntegral.Box ι` is a finite set of pairwise disjoint subboxes of
 `I`. -/
 structure Prepartition (I : Box ι) where
+  /-- The underlying set of boxes -/
   boxes : Finset (Box ι)
+  /-- Each box is a sub-box of `I` -/
   le_of_mem' : ∀ J ∈ boxes, J ≤ I
+  /-- The boxes in a prepartition are pairwise disjoint. -/
   pairwiseDisjoint : Set.Pairwise (↑boxes) (Disjoint on ((↑) : Box ι → Set (ι → ℝ)))
 #align box_integral.prepartition BoxIntegral.Prepartition
 
@@ -393,10 +396,10 @@ theorem biUnion_assoc (πi : ∀ J, Prepartition J) (πi' : Box ι → ∀ J : B
   simp only [mem_biUnion, exists_prop]
   constructor
   · rintro ⟨J₁, hJ₁, J₂, hJ₂, hJ⟩
-    refine' ⟨J₂, ⟨J₁, hJ₁, hJ₂⟩, _⟩
+    refine ⟨J₂, ⟨J₁, hJ₁, hJ₂⟩, ?_⟩
     rwa [π.biUnionIndex_of_mem hJ₁ hJ₂]
   · rintro ⟨J₁, ⟨J₂, hJ₂, hJ₁⟩, hJ⟩
-    refine' ⟨J₂, hJ₂, J₁, hJ₁, _⟩
+    refine ⟨J₂, hJ₂, J₁, hJ₁, ?_⟩
     rwa [π.biUnionIndex_of_mem hJ₂ hJ₁] at hJ
 #align box_integral.prepartition.bUnion_assoc BoxIntegral.Prepartition.biUnion_assoc
 
@@ -622,7 +625,7 @@ theorem filter_true : (π.filter fun _ => True) = π :=
 theorem iUnion_filter_not (π : Prepartition I) (p : Box ι → Prop) :
     (π.filter fun J => ¬p J).iUnion = π.iUnion \ (π.filter p).iUnion := by
   simp only [Prepartition.iUnion]
-  convert (@Set.biUnion_diff_biUnion_eq _ (Box ι) π.boxes (π.filter p).boxes (↑) _).symm
+  convert (@Set.biUnion_diff_biUnion_eq (ι → ℝ) (Box ι) π.boxes (π.filter p).boxes (↑) _).symm
   · simp (config := { contextual := true })
   · rw [Set.PairwiseDisjoint]
     convert π.pairwiseDisjoint

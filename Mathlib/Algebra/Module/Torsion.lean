@@ -90,7 +90,7 @@ variable (R)
 
 @[simp]
 theorem torsionOf_eq_top_iff (m : M) : torsionOf R M m = ⊤ ↔ m = 0 := by
-  refine' ⟨fun h => _, fun h => by simp [h]⟩
+  refine ⟨fun h => ?_, fun h => by simp [h]⟩
   rw [← one_smul R m, ← mem_torsionOf_iff m (1 : R), h]
   exact Submodule.mem_top
 #align ideal.torsion_of_eq_top_iff Ideal.torsionOf_eq_top_iff
@@ -546,6 +546,12 @@ instance : Module (R ⧸ I) (M ⧸ I • (⊤ : Submodule R M)) :=
     induction x using Quotient.inductionOn
     refine' (Submodule.Quotient.mk_eq_zero _).mpr (Submodule.smul_mem_smul r.prop _)
     trivial
+
+lemma Quotient.mk_smul_mk (r : R) (m : M) :
+    Ideal.Quotient.mk I r •
+      Submodule.Quotient.mk (p := (I • ⊤ : Submodule R M)) m =
+      Submodule.Quotient.mk (p := (I • ⊤ : Submodule R M)) (r • m) :=
+  rfl
 
 end Module
 

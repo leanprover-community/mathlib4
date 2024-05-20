@@ -349,7 +349,7 @@ theorem continuousLinearMapAt_model_space (b b' : F) :
 end TangentBundle
 
 instance tangentBundleCore.isSmooth : (tangentBundleCore I M).IsSmooth I := by
-  refine' ⟨fun i j => _⟩
+  refine ⟨fun i j => ?_⟩
   rw [SmoothOn, contMDiffOn_iff_source_of_mem_maximalAtlas (subset_maximalAtlas I i.2),
     contMDiffOn_iff_contDiffOn]
   · refine' ((contDiffOn_fderiv_coord_change I i j).congr fun x hx => _).mono _

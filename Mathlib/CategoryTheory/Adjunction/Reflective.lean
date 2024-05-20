@@ -195,8 +195,7 @@ lemma equivEssImageOfReflective_map_counitIso_app_inv [Reflective i]
 /-- If `i : D ⥤ C` is reflective, the inverse functor of `i ≌ F.essImage` can be explicitly
 defined by the reflector. -/
 @[simps]
-def equivEssImageOfReflective [Reflective i] : D ≌ i.EssImageSubcategory
-    where
+def equivEssImageOfReflective [Reflective i] : D ≌ i.EssImageSubcategory where
   functor := i.toEssImage
   inverse := i.essImageInclusion ⋙ reflector i
   unitIso :=

@@ -175,8 +175,8 @@ variable [TopologicalSpace H]
 instance : Membership (PartialHomeomorph H H) (StructureGroupoid H) :=
   ⟨fun (e : PartialHomeomorph H H) (G : StructureGroupoid H) ↦ e ∈ G.members⟩
 
-instance (H : Type u) [TopologicalSpace H] : SetLike (StructureGroupoid H) (PartialHomeomorph H H)
-    where
+instance (H : Type u) [TopologicalSpace H] :
+    SetLike (StructureGroupoid H) (PartialHomeomorph H H) where
   coe s := s.members
   coe_injective' N O h := by cases N; cases O; congr
 
@@ -480,7 +480,7 @@ def idRestrGroupoid : StructureGroupoid H where
     rwa [PartialHomeomorph.ofSet_trans_ofSet] at this
   symm' := by
     rintro e ⟨s, hs, hse⟩
-    refine' ⟨s, hs, _⟩
+    refine ⟨s, hs, ?_⟩
     rw [← ofSet_symm]
     exact PartialHomeomorph.EqOnSource.symm' hse
   id_mem' := ⟨univ, isOpen_univ, by simp only [mfld_simps, refl]⟩
@@ -491,7 +491,7 @@ def idRestrGroupoid : StructureGroupoid H where
     rcases h x hx with ⟨s, hs, hxs, s', hs', hes'⟩
     have hes : x ∈ (e.restr s).source := by
       rw [e.restr_source]
-      refine' ⟨hx, _⟩
+      refine ⟨hx, ?_⟩
       rw [hs.interior_eq]
       exact hxs
     simpa only [mfld_simps] using PartialHomeomorph.EqOnSource.eqOn hes' hes
@@ -509,7 +509,7 @@ instance closedUnderRestriction_idRestrGroupoid : ClosedUnderRestriction (@idRes
   ⟨by
     rintro e ⟨s', hs', he⟩ s hs
     use s' ∩ s, hs'.inter hs
-    refine' Setoid.trans (PartialHomeomorph.EqOnSource.restr he s) _
+    refine Setoid.trans (PartialHomeomorph.EqOnSource.restr he s) ?_
     exact ⟨by simp only [hs.interior_eq, mfld_simps], by simp only [mfld_simps, eqOn_refl]⟩⟩
 #align closed_under_restriction_id_restr_groupoid closedUnderRestriction_idRestrGroupoid
 
@@ -535,7 +535,7 @@ theorem closedUnderRestriction_iff_id_le (G : StructureGroupoid H) :
     constructor
     intro e he s hs
     rw [← ofSet_trans (e : PartialHomeomorph H H) hs]
-    refine' G.trans _ he
+    refine G.trans ?_ he
     apply StructureGroupoid.le_iff.mp h
     exact idRestrGroupoid_mem hs
 #align closed_under_restriction_iff_id_le closedUnderRestriction_iff_id_le
@@ -1043,7 +1043,7 @@ theorem mem_maximalAtlas_iff {e : PartialHomeomorph M H} :
 of the structure groupoid. -/
 theorem StructureGroupoid.compatible_of_mem_maximalAtlas {e e' : PartialHomeomorph M H}
     (he : e ∈ G.maximalAtlas M) (he' : e' ∈ G.maximalAtlas M) : e.symm ≫ₕ e' ∈ G := by
-  refine' G.locality fun x hx ↦ _
+  refine G.locality fun x hx ↦ ?_
   set f := chartAt (H := H) (e.symm x)
   let s := e.target ∩ e.symm ⁻¹' f.source
   have hs : IsOpen s := by
@@ -1051,7 +1051,7 @@ theorem StructureGroupoid.compatible_of_mem_maximalAtlas {e e' : PartialHomeomor
   have xs : x ∈ s := by
     simp only [s, f, mem_inter_iff, mem_preimage, mem_chart_source, and_true]
     exact ((mem_inter_iff _ _ _).1 hx).1
-  refine' ⟨s, hs, xs, _⟩
+  refine ⟨s, hs, xs, ?_⟩
   have A : e.symm ≫ₕ f ∈ G := (mem_maximalAtlas_iff.1 he f (chart_mem_atlas _ _)).1
   have B : f.symm ≫ₕ e' ∈ G := (mem_maximalAtlas_iff.1 he' f (chart_mem_atlas _ _)).2
   have C : (e.symm ≫ₕ f) ≫ₕ f.symm ≫ₕ e' ∈ G := G.trans A B
@@ -1298,7 +1298,7 @@ def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
       Then g ∘ e ∘ c⁻¹ and c' ∘ e' ∘ g⁻¹ are both smooth as e and e' are structomorphisms, so
       their composition is smooth, and it coincides with c' ∘ e' ∘ e ∘ c⁻¹ around x. -/
       intro c c' hc hc'
-      refine' G.locality fun x hx ↦ _
+      refine G.locality fun x hx ↦ ?_
       let f₁ := e.toHomeomorph.toPartialHomeomorph
       let f₂ := e'.toHomeomorph.toPartialHomeomorph
       let f := (e.toHomeomorph.trans e'.toHomeomorph).toPartialHomeomorph
