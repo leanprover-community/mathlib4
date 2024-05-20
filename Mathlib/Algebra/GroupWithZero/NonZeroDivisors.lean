@@ -285,7 +285,7 @@ variable [MonoidWithZero M₀] {a b : M₀⁰}
 
 /-- The units of the monoid of non-zero divisors of `M₀` are equivalent to the units of `M₀`. -/
 @[simps]
-def nonZeroDivisorsUnitsEquiv : M₀⁰ˣ ≃* M₀ˣ where
+def unitsNonZeroDivisorsEquiv : M₀⁰ˣ ≃* M₀ˣ where
   __ := Units.map M₀⁰.subtype
   invFun u := ⟨⟨u, u.isUnit.mem_nonZeroDivisors⟩, ⟨(u⁻¹ : M₀ˣ), u⁻¹.isUnit.mem_nonZeroDivisors⟩,
     by simp, by simp⟩
@@ -293,7 +293,7 @@ def nonZeroDivisorsUnitsEquiv : M₀⁰ˣ ≃* M₀ˣ where
   right_inv _ := rfl
 
 @[simp, norm_cast] lemma nonZeroDivisors.associated_coe : Associated (a : M₀) b ↔ Associated a b :=
-  nonZeroDivisorsUnitsEquiv.symm.exists_congr_left.trans $ by simp [Associated]; norm_cast
+  unitsNonZeroDivisorsEquiv.symm.exists_congr_left.trans $ by simp [Associated]; norm_cast
 
 end MonoidWithZero
 
