@@ -1639,26 +1639,18 @@ Quotient.inductionOn₂ q q' h
 
 /-- The largest T2 quotient of a topological space is indeed T2. -/
 instance : T2Space (t2Quotient X) := by
-  rw [t2Space_iff_disjoint_nhds]
-  rintro ⟨x⟩ ⟨y⟩ (h : ¬  t2Quotient.mk x = t2Quotient.mk y)
+  rw [t2Space_iff]
+  rintro ⟨x⟩ ⟨y⟩ (h : ¬ t2Quotient.mk x = t2Quotient.mk y)
   obtain ⟨s, hs, hsxy⟩ : ∃ s, T2Space (Quotient s) ∧ Quotient.mk s x ≠ Quotient.mk s y := by
     simpa [t2Quotient.mk_eq] using h
-  have hs' : s ∈ {s | T2Space (Quotient s)} := hs
-  apply Tendsto.disjoint (continuous_map_sInf hs').continuousAt
-    (disjoint_nhds_nhds.mpr _) (continuous_map_sInf hs').continuousAt
-  exact hsxy
+  exact separated_by_continuous (continuous_map_sInf (by exact hs)) hsxy
 
 lemma compatible {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [T2Space Y]
     {f : X → Y} (hf : Continuous f) : letI _ := t2Setoid X
     ∀ (a b : X), a ≈ b → f a = f b := by
-  intro x y hxy
-  set g : Quotient (Setoid.ker f) → Y := Quotient.lift f (fun _ _ ↦ id)
-  have gcont : Continuous g := hf.quotient_lift (fun _ _ ↦ id)
-  change (Setoid.ker f).Rel x y
-  apply hxy _ (t2Space_iff_disjoint_nhds.mpr _)
-  rintro ⟨x⟩ ⟨x'⟩ (h : Quotient.mk _ x ≠ Quotient.mk _ x')
-  apply Tendsto.disjoint gcont.continuousAt (disjoint_nhds_nhds.mpr _) gcont.continuousAt
-  simpa using h
+  change t2Setoid X ≤ Setoid.ker f
+  exact sInf_le <| .of_injective_continuous
+    (Setoid.ker_lift_injective _) (hf.quotient_lift fun _ _ ↦ id)
 
 /-- The universal property of the largest T2 quotient of a topological space `X`: any continuous
 map from `X` to a T2 space `Y` uniquely factors through `t2Quotient X`. This declaration builds the
