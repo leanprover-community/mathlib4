@@ -3,7 +3,7 @@ Copyright (c) 2020 Kevin Lacker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Lacker
 -/
-import Mathlib.Algebra.GroupPower.Identities
+import Mathlib.Algebra.Ring.Identities
 import Mathlib.Data.Int.NatPrime
 import Mathlib.Tactic.Linarith
 import Mathlib.Data.Set.Finite
