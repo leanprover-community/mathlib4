@@ -339,20 +339,20 @@ theorem AssociatesNonZeroDivisorsMonoidHom_apply (a : α⁰) :
 
 /-- This is the `MulEquiv` version of `AssociatesNonZeroDivisorsMonoidHom`. -/
 noncomputable def associatesNonZeroDivisorsMulEquiv :
-    Associates α⁰ ≃* (Associates α)⁰ := by
-  refine MulEquiv.ofBijective (AssociatesNonZeroDivisorsMonoidHom α) ⟨?_, ?_⟩
-  · rintro ⟨_⟩ ⟨_⟩ h
+    Associates α⁰ ≃* (Associates α)⁰ :=
+  MulEquiv.ofBijective (AssociatesNonZeroDivisorsMonoidHom α) ⟨by
+    rintro ⟨_⟩ ⟨_⟩ h
     rw [Subtype.ext_iff, Associates.quot_mk_eq_mk, Associates.quot_mk_eq_mk,
       AssociatesNonZeroDivisorsMonoidHom_apply, AssociatesNonZeroDivisorsMonoidHom_apply] at h
     obtain ⟨u, hu⟩ := Associates.mk_eq_mk_iff_associated.mp h
     rw [Associates.quot_mk_eq_mk, Associates.quot_mk_eq_mk]
     refine Associates.mk_eq_mk_iff_associated.mpr ⟨?_, ?_⟩
     · exact (nonZeroDivisorsUnitsEquiv α).symm u
-    · rwa [Subtype.ext_iff, Submonoid.coe_mul, nonZeroDivisorsUnitsEquiv_symm_apply]
-  · rintro ⟨⟨y⟩, hy⟩
-    refine ⟨⟦⟨y, ?_⟩⟧, ?_⟩
-    · rwa [← associatesMk_mem_nonZeroDivisors_iff, ← Associates.quot_mk_eq_mk]
-    · rw [Subtype.ext_iff, AssociatesNonZeroDivisorsMonoidHom_apply, ← Associates.quot_mk_eq_mk]
+    · rwa [Subtype.ext_iff, Submonoid.coe_mul, nonZeroDivisorsUnitsEquiv_symm_apply], by
+      rintro ⟨⟨y⟩, hy⟩
+      refine ⟨⟦⟨y, ?_⟩⟧, ?_⟩
+      rwa [← associatesMk_mem_nonZeroDivisors_iff, ← Associates.quot_mk_eq_mk]
+      rw [Subtype.ext_iff, AssociatesNonZeroDivisorsMonoidHom_apply, ← Associates.quot_mk_eq_mk]⟩
 
 @[simp]
 theorem associatesNonZeroDivisorsMulEquiv_apply (a : α⁰) :
