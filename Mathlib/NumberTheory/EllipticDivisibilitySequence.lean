@@ -888,9 +888,6 @@ lemma map_normEDS (n : ℤ) : f (normEDS b c d n) = normEDS (f b) (f c) (f d) n 
 lemma map_complEDS (n : ℤ) : f (complEDS b c d n) = complEDS (f b) (f c) (f d) n := by
   simp only [complEDS, map_sub, map_mul, map_pow, map_preNormEDS, apply_ite f, map_one]
 
-lemma map_complEDS₃ (n : ℤ) : f (complEDS₃ b c d n) = complEDS₃ (f b) (f c) (f d) n := by
-  simp_rw [complEDS₃, map_mul, map_preNormEDS, apply_ite f, map_pow, map_one]
-
 lemma map_addMulSub (m n : ℤ) : f (addMulSub W m n) = addMulSub (f ∘ W) m n := by
   simp_rw [addMulSub, map_mul, Function.comp]
 
