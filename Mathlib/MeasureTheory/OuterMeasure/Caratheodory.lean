@@ -111,6 +111,7 @@ theorem isCaratheodory_sum {s : ℕ → Set α} (h : ∀ i, IsCaratheodory m (s 
     simpa using fun (h₁ : a ∈ s n) i (hi : i < n) h₂ => (hd (ne_of_gt hi)).le_bot ⟨h₁, h₂⟩
 #align measure_theory.outer_measure.is_caratheodory_sum MeasureTheory.OuterMeasure.isCaratheodory_sum
 
+set_option linter.deprecated false in -- not immediately obvious how to replace `iUnion` here.
 theorem isCaratheodory_iUnion_nat {s : ℕ → Set α} (h : ∀ i, IsCaratheodory m (s i))
     (hd : Pairwise (Disjoint on s)) : IsCaratheodory m (⋃ i, s i) := by
       apply (isCaratheodory_iff_le' m).mpr
@@ -130,7 +131,7 @@ theorem isCaratheodory_iUnion_nat {s : ℕ → Set α} (h : ∀ i, IsCaratheodor
 
 theorem f_iUnion {s : ℕ → Set α} (h : ∀ i, IsCaratheodory m (s i)) (hd : Pairwise (Disjoint on s)) :
     m (⋃ i, s i) = ∑' i, m (s i) := by
-  refine' le_antisymm (m.iUnion s) _
+  refine' le_antisymm (measure_iUnion_le s) _
   rw [ENNReal.tsum_eq_iSup_nat]
   refine' iSup_le fun n => _
   have := @isCaratheodory_sum _ m _ h hd univ n

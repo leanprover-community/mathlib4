@@ -219,7 +219,7 @@ alias ⟨_, iUnion_null⟩ := iUnion_null_iff
 @[deprecated (since := "2024-01-14")]
 theorem iUnion_null_iff' (m : OuterMeasure α) {ι : Prop} {s : ι → Set α} :
     m (⋃ i, s i) = 0 ↔ ∀ i, m (s i) = 0 :=
-  m.iUnion_null_iff
+  measure_iUnion_null_iff
 #align measure_theory.outer_measure.Union_null_iff' MeasureTheory.OuterMeasure.iUnion_null_iff'
 
 @[deprecated measure_biUnion_finset_le (since := "2024-05-14")]
@@ -262,7 +262,7 @@ theorem iUnion_nat_of_monotone_of_tsum_ne_top (m : OuterMeasure α) {s : ℕ →
     m (⋃ n, s n) = ⨆ n, m (s n) := by
   refine measure_iUnion_of_tendsto_zero m atTop ?_
   refine tendsto_nhds_bot_mono' (ENNReal.tendsto_sum_nat_add _ h0) fun n => ?_
-  refine' (m.mono _).trans (m.iUnion _)
+  refine' (m.mono _).trans (measure_iUnion_le _)
   -- Current goal: `(⋃ k, s k) \ s n ⊆ ⋃ k, s (k + n + 1) \ s (k + n)`
   have h' : Monotone s := @monotone_nat_of_le_succ (Set α) _ _ h_mono
   simp only [diff_subset_iff, iUnion_subset_iff]

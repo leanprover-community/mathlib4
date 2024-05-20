@@ -1299,10 +1299,10 @@ theorem exists_ne_forall_mem_nhds_pos_measure_preimage {β} [TopologicalSpace β
   set m : OuterMeasure β := OuterMeasure.map f μ.toOuterMeasure
   replace h : ∀ b : β, m {b}ᶜ ≠ 0 := fun b => not_eventually.mpr (h b)
   inhabit β
-  have : m univ ≠ 0 := ne_bot_of_le_ne_bot (h default) (m.mono' <| subset_univ _)
-  rcases m.exists_mem_forall_mem_nhds_within_pos this with ⟨b, -, hb⟩
+  have : m univ ≠ 0 := ne_bot_of_le_ne_bot (h default) (measure_mono <| subset_univ _)
+  rcases exists_mem_forall_mem_nhdsWithin_pos_measure this with ⟨b, -, hb⟩
   simp only [nhdsWithin_univ] at hb
-  rcases m.exists_mem_forall_mem_nhds_within_pos (h b) with ⟨a, hab : a ≠ b, ha⟩
+  rcases exists_mem_forall_mem_nhdsWithin_pos_measure (h b) with ⟨a, hab : a ≠ b, ha⟩
   simp only [isOpen_compl_singleton.nhdsWithin_eq hab] at ha
   exact ⟨a, b, hab, ha, hb⟩
 #align measure_theory.exists_ne_forall_mem_nhds_pos_measure_preimage MeasureTheory.exists_ne_forall_mem_nhds_pos_measure_preimage
