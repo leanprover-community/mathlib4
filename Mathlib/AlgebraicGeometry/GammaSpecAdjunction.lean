@@ -325,8 +325,6 @@ theorem left_triangle (X : LocallyRingedSpace) :
   X.Γ_Spec_left_triangle
 #align algebraic_geometry.Γ_Spec.left_triangle AlgebraicGeometry.ΓSpec.left_triangle
 
-@[simp] theorem foo {X : TopCat} : (𝟙 X : X → X) = _root_.id := rfl
-
 /-- `SpecΓIdentity` is iso so these are mutually two-sided inverses. -/
 theorem right_triangle (R : CommRingCat) :
     identityToΓSpec.app (Spec.toLocallyRingedSpace.obj <| op R) ≫
