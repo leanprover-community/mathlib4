@@ -36,7 +36,7 @@ Let `R` be a commutative ring (or semiring) and let `A` be an `R`-algebra.
 
 It is proved that `Submodule R A` is a semiring, and also an algebra over `Set A`.
 
-Additionally, in the `pointwise` locale we promote `Submodule.pointwiseDistribMulAction` to a
+Additionally, in the `Pointwise` locale we promote `Submodule.pointwiseDistribMulAction` to a
 `MulSemiringAction` as `Submodule.pointwiseMulSemiringAction`.
 
 ## Tags
@@ -469,6 +469,9 @@ theorem le_pow_toAddSubmonoid {n : ℕ} : M.toAddSubmonoid ^ n ≤ (M ^ n).toAdd
   · exact (pow_toAddSubmonoid M hn).ge
 #align submodule.le_pow_to_add_submonoid Submodule.le_pow_toAddSubmonoid
 
+-- Adaptation note: nightly-2024-04-01
+-- Previously this maxHeartbeats was not required. None of the backwards compatibility flags help.
+set_option maxHeartbeats 400000 in
 /-- Dependent version of `Submodule.pow_induction_on_left`. -/
 @[elab_as_elim]
 protected theorem pow_induction_on_left' {C : ∀ (n : ℕ) (x), x ∈ M ^ n → Prop}
@@ -538,8 +541,8 @@ protected theorem pow_induction_on_right {C : A → Prop} (hr : ∀ r : R, C (al
 
 /-- `Submonoid.map` as a `MonoidWithZeroHom`, when applied to `AlgHom`s. -/
 @[simps]
-def mapHom {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A') : Submodule R A →*₀ Submodule R A'
-    where
+def mapHom {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A') :
+    Submodule R A →*₀ Submodule R A' where
   toFun := map f.toLinearMap
   map_zero' := Submodule.map_bot _
   map_one' := Submodule.map_one _
@@ -607,7 +610,7 @@ variable {α : Type*} [Monoid α] [MulSemiringAction α A] [SMulCommClass α R A
 
 /-- The action on a submodule corresponding to applying the action to every element.
 
-This is available as an instance in the `pointwise` locale.
+This is available as an instance in the `Pointwise` locale.
 
 This is a stronger version of `Submodule.pointwiseDistribMulAction`. -/
 protected def pointwiseMulSemiringAction : MulSemiringAction α (Submodule R A) :=

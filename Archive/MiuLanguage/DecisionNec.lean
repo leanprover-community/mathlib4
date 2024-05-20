@@ -198,7 +198,7 @@ theorem goodm_of_derivable (en : Miustr) : Derivable en → Goodm en := by
 #align miu.goodm_of_derivable Miu.goodm_of_derivable
 
 /-!
-We put togther our two conditions to give one necessary condition `Decstr` for an `Miustr` to be
+We put together our two conditions to give one necessary condition `Decstr` for an `Miustr` to be
 derivable.
 -/
 

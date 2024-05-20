@@ -118,7 +118,7 @@ instance instInnerProductSpace : InnerProductSpace 𝕜 (lp G 2) :=
     norm_sq_eq_inner := fun f => by
       calc
         ‖f‖ ^ 2 = ‖f‖ ^ (2 : ℝ≥0∞).toReal := by norm_cast
-        _ = ∑' i, ‖f i‖ ^ (2 : ℝ≥0∞).toReal := (lp.norm_rpow_eq_tsum ?_ f)
+        _ = ∑' i, ‖f i‖ ^ (2 : ℝ≥0∞).toReal := lp.norm_rpow_eq_tsum ?_ f
         _ = ∑' i, ‖f i‖ ^ (2 : ℕ) := by norm_cast
         _ = ∑' i, re ⟪f i, f i⟫ := by
           congr
@@ -139,7 +139,7 @@ instance instInnerProductSpace : InnerProductSpace 𝕜 (lp G 2) :=
         _ = ∑' i, ⟪(f₁ + f₂) i, g i⟫ := ?_
         _ = ∑' i, (⟪f₁ i, g i⟫ + ⟪f₂ i, g i⟫) := by
           simp only [inner_add_left, Pi.add_apply, coeFn_add]
-        _ = (∑' i, ⟪f₁ i, g i⟫) + ∑' i, ⟪f₂ i, g i⟫ := (tsum_add ?_ ?_)
+        _ = (∑' i, ⟪f₁ i, g i⟫) + ∑' i, ⟪f₂ i, g i⟫ := tsum_add ?_ ?_
         _ = _ := by congr
       · congr
       · exact summable_inner f₁ g
@@ -475,7 +475,7 @@ protected theorem dense_span (b : HilbertBasis ι 𝕜 E) :
 
 protected theorem hasSum_inner_mul_inner (b : HilbertBasis ι 𝕜 E) (x y : E) :
     HasSum (fun i => ⟪x, b i⟫ * ⟪b i, y⟫) ⟪x, y⟫ := by
-  convert (b.hasSum_repr y).mapL (innerSL _ x) using 1
+  convert (b.hasSum_repr y).mapL (innerSL 𝕜 x) using 1
   ext i
   rw [innerSL_apply, b.repr_apply_apply, inner_smul_right, mul_comm]
 #align hilbert_basis.has_sum_inner_mul_inner HilbertBasis.hasSum_inner_mul_inner

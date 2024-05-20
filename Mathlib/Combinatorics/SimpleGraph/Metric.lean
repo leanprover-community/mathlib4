@@ -122,4 +122,25 @@ theorem dist_comm {u v : V} : G.dist u v = G.dist v u := by
     simp [h, h', dist_eq_zero_of_not_reachable]
 #align simple_graph.dist_comm SimpleGraph.dist_comm
 
+theorem Walk.isPath_of_length_eq_dist {u v : V} (p : G.Walk u v) (hp : p.length = G.dist u v) :
+    p.IsPath := by
+  classical
+  have : p.bypass = p := by
+    apply Walk.bypass_eq_self_of_length_le
+    calc p.length
+      _ = G.dist u v := hp
+      _ ≤ p.bypass.length := dist_le p.bypass
+  rw [← this]
+  apply Walk.bypass_isPath
+
+lemma Reachable.exists_path_of_dist {u v : V} (hr : G.Reachable u v) :
+    ∃ (p : G.Walk u v), p.IsPath ∧ p.length = G.dist u v := by
+  obtain ⟨p, h⟩ := hr.exists_walk_of_dist
+  exact ⟨p, p.isPath_of_length_eq_dist h, h⟩
+
+lemma Connected.exists_path_of_dist (hconn : G.Connected) (u v : V) :
+    ∃ (p : G.Walk u v), p.IsPath ∧ p.length = G.dist u v := by
+  obtain ⟨p, h⟩ := hconn.exists_walk_of_dist u v
+  exact ⟨p, p.isPath_of_length_eq_dist h, h⟩
+
 end SimpleGraph

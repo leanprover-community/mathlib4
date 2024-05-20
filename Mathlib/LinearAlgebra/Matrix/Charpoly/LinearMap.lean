@@ -141,7 +141,7 @@ theorem Matrix.Represents.zero : (0 : Matrix ι ι R).Represents b 0 := by
 theorem Matrix.Represents.smul {A : Matrix ι ι R} {f : Module.End R M} (h : A.Represents b f)
     (r : R) : (r • A).Represents b (r • f) := by
   delta Matrix.Represents at h ⊢
-  rw [SMulHomClass.map_smul, SMulHomClass.map_smul, h]
+  rw [_root_.map_smul, _root_.map_smul, h]
 #align matrix.represents.smul Matrix.Represents.smul
 
 theorem Matrix.Represents.algebraMap (r : R) :
@@ -167,8 +167,8 @@ def Matrix.isRepresentation : Subalgebra R (Matrix ι ι R) where
 #align matrix.is_representation Matrix.isRepresentation
 
 /-- The map sending a matrix to the endomorphism it represents. This is an `R`-algebra morphism. -/
-noncomputable def Matrix.isRepresentation.toEnd : Matrix.isRepresentation R b →ₐ[R] Module.End R M
-    where
+noncomputable def Matrix.isRepresentation.toEnd :
+    Matrix.isRepresentation R b →ₐ[R] Module.End R M where
   toFun A := A.2.choose
   map_one' := (1 : Matrix.isRepresentation R b).2.choose_spec.eq hb Matrix.Represents.one
   map_mul' A₁ A₂ := (A₁ * A₂).2.choose_spec.eq hb (A₁.2.choose_spec.mul A₂.2.choose_spec)

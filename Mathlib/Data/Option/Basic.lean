@@ -310,6 +310,15 @@ theorem orElse_none' (x : Option α) : x.orElse (fun _ ↦ none) = x := by cases
 
 #align option.ne_none_iff_is_some Option.ne_none_iff_isSome
 
+@[simp]
+theorem isSome_map (f : α → β) (o : Option α) : isSome (o.map f) = isSome o := by
+  cases o <;> rfl
+
+@[simp]
+theorem get_map (f : α → β) {o : Option α} (h : isSome (o.map f)) :
+    (o.map f).get h = f (o.get (by rwa [← isSome_map])) := by
+  cases o <;> [simp at h; rfl]
+
 theorem iget_mem [Inhabited α] : ∀ {o : Option α}, isSome o → o.iget ∈ o
   | some _, _ => rfl
 #align option.iget_mem Option.iget_mem

@@ -18,7 +18,7 @@ import Mathlib.Topology.ContinuousFunction.StoneWeierstrass
 # Gelfand Duality
 
 The `gelfandTransform` is an algebra homomorphism from a topological `𝕜`-algebra `A` to
-`C(character_space 𝕜 A, 𝕜)`. In the case where `A` is a commutative complex Banach algebra, then
+`C(characterSpace 𝕜 A, 𝕜)`. In the case where `A` is a commutative complex Banach algebra, then
 the Gelfand transform is actually spectrum-preserving (`spectrum.gelfandTransform_eq`). Moreover,
 when `A` is a commutative C⋆-algebra over `ℂ`, then the Gelfand transform is a surjective isometry,
 and even an equivalence between C⋆-algebras.
@@ -216,8 +216,8 @@ variable [NormedRing C] [NormedAlgebra 𝕜 C] [CompleteSpace C] [StarRing C]
 /-- The functorial map taking `ψ : A →⋆ₐ[ℂ] B` to a continuous function
 `characterSpace ℂ B → characterSpace ℂ A` obtained by pre-composition with `ψ`. -/
 @[simps]
-noncomputable def compContinuousMap (ψ : A →⋆ₐ[𝕜] B) : C(characterSpace 𝕜 B, characterSpace 𝕜 A)
-    where
+noncomputable def compContinuousMap (ψ : A →⋆ₐ[𝕜] B) :
+    C(characterSpace 𝕜 B, characterSpace 𝕜 A) where
   toFun φ := equivAlgHom.symm ((equivAlgHom φ).comp ψ.toAlgHom)
   continuous_toFun :=
     Continuous.subtype_mk

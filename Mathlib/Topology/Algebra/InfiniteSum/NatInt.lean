@@ -8,12 +8,12 @@ import Mathlib.Topology.Algebra.InfiniteSum.Group
 import Mathlib.Logic.Encodable.Lattice
 
 /-!
-# Infinite sums over `ℕ` and `ℤ`
+# Infinite sums and products over `ℕ` and `ℤ`
 
-This file contains lemmas about `HasSum`, `Summable`, `tsum`, `HasProd`, `Multipliable`, `tprod`
+This file contains lemmas about `HasSum`, `Summable`, `tsum`, `HasProd`, `Multipliable`, and `tprod`
 applied to the important special cases where the domain is `ℕ` or `ℤ`. For instance, we prove the
 formula `∑ i in range k, f i + ∑' i, f (i + k) = ∑' i, f i`, in `sum_add_tsum_nat_add`, as well as
-several results relating sums on `ℕ` and `ℤ`.
+several results relating sums and products on `ℕ` to sums and products on `ℤ`.
 -/
 
 noncomputable section
@@ -45,6 +45,14 @@ theorem tendsto_prod_nat {f : ℕ → M} (h : HasProd f m) :
     Tendsto (fun n ↦ ∏ i in range n, f i) atTop (𝓝 m) :=
   h.comp tendsto_finset_range
 #align has_sum.tendsto_sum_nat HasSum.tendsto_sum_nat
+
+/-- If `f : ℕ → M` is multipliable, then the partial products `∏ i in range n, f i` converge
+to `∏' i, f i`. -/
+@[to_additive "If `f : ℕ → M` is summable, then the partial sums `∑ i in range n, f i` converge
+to `∑' i, f i`."]
+theorem Multipliable.tendsto_prod_tprod_nat {f : ℕ → M} (h : Multipliable f) :
+    Tendsto (fun n ↦ ∏ i in range n, f i) atTop (𝓝 (∏' i, f i)) :=
+  tendsto_prod_nat h.hasProd
 
 section ContinuousMul
 
@@ -421,9 +429,9 @@ theorem HasProd.nat_mul_neg {f : ℤ → M} (hf : HasProd f m) :
     simp only [u1, u2, mem_union, mem_image, exists_prop]
     rcases le_total 0 x with (h'x | h'x)
     · refine Or.inl ⟨_, hv' <| mem_image.mpr ⟨x, hx, rfl⟩, ?_⟩
-      simp only [Int.coe_natAbs, abs_eq_self, h'x]
+      simp only [Int.natCast_natAbs, abs_eq_self, h'x]
     · refine Or.inr ⟨_, hv' <| mem_image.mpr ⟨x, hx, rfl⟩, ?_⟩
-      simp only [abs_of_nonpos h'x, Int.coe_natAbs, neg_neg]
+      simp only [abs_of_nonpos h'x, Int.natCast_natAbs, neg_neg]
   exact ⟨_, A, calc
     (∏ x in u1 ∪ u2, (f x * if x = 0 then f 0 else 1)) =
         (∏ x in u1 ∪ u2, f x) * ∏ x in u1 ∩ u2, f x := by

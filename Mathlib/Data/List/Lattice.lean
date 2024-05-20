@@ -181,7 +181,7 @@ theorem forall_mem_inter_of_forall_right (l₁ : List α) (h : ∀ x ∈ l₂, p
 
 @[simp]
 theorem inter_reverse {xs ys : List α} : xs.inter ys.reverse = xs.inter ys := by
-  simp only [List.inter, mem_reverse]
+  simp only [List.inter, elem_eq_mem, mem_reverse]
 #align list.inter_reverse List.inter_reverse
 
 end Inter

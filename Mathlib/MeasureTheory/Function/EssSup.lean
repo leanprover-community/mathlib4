@@ -3,7 +3,7 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 import Mathlib.Order.Filter.ENNReal
 
 #align_import measure_theory.function.ess_sup from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
@@ -15,12 +15,12 @@ We define the essential supremum and infimum of a function `f : α → β` with 
 almost everywhere.
 
 TODO: The essential supremum of functions `α → ℝ≥0∞` is used in particular to define the norm in
-the `L∞` space (see MeasureTheory/LpSpace.lean).
+the `L∞` space (see `Mathlib.MeasureTheory.Function.LpSpace`).
 
 There is a different quantity which is sometimes also called essential supremum: the least
 upper-bound among measurable functions of a family of measurable functions (in an almost-everywhere
 sense). We do not define that quantity here, which is simply the supremum of a map with values in
-`α →ₘ[μ] β` (see MeasureTheory/AEEqFun.lean).
+`α →ₘ[μ] β` (see `Mathlib.MeasureTheory.Function.AEEqFun`).
 
 ## Main definitions
 

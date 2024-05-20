@@ -51,7 +51,7 @@ Thinking of `C` as a 2-category with a single `0`-morphism, these are the same a
 transformations (in the pseudo- sense) of the identity 2-functor on `C`, which send the unique
 `0`-morphism to `X`.
 -/
--- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
+-- @[nolint has_nonempty_instance] -- Porting note(#5171): This linter does not exist yet.
 structure HalfBraiding (X : C) where
   β : ∀ U, X ⊗ U ≅ U ⊗ X
   monoidal : ∀ U U', (β (U ⊗ U')).hom =
@@ -71,7 +71,7 @@ variable (C)
 /-- The Drinfeld center of a monoidal category `C` has as objects pairs `⟨X, b⟩`, where `X : C`
 and `b` is a half-braiding on `X`.
 -/
--- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
+-- @[nolint has_nonempty_instance] -- Porting note(#5171): This linter does not exist yet.
 def Center :=
   Σ X : C, HalfBraiding X
 #align category_theory.center CategoryTheory.Center
@@ -81,7 +81,8 @@ namespace Center
 variable {C}
 
 /-- A morphism in the Drinfeld center of `C`. -/
-@[ext] -- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
+-- Porting note(#5171): linter not ported yet
+@[ext] -- @[nolint has_nonempty_instance]
 structure Hom (X Y : Center C) where
   f : X.1 ⟶ Y.1
   comm : ∀ U, (f ▷ U) ≫ (Y.2.β U).hom = (X.2.β U).hom ≫ (U ◁ f) := by aesop_cat
@@ -339,7 +340,7 @@ def forget : MonoidalFunctor (Center C) C where
   μ X Y := 𝟙 (X.1 ⊗ Y.1)
 #align category_theory.center.forget CategoryTheory.Center.forget
 
-instance : ReflectsIsomorphisms (forget C).toFunctor where
+instance : (forget C).ReflectsIsomorphisms where
   reflects f i := by dsimp at i; change IsIso (isoMk f).hom; infer_instance
 
 end

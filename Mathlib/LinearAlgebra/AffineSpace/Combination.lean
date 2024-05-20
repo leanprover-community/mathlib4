@@ -365,8 +365,7 @@ the weights.  This is intended to be used when the sum of the weights
 is 1, in which case it is an affine combination (barycenter) of the
 points with the given weights; that condition is specified as a
 hypothesis on those lemmas that require it. -/
-def affineCombination (p : ι → P) : (ι → k) →ᵃ[k] P
-    where
+def affineCombination (p : ι → P) : (ι → k) →ᵃ[k] P where
   toFun w := s.weightedVSubOfPoint p (Classical.choice S.nonempty) w +ᵥ Classical.choice S.nonempty
   linear := s.weightedVSub p
   map_vadd' w₁ w₂ := by simp_rw [vadd_vadd, weightedVSub, vadd_eq_add, LinearMap.map_add]
@@ -432,7 +431,7 @@ theorem affineCombination_vsub (w₁ w₂ : ι → k) (p : ι → P) :
 theorem attach_affineCombination_of_injective [DecidableEq P] (s : Finset P) (w : P → k) (f : s → P)
     (hf : Function.Injective f) :
     s.attach.affineCombination k f (w ∘ f) = (image f univ).affineCombination k id w := by
-  simp only [affineCombination, weightedVSubOfPoint_apply, id.def, vadd_right_cancel_iff,
+  simp only [affineCombination, weightedVSubOfPoint_apply, id, vadd_right_cancel_iff,
     Function.comp_apply, AffineMap.coe_mk]
   let g₁ : s → V := fun i => w (f i) • (f i -ᵥ Classical.choice S.nonempty)
   let g₂ : P → V := fun i => w i • (i -ᵥ Classical.choice S.nonempty)
@@ -441,8 +440,8 @@ theorem attach_affineCombination_of_injective [DecidableEq P] (s : Finset P) (w 
     ext
     simp
   rw [hgf, sum_image]
-  simp only [Function.comp_apply]
-  exact fun _ _ _ _ hxy => hf hxy
+  · simp only [Function.comp_apply]
+  · exact fun _ _ _ _ hxy => hf hxy
 #align finset.attach_affine_combination_of_injective Finset.attach_affineCombination_of_injective
 
 theorem attach_affineCombination_coe (s : Finset P) (w : P → k) :

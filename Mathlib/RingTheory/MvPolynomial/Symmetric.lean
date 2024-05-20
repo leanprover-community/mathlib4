@@ -3,9 +3,9 @@ Copyright (c) 2020 Hanting Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hanting Zhang, Johan Commelin
 -/
-import Mathlib.Data.MvPolynomial.Rename
-import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.MvPolynomial.Rename
+import Mathlib.Algebra.MvPolynomial.CommRing
 
 #align_import ring_theory.mv_polynomial.symmetric from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
@@ -251,14 +251,14 @@ theorem support_esymm'' (n : ℕ) [DecidableEq σ] [Nontrivial R] :
   rintro a h rfl
   have := congr_arg Finsupp.support h
   rw [Finsupp.support_sum_eq_biUnion, Finsupp.support_sum_eq_biUnion] at this
-  have hsingle : ∀ s : Finset σ, ∀ x : σ, x ∈ s → (Finsupp.single x 1).support = {x} := by
-    intros _ x _
-    rw [Finsupp.support_single_ne_zero x one_ne_zero]
-  have hs := biUnion_congr (of_eq_true (eq_self s)) (hsingle s)
-  have ht := biUnion_congr (of_eq_true (eq_self t)) (hsingle t)
-  rw [hs, ht] at this
-  · simp only [biUnion_singleton_eq_self] at this
-    exact absurd this hst.symm
+  · have hsingle : ∀ s : Finset σ, ∀ x : σ, x ∈ s → (Finsupp.single x 1).support = {x} := by
+      intros _ x _
+      rw [Finsupp.support_single_ne_zero x one_ne_zero]
+    have hs := biUnion_congr (of_eq_true (eq_self s)) (hsingle s)
+    have ht := biUnion_congr (of_eq_true (eq_self t)) (hsingle t)
+    rw [hs, ht] at this
+    · simp only [biUnion_singleton_eq_self] at this
+      exact absurd this hst.symm
   all_goals intro x y; simp [Finsupp.support_single_disjoint]
 #align mv_polynomial.support_esymm'' MvPolynomial.support_esymm''
 

@@ -275,7 +275,7 @@ theorem aleph_zero : aleph 0 = ℵ₀ := by rw [aleph, add_zero, aleph'_omega]
 theorem aleph_limit {o : Ordinal} (ho : o.IsLimit) : aleph o = ⨆ a : Iio o, aleph a := by
   apply le_antisymm _ (ciSup_le' _)
   · rw [aleph, aleph'_limit (ho.add _)]
-    refine' ciSup_mono' (bddAbove_of_small _) _
+    refine ciSup_mono' (bddAbove_of_small _) ?_
     rintro ⟨i, hi⟩
     cases' lt_or_le i ω with h h
     · rcases lt_omega.1 h with ⟨n, rfl⟩
@@ -697,8 +697,8 @@ theorem mul_eq_left_iff {a b : Cardinal} : a * b = a ↔ max ℵ₀ b ≤ a ∧ 
     left
     rw [← h, mul_lt_aleph0_iff, lt_aleph0, lt_aleph0] at ha
     rcases ha with (rfl | rfl | ⟨⟨n, rfl⟩, ⟨m, rfl⟩⟩)
-    contradiction
-    contradiction
+    · contradiction
+    · contradiction
     rw [← Ne] at h2a
     rw [← one_le_iff_ne_zero] at h2a hb
     norm_cast at h2a hb h ⊢
@@ -707,7 +707,7 @@ theorem mul_eq_left_iff {a b : Cardinal} : a * b = a ↔ max ℵ₀ b ≤ a ∧ 
     apply fun h2b => ne_of_gt _ h
     conv_rhs => left; rw [← mul_one n]
     rw [mul_lt_mul_left]
-    exact id
+    · exact id
     apply Nat.lt_of_succ_le h2a
   · rintro (⟨⟨ha, hab⟩, hb⟩ | rfl | rfl)
     · rw [mul_eq_max_of_aleph0_le_left ha hb, max_eq_left hab]
@@ -1293,9 +1293,9 @@ theorem mk_bounded_set_le (α : Type u) (c : Cardinal) :
     #{ t : Set α // #t ≤ c } ≤ max #α ℵ₀ ^ c := by
   trans #{ t : Set (Sum (ULift.{u} ℕ) α) // #t ≤ c }
   · refine' ⟨Embedding.subtypeMap _ _⟩
-    apply Embedding.image
-    use Sum.inr
-    apply Sum.inr.inj
+    · apply Embedding.image
+      use Sum.inr
+      apply Sum.inr.inj
     intro s hs
     exact mk_image_le.trans hs
   apply (mk_bounded_set_le_of_infinite (Sum (ULift.{u} ℕ) α) c).trans
@@ -1306,8 +1306,8 @@ theorem mk_bounded_subset_le {α : Type u} (s : Set α) (c : Cardinal.{u}) :
     #{ t : Set α // t ⊆ s ∧ #t ≤ c } ≤ max #s ℵ₀ ^ c := by
   refine' le_trans _ (mk_bounded_set_le s c)
   refine' ⟨Embedding.codRestrict _ _ _⟩
-  use fun t => (↑) ⁻¹' t.1
-  · rintro ⟨t, ht1, ht2⟩ ⟨t', h1t', h2t'⟩ h
+  · use fun t => (↑) ⁻¹' t.1
+    rintro ⟨t, ht1, ht2⟩ ⟨t', h1t', h2t'⟩ h
     apply Subtype.eq
     dsimp only at h ⊢
     refine' (preimage_eq_preimage' _ _).1 h <;> rw [Subtype.range_coe] <;> assumption

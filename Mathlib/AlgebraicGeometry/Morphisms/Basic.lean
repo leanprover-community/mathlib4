@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.AlgebraicGeometry.Pullbacks
-import Mathlib.CategoryTheory.MorphismProperty
+import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.Data.List.TFAE
 
 #align_import algebraic_geometry.morphisms.basic from "leanprover-community/mathlib"@"434e2fd21c1900747afc6d13d8be7f4eedba7218"
@@ -294,15 +294,15 @@ theorem AffineTargetMorphismProperty.isLocalOfOpenCoverImply (P : AffineTargetMo
     haveI : IsAffine _ := (topIsAffineOpen Y).basicOpenIsAffine r
     delta morphismRestrict
     rw [affine_cancel_left_isIso hP]
-    refine' @H _ _ f ⟨Scheme.openCoverOfIsIso (𝟙 Y), _, _⟩ _ (Y.ofRestrict _) _ _
+    refine @H _ _ f ⟨Scheme.openCoverOfIsIso (𝟙 Y), ?_, ?_⟩ _ (Y.ofRestrict _) _ _
     · intro i; dsimp; infer_instance
     · intro i; dsimp
       rwa [← Category.comp_id pullback.snd, ← pullback.condition, affine_cancel_left_isIso hP]
   · introv hs hs'
     replace hs := ((topIsAffineOpen Y).basicOpen_union_eq_self_iff _).mpr hs
     have := H f ⟨Y.openCoverOfSuprEqTop _ hs, ?_, ?_⟩ (𝟙 _)
-    rwa [← Category.comp_id pullback.snd, ← pullback.condition, affine_cancel_left_isIso hP]
-      at this
+    · rwa [← Category.comp_id pullback.snd, ← pullback.condition, affine_cancel_left_isIso hP]
+        at this
     · intro i; exact (topIsAffineOpen Y).basicOpenIsAffine _
     · rintro (i : s)
       specialize hs' i
@@ -526,7 +526,7 @@ theorem diagonalTargetAffineLocallyOfOpenCover (P : AffineTargetMorphismProperty
   let 𝒱 := (Scheme.Pullback.openCoverOfBase 𝒰 f f).bind fun i =>
     Scheme.Pullback.openCoverOfLeftRight.{u} (𝒰' i) (𝒰' i) pullback.snd pullback.snd
   have i1 : ∀ i, IsAffine (𝒱.obj i) := fun i => by dsimp [𝒱]; infer_instance
-  refine' (hP.affine_openCover_iff _ _).mpr _
+  refine' (hP.affine_openCover_iff _ 𝒱).mpr _
   rintro ⟨i, j, k⟩
   dsimp [𝒱]
   convert (affine_cancel_left_isIso hP.1
@@ -551,7 +551,7 @@ theorem AffineTargetMorphismProperty.diagonalOfTargetAffineLocally
   specialize H g₁
   rw [← affine_cancel_left_isIso hP.1 (pullbackDiagonalMapIso f _ f₁ f₂).hom]
   convert H
-  · apply pullback.hom_ext <;>
+  apply pullback.hom_ext <;>
     simp only [Category.assoc, pullback.lift_fst, pullback.lift_snd, pullback.lift_fst_assoc,
       pullback.lift_snd_assoc, Category.comp_id, pullbackDiagonalMapIso_hom_fst,
       pullbackDiagonalMapIso_hom_snd]

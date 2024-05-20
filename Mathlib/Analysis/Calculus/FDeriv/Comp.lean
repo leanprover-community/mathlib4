@@ -71,7 +71,7 @@ example {g : F → G} {g' : F →L[𝕜] G} (hg : HasFDerivAtFilter g g' (f x) (
   calc
     (fun x' : E => g' (f x' - f x) - g'.comp f' (x' - x))
     _ =ᶠ[L] fun x' => g' (f x' - f x - f' (x' - x)) := eventually_of_forall fun x' => by simp
-    _ =O[L] fun x' => f x' - f x - f' (x' - x) := (g'.isBigO_comp _ _)
+    _ =O[L] fun x' => f x' - f x - f' (x' - x) := g'.isBigO_comp _ _
     _ =o[L] fun x' => x' - x := hf.isLittleO
 
 @[fun_prop]

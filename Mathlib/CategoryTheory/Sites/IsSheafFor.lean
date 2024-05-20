@@ -491,7 +491,8 @@ theorem extension_iff_amalgamation {P : Cᵒᵖ ⥤ Type v₁} (x : S.functor �
     ext Y ⟨f, hf⟩
     convert h f hf
     rw [yonedaEquiv_naturality]
-    simp [yonedaEquiv]
+    dsimp [yonedaEquiv]
+    simp
 #align category_theory.presieve.extension_iff_amalgamation CategoryTheory.Presieve.extension_iff_amalgamation
 
 /-- The yoneda version of the sheaf condition is equivalent to the sheaf condition.
@@ -504,7 +505,7 @@ theorem isSheafFor_iff_yonedaSheafCondition {P : Cᵒᵖ ⥤ Type v₁} :
   simp_rw [extension_iff_amalgamation]
   rw [Equiv.forall_congr_left' natTransEquivCompatibleFamily]
   rw [Subtype.forall]
-  apply ball_congr
+  apply forall₂_congr
   intro x hx
   rw [Equiv.exists_unique_congr_left _]
   simp

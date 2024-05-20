@@ -440,7 +440,7 @@ def IsNontrivial (χ : MulChar R R') : Prop :=
 
 /-- A multiplicative character is nontrivial iff it is not the trivial character. -/
 theorem isNontrivial_iff (χ : MulChar R R') : χ.IsNontrivial ↔ χ ≠ 1 := by
-  simp only [IsNontrivial, Ne.def, ext_iff, not_forall, one_apply_coe]
+  simp only [IsNontrivial, Ne, ext_iff, not_forall, one_apply_coe]
 #align mul_char.is_nontrivial_iff MulChar.isNontrivial_iff
 
 end nontrivial
@@ -556,7 +556,7 @@ theorem sum_one_eq_card_units [DecidableEq R] :
   calc
     (∑ a, (1 : MulChar R R') a) = ∑ a : R, if IsUnit a then 1 else 0 :=
       Finset.sum_congr rfl fun a _ => ?_
-    _ = ((Finset.univ : Finset R).filter IsUnit).card := Finset.sum_boole
+    _ = ((Finset.univ : Finset R).filter IsUnit).card := Finset.sum_boole _ _
     _ = (Finset.univ.map ⟨((↑) : Rˣ → R), Units.ext⟩).card := ?_
     _ = Fintype.card Rˣ := congr_arg _ (Finset.card_map _)
   · split_ifs with h

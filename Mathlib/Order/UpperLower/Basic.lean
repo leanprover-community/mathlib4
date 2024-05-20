@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Sara Rousta
 -/
 import Mathlib.Data.SetLike.Basic
-import Mathlib.Data.Set.Intervals.OrdConnected
-import Mathlib.Data.Set.Intervals.OrderIso
+import Mathlib.Order.Interval.Set.OrdConnected
+import Mathlib.Order.Interval.Set.OrderIso
 import Mathlib.Data.Set.Lattice
 
 #align_import order.upper_lower.basic from "leanprover-community/mathlib"@"c0c52abb75074ed8b73a948341f50521fbf43b4c"
@@ -1008,8 +1008,7 @@ end LowerSet
 
 /-- Upper sets are order-isomorphic to lower sets under complementation. -/
 @[simps]
-def upperSetIsoLowerSet : UpperSet α ≃o LowerSet α
-    where
+def upperSetIsoLowerSet : UpperSet α ≃o LowerSet α where
   toFun := UpperSet.compl
   invFun := LowerSet.compl
   left_inv := UpperSet.compl_compl

@@ -6,7 +6,7 @@ Authors: Mario Carneiro, Kenny Lau, Yury Kudryashov
 import Mathlib.Logic.Relation
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.Lex
-import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Data.List.Infix
 
 #align_import data.list.chain from "leanprover-community/mathlib"@"dd71334db81d0bd444af1ee339a29298bef40734"
 
@@ -20,6 +20,8 @@ A graph-specialized version is in development and will hopefully be added under 
 sometime soon.
 -/
 
+-- Make sure we haven't imported `Data.Nat.Order.Basic`
+assert_not_exists OrderedSub
 
 universe u v
 
@@ -164,7 +166,7 @@ theorem chain_iff_get {R} : ∀ {a : α} {l : List α}, Chain R a l ↔
     exact h (i+1) (by simp only [length_cons]; omega)
 
 set_option linter.deprecated false in
-@[deprecated chain_iff_get]
+@[deprecated chain_iff_get] -- 2023-01-10
 theorem chain_iff_nthLe {R} {a : α} {l : List α} : Chain R a l ↔
     (∀ h : 0 < length l, R a (nthLe l 0 h)) ∧
     ∀ (i) (h : i < length l - 1),
@@ -354,15 +356,16 @@ theorem chain'_iff_get {R} : ∀ {l : List α}, Chain' R l ↔
   | [a] => iff_of_true (by simp) (fun _ h => by simp at h)
   | a :: b :: t => by
     rw [← and_forall_succ, chain'_cons, chain'_iff_get]
-    simp only [length_cons, get_cons_succ, Fin.zero_eta, get_cons_zero, zero_add, Fin.mk_one,
-      get_cons_cons_one, succ_sub_succ_eq_sub, nonpos_iff_eq_zero, add_eq_zero_iff, and_false,
-      tsub_zero, add_pos_iff, zero_lt_one, or_true, forall_true_left, and_congr_right_iff]
+    simp only [length_cons, get_cons_succ, Fin.zero_eta, get_cons_zero, Nat.zero_add, Fin.mk_one,
+      get_cons_cons_one, succ_sub_succ_eq_sub, Nat.le_zero, Nat.add_eq_zero_iff, and_false,
+      Nat.sub_zero, Nat.add_pos_iff_pos_or_pos, Nat.zero_lt_one, or_true, forall_true_left,
+      and_congr_right_iff]
     dsimp [succ_sub_one]
     exact fun _ => ⟨fun h i hi => h i (Nat.lt_of_succ_lt_succ hi),
                     fun h i hi => h i (Nat.succ_lt_succ hi)⟩
 
 set_option linter.deprecated false in
-@[deprecated chain'_iff_get]
+@[deprecated chain'_iff_get] -- 2023-01-10
 theorem chain'_iff_nthLe {R} {l : List α} : Chain' R l ↔
     ∀ (i) (h : i < length l - 1),
       R (nthLe l i (by omega)) (nthLe l (i + 1) (by omega)) :=
@@ -417,8 +420,8 @@ theorem Chain.induction (p : α → Prop) (l : List α) (h : Chain r a l)
   · rw [chain_cons] at h
     simp only [mem_cons]
     rintro _ (rfl | H)
-    apply carries h.1 (l_ih h.2 hb _ (mem_cons.2 (Or.inl rfl)))
-    apply l_ih h.2 hb _ (mem_cons.2 H)
+    · apply carries h.1 (l_ih h.2 hb _ (mem_cons.2 (Or.inl rfl)))
+    · apply l_ih h.2 hb _ (mem_cons.2 H)
 #align list.chain.induction List.Chain.induction
 
 /-- Given a chain from `a` to `b`, and a predicate true at `b`, if `r x y → p y → p x` then
