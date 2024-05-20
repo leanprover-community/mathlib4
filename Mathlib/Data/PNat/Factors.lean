@@ -3,7 +3,7 @@ Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland
 -/
-import Mathlib.Algebra.BigOperators.Multiset.Basic
+import Mathlib.Algebra.BigOperators.Group.Multiset
 import Mathlib.Data.PNat.Prime
 import Mathlib.Data.Nat.Factors
 import Mathlib.Data.Multiset.Sort

@@ -14,6 +14,8 @@ The antidiagonal of a multiset `s` consists of all pairs `(t₁, t₂)`
 such that `t₁ + t₂ = s`. These pairs are counted with multiplicities.
 -/
 
+assert_not_exists Ring
+
 universe u
 
 namespace Multiset
@@ -102,17 +104,5 @@ theorem card_antidiagonal (s : Multiset α) : card (antidiagonal s) = 2 ^ card s
   have := card_powerset s
   rwa [← antidiagonal_map_fst, card_map] at this
 #align multiset.card_antidiagonal Multiset.card_antidiagonal
-
-theorem prod_map_add [CommSemiring β] {s : Multiset α} {f g : α → β} :
-    prod (s.map fun a ↦ f a + g a) =
-      sum ((antidiagonal s).map fun p ↦ (p.1.map f).prod * (p.2.map g).prod) := by
-  refine' s.induction_on _ _
-  · simp only [map_zero, prod_zero, antidiagonal_zero, map_singleton, mul_one, sum_singleton]
-  · intro a s ih
-    simp only [map_cons, prod_cons, ih, sum_map_mul_left.symm, add_mul, mul_left_comm (f a),
-      mul_left_comm (g a), sum_map_add, antidiagonal_cons, Prod_map, id_eq, map_add, map_map,
-      Function.comp_apply, mul_assoc, sum_add]
-    exact add_comm _ _
-#align multiset.prod_map_add Multiset.prod_map_add
 
 end Multiset
