@@ -33,12 +33,12 @@ structure StarSubset (A : Type v) [Star A] : Type v where
   star_mem' : ∀ {a : A} (_ha : a ∈ carrier), star a ∈ carrier
 
 /-- A sub star magma is a subset of a magma which is closed under the `star`-/
-structure SubStarmagma (M : Type v) [Mul M] [Star M] extends Subsemigroup M, StarSubset M : Type v
+structure SubStarmagma (M : Type v) [Mul M] [Star M] extends Subsemigroup M : Type v where
+  /-- The `carrier` of a `StarSubset` is closed under the `star` operation. -/
+  star_mem' : ∀ {a : M} (_ha : a ∈ carrier), star a ∈ carrier
 
 /-- Reinterpret a `SubStarmagma` as a `Subsemigroup`. -/
 add_decl_doc SubStarmagma.toSubsemigroup
-/-- Reinterpret a `SubStarmagma` as a `StarSubset`. -/
-add_decl_doc SubStarmagma.toStarSubset
 
 /-- A non-unital star subsemiring is a non-unital non-associative ring which is closed under the
 `star` operation. -/
