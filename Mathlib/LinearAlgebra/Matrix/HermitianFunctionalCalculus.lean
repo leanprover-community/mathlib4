@@ -46,6 +46,7 @@ theorem eigenvalue_mem_toEuclideanLin_spectrum_RCLike (i : n) :
     (RCLike.ofReal ∘ hA.eigenvalues) i ∈ spectrum 𝕜 (toEuclideanLin A) :=
   LinearMap.IsSymmetric.hasEigenvalue_eigenvalues _ _ _ |>.mem_spectrum
 
+/-The following needs a name change-/
 theorem range_thm_RCLike : Set.range
     (fun (i : n) ↦ (RCLike.ofReal ∘ hA.eigenvalues) i) ⊆ (spectrum 𝕜 (toEuclideanLin A)) := by
     rw [Set.range_subset_iff]
@@ -105,17 +106,48 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
 --so, since the continuous functions will then only be Locally Compact...
 --But LinearMap.closedEmbedding_of_injective might work, in this case.
 --Otherwise, the best might be closedEmbedding_of_continuous_injective_closed.
+--equivFnOfDiscrete gives that the continuous functions are the same as all functions
+--if the domain is discrete
+--Pi.discreteTopology gets that the product of discrete spaces is discrete. Can this
+--be used to get that the spectrum has the discrete topology?
+--finite_of_compact_of_discrete : a compact discrete space is finite
+--Is the spectrum of any Hermitian matrix necessarily Hausdorff? If so, then the
+--topology on the spectrum must be discrete. Maybe this isn't needed, though,
+--because the dimension can only be less if there are fewer open sets. Check this.
+--finiteDimensional_finsupp
+-- linearEquivFunOnFinite
+
+--variable [CompactSpace (spectrum ℝ A)]
+--isCompact_iff_compactSpace
+-- Matrix.IsHermitian.eigenvalues (map to the reals) Is map with finite domain finite?
+
+--#synth ContinuousSMul ℝ C(spectrum ℝ A, ℝ)
+--#synth CompactSpace (spectrum ℝ A)
+
+theorem eigenvalues_eq_spectrum {a : Matrix n n 𝕜} (ha : IsHermitian A) : (spectrum ℝ a) = Set.range (ha.eigenvalues) := by
+    sorry --simp? [toLin, Module.End.hasEigenvalue_iff_mem_spectrum]
+
+theorem finite_spectrum {a : Matrix n n 𝕜} (ha : IsHermitian a) : (spectrum ℝ a).Finite := by
+   have H := Set.finite_range (ha.eigenvalues)
+   exact (ha.eigenvalues_eq_spectrum).symm ▸ H
+
+theorem compact_spectrum {a : Matrix n n 𝕜} (ha : IsHermitian a) : CompactSpace (spectrum ℝ a) := by
+   convert Finite.compactSpace (X := spectrum ℝ a)
+   refine Set.finite_coe_iff.mpr ?_
+   apply finite_spectrum
+   assumption
 
 instance instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus ℝ (IsHermitian : Matrix n n 𝕜 → Prop) where
 exists_cfc_of_predicate := by
-    intro A hA
-    use (φ hA)
+    intro a ha
+    use (φ ha)
     constructor
-    · have h0 : FiniteDimensional ℝ C(spectrum ℝ A, ℝ) := by sorry
-      have hφ : LinearMap.ker hA.φ = ⊥ := by sorry
-      refine LinearMap.closedEmbedding_of_injective (𝕜 := ℝ) (E := C(spectrum ℝ A, ℝ)) hφ
-      sorry
+    · have h0 : FiniteDimensional ℝ C(spectrum ℝ a, ℝ) := by sorry
+      have hφ : LinearMap.ker ha.φ = ⊥ := by sorry
+      have H := ha.compact_spectrum
+      apply LinearMap.closedEmbedding_of_injective (𝕜 := ℝ) (E := C(spectrum ℝ a, ℝ))
+                (F := Matrix n n 𝕜) (f := ha.φ) hφ
     · sorry--probably an easy lemma saying that *-homs preserve Hermitian elements...
 
 
