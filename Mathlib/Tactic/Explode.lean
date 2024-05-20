@@ -7,7 +7,6 @@ import Lean.Elab.Command
 import Lean.PrettyPrinter
 import Mathlib.Tactic.Explode.Datatypes
 import Mathlib.Tactic.Explode.Pretty
-import Batteries.Lean.Delaborator
 
 /-!
 # Explode command
