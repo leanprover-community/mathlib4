@@ -132,8 +132,8 @@ def gluedScheme : Scheme := by
   swap
   · exact (D.U i).affineCover.map y
   constructor
-  · dsimp [-Set.mem_range]
-    rw [coe_comp, Set.range_comp]
+  · dsimp
+    erw [coe_comp, Set.range_comp]
     refine' Set.mem_image_of_mem _ _
     exact (D.U i).affineCover.Covers y
   · infer_instance
@@ -143,10 +143,9 @@ instance : CreatesColimit 𝖣.diagram.multispan forgetToLocallyRingedSpace :=
   createsColimitOfFullyFaithfulOfIso D.gluedScheme
     (HasColimit.isoOfNatIso (𝖣.diagramIso forgetToLocallyRingedSpace).symm)
 
--- Porting note: we need to use `CommRingCatMax.{u, u}` instead of just `CommRingCat`.
 instance : PreservesColimit (𝖣.diagram.multispan) forgetToTop :=
   inferInstanceAs (PreservesColimit (𝖣.diagram).multispan (forgetToLocallyRingedSpace ⋙
-      LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget CommRingCatMax.{u, u}))
+      LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget CommRingCat))
 
 instance : HasMulticoequalizer 𝖣.diagram :=
   hasColimit_of_created _ forgetToLocallyRingedSpace
