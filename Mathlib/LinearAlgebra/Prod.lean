@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Eric W
 import Mathlib.Algebra.Algebra.Prod
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.LinearAlgebra.Span
-import Mathlib.Order.PartialSups
 
 #align_import linear_algebra.prod from "leanprover-community/mathlib"@"cd391184c85986113f8c00844cfe6dda1d34be3d"
 
