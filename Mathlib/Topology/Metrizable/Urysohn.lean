@@ -98,7 +98,7 @@ theorem exists_inducing_l_infty : ∃ f : X → ℕ →ᵇ ℝ, Inducing f := by
     rintro V ⟨hVB, hxV⟩
     rcases hB.exists_closure_subset (hB.mem_nhds hVB hxV) with ⟨U, hUB, hxU, hUV⟩
     set UV : ↥s := ⟨(U, V), ⟨hUB, hVB⟩, hUV⟩
-    refine' ⟨ε UV, (ε01 UV).1, fun y (hy : dist (F y) (F x) < ε UV) => _⟩
+    refine ⟨ε UV, (ε01 UV).1, fun y (hy : dist (F y) (F x) < ε UV) => ?_⟩
     replace hy : dist (F y UV) (F x UV) < ε UV :=
       (BoundedContinuousFunction.dist_coe_le_dist _).trans_lt hy
     contrapose! hy

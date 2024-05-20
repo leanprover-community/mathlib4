@@ -224,7 +224,7 @@ def mkOfNNDistEq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (f : α �
   toFun := f
   edist_eq' := by
     rcases h with ⟨r, hne, h⟩
-    refine' ⟨r, hne, fun x y => _⟩
+    refine ⟨r, hne, fun x y => ?_⟩
     rw [edist_nndist, edist_nndist, ← ENNReal.coe_mul, h x y]
 #align dilation.mk_of_nndist_eq Dilation.mkOfNNDistEq
 

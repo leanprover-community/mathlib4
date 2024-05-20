@@ -64,7 +64,7 @@ theorem IsSelfAdjoint.spectralRadius_eq_nnnorm {a : A} (ha : IsSelfAdjoint a) :
   convert
     (spectrum.pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius (a : A)).comp
       (Nat.tendsto_pow_atTop_atTop_of_one_lt one_lt_two) using 1
-  refine' funext fun n => _
+  refine funext fun n => ?_
   rw [Function.comp_apply, ha.nnnorm_pow_two_pow, ENNReal.coe_pow, ← rpow_natCast, ← rpow_mul]
   simp
 #align is_self_adjoint.spectral_radius_eq_nnnorm IsSelfAdjoint.spectralRadius_eq_nnnorm

@@ -868,7 +868,7 @@ theorem digits_succ (b n m r l) (e : r + b * m = n) (hr : r < b)
   rcases h with ⟨h, b2, m0⟩
   have b0 : 0 < b := by omega
   have n0 : 0 < n := by linarith [mul_pos b0 m0]
-  refine' ⟨_, b2, n0⟩
+  refine ⟨?_, b2, n0⟩
   obtain ⟨rfl, rfl⟩ := (Nat.div_mod_unique b0).2 ⟨e, hr⟩
   subst h; exact Nat.digits_def' b2 n0
 #align nat.norm_digits.digits_succ Nat.NormDigits.digits_succ
@@ -876,7 +876,7 @@ theorem digits_succ (b n m r l) (e : r + b * m = n) (hr : r < b)
 theorem digits_one (b n) (n0 : 0 < n) (nb : n < b) : Nat.digits b n = [n] ∧ 1 < b ∧ 0 < n := by
   have b2 : 1 < b :=
     lt_iff_add_one_le.mpr (le_trans (add_le_add_right (lt_iff_add_one_le.mp n0) 1) nb)
-  refine' ⟨_, b2, n0⟩
+  refine ⟨?_, b2, n0⟩
   rw [Nat.digits_def' b2 n0, Nat.mod_eq_of_lt nb,
     (Nat.div_eq_zero_iff ((zero_le n).trans_lt nb)).2 nb, Nat.digits_zero]
 #align nat.norm_digits.digits_one Nat.NormDigits.digits_one

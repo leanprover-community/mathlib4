@@ -277,7 +277,7 @@ private theorem exists_mono_in_high_dimension' :
     specialize ihα ((ι → Option α) → κ)
     obtain ⟨ι', _inst, hι'⟩ := ihα
     -- We claim that `ι ⊕ ι'` works for `Option α` and `κ`-coloring.
-    refine' ⟨Sum ι ι', inferInstance, _⟩
+    refine ⟨Sum ι ι', inferInstance, ?_⟩
     intro C
     -- A `κ`-coloring of `ι ⊕ ι' → Option α` induces an `(ι → Option α) → κ`-coloring of `ι' → α`.
     specialize hι' fun v' v => C (Sum.elim v (some ∘ v'))
@@ -287,7 +287,7 @@ private theorem exists_mono_in_high_dimension' :
     -- If `C'` has a monochromatic line, then so does `C`. We use this in two places below.
     have mono_of_mono : (∃ l, IsMono C' l) → ∃ l, IsMono C l := by
       rintro ⟨l, c, hl⟩
-      refine' ⟨l.horizontal (some ∘ l' (Classical.arbitrary α)), c, fun x => _⟩
+      refine ⟨l.horizontal (some ∘ l' (Classical.arbitrary α)), c, fun x => ?_⟩
       rw [Line.horizontal_apply, ← hl, ← hl']
     -- By choice of `ι`, `C'` either has `r` color-focused lines or a monochromatic line.
     specialize hι C'

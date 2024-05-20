@@ -181,7 +181,7 @@ private theorem disjUnion_filter_pairs_eq_pairs (k : ℕ) :
   simp only [disjUnion_eq_union, Finset.ext_iff, pairs, filter_filter, mem_filter]
   intro a
   rw [← filter_or, mem_filter]
-  refine' ⟨fun ha ↦ by tauto, fun ha ↦ _⟩
+  refine ⟨fun ha ↦ by tauto, fun ha ↦ ?_⟩
   have hacard := le_iff_lt_or_eq.mp ha.2.1
   tauto
 
@@ -261,7 +261,7 @@ theorem psum_eq_mul_esymm_sub_sum (k : ℕ) (h : 0 < k) : psum σ R k =
   have : filter (fun a ↦ a.fst < k ∧ ¬0 < a.fst) (antidiagonal k) = {(0, k)} := by
     ext a
     rw [mem_filter, mem_antidiagonal, mem_singleton]
-    refine' ⟨_, by rintro rfl; omega⟩
+    refine ⟨?_, by rintro rfl; omega⟩
     rintro ⟨ha, ⟨_, ha0⟩⟩
     rw [← ha, Nat.eq_zero_of_not_pos ha0, zero_add, ← Nat.eq_zero_of_not_pos ha0]
   rw [this, sum_singleton] at sub_both_sides

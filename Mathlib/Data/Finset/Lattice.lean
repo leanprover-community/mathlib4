@@ -1916,7 +1916,7 @@ end ExistsMaxMin
 
 theorem isGLB_iff_isLeast [LinearOrder α] (i : α) (s : Finset α) (hs : s.Nonempty) :
     IsGLB (s : Set α) i ↔ IsLeast (↑s) i := by
-  refine' ⟨fun his => _, IsLeast.isGLB⟩
+  refine ⟨fun his => ?_, IsLeast.isGLB⟩
   suffices i = min' s hs by
     rw [this]
     exact isLeast_min' s hs

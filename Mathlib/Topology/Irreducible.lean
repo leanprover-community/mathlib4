@@ -122,7 +122,7 @@ theorem irreducibleComponents_eq_maximals_closed (X : Type*) [TopologicalSpace X
   · intro H
     exact ⟨⟨isClosed_of_mem_irreducibleComponents _ H, H.1⟩, fun x h e => H.2 h.2 e⟩
   · intro H
-    refine' ⟨H.1.2, fun x h e => _⟩
+    refine ⟨H.1.2, fun x h e => ?_⟩
     have : closure x ≤ s := H.2 ⟨isClosed_closure, h.closure⟩ (e.trans subset_closure)
     exact le_trans subset_closure this
 #align irreducible_components_eq_maximals_closed irreducibleComponents_eq_maximals_closed
@@ -306,7 +306,7 @@ theorem IsPreirreducible.subset_irreducible {S U : Set X} (ht : IsPreirreducible
     (hU : U.Nonempty) (hU' : IsOpen U) (h₁ : U ⊆ S) (h₂ : S ⊆ t) : IsIrreducible S := by
   obtain ⟨z, hz⟩ := hU
   replace ht : IsIrreducible t := ⟨⟨z, h₂ (h₁ hz)⟩, ht⟩
-  refine' ⟨⟨z, h₁ hz⟩, _⟩
+  refine ⟨⟨z, h₁ hz⟩, ?_⟩
   rintro u v hu hv ⟨x, hx, hx'⟩ ⟨y, hy, hy'⟩
   obtain ⟨x, -, hx'⟩ : Set.Nonempty (t ∩ ⋂₀ ↑({U, u, v} : Finset (Set X)))
   · refine isIrreducible_iff_sInter.mp ht {U, u, v} ?_ ?_

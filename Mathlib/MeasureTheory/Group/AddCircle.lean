@@ -65,7 +65,7 @@ theorem isAddFundamentalDomain_of_ae_ball (I : Set <| AddCircle T) (u x : AddCir
     rintro ⟨g, hg⟩ hg'
     replace hg' : g ≠ 0 := by simpa only [Ne, AddSubgroup.mk_eq_zero] using hg'
     change AEDisjoint volume (g +ᵥ I) I
-    refine' AEDisjoint.congr (Disjoint.aedisjoint _)
+    refine AEDisjoint.congr (Disjoint.aedisjoint ?_)
       ((quasiMeasurePreserving_add_left volume (-g)).vadd_ae_eq_of_ae_eq g hI) hI
     have hBg : g +ᵥ B = ball (g + x) (T / (2 * n)) := by
       rw [add_comm g x, ← singleton_add_ball _ x g, add_ball, thickening_singleton]

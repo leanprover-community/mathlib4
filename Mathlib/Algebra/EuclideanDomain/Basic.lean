@@ -124,7 +124,7 @@ theorem dvd_div_of_mul_dvd {a b c : R} (h : a * b ∣ c) : b ∣ c / a := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · simp only [div_zero, dvd_zero]
   rcases h with ⟨d, rfl⟩
-  refine' ⟨d, _⟩
+  refine ⟨d, ?_⟩
   rw [mul_assoc, mul_div_cancel_left₀ _ ha]
 #align euclidean_domain.dvd_div_of_mul_dvd EuclideanDomain.dvd_div_of_mul_dvd
 
@@ -213,7 +213,7 @@ theorem xgcdAux_P (a b : R) {r r' : R} {s t s' t'} (p : P a b (r, s, t))
   | H0 n => simpa only [xgcd_zero_left]
   | H1 _ _ h IH =>
     rw [xgcdAux_rec h]
-    refine' IH _ p
+    refine IH ?_ p
     unfold P at p p' ⊢
     dsimp
     rw [mul_sub, mul_sub, add_sub, sub_add_eq_add_sub, ← p', sub_sub, mul_comm _ s, ← mul_assoc,

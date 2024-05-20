@@ -101,7 +101,7 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
   specialize hf c hc
   have hcs : c ∈ s := by
     rcases hc.1.eq_or_lt with (rfl | hlt); · assumption
-    refine' ⟨hc, fun hcf => hf fun U hU => _⟩
+    refine ⟨hc, fun hcf => hf fun U hU => ?_⟩
     rcases (mem_nhdsWithin_Iic_iff_exists_Ioc_subset' hlt).1 (mem_nhdsWithin_of_mem_nhds hU)
       with ⟨x, hxc, hxU⟩
     rcases ((hsc.frequently_mem ⟨a, ha⟩).and_eventually
@@ -307,7 +307,7 @@ theorem ContinuousOn.exists_isMinOn' [ClosedIicTopology α] {s : Set β} {f : β
   have hsub : insert x₀ (K ∩ s) ⊆ s := insert_subset_iff.2 ⟨h₀, inter_subset_right _ _⟩
   obtain ⟨x, hx, hxf⟩ : ∃ x ∈ insert x₀ (K ∩ s), ∀ y ∈ insert x₀ (K ∩ s), f x ≤ f y :=
     ((hK.inter_right hsc).insert x₀).exists_isMinOn (insert_nonempty _ _) (hf.mono hsub)
-  refine' ⟨x, hsub hx, fun y hy => _⟩
+  refine ⟨x, hsub hx, fun y hy => ?_⟩
   by_cases hyK : y ∈ K
   exacts [hxf _ (Or.inr ⟨hyK, hy⟩), (hxf _ (Or.inl rfl)).trans (hKf ⟨hyK, hy⟩)]
 

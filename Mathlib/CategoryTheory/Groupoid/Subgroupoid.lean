@@ -317,7 +317,7 @@ theorem isWide_iff_objs_eq_univ : S.IsWide ↔ S.objs = Set.univ := by
     ext x; constructor <;> simp only [top_eq_univ, mem_univ, imp_true_iff, forall_true_left]
     apply mem_objs_of_src S (h.wide x)
   · rintro h
-    refine' ⟨fun c => _⟩
+    refine ⟨fun c => ?_⟩
     obtain ⟨γ, γS⟩ := (le_of_eq h.symm : ⊤ ⊆ S.objs) (Set.mem_univ c)
     exact id_mem_of_src S γS
 #align category_theory.subgroupoid.is_wide_iff_objs_eq_univ CategoryTheory.Subgroupoid.isWide_iff_objs_eq_univ

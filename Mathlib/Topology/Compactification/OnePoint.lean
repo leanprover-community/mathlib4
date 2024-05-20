@@ -189,12 +189,12 @@ instance : TopologicalSpace (OnePoint X) where
   isOpen_univ := by simp
   isOpen_inter s t := by
     rintro ⟨hms, hs⟩ ⟨hmt, ht⟩
-    refine' ⟨_, hs.inter ht⟩
+    refine ⟨?_, hs.inter ht⟩
     rintro ⟨hms', hmt'⟩
     simpa [compl_inter] using (hms hms').union (hmt hmt')
   isOpen_sUnion S ho := by
     suffices IsOpen ((↑) ⁻¹' ⋃₀ S : Set X) by
-      refine' ⟨_, this⟩
+      refine ⟨?_, this⟩
       rintro ⟨s, hsS : s ∈ S, hs : ∞ ∈ s⟩
       refine' IsCompact.of_isClosed_subset ((ho s hsS).1 hs) this.isClosed_compl _
       exact compl_subset_compl.mpr (preimage_mono <| subset_sUnion_of_mem hsS)
@@ -445,7 +445,7 @@ instance : CompactSpace (OnePoint X) where
 
 /-- The one point compactification of a `T0Space` space is a `T0Space`. -/
 instance [T0Space X] : T0Space (OnePoint X) := by
-  refine' ⟨fun x y hxy => _⟩
+  refine ⟨fun x y hxy => ?_⟩
   rcases inseparable_iff.1 hxy with (⟨rfl, rfl⟩ | ⟨x, rfl, y, rfl, h⟩)
   exacts [rfl, congr_arg some h.eq]
 

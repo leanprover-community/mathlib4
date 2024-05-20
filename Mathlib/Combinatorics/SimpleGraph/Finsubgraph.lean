@@ -102,7 +102,7 @@ theorem singletonFinsubgraph_le_adj_right {u v : V} {e : G.Adj u v} :
 
 /-- Given a homomorphism from a subgraph to `F`, construct its restriction to a sub-subgraph. -/
 def FinsubgraphHom.restrict {G' G'' : G.Finsubgraph} (h : G'' ≤ G') (f : G' →fg F) : G'' →fg F := by
-  refine' ⟨fun ⟨v, hv⟩ => f.toFun ⟨v, h.1 hv⟩, _⟩
+  refine ⟨fun ⟨v, hv⟩ => f.toFun ⟨v, h.1 hv⟩, ?_⟩
   rintro ⟨u, hu⟩ ⟨v, hv⟩ huv
   exact f.map_rel' (h.2 huv)
 #align simple_graph.finsubgraph_hom.restrict SimpleGraph.FinsubgraphHom.restrict

@@ -169,7 +169,7 @@ lemma _root_.Set.Sized.shadow_iterate (h𝒜 : (𝒜 : Set (Finset α)).Sized r)
 
 theorem sized_shadow_iff (h : ∅ ∉ 𝒜) :
     (∂ 𝒜 : Set (Finset α)).Sized r ↔ (𝒜 : Set (Finset α)).Sized (r + 1) := by
-  refine' ⟨fun h𝒜 s hs => _, Set.Sized.shadow⟩
+  refine ⟨fun h𝒜 s hs => ?_, Set.Sized.shadow⟩
   obtain ⟨a, ha⟩ := nonempty_iff_ne_empty.2 (ne_of_mem_of_not_mem hs h)
   rw [← h𝒜 (erase_mem_shadow hs ha), card_erase_add_one ha]
 #align finset.sized_shadow_iff Finset.sized_shadow_iff
@@ -301,12 +301,12 @@ theorem mem_upShadow_iff_exists_mem_card_add :
     rintro ⟨t, ht, hst, hcard⟩
     rwa [← eq_of_subset_of_card_le hst hcard.ge]
   simp only [exists_prop, Function.comp_apply, Function.iterate_succ]
-  refine' ih.trans _
+  refine ih.trans ?_
   clear ih
   constructor
   · rintro ⟨t, ht, hts, hcardst⟩
     obtain ⟨u, hu, hut, hcardtu⟩ := mem_upShadow_iff_exists_mem_card_add_one.1 ht
-    refine' ⟨u, hu, hut.trans hts, _⟩
+    refine ⟨u, hu, hut.trans hts, ?_⟩
     rw [← hcardst, hcardtu, add_right_comm]
     rfl
   · rintro ⟨t, ht, hts, hcard⟩

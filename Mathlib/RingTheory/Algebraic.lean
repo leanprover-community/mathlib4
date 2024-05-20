@@ -220,7 +220,7 @@ variable {K : Type u} {A : Type v} [Field K] [Ring A] [Algebra K A]
 
 /-- An element of an algebra over a field is algebraic if and only if it is integral. -/
 theorem isAlgebraic_iff_isIntegral {x : A} : IsAlgebraic K x ↔ IsIntegral K x := by
-  refine' ⟨_, IsIntegral.isAlgebraic⟩
+  refine ⟨?_, IsIntegral.isAlgebraic⟩
   rintro ⟨p, hp, hpx⟩
   refine' ⟨_, monic_mul_leadingCoeff_inv hp, _⟩
   rw [← aeval_def, AlgHom.map_mul, hpx, zero_mul]
@@ -329,7 +329,7 @@ variable [Algebra K L] [NoZeroSMulDivisors K L]
 
 theorem algHom_bijective [Algebra.IsAlgebraic K L] (f : L →ₐ[K] L) :
     Function.Bijective f := by
-  refine' ⟨f.injective, fun b ↦ _⟩
+  refine ⟨f.injective, fun b ↦ ?_⟩
   obtain ⟨p, hp, he⟩ := Algebra.IsAlgebraic.isAlgebraic (R := K) b
   let f' : p.rootSet L → p.rootSet L := (rootSet_maps_to' (fun x ↦ x) f).restrict f _ _
   have : f'.Surjective := Finite.injective_iff_surjective.1

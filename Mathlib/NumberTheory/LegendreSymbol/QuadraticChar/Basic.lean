@@ -235,7 +235,7 @@ when the domain has odd characteristic. -/
 theorem quadraticChar_isNontrivial (hF : ringChar F ≠ 2) : (quadraticChar F).IsNontrivial := by
   rcases quadraticChar_exists_neg_one hF with ⟨a, ha⟩
   have hu : IsUnit a := by by_contra hf; rw [MulChar.map_nonunit _ hf] at ha; norm_num at ha
-  refine' ⟨hu.unit, (_ : quadraticChar F a ≠ 1)⟩
+  refine ⟨hu.unit, (?_ : quadraticChar F a ≠ 1)⟩
   rw [ha]
   norm_num
 #align quadratic_char_is_nontrivial quadraticChar_isNontrivial

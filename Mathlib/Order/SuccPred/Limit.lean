@@ -145,7 +145,7 @@ theorem IsSuccLimit.succ_lt (hb : IsSuccLimit b) (ha : a < b) : succ a < b := by
   by_cases h : IsMax a
   · rwa [h.succ_eq]
   · rw [lt_iff_le_and_ne, succ_le_iff_of_not_isMax h]
-    refine' ⟨ha, fun hab => _⟩
+    refine ⟨ha, fun hab => ?_⟩
     subst hab
     exact (h hb.isMax).elim
 #align order.is_succ_limit.succ_lt Order.IsSuccLimit.succ_lt

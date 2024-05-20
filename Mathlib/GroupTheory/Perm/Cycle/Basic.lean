@@ -231,7 +231,7 @@ theorem SameCycle.exists_pow_eq' [Finite α] : SameCycle f x y → ∃ i < order
     have h₀ := Int.natCast_pos.mpr (orderOf_pos f)
     have h₁ := Int.emod_nonneg k h₀.ne'
     rw [← zpow_natCast, Int.natAbs_of_nonneg h₁, zpow_mod_orderOf]
-    refine' ⟨_, by rfl⟩
+    refine ⟨?_, by rfl⟩
     rw [← Int.ofNat_lt, Int.natAbs_of_nonneg h₁]
     exact Int.emod_lt_of_pos _ h₀
 #align equiv.perm.same_cycle.exists_pow_eq' Equiv.Perm.SameCycle.exists_pow_eq'
@@ -531,7 +531,7 @@ theorem IsCycle.of_pow {n : ℕ} (h1 : IsCycle (f ^ n)) (h2 : f.support ⊆ (f ^
     simp_rw [← mem_support, ← Finset.ext_iff]
     exact (support_pow_le _ n).antisymm h2
   obtain ⟨x, hx1, hx2⟩ := h1
-  refine' ⟨x, (key x).mp hx1, fun y hy => _⟩
+  refine ⟨x, (key x).mp hx1, fun y hy => ?_⟩
   cases' hx2 ((key y).mpr hy) with i _
   exact ⟨n * i, by rwa [zpow_mul]⟩
 #align equiv.perm.is_cycle.of_pow Equiv.Perm.IsCycle.of_pow
@@ -697,7 +697,7 @@ theorem IsCycle.isCycle_pow_pos_of_lt_prime_order [Finite β] {f : Perm β} (hf 
   classical
     cases nonempty_fintype β
     have : n.Coprime (orderOf f) := by
-      refine' Nat.Coprime.symm _
+      refine Nat.Coprime.symm ?_
       rw [Nat.Prime.coprime_iff_not_dvd hf']
       exact Nat.not_dvd_of_pos_of_lt hn hn'
     obtain ⟨m, hm⟩ := exists_pow_eq_self_of_coprime this
@@ -984,7 +984,7 @@ theorem Nodup.isCycleOn_formPerm (h : l.Nodup) :
   refine' ⟨l.formPerm.bijOn fun _ => List.formPerm_mem_iff_mem, fun a ha b hb => _⟩
   rw [Set.mem_setOf, ← List.indexOf_lt_length] at ha hb
   rw [← List.indexOf_get ha, ← List.indexOf_get hb]
-  refine' ⟨l.indexOf b - l.indexOf a, _⟩
+  refine ⟨l.indexOf b - l.indexOf a, ?_⟩
   simp only [sub_eq_neg_add, zpow_add, zpow_neg, Equiv.Perm.inv_eq_iff_eq, zpow_natCast,
     Equiv.Perm.coe_mul, List.formPerm_pow_apply_get _ h, Function.comp]
   rw [add_comm]

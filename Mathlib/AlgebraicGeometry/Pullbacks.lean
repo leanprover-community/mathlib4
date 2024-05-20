@@ -98,9 +98,9 @@ abbrev fV (i j : 𝒰.J) : v 𝒰 f g i j ⟶ pullback (𝒰.map i ≫ f) g :=
   `((Xⱼ ×[Z] Y) ×[X] Xₖ) ×[Xⱼ ×[Z] Y] ((Xⱼ ×[Z] Y) ×[X] Xᵢ)` needed for gluing   -/
 def t' (i j k : 𝒰.J) :
     pullback (fV 𝒰 f g i j) (fV 𝒰 f g i k) ⟶ pullback (fV 𝒰 f g j k) (fV 𝒰 f g j i) := by
-  refine' (pullbackRightPullbackFstIso ..).hom ≫ _
+  refine (pullbackRightPullbackFstIso ..).hom ≫ ?_
   refine' _ ≫ (pullbackSymmetry _ _).hom
-  refine' _ ≫ (pullbackRightPullbackFstIso ..).inv
+  refine ?_ ≫ (pullbackRightPullbackFstIso ..).inv
   refine' pullback.map _ _ _ _ (t 𝒰 f g i j) (𝟙 _) (𝟙 _) _ _
   · simp_rw [Category.comp_id, t_fst_fst_assoc, ← pullback.condition]
   · rw [Category.comp_id, Category.id_comp]

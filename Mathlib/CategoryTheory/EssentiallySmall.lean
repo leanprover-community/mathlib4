@@ -216,13 +216,13 @@ theorem essentiallySmall_iff (C : Type u) [Category.{v} C] :
   · intro h
     fconstructor
     · rcases h with ⟨S, 𝒮, ⟨e⟩⟩
-      refine' ⟨⟨Skeleton S, ⟨_⟩⟩⟩
+      refine ⟨⟨Skeleton S, ⟨?_⟩⟩⟩
       exact e.skeletonEquiv
     · infer_instance
   · rintro ⟨⟨S, ⟨e⟩⟩, L⟩
     let e' := (ShrinkHoms.equivalence C).skeletonEquiv.symm
     letI : Category S := InducedCategory.category (e'.trans e).symm
-    refine' ⟨⟨S, this, ⟨_⟩⟩⟩
+    refine ⟨⟨S, this, ⟨?_⟩⟩⟩
     refine' (ShrinkHoms.equivalence C).trans <|
       (skeletonEquivalence (ShrinkHoms C)).symm.trans
         ((inducedFunctor (e'.trans e).symm).asEquivalence.symm)

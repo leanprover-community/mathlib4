@@ -1272,7 +1272,7 @@ theorem exists_seq_of_forall_finset_exists {α : Type*} (P : α → Prop) (r : �
         (Classical.choose_spec
             (h' (Finset.image (fun i : Fin n => f i) (Finset.univ : Finset (Fin n))))
             (by simp [IH'])).1
-    refine' ⟨f, A, fun m n hmn => _⟩
+    refine ⟨f, A, fun m n hmn => ?_⟩
     conv_rhs => rw [hf]
     rw [seqOfForallFinsetExistsAux]
     apply
@@ -1292,7 +1292,7 @@ theorem exists_seq_of_forall_finset_exists' {α : Type*} (P : α → Prop) (r : 
     [IsSymm α r] (h : ∀ s : Finset α, (∀ x ∈ s, P x) → ∃ y, P y ∧ ∀ x ∈ s, r x y) :
     ∃ f : ℕ → α, (∀ n, P (f n)) ∧ Pairwise fun m n => r (f m) (f n) := by
   rcases exists_seq_of_forall_finset_exists P r h with ⟨f, hf, hf'⟩
-  refine' ⟨f, hf, fun m n hmn => _⟩
+  refine ⟨f, hf, fun m n hmn => ?_⟩
   rcases lt_trichotomy m n with (h | rfl | h)
   · exact hf' m n h
   · exact (hmn rfl).elim

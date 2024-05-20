@@ -47,7 +47,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
   have h2pow : ∀ n : ℕ, 2 * (2⁻¹ : ℝ≥0∞) ^ (n + 1) = 2⁻¹ ^ n := fun n => by
     simp [pow_succ', ← mul_assoc, ENNReal.mul_inv_cancel two_ne_zero two_ne_top]
   -- Consider an open covering `S : Set (Set α)`
-  refine' ⟨fun ι s ho hcov => _⟩
+  refine ⟨fun ι s ho hcov => ?_⟩
   simp only [iUnion_eq_univ_iff] at hcov
   -- choose a well founded order on `S`
   -- Porting note (#11215): TODO: add lemma that claims `∃ i : LinearOrder ι, WellFoundedLT ι`
@@ -159,9 +159,9 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
     have : (⋃ (m ≤ n + k) (i ∈ { i : ι | (D m i ∩ B).Nonempty }), {(m, i)}).Finite :=
       (finite_le_nat _).biUnion' fun i hi =>
         (Hle i hi).finite.biUnion' fun _ _ => finite_singleton _
-    refine' this.subset fun I hI => _
+    refine this.subset fun I hI => ?_
     simp only [mem_iUnion]
-    refine' ⟨I.1, _, I.2, hI, rfl⟩
+    refine ⟨I.1, ?_, I.2, hI, rfl⟩
     exact not_lt.1 fun hlt => (Hgt I.1 hlt I.2).le_bot hI.choose_spec
 #align emetric.paracompact_space EMetric.instParacompactSpace
 

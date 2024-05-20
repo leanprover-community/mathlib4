@@ -1027,7 +1027,7 @@ alias IsPushout.map := Functor.map_isPushout
 
 theorem IsPullback.of_map [ReflectsLimit (cospan h i) F] (e : f ≫ h = g ≫ i)
     (H : IsPullback (F.map f) (F.map g) (F.map h) (F.map i)) : IsPullback f g h i := by
-  refine' ⟨⟨e⟩, ⟨isLimitOfReflects F <| _⟩⟩
+  refine ⟨⟨e⟩, ⟨isLimitOfReflects F <| ?_⟩⟩
   refine'
     (IsLimit.equivOfNatIsoOfIso (cospanCompIso F h i) _ _ (WalkingCospan.ext _ _ _)).symm
       H.isLimit
@@ -1048,7 +1048,7 @@ theorem IsPullback.map_iff {D : Type*} [Category D] (F : C ⥤ D) [PreservesLimi
 
 theorem IsPushout.of_map [ReflectsColimit (span f g) F] (e : f ≫ h = g ≫ i)
     (H : IsPushout (F.map f) (F.map g) (F.map h) (F.map i)) : IsPushout f g h i := by
-  refine' ⟨⟨e⟩, ⟨isColimitOfReflects F <| _⟩⟩
+  refine ⟨⟨e⟩, ⟨isColimitOfReflects F <| ?_⟩⟩
   refine'
     (IsColimit.equivOfNatIsoOfIso (spanCompIso F f g) _ _ (WalkingSpan.ext _ _ _)).symm
       H.isColimit

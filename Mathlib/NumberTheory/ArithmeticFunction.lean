@@ -1132,7 +1132,7 @@ theorem moebius_apply_isPrimePow_not_prime {n : ℕ} (hn : IsPrimePow n) (hn' : 
 @[arith_mult]
 theorem isMultiplicative_moebius : IsMultiplicative μ := by
   rw [IsMultiplicative.iff_ne_zero]
-  refine' ⟨by simp, fun {n m} hn hm hnm => _⟩
+  refine ⟨by simp, fun {n m} hn hm hnm => ?_⟩
   simp only [moebius, ZeroHom.coe_mk, coe_mk, ZeroHom.toFun_eq_coe, Eq.ndrec, ZeroHom.coe_mk,
     IsUnit.mul_iff, Nat.isUnit_iff, squarefree_mul hnm, ite_zero_mul_ite_zero,
     cardFactors_mul hn hm, pow_add]

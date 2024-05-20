@@ -270,7 +270,7 @@ theorem IsBaseChange.of_lift_unique
     LinearEquiv.ofLinear f'' (ULift.moduleEquiv.toLinearMap.comp g) ?_ ?_
   · exact fe.bijective
   · rw [← LinearMap.cancel_left (ULift.moduleEquiv : ULift.{max v₁ v₃} N ≃ₗ[S] N).symm.injective]
-    refine' (h (ULift.{max v₁ v₃} N) <| ULift.moduleEquiv.symm.toLinearMap.comp f).unique _ rfl
+    refine (h (ULift.{max v₁ v₃} N) <| ULift.moduleEquiv.symm.toLinearMap.comp f).unique ?_ rfl
     ext x
     simp only [LinearMap.comp_apply, LinearMap.restrictScalars_apply, hg]
     apply one_smul
@@ -326,7 +326,7 @@ theorem IsBaseChange.comp {f : M →ₗ[R] N} (hf : IsBaseChange S f) {g : N →
       rw [Algebra.smul_def, mul_smul]
       rfl⟩
   have : IsScalarTower R S Q := by
-    refine' ⟨fun x y z => _⟩
+    refine ⟨fun x y z => ?_⟩
     change (IsScalarTower.toAlgHom R S T) (x • y) • z = x • algebraMap S T y • z
     rw [AlgHom.map_smul, smul_assoc]
     rfl

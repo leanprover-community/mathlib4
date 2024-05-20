@@ -108,7 +108,7 @@ theorem mem_span_pow {x y : S} {d : ℕ} (hd : d ≠ 0) :
   rw [mem_span_pow']
   constructor <;>
     · rintro ⟨f, h, hy⟩
-      refine' ⟨f, _, hy⟩
+      refine ⟨f, ?_, hy⟩
       by_cases hf : f = 0
       · simp only [hf, natDegree_zero, degree_zero] at h ⊢
         first | exact lt_of_le_of_ne (Nat.zero_le d) hd.symm | exact WithBot.bot_lt_coe d
@@ -223,7 +223,7 @@ protected theorem leftMulMatrix (pb : PowerBasis A S) : Algebra.leftMulMatrix pb
       if ↑j + 1 = pb.dim then -pb.minpolyGen.coeff ↑i else if (i : ℕ) = j + 1 then 1 else 0 := by
   cases subsingleton_or_nontrivial A; · apply Subsingleton.elim
   rw [Algebra.leftMulMatrix_apply, ← LinearEquiv.eq_symm_apply, LinearMap.toMatrix_symm]
-  refine' pb.basis.ext fun k => _
+  refine pb.basis.ext fun k => ?_
   simp_rw [Matrix.toLin_self, Matrix.of_apply, pb.basis_eq_pow]
   apply (pow_succ' _ _).symm.trans
   split_ifs with h

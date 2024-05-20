@@ -1083,7 +1083,7 @@ theorem continuousOn_open_iff {f : α → β} {s : Set α} (hs : IsOpen s) :
     rw [inter_comm, hu]
     apply IsOpen.inter u_open hs
   · intro h t ht
-    refine' ⟨s ∩ f ⁻¹' t, h t ht, _⟩
+    refine ⟨s ∩ f ⁻¹' t, h t ht, ?_⟩
     rw [@inter_comm _ s (f ⁻¹' t), inter_assoc, inter_self]
 #align continuous_on_open_iff continuousOn_open_iff
 

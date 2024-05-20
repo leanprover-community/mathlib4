@@ -34,7 +34,7 @@ lemma isNilpotent_C_mul_pow_X_of_isNilpotent (n : ℕ) (hnil : IsNilpotent r) :
     IsNilpotent ((C r) * X ^ n) := by
   refine' Commute.isNilpotent_mul_left (commute_X_pow _ _).symm _
   obtain ⟨m, hm⟩ := hnil
-  refine' ⟨m, _⟩
+  refine ⟨m, ?_⟩
   rw [← C_pow, hm, C_0]
 
 lemma isNilpotent_pow_X_mul_C_of_isNilpotent (n : ℕ) (hnil : IsNilpotent r) :

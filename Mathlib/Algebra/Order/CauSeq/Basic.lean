@@ -117,7 +117,7 @@ lemma bounded (hf : IsCauSeq abv f) : ∃ r, ∀ i, abv (f i) < r := by
   obtain ⟨i, h⟩ := hf _ zero_lt_one
   set R : ℕ → α := @Nat.rec (fun _ => α) (abv (f 0)) fun i c => max c (abv (f i.succ)) with hR
   have : ∀ i, ∀ j ≤ i, abv (f j) ≤ R i := by
-    refine' Nat.rec (by simp [hR]) _
+    refine Nat.rec (by simp [hR]) ?_
     rintro i hi j (rfl | hj)
     · simp [R]
     · exact (hi j hj).trans (le_max_left _ _)
@@ -504,13 +504,13 @@ theorem abv_pos_of_not_limZero {f : CauSeq β abv} (hf : ¬LimZero f) :
     ∃ K > 0, ∃ i, ∀ j ≥ i, K ≤ abv (f j) := by
   haveI := Classical.propDecidable
   by_contra nk
-  refine' hf fun ε ε0 => _
+  refine hf fun ε ε0 => ?_
   simp? [not_forall] at nk says
     simp only [gt_iff_lt, ge_iff_le, not_exists, not_and, not_forall, Classical.not_imp,
       not_le] at nk
   cases' f.cauchy₃ (half_pos ε0) with i hi
   rcases nk _ (half_pos ε0) i with ⟨j, ij, hj⟩
-  refine' ⟨j, fun k jk => _⟩
+  refine ⟨j, fun k jk => ?_⟩
   have := lt_of_le_of_lt (abv_add abv _ _) (add_lt_add (hi j ij k jk) hj)
   rwa [sub_add_cancel, add_halves] at this
 #align cau_seq.abv_pos_of_not_lim_zero CauSeq.abv_pos_of_not_limZero
@@ -711,7 +711,7 @@ theorem trichotomy (f : CauSeq α abs) : Pos f ∨ LimZero f ∨ Pos (-f) := by
   rcases abv_pos_of_not_limZero h with ⟨K, K0, hK⟩
   rcases exists_forall_ge_and hK (f.cauchy₃ K0) with ⟨i, hi⟩
   refine' (le_total 0 (f i)).imp _ _ <;>
-    refine' fun h => ⟨K, K0, i, fun j ij => _⟩ <;>
+    refine fun h => ⟨K, K0, i, fun j ij => ?_⟩ <;>
     have := (hi _ ij).1 <;>
     cases' hi _ le_rfl with h₁ h₂
   · rwa [abs_of_nonneg] at this
@@ -921,7 +921,7 @@ protected theorem inf_comm (a b : CauSeq α abs) : a ⊓ b = b ⊓ a := Subtype.
 protected theorem sup_eq_right {a b : CauSeq α abs} (h : a ≤ b) : a ⊔ b ≈ b := by
   obtain ⟨ε, ε0 : _ < _, i, h⟩ | h := h
   · intro _ _
-    refine' ⟨i, fun j hj => _⟩
+    refine ⟨i, fun j hj => ?_⟩
     dsimp
     erw [← max_sub_sub_right]
     rwa [sub_self, max_eq_right, abs_zero]
@@ -934,7 +934,7 @@ protected theorem sup_eq_right {a b : CauSeq α abs} (h : a ≤ b) : a ⊔ b ≈
 protected theorem inf_eq_right {a b : CauSeq α abs} (h : b ≤ a) : a ⊓ b ≈ b := by
   obtain ⟨ε, ε0 : _ < _, i, h⟩ | h := h
   · intro _ _
-    refine' ⟨i, fun j hj => _⟩
+    refine ⟨i, fun j hj => ?_⟩
     dsimp
     erw [← min_sub_sub_right]
     rwa [sub_self, min_eq_right, abs_zero]

@@ -736,7 +736,7 @@ theorem complete' : ∃ q : ℚ_[p], ∀ ε > 0, ∃ N, ∀ i ≥ N, padicNormE 
   ⟨lim f, fun ε hε ↦ by
     obtain ⟨N, hN⟩ := exi_rat_seq_conv f (half_pos hε)
     obtain ⟨N2, hN2⟩ := padicNormE.defn (lim' f) (half_pos hε)
-    refine' ⟨max N N2, fun i hi ↦ _⟩
+    refine ⟨max N N2, fun i hi ↦ ?_⟩
     rw [← sub_add_sub_cancel _ (lim' f i : ℚ_[p]) _]
     refine' (padicNormE.add_le _ _).trans_lt _
     rw [← add_halves ε]
@@ -1011,7 +1011,7 @@ instance : CompleteSpace ℚ_[p] := by
   apply complete_of_cauchySeq_tendsto
   intro u hu
   let c : CauSeq ℚ_[p] norm := ⟨u, Metric.cauchySeq_iff'.mp hu⟩
-  refine' ⟨c.lim, fun s h ↦ _⟩
+  refine ⟨c.lim, fun s h ↦ ?_⟩
   rcases Metric.mem_nhds_iff.1 h with ⟨ε, ε0, hε⟩
   have := c.equiv_lim ε ε0
   simp only [mem_map, mem_atTop_sets, mem_setOf_eq]

@@ -189,7 +189,7 @@ instance {X : Compactum} : CompactSpace X := by
   constructor
   rw [isCompact_iff_ultrafilter_le_nhds]
   intro F _
-  refine' ⟨X.str F, by tauto, _⟩
+  refine ⟨X.str F, by tauto, ?_⟩
   rw [le_nhds_iff]
   intro S h1 h2
   exact h2 F h1
@@ -241,7 +241,7 @@ private theorem cl_cl {X : Compactum} (A : Set X) : cl (cl A) ⊆ cl A := by
     rintro B ⟨Q, hQ, rfl⟩
     have : (Q ∩ cl A).Nonempty := Filter.nonempty_of_mem (inter_mem hQ hF)
     rcases this with ⟨q, hq1, P, hq2, hq3⟩
-    refine' ⟨P, hq2, _⟩
+    refine ⟨P, hq2, ?_⟩
     rw [← hq3] at hq1
     simpa
   -- Suffices to show that the intersection of any finite subcollection of C1 is nonempty.
@@ -328,7 +328,7 @@ theorem str_eq_of_le_nhds {X : Compactum} (F : Ultrafilter X) (x : X) : ↑F ≤
       · use Set.univ
         refine' ⟨Filter.univ_sets _, _⟩
         ext
-        refine' ⟨_, by tauto⟩
+        refine ⟨?_, by tauto⟩
         · intro
           apply Filter.univ_sets
       · exact claim3

@@ -209,7 +209,7 @@ theorem Integrable.uniformIntegrable_condexp {ι : Type*} [IsFiniteMeasure μ] {
       ENNReal.le_div_iff_mul_le (Or.inl (ENNReal.coe_ne_zero.2 hCpos.ne.symm))
         (Or.inl ENNReal.coe_lt_top.ne)] at this
     simp_rw [ENNReal.coe_le_coe] at this
-    refine' this.trans _
+    refine this.trans ?_
     rw [ENNReal.div_le_iff_le_mul (Or.inl (ENNReal.coe_ne_zero.2 hCpos.ne.symm))
         (Or.inl ENNReal.coe_lt_top.ne),
       hC, Nonneg.inv_mk, ENNReal.coe_mul, ENNReal.coe_toNNReal hg.snorm_lt_top.ne, ← mul_assoc, ←
@@ -306,9 +306,9 @@ theorem condexp_stronglyMeasurable_mul_of_bound₀ (hm : m ≤ m0) [IsFiniteMeas
     (hf_bound : ∀ᵐ x ∂μ, ‖f x‖ ≤ c) : μ[f * g|m] =ᵐ[μ] f * μ[g|m] := by
   have : μ[f * g|m] =ᵐ[μ] μ[hf.mk f * g|m] :=
     condexp_congr_ae (EventuallyEq.mul hf.ae_eq_mk EventuallyEq.rfl)
-  refine' this.trans _
+  refine this.trans ?_
   have : f * μ[g|m] =ᵐ[μ] hf.mk f * μ[g|m] := EventuallyEq.mul hf.ae_eq_mk EventuallyEq.rfl
-  refine' EventuallyEq.trans _ this.symm
+  refine EventuallyEq.trans ?_ this.symm
   refine' condexp_stronglyMeasurable_mul_of_bound hm hf.stronglyMeasurable_mk hg c _
   filter_upwards [hf_bound, hf.ae_eq_mk] with x hxc hx_eq
   rwa [← hx_eq]
@@ -357,7 +357,7 @@ theorem condexp_stronglyMeasurable_mul₀ {f g : α → ℝ} (hf : AEStronglyMea
     (hfg : Integrable (f * g) μ) (hg : Integrable g μ) : μ[f * g|m] =ᵐ[μ] f * μ[g|m] := by
   have : μ[f * g|m] =ᵐ[μ] μ[hf.mk f * g|m] :=
     condexp_congr_ae (hf.ae_eq_mk.mul EventuallyEq.rfl)
-  refine' this.trans _
+  refine this.trans ?_
   have : f * μ[g|m] =ᵐ[μ] hf.mk f * μ[g|m] := hf.ae_eq_mk.mul EventuallyEq.rfl
   refine' (condexp_stronglyMeasurable_mul hf.stronglyMeasurable_mk _ hg).trans this.symm
   refine' (integrable_congr _).mp hfg

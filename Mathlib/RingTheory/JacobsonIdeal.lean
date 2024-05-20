@@ -346,7 +346,7 @@ theorem jacobson_bot_polynomial_le_sInf_map_maximal :
 theorem jacobson_bot_polynomial_of_jacobson_bot (h : jacobson (⊥ : Ideal R) = ⊥) :
     jacobson (⊥ : Ideal R[X]) = ⊥ := by
   refine' eq_bot_iff.2 (le_trans jacobson_bot_polynomial_le_sInf_map_maximal _)
-  refine' fun f hf => (Submodule.mem_bot R[X]).2 <| Polynomial.ext fun n =>
+  refine fun f hf => (Submodule.mem_bot R[X]).2 <| Polynomial.ext fun n =>
     Trans.trans (?_ : coeff f n = 0) (coeff_zero n).symm
   suffices f.coeff n ∈ Ideal.jacobson ⊥ by rwa [h, Submodule.mem_bot] at this
   exact mem_sInf.2 fun j hj => (mem_map_C_iff.1 ((mem_sInf.1 hf) ⟨j, ⟨hj.2, rfl⟩⟩)) n

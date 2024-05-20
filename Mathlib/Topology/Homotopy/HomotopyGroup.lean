@@ -469,7 +469,7 @@ def genLoopEquivOfUnique (N) [Unique N] : Ω^ N X x ≃ Ω X x where
 def homotopyGroupEquivFundamentalGroupOfUnique (N) [Unique N] :
     HomotopyGroup N X x ≃ FundamentalGroup X x := by
   refine' Equiv.trans _ (CategoryTheory.Groupoid.isoEquivHom _ _).symm
-  refine' Quotient.congr (genLoopEquivOfUnique N) _
+  refine Quotient.congr (genLoopEquivOfUnique N) ?_
   intros a₁ a₂; constructor <;> rintro ⟨H⟩
   · exact
       ⟨{  toFun := fun tx => H (tx.fst, fun _ => tx.snd)

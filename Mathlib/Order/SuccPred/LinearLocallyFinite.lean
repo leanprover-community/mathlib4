@@ -77,7 +77,7 @@ theorem le_succFn (i : ι) : i ≤ succFn i := by
 theorem isGLB_Ioc_of_isGLB_Ioi {i j k : ι} (hij_lt : i < j) (h : IsGLB (Set.Ioi i) k) :
     IsGLB (Set.Ioc i j) k := by
   simp_rw [IsGLB, IsGreatest, mem_upperBounds, mem_lowerBounds] at h ⊢
-  refine' ⟨fun x hx ↦ h.1 x hx.1, fun x hx ↦ h.2 x _⟩
+  refine ⟨fun x hx ↦ h.1 x hx.1, fun x hx ↦ h.2 x ?_⟩
   intro y hy
   rcases le_or_lt y j with h_le | h_lt
   · exact hx y ⟨hy, h_le⟩
@@ -162,7 +162,7 @@ instance (priority := 100) LinearOrder.isPredArchimedean_of_isSuccArchimedean [S
     have h_exists := exists_succ_iterate_of_le hij
     obtain ⟨n, hn_eq, hn_lt_ne⟩ : ∃ n, succ^[n] i = j ∧ ∀ m < n, succ^[m] i ≠ j :=
       ⟨Nat.find h_exists, Nat.find_spec h_exists, fun m hmn ↦ Nat.find_min h_exists hmn⟩
-    refine' ⟨n, _⟩
+    refine ⟨n, ?_⟩
     rw [← hn_eq]
     induction' n with n
     · simp only [Nat.zero_eq, Function.iterate_zero, id]

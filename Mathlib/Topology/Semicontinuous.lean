@@ -1217,7 +1217,7 @@ variable {γ : Type*} [LinearOrder γ] [TopologicalSpace γ] [OrderTopology γ]
 theorem continuousWithinAt_iff_lower_upperSemicontinuousWithinAt {f : α → γ} :
     ContinuousWithinAt f s x ↔
       LowerSemicontinuousWithinAt f s x ∧ UpperSemicontinuousWithinAt f s x := by
-  refine' ⟨fun h => ⟨h.lowerSemicontinuousWithinAt, h.upperSemicontinuousWithinAt⟩, _⟩
+  refine ⟨fun h => ⟨h.lowerSemicontinuousWithinAt, h.upperSemicontinuousWithinAt⟩, ?_⟩
   rintro ⟨h₁, h₂⟩
   intro v hv
   simp only [Filter.mem_map]

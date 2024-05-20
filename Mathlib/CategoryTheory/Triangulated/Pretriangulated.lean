@@ -216,7 +216,7 @@ lemma complete_distinguished_triangle_morphism₂ (T₁ T₂ : Triangle C)
     dsimp
     simp only [neg_comp, comp_neg, ← Functor.map_comp_assoc, ← comm,
       Functor.map_comp, shift_shift_neg', Functor.id_obj, assoc, Iso.inv_hom_id_app, comp_id])
-  refine' ⟨a, ⟨ha₁, _⟩⟩
+  refine ⟨a, ⟨ha₁, ?_⟩⟩
   dsimp only [Triangle.invRotate, Triangle.mk] at ha₂
   rw [← cancel_mono ((shiftEquiv C (1 : ℤ)).counitIso.inv.app T₂.obj₃), assoc, assoc, ← ha₂]
   simp only [shiftEquiv'_counitIso, shift_neg_shift', assoc, Iso.inv_hom_id_app_assoc]
@@ -441,7 +441,7 @@ lemma isIso₂_of_isIso₁₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ di
     obtain ⟨h, hh⟩ := Triangle.coyoneda_exact₂ T'.invRotate (inv_rot_of_distTriang _ hT')
       (g ≫ φ.hom₁) (by dsimp; rw [assoc, ← φ.comm₁, hf])
     obtain ⟨k, rfl⟩ : ∃ (k : A ⟶ T.invRotate.obj₁), k ≫ T.invRotate.mor₁ = g := by
-      refine' ⟨h ≫ inv (φ.hom₃⟦(-1 : ℤ)⟧'), _⟩
+      refine ⟨h ≫ inv (φ.hom₃⟦(-1 : ℤ)⟧'), ?_⟩
       have eq := ((invRotate C).map φ).comm₁
       dsimp only [invRotate] at eq
       rw [← cancel_mono φ.hom₁, assoc, assoc, eq, IsIso.inv_hom_id_assoc, hh]
@@ -458,7 +458,7 @@ lemma isIso₂_of_isIso₁₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ di
     obtain ⟨y₁, hy₁⟩ := Triangle.coyoneda_exact₂ _ hT' (y₂ - x₂ ≫ φ.hom₂)
       (by rw [sub_comp, assoc, ← φ.comm₂, ← reassoc_of% hx₂, hx₃, sub_self])
     obtain ⟨x₁, hx₁⟩ : ∃ (x₁ : A ⟶ T.obj₁), x₁ ≫ φ.hom₁ = y₁ := ⟨y₁ ≫ inv φ.hom₁, by simp⟩
-    refine' ⟨x₂ + x₁ ≫ T.mor₁, _⟩
+    refine ⟨x₂ + x₁ ≫ T.mor₁, ?_⟩
     dsimp
     rw [add_comp, assoc, φ.comm₁, reassoc_of% hx₁, ← hy₁, add_sub_cancel]
 

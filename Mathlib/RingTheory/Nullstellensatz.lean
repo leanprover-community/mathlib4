@@ -206,7 +206,7 @@ theorem vanishingIdeal_zeroLocus_eq_radical (I : Ideal (MvPolynomial σ k)) :
     rw [← mem_vanishingIdeal_singleton_iff, Set.mem_singleton_iff.1 hy, ← hx]
     exact hJI hp
   · rw [← mem_vanishingIdeal_singleton_iff x p]
-    refine' (mem_sInf.mp hp)
+    refine (mem_sInf.mp hp)
       ⟨le_trans (le_vanishingIdeal_zeroLocus I) (vanishingIdeal_anti_mono fun y hy => hy.symm ▸ hx),
         MvPolynomial.vanishingIdeal_singleton_isMaximal⟩
 #align mv_polynomial.vanishing_ideal_zero_locus_eq_radical MvPolynomial.vanishingIdeal_zeroLocus_eq_radical

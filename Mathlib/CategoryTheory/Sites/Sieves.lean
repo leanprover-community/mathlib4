@@ -852,7 +852,7 @@ def sieveOfSubfunctor {R} (f : R ⟶ yoneda.obj X) : Sieve X where
   arrows Y g := ∃ t, f.app (Opposite.op Y) t = g
   downward_closed := by
     rintro Y Z _ ⟨t, rfl⟩ g
-    refine' ⟨R.map g.op t, _⟩
+    refine ⟨R.map g.op t, ?_⟩
     rw [FunctorToTypes.naturality _ _ f]
     simp
 #align category_theory.sieve.sieve_of_subfunctor CategoryTheory.Sieve.sieveOfSubfunctor

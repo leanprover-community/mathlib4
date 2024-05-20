@@ -550,7 +550,7 @@ theorem eq_zero_or_one (I : FractionalIdeal K⁰ L) : I = 0 ∨ I = 1 := by
   constructor
   · intro x_mem
     obtain ⟨n, d, rfl⟩ := IsLocalization.mk'_surjective K⁰ x
-    refine' ⟨n / d, _⟩
+    refine ⟨n / d, ?_⟩
     rw [map_div₀, IsFractionRing.mk'_eq_div]
   · rintro ⟨x, rfl⟩
     obtain ⟨y, y_ne, y_mem⟩ := exists_ne_zero_mem_isInteger hI

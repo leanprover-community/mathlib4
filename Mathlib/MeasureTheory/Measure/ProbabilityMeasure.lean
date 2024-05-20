@@ -350,7 +350,7 @@ def normalize : ProbabilityMeasure Ω :=
   else
     { val := ↑(μ.mass⁻¹ • μ)
       property := by
-        refine' ⟨_⟩
+        refine ⟨?_⟩
         -- Porting note: paying the price that this isn't `simp` lemma now.
         rw [FiniteMeasure.toMeasure_smul]
         simp only [Measure.coe_smul, Pi.smul_apply, Measure.nnreal_smul_coe_apply, ne_eq,

@@ -89,7 +89,7 @@ theorem exists_disjoint_subfamily_covering_enlargment (B : ι → Set α) (t : S
     exact ⟨c, ⟨u, uU, cu⟩, ac, hc⟩
   -- The only nontrivial bit is to check that every `a ∈ t` intersects an element `b ∈ u` with
   -- comparatively large `δ b`. Assume this is not the case, then we will contradict the maximality.
-  refine' ⟨u, uT.1, uT.2.1, fun a hat => _⟩
+  refine ⟨u, uT.1, uT.2.1, fun a hat => ?_⟩
   contrapose! hu
   have a_disj : ∀ c ∈ u, Disjoint (B a) (B c) := by
     intro c hc
@@ -104,7 +104,7 @@ theorem exists_disjoint_subfamily_covering_enlargment (B : ι → Set α) (t : S
   have Anonempty : A.Nonempty := ⟨a, hat, a_disj⟩
   let m := sSup (δ '' A)
   have bddA : BddAbove (δ '' A) := by
-    refine' ⟨R, fun x xA => _⟩
+    refine ⟨R, fun x xA => ?_⟩
     rcases (mem_image _ _ _).1 xA with ⟨a', ha', rfl⟩
     exact δle a' ha'.1
   obtain ⟨a', a'A, ha'⟩ : ∃ a' ∈ A, m / τ ≤ δ a' := by
@@ -181,7 +181,7 @@ theorem exists_disjoint_subfamily_covering_enlargment_closedBall [MetricSpace α
   have A : ∀ a ∈ t', ∃ b ∈ u, closedBall (x a) (r a) ⊆ closedBall (x b) (5 * r b) := by
     intro a ha
     rcases hu a ha with ⟨b, bu, hb, rb⟩
-    refine' ⟨b, bu, _⟩
+    refine ⟨b, bu, ?_⟩
     have : dist (x a) (x b) ≤ r a + r b := dist_le_add_of_nonempty_closedBall_inter_closedBall hb
     apply closedBall_subset_closedBall'
     linarith
@@ -263,17 +263,17 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
     have Idist_v : ∀ a ∈ v, dist (c a) x ≤ r a + R x := by
       intro a hav
       apply dist_le_add_of_nonempty_closedBall_inter_closedBall
-      refine' hav.2.mono _
+      refine hav.2.mono ?_
       apply inter_subset_inter _ ball_subset_closedBall
       exact hB a (ut (vu hav))
     set R0 := sSup (r '' v) with R0_def
     have R0_bdd : BddAbove (r '' v) := by
-      refine' ⟨1, fun r' hr' => _⟩
+      refine ⟨1, fun r' hr' => ?_⟩
       rcases (mem_image _ _ _).1 hr' with ⟨b, hb, rfl⟩
       exact le_trans (ut' (vu hb)).2 (hR1 (c b))
     rcases le_total R0 (R x) with (H | H)
     · refine' ⟨20 * R x, hRμ x, fun a au hax => _⟩
-      refine' (hB a (ut au)).trans _
+      refine (hB a (ut au)).trans ?_
       apply closedBall_subset_closedBall'
       have : r a ≤ R0 := le_csSup R0_bdd (mem_image_of_mem _ ⟨au, hax⟩)
       linarith [Idist_v a ⟨au, hax⟩, hR0 x]
@@ -294,7 +294,7 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
         rw [dist_comm]
         linarith [Idist_v a hav, (ut' (vu hav)).2]
       · intro b bu hbx
-        refine' (hB b (ut bu)).trans _
+        refine (hB b (ut bu)).trans ?_
         apply closedBall_subset_closedBall'
         have : r b ≤ R0 := le_csSup R0_bdd (mem_image_of_mem _ ⟨bu, hbx⟩)
         linarith [Idist_v b ⟨bu, hbx⟩]
@@ -342,14 +342,14 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
     obtain ⟨a, hat, ad, rfl⟩ : ∃ a ∈ t, r a ≤ min d (R z) ∧ c a = z :=
       hf z ((mem_diff _).1 (mem_of_mem_inter_left hz)).1 (min d (R z)) (lt_min dpos (hR0 z))
     have ax : B a ⊆ ball x (R x) := by
-      refine' (hB a hat).trans _
+      refine (hB a hat).trans ?_
       refine' Subset.trans _ (hd.trans (diff_subset (ball x (R x)) k))
       exact closedBall_subset_closedBall (ad.trans (min_le_left _ _))
     -- it intersects an element `b` of `u` with comparable diameter, by definition of `u`
     obtain ⟨b, bu, ab, bdiam⟩ : ∃ b ∈ u, (B a ∩ B b).Nonempty ∧ r a ≤ 2 * r b :=
       hu a ⟨hat, ad.trans (min_le_right _ _)⟩
     have bv : b ∈ v := by
-      refine' ⟨bu, ab.mono _⟩
+      refine ⟨bu, ab.mono ?_⟩
       rw [inter_comm]
       exact inter_subset_inter_right _ ax
     let b' : v := ⟨b, bv⟩

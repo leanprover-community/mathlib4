@@ -85,7 +85,7 @@ theorem mul (k : ℤ) : PythagoreanTriple (k * x) (k * y) (k * z) :=
 `(x, y, z)` is also a triple. -/
 theorem mul_iff (k : ℤ) (hk : k ≠ 0) :
     PythagoreanTriple (k * x) (k * y) (k * z) ↔ PythagoreanTriple x y z := by
-  refine' ⟨_, fun h => h.mul k⟩
+  refine ⟨?_, fun h => h.mul k⟩
   simp only [PythagoreanTriple]
   intro h
   rw [← mul_left_inj' (mul_ne_zero hk hk)]
@@ -454,7 +454,7 @@ theorem isPrimitiveClassified_aux (hc : x.gcd y = 1) (hzpos : 0 < z) {m n : ℤ}
   use m, n
   apply And.intro _ (And.intro co pp)
   right
-  refine' ⟨_, h2.left⟩
+  refine ⟨?_, h2.left⟩
   rw [← Rat.coe_int_inj _ _, ← div_left_inj' ((mt (Rat.coe_int_inj z 0).mp) hz), hv2, h2.right]
   norm_cast
 #align pythagorean_triple.is_primitive_classified_aux PythagoreanTriple.isPrimitiveClassified_aux

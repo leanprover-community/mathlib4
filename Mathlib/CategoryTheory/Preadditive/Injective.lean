@@ -98,7 +98,7 @@ theorem of_iso {P Q : C} (i : P ≅ Q) (hP : Injective P) : Injective Q :=
   {
     factors := fun g f mono => by
       obtain ⟨h, h_eq⟩ := @Injective.factors C _ P _ _ _ (g ≫ i.inv) f mono
-      refine' ⟨h ≫ i.hom, _⟩
+      refine ⟨h ≫ i.hom, ?_⟩
       rw [← Category.assoc, h_eq, Category.assoc, Iso.inv_hom_id, Category.comp_id] }
 #align category_theory.injective.of_iso CategoryTheory.Injective.of_iso
 
@@ -149,7 +149,7 @@ instance {β : Type v} (c : β → C) [HasProduct c] [∀ b, Injective (c b)] : 
 instance {P Q : C} [HasZeroMorphisms C] [HasBinaryBiproduct P Q] [Injective P] [Injective Q] :
     Injective (P ⊞ Q) where
   factors g f mono := by
-    refine' ⟨biprod.lift (factorThru (g ≫ biprod.fst) f) (factorThru (g ≫ biprod.snd) f), _⟩
+    refine ⟨biprod.lift (factorThru (g ≫ biprod.fst) f) (factorThru (g ≫ biprod.snd) f), ?_⟩
     ext
     · simp only [Category.assoc, biprod.lift_fst, comp_factorThru]
     · simp only [Category.assoc, biprod.lift_snd, comp_factorThru]

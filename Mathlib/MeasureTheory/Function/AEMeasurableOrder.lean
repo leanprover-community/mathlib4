@@ -101,7 +101,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
     · intro q hq
       obtain ⟨r, ⟨xr, rq⟩, rs⟩ : ∃ r, r ∈ Ioo (f x) q ∩ s :=
         dense_iff_inter_open.1 s_dense (Ioo (f x) q) isOpen_Ioo (nonempty_Ioo.2 hq)
-      refine' ⟨⟨r, rs⟩, _⟩
+      refine ⟨⟨r, rs⟩, ?_⟩
       have A : x ∈ u' r := mem_biInter fun i _ => (huv r i).2.2.1 xr
       simp only [A, rq, piecewise_eq_of_mem, Subtype.coe_mk]
   exact ⟨f', f'_meas, ff'⟩

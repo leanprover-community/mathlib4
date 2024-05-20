@@ -74,7 +74,7 @@ variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ F]
 def plusCompIso : J.plusObj P ⋙ F ≅ J.plusObj (P ⋙ F) :=
   NatIso.ofComponents
     (fun X => by
-      refine' _ ≪≫ HasColimit.isoOfNatIso (J.diagramCompIso F P X.unop)
+      refine ?_ ≪≫ HasColimit.isoOfNatIso (J.diagramCompIso F P X.unop)
       refine'
         (isColimitOfPreserves F
               (colimit.isColimit (J.diagram P (unop X)))).coconePointUniqueUpToIso

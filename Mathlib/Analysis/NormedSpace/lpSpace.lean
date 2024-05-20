@@ -222,7 +222,7 @@ theorem add {f g : ∀ i, E i} (hf : Memℓp f p) (hg : Memℓp g p) : Memℓp (
   · apply memℓp_infty
     obtain ⟨A, hA⟩ := hf.bddAbove
     obtain ⟨B, hB⟩ := hg.bddAbove
-    refine' ⟨A + B, _⟩
+    refine ⟨A + B, ?_⟩
     rintro a ⟨i, rfl⟩
     exact le_trans (norm_add_le _ _) (add_le_add (hA ⟨i, rfl⟩) (hB ⟨i, rfl⟩))
   apply memℓp_gen
@@ -663,7 +663,7 @@ theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f�
     have hfc := (lp.isLUB_norm f).mul_left (norm_nonneg c)
     simp_rw [← Set.range_comp, Function.comp] at hfc
     -- TODO: some `IsLUB` API should make it a one-liner from here.
-    refine' hcf.right _
+    refine hcf.right ?_
     have := hfc.left
     simp_rw [mem_upperBounds, Set.mem_range,
       forall_exists_index, forall_apply_eq_imp_iff] at this ⊢
@@ -780,7 +780,7 @@ theorem _root_.Memℓp.infty_mul {f g : ∀ i, B i} (hf : Memℓp f ∞) (hg : M
     Memℓp (f * g) ∞ := by
   rw [memℓp_infty_iff]
   obtain ⟨⟨Cf, hCf⟩, ⟨Cg, hCg⟩⟩ := hf.bddAbove, hg.bddAbove
-  refine' ⟨Cf * Cg, _⟩
+  refine ⟨Cf * Cg, ?_⟩
   rintro _ ⟨i, rfl⟩
   calc
     ‖(f * g) i‖ ≤ ‖f i‖ * ‖g i‖ := norm_mul_le (f i) (g i)
@@ -1009,7 +1009,7 @@ protected theorem single_apply_ne (p) (i : α) (a : E i) {j : α} (hij : j ≠ i
 
 @[simp]
 protected theorem single_neg (p) (i : α) (a : E i) : lp.single p i (-a) = -lp.single p i a := by
-  refine' ext (funext (fun (j : α) => _))
+  refine ext (funext (fun (j : α) => ?_))
   by_cases hi : j = i
   · subst hi
     simp [lp.single_apply_self]
@@ -1019,7 +1019,7 @@ protected theorem single_neg (p) (i : α) (a : E i) : lp.single p i (-a) = -lp.s
 @[simp]
 protected theorem single_smul (p) (i : α) (a : E i) (c : 𝕜) :
     lp.single p i (c • a) = c • lp.single p i a := by
-  refine' ext (funext (fun (j : α) => _))
+  refine ext (funext (fun (j : α) => ?_))
   by_cases hi : j = i
   · subst hi
     dsimp
@@ -1113,7 +1113,7 @@ theorem uniformContinuous_coe [_i : Fact (1 ≤ p)] :
   rw [NormedAddCommGroup.uniformity_basis_dist.uniformContinuous_iff
     NormedAddCommGroup.uniformity_basis_dist]
   intro ε hε
-  refine' ⟨ε, hε, _⟩
+  refine ⟨ε, hε, ?_⟩
   rintro f g (hfg : ‖f - g‖ < ε)
   have : ‖f i - g i‖ ≤ ‖f - g‖ := norm_apply_le_norm hp (f - g) i
   exact this.trans_lt hfg
@@ -1144,7 +1144,7 @@ theorem sum_rpow_le_of_tendsto (hp : p ≠ ∞) {C : ℝ} {F : ι → lp E p} (h
     have : Continuous fun f : ∀ a, E a => f a := continuous_apply a
     exact this.norm.rpow_const fun _ => Or.inr hp''.le
   refine' le_of_tendsto (hG.continuousAt.tendsto.comp hf) _
-  refine' hCF.mono _
+  refine hCF.mono ?_
   intro k hCFk
   refine' (lp.sum_rpow_le_norm_rpow hp'' (F k) s).trans _
   gcongr

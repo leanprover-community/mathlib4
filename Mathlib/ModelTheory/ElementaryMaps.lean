@@ -87,7 +87,7 @@ theorem map_boundedFormula (f : M ↪ₑ[L] N) {α : Type*} {n : ℕ} (φ : L.Bo
       Function.comp.assoc _ (Fintype.equivFin _).symm (Fintype.equivFin _),
       _root_.Equiv.symm_comp_self, Function.comp_id, Function.comp.assoc, Sum.elim_comp_inl,
       Function.comp.assoc _ _ Sum.inr, Sum.elim_comp_inr, ← Function.comp.assoc] at h
-    refine' h.trans _
+    refine h.trans ?_
     erw [Function.comp.assoc _ _ (Fintype.equivFin _), _root_.Equiv.symm_comp_self,
       Function.comp_id, Sum.elim_comp_inl, Sum.elim_comp_inr (v ∘ Subtype.val) xs,
       ← Set.inclusion_eq_id (s := (BoundedFormula.freeVarFinset φ : Set α)) Set.Subset.rfl,

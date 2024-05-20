@@ -56,7 +56,7 @@ instance (priority := 100) toNoZeroDivisors : NoZeroDivisors α :=
 
 -- see Note [lower instance priority]
 instance (priority := 100) toCovariantClassMulLE : CovariantClass α α (· * ·) (· ≤ ·) := by
-  refine' ⟨fun a b c h => _⟩
+  refine ⟨fun a b c h => ?_⟩
   rcases exists_add_of_le h with ⟨c, rfl⟩
   rw [mul_add]
   apply self_le_add_right

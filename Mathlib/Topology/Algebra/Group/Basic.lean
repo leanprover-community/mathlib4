@@ -1819,7 +1819,7 @@ theorem exists_disjoint_smul_of_isCompact [NoncompactSpace G] {K L : Set G} (hK 
   obtain ⟨g, hg⟩ : ∃ g, g ∉ K * L⁻¹ := by
     contrapose! A
     exact eq_univ_iff_forall.2 A
-  refine' ⟨g, _⟩
+  refine ⟨g, ?_⟩
   refine disjoint_left.2 fun a ha h'a => hg ?_
   rcases h'a with ⟨b, bL, rfl⟩
   refine' ⟨g * b, ha, b⁻¹, by simpa only [Set.mem_inv, inv_inv] using bL, _⟩

@@ -222,7 +222,7 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
 theorem exists_perfect_nonempty_of_isClosed_of_not_countable [SecondCountableTopology α]
     (hclosed : IsClosed C) (hunc : ¬C.Countable) : ∃ D : Set α, Perfect D ∧ D.Nonempty ∧ D ⊆ C := by
   rcases exists_countable_union_perfect_of_isClosed hclosed with ⟨V, D, Vct, Dperf, VD⟩
-  refine' ⟨D, ⟨Dperf, _⟩⟩
+  refine ⟨D, ⟨Dperf, ?_⟩⟩
   constructor
   · rw [nonempty_iff_ne_empty]
     by_contra h

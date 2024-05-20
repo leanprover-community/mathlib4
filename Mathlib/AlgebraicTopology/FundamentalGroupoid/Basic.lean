@@ -376,7 +376,7 @@ def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
     change _ = (⟨_, _, _⟩ : FundamentalGroupoid X ⥤ FundamentalGroupoid X)
     congr
     ext x y p
-    refine' Quotient.inductionOn p fun q => _
+    refine Quotient.inductionOn p fun q => ?_
     rw [← Path.Homotopic.map_lift]
     conv_rhs => rw [← q.map_id]
     rfl
@@ -384,7 +384,7 @@ def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
     simp only
     congr
     ext x y p
-    refine' Quotient.inductionOn p fun q => _
+    refine Quotient.inductionOn p fun q => ?_
     simp only [Quotient.map_mk, Path.map_map, Quotient.eq']
     rfl
 #align fundamental_groupoid.fundamental_groupoid_functor FundamentalGroupoid.fundamentalGroupoidFunctor

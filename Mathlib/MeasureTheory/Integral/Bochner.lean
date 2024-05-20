@@ -1480,7 +1480,7 @@ theorem integral_mono_of_nonneg {f g : α → ℝ} (hf : 0 ≤ᵐ[μ] f) (hgi : 
     (h : f ≤ᵐ[μ] g) : ∫ a, f a ∂μ ≤ ∫ a, g a ∂μ := by
   by_cases hfm : AEStronglyMeasurable f μ
   · refine' integral_mono_ae ⟨hfm, _⟩ hgi h
-    refine' hgi.hasFiniteIntegral.mono <| h.mp <| hf.mono fun x hf hfg => _
+    refine hgi.hasFiniteIntegral.mono <| h.mp <| hf.mono fun x hf hfg => ?_
     simpa [abs_of_nonneg hf, abs_of_nonneg (le_trans hf hfg)]
   · rw [integral_non_aestronglyMeasurable hfm]
     exact integral_nonneg_of_ae (hf.trans h)
@@ -1641,7 +1641,7 @@ theorem hasSum_integral_measure {ι} {m : MeasurableSpace α} {f : α → G} {μ
     exacts [hf_lt.ne, ENNReal.coe_ne_zero.2 (NNReal.coe_ne_zero.1 ε0.ne')]
   refine' ((hasSum_lintegral_measure (fun x => ‖f x‖₊) μ).eventually hmem).mono fun s hs => _
   obtain ⟨ν, hν⟩ : ∃ ν, (∑ i in s, μ i) + ν = Measure.sum μ := by
-    refine' ⟨Measure.sum fun i : ↥(sᶜ : Set ι) => μ i, _⟩
+    refine ⟨Measure.sum fun i : ↥(sᶜ : Set ι) => μ i, ?_⟩
     simpa only [← Measure.sum_coe_finset] using Measure.sum_add_sum_compl (s : Set ι) μ
   rw [Metric.mem_ball, ← coe_nndist, NNReal.coe_lt_coe, ← ENNReal.coe_lt_coe, ← hν]
   rw [← hν, integrable_add_measure] at hf

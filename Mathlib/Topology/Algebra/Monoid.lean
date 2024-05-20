@@ -847,7 +847,7 @@ theorem continuous_finprod {f : ι → X → M} (hc : ∀ i, Continuous (f i))
     (hf : LocallyFinite fun i => mulSupport (f i)) : Continuous fun x => ∏ᶠ i, f i x := by
   refine' continuous_iff_continuousAt.2 fun x => _
   rcases finprod_eventually_eq_prod hf x with ⟨s, hs⟩
-  refine' ContinuousAt.congr _ (EventuallyEq.symm hs)
+  refine ContinuousAt.congr ?_ (EventuallyEq.symm hs)
   exact tendsto_finset_prod _ fun i _ => (hc i).continuousAt
 #align continuous_finprod continuous_finprod
 #align continuous_finsum continuous_finsum

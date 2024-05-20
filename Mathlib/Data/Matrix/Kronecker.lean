@@ -426,7 +426,7 @@ theorem inv_kronecker [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [C
   · cases isEmpty_or_nonempty n
     · exact Subsingleton.elim _ _
     have hAB : ¬IsUnit (A ⊗ₖ B).det := by
-      refine' mt (fun hAB => _) hA
+      refine mt (fun hAB => ?_) hA
       rw [det_kronecker] at hAB
       exact (isUnit_pow_iff Fintype.card_ne_zero).mp (isUnit_of_mul_isUnit_left hAB)
     rw [nonsing_inv_apply_not_isUnit _ hA, zero_kronecker, nonsing_inv_apply_not_isUnit _ hAB]
@@ -434,7 +434,7 @@ theorem inv_kronecker [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [C
   · cases isEmpty_or_nonempty m
     · exact Subsingleton.elim _ _
     have hAB : ¬IsUnit (A ⊗ₖ B).det := by
-      refine' mt (fun hAB => _) hB
+      refine mt (fun hAB => ?_) hB
       rw [det_kronecker] at hAB
       exact (isUnit_pow_iff Fintype.card_ne_zero).mp (isUnit_of_mul_isUnit_right hAB)
     rw [nonsing_inv_apply_not_isUnit _ hB, kronecker_zero, nonsing_inv_apply_not_isUnit _ hAB]

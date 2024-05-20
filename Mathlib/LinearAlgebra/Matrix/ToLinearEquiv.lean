@@ -127,7 +127,7 @@ theorem exists_mulVec_eq_zero_iff_aux {K : Type*} [DecidableEq n] [Field K] {M :
           LinearMap.toMatrix'
             ((LinearEquiv.ofInjectiveEndo (Matrix.toLin' M) this).symm : (n → K) →ₗ[K] n → K) =
         1 := by
-      refine' Matrix.toLin'.injective (LinearMap.ext fun v => _)
+      refine Matrix.toLin'.injective (LinearMap.ext fun v => ?_)
       rw [Matrix.toLin'_mul, Matrix.toLin'_one, Matrix.toLin'_toMatrix', LinearMap.comp_apply]
       exact (LinearEquiv.ofInjectiveEndo (Matrix.toLin' M) this).apply_symm_apply v
     exact Matrix.det_ne_zero_of_right_inverse this
@@ -157,7 +157,7 @@ theorem exists_mulVec_eq_zero_iff' {A : Type*} (K : Type*) [DecidableEq n] [Comm
         IsFractionRing.to_map_eq_zero_iff] at this
       exact this.resolve_left (nonZeroDivisors.ne_zero hb)
     · ext i
-      refine' IsFractionRing.injective A K _
+      refine IsFractionRing.injective A K ?_
       calc
         algebraMap A K ((M *ᵥ (fun i : n => f (v i) _)) i) =
             ((algebraMap A K).mapMatrix M *ᵥ algebraMap _ K b • v) i := ?_

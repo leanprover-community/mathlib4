@@ -449,7 +449,7 @@ def tautologicalCocone : Cocone (CostructuredArrow.proj yoneda P ⋙ yoneda) whe
     Proposition 2.6.3(i) in [Kashiwara2006] -/
 def isColimitTautologicalCocone : IsColimit (tautologicalCocone P) where
   desc := fun s => by
-    refine' ⟨fun X t => yonedaEquiv (s.ι.app (CostructuredArrow.mk (yonedaEquiv.symm t))), _⟩
+    refine ⟨fun X t => yonedaEquiv (s.ι.app (CostructuredArrow.mk (yonedaEquiv.symm t))), ?_⟩
     intros X Y f
     ext t
     dsimp

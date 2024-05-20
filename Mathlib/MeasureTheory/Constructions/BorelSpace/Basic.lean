@@ -236,7 +236,7 @@ lemma opensMeasurableSpace_iff_forall_measurableSet
 instance (priority := 100) BorelSpace.countablyGenerated {α : Type*} [TopologicalSpace α]
     [MeasurableSpace α] [BorelSpace α] [SecondCountableTopology α] : CountablyGenerated α := by
   obtain ⟨b, bct, -, hb⟩ := exists_countable_basis α
-  refine' ⟨⟨b, bct, _⟩⟩
+  refine ⟨⟨b, bct, ?_⟩⟩
   borelize α
   exact hb.borel_eq_generateFrom
 #align borel_space.countably_generated BorelSpace.countablyGenerated

@@ -274,7 +274,7 @@ theorem gauge_smul_of_nonneg [MulActionWithZero α E] [IsScalarTower α ℝ (Set
     rw [mem_Ioi] at hr ⊢
     rw [← mem_smul_set_iff_inv_smul_mem₀ hr.ne'] at hx
     have := smul_pos ha' hr
-    refine' ⟨this, _⟩
+    refine ⟨this, ?_⟩
     rw [← mem_smul_set_iff_inv_smul_mem₀ this.ne', smul_assoc]
     exact smul_mem_smul_set hx
 #align gauge_smul_of_nonneg gauge_smul_of_nonneg

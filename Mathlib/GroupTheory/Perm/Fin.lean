@@ -126,7 +126,7 @@ theorem support_finRotate_of_le {n : ℕ} (h : 2 ≤ n) : support (finRotate n) 
 #align support_fin_rotate_of_le support_finRotate_of_le
 
 theorem isCycle_finRotate {n : ℕ} : IsCycle (finRotate (n + 2)) := by
-  refine' ⟨0, by simp, fun x hx' => ⟨x, _⟩⟩
+  refine ⟨0, by simp, fun x hx' => ⟨x, ?_⟩⟩
   clear hx'
   cases' x with x hx
   rw [zpow_natCast, Fin.ext_iff, Fin.val_mk]

@@ -119,7 +119,7 @@ theorem adjoin_induction' {p : adjoin R s → Prop} (mem : ∀ (x) (h : x ∈ s)
     (algebraMap : ∀ r, p (algebraMap R _ r)) (add : ∀ x y, p x → p y → p (x + y))
     (mul : ∀ x y, p x → p y → p (x * y)) (x : adjoin R s) : p x :=
   Subtype.recOn x fun x hx => by
-    refine' Exists.elim _ fun (hx : x ∈ adjoin R s) (hc : p ⟨x, hx⟩) => hc
+    refine Exists.elim ?_ fun (hx : x ∈ adjoin R s) (hc : p ⟨x, hx⟩) => hc
     exact adjoin_induction hx (fun x hx => ⟨subset_adjoin hx, mem x hx⟩)
       (fun r => ⟨Subalgebra.algebraMap_mem _ r, algebraMap r⟩)
       (fun x y hx hy =>

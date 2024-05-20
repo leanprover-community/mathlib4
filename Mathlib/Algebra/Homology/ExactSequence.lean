@@ -171,7 +171,7 @@ lemma isComplex₂_iff (S : ComposableArrows C 2) :
   · intro h
     exact h.zero 0 (by omega)
   · intro h
-    refine' IsComplex.mk (fun i hi => _)
+    refine IsComplex.mk (fun i hi => ?_)
     obtain rfl : i = 0 := by omega
     exact h
 
@@ -195,7 +195,7 @@ lemma exact₂_iff (S : ComposableArrows C 2) (hS : S.IsComplex) :
   · intro h
     exact h.exact 0 (by omega)
   · intro h
-    refine' Exact.mk hS (fun i hi => _)
+    refine Exact.mk hS (fun i hi => ?_)
     obtain rfl : i = 0 := by omega
     exact h
 

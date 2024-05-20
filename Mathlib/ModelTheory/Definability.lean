@@ -52,7 +52,7 @@ variable {L} {A} {B : Set M} {s : Set (α → M)}
 theorem Definable.map_expansion {L' : FirstOrder.Language} [L'.Structure M] (h : A.Definable L s)
     (φ : L →ᴸ L') [φ.IsExpansionOn M] : A.Definable L' s := by
   obtain ⟨ψ, rfl⟩ := h
-  refine' ⟨(φ.addConstants A).onFormula ψ, _⟩
+  refine ⟨(φ.addConstants A).onFormula ψ, ?_⟩
   ext x
   simp only [mem_setOf_eq, LHom.realize_onFormula]
 #align set.definable.map_expansion Set.Definable.map_expansion
@@ -107,7 +107,7 @@ theorem Definable.inter {f g : Set (α → M)} (hf : A.Definable L f) (hg : A.De
     A.Definable L (f ∩ g) := by
   rcases hf with ⟨φ, rfl⟩
   rcases hg with ⟨θ, rfl⟩
-  refine' ⟨φ ⊓ θ, _⟩
+  refine ⟨φ ⊓ θ, ?_⟩
   ext
   simp
 #align set.definable.inter Set.Definable.inter
@@ -117,7 +117,7 @@ theorem Definable.union {f g : Set (α → M)} (hf : A.Definable L f) (hg : A.De
     A.Definable L (f ∪ g) := by
   rcases hf with ⟨φ, hφ⟩
   rcases hg with ⟨θ, hθ⟩
-  refine' ⟨φ ⊔ θ, _⟩
+  refine ⟨φ ⊔ θ, ?_⟩
   ext
   rw [hφ, hθ, mem_setOf_eq, Formula.realize_sup, mem_union, mem_setOf_eq, mem_setOf_eq]
 #align set.definable.union Set.Definable.union
@@ -153,7 +153,7 @@ theorem definable_finset_biUnion {ι : Type*} {f : ι → Set (α → M)}
 @[simp]
 theorem Definable.compl {s : Set (α → M)} (hf : A.Definable L s) : A.Definable L sᶜ := by
   rcases hf with ⟨φ, hφ⟩
-  refine' ⟨φ.not, _⟩
+  refine ⟨φ.not, ?_⟩
   ext v
   rw [hφ, compl_setOf, mem_setOf, mem_setOf, Formula.realize_not]
 #align set.definable.compl Set.Definable.compl
@@ -167,7 +167,7 @@ theorem Definable.sdiff {s t : Set (α → M)} (hs : A.Definable L s) (ht : A.De
 theorem Definable.preimage_comp (f : α → β) {s : Set (α → M)} (h : A.Definable L s) :
     A.Definable L ((fun g : β → M => g ∘ f) ⁻¹' s) := by
   obtain ⟨φ, rfl⟩ := h
-  refine' ⟨φ.relabel f, _⟩
+  refine ⟨φ.relabel f, ?_⟩
   ext
   simp only [Set.preimage_setOf_eq, mem_setOf_eq, Formula.realize_relabel]
 #align set.definable.preimage_comp Set.Definable.preimage_comp
@@ -214,7 +214,7 @@ theorem definable_iff_finitely_definable :
 theorem Definable.image_comp_sum_inl_fin (m : ℕ) {s : Set (Sum α (Fin m) → M)}
     (h : A.Definable L s) : A.Definable L ((fun g : Sum α (Fin m) → M => g ∘ Sum.inl) '' s) := by
   obtain ⟨φ, rfl⟩ := h
-  refine' ⟨(BoundedFormula.relabel id φ).exs, _⟩
+  refine ⟨(BoundedFormula.relabel id φ).exs, ?_⟩
   ext x
   simp only [Set.mem_image, mem_setOf_eq, BoundedFormula.realize_exs,
     BoundedFormula.realize_relabel, Function.comp_id, Fin.castAdd_zero, Fin.cast_refl]
@@ -258,16 +258,16 @@ theorem Definable.image_comp {s : Set (β → M)} (h : A.Definable L s) (f : α 
       A.Definable L { x : α → M | ∀ a, x a = x (rangeSplitting f (rangeFactorization f a)) } := by
       have h' : ∀ a,
         A.Definable L { x : α → M | x a = x (rangeSplitting f (rangeFactorization f a)) } := by
-          refine' fun a => ⟨(var a).equal (var (rangeSplitting f (rangeFactorization f a))), ext _⟩
+          refine fun a => ⟨(var a).equal (var (rangeSplitting f (rangeFactorization f a))), ext ?_⟩
           simp
       refine' (congr rfl (ext _)).mp (definable_finset_biInter h' Finset.univ)
       simp
-    refine' (congr rfl (ext fun x => _)).mp (h.inter h')
+    refine (congr rfl (ext fun x => ?_)).mp (h.inter h')
     simp only [Equiv.coe_trans, mem_inter_iff, mem_preimage, mem_image, exists_exists_and_eq_and,
       mem_setOf_eq]
     constructor
     · rintro ⟨⟨y, ys, hy⟩, hx⟩
-      refine' ⟨y, ys, _⟩
+      refine ⟨y, ys, ?_⟩
       ext a
       rw [hx a, ← Function.comp_apply (f := x), ← hy]
       simp

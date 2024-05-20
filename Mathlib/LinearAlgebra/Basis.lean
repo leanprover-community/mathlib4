@@ -317,7 +317,7 @@ theorem repr_apply_eq (f : M → ι → R) (hadd : ∀ x y, f (x + y) = f x + f 
       map_add' := fun _ _ => by beta_reduce; rw [hadd, Pi.add_apply]
       map_smul' := fun _ _ => by simp [hsmul, Pi.smul_apply] }
   have : Finsupp.lapply i ∘ₗ ↑b.repr = f_i := by
-    refine' b.ext fun j => _
+    refine b.ext fun j => ?_
     show b.repr (b j) i = f (b j) i
     rw [b.repr_self, f_eq]
   calc
@@ -611,13 +611,13 @@ def constr : (ι → M') ≃ₗ[S] M →ₗ[R] M' where
     ext
     simp
   right_inv f := by
-    refine' b.ext fun i => _
+    refine b.ext fun i => ?_
     simp
   map_add' f g := by
-    refine' b.ext fun i => _
+    refine b.ext fun i => ?_
     simp
   map_smul' c f := by
-    refine' b.ext fun i => _
+    refine b.ext fun i => ?_
     simp
 #align basis.constr Basis.constr
 
@@ -1191,7 +1191,7 @@ theorem groupSMul_span_eq_top {G : Type*} [Group G] [DistribMulAction G R] [Dist
   intro j hj
   rw [← hv] at hj
   rw [Submodule.mem_span] at hj ⊢
-  refine' fun p hp => hj p fun u hu => _
+  refine fun p hp => hj p fun u hu => ?_
   obtain ⟨i, rfl⟩ := hu
   have : ((w i)⁻¹ • (1 : R)) • w i • v i ∈ p := p.smul_mem ((w i)⁻¹ • (1 : R)) (hp ⟨i, rfl⟩)
   rwa [smul_one_smul, inv_smul_smul] at this

@@ -420,9 +420,9 @@ protected theorem MemBaseSet.filter (hπ : l.MemBaseSet I c r π) (p : Box ι �
 theorem biUnionTagged_memBaseSet {π : Prepartition I} {πi : ∀ J, TaggedPrepartition J}
     (h : ∀ J ∈ π, l.MemBaseSet J c r (πi J)) (hp : ∀ J ∈ π, (πi J).IsPartition)
     (hc : l.bDistortion → π.compl.distortion ≤ c) : l.MemBaseSet I c r (π.biUnionTagged πi) := by
-  refine' ⟨TaggedPrepartition.isSubordinate_biUnionTagged.2 fun J hJ => (h J hJ).1,
+  refine ⟨TaggedPrepartition.isSubordinate_biUnionTagged.2 fun J hJ => (h J hJ).1,
     fun hH => TaggedPrepartition.isHenstock_biUnionTagged.2 fun J hJ => (h J hJ).2 hH,
-    fun hD => _, fun hD => _⟩
+    fun hD => ?_, fun hD => ?_⟩
   · rw [Prepartition.distortion_biUnionTagged, Finset.sup_le_iff]
     exact fun J hJ => (h J hJ).3 hD
   · refine' ⟨_, _, hc hD⟩
@@ -510,7 +510,7 @@ theorem tendsto_embedBox_toFilteriUnion_top (l : IntegrationParams) (h : I ≤ J
   refine' le_iSup_of_le (max c π₀.compl.distortion) _
   refine' ((l.hasBasis_toFilterDistortioniUnion I c ⊤).tendsto_iff
     (l.hasBasis_toFilterDistortioniUnion J _ _)).2 fun r hr => _
-  refine' ⟨r, hr, fun π hπ => _⟩
+  refine ⟨r, hr, fun π hπ => ?_⟩
   rw [mem_setOf_eq, Prepartition.iUnion_top] at hπ
   refine' ⟨⟨hπ.1.1, hπ.1.2, fun hD => le_trans (hπ.1.3 hD) (le_max_left _ _), fun _ => _⟩, _⟩
   · refine' ⟨_, π₀.iUnion_compl.trans _, le_max_right _ _⟩

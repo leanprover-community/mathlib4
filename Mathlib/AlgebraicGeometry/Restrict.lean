@@ -377,7 +377,7 @@ def morphismRestrictOpensRange
     pullback.map _ _ _ _ (𝟙 _) e.hom (𝟙 _) (by rw [Category.comp_id, Category.id_comp])
       (by rw [Category.comp_id, IsOpenImmersion.isoOfRangeEq_hom_fac])
   symm
-  refine' Arrow.isoMk (asIso t ≪≫ pullbackRestrictIsoRestrict f V) e _
+  refine Arrow.isoMk (asIso t ≪≫ pullbackRestrictIsoRestrict f V) e ?_
   rw [Iso.trans_hom, asIso_hom, ← Iso.comp_inv_eq, ← cancel_mono g, Arrow.mk_hom, Arrow.mk_hom,
     Category.assoc, Category.assoc, Category.assoc, IsOpenImmersion.isoOfRangeEq_inv_fac,
     ← pullback.condition, morphismRestrict_ι,

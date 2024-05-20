@@ -439,7 +439,7 @@ theorem disjoint_supported_supported_iff [Nontrivial M] {s t : Set α} :
 `supported M R s` and `s →₀ M`. -/
 def supportedEquivFinsupp (s : Set α) : supported M R s ≃ₗ[R] s →₀ M := by
   let F : supported M R s ≃ (s →₀ M) := restrictSupportEquiv s M
-  refine' F.toLinearEquiv _
+  refine F.toLinearEquiv ?_
   have :
     (F : supported M R s → ↥s →₀ M) =
       (lsubtypeDomain s : (α →₀ M) →ₗ[R] s →₀ M).comp (Submodule.subtype (supported M R s)) :=

@@ -161,7 +161,7 @@ theorem element_of_chain_eq_pow_second_of_chain {q r : Associates M} {n : ℕ} (
       have := UniqueFactorizationMonoid.normalizedFactors_prod (ne_zero_of_dvd_ne_zero hq hr)
       rw [associated_iff_eq, hi, Multiset.prod_replicate] at this
       rw [this]
-    refine' ⟨⟨i, _⟩, H⟩
+    refine ⟨⟨i, ?_⟩, H⟩
     have : (Finset.univ.image fun m : Fin (i + 1) => c 1 ^ (m : ℕ)).card = i + 1 := by
       conv_rhs => rw [← Finset.card_fin (i + 1)]
       cases n

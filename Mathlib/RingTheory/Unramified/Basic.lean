@@ -158,7 +158,7 @@ theorem of_comp [FormallyUnramified R B] : FormallyUnramified A B := by
   letI := ((algebraMap A Q).comp (algebraMap R A)).toAlgebra
   letI : IsScalarTower R A Q := IsScalarTower.of_algebraMap_eq' rfl
   refine' AlgHom.restrictScalars_injective R _
-  refine' FormallyUnramified.ext I ⟨2, e⟩ _
+  refine FormallyUnramified.ext I ⟨2, e⟩ ?_
   intro x
   exact AlgHom.congr_fun e' x
 #align algebra.formally_unramified.of_comp Algebra.FormallyUnramified.of_comp

@@ -404,7 +404,7 @@ theorem _root_.Polynomial.toLaurent_ne_zero {f : R[X]} : f ≠ 0 ↔ toLaurent f
 theorem exists_T_pow (f : R[T;T⁻¹]) : ∃ (n : ℕ) (f' : R[X]), toLaurent f' = f * T n := by
   refine f.induction_on' ?_ fun n a => ?_ <;> clear f
   · rintro f g ⟨m, fn, hf⟩ ⟨n, gn, hg⟩
-    refine' ⟨m + n, fn * X ^ n + gn * X ^ m, _⟩
+    refine ⟨m + n, fn * X ^ n + gn * X ^ m, ?_⟩
     simp only [hf, hg, add_mul, add_comm (n : ℤ), map_add, map_mul, Polynomial.toLaurent_X_pow,
       mul_T_assoc, Int.ofNat_add]
   · cases' n with n n
@@ -469,7 +469,7 @@ theorem toLaurent_support (f : R[X]) : f.toLaurent.support = f.support.map Nat.c
       Finsupp.support_eq_empty]
   · intro a s as hf f fs
     have : (erase a f).toLaurent.support = s.map Nat.castEmbedding := by
-      refine' hf (f.erase a) _
+      refine hf (f.erase a) ?_
       simp only [fs, Finset.erase_eq_of_not_mem as, Polynomial.support_erase,
         Finset.erase_insert_eq_erase]
     rw [← monomial_add_erase f a, Finset.map_insert, ← this, map_add, Polynomial.toLaurent_C_mul_T,

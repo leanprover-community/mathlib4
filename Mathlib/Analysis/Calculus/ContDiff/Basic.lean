@@ -157,7 +157,7 @@ theorem iteratedFDeriv_const_of_ne {n : ℕ} (hn : n ≠ 0) (c : F) :
 theorem IsBoundedLinearMap.contDiff (hf : IsBoundedLinearMap 𝕜 f) : ContDiff 𝕜 n f := by
   suffices h : ContDiff 𝕜 ∞ f from h.of_le le_top
   rw [contDiff_top_iff_fderiv]
-  refine' ⟨hf.differentiable, _⟩
+  refine ⟨hf.differentiable, ?_⟩
   simp_rw [hf.fderiv]
   exact contDiff_const
 #align is_bounded_linear_map.cont_diff IsBoundedLinearMap.contDiff
@@ -201,7 +201,7 @@ theorem contDiffOn_id {s} : ContDiffOn 𝕜 n (id : E → E) s :=
 theorem IsBoundedBilinearMap.contDiff (hb : IsBoundedBilinearMap 𝕜 b) : ContDiff 𝕜 n b := by
   suffices h : ContDiff 𝕜 ∞ b from h.of_le le_top
   rw [contDiff_top_iff_fderiv]
-  refine' ⟨hb.differentiable, _⟩
+  refine ⟨hb.differentiable, ?_⟩
   simp only [hb.fderiv]
   exact hb.isBoundedLinearMap_deriv.contDiff
 #align is_bounded_bilinear_map.cont_diff IsBoundedBilinearMap.contDiff
@@ -1055,7 +1055,7 @@ protected theorem ContDiffWithinAt.fderivWithin {f : E → F → G} {g : E → F
     (hg : ContDiffWithinAt 𝕜 m g s x₀) (ht : UniqueDiffOn 𝕜 t) (hmn : m + 1 ≤ n) (hx₀ : x₀ ∈ s)
     (hst : s ⊆ g ⁻¹' t) : ContDiffWithinAt 𝕜 m (fun x => fderivWithin 𝕜 (f x) t (g x)) s x₀ := by
   rw [← insert_eq_self.mpr hx₀] at hf
-  refine' hf.fderivWithin' hg _ hmn hst
+  refine hf.fderivWithin' hg ?_ hmn hst
   rw [insert_eq_self.mpr hx₀]
   exact eventually_of_mem self_mem_nhdsWithin fun x hx => ht _ (hst hx)
 #align cont_diff_within_at.fderiv_within ContDiffWithinAt.fderivWithin

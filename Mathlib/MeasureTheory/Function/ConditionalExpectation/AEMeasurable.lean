@@ -290,7 +290,7 @@ theorem memℒp_trim_of_mem_lpMeasSubgroup (hm : m ≤ m0) (f : Lp F p μ)
   let g := hf.choose
   obtain ⟨hg, hfg⟩ := hf.choose_spec
   change Memℒp g p (μ.trim hm)
-  refine' ⟨hg.aestronglyMeasurable, _⟩
+  refine ⟨hg.aestronglyMeasurable, ?_⟩
   have h_snorm_fg : snorm g p (μ.trim hm) = snorm f p μ := by
     rw [snorm_trim hm hg]
     exact snorm_congr_ae hfg.symm

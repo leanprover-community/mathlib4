@@ -118,7 +118,7 @@ theorem exists_taggedPartition_isHenstock_isSubordinate_homothetic (I : Box ι)
         (J' : _).upper i - J'.lower i = (J.upper i - J.lower i) / 2 ^ n := by
       intro J' hJ'
       rcases (splitCenter J).mem_biUnionTagged.1 hJ' with ⟨J₁, h₁, h₂⟩
-      refine' ⟨n J₁ J' + 1, fun i => _⟩
+      refine ⟨n J₁ J' + 1, fun i => ?_⟩
       simp only [hn J₁ h₁ J' h₂, upper_sub_lower_of_mem_splitCenter h₁, pow_succ', div_div]
     refine' ⟨_, hP, isHenstock_biUnionTagged.2 hHen, isSubordinate_biUnionTagged.2 hr, hsub, _⟩
     refine' TaggedPrepartition.distortion_of_const _ hP.nonempty_boxes fun J' h' => _
@@ -131,7 +131,7 @@ theorem exists_taggedPartition_isHenstock_isSubordinate_homothetic (I : Box ι)
     refine' ⟨single _ _ le_rfl _ Hmem, isPartition_single _, isHenstock_single _,
       (isSubordinate_single _ _).2 HIcc.2, _, distortion_single _ _⟩
     simp only [TaggedPrepartition.mem_single, forall_eq]
-    refine' ⟨0, fun i => _⟩
+    refine ⟨0, fun i => ?_⟩
     simp
 set_option linter.uppercaseLean3 false in
 #align box_integral.box.exists_tagged_partition_is_Henstock_is_subordinate_homothetic BoxIntegral.Box.exists_taggedPartition_isHenstock_isSubordinate_homothetic

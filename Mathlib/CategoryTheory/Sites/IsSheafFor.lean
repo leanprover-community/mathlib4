@@ -569,7 +569,7 @@ theorem isSeparatedFor_and_exists_isAmalgamation_iff_isSheafFor :
   · intro z hx
     exact exists_unique_of_exists_of_unique (z.2 hx) z.1
   · intro h
-    refine' ⟨_, ExistsUnique.exists ∘ h⟩
+    refine ⟨?_, ExistsUnique.exists ∘ h⟩
     intro t₁ t₂ ht₁ ht₂
     apply (h _).unique ht₁ ht₂
     exact is_compatible_of_exists_amalgamation x ⟨_, ht₂⟩

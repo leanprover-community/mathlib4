@@ -89,7 +89,7 @@ theorem isCompactElement_iff.{u} {α : Type u} [CompleteLattice α] (k : α) :
       obtain ⟨t, ht, ht'⟩ := H (Set.range s) hs
       have : ∀ x : t, ∃ i, s i = x := fun x => ht x.prop
       choose f hf using this
-      refine' ⟨Finset.univ.image f, ht'.trans _⟩
+      refine ⟨Finset.univ.image f, ht'.trans ?_⟩
       rw [Finset.sup_le_iff]
       intro b hb
       rw [← show s (f ⟨b, hb⟩) = id b from hf _]
@@ -100,7 +100,7 @@ theorem isCompactElement_iff.{u} {α : Type u} [CompleteLattice α] (k : α) :
           (by
             delta iSup
             rwa [Subtype.range_coe])
-      refine' ⟨t.image Subtype.val, by simp, ht.trans _⟩
+      refine ⟨t.image Subtype.val, by simp, ht.trans ?_⟩
       rw [Finset.sup_le_iff]
       exact fun x hx => @Finset.le_sup _ _ _ _ _ id _ (Finset.mem_image_of_mem Subtype.val hx)
 #align complete_lattice.is_compact_element_iff CompleteLattice.isCompactElement_iff

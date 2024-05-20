@@ -371,7 +371,7 @@ theorem grundyValue_nim_add_nim (n m : ℕ) :
   · apply leftMoves_add_cases i <;>
       · -- A left move leaves us with a Grundy value of `k ^^^ m` for `k < n`, or
         -- `n ^^^ k` for `k < m`.
-        refine' fun a => leftMovesNimRecOn a fun ok hk => _
+        refine fun a => leftMovesNimRecOn a fun ok hk => ?_
         obtain ⟨k, rfl⟩ := Ordinal.lt_omega.1 (hk.trans (Ordinal.nat_lt_omega _))
         simp only [add_moveLeft_inl, add_moveLeft_inr, moveLeft_nim', Equiv.symm_apply_apply]
         -- The inequality follows from injectivity.
@@ -379,7 +379,7 @@ theorem grundyValue_nim_add_nim (n m : ℕ) :
         first
         | rw [hn _ hk]
         | rw [hm _ hk]
-        refine' fun h => hk.ne _
+        refine fun h => hk.ne ?_
         rw [Ordinal.natCast_inj] at h
         first
         | rwa [Nat.xor_left_inj] at h

@@ -128,7 +128,7 @@ instance : SupSet (Filtration ι m) :=
         rw [Set.mem_image] at hm'
         obtain ⟨f, hf_mem, hfm'⟩ := hm'
         rw [← hfm']
-        refine' (f.mono hij).trans _
+        refine (f.mono hij).trans ?_
         have hfj_mem : f j ∈ (fun g : Filtration ι m => g j) '' s := ⟨f, hf_mem, rfl⟩
         exact le_sSup hfj_mem
       le' := fun i => by

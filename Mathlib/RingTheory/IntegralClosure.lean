@@ -95,7 +95,7 @@ theorem IsIntegral.map {B C F : Type*} [Ring B] [Ring C] [Algebra R B] [Algebra 
     [FunLike F B C] [AlgHomClass F A B C] (f : F)
     (hb : IsIntegral R b) : IsIntegral R (f b) := by
   obtain ⟨P, hP⟩ := hb
-  refine' ⟨P, hP.1, _⟩
+  refine ⟨P, hP.1, ?_⟩
   rw [← aeval_def, ← aeval_map_algebraMap A,
     aeval_algHom_apply, aeval_map_algebraMap, aeval_def, hP.2, _root_.map_zero]
 #align map_is_integral IsIntegral.map

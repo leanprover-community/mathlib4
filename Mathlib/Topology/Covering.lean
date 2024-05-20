@@ -103,7 +103,7 @@ protected theorem continuousOn (hf : IsCoveringMapOn f s) : ContinuousOn f (f �
 
 protected theorem isLocalHomeomorphOn (hf : IsCoveringMapOn f s) :
     IsLocalHomeomorphOn f (f ⁻¹' s) := by
-  refine' IsLocalHomeomorphOn.mk f (f ⁻¹' s) fun x hx => _
+  refine IsLocalHomeomorphOn.mk f (f ⁻¹' s) fun x hx => ?_
   let e := (hf (f x) hx).toTrivialization
   have h := (hf (f x) hx).mem_toTrivialization_baseSet
   let he := e.mem_source.2 h

@@ -297,7 +297,7 @@ theorem coe_closure_eq_range_term_realize :
     (closure L s : Set M) = range (@Term.realize L _ _ _ ((↑) : s → M)) := by
   let S : L.Substructure M := ⟨range (Term.realize (L := L) ((↑) : s → M)), fun {n} f x hx => by
     simp only [mem_range] at *
-    refine' ⟨func f fun i => Classical.choose (hx i), _⟩
+    refine ⟨func f fun i => Classical.choose (hx i), ?_⟩
     simp only [Term.realize, fun i => Classical.choose_spec (hx i)]⟩
   change _ = (S : Set M)
   rw [← SetLike.ext'_iff]
@@ -705,7 +705,7 @@ theorem closure_induction' (s : Set M) {p : ∀ x, x ∈ closure L s → Prop}
     (Hs : ∀ (x) (h : x ∈ s), p x (subset_closure h))
     (Hfun : ∀ {n : ℕ} (f : L.Functions n), ClosedUnder f { x | ∃ hx, p x hx }) {x}
     (hx : x ∈ closure L s) : p x hx := by
-  refine' Exists.elim _ fun (hx : x ∈ closure L s) (hc : p x hx) => hc
+  refine Exists.elim ?_ fun (hx : x ∈ closure L s) (hc : p x hx) => hc
   exact closure_induction hx (fun x hx => ⟨subset_closure hx, Hs x hx⟩) @Hfun
 #align first_order.language.substructure.closure_induction' FirstOrder.Language.Substructure.closure_induction'
 
@@ -1039,7 +1039,7 @@ theorem coe_inclusion {S T : L.Substructure M} (h : S ≤ T) :
 theorem range_subtype (S : L.Substructure M) : S.subtype.toHom.range = S := by
   ext x
   simp only [Hom.mem_range, Embedding.coe_toHom, coeSubtype]
-  refine' ⟨_, fun h => ⟨⟨x, h⟩, rfl⟩⟩
+  refine ⟨?_, fun h => ⟨⟨x, h⟩, rfl⟩⟩
   rintro ⟨⟨y, hy⟩, rfl⟩
   exact hy
 #align first_order.language.substructure.range_subtype FirstOrder.Language.Substructure.range_subtype

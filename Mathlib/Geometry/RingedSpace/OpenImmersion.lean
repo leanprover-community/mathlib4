@@ -115,7 +115,7 @@ noncomputable def isoRestrict : X ≅ Y.restrict H.base_open :=
     symm
     fapply NatIso.ofComponents
     · intro U
-      refine' asIso (f.c.app (op (H.openFunctor.obj (unop U)))) ≪≫ X.presheaf.mapIso (eqToIso _)
+      refine asIso (f.c.app (op (H.openFunctor.obj (unop U)))) ≪≫ X.presheaf.mapIso (eqToIso ?_)
       induction U using Opposite.rec' with | h U => ?_
       cases U
       dsimp only [IsOpenMap.functor, Functor.op, Opens.map]
@@ -528,7 +528,7 @@ instance forgetPreservesLimitsOfLeft : PreservesLimit (cospan f g) (forget C) :=
   preservesLimitOfPreservesLimitCone (pullbackConeOfLeftIsLimit f g)
     (by
       apply (IsLimit.postcomposeHomEquiv (diagramIsoCospan _) _).toFun
-      refine' (IsLimit.equivIsoLimit _).toFun (limit.isLimit (cospan f.base g.base))
+      refine (IsLimit.equivIsoLimit ?_).toFun (limit.isLimit (cospan f.base g.base))
       fapply Cones.ext
       · exact Iso.refl _
       change ∀ j, _ = 𝟙 _ ≫ _ ≫ _
@@ -973,8 +973,8 @@ instance : SheafedSpace.IsOpenImmersion (LocallyRingedSpace.forgetToSheafedSpace
 
 /-- An explicit pullback cone over `cospan f g` if `f` is an open immersion. -/
 def pullbackConeOfLeft : PullbackCone f g := by
-  refine' PullbackCone.mk _
-      (Y.ofRestrict (TopCat.snd_openEmbedding_of_left_openEmbedding H.base_open g.1.base)) _
+  refine PullbackCone.mk ?_
+      (Y.ofRestrict (TopCat.snd_openEmbedding_of_left_openEmbedding H.base_open g.1.base)) ?_
   · use PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftFst f.1 g.1
     intro x
     have := PresheafedSpace.stalkMap.congr_hom _ _
@@ -1190,7 +1190,7 @@ noncomputable def isoRestrict {X Y : LocallyRingedSpace} {f : X ⟶ Y}
     (H : LocallyRingedSpace.IsOpenImmersion f) :
     X ≅ Y.restrict H.base_open := by
   apply LocallyRingedSpace.isoOfSheafedSpaceIso
-  refine' SheafedSpace.forgetToPresheafedSpace.preimageIso _
+  refine SheafedSpace.forgetToPresheafedSpace.preimageIso ?_
   exact PresheafedSpace.IsOpenImmersion.isoRestrict H
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.iso_restrict AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.isoRestrict
 

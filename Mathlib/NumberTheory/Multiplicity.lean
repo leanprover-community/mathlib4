@@ -213,7 +213,7 @@ theorem Int.pow_sub_pow {x y : ℤ} (hxy : ↑p ∣ x - y) (hx : ¬↑p ∣ x) (
   · exact fun h => hx (hp.dvd_of_dvd_pow h)
   · rw [Int.natCast_dvd_natCast]
     rintro ⟨c, rfl⟩
-    refine' hpn ⟨c, _⟩
+    refine hpn ⟨c, ?_⟩
     rwa [pow_succ, mul_assoc]
 #align multiplicity.int.pow_sub_pow multiplicity.Int.pow_sub_pow
 

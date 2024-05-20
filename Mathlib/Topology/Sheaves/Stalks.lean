@@ -208,7 +208,7 @@ theorem stalkPushforward_iso_of_openEmbedding {f : X ⟶ Y} (hf : OpenEmbedding 
   swap
   · fapply NatIso.ofComponents
     · intro U
-      refine' F.mapIso (eqToIso _)
+      refine F.mapIso (eqToIso ?_)
       dsimp only [Functor.op]
       exact congr_arg op (Opens.ext <| Set.preimage_image_eq (unop U).1.1 hf.inj)
     · intro U V i; erw [← F.map_comp, ← F.map_comp]; congr 1

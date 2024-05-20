@@ -728,7 +728,7 @@ theorem ae_eq_zero_of_snorm'_eq_zero {f : α → E} (hq0 : 0 ≤ q) (hf : AEStro
   cases h with
   | inl h =>
     rw [lintegral_eq_zero_iff' (hf.ennnorm.pow_const q)] at h
-    refine' h.left.mono fun x hx => _
+    refine h.left.mono fun x hx => ?_
     rw [Pi.zero_apply, ENNReal.rpow_eq_zero_iff] at hx
     cases hx with
     | inl hx =>

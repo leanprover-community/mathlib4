@@ -127,7 +127,7 @@ theorem monoidHom_ext ⦃f g : G ⧸ N →* M⦄ (h : f.comp (mk' N) = g.comp (m
 
 @[to_additive (attr := simp)]
 theorem eq_one_iff {N : Subgroup G} [nN : N.Normal] (x : G) : (x : G ⧸ N) = 1 ↔ x ∈ N := by
-  refine' QuotientGroup.eq.trans _
+  refine QuotientGroup.eq.trans ?_
   rw [mul_one, Subgroup.inv_mem_iff]
 #align quotient_group.eq_one_iff QuotientGroup.eq_one_iff
 #align quotient_add_group.eq_zero_iff QuotientAddGroup.eq_zero_iff
@@ -245,9 +245,9 @@ theorem lift_quot_mk {φ : G →* M} (HN : N ≤ φ.ker) (g : G) :
 @[to_additive
       "An `AddGroup` homomorphism `f : G →+ H` induces a map `G/N →+ H/M` if `N ⊆ f⁻¹(M)`."]
 def map (M : Subgroup H) [M.Normal] (f : G →* H) (h : N ≤ M.comap f) : G ⧸ N →* H ⧸ M := by
-  refine' QuotientGroup.lift N ((mk' M).comp f) _
+  refine QuotientGroup.lift N ((mk' M).comp f) ?_
   intro x hx
-  refine' QuotientGroup.eq.2 _
+  refine QuotientGroup.eq.2 ?_
   rw [mul_one, Subgroup.inv_mem_iff]
   exact h hx
 #align quotient_group.map QuotientGroup.map

@@ -1087,7 +1087,7 @@ instance : CompleteSpace GHSpace := by
   -- so the images of `u n` converge to the image of `L` as well
   use L.toGHSpace
   apply Filter.Tendsto.congr this
-  refine' Tendsto.comp _ hL
+  refine Tendsto.comp ?_ hL
   apply toGHSpace_continuous.tendsto
 
 end Complete

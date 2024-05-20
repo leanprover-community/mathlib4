@@ -149,7 +149,7 @@ noncomputable def embeddingsEquivPrimitiveRoots (C : Type*) [CommRing C] [IsDoma
     { toFun := fun x => by
         haveI := IsCyclotomicExtension.neZero' n K L
         haveI hn := NeZero.of_noZeroSMulDivisors K C n
-        refine' ⟨x.1, _⟩
+        refine ⟨x.1, ?_⟩
         cases x
         rwa [mem_primitiveRoots n.pos, ← isRoot_cyclotomic_iff, IsRoot.def,
           ← map_cyclotomic _ (algebraMap K C), hζ.minpoly_eq_cyclotomic_of_irreducible hirr,
@@ -157,7 +157,7 @@ noncomputable def embeddingsEquivPrimitiveRoots (C : Type*) [CommRing C] [IsDoma
       invFun := fun x => by
         haveI := IsCyclotomicExtension.neZero' n K L
         haveI hn := NeZero.of_noZeroSMulDivisors K C n
-        refine' ⟨x.1, _⟩
+        refine ⟨x.1, ?_⟩
         cases x
         rwa [aeval_def, eval₂_eq_eval_map, hζ.powerBasis_gen K, ←
           hζ.minpoly_eq_cyclotomic_of_irreducible hirr, map_cyclotomic, ← IsRoot.def,
@@ -411,7 +411,7 @@ theorem norm_pow_sub_one_of_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot 
   let η₁ : K⟮η⟯ := IntermediateField.AdjoinSimple.gen K η
   have hη : IsPrimitiveRoot (η + 1) ((p : ℕ) ^ (k + 1 - s)) := by
     rw [sub_add_cancel]
-    refine' IsPrimitiveRoot.pow (p ^ (k + 1)).pos hζ _
+    refine IsPrimitiveRoot.pow (p ^ (k + 1)).pos hζ ?_
     rw [PNat.pow_coe, ← pow_add, add_comm s, Nat.sub_add_cancel (le_trans hs (Nat.le_succ k))]
   have : IsCyclotomicExtension {p ^ (k - s + 1)} K K⟮η⟯ := by
     suffices IsCyclotomicExtension {p ^ (k - s + 1)} K K⟮η + 1⟯.toSubalgebra by

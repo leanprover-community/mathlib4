@@ -778,7 +778,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
       classical
         let m := Nat.find hf
         let n := Nat.find hg
-        refine' ⟨m + n, _⟩
+        refine ⟨m + n, ?_⟩
         rw [coeff_mul, ← Finset.insert_erase ((Finset.mem_antidiagonal (a := (m,n))).mpr rfl),
           Finset.sum_insert (Finset.not_mem_erase _ _), (P.add_mem_iff_left _).not]
         · apply mt h.2
@@ -980,7 +980,7 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
         induction' k using Nat.strong_induction_on with k ih generalizing p
         rcases le_or_lt k N with h | h
         · subst k
-          refine' hs2 ⟨Polynomial.mem_degreeLE.2
+          refine hs2 ⟨Polynomial.mem_degreeLE.2
             (le_trans Polynomial.degree_le_natDegree <| WithBot.coe_le_coe.2 h), hp⟩
         · have hp0 : p ≠ 0 := by
             rintro rfl
