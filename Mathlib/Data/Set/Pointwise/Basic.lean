@@ -5,9 +5,9 @@ Authors: Johan Commelin, Floris van Doorn
 -/
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Units.Hom
-import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
-import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Algebra.Opposites
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Set.Lattice
 import Mathlib.Tactic.Common
 
@@ -38,8 +38,8 @@ Appropriate definitions and results are also transported to the additive theory 
 ## Implementation notes
 
 * The following expressions are considered in simp-normal form in a group:
-  `(λ h, h * g) ⁻¹' s`, `(λ h, g * h) ⁻¹' s`, `(λ h, h * g⁻¹) ⁻¹' s`, `(λ h, g⁻¹ * h) ⁻¹' s`,
-  `s * t`, `s⁻¹`, `(1 : Set _)` (and similarly for additive variants).
+  `(fun h ↦ h * g) ⁻¹' s`, `(fun h ↦ g * h) ⁻¹' s`, `(fun h ↦ h * g⁻¹) ⁻¹' s`,
+  `(fun h ↦ g⁻¹ * h) ⁻¹' s`, `s * t`, `s⁻¹`, `(1 : Set _)` (and similarly for additive variants).
   Expressions equal to one of these will be simplified.
 * We put all instances in the locale `Pointwise`, so that these instances are not available by
   default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
@@ -260,6 +260,10 @@ theorem image_inv : Inv.inv '' s = s⁻¹ :=
 #align set.image_neg Set.image_neg
 
 @[to_additive (attr := simp)]
+theorem inv_eq_empty : s⁻¹ = ∅ ↔ s = ∅ := by
+  rw [← image_inv, image_eq_empty]
+
+@[to_additive (attr := simp)]
 noncomputable instance involutiveInv : InvolutiveInv (Set α) where
   inv := Inv.inv
   inv_inv s := by simp only [← inv_preimage, preimage_preimage, inv_inv, preimage_id']
@@ -333,7 +337,7 @@ theorem image2_mul : image2 (· * ·) s t = s * t :=
 #align set.image2_add Set.image2_add
 
 @[to_additive]
-theorem mem_mul : a ∈ s * t ↔ ∃ x y, x ∈ s ∧ y ∈ t ∧ x * y = a :=
+theorem mem_mul : a ∈ s * t ↔ ∃ x ∈ s, ∃ y ∈ t, x * y = a :=
   Iff.rfl
 #align set.mem_mul Set.mem_mul
 #align set.mem_add Set.mem_add
@@ -344,7 +348,6 @@ theorem mul_mem_mul : a ∈ s → b ∈ t → a * b ∈ s * t :=
 #align set.mul_mem_mul Set.mul_mem_mul
 #align set.add_mem_add Set.add_mem_add
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[to_additive add_image_prod]
 theorem image_mul_prod : (fun x : α × α => x.fst * x.snd) '' s ×ˢ t = s * t :=
   image_prod _
@@ -400,12 +403,12 @@ theorem mul_singleton : s * {b} = (· * b) '' s :=
 #align set.add_singleton Set.add_singleton
 
 @[to_additive (attr := simp)]
-theorem singleton_mul : {a} * t = (· * ·) a '' t :=
+theorem singleton_mul : {a} * t = (a * ·) '' t :=
   image2_singleton_left
 #align set.singleton_mul Set.singleton_mul
 #align set.singleton_add Set.singleton_add
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 @[to_additive]
 theorem singleton_mul_singleton : ({a} : Set α) * {b} = {a * b} :=
   image2_singleton
@@ -473,7 +476,7 @@ theorem union_mul_inter_subset_union : (s₁ ∪ s₂) * (t₁ ∩ t₂) ⊆ s�
 #align set.union_add_inter_subset_union Set.union_add_inter_subset_union
 
 @[to_additive]
-theorem iUnion_mul_left_image : ⋃ a ∈ s, (· * ·) a '' t = s * t :=
+theorem iUnion_mul_left_image : ⋃ a ∈ s, (a * ·) '' t = s * t :=
   iUnion_image_left _
 #align set.Union_mul_left_image Set.iUnion_mul_left_image
 #align set.Union_add_left_image Set.iUnion_add_left_image
@@ -600,7 +603,7 @@ theorem image2_div : image2 Div.div s t = s / t :=
 #align set.image2_sub Set.image2_sub
 
 @[to_additive]
-theorem mem_div : a ∈ s / t ↔ ∃ x y, x ∈ s ∧ y ∈ t ∧ x / y = a :=
+theorem mem_div : a ∈ s / t ↔ ∃ x ∈ s, ∃ y ∈ t, x / y = a :=
   Iff.rfl
 #align set.mem_div Set.mem_div
 #align set.mem_sub Set.mem_sub
@@ -611,7 +614,6 @@ theorem div_mem_div : a ∈ s → b ∈ t → a / b ∈ s / t :=
 #align set.div_mem_div Set.div_mem_div
 #align set.sub_mem_sub Set.sub_mem_sub
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[to_additive sub_image_prod]
 theorem image_div_prod : (fun x : α × α => x.fst / x.snd) '' s ×ˢ t = s / t :=
   image_prod _
@@ -672,7 +674,7 @@ theorem singleton_div : {a} / t = (· / ·) a '' t :=
 #align set.singleton_div Set.singleton_div
 #align set.singleton_sub Set.singleton_sub
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 @[to_additive]
 theorem singleton_div_singleton : ({a} : Set α) / {b} = {a / b} :=
   image2_singleton
@@ -740,7 +742,7 @@ theorem union_div_inter_subset_union : (s₁ ∪ s₂) / (t₁ ∩ t₂) ⊆ s�
 #align set.union_sub_inter_subset_union Set.union_sub_inter_subset_union
 
 @[to_additive]
-theorem iUnion_div_left_image : ⋃ a ∈ s, (· / ·) a '' t = s / t :=
+theorem iUnion_div_left_image : ⋃ a ∈ s, (a / ·) '' t = s / t :=
   iUnion_image_left _
 #align set.Union_div_left_image Set.iUnion_div_left_image
 #align set.Union_sub_left_image Set.iUnion_sub_left_image
@@ -816,7 +818,7 @@ end Div
 open Pointwise
 
 /-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Set`. See
-note [pointwise nat action].-/
+note [pointwise nat action]. -/
 protected def NSMul [Zero α] [Add α] : SMul ℕ (Set α) :=
   ⟨nsmulRec⟩
 #align set.has_nsmul Set.NSMul
@@ -838,7 +840,7 @@ protected def ZSMul [Zero α] [Add α] [Neg α] : SMul ℤ (Set α) :=
 multiplication/division!) of a `Set`. See note [pointwise nat action]. -/
 @[to_additive existing]
 protected def ZPow [One α] [Mul α] [Inv α] : Pow (Set α) ℤ :=
-  ⟨fun s n => zpowRec n s⟩
+  ⟨fun s n => zpowRec npowRec n s⟩
 #align set.has_zpow Set.ZPow
 
 scoped[Pointwise] attribute [instance] Set.NSMul Set.NPow Set.ZSMul Set.ZPow
@@ -895,13 +897,13 @@ scoped[Pointwise]
 
 @[to_additive]
 theorem subset_mul_left (s : Set α) {t : Set α} (ht : (1 : α) ∈ t) : s ⊆ s * t := fun x hx =>
-  ⟨x, 1, hx, ht, mul_one _⟩
+  ⟨x, hx, 1, ht, mul_one _⟩
 #align set.subset_mul_left Set.subset_mul_left
 #align set.subset_add_left Set.subset_add_left
 
 @[to_additive]
 theorem subset_mul_right {s : Set α} (t : Set α) (hs : (1 : α) ∈ s) : t ⊆ s * t := fun x hx =>
-  ⟨1, x, hs, hx, one_mul _⟩
+  ⟨1, hs, x, hx, one_mul _⟩
 #align set.subset_mul_right Set.subset_mul_right
 #align set.subset_add_right Set.subset_add_right
 
@@ -946,7 +948,7 @@ theorem pow_mem_pow (ha : a ∈ s) : ∀ n : ℕ, a ^ n ∈ s ^ n
     exact one_mem_one
   | n + 1 => by
     rw [pow_succ]
-    exact mul_mem_mul ha (pow_mem_pow ha _)
+    exact mul_mem_mul (pow_mem_pow ha _) ha
 #align set.pow_mem_pow Set.pow_mem_pow
 #align set.nsmul_mem_nsmul Set.nsmul_mem_nsmul
 
@@ -957,7 +959,7 @@ theorem pow_subset_pow (hst : s ⊆ t) : ∀ n : ℕ, s ^ n ⊆ t ^ n
     exact Subset.rfl
   | n + 1 => by
     rw [pow_succ]
-    exact mul_subset_mul hst (pow_subset_pow hst _)
+    exact mul_subset_mul (pow_subset_pow hst _) hst
 #align set.pow_subset_pow Set.pow_subset_pow
 #align set.nsmul_subset_nsmul Set.nsmul_subset_nsmul
 
@@ -968,26 +970,26 @@ theorem pow_subset_pow_of_one_mem (hs : (1 : α) ∈ s) (hn : m ≤ n) : s ^ m �
   induction' n, hn using Nat.le_induction with _ _ ih
   · exact Subset.rfl
   · dsimp only
-    rw [pow_succ]
+    rw [pow_succ']
     exact ih.trans (subset_mul_right _ hs)
 #align set.pow_subset_pow_of_one_mem Set.pow_subset_pow_of_one_mem
 #align set.nsmul_subset_nsmul_of_zero_mem Set.nsmul_subset_nsmul_of_zero_mem
 
 @[to_additive (attr := simp)]
 theorem empty_pow {n : ℕ} (hn : n ≠ 0) : (∅ : Set α) ^ n = ∅ := by
-  rw [← tsub_add_cancel_of_le (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn), pow_succ, empty_mul]
+  rw [← tsub_add_cancel_of_le (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn), pow_succ', empty_mul]
 #align set.empty_pow Set.empty_pow
 #align set.empty_nsmul Set.empty_nsmul
 
 @[to_additive]
 theorem mul_univ_of_one_mem (hs : (1 : α) ∈ s) : s * univ = univ :=
-  eq_univ_iff_forall.2 fun _ => mem_mul.2 ⟨_, _, hs, mem_univ _, one_mul _⟩
+  eq_univ_iff_forall.2 fun _ => mem_mul.2 ⟨_, hs, _, mem_univ _, one_mul _⟩
 #align set.mul_univ_of_one_mem Set.mul_univ_of_one_mem
 #align set.add_univ_of_zero_mem Set.add_univ_of_zero_mem
 
 @[to_additive]
 theorem univ_mul_of_one_mem (ht : (1 : α) ∈ t) : univ * t = univ :=
-  eq_univ_iff_forall.2 fun _ => mem_mul.2 ⟨_, _, mem_univ _, ht, mul_one _⟩
+  eq_univ_iff_forall.2 fun _ => mem_mul.2 ⟨_, mem_univ _, _, ht, mul_one _⟩
 #align set.univ_mul_of_one_mem Set.univ_mul_of_one_mem
 #align set.univ_add_of_zero_mem Set.univ_add_of_zero_mem
 
@@ -1068,6 +1070,8 @@ protected noncomputable def divisionMonoid : DivisionMonoid (Set α) :=
 #align set.division_monoid Set.divisionMonoid
 #align set.subtraction_monoid Set.subtractionMonoid
 
+scoped[Pointwise] attribute [instance] Set.divisionMonoid Set.subtractionMonoid
+
 @[to_additive (attr := simp 500)]
 theorem isUnit_iff : IsUnit s ↔ ∃ a, s = {a} ∧ IsUnit a := by
   constructor
@@ -1080,6 +1084,9 @@ theorem isUnit_iff : IsUnit s ↔ ∃ a, s = {a} ∧ IsUnit a := by
     exact ha.set
 #align set.is_unit_iff Set.isUnit_iff
 #align set.is_add_unit_iff Set.isAddUnit_iff
+
+@[to_additive (attr := simp)]
+lemma univ_div_univ : (univ / univ : Set α) = univ := by simp [div_eq_mul_inv]
 
 end DivisionMonoid
 
@@ -1104,9 +1111,7 @@ protected noncomputable def hasDistribNeg [Mul α] [HasDistribNeg α] : HasDistr
 #align set.has_distrib_neg Set.hasDistribNeg
 
 scoped[Pointwise]
-  attribute [instance]
-    Set.divisionMonoid Set.subtractionMonoid Set.divisionCommMonoid Set.subtractionCommMonoid
-    Set.hasDistribNeg
+  attribute [instance] Set.divisionCommMonoid Set.subtractionCommMonoid Set.hasDistribNeg
 
 section Distrib
 
@@ -1179,7 +1184,7 @@ attribute [to_additive] Disjoint.one_not_mem_div_set
 @[to_additive]
 theorem Nonempty.one_mem_div (h : s.Nonempty) : (1 : α) ∈ s / s :=
   let ⟨a, ha⟩ := h
-  mem_div.2 ⟨a, a, ha, ha, div_self' _⟩
+  mem_div.2 ⟨a, ha, a, ha, div_self' _⟩
 #align set.nonempty.one_mem_div Set.Nonempty.one_mem_div
 #align set.nonempty.zero_mem_sub Set.Nonempty.zero_mem_sub
 
@@ -1196,7 +1201,7 @@ theorem isUnit_iff_singleton : IsUnit s ↔ ∃ a, s = {a} := by
 #align set.is_add_unit_iff_singleton Set.isAddUnit_iff_singleton
 
 @[to_additive (attr := simp)]
-theorem image_mul_left : (· * ·) a '' t = (· * ·) a⁻¹ ⁻¹' t := by
+theorem image_mul_left : (a * ·) '' t = (a⁻¹ * ·) ⁻¹' t := by
   rw [image_eq_preimage_of_inverse] <;> intro c <;> simp
 #align set.image_mul_left Set.image_mul_left
 #align set.image_add_left Set.image_add_left
@@ -1208,7 +1213,7 @@ theorem image_mul_right : (· * b) '' t = (· * b⁻¹) ⁻¹' t := by
 #align set.image_add_right Set.image_add_right
 
 @[to_additive]
-theorem image_mul_left' : (fun b => a⁻¹ * b) '' t = (fun b => a * b) ⁻¹' t := by simp
+theorem image_mul_left' : (a⁻¹ * ·) '' t = (a * ·) ⁻¹' t := by simp
 #align set.image_mul_left' Set.image_mul_left'
 #align set.image_add_left' Set.image_add_left'
 
@@ -1218,7 +1223,7 @@ theorem image_mul_right' : (· * b⁻¹) '' t = (· * b) ⁻¹' t := by simp
 #align set.image_add_right' Set.image_add_right'
 
 @[to_additive (attr := simp)]
-theorem preimage_mul_left_singleton : (· * ·) a ⁻¹' {b} = {a⁻¹ * b} := by
+theorem preimage_mul_left_singleton : (a * ·) ⁻¹' {b} = {a⁻¹ * b} := by
   rw [← image_mul_left', image_singleton]
 #align set.preimage_mul_left_singleton Set.preimage_mul_left_singleton
 #align set.preimage_add_left_singleton Set.preimage_add_left_singleton
@@ -1230,7 +1235,7 @@ theorem preimage_mul_right_singleton : (· * a) ⁻¹' {b} = {b * a⁻¹} := by
 #align set.preimage_add_right_singleton Set.preimage_add_right_singleton
 
 @[to_additive (attr := simp)]
-theorem preimage_mul_left_one : (· * ·) a ⁻¹' 1 = {a⁻¹} := by
+theorem preimage_mul_left_one : (a * ·) ⁻¹' 1 = {a⁻¹} := by
   rw [← image_mul_left', image_one, mul_one]
 #align set.preimage_mul_left_one Set.preimage_mul_left_one
 #align set.preimage_add_left_zero Set.preimage_add_left_zero
@@ -1242,7 +1247,7 @@ theorem preimage_mul_right_one : (· * b) ⁻¹' 1 = {b⁻¹} := by
 #align set.preimage_add_right_zero Set.preimage_add_right_zero
 
 @[to_additive]
-theorem preimage_mul_left_one' : (fun b => a⁻¹ * b) ⁻¹' 1 = {a} := by simp
+theorem preimage_mul_left_one' : (a⁻¹ * ·) ⁻¹' 1 = {a} := by simp
 #align set.preimage_mul_left_one' Set.preimage_mul_left_one'
 #align set.preimage_add_left_zero' Set.preimage_add_left_zero'
 
@@ -1254,14 +1259,14 @@ theorem preimage_mul_right_one' : (· * b⁻¹) ⁻¹' 1 = {b} := by simp
 @[to_additive (attr := simp)]
 theorem mul_univ (hs : s.Nonempty) : s * (univ : Set α) = univ :=
   let ⟨a, ha⟩ := hs
-  eq_univ_of_forall fun b => ⟨a, a⁻¹ * b, ha, trivial, mul_inv_cancel_left _ _⟩
+  eq_univ_of_forall fun b => ⟨a, ha, a⁻¹ * b, trivial, mul_inv_cancel_left _ _⟩
 #align set.mul_univ Set.mul_univ
 #align set.add_univ Set.add_univ
 
 @[to_additive (attr := simp)]
 theorem univ_mul (ht : t.Nonempty) : (univ : Set α) * t = univ :=
   let ⟨a, ha⟩ := ht
-  eq_univ_of_forall fun b => ⟨b * a⁻¹, a, trivial, ha, inv_mul_cancel_right _ _⟩
+  eq_univ_of_forall fun b => ⟨b * a⁻¹, trivial, a, ha, inv_mul_cancel_right _ _⟩
 #align set.univ_mul Set.univ_mul
 #align set.univ_add Set.univ_add
 
@@ -1289,7 +1294,7 @@ end GroupWithZero
 
 section Mul
 
-variable [Mul α] [Mul β] [MulHomClass F α β] (m : F) {s t : Set α}
+variable [Mul α] [Mul β] [FunLike F α β] [MulHomClass F α β] (m : F) {s t : Set α}
 
 @[to_additive]
 theorem image_mul : m '' (s * t) = m '' s * m '' t :=
@@ -1298,17 +1303,31 @@ theorem image_mul : m '' (s * t) = m '' s * m '' t :=
 #align set.image_add Set.image_add
 
 @[to_additive]
+lemma mul_subset_range {s t : Set β} (hs : s ⊆ range m) (ht : t ⊆ range m) : s * t ⊆ range m := by
+  rintro _ ⟨a, ha, b, hb, rfl⟩
+  obtain ⟨a, rfl⟩ := hs ha
+  obtain ⟨b, rfl⟩ := ht hb
+  exact ⟨a * b, map_mul _ _ _⟩
+
+@[to_additive]
 theorem preimage_mul_preimage_subset {s t : Set β} : m ⁻¹' s * m ⁻¹' t ⊆ m ⁻¹' (s * t) := by
   rintro _ ⟨_, _, _, _, rfl⟩
-  exact ⟨_, _, ‹_›, ‹_›, (map_mul m _ _).symm⟩
+  exact ⟨_, ‹_›, _, ‹_›, (map_mul m _ _).symm⟩
 #align set.preimage_mul_preimage_subset Set.preimage_mul_preimage_subset
 #align set.preimage_add_preimage_subset Set.preimage_add_preimage_subset
+
+@[to_additive]
+lemma preimage_mul (hm : Injective m) {s t : Set β} (hs : s ⊆ range m) (ht : t ⊆ range m) :
+    m ⁻¹' (s * t) = m ⁻¹' s * m ⁻¹' t :=
+  hm.image_injective <| by
+    rw [image_mul, image_preimage_eq_iff.2 hs, image_preimage_eq_iff.2 ht,
+      image_preimage_eq_iff.2 (mul_subset_range m hs ht)]
 
 end Mul
 
 section Group
 
-variable [Group α] [DivisionMonoid β] [MonoidHomClass F α β] (m : F) {s t : Set α}
+variable [Group α] [DivisionMonoid β] [FunLike F α β] [MonoidHomClass F α β] (m : F) {s t : Set α}
 
 @[to_additive]
 theorem image_div : m '' (s / t) = m '' s / m '' t :=
@@ -1317,23 +1336,34 @@ theorem image_div : m '' (s / t) = m '' s / m '' t :=
 #align set.image_sub Set.image_sub
 
 @[to_additive]
+lemma div_subset_range {s t : Set β} (hs : s ⊆ range m) (ht : t ⊆ range m) : s / t ⊆ range m := by
+  rintro _ ⟨a, ha, b, hb, rfl⟩
+  obtain ⟨a, rfl⟩ := hs ha
+  obtain ⟨b, rfl⟩ := ht hb
+  exact ⟨a / b, map_div _ _ _⟩
+
+@[to_additive]
 theorem preimage_div_preimage_subset {s t : Set β} : m ⁻¹' s / m ⁻¹' t ⊆ m ⁻¹' (s / t) := by
   rintro _ ⟨_, _, _, _, rfl⟩
-  exact ⟨_, _, ‹_›, ‹_›, (map_div m _ _).symm⟩
+  exact ⟨_, ‹_›, _, ‹_›, (map_div m _ _).symm⟩
 #align set.preimage_div_preimage_subset Set.preimage_div_preimage_subset
 #align set.preimage_sub_preimage_subset Set.preimage_sub_preimage_subset
+
+@[to_additive]
+lemma preimage_div (hm : Injective m) {s t : Set β} (hs : s ⊆ range m) (ht : t ⊆ range m) :
+    m ⁻¹' (s / t) = m ⁻¹' s / m ⁻¹' t :=
+  hm.image_injective <| by
+    rw [image_div, image_preimage_eq_iff.2 hs, image_preimage_eq_iff.2 ht,
+      image_preimage_eq_iff.2 (div_subset_range m hs ht)]
 
 end Group
 
 @[to_additive]
-theorem bddAbove_mul [OrderedCommMonoid α] {A B : Set α} :
-    BddAbove A → BddAbove B → BddAbove (A * B) := by
-  rintro ⟨bA, hbA⟩ ⟨bB, hbB⟩
-  use bA * bB
-  rintro x ⟨xa, xb, hxa, hxb, rfl⟩
-  exact mul_le_mul' (hbA hxa) (hbB hxb)
-#align set.bdd_above_mul Set.bddAbove_mul
-#align set.bdd_above_add Set.bddAbove_add
+theorem BddAbove.mul [OrderedCommMonoid α] {A B : Set α} (hA : BddAbove A) (hB : BddAbove B) :
+    BddAbove (A * B) :=
+  hA.image2 (fun _ _ _ h ↦ mul_le_mul_right' h _) (fun _ _ _ h ↦ mul_le_mul_left' h _) hB
+#align set.bdd_above_mul Set.BddAbove.mul
+#align set.bdd_above_add Set.BddAbove.add
 
 end Set
 
@@ -1358,12 +1388,12 @@ theorem card_pow_eq_card_pow_card_univ_aux {f : ℕ → ℕ} (h1 : Monotone f) {
           lt_of_le_of_lt (ih (n.le_succ.trans h))
             (lt_of_le_of_ne (h1 n.le_succ) (h2 n (Nat.succ_le_succ_iff.mp h))))
         n
-  · obtain ⟨n, hn1, hn2⟩ := key
-    replace key : ∀ k : ℕ, f (n + k) = f (n + k + 1) ∧ f (n + k) = f n := fun k =>
-      Nat.rec ⟨hn2, rfl⟩ (fun k ih => ⟨h3 _ ih.1, ih.1.symm.trans ih.2⟩) k
-    replace key : ∀ k : ℕ, n ≤ k → f k = f n := fun k hk =>
-      (congr_arg f (add_tsub_cancel_of_le hk)).symm.trans (key (k - n)).2
-    exact fun k hk => (key k (hn1.trans hk)).trans (key B hn1).symm
+  obtain ⟨n, hn1, hn2⟩ := key
+  replace key : ∀ k : ℕ, f (n + k) = f (n + k + 1) ∧ f (n + k) = f n := fun k =>
+    Nat.rec ⟨hn2, rfl⟩ (fun k ih => ⟨h3 _ ih.1, ih.1.symm.trans ih.2⟩) k
+  replace key : ∀ k : ℕ, n ≤ k → f k = f n := fun k hk =>
+    (congr_arg f (add_tsub_cancel_of_le hk)).symm.trans (key (k - n)).2
+  exact fun k hk => (key k (hn1.trans hk)).trans (key B hn1).symm
 #align group.card_pow_eq_card_pow_card_univ_aux Group.card_pow_eq_card_pow_card_univ_aux
 #align add_group.card_nsmul_eq_card_nsmul_card_univ_aux AddGroup.card_nsmul_eq_card_nsmul_card_univ_aux
 

@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Functor.ReflectsIso
 #align_import algebra.category.Mon.basic from "leanprover-community/mathlib"@"0caf3701139ef2e69c215717665361cda205a90b"
 
 /-!
-# Category instances for monoid, add_monoid, comm_monoid, and add_comm_monoid.
+# Category instances for `Monoid`, `AddMonoid`, `CommMonoid`, and `AddCommMmonoid`.
 
 We introduce the bundled categories:
 * `MonCat`
@@ -19,9 +19,6 @@ We introduce the bundled categories:
 * `AddCommMonCat`
 along with the relevant forgetful functors between them.
 -/
-
-set_option autoImplicit true
-
 
 universe u v
 
@@ -80,25 +77,30 @@ instance : CoeSort MonCat (Type*) where
 @[to_additive]
 instance (X : MonCat) : Monoid X := X.str
 
--- porting note: this instance was not necessary in mathlib
+-- porting note (#10670): this instance was not necessary in mathlib
 @[to_additive]
 instance {X Y : MonCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
 
 @[to_additive]
-instance Hom_FunLike (X Y : MonCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
-  show FunLike (X →* Y) X (fun _ => Y) by infer_instance
+instance instFunLike (X Y : MonCat) : FunLike (X ⟶ Y) X Y :=
+  inferInstanceAs <| FunLike (X →* Y) X Y
 
--- porting note: added
+@[to_additive]
+instance instMonoidHomClass (X Y : MonCat) : MonoidHomClass (X ⟶ Y) X Y :=
+  inferInstanceAs <| MonoidHomClass (X →* Y) X Y
+
+-- porting note (#10756): added lemma
 @[to_additive (attr := simp)]
 lemma coe_id {X : MonCat} : (𝟙 X : X → X) = id := rfl
 
--- porting note: added
+-- porting note (#10756): added lemma
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : MonCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
--- porting note: added
-@[to_additive (attr := simp)] lemma forget_map (f : X ⟶ Y) : (forget MonCat).map f = f := rfl
+-- porting note (#10756): added lemma
+@[to_additive (attr := simp)] lemma forget_map {X Y : MonCat} (f : X ⟶ Y) :
+    (forget MonCat).map f = f := rfl
 
 @[to_additive (attr := ext)]
 lemma ext {X Y : MonCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -149,14 +151,14 @@ lemma ofHom_apply {X Y : Type u} [Monoid X] [Monoid Y] (f : X →* Y) (x : X) :
 set_option linter.uppercaseLean3 false in
 #align Mon.of_hom_apply MonCat.ofHom_apply
 
----- porting note: added to ease the port of `RepresentationTheory.Action`
+---- Porting note: added to ease the port of `RepresentationTheory.Action.Basic`
 @[to_additive]
 instance (X Y : MonCat.{u}) : One (X ⟶ Y) := ⟨ofHom 1⟩
 
 @[to_additive (attr := simp)]
 lemma oneHom_apply (X Y : MonCat.{u}) (x : X) : (1 : X ⟶ Y) x = 1 := rfl
 
----- porting note: added to ease the port of `RepresentationTheory.Action`
+---- Porting note: added to ease the port of `RepresentationTheory.Action.Basic`
 @[to_additive (attr := simp)]
 lemma one_of {A : Type*} [Monoid A] : (1 : MonCat.of A) = (1 : A) := rfl
 
@@ -202,24 +204,24 @@ instance : CoeSort CommMonCat (Type*) where
 @[to_additive]
 instance (X : CommMonCat) : CommMonoid X := X.str
 
--- porting note: this instance was not necessary in mathlib
+-- porting note (#10670): this instance was not necessary in mathlib
 @[to_additive]
 instance {X Y : CommMonCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
 
 @[to_additive]
-instance Hom_FunLike (X Y : CommMonCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
-  show FunLike (X →* Y) X (fun _ => Y) by infer_instance
+instance instFunLike (X Y : CommMonCat) : FunLike (X ⟶ Y) X Y :=
+  show FunLike (X →* Y) X Y by infer_instance
 
--- porting note: added
+-- porting note (#10756): added lemma
 @[to_additive (attr := simp)]
 lemma coe_id {X : CommMonCat} : (𝟙 X : X → X) = id := rfl
 
--- porting note: added
+-- porting note (#10756): added lemma
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : CommMonCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
--- porting note: added
+-- porting note (#10756): added lemma
 @[to_additive (attr := simp)]
 lemma forget_map {X Y : CommMonCat} (f : X ⟶ Y) :
     (forget CommMonCat).map f = (f : X → Y) :=
@@ -238,7 +240,7 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddCommMon.of AddCommMonCat.of
 
-/-- Construct a bundled `AddCommMon` from the underlying type and typeclass. -/
+/-- Construct a bundled `AddCommMonCat` from the underlying type and typeclass. -/
 add_decl_doc AddCommMonCat.of
 
 @[to_additive]
@@ -268,7 +270,7 @@ set_option linter.uppercaseLean3 false in
 @[to_additive]
 instance : Coe CommMonCat.{u} MonCat.{u} where coe := (forget₂ CommMonCat MonCat).obj
 
--- porting note: this was added to make automation work (it already exists for MonCat)
+-- Porting note: this was added to make automation work (it already exists for MonCat)
 /-- Typecheck a `MonoidHom` as a morphism in `CommMonCat`. -/
 @[to_additive]
 def ofHom {X Y : Type u} [CommMonoid X] [CommMonoid Y] (f : X →* Y) : of X ⟶ of Y := f
@@ -281,28 +283,6 @@ lemma ofHom_apply {X Y : Type u} [CommMonoid X] [CommMonoid Y] (f : X →* Y) (x
     (ofHom f) x = f x := rfl
 
 end CommMonCat
-
--- We verify that the coercions of morphisms to functions work correctly:
-example {R S : MonCat} (f : R ⟶ S) : ↑R → ↑S := f
-
--- Porting note: it's essential that simp lemmas for `→*` apply to morphisms.
-example {R S : MonCat} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by simp [h]
-
-example {R S : CommMonCat} (f : R ⟶ S) : ↑R → ↑S := f
-
-example {R S : CommMonCat} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by simp [h]
-
--- We verify that when constructing a morphism in `CommMonCat`,
--- when we construct the `toFun` field, the types are presented as `↑R`.
-example (R : CommMonCat.{u}) : R ⟶ R :=
-  { toFun := fun x => by
-      match_target (R : Type u)
-      guard_hyp x : (R : Type u)
-      exact x * x
-    map_one' := by simp
-    map_mul' := fun x y => by
-      dsimp
-      rw [mul_assoc x y (x * y), ← mul_assoc y x y, mul_comm y x, mul_assoc, mul_assoc] }
 
 variable {X Y : Type u}
 
@@ -386,8 +366,7 @@ add_decl_doc addEquivIsoAddMonCatIso
 in `CommMonCat` -/
 @[to_additive addEquivIsoAddCommMonCatIso]
 def mulEquivIsoCommMonCatIso {X Y : Type u} [CommMonoid X] [CommMonoid Y] :
-    X ≃* Y ≅ CommMonCat.of X ≅ CommMonCat.of Y
-    where
+    X ≃* Y ≅ CommMonCat.of X ≅ CommMonCat.of Y where
   hom e := e.toCommMonCatIso
   inv i := i.commMonCatIsoToMulEquiv
 set_option linter.uppercaseLean3 false in
@@ -400,7 +379,7 @@ the same as (isomorphic to) isomorphisms in `AddCommMonCat` -/
 add_decl_doc addEquivIsoAddCommMonCatIso
 
 @[to_additive]
-instance MonCat.forget_reflects_isos : ReflectsIsomorphisms (forget MonCat.{u}) where
+instance MonCat.forget_reflects_isos : (forget MonCat.{u}).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget MonCat).map f)
     -- Again a problem that exists already creeps into other things leanprover/lean4#2644
@@ -413,7 +392,7 @@ set_option linter.uppercaseLean3 false in
 #align AddMon.forget_reflects_isos AddMonCat.forget_reflects_isos
 
 @[to_additive]
-instance CommMonCat.forget_reflects_isos : ReflectsIsomorphisms (forget CommMonCat.{u}) where
+instance CommMonCat.forget_reflects_isos : (forget CommMonCat.{u}).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget CommMonCat).map f)
     let e : X ≃* Y := MulEquiv.mk i.toEquiv
@@ -425,10 +404,11 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddCommMon.forget_reflects_isos AddCommMonCat.forget_reflects_isos
 
--- porting note: this was added in order to ensure that `forget₂ CommMonCat MonCat`
+-- Porting note: this was added in order to ensure that `forget₂ CommMonCat MonCat`
 -- automatically reflects isomorphisms
 -- we could have used `CategoryTheory.ConcreteCategory.ReflectsIso` alternatively
 @[to_additive]
-instance CommMonCat.forget₂Full : Full (forget₂ CommMonCat MonCat) where preimage f := f
+instance CommMonCat.forget₂_full : (forget₂ CommMonCat MonCat).Full where
+  map_surjective f := ⟨f, rfl⟩
 
-example : ReflectsIsomorphisms (forget₂ CommMonCat MonCat) := inferInstance
+example : (forget₂ CommMonCat MonCat).ReflectsIsomorphisms := inferInstance

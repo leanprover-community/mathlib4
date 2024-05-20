@@ -5,8 +5,9 @@ Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Combinatorics.DoubleCounting
+import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Combinatorics.SetFamily.Shadow
+import Mathlib.Data.Rat.Field
 import Mathlib.Data.Rat.Order
 
 #align_import combinatorics.set_family.lym from "leanprover-community/mathlib"@"861a26926586cd46ff80264d121cdb6fa0e35cc1"
@@ -66,13 +67,13 @@ theorem card_mul_le_card_shadow_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
   let i : DecidableRel ((· ⊆ ·) : Finset α → Finset α → Prop) := fun _ _ => Classical.dec _
   refine' card_mul_le_card_mul' (· ⊆ ·) (fun s hs => _) (fun s hs => _)
   · rw [← h𝒜 hs, ← card_image_of_injOn s.erase_injOn]
-    refine' card_le_of_subset _
+    refine' card_le_card _
     simp_rw [image_subset_iff, mem_bipartiteBelow]
     exact fun a ha => ⟨erase_mem_shadow hs ha, erase_subset _ _⟩
   refine' le_trans _ tsub_tsub_le_tsub_add
   rw [← (Set.Sized.shadow h𝒜) hs, ← card_compl, ← card_image_of_injOn (insert_inj_on' _)]
-  refine' card_le_of_subset fun t ht => _
-  -- porting note: commented out the following line
+  refine' card_le_card fun t ht => _
+  -- Porting note: commented out the following line
   -- infer_instance
   rw [mem_bipartiteAbove] at ht
   have : ∅ ∉ 𝒜 := by
@@ -98,7 +99,6 @@ theorem card_div_choose_le_card_shadow_div_choose (hr : r ≠ 0)
   rw [div_le_div_iff] <;> norm_cast
   · cases' r with r
     · exact (hr rfl).elim
-    rw [Nat.succ_eq_add_one] at *
     rw [tsub_add_eq_add_tsub hr', add_tsub_add_eq_tsub_right] at h𝒜
     apply le_of_mul_le_mul_right _ (pos_iff_ne_zero.2 hr)
     convert Nat.mul_le_mul_right ((Fintype.card α).choose r) h𝒜 using 1
@@ -187,10 +187,9 @@ theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
   · simp only [tsub_zero, cast_one, cast_le, sum_singleton, div_one, choose_self, range_one,
       zero_eq, zero_add, range_one, ge_iff_le, sum_singleton, nonpos_iff_eq_zero, tsub_zero,
       choose_self, cast_one, div_one, cast_le]
-    exact card_le_of_subset (slice_subset_falling _ _)
-  rw [succ_eq_add_one] at *
+    exact card_le_card (slice_subset_falling _ _)
   rw [sum_range_succ, ← slice_union_shadow_falling_succ,
-    card_disjoint_union (IsAntichain.disjoint_slice_shadow_falling h𝒜), cast_add, _root_.add_div,
+    card_union_of_disjoint (IsAntichain.disjoint_slice_shadow_falling h𝒜), cast_add, _root_.add_div,
     add_comm]
   rw [← tsub_tsub, tsub_add_cancel_of_le (le_tsub_of_add_le_left hk)]
   exact
@@ -233,16 +232,16 @@ theorem IsAntichain.sperner [Fintype α] {𝒜 : Finset (Finset α)}
     suffices (∑ r in Iic (Fintype.card α),
         ((𝒜 # r).card : ℚ) / (Fintype.card α).choose (Fintype.card α / 2)) ≤ 1 by
       rw [← sum_div, ← Nat.cast_sum, div_le_one] at this
-      simp only [cast_le] at this
-      rwa [sum_card_slice] at this
+      · simp only [cast_le] at this
+        rwa [sum_card_slice] at this
       simp only [cast_pos]
       exact choose_pos (Nat.div_le_self _ _)
     rw [Iic_eq_Icc, ← Ico_succ_right, bot_eq_zero, Ico_zero_eq_range]
     refine' (sum_le_sum fun r hr => _).trans (sum_card_slice_div_choose_le_one h𝒜)
     rw [mem_range] at hr
-    refine' div_le_div_of_le_left _ _ _ <;> norm_cast
+    refine' div_le_div_of_nonneg_left _ _ _ <;> norm_cast
     · exact Nat.zero_le _
-    · exact choose_pos (lt_succ_iff.1 hr)
+    · exact choose_pos (Nat.lt_succ_iff.1 hr)
     · exact choose_le_middle _ _
 #align finset.is_antichain.sperner Finset.IsAntichain.sperner
 

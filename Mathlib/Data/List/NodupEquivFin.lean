@@ -3,9 +3,8 @@ Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
-import Mathlib.Data.Fin.Basic
-import Mathlib.Data.List.Sort
 import Mathlib.Data.List.Duplicate
+import Mathlib.Data.List.Sort
 
 #align_import data.list.nodup_equiv_fin from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
 
@@ -19,8 +18,8 @@ Given a list `l`,
   sending `⟨x, hx⟩` to `⟨indexOf x l, _⟩`;
 
 * if `l` has no duplicates and contains every element of a type `α`, then
-  `List.Nodup.getEquivOfForallMemList` defines an equivalence between
-  `Fin (length l)` and `α`;  if `α` does not have decidable equality, then
+  `List.Nodup.getEquivOfForallMemList` defines an equivalence between `Fin (length l)` and `α`;
+  if `α` does not have decidable equality, then
   there is a bijection `List.Nodup.getBijectionOfForallMemList`;
 
 * if `l` is sorted w.r.t. `(<)`, then `List.Sorted.getIso` is the same bijection reinterpreted
@@ -41,7 +40,7 @@ for a version giving an equivalence when there is decidable equality. -/
 @[simps]
 def getBijectionOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, x ∈ l) :
     { f : Fin l.length → α // Function.Bijective f } :=
-  ⟨fun i => l.get i, fun _ _ h => Fin.ext <| (nd.nthLe_inj_iff _ _).1 h,
+  ⟨fun i => l.get i, fun _ _ h => nd.get_inj_iff.1 h,
    fun x =>
     let ⟨i, hl⟩ := List.mem_iff_get.1 (h x)
     ⟨i, hl⟩⟩
@@ -65,8 +64,8 @@ an equivalence between `Fin l.length` and `α`.
 See `List.Nodup.getBijectionOfForallMemList` for a version without
 decidable equality. -/
 @[simps]
-def getEquivOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, x ∈ l) : Fin l.length ≃ α
-    where
+def getEquivOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, x ∈ l) :
+    Fin l.length ≃ α where
   toFun i := l.get i
   invFun a := ⟨_, indexOf_lt_length.2 (h a)⟩
   left_inv i := by simp [List.get_indexOf, nd]
@@ -124,12 +123,12 @@ theorem sublist_of_orderEmbedding_get?_eq {l l' : List α} (f : ℕ ↪o ℕ)
   let f' : ℕ ↪o ℕ :=
     OrderEmbedding.ofMapLEIff (fun i => f (i + 1) - (f 0 + 1)) fun a b => by
       dsimp only
-      rw [tsub_le_tsub_iff_right, OrderEmbedding.le_iff_le, Nat.succ_le_succ_iff]
+      rw [Nat.sub_le_sub_iff_right, OrderEmbedding.le_iff_le, Nat.succ_le_succ_iff]
       rw [Nat.succ_le_iff, OrderEmbedding.lt_iff_lt]
       exact b.succ_pos
   have : ∀ ix, tl.get? ix = (l'.drop (f 0 + 1)).get? (f' ix) := by
     intro ix
-    rw [List.get?_drop, OrderEmbedding.coe_ofMapLEIff, add_tsub_cancel_of_le, ←hf, List.get?]
+    rw [List.get?_drop, OrderEmbedding.coe_ofMapLEIff, Nat.add_sub_cancel', ← hf, List.get?]
     rw [Nat.succ_le_iff, OrderEmbedding.lt_iff_lt]
     exact ix.succ_pos
   rw [← List.take_append_drop (f 0 + 1) l', ← List.singleton_append]
@@ -173,7 +172,7 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
   rw [sublist_iff_exists_orderEmbedding_get?_eq]
   constructor
   · rintro ⟨f, hf⟩
-    have h : ∀ {i : ℕ} (_ : i < l.length), f i < l'.length := by
+    have h : ∀ {i : ℕ}, i < l.length → f i < l'.length := by
       intro i hi
       specialize hf i
       rw [get?_eq_get hi, eq_comm, get?_eq_some] at hf
@@ -220,7 +219,7 @@ theorem duplicate_iff_exists_distinct_get {l : List α} {x : α} :
     · rintro ⟨f, hf⟩
       refine' ⟨f ⟨0, by simp⟩, f ⟨1, by simp⟩,
         f.lt_iff_lt.2 (show (0 : ℕ) < 1 from zero_lt_one), _⟩
-      · rw [← hf, ← hf]; simp
+      rw [← hf, ← hf]; simp
     · rintro ⟨n, m, hnm, h, h'⟩
       refine' ⟨OrderEmbedding.ofStrictMono (fun i => if (i : ℕ) = 0 then n else m) _, _⟩
       · rintro ⟨⟨_ | i⟩, hi⟩ ⟨⟨_ | j⟩, hj⟩
@@ -234,10 +233,11 @@ theorem duplicate_iff_exists_distinct_get {l : List α} {x : α} :
         · simpa using h
         · simpa using h'
 
+set_option linter.deprecated false in
 /-- An element `x : α` of `l : List α` is a duplicate iff it can be found
 at two distinct indices `n m : ℕ` inside the list `l`.
 -/
-@[deprecated duplicate_iff_exists_distinct_get]
+@[deprecated duplicate_iff_exists_distinct_get] -- 2023-01-19
 theorem duplicate_iff_exists_distinct_nthLe {l : List α} {x : α} :
     l.Duplicate x ↔
       ∃ (n : ℕ) (hn : n < l.length) (m : ℕ) (hm : m < l.length) (_ : n < m),

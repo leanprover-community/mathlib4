@@ -30,7 +30,7 @@ variable {α : Type u} {β : Type v} {γ : Type w} [UniformSpace α] [UniformSpa
 /-- A map `f : α → β` between uniform spaces is called *uniform inducing* if the uniformity filter
 on `α` is the pullback of the uniformity filter on `β` under `Prod.map f f`. If `α` is a separated
 space, then this implies that `f` is injective, hence it is a `UniformEmbedding`. -/
-@[mk_iff uniformInducing_iff]
+@[mk_iff]
 structure UniformInducing (f : α → β) : Prop where
   /-- The uniformity filter on the domain is the pullback of the uniformity filter on the codomain
   under `Prod.map f f`. -/
@@ -38,9 +38,12 @@ structure UniformInducing (f : α → β) : Prop where
 #align uniform_inducing UniformInducing
 #align uniform_inducing_iff uniformInducing_iff
 
-protected lemma UniformInducing.comap_uniformSpace {f : α → β} (hf : UniformInducing f) :
-    ‹UniformSpace β›.comap f = ‹UniformSpace α› :=
-  UniformSpace.ext hf.1
+lemma uniformInducing_iff_uniformSpace {f : α → β} :
+    UniformInducing f ↔ ‹UniformSpace β›.comap f = ‹UniformSpace α› := by
+  rw [uniformInducing_iff, UniformSpace.ext_iff, Filter.ext_iff]
+  rfl
+
+protected alias ⟨UniformInducing.comap_uniformSpace, _⟩ := uniformInducing_iff_uniformSpace
 #align uniform_inducing.comap_uniform_space UniformInducing.comap_uniformSpace
 
 lemma uniformInducing_iff' {f : α → β} :
@@ -70,6 +73,12 @@ theorem UniformInducing.comp {g : β → γ} (hg : UniformInducing g) {f : α �
   ⟨by rw [← hf.1, ← hg.1, comap_comap]; rfl⟩
 #align uniform_inducing.comp UniformInducing.comp
 
+theorem UniformInducing.of_comp_iff {g : β → γ} (hg : UniformInducing g) {f : α → β} :
+    UniformInducing (g ∘ f) ↔ UniformInducing f := by
+  refine ⟨fun h ↦ ?_, hg.comp⟩
+  rw [uniformInducing_iff, ← hg.comap_uniformity, comap_comap, ← h.comap_uniformity,
+    Function.comp, Function.comp]
+
 theorem UniformInducing.basis_uniformity {f : α → β} (hf : UniformInducing f) {ι : Sort*}
     {p : ι → Prop} {s : ι → Set (β × β)} (H : (𝓤 β).HasBasis p s) :
     (𝓤 α).HasBasis p fun i => Prod.map f f ⁻¹' s i :=
@@ -98,6 +107,12 @@ theorem UniformInducing.uniformContinuous_iff {f : α → β} {g : β → γ} (h
   rw [← hg.comap_uniformity, ← map_le_iff_le_comap, Filter.map_map]; rfl
 #align uniform_inducing.uniform_continuous_iff UniformInducing.uniformContinuous_iff
 
+theorem UniformInducing.uniformContinuousOn_iff {f : α → β} {g : β → γ} {S : Set α}
+    (hg : UniformInducing g) :
+    UniformContinuousOn f S ↔ UniformContinuousOn (g ∘ f) S := by
+  dsimp only [UniformContinuousOn, Tendsto]
+  rw [← hg.comap_uniformity, ← map_le_iff_le_comap, Filter.map_map, comp_def, comp_def]
+
 theorem UniformInducing.inducing {f : α → β} (h : UniformInducing f) : Inducing f := by
   obtain rfl := h.comap_uniformSpace
   exact inducing_induced f
@@ -115,6 +130,9 @@ theorem UniformInducing.denseInducing {f : α → β} (h : UniformInducing f) (h
     induced := h.inducing.induced }
 #align uniform_inducing.dense_inducing UniformInducing.denseInducing
 
+theorem SeparationQuotient.uniformInducing_mk : UniformInducing (mk : α → SeparationQuotient α) :=
+  ⟨comap_mk_uniformity⟩
+
 protected theorem UniformInducing.injective [T0Space α] {f : α → β} (h : UniformInducing f) :
     Injective f :=
   h.inducing.injective
@@ -125,7 +143,7 @@ protected theorem UniformInducing.injective [T0Space α] {f : α → β} (h : Un
 
 /-- A map `f : α → β` between uniform spaces is a *uniform embedding* if it is uniform inducing and
 injective. If `α` is a separated space, then the latter assumption follows from the former. -/
-@[mk_iff uniformEmbedding_iff]
+@[mk_iff]
 structure UniformEmbedding (f : α → β) extends UniformInducing f : Prop where
   /-- A uniform embedding is injective. -/
   inj : Function.Injective f
@@ -169,6 +187,10 @@ theorem UniformEmbedding.comp {g : β → γ} (hg : UniformEmbedding g) {f : α 
     (hf : UniformEmbedding f) : UniformEmbedding (g ∘ f) :=
   { hg.toUniformInducing.comp hf.toUniformInducing with inj := hg.inj.comp hf.inj }
 #align uniform_embedding.comp UniformEmbedding.comp
+
+theorem UniformEmbedding.of_comp_iff {g : β → γ} (hg : UniformEmbedding g) {f : α → β} :
+    UniformEmbedding (g ∘ f) ↔ UniformEmbedding f := by
+  simp_rw [uniformEmbedding_iff, hg.toUniformInducing.of_comp_iff, hg.inj.of_comp_iff f]
 
 theorem Equiv.uniformEmbedding {α β : Type*} [UniformSpace α] [UniformSpace β] (f : α ≃ β)
     (h₁ : UniformContinuous f) (h₂ : UniformContinuous f.symm) : UniformEmbedding f :=
@@ -232,12 +254,12 @@ theorem UniformEmbedding.denseEmbedding {f : α → β} (h : UniformEmbedding f)
 #align uniform_embedding.dense_embedding UniformEmbedding.denseEmbedding
 
 theorem closedEmbedding_of_spaced_out {α} [TopologicalSpace α] [DiscreteTopology α]
-    [SeparatedSpace β] {f : α → β} {s : Set (β × β)} (hs : s ∈ 𝓤 β)
+    [T0Space β] {f : α → β} {s : Set (β × β)} (hs : s ∈ 𝓤 β)
     (hf : Pairwise fun x y => (f x, f y) ∉ s) : ClosedEmbedding f := by
   rcases @DiscreteTopology.eq_bot α _ _ with rfl; let _ : UniformSpace α := ⊥
   exact
     { (uniformEmbedding_of_spaced_out hs hf).embedding with
-      closed_range := isClosed_range_of_spaced_out hs hf }
+      isClosed_range := isClosed_range_of_spaced_out hs hf }
 #align closed_embedding_of_spaced_out closedEmbedding_of_spaced_out
 
 theorem closure_image_mem_nhds_of_uniformInducing {s : Set (α × α)} {e : α → β} (b : β)
@@ -269,37 +291,17 @@ theorem UniformEmbedding.prod {α' : Type*} {β' : Type*} [UniformSpace α'] [Un
   { h₁.toUniformInducing.prod h₂.toUniformInducing with inj := h₁.inj.Prod_map h₂.inj }
 #align uniform_embedding.prod UniformEmbedding.prod
 
-theorem isComplete_of_complete_image {m : α → β} {s : Set α} (hm : UniformInducing m)
-    (hs : IsComplete (m '' s)) : IsComplete s := by
-  intro f hf hfs
-  rw [le_principal_iff] at hfs
-  obtain ⟨_, ⟨x, hx, rfl⟩, hyf⟩ : ∃ y ∈ m '' s, map m f ≤ 𝓝 y
-  exact hs (f.map m) (hf.map hm.uniformContinuous) (le_principal_iff.2 (image_mem_map hfs))
-  rw [map_le_iff_le_comap, ← nhds_induced, ← hm.inducing.induced] at hyf
-  exact ⟨x, hx, hyf⟩
-#align is_complete_of_complete_image isComplete_of_complete_image
-
-theorem IsComplete.completeSpace_coe {s : Set α} (hs : IsComplete s) : CompleteSpace s :=
-  completeSpace_iff_isComplete_univ.2 <|
-    isComplete_of_complete_image uniformEmbedding_subtype_val.toUniformInducing <| by simp [hs]
-#align is_complete.complete_space_coe IsComplete.completeSpace_coe
-
 /-- A set is complete iff its image under a uniform inducing map is complete. -/
 theorem isComplete_image_iff {m : α → β} {s : Set α} (hm : UniformInducing m) :
     IsComplete (m '' s) ↔ IsComplete s := by
-  refine' ⟨isComplete_of_complete_image hm, fun c => _⟩
-  haveI : CompleteSpace s := c.completeSpace_coe
-  set m' : s → β := m ∘ (↑)
-  suffices IsComplete (range m') by rwa [range_comp, Subtype.range_coe] at this
-  have hm' : UniformInducing m' := hm.comp uniformEmbedding_subtype_val.toUniformInducing
-  intro f hf hfm
-  rw [Filter.le_principal_iff] at hfm
-  have cf' : Cauchy (comap m' f) :=
-    hf.comap' hm'.comap_uniformity.le (NeBot.comap_of_range_mem hf.1 hfm)
-  rcases CompleteSpace.complete cf' with ⟨x, hx⟩
-  rw [hm'.inducing.nhds_eq_comap, comap_le_comap_iff hfm] at hx
-  exact ⟨m' x, mem_range_self _, hx⟩
+  have fact1 : SurjOn (map m) (Iic <| 𝓟 s) (Iic <| 𝓟 <| m '' s) := surjOn_image .. |>.filter_map_Iic
+  have fact2 : MapsTo (map m) (Iic <| 𝓟 s) (Iic <| 𝓟 <| m '' s) := mapsTo_image .. |>.filter_map_Iic
+  simp_rw [IsComplete, imp.swap (a := Cauchy _), ← mem_Iic (b := 𝓟 _), fact1.forall fact2,
+    hm.cauchy_map_iff, exists_mem_image, map_le_iff_le_comap, hm.inducing.nhds_eq_comap]
 #align is_complete_image_iff isComplete_image_iff
+
+alias ⟨isComplete_of_complete_image, _⟩ := isComplete_image_iff
+#align is_complete_of_complete_image isComplete_of_complete_image
 
 theorem completeSpace_iff_isComplete_range {f : α → β} (hf : UniformInducing f) :
     CompleteSpace α ↔ IsComplete (range f) := by
@@ -311,6 +313,16 @@ theorem UniformInducing.isComplete_range [CompleteSpace α] {f : α → β} (hf 
   (completeSpace_iff_isComplete_range hf).1 ‹_›
 #align uniform_inducing.is_complete_range UniformInducing.isComplete_range
 
+theorem SeparationQuotient.completeSpace_iff :
+    CompleteSpace (SeparationQuotient α) ↔ CompleteSpace α := by
+  rw [completeSpace_iff_isComplete_univ, ← range_mk,
+    ← completeSpace_iff_isComplete_range uniformInducing_mk]
+
+instance SeparationQuotient.instCompleteSpace [CompleteSpace α] :
+    CompleteSpace (SeparationQuotient α) :=
+  completeSpace_iff.2 ‹_›
+#align uniform_space.complete_space_separation SeparationQuotient.instCompleteSpace
+
 theorem completeSpace_congr {e : α ≃ β} (he : UniformEmbedding e) :
     CompleteSpace α ↔ CompleteSpace β := by
   rw [completeSpace_iff_isComplete_range he.toUniformInducing, e.range_eq_univ,
@@ -321,6 +333,9 @@ theorem completeSpace_coe_iff_isComplete {s : Set α} : CompleteSpace s ↔ IsCo
   (completeSpace_iff_isComplete_range uniformEmbedding_subtype_val.toUniformInducing).trans <| by
     rw [Subtype.range_coe]
 #align complete_space_coe_iff_is_complete completeSpace_coe_iff_isComplete
+
+alias ⟨_, IsComplete.completeSpace_coe⟩ := completeSpace_coe_iff_isComplete
+#align is_complete.complete_space_coe IsComplete.completeSpace_coe
 
 theorem IsClosed.completeSpace_coe [CompleteSpace α] {s : Set α} (hs : IsClosed s) :
     CompleteSpace s :=
@@ -487,7 +502,7 @@ theorem uniformContinuous_uniformly_extend [CompleteSpace γ] : UniformContinuou
       exact hs_comp ⟨f a, ha₂, ⟨f b, this, hb₂⟩⟩
 #align uniform_continuous_uniformly_extend uniformContinuous_uniformly_extend
 
-variable [SeparatedSpace γ]
+variable [T0Space γ]
 
 theorem uniformly_extend_of_ind (b : β) : ψ (e b) = f b :=
   DenseInducing.extend_eq_at _ h_f.continuous.continuousAt

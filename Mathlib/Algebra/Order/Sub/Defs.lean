@@ -59,12 +59,13 @@ class OrderedSub (α : Type*) [LE α] [Add α] [Sub α] : Prop where
 
 section Add
 
-variable [Preorder α] [Add α] [Sub α] [OrderedSub α] {a b c d : α}
-
 @[simp]
-theorem tsub_le_iff_right : a - b ≤ c ↔ a ≤ c + b :=
+theorem tsub_le_iff_right [LE α] [Add α] [Sub α] [OrderedSub α] {a b c : α} :
+    a - b ≤ c ↔ a ≤ c + b :=
   OrderedSub.tsub_le_iff_right a b c
 #align tsub_le_iff_right tsub_le_iff_right
+
+variable [Preorder α] [Add α] [Sub α] [OrderedSub α] {a b c d : α}
 
 /-- See `add_tsub_cancel_right` for the equality if `ContravariantClass α α (+) (≤)`. -/
 theorem add_tsub_le_right : a + b - b ≤ a :=
@@ -274,7 +275,7 @@ theorem tsub_add_eq_tsub_tsub_swap (a b c : α) : a - (b + c) = a - c - b := by
 #align tsub_add_eq_tsub_tsub_swap tsub_add_eq_tsub_tsub_swap
 
 theorem tsub_right_comm : a - b - c = a - c - b := by
-  rw [←tsub_add_eq_tsub_tsub, tsub_add_eq_tsub_tsub_swap]
+  rw [← tsub_add_eq_tsub_tsub, tsub_add_eq_tsub_tsub_swap]
 #align tsub_right_comm tsub_right_comm
 
 /-! ### Lemmas that assume that an element is `AddLECancellable`. -/
@@ -388,9 +389,9 @@ variable [CovariantClass α α (· + ·) (· ≤ ·)] [ContravariantClass α α 
 
 theorem add_tsub_add_eq_tsub_right (a c b : α) : a + c - (b + c) = a - b := by
   refine' add_tsub_add_le_tsub_right.antisymm (tsub_le_iff_right.2 <| le_of_add_le_add_right _)
-  exact c
-  rw [add_assoc]
-  exact le_tsub_add
+  · exact c
+  · rw [add_assoc]
+    exact le_tsub_add
 #align add_tsub_add_eq_tsub_right add_tsub_add_eq_tsub_right
 
 theorem add_tsub_add_eq_tsub_left (a b c : α) : a + b - (a + c) = b - c := by

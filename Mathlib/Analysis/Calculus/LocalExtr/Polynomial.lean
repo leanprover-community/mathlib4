@@ -37,7 +37,7 @@ open scoped BigOperators
 that are not roots of `p` plus one. -/
 theorem card_roots_toFinset_le_card_roots_derivative_diff_roots_succ (p : ℝ[X]) :
     p.roots.toFinset.card ≤ (p.derivative.roots.toFinset \ p.roots.toFinset).card + 1 := by
-  cases' eq_or_ne (derivative p) 0 with hp' hp'
+  rcases eq_or_ne (derivative p) 0 with hp' | hp'
   · rw [eq_C_of_derivative_eq_zero hp', roots_C, Multiset.toFinset_zero, Finset.card_empty]
     exact zero_le _
   have hp : p ≠ 0 := ne_of_apply_ne derivative (by rwa [derivative_zero])

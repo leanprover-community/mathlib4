@@ -47,24 +47,24 @@ example (p q : Nat → Prop) (h₁ : ∀ x, p x) (h₂ : ∀ x, p x → q x) : �
   exact h₂ _ foo
 
 example (p q : Nat → Prop) (h₁ : ∀ x, p x) (h₂ : ∀ x, p x → q x) : ∀ y, q y := by
-  peel h₁ with foo w
+  peel h₁ with w foo
   guard_target =ₐ q w
   exact h₂ w foo
 
 example (p q : Nat → Prop) (h₁ : ∀ x, p x) (h₂ : ∀ x, p x → q x) : ∀ y, q y := by
-  peel h₁ with foo _
+  peel h₁ with _ foo
   rename_i w
   guard_target =ₐ q w
   exact h₂ w foo
 
 example (p q : Nat → Prop) (h₁ : ∀ x, p x) (h₂ : ∀ x, p x → q x) : ∀ y, q y := by
-  peel h₁ with _ w
+  peel h₁ with w _
   guard_target =ₐ q w
   exact h₂ w this
 
 example (p q : Nat → Nat → Prop) (h₁ : ∀ x y, p x y) (h₂ : ∀ x y, p x y → q x y) :
     ∀ u v, q u v := by
-  peel h₁ with h_peel s t
+  peel h₁ with s t h_peel
   guard_target =ₐ q s t
   exact h₂ s t h_peel
 
@@ -75,13 +75,13 @@ example (p q : Nat → Prop) (h : ∀ y, p y) (h₁ : ∀ z, p z → q z) : ∀ 
   exact h₁ _ <| by assumption
 
 example (p q : Nat → Prop) (h : ∃ y, p y) (h₁ : ∀ z, p z → q z) : ∃ x, q x := by
-  peel h with h a
+  peel h with a h
   guard_target =ₐ q a
   exact h₁ a h
 
 example (x y : ℝ) (h : ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, x + n = y + ε) :
     ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, x - ε = y - n := by
-  peel h with h_peel ε hε N n hn
+  peel h with ε hε N n hn h_peel
   guard_target =ₐ x - ε = y - n
   linarith
 
@@ -96,14 +96,14 @@ example (x y : ℝ) (h : ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, x + n = y + ε) :
 example (p q : ℝ → ℝ → Prop) (h : ∀ ε > 0, ∃ δ > 0, p ε δ)
     (hpq : ∀ x y, x > 0 → y > 0 → p x y → q x y) :
     ∀ ε > 0, ∃ δ > 0, q ε δ := by
-  peel h with h ε hε δ hδ
+  peel h with ε hε δ hδ h
   guard_target =ₐ q ε δ
   exact hpq ε δ hε hδ h
 
 example (p q : ℝ → ℝ → Prop) (h : ∀ ε > 0, ∃ δ > 0, p ε δ)
     (hpq : ∀ x y, x > 0 → y > 0 → p x y → q x y) :
     ∀ ε > 0, ∃ δ > 0, q ε δ := by
-  peel h with h ε hε δ hδ using hpq ε δ hε hδ h
+  peel h with ε hε δ hδ h using hpq ε δ hε hδ h
 
 example (x y : ℝ) : (∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, x + n = y + ε) ↔
     ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, x - ε = y - n := by
@@ -150,6 +150,10 @@ example (x y : ℝ) : (∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, x + n = y + ε) ↔
     intro
     linarith
 
+example : (∃ k > 0, ∃ n ≥ k, n = k) ↔ ∃ k > 0, ∃ n ≥ k, k = n := by
+  peel 4
+  exact eq_comm
+
 /-! ## Eventually and frequently -/
 
 example {f : ℝ → ℝ} (h : ∀ x : ℝ, ∀ᶠ y in 𝓝 x, |f y - f x| ≤ |y - x|) :
@@ -159,12 +163,12 @@ example {f : ℝ → ℝ} (h : ∀ x : ℝ, ∀ᶠ y in 𝓝 x, |f y - f x| ≤ 
 
 example (α : Type*) (f g : Filter α) (p q : α → α → Prop) (h : ∀ᶠ x in f, ∃ᶠ y in g, p x y)
     (h₁ : ∀ x y, p x y → q x y) : ∀ᶠ x in f, ∃ᶠ y in g, q x y := by
-  peel h with h_peel x y
+  peel h with x y h_peel
   exact h₁ x y h_peel
 
 example (α : Type*) (f : Filter α) (p q : α → Prop) (h : ∀ᶠ x in f, p x) (h₁ : ∀ x, p x → q x) :
     ∀ᶠ x in f, q x := by
-  peel h with h_peel x
+  peel h with x h_peel
   exact h₁ x h_peel
 
 /-! ## Type classes -/
@@ -178,7 +182,7 @@ example {R : Type*} [CommRing R] (h : ∀ x : R, ∃ y : R, x + y = 2) :
 example {G : Type*} [Group G] [TopologicalSpace G] [TopologicalGroup G]
     (h : ∀ᶠ x in 𝓝 (1 : G), ∃ᶠ y in 𝓝 x, x * y⁻¹ = 1) :
     ∀ᶠ x in 𝓝 (1 : G), ∃ᶠ y in 𝓝 x, x ^ 2 = y ^ 2 := by
-  peel h with h_peel a b
+  peel h with a b h_peel
   observe : a = b⁻¹⁻¹
   simp [this]
 
@@ -186,14 +190,14 @@ example {G : Type*} [Group G] [TopologicalSpace G] [TopologicalGroup G]
 
 example {α β γ : Type*} {f : α → β} {g : β → γ} (h : Function.Injective (g ∘ f)) :
     Function.Injective f := by
-  peel 2 h with _ x y
+  peel 2 h with x y _
   intro hf
   apply this
   congrm(g $hf)
 
 example {α β γ : Type*} {f : α → β} {g : β → γ} (h : Function.Surjective (g ∘ f)) :
     Function.Surjective g := by
-  peel 1 h with _ y
+  peel 1 h with y _
   fail_if_success peel this
   obtain ⟨x, rfl⟩ := this
   exact ⟨f x, rfl⟩

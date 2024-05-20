@@ -57,7 +57,7 @@ theorem fg_iff_exists_fin_generating_family {N : L.Substructure M} :
     obtain ⟨n, f, rfl⟩ := Sfin.fin_embedding
     exact ⟨n, f, hS⟩
   · rintro ⟨n, s, hs⟩
-    refine' ⟨range s, finite_range s, hs⟩
+    exact ⟨range s, finite_range s, hs⟩
 #align first_order.language.substructure.fg_iff_exists_fin_generating_family FirstOrder.Language.Substructure.fg_iff_exists_fin_generating_family
 
 theorem fg_bot : (⊥ : L.Substructure M).FG :=
@@ -110,7 +110,7 @@ theorem cg_def {N : L.Substructure M} : N.CG ↔ ∃ S : Set M, S.Countable ∧ 
 
 theorem FG.cg {N : L.Substructure M} (h : N.FG) : N.CG := by
   obtain ⟨s, hf, rfl⟩ := fg_def.1 h
-  refine' ⟨s, hf.countable, rfl⟩
+  exact ⟨s, hf.countable, rfl⟩
 #align first_order.language.substructure.fg.cg FirstOrder.Language.Substructure.FG.cg
 
 theorem cg_iff_empty_or_exists_nat_generating_family {N : L.Substructure M} :
@@ -118,7 +118,7 @@ theorem cg_iff_empty_or_exists_nat_generating_family {N : L.Substructure M} :
   rw [cg_def]
   constructor
   · rintro ⟨S, Scount, hS⟩
-    cases' eq_empty_or_nonempty (N : Set M) with h h
+    rcases eq_empty_or_nonempty (N : Set M) with h | h
     · exact Or.intro_left _ h
     obtain ⟨f, h'⟩ :=
       (Scount.union (Set.countable_singleton h.some)).exists_eq_range

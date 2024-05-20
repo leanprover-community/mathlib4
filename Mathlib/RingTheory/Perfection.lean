@@ -10,7 +10,7 @@ import Mathlib.Algebra.Ring.Pi
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 import Mathlib.FieldTheory.Perfect
 import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.Subring.Basic
+import Mathlib.Algebra.Ring.Subring.Basic
 import Mathlib.RingTheory.Valuation.Integers
 
 #align_import ring_theory.perfection from "leanprover-community/mathlib"@"0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8"
@@ -47,7 +47,7 @@ indexed by the natural numbers, implemented as `{ f : ℕ → R | ∀ n, f (n + 
 def Ring.perfectionSubsemiring (R : Type u₁) [CommSemiring R] (p : ℕ) [hp : Fact p.Prime]
     [CharP R p] : Subsemiring (ℕ → R) :=
   { Monoid.perfection R p with
-    zero_mem' := fun _ => zero_pow <| hp.1.pos
+    zero_mem' := fun _ ↦ zero_pow hp.1.ne_zero
     add_mem' := fun hf hg n => (frobenius_add R p _ _).trans <| congr_arg₂ _ (hf n) (hg n) }
 #align ring.perfection_subsemiring Ring.perfectionSubsemiring
 
@@ -163,7 +163,8 @@ theorem frobenius_pthRoot : (frobenius _ p).comp (pthRoot R p) = RingHom.id _ :=
 
 theorem coeff_add_ne_zero {f : Ring.Perfection R p} {n : ℕ} (hfn : coeff R p n f ≠ 0) (k : ℕ) :
     coeff R p (n + k) f ≠ 0 :=
-  Nat.recOn k hfn fun k ih h => ih <| by erw [← coeff_pow_p, RingHom.map_pow, h, zero_pow hp.1.pos]
+  Nat.recOn k hfn fun k ih h => ih <| by
+    erw [← coeff_pow_p, RingHom.map_pow, h, zero_pow hp.1.ne_zero]
 #align perfection.coeff_add_ne_zero Perfection.coeff_add_ne_zero
 
 theorem coeff_ne_zero_of_le {f : Ring.Perfection R p} {m n : ℕ} (hfm : coeff R p m f ≠ 0)
@@ -177,8 +178,8 @@ variable (R p)
 instance perfectRing : PerfectRing (Ring.Perfection R p) p where
   bijective_frobenius := Function.bijective_iff_has_inverse.mpr
     ⟨pthRoot R p,
-     FunLike.congr_fun <| @frobenius_pthRoot R _ p _ _,
-     FunLike.congr_fun <| @pthRoot_frobenius R _ p _ _⟩
+     DFunLike.congr_fun <| @frobenius_pthRoot R _ p _ _,
+     DFunLike.congr_fun <| @pthRoot_frobenius R _ p _ _⟩
 #align perfection.perfect_ring Perfection.perfectRing
 
 /-- Given rings `R` and `S` of characteristic `p`, with `R` being perfect,
@@ -189,10 +190,10 @@ noncomputable def lift (R : Type u₁) [CommSemiring R] [CharP R p] [PerfectRing
   toFun f :=
     { toFun := fun r => ⟨fun n => f (((frobeniusEquiv R p).symm : R →+* R)^[n] r),
         fun n => by erw [← f.map_pow, Function.iterate_succ_apply', frobeniusEquiv_symm_pow_p]⟩
-      map_one' := ext fun n => (congr_arg f <| RingHom.iterate_map_one _ _).trans f.map_one
+      map_one' := ext fun n => (congr_arg f <| iterate_map_one _ _).trans f.map_one
       map_mul' := fun x y =>
         ext fun n => (congr_arg f <| iterate_map_mul _ _ _ _).trans <| f.map_mul _ _
-      map_zero' := ext fun n => (congr_arg f <| RingHom.iterate_map_zero _ _).trans f.map_zero
+      map_zero' := ext fun n => (congr_arg f <| iterate_map_zero _ _).trans f.map_zero
       map_add' := fun x y =>
         ext fun n => (congr_arg f <| iterate_map_add _ _ _ _).trans <| f.map_add _ _ }
   invFun := RingHom.comp <| coeff S p 0
@@ -228,7 +229,7 @@ end Perfection
 
 /-- A perfection map to a ring of characteristic `p` is a map that is isomorphic
 to its perfection. -/
--- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
+-- @[nolint has_nonempty_instance] -- Porting note(#5171): This linter does not exist yet.
 structure PerfectionMap (p : ℕ) [Fact p.Prime] {R : Type u₁} [CommSemiring R] [CharP R p]
     {P : Type u₂} [CommSemiring P] [CharP P p] [PerfectRing P p] (π : P →+* R) : Prop where
   injective : ∀ ⦃x y : P⦄,
@@ -240,9 +241,7 @@ structure PerfectionMap (p : ℕ) [Fact p.Prime] {R : Type u₁} [CommSemiring R
 namespace PerfectionMap
 
 variable {p : ℕ} [Fact p.Prime]
-
 variable {R : Type u₁} [CommSemiring R] [CharP R p]
-
 variable {P : Type u₃} [CommSemiring P] [CharP P p] [PerfectRing P p]
 
 /-- Create a `PerfectionMap` from an isomorphism to the perfection. -/
@@ -339,9 +338,7 @@ theorem hom_ext [PerfectRing R p] {S : Type u₂} [CommSemiring S] [CharP S p] {
 #align perfection_map.hom_ext PerfectionMap.hom_ext
 
 variable {P} (p)
-
 variable {S : Type u₂} [CommSemiring S] [CharP S p]
-
 variable {Q : Type u₄} [CommSemiring Q] [CharP Q p] [PerfectRing Q p]
 
 /-- A ring homomorphism `R →+* S` induces `P →+* Q`, a map of the respective perfections. -/
@@ -370,14 +367,12 @@ end PerfectionMap
 section Perfectoid
 
 variable (K : Type u₁) [Field K] (v : Valuation K ℝ≥0)
-
 variable (O : Type u₂) [CommRing O] [Algebra O K] (hv : v.Integers O)
-
 variable (p : ℕ)
 
 -- Porting note: Specified all arguments explicitly
 /-- `O/(p)` for `O`, ring of integers of `K`. -/
-@[nolint unusedArguments] -- Porting note: Removed `nolint has_nonempty_instance`
+@[nolint unusedArguments] -- Porting note(#5171): removed `nolint has_nonempty_instance`
 def ModP (K : Type u₁) [Field K] (v : Valuation K ℝ≥0) (O : Type u₂) [CommRing O] [Algebra O K]
     (_ : v.Integers O) (p : ℕ) :=
   O ⧸ (Ideal.span {(p : O)} : Ideal O)
@@ -428,7 +423,7 @@ theorem preVal_mul {x y : ModP K v O hv p} (hxy0 : x * y ≠ 0) :
   have hy0 : y ≠ 0 := mt (by rintro rfl; rw [mul_zero]) hxy0
   obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective x
   obtain ⟨s, rfl⟩ := Ideal.Quotient.mk_surjective y
-  rw [← RingHom.map_mul] at hxy0 ⊢
+  rw [← map_mul (Ideal.Quotient.mk (Ideal.span {↑p})) r s] at hxy0 ⊢
   rw [preVal_mk hx0, preVal_mk hy0, preVal_mk hxy0, RingHom.map_mul, v.map_mul]
 #align mod_p.pre_val_mul ModP.preVal_mul
 
@@ -442,7 +437,7 @@ theorem preVal_add (x y : ModP K v O hv p) :
   · rw [hxy0, preVal_zero]; exact zero_le _
   obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective x
   obtain ⟨s, rfl⟩ := Ideal.Quotient.mk_surjective y
-  rw [← RingHom.map_add] at hxy0 ⊢
+  rw [← map_add (Ideal.Quotient.mk (Ideal.span {↑p})) r s] at hxy0 ⊢
   rw [preVal_mk hx0, preVal_mk hy0, preVal_mk hxy0, RingHom.map_add]; exact v.map_add _ _
 #align mod_p.pre_val_add ModP.preVal_add
 
@@ -479,9 +474,10 @@ theorem mul_ne_zero_of_pow_p_ne_zero {x y : ModP K v O hv p} (hx : x ^ p ≠ 0) 
   obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective x
   obtain ⟨s, rfl⟩ := Ideal.Quotient.mk_surjective y
   have h1p : (0 : ℝ) < 1 / p := one_div_pos.2 (Nat.cast_pos.2 hp.1.pos)
-  rw [← RingHom.map_mul]; rw [← RingHom.map_pow] at hx hy
+  rw [← (Ideal.Quotient.mk (Ideal.span {(p : O)})).map_mul]
+  rw [← (Ideal.Quotient.mk (Ideal.span {(p : O)})).map_pow] at hx hy
   rw [← v_p_lt_val hv] at hx hy ⊢
-  rw [RingHom.map_pow, v.map_pow, ← rpow_lt_rpow_iff h1p, ← rpow_nat_cast, ← rpow_mul,
+  rw [RingHom.map_pow, v.map_pow, ← rpow_lt_rpow_iff h1p, ← rpow_natCast, ← rpow_mul,
     mul_one_div_cancel (Nat.cast_ne_zero.2 hp.1.ne_zero : (p : ℝ) ≠ 0), rpow_one] at hx hy
   rw [RingHom.map_mul, v.map_mul]; refine' lt_of_le_of_lt _ (mul_lt_mul₀ hx hy)
   by_cases hvp : v p = 0
@@ -490,7 +486,7 @@ theorem mul_ne_zero_of_pow_p_ne_zero {x y : ModP K v O hv p} (hx : x ^ p ≠ 0) 
   conv_lhs => rw [← rpow_one (v p)]
   rw [← rpow_add (ne_of_gt hvp)]
   refine' rpow_le_rpow_of_exponent_ge hvp (map_natCast (algebraMap O K) p ▸ hv.2 _) _
-  rw [← add_div, div_le_one (Nat.cast_pos.2 hp.1.pos : 0 < (p : ℝ))]; exact_mod_cast hp.1.two_le
+  rw [← add_div, div_le_one (Nat.cast_pos.2 hp.1.pos : 0 < (p : ℝ))]; exact mod_cast hp.1.two_le
 #align mod_p.mul_ne_zero_of_pow_p_ne_zero ModP.mul_ne_zero_of_pow_p_ne_zero
 
 end Classical
@@ -498,7 +494,7 @@ end Classical
 end ModP
 
 /-- Perfection of `O/(p)` where `O` is the ring of integers of `K`. -/
--- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
+-- @[nolint has_nonempty_instance] -- Porting note(#5171): This linter does not exist yet.
 def PreTilt :=
   Ring.Perfection (ModP K v O hv p) p
 #align pre_tilt PreTilt
@@ -540,14 +536,14 @@ theorem valAux_eq {f : PreTilt K v O hv p} {n : ℕ} (hfn : coeff _ _ n f ≠ 0)
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le (Nat.find_min' h hfn)
   induction' k with k ih
   · rfl
-  obtain ⟨x, hx⟩ := Ideal.Quotient.mk_surjective (coeff _ _ (Nat.find h + k + 1) f)
+  obtain ⟨x, hx⟩ := Ideal.Quotient.mk_surjective (coeff (ModP K v O hv p) p (Nat.find h + k + 1) f)
   have h1 : (Ideal.Quotient.mk _ x : ModP K v O hv p) ≠ 0 := hx.symm ▸ hfn
   have h2 : (Ideal.Quotient.mk _ (x ^ p) : ModP K v O hv p) ≠ 0 := by
     erw [RingHom.map_pow, hx, ← RingHom.map_pow, coeff_pow_p]
     exact coeff_nat_find_add_ne_zero k
   erw [ih (coeff_nat_find_add_ne_zero k), ← hx, ← coeff_pow_p, RingHom.map_pow, ← hx,
     ← RingHom.map_pow, ModP.preVal_mk h1, ModP.preVal_mk h2, RingHom.map_pow, v.map_pow, ← pow_mul,
-    pow_succ]
+    pow_succ']
   rfl
 #align pre_tilt.val_aux_eq PreTilt.valAux_eq
 
@@ -600,8 +596,8 @@ theorem valAux_add (f g : PreTilt K v O hv p) :
   rw [valAux_eq hm, valAux_eq hn, valAux_eq hk, RingHom.map_add]
   cases' le_max_iff.1
       (ModP.preVal_add (coeff _ _ (max (max m n) k) f) (coeff _ _ (max (max m n) k) g)) with h h
-  · exact le_max_of_le_left (pow_le_pow_of_le_left' h _)
-  · exact le_max_of_le_right (pow_le_pow_of_le_left' h _)
+  · exact le_max_of_le_left (pow_le_pow_left' h _)
+  · exact le_max_of_le_right (pow_le_pow_left' h _)
 #align pre_tilt.val_aux_add PreTilt.valAux_add
 
 variable (K v O hv p)
@@ -642,7 +638,7 @@ end PreTilt
 /-- The tilt of a field, as defined in Perfectoid Spaces by Peter Scholze, as in
 [scholze2011perfectoid]. Given a field `K` with valuation `K → ℝ≥0` and ring of integers `O`,
 this is implemented as the fraction field of the perfection of `O/(p)`. -/
--- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
+-- @[nolint has_nonempty_instance] -- Porting note(#5171): This linter does not exist yet.
 def Tilt :=
   FractionRing (PreTilt K v O hv p)
 #align tilt Tilt

@@ -5,6 +5,7 @@ Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Data.Set.Function
 import Mathlib.Logic.Equiv.Defs
+import Mathlib.Tactic.Says
 
 #align_import logic.equiv.set from "leanprover-community/mathlib"@"aba57d4d3dae35460225919dcd82fe91355162f9"
 
@@ -61,18 +62,22 @@ theorem _root_.Set.preimage_equiv_eq_image_symm {α β} (S : Set α) (f : β ≃
 
 -- Porting note: increased priority so this fires before `image_subset_iff`
 @[simp high]
-protected theorem subset_image {α β} (e : α ≃ β) (s : Set α) (t : Set β) :
+protected theorem symm_image_subset {α β} (e : α ≃ β) (s : Set α) (t : Set β) :
     e.symm '' t ⊆ s ↔ t ⊆ e '' s := by rw [image_subset_iff, e.image_eq_preimage]
-#align equiv.subset_image Equiv.subset_image
+#align equiv.subset_image Equiv.symm_image_subset
+
+@[deprecated] alias subset_image := Equiv.symm_image_subset -- deprecated since 2024-01-19
 
 -- Porting note: increased priority so this fires before `image_subset_iff`
 @[simp high]
-protected theorem subset_image' {α β} (e : α ≃ β) (s : Set α) (t : Set β) :
+protected theorem subset_symm_image {α β} (e : α ≃ β) (s : Set α) (t : Set β) :
     s ⊆ e.symm '' t ↔ e '' s ⊆ t :=
   calc
-    s ⊆ e.symm '' t ↔ e.symm.symm '' s ⊆ t := by rw [e.symm.subset_image]
+    s ⊆ e.symm '' t ↔ e.symm.symm '' s ⊆ t := by rw [e.symm.symm_image_subset]
     _ ↔ e '' s ⊆ t := by rw [e.symm_symm]
-#align equiv.subset_image' Equiv.subset_image'
+#align equiv.subset_image' Equiv.subset_symm_image
+
+@[deprecated] alias subset_image' := Equiv.subset_symm_image -- deprecated since 2024-01-19
 
 @[simp]
 theorem symm_image_image {α β} (e : α ≃ β) (s : Set α) : e.symm '' (e '' s) = s :=
@@ -113,12 +118,11 @@ theorem preimage_symm_preimage {α β} (e : α ≃ β) (s : Set α) : e ⁻¹' (
   e.leftInverse_symm.preimage_preimage s
 #align equiv.preimage_symm_preimage Equiv.preimage_symm_preimage
 
-@[simp]
 theorem preimage_subset {α β} (e : α ≃ β) (s t : Set β) : e ⁻¹' s ⊆ e ⁻¹' t ↔ s ⊆ t :=
   e.surjective.preimage_subset_preimage_iff
 #align equiv.preimage_subset Equiv.preimage_subset
 
--- Porting note: Removed `simp` attribute. `simp` can prove it.
+-- Porting note (#10618): removed `simp` attribute. `simp` can prove it.
 theorem image_subset {α β} (e : α ≃ β) (s t : Set α) : e '' s ⊆ e '' t ↔ s ⊆ t :=
   image_subset_image_iff e.injective
 #align equiv.image_subset Equiv.image_subset
@@ -135,6 +139,10 @@ theorem preimage_eq_iff_eq_image {α β} (e : α ≃ β) (s t) : e ⁻¹' s = t 
 theorem eq_preimage_iff_image_eq {α β} (e : α ≃ β) (s t) : s = e ⁻¹' t ↔ e '' s = t :=
   Set.eq_preimage_iff_image_eq e.bijective
 #align equiv.eq_preimage_iff_image_eq Equiv.eq_preimage_iff_image_eq
+
+lemma setOf_apply_symm_eq_image_setOf {α β} (e : α ≃ β) (p : α → Prop) :
+    {b | p (e.symm b)} = e '' {a | p a} := by
+  rw [Equiv.image_eq_preimage, preimage_setOf_eq]
 
 @[simp]
 theorem prod_assoc_preimage {α β γ} {s : Set α} {t : Set β} {u : Set γ} :
@@ -198,7 +206,7 @@ def image {α β : Type*} (e : α ≃ β) (s : Set α) :
 
 namespace Set
 
---Porting note: Removed attribute @[simps apply symm_apply]
+-- Porting note: Removed attribute @[simps apply symm_apply]
 /-- `univ α` is equivalent to `α`. -/
 protected def univ (α) : @univ α ≃ α :=
   ⟨Subtype.val, fun a => ⟨a, trivial⟩, fun ⟨_, _⟩ => rfl, fun _ => rfl⟩
@@ -261,7 +269,7 @@ theorem union_symm_apply_right {α} {s t : Set α} [DecidablePred fun x => x ∈
 /-- A singleton set is equivalent to a `PUnit` type. -/
 protected def singleton {α} (a : α) : ({a} : Set α) ≃ PUnit.{u} :=
   ⟨fun _ => PUnit.unit, fun _ => ⟨a, mem_singleton _⟩, fun ⟨x, h⟩ => by
-    simp at h
+    simp? at h says simp only [mem_singleton_iff] at h
     subst x
     rfl, fun ⟨⟩ => rfl⟩
 #align equiv.set.singleton Equiv.Set.singleton
@@ -488,16 +496,14 @@ protected noncomputable def image {α β} (f : α → β) (s : Set α) (H : Inje
 
 @[simp]
 protected theorem image_symm_apply {α β} (f : α → β) (s : Set α) (H : Injective f) (x : α)
-    (h : x ∈ s) : (Set.image f s H).symm ⟨f x, ⟨x, ⟨h, rfl⟩⟩⟩ = ⟨x, h⟩ := by
-  apply (Set.image f s H).injective
-  simp [(Set.image f s H).apply_symm_apply]
+    (h : f x ∈ f '' s) : (Set.image f s H).symm ⟨f x, h⟩ = ⟨x, H.mem_set_image.1 h⟩ :=
+  (Equiv.symm_apply_eq _).2 rfl
 #align equiv.set.image_symm_apply Equiv.Set.image_symm_apply
 
 theorem image_symm_preimage {α β} {f : α → β} (hf : Injective f) (u s : Set α) :
     (fun x => (Set.image f s hf).symm x : f '' s → α) ⁻¹' u = Subtype.val ⁻¹' (f '' u) := by
   ext ⟨b, a, has, rfl⟩
-  have : ∀ h : ∃ a', a' ∈ s ∧ a' = a, Classical.choose h = a := fun h => (Classical.choose_spec h).2
-  simp [Equiv.Set.image, Equiv.Set.imageOfInjOn, hf.eq_iff, this]
+  simp [hf.eq_iff]
 #align equiv.set.image_symm_preimage Equiv.Set.image_symm_preimage
 
 /-- If `α` is equivalent to `β`, then `Set α` is equivalent to `Set β`. -/
@@ -700,7 +706,7 @@ noncomputable def Set.BijOn.equiv {α : Type*} {β : Type*} {s : Set α} {t : Se
 
 /-- The composition of an updated function with an equiv on a subtype can be expressed as an
 updated function. -/
--- porting note: replace `s : Set α` and `: s` with `p : α → Prop` and `: Subtype p`, since the
+-- Porting note: replace `s : Set α` and `: s` with `p : α → Prop` and `: Subtype p`, since the
 -- former now unfolds syntactically to a less general case of the latter.
 theorem dite_comp_equiv_update {α : Type*} {β : Sort*} {γ : Sort*} {p : α → Prop}
     (e : β ≃ Subtype p)
@@ -721,3 +727,28 @@ theorem dite_comp_equiv_update {α : Type*} {β : Sort*} {γ : Sort*} {p : α �
       rwa [← h] at this
     simp [h, this]
 #align dite_comp_equiv_update dite_comp_equiv_updateₓ
+
+section Swap
+
+variable {α : Type*} [DecidableEq α] {a b : α} {s : Set α}
+
+theorem Equiv.swap_bijOn_self (hs : a ∈ s ↔ b ∈ s) : BijOn (Equiv.swap a b) s s := by
+  refine ⟨fun x hx ↦ ?_, (Equiv.injective _).injOn _, fun x hx ↦ ?_⟩
+  · obtain (rfl | hxa) := eq_or_ne x a; rwa [swap_apply_left, ← hs]
+    obtain (rfl | hxb) := eq_or_ne x b; rwa [swap_apply_right, hs]
+    rwa [swap_apply_of_ne_of_ne hxa hxb]
+  obtain (rfl | hxa) := eq_or_ne x a; simp [hs.1 hx]
+  obtain (rfl | hxb) := eq_or_ne x b; simp [hs.2 hx]
+  exact ⟨x, hx, swap_apply_of_ne_of_ne hxa hxb⟩
+
+theorem Equiv.swap_bijOn_exchange (ha : a ∈ s) (hb : b ∉ s) :
+    BijOn (Equiv.swap a b) s (insert b (s \ {a})) := by
+  refine ⟨fun x hx ↦ ?_, (Equiv.injective _).injOn _, fun x hx ↦ ?_⟩
+  · obtain (rfl | hxa) := eq_or_ne x a; simp [swap_apply_left]
+    rw [swap_apply_of_ne_of_ne hxa (by rintro rfl; contradiction)]
+    exact .inr ⟨hx, hxa⟩
+  obtain (rfl | hxb) := eq_or_ne x b; exact ⟨a, ha, by simp⟩
+  simp only [mem_insert_iff, mem_diff, mem_singleton_iff, or_iff_right hxb] at hx
+  exact ⟨x, hx.1, swap_apply_of_ne_of_ne hx.2 hxb⟩
+
+end Swap

@@ -30,10 +30,10 @@ variable [∀ i, SMul M (α i)] [∀ i, SMul N (α i)] (a : M) (i : ι) (b : α 
 
 @[to_additive Sigma.VAdd]
 instance : SMul M (Σi, α i) :=
-  ⟨fun a => (Sigma.map id) fun _ => (· • ·) a⟩
+  ⟨fun a => (Sigma.map id) fun _ => (a • ·)⟩
 
 @[to_additive]
-theorem smul_def : a • x = x.map id fun _ => (· • ·) a :=
+theorem smul_def : a • x = x.map id fun _ => (a • ·) :=
   rfl
 #align sigma.smul_def Sigma.smul_def
 #align sigma.vadd_def Sigma.vadd_def
@@ -45,7 +45,8 @@ theorem smul_mk : a • mk i b = ⟨i, a • b⟩ :=
 #align sigma.vadd_mk Sigma.vadd_mk
 
 @[to_additive]
-instance [SMul M N] [∀ i, IsScalarTower M N (α i)] : IsScalarTower M N (Σi, α i) :=
+instance instIsScalarTowerOfSMul [SMul M N] [∀ i, IsScalarTower M N (α i)] :
+    IsScalarTower M N (Σi, α i) :=
   ⟨fun a b x => by
     cases x
     rw [smul_mk, smul_mk, smul_mk, smul_assoc]⟩

@@ -4,11 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Group.Equiv.TypeTags
-import Mathlib.Algebra.Module.Equiv
-import Mathlib.Data.Finsupp.Defs
 import Mathlib.GroupTheory.FreeAbelianGroup
 import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
-import Mathlib.LinearAlgebra.Dimension
+import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 
 #align_import group_theory.free_abelian_group_finsupp from "leanprover-community/mathlib"@"47b51515e69f59bca5cf34ef456e6000fe205a69"
 
@@ -180,17 +178,17 @@ theorem support_zsmul (k : ℤ) (h : k ≠ 0) (a : FreeAbelianGroup X) :
     support (k • a) = support a := by
   ext x
   simp only [mem_support_iff, AddMonoidHom.map_zsmul]
-  simp only [h, zsmul_int_int, false_or_iff, Ne.def, mul_eq_zero]
+  simp only [h, zsmul_int_int, false_or_iff, Ne, mul_eq_zero]
 #align free_abelian_group.support_zsmul FreeAbelianGroup.support_zsmul
 
 @[simp]
 theorem support_nsmul (k : ℕ) (h : k ≠ 0) (a : FreeAbelianGroup X) :
     support (k • a) = support a := by
   apply support_zsmul k _ a
-  exact_mod_cast h
+  exact mod_cast h
 #align free_abelian_group.support_nsmul FreeAbelianGroup.support_nsmul
 
-open Classical
+open scoped Classical
 
 theorem support_add (a b : FreeAbelianGroup X) : support (a + b) ⊆ a.support ∪ b.support := by
   simp only [support, AddMonoidHom.map_add]

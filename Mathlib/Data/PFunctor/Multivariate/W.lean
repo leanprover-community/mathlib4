@@ -130,7 +130,7 @@ set_option linter.uppercaseLean3 false in
 #align mvpfunctor.Wp MvPFunctor.wp
 
 /-- W-type of `P` -/
--- Porting note: used to have @[nolint has_nonempty_instance]
+-- Porting note(#5171): used to have @[nolint has_nonempty_instance]
 def W (α : TypeVec n) : Type _ :=
   P.wp α
 set_option linter.uppercaseLean3 false in
@@ -251,7 +251,7 @@ theorem w_map_wMk {α β : TypeVec n} (g : α ⟹ β) (a : P.A) (f' : P.drop.B a
   show _ = P.wMk a (g ⊚ f') (MvFunctor.map g ∘ f)
   have : MvFunctor.map g ∘ f = fun i => ⟨(f i).fst, g ⊚ (f i).snd⟩ := by
     ext i : 1
-    dsimp [Function.comp]
+    dsimp [Function.comp_def]
     cases f i
     rfl
   rw [this]
@@ -271,8 +271,7 @@ set_option linter.uppercaseLean3 false in
 -- Can it be avoided?
 /-- Constructor of a value of `P.obj (α ::: β)` from components.
 Useful to avoid complicated type annotation -/
-@[reducible]
-def objAppend1 {α : TypeVec n} {β : Type u} (a : P.A) (f' : P.drop.B a ⟹ α)
+abbrev objAppend1 {α : TypeVec n} {β : Type u} (a : P.A) (f' : P.drop.B a ⟹ α)
     (f : P.last.B a → β) : P (α ::: β) :=
   ⟨a, splitFun f' f⟩
 #align mvpfunctor.obj_append1 MvPFunctor.objAppend1

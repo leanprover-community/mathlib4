@@ -55,12 +55,12 @@ theorem zero_form_isBoundedAtImInfty {α : Type*} [NormedField α] :
 
 /-- Module of functions that are zero at infinity. -/
 def zeroAtImInftySubmodule (α : Type*) [NormedField α] : Submodule α (ℍ → α) :=
-  zeroAtFilterSubmodule atImInfty
+  zeroAtFilterSubmodule _ atImInfty
 #align upper_half_plane.zero_at_im_infty_submodule UpperHalfPlane.zeroAtImInftySubmodule
 
 /-- Subalgebra of functions that are bounded at infinity. -/
 def boundedAtImInftySubalgebra (α : Type*) [NormedField α] : Subalgebra α (ℍ → α) :=
-  boundedFilterSubalgebra atImInfty
+  boundedFilterSubalgebra _ atImInfty
 #align upper_half_plane.bounded_at_im_infty_subalgebra UpperHalfPlane.boundedAtImInftySubalgebra
 
 nonrec theorem IsBoundedAtImInfty.mul {f g : ℍ → ℂ} (hf : IsBoundedAtImInfty f)

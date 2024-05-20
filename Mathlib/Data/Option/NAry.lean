@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Option.Basic
+import Mathlib.Init.Function
 
 #align_import data.option.n_ary from "leanprover-community/mathlib"@"995b47e555f1b6297c7cf16855f1023e355219fb"
 
@@ -27,15 +27,13 @@ We do not define `Option.map₃` as its only purpose so far would be to prove pr
 `Option.map₂` and casing already fulfills this task.
 -/
 
-set_option autoImplicit true
-
 universe u
 
 open Function
 
 namespace Option
 
-variable {f : α → β → γ} {a : Option α} {b : Option β} {c : Option γ}
+variable {α β γ δ : Type*} {f : α → β → γ} {a : Option α} {b : Option β} {c : Option γ}
 
 /-- The image of a binary function `f : α → β → γ` as a function `Option α → Option β → Option γ`.
 Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/
@@ -50,7 +48,7 @@ theorem map₂_def {α β γ : Type u} (f : α → β → γ) (a : Option α) (b
   by cases a <;> rfl
 #align option.map₂_def Option.map₂_def
 
--- porting note: In Lean3, was `@[simp]` but now `simp` can prove it
+-- Porting note (#10618): In Lean3, was `@[simp]` but now `simp` can prove it
 theorem map₂_some_some (f : α → β → γ) (a : α) (b : β) : map₂ f (some a) (some b) = f a b := rfl
 #align option.map₂_some_some Option.map₂_some_some
 
@@ -70,13 +68,13 @@ theorem map₂_coe_left (f : α → β → γ) (a : α) (b : Option β) : map₂
   rfl
 #align option.map₂_coe_left Option.map₂_coe_left
 
--- porting note: This proof was `rfl` in Lean3, but now is not.
+-- Porting note: This proof was `rfl` in Lean3, but now is not.
 @[simp]
 theorem map₂_coe_right (f : α → β → γ) (a : Option α) (b : β) : map₂ f a b = a.map fun a => f a b :=
   by cases a <;> rfl
 #align option.map₂_coe_right Option.map₂_coe_right
 
--- porting note: Removed the `@[simp]` tag as membership of an `Option` is no-longer simp-normal.
+-- Porting note: Removed the `@[simp]` tag as membership of an `Option` is no-longer simp-normal.
 theorem mem_map₂_iff {c : γ} : c ∈ map₂ f a b ↔ ∃ a' b', a' ∈ a ∧ b' ∈ b ∧ f a' b' = c :=
   by simp [map₂]
 #align option.mem_map₂_iff Option.mem_map₂_iff
@@ -120,6 +118,8 @@ to the associativity, commutativity, distributivity, ... of `Option.map₂` of t
 The proof pattern is `map₂_lemma operation_lemma`. For example, `map₂_comm mul_comm` proves that
 `map₂ (*) a b = map₂ (*) g f` in a `CommSemigroup`.
 -/
+
+variable {α' β' δ' ε ε' : Type*}
 
 theorem map₂_assoc {f : δ → γ → ε} {g : α → β → δ} {f' : α → ε' → ε} {g' : β → γ → ε'}
     (h_assoc : ∀ a b c, f (g a b) c = f' a (g' b c)) :

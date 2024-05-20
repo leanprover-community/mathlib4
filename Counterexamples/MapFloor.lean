@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Hom.Ring
-import Mathlib.Data.Polynomial.Reverse
+import Mathlib.Algebra.Polynomial.Reverse
 
 #align_import map_floor from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
 
@@ -97,14 +97,14 @@ instance : FloorRing ℤ[ε] :=
       · rintro ⟨_ | n, hn⟩
         · refine' (sub_one_lt _).trans _
           simp at hn
-          rwa [int_cast_coeff_zero] at hn
+          rwa [intCast_coeff_zero] at hn
         · dsimp at hn
           simp [hn.1 _ n.zero_lt_succ]
-          rw [int_cast_coeff_zero]; simp
+          rw [intCast_coeff_zero]; simp
       · exact fun h' => cast_lt.1 ((not_lt.1 h).trans_lt h')
     · split_ifs with h
       · exact fun h' => h.trans_le (cast_le.2 <| sub_one_lt_iff.1 h')
-      · exact fun h' => ⟨0, by simp; rwa [int_cast_coeff_zero]⟩
+      · exact fun h' => ⟨0, by simp; rwa [intCast_coeff_zero]⟩
 
 /-- The ordered ring homomorphisms from `ℤ[ε]` to `ℤ` that "forgets" the `ε`s. -/
 def forgetEpsilons : ℤ[ε] →+*o ℤ where
@@ -131,8 +131,8 @@ theorem forgetEpsilons_floor_lt (n : ℤ) :
     forgetEpsilons ⌊(n - ↑ε : ℤ[ε])⌋ < ⌊forgetEpsilons (n - ↑ε)⌋ := by
   suffices ⌊(n - ↑ε : ℤ[ε])⌋ = n - 1 by simp [this]
   have : (0 : ℤ[ε]) < ε := ⟨1, by simp⟩
-  exact (if_neg <| by rw [coeff_sub, int_cast_coeff_zero]; simp [this]).trans (by
-    rw [coeff_sub, int_cast_coeff_zero]; simp)
+  exact (if_neg <| by rw [coeff_sub, intCast_coeff_zero]; simp [this]).trans (by
+    rw [coeff_sub, intCast_coeff_zero]; simp)
 #align counterexample.int_with_epsilon.forget_epsilons_floor_lt Counterexample.IntWithEpsilon.forgetEpsilons_floor_lt
 
 /-- The ceil of `n + ε` is `n + 1` but its image under `forgetEpsilons` is `n`, whose ceil is

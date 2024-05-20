@@ -45,11 +45,11 @@ noncomputable def adjoin.powerBasisAux {x : S} (hx : IsIntegral K x) :
     have := hx'.mem_span_pow (y := ⟨y, hy⟩)
     rw [← minpoly.algebraMap_eq hST] at this
     apply this
-    · rw [adjoin_singleton_eq_range_aeval] at hy
-      obtain ⟨f, rfl⟩ := (aeval x).mem_range.mp hy
-      use f
-      ext
-      exact aeval_algebraMap_apply S (⟨x, _⟩ : adjoin K {x}) _
+    rw [adjoin_singleton_eq_range_aeval] at hy
+    obtain ⟨f, rfl⟩ := (aeval x).mem_range.mp hy
+    use f
+    ext
+    exact aeval_algebraMap_apply S (⟨x, _⟩ : adjoin K {x}) _
 #align algebra.adjoin.power_basis_aux Algebra.adjoin.powerBasisAux
 
 /-- The power basis `1, x, ..., x ^ (d - 1)` for `K[x]`,
@@ -87,9 +87,7 @@ open Polynomial
 open Polynomial
 
 variable {R : Type*} [CommRing R] [Algebra R S] [Algebra R K] [IsScalarTower R K S]
-
 variable {A : Type*} [CommRing A] [Algebra R A] [Algebra S A]
-
 variable [IsScalarTower R S A] {B : PowerBasis S A} (hB : IsIntegral R B.gen)
 
 /-- If `B : PowerBasis S A` is such that `IsIntegral R B.gen`, then
@@ -134,13 +132,14 @@ theorem repr_mul_isIntegral [IsDomain S] {x y : A} (hx : ∀ i, IsIntegral R (B.
     (hmin : minpoly S B.gen = (minpoly R B.gen).map (algebraMap R S)) :
     ∀ i, IsIntegral R (B.basis.repr (x * y) i) := by
   intro i
-  rw [← B.basis.sum_repr x, ← B.basis.sum_repr y, Finset.sum_mul_sum, map_sum, Finset.sum_apply']
+  rw [← B.basis.sum_repr x, ← B.basis.sum_repr y, Finset.sum_mul_sum, ← Finset.sum_product',
+    map_sum, Finset.sum_apply']
   refine' IsIntegral.sum _ fun I _ => _
   simp only [Algebra.smul_mul_assoc, Algebra.mul_smul_comm, LinearEquiv.map_smulₛₗ,
     RingHom.id_apply, Finsupp.coe_smul, Pi.smul_apply, id.smul_eq_mul]
-  refine' isIntegral_mul (hy _) (isIntegral_mul (hx _) _)
+  refine (hy _).mul ((hx _).mul ?_)
   simp only [coe_basis, ← pow_add]
-  refine' repr_gen_pow_isIntegral hB hmin _ _
+  exact repr_gen_pow_isIntegral hB hmin _ _
 #align power_basis.repr_mul_is_integral PowerBasis.repr_mul_isIntegral
 
 /-- Let `B : PowerBasis S A` be such that `IsIntegral R B.gen`, and let `x : A` be an element
@@ -164,7 +163,7 @@ theorem repr_pow_isIntegral [IsDomain S] {x : A} (hx : ∀ i, IsIntegral R (B.ba
     · exact isIntegral_zero
   · intro hx
     rw [pow_succ]
-    exact repr_mul_isIntegral hB hx (fun _ => hn _ le_rfl (fun _ => hx _) _) hmin
+    exact repr_mul_isIntegral hB (fun _ => hn _ le_rfl (fun _ => hx _) _) hx hmin
 #align power_basis.repr_pow_is_integral PowerBasis.repr_pow_isIntegral
 
 /-- Let `B B' : PowerBasis K S` be such that `IsIntegral R B.gen`, and let `P : R[X]` be such that
@@ -181,7 +180,7 @@ theorem toMatrix_isIntegral {B B' : PowerBasis K S} {P : R[X]} (h : aeval B.gen 
   refine' IsIntegral.sum _ fun n _ => _
   rw [Algebra.smul_def, IsScalarTower.algebraMap_apply R K S, ← Algebra.smul_def,
     LinearEquiv.map_smul, algebraMap_smul]
-  exact isIntegral_smul _ (repr_gen_pow_isIntegral hB hmin _ _)
+  exact (repr_gen_pow_isIntegral hB hmin _ _).smul _
 #align power_basis.to_matrix_is_integral PowerBasis.toMatrix_isIntegral
 
 end PowerBasis

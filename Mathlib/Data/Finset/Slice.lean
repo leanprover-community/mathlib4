@@ -116,7 +116,7 @@ alias ⟨_, _root_.Set.Sized.subset_powersetCard_univ⟩ := subset_powersetCard_
 theorem _root_.Set.Sized.card_le (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
     card 𝒜 ≤ (Fintype.card α).choose r := by
   rw [Fintype.card, ← card_powersetCard]
-  exact card_le_of_subset (subset_powersetCard_univ_iff.mpr h𝒜)
+  exact card_le_card (subset_powersetCard_univ_iff.mpr h𝒜)
 #align set.sized.card_le Set.Sized.card_le
 
 end Sized
@@ -133,7 +133,6 @@ def slice (𝒜 : Finset (Finset α)) (r : ℕ) : Finset (Finset α) :=
   𝒜.filter fun i => i.card = r
 #align finset.slice Finset.slice
 
--- mathport name: finset.slice
 -- Porting note: old code: scoped[FinsetFamily]
 @[inherit_doc]
 scoped[Finset] infixl:90 " # " => Finset.slice
