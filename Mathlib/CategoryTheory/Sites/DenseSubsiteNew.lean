@@ -74,18 +74,15 @@ structure OneHypercoverDenseData (S : C) extends PreOneHypercoverDenseData.{w} F
     (w : F.map p₁ ≫ f i₁ = F.map p₂ ≫ f i₂) :
     toPreOneHypercoverDenseData.sieve₁₀ p₁ p₂ ∈ J₀ W₀
 
-class IsOneHypercoverDense extends IsContinuous.{v₃} F J₀ J,
-    F.IsCocontinuous J₀ J : Prop where
+class IsOneHypercoverDense extends F.IsCocontinuous J₀ J : Prop where
   coverPreserving : CoverPreserving J₀ J F
   nonempty_oneHypercoverDenseData (X : C) :
     Nonempty (OneHypercoverDenseData.{w} F J₀ J X)
 
-
-variable [IsOneHypercoverDense.{w, v₃} F J₀ J]
+variable [IsOneHypercoverDense.{w} F J₀ J]
 
 lemma coverPreserving_of_isOneHypercoverDense : CoverPreserving J₀ J F :=
   IsOneHypercoverDense.coverPreserving
-
 
 noncomputable def oneHypercoverDenseData (X : C) : F.OneHypercoverDenseData J₀ J X :=
   (IsOneHypercoverDense.nonempty_oneHypercoverDenseData X).some
@@ -129,16 +126,11 @@ def toOneHypercover {X : C} (data : F.OneHypercoverDenseData J₀ J X) :
 
 end OneHypercoverDenseData
 
-variable [F.Full]
-
-namespace IsOneHypercoverDense
-
-section
+namespace isContinuous_of_isOneHypercoverDense
 
 variable (P : Cᵒᵖ ⥤ A) (hP : Presheaf.IsSheaf J P)
 
-namespace isContinuous
-
+variable [F.Full] [F.Faithful]
 variable {F J₀ J P}
 variable {X₀ : C₀} {S : J₀.Cover X₀} (E : Multifork (S.index (F.op.comp P)))
 
@@ -151,7 +143,22 @@ lemma liftAux'_eq_liftAux' {Y : C} (f : Y ⟶ F.obj X₀)
     {Z₀ : C₀} (g : Z₀ ⟶ X₀) (hg : S g) (h : Y ⟶ F.obj Z₀) (fac : f = h ≫ F.map g)
     {Z₀' : C₀} (g' : Z₀' ⟶ X₀) (hg' : S g') (h' : Y ⟶ F.obj Z₀') (fac' : f = h' ≫ F.map g') :
     liftAux' E f g hg h fac = liftAux' E f g' hg' h' fac' := by
-  sorry
+  let data₁ := F.oneHypercoverDenseData J₀ J Y
+  apply hP.hom_ext ⟨_, data₁.mem₀⟩
+  rintro ⟨T, f, ⟨U, a, b, hb, rfl⟩⟩
+  obtain ⟨i, rfl, hi⟩ := hb.exists
+  simp only [eqToHom_refl, id_comp] at hi
+  subst hi
+  dsimp [liftAux']
+  simp only [map_comp, ← assoc]
+  congr 1
+  simp only [assoc, ← map_comp]
+  simpa using E.condition
+    (GrothendieckTopology.Cover.Relation.mk { hf := hg } { hf := hg' }
+      { Z := data₁.X i
+        g₁ := F.preimage (data₁.f i ≫ h)
+        g₂ := F.preimage (data₁.f i ≫ h')
+        w := F.map_injective (by simp only [map_comp, map_preimage, assoc, ← fac, ← fac']) })
 
 noncomputable def liftAux {Y : C} (f : Y ⟶ F.obj X₀) (hf : S.1.functorPushforward F f) :
     E.pt ⟶ P.obj (Opposite.op Y) :=
@@ -161,31 +168,60 @@ noncomputable def liftAux {Y : C} (f : Y ⟶ F.obj X₀) (hf : S.1.functorPushfo
 noncomputable def liftAux_eq_liftAux' {Y : C} (f : Y ⟶ F.obj X₀)
     {Z₀ : C₀} (g : Z₀ ⟶ X₀) (hg : S g) (h : Y ⟶ F.obj Z₀) (fac : f = h ≫ F.map g) :
     liftAux E f ⟨_, g, h, hg, fac⟩ = liftAux' E f g hg h fac := by
-  apply liftAux'_eq_liftAux'
+  apply liftAux'_eq_liftAux' hP
 
 lemma liftAux_map {Y : C} (f : Y ⟶ F.obj X₀) (hf : S.1.functorPushforward F f)
     {Z : C} (g : Z ⟶ Y) :
     liftAux E f hf ≫ P.map g.op = liftAux E (g ≫ f) (Sieve.downward_closed _ hf _) := by
   obtain ⟨W₀, b, a, hb, rfl⟩ := hf
-  rw [liftAux_eq_liftAux' E (a ≫ F.map b) b hb a rfl,
-    liftAux_eq_liftAux' E (g ≫ a ≫ F.map b) b hb (g ≫ a) (by simp)]
+  rw [liftAux_eq_liftAux' hP E (a ≫ F.map b) b hb a rfl,
+    liftAux_eq_liftAux' hP E (g ≫ a ≫ F.map b) b hb (g ≫ a) (by simp)]
   simp [liftAux']
 
 noncomputable def lift : E.pt ⟶ P.obj (Opposite.op (F.obj X₀)) :=
   hP.amalgamate ⟨_, (F.coverPreserving_of_isOneHypercoverDense J₀ J).cover_preserve S.2⟩
     (fun ⟨Y, f, hf⟩ => liftAux E f hf) (by
-      rintro ⟨Y₁, Y₂, Z, p₁, p₂, f₁, f₂, hf₁, hf₂, w⟩
-      simp [liftAux_map, w])
+      rintro ⟨Y₁, f₁, hf₁⟩ ⟨Y₂, f₂, hf₂⟩ ⟨Z, p₁, p₂, w⟩
+      simp [liftAux_map hP, w])
 
-end isContinuous
+@[reassoc]
+lemma fac (i : S.Arrow) : lift hP E ≫ P.map (F.map (i.f)).op = E.ι i := by
+  apply (hP.amalgamate_map ⟨_, (F.coverPreserving_of_isOneHypercoverDense J₀ J).cover_preserve S.2⟩
+    (fun ⟨Y, f, hf⟩ => liftAux E f hf) (by
+      rintro ⟨Y₁, f₁, hf₁⟩ ⟨Y₂, f₂, hf₂⟩ ⟨Z, p₁, p₂, w⟩
+      simp [liftAux_map hP, w])
+    ⟨_, F.map i.f, Sieve.image_mem_functorPushforward _ _ i.hf⟩).trans
+  simpa [liftAux'] using liftAux_eq_liftAux' hP E (F.map i.f) i.f i.hf (𝟙 _) (by simp)
 
-lemma isContinuous : Presheaf.IsSheaf J₀ (F.op ⋙ P) := by
+lemma isSheaf [F.Faithful] :
+    Presheaf.IsSheaf J₀ (F.op ⋙ P) := by
   rw [Presheaf.isSheaf_iff_multifork]
   rintro X₀ S
   constructor
-  exact Multifork.IsLimit.mk _ (isContinuous.lift hP) sorry sorry
+  exact Multifork.IsLimit.mk _ (lift hP) (fac hP) (by
+    intro E m hm
+    dsimp at m hm
+    apply hP.hom_ext ⟨_, (F.coverPreserving_of_isOneHypercoverDense J₀ J).cover_preserve S.2⟩
+    rintro ⟨Y, f, ⟨T, a, b, ha, rfl⟩⟩
+    dsimp
+    simp only [map_comp, ← assoc]
+    congr 1
+    exact (hm ⟨_, _, ha⟩).trans (fac hP E ⟨_, _, ha⟩).symm)
 
-end
+end isContinuous_of_isOneHypercoverDense
+
+
+lemma isContinuous_of_isOneHypercoverDense [F.Full] [F.Faithful] :
+    Functor.IsContinuous.{v₃} F J₀ J where
+  op_comp_isSheafOfTypes := by
+    rintro ⟨P, hP⟩
+    dsimp
+    rw [← isSheaf_iff_isSheaf_of_type] at hP ⊢
+    exact isContinuous_of_isOneHypercoverDense.isSheaf hP
+
+namespace IsOneHypercoverDense
+
+variable [F.Full] [Functor.IsContinuous.{v₃} F J₀ J]
 
 lemma restriction_map_injective {P Q : Cᵒᵖ ⥤ A} {f g : P ⟶ Q} (hQ : Presheaf.IsSheaf J Q)
     (h : ∀ (X₀ : C₀), f.app (Opposite.op (F.obj X₀)) = g.app (Opposite.op (F.obj X₀))) :
@@ -329,7 +365,8 @@ noncomputable def extensionObjRestrict {X : Cᵒᵖ} {Y₀ : C₀} (f : F.obj Y�
       obtain ⟨_, a, _, ⟨i⟩, fac⟩ := hg
       obtain ⟨a, rfl⟩ := F.map_surjective a
       exact ⟨_, _, fac⟩)) (by
-        rintro ⟨Y₁, Y₂, Z, p₁, p₂, q₁, q₂, hq₁, hq₂, w⟩
+        rintro ⟨Y₁, q₁, hq₁⟩ ⟨Y₂, q₂, hq₂⟩
+        rintro ⟨Z, p₁, p₂, w⟩
         obtain ⟨_, a₁, b₁, h₁, fac₁⟩ := hq₁
         obtain ⟨_, a₂, b₂, h₂, fac₂⟩ := hq₂
         obtain ⟨i₁, rfl, hi₁⟩ := h₁.exists
