@@ -16,6 +16,8 @@ noncomputable section -- Let's do some maths.
 
 open CategoryTheory
 
+section
+
 variable (C : Type) [Category C]
 
 /-- And now we can prove a trivial fact:
@@ -54,6 +56,9 @@ or
 ```
 How do these work?
 -/
+
+
+end
 
 /-!
 Sometimes we want to talk about the category consisting of all algebraic structures of some flavour.
@@ -109,22 +114,41 @@ universe u
 @[simp] theorem MonoidHom.comp_id' {G : GroupCat.{u}} {H : Type u} [Group H] (f : G →* H) : f.comp (𝟙 G) = f :=
   Category.id_comp (GroupCat.ofHom f)
 
--- attribute [simp] CommGroupCat.coe_of
+-- @[simp] theorem foo {G : Type _} [Group G] {x : G} :
+--     @DFunLike.coe (G →* G) G (fun _ ↦ G) MonoidHom.instFunLike (𝟙 (GroupCat.of G)) x = x :=
+--   rfl
+
+-- @[simp] theorem foo' {G : Type _} [CommGroup G] {x : G} :
+--     @DFunLike.coe (G →* G) G (fun _ ↦ G) MonoidHom.instFunLike (𝟙 (CommGroupCat.of G)) x = x :=
+--   rfl
+
+-- @[simp] theorem GroupCat.comp_apply {G H K : GroupCat} (f : G ⟶ H) (g : H ⟶ K) (x : G) :
+--   (f ≫ g) x = g (f x) := rfl
+-- @[simp] theorem CommGroupCat.comp_apply {G H K : GroupCat} (f : G ⟶ H) (g : H ⟶ K) (x : G) :
+--   (f ≫ g) x = g (f x) := rfl
+
+-- @[simp] theorem bar {G H K : Type _} [CommGroup G] [ CommGroup H] [CommGroup K] (f : G →* H) (g : H →* K) :
+--     (@DFunLike.coe (G →* K) G (fun _ ↦ K)
+--   MonoidHom.instFunLike (CategoryStruct.comp (obj := CommGroupCat) (X := CommGroupCat.of G) (Y := CommGroupCat.of H) (Z := CommGroupCat.of K) f g)) = g ∘ f := rfl
+
+
+attribute [simp] CommGroupCat.coe_of
+-- attribute [simp] CommGroupCat.comp_def GroupCat.comp_def
 def abelianize : GroupCat.{u} ⥤ CommGroupCat.{u} where
   obj G := CommGroupCat.of (Abelianization G)
   map f := Abelianization.lift (Abelianization.of.comp f)
   map_id := by
-    -- aesop_cat
-    intros--; simp only [MonoidHom.mk_coe, coe_id]
-    ext x
-    dsimp at x ⊢  -- but doesn't work `at *`!
-    simp [CommGroupCat.coe_of] -- but if we use this in `dsimp`, we get stuck!
+    aesop_cat
+    -- intros--; simp only [MonoidHom.mk_coe, coe_id]
+    -- ext x
+    -- -- dsimp at x ⊢  -- but doesn't work `at *`!
+    -- simp
   map_comp := by
-    intros
+    -- aesop_cat
+    intros G H K f g
     ext
-    dsimp
-    simp [CommGroupCat.coe_of]
-    sorry
+    simp
+    simp [CommGroupCat.comp_def, GroupCat.comp_def]
 
 structure PointedSpace where
   X : Type
