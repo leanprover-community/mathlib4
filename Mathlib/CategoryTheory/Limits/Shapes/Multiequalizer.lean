@@ -410,6 +410,11 @@ lemma IsLimit.fac (hK : IsLimit K) {T : C} (k : ∀ a, T ⟶ I.left a)
     IsLimit.lift hK k hk ≫ K.ι a = k a :=
   hK.fac _ _
 
+/-- Constructor for isomorphisms of multiforks. -/
+def ext {L : Multifork I} (e : K.pt ≅ L.pt)
+    (fac : ∀ (a : I.L), K.ι a = e.hom ≫ L.ι a) : K ≅ L :=
+  Cones.ext e (by rintro (a|b) <;> simp [fac])
+
 variable (K)
 
 variable [HasProduct I.left] [HasProduct I.right]

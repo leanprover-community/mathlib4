@@ -58,6 +58,22 @@ def multicospanIndex (P : C₀ᵒᵖ ⥤ A) : MulticospanIndex A where
   snd j := P.map ((data.p₂ j.2).op)
 
 @[simps]
+def multicospanMap {P Q : C₀ᵒᵖ ⥤ A} (f : P ⟶ Q) :
+    (data.multicospanIndex P).multicospan ⟶ (data.multicospanIndex Q).multicospan where
+  app x := match x with
+    | WalkingMulticospan.left i => f.app _
+    | WalkingMulticospan.right j => f.app _
+  naturality := by
+    rintro (i₁|j₁) (i₂|j₂) (_|_)
+    all_goals simp
+
+@[simps]
+def multicospanMapIso {P Q : C₀ᵒᵖ ⥤ A} (e : P ≅ Q) :
+    (data.multicospanIndex P).multicospan ≅ (data.multicospanIndex Q).multicospan where
+  hom := data.multicospanMap e.hom
+  inv := data.multicospanMap e.inv
+
+@[simps]
 def sieve₁₀ {i₁ i₂ : data.I₀} {W₀ : C₀} (p₁ : W₀ ⟶ data.X i₁) (p₂ : W₀ ⟶ data.X i₂) :
     Sieve W₀ where
   arrows Z₀ g := ∃ (j : data.I₁ i₁ i₂) (h : Z₀ ⟶ data.Y j),
@@ -210,7 +226,6 @@ lemma isSheaf [F.Faithful] :
 
 end isContinuous_of_isOneHypercoverDense
 
-
 lemma isContinuous_of_isOneHypercoverDense [F.Full] [F.Faithful] :
     Functor.IsContinuous.{v₃} F J₀ J where
   op_comp_isSheafOfTypes := by
@@ -220,6 +235,18 @@ lemma isContinuous_of_isOneHypercoverDense [F.Full] [F.Faithful] :
     exact isContinuous_of_isOneHypercoverDense.isSheaf hP
 
 namespace IsOneHypercoverDense
+
+section
+
+variable {P : Cᵒᵖ ⥤ A} (hP₀ : Presheaf.IsSheaf J₀ (F.op ⋙ P))
+  (hP : ∀ (X : C), IsLimit ((F.oneHypercoverDenseData J₀ J X).toPreOneHypercover.multifork P))
+
+lemma isSheaf_of_isSheaf_op_comp : Presheaf.IsSheaf J P := by
+  have := hP₀
+  have := hP
+  sorry
+
+end
 
 variable [F.Full] [Functor.IsContinuous.{v₃} F J₀ J]
 
@@ -500,7 +527,16 @@ noncomputable def extensionIsoApp (X₀ : C₀ᵒᵖ) :
 noncomputable def extensionIso : F.op ⋙ extension F J₀ J hP₀ ≅ P₀ :=
   NatIso.ofComponents (fun X₀ => extensionIsoApp F J₀ J hP₀ X₀)
 
-lemma extension_isSheaf : Presheaf.IsSheaf J (extension F J₀ J hP₀) := sorry
+lemma extension_isSheaf : Presheaf.IsSheaf J (extension F J₀ J hP₀) := by
+  apply isSheaf_of_isSheaf_op_comp F J₀ J
+  · rw [Presheaf.isSheaf_of_iso_iff (extensionIso F J₀ J hP₀)]
+    exact hP₀
+  · intro X
+    let e := (F.oneHypercoverDenseData J₀ J X).multicospanMapIso (extensionIso F J₀ J hP₀)
+    refine' IsLimit.ofIsoLimit ((IsLimit.postcomposeInvEquiv e _).symm
+      (limit.isLimit ((F.oneHypercoverDenseData J₀ J X).multicospanIndex P₀).multicospan))
+      (Iso.symm (Multifork.ext (Iso.refl _) (fun i => _)))
+    sorry
 
 end essSurj_sheafPushforwardContinuous
 
