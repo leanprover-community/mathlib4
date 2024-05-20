@@ -330,6 +330,11 @@ theorem norm_unit (u : (𝓞 K)ˣ) :
   rw [norm_eq_norm, show |(Algebra.norm ℚ) (u : K)| = 1
       by exact NumberField.isUnit_iff_norm.mp (Units.isUnit u), Rat.cast_one]
 
+variable (K) in
+protected theorem continuous_norm : Continuous (mixedEmbedding.norm : (E K) → ℝ) :=
+  Continuous.mul (continuous_finset_prod _ fun _ _ ↦ by fun_prop)
+    (continuous_finset_prod _ fun _ _ ↦ by fun_prop)
+
 end norm
 
 noncomputable section stdBasis

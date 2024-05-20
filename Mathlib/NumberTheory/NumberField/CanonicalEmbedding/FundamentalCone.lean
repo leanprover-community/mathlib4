@@ -91,11 +91,11 @@ open Classical in
 defined in such way that: 1) it factors the map `logEmbedding`, see `logMap_eq_logEmbedding`;
 2) it is constant on the lines `{c • x | c ∈ ℝ}`, see `logMap_smul`. -/
 def logMap (x : E K) : {w : InfinitePlace K // w ≠ w₀} → ℝ := fun w ↦
-  if hw : IsReal w.val then
-    Real.log ‖x.1 ⟨w.val, hw⟩‖ - Real.log (mixedEmbedding.norm x) * (finrank ℚ K : ℝ)⁻¹
-  else
-    2 * (Real.log ‖x.2 ⟨w.val, not_isReal_iff_isComplex.mp hw⟩‖ -
-      Real.log (mixedEmbedding.norm x) * (finrank ℚ K : ℝ)⁻¹)
+    if hw : IsReal w.val then
+      Real.log ‖x.1 ⟨w.val, hw⟩‖ - Real.log (mixedEmbedding.norm x) * (finrank ℚ K : ℝ)⁻¹
+    else
+      2 * (Real.log ‖x.2 ⟨w.val, not_isReal_iff_isComplex.mp hw⟩‖ -
+        Real.log (mixedEmbedding.norm x) * (finrank ℚ K : ℝ)⁻¹)
 
 @[simp]
 theorem logMap_zero : logMap (0 : E K) = 0 := by
@@ -216,6 +216,22 @@ theorem unitSMul_mem_iff_mem_torsion {x : E K} (hx : x ∈ fundamentalCone K) (u
     · rw [AddSubmonoid.mk_vadd, vadd_eq_add, zero_add]
       exact hx.1
   · exact torsion_unitSMul_mem_of_mem hx h
+
+theorem measurable :
+    MeasurableSet (fundamentalCone K) := by
+  classical
+  refine MeasurableSet.diff ?_ ?_
+  · refine MeasurableSet.preimage (Zspan.fundamentalDomain_measurableSet _) ?_
+    unfold logMap
+    refine measurable_pi_iff.mpr fun w ↦ ?_
+    by_cases hw : IsReal w.1
+    · simp_rw [dif_pos hw]
+      refine measurable_fst.eval.norm.log.sub ?_
+      exact (mixedEmbedding.continuous_norm K).measurable.log.mul measurable_const
+    · simp_rw [dif_neg hw]
+      refine measurable_const.mul (measurable_snd.eval.norm.log.sub ?_)
+      exact (mixedEmbedding.continuous_norm K).measurable.log.mul measurable_const
+  · exact measurableSet_eq_fun (mixedEmbedding.continuous_norm K).measurable measurable_const
 
 end fundamentalCone
 
