@@ -368,7 +368,7 @@ instance : NormalizationMonoid k⟦X⟧ where
     exact ((eq_divided_by_X_pow_order_Iff_Unit h₀.ne_zero).mpr h₀).symm
 
 theorem normUnit_X : normUnit (PowerSeries.X : PowerSeries k) = 1 := by
-  dsimp only [normUnit];
+  dsimp only [normUnit]
   rw [inv_eq_one, ← Units.val_eq_one, Unit_of_divided_by_X_pow_order_nonzero,
     divided_by_X_pow_order_of_X_eq_one]
 
