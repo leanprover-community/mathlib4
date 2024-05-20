@@ -6,6 +6,7 @@ Authors: Leonardo de Moura
 import Mathlib.Data.Set.Lattice
 import Mathlib.Init.Set
 import Mathlib.Control.Basic
+import Mathlib.Lean.Expr.ExtraRecognizers
 
 #align_import data.set.functor from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
@@ -14,8 +15,6 @@ import Mathlib.Control.Basic
 
 This file defines the functor structure of `Set`.
 -/
-
-set_option autoImplicit true
 
 universe u
 
@@ -88,19 +87,19 @@ instance : Alternative Set :=
 
 variable {β : Set α} {γ : Set β}
 
-theorem mem_coe_of_mem (ha : a ∈ β) (ha' : ⟨a, ha⟩ ∈ γ) : a ∈ (γ : Set α) :=
+theorem mem_coe_of_mem {a : α} (ha : a ∈ β) (ha' : ⟨a, ha⟩ ∈ γ) : a ∈ (γ : Set α) :=
   ⟨_, ⟨⟨_, rfl⟩, _, ⟨ha', rfl⟩, rfl⟩⟩
 
 theorem coe_subset : (γ : Set α) ⊆ β := by
   intro _ ⟨_, ⟨⟨⟨_, ha⟩, rfl⟩, _, ⟨_, rfl⟩, _⟩⟩; convert ha
 
-theorem mem_of_mem_coe (ha : a ∈ (γ : Set α)) : ⟨a, coe_subset ha⟩ ∈ γ := by
+theorem mem_of_mem_coe {a : α} (ha : a ∈ (γ : Set α)) : ⟨a, coe_subset ha⟩ ∈ γ := by
   rcases ha with ⟨_, ⟨_, rfl⟩, _, ⟨ha, rfl⟩, _⟩; convert ha
 
 theorem eq_univ_of_coe_eq (hγ : (γ : Set α) = β) : γ = univ :=
   eq_univ_of_forall fun ⟨_, ha⟩ => mem_of_mem_coe <| hγ.symm ▸ ha
 
-theorem image_coe_eq_restrict_image {f : α → δ} : f '' γ = β.restrict f '' γ :=
+theorem image_coe_eq_restrict_image {δ : Type*} {f : α → δ} : f '' γ = β.restrict f '' γ :=
   ext fun _ =>
     ⟨fun ⟨_, h, ha⟩ => ⟨_, mem_of_mem_coe h, ha⟩, fun ⟨_, h, ha⟩ => ⟨_, mem_coe_of_mem _ h, ha⟩⟩
 
@@ -115,6 +114,23 @@ We define this coercion here.  -/
 /-- Coercion using `(Subtype.val '' ·)` -/
 instance : CoeHead (Set s) (Set α) := ⟨fun t => (Subtype.val '' t)⟩
 
+namespace Notation
+
+open Lean PrettyPrinter Delaborator SubExpr in
+/--
+If the `Set.Notation` namespace is open, sets of a subtype coerced to the ambient type are
+represented with `↑`.
+-/
+@[scoped delab app.Set.image]
+def delab_set_image_subtype : Delab := whenPPOption getPPCoercions do
+  let #[α, _, f, _] := (← getExpr).getAppArgs | failure
+  guard <| f.isAppOfArity ``Subtype.val 2
+  let some _ := α.coeTypeSet? | failure
+  let e ← withAppArg delab
+  `(↑$e)
+
+end Notation
+
 /-- The coercion from `Set.monad` as an instance is equal to the coercion defined above. -/
 theorem coe_eq_image_val (t : Set s) :
     @Lean.Internal.coeM Set s α _ Set.monad t = (t : Set α) := by
@@ -122,7 +138,7 @@ theorem coe_eq_image_val (t : Set s) :
   ext
   simp
 
-variable {β : Set α} {γ : Set β}
+variable {β : Set α} {γ : Set β} {a : α}
 
 theorem mem_image_val_of_mem (ha : a ∈ β) (ha' : ⟨a, ha⟩ ∈ γ) : a ∈ (γ : Set α) :=
   ⟨_, ha', rfl⟩
@@ -136,7 +152,7 @@ theorem mem_of_mem_image_val (ha : a ∈ (γ : Set α)) : ⟨a, image_val_subset
 theorem eq_univ_of_image_val_eq (hγ : (γ : Set α) = β) : γ = univ :=
   eq_univ_of_forall fun ⟨_, ha⟩ => mem_of_mem_image_val <| hγ.symm ▸ ha
 
-theorem image_image_val_eq_restrict_image {f : α → δ} : f '' γ = β.restrict f '' γ := by
+theorem image_image_val_eq_restrict_image {δ : Type*} {f : α → δ} : f '' γ = β.restrict f '' γ := by
   ext; simp
 
 end Set
@@ -150,4 +166,4 @@ instance : Monad SetM := Set.monad
 
 /-- Evaluates the `SetM` monad, yielding a `Set`.
 Implementation note: this is the identity function. -/
-protected def SetM.run (s : SetM α) : Set α := s
+protected def SetM.run {α : Type*} (s : SetM α) : Set α := s

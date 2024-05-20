@@ -51,9 +51,9 @@ def primeCounting (n : ℕ) : ℕ :=
   primeCounting' (n + 1)
 #align nat.prime_counting Nat.primeCounting
 
-scoped notation "π" => Nat.primeCounting
+@[inherit_doc] scoped notation "π" => Nat.primeCounting
 
-scoped notation "π'" => Nat.primeCounting'
+@[inherit_doc] scoped notation "π'" => Nat.primeCounting'
 
 theorem monotone_primeCounting' : Monotone primeCounting' :=
   count_monotone Prime
@@ -101,5 +101,8 @@ theorem primeCounting'_add_le {a k : ℕ} (h0 : 0 < a) (h1 : a < k) (n : ℕ) :
       rw [add_le_add_iff_left]
       exact Ico_filter_coprime_le k n h0
 #align nat.prime_counting'_add_le Nat.primeCounting'_add_le
+
+@[simp]
+theorem zeroth_prime_eq_two : nth Prime 0 = 2 := nth_count prime_two
 
 end Nat

@@ -68,7 +68,7 @@ def mkUnit {a : Units k} {A : 𝕎 k} (hA : A.coeff 0 = a) : Units (𝕎 k) :=
     have H := Units.mul_inv (a ^ p ^ (n + 1))
     linear_combination (norm := skip) -H_coeff * H
     have ha : (a : k) ^ p ^ (n + 1) = ↑(a ^ p ^ (n + 1)) := by norm_cast
-    have ha_inv : (↑a⁻¹ : k) ^ p ^ (n + 1) = ↑(a ^ p ^ (n + 1))⁻¹ := by norm_cast; norm_num
+    have ha_inv : (↑a⁻¹ : k) ^ p ^ (n + 1) = ↑(a ^ p ^ (n + 1))⁻¹ := by norm_cast
     simp only [nthRemainder_spec, inverseCoeff, succNthValUnits, hA,
       one_coeff_eq_of_pos, Nat.succ_pos', ha_inv, ha, inv_pow]
     ring!)
@@ -128,8 +128,7 @@ theorem exists_eq_pow_p_mul (a : 𝕎 k) (ha : a ≠ 0) :
   rw [← this] at hcm
   refine' ⟨m, b, _, _⟩
   · contrapose! hc
-    have : 0 < p ^ m := pow_pos (Nat.Prime.pos Fact.out) _
-    simp [hc, zero_pow this]
+    simp [hc, zero_pow $ pow_ne_zero _ hp.out.ne_zero]
   · simp_rw [← mul_left_iterate (p : 𝕎 k) m]
     convert hcm using 2
     ext1 x

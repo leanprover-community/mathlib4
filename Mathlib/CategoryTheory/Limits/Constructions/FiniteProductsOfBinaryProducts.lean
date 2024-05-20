@@ -33,9 +33,7 @@ open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 namespace CategoryTheory
 
 variable {J : Type v} [SmallCategory J]
-
 variable {C : Type u} [Category.{v} C]
-
 variable {D : Type u'} [Category.{v'} D]
 
 /--
@@ -60,13 +58,13 @@ def extendFan {n : ℕ} {f : Fin (n + 1) → C} (c₁ : Fan fun i : Fin n => f i
 limit.
 -/
 def extendFanIsLimit {n : ℕ} (f : Fin (n + 1) → C) {c₁ : Fan fun i : Fin n => f i.succ}
-    {c₂ : BinaryFan (f 0) c₁.pt} (t₁ : IsLimit c₁) (t₂ : IsLimit c₂) : IsLimit (extendFan c₁ c₂)
-    where
+    {c₂ : BinaryFan (f 0) c₁.pt} (t₁ : IsLimit c₁) (t₂ : IsLimit c₂) :
+    IsLimit (extendFan c₁ c₂) where
   lift s := by
     apply (BinaryFan.IsLimit.lift' t₂ (s.π.app ⟨0⟩) _).1
     apply t₁.lift ⟨_, Discrete.natTrans fun ⟨i⟩ => s.π.app ⟨i.succ⟩⟩
   fac := fun s ⟨j⟩ => by
-    refine' Fin.inductionOn j ?_ ?_
+    refine Fin.inductionOn j ?_ ?_
     · apply (BinaryFan.IsLimit.lift' t₂ _ _).2.1
     · rintro i -
       dsimp only [extendFan_π_app]
@@ -117,11 +115,8 @@ end
 section Preserves
 
 variable (F : C ⥤ D)
-
 variable [PreservesLimitsOfShape (Discrete WalkingPair) F]
-
 variable [PreservesLimitsOfShape (Discrete.{0} PEmpty) F]
-
 variable [HasFiniteProducts.{v} C]
 
 /-- If `F` preserves the terminal object and binary products, then it preserves products indexed by
@@ -145,9 +140,9 @@ noncomputable def preservesFinOfPreservesBinaryAndTerminal :
         (isLimitOfHasBinaryProductOfPreservesLimit F _ _)
     refine' IsLimit.ofIsoLimit this _
     apply Cones.ext _ _
-    apply Iso.refl _
+    · apply Iso.refl _
     rintro ⟨j⟩
-    refine' Fin.inductionOn j ?_ ?_
+    refine Fin.inductionOn j ?_ ?_
     · apply (Category.id_comp _).symm
     · rintro i _
       dsimp [extendFan_π_app, Iso.refl_hom, Fan.mk_π_app]
@@ -207,7 +202,7 @@ def extendCofanIsColimit {n : ℕ} (f : Fin (n + 1) → C) {c₁ : Cofan fun i :
     apply t₁.desc ⟨_, Discrete.natTrans fun i => s.ι.app ⟨i.as.succ⟩⟩
   fac s := by
     rintro ⟨j⟩
-    refine' Fin.inductionOn j ?_ ?_
+    refine Fin.inductionOn j ?_ ?_
     · apply (BinaryCofan.IsColimit.desc' t₂ _ _).2.1
     · rintro i -
       dsimp only [extendCofan_ι_app]
@@ -259,11 +254,8 @@ end
 section Preserves
 
 variable (F : C ⥤ D)
-
 variable [PreservesColimitsOfShape (Discrete WalkingPair) F]
-
 variable [PreservesColimitsOfShape (Discrete.{0} PEmpty) F]
-
 variable [HasFiniteCoproducts.{v} C]
 
 /-- If `F` preserves the initial object and binary coproducts, then it preserves products indexed by
@@ -288,9 +280,9 @@ noncomputable def preservesFinOfPreservesBinaryAndInitial :
         (isColimitOfHasBinaryCoproductOfPreservesColimit F _ _)
     refine' IsColimit.ofIsoColimit this _
     apply Cocones.ext _ _
-    apply Iso.refl _
+    · apply Iso.refl _
     rintro ⟨j⟩
-    refine' Fin.inductionOn j ?_ ?_
+    refine Fin.inductionOn j ?_ ?_
     · apply Category.comp_id
     · rintro i _
       dsimp [extendCofan_ι_app, Iso.refl_hom, Cofan.mk_ι_app]

@@ -98,14 +98,9 @@ namespace Poly
 
 section
 
-instance funLike : FunLike (Poly α) (α → ℕ) fun _ => ℤ :=
+instance instFunLike : FunLike (Poly α) (α → ℕ) ℤ :=
   ⟨Subtype.val, Subtype.val_injective⟩
-#align poly.fun_like Poly.funLike
-
--- Porting note: This instance is not necessary anymore
--- /-- Helper instance for when there are too many metavariables to apply `fun_like.has_coe_to_fun`
--- directly. -/
--- instance : CoeFun (Poly α) fun _ => (α → ℕ) → ℤ := FunLike.hasCoeToFun
+#align poly.fun_like Poly.instFunLike
 
 /-- The underlying function of a `Poly` is a polynomial -/
 protected theorem isPoly (f : Poly α) : IsPoly f := f.2
@@ -113,7 +108,7 @@ protected theorem isPoly (f : Poly α) : IsPoly f := f.2
 
 /-- Extensionality for `Poly α` -/
 @[ext]
-theorem ext {f g : Poly α} : (∀ x, f x = g x) → f = g := FunLike.ext _ _
+theorem ext {f g : Poly α} : (∀ x, f x = g x) → f = g := DFunLike.ext _ _
 #align poly.ext Poly.ext
 
 /-- The `i`th projection function, `x_i`. -/
@@ -199,8 +194,9 @@ instance : AddCommGroup (Poly α) := by
             neg := (Neg.neg : Poly α → Poly α)
             sub := Sub.sub
             zero := 0
-            zsmul := @zsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩ ⟨Neg.neg⟩
             nsmul := @nsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩
+            zsmul := @zsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩ ⟨Neg.neg⟩
+              (@nsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩)
             .. }
   all_goals
     intros
@@ -245,7 +241,10 @@ theorem induction {C : Poly α → Prop} (H1 : ∀ i, C (proj i)) (H2 : ∀ n, C
     (H3 : ∀ f g, C f → C g → C (f - g)) (H4 : ∀ f g, C f → C g → C (f * g)) (f : Poly α) : C f := by
   cases' f with f pf
   induction' pf with i n f g pf pg ihf ihg f g pf pg ihf ihg
-  apply H1; apply H2; apply H3 _ _ ihf ihg; apply H4 _ _ ihf ihg
+  · apply H1
+  · apply H2
+  · apply H3 _ _ ihf ihg
+  · apply H4 _ _ ihf ihg
 #align poly.induction Poly.induction
 
 /-- The sum of squares of a list of polynomials. This is relevant for
@@ -341,7 +340,7 @@ theorem inject_dummies (f : β → γ) (g : γ → Option β) (inv : ∀ x, g (f
 
 variable (β)
 
-theorem reindex_dioph (f : α → β) : ∀ _ : Dioph S, Dioph {v | v ∘ f ∈ S}
+theorem reindex_dioph (f : α → β) : Dioph S → Dioph {v | v ∘ f ∈ S}
   | ⟨γ, p, pe⟩ => ⟨γ, p.map (inl ∘ f ⊗ inr), fun v =>
       (pe _).trans <|
         exists_congr fun t =>
@@ -359,7 +358,7 @@ theorem DiophList.forall (l : List (Set <| α → ℕ)) (d : l.Forall Dioph) :
     let ⟨β, pl, h⟩ := this
     ⟨β, Poly.sumsq pl, fun v => (h v).trans <| exists_congr fun t => (Poly.sumsq_eq_zero _ _).symm⟩
   induction' l with S l IH
-  exact ⟨ULift Empty, [], fun _ => by simp⟩
+  · exact ⟨ULift Empty, [], fun _ => by simp⟩
   simp? at d says simp only [List.forall_cons] at d
   exact
     let ⟨⟨β, p, pe⟩, dl⟩ := d
@@ -402,12 +401,12 @@ theorem union : ∀ (_ : Dioph S) (_ : Dioph S'), Dioph (S ∪ S')
                   (q ((v ⊗ t) ∘ (inl ⊗ inr ∘ inr)))).symm))
       -- Porting note: putting everything on the same line fails
       · refine inject_dummies_lem _ ?_ ?_ _ _
-        exact some ⊗ fun _ => none
-        exact fun _ => by simp only [elim_inl]
+        · exact some ⊗ fun _ => none
+        · exact fun _ => by simp only [elim_inl]
       -- Porting note: putting everything on the same line fails
       · refine inject_dummies_lem _ ?_ ?_ _ _
-        exact (fun _ => none) ⊗ some
-        exact fun _ => by simp only [elim_inr]⟩
+        · exact (fun _ => none) ⊗ some
+        · exact fun _ => by simp only [elim_inr]⟩
 #align dioph.union Dioph.union
 
 /-- A partial function is Diophantine if its graph is Diophantine. -/
@@ -613,21 +612,18 @@ theorem eq_dioph : Dioph fun v => f v = g v :=
       exact Int.ofNat_inj.symm.trans ⟨@sub_eq_zero_of_eq ℤ _ (v &0) (v &1), eq_of_sub_eq_zero⟩
 #align dioph.eq_dioph Dioph.eq_dioph
 
--- mathport name: eq_dioph
 scoped infixl:50 " D= " => Dioph.eq_dioph
 
 theorem add_dioph : DiophFn fun v => f v + g v :=
   diophFn_comp2 df dg <| abs_poly_dioph (@Poly.proj (Fin2 2) &0 + @Poly.proj (Fin2 2) &1)
 #align dioph.add_dioph Dioph.add_dioph
 
--- mathport name: add_dioph
 scoped infixl:80 " D+ " => Dioph.add_dioph
 
 theorem mul_dioph : DiophFn fun v => f v * g v :=
   diophFn_comp2 df dg <| abs_poly_dioph (@Poly.proj (Fin2 2) &0 * @Poly.proj (Fin2 2) &1)
 #align dioph.mul_dioph Dioph.mul_dioph
 
--- mathport name: mul_dioph
 scoped infixl:90 " D* " => Dioph.mul_dioph
 
 theorem le_dioph : Dioph {v | f v ≤ g v} :=
@@ -681,7 +677,8 @@ theorem mod_dioph : DiophFn fun v => f v % g v :=
         (vectorAll_iff_forall _).1 fun z x y =>
           show ((y = 0 ∨ z < y) ∧ ∃ c, z + y * c = x) ↔ x % y = z from
             ⟨fun ⟨h, c, hc⟩ => by
-              rw [← hc]; simp; cases' h with x0 hl; rw [x0, mod_zero]
+              rw [← hc]; simp; cases' h with x0 hl
+              · rw [x0, mod_zero]
               exact mod_eq_of_lt hl, fun e => by
                 rw [← e]
                 exact ⟨or_iff_not_imp_left.2 fun h => mod_lt _ (Nat.pos_of_ne_zero h), x / y,
@@ -718,7 +715,6 @@ theorem div_dioph : DiophFn fun v => f v / g v :=
                     Iff.trans ⟨lt_succ_of_le, le_of_lt_succ⟩ (div_lt_iff_lt_mul ypos)).symm
 #align dioph.div_dioph Dioph.div_dioph
 
--- mathport name: div_dioph
 scoped infixl:80 " D/ " => Dioph.div_dioph
 
 open Pell
@@ -765,7 +761,7 @@ theorem pow_dioph : DiophFn fun v => f v ^ g v := by
     let D_pell := pell_dioph.reindex_dioph (Fin2 9) [&4, &8, &1, &0]
     (D&2 D= D.0 D∧ D&0 D= D.1) D∨ (D.0 D< D&2 D∧
     ((D&1 D= D.0 D∧ D&0 D= D.0) D∨ (D.0 D< D&1 D∧
-    ((D∃) 3 <| (D∃) 4 <| (D∃) 5 <| (D∃) 6 $ (D∃) 7 <| (D∃) 8 <| D_pell D∧
+    ((D∃) 3 <| (D∃) 4 <| (D∃) 5 <| (D∃) 6 <| (D∃) 7 <| (D∃) 8 <| D_pell D∧
     (D≡ (D&1) (D&0 D* (D&4 D- D&7) D+ D&6) (D&3)) D∧
     D.2 D* D&4 D* D&7 D= D&3 D+ (D&7 D* D&7 D+ D.1) D∧
     D&6 D< D&3 D∧ D&7 D≤ D&5 D∧ D&8 D≤ D&5 D∧

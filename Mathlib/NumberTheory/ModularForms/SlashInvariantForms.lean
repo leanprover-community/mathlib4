@@ -46,21 +46,21 @@ structure SlashInvariantForm where
 
 /-- `SlashInvariantFormClass F Γ k` asserts `F` is a type of bundled functions that are invariant
 under the `SlashAction`. -/
-class SlashInvariantFormClass extends FunLike F ℍ fun _ => ℂ where
+class SlashInvariantFormClass [FunLike F ℍ ℂ] : Prop where
   slash_action_eq : ∀ (f : F) (γ : Γ), (f : ℍ → ℂ) ∣[k] γ = f
 #align slash_invariant_form_class SlashInvariantFormClass
 
-instance (priority := 100) SlashInvariantFormClass.slashInvariantForm :
-    SlashInvariantFormClass (SlashInvariantForm Γ k) Γ k where
+instance (priority := 100) SlashInvariantForm.funLike :
+    FunLike (SlashInvariantForm Γ k) ℍ ℂ where
   coe := SlashInvariantForm.toFun
   coe_injective' f g h := by cases f; cases g; congr
+
+instance (priority := 100) SlashInvariantFormClass.slashInvariantForm :
+    SlashInvariantFormClass (SlashInvariantForm Γ k) Γ k where
   slash_action_eq := SlashInvariantForm.slash_action_eq'
 #align slash_invariant_form_class.slash_invariant_form SlashInvariantFormClass.slashInvariantForm
 
 variable {F Γ k}
-
-instance : CoeFun (SlashInvariantForm Γ k) fun _ => ℍ → ℂ :=
-  FunLike.hasCoeToFun
 
 @[simp]
 theorem SlashInvariantForm.toFun_eq_coe {f : SlashInvariantForm Γ k} : f.toFun = (f : ℍ → ℂ) :=
@@ -72,7 +72,7 @@ theorem SlashInvariantForm.coe_mk (f : ℍ → ℂ) (hf : ∀ γ : Γ, f ∣[k] 
 
 @[ext]
 theorem SlashInvariantForm.ext {f g : SlashInvariantForm Γ k} (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align slash_invariant_form_ext SlashInvariantForm.ext
 
 /-- Copy of a `SlashInvariantForm` with a new `toFun` equal to the old one.
@@ -89,10 +89,11 @@ namespace SlashInvariantForm
 
 open SlashInvariantForm
 
-variable {F : Type*} {Γ : outParam <| Subgroup SL(2, ℤ)} {k : outParam ℤ}
+variable {F : Type*} {Γ : Subgroup SL(2, ℤ)} {k : ℤ} [FunLike F ℍ ℂ]
 
 -- @[simp] -- Porting note: simpNF says LHS simplifies to something more complex
-theorem slash_action_eqn [SlashInvariantFormClass F Γ k] (f : F) (γ : Γ) : ↑f ∣[k] γ = ⇑f :=
+theorem slash_action_eqn [SlashInvariantFormClass F Γ k] (f : F) (γ : Γ) :
+    ↑f ∣[k] γ = ⇑f :=
   SlashInvariantFormClass.slash_action_eq f γ
 #align slash_invariant_form.slash_action_eqn SlashInvariantForm.slash_action_eqn
 
@@ -192,9 +193,9 @@ theorem sub_apply (f g : SlashInvariantForm Γ k) (z : ℍ) : (f - g) z = f z - 
 #align slash_invariant_form.sub_apply SlashInvariantForm.sub_apply
 
 instance : AddCommGroup (SlashInvariantForm Γ k) :=
-  FunLike.coe_injective.addCommGroup _ rfl coe_add coe_neg coe_sub coe_smul coe_smul
+  DFunLike.coe_injective.addCommGroup _ rfl coe_add coe_neg coe_sub coe_smul coe_smul
 
-/-- Additive coercion from `SlashInvariantForm` to `ℍ → ℂ`.-/
+/-- Additive coercion from `SlashInvariantForm` to `ℍ → ℂ`. -/
 def coeHom : SlashInvariantForm Γ k →+ ℍ → ℂ where
   toFun f := f
   map_zero' := rfl
@@ -202,7 +203,7 @@ def coeHom : SlashInvariantForm Γ k →+ ℍ → ℂ where
 #align slash_invariant_form.coe_hom SlashInvariantForm.coeHom
 
 theorem coeHom_injective : Function.Injective (@coeHom Γ k) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align slash_invariant_form.coe_hom_injective SlashInvariantForm.coeHom_injective
 
 instance : Module ℂ (SlashInvariantForm Γ k) :=

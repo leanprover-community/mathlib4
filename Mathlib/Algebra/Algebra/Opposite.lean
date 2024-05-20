@@ -37,7 +37,7 @@ variable [IsScalarTower R S A]
 
 namespace MulOpposite
 
-instance MulOpposite.instAlgebra : Algebra R Aᵐᵒᵖ where
+instance instAlgebra : Algebra R Aᵐᵒᵖ where
   toRingHom := (algebraMap R A).toOpposite fun x y => Algebra.commutes _ _
   smul_def' c x := unop_injective <| by
     simp only [unop_smul, RingHom.toOpposite_apply, Function.comp_apply, unop_mul, op_mul,

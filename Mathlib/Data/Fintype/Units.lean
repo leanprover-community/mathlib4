@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Sum
-import Mathlib.Data.Int.Units
 import Mathlib.SetTheory.Cardinal.Finite
 
 #align_import data.fintype.units from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
