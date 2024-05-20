@@ -36,23 +36,23 @@ section TopologicalAlgebra
 
 variable (R : Type*) (A : Type u)
 variable [CommSemiring R] [Semiring A] [Algebra R A]
-variable [TopologicalSpace R] [TopologicalSpace A] [TopologicalSemiring A]
+variable [TopologicalSpace R] [TopologicalSpace A]
 
-theorem continuous_algebraMap_iff_smul :
-    Continuous (algebraMap R A) ↔ Continuous fun p : R × A => p.1 • p.2 := by
-  refine' ⟨fun h => _, fun h => _⟩
-  · simp only [Algebra.smul_def]
-    exact (h.comp continuous_fst).mul continuous_snd
-  · rw [algebraMap_eq_smul_one']
-    exact h.comp (continuous_id.prod_mk continuous_const)
-#align continuous_algebra_map_iff_smul continuous_algebraMap_iff_smul
-
-@[continuity]
-theorem continuous_algebraMap [ContinuousSMul R A] : Continuous (algebraMap R A) :=
-  (continuous_algebraMap_iff_smul R A).2 continuous_smul
+ @[continuity, fun_prop]
+theorem continuous_algebraMap [ContinuousSMul R A] : Continuous (algebraMap R A) := by
+  rw [algebraMap_eq_smul_one']
+  exact continuous_id.smul continuous_const
 #align continuous_algebra_map continuous_algebraMap
 
-theorem continuousSMul_of_algebraMap (h : Continuous (algebraMap R A)) : ContinuousSMul R A :=
+theorem continuous_algebraMap_iff_smul [TopologicalSemiring A] :
+    Continuous (algebraMap R A) ↔ Continuous fun p : R × A => p.1 • p.2 := by
+  refine ⟨fun h => ?_, fun h => have : ContinuousSMul R A := ⟨h⟩; continuous_algebraMap _ _⟩
+  simp only [Algebra.smul_def]
+  exact (h.comp continuous_fst).mul continuous_snd
+#align continuous_algebra_map_iff_smul continuous_algebraMap_iff_smul
+
+theorem continuousSMul_of_algebraMap [TopologicalSemiring A] (h : Continuous (algebraMap R A)) :
+    ContinuousSMul R A :=
   ⟨(continuous_algebraMap_iff_smul R A).1 h⟩
 #align has_continuous_smul_of_algebra_map continuousSMul_of_algebraMap
 
