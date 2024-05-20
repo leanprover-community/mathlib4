@@ -32,6 +32,8 @@ example (n : Fin 3) : ∃ x : Nat, x = x := show_term by use n
 
 example : ∃ x : Nat, ∃ y : Nat, x = y := by use 42, 42
 
+run_cmd Lean.logInfo ""
+
 /--
 error: failed to synthesize instance
   OfNat (Nat × Nat) 42
