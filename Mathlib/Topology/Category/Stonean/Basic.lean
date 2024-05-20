@@ -86,6 +86,10 @@ instance : LargeCategory Stonean.{u} :=
 def toCompHaus : Stonean.{u} ⥤ CompHaus.{u} :=
   inducedFunctor _
 
+/-- The forgetful functor `Stonean ⥤ CompHaus` is fully faithful. -/
+def fullyFaithfulToCompHaus : FullyFaithful toCompHaus :=
+  fullyFaithfulInducedFunctor _
+
 /-- Construct a term of `Stonean` from a type endowed with the structure of a
 compact, Hausdorff and extremally disconnected topological space.
 -/
@@ -94,11 +98,10 @@ def of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
   ⟨⟨⟨X, inferInstance⟩⟩⟩
 
 /-- The forgetful functor `Stonean ⥤ CompHaus` is full. -/
-instance : toCompHaus.Full where
-  map_surjective f := ⟨f, rfl⟩
+instance : toCompHaus.Full := fullyFaithfulToCompHaus.full
 
 /-- The forgetful functor `Stonean ⥤ CompHaus` is faithful. -/
-instance : toCompHaus.Faithful := {}
+instance : toCompHaus.Faithful := fullyFaithfulToCompHaus.faithful
 
 /-- Stonean spaces are a concrete category. -/
 instance : ConcreteCategory Stonean where

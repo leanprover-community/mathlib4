@@ -79,10 +79,16 @@ def inducedFunctor : InducedCategory D F ⥤ D where
 #align category_theory.induced_functor_map CategoryTheory.inducedFunctor_map
 #align category_theory.induced_functor_obj CategoryTheory.inducedFunctor_obj
 
-instance InducedCategory.full : (inducedFunctor F).Full where map_surjective f := ⟨f, rfl⟩
+/-- The induced functor `inducedFunctor F : InducedCategory D F ⥤ D` is fully faithful. -/
+def fullyFaithfulInducedFunctor : (inducedFunctor F).FullyFaithful where
+  preimage f := f
+
+instance InducedCategory.full : (inducedFunctor F).Full :=
+  (fullyFaithfulInducedFunctor F).full
 #align category_theory.induced_category.full CategoryTheory.InducedCategory.full
 
-instance InducedCategory.faithful : (inducedFunctor F).Faithful where
+instance InducedCategory.faithful : (inducedFunctor F).Faithful :=
+  (fullyFaithfulInducedFunctor F).faithful
 #align category_theory.induced_category.faithful CategoryTheory.InducedCategory.faithful
 
 end Induced
