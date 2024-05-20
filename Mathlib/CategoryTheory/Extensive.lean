@@ -303,7 +303,7 @@ noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
     apply le_antisymm
     · rintro _ ⟨x, rfl⟩; exact ⟨PUnit.unit, x.2.symm⟩
     · rintro x ⟨⟨⟩, hx⟩; refine ⟨⟨⟨x, PUnit.unit⟩, hx.symm⟩, rfl⟩
-  refine ((TopCat.binaryCofan_isColimit_iff ?_).mpr ⟨?_, ?_, ?_⟩).some
+  refine ((TopCat.binaryCofan_isColimit_iff _).mpr ⟨?_, ?_, ?_⟩).some
   · refine ⟨(Homeomorph.prodPUnit Z).embedding.comp embedding_subtype_val, ?_⟩
     convert f.2.1 _ isOpen_range_inl
   · refine ⟨(Homeomorph.prodPUnit Z).embedding.comp embedding_subtype_val, ?_⟩
