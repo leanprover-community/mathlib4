@@ -215,14 +215,14 @@ theorem eq_zero {β : Type*} [NormedAddCommGroup β] {T : Set α → β} {C : �
 
 theorem add (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive μ T' C') :
     DominatedFinMeasAdditive μ (T + T') (C + C') := by
-  refine' ⟨hT.1.add hT'.1, fun s hs hμs => _⟩
+  refine ⟨hT.1.add hT'.1, fun s hs hμs => ?_⟩
   rw [Pi.add_apply, add_mul]
   exact (norm_add_le _ _).trans (add_le_add (hT.2 s hs hμs) (hT'.2 s hs hμs))
 #align measure_theory.dominated_fin_meas_additive.add MeasureTheory.DominatedFinMeasAdditive.add
 
 theorem smul [NormedField 𝕜] [NormedSpace 𝕜 β] (hT : DominatedFinMeasAdditive μ T C) (c : 𝕜) :
     DominatedFinMeasAdditive μ (fun s => c • T s) (‖c‖ * C) := by
-  refine' ⟨hT.1.smul c, fun s hs hμs => _⟩
+  refine ⟨hT.1.smul c, fun s hs hμs => ?_⟩
   dsimp only
   rw [norm_smul, mul_assoc]
   exact mul_le_mul le_rfl (hT.2 s hs hμs) (norm_nonneg _) (norm_nonneg _)
@@ -344,7 +344,7 @@ theorem map_setToSimpleFunc (T : Set α → F →L[ℝ] F') (h_add : FinMeasAddi
   · exact fun i => measurableSet_fiber _ _
   · intro i hi
     rw [mem_filter] at hi
-    refine' hfp i hi.1 fun hi0 => _
+    refine hfp i hi.1 fun hi0 => ?_
     rw [hi0, hg] at hi
     exact h0 hi.2.symm
   · intro i _j hi _ hij
@@ -481,7 +481,7 @@ theorem setToSimpleFunc_sub (T : Set α → E →L[ℝ] F) (h_add : FinMeasAddit
   intro x hx_ne
   change μ (Neg.neg ∘ g ⁻¹' {x}) < ∞
   rw [preimage_comp, neg_preimage, Set.neg_singleton]
-  refine' hg (-x) _
+  refine hg (-x) ?_
   simp [hx_ne]
 #align measure_theory.simple_func.set_to_simple_func_sub MeasureTheory.SimpleFunc.setToSimpleFunc_sub
 
