@@ -20,8 +20,8 @@ one consequence being that the number of Dyck words with length `2n` is `catalan
 
 ## Main definitions
 
-* `DyckPath`: a list of `U` and `D` steps without any restrictions.
-* `DyckPath.IsDyckWord`: the property defining Dyck words.
+* `DyckWord`: a list of `U`s and `D`s with as many `U`s as `D`s and with every prefix having
+at least as many `U`s as `D`s.
 
 ## Main results
 
@@ -32,11 +32,50 @@ one consequence being that the number of Dyck words with length `2n` is `catalan
 
 ## Implementation notes
 
-While any two-valued type could have been used for `Step`, a new enumerated type has been created
-here to emphasise that the definition of a Dyck word does not depend on that underlying type.
+While any two-valued type could have been used for `DyckStep`, a new enumerated type is used here
+to emphasise that the definition of a Dyck word does not depend on that underlying type.
 -/
 
 open List
+
+section
+
+/-- A `DyckStep` is either `U` or `D`, corresponding to `(` and `)` respectively. -/
+inductive DyckStep
+  | U : DyckStep
+  | D : DyckStep
+  deriving Inhabited, DecidableEq
+
+open DyckStep
+
+lemma dyckStep_cases (s : DyckStep) : s = U ∨ s = D := by cases' s <;> tauto
+
+/-- A Dyck word is a list of `DyckStep`s with _as many_ `U`s as `D`s and with every prefix having
+_at least as many_ `U`s as `D`s. -/
+@[ext]
+structure DyckWord where
+  /-- The underlying list -/
+  l : List DyckStep
+  /-- There are as many `U`s as `D`s -/
+  bal : l.count U = l.count D
+  /-- Each prefix has as least as many `U`s as `D`s -/
+  nonneg : ∀ i, (l.take i).count D ≤ (l.take i).count U
+
+instance : Add DyckWord where
+  add p q := ⟨p.l ++ q.l, by simp only [count_append, p.bal, q.bal], by
+    simp only [take_append_eq_append_take, count_append]
+    exact fun _ ↦ add_le_add (p.nonneg _) (q.nonneg _)⟩
+
+instance : Zero DyckWord := ⟨[], by simp, by simp⟩
+
+/-- Dyck words form an additive monoid under concatenation, with the empty word as 0. -/
+instance : AddMonoid DyckWord where
+  add_zero p := by ext1; exact append_right_eq_self.mpr rfl
+  zero_add p := by ext1; rfl
+  add_assoc p q r := by ext1; apply append_assoc
+  nsmul := nsmulRec
+
+end
 
 namespace DyckPath
 
