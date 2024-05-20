@@ -72,9 +72,9 @@ spectral sequences in general).
 
 noncomputable section
 
-universe u
+universe u v w
 
-variable {k G : Type u} [CommRing k] {n : ℕ}
+variable {k : Type u} {G : Type v} [CommRing k] {n : ℕ}
 
 open CategoryTheory
 
@@ -84,7 +84,7 @@ variable [Monoid G]
 
 /-- The complex `Hom(P, A)`, where `P` is the standard resolution of `k` as a trivial `k`-linear
 `G`-representation. -/
-abbrev linearYonedaObjResolution (A : Rep k G) : CochainComplex (ModuleCat.{u} k) ℕ :=
+abbrev linearYonedaObjResolution (A : Rep k G) : CochainComplex (ModuleCat.{max u w} k) ℕ :=
   (groupCohomology.resolution k G).linearYonedaObj k A
 #align group_cohomology.linear_yoneda_obj_resolution groupCohomology.linearYonedaObjResolution
 

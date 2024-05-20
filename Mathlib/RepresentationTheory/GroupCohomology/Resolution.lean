@@ -266,7 +266,7 @@ end Rep
 open scoped TensorProduct
 
 open Representation
-
+#exit
 /-- The `k[G]`-linear isomorphism `k[G] ⊗ₖ k[Gⁿ] ≃ k[Gⁿ⁺¹]`, where the `k[G]`-module structure on
 the lefthand side is `TensorProduct.leftModule`, whilst that of the righthand side comes from
 `Representation.asModule`. Allows us to use `Algebra.TensorProduct.basis` to get a `k[G]`-basis
@@ -413,7 +413,7 @@ end Rep
 variable (G)
 
 /-- The simplicial `G`-set sending `[n]` to `Gⁿ⁺¹` equipped with the diagonal action of `G`. -/
-def classifyingSpaceUniversalCover [Monoid G] : SimplicialObject (Action (Type u) <| MonCat.of G)
+def classifyingSpaceUniversalCover [Monoid G] : SimplicialObject (Action (Type u) G)
     where
   obj n := Action.ofMulAction G (Fin (n.unop.len + 1) → G)
   map f :=

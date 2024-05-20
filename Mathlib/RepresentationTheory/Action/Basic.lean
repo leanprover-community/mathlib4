@@ -23,8 +23,8 @@ and construct the restriction functors `res {G H : Mon} (f : G ⟶ H) : Action V
 -/
 
 
-universe u v
-
+universe u v w v₁
+set_option pp.universes true
 open CategoryTheory Limits
 
 variable (V : Type (u + 1)) [LargeCategory V]
@@ -36,9 +36,9 @@ the monoid `G` on an object of some category `V`.
 As an example, when `V = ModuleCat R`, this is an `R`-linear representation of `G`,
 while when `V = Type` this is a `G`-action.
 -/
-structure Action (G : MonCat.{u}) where
+structure Action (G : Type v) [Monoid G] where
   V : V
-  ρ : G ⟶ MonCat.of (End V)
+  ρ : G →* End V
 set_option linter.uppercaseLean3 false in
 #align Action Action
 
@@ -47,13 +47,14 @@ namespace Action
 variable {V}
 
 @[simp 1100]
-theorem ρ_one {G : MonCat.{u}} (A : Action V G) : A.ρ 1 = 𝟙 A.V := by rw [MonoidHom.map_one]; rfl
+theorem ρ_one {G : Type v} [Monoid G] (A : Action V G) : A.ρ 1 = 𝟙 A.V := by
+  rw [MonoidHom.map_one]; rfl
 set_option linter.uppercaseLean3 false in
 #align Action.ρ_one Action.ρ_one
 
 /-- When a group acts, we can lift the action to the group of automorphisms. -/
 @[simps]
-def ρAut {G : GroupCat.{u}} (A : Action V (MonCat.of G)) : G ⟶ GroupCat.of (Aut A.V) where
+def ρAut {G : Type v} [Group G] (A : Action V G) : G →* Aut A.V where
   toFun g :=
     { hom := A.ρ g
       inv := A.ρ (g⁻¹ : G)
@@ -67,7 +68,7 @@ set_option linter.uppercaseLean3 false in
 -- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
 attribute [nolint simpNF] Action.ρAut_apply_inv Action.ρAut_apply_hom
 
-variable (G : MonCat.{u})
+variable (G : Type v) [Monoid G]
 
 section
 
@@ -77,13 +78,13 @@ set_option linter.uppercaseLean3 false in
 #align Action.inhabited' Action.inhabited'
 
 /-- The trivial representation of a group. -/
-def trivial : Action AddCommGroupCat G where
+def trivial : Action AddCommGroupCat.{u} G where
   V := AddCommGroupCat.of PUnit
   ρ := 1
 set_option linter.uppercaseLean3 false in
 #align Action.trivial Action.trivial
 
-instance : Inhabited (Action AddCommGroupCat G) :=
+instance : Inhabited (Action AddCommGroupCat.{u} G) :=
   ⟨trivial G⟩
 
 end
@@ -308,16 +309,14 @@ set_option linter.uppercaseLean3 false in
 #align Action.iso.conj_ρ Action.Iso.conj_ρ
 
 /-- Actions/representations of the trivial group are just objects in the ambient category. -/
-def actionPunitEquivalence : Action V (MonCat.of PUnit) ≌ V where
+def actionPunitEquivalence : Action.{u, v} V PUnit ≌ V where
   functor := forget V _
   inverse :=
     { obj := fun X => ⟨X, 1⟩
       map := fun f => ⟨f, fun ⟨⟩ => by simp⟩ }
   unitIso :=
     NatIso.ofComponents fun X => mkIso (Iso.refl _) fun ⟨⟩ => by
-      simp only [MonCat.oneHom_apply, MonCat.one_of, End.one_def, id_eq, Functor.comp_obj,
-        forget_obj, Iso.refl_hom, Category.comp_id]
-      exact ρ_one X
+      simp [Subsingleton.elim.{v + 1} PUnit.unit 1, ρ_one X]
   counitIso := NatIso.ofComponents fun X => Iso.refl _
 set_option linter.uppercaseLean3 false in
 #align Action.Action_punit_equivalence Action.actionPunitEquivalence
@@ -330,10 +329,11 @@ taking actions of `H` to actions of `G`.
 (This makes sense for any homomorphism, but the name is natural when `f` is a monomorphism.)
 -/
 @[simps]
-def res {G H : MonCat} (f : G ⟶ H) : Action V H ⥤ Action V G where
+def res {G : Type v} {H : Type w} [Monoid G] [Monoid H]
+    (f : G →* H) : Action V H ⥤ Action V G where
   obj M :=
     { V := M.V
-      ρ := f ≫ M.ρ }
+      ρ := M.ρ.comp f }
   map p :=
     { hom := p.hom
       comm := fun g => p.comm (f g) }
@@ -344,7 +344,7 @@ set_option linter.uppercaseLean3 false in
 the identity functor on `Action V G`.
 -/
 @[simps!]
-def resId {G : MonCat} : res V (𝟙 G) ≅ 𝟭 (Action V G) :=
+def resId : res V (MonoidHom.id G) ≅ 𝟭 (Action V G) :=
   NatIso.ofComponents fun M => mkIso (Iso.refl _)
 set_option linter.uppercaseLean3 false in
 #align Action.res_id Action.resId
@@ -353,7 +353,9 @@ set_option linter.uppercaseLean3 false in
 to the restriction along the composition of homomorphism.
 -/
 @[simps!]
-def resComp {G H K : MonCat} (f : G ⟶ H) (g : H ⟶ K) : res V g ⋙ res V f ≅ res V (f ≫ g) :=
+def resComp {G : Type v} {H : Type w} {K : Type v₁}
+    [Monoid G] [Monoid H] [Monoid K] (f : G →* H) (g : H →* K) :
+    res V g ⋙ res V f ≅ res V (g.comp f) :=
   NatIso.ofComponents fun M => mkIso (Iso.refl _)
 set_option linter.uppercaseLean3 false in
 #align Action.res_comp Action.resComp
@@ -365,12 +367,13 @@ end Action
 
 namespace CategoryTheory.Functor
 
-variable {V} {W : Type (u + 1)} [LargeCategory W]
+variable {V} {W : Type (v + 1)} [LargeCategory W]
 
 /-- A functor between categories induces a functor between
 the categories of `G`-actions within those categories. -/
 @[simps]
-def mapAction (F : V ⥤ W) (G : MonCat.{u}) : Action V G ⥤ Action W G where
+def mapAction (F : V ⥤ W) (G : Type w) [Monoid G] :
+    Action V G ⥤ Action W G where
   obj M :=
     { V := F.obj M.V
       ρ :=
@@ -378,7 +381,7 @@ def mapAction (F : V ⥤ W) (G : MonCat.{u}) : Action V G ⥤ Action W G where
           map_one' := by simp only [End.one_def, Action.ρ_one, F.map_id, MonCat.one_of]
           map_mul' := fun g h => by
             dsimp
-            rw [map_mul, MonCat.mul_of, End.mul_def, End.mul_def, F.map_comp] } }
+            simp } }
   map f :=
     { hom := F.map f.hom
       comm := fun g => by dsimp; rw [← F.map_comp, f.comm, F.map_comp] }

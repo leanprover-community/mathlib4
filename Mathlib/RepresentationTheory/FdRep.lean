@@ -40,7 +40,7 @@ We verify that `FdRep k G` is a `k`-linear monoidal category, and rigid when `G`
 
 suppress_compilation
 
-universe u
+universe u v w v₁ w₁
 
 open CategoryTheory
 
@@ -49,16 +49,17 @@ open CategoryTheory.Limits
 set_option linter.uppercaseLean3 false -- `FdRep`
 
 /-- The category of finite dimensional `k`-linear representations of a monoid `G`. -/
-abbrev FdRep (k G : Type u) [Field k] [Monoid G] :=
-  Action (FGModuleCat.{u} k) (MonCat.of G)
+abbrev FdRep (k : Type u) (G : Type v) [Field k] [Monoid G] :=
+  Action (FGModuleCat.{u} k) G
 #align fdRep FdRep
 
 namespace FdRep
 
-variable {k G : Type u} [Field k] [Monoid G]
+variable {k : Type u} {G : Type v} [Field k] [Monoid G]
 
 -- Porting note: `@[derive]` didn't work for `FdRep`. Add the 4 instances here.
-instance : LargeCategory (FdRep k G) := inferInstance
+instance {k : Type u} {G : Type u} [Field k] [Monoid G] :
+    LargeCategory (FdRep k G) := inferInstance
 instance : ConcreteCategory (FdRep k G) := inferInstance
 instance : Preadditive (FdRep k G) := inferInstance
 instance : HasFiniteLimits (FdRep k G) := inferInstance
@@ -89,14 +90,14 @@ def ρ (V : FdRep k G) : G →* V →ₗ[k] V :=
 
 /-- The underlying `LinearEquiv` of an isomorphism of representations. -/
 def isoToLinearEquiv {V W : FdRep k G} (i : V ≅ W) : V ≃ₗ[k] W :=
-  FGModuleCat.isoToLinearEquiv ((Action.forget (FGModuleCat k) (MonCat.of G)).mapIso i)
+  FGModuleCat.isoToLinearEquiv ((Action.forget (FGModuleCat k) G).mapIso i)
 #align fdRep.iso_to_linear_equiv FdRep.isoToLinearEquiv
 
 theorem Iso.conj_ρ {V W : FdRep k G} (i : V ≅ W) (g : G) :
     W.ρ g = (FdRep.isoToLinearEquiv i).conj (V.ρ g) := by
   -- Porting note: Changed `rw` to `erw`
   erw [FdRep.isoToLinearEquiv, ← FGModuleCat.Iso.conj_eq_conj, Iso.conj_apply]
-  rw [Iso.eq_inv_comp ((Action.forget (FGModuleCat k) (MonCat.of G)).mapIso i)]
+  rw [Iso.eq_inv_comp ((Action.forget (FGModuleCat k) G).mapIso i)]
   exact (i.hom.comm g).symm
 #align fdRep.iso.conj_ρ FdRep.Iso.conj_ρ
 
@@ -108,7 +109,7 @@ def of {V : Type u} [AddCommGroup V] [Module k V] [FiniteDimensional k V]
 #align fdRep.of FdRep.of
 
 instance : HasForget₂ (FdRep k G) (Rep k G) where
-  forget₂ := (forget₂ (FGModuleCat k) (ModuleCat k)).mapAction (MonCat.of G)
+  forget₂ := (forget₂ (FGModuleCat k) (ModuleCat k)).mapAction G
 
 theorem forget₂_ρ (V : FdRep k G) : ((forget₂ (FdRep k G) (Rep k G)).obj V).ρ = V.ρ := by
   ext g v; rfl
@@ -152,11 +153,11 @@ end FdRep
 
 namespace FdRep
 
-variable {k G : Type u} [Field k] [Group G]
+variable {k : Type u} {G : Type v} [Field k] [Group G]
 
 -- Verify that the right rigid structure is available when the monoid is a group.
 noncomputable instance : RightRigidCategory (FdRep k G) := by
-  change RightRigidCategory (Action (FGModuleCat k) (GroupCat.of G)); infer_instance
+  change RightRigidCategory (Action (FGModuleCat k) G); infer_instance
 
 end FdRep
 
@@ -169,7 +170,7 @@ namespace FdRep
 -- below should then just be obtained from general results about rigid categories.
 open Representation
 
-variable {k G V : Type u} [Field k] [Group G]
+variable {k : Type u} {G : Type v} {V : Type u} [Field k] [Group G]
 variable [AddCommGroup V] [Module k V]
 variable [FiniteDimensional k V]
 variable (ρV : Representation k G V) (W : FdRep k G)
