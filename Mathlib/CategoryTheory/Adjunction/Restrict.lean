@@ -37,11 +37,12 @@ noncomputable def restrictFullyFaithful : L ⊣ R :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X Y =>
         calc
-          (L.obj X ⟶ Y) ≃ (iD.obj (L.obj X) ⟶ iD.obj Y) := equivOfFullyFaithful iD
+          (L.obj X ⟶ Y) ≃ (iD.obj (L.obj X) ⟶ iD.obj Y) :=
+              (Functor.FullyFaithful.ofFullyFaithful iD).homEquiv
           _ ≃ (L'.obj (iC.obj X) ⟶ iD.obj Y) := Iso.homCongr (comm1.symm.app X) (Iso.refl _)
           _ ≃ (iC.obj X ⟶ R'.obj (iD.obj Y)) := adj.homEquiv _ _
           _ ≃ (iC.obj X ⟶ iC.obj (R.obj Y)) := Iso.homCongr (Iso.refl _) (comm2.app Y)
-          _ ≃ (X ⟶ R.obj Y) := (equivOfFullyFaithful iC).symm
+          _ ≃ (X ⟶ R.obj Y) := (Functor.FullyFaithful.ofFullyFaithful iC).homEquiv.symm
 
       homEquiv_naturality_left_symm := fun {X' X Y} f g => by
         apply iD.map_injective

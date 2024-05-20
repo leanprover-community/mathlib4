@@ -169,7 +169,7 @@ theorem toSheafify_isLocallySurjective (F : Cᵒᵖ ⥤ B) : IsLocallySurjective
   rw [isLocallySurjective_iff_whisker_forget, ← toSheafify_comp_sheafifyCompIso_inv]
   apply IsLocallySurjective.comp
   · rw [isLocallySurjective_iff_imagePresheaf_sheafify_eq_top, Subpresheaf.eq_top_iff_isIso]
-    exact (sheafificationIsoImagePresheaf J (F ⋙ forget B)).isIso_hom
+    exact (sheafificationIsoImagePresheaf J (F ⋙ forget B)).isIso_inv
   · exact isLocallySurjective_of_iso _ _
 #align category_theory.to_sheafify_is_locally_surjective CategoryTheory.toSheafify_isLocallySurjective
 

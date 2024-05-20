@@ -115,7 +115,8 @@ instance Reflective.comp (F : C ⥤ D) (G : D ⥤ E) [Reflective F] [Reflective 
 /-- (Implementation) Auxiliary definition for `unitCompPartialBijective`. -/
 def unitCompPartialBijectiveAux [Reflective i] (A : C) (B : D) :
     (A ⟶ i.obj B) ≃ (i.obj ((reflector i).obj A) ⟶ i.obj B) :=
-  ((reflectorAdjunction i).homEquiv _ _).symm.trans (equivOfFullyFaithful i)
+  ((reflectorAdjunction i).homEquiv _ _).symm.trans
+    (Functor.FullyFaithful.ofFullyFaithful i).homEquiv
 #align category_theory.unit_comp_partial_bijective_aux CategoryTheory.unitCompPartialBijectiveAux
 
 /-- The description of the inverse of the bijection `unitCompPartialBijectiveAux`. -/
