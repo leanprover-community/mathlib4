@@ -24,7 +24,7 @@ We define the subtype of open sets in a topological space.
 ### Bundled open sets
 
 - `TopologicalSpace.Opens α` is the type of open subsets of a topological space `α`.
-- `TopologicalSpace.Opens.IsBasis` is a predicate saying that a set of `opens`s form a topological
+- `TopologicalSpace.Opens.IsBasis` is a predicate saying that a set of `Opens`s form a topological
   basis.
 - `TopologicalSpace.Opens.comap`: preimage of an open set under a continuous map as a `FrameHom`.
 - `Homeomorph.opensCongr`: order-preserving equivalence between open sets in the domain and the
@@ -39,7 +39,7 @@ We define the subtype of open sets in a topological space.
 
 ## Main results
 
-We define order structures on both `opens α` (`complete_structure`, `frame`) and `open_nhds_of x`
+We define order structures on both `Opens α` (`CompleteLattice`, `Frame`) and `OpenNhdsOf x`
 (`OrderTop`, `DistribLattice`).
 
 ## TODO
@@ -276,7 +276,7 @@ theorem not_nonempty_iff_eq_bot (U : Opens α) : ¬Set.Nonempty (U : Set α) ↔
 #align topological_space.opens.not_nonempty_iff_eq_bot TopologicalSpace.Opens.not_nonempty_iff_eq_bot
 
 theorem ne_bot_iff_nonempty (U : Opens α) : U ≠ ⊥ ↔ Set.Nonempty (U : Set α) := by
-  rw [Ne.def, ← not_nonempty_iff_eq_bot, not_not]
+  rw [Ne, ← not_nonempty_iff_eq_bot, not_not]
 #align topological_space.opens.ne_bot_iff_nonempty TopologicalSpace.Opens.ne_bot_iff_nonempty
 
 /-- An open set in the indiscrete topology is either empty or the whole space. -/

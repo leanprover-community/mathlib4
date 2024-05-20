@@ -40,7 +40,7 @@ namespace Matrix
 open Matrix BigOperators
 
 /-- `Matrix.hadamard` defines the Hadamard product,
-    which is the pointwise product of two matrices of the same size.-/
+    which is the pointwise product of two matrices of the same size. -/
 def hadamard [Mul α] (A : Matrix m n α) (B : Matrix m n α) : Matrix m n α :=
   of fun i j => A i j * B i j
 #align matrix.hadamard Matrix.hadamard
@@ -52,7 +52,6 @@ theorem hadamard_apply [Mul α] (A : Matrix m n α) (B : Matrix m n α) (i j) :
   rfl
 #align matrix.hadamard_apply Matrix.hadamard_apply
 
--- mathport name: matrix.hadamard
 scoped infixl:100 " ⊙ " => Matrix.hadamard
 
 section BasicProperties

@@ -131,7 +131,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
       apply this
       calc
         edist z x ≤ edist y z + edist y x := edist_triangle_left _ _ _
-        _ < 2⁻¹ ^ m + 2⁻¹ ^ (n + k + 1) := (ENNReal.add_lt_add hz hyx)
+        _ < 2⁻¹ ^ m + 2⁻¹ ^ (n + k + 1) := ENNReal.add_lt_add hz hyx
         _ ≤ 2⁻¹ ^ (k + 1) + 2⁻¹ ^ (k + 1) :=
           (add_le_add (hpow_le <| by omega) (hpow_le <| by omega))
         _ = 2⁻¹ ^ k := by rw [← two_mul, h2pow]

@@ -411,7 +411,7 @@ theorem shadow_compression_subset_compression_shadow (u v : Finset α)
       sdiff_union_of_subset (hus.trans <| subset_union_left _ _),
       sdiff_erase (mem_union_right _ ‹z ∈ v›), union_sdiff_cancel_right hsv]
   -- If `w ∉ u`, we contradict `m` again
-  rw [mem_sdiff, ← not_imp, Classical.not_not] at hwB
+  rw [mem_sdiff, ← Classical.not_imp, Classical.not_not] at hwB
   apply m w (hwu ∘ hwB ∘ mem_union_left _)
   have : (insert w ((s ∪ v) \ u) ∪ u) \ v ∈ 𝒜 :=
     sup_sdiff_mem_of_mem_compression ‹insert w ((s ∪ v) \ u) ∈ 𝒜'› ‹_›

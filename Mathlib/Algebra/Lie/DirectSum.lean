@@ -166,16 +166,16 @@ def lieAlgebraOf [DecidableEq ι] (j : ι) : L j →ₗ⁅R⁆ ⨁ i, L i :=
         -- with `simp [of, singleAddHom]`
         simp only [of, singleAddHom, bracket_apply]
         erw [AddHom.coe_mk, single_apply, single_apply]
-        simp? [h] says simp only [h, ↓reduceDite, single_apply]
-        intros
-        erw [single_add]
+        · simp? [h] says simp only [h, ↓reduceDite, single_apply]
+        · intros
+          erw [single_add]
       · -- This used to be the end of the proof before leanprover/lean4#2644
         -- with `simp [of, singleAddHom]`
         simp only [of, singleAddHom, bracket_apply]
         erw [AddHom.coe_mk, single_apply, single_apply]
-        simp only [h, dite_false, single_apply, lie_self]
-        intros
-        erw [single_add] }
+        · simp only [h, dite_false, single_apply, lie_self]
+        · intros
+          erw [single_add] }
 #align direct_sum.lie_algebra_of DirectSum.lieAlgebraOf
 
 /-- The projection map onto one component, as a morphism of Lie algebras. -/

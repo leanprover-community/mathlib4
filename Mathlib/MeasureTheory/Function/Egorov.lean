@@ -90,8 +90,7 @@ theorem measure_notConvergentSeq_tendsto_zero [SemilatticeSup ι] [Countable ι]
   rw [← measure_inter_notConvergentSeq_eq_zero hfg n, Set.inter_iInter]
   refine' tendsto_measure_iInter (fun n => hsm.inter <| notConvergentSeq_measurableSet hf hg)
     (fun k l hkl => Set.inter_subset_inter_right _ <| notConvergentSeq_antitone hkl)
-    ⟨h.some,
-      (lt_of_le_of_lt (measure_mono <| Set.inter_subset_left _ _) (lt_top_iff_ne_top.2 hs)).ne⟩
+    ⟨h.some, ne_top_of_le_ne_top hs (measure_mono <| Set.inter_subset_left _ _)⟩
 #align measure_theory.egorov.measure_not_convergent_seq_tendsto_zero MeasureTheory.Egorov.measure_notConvergentSeq_tendsto_zero
 
 variable [SemilatticeSup ι] [Nonempty ι] [Countable ι]
@@ -153,7 +152,7 @@ theorem measure_iUnionNotConvergentSeq (hε : 0 < ε) (hf : ∀ n, StronglyMeasu
   simp_rw [ENNReal.ofReal_mul (half_pos hε).le]
   rw [ENNReal.tsum_mul_left, ← ENNReal.ofReal_tsum_of_nonneg, inv_eq_one_div, tsum_geometric_two,
     ← ENNReal.ofReal_mul (half_pos hε).le, div_mul_cancel₀ ε two_ne_zero]
-  · exact fun n => pow_nonneg (by norm_num) _
+  · intro n; positivity
   · rw [inv_eq_one_div]
     exact summable_geometric_two
 #align measure_theory.egorov.measure_Union_not_convergent_seq MeasureTheory.Egorov.measure_iUnionNotConvergentSeq

@@ -144,7 +144,7 @@ theorem perm_nodupKeys {l₁ l₂ : List (Sigma β)} (h : l₁ ~ l₂) : NodupKe
 theorem nodupKeys_join {L : List (List (Sigma β))} :
     NodupKeys (join L) ↔ (∀ l ∈ L, NodupKeys l) ∧ Pairwise Disjoint (L.map keys) := by
   rw [nodupKeys_iff_pairwise, pairwise_join, pairwise_map]
-  refine' and_congr (ball_congr fun l _ => by simp [nodupKeys_iff_pairwise]) _
+  refine' and_congr (forall₂_congr fun l _ => by simp [nodupKeys_iff_pairwise]) _
   apply iff_of_eq; congr with (l₁ l₂)
   simp [keys, disjoint_iff_ne]
 #align list.nodupkeys_join List.nodupKeys_join
@@ -272,6 +272,9 @@ theorem lookupAll_eq_nil {a : α} :
   | ⟨a', b⟩ :: l => by
     by_cases h : a = a'
     · subst a'
+      simp only [lookupAll_cons_eq, mem_cons, Sigma.mk.inj_iff, heq_eq_eq, true_and, not_or,
+        false_iff, not_forall, not_and, not_not]
+      use b
       simp
     · simp [h, lookupAll_eq_nil]
 #align list.lookup_all_eq_nil List.lookupAll_eq_nil
@@ -434,7 +437,7 @@ theorem exists_of_kerase {a : α} {l : List (Sigma β)} (h : a ∈ l.keys) :
       exact ⟨hd.2, [], tl, by simp, by cases hd; rfl, by simp⟩
     · simp only [keys_cons, mem_cons] at h
       cases' h with h h
-      exact absurd h e
+      · exact absurd h e
       rcases ih h with ⟨b, tl₁, tl₂, h₁, h₂, h₃⟩
       exact ⟨b, hd :: tl₁, tl₂, not_mem_cons_of_ne_of_not_mem e h₁, by (rw [h₂]; rfl), by
             simp [e, h₃]⟩
@@ -655,7 +658,8 @@ theorem nodupKeys_dedupKeys (l : List (Sigma β)) : NodupKeys (dedupKeys l) := b
 #align list.nodupkeys_dedupkeys List.nodupKeys_dedupKeys
 
 theorem dlookup_dedupKeys (a : α) (l : List (Sigma β)) : dlookup a (dedupKeys l) = dlookup a l := by
-  induction' l with l_hd _ l_ih; rfl
+  induction' l with l_hd _ l_ih
+  · rfl
   cases' l_hd with a' b
   by_cases h : a = a'
   · subst a'
@@ -669,10 +673,10 @@ theorem sizeOf_dedupKeys {α} {β : α → Type*} [DecidableEq α] [SizeOf (Sigm
   simp only [SizeOf.sizeOf, _sizeOf_1]
   induction' xs with x xs
   · simp [dedupKeys]
-  · simp only [dedupKeys_cons, kinsert_def, add_le_add_iff_left, Sigma.eta]
+  · simp only [dedupKeys_cons, kinsert_def, Nat.add_le_add_iff_left, Sigma.eta]
     trans
-    apply sizeOf_kerase
-    assumption
+    · apply sizeOf_kerase
+    · assumption
 #align list.sizeof_dedupkeys List.sizeOf_dedupKeys
 
 /-! ### `kunion` -/

@@ -337,12 +337,12 @@ theorem midpoint_mem_segment [Invertible (2 : 𝕜)] (x y : E) : midpoint 𝕜 x
 #align midpoint_mem_segment midpoint_mem_segment
 
 theorem mem_segment_sub_add [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x - y -[𝕜] x + y] := by
-  convert @midpoint_mem_segment 𝕜 _ _ _ _ _ _ _
+  convert @midpoint_mem_segment 𝕜 _ _ _ _ _ (x - y) (x + y)
   rw [midpoint_sub_add]
 #align mem_segment_sub_add mem_segment_sub_add
 
 theorem mem_segment_add_sub [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x + y -[𝕜] x - y] := by
-  convert @midpoint_mem_segment 𝕜 _ _ _ _ _ _ _
+  convert @midpoint_mem_segment 𝕜 _ _ _ _ _ (x + y) (x - y)
   rw [midpoint_add_sub]
 #align mem_segment_add_sub mem_segment_add_sub
 
@@ -457,12 +457,12 @@ variable [OrderedAddCommMonoid E] [Module 𝕜 E] [OrderedSMul 𝕜 E] {x y : E}
 theorem segment_subset_Icc (h : x ≤ y) : [x -[𝕜] y] ⊆ Icc x y := by
   rintro z ⟨a, b, ha, hb, hab, rfl⟩
   constructor
-  calc
-    x = a • x + b • x := (Convex.combo_self hab _).symm
-    _ ≤ a • x + b • y := by gcongr
-  calc
-    a • x + b • y ≤ a • y + b • y := by gcongr
-    _ = y := Convex.combo_self hab _
+  · calc
+      x = a • x + b • x := (Convex.combo_self hab _).symm
+      _ ≤ a • x + b • y := by gcongr
+  · calc
+      a • x + b • y ≤ a • y + b • y := by gcongr
+      _ = y := Convex.combo_self hab _
 #align segment_subset_Icc segment_subset_Icc
 
 end OrderedAddCommMonoid
@@ -474,12 +474,12 @@ variable [OrderedCancelAddCommMonoid E] [Module 𝕜 E] [OrderedSMul 𝕜 E] {x 
 theorem openSegment_subset_Ioo (h : x < y) : openSegment 𝕜 x y ⊆ Ioo x y := by
   rintro z ⟨a, b, ha, hb, hab, rfl⟩
   constructor
-  calc
-    x = a • x + b • x := (Convex.combo_self hab _).symm
-    _ < a • x + b • y := by gcongr
-  calc
-    a • x + b • y < a • y + b • y := by gcongr
-    _ = y := Convex.combo_self hab _
+  · calc
+      x = a • x + b • x := (Convex.combo_self hab _).symm
+      _ < a • x + b • y := by gcongr
+  · calc
+      a • x + b • y < a • y + b • y := by gcongr
+      _ = y := Convex.combo_self hab _
 #align open_segment_subset_Ioo openSegment_subset_Ioo
 
 end OrderedCancelAddCommMonoid

@@ -241,7 +241,7 @@ theorem tprod_eq_one_iff (hf : Multipliable f) : ∏' i, f i = 1 ↔ ∀ x, f x 
 
 @[to_additive]
 theorem tprod_ne_one_iff (hf : Multipliable f) : ∏' i, f i ≠ 1 ↔ ∃ x, f x ≠ 1 := by
-  rw [Ne.def, tprod_eq_one_iff hf, not_forall]
+  rw [Ne, tprod_eq_one_iff hf, not_forall]
 #align tsum_ne_zero_iff tsum_ne_zero_iff
 
 @[to_additive]

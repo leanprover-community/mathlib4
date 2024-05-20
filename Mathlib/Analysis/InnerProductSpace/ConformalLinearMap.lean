@@ -35,7 +35,7 @@ theorem isConformalMap_iff (f : E →L[ℝ] F) :
       coe_toContinuousLinearMap, Pi.smul_apply, inner_map_map]
   · rintro ⟨c₁, hc₁, huv⟩
     obtain ⟨c, hc, rfl⟩ : ∃ c : ℝ, 0 < c ∧ c₁ = c * c :=
-      ⟨Real.sqrt c₁, Real.sqrt_pos.2 hc₁, (Real.mul_self_sqrt hc₁.le).symm⟩
+      ⟨√c₁, Real.sqrt_pos.2 hc₁, (Real.mul_self_sqrt hc₁.le).symm⟩
     refine' ⟨c, hc.ne', (c⁻¹ • f : E →ₗ[ℝ] F).isometryOfInner fun u v => _, _⟩
     · simp only [real_inner_smul_left, real_inner_smul_right, huv, mul_assoc, coe_smul,
         inv_mul_cancel_left₀ hc.ne', LinearMap.smul_apply, ContinuousLinearMap.coe_coe]
