@@ -138,7 +138,7 @@ theorem contDiffWithinAt_localInvariantProp (n : ℕ∞) :
     · ext y; simp only [mfld_simps]
     refine mem_nhdsWithin.mpr
       ⟨I.symm ⁻¹' e.target, e.open_target.preimage I.continuous_symm, by
-        simp_rw [mem_preimage, I.left_inv, e.mapsTo hx], _⟩
+        simp_rw [mem_preimage, I.left_inv, e.mapsTo hx], ?_⟩
     mfld_set_tac
   congr_of_forall := by
     intro s x f g h hx hf

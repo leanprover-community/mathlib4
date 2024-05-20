@@ -378,7 +378,7 @@ theorem eventually_injective [Nonempty J] [Finite F.sections] :
   let fn j := Fintype.card F.sections - Fintype.card (F.obj j)
   refine ⟨fn.argmin Nat.lt_wfRel.wf,
     fun i f => ((Fintype.bijective_iff_surjective_and_card _).2
-      ⟨Fsur f, le_antisymm _ (Fintype.card_le_of_surjective _ <| Fsur f)⟩).1⟩
+      ⟨Fsur f, le_antisymm ?_ (Fintype.card_le_of_surjective _ <| Fsur f)⟩).1⟩
   rw [← Nat.sub_sub_self (card_le i), tsub_le_iff_tsub_le]
   apply fn.argmin_le
 #align category_theory.functor.eventually_injective CategoryTheory.Functor.eventually_injective
