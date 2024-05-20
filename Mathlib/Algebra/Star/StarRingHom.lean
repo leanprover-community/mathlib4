@@ -140,8 +140,7 @@ instance : RingEquivClass (A ≃⋆+* B) A B where
   map_mul f := f.map_mul'
   map_add f := f.map_add'
 
-instance : StarRingEquivClass (A ≃⋆+* B) A B
-    where
+instance : StarRingEquivClass (A ≃⋆+* B) A B where
   map_star := map_star'
 
 end Basic
