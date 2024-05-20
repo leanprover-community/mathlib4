@@ -62,8 +62,7 @@ attribute [instance 100] AddTorsor.nonempty
 /-- An `AddGroup G` is a torsor for itself. -/
 -- Porting note(#12096): linter not ported yet
 --@[nolint instance_priority]
-instance addGroupIsAddTorsor (G : Type*) [AddGroup G] : AddTorsor G G
-    where
+instance addGroupIsAddTorsor (G : Type*) [AddGroup G] : AddTorsor G G where
   vsub := Sub.sub
   vsub_vadd' := sub_add_cancel
   vadd_vsub' := add_sub_cancel_right

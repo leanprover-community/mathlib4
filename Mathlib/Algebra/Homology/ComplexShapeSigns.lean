@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.ComplexShape
-import Mathlib.Algebra.GroupPower.NegOnePow
+import Mathlib.Algebra.Ring.NegOnePow
 
 /-! Signs in constructions on homological complexes
 

@@ -198,7 +198,7 @@ theorem inducedOuterMeasure_eq_iInf (s : Set α) :
   apply le_antisymm
   · simp only [le_iInf_iff]
     intro t ht hs
-    refine' le_trans (mono' _ hs) _
+    refine' le_trans (measure_mono hs) _
     exact le_of_eq (inducedOuterMeasure_eq' _ msU m_mono _)
   · refine' le_iInf _
     intro f
@@ -256,10 +256,8 @@ theorem inducedOuterMeasure_caratheodory (s : Set α) :
     intro ht
     refine' le_iInf _
     intro h2t
-    refine' le_trans _ (le_trans (h t ht) <| le_of_eq <| inducedOuterMeasure_eq' _ msU m_mono ht)
-    refine'
-      add_le_add (mono' _ <| Set.inter_subset_inter_left _ h2t)
-        (mono' _ <| diff_subset_diff_left h2t)
+    refine le_trans ?_ ((h t ht).trans_eq <| inducedOuterMeasure_eq' _ msU m_mono ht)
+    gcongr
 #align measure_theory.induced_outer_measure_caratheodory MeasureTheory.inducedOuterMeasure_caratheodory
 
 end ExtendSet
@@ -332,7 +330,7 @@ theorem le_trim : m ≤ m.trim := le_trim_iff.2 fun _ _ ↦ le_rfl
 @[simp] -- Porting note: added `simp`
 theorem trim_eq {s : Set α} (hs : MeasurableSet s) : m.trim s = m s :=
   inducedOuterMeasure_eq' MeasurableSet.iUnion (fun f _hf => m.iUnion f)
-    (fun _ _ _ _ h => m.mono h) hs
+    (fun _ _ _ _ h => measure_mono h) hs
 #align measure_theory.outer_measure.trim_eq MeasureTheory.OuterMeasure.trim_eq
 
 theorem trim_congr {m₁ m₂ : OuterMeasure α} (H : ∀ {s : Set α}, MeasurableSet s → m₁ s = m₂ s) :
@@ -366,7 +364,7 @@ theorem trim_eq_iInf (s : Set α) : m.trim s = ⨅ (t) (_ : s ⊆ t) (_ : Measur
   simp (config := { singlePass := true }) only [iInf_comm]
   exact
     inducedOuterMeasure_eq_iInf MeasurableSet.iUnion (fun f _ => m.iUnion f)
-      (fun _ _ _ _ h => m.mono h) s
+      (fun _ _ _ _ h => measure_mono h) s
 #align measure_theory.outer_measure.trim_eq_infi MeasureTheory.OuterMeasure.trim_eq_iInf
 
 theorem trim_eq_iInf' (s : Set α) : m.trim s = ⨅ t : { t // s ⊆ t ∧ MeasurableSet t }, m t := by
@@ -386,7 +384,7 @@ theorem trim_top : (⊤ : OuterMeasure α).trim = ⊤ :=
 theorem trim_zero : (0 : OuterMeasure α).trim = 0 :=
   ext fun s =>
     le_antisymm
-      (le_trans ((trim 0).mono (subset_univ s)) <| le_of_eq <| trim_eq _ MeasurableSet.univ)
+      ((measure_mono (subset_univ s)).trans_eq <| trim_eq _ MeasurableSet.univ)
       (zero_le _)
 #align measure_theory.outer_measure.trim_zero MeasureTheory.OuterMeasure.trim_zero
 
@@ -439,7 +437,7 @@ theorem exists_measurable_superset_forall_eq_trim {ι} [Countable ι] (μ : ι �
   replace hst := subset_iInter hst
   replace ht := MeasurableSet.iInter ht
   refine' ⟨⋂ i, t i, hst, ht, fun i => le_antisymm _ _⟩
-  exacts [hμt i ▸ (μ i).mono (iInter_subset _ _), (mono' _ hst).trans_eq ((μ i).trim_eq ht)]
+  exacts [hμt i ▸ (μ i).mono (iInter_subset _ _), (measure_mono hst).trans_eq ((μ i).trim_eq ht)]
 #align measure_theory.outer_measure.exists_measurable_superset_forall_eq_trim MeasureTheory.OuterMeasure.exists_measurable_superset_forall_eq_trim
 
 /-- If `m₁ s = op (m₂ s) (m₃ s)` for all `s`, then the same is true for `m₁.trim`, `m₂.trim`,
@@ -496,10 +494,10 @@ theorem restrict_trim {μ : OuterMeasure α} {s : Set α} (hs : MeasurableSet s)
     rcases μ.exists_measurable_superset_eq_trim (t ∩ s) with ⟨t', htt', ht', hμt'⟩
     rw [← hμt']
     rw [inter_subset] at htt'
-    refine' (mono' _ htt').trans _
+    refine' (measure_mono htt').trans _
     rw [trim_eq _ (hs.compl.union ht'), restrict_apply, union_inter_distrib_right, compl_inter_self,
       Set.empty_union]
-    exact μ.mono' (inter_subset_left _ _)
+    exact measure_mono (inter_subset_left _ _)
   · rw [restrict_apply, trim_eq _ (ht.inter hs), restrict_apply]
 #align measure_theory.outer_measure.restrict_trim MeasureTheory.OuterMeasure.restrict_trim
 

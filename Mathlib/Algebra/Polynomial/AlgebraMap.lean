@@ -35,8 +35,7 @@ variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 variable {p q r : R[X]}
 
 /-- Note that this instance also provides `Algebra R R[X]`. -/
-instance algebraOfAlgebra : Algebra R A[X]
-    where
+instance algebraOfAlgebra : Algebra R A[X] where
   smul_def' r p :=
     toFinsupp_injective <| by
       dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply]
@@ -112,12 +111,12 @@ variable {R}
 instance subalgebraNontrivial [Nontrivial A] : Nontrivial (Subalgebra R A[X]) :=
   ⟨⟨⊥, ⊤, by
       rw [Ne, SetLike.ext_iff, not_forall]
-      refine' ⟨X, _⟩
+      refine ⟨X, ?_⟩
       simp only [Algebra.mem_bot, not_exists, Set.mem_range, iff_true_iff, Algebra.mem_top,
         algebraMap_apply, not_forall]
       intro x
       rw [ext_iff, not_forall]
-      refine' ⟨1, _⟩
+      refine ⟨1, ?_⟩
       simp [coeff_C]⟩⟩
 
 @[simp]
