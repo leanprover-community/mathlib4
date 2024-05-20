@@ -3,8 +3,9 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.RingTheory.Finiteness
-import Mathlib.LinearAlgebra.Dimension
+import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.LinearAlgebra.Dimension.Constructions
+import Mathlib.LinearAlgebra.Dimension.Finite
 
 #align_import field_theory.finiteness from "leanprover-community/mathlib"@"039a089d2a4b93c761b234f3e5f5aeb752bac60f"
 
@@ -16,7 +17,8 @@ import Mathlib.LinearAlgebra.Dimension
 
 universe u v
 
-open Classical Cardinal
+open scoped Classical
+open Cardinal
 
 open Cardinal Submodule Module Function
 
@@ -32,7 +34,7 @@ theorem iff_rank_lt_aleph0 : IsNoetherian K V ↔ Module.rank K V < ℵ₀ := by
   rw [← b.mk_eq_rank'', lt_aleph0_iff_set_finite]
   constructor
   · intro
-    exact finite_of_linearIndependent (Basis.ofVectorSpaceIndex.linearIndependent K V)
+    exact (Basis.ofVectorSpaceIndex.linearIndependent K V).set_finite_of_isNoetherian
   · intro hbfinite
     refine'
       @isNoetherian_of_linearEquiv K (⊤ : Submodule K V) V _ _ _ _ _ (LinearEquiv.ofTop _ rfl)
@@ -43,11 +45,8 @@ theorem iff_rank_lt_aleph0 : IsNoetherian K V ↔ Module.rank K V < ℵ₀ := by
 
 variable (K V)
 
-/-- The dimension of a noetherian module over a division ring, as a cardinal,
-is strictly less than the first infinite cardinal `ℵ₀`. -/
-theorem rank_lt_aleph0 : ∀ [IsNoetherian K V], Module.rank K V < ℵ₀ :=
-  @IsNoetherian.iff_rank_lt_aleph0.1
-#align is_noetherian.rank_lt_aleph_0 IsNoetherian.rank_lt_aleph0
+@[deprecated (since := "2023-01-01")] protected alias rank_lt_aleph0 := _root_.rank_lt_aleph0
+#align is_noetherian.rank_lt_aleph_0 rank_lt_aleph0
 
 variable {K V}
 
@@ -89,7 +88,7 @@ theorem coeSort_finsetBasisIndex [IsNoetherian K V] :
 #align is_noetherian.coe_sort_finset_basis_index IsNoetherian.coeSort_finsetBasisIndex
 
 /-- In a noetherian module over a division ring, there exists a finite basis.
-This is indexed by the `Finset` `FiniteDimensional.finsetBasisIndex`.
+This is indexed by the `Finset` `IsNoetherian.finsetBasisIndex`.
 This is in contrast to the result `finite_basis_index (Basis.ofVectorSpace K V)`,
 which provides a set and a `Set.finite`.
 -/

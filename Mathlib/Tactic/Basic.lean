@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kyle Miller
 -/
 import Lean
-import Std
+import Batteries
 import Mathlib.Tactic.PPWithUniv
 import Mathlib.Tactic.ExtendDoc
+import Mathlib.Tactic.Lemma
+import Mathlib.Tactic.TypeStar
 
 set_option autoImplicit true
 
@@ -21,31 +23,6 @@ syntax (name := «variables») "variables" (ppSpace bracketedBinder)* : command
     elabVariable (← `(variable%$pos $binders*))
   | _ => throwUnsupportedSyntax
 
-/-- `lemma` means the same as `theorem`. It is used to denote "less important" theorems -/
-syntax (name := lemma) declModifiers
-  group("lemma " declId ppIndent(declSig) declVal Parser.Command.terminationSuffix) : command
-
-/-- Implementation of the `lemma` command, by macro expansion to `theorem`. -/
-@[macro «lemma»] def expandLemma : Macro := fun stx =>
-  -- FIXME: this should be a macro match, but terminationSuffix is not easy to bind correctly.
-  -- This implementation ensures that any future changes to `theorem` are reflected in `lemma`
-  let stx := stx.modifyArg 1 fun stx =>
-    let stx := stx.modifyArg 0 (mkAtomFrom · "theorem" (canonical := true))
-    stx.setKind ``Parser.Command.theorem
-  pure <| stx.setKind ``Parser.Command.declaration
-
-/-- The syntax `variable (X Y ... Z : Sort*)` creates a new distinct implicit universe variable
-for each variable in the sequence. -/
-elab "Sort*" : term => do
-  let u ← Lean.Meta.mkFreshLevelMVar
-  Elab.Term.levelMVarToParam (.sort u)
-
-/-- The syntax `variable (X Y ... Z : Type*)` creates a new distinct implicit universe variable
-`> 0` for each variable in the sequence. -/
-elab "Type*" : term => do
-  let u ← Lean.Meta.mkFreshLevelMVar
-  Elab.Term.levelMVarToParam (.sort (.succ u))
-
 /-- Given two arrays of `FVarId`s, one from an old local context and the other from a new local
 context, pushes `FVarAliasInfo`s into the info tree for corresponding pairs of `FVarId`s.
 Recall that variables linked this way should be considered to be semantically identical.
@@ -58,16 +35,6 @@ def pushFVarAliasInfo [Monad m] [MonadInfoTree m]
     if old != new then
       let decl := newLCtx.get! new
       pushInfoLeaf (.ofFVarAliasInfo { id := new, baseId := old, userName := decl.userName })
-
-syntax "transitivity" (ppSpace colGt term)? : tactic
-set_option hygiene false in
-macro_rules
-  | `(tactic| transitivity) => `(tactic| apply Nat.le_trans)
-  | `(tactic| transitivity $e) => `(tactic| apply Nat.le_trans (m := $e))
-set_option hygiene false in
-macro_rules
-  | `(tactic| transitivity) => `(tactic| apply Nat.lt_trans)
-  | `(tactic| transitivity $e) => `(tactic| apply Nat.lt_trans (m := $e))
 
 /--
 The tactic `introv` allows the user to automatically introduce the variables of a theorem and

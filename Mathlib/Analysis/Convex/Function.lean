@@ -29,7 +29,8 @@ a convex set.
 -/
 
 
-open LinearMap Set BigOperators Classical Convex Pointwise
+open scoped Classical
+open LinearMap Set BigOperators Convex Pointwise
 
 variable {𝕜 E F α β ι : Type*}
 
@@ -234,7 +235,10 @@ theorem ConvexOn.convex_le (hf : ConvexOn 𝕜 s f) (r : β) : Convex 𝕜 ({ x 
   ⟨hf.1 hx.1 hy.1 ha hb hab,
     calc
       f (a • x + b • y) ≤ a • f x + b • f y := hf.2 hx.1 hy.1 ha hb hab
-      _ ≤ a • r + b • r := by gcongr; exact hx.2; exact hy.2
+      _ ≤ a • r + b • r := by
+        gcongr
+        · exact hx.2
+        · exact hy.2
       _ = r := Convex.combo_self hab r
       ⟩
 #align convex_on.convex_le ConvexOn.convex_le
@@ -385,7 +389,10 @@ theorem StrictConvexOn.convex_lt (hf : StrictConvexOn 𝕜 s f) (r : β) :
     ⟨hf.1 hx.1 hy.1 ha.le hb.le hab,
       calc
         f (a • x + b • y) < a • f x + b • f y := hf.2 hx.1 hy.1 hxy ha hb hab
-        _ ≤ a • r + b • r := by gcongr; exact hx.2.le; exact hy.2.le
+        _ ≤ a • r + b • r := by
+          gcongr
+          · exact hx.2.le
+          · exact hy.2.le
         _ = r := Convex.combo_self hab r
         ⟩
 #align strict_convex_on.convex_lt StrictConvexOn.convex_lt
@@ -417,7 +424,7 @@ theorem LinearOrder.convexOn_of_lt (hs : Convex 𝕜 s)
   wlog h : x < y
   · rw [add_comm (a • x), add_comm (a • f x)]
     rw [add_comm] at hab
-    refine' this hs hf y hy x hx hxy.symm b a hb ha hab (hxy.lt_or_lt.resolve_left h)
+    exact this hs hf y hy x hx hxy.symm b a hb ha hab (hxy.lt_or_lt.resolve_left h)
   exact hf hx hy h ha hb hab
 #align linear_order.convex_on_of_lt LinearOrder.convexOn_of_lt
 
@@ -447,7 +454,7 @@ theorem LinearOrder.strictConvexOn_of_lt (hs : Convex 𝕜 s)
   wlog h : x < y
   · rw [add_comm (a • x), add_comm (a • f x)]
     rw [add_comm] at hab
-    refine' this hs hf y hy x hx hxy.symm b a hb ha hab (hxy.lt_or_lt.resolve_left h)
+    exact this hs hf y hy x hx hxy.symm b a hb ha hab (hxy.lt_or_lt.resolve_left h)
   exact hf hx hy h ha hb hab
 #align linear_order.strict_convex_on_of_lt LinearOrder.strictConvexOn_of_lt
 
@@ -1142,10 +1149,10 @@ lemma StrictConvexOn.eq_of_isMinOn (hf : StrictConvexOn 𝕜 s f) (hfx : IsMinOn
     (hfy : IsMinOn f s y) (hx : x ∈ s) (hy : y ∈ s) : x = y := by
   by_contra hxy
   let z := (2 : 𝕜)⁻¹ • x + (2 : 𝕜)⁻¹ • y
-  have hz : z ∈ s := hf.1 hx hy (by norm_num) (by norm_num) $ by norm_num
+  have hz : z ∈ s := hf.1 hx hy (by norm_num) (by norm_num) <| by norm_num
   refine lt_irrefl (f z) ?_
   calc
-    f z < _ := hf.2 hx hy hxy (by norm_num) (by norm_num) $ by norm_num
+    f z < _ := hf.2 hx hy hxy (by norm_num) (by norm_num) <| by norm_num
     _ ≤ (2 : 𝕜)⁻¹ • f z + (2 : 𝕜)⁻¹ • f z := by gcongr; exacts [hfx hz, hfy hz]
     _ = f z := by rw [← _root_.add_smul]; norm_num
 

@@ -29,8 +29,7 @@ namespace Finsupp
 variable [Zero α] {s : Finset ι} (f : ∀ i ∈ s, α) {i : ι}
 
 /-- Create an element of `ι →₀ α` from a finset `s` and a function `f` defined on this finset. -/
-def indicator (s : Finset ι) (f : ∀ i ∈ s, α) : ι →₀ α
-    where
+def indicator (s : Finset ι) (f : ∀ i ∈ s, α) : ι →₀ α where
   toFun i :=
     haveI := Classical.decEq ι
     if H : i ∈ s then f i H else 0
@@ -61,7 +60,7 @@ theorem indicator_injective : Injective fun f : ∀ i ∈ s, α => indicator s f
   intro a b h
   ext i hi
   rw [← indicator_of_mem hi a, ← indicator_of_mem hi b]
-  exact FunLike.congr_fun h i
+  exact DFunLike.congr_fun h i
 #align finsupp.indicator_injective Finsupp.indicator_injective
 
 theorem support_indicator_subset : ((indicator s f).support : Set ι) ⊆ s := by

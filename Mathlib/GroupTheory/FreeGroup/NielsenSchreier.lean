@@ -52,7 +52,7 @@ free group, free groupoid, Nielsen-Schreier
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 universe v u
 
@@ -63,7 +63,7 @@ open CategoryTheory CategoryTheory.ActionCategory CategoryTheory.SingleObj Quive
 /-- `IsFreeGroupoid.Generators G` is a type synonym for `G`. We think of this as
 the vertices of the generating quiver of `G` when `G` is free. We can't use `G` directly,
 since `G` already has a quiver instance from being a groupoid. -/
--- Porting note: @[nolint has_nonempty_instance]
+-- Porting note(#5171): @[nolint has_nonempty_instance]
 @[nolint unusedArguments]
 def IsFreeGroupoid.Generators (G) [Groupoid G] :=
   G
@@ -120,7 +120,7 @@ instance actionGroupoidIsFree {G A : Type u} [Group G] [IsFreeGroup G] [MulActio
     refine' ⟨uncurry F' _, _, _⟩
     · suffices SemidirectProduct.rightHom.comp F' = MonoidHom.id _ by
         -- Porting note: `MonoidHom.ext_iff` has been deprecated.
-        exact FunLike.ext_iff.mp this
+        exact DFunLike.ext_iff.mp this
       apply IsFreeGroup.ext_hom (fun x ↦ ?_)
       rw [MonoidHom.comp_apply, hF']
       rfl
@@ -205,8 +205,8 @@ theorem loopOfHom_eq_id {a b : Generators G} (e) (H : e ∈ wideSubquiverSymmetr
 /-- Since a hom gives a loop, any homomorphism from the vertex group at the root
     extends to a functor on the whole groupoid. -/
 @[simps]
-def functorOfMonoidHom {X} [Monoid X] (f : End (root' T) →* X) : G ⥤ CategoryTheory.SingleObj X
-    where
+def functorOfMonoidHom {X} [Monoid X] (f : End (root' T) →* X) :
+    G ⥤ CategoryTheory.SingleObj X where
   obj _ := ()
   map p := f (loopOfHom T p)
   map_id := by
@@ -291,7 +291,7 @@ theorem path_nonempty_of_hom {G} [Groupoid.{u, u} G] [IsFreeGroupoid G] {a b : G
 /-- Given a connected free groupoid, its generating quiver is rooted-connected. -/
 instance generators_connected (G) [Groupoid.{u, u} G] [IsConnected G] [IsFreeGroupoid G] (r : G) :
     RootedConnected (symgen r) :=
-  ⟨fun b => path_nonempty_of_hom (CategoryTheory.nonempty_hom_of_connected_groupoid r b)⟩
+  ⟨fun b => path_nonempty_of_hom (CategoryTheory.nonempty_hom_of_preconnected_groupoid r b)⟩
 #align is_free_groupoid.generators_connected IsFreeGroupoid.generators_connected
 
 /-- A vertex group in a free connected groupoid is free. With some work one could drop the

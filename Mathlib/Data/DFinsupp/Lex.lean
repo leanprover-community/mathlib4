@@ -3,6 +3,7 @@ Copyright (c) 2022 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Junyan Xu
 -/
+import Mathlib.Algebra.Order.Group.PiLex
 import Mathlib.Data.DFinsupp.Order
 import Mathlib.Data.DFinsupp.NeLocus
 import Mathlib.Order.WellFoundedSet
@@ -78,7 +79,7 @@ instance Lex.partialOrder [∀ i, PartialOrder (α i)] : PartialOrder (Lex (Π�
   lt := (· < ·)
   le x y := ⇑(ofLex x) = ⇑(ofLex y) ∨ x < y
   __ := PartialOrder.lift (fun x : Lex (Π₀ i, α i) ↦ toLex (⇑(ofLex x)))
-    (FunLike.coe_injective (F := DFinsupp α))
+    (DFunLike.coe_injective (F := DFinsupp α))
 #align dfinsupp.lex.partial_order DFinsupp.Lex.partialOrder
 
 section LinearOrder

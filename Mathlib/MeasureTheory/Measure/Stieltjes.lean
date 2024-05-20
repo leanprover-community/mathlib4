@@ -3,8 +3,8 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov, Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.Topology.Algebra.Order.LeftRightLim
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+import Mathlib.Topology.Order.LeftRightLim
 
 #align_import measure_theory.measure.stieltjes from "leanprover-community/mathlib"@"20d5763051978e9bc6428578ed070445df6a18b3"
 
@@ -26,7 +26,8 @@ a Borel measure `f.measure`.
 
 noncomputable section
 
-open Classical Set Filter Function BigOperators ENNReal NNReal Topology MeasureTheory
+open scoped Classical
+open Set Filter Function BigOperators ENNReal NNReal Topology MeasureTheory
 
 open ENNReal (ofReal)
 
@@ -217,7 +218,7 @@ theorem length_subadditive_Icc_Ioo {a b : ℝ} {c d : ℕ → ℝ} (ss : Icc a b
     rw [sub_add_sub_cancel]
     exact sub_le_sub_right (f.mono bd.le) _
   · rintro x ⟨h₁, h₂⟩
-    refine' (cv ⟨h₁, le_trans h₂ (le_of_lt cb)⟩).resolve_left (mt And.left (not_lt_of_le h₂))
+    exact (cv ⟨h₁, le_trans h₂ (le_of_lt cb)⟩).resolve_left (mt And.left (not_lt_of_le h₂))
 #align stieltjes_function.length_subadditive_Icc_Ioo StieltjesFunction.length_subadditive_Icc_Ioo
 
 @[simp]
@@ -241,7 +242,7 @@ theorem outer_Ioc (a b : ℝ) : f.outer (Ioc a b) = ofReal (f b - f a) := by
         apply outer_le_length)
       (le_iInf₂ fun s hs => ENNReal.le_of_forall_pos_le_add fun ε εpos h => _)
   let δ := ε / 2
-  have δpos : 0 < (δ : ℝ≥0∞) := by simpa using εpos.ne'
+  have δpos : 0 < (δ : ℝ≥0∞) := by simpa [δ] using εpos.ne'
   rcases ENNReal.exists_pos_sum_of_countable δpos.ne' ℕ with ⟨ε', ε'0, hε⟩
   obtain ⟨a', ha', aa'⟩ : ∃ a', f a' - f a < δ ∧ a < a' := by
     have A : ContinuousWithinAt (fun r => f r - f a) (Ioi a) a := by
@@ -280,8 +281,8 @@ theorem outer_Ioc (a b : ℝ) : f.outer (Ioc a b) = ofReal (f b - f a) := by
       (add_le_add (ENNReal.tsum_le_tsum fun i => (hg i).2.le)
         (by simp only [ENNReal.ofReal_coe_nnreal, le_rfl]))
     _ = ∑' i, f.length (s i) + ∑' i, (ε' i : ℝ≥0∞) + δ := by rw [ENNReal.tsum_add]
-    _ ≤ ∑' i, f.length (s i) + δ + δ := (add_le_add (add_le_add le_rfl hε.le) le_rfl)
-    _ = ∑' i : ℕ, f.length (s i) + ε := by simp [add_assoc, ENNReal.add_halves]
+    _ ≤ ∑' i, f.length (s i) + δ + δ := add_le_add (add_le_add le_rfl hε.le) le_rfl
+    _ = ∑' i : ℕ, f.length (s i) + ε := by simp [δ, add_assoc, ENNReal.add_halves]
 #align stieltjes_function.outer_Ioc StieltjesFunction.outer_Ioc
 
 theorem measurableSet_Ioi {c : ℝ} : MeasurableSet[f.outer.caratheodory] (Ioi c) := by
@@ -341,11 +342,10 @@ theorem borel_le_measurable : borel ℝ ≤ f.outer.caratheodory := by
 
 /-- The measure associated to a Stieltjes function, giving mass `f b - f a` to the
 interval `(a, b]`. -/
-protected irreducible_def measure : Measure ℝ :=
-  { toOuterMeasure := f.outer
-    m_iUnion := fun _s hs =>
-      f.outer.iUnion_eq_of_caratheodory fun i => f.borel_le_measurable _ (hs i)
-    trimmed := f.outer_trim }
+protected irreducible_def measure : Measure ℝ where
+  toOuterMeasure := f.outer
+  m_iUnion _s hs := f.outer.iUnion_eq_of_caratheodory fun i => f.borel_le_measurable _ (hs i)
+  trim_le := f.outer_trim.le
 #align stieltjes_function.measure StieltjesFunction.measure
 
 @[simp]
@@ -354,7 +354,9 @@ theorem measure_Ioc (a b : ℝ) : f.measure (Ioc a b) = ofReal (f b - f a) := by
   exact f.outer_Ioc a b
 #align stieltjes_function.measure_Ioc StieltjesFunction.measure_Ioc
 
-@[simp]
+-- Adaptation note: nightly-2024-04-01
+-- The simpNF linter now times out on this lemma.
+@[simp, nolint simpNF]
 theorem measure_singleton (a : ℝ) : f.measure {a} = ofReal (f a - leftLim f a) := by
   obtain ⟨u, u_mono, u_lt_a, u_lim⟩ :
     ∃ u : ℕ → ℝ, StrictMono u ∧ (∀ n : ℕ, u n < a) ∧ Tendsto u atTop (𝓝 a) :=
@@ -445,6 +447,12 @@ theorem measure_univ {l u : ℝ} (hfl : Tendsto f atBot (𝓝 l)) (hfu : Tendsto
   simp_rw [measure_Iic f hfl]
   exact ENNReal.tendsto_ofReal (Tendsto.sub_const hfu _)
 #align stieltjes_function.measure_univ StieltjesFunction.measure_univ
+
+lemma isFiniteMeasure {l u : ℝ} (hfl : Tendsto f atBot (𝓝 l)) (hfu : Tendsto f atTop (𝓝 u)) :
+    IsFiniteMeasure f.measure := ⟨by simp [f.measure_univ hfl hfu]⟩
+
+lemma isProbabilityMeasure (hf_bot : Tendsto f atBot (𝓝 0)) (hf_top : Tendsto f atTop (𝓝 1)) :
+    IsProbabilityMeasure f.measure := ⟨by simp [f.measure_univ hf_bot hf_top]⟩
 
 instance instIsLocallyFiniteMeasure : IsLocallyFiniteMeasure f.measure :=
   ⟨fun x => ⟨Ioo (x - 1) (x + 1), Ioo_mem_nhds (by linarith) (by linarith), by simp⟩⟩

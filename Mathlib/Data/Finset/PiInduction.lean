@@ -3,8 +3,8 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Fintype.Lattice
 import Mathlib.Data.Finset.Sigma
+import Mathlib.Data.Fintype.Card
 
 #align_import data.finset.pi_induction from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
 
@@ -49,8 +49,7 @@ theorem induction_on_pi_of_choice (r : ∀ i, α i → Finset (α i) → Prop)
   · rcases sigma_nonempty.1 hne with ⟨i, -, hi⟩
     rcases H_ex i (f i) hi with ⟨x, x_mem, hr⟩
     set g := update f i ((f i).erase x) with hg
--- Porting note: this tactic does not exist yet
---  clear_value g
+    clear_value g
     have hx' : x ∉ g i := by
       rw [hg, update_same]
       apply not_mem_erase

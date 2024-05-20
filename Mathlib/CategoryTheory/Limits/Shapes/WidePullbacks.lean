@@ -26,9 +26,6 @@ Typeclasses `HasWidePullbacks` and `HasFiniteWidePullbacks` assert the existence
 pullbacks and finite wide pullbacks.
 -/
 
-set_option autoImplicit true
-
-
 universe w w' v u
 
 open CategoryTheory CategoryTheory.Limits Opposite
@@ -72,7 +69,7 @@ instance struct : CategoryStruct (WidePullbackShape J) where
   id j := Hom.id j
   comp f g := by
     cases f
-    exact g
+    · exact g
     cases g
     apply Hom.term _
 #align category_theory.limits.wide_pullback_shape.struct CategoryTheory.Limits.WidePullbackShape.struct
@@ -90,13 +87,15 @@ def evalCasesBash : TacticM Unit := do
     (← `(tactic| casesm* WidePullbackShape _,
       (_: WidePullbackShape _) ⟶ (_ : WidePullbackShape _) ))
 
-attribute [local aesop safe tactic (rule_sets [CategoryTheory])] evalCasesBash
+attribute [local aesop safe tactic (rule_sets := [CategoryTheory])] evalCasesBash
 
 instance subsingleton_hom : Quiver.IsThin (WidePullbackShape J) := fun _ _ => by
   constructor
   intro a b
   casesm* WidePullbackShape _, (_: WidePullbackShape _) ⟶ (_ : WidePullbackShape _)
-  rfl; rfl; rfl
+  · rfl
+  · rfl
+  · rfl
 #align category_theory.limits.wide_pullback_shape.subsingleton_hom CategoryTheory.Limits.WidePullbackShape.subsingleton_hom
 
 instance category : SmallCategory (WidePullbackShape J) :=
@@ -144,12 +143,12 @@ def mkCone {F : WidePullbackShape J ⥤ C} {X : C} (f : X ⟶ F.obj none) (π : 
           | none => f
           | some j => π j
         naturality := fun j j' f => by
-          cases j <;> cases j' <;> cases f <;> refine id _ <;> dsimp <;> simp [w] } }
+          cases j <;> cases j' <;> cases f <;> dsimp <;> simp [w] } }
 #align category_theory.limits.wide_pullback_shape.mk_cone CategoryTheory.Limits.WidePullbackShape.mkCone
 
 /-- Wide pullback diagrams of equivalent index types are equivalent. -/
-def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') : WidePullbackShape J ≌ WidePullbackShape J'
-    where
+def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') :
+    WidePullbackShape J ≌ WidePullbackShape J' where
   functor := wideCospan none (fun j => some (h j)) fun j => Hom.term (h j)
   inverse := wideCospan none (fun j => some (h.invFun j)) fun j => Hom.term (h.invFun j)
   unitIso :=
@@ -189,7 +188,7 @@ instance struct : CategoryStruct (WidePushoutShape J) where
   id j := Hom.id j
   comp f g := by
     cases f
-    exact g
+    · exact g
     cases g
     apply Hom.init _
 #align category_theory.limits.wide_pushout_shape.struct CategoryTheory.Limits.WidePushoutShape.struct
@@ -206,7 +205,7 @@ def evalCasesBash' : TacticM Unit := do
     (← `(tactic| casesm* WidePushoutShape _,
       (_: WidePushoutShape _) ⟶ (_ : WidePushoutShape _) ))
 
-attribute [local aesop safe tactic (rule_sets [CategoryTheory])] evalCasesBash'
+attribute [local aesop safe tactic (rule_sets := [CategoryTheory])] evalCasesBash'
 
 instance subsingleton_hom : Quiver.IsThin (WidePushoutShape J) := fun _ _ => by
   constructor
@@ -244,7 +243,7 @@ def wideSpan (B : C) (objs : J → C) (arrows : ∀ j : J, B ⟶ objs j) : WideP
     cases f
     · simp only [Eq.ndrec, hom_id, eq_rec_constant, Category.id_comp]; congr
     · cases g
-      · simp only [Eq.ndrec, hom_id, eq_rec_constant, Category.comp_id]; congr
+      simp only [Eq.ndrec, hom_id, eq_rec_constant, Category.comp_id]; congr
 #align category_theory.limits.wide_pushout_shape.wide_span CategoryTheory.Limits.WidePushoutShape.wideSpan
 
 /-- Every diagram is naturally isomorphic (actually, equal) to a `wideSpan` -/
@@ -264,12 +263,11 @@ def mkCocone {F : WidePushoutShape J ⥤ C} {X : C} (f : F.obj none ⟶ X) (ι :
           | none => f
           | some j => ι j
         naturality := fun j j' f => by
-          cases j <;> cases j' <;> cases f <;> refine id _ <;> dsimp <;> simp [w] } }
+          cases j <;> cases j' <;> cases f <;> dsimp <;> simp [w] } }
 #align category_theory.limits.wide_pushout_shape.mk_cocone CategoryTheory.Limits.WidePushoutShape.mkCocone
 
 /-- Wide pushout diagrams of equivalent index types are equivalent. -/
-def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') : WidePushoutShape J ≌ WidePushoutShape J'
-    where
+def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') : WidePushoutShape J ≌ WidePushoutShape J' where
   functor := wideSpan none (fun j => some (h j)) fun j => Hom.init (h j)
   inverse := wideSpan none (fun j => some (h.invFun j)) fun j => Hom.init (h.invFun j)
   unitIso :=
@@ -323,12 +321,9 @@ noncomputable abbrev widePushout (B : C) (objs : J → C) (arrows : ∀ j : J, B
   colimit (WidePushoutShape.wideSpan B objs arrows)
 #align category_theory.limits.wide_pushout CategoryTheory.Limits.widePushout
 
--- variable (C) -- Porting note: Lean had problems with which `C` below. Changed to `D`
-
 namespace WidePullback
 
-variable {D} [Category.{v₂} D] {B : D} {objs : J → D} (arrows : ∀ j : J, objs j ⟶ B)
-
+variable {C : Type u} [Category.{v} C] {B : C} {objs : J → C} (arrows : ∀ j : J, objs j ⟶ B)
 variable [HasWidePullback B objs arrows]
 
 /-- The `j`-th projection from the pullback. -/
@@ -350,22 +345,21 @@ theorem π_arrow (j : J) : π arrows j ≫ arrows _ = base arrows := by
 variable {arrows}
 
 /-- Lift a collection of morphisms to a morphism to the pullback. -/
-noncomputable abbrev lift {X : D} (f : X ⟶ B) (fs : ∀ j : J, X ⟶ objs j)
+noncomputable abbrev lift {X : C} (f : X ⟶ B) (fs : ∀ j : J, X ⟶ objs j)
     (w : ∀ j, fs j ≫ arrows j = f) : X ⟶ widePullback _ _ arrows :=
   limit.lift (WidePullbackShape.wideCospan _ _ _) (WidePullbackShape.mkCone f fs <| w)
 #align category_theory.limits.wide_pullback.lift CategoryTheory.Limits.WidePullback.lift
 
 variable (arrows)
+variable {X : C} (f : X ⟶ B) (fs : ∀ j : J, X ⟶ objs j) (w : ∀ j, fs j ≫ arrows j = f)
 
-variable {X : D} (f : X ⟶ B) (fs : ∀ j : J, X ⟶ objs j) (w : ∀ j, fs j ≫ arrows j = f)
-
--- Porting note: simp can prove this so removed simp attribute
+-- Porting note (#10618): simp can prove this so removed simp attribute
 @[reassoc]
 theorem lift_π (j : J) : lift f fs w ≫ π arrows j = fs _ := by
   simp only [limit.lift_π, WidePullbackShape.mkCone_pt, WidePullbackShape.mkCone_π_app]
 #align category_theory.limits.wide_pullback.lift_π CategoryTheory.Limits.WidePullback.lift_π
 
--- Porting note: simp can prove this so removed simp attribute
+-- Porting note (#10618): simp can prove this so removed simp attribute
 @[reassoc]
 theorem lift_base : lift f fs w ≫ base arrows = f := by
   simp only [limit.lift_π, WidePullbackShape.mkCone_pt, WidePullbackShape.mkCone_π_app]
@@ -385,8 +379,8 @@ theorem eq_lift_of_comp_eq (g : X ⟶ widePullback _ _ arrows) :
 theorem hom_eq_lift (g : X ⟶ widePullback _ _ arrows) :
     g = lift (g ≫ base arrows) (fun j => g ≫ π arrows j) (by aesop_cat) := by
   apply eq_lift_of_comp_eq
-  aesop_cat
-  rfl  -- Porting note: quite a few missing refl's in aesop_cat now
+  · aesop_cat
+  · rfl  -- Porting note: quite a few missing refl's in aesop_cat now
 #align category_theory.limits.wide_pullback.hom_eq_lift CategoryTheory.Limits.WidePullback.hom_eq_lift
 
 @[ext 1100]
@@ -403,8 +397,7 @@ end WidePullback
 
 namespace WidePushout
 
-variable {D} [Category.{v₂} D] {B : D} {objs : J → D} (arrows : ∀ j : J, B ⟶ objs j)
-
+variable {C : Type u} [Category.{v} C] {B : C} {objs : J → C} (arrows : ∀ j : J, B ⟶ objs j)
 variable [HasWidePushout B objs arrows]
 
 /-- The `j`-th inclusion to the pushout. -/
@@ -428,22 +421,21 @@ attribute [nolint simpNF] WidePushout.arrow_ι WidePushout.arrow_ι_assoc
 variable {arrows}
 
 /-- Descend a collection of morphisms to a morphism from the pushout. -/
-noncomputable abbrev desc {X : D} (f : B ⟶ X) (fs : ∀ j : J, objs j ⟶ X)
+noncomputable abbrev desc {X : C} (f : B ⟶ X) (fs : ∀ j : J, objs j ⟶ X)
     (w : ∀ j, arrows j ≫ fs j = f) : widePushout _ _ arrows ⟶ X :=
   colimit.desc (WidePushoutShape.wideSpan B objs arrows) (WidePushoutShape.mkCocone f fs <| w)
 #align category_theory.limits.wide_pushout.desc CategoryTheory.Limits.WidePushout.desc
 
 variable (arrows)
+variable {X : C} (f : B ⟶ X) (fs : ∀ j : J, objs j ⟶ X) (w : ∀ j, arrows j ≫ fs j = f)
 
-variable {X : D} (f : B ⟶ X) (fs : ∀ j : J, objs j ⟶ X) (w : ∀ j, arrows j ≫ fs j = f)
-
--- Porting note: simp can prove this so removed simp attribute
+-- Porting note (#10618): simp can prove this so removed simp attribute
 @[reassoc]
 theorem ι_desc (j : J) : ι arrows j ≫ desc f fs w = fs _ := by
   simp only [colimit.ι_desc, WidePushoutShape.mkCocone_pt, WidePushoutShape.mkCocone_ι_app]
 #align category_theory.limits.wide_pushout.ι_desc CategoryTheory.Limits.WidePushout.ι_desc
 
--- Porting note: simp can prove this so removed simp attribute
+-- Porting note (#10618): simp can prove this so removed simp attribute
 @[reassoc]
 theorem head_desc : head arrows ≫ desc f fs w = f := by
   simp only [colimit.ι_desc, WidePushoutShape.mkCocone_pt, WidePushoutShape.mkCocone_ι_app]
@@ -466,8 +458,8 @@ theorem hom_eq_desc (g : widePushout _ _ arrows ⟶ X) :
         rw [← Category.assoc]
         simp := by
   apply eq_desc_of_comp_eq
-  aesop_cat
-  rfl -- Porting note: another missing rfl
+  · aesop_cat
+  · rfl -- Porting note: another missing rfl
 #align category_theory.limits.wide_pushout.hom_eq_desc CategoryTheory.Limits.WidePushout.hom_eq_desc
 
 @[ext 1100]
