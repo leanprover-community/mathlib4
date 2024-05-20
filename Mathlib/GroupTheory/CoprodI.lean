@@ -718,8 +718,7 @@ theorem toList_getLast? {i j} (w : NeWord M i j) : w.toList.getLast? = Option.so
 #align free_product.neword.to_list_last' Monoid.CoprodI.NeWord.toList_getLast?
 
 /-- The `Word M` represented by a `NeWord M i j` -/
-def toWord {i j} (w : NeWord M i j) : Word M
-    where
+def toWord {i j} (w : NeWord M i j) : Word M where
   toList := w.toList
   ne_one := by
     induction w
@@ -988,8 +987,7 @@ theorem lift_injective_of_ping_pong : Function.Injective (lift f) := by
     rw [(CoprodI.Word.equiv).forall_congr_left']
     intro w Heq
     dsimp [Word.equiv] at *
-    rw [empty_of_word_prod_eq_one f hcard X hXnonempty hXdisj hpp Heq]
-    rfl
+    rw [empty_of_word_prod_eq_one f hcard X hXnonempty hXdisj hpp Heq, Word.prod_empty]
 #align free_product.lift_injective_of_ping_pong Monoid.CoprodI.lift_injective_of_ping_pong
 
 end PingPongLemma
