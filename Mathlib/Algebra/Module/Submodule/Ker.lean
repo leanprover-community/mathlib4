@@ -334,3 +334,28 @@ end
 end AddCommMonoid
 
 end LinearEquiv
+
+/-! ### Iterate maps and comaps of submodules -/
+
+
+namespace LinearMap
+
+open Submodule
+
+variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M₂] [Module R M₂]
+  (f i : M →ₗ[R] M₂)
+
+/-- If `f(K) ≤ i(K)`, `f` is surjective, `i` is injective, there exists some `m` such that
+`LinearMap.iterateMapComapAux f i m K = LinearMap.iterateMapComapAux f i (m + 1) K`,
+then the kernel of `f` is contained in `K`.
+This is a corollary of `LinearMap.iterateMapComapAux_eq_succ` and `LinearMap.ker_le_comap`.
+As a special case, if one can take `K` to be zero,
+then `f` is injective. This is the key result for establishing the strong rank condition
+for noetherian rings. -/
+theorem ker_le_of_iterateMapComapAux_eq_succ (K : Submodule R M) (h : K.map f ≤ K.map i)
+    (m : ℕ) (heq : f.iterateMapComapAux i m K = f.iterateMapComapAux i (m + 1) K)
+    (hf : Surjective f) (hi : Injective i) : LinearMap.ker f ≤ K := by
+  rw [show K = _ from f.iterateMapComapAux_eq_succ i K h m heq hf hi 0]
+  exact f.ker_le_comap
+
+end LinearMap

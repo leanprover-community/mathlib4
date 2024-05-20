@@ -467,7 +467,7 @@ theorem IsNoetherian.injective_of_surjective_of_injective (i f : N →ₗ[R] M)
   haveI := isNoetherian_of_injective i hi
   obtain ⟨n, H⟩ := monotone_stabilizes_iff_noetherian.2 ‹_› (f.iterateMapComap i ⊥ (by simp))
   exact LinearMap.ker_eq_bot.1 <| bot_unique <|
-    f.ker_le_of_iterateMapComapAux_eq i n ⊥ (by simp) (H _ (Nat.le_succ _)) hf hi
+    f.ker_le_of_iterateMapComapAux_eq_succ i ⊥ (by simp) n (H _ (Nat.le_succ _)) hf hi
 
 /-- **Orzech's theorem** for Noetherian module: if `R` is a ring (not necessarily commutative),
 `M` is a Noetherian `R`-module, `N` is a submodule, `f : N →ₗ[R] M` is surjective, then `f` is also
@@ -518,6 +518,7 @@ theorem IsNoetherian.subsingleton_of_prod_injective (f : M × N →ₗ[R] M)
 
 /-- If `M ⊕ N` embeds into `M`, for `M` noetherian over `R`, then `N` is trivial.
 -/
+@[simps!]
 def IsNoetherian.equivPUnitOfProdInjective (f : M × N →ₗ[R] M)
     (i : Injective f) : N ≃ₗ[R] PUnit.{w + 1} :=
   haveI := IsNoetherian.subsingleton_of_prod_injective f i
