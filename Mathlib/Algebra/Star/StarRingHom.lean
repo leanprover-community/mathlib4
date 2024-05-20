@@ -18,7 +18,7 @@ As with `NonUnitalAlgHom`, the multiplications are not assumed to be associative
 
 ## Main definitions
 
-  * `NonUnitalRingAlgHom`
+  * `NonUnitalStarRingHom`
 
 ## Implementation
 
