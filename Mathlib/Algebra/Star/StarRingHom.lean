@@ -71,8 +71,7 @@ instance : NonUnitalRingHomClass (A →⋆ₙ+* B) A B where
   map_add f := f.map_add'
   map_zero f := f.map_zero'
 
-instance : NonUnitalStarRingHomClass (A →⋆ₙ+* B) A B
-    where
+instance : NonUnitalStarRingHomClass (A →⋆ₙ+* B) A B where
   map_star f := f.map_star'
 
 initialize_simps_projections NonUnitalStarRingHom (toFun → apply)
