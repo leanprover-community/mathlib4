@@ -880,10 +880,6 @@ lemma Nil_iff_eq_nil : ∀ {p : G.Walk v v}, p.Nil ↔ p = nil
 
 lemma Nil.eq_nil {p : G.Walk v v} (hp : p.Nil) : p = Walk.nil := Nil_iff_eq_nil.1 hp
 
-@[simp] lemma nil_copy {p : G.Walk x y} (hx : x = x') (hy : y = y') :
-    (p.copy hx hy).Nil = p.Nil := by
-  subst_vars; rfl
-
 @[elab_as_elim]
 def notNilRec {motive : {u w : V} → (p : G.Walk u w) → (h : ¬ p.Nil) → Sort*}
     (cons : {u v w : V} → (h : G.Adj u v) → (q : G.Walk v w) → motive (cons h q) not_nil_cons)
@@ -927,6 +923,10 @@ variable {x y : V} -- TODO: rename to u, v, w instead?
 @[simp] lemma length_tail_add_one {p : G.Walk x y} (hp : ¬ p.Nil) :
     (p.tail hp).length + 1 = p.length := by
   rw [← length_cons, cons_tail_eq]
+
+@[simp] lemma nil_copy {x' y' : V} {p : G.Walk x y} (hx : x = x') (hy : y = y') :
+    (p.copy hx hy).Nil = p.Nil := by
+  subst_vars; rfl
 
 lemma support_tail {p : G.Walk v v} (hp : ¬p.Nil) :
     (p.tail hp).support = p.support.tail := by
@@ -1014,8 +1014,6 @@ theorem isCycle_copy {u u'} (p : G.Walk u u) (hu : u = u') :
   subst_vars
   rfl
 #align simple_graph.walk.is_cycle_copy SimpleGraph.Walk.isCycle_copy
-
-lemma IsCycle.not_Nil {p : G.Walk v v} (hp : IsCycle p) : ¬ p.Nil := (hp.ne_nil ·.eq_nil)
 
 @[simp]
 theorem IsTrail.nil {u : V} : (nil : G.Walk u u).IsTrail :=
