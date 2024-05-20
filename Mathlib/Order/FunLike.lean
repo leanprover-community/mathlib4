@@ -40,7 +40,7 @@ theorem lt_def [∀ a, Preorder (β a)] [Preorder F] [PointwiseLE F] {f g : F} :
   rw [← coe_le_coe, ← Pi.lt_def]
   exact lt_iff_lt_of_le_iff_le' coe_le_coe.symm coe_le_coe.symm
 
-instance (priority := 100) instPartialOrder [∀ a, PartialOrder (β a)] [Preorder F]
+instance (priority := 100) toPartialOrder [∀ a, PartialOrder (β a)] [Preorder F]
     [PointwiseLE F] : PartialOrder F where
   le_antisymm _a _b hab hba := coe_injective <| le_antisymm (mod_cast hab) (mod_cast hba)
 
