@@ -189,7 +189,7 @@ number. -/
 def Solution.multiplicity := S.toSolution'.multiplicity
 
 /-- We say that `S : Solution` is minimal if for all `S₁ : Solution`, the multiplicity of `λ` in
-`S.c` is less or equal than the multiplicity in `S'.c`. -/
+`S.c` is less or equal than the multiplicity in `S₁.c`. -/
 def Solution.isMinimal : Prop := ∀ (S₁ : Solution hζ), S.multiplicity ≤ S₁.multiplicity
 
 /-- If there is a solution then there is a minimal one. -/
