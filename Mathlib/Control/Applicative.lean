@@ -163,11 +163,11 @@ instance {α} [One α] [Mul α] : Applicative (Const α) where
 -- Also, `simp` didn't close `refl` goals.
 
 instance {α} [Monoid α] : LawfulApplicative (Const α) := by
-  refine { .. } <;> intros <;> simp [mul?_assoc, (· <$> ·), Seq.seq, pure] <;> rfl
+  refine' { .. } <;> intros <;> simp [mul_assoc, (· <$> ·), Seq.seq, pure] <;> rfl
 
 instance {α} [Zero α] [Add α] : Applicative (AddConst α) where
   pure _ := (0 : α)
   seq f x := (show α from f) + (show α from x Unit.unit)
 
 instance {α} [AddMonoid α] : LawfulApplicative (AddConst α) := by
-  refine { .. } <;> intros <;> simp [add?_assoc, (· <$> ·), Seq.seq, pure] <;> rfl
+  refine' { .. } <;> intros <;> simp [add_assoc, (· <$> ·), Seq.seq, pure] <;> rfl
