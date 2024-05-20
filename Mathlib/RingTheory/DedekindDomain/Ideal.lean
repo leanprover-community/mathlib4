@@ -1538,4 +1538,40 @@ theorem multiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_multipl
     multiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_multiplicity hr ha]
 #align multiplicity_normalized_factors_equiv_span_normalized_factors_symm_eq_multiplicity multiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_multiplicity
 
+theorem count_normalizedFactors_eq_count_normalizedFactors_span {R : Type _} [CommRing R]
+    [IsDomain R] [IsPrincipalIdealRing R] [NormalizationMonoid R] [DecidableEq R]
+    [DecidableEq (Ideal R)] {r X : R} (hr : r ≠ 0) (hX₀ : X ≠ 0) (hX₁ : normUnit X = 1)
+    (hX : Prime X) :
+    Multiset.count X (normalizedFactors r) =
+      Multiset.count (Ideal.span {X} : Ideal R) (normalizedFactors (Ideal.span {r})) := by
+  classical
+  replace hX₁ : X = normalize X := by
+    simp only [normalize_apply, hX₁, Units.val_one, mul_one]
+  have : (Ideal.span {normalize X} : Ideal R) = normalize (Ideal.span {X}) := by
+
+    simp only [normalize_apply, normalize_eq, @Ideal.span_singleton_mul_right_unit R _
+      (normUnit X) (Units.isUnit _) X, normUnit_eq_one, Units.val_one, Ideal.one_eq_top,
+        Ideal.mul_top]
+  rw [← PartENat.natCast_inj, hX₁, ← multiplicity_eq_count_normalizedFactors hX.irreducible hr,
+    this, ← multiplicity_eq_multiplicity_span, ← multiplicity_eq_count_normalizedFactors]
+  refine' Prime.irreducible (Ideal.prime_of_isPrime _ _)
+  · rwa [ne_eq, Ideal.span_singleton_eq_bot]
+  · rwa [Ideal.span_singleton_prime hX₀]
+  · rwa [ne_eq, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]
+
+open Classical in
+theorem count_normalizedFactors_eq_associates_count (R : Type _) [CommRing R] [IsDomain R]
+    [IsPrincipalIdealRing R] (I J : Ideal R) (hI : I ≠ 0) (hJ : J.IsPrime) (hJ₀ : J ≠ ⊥) :
+    Multiset.count J (normalizedFactors I) = (Associates.mk J).count (Associates.mk I).factors := by
+  replace hI : Associates.mk I ≠ 0 := Associates.mk_ne_zero.mpr hI
+  have hJ' : Irreducible (Associates.mk J) := by
+    rw [Associates.irreducible_mk]
+    exact (Ideal.prime_of_isPrime hJ₀ hJ).irreducible
+  apply Ideal.count_normalizedFactors_eq
+  any_goals
+    rw [← Ideal.dvd_iff_le, ← Associates.mk_dvd_mk, Associates.mk_pow]
+    simp only [Associates.dvd_eq_le]
+    rw [Associates.prime_pow_dvd_iff_le hI hJ']
+  linarith
+
 end PID
