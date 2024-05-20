@@ -6,6 +6,7 @@ Authors: Johan Commelin, Kenny Lau
 
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.RingTheory.Multiplicity
+import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.PowerSeries.Basic
 
 #align_import ring_theory.power_series.basic from "leanprover-community/mathlib"@"2d5739b61641ee4e7e53eca5688a08f66f2e6a60"
@@ -387,6 +388,99 @@ theorem divided_by_X_pow_orderMul {f g : R⟦X⟧} (hf : f ≠ 0) (hg : g ≠ 0)
   convert H
 
 end OrderIsDomain
+
+section HeightOneSpectrum
+
+variable (K : Type*) [Field K]
+/-- The prime ideal `(X)` of `PowerSeries K`, when `K` is a field, as a term of the
+`HeightOneSpectrum`. -/
+def idealX : IsDedekindDomain.HeightOneSpectrum (PowerSeries K) where
+  asIdeal := Ideal.span {X}
+  isPrime := PowerSeries.span_X_isPrime
+  ne_bot  := by rw [ne_eq, Ideal.span_singleton_eq_bot]; exact X_ne_zero
+
+open multiplicity UniqueFactorizationMonoid /- RatFunc -/ Classical
+
+theorem factors_in_pol_eq_powerSeries (P : Polynomial K) (hP : P ≠ 0) :
+    (normalizedFactors (Ideal.span {↑P})).count (PowerSeries.idealX K).asIdeal =
+      (normalizedFactors (Ideal.span {P})).count
+        (Ideal.span {Polynomial.X} : Ideal (Polynomial K)) := by
+  have for_pol :=
+    NormalizationMonoid.count_normalizedFactors_eq_count_normalizedFactors_span hP
+      Polynomial.X_ne_zero (Polynomial.normUnit_X (R := K))  Polynomial.prime_X
+  rw [← for_pol]
+  have for_pow :=
+    NormalizationMonoid.count_normalizedFactors_eq_count_normalizedFactors_span (coe_ne_zero hP)
+      PowerSeries.X_ne_zero (PowerSeries.normUnit_X K) PowerSeries.X_prime
+  erw [← for_pow]
+  have aux_pol :=
+    @multiplicity_eq_count_normalizedFactors (Polynomial K) _ _ _ _ _ Polynomial.X P
+      Polynomial.irreducible_X hP
+  have aux_pow_series :=
+    @multiplicity_eq_count_normalizedFactors (PowerSeries K) _ _ _ _ _ PowerSeries.X (↑P)
+      (Prime.irreducible PowerSeries.X_prime) (coe_ne_zero hP)
+  apply Nat.le_antisymm
+  · rw [X_eq_normalize, PowerSeries.X_eq_normalizeX, ← PartENat.coe_le_coe, ← aux_pol, ←
+      multiplicity.pow_dvd_iff_le_multiplicity, Polynomial.X_pow_dvd_iff]
+    intro d hd
+    replace aux_pow_series := le_of_eq aux_pow_series.symm
+    rw [← multiplicity.pow_dvd_iff_le_multiplicity, PowerSeries.X_pow_dvd_iff] at aux_pow_series
+    replace aux_pow_series := aux_pow_series d hd
+    rwa [Polynomial.coeff_coe P d] at aux_pow_series
+  · rw [X_eq_normalize, PowerSeries.X_eq_normalizeX, ← PartENat.coe_le_coe, ←
+      aux_pow_series, ← multiplicity.pow_dvd_iff_le_multiplicity, PowerSeries.X_pow_dvd_iff]
+    intro d hd
+    replace aux_pol := le_of_eq aux_pol.symm
+    rw [← multiplicity.pow_dvd_iff_le_multiplicity, Polynomial.X_pow_dvd_iff] at aux_pol
+    replace aux_pol := aux_pol d hd
+    rwa [← Polynomial.coeff_coe P d] at aux_pol
+
+theorem pol_intValuation_eq_powerSeries (P : Polynomial K) :
+    (Polynomial.idealX K).intValuation P =
+      (PowerSeries.idealX K).intValuation (↑P : PowerSeries K) := by
+  by_cases hP : P = 0
+  · rw [hP, Valuation.map_zero, Polynomial.coe_zero, Valuation.map_zero]
+  · simp only [intValuation_apply]
+    rw [intValuationDef_if_neg _ hP, intValuationDef_if_neg _ <| coe_ne_zero hP]
+    simp only [idealX_span, ofAdd_neg, inv_inj, WithZero.coe_inj, EmbeddingLike.apply_eq_iff_eq,
+      Nat.cast_inj]
+    have span_ne_zero :
+      (Ideal.span {P} : Ideal (Polynomial K)) ≠ 0 ∧
+        (Ideal.span {Polynomial.X} : Ideal (Polynomial K)) ≠ 0 :=
+      by
+      simp only [Ideal.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot, hP, Polynomial.X_ne_zero,
+        not_false_iff, and_self_iff]
+    have := NormalizationMonoid.count_normalizedFactors_eq_associates_count (Polynomial K)
+        (Ideal.span {P}) (Ideal.span {Polynomial.X}) span_ne_zero.1
+        ((@Ideal.span_singleton_prime (Polynomial K) _ _ Polynomial.X_ne_zero).mpr prime_X)
+        span_ne_zero.2
+    convert this.symm
+    have span_ne_zero' :
+      (Ideal.span {↑P} : Ideal (PowerSeries K)) ≠ 0 ∧
+        ((PowerSeries.idealX K).asIdeal : Ideal (PowerSeries K)) ≠ 0 := by
+      rw [Ideal.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot, coe_eq_zero_iff]
+      exact ⟨hP, (PowerSeries.idealX K).3⟩
+    rw [← factors_in_pol_eq_powerSeries _ _ hP]
+    convert
+      (NormalizationMonoid.count_normalizedFactors_eq_associates_count (PowerSeries K)
+          (Ideal.span {↑P}) (PowerSeries.idealX K).asIdeal span_ne_zero'.1 (PowerSeries.idealX K).2
+          span_ne_zero'.2).symm
+
+theorem intValuation_of_X :
+    (PowerSeries.idealX K).intValuation X = ↑(Multiplicative.ofAdd (-1 : ℤ)) := by
+  classical
+  rw [intValuation_apply, intValuationDef_if_neg (PowerSeries.idealX K) PowerSeries.X_ne_zero]
+  congr
+  have hX : Irreducible (Associates.mk (PowerSeries.idealX K).asIdeal) := by
+    rw [Associates.irreducible_mk]
+    apply Prime.irreducible
+    apply Ideal.prime_of_isPrime
+    apply Ideal.span_singleton_eq_bot.mp.mt
+    apply PowerSeries.X_ne_zero
+    apply PowerSeries.span_X_isPrime
+  convert Associates.count_self hX
+
+end HeightOneSpectrum
 
 end PowerSeries
 
