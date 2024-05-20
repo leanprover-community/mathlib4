@@ -271,6 +271,7 @@ open ZeroObject
 theorem of_hasBinaryProduct [HasBinaryProduct X Y] [HasZeroObject C] [HasZeroMorphisms C] :
     IsPullback Limits.prod.fst Limits.prod.snd (0 : X ⟶ 0) (0 : Y ⟶ 0) := by
   convert @of_is_product _ _ X Y 0 _ (limit.isLimit _) HasZeroObject.zeroIsTerminal
+    <;> apply Subsingleton.elim
 #align category_theory.is_pullback.of_has_binary_product CategoryTheory.IsPullback.of_hasBinaryProduct
 
 variable {X Y}
@@ -403,6 +404,7 @@ open ZeroObject
 theorem of_hasBinaryCoproduct [HasBinaryCoproduct X Y] [HasZeroObject C] [HasZeroMorphisms C] :
     IsPushout (0 : 0 ⟶ X) (0 : 0 ⟶ Y) coprod.inl coprod.inr := by
   convert @of_is_coproduct _ _ 0 X Y _ (colimit.isColimit _) HasZeroObject.zeroIsInitial
+    <;> apply Subsingleton.elim
 #align category_theory.is_pushout.of_has_binary_coproduct CategoryTheory.IsPushout.of_hasBinaryCoproduct
 
 variable {X Y}
@@ -451,7 +453,7 @@ namespace IsPullback
 variable {P X Y Z : C} {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z}
 
 theorem flip (h : IsPullback fst snd f g) : IsPullback snd fst g f :=
-  of_isLimit (PullbackCone.flipIsLimit (comm := h.w.symm) h.isLimit)
+  of_isLimit (PullbackCone.flipIsLimit h.isLimit)
 #align category_theory.is_pullback.flip CategoryTheory.IsPullback.flip
 
 theorem flip_iff : IsPullback fst snd f g ↔ IsPullback snd fst g f :=
@@ -557,6 +559,7 @@ open ZeroObject
 theorem of_isBilimit {b : BinaryBicone X Y} (h : b.IsBilimit) :
     IsPullback b.fst b.snd (0 : X ⟶ 0) (0 : Y ⟶ 0) := by
   convert IsPullback.of_is_product' h.isLimit HasZeroObject.zeroIsTerminal
+    <;> apply Subsingleton.elim
 #align category_theory.is_pullback.of_is_bilimit CategoryTheory.IsPullback.of_isBilimit
 
 @[simp]
@@ -661,7 +664,7 @@ namespace IsPushout
 variable {Z X Y P : C} {f : Z ⟶ X} {g : Z ⟶ Y} {inl : X ⟶ P} {inr : Y ⟶ P}
 
 theorem flip (h : IsPushout f g inl inr) : IsPushout g f inr inl :=
-  of_isColimit (PushoutCocone.flipIsColimit (comm := h.w.symm) h.isColimit)
+  of_isColimit (PushoutCocone.flipIsColimit h.isColimit)
 #align category_theory.is_pushout.flip CategoryTheory.IsPushout.flip
 
 theorem flip_iff : IsPushout f g inl inr ↔ IsPushout g f inr inl :=
@@ -769,6 +772,7 @@ open ZeroObject
 theorem of_isBilimit {b : BinaryBicone X Y} (h : b.IsBilimit) :
     IsPushout (0 : 0 ⟶ X) (0 : 0 ⟶ Y) b.inl b.inr := by
   convert IsPushout.of_is_coproduct' h.isColimit HasZeroObject.zeroIsInitial
+    <;> apply Subsingleton.elim
 #align category_theory.is_pushout.of_is_bilimit CategoryTheory.IsPushout.of_isBilimit
 
 @[simp]
@@ -989,7 +993,6 @@ end BicartesianSq
 section Functor
 
 variable {D : Type u₂} [Category.{v₂} D]
-
 variable (F : C ⥤ D) {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
 
 theorem Functor.map_isPullback [PreservesLimit (cospan h i) F] (s : IsPullback f g h i) :
@@ -1032,7 +1035,7 @@ theorem IsPullback.of_map [ReflectsLimit (cospan h i) F] (e : f ≫ h = g ≫ i)
     (Category.comp_id _).trans (Category.id_comp _).symm]
 #align category_theory.is_pullback.of_map CategoryTheory.IsPullback.of_map
 
-theorem IsPullback.of_map_of_faithful [ReflectsLimit (cospan h i) F] [Faithful F]
+theorem IsPullback.of_map_of_faithful [ReflectsLimit (cospan h i) F] [F.Faithful]
     (H : IsPullback (F.map f) (F.map g) (F.map h) (F.map i)) : IsPullback f g h i :=
   H.of_map F (F.map_injective <| by simpa only [F.map_comp] using H.w)
 #align category_theory.is_pullback.of_map_of_faithful CategoryTheory.IsPullback.of_map_of_faithful
@@ -1053,7 +1056,7 @@ theorem IsPushout.of_map [ReflectsColimit (span f g) F] (e : f ≫ h = g ≫ i)
     (Category.comp_id _).trans (Category.id_comp _)]
 #align category_theory.is_pushout.of_map CategoryTheory.IsPushout.of_map
 
-theorem IsPushout.of_map_of_faithful [ReflectsColimit (span f g) F] [Faithful F]
+theorem IsPushout.of_map_of_faithful [ReflectsColimit (span f g) F] [F.Faithful]
     (H : IsPushout (F.map f) (F.map g) (F.map h) (F.map i)) : IsPushout f g h i :=
   H.of_map F (F.map_injective <| by simpa only [F.map_comp] using H.w)
 #align category_theory.is_pushout.of_map_of_faithful CategoryTheory.IsPushout.of_map_of_faithful

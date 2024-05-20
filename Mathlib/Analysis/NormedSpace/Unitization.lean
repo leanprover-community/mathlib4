@@ -5,7 +5,7 @@ Authors: Jireh Loreaux
 -/
 
 import Mathlib.Algebra.Algebra.Unitization
-import Mathlib.Analysis.NormedSpace.OperatorNorm
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Mul
 
 /-!
 # Unitization norms
@@ -100,8 +100,8 @@ theorem splitMul_injective_of_clm_mul_injective
 variable [RegularNormedAlgebra 𝕜 A]
 variable (𝕜 A)
 
-/- In a `RegularNormedAlgebra`, the map `Unitization.splitMul 𝕜 A` is injective. We will use this
-to pull back the norm from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A`. -/
+/-- In a `RegularNormedAlgebra`, the map `Unitization.splitMul 𝕜 A` is injective.
+We will use this to pull back the norm from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A`. -/
 theorem splitMul_injective : Function.Injective (splitMul 𝕜 A) :=
   splitMul_injective_of_clm_mul_injective (isometry_mul 𝕜 A).injective
 
@@ -113,19 +113,15 @@ section Aux
 algebra homomorphism `Unitization.splitMul 𝕜 A`. This does not give us the desired topology,
 uniformity or bornology on `Unitization 𝕜 A` (which we want to agree with `Prod`), so we only use
 it as a local instance to build the real one. -/
-@[reducible]
-noncomputable def normedRingAux : NormedRing (Unitization 𝕜 A) :=
-  @NormedRing.induced _ (Unitization 𝕜 A) (𝕜 × (A →L[𝕜] A)) Unitization.instRing
-    Prod.normedRing _ (splitMul 𝕜 A) (splitMul_injective 𝕜 A)
--- todo: why does Lean need these instances explictly?
+noncomputable abbrev normedRingAux : NormedRing (Unitization 𝕜 A) :=
+  NormedRing.induced (Unitization 𝕜 A) (𝕜 × (A →L[𝕜] A)) (splitMul 𝕜 A) (splitMul_injective 𝕜 A)
 
 attribute [local instance] Unitization.normedRingAux
 
 /-- Pull back the normed algebra structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.splitMul 𝕜 A`. This uses the wrong `NormedRing` instance (i.e.,
-`Unitization.normedRingAux`), so we only use it as a local instance to build the real one.-/
-@[reducible]
-noncomputable def normedAlgebraAux : NormedAlgebra 𝕜 (Unitization 𝕜 A) :=
+`Unitization.normedRingAux`), so we only use it as a local instance to build the real one. -/
+noncomputable abbrev normedAlgebraAux : NormedAlgebra 𝕜 (Unitization 𝕜 A) :=
   NormedAlgebra.induced 𝕜 (Unitization 𝕜 A) (𝕜 × (A →L[𝕜] A)) (splitMul 𝕜 A)
 
 attribute [local instance] Unitization.normedAlgebraAux
@@ -147,13 +143,12 @@ theorem nnnorm_eq_sup (x : Unitization 𝕜 A) :
     ‖x‖₊ = ‖x.fst‖₊ ⊔ ‖algebraMap 𝕜 (A →L[𝕜] A) x.fst + mul 𝕜 A x.snd‖₊ :=
   NNReal.eq <| norm_eq_sup x
 
-
 theorem lipschitzWith_addEquiv :
     LipschitzWith 2 (Unitization.addEquiv 𝕜 A) := by
   rw [← Real.toNNReal_ofNat]
   refine AddMonoidHomClass.lipschitz_of_bound (Unitization.addEquiv 𝕜 A) 2 fun x => ?_
   rw [norm_eq_sup, Prod.norm_def]
-  refine' max_le ?_ ?_
+  refine max_le ?_ ?_
   · rw [sup_eq_max, mul_max_of_nonneg _ _ (zero_le_two : (0 : ℝ) ≤ 2)]
     exact le_max_of_le_left ((le_add_of_nonneg_left (norm_nonneg _)).trans_eq (two_mul _).symm)
   · nontriviality A
@@ -224,8 +219,7 @@ noncomputable instance instMetricSpace : MetricSpace (Unitization 𝕜 A) :=
 
 /-- Pull back the normed ring structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.splitMul 𝕜 A`. -/
-noncomputable instance instNormedRing : NormedRing (Unitization 𝕜 A)
-    where
+noncomputable instance instNormedRing : NormedRing (Unitization 𝕜 A) where
   dist_eq := normedRingAux.dist_eq
   norm_mul := normedRingAux.norm_mul
   norm := normedRingAux.norm
@@ -234,11 +228,13 @@ noncomputable instance instNormedRing : NormedRing (Unitization 𝕜 A)
 algebra homomorphism `Unitization.splitMul 𝕜 A`. -/
 instance instNormedAlgebra : NormedAlgebra 𝕜 (Unitization 𝕜 A) where
   norm_smul_le k x := by
-    rw [norm_def, map_smul, norm_smul, ← norm_def]
+    rw [norm_def, map_smul]
+    -- Note: this used to be `rw [norm_smul, ← norm_def]` before #8386
+    exact (norm_smul k (splitMul 𝕜 A x)).le
 
 instance instNormOneClass : NormOneClass (Unitization 𝕜 A) where
   norm_one := by simpa only [norm_eq_sup, fst_one, norm_one, snd_one, map_one, map_zero,
-      add_zero, ge_iff_le, sup_eq_left] using op_norm_le_bound _ zero_le_one fun x => by simp
+      add_zero, ge_iff_le, sup_eq_left] using opNorm_le_bound _ zero_le_one fun x => by simp
 
 lemma norm_inr (a : A) : ‖(a : Unitization 𝕜 A)‖ = ‖a‖ := by
   simp [norm_eq_sup]

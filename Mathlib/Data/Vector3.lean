@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Fin.Fin2
-import Mathlib.Init.Align
+import Mathlib.Init.Logic
 import Mathlib.Mathport.Notation
+import Mathlib.Tactic.TypeStar
 
 #align_import data.vector3 from "leanprover-community/mathlib"@"3d7987cda72abc473c7cdbbb075170e9ac620042"
 
@@ -37,15 +38,15 @@ namespace Vector3
 /-- The empty vector -/
 @[match_pattern]
 def nil : Vector3 α 0 :=
-  fun.
+  nofun
 #align vector3.nil Vector3.nil
 
 /-- The vector cons operation -/
 @[match_pattern]
-def cons (a : α) (v : Vector3 α n) : Vector3 α (succ n) := fun i => by
+def cons (a : α) (v : Vector3 α n) : Vector3 α (n + 1) := fun i => by
   refine' i.cases' _ _
-  exact a
-  exact v
+  · exact a
+  · exact v
 #align vector3.cons Vector3.cons
 
 section
@@ -68,6 +69,7 @@ scoped macro_rules | `([$l,*]) => `(expand_foldr% (h t => cons h t) nil [$(.ofEl
 end
 
 -- Overloading the usual `::` notation for `List.cons` with `Vector3.cons`.
+@[inherit_doc]
 scoped notation a " :: " b => cons a b
 
 @[simp]
@@ -81,44 +83,42 @@ theorem cons_fs (a : α) (v : Vector3 α n) (i) : (a :: v) (fs i) = v i :=
 #align vector3.cons_fs Vector3.cons_fs
 
 /-- Get the `i`th element of a vector -/
-@[reducible]
-def nth (i : Fin2 n) (v : Vector3 α n) : α :=
+abbrev nth (i : Fin2 n) (v : Vector3 α n) : α :=
   v i
 #align vector3.nth Vector3.nth
 
 /-- Construct a vector from a function on `Fin2`. -/
-@[reducible]
-def ofFn (f : Fin2 n → α) : Vector3 α n :=
+abbrev ofFn (f : Fin2 n → α) : Vector3 α n :=
   f
 #align vector3.of_fn Vector3.ofFn
 
 /-- Get the head of a nonempty vector. -/
-def head (v : Vector3 α (succ n)) : α :=
+def head (v : Vector3 α (n + 1)) : α :=
   v fz
 #align vector3.head Vector3.head
 
 /-- Get the tail of a nonempty vector. -/
-def tail (v : Vector3 α (succ n)) : Vector3 α n := fun i => v (fs i)
+def tail (v : Vector3 α (n + 1)) : Vector3 α n := fun i => v (fs i)
 #align vector3.tail Vector3.tail
 
 theorem eq_nil (v : Vector3 α 0) : v = [] :=
   funext fun i => nomatch i
 #align vector3.eq_nil Vector3.eq_nil
 
-theorem cons_head_tail (v : Vector3 α (succ n)) : (head v :: tail v) = v :=
+theorem cons_head_tail (v : Vector3 α (n + 1)) : (head v :: tail v) = v :=
   funext fun i => Fin2.cases' rfl (fun _ => rfl) i
 #align vector3.cons_head_tail Vector3.cons_head_tail
 
 /-- Eliminator for an empty vector. -/
-@[elab_as_elim]  -- porting note: add `elab_as_elim`
+@[elab_as_elim]  -- Porting note: add `elab_as_elim`
 def nilElim {C : Vector3 α 0 → Sort u} (H : C []) (v : Vector3 α 0) : C v := by
   rw [eq_nil v]; apply H
 #align vector3.nil_elim Vector3.nilElim
 
 /-- Recursion principle for a nonempty vector. -/
-@[elab_as_elim]  -- porting note: add `elab_as_elim`
-def consElim {C : Vector3 α (succ n) → Sort u} (H : ∀ (a : α) (t : Vector3 α n), C (a :: t))
-    (v : Vector3 α (succ n)) : C v := by rw [← cons_head_tail v]; apply H
+@[elab_as_elim]  -- Porting note: add `elab_as_elim`
+def consElim {C : Vector3 α (n + 1) → Sort u} (H : ∀ (a : α) (t : Vector3 α n), C (a :: t))
+    (v : Vector3 α (n + 1)) : C v := by rw [← cons_head_tail v]; apply H
 #align vector3.cons_elim Vector3.consElim
 
 @[simp]
@@ -142,7 +142,7 @@ theorem recOn_nil {C H0 Hs} : @Vector3.recOn α (@C) 0 [] H0 @Hs = H0 :=
 
 @[simp]
 theorem recOn_cons {C H0 Hs n a v} :
-    @Vector3.recOn α (@C) (succ n) (a :: v) H0 @Hs = Hs a v (@Vector3.recOn α (@C) n v H0 @Hs) :=
+    @Vector3.recOn α (@C) (n + 1) (a :: v) H0 @Hs = Hs a v (@Vector3.recOn α (@C) n v H0 @Hs) :=
   rfl
 #align vector3.rec_on_cons Vector3.recOn_cons
 
@@ -177,11 +177,11 @@ theorem append_left :
 theorem append_add :
     ∀ {m} (v : Vector3 α m) {n} (w : Vector3 α n) (i : Fin2 n), (v +-+ w) (add i m) = w i
   | 0, v, n, w, i => rfl
-  | succ m, v, n, w, i => v.consElim fun _a t => by simp [append_add, add]
+  | m + 1, v, n, w, i => v.consElim fun _a t => by simp [append_add, add]
 #align vector3.append_add Vector3.append_add
 
 /-- Insert `a` into `v` at index `i`. -/
-def insert (a : α) (v : Vector3 α n) (i : Fin2 (succ n)) : Vector3 α (succ n) := fun j =>
+def insert (a : α) (v : Vector3 α n) (i : Fin2 (n + 1)) : Vector3 α (n + 1) := fun j =>
   (a :: v) (insertPerm i j)
 #align vector3.insert Vector3.insert
 
@@ -191,25 +191,27 @@ theorem insert_fz (a : α) (v : Vector3 α n) : insert a v fz = a :: v := by
 #align vector3.insert_fz Vector3.insert_fz
 
 @[simp]
-theorem insert_fs (a : α) (b : α) (v : Vector3 α n) (i : Fin2 (succ n)) :
+theorem insert_fs (a : α) (b : α) (v : Vector3 α n) (i : Fin2 (n + 1)) :
     insert a (b :: v) (fs i) = b :: insert a v i :=
   funext fun j => by
     refine' j.cases' _ fun j => _ <;> simp [insert, insertPerm]
     refine' Fin2.cases' _ _ (insertPerm i j) <;> simp [insertPerm]
 #align vector3.insert_fs Vector3.insert_fs
 
-theorem append_insert (a : α) (t : Vector3 α m) (v : Vector3 α n) (i : Fin2 (succ n))
-    (e : succ n + m = succ (n + m)) :
+theorem append_insert (a : α) (t : Vector3 α m) (v : Vector3 α n) (i : Fin2 (n + 1))
+    (e : (n + 1) + m = (n + m) + 1) :
     insert a (t +-+ v) (Eq.recOn e (i.add m)) = Eq.recOn e (t +-+ insert a v i) := by
-  refine' Vector3.recOn t (fun e => _) (@fun k b t IH _ => _) e; rfl
-  have e' := succ_add n k
+  refine' Vector3.recOn t (fun e => _) (@fun k b t IH _ => _) e
+  · rfl
+  have e' : (n + 1) + k = (n + k) + 1 := by omega
   change
-    insert a (b :: t +-+ v) (Eq.recOn (congr_arg succ e') (fs (add i k))) =
-      Eq.recOn (congr_arg succ e') (b :: t +-+ insert a v i)
+    insert a (b :: t +-+ v)
+      (Eq.recOn (congr_arg (· + 1) e' : _ + 1 = _) (fs (add i k))) =
+      Eq.recOn (congr_arg (· + 1) e' : _ + 1 = _) (b :: t +-+ insert a v i)
   rw [←
     (Eq.recOn e' rfl :
-      fs (Eq.recOn e' (i.add k) : Fin2 (succ (n + k))) =
-        Eq.recOn (congr_arg succ e') (fs (i.add k)))]
+      fs (Eq.recOn e' (i.add k) : Fin2 ((n + k) + 1)) =
+        Eq.recOn (congr_arg (· + 1) e' : _ + 1 = _) (fs (i.add k)))]
   simp; rw [IH]; exact Eq.recOn e' rfl
 #align vector3.append_insert Vector3.append_insert
 
@@ -264,7 +266,7 @@ theorem vectorAllP_nil (p : α → Prop) : VectorAllP p [] = True :=
   rfl
 #align vector_allp_nil vectorAllP_nil
 
-@[simp, nolint simpNF] -- Porting note: dsimp cannot prove this
+@[simp, nolint simpNF] -- Porting note (#10675): dsimp cannot prove this
 theorem vectorAllP_singleton (p : α → Prop) (x : α) : VectorAllP p (cons x []) = p x :=
   rfl
 #align vector_allp_singleton vectorAllP_singleton

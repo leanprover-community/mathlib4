@@ -96,8 +96,8 @@ theorem recF_eq_of_wEquiv (α : TypeVec n) {β : Type u} (u : F (α.append1 β) 
   apply q.P.w_cases _ y
   intro a₁ f'₁ f₁
   intro h
-  -- porting note: induction on h doesn't work.
-  refine' @WEquiv.recOn _ _ _ _ _ (λ a a' _ => recF u a = recF u a') _ _ h _ _ _
+  -- Porting note: induction on h doesn't work.
+  refine' @WEquiv.recOn _ _ _ _ _ (fun a a' _ ↦ recF u a = recF u a') _ _ h _ _ _
   · intros a f' f₀ f₁ _h ih; simp only [recF_eq, Function.comp]
     congr; funext; congr; funext; apply ih
   · intros a₀ f'₀ f₀ a₁ f'₁ f₁ h; simp only [recF_eq', abs_map, MvPFunctor.wDest'_wMk, h]
@@ -123,10 +123,10 @@ set_option linter.uppercaseLean3 false in
 #align mvqpf.Wequiv.refl MvQPF.wEquiv.refl
 
 theorem wEquiv.symm {α : TypeVec n} (x y : q.P.W α) : WEquiv x y → WEquiv y x := by
-  intro h; induction h
-  case ind a f' f₀ f₁ _h ih => exact WEquiv.ind _ _ _ _ ih
-  case abs a₀ f'₀ f₀ a₁ f'₁ f₁ h => exact WEquiv.abs _ _ _ _ _ _ h.symm
-  case trans x y z _e₁ _e₂ ih₁ ih₂ => exact MvQPF.WEquiv.trans _ _ _ ih₂ ih₁
+  intro h; induction h with
+  | ind a f' f₀ f₁ _h ih => exact WEquiv.ind _ _ _ _ ih
+  | abs a₀ f'₀ f₀ a₁ f'₁ f₁ h => exact WEquiv.abs _ _ _ _ _ _ h.symm
+  | trans x y z _e₁ _e₂ ih₁ ih₂ => exact MvQPF.WEquiv.trans _ _ _ ih₂ ih₁
 set_option linter.uppercaseLean3 false in
 #align mvqpf.Wequiv.symm MvQPF.wEquiv.symm
 
@@ -156,16 +156,18 @@ set_option linter.uppercaseLean3 false in
 
 theorem wEquiv_map {α β : TypeVec n} (g : α ⟹ β) (x y : q.P.W α) :
     WEquiv x y → WEquiv (g <$$> x) (g <$$> y) := by
-  intro h; induction h
-  case ind a f' f₀ f₁ h ih => rw [q.P.w_map_wMk, q.P.w_map_wMk]; apply WEquiv.ind; exact ih
-  case
-    abs a₀ f'₀ f₀ a₁ f'₁ f₁ h =>
+  intro h; induction h with
+  | ind a f' f₀ f₁ h ih => rw [q.P.w_map_wMk, q.P.w_map_wMk]; apply WEquiv.ind; exact ih
+  | abs a₀ f'₀ f₀ a₁ f'₁ f₁ h =>
     rw [q.P.w_map_wMk, q.P.w_map_wMk]; apply WEquiv.abs
     show
       abs (q.P.objAppend1 a₀ (g ⊚ f'₀) fun x => q.P.wMap g (f₀ x)) =
         abs (q.P.objAppend1 a₁ (g ⊚ f'₁) fun x => q.P.wMap g (f₁ x))
     rw [← q.P.map_objAppend1, ← q.P.map_objAppend1, abs_map, abs_map, h]
-  case trans x y z _ _ ih₁ ih₂ => apply MvQPF.WEquiv.trans; apply ih₁; apply ih₂
+  | trans x y z _ _ ih₁ ih₂ =>
+    apply MvQPF.WEquiv.trans
+    · apply ih₁
+    · apply ih₂
 set_option linter.uppercaseLean3 false in
 #align mvqpf.Wequiv_map MvQPF.wEquiv_map
 
@@ -189,6 +191,7 @@ def Fix {n : ℕ} (F : TypeVec (n + 1) → Type*) [MvFunctor F] [q : MvQPF F] (�
   Quotient (wSetoid α : Setoid (q.P.W α))
 #align mvqpf.fix MvQPF.Fix
 
+-- Porting note(#5171): this linter isn't ported yet.
 --attribute [nolint has_nonempty_instance] Fix
 
 /-- `Fix F` is a functor -/
@@ -338,6 +341,7 @@ instance mvqpfFix : MvQPF (Fix F) where
     conv =>
       rhs
       dsimp [MvFunctor.map]
+    rfl
 #align mvqpf.mvqpf_fix MvQPF.mvqpfFix
 
 /-- Dependent recursor for `fix F` -/
@@ -346,12 +350,13 @@ def Fix.drec {β : Fix F α → Type u}
   let y := @Fix.rec _ F _ _ α (Sigma β) (fun i => ⟨_, g i⟩) x
   have : x = y.1 := by
     symm
-    dsimp
+    dsimp [y]
     apply Fix.ind_rec _ id _ x
     intro x' ih
     rw [Fix.rec_eq]
     dsimp
-    simp [appendFun_id_id] at ih
+    simp? [appendFun_id_id] at ih says
+      simp only [appendFun_id_id, MvFunctor.id_map] at ih
     congr
     conv =>
       rhs

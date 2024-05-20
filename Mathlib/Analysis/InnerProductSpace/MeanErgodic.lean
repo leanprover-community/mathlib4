@@ -22,7 +22,7 @@ see `ContinuousLinearMap.tendsto_birkhoffAverage_orthogonalProjection`.
 open Filter Finset Function Bornology
 open scoped BigOperators Topology
 
-variable {𝕜 E : Type*} [IsROrC 𝕜] [NormedAddCommGroup E]
+variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
 
 /-- **Von Neumann Mean Ergodic Theorem**, a version for a normed space.
 
@@ -59,14 +59,14 @@ theorem LinearMap.tendsto_birkhoffAverage_of_ker_subset_closure [NormedSpace �
   so it suffices to prove the theorem for `y = f x - x`. -/
   have : IsClosed {x | Tendsto (birkhoffAverage 𝕜 f _root_.id · x) atTop (𝓝 0)} :=
     isClosed_setOf_tendsto_birkhoffAverage 𝕜 hf uniformContinuous_id continuous_const
-  refine closure_minimal (Set.forall_range_iff.2 fun x ↦ ?_) this (hg_ker hy)
+  refine closure_minimal (Set.forall_mem_range.2 fun x ↦ ?_) this (hg_ker hy)
   /- Finally, for `y = f x - x` the average is equal to the difference between averages
   along the orbits of `f x` and `x`, and most of the terms cancel. -/
   have : IsBounded (Set.range (_root_.id <| f^[·] x)) :=
-    isBounded_iff_forall_norm_le.2 ⟨‖x‖, Set.forall_range_iff.2 fun n ↦ by
-      have H : f^[n] 0 = 0 := (f : E →+ E).iterate_map_zero n
+    isBounded_iff_forall_norm_le.2 ⟨‖x‖, Set.forall_mem_range.2 fun n ↦ by
+      have H : f^[n] 0 = 0 := iterate_map_zero (f : E →+ E) n
       simpa [H] using (hf.iterate n).dist_le_mul x 0⟩
-  have H : ∀ n x y, f^[n] (x - y) = f^[n] x - f^[n] y := (f : E →+ E).iterate_map_sub
+  have H : ∀ n x y, f^[n] (x - y) = f^[n] x - f^[n] y := iterate_map_sub (f : E →+ E)
   simpa [birkhoffAverage, birkhoffSum, Finset.sum_sub_distrib, smul_sub, H]
     using tendsto_birkhoffAverage_apply_sub_birkhoffAverage 𝕜 this
 
@@ -97,7 +97,7 @@ theorem ContinuousLinearMap.tendsto_birkhoffAverage_orthogonalProjection (f : E 
       ← Submodule.orthogonal_orthogonal_eq_closure]
     /- To verify this, we verify `‖f x‖ ≤ ‖x‖` (because `‖f‖ ≤ 1`) and `⟪f x, x⟫ = ‖x‖²`. -/
     refine Submodule.orthogonal_le fun x hx ↦ eq_of_norm_le_re_inner_eq_norm_sq (𝕜 := 𝕜) ?_ ?_
-    · simpa using f.le_of_op_norm_le hf x
+    · simpa using f.le_of_opNorm_le hf x
     · have : ∀ y, ⟪f y, x⟫ = ⟪y, x⟫ := by
         simpa [Submodule.mem_orthogonal, inner_sub_left, sub_eq_zero] using hx
       simp [this, ← norm_sq_eq_inner]

@@ -13,14 +13,12 @@ In this file we define the Dirac measure `MeasureTheory.Measure.dirac a`
 and prove some basic facts about it.
 -/
 
-set_option autoImplicit true
-
 open Function Set
 open scoped ENNReal Classical
 
 noncomputable section
 
-variable [MeasurableSpace α] [MeasurableSpace β] {s : Set α}
+variable {α β δ : Type*} [MeasurableSpace α] [MeasurableSpace β] {s : Set α} {a : α}
 
 namespace MeasureTheory
 
@@ -58,7 +56,6 @@ theorem dirac_apply [MeasurableSingletonClass α] (a : α) (s : Set α) :
   calc
     dirac a s ≤ dirac a {a}ᶜ := measure_mono (subset_compl_comm.1 <| singleton_subset_iff.2 h)
     _ = 0 := by simp [dirac_apply' _ (measurableSet_singleton _).compl]
-
 #align measure_theory.measure.dirac_apply MeasureTheory.Measure.dirac_apply
 
 theorem map_dirac {f : α → β} (hf : Measurable f) (a : α) : (dirac a).map f = dirac (f a) :=
@@ -67,8 +64,8 @@ theorem map_dirac {f : α → β} (hf : Measurable f) (a : α) : (dirac a).map f
 
 lemma map_const (μ : Measure α) (c : β) : μ.map (fun _ ↦ c) = (μ Set.univ) • dirac c := by
   ext s hs
-  simp only [aemeasurable_const, measurable_const, smul_toOuterMeasure, OuterMeasure.coe_smul,
-    Pi.smul_apply, dirac_apply' _ hs, smul_eq_mul]
+  simp only [aemeasurable_const, measurable_const, Measure.coe_smul, Pi.smul_apply,
+    dirac_apply' _ hs, smul_eq_mul]
   classical
   rw [Measure.map_apply measurable_const hs, Set.preimage_const]
   by_cases hsc : c ∈ s
@@ -140,10 +137,14 @@ theorem ae_eq_dirac [MeasurableSingletonClass α] {a : α} (f : α → δ) :
     f =ᵐ[dirac a] const α (f a) := by simp [Filter.EventuallyEq]
 #align measure_theory.ae_eq_dirac MeasureTheory.ae_eq_dirac
 
-instance Measure.dirac.isProbabilityMeasure [MeasurableSpace α] {x : α} :
-    IsProbabilityMeasure (dirac x) :=
+instance Measure.dirac.isProbabilityMeasure {x : α} : IsProbabilityMeasure (dirac x) :=
   ⟨dirac_apply_of_mem <| mem_univ x⟩
 #align measure_theory.measure.dirac.is_probability_measure MeasureTheory.Measure.dirac.isProbabilityMeasure
+
+/-! Extra instances to short-circuit type class resolution -/
+
+instance Measure.dirac.instIsFiniteMeasure {a : α} : IsFiniteMeasure (dirac a) := inferInstance
+instance Measure.dirac.instSigmaFinite {a : α} : SigmaFinite (dirac a) := inferInstance
 
 theorem restrict_dirac' (hs : MeasurableSet s) [Decidable (a ∈ s)] :
     (Measure.dirac a).restrict s = if a ∈ s then Measure.dirac a else 0 := by

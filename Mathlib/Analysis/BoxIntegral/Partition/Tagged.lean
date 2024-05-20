@@ -19,7 +19,7 @@ called a *Henstock* partition. We do not include this assumption into the defini
 (pre)partition because McShane integral is defined as a limit along tagged partitions without this
 requirement.
 
-### Tags
+## Tags
 
 rectangular box, box partition
 -/
@@ -27,7 +27,8 @@ rectangular box, box partition
 
 noncomputable section
 
-open Classical ENNReal NNReal
+open scoped Classical
+open ENNReal NNReal
 
 open Set Function
 
@@ -39,7 +40,10 @@ variable {ι : Type*}
 prepartition. For simplicity we require that `tag` is defined for all boxes in `ι → ℝ` but
 we will use only the values of `tag` on the boxes of the partition. -/
 structure TaggedPrepartition (I : Box ι) extends Prepartition I where
+  /-- Choice of tagged point of each box in this prepartition:
+    we extend this to a total function, on all boxes in `ι → ℝ`. -/
   tag : Box ι → ι → ℝ
+  /-- Each tagged point belongs to `I` -/
   tag_mem_Icc : ∀ J, tag J ∈ Box.Icc I
 #align box_integral.tagged_prepartition BoxIntegral.TaggedPrepartition
 
@@ -237,7 +241,7 @@ theorem IsHenstock.card_filter_tag_eq_le [Fintype ι] (h : π.IsHenstock) (x : �
   calc
     (π.boxes.filter fun J => π.tag J = x).card ≤
         (π.boxes.filter fun J : Box ι => x ∈ Box.Icc J).card := by
-      refine' Finset.card_le_of_subset fun J hJ => _
+      refine' Finset.card_le_card fun J hJ => _
       rw [Finset.mem_filter] at hJ ⊢; rcases hJ with ⟨hJ, rfl⟩
       exact ⟨hJ, h J hJ⟩
     _ ≤ 2 ^ Fintype.card ι := π.toPrepartition.card_filter_mem_Icc_le x

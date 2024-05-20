@@ -55,7 +55,7 @@ instance isScalarTower'' [SMul R M] [SMul M N] [SMul R N] [IsScalarTower R M N] 
 instance [SMul R M] [SMul Rᵐᵒᵖ M] [IsCentralScalar R M] : IsCentralScalar R (ULift M) :=
   ⟨fun r m => congr_arg up <| op_smul_eq_smul r m.down⟩
 
--- Porting note: TODO this takes way longer to elaborate than it should
+-- Porting note (#11215): TODO this takes way longer to elaborate than it should
 @[to_additive]
 instance mulAction [Monoid R] [MulAction R M] : MulAction (ULift R) M where
   smul := (· • ·)
@@ -80,24 +80,24 @@ instance smulZeroClass' [Zero M] [SMulZeroClass R M] : SMulZeroClass R (ULift M)
   smul_zero c := by { ext; simp [smul_zero] }
 #align ulift.smul_zero_class' ULift.smulZeroClass'
 
-instance distribSmul [AddZeroClass M] [DistribSMul R M] : DistribSMul (ULift R) M where
+instance distribSMul [AddZeroClass M] [DistribSMul R M] : DistribSMul (ULift R) M where
   smul_add _ := smul_add _
-#align ulift.distrib_smul ULift.distribSmul
+#align ulift.distrib_smul ULift.distribSMul
 
-instance distribSmul' [AddZeroClass M] [DistribSMul R M] : DistribSMul R (ULift M) where
+instance distribSMul' [AddZeroClass M] [DistribSMul R M] : DistribSMul R (ULift M) where
   smul_add c f g := by
     ext
     simp [smul_add]
-#align ulift.distrib_smul' ULift.distribSmul'
+#align ulift.distrib_smul' ULift.distribSMul'
 
 instance distribMulAction [Monoid R] [AddMonoid M] [DistribMulAction R M] :
     DistribMulAction (ULift R) M :=
-  { ULift.mulAction, ULift.distribSmul with }
+  { ULift.mulAction, ULift.distribSMul with }
 #align ulift.distrib_mul_action ULift.distribMulAction
 
 instance distribMulAction' [Monoid R] [AddMonoid M] [DistribMulAction R M] :
     DistribMulAction R (ULift M) :=
-  { ULift.mulAction', ULift.distribSmul' with }
+  { ULift.mulAction', ULift.distribSMul' with }
 #align ulift.distrib_mul_action' ULift.distribMulAction'
 
 instance mulDistribMulAction [Monoid R] [Monoid M] [MulDistribMulAction R M] :
@@ -123,8 +123,7 @@ instance smulWithZero [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero (ULift
     zero_smul := zero_smul _ }
 #align ulift.smul_with_zero ULift.smulWithZero
 
-instance smulWithZero' [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero R (ULift M)
-    where
+instance smulWithZero' [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero R (ULift M) where
   smul_zero _ := ULift.ext _ _ <| smul_zero _
   zero_smul _ := ULift.ext _ _ <| zero_smul _ _
 #align ulift.smul_with_zero' ULift.smulWithZero'
@@ -132,7 +131,8 @@ instance smulWithZero' [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero R (UL
 instance mulActionWithZero [MonoidWithZero R] [Zero M] [MulActionWithZero R M] :
     MulActionWithZero (ULift R) M :=
   { ULift.smulWithZero with
-    -- Porting note: TODO there seems to be a mismatch in whether the carrier is explicit here
+    -- Porting note (#11215): TODO there seems to be a mismatch in whether
+    -- the carrier is explicit here
     one_smul := one_smul _
     mul_smul := mul_smul }
 #align ulift.mul_action_with_zero ULift.mulActionWithZero

@@ -64,9 +64,7 @@ open TopologicalSpace
 open Opposite
 
 variable {C : Type u} [Category.{v} C]
-
 variable [HasColimits.{v} C]
-
 variable {X Y Z : TopCat.{v}}
 
 namespace TopCat.Presheaf
@@ -110,7 +108,7 @@ theorem germ_res (F : X.Presheaf C) {U V : Opens X} (i : U ⟶ V) (x : U) :
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.germ_res TopCat.Presheaf.germ_res
 
--- Porting note : `@[elementwise]` did not generate the best lemma when applied to `germ_res`
+-- Porting note: `@[elementwise]` did not generate the best lemma when applied to `germ_res`
 theorem germ_res_apply (F : X.Presheaf C) {U V : Opens X} (i : U ⟶ V) (x : U) [ConcreteCategory C]
     (s) : germ F x (F.map i.op s) = germ F (i x) s := by rw [← comp_apply, germ_res]
 set_option linter.uppercaseLean3 false in
@@ -142,7 +140,7 @@ stalk of `f _ * F` at `f x` and the stalk of `F` at `x`.
 def stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) (x : X) : (f _* F).stalk (f x) ⟶ F.stalk x := by
   -- This is a hack; Lean doesn't like to elaborate the term written directly.
   -- Porting note: The original proof was `trans; swap`, but `trans` does nothing.
-  refine' ?_ ≫ colimit.pre _ (OpenNhds.map f x).op
+  refine ?_ ≫ colimit.pre _ (OpenNhds.map f x).op
   exact colim.map (whiskerRight (NatTrans.op (OpenNhds.inclusionMapIso f x).inv) F)
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pushforward TopCat.Presheaf.stalkPushforward
@@ -388,14 +386,13 @@ end stalkSpecializes
 section Concrete
 
 variable {C}
-
 variable [ConcreteCategory.{v} C]
 
 attribute [local instance] ConcreteCategory.hasCoeToSort
 -- Porting note: The following does not seem to be needed.
 -- ConcreteCategory.hasCoeToFun
 
--- Porting note: Todo: @[ext] attribute only applies to structures or lemmas proving x = y
+-- Porting note (#11215): TODO: @[ext] attribute only applies to structures or lemmas proving x = y
 -- @[ext]
 theorem germ_ext (F : X.Presheaf C) {U V : Opens X} {x : X} {hxU : x ∈ U} {hxV : x ∈ V}
     (W : Opens X) (hxW : x ∈ W) (iWU : W ⟶ U) (iWV : W ⟶ V) {sU : F.obj (op U)} {sV : F.obj (op V)}
@@ -448,7 +445,7 @@ theorem stalkFunctor_map_injective_of_app_injective {F G : Presheaf C X} (f : F 
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_functor_map_injective_of_app_injective TopCat.Presheaf.stalkFunctor_map_injective_of_app_injective
 
-variable [HasLimits C] [PreservesLimits (forget C)] [ReflectsIsomorphisms (forget C)]
+variable [HasLimits C] [PreservesLimits (forget C)] [(forget C).ReflectsIsomorphisms]
 
 /-- Let `F` be a sheaf valued in a concrete category, whose forgetful functor reflects isomorphisms,
 preserves limits and filtered colimits. Then two sections who agree on every stalk must be equal.

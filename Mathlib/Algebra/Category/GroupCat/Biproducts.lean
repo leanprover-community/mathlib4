@@ -3,10 +3,11 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Algebra.Group.Pi
+import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.Category.GroupCat.Preadditive
 import Mathlib.CategoryTheory.Preadditive.Biproducts
 import Mathlib.Algebra.Category.GroupCat.Limits
+import Mathlib.Tactic.CategoryTheory.Elementwise
 
 #align_import algebra.category.Group.biproducts from "leanprover-community/mathlib"@"234ddfeaa5572bc13716dd215c6444410a679a8e"
 
@@ -18,8 +19,6 @@ import Mathlib.Algebra.Category.GroupCat.Limits
 open CategoryTheory
 
 open CategoryTheory.Limits
-
-open BigOperators
 
 universe w u
 
@@ -130,7 +129,7 @@ end HasLimit
 
 open HasLimit
 
-variable {J : Type} [Fintype J]
+variable {J : Type} [Finite J]
 
 /-- We verify that the biproduct we've just defined is isomorphic to the `AddCommGroupCat` structure
 on the dependent function type.
