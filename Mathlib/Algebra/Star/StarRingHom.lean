@@ -120,7 +120,7 @@ class StarRingEquivClass (F : Type*) (A B : outParam Type*)
   [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B] [EquivLike F A B]
   extends RingEquivClass F A B : Prop
   where
-  /-- By definition, a ⋆-algebra equivalence preserves the `star` operation. -/
+  /-- By definition, a ⋆-ring equivalence preserves the `star` operation. -/
   map_star : ∀ (f : F) (a : A), f (star a) = star (f a)
 
 namespace StarRingEquiv
