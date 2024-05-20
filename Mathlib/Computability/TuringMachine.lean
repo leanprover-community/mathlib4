@@ -224,7 +224,7 @@ theorem ListBlank.head_mk {Γ} [Inhabited Γ] (l : List Γ) :
 def ListBlank.tail {Γ} [Inhabited Γ] (l : ListBlank Γ) : ListBlank Γ := by
   apply l.liftOn (fun l ↦ ListBlank.mk l.tail)
   rintro a _ ⟨i, rfl⟩
-  refine' Quotient.sound' (Or.inl _)
+  refine Quotient.sound' (Or.inl ?_)
   cases a
   · cases' i with i <;> [exact ⟨0, rfl⟩; exact ⟨i, rfl⟩]
   exact ⟨i, rfl⟩
@@ -264,7 +264,7 @@ this only holds for nonempty lists. -/
 @[simp]
 theorem ListBlank.cons_head_tail {Γ} [Inhabited Γ] : ∀ l : ListBlank Γ, l.tail.cons l.head = l := by
   apply Quotient.ind'
-  refine' fun l ↦ Quotient.sound' (Or.inr _)
+  refine fun l ↦ Quotient.sound' (Or.inr ?_)
   cases l
   · exact ⟨1, rfl⟩
   · rfl
@@ -316,7 +316,7 @@ theorem ListBlank.ext {Γ} [i : Inhabited Γ] {L₁ L₂ : ListBlank Γ} :
   · cases le_total l₁.length l₂.length <;> [skip; symm] <;> apply this <;> try assumption
     intro
     rw [H]
-  refine' Quotient.sound' (Or.inl ⟨l₂.length - l₁.length, _⟩)
+  refine Quotient.sound' (Or.inl ⟨l₂.length - l₁.length, ?_⟩)
   refine' List.ext_get _ fun i h h₂ ↦ Eq.symm _
   · simp only [add_tsub_cancel_of_le h, List.length_append, List.length_replicate]
   simp only [ListBlank.nth_mk] at H
@@ -415,7 +415,7 @@ theorem ListBlank.map_cons {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedM
 @[simp]
 theorem ListBlank.nth_map {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ')
     (l : ListBlank Γ) (n : ℕ) : (l.map f).nth n = f (l.nth n) := by
-  refine' l.inductionOn fun l ↦ _
+  refine l.inductionOn fun l ↦ ?_
   -- Porting note: Added `suffices` to get `simp` to work.
   suffices ((mk l).map f).nth n = f ((mk l).nth n) by exact this
   simp only [List.get?_map, ListBlank.map_mk, ListBlank.nth_mk, List.getI_eq_iget_get?]
@@ -458,7 +458,7 @@ theorem ListBlank.append_mk {Γ} [Inhabited Γ] (l₁ l₂ : List Γ) :
 
 theorem ListBlank.append_assoc {Γ} [Inhabited Γ] (l₁ l₂ : List Γ) (l₃ : ListBlank Γ) :
     ListBlank.append (l₁ ++ l₂) l₃ = ListBlank.append l₁ (ListBlank.append l₂ l₃) := by
-  refine' l₃.inductionOn fun l ↦ _
+  refine l₃.inductionOn fun l ↦ ?_
   -- Porting note: Added `suffices` to get `simp` to work.
   suffices append (l₁ ++ l₂) (mk l) = append l₁ (append l₂ (mk l)) by exact this
   simp only [ListBlank.append_mk, List.append_assoc]
@@ -485,7 +485,7 @@ theorem ListBlank.bind_mk {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (l : List Γ) 
 @[simp]
 theorem ListBlank.cons_bind {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (a : Γ) (l : ListBlank Γ)
     (f : Γ → List Γ') (hf) : (l.cons a).bind f hf = (l.bind f hf).append (f a) := by
-  refine' l.inductionOn fun l ↦ _
+  refine l.inductionOn fun l ↦ ?_
   -- Porting note: Added `suffices` to get `simp` to work.
   suffices ((mk l).cons a).bind f hf = ((mk l).bind f hf).append (f a) by exact this
   simp only [ListBlank.append_mk, ListBlank.bind_mk, ListBlank.cons_mk, List.cons_bind]
@@ -1847,7 +1847,7 @@ theorem tr_respects {enc₀} :
     · exact rfl
     suffices ∀ q R, Reaches (step (tr enc dec M)) (stepAux (trNormal dec q) v (trTape' enc0 L R))
         (trCfg enc enc0 (stepAux q v (Tape.mk' L R))) by
-      refine' TransGen.head' rfl _
+      refine TransGen.head' rfl ?_
       rw [trTape_mk']
       exact this _ R
     clear R l₁
@@ -1861,7 +1861,7 @@ theorem tr_respects {enc₀} :
         apply IH
     | write f q IH =>
       simp only [trNormal, stepAux_read dec enc0 encdec, stepAux]
-      refine' ReflTransGen.head rfl _
+      refine ReflTransGen.head rfl ?_
       obtain ⟨a, R, rfl⟩ := R.exists_cons
       rw [tr, Tape.mk'_head, stepAux_write, ListBlank.head_cons, stepAux_move,
         trTape'_move_left enc0, ListBlank.head_cons, ListBlank.tail_cons, Tape.write_mk']
@@ -2556,7 +2556,7 @@ theorem tr_respects_aux₂ {k : K} {q : Stmt₂₁} {v : σ} {S : ∀ k, List (�
         erw [Tape.move_right_n_head, List.length, Tape.mk'_nth_nat, this,
           addBottom_modifyNth fun a ↦ update a k (some (f v)), Nat.add_one, iterate_succ']
         rfl⟩
-    refine' ListBlank.ext fun i ↦ _
+    refine ListBlank.ext fun i ↦ ?_
     rw [ListBlank.nth_map, ListBlank.nth_modifyNth, proj, PointedMap.mk_val]
     by_cases h' : k' = k
     · subst k'
@@ -2600,7 +2600,7 @@ theorem tr_respects_aux₂ {k : K} {q : Stmt₂₁} {v : σ} {S : ∀ k, List (�
             show (List.cons hd tl).reverse.get? tl.length = some hd by
               rw [List.reverse_cons, ← List.length_reverse, List.get?_concat_length],
             List.head?, List.tail]⟩
-      refine' ListBlank.ext fun i ↦ _
+      refine ListBlank.ext fun i ↦ ?_
       rw [ListBlank.nth_map, ListBlank.nth_modifyNth, proj, PointedMap.mk_val]
       by_cases h' : k' = k
       · subst k'
@@ -2660,7 +2660,7 @@ theorem tr_respects_aux₃ {q v} {L : ListBlank (∀ k, Option (Γ k))} (n) : Re
     ⟨some (ret q), v, (Tape.move Dir.right)^[n] (Tape.mk' ∅ (addBottom L))⟩
     ⟨some (ret q), v, Tape.mk' ∅ (addBottom L)⟩ := by
   induction' n with n IH; · rfl
-  refine' Reaches₀.head _ IH
+  refine Reaches₀.head ?_ IH
   simp only [Option.mem_def, TM1.step]
   rw [Option.some_inj, tr, TM1.stepAux, Tape.move_right_n_head, Tape.mk'_nth_nat,
     addBottom_nth_succ_fst, TM1.stepAux, iterate_succ', Function.comp_apply, Tape.move_right_left]
@@ -2714,7 +2714,7 @@ theorem tr_respects : Respects (TM2.step M) (TM1.step (tr M)) TrCfg := by
 theorem trCfg_init (k) (L : List (Γ k)) : TrCfg (TM2.init k L) (TM1.init (trInit k L) : Cfg₂₁) := by
   rw [(_ : TM1.init _ = _)]
   · refine' ⟨ListBlank.mk (L.reverse.map fun a ↦ update default k (some a)), fun k' ↦ _⟩
-    refine' ListBlank.ext fun i ↦ _
+    refine ListBlank.ext fun i ↦ ?_
     rw [ListBlank.map_mk, ListBlank.nth_mk, List.getI_eq_iget_get?, List.map_map]
     have : ((proj k').f ∘ fun a => update (β := fun k => Option (Γ k)) default k (some a))
       = fun a => (proj k').f (update (β := fun k => Option (Γ k)) default k (some a)) := rfl
@@ -2793,7 +2793,7 @@ theorem tr_supports {S} (ss : TM2.Supports M S) : TM1.Supports (tr M) (trSupp M 
       unfold TM2to1.trStmts₁ at sub
       cases' IH₁ ss'.1 fun x hx ↦ sub x <| Finset.mem_union_left _ hx with IH₁₁ IH₁₂
       cases' IH₂ ss'.2 fun x hx ↦ sub x <| Finset.mem_union_right _ hx with IH₂₁ IH₂₂
-      refine' ⟨⟨IH₁₁, IH₂₁⟩, fun l h ↦ _⟩
+      refine ⟨⟨IH₁₁, IH₂₁⟩, fun l h ↦ ?_⟩
       rw [trStmts₁] at h
       rcases Finset.mem_union.1 h with (h | h) <;> [exact IH₁₂ _ h; exact IH₂₂ _ h]
     · intro _ ss' _ -- goto

@@ -407,7 +407,7 @@ instance {Γ} [LinearOrderedCancelAddCommMonoid Γ] [NonUnitalNonAssocSemiring R
     eq_zero_or_eq_zero_of_mul_eq_zero {x y} xy := by
       contrapose! xy
       rw [Ne, HahnSeries.ext_iff, Function.funext_iff, not_forall]
-      refine' ⟨x.order + y.order, _⟩
+      refine ⟨x.order + y.order, ?_⟩
       rw [mul_coeff_order_add_order x y, zero_coeff, mul_eq_zero]
       simp [coeff_order_ne_zero, xy]
 
@@ -464,7 +464,7 @@ variable [Semiring R]
 @[simp]
 theorem single_pow (a : Γ) (n : ℕ) (r : R) : single a r ^ n = single (n • a) (r ^ n) := by
   induction' n with n IH
-  · simp; rfl
+  · ext; simp only [pow_zero, one_coeff, zero_smul, single_coeff]
   · rw [pow_succ, pow_succ, IH, single_mul_single, succ_nsmul]
 
 end Semiring
@@ -616,11 +616,11 @@ instance [Nontrivial Γ] [Nontrivial R] : Nontrivial (Subalgebra R (HahnSeries �
   ⟨⟨⊥, ⊤, by
       rw [Ne, SetLike.ext_iff, not_forall]
       obtain ⟨a, ha⟩ := exists_ne (0 : Γ)
-      refine' ⟨single a 1, _⟩
+      refine ⟨single a 1, ?_⟩
       simp only [Algebra.mem_bot, not_exists, Set.mem_range, iff_true_iff, Algebra.mem_top]
       intro x
       rw [HahnSeries.ext_iff, Function.funext_iff, not_forall]
-      refine' ⟨a, _⟩
+      refine ⟨a, ?_⟩
       rw [single_coeff_same, algebraMap_apply, C_apply, single_coeff_of_ne ha]
       exact zero_ne_one⟩⟩
 

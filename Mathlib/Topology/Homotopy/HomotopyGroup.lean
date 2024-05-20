@@ -469,7 +469,7 @@ def genLoopEquivOfUnique (N) [Unique N] : Ω^ N X x ≃ Ω X x where
 def homotopyGroupEquivFundamentalGroupOfUnique (N) [Unique N] :
     HomotopyGroup N X x ≃ FundamentalGroup X x := by
   refine' Equiv.trans _ (CategoryTheory.Groupoid.isoEquivHom _ _).symm
-  refine' Quotient.congr (genLoopEquivOfUnique N) _
+  refine Quotient.congr (genLoopEquivOfUnique N) ?_
   intros a₁ a₂; constructor <;> rintro ⟨H⟩
   · exact
       ⟨{  toFun := fun tx => H (tx.fst, fun _ => tx.snd)
@@ -506,10 +506,9 @@ abbrev auxGroup (i : N) : Group (HomotopyGroup N X x) :=
 #align homotopy_group.aux_group HomotopyGroup.auxGroup
 
 theorem isUnital_auxGroup (i : N) :
-    EckmannHilton.IsUnital (auxGroup i).mul (⟦const⟧ : HomotopyGroup N X x) := {
-    left_id := (auxGroup i).one_mul,
-    right_id := (auxGroup i).mul_one
-  }
+    EckmannHilton.IsUnital (auxGroup i).mul (⟦const⟧ : HomotopyGroup N X x) where
+  left_id := (auxGroup i).one_mul
+  right_id := (auxGroup i).mul_one
 #align homotopy_group.is_unital_aux_group HomotopyGroup.isUnital_auxGroup
 
 theorem auxGroup_indep (i j : N) : (auxGroup i : Group (HomotopyGroup N X x)) = auxGroup j := by
