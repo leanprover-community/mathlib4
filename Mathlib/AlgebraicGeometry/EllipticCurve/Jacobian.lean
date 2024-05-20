@@ -1136,17 +1136,12 @@ section Point
 /-! ### Nonsingular rational points -/
 
 /-- A nonsingular rational point on `W`. -/
-@[pp_dot]
 structure Point where
   {point : PointClass R}
   (nonsingular : V.NonsingularLift point)
 
-attribute [pp_dot] Point.point
-
 /-- The point class underlying a nonsingular rational point on `W`. -/
 add_decl_doc Point.point
-
-attribute [pp_dot] Point.nonsingular
 
 /-- The nonsingular condition underlying a nonsingular rational point on `W`. -/
 add_decl_doc Point.nonsingular
@@ -1168,13 +1163,12 @@ def fromAffine [Nontrivial R] : V.toAffine.Point → V.Point
 lemma fromAffine_zero [Nontrivial R] : fromAffine 0 = (0 : V.Point) :=
   rfl
 
-lemma fromAffine_some [Nontrivial R] {X Y : R} (h : V.toAffine.nonsingular X Y) :
+lemma fromAffine_some [Nontrivial R] {X Y : R} (h : V.toAffine.Nonsingular X Y) :
     fromAffine (Affine.Point.some h) = ⟨(nonsingularLift_some ..).mpr h⟩ :=
   rfl
 
 /-- The negation of a nonsingular rational point on `W`.
 Given a nonsingular rational point `P` on `W`, use `-P` instead of `neg P`. -/
-@[pp_dot]
 def neg (P : W.Point) : W.Point :=
   ⟨nonsingularLift_negMap P.nonsingular⟩
 
@@ -1186,7 +1180,6 @@ lemma neg_def (P : W.Point) : P.neg = -P :=
 
 /-- The addition of two nonsingular rational points on `W`.
 Given two nonsingular rational points `P` and `Q` on `W`, use `P + Q` instead of `add P Q`. -/
-@[pp_dot]
 noncomputable def add (P Q : W.Point) : W.Point :=
   ⟨nonsingularLift_addMap P.nonsingular Q.nonsingular⟩
 
@@ -1280,7 +1273,7 @@ lemma toAffine_add {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsingula
             toAffine_some <| nonsingular_add_of_Z_ne_zero hP hQ hPz hQz hxy,
             Affine.Point.some_add_some_of_Xne <|
               hx.comp (div_eq_div_iff (pow_ne_zero 2 hPz) (pow_ne_zero 2 hQz)).mp]
-      · rw [not_imp, not_ne_iff] at hxy
+      · rw [_root_.not_imp, not_ne_iff] at hxy
         rw [Affine.Point.some_add_some_of_Yeq
           ((div_eq_div_iff (pow_ne_zero 2 hPz) (pow_ne_zero 2 hQz)).mpr hxy.left) <|
             negY_of_Z_ne_zero hQz ▸
