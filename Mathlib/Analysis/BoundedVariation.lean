@@ -207,6 +207,7 @@ singletons of elements of `s`.
 -/
 protected theorem lowerSemicontinuous (s : Set α) :
     LowerSemicontinuous fun f : α →ᵤ[s.image singleton] E => eVariationOn f s := fun f ↦ by
+  rw [lowerSemicontinuousAt_iff_eventually_lt]
   apply @lowerSemicontinuous_aux _ _ _ _ (UniformOnFun α E (s.image singleton)) id (𝓝 f) f s _
   simpa only [UniformOnFun.tendsto_iff_tendstoUniformlyOn, mem_image, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂, tendstoUniformlyOn_singleton_iff_tendsto] using @tendsto_id _ (𝓝 f)
@@ -215,6 +216,7 @@ protected theorem lowerSemicontinuous (s : Set α) :
 /-- The map `(eVariationOn · s)` is lower semicontinuous for uniform convergence on `s`.  -/
 theorem lowerSemicontinuous_uniformOn (s : Set α) :
     LowerSemicontinuous fun f : α →ᵤ[{s}] E => eVariationOn f s := fun f ↦ by
+  rw [lowerSemicontinuousAt_iff_eventually_lt]
   apply @lowerSemicontinuous_aux _ _ _ _ (UniformOnFun α E {s}) id (𝓝 f) f s _
   have := @tendsto_id _ (𝓝 f)
   rw [UniformOnFun.tendsto_iff_tendstoUniformlyOn] at this
