@@ -94,6 +94,7 @@ theorem sum_tmul_eq_zero_of_vanishesTrivially (hmn : VanishesTrivially R m n) :
   rw [Finset.sum_comm]
   simp_rw [← tmul_smul, ← smul_tmul, ← sum_tmul, h₂, zero_tmul, Finset.sum_const_zero]
 
+set_option maxHeartbeats 0
 /-- **Equational criterion for vanishing**
 [A. Altman and S. Kleiman, *A term of commutative algebra* (Lemma 8.16)][altman2021term],
 forward direction.
@@ -120,7 +121,7 @@ theorem vanishesTrivially_of_sum_tmul_eq_zero (hm : Submodule.span R (Set.range 
   have exact_ker_subtype : Exact (ker G).subtype G := G.exact_subtype_ker_map
   -- Tensor the exact sequence with $N$.
   have exact_rTensor_ker_subtype : Exact (rTensor N (ker G).subtype) (rTensor N G) :=
-    rTensor_exact N exact_ker_subtype G_surjective
+    rTensor_exact (M := ↥(ker G)) N exact_ker_subtype G_surjective
   /- We conclude that $\sum_i e_i \otimes n_i$ is in the range of
     $\ker G \otimes N \to R^\iota \otimes N$. -/
   have en_mem_range : en ∈ range (rTensor N (ker G).subtype) :=
