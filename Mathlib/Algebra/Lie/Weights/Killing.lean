@@ -396,8 +396,8 @@ lemma isCompl_ker_weight_span_coroot (α : Weight K H L) :
     replace hα : corootSpace α ≠ ⊥ := by simpa using hα
     rwa [ne_eq, ← LieSubmodule.coe_toSubmodule_eq_iff] at hα
 
-lemma exists_sl2Triple_of_weight_isNonZero {α : Weight K H L} (hα : α.IsNonZero) :
-    ∃ t : Sl2Triple L, t ≠ 0 ∧ t.e ∈ rootSpace H α ∧ t.f ∈ rootSpace H (- α) := by
+lemma exists_isSl2Triple_of_weight_isNonZero {α : Weight K H L} (hα : α.IsNonZero) :
+    ∃ h e f : L, IsSl2Triple h e f ∧ e ∈ rootSpace H α ∧ f ∈ rootSpace H (- α) := by
   obtain ⟨e, heα : e ∈ rootSpace H α, he₀ : e ≠ 0⟩ := α.exists_ne_zero
   obtain ⟨f, hfα, hf⟩ : ∃ f ∈ rootSpace H (-α), killingForm K L e f ≠ 0 := by
     contrapose! he₀
@@ -409,39 +409,44 @@ lemma exists_sl2Triple_of_weight_isNonZero {α : Weight K H L} (hα : α.IsNonZe
     have : h = killingForm K L e f • (cartanEquivDual H).symm α := by simp [Subtype.ext_iff, hef]
     rw [this, map_smul, smul_eq_mul, ne_eq, mul_eq_zero, not_or]
     exact ⟨hf, root_apply_cartanEquivDual_symm_ne_zero hα⟩
-  refine ⟨⟨e, (2 * (α h)⁻¹) • f, ?_, ?_⟩, ?_, heα, Submodule.smul_mem _ _ hfα⟩
-  · have : ⁅⁅e, f⁆, e⁆ = α h • e := lie_eq_smul_of_mem_rootSpace heα h
+  let f' := (2 * (α h)⁻¹) • f
+  replace hef : ⁅⁅e, f'⁆, e⁆ = 2 • e := by
+    have : ⁅⁅e, f⁆, e⁆ = α h • e := lie_eq_smul_of_mem_rootSpace heα h
     rw [lie_smul, smul_lie, this, ← smul_assoc, smul_eq_mul, mul_assoc, inv_mul_cancel hh,
       mul_one, two_smul, two_smul]
+  refine ⟨⁅e, f'⁆, e, f', ⟨fun contra ↦ ?_, rfl, hef, ?_⟩, heα, Submodule.smul_mem _ _ hfα⟩
+  · rw [contra] at hef
+    have _i : NoZeroSMulDivisors ℤ L := NoZeroSMulDivisors.int_of_charZero K L
+    simp only [zero_lie, eq_comm (a := (0 : L)), smul_eq_zero, OfNat.ofNat_ne_zero, false_or] at hef
+    contradiction
   · have : ⁅⁅e, f⁆, f⁆ = - α h • f := lie_eq_smul_of_mem_rootSpace hfα h
     rw [lie_smul, lie_smul, smul_lie, this, ← smul_assoc, smul_eq_mul, mul_assoc]
-    simp only [neg_smul, smul_neg, ← smul_assoc, smul_eq_mul, mul_assoc, neg_inj]
+    simp only [neg_smul, smul_neg, ← smul_assoc, smul_eq_mul, mul_assoc, neg_inj, f']
     field_simp
-  · simp only [ne_eq, Sl2Triple.eq_zero_iff]
-    tauto
 
-lemma sl2Triple_h_eq_coroot {α : Weight K H L} (hα : α.IsNonZero) {t : Sl2Triple L} (ht₀ : t ≠ 0)
-    (heα : t.e ∈ rootSpace H α) (hfα : t.f ∈ rootSpace H (- α)) :
-    t.h = coroot α := by
-  have _i : NoZeroSMulDivisors ℤ L := NoZeroSMulDivisors.int_of_charZero K L
+lemma isSl2Triple_h_eq_coroot {α : Weight K H L} (hα : α.IsNonZero)
+    {h e f : L} (ht : IsSl2Triple h e f) (heα : e ∈ rootSpace H α) (hfα : f ∈ rootSpace H (- α)) :
+    h = coroot α := by
   have hef := lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg heα hfα
-  let h : H := ⟨⁅t.e, t.f⁆, hef ▸ Submodule.smul_mem _ _ (Submodule.coe_mem _)⟩
-  suffices h = coroot α by rw [← t.lie_e_f, ← this]
-  have key : α h = 2 := by
-    have := lie_eq_smul_of_mem_rootSpace heα h
-    rw [LieSubalgebra.coe_bracket_of_module, t.lie_lie_smul_e K] at this
-    exact smul_left_injective K (by simpa) this.symm
-  suffices ∃ s : K, s • h = coroot α by
+  let h' : H := ⟨h, by rw [← ht.lie_e_f, hef]; exact Submodule.smul_mem _ _ (Submodule.coe_mem _)⟩
+  suffices h' = coroot α by rw [← this]
+  have key : α h' = 2 := by
+    have := lie_eq_smul_of_mem_rootSpace heα h'
+    rw [LieSubalgebra.coe_bracket_of_module, ht.lie_h_e_smul K] at this
+    exact smul_left_injective K ht.e_ne_zero this.symm
+  suffices ∃ s : K, s • h' = coroot α by
     obtain ⟨s, hs⟩ := this
     have := congr_arg (α : H →ₗ[K] K) hs
     replace this : s = 1 := by simpa [root_apply_coroot hα, key] using this
     rwa [this, one_smul] at hs
   set α' := (cartanEquivDual H).symm α with hα'
-  have h_eq : h = killingForm K L t.e t.f • α' := by simp [Subtype.ext_iff, hef, hα']
-  use (2 • (α α')⁻¹) * (killingForm K L t.e t.f)⁻¹
-  have hef₀ : killingForm K L t.e t.f ≠ 0 := by
-    contrapose! ht₀
-    simpa [ht₀, Subtype.ext_iff, t.lie_e_f] using h_eq
+  have h_eq : h' = killingForm K L e f • α' := by
+    simp only [hα', Subtype.ext_iff, Submodule.coe_smul_of_tower, ← ht.lie_e_f, hef]
+  use (2 • (α α')⁻¹) * (killingForm K L e f)⁻¹
+  have hef₀ : killingForm K L e f ≠ 0 := by
+    have := ht.h_ne_zero
+    contrapose! this
+    simpa [this, Subtype.ext_iff] using h_eq
   rw [h_eq, smul_smul, mul_assoc, inv_mul_cancel hef₀, mul_one, smul_assoc, coroot]
 
 lemma finrank_rootSpace_eq_one (α : Weight K H L) (hα : α.IsNonZero) :
@@ -450,20 +455,23 @@ lemma finrank_rootSpace_eq_one (α : Weight K H L) (hα : α.IsNonZero) :
     have h₀ : finrank K (rootSpace H α) ≠ 0 := by simpa using α.weightSpace_ne_bot
     omega
   intro contra
-  obtain ⟨t, ht₀, heα, hfα⟩ := exists_sl2Triple_of_weight_isNonZero hα
-  let F : rootSpace H α →ₗ[K] K := killingForm K L t.f ∘ₗ (rootSpace H α).subtype
+  obtain ⟨h, e, f, ht, heα, hfα⟩ := exists_isSl2Triple_of_weight_isNonZero hα
+  let F : rootSpace H α →ₗ[K] K := killingForm K L f ∘ₗ (rootSpace H α).subtype
   have hF : LinearMap.ker F ≠ ⊥ := F.ker_ne_bot_of_finrank_lt <| by rwa [finrank_self]
   obtain ⟨⟨y, hyα⟩, hy, hy₀⟩ := (Submodule.ne_bot_iff _).mp hF
-  replace hy : ⁅y, t.f⁆ = 0 := by
-    have : killingForm K L y t.f = 0 := by simpa [F, traceForm_comm] using hy
+  replace hy : ⁅y, f⁆ = 0 := by
+    have : killingForm K L y f = 0 := by simpa [F, traceForm_comm] using hy
     simpa [this] using lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg hyα hfα
-  have P : t.symm.HasPrimitiveVectorWith y (-2 : K) :=
-    { ne_zero := by simpa using hy₀
-      lie_h := by
-        simp only [Sl2Triple.h_symm, neg_smul, neg_lie, neg_inj,
-          sl2Triple_h_eq_coroot hα ht₀ heα hfα, ← H.coe_bracket_of_module,
-          lie_eq_smul_of_mem_rootSpace hyα (coroot α), root_apply_coroot hα]
-      lie_e := by rw [← lie_skew, t.symm_e, hy, neg_zero] }
+  have P : IsSl2Triple.HasPrimitiveVectorWith (-h) f e y (-2 : K) :=
+    { h_ne_zero := ht.symm.h_ne_zero
+      lie_e_f := ht.symm.lie_e_f
+      lie_h_e_nsmul := ht.symm.lie_h_e_nsmul
+      lie_h_f_nsmul := ht.symm.lie_h_f_nsmul
+      ne_zero := by simpa using hy₀
+      lie_h := by simp only [neg_smul, neg_lie, neg_inj, isSl2Triple_h_eq_coroot hα ht heα hfα,
+        ← H.coe_bracket_of_module, lie_eq_smul_of_mem_rootSpace hyα (coroot α),
+        root_apply_coroot hα]
+      lie_e := by rw [← lie_skew, hy, neg_zero] }
   obtain ⟨z, hz⟩ := P.exists_nat
   replace hz : -2 = (z : ℤ) := by norm_cast at hz
   omega
