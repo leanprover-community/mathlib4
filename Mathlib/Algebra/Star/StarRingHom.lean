@@ -53,9 +53,28 @@ class NonUnitalStarRingHomClass (F : Type*) (A B : outParam Type*)
      [NonUnitalNonAssocSemiring A] [Star A] [NonUnitalNonAssocSemiring B] [Star B]
     [FunLike F A B] [NonUnitalRingHomClass F A B] extends StarHomClass F A B : Prop
 
+namespace NonUnitalStarRingHomClass
+
+variable {F A B : Type*}
+variable [NonUnitalNonAssocSemiring A] [Star A]
+variable [NonUnitalNonAssocSemiring B] [Star B]
+variable [FunLike F A B] [NonUnitalRingHomClass F A B]
+
+/-- Turn an element of a type `F` satisfying `NonUnitalStarRingHomClass F A B` into an actual
+`NonUnitalStarRingHom`. This is declared as the default coercion from `F` to `A →⋆ₙ+ B`. -/
+@[coe]
+def toNonUnitalStarRingHom [NonUnitalStarRingHomClass F A B] (f : F) : A →⋆ₙ+* B :=
+  { (f : A →ₙ+* B) with
+    map_star' := map_star f }
+
+instance [NonUnitalStarRingHomClass F A B] : CoeTC F (A →⋆ₙ+* B) :=
+  ⟨toNonUnitalStarRingHom⟩
+
+end NonUnitalStarRingHomClass
+
 namespace NonUnitalStarRingHom
 
-section
+section Basic
 
 variable {A B C : Type*}
 variable [NonUnitalNonAssocSemiring A] [Star A]
@@ -74,10 +93,48 @@ instance : NonUnitalRingHomClass (A →⋆ₙ+* B) A B where
 instance : NonUnitalStarRingHomClass (A →⋆ₙ+* B) A B where
   map_star f := f.map_star'
 
+def Simps.apply (f : A →⋆ₙ+* B) : A → B := f
+
 initialize_simps_projections NonUnitalStarRingHom (toFun → apply)
 
 @[simp]
+protected theorem coe_coe {F : Type*} [FunLike F A B] [NonUnitalRingHomClass F A B]
+    [NonUnitalStarRingHomClass F A B] (f : F) :
+    ⇑(f : A →⋆ₙ+* B) = f := rfl
+
+@[simp]
 theorem coe_toNonUnitalRingHom (f : A →⋆ₙ+* B) : ⇑f.toNonUnitalRingHom = f :=
+  rfl
+
+@[ext]
+theorem ext {f g : A →⋆ₙ+* B} (h : ∀ x, f x = g x) : f = g :=
+  DFunLike.ext _ _ h
+
+/-- Copy of a `NonUnitalStarRingHom` with a new `toFun` equal to the old one. Useful
+to fix definitional equalities. -/
+protected def copy (f : A →⋆ₙ+* B) (f' : A → B) (h : f' = f) : A →⋆ₙ+* B where
+  toFun := f'
+  map_zero' := h.symm ▸ map_zero f
+  map_add' := h.symm ▸ map_add f
+  map_mul' := h.symm ▸ map_mul f
+  map_star' := h.symm ▸ map_star f
+
+@[simp]
+theorem coe_copy (f : A →⋆ₙ+* B) (f' : A → B) (h : f' = f) : ⇑(f.copy f' h) = f' :=
+  rfl
+
+theorem copy_eq (f : A →⋆ₙ+* B) (f' : A → B) (h : f' = f) : f.copy f' h = f :=
+  DFunLike.ext' h
+
+@[simp]
+theorem coe_mk (f : A →ₙ+* B) (h) :
+    ((⟨f, h⟩ : A  →⋆ₙ+* B) : A → B) = f :=
+  rfl
+
+@[simp]
+theorem mk_coe (f : A →ₙ+* B) (h₁ h₂ h₃ h₄ h₅) :
+    (⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩⟩ : A →ₙ+* B) = f := by
+  ext
   rfl
 
 /-- The composition of non-unital ⋆-ring homomorphisms, as a non-unital ⋆-ring homomorphism. -/
@@ -88,7 +145,7 @@ def comp (f : B →⋆ₙ+* C) (g : A →⋆ₙ+* B) : A →⋆ₙ+* C :=
       _ = star (f (g a)) := by rw [map_star, map_star]
       _ = star ((f ∘ g) a) := rfl )}
 
-end
+end Basic
 
 end NonUnitalStarRingHom
 
