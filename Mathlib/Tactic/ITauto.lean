@@ -3,11 +3,11 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Batteries.Tactic.Exact
 import Mathlib.Tactic.Hint
 import Mathlib.Tactic.DeriveToExpr
 import Mathlib.Util.AtomM
 import Mathlib.Init.Logic
-import Mathlib.Control.Basic
 import Qq
 
 #align_import tactic.itauto from "leanprover-community/mathlib"@"dff8393cf1d1fc152d148e13fe57452fc37d4852"
