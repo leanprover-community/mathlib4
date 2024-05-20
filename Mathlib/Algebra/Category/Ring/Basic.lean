@@ -501,8 +501,7 @@ variable {X Y : Type u}
 
 /-- Build an isomorphism in the category `RingCat` from a `RingEquiv` between `RingCat`s. -/
 @[simps]
-def toRingCatIso [Ring X] [Ring Y] (e : X ≃+* Y) : RingCat.of X ≅ RingCat.of Y
-    where
+def toRingCatIso [Ring X] [Ring Y] (e : X ≃+* Y) : RingCat.of X ≅ RingCat.of Y where
   hom := e.toRingHom
   inv := e.symm.toRingHom
 set_option linter.uppercaseLean3 false in
@@ -510,8 +509,8 @@ set_option linter.uppercaseLean3 false in
 
 /-- Build an isomorphism in the category `CommRingCat` from a `RingEquiv` between `CommRingCat`s. -/
 @[simps]
-def toCommRingCatIso [CommRing X] [CommRing Y] (e : X ≃+* Y) : CommRingCat.of X ≅ CommRingCat.of Y
-    where
+def toCommRingCatIso [CommRing X] [CommRing Y] (e : X ≃+* Y) :
+    CommRingCat.of X ≅ CommRingCat.of Y where
   hom := e.toRingHom
   inv := e.symm.toRingHom
 set_option linter.uppercaseLean3 false in
@@ -555,8 +554,8 @@ end CategoryTheory.Iso
 
 /-- Ring equivalences between `RingCat`s are the same as (isomorphic to) isomorphisms in
 `RingCat`. -/
-def ringEquivIsoRingIso {X Y : Type u} [Ring X] [Ring Y] : X ≃+* Y ≅ RingCat.of X ≅ RingCat.of Y
-    where
+def ringEquivIsoRingIso {X Y : Type u} [Ring X] [Ring Y] :
+    X ≃+* Y ≅ RingCat.of X ≅ RingCat.of Y where
   hom e := e.toRingCatIso
   inv i := i.ringCatIsoToRingEquiv
 set_option linter.uppercaseLean3 false in
@@ -565,8 +564,7 @@ set_option linter.uppercaseLean3 false in
 /-- Ring equivalences between `CommRingCat`s are the same as (isomorphic to) isomorphisms
 in `CommRingCat`. -/
 def ringEquivIsoCommRingIso {X Y : Type u} [CommRing X] [CommRing Y] :
-    X ≃+* Y ≅ CommRingCat.of X ≅ CommRingCat.of Y
-    where
+    X ≃+* Y ≅ CommRingCat.of X ≅ CommRingCat.of Y where
   hom e := e.toCommRingCatIso
   inv i := i.commRingCatIsoToRingEquiv
 set_option linter.uppercaseLean3 false in

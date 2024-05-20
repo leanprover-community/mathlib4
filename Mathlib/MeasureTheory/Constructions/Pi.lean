@@ -297,8 +297,8 @@ theorem pi_caratheodory :
   simp_rw [piPremeasure]
   refine' Finset.prod_add_prod_le' (Finset.mem_univ i) _ _ _
   · simp [image_inter_preimage, image_diff_preimage, measure_inter_add_diff _ hs, le_refl]
-  · rintro j - _; apply mono'; apply image_subset; apply inter_subset_left
-  · rintro j - _; apply mono'; apply image_subset; apply diff_subset
+  · rintro j - _; gcongr; apply inter_subset_left
+  · rintro j - _; gcongr; apply diff_subset
 #align measure_theory.measure.pi_caratheodory MeasureTheory.Measure.pi_caratheodory
 
 /-- `Measure.pi μ` is the finite product of the measures `{μ i | i : ι}`.

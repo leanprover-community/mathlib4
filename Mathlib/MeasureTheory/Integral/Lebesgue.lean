@@ -8,6 +8,7 @@ import Mathlib.MeasureTheory.Function.SimpleFunc
 import Mathlib.MeasureTheory.Measure.MutuallySingular
 import Mathlib.MeasureTheory.Measure.Count
 import Mathlib.Topology.IndicatorConstPointwise
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 
 #align_import measure_theory.integral.lebesgue from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
 
@@ -387,9 +388,9 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
       (Finset.sum_congr rfl fun x _ => by
         rw [measure_iUnion_eq_iSup (mono x).directed_le, ENNReal.mul_iSup])
     _ = ⨆ n, ∑ r in (rs.map c).range, r * μ (rs.map c ⁻¹' {r} ∩ { a | r ≤ f n a }) := by
-      rw [ENNReal.finset_sum_iSup_nat]
-      intro p i j h
-      exact mul_le_mul_left' (measure_mono <| mono p h) _
+      refine ENNReal.finset_sum_iSup_nat fun p i j h ↦ ?_
+      gcongr _ * μ ?_
+      exact mono p h
     _ ≤ ⨆ n : ℕ, ((rs.map c).restrict { a | (rs.map c) a ≤ f n a }).lintegral μ := by
       gcongr with n
       rw [restrict_lintegral _ (h_meas n)]
@@ -398,9 +399,8 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
       refine' and_congr_right _
       simp (config := { contextual := true })
     _ ≤ ⨆ n, ∫⁻ a, f n a ∂μ := by
-      gcongr with n
-      rw [← SimpleFunc.lintegral_eq_lintegral]
-      gcongr with a
+      simp only [← SimpleFunc.lintegral_eq_lintegral]
+      gcongr with n a
       simp only [map_apply] at h_meas
       simp only [coe_map, restrict_apply _ (h_meas _), (· ∘ ·)]
       exact indicator_apply_le id
@@ -478,8 +478,9 @@ theorem exists_pos_set_lintegral_lt_of_measure_lt {f : α → ℝ≥0∞} (h : �
       gcongr
       refine' le_trans _ (hφ _ hψ).le
       exact SimpleFunc.lintegral_mono le_rfl Measure.restrict_le_self
-    _ ≤ (SimpleFunc.const α (C : ℝ≥0∞)).lintegral (μ.restrict s) + ε₁ :=
-      (add_le_add (SimpleFunc.lintegral_mono (fun x => by exact coe_le_coe.2 (hC x)) le_rfl) le_rfl)
+    _ ≤ (SimpleFunc.const α (C : ℝ≥0∞)).lintegral (μ.restrict s) + ε₁ := by
+      gcongr
+      exact SimpleFunc.lintegral_mono (fun x ↦ ENNReal.coe_le_coe.2 (hC x)) le_rfl
     _ = C * μ s + ε₁ := by
       simp only [← SimpleFunc.lintegral_eq_lintegral, coe_const, lintegral_const,
         Measure.restrict_apply, MeasurableSet.univ, univ_inter, Function.const]
@@ -533,11 +534,12 @@ theorem lintegral_add_aux {f g : α → ℝ≥0∞} (hf : Measurable f) (hg : Me
         simp only [Pi.add_apply, SimpleFunc.coe_add]
       · measurability
       · intro i j h a
-        exact add_le_add (monotone_eapprox _ h _) (monotone_eapprox _ h _)
+        dsimp
+        gcongr <;> exact monotone_eapprox _ h _
     _ = (⨆ n, (eapprox f n).lintegral μ) + ⨆ n, (eapprox g n).lintegral μ := by
       refine' (ENNReal.iSup_add_iSup_of_monotone _ _).symm <;>
         · intro i j h
-          exact SimpleFunc.lintegral_mono (monotone_eapprox _ h) (le_refl μ)
+          exact SimpleFunc.lintegral_mono (monotone_eapprox _ h) le_rfl
     _ = ∫⁻ a, f a ∂μ + ∫⁻ a, g a ∂μ := by
       rw [lintegral_eq_iSup_eapprox_lintegral hf, lintegral_eq_iSup_eapprox_lintegral hg]
 #align measure_theory.lintegral_add_aux MeasureTheory.lintegral_add_aux
