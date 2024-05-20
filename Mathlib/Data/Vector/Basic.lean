@@ -454,7 +454,7 @@ def inductionOn {C : ∀ {n : ℕ}, Vector α n → Sort*} {n : ℕ} (v : Vector
   · rcases v with ⟨_ | ⟨-, -⟩, - | -⟩
     exact h_nil
   · rcases v with ⟨_ | ⟨a, v⟩, v_property⟩
-    cases v_property
+    · cases v_property
     apply @h_cons n _ ⟨v, (add_left_inj 1).mp v_property⟩
     apply ih
 #align vector.induction_on Vector.inductionOn
@@ -476,9 +476,9 @@ def inductionOn₂ {C : ∀ {n}, Vector α n → Vector β n → Sort*}
     rcases w with ⟨_ | ⟨-, -⟩, - | -⟩
     exact nil
   · rcases v with ⟨_ | ⟨a, v⟩, v_property⟩
-    cases v_property
+    · cases v_property
     rcases w with ⟨_ | ⟨b, w⟩, w_property⟩
-    cases w_property
+    · cases w_property
     apply @cons n _ _ ⟨v, (add_left_inj 1).mp v_property⟩ ⟨w, (add_left_inj 1).mp w_property⟩
     apply ih
 #align vector.induction_on₂ Vector.inductionOn₂
@@ -497,11 +497,11 @@ def inductionOn₃ {C : ∀ {n}, Vector α n → Vector β n → Vector γ n →
     rcases w with ⟨_ | ⟨-, -⟩, - | -⟩
     exact nil
   · rcases u with ⟨_ | ⟨a, u⟩, u_property⟩
-    cases u_property
+    · cases u_property
     rcases v with ⟨_ | ⟨b, v⟩, v_property⟩
-    cases v_property
+    · cases v_property
     rcases w with ⟨_ | ⟨c, w⟩, w_property⟩
-    cases w_property
+    · cases w_property
     apply
       @cons n _ _ _ ⟨u, (add_left_inj 1).mp u_property⟩ ⟨v, (add_left_inj 1).mp v_property⟩
         ⟨w, (add_left_inj 1).mp w_property⟩

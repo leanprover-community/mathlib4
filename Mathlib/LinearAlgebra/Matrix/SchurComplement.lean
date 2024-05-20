@@ -517,7 +517,7 @@ theorem IsHermitian.fromBlocks₁₁ [Fintype m] [DecidableEq m] {A : Matrix m m
     apply IsHermitian.sub h.2.2.2 hBAB
   · intro h
     refine' ⟨hA, rfl, conjTranspose_conjTranspose B, _⟩
-    rw [← sub_add_cancel D]
+    rw [← sub_add_cancel D (B.conjTranspose * A⁻¹ * B)]
     apply IsHermitian.add h hBAB
 #align matrix.is_hermitian.from_blocks₁₁ Matrix.IsHermitian.fromBlocks₁₁
 

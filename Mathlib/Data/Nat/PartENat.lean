@@ -452,7 +452,7 @@ noncomputable instance linearOrder : LinearOrder PartENat :=
     max_def := fun a b => by
       change (fun a b => a ⊔ b) a b = _
       rw [@sup_eq_maxDefault PartENat _ (id _) _]
-      rfl }
+      · rfl }
 
 instance boundedOrder : BoundedOrder PartENat :=
   { PartENat.orderTop, PartENat.orderBot with }

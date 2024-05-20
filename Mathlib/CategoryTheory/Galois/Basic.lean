@@ -336,7 +336,7 @@ lemma card_fiber_eq_of_iso {X Y : C} (i : X ≅ Y) : Nat.card (F.obj X) = Nat.ca
 the fiber of the target if the source is connected. -/
 lemma card_hom_le_card_fiber_of_connected (A X : C) [IsConnected A] :
     Nat.card (A ⟶ X) ≤ Nat.card (F.obj X) := by
-  apply Nat.card_le_card_of_injective
+  apply Nat.card_le_card_of_injective (F.map · (Classical.arbitrary (F.obj A)))
   exact evaluation_injective_of_isConnected F A X (Classical.arbitrary _)
 
 /-- If `A` is connected, the cardinality of `Aut A` is smaller than the cardinality of the
@@ -345,7 +345,7 @@ lemma card_aut_le_card_fiber_of_connected (A : C) [IsConnected A] :
     Nat.card (Aut A) ≤ Nat.card (F.obj A) := by
   have h : Nonempty (F.obj A) := inferInstance
   obtain ⟨a⟩ := h
-  apply Nat.card_le_card_of_injective
+  apply Nat.card_le_card_of_injective (F.map ·.hom a)
   exact evaluation_aut_injective_of_isConnected _ _ a
 
 end CardFiber

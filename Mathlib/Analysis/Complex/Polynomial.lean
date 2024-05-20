@@ -144,7 +144,7 @@ theorem galActionHom_bijective_of_prime_degree {p : ℚ[X]} (p_irr : Irreducible
       using prime_degree_dvd_card p_irr p_deg
   · exact ⟨conj', rfl⟩
   · rw [← Equiv.Perm.card_support_eq_two]
-    apply Nat.add_left_cancel
+    apply Nat.add_left_cancel (n := Fintype.card (p.rootSet ℝ))
     rw [← p_roots, ← Set.toFinset_card (rootSet p ℝ), ← Set.toFinset_card (rootSet p ℂ)]
     exact (card_complex_roots_eq_card_real_add_card_not_gal_inv p).symm
 #align polynomial.gal.gal_action_hom_bijective_of_prime_degree Polynomial.Gal.galActionHom_bijective_of_prime_degree

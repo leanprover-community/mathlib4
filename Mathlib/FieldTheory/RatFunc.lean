@@ -674,13 +674,13 @@ def mapRingHom [RingHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.co
       rintro ⟨x⟩ ⟨y⟩
       -- Porting note: had to hint `induction` which induction principle to use
       induction x using Localization.rec
-      induction y using Localization.rec
-      · simp only [← ofFractionRing_add, Localization.add_mk, map_add, map_mul,
-          MonoidHom.toFun_eq_coe, map_apply_ofFractionRing_mk, Submonoid.coe_mul]
-        -- Porting note: `Submonoid.mk_mul_mk` couldn't be applied: motive incorrect,
-        -- even though it is a rfl lemma.
-        rfl
-      · rfl
+      · induction y using Localization.rec
+        · simp only [← ofFractionRing_add, Localization.add_mk, map_add, map_mul,
+            MonoidHom.toFun_eq_coe, map_apply_ofFractionRing_mk, Submonoid.coe_mul]
+          -- Porting note: `Submonoid.mk_mul_mk` couldn't be applied: motive incorrect,
+          -- even though it is a rfl lemma.
+          rfl
+        · rfl
       · rfl }
 #align ratfunc.map_ring_hom RatFunc.mapRingHom
 

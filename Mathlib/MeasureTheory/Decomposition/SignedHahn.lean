@@ -421,32 +421,32 @@ theorem of_symmDiff_compl_positive_negative {s : SignedMeasure α} {i j : Set α
     (hi : MeasurableSet i) (hj : MeasurableSet j) (hi' : 0 ≤[i] s ∧ s ≤[iᶜ] 0)
     (hj' : 0 ≤[j] s ∧ s ≤[jᶜ] 0) : s (i ∆ j) = 0 ∧ s (iᶜ ∆ jᶜ) = 0 := by
   rw [restrict_le_restrict_iff s 0, restrict_le_restrict_iff 0 s] at hi' hj'
-  constructor
-  · rw [Set.symmDiff_def, Set.diff_eq_compl_inter, Set.diff_eq_compl_inter, of_union,
-      le_antisymm (hi'.2 (hi.compl.inter hj) (Set.inter_subset_left _ _))
-        (hj'.1 (hi.compl.inter hj) (Set.inter_subset_right _ _)),
-      le_antisymm (hj'.2 (hj.compl.inter hi) (Set.inter_subset_left _ _))
-        (hi'.1 (hj.compl.inter hi) (Set.inter_subset_right _ _)),
-      zero_apply, zero_apply, zero_add]
-    · exact
-        Set.disjoint_of_subset_left (Set.inter_subset_left _ _)
-          (Set.disjoint_of_subset_right (Set.inter_subset_right _ _)
-            (disjoint_comm.1 (IsCompl.disjoint isCompl_compl)))
-    · exact hj.compl.inter hi
-    · exact hi.compl.inter hj
-  · rw [Set.symmDiff_def, Set.diff_eq_compl_inter, Set.diff_eq_compl_inter, compl_compl,
-      compl_compl, of_union,
-      le_antisymm (hi'.2 (hj.inter hi.compl) (Set.inter_subset_right _ _))
-        (hj'.1 (hj.inter hi.compl) (Set.inter_subset_left _ _)),
-      le_antisymm (hj'.2 (hi.inter hj.compl) (Set.inter_subset_right _ _))
-        (hi'.1 (hi.inter hj.compl) (Set.inter_subset_left _ _)),
-      zero_apply, zero_apply, zero_add]
-    · exact
-        Set.disjoint_of_subset_left (Set.inter_subset_left _ _)
-          (Set.disjoint_of_subset_right (Set.inter_subset_right _ _)
-            (IsCompl.disjoint isCompl_compl))
-    · exact hj.inter hi.compl
-    · exact hi.inter hj.compl
+  · constructor
+    · rw [Set.symmDiff_def, Set.diff_eq_compl_inter, Set.diff_eq_compl_inter, of_union,
+        le_antisymm (hi'.2 (hi.compl.inter hj) (Set.inter_subset_left _ _))
+          (hj'.1 (hi.compl.inter hj) (Set.inter_subset_right _ _)),
+        le_antisymm (hj'.2 (hj.compl.inter hi) (Set.inter_subset_left _ _))
+          (hi'.1 (hj.compl.inter hi) (Set.inter_subset_right _ _)),
+        zero_apply, zero_apply, zero_add]
+      · exact
+          Set.disjoint_of_subset_left (Set.inter_subset_left _ _)
+            (Set.disjoint_of_subset_right (Set.inter_subset_right _ _)
+              (disjoint_comm.1 (IsCompl.disjoint isCompl_compl)))
+      · exact hj.compl.inter hi
+      · exact hi.compl.inter hj
+    · rw [Set.symmDiff_def, Set.diff_eq_compl_inter, Set.diff_eq_compl_inter, compl_compl,
+        compl_compl, of_union,
+        le_antisymm (hi'.2 (hj.inter hi.compl) (Set.inter_subset_right _ _))
+          (hj'.1 (hj.inter hi.compl) (Set.inter_subset_left _ _)),
+        le_antisymm (hj'.2 (hi.inter hj.compl) (Set.inter_subset_right _ _))
+          (hi'.1 (hi.inter hj.compl) (Set.inter_subset_left _ _)),
+        zero_apply, zero_apply, zero_add]
+      · exact
+          Set.disjoint_of_subset_left (Set.inter_subset_left _ _)
+            (Set.disjoint_of_subset_right (Set.inter_subset_right _ _)
+              (IsCompl.disjoint isCompl_compl))
+      · exact hj.inter hi.compl
+      · exact hi.inter hj.compl
   all_goals measurability
 #align measure_theory.signed_measure.of_symm_diff_compl_positive_negative MeasureTheory.SignedMeasure.of_symmDiff_compl_positive_negative
 

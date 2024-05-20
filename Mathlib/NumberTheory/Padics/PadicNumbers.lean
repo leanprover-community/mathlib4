@@ -293,7 +293,7 @@ theorem norm_mul (f g : PadicSeq p) : (f * g).norm = f.norm * g.norm :=
       · exact (mul_not_equiv_zero hf hg hfg).elim
       -- Porting note: originally `padic_index_simp [hfg, hf, hg]`
       rw [lift_index_left_left hfg, lift_index_left hf, lift_index_right hg]
-      apply padicNorm.mul
+      · apply padicNorm.mul
 #align padic_seq.norm_mul PadicSeq.norm_mul
 
 theorem eq_zero_iff_equiv_zero (f : PadicSeq p) : mk f = 0 ↔ f ≈ 0 :=
@@ -372,7 +372,7 @@ private theorem norm_nonarchimedean_aux {f g : PadicSeq p} (hfg : ¬f + g ≈ 0)
   unfold norm; split_ifs
   -- Porting note: originally `padic_index_simp [hfg, hf, hg]`
   rw [lift_index_left_left hfg, lift_index_left hf, lift_index_right hg]
-  apply padicNorm.nonarchimedean
+  · apply padicNorm.nonarchimedean
 
 theorem norm_nonarchimedean (f g : PadicSeq p) : (f + g).norm ≤ max f.norm g.norm :=
   if hfg : f + g ≈ 0 then by
@@ -452,7 +452,7 @@ theorem add_eq_max_of_ne {f g : PadicSeq p} (hfgne : f.norm ≠ g.norm) :
       -- Porting note: originally `padic_index_simp [hfg, hf, hg] at hfgne ⊢`
       rw [lift_index_left hf, lift_index_right hg] at hfgne
       · rw [lift_index_left_left hfg, lift_index_left hf, lift_index_right hg]
-        exact padicNorm.add_eq_max_of_ne hfgne
+        · exact padicNorm.add_eq_max_of_ne hfgne
 #align padic_seq.add_eq_max_of_ne PadicSeq.add_eq_max_of_ne
 
 end Embedding

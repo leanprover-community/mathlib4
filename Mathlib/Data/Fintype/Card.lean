@@ -1246,8 +1246,8 @@ theorem List.exists_pw_disjoint_with_card {α : Type*} [Fintype α]
     apply Nodup.map (Equiv.injective _)
     obtain ⟨u, hu, rfl⟩ := mem_pmap.mp ht
     apply Nodup.of_map
-    rw [hl u hu]
-    exact ranges_nodup hu
+    · rw [hl u hu]
+      exact ranges_nodup hu
   · -- pairwise disjoint
     refine Pairwise.map _ (fun s t ↦ disjoint_map (Equiv.injective _)) ?_
     -- List.Pairwise List.disjoint l

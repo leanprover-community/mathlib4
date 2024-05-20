@@ -197,7 +197,8 @@ theorem isIntegrallyClosed_iff' :
         RingHom.mem_range.mp <| minpoly.mem_range_of_degree_eq_one R x _
     rw [← Monic.degree_map (minpoly.monic hx) (algebraMap R K)]
     apply
-      degree_eq_one_of_irreducible_of_root ((H _ <| minpoly.monic hx).mp (minpoly.irreducible hx))
+      degree_eq_one_of_irreducible_of_root (x := x)
+        ((H _ <| minpoly.monic hx).mp (minpoly.irreducible hx))
     rw [IsRoot, eval_map, ← aeval_def, minpoly.aeval R x]
 #align polynomial.is_integrally_closed_iff' Polynomial.isIntegrallyClosed_iff'
 
@@ -231,7 +232,7 @@ theorem isUnit_or_eq_zero_of_isUnit_integerNormalization_primPart {p : K[X]} (h0
   rcases isUnit_iff.1 h with ⟨_, ⟨u, rfl⟩, hu⟩
   obtain ⟨⟨c, c0⟩, hc⟩ := integerNormalization_map_to_map R⁰ p
   rw [Subtype.coe_mk, Algebra.smul_def, algebraMap_apply] at hc
-  apply isUnit_of_mul_isUnit_right
+  apply isUnit_of_mul_isUnit_right (x := C ((algebraMap R K) c))
   rw [← hc, (integerNormalization R⁰ p).eq_C_content_mul_primPart, ← hu, ← RingHom.map_mul,
     isUnit_iff]
   refine'

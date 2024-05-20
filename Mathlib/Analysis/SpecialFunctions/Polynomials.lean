@@ -140,7 +140,7 @@ theorem div_tendsto_zero_of_degree_lt (hdeg : P.degree < Q.degree) :
   · simp [hP, tendsto_const_nhds]
   rw [← natDegree_lt_natDegree_iff hP] at hdeg
   refine' (isEquivalent_atTop_div P Q).symm.tendsto_nhds _
-  rw [← mul_zero]
+  rw [← mul_zero (P.leadingCoeff / Q.leadingCoeff)]
   refine' (tendsto_zpow_atTop_zero _).const_mul _
   omega
 #align polynomial.div_tendsto_zero_of_degree_lt Polynomial.div_tendsto_zero_of_degree_lt

@@ -73,7 +73,7 @@ theorem Memℒp.const_inner (c : E) {f : α → E} (hf : Memℒp f p μ) : Mem�
 
 theorem Memℒp.inner_const {f : α → E} (hf : Memℒp f p μ) (c : E) : Memℒp (fun a => ⟪f a, c⟫) p μ :=
   hf.of_le_mul (AEStronglyMeasurable.inner hf.1 aestronglyMeasurable_const)
-    (eventually_of_forall fun x => by rw [mul_comm]; exact norm_inner_le_norm _ _)
+    (eventually_of_forall fun x => by rw [mul_comm ‖c‖]; exact norm_inner_le_norm _ _)
 #align measure_theory.mem_ℒp.inner_const MeasureTheory.Memℒp.inner_const
 
 variable {f : α → E}

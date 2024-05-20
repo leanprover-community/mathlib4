@@ -296,7 +296,7 @@ theorem get_zipWith {f : α → β → γ} {l : List α} {l' : List β} {i : Fin
   rw [← Option.some_inj, ← get?_eq_get, get?_zip_with_eq_some]
   exact
     ⟨l.get ⟨i, lt_length_left_of_zipWith i.isLt⟩, l'.get ⟨i, lt_length_right_of_zipWith i.isLt⟩,
-      by rw [get?_eq_get], by rw [get?_eq_get]; exact ⟨rfl, rfl⟩⟩
+      by rw [get?_eq_get], ⟨get?_eq_get _, rfl⟩⟩
 
 set_option linter.deprecated false in
 @[simp, deprecated get_zipWith (since := "2024-05-09")]

@@ -127,7 +127,7 @@ def sCorec : X → ∀ n, CofixA F n
 
 theorem P_corec (i : X) (n : ℕ) : Agree (sCorec f i n) (sCorec f i (succ n)) := by
   induction' n with n n_ih generalizing i
-  constructor
+  · constructor
   cases' f i with y g
   constructor
   introv

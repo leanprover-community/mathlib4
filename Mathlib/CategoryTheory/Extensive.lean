@@ -304,8 +304,8 @@ noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
   letI eY : { p : Z × PUnit // f p.fst = Sum.inr p.snd } ≃ { x : Z // f x = Sum.inr PUnit.unit } :=
     ⟨fun p => ⟨p.1.1, p.2.trans (congr_arg Sum.inr <| Subsingleton.elim _ _)⟩,
       fun x => ⟨⟨_, PUnit.unit⟩, x.2⟩, fun _ => by ext; rfl, fun _ => by ext; rfl⟩
-  fapply BinaryCofan.isColimitMk
   classical -- Porting note: Added
+  fapply BinaryCofan.isColimitMk
   · refine' fun s => ⟨fun x => dite _
       (fun h => s.inl <| eX.symm ⟨x, h⟩) fun h => s.inr <| eY.symm ⟨x, (this x).resolve_left h⟩, _⟩
     rw [continuous_iff_continuousAt]

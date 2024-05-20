@@ -241,7 +241,7 @@ theorem concat_get_prefix {x y : List α} (h : x <+: y) (hl : x.length < y.lengt
   use y.drop (x.length + 1)
   nth_rw 1 [List.prefix_iff_eq_take.mp h]
   convert List.take_append_drop (x.length + 1) y using 2
-  rw [← List.take_concat_get, List.concat_eq_append]; rfl
+  rw [← List.take_concat_get _ _ hl, List.concat_eq_append]; rfl
 
 theorem suffix_iff_eq_drop : l₁ <:+ l₂ ↔ l₁ = drop (length l₂ - length l₁) l₂ :=
   ⟨fun h => append_cancel_left <| (suffix_iff_eq_append.1 h).trans (take_append_drop _ _).symm,

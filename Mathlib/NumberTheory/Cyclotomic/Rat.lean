@@ -373,7 +373,7 @@ lemma norm_toInteger_pow_sub_one_of_prime_ne_two [IsCyclotomicExtension {p ^ (k 
     Algebra.norm ℤ (hζ.toInteger ^ (p : ℕ) ^ s - 1) = p ^ (p : ℕ) ^ s := by
   refine hζ.norm_toInteger_pow_sub_one_of_prime_pow_ne_two hs (fun h ↦ hodd ?_)
   suffices h : (p : ℕ) = 2 from PNat.coe_injective h
-  apply eq_of_prime_pow_eq hp.out.prime Nat.prime_two.prime (k - s).succ_pos
+  apply eq_of_prime_pow_eq (k₂ := 1) hp.out.prime Nat.prime_two.prime (k - s).succ_pos
   rw [pow_one]
   exact congr_arg Subtype.val h
 

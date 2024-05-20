@@ -299,7 +299,7 @@ theorem opensImagePreimageMap_app' (i j k : D.J) (U : Opens (D.U i).carrier) :
         · simp_rw [Category.assoc]
           dsimp only [Functor.op, unop_op, Quiver.Hom.unop_op]
           rw [eqToHom_map (Opens.map _), eqToHom_op, eqToHom_trans]
-          congr
+          on_goal 1 => congr
 #align algebraic_geometry.PresheafedSpace.glue_data.opens_image_preimage_map_app' AlgebraicGeometry.PresheafedSpace.GlueData.opensImagePreimageMap_app'
 
 /-- The red and the blue arrows in ![this diagram](https://i.imgur.com/mBzV1Rx.png) commute. -/

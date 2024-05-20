@@ -360,8 +360,7 @@ theorem ae_differentiableWithinAt_of_mem {f : E → F} (hf : LipschitzOnWith C f
       simp only [ContinuousLinearEquiv.symm_comp_self, Function.id_comp]
     rw [this]
     exact A.symm.differentiableAt.comp_differentiableWithinAt x (hx xs)
-  apply ae_differentiableWithinAt_of_mem_pi
-  exact A.lipschitz.comp_lipschitzOnWith hf
+  exact ae_differentiableWithinAt_of_mem_pi <| A.lipschitz.comp_lipschitzOnWith hf
 
 /-- *Rademacher's theorem*: a function between finite-dimensional real vector spaces which is
 Lipschitz on a set is differentiable almost everywere in this set. -/

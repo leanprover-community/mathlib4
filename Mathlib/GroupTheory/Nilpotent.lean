@@ -626,7 +626,7 @@ theorem nilpotencyClass_quotient_center [hH : IsNilpotent G] :
       apply comap_injective (f := (mk' (center G))) (surjective_quot_mk _)
       rw [comap_upperCentralSeries_quotient_center, comap_top, Nat.succ_eq_add_one, ← hn]
       exact upperCentralSeries_nilpotencyClass
-    · apply le_of_add_le_add_right
+    · apply le_of_add_le_add_right (a := 1)
       calc
         n + 1 = Group.nilpotencyClass G := hn.symm
         _ ≤ Group.nilpotencyClass (G ⧸ center G) + 1 :=

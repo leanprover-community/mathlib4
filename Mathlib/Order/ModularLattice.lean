@@ -398,7 +398,7 @@ theorem disjoint_sup_right_of_disjoint_sup_left [Lattice α] [OrderBot α]
     Disjoint a (b ⊔ c) := by
   rw [disjoint_iff_inf_le, ← h.eq_bot, sup_comm]
   apply le_inf inf_le_left
-  apply (inf_le_inf_right (c ⊔ b) le_sup_right).trans
+  apply (inf_le_inf_right (c ⊔ b) (le_sup_right (a := b))).trans
   rw [sup_comm, IsModularLattice.sup_inf_sup_assoc, hsup.eq_bot, bot_sup_eq]
 #align disjoint.disjoint_sup_right_of_disjoint_sup_left Disjoint.disjoint_sup_right_of_disjoint_sup_left
 

@@ -113,7 +113,7 @@ private theorem maxVar_bound : dist x y ≤ maxVar X Y :=
     _ = diam (univ : Set X) + (dist default default + 1 + dist default default) +
         diam (univ : Set Y) := by
       rw [isometry_inl.diam_range, isometry_inr.diam_range]
-      rfl
+      · rfl
     _ = 1 * diam (univ : Set X) + 1 + 1 * diam (univ : Set Y) := by simp
     _ ≤ 2 * diam (univ : Set X) + 1 + 2 * diam (univ : Set Y) := by gcongr <;> norm_num
 
