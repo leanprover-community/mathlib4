@@ -39,6 +39,8 @@ Types which have a surjection from/an injection to a `Fintype` are themselves fi
 See `Fintype.ofInjective` and `Fintype.ofSurjective`.
 -/
 
+-- TODO: After #12974,
+-- assert_not_exists MonoidWithZero
 
 open Function
 
