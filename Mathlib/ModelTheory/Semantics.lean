@@ -109,7 +109,7 @@ theorem realize_constants {c : L.Constants} {v : α → M} : c.term.realize v = 
 theorem realize_functions_apply₁ {f : L.Functions 1} {t : L.Term α} {v : α → M} :
     (f.apply₁ t).realize v = funMap f ![t.realize v] := by
   rw [Functions.apply₁, Term.realize]
-  refine' congr rfl (funext fun i => _)
+  refine congr rfl (funext fun i => ?_)
   simp only [Matrix.cons_val_fin_one]
 #align first_order.language.term.realize_functions_apply₁ FirstOrder.Language.Term.realize_functions_apply₁
 
@@ -221,7 +221,7 @@ theorem Hom.realize_term (g : M →[L] N) {t : L.Term α} {v : α → M} :
   induction t
   · rfl
   · rw [Term.realize, Term.realize, g.map_fun]
-    refine' congr rfl _
+    refine congr rfl ?_
     ext x
     simp [*]
 #align first_order.language.hom.realize_term FirstOrder.Language.Hom.realize_term
@@ -441,7 +441,7 @@ theorem realize_liftAt_one {n m : ℕ} {φ : L.BoundedFormula α n} {v : α → 
 theorem realize_liftAt_one_self {n : ℕ} {φ : L.BoundedFormula α n} {v : α → M}
     {xs : Fin (n + 1) → M} : (φ.liftAt 1 n).Realize v xs ↔ φ.Realize v (xs ∘ castSucc) := by
   rw [realize_liftAt_one (refl n), iff_eq_eq]
-  refine' congr rfl (congr rfl (funext fun i => _))
+  refine congr rfl (congr rfl (funext fun i => ?_))
   rw [if_pos i.is_lt]
 #align first_order.language.bounded_formula.realize_lift_at_one_self FirstOrder.Language.BoundedFormula.realize_liftAt_one_self
 
@@ -490,7 +490,7 @@ theorem realize_relabelEquiv {g : α ≃ β} {k} {φ : L.BoundedFormula α k} {v
   simp only [relabelEquiv, mapTermRelEquiv_apply, Equiv.coe_refl]
   refine' realize_mapTermRel_id (fun n t xs => _) fun _ _ _ => rfl
   simp only [relabelEquiv_apply, Term.realize_relabel]
-  refine' congr (congr rfl _) rfl
+  refine congr (congr rfl ?_) rfl
   ext (i | i) <;> rfl
 #align first_order.language.bounded_formula.realize_relabel_equiv FirstOrder.Language.BoundedFormula.realize_relabelEquiv
 
@@ -1106,7 +1106,7 @@ theorem Sentence.realize_cardGe (n) : M ⊨ Sentence.cardGe L n ↔ ↑n ≤ #M 
     List.mem_finRange, forall_exists_index, and_imp, List.mem_filter, true_and_iff]
   refine' ⟨_, fun xs => ⟨xs.some, _⟩⟩
   · rintro ⟨xs, h⟩
-    refine' ⟨⟨xs, fun i j ij => _⟩⟩
+    refine ⟨⟨xs, fun i j ij => ?_⟩⟩
     contrapose! ij
     have hij := h _ i j (by simpa using ij) rfl
     simp only [BoundedFormula.realize_not, Term.realize, BoundedFormula.realize_bdEqual,

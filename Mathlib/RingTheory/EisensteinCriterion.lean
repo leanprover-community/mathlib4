@@ -103,7 +103,7 @@ theorem irreducible_of_eisenstein_criterion {f : R[X]} {P : Ideal R} (hP : P.IsP
       ⟨m, n, b, c, hmnd, hbc, hp, hq⟩
     have hmn : 0 < m → 0 < n → False := by
       intro hm0 hn0
-      refine' h0 _
+      refine h0 ?_
       rw [coeff_zero_eq_eval_zero, eval_mul, sq]
       exact
         Ideal.mul_mem_mul (eval_zero_mem_ideal_of_eq_mul_X_pow hp hm0.ne')

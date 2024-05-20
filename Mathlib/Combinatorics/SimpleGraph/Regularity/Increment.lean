@@ -81,7 +81,7 @@ variable (hP G ε)
 
 theorem increment_isEquipartition : (increment hP G ε).IsEquipartition := by
   simp_rw [IsEquipartition, Set.equitableOn_iff_exists_eq_eq_add_one]
-  refine' ⟨m, fun A hA => _⟩
+  refine ⟨m, fun A hA => ?_⟩
   rw [mem_coe, increment, mem_bind] at hA
   obtain ⟨U, hU, hA⟩ := hA
   exact card_eq_of_mem_parts_chunk hA
