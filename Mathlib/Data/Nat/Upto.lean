@@ -3,6 +3,7 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Ring.Nat
 
 #align_import data.nat.upto from "leanprover-community/mathlib"@"ee0c179cd3c8a45aa5bffbf1b41d8dbede452865"

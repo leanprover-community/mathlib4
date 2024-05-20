@@ -7,6 +7,7 @@ import Mathlib.Algebra.NeZero
 import Mathlib.Data.Nat.Defs
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Logic.Equiv.Set
+import Mathlib.Order.Nat
 import Mathlib.Tactic.Common
 
 #align_import data.fin.basic from "leanprover-community/mathlib"@"3a2b5524a138b5d0b818b858b516d4ac8a484b03"

@@ -76,7 +76,7 @@ theorem enumerate_inj {n₁ n₂ : ℕ} {a : α} {s : Set α} (h_sel : ∀ s a, 
     (h₁ : enumerate sel s n₁ = some a) (h₂ : enumerate sel s n₂ = some a) : n₁ = n₂ := by
   /- Porting note: The `rcase, on_goal, all_goals` has been used instead of
      the not-yet-ported `wlog` -/
-  rcases le_total n₁ n₂ with (hn|hn)
+  rcases Nat.le_total n₁ n₂ with (hn|hn)
   on_goal 2 => swap_var n₁ ↔ n₂, h₁ ↔ h₂
   all_goals
     rcases Nat.le.dest hn with ⟨m, rfl⟩

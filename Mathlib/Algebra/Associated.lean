@@ -10,6 +10,7 @@ import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Ring.Units
+import Mathlib.Order.Nat
 
 #align_import algebra.associated from "leanprover-community/mathlib"@"2f3994e1b117b1e1da49bcfb67334f33460c3ce4"
 

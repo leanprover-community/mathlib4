@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Int.Defs
 import Mathlib.Data.Rat.Init
-import Mathlib.Order.Basic
 import Mathlib.Tactic.Common
 
 #align_import data.rat.defs from "leanprover-community/mathlib"@"18a5306c091183ac90884daa9373fa3b178e8607"
@@ -115,7 +114,7 @@ lemma num_eq_zero {q : ℚ} : q.num = 0 ↔ q = 0 := by
 lemma num_ne_zero {q : ℚ} : q.num ≠ 0 ↔ q ≠ 0 := num_eq_zero.not
 #align rat.num_ne_zero_of_ne_zero Rat.num_ne_zero
 
-@[simp] lemma den_ne_zero (q : ℚ) : q.den ≠ 0 := q.den_pos.ne'
+@[simp] lemma den_ne_zero (q : ℚ) : q.den ≠ 0 := Nat.ne_of_gt q.den_pos
 
 #noalign rat.nonneg
 
@@ -169,7 +168,7 @@ numbers of the form `n /. d` with `d ≠ 0`. -/
 @[elab_as_elim]
 def numDenCasesOn'.{u} {C : ℚ → Sort u} (a : ℚ) (H : ∀ (n : ℤ) (d : ℕ), d ≠ 0 → C (n /. d)) :
     C a :=
-  numDenCasesOn a fun n d h _ => H n d h.ne'
+  numDenCasesOn a fun n d h _ => H n d (Nat.ne_of_gt h)
 #align rat.num_denom_cases_on' Rat.numDenCasesOn'
 
 /-- Define a (dependent) function or prove `∀ r : ℚ, p r` by dealing with rational
@@ -177,7 +176,8 @@ numbers of the form `mk' n d` with `d ≠ 0`. -/
 @[elab_as_elim]
 def numDenCasesOn''.{u} {C : ℚ → Sort u} (a : ℚ)
     (H : ∀ (n : ℤ) (d : ℕ) (nz red), C (mk' n d nz red)) : C a :=
-  numDenCasesOn a fun n d h h' ↦ by rw [← mk_eq_divInt _ _ h.ne' h']; exact H n d h.ne' _
+  numDenCasesOn a fun n d h h' ↦ by
+    rw [← mk_eq_divInt _ _ (Nat.ne_of_gt h) h']; exact H n d (Nat.ne_of_gt h) _
 
 #align rat.add Rat.add
 

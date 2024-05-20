@@ -5,6 +5,7 @@ Authors: Johan Commelin, Damiano Testa, Kevin Buzzard
 -/
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
+import Mathlib.Order.Nat
 
 #align_import linear_order_with_pos_mul_pos_eq_zero from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
 

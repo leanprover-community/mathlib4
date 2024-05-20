@@ -317,7 +317,7 @@ lemma even_sub' (h : n ≤ m) : Even (m - n) ↔ (Odd m ↔ Odd n) := by
 #align nat.even_sub' Nat.even_sub'
 
 lemma Odd.sub_odd (hm : Odd m) (hn : Odd n) : Even (m - n) :=
-  (le_total n m).elim (fun h ↦ by simp only [even_sub' h, *]) fun h ↦ by
+  (Nat.le_total n m).elim (fun h ↦ by simp only [even_sub' h, *]) fun h ↦ by
     simp only [Nat.sub_eq_zero_iff_le.2 h, even_zero]
 #align nat.odd.sub_odd Nat.Odd.sub_odd
 

@@ -3,11 +3,12 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Ralf Stephan, Neil Strickland, Ruben Van de Velde
 -/
-import Mathlib.Data.PNat.Defs
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Set.Basic
 import Mathlib.Algebra.GroupWithZero.Divisibility
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Positive.Ring
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.PNat.Defs
+import Mathlib.Data.Set.Basic
 import Mathlib.Order.Hom.Basic
 
 #align_import data.pnat.basic from "leanprover-community/mathlib"@"172bf2812857f5e56938cc148b7a539f52f84ca9"

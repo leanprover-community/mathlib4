@@ -1,6 +1,9 @@
-import Mathlib.Tactic.MoveAdd
+import Mathlib.Algebra.Ring.Defs
+import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Algebra.Ring.Nat
+import Mathlib.Init.Order.Defs
+import Mathlib.Order.Nat
+import Mathlib.Tactic.MoveAdd
 
 universe u
 

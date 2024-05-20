@@ -5,6 +5,7 @@ Authors: Kim Liesinger
 -/
 import Mathlib.Data.Set.Defs
 import Mathlib.Order.Heyting.Basic
+import Mathlib.Order.Nat
 import Mathlib.Order.RelClasses
 import Mathlib.Order.Hom.Basic
 import Mathlib.Lean.Thunk

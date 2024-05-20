@@ -3,6 +3,7 @@ Copyright (c) 2014 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Jeremy Avigad
 -/
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Ring.Nat
 
 #align_import data.nat.dist from "leanprover-community/mathlib"@"d50b12ae8e2bd910d08a94823976adae9825718b"

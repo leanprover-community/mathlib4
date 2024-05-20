@@ -5,6 +5,7 @@ Authors: Yury G. Kudryashov
 -/
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Order.Monotone.Basic
+import Mathlib.Order.Nat
 
 #align_import order.iterate from "leanprover-community/mathlib"@"2258b40dacd2942571c8ce136215350c702dc78f"
 

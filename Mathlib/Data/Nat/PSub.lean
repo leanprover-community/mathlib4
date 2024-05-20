@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Nat
 import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Order.Nat
 
 #align_import data.nat.psub from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 

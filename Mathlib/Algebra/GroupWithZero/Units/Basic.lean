@@ -150,8 +150,9 @@ theorem inverse_one : inverse (1 : M₀) = 1 :=
 
 @[simp]
 theorem inverse_zero : inverse (0 : M₀) = 0 := by
-  nontriviality
-  exact inverse_non_unit _ not_isUnit_zero
+  cases subsingleton_or_nontrivial M₀ with
+  | inl h => apply Subsingleton.elim
+  | inr h => exact inverse_non_unit _ not_isUnit_zero
 #align ring.inverse_zero Ring.inverse_zero
 
 variable {M₀}

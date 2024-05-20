@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Nat
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Sub.Defs
 import Mathlib.Data.Nat.Defs
+import Mathlib.Order.Nat
 
 #align_import data.nat.order.basic from "leanprover-community/mathlib"@"3ed3f98a1e836241990d3d308f1577e434977130"
 

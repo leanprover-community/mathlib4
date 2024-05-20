@@ -3,7 +3,6 @@ Copyright (c) 2020 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yury G. Kudryashov
 -/
-import Mathlib.Data.Nat.Defs
 import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Relation
 import Mathlib.Order.Basic
@@ -936,9 +935,6 @@ instance OrderDual.isTotal_le [LE α] [h : IsTotal α (· ≤ ·)] : IsTotal α�
 instance : WellFoundedLT ℕ :=
   ⟨Nat.lt_wfRel.wf⟩
 #align nat.lt_wf Nat.lt_wfRel
-
-instance Nat.lt.isWellOrder : IsWellOrder ℕ (· < ·) where
-#align nat.lt.is_well_order Nat.lt.isWellOrder
 
 instance [LinearOrder α] [h : IsWellOrder α (· < ·)] : IsWellOrder αᵒᵈ (· > ·) := h
 
