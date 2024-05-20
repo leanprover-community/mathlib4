@@ -52,19 +52,19 @@ def toString (t : Tally) : String :=
   s!"\
   Theorems\n\
   {print t.thms}\n\
-  Definitions-Data\n\
+  Definitions:Data\n\
   {print t.ddata}\n\
   Data\n\
   {print t.data}\n\
-  Definitions-Props\n\
+  Definitions:Props\n\
   {print t.dprop}\n\
   Types\n\
   {print t.types}\n\
-  Definitions-Types\n\
+  Definitions:Types\n\
   {print t.dtype}\n\
   Predicates\n\
   {print t.preds}\n\
-  Definitions-Predicates\n\
+  Definitions:Predicates\n\
   {print t.dpred}"
 
 /-- `declKind` is the inductive enumerating the possibilities for a declaration. -/
