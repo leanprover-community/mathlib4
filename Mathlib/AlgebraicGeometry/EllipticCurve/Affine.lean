@@ -186,27 +186,6 @@ lemma eval_polynomial_zero : (W.polynomial.eval 0).eval 0 = -W.a₆ := by
   simp only [← C_0, eval_polynomial, zero_add, zero_sub, mul_zero, zero_pow <| Nat.succ_ne_zero _]
 #align weierstrass_curve.eval_polynomial_zero WeierstrassCurve.Affine.eval_polynomial_zero
 
-section map
-
-variable {S} [CommRing S] (f : R →+* S)
-
-lemma map_polynomial : polynomial (W.map f) = W.polynomial.map (mapRingHom f) := by
-  simp [polynomial]
-
-lemma map_polynomial_eval (x : R[X]) :
-    (polynomial (W.map f)).eval (x.map f) = (W.polynomial.eval x).map f := by
-  rw [map_polynomial, eval_map, ← coe_mapRingHom, eval₂_hom]
-
-lemma map_polynomial_eval_eval (x : R[X]) (y : R) :
-    ((polynomial (W.map f)).eval (x.map f)).eval (f y) = f ((W.polynomial.eval x).eval y) := by
-  rw [map_polynomial_eval, eval_map, eval₂_hom]
-
-lemma map_polynomial_eval_C_eval (x y : R) :
-    ((polynomial (W.map f)).eval (C (f x))).eval (f y) = f ((W.polynomial.eval (C x)).eval y) := by
-  rw [← map_polynomial_eval_eval, map_C]
-
-end map
-
 /-- The proposition that an affine point $(x, y)$ lies in `W`. In other words, $W(x, y) = 0$. -/
 def Equation (x y : R) : Prop :=
   (W.polynomial.eval <| C y).eval x = 0
@@ -791,17 +770,15 @@ section BaseChange
 
 /-! ### Maps and base changes -/
 
-variable {A : Type v} [CommRing A] {φ : R →+* A}
+variable {A : Type v} [CommRing A] (φ : R →+* A)
 
-lemma Equation.map {x y : R} (h : W.Equation x y) : Equation (W.map φ) (φ x) (φ y) := by
-  rw [Equation, map_polynomial_eval_C_eval, ← φ.map_zero]; exact congr_arg φ h
-
-lemma map_equation (hφ : Function.Injective φ) (x y : R) :
+lemma map_equation {φ : R →+* A} (hφ : Function.Injective φ) (x y : R) :
     (W.map φ).toAffine.Equation (φ x) (φ y) ↔ W.Equation x y := by
-  simp_rw [Equation, map_polynomial_eval_C_eval, map_eq_zero_iff φ hφ]
+  simpa only [equation_iff] using
+    ⟨fun h => hφ <| by map_simp; exact h, fun h => by convert congr_arg φ h <;> map_simp⟩
 #align weierstrass_curve.equation_iff_base_change WeierstrassCurve.Affine.map_equation
 
-lemma map_nonsingular (hφ : Function.Injective φ) (x y : R) :
+lemma map_nonsingular {φ : R →+* A} (hφ : Function.Injective φ) (x y : R) :
     (W.map φ).toAffine.Nonsingular (φ x) (φ y) ↔ W.Nonsingular x y := by
   rw [nonsingular_iff, nonsingular_iff, and_congr <| W.map_equation hφ x y]
   refine ⟨Or.imp (not_imp_not.mpr fun h => ?_) (not_imp_not.mpr fun h => ?_),
@@ -809,8 +786,6 @@ lemma map_nonsingular (hφ : Function.Injective φ) (x y : R) :
   any_goals apply hφ; map_simp; exact h
   any_goals convert congr_arg φ h <;> map_simp
 #align weierstrass_curve.nonsingular_iff_base_change WeierstrassCurve.Affine.map_nonsingular
-
-variable (φ)
 
 lemma map_negY (x y : R) : (W.map φ).toAffine.negY (φ x) (φ y) = φ (W.negY x y) := by
   simp only [negY]
