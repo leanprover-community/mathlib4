@@ -216,7 +216,7 @@ protected theorem comp {Kf Kg : ℝ≥0} {f : β → γ} {g : α → β} (hf : L
     (hg : LipschitzWith Kg g) : LipschitzWith (Kf * Kg) (f ∘ g) := fun x y =>
   calc
     edist (f (g x)) (f (g y)) ≤ Kf * edist (g x) (g y) := hf _ _
-    _ ≤ Kf * (Kg * edist x y) := (ENNReal.mul_left_mono (hg _ _))
+    _ ≤ Kf * (Kg * edist x y) := ENNReal.mul_left_mono (hg _ _)
     _ = (Kf * Kg : ℝ≥0) * edist x y := by rw [← mul_assoc, ENNReal.coe_mul]
 #align lipschitz_with.comp LipschitzWith.comp
 

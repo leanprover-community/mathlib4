@@ -70,8 +70,8 @@ def _root_.ConvexCone.toPointedCone {S : ConvexCone 𝕜 E} (hS : S.Pointed) : P
       convert hS
       simp [← hzero]
     · apply ConvexCone.smul_mem
-      convert hpos
-      exact hx
+      · convert hpos
+      · exact hx
 
 @[simp]
 lemma _root_.ConvexCone.mem_toPointedCone {S : ConvexCone 𝕜 E} (hS : S.Pointed) (x : E) :

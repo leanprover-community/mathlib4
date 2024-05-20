@@ -3,7 +3,8 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris Van Doorn, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+import Mathlib.Topology.MetricSpace.HausdorffDistance
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 
 #align_import measure_theory.measure.regular from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
 
@@ -431,7 +432,7 @@ lemma of_restrict [OpensMeasurableSpace α] {μ : Measure α} {s : ℕ → Set �
   refine' ⟨⋃ n, U n, iUnion_mono hAU, isOpen_iUnion hUo, _⟩
   calc
     μ (⋃ n, U n) ≤ ∑' n, μ (U n) := measure_iUnion_le _
-    _ ≤ ∑' n, (μ (A n) + δ n) := (ENNReal.tsum_le_tsum fun n => (hU n).le)
+    _ ≤ ∑' n, (μ (A n) + δ n) := ENNReal.tsum_le_tsum fun n => (hU n).le
     _ = ∑' n, μ (A n) + ∑' n, δ n := ENNReal.tsum_add
     _ = μ (⋃ n, A n) + ∑' n, δ n := (congr_arg₂ (· + ·) (measure_iUnion hAd hAm).symm rfl)
     _ < r := hδε
@@ -481,10 +482,8 @@ theorem measurableSet_of_isOpen [OuterRegular μ] (H : InnerRegularWRT μ p IsOp
   calc
     μ s ≤ μ U := μ.mono hsU
     _ < μ K + ε := hKr
-    _ ≤ μ (K \ U') + μ U' + ε := (add_le_add_right (tsub_le_iff_right.1 le_measure_diff) _)
-    _ ≤ μ (K \ U') + ε + ε := by
-      apply add_le_add_right; apply add_le_add_left
-      exact hμU'.le
+    _ ≤ μ (K \ U') + μ U' + ε := add_le_add_right (tsub_le_iff_right.1 le_measure_diff) _
+    _ ≤ μ (K \ U') + ε + ε := by gcongr
     _ = μ (K \ U') + (ε + ε) := add_assoc _ _ _
 #align measure_theory.measure.inner_regular.measurable_set_of_open MeasureTheory.Measure.InnerRegularWRT.measurableSet_of_isOpen
 
@@ -540,16 +539,18 @@ theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [IsFiniteMeasu
     · calc
         (∑ k in t, μ (s k)) + ε / 2 ≤ ((∑ k in t, μ (F k)) + ∑ k in t, δ k) + ε / 2 := by
           rw [← sum_add_distrib]
-          exact add_le_add_right (sum_le_sum fun k _ => hF k) _
-        _ ≤ (∑ k in t, μ (F k)) + ε / 2 + ε / 2 :=
-          (add_le_add_right (add_le_add_left ((ENNReal.sum_le_tsum _).trans hδε.le) _) _)
+          gcongr
+          apply hF
+        _ ≤ (∑ k in t, μ (F k)) + ε / 2 + ε / 2 := by
+          gcongr
+          exact (ENNReal.sum_le_tsum _).trans hδε.le
         _ = μ (⋃ k ∈ t, F k) + ε := by
           rw [measure_biUnion_finset, add_assoc, ENNReal.add_halves]
           exacts [fun k _ n _ hkn => (hsd hkn).mono (hFs k) (hFs n),
             fun k _ => (hFc k).measurableSet]
     · calc
         μ (⋃ n, U n) ≤ ∑' n, μ (U n) := measure_iUnion_le _
-        _ ≤ ∑' n, (μ (s n) + δ n) := (ENNReal.tsum_le_tsum hU)
+        _ ≤ ∑' n, (μ (s n) + δ n) := ENNReal.tsum_le_tsum hU
         _ = μ (⋃ n, s n) + ∑' n, δ n := by rw [measure_iUnion hsd hsm, ENNReal.tsum_add]
         _ ≤ μ (⋃ n, s n) + ε := add_le_add_left (hδε.le.trans ENNReal.half_le_self) _
 #align measure_theory.measure.inner_regular.weakly_regular_of_finite MeasureTheory.Measure.InnerRegularWRT.weaklyRegular_of_finite
@@ -731,10 +732,8 @@ theorem _root_.MeasurableSet.exists_isCompact_diff_lt [OpensMeasurableSpace α] 
     {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ K, K ⊆ A ∧ IsCompact K ∧ μ (A \ K) < ε := by
   rcases hA.exists_isCompact_lt_add h'A hε with ⟨K, hKA, hKc, hK⟩
-  exact
-    ⟨K, hKA, hKc,
-      measure_diff_lt_of_lt_add hKc.measurableSet hKA (ne_top_of_le_ne_top h'A <| measure_mono hKA)
-        hK⟩
+  exact ⟨K, hKA, hKc, measure_diff_lt_of_lt_add hKc.measurableSet hKA
+    (ne_top_of_le_ne_top h'A <| measure_mono hKA) hK⟩
 #align measurable_set.exists_is_compact_diff_lt MeasurableSet.exists_isCompact_diff_lt
 
 /-- If `μ` is inner regular for finite measure sets with respect to compact sets,
@@ -879,10 +878,8 @@ theorem _root_.MeasurableSet.exists_isClosed_diff_lt [OpensMeasurableSpace α] [
     ⦃A : Set α⦄ (hA : MeasurableSet A) (h'A : μ A ≠ ∞) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ F, F ⊆ A ∧ IsClosed F ∧ μ (A \ F) < ε := by
   rcases hA.exists_isClosed_lt_add h'A hε with ⟨F, hFA, hFc, hF⟩
-  exact
-    ⟨F, hFA, hFc,
-      measure_diff_lt_of_lt_add hFc.measurableSet hFA (ne_top_of_le_ne_top h'A <| measure_mono hFA)
-        hF⟩
+  exact ⟨F, hFA, hFc, measure_diff_lt_of_lt_add hFc.measurableSet hFA
+    (ne_top_of_le_ne_top h'A <| measure_mono hFA) hF⟩
 #align measurable_set.exists_is_closed_diff_lt MeasurableSet.exists_isClosed_diff_lt
 
 /-- Given a weakly regular measure, any measurable set of finite mass can be approximated from

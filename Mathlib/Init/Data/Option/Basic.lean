@@ -7,7 +7,7 @@ Authors: Johan Commelin
 import Mathlib.Mathport.Rename
 
 /-!
-# Align statements for declarations from Std
+# Align statements for declarations from Batteries
 -/
 
 #align option.mem_def Option.mem_def

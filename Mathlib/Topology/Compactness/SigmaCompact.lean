@@ -85,7 +85,7 @@ lemma IsSigmaCompact.of_isClosed_subset {s t : Set X} (ht : IsSigmaCompact t)
   rw [← inter_iUnion, hcov]
   exact inter_eq_left.mpr h
 
-/-- If `s` is σ-compact and `f` is continuous on `s`, `f(s)` is σ-compact.-/
+/-- If `s` is σ-compact and `f` is continuous on `s`, `f(s)` is σ-compact. -/
 lemma IsSigmaCompact.image_of_continuousOn {f : X → Y} {s : Set X} (hs : IsSigmaCompact s)
     (hf : ContinuousOn f s) : IsSigmaCompact (f '' s) := by
   rcases hs with ⟨K, hcompact, hcov⟩
@@ -247,8 +247,7 @@ instance [Countable ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
     refine' ⟨⟨fun n => ⋃ k ≤ n, Sigma.mk (f k) '' compactCovering (X (f k)) n, fun n => _, _⟩⟩
     · refine' (finite_le_nat _).isCompact_biUnion fun k _ => _
       exact (isCompact_compactCovering _ _).image continuous_sigmaMk
-    · simp only [iUnion_eq_univ_iff, Sigma.forall, mem_iUnion]
-      rw [hf.forall] -- Porting note: `simp only` failed to use `hf.forall`
+    · simp only [iUnion_eq_univ_iff, Sigma.forall, mem_iUnion, hf.forall]
       intro k y
       rcases exists_mem_compactCovering y with ⟨n, hn⟩
       refine' ⟨max k n, k, le_max_left _ _, mem_image_of_mem _ _⟩
