@@ -74,6 +74,7 @@ This file defines the predicate `SeparatedNhds`, and common separation axioms
   it is a `TotallySeparatedSpace`.
 * `loc_compact_t2_tot_disc_iff_tot_sep`: A locally compact T₂ space is totally disconnected iff
   it is totally separated.
+* `t2Quotient`: the largest T2 quotient of a given topological space.
 
 If the space is also compact:
 
@@ -1434,6 +1435,95 @@ theorem Set.InjOn.exists_isOpen_superset {X Y : Type*} [TopologicalSpace X] [Top
   let ⟨_t, hst, ht⟩ := inj.exists_mem_nhdsSet sc fc loc
   let ⟨u, huo, hsu, hut⟩ := mem_nhdsSet_iff_exists.1 hst
   ⟨u, huo, hsu, ht.mono hut⟩
+
+section
+variable (X)
+
+/-- The smallest equivalence relation on a topological space giving a T2 quotient. -/
+def t2Setoid : Setoid X := sInf {s | T2Space (Quotient s)}
+
+/-- The largest T2 quotient of a topological space. This construction is left-adjoint to the
+inclusion of T2 spaces into all topological spaces. -/
+def t2Quotient := Quotient (t2Setoid X)
+
+namespace t2Quotient
+variable {X}
+
+instance : TopologicalSpace (t2Quotient X) :=
+inferInstanceAs <| TopologicalSpace (Quotient _)
+
+/-- The map from a topological space to its largest T2 quotient. -/
+def mk : X → t2Quotient X := Quotient.mk (t2Setoid X)
+
+lemma mk_eq {x y : X} : mk x = mk y ↔ ∀ s : Setoid X, T2Space (Quotient s) → s.Rel x y :=
+Setoid.quotient_mk_sInf_eq
+
+variable (X)
+
+lemma surjective_mk : Surjective (mk : X → t2Quotient X) := surjective_quotient_mk _
+
+lemma continuous_mk : Continuous (mk : X → t2Quotient X) :=
+continuous_quotient_mk'
+
+variable {X}
+
+@[elab_as_elim]
+protected lemma inductionOn {motive : t2Quotient X → Prop} (q : t2Quotient X)
+  (h : ∀ x, motive (t2Quotient.mk x)) : motive q := Quotient.inductionOn q h
+
+@[elab_as_elim]
+protected lemma inductionOn₂ [TopologicalSpace Y] {motive : t2Quotient X → t2Quotient Y → Prop}
+  (q : t2Quotient X) (q' : t2Quotient Y) (h : ∀ x y, motive (mk x) (mk y)) : motive q q' :=
+Quotient.inductionOn₂ q q' h
+
+/-- The largest T2 quotient of a topological space is indeed T2. -/
+instance : T2Space (t2Quotient X) := by
+  rw [t2Space_iff_disjoint_nhds]
+  rintro ⟨x⟩ ⟨y⟩ (h : ¬  t2Quotient.mk x = t2Quotient.mk y)
+  obtain ⟨s, hs, hsxy⟩ : ∃ s, T2Space (Quotient s) ∧ Quotient.mk s x ≠ Quotient.mk s y := by
+    simpa [t2Quotient.mk_eq] using h
+  have hs' : s ∈ {s | T2Space (Quotient s)} := hs
+  apply Tendsto.disjoint (continuous_map_sInf hs').continuousAt
+    (disjoint_nhds_nhds.mpr _) (continuous_map_sInf hs').continuousAt
+  exact hsxy
+
+lemma compatible {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [T2Space Y]
+    {f : X → Y} (hf : Continuous f) : letI _ := t2Setoid X
+    ∀ (a b : X), a ≈ b → f a = f b := by
+  intro x y hxy
+  set g : Quotient (Setoid.ker f) → Y := Quotient.lift f (fun _ _ ↦ id)
+  have gcont : Continuous g := hf.quotient_lift (fun _ _ ↦ id)
+  change (Setoid.ker f).Rel x y
+  apply hxy _ (t2Space_iff_disjoint_nhds.mpr _)
+  rintro ⟨x⟩ ⟨x'⟩ (h : Quotient.mk _ x ≠ Quotient.mk _ x')
+  apply Tendsto.disjoint gcont.continuousAt (disjoint_nhds_nhds.mpr _) gcont.continuousAt
+  simpa using h
+
+/-- The universal property of the largest T2 quotient of a topological space `X`: any continuous
+map from `X` to a T2 space `Y` uniquely factors through `t2Quotient X`. This declaration builds the
+factored map. Its continuity is `t2Quotient.continuous_lift`, the fact that it indeed factors the
+original map is `t2Quotient.lift_mk` and uniquenes is `t2Quotient.unique_lift`. -/
+def lift {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [T2Space Y]
+    {f : X → Y} (hf : Continuous f) : t2Quotient X → Y :=
+  Quotient.lift f (t2Quotient.compatible hf)
+
+lemma continuous_lift {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [T2Space Y]
+    {f : X → Y} (hf : Continuous f) : Continuous (t2Quotient.lift hf) :=
+  continuous_coinduced_dom.mpr hf
+
+@[simp]
+lemma lift_mk {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [T2Space Y]
+    {f : X → Y} (hf : Continuous f) (x : X) : lift hf (mk x) = f x :=
+Quotient.lift_mk (s := t2Setoid X) f (t2Quotient.compatible hf) x
+
+lemma unique_lift {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [T2Space Y]
+    {f : X → Y} (hf : Continuous f) {g : t2Quotient X → Y} (hfg : g ∘ mk = f) :
+    g = lift hf := by
+  apply surjective_mk X |>.right_cancellable |>.mp <| funext _
+  simp [← hfg]
+
+end t2Quotient
+end
 
 /-- A T₂.₅ space, also known as a Urysohn space, is a topological space
   where for every pair `x ≠ y`, there are two open sets, with the intersection of closures
