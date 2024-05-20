@@ -488,14 +488,17 @@ lemma _root_.Equiv.toHomeomorph_trans (e : X ≃ Y) (f : Y ≃ Z) (he hf) :
     (e.toHomeomorph he).trans (f.toHomeomorph hf) := rfl
 
 /-- An inducing equiv between topological spaces is a homeomorphism. -/
-@[simps toEquiv] -- Porting note (#11215): TODO: was `@[simps]`
+@[simps]
 def _root_.Equiv.toHomeomorphOfInducing (f : X ≃ Y) (hf : Inducing f) : X ≃ₜ Y :=
   { f with
+    toFun := f
+    invFun := f.symm
     continuous_toFun := hf.continuous
     continuous_invFun := hf.continuous_iff.2 <| by simpa using continuous_id }
 #align equiv.to_homeomorph_of_inducing Equiv.toHomeomorphOfInducing
 
 /-- If a bijective map `e : X ≃ Y` is continuous and open, then it is a homeomorphism. -/
+@[simps!]
 def _root_.Equiv.toHomeomorphOfContinuousOpen (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsOpenMap e) :
     X ≃ₜ Y :=
   e.toHomeomorphOfInducing <|
@@ -506,6 +509,7 @@ def _root_.Equiv.toHomeomorphOfContinuousOpen (e : X ≃ Y) (h₁ : Continuous e
 alias homeomorphOfContinuousOpen := _root_.Equiv.toHomeomorphOfContinuousOpen
 
 /-- An embedding is an homeomorphism onto its range. -/
+@[simps! apply_coe]
 noncomputable def _root_.Embedding.toHomeomorph {f : X → Y} (hf : Embedding f) :
     X ≃ₜ Set.range f :=
   Equiv.ofInjective f hf.inj |>.toHomeomorphOfInducing <|
@@ -516,12 +520,13 @@ noncomputable def _root_.Embedding.toHomeomorph {f : X → Y} (hf : Embedding f)
 alias ofEmbedding := _root_.Embedding.toHomeomorph
 
 /-- A surjective embedding is a homeomorphism. -/
-noncomputable def _root_.Embedding.toHomeomorph_of_surjective {f : X → Y}  (hf : Embedding f)
+@[simps! apply]
+noncomputable def _root_.Embedding.toHomeomorphOfSurjective {f : X → Y}  (hf : Embedding f)
     (hsurj : Function.Surjective f) : X ≃ₜ Y :=
   Equiv.ofBijective f ⟨hf.inj, hsurj⟩ |>.toHomeomorphOfInducing hf.toInducing
 
 @[deprecated] -- May 20th 2024
-alias _root_.Embedding.toHomeomeomorph_of_surjective := Embedding.toHomeomorph_of_surjective
+alias _root_.Embedding.toHomeomeomorph_of_surjective := Embedding.toHomeomorphOfSurjective
 
 @[simp]
 theorem comp_continuousOn_iff (h : X ≃ₜ Y) (f : Z → X) (s : Set Z) :

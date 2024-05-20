@@ -212,9 +212,9 @@ lemma pullback.condition {X Y Z : Stonean.{u}} (f : X ⟶ Z) {i : Y ⟶ Z}
   erw [← hy, @ContinuousMap.coe_mk _ _ (Stonean.instTopologicalSpace (pullback f hi)) _ _ _]
   congr
   apply_fun hi.toHomeomorph
-  simpa only [Embedding.toHomeomorph, Homeomorph.homeomorph_mk_coe, Equiv.ofInjective_apply,
-    Homeomorph.homeomorph_mk_coe_symm, Set.MapsTo.restrict, Subtype.map, Function.comp_apply,
-    Equiv.apply_symm_apply, Subtype.mk.injEq]
+  ext
+  simpa? says simpa only [Embedding.toHomeomorph_apply_coe, Function.comp_apply,
+    Homeomorph.apply_symm_apply, Set.MapsTo.val_restrict_apply]
 
 @[reassoc (attr := simp)]
 lemma pullback.lift_fst {W : Stonean} (a : W ⟶ X) (b : W ⟶ Y) (w : a ≫ f = b ≫ i) :
@@ -230,8 +230,8 @@ lemma pullback.lift_snd {X Y Z W : Stonean} (f : X ⟶ Z) {i : Y ⟶ Z} (hi : Op
   suffices b z = hi.toHomeomorph.symm (⟨f (a z), by rw [← h]; simp⟩) from
     this.symm
   apply_fun hi.toHomeomorph
-  simpa only [Embedding.toHomeomorph, Homeomorph.homeomorph_mk_coe, Equiv.ofInjective_apply,
-    Homeomorph.homeomorph_mk_coe_symm, Equiv.apply_symm_apply, Subtype.mk.injEq]
+  ext
+  simpa? says simpa only [Embedding.toHomeomorph_apply_coe, Homeomorph.apply_symm_apply]
 
 /-- The pullback cone whose cone point is the explicit pullback. -/
 @[simps! pt π]
