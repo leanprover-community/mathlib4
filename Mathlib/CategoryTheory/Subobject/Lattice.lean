@@ -219,7 +219,7 @@ section OrderTop
 instance orderTop {X : C} : OrderTop (Subobject X) where
   top := Quotient.mk'' ⊤
   le_top := by
-    refine' Quotient.ind' fun f => _
+    refine Quotient.ind' fun f => ?_
     exact ⟨MonoOver.leTop f⟩
 #align category_theory.subobject.order_top CategoryTheory.Subobject.orderTop
 
@@ -299,7 +299,7 @@ variable [HasInitial C] [InitialMonoClass C]
 instance orderBot {X : C} : OrderBot (Subobject X) where
   bot := Quotient.mk'' ⊥
   bot_le := by
-    refine' Quotient.ind' fun f => _
+    refine Quotient.ind' fun f => ?_
     exact ⟨MonoOver.botLE f⟩
 #align category_theory.subobject.order_bot CategoryTheory.Subobject.orderBot
 

@@ -1098,7 +1098,7 @@ noncomputable def adjoinRootEquivAdjoin (h : IsIntegral F α) :
           exact ⟨y, Subtype.ext hy⟩
         refine' Subfield.closure_le.mpr (Set.union_subset (fun x hx => _) _)
         · obtain ⟨y, hy⟩ := hx
-          refine' ⟨y, _⟩
+          refine ⟨y, ?_⟩
           -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
           erw [RingHom.comp_apply, AdjoinRoot.lift_of (aeval_gen_minpoly F α)]
           exact hy
