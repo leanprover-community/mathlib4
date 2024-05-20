@@ -35,21 +35,13 @@ attribute [simp] LawfulTraversable.id_traverse
 namespace Traversable
 
 variable {t : Type u → Type u}
-
 variable [Traversable t] [LawfulTraversable t]
-
 variable (F G : Type u → Type u)
-
 variable [Applicative F] [LawfulApplicative F]
-
 variable [Applicative G] [LawfulApplicative G]
-
 variable {α β γ : Type u}
-
 variable (g : α → F β)
-
 variable (h : β → G γ)
-
 variable (f : β → γ)
 
 /-- The natural applicative transformation from the identity functor
@@ -100,7 +92,7 @@ theorem id_sequence (x : t α) : sequence (f := Id) (pure <$> x) = pure x := by
 
 theorem comp_sequence (x : t (F (G α))) :
     sequence (Comp.mk <$> x) = Comp.mk (sequence <$> sequence x) := by
-  simp [sequence, traverse_map]; rw [← comp_traverse]; simp [map_id]
+  simp only [sequence, traverse_map, id_comp]; rw [← comp_traverse]; simp [map_id]
 #align traversable.comp_sequence Traversable.comp_sequence
 
 theorem naturality' (η : ApplicativeTransformation F G) (x : t (F α)) :
@@ -122,7 +114,7 @@ theorem traverse_comp (g : α → F β) (h : β → G γ) :
 #align traversable.traverse_comp Traversable.traverse_comp
 
 theorem traverse_eq_map_id' (f : β → γ) :
-  traverse (m := Id) (pure ∘ f) = pure ∘ (map f : t β → t γ) := by
+    traverse (m := Id) (pure ∘ f) = pure ∘ (map f : t β → t γ) := by
   ext
   exact traverse_eq_map_id _ _
 #align traversable.traverse_eq_map_id' Traversable.traverse_eq_map_id'

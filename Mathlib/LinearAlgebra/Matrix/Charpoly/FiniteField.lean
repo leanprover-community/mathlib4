@@ -38,7 +38,7 @@ theorem FiniteField.Matrix.charpoly_pow_card {K : Type*} [Field K] [Fintype K] (
     apply congr_arg det
     refine' matPolyEquiv.injective _
     rw [AlgEquiv.map_pow, matPolyEquiv_charmatrix, hk, sub_pow_char_pow_of_commute, ← C_pow]
-    · exact (id (matPolyEquiv_eq_x_pow_sub_c (p ^ k) M) : _)
+    · exact (id (matPolyEquiv_eq_X_pow_sub_C (p ^ k) M) : _)
     · exact (C M).commute_X
   · exact congr_arg _ (Subsingleton.elim _ _)
 #align finite_field.matrix.charpoly_pow_card FiniteField.Matrix.charpoly_pow_card
@@ -53,7 +53,7 @@ theorem ZMod.charpoly_pow_card {p : ℕ} [Fact p.Prime] (M : Matrix n n (ZMod p)
 theorem FiniteField.trace_pow_card {K : Type*} [Field K] [Fintype K] (M : Matrix n n K) :
     trace (M ^ Fintype.card K) = trace M ^ Fintype.card K := by
   cases isEmpty_or_nonempty n
-  · simp [Matrix.trace]; rw [zero_pow Fintype.card_pos]
+  · simp [Matrix.trace]
   rw [Matrix.trace_eq_neg_charpoly_coeff, Matrix.trace_eq_neg_charpoly_coeff,
     FiniteField.Matrix.charpoly_pow_card, FiniteField.pow_card]
 #align finite_field.trace_pow_card FiniteField.trace_pow_card

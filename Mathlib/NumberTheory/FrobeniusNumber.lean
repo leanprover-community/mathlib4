@@ -3,9 +3,8 @@ Copyright (c) 2021 Alex Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Zhao
 -/
+import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Data.Nat.ModEq
-import Mathlib.GroupTheory.Submonoid.Basic
-import Mathlib.GroupTheory.Submonoid.Membership
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Zify
 
@@ -53,7 +52,7 @@ variable {m n : ℕ}
 
 /-- The **Chicken McNugget theorem** stating that the Frobenius number
   of positive numbers `m` and `n` is `m * n - m - n`. -/
-theorem frobeniusNumber_pair (cop : coprime m n) (hm : 1 < m) (hn : 1 < n) :
+theorem frobeniusNumber_pair (cop : Coprime m n) (hm : 1 < m) (hn : 1 < n) :
     FrobeniusNumber (m * n - m - n) {m, n} := by
   simp_rw [FrobeniusNumber, AddSubmonoid.mem_closure_pair]
   have hmn : m + n ≤ m * n := add_le_mul hm hn
@@ -71,8 +70,8 @@ theorem frobeniusNumber_pair (cop : coprime m n) (hm : 1 < m) (hn : 1 < n) :
     contrapose! hk
     let x := chineseRemainder cop 0 k
     have hx : x.val < m * n := chineseRemainder_lt_mul cop 0 k (ne_bot_of_gt hm) (ne_bot_of_gt hn)
-    suffices key : x.1 ≤ k
-    · obtain ⟨a, ha⟩ := modEq_zero_iff_dvd.mp x.2.1
+    suffices key : x.1 ≤ k by
+      obtain ⟨a, ha⟩ := modEq_zero_iff_dvd.mp x.2.1
       obtain ⟨b, hb⟩ := (modEq_iff_dvd' key).mp x.2.2
       exact ⟨a, b, by rw [mul_comm, ← ha, mul_comm, ← hb, Nat.add_sub_of_le key]⟩
     refine' ModEq.le_of_lt_add x.2.2 (lt_of_le_of_lt _ (add_lt_add_right hk n))

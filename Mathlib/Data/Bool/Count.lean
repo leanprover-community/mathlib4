@@ -3,7 +3,8 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Nat.Parity
+import Mathlib.Algebra.Order.Ring.CharZero
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.List.Chain
 
 #align_import data.bool.count from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
@@ -25,7 +26,7 @@ theorem count_not_add_count (l : List Bool) (b : Bool) : count (!b) l + count b 
   -- Porting note: Proof re-written
   -- Old proof: simp only [length_eq_countP_add_countP (Eq (!b)), Bool.not_not_eq, count]
   simp only [length_eq_countP_add_countP (· == !b), count, add_right_inj]
-  suffices : (fun x => x == b) = (fun a => decide ¬(a == !b) = true); rw [this]
+  suffices (fun x => x == b) = (fun a => decide ¬(a == !b) = true) by rw [this]
   ext x; cases x <;> cases b <;> rfl
 #align list.count_bnot_add_count List.count_not_add_count
 

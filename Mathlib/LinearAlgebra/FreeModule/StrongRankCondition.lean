@@ -37,8 +37,6 @@ variable (R : Type*) [CommRing R] [Nontrivial R]
 
 open Polynomial Function Fin LinearMap
 
-set_option maxHeartbeats 250000 in
-set_option synthInstance.maxHeartbeats 25000 in
 /-- Any commutative ring satisfies the `StrongRankCondition`. -/
 instance (priority := 100) commRing_strongRankCondition : StrongRankCondition R := by
   suffices ∀ n, ∀ f : (Fin (n + 1) → R) →ₗ[R] Fin n → R, ¬Injective f by
@@ -61,6 +59,6 @@ instance (priority := 100) commRing_strongRankCondition : StrongRankCondition R 
     rw [← monomial_add_erase (minpoly R g) 0, hP] at heval
     replace heval := congr_fun heval (Fin.last n)
     -- Porting note: ...it's just that this line gives a timeout without slightly raising heartbeats
-    simpa [hnex] using heval
+    simpa [g, hnex] using heval
   contradiction
 #align comm_ring_strong_rank_condition commRing_strongRankCondition

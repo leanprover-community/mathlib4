@@ -3,82 +3,100 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Nilpotent
-import Mathlib.LinearAlgebra.Trace
+import Mathlib.Algebra.Lie.Semisimple
+import Mathlib.Algebra.Lie.TraceForm
 
 /-!
-# The trace and Killing forms of a Lie algebra.
+# Lie algebras with non-degenerate Killing forms.
 
-Let `L` be a Lie algebra with coefficients in a commutative ring `R`. Suppose `M` is a finite, free
-`R`-module and we have a representation `φ : L → End M`. This data induces a natural bilinear form
-`B` on `L`, called the trace form associated to `M`; it is defined as `B(x, y) = Tr (φ x) (φ y)`.
+In characteristic zero, the following three conditions are equivalent:
+ 1. The solvable radical of a Lie algebra is trivial
+ 2. A Lie algebra is a direct sum of its simple ideals
+ 3. A Lie algebra has non-degenerate Killing form
 
-In the special case that `M` is `L` itself and `φ` is the adjoint representation, the trace form
-is known as the Killing form.
+In positive characteristic, it is still true that 3 implies 2, and that 2 implies 1, but there are
+counterexamples to the remaining implications. Thus condition 3 is the strongest assumption.
+Furthermore, much of the Cartan-Killing classification of semisimple Lie algebras in characteristic
+zero, continues to hold in positive characteristic (over a perfect field) if the Lie algebra has a
+non-degenerate Killing form.
 
-We define the trace / Killing form in this file and prove some basic properties.
+This file contains basic definitions and results for such Lie algebras.
 
 ## Main definitions
-
- * `LieModule.traceForm`
- * `killingForm`
+ * `LieAlgebra.IsKilling`: a typeclass encoding the fact that a Lie algebra has a non-singular
+   Killing form.
+ * `LieAlgebra.IsKilling.instIsSemisimple`: if a Lie algebra has non-singular Killing form then it
+   is semisimple.
 
 ## TODO
 
- * Show that `LieModule.traceForm R L M` vanishes when `M` is nilpotent (using
-   `isNilpotent_toEndomorphism_of_isNilpotent₂`).
- * Prove Cartan's criterion for semisimplicity.
+ * Prove that in characteristic zero, a semisimple Lie algebra has non-singular Killing form.
+
 -/
 
-variable (R L : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
+variable (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
 
-namespace LieModule
+namespace LieAlgebra
 
-open LinearMap (trace)
+/-- We say a Lie algebra is Killing if its Killing form is non-singular.
 
-variable (M : Type _) [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
-variable [Module.Free R M] [Module.Finite R M]
+NB: This is not standard terminology (the literature does not seem to name Lie algebras with this
+property). -/
+class IsKilling : Prop :=
+  /-- We say a Lie algebra is Killing if its Killing form is non-singular. -/
+  killingCompl_top_eq_bot : LieIdeal.killingCompl R L ⊤ = ⊥
 
-local notation "φ" => toEndomorphism R L M
+attribute [simp] IsKilling.killingCompl_top_eq_bot
 
-/-- A finite, free representation of a Lie algebra `L` induces a bilinear form on `L` called
-the trace Form. See also `killingForm`. -/
-noncomputable def traceForm : L →ₗ[R] L →ₗ[R] R :=
-  ((LinearMap.mul _ _).compl₁₂ (φ).toLinearMap (φ).toLinearMap).compr₂ (trace R M)
+namespace IsKilling
 
-@[simp] lemma traceForm_apply_apply (x y : L) :
-    traceForm R L M x y = trace R _ (φ x ∘ₗ φ y) :=
-  rfl
+variable [Module.Free R L] [Module.Finite R L] [IsKilling R L]
 
-lemma traceForm_comm (x y : L) : traceForm R L M x y = traceForm R L M y x :=
-  LinearMap.trace_mul_comm R (φ x) (φ y)
+@[simp] lemma ker_killingForm_eq_bot :
+    LinearMap.ker (killingForm R L) = ⊥ := by
+  simp [← LieIdeal.coe_killingCompl_top, killingCompl_top_eq_bot]
 
-@[simp] lemma traceForm_flip : (traceForm R L M).flip = traceForm R L M :=
-  Eq.symm <| LinearMap.ext₂ <| traceForm_comm R L M
+lemma killingForm_nondegenerate :
+    (killingForm R L).Nondegenerate := by
+  simp [LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot]
 
-lemma traceForm_apply_lie_apply (x y z : L) :
-    traceForm R L M ⁅x, y⁆ z = traceForm R L M x ⁅y, z⁆ := by
-  calc traceForm R L M ⁅x, y⁆ z
-      = trace R _ (φ ⁅x, y⁆ ∘ₗ φ z) := by simp only [traceForm_apply_apply]
-    _ = trace R _ ((φ x * φ y - φ y * φ x) * φ z) := ?_
-    _ = trace R _ (φ x * (φ y * φ z)) - trace R _ (φ y * (φ x * φ z)) := ?_
-    _ = trace R _ (φ x * (φ y * φ z)) - trace R _ (φ x * (φ z * φ y)) := ?_
-    _ = traceForm R L M x ⁅y, z⁆ := ?_
-  · simp only [LieHom.map_lie, Ring.lie_def, ← LinearMap.mul_eq_comp]
-  · simp only [sub_mul, mul_sub, map_sub, mul_assoc]
-  · simp only [LinearMap.trace_mul_cycle' R (φ x) (φ z) (φ y)]
-  · simp only [traceForm_apply_apply, LieHom.map_lie, Ring.lie_def, mul_sub, map_sub,
-      ← LinearMap.mul_eq_comp]
+/-- The converse of this is true over a field of characteristic zero. There are counterexamples
+over fields with positive characteristic. -/
+instance instIsSemisimple [IsDomain R] [IsPrincipalIdealRing R] : IsSemisimple R L := by
+  refine' (isSemisimple_iff_no_abelian_ideals R L).mpr fun I hI ↦ _
+  rw [eq_bot_iff, ← killingCompl_top_eq_bot]
+  exact I.le_killingCompl_top_of_isLieAbelian
 
-end LieModule
+end IsKilling
 
-section LieAlgebra
+section LieEquiv
 
-variable [Module.Free R L] [Module.Finite R L]
+variable {R L}
+variable {L' : Type*} [LieRing L'] [LieAlgebra R L']
 
-/-- A finite, free (as an `R`-module) Lie algebra `L` carries a bilinear form on `L`.
+/-- Given an equivalence `e` of Lie algebras from `L` to `L'`, and elements `x y : L`, the
+respective Killing forms of `L` and `L'` satisfy `κ'(e x, e y) = κ(x, y)`. -/
+@[simp] lemma killingForm_of_equiv_apply (e : L ≃ₗ⁅R⁆ L') (x y : L) :
+    killingForm R L' (e x) (e y) = killingForm R L x y := by
+  simp_rw [killingForm_apply_apply, ← LieAlgebra.conj_ad_apply, ← LinearEquiv.conj_comp,
+    LinearMap.trace_conj']
 
-This is a specialisation of `LieModule.traceForm` to the adjoint representation of `L`. -/
-noncomputable abbrev killingForm : L →ₗ[R] L →ₗ[R] R := LieModule.traceForm R L L
+/-- Given a Killing Lie algebra `L`, if `L'` is isomorphic to `L`, then `L'` is Killing too. -/
+lemma isKilling_of_equiv [IsKilling R L] (e : L ≃ₗ⁅R⁆ L') : IsKilling R L' := by
+  constructor
+  ext x'
+  simp_rw [LieIdeal.mem_killingCompl, LieModule.traceForm_comm]
+  refine ⟨fun hx' ↦ ?_, fun hx y _ ↦ hx ▸ LinearMap.map_zero₂ (killingForm R L') y⟩
+  suffices e.symm x' ∈ LinearMap.ker (killingForm R L) by
+    rw [IsKilling.ker_killingForm_eq_bot] at this
+    simpa using (e : L ≃ₗ[R] L').congr_arg this
+  ext y
+  replace hx' : ∀ y', killingForm R L' x' y' = 0 := by simpa using hx'
+  specialize hx' (e y)
+  rwa [← e.apply_symm_apply x', killingForm_of_equiv_apply] at hx'
+
+alias _root_.LieEquiv.isKilling := LieAlgebra.isKilling_of_equiv
+
+end LieEquiv
 
 end LieAlgebra

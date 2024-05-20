@@ -38,7 +38,6 @@ traversable bitraversable functor bifunctor applicative
 universe u
 
 variable {t : Type u → Type u → Type u} [Bitraversable t]
-
 variable {β : Type u}
 
 namespace Bitraversable
@@ -48,14 +47,12 @@ open Functor LawfulApplicative
 variable {F G : Type u → Type u} [Applicative F] [Applicative G]
 
 /-- traverse on the first functor argument -/
-@[reducible]
-def tfst {α α'} (f : α → F α') : t α β → F (t α' β) :=
+abbrev tfst {α α'} (f : α → F α') : t α β → F (t α' β) :=
   bitraverse f pure
 #align bitraversable.tfst Bitraversable.tfst
 
 /-- traverse on the second functor argument -/
-@[reducible]
-def tsnd {α α'} (f : α → F α') : t β α → F (t β α') :=
+abbrev tsnd {α α'} (f : α → F α') : t β α → F (t β α') :=
   bitraverse pure f
 #align bitraversable.tsnd Bitraversable.tsnd
 

@@ -5,7 +5,6 @@ Authors: Johan Commelin, Scott Morrison, Adam Topaz
 -/
 import Mathlib.Topology.Sheaves.SheafOfFunctions
 import Mathlib.Topology.Sheaves.Stalks
-import Mathlib.Topology.LocalHomeomorph
 import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
 
 #align_import topology.sheaves.local_predicate from "leanprover-community/mathlib"@"5dc6092d09e5e489106865241986f7f2ad28d4c8"
@@ -43,7 +42,6 @@ universe v
 noncomputable section
 
 variable {X : TopCat.{v}}
-
 variable (T : X → Type v)
 
 open TopologicalSpace
@@ -245,7 +243,8 @@ def stalkToFiber (P : LocalPredicate T) (x : X) : (subsheafToTypes P).presheaf.s
 set_option linter.uppercaseLean3 false in
 #align Top.stalk_to_fiber TopCat.stalkToFiber
 
--- Porting note : removed `simp` attribute, due to left hand side is not in simple normal form.
+-- Porting note (#11119): removed `simp` attribute,
+-- due to left hand side is not in simple normal form.
 theorem stalkToFiber_germ (P : LocalPredicate T) (U : Opens X) (x : U) (f) :
     stalkToFiber P x ((subsheafToTypes P).presheaf.germ x f) = f.1 x := by
   dsimp [Presheaf.germ, stalkToFiber]
@@ -288,16 +287,16 @@ theorem stalkToFiber_injective (P : LocalPredicate T) (x : X)
   -- Then use induction to pick particular representatives of `tU tV : stalk x`
   obtain ⟨U, ⟨fU, hU⟩, rfl⟩ := jointly_surjective'.{v, v} tU
   obtain ⟨V, ⟨fV, hV⟩, rfl⟩ := jointly_surjective'.{v, v} tV
-  · -- Decompose everything into its constituent parts:
-    dsimp
-    simp only [stalkToFiber, Types.Colimit.ι_desc_apply'] at h
-    specialize w (unop U) (unop V) fU hU fV hV h
-    rcases w with ⟨W, iU, iV, w⟩
-    -- and put it back together again in the correct order.
-    refine' ⟨op W, fun w => fU (iU w : (unop U).1), P.res _ _ hU, _⟩
-    rcases W with ⟨W, m⟩
-    · exact iU
-    · exact ⟨colimit_sound iU.op (Subtype.eq rfl), colimit_sound iV.op (Subtype.eq (funext w).symm)⟩
+  -- Decompose everything into its constituent parts:
+  dsimp
+  simp only [stalkToFiber, Types.Colimit.ι_desc_apply'] at h
+  specialize w (unop U) (unop V) fU hU fV hV h
+  rcases w with ⟨W, iU, iV, w⟩
+  -- and put it back together again in the correct order.
+  refine' ⟨op W, fun w => fU (iU w : (unop U).1), P.res _ _ hU, _⟩
+  · rcases W with ⟨W, m⟩
+    exact iU
+  · exact ⟨colimit_sound iU.op (Subtype.eq rfl), colimit_sound iV.op (Subtype.eq (funext w).symm)⟩
 set_option linter.uppercaseLean3 false in
 #align Top.stalk_to_fiber_injective TopCat.stalkToFiber_injective
 

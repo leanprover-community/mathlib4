@@ -3,6 +3,7 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Mathlib.Lean.Expr.Basic
 import Mathlib.Tactic.Basic
 
 /-!
@@ -19,7 +20,7 @@ open Lean Elab Parser Meta Tactic
 a new local definition. -/
 def Lean.MVarId.extractLetsAt (mvarId : MVarId) (fvarId : FVarId) (names : Array Name) :
     MetaM (Array FVarId × MVarId) := do
-  mvarId.checkNotAssigned `extractLetAt
+  mvarId.checkNotAssigned `extractLetsAt
   mvarId.withReverted #[fvarId] fun mvarId fvarIds => mvarId.withContext do
     let mut mvarId := mvarId
     let mut fvarIds' := #[]
@@ -28,7 +29,7 @@ def Lean.MVarId.extractLetsAt (mvarId : MVarId) (fvarId : FVarId) (names : Array
       mvarId ← match ty with
         | .letE n t v b ndep => process mvarId t (.letE n · v b ndep)
         | .forallE n t v b   => process mvarId t (.forallE n · v b)
-        | _ => throwTacticEx `extractLetAt mvarId "unexpected auxiliary target"
+        | _ => throwTacticEx `extractLetsAt mvarId "unexpected auxiliary target"
       let (fvarId', mvarId') ← mvarId.intro name
       fvarIds' := fvarIds'.push fvarId'
       mvarId := mvarId'
@@ -38,17 +39,12 @@ where
   described by `mk`. -/
   process (mvarId : MVarId) (t : Expr) (mk : Expr → Expr) : MetaM MVarId := do
     let .letE n' t' v' b' _ := t.cleanupAnnotations
-      | throwTacticEx `extractLetAt mvarId "insufficient number of `let` expressions"
+      | throwTacticEx `extractLetsAt mvarId "insufficient number of `let` expressions"
     -- Lift the let
     withLetDecl n' t' v' fun fvar => do
       let b' := b'.instantiate1 fvar
       let ty' ← mkLetFVars #[fvar] <| mk b'
       mvarId.change ty'
-
-/-- Counts the immediate depth of a nested `let` expression. -/
-def Lean.Expr.letDepth : Expr → Nat
-  | .letE _ _ _ b _ => b.letDepth + 1
-  | _ => 0
 
 /-- A more limited version of `Lean.MVarId.introN` that ensures the goal is a
 nested `let` expression. -/
@@ -57,7 +53,7 @@ def Lean.MVarId.extractLets (mvarId : MVarId) (names : Array Name) :
   mvarId.withContext do
     let ty := (← Lean.instantiateMVars (← mvarId.getType)).cleanupAnnotations
     if ty.letDepth < names.size then
-      throwTacticEx `extractLet mvarId "insufficient number of `let` expressions"
+      throwTacticEx `extractLets mvarId "insufficient number of `let` expressions"
     mvarId.introN names.size names.toList
 
 namespace Mathlib
@@ -74,23 +70,29 @@ Just like `intros`, the `extract_lets` tactic either takes a list of names, in w
 that specifies the number of `let` bindings that must be extracted, or it takes no names, in which
 case all the `let` bindings are extracted.
 
-The tactic `extract_let at ⊢` is a weaker form of `intros` that only introduces obvious `let`s. -/
-syntax (name := extractLets) "extract_lets " (colGt (ident <|> hole))* (ppSpace location) : tactic
+The tactic `extract_lets` (without `at`) or `extract_lets at h ⊢` acts as a weaker
+form of `intros` on the goal that only introduces obvious `let`s. -/
+syntax (name := extractLets) "extract_lets " (colGt (ident <|> hole))* (ppSpace location)? : tactic
 
-@[tactic Mathlib.extractLets] def evalExtractLet : Tactic := fun stx => do
+@[tactic Mathlib.extractLets, inherit_doc extractLets]
+def evalExtractLets : Tactic := fun stx => do
   match stx with
+  | `(tactic| extract_lets)                       => doExtract none none
+  | `(tactic| extract_lets $hs*)                  => doExtract hs none
   | `(tactic| extract_lets $loc:location)         => doExtract none loc
   | `(tactic| extract_lets $hs* $loc:location)    => doExtract hs loc
   | _ => throwUnsupportedSyntax
 where
+  @[nolint docBlame]
   setupNames (ids? : Option (TSyntaxArray [`ident, `Lean.Parser.Term.hole])) (ty : Expr) :
       MetaM (Array Name) := do
     if let some ids := ids? then
       return ids.map getNameOfIdent'
     else
       return Array.mkArray (← instantiateMVars ty).cleanupAnnotations.letDepth `_
+  @[nolint docBlame]
   doExtract (ids? : Option (TSyntaxArray [`ident, `Lean.Parser.Term.hole]))
-      (loc : TSyntax `Lean.Parser.Tactic.location) :
+      (loc? : Option <| TSyntax `Lean.Parser.Tactic.location) :
       TacticM Unit := do
     let process (f : MVarId → Array Name → MetaM (Array FVarId × MVarId))
         (ty : MVarId → MetaM Expr) : TacticM Unit := do
@@ -102,11 +104,11 @@ where
         withMainContext do
           for stx in ids, fvarId in fvarIds do
             Term.addLocalVarInfo stx (.fvar fvarId)
-    withLocation (expandOptLocation (mkOptionalNode loc))
+    withLocation (expandOptLocation (mkOptionalNode loc?))
       (atLocal := fun h ↦ do
         process (fun mvarId ids => mvarId.extractLetsAt h ids) (fun _ => h.getType))
       (atTarget := do
         process (fun mvarId ids => mvarId.extractLets ids) (fun mvarId => mvarId.getType))
-      (failed := fun _ ↦ throwError "extract_let tactic failed")
+      (failed := fun _ ↦ throwError "extract_lets tactic failed")
 
 end Mathlib

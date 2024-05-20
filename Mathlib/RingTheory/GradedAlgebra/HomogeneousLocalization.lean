@@ -70,13 +70,9 @@ open DirectSum BigOperators Pointwise
 open DirectSum SetLike
 
 variable {ι R A : Type*}
-
 variable [AddCommMonoid ι] [DecidableEq ι]
-
 variable [CommRing R] [CommRing A] [Algebra R A]
-
 variable (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜]
-
 variable (x : Submonoid A)
 
 local notation "at " x => Localization x
@@ -88,7 +84,8 @@ section
 /-- Let `x` be a submonoid of `A`, then `NumDenSameDeg 𝒜 x` is a structure with a numerator and a
 denominator with same grading such that the denominator is contained in `x`.
 -/
--- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
+-- Porting note(#5171): this linter isn't ported yet.
+-- @[nolint has_nonempty_instance]
 structure NumDenSameDeg where
   deg : ι
   (num den : 𝒜 deg)
@@ -234,7 +231,7 @@ instance : Pow (NumDenSameDeg 𝒜 x) ℕ where
       @GradedMonoid.GMonoid.gnpow _ (fun i => ↥(𝒜 i)) _ _ n _ c.den, by
         induction' n with n ih
         · simpa only [Nat.zero_eq, coe_gnpow, pow_zero] using Submonoid.one_mem _
-        · simpa only [pow_succ', coe_gnpow] using x.mul_mem ih c.den_mem⟩
+        · simpa only [pow_succ, coe_gnpow] using x.mul_mem ih c.den_mem⟩
 
 @[simp]
 theorem deg_pow (c : NumDenSameDeg 𝒜 x) (n : ℕ) : (c ^ n).deg = n • c.deg :=
@@ -292,7 +289,8 @@ end HomogeneousLocalization
 kernel of `embedding 𝒜 x`. This is essentially the subring of `Aₓ` where the numerator and
 denominator share the same grading.
 -/
--- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
+-- Porting note(#5171): this linter isn't ported yet.
+-- @[nolint has_nonempty_instance]
 def HomogeneousLocalization : Type _ :=
   Quotient (Setoid.ker <| HomogeneousLocalization.NumDenSameDeg.embedding 𝒜 x)
 #align homogeneous_localization HomogeneousLocalization
@@ -335,17 +333,16 @@ instance hasPow : Pow (HomogeneousLocalization 𝒜 x) ℕ where
 section SMul
 
 variable {α : Type*} [SMul α R] [SMul α A] [IsScalarTower α R A]
-
 variable [IsScalarTower α A A]
 
 instance : SMul α (HomogeneousLocalization 𝒜 x) where
   smul m := Quotient.map' (m • ·) fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) => by
     change Localization.mk _ _ = Localization.mk _ _
     simp only [num_smul, den_smul]
-    convert congr_arg (fun z : at x => m • z) h <;> rw [Localization.smul_mk] <;> rfl
+    convert congr_arg (fun z : at x => m • z) h <;> rw [Localization.smul_mk]
 
 @[simp]
-theorem smul_val (y : HomogeneousLocalization 𝒜 x) (n : α) : (n • y).val = n • y.val := by
+theorem smul_val (n : α) (y : HomogeneousLocalization 𝒜 x) : (n • y).val = n • y.val := by
   induction y using Quotient.inductionOn
   change Localization.mk _ _ = n • Localization.mk _ _
   dsimp only
@@ -479,6 +476,9 @@ instance homogeneousLocalizationAlgebra :
   smul_def' _ _ := rfl
 #align homogeneous_localization.homogeneous_localization_algebra HomogeneousLocalization.homogeneousLocalizationAlgebra
 
+@[simp] lemma algebraMap_apply (y) :
+    algebraMap (HomogeneousLocalization 𝒜 x) (Localization x) y = y.val := rfl
+
 end HomogeneousLocalization
 
 namespace HomogeneousLocalization
@@ -522,6 +522,11 @@ theorem eq_num_div_den (f : HomogeneousLocalization 𝒜 x) :
   rw [← this]
   rfl
 #align homogeneous_localization.eq_num_div_denom HomogeneousLocalization.eq_num_div_den
+
+theorem den_smul_val (f : HomogeneousLocalization 𝒜 x) :
+    f.den • f.val = algebraMap _ _ f.num := by
+  rw [eq_num_div_den, Localization.mk_eq_mk', IsLocalization.smul_mk']
+  exact IsLocalization.mk'_mul_cancel_left _ ⟨_, _⟩
 
 theorem ext_iff_val (f g : HomogeneousLocalization 𝒜 x) : f = g ↔ f.val = g.val :=
   { mp := fun h => h ▸ rfl
@@ -610,6 +615,23 @@ variable (𝒜) (f : A)
 abbrev Away :=
   HomogeneousLocalization 𝒜 (Submonoid.powers f)
 #align homogeneous_localization.away HomogeneousLocalization.Away
+
+variable {𝒜} {f}
+
+theorem Away.eventually_smul_mem {m} (hf : f ∈ 𝒜 m) (z : Away 𝒜 f) :
+    ∀ᶠ n in Filter.atTop, f ^ n • z.val ∈ algebraMap _ _ '' (𝒜 (n • m) : Set A) := by
+  obtain ⟨k, hk : f ^ k = _⟩ := z.den_mem
+  apply Filter.mem_of_superset (Filter.Ici_mem_atTop k)
+  rintro k' (hk' : k ≤ k')
+  simp only [Set.mem_image, SetLike.mem_coe, Set.mem_setOf_eq]
+  by_cases hfk : f ^ k = 0
+  · refine ⟨0, zero_mem _, ?_⟩
+    rw [← tsub_add_cancel_of_le hk', map_zero, pow_add, hfk, mul_zero, zero_smul]
+  rw [← tsub_add_cancel_of_le hk', pow_add, mul_smul, hk, den_smul_val,
+    Algebra.smul_def, ← _root_.map_mul]
+  rw [← smul_eq_mul, add_smul,
+    DirectSum.degree_eq_of_mem_mem 𝒜 (SetLike.pow_mem_graded _ hf) (hk.symm ▸ z.den_mem_deg) hfk]
+  exact ⟨_, SetLike.mul_mem_graded (SetLike.pow_mem_graded _ hf) z.num_mem_deg, rfl⟩
 
 end
 
