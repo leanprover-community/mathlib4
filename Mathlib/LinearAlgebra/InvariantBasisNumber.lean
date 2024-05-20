@@ -128,6 +128,18 @@ theorem OrzechProperty.injective_of_surjective_of_submodule [OrzechProperty R]
     {N : Submodule R M} (f : N →ₗ[R] M) (hf : Surjective f) : Injective f :=
   OrzechProperty.injective_of_surjective_of_injective N.subtype f N.injective_subtype hf
 
+variable {R} in
+theorem OrzechProperty.injective_of_surjective_endomorphism [OrzechProperty R]
+    {M : Type v} [AddCommMonoid M] [Module R M] [Module.Finite R M]
+    (f : M →ₗ[R] M) (hf : Surjective f) : Injective f :=
+  OrzechProperty.injective_of_surjective_of_injective _ f (LinearEquiv.refl _ _).injective hf
+
+variable {R} in
+theorem OrzechProperty.bijective_of_surjective_endomorphism [OrzechProperty R]
+    {M : Type v} [AddCommMonoid M] [Module R M] [Module.Finite R M]
+    (f : M →ₗ[R] M) (hf : Surjective f) : Bijective f :=
+  ⟨OrzechProperty.injective_of_surjective_endomorphism f hf, hf⟩
+
 /-- Any Noetherian ring satisfies Orzech property.
     See also `IsNoetherian.injective_of_surjective_of_submodule` and
     `IsNoetherian.injective_of_surjective_of_injective`. -/
