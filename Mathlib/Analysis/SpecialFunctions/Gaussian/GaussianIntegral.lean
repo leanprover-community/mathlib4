@@ -63,7 +63,7 @@ theorem rpow_mul_exp_neg_mul_sq_isLittleO_exp_neg {b : ℝ} (hb : 0 < b) (s : �
 theorem integrableOn_rpow_mul_exp_neg_rpow {p s : ℝ} (hs : -1 < s) (hp : 1 ≤ p) :
     IntegrableOn (fun x : ℝ => x ^ s * exp (- x ^ p)) (Ioi 0) := by
   obtain hp | hp := le_iff_lt_or_eq.mp hp
-  · have h_exp : ∀ x, ContinuousAt (fun x => exp (- x)) x := fun x => continuousAt_neg.exp
+  · have h_exp : ∀ x, ContinuousAt (fun x => exp (- x)) x := fun x => continuousAt_neg.rexp
     rw [← Ioc_union_Ioi_eq_Ioi zero_le_one, integrableOn_union]
     constructor
     · rw [← integrableOn_Icc_iff_integrableOn_Ioc]
@@ -293,8 +293,8 @@ theorem integral_gaussian_complex {b : ℂ} (hb : 0 < re b) :
       · rw [← ofReal_one, ← ofReal_div]
       · rw [← ofReal_one, ← ofReal_ofNat, ← ofReal_div]
     rw [← ofReal_cpow, ofReal_inj]
-    convert integral_gaussian (1 : ℝ) using 1
-    · rw [sqrt_eq_rpow]
+    · convert integral_gaussian (1 : ℝ) using 1
+      rw [sqrt_eq_rpow]
     · rw [div_one]; exact pi_pos.le
   · -- squares of both sides agree
     dsimp only [Pi.pow_apply]
@@ -338,15 +338,15 @@ theorem integral_gaussian_Ioi (b : ℝ) :
     ∫ x in Ioi (0 : ℝ), exp (-b * x ^ 2) = √(π / b) / 2 := by
   rcases le_or_lt b 0 with (hb | hb)
   · rw [integral_undef, sqrt_eq_zero_of_nonpos, zero_div]
-    exact div_nonpos_of_nonneg_of_nonpos pi_pos.le hb
-    rwa [← IntegrableOn, integrableOn_Ioi_exp_neg_mul_sq_iff, not_lt]
+    · exact div_nonpos_of_nonneg_of_nonpos pi_pos.le hb
+    · rwa [← IntegrableOn, integrableOn_Ioi_exp_neg_mul_sq_iff, not_lt]
   rw [← RCLike.ofReal_inj (K := ℂ), ← integral_ofReal, ← RCLike.algebraMap_eq_ofReal,
     coe_algebraMap]
   convert integral_gaussian_complex_Ioi (by rwa [ofReal_re] : 0 < (b : ℂ).re)
   · simp
   · rw [sqrt_eq_rpow, ← ofReal_div, ofReal_div, ofReal_cpow]
-    norm_num
-    exact (div_pos pi_pos hb).le
+    · norm_num
+    · exact (div_pos pi_pos hb).le
 #align integral_gaussian_Ioi integral_gaussian_Ioi
 
 /-- The special-value formula `Γ(1/2) = √π`, which is equivalent to the Gaussian integral. -/

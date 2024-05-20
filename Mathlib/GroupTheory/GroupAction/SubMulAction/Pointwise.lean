@@ -99,8 +99,7 @@ section Semigroup
 variable [Monoid R] [MulAction R M] [Semigroup M] [IsScalarTower R M M]
 
 -- Porting note: giving the instance the name `semiGroup`
-instance semiGroup : Semigroup (SubMulAction R M)
-    where
+instance semiGroup : Semigroup (SubMulAction R M) where
   mul := (· * ·)
   mul_assoc _ _ _ := SetLike.coe_injective (mul_assoc (_ : Set _) _ _)
 

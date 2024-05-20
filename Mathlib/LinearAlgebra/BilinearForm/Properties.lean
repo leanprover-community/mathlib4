@@ -417,7 +417,7 @@ theorem nondegenerate_iff_ker_eq_bot {B : BilinForm R M} :
 #align bilin_form.nondegenerate_iff_ker_eq_bot LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot
 
 theorem Nondegenerate.ker_eq_bot {B : BilinForm R M} (h : B.Nondegenerate) :
-    LinearMap.ker (BilinForm.toLin B) = ⊥ :=
+    LinearMap.ker B = ⊥ :=
   nondegenerate_iff_ker_eq_bot.mp h
 #align bilin_form.nondegenerate.ker_eq_bot LinearMap.BilinForm.Nondegenerate.ker_eq_bot
 
@@ -507,8 +507,7 @@ lemma dualBasis_dualBasis_flip (B : BilinForm K V) (hB : B.Nondegenerate) {ι}
     B.dualBasis hB (B.flip.dualBasis hB.flip b) = b := by
   ext i
   refine LinearMap.ker_eq_bot.mp hB.ker_eq_bot ((B.flip.dualBasis hB.flip b).ext (fun j ↦ ?_))
-  simp_rw [BilinForm.toLin_apply, apply_dualBasis_left, ← B.flip_apply,
-    apply_dualBasis_left, @eq_comm _ i j]
+  simp_rw [apply_dualBasis_left, ← B.flip_apply, apply_dualBasis_left, @eq_comm _ i j]
 
 @[simp]
 lemma dualBasis_flip_dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) {ι}
@@ -531,7 +530,7 @@ section LinearAdjoints
 is the linear map `B₂.toLin⁻¹ ∘ B₁.toLin`. -/
 noncomputable def symmCompOfNondegenerate (B₁ B₂ : BilinForm K V) (b₂ : B₂.Nondegenerate) :
     V →ₗ[K] V :=
-  (B₂.toDual b₂).symm.toLinearMap.comp (BilinForm.toLin B₁)
+  (B₂.toDual b₂).symm.toLinearMap.comp B₁
 #align bilin_form.symm_comp_of_nondegenerate LinearMap.BilinForm.symmCompOfNondegenerate
 
 theorem comp_symmCompOfNondegenerate_apply (B₁ : BilinForm K V) {B₂ : BilinForm K V}
@@ -540,7 +539,6 @@ theorem comp_symmCompOfNondegenerate_apply (B₁ : BilinForm K V) {B₂ : BilinF
   erw [symmCompOfNondegenerate]
   simp only [coe_comp, LinearEquiv.coe_coe, Function.comp_apply, DFunLike.coe_fn_eq]
   erw [LinearEquiv.apply_symm_apply (B₂.toDual b₂)]
-  rfl
 #align bilin_form.comp_symm_comp_of_nondegenerate_apply LinearMap.BilinForm.comp_symmCompOfNondegenerate_apply
 
 @[simp]

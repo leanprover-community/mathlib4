@@ -151,7 +151,7 @@ theorem evariance_eq_zero_iff (hX : AEMeasurable X μ) :
       using hω
   · rw [hω]
     simp
-  · measurability
+  · exact (hX.sub_const _).ennnorm.pow_const _ -- TODO `measurability` and `fun_prop` fail
 #align probability_theory.evariance_eq_zero_iff ProbabilityTheory.evariance_eq_zero_iff
 
 theorem evariance_mul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
@@ -221,12 +221,12 @@ theorem variance_le_expectation_sq [@IsProbabilityMeasure Ω _ ℙ] {X : Ω → 
   · rw [variance_def' hX]
     simp only [sq_nonneg, sub_le_self_iff]
   rw [variance, evariance_eq_lintegral_ofReal, ← integral_eq_lintegral_of_nonneg_ae]
-  by_cases hint : Integrable X; swap
-  · simp only [integral_undef hint, Pi.pow_apply, Pi.sub_apply, sub_zero]
-    exact le_rfl
-  · rw [integral_undef]
-    · exact integral_nonneg fun a => sq_nonneg _
-    · intro h
+  · by_cases hint : Integrable X; swap
+    · simp only [integral_undef hint, Pi.pow_apply, Pi.sub_apply, sub_zero]
+      exact le_rfl
+    · rw [integral_undef]
+      · exact integral_nonneg fun a => sq_nonneg _
+      intro h
       have A : Memℒp (X - fun ω : Ω => 𝔼[X]) 2 ℙ :=
         (memℒp_two_iff_integrable_sq (hint.aestronglyMeasurable.sub aestronglyMeasurable_const)).2 h
       have B : Memℒp (fun _ : Ω => 𝔼[X]) 2 ℙ := memℒp_const _
@@ -350,8 +350,8 @@ theorem IndepFun.variance_sum [@IsProbabilityMeasure Ω _ ℙ] {ι : Type*} {X :
         variance_def' (memℒp_finset_sum' _ fun i hi => hs _ (mem_insert_of_mem hi))]
       ring
     _ = Var[X k] + Var[∑ i in s, X i] := by
-      simp only [mul_assoc, integral_mul_left, Pi.mul_apply, Pi.one_apply, sum_apply,
-        add_right_eq_self, mul_sum]
+      simp_rw [Pi.mul_apply, Pi.ofNat_apply, Nat.cast_ofNat, sum_apply, mul_sum, mul_assoc,
+        add_right_eq_self]
       rw [integral_finset_sum s fun i hi => ?_]; swap
       · apply Integrable.const_mul _ (2 : ℝ)
         apply IndepFun.integrable_mul _ (Memℒp.integrable one_le_two (hs _ (mem_insert_self _ _)))
@@ -362,8 +362,6 @@ theorem IndepFun.variance_sum [@IsProbabilityMeasure Ω _ ℙ] {ι : Type*} {X :
           Memℒp.integrable one_le_two (hs _ (mem_insert_of_mem hi)),
         mul_sum, mul_sum, ← sum_sub_distrib]
       apply Finset.sum_eq_zero fun i hi => ?_
-      have : ∀ (a : Ω), @OfNat.ofNat (Ω → ℝ) 2 instOfNatAtLeastTwo a = (2 : ℝ) := fun a => rfl
-      conv_lhs => enter [1, 2, a]; rw [this]
       rw [integral_mul_left, IndepFun.integral_mul', sub_self]
       · apply h (mem_insert_self _ _) (mem_insert_of_mem hi)
         exact fun hki => ks (hki.symm ▸ hi)

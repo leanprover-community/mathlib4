@@ -434,8 +434,8 @@ namespace ModularForm
 section GradedRing
 
 /-- Cast for modular forms, which is useful for avoiding `Heq`s. -/
-def mcast {a b : ℤ} {Γ : Subgroup SL(2, ℤ)} (h : a = b) (f : ModularForm Γ a) : ModularForm Γ b
-    where
+def mcast {a b : ℤ} {Γ : Subgroup SL(2, ℤ)} (h : a = b) (f : ModularForm Γ a) :
+    ModularForm Γ b where
   toFun := (f : ℍ → ℂ)
   slash_action_eq' A := h ▸ f.slash_action_eq' A
   holo' := f.holo'

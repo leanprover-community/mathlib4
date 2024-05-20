@@ -35,8 +35,7 @@ variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 variable {p q r : R[X]}
 
 /-- Note that this instance also provides `Algebra R R[X]`. -/
-instance algebraOfAlgebra : Algebra R A[X]
-    where
+instance algebraOfAlgebra : Algebra R A[X] where
   smul_def' r p :=
     toFinsupp_injective <| by
       dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply]
@@ -50,6 +49,7 @@ instance algebraOfAlgebra : Algebra R A[X]
   toRingHom := C.comp (algebraMap R A)
 #align polynomial.algebra_of_algebra Polynomial.algebraOfAlgebra
 
+@[simp]
 theorem algebraMap_apply (r : R) : algebraMap R A[X] r = C (algebraMap R A r) :=
   rfl
 #align polynomial.algebra_map_apply Polynomial.algebraMap_apply
@@ -75,6 +75,10 @@ theorem C_eq_algebraMap (r : R) : C r = algebraMap R R[X] r :=
 set_option linter.uppercaseLean3 false in
 #align polynomial.C_eq_algebra_map Polynomial.C_eq_algebraMap
 
+@[simp]
+theorem algebraMap_eq : algebraMap R R[X] = C :=
+  rfl
+
 /-- `Polynomial.C` as an `AlgHom`. -/
 @[simps! apply]
 def CAlgHom : A →ₐ[R] A[X] where
@@ -99,8 +103,7 @@ implementation detail, but it can be useful to transfer results from `Finsupp` t
 def toFinsuppIsoAlg : R[X] ≃ₐ[R] R[ℕ] :=
   { toFinsuppIso R with
     commutes' := fun r => by
-      dsimp
-      exact toFinsupp_algebraMap _ }
+      dsimp }
 #align polynomial.to_finsupp_iso_alg Polynomial.toFinsuppIsoAlg
 
 variable {R}
@@ -450,12 +453,10 @@ theorem aevalTower_comp_C : (aevalTower g y : R[X] →+* A').comp C = g :=
 set_option linter.uppercaseLean3 false in
 #align polynomial.aeval_tower_comp_C Polynomial.aevalTower_comp_C
 
-@[simp]
 theorem aevalTower_algebraMap (x : R) : aevalTower g y (algebraMap R R[X] x) = g x :=
   eval₂_C _ _
 #align polynomial.aeval_tower_algebra_map Polynomial.aevalTower_algebraMap
 
-@[simp]
 theorem aevalTower_comp_algebraMap : (aevalTower g y : R[X] →+* A').comp (algebraMap R R[X]) = g :=
   aevalTower_comp_C _ _
 #align polynomial.aeval_tower_comp_algebra_map Polynomial.aevalTower_comp_algebraMap

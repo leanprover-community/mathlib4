@@ -101,8 +101,8 @@ theorem ack_three (n : ℕ) : ack 3 n = 2 ^ (n + 3) - 3 := by
         Nat.mul_sub_left_distrib, ← Nat.sub_add_comm, two_mul 3, Nat.add_sub_add_right]
     have H : 2 * 3 ≤ 2 * 2 ^ 3 := by norm_num
     apply H.trans
-    set_option simprocs false in
-    simp [pow_le_pow_right (show 1 ≤ 2 by norm_num)]
+    rw [_root_.mul_le_mul_left two_pos]
+    exact pow_le_pow_right one_le_two (Nat.le_add_left 3 n)
 #align ack_three ack_three
 
 theorem ack_pos : ∀ m n, 0 < ack m n
@@ -251,7 +251,7 @@ theorem ack_le_ack {m₁ m₂ n₁ n₂ : ℕ} (hm : m₁ ≤ m₂) (hn : n₁ �
 theorem ack_succ_right_le_ack_succ_left (m n : ℕ) : ack m (n + 1) ≤ ack (m + 1) n := by
   cases' n with n n
   · simp
-  · rw [ack_succ_succ, succ_eq_add_one]
+  · rw [ack_succ_succ]
     apply ack_mono_right m (le_trans _ <| add_add_one_le_ack _ n)
     omega
 #align ack_succ_right_le_ack_succ_left ack_succ_right_le_ack_succ_left
@@ -262,7 +262,7 @@ private theorem sq_le_two_pow_add_one_minus_three (n : ℕ) : n ^ 2 ≤ 2 ^ (n +
   · norm_num
   · cases' k with k k
     · norm_num
-    · rw [succ_eq_add_one, add_sq, Nat.pow_succ 2, mul_comm _ 2, two_mul (2 ^ _),
+    · rw [add_sq, Nat.pow_succ 2, mul_comm _ 2, two_mul (2 ^ _),
           add_tsub_assoc_of_le, add_comm (2 ^ _), add_assoc]
       · apply Nat.add_le_add hk
         norm_num

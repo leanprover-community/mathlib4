@@ -236,8 +236,7 @@ variable {σ}
 def mvPolynomialEquivMvPolynomial [CommSemiring S₃] (f : MvPolynomial S₁ R →+* MvPolynomial S₂ S₃)
     (g : MvPolynomial S₂ S₃ →+* MvPolynomial S₁ R) (hfgC : (f.comp g).comp C = C)
     (hfgX : ∀ n, f (g (X n)) = X n) (hgfC : (g.comp f).comp C = C) (hgfX : ∀ n, g (f (X n)) = X n) :
-    MvPolynomial S₁ R ≃+* MvPolynomial S₂ S₃
-    where
+    MvPolynomial S₁ R ≃+* MvPolynomial S₂ S₃ where
   toFun := f
   invFun := g
   left_inv := is_id (RingHom.comp _ _) hgfC hgfX
@@ -287,7 +286,7 @@ polynomials with coefficients in `MvPolynomial S₁ R`.
 def optionEquivLeft : MvPolynomial (Option S₁) R ≃ₐ[R] Polynomial (MvPolynomial S₁ R) :=
   AlgEquiv.ofAlgHom (MvPolynomial.aeval fun o => o.elim Polynomial.X fun s => Polynomial.C (X s))
     (Polynomial.aevalTower (MvPolynomial.rename some) (X none))
-    (by ext : 2 <;> simp [← Polynomial.C_eq_algebraMap]) (by ext i : 2; cases i <;> simp)
+    (by ext : 2 <;> simp) (by ext i : 2; cases i <;> simp)
 #align mv_polynomial.option_equiv_left MvPolynomial.optionEquivLeft
 
 end

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Chris Hughes
 -/
 import Mathlib.Algebra.GeomSum
-import Mathlib.Algebra.Polynomial.RingDivision
+import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
 #align_import ring_theory.integral_domain from "leanprover-community/mathlib"@"6e70e0d419bf686784937d64ed4bfde866ff229e"
@@ -95,9 +95,11 @@ variable [Ring R] [IsDomain R] [Fintype R]
 /-- Every finite domain is a division ring. More generally, they are fields; this can be found in
 `Mathlib.RingTheory.LittleWedderburn`. -/
 def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableEq R] [Fintype R] :
-    DivisionRing R :=
-  { show GroupWithZero R from Fintype.groupWithZeroOfCancel R, ‹Ring R› with
-    qsmul := qsmulRec _}
+    DivisionRing R where
+  __ := Fintype.groupWithZeroOfCancel R
+  __ := ‹Ring R›
+  nnqsmul := _
+  qsmul := _
 #align fintype.division_ring_of_is_domain Fintype.divisionRingOfIsDomain
 
 /-- Every finite commutative domain is a field. More generally, commutativity is not required: this

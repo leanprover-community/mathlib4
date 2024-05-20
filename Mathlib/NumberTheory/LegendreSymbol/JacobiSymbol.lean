@@ -374,7 +374,8 @@ theorem even_odd {a : ℤ} {b : ℕ} (ha2 : a % 2 = 0) (hb2 : b % 2 = 1) :
     if_neg (Nat.mod_two_ne_zero.mpr hb2)]
   have := Nat.mod_lt b (by decide : 0 < 8)
   interval_cases h : b % 8 <;> simp_all <;>
-    exact absurd (hb2 ▸ h ▸ Nat.mod_mod_of_dvd b (by decide : 2 ∣ 8)) zero_ne_one
+  · have := hb2 ▸ h ▸ Nat.mod_mod_of_dvd b (by decide : 2 ∣ 8)
+    simp_all
 
 end jacobiSym
 
@@ -441,7 +442,7 @@ theorem quadratic_reciprocity' {a b : ℕ} (ha : Odd a) (hb : Odd b) :
   -- define the right hand side for fixed `a` as a `ℕ →* ℤ`
   let rhs : ℕ → ℕ →* ℤ := fun a =>
     { toFun := fun x => qrSign x a * J(x | a)
-      map_one' := by convert ← mul_one (M := ℤ) _; symm; all_goals apply one_left
+      map_one' := by convert ← mul_one (M := ℤ) _; (on_goal 1 => symm); all_goals apply one_left
       map_mul' := fun x y => by
         -- Porting note: `simp_rw` on line 423 replaces `rw` to allow the rewrite rules to be
         -- applied under the binder `fun ↦ ...`
@@ -506,12 +507,13 @@ theorem mod_right' (a : ℕ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * 
   rw [Nat.cast_mul, mul_left, mul_left, quadratic_reciprocity' ha₁ hb,
     quadratic_reciprocity' ha₁ hb', Nat.cast_pow, pow_left, pow_left, Nat.cast_two, at_two hb,
     at_two hb']
-  congr 1; swap; congr 1
-  · simp_rw [qrSign]
-    rw [χ₄_nat_mod_four, χ₄_nat_mod_four (b % (4 * a)), mod_mod_of_dvd b (dvd_mul_right 4 a)]
-  · rw [mod_left ↑(b % _), mod_left b, Int.natCast_mod, Int.emod_emod_of_dvd b]
-    simp only [ha₂, Nat.cast_mul, ← mul_assoc]
-    apply dvd_mul_left
+  congr 1; swap;
+  · congr 1
+    · simp_rw [qrSign]
+      rw [χ₄_nat_mod_four, χ₄_nat_mod_four (b % (4 * a)), mod_mod_of_dvd b (dvd_mul_right 4 a)]
+    · rw [mod_left ↑(b % _), mod_left b, Int.natCast_mod, Int.emod_emod_of_dvd b]
+      simp only [ha₂, Nat.cast_mul, ← mul_assoc]
+      apply dvd_mul_left
   -- Porting note: In mathlib3, it was written `cases' e`. In Lean 4, this resulted in the choice
   -- of a name other than e (for the case distinction of line 482) so we indicate the name
   -- to use explicitly.

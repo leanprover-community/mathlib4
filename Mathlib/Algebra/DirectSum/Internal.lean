@@ -187,7 +187,7 @@ theorem coe_of_mul_apply_aux [AddMonoid ι] [SetLike.GradedMonoid A] {i : ι} (r
       exact DFinsupp.sum_zero
     simp_rw [DFinsupp.sum, H, Finset.sum_ite_eq']
     split_ifs with h
-    rfl
+    · rfl
     rw [DFinsupp.not_mem_support_iff.mp h, ZeroMemClass.coe_zero, mul_zero]
 #align direct_sum.coe_of_mul_apply_aux DirectSum.coe_of_mul_apply_aux
 
@@ -202,7 +202,7 @@ theorem coe_mul_of_apply_aux [AddMonoid ι] [SetLike.GradedMonoid A] (r : ⨁ i,
       exact DFinsupp.sum_zero
     simp_rw [DFinsupp.sum, H, Finset.sum_ite_eq']
     split_ifs with h
-    rfl
+    · rfl
     rw [DFinsupp.not_mem_support_iff.mp h, ZeroMemClass.coe_zero, zero_mul]
 #align direct_sum.coe_mul_of_apply_aux DirectSum.coe_mul_of_apply_aux
 

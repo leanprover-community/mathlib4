@@ -443,7 +443,8 @@ theorem IsWeightedHomogeneous.weightedHomogeneousComponent_same {m : M} {p : MvP
   rw [coeff_weightedHomogeneousComponent]
   by_cases zero_coeff : coeff x p = 0
   · split_ifs
-    rfl; rw [zero_coeff]
+    · rfl
+    rw [zero_coeff]
   · rw [hp zero_coeff, if_pos]; rfl
 
 theorem IsWeightedHomogeneous.weightedHomogeneousComponent_ne {m : M} (n : M)
@@ -455,8 +456,11 @@ theorem IsWeightedHomogeneous.weightedHomogeneousComponent_ne {m : M} (n : M)
   rw [coeff_weightedHomogeneousComponent]
   by_cases zero_coeff : coeff x p = 0
   · split_ifs
-    rw [zero_coeff]; rw [coeff_zero]; rw [coeff_zero]
-  · rw [if_neg]; rw [coeff_zero]; rw [hp zero_coeff]; exact Ne.symm hn
+    · rw [zero_coeff]; rw [coeff_zero]
+    · rw [coeff_zero]
+  · rw [if_neg]
+    · rw [coeff_zero]
+    · rw [hp zero_coeff]; exact Ne.symm hn
 
 /-- The weighted homogeneous components of a weighted homogeneous polynomial. -/
 theorem weightedHomogeneousComponent_weighted_homogeneous_polynomial [DecidableEq M] (m n : M)

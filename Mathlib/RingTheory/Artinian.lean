@@ -191,7 +191,8 @@ theorem IsArtinian.finite_of_linearIndependent [Nontrivial R] [IsArtinian R M] {
     rw [le_antisymm_iff, ← this y x, ← this x y]
     exact fun ⟨h₁, h₂⟩ => le_antisymm_iff.2 ⟨h₂, h₁⟩⟩, by
     intro a b
-    conv_rhs => rw [GT.gt, lt_iff_le_not_le, this, this, ← lt_iff_le_not_le]⟩
+    conv_rhs => rw [GT.gt, lt_iff_le_not_le, this, this, ← lt_iff_le_not_le]
+    rfl⟩
 #align is_artinian.finite_of_linear_independent IsArtinian.finite_of_linearIndependent
 
 /-- A module is Artinian iff every nonempty set of submodules has a minimal submodule among them. -/
@@ -358,8 +359,7 @@ end CommRing
 
 Strictly speaking, this should be called `IsLeftArtinianRing` but we omit the `Left` for
 convenience in the commutative case. For a right Artinian ring, use `IsArtinian Rᵐᵒᵖ R`. -/
-@[reducible]
-def IsArtinianRing (R) [Ring R] :=
+abbrev IsArtinianRing (R) [Ring R] :=
   IsArtinian R R
 #align is_artinian_ring IsArtinianRing
 

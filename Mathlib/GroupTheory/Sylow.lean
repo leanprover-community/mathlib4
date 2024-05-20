@@ -533,7 +533,7 @@ def fixedPointsMulLeftCosetsEquivQuotient (H : Subgroup G) [Finite (H : Set G)] 
     (fun a => (@mem_fixedPoints_mul_left_cosets_iff_mem_normalizer _ _ _ ‹_› _).symm)
     (by
       intros
-      dsimp only [instHasEquiv]
+      unfold_projs
       rw [leftRel_apply (α := normalizer H), leftRel_apply]
       rfl)
 #align sylow.fixed_points_mul_left_cosets_equiv_quotient Sylow.fixedPointsMulLeftCosetsEquivQuotient
@@ -559,6 +559,7 @@ theorem card_normalizer_modEq_card [Fintype G] {p : ℕ} {n : ℕ} [hp : Fact p.
   exact (card_quotient_normalizer_modEq_card_quotient hH).mul_right' _
 #align sylow.card_normalizer_modeq_card Sylow.card_normalizer_modEq_card
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- If `H` is a `p`-subgroup but not a Sylow `p`-subgroup, then `p` divides the
   index of `H` inside its normalizer. -/
 theorem prime_dvd_card_quotient_normalizer [Fintype G] {p : ℕ} {n : ℕ} [hp : Fact p.Prime]
@@ -584,6 +585,7 @@ theorem prime_pow_dvd_card_normalizer [Fintype G] {p : ℕ} {n : ℕ} [_hp : Fac
   Nat.modEq_zero_iff_dvd.1 ((card_normalizer_modEq_card hH).trans hdvd.modEq_zero_nat)
 #align sylow.prime_pow_dvd_card_normalizer Sylow.prime_pow_dvd_card_normalizer
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- If `H` is a subgroup of `G` of cardinality `p ^ n`,
   then `H` is contained in a subgroup of cardinality `p ^ (n + 1)`
   if `p ^ (n + 1)` divides the cardinality of `G` -/
@@ -728,8 +730,7 @@ theorem card_eq_multiplicity [Fintype G] {p : ℕ} [hp : Fact p.Prime] (P : Sylo
 /-- A subgroup with cardinality `p ^ n` is a Sylow subgroup
  where `n` is the multiplicity of `p` in the group order. -/
 def ofCard [Fintype G] {p : ℕ} [Fact p.Prime] (H : Subgroup G) [Fintype H]
-    (card_eq : card H = p ^ (card G).factorization p) : Sylow p G
-    where
+    (card_eq : card H = p ^ (card G).factorization p) : Sylow p G where
   toSubgroup := H
   isPGroup' := IsPGroup.of_card card_eq
   is_maximal' := by
@@ -825,8 +826,8 @@ noncomputable def directProductOfNormal [Fintype G]
     apply IsPGroup.disjoint_of_ne p₁ p₂ hne' _ _ (P p₁).isPGroup' (P p₂).isPGroup'
   refine' MulEquiv.trans (N := ∀ p : ps, P p) _ _
   -- There is only one Sylow subgroup for each p, so the inner product is trivial
-  show (∀ p : ps, ∀ P : Sylow p G, P) ≃* ∀ p : ps, P p
-  · -- here we need to help the elaborator with an explicit instantiation
+  · show (∀ p : ps, ∀ P : Sylow p G, P) ≃* ∀ p : ps, P p
+    -- here we need to help the elaborator with an explicit instantiation
     apply @MulEquiv.piCongrRight ps (fun p => ∀ P : Sylow p G, P) (fun p => P p) _ _
     rintro ⟨p, hp⟩
     haveI hp' := Fact.mk (Nat.prime_of_mem_primeFactors hp)
@@ -836,16 +837,16 @@ noncomputable def directProductOfNormal [Fintype G]
   apply MulEquiv.ofBijective (Subgroup.noncommPiCoprod hcomm)
   apply (bijective_iff_injective_and_card _).mpr
   constructor
-  show Injective _
-  · apply Subgroup.injective_noncommPiCoprod_of_independent
+  · show Injective _
+    apply Subgroup.injective_noncommPiCoprod_of_independent
     apply independent_of_coprime_order hcomm
     rintro ⟨p₁, hp₁⟩ ⟨p₂, hp₂⟩ hne
     haveI hp₁' := Fact.mk (Nat.prime_of_mem_primeFactors hp₁)
     haveI hp₂' := Fact.mk (Nat.prime_of_mem_primeFactors hp₂)
     have hne' : p₁ ≠ p₂ := by simpa using hne
     apply IsPGroup.coprime_card_of_ne p₁ p₂ hne' _ _ (P p₁).isPGroup' (P p₂).isPGroup'
-  show card (∀ p : ps, P p) = card G
-  · calc
+  · show card (∀ p : ps, P p) = card G
+    calc
       card (∀ p : ps, P p) = ∏ p : ps, card (P p) := Fintype.card_pi
       _ = ∏ p : ps, p.1 ^ (card G).factorization p.1 := by
         congr 1 with ⟨p, hp⟩

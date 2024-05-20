@@ -207,7 +207,7 @@ instance forget_reflects_iso : (forget X).ReflectsIsomorphisms where
 #align category_theory.over.forget_reflects_iso CategoryTheory.Over.forget_reflects_iso
 
 /-- The identity over `X` is terminal. -/
-def mkIdTerminal : Limits.IsTerminal (mk (𝟙 X)) :=
+noncomputable def mkIdTerminal : Limits.IsTerminal (mk (𝟙 X)) :=
   CostructuredArrow.mkIdTerminal
 
 instance forget_faithful : (forget X).Faithful where
@@ -256,24 +256,21 @@ variable (f : Over X)
 
 /-- Given f : Y ⟶ X, this is the obvious functor from (T/X)/f to T/Y -/
 @[simps]
-def iteratedSliceForward : Over f ⥤ Over f.left
-    where
+def iteratedSliceForward : Over f ⥤ Over f.left where
   obj α := Over.mk α.hom.left
   map κ := Over.homMk κ.left.left (by dsimp; rw [← Over.w κ]; rfl)
 #align category_theory.over.iterated_slice_forward CategoryTheory.Over.iteratedSliceForward
 
 /-- Given f : Y ⟶ X, this is the obvious functor from T/Y to (T/X)/f -/
 @[simps]
-def iteratedSliceBackward : Over f.left ⥤ Over f
-    where
+def iteratedSliceBackward : Over f.left ⥤ Over f where
   obj g := mk (homMk g.hom : mk (g.hom ≫ f.hom) ⟶ f)
   map α := homMk (homMk α.left (w_assoc α f.hom)) (OverMorphism.ext (w α))
 #align category_theory.over.iterated_slice_backward CategoryTheory.Over.iteratedSliceBackward
 
 /-- Given f : Y ⟶ X, we have an equivalence between (T/X)/f and T/Y -/
 @[simps]
-def iteratedSliceEquiv : Over f ≌ Over f.left
-    where
+def iteratedSliceEquiv : Over f ≌ Over f.left where
   functor := iteratedSliceForward f
   inverse := iteratedSliceBackward f
   unitIso := NatIso.ofComponents (fun g => Over.isoMk (Over.isoMk (Iso.refl _)))
@@ -298,8 +295,7 @@ variable {D : Type u₂} [Category.{v₂} D]
 
 /-- A functor `F : T ⥤ D` induces a functor `Over X ⥤ Over (F.obj X)` in the obvious way. -/
 @[simps]
-def post (F : T ⥤ D) : Over X ⥤ Over (F.obj X)
-    where
+def post (F : T ⥤ D) : Over X ⥤ Over (F.obj X) where
   obj Y := mk <| F.map Y.hom
   map f := Over.homMk (F.map f.left)
     (by simp only [Functor.id_obj, mk_left, Functor.const_obj_obj, mk_hom, ← F.map_comp, w])
@@ -329,9 +325,9 @@ instance (F : D ⥤ T) (X : T) [F.EssSurj] : (toOver F X).EssSurj :=
   show (CostructuredArrow.pre _ _ _).EssSurj from inferInstance
 
 /-- An equivalence `F` induces an equivalence `CostructuredArrow F X ≌ Over X`. -/
-noncomputable def isEquivalenceToOver (F : D ⥤ T) (X : T) [F.IsEquivalence] :
+instance isEquivalence_toOver (F : D ⥤ T) (X : T) [F.IsEquivalence] :
     (toOver F X).IsEquivalence :=
-  CostructuredArrow.isEquivalencePre _ _ _
+  CostructuredArrow.isEquivalence_pre _ _ _
 
 end CostructuredArrow
 
@@ -490,7 +486,7 @@ instance forget_reflects_iso : (forget X).ReflectsIsomorphisms where
 #align category_theory.under.forget_reflects_iso CategoryTheory.Under.forget_reflects_iso
 
 /-- The identity under `X` is initial. -/
-def mkIdInitial : Limits.IsInitial (mk (𝟙 X)) :=
+noncomputable def mkIdInitial : Limits.IsInitial (mk (𝟙 X)) :=
   StructuredArrow.mkIdInitial
 
 instance forget_faithful : (forget X).Faithful where
@@ -567,9 +563,9 @@ instance (X : T) (F : D ⥤ T) [F.EssSurj] : (toUnder X F).EssSurj :=
   show (StructuredArrow.pre _ _ _).EssSurj from inferInstance
 
 /-- An equivalence `F` induces an equivalence `StructuredArrow X F ≌ Under X`. -/
-noncomputable def isEquivalenceToUnder (X : T) (F : D ⥤ T) [F.IsEquivalence] :
+instance isEquivalence_toUnder (X : T) (F : D ⥤ T) [F.IsEquivalence] :
     (toUnder X F).IsEquivalence :=
-  StructuredArrow.isEquivalencePre _ _ _
+  StructuredArrow.isEquivalence_pre _ _ _
 
 end StructuredArrow
 

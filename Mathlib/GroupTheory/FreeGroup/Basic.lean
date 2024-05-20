@@ -3,10 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.List.Sublists
 import Mathlib.Data.List.InsertNth
-import Mathlib.GroupTheory.Subgroup.Basic
 
 #align_import group_theory.free_group from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
 
@@ -985,8 +985,7 @@ end Sum
 /-- The bijection between the free group on the empty type, and a type with one element. -/
 @[to_additive "The bijection between the additive free group on the empty type, and a type with one
   element."]
-def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit
-    where
+def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit where
   toFun _ := ()
   invFun _ := 1
   left_inv := by rintro ⟨_ | ⟨⟨⟨⟩, _⟩, _⟩⟩; rfl
@@ -995,8 +994,7 @@ def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit
 #align free_add_group.free_add_group_empty_equiv_add_unit FreeAddGroup.freeAddGroupEmptyEquivAddUnit
 
 /-- The bijection between the free group on a singleton, and the integers. -/
-def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ
-    where
+def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ where
   toFun x := sum (by
     revert x
     change (FreeGroup Unit →* FreeGroup ℤ)
@@ -1172,11 +1170,7 @@ theorem reduce.not {p : Prop} :
       simp? [List.length] at this says
         simp only [List.length, zero_add, List.length_append] at this
       rw [add_comm, add_assoc, add_assoc, add_comm, <-add_assoc] at this
-      simp [Nat.one_eq_succ_zero, Nat.succ_add] at this
-      -- Porting note: needed to add this step in #3414.
-      -- This is caused by https://github.com/leanprover/lean4/pull/2146.
-      -- Nevertheless the proof could be cleaned up.
-      cases this
+      omega
     | cons hd tail =>
       cases' hd with y c
       dsimp only

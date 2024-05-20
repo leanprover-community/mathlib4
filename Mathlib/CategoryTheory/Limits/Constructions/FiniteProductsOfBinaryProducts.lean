@@ -58,8 +58,8 @@ def extendFan {n : ℕ} {f : Fin (n + 1) → C} (c₁ : Fan fun i : Fin n => f i
 limit.
 -/
 def extendFanIsLimit {n : ℕ} (f : Fin (n + 1) → C) {c₁ : Fan fun i : Fin n => f i.succ}
-    {c₂ : BinaryFan (f 0) c₁.pt} (t₁ : IsLimit c₁) (t₂ : IsLimit c₂) : IsLimit (extendFan c₁ c₂)
-    where
+    {c₂ : BinaryFan (f 0) c₁.pt} (t₁ : IsLimit c₁) (t₂ : IsLimit c₂) :
+    IsLimit (extendFan c₁ c₂) where
   lift s := by
     apply (BinaryFan.IsLimit.lift' t₂ (s.π.app ⟨0⟩) _).1
     apply t₁.lift ⟨_, Discrete.natTrans fun ⟨i⟩ => s.π.app ⟨i.succ⟩⟩
@@ -140,7 +140,7 @@ noncomputable def preservesFinOfPreservesBinaryAndTerminal :
         (isLimitOfHasBinaryProductOfPreservesLimit F _ _)
     refine' IsLimit.ofIsoLimit this _
     apply Cones.ext _ _
-    apply Iso.refl _
+    · apply Iso.refl _
     rintro ⟨j⟩
     refine Fin.inductionOn j ?_ ?_
     · apply (Category.id_comp _).symm
@@ -280,7 +280,7 @@ noncomputable def preservesFinOfPreservesBinaryAndInitial :
         (isColimitOfHasBinaryCoproductOfPreservesColimit F _ _)
     refine' IsColimit.ofIsoColimit this _
     apply Cocones.ext _ _
-    apply Iso.refl _
+    · apply Iso.refl _
     rintro ⟨j⟩
     refine Fin.inductionOn j ?_ ?_
     · apply Category.comp_id

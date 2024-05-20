@@ -611,7 +611,7 @@ theorem nhds_nhdsAdjoint_same (a : α) (f : Filter α) :
     exact IsOpen.mem_nhds (fun _ ↦ htf) hat
   · exact sup_le (pure_le_nhds _) ((gc_nhds a).le_u_l f)
 
-@[deprecated] -- Since 2024/02/10
+@[deprecated] -- Since 2024-02-10
 alias nhdsAdjoint_nhds := nhds_nhdsAdjoint_same
 #align nhds_adjoint_nhds nhdsAdjoint_nhds
 
@@ -620,7 +620,7 @@ theorem nhds_nhdsAdjoint_of_ne {a b : α} (f : Filter α) (h : b ≠ a) :
   let _ := nhdsAdjoint a f
   (isOpen_singleton_iff_nhds_eq_pure _).1 <| isOpen_singleton_nhdsAdjoint f h
 
-@[deprecated nhds_nhdsAdjoint_of_ne] -- Since 2024/02/10
+@[deprecated nhds_nhdsAdjoint_of_ne] -- Since 2024-02-10
 theorem nhdsAdjoint_nhds_of_ne (a : α) (f : Filter α) {b : α} (h : b ≠ a) :
     @nhds α (nhdsAdjoint a f) b = pure b :=
   nhds_nhdsAdjoint_of_ne f h
@@ -894,7 +894,7 @@ theorem nhds_true : 𝓝 True = pure True :=
 
 @[simp]
 theorem nhds_false : 𝓝 False = ⊤ :=
-  TopologicalSpace.nhds_generateFrom.trans <| by simp [@and_comm (_ ∈ _)]
+  TopologicalSpace.nhds_generateFrom.trans <| by simp [@and_comm (_ ∈ _), iInter_and]
 #align nhds_false nhds_false
 
 theorem tendsto_nhds_true {l : Filter α} {p : α → Prop} :

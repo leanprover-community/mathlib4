@@ -5,7 +5,8 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Order.Antichain
 import Mathlib.Order.UpperLower.Basic
-import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Order.RelIso.Set
 
 #align_import order.minimal from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
 
@@ -423,7 +424,17 @@ theorem RelEmbedding.inter_preimage_minimals_eq_of_subset (f : r ↪r s) (h : y 
 
 theorem RelEmbedding.minimals_preimage_eq (f : r ↪r s) (y : Set β) :
     minimals r (f ⁻¹' y) = f ⁻¹' minimals s (y ∩ range f) := by
-  convert (f.inter_preimage_minimals_eq univ y).symm; simp [univ_inter]; simp [inter_comm]
+  convert (f.inter_preimage_minimals_eq univ y).symm
+  · simp [univ_inter]
+  · simp [inter_comm]
+
+theorem RelIso.minimals_preimage_eq (f : r ≃r s) (y : Set β) :
+    minimals r (f ⁻¹' y) = f ⁻¹' (minimals s y) := by
+  convert f.toRelEmbedding.minimals_preimage_eq y; simp
+
+theorem RelIso.maximals_preimage_eq (f : r ≃r s) (y : Set β) :
+    maximals r (f ⁻¹' y) = f ⁻¹' (maximals s y) :=
+  f.swap.minimals_preimage_eq y
 
 theorem inter_maximals_preimage_inter_eq_of_rel_iff_rel_on
     (hf : ∀ ⦃a a'⦄, a ∈ x → a' ∈ x → (r a a' ↔ s (f a) (f a'))) (y : Set β) :
@@ -447,7 +458,9 @@ theorem RelEmbedding.inter_preimage_maximals_eq_of_subset (f : r ↪r s) (h : y 
 
 theorem RelEmbedding.maximals_preimage_eq (f : r ↪r s) (y : Set β) :
     maximals r (f ⁻¹' y) = f ⁻¹' maximals s (y ∩ range f) := by
-  convert (f.inter_preimage_maximals_eq univ y).symm; simp [univ_inter]; simp [inter_comm]
+  convert (f.inter_preimage_maximals_eq univ y).symm
+  · simp [univ_inter]
+  · simp [inter_comm]
 
 end Image
 

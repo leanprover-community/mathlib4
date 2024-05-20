@@ -3,8 +3,9 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Chris Hughes
 -/
-import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Associated
+import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Data.Nat.PartENat
 import Mathlib.Tactic.Linarith
@@ -45,8 +46,7 @@ section Monoid
 variable [Monoid α] [Monoid β]
 
 /-- `multiplicity.Finite a b` indicates that the multiplicity of `a` in `b` is finite. -/
-@[reducible]
-def Finite (a b : α) : Prop :=
+abbrev Finite (a b : α) : Prop :=
   ∃ n : ℕ, ¬a ^ (n + 1) ∣ b
 #align multiplicity.finite multiplicity.Finite
 
@@ -448,8 +448,8 @@ theorem multiplicity_add_of_gt {p a b : α} (h : multiplicity p b < multiplicity
     cases' PartENat.ne_top_iff.mp (PartENat.ne_top_of_lt h) with k hk
     rw [hk]
     rw_mod_cast [multiplicity_lt_iff_not_dvd, dvd_add_right]
-    intro h_dvd
-    · apply multiplicity.is_greatest _ h_dvd
+    · intro h_dvd
+      apply multiplicity.is_greatest _ h_dvd
       rw [hk, ← Nat.succ_eq_add_one]
       norm_cast
       apply Nat.lt_succ_self k
@@ -608,7 +608,7 @@ protected theorem pow' {p a : α} (hp : Prime p) (ha : Finite p a) :
   induction' k with k hk
   · simp [one_right hp.not_unit]
   · have : multiplicity p (a ^ (k + 1)) = multiplicity p (a * a ^ k) := by rw [_root_.pow_succ']
-    rw [succ_eq_add_one, get_eq_get_of_eq _ _ this,
+    rw [get_eq_get_of_eq _ _ this,
       multiplicity.mul' hp, hk, add_mul, one_mul, add_comm]
 #align multiplicity.pow' multiplicity.pow'
 

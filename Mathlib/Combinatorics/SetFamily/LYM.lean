@@ -99,7 +99,6 @@ theorem card_div_choose_le_card_shadow_div_choose (hr : r ≠ 0)
   rw [div_le_div_iff] <;> norm_cast
   · cases' r with r
     · exact (hr rfl).elim
-    rw [Nat.succ_eq_add_one] at *
     rw [tsub_add_eq_add_tsub hr', add_tsub_add_eq_tsub_right] at h𝒜
     apply le_of_mul_le_mul_right _ (pos_iff_ne_zero.2 hr)
     convert Nat.mul_le_mul_right ((Fintype.card α).choose r) h𝒜 using 1
@@ -189,7 +188,6 @@ theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
       zero_eq, zero_add, range_one, ge_iff_le, sum_singleton, nonpos_iff_eq_zero, tsub_zero,
       choose_self, cast_one, div_one, cast_le]
     exact card_le_card (slice_subset_falling _ _)
-  rw [succ_eq_add_one] at *
   rw [sum_range_succ, ← slice_union_shadow_falling_succ,
     card_union_of_disjoint (IsAntichain.disjoint_slice_shadow_falling h𝒜), cast_add, _root_.add_div,
     add_comm]
@@ -234,8 +232,8 @@ theorem IsAntichain.sperner [Fintype α] {𝒜 : Finset (Finset α)}
     suffices (∑ r in Iic (Fintype.card α),
         ((𝒜 # r).card : ℚ) / (Fintype.card α).choose (Fintype.card α / 2)) ≤ 1 by
       rw [← sum_div, ← Nat.cast_sum, div_le_one] at this
-      simp only [cast_le] at this
-      rwa [sum_card_slice] at this
+      · simp only [cast_le] at this
+        rwa [sum_card_slice] at this
       simp only [cast_pos]
       exact choose_pos (Nat.div_le_self _ _)
     rw [Iic_eq_Icc, ← Ico_succ_right, bot_eq_zero, Ico_zero_eq_range]
