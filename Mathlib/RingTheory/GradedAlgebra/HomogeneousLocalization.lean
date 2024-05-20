@@ -301,6 +301,10 @@ open HomogeneousLocalization HomogeneousLocalization.NumDenSameDeg
 
 variable {𝒜} {x}
 
+/--
+Given `a, b ∈ A` of the same degree such that `b ∈ x`, we can construct a homogeneous fraction
+`a / b ∈ Aₓ`.
+-/
 abbrev mk (y : HomogeneousLocalization.NumDenSameDeg 𝒜 x) : HomogeneousLocalization 𝒜 x :=
   Quotient.mk'' y
 
@@ -615,6 +619,12 @@ variable (ℬ : ι → Submodule R B) [GradedAlgebra ℬ]
 variable {P : Submonoid A} {Q : Submonoid B}
 variable [CommRing C]
 
+/--
+Let `A, B` be two graded algebras with the same indexing set and `g : A → B` be a graded algebra
+homomorphism (i.e. `g(Aₘ) ⊆ Bₘ`). Let `P ≤ A` be a submonoid and `Q ≤ B` be a submonoid such that
+`P ≤ g⁻¹ Q`, then `g` induce a map from the homogeneous localizations `A⁰_P` to the homogeneous
+localizations `B⁰_Q`.
+-/
 def map (g : A →+* B)
     (comap_le : P ≤ Q.comap g) (hg : ∀ i, ∀ a ∈ 𝒜 i, g a ∈ ℬ i) :
     HomogeneousLocalization 𝒜 P →+* HomogeneousLocalization ℬ Q where
@@ -634,6 +644,10 @@ def map (g : A →+* B)
   map_one' := by simp only [← mk_one (𝒜 := 𝒜), Quotient.map'_mk'', deg_zero,
     num_one, ZeroMemClass.coe_zero, map_zero, den_one, map_one]; rfl
 
+/--
+Let `A` be a graded algebra and `P ≤ Q` be two submonoids, then the homogeneous localization of `A`
+at `P` embedds into the homogeneous localization of `A` at `Q`.
+-/
 abbrev mapId {P Q : Submonoid A} (h : P ≤ Q) :
     HomogeneousLocalization 𝒜 P →+* HomogeneousLocalization 𝒜 Q :=
   map 𝒜 𝒜 (RingHom.id _) h (fun _ _ ↦ id)
