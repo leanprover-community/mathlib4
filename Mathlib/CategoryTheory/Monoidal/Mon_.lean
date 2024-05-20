@@ -549,7 +549,12 @@ end BraidedCategory
 /-!
 We next show that if `C` is symmetric, then `Mon_ C` is braided, and indeed symmetric.
 
-(Note that `Mon_ C` is *not* braided in general when `C` is only braided.)
+Note that `Mon_ C` is *not* braided in general when `C` is only braided.
+
+The more interesting construction is the 2-category of monoids in `C`,
+bimodules between the monoids, and intertwiners between the bimodules.
+
+When `C` is braided, that is a monoidal 2-category.
 -/
 section SymmetricCategory
 
