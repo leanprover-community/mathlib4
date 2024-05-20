@@ -395,13 +395,6 @@ theorem sgr_alternatingWord_apply_simpleRoot' (i i' : B) (m : ℕ) (hM : M i i' 
     (ρ (π (alternatingWord i i' m))) (α i) = if Even m
       then (m + 1 : ℝ) • (α i) + (m : ℝ) • (α i')
       else (m : ℝ) • (α i) + (m + 1 : ℝ) • (α i') := by
-  have h₁ : (σ i') (α i) = α i + (2 : ℝ) • α i' := by
-    rw [simpleOrthoReflection_simpleRoot, M.symmetric, hM]
-    simp
-  have h₂ : (σ i) (α i') = (2 : ℝ) • α i + α i' := by
-    rw [simpleOrthoReflection_simpleRoot, hM]
-    simp only [Nat.cast_zero, div_zero, cos_zero, mul_one]
-    abel
   induction' m with m ih
   · simp [alternatingWord]
   · rw [alternatingWord_succ', wordProd_cons, map_mul, mul_apply, ih]
@@ -409,15 +402,13 @@ theorem sgr_alternatingWord_apply_simpleRoot' (i i' : B) (m : ℕ) (hM : M i i' 
     rcases em (Even m) with even | not_even
     · have succ_not_even : ¬ Even (Nat.succ m) := by tauto
       simp only [if_pos even, if_neg succ_not_even]
-      simp only [map_add, map_smul, h₁, sgr_simple_apply_simpleRoot_self,
-        sgr_simple_apply_simpleRoot]
+      simp only [map_add, map_smul, sgr_simple_apply_simpleRoot_self, sgr_simple_apply_simpleRoot]
       simp only [M.symmetric i i' ▸ hM, Nat.cast_zero, div_zero, cos_zero]
       rw [Nat.cast_succ, smul_add, smul_smul, smul_neg, ← neg_smul, add_assoc, ← add_smul]
       ring_nf
     · have succ_even : Even (Nat.succ m) := by tauto
       simp only [if_neg not_even, if_pos succ_even]
-      simp only [map_add, map_smul, h₂, sgr_simple_apply_simpleRoot_self,
-        sgr_simple_apply_simpleRoot]
+      simp only [map_add, map_smul, sgr_simple_apply_simpleRoot_self, sgr_simple_apply_simpleRoot]
       simp only [hM, Nat.cast_zero, div_zero, cos_zero]
       rw [Nat.cast_succ, smul_add, smul_smul, smul_neg, ← neg_smul, add_comm (_ • α i'),
         ← add_assoc, ← add_smul]
