@@ -133,8 +133,8 @@ theorem norm_max_aux₁ [CompleteSpace F] {f : ℂ → F} {z w : ℂ}
     rw [le_div_iff hr, norm_smul, norm_inv, norm_eq_abs, hζ, mul_comm, mul_inv_cancel_left₀ hr.ne']
     exact hz (hsub hζ)
   show ‖(w - z)⁻¹ • f w‖ < ‖f z‖ / r
-  · rw [norm_smul, norm_inv, norm_eq_abs, ← div_eq_inv_mul]
-    exact (div_lt_div_right hr).2 hw_lt
+  rw [norm_smul, norm_inv, norm_eq_abs, ← div_eq_inv_mul]
+  exact (div_lt_div_right hr).2 hw_lt
 #align complex.norm_max_aux₁ Complex.norm_max_aux₁
 
 /-!
@@ -371,7 +371,7 @@ theorem exists_mem_frontier_isMaxOn_norm [FiniteDimensional ℂ E] {f : E → F}
     ∃ z ∈ frontier U, IsMaxOn (norm ∘ f) (closure U) z := by
   have hc : IsCompact (closure U) := hb.isCompact_closure
   obtain ⟨w, hwU, hle⟩ : ∃ w ∈ closure U, IsMaxOn (norm ∘ f) (closure U) w :=
-    hc.exists_forall_ge hne.closure hd.continuousOn.norm
+    hc.exists_isMaxOn hne.closure hd.continuousOn.norm
   rw [closure_eq_interior_union_frontier, mem_union] at hwU
   cases' hwU with hwU hwU; rotate_left; · exact ⟨w, hwU, hle⟩
   have : interior U ≠ univ := ne_top_of_le_ne_top hc.ne_univ interior_subset_closure

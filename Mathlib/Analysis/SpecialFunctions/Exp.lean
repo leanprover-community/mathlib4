@@ -3,8 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 -/
-import Mathlib.Analysis.Asymptotics.Theta
-import Mathlib.Analysis.Complex.Basic
+import Mathlib.Analysis.Complex.Asymptotics
 import Mathlib.Analysis.SpecificLimits.Normed
 
 #align_import analysis.special_functions.exp from "leanprover-community/mathlib"@"ba5ff5ad5d120fb0ef094ad2994967e9bfaf5112"
@@ -25,7 +24,7 @@ noncomputable section
 
 open Finset Filter Metric Asymptotics Set Function Bornology
 
-open scoped Classical Topology
+open scoped Classical Topology BigOperators Nat
 
 namespace Complex
 
@@ -78,6 +77,20 @@ theorem continuousOn_exp {s : Set ℂ} : ContinuousOn exp s :=
   continuous_exp.continuousOn
 #align complex.continuous_on_exp Complex.continuousOn_exp
 
+lemma exp_sub_sum_range_isBigO_pow (n : ℕ) :
+    (fun x ↦ exp x - ∑ i in Finset.range n, x ^ i / i !) =O[𝓝 0] (· ^ n) := by
+  rcases (zero_le n).eq_or_lt with rfl | hn
+  · simpa using continuous_exp.continuousAt.norm.isBoundedUnder_le
+  · refine .of_bound (n.succ / (n ! * n)) ?_
+    rw [NormedAddCommGroup.nhds_zero_basis_norm_lt.eventually_iff]
+    refine ⟨1, one_pos, fun x hx ↦ ?_⟩
+    convert exp_bound hx.out.le hn using 1
+    field_simp [mul_comm]
+
+lemma exp_sub_sum_range_succ_isLittleO_pow (n : ℕ) :
+    (fun x ↦ exp x - ∑ i in Finset.range (n + 1), x ^ i / i !) =o[𝓝 0] (· ^ n) :=
+  (exp_sub_sum_range_isBigO_pow (n + 1)).trans_isLittleO <| isLittleO_pow_pow n.lt_succ_self
+
 end Complex
 
 section ComplexContinuousExpComp
@@ -128,6 +141,17 @@ theorem continuousOn_exp {s : Set ℝ} : ContinuousOn exp s :=
   continuous_exp.continuousOn
 #align real.continuous_on_exp Real.continuousOn_exp
 
+lemma exp_sub_sum_range_isBigO_pow (n : ℕ) :
+    (fun x ↦ exp x - ∑ i in Finset.range n, x ^ i / i !) =O[𝓝 0] (· ^ n) := by
+  have := (Complex.exp_sub_sum_range_isBigO_pow n).comp_tendsto
+    (Complex.continuous_ofReal.tendsto' 0 0 rfl)
+  simp only [(· ∘ ·)] at this
+  norm_cast at this
+
+lemma exp_sub_sum_range_succ_isLittleO_pow (n : ℕ) :
+    (fun x ↦ exp x - ∑ i in Finset.range (n + 1), x ^ i / i !) =o[𝓝 0] (· ^ n) :=
+  (exp_sub_sum_range_isBigO_pow (n + 1)).trans_isLittleO <| isLittleO_pow_pow n.lt_succ_self
+
 end Real
 
 section RealContinuousExpComp
@@ -136,34 +160,39 @@ variable {α : Type*}
 
 open Real
 
-theorem Filter.Tendsto.exp {l : Filter α} {f : α → ℝ} {z : ℝ} (hf : Tendsto f l (𝓝 z)) :
+theorem Filter.Tendsto.rexp {l : Filter α} {f : α → ℝ} {z : ℝ} (hf : Tendsto f l (𝓝 z)) :
     Tendsto (fun x => exp (f x)) l (𝓝 (exp z)) :=
   (continuous_exp.tendsto _).comp hf
-#align filter.tendsto.exp Filter.Tendsto.exp
+#align filter.tendsto.exp Filter.Tendsto.rexp
 
 variable [TopologicalSpace α] {f : α → ℝ} {s : Set α} {x : α}
 
 nonrec
-theorem ContinuousWithinAt.exp (h : ContinuousWithinAt f s x) :
-    ContinuousWithinAt (fun y => exp (f y)) s x :=
-  h.exp
-#align continuous_within_at.exp ContinuousWithinAt.exp
+theorem ContinuousWithinAt.rexp (h : ContinuousWithinAt f s x) :
+    ContinuousWithinAt (fun y ↦ exp (f y)) s x :=
+  h.rexp
+#align continuous_within_at.exp ContinuousWithinAt.rexp
+@[deprecated (since := "2024-05-09")] alias ContinuousWithinAt.exp := ContinuousWithinAt.rexp
 
 @[fun_prop]
 nonrec
-theorem ContinuousAt.exp (h : ContinuousAt f x) : ContinuousAt (fun y => exp (f y)) x :=
-  h.exp
-#align continuous_at.exp ContinuousAt.exp
+theorem ContinuousAt.rexp (h : ContinuousAt f x) : ContinuousAt (fun y ↦ exp (f y)) x :=
+  h.rexp
+#align continuous_at.exp ContinuousAt.rexp
+@[deprecated (since := "2024-05-09")] alias ContinuousAt.exp := ContinuousAt.rexp
 
 @[fun_prop]
-theorem ContinuousOn.exp (h : ContinuousOn f s) : ContinuousOn (fun y => exp (f y)) s := fun x hx =>
-  (h x hx).exp
-#align continuous_on.exp ContinuousOn.exp
+theorem ContinuousOn.rexp (h : ContinuousOn f s) :
+    ContinuousOn (fun y ↦ exp (f y)) s :=
+  fun x hx ↦ (h x hx).rexp
+#align continuous_on.exp ContinuousOn.rexp
+@[deprecated (since := "2024-05-09")] alias ContinuousOn.exp := ContinuousOn.rexp
 
 @[fun_prop]
-theorem Continuous.exp (h : Continuous f) : Continuous fun y => exp (f y) :=
-  continuous_iff_continuousAt.2 fun _ => h.continuousAt.exp
-#align continuous.exp Continuous.exp
+theorem Continuous.rexp (h : Continuous f) : Continuous fun y ↦ exp (f y) :=
+  continuous_iff_continuousAt.2 fun _ ↦ h.continuousAt.rexp
+#align continuous.exp Continuous.rexp
+@[deprecated (since := "2024-05-09")] alias Continuous.exp := Continuous.rexp
 
 end RealContinuousExpComp
 
@@ -442,12 +471,14 @@ lemma summable_pow_mul_exp_neg_nat_mul (k : ℕ) {r : ℝ} (hr : 0 < r) :
 
 end Real
 
+open Real in
+/-- If `f` has sum `a`, then `exp ∘ f` has product `exp a`. -/
+lemma HasSum.rexp {ι} {f : ι → ℝ} {a : ℝ} (h : HasSum f a) : HasProd (rexp ∘ f) (rexp a) :=
+  Tendsto.congr (fun s ↦ exp_sum s f) <| Tendsto.rexp h
+
 namespace Complex
 
--- Adaptation note: nightly-2024-04-01
--- The simpNF linter now times out on this lemma.
--- See https://github.com/leanprover-community/mathlib4/issues/12226
-@[simp, nolint simpNF]
+@[simp]
 theorem comap_exp_cobounded : comap exp (cobounded ℂ) = comap re atTop :=
   calc
     comap exp (cobounded ℂ) = comap re (comap Real.exp atTop) := by
@@ -489,3 +520,8 @@ theorem tendsto_exp_comap_re_atBot_nhdsWithin : Tendsto exp (comap re atBot) (�
 #align complex.tendsto_exp_comap_re_at_bot_nhds_within Complex.tendsto_exp_comap_re_atBot_nhdsWithin
 
 end Complex
+
+open Complex in
+/-- If `f` has sum `a`, then `exp ∘ f` has product `exp a`. -/
+lemma HasSum.cexp {ι : Type*} {f : ι → ℂ} {a : ℂ} (h : HasSum f a) : HasProd (cexp ∘ f) (cexp a) :=
+  Filter.Tendsto.congr (fun s ↦ exp_sum s f) <| Filter.Tendsto.cexp h

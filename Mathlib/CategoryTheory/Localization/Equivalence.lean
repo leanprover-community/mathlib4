@@ -52,8 +52,8 @@ lemma equivalence_counitIso_app (X : C₂) :
   rw [comp_id]
 
 /-- Basic constructor of an equivalence between localized categories -/
-noncomputable def isEquivalence : G'.IsEquivalence :=
-  Functor.IsEquivalence.ofEquivalence (equivalence L₁ W₁ L₂ W₂ G G' F F' α β)
+lemma isEquivalence : G'.IsEquivalence :=
+  (equivalence L₁ W₁ L₂ W₂ G G' F F' α β).isEquivalence_functor
 
 end Localization
 
@@ -74,8 +74,8 @@ lemma of_equivalence_source (L₁ : C₁ ⥤ D) (W₁ : MorphismProperty C₁)
       (W₂.Q.mapArrow.mapIso e)).1 (Localization.inverts W₂.Q W₂ _ hf')
   exact
     { inverts := hW₂
-      nonempty_isEquivalence :=
-        ⟨Localization.isEquivalence W₂.Q W₂ L₁ W₁ L₂ (Construction.lift L₂ hW₂)
+      isEquivalence :=
+        Localization.isEquivalence W₂.Q W₂ L₁ W₁ L₂ (Construction.lift L₂ hW₂)
           (E.functor ⋙ W₂.Q) (Localization.lift (E.functor ⋙ W₂.Q) h L₁) (by
             calc
               L₂ ⋙ lift (E.functor ⋙ W₂.Q) h L₁ ≅ _ := (leftUnitor _).symm
@@ -90,7 +90,7 @@ lemma of_equivalence_source (L₁ : C₁ ⥤ D) (W₁ : MorphismProperty C₁)
               _ ≅ (E.inverse ⋙ E.functor) ⋙ W₂.Q := (Functor.associator _ _ _).symm
               _ ≅ 𝟭 C₂ ⋙ W₂.Q := isoWhiskerRight E.counitIso _
               _ ≅ W₂.Q := leftUnitor _)
-          (Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (Lifting.iso W₂.Q W₂ _ _)  ≪≫ iso)⟩ }
+          (Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (Lifting.iso W₂.Q W₂ _ _)  ≪≫ iso) }
 
 /-- If `L₁ : C₁ ⥤ D₁` is a localization functor for `W₁ : MorphismProperty C₁`, then if we
 transport this functor `L₁` via equivalences `C₁ ≌ C₂` and `D₁ ≌ D₂` to get a functor

@@ -154,7 +154,6 @@ lemma hom_ext_of_isLeftKanExtension {G : D ⥤ H} (γ₁ γ₂ : F' ⟶ G)
 
 /-- If `(F', α)` is a left Kan extension of `F` along `L`, then this
 is the induced bijection `(F' ⟶ G) ≃ (F ⟶ L ⋙ G)` for all `G`. -/
-@[pp_dot]
 noncomputable def homEquivOfIsLeftKanExtension (G : D ⥤ H) :
     (F' ⟶ G) ≃ (F ⟶ L ⋙ G) where
   toFun β := α ≫ whiskerLeft _ β
@@ -272,7 +271,7 @@ variable (L L' : C ⥤ D) (iso₁ : L ≅ L') (F F' : C ⥤ H) (e : D ≌ D') (i
 when `e` is an equivalence. -/
 noncomputable def rightExtensionEquivalenceOfPostcomp₁ :
     RightExtension (L ⋙ e.functor) F ≌ RightExtension L F := by
-  have := CostructuredArrow.isEquivalencePre ((whiskeringLeft D D' H).obj e.functor)
+  have := CostructuredArrow.isEquivalence_pre ((whiskeringLeft D D' H).obj e.functor)
     ((whiskeringLeft C D H).obj L) F
   exact Functor.asEquivalence (CostructuredArrow.pre ((whiskeringLeft D D' H).obj e.functor)
     ((whiskeringLeft C D H).obj L) F)
@@ -285,7 +284,7 @@ lemma hasRightExtension_iff_postcomp₁ :
 when `e` is an equivalence. -/
 noncomputable def leftExtensionEquivalenceOfPostcomp₁ :
     LeftExtension (L ⋙ e.functor) F ≌ LeftExtension L F := by
-  have := StructuredArrow.isEquivalencePre F ((whiskeringLeft D D' H).obj e.functor)
+  have := StructuredArrow.isEquivalence_pre F ((whiskeringLeft D D' H).obj e.functor)
     ((whiskeringLeft C D H).obj L)
   exact Functor.asEquivalence (StructuredArrow.pre F ((whiskeringLeft D D' H).obj e.functor)
     ((whiskeringLeft C D H).obj L))

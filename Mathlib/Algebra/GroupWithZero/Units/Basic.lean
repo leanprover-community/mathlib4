@@ -228,22 +228,18 @@ theorem exists0' {p : ∀ g : G₀, g ≠ 0 → Prop} :
 #align units.exists0' Units.exists0'
 
 @[simp]
-theorem exists_iff_ne_zero {x : G₀} : (∃ u : G₀ˣ, ↑u = x) ↔ x ≠ 0 := by simp [exists0]
+theorem exists_iff_ne_zero {p : G₀ → Prop} : (∃ u : G₀ˣ, p u) ↔ ∃ x ≠ 0, p x := by
+  simp [exists0]
 #align units.exists_iff_ne_zero Units.exists_iff_ne_zero
 
 theorem _root_.GroupWithZero.eq_zero_or_unit (a : G₀) : a = 0 ∨ ∃ u : G₀ˣ, a = u := by
-  by_cases h : a = 0
-  · left
-    exact h
-  · right
-    simpa only [eq_comm] using Units.exists_iff_ne_zero.mpr h
+  simpa using em _
 #align group_with_zero.eq_zero_or_unit GroupWithZero.eq_zero_or_unit
 
 end Units
 
 section GroupWithZero
-
-variable [GroupWithZero G₀] {a b c d : G₀}
+variable [GroupWithZero G₀] {a b c d : G₀} {m n : ℕ}
 
 theorem IsUnit.mk0 (x : G₀) (hx : x ≠ 0) : IsUnit x :=
   (Units.mk0 x hx).isUnit
@@ -251,7 +247,7 @@ theorem IsUnit.mk0 (x : G₀) (hx : x ≠ 0) : IsUnit x :=
 
 @[simp]
 theorem isUnit_iff_ne_zero : IsUnit a ↔ a ≠ 0 :=
-  Units.exists_iff_ne_zero
+  (Units.exists_iff_ne_zero (p := (· = a))).trans (by simp)
 #align is_unit_iff_ne_zero isUnit_iff_ne_zero
 
 alias ⟨_, Ne.isUnit⟩ := isUnit_iff_ne_zero
@@ -375,6 +371,7 @@ lemma div_eq_one_iff_eq (hb : b ≠ 0) : a / b = 1 ↔ a = b := hb.isUnit.div_eq
 lemma div_mul_cancel_right₀ (hb : b ≠ 0) (a : G₀) : b / (a * b) = a⁻¹ :=
   hb.isUnit.div_mul_cancel_right _
 
+set_option linter.deprecated false in
 @[deprecated div_mul_cancel_right₀] -- 2024-03-20
 lemma div_mul_left (hb : b ≠ 0) : b / (a * b) = 1 / a := hb.isUnit.div_mul_left
 #align div_mul_left div_mul_left
@@ -405,6 +402,52 @@ lemma mul_div_cancel_of_imp (h : b = 0 → a = 0) : a * b / b = a := by
 
 @[simp] lemma divp_mk0 (a : G₀) (hb : b ≠ 0) : a /ₚ Units.mk0 b hb = a / b := divp_eq_div _ _
 #align divp_mk0 divp_mk0
+
+lemma pow_sub₀ (a : G₀) (ha : a ≠ 0) (h : n ≤ m) : a ^ (m - n) = a ^ m * (a ^ n)⁻¹ := by
+  have h1 : m - n + n = m := Nat.sub_add_cancel h
+  have h2 : a ^ (m - n) * a ^ n = a ^ m := by rw [← pow_add, h1]
+  simpa only [div_eq_mul_inv] using eq_div_of_mul_eq (pow_ne_zero _ ha) h2
+#align pow_sub₀ pow_sub₀
+
+lemma pow_sub_of_lt (a : G₀) (h : n < m) : a ^ (m - n) = a ^ m * (a ^ n)⁻¹ := by
+  obtain rfl | ha := eq_or_ne a 0
+  · rw [zero_pow (Nat.sub_pos_of_lt h).ne', zero_pow (by omega), zero_mul]
+  · exact pow_sub₀ _ ha h.le
+#align pow_sub_of_lt pow_sub_of_lt
+
+lemma inv_pow_sub₀ (ha : a ≠ 0) (h : n ≤ m) : a⁻¹ ^ (m - n) = (a ^ m)⁻¹ * a ^ n := by
+  rw [pow_sub₀ _ (inv_ne_zero ha) h, inv_pow, inv_pow, inv_inv]
+#align inv_pow_sub₀ inv_pow_sub₀
+
+lemma inv_pow_sub_of_lt (a : G₀) (h : n < m) : a⁻¹ ^ (m - n) = (a ^ m)⁻¹ * a ^ n := by
+  rw [pow_sub_of_lt a⁻¹ h, inv_pow, inv_pow, inv_inv]
+#align inv_pow_sub_of_lt inv_pow_sub_of_lt
+
+lemma zpow_sub₀ (ha : a ≠ 0) (m n : ℤ) : a ^ (m - n) = a ^ m / a ^ n := by
+  rw [Int.sub_eq_add_neg, zpow_add₀ ha, zpow_neg, div_eq_mul_inv]
+#align zpow_sub₀ zpow_sub₀
+
+lemma zpow_ne_zero {a : G₀} : ∀ n : ℤ, a ≠ 0 → a ^ n ≠ 0
+  | (_ : ℕ) => by rw [zpow_natCast]; exact pow_ne_zero _
+  | .negSucc n => fun ha ↦ by rw [zpow_negSucc]; exact inv_ne_zero (pow_ne_zero _ ha)
+#align zpow_ne_zero_of_ne_zero zpow_ne_zero
+#align zpow_ne_zero zpow_ne_zero
+
+lemma eq_zero_of_zpow_eq_zero {n : ℤ} : a ^ n = 0 → a = 0 := not_imp_not.1 (zpow_ne_zero _)
+#align zpow_eq_zero eq_zero_of_zpow_eq_zero
+
+@[deprecated (since := "2024-05-07")] alias zpow_ne_zero_of_ne_zero := zpow_ne_zero
+@[deprecated (since := "2024-05-07")] alias zpow_eq_zero := eq_zero_of_zpow_eq_zero
+
+lemma zpow_eq_zero_iff {n : ℤ} (hn : n ≠ 0) : a ^ n = 0 ↔ a = 0 :=
+  ⟨eq_zero_of_zpow_eq_zero, fun ha => ha.symm ▸ zero_zpow _ hn⟩
+#align zpow_eq_zero_iff zpow_eq_zero_iff
+
+lemma zpow_ne_zero_iff {n : ℤ} (hn : n ≠ 0) : a ^ n ≠ 0 ↔ a ≠ 0 := (zpow_eq_zero_iff hn).ne
+
+lemma zpow_neg_mul_zpow_self (n : ℤ) (ha : a ≠ 0) : a ^ (-n) * a ^ n = 1 := by
+  rw [zpow_neg]; exact inv_mul_cancel (zpow_ne_zero n ha)
+#align zpow_neg_mul_zpow_self zpow_neg_mul_zpow_self
 
 theorem Ring.inverse_eq_inv (a : G₀) : Ring.inverse a = a⁻¹ := by
   obtain rfl | ha := eq_or_ne a 0
@@ -441,6 +484,7 @@ instance (priority := 100) CommGroupWithZero.toDivisionCommMonoid :
 lemma div_mul_cancel_left₀ (ha : a ≠ 0) (b : G₀) : a / (a * b) = b⁻¹ :=
   ha.isUnit.div_mul_cancel_left _
 
+set_option linter.deprecated false in
 @[deprecated div_mul_cancel_left₀] -- 2024-03-22
 lemma div_mul_right (b : G₀) (ha : a ≠ 0) : a / (a * b) = 1 / b := ha.isUnit.div_mul_right _
 #align div_mul_right div_mul_right

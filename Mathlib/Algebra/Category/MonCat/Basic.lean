@@ -366,8 +366,7 @@ add_decl_doc addEquivIsoAddMonCatIso
 in `CommMonCat` -/
 @[to_additive addEquivIsoAddCommMonCatIso]
 def mulEquivIsoCommMonCatIso {X Y : Type u} [CommMonoid X] [CommMonoid Y] :
-    X ≃* Y ≅ CommMonCat.of X ≅ CommMonCat.of Y
-    where
+    X ≃* Y ≅ CommMonCat.of X ≅ CommMonCat.of Y where
   hom e := e.toCommMonCatIso
   inv i := i.commMonCatIsoToMulEquiv
 set_option linter.uppercaseLean3 false in

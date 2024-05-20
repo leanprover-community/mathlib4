@@ -324,8 +324,8 @@ instance : Preadditive (ModuleCat.{v} R) where
     erw [map_add]
     rfl
 
-instance forget₂_addCommGroupCat_additive : (forget₂ (ModuleCat.{v} R) AddCommGroupCat).Additive
-    where
+instance forget₂_addCommGroupCat_additive :
+    (forget₂ (ModuleCat.{v} R) AddCommGroupCat).Additive where
 #align Module.forget₂_AddCommGroup_additive ModuleCat.forget₂_addCommGroupCat_additive
 
 section

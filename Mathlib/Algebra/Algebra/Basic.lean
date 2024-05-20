@@ -152,8 +152,7 @@ variable (R)
 
 /-- A `Semiring` that is an `Algebra` over a commutative ring carries a natural `Ring` structure.
 See note [reducible non-instances]. -/
-@[reducible]
-def semiringToRing [Semiring A] [Algebra R A] : Ring A :=
+abbrev semiringToRing [Semiring A] [Algebra R A] : Ring A :=
   { __ := (inferInstance : Semiring A)
     __ := Module.addCommMonoidToAddCommGroup R
     intCast := fun z => algebraMap R A z
