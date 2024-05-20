@@ -132,7 +132,7 @@ universe u
 --   MonoidHom.instFunLike (CategoryStruct.comp (obj := CommGroupCat) (X := CommGroupCat.of G) (Y := CommGroupCat.of H) (Z := CommGroupCat.of K) f g)) = g ∘ f := rfl
 
 
-attribute [simp] CommGroupCat.coe_of
+-- attribute [simp] CommGroupCat.coe_of
 -- attribute [simp] CommGroupCat.comp_def GroupCat.comp_def
 def abelianize : GroupCat.{u} ⥤ CommGroupCat.{u} where
   obj G := CommGroupCat.of (Abelianization G)
