@@ -133,8 +133,8 @@ theorem norm_max_aux₁ [CompleteSpace F] {f : ℂ → F} {z w : ℂ}
     rw [le_div_iff hr, norm_smul, norm_inv, norm_eq_abs, hζ, mul_comm, mul_inv_cancel_left₀ hr.ne']
     exact hz (hsub hζ)
   show ‖(w - z)⁻¹ • f w‖ < ‖f z‖ / r
-  · rw [norm_smul, norm_inv, norm_eq_abs, ← div_eq_inv_mul]
-    exact (div_lt_div_right hr).2 hw_lt
+  rw [norm_smul, norm_inv, norm_eq_abs, ← div_eq_inv_mul]
+  exact (div_lt_div_right hr).2 hw_lt
 #align complex.norm_max_aux₁ Complex.norm_max_aux₁
 
 /-!

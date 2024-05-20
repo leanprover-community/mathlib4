@@ -41,3 +41,12 @@ example : 1 = 2 := by
   simp_rw (config := {zeta := false}) []
   guard_target =ₛ 1 = a
   exact test_sorry
+
+/--
+error: no goals to be solved
+-/
+-- check that `simp_rw` does not "spill over" goals
+#guard_msgs in
+example {n : Nat} (hn : n = 0) : (n = 0) ∧ (n = 0) := by
+  constructor
+  simp_rw [hn, hn]  -- does this work?

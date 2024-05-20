@@ -588,6 +588,7 @@ theorem mem_closedBall_comm : x ∈ closedBall y ε ↔ y ∈ closedBall x ε :=
 theorem mem_sphere_comm : x ∈ sphere y ε ↔ y ∈ sphere x ε := by rw [mem_sphere', mem_sphere]
 #align metric.mem_sphere_comm Metric.mem_sphere_comm
 
+@[gcongr]
 theorem ball_subset_ball (h : ε₁ ≤ ε₂) : ball x ε₁ ⊆ ball x ε₂ := fun _y yx =>
   lt_of_lt_of_le (mem_ball.1 yx) h
 #align metric.ball_subset_ball Metric.ball_subset_ball
@@ -603,6 +604,7 @@ theorem ball_subset_ball' (h : ε₁ + dist x y ≤ ε₂) : ball x ε₁ ⊆ ba
     _ ≤ ε₂ := h
 #align metric.ball_subset_ball' Metric.ball_subset_ball'
 
+@[gcongr]
 theorem closedBall_subset_closedBall (h : ε₁ ≤ ε₂) : closedBall x ε₁ ⊆ closedBall x ε₂ :=
   fun _y (yx : _ ≤ ε₁) => le_trans yx h
 #align metric.closed_ball_subset_closed_ball Metric.closedBall_subset_closedBall
@@ -1591,6 +1593,24 @@ theorem NNReal.le_add_nndist (a b : ℝ≥0) : a ≤ b + nndist a b := by
   rw [← sub_le_iff_le_add']
   exact le_of_abs_le (dist_eq a b).ge
 #align nnreal.le_add_nndist NNReal.le_add_nndist
+
+lemma NNReal.ball_zero_eq_Ico' (c : ℝ≥0) :
+    Metric.ball (0 : ℝ≥0) c.toReal = Set.Ico 0 c := by ext x; simp
+
+lemma NNReal.ball_zero_eq_Ico (c : ℝ) :
+    Metric.ball (0 : ℝ≥0) c = Set.Ico 0 c.toNNReal := by
+  by_cases c_pos : 0 < c
+  · convert NNReal.ball_zero_eq_Ico' ⟨c, c_pos.le⟩
+    simp [Real.toNNReal, c_pos.le]
+  simp [not_lt.mp c_pos]
+
+lemma NNReal.closedBall_zero_eq_Icc' (c : ℝ≥0) :
+    Metric.closedBall (0 : ℝ≥0) c.toReal = Set.Icc 0 c := by ext x; simp
+
+lemma NNReal.closedBall_zero_eq_Icc {c : ℝ} (c_nn : 0 ≤ c) :
+    Metric.closedBall (0 : ℝ≥0) c = Set.Icc 0 c.toNNReal := by
+  convert NNReal.closedBall_zero_eq_Icc' ⟨c, c_nn⟩
+  simp [Real.toNNReal, c_nn]
 
 end NNReal
 

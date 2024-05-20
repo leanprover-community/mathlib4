@@ -119,8 +119,8 @@ theorem mem_toSubfield (s : IntermediateField K L) (x : L) : x ∈ s.toSubfield 
 
 /-- Copy of an intermediate field with a new `carrier` equal to the old one. Useful to fix
 definitional equalities. -/
-protected def copy (S : IntermediateField K L) (s : Set L) (hs : s = ↑S) : IntermediateField K L
-    where
+protected def copy (S : IntermediateField K L) (s : Set L) (hs : s = ↑S) :
+    IntermediateField K L where
   toSubalgebra := S.toSubalgebra.copy s (hs : s = S.toSubalgebra.carrier)
   inv_mem' :=
     have hs' : (S.toSubalgebra.copy s hs).carrier = S.toSubalgebra.carrier := hs
@@ -834,9 +834,10 @@ theorem minpoly_eq (x : S) : minpoly K x = minpoly K (x : L) :=
 end IntermediateField
 
 /-- If `L/K` is algebraic, the `K`-subalgebras of `L` are all fields.  -/
-def subalgebraEquivIntermediateField (alg : Algebra.IsAlgebraic K L) :
+def subalgebraEquivIntermediateField [Algebra.IsAlgebraic K L] :
     Subalgebra K L ≃o IntermediateField K L where
-  toFun S := S.toIntermediateField fun x hx => S.inv_mem_of_algebraic (alg (⟨x, hx⟩ : S))
+  toFun S := S.toIntermediateField fun x hx => S.inv_mem_of_algebraic
+    (Algebra.IsAlgebraic.isAlgebraic ((⟨x, hx⟩ : S) : L))
   invFun S := S.toSubalgebra
   left_inv _ := toSubalgebra_toIntermediateField _ _
   right_inv := toIntermediateField_toSubalgebra
@@ -844,14 +845,14 @@ def subalgebraEquivIntermediateField (alg : Algebra.IsAlgebraic K L) :
 #align subalgebra_equiv_intermediate_field subalgebraEquivIntermediateField
 
 @[simp]
-theorem mem_subalgebraEquivIntermediateField (alg : Algebra.IsAlgebraic K L) {S : Subalgebra K L}
-    {x : L} : x ∈ subalgebraEquivIntermediateField alg S ↔ x ∈ S :=
+theorem mem_subalgebraEquivIntermediateField [Algebra.IsAlgebraic K L] {S : Subalgebra K L}
+    {x : L} : x ∈ subalgebraEquivIntermediateField S ↔ x ∈ S :=
   Iff.rfl
 #align mem_subalgebra_equiv_intermediate_field mem_subalgebraEquivIntermediateField
 
 @[simp]
-theorem mem_subalgebraEquivIntermediateField_symm (alg : Algebra.IsAlgebraic K L)
+theorem mem_subalgebraEquivIntermediateField_symm [Algebra.IsAlgebraic K L]
     {S : IntermediateField K L} {x : L} :
-    x ∈ (subalgebraEquivIntermediateField alg).symm S ↔ x ∈ S :=
+    x ∈ subalgebraEquivIntermediateField.symm S ↔ x ∈ S :=
   Iff.rfl
 #align mem_subalgebra_equiv_intermediate_field_symm mem_subalgebraEquivIntermediateField_symm

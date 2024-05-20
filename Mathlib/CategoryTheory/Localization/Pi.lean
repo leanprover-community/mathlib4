@@ -63,9 +63,9 @@ instance pi {J : Type w} [Finite J] {C : J → Type u₁} {D : J → Type u₂}
       (Pi.optionEquivalence C).symm (Pi.optionEquivalence D).symm ?_ ?_
     · intro ⟨X₁, X₂⟩ ⟨Y₁, Y₂⟩ f ⟨hf₁, hf₂⟩
       refine ⟨_, _, (Pi.optionEquivalence C).inverse.map f, ?_, ⟨Iso.refl _⟩⟩
-      · rintro (_|i)
-        · exact hf₁
-        · apply hf₂
+      rintro (_|i)
+      · exact hf₁
+      · apply hf₂
     · apply MorphismProperty.IsInvertedBy.pi
       rintro (_|i) <;> apply Localization.inverts
 
