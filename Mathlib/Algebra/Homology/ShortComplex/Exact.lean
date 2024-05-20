@@ -360,8 +360,8 @@ noncomputable def Exact.leftHomologyDataOfIsLimitKernelFork
     have := hS.hasHomology
     refine' ((MorphismProperty.RespectsIso.epimorphisms C).arrow_mk_iso_iff _).1
       hS.epi_toCycles
-    refine Arrow.isoMk (Iso.refl ?_)
-      (IsLimit.conePointUniqueUpToIso S.cyclesIsKernel hkf) _
+    refine Arrow.isoMk (Iso.refl _)
+      (IsLimit.conePointUniqueUpToIso S.cyclesIsKernel hkf) ?_
     apply Fork.IsLimit.hom_ext hkf
     simp [IsLimit.conePointUniqueUpToIso]) (isZero_zero C)
 
