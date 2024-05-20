@@ -475,7 +475,7 @@ protected theorem dense_span (b : HilbertBasis ι 𝕜 E) :
 
 protected theorem hasSum_inner_mul_inner (b : HilbertBasis ι 𝕜 E) (x y : E) :
     HasSum (fun i => ⟪x, b i⟫ * ⟪b i, y⟫) ⟪x, y⟫ := by
-  convert (b.hasSum_repr y).mapL (innerSL _ x) using 1
+  convert (b.hasSum_repr y).mapL (innerSL 𝕜 x) using 1
   ext i
   rw [innerSL_apply, b.repr_apply_apply, inner_smul_right, mul_comm]
 #align hilbert_basis.has_sum_inner_mul_inner HilbertBasis.hasSum_inner_mul_inner
@@ -496,7 +496,7 @@ protected theorem tsum_inner_mul_inner (b : HilbertBasis ι 𝕜 E) (x y : E) :
 protected def toOrthonormalBasis [Fintype ι] (b : HilbertBasis ι 𝕜 E) : OrthonormalBasis ι 𝕜 E :=
   OrthonormalBasis.mk b.orthonormal
     (by
-      refine' Eq.ge _
+      refine Eq.ge ?_
       have := (span 𝕜 (Finset.univ.image b : Set E)).closed_of_finiteDimensional
       simpa only [Finset.coe_image, Finset.coe_univ, Set.image_univ, HilbertBasis.dense_span] using
         this.submodule_topologicalClosure_eq.symm)

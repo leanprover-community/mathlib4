@@ -77,9 +77,11 @@ lemma AddSubgroupClass.zsmulMemClass {S M : Type*} [SubNegMonoid M] [SetLike S M
 
 namespace SetLike
 
-variable [SMul R M] [SetLike S M] [hS : SMulMemClass S R M] (s : S)
-
 open SMulMemClass
+
+section SMul
+
+variable [SMul R M] [SetLike S M] [hS : SMulMemClass S R M] (s : S)
 
 -- lower priority so other instances are found first
 /-- A subset closed under the scalar action inherits that action. -/
@@ -132,6 +134,35 @@ theorem forall_smul_mem_iff {R M S : Type*} [Monoid R] [MulAction R M] [SetLike 
   ⟨fun h => by simpa using h 1, fun h a => SMulMemClass.smul_mem a h⟩
 #align set_like.forall_smul_mem_iff SetLike.forall_smul_mem_iff
 
+end SMul
+
+section OfTower
+
+variable {N α : Type*} [SetLike S α] [SMul M N] [SMul M α] [Monoid N]
+    [MulAction N α] [SMulMemClass S N α] [IsScalarTower M N α] (s : S)
+
+-- lower priority so other instances are found first
+/-- A subset closed under the scalar action inherits that action. -/
+@[to_additive "A subset closed under the additive action inherits that action."]
+instance (priority := 900) smul' : SMul M s where
+  smul r x := ⟨r • x.1, smul_one_smul N r x.1 ▸ smul_mem _ x.2⟩
+
+@[to_additive (attr := simp, norm_cast)]
+protected theorem val_smul_of_tower (r : M) (x : s) : (↑(r • x) : α) = r • (x : α) :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem mk_smul_of_tower_mk (r : M) (x : α) (hx : x ∈ s) :
+    r • (⟨x, hx⟩ : s) = ⟨r • x, smul_one_smul N r x ▸ smul_mem _ hx⟩ :=
+  rfl
+
+@[to_additive]
+theorem smul_of_tower_def (r : M) (x : s) :
+    r • x = ⟨r • x, smul_one_smul N r x.1 ▸ smul_mem _ x.2⟩ :=
+  rfl
+
+end OfTower
+
 end SetLike
 
 /-- A SubMulAction is a set which is closed under scalar multiplication.  -/
@@ -163,8 +194,7 @@ theorem ext {p q : SubMulAction R M} (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
 
 /-- Copy of a sub_mul_action with a new `carrier` equal to the old one. Useful to fix definitional
 equalities. -/
-protected def copy (p : SubMulAction R M) (s : Set M) (hs : s = ↑p) : SubMulAction R M
-    where
+protected def copy (p : SubMulAction R M) (s : Set M) (hs : s = ↑p) : SubMulAction R M where
   carrier := s
   smul_mem' := hs.symm ▸ p.smul_mem'
 #align sub_mul_action.copy SubMulAction.copy
