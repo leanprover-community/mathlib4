@@ -491,7 +491,7 @@ theorem isMaximal_comap_C_of_isMaximal [Nontrivial R] (hP' : ∀ x : R, C x ∈ 
   suffices (⊥ : Ideal (Localization M)).IsMaximal by
     rw [← IsLocalization.comap_map_of_isPrime_disjoint M (Localization M) ⊥ bot_prime
       (disjoint_iff_inf_le.mpr fun x hx => hM (hx.2 ▸ hx.1))]
-    refine' ((isMaximal_iff_isMaximal_disjoint (Localization M) _ _).mp (by rwa [map_bot])).1
+    refine' ((isMaximal_iff_isMaximal_disjoint (Localization M) a _).mp (by rwa [map_bot])).1
   let M' : Submonoid (R[X] ⧸ P) := M.map φ
   have hM' : (0 : R[X] ⧸ P) ∉ M' := fun ⟨z, hz⟩ =>
     hM (quotientMap_injective (_root_.trans hz.2 φ.map_zero.symm) ▸ hz.1)
