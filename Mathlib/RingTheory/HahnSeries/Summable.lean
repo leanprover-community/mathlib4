@@ -29,7 +29,13 @@ the converse holds.
 
 ## Main results
 
-  *
+  * A Hahn series with commutative ring coefficients is invertible if its leading term is
+    invertible.
+
+## TODO
+
+  * Substitution of finitely many formal variables into elements of strictly positive orderTop
+    induces a ring homomorphism.
 
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
@@ -464,6 +470,9 @@ section powers
 
 variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R]
 
+-- consider substitutions of power series in finitely many variables, using finitely many
+-- positive-orderTop elements.
+
 theorem co_support_zero (g : Γ) : {a | ¬((0 : HahnSeries Γ R) ^ a).coeff g = 0} ⊆ {0} := by
   simp_all only [Set.subset_singleton_iff, Set.mem_setOf_eq]
   intro n hn
@@ -552,6 +561,22 @@ theorem xxx (n : ℕ) : Finite (Set.addAntidiagonal Set.univ Set.univ n) :=
     (Set.isWF_univ_iff.mpr wellFounded_lt) n
 
 
+theorem finsumAntidiagonal {R} [AddCommMonoid R] (f : ℕ × ℕ →₀ R) :
+    ∑ᶠ (i : ℕ), (∑ i_1 ∈ antidiagonal i, f i_1) = ∑ᶠ (i : ℕ × ℕ), f i := by
+  -- sum_bij or sum_nbij with sum_sigma?
+  sorry
+
+theorem sum_coeff {α} (s : Finset α) (f : α → HahnSeries Γ R) (g : Γ) :
+    (Finset.sum s f).coeff g = Finset.sum s (fun i => (f i).coeff g) := by
+  refine sum_induction
+  sorry
+-/
+
+theorem finsum_prod {R} [AddCommMonoid R] (f : ℕ × ℕ →₀ R) :
+    ∑ᶠ (i : ℕ), ∑ᶠ (j : ℕ),  f (i, j) = ∑ᶠ (i : ℕ × ℕ), f i := by
+  exact Eq.symm (finsum_curry (fun ab ↦ f ab) (Finsupp.finite_support f))
+
+/-!
 /-- The ring homomorphism from `R[[X]]` to `HahnSeries Γ R` given by sending the power series
 variable `X` to a positive order element `x`. -/
 def powerSeriesComp : PowerSeries R →ₐ[R] HahnSeries Γ R where
@@ -564,8 +589,8 @@ def powerSeriesComp : PowerSeries R →ₐ[R] HahnSeries Γ R where
       (fun n hn => by simp_all), pow_zero, ← zero_pow_eq 0, pow_zero]
   map_mul' a b := by
     ext g
-    simp only [hsum, powerSeriesFamily_toFun, mul_coeff]
-
+    simp only [hsum, powerSeriesFamily_toFun, mul_coeff, PowerSeries.coeff_mul, Finset.sum_smul]
+    rw [finsum]
     -- write f * g as a double sum. write each coefficient of X ^ n as a finite sum.
     -- make a summable family parametrized by ℕ × ℕ.
     -- try finsum_mem_biUnion

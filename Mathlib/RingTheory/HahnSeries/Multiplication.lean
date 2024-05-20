@@ -643,11 +643,17 @@ theorem smul_comm [CommRing R] [Module R V] (r : R) (x : HahnSeries Γ R) (y : H
     r • x • y = x • r • y := by
   rw [@SMulCommClass.smul_comm]
 
--- Use haveI...
-/-! instance [SMul R S] [IsScalarTower R S V] : IsScalarTower R S (HahnSeries Γ V) :=
-  ⟨fun r s a => by
+instance [CommRing R] {S : Type*} [CommRing S] [Algebra R S] [Module R V] [Module S V]
+    [IsScalarTower R S V] : IsScalarTower R S (HahnSeries Γ V) where
+  smul_assoc r s a := by
     ext
-    simp⟩
+    simp
+
+/-!
+instance [CommRing R] [Module R V] : IsScalarTower R (HahnSeries Γ R) (HahnModule Γ' R V) where
+  smul_assoc r x a := by
+    ext
+    simp only [of_symm_smul, HahnSeries.smul_coeff, smul_coeff, smul_sum]
 -/
 
 instance instNoZeroSMulDivisors {Γ} [LinearOrderedCancelAddCommMonoid Γ] [Zero R] [SMulWithZero R V]
@@ -771,7 +777,7 @@ theorem C_mul_eq_smul {r : R} {x : HahnSeries Γ R} : C r * x = r • x :=
 @[simp]
 theorem single_pow (a : Γ) (n : ℕ) (r : R) : single a r ^ n = single (n • a) (r ^ n) := by
   induction' n with n IH
-  · simp only [Nat.zero_eq, pow_zero, zero_smul, single_zero_one]
+  · ext; simp only [pow_zero, one_coeff, zero_smul, single_zero_one]
   · simp only [pow_succ, IH, single_mul_single, succ_nsmul]
 
 theorem pow_leadingCoeff {Γ} [LinearOrderedCancelAddCommMonoid Γ] {x : HahnSeries Γ R}
