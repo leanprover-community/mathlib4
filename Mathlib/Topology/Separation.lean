@@ -1469,11 +1469,11 @@ variable {X}
 
 @[elab_as_elim]
 protected lemma inductionOn {motive : t2Quotient X → Prop} (q : t2Quotient X)
-  (h : ∀ x, motive (t2Quotient.mk x)) : motive q := Quotient.inductionOn q h
+    (h : ∀ x, motive (t2Quotient.mk x)) : motive q := Quotient.inductionOn q h
 
 @[elab_as_elim]
 protected lemma inductionOn₂ [TopologicalSpace Y] {motive : t2Quotient X → t2Quotient Y → Prop}
-  (q : t2Quotient X) (q' : t2Quotient Y) (h : ∀ x y, motive (mk x) (mk y)) : motive q q' :=
+    (q : t2Quotient X) (q' : t2Quotient Y) (h : ∀ x y, motive (mk x) (mk y)) : motive q q' :=
 Quotient.inductionOn₂ q q' h
 
 /-- The largest T2 quotient of a topological space is indeed T2. -/
