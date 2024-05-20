@@ -269,8 +269,7 @@ instance [∀ i, AddMonoid (β i)] : AddMonoid (Π₀ i, β i) :=
   DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => coe_nsmul _ _
 
 /-- Coercion from a `DFinsupp` to a pi type is an `AddMonoidHom`. -/
-def coeFnAddMonoidHom [∀ i, AddZeroClass (β i)] : (Π₀ i, β i) →+ ∀ i, β i
-    where
+def coeFnAddMonoidHom [∀ i, AddZeroClass (β i)] : (Π₀ i, β i) →+ ∀ i, β i where
   toFun := (⇑)
   map_zero' := coe_zero
   map_add' := coe_add
@@ -456,8 +455,7 @@ def filterAddMonoidHom [∀ i, AddZeroClass (β i)] (p : ι → Prop) [Decidable
 /-- `DFinsupp.filter` as a `LinearMap`. -/
 @[simps]
 def filterLinearMap [Semiring γ] [∀ i, AddCommMonoid (β i)] [∀ i, Module γ (β i)] (p : ι → Prop)
-    [DecidablePred p] : (Π₀ i, β i) →ₗ[γ] Π₀ i, β i
-    where
+    [DecidablePred p] : (Π₀ i, β i) →ₗ[γ] Π₀ i, β i where
   toFun := filter p
   map_add' := filter_add p
   map_smul' := filter_smul p
@@ -520,8 +518,7 @@ variable (γ β)
 /-- `subtypeDomain` but as an `AddMonoidHom`. -/
 @[simps]
 def subtypeDomainAddMonoidHom [∀ i, AddZeroClass (β i)] (p : ι → Prop) [DecidablePred p] :
-    (Π₀ i : ι, β i) →+ Π₀ i : Subtype p, β i
-    where
+    (Π₀ i : ι, β i) →+ Π₀ i : Subtype p, β i where
   toFun := subtypeDomain p
   map_zero' := subtypeDomain_zero
   map_add' := subtypeDomain_add
@@ -531,8 +528,7 @@ def subtypeDomainAddMonoidHom [∀ i, AddZeroClass (β i)] (p : ι → Prop) [De
 /-- `DFinsupp.subtypeDomain` as a `LinearMap`. -/
 @[simps]
 def subtypeDomainLinearMap [Semiring γ] [∀ i, AddCommMonoid (β i)] [∀ i, Module γ (β i)]
-    (p : ι → Prop) [DecidablePred p] : (Π₀ i, β i) →ₗ[γ] Π₀ i : Subtype p, β i
-    where
+    (p : ι → Prop) [DecidablePred p] : (Π₀ i, β i) →ₗ[γ] Π₀ i : Subtype p, β i where
   toFun := subtypeDomain p
   map_add' := subtypeDomain_add
   map_smul' := subtypeDomain_smul
@@ -608,8 +604,7 @@ instance uniqueOfIsEmpty [IsEmpty ι] : Unique (Π₀ i, β i) :=
 /-- Given `Fintype ι`, `equivFunOnFintype` is the `Equiv` between `Π₀ i, β i` and `Π i, β i`.
   (All dependent functions on a finite type are finitely supported.) -/
 @[simps apply]
-def equivFunOnFintype [Fintype ι] : (Π₀ i, β i) ≃ ∀ i, β i
-    where
+def equivFunOnFintype [Fintype ι] : (Π₀ i, β i) ≃ ∀ i, β i where
   toFun := (⇑)
   invFun f := ⟨f, Trunc.mk ⟨Finset.univ.1, fun _ => Or.inl <| Finset.mem_univ_val _⟩⟩
   left_inv _ := DFunLike.coe_injective rfl
@@ -898,8 +893,7 @@ variable (β)
 
 /-- `DFinsupp.single` as an `AddMonoidHom`. -/
 @[simps]
-def singleAddHom (i : ι) : β i →+ Π₀ i, β i
-    where
+def singleAddHom (i : ι) : β i →+ Π₀ i, β i where
   toFun := single i
   map_zero' := single_zero i
   map_add' := single_add i
@@ -908,8 +902,7 @@ def singleAddHom (i : ι) : β i →+ Π₀ i, β i
 
 /-- `DFinsupp.erase` as an `AddMonoidHom`. -/
 @[simps]
-def eraseAddHom (i : ι) : (Π₀ i, β i) →+ Π₀ i, β i
-    where
+def eraseAddHom (i : ι) : (Π₀ i, β i) →+ Π₀ i, β i where
   toFun := erase i
   map_zero' := erase_zero i
   map_add' := erase_add i
@@ -1062,8 +1055,8 @@ theorem mk_sub [∀ i, AddGroup (β i)] {s : Finset ι} {x y : ∀ i : (↑s : S
 
 /-- If `s` is a subset of `ι` then `mk_addGroupHom s` is the canonical additive
 group homomorphism from $\prod_{i\in s}\beta_i$ to $\prod_{\mathtt{i : \iota}}\beta_i.$-/
-def mkAddGroupHom [∀ i, AddGroup (β i)] (s : Finset ι) : (∀ i : (s : Set ι), β ↑i) →+ Π₀ i : ι, β i
-    where
+def mkAddGroupHom [∀ i, AddGroup (β i)] (s : Finset ι) :
+    (∀ i : (s : Set ι), β ↑i) →+ Π₀ i : ι, β i where
   toFun := mk s
   map_zero' := mk_zero
   map_add' _ _ := mk_add
@@ -1430,8 +1423,7 @@ theorem comapDomain'_single [DecidableEq ι] [DecidableEq κ] [∀ i, Zero (β i
 
 This is the dfinsupp version of `Equiv.piCongrLeft'`. -/
 @[simps apply]
-def equivCongrLeft [∀ i, Zero (β i)] (h : ι ≃ κ) : (Π₀ i, β i) ≃ Π₀ k, β (h.symm k)
-    where
+def equivCongrLeft [∀ i, Zero (β i)] (h : ι ≃ κ) : (Π₀ i, β i) ≃ Π₀ k, β (h.symm k) where
   toFun := comapDomain' h.symm h.right_inv
   invFun f :=
     mapRange (fun i => Equiv.cast <| congr_arg β <| h.symm_apply_apply i)
@@ -1609,8 +1601,7 @@ theorem sigmaUncurry_single [∀ i j, Zero (δ i j)]
 This is the dfinsupp version of `Equiv.piCurry`. -/
 def sigmaCurryEquiv [∀ i j, Zero (δ i j)]
     [∀ i, DecidableEq (α i)] [∀ i j (x : δ i j), Decidable (x ≠ 0)] :
-    (Π₀ i : Σi, _, δ i.1 i.2) ≃ Π₀ (i) (j), δ i j
-    where
+    (Π₀ i : Σi, _, δ i.1 i.2) ≃ Π₀ (i) (j), δ i j where
   toFun := sigmaCurry
   invFun := sigmaUncurry
   left_inv f := by
@@ -1674,8 +1665,8 @@ theorem extendWith_zero [DecidableEq ι] [∀ i, Zero (α i)] (x : α none) :
 
 This is the dfinsupp version of `Equiv.piOptionEquivProd`. -/
 @[simps]
-noncomputable def equivProdDFinsupp [∀ i, Zero (α i)] : (Π₀ i, α i) ≃ α none × Π₀ i, α (some i)
-    where
+noncomputable def equivProdDFinsupp [∀ i, Zero (α i)] :
+    (Π₀ i, α i) ≃ α none × Π₀ i, α (some i) where
   toFun f := (f none, comapDomain some (Option.some_injective _) f)
   invFun f := f.2.extendWith f.1
   left_inv f := by
@@ -2035,8 +2026,8 @@ theorem sumAddHom_comm {ι₁ ι₂ : Sort _} {β₁ : ι₁ → Type*} {β₂ :
 
 /-- The `DFinsupp` version of `Finsupp.liftAddHom`,-/
 @[simps apply symm_apply]
-def liftAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] : (∀ i, β i →+ γ) ≃+ ((Π₀ i, β i) →+ γ)
-    where
+def liftAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] :
+    (∀ i, β i →+ γ) ≃+ ((Π₀ i, β i) →+ γ) where
   toFun := sumAddHom
   invFun F i := F.comp (singleAddHom β i)
   left_inv x := by ext; simp
@@ -2179,8 +2170,7 @@ theorem mapRange_add (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0)
 
 /-- `DFinsupp.mapRange` as an `AddMonoidHom`. -/
 @[simps apply]
-def mapRange.addMonoidHom (f : ∀ i, β₁ i →+ β₂ i) : (Π₀ i, β₁ i) →+ Π₀ i, β₂ i
-    where
+def mapRange.addMonoidHom (f : ∀ i, β₁ i →+ β₂ i) : (Π₀ i, β₁ i) →+ Π₀ i, β₂ i where
   toFun := mapRange (fun i x => f i x) fun i => (f i).map_zero
   map_zero' := mapRange_zero _ _
   map_add' := mapRange_add _ (fun i => (f i).map_zero) fun i => (f i).map_add

@@ -3,7 +3,7 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov, Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 import Mathlib.Topology.Order.LeftRightLim
 
 #align_import measure_theory.measure.stieltjes from "leanprover-community/mathlib"@"20d5763051978e9bc6428578ed070445df6a18b3"
@@ -342,11 +342,10 @@ theorem borel_le_measurable : borel ℝ ≤ f.outer.caratheodory := by
 
 /-- The measure associated to a Stieltjes function, giving mass `f b - f a` to the
 interval `(a, b]`. -/
-protected irreducible_def measure : Measure ℝ :=
-  { toOuterMeasure := f.outer
-    m_iUnion := fun _s hs =>
-      f.outer.iUnion_eq_of_caratheodory fun i => f.borel_le_measurable _ (hs i)
-    trim_le := f.outer_trim.le }
+protected irreducible_def measure : Measure ℝ where
+  toOuterMeasure := f.outer
+  m_iUnion _s hs := f.outer.iUnion_eq_of_caratheodory fun i => f.borel_le_measurable _ (hs i)
+  trim_le := f.outer_trim.le
 #align stieltjes_function.measure StieltjesFunction.measure
 
 @[simp]

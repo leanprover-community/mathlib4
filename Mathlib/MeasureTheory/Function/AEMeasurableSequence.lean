@@ -107,12 +107,9 @@ theorem measure_compl_aeSeqSet_eq_zero [Countable ι] (hf : ∀ i, AEMeasurable 
 
 theorem aeSeq_eq_mk_ae [Countable ι] (hf : ∀ i, AEMeasurable (f i) μ)
     (hp : ∀ᵐ x ∂μ, p x fun n => f n x) : ∀ᵐ a : α ∂μ, ∀ i : ι, aeSeq hf p i a = (hf i).mk (f i) a :=
-  haveI h_ss : aeSeqSet hf p ⊆ { a : α | ∀ i, aeSeq hf p i a = (hf i).mk (f i) a } := fun x hx i =>
+  have h_ss : aeSeqSet hf p ⊆ { a : α | ∀ i, aeSeq hf p i a = (hf i).mk (f i) a } := fun x hx i =>
     by simp only [aeSeq, hx, if_true]
-  le_antisymm
-    (le_trans (measure_mono (Set.compl_subset_compl.mpr h_ss))
-      (le_of_eq (measure_compl_aeSeqSet_eq_zero hf hp)))
-    (zero_le _)
+  (ae_iff.2 (measure_compl_aeSeqSet_eq_zero hf hp)).mono h_ss
 #align ae_seq.ae_seq_eq_mk_ae aeSeq.aeSeq_eq_mk_ae
 
 theorem aeSeq_eq_fun_ae [Countable ι] (hf : ∀ i, AEMeasurable (f i) μ)

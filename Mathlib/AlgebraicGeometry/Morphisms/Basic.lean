@@ -294,7 +294,7 @@ theorem AffineTargetMorphismProperty.isLocalOfOpenCoverImply (P : AffineTargetMo
     haveI : IsAffine _ := (topIsAffineOpen Y).basicOpenIsAffine r
     delta morphismRestrict
     rw [affine_cancel_left_isIso hP]
-    refine' @H _ _ f ⟨Scheme.openCoverOfIsIso (𝟙 Y), _, _⟩ _ (Y.ofRestrict _) _ _
+    refine @H _ _ f ⟨Scheme.openCoverOfIsIso (𝟙 Y), ?_, ?_⟩ _ (Y.ofRestrict _) _ _
     · intro i; dsimp; infer_instance
     · intro i; dsimp
       rwa [← Category.comp_id pullback.snd, ← pullback.condition, affine_cancel_left_isIso hP]
