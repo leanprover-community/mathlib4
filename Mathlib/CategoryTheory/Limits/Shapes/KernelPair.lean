@@ -140,7 +140,7 @@ theorem comp_of_mono {f₁ : X ⟶ Y} {f₂ : Y ⟶ Z} [Mono f₂] (small_k : Is
     IsKernelPair (f₁ ≫ f₂) a b :=
   { w := by rw [small_k.w_assoc]
     isLimit' := ⟨by
-      refine PullbackCone.isLimitAux _?
+      refine PullbackCone.isLimitAux ?_
         (fun s => small_k.lift s.fst s.snd (by rw [← cancel_mono f₂, assoc, s.condition, assoc]))
         (by simp) (by simp) _
       intro s m hm
@@ -158,7 +158,7 @@ def toCoequalizer (k : IsKernelPair f a b) [r : RegularEpi f] : IsColimit (Cofor
   let t := k.isLimit.lift (PullbackCone.mk _ _ r.w)
   have ht : t ≫ a = r.left := k.isLimit.fac _ WalkingCospan.left
   have kt : t ≫ b = r.right := k.isLimit.fac _ WalkingCospan.right
-  refine Cofork.IsColimit.mk _?
+  refine Cofork.IsColimit.mk ?_
     (fun s => Cofork.IsColimit.desc r.isColimit s.π
       (by rw [← ht, assoc, s.condition, reassoc_of% kt]))
     (fun s => _) (fun s m w => _)

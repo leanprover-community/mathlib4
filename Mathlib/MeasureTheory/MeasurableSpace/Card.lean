@@ -128,7 +128,7 @@ theorem generateMeasurable_eq_rec (s : Set (Set α)) :
     · have : ∀ n, ∃ i, f n ∈ generateMeasurableRec s i := fun n => by simpa using IH n
       choose I hI using this
       have : IsWellOrder (ω₁ : Type u) (· < ·) := isWellOrder_out_lt _
-      refine mem_?iUnion.2
+      refine mem?_iUnion.2
         ⟨Ordinal.enum (· < ·) (Ordinal.lsub fun n => Ordinal.typein.{u} (· < ·) (I n)) _,
           iUnion_mem_generateMeasurableRec fun n => ⟨I n, _, hI n⟩⟩
       · rw [Ordinal.type_lt]

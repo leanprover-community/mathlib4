@@ -310,7 +310,7 @@ private theorem sup_aux (f g : E →ₗ.[R] F)
     simp only [AddSubgroupClass.coe_sub, coe_mk, coe_mk, hxy, ← sub_add, ← sub_sub, sub_self,
       zero_sub, ← H]
     apply neg_add_eq_sub
-  refine ⟨{ toFun := fg.. }, fg_?eq⟩
+  refine ⟨{ toFun := fg.. }, fg?_eq⟩
   · rintro ⟨z₁, hz₁⟩ ⟨z₂, hz₂⟩
     rw [← add_assoc, add_right_comm (f _), ← map_add, add_assoc, ← map_add]
     apply fg_eq
@@ -623,7 +623,7 @@ private theorem sSup_aux (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·)
     -- Porting note: `refine' ..; exacts [inclusion hpq.1 y, hxy, rfl]`
     --               → `refine' .. <;> [skip; exact inclusion hpq.1 y; rfl]; exact hxy`
     refine' (hxq.2 _).trans (hpq.2 _).symm <;> [skip; exact inclusion hpq.1 y; rfl]; exact hxy
-  refine ⟨{ toFun := f.. }, _?⟩
+  refine ⟨{ toFun := f.. }, ?_⟩
   · intro x y
     rcases hc (P x).1.1 (P x).1.2 (P y).1.1 (P y).1.2 with ⟨p, hpc, hpx, hpy⟩
     set x' := inclusion hpx.1 ⟨x, (P x).2⟩
@@ -925,7 +925,7 @@ theorem le_of_le_graph {f g : E →ₗ.[R] F} (h : f.graph ≤ g.graph) : f ≤ 
     exact h hx
   rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
   rw [image_iff]
-  refine h _?
+  refine h ?_
   simp only [Submodule.coe_mk] at hxy
   rw [hxy] at hx
   rw [← image_iff hx]
@@ -939,7 +939,7 @@ theorem le_graph_of_le {f g : E →ₗ.[R] F} (h : f ≤ g) : f.graph ≤ g.grap
   use ⟨y, h.1 y.2⟩
   simp only [hx, Submodule.coe_mk, eq_self_iff_true, true_and_iff]
   convert hx.2 using 1
-  refine (h.2 _?).symm
+  refine (h.2 ?_).symm
   simp only [hx.1, Submodule.coe_mk]
 #align linear_pmap.le_graph_of_le LinearPMap.le_graph_of_le
 
