@@ -136,7 +136,7 @@ theorem isCompact_basicOpen (X : Scheme) {U : Opens X.carrier} (hU : IsCompact (
     use V.1 ⊓ X.basicOpen f
     have : V.1.1 ⟶ U := by
       apply homOfLE; change _ ⊆ (U : Set X.carrier); rw [e]
-      convert @Set.subset_iUnion₂ _ _ _
+      convert @Set.subset_iUnion₂ X.toPresheafedSpace _ _
         (fun (U : X.affineOpens) (_ : U ∈ s) => ↑U) V V.prop using 1
     erw [← X.toLocallyRingedSpace.toRingedSpace.basicOpen_res this.op]
     exact IsAffineOpen.basicOpenIsAffine V.1.prop _

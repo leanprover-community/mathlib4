@@ -526,7 +526,7 @@ theorem diagonalTargetAffineLocallyOfOpenCover (P : AffineTargetMorphismProperty
   let 𝒱 := (Scheme.Pullback.openCoverOfBase 𝒰 f f).bind fun i =>
     Scheme.Pullback.openCoverOfLeftRight.{u} (𝒰' i) (𝒰' i) pullback.snd pullback.snd
   have i1 : ∀ i, IsAffine (𝒱.obj i) := fun i => by dsimp [𝒱]; infer_instance
-  refine' (hP.affine_openCover_iff _ _).mpr _
+  apply (hP.affine_openCover_iff _ 𝒱).mpr
   rintro ⟨i, j, k⟩
   dsimp [𝒱]
   convert (affine_cancel_left_isIso hP.1
