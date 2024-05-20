@@ -9,6 +9,8 @@ import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.TypeStar
 import Batteries.Classes.Order
+import Mathlib.Tactic.GCongr.Core
+
 
 #align_import init.algebra.order from "leanprover-community/lean"@"c2bcdbcbe741ed37c361a30d38e179182b989f76"
 
@@ -467,3 +469,8 @@ instance : Batteries.TransCmp (compare (α := α)) where
 end Ord
 
 end LinearOrder
+
+open Lean Meta
+/-- See if the term is `a < b` and the goal is `a ≤ b`. -/
+@[gcongr_forward] def Mathlib.Tactic.GCongr.exactLeOfLt : ForwardExt where
+  eval h goal := do goal.assignIfDefeq (← mkAppM ``le_of_lt #[h])
