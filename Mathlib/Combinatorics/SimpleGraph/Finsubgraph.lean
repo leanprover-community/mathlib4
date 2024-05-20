@@ -108,8 +108,8 @@ def FinsubgraphHom.restrict {G' G'' : G.Finsubgraph} (h : G'' ≤ G') (f : G' �
 #align simple_graph.finsubgraph_hom.restrict SimpleGraph.FinsubgraphHom.restrict
 
 /-- The inverse system of finite homomorphisms. -/
-def finsubgraphHomFunctor (G : SimpleGraph V) (F : SimpleGraph W) : G.Finsubgraphᵒᵖ ⥤ Type max u v
-    where
+def finsubgraphHomFunctor (G : SimpleGraph V) (F : SimpleGraph W) :
+    G.Finsubgraphᵒᵖ ⥤ Type max u v where
   obj G' := G'.unop →fg F
   map g f := f.restrict (CategoryTheory.leOfHom g.unop)
 #align simple_graph.finsubgraph_hom_functor SimpleGraph.finsubgraphHomFunctor
