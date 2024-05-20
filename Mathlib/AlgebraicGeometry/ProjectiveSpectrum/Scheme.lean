@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf
-import Mathlib.RingTheory.GradedAlgebra.Radical
 import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
+import Mathlib.RingTheory.GradedAlgebra.Radical
 
 #align_import algebraic_geometry.projective_spectrum.scheme from "leanprover-community/mathlib"@"d39590fc8728fbf6743249802486f8c91ffe07bc"
 
@@ -570,7 +570,6 @@ The homeomorphism `Proj|D(f) ≅ Spec A⁰_f` defined by
 - `φ : Proj|D(f) ⟶ Spec A⁰_f` by sending `x` to `A⁰_f ∩ span {g / 1 | g ∈ x}`
 - `ψ : Spec A⁰_f ⟶ Proj|D(f)` by sending `q` to `{a | aᵢᵐ/fⁱ ∈ q}`.
 -/
-@[simps]
 def projIsoSpecTopComponent {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
     (Proj.T| (pbo f)) ≅ (Spec.T (A⁰_ f))  where
   hom := ProjIsoSpecTopComponent.toSpec 𝒜 f
@@ -579,6 +578,271 @@ def projIsoSpecTopComponent {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m
     (ProjIsoSpecTopComponent.fromSpec_toSpec 𝒜 f_deg hm)
   inv_hom_id := ConcreteCategory.hom_ext _ _
     (ProjIsoSpecTopComponent.toSpec_fromSpec 𝒜 f_deg hm)
+
+open ProjectiveSpectrum.Proj in
+def awayToSection (f) : CommRingCat.of (A⁰_ f) ⟶ (structureSheaf 𝒜).1.obj (op (pbo f)) where
+  toFun s :=
+    ⟨fun x ↦ HomogeneousLocalization.mapId 𝒜 (Submonoid.powers_le.mpr x.2) s, fun x ↦ by
+      obtain ⟨s, rfl⟩ := HomogeneousLocalization.mk_surjective s
+      obtain ⟨n, hn : f ^ n = s.den.1⟩ := s.den_mem
+      refine ⟨_, x.2, 𝟙 _, s.1, s.2, s.3, ?_, fun _ ↦ rfl⟩
+      exact fun x hsx ↦ x.2 (Ideal.IsPrime.mem_of_pow_mem inferInstance n (hn ▸ hsx))⟩
+  map_add' s t := by ext; simp only [map_add, HomogeneousLocalization.val_add, Proj.add_apply]
+  map_mul' s t := by ext; simp only [map_mul, HomogeneousLocalization.val_mul, Proj.mul_apply]
+  map_zero' := by ext; simp only [map_zero, HomogeneousLocalization.val_zero, Proj.zero_apply]
+  map_one' := by ext; simp only [map_one, HomogeneousLocalization.val_one, Proj.one_apply]
+
+open ProjectiveSpectrum.Proj in
+lemma awayToSection_germ (f x) :
+    awayToSection 𝒜 f ≫ (structureSheaf 𝒜).presheaf.germ x =
+      (HomogeneousLocalization.mapId 𝒜 (Submonoid.powers_le.mpr x.2)) ≫
+        (Proj.stalkIso' 𝒜 x).toCommRingCatIso.inv := by
+  ext z
+  apply (Proj.stalkIso' 𝒜 x).eq_symm_apply.mpr
+  simp only [RingEquiv.toEquiv_eq_coe, comp_apply, EquivLike.coe_coe]
+  rw [Proj.stalkIso'_germ]
+  rfl
+
+def awayToΓ (f) : CommRingCat.of (A⁰_ f) ⟶ LocallyRingedSpace.Γ.obj (op <| Proj| (pbo f)) :=
+  awayToSection 𝒜 f ≫ (ProjectiveSpectrum.Proj.structureSheaf 𝒜).1.map
+    (homOfLE (Opens.openEmbedding_obj_top _).le).op
+
+lemma awayToΓ_ΓToStalk (f) (x) :
+    awayToΓ 𝒜 f ≫ LocallyRingedSpace.ΓToStalk (Proj| pbo f) x =
+      HomogeneousLocalization.mapId 𝒜 (Submonoid.powers_le.mpr x.2) ≫
+      (Proj.stalkIso' 𝒜 x.1).toCommRingCatIso.inv ≫
+      ((Proj.toLocallyRingedSpace 𝒜).restrictStalkIso (Opens.openEmbedding _) x).inv := by
+  rw [awayToΓ, Category.assoc, LocallyRingedSpace.ΓToStalk, ← Category.assoc _ (Iso.inv _),
+    Iso.eq_comp_inv, Category.assoc, Category.assoc]
+  simp only [LocallyRingedSpace.restrict, SheafedSpace.restrict]
+  rw [PresheafedSpace.restrictStalkIso_hom_eq_germ]
+  simp only [Proj.toLocallyRingedSpace, Proj.toSheafedSpace]
+  rw [Presheaf.germ_res, awayToSection_germ]
+  rfl
+
+open ProjectiveSpectrum.Proj in
+def toSpec (f) : (Proj| pbo f) ⟶ Spec (A⁰_ f) :=
+  ΓSpec.locallyRingedSpaceAdjunction.homEquiv (Proj| (pbo f)) (op (CommRingCat.of <| A⁰_ f))
+    (awayToΓ 𝒜 f).op
+
+open HomogeneousLocalization LocalRing in
+lemma ProjIsoSpec.toSpec_apply {f} (x : Proj| pbo f) :
+    (toSpec 𝒜 f).1.base x = PrimeSpectrum.comap (mapId 𝒜 (Submonoid.powers_le.mpr x.2))
+      (closedPoint (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal)) := by
+  show PrimeSpectrum.comap (awayToΓ 𝒜 f ≫ LocallyRingedSpace.ΓToStalk (Proj| pbo f) x)
+        (LocalRing.closedPoint ((Proj| pbo f).presheaf.stalk x)) = _
+  rw [awayToΓ_ΓToStalk, CommRingCat.comp_eq_ring_hom_comp,
+    PrimeSpectrum.comap_comp, ContinuousMap.comp_apply]
+  congr 1
+  apply @LocalRing.comap_closedPoint
+    (HomogeneousLocalization.AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) _ _
+    ((Proj| pbo f).presheaf.stalk x) _ _ _ (isLocalRingHom_of_isIso _)
+
+lemma ProjIsoSpec.toSpec_eq_toSpec {f} (x : Proj| pbo f) :
+    (toSpec 𝒜 f).1.base x = ProjIsoSpecTopComponent.toSpec 𝒜 f x := by
+  rw [toSpec_apply]
+  apply PrimeSpectrum.ext
+  ext z
+  show ¬ IsUnit _ ↔ z ∈ ProjIsoSpecTopComponent.ToSpec.carrier _
+  obtain ⟨z, rfl⟩ := z.mk_surjective
+  rw [← HomogeneousLocalization.isUnit_iff_isUnit_val,
+    ProjIsoSpecTopComponent.ToSpec.mk_mem_carrier, HomogeneousLocalization.map_mk,
+    HomogeneousLocalization.val_mk, Localization.mk_eq_mk',
+    IsLocalization.AtPrime.isUnit_mk'_iff]
+  exact not_not
+
+lemma ProjIsoSpec.mk_mem_toSpec {f} (x : Proj| pbo f)
+    (z : HomogeneousLocalization.NumDenSameDeg 𝒜 (.powers f)) :
+  HomogeneousLocalization.mk z ∈ ((toSpec 𝒜 f).1.base x).asIdeal ↔
+    z.num.1 ∈ x.1.asHomogeneousIdeal := by
+  rw [toSpec_eq_toSpec]
+  exact ProjIsoSpecTopComponent.ToSpec.mk_mem_carrier _ _
+
+lemma ProjIsoSpec.toSpec_preimage_basicOpen {f}
+      (t : HomogeneousLocalization.NumDenSameDeg 𝒜 (.powers f)) :
+    toSpec 𝒜 f ⁻¹ᵁ (sbo (.mk t)) = Opens.comap ⟨_, continuous_subtype_val⟩ (pbo t.num.1) := by
+  ext1
+  simp only [Opens.map_coe]
+  convert (ProjIsoSpecTopComponent.ToSpec.preimage_basicOpen f t)
+  ext
+  exact toSpec_eq_toSpec _ _
+
+lemma _root_.CategoryTheory.NatTrans.naturality_congr {C D} [Category C] [Category D] {F G : C ⥤ D} (e : NatTrans F G)
+    {X Y : C} (i : X ≅ Y) : e.app X = F.map i.hom ≫ e.app Y ≫ G.map i.inv := by
+  rw [e.naturality_assoc, ← G.map_comp, i.hom_inv_id, G.map_id, Category.comp_id]
+
+lemma _root_.PrimeSpectrum.comap_basicOpen {R S} [CommRing R] [CommRing S] (f : R →+* S) (x : R) :
+    Opens.comap (PrimeSpectrum.comap f) (PrimeSpectrum.basicOpen x) =
+        PrimeSpectrum.basicOpen (f x) := rfl
+
+lemma _root_.PrimeSpectrum.StructureSheaf.comap_basicOpen {R S} [CommRing R] [CommRing S]
+    (f : R →+* S) (x : R) :
+    StructureSheaf.comap f (PrimeSpectrum.basicOpen x) (PrimeSpectrum.basicOpen (f x))
+      (PrimeSpectrum.comap_basicOpen f x).le =
+      IsLocalization.map (M := .powers x) (T := .powers (f x)) _ f
+        (Submonoid.powers_le.mpr (Submonoid.mem_powers _)) := by
+  apply IsLocalization.ringHom_ext (.powers x)
+  rw [IsLocalization.map_comp]
+  exact StructureSheaf.toOpen_comp_comap _ _
+
+lemma ΓSpec.toOpen_homEquiv_app (R) [CommRing R] (X : LocallyRingedSpace)
+    (f : LocallyRingedSpace.Γ.rightOp.obj X ⟶ op (CommRingCat.of R)) (U) :
+    StructureSheaf.toOpen R U.unop ≫
+      (ΓSpec.locallyRingedSpaceAdjunction.homEquiv X (op (CommRingCat.of R)) f).1.c.app U =
+    f.unop ≫ X.presheaf.map (homOfLE le_top).op := by
+  rw [← StructureSheaf.toOpen_res _ _ _ (homOfLE le_top), Category.assoc]
+  show _ ≫ (Spec.locallyRingedSpaceObj (CommRingCat.of R)).presheaf.map
+    (homOfLE (le_top (a := U.unop))).op ≫ _ = _
+  rw [NatTrans.naturality, ← Category.assoc]
+  show ((ΓSpec.locallyRingedSpaceAdjunction.counit.app (op (CommRingCat.of R))).unop ≫
+    (LocallyRingedSpace.Γ.rightOp.map
+      (ΓSpec.locallyRingedSpaceAdjunction.homEquiv X (op (CommRingCat.of R)) f)).unop) ≫ _ = _
+  rw [← unop_comp, ← Adjunction.homEquiv_counit, Equiv.symm_apply_apply]
+  rfl
+
+@[reassoc]
+lemma toOpen_toSpec_val_c_app (f) (U) :
+    StructureSheaf.toOpen _ _ ≫ (toSpec 𝒜 f).val.c.app U =
+      awayToΓ 𝒜 f ≫ (by exact (Proj| pbo f).presheaf.map (homOfLE le_top).op) :=
+  ΓSpec.toOpen_homEquiv_app _ _ _ _
+
+lemma toStalk_stalkMap_toSpec (f) (x) :
+    StructureSheaf.toStalk _ _ ≫ PresheafedSpace.stalkMap (toSpec 𝒜 f).1 x =
+      awayToΓ 𝒜 f ≫ (Proj| pbo f).ΓToStalk x := by
+  rw [StructureSheaf.toStalk, Category.assoc]
+  erw [PresheafedSpace.stalkMap_germ']
+  rw [toOpen_toSpec_val_c_app_assoc, Presheaf.germ_res]
+  rfl
+
+lemma DirectSum.mul_of_apply {ι} [DecidableEq ι] {A : ι → Type*} [AddRightCancelSemigroup ι]
+    [(i : ι) → AddCommMonoid (A i)] [GNonUnitalNonAssocSemiring A] {i j : ι}
+    (a : ⨁ i, A i) (b : A j) :
+    (a * DirectSum.of A j b) (i + j) = GradedMonoid.GMul.mul (a i) b := by
+  induction a using DirectSum.induction_on
+  · simp [GNonUnitalNonAssocSemiring.zero_mul]
+  next i' x' =>
+    rw [of_mul_of]
+    by_cases hi : i = i'
+    · subst hi; rw [DirectSum.of_eq_same, DirectSum.of_eq_same]
+    rw [DirectSum.of_eq_of_ne, DirectSum.of_eq_of_ne, GNonUnitalNonAssocSemiring.zero_mul]
+    · exact Ne.symm hi
+    · exact fun e ↦ hi (by exact add_right_cancel e.symm)
+  · simp only [add_mul, add_apply, GNonUnitalNonAssocSemiring.add_mul, *]
+
+open HomogeneousLocalization in
+lemma isLocalization_atPrime (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
+    @IsLocalization (Away 𝒜 f) _ ((toSpec 𝒜 f).1.base x).asIdeal.primeCompl
+      (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) _
+      (mapId 𝒜 (Submonoid.powers_le.mpr x.2)).toAlgebra := by
+  letI : Algebra (Away 𝒜 f) (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) :=
+    (mapId 𝒜 (Submonoid.powers_le.mpr x.2)).toAlgebra
+  have hm : 1 ≤ m := hm
+  constructor
+  · rintro ⟨y, hy⟩
+    obtain ⟨y, rfl⟩ := y.mk_surjective
+    apply isUnit_of_mul_eq_one _
+      (.mk ⟨y.1, y.3, y.2, (ProjIsoSpec.mk_mem_toSpec _ _ _).not.mp hy⟩)
+    apply HomogeneousLocalization.val_injective
+    simp only [RingHom.algebraMap_toAlgebra, map_mk, RingHom.id_apply, Subtype.coe_eta, val_mul,
+      val_mk, id_eq, mk_eq_mk', val_one]
+    rw [IsLocalization.mk'_mul_mk'_eq_one']
+  · rintro z
+    obtain ⟨⟨i, a, ⟨b, hb⟩, (hb' : b ∉ x.1.1)⟩, rfl⟩ := z.mk_surjective
+    refine ⟨⟨.mk ⟨i * m, ⟨a * b ^ (m - 1), ?_⟩, ⟨f ^ i, SetLike.pow_mem_graded _ f_deg⟩, ⟨_, rfl⟩⟩,
+      ⟨.mk ⟨i * m, ⟨b ^ m, ?_⟩, ⟨f ^ i, SetLike.pow_mem_graded _ f_deg⟩, ⟨_, rfl⟩⟩, ?_⟩⟩, ?_⟩
+    · convert SetLike.mul_mem_graded a.2 (SetLike.pow_mem_graded (m - 1) hb) using 2
+      rw [← succ_nsmul', tsub_add_cancel_of_le hm, mul_comm, smul_eq_mul]
+    · rw [mul_comm]; exact SetLike.pow_mem_graded _ hb
+    · refine (ProjIsoSpec.mk_mem_toSpec _ _ _).not.mpr ?_
+      exact x.1.asHomogeneousIdeal.toIdeal.primeCompl.pow_mem hb' m
+    · apply HomogeneousLocalization.val_injective
+      simp only [val_mul, val_mk, RingHom.algebraMap_toAlgebra, map_mk,
+        Localization.mk_eq_mk', ← IsLocalization.mk'_mul, IsLocalization.mk'_eq_iff_eq,
+        ← map_pow, RingHom.id_apply, ← map_mul, Submonoid.mk_mul_mk]
+      rw [mul_comm b, mul_mul_mul_comm, ← pow_succ', mul_assoc, tsub_add_cancel_of_le hm]
+  · intros y z e
+    obtain ⟨y, rfl⟩ := y.mk_surjective
+    obtain ⟨z, rfl⟩ := z.mk_surjective
+    obtain ⟨i, c, hc, hc', e⟩ : ∃ i, ∃ c ∈ 𝒜 i, c ∉ x.1.asHomogeneousIdeal ∧
+        c * (z.den.1 * y.num.1) = c * (y.den.1 * z.num.1) := by
+      apply_fun HomogeneousLocalization.val at e
+      simp only [RingHom.algebraMap_toAlgebra, map_mk, RingHom.id_apply, val_mk, mk_eq_mk',
+        IsLocalization.mk'_eq_iff_eq] at e
+      obtain ⟨⟨c, hcx⟩, hc⟩ :=
+        IsLocalization.exists_of_eq (M := x.1.asHomogeneousIdeal.toIdeal.primeCompl) e
+      obtain ⟨i, hi⟩ := not_forall.mp ((x.1.asHomogeneousIdeal.isHomogeneous.mem_iff _).not.mp hcx)
+      refine ⟨i, _, (decompose 𝒜 c i).2, hi, ?_⟩
+      apply_fun (fun x ↦ (decompose 𝒜 x (i + z.deg + y.deg)).1) at hc
+      conv_rhs at hc => rw [add_right_comm]
+      simp only [decompose_mul, decompose_coe, SetLike.coe_eq_coe, ← mul_assoc,
+        DirectSum.mul_of_apply] at hc ⊢
+      exact hc
+    refine ⟨⟨.mk ⟨m * i, ⟨c ^ m, SetLike.pow_mem_graded _ hc⟩, ⟨f ^ i, ?_⟩, ⟨_, rfl⟩⟩, ?_⟩, ?_⟩
+    · rw [mul_comm]; exact SetLike.pow_mem_graded _ f_deg
+    · refine (ProjIsoSpec.mk_mem_toSpec _ _ _).not.mpr ?_
+      exact x.1.asHomogeneousIdeal.toIdeal.primeCompl.pow_mem hc' _
+    apply HomogeneousLocalization.val_injective
+    simp only [val_mul, val_mk, mk_eq_mk', ← IsLocalization.mk'_mul, Submonoid.mk_mul_mk,
+      IsLocalization.mk'_eq_iff_eq, mul_assoc]
+    congr 2
+    rw [mul_left_comm, mul_left_comm y.den.1, ← tsub_add_cancel_of_le hm, pow_succ,
+      mul_assoc, mul_assoc, e]
+
+open HomogeneousLocalization in
+def stalkEquiv (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
+  (Spec.structureSheaf (A⁰_ f)).presheaf.stalk ((toSpec 𝒜 f).1.base x) ≅
+    CommRingCat.of (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) :=
+  letI : Algebra (Away 𝒜 f) (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) :=
+    (mapId 𝒜 (Submonoid.powers_le.mpr x.2)).toAlgebra
+  haveI := isLocalization_atPrime 𝒜 f x f_deg hm
+  (IsLocalization.algEquiv
+    (R := A⁰_ f)
+    (M := ((toSpec 𝒜 f).1.base x).asIdeal.primeCompl)
+    (S := (Spec.structureSheaf (A⁰_ f)).presheaf.stalk ((toSpec 𝒜 f).1.base x))
+    (Q := AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal)).toRingEquiv.toCommRingCatIso
+
+open HomogeneousLocalization in
+lemma toStalk_stalkEquiv (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
+    StructureSheaf.toStalk (A⁰_ f) _ ≫ (stalkEquiv 𝒜 f x f_deg hm).hom =
+      by exact (mapId 𝒜 (Submonoid.powers_le.mpr x.2)) :=
+  letI : Algebra (Away 𝒜 f) (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) :=
+    (mapId 𝒜 (Submonoid.powers_le.mpr x.2)).toAlgebra
+  haveI := isLocalization_atPrime 𝒜 f x f_deg hm
+  (IsLocalization.algEquiv
+    (R := A⁰_ f)
+    (M := ((toSpec 𝒜 f).1.base x).asIdeal.primeCompl)
+    (S := (Spec.structureSheaf (A⁰_ f)).presheaf.stalk ((toSpec 𝒜 f).1.base x))
+    (Q := AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal)).toAlgHom.comp_algebraMap
+
+open HomogeneousLocalization in
+lemma stalkMap_toSpec (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
+    PresheafedSpace.stalkMap (toSpec 𝒜 f).1 x =
+      (stalkEquiv 𝒜 f x f_deg hm).hom ≫ (Proj.stalkIso' 𝒜 x.1).toCommRingCatIso.inv ≫
+      ((Proj.toLocallyRingedSpace 𝒜).restrictStalkIso (Opens.openEmbedding _) x).inv := by
+  apply IsLocalization.ringHom_ext (R := A⁰_ f) ((toSpec 𝒜 f).1.base x).asIdeal.primeCompl
+    (S := (Spec.structureSheaf (A⁰_ f)).presheaf.stalk ((toSpec 𝒜 f).1.base x))
+  refine (toStalk_stalkMap_toSpec _ _ _).trans ?_
+  rw [awayToΓ_ΓToStalk, ← toStalk_stalkEquiv 𝒜 f x f_deg hm, Category.assoc]
+  rfl
+
+lemma isIso_toSpec (f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
+    IsIso (toSpec 𝒜 f) := by
+  have (x) : IsIso (PresheafedSpace.stalkMap (toSpec 𝒜 f).1 x) := by
+    rw [stalkMap_toSpec 𝒜 f x f_deg hm]; infer_instance
+  have : LocallyRingedSpace.IsOpenImmersion (toSpec 𝒜 f) := by
+    apply SheafedSpace.IsOpenImmersion.of_stalk_iso
+    convert (TopCat.homeoOfIso (projIsoSpecTopComponent f_deg hm)).openEmbedding using 1
+    ext; exact ProjIsoSpec.toSpec_eq_toSpec 𝒜 _
+  suffices IsIso (LocallyRingedSpace.forgetToSheafedSpace.map (toSpec 𝒜 f)) by
+    apply isIso_of_reflects_iso _ LocallyRingedSpace.forgetToSheafedSpace
+  show IsIso (toSpec 𝒜 f).1
+  suffices IsIso (SheafedSpace.forgetToPresheafedSpace.map (toSpec 𝒜 f).1) by
+    apply isIso_of_reflects_iso _ SheafedSpace.forgetToPresheafedSpace
+  suffices Epi (SheafedSpace.forgetToPresheafedSpace.map (toSpec 𝒜 f).val).base by
+    exact PresheafedSpace.IsOpenImmersion.to_iso _
+  rw [TopCat.epi_iff_surjective]
+  convert (TopCat.homeoOfIso (projIsoSpecTopComponent f_deg hm)).surjective using 1
+  ext; exact ProjIsoSpec.toSpec_eq_toSpec 𝒜 _
 
 variable {𝒜} in
 /--
