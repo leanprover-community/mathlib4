@@ -44,8 +44,7 @@ lemma MDifferentiable_iff_extension_DifferentiableOn (f : ℍ → ℂ) : MDiffer
     DifferentiableOn ℂ (↑ₕf) (UpperHalfPlane.coe '' ⊤) := by
   rw [_root_.MDifferentiable]
   constructor
-  · intro h z hz
-    obtain ⟨y, _, hy⟩ := hz
+  · intro h z ⟨y, _, hy⟩
     have H := h y
     rw [mdifferentiableAt_iff] at H
     simp only [top_eq_univ, mem_univ, ← hy, writtenInExtChartAt, extChartAt, extend,
@@ -56,8 +55,8 @@ lemma MDifferentiable_iff_extension_DifferentiableOn (f : ℍ → ℂ) : MDiffer
       image_univ] at H ⊢
     apply H.2.mono (Set.subset_univ _)
   · intro h z
-    have ha : UpperHalfPlane.coe '' ⊤ ∈ 𝓝 ↑z := by
-      exact IsOpenMap.image_mem_nhds (OpenEmbedding.isOpenMap openEmbedding_coe) (by simp)
+    have ha : UpperHalfPlane.coe '' ⊤ ∈ 𝓝 ↑z :=
+      IsOpenMap.image_mem_nhds (OpenEmbedding.isOpenMap openEmbedding_coe) (by simp)
     constructor
     · rw [continuousWithinAt_univ, continuousAt_iff_continuousAt_comp_right
         (e := (PartialHomeomorph.symm (OpenEmbedding.toPartialHomeomorph
