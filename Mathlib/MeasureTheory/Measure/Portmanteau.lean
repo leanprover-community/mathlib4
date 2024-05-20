@@ -316,7 +316,7 @@ Weak convergence of probability measures implies that the limsup of the measures
 set is at most the measure of the closed set under the limit probability measure.
 -/
 theorem ProbabilityMeasure.limsup_measure_closed_le_of_tendsto {Ω ι : Type*} {L : Filter ι}
-    [MeasurableSpace Ω] [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω] [HasOuterApproxClosed Ω]
+    [MeasurableSpace Ω] [TopologicalSpace Ω] [OpensMeasurableSpace Ω] [HasOuterApproxClosed Ω]
     {μ : ProbabilityMeasure Ω} {μs : ι → ProbabilityMeasure Ω} (μs_lim : Tendsto μs L (𝓝 μ))
     {F : Set Ω} (F_closed : IsClosed F) :
     (L.limsup fun i => (μs i : Measure Ω) F) ≤ (μ : Measure Ω) F := by
