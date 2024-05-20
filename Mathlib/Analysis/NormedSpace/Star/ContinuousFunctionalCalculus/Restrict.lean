@@ -28,6 +28,7 @@ open Set
 
 namespace SpectrumRestricts
 
+/-- The homeomorphism `spectrum S a ≃ₜ spectrum R a` induced by `SpectrumRestricts a f`. -/
 def homeomorph {R S A : Type*} [Semifield R] [Semifield S] [Ring A]
     [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [TopologicalSpace R]
     [TopologicalSpace S] [ContinuousSMul R S] {a : A} {f : C(S, R)} (h : SpectrumRestricts a f) :
