@@ -93,3 +93,5 @@ theorem measure_prod (N : ℕ) (μ : (n : Finset.range (N + 1)) → Measure (X n
       (fun n : Finset.range N ↦ (μ ⟨n + 1, ok.1 n.2⟩) (s ⟨n + 1, ok.1 n.2⟩))) := by
     intro s
     rw [Measure.pi_pi]
+    sorry
+  sorry
