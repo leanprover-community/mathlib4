@@ -250,7 +250,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     MeasurableSet.measurableSet_blimsup fun n _ => isOpen_thickening.measurableSet
   have hE₀ : NullMeasurableSet E μ := by
     refine (MeasurableSet.measurableSet_blimsup fun n hn =>
-      IsOpen.measurableSet _).nullMeasurableSet
+      IsOpen.measurableSet ?_).nullMeasurableSet
     exact isOpen_thickening
   have hE₁ : ∀ p, E = A p ∪ B p ∪ C p := by
     intro p

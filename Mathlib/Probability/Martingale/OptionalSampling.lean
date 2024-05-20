@@ -123,7 +123,7 @@ theorem stoppedValue_ae_eq_condexp_of_le_of_countable_range (h : Martingale f �
       μ[μ[f n|hτ.measurableSpace]|hσ.measurableSpace] := condexp_congr_ae
     (h.stoppedValue_ae_eq_condexp_of_le_const_of_countable_range hτ hτ_le hτ_countable_range)
   refine (Filter.EventuallyEq.trans ?_
-    (condexp_condexp_of_le _ (hτ.measurableSpace_le_of_le hτ_le)).symm).trans this.symm
+    (condexp_condexp_of_le ?_ (hτ.measurableSpace_le_of_le hτ_le)).symm).trans this.symm
   · exact h.stoppedValue_ae_eq_condexp_of_le_const_of_countable_range hσ
       (fun x => (hσ_le_τ x).trans (hτ_le x)) hσ_countable_range
   · exact hσ.measurableSpace_mono hτ hσ_le_τ
