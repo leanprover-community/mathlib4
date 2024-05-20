@@ -155,7 +155,8 @@ exists_cfc_of_predicate := by
         intro f
         refine Set.ext ?h.right.right.left.h
         intro x
-        constructor
+        sorry
+        sorry
 
 
 
