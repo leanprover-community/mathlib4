@@ -619,7 +619,7 @@ section Permutations
 theorem perm_of_mem_permutationsAux :
     ∀ {ts is l : List α}, l ∈ permutationsAux ts is → l ~ ts ++ is := by
   show ∀ (ts is l : List α), l ∈ permutationsAux ts is → l ~ ts ++ is
-  refine' permutationsAux.rec (by simp) _
+  refine permutationsAux.rec (by simp) ?_
   introv IH1 IH2 m
   rw [permutationsAux_cons, permutations, mem_foldr_permutationsAux2] at m
   rcases m with (m | ⟨l₁, l₂, m, _, rfl⟩)
@@ -639,7 +639,7 @@ theorem perm_of_mem_permutations {l₁ l₂ : List α} (h : l₁ ∈ permutation
 
 theorem length_permutationsAux :
     ∀ ts is : List α, length (permutationsAux ts is) + is.length ! = (length ts + length is)! := by
-  refine' permutationsAux.rec (by simp) _
+  refine permutationsAux.rec (by simp) ?_
   intro t ts is IH1 IH2
   have IH2 : length (permutationsAux is nil) + 1 = is.length ! := by simpa using IH2
   simp only [factorial, Nat.mul_comm, add_eq] at IH1
@@ -663,7 +663,7 @@ theorem mem_permutationsAux_of_perm :
       l ~ is ++ ts → (∃ (is' : _) (_ : is' ~ is), l = is' ++ ts) ∨ l ∈ permutationsAux ts is := by
   show ∀ (ts is l : List α),
       l ~ is ++ ts → (∃ (is' : _) (_ : is' ~ is), l = is' ++ ts) ∨ l ∈ permutationsAux ts is
-  refine' permutationsAux.rec (by simp) _
+  refine permutationsAux.rec (by simp) ?_
   intro t ts is IH1 IH2 l p
   rw [permutationsAux_cons, mem_foldr_permutationsAux2]
   rcases IH1 _ (p.trans perm_middle) with (⟨is', p', e⟩ | m)

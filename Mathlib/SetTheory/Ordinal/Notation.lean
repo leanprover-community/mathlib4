@@ -1036,7 +1036,7 @@ private theorem exists_lt_add {α} [hα : Nonempty α] {o : Ordinal} {f : α →
   · obtain ⟨i⟩ := id hα
     exact ⟨i, h.trans_le (le_add_right _ _)⟩
   · rw [← Ordinal.add_sub_cancel_of_le h', add_lt_add_iff_left] at h
-    refine' (H h).imp fun i H => _
+    refine (H h).imp fun i H => ?_
     rwa [← Ordinal.add_sub_cancel_of_le h', add_lt_add_iff_left]
 
 private theorem exists_lt_mul_omega' {o : Ordinal} ⦃a⦄ (h : a < o * ω) :

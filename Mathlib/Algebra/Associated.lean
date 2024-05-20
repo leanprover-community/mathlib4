@@ -1162,7 +1162,7 @@ theorem dvdNotUnit_of_lt {a b : Associates α} (hlt : a < b) : DvdNotUnit a b :=
     apply not_lt_of_le _ hlt
     apply dvd_zero
   rcases hlt with ⟨⟨x, rfl⟩, ndvd⟩
-  refine' ⟨x, _, rfl⟩
+  refine ⟨x, ?_, rfl⟩
   contrapose! ndvd
   rcases ndvd with ⟨u, rfl⟩
   simp

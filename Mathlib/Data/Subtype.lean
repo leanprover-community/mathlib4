@@ -183,7 +183,7 @@ theorem restrict_injective {α β} {f : α → β} (p : α → Prop) (h : Inject
 theorem surjective_restrict {α} {β : α → Type*} [ne : ∀ a, Nonempty (β a)] (p : α → Prop) :
     Surjective fun f : ∀ x, β x ↦ restrict p f := by
   letI := Classical.decPred p
-  refine' fun f ↦ ⟨fun x ↦ if h : p x then f ⟨x, h⟩ else Nonempty.some (ne x), funext <| _⟩
+  refine fun f ↦ ⟨fun x ↦ if h : p x then f ⟨x, h⟩ else Nonempty.some (ne x), funext <| ?_⟩
   rintro ⟨x, hx⟩
   exact dif_pos hx
 #align subtype.surjective_restrict Subtype.surjective_restrict

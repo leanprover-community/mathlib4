@@ -568,7 +568,7 @@ theorem nat_coe_zmod_eq_iff (p : ℕ) (n : ℕ) (z : ZMod p) [NeZero p] :
     ↑n = z ↔ ∃ k, n = z.val + p * k := by
   constructor
   · rintro rfl
-    refine' ⟨n / p, _⟩
+    refine ⟨n / p, ?_⟩
     rw [val_natCast, Nat.mod_add_div]
   · rintro ⟨k, rfl⟩
     rw [Nat.cast_add, natCast_zmod_val, Nat.cast_mul, natCast_self, zero_mul,
@@ -579,7 +579,7 @@ theorem int_coe_zmod_eq_iff (p : ℕ) (n : ℤ) (z : ZMod p) [NeZero p] :
     ↑n = z ↔ ∃ k, n = z.val + p * k := by
   constructor
   · rintro rfl
-    refine' ⟨n / p, _⟩
+    refine ⟨n / p, ?_⟩
     rw [val_intCast, Int.emod_add_ediv]
   · rintro ⟨k, rfl⟩
     rw [Int.cast_add, Int.cast_mul, Int.cast_natCast, Int.cast_natCast, natCast_val,
