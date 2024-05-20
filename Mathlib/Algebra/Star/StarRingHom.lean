@@ -14,7 +14,7 @@ This file defines morphisms between (non-unital) rings `A` and `B` where both
 a direct extension of its non-`star`red counterpart with a field `map_star` which guarantees it
 preserves the star operation.
 
-As with `NonUnitalAlgHom`, the multiplications are not assumed to be associative or unital.
+As with `NonUnitalRingHom`, the multiplications are not assumed to be associative or unital.
 
 ## Main definitions
 
