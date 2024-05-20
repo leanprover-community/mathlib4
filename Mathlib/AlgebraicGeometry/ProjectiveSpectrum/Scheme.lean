@@ -604,7 +604,7 @@ lemma awayToSection_germ (f x) :
   rw [Proj.stalkIso'_germ]
   rfl
 
-def awayToΓ (f) : CommRingCat.of (A⁰_ f) ⟶ LocallyRingedSpace.Γ.obj (op <| Proj| (pbo f)) :=
+def awayToΓ (f) : CommRingCat.of (A⁰_ f) ⟶ LocallyRingedSpace.Γ.obj (op <| Proj| pbo f) :=
   awayToSection 𝒜 f ≫ (ProjectiveSpectrum.Proj.structureSheaf 𝒜).1.map
     (homOfLE (Opens.openEmbedding_obj_top _).le).op
 
@@ -623,7 +623,7 @@ lemma awayToΓ_ΓToStalk (f) (x) :
 
 open ProjectiveSpectrum.Proj in
 def toSpec (f) : (Proj| pbo f) ⟶ Spec (A⁰_ f) :=
-  ΓSpec.locallyRingedSpaceAdjunction.homEquiv (Proj| (pbo f)) (op (CommRingCat.of <| A⁰_ f))
+  ΓSpec.locallyRingedSpaceAdjunction.homEquiv (Proj| pbo f) (op (CommRingCat.of <| A⁰_ f))
     (awayToΓ 𝒜 f).op
 
 open HomogeneousLocalization LocalRing in
@@ -668,49 +668,17 @@ lemma ProjIsoSpec.toSpec_preimage_basicOpen {f}
   ext
   exact toSpec_eq_toSpec _ _
 
-lemma _root_.CategoryTheory.NatTrans.naturality_congr {C D} [Category C] [Category D] {F G : C ⥤ D} (e : NatTrans F G)
-    {X Y : C} (i : X ≅ Y) : e.app X = F.map i.hom ≫ e.app Y ≫ G.map i.inv := by
-  rw [e.naturality_assoc, ← G.map_comp, i.hom_inv_id, G.map_id, Category.comp_id]
-
-lemma _root_.PrimeSpectrum.comap_basicOpen {R S} [CommRing R] [CommRing S] (f : R →+* S) (x : R) :
-    Opens.comap (PrimeSpectrum.comap f) (PrimeSpectrum.basicOpen x) =
-        PrimeSpectrum.basicOpen (f x) := rfl
-
-lemma _root_.PrimeSpectrum.StructureSheaf.comap_basicOpen {R S} [CommRing R] [CommRing S]
-    (f : R →+* S) (x : R) :
-    StructureSheaf.comap f (PrimeSpectrum.basicOpen x) (PrimeSpectrum.basicOpen (f x))
-      (PrimeSpectrum.comap_basicOpen f x).le =
-      IsLocalization.map (M := .powers x) (T := .powers (f x)) _ f
-        (Submonoid.powers_le.mpr (Submonoid.mem_powers _)) := by
-  apply IsLocalization.ringHom_ext (.powers x)
-  rw [IsLocalization.map_comp]
-  exact StructureSheaf.toOpen_comp_comap _ _
-
-lemma ΓSpec.toOpen_homEquiv_app (R) [CommRing R] (X : LocallyRingedSpace)
-    (f : LocallyRingedSpace.Γ.rightOp.obj X ⟶ op (CommRingCat.of R)) (U) :
-    StructureSheaf.toOpen R U.unop ≫
-      (ΓSpec.locallyRingedSpaceAdjunction.homEquiv X (op (CommRingCat.of R)) f).1.c.app U =
-    f.unop ≫ X.presheaf.map (homOfLE le_top).op := by
-  rw [← StructureSheaf.toOpen_res _ _ _ (homOfLE le_top), Category.assoc]
-  show _ ≫ (Spec.locallyRingedSpaceObj (CommRingCat.of R)).presheaf.map
-    (homOfLE (le_top (a := U.unop))).op ≫ _ = _
-  rw [NatTrans.naturality, ← Category.assoc]
-  show ((ΓSpec.locallyRingedSpaceAdjunction.counit.app (op (CommRingCat.of R))).unop ≫
-    (LocallyRingedSpace.Γ.rightOp.map
-      (ΓSpec.locallyRingedSpaceAdjunction.homEquiv X (op (CommRingCat.of R)) f)).unop) ≫ _ = _
-  rw [← unop_comp, ← Adjunction.homEquiv_counit, Equiv.symm_apply_apply]
-  rfl
-
 @[reassoc]
 lemma toOpen_toSpec_val_c_app (f) (U) :
-    StructureSheaf.toOpen _ _ ≫ (toSpec 𝒜 f).val.c.app U =
-      awayToΓ 𝒜 f ≫ (by exact (Proj| pbo f).presheaf.map (homOfLE le_top).op) :=
-  ΓSpec.toOpen_homEquiv_app _ _ _ _
+    StructureSheaf.toOpen (A⁰_ f) U.unop ≫ (toSpec 𝒜 f).val.c.app U =
+      awayToΓ 𝒜 f ≫ (Proj| pbo f).presheaf.map (homOfLE le_top).op :=
+  Eq.trans (by congr) <| ΓSpec.toOpen_comp_locallyRingedSpaceAdjunction_homEquiv_app (awayToΓ 𝒜 f).op U
 
 lemma toStalk_stalkMap_toSpec (f) (x) :
     StructureSheaf.toStalk _ _ ≫ PresheafedSpace.stalkMap (toSpec 𝒜 f).1 x =
       awayToΓ 𝒜 f ≫ (Proj| pbo f).ΓToStalk x := by
   rw [StructureSheaf.toStalk, Category.assoc]
+  simp_rw [CommRingCat.coe_of]
   erw [PresheafedSpace.stalkMap_germ']
   rw [toOpen_toSpec_val_c_app_assoc, Presheaf.germ_res]
   rfl

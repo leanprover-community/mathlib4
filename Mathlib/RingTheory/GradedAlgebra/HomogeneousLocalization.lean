@@ -612,7 +612,7 @@ section
 variable (𝒜)
 variable {B C : Type*} [CommRing B] [Algebra R B]
 variable (ℬ : ι → Submodule R B) [GradedAlgebra ℬ]
-variable (P : Submonoid A) (Q : Submonoid B)
+variable {P : Submonoid A} {Q : Submonoid B}
 variable [CommRing C]
 
 def map (g : A →+* B)
@@ -636,12 +636,13 @@ def map (g : A →+* B)
 
 abbrev mapId {P Q : Submonoid A} (h : P ≤ Q) :
     HomogeneousLocalization 𝒜 P →+* HomogeneousLocalization 𝒜 Q :=
-  map 𝒜 𝒜 P Q (RingHom.id _) h (fun _ _ ↦ id)
+  map 𝒜 𝒜 (RingHom.id _) h (fun _ _ ↦ id)
 
 lemma map_mk (g : A →+* B)
     (comap_le : P ≤ Q.comap g) (hg : ∀ i, ∀ a ∈ 𝒜 i, g a ∈ ℬ i) (x) :
-    map 𝒜 ℬ P Q g comap_le hg (mk x) =
-      mk ⟨x.1, ⟨_, hg _ _ x.2.2⟩, ⟨_, hg _ _ x.3.2⟩, comap_le x.4⟩ := rfl
+    map 𝒜 ℬ g comap_le hg (mk x) =
+    mk ⟨x.1, ⟨_, hg _ _ x.2.2⟩, ⟨_, hg _ _ x.3.2⟩, comap_le x.4⟩ :=
+  rfl
 
 end
 
