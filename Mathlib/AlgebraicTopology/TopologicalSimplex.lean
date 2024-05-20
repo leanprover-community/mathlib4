@@ -69,7 +69,7 @@ theorem continuous_toTopMap {x y : SimplexCategory} (f : x ⟶ y) : Continuous (
 #align simplex_category.continuous_to_Top_map SimplexCategory.continuous_toTopMap
 
 /-- The functor associating the topological `n`-simplex to `[n] : SimplexCategory`. -/
-@[simps]
+@[simps obj map]
 def toTop : SimplexCategory ⥤ TopCat where
   obj x := TopCat.of x.toTopObj
   map f := ⟨toTopMap f, by continuity⟩
@@ -95,8 +95,5 @@ def toTop : SimplexCategory ⥤ TopCat where
       · tauto
     · apply Set.pairwiseDisjoint_filter
 #align simplex_category.to_Top SimplexCategory.toTop
-
--- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
-attribute [nolint simpNF] SimplexCategory.toTop_map_apply
 
 end SimplexCategory

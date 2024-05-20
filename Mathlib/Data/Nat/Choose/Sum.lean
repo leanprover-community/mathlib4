@@ -235,4 +235,11 @@ theorem sum_antidiagonal_choose_succ_mul (f : ℕ → ℕ → R) (n : ℕ) :
   simpa only [nsmul_eq_mul] using sum_antidiagonal_choose_succ_nsmul f n
 #align finset.sum_antidiagonal_choose_succ_mul Finset.sum_antidiagonal_choose_succ_mul
 
+theorem sum_antidiagonal_choose_add (d n : ℕ) :
+    (Finset.sum (antidiagonal n) fun ij => (d + ij.2).choose d) =
+    (d + n).choose d + (d + n).choose (succ d) := by
+  induction n with
+  | zero => simp
+  | succ n hn => simpa [Nat.sum_antidiagonal_succ] using hn
+
 end Finset

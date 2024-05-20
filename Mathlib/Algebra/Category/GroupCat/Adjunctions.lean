@@ -130,28 +130,20 @@ def adj : free ⊣ forget GroupCat.{u} :=
 instance : (forget GroupCat.{u}).IsRightAdjoint  :=
   ⟨_, ⟨adj⟩⟩
 
-end GroupCat
-
 section Abelianization
 
 /-- The abelianization functor `Group ⥤ CommGroup` sending a group `G` to its abelianization `Gᵃᵇ`.
  -/
 def abelianize : GroupCat.{u} ⥤ CommGroupCat.{u} where
-  obj G :=
-    { α := Abelianization G
-      str := by infer_instance }
-  map f :=
-    Abelianization.lift
-      { toFun := fun x => Abelianization.of (f x)
-        map_one' := by simp
-        map_mul' := by simp }
+  obj G := CommGroupCat.of (Abelianization G)
+  map f := Abelianization.lift (Abelianization.of.comp f)
   map_id := by
-    intros; simp only [MonoidHom.mk_coe, coe_id]
+    intros; simp only [coe_id]
     apply (Equiv.apply_eq_iff_eq_symm_apply Abelianization.lift).mpr; rfl
   map_comp := by
-    intros; simp only [coe_comp];
+    intros; simp only [coe_comp]
     apply (Equiv.apply_eq_iff_eq_symm_apply Abelianization.lift).mpr; rfl
-#align abelianize abelianize
+#align abelianize GroupCat.abelianize
 
 /-- The abelianization-forgetful adjuction from `Group` to `CommGroup`. -/
 def abelianizeAdj : abelianize ⊣ forget₂ CommGroupCat.{u} GroupCat.{u} :=
@@ -166,9 +158,11 @@ def abelianizeAdj : abelianize ⊣ forget₂ CommGroupCat.{u} GroupCat.{u} :=
         apply Abelianization.lift.unique
         intros
         apply Abelianization.lift.of }
-#align abelianize_adj abelianizeAdj
+#align abelianize_adj GroupCat.abelianizeAdj
 
 end Abelianization
+
+end GroupCat
 
 /-- The functor taking a monoid to its subgroup of units. -/
 @[simps]

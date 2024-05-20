@@ -31,11 +31,6 @@ theorem IsPrime.isPrimary {I : Ideal R} (hi : IsPrime I) : IsPrimary I :=
   ⟨hi.1, fun {_ _} hxy => (hi.mem_or_mem hxy).imp id fun hyi => le_radical hyi⟩
 #align ideal.is_prime.is_primary Ideal.IsPrime.isPrimary
 
-theorem mem_radical_of_pow_mem {I : Ideal R} {x : R} {m : ℕ} (hx : x ^ m ∈ radical I) :
-    x ∈ radical I :=
-  radical_idem I ▸ ⟨m, hx⟩
-#align ideal.mem_radical_of_pow_mem Ideal.mem_radical_of_pow_mem
-
 theorem isPrime_radical {I : Ideal R} (hi : IsPrimary I) : IsPrime (radical I) :=
   ⟨mt radical_eq_top.1 hi.1,
    fun {x y} ⟨m, hxy⟩ => by
