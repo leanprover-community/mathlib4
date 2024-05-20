@@ -62,8 +62,7 @@ variable [NonUnitalNonAssocSemiring A] [Star A]
 variable [NonUnitalNonAssocSemiring B] [Star B]
 variable [NonUnitalNonAssocSemiring C] [Star C]
 
-instance : FunLike (A →⋆ₙ+* B) A B
-    where
+instance : FunLike (A →⋆ₙ+* B) A B where
   coe f := f.toFun
   coe_injective' := by rintro ⟨⟨⟨f, _⟩,  _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
 
