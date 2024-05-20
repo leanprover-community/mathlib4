@@ -40,8 +40,7 @@ namespace FinEnum
 variable {α : Type u} {β : α → Type v}
 
 /-- transport a `FinEnum` instance across an equivalence -/
-def ofEquiv (α) {β} [FinEnum α] (h : β ≃ α) : FinEnum β
-    where
+def ofEquiv (α) {β} [FinEnum α] (h : β ≃ α) : FinEnum β where
   card := card α
   equiv := h.trans (equiv)
   decEq := (h.trans (equiv)).decidableEq

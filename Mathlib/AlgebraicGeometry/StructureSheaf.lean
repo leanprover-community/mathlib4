@@ -191,7 +191,7 @@ def sectionsSubring (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
   neg_mem' := by
     intro a ha x
     rcases ha x with ⟨V, m, i, r, s, w⟩
-    refine' ⟨V, m, i, -r, s, _⟩
+    refine ⟨V, m, i, -r, s, ?_⟩
     intro y
     rcases w y with ⟨nm, w⟩
     fconstructor
@@ -410,8 +410,8 @@ theorem const_mul_cancel' (f g₁ g₂ : R) (U hu₁ hu₂) :
 
 /-- The canonical ring homomorphism interpreting an element of `R` as
 a section of the structure sheaf. -/
-def toOpen (U : Opens (PrimeSpectrum.Top R)) : CommRingCat.of R ⟶ (structureSheaf R).1.obj (op U)
-    where
+def toOpen (U : Opens (PrimeSpectrum.Top R)) :
+    CommRingCat.of R ⟶ (structureSheaf R).1.obj (op U) where
   toFun f :=
     ⟨fun x => algebraMap R _ f, fun x =>
       ⟨U, x.2, 𝟙 _, f, 1, fun y =>
@@ -980,10 +980,7 @@ instance IsLocalization.to_basicOpen (r : R) :
 #align algebraic_geometry.structure_sheaf.is_localization.to_basic_open AlgebraicGeometry.StructureSheaf.IsLocalization.to_basicOpen
 
 instance to_basicOpen_epi (r : R) : Epi (toOpen R (PrimeSpectrum.basicOpen r)) :=
-  ⟨fun {S} f g h => by
-    refine' IsLocalization.ringHom_ext (R := R)
-      (S := (structureSheaf R).val.obj (op <| PrimeSpectrum.basicOpen r)) _ _
-    exact h⟩
+  ⟨fun _ _ h => IsLocalization.ringHom_ext (Submonoid.powers r) h⟩
 #align algebraic_geometry.structure_sheaf.to_basic_open_epi AlgebraicGeometry.StructureSheaf.to_basicOpen_epi
 
 @[elementwise]

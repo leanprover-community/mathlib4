@@ -264,7 +264,7 @@ private theorem density_sub_eps_le_sum_density_div_card [Nonempty α]
     rw [sub_mul, one_mul, sub_le_sub_iff_left]
     refine' mul_le_of_le_one_right (by sz_positivity) _
     exact mod_cast G.edgeDensity_le_one _ _
-  refine' this.trans _
+  refine this.trans ?_
   conv_rhs => -- Porting note: LHS and RHS need separate treatment to get the desired form
     simp only [SimpleGraph.edgeDensity_def, sum_div, Rat.cast_div, div_div]
   conv_lhs =>
