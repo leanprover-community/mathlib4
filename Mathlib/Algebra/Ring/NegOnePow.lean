@@ -44,10 +44,6 @@ lemma negOnePow_even (n : ℤ) (hn : Even n) : n.negOnePow = 1 := by
 lemma negOnePow_two_mul (n : ℤ) : (2 * n).negOnePow = 1 :=
   negOnePow_even _ ⟨n, two_mul n⟩
 
-@[simp]
-lemma negOnePow_mul_negOnePow_self (n : ℤ) : n.negOnePow * n.negOnePow = 1 := by
-  rw [← negOnePow_add, ← two_mul, negOnePow_two_mul]
-
 lemma negOnePow_odd (n : ℤ) (hn : Odd n) : n.negOnePow = -1 := by
   obtain ⟨k, rfl⟩ := hn
   simp only [negOnePow_add, negOnePow_two_mul, negOnePow_one, mul_neg, mul_one]
