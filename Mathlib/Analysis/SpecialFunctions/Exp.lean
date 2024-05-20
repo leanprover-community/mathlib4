@@ -167,28 +167,32 @@ theorem Filter.Tendsto.rexp {l : Filter α} {f : α → ℝ} {z : ℝ} (hf : Ten
 
 variable [TopologicalSpace α] {f : α → ℝ} {s : Set α} {x : α}
 
--- TODO: the two next theorems should be `rexp` as well
 nonrec
-theorem ContinuousWithinAt.exp (h : ContinuousWithinAt f s x) :
-    ContinuousWithinAt (fun y => exp (f y)) s x :=
+theorem ContinuousWithinAt.rexp (h : ContinuousWithinAt f s x) :
+    ContinuousWithinAt (fun y ↦ exp (f y)) s x :=
   h.rexp
-#align continuous_within_at.exp ContinuousWithinAt.exp
+#align continuous_within_at.exp ContinuousWithinAt.rexp
+@[deprecated (since := "2024-05-09")] alias ContinuousWithinAt.exp := ContinuousWithinAt.rexp
 
 @[fun_prop]
 nonrec
-theorem ContinuousAt.exp (h : ContinuousAt f x) : ContinuousAt (fun y => exp (f y)) x :=
+theorem ContinuousAt.rexp (h : ContinuousAt f x) : ContinuousAt (fun y ↦ exp (f y)) x :=
   h.rexp
-#align continuous_at.exp ContinuousAt.exp
+#align continuous_at.exp ContinuousAt.rexp
+@[deprecated (since := "2024-05-09")] alias ContinuousAt.exp := ContinuousAt.rexp
 
 @[fun_prop]
-theorem ContinuousOn.exp (h : ContinuousOn f s) : ContinuousOn (fun y => exp (f y)) s := fun x hx =>
-  (h x hx).exp
-#align continuous_on.exp ContinuousOn.exp
+theorem ContinuousOn.rexp (h : ContinuousOn f s) :
+    ContinuousOn (fun y ↦ exp (f y)) s :=
+  fun x hx ↦ (h x hx).rexp
+#align continuous_on.exp ContinuousOn.rexp
+@[deprecated (since := "2024-05-09")] alias ContinuousOn.exp := ContinuousOn.rexp
 
 @[fun_prop]
-theorem Continuous.exp (h : Continuous f) : Continuous fun y => exp (f y) :=
-  continuous_iff_continuousAt.2 fun _ => h.continuousAt.exp
-#align continuous.exp Continuous.exp
+theorem Continuous.rexp (h : Continuous f) : Continuous fun y ↦ exp (f y) :=
+  continuous_iff_continuousAt.2 fun _ ↦ h.continuousAt.rexp
+#align continuous.exp Continuous.rexp
+@[deprecated (since := "2024-05-09")] alias Continuous.exp := Continuous.rexp
 
 end RealContinuousExpComp
 
