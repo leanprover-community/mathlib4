@@ -234,7 +234,7 @@ theorem coe_of_rat_eq :
   -- Porting note: was
   -- simp [coe_of_h_rat_eq rfl, coe_of_s_rat_eq rfl, gcf_v_eq]
   simp only [gcf_v_eq, Int.cast_inj, Rat.floor_cast, of_h_eq_floor, eq_self_iff_true,
-    Rat.cast_coe_int, and_self, coe_of_h_rat_eq rfl, coe_of_s_rat_eq rfl]
+    Rat.cast_intCast, and_self, coe_of_h_rat_eq rfl, coe_of_s_rat_eq rfl]
 #align generalized_continued_fraction.coe_of_rat_eq GeneralizedContinuedFraction.coe_of_rat_eq
 
 theorem of_terminates_iff_of_rat_terminates {v : K} {q : ℚ} (v_eq_q : v = (q : K)) :

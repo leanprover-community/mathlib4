@@ -39,7 +39,7 @@ In this file we introduce the following concepts:
 This formalization is mostly based on
   N. Bourbaki: General Topology
   I. M. James: Topologies and Uniformities
-From a slightly different perspective in order to reuse material in topology.uniform_space.basic.
+From a slightly different perspective in order to reuse material in `Topology.UniformSpace.Basic`.
 -/
 
 
@@ -68,9 +68,7 @@ namespace CauchyFilter
 section
 
 variable {α : Type u} [UniformSpace α]
-
 variable {β : Type v} {γ : Type w}
-
 variable [UniformSpace β] [UniformSpace γ]
 
 instance (f : CauchyFilter α) : NeBot f.1 := f.2.1
@@ -293,7 +291,7 @@ theorem inseparable_iff_of_le_nhds {f g : CauchyFilter α} {a b : α}
     (ha : f.1 ≤ 𝓝 a) (hb : g.1 ≤ 𝓝 b) : Inseparable a b ↔ Inseparable f g := by
   rw [← tendsto_id'] at ha hb
   rw [inseparable_iff, (ha.comp tendsto_fst).inseparable_iff_uniformity (hb.comp tendsto_snd)]
-  rfl
+  simp only [Function.comp_apply, id_eq, Prod.mk.eta, ← Function.id_def, tendsto_id']
 
 theorem inseparable_lim_iff [CompleteSpace α] {f g : CauchyFilter α} :
     haveI := f.2.1.nonempty; Inseparable (lim f.1) (lim g.1) ↔ Inseparable f g :=
@@ -305,7 +303,6 @@ theorem cauchyFilter_eq {α : Type*} [UniformSpace α] [CompleteSpace α] [T0Spa
     {f g : CauchyFilter α} :
     haveI := f.2.1.nonempty; lim f.1 = lim g.1 ↔ Inseparable f g := by
   rw [← inseparable_iff_eq, inseparable_lim_iff]
-
 set_option linter.uppercaseLean3 false in
 #align Cauchy.Cauchy_eq CauchyFilter.cauchyFilter_eq
 

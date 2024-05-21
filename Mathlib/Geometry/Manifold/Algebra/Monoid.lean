@@ -256,7 +256,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalS
 @[to_additive]
 theorem smooth_pow : ∀ n : ℕ, Smooth I I fun a : G => a ^ n
   | 0 => by simp only [pow_zero]; exact smooth_const
-  | k + 1 => by simpa [pow_succ] using smooth_id.mul (smooth_pow _)
+  | k + 1 => by simpa [pow_succ] using (smooth_pow _).mul smooth_id
 #align smooth_pow smooth_pow
 
 /-- Morphism of additive smooth monoids. -/
@@ -339,7 +339,7 @@ theorem contMDiffWithinAt_finprod (lf : LocallyFinite fun i ↦ mulSupport <| f 
 theorem contMDiffWithinAt_finset_prod' (h : ∀ i ∈ t, ContMDiffWithinAt I' I n (f i) s x) :
     ContMDiffWithinAt I' I n (∏ i in t, f i) s x :=
   Finset.prod_induction f (fun f => ContMDiffWithinAt I' I n f s x) (fun _ _ hf hg => hf.mul hg)
-    contMDiffWithinAt_const h
+    (contMDiffWithinAt_const (c := 1)) h
 #align cont_mdiff_within_at_finset_prod' contMDiffWithinAt_finset_prod'
 #align cont_mdiff_within_at_finset_sum' contMDiffWithinAt_finset_sum'
 
@@ -514,8 +514,10 @@ section
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E]
 
-instance hasSmoothAddSelf : SmoothAdd 𝓘(𝕜, E) E :=
-  ⟨by rw [← modelWithCornersSelf_prod]; exact contDiff_add.contMDiff⟩
+instance hasSmoothAddSelf : SmoothAdd 𝓘(𝕜, E) E := by
+  constructor
+  rw [← modelWithCornersSelf_prod, chartedSpaceSelf_prod]
+  exact contDiff_add.contMDiff
 #align has_smooth_add_self hasSmoothAddSelf
 
 end

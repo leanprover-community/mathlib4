@@ -217,8 +217,9 @@ def ndinter (s t : Multiset α) : Multiset α :=
 #align multiset.ndinter Multiset.ndinter
 
 @[simp]
-theorem coe_ndinter (l₁ l₂ : List α) : @ndinter α _ l₁ l₂ = (l₁ ∩ l₂ : List α) :=
-  rfl
+theorem coe_ndinter (l₁ l₂ : List α) : @ndinter α _ l₁ l₂ = (l₁ ∩ l₂ : List α) := by
+  simp only [ndinter, mem_coe, filter_coe, coe_eq_coe, ← elem_eq_mem]
+  apply Perm.refl
 #align multiset.coe_ndinter Multiset.coe_ndinter
 
 @[simp, nolint simpNF] -- Porting note (#10675): dsimp can not prove this

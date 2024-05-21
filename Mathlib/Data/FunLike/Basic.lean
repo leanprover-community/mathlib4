@@ -21,27 +21,23 @@ A typical type of morphisms should be declared as:
 ```
 structure MyHom (A B : Type*) [MyClass A] [MyClass B] :=
   (toFun : A → B)
-  (map_op' : ∀ {x y : A}, toFun (MyClass.op x y) = MyClass.op (toFun x) (toFun y))
+  (map_op' : ∀ (x y : A), toFun (MyClass.op x y) = MyClass.op (toFun x) (toFun y))
 
 namespace MyHom
 
-variables (A B : Type*) [MyClass A] [MyClass B]
+variable (A B : Type*) [MyClass A] [MyClass B]
 
--- This instance is optional if you follow the "morphism class" design below:
-instance : FunLike (MyHom A B) A B :=
-  { coe := MyHom.toFun, coe_injective' := fun f g h => by cases f; cases g; congr' }
-
-/-- Helper instance for when there's too many metavariables to apply
-`DFunLike.coe` directly. -/
-instance : CoeFun (MyHom A B) (fun _ => A → B) := ⟨MyHom.toFun⟩
+instance : FunLike (MyHom A B) A B where
+  coe := MyHom.toFun
+  coe_injective' := fun f g h => by cases f; cases g; congr
 
 @[ext] theorem ext {f g : MyHom A B} (h : ∀ x, f x = g x) : f = g := DFunLike.ext f g h
 
 /-- Copy of a `MyHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
-protected def copy (f : MyHom A B) (f' : A → B) (h : f' = ⇑f) : MyHom A B :=
-  { toFun := f',
-    map_op' := h.symm ▸ f.map_op' }
+protected def copy (f : MyHom A B) (f' : A → B) (h : f' = ⇑f) : MyHom A B where
+  toFun := f'
+  map_op' := h.symm ▸ f.map_op'
 
 end MyHom
 ```
@@ -51,8 +47,8 @@ extensionality and simp lemmas.
 
 ## Morphism classes extending `DFunLike` and `FunLike`
 
-The `DFunLike` design provides further benefits if you put in a bit more work.
-The first step is to extend `DFunLike` to create a class of those types satisfying
+The `FunLike` design provides further benefits if you put in a bit more work.
+The first step is to extend `FunLike` to create a class of those types satisfying
 the axioms of your new type of morphisms.
 Continuing the example above:
 
@@ -60,20 +56,20 @@ Continuing the example above:
 /-- `MyHomClass F A B` states that `F` is a type of `MyClass.op`-preserving morphisms.
 You should extend this class when you extend `MyHom`. -/
 class MyHomClass (F : Type*) (A B : outParam Type*) [MyClass A] [MyClass B]
-  [FunLike F A B] : Prop :=
-(map_op : ∀ (f : F) (x y : A), f (MyClass.op x y) = MyClass.op (f x) (f y))
+    [FunLike F A B] : Prop :=
+  (map_op : ∀ (f : F) (x y : A), f (MyClass.op x y) = MyClass.op (f x) (f y))
 
-@[simp] lemma map_op {F A B : Type*} [MyClass A] [MyClass B] [MyHomClass F A B]
-  (f : F) (x y : A) : f (MyClass.op x y) = MyClass.op (f x) (f y) :=
-MyHomClass.map_op
+@[simp]
+lemma map_op {F A B : Type*} [MyClass A] [MyClass B] [FunLike F A B] [MyHomClass F A B]
+    (f : F) (x y : A) :
+    f (MyClass.op x y) = MyClass.op (f x) (f y) :=
+  MyHomClass.map_op _ _ _
 
 -- You can add the below instance next to `MyHomClass.instFunLike`:
-instance : MyHomClass (MyHom A B) A B :=
-  { coe := MyHom.toFun,
-    coe_injective' := λ f g h, by cases f; cases g; congr',
-    map_op := MyHom.map_op' }
+instance : MyHomClass (MyHom A B) A B where
+  map_op := MyHom.map_op'
 
--- [Insert `CoeFun`, `ext` and `copy` here]
+-- [Insert `ext` and `copy` here]
 ```
 
 Note that `A B` are marked as `outParam` even though they are not purely required to be so
@@ -85,28 +81,28 @@ The second step is to add instances of your new `MyHomClass` for all types exten
 Typically, you can just declare a new class analogous to `MyHomClass`:
 
 ```
-structure CoolerHom (A B : Type*) [CoolClass A] [CoolClass B]
-  extends MyHom A B :=
-(map_cool' : toFun CoolClass.cool = CoolClass.cool)
+structure CoolerHom (A B : Type*) [CoolClass A] [CoolClass B] extends MyHom A B :=
+  (map_cool' : toFun CoolClass.cool = CoolClass.cool)
 
 class CoolerHomClass (F : Type*) (A B : outParam Type*) [CoolClass A] [CoolClass B]
-  [FunLike F A B]
-  extends MyHomClass F A B :=
-(map_cool : ∀ (f : F), f CoolClass.cool = CoolClass.cool)
+  [FunLike F A B] extends MyHomClass F A B :=
+    (map_cool : ∀ (f : F), f CoolClass.cool = CoolClass.cool)
 
-@[simp] lemma map_cool {F A B : Type*} [CoolClass A] [CoolClass B] [FunLike F A (fun _ => B)]
-    [CoolerHomClass F A B] (f : F) :
-    f CoolClass.cool = CoolClass.cool :=
-MyHomClass.map_op
+@[simp] lemma map_cool {F A B : Type*} [CoolClass A] [CoolClass B] [FunLike F A B]
+    [CoolerHomClass F A B] (f : F) : f CoolClass.cool = CoolClass.cool :=
+  CoolerHomClass.map_cool _
 
--- You can add the below instance next to `MyHom.instFunLike`:
-instance : CoolerHomClass (CoolHom A B) A B :=
-  { coe := CoolHom.toFun,
-    coe_injective' := λ f g h, by cases f; cases g; congr',
-    map_op := CoolHom.map_op',
-    map_cool := CoolHom.map_cool' }
+variable {A B : Type*} [CoolClass A] [CoolClass B]
 
--- [Insert `CoeFun`, `ext` and `copy` here]
+instance : FunLike (CoolerHom A B) A B where
+  coe f := f.toFun
+  coe_injective' := fun f g h ↦ by cases f; cases g; congr; apply DFunLike.coe_injective; congr
+
+instance : CoolerHomClass (CoolerHom A B) A B where
+  map_op f := f.map_op'
+  map_cool f := f.map_cool'
+
+-- [Insert `ext` and `copy` here]
 ```
 
 Then any declaration taking a specific type of morphisms as parameter can instead take the
@@ -222,7 +218,7 @@ theorem exists_ne {f g : F} (h : f ≠ g) : ∃ x, f x ≠ g x :=
   ne_iff.mp h
 #align fun_like.exists_ne DFunLike.exists_ne
 
-/-- This is not an instance to avoid slowing down every single `Subsingleton` typeclass search.-/
+/-- This is not an instance to avoid slowing down every single `Subsingleton` typeclass search. -/
 lemma subsingleton_cod [∀ a, Subsingleton (β a)] : Subsingleton F :=
   ⟨fun _ _ ↦ coe_injective <| Subsingleton.elim _ _⟩
 #align fun_like.subsingleton_cod DFunLike.subsingleton_cod

@@ -40,8 +40,9 @@ namespace ContinuousMap
 
 section CompactOpen
 
-variable {α X Y Z : Type*}
-variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] {K : Set X} {U : Set Y}
+variable {α X Y Z T : Type*}
+variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace T]
+variable {K : Set X} {U : Set Y}
 
 #noalign continuous_map.compact_open.gen
 #noalign continuous_map.gen_empty
@@ -52,7 +53,7 @@ variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] {K : Set
 
 /-- The compact-open topology on the space of continuous maps `C(X, Y)`. -/
 instance compactOpen : TopologicalSpace C(X, Y) :=
- .generateFrom <| image2 (fun K U ↦ {f | MapsTo f K U}) {K | IsCompact K} {U | IsOpen U}
+  .generateFrom <| image2 (fun K U ↦ {f | MapsTo f K U}) {K | IsCompact K} {U | IsOpen U}
 #align continuous_map.compact_open ContinuousMap.compactOpen
 
 /-- Definition of `ContinuousMap.compactOpen`. -/
@@ -109,6 +110,17 @@ theorem continuous_comp_left (f : C(X, Y)) : Continuous (fun g => g.comp f : C(Y
     simpa only [mapsTo_image_iff] using isOpen_setOf_mapsTo (hK.image f.2) hU
 #align continuous_map.continuous_comp_left ContinuousMap.continuous_comp_left
 
+/-- Any pair of homeomorphisms `X ≃ₜ Z` and `Y ≃ₜ T` gives rise to a homeomorphism
+`C(X, Y) ≃ₜ C(Z, T)`. -/
+protected def _root_.Homeomorph.arrowCongr (φ : X ≃ₜ Z) (ψ : Y ≃ₜ T) :
+    C(X, Y) ≃ₜ C(Z, T) where
+  toFun f := .comp ψ <| f.comp φ.symm
+  invFun f := .comp ψ.symm <| f.comp φ
+  left_inv f := ext fun _ ↦ ψ.left_inv (f _) |>.trans <| congrArg f <| φ.left_inv _
+  right_inv f := ext fun _ ↦ ψ.right_inv (f _) |>.trans <| congrArg f <| φ.right_inv _
+  continuous_toFun := continuous_comp _ |>.comp <| continuous_comp_left _
+  continuous_invFun := continuous_comp _ |>.comp <| continuous_comp_left _
+
 variable [LocallyCompactPair Y Z]
 
 /-- Composition is a continuous map from `C(X, Y) × C(Y, Z)` to `C(X, Z)`,
@@ -150,7 +162,7 @@ lemma _root_.Continuous.compCM (hg : Continuous g) (hf : Continuous f) :
     Continuous fun x => (g x).comp (f x) :=
   continuous_comp'.comp (hf.prod_mk hg)
 
-@[deprecated _root_.Continuous.compCM] -- deprecated on 2024/01/30
+@[deprecated _root_.Continuous.compCM] -- deprecated on 2024-01-30
 lemma continuous.comp' (hf : Continuous f) (hg : Continuous g) :
     Continuous fun x => (g x).comp (f x) :=
   hg.compCM hf
@@ -200,14 +212,44 @@ lemma isClopen_setOf_mapsTo (hK : IsCompact K) (hU : IsClopen U) :
     IsClopen {f : C(X, Y) | MapsTo f K U} :=
   ⟨isClosed_setOf_mapsTo hU.isClosed K, isOpen_setOf_mapsTo hK hU.isOpen⟩
 
+@[norm_cast]
+lemma specializes_coe {f g : C(X, Y)} : ⇑f ⤳ ⇑g ↔ f ⤳ g := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.map continuous_coe⟩
+  suffices ∀ K, IsCompact K → ∀ U, IsOpen U → MapsTo g K U → MapsTo f K U by
+    simpa [specializes_iff_pure, nhds_compactOpen]
+  exact fun K _ U hU hg x hx ↦ (h.map (continuous_apply x)).mem_open hU (hg hx)
+
+@[norm_cast]
+lemma inseparable_coe {f g : C(X, Y)} : Inseparable (f : X → Y) g ↔ Inseparable f g := by
+  simp only [inseparable_iff_specializes_and, specializes_coe]
+
 instance [T0Space Y] : T0Space C(X, Y) :=
   t0Space_of_injective_of_continuous DFunLike.coe_injective continuous_coe
+
+instance [R0Space Y] : R0Space C(X, Y) where
+  specializes_symmetric f g h := by
+    rw [← specializes_coe] at h ⊢
+    exact h.symm
 
 instance [T1Space Y] : T1Space C(X, Y) :=
   t1Space_of_injective_of_continuous DFunLike.coe_injective continuous_coe
 
-instance [T2Space Y] : T2Space C(X, Y) :=
-  .of_injective_continuous DFunLike.coe_injective continuous_coe
+instance [R1Space Y] : R1Space C(X, Y) :=
+  .of_continuous_specializes_imp continuous_coe fun _ _ ↦ specializes_coe.1
+
+instance [T2Space Y] : T2Space C(X, Y) := inferInstance
+
+instance [RegularSpace Y] : RegularSpace C(X, Y) :=
+  .of_lift'_closure_le fun f ↦ by
+    rw [← tendsto_id', tendsto_nhds_compactOpen]
+    intro K hK U hU hf
+    rcases (hK.image f.continuous).exists_isOpen_closure_subset (hU.mem_nhdsSet.2 hf.image_subset)
+      with ⟨V, hVo, hKV, hVU⟩
+    filter_upwards [mem_lift' (eventually_mapsTo hK hVo (mapsTo'.2 hKV))] with g hg
+    refine ((isClosed_setOf_mapsTo isClosed_closure K).closure_subset ?_).mono_right hVU
+    exact closure_mono (fun _ h ↦ h.mono_right subset_closure) hg
+
+instance [T3Space Y] : T3Space C(X, Y) := inferInstance
 
 end Ev
 
@@ -413,7 +455,6 @@ open ContinuousMap
 namespace Homeomorph
 
 variable {X : Type*} {Y : Type*} {Z : Type*}
-
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 /-- Currying as a homeomorphism between the function spaces `C(X × Y, Z)` and `C(X, C(Y, Z))`. -/

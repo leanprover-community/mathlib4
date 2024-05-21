@@ -25,7 +25,6 @@ import Mathlib.Data.Matrix.Basic
 
 
 variable {l m n o p q : Type*} {m' n' p' : o → Type*}
-
 variable {R : Type*} {S : Type*} {α : Type*} {β : Type*}
 
 open BigOperators Matrix
@@ -449,8 +448,8 @@ variable (o m n α)
 
 /-- `Matrix.blockDiagonal` as an `AddMonoidHom`. -/
 @[simps]
-def blockDiagonalAddMonoidHom [AddZeroClass α] : (o → Matrix m n α) →+ Matrix (m × o) (n × o) α
-    where
+def blockDiagonalAddMonoidHom [AddZeroClass α] :
+    (o → Matrix m n α) →+ Matrix (m × o) (n × o) α where
   toFun := blockDiagonal
   map_zero' := blockDiagonal_zero
   map_add' := blockDiagonal_add

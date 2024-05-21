@@ -88,8 +88,8 @@ structure ZeroHom (M : Type*) (N : Type*) [Zero M] [Zero N] where
 
 You should extend this typeclass when you extend `ZeroHom`.
 -/
-class ZeroHomClass (F : Type*) (M N : outParam Type*) [Zero M] [Zero N] [FunLike F M N] : Prop
-    where
+class ZeroHomClass (F : Type*) (M N : outParam Type*) [Zero M] [Zero N] [FunLike F M N] :
+    Prop where
   /-- The proposition that the function preserves 0 -/
   map_zero : ∀ f : F, f 0 = 0
 #align zero_hom_class ZeroHomClass
@@ -480,7 +480,7 @@ lemma map_comp_pow [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (
 @[to_additive]
 theorem map_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H]
     (f : F) (hf : ∀ x : G, f x⁻¹ = (f x)⁻¹) (a : G) : ∀ n : ℤ, f (a ^ n) = f a ^ n
-  | (n : ℕ) => by rw [zpow_coe_nat, map_pow, zpow_coe_nat]
+  | (n : ℕ) => by rw [zpow_natCast, map_pow, zpow_natCast]
   | Int.negSucc n => by rw [zpow_negSucc, hf, map_pow, ← zpow_negSucc]
 #align map_zpow' map_zpow'
 #align map_zsmul' map_zsmul'

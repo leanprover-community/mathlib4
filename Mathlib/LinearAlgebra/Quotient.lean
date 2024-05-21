@@ -22,7 +22,6 @@ section Ring
 namespace Submodule
 
 variable {R M : Type*} {r : R} {x y : M} [Ring R] [AddCommGroup M] [Module R M]
-
 variable (p p' : Submodule R M)
 
 open LinearMap QuotientAddGroup
@@ -136,6 +135,7 @@ instance instSMul : SMul R (M ⧸ P) :=
   Quotient.instSMul' P
 #align submodule.quotient.has_smul Submodule.Quotient.instSMul
 
+set_option backward.isDefEq.lazyProjDelta false in -- See https://github.com/leanprover-community/mathlib4/issues/12535
 @[simp]
 theorem mk_smul (r : S) (x : M) : (mk (r • x) : M ⧸ p) = r • mk x :=
   rfl
@@ -262,7 +262,7 @@ theorem mk_surjective : Function.Surjective (@mk _ _ _ _ _ p) := by
 
 theorem nontrivial_of_lt_top (h : p < ⊤) : Nontrivial (M ⧸ p) := by
   obtain ⟨x, _, not_mem_s⟩ := SetLike.exists_of_lt h
-  refine' ⟨⟨mk x, 0, _⟩⟩
+  refine ⟨⟨mk x, 0, ?_⟩⟩
   simpa using not_mem_s
 #align submodule.quotient.nontrivial_of_lt_top Submodule.Quotient.nontrivial_of_lt_top
 
@@ -366,7 +366,7 @@ theorem liftQ_mkQ (f : M →ₛₗ[τ₁₂] M₂) (h) : (p.liftQ f h).comp p.mk
 #align submodule.liftq_mkq Submodule.liftQ_mkQ
 
 /-- Special case of `submodule.liftQ` when `p` is the span of `x`. In this case, the condition on
-`f` simply becomes vanishing at `x`.-/
+`f` simply becomes vanishing at `x`. -/
 def liftQSpanSingleton (x : M) (f : M →ₛₗ[τ₁₂] M₂) (h : f x = 0) : (M ⧸ R ∙ x) →ₛₗ[τ₁₂] M₂ :=
   (R ∙ x).liftQ f <| by rw [span_singleton_le_iff_mem, LinearMap.mem_ker, h]
 #align submodule.liftq_span_singleton Submodule.liftQSpanSingleton
@@ -572,15 +572,10 @@ namespace LinearMap
 section Ring
 
 variable {R M R₂ M₂ R₃ M₃ : Type*}
-
 variable [Ring R] [Ring R₂] [Ring R₃]
-
 variable [AddCommMonoid M] [AddCommGroup M₂] [AddCommMonoid M₃]
-
 variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
-
 variable {τ₁₂ : R →+* R₂} {τ₂₃ : R₂ →+* R₃} {τ₁₃ : R →+* R₃}
-
 variable [RingHomCompTriple τ₁₂ τ₂₃ τ₁₃] [RingHomSurjective τ₁₂]
 
 theorem range_mkQ_comp (f : M →ₛₗ[τ₁₂] M₂) : f.range.mkQ.comp f = 0 :=
@@ -609,7 +604,6 @@ open LinearMap
 namespace Submodule
 
 variable {R M : Type*} {r : R} {x y : M} [Ring R] [AddCommGroup M] [Module R M]
-
 variable (p p' : Submodule R M)
 
 /-- If `p = ⊥`, then `M / p ≃ₗ[R] M`. -/
@@ -676,8 +670,7 @@ namespace Submodule
 
 /-- Given modules `M`, `M₂` over a commutative ring, together with submodules `p ⊆ M`, `q ⊆ M₂`,
 the natural map $\{f ∈ Hom(M, M₂) | f(p) ⊆ q \} \to Hom(M/p, M₂/q)$ is linear. -/
-def mapQLinear : compatibleMaps p q →ₗ[R] M ⧸ p →ₗ[R] M₂ ⧸ q
-    where
+def mapQLinear : compatibleMaps p q →ₗ[R] M ⧸ p →ₗ[R] M₂ ⧸ q where
   toFun f := mapQ _ _ f.val f.property
   map_add' x y := by
     ext

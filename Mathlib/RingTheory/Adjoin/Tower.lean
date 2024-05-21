@@ -83,7 +83,6 @@ variable (C : Type*)
 section Semiring
 
 variable [CommSemiring A] [CommSemiring B] [Semiring C]
-
 variable [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
 
 open Finset Submodule
@@ -141,7 +140,6 @@ end Semiring
 section Ring
 
 variable [CommRing A] [CommRing B] [CommRing C]
-
 variable [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
 
 /-- **Artin--Tate lemma**: if A ⊆ B ⊆ C is a chain of subrings of commutative rings, and

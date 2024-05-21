@@ -243,7 +243,7 @@ lemma ofUniqueLift {G : Type u} [Group G] (X : Type u) (of : X → G)
     IsFreeGroup G :=
   (FreeGroupBasis.ofUniqueLift X of h).isFreeGroup
 
-lemma ofMulEquiv [IsFreeGroup G] (e : G ≃* H) : IsFreeGroup H :=
+lemma ofMulEquiv (e : G ≃* H) : IsFreeGroup H :=
   ((basis G).map e).isFreeGroup
 
 end IsFreeGroup

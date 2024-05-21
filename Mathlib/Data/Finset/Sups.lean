@@ -445,7 +445,7 @@ variable {𝒜 ℬ : Finset (Finset α)} {s t : Finset α} {a : α}
   ext u
   simp only [mem_sups, mem_powerset, le_eq_subset, sup_eq_union]
   refine ⟨fun h ↦ ⟨_, inter_subset_left _ u, _, inter_subset_left _ u, ?_⟩, ?_⟩
-  · rwa [← inter_distrib_right, inter_eq_right]
+  · rwa [← union_inter_distrib_right, inter_eq_right]
   · rintro ⟨v, hv, w, hw, rfl⟩
     exact union_subset_union hv hw
 
@@ -739,10 +739,10 @@ protected alias ⟨Nonempty.of_compls, Nonempty.compls⟩ := compls_nonempty
 @[simp] lemma compls_inter (s t : Finset α) : (s ∩ t)ᶜˢ = sᶜˢ ∩ tᶜˢ := map_inter _ _
 
 @[simp] lemma compls_infs (s t : Finset α) : (s ⊼ t)ᶜˢ = sᶜˢ ⊻ tᶜˢ := by
-  simp_rw [← image_compl]; exact image_image₂_distrib λ _ _ ↦ compl_inf
+  simp_rw [← image_compl]; exact image_image₂_distrib fun _ _ ↦ compl_inf
 
 @[simp] lemma compls_sups (s t : Finset α) : (s ⊻ t)ᶜˢ = sᶜˢ ⊼ tᶜˢ := by
-  simp_rw [← image_compl]; exact image_image₂_distrib λ _ _ ↦ compl_sup
+  simp_rw [← image_compl]; exact image_image₂_distrib fun _ _ ↦ compl_sup
 
 @[simp] lemma infs_compls_eq_diffs (s t : Finset α) : s ⊼ tᶜˢ = s \\ t := by
   ext; simp [sdiff_eq]; aesop
@@ -757,7 +757,7 @@ variable [Fintype α] {𝒜 : Finset (Finset α)} {n : ℕ}
 
 protected lemma _root_.Set.Sized.compls (h𝒜 : (𝒜 : Set (Finset α)).Sized n) :
     (𝒜ᶜˢ : Set (Finset α)).Sized (Fintype.card α - n) :=
-  Finset.forall_mem_compls.2 <| λ s hs ↦ by rw [Finset.card_compl, h𝒜 hs]
+  Finset.forall_mem_compls.2 <| fun s hs ↦ by rw [Finset.card_compl, h𝒜 hs]
 
 lemma sized_compls (hn : n ≤ Fintype.card α) :
     (𝒜ᶜˢ : Set (Finset α)).Sized n ↔ (𝒜 : Set (Finset α)).Sized (Fintype.card α - n) where

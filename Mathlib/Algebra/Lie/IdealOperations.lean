@@ -39,13 +39,9 @@ universe u v w w₁ w₂
 namespace LieSubmodule
 
 variable {R : Type u} {L : Type v} {M : Type w} {M₂ : Type w₁}
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
-
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
-
 variable [AddCommGroup M₂] [Module R M₂] [LieRingModule L M₂] [LieModule R L M₂]
-
 variable (N N' : LieSubmodule R L M) (I J : LieIdeal R L) (N₂ : LieSubmodule R L M₂)
 
 section LieIdealOperations
@@ -99,7 +95,7 @@ theorem lieIdeal_oper_eq_linear_span' :
 
 theorem lie_le_iff : ⁅I, N⁆ ≤ N' ↔ ∀ x ∈ I, ∀ m ∈ N, ⁅x, m⁆ ∈ N' := by
   rw [lieIdeal_oper_eq_span, LieSubmodule.lieSpan_le]
-  refine' ⟨fun h x hx m hm => h ⟨⟨x, hx⟩, ⟨m, hm⟩, rfl⟩, _⟩
+  refine ⟨fun h x hx m hm => h ⟨⟨x, hx⟩, ⟨m, hm⟩, rfl⟩, ?_⟩
   rintro h _ ⟨⟨x, hx⟩, ⟨m, hm⟩, rfl⟩
   exact h x hx m hm
 #align lie_submodule.lie_le_iff LieSubmodule.lie_le_iff
@@ -144,7 +140,7 @@ theorem bot_lie : ⁅(⊥ : LieIdeal R L), N⁆ = ⊥ := by
 
 theorem lie_eq_bot_iff : ⁅I, N⁆ = ⊥ ↔ ∀ x ∈ I, ∀ m ∈ N, ⁅(x : L), m⁆ = 0 := by
   rw [lieIdeal_oper_eq_span, LieSubmodule.lieSpan_eq_bot_iff]
-  refine' ⟨fun h x hx m hm => h ⁅x, m⁆ ⟨⟨x, hx⟩, ⟨m, hm⟩, rfl⟩, _⟩
+  refine ⟨fun h x hx m hm => h ⁅x, m⁆ ⟨⟨x, hx⟩, ⟨m, hm⟩, rfl⟩, ?_⟩
   rintro h - ⟨⟨x, hx⟩, ⟨⟨n, hn⟩, rfl⟩⟩
   exact h x hx n hn
 #align lie_submodule.lie_eq_bot_iff LieSubmodule.lie_eq_bot_iff
@@ -257,9 +253,7 @@ namespace LieIdeal
 open LieAlgebra
 
 variable {R : Type u} {L : Type v} {L' : Type w₂}
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing L'] [LieAlgebra R L']
-
 variable (f : L →ₗ⁅R⁆ L') (I : LieIdeal R L) (J : LieIdeal R L')
 
 /-- Note that the inequality can be strict; e.g., the inclusion of an Abelian subalgebra of a
@@ -316,9 +310,9 @@ theorem comap_bracket_eq {J₁ J₂ : LieIdeal R L'} (h : f.IsIdealMorphism) :
     simp only [hz₁, hz₂, Submodule.coe_mk, LieHom.map_lie]
   · rintro ⟨x, ⟨⟨z₁, hz₁⟩, ⟨z₂, hz₂⟩, hx⟩, hy⟩; rw [← hy, ← hx]
     have hz₁' : f z₁ ∈ f.idealRange ⊓ J₁ := by
-      rw [LieSubmodule.mem_inf]; exact ⟨f.mem_idealRange, hz₁⟩
+      rw [LieSubmodule.mem_inf]; exact ⟨f.mem_idealRange z₁, hz₁⟩
     have hz₂' : f z₂ ∈ f.idealRange ⊓ J₂ := by
-      rw [LieSubmodule.mem_inf]; exact ⟨f.mem_idealRange, hz₂⟩
+      rw [LieSubmodule.mem_inf]; exact ⟨f.mem_idealRange z₂, hz₂⟩
     use ⟨f z₁, hz₁'⟩, ⟨f z₂, hz₂'⟩; simp only [Submodule.coe_mk, LieHom.map_lie]
 #align lie_ideal.comap_bracket_eq LieIdeal.comap_bracket_eq
 
@@ -335,7 +329,8 @@ theorem comap_bracket_incl {I₁ I₂ : LieIdeal R L} :
     next => skip
     rw [← I.incl_idealRange]
   rw [comap_bracket_eq]
-  simp only [ker_incl, sup_bot_eq]; exact I.incl_isIdealMorphism
+  · simp only [ker_incl, sup_bot_eq]
+  · exact I.incl_isIdealMorphism
 #align lie_ideal.comap_bracket_incl LieIdeal.comap_bracket_incl
 
 /-- This is a very useful result; it allows us to use the fact that inclusion distributes over the

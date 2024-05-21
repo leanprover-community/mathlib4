@@ -56,7 +56,7 @@ variable (F : Type*) [Field F] (E : Type*) [Field E] [Algebra F E]
 theorem exists_primitive_element_of_finite_top [Finite E] : ∃ α : E, F⟮α⟯ = ⊤ := by
   obtain ⟨α, hα⟩ := @IsCyclic.exists_generator Eˣ _ _
   use α
-  apply eq_top_iff.mpr
+  rw [eq_top_iff]
   rintro x -
   by_cases hx : x = 0
   · rw [hx]
@@ -97,7 +97,6 @@ theorem primitive_element_inf_aux_exists_c (f g : F[X]) :
 #align field.primitive_element_inf_aux_exists_c Field.primitive_element_inf_aux_exists_c
 
 variable (F)
-
 variable [Algebra F E]
 
 /-- This is the heart of the proof of the primitive element theorem. It shows that if `F` is
@@ -116,7 +115,7 @@ theorem primitive_element_inf_aux [IsSeparable F E] : ∃ γ : E, F⟮α, β⟯ 
     apply le_antisymm
     · rw [adjoin_le_iff]
       have α_in_Fγ : α ∈ F⟮γ⟯ := by
-        rw [← add_sub_cancel α (c • β)]
+        rw [← add_sub_cancel_right α (c • β)]
         exact F⟮γ⟯.sub_mem (mem_adjoin_simple_self F γ) (F⟮γ⟯.toSubalgebra.smul_mem β_in_Fγ c)
       rintro x (rfl | rfl) <;> assumption
     · rw [adjoin_simple_le_iff]
@@ -133,7 +132,7 @@ theorem primitive_element_inf_aux [IsSeparable F E] : ∃ γ : E, F⟮α, β⟯ 
     have finale : β = algebraMap F⟮γ⟯ E (-p.coeff 0 / p.coeff 1) := by
       rw [map_div₀, RingHom.map_neg, ← coeff_map, ← coeff_map, p_linear]
       -- Porting note: had to add `-map_add` to avoid going in the wrong direction.
-      simp [mul_sub, coeff_C, mul_div_cancel_left β (mt leadingCoeff_eq_zero.mp h_ne_zero),
+      simp [mul_sub, coeff_C, mul_div_cancel_left₀ β (mt leadingCoeff_eq_zero.mp h_ne_zero),
         -map_add]
       -- Porting note: an alternative solution is:
       -- simp_rw [Polynomial.coeff_C_mul, Polynomial.coeff_sub, mul_sub,
@@ -146,7 +145,7 @@ theorem primitive_element_inf_aux [IsSeparable F E] : ∃ γ : E, F⟮α, β⟯ 
   have h_root : h.eval β = 0 := by
     apply eval_gcd_eq_zero
     · rw [eval_comp, eval_sub, eval_mul, eval_C, eval_C, eval_X, eval_map, ← aeval_def, ←
-        Algebra.smul_def, add_sub_cancel, minpoly.aeval]
+        Algebra.smul_def, add_sub_cancel_right, minpoly.aeval]
     · rw [eval_map, ← aeval_def, minpoly.aeval]
   have h_splits : Splits ιEE' h :=
     splits_of_splits_gcd_right ιEE' map_g_ne_zero (SplittingField.splits _)
@@ -195,7 +194,7 @@ private theorem primitive_element_inf_aux_of_finite_intermediateField
     rw [smul_smul, inv_mul_eq_div, div_self (sub_ne_zero.2 hneq), one_smul] at β_in_K
     have α_in_K : α ∈ F⟮α + x • β⟯ := by
       convert ← sub_mem αxβ_in_K (smul_mem _ β_in_K)
-      apply add_sub_cancel
+      apply add_sub_cancel_right
     rintro x (rfl | rfl) <;> assumption
   · rw [adjoin_simple_le_iff]
     have α_in_Fαβ : α ∈ F⟮α, β⟯ := subset_adjoin F {α, β} (Set.mem_insert α {β})
@@ -205,7 +204,6 @@ private theorem primitive_element_inf_aux_of_finite_intermediateField
 end PrimitiveElementInf
 
 variable (F E : Type*) [Field F] [Field E]
-
 variable [Algebra F E]
 
 section SeparableAssumption
@@ -277,22 +275,23 @@ theorem isAlgebraic_of_adjoin_eq_adjoin {α : E} {m n : ℕ} (hneq : m ≠ n)
   · simp only [f, map_sub, map_mul, map_pow, aeval_X, expand_aeval, h]
 
 theorem isAlgebraic_of_finite_intermediateField
-    [Finite (IntermediateField F E)] : Algebra.IsAlgebraic F E := fun α ↦
+    [Finite (IntermediateField F E)] : Algebra.IsAlgebraic F E := ⟨fun α ↦
   have ⟨_m, _n, hneq, heq⟩ := Finite.exists_ne_map_eq_of_infinite fun n ↦ F⟮α ^ n⟯
-  isAlgebraic_of_adjoin_eq_adjoin F E hneq heq
+  isAlgebraic_of_adjoin_eq_adjoin F E hneq heq⟩
 
 theorem FiniteDimensional.of_finite_intermediateField
     [Finite (IntermediateField F E)] : FiniteDimensional F E := by
   let IF := { K : IntermediateField F E // ∃ x, K = F⟮x⟯ }
+  have := isAlgebraic_of_finite_intermediateField F E
   haveI : ∀ K : IF, FiniteDimensional F K.1 := fun ⟨_, x, rfl⟩ ↦ adjoin.finiteDimensional
-    (isAlgebraic_of_finite_intermediateField F E x).isIntegral
+    (Algebra.IsIntegral.isIntegral _)
   have hfin := finiteDimensional_iSup_of_finite (t := fun K : IF ↦ K.1)
   have htop : ⨆ K : IF, K.1 = ⊤ := le_top.antisymm fun x _ ↦
     le_iSup (fun K : IF ↦ K.1) ⟨F⟮x⟯, x, rfl⟩ <| mem_adjoin_simple_self F x
   rw [htop] at hfin
   exact topEquiv.toLinearEquiv.finiteDimensional
 
-@[deprecated] -- Since 2024/02/02
+@[deprecated] -- Since 2024-02-02
 alias finiteDimensional_of_finite_intermediateField := FiniteDimensional.of_finite_intermediateField
 
 theorem exists_primitive_element_of_finite_intermediateField
@@ -306,20 +305,20 @@ theorem exists_primitive_element_of_finite_intermediateField
     simp_rw [adjoin_simple_adjoin_simple, eq_comm]
     exact primitive_element_inf_aux_of_finite_intermediateField F α β
 
-theorem FiniteDimensional.of_exists_primitive_element (halg : Algebra.IsAlgebraic F E)
+theorem FiniteDimensional.of_exists_primitive_element [Algebra.IsAlgebraic F E]
     (h : ∃ α : E, F⟮α⟯ = ⊤) : FiniteDimensional F E := by
   obtain ⟨α, hprim⟩ := h
-  have hfin := adjoin.finiteDimensional (halg α).isIntegral
+  have hfin := adjoin.finiteDimensional (Algebra.IsIntegral.isIntegral (R := F) α)
   rw [hprim] at hfin
   exact topEquiv.toLinearEquiv.finiteDimensional
 
-@[deprecated] -- Since 2024/02/02
+@[deprecated] -- Since 2024-02-02
 alias finiteDimensional_of_exists_primitive_element := FiniteDimensional.of_exists_primitive_element
 
 -- A finite simple extension has only finitely many intermediate fields
-theorem finite_intermediateField_of_exists_primitive_element (halg : Algebra.IsAlgebraic F E)
+theorem finite_intermediateField_of_exists_primitive_element [Algebra.IsAlgebraic F E]
     (h : ∃ α : E, F⟮α⟯ = ⊤) : Finite (IntermediateField F E) := by
-  haveI := FiniteDimensional.of_exists_primitive_element F E halg h
+  haveI := FiniteDimensional.of_exists_primitive_element F E h
   obtain ⟨α, hprim⟩ := h
   -- Let `f` be the minimal polynomial of `α ∈ E` over `F`
   let f : F[X] := minpoly F α
@@ -336,7 +335,7 @@ theorem finite_intermediateField_of_exists_primitive_element (halg : Algebra.IsA
   -- The map `K ↦ g` is injective
   have hinj : Function.Injective g := fun K K' heq ↦ by
     rw [Subtype.mk.injEq] at heq
-    apply_fun fun f : E[X] ↦ adjoin F (f.frange : Set E) at heq
+    apply_fun fun f : E[X] ↦ adjoin F (f.coeffs : Set E) at heq
     simpa only [adjoin_minpoly_coeff_of_exists_primitive_element F hprim] using heq
   -- Therefore there are only finitely many intermediate fields
   exact Finite.of_injective g hinj
@@ -346,7 +345,7 @@ theorem finite_intermediateField_of_exists_primitive_element (halg : Algebra.IsA
   if and only if there exist only finitely many intermediate fields between `E` and `F`. -/
 theorem exists_primitive_element_iff_finite_intermediateField :
     (Algebra.IsAlgebraic F E ∧ ∃ α : E, F⟮α⟯ = ⊤) ↔ Finite (IntermediateField F E) :=
-  ⟨fun ⟨halg, h⟩ ↦ finite_intermediateField_of_exists_primitive_element F E halg h,
+  ⟨fun ⟨_, h⟩ ↦ finite_intermediateField_of_exists_primitive_element F E h,
     fun _ ↦ ⟨isAlgebraic_of_finite_intermediateField F E,
       exists_primitive_element_of_finite_intermediateField F E _⟩⟩
 
@@ -368,7 +367,7 @@ theorem AlgHom.card_of_splits (L : Type*) [Field L] [Algebra F L]
     (hL : ∀ x : E, (minpoly F x).Splits (algebraMap F L)) :
     Fintype.card (E →ₐ[F] L) = finrank F E := by
   rw [← Fintype.ofEquiv_card <| Algebra.IsAlgebraic.algHomEquivAlgHomOfSplits
-    (AlgebraicClosure L) (Algebra.IsAlgebraic.of_finite F E) _ hL]
+    (AlgebraicClosure L) _ hL]
   convert AlgHom.card F E (AlgebraicClosure L)
 
 section iff

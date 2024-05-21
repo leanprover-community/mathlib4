@@ -90,7 +90,6 @@ variable {M : Type*} [Monoid M]
 -- We have a family of monoids
 -- The fintype assumption is not always used, but declared here, to keep things in order
 variable {ι : Type*} [DecidableEq ι] [Fintype ι]
-
 variable {N : ι → Type*} [∀ i, Monoid (N i)]
 
 -- And morphisms ϕ into G
@@ -107,8 +106,7 @@ namespace MonoidHom
 /-- The canonical homomorphism from a family of monoids. -/
 @[to_additive "The canonical homomorphism from a family of additive monoids. See also
 `LinearMap.lsum` for a linear version without the commutativity assumption."]
-def noncommPiCoprod : (∀ i : ι, N i) →* M
-    where
+def noncommPiCoprod : (∀ i : ι, N i) →* M where
   toFun f := Finset.univ.noncommProd (fun i => ϕ i (f i)) fun i _ j _ h => hcomm h _ _
   map_one' := by
     apply (Finset.noncommProd_eq_pow_card _ _ _ _ _).trans (one_pow _)
@@ -145,16 +143,17 @@ theorem noncommPiCoprod_mulSingle (i : ι) (y : N i) :
 /-- The universal property of `MonoidHom.noncommPiCoprod` -/
 @[to_additive "The universal property of `AddMonoidHom.noncommPiCoprod`"]
 def noncommPiCoprodEquiv :
-    { ϕ : ∀ i, N i →* M // Pairwise fun i j => ∀ x y, Commute (ϕ i x) (ϕ j y) } ≃ ((∀ i, N i) →* M)
-    where
+    { ϕ : ∀ i, N i →* M // Pairwise fun i j => ∀ x y, Commute (ϕ i x) (ϕ j y) } ≃
+      ((∀ i, N i) →* M) where
   toFun ϕ := noncommPiCoprod ϕ.1 ϕ.2
   invFun f :=
-    ⟨fun i => f.comp (MonoidHom.single N i), fun i j hij x y =>
+    ⟨fun i => f.comp (MonoidHom.mulSingle N i), fun i j hij x y =>
       Commute.map (Pi.mulSingle_commute hij x y) f⟩
   left_inv ϕ := by
     ext
-    simp
-  right_inv f := pi_ext fun i x => by simp
+    simp only [coe_comp, Function.comp_apply, mulSingle_apply, noncommPiCoprod_mulSingle]
+  right_inv f := pi_ext fun i x => by
+    simp only [noncommPiCoprod_mulSingle, coe_comp, Function.comp_apply, mulSingle_apply]
 #align monoid_hom.noncomm_pi_coprod_equiv MonoidHom.noncommPiCoprodEquiv
 #align add_monoid_hom.noncomm_pi_coprod_equiv AddMonoidHom.noncommPiCoprodEquiv
 
@@ -181,13 +180,9 @@ end FamilyOfMonoids
 section FamilyOfGroups
 
 variable {G : Type*} [Group G]
-
 variable {ι : Type*} [hdec : DecidableEq ι] [hfin : Fintype ι]
-
 variable {H : ι → Type*} [∀ i, Group (H i)]
-
 variable (ϕ : ∀ i : ι, H i →* G)
-
 variable {hcomm : Pairwise fun i j : ι => ∀ (x : H i) (y : H j), Commute (ϕ i x) (ϕ j y)}
 
 -- We use `f` and `g` to denote elements of `Π (i : ι), H i`
@@ -218,7 +213,7 @@ theorem injective_noncommPiCoprod_of_independent
     (hinj : ∀ i, Function.Injective (ϕ i)) : Function.Injective (noncommPiCoprod ϕ hcomm) := by
   classical
     apply (MonoidHom.ker_eq_bot_iff _).mp
-    apply eq_bot_iff.mpr
+    rw [eq_bot_iff]
     intro f heq1
     have : ∀ i, i ∈ Finset.univ → ϕ i (f i) = 1 :=
       Subgroup.eq_one_of_noncommProd_eq_one_of_independent _ _ (fun _ _ _ _ h => hcomm h _ _)
@@ -275,7 +270,6 @@ namespace Subgroup
 
 -- We have a family of subgroups
 variable {G : Type*} [Group G]
-
 variable {ι : Type*} [hdec : DecidableEq ι] [hfin : Fintype ι] {H : ι → Subgroup G}
 
 -- Elements of `Π (i : ι), H i` are called `f` and `g` here

@@ -48,18 +48,15 @@ cardinal arithmetic (for infinite cardinals)
 
 noncomputable section
 
-open Function Cardinal Set Equiv Order
+open Function Set Cardinal Equiv Order Ordinal
 
 open scoped Classical
-open Cardinal Ordinal
 
 universe u v w
 
 namespace Cardinal
 
 section UsingOrdinals
-
-open Ordinal
 
 theorem ord_isLimit {c} (co : ℵ₀ ≤ c) : (ord c).IsLimit := by
   refine' ⟨fun h => aleph0_ne_zero _, fun a => lt_imp_lt_of_le_imp_le fun h => _⟩
@@ -77,7 +74,7 @@ theorem noMaxOrder {c} (h : ℵ₀ ≤ c) : NoMaxOrder c.ord.out.α :=
   Ordinal.out_no_max_of_succ_lt (ord_isLimit h).2
 
 /-! ### Aleph cardinals -/
-
+section aleph
 
 /-- The `aleph'` index function, which gives the ordinal index of a cardinal.
   (The `aleph'` part is because unlike `aleph` this counts also the
@@ -280,7 +277,7 @@ theorem aleph_zero : aleph 0 = ℵ₀ := by rw [aleph, add_zero, aleph'_omega]
 theorem aleph_limit {o : Ordinal} (ho : o.IsLimit) : aleph o = ⨆ a : Iio o, aleph a := by
   apply le_antisymm _ (ciSup_le' _)
   · rw [aleph, aleph'_limit (ho.add _)]
-    refine' ciSup_mono' (bddAbove_of_small _) _
+    refine ciSup_mono' (bddAbove_of_small _) ?_
     rintro ⟨i, hi⟩
     cases' lt_or_le i ω with h h
     · rcases lt_omega.1 h with ⟨n, rfl⟩
@@ -405,8 +402,10 @@ theorem ord_aleph_eq_enum_card :
     exact aleph0_le_aleph _
 #align cardinal.ord_aleph_eq_enum_card Cardinal.ord_aleph_eq_enum_card
 
-/-! ### Beth cardinals -/
+end aleph
 
+/-! ### Beth cardinals -/
+section beth
 
 /-- Beth numbers are defined so that `beth 0 = ℵ₀`, `beth (succ o) = 2 ^ (beth o)`, and when `o` is
 a limit ordinal, `beth o` is the supremum of `beth o'` for `o' < o`.
@@ -492,9 +491,10 @@ theorem beth_normal : IsNormal.{u} fun o => (beth o).ord :=
       exact ciSup_le' fun b => ord_le.1 (ha _ b.2)⟩
 #align cardinal.beth_normal Cardinal.beth_normal
 
+end beth
+
 /-! ### Properties of `mul` -/
-
-
+section mulOrdinals
 
 /-- If `α` is an infinite type, then `α × α` and `α` have the same cardinality. -/
 theorem mul_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : c * c = c := by
@@ -503,7 +503,6 @@ theorem mul_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : c * c = c := by
   refine' Acc.recOn (Cardinal.lt_wf.apply c) (fun c _ => Quotient.inductionOn c fun α IH ol => _) h
   -- consider the minimal well-order `r` on `α` (a type with cardinality `c`).
   rcases ord_eq α with ⟨r, wo, e⟩
-  skip
   letI := linearOrderOfSTO r
   haveI : IsWellOrder α (· < ·) := wo
   -- Define an order `s` on `α × α` by writing `(a, b) < (c, d)` if `max a b < max c d`, or
@@ -545,7 +544,12 @@ theorem mul_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : c * c = c := by
     apply typein_lt_type
 #align cardinal.mul_eq_self Cardinal.mul_eq_self
 
+end mulOrdinals
+
 end UsingOrdinals
+
+/-! Properties of `mul`, not requiring ordinals -/
+section mul
 
 /-- If `α` and `β` are infinite types, then the cardinality of `α × β` is the maximum
 of the cardinalities of `α` and `β`. -/
@@ -577,12 +581,12 @@ theorem mul_aleph0_eq {a : Cardinal} (ha : ℵ₀ ≤ a) : a * ℵ₀ = a :=
   (mul_eq_max ha le_rfl).trans (max_eq_left ha)
 #align cardinal.mul_aleph_0_eq Cardinal.mul_aleph0_eq
 
--- Porting note: removed `simp`, `simp` can prove it
+-- Porting note (#10618): removed `simp`, `simp` can prove it
 theorem aleph0_mul_mk_eq {α : Type*} [Infinite α] : ℵ₀ * #α = #α :=
   aleph0_mul_eq (aleph0_le_mk α)
 #align cardinal.aleph_0_mul_mk_eq Cardinal.aleph0_mul_mk_eq
 
--- Porting note: removed `simp`, `simp` can prove it
+-- Porting note (#10618): removed `simp`, `simp` can prove it
 theorem mk_mul_aleph0_eq {α : Type*} [Infinite α] : #α * ℵ₀ = #α :=
   mul_aleph0_eq (aleph0_le_mk α)
 #align cardinal.mk_mul_aleph_0_eq Cardinal.mk_mul_aleph0_eq
@@ -695,8 +699,8 @@ theorem mul_eq_left_iff {a b : Cardinal} : a * b = a ↔ max ℵ₀ b ≤ a ∧ 
     left
     rw [← h, mul_lt_aleph0_iff, lt_aleph0, lt_aleph0] at ha
     rcases ha with (rfl | rfl | ⟨⟨n, rfl⟩, ⟨m, rfl⟩⟩)
-    contradiction
-    contradiction
+    · contradiction
+    · contradiction
     rw [← Ne] at h2a
     rw [← one_le_iff_ne_zero] at h2a hb
     norm_cast at h2a hb h ⊢
@@ -705,15 +709,17 @@ theorem mul_eq_left_iff {a b : Cardinal} : a * b = a ↔ max ℵ₀ b ≤ a ∧ 
     apply fun h2b => ne_of_gt _ h
     conv_rhs => left; rw [← mul_one n]
     rw [mul_lt_mul_left]
-    exact id
+    · exact id
     apply Nat.lt_of_succ_le h2a
   · rintro (⟨⟨ha, hab⟩, hb⟩ | rfl | rfl)
     · rw [mul_eq_max_of_aleph0_le_left ha hb, max_eq_left hab]
     all_goals simp
 #align cardinal.mul_eq_left_iff Cardinal.mul_eq_left_iff
 
-/-! ### Properties of `add` -/
+end mul
 
+/-! ### Properties of `add` -/
+section add
 
 /-- If `α` is an infinite type, then `α ⊕ α` and `α` have the same cardinality. -/
 theorem add_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : c + c = c :=
@@ -820,7 +826,7 @@ theorem add_one_eq {a : Cardinal} (ha : ℵ₀ ≤ a) : a + 1 = a :=
   add_one_of_aleph0_le ha
 #align cardinal.add_one_eq Cardinal.add_one_eq
 
--- Porting note: removed `simp`, `simp` can prove it
+-- Porting note (#10618): removed `simp`, `simp` can prove it
 theorem mk_add_one_eq {α : Type*} [Infinite α] : #α + 1 = #α :=
   add_one_eq (aleph0_le_mk α)
 #align cardinal.mk_add_one_eq Cardinal.mk_add_one_eq
@@ -851,6 +857,8 @@ protected theorem eq_of_add_eq_add_right {a b c : Cardinal} (h : a + b = c + b) 
   rw [add_comm a b, add_comm c b] at h
   exact Cardinal.eq_of_add_eq_add_left h hb
 #align cardinal.eq_of_add_eq_add_right Cardinal.eq_of_add_eq_add_right
+
+end add
 
 section ciSup
 
@@ -963,6 +971,7 @@ theorem add_one_le_add_one_iff {α β : Cardinal} : α + 1 ≤ β + 1 ↔ α ≤
 alias add_one_le_add_one_iff_of_lt_aleph_0 := add_one_le_add_one_iff  -- deprecated on 2024-02-12
 
 /-! ### Properties about power -/
+section pow
 
 theorem pow_le {κ μ : Cardinal.{u}} (H1 : ℵ₀ ≤ κ) (H2 : μ < ℵ₀) : κ ^ μ ≤ κ :=
   let ⟨n, H3⟩ := lt_aleph0.1 H2
@@ -1048,8 +1057,10 @@ theorem powerlt_aleph0_le (c : Cardinal) : c ^< ℵ₀ ≤ max c ℵ₀ := by
   exact fun c' hc' => (power_lt_aleph0 h hc').le.trans (le_max_right _ _)
 #align cardinal.powerlt_aleph_0_le Cardinal.powerlt_aleph0_le
 
-/-! ### Computing cardinality of various types -/
+end pow
 
+/-! ### Computing cardinality of various types -/
+section computing
 
 section Function
 
@@ -1284,9 +1295,9 @@ theorem mk_bounded_set_le (α : Type u) (c : Cardinal) :
     #{ t : Set α // #t ≤ c } ≤ max #α ℵ₀ ^ c := by
   trans #{ t : Set (Sum (ULift.{u} ℕ) α) // #t ≤ c }
   · refine' ⟨Embedding.subtypeMap _ _⟩
-    apply Embedding.image
-    use Sum.inr
-    apply Sum.inr.inj
+    · apply Embedding.image
+      use Sum.inr
+      apply Sum.inr.inj
     intro s hs
     exact mk_image_le.trans hs
   apply (mk_bounded_set_le_of_infinite (Sum (ULift.{u} ℕ) α) c).trans
@@ -1297,16 +1308,18 @@ theorem mk_bounded_subset_le {α : Type u} (s : Set α) (c : Cardinal.{u}) :
     #{ t : Set α // t ⊆ s ∧ #t ≤ c } ≤ max #s ℵ₀ ^ c := by
   refine' le_trans _ (mk_bounded_set_le s c)
   refine' ⟨Embedding.codRestrict _ _ _⟩
-  use fun t => (↑) ⁻¹' t.1
-  · rintro ⟨t, ht1, ht2⟩ ⟨t', h1t', h2t'⟩ h
+  · use fun t => (↑) ⁻¹' t.1
+    rintro ⟨t, ht1, ht2⟩ ⟨t', h1t', h2t'⟩ h
     apply Subtype.eq
     dsimp only at h ⊢
     refine' (preimage_eq_preimage' _ _).1 h <;> rw [Subtype.range_coe] <;> assumption
   rintro ⟨t, _, h2t⟩; exact (mk_preimage_of_injective _ _ Subtype.val_injective).trans h2t
 #align cardinal.mk_bounded_subset_le Cardinal.mk_bounded_subset_le
 
-/-! ### Properties of `compl` -/
+end computing
 
+/-! ### Properties of `compl` -/
+section compl
 
 theorem mk_compl_of_infinite {α : Type*} [Infinite α] (s : Set α) (h2 : #s < #α) :
     #(sᶜ : Set α) = #α := by
@@ -1352,12 +1365,13 @@ theorem mk_compl_eq_mk_compl_finite_same {α : Type u} [Finite α] {s t : Set α
   mk_compl_eq_mk_compl_finite.{u, u} rfl h
 #align cardinal.mk_compl_eq_mk_compl_finite_same Cardinal.mk_compl_eq_mk_compl_finite_same
 
-/-! ### Extending an injection to an equiv -/
+end compl
 
+/-! ### Extending an injection to an equiv -/
 
 theorem extend_function {α β : Type*} {s : Set α} (f : s ↪ β)
     (h : Nonempty ((sᶜ : Set α) ≃ ((range f)ᶜ : Set β))) : ∃ g : α ≃ β, ∀ x : s, g x = f x := by
-  intros; have := h; cases' this with g
+  have := h; cases' this with g
   let h : α ≃ β :=
     (Set.sumCompl (s : Set α)).symm.trans
       ((sumCongr (Equiv.ofInjective f f.2) g).trans (Set.sumCompl (range f)))

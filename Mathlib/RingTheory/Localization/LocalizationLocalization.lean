@@ -30,9 +30,7 @@ namespace IsLocalization
 section LocalizationLocalization
 
 variable {R : Type*} [CommSemiring R] (M : Submonoid R) {S : Type*} [CommSemiring S]
-
 variable [Algebra R S] {P : Type*} [CommSemiring P]
-
 variable (N : Submonoid S) (T : Type*) [CommSemiring T] [Algebra R T]
 
 
@@ -84,7 +82,7 @@ theorem localization_localization_surj [IsLocalization N T] (x : T) :
   dsimp only at eq₁ eq₂ eq₃
   refine ⟨⟨z * t', z' * t, ?_⟩, ?_⟩ -- x = y / s = (z * t') / (z' * t)
   · rw [mem_localizationLocalizationSubmodule]
-    refine' ⟨s, t * t', _⟩
+    refine ⟨s, t * t', ?_⟩
     rw [RingHom.map_mul, ← eq₃, mul_assoc, ← RingHom.map_mul, mul_comm t, Submonoid.coe_mul]
   · simp only [Subtype.coe_mk, RingHom.map_mul, IsScalarTower.algebraMap_apply R S T, ← eq₃, ← eq₂,
       ← eq₁]

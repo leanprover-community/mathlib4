@@ -31,6 +31,7 @@ namespace TopologicalSpace
 
 /-- The type of closed subsets of a topological space. -/
 structure Closeds (α : Type*) [TopologicalSpace α] where
+  /-- the carrier set, i.e. the points in this set -/
   carrier : Set α
   closed' : IsClosed carrier
 #align topological_space.closeds TopologicalSpace.Closeds
@@ -120,7 +121,7 @@ theorem coe_top : (↑(⊤ : Closeds α) : Set α) = univ :=
   rfl
 #align topological_space.closeds.coe_top TopologicalSpace.Closeds.coe_top
 
-@[simp, norm_cast] -- Porting note: new
+@[simp, norm_cast] -- Porting note (#10756): new theorem
 theorem coe_eq_univ {s : Closeds α} : (s : Set α) = univ ↔ s = ⊤ :=
   SetLike.coe_injective.eq_iff' rfl
 
@@ -129,7 +130,7 @@ theorem coe_bot : (↑(⊥ : Closeds α) : Set α) = ∅ :=
   rfl
 #align topological_space.closeds.coe_bot TopologicalSpace.Closeds.coe_bot
 
-@[simp, norm_cast] -- Porting note: new
+@[simp, norm_cast] -- Porting note (#10756): new theorem
 theorem coe_eq_empty {s : Closeds α} : (s : Set α) = ∅ ↔ s = ⊥ :=
   SetLike.coe_injective.eq_iff' rfl
 
@@ -285,6 +286,7 @@ theorem Opens.isCoatom_iff [T1Space α] {s : Opens α} :
 
 /-- The type of clopen sets of a topological space. -/
 structure Clopens (α : Type*) [TopologicalSpace α] where
+  /-- the carrier set, i.e. the points in this set -/
   carrier : Set α
   isClopen' : IsClopen carrier
 #align topological_space.clopens TopologicalSpace.Clopens

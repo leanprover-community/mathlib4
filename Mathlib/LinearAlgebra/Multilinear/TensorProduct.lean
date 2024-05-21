@@ -21,13 +21,9 @@ section DomCoprod
 open TensorProduct
 
 variable {R ι₁ ι₂ ι₃ ι₄ : Type*}
-
 variable [CommSemiring R]
-
 variable {N₁ : Type*} [AddCommMonoid N₁] [Module R N₁]
-
 variable {N₂ : Type*} [AddCommMonoid N₂] [Module R N₂]
-
 variable {N : Type*} [AddCommMonoid N] [Module R N]
 
 /-- Given two multilinear maps `(ι₁ → N) → N₁` and `(ι₂ → N) → N₂`, this produces the map

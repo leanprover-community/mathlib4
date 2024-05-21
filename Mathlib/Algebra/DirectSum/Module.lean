@@ -35,9 +35,7 @@ open DirectSum
 section General
 
 variable {R : Type u} [Semiring R]
-
 variable {ι : Type v} [dec_ι : DecidableEq ι]
-
 variable {M : ι → Type w} [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
 
 instance : Module R (⨁ i, M i) :=
@@ -96,9 +94,7 @@ theorem support_smul [∀ (i : ι) (x : M i), Decidable (x ≠ 0)] (c : R) (v : 
 #align direct_sum.support_smul DirectSum.support_smul
 
 variable {N : Type u₁} [AddCommMonoid N] [Module R N]
-
 variable (φ : ∀ i, M i →ₗ[R] N)
-
 variable (R ι N)
 
 /-- The linear map constructed using the universal property of the coproduct. -/
@@ -248,7 +244,6 @@ end CongrLeft
 section Sigma
 
 variable {α : ι → Type*} {δ : ∀ i, α i → Type w}
-
 variable [∀ i j, AddCommMonoid (δ i j)] [∀ i j, Module R (δ i j)]
 
 /-- `curry` as a linear map. -/
@@ -303,11 +298,8 @@ section Submodule
 section Semiring
 
 variable {R : Type u} [Semiring R]
-
 variable {ι : Type v} [dec_ι : DecidableEq ι]
-
 variable {M : Type*} [AddCommMonoid M] [Module R M]
-
 variable (A : ι → Submodule R M)
 
 /-- The canonical embedding from `⨁ i, A i` to `M` where `A` is a collection of `Submodule R M`
@@ -422,9 +414,7 @@ end Semiring
 section Ring
 
 variable {R : Type u} [Ring R]
-
 variable {ι : Type v} [dec_ι : DecidableEq ι]
-
 variable {M : Type*} [AddCommGroup M] [Module R M]
 
 /-- Note that this is not generally true for `[Semiring R]`; see
@@ -467,7 +457,7 @@ lemma isInternal_biSup_submodule_of_independent {A : ι → Submodule R M} (s : 
   refine (isInternal_submodule_iff_independent_and_iSup_eq_top _).mpr ⟨?_, by simp [iSup_subtype]⟩
   let p := ⨆ i ∈ s, A i
   have hp : ∀ i ∈ s, A i ≤ p := fun i hi ↦ le_biSup A hi
-  let e : Submodule R p ≃o Set.Iic p := Submodule.MapSubtype.relIso p
+  let e : Submodule R p ≃o Set.Iic p := p.mapIic
   suffices (e ∘ fun i : s ↦ (A i).comap p.subtype) = fun i ↦ ⟨A i, hp i i.property⟩ by
     rw [← CompleteLattice.independent_map_orderIso_iff e, this]
     exact CompleteLattice.independent_of_independent_coe_Iic_comp h

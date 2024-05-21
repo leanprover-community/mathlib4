@@ -56,9 +56,7 @@ theorem opNorm_ext [RingHomIsometric σ₁₃] (f : E →SL[σ₁₂] F) (g : E 
       exact h₂ z
 #align continuous_linear_map.op_norm_ext ContinuousLinearMap.opNorm_ext
 
-@[deprecated]
-alias op_norm_ext :=
-  opNorm_ext -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_ext := opNorm_ext -- deprecated on 2024-02-02
 
 variable [RingHomIsometric σ₂₃]
 
@@ -67,28 +65,22 @@ theorem opNorm_le_bound₂ (f : E →SL[σ₁₃] F →SL[σ₂₃] G) {C : ℝ}
   f.opNorm_le_bound h0 fun x => (f x).opNorm_le_bound (mul_nonneg h0 (norm_nonneg _)) <| hC x
 #align continuous_linear_map.op_norm_le_bound₂ ContinuousLinearMap.opNorm_le_bound₂
 
-@[deprecated]
-alias op_norm_le_bound₂ :=
-  opNorm_le_bound₂ -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_le_bound₂ := opNorm_le_bound₂ -- deprecated on 2024-02-02
 
 theorem le_opNorm₂ [RingHomIsometric σ₁₃] (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (x : E) (y : F) :
     ‖f x y‖ ≤ ‖f‖ * ‖x‖ * ‖y‖ :=
   (f x).le_of_opNorm_le (f.le_opNorm x) y
 #align continuous_linear_map.le_op_norm₂ ContinuousLinearMap.le_opNorm₂
 
-@[deprecated]
-alias le_op_norm₂ :=
-  le_opNorm₂ -- deprecated on 2024-02-02
+@[deprecated] alias le_op_norm₂ := le_opNorm₂ -- deprecated on 2024-02-02
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 theorem le_of_opNorm₂_le_of_le [RingHomIsometric σ₁₃] (f : E →SL[σ₁₃] F →SL[σ₂₃] G) {x : E} {y : F}
     {a b c : ℝ} (hf : ‖f‖ ≤ a) (hx : ‖x‖ ≤ b) (hy : ‖y‖ ≤ c) :
     ‖f x y‖ ≤ a * b * c :=
   (f x).le_of_opNorm_le_of_le (f.le_of_opNorm_le_of_le hf hx) hy
 
-@[deprecated]
-alias le_of_op_norm₂_le_of_le :=
-  le_of_opNorm₂_le_of_le -- deprecated on 2024-02-02
+@[deprecated] alias le_of_op_norm₂_le_of_le := le_of_opNorm₂_le_of_le -- deprecated on 2024-02-02
 
 end OpNorm
 
@@ -187,9 +179,7 @@ theorem opNorm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f.flip‖ =
   le_antisymm (by simpa only [flip_flip] using le_norm_flip f.flip) (le_norm_flip f)
 #align continuous_linear_map.op_norm_flip ContinuousLinearMap.opNorm_flip
 
-@[deprecated]
-alias op_norm_flip :=
-  opNorm_flip -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_flip := opNorm_flip -- deprecated on 2024-02-02
 
 @[simp]
 theorem flip_add (f g : E →SL[σ₁₃] F →SL[σ₂₃] G) : (f + g).flip = f.flip + g.flip :=
@@ -304,7 +294,8 @@ def compSL : (F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ�
 #align continuous_linear_map.compSL ContinuousLinearMap.compSL
 
 theorem norm_compSL_le :
-    -- Porting note: added
+    -- Currently, this cannot be synthesized because it violated `synthPendingDepth` restrictions
+    -- see leanprover/lean4#3927
     letI : Norm ((F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G) :=
       hasOpNorm (E := F →SL[σ₂₃] G) (F := (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G)
     ‖compSL E F G σ₁₂ σ₂₃‖ ≤ 1 :=
@@ -340,6 +331,8 @@ def compL : (Fₗ →L[𝕜] Gₗ) →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] E �
 #align continuous_linear_map.compL ContinuousLinearMap.compL
 
 theorem norm_compL_le :
+    -- Currently, this cannot be synthesized because it violated `synthPendingDepth` restrictions
+    -- see leanprover/lean4#3927
     letI : Norm ((Fₗ →L[𝕜] Gₗ) →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] E →L[𝕜] Gₗ) :=
       hasOpNorm (E := Fₗ →L[𝕜] Gₗ) (F := (E →L[𝕜] Fₗ) →L[𝕜] E →L[𝕜] Gₗ)
     ‖compL 𝕜 E Fₗ Gₗ‖ ≤ 1 :=
@@ -364,19 +357,24 @@ def precompL (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : (Eₗ →L[𝕜] E) →L[
   (precompR Eₗ (flip L)).flip
 #align continuous_linear_map.precompL ContinuousLinearMap.precompL
 
+@[simp] lemma precompL_apply (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) (u : Eₗ →L[𝕜] E) (f : Fₗ) (g : Eₗ) :
+    precompL Eₗ L u f g = L (u g) f := rfl
+
 theorem norm_precompR_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) :
-    -- Porting note: added
+    -- Currently, this cannot be synthesized because it violated `synthPendingDepth` restrictions
+    -- see leanprover/lean4#3927
     letI : SeminormedAddCommGroup ((Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ) := inferInstance
     letI : NormedSpace 𝕜 ((Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ) := inferInstance
     ‖precompR Eₗ L‖ ≤ ‖L‖ :=
   calc
     ‖precompR Eₗ L‖ ≤ ‖compL 𝕜 Eₗ Fₗ Gₗ‖ * ‖L‖ := opNorm_comp_le _ _
-    _ ≤ 1 * ‖L‖ := (mul_le_mul_of_nonneg_right (norm_compL_le _ _ _ _) (norm_nonneg _))
+    _ ≤ 1 * ‖L‖ := mul_le_mul_of_nonneg_right (norm_compL_le _ _ _ _) (norm_nonneg _)
     _ = ‖L‖ := by rw [one_mul]
 #align continuous_linear_map.norm_precompR_le ContinuousLinearMap.norm_precompR_le
 
 theorem norm_precompL_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) :
-    -- Porting note: added
+    -- Currently, this cannot be synthesized because it violated `synthPendingDepth` restrictions
+    -- see leanprover/lean4#3927
     letI : Norm ((Eₗ →L[𝕜] E) →L[𝕜] Fₗ →L[𝕜] Eₗ →L[𝕜] Gₗ) :=
       hasOpNorm (E := Eₗ →L[𝕜] E) (F := Fₗ →L[𝕜] Eₗ →L[𝕜] Gₗ)
     ‖precompL Eₗ L‖ ≤ ‖L‖ := by
@@ -391,7 +389,6 @@ variable {σ₂₁ : 𝕜₂ →+* 𝕜} [RingHomInvPair σ₁₂ σ₂₁] [Rin
 namespace ContinuousLinearMap
 
 variable {E' F' : Type*} [SeminormedAddCommGroup E'] [SeminormedAddCommGroup F']
-
 variable {𝕜₁' : Type*} {𝕜₂' : Type*} [NontriviallyNormedField 𝕜₁'] [NontriviallyNormedField 𝕜₂']
   [NormedSpace 𝕜₁' E'] [NormedSpace 𝕜₂' F'] {σ₁' : 𝕜₁' →+* 𝕜} {σ₁₃' : 𝕜₁' →+* 𝕜₃} {σ₂' : 𝕜₂' →+* 𝕜₂}
   {σ₂₃' : 𝕜₂' →+* 𝕜₃} [RingHomCompTriple σ₁' σ₁₃ σ₁₃'] [RingHomCompTriple σ₂' σ₂₃ σ₂₃']

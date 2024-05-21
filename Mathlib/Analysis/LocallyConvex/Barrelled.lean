@@ -90,7 +90,8 @@ theorem Seminorm.continuous_of_lowerSemicontinuous {𝕜 E : Type*} [AddGroup E]
     (hp : LowerSemicontinuous p) : Continuous p :=
   BarrelledSpace.continuous_of_lowerSemicontinuous p hp
 
-theorem Seminorm.continuous_iSup {ι 𝕜 E : Type*} [NormedField 𝕜]  [AddCommGroup E] [Module 𝕜 E]
+theorem Seminorm.continuous_iSup
+    {ι : Sort*} {𝕜 E : Type*} [NormedField 𝕜]  [AddCommGroup E] [Module 𝕜 E]
     [TopologicalSpace E] [BarrelledSpace 𝕜 E] (p : ι → Seminorm 𝕜 E)
     (hp : ∀ i, Continuous (p i)) (bdd : BddAbove (range p)) :
     Continuous (⨆ i, p i) := by
@@ -138,7 +139,7 @@ instance BaireSpace.instBarrelledSpace [TopologicalSpace E] [TopologicalAddGroup
     -- Hence, for `y` sufficiently close to `0`, we have
     -- `p y = p (x + y - x) ≤ p (x + y) + p x ≤ 2*n`
     filter_upwards [hxn] with y hy
-    calc p y = p (x + y - x) := by rw [add_sub_cancel']
+    calc p y = p (x + y - x) := by rw [add_sub_cancel_left]
       _ ≤ p (x + y) + p x := map_sub_le_add _ _ _
       _ ≤ n + n := add_le_add hy hxn'
 
@@ -156,7 +157,7 @@ protected theorem banach_steinhaus (H : ∀ k x, BddAbove (range fun i ↦ q k (
     UniformEquicontinuous ((↑) ∘ 𝓕) := by
   -- We just have to prove that `⊔ i, (q k) ∘ (𝓕 i)` is a (well-defined) continuous seminorm
   -- for all `k`.
-  refine (hq.uniformEquicontinuous_iff_bddAbove_and_continuous_iSup ((toLinearMap) ∘ 𝓕)).mpr ?_
+  refine (hq.uniformEquicontinuous_iff_bddAbove_and_continuous_iSup (toLinearMap ∘ 𝓕)).mpr ?_
   intro k
   -- By assumption the supremum `⊔ i, q k (𝓕 i x)` is well-defined for all `x`, hence the
   -- supremum `⊔ i, (q k) ∘ (𝓕 i)` is well defined in the lattice of seminorms.

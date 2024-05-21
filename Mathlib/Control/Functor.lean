@@ -6,7 +6,7 @@ Authors: Simon Hudon
 import Mathlib.Control.Basic
 import Mathlib.Init.Set
 import Mathlib.Tactic.TypeStar
-import Std.Tactic.Lint
+import Batteries.Tactic.Lint
 
 #align_import control.functor from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
@@ -33,9 +33,7 @@ universe u v w
 section Functor
 
 variable {F : Type u → Type v}
-
 variable {α β γ : Type u}
-
 variable [Functor F] [LawfulFunctor F]
 
 theorem Functor.map_id : (id <$> ·) = (id : F α → F α) := funext id_map
@@ -199,7 +197,6 @@ protected theorem run_map {α β} (h : α → β) (x : Comp F G α) :
 #align functor.comp.run_map Functor.Comp.run_map
 
 variable [LawfulFunctor F] [LawfulFunctor G]
-
 variable {α β γ : Type v}
 
 protected theorem id_map : ∀ x : Comp F G α, Comp.map id x = x
@@ -238,7 +235,6 @@ open Function hiding comp
 open Functor
 
 variable {F : Type u → Type w} {G : Type v → Type u}
-
 variable [Applicative F] [Applicative G]
 
 /-- The `<*>` operation for the composition of applicative functors. -/
@@ -300,7 +296,7 @@ theorem of_mem_supp {α : Type u} {x : F α} {p : α → Prop} (h : Liftp p x) :
 /-- If `f` is a functor, if `fb : f β` and `a : α`, then `mapConstRev fb a` is the result of
   applying `f.map` to the constant function `β → α` sending everything to `a`, and then
   evaluating at `fb`. In other words it's `const a <$> fb`. -/
-@[reducible] def mapConstRev {f : Type u → Type v} [Functor f] {α β : Type u} :
+abbrev mapConstRev {f : Type u → Type v} [Functor f] {α β : Type u} :
     f β → α → f α :=
   fun a b => Functor.mapConst b a
 #align functor.map_const_rev Functor.mapConstRev

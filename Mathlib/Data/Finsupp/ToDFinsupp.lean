@@ -289,7 +289,7 @@ def sigmaFinsuppEquivDFinsupp [Zero N] : ((Σi, η i) →₀ N) ≃ Π₀ i, η 
     refine'
       onFinset (Finset.sigma f.support fun j => (f j).support) (fun ji => f ji.1 ji.2) fun g hg =>
         Finset.mem_sigma.mpr ⟨_, mem_support_iff.mpr hg⟩
-    simp only [Ne.def, DFinsupp.mem_support_toFun]
+    simp only [Ne, DFinsupp.mem_support_toFun]
     intro h
     dsimp at hg
     rw [h] at hg
@@ -355,12 +355,10 @@ def sigmaFinsuppAddEquivDFinsupp [AddZeroClass N] : ((Σi, η i) →₀ N) ≃+ 
 
 attribute [-instance] Finsupp.instAddZeroClass
 
---tofix: r • (sigma_finsupp_equiv_dfinsupp f) doesn't work.
 @[simp]
 theorem sigmaFinsuppEquivDFinsupp_smul {R} [Monoid R] [AddMonoid N] [DistribMulAction R N] (r : R)
-    (f : (Σi, η i) →₀ N) :
-    sigmaFinsuppEquivDFinsupp (r • f) =
-      @SMul.smul R (Π₀ i, η i →₀ N) MulAction.toSMul r (sigmaFinsuppEquivDFinsupp f) := by
+    (f : (Σ i, η i) →₀ N) :
+    sigmaFinsuppEquivDFinsupp (r • f) = r • sigmaFinsuppEquivDFinsupp f := by
   ext
   rfl
 #align sigma_finsupp_equiv_dfinsupp_smul sigmaFinsuppEquivDFinsupp_smul

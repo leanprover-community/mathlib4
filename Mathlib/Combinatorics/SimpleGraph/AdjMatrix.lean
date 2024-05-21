@@ -148,7 +148,6 @@ open Matrix
 namespace SimpleGraph
 
 variable (G : SimpleGraph V) [DecidableRel G.Adj]
-
 variable (α)
 
 /-- `adjMatrix G α` is the matrix `A` such that `A i j = (1 : α)` if `i` and `j` are
@@ -217,7 +216,7 @@ theorem adjMatrix_mulVec_apply [NonAssocSemiring α] (v : V) (vec : V → α) :
 theorem adjMatrix_vecMul_apply [NonAssocSemiring α] (v : V) (vec : V → α) :
     (vec ᵥ* G.adjMatrix α) v = ∑ u in G.neighborFinset v, vec u := by
   simp only [← dotProduct_adjMatrix, vecMul]
-  refine' congr rfl _; ext x
+  refine congr rfl ?_; ext x
   rw [← transpose_apply (adjMatrix α G) x v, transpose_adjMatrix]
 #align simple_graph.adj_matrix_vec_mul_apply SimpleGraph.adjMatrix_vecMul_apply
 
@@ -243,17 +242,17 @@ theorem trace_adjMatrix [AddCommMonoid α] [One α] : Matrix.trace (G.adjMatrix 
 variable {α}
 
 theorem adjMatrix_mul_self_apply_self [NonAssocSemiring α] (i : V) :
-    (G.adjMatrix α * G.adjMatrix α) i i = degree G i := by simp
+    (G.adjMatrix α * G.adjMatrix α) i i = degree G i := by simp [filter_true_of_mem]
 #align simple_graph.adj_matrix_mul_self_apply_self SimpleGraph.adjMatrix_mul_self_apply_self
 
 variable {G}
 
 -- @[simp] -- Porting note (#10618): simp can prove this
-theorem adjMatrix_mulVec_const_apply [Semiring α] {a : α} {v : V} :
+theorem adjMatrix_mulVec_const_apply [NonAssocSemiring α] {a : α} {v : V} :
     (G.adjMatrix α *ᵥ Function.const _ a) v = G.degree v * a := by simp
 #align simple_graph.adj_matrix_mul_vec_const_apply SimpleGraph.adjMatrix_mulVec_const_apply
 
-theorem adjMatrix_mulVec_const_apply_of_regular [Semiring α] {d : ℕ} {a : α}
+theorem adjMatrix_mulVec_const_apply_of_regular [NonAssocSemiring α] {d : ℕ} {a : α}
     (hd : G.IsRegularOfDegree d) {v : V} : (G.adjMatrix α *ᵥ Function.const _ a) v = d * a :=
   by simp [hd v]
 #align simple_graph.adj_matrix_mul_vec_const_apply_of_regular SimpleGraph.adjMatrix_mulVec_const_apply_of_regular
@@ -263,8 +262,7 @@ theorem adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ)
   rw [card_set_walk_length_eq]
   induction' n with n ih generalizing u v
   · obtain rfl | h := eq_or_ne u v <;> simp [finsetWalkLength, *]
-  · nth_rw 1 [Nat.succ_eq_one_add]
-    simp only [pow_add, pow_one, finsetWalkLength, ih, adjMatrix_mul_apply]
+  · simp only [pow_succ', finsetWalkLength, ih, adjMatrix_mul_apply]
     rw [Finset.card_biUnion]
     · norm_cast
       simp only [Nat.cast_sum, card_map, neighborFinset_def]
@@ -279,21 +277,20 @@ theorem adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ)
       simp at hxy
 #align simple_graph.adj_matrix_pow_apply_eq_card_walk SimpleGraph.adjMatrix_pow_apply_eq_card_walk
 
-/-- The sum of the identity, `G.adjMatrix ℕ` and `(G.adjMatrix ℕ).compl` is the all-ones matrix. -/
-theorem one_add_adjMatrix_add_compl_adjMatrix_eq_allOnes [DecidableEq V] :
-    1 + G.adjMatrix ℕ + (G.adjMatrix ℕ).compl = Matrix.of fun _ _ ↦ 1 := by
+/-- The sum of the identity, the adjacency matrix, and its complement is the all-ones matrix. -/
+theorem one_add_adjMatrix_add_compl_adjMatrix_eq_allOnes [DecidableEq V] [DecidableEq α]
+    [NonAssocSemiring α] : 1 + G.adjMatrix α + (G.adjMatrix α).compl = Matrix.of fun _ _ ↦ 1 := by
   ext i j
   unfold Matrix.compl
   rw [of_apply, add_apply, adjMatrix_apply, add_apply, adjMatrix_apply, one_apply]
   by_cases h : G.Adj i j
-  · rw [if_pos h, if_neg one_ne_zero, if_neg (G.ne_of_adj h), if_neg (G.ne_of_adj h), zero_add,
-     add_zero]
+  · aesop
   · rw [if_neg h]
     by_cases heq : i = j
     · repeat rw [if_pos heq, add_zero]
     · rw [if_neg heq, if_neg heq, zero_add, zero_add, if_pos (refl 0)]
 
-theorem dotProduct_mulVec_adjMatrix [Ring α] (vec : V → α) :
+theorem dotProduct_mulVec_adjMatrix [NonAssocSemiring α] (vec : V → α) :
     vec ⬝ᵥ (G.adjMatrix α).mulVec vec =
     ∑ i : V, ∑ j : V, if G.Adj i j then vec i * vec j else 0 := by
   simp only [dotProduct, mulVec, adjMatrix_apply, ite_mul, one_mul, zero_mul, mul_sum, mul_ite,
@@ -304,7 +301,6 @@ end SimpleGraph
 namespace Matrix.IsAdjMatrix
 
 variable [MulZeroOneClass α] [Nontrivial α]
-
 variable {A : Matrix V V α} (h : IsAdjMatrix A)
 
 /-- If `A` is qualified as an adjacency matrix,

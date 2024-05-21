@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 import Lean.Elab.Command
 import Lean.Elab.Quotation
-import Std.Tactic.Where
+import Batteries.Tactic.Where
 import Mathlib.Data.Matrix.Notation
 import Mathlib.Logic.Equiv.PartialEquiv
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
@@ -27,7 +27,7 @@ import Mathlib.Tactic.CategoryTheory.Slice
 import Mathlib.Tactic.Choose
 import Mathlib.Tactic.Clean
 import Mathlib.Tactic.Clear_
-import Mathlib.Tactic.Clear!
+import Mathlib.Tactic.ClearExclamation
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Congrm
@@ -162,6 +162,11 @@ open Lean Parser.Tactic
 
 /- S -/ syntax (name := elide) "elide " num (location)? : tactic
 /- S -/ syntax (name := unelide) "unelide" (location)? : tactic
+
+/-- `ext1? pat*` is like `ext1 pat*` but gives a suggestion on what pattern to use -/
+/- M -/ syntax (name := ext1?) "ext1?" (colGt ppSpace rintroPat)* : tactic
+/-- `ext? pat*` is like `ext pat*` but gives a suggestion on what pattern to use -/
+/- M -/ syntax (name := ext?) "ext?" (colGt ppSpace rintroPat)* (" : " num)? : tactic
 
 /- S -/ syntax (name := clarify) "clarify" (config)?
   (Parser.Tactic.simpArgs)? (" using " term,+)? : tactic

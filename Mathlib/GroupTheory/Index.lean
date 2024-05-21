@@ -67,8 +67,8 @@ theorem index_comap_of_surjective {G' : Type*} [Group G'] {f : G' →* G}
     exact fun x y => iff_of_eq (congr_arg (· ∈ H) (by rw [f.map_mul, f.map_inv]))
   refine' Cardinal.toNat_congr (Equiv.ofBijective (Quotient.map' f fun x y => (key x y).mp) ⟨_, _⟩)
   · simp_rw [← Quotient.eq''] at key
-    refine' Quotient.ind' fun x => _
-    refine' Quotient.ind' fun y => _
+    refine Quotient.ind' fun x => ?_
+    refine Quotient.ind' fun y => ?_
     exact (key x y).mpr
   · refine' Quotient.ind' fun x => _
     obtain ⟨y, hy⟩ := hf x
@@ -180,7 +180,7 @@ of `b * a` and `b` belong to `H`. -/
 for all `b`, exactly one of `b + a` and `b` belong to `H`."]
 theorem index_eq_two_iff : H.index = 2 ↔ ∃ a, ∀ b, Xor' (b * a ∈ H) (b ∈ H) := by
   simp only [index, Nat.card_eq_two_iff' ((1 : G) : G ⧸ H), ExistsUnique, inv_mem_iff,
-    QuotientGroup.exists_mk, QuotientGroup.forall_mk, Ne.def, QuotientGroup.eq, mul_one,
+    QuotientGroup.exists_mk, QuotientGroup.forall_mk, Ne, QuotientGroup.eq, mul_one,
     xor_iff_iff_not]
   refine'
     exists_congr fun a => ⟨fun ha b => ⟨fun hba hb => _, fun hb => _⟩, fun ha => ⟨_, fun b hb => _⟩⟩
