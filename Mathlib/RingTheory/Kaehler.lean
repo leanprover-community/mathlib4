@@ -632,10 +632,8 @@ theorem KaehlerDifferential.kerTotal_map (h : Function.Surjective (algebraMap A 
       (KaehlerDifferential.kerTotal S B).restrictScalars _ := by
   rw [KaehlerDifferential.kerTotal, Submodule.map_span, KaehlerDifferential.kerTotal,
     Submodule.restrictScalars_span _ _ h]
-  -- Porting note: the proof is diverging from the mathlib3 proof here.
-  -- `map_sub` and `map_add` are not firing so we need to use `LinearMap.map_*` instead
   simp_rw [Set.image_union, Submodule.span_union, ← Set.image_univ, Set.image_image, Set.image_univ,
-    LinearMap.map_sub, LinearMap.map_add]
+    map_sub, map_add]
   simp only [LinearMap.comp_apply, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single,
     Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single, Algebra.linearMap_apply,
     map_one, map_add, map_mul]

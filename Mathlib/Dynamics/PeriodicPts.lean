@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
 import Mathlib.Algebra.GroupPower.IterateHom
+import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Data.List.Cycle
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.PNat.Basic
