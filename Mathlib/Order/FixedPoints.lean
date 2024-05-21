@@ -320,7 +320,7 @@ instance completeLattice : CompleteLattice (fixedPoints f) where
   open OmegaCompletePartialOrder fixedPoints
 
   /-- **Kleenes fixed point Theorem**: The least fixed point in a complete lattice is
-  the supremum of iterating a function to bottom arbitrary often. -/
+  the supremum of iterating a function on bottom arbitrary often. -/
   theorem lfp_eq_sSup_repeat (h : Continuous f) :
       lfp f = sSup { Nat.repeat f n ⊥ | n : Nat} := by
     apply le_antisymm
