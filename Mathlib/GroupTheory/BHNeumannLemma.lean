@@ -228,7 +228,7 @@ theorem Fintype.finiteIndex_of_iUnion_leftCoset_eq_univ {G ι : Type*} [Group G]
     exact match h with | ⟨i, _, h⟩ => ⟨i, h⟩
 
 /-- Let the group `G` be the union of finitely many left cosets `g i • H i`.
-Then the cosets of infinite index may be omitted from the covering. -/
+Then the cosets of subsets of infinite index may be omitted from the covering. -/
 theorem Fintype.covers_finiteIndex_of_covers {G ι : Type*} [Group G] [Fintype ι]
     [DecidablePred fun (H : Subgroup G) => H.FiniteIndex]
     (g : ι → G) (H : ι → Subgroup G) (hcovers : ⋃ k, g k • (H k : Set G) = Set.univ) :
