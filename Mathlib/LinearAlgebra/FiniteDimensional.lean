@@ -1045,51 +1045,6 @@ theorem finrank_eq_one_iff_of_nonzero' (v : V) (nz : v ≠ 0) :
   apply span_singleton_eq_top_iff
 #align finrank_eq_one_iff_of_nonzero' finrank_eq_one_iff_of_nonzero'
 
-/-- A module has dimension 1 iff there is some `v : V` so `{v}` is a basis.
--/
-theorem finrank_eq_one_iff {K V : Type*} [Ring K] [StrongRankCondition K]
-    [AddCommGroup V] [Module K V] [Module.Free K V] (ι : Type*) [Unique ι] :
-    finrank K V = 1 ↔ Nonempty (Basis ι K V) := by
-  constructor
-  · intro h
-    exact ⟨FiniteDimensional.basisUnique ι h⟩
-  · rintro ⟨b⟩
-    simpa using finrank_eq_card_basis b
-#align finrank_eq_one_iff finrank_eq_one_iff
-
-/-- A module has dimension 1 iff there is some nonzero `v : V` so every vector is a multiple of `v`.
--/
-theorem finrank_eq_one_iff' {K V : Type*} [Ring K] [StrongRankCondition K]
-    [AddCommGroup V] [Module K V] [Module.Free K V] :
-    finrank K V = 1 ↔ ∃ v ≠ 0, ∀ w : V, ∃ c : K, c • v = w := by
-  rw [← rank_eq_one_iff]
-  exact Cardinal.toNat_eq_iff one_ne_zero
-#align finrank_eq_one_iff' finrank_eq_one_iff'
-
--- Not sure why this aren't found automatically.
-/-- A finite dimensional module has dimension at most 1 iff
-there is some `v : V` so every vector is a multiple of `v`.
--/
-theorem finrank_le_one_iff {K V : Type*} [Ring K] [StrongRankCondition K]
-    [AddCommGroup V] [Module K V] [Module.Free K V] [Module.Finite K V] :
-    finrank K V ≤ 1 ↔ ∃ v : V, ∀ w : V, ∃ c : K, c • v = w := by
-  rw [← rank_le_one_iff, ← finrank_eq_rank, ← Cardinal.natCast_le,
-    Nat.cast_one]
-#align finrank_le_one_iff finrank_le_one_iff
-
-theorem Submodule.finrank_le_one_iff_isPrincipal {K V : Type*} [Ring K] [StrongRankCondition K]
-    [AddCommGroup V] [Module K V] (W : Submodule K V) [Module.Free K W] [Module.Finite K W] :
-    finrank K W ≤ 1 ↔ W.IsPrincipal := by
-  rw [← W.rank_le_one_iff_isPrincipal, ← finrank_eq_rank, ← Cardinal.natCast_le, Nat.cast_one]
-#align submodule.finrank_le_one_iff_is_principal Submodule.finrank_le_one_iff_isPrincipal
-
-theorem Module.finrank_le_one_iff_top_isPrincipal {K V : Type*} [Ring K] [StrongRankCondition K]
-    [AddCommGroup V] [Module K V] [Module.Free K V] [Module.Finite K V] :
-    finrank K V ≤ 1 ↔ (⊤ : Submodule K V).IsPrincipal := by
-  rw [← Module.rank_le_one_iff_top_isPrincipal, ← finrank_eq_rank, ← Cardinal.natCast_le,
-    Nat.cast_one]
-#align module.finrank_le_one_iff_top_is_principal Module.finrank_le_one_iff_top_isPrincipal
-
 -- We use the `LinearMap.CompatibleSMul` typeclass here, to encompass two situations:
 -- * `A = K`
 -- * `[Field K] [Algebra K A] [IsScalarTower K A V] [IsScalarTower K A W]`
@@ -1301,32 +1256,5 @@ theorem ker_pow_le_ker_pow_finrank [FiniteDimensional K V] (f : End K V) (m : �
 #align module.End.ker_pow_le_ker_pow_finrank Module.End.ker_pow_le_ker_pow_finrank
 
 end End
-
-end Module
-
-section Module
-
-open Module
-
-open Cardinal
-
-theorem cardinal_mk_eq_cardinal_mk_field_pow_rank (K V : Type u) [Ring K] [StrongRankCondition K]
-    [AddCommGroup V] [Module K V] [Module.Free K V] [Module.Finite K V] :
-    #V = #K ^ Module.rank K V := by
-  haveI := nontrivial_of_invariantBasisNumber K
-  obtain ⟨s, hs⟩ := Module.Free.exists_basis (R := K) (M := V)
-  -- `Module.Finite.finite_basis` is in a much later file, so we copy its proof to here
-  haveI : Finite s := by
-    obtain ⟨t, ht⟩ := ‹Module.Finite K V›
-    exact basis_finite_of_finite_spans _ t.finite_toSet ht hs
-  simp_rw [hs.repr.toEquiv.cardinal_eq, Finsupp.equivFunOnFinite.cardinal_eq, Cardinal.mk_arrow,
-    Cardinal.lift_id, hs.mk_eq_rank'']
-#align cardinal_mk_eq_cardinal_mk_field_pow_rank cardinal_mk_eq_cardinal_mk_field_pow_rank
-
-theorem cardinal_lt_aleph0_of_finiteDimensional (K V : Type u) [Ring K] [StrongRankCondition K]
-    [AddCommGroup V] [Module K V] [Finite K] [Module.Free K V] [Module.Finite K V] : #V < ℵ₀ := by
-  rw [cardinal_mk_eq_cardinal_mk_field_pow_rank K V]
-  exact Cardinal.power_lt_aleph0 (Cardinal.lt_aleph0_of_finite K) (rank_lt_aleph0 K V)
-#align cardinal_lt_aleph_0_of_finite_dimensional cardinal_lt_aleph0_of_finiteDimensional
 
 end Module
