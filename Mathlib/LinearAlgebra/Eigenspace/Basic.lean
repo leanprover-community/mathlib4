@@ -205,11 +205,11 @@ def genEigenrange (f : End R M) (μ : R) (k : ℕ) : Submodule R M :=
 #align module.End.generalized_eigenrange Module.End.genEigenrange
 
 /-- The exponent of a generalized eigenvalue is never 0. -/
-theorem exp_ne_zero_of_hasGeneralizedEigenvalue {f : End R M} {μ : R} {k : ℕ}
+theorem exp_ne_zero_of_hasGenEigenvalue {f : End R M} {μ : R} {k : ℕ}
     (h : f.HasGenEigenvalue μ k) : k ≠ 0 := by
   rintro rfl
   exact h LinearMap.ker_id
-#align module.End.exp_ne_zero_of_has_generalized_eigenvalue Module.End.exp_ne_zero_of_hasGeneralizedEigenvalue
+#align module.End.exp_ne_zero_of_has_generalized_eigenvalue Module.End.exp_ne_zero_of_hasGenEigenvalue
 
 /-- The union of the kernels of `(f - μ • id) ^ k` over all `k`. -/
 def maxGenEigenspace (f : End R M) (μ : R) : Submodule R M :=
@@ -245,14 +245,14 @@ theorem maxGenEigenspace_eq [h : IsNoetherian R M] (f : End R M) (μ : R) :
 
 /-- A generalized eigenvalue for some exponent `k` is also
     a generalized eigenvalue for exponents larger than `k`. -/
-theorem hasGeneralizedEigenvalue_of_hasGeneralizedEigenvalue_of_le {f : End R M} {μ : R} {k : ℕ}
+theorem hasGenEigenvalue_of_hasGenEigenvalue_of_le {f : End R M} {μ : R} {k : ℕ}
     {m : ℕ} (hm : k ≤ m) (hk : f.HasGenEigenvalue μ k) :
     f.HasGenEigenvalue μ m := by
   unfold HasGenEigenvalue at *
   contrapose! hk
   rw [← le_bot_iff, ← hk]
   exact (f.genEigenspace μ).monotone hm
-#align module.End.has_generalized_eigenvalue_of_has_generalized_eigenvalue_of_le Module.End.hasGeneralizedEigenvalue_of_hasGeneralizedEigenvalue_of_le
+#align module.End.has_generalized_eigenvalue_of_has_generalized_eigenvalue_of_le Module.End.hasGenEigenvalue_of_hasGenEigenvalue_of_le
 
 /-- The eigenspace is a subspace of the generalized eigenspace. -/
 theorem eigenspace_le_genEigenspace {f : End R M} {μ : R} {k : ℕ} (hk : 0 < k) :
@@ -261,27 +261,27 @@ theorem eigenspace_le_genEigenspace {f : End R M} {μ : R} {k : ℕ} (hk : 0 < k
 #align module.End.eigenspace_le_generalized_eigenspace Module.End.eigenspace_le_genEigenspace
 
 /-- All eigenvalues are generalized eigenvalues. -/
-theorem hasGeneralizedEigenvalue_of_hasEigenvalue {f : End R M} {μ : R} {k : ℕ} (hk : 0 < k)
+theorem hasGenEigenvalue_of_hasEigenvalue {f : End R M} {μ : R} {k : ℕ} (hk : 0 < k)
     (hμ : f.HasEigenvalue μ) : f.HasGenEigenvalue μ k := by
-  apply hasGeneralizedEigenvalue_of_hasGeneralizedEigenvalue_of_le hk
+  apply hasGenEigenvalue_of_hasGenEigenvalue_of_le hk
   rw [HasGenEigenvalue, genEigenspace, OrderHom.coe_mk, pow_one]
   exact hμ
-#align module.End.has_generalized_eigenvalue_of_has_eigenvalue Module.End.hasGeneralizedEigenvalue_of_hasEigenvalue
+#align module.End.has_generalized_eigenvalue_of_has_eigenvalue Module.End.hasGenEigenvalue_of_hasEigenvalue
 
 /-- All generalized eigenvalues are eigenvalues. -/
-theorem hasEigenvalue_of_hasGeneralizedEigenvalue {f : End R M} {μ : R} {k : ℕ}
+theorem hasEigenvalue_of_hasGenEigenvalue {f : End R M} {μ : R} {k : ℕ}
     (hμ : f.HasGenEigenvalue μ k) : f.HasEigenvalue μ := by
   intro contra; apply hμ
   erw [LinearMap.ker_eq_bot] at contra ⊢; rw [LinearMap.coe_pow]
   exact Function.Injective.iterate contra k
-#align module.End.has_eigenvalue_of_has_generalized_eigenvalue Module.End.hasEigenvalue_of_hasGeneralizedEigenvalue
+#align module.End.has_eigenvalue_of_has_generalized_eigenvalue Module.End.hasEigenvalue_of_hasGenEigenvalue
 
 /-- Generalized eigenvalues are actually just eigenvalues. -/
 @[simp]
-theorem hasGeneralizedEigenvalue_iff_hasEigenvalue {f : End R M} {μ : R} {k : ℕ} (hk : 0 < k) :
+theorem hasGenEigenvalue_iff_hasEigenvalue {f : End R M} {μ : R} {k : ℕ} (hk : 0 < k) :
     f.HasGenEigenvalue μ k ↔ f.HasEigenvalue μ :=
-  ⟨hasEigenvalue_of_hasGeneralizedEigenvalue, hasGeneralizedEigenvalue_of_hasEigenvalue hk⟩
-#align module.End.has_generalized_eigenvalue_iff_has_eigenvalue Module.End.hasGeneralizedEigenvalue_iff_hasEigenvalue
+  ⟨hasEigenvalue_of_hasGenEigenvalue, hasGenEigenvalue_of_hasEigenvalue hk⟩
+#align module.End.has_generalized_eigenvalue_iff_has_eigenvalue Module.End.hasGenEigenvalue_iff_hasEigenvalue
 
 /-- Every generalized eigenvector is a generalized eigenvector for exponent `finrank K V`.
     (Lemma 8.11 of [axler2015]) -/

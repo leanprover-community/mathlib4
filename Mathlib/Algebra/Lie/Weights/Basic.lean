@@ -239,7 +239,7 @@ lemma hasEigenvalueAt (χ : Weight R L M) (x : L) :
     (toEnd R L M x).HasEigenvalue (χ x) := by
   obtain ⟨k : ℕ, hk : (toEnd R L M x).genEigenspace (χ x) k ≠ ⊥⟩ := by
     simpa [Module.End.maxGenEigenspace, weightSpaceOf] using χ.weightSpaceOf_ne_bot x
-  exact Module.End.hasEigenvalue_of_hasGeneralizedEigenvalue hk
+  exact Module.End.hasEigenvalue_of_hasGenEigenvalue hk
 
 lemma apply_eq_zero_of_isNilpotent [NoZeroSMulDivisors R M] [IsReduced R]
     (x : L) (h : _root_.IsNilpotent (toEnd R L M x)) (χ : Weight R L M) :
