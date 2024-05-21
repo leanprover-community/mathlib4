@@ -182,7 +182,50 @@ theorem id_comp (f : A →⋆ₙ+* B) : (NonUnitalStarRingHom.id _).comp f = f :
 theorem comp_id (f : A →⋆ₙ+* B) : f.comp (NonUnitalStarRingHom.id _) = f :=
   ext fun _ => rfl
 
+instance : Monoid (A →⋆ₙ+* A) where
+  mul := comp
+  mul_assoc := comp_assoc
+  one := NonUnitalStarRingHom.id A
+  one_mul := id_comp
+  mul_one := comp_id
+
+@[simp]
+theorem coe_one : ((1 : A →⋆ₙ+* A) : A → A) = id :=
+  rfl
+
+theorem one_apply (a : A) : (1 : A →⋆ₙ+* A) a = a :=
+  rfl
+
 end Basic
+
+section Zero
+
+-- the `zero` requires extra type class assumptions because we need `star_zero`
+variable {A B C D : Type*}
+variable [NonUnitalNonAssocSemiring A] [StarAddMonoid A]
+variable [NonUnitalNonAssocSemiring B] [StarAddMonoid B]
+
+instance : Zero (A →⋆ₙ+* B) :=
+  ⟨{ (0 : NonUnitalRingHom A B) with map_star' := by simp }⟩
+
+instance : Inhabited (A →⋆ₙ+* B) :=
+  ⟨0⟩
+
+instance : MonoidWithZero (A →⋆ₙ+* A) :=
+  { inferInstanceAs (Monoid (A →⋆ₙ+* A)),
+    inferInstanceAs (Zero (A →⋆ₙ+* A)) with
+    zero_mul := fun _ => ext fun _ => rfl
+    mul_zero := fun f => ext fun _ => map_zero f }
+
+@[simp]
+theorem coe_zero : ((0 : A →⋆ₙ+* B) : A → B) = 0 :=
+  rfl
+
+theorem zero_apply (a : A) : (0 : A →⋆ₙ+* B) a = 0 :=
+  rfl
+
+end Zero
+
 
 end NonUnitalStarRingHom
 
