@@ -894,35 +894,36 @@ section WithZero_Multiplicative_stuff
 
 open Multiplicative
 
-theorem WithZero.Multiplicative.eq_coe_of_pos {α : Type*} {x : WithZero (Multiplicative α)}
-    (hx : x ≠ 0) : ∃ (n : α), x = ofAdd n :=
+-- in the process of moving these
+theorem WithZero.eq_coe_of_ne_zero {α : Type*} {x : WithZero α}
+    (hx : x ≠ 0) : ∃ (n : α), x = n :=
   Option.ne_none_iff_exists'.mp hx
 
-theorem WithZero.Multiplicative.eq_zero_or_coe {α : Type*} (x : WithZero (Multiplicative α)) :
-    x = 0 ∨ ∃ (n : α), x = ofAdd n :=
-  or_iff_not_imp_left.mpr WithZero.Multiplicative.eq_coe_of_pos
+theorem WithZero.eq_zero_or_coe {α : Type*} (x : WithZero α) :
+    x = 0 ∨ ∃ (n : α), x = n :=
+  or_iff_not_imp_left.mpr Option.ne_none_iff_exists'.mp
 
-open WithZero.Multiplicative
+open WithZero
 
 -- this makes `mul_lt_mul_left`, `mul_pos` etc work on `ℤₘ₀`
-instance {α : Type*} [Add α] [Preorder α] [CovariantClass α α (· + ·) (· < ·)]:
-    PosMulStrictMono (WithZero (Multiplicative α)) where
+instance foo {α : Type*} [Mul α] [Preorder α] [CovariantClass α α (· * ·) (· < ·)]:
+    PosMulStrictMono (WithZero α) where
   elim := by
     intro ⟨x, hx⟩ a b (h : a < b)
-    rcases eq_coe_of_pos hx.ne' with ⟨x, rfl⟩
+    rcases eq_coe_of_ne_zero hx.ne' with ⟨x, rfl⟩
     dsimp only
     rcases eq_zero_or_coe a with (rfl | ⟨a, rfl⟩)
     · rw [mul_zero]
-      rcases eq_coe_of_pos h.ne' with ⟨b, rfl⟩
+      rcases eq_coe_of_ne_zero h.ne' with ⟨b, rfl⟩
       exact WithZero.zero_lt_coe _
     · have hb : 0 < b := lt_trans (WithZero.zero_lt_coe (ofAdd a)) h
-      rcases eq_coe_of_pos hb.ne' with ⟨b, rfl⟩
+      rcases eq_coe_of_ne_zero hb.ne' with ⟨b, rfl⟩
       norm_cast at h ⊢
-      exact add_lt_add_left (α := α) h x
+      exact mul_lt_mul_left' (α := α) h x
 
 -- This makes `lt_mul_of_le_of_one_lt'` work on `ℤₘ₀`
-instance {α : Type*} [Add α] [Preorder α] [CovariantClass α α (swap (· + ·)) (· ≤ ·)]:
-    MulPosMono (WithZero (Multiplicative α)) where
+instance {α : Type*} [Mul α] [Preorder α] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]:
+    MulPosMono (WithZero α) where
   elim := by
     intro ⟨x, hx⟩ a b (h : a ≤ b)
     dsimp only
@@ -931,8 +932,8 @@ instance {α : Type*} [Add α] [Preorder α] [CovariantClass α α (swap (· + �
     · rcases eq_zero_or_coe a with (rfl | ⟨a, rfl⟩)
       · simp only [zero_mul, WithZero.zero_le]
       · have hb : 0 < b := lt_of_lt_of_le (WithZero.zero_lt_coe (ofAdd a)) h
-        rcases eq_coe_of_pos hb.ne' with ⟨b, rfl⟩
+        rcases eq_coe_of_ne_zero hb.ne' with ⟨b, rfl⟩
         norm_cast at h ⊢
-        exact add_le_add_right (α := α) h x
+        exact mul_le_mul_right' (α := α) h x
 
 end WithZero_Multiplicative_stuff
