@@ -76,7 +76,7 @@ lemma fac : f = eqToHom (domain_eq p f φ).symm ≫ p.map φ ≫ eqToHom (codoma
   Functor.IsHomLift.fac
 
 lemma fac' : p.map φ = eqToHom (domain_eq p f φ) ≫ f ≫
-      eqToHom (codomain_eq p f φ).symm := by
+    eqToHom (codomain_eq p f φ).symm := by
   simp [fac p f φ]
 
 lemma commSq : CommSq (p.map φ) (eqToHom (domain_eq p f φ))
