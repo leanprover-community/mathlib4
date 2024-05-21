@@ -29,6 +29,8 @@ This file is heavily inspired by `Mathlib.Algebra.Star.StarAlgHom`.
 non-unital, ring, morphism, star
 -/
 
+open EquivLike
+
 /-! ### Non-unital star ring homomorphisms -/
 
 /-- A *non-unital ⋆-ring homomorphism* is a non-unital ring homomorphism between non-unital
@@ -255,11 +257,42 @@ class StarRingEquivClass (F : Type*) (A B : outParam Type*)
   /-- By definition, a ⋆-ring equivalence preserves the `star` operation. -/
   map_star : ∀ (f : F) (a : A), f (star a) = star (f a)
 
+namespace StarRingEquivClass
+
+-- See note [lower instance priority]
+instance (priority := 50) {F A B : Type*} {_ : Add A} {_ : Mul A} {_ : Star A} {_ : Add B}
+    {_ : Mul B} {_ : Star B} [EquivLike F A B] [RingEquivClass F A B]
+    [hF : StarRingEquivClass F A B] :
+    StarHomClass F A B :=
+  { hF with }
+
+-- See note [lower instance priority]
+instance (priority := 100) {F A B : Type*} {_ : NonUnitalNonAssocSemiring A} {_ : Star A}
+    {_ : NonUnitalNonAssocSemiring B} {_ : Star B} [EquivLike F A B] [RingEquivClass F A B]
+    [StarRingEquivClass F A B] : NonUnitalStarRingHomClass F A B :=
+  { }
+
+/-- Turn an element of a type `F` satisfying `StarAlgEquivClass F R A B` into an actual
+`StarAlgEquiv`. This is declared as the default coercion from `F` to `A ≃⋆ₐ[R] B`. -/
+@[coe]
+def toStarRingEquiv {F A B : Type*} [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B]
+    [EquivLike F A B] [RingEquivClass F A B] [StarRingEquivClass F A B] (f : F) : A  ≃⋆+* B :=
+  { (f : A ≃+* B) with
+    map_star' := map_star f}
+
+/-- Any type satisfying `StarRingEquivClass` can be cast into `StarRingEquiv` via
+`StarRingEquivClass.toStarRingEquiv`. -/
+instance instCoeHead {F A B : Type*} [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B]
+    [EquivLike F A B] [RingEquivClass F A B] [StarRingEquivClass F A B] : CoeHead F (A ≃⋆+* B) :=
+  ⟨toStarRingEquiv⟩
+
+end StarRingEquivClass
+
 namespace StarRingEquiv
 
 section Basic
 
-variable {A B : Type*} [Add A] [Add B] [Mul A] [Mul B] [Star A] [Star B]
+variable {A B C : Type*} [Add A] [Add B] [Mul A] [Mul B] [Star A] [Star B] [Add C] [Mul C] [Star C]
 
 instance : EquivLike (A ≃⋆+* B) A B where
   coe f := f.toFun
@@ -277,6 +310,122 @@ instance : RingEquivClass (A ≃⋆+* B) A B where
 
 instance : StarRingEquivClass (A ≃⋆+* B) A B where
   map_star := map_star'
+
+/-- Helper instance for cases where the inference via `EquivLike` is too hard. -/
+instance : FunLike (A ≃⋆+* B) A B where
+  coe f := f.toFun
+  coe_injective' := DFunLike.coe_injective
+
+@[simp]
+theorem toRingEquiv_eq_coe (e : A ≃⋆+* B) : e.toRingEquiv = e :=
+  rfl
+
+@[ext]
+theorem ext {f g : A ≃⋆+* B} (h : ∀ a, f a = g a) : f = g :=
+  DFunLike.ext f g h
+
+theorem ext_iff {f g : A ≃⋆+* B} : f = g ↔ ∀ a, f a = g a :=
+  DFunLike.ext_iff
+
+/-- Star ring equivalences are reflexive. -/
+@[refl]
+def refl : A ≃⋆+* A :=
+  { RingEquiv.refl A with
+    map_star' := fun _ => rfl }
+#align star_alg_equiv.refl StarRingEquiv.refl
+
+instance : Inhabited (A ≃⋆+* A) :=
+  ⟨refl⟩
+
+@[simp]
+theorem coe_refl : ⇑(refl : A ≃⋆+* A) = id :=
+  rfl
+
+/-- Star ring equivalences are symmetric. -/
+@[symm]
+nonrec def symm (e : A ≃⋆+* B) : B ≃⋆+* A :=
+  { e.symm with
+    map_star' := fun b => by
+      simpa only [apply_inv_apply, inv_apply_apply] using
+        congr_arg (inv e) (map_star e (inv e b)).symm }
+
+/-- See Note [custom simps projection] -/
+def Simps.apply (e : A ≃⋆+* B) : A → B := e
+
+/-- See Note [custom simps projection] -/
+def Simps.symm_apply (e : A ≃⋆+* B) : B → A :=
+  e.symm
+
+initialize_simps_projections StarRingEquiv (toFun → apply, invFun → symm_apply)
+
+@[simp]
+theorem invFun_eq_symm {e : A ≃⋆+* B} : EquivLike.inv e = e.symm :=
+  rfl
+
+@[simp]
+theorem symm_symm (e : A ≃⋆+* B) : e.symm.symm = e := by
+  ext
+  rfl
+
+theorem symm_bijective : Function.Bijective (symm : (A ≃⋆+* B) → B ≃⋆+* A) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
+@[simp]
+theorem mk_coe' (e : A ≃⋆+* B) (f h₁ h₂ h₃ h₄ h₅) :
+    (⟨⟨⟨f, e, h₁, h₂⟩, h₃, h₄⟩, h₅⟩ : B ≃⋆+* A) = e.symm :=
+  symm_bijective.injective <| ext fun _ => rfl
+
+@[simp]
+theorem symm_mk (f f') (h₁ h₂ h₃ h₄ h₅) :
+    (⟨⟨⟨f, f', h₁, h₂⟩, h₃, h₄⟩, h₅⟩ : A ≃⋆+* B).symm =
+      { (⟨⟨⟨f, f', h₁, h₂⟩, h₃, h₄⟩, h₅⟩ : A ≃⋆+* B).symm with
+        toFun := f'
+        invFun := f } :=
+  rfl
+
+@[simp]
+theorem refl_symm : (StarRingEquiv.refl : A ≃⋆+* A).symm = StarRingEquiv.refl :=
+  rfl
+
+-- should be a `simp` lemma, but causes a linter timeout
+theorem to_ringEquiv_symm (f : A ≃⋆+* B) : (f : A ≃⋆+* B).symm = f.symm :=
+  rfl
+
+/-- Star ring equivalences are transitive. -/
+@[trans]
+def trans (e₁ : A≃⋆+* B) (e₂ : B ≃⋆+* C) : A ≃⋆+* C :=
+  { e₁.toRingEquiv.trans
+      e₂.toRingEquiv with
+    map_star' := fun a =>
+      show e₂.toFun (e₁.toFun (star a)) = star (e₂.toFun (e₁.toFun a)) by
+        rw [e₁.map_star', e₂.map_star'] }
+
+@[simp]
+theorem apply_symm_apply (e : A ≃⋆+* B) : ∀ x, e (e.symm x) = x :=
+  e.toRingEquiv.apply_symm_apply
+
+@[simp]
+theorem symm_apply_apply (e : A ≃⋆+* B) : ∀ x, e.symm (e x) = x :=
+  e.toRingEquiv.symm_apply_apply
+
+@[simp]
+theorem symm_trans_apply (e₁ : A ≃⋆+* B) (e₂ : B≃⋆+* C) (x : C) :
+    (e₁.trans e₂).symm x = e₁.symm (e₂.symm x) :=
+  rfl
+
+@[simp]
+theorem coe_trans (e₁ : A ≃⋆+* B) (e₂ : B ≃⋆+* C) : ⇑(e₁.trans e₂) = e₂ ∘ e₁ :=
+  rfl
+
+@[simp]
+theorem trans_apply (e₁ : A ≃⋆+* B) (e₂ : B ≃⋆+* C) (x : A) : (e₁.trans e₂) x = e₂ (e₁ x) :=
+  rfl
+
+theorem leftInverse_symm (e : A ≃⋆+* B) : Function.LeftInverse e.symm e :=
+  e.left_inv
+
+theorem rightInverse_symm (e : A ≃⋆+* B) : Function.RightInverse e.symm e :=
+  e.right_inv
 
 end Basic
 
