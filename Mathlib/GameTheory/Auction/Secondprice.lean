@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Wang Haocheng. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Wang Haocheng
+Authors:  Ma Jiajun, Wang Haocheng
 -/
 import Mathlib.Data.Real.EReal
 import Mathlib.Data.Fintype.Basic
@@ -266,7 +266,7 @@ theorem valuation_is_dominant (i : a.I ) : dominant i (a.v i) := by
 noncomputable def Utility.FirstPrice (i : a.I) : ℝ := if i = winner b then a.v i - b i else 0
 
 /-- If `i` is the winner in a first price auction, utility is their valuation minus their bid. -/
-lemma utility_first_price_winner (i :a.I) (H :i = winner b) :Utility.FirstPrice b i = a.v i - b i := by
+lemma utility_first_price_winner (i :a.I) (H :i = winner b):Utility.FirstPrice b i = a.v i-b i := by
    rw[H]
    simp only [Utility.FirstPrice]
    simp only [if_true]
