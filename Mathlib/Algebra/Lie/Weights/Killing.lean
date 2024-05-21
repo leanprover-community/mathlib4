@@ -462,12 +462,8 @@ lemma finrank_rootSpace_eq_one (α : Weight K H L) (hα : α.IsNonZero) :
   replace hy : ⁅y, f⁆ = 0 := by
     have : killingForm K L y f = 0 := by simpa [F, traceForm_comm] using hy
     simpa [this] using lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg hyα hfα
-  have P : IsSl2Triple.HasPrimitiveVectorWith (-h) f e y (-2 : K) :=
-    { h_ne_zero := ht.symm.h_ne_zero
-      lie_e_f := ht.symm.lie_e_f
-      lie_h_e_nsmul := ht.symm.lie_h_e_nsmul
-      lie_h_f_nsmul := ht.symm.lie_h_f_nsmul
-      ne_zero := by simpa using hy₀
+  have P : IsSl2Triple.HasPrimitiveVectorWith ht.symm y (-2 : K) :=
+    { ne_zero := by simpa using hy₀
       lie_h := by simp only [neg_smul, neg_lie, neg_inj, isSl2Triple_h_eq_coroot hα ht heα hfα,
         ← H.coe_bracket_of_module, lie_eq_smul_of_mem_rootSpace hyα (coroot α),
         root_apply_coroot hα]
