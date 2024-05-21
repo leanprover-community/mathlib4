@@ -26,9 +26,7 @@ This defines the cardinality of a `Finset` and provides induction principles for
 * `Finset.Nonempty.strong_induction`
 -/
 
-assert_not_exists Ring
--- TODO: After #12974,
--- assert_not_exists MonoidWithZero
+assert_not_exists MonoidWithZero
 -- TODO: After a lot more work,
 -- assert_not_exists OrderedCommMonoid
 

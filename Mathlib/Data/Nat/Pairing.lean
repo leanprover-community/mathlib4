@@ -3,8 +3,8 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Data.Set.Lattice
 import Mathlib.Algebra.Group.Prod
+import Mathlib.Data.Set.Lattice
 
 #align_import data.nat.pairing from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
@@ -24,6 +24,7 @@ It has the advantage of being monotone in both directions and sending `⟦0, n^2
 `⟦0, n - 1⟧²`.
 -/
 
+assert_not_exists MonoidWithZero
 
 open Prod Decidable Function
 

@@ -22,9 +22,7 @@ and sums indexed by finite sets.
 * `Multiset.sum`: `s.sum f` is the sum of `f i` over all `i ∈ s`.
 -/
 
-assert_not_exists Ring
--- TODO: After #12974,
--- assert_not_exists MonoidWithZero
+assert_not_exists MonoidWithZero
 
 variable {F ι α β γ : Type*}
 
