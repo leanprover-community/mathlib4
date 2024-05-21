@@ -68,7 +68,7 @@ theorem ProperSpace.of_isCompact_closedBall_of_le (R : ℝ)
     (closedBall_subset_closedBall <| le_max_left _ _)⟩
 #align proper_space_of_compact_closed_ball_of_le ProperSpace.of_isCompact_closedBall_of_le
 
-@[deprecated] -- Since 2024/01/31
+@[deprecated] -- Since 2024-01-31
 alias properSpace_of_compact_closedBall_of_le := ProperSpace.of_isCompact_closedBall_of_le
 
 /-- If there exists a sequence of compact closed balls with the same center
@@ -137,7 +137,7 @@ theorem exists_pos_lt_subset_ball (hr : 0 < r) (hs : IsClosed s) (h : s ⊆ ball
   have : IsCompact s :=
     (isCompact_closedBall x r).of_isClosed_subset hs (h.trans ball_subset_closedBall)
   obtain ⟨y, hys, hy⟩ : ∃ y ∈ s, s ⊆ closedBall x (dist y x) :=
-    this.exists_forall_ge hne (continuous_id.dist continuous_const).continuousOn
+    this.exists_isMaxOn hne (continuous_id.dist continuous_const).continuousOn
   have hyr : dist y x < r := h hys
   rcases exists_between hyr with ⟨r', hyr', hrr'⟩
   exact ⟨r', ⟨dist_nonneg.trans_lt hyr', hrr'⟩, hy.trans <| closedBall_subset_ball hyr'⟩

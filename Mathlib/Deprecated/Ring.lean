@@ -48,7 +48,6 @@ structure IsSemiringHom {α : Type u} {β : Type v} [Semiring α] [Semiring β] 
 namespace IsSemiringHom
 
 variable {β : Type v} [Semiring α] [Semiring β]
-
 variable {f : α → β} (hf : IsSemiringHom f) {x y : α}
 
 /-- The identity map is a semiring homomorphism. -/

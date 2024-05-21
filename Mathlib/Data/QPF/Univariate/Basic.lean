@@ -249,7 +249,8 @@ set_option linter.uppercaseLean3 false in
 attribute [local instance] Wsetoid
 
 /-- inductive type defined as initial algebra of a Quotient of Polynomial Functor -/
---@[nolint has_nonempty_instance] Porting note: linter does not exist
+-- Porting note(#5171): this linter isn't ported yet.
+-- @[nolint has_nonempty_instance]
 def Fix (F : Type u → Type u) [Functor F] [q : QPF F] :=
   Quotient (Wsetoid : Setoid q.P.W)
 #align qpf.fix QPF.Fix
@@ -298,9 +299,8 @@ theorem Fix.ind_aux (a : q.P.A) (f : q.P.B a → q.P.W) :
   have : Fix.mk (abs ⟨a, fun x => ⟦f x⟧⟩) = ⟦Wrepr ⟨a, f⟩⟧ := by
     apply Quot.sound; apply Wequiv.abs'
     rw [PFunctor.W.dest_mk, abs_map, abs_repr, ← abs_map, PFunctor.map_eq]
-    conv =>
-      rhs
-      simp only [Wrepr, recF_eq, PFunctor.W.dest_mk, abs_repr, Function.comp]
+    simp only [Wrepr, recF_eq, PFunctor.W.dest_mk, abs_repr, Function.comp]
+    rfl
   rw [this]
   apply Quot.sound
   apply Wrepr_equiv
@@ -518,7 +518,6 @@ Composition of qpfs.
 namespace QPF
 
 variable {F₂ : Type u → Type u} [Functor F₂] [q₂ : QPF F₂]
-
 variable {F₁ : Type u → Type u} [Functor F₁] [q₁ : QPF F₁]
 
 /-- composition of qpfs gives another qpf -/
@@ -531,7 +530,7 @@ def comp : QPF (Functor.Comp F₂ F₁) where
   repr {α} := by
     dsimp [Functor.Comp]
     intro y
-    refine' ⟨⟨(repr y).1, fun u => (repr ((repr y).2 u)).1⟩, _⟩
+    refine ⟨⟨(repr y).1, fun u => (repr ((repr y).2 u)).1⟩, ?_⟩
     dsimp [PFunctor.comp]
     intro x
     exact (repr ((repr y).2 x.1)).snd x.2
@@ -553,8 +552,8 @@ def comp : QPF (Functor.Comp F₂ F₁) where
     cases' a with b h; dsimp
     symm
     trans
-    symm
-    apply abs_map
+    · symm
+      apply abs_map
     congr
     rw [PFunctor.map_eq]
     dsimp [Function.comp_def]
@@ -574,11 +573,8 @@ We show that if `F` is a qpf and `G` is a suitable quotient of `F`, then `G` is 
 namespace QPF
 
 variable {F : Type u → Type u} [Functor F] [q : QPF F]
-
 variable {G : Type u → Type u} [Functor G]
-
 variable {FG_abs : ∀ {α}, F α → G α}
-
 variable {FG_repr : ∀ {α}, G α → F α}
 
 /-- Given a qpf `F` and a well-behaved surjection `FG_abs` from `F α` to
@@ -635,7 +631,7 @@ theorem has_good_supp_iff {α : Type u} (x : F α) :
     have : Liftp (supp x) x := by rw [h]; intro u; exact id
     rw [liftp_iff] at this
     rcases this with ⟨a, f, xeq, h'⟩
-    refine' ⟨a, f, xeq.symm, _⟩
+    refine ⟨a, f, xeq.symm, ?_⟩
     intro a' f' h''
     rintro u ⟨i, _, hfi⟩
     have : u ∈ supp x := by rw [← hfi]; apply h'
@@ -646,7 +642,7 @@ theorem has_good_supp_iff {α : Type u} (x : F α) :
     rw [← f'ieq]
     apply h'
   intro h'
-  refine' ⟨a, f, xeq.symm, _⟩; intro i
+  refine ⟨a, f, xeq.symm, ?_⟩; intro i
   apply h'; rw [mem_supp]
   intro a' f' xeq'
   apply h a' f' xeq'

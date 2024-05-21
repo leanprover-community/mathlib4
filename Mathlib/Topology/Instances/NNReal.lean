@@ -6,6 +6,7 @@ Authors: Johan Commelin
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.Algebra.InfiniteSum.Ring
 import Mathlib.Topology.Instances.Real
+import Mathlib.Topology.MetricSpace.Isometry
 
 #align_import topology.instances.nnreal from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
@@ -22,6 +23,7 @@ Instances for the following typeclasses are defined:
 * `TopologicalSemiring ℝ≥0`
 * `SecondCountableTopology ℝ≥0`
 * `OrderTopology ℝ≥0`
+* `ProperSpace ℝ≥0`
 * `ContinuousSub ℝ≥0`
 * `HasContinuousInv₀ ℝ≥0` (continuity of `x⁻¹` away from `0`)
 * `ContinuousSMul ℝ≥0 α` (whenever `α` has a continuous `MulAction ℝ α`)
@@ -176,8 +178,8 @@ theorem hasSum_real_toNNReal_of_nonneg {f : α → ℝ} (hf_nonneg : ∀ n, 0 �
 @[norm_cast]
 theorem summable_coe {f : α → ℝ≥0} : (Summable fun a => (f a : ℝ)) ↔ Summable f := by
   constructor
-  exact fun ⟨a, ha⟩ => ⟨⟨a, ha.nonneg fun x => (f x).2⟩, hasSum_coe.1 ha⟩
-  exact fun ⟨a, ha⟩ => ⟨a.1, hasSum_coe.2 ha⟩
+  · exact fun ⟨a, ha⟩ => ⟨⟨a, ha.nonneg fun x => (f x).2⟩, hasSum_coe.1 ha⟩
+  · exact fun ⟨a, ha⟩ => ⟨a.1, hasSum_coe.2 ha⟩
 #align nnreal.summable_coe NNReal.summable_coe
 
 theorem summable_mk {f : α → ℝ} (hf : ∀ n, 0 ≤ f n) :
@@ -265,5 +267,39 @@ def powOrderIso (n : ℕ) (hn : n ≠ 0) : ℝ≥0 ≃o ℝ≥0 :=
     (continuous_id.pow _).surjective (tendsto_pow_atTop hn) <| by
       simpa [OrderBot.atBot_eq, pos_iff_ne_zero]
 #align nnreal.pow_order_iso NNReal.powOrderIso
+
+section Monotone
+
+/-- A monotone, bounded above sequence `f : ℕ → ℝ` has a finite limit. -/
+theorem _root_.Real.tendsto_of_bddAbove_monotone {f : ℕ → ℝ} (h_bdd : BddAbove (Set.range f))
+    (h_mon : Monotone f) : ∃ r : ℝ, Tendsto f atTop (𝓝 r) := by
+  obtain ⟨B, hB⟩ := Real.exists_isLUB  (Set.range_nonempty f) h_bdd
+  exact ⟨B, tendsto_atTop_isLUB h_mon hB⟩
+
+/-- An antitone, bounded below sequence `f : ℕ → ℝ` has a finite limit. -/
+theorem _root_.Real.tendsto_of_bddBelow_antitone {f : ℕ → ℝ} (h_bdd : BddBelow (Set.range f))
+    (h_ant : Antitone f) : ∃ r : ℝ, Tendsto f atTop (𝓝 r) := by
+  obtain ⟨B, hB⟩ := Real.exists_isGLB (Set.range_nonempty f) h_bdd
+  exact ⟨B, tendsto_atTop_isGLB h_ant hB⟩
+
+/-- An antitone sequence `f : ℕ → ℝ≥0` has a finite limit. -/
+theorem tendsto_of_antitone {f : ℕ → ℝ≥0} (h_ant : Antitone f) :
+    ∃ r : ℝ≥0, Tendsto f atTop (𝓝 r) := by
+  have h_bdd_0 : (0 : ℝ) ∈ lowerBounds (Set.range fun n : ℕ => (f n : ℝ)) := by
+    rintro r ⟨n, hn⟩
+    simp_rw [← hn]
+    exact NNReal.coe_nonneg _
+  obtain ⟨L, hL⟩ := Real.tendsto_of_bddBelow_antitone ⟨0, h_bdd_0⟩ h_ant
+  have hL0 : 0 ≤ L :=
+    haveI h_glb : IsGLB (Set.range fun n => (f n : ℝ)) L := isGLB_of_tendsto_atTop h_ant hL
+    (le_isGLB_iff h_glb).mpr h_bdd_0
+  exact ⟨⟨L, hL0⟩, NNReal.tendsto_coe.mp hL⟩
+
+end Monotone
+
+instance instProperSpace : ProperSpace ℝ≥0 where
+  isCompact_closedBall x r := by
+    have emb : ClosedEmbedding ((↑) : ℝ≥0 → ℝ) := Isometry.closedEmbedding fun _ ↦ congrFun rfl
+    exact emb.isCompact_preimage (K := Metric.closedBall x r) (isCompact_closedBall _ _)
 
 end NNReal

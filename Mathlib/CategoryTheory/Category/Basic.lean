@@ -42,13 +42,13 @@ specified explicitly, as `Category.{v} C`.
 Typically any concrete example will either be a `SmallCategory`, where `v = u`,
 which can be introduced as
 ```
-universes u
-variables {C : Type u} [SmallCategory C]
+universe u
+variable {C : Type u} [SmallCategory C]
 ```
 or a `LargeCategory`, where `u = v+1`, which can be introduced as
 ```
-universes u
-variables {C : Type (u+1)} [LargeCategory C]
+universe u
+variable {C : Type (u+1)} [LargeCategory C]
 ```
 
 In order for the library to handle these cases uniformly,
@@ -61,11 +61,11 @@ can not be automatically inferred, through the category theory library
 we introduce universe parameters with morphism levels listed first,
 as in
 ```
-universes v u
+universe v u
 ```
 or
 ```
-universes v₁ v₂ u₁ u₂
+universe v₁ v₂ u₁ u₂
 ```
 when multiple independent universes are needed.
 
@@ -171,10 +171,6 @@ class Category (obj : Type u) extends CategoryStruct.{v} obj : Type max u (v + 1
 #align category_theory.category.assoc CategoryTheory.Category.assoc
 #align category_theory.category.comp_id CategoryTheory.Category.comp_id
 #align category_theory.category.id_comp CategoryTheory.Category.id_comp
-
--- Porting note: `restate_axiom` should not be necessary in lean4
--- Hopefully we can just remove the backticks from field names,
--- then delete the invocation of `restate_axiom`.
 
 attribute [simp] Category.id_comp Category.comp_id Category.assoc
 attribute [trans] CategoryStruct.comp
@@ -363,7 +359,6 @@ end
 section
 
 variable (C : Type u)
-
 variable [Category.{v} C]
 
 universe u'

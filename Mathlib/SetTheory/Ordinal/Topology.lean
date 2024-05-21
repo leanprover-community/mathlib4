@@ -5,7 +5,7 @@ Authors: Violeta Hernández Palacios
 -/
 import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.Tactic.TFAE
-import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Order.Monotone
 
 #align_import set_theory.ordinal.topology from "leanprover-community/mathlib"@"740acc0e6f9adf4423f92a485d0456fc271482da"
 
@@ -197,7 +197,7 @@ theorem isNormal_iff_strictMono_and_continuous (f : Ordinal.{u} → Ordinal.{u})
         Set.mem_preimage.2 (has ⟨hab.trans (h.strictMono hc.1), h.strictMono hc.2⟩)⟩
   · rw [isNormal_iff_strictMono_limit]
     rintro ⟨h, h'⟩
-    refine' ⟨h, fun o ho a h => _⟩
+    refine ⟨h, fun o ho a h => ?_⟩
     suffices o ∈ f ⁻¹' Set.Iic a from Set.mem_preimage.1 this
     rw [mem_closed_iff_sup (IsClosed.preimage h' (@isClosed_Iic _ _ _ _ a))]
     exact

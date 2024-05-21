@@ -36,13 +36,13 @@ theorem exists_homeomorph_extension {E : Type*} [NormedAddCommGroup E] [NormedSp
     ∃ u : E → F, LipschitzWith (lipschitzExtensionConstant F * c) u ∧ EqOn (f - ⇑f') u s :=
     hf.lipschitzOnWith.extend_finite_dimension
   let g : E → F := fun x => f' x + u x
-  have fg : EqOn f g s := fun x hx => by simp_rw [g, ← uf hx, Pi.sub_apply, add_sub_cancel'_right]
+  have fg : EqOn f g s := fun x hx => by simp_rw [g, ← uf hx, Pi.sub_apply, add_sub_cancel]
   have hg : ApproximatesLinearOn g (f' : E →L[ℝ] F) univ (lipschitzExtensionConstant F * c) := by
     apply LipschitzOnWith.approximatesLinearOn
     rw [lipschitzOn_univ]
     convert hu
     ext x
-    simp only [g, add_sub_cancel', ContinuousLinearEquiv.coe_coe, Pi.sub_apply]
+    simp only [g, add_sub_cancel_left, ContinuousLinearEquiv.coe_coe, Pi.sub_apply]
   haveI : FiniteDimensional ℝ E := f'.symm.finiteDimensional
   exact ⟨hg.toHomeomorph g hc, fg⟩
 #align approximates_linear_on.exists_homeomorph_extension ApproximatesLinearOn.exists_homeomorph_extension

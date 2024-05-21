@@ -256,7 +256,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
       exact mul_ne_zero (ne_of_mem_of_not_mem y₀_in zeroV') h H
     rcases this with ⟨z₀, y₀, y₀_in, hz₀, z₀_ne⟩
     have vz₀_ne : (v z₀ : Γ₀) ≠ 0 := by rwa [Valuation.ne_zero_iff]
-    refine' ⟨v z₀, _⟩
+    refine ⟨v z₀, ?_⟩
     rw [WithZeroTopology.tendsto_of_ne_zero vz₀_ne, eventually_comap]
     filter_upwards [nhds_right] with x x_in a ha
     rcases x_in with ⟨y, y_in, rfl⟩
@@ -268,7 +268,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
       solve_by_elim
     calc
       v a = v (a * z₀⁻¹ * z₀) := by rw [mul_assoc, inv_mul_cancel z₀_ne, mul_one]
-      _ = v (a * z₀⁻¹) * v z₀ := (Valuation.map_mul _ _ _)
+      _ = v (a * z₀⁻¹) * v z₀ := Valuation.map_mul _ _ _
       _ = v z₀ := by rw [this, one_mul]
 #align valued.continuous_extension Valued.continuous_extension
 

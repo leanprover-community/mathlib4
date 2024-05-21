@@ -29,9 +29,7 @@ open MeasureTheory MeasureTheory.Measure Set Function TopologicalSpace Bornology
 open scoped Topology Interval ENNReal BigOperators
 
 variable {X Y E F R : Type*} [MeasurableSpace X] [TopologicalSpace X]
-
 variable [MeasurableSpace Y] [TopologicalSpace Y]
-
 variable [NormedAddCommGroup E] [NormedAddCommGroup F] {f g : X → E} {μ : Measure X} {s : Set X}
 
 namespace MeasureTheory
@@ -154,7 +152,7 @@ theorem locallyIntegrableOn_iff [LocallyCompactSpace X] [T2Space X] (hs : IsClos
           (hK.of_isClosed_subset (hs.inter hK.isClosed) (inter_subset_right _ _))⟩
   | inr hs =>
     obtain ⟨K, hK, h2K, h3K⟩ := exists_compact_subset hs hx
-    refine' ⟨K, _, hf K h3K hK⟩
+    refine ⟨K, ?_, hf K h3K hK⟩
     simpa only [IsOpen.nhdsWithin_eq hs hx, interior_eq_nhds'] using h2K
 #align measure_theory.locally_integrable_on_iff MeasureTheory.locallyIntegrableOn_iff
 
@@ -280,7 +278,7 @@ theorem Memℒp.locallyIntegrable [IsLocallyFiniteMeasure μ] {f : X → E} {p :
   intro x
   rcases μ.finiteAt_nhds x with ⟨U, hU, h'U⟩
   have : Fact (μ U < ⊤) := ⟨h'U⟩
-  refine' ⟨U, hU, _⟩
+  refine ⟨U, hU, ?_⟩
   rw [IntegrableOn, ← memℒp_one_iff_integrable]
   apply (hf.restrict U).memℒp_of_exponent_le hp
 
@@ -391,6 +389,58 @@ theorem integrable_iff_integrableAtFilter_cocompact :
   rewrite [← integrableOn_univ, ← compl_union_self s, integrableOn_union]
   exact ⟨(hloc.integrableOn_isCompact htc).mono ht le_rfl, hs⟩
 
+theorem integrable_iff_integrableAtFilter_atBot_atTop [LinearOrder X] [CompactIccSpace X] :
+    Integrable f μ ↔
+    (IntegrableAtFilter f atBot μ ∧ IntegrableAtFilter f atTop μ) ∧ LocallyIntegrable f μ := by
+  constructor
+  · exact fun hf ↦ ⟨⟨hf.integrableAtFilter _, hf.integrableAtFilter _⟩, hf.locallyIntegrable⟩
+  · refine fun h ↦ integrable_iff_integrableAtFilter_cocompact.mpr ⟨?_, h.2⟩
+    exact (IntegrableAtFilter.sup_iff.mpr h.1).filter_mono cocompact_le_atBot_atTop
+
+theorem integrable_iff_integrableAtFilter_atBot [LinearOrder X] [OrderTop X] [CompactIccSpace X] :
+    Integrable f μ ↔ IntegrableAtFilter f atBot μ ∧ LocallyIntegrable f μ := by
+  constructor
+  · exact fun hf ↦ ⟨hf.integrableAtFilter _, hf.locallyIntegrable⟩
+  · refine fun h ↦ integrable_iff_integrableAtFilter_cocompact.mpr ⟨?_, h.2⟩
+    exact h.1.filter_mono cocompact_le_atBot
+
+theorem integrable_iff_integrableAtFilter_atTop [LinearOrder X] [OrderBot X] [CompactIccSpace X] :
+    Integrable f μ ↔ IntegrableAtFilter f atTop μ ∧ LocallyIntegrable f μ :=
+  integrable_iff_integrableAtFilter_atBot (X := Xᵒᵈ)
+
+variable {a : X}
+
+theorem integrableOn_Iic_iff_integrableAtFilter_atBot [LinearOrder X] [CompactIccSpace X] :
+    IntegrableOn f (Iic a) μ ↔ IntegrableAtFilter f atBot μ ∧ LocallyIntegrableOn f (Iic a) μ := by
+  refine ⟨fun h ↦ ⟨⟨Iic a, Iic_mem_atBot a, h⟩, h.locallyIntegrableOn⟩, fun ⟨⟨s, hsl, hs⟩, h⟩ ↦ ?_⟩
+  haveI : Nonempty X := Nonempty.intro a
+  obtain ⟨a', ha'⟩ := mem_atBot_sets.mp hsl
+  refine (integrableOn_union.mpr ⟨hs.mono ha' le_rfl, ?_⟩).mono Iic_subset_Iic_union_Icc le_rfl
+  exact h.integrableOn_compact_subset Icc_subset_Iic_self isCompact_Icc
+
+theorem integrableOn_Ici_iff_integrableAtFilter_atTop [LinearOrder X] [CompactIccSpace X] :
+    IntegrableOn f (Ici a) μ ↔ IntegrableAtFilter f atTop μ ∧ LocallyIntegrableOn f (Ici a) μ :=
+  integrableOn_Iic_iff_integrableAtFilter_atBot (X := Xᵒᵈ)
+
+theorem integrableOn_Iio_iff_integrableAtFilter_atBot_nhdsWithin
+    [LinearOrder X] [CompactIccSpace X] [NoMinOrder X] [OrderTopology X] :
+    IntegrableOn f (Iio a) μ ↔ IntegrableAtFilter f atBot μ ∧
+    IntegrableAtFilter f (𝓝[<] a) μ ∧ LocallyIntegrableOn f (Iio a) μ := by
+  constructor
+  · intro h
+    exact ⟨⟨Iio a, Iio_mem_atBot a, h⟩, ⟨Iio a, self_mem_nhdsWithin, h⟩, h.locallyIntegrableOn⟩
+  · intro ⟨hbot, ⟨s, hsl, hs⟩, hlocal⟩
+    obtain ⟨s', ⟨hs'_mono, hs'⟩⟩ := mem_nhdsWithin_Iio_iff_exists_Ioo_subset.mp hsl
+    refine (integrableOn_union.mpr ⟨?_, hs.mono hs' le_rfl⟩).mono Iio_subset_Iic_union_Ioo le_rfl
+    exact integrableOn_Iic_iff_integrableAtFilter_atBot.mpr
+      ⟨hbot, hlocal.mono_set (Iic_subset_Iio.mpr hs'_mono)⟩
+
+theorem integrableOn_Ioi_iff_integrableAtFilter_atTop_nhdsWithin
+    [LinearOrder X] [CompactIccSpace X] [NoMaxOrder X] [OrderTopology X] :
+    IntegrableOn f (Ioi a) μ ↔ IntegrableAtFilter f atTop μ ∧
+    IntegrableAtFilter f (𝓝[>] a) μ ∧ LocallyIntegrableOn f (Ioi a) μ :=
+  integrableOn_Iio_iff_integrableAtFilter_atBot_nhdsWithin (X := Xᵒᵈ)
+
 end MeasureTheory
 
 open MeasureTheory
@@ -398,7 +448,6 @@ open MeasureTheory
 section borel
 
 variable [OpensMeasurableSpace X]
-
 variable {K : Set X} {a b : X}
 
 /-- A continuous function `f` is locally integrable with respect to any locally finite measure. -/
@@ -492,7 +541,7 @@ theorem MonotoneOn.integrableOn_of_measure_ne_top (hmono : MonotoneOn f s) {a b 
   rcases isBounded_iff_forall_norm_le.mp this with ⟨C, hC⟩
   have A : IntegrableOn (fun _ => C) s μ := by
     simp only [hs.lt_top, integrableOn_const, or_true_iff]
-  refine'
+  exact
     Integrable.mono' A (aemeasurable_restrict_of_monotoneOn h's hmono).aestronglyMeasurable
       ((ae_restrict_iff' h's).mpr <| ae_of_all _ fun y hy => hC (f y) (mem_image_of_mem f hy))
 #align monotone_on.integrable_on_of_measure_ne_top MonotoneOn.integrableOn_of_measure_ne_top
@@ -524,7 +573,7 @@ theorem Monotone.locallyIntegrable [IsLocallyFiniteMeasure μ] (hmono : Monotone
   obtain ⟨a, b, xab, hab, abU⟩ : ∃ a b : X, x ∈ Icc a b ∧ Icc a b ∈ 𝓝 x ∧ Icc a b ⊆ U :=
     exists_Icc_mem_subset_of_mem_nhds hU
   have ab : a ≤ b := xab.1.trans xab.2
-  refine' ⟨Icc a b, hab, _⟩
+  refine ⟨Icc a b, hab, ?_⟩
   exact
     (hmono.monotoneOn _).integrableOn_of_measure_ne_top (isLeast_Icc ab) (isGreatest_Icc ab)
       ((measure_mono abU).trans_lt h'U).ne measurableSet_Icc
@@ -552,9 +601,10 @@ theorem IntegrableOn.mul_continuousOn_of_subset (hg : IntegrableOn g A μ) (hg' 
   rw [IntegrableOn, ← memℒp_one_iff_integrable] at hg ⊢
   have : ∀ᵐ x ∂μ.restrict A, ‖g x * g' x‖ ≤ C * ‖g x‖ := by
     filter_upwards [ae_restrict_mem hA] with x hx
-    refine' (norm_mul_le _ _).trans _
+    refine (norm_mul_le _ _).trans ?_
     rw [mul_comm]
-    apply mul_le_mul_of_nonneg_right (hC x (hAK hx)) (norm_nonneg _)
+    gcongr
+    exact hC x (hAK hx)
   exact
     Memℒp.of_le_mul hg (hg.aestronglyMeasurable.mul <| (hg'.mono hAK).aestronglyMeasurable hA) this
 #align measure_theory.integrable_on.mul_continuous_on_of_subset MeasureTheory.IntegrableOn.mul_continuousOn_of_subset
@@ -571,8 +621,9 @@ theorem IntegrableOn.continuousOn_mul_of_subset (hg : ContinuousOn g K) (hg' : I
   rw [IntegrableOn, ← memℒp_one_iff_integrable] at hg' ⊢
   have : ∀ᵐ x ∂μ.restrict A, ‖g x * g' x‖ ≤ C * ‖g' x‖ := by
     filter_upwards [ae_restrict_mem hA] with x hx
-    refine' (norm_mul_le _ _).trans _
-    apply mul_le_mul_of_nonneg_right (hC x (hAK hx)) (norm_nonneg _)
+    refine (norm_mul_le _ _).trans ?_
+    gcongr
+    exact hC x (hAK hx)
   exact
     Memℒp.of_le_mul hg' (((hg.mono hAK).aestronglyMeasurable hA).mul hg'.aestronglyMeasurable) this
 #align measure_theory.integrable_on.continuous_on_mul_of_subset MeasureTheory.IntegrableOn.continuousOn_mul_of_subset

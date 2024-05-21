@@ -45,19 +45,14 @@ using `map_swap` as a definition, and does not require `Neg N`.
 -- semiring / add_comm_monoid
 
 variable {R : Type*} [Semiring R]
-
 variable {M : Type*} [AddCommMonoid M] [Module R M]
-
 variable {N : Type*} [AddCommMonoid N] [Module R N]
-
 variable {P : Type*} [AddCommMonoid P] [Module R P]
 
 -- semiring / add_comm_group
 
 variable {M' : Type*} [AddCommGroup M'] [Module R M']
-
 variable {N' : Type*} [AddCommGroup N'] [Module R N']
-
 variable {ι ι' ι'' : Type*}
 
 section
@@ -82,11 +77,8 @@ add_decl_doc AlternatingMap.toMultilinearMap
 namespace AlternatingMap
 
 variable (f f' : M [⋀^ι]→ₗ[R] N)
-
 variable (g g₂ : M [⋀^ι]→ₗ[R] N')
-
 variable (g' : M' [⋀^ι]→ₗ[R] N')
-
 variable (v : ι → M) (v' : ι → M')
 
 open Function
@@ -535,7 +527,6 @@ end LinearMap
 namespace AlternatingMap
 
 variable {M₂ : Type*} [AddCommMonoid M₂] [Module R M₂]
-
 variable {M₃ : Type*} [AddCommMonoid M₃] [Module R M₃]
 
 /-- Composing an alternating map with the same linear map on each argument gives again an
@@ -965,9 +956,7 @@ section Basis
 open AlternatingMap
 
 variable {ι₁ : Type*} [Finite ι]
-
 variable {R' : Type*} {N₁ N₂ : Type*} [CommSemiring R'] [AddCommMonoid N₁] [AddCommMonoid N₂]
-
 variable [Module R' N₁] [Module R' N₂]
 
 /-- Two alternating maps indexed by a `Fintype` are equal if they are equal when all arguments

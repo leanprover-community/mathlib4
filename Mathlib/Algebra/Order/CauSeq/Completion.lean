@@ -22,7 +22,6 @@ open CauSeq
 section
 
 variable {α : Type*} [LinearOrderedField α]
-
 variable {β : Type*} [Ring β] (abv : β → α) [IsAbsoluteValue abv]
 
 -- TODO: rename this to `CauSeq.Completion` instead of `CauSeq.Completion.Cauchy`.
@@ -187,7 +186,6 @@ end
 section
 
 variable {α : Type*} [LinearOrderedField α]
-
 variable {β : Type*} [CommRing β] {abv : β → α} [IsAbsoluteValue abv]
 
 instance Cauchy.commRing : CommRing (Cauchy abv) :=
@@ -203,15 +201,13 @@ open scoped Classical
 section
 
 variable {α : Type*} [LinearOrderedField α]
-
 variable {β : Type*} [DivisionRing β] {abv : β → α} [IsAbsoluteValue abv]
 
-instance : RatCast (Cauchy abv) :=
-  ⟨fun q => ofRat q⟩
+instance instNNRatCast : NNRatCast (Cauchy abv) where nnratCast q := ofRat q
+instance instRatCast : RatCast (Cauchy abv) where ratCast q := ofRat q
 
-@[simp, coe]
-theorem ofRat_ratCast (q : ℚ) : ofRat (↑q : β) = (q : (Cauchy abv)) :=
-  rfl
+@[simp, norm_cast] lemma ofRat_nnratCast (q : ℚ≥0) : ofRat (q : β) = (q : Cauchy abv) := rfl
+@[simp, norm_cast] lemma ofRat_ratCast (q : ℚ) : ofRat (q : β) = (q : Cauchy abv) := rfl
 #align cau_seq.completion.of_rat_rat_cast CauSeq.Completion.ofRat_ratCast
 
 noncomputable instance : Inv (Cauchy abv) :=
@@ -240,7 +236,7 @@ theorem inv_mk {f} (hf) : (@mk α _ β _ abv _ f)⁻¹ = mk (inv f hf) :=
 #align cau_seq.completion.inv_mk CauSeq.Completion.inv_mk
 
 theorem cau_seq_zero_ne_one : ¬(0 : CauSeq _ abv) ≈ 1 := fun h =>
-  have : LimZero (1 - 0) := Setoid.symm h
+  have : LimZero (1 - 0 : CauSeq _ abv) := Setoid.symm h
   have : LimZero 1 := by simpa
   by apply one_ne_zero <| const_limZero.1 this
 #align cau_seq.completion.cau_seq_zero_ne_one CauSeq.Completion.cau_seq_zero_ne_one
@@ -267,21 +263,23 @@ theorem ofRat_inv (x : β) : ofRat x⁻¹ = ((ofRat x)⁻¹ : (Cauchy abv)) :=
     [simp only [const_limZero.1 h, GroupWithZero.inv_zero, const_zero]; rfl]
 #align cau_seq.completion.of_rat_inv CauSeq.Completion.ofRat_inv
 
-/- porting note: needed to rewrite the proof of ratCast_mk due to simp issues -/
+noncomputable instance instDivInvMonoid : DivInvMonoid (Cauchy abv) where
+
+lemma ofRat_div (x y : β) : ofRat (x / y) = (ofRat x / ofRat y : Cauchy abv) := by
+  simp only [div_eq_mul_inv, ofRat_inv, ofRat_mul]
+#align cau_seq.completion.of_rat_div CauSeq.Completion.ofRat_div
+
 /-- The Cauchy completion forms a division ring. -/
 noncomputable instance Cauchy.divisionRing : DivisionRing (Cauchy abv) where
   exists_pair_ne := ⟨0, 1, zero_ne_one⟩
   inv_zero := inv_zero
   mul_inv_cancel x := CauSeq.Completion.mul_inv_cancel
-  ratCast q := ofRat q
-  ratCast_mk n d hd hnd := by rw [← ofRat_ratCast, Rat.cast_mk', ofRat_mul, ofRat_inv]; rfl
+  nnqsmul := (· • ·)
   qsmul := (· • ·)
-  qsmul_eq_mul' q x := Quotient.inductionOn x fun f =>
-    congr_arg mk <| ext fun i => DivisionRing.qsmul_eq_mul' _ _
-
-theorem ofRat_div (x y : β) : ofRat (x / y) = (ofRat x / ofRat y : Cauchy abv) := by
-  simp only [div_eq_mul_inv, ofRat_inv, ofRat_mul]
-#align cau_seq.completion.of_rat_div CauSeq.Completion.ofRat_div
+  nnratCast_def q := by simp_rw [← ofRat_nnratCast, NNRat.cast_def, ofRat_div, ofRat_natCast]
+  ratCast_def q := by rw [← ofRat_ratCast, Rat.cast_def, ofRat_div, ofRat_natCast, ofRat_intCast]
+  nnqsmul_def q x := Quotient.inductionOn x fun f ↦ congr_arg mk <| ext fun i ↦ NNRat.smul_def _ _
+  qsmul_def q x := Quotient.inductionOn x fun f ↦ congr_arg mk <| ext fun i ↦ Rat.smul_def _ _
 
 /-- Show the first 10 items of a representative of this equivalence class of cauchy sequences.
 
@@ -299,7 +297,6 @@ end
 section
 
 variable {α : Type*} [LinearOrderedField α]
-
 variable {β : Type*} [Field β] {abv : β → α} [IsAbsoluteValue abv]
 
 /-- The Cauchy completion forms a field. -/
@@ -331,7 +328,6 @@ end
 section
 
 variable {β : Type*} [Ring β] {abv : β → α} [IsAbsoluteValue abv]
-
 variable [IsComplete β abv]
 
 theorem complete : ∀ s : CauSeq β abv, ∃ b : β, s ≈ const abv b :=

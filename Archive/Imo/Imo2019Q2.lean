@@ -32,7 +32,7 @@ angle chase / concyclicity argument, where an informal solution doesn't discuss 
 at all. Also note that (as described in `Geometry.Euclidean.Angle.Oriented.Basic`) the oriented
 angles used are modulo `2 * π`, so parts of the angle chase that are only valid for angles modulo
 `π` (as used in the informal solution) are represented as equalities of twice angles, which we write
-as `(2 : ℤ) • ∡ _ _ _ = (2 : ℤ) • _ _ _`.
+as `(2 : ℤ) • ∡ _ _ _ = (2 : ℤ) • ∡ _ _ _`.
 -/
 
 
@@ -68,9 +68,7 @@ set_option linter.uppercaseLean3 false
 attribute [local instance] FiniteDimensional.of_fact_finrank_eq_two
 
 variable (V : Type*) (Pt : Type*)
-
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace Pt]
-
 variable [NormedAddTorsor V Pt] [hd2 : Fact (finrank ℝ V = 2)]
 
 namespace Imo2019Q2

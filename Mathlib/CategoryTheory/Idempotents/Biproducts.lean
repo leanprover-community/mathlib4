@@ -65,8 +65,8 @@ def bicone [HasFiniteBiproducts C] {J : Type} [Finite J] (F : J → Karoubi C) :
       simp only [biproduct.ι_map, biproduct.bicone_π, biproduct.map_π, eqToHom_refl,
         id_eq, hom_ext_iff, comp_f, assoc, bicone_ι_π_self_assoc, idem]
     · dsimp
-      simp only [hom_ext_iff, biproduct.ι_map, biproduct.map_π, comp_f, assoc, ne_eq,
-        biproduct.ι_π_ne_assoc _ h, comp_zero, zero_comp]
+      simp only [biproduct.ι_map, biproduct.map_π, hom_ext_iff, comp_f,
+        assoc, biproduct.ι_π_ne_assoc _ h, zero_comp, comp_zero, instZero_zero]
 #align category_theory.idempotents.karoubi.biproducts.bicone CategoryTheory.Idempotents.Karoubi.Biproducts.bicone
 
 end Biproducts
@@ -117,7 +117,7 @@ instance (P : Karoubi C) : HasBinaryBiproduct P P.complement :=
     (by
       simp only [id_eq, complement_X, comp_f,
         decompId_i_f, decompId_p_f, complement_p, instAdd_add, idem,
-        comp_sub, comp_id, sub_comp, id_comp, sub_self, sub_zero, add_sub_cancel'_right])
+        comp_sub, comp_id, sub_comp, id_comp, sub_self, sub_zero, add_sub_cancel])
 
 attribute [-simp] hom_ext_iff
 
@@ -144,7 +144,7 @@ def decomposition (P : Karoubi C) : P ⊞ P.complement ≅ (toKaroubi _).obj P.X
   inv_hom_id := by
     simp only [biprod.lift_desc, instAdd_add, toKaroubi_obj_X, comp_f,
       decompId_p_f, decompId_i_f, idem, complement_X, complement_p, comp_sub, comp_id,
-      sub_comp, id_comp, sub_self, sub_zero, add_sub_cancel'_right,
+      sub_comp, id_comp, sub_self, sub_zero, add_sub_cancel,
       id_eq, toKaroubi_obj_p]
 #align category_theory.idempotents.karoubi.decomposition CategoryTheory.Idempotents.Karoubi.decomposition
 

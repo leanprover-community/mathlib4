@@ -26,9 +26,7 @@ import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 
 
 variable {R M N N' : Type*}
-
 variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [AddCommGroup N']
-
 variable [Module R M] [Module R N] [Module R N']
 
 -- This instance can't be found where it's needed if we don't remind lean that it exists.
@@ -47,8 +45,8 @@ def liftAlternating : (∀ i, M [⋀^Fin i]→ₗ[R] N) →ₗ[R] ExteriorAlgebr
   suffices
     (∀ i, M [⋀^Fin i]→ₗ[R] N) →ₗ[R]
       ExteriorAlgebra R M →ₗ[R] ∀ i, M [⋀^Fin i]→ₗ[R] N by
-    refine' LinearMap.compr₂ this _
-    refine' (LinearEquiv.toLinearMap _).comp (LinearMap.proj 0)
+    refine LinearMap.compr₂ this ?_
+    refine (LinearEquiv.toLinearMap ?_).comp (LinearMap.proj 0)
     exact AlternatingMap.constLinearEquivOfIsEmpty.symm
   refine' CliffordAlgebra.foldl _ _ _
   · refine'
@@ -152,8 +150,7 @@ theorem liftAlternating_ιMulti :
 
 /-- `ExteriorAlgebra.liftAlternating` is an equivalence. -/
 @[simps apply symm_apply]
-def liftAlternatingEquiv : (∀ i, M [⋀^Fin i]→ₗ[R] N) ≃ₗ[R] ExteriorAlgebra R M →ₗ[R] N
-    where
+def liftAlternatingEquiv : (∀ i, M [⋀^Fin i]→ₗ[R] N) ≃ₗ[R] ExteriorAlgebra R M →ₗ[R] N where
   toFun := liftAlternating (R := R)
   map_add' := map_add _
   map_smul' := map_smul _

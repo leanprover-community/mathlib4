@@ -53,7 +53,7 @@ theorem ContMDiffWithinAt.comp {t : Set M'} {g : M' → M''} (x : M)
     (hg : ContMDiffWithinAt I' I'' n g t (f x)) (hf : ContMDiffWithinAt I I' n f s x)
     (st : MapsTo f s t) : ContMDiffWithinAt I I'' n (g ∘ f) s x := by
   rw [contMDiffWithinAt_iff] at hg hf ⊢
-  refine' ⟨hg.1.comp hf.1 st, _⟩
+  refine ⟨hg.1.comp hf.1 st, ?_⟩
   set e := extChartAt I x
   set e' := extChartAt I' (f x)
   have : e' (f x) = (writtenInExtChartAt I I' x f) (e x) := by simp only [e, e', mfld_simps]
@@ -338,8 +338,7 @@ theorem contMDiff_of_mulTSupport [One M'] {f : M → M'}
       (not_mem_mulTSupport_iff_eventuallyEq.1 hx)
 #align cont_mdiff_of_support contMDiff_of_tsupport
 
--- deprecated since 15 January 2024
-@[deprecated] alias contMDiff_of_support := contMDiff_of_tsupport
+@[deprecated (since := "2024-01-15")] alias contMDiff_of_support := contMDiff_of_tsupport
 
 @[to_additive contMDiffWithinAt_of_not_mem]
 theorem contMDiffWithinAt_of_not_mem_mulTSupport {f : M → M'} [One M'] {x : M}

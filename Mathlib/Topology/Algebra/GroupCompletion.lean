@@ -122,8 +122,8 @@ instance : AddMonoid (Completion α) :=
         show 0 • (a : Completion α) = 0 by rw [← coe_smul, ← coe_zero, zero_smul]
     nsmul_succ := fun n a ↦
       Completion.induction_on a
-        (isClosed_eq continuous_map <| continuous_map₂ continuous_id continuous_map) fun a ↦
-        show (n + 1) • (a : Completion α) = (a : Completion α) + n • (a : Completion α) by
+        (isClosed_eq continuous_map <| continuous_map₂ continuous_map continuous_id) fun a ↦
+        show (n + 1) • (a : Completion α) = n • (a : Completion α) + (a : Completion α) by
           rw [← coe_smul, succ_nsmul, coe_add, coe_smul] }
 
 instance : SubNegMonoid (Completion α) :=
@@ -141,9 +141,9 @@ instance : SubNegMonoid (Completion α) :=
         show (0 : ℤ) • (a : Completion α) = 0 by rw [← coe_smul, ← coe_zero, zero_smul]
     zsmul_succ' := fun n a ↦
       Completion.induction_on a
-        (isClosed_eq continuous_map <| continuous_map₂ continuous_id continuous_map) fun a ↦
+        (isClosed_eq continuous_map <| continuous_map₂ continuous_map continuous_id) fun a ↦
           show Int.ofNat n.succ • (a : Completion α) = _ by
-            rw [← coe_smul, show Int.ofNat n.succ • a = a + Int.ofNat n • a from
+            rw [← coe_smul, show Int.ofNat n.succ • a = Int.ofNat n • a + a from
               SubNegMonoid.zsmul_succ' n a, coe_add, coe_smul]
     zsmul_neg' := fun n a ↦
       Completion.induction_on a
@@ -201,7 +201,7 @@ section UniformAddCommGroup
 
 variable [UniformSpace α] [AddCommGroup α] [UniformAddGroup α]
 
-instance : AddCommGroup (Completion α) :=
+instance instAddCommGroup : AddCommGroup (Completion α) :=
   { (inferInstance : AddGroup <| Completion α) with
     add_comm := fun a b ↦
       Completion.induction_on₂ a b

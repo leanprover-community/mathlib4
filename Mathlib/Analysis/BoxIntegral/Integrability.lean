@@ -82,8 +82,8 @@ theorem hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = fal
     refine' fun J hJ hJs x hx => ⟨hrsU _ ⟨hJs, π.tag_mem_Icc J⟩ _, π.le_of_mem' J hJ hx⟩
     simpa only [r, s.piecewise_eq_of_mem _ _ hJs] using hπ.1 J hJ (Box.coe_subset_Icc hx)
   refine' abs_sub_le_iff.2 ⟨_, _⟩
-  · refine' (ENNReal.le_toReal_sub B).trans (ENNReal.toReal_le_coe_of_le_coe _)
-    refine' (tsub_le_tsub (measure_mono htU) le_rfl).trans (le_measure_diff.trans _)
+  · refine (ENNReal.le_toReal_sub B).trans (ENNReal.toReal_le_coe_of_le_coe ?_)
+    refine (tsub_le_tsub (measure_mono htU) le_rfl).trans (le_measure_diff.trans ?_)
     refine' (measure_mono fun x hx => _).trans hμU.le
     exact ⟨hx.1.1, fun hx' => hx.2 ⟨hx'.1, hx.1.2⟩⟩
   · have hμt : μ t ≠ ∞ := ((measure_mono (htU.trans (inter_subset_left _ _))).trans_lt hUt).ne
@@ -91,10 +91,9 @@ theorem hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = fal
     refine' le_measure_diff.trans ((measure_mono _).trans hμF.le)
     rintro x ⟨⟨hxs, hxI⟩, hxt⟩
     refine' ⟨⟨hxs, Box.coe_subset_Icc hxI⟩, fun hxF => hxt _⟩
-    simp only [t, TaggedPrepartition.iUnion_def, TaggedPrepartition.mem_filter, Set.mem_iUnion,
-      exists_prop]
+    simp only [t, TaggedPrepartition.iUnion_def, TaggedPrepartition.mem_filter, Set.mem_iUnion]
     rcases hπp x hxI with ⟨J, hJπ, hxJ⟩
-    refine' ⟨J, ⟨hJπ, _⟩, hxJ⟩
+    refine ⟨J, ⟨hJπ, ?_⟩, hxJ⟩
     contrapose hxF
     refine' hrs'F _ ⟨π.tag_mem_Icc J, hxF⟩ _
     simpa only [r, s.piecewise_eq_of_not_mem _ _ hxF] using hπ.1 J hJπ (Box.coe_subset_Icc hxJ)
@@ -141,22 +140,18 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
     exact hJ.2 ▸ Nat.le_ceil _
   refine' (norm_sum_le_of_le _ this).trans _; clear this
   rw [← sum_mul, ← Prepartition.measure_iUnion_toReal]
-  -- Adaption note: v4.7.0-rc1
-  -- The behaviour of `generalize` was changed in https://github.com/leanprover/lean4/pull/3575
-  -- to use transparancy `instances` (rather than `default`)
-  -- `generalize'` is a temporary backwards compatibility shim.
-  -- Hopefully we will be able to refactor this proof to use `generalize` again, and then drop
-  -- `generalize'`.
-  generalize' hm : μ (π.filter fun J => N (π.tag J) = n).iUnion = m
+  let m := μ (π.filter fun J => N (π.tag J) = n).iUnion
+  show m.toReal * ↑n ≤ ↑(δ n)
   have : m < δ n / n := by
     simp only [Measure.restrict_apply (hUo _).measurableSet] at hμU
-    refine' hm ▸ (measure_mono _).trans_lt (hμU _)
+    refine' (measure_mono _).trans_lt (hμU _)
     simp only [Set.subset_def, TaggedPrepartition.mem_iUnion, TaggedPrepartition.mem_filter]
     rintro x ⟨J, ⟨hJ, rfl⟩, hx⟩
     exact ⟨hrU _ (hπ.1 _ hJ (Box.coe_subset_Icc hx)), π.le_of_mem' J hJ hx⟩
+  clear_value m
   lift m to ℝ≥0 using ne_top_of_lt this
-  rw [ENNReal.coe_toReal, ← NNReal.coe_nat_cast, ← NNReal.coe_mul, NNReal.coe_le_coe, ←
-    ENNReal.coe_le_coe, ENNReal.coe_mul, ENNReal.coe_nat, mul_comm]
+  rw [ENNReal.coe_toReal, ← NNReal.coe_natCast, ← NNReal.coe_mul, NNReal.coe_le_coe, ←
+    ENNReal.coe_le_coe, ENNReal.coe_mul, ENNReal.coe_natCast, mul_comm]
   exact (mul_le_mul_left' this.le _).trans ENNReal.mul_div_le
 #align box_integral.has_integral_zero_of_ae_eq_zero BoxIntegral.HasIntegral.of_aeEq_zero
 

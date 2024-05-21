@@ -125,7 +125,7 @@ theorem StrictConvexSpace.of_norm_add_ne_two
   refine'
     StrictConvexSpace.of_norm_combo_ne_one fun x y hx hy hne =>
       ⟨1 / 2, 1 / 2, one_half_pos.le, one_half_pos.le, add_halves _, _⟩
-  rw [← smul_add, norm_smul, Real.norm_of_nonneg one_half_pos.le, one_div, ← div_eq_inv_mul, Ne.def,
+  rw [← smul_add, norm_smul, Real.norm_of_nonneg one_half_pos.le, one_div, ← div_eq_inv_mul, Ne,
     div_eq_one_iff_eq (two_ne_zero' ℝ)]
   exact h hx hy hne
 #align strict_convex_space.of_norm_add_ne_two StrictConvexSpace.of_norm_add_ne_two
@@ -176,7 +176,7 @@ theorem norm_combo_lt_of_ne (hx : ‖x‖ ≤ r) (hy : ‖y‖ ≤ r) (hne : x �
 /-- In a strictly convex space, if `x` and `y` are not in the same ray, then `‖x + y‖ < ‖x‖ + ‖y‖`.
 -/
 theorem norm_add_lt_of_not_sameRay (h : ¬SameRay ℝ x y) : ‖x + y‖ < ‖x‖ + ‖y‖ := by
-  simp only [sameRay_iff_inv_norm_smul_eq, not_or, ← Ne.def] at h
+  simp only [sameRay_iff_inv_norm_smul_eq, not_or, ← Ne.eq_def] at h
   rcases h with ⟨hx, hy, hne⟩
   rw [← norm_pos_iff] at hx hy
   have hxy : 0 < ‖x‖ + ‖y‖ := add_pos hx hy

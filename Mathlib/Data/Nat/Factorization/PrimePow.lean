@@ -67,7 +67,7 @@ theorem IsPrimePow.exists_ord_compl_eq_one {n : ℕ} (h : IsPrimePow n) :
   rcases em' p.Prime with (pp | pp)
   · refine' absurd _ hk0.ne'
     simp [← Nat.factorization_eq_zero_of_non_prime n pp, h1]
-  refine' ⟨p, pp, _⟩
+  refine ⟨p, pp, ?_⟩
   refine' Nat.eq_of_factorization_eq (Nat.ord_compl_pos p hn0).ne' (by simp) fun q => _
   rw [Nat.factorization_ord_compl n p, h1]
   simp
@@ -79,9 +79,9 @@ theorem exists_ord_compl_eq_one_iff_isPrimePow {n : ℕ} (hn : n ≠ 1) :
   rcases h with ⟨p, pp, h⟩
   rw [isPrimePow_nat_iff]
   rw [← Nat.eq_of_dvd_of_div_eq_one (Nat.ord_proj_dvd n p) h] at hn ⊢
-  refine' ⟨p, n.factorization p, pp, _, by simp⟩
+  refine ⟨p, n.factorization p, pp, ?_, by simp⟩
   contrapose! hn
-  simp [le_zero_iff.1 hn]
+  simp [Nat.le_zero.1 hn]
 #align exists_ord_compl_eq_one_iff_is_prime_pow exists_ord_compl_eq_one_iff_isPrimePow
 
 /-- An equivalent definition for prime powers: `n` is a prime power iff there is a unique prime
@@ -149,7 +149,7 @@ theorem Nat.mul_divisors_filter_prime_pow {a b : ℕ} (hab : a.Coprime b) :
   · simp only [Nat.coprime_zero_right] at hab
     simp [hab, Finset.filter_singleton, not_isPrimePow_one]
   ext n
-  simp only [ha, hb, Finset.mem_union, Finset.mem_filter, Nat.mul_eq_zero, and_true_iff, Ne.def,
+  simp only [ha, hb, Finset.mem_union, Finset.mem_filter, Nat.mul_eq_zero, and_true_iff, Ne,
     and_congr_left_iff, not_false_iff, Nat.mem_divisors, or_self_iff]
   apply hab.isPrimePow_dvd_mul
 #align nat.mul_divisors_filter_prime_pow Nat.mul_divisors_filter_prime_pow

@@ -3,9 +3,9 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+import Mathlib.Algebra.Polynomial.Expand
+import Mathlib.Algebra.Polynomial.Splits
 import Mathlib.Algebra.Squarefree.Basic
-import Mathlib.Data.Polynomial.Expand
-import Mathlib.Data.Polynomial.Splits
 import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.RingTheory.PowerBasis
 
@@ -120,7 +120,7 @@ theorem Separable.of_pow' {f : R[X]} :
   | 1 => fun h => Or.inr <| Or.inl ⟨pow_one f ▸ h, rfl⟩
   | n + 2 => fun h => by
     rw [pow_succ, pow_succ] at h
-    exact Or.inl (isCoprime_self.1 h.isCoprime.of_mul_right_left)
+    exact Or.inl (isCoprime_self.1 h.isCoprime.of_mul_left_right)
 #align polynomial.separable.of_pow' Polynomial.Separable.of_pow'
 
 theorem Separable.of_pow {f : R[X]} (hf : ¬IsUnit f) {n : ℕ} (hn : n ≠ 0)
@@ -272,15 +272,15 @@ theorem separable_X_pow_sub_C_unit {n : ℕ} (u : Rˣ) (hn : IsUnit (n : R)) :
   · simp at hn
   apply (separable_def' (X ^ n - C (u : R))).2
   obtain ⟨n', hn'⟩ := hn.exists_left_inv
-  refine' ⟨-C ↑u⁻¹, C (↑u⁻¹ : R) * C n' * X, _⟩
+  refine ⟨-C ↑u⁻¹, C (↑u⁻¹ : R) * C n' * X, ?_⟩
   rw [derivative_sub, derivative_C, sub_zero, derivative_pow X n, derivative_X, mul_one]
   calc
     -C ↑u⁻¹ * (X ^ n - C ↑u) + C ↑u⁻¹ * C n' * X * (↑n * X ^ (n - 1)) =
         C (↑u⁻¹ * ↑u) - C ↑u⁻¹ * X ^ n + C ↑u⁻¹ * C (n' * ↑n) * (X * X ^ (n - 1)) := by
-      simp only [C.map_mul, C_eq_nat_cast]
+      simp only [C.map_mul, C_eq_natCast]
       ring
     _ = 1 := by
-      simp only [Units.inv_mul, hn', C.map_one, mul_one, ← pow_succ,
+      simp only [Units.inv_mul, hn', C.map_one, mul_one, ← pow_succ',
         Nat.sub_add_cancel (show 1 ≤ n from hpos), sub_add_cancel]
 set_option linter.uppercaseLean3 false in
 #align polynomial.separable_X_pow_sub_C_unit Polynomial.separable_X_pow_sub_C_unit
@@ -399,8 +399,8 @@ theorem exists_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : p 
       rw [← mul_one g.natDegree, ← hg1]
       exact Nat.mul_lt_mul_of_pos_left hp.one_lt hg2.bot_lt
     rcases ih _ hg3 hg rfl with ⟨n, g, hg4, rfl⟩
-    refine' ⟨n + 1, g, hg4, _⟩
-    rw [← hgf, expand_expand, pow_succ]
+    refine ⟨n + 1, g, hg4, ?_⟩
+    rw [← hgf, expand_expand, pow_succ']
 #align polynomial.exists_separable_of_irreducible Polynomial.exists_separable_of_irreducible
 
 theorem isUnit_or_eq_zero_of_separable_expand {f : F[X]} (n : ℕ) (hp : 0 < p)
@@ -603,8 +603,8 @@ theorem AlgEquiv.isSeparable_iff : IsSeparable F K ↔ IsSeparable F E :=
 
 variable (F K)
 
-theorem IsSeparable.isAlgebraic [Nontrivial F] [IsSeparable F K] : Algebra.IsAlgebraic F K :=
-  fun x ↦ (IsSeparable.isIntegral F x).isAlgebraic
+instance IsSeparable.isAlgebraic [Nontrivial F] [IsSeparable F K] : Algebra.IsAlgebraic F K :=
+  ⟨fun x ↦ (IsSeparable.isIntegral F x).isAlgebraic⟩
 
 end CommRing
 
@@ -674,9 +674,7 @@ end IsSeparableTower
 section CardAlgHom
 
 variable {R S T : Type*} [CommRing S]
-
 variable {K L F : Type*} [Field K] [Field L] [Field F]
-
 variable [Algebra K S] [Algebra K L]
 
 theorem AlgHom.card_of_powerBasis (pb : PowerBasis K S) (h_sep : (minpoly K pb.gen).Separable)

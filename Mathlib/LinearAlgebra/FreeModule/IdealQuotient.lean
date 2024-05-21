@@ -7,6 +7,7 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.LinearAlgebra.QuotientPi
+import Mathlib.RingTheory.Ideal.Basis
 
 #align_import linear_algebra.free_module.ideal_quotient from "leanprover-community/mathlib"@"90b0d53ee6ffa910e5c2a977ce7e2fc704647974"
 
@@ -24,7 +25,6 @@ namespace Ideal
 open scoped BigOperators DirectSum
 
 variable {ι R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-
 variable [IsDomain R] [IsPrincipalIdealRing R] [IsDomain S] [Finite ι]
 
 /-- We can write the quotient of an ideal over a PID as a product of quotients by principal ideals.

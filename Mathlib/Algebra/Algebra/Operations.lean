@@ -36,7 +36,7 @@ Let `R` be a commutative ring (or semiring) and let `A` be an `R`-algebra.
 
 It is proved that `Submodule R A` is a semiring, and also an algebra over `Set A`.
 
-Additionally, in the `pointwise` locale we promote `Submodule.pointwiseDistribMulAction` to a
+Additionally, in the `Pointwise` locale we promote `Submodule.pointwiseDistribMulAction` to a
 `MulSemiringAction` as `Submodule.pointwiseMulSemiringAction`.
 
 ## Tags
@@ -70,13 +70,11 @@ end SubMulAction
 namespace Submodule
 
 variable {ι : Sort uι}
-
 variable {R : Type u} [CommSemiring R]
 
 section Ring
 
 variable {A : Type v} [Semiring A] [Algebra R A]
-
 variable (S T : Set A) {M N P Q : Submodule R A} {m n : A}
 
 /-- `1 : Submodule R A` is the submodule R of A. -/
@@ -190,7 +188,7 @@ protected theorem mul_induction_on' {C : ∀ r, r ∈ M * N → Prop}
     (mem_mul_mem : ∀ m (hm : m ∈ M) n (hn : n ∈ N), C (m * n) (mul_mem_mul hm hn))
     (add : ∀ x hx y hy, C x hx → C y hy → C (x + y) (add_mem hx hy)) {r : A} (hr : r ∈ M * N) :
     C r hr := by
-  refine' Exists.elim _ fun (hr : r ∈ M * N) (hc : C r hr) => hc
+  refine Exists.elim ?_ fun (hr : r ∈ M * N) (hc : C r hr) => hc
   exact
     Submodule.mul_induction_on hr
       (fun x hx y hy => ⟨_, mem_mul_mem _ hx _ hy⟩)
@@ -204,7 +202,6 @@ theorem span_mul_span : span R S * span R T = span R (S * T) :=
 #align submodule.span_mul_span Submodule.span_mul_span
 
 variable {R}
-
 variable (M N P Q)
 
 @[simp]
@@ -268,12 +265,12 @@ protected theorem map_mul {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A')
       ext S
       constructor <;> rintro ⟨y, hy⟩
       · use ⟨f y, mem_map.mpr ⟨y.1, y.2, rfl⟩⟩  -- Porting note: added `⟨⟩`
-        refine' Eq.trans _ hy
+        refine Eq.trans ?_ hy
         ext
         simp
       · obtain ⟨y', hy', fy_eq⟩ := mem_map.mp y.2
         use ⟨y', hy'⟩  -- Porting note: added `⟨⟩`
-        refine' Eq.trans _ hy
+        refine Eq.trans ?_ hy
         rw [f.toLinearMap_apply] at fy_eq
         ext
         simp [fy_eq]
@@ -461,7 +458,7 @@ theorem pow_toAddSubmonoid {n : ℕ} (h : n ≠ 0) : (M ^ n).toAddSubmonoid = M.
   · exact (h rfl).elim
   · rw [pow_succ, pow_succ, mul_toAddSubmonoid]
     cases n with
-    | zero => rw [pow_zero, pow_zero, mul_one, ← mul_toAddSubmonoid, mul_one]
+    | zero => rw [pow_zero, pow_zero, one_mul, ← mul_toAddSubmonoid, one_mul]
     | succ n => rw [ih n.succ_ne_zero]
 #align submodule.pow_to_add_submonoid Submodule.pow_toAddSubmonoid
 
@@ -472,12 +469,16 @@ theorem le_pow_toAddSubmonoid {n : ℕ} : M.toAddSubmonoid ^ n ≤ (M ^ n).toAdd
   · exact (pow_toAddSubmonoid M hn).ge
 #align submodule.le_pow_to_add_submonoid Submodule.le_pow_toAddSubmonoid
 
+-- Adaptation note: nightly-2024-04-01
+-- Previously this maxHeartbeats was not required. None of the backwards compatibility flags help.
+set_option maxHeartbeats 400000 in
 /-- Dependent version of `Submodule.pow_induction_on_left`. -/
 @[elab_as_elim]
 protected theorem pow_induction_on_left' {C : ∀ (n : ℕ) (x), x ∈ M ^ n → Prop}
     (algebraMap : ∀ r : R, C 0 (algebraMap _ _ r) (algebraMap_mem r))
     (add : ∀ x y i hx hy, C i x hx → C i y hy → C i (x + y) (add_mem ‹_› ‹_›))
-    (mem_mul : ∀ m (hm : m ∈ M), ∀ (i x hx), C i x hx → C i.succ (m * x) (mul_mem_mul hm hx))
+    (mem_mul : ∀ m (hm : m ∈ M), ∀ (i x hx), C i x hx → C i.succ (m * x)
+      ((pow_succ' M i).symm ▸ (mul_mem_mul hm hx)))
     -- Porting note: swapped argument order to match order of `C`
     {n : ℕ} {x : A}
     (hx : x ∈ M ^ n) : C n x hx := by
@@ -485,6 +486,9 @@ protected theorem pow_induction_on_left' {C : ∀ (n : ℕ) (x), x ∈ M ^ n →
   · rw [pow_zero] at hx
     obtain ⟨r, rfl⟩ := hx
     exact algebraMap r
+  revert hx
+  simp_rw [pow_succ']
+  intro hx
   exact
     Submodule.mul_induction_on' (fun m hm x ih => mem_mul _ hm _ _ _ (n_ih ih))
       (fun x hx y hy Cx Cy => add _ _ _ _ _ Cx Cy) hx
@@ -497,7 +501,7 @@ protected theorem pow_induction_on_right' {C : ∀ (n : ℕ) (x), x ∈ M ^ n �
     (add : ∀ x y i hx hy, C i x hx → C i y hy → C i (x + y) (add_mem ‹_› ‹_›))
     (mul_mem :
       ∀ i x hx, C i x hx →
-        ∀ m (hm : m ∈ M), C i.succ (x * m) ((pow_succ' M i).symm ▸ mul_mem_mul hx hm))
+        ∀ m (hm : m ∈ M), C i.succ (x * m) (mul_mem_mul hx hm))
     -- Porting note: swapped argument order to match order of `C`
     {n : ℕ} {x : A} (hx : x ∈ M ^ n) : C n x hx := by
   induction' n with n n_ih generalizing x
@@ -505,7 +509,7 @@ protected theorem pow_induction_on_right' {C : ∀ (n : ℕ) (x), x ∈ M ^ n �
     obtain ⟨r, rfl⟩ := hx
     exact algebraMap r
   revert hx
-  simp_rw [pow_succ']
+  simp_rw [pow_succ]
   intro hx
   exact
     Submodule.mul_induction_on' (fun m hm x ih => mul_mem _ _ hm (n_ih _) _ ih)
@@ -537,8 +541,8 @@ protected theorem pow_induction_on_right {C : A → Prop} (hr : ∀ r : R, C (al
 
 /-- `Submonoid.map` as a `MonoidWithZeroHom`, when applied to `AlgHom`s. -/
 @[simps]
-def mapHom {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A') : Submodule R A →*₀ Submodule R A'
-    where
+def mapHom {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A') :
+    Submodule R A →*₀ Submodule R A' where
   toFun := map f.toLinearMap
   map_zero' := Submodule.map_bot _
   map_one' := Submodule.map_one _
@@ -606,7 +610,7 @@ variable {α : Type*} [Monoid α] [MulSemiringAction α A] [SMulCommClass α R A
 
 /-- The action on a submodule corresponding to applying the action to every element.
 
-This is available as an instance in the `pointwise` locale.
+This is available as an instance in the `Pointwise` locale.
 
 This is a stronger version of `Submodule.pointwiseDistribMulAction`. -/
 protected def pointwiseMulSemiringAction : MulSemiringAction α (Submodule R A) :=
@@ -625,7 +629,6 @@ end Ring
 section CommRing
 
 variable {A : Type v} [CommSemiring A] [Algebra R A]
-
 variable {M N : Submodule R A} {m n : A}
 
 theorem mul_mem_mul_rev (hm : m ∈ M) (hn : n ∈ N) : n * m ∈ M * N :=

@@ -210,7 +210,7 @@ theorem decode₂_encode [Encodable α] (a : α) : decode₂ α (encode a) = som
 
 theorem decode₂_ne_none_iff [Encodable α] {n : ℕ} :
     decode₂ α n ≠ none ↔ n ∈ Set.range (encode : α → ℕ) := by
-  simp_rw [Set.range, Set.mem_setOf_eq, Ne.def, Option.eq_none_iff_forall_not_mem,
+  simp_rw [Set.range, Set.mem_setOf_eq, Ne, Option.eq_none_iff_forall_not_mem,
     Encodable.mem_decode₂, not_forall, not_not]
 #align encodable.decode₂_ne_none_iff Encodable.decode₂_ne_none_iff
 
@@ -236,8 +236,7 @@ def decidableRangeEncode (α : Type*) [Encodable α] : DecidablePred (· ∈ Set
 #align encodable.decidable_range_encode Encodable.decidableRangeEncode
 
 /-- An encodable type is equivalent to the range of its encoding function. -/
-def equivRangeEncode (α : Type*) [Encodable α] : α ≃ Set.range (@encode α _)
-    where
+def equivRangeEncode (α : Type*) [Encodable α] : α ≃ Set.range (@encode α _) where
   toFun := fun a : α => ⟨encode a, Set.mem_range_self _⟩
   invFun n :=
     Option.get _

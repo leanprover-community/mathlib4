@@ -27,8 +27,6 @@ In `Homology.lean`, when `S` has two compatible left and right homology data
 
 -/
 
-set_option autoImplicit true
-
 namespace CategoryTheory
 
 open Category Limits
@@ -513,21 +511,21 @@ instance : Mono S.rightHomologyι := by
   dsimp only [rightHomologyι]
   infer_instance
 
-lemma rightHomology_ext_iff (f₁ f₂ : A ⟶ S.rightHomology) :
+lemma rightHomology_ext_iff {A : C} (f₁ f₂ : A ⟶ S.rightHomology) :
     f₁ = f₂ ↔ f₁ ≫ S.rightHomologyι = f₂ ≫ S.rightHomologyι := by
   rw [cancel_mono]
 
 @[ext]
-lemma rightHomology_ext (f₁ f₂ : A ⟶ S.rightHomology)
+lemma rightHomology_ext {A : C} (f₁ f₂ : A ⟶ S.rightHomology)
     (h : f₁ ≫ S.rightHomologyι = f₂ ≫ S.rightHomologyι) : f₁ = f₂ := by
   simpa only [rightHomology_ext_iff]
 
-lemma opcycles_ext_iff (f₁ f₂ : S.opcycles ⟶ A) :
+lemma opcycles_ext_iff {A : C} (f₁ f₂ : S.opcycles ⟶ A) :
     f₁ = f₂ ↔ S.pOpcycles ≫ f₁ = S.pOpcycles ≫ f₂ := by
   rw [cancel_epi]
 
 @[ext]
-lemma opcycles_ext (f₁ f₂ : S.opcycles ⟶ A)
+lemma opcycles_ext {A : C} (f₁ f₂ : S.opcycles ⟶ A)
     (h : S.pOpcycles ≫ f₁ = S.pOpcycles ≫ f₂) : f₁ = f₂ := by
   simpa only [opcycles_ext_iff]
 

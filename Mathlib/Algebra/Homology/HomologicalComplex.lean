@@ -42,7 +42,6 @@ universe v u
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
 variable {ι : Type*}
-
 variable (V : Type u) [Category.{v} V] [HasZeroMorphisms V]
 
 /-- A `HomologicalComplex V c` with a "shape" controlled by `c : ComplexShape ι`
@@ -333,6 +332,20 @@ theorem congr_hom {C D : HomologicalComplex V c} {f g : C ⟶ D} (w : f = g) (i 
   congr_fun (congr_arg Hom.f w) i
 #align homological_complex.congr_hom HomologicalComplex.congr_hom
 
+lemma mono_of_mono_f {K L : HomologicalComplex V c} (φ : K ⟶ L)
+    (hφ : ∀ i, Mono (φ.f i)) : Mono φ where
+  right_cancellation g h eq := by
+    ext i
+    rw [← cancel_mono (φ.f i)]
+    exact congr_hom eq i
+
+lemma epi_of_epi_f {K L : HomologicalComplex V c} (φ : K ⟶ L)
+    (hφ : ∀ i, Epi (φ.f i)) : Epi φ where
+  left_cancellation g h eq := by
+    ext i
+    rw [← cancel_epi (φ.f i)]
+    exact congr_hom eq i
+
 section
 
 variable (V c)
@@ -351,7 +364,7 @@ def forget : HomologicalComplex V c ⥤ GradedObject ι V where
   map f := f.f
 #align homological_complex.forget HomologicalComplex.forget
 
-instance : Faithful (forget V c) where
+instance : (forget V c).Faithful where
   map_injective h := by
     ext i
     exact congr_fun h i
@@ -715,7 +728,6 @@ end Of
 section OfHom
 
 variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
-
 variable (X : α → V) (d_X : ∀ n, X (n + 1) ⟶ X n) (sq_X : ∀ n, d_X (n + 1) ≫ d_X n = 0) (Y : α → V)
   (d_Y : ∀ n, Y (n + 1) ⟶ Y n) (sq_Y : ∀ n, d_Y (n + 1) ≫ d_Y n = 0)
 
@@ -964,7 +976,6 @@ end Of
 section OfHom
 
 variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
-
 variable (X : α → V) (d_X : ∀ n, X n ⟶ X (n + 1)) (sq_X : ∀ n, d_X n ≫ d_X (n + 1) = 0) (Y : α → V)
   (d_Y : ∀ n, Y n ⟶ Y (n + 1)) (sq_Y : ∀ n, d_Y n ≫ d_Y (n + 1) = 0)
 
@@ -988,37 +999,14 @@ end OfHom
 
 section Mk
 
--- porting note (#10927): removed @[nolint has_nonempty_instance]
-/-- Auxiliary structure for setting up the recursion in `mk`.
-This is purely an implementation detail: for some reason just using the dependent 6-tuple directly
-results in `mkAux` taking much longer (well over the `-T100000` limit) to elaborate.
--/
-structure MkStruct where
-  (X₀ X₁ X₂ : V)
-  d₀ : X₀ ⟶ X₁
-  d₁ : X₁ ⟶ X₂
-  s : d₀ ≫ d₁ = 0
-#align cochain_complex.mk_struct CochainComplex.MkStruct
-
 variable {V}
-
-/-- Flatten to a tuple. -/
-def MkStruct.flat (t : MkStruct V) :
-    Σ' (X₀ X₁ X₂ : V) (d₀ : X₀ ⟶ X₁) (d₁ : X₁ ⟶ X₂), d₀ ≫ d₁ = 0 :=
-  ⟨t.X₀, t.X₁, t.X₂, t.d₀, t.d₁, t.s⟩
-#align cochain_complex.mk_struct.flat CochainComplex.MkStruct.flat
-
 variable (X₀ X₁ X₂ : V) (d₀ : X₀ ⟶ X₁) (d₁ : X₁ ⟶ X₂) (s : d₀ ≫ d₁ = 0)
-  (succ :
-    ∀ t : Σ' (X₀ X₁ X₂ : V) (d₀ : X₀ ⟶ X₁) (d₁ : X₁ ⟶ X₂), d₀ ≫ d₁ = 0,
-      Σ' (X₃ : V) (d₂ : t.2.2.1 ⟶ X₃), t.2.2.2.2.1 ≫ d₂ = 0)
+  (succ : ∀ (S : ShortComplex V), Σ' (X₄ : V) (d₂ : S.X₃ ⟶ X₄), S.g ≫ d₂ = 0)
 
 /-- Auxiliary definition for `mk`. -/
-def mkAux : ℕ → MkStruct V
-  | 0 => ⟨X₀, X₁, X₂, d₀, d₁, s⟩
-  | n + 1 =>
-    let p := mkAux n
-    ⟨p.X₁, p.X₂, (succ p.flat).1, p.d₁, (succ p.flat).2.1, (succ p.flat).2.2⟩
+def mkAux : ℕ → ShortComplex V
+  | 0 => ShortComplex.mk _ _ s
+  | n + 1 => ShortComplex.mk _ _ (succ (mkAux n)).2.2
 #align cochain_complex.mk_aux CochainComplex.mkAux
 
 /-- An inductive constructor for `ℕ`-indexed cochain complexes.
@@ -1030,8 +1018,8 @@ and returns the next object, its differential, and the fact it composes appropri
 See also `mk'`, which only sees the previous differential in the inductive step.
 -/
 def mk : CochainComplex V ℕ :=
-  of (fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).X₀) (fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).d₀)
-    fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).s
+  of (fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).X₁) (fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).f)
+    fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).zero
 #align cochain_complex.mk CochainComplex.mk
 
 @[simp]
@@ -1072,13 +1060,13 @@ then a function which takes a differential,
 and returns the next object, its differential, and the fact it composes appropriately to zero.
 -/
 def mk' (X₀ X₁ : V) (d : X₀ ⟶ X₁)
-    (succ' : ∀ t : ΣX₀ X₁ : V, X₀ ⟶ X₁, Σ' (X₂ : V) (d : t.2.1 ⟶ X₂), t.2.2 ≫ d = 0) :
+    -- (succ' : ∀  : ΣX₀ X₁ : V, X₀ ⟶ X₁, Σ' (X₂ : V) (d : t.2.1 ⟶ X₂), t.2.2 ≫ d = 0) :
+    (succ' : ∀ {X₀ X₁ : V} (f : X₀ ⟶ X₁), Σ' (X₂ : V) (d : X₁ ⟶ X₂), f ≫ d = 0) :
     CochainComplex V ℕ :=
-  mk X₀ X₁ (succ' ⟨X₀, X₁, d⟩).1 d (succ' ⟨X₀, X₁, d⟩).2.1 (succ' ⟨X₀, X₁, d⟩).2.2 fun t =>
-    succ' ⟨t.2.1, t.2.2.1, t.2.2.2.2.1⟩
+  mk _ _ _ _ _ (succ' d).2.2 (fun S => succ' S.g)
 #align cochain_complex.mk' CochainComplex.mk'
 
-variable (succ' : ∀ t : ΣX₀ X₁ : V, X₀ ⟶ X₁, Σ' (X₂ : V) (d : t.2.1 ⟶ X₂), t.2.2 ≫ d = 0)
+variable (succ' : ∀ {X₀ X₁ : V} (f : X₀ ⟶ X₁), Σ' (X₂ : V) (d : X₁ ⟶ X₂), f ≫ d = 0)
 
 @[simp]
 theorem mk'_X_0 : (mk' X₀ X₁ d₀ succ').X 0 = X₀ :=

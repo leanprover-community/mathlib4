@@ -52,15 +52,10 @@ open scoped Topology Classical NNReal
 noncomputable section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
 variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-
 variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
-
 variable {ε : ℝ}
 
 open Filter Metric Set
@@ -122,7 +117,7 @@ theorem lipschitz_sub (hf : ApproximatesLinearOn f f' s c) :
 
 protected theorem lipschitz (hf : ApproximatesLinearOn f f' s c) :
     LipschitzWith (‖f'‖₊ + c) (s.restrict f) := by
-  simpa only [restrict_apply, add_sub_cancel'_right] using
+  simpa only [restrict_apply, add_sub_cancel] using
     (f'.lipschitz.restrict s).add hf.lipschitz_sub
 #align approximates_linear_on.lipschitz ApproximatesLinearOn.lipschitz
 
@@ -183,7 +178,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
   -- First bound: if `f z` is close to `y`, then `g z` is close to `z` (i.e., almost a fixed point).
   have A : ∀ z, dist (g z) z ≤ f'symm.nnnorm * dist (f z) y := by
     intro z
-    rw [dist_eq_norm, hg, add_sub_cancel', dist_eq_norm']
+    rw [dist_eq_norm, hg, add_sub_cancel_left, dist_eq_norm']
     exact f'symm.bound _
   -- Second bound: if `z` and `g z` are in the set with good control, then `f (g z)` becomes closer
   -- to `y` than `f z` was (this uses the linear approximation property, and is the reason for the
@@ -197,9 +192,9 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
       dist (f (g z)) y = ‖f (z + v) - y‖ := by rw [dist_eq_norm]
       _ = ‖f (z + v) - f z - f' v + f' v - (y - f z)‖ := by congr 1; abel
       _ = ‖f (z + v) - f z - f' (z + v - z)‖ := by
-        simp only [v, ContinuousLinearMap.NonlinearRightInverse.right_inv, add_sub_cancel',
+        simp only [v, ContinuousLinearMap.NonlinearRightInverse.right_inv, add_sub_cancel_left,
           sub_add_cancel]
-      _ ≤ c * ‖z + v - z‖ := (hf _ (hε hgz) _ (hε hz))
+      _ ≤ c * ‖z + v - z‖ := hf _ (hε hgz) _ (hε hz)
       _ ≤ c * (f'symm.nnnorm * dist (f z) y) := by
         gcongr
         simpa [dist_eq_norm'] using f'symm.bound (y - f z)
@@ -238,14 +233,17 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
         (1 - c * f'symm.nnnorm) * dist (f b) y :=
       calc
         dist (g (u n)) b ≤ dist (g (u n)) (u n) + dist (u n) b := dist_triangle _ _ _
-        _ ≤ f'symm.nnnorm * dist (f (u n)) y + dist (u n) b := (add_le_add (A _) le_rfl)
+        _ ≤ f'symm.nnnorm * dist (f (u n)) y + dist (u n) b := add_le_add (A _) le_rfl
         _ ≤ f'symm.nnnorm * (((c : ℝ) * f'symm.nnnorm) ^ n * dist (f b) y) +
               f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) / (1 - c * f'symm.nnnorm) *
-                dist (f b) y := by gcongr; exact IH.1; exact IH.2
+                dist (f b) y := by
+                  gcongr
+                  · exact IH.1
+                  · exact IH.2
         _ = f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n.succ) /
               (1 - (c : ℝ) * f'symm.nnnorm) * dist (f b) y := by
           field_simp [Jcf', pow_succ]; ring
-    refine' ⟨_, Ign⟩
+    refine ⟨?_, Ign⟩
     calc
       dist (f (g (u n))) y ≤ c * f'symm.nnnorm * dist (f (u n)) y :=
         B _ (C n _ IH.2) (C n.succ _ Ign)
@@ -258,7 +256,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
     refine cauchySeq_of_le_geometric _ (↑f'symm.nnnorm * dist (f b) y) Icf' fun n ↦ ?_
     calc
       dist (u n) (u (n + 1)) = dist (g (u n)) (u n) := by rw [usucc, dist_comm]
-      _ ≤ f'symm.nnnorm * dist (f (u n)) y := (A _)
+      _ ≤ f'symm.nnnorm * dist (f (u n)) y := A _
       _ ≤ f'symm.nnnorm * (((c : ℝ) * f'symm.nnnorm) ^ n * dist (f b) y) := by
         gcongr
         exact (D n).1
@@ -267,7 +265,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
   -- As all the `uₙ` belong to the ball `closedBall b ε`, so does their limit `x`.
   have xmem : x ∈ closedBall b ε :=
     isClosed_ball.mem_of_tendsto hx (eventually_of_forall fun n => C n _ (D n).2)
-  refine' ⟨x, xmem, _⟩
+  refine ⟨x, xmem, ?_⟩
   -- It remains to check that `f x = y`. This follows from continuity of `f` on `closedBall b ε`
   -- and from the fact that `f uₙ` is converging to `y` by construction.
   have hx' : Tendsto u atTop (𝓝[closedBall b ε] x) := by
@@ -391,7 +389,7 @@ theorem to_inv (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c) (hc : Sub
       congr 2
       simp only [ContinuousLinearEquiv.apply_symm_apply, ContinuousLinearEquiv.map_sub]
       abel
-    _ ≤ N * (c * ‖y' - x'‖) := (mul_le_mul_of_nonneg_left (hf _ y's _ x's) (NNReal.coe_nonneg _))
+    _ ≤ N * (c * ‖y' - x'‖) := mul_le_mul_of_nonneg_left (hf _ y's _ x's) (NNReal.coe_nonneg _)
     _ ≤ N * (c * (((N⁻¹ - c)⁻¹ : ℝ≥0) * ‖A y' - A x'‖)) := by
       gcongr
       rw [← dist_eq_norm, ← dist_eq_norm]

@@ -1244,11 +1244,8 @@ section ProdComparison
 universe w
 
 variable {C} {D : Type u₂} [Category.{w} D]
-
 variable (F : C ⥤ D) {A A' B B' : C}
-
 variable [HasBinaryProduct A B] [HasBinaryProduct A' B']
-
 variable [HasBinaryProduct (F.obj A) (F.obj B)] [HasBinaryProduct (F.obj A') (F.obj B')]
 
 /-- The product comparison morphism.
@@ -1338,11 +1335,8 @@ section CoprodComparison
 universe w
 
 variable {C} {D : Type u₂} [Category.{w} D]
-
 variable (F : C ⥤ D) {A A' B B' : C}
-
 variable [HasBinaryCoproduct A B] [HasBinaryCoproduct A' B']
-
 variable [HasBinaryCoproduct (F.obj A) (F.obj B)] [HasBinaryCoproduct (F.obj A') (F.obj B')]
 
 /-- The coproduct comparison morphism.
@@ -1446,14 +1440,14 @@ def Over.coprod [HasBinaryCoproducts C] {A : C} : Over A ⥤ Over A ⥤ Over A w
     { app := fun g => Over.homMk (coprod.map k.left (𝟙 _)) (by
         dsimp; rw [coprod.map_desc, Category.id_comp, Over.w k])
       naturality := fun f g k => by
-        ext;
-          · dsimp; simp }
+        ext
+        dsimp; simp }
   map_id X := by
     ext
-    · dsimp; simp
+    dsimp; simp
   map_comp f g := by
     ext
-    · dsimp; simp
+    dsimp; simp
 #align category_theory.over.coprod CategoryTheory.Over.coprod
 
 end CategoryTheory

@@ -137,7 +137,7 @@ theorem smul_subset_of_coprime (han : (orderOf a).Coprime n) :
     smul_ball'', smul_eq_mul, mem_setOf_eq]
   refine' iUnion₂_subset_iff.mpr fun b hb c hc => _
   simp only [mem_iUnion, exists_prop]
-  refine' ⟨a * b, _, hc⟩
+  refine ⟨a * b, ?_, hc⟩
   rw [← hb] at han ⊢
   exact (Commute.all a b).orderOf_mul_eq_mul_orderOf_of_coprime han
 #align approx_order_of.smul_subset_of_coprime approxOrderOf.smul_subset_of_coprime
@@ -173,7 +173,6 @@ namespace UnitAddCircle
 
 theorem mem_approxAddOrderOf_iff {δ : ℝ} {x : UnitAddCircle} {n : ℕ} (hn : 0 < n) :
     x ∈ approxAddOrderOf UnitAddCircle n δ ↔ ∃ m < n, gcd m n = 1 ∧ ‖x - ↑((m : ℝ) / n)‖ < δ := by
-  haveI := Real.fact_zero_lt_one
   simp only [mem_approx_add_orderOf_iff, mem_setOf_eq, ball, exists_prop, dist_eq_norm,
     AddCircle.addOrderOf_eq_pos_iff hn, mul_one]
   constructor
@@ -250,8 +249,8 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
   have hB₀ : ∀ p, MeasurableSet (B p) := fun p =>
     MeasurableSet.measurableSet_blimsup fun n _ => isOpen_thickening.measurableSet
   have hE₀ : NullMeasurableSet E μ := by
-    refine' (MeasurableSet.measurableSet_blimsup fun n hn =>
-      IsOpen.measurableSet _).nullMeasurableSet
+    refine (MeasurableSet.measurableSet_blimsup fun n hn =>
+      IsOpen.measurableSet ?_).nullMeasurableSet
     exact isOpen_thickening
   have hE₁ : ∀ p, E = A p ∪ B p ∪ C p := by
     intro p
@@ -301,7 +300,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     have := @monotone_image 𝕊 𝕊 fun y => x + y
     specialize this (approxAddOrderOf.image_nsmul_subset (δ n) (n / p) hp.pos)
     simp only [h_div] at this ⊢
-    refine' this.trans _
+    refine this.trans ?_
     convert approxAddOrderOf.vadd_subset_of_coprime (p * δ n) h_cop
     rw [hu₀, Subtype.coe_mk, mul_comm p, h_div]
   change (∀ᵐ x, x ∉ E) ∨ E ∈ volume.ae
@@ -377,7 +376,7 @@ lemma exists_norm_nsmul_le (ξ : 𝕊) {n : ℕ} (hn : 0 < n) :
     ∃ j ∈ Icc 1 n, ‖j • ξ‖ ≤ T / ↑(n + 1) := by
   apply NormedAddCommGroup.exists_norm_nsmul_le (μ := volume) ξ hn
   rw [AddCircle.measure_univ, volume_closedBall, ← ENNReal.ofReal_nsmul,
-    mul_div_cancel' _ two_ne_zero, min_eq_right (div_le_self hT.out.le <| by simp), nsmul_eq_mul,
-    mul_div_cancel' _ (Nat.cast_ne_zero.mpr n.succ_ne_zero)]
+    mul_div_cancel₀ _ two_ne_zero, min_eq_right (div_le_self hT.out.le <| by simp), nsmul_eq_mul,
+    mul_div_cancel₀ _ (Nat.cast_ne_zero.mpr n.succ_ne_zero)]
 
 end AddCircle

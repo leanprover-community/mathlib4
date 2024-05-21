@@ -96,7 +96,6 @@ namespace ExactPairing
 -- arguments for class fields explicit,
 -- we now repeat all the fields without primes.
 -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Making.20variable.20in.20class.20field.20explicit
-
 variable (X Y : C)
 variable [ExactPairing X Y]
 
@@ -382,14 +381,14 @@ If `Y` has a left dual `ᘁY`, then it is a closed object, with the internal hom
 given by left tensoring by `ᘁY`.
 This has to be a definition rather than an instance to avoid diamonds, for example between
 `category_theory.monoidal_closed.functor_closed` and
-`category_theory.monoidal.functor_has_left_dual`. Moreover, in concrete applications there is often
+`CategoryTheory.Monoidal.functorHasLeftDual`. Moreover, in concrete applications there is often
 a more useful definition of the internal hom object than `ᘁY ⊗ X`, in which case the closed
 structure shouldn't come from `has_left_dual` (e.g. in the category `FinVect k`, it is more
 convenient to define the internal hom as `Y →ₗ[k] X` rather than `ᘁY ⊗ X` even though these are
 naturally isomorphic).
 -/
 def closedOfHasLeftDual (Y : C) [HasLeftDual Y] : Closed Y where
-  isAdj := ⟨_, tensorLeftAdjunction (ᘁY) Y⟩
+  adj := tensorLeftAdjunction (ᘁY) Y
 #align category_theory.closed_of_has_left_dual CategoryTheory.closedOfHasLeftDual
 
 /-- `tensorLeftHomEquiv` commutes with tensoring on the right -/
@@ -641,7 +640,7 @@ attribute [instance 100] LeftRigidCategory.leftDual
 /-- Any left rigid category is monoidal closed, with the internal hom `X ⟶[C] Y = ᘁX ⊗ Y`.
 This has to be a definition rather than an instance to avoid diamonds, for example between
 `category_theory.monoidal_closed.functor_category` and
-`category_theory.monoidal.left_rigid_functor_category`. Moreover, in concrete applications there is
+`CategoryTheory.Monoidal.leftRigidFunctorCategory`. Moreover, in concrete applications there is
 often a more useful definition of the internal hom object than `ᘁY ⊗ X`, in which case the monoidal
 closed structure shouldn't come the rigid structure (e.g. in the category `FinVect k`, it is more
 convenient to define the internal hom as `Y →ₗ[k] X` rather than `ᘁY ⊗ X` even though these are

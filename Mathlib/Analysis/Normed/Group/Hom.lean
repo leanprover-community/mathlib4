@@ -506,7 +506,7 @@ instance smul : SMul R (NormedAddGroupHom V₁ V₂) where
           have := dist_smul_pair r (f x) (f 0)
           rw [map_zero, smul_zero, dist_zero_right, dist_zero_right] at this
           rw [mul_assoc]
-          refine' this.trans _
+          refine this.trans ?_
           gcongr
           exact hb x⟩ }
 
@@ -869,11 +869,8 @@ variable {W₁ W₂ W₃ : Type*} [SeminormedAddCommGroup W₁] [SeminormedAddCo
   [SeminormedAddCommGroup W₃]
 
 variable (f) (g : NormedAddGroupHom V W)
-
 variable {f₁ g₁ : NormedAddGroupHom V₁ W₁}
-
 variable {f₂ g₂ : NormedAddGroupHom V₂ W₂}
-
 variable {f₃ g₃ : NormedAddGroupHom V₃ W₃}
 
 /-- The equalizer of two morphisms `f g : NormedAddGroupHom V W`. -/
@@ -900,8 +897,7 @@ variable {f g}
 `NormedAddGroupHom V₁ (f.equalizer g)`. -/
 @[simps]
 def lift (φ : NormedAddGroupHom V₁ V) (h : f.comp φ = g.comp φ) :
-    NormedAddGroupHom V₁ (f.equalizer g)
-    where
+    NormedAddGroupHom V₁ (f.equalizer g) where
   toFun v :=
     ⟨φ v,
       show (f - g) (φ v) = 0 by
@@ -924,8 +920,8 @@ theorem ι_comp_lift (φ : NormedAddGroupHom V₁ V) (h : f.comp φ = g.comp φ)
 /-- The lifting property of the equalizer as an equivalence. -/
 @[simps]
 def liftEquiv :
-    { φ : NormedAddGroupHom V₁ V // f.comp φ = g.comp φ } ≃ NormedAddGroupHom V₁ (f.equalizer g)
-    where
+    { φ : NormedAddGroupHom V₁ V // f.comp φ = g.comp φ } ≃
+      NormedAddGroupHom V₁ (f.equalizer g) where
   toFun φ := lift φ φ.prop
   invFun ψ := ⟨(ι f g).comp ψ, by rw [← comp_assoc, ← comp_assoc, comp_ι_eq]⟩
   left_inv φ := by simp
@@ -945,7 +941,6 @@ def map (φ : NormedAddGroupHom V₁ V₂) (ψ : NormedAddGroupHom W₁ W₂) (h
 #align normed_add_group_hom.equalizer.map NormedAddGroupHom.Equalizer.map
 
 variable {φ : NormedAddGroupHom V₁ V₂} {ψ : NormedAddGroupHom W₁ W₂}
-
 variable {φ' : NormedAddGroupHom V₂ V₃} {ψ' : NormedAddGroupHom W₂ W₃}
 
 @[simp]

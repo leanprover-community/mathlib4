@@ -137,7 +137,7 @@ def basicOpen {U : Opens X} (f : X.presheaf.obj (op U)) : Opens X where
     rintro _ ⟨x, hx, rfl⟩
     obtain ⟨V, i, hxV, hf⟩ := X.isUnit_res_of_isUnit_germ U f x hx
     use V.1
-    refine' ⟨_, V.2, hxV⟩
+    refine ⟨?_, V.2, hxV⟩
     intro y hy
     use (⟨y, i.le hy⟩ : U)
     rw [Set.mem_setOf_eq]
@@ -218,7 +218,6 @@ theorem basicOpen_mul {U : Opens X} (f g : X.presheaf.obj (op U)) :
   ext1
   dsimp [RingedSpace.basicOpen]
   rw [← Set.image_inter Subtype.coe_injective]
-  congr
   ext x
   simp [map_mul, Set.mem_image]
 set_option linter.uppercaseLean3 false in

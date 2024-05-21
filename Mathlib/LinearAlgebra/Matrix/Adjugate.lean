@@ -47,7 +47,6 @@ namespace Matrix
 universe u v w
 
 variable {m : Type u} {n : Type v} {α : Type w}
-
 variable [DecidableEq n] [Fintype n] [DecidableEq m] [Fintype m] [CommRing α]
 
 open Matrix BigOperators Polynomial Equiv Equiv.Perm Finset
@@ -269,7 +268,7 @@ theorem cramer_eq_adjugate_mulVec (A : Matrix n n α) (b : n → α) :
     cramer A b = A.adjugate *ᵥ b := by
   nth_rw 2 [← A.transpose_transpose]
   rw [← adjugate_transpose, adjugate_def]
-  have : b = ∑ i, b i • Pi.single i 1 := by
+  have : b = ∑ i, b i • (Pi.single i 1 : n → α) := by
     refine' (pi_eq_sum_univ b).trans _
     congr with j
     -- Porting note: needed to help `Pi.smul_apply`
@@ -386,7 +385,7 @@ theorem det_adjugate (A : Matrix n n α) : (adjugate A).det = A.det ^ (Fintype.c
   calc
     A'.det * A'.adjugate.det = (A' * adjugate A').det := (det_mul _ _).symm
     _ = A'.det ^ Fintype.card n := by rw [mul_adjugate, det_smul, det_one, mul_one]
-    _ = A'.det * A'.det ^ (Fintype.card n - 1) := by rw [← pow_succ, h_card]
+    _ = A'.det * A'.det ^ (Fintype.card n - 1) := by rw [← pow_succ', h_card]
 #align matrix.det_adjugate Matrix.det_adjugate
 
 @[simp]
@@ -470,12 +469,12 @@ theorem isRegular_of_isLeftRegular_det {A : Matrix n n α} (hA : IsLeftRegular A
     IsRegular A := by
   constructor
   · intro B C h
-    refine' hA.matrix _
+    refine hA.matrix ?_
     simp only at h ⊢
     rw [← Matrix.one_mul B, ← Matrix.one_mul C, ← Matrix.smul_mul, ← Matrix.smul_mul, ←
       adjugate_mul, Matrix.mul_assoc, Matrix.mul_assoc, h]
   · intro B C (h : B * A = C * A)
-    refine' hA.matrix _
+    refine hA.matrix ?_
     simp only
     rw [← Matrix.mul_one B, ← Matrix.mul_one C, ← Matrix.mul_smul, ← Matrix.mul_smul, ←
       mul_adjugate, ← Matrix.mul_assoc, ← Matrix.mul_assoc, h]
@@ -510,7 +509,7 @@ theorem adjugate_mul_distrib (A B : Matrix n n α) : adjugate (A * B) = adjugate
     rw [RingHom.map_mul, f'_inv, f'_inv]
   have hu : ∀ M : Matrix n n α, IsRegular (g M).det := by
     intro M
-    refine' Polynomial.Monic.isRegular _
+    refine Polynomial.Monic.isRegular ?_
     simp only [g, Polynomial.Monic.def, ← Polynomial.leadingCoeff_det_X_one_add_C M, add_comm]
   rw [← f'_adj, ← f'_adj, ← f'_adj, ← f'.map_mul, ←
     adjugate_mul_distrib_aux _ _ (hu A).left (hu B).left, RingHom.map_adjugate,
@@ -555,7 +554,7 @@ theorem adjugate_adjugate (A : Matrix n n α) (h : Fintype.card n ≠ 1) :
     mul_left_cancel₀ (det_mvPolynomialX_ne_zero n ℤ)
   apply is_reg.matrix
   simp only
-  rw [smul_smul, ← pow_succ, h_card', det_smul_adjugate_adjugate]
+  rw [smul_smul, ← pow_succ', h_card', det_smul_adjugate_adjugate]
 #align matrix.adjugate_adjugate Matrix.adjugate_adjugate
 
 /-- A weaker version of `Matrix.adjugate_adjugate` that uses `Nontrivial`. -/

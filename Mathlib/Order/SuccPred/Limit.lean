@@ -145,7 +145,7 @@ theorem IsSuccLimit.succ_lt (hb : IsSuccLimit b) (ha : a < b) : succ a < b := by
   by_cases h : IsMax a
   · rwa [h.succ_eq]
   · rw [lt_iff_le_and_ne, succ_le_iff_of_not_isMax h]
-    refine' ⟨ha, fun hab => _⟩
+    refine ⟨ha, fun hab => ?_⟩
     subst hab
     exact (h hb.isMax).elim
 #align order.is_succ_limit.succ_lt Order.IsSuccLimit.succ_lt
@@ -203,8 +203,8 @@ variable (a) in
 
 @[simp]
 theorem _root_.SuccOrder.limitRecOn_succ (ha : ¬ IsMax a) :
-    SuccOrder.limitRecOn (succ a) H_succ H_lim =
-    H_succ a ha (SuccOrder.limitRecOn a H_succ H_lim) := by
+    SuccOrder.limitRecOn (succ a) H_succ H_lim
+      = H_succ a ha (SuccOrder.limitRecOn a H_succ H_lim) := by
   have h := not_isSuccLimit_succ_of_not_isMax ha
   rw [SuccOrder.limitRecOn, WellFounded.fix_eq, dif_neg h]
   have {b c hb hc} {x : ∀ a, C a} (h : b = c) :
@@ -213,8 +213,9 @@ theorem _root_.SuccOrder.limitRecOn_succ (ha : ¬ IsMax a) :
   exact this ((succ_eq_succ_iff_of_not_isMax x.2.1 ha).mp x.2.2)
 
 @[simp]
-theorem _root_.SuccOrder.limitRecOn_limit (ha : IsSuccLimit a) : SuccOrder.limitRecOn a H_succ H_lim
-    = H_lim a ha fun x _ ↦ SuccOrder.limitRecOn x H_succ H_lim := by
+theorem _root_.SuccOrder.limitRecOn_limit (ha : IsSuccLimit a) :
+    SuccOrder.limitRecOn a H_succ H_lim
+      = H_lim a ha fun x _ ↦ SuccOrder.limitRecOn x H_succ H_lim := by
   rw [SuccOrder.limitRecOn, WellFounded.fix_eq, dif_pos ha]; rfl
 
 end limitRecOn
@@ -434,8 +435,8 @@ variable (a) in
 
 @[simp]
 theorem _root_.PredOrder.limitRecOn_pred (ha : ¬ IsMin a) :
-    PredOrder.limitRecOn (pred a) H_pred H_lim =
-    H_pred a ha (PredOrder.limitRecOn a H_pred H_lim) := by
+    PredOrder.limitRecOn (pred a) H_pred H_lim
+      = H_pred a ha (PredOrder.limitRecOn a H_pred H_lim) := by
   have h := not_isPredLimit_pred_of_not_isMin ha
   rw [PredOrder.limitRecOn, WellFounded.fix_eq, dif_neg h]
   have {b c hb hc} {x : ∀ a, C a} (h : b = c) :
@@ -444,8 +445,9 @@ theorem _root_.PredOrder.limitRecOn_pred (ha : ¬ IsMin a) :
   exact this ((pred_eq_pred_iff_of_not_isMin x.2.1 ha).mp x.2.2)
 
 @[simp]
-theorem _root_.PredOrder.limitRecOn_limit (ha : IsPredLimit a) : PredOrder.limitRecOn a H_pred H_lim
-    = H_lim a ha fun x _ ↦ PredOrder.limitRecOn x H_pred H_lim := by
+theorem _root_.PredOrder.limitRecOn_limit (ha : IsPredLimit a) :
+    PredOrder.limitRecOn a H_pred H_lim
+      = H_lim a ha fun x _ ↦ PredOrder.limitRecOn x H_pred H_lim := by
   rw [PredOrder.limitRecOn, WellFounded.fix_eq, dif_pos ha]; rfl
 
 end limitRecOn

@@ -101,7 +101,7 @@ theorem norm_dslope_le_div_of_mapsTo_ball (hd : DifferentiableOn ℂ f (ball c R
   have hg₀ : ‖g‖₊ ≠ 0 := by simpa only [hg'] using one_ne_zero
   calc
     ‖dslope f c z‖ = ‖dslope (g ∘ f) c z‖ := by
-      rw [g.dslope_comp, hgf, IsROrC.norm_ofReal, abs_norm]
+      rw [g.dslope_comp, hgf, RCLike.norm_ofReal, abs_norm]
       exact fun _ => hd.differentiableAt (ball_mem_nhds _ hR₁)
     _ ≤ R₂ / R₁ := by
       refine' schwarz_aux (g.differentiable.comp_differentiableOn hd) (MapsTo.comp _ h_maps) hz

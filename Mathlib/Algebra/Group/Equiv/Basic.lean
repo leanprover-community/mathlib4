@@ -75,8 +75,8 @@ structure AddEquiv (A B : Type*) [Add A] [Add B] extends A ≃ B, AddHom A B
 
 /-- `AddEquivClass F A B` states that `F` is a type of addition-preserving morphisms.
 You should extend this class when you extend `AddEquiv`. -/
-class AddEquivClass (F : Type*) (A B : outParam Type*) [Add A] [Add B] [EquivLike F A B] : Prop
-    where
+class AddEquivClass (F : Type*) (A B : outParam Type*) [Add A] [Add B] [EquivLike F A B] :
+    Prop where
   /-- Preserves addition. -/
   map_add : ∀ (f : F) (a b), f (a + b) = f a + f b
 #align add_equiv_class AddEquivClass
@@ -109,8 +109,8 @@ add_decl_doc MulEquiv.toMulHom
 You should extend this class when you extend `MulEquiv`. -/
 -- TODO: make this a synonym for MulHomClass?
 @[to_additive]
-class MulEquivClass (F : Type*) (A B : outParam Type*) [Mul A] [Mul B] [EquivLike F A B] : Prop
-    where
+class MulEquivClass (F : Type*) (A B : outParam Type*) [Mul A] [Mul B] [EquivLike F A B] :
+    Prop where
   /-- Preserves multiplication. -/
   map_mul : ∀ (f : F) (a b), f (a * b) = f a * f b
 #align mul_equiv_class MulEquivClass
@@ -124,7 +124,6 @@ infixl:25 " ≃+ " => AddEquiv
 namespace MulEquivClass
 
 variable (F)
-
 variable [EquivLike F M N]
 
 -- See note [lower instance priority]
@@ -148,7 +147,6 @@ instance (priority := 100) instMonoidHomClass
         _ = 1 := EquivLike.right_inv e 1 }
 
 variable [EquivLike F α β]
-
 variable {F}
 
 @[to_additive (attr := simp)]
