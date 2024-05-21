@@ -772,7 +772,7 @@ def isLimitOfCompMono (f : X ⟶ W) (g : Y ⟶ W) (i : W ⟶ Z) [Mono i] (s : Pu
   rcases PullbackCone.IsLimit.lift' H s.fst s.snd
       ((cancel_mono i).mp (by simpa using s.condition)) with
     ⟨l, h₁, h₂⟩
-  refine' ⟨l, h₁, h₂, _⟩
+  refine ⟨l, h₁, h₂, ?_⟩
   intro m hm₁ hm₂
   exact (PullbackCone.IsLimit.hom_ext H (hm₁.trans h₁.symm) (hm₂.trans h₂.symm) : _)
 #align category_theory.limits.pullback_cone.is_limit_of_comp_mono CategoryTheory.Limits.PullbackCone.isLimitOfCompMono
@@ -1042,7 +1042,7 @@ def isColimitOfEpiComp (f : X ⟶ Y) (g : X ⟶ Z) (h : W ⟶ X) [Epi h] (s : Pu
   rcases PushoutCocone.IsColimit.desc' H s.inl s.inr
       ((cancel_epi h).mp (by simpa using s.condition)) with
     ⟨l, h₁, h₂⟩
-  refine' ⟨l, h₁, h₂, _⟩
+  refine ⟨l, h₁, h₂, ?_⟩
   intro m hm₁ hm₂
   exact (PushoutCocone.IsColimit.hom_ext H (hm₁.trans h₁.symm) (hm₂.trans h₂.symm) : _)
 #align category_theory.limits.pushout_cocone.is_colimit_of_epi_comp CategoryTheory.Limits.PushoutCocone.isColimitOfEpiComp
@@ -2730,50 +2730,5 @@ instance (priority := 100) hasPushouts_of_hasWidePushouts (D : Type u) [h : Cate
   infer_instance
 
 end Limits
-
-namespace Over
-
-open Limits
-
-variable {C : Type u} [Category.{v} C]
-
--- Porting note: removed semireducible from the simps config
-/-- Given a morphism `f : X ⟶ Y`, we can take morphisms over `Y` to morphisms over `X` via
-pullbacks. -/
-@[simps! (config := { simpRhs := true}) obj_left obj_hom map_left]
-def baseChange [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X where
-  obj g := Over.mk (pullback.snd : pullback g.hom f ⟶ _)
-  map i := Over.homMk (pullback.map _ _ _ _ i.left (𝟙 _) (𝟙 _) (by simp) (by simp))
-  map_id Z := by
-    apply Over.OverMorphism.ext; apply pullback.hom_ext
-    · dsimp; simp
-    · dsimp; simp
-  map_comp f g := by
-    apply Over.OverMorphism.ext; apply pullback.hom_ext
-    · dsimp; simp
-    · dsimp; simp
-#align category_theory.limits.base_change CategoryTheory.Over.baseChange
-
--- deprecated on 2024-05-15
-@[deprecated] noncomputable alias Limits.baseChange := Over.baseChange
-
-/-- The adjunction `Over.map ⊣ baseChange` -/
-@[simps! unit_app counit_app]
-def mapAdjunction [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over.map f ⊣ baseChange f :=
-  .mkOfHomEquiv <| {
-    homEquiv := fun X Y => {
-      toFun := fun u => Over.homMk (pullback.lift u.left X.hom <| by simp)
-      invFun := fun v => Over.homMk (v.left ≫ pullback.fst) <|
-        by simp [← Over.w v, pullback.condition]
-      left_inv := by aesop_cat
-      right_inv := by
-        intro v
-        ext
-        dsimp
-        ext
-        · simp
-        · simpa using Over.w v |>.symm  } }
-
-end Over
 
 end CategoryTheory
