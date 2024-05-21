@@ -78,8 +78,9 @@ theorem support_add_subset {x y : HahnSeries Γ R} : support (x + y) ⊆ support
   rw [ha.1, ha.2, add_zero]
 #align hahn_series.support_add_subset HahnSeries.support_add_subset
 
-protected theorem min_le_min_add {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R} (hx : x ≠ 0) (hy : y ≠ 0)
-    (hxy : x + y ≠ 0) : min (Set.IsWF.min x.isWF_support (support_nonempty_iff.2 hx))
+protected theorem min_le_min_add {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R} (hx : x ≠ 0)
+    (hy : y ≠ 0) (hxy : x + y ≠ 0) :
+    min (Set.IsWF.min x.isWF_support (support_nonempty_iff.2 hx))
       (Set.IsWF.min y.isWF_support (support_nonempty_iff.2 hy)) ≤
       Set.IsWF.min (x + y).isWF_support (support_nonempty_iff.2 hxy) := by
   rw [← Set.IsWF.min_union]
