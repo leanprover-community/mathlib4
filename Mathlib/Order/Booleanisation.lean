@@ -21,7 +21,7 @@ complements.
 * `Booleanisation.liftLatticeHom`: Boolean algebra containing a given generalised Boolean algebra as
   a sublattice.
 
-## Future workl
+## Future work
 
 If mathlib ever acquires `GenBoolAlg`, the category of generalised Boolean algebras, then one could
 show that `Booleanisation` is the free functor from `GenBoolAlg` to `BoolAlg`.
@@ -39,7 +39,8 @@ def Booleanisation (α : Type*) := α ⊕ α
 
 namespace Booleanisation
 
-instance instDecidableEq [DecidableEq α] : DecidableEq (Booleanisation α) := Sum.instDecidableEqSum
+instance instDecidableEq [DecidableEq α] : DecidableEq (Booleanisation α) :=
+  inferInstanceAs <| DecidableEq (α ⊕ α)
 
 variable [GeneralizedBooleanAlgebra α] {x y : Booleanisation α} {a b : α}
 
@@ -131,12 +132,12 @@ instance instSDiff : SDiff (Booleanisation α) where
 @[simp] lemma lift_le_lift : lift a ≤ lift b ↔ a ≤ b := ⟨by rintro ⟨_⟩; assumption, LE.lift⟩
 @[simp] lemma comp_le_comp : comp a ≤ comp b ↔ b ≤ a := ⟨by rintro ⟨_⟩; assumption, LE.comp⟩
 @[simp] lemma lift_le_comp : lift a ≤ comp b ↔ Disjoint a b := ⟨by rintro ⟨_⟩; assumption, LE.sep⟩
-@[simp] lemma not_comp_le_lift : ¬ comp a ≤ lift b := λ h ↦ nomatch h
+@[simp] lemma not_comp_le_lift : ¬ comp a ≤ lift b := fun h ↦ nomatch h
 
 @[simp] lemma lift_lt_lift : lift a < lift b ↔ a < b := ⟨by rintro ⟨_⟩; assumption, LT.lift⟩
 @[simp] lemma comp_lt_comp : comp a < comp b ↔ b < a := ⟨by rintro ⟨_⟩; assumption, LT.comp⟩
 @[simp] lemma lift_lt_comp : lift a < comp b ↔ Disjoint a b := ⟨by rintro ⟨_⟩; assumption, LT.sep⟩
-@[simp] lemma not_comp_lt_lift : ¬ comp a < lift b := λ h ↦ nomatch h
+@[simp] lemma not_comp_lt_lift : ¬ comp a < lift b := fun h ↦ nomatch h
 
 @[simp] lemma lift_sup_lift (a b : α) : lift a ⊔ lift b = lift (a ⊔ b) := rfl
 @[simp] lemma lift_sup_comp (a b : α) : lift a ⊔ comp b = comp (b \ a) := rfl
@@ -227,12 +228,13 @@ instance instDistribLattice : DistribLattice (Booleanisation α) where
   le_sup_inf x y z := match x, y, z with
     | lift a, lift b, lift c => LE.lift le_sup_inf
     | lift a, lift b, comp c => LE.lift <| by simp [sup_left_comm, sup_comm]
-    | lift a, comp b, lift c => LE.lift <| by simp [sup_left_comm, sup_comm (a := b \ a)]
+    | lift a, comp b, lift c => LE.lift <| by
+      simp [sup_left_comm (a := b \ a), sup_comm (a := b \ a)]
     | lift a, comp b, comp c => LE.comp <| by rw [sup_sdiff]
     | comp a, lift b, lift c => LE.comp <| by rw [sdiff_inf]
     | comp a, lift b, comp c => LE.comp <| by rw [sdiff_sdiff_right']
     | comp a, comp b, lift c => LE.comp <| by rw [sdiff_sdiff_right', sup_comm]
-    | comp a, comp b, comp c => LE.comp inf_sup_left.le
+    | comp a, comp b, comp c => LE.comp (inf_sup_left _ _ _).le
 
 -- The linter significantly hinders readability here.
 set_option linter.unusedVariables false in

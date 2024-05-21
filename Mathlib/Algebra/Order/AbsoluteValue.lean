@@ -109,7 +109,7 @@ protected theorem add_le (x y : R) : abv (x + y) ≤ abv x + abv y :=
   abv.add_le' x y
 #align absolute_value.add_le AbsoluteValue.add_le
 
--- porting note: was `@[simp]` but `simp` can prove it
+-- Porting note (#10618): was `@[simp]` but `simp` can prove it
 protected theorem map_mul (x y : R) : abv (x * y) = abv x * abv y :=
   abv.map_mul' x y
 #align absolute_value.map_mul AbsoluteValue.map_mul
@@ -135,7 +135,7 @@ theorem map_one_of_isLeftRegular (h : IsLeftRegular (abv 1)) : abv 1 = 1 :=
   h <| by simp [← abv.map_mul]
 #align absolute_value.map_one_of_is_regular AbsoluteValue.map_one_of_isLeftRegular
 
--- porting note: was `@[simp]` but `simp` can prove it
+-- Porting note (#10618): was `@[simp]` but `simp` can prove it
 protected theorem map_zero : abv 0 = 0 :=
   abv.eq_zero.2 rfl
 #align absolute_value.map_zero AbsoluteValue.map_zero
@@ -150,7 +150,7 @@ protected theorem sub_le (a b c : R) : abv (a - c) ≤ abv (a - b) + abv (b - c)
   simpa [sub_eq_add_neg, add_assoc] using abv.add_le (a - b) (b - c)
 #align absolute_value.sub_le AbsoluteValue.sub_le
 
-@[simp high] -- porting note: added `high` to apply it before `AbsoluteValue.eq_zero`
+@[simp high] -- Porting note: added `high` to apply it before `AbsoluteValue.eq_zero`
 theorem map_sub_eq_zero_iff (a b : R) : abv (a - b) = 0 ↔ a = b :=
   abv.eq_zero.trans sub_eq_zero
 #align absolute_value.map_sub_eq_zero_iff AbsoluteValue.map_sub_eq_zero_iff
@@ -168,10 +168,9 @@ section IsDomain
 -- all of these are true for `NoZeroDivisors S`; but it doesn't work smoothly with the
 -- `IsDomain`/`CancelMonoidWithZero` API
 variable {R S : Type*} [Semiring R] [OrderedRing S] (abv : AbsoluteValue R S)
-
 variable [IsDomain S] [Nontrivial R]
 
--- porting note: was `@[simp]` but `simp` can prove it
+-- Porting note (#10618): was `@[simp]` but `simp` can prove it
 protected theorem map_one : abv 1 = 1 :=
   abv.map_one_of_isLeftRegular (isRegular_of_ne_zero <| abv.ne_zero one_ne_zero).left
 #align absolute_value.map_one AbsoluteValue.map_one
@@ -201,7 +200,7 @@ theorem coe_toMonoidHom : ⇑abv.toMonoidHom = abv :=
   rfl
 #align absolute_value.coe_to_monoid_hom AbsoluteValue.coe_toMonoidHom
 
--- porting note: was `@[simp]` but `simp` can prove it
+-- Porting note (#10618): was `@[simp]` but `simp` can prove it
 protected theorem map_pow (a : R) (n : ℕ) : abv (a ^ n) = abv a ^ n :=
   abv.toMonoidHom.map_pow a n
 #align absolute_value.map_pow AbsoluteValue.map_pow
@@ -224,7 +223,6 @@ end OrderedRing
 
 section OrderedCommRing
 variable [OrderedCommRing S] [Ring R] (abv : AbsoluteValue R S)
-
 variable [NoZeroDivisors S]
 
 @[simp]
@@ -311,7 +309,6 @@ namespace IsAbsoluteValue
 section OrderedSemiring
 
 variable {S : Type*} [OrderedSemiring S]
-
 variable {R : Type*} [Semiring R] (abv : R → S) [IsAbsoluteValue abv]
 
 lemma abv_nonneg (x) : 0 ≤ abv x := abv_nonneg' x
@@ -381,7 +378,6 @@ variable {S : Type*} [OrderedRing S]
 section Semiring
 
 variable {R : Type*} [Semiring R] (abv : R → S) [IsAbsoluteValue abv]
-
 variable [IsDomain S]
 
 theorem abv_one [Nontrivial R] : abv 1 = 1 :=

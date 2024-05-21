@@ -89,7 +89,7 @@ instance funLike : FunLike (NormedAddGroupHom V₁ V₂) V₁ V₂ where
   coe := toFun
   coe_injective' := fun f g h => by cases f; cases g; congr
 
--- porting note: moved this declaration up so we could get a `FunLike` instance sooner.
+-- Porting note: moved this declaration up so we could get a `FunLike` instance sooner.
 instance toAddMonoidHomClass : AddMonoidHomClass (NormedAddGroupHom V₁ V₂) V₁ V₂ where
   map_add f := f.map_add'
   map_zero f := (AddMonoidHom.mk' f.toFun f.map_add').map_zero
@@ -124,7 +124,7 @@ theorem toFun_eq_coe : f.toFun = f :=
   rfl
 #align normed_add_group_hom.to_fun_eq_coe NormedAddGroupHom.toFun_eq_coe
 
--- porting note: removed `simp` because `simpNF` complains the LHS doesn't simplify.
+-- Porting note: removed `simp` because `simpNF` complains the LHS doesn't simplify.
 theorem coe_mk (f) (h₁) (h₂) (h₃) : ⇑(⟨f, h₁, h₂, h₃⟩ : NormedAddGroupHom V₁ V₂) = f :=
   rfl
 #align normed_add_group_hom.coe_mk NormedAddGroupHom.coe_mk
@@ -337,7 +337,7 @@ theorem opNorm_add_le : ‖f + g‖ ≤ ‖f‖ + ‖g‖ :=
   mkNormedAddGroupHom_norm_le _ (add_nonneg (opNorm_nonneg _) (opNorm_nonneg _)) _
 #align normed_add_group_hom.op_norm_add_le NormedAddGroupHom.opNorm_add_le
 
--- porting note: this library note doesn't seem to apply anymore
+-- Porting note: this library note doesn't seem to apply anymore
 /-
 library_note "addition on function coercions"/--
 Terms containing `@has_add.add (has_coe_to_fun.F ...) pi.has_add`
@@ -869,11 +869,8 @@ variable {W₁ W₂ W₃ : Type*} [SeminormedAddCommGroup W₁] [SeminormedAddCo
   [SeminormedAddCommGroup W₃]
 
 variable (f) (g : NormedAddGroupHom V W)
-
 variable {f₁ g₁ : NormedAddGroupHom V₁ W₁}
-
 variable {f₂ g₂ : NormedAddGroupHom V₂ W₂}
-
 variable {f₃ g₃ : NormedAddGroupHom V₃ W₃}
 
 /-- The equalizer of two morphisms `f g : NormedAddGroupHom V W`. -/
@@ -900,8 +897,7 @@ variable {f g}
 `NormedAddGroupHom V₁ (f.equalizer g)`. -/
 @[simps]
 def lift (φ : NormedAddGroupHom V₁ V) (h : f.comp φ = g.comp φ) :
-    NormedAddGroupHom V₁ (f.equalizer g)
-    where
+    NormedAddGroupHom V₁ (f.equalizer g) where
   toFun v :=
     ⟨φ v,
       show (f - g) (φ v) = 0 by
@@ -924,8 +920,8 @@ theorem ι_comp_lift (φ : NormedAddGroupHom V₁ V) (h : f.comp φ = g.comp φ)
 /-- The lifting property of the equalizer as an equivalence. -/
 @[simps]
 def liftEquiv :
-    { φ : NormedAddGroupHom V₁ V // f.comp φ = g.comp φ } ≃ NormedAddGroupHom V₁ (f.equalizer g)
-    where
+    { φ : NormedAddGroupHom V₁ V // f.comp φ = g.comp φ } ≃
+      NormedAddGroupHom V₁ (f.equalizer g) where
   toFun φ := lift φ φ.prop
   invFun ψ := ⟨(ι f g).comp ψ, by rw [← comp_assoc, ← comp_assoc, comp_ι_eq]⟩
   left_inv φ := by simp
@@ -945,7 +941,6 @@ def map (φ : NormedAddGroupHom V₁ V₂) (ψ : NormedAddGroupHom W₁ W₂) (h
 #align normed_add_group_hom.equalizer.map NormedAddGroupHom.Equalizer.map
 
 variable {φ : NormedAddGroupHom V₁ V₂} {ψ : NormedAddGroupHom W₁ W₂}
-
 variable {φ' : NormedAddGroupHom V₂ V₃} {ψ' : NormedAddGroupHom W₂ W₃}
 
 @[simp]

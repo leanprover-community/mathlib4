@@ -167,7 +167,7 @@ theorem posDef_prod_iff {R} [OrderedCommRing R] [Module R M₁] [Module R M₂]
   constructor
   · rintro ⟨⟨hle₁, hle₂⟩, ha⟩
     obtain ⟨ha₁, ha₂⟩ := anisotropic_of_prod ha
-    refine' ⟨⟨hle₁, ha₁⟩, ⟨hle₂, ha₂⟩⟩
+    exact ⟨⟨hle₁, ha₁⟩, ⟨hle₂, ha₂⟩⟩
   · rintro ⟨⟨hle₁, ha₁⟩, ⟨hle₂, ha₂⟩⟩
     refine' ⟨⟨hle₁, hle₂⟩, _⟩
     rintro ⟨x₁, x₂⟩ (hx : Q₁ x₁ + Q₂ x₂ = 0)
@@ -219,15 +219,15 @@ variable [Module R M₁] [Module R M₂]
 
 @[simp] theorem polarBilin_prod (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) :
     (Q₁.prod Q₂).polarBilin =
-      Q₁.polarBilin.comp (.fst _ _ _) (.fst _ _ _) +
-      Q₂.polarBilin.comp (.snd _ _ _) (.snd _ _ _) :=
-  BilinForm.ext <| polar_prod _ _
+      Q₁.polarBilin.compl₁₂ (.fst R M₁ M₂) (.fst R M₁ M₂) +
+      Q₂.polarBilin.compl₁₂ (.snd R M₁ M₂) (.snd R M₁ M₂) :=
+  LinearMap.ext₂ <| polar_prod _ _
 
 @[simp] theorem associated_prod [Invertible (2 : R)]
     (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) :
     associated (Q₁.prod Q₂) =
-      Q₁.associated.comp (.fst _ _ _) (.fst _ _ _) +
-      Q₂.associated.comp (.snd _ _ _) (.snd _ _ _) := by
+      (associated Q₁).compl₁₂ (.fst R M₁ M₂) (.fst R M₁ M₂) +
+      (associated Q₂).compl₁₂ (.snd R M₁ M₂) (.snd R M₁ M₂) := by
   dsimp [associated, associatedHom]
   rw [polarBilin_prod, smul_add]
   rfl
@@ -370,11 +370,11 @@ variable [Fintype ι]
   simp_rw [Finset.sum_sub_distrib, pi_apply, Pi.add_apply]
 
 @[simp] theorem polarBilin_pi (Q : ∀ i, QuadraticForm R (Mᵢ i)) :
-    (pi Q).polarBilin = ∑ i, (Q i).polarBilin.comp (.proj i) (.proj i) :=
-  BilinForm.ext fun x y => (polar_pi _ _ _).trans <| by simp
+    (pi Q).polarBilin = ∑ i, (Q i).polarBilin.compl₁₂ (.proj i) (.proj i) :=
+  LinearMap.ext₂ fun x y => (polar_pi _ _ _).trans <| by simp
 
 @[simp] theorem associated_pi [Invertible (2 : R)] (Q : ∀ i, QuadraticForm R (Mᵢ i)) :
-    associated (pi Q) = ∑ i, (Q i).associated.comp (.proj i) (.proj i) := by
+    associated (pi Q) = ∑ i, (Q i).associated.compl₁₂ (.proj i) (.proj i) := by
   dsimp [associated, associatedHom]
   rw [polarBilin_pi, Finset.smul_sum]
   rfl

@@ -324,15 +324,15 @@ def IsOpenMap.adjunction {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) :
 #align is_open_map.adjunction IsOpenMap.adjunction
 
 instance IsOpenMap.functorFullOfMono {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) [H : Mono f] :
-    Full hf.functor where
-  preimage i :=
-    homOfLE fun x hx => by
+    hf.functor.Full where
+  map_surjective i :=
+    ⟨homOfLE fun x hx => by
       obtain ⟨y, hy, eq⟩ := i.le ⟨x, hx, rfl⟩
-      exact (TopCat.mono_iff_injective f).mp H eq ▸ hy
+      exact (TopCat.mono_iff_injective f).mp H eq ▸ hy, rfl⟩
 #align is_open_map.functor_full_of_mono IsOpenMap.functorFullOfMono
 
 instance IsOpenMap.functor_faithful {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) :
-    Faithful hf.functor where
+    hf.functor.Faithful where
 #align is_open_map.functor_faithful IsOpenMap.functor_faithful
 
 lemma OpenEmbedding.functor_obj_injective {X Y : TopCat} {f : X ⟶ Y} (hf : OpenEmbedding f) :
@@ -381,7 +381,7 @@ theorem functor_obj_map_obj {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) (U :
     exact ⟨x, hx, rfl⟩
 #align topological_space.opens.functor_obj_map_obj TopologicalSpace.Opens.functor_obj_map_obj
 
--- porting note: added to ease the proof of `functor_map_eq_inf`
+-- Porting note: added to ease the proof of `functor_map_eq_inf`
 lemma set_range_forget_map_inclusion {X : TopCat} (U : Opens X) :
     Set.range ((forget TopCat).map (inclusion U)) = (U : Set X) := by
   ext x

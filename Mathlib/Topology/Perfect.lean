@@ -16,6 +16,7 @@ including a version of the Cantor-Bendixson Theorem.
 
 * `Perfect C`: A set `C` is perfect, meaning it is closed and every point of it
   is an accumulation point of itself.
+* `PerfectSpace X`: A topological space `X` is perfect if its universe is a perfect set.
 
 ## Main Statements
 
@@ -50,9 +51,7 @@ accumulation point, perfect set, cantor-bendixson.
 -/
 
 
-open Topology Filter
-
-open TopologicalSpace Filter Set
+open Topology Filter Set TopologicalSpace
 
 section Basic
 
@@ -71,14 +70,15 @@ theorem AccPt.nhds_inter {x : α} {U : Set α} (h_acc : AccPt x (𝓟 C)) (hU : 
 
 /-- A set `C` is preperfect if all of its points are accumulation points of itself.
 If `C` is nonempty and `α` is a T1 space, this is equivalent to the closure of `C` being perfect.
-See `preperfect_iff_perfect_closure`.-/
+See `preperfect_iff_perfect_closure`. -/
 def Preperfect (C : Set α) : Prop :=
   ∀ x ∈ C, AccPt x (𝓟 C)
 #align preperfect Preperfect
 
 /-- A set `C` is called perfect if it is closed and all of its
 points are accumulation points of itself.
-Note that we do not require `C` to be nonempty.-/
+Note that we do not require `C` to be nonempty. -/
+@[mk_iff perfect_def]
 structure Perfect (C : Set α) : Prop where
   closed : IsClosed C
   acc : Preperfect C
@@ -87,6 +87,25 @@ structure Perfect (C : Set α) : Prop where
 theorem preperfect_iff_nhds : Preperfect C ↔ ∀ x ∈ C, ∀ U ∈ 𝓝 x, ∃ y ∈ U ∩ C, y ≠ x := by
   simp only [Preperfect, accPt_iff_nhds]
 #align preperfect_iff_nhds preperfect_iff_nhds
+
+section PerfectSpace
+
+variable (α)
+
+/--
+A topological space `X` is said to be perfect if its universe is a perfect set.
+Equivalently, this means that `𝓝[≠] x ≠ ⊥` for every point `x : X`.
+-/
+@[mk_iff perfectSpace_def]
+class PerfectSpace: Prop :=
+  univ_preperfect : Preperfect (Set.univ : Set α)
+
+theorem PerfectSpace.univ_perfect [PerfectSpace α] : Perfect (Set.univ : Set α) :=
+  ⟨isClosed_univ, PerfectSpace.univ_preperfect⟩
+
+end PerfectSpace
+
+section Preperfect
 
 /-- The intersection of a preperfect set and an open set is preperfect. -/
 theorem Preperfect.open_inter {U : Set α} (hC : Preperfect C) (hU : IsOpen U) :
@@ -109,7 +128,7 @@ theorem Preperfect.perfect_closure (hC : Preperfect C) : Perfect (closure C) := 
   exact hx
 #align preperfect.perfect_closure Preperfect.perfect_closure
 
-/-- In a T1 space, being preperfect is equivalent to having perfect closure.-/
+/-- In a T1 space, being preperfect is equivalent to having perfect closure. -/
 theorem preperfect_iff_perfect_closure [T1Space α] : Preperfect C ↔ Perfect (closure C) := by
   constructor <;> intro h
   · exact h.perfect_closure
@@ -158,10 +177,12 @@ theorem Perfect.splitting [T25Space α] (hC : Perfect C) (hnonempty : C.Nonempty
   apply Disjoint.mono _ _ hUV <;> apply closure_mono <;> exact inter_subset_left _ _
 #align perfect.splitting Perfect.splitting
 
+end Preperfect
+
 section Kernel
 
 /-- The **Cantor-Bendixson Theorem**: Any closed subset of a second countable space
-can be written as the union of a countable set and a perfect set.-/
+can be written as the union of a countable set and a perfect set. -/
 theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
     (hclosed : IsClosed C) : ∃ V D : Set α, V.Countable ∧ Perfect D ∧ C = V ∪ D := by
   obtain ⟨b, bct, _, bbasis⟩ := TopologicalSpace.exists_countable_basis α
@@ -169,7 +190,7 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
   let V := ⋃ U ∈ v, U
   let D := C \ V
   have Vct : (V ∩ C).Countable := by
-    simp only [iUnion_inter, mem_sep_iff]
+    simp only [V, iUnion_inter, mem_sep_iff]
     apply Countable.biUnion
     · exact Countable.mono (inter_subset_left _ _) bct
     · exact inter_subset_right _ _
@@ -197,7 +218,7 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
   · rw [inter_comm, inter_union_diff]
 #align exists_countable_union_perfect_of_is_closed exists_countable_union_perfect_of_isClosed
 
-/-- Any uncountable closed set in a second countable space contains a nonempty perfect subset.-/
+/-- Any uncountable closed set in a second countable space contains a nonempty perfect subset. -/
 theorem exists_perfect_nonempty_of_isClosed_of_not_countable [SecondCountableTopology α]
     (hclosed : IsClosed C) (hunc : ¬C.Countable) : ∃ D : Set α, Perfect D ∧ D.Nonempty ∧ D ⊆ C := by
   rcases exists_countable_union_perfect_of_isClosed hclosed with ⟨V, D, Vct, Dperf, VD⟩
@@ -215,3 +236,15 @@ theorem exists_perfect_nonempty_of_isClosed_of_not_countable [SecondCountableTop
 end Kernel
 
 end Basic
+
+section PerfectSpace
+
+variable {X : Type*} [TopologicalSpace X]
+
+theorem perfectSpace_iff_forall_not_isolated : PerfectSpace X ↔ ∀ x : X, Filter.NeBot (𝓝[≠] x) := by
+  simp [perfectSpace_def, Preperfect, AccPt]
+
+instance PerfectSpace.not_isolated [PerfectSpace X] (x : X) : Filter.NeBot (𝓝[≠] x) :=
+  perfectSpace_iff_forall_not_isolated.mp ‹_› x
+
+end PerfectSpace

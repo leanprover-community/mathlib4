@@ -33,7 +33,7 @@ variable {α : Type u}
 
 open Cardinal Set
 
--- porting note: fix universe below, not here
+-- Porting note: fix universe below, not here
 local notation "ω₁" => (WellOrder.α <| Quotient.out <| Cardinal.ord (aleph 1 : Cardinal))
 
 namespace MeasurableSpace

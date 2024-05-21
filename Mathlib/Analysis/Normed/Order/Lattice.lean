@@ -37,7 +37,7 @@ Motivated by the theory of Banach Lattices, this section introduces normed latti
 -/
 
 
--- porting note: this now exists as a global notation
+-- Porting note: this now exists as a global notation
 -- local notation "|" a "|" => abs a
 
 section SolidNorm
@@ -73,8 +73,8 @@ respect which `α` forms a lattice. Suppose that `α` is *solid*, that is to say
 `α`, with absolute values `|a|` and `|b|` respectively, `|a| ≤ |b|` implies `‖a‖ ≤ ‖b‖`. Then `α` is
 said to be a normed lattice ordered group.
 -/
-class NormedLatticeAddCommGroup (α : Type*) extends NormedAddCommGroup α, Lattice α, HasSolidNorm α
-  where
+class NormedLatticeAddCommGroup (α : Type*) extends
+    NormedAddCommGroup α, Lattice α, HasSolidNorm α where
   add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b
 #align normed_lattice_add_comm_group NormedLatticeAddCommGroup
 
@@ -100,15 +100,16 @@ theorem dual_solid (a b : α) (h : b ⊓ -b ≤ a ⊓ -a) : ‖a‖ ≤ ‖b‖ 
   rw [← neg_inf]
   rw [abs]
   nth_rw 1 [← neg_neg b]
-  rwa [← neg_inf, neg_le_neg_iff, @inf_comm _ _ _ b, @inf_comm _ _ _ a]
+  rwa [← neg_inf, neg_le_neg_iff, inf_comm _ b, inf_comm _ a]
 #align dual_solid dual_solid
 
 -- see Note [lower instance priority]
 /-- Let `α` be a normed lattice ordered group, then the order dual is also a
 normed lattice ordered group.
 -/
-instance (priority := 100) OrderDual.normedLatticeAddCommGroup : NormedLatticeAddCommGroup αᵒᵈ :=
-  { OrderDual.orderedAddCommGroup, OrderDual.normedAddCommGroup, OrderDual.lattice α with
+instance (priority := 100) OrderDual.instNormedLatticeAddCommGroup :
+    NormedLatticeAddCommGroup αᵒᵈ :=
+  { OrderDual.orderedAddCommGroup, OrderDual.normedAddCommGroup, OrderDual.instLattice α with
     solid := dual_solid (α := α) }
 
 theorem norm_abs_eq_norm (a : α) : ‖|a|‖ = ‖a‖ :=
@@ -121,11 +122,11 @@ theorem norm_inf_sub_inf_le_add_norm (a b c d : α) : ‖a ⊓ b - c ⊓ d‖ �
   rw [abs_of_nonneg (add_nonneg (abs_nonneg (a - c)) (abs_nonneg (b - d)))]
   calc
     |a ⊓ b - c ⊓ d| = |a ⊓ b - c ⊓ b + (c ⊓ b - c ⊓ d)| := by rw [sub_add_sub_cancel]
-    _ ≤ |a ⊓ b - c ⊓ b| + |c ⊓ b - c ⊓ d| := (abs_add_le _ _)
+    _ ≤ |a ⊓ b - c ⊓ b| + |c ⊓ b - c ⊓ d| := abs_add_le _ _
     _ ≤ |a - c| + |b - d| := by
       apply add_le_add
       · exact abs_inf_sub_inf_le_abs _ _ _
-      · rw [@inf_comm _ _ c, @inf_comm _ _ c]
+      · rw [inf_comm c, inf_comm c]
         exact abs_inf_sub_inf_le_abs _ _ _
 #align norm_inf_sub_inf_le_add_norm norm_inf_sub_inf_le_add_norm
 
@@ -135,11 +136,11 @@ theorem norm_sup_sub_sup_le_add_norm (a b c d : α) : ‖a ⊔ b - c ⊔ d‖ �
   rw [abs_of_nonneg (add_nonneg (abs_nonneg (a - c)) (abs_nonneg (b - d)))]
   calc
     |a ⊔ b - c ⊔ d| = |a ⊔ b - c ⊔ b + (c ⊔ b - c ⊔ d)| := by rw [sub_add_sub_cancel]
-    _ ≤ |a ⊔ b - c ⊔ b| + |c ⊔ b - c ⊔ d| := (abs_add_le _ _)
+    _ ≤ |a ⊔ b - c ⊔ b| + |c ⊔ b - c ⊔ d| := abs_add_le _ _
     _ ≤ |a - c| + |b - d| := by
       apply add_le_add
       · exact abs_sup_sub_sup_le_abs _ _ _
-      · rw [@sup_comm _ _ c, @sup_comm _ _ c]
+      · rw [sup_comm c, sup_comm c]
         exact abs_sup_sub_sup_le_abs _ _ _
 #align norm_sup_sub_sup_le_add_norm norm_sup_sub_sup_le_add_norm
 

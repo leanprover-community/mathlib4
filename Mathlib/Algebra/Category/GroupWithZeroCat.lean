@@ -14,9 +14,6 @@ import Mathlib.Algebra.Category.MonCat.Basic
 This file defines `GroupWithZeroCat`, the category of groups with zero.
 -/
 
-set_option autoImplicit true
-
-
 universe u
 
 open CategoryTheory Order
@@ -72,8 +69,10 @@ instance groupWithZeroConcreteCategory : ConcreteCategory GroupWithZeroCat where
     map := fun f => f.toFun }
   forget_faithful := ⟨fun h => DFunLike.coe_injective h⟩
 
--- porting note: added
-@[simp] lemma forget_map (f : X ⟶ Y) : (forget GroupWithZeroCat).map f = f := rfl
+-- porting note (#10756): added lemma
+@[simp] lemma forget_map {X Y : GroupWithZeroCat} (f : X ⟶ Y) :
+  (forget GroupWithZeroCat).map f = f := rfl
+
 instance hasForgetToBipointed : HasForget₂ GroupWithZeroCat Bipointed where
   forget₂ :=
       { obj := fun X => ⟨X, 0, 1⟩

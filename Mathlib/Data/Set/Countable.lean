@@ -6,7 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Countable.Basic
 import Mathlib.Logic.Equiv.List
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import data.set.countable from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
 
@@ -26,7 +26,8 @@ sets, countable set
 
 noncomputable section
 
-open Function Set Encodable Classical
+open scoped Classical
+open Function Set Encodable
 
 universe u v w x
 
@@ -94,6 +95,26 @@ theorem subset_range_enumerate {s : Set α} (h : s.Countable) (default : α) :
     letI := h.toEncodable
     simp [enumerateCountable, Encodable.encodek]⟩
 #align set.subset_range_enumerate Set.subset_range_enumerate
+
+lemma range_enumerateCountable_subset {s : Set α} (h : s.Countable) (default : α) :
+    range (enumerateCountable h default) ⊆ insert default s := by
+  refine range_subset_iff.mpr (fun n ↦ ?_)
+  rw [enumerateCountable]
+  match @decode s (Countable.toEncodable h) n with
+  | none => exact mem_insert _ _
+  | some val => simp
+
+lemma range_enumerateCountable_of_mem {s : Set α} (h : s.Countable) {default : α}
+    (h_mem : default ∈ s) :
+    range (enumerateCountable h default) = s :=
+  subset_antisymm ((range_enumerateCountable_subset h _).trans_eq (insert_eq_of_mem h_mem))
+    (subset_range_enumerate h default)
+
+lemma enumerateCountable_mem {s : Set α} (h : s.Countable) {default : α} (h_mem : default ∈ s)
+    (n : ℕ) :
+    enumerateCountable h default n ∈ s := by
+  conv_rhs => rw [← range_enumerateCountable_of_mem h h_mem]
+  exact mem_range_self n
 
 end Enumerate
 
@@ -174,7 +195,7 @@ theorem exists_seq_iSup_eq_top_iff_countable [CompleteLattice α] {p : α → Pr
       ∃ S : Set α, S.Countable ∧ (∀ s ∈ S, p s) ∧ sSup S = ⊤ := by
   constructor
   · rintro ⟨s, hps, hs⟩
-    refine' ⟨range s, countable_range s, forall_range_iff.2 hps, _⟩
+    refine' ⟨range s, countable_range s, forall_mem_range.2 hps, _⟩
     rwa [sSup_range]
   · rintro ⟨S, hSc, hps, hS⟩
     rcases eq_empty_or_nonempty S with (rfl | hne)

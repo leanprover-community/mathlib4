@@ -55,7 +55,7 @@ variable {ι R R' E F G : Type*}
 /-- A seminorm on an additive group `G` is a function `f : G → ℝ` that preserves zero, is
 subadditive and such that `f (-x) = f x` for all `x`. -/
 structure AddGroupSeminorm (G : Type*) [AddGroup G] where
-  -- porting note: can't extend `ZeroHom G ℝ` because otherwise `to_additive` won't work since
+  -- Porting note: can't extend `ZeroHom G ℝ` because otherwise `to_additive` won't work since
   -- we aren't using old structures
   /-- The bare function of an `AddGroupSeminorm`. -/
   protected toFun : G → ℝ
@@ -186,14 +186,12 @@ section Group
 variable [Group E] [Group F] [Group G] {p q : GroupSeminorm E}
 
 @[to_additive]
-instance funLike : FunLike (GroupSeminorm E) E ℝ
-    where
+instance funLike : FunLike (GroupSeminorm E) E ℝ where
   coe f := f.toFun
   coe_injective' f g h := by cases f; cases g; congr
 
 @[to_additive]
-instance groupSeminormClass : GroupSeminormClass (GroupSeminorm E) E ℝ
-    where
+instance groupSeminormClass : GroupSeminormClass (GroupSeminorm E) E ℝ where
   map_one_eq_zero f := f.map_one'
   map_mul_le_add f := f.mul_le'
   map_inv_eq_map f := f.inv'
@@ -325,8 +323,7 @@ instance semilatticeSup : SemilatticeSup (GroupSeminorm E) :=
 /-- Composition of a group seminorm with a monoid homomorphism as a group seminorm. -/
 @[to_additive "Composition of an additive group seminorm with an additive monoid homomorphism as an
 additive group seminorm."]
-def comp (p : GroupSeminorm E) (f : F →* E) : GroupSeminorm F
-    where
+def comp (p : GroupSeminorm E) (f : F →* E) : GroupSeminorm F where
   toFun x := p (f x)
   map_one' := by simp_rw [f.map_one, map_one_eq_zero p]
   mul_le' _ _ := (congr_arg p <| f.map_mul _ _).trans_le <| map_mul_le_add p _ _
@@ -411,7 +408,7 @@ noncomputable instance : Inf (GroupSeminorm E) :=
     { toFun := fun x => ⨅ y, p y + q (x / y)
       map_one' :=
         ciInf_eq_of_forall_ge_of_forall_gt_exists_lt
-          -- porting note: replace `add_nonneg` with `positivity` once we have the extension
+          -- Porting note: replace `add_nonneg` with `positivity` once we have the extension
           (fun x => add_nonneg (apply_nonneg _ _) (apply_nonneg _ _)) fun r hr =>
           ⟨1, by rwa [div_one, map_one_eq_zero p, map_one_eq_zero q, add_zero]⟩
       mul_le' := fun x y =>
@@ -509,13 +506,12 @@ section AddGroup
 
 variable [AddGroup E] [AddGroup F] [AddGroup G] {p q : NonarchAddGroupSeminorm E}
 
-instance funLike : FunLike (NonarchAddGroupSeminorm E) E ℝ
-    where
+instance funLike : FunLike (NonarchAddGroupSeminorm E) E ℝ where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨_, _⟩, _, _⟩ := f; cases g; congr
 
-instance nonarchAddGroupSeminormClass : NonarchAddGroupSeminormClass (NonarchAddGroupSeminorm E) E
-    where
+instance nonarchAddGroupSeminormClass :
+    NonarchAddGroupSeminormClass (NonarchAddGroupSeminorm E) E where
   map_add_le_max f := f.add_le_max'
   map_zero f := f.map_zero'
   map_neg_eq_map' f := f.neg'
@@ -525,7 +521,7 @@ instance nonarchAddGroupSeminormClass : NonarchAddGroupSeminormClass (NonarchAdd
 instance : CoeFun (NonarchAddGroupSeminorm E) fun _ => E → ℝ :=
   ⟨DFunLike.coe⟩
 
--- porting note: `simpNF` said the left hand side simplified to this
+-- Porting note: `simpNF` said the left hand side simplified to this
 @[simp]
 theorem toZeroHom_eq_coe : ⇑p.toZeroHom = p := by
   rfl
@@ -693,7 +689,7 @@ instance [DecidableEq E] : One (NonarchAddGroupSeminorm E) :=
         · simp_rw [if_pos hx, hx, zero_add]
           exact le_max_of_le_right (le_refl _)
         · simp_rw [if_neg hx]
-          split_ifs <;> norm_num
+          split_ifs <;> simp
       neg' := fun x => by simp_rw [neg_eq_zero] }⟩
 
 @[simp]
@@ -749,14 +745,12 @@ section Group
 variable [Group E] [Group F] [Group G] {p q : GroupNorm E}
 
 @[to_additive]
-instance funLike : FunLike (GroupNorm E) E ℝ
-    where
+instance funLike : FunLike (GroupNorm E) E ℝ where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨_, _, _, _⟩, _⟩ := f; cases g; congr
 
 @[to_additive]
-instance groupNormClass : GroupNormClass (GroupNorm E) E ℝ
-    where
+instance groupNormClass : GroupNormClass (GroupNorm E) E ℝ where
   map_one_eq_zero f := f.map_one'
   map_mul_le_add f := f.mul_le'
   map_inv_eq_map f := f.inv'
@@ -771,7 +765,7 @@ directly. -/
 instance : CoeFun (GroupNorm E) fun _ => E → ℝ :=
   DFunLike.hasCoeToFun
 
--- porting note: `simpNF` told me the left-hand side simplified to this
+-- Porting note: `simpNF` told me the left-hand side simplified to this
 @[to_additive (attr := simp)]
 theorem toGroupSeminorm_eq_coe : ⇑p.toGroupSeminorm = p :=
   rfl
@@ -908,13 +902,11 @@ section AddGroup
 
 variable [AddGroup E] [AddGroup F] {p q : NonarchAddGroupNorm E}
 
-instance funLike : FunLike (NonarchAddGroupNorm E) E ℝ
-    where
+instance funLike : FunLike (NonarchAddGroupNorm E) E ℝ where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨⟨_, _⟩, _, _⟩, _⟩ := f; cases g; congr
 
-instance nonarchAddGroupNormClass : NonarchAddGroupNormClass (NonarchAddGroupNorm E) E
-    where
+instance nonarchAddGroupNormClass : NonarchAddGroupNormClass (NonarchAddGroupNorm E) E where
   map_add_le_max f := f.add_le_max'
   map_zero f := f.map_zero'
   map_neg_eq_map' f := f.neg'
@@ -925,7 +917,7 @@ instance nonarchAddGroupNormClass : NonarchAddGroupNormClass (NonarchAddGroupNor
 noncomputable instance : CoeFun (NonarchAddGroupNorm E) fun _ => E → ℝ :=
   DFunLike.hasCoeToFun
 
--- porting note: `simpNF` told me the left-hand side simplified to this
+-- Porting note: `simpNF` told me the left-hand side simplified to this
 @[simp]
 theorem toNonarchAddGroupSeminorm_eq_coe : ⇑p.toNonarchAddGroupSeminorm = p :=
   rfl

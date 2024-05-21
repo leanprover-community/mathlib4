@@ -30,7 +30,6 @@ open BigOperators Affine
 section AffineSpace'
 
 variable (k : Type*) {V : Type*} {P : Type*}
-
 variable {ι : Type*}
 
 open AffineSubspace FiniteDimensional Module
@@ -187,7 +186,6 @@ theorem affineIndependent_iff_finrank_vectorSpan_eq [Fintype ι] (p : ι → P) 
   rw [affineIndependent_iff_linearIndependent_vsub _ _ i₁,
     linearIndependent_iff_card_eq_finrank_span, eq_comm,
     vectorSpan_range_eq_span_range_vsub_right_ne k p i₁, Set.finrank]
-  congr
   rw [← Finset.card_univ] at hc
   rw [Fintype.subtype_card]
   simp [Finset.filter_ne', Finset.card_erase_of_mem, hc]
@@ -353,7 +351,7 @@ instance finiteDimensional_vectorSpan_insert (s : AffineSubspace k P)
   rcases (s : Set P).eq_empty_or_nonempty with (hs | ⟨p₀, hp₀⟩)
   · rw [coe_eq_bot_iff] at hs
     rw [hs, bot_coe, span_empty, bot_coe, direction_affineSpan]
-    convert finiteDimensional_bot _ _ <;> simp
+    convert finiteDimensional_bot k V <;> simp
   · rw [affineSpan_coe, direction_affineSpan_insert hp₀]
     infer_instance
 #align finite_dimensional_vector_span_insert finiteDimensional_vectorSpan_insert
@@ -824,7 +822,6 @@ namespace AffineBasis
 universe u₁ u₂ u₃ u₄
 
 variable {ι : Type u₁} {k : Type u₂} {V : Type u₃} {P : Type u₄}
-
 variable [AddCommGroup V] [AffineSpace V P]
 
 section DivisionRing

@@ -244,7 +244,7 @@ variable (R)
 
 /-- The additive version of `Finsupp.toFinsupp`. Note that this is `noncomputable` because
 `Finsupp.add` is noncomputable. -/
--- porting note: `simps` generated lemmas that did not pass `simpNF` lints, manually added below
+-- Porting note: `simps` generated lemmas that did not pass `simpNF` lints, manually added below
 --@[simps? (config := .asFn)]
 def finsuppLequivDFinsupp [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     [∀ m : M, Decidable (m ≠ 0)] [Module R M] : (ι →₀ M) ≃ₗ[R] Π₀ _ : ι, M :=
@@ -255,7 +255,7 @@ def finsuppLequivDFinsupp [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     map_add' := Finsupp.toDFinsupp_add }
 #align finsupp_lequiv_dfinsupp finsuppLequivDFinsupp
 
--- porting note: `simps` generated as `↑(finsuppLequivDFinsupp R).toLinearMap = Finsupp.toDFinsupp`
+-- Porting note: `simps` generated as `↑(finsuppLequivDFinsupp R).toLinearMap = Finsupp.toDFinsupp`
 @[simp]
 theorem finsuppLequivDFinsupp_apply_apply [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     [∀ m : M, Decidable (m ≠ 0)] [Module R M] :
@@ -268,7 +268,7 @@ theorem finsuppLequivDFinsupp_symm_apply [DecidableEq ι] [Semiring R] [AddCommM
     ↑(LinearEquiv.symm (finsuppLequivDFinsupp (ι := ι) (M := M) R)) = DFinsupp.toFinsupp :=
   rfl
 
--- porting note: moved noncomputable declaration into section begin
+-- Porting note: moved noncomputable declaration into section begin
 noncomputable section Sigma
 
 /-! ### Stronger versions of `Finsupp.split` -/
@@ -289,7 +289,7 @@ def sigmaFinsuppEquivDFinsupp [Zero N] : ((Σi, η i) →₀ N) ≃ Π₀ i, η 
     refine'
       onFinset (Finset.sigma f.support fun j => (f j).support) (fun ji => f ji.1 ji.2) fun g hg =>
         Finset.mem_sigma.mpr ⟨_, mem_support_iff.mpr hg⟩
-    simp only [Ne.def, DFinsupp.mem_support_toFun]
+    simp only [Ne, DFinsupp.mem_support_toFun]
     intro h
     dsimp at hg
     rw [h] at hg
@@ -334,7 +334,7 @@ theorem sigmaFinsuppEquivDFinsupp_single [DecidableEq ι] [Zero N] (a : Σi, η 
 #align sigma_finsupp_equiv_dfinsupp_single sigmaFinsuppEquivDFinsupp_single
 
 -- Without this Lean fails to find the `AddZeroClass` instance on `Π₀ i, (η i →₀ N)`.
-attribute [-instance] Finsupp.zero
+attribute [-instance] Finsupp.instZero
 
 @[simp]
 theorem sigmaFinsuppEquivDFinsupp_add [AddZeroClass N] (f g : (Σi, η i) →₀ N) :
@@ -353,19 +353,17 @@ def sigmaFinsuppAddEquivDFinsupp [AddZeroClass N] : ((Σi, η i) →₀ N) ≃+ 
     map_add' := sigmaFinsuppEquivDFinsupp_add }
 #align sigma_finsupp_add_equiv_dfinsupp sigmaFinsuppAddEquivDFinsupp
 
-attribute [-instance] Finsupp.addZeroClass
+attribute [-instance] Finsupp.instAddZeroClass
 
---tofix: r • (sigma_finsupp_equiv_dfinsupp f) doesn't work.
 @[simp]
 theorem sigmaFinsuppEquivDFinsupp_smul {R} [Monoid R] [AddMonoid N] [DistribMulAction R N] (r : R)
-    (f : (Σi, η i) →₀ N) :
-    sigmaFinsuppEquivDFinsupp (r • f) =
-      @SMul.smul R (Π₀ i, η i →₀ N) MulAction.toSMul r (sigmaFinsuppEquivDFinsupp f) := by
+    (f : (Σ i, η i) →₀ N) :
+    sigmaFinsuppEquivDFinsupp (r • f) = r • sigmaFinsuppEquivDFinsupp f := by
   ext
   rfl
 #align sigma_finsupp_equiv_dfinsupp_smul sigmaFinsuppEquivDFinsupp_smul
 
-attribute [-instance] Finsupp.addMonoid
+attribute [-instance] Finsupp.instAddMonoid
 
 /-- `Finsupp.split` is a linear equivalence between `(Σ i, η i) →₀ N` and `Π₀ i, (η i →₀ N)`. -/
 @[simps]

@@ -34,7 +34,7 @@ open CategoryTheory.Limits
 
 universe u v
 
-variable {J : Type v} [SmallCategory J] [IsCofiltered J] {F : J ⥤ ProfiniteMax.{u, v}} (C : Cone F)
+variable {J : Type v} [SmallCategory J] [IsCofiltered J] {F : J ⥤ Profinite.{max u v}} (C : Cone F)
 
 /-- If `X` is a cofiltered limit of profinite sets, then any clopen subset of `X` arises from
 a clopen set in one of the terms in the limit.
@@ -90,18 +90,18 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
   refine' ⟨j0, ⋃ (s : S) (_ : s ∈ G), W s, _, _⟩
   · apply isClopen_biUnion_finset
     intro s hs
-    dsimp
+    dsimp [W]
     rw [dif_pos hs]
     exact ⟨(hV s).1.1.preimage (F.map _).continuous, (hV s).1.2.preimage (F.map _).continuous⟩
   · ext x
     constructor
     · intro hx
-      simp_rw [Set.preimage_iUnion, Set.mem_iUnion]
+      simp_rw [W, Set.preimage_iUnion, Set.mem_iUnion]
       obtain ⟨_, ⟨s, rfl⟩, _, ⟨hs, rfl⟩, hh⟩ := hG hx
       refine' ⟨s, hs, _⟩
       rwa [dif_pos hs, ← Set.preimage_comp, ← Profinite.coe_comp, ← Functor.map_comp, C.w]
     · intro hx
-      simp_rw [Set.preimage_iUnion, Set.mem_iUnion] at hx
+      simp_rw [W, Set.preimage_iUnion, Set.mem_iUnion] at hx
       obtain ⟨s, hs, hx⟩ := hx
       rw [h]
       refine' ⟨s.1, s.2, _⟩
@@ -117,11 +117,10 @@ theorem exists_locallyConstant_fin_two (hC : IsLimit C) (f : LocallyConstant C.p
   obtain ⟨j, V, hV, h⟩ := exists_isClopen_of_cofiltered C hC hU
   use j, LocallyConstant.ofIsClopen hV
   apply LocallyConstant.locallyConstant_eq_of_fiber_zero_eq
+  simp only [Fin.isValue, Functor.const_obj_obj, LocallyConstant.coe_comap, Set.preimage_comp,
+    LocallyConstant.ofIsClopen_fiber_zero]
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [LocallyConstant.coe_comap _ _ (C.π.app j).continuous]
-  conv_rhs => rw [Set.preimage_comp]
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [LocallyConstant.ofIsClopen_fiber_zero hV, ← h]
+  erw [← h]
 set_option linter.uppercaseLean3 false in
 #align Profinite.exists_locally_constant_fin_two Profinite.exists_locallyConstant_fin_two
 
@@ -155,20 +154,8 @@ theorem exists_locallyConstant_finite_aux {α : Type*} [Finite α] (hC : IsLimit
   rw [h]
   dsimp
   ext1 x
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [LocallyConstant.coe_comap _ _ (C.π.app (j a)).continuous]
-  dsimp [LocallyConstant.flip, LocallyConstant.unflip]
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [LocallyConstant.coe_comap _ _ (C.π.app j0).continuous]
-  dsimp
-  rw [LocallyConstant.coe_comap _ _ _]
-  -- Porting note: `repeat' rw [LocallyConstant.coe_comap]` didn't work
-  -- so I did all three rewrites manually
-  · dsimp
-    congr! 1
-    change _ = (C.π.app j0 ≫ F.map (fs a)) x
-    rw [C.w]; rfl
-  · exact (F.map _).continuous
+  change _ = (g a) ((C.π.app j0 ≫ F.map (fs a)) x)
+  rw [C.w]; rfl
 set_option linter.uppercaseLean3 false in
 #align Profinite.exists_locally_constant_finite_aux Profinite.exists_locallyConstant_finite_aux
 
@@ -181,13 +168,13 @@ theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempt
   let σ : (α → Fin 2) → α := fun f => if h : ∃ a : α, ι a = f then h.choose else default
   refine' ⟨j, gg.map σ, _⟩
   ext x
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [LocallyConstant.coe_comap _ _ (C.π.app j).continuous]
-  dsimp
+  simp only [Functor.const_obj_obj, LocallyConstant.coe_comap, LocallyConstant.map_apply,
+    Function.comp_apply]
+  dsimp [σ]
   have h1 : ι (f x) = gg (C.π.app j x) := by
     change f.map (fun a b => if a = b then (0 : Fin 2) else 1) x = _
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [h, LocallyConstant.coe_comap _ _ (C.π.app j).continuous]
+    erw [h]
     rfl
   have h2 : ∃ a : α, ι a = gg (C.π.app j x) := ⟨f x, h1⟩
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
@@ -197,7 +184,7 @@ theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempt
     exact h1
   · intro a b hh
     have hhh := congr_fun hh a
-    dsimp at hhh
+    dsimp [ι] at hhh
     rw [if_pos rfl] at hhh
     split_ifs at hhh with hh1
     · exact hh1.symm
@@ -240,8 +227,6 @@ theorem exists_locallyConstant {α : Type*} (hC : IsLimit C) (f : LocallyConstan
     refine' ⟨j, ⟨ff ∘ g', g'.isLocallyConstant.comp _⟩, _⟩
     ext1 t
     apply_fun fun e => e t at hj
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [LocallyConstant.coe_comap _ _ (C.π.app j).continuous] at hj ⊢
     dsimp at hj ⊢
     rw [← hj]
     rfl

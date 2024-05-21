@@ -70,14 +70,10 @@ instance instCoeSortMultisetType.instCoeOutToType : CoeOut m α :=
 -- Porting note: syntactic equality
 #noalign multiset.fst_coe_eq_coe
 
-@[simp]
-theorem Multiset.coe_eq {x y : m} : (x : α) = (y : α) ↔ x.1 = y.1 := by
-  cases x
-  cases y
-  rfl
-#align multiset.coe_eq Multiset.coe_eq
+-- Syntactic equality
+#noalign multiset.coe_eq
 
--- @[simp] -- Porting note: dsimp can prove this
+-- @[simp] -- Porting note (#10685): dsimp can prove this
 theorem Multiset.coe_mk {x : α} {i : Fin (m.count x)} : ↑(m.mkToType x i) = x :=
   rfl
 #align multiset.coe_mk Multiset.coe_mk
@@ -152,8 +148,7 @@ theorem Multiset.toEnumFinset_subset_iff {m₁ m₂ : Multiset α} :
 /-- The embedding from a multiset into `α × ℕ` where the second coordinate enumerates repeats.
 If you are looking for the function `m → α`, that would be plain `(↑)`. -/
 @[simps]
-def Multiset.coeEmbedding (m : Multiset α) : m ↪ α × ℕ
-    where
+def Multiset.coeEmbedding (m : Multiset α) : m ↪ α × ℕ where
   toFun x := (x, x.2)
   inj' := by
     intro ⟨x, i, hi⟩ ⟨y, j, hj⟩
@@ -164,8 +159,7 @@ def Multiset.coeEmbedding (m : Multiset α) : m ↪ α × ℕ
 /-- Another way to coerce a `Multiset` to a type is to go through `m.toEnumFinset` and coerce
 that `Finset` to a type. -/
 @[simps]
-def Multiset.coeEquiv (m : Multiset α) : m ≃ m.toEnumFinset
-    where
+def Multiset.coeEquiv (m : Multiset α) : m ≃ m.toEnumFinset where
   toFun x :=
     ⟨m.coeEmbedding x, by
       rw [Multiset.mem_toEnumFinset]

@@ -56,7 +56,8 @@ product measure, Tonelli's theorem, Fubini-Tonelli theorem
 
 noncomputable section
 
-open Classical Topology ENNReal MeasureTheory
+open scoped Classical
+open Topology ENNReal MeasureTheory
 
 open Set Function Real ENNReal
 
@@ -85,11 +86,8 @@ theorem IsCountablySpanning.prod {C : Set (Set α)} {D : Set (Set β)} (hC : IsC
 #align is_countably_spanning.prod IsCountablySpanning.prod
 
 variable [MeasurableSpace α] [MeasurableSpace α'] [MeasurableSpace β] [MeasurableSpace β']
-
 variable [MeasurableSpace γ]
-
 variable {μ μ' : Measure α} {ν ν' : Measure β} {τ : Measure γ}
-
 variable [NormedAddCommGroup E]
 
 /-! ### Measurability
@@ -158,7 +156,7 @@ theorem measurable_measure_prod_mk_left_finite [IsFiniteMeasure ν] {s : Set (α
     (hs : MeasurableSet s) : Measurable fun x => ν (Prod.mk x ⁻¹' s) := by
   refine' induction_on_inter (C := fun s => Measurable fun x => ν (Prod.mk x ⁻¹' s))
     generateFrom_prod.symm isPiSystem_prod _ _ _ _ hs
-  · simp [measurable_zero, const_def]
+  · simp
   · rintro _ ⟨s, hs, t, _, rfl⟩
     simp only [mk_preimage_prod_right_eq_if, measure_if]
     exact measurable_const.indicator hs
@@ -351,13 +349,13 @@ do not need the sets to be measurable. -/
 @[simp]
 theorem prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν t := by
   apply le_antisymm
-  · set ST := toMeasurable μ s ×ˢ toMeasurable ν t
-    have hSTm : MeasurableSet ST :=
+  · set S := toMeasurable μ s
+    set T := toMeasurable ν t
+    have hSTm : MeasurableSet (S ×ˢ T) :=
       (measurableSet_toMeasurable _ _).prod (measurableSet_toMeasurable _ _)
     calc
-      μ.prod ν (s ×ˢ t) ≤ μ.prod ν ST :=
-        measure_mono <| Set.prod_mono (subset_toMeasurable _ _) (subset_toMeasurable _ _)
-      _ = μ (toMeasurable μ s) * ν (toMeasurable ν t) := by
+      μ.prod ν (s ×ˢ t) ≤ μ.prod ν (S ×ˢ T) := by gcongr <;> apply subset_toMeasurable
+      _ = μ S * ν T := by
         rw [prod_apply hSTm]
         simp_rw [mk_preimage_prod_right_eq_if, measure_if,
           lintegral_indicator _ (measurableSet_toMeasurable _ _), lintegral_const,
@@ -372,10 +370,10 @@ theorem prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν 
     set s' : Set α := { x | ν t ≤ f x }
     have hss' : s ⊆ s' := fun x hx => measure_mono fun y hy => hST <| mk_mem_prod hx hy
     calc
-      μ s * ν t ≤ μ s' * ν t := mul_le_mul_right' (measure_mono hss') _
+      μ s * ν t ≤ μ s' * ν t := by gcongr
       _ = ∫⁻ _ in s', ν t ∂μ := by rw [set_lintegral_const, mul_comm]
-      _ ≤ ∫⁻ x in s', f x ∂μ := (set_lintegral_mono measurable_const hfm fun x => id)
-      _ ≤ ∫⁻ x, f x ∂μ := (lintegral_mono' restrict_le_self le_rfl)
+      _ ≤ ∫⁻ x in s', f x ∂μ := set_lintegral_mono measurable_const hfm fun x => id
+      _ ≤ ∫⁻ x, f x ∂μ := lintegral_mono' restrict_le_self le_rfl
       _ = μ.prod ν ST := (prod_apply hSTm).symm
       _ = μ.prod ν (s ×ˢ t) := measure_toMeasurable _
 #align measure_theory.measure.prod_prod MeasureTheory.Measure.prod_prod
@@ -438,7 +436,8 @@ instance prod.instIsFiniteMeasureOnCompacts {α β : Type*} [TopologicalSpace α
   set L := (Prod.fst '' K) ×ˢ (Prod.snd '' K) with hL
   have : K ⊆ L := by
     rintro ⟨x, y⟩ hxy
-    simp only [prod_mk_mem_set_prod_eq, mem_image, Prod.exists, exists_and_right, exists_eq_right]
+    simp only [L, prod_mk_mem_set_prod_eq, mem_image, Prod.exists, exists_and_right,
+      exists_eq_right]
     exact ⟨⟨y, hxy⟩, ⟨x, hxy⟩⟩
   apply lt_of_le_of_lt (measure_mono this)
   rw [hL, prod_prod]
@@ -466,7 +465,7 @@ instance prod.instNoAtoms_snd [NoAtoms ν] :
 theorem ae_measure_lt_top {s : Set (α × β)} (hs : MeasurableSet s) (h2s : (μ.prod ν) s ≠ ∞) :
     ∀ᵐ x ∂μ, ν (Prod.mk x ⁻¹' s) < ∞ := by
   rw [prod_apply hs] at h2s
-  refine' ae_lt_top (measurable_measure_prod_mk_left hs) h2s
+  exact ae_lt_top (measurable_measure_prod_mk_left hs) h2s
 #align measure_theory.measure.ae_measure_lt_top MeasureTheory.Measure.ae_measure_lt_top
 
 /-- Note: the assumption `hs` cannot be dropped. For a counterexample, see
@@ -534,8 +533,7 @@ lemma set_prod_ae_eq {s s' : Set α} {t t' : Set β} (hs : s =ᵐ[μ] s') (ht : 
 lemma measure_prod_compl_eq_zero {s : Set α} {t : Set β}
     (s_ae_univ : μ sᶜ = 0) (t_ae_univ : ν tᶜ = 0) :
     μ.prod ν (s ×ˢ t)ᶜ = 0 := by
-  rw [Set.compl_prod_eq_union]
-  apply le_antisymm ((measure_union_le _ _).trans _) (zero_le _)
+  rw [Set.compl_prod_eq_union, measure_union_null_iff]
   simp [s_ae_univ, t_ae_univ]
 
 lemma _root_.MeasureTheory.NullMeasurableSet.prod {s : Set α} {t : Set β}
@@ -638,9 +636,9 @@ theorem prod_eq_generateFrom {μ : Measure α} {ν : Measure β} {C : Set (Set �
     (h3C.prod h3D).ext
       (generateFrom_eq_prod hC hD h3C.isCountablySpanning h3D.isCountablySpanning).symm
       (h2C.prod h2D) _
-  · rintro _ ⟨s, hs, t, ht, rfl⟩
-    haveI := h3D.sigmaFinite
-    rw [h₁ s hs t ht, prod_prod]
+  rintro _ ⟨s, hs, t, ht, rfl⟩
+  haveI := h3D.sigmaFinite
+  rw [h₁ s hs t ht, prod_prod]
 #align measure_theory.measure.prod_eq_generate_from MeasureTheory.Measure.prod_eq_generateFrom
 
 /- Note that the next theorem is not true for s-finite measures: let `μ = ν = ∞ • Leb` on `[0,1]`
