@@ -1451,6 +1451,8 @@ theorem card_typein_out_lt (c : Cardinal) (x : c.ord.out.α) :
   apply typein_lt_self
 #align cardinal.card_typein_out_lt Cardinal.card_typein_out_lt
 
+theorem mk_Iio_ord_out_α {c : Cardinal} (i : c.ord.out.α) : #(Iio i) < c := card_typein_out_lt c i
+
 theorem ord_injective : Injective ord := by
   intro c c' h
   rw [← card_ord c, ← card_ord c', h]
