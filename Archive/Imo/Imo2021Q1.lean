@@ -89,9 +89,9 @@ theorem exists_finset_3_le_card_with_pairs_summing_to_squares (n : ℕ) (hn : 10
     suffices a ∉ {b, c} ∧ b ∉ {c} by
       rw [Finset.card_insert_of_not_mem this.1, Finset.card_insert_of_not_mem this.2,
         Finset.card_singleton]
-    · rw [Finset.mem_insert, Finset.mem_singleton, Finset.mem_singleton]
-      push_neg
-      exact ⟨⟨hab.ne, (hab.trans hbc).ne⟩, hbc.ne⟩
+    rw [Finset.mem_insert, Finset.mem_singleton, Finset.mem_singleton]
+    push_neg
+    exact ⟨⟨hab.ne, (hab.trans hbc).ne⟩, hbc.ne⟩
   · intro x hx y hy hxy
     simp only [Finset.mem_insert, Finset.mem_singleton] at hx hy
     rcases hx with (rfl | rfl | rfl) <;> rcases hy with (rfl | rfl | rfl)

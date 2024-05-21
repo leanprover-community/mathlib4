@@ -201,8 +201,8 @@ theorem count_countedSequence : ∀ p q : ℕ, count (countedSequence p q) = (p 
     rw [counted_succ_succ, measure_union (disjoint_bits _ _) list_int_measurableSet,
       count_injective_image List.cons_injective, count_countedSequence _ _,
       count_injective_image List.cons_injective, count_countedSequence _ _]
-    · norm_cast
-      rw [add_assoc, add_comm 1 q, ← Nat.choose_succ_succ, Nat.succ_eq_add_one, add_right_comm]
+    norm_cast
+    rw [add_assoc, add_comm 1 q, ← Nat.choose_succ_succ, Nat.succ_eq_add_one, add_right_comm]
 #align ballot.count_counted_sequence Ballot.count_countedSequence
 
 theorem first_vote_pos :
@@ -237,12 +237,11 @@ theorem first_vote_pos :
       rw [(condCount_eq_zero_iff <| (countedSequence_finite _ _).image _).2 this, condCount,
         cond_apply _ list_int_measurableSet, hint, count_injective_image List.cons_injective,
         count_countedSequence, count_countedSequence, one_mul, zero_mul, add_zero,
-        Nat.cast_add, Nat.cast_one]
-      · rw [mul_comm, ← div_eq_mul_inv, ENNReal.div_eq_div_iff]
-        · norm_cast
-          rw [mul_comm _ (p + 1), ← Nat.succ_eq_add_one p, Nat.succ_add, Nat.succ_mul_choose_eq,
-            mul_comm]
-        all_goals simp [(Nat.choose_pos <| (le_add_iff_nonneg_right _).2 zero_le').ne.symm]
+        Nat.cast_add, Nat.cast_one, mul_comm, ← div_eq_mul_inv, ENNReal.div_eq_div_iff]
+      · norm_cast
+        rw [mul_comm _ (p + 1), ← Nat.succ_eq_add_one p, Nat.succ_add, Nat.succ_mul_choose_eq,
+          mul_comm]
+      all_goals simp [(Nat.choose_pos <| (le_add_iff_nonneg_right _).2 zero_le').ne.symm]
     · simp
 #align ballot.first_vote_pos Ballot.first_vote_pos
 
@@ -394,11 +393,11 @@ theorem ballot_problem :
       ENNReal.toReal_sub_of_le, ENNReal.toReal_nat, ENNReal.toReal_nat]
     exacts [Nat.cast_le.2 qp.le, ENNReal.natCast_ne_top _]
   rwa [ENNReal.toReal_eq_toReal (measure_lt_top _ _).ne] at this
-  · simp only [Ne, ENNReal.div_eq_top, tsub_eq_zero_iff_le, Nat.cast_le, not_le,
-      add_eq_zero_iff, Nat.cast_eq_zero, ENNReal.add_eq_top, ENNReal.natCast_ne_top, or_self_iff,
-      not_false_iff, and_true_iff]
-    push_neg
-    exact ⟨fun _ _ => by linarith, (tsub_le_self.trans_lt (ENNReal.natCast_ne_top p).lt_top).ne⟩
+  simp only [Ne, ENNReal.div_eq_top, tsub_eq_zero_iff_le, Nat.cast_le, not_le,
+    add_eq_zero_iff, Nat.cast_eq_zero, ENNReal.add_eq_top, ENNReal.natCast_ne_top, or_self_iff,
+    not_false_iff, and_true_iff]
+  push_neg
+  exact ⟨fun _ _ => by linarith, (tsub_le_self.trans_lt (ENNReal.natCast_ne_top p).lt_top).ne⟩
 #align ballot.ballot_problem Ballot.ballot_problem
 
 end Ballot
