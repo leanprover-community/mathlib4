@@ -372,8 +372,8 @@ theorem normUnit_X : normUnit (PowerSeries.X : PowerSeries k) = 1 := by
   rw [inv_eq_one, ← Units.val_eq_one, Unit_of_divided_by_X_pow_order_nonzero,
     divided_by_X_pow_order_of_X_eq_one]
 
-theorem X_eq_normalizeX : (PowerSeries.X : PowerSeries k) = normalize PowerSeries.X := by
-  simp only [normalize_apply, PowerSeries.normUnit_X, Units.val_one, mul_one]
+theorem X_eq_normalizeX : (X : PowerSeries k) = normalize X := by
+  simp only [normalize_apply, normUnit_X, Units.val_one, mul_one]
 
 open LocalRing
 
