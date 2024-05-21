@@ -97,6 +97,9 @@ example (a b c : Nat) : a = b → c = b → f₁ (f₁ a b) (g₁ c) = f₁ (f�
 example (a b c d e x y : Nat) : a = b → a = x → b = y → c = d → c = e → c = b → a = e := by
   cc
 
+example (f : ℕ → ℕ) (x : ℕ) (H1 : f (f (f x)) = x) (H2 : f (f (f (f (f x)))) = x) : f x = x := by
+  cc
+
 end CC1
 
 section CC2
@@ -537,3 +540,29 @@ example {G : Type*} [AddCommMonoid G] (a b : G) :
   cc (config := { ac := false })
 
 end Config
+
+section Lean3Issue1442
+
+def Rel : ℤ × ℤ → ℤ × ℤ → Prop
+  | (n₁, d₁), (n₂, d₂) => n₁ * d₂ = n₂ * d₁
+
+def mul' : ℤ × ℤ → ℤ × ℤ → ℤ × ℤ
+  | (n₁, d₁), (n₂, d₂) => ⟨n₁ * n₂, d₁ * d₂⟩
+
+example : ∀ (a b c d : ℤ × ℤ), Rel a c → Rel b d → Rel (mul' a b) (mul' c d) :=
+  fun (n₁, d₁) (n₂, d₂) (n₃, d₃) (n₄, d₄) =>
+    fun (h₁ : n₁ * d₃ = n₃ * d₁) (h₂ : n₂ * d₄ = n₄ * d₂) =>
+      show (n₁ * n₂) * (d₃ * d₄) = (n₃ * n₄) * (d₁ * d₂) by
+        cc
+
+end Lean3Issue1442
+
+section Lean3Issue1608
+
+example {α : Type} {a b : α} (h : ¬ (a = b)) : b ≠ a := by
+  cc
+
+example {α : Type} {a b : α} (h : ¬ (a = b)) : ¬ (b = a) := by
+  cc
+
+end Lean3Issue1608

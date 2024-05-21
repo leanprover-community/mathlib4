@@ -174,13 +174,15 @@ def eqcOf (s : CCState) (e : Expr) : List Expr :=
   s.eqcOfCore e e []
 #align cc_state.eqc_of Mathlib.Tactic.CC.CCState.eqcOf
 
-/-- The equivalence class of `e`. -/
+/-- The size of the equivalence class of `e`. -/
 def eqcSize (s : CCState) (e : Expr) : Nat :=
   s.eqcOf e |>.length
 #align cc_state.eqc_size Mathlib.Tactic.CC.CCState.eqcSize
 
-/-- Continue to apply `f` using following expressions in the equivalence class of `first` to `a`
-until `first` is found. -/
+/-- Fold `f` over the equivalence class of `c`, accumulating the result in `a`.
+Loops until the element `first` is encountered.
+
+See `foldEqc` for folding `f` over all elements of the equivalence class. -/
 partial def foldEqcCore {α} (s : CCState) (f : α → Expr → α) (first : Expr) (c : Expr) (a : α) :
     α :=
   let new_a := f a c
@@ -222,27 +224,7 @@ example (f : ℕ → ℕ) (x : ℕ)
     (H1 : f (f (f x)) = x) (H2 : f (f (f (f (f x)))) = x) :
     f x = x := by
   cc
-```
-
-The tactic works by building an equality matching graph. It's a graph where
-the vertices are terms and they are linked by edges if they are known to
-be equal. Once you've added all the equalities in your context, you take
-the transitive closure of the graph and, for each connected component
-(i.e. equivalence class) you can elect a term that will represent the
-whole class and store proofs that the other elements are equal to it.
-You then take the transitive closure of these equalities under the
-congruence lemmas.
-
-The `cc` implementation in Lean does a few more tricks: for example it
-derives `a = b` from `Nat.succ a = Nat.succ b`, and `Nat.succ a != Nat.zero` for any `a`.
-
-* The starting reference point is Nelson, Oppen, [Fast decision procedures based on congruence
-closure](http://www.cs.colorado.edu/~bec/courses/csci5535-s09/reading/nelson-oppen-congruence.pdf),
-Journal of the ACM (1980)
-
-* The congruence lemmas for dependent type theory as used in Lean are described in
-[Congruence closure in intensional type theory](https://leanprover.github.io/papers/congr.pdf)
-(de Moura, Selsam IJCAR 2016). -/
+``` -/
 def _root_.Lean.MVarId.cc (m : MVarId) (cfg : CCConfig := {}) : MetaM Unit := do
   let (_, m) ← m.intros
   m.withContext do
@@ -294,28 +276,7 @@ example (f : ℕ → ℕ) (x : ℕ)
     (H1 : f (f (f x)) = x) (H2 : f (f (f (f (f x)))) = x) :
     f x = x := by
   cc
-```
-
-The tactic works by building an equality matching graph. It's a graph where
-the vertices are terms and they are linked by edges if they are known to
-be equal. Once you've added all the equalities in your context, you take
-the transitive closure of the graph and, for each connected component
-(i.e. equivalence class) you can elect a term that will represent the
-whole class and store proofs that the other elements are equal to it.
-You then take the transitive closure of these equalities under the
-congruence lemmas.
-
-The `cc` implementation in Lean does a few more tricks: for example it
-derives `a = b` from `Nat.succ a = Nat.succ b`, and `Nat.succ a != Nat.zero` for any `a`.
-
-* The starting reference point is Nelson, Oppen, [Fast decision procedures based on congruence
-closure](http://www.cs.colorado.edu/~bec/courses/csci5535-s09/reading/nelson-oppen-congruence.pdf),
-Journal of the ACM (1980)
-
-* The congruence lemmas for dependent type theory as used in Lean are described in
-[Congruence closure in intensional type theory](https://leanprover.github.io/papers/congr.pdf)
-(de Moura, Selsam IJCAR 2016).
--/
+``` -/
 elab (name := _root_.Mathlib.Tactic.cc) "cc" cfg:(config)? : tactic => do
   let cfg ← elabCCConfig (mkOptionalNode cfg)
   withMainContext <| liftMetaFinishingTactic (·.cc cfg)
