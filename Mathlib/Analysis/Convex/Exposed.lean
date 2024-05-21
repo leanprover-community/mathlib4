@@ -6,7 +6,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 import Mathlib.Analysis.Convex.Extreme
 import Mathlib.Analysis.Convex.Function
 import Mathlib.Topology.Algebra.Module.Basic
-import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Order.OrderClosed
 
 #align_import analysis.convex.exposed from "leanprover-community/mathlib"@"48024901a8e2a462363650c50d62248a77cbcab3"
 
@@ -46,13 +46,14 @@ More not-yet-PRed stuff is available on the branch `sperner_again`.
 -/
 
 
-open Classical Affine BigOperators
+open scoped Classical
+open Affine BigOperators
 
 open Set
 
 section PreorderSemiring
 
-variable (𝕜 : Type _) {E : Type _} [TopologicalSpace 𝕜] [Semiring 𝕜] [Preorder 𝕜] [AddCommMonoid E]
+variable (𝕜 : Type*) {E : Type*} [TopologicalSpace 𝕜] [Semiring 𝕜] [Preorder 𝕜] [AddCommMonoid E]
   [TopologicalSpace E] [Module 𝕜 E] {A B : Set E}
 
 /-- A set `B` is exposed with respect to `A` iff it maximizes some functional over `A` (and contains
@@ -65,7 +66,7 @@ end PreorderSemiring
 
 section OrderedRing
 
-variable {𝕜 : Type _} {E : Type _} [TopologicalSpace 𝕜] [OrderedRing 𝕜] [AddCommMonoid E]
+variable {𝕜 : Type*} {E : Type*} [TopologicalSpace 𝕜] [OrderedRing 𝕜] [AddCommMonoid E]
   [TopologicalSpace E] [Module 𝕜 E] {l : E →L[𝕜] 𝕜} {A B C : Set E} {X : Finset E} {x : E}
 
 /-- A useful way to build exposed sets from intersecting `A` with halfspaces (modelled by an
@@ -99,7 +100,7 @@ protected theorem antisymm (hB : IsExposed 𝕜 A B) (hA : IsExposed 𝕜 B A) :
   hA.subset.antisymm hB.subset
 #align is_exposed.antisymm IsExposed.antisymm
 
-/- `IsExposed` is *not* transitive: Consider a (topologically) open cube with vertices
+/-! `IsExposed` is *not* transitive: Consider a (topologically) open cube with vertices
 `A₀₀₀, ..., A₁₁₁` and add to it the triangle `A₀₀₀A₀₀₁A₀₁₀`. Then `A₀₀₁A₀₁₀` is an exposed subset
 of `A₀₀₀A₀₀₁A₀₁₀` which is an exposed subset of the cube, but `A₀₀₁A₀₁₀` is not itself an exposed
 subset of the cube. -/
@@ -187,7 +188,7 @@ protected theorem isClosed [OrderClosedTopology 𝕜] {A B : Set E} (hAB : IsExp
 
 protected theorem isCompact [OrderClosedTopology 𝕜] [T2Space E] {A B : Set E}
     (hAB : IsExposed 𝕜 A B) (hA : IsCompact A) : IsCompact B :=
-  isCompact_of_isClosed_subset hA (hAB.isClosed hA.isClosed) hAB.subset
+  hA.of_isClosed_subset (hAB.isClosed hA.isClosed) hAB.subset
 #align is_exposed.is_compact IsExposed.isCompact
 
 end IsExposed
@@ -234,7 +235,7 @@ end OrderedRing
 
 section LinearOrderedRing
 
-variable {𝕜 : Type _} {E : Type _} [TopologicalSpace 𝕜] [LinearOrderedRing 𝕜] [AddCommMonoid E]
+variable {𝕜 : Type*} {E : Type*} [TopologicalSpace 𝕜] [LinearOrderedRing 𝕜] [AddCommMonoid E]
   [TopologicalSpace E] [Module 𝕜 E] {A B C : Set E}
 
 namespace IsExposed
@@ -250,7 +251,7 @@ protected theorem convex (hAB : IsExposed 𝕜 A B) (hA : Convex 𝕜 A) : Conve
 #align is_exposed.convex IsExposed.convex
 
 protected theorem isExtreme (hAB : IsExposed 𝕜 A B) : IsExtreme 𝕜 A B := by
-  refine' ⟨hAB.subset, fun x₁ hx₁A x₂ hx₂A x hxB hx => _⟩
+  refine ⟨hAB.subset, fun x₁ hx₁A x₂ hx₂A x hxB hx => ?_⟩
   obtain ⟨l, rfl⟩ := hAB ⟨x, hxB⟩
   have hl : ConvexOn 𝕜 univ l := l.toLinearMap.convexOn convex_univ
   have hlx₁ := hxB.2 x₁ hx₁A
@@ -265,7 +266,7 @@ protected theorem isExtreme (hAB : IsExposed 𝕜 A B) : IsExtreme 𝕜 A B := b
 end IsExposed
 
 theorem exposedPoints_subset_extremePoints : A.exposedPoints 𝕜 ⊆ A.extremePoints 𝕜 := fun _ hx =>
-  mem_extremePoints_iff_extreme_singleton.2 (mem_exposedPoints_iff_exposed_singleton.1 hx).isExtreme
+  (mem_exposedPoints_iff_exposed_singleton.1 hx).isExtreme.mem_extremePoints
 #align exposed_points_subset_extreme_points exposedPoints_subset_extremePoints
 
 end LinearOrderedRing

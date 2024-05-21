@@ -17,7 +17,7 @@ namespace Vector
 
 section ZipWith
 
-variable {α β γ : Type _} {n : ℕ} (f : α → β → γ)
+variable {α β γ : Type*} {n : ℕ} (f : α → β → γ)
 
 /-- Apply the function `f : α → β → γ` to each corresponding pair of elements from two vectors. -/
 def zipWith : Vector α n → Vector β n → Vector γ n := fun x y => ⟨List.zipWith f x.1 y.1, by simp⟩
@@ -33,8 +33,7 @@ theorem zipWith_toList (x : Vector α n) (y : Vector β n) :
 theorem zipWith_get (x : Vector α n) (y : Vector β n) (i) :
     (Vector.zipWith f x y).get i = f (x.get i) (y.get i) := by
   dsimp only [Vector.zipWith, Vector.get]
-  cases x; cases y
-  simp only [List.nthLe_zipWith]
+  simp only [List.get_zipWith, Fin.cast]
 #align vector.zip_with_nth Vector.zipWith_get
 
 @[simp]

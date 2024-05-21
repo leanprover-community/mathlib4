@@ -37,7 +37,7 @@ open scoped NNReal ENNReal MeasureTheory ProbabilityTheory BigOperators
 
 namespace MeasureTheory
 
-variable {Ω E : Type _} {m0 : MeasurableSpace Ω} {μ : Measure Ω} [NormedAddCommGroup E]
+variable {Ω E : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω} [NormedAddCommGroup E]
   [NormedSpace ℝ E] [CompleteSpace E] {f : ℕ → Ω → E} {ℱ : Filtration ℕ m0} {n : ℕ}
 
 /-- Any `ℕ`-indexed stochastic process can be written as the sum of a martingale and a predictable
@@ -122,7 +122,7 @@ theorem martingale_martingalePart (hf : Adapted ℱ f) (hf_int : ∀ n, Integrab
       · exact stronglyMeasurable_condexp.mono (ℱ.mono hk.le)
       · exact integrable_condexp
   rw [martingalePart_eq_sum]
-  refine' EventuallyEq.add EventuallyEq.rfl _
+  refine EventuallyEq.add EventuallyEq.rfl ?_
   rw [← Finset.sum_range_add_sum_Ico _ hij, ←
     add_zero (∑ i in Finset.range i, (f (i + 1) - f i - μ[f (i + 1) - f i|ℱ i]))]
   refine' (eventuallyEq_sum fun k hk => h_lt k (Finset.mem_range.mp hk)).add _
@@ -147,6 +147,7 @@ theorem martingalePart_add_ae_eq [SigmaFiniteFiltration μ ℱ] {f g : ℕ → �
     (hf.integrable n).add <| hgint n)
   refine' (eventuallyEq_iff_sub.2 _).symm
   filter_upwards [hhmgle.eq_zero_of_predictable hhpred n] with ω hω
+  unfold_let h at hω
   rw [Pi.sub_apply] at hω
   rw [hω, Pi.sub_apply, martingalePart]
   simp [hg0]

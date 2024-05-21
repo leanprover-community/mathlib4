@@ -184,7 +184,7 @@ theorem preservesEpimorphsisms_of_adjunction {F : C ⥤ D} {G : D ⥤ C} (adj : 
 
 instance (priority := 100) preservesEpimorphisms_of_isLeftAdjoint (F : C ⥤ D) [IsLeftAdjoint F] :
     PreservesEpimorphisms F :=
-  preservesEpimorphsisms_of_adjunction (Adjunction.ofLeftAdjoint F)
+  preservesEpimorphsisms_of_adjunction (Adjunction.ofIsLeftAdjoint F)
 #align category_theory.functor.preserves_epimorphisms_of_is_left_adjoint CategoryTheory.Functor.preservesEpimorphisms_of_isLeftAdjoint
 
 theorem preservesMonomorphisms_of_adjunction {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) :
@@ -199,19 +199,19 @@ theorem preservesMonomorphisms_of_adjunction {F : C ⥤ D} {G : D ⥤ C} (adj : 
 
 instance (priority := 100) preservesMonomorphisms_of_isRightAdjoint (F : C ⥤ D) [IsRightAdjoint F] :
     PreservesMonomorphisms F :=
-  preservesMonomorphisms_of_adjunction (Adjunction.ofRightAdjoint F)
+  preservesMonomorphisms_of_adjunction (Adjunction.ofIsRightAdjoint F)
 #align category_theory.functor.preserves_monomorphisms_of_is_right_adjoint CategoryTheory.Functor.preservesMonomorphisms_of_isRightAdjoint
 
 instance (priority := 100) reflectsMonomorphisms_of_faithful (F : C ⥤ D) [Faithful F] :
-    ReflectsMonomorphisms F
-    where reflects {X} {Y} f hf :=
+    ReflectsMonomorphisms F where
+  reflects {X} {Y} f hf :=
     ⟨fun {Z} g h hgh =>
       F.map_injective ((cancel_mono (F.map f)).1 (by rw [← F.map_comp, hgh, F.map_comp]))⟩
 #align category_theory.functor.reflects_monomorphisms_of_faithful CategoryTheory.Functor.reflectsMonomorphisms_of_faithful
 
 instance (priority := 100) reflectsEpimorphisms_of_faithful (F : C ⥤ D) [Faithful F] :
-    ReflectsEpimorphisms F
-    where reflects {X} {Y} f hf :=
+    ReflectsEpimorphisms F where
+  reflects {X} {Y} f hf :=
     ⟨fun {Z} g h hgh =>
       F.map_injective ((cancel_epi (F.map f)).1 (by rw [← F.map_comp, hgh, F.map_comp]))⟩
 #align category_theory.functor.reflects_epimorphisms_of_faithful CategoryTheory.Functor.reflectsEpimorphisms_of_faithful
@@ -221,20 +221,14 @@ section
 variable (F : C ⥤ D) {X Y : C} (f : X ⟶ Y)
 
 /-- If `F` is a fully faithful functor, split epimorphisms are preserved and reflected by `F`. -/
-def splitEpiEquiv [Full F] [Faithful F] : SplitEpi f ≃ SplitEpi (F.map f)
-    where
+noncomputable def splitEpiEquiv [Full F] [Faithful F] : SplitEpi f ≃ SplitEpi (F.map f) where
   toFun f := f.map F
-  invFun s := by
-    refine' ⟨F.preimage s.section_, _⟩
+  invFun s := ⟨F.preimage s.section_, by
     apply F.map_injective
-    simp only [map_comp, image_preimage, map_id]
-    apply SplitEpi.id
+    simp only [map_comp, map_preimage, map_id]
+    apply SplitEpi.id⟩
   left_inv := by aesop_cat
-  right_inv := by
-      simp only [Function.RightInverse,Function.LeftInverse]
-      intro x
-      simp only [SplitEpi.map, preimage]
-      aesop_cat
+  right_inv x := by aesop_cat
 #align category_theory.functor.split_epi_equiv CategoryTheory.Functor.splitEpiEquiv
 
 @[simp]
@@ -247,20 +241,14 @@ theorem isSplitEpi_iff [Full F] [Faithful F] : IsSplitEpi (F.map f) ↔ IsSplitE
 #align category_theory.functor.is_split_epi_iff CategoryTheory.Functor.isSplitEpi_iff
 
 /-- If `F` is a fully faithful functor, split monomorphisms are preserved and reflected by `F`. -/
-def splitMonoEquiv [Full F] [Faithful F] : SplitMono f ≃ SplitMono (F.map f)
-    where
+noncomputable def splitMonoEquiv [Full F] [Faithful F] : SplitMono f ≃ SplitMono (F.map f) where
   toFun f := f.map F
-  invFun s := by
-    refine' ⟨F.preimage s.retraction, _⟩
+  invFun s := ⟨F.preimage s.retraction, by
     apply F.map_injective
-    simp only [map_comp, image_preimage, map_id]
-    apply SplitMono.id
+    simp only [map_comp, map_preimage, map_id]
+    apply SplitMono.id⟩
   left_inv := by aesop_cat
-  right_inv := by
-    simp only [Function.RightInverse, Function.LeftInverse]
-    intro x
-    simp only [SplitMono.map,preimage]
-    aesop_cat
+  right_inv x := by aesop_cat
 #align category_theory.functor.split_mono_equiv CategoryTheory.Functor.splitMonoEquiv
 
 @[simp]
@@ -306,7 +294,7 @@ end CategoryTheory.Functor
 
 namespace CategoryTheory.Adjunction
 
-variable {C D : Type _} [Category C] [Category D] {F : C ⥤ D} {F' : D ⥤ C} {A B : C}
+variable {C D : Type*} [Category C] [Category D] {F : C ⥤ D} {F' : D ⥤ C} {A B : C}
 
 theorem strongEpi_map_of_strongEpi (adj : F ⊣ F') (f : A ⟶ B) [h₁ : F'.PreservesMonomorphisms]
     [h₂ : F.PreservesEpimorphisms] [StrongEpi f] : StrongEpi (F.map f) :=
@@ -316,16 +304,22 @@ theorem strongEpi_map_of_strongEpi (adj : F ⊣ F') (f : A ⟶ B) [h₁ : F'.Pre
     infer_instance⟩
 #align category_theory.adjunction.strong_epi_map_of_strong_epi CategoryTheory.Adjunction.strongEpi_map_of_strongEpi
 
-instance strongEpi_map_of_isEquivalence [IsEquivalence F] (f : A ⟶ B) [_h : StrongEpi f] :
+instance strongEpi_map_of_isEquivalence [F.IsEquivalence] (f : A ⟶ B) [_h : StrongEpi f] :
     StrongEpi (F.map f) :=
   F.asEquivalence.toAdjunction.strongEpi_map_of_strongEpi f
 #align category_theory.adjunction.strong_epi_map_of_is_equivalence CategoryTheory.Adjunction.strongEpi_map_of_isEquivalence
+
+instance (adj : F ⊣ F') {X : C} {Y : D} (f : F.obj X ⟶ Y) [hf : Mono f] [F.ReflectsMonomorphisms] :
+    Mono (adj.homEquiv _ _ f) :=
+  F.mono_of_mono_map <| by
+    rw [← (homEquiv adj X Y).symm_apply_apply f] at hf
+    exact mono_of_mono_fac adj.homEquiv_counit.symm
 
 end CategoryTheory.Adjunction
 
 namespace CategoryTheory.Functor
 
-variable {C D : Type _} [Category C] [Category D] {F : C ⥤ D} {A B : C} (f : A ⟶ B)
+variable {C D : Type*} [Category C] [Category D] {F : C ⥤ D} {A B : C} (f : A ⟶ B)
 
 @[simp]
 theorem strongEpi_map_iff_strongEpi_of_isEquivalence [IsEquivalence F] :

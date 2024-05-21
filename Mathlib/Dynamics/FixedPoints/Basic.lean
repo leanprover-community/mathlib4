@@ -17,7 +17,7 @@ In this file we define
 * the predicate `IsFixedPt f x := f x = x`;
 * the set `fixedPoints f` of fixed points of a self-map `f`.
 
-We also prove some simple lemmas about `IsFixedPt` and `∘`, `iterate`, and `semiconj`.
+We also prove some simple lemmas about `IsFixedPt` and `∘`, `iterate`, and `Semiconj`.
 
 ## Tags
 
@@ -32,6 +32,8 @@ universe u v
 variable {α : Type u} {β : Type v} {f fa g : α → α} {x y : α} {fb : β → β} {m n k : ℕ} {e : Perm α}
 
 namespace Function
+
+open Function (Commute)
 
 /-- A point `x` is a fixed point of `f : α → α` if `f x = x`. -/
 def IsFixedPt (f : α → α) (x : α) :=
@@ -48,7 +50,7 @@ namespace IsFixedPt
 instance decidable [h : DecidableEq α] {f : α → α} {x : α} : Decidable (IsFixedPt f x) :=
   h (f x) x
 
-/-- If `x` is a fixed point of `f`, then `f x = x`. This is useful, e.g., for `rw` or `simp`.-/
+/-- If `x` is a fixed point of `f`, then `f x = x`. This is useful, e.g., for `rw` or `simp`. -/
 protected theorem eq (hf : IsFixedPt f x) : f x = x :=
   hf
 #align function.is_fixed_pt.eq Function.IsFixedPt.eq
@@ -98,6 +100,10 @@ theorem preimage_iterate {s : Set α} (h : IsFixedPt (Set.preimage f) s) (n : �
   exact h.iterate n
 #align function.is_fixed_pt.preimage_iterate Function.IsFixedPt.preimage_iterate
 
+lemma image_iterate {s : Set α} (h : IsFixedPt (Set.image f) s) (n : ℕ) :
+    IsFixedPt (Set.image f^[n]) s :=
+  Set.image_iterate_eq ▸ h.iterate n
+
 protected theorem equiv_symm (h : IsFixedPt e x) : IsFixedPt e.symm x :=
   h.to_leftInverse e.leftInverse_symm
 #align function.is_fixed_pt.equiv_symm Function.IsFixedPt.equiv_symm
@@ -139,7 +145,7 @@ theorem mem_fixedPoints : x ∈ fixedPoints f ↔ IsFixedPt f x :=
   Iff.rfl
 #align function.mem_fixed_points Function.mem_fixedPoints
 
-theorem mem_fixedPoints_iff {α : Type _} {f : α → α} {x : α} : x ∈ fixedPoints f ↔ f x = x := by
+theorem mem_fixedPoints_iff {α : Type*} {f : α → α} {x : α} : x ∈ fixedPoints f ↔ f x = x := by
   rfl
 #align function.mem_fixed_points_iff Function.mem_fixedPoints_iff
 

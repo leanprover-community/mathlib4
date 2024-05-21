@@ -40,8 +40,9 @@ purposes and because it is easier than dealing with
 boolean ring, boolean algebra
 -/
 
+open scoped symmDiff
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 /-- A Boolean ring is a ring where multiplication is idempotent. -/
 class BooleanRing (α) extends Ring α where
@@ -53,17 +54,15 @@ section BooleanRing
 
 variable [BooleanRing α] (a b : α)
 
-instance : IsIdempotent α (· * ·) :=
+instance : Std.IdempotentOp (α := α) (· * ·) :=
   ⟨BooleanRing.mul_self⟩
 
--- Porting note: simpNF linter complains. This causes lemmas in other files not to be in simpNF
--- @[simp]
+@[simp]
 theorem mul_self : a * a = a :=
   BooleanRing.mul_self _
 #align mul_self mul_self
 
--- Porting note: simpNF linter complains. This causes lemmas in other files not to be in simpNF
--- @[simp]
+@[simp]
 theorem add_self : a + a = 0 := by
   have : a + a = a + a + (a + a) :=
     calc
@@ -73,8 +72,7 @@ theorem add_self : a + a = 0 := by
   rwa [self_eq_add_left] at this
 #align add_self add_self
 
--- Porting note: simpNF linter complains. This causes lemmas in other files not to be in simpNF
--- @[simp]
+@[simp]
 theorem neg_eq : -a = a :=
   calc
     -a = -a + 0 := by rw [add_zero]
@@ -88,8 +86,7 @@ theorem add_eq_zero' : a + b = 0 ↔ a = b :=
     _ ↔ a = b := by rw [neg_eq]
 #align add_eq_zero' add_eq_zero'
 
--- Porting note: simpNF linter complains. This causes lemmas in other files not to be in simpNF
--- @[simp]
+@[simp]
 theorem mul_add_mul : a * b + b * a = 0 := by
   have : a + b = a + b + (a * b + b * a) :=
     calc
@@ -100,8 +97,7 @@ theorem mul_add_mul : a * b + b * a = 0 := by
   rwa [self_eq_add_right] at this
 #align mul_add_mul mul_add_mul
 
--- Porting note: simpNF linter complains. This causes lemmas in other files not to be in simpNF
--- @[simp]
+@[simp]
 theorem sub_eq_add : a - b = a + b := by rw [sub_eq_add_neg, add_right_inj, neg_eq]
 #align sub_eq_add sub_eq_add
 
@@ -126,7 +122,7 @@ instance : BooleanRing PUnit :=
 section RingToAlgebra
 
 /-- Type synonym to view a Boolean ring as a Boolean algebra. -/
-def AsBoolAlg (α : Type _) :=
+def AsBoolAlg (α : Type*) :=
   α
 #align as_boolalg AsBoolAlg
 
@@ -160,12 +156,12 @@ theorem ofBoolAlg_toBoolAlg (a : α) : ofBoolAlg (toBoolAlg a) = a :=
   rfl
 #align of_boolalg_to_boolalg ofBoolAlg_toBoolAlg
 
--- Porting note: simp can prove this -- @[simp]
+-- Porting note (#10618): simp can prove this -- @[simp]
 theorem toBoolAlg_inj {a b : α} : toBoolAlg a = toBoolAlg b ↔ a = b :=
   Iff.rfl
 #align to_boolalg_inj toBoolAlg_inj
 
--- Porting note: simp can prove this -- @[simp]
+-- Porting note (#10618): simp can prove this -- @[simp]
 theorem ofBoolAlg_inj {a b : AsBoolAlg α} : ofBoolAlg a = ofBoolAlg b ↔ a = b :=
   Iff.rfl
 #align of_boolalg_inj ofBoolAlg_inj
@@ -187,7 +183,7 @@ def inf : Inf α :=
   ⟨(· * ·)⟩
 #align boolean_ring.has_inf BooleanRing.inf
 
--- Porting note: TODO: add priority 100. lower instance priority
+-- Porting note (#11215): TODO: add priority 100. lower instance priority
 scoped [BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.sup
 scoped [BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.inf
 open BooleanAlgebraOfBooleanRing
@@ -252,10 +248,10 @@ def toBooleanAlgebra : BooleanAlgebra α :=
   { Lattice.mk' sup_comm sup_assoc inf_comm inf_assoc sup_inf_self inf_sup_self with
     le_sup_inf := le_sup_inf
     top := 1
-    le_top := fun a => show a + 1 + a * 1 = 1 by rw [mul_one, (add_comm a 1),
+    le_top := fun a => show a + 1 + a * 1 = 1 by rw [mul_one, add_comm a 1,
                                                      add_assoc, add_self, add_zero]
     bot := 0
-    bot_le := fun a => show 0 + a + 0 * a = a by rw [MulZeroClass.zero_mul, zero_add, add_zero]
+    bot_le := fun a => show 0 + a + 0 * a = a by rw [zero_mul, zero_add, add_zero]
     compl := fun a => 1 + a
     inf_compl_le_bot := fun a =>
       show a * (1 + a) + 0 + a * (1 + a) * 0 = 0 by norm_num [mul_add, mul_self, add_self]
@@ -263,11 +259,11 @@ def toBooleanAlgebra : BooleanAlgebra α :=
       change
         1 + (a + (1 + a) + a * (1 + a)) + 1 * (a + (1 + a) + a * (1 + a)) =
           a + (1 + a) + a * (1 + a)
-      norm_num [mul_add, mul_self]
+      norm_num [mul_add, mul_self, add_self]
       rw [← add_assoc, add_self] }
 #align boolean_ring.to_boolean_algebra BooleanRing.toBooleanAlgebra
 
--- Porting note: TODO: add priority 100. lower instance priority
+-- Porting note (#11215): TODO: add priority 100. lower instance priority
 scoped[BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.toBooleanAlgebra
 
 end BooleanRing
@@ -347,7 +343,7 @@ theorem toBoolAlg_add_add_mul (a b : α) : toBoolAlg (a + b + a * b) = toBoolAlg
 
 @[simp]
 theorem toBoolAlg_add (a b : α) : toBoolAlg (a + b) = toBoolAlg a ∆ toBoolAlg b :=
-  (ofBoolAlg_symmDiff _ _).symm
+  (ofBoolAlg_symmDiff a b).symm
 #align to_boolalg_add toBoolAlg_add
 
 /-- Turn a ring homomorphism from Boolean rings `α` to `β` into a bounded lattice homomorphism
@@ -382,7 +378,7 @@ end RingToAlgebra
 section AlgebraToRing
 
 /-- Type synonym to view a Boolean ring as a Boolean algebra. -/
-def AsBoolRing (α : Type _) :=
+def AsBoolRing (α : Type*) :=
   α
 #align as_boolring AsBoolRing
 
@@ -416,12 +412,12 @@ theorem ofBoolRing_toBoolRing (a : α) : ofBoolRing (toBoolRing a) = a :=
   rfl
 #align of_boolring_to_boolring ofBoolRing_toBoolRing
 
--- Porting note: simp can prove this -- @[simp]
+-- Porting note (#10618): simp can prove this -- @[simp]
 theorem toBoolRing_inj {a b : α} : toBoolRing a = toBoolRing b ↔ a = b :=
   Iff.rfl
 #align to_boolring_inj toBoolRing_inj
 
--- Porting note: simp can prove this -- @[simp]
+-- Porting note (#10618): simp can prove this -- @[simp]
 theorem ofBoolRing_inj {a b : AsBoolRing α} : ofBoolRing a = ofBoolRing b ↔ a = b :=
   Iff.rfl
 #align of_boolring_inj ofBoolRing_inj
@@ -438,24 +434,25 @@ following data:
 * `-a` unfolds to `a`
 * `0` unfolds to `⊥`
 -/
-@[reducible]
-def GeneralizedBooleanAlgebra.toNonUnitalCommRing [GeneralizedBooleanAlgebra α] :
+abbrev GeneralizedBooleanAlgebra.toNonUnitalCommRing [GeneralizedBooleanAlgebra α] :
     NonUnitalCommRing α where
   add := (· ∆ ·)
   add_assoc := symmDiff_assoc
   zero := ⊥
   zero_add := bot_symmDiff
   add_zero := symmDiff_bot
-  zero_mul _ := bot_inf_eq
-  mul_zero _ := inf_bot_eq
+  zero_mul := bot_inf_eq
+  mul_zero := inf_bot_eq
   neg := id
   add_left_neg := symmDiff_self
   add_comm := symmDiff_comm
   mul := (· ⊓ ·)
-  mul_assoc _ _ _ := inf_assoc
-  mul_comm _ _ := inf_comm
+  mul_assoc := inf_assoc
+  mul_comm := inf_comm
   left_distrib := inf_symmDiff_distrib_left
   right_distrib := inf_symmDiff_distrib_right
+  nsmul := letI : Zero α := ⟨⊥⟩; letI : Add α := ⟨(· ∆ ·)⟩; nsmulRec
+  zsmul := letI : Zero α := ⟨⊥⟩; letI : Add α := ⟨(· ∆ ·)⟩; letI : Neg α := ⟨id⟩; zsmulRec
 #align generalized_boolean_algebra.to_non_unital_comm_ring GeneralizedBooleanAlgebra.toNonUnitalCommRing
 
 instance [GeneralizedBooleanAlgebra α] : NonUnitalCommRing (AsBoolRing α) :=
@@ -472,13 +469,12 @@ variable [BooleanAlgebra α] [BooleanAlgebra β] [BooleanAlgebra γ]
 * `0` unfolds to `⊥`
 * `1` unfolds to `⊤`
 -/
-@[reducible]
-def BooleanAlgebra.toBooleanRing : BooleanRing α :=
-  { GeneralizedBooleanAlgebra.toNonUnitalCommRing with
-    one := ⊤
-    one_mul := fun _ => top_inf_eq
-    mul_one := fun _ => inf_top_eq
-    mul_self := fun b => inf_idem }
+abbrev BooleanAlgebra.toBooleanRing : BooleanRing α where
+  __ := GeneralizedBooleanAlgebra.toNonUnitalCommRing
+  one := ⊤
+  one_mul := top_inf_eq
+  mul_one := inf_top_eq
+  mul_self := inf_idem
 #align boolean_algebra.to_boolean_ring BooleanAlgebra.toBooleanRing
 
 scoped[BooleanRingOfBooleanAlgebra]
@@ -576,7 +572,7 @@ end AlgebraToRing
 /-- Order isomorphism between `α` considered as a Boolean ring considered as a Boolean algebra and
 `α`. -/
 @[simps!]
-def OrderIso.asBoolAlgAsBoolRing (α : Type _) [BooleanAlgebra α] : AsBoolAlg (AsBoolRing α) ≃o α :=
+def OrderIso.asBoolAlgAsBoolRing (α : Type*) [BooleanAlgebra α] : AsBoolAlg (AsBoolRing α) ≃o α :=
   ⟨ofBoolAlg.trans ofBoolRing,
    ofBoolRing_le_ofBoolRing_iff.trans ofBoolAlg_mul_ofBoolAlg_eq_left_iff⟩
 #align order_iso.as_boolalg_as_boolring OrderIso.asBoolAlgAsBoolRing
@@ -584,7 +580,7 @@ def OrderIso.asBoolAlgAsBoolRing (α : Type _) [BooleanAlgebra α] : AsBoolAlg (
 /-- Ring isomorphism between `α` considered as a Boolean algebra considered as a Boolean ring and
 `α`. -/
 @[simps!]
-def RingEquiv.asBoolRingAsBoolAlg (α : Type _) [BooleanRing α] : AsBoolRing (AsBoolAlg α) ≃+* α :=
+def RingEquiv.asBoolRingAsBoolAlg (α : Type*) [BooleanRing α] : AsBoolRing (AsBoolAlg α) ≃+* α :=
   { ofBoolRing.trans ofBoolAlg with
     map_mul' := fun _a _b => rfl
     map_add' := ofBoolAlg_symmDiff }
@@ -592,19 +588,25 @@ def RingEquiv.asBoolRingAsBoolAlg (α : Type _) [BooleanRing α] : AsBoolRing (A
 
 open Bool
 
+instance : Zero Bool where zero := false
+
+instance : One Bool where one := true
+
+instance : Add Bool where add := xor
+
+instance : Neg Bool where neg := id
+
+instance : Sub Bool where sub := xor
+
+instance : Mul Bool where mul := and
+
 instance : BooleanRing Bool where
-  add := xor
   add_assoc := xor_assoc
-  zero := false
   zero_add := Bool.false_xor
   add_zero := Bool.xor_false
-  neg := id
-  sub := xor
   sub_eq_add_neg _ _ := rfl
   add_left_neg := Bool.xor_self
   add_comm := xor_comm
-  one := true
-  mul := and
   mul_assoc := and_assoc
   one_mul := Bool.true_and
   mul_one := Bool.and_true
@@ -613,3 +615,5 @@ instance : BooleanRing Bool where
   mul_self := Bool.and_self
   zero_mul a := rfl
   mul_zero a := by cases a <;> rfl
+  nsmul := nsmulRec
+  zsmul := zsmulRec

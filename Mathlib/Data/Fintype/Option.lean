@@ -19,25 +19,25 @@ open Nat
 
 universe u v
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 open Finset Function
 
-instance {α : Type _} [Fintype α] : Fintype (Option α) :=
+instance {α : Type*} [Fintype α] : Fintype (Option α) :=
   ⟨Finset.insertNone univ, fun a => by simp⟩
 
-theorem univ_option (α : Type _) [Fintype α] : (univ : Finset (Option α)) = insertNone univ :=
+theorem univ_option (α : Type*) [Fintype α] : (univ : Finset (Option α)) = insertNone univ :=
   rfl
 #align univ_option univ_option
 
 @[simp]
-theorem Fintype.card_option {α : Type _} [Fintype α] :
+theorem Fintype.card_option {α : Type*} [Fintype α] :
     Fintype.card (Option α) = Fintype.card α + 1 :=
   (Finset.card_cons (by simp)).trans <| congr_arg₂ _ (card_map _) rfl
 #align fintype.card_option Fintype.card_option
 
 /-- If `Option α` is a `Fintype` then so is `α` -/
-def fintypeOfOption {α : Type _} [Fintype (Option α)] : Fintype α :=
+def fintypeOfOption {α : Type*} [Fintype (Option α)] : Fintype α :=
   ⟨Finset.eraseNone (Fintype.elems (α := Option α)), fun x =>
     mem_eraseNone.mpr (Fintype.complete (some x))⟩
 #align fintype_of_option fintypeOfOption
@@ -62,7 +62,7 @@ def truncRecEmptyOption {P : Type u → Sort v} (of_equiv : ∀ {α β}, α ≃ 
     intro e
     exact of_equiv (Equiv.ulift.trans e.symm) h
   apply ind where
-    -- porting note: do a manual recursion, instead of `induction` tactic,
+    -- Porting note: do a manual recursion, instead of `induction` tactic,
     -- to ensure the result is computable
     /-- Internal induction hypothesis -/
     ind : ∀ n : ℕ, Trunc (P (ULift <| Fin n))
@@ -72,7 +72,7 @@ def truncRecEmptyOption {P : Type u → Sort v} (of_equiv : ∀ {α β}, α ≃ 
           apply Trunc.bind (truncEquivOfCardEq this)
           intro e
           apply Trunc.mk
-          refine' of_equiv e h_empty
+          exact of_equiv e h_empty
       | Nat.succ n => by
           have : card (Option (ULift (Fin n))) = card (ULift (Fin n.succ)) := by
             simp only [card_fin, card_option, card_ulift]
@@ -80,7 +80,7 @@ def truncRecEmptyOption {P : Type u → Sort v} (of_equiv : ∀ {α β}, α ≃ 
           intro e
           apply Trunc.map _ (ind n)
           intro ih
-          refine' of_equiv e (h_option ih)
+          exact of_equiv e (h_option ih)
 #align fintype.trunc_rec_empty_option Fintype.truncRecEmptyOption
 
 -- Porting note: due to instance inference issues in `SetTheory.Cardinal.Basic`
@@ -101,7 +101,7 @@ theorem induction_empty_option {P : ∀ (α : Type u) [Fintype α], Prop}
       convert h_option α (Pα _)
     @truncRecEmptyOption (fun α => ∀ h, @P α h) (@fun α β e hα hβ => @of_equiv α β hβ e (hα _))
       f_empty h_option α _ (Classical.decEq α)
-  · exact p _
+  exact p _
   -- ·
 #align fintype.induction_empty_option Fintype.induction_empty_option
 

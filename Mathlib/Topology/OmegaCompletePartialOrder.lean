@@ -24,7 +24,7 @@ of continuity is equivalent to continuity in ωCPOs.
 
 open Set OmegaCompletePartialOrder
 
-open Classical
+open scoped Classical
 
 universe u
 
@@ -73,8 +73,7 @@ end Scott
 /-- A Scott topological space is defined on preorders
 such that their open sets, seen as a function `α → Prop`,
 preserves the joins of ω-chains  -/
-@[reducible]
-def Scott (α : Type u) := α
+abbrev Scott (α : Type u) := α
 #align Scott Scott
 
 instance Scott.topologicalSpace (α : Type u) [OmegaCompletePartialOrder α] :
@@ -87,7 +86,7 @@ instance Scott.topologicalSpace (α : Type u) [OmegaCompletePartialOrder α] :
 
 section notBelow
 
-variable {α : Type _} [OmegaCompletePartialOrder α] (y : Scott α)
+variable {α : Type*} [OmegaCompletePartialOrder α] (y : Scott α)
 
 /-- `notBelow` is an open set in `Scott α` used
 to prove the monotonicity of continuous functions -/

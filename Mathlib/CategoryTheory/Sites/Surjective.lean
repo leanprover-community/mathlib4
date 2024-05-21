@@ -32,7 +32,7 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.funLike
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
 variable {A : Type u'} [Category.{v'} A] [ConcreteCategory.{w'} A]
 
@@ -43,7 +43,7 @@ def imageSieve {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : C} (s : G.obj (op U)) : 
   arrows V i := ∃ t : F.obj (op V), f.app _ t = G.map i.op s
   downward_closed := by
     rintro V W i ⟨t, ht⟩ j
-    refine' ⟨F.map j.op t, _⟩
+    refine ⟨F.map j.op t, ?_⟩
     rw [op_comp, G.map_comp, comp_apply, ← ht, elementwise_of% f.naturality]
 #align category_theory.image_sieve CategoryTheory.imageSieve
 
@@ -113,7 +113,7 @@ theorem isLocallySurjective_of_iso {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) [IsIso f]
   apply isLocallySurjective_of_surjective
   intro U
   apply Function.Bijective.surjective
-  rw [← isIso_iff_bijective, ←forget_map_eq_coe]
+  rw [← isIso_iff_bijective, ← forget_map_eq_coe]
   infer_instance
 #align category_theory.is_locally_surjective_of_iso CategoryTheory.isLocallySurjective_of_iso
 
@@ -124,7 +124,7 @@ theorem IsLocallySurjective.comp {F₁ F₂ F₃ : Cᵒᵖ ⥤ A} {f₁ : F₁ �
   have : (Sieve.bind (imageSieve f₂ s) fun _ _ h => imageSieve f₁ h.choose) ≤
       imageSieve (f₁ ≫ f₂) s := by
     rintro V i ⟨W, i, j, H, ⟨t', ht'⟩, rfl⟩
-    refine' ⟨t', _⟩
+    refine ⟨t', ?_⟩
     rw [op_comp, F₃.map_comp, NatTrans.comp_app, comp_apply, comp_apply, ht',
       elementwise_of% f₂.naturality, H.choose_spec]
   apply J.superset_covering this
@@ -144,7 +144,7 @@ noncomputable def sheafificationIsoImagePresheaf :
     J.sheafifyLift (toImagePresheafSheafify J _)
       ((isSheaf_iff_isSheaf_of_type J _).mpr <|
         Subpresheaf.sheafify_isSheaf _ <|
-          (isSheaf_iff_isSheaf_of_type J _).mp <| sheafify_isSheaf J _)
+          (isSheaf_iff_isSheaf_of_type J _).mp <| GrothendieckTopology.sheafify_isSheaf J _)
   inv := Subpresheaf.ι _
   hom_inv_id :=
     J.sheafify_hom_ext _ _ (J.sheafify_isSheaf _) (by simp [toImagePresheafSheafify])

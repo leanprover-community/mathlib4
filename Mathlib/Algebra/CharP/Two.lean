@@ -3,7 +3,7 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.CharP.ExpChar
 
 #align_import algebra.char_p.two from "leanprover-community/mathlib"@"7f1ba1a333d66eed531ecb4092493cd1b6715450"
 
@@ -17,7 +17,7 @@ elsewhere, with a shorter name for ease of discovery, and no need for a `[Fact (
 -/
 
 
-variable {R ι : Type _}
+variable {R ι : Type*}
 
 namespace CharTwo
 
@@ -73,7 +73,7 @@ theorem neg_eq' : Neg.neg = (id : R → R) :=
 theorem sub_eq_add (x y : R) : x - y = x + y := by rw [sub_eq_add_neg, neg_eq]
 #align char_two.sub_eq_add CharTwo.sub_eq_add
 
-theorem sub_eq_add' : Sub.sub = ((· + ·) : R → R → R) :=
+theorem sub_eq_add' : HSub.hSub = ((· + ·) : R → R → R) :=
   funext fun x => funext fun y => sub_eq_add x y
 #align char_two.sub_eq_add' CharTwo.sub_eq_add'
 

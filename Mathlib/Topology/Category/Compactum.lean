@@ -16,8 +16,8 @@ import Mathlib.Data.Set.Constructions
 
 # Compacta and Compact Hausdorff Spaces
 
-Recall that, given a monad `M` on `Type _`, an *algebra* for `M` consists of the following data:
-- A type `X : Type _`
+Recall that, given a monad `M` on `Type*`, an *algebra* for `M` consists of the following data:
+- A type `X : Type*`
 - A "structure" map `M X → X`.
 This data must also satisfy a distributivity and unit axiom, and algebras for `M` form a category
 in an evident way.
@@ -41,7 +41,7 @@ map `Ultrafilter X → X` for an algebra `X` of the ultrafilter monad should be 
 sending an ultrafilter to its limit in `X`. The topology on `X` is then defined by mimicking the
 characterization of open sets in terms of ultrafilters.
 
-Any `X : Compactum` is endowed with a coercion to `Type _`, as well as the following instances:
+Any `X : Compactum` is endowed with a coercion to `Type*`, as well as the following instances:
 - `TopologicalSpace X`.
 - `CompactSpace X`.
 - `T2Space X`.
@@ -55,9 +55,9 @@ topological space which satisfies `CompactSpace` and `T2Space`.
 We also add wrappers around structures which already exist. Here are the main ones, all in the
 `Compactum` namespace:
 
-- `forget : Compactum ⥤ Type _` is the forgetful functor, which induces a `ConcreteCategory`
+- `forget : Compactum ⥤ Type*` is the forgetful functor, which induces a `ConcreteCategory`
   instance for `Compactum`.
-- `free : Type _ ⥤ Compactum` is the left adjoint to `forget`, and the adjunction is in `adj`.
+- `free : Type* ⥤ Compactum` is the left adjoint to `forget`, and the adjunction is in `adj`.
 - `str : Ultrafilter X → X` is the structure map for `X : Compactum`.
   The notation `X.str` is preferred.
 - `join : Ultrafilter (Ultrafilter X) → Ultrafilter X` is the monadic join for `X : Compactum`.
@@ -71,13 +71,14 @@ We also add wrappers around structures which already exist. Here are the main on
 
 -/
 
--- porting note: "Compactum" is already upper case
+-- Porting note: "Compactum" is already upper case
 set_option linter.uppercaseLean3 false
 universe u
 
 open CategoryTheory Filter Ultrafilter TopologicalSpace CategoryTheory.Limits FiniteInter
 
-open Classical Topology
+open scoped Classical
+open Topology
 
 local notation "β" => ofTypeMonad Ultrafilter
 
@@ -88,20 +89,20 @@ def Compactum :=
 
 namespace Compactum
 
-/-- The forgetful functor to Type _ -/
-def forget : Compactum ⥤ Type _ :=
+/-- The forgetful functor to Type* -/
+def forget : Compactum ⥤ Type* :=
   Monad.forget _ --deriving CreatesLimits, Faithful
   -- Porting note: deriving fails, adding manually. Note `CreatesLimits` now noncomputable
 #align Compactum.forget Compactum.forget
 
-instance : Faithful forget :=
-  show Faithful <| Monad.forget _ from inferInstance
+instance : forget.Faithful :=
+  show (Monad.forget _).Faithful from inferInstance
 
 noncomputable instance : CreatesLimits forget :=
   show CreatesLimits <| Monad.forget _ from inferInstance
 
 /-- The "free" Compactum functor. -/
-def free : Type _ ⥤ Compactum :=
+def free : Type* ⥤ Compactum :=
   Monad.free _
 #align Compactum.free Compactum.free
 
@@ -114,7 +115,7 @@ def adj : free ⊣ forget :=
 instance : ConcreteCategory Compactum where forget := forget
 
 -- Porting note: changed from forget to X.A
-instance : CoeSort Compactum (Type _) :=
+instance : CoeSort Compactum (Type*) :=
   ⟨fun X => X.A⟩
 
 instance {X Y : Compactum} : CoeFun (X ⟶ Y) fun _ => X → Y :=
@@ -188,7 +189,7 @@ instance {X : Compactum} : CompactSpace X := by
   constructor
   rw [isCompact_iff_ultrafilter_le_nhds]
   intro F _
-  refine' ⟨X.str F, by tauto, _⟩
+  refine ⟨X.str F, by tauto, ?_⟩
   rw [le_nhds_iff]
   intro S h1 h2
   exact h2 F h1
@@ -205,7 +206,7 @@ private theorem basic_inter {X : Compactum} (A B : Set X) : basic (A ∩ B) = ba
   ext G
   constructor
   · intro hG
-    constructor <;> filter_upwards [hG]with _
+    constructor <;> filter_upwards [hG] with _
     exacts [And.left, And.right]
   · rintro ⟨h1, h2⟩
     exact inter_mem h1 h2
@@ -240,7 +241,7 @@ private theorem cl_cl {X : Compactum} (A : Set X) : cl (cl A) ⊆ cl A := by
     rintro B ⟨Q, hQ, rfl⟩
     have : (Q ∩ cl A).Nonempty := Filter.nonempty_of_mem (inter_mem hQ hF)
     rcases this with ⟨q, hq1, P, hq2, hq3⟩
-    refine' ⟨P, hq2, _⟩
+    refine ⟨P, hq2, ?_⟩
     rw [← hq3] at hq1
     simpa
   -- Suffices to show that the intersection of any finite subcollection of C1 is nonempty.
@@ -270,7 +271,7 @@ private theorem cl_cl {X : Compactum} (A : Set X) : cl (cl A) ⊆ cl A := by
   -- Finish
   apply claim4.finiteInter_mem T
   intro t ht
-  refine' finiteInterClosure.basic (@hT t ht)
+  exact finiteInterClosure.basic (@hT t ht)
 
 theorem isClosed_cl {X : Compactum} (A : Set X) : IsClosed (cl A) := by
   rw [isClosed_iff]
@@ -327,7 +328,7 @@ theorem str_eq_of_le_nhds {X : Compactum} (F : Ultrafilter X) (x : X) : ↑F ≤
       · use Set.univ
         refine' ⟨Filter.univ_sets _, _⟩
         ext
-        refine' ⟨_, by tauto⟩
+        refine ⟨?_, by tauto⟩
         · intro
           apply Filter.univ_sets
       · exact claim3
@@ -386,7 +387,7 @@ theorem continuous_of_hom {X Y : Compactum} (f : X ⟶ Y) : Continuous f := by
 #align Compactum.continuous_of_hom Compactum.continuous_of_hom
 
 /-- Given any compact Hausdorff space, we construct a Compactum. -/
-noncomputable def ofTopologicalSpace (X : Type _) [TopologicalSpace X] [CompactSpace X]
+noncomputable def ofTopologicalSpace (X : Type*) [TopologicalSpace X] [CompactSpace X]
     [T2Space X] : Compactum where
   A := X
   a := Ultrafilter.lim
@@ -440,11 +441,12 @@ def compactumToCompHaus : Compactum ⥤ CompHaus where
 namespace compactumToCompHaus
 
 /-- The functor `compactumToCompHaus` is full. -/
-def full : Full compactumToCompHaus.{u} where preimage X Y {f} := Compactum.homOfContinuous f.1 f.2
+instance full : compactumToCompHaus.{u}.Full where
+  map_surjective f := ⟨Compactum.homOfContinuous f.1 f.2, rfl⟩
 #align Compactum_to_CompHaus.full compactumToCompHaus.full
 
 /-- The functor `compactumToCompHaus` is faithful. -/
-theorem faithful : Faithful compactumToCompHaus where
+instance faithful : compactumToCompHaus.Faithful where
   -- Porting note: this used to be obviously (though it consumed a bit of memory)
   map_injective := by
     intro _ _ _ _ h
@@ -472,16 +474,12 @@ def isoOfTopologicalSpace {D : CompHaus} :
 #align Compactum_to_CompHaus.iso_of_topological_space compactumToCompHaus.isoOfTopologicalSpace
 
 /-- The functor `compactumToCompHaus` is essentially surjective. -/
-theorem essSurj : EssSurj compactumToCompHaus :=
+instance essSurj : compactumToCompHaus.EssSurj :=
   { mem_essImage := fun X => ⟨Compactum.ofTopologicalSpace X, ⟨isoOfTopologicalSpace⟩⟩ }
 #align Compactum_to_CompHaus.ess_surj compactumToCompHaus.essSurj
 
 /-- The functor `compactumToCompHaus` is an equivalence of categories. -/
-noncomputable instance isEquivalence : IsEquivalence compactumToCompHaus := by
-  have := compactumToCompHaus.full
-  have := compactumToCompHaus.faithful
-  have := compactumToCompHaus.essSurj
-  apply Equivalence.ofFullyFaithfullyEssSurj _
+instance isEquivalence : compactumToCompHaus.IsEquivalence where
 #align Compactum_to_CompHaus.is_equivalence compactumToCompHaus.isEquivalence
 
 end compactumToCompHaus

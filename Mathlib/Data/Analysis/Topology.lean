@@ -32,7 +32,7 @@ open Topology
 /-- A `Ctop α σ` is a realization of a topology (basis) on `α`,
   represented by a type `σ` together with operations for the top element and
   the intersection operation. -/
-structure Ctop (α σ : Type _) where
+structure Ctop (α σ : Type*) where
   f : σ → Set α
   top : α → σ
   top_mem : ∀ x : α, x ∈ f (top x)
@@ -41,7 +41,7 @@ structure Ctop (α σ : Type _) where
   inter_sub : ∀ a b x h, f (inter a b x h) ⊆ f a ∩ f b
 #align ctop Ctop
 
-variable {α : Type _} {β : Type _} {σ : Type _} {τ : Type _}
+variable {α : Type*} {β : Type*} {σ : Type*} {τ : Type*}
 
 instance : Inhabited (Ctop α (Set α)) :=
   ⟨{  f := id
@@ -60,7 +60,7 @@ variable (F : Ctop α σ)
 instance : CoeFun (Ctop α σ) fun _ ↦ σ → Set α :=
   ⟨Ctop.f⟩
 
--- @[simp] -- Porting note: dsimp can prove this
+-- @[simp] -- Porting note (#10685): dsimp can prove this
 theorem coe_mk (f T h₁ I h₂ h₃ a) : (@Ctop.mk α σ f T h₁ I h₂ h₃) a = f a := rfl
 #align ctop.coe_mk Ctop.coe_mk
 
@@ -107,7 +107,7 @@ end Ctop
 /-- A `Ctop` realizer for the topological space `T` is a `Ctop`
   which generates `T`. -/
 structure Ctop.Realizer (α) [T : TopologicalSpace α] where
-  σ : Type _
+  σ : Type*
   F : Ctop α σ
   eq : F.toTopsp = T
 #align ctop.realizer Ctop.Realizer
@@ -130,13 +130,13 @@ protected theorem is_basis [T : TopologicalSpace α] (F : Realizer α) :
 #align ctop.realizer.is_basis Ctop.Realizer.is_basis
 
 protected theorem mem_nhds [T : TopologicalSpace α] (F : Realizer α) {s : Set α} {a : α} :
-  s ∈ 𝓝 a ↔ ∃ b, a ∈ F.F b ∧ F.F b ⊆ s := by
+    s ∈ 𝓝 a ↔ ∃ b, a ∈ F.F b ∧ F.F b ⊆ s := by
   have := @mem_nhds_toTopsp _ _ F.F s a; rwa [F.eq] at this
 #align ctop.realizer.mem_nhds Ctop.Realizer.mem_nhds
 
 theorem isOpen_iff [TopologicalSpace α] (F : Realizer α) {s : Set α} :
     IsOpen s ↔ ∀ a ∈ s, ∃ b, a ∈ F.F b ∧ F.F b ⊆ s :=
-  isOpen_iff_mem_nhds.trans <| ball_congr fun _a _h ↦ F.mem_nhds
+  isOpen_iff_mem_nhds.trans <| forall₂_congr fun _a _h ↦ F.mem_nhds
 #align ctop.realizer.is_open_iff Ctop.Realizer.isOpen_iff
 
 theorem isClosed_iff [TopologicalSpace α] (F : Realizer α) {s : Set α} :
@@ -158,14 +158,14 @@ protected theorem isOpen [TopologicalSpace α] (F : Realizer α) (s : F.σ) : Is
   isOpen_iff_nhds.2 fun a m ↦ by simpa using F.mem_nhds.2 ⟨s, m, Subset.refl _⟩
 #align ctop.realizer.is_open Ctop.Realizer.isOpen
 
-theorem ext' [T : TopologicalSpace α] {σ : Type _} {F : Ctop α σ}
+theorem ext' [T : TopologicalSpace α] {σ : Type*} {F : Ctop α σ}
     (H : ∀ a s, s ∈ 𝓝 a ↔ ∃ b, a ∈ F b ∧ F b ⊆ s) : F.toTopsp = T := by
-  refine' eq_of_nhds_eq_nhds fun x ↦ _
+  refine TopologicalSpace.ext_nhds fun x ↦ ?_
   ext s
   rw [mem_nhds_toTopsp, H]
 #align ctop.realizer.ext' Ctop.Realizer.ext'
 
-theorem ext [T : TopologicalSpace α] {σ : Type _} {F : Ctop α σ} (H₁ : ∀ a, IsOpen (F a))
+theorem ext [T : TopologicalSpace α] {σ : Type*} {F : Ctop α σ} (H₁ : ∀ a, IsOpen (F a))
     (H₂ : ∀ a s, s ∈ 𝓝 a → ∃ b, a ∈ F b ∧ F b ⊆ s) : F.toTopsp = T :=
   ext' fun a s ↦ ⟨H₂ a s, fun ⟨_b, h₁, h₂⟩ ↦ mem_nhds_iff.2 ⟨_, h₂, H₁ _, h₁⟩⟩
 #align ctop.realizer.ext Ctop.Realizer.ext
@@ -246,12 +246,12 @@ structure LocallyFinite.Realizer [TopologicalSpace α] (F : Ctop.Realizer α) (f
 #align locally_finite.realizer LocallyFinite.Realizer
 
 theorem LocallyFinite.Realizer.to_locallyFinite [TopologicalSpace α] {F : Ctop.Realizer α}
-  {f : β → Set α} (R : LocallyFinite.Realizer F f) : LocallyFinite f := fun a ↦
-  ⟨_, F.mem_nhds.2 ⟨(R.bas a).1, (R.bas a).2, Subset.refl _⟩, ⟨R.sets a⟩⟩
+    {f : β → Set α} (R : LocallyFinite.Realizer F f) : LocallyFinite f := fun a ↦
+  ⟨_, F.mem_nhds.2 ⟨(R.bas a).1, (R.bas a).2, Subset.rfl⟩, have := R.sets a; Set.toFinite _⟩
 #align locally_finite.realizer.to_locally_finite LocallyFinite.Realizer.to_locallyFinite
 
-theorem locallyFinite_iff_exists_realizer [TopologicalSpace α]
-  (F : Ctop.Realizer α) {f : β → Set α} : LocallyFinite f ↔ Nonempty (LocallyFinite.Realizer F f) :=
+theorem locallyFinite_iff_exists_realizer [TopologicalSpace α] (F : Ctop.Realizer α)
+    {f : β → Set α} : LocallyFinite f ↔ Nonempty (LocallyFinite.Realizer F f) :=
   ⟨fun h ↦
     let ⟨g, h₁⟩ := Classical.axiom_of_choice h
     let ⟨g₂, h₂⟩ :=
@@ -278,6 +278,6 @@ def Compact.Realizer [TopologicalSpace α] (s : Set α) :=
 
 instance [TopologicalSpace α] : Inhabited (Compact.Realizer (∅ : Set α)) :=
   ⟨fun {f} F x h hF ↦ by
-    suffices : f = ⊥; exact absurd this h
+    suffices f = ⊥ from absurd this h
     rw [← F.eq, eq_bot_iff]
-    exact λ s _ ↦ ⟨x, hF.trans s.empty_subset⟩⟩
+    exact fun s _ ↦ ⟨x, hF.trans s.empty_subset⟩⟩

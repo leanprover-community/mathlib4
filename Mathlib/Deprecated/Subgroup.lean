@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mitchell Rowett, Scott Morrison, Johan Commelin, Mario Carneiro,
   Michael Howes
 -/
-import Mathlib.GroupTheory.Subgroup.Basic
+import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Deprecated.Submonoid
 
 #align_import deprecated.subgroup from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
@@ -16,7 +16,7 @@ This file is deprecated, and is no longer imported by anything in mathlib other 
 deprecated files, and test files. You should not need to import it.
 
 This file defines unbundled multiplicative and additive subgroups. Instead of using this file,
-please use `Subgroup G` and `AddSubgroup A`, defined in `GroupTheory.Subgroup.Basic`.
+please use `Subgroup G` and `AddSubgroup A`, defined in `Mathlib.Algebra.Group.Subgroup.Basic`.
 
 ## Main definitions
 
@@ -34,7 +34,7 @@ subgroup, subgroups, IsSubgroup
 
 open Set Function
 
-variable {G : Type _} {H : Type _} {A : Type _} {a a₁ a₂ b c : G}
+variable {G : Type*} {H : Type*} {A : Type*} {a a₁ a₂ b c : G}
 
 section Group
 
@@ -110,7 +110,7 @@ theorem IsSubgroup.inter {s₁ s₂ : Set G} (hs₁ : IsSubgroup s₁) (hs₂ : 
 #align is_add_subgroup.inter IsAddSubgroup.inter
 
 @[to_additive]
-theorem IsSubgroup.iInter {ι : Sort _} {s : ι → Set G} (hs : ∀ y : ι, IsSubgroup (s y)) :
+theorem IsSubgroup.iInter {ι : Sort*} {s : ι → Set G} (hs : ∀ y : ι, IsSubgroup (s y)) :
     IsSubgroup (Set.iInter s) :=
   { IsSubmonoid.iInter fun y => (hs y).toIsSubmonoid with
     inv_mem := fun h =>
@@ -119,7 +119,7 @@ theorem IsSubgroup.iInter {ι : Sort _} {s : ι → Set G} (hs : ∀ y : ι, IsS
 #align is_add_subgroup.Inter IsAddSubgroup.iInter
 
 @[to_additive]
-theorem isSubgroup_iUnion_of_directed {ι : Type _} [Nonempty ι] {s : ι → Set G}
+theorem isSubgroup_iUnion_of_directed {ι : Type*} [Nonempty ι] {s : ι → Set G}
     (hs : ∀ i, IsSubgroup (s i)) (directed : ∀ i j, ∃ k, s i ⊆ s k ∧ s j ⊆ s k) :
     IsSubgroup (⋃ i, s i) :=
   { inv_mem := fun ha =>
@@ -185,7 +185,7 @@ theorem Additive.isNormalAddSubgroup [Group G] {s : Set G} (hs : IsNormalSubgrou
     @IsNormalAddSubgroup (Additive G) _ s :=
   @IsNormalAddSubgroup.mk (Additive G) _ _ (Additive.isAddSubgroup hs.toIsSubgroup)
     (@IsNormalSubgroup.normal _ ‹Group (Additive G)› _ hs)
-    -- porting note: Lean needs help synthesising
+    -- Porting note: Lean needs help synthesising
 #align additive.is_normal_add_subgroup Additive.isNormalAddSubgroup
 
 theorem Additive.isNormalAddSubgroup_iff [Group G] {s : Set G} :
@@ -229,7 +229,7 @@ theorem mem_norm_comm_iff {s : Set G} (hs : IsNormalSubgroup s) {a b : G} : a * 
 
 /-- The trivial subgroup -/
 @[to_additive "the trivial additive subgroup"]
-def trivial (G : Type _) [Group G] : Set G :=
+def trivial (G : Type*) [Group G] : Set G :=
   {1}
 #align is_subgroup.trivial IsSubgroup.trivial
 #align is_add_subgroup.trivial IsAddSubgroup.trivial
@@ -260,7 +260,7 @@ theorem univ_subgroup : IsNormalSubgroup (@univ G) := by refine' { .. } <;> simp
 
 /-- The underlying set of the center of a group. -/
 @[to_additive addCenter "The underlying set of the center of an additive group."]
-def center (G : Type _) [Group G] : Set G :=
+def center (G : Type*) [Group G] : Set G :=
   { z | ∀ g, g * z = z * g }
 #align is_subgroup.center IsSubgroup.center
 #align is_add_subgroup.add_center IsAddSubgroup.addCenter
@@ -645,7 +645,7 @@ theorem closure_eq_mclosure {s : Set G} : closure s = Monoid.Closure (s ∪ Inv.
 #align add_group.closure_eq_mclosure AddGroup.closure_eq_mclosure
 
 @[to_additive]
-theorem mem_closure_union_iff {G : Type _} [CommGroup G] {s t : Set G} {x : G} :
+theorem mem_closure_union_iff {G : Type*} [CommGroup G] {s t : Set G} {x : G} :
     x ∈ closure (s ∪ t) ↔ ∃ y ∈ closure s, ∃ z ∈ closure t, y * z = x := by
   simp only [closure_eq_mclosure, Monoid.mem_closure_union_iff, exists_prop, preimage_union];
   constructor
@@ -673,7 +673,7 @@ theorem trivial_eq_closure : trivial G = Group.closure ∅ :=
 
 end IsSubgroup
 
-/-The normal closure of a set s is the subgroup closure of all the conjugates of
+/- The normal closure of a set s is the subgroup closure of all the conjugates of
 elements of s. It is the smallest normal subgroup containing s. -/
 namespace Group
 
@@ -746,8 +746,7 @@ end Group
 
 /-- Create a bundled subgroup from a set `s` and `[IsSubgroup s]`. -/
 @[to_additive "Create a bundled additive subgroup from a set `s` and `[IsAddSubgroup s]`."]
-def Subgroup.of [Group G] {s : Set G} (h : IsSubgroup s) : Subgroup G
-    where
+def Subgroup.of [Group G] {s : Set G} (h : IsSubgroup s) : Subgroup G where
   carrier := s
   one_mem' := h.1.1
   mul_mem' := h.1.2

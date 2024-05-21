@@ -18,7 +18,6 @@ This equivalence is probably not particularly useful in practice;
 it's here to check that definitions match up as expected.
 -/
 
-
 open CategoryTheory CategoryTheory.Limits
 
 open scoped Classical
@@ -32,8 +31,8 @@ Porting note: after the port, move these to their own file.
 -/
 namespace CategoryTheory.DifferentialObject
 
-variable {β : Type _} [AddCommGroup β] {b : β}
-variable {V : Type _} [Category V] [HasZeroMorphisms V]
+variable {β : Type*} [AddCommGroup β] {b : β}
+variable {V : Type*} [Category V] [HasZeroMorphisms V]
 variable (X : DifferentialObject ℤ (GradedObjectWithShift b V))
 
 /-- Since `eqToHom` only preserves the fact that `X.X i = X.X j` but not `i = j`, this definition
@@ -56,7 +55,7 @@ theorem objEqToHom_d {x y : β} (h : x = y) :
 #align homological_complex.eq_to_hom_d CategoryTheory.DifferentialObject.objEqToHom_d
 
 @[reassoc (attr := simp)]
-theorem d_squared_apply : X.d x ≫ X.d _ = 0 := congr_fun X.d_squared _
+theorem d_squared_apply {x : β} : X.d x ≫ X.d _ = 0 := congr_fun X.d_squared _
 
 @[reassoc (attr := simp)]
 theorem eqToHom_f' {X Y : DifferentialObject ℤ (GradedObjectWithShift b V)} (f : X ⟶ Y) {x y : β}
@@ -69,8 +68,8 @@ open CategoryTheory.DifferentialObject
 
 namespace HomologicalComplex
 
-variable {β : Type _} [AddCommGroup β] (b : β)
-variable (V : Type _) [Category V] [HasZeroMorphisms V]
+variable {β : Type*} [AddCommGroup β] (b : β)
+variable (V : Type*) [Category V] [HasZeroMorphisms V]
 
 -- Porting note: this should be moved to an earlier file.
 -- Porting note: simpNF linter silenced, both `d_eqToHom` and its `_assoc` version
@@ -80,7 +79,7 @@ theorem d_eqToHom (X : HomologicalComplex V (ComplexShape.up' b)) {x y z : β} (
     X.d x y ≫ eqToHom (congr_arg X.X h) = X.d x z := by cases h; simp
 #align homological_complex.d_eq_to_hom HomologicalComplex.d_eqToHom
 
-set_option maxHeartbeats 800000 in
+set_option maxHeartbeats 400000 in
 /-- The functor from differential graded objects to homological complexes.
 -/
 @[simps]

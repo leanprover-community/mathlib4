@@ -3,7 +3,7 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.Group.Instances
+import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Monoid.TypeTags
 
 #align_import algebra.order.group.type_tags from "leanprover-community/mathlib"@"2258b40dacd2942571c8ce136215350c702dc78f"
@@ -11,7 +11,7 @@ import Mathlib.Algebra.Order.Monoid.TypeTags
 /-! # Ordered group structures on `Multiplicative α` and `Additive α`. -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 instance Multiplicative.orderedCommGroup [OrderedAddCommGroup α] :
     OrderedCommGroup (Multiplicative α) :=

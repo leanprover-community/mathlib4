@@ -3,6 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Pairing
 
 #align_import logic.equiv.nat from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
@@ -19,7 +20,7 @@ open Nat Function
 
 namespace Equiv
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- An equivalence between `Bool × ℕ` and `ℕ`, by mapping `(true, x)` to `2 * x + 1` and
 `(false, x)` to `2 * x`. -/

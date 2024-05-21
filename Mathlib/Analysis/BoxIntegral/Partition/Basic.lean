@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.Option
 import Mathlib.Analysis.BoxIntegral.Box.Basic
+import Mathlib.Data.Set.Pairwise.Lattice
 
 #align_import analysis.box_integral.partition.basic from "leanprover-community/mathlib"@"84dc0bd6619acaea625086d6f53cb35cdd554219"
 
@@ -40,19 +41,23 @@ rectangular box, partition
 
 open Set Finset Function
 
-open Classical NNReal BigOperators
+open scoped Classical
+open NNReal BigOperators
 
 noncomputable section
 
 namespace BoxIntegral
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 /-- A prepartition of `I : BoxIntegral.Box ι` is a finite set of pairwise disjoint subboxes of
 `I`. -/
 structure Prepartition (I : Box ι) where
+  /-- The underlying set of boxes -/
   boxes : Finset (Box ι)
+  /-- Each box is a sub-box of `I` -/
   le_of_mem' : ∀ J ∈ boxes, J ≤ I
+  /-- The boxes in a prepartition are pairwise disjoint. -/
   pairwiseDisjoint : Set.Pairwise (↑boxes) (Disjoint on ((↑) : Box ι → Set (ι → ℝ)))
 #align box_integral.prepartition BoxIntegral.Prepartition
 
@@ -133,12 +138,14 @@ instance partialOrder : PartialOrder (Prepartition I) where
     let ⟨I₃, hI₃, hI₂₃⟩ := h₂₃ hI₂
     ⟨I₃, hI₃, hI₁₂.trans hI₂₃⟩
   le_antisymm := by
-    suffices : ∀ {π₁ π₂ : Prepartition I}, π₁ ≤ π₂ → π₂ ≤ π₁ → π₁.boxes ⊆ π₂.boxes
-    exact fun π₁ π₂ h₁ h₂ => injective_boxes (Subset.antisymm (this h₁ h₂) (this h₂ h₁))
+    suffices ∀ {π₁ π₂ : Prepartition I}, π₁ ≤ π₂ → π₂ ≤ π₁ → π₁.boxes ⊆ π₂.boxes from
+      fun π₁ π₂ h₁ h₂ => injective_boxes (Subset.antisymm (this h₁ h₂) (this h₂ h₁))
     intro π₁ π₂ h₁ h₂ J hJ
     rcases h₁ hJ with ⟨J', hJ', hle⟩; rcases h₂ hJ' with ⟨J'', hJ'', hle'⟩
-    obtain rfl : J = J''; exact π₁.eq_of_le hJ hJ'' (hle.trans hle')
-    obtain rfl : J' = J; exact le_antisymm ‹_› ‹_›
+    obtain rfl : J = J''
+    · exact π₁.eq_of_le hJ hJ'' (hle.trans hle')
+    obtain rfl : J' = J
+    · exact le_antisymm ‹_› ‹_›
     assumption
 
 instance : OrderTop (Prepartition I) where
@@ -184,7 +191,7 @@ theorem injOn_setOf_mem_Icc_setOf_lower_eq (x : ι → ℝ) :
     exact π.eq_of_mem_of_mem h₁ h₂ hy₁ hy₂
   intro i
   simp only [Set.ext_iff, mem_setOf] at H
-  cases' (hx₁.1 i).eq_or_lt with hi₁ hi₁
+  rcases (hx₁.1 i).eq_or_lt with hi₁ | hi₁
   · have hi₂ : J₂.lower i = x i := (H _).1 hi₁
     have H₁ : x i < J₁.upper i := by simpa only [hi₁] using J₁.lower_lt_upper i
     have H₂ : x i < J₂.upper i := by simpa only [hi₂] using J₂.lower_lt_upper i
@@ -302,8 +309,8 @@ def biUnion (πi : ∀ J : Box ι, Prepartition J) : Prepartition I where
     rw [Function.onFun, Set.disjoint_left]
     rintro x hx₁ hx₂; apply Hne
     obtain rfl : J₁ = J₂
-    exact π.eq_of_mem_of_mem hJ₁ hJ₂ ((πi J₁).le_of_mem hJ₁' hx₁) ((πi J₂).le_of_mem hJ₂' hx₂)
-    exact (πi J₁).eq_of_mem_of_mem hJ₁' hJ₂' hx₁ hx₂
+    · exact π.eq_of_mem_of_mem hJ₁ hJ₂ ((πi J₁).le_of_mem hJ₁' hx₁) ((πi J₂).le_of_mem hJ₂' hx₂)
+    · exact (πi J₁).eq_of_mem_of_mem hJ₁' hJ₂' hx₁ hx₂
 #align box_integral.prepartition.bUnion BoxIntegral.Prepartition.biUnion
 
 variable {πi πi₁ πi₂ : ∀ J : Box ι, Prepartition J}
@@ -343,7 +350,7 @@ theorem iUnion_biUnion (πi : ∀ J : Box ι, Prepartition J) :
 #align box_integral.prepartition.Union_bUnion BoxIntegral.Prepartition.iUnion_biUnion
 
 @[simp]
-theorem sum_biUnion_boxes {M : Type _} [AddCommMonoid M] (π : Prepartition I)
+theorem sum_biUnion_boxes {M : Type*} [AddCommMonoid M] (π : Prepartition I)
     (πi : ∀ J, Prepartition J) (f : Box ι → M) :
     (∑ J in π.boxes.biUnion fun J => (πi J).boxes, f J) =
       ∑ J in π.boxes, ∑ J' in (πi J).boxes, f J' := by
@@ -389,10 +396,10 @@ theorem biUnion_assoc (πi : ∀ J, Prepartition J) (πi' : Box ι → ∀ J : B
   simp only [mem_biUnion, exists_prop]
   constructor
   · rintro ⟨J₁, hJ₁, J₂, hJ₂, hJ⟩
-    refine' ⟨J₂, ⟨J₁, hJ₁, hJ₂⟩, _⟩
+    refine ⟨J₂, ⟨J₁, hJ₁, hJ₂⟩, ?_⟩
     rwa [π.biUnionIndex_of_mem hJ₁ hJ₂]
   · rintro ⟨J₁, ⟨J₂, hJ₂, hJ₁⟩, hJ⟩
-    refine' ⟨J₂, hJ₂, J₁, hJ₁, _⟩
+    refine ⟨J₂, hJ₂, J₁, hJ₁, ?_⟩
     rwa [π.biUnionIndex_of_mem hJ₂ hJ₁] at hJ
 #align box_integral.prepartition.bUnion_assoc BoxIntegral.Prepartition.biUnion_assoc
 
@@ -459,7 +466,7 @@ theorem ofWithBot_mono {boxes₁ : Finset (WithBot (Box ι))}
   le_ofWithBot _ fun J hJ => H J (mem_ofWithBot.1 hJ) WithBot.coe_ne_bot
 #align box_integral.prepartition.of_with_bot_mono BoxIntegral.Prepartition.ofWithBot_mono
 
-theorem sum_ofWithBot {M : Type _} [AddCommMonoid M] (boxes : Finset (WithBot (Box ι)))
+theorem sum_ofWithBot {M : Type*} [AddCommMonoid M] (boxes : Finset (WithBot (Box ι)))
     (le_of_mem : ∀ J ∈ boxes, (J : WithBot (Box ι)) ≤ I)
     (pairwise_disjoint : Set.Pairwise (boxes : Set (WithBot (Box ι))) Disjoint) (f : Box ι → M) :
     (∑ J in (ofWithBot boxes le_of_mem pairwise_disjoint).boxes, f J) =
@@ -533,8 +540,8 @@ theorem restrict_biUnion (πi : ∀ J, Prepartition J) (hJ : J ∈ π) :
   · simp only [iUnion_restrict, iUnion_biUnion, Set.subset_def, Set.mem_inter_iff, Set.mem_iUnion]
     rintro x ⟨hxJ, J₁, h₁, hx⟩
     obtain rfl : J = J₁
-    exact π.eq_of_mem_of_mem hJ h₁ hxJ (iUnion_subset _ hx)
-    exact hx
+    · exact π.eq_of_mem_of_mem hJ h₁ hxJ (iUnion_subset _ hx)
+    · exact hx
 #align box_integral.prepartition.restrict_bUnion BoxIntegral.Prepartition.restrict_biUnion
 
 theorem biUnion_le_iff {πi : ∀ J, Prepartition J} {π' : Prepartition I} :
@@ -618,11 +625,11 @@ theorem filter_true : (π.filter fun _ => True) = π :=
 theorem iUnion_filter_not (π : Prepartition I) (p : Box ι → Prop) :
     (π.filter fun J => ¬p J).iUnion = π.iUnion \ (π.filter p).iUnion := by
   simp only [Prepartition.iUnion]
-  convert (@Set.biUnion_diff_biUnion_eq _ (Box ι) π.boxes (π.filter p).boxes (↑) _).symm
+  convert (@Set.biUnion_diff_biUnion_eq (ι → ℝ) (Box ι) π.boxes (π.filter p).boxes (↑) _).symm
   · simp (config := { contextual := true })
   · rw [Set.PairwiseDisjoint]
     convert π.pairwiseDisjoint
-    rw [Set.union_eq_left_iff_subset, filter_boxes, coe_filter]
+    rw [Set.union_eq_left, filter_boxes, coe_filter]
     exact fun _ ⟨h, _⟩ => h
 #align box_integral.prepartition.Union_filter_not BoxIntegral.Prepartition.iUnion_filter_not
 
@@ -656,7 +663,7 @@ theorem iUnion_disjUnion (h : Disjoint π₁.iUnion π₂.iUnion) :
 #align box_integral.prepartition.Union_disj_union BoxIntegral.Prepartition.iUnion_disjUnion
 
 @[simp]
-theorem sum_disj_union_boxes {M : Type _} [AddCommMonoid M] (h : Disjoint π₁.iUnion π₂.iUnion)
+theorem sum_disj_union_boxes {M : Type*} [AddCommMonoid M] (h : Disjoint π₁.iUnion π₂.iUnion)
     (f : Box ι → M) :
     ∑ J in π₁.boxes ∪ π₂.boxes, f J = (∑ J in π₁.boxes, f J) + ∑ J in π₂.boxes, f J :=
   sum_union <| disjoint_boxes_of_disjoint_iUnion h
@@ -740,9 +747,9 @@ theorem iUnion_subset (h : π.IsPartition) (π₁ : Prepartition I) : π₁.iUni
 #align box_integral.prepartition.is_partition.Union_subset BoxIntegral.Prepartition.IsPartition.iUnion_subset
 
 protected theorem existsUnique (h : π.IsPartition) (hx : x ∈ I) :
-    ∃! (J : _) (_ : J ∈ π), x ∈ J := by
+    ∃! J ∈ π, x ∈ J := by
   rcases h x hx with ⟨J, h, hx⟩
-  exact ExistsUnique.intro₂ J h hx fun J' h' hx' => π.eq_of_mem_of_mem h' h hx' hx
+  exact ExistsUnique.intro J ⟨h, hx⟩ fun J' ⟨h', hx'⟩ => π.eq_of_mem_of_mem h' h hx' hx
 #align box_integral.prepartition.is_partition.exists_unique BoxIntegral.Prepartition.IsPartition.existsUnique
 
 theorem nonempty_boxes (h : π.IsPartition) : π.boxes.Nonempty :=

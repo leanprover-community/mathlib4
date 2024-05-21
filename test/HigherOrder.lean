@@ -1,5 +1,6 @@
 import Mathlib.Tactic.HigherOrder
 
+set_option autoImplicit true
 namespace HigherOrderTest
 
 @[higher_order map_comp_pure]

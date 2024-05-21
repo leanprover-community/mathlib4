@@ -24,24 +24,18 @@ derivative
 
 universe u v w
 
-open Classical Topology BigOperators Filter
+open scoped Classical
+open Topology BigOperators Filter
 
 open Filter Asymptotics Set
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
 variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 variable {f f₀ f₁ g : 𝕜 → F}
-
 variable {f' f₀' f₁' g' : F}
-
 variable {x : 𝕜}
-
 variable {s t : Set 𝕜}
-
 variable {L L₁ L₂ : Filter 𝕜}
 
 section CartesianProduct
@@ -50,7 +44,6 @@ section CartesianProduct
 
 
 variable {G : Type w} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-
 variable {f₂ : 𝕜 → G} {f₂' : G}
 
 nonrec theorem HasDerivAtFilter.prod (hf₁ : HasDerivAtFilter f₁ f₁' x L)
@@ -79,7 +72,7 @@ section Pi
 
 /-! ### Derivatives of functions `f : 𝕜 → Π i, E i` -/
 
-variable {ι : Type _} [Fintype ι] {E' : ι → Type _} [∀ i, NormedAddCommGroup (E' i)]
+variable {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, NormedAddCommGroup (E' i)]
   [∀ i, NormedSpace 𝕜 (E' i)] {φ : 𝕜 → ∀ i, E' i} {φ' : ∀ i, E' i}
 
 @[simp]
@@ -115,4 +108,3 @@ theorem deriv_pi (h : ∀ i, DifferentiableAt 𝕜 (fun x => φ x i) x) :
 #align deriv_pi deriv_pi
 
 end Pi
-

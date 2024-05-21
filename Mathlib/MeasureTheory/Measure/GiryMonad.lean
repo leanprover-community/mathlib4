@@ -32,11 +32,13 @@ giry monad
 
 noncomputable section
 
-open Classical BigOperators ENNReal
+open scoped Classical
+open BigOperators ENNReal
 
-open Classical Set Filter
+open scoped Classical
+open Set Filter
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace MeasureTheory
 
@@ -60,7 +62,7 @@ theorem measurable_of_measurable_coe (f : β → Measure α)
       MeasurableSpace.comap_le_iff_le_map.2 <| by rw [MeasurableSpace.map_comp]; exact h s hs
 #align measure_theory.measure.measurable_of_measurable_coe MeasureTheory.Measure.measurable_of_measurable_coe
 
-instance instMeasurableAdd₂ {α : Type _} {m : MeasurableSpace α} : MeasurableAdd₂ (Measure α) := by
+instance instMeasurableAdd₂ {α : Type*} {m : MeasurableSpace α} : MeasurableAdd₂ (Measure α) := by
   refine' ⟨Measure.measurable_of_measurable_coe _ fun s hs => _⟩
   simp_rw [Measure.coe_add, Pi.add_apply]
   refine' Measurable.add _ _
@@ -98,7 +100,7 @@ theorem measurable_lintegral {f : α → ℝ≥0∞} (hf : Measurable f) :
 functions. -/
 def join (m : Measure (Measure α)) : Measure α :=
   Measure.ofMeasurable (fun s _ => ∫⁻ μ, μ s ∂m)
-    (by simp only [measure_empty, lintegral_const, MulZeroClass.zero_mul])
+    (by simp only [measure_empty, lintegral_const, zero_mul])
     (by
       intro f hf h
       simp_rw [measure_iUnion h hf]
@@ -162,7 +164,7 @@ theorem bind_zero_right (m : Measure α) : bind m (0 : α → Measure β) = 0 :=
   ext1 s hs
   simp only [bind, hs, join_apply, coe_zero, Pi.zero_apply]
   rw [lintegral_map (measurable_coe hs) measurable_zero]
-  simp only [Pi.zero_apply, coe_zero, lintegral_const, MulZeroClass.zero_mul]
+  simp only [Pi.zero_apply, coe_zero, lintegral_const, zero_mul]
 #align measure_theory.measure.bind_zero_right MeasureTheory.Measure.bind_zero_right
 
 @[simp]
@@ -191,6 +193,7 @@ theorem bind_bind {γ} [MeasurableSpace γ] {m : Measure α} {f : α → Measure
   erw [bind_apply hs hg, bind_apply hs ((measurable_bind' hg).comp hf),
     lintegral_bind hf ((measurable_coe hs).comp hg)]
   conv_rhs => enter [2, a]; erw [bind_apply hs hg]
+  rfl
 #align measure_theory.measure.bind_bind MeasureTheory.Measure.bind_bind
 
 theorem bind_dirac {f : α → Measure β} (hf : Measurable f) (a : α) : bind (dirac a) f = f a := by

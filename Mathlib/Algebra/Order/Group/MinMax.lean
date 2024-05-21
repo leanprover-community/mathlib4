@@ -15,22 +15,27 @@ import Mathlib.Algebra.Order.Monoid.MinMax
 
 section
 
-variable {α : Type _} [Group α] [LinearOrder α] [CovariantClass α α (· * ·) (· ≤ ·)]
+variable {α : Type*} [Group α] [LinearOrder α] [CovariantClass α α (· * ·) (· ≤ ·)]
 
+-- TODO: This duplicates `oneLePart_div_leOnePart`
 @[to_additive (attr := simp)]
 theorem max_one_div_max_inv_one_eq_self (a : α) : max a 1 / max a⁻¹ 1 = a := by
   rcases le_total a 1 with (h | h) <;> simp [h]
 #align max_one_div_max_inv_one_eq_self max_one_div_max_inv_one_eq_self
 #align max_zero_sub_max_neg_zero_eq_self max_zero_sub_max_neg_zero_eq_self
 
-alias max_zero_sub_max_neg_zero_eq_self ← max_zero_sub_eq_self
+alias max_zero_sub_eq_self := max_zero_sub_max_neg_zero_eq_self
 #align max_zero_sub_eq_self max_zero_sub_eq_self
+
+@[to_additive]
+lemma max_inv_one (a : α) : max a⁻¹ 1 = a⁻¹ * max a 1 := by
+  rw [eq_inv_mul_iff_mul_eq, ← eq_div_iff_mul_eq', max_one_div_max_inv_one_eq_self]
 
 end
 
 section LinearOrderedCommGroup
 
-variable {α : Type _} [LinearOrderedCommGroup α] {a b c : α}
+variable {α : Type*} [LinearOrderedCommGroup α] {a b c : α}
 
 @[to_additive min_neg_neg]
 theorem min_inv_inv' (a b : α) : min a⁻¹ b⁻¹ = (max a b)⁻¹ :=
@@ -76,14 +81,14 @@ end LinearOrderedCommGroup
 
 section LinearOrderedAddCommGroup
 
-variable {α : Type _} [LinearOrderedAddCommGroup α] {a b c : α}
+variable {α : Type*} [LinearOrderedAddCommGroup α] {a b c : α}
 
 theorem max_sub_max_le_max (a b c d : α) : max a b - max c d ≤ max (a - c) (b - d) := by
   simp only [sub_le_iff_le_add, max_le_iff]; constructor
-  calc
+  · calc
     a = a - c + c := (sub_add_cancel a c).symm
     _ ≤ max (a - c) (b - d) + max c d := add_le_add (le_max_left _ _) (le_max_left _ _)
-  calc
+  · calc
     b = b - d + d := (sub_add_cancel b d).symm
     _ ≤ max (a - c) (b - d) + max c d := add_le_add (le_max_right _ _) (le_max_right _ _)
 #align max_sub_max_le_max max_sub_max_le_max

@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
 import Mathlib.Algebra.CharP.Invertible
+import Mathlib.Algebra.MvPolynomial.Variables
+import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.Algebra.MvPolynomial.Expand
 import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.MvPolynomial.Variables
-import Mathlib.Data.MvPolynomial.CommRing
-import Mathlib.Data.MvPolynomial.Expand
 import Mathlib.Data.ZMod.Basic
 
 #align_import ring_theory.witt_vector.witt_polynomial from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
@@ -69,8 +69,7 @@ open BigOperators
 --attribute [-simp] coe_eval₂_hom
 
 variable (p : ℕ)
-
-variable (R : Type _) [CommRing R] [DecidableEq R]
+variable (R : Type*) [CommRing R] [DecidableEq R]
 
 /-- `wittPolynomial p R n` is the `n`-th Witt polynomial
 with respect to a prime `p` with coefficients in a commutative ring `R`.
@@ -94,26 +93,26 @@ set_option linter.uppercaseLean3 false in
 This allows us to simply write `W n` or `W_ ℤ n`. -/
 
 
--- mathport name: witt_polynomial
 -- Notation with ring of coefficients explicit
 set_option quotPrecheck false in
+@[inherit_doc]
 scoped[Witt] notation "W_" => wittPolynomial p
 
--- mathport name: witt_polynomial.infer
 -- Notation with ring of coefficients implicit
 set_option quotPrecheck false in
+@[inherit_doc]
 scoped[Witt] notation "W" => wittPolynomial p _
 
 open Witt
 
 open MvPolynomial
 
-/- The first observation is that the Witt polynomial doesn't really depend on the coefficient ring.
+/-! The first observation is that the Witt polynomial doesn't really depend on the coefficient ring.
 If we map the coefficients through a ring homomorphism, we obtain the corresponding Witt polynomial
 over the target ring. -/
 section
 
-variable {R} {S : Type _} [CommRing S]
+variable {R} {S : Type*} [CommRing S]
 
 @[simp]
 theorem map_wittPolynomial (f : R →+* S) (n : ℕ) : map f (W n) = W n := by
@@ -146,22 +145,21 @@ theorem wittPolynomial_one : wittPolynomial p R 1 = C (p : R) * X 1 + X 0 ^ p :=
     one_mul, pow_one, C_1, pow_zero, tsub_self, tsub_zero]
 #align witt_polynomial_one wittPolynomial_one
 
-theorem aeval_wittPolynomial {A : Type _} [CommRing A] [Algebra R A] (f : ℕ → A) (n : ℕ) :
+theorem aeval_wittPolynomial {A : Type*} [CommRing A] [Algebra R A] (f : ℕ → A) (n : ℕ) :
     aeval f (W_ R n) = ∑ i in range (n + 1), (p : A) ^ i * f i ^ p ^ (n - i) := by
   simp [wittPolynomial, AlgHom.map_sum, aeval_monomial, Finsupp.prod_single_index]
 #align aeval_witt_polynomial aeval_wittPolynomial
 
 /-- Over the ring `ZMod (p^(n+1))`, we produce the `n+1`st Witt polynomial
-by expanding the `n`th Witt polynomial by `p`.
--/
+by expanding the `n`th Witt polynomial by `p`. -/
 @[simp]
 theorem wittPolynomial_zmod_self (n : ℕ) :
     W_ (ZMod (p ^ (n + 1))) (n + 1) = expand p (W_ (ZMod (p ^ (n + 1))) n) := by
   simp only [wittPolynomial_eq_sum_C_mul_X_pow]
   rw [sum_range_succ, ← Nat.cast_pow, CharP.cast_eq_zero (ZMod (p ^ (n + 1))) (p ^ (n + 1)), C_0,
-    MulZeroClass.zero_mul, add_zero, AlgHom.map_sum, sum_congr rfl]
+    zero_mul, add_zero, AlgHom.map_sum, sum_congr rfl]
   intro k hk
-  rw [AlgHom.map_mul, AlgHom.map_pow, expand_X, algHom_C, ← pow_mul, ← pow_succ]
+  rw [AlgHom.map_mul, AlgHom.map_pow, expand_X, algHom_C, ← pow_mul, ← pow_succ']
   congr
   rw [mem_range] at hk
   rw [add_comm, add_tsub_assoc_of_le (Nat.lt_succ_iff.mp hk), ← add_comm]
@@ -227,7 +225,7 @@ theorem constantCoeff_xInTermsOfW [hp : Fact p.Prime] [Invertible (p : R)] (n : 
   intro n IH
   rw [xInTermsOfW_eq, mul_comm, RingHom.map_mul, RingHom.map_sub, map_sum, constantCoeff_C,
     constantCoeff_X, zero_sub, mul_neg, neg_eq_zero]
-  -- porting note: here, we should be able to do `rw [sum_eq_zero]`, but the goal that
+  -- Porting note: here, we should be able to do `rw [sum_eq_zero]`, but the goal that
   -- is created is not what we expect, and the sum is not replaced by zero...
   -- is it a bug in `rw` tactic?
   refine' Eq.trans (_ : _ = ((⅟↑p : R) ^ n)* 0) (mul_zero _)
@@ -237,7 +235,7 @@ theorem constantCoeff_xInTermsOfW [hp : Fact p.Prime] [Invertible (p : R)] (n : 
   rw [mem_range] at H
   simp only [RingHom.map_mul, RingHom.map_pow, map_natCast, IH m H]
   rw [zero_pow, mul_zero]
-  apply pow_pos hp.1.pos
+  exact pow_ne_zero _ hp.1.ne_zero
 set_option linter.uppercaseLean3 false in
 #align constant_coeff_X_in_terms_of_W constantCoeff_xInTermsOfW
 
@@ -271,13 +269,13 @@ theorem xInTermsOfW_vars_aux (n : ℕ) :
     rw [vars_C_mul] at H
     swap
     · apply pow_ne_zero
-      exact_mod_cast hp.1.ne_zero
+      exact mod_cast hp.1.ne_zero
     rw [mem_range] at hj
     replace H := (ih j hj).2 (vars_pow _ _ H)
     rw [mem_range] at H
   · rw [mem_range]
-    linarith
-  · linarith
+    omega
+  · omega
 set_option linter.uppercaseLean3 false in
 #align X_in_terms_of_W_vars_aux xInTermsOfW_vars_aux
 

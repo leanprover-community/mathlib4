@@ -38,7 +38,7 @@ local notation "𝕎" => WittVector p
 
 namespace TruncatedWittVector
 
-variable (p) (n : ℕ) (R : Type _) [CommRing R]
+variable (p) (n : ℕ) (R : Type*) [CommRing R]
 
 theorem eq_of_le_of_cast_pow_eq_zero [CharP R p] (i : ℕ) (hin : i ≤ n)
     (hpi : (p : TruncatedWittVector p n R) ^ i = 0) : i = n := by

@@ -21,7 +21,7 @@ In the case in which `N a` is an additive group for all `a`, `DFinsupp.neLocus f
 -/
 
 
-variable {α : Type _} {N : α → Type _}
+variable {α : Type*} {N : α → Type*}
 
 namespace DFinsupp
 
@@ -56,7 +56,7 @@ theorem coe_neLocus : ↑(f.neLocus g) = { x | f x ≠ g x } :=
 theorem neLocus_eq_empty {f g : Π₀ a, N a} : f.neLocus g = ∅ ↔ f = g :=
   ⟨fun h ↦
     ext fun a ↦ not_not.mp (mem_neLocus.not.mp (Finset.eq_empty_iff_forall_not_mem.mp h a)),
-    fun h ↦ h ▸ by simp only [neLocus, Ne.def, eq_self_iff_true, not_true, Finset.filter_False]⟩
+    fun h ↦ h ▸ by simp only [neLocus, Ne, eq_self_iff_true, not_true, Finset.filter_False]⟩
 #align dfinsupp.ne_locus_eq_empty DFinsupp.neLocus_eq_empty
 
 @[simp]
@@ -83,7 +83,7 @@ end NHasZero
 
 section NeLocusAndMaps
 
-variable {M P : α → Type _} [∀ a, Zero (N a)] [∀ a, Zero (M a)] [∀ a, Zero (P a)]
+variable {M P : α → Type*} [∀ a, Zero (N a)] [∀ a, Zero (M a)] [∀ a, Zero (P a)]
 
 theorem subset_mapRange_neLocus [∀ a, DecidableEq (N a)] [∀ a, DecidableEq (M a)] (f g : Π₀ a, N a)
     {F : ∀ a, N a → M a} (F0 : ∀ a, F a 0 = 0) :

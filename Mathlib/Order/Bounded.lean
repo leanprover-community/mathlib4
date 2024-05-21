@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
 import Mathlib.Order.RelClasses
-import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Order.Interval.Set.Basic
 
 #align_import order.bounded from "leanprover-community/mathlib"@"aba57d4d3dae35460225919dcd82fe91355162f9"
 
@@ -18,7 +18,7 @@ different general ideas.
 
 namespace Set
 
-variable {α : Type _} {r : α → α → Prop} {s t : Set α}
+variable {α : Type*} {r : α → α → Prop} {s t : Set α}
 
 /-! ### Subsets of bounded and unbounded sets -/
 

@@ -23,7 +23,7 @@ This file provides basic results about orderings and comparison in linear orders
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 /-- Like `cmp`, but uses a `≤` on the type instead of `<`. Given two elements `x` and `y`, returns a
 three-way comparison result `Ordering`. -/
@@ -71,7 +71,7 @@ theorem compares_swap [LT α] {a b : α} {o : Ordering} : o.swap.Compares a b �
   · exact Iff.rfl
 #align ordering.compares_swap Ordering.compares_swap
 
-alias compares_swap ↔ Compares.of_swap Compares.swap
+alias ⟨Compares.of_swap, Compares.swap⟩ := compares_swap
 #align ordering.compares.of_swap Ordering.Compares.of_swap
 #align ordering.compares.swap Ordering.Compares.swap
 
@@ -127,7 +127,7 @@ theorem Compares.inj [Preorder α] {o₁} :
 -- Porting note: mathlib3 proof uses `change ... at hab`
 theorem compares_iff_of_compares_impl [LinearOrder α] [Preorder β] {a b : α} {a' b' : β}
     (h : ∀ {o}, Compares o a b → Compares o a' b') (o) : Compares o a b ↔ Compares o a' b' := by
-  refine' ⟨h, fun ho => _⟩
+  refine ⟨h, fun ho => ?_⟩
   cases' lt_trichotomy a b with hab hab
   · have hab : Compares Ordering.lt a b := hab
     rwa [ho.inj (h hab)]
@@ -143,7 +143,7 @@ theorem swap_orElse (o₁ o₂) : (orElse o₁ o₂).swap = orElse o₁.swap o�
 #align ordering.swap_or_else Ordering.swap_orElse
 
 theorem orElse_eq_lt (o₁ o₂) : orElse o₁ o₂ = lt ↔ o₁ = lt ∨ o₁ = eq ∧ o₂ = lt := by
-  cases o₁ <;> cases o₂ <;> exact by decide
+  cases o₁ <;> cases o₂ <;> decide
 #align ordering.or_else_eq_lt Ordering.orElse_eq_lt
 
 end Ordering
@@ -241,7 +241,7 @@ theorem cmp_eq_gt_iff : cmp x y = Ordering.gt ↔ y < x :=
 theorem cmp_self_eq_eq : cmp x x = Ordering.eq := by rw [cmp_eq_eq_iff]
 #align cmp_self_eq_eq cmp_self_eq_eq
 
-variable {x y} {β : Type _} [LinearOrder β] {x' y' : β}
+variable {x y} {β : Type*} [LinearOrder β] {x' y' : β}
 
 theorem cmp_eq_cmp_symm : cmp x y = cmp x' y' ↔ cmp y x = cmp y' x' :=
   ⟨fun h => by rwa [← cmp_swap x', ← cmp_swap, swap_inj],

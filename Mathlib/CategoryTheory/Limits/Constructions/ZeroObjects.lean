@@ -21,7 +21,7 @@ noncomputable section
 
 open CategoryTheory
 
-variable {C : Type _} [Category C]
+variable {C : Type*} [Category C]
 
 namespace CategoryTheory.Limits
 

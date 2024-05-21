@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Ring.Equiv
+import Mathlib.Algebra.Ring.Opposite
 
 #align_import algebra.big_operators.ring_equiv from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
 
@@ -17,7 +18,7 @@ namespace RingEquiv
 
 open BigOperators
 
-variable {α R S : Type _}
+variable {α R S : Type*}
 
 protected theorem map_list_prod [Semiring R] [Semiring S] (f : R ≃+* S) (l : List R) :
     f l.prod = (l.map f).prod := map_list_prod f l

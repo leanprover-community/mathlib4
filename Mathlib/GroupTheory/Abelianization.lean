@@ -100,6 +100,8 @@ instance commGroup : CommGroup (Abelianization G) :=
 instance : Inhabited (Abelianization G) :=
   ⟨1⟩
 
+instance [Unique G] : Unique (Abelianization G) := Quotient.instUniqueQuotient _
+
 instance [Fintype G] [DecidablePred (· ∈ commutator G)] : Fintype (Abelianization G) :=
   QuotientGroup.fintype (commutator G)
 
@@ -166,7 +168,7 @@ variable {A : Type v} [Monoid A]
 /-- See note [partially-applied ext lemmas]. -/
 @[ext]
 theorem hom_ext (φ ψ : Abelianization G →* A) (h : φ.comp of = ψ.comp of) : φ = ψ :=
-  MonoidHom.ext fun x => QuotientGroup.induction_on x <| FunLike.congr_fun h
+  MonoidHom.ext fun x => QuotientGroup.induction_on x <| DFunLike.congr_fun h
 #align abelianization.hom_ext Abelianization.hom_ext
 
 section Map
@@ -196,7 +198,7 @@ theorem map_comp {I : Type w} [Group I] (g : H →* I) : (map g).comp (map f) = 
 @[simp]
 theorem map_map_apply {I : Type w} [Group I] {g : H →* I} {x : Abelianization G} :
     map g (map f x) = map (g.comp f) x :=
-  FunLike.congr_fun (map_comp _ _) x
+  DFunLike.congr_fun (map_comp _ _) x
 #align abelianization.map_map_apply Abelianization.map_map_apply
 
 end Map
@@ -248,7 +250,7 @@ end AbelianizationCongr
 
 /-- An Abelian group is equivalent to its own abelianization. -/
 @[simps]
-def Abelianization.equivOfComm {H : Type _} [CommGroup H] : H ≃* Abelianization H :=
+def Abelianization.equivOfComm {H : Type*} [CommGroup H] : H ≃* Abelianization H :=
   { Abelianization.of with
     toFun := Abelianization.of
     invFun := Abelianization.lift (MonoidHom.id H)

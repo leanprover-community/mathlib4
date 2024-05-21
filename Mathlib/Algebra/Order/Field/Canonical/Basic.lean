@@ -13,7 +13,7 @@ import Mathlib.Algebra.Order.Field.Canonical.Defs
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 section CanonicallyLinearOrderedSemifield
 

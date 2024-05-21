@@ -3,7 +3,9 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Algebra.Group.Units
 import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.Tactic.Common
 
 #align_import group_theory.group_action.units from "leanprover-community/mathlib"@"f1a2caaf51ef593799107fe9a8d5e411599f3996"
 
@@ -21,7 +23,7 @@ The results are repeated for `AddUnits` and `VAdd` where relevant.
 -/
 
 
-variable {G H M N : Type _} {α : Type _}
+variable {G H M N : Type*} {α : Type*}
 
 namespace Units
 
@@ -36,6 +38,11 @@ theorem smul_def [Monoid M] [SMul M α] (m : Mˣ) (a : α) : m • a = (m : M) �
   rfl
 #align units.smul_def Units.smul_def
 #align add_units.vadd_def AddUnits.vadd_def
+
+@[to_additive, simp]
+theorem smul_mk_apply {M α : Type*} [Monoid M] [SMul M α] (m n : M) (h₁) (h₂) (a : α) :
+    (⟨m, n, h₁, h₂⟩ : Mˣ) • a = m • a :=
+  rfl
 
 @[simp]
 theorem smul_isUnit [Monoid M] [SMul M α] {m : M} (hm : IsUnit m) (a : α) :
@@ -52,25 +59,24 @@ instance [Monoid M] [SMul M α] [FaithfulSMul M α] : FaithfulSMul Mˣ α where
   eq_of_smul_eq_smul h := Units.ext <| eq_of_smul_eq_smul h
 
 @[to_additive]
-instance [Monoid M] [MulAction M α] :
-    MulAction Mˣ α where
+instance instMulAction [Monoid M] [MulAction M α] : MulAction Mˣ α where
   one_smul := (one_smul M : _)
   mul_smul m n := mul_smul (m : M) n
 
-instance [Monoid M] [Zero α] [SMulZeroClass M α] :
-    SMulZeroClass Mˣ α where
+instance instSMulZeroClass [Monoid M] [Zero α] [SMulZeroClass M α] : SMulZeroClass Mˣ α where
   smul := (· • ·)
   smul_zero m := smul_zero (m : M)
 
-instance [Monoid M] [AddZeroClass α] [DistribSMul M α] :
+instance instDistribSMulUnits [Monoid M] [AddZeroClass α] [DistribSMul M α] :
     DistribSMul Mˣ α where smul_add m := smul_add (m : M)
 
-instance [Monoid M] [AddMonoid α] [DistribMulAction M α] : DistribMulAction Mˣ α :=
-  { instDistribSMulUnits with
-    one_smul := fun b => one_smul M b
-    mul_smul := fun x y b => mul_smul (x : M) y b }
+instance instDistribMulAction [Monoid M] [AddMonoid α] [DistribMulAction M α] :
+    DistribMulAction Mˣ α where
+  __ := instDistribSMulUnits
+  one_smul := fun b => one_smul M b
+  mul_smul := fun x y b => mul_smul (x : M) y b
 
-instance [Monoid M] [Monoid α] [MulDistribMulAction M α] :
+instance instMulDistribMulAction [Monoid M] [Monoid α] [MulDistribMulAction M α] :
     MulDistribMulAction Mˣ α where
   smul_mul m := smul_mul' (m : M)
   smul_one m := smul_one (m : M)

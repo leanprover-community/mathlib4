@@ -54,13 +54,13 @@ notes" section of `Mathlib.Topology.FiberBundle.Basic`.
 Vector bundle
 -/
 
-
 noncomputable section
 
-open Bundle Set Classical
+open scoped Classical
+open Bundle Set
 open scoped Topology
 
-variable (R : Type _) {B : Type _} (F : Type _) (E : B → Type _)
+variable (R : Type*) {B : Type*} (F : Type*) (E : B → Type*)
 
 section TopologicalVectorSpace
 
@@ -89,7 +89,7 @@ variable [AddCommMonoid F] [Module R F] [∀ x, AddCommMonoid (E x)] [∀ x, Mod
 /-- A fiberwise linear inverse to `e`. -/
 @[simps!]
 protected def symmₗ (e : Pretrivialization F (π F E)) [e.IsLinear R] (b : B) : F →ₗ[R] E b := by
-  refine' IsLinearMap.mk' (e.symm b) _
+  refine IsLinearMap.mk' (e.symm b) ?_
   by_cases hb : b ∈ e.baseSet
   · exact (((e.linear R hb).mk' _).inverse (e.symm b) (e.symm_apply_apply_mk hb) fun v ↦
       congr_arg Prod.snd <| e.apply_mk_symm hb v).isLinear
@@ -99,7 +99,7 @@ protected def symmₗ (e : Pretrivialization F (π F E)) [e.IsLinear R] (b : B) 
 
 /-- A pretrivialization for a vector bundle defines linear equivalences between the
 fibers and the model space. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def linearEquivAt (e : Pretrivialization F (π F E)) [e.IsLinear R] (b : B) (hb : b ∈ e.baseSet) :
     E b ≃ₗ[R] F where
   toFun y := (e ⟨b, y⟩).2
@@ -290,8 +290,8 @@ def coordChangeL (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.IsLinear 
       by_cases hb : b ∈ e.baseSet ∩ e'.baseSet
       · rw [dif_pos hb]
         refine' (e.continuousOn.comp_continuous _ _).snd
-        exact e'.continuousOn_symm.comp_continuous (Continuous.Prod.mk b) fun y =>
-          mk_mem_prod hb.2 (mem_univ y)
+        · exact e'.continuousOn_symm.comp_continuous (Continuous.Prod.mk b) fun y =>
+            mk_mem_prod hb.2 (mem_univ y)
         exact fun y => e.mem_source.mpr hb.1
       · rw [dif_neg hb]
         exact continuous_id }
@@ -343,7 +343,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem apply_symm_apply_eq_coordChangeL (e e' : Trivialization F (π F E)) [e.IsLinear R]
     [e'.IsLinear R] {b : B} (hb : b ∈ e.baseSet ∩ e'.baseSet) (v : F) :
-    e' (e.toLocalHomeomorph.symm (b, v)) = (b, e.coordChangeL R e' b v) := by
+    e' (e.toPartialHomeomorph.symm (b, v)) = (b, e.coordChangeL R e' b v) := by
   rw [e.mk_coordChangeL e' hb, e.mk_symm hb.1]
 set_option linter.uppercaseLean3 false in
 #align trivialization.apply_symm_apply_eq_coord_changeL Trivialization.apply_symm_apply_eq_coordChangeL
@@ -353,7 +353,7 @@ right-hand side is ugly, but has good definitional properties for specifically d
 trivializations. -/
 theorem coordChangeL_apply' (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.IsLinear R] {b : B}
     (hb : b ∈ e.baseSet ∩ e'.baseSet) (y : F) :
-    coordChangeL R e e' b y = (e' (e.toLocalHomeomorph.symm (b, y))).2 := by
+    coordChangeL R e e' b y = (e' (e.toPartialHomeomorph.symm (b, y))).2 := by
   rw [e.coordChangeL_apply e' hb, e.mk_symm hb.1]
 set_option linter.uppercaseLean3 false in
 #align trivialization.coord_changeL_apply' Trivialization.coordChangeL_apply'
@@ -396,7 +396,7 @@ variable [NontriviallyNormedField R] [∀ x, AddCommMonoid (E x)] [∀ x, Module
   [NormedAddCommGroup F] [NormedSpace R F] [TopologicalSpace B] [TopologicalSpace (TotalSpace F E)]
   [∀ x, TopologicalSpace (E x)] [FiberBundle F E]
 
-/-- The space `Bundle.TotalSpace F E` (for `E : B → Type _` such that each `E x` is a topological
+/-- The space `Bundle.TotalSpace F E` (for `E : B → Type*` such that each `E x` is a topological
 vector space) has a topological vector space structure with fiber `F` (denoted with
 `VectorBundle R F E`) if around every point there is a fiber bundle trivialization which is linear
 in the fibers. -/
@@ -426,20 +426,20 @@ namespace Trivialization
 
 /-- Forward map of `Trivialization.continuousLinearEquivAt` (only propositionally equal),
   defined everywhere (`0` outside domain). -/
-@[simps (config := { fullyApplied := false }) apply]
+@[simps (config := .asFn) apply]
 def continuousLinearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) : E b →L[R] F :=
   { e.linearMapAt R b with
     toFun := e.linearMapAt R b -- given explicitly to help `simps`
     cont := by
       dsimp
       rw [e.coe_linearMapAt b]
-      refine' continuous_if_const _ (fun hb => _) fun _ => continuous_zero
+      refine continuous_if_const _ (fun hb => ?_) fun _ => continuous_zero
       exact (e.continuousOn.comp_continuous (FiberBundle.totalSpaceMk_inducing F E b).continuous
         fun x => e.mem_source.mpr hb).snd }
 #align trivialization.continuous_linear_map_at Trivialization.continuousLinearMapAt
 
 /-- Backwards map of `Trivialization.continuousLinearEquivAt`, defined everywhere. -/
-@[simps (config := { fullyApplied := false }) apply]
+@[simps (config := .asFn) apply]
 def symmL (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) : F →L[R] E b :=
   { e.symmₗ R b with
     toFun := e.symm b -- given explicitly to help `simps`
@@ -470,7 +470,7 @@ variable (R)
 
 /-- In a vector bundle, a trivialization in the fiber (which is a priori only linear)
 is in fact a continuous linear equiv between the fibers and the model fiber. -/
-@[simps (config := { fullyApplied := false }) apply symm_apply]
+@[simps (config := .asFn) apply symm_apply]
 def continuousLinearEquivAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B)
     (hb : b ∈ e.baseSet) : E b ≃L[R] F :=
   { e.toPretrivialization.linearEquivAt R b hb with
@@ -520,9 +520,9 @@ variable {R}
 
 theorem symm_apply_eq_mk_continuousLinearEquivAt_symm (e : Trivialization F (π F E)) [e.IsLinear R]
     (b : B) (hb : b ∈ e.baseSet) (z : F) :
-    e.toLocalHomeomorph.symm ⟨b, z⟩ = ⟨b, (e.continuousLinearEquivAt R b hb).symm z⟩ := by
-  have h : (b, z) ∈ e.target
-  · rw [e.target_eq]
+    e.toPartialHomeomorph.symm ⟨b, z⟩ = ⟨b, (e.continuousLinearEquivAt R b hb).symm z⟩ := by
+  have h : (b, z) ∈ e.target := by
+    rw [e.target_eq]
     exact ⟨hb, mem_univ _⟩
   apply e.injOn (e.map_target h)
   · simpa only [e.source_eq, mem_preimage]
@@ -548,7 +548,7 @@ variable (B F)
 /-- Analogous construction of `FiberBundleCore` for vector bundles. This
 construction gives a way to construct vector bundles from a structure registering how
 trivialization changes act on fibers. -/
-structure VectorBundleCore (ι : Type _) where
+structure VectorBundleCore (ι : Type*) where
   baseSet : ι → Set B
   isOpen_baseSet : ∀ i, IsOpen (baseSet i)
   indexAt : B → ι
@@ -562,7 +562,7 @@ structure VectorBundleCore (ι : Type _) where
 
 /-- The trivial vector bundle core, in which all the changes of coordinates are the
 identity. -/
-def trivialVectorBundleCore (ι : Type _) [Inhabited ι] : VectorBundleCore R B F ι where
+def trivialVectorBundleCore (ι : Type*) [Inhabited ι] : VectorBundleCore R B F ι where
   baseSet _ := univ
   isOpen_baseSet _ := isOpen_univ
   indexAt := default
@@ -573,12 +573,12 @@ def trivialVectorBundleCore (ι : Type _) [Inhabited ι] : VectorBundleCore R B 
   continuousOn_coordChange _ _ := continuousOn_const
 #align trivial_vector_bundle_core trivialVectorBundleCore
 
-instance (ι : Type _) [Inhabited ι] : Inhabited (VectorBundleCore R B F ι) :=
+instance (ι : Type*) [Inhabited ι] : Inhabited (VectorBundleCore R B F ι) :=
   ⟨trivialVectorBundleCore R B F ι⟩
 
 namespace VectorBundleCore
 
-variable {R B F} {ι : Type _}
+variable {R B F} {ι : Type*}
 variable (Z : VectorBundleCore R B F ι)
 
 /-- Natural identification to a `FiberBundleCore`. -/
@@ -587,11 +587,11 @@ def toFiberBundleCore : FiberBundleCore ι B F :=
   { Z with
     coordChange := fun i j b => Z.coordChange i j b
     continuousOn_coordChange := fun i j =>
-      isBoundedBilinearMapApply.continuous.comp_continuousOn
+      isBoundedBilinearMap_apply.continuous.comp_continuousOn
         ((Z.continuousOn_coordChange i j).prod_map continuousOn_id) }
 #align vector_bundle_core.to_fiber_bundle_core VectorBundleCore.toFiberBundleCore
 
--- porting note: TODO: restore coercion
+-- Porting note (#11215): TODO: restore coercion
 -- instance toFiberBundleCoreCoe : Coe (VectorBundleCore R B F ι) (FiberBundleCore ι B F) :=
 --   ⟨toFiberBundleCore⟩
 -- #align vector_bundle_core.to_fiber_bundle_core_coe VectorBundleCore.toFiberBundleCoreCoe
@@ -605,7 +605,7 @@ theorem coordChange_linear_comp (i j k : ι) :
 #align vector_bundle_core.coord_change_linear_comp VectorBundleCore.coordChange_linear_comp
 
 /-- The index set of a vector bundle core, as a convenience function for dot notation -/
-@[nolint unusedArguments] -- porting note: was `nolint has_nonempty_instance`
+@[nolint unusedArguments] -- Porting note(#5171): was `nolint has_nonempty_instance`
 def Index := ι
 #align vector_bundle_core.index VectorBundleCore.Index
 
@@ -616,7 +616,7 @@ def Base := B
 
 /-- The fiber of a vector bundle core, as a convenience function for dot notation and
 typeclass inference -/
-@[nolint unusedArguments] -- porting note: was `nolint has_nonempty_instance`
+@[nolint unusedArguments] -- Porting note(#5171): was `nolint has_nonempty_instance`
 def Fiber : B → Type _ :=
   Z.toFiberBundleCore.Fiber
 #align vector_bundle_core.fiber VectorBundleCore.Fiber
@@ -625,7 +625,7 @@ instance topologicalSpaceFiber (x : B) : TopologicalSpace (Z.Fiber x) :=
   Z.toFiberBundleCore.topologicalSpaceFiber x
 #align vector_bundle_core.topological_space_fiber VectorBundleCore.topologicalSpaceFiber
 
--- porting note: fixed: used to assume both `[NormedAddCommGroup F]` and `[AddCommGroupCat F]`
+-- Porting note: fixed: used to assume both `[NormedAddCommGroup F]` and `[AddCommGroupCat F]`
 instance addCommGroupFiber (x : B) : AddCommGroup (Z.Fiber x) :=
   inferInstanceAs (AddCommGroup F)
 #align vector_bundle_core.add_comm_group_fiber VectorBundleCore.addCommGroupFiber
@@ -648,7 +648,7 @@ protected def TotalSpace :=
 #align vector_bundle_core.total_space VectorBundleCore.TotalSpace
 
 /-- Local homeomorphism version of the trivialization change. -/
-def trivChange (i j : ι) : LocalHomeomorph (B × F) (B × F) :=
+def trivChange (i j : ι) : PartialHomeomorph (B × F) (B × F) :=
   Z.toFiberBundleCore.trivChange i j
 #align vector_bundle_core.triv_change VectorBundleCore.trivChange
 
@@ -677,9 +677,9 @@ def localTriv (i : ι) : Trivialization F (π F Z.Fiber) :=
   Z.toFiberBundleCore.localTriv i
 #align vector_bundle_core.local_triv VectorBundleCore.localTriv
 
--- porting note: moved from below to fix the next instance
+-- Porting note: moved from below to fix the next instance
 @[simp, mfld_simps]
-theorem localTriv_apply (p : Z.TotalSpace) :
+theorem localTriv_apply {i : ι} (p : Z.TotalSpace) :
     (Z.localTriv i) p = ⟨p.1, Z.coordChange (Z.indexAt p.1) i p.1 p.2⟩ :=
   rfl
 #align vector_bundle_core.local_triv_apply VectorBundleCore.localTriv_apply
@@ -711,7 +711,7 @@ theorem mem_localTriv_target (p : B × F) :
 
 @[simp, mfld_simps]
 theorem localTriv_symm_fst (p : B × F) :
-    (Z.localTriv i).toLocalHomeomorph.symm p = ⟨p.1, Z.coordChange i (Z.indexAt p.1) p.1 p.2⟩ :=
+    (Z.localTriv i).toPartialHomeomorph.symm p = ⟨p.1, Z.coordChange i (Z.indexAt p.1) p.1 p.2⟩ :=
   rfl
 #align vector_bundle_core.local_triv_symm_fst VectorBundleCore.localTriv_symm_fst
 
@@ -847,14 +847,14 @@ open VectorBundle
 /-- This structure permits to define a vector bundle when trivializations are given as local
 equivalences but there is not yet a topology on the total space or the fibers.
 The total space is hence given a topology in such a way that there is a fiber bundle structure for
-which the local equivalences are also local homeomorphisms and hence vector bundle trivializations.
-The topology on the fibers is induced from the one on the total space.
+which the partial equivalences are also partial homeomorphisms and hence vector bundle
+trivializations. The topology on the fibers is induced from the one on the total space.
 
 The field `exists_coordChange` is stated as an existential statement (instead of 3 separate
 fields), since it depends on propositional information (namely `e e' ∈ pretrivializationAtlas`).
 This makes it inconvenient to explicitly define a `coordChange` function when constructing a
 `VectorPrebundle`. -/
--- porting note: was @[nolint has_nonempty_instance]
+-- Porting note(#5171): was @[nolint has_nonempty_instance]
 structure VectorPrebundle where
   pretrivializationAtlas : Set (Pretrivialization F (π F E))
   pretrivialization_linear' : ∀ e, e ∈ pretrivializationAtlas → e.IsLinear R
@@ -908,12 +908,12 @@ def toFiberPrebundle (a : VectorPrebundle R F E) : FiberPrebundle F E :=
     continuous_trivChange := fun e he e' he' ↦ by
       have : ContinuousOn (fun x : B × F ↦ a.coordChange he' he x.1 x.2)
           ((e'.baseSet ∩ e.baseSet) ×ˢ univ) :=
-        isBoundedBilinearMapApply.continuous.comp_continuousOn
+        isBoundedBilinearMap_apply.continuous.comp_continuousOn
           ((a.continuousOn_coordChange he' he).prod_map continuousOn_id)
       rw [e.target_inter_preimage_symm_source_eq e', inter_comm]
       refine' (continuousOn_fst.prod this).congr _
       rintro ⟨b, f⟩ ⟨hb, -⟩
-      dsimp only [Function.comp, Prod.map]
+      dsimp only [Function.comp_def, Prod.map]
       rw [a.mk_coordChange _ _ hb, e'.mk_symm hb.1] }
 #align vector_prebundle.to_fiber_prebundle VectorPrebundle.toFiberPrebundle
 
@@ -978,7 +978,7 @@ theorem toVectorBundle : @VectorBundle R _ F E _ _ _ _ _ _ a.totalSpaceTopology 
       rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩
       refine (a.continuousOn_coordChange he he').congr fun b hb ↦ ?_
       ext v
-      -- porting note: help `rw` find instances
+      -- Porting note: help `rw` find instances
       haveI h₁ := a.linear_trivializationOfMemPretrivializationAtlas he
       haveI h₂ := a.linear_trivializationOfMemPretrivializationAtlas he'
       rw [trivializationOfMemPretrivializationAtlas] at h₁ h₂
@@ -991,21 +991,15 @@ end VectorPrebundle
 
 namespace ContinuousLinearMap
 
-variable {𝕜₁ 𝕜₂ : Type _} [NontriviallyNormedField 𝕜₁] [NontriviallyNormedField 𝕜₂]
-
+variable {𝕜₁ 𝕜₂ : Type*} [NontriviallyNormedField 𝕜₁] [NontriviallyNormedField 𝕜₂]
 variable {σ : 𝕜₁ →+* 𝕜₂}
-
-variable {B' : Type _} [TopologicalSpace B']
-
+variable {B' : Type*} [TopologicalSpace B']
 variable [NormedSpace 𝕜₁ F] [∀ x, Module 𝕜₁ (E x)] [TopologicalSpace (TotalSpace F E)]
-
-variable {F' : Type _} [NormedAddCommGroup F'] [NormedSpace 𝕜₂ F'] {E' : B' → Type _}
+variable {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕜₂ F'] {E' : B' → Type*}
   [∀ x, AddCommMonoid (E' x)] [∀ x, Module 𝕜₂ (E' x)] [TopologicalSpace (TotalSpace F' E')]
 
 variable [FiberBundle F E] [VectorBundle 𝕜₁ F E]
-
 variable [∀ x, TopologicalSpace (E' x)] [FiberBundle F' E'] [VectorBundle 𝕜₂ F' E']
-
 variable (F' E')
 
 /-- When `ϕ` is a continuous (semi)linear map between the fibers `E x` and `E' y` of two vector
@@ -1020,7 +1014,7 @@ definition, instead of `Trivialization.continuousLinearEquivAt`, so that
 `ContinuousLinearMap.inCoordinates_eq`).
 
 This is the (second component of the) underlying function of a trivialization of the hom-bundle
-(see `hom_trivialization_at_apply`). However, note that `ContinuousLinearMap.inCoordinates` is
+(see `hom_trivializationAt_apply`). However, note that `ContinuousLinearMap.inCoordinates` is
 defined even when `x` and `y` live in different base sets.
 Therefore, it is also convenient when working with the hom-bundle between pulled back bundles.
 -/

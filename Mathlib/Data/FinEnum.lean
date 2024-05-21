@@ -24,7 +24,7 @@ open Finset
   infer kinds are unsupported in Lean 4: #[`Equiv] [] -/
 /-- `FinEnum α` means that `α` is finite and can be enumerated in some order,
   i.e. `α` has an explicit bijection with `Fin n` for some n. -/
-class FinEnum (α : Sort _) where
+class FinEnum (α : Sort*) where
   /-- `FinEnum.card` is the cardinality of the `FinEnum` -/
   card : ℕ
   /-- `FinEnum.Equiv` states that type `α` is in bijection with `Fin card`,
@@ -40,21 +40,19 @@ namespace FinEnum
 variable {α : Type u} {β : α → Type v}
 
 /-- transport a `FinEnum` instance across an equivalence -/
-def ofEquiv (α) {β} [FinEnum α] (h : β ≃ α) : FinEnum β
-    where
+def ofEquiv (α) {β} [FinEnum α] (h : β ≃ α) : FinEnum β where
   card := card α
   equiv := h.trans (equiv)
   decEq := (h.trans (equiv)).decidableEq
 #align fin_enum.of_equiv FinEnum.ofEquiv
 
 /-- create a `FinEnum` instance from an exhaustive list without duplicates -/
-def ofNodupList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) (h' : List.Nodup xs) : FinEnum α
-    where
+def ofNodupList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) (h' : List.Nodup xs) :
+    FinEnum α where
   card := xs.length
   equiv :=
-    ⟨fun x => ⟨xs.indexOf x, by rw [List.indexOf_lt_length]; apply h⟩, fun ⟨i, h⟩ =>
-      xs.nthLe _ h, fun x => by simp, fun ⟨i, h⟩ => by
-      simp [*]⟩
+    ⟨fun x => ⟨xs.indexOf x, by rw [List.indexOf_lt_length]; apply h⟩, xs.get, fun x => by simp,
+      fun i => by ext; simp [List.get_indexOf h']⟩
 #align fin_enum.of_nodup_list FinEnum.ofNodupList
 
 /-- create a `FinEnum` instance from an exhaustive list; duplicates are removed -/
@@ -155,8 +153,8 @@ theorem Finset.mem_enum [DecidableEq α] (s : Finset α) (xs : List α) :
       simp only [or_iff_not_imp_left] at h
       exists h
       by_cases h : xs_hd ∈ s
-      · have : {xs_hd} ⊆ s
-        simp only [HasSubset.Subset, *, forall_eq, mem_singleton]
+      · have : {xs_hd} ⊆ s := by
+          simp only [HasSubset.Subset, *, forall_eq, mem_singleton]
         simp only [union_sdiff_of_subset this, or_true_iff, Finset.union_sdiff_of_subset,
           eq_self_iff_true]
       · left
@@ -233,12 +231,12 @@ theorem mem_pi {β : α → Type _} [FinEnum α] [∀ a, FinEnum (β a)] (xs : L
   · ext a ⟨⟩
   · exists Pi.cons xs_hd xs_tl (f _ (List.mem_cons_self _ _))
     constructor
-    exact ⟨_, rfl⟩
+    · exact ⟨_, rfl⟩
     exists Pi.tail f
     constructor
     · apply xs_ih
     · ext x h
-      simp [Pi.cons]
+      simp only [Pi.cons]
       split_ifs
       · subst x
         rfl

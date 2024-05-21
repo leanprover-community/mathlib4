@@ -77,10 +77,11 @@ theorem prime_of_aleph0_le (ha : ℵ₀ ≤ a) : Prime a := by
   refine' ⟨(aleph0_pos.trans_le ha).ne', _, fun b c hbc => _⟩
   · rw [isUnit_iff]
     exact (one_lt_aleph0.trans_le ha).ne'
-  cases' eq_or_ne (b * c) 0 with hz hz
+  rcases eq_or_ne (b * c) 0 with hz | hz
   · rcases mul_eq_zero.mp hz with (rfl | rfl) <;> simp
   wlog h : c ≤ b
-  · cases le_total c b <;> [skip; rw [or_comm]] <;> apply_assumption
+  · cases le_total c b <;> [solve_by_elim; rw [or_comm]]
+    apply_assumption
     assumption'
     all_goals rwa [mul_comm]
   left
@@ -90,21 +91,21 @@ theorem prime_of_aleph0_le (ha : ℵ₀ ≤ a) : Prime a := by
 
 theorem not_irreducible_of_aleph0_le (ha : ℵ₀ ≤ a) : ¬Irreducible a := by
   rw [irreducible_iff, not_and_or]
-  refine' Or.inr fun h => _
+  refine Or.inr fun h => ?_
   simpa [mul_aleph0_eq ha, isUnit_iff, (one_lt_aleph0.trans_le ha).ne', one_lt_aleph0.ne'] using
     h a ℵ₀
 #align cardinal.not_irreducible_of_aleph_0_le Cardinal.not_irreducible_of_aleph0_le
 
 @[simp, norm_cast]
 theorem nat_coe_dvd_iff : (n : Cardinal) ∣ m ↔ n ∣ m := by
-  refine' ⟨_, fun ⟨h, ht⟩ => ⟨h, by exact_mod_cast ht⟩⟩
+  refine' ⟨_, fun ⟨h, ht⟩ => ⟨h, mod_cast ht⟩⟩
   rintro ⟨k, hk⟩
   have : ↑m < ℵ₀ := nat_lt_aleph0 m
   rw [hk, mul_lt_aleph0_iff] at this
   rcases this with (h | h | ⟨-, hk'⟩)
   iterate 2 simp only [h, mul_zero, zero_mul, Nat.cast_eq_zero] at hk; simp [hk]
   lift k to ℕ using hk'
-  exact ⟨k, by exact_mod_cast hk⟩
+  exact ⟨k, mod_cast hk⟩
 #align cardinal.nat_coe_dvd_iff Cardinal.nat_coe_dvd_iff
 
 @[simp]
@@ -112,15 +113,15 @@ theorem nat_is_prime_iff : Prime (n : Cardinal) ↔ n.Prime := by
   simp only [Prime, Nat.prime_iff]
   refine' and_congr (by simp) (and_congr _ ⟨fun h b c hbc => _, fun h b c hbc => _⟩)
   · simp only [isUnit_iff, Nat.isUnit_iff]
-    exact_mod_cast Iff.rfl
-  · exact_mod_cast h b c (by exact_mod_cast hbc)
+    exact mod_cast Iff.rfl
+  · exact mod_cast h b c (mod_cast hbc)
   cases' lt_or_le (b * c) ℵ₀ with h' h'
   · rcases mul_lt_aleph0_iff.mp h' with (rfl | rfl | ⟨hb, hc⟩)
     · simp
     · simp
     lift b to ℕ using hb
     lift c to ℕ using hc
-    exact_mod_cast h b c (by exact_mod_cast hbc)
+    exact mod_cast h b c (mod_cast hbc)
   rcases aleph0_le_mul_iff.mp h' with ⟨hb, hc, hℵ₀⟩
   have hn : (n : Cardinal) ≠ 0 := by
     intro h
@@ -128,13 +129,13 @@ theorem nat_is_prime_iff : Prime (n : Cardinal) ↔ n.Prime := by
     cases hbc <;> contradiction
   wlog hℵ₀b : ℵ₀ ≤ b
   refine' (this h c b _ _ hc hb hℵ₀.symm hn (hℵ₀.resolve_left hℵ₀b)).symm <;> try assumption
-  rwa [mul_comm] at hbc
-  rwa [mul_comm] at h'
-  exact Or.inl (dvd_of_le_of_aleph0_le hn ((nat_lt_aleph0 n).le.trans hℵ₀b) hℵ₀b)
+  · rwa [mul_comm] at hbc
+  · rwa [mul_comm] at h'
+  · exact Or.inl (dvd_of_le_of_aleph0_le hn ((nat_lt_aleph0 n).le.trans hℵ₀b) hℵ₀b)
 #align cardinal.nat_is_prime_iff Cardinal.nat_is_prime_iff
 
 theorem is_prime_iff {a : Cardinal} : Prime a ↔ ℵ₀ ≤ a ∨ ∃ p : ℕ, a = p ∧ p.Prime := by
-  cases' le_or_lt ℵ₀ a with h h
+  rcases le_or_lt ℵ₀ a with h | h
   · simp [h]
   lift a to ℕ using id h
   simp [not_le.mpr h]
@@ -148,12 +149,13 @@ theorem isPrimePow_iff {a : Cardinal} : IsPrimePow a ↔ ℵ₀ ≤ a ∨ ∃ n 
   rw [isPrimePow_def]
   refine'
     ⟨_, fun ⟨n, han, p, k, hp, hk, h⟩ =>
-          ⟨p, k, nat_is_prime_iff.2 hp, hk, by rw [han]; exact_mod_cast h⟩⟩
+          ⟨p, k, nat_is_prime_iff.2 hp, hk, by rw [han]; exact mod_cast h⟩⟩
   rintro ⟨p, k, hp, hk, hpk⟩
-  have key : p ^ 1 ≤ ↑a := by rw [←hpk]; apply power_le_power_left hp.ne_zero; exact_mod_cast hk
+  have key : p ^ (1 : Cardinal) ≤ ↑a := by
+    rw [← hpk]; apply power_le_power_left hp.ne_zero; exact mod_cast hk
   rw [power_one] at key
   lift p to ℕ using key.trans_lt (nat_lt_aleph0 a)
-  exact ⟨a, rfl, p, k, nat_is_prime_iff.mp hp, hk, by exact_mod_cast hpk⟩
+  exact ⟨a, rfl, p, k, nat_is_prime_iff.mp hp, hk, mod_cast hpk⟩
 #align cardinal.is_prime_pow_iff Cardinal.isPrimePow_iff
 
 end Cardinal

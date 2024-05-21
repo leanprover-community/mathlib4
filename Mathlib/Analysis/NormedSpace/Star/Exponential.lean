@@ -8,8 +8,8 @@ import Mathlib.Analysis.NormedSpace.Exponential
 #align_import analysis.normed_space.star.exponential from "leanprover-community/mathlib"@"1e3201306d4d9eb1fd54c60d7c4510ad5126f6f9"
 
 /-! # The exponential map from selfadjoint to unitary
-In this file, we establish various properties related to the map `λ a, exp ℂ A (I • a)` between the
-subtypes `selfAdjoint A` and `unitary A`.
+In this file, we establish various properties related to the map `fun a ↦ exp ℂ A (I • a)`
+between the subtypes `selfAdjoint A` and `unitary A`.
 
 ## TODO
 
@@ -20,10 +20,11 @@ subtypes `selfAdjoint A` and `unitary A`.
   unitaries.
 -/
 
+open NormedSpace -- For `NormedSpace.exp`.
 
 section Star
 
-variable {A : Type _} [NormedRing A] [NormedAlgebra ℂ A] [StarRing A] [ContinuousStar A]
+variable {A : Type*} [NormedRing A] [NormedAlgebra ℂ A] [StarRing A] [ContinuousStar A]
   [CompleteSpace A] [StarModule ℂ A]
 
 open Complex

@@ -26,14 +26,14 @@ This file defines restrictions of affine maps.
 -/
 
 
-variable {k V₁ P₁ V₂ P₂ : Type _} [Ring k] [AddCommGroup V₁] [AddCommGroup V₂] [Module k V₁]
+variable {k V₁ P₁ V₂ P₂ : Type*} [Ring k] [AddCommGroup V₁] [AddCommGroup V₂] [Module k V₁]
   [Module k V₂] [AddTorsor V₁ P₁] [AddTorsor V₂ P₂]
 
 -- not an instance because it loops with `Nonempty`
 theorem AffineSubspace.nonempty_map {E : AffineSubspace k P₁} [Ene : Nonempty E] {φ : P₁ →ᵃ[k] P₂} :
     Nonempty (E.map φ) := by
   obtain ⟨x, hx⟩ := id Ene
-  refine' ⟨⟨φ x, AffineSubspace.mem_map.mpr ⟨x, hx, rfl⟩⟩⟩
+  exact ⟨⟨φ x, AffineSubspace.mem_map.mpr ⟨x, hx, rfl⟩⟩⟩
 #align affine_subspace.nonempty_map AffineSubspace.nonempty_map
 
 -- Porting note: removed "local nolint fails_quickly" attribute

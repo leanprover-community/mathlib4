@@ -5,7 +5,6 @@ Authors: Scott Morrison, Mario Carneiro
 -/
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.FinCases
-import Mathlib.Data.Set.Intervals.Basic
 
 /-!
 # Case bash on variables in finite intervals
@@ -22,6 +21,8 @@ You can also explicitly specify a lower and upper bound to use, as `interval_cas
 where the hypotheses should be of the form `hl : a ≤ n` and `hu : n < b`. In that case,
 `interval_cases` calls `fin_cases` on the resulting hypothesis `h : n ∈ Set.Ico a b`.
 -/
+
+set_option autoImplicit true
 
 -- In this file we would like to be able to use multi-character auto-implicits.
 set_option relaxedAutoImplicit true
@@ -307,7 +308,7 @@ def intervalCases (g : MVarId) (e e' : Expr) (lbs ubs : Array Expr) (mustUseBoun
         let z := lo+i
         let rhs ← m.mkNumeral z
         let ty ← mkArrow (← mkEq e rhs) tgt
-        let goal ← mkFreshExprMVar ty .syntheticOpaque (appendTag tag (toString z))
+        let goal ← mkFreshExprMVar ty .syntheticOpaque (appendTag tag (.mkSimple (toString z)))
         goals := goals.push { rhs, value := z, goal := goal.mvarId! }
       m.bisect g goals.toSubarray z1 z2 e1 e2 p1 p2 e
       pure goals

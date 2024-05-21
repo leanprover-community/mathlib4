@@ -32,7 +32,7 @@ namespace MeasureTheory
 
 open ProbabilityTheory
 
-variable {Ω E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable {Ω E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
   {m₁ m₂ m : MeasurableSpace Ω} {μ : Measure Ω} {f : Ω → E}
 
 /-- If `m₁, m₂` are independent σ-algebras and `f` is `m₁`-measurable, then `𝔼[f | m₂] = 𝔼[f]`
@@ -41,17 +41,17 @@ theorem condexp_indep_eq (hle₁ : m₁ ≤ m) (hle₂ : m₂ ≤ m) [SigmaFinit
     (hf : StronglyMeasurable[m₁] f) (hindp : Indep m₁ m₂ μ) : μ[f|m₂] =ᵐ[μ] fun _ => μ[f] := by
   by_cases hfint : Integrable f μ
   swap; · rw [condexp_undef hfint, integral_undef hfint]; rfl
-  refine' (ae_eq_condexp_of_forall_set_integral_eq hle₂ hfint
+  refine' (ae_eq_condexp_of_forall_setIntegral_eq hle₂ hfint
     (fun s _ hs => integrableOn_const.2 (Or.inr hs)) (fun s hms hs => _)
       stronglyMeasurable_const.aeStronglyMeasurable').symm
-  rw [set_integral_const]
+  rw [setIntegral_const]
   rw [← memℒp_one_iff_integrable] at hfint
   refine' Memℒp.induction_stronglyMeasurable hle₁ ENNReal.one_ne_top _ _ _ _ hfint _
   · exact ⟨f, hf, EventuallyEq.rfl⟩
   · intro c t hmt _
     rw [Indep_iff] at hindp
-    rw [integral_indicator (hle₁ _ hmt), set_integral_const, smul_smul, ← ENNReal.toReal_mul,
-      mul_comm, ← hindp _ _ hmt hms, set_integral_indicator (hle₁ _ hmt), set_integral_const,
+    rw [integral_indicator (hle₁ _ hmt), setIntegral_const, smul_smul, ← ENNReal.toReal_mul,
+      mul_comm, ← hindp _ _ hmt hms, setIntegral_indicator (hle₁ _ hmt), setIntegral_const,
       Set.inter_comm]
   · intro u v _ huint hvint hu hv hu_eq hv_eq
     rw [memℒp_one_iff_integrable] at huint hvint
@@ -70,10 +70,10 @@ theorem condexp_indep_eq (hle₁ : m₁ ≤ m) (hle₂ : m₂ ≤ m) [SigmaFinit
     · rw [heq₁]
       exact continuous_integral.comp (ContinuousLinearMap.continuous _)
     · rw [heq₂]
-      exact (continuous_set_integral _).comp (ContinuousLinearMap.continuous _)
+      exact (continuous_setIntegral _).comp (ContinuousLinearMap.continuous _)
   · intro u v huv _ hueq
     rwa [← integral_congr_ae huv, ←
-      (set_integral_congr_ae (hle₂ _ hms) _ : ∫ x in s, u x ∂μ = ∫ x in s, v x ∂μ)]
+      (setIntegral_congr_ae (hle₂ _ hms) _ : ∫ x in s, u x ∂μ = ∫ x in s, v x ∂μ)]
     filter_upwards [huv] with x hx _ using hx
 #align measure_theory.condexp_indep_eq MeasureTheory.condexp_indep_eq
 

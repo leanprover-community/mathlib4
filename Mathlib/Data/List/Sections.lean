@@ -18,7 +18,7 @@ open Nat Function
 
 namespace List
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 theorem mem_sections {L : List (List α)} {f} : f ∈ sections L ↔ Forall₂ (· ∈ ·) f L := by
   refine' ⟨fun h => _, fun h => _⟩

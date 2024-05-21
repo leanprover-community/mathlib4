@@ -3,7 +3,7 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Eric Wieser
 -/
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Defs
 import Mathlib.GroupTheory.GroupAction.Prod
 
 #align_import algebra.module.prod from "leanprover-community/mathlib"@"a437a2499163d85d670479f69f625f461cc5fef9"
@@ -15,7 +15,7 @@ This file defines instances for binary product of modules
 -/
 
 
-variable {R : Type _} {S : Type _} {M : Type _} {N : Type _}
+variable {R : Type*} {S : Type*} {M : Type*} {N : Type*}
 
 namespace Prod
 
@@ -33,12 +33,12 @@ instance mulActionWithZero [MonoidWithZero R] [Zero M] [Zero N] [MulActionWithZe
     zero_smul := fun _ => Prod.ext (zero_smul _ _) (zero_smul _ _) }
 #align prod.mul_action_with_zero Prod.mulActionWithZero
 
-instance module [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N] :
+instance instModule [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N] :
     Module R (M × N) :=
   { Prod.distribMulAction with
     add_smul := fun _ _ _ => mk.inj_iff.mpr ⟨add_smul _ _ _, add_smul _ _ _⟩
     zero_smul := fun _ => mk.inj_iff.mpr ⟨zero_smul _ _, zero_smul _ _⟩ }
-#align prod.module Prod.module
+#align prod.module Prod.instModule
 
 instance noZeroSMulDivisors {r : Semiring R} [AddCommMonoid M] [AddCommMonoid N]
     [Module R M] [Module R N] [NoZeroSMulDivisors R M] [NoZeroSMulDivisors R N] :

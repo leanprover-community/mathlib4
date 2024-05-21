@@ -31,7 +31,7 @@ open MeasureTheory Set TopologicalSpace
 
 open scoped Interval
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
 notation3 "⨍ "(...)" in "a".."b",
   "r:60:(scoped f => average (Measure.restrict volume (uIoc a b)) f) => r
@@ -42,7 +42,7 @@ theorem interval_average_symm (f : ℝ → E) (a b : ℝ) : (⨍ x in a..b, f x)
 
 theorem interval_average_eq (f : ℝ → E) (a b : ℝ) :
     (⨍ x in a..b, f x) = (b - a)⁻¹ • ∫ x in a..b, f x := by
-  cases' le_or_lt a b with h h
+  rcases le_or_lt a b with h | h
   · rw [setAverage_eq, uIoc_of_le h, Real.volume_Ioc, intervalIntegral.integral_of_le h,
       ENNReal.toReal_ofReal (sub_nonneg.2 h)]
   · rw [setAverage_eq, uIoc_of_lt h, Real.volume_Ioc, intervalIntegral.integral_of_ge h.le,

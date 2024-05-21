@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
 import Mathlib.Algebra.Order.AbsoluteValue
+import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Topology.UniformSpace.Basic
 
 #align_import topology.uniform_space.absolute_value from "leanprover-community/mathlib"@"e1a7bdeb4fd826b7e71d130d34988f0a2d26a177"
@@ -25,12 +26,12 @@ follows exactly the same path.
 absolute value, uniform spaces
 -/
 
-open Set Function Filter Topology
+open Set Function Filter Uniformity
 
 namespace AbsoluteValue
 
-variable {𝕜 : Type _} [LinearOrderedField 𝕜]
-variable {R : Type _} [CommRing R] (abv : AbsoluteValue R 𝕜)
+variable {𝕜 : Type*} [LinearOrderedField 𝕜]
+variable {R : Type*} [CommRing R] (abv : AbsoluteValue R 𝕜)
 
 /-- The uniform structure coming from an absolute value. -/
 def uniformSpace : UniformSpace R :=

@@ -20,7 +20,7 @@ This module contains some results on atoms and simple lattices in the finite con
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace IsSimpleOrder
 
@@ -77,7 +77,7 @@ instance (priority := 100) Finite.to_isCoatomic [PartialOrder α] [OrderTop α] 
   refine' IsCoatomic.mk fun b => or_iff_not_imp_left.2 fun ht => _
   obtain ⟨c, hc, hmax⟩ :=
     Set.Finite.exists_maximal_wrt id { x : α | b ≤ x ∧ x ≠ ⊤ } (Set.toFinite _) ⟨b, le_rfl, ht⟩
-  refine' ⟨c, ⟨hc.2, fun y hcy => _⟩, hc.1⟩
+  refine ⟨c, ⟨hc.2, fun y hcy => ?_⟩, hc.1⟩
   by_contra hyt
   obtain rfl : c = y := hmax y ⟨hc.1.trans hcy.le, hyt⟩ hcy.le
   exact (lt_self_iff_false _).mp hcy

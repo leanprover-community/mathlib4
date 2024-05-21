@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, David Renshaw
 -/
 import Lean
-import Mathlib.Init.Logic
 import Mathlib.Tactic.Core
 
 /-!
@@ -54,7 +53,7 @@ better match the behavior of mathlib3's `split_ifs`.
 -/
 private def discharge? (e : Expr) : SimpM (Option Expr) := do
   let e ← instantiateMVars e
-  if let some e1 ← SplitIf.discharge? false e
+  if let some e1 ← (← SplitIf.mkDischarge? false) e
     then return some e1
   if e.isConstOf `True
     then return some (mkConst `True.intro)
@@ -64,7 +63,8 @@ private def discharge? (e : Expr) : SimpM (Option Expr) := do
 -/
 private def reduceIfsAt (loc : Location) : TacticM Unit := do
   let ctx ← SplitIf.getSimpContext
-  let _ ← simpLocation ctx discharge? loc
+  let ctx := { ctx with config := { ctx.config with failIfUnchanged := false } }
+  let _ ← simpLocation ctx {} discharge? loc
   pure ()
 
 /-- Splits a single if-then-else expression and then reduces the resulting goals.
@@ -81,7 +81,7 @@ private def splitIf1 (cond : Expr) (hName : Name) (loc : Location) : TacticM Uni
 list is empty.
 -/
 private def getNextName (hNames: IO.Ref (List (TSyntax `Lean.binderIdent))) : MetaM Name := do
-  match ←hNames.get with
+  match ← hNames.get with
   | [] => mkFreshUserName `h
   | n::ns => do hNames.set ns
                 if let `(binderIdent| $x:ident) := n
@@ -104,7 +104,7 @@ private partial def splitIfsCore
     (hNames : IO.Ref (List (TSyntax `Lean.binderIdent))) :
     List Expr → TacticM Unit := fun done ↦ withMainContext do
   let some (_,cond) ← findIfCondAt loc
-      | Meta.throwTacticEx `split_ifs (←getMainGoal) "no if-then-else conditions to split"
+      | Meta.throwTacticEx `split_ifs (← getMainGoal) "no if-then-else conditions to split"
 
   -- If `cond` is `¬p` then use `p` instead.
   let cond := if cond.isAppOf `Not then cond.getAppArgs[0]! else cond

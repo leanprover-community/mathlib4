@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.GroupTheory.GroupAction.Group
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Defs
 
 #align_import algebra.ring.add_aut from "leanprover-community/mathlib"@"a437a2499163d85d670479f69f625f461cc5fef9"
 
@@ -21,7 +21,7 @@ See also `AddMonoidHom.mulLeft`, `AddMonoidHom.mulRight`, `AddMonoid.End.mulLeft
 
 namespace AddAut
 
-variable {R : Type _} [Semiring R]
+variable {R : Type*} [Semiring R]
 
 /-- Left multiplication by a unit of a semiring as an additive automorphism. -/
 @[simps! (config := { simpRhs := true })]

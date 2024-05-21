@@ -3,8 +3,9 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.BigOperators.Order
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Combinatorics.SimpleGraph.Density
 import Mathlib.Data.Rat.BigOperators
 
@@ -29,10 +30,8 @@ open Finset
 
 open BigOperators
 
-variable {α : Type _} [DecidableEq α] {s : Finset α} (P : Finpartition s) (G : SimpleGraph α)
+variable {α : Type*} [DecidableEq α] {s : Finset α} (P : Finpartition s) (G : SimpleGraph α)
   [DecidableRel G.Adj]
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
 
 namespace Finpartition
 
@@ -43,7 +42,7 @@ def energy : ℚ :=
 #align finpartition.energy Finpartition.energy
 
 theorem energy_nonneg : 0 ≤ P.energy G := by
-  refine' div_nonneg (Finset.sum_nonneg fun _ _ => sq_nonneg _) <| sq_nonneg _
+  exact div_nonneg (Finset.sum_nonneg fun _ _ => sq_nonneg _) <| sq_nonneg _
 #align finpartition.energy_nonneg Finpartition.energy_nonneg
 
 theorem energy_le_one : P.energy G ≤ 1 :=
@@ -52,7 +51,7 @@ theorem energy_le_one : P.energy G ≤ 1 :=
       ∑ uv in P.parts.offDiag, G.edgeDensity uv.1 uv.2 ^ 2 ≤ P.parts.offDiag.card • (1 : ℚ) :=
         sum_le_card_nsmul _ _ 1 fun uv _ =>
           (sq_le_one_iff <| G.edgeDensity_nonneg _ _).2 <| G.edgeDensity_le_one _ _
-      _ = P.parts.offDiag.card := (Nat.smul_one_eq_coe _)
+      _ = P.parts.offDiag.card := Nat.smul_one_eq_cast _
       _ ≤ _ := by
         rw [offDiag_card, one_mul]
         norm_cast
@@ -61,7 +60,7 @@ theorem energy_le_one : P.energy G ≤ 1 :=
 #align finpartition.energy_le_one Finpartition.energy_le_one
 
 @[simp, norm_cast]
-theorem coe_energy {𝕜 : Type _} [LinearOrderedField 𝕜] : (P.energy G : 𝕜) =
+theorem coe_energy {𝕜 : Type*} [LinearOrderedField 𝕜] : (P.energy G : 𝕜) =
     (∑ uv in P.parts.offDiag, (G.edgeDensity uv.1 uv.2 : 𝕜) ^ 2) / (P.parts.card : 𝕜) ^ 2 := by
   rw [energy]; norm_cast
 #align finpartition.coe_energy Finpartition.coe_energy

@@ -3,7 +3,7 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 
 #align_import algebra.module.bimodule from "leanprover-community/mathlib"@"58cef51f7a819e7227224461e392dee423302f2d"
 
@@ -18,8 +18,8 @@ and `S` acting contravariantly ("on the right"). The compatibility condition is 
 
 This situation can be set up in Mathlib as:
 ```lean
-variables (R S M : Type*) [Ring R] [Ring S]
-variables [AddCommGroup M] [Module R M] [Module Sᵐᵒᵖ M] [SMulCommClass R Sᵐᵒᵖ M]
+variable (R S M : Type*) [Ring R] [Ring S]
+variable [AddCommGroup M] [Module R M] [Module Sᵐᵒᵖ M] [SMulCommClass R Sᵐᵒᵖ M]
 ```
 The key fact is:
 ```lean
@@ -64,16 +64,11 @@ namespace Subbimodule
 
 section Algebra
 
-variable {R A B M : Type _}
-
+variable {R A B M : Type*}
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
-
 variable [Semiring A] [Semiring B] [Module A M] [Module B M]
-
 variable [Algebra R A] [Algebra R B]
-
 variable [IsScalarTower R A M] [IsScalarTower R B M]
-
 variable [SMulCommClass A B M]
 
 /-- A constructor for a subbimodule which demands closure under the two sets of scalars
@@ -105,7 +100,7 @@ theorem smul_mem' (p : Submodule (A ⊗[R] B) M) (b : B) {m : M} (hm : m ∈ p) 
 /-- If `A` and `B` are also `Algebra`s over yet another set of scalars `S` then we may "base change"
 from `R` to `S`. -/
 @[simps!]
-def baseChange (S : Type _) [CommSemiring S] [Module S M] [Algebra S A] [Algebra S B]
+def baseChange (S : Type*) [CommSemiring S] [Module S M] [Algebra S A] [Algebra S B]
     [IsScalarTower S A M] [IsScalarTower S B M] (p : Submodule (A ⊗[R] B) M) :
     Submodule (A ⊗[S] B) M :=
   mk p.toAddSubmonoid (smul_mem p) (smul_mem' p)
@@ -131,8 +126,7 @@ end Algebra
 
 section Ring
 
-variable (R S M : Type _) [Ring R] [Ring S]
-
+variable (R S M : Type*) [Ring R] [Ring S]
 variable [AddCommGroup M] [Module R M] [Module S M] [SMulCommClass R S M]
 
 /-- A `Submodule` over `R ⊗[ℕ] S` is naturally also a `Submodule` over the canonically-isomorphic

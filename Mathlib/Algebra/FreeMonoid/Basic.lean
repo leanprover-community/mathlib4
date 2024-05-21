@@ -3,7 +3,9 @@ Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yury Kudryashov
 -/
-import Mathlib.Data.List.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Group.List
+import Mathlib.Algebra.Group.Units
+import Mathlib.GroupTheory.GroupAction.Defs
 
 #align_import algebra.free_monoid.basic from "leanprover-community/mathlib"@"657df4339ae6ceada048c8a2980fb10e393143ec"
 
@@ -20,7 +22,7 @@ import Mathlib.Data.List.BigOperators.Basic
 -/
 
 
-variable {α : Type _} {β : Type _} {γ : Type _} {M : Type _} [Monoid M] {N : Type _} [Monoid N]
+variable {α : Type*} {β : Type*} {γ : Type*} {M : Type*} [Monoid M] {N : Type*} [Monoid N]
 
 /-- Free monoid over a given alphabet. -/
 @[to_additive "Free nonabelian additive monoid over a given alphabet"]
@@ -29,10 +31,6 @@ def FreeMonoid (α) := List α
 #align free_add_monoid FreeAddMonoid
 
 namespace FreeMonoid
-
--- Porting note: TODO. Check this is still needed
-@[to_additive]
-instance [DecidableEq α] : DecidableEq (FreeMonoid α) := instDecidableEqList
 
 /-- The identity equivalence between `FreeMonoid α` and `List α`. -/
 @[to_additive "The identity equivalence between `FreeAddMonoid α` and `List α`."]
@@ -77,15 +75,14 @@ theorem ofList_comp_toList : @ofList α ∘ toList = id := rfl
 #align free_add_monoid.of_list_comp_to_list FreeAddMonoid.ofList_comp_toList
 
 @[to_additive]
-instance : CancelMonoid (FreeMonoid α)
-    where
+instance : CancelMonoid (FreeMonoid α) where
   one := ofList []
   mul x y := ofList (toList x ++ toList y)
   mul_one := List.append_nil
   one_mul := List.nil_append
   mul_assoc := List.append_assoc
-  mul_left_cancel _ _ _ := List.append_left_cancel
-  mul_right_cancel _ _ _ := List.append_right_cancel
+  mul_left_cancel _ _ _ := List.append_cancel_left
+  mul_right_cancel _ _ _ := List.append_cancel_right
 
 @[to_additive]
 instance : Inhabited (FreeMonoid α) := ⟨1⟩
@@ -157,19 +154,19 @@ theorem of_injective : Function.Injective (@of α) := List.singleton_injective
 @[to_additive (attr := elab_as_elim) "Recursor for `FreeAddMonoid` using `0` and
 `FreeAddMonoid.of x + xs` instead of `[]` and `x :: xs`."]
 -- Porting note: change from `List.recOn` to `List.rec` since only the latter is computable
-def recOn {C : FreeMonoid α → Sort _} (xs : FreeMonoid α) (h0 : C 1)
+def recOn {C : FreeMonoid α → Sort*} (xs : FreeMonoid α) (h0 : C 1)
     (ih : ∀ x xs, C xs → C (of x * xs)) : C xs := List.rec h0 ih xs
 #align free_monoid.rec_on FreeMonoid.recOn
 #align free_add_monoid.rec_on FreeAddMonoid.recOn
 
 @[to_additive (attr := simp)]
-theorem recOn_one {C : FreeMonoid α → Sort _} (h0 : C 1) (ih : ∀ x xs, C xs → C (of x * xs)) :
+theorem recOn_one {C : FreeMonoid α → Sort*} (h0 : C 1) (ih : ∀ x xs, C xs → C (of x * xs)) :
     @recOn α C 1 h0 ih = h0 := rfl
 #align free_monoid.rec_on_one FreeMonoid.recOn_one
 #align free_add_monoid.rec_on_zero FreeAddMonoid.recOn_zero
 
 @[to_additive (attr := simp)]
-theorem recOn_of_mul {C : FreeMonoid α → Sort _} (x : α) (xs : FreeMonoid α) (h0 : C 1)
+theorem recOn_of_mul {C : FreeMonoid α → Sort*} (x : α) (xs : FreeMonoid α) (h0 : C 1)
     (ih : ∀ x xs, C xs → C (of x * xs)) : @recOn α C (of x * xs) h0 ih = ih x xs (recOn xs h0 ih) :=
   rfl
 #align free_monoid.rec_on_of_mul FreeMonoid.recOn_of_mul
@@ -179,19 +176,19 @@ theorem recOn_of_mul {C : FreeMonoid α → Sort _} (x : α) (xs : FreeMonoid α
 `[]` and `x :: xs`. -/
 @[to_additive (attr := elab_as_elim) "A version of `List.casesOn` for `FreeAddMonoid` using `0` and
 `FreeAddMonoid.of x + xs` instead of `[]` and `x :: xs`."]
-def casesOn {C : FreeMonoid α → Sort _} (xs : FreeMonoid α) (h0 : C 1)
+def casesOn {C : FreeMonoid α → Sort*} (xs : FreeMonoid α) (h0 : C 1)
     (ih : ∀ x xs, C (of x * xs)) : C xs := List.casesOn xs h0 ih
 #align free_monoid.cases_on FreeMonoid.casesOn
 #align free_add_monoid.cases_on FreeAddMonoid.casesOn
 
 @[to_additive (attr := simp)]
-theorem casesOn_one {C : FreeMonoid α → Sort _} (h0 : C 1) (ih : ∀ x xs, C (of x * xs)) :
+theorem casesOn_one {C : FreeMonoid α → Sort*} (h0 : C 1) (ih : ∀ x xs, C (of x * xs)) :
     @casesOn α C 1 h0 ih = h0 := rfl
 #align free_monoid.cases_on_one FreeMonoid.casesOn_one
 #align free_add_monoid.cases_on_zero FreeAddMonoid.casesOn_zero
 
 @[to_additive (attr := simp)]
-theorem casesOn_of_mul {C : FreeMonoid α → Sort _} (x : α) (xs : FreeMonoid α) (h0 : C 1)
+theorem casesOn_of_mul {C : FreeMonoid α → Sort*} (x : α) (xs : FreeMonoid α) (h0 : C 1)
     (ih : ∀ x xs, C (of x * xs)) : @casesOn α C (of x * xs) h0 ih = ih x xs := rfl
 #align free_monoid.cases_on_of_mul FreeMonoid.casesOn_of_mul
 #align free_add_monoid.cases_on_of_add FreeAddMonoid.casesOn_of_add
@@ -234,7 +231,7 @@ def lift : (α → M) ≃ (FreeMonoid α →* M) where
 #align free_monoid.lift FreeMonoid.lift
 #align free_add_monoid.lift FreeAddMonoid.lift
 
--- porting note: new
+-- Porting note (#10756): new theorem
 @[to_additive (attr := simp)]
 theorem lift_ofList (f : α → M) (l : List α) : lift f (ofList l) = (l.map f).prod :=
   prodAux_eq _
@@ -274,7 +271,7 @@ theorem comp_lift (g : M →* N) (f : α → M) : g.comp (lift f) = lift (g ∘ 
 
 @[to_additive]
 theorem hom_map_lift (g : M →* N) (f : α → M) (x : FreeMonoid α) : g (lift f x) = lift (g ∘ f) x :=
-  FunLike.ext_iff.1 (comp_lift g f) x
+  DFunLike.ext_iff.1 (comp_lift g f) x
 #align free_monoid.hom_map_lift FreeMonoid.hom_map_lift
 #align free_add_monoid.hom_map_lift FreeAddMonoid.hom_map_lift
 
@@ -312,8 +309,7 @@ theorem of_smul (f : α → β → β) (x : α) (y : β) :
 each `of x` to `of (f x)`. -/
 @[to_additive "The unique additive monoid homomorphism `FreeAddMonoid α →+ FreeAddMonoid β`
 that sends each `of x` to `of (f x)`."]
-def map (f : α → β) : FreeMonoid α →* FreeMonoid β
-    where
+def map (f : α → β) : FreeMonoid α →* FreeMonoid β where
   toFun l := ofList <| l.toList.map f
   map_one' := rfl
   map_mul' _ _ := List.map_append _ _ _
@@ -349,5 +345,12 @@ theorem map_comp (g : β → γ) (f : α → β) : map (g ∘ f) = (map g).comp 
 theorem map_id : map (@id α) = MonoidHom.id (FreeMonoid α) := hom_eq fun _ ↦ rfl
 #align free_monoid.map_id FreeMonoid.map_id
 #align free_add_monoid.map_id FreeAddMonoid.map_id
+
+/-- The only invertible element of the free monoid is 1; this instance enables `units_eq_one`. -/
+@[to_additive]
+instance uniqueUnits : Unique (FreeMonoid α)ˣ where
+  uniq u := Units.ext <| toList.injective <|
+    have : toList u.val ++ toList u.inv = [] := DFunLike.congr_arg toList u.val_inv
+    (List.append_eq_nil.mp this).1
 
 end FreeMonoid

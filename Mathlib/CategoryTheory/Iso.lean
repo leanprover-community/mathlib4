@@ -68,9 +68,6 @@ attribute [reassoc (attr := simp)] Iso.hom_inv_id Iso.inv_hom_id
 #align category_theory.iso.hom_inv_id_assoc CategoryTheory.Iso.hom_inv_id_assoc
 #align category_theory.iso.inv_hom_id_assoc CategoryTheory.Iso.inv_hom_id_assoc
 
--- Pretty printer support for additional arguments when in a concrete category
-attribute [pp_dot] Iso.hom Iso.inv
-
 /-- Notation for an isomorphism in a category. -/
 infixr:10 " ≅ " => Iso -- type as \cong or \iso
 
@@ -89,11 +86,11 @@ theorem ext ⦃α β : X ≅ Y⦄ (w : α.hom = β.hom) : α = β :=
   calc
     α.inv = α.inv ≫ β.hom ≫ β.inv   := by rw [Iso.hom_inv_id, Category.comp_id]
     _     = (α.inv ≫ α.hom) ≫ β.inv := by rw [Category.assoc, ← w]
-    _     = β.inv                   := by rw [Iso.inv_hom_id, Category.id_comp]
+    _     = β.inv                    := by rw [Iso.inv_hom_id, Category.id_comp]
 #align category_theory.iso.ext CategoryTheory.Iso.ext
 
 /-- Inverse isomorphism. -/
-@[symm, pp_dot]
+@[symm]
 def symm (I : X ≅ Y) : Y ≅ X where
   hom := I.inv
   inv := I.hom
@@ -158,7 +155,7 @@ def trans (α : X ≅ Y) (β : Y ≅ Z) : X ≅ Z where
 #align category_theory.iso.trans_inv CategoryTheory.Iso.trans_inv
 
 @[simps]
-instance : Trans (α := C) (· ≅ ·) (· ≅ ·) (· ≅ ·) where
+instance instTransIso : Trans (α := C) (· ≅ ·) (· ≅ ·) (· ≅ ·) where
   trans := trans
 
 /-- Notation for composition of isomorphisms. -/
@@ -340,7 +337,7 @@ instance (priority := 100) mono_of_iso (f : X ⟶ Y) [IsIso f] : Mono f where
 #align category_theory.is_iso.mono_of_iso CategoryTheory.IsIso.mono_of_iso
 
 -- Porting note: `@[ext]` used to accept lemmas like this. Now we add an aesop rule
-@[aesop apply safe (rule_sets [CategoryTheory])]
+@[aesop apply safe (rule_sets := [CategoryTheory])]
 theorem inv_eq_of_hom_inv_id {f : X ⟶ Y} [IsIso f] {g : Y ⟶ X} (hom_inv_id : f ≫ g = 𝟙 X) :
     inv f = g := by
   apply (cancel_epi f).mp
@@ -354,7 +351,7 @@ theorem inv_eq_of_inv_hom_id {f : X ⟶ Y} [IsIso f] {g : Y ⟶ X} (inv_hom_id :
 #align category_theory.is_iso.inv_eq_of_inv_hom_id CategoryTheory.IsIso.inv_eq_of_inv_hom_id
 
 -- Porting note: `@[ext]` used to accept lemmas like this.
-@[aesop apply safe (rule_sets [CategoryTheory])]
+@[aesop apply safe (rule_sets := [CategoryTheory])]
 theorem eq_inv_of_hom_inv_id {f : X ⟶ Y} [IsIso f] {g : Y ⟶ X} (hom_inv_id : f ≫ g = 𝟙 X) :
     g = inv f :=
   (inv_eq_of_hom_inv_id hom_inv_id).symm
@@ -506,13 +503,13 @@ theorem isIso_of_comp_hom_eq_id (g : X ⟶ Y) [IsIso g] {f : Y ⟶ X} (h : f ≫
 namespace Iso
 
 -- Porting note: `@[ext]` used to accept lemmas like this.
-@[aesop apply safe (rule_sets [CategoryTheory])]
+@[aesop apply safe (rule_sets := [CategoryTheory])]
 theorem inv_ext {f : X ≅ Y} {g : Y ⟶ X} (hom_inv_id : f.hom ≫ g = 𝟙 X) : f.inv = g :=
   ((hom_comp_eq_id f).1 hom_inv_id).symm
 #align category_theory.iso.inv_ext CategoryTheory.Iso.inv_ext
 
 -- Porting note: `@[ext]` used to accept lemmas like this.
-@[aesop apply safe (rule_sets [CategoryTheory])]
+@[aesop apply safe (rule_sets := [CategoryTheory])]
 theorem inv_ext' {f : X ≅ Y} {g : Y ⟶ X} (hom_inv_id : f.hom ≫ g = 𝟙 X) : g = f.inv :=
   (hom_comp_eq_id f).1 hom_inv_id
 #align category_theory.iso.inv_ext' CategoryTheory.Iso.inv_ext'
@@ -581,11 +578,10 @@ namespace Functor
 universe u₁ v₁ u₂ v₂
 
 variable {D : Type u₂}
-
 variable [Category.{v₂} D]
 
 /-- A functor `F : C ⥤ D` sends isomorphisms `i : X ≅ Y` to isomorphisms `F.obj X ≅ F.obj Y` -/
-@[simps, pp_dot]
+@[simps]
 def mapIso (F : C ⥤ D) {X Y : C} (i : X ≅ Y) : F.obj X ≅ F.obj Y where
   hom := F.map i.hom
   inv := F.map i.inv

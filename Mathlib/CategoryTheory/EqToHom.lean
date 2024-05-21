@@ -26,7 +26,6 @@ This file introduces various `simp` lemmas which in favourable circumstances
 result in the various `eqToHom` morphisms to drop out at the appropriate moment!
 -/
 
-
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
 -- morphism levels before object levels. See note [CategoryTheory universes].
@@ -69,6 +68,8 @@ theorem eqToHom_comp_iff {X X' Y : C} (p : X = X') (f : X ⟶ Y) (g : X' ⟶ Y) 
     mpr := fun h => h ▸ by simp [whisker_eq _ h] }
 #align category_theory.eq_to_hom_comp_iff CategoryTheory.eqToHom_comp_iff
 
+variable {β : Sort*}
+
 /-- We can push `eqToHom` to the left through families of morphisms. -/
 -- The simpNF linter incorrectly claims that this will never apply.
 -- https://github.com/leanprover-community/mathlib4/issues/5049
@@ -105,7 +106,7 @@ theorem congrArg_cast_hom_left {X Y Z : C} (p : X = Y) (q : Y ⟶ Z) :
   cases p
   simp
 
- /-- If we (perhaps unintentionally) perform equational rewriting on
+/-- If we (perhaps unintentionally) perform equational rewriting on
 the source object of a morphism,
 we can replace the resulting `_.mpr f` term by a composition with an `eqToHom`.
 
@@ -212,6 +213,12 @@ theorem ext {F G : C ⥤ D} (h_obj : ∀ X, F.obj X = G.obj X)
     simpa using h_map X Y f
 #align category_theory.functor.ext CategoryTheory.Functor.ext
 
+lemma ext_of_iso {F G : C ⥤ D} (e : F ≅ G) (hobj : ∀ X, F.obj X = G.obj X)
+    (happ : ∀ X, e.hom.app X = eqToHom (hobj X)) : F = G :=
+  Functor.ext hobj (fun X Y f => by
+    rw [← cancel_mono (e.hom.app Y), e.hom.naturality f, happ, happ, Category.assoc,
+    Category.assoc, eqToHom_trans, eqToHom_refl, Category.comp_id])
+
 /-- Two morphisms are conjugate via eqToHom if and only if they are heterogeneously equal. -/
 theorem conj_eqToHom_iff_heq {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) (h : W = Y) (h' : X = Z) :
     f = eqToHom h ≫ g ≫ eqToHom h'.symm ↔ HEq f g := by
@@ -242,9 +249,6 @@ theorem congr_inv_of_congr_hom (F G : C ⥤ D) {X Y : C} (e : X ≅ Y) (hX : F.o
   simp only [← IsIso.Iso.inv_hom e, Functor.map_inv, h₂, IsIso.inv_comp, inv_eqToHom,
     Category.assoc]
 #align category_theory.functor.congr_inv_of_congr_hom CategoryTheory.Functor.congr_inv_of_congr_hom
-
-theorem congr_map (F : C ⥤ D) {X Y : C} {f g : X ⟶ Y} (h : f = g) : F.map f = F.map g := by rw [h]
-#align category_theory.functor.congr_map CategoryTheory.Functor.congr_map
 
 section HEq
 
@@ -292,17 +296,25 @@ end Functor
 as we lose the ability to use results that interact with `F`,
 e.g. the naturality of a natural transformation.
 
-In some files it may be appropriate to use `local attribute [simp] eqToHom_map`, however.
+In some files it may be appropriate to use `attribute [local simp] eqToHom_map`, however.
 -/
 theorem eqToHom_map (F : C ⥤ D) {X Y : C} (p : X = Y) :
     F.map (eqToHom p) = eqToHom (congr_arg F.obj p) := by cases p; simp
 #align category_theory.eq_to_hom_map CategoryTheory.eqToHom_map
+
+@[reassoc (attr := simp)]
+theorem eqToHom_map_comp (F : C ⥤ D) {X Y Z : C} (p : X = Y) (q : Y = Z) :
+    F.map (eqToHom p) ≫ F.map (eqToHom q) = F.map (eqToHom <| p.trans q) := by aesop_cat
 
 /-- See the note on `eqToHom_map` regarding using this as a `simp` lemma.
 -/
 theorem eqToIso_map (F : C ⥤ D) {X Y : C} (p : X = Y) :
     F.mapIso (eqToIso p) = eqToIso (congr_arg F.obj p) := by ext; cases p; simp
 #align category_theory.eq_to_iso_map CategoryTheory.eqToIso_map
+
+@[simp]
+theorem eqToIso_map_trans (F : C ⥤ D) {X Y Z : C} (p : X = Y) (q : Y = Z) :
+    F.mapIso (eqToIso p) ≪≫ F.mapIso (eqToIso q) = F.mapIso (eqToIso <| p.trans q) := by aesop_cat
 
 @[simp]
 theorem eqToHom_app {F G : C ⥤ D} (h : F = G) (X : C) :
@@ -319,7 +331,7 @@ theorem eq_conj_eqToHom {X Y : C} (f : X ⟶ Y) : f = eqToHom rfl ≫ f ≫ eqTo
   simp only [Category.id_comp, eqToHom_refl, Category.comp_id]
 #align category_theory.eq_conj_eq_to_hom CategoryTheory.eq_conj_eqToHom
 
-theorem dcongr_arg {ι : Type _} {F G : ι → C} (α : ∀ i, F i ⟶ G i) {i j : ι} (h : i = j) :
+theorem dcongr_arg {ι : Type*} {F G : ι → C} (α : ∀ i, F i ⟶ G i) {i j : ι} (h : i = j) :
     α i = eqToHom (congr_arg F h) ≫ α j ≫ eqToHom (congr_arg G h.symm) := by
   subst h
   simp

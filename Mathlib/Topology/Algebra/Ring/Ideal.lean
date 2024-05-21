@@ -19,7 +19,7 @@ ideal and prove that the quotient is a topological ring.
 
 section Ring
 
-variable {R : Type _} [TopologicalSpace R] [Ring R] [TopologicalRing R]
+variable {R : Type*} [TopologicalSpace R] [Ring R] [TopologicalRing R]
 
 /-- The closure of an ideal in a topological ring as an ideal. -/
 protected def Ideal.closure (I : Ideal R) : Ideal R :=
@@ -35,7 +35,7 @@ theorem Ideal.coe_closure (I : Ideal R) : (I.closure : Set R) = closure I :=
   rfl
 #align ideal.coe_closure Ideal.coe_closure
 
--- porting note: removed `@[simp]` because we make the instance argument explicit since otherwise
+-- Porting note: removed `@[simp]` because we make the instance argument explicit since otherwise
 -- it causes timeouts as `simp` tries and fails to generated an `IsClosed` instance.
 -- we also `alignₓ` because of the change in argument type
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/!4.234852.20heartbeats.20of.20the.20linter
@@ -47,7 +47,7 @@ end Ring
 
 section CommRing
 
-variable {R : Type _} [TopologicalSpace R] [CommRing R] (N : Ideal R)
+variable {R : Type*} [TopologicalSpace R] [CommRing R] (N : Ideal R)
 
 open Ideal.Quotient
 

@@ -9,6 +9,8 @@ import Mathlib.Tactic.Basic
 
 namespace UseTests
 
+set_option autoImplicit true
+
 example : ∃ x : Nat, x = x := by use 42
 
 -- Since `Eq` is an inductive type, `use` naturally handles it when applying the constructor.
@@ -207,4 +209,9 @@ by
 
 -- The discharger knows about `exists_prop`.
 example (h1 : 1 > 0) : ∃ (n : Nat) (_h : n > 0), n = n := by
+  use 1
+
+-- Regression test: `use` needs to ensure it does calculations inside the correct local contexts
+example : let P : Nat → Prop := fun _x => ∃ _n : Nat, True; P 1 := by
+  intro P
   use 1

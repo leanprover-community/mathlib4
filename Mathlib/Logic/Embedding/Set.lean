@@ -85,19 +85,19 @@ end Function
 namespace Set
 
 /-- The injection map is an embedding between subsets. -/
-@[simps apply]
+@[simps apply_coe]
 def embeddingOfSubset {α} (s t : Set α) (h : s ⊆ t) : s ↪ t :=
   ⟨fun x ↦ ⟨x.1, h x.2⟩, fun ⟨x, hx⟩ ⟨y, hy⟩ h ↦ by
     congr
     injection h⟩
 #align set.embedding_of_subset Set.embeddingOfSubset
-#align set.embedding_of_subset_apply Set.embeddingOfSubset_apply
+#align set.embedding_of_subset_apply Set.embeddingOfSubset_apply_coeₓ
 
 end Set
 
 section Subtype
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- A subtype `{x // p x ∨ q x}` over a disjunction of `p q : α → Prop` is equivalent to a sum of
 subtypes `{x // p x} ⊕ {x // q x}` such that `¬ p x` is sent to the right, when

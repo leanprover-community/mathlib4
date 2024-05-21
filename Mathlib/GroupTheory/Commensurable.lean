@@ -3,9 +3,9 @@ Copyright (c) 2021 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.GroupTheory.Index
-import Mathlib.GroupTheory.Subgroup.Pointwise
+import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.GroupTheory.GroupAction.ConjAct
+import Mathlib.GroupTheory.Index
 
 #align_import group_theory.commensurable from "leanprover-community/mathlib"@"48085f140e684306f9e7da907cd5932056d1aded"
 
@@ -29,7 +29,7 @@ the map `G → (conjAct G)` to obtain our commensurator as a subgroup of `G`.
 -/
 
 
-variable {G : Type _} [Group G]
+variable {G : Type*} [Group G]
 
 /-- Two subgroups `H K` of `G` are commensurable if `H ⊓ K` has finite index in both `H` and `K` -/
 def Commensurable (H K : Subgroup G) : Prop :=

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Set.Lattice
 
 #align_import data.set.constructions from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
@@ -24,7 +25,7 @@ set of subsets of `α` which is closed under finite intersections.
 -/
 
 
-variable {α : Type _} (S : Set (Set α))
+variable {α : Type*} (S : Set (Set α))
 
 /-- A structure encapsulating the fact that a set of sets is closed under finite intersection. -/
 structure FiniteInter : Prop where

@@ -21,7 +21,7 @@ This file defines instances for additive and multiplicative actions on the binar
 -/
 
 
-variable {M N P α β γ : Type _}
+variable {M N P α β γ : Type*}
 
 namespace Sum
 
@@ -32,10 +32,10 @@ variable [SMul M α] [SMul M β] [SMul N α] [SMul N β] (a : M) (b : α) (c : �
 
 @[to_additive Sum.hasVAdd]
 instance : SMul M (Sum α β) :=
-  ⟨fun a => Sum.map ((· • ·) a) ((· • ·) a)⟩
+  ⟨fun a => Sum.map (a • ·) (a • ·)⟩
 
 @[to_additive]
-theorem smul_def : a • x = x.map ((· • ·) a) ((· • ·) a) :=
+theorem smul_def : a • x = x.map (a • ·) (a • ·) :=
   rfl
 #align sum.smul_def Sum.smul_def
 #align sum.vadd_def Sum.vadd_def

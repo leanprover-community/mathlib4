@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Simon Hudon, Sébastien Gouëzel, Scott Morrison, Thomas Murrills
 -/
 import Lean
-import Std.Util.TermUnsafe
 
 /-!
 # Success If Fail With Message
@@ -14,6 +13,8 @@ This file implements a tactic that succeeds only if its argument fails with a sp
 It's mostly useful in tests, where we want to make sure that tactics fail in certain ways under
 circumstances.
 -/
+
+set_option autoImplicit true
 
 open Lean Elab Meta Tactic Syntax
 

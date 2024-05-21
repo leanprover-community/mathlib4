@@ -17,9 +17,9 @@ open Function
 open UniformConvergence
 
 @[to_additive]
-theorem equicontinuous_of_equicontinuousAt_one {ι G M hom : Type _} [TopologicalSpace G]
+theorem equicontinuous_of_equicontinuousAt_one {ι G M hom : Type*} [TopologicalSpace G]
     [UniformSpace M] [Group G] [Group M] [TopologicalGroup G] [UniformGroup M]
-    [MonoidHomClass hom G M] (F : ι → hom)
+    [FunLike hom G M] [MonoidHomClass hom G M] (F : ι → hom)
     (hf : EquicontinuousAt ((↑) ∘ F) (1 : G)) :
     Equicontinuous ((↑) ∘ F) := by
   rw [equicontinuous_iff_continuous]
@@ -33,8 +33,9 @@ theorem equicontinuous_of_equicontinuousAt_one {ι G M hom : Type _} [Topologica
 #align equicontinuous_of_equicontinuous_at_zero equicontinuous_of_equicontinuousAt_zero
 
 @[to_additive]
-theorem uniformEquicontinuous_of_equicontinuousAt_one {ι G M hom : Type _} [UniformSpace G]
-    [UniformSpace M] [Group G] [Group M] [UniformGroup G] [UniformGroup M] [MonoidHomClass hom G M]
+theorem uniformEquicontinuous_of_equicontinuousAt_one {ι G M hom : Type*} [UniformSpace G]
+    [UniformSpace M] [Group G] [Group M] [UniformGroup G] [UniformGroup M]
+    [FunLike hom G M] [MonoidHomClass hom G M]
     (F : ι → hom) (hf : EquicontinuousAt ((↑) ∘ F) (1 : G)) :
     UniformEquicontinuous ((↑) ∘ F) := by
   rw [uniformEquicontinuous_iff_uniformContinuous]

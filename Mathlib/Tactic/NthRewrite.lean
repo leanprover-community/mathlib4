@@ -5,7 +5,6 @@ Authors: Moritz Doll
 -/
 
 import Lean.Elab.Tactic.Rewrite
-import Lean.Elab.BuiltinTerm
 
 /-!
 # `nth_rewrite` tactic
@@ -17,30 +16,6 @@ The tactic `nth_rewrite` and `nth_rw` are variants of `rewrite` and `rw` that on
 namespace Mathlib.Tactic
 
 open Lean Elab Tactic Meta Parser.Tactic
-
-/-- Variant of `rewriteTarget` that allows to use `Occurrences`.
-
-This def should be in Core. -/
-def rewriteTarget' (stx : Syntax) (symm : Bool) (occs : Occurrences := Occurrences.all)
-    (config : Rewrite.Config := { : Rewrite.Config }) : TacticM Unit := do
-  Term.withSynthesize <| withMainContext do
-    let e ← elabTerm stx none true
-    let r ← (← getMainGoal).rewrite (← getMainTarget) e symm occs config
-    let mvarId' ← (← getMainGoal).replaceTargetEq r.eNew r.eqProof
-    replaceMainGoal (mvarId' :: r.mvarIds)
-
-/-- Variant of `rewriteLocalDecl` that allows to use `Occurrences`.
-
-This def should be in Core. -/
-def rewriteLocalDecl' (stx : Syntax) (symm : Bool) (fvarId : FVarId)
-    (occs : Occurrences := Occurrences.all) (config : Rewrite.Config := { : Rewrite.Config }) :
-    TacticM Unit := do
-  Term.withSynthesize <| withMainContext do
-    let e ← elabTerm stx none true
-    let localDecl ← fvarId.getDecl
-    let rwResult ← (← getMainGoal).rewrite localDecl.type e symm occs config
-    let replaceResult ← (← getMainGoal).replaceLocalDecl fvarId rwResult.eNew rwResult.eqProof
-    replaceMainGoal (replaceResult.mvarId :: rwResult.mvarIds)
 
 /-- `nth_rewrite` is a variant of `rewrite` that only changes the nth occurrence of the expression
 to be rewritten.
@@ -57,10 +32,11 @@ syntax (name := nthRewriteSeq) "nth_rewrite" (config)? ppSpace num rwRuleSeq (lo
     let cfg ← elabRewriteConfig stx[1]
     let loc := expandOptLocation stx[4]
     let occ := Occurrences.pos [n.getNat]
+    let cfg := { cfg with occs := occ }
     withRWRulesSeq stx[0] stx[3] fun symm term => do
       withLocation loc
-        (rewriteLocalDecl' term symm · occ cfg)
-        (rewriteTarget' term symm occ cfg)
+        (rewriteLocalDecl term symm · cfg)
+        (rewriteTarget term symm cfg)
         (throwTacticEx `nth_rewrite · "did not find instance of the pattern in the current goal")
   | _ => throwUnsupportedSyntax
 

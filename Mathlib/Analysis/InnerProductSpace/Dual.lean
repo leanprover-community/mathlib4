@@ -39,17 +39,17 @@ dual, Fréchet-Riesz
 
 noncomputable section
 
-open Classical ComplexConjugate
+open scoped Classical
+open ComplexConjugate
 
 universe u v
 
 namespace InnerProductSpace
 
-open IsROrC ContinuousLinearMap
+open RCLike ContinuousLinearMap
 
-variable (𝕜 : Type _)
-
-variable (E : Type _) [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable (𝕜 : Type*)
+variable (E : Type*) [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
 
@@ -79,7 +79,7 @@ set_option linter.uppercaseLean3 false in
 
 variable {𝕜}
 
-theorem ext_inner_left_basis {ι : Type _} {x y : E} (b : Basis ι 𝕜 E)
+theorem ext_inner_left_basis {ι : Type*} {x y : E} (b : Basis ι 𝕜 E)
     (h : ∀ i : ι, ⟪b i, x⟫ = ⟪b i, y⟫) : x = y := by
   apply (toDualMap 𝕜 E).map_eq_iff.mp
   refine' (Function.Injective.eq_iff ContinuousLinearMap.coe_injective).mp (Basis.ext b _)
@@ -91,7 +91,7 @@ theorem ext_inner_left_basis {ι : Type _} {x y : E} (b : Basis ι 𝕜 E)
   exact congr_arg conj (h i)
 #align inner_product_space.ext_inner_left_basis InnerProductSpace.ext_inner_left_basis
 
-theorem ext_inner_right_basis {ι : Type _} {x y : E} (b : Basis ι 𝕜 E)
+theorem ext_inner_right_basis {ι : Type*} {x y : E} (b : Basis ι 𝕜 E)
     (h : ∀ i : ι, ⟪x, b i⟫ = ⟪y, b i⟫) : x = y := by
   refine' ext_inner_left_basis b fun i => _
   rw [← inner_conj_symm]
@@ -100,7 +100,6 @@ theorem ext_inner_right_basis {ι : Type _} {x y : E} (b : Basis ι 𝕜 E)
 #align inner_product_space.ext_inner_right_basis InnerProductSpace.ext_inner_right_basis
 
 variable (𝕜) (E)
-
 variable [CompleteSpace E]
 
 /-- Fréchet-Riesz representation: any `ℓ` in the dual of a Hilbert space `E` is of the form
@@ -122,7 +121,7 @@ def toDual : E ≃ₗᵢ⋆[𝕜] NormedSpace.Dual 𝕜 E :=
         change Yᗮ ≠ ⊥ at htriv
         rw [Submodule.ne_bot_iff] at htriv
         obtain ⟨z : E, hz : z ∈ Yᗮ, z_ne_0 : z ≠ 0⟩ := htriv
-        refine' ⟨(starRingEnd (R := 𝕜) (ℓ z) / ⟪z, z⟫) • z, _⟩
+        refine ⟨(starRingEnd (R := 𝕜) (ℓ z) / ⟪z, z⟫) • z, ?_⟩
         apply ContinuousLinearMap.ext
         intro x
         have h₁ : ℓ z • x - ℓ x • z ∈ Y := by
@@ -174,7 +173,8 @@ variable (B : E →L⋆[𝕜] E →L[𝕜] 𝕜)
 
 @[simp]
 theorem continuousLinearMapOfBilin_apply (v w : E) : ⟪B♯ v, w⟫ = B v w := by
-  simp [continuousLinearMapOfBilin]
+  rw [continuousLinearMapOfBilin, coe_comp', ContinuousLinearEquiv.coe_coe,
+    LinearIsometryEquiv.coe_toContinuousLinearEquiv, Function.comp_apply, toDual_symm_apply]
 #align inner_product_space.continuous_linear_map_of_bilin_apply InnerProductSpace.continuousLinearMapOfBilin_apply
 
 theorem unique_continuousLinearMapOfBilin {v f : E} (is_lax_milgram : ∀ w, ⟪f, w⟫ = B v w) :

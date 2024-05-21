@@ -5,9 +5,6 @@ Authors: Yourong Zang
 -/
 import Mathlib.Analysis.NormedSpace.ConformalLinearMap
 import Mathlib.Analysis.Calculus.FDeriv.Add
-import Mathlib.Analysis.Calculus.FDeriv.Mul
-import Mathlib.Analysis.Calculus.FDeriv.Equiv
-import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 
 #align_import analysis.calculus.conformal.normed_space from "leanprover-community/mathlib"@"e3fb84046afd187b710170887195d50bada934ee"
 
@@ -47,7 +44,7 @@ Maps such as the complex conjugate are considered to be conformal.
 
 noncomputable section
 
-variable {X Y Z : Type _} [NormedAddCommGroup X] [NormedAddCommGroup Y] [NormedAddCommGroup Z]
+variable {X Y Z : Type*} [NormedAddCommGroup X] [NormedAddCommGroup Y] [NormedAddCommGroup Z]
   [NormedSpace ℝ X] [NormedSpace ℝ Y] [NormedSpace ℝ Z]
 
 section LocConformality

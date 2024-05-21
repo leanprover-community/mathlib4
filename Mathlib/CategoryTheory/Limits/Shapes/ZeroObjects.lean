@@ -29,7 +29,6 @@ open CategoryTheory
 open CategoryTheory.Category
 
 variable {C : Type u} [Category.{v} C]
-
 variable {D : Type u'} [Category.{v'} D]
 
 namespace CategoryTheory
@@ -51,7 +50,7 @@ namespace IsZero
 
 variable {X Y : C}
 
--- Porting: `to` is a reserved word, it was replaced by `to_`
+-- Porting note: `to` is a reserved word, it was replaced by `to_`
 /-- If `h : IsZero X`, then `h.to_ Y` is a choice of unique morphism `X → Y`. -/
 protected def to_ (h : IsZero X) (Y : C) : X ⟶ Y :=
   @default _ <| (h.unique_to Y).some.toInhabited
@@ -65,7 +64,7 @@ theorem to_eq (h : IsZero X) (f : X ⟶ Y) : h.to_ Y = f :=
   (h.eq_to f).symm
 #align category_theory.limits.is_zero.to_eq CategoryTheory.Limits.IsZero.to_eq
 
--- Porting: `from` is a reserved word, it was replaced by `from_`
+-- Porting note: `from` is a reserved word, it was replaced by `from_`
 /-- If `h : is_zero X`, then `h.from_ Y` is a choice of unique morphism `Y → X`. -/
 protected def from_ (h : IsZero X) (Y : C) : Y ⟶ X :=
   @default _ <| (h.unique_from Y).some.toInhabited
@@ -88,8 +87,7 @@ theorem eq_of_tgt (hX : IsZero X) (f g : Y ⟶ X) : f = g :=
 #align category_theory.limits.is_zero.eq_of_tgt CategoryTheory.Limits.IsZero.eq_of_tgt
 
 /-- Any two zero objects are isomorphic. -/
-def iso (hX : IsZero X) (hY : IsZero Y) : X ≅ Y
-    where
+def iso (hX : IsZero X) (hY : IsZero Y) : X ≅ Y where
   hom := hX.to_ Y
   inv := hX.from_ Y
   hom_inv_id := hX.eq_of_src _ _
@@ -269,6 +267,7 @@ instance {X : C} (f : X ⟶ 0) : Epi f where left_cancellation g h _ := by ext
 
 instance zero_to_zero_isIso (f : (0 : C) ⟶ 0) : IsIso f := by
   convert show IsIso (𝟙 (0 : C)) by infer_instance
+  apply Subsingleton.elim
 #align category_theory.limits.has_zero_object.zero_to_zero_is_iso CategoryTheory.Limits.HasZeroObject.zero_to_zero_isIso
 
 /-- A zero object is in particular initial. -/

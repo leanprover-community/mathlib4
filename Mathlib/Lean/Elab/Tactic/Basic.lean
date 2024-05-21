@@ -8,6 +8,8 @@ import Mathlib.Lean.Meta
 # Additions to `Lean.Elab.Tactic.Basic`
 -/
 
+set_option autoImplicit true
+
 open Lean Elab Tactic
 
 namespace Lean.Elab.Tactic

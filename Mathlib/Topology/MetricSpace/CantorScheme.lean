@@ -45,9 +45,10 @@ namespace CantorScheme
 
 open List Function Filter Set PiNat
 
-open Classical Topology
+open scoped Classical
+open Topology
 
-variable {β α : Type _} (A : List β → Set α)
+variable {β α : Type*} (A : List β → Set α)
 
 /-- From a `β`-scheme on `α` `A`, we define a partial function from `(ℕ → β)` to `α`
 which sends each infinite sequence `x` to an element of the intersection along the
@@ -102,9 +103,9 @@ theorem Disjoint.map_injective (hA : CantorScheme.Disjoint A) : Injective (induc
   ext n : 1
   induction' n with n ih; · simp
   simp only [res_succ, cons.injEq]
-  refine' ⟨_, ih⟩
+  refine ⟨?_, ih⟩
   contrapose hA
-  simp only [CantorScheme.Disjoint, _root_.Pairwise, Ne.def, not_forall, exists_prop]
+  simp only [CantorScheme.Disjoint, _root_.Pairwise, Ne, not_forall, exists_prop]
   refine' ⟨res x n, _, _, hA, _⟩
   rw [not_disjoint_iff]
   refine' ⟨(inducedMap A).2 ⟨x, hx⟩, _, _⟩

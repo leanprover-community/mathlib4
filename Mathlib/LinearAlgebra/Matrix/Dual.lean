@@ -24,7 +24,7 @@ open Matrix
 
 section Transpose
 
-variable {K V₁ V₂ ι₁ ι₂ : Type _} [Field K] [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂]
+variable {K V₁ V₂ ι₁ ι₂ : Type*} [Field K] [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂]
   [Module K V₂] [Fintype ι₁] [Fintype ι₂] [DecidableEq ι₁] [DecidableEq ι₂] {B₁ : Basis ι₁ K V₁}
   {B₂ : Basis ι₂ K V₂}
 

@@ -5,7 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Damiano Testa, Kevin Buzzard
 -/
 import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Algebra.Order.Monoid.WithZero.Defs
+import Mathlib.Algebra.Order.GroupWithZero.Canonical
 
 #align_import linear_order_with_pos_mul_pos_eq_zero from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
 
@@ -86,7 +86,7 @@ instance : LinearOrderedCommMonoidWithZero Foo :=
     zero_le_one := by decide }
 
 theorem not_mul_pos : ¬∀ {M : Type} [LinearOrderedCommMonoidWithZero M],
-    ∀ (a b : M) (_ : 0 < a) (_ : 0 < b), 0 < a * b := by
+    ∀ a b : M, 0 < a → 0 < b → 0 < a * b := by
   intro h
   specialize h ε ε (by boom) (by boom)
   exact (lt_irrefl 0 (h.trans_le (by boom))).elim

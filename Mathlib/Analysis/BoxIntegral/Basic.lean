@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Analysis.BoxIntegral.Partition.Filter
 import Mathlib.Analysis.BoxIntegral.Partition.Measure
 import Mathlib.Topology.UniformSpace.Compact
+import Mathlib.Init.Data.Bool.Lemmas
 
 #align_import analysis.box_integral.basic from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -336,7 +337,7 @@ theorem integral_zero : integral I l (fun _ => (0 : E)) vol = 0 :=
   hasIntegral_zero.integral_eq
 #align box_integral.integral_zero BoxIntegral.integral_zero
 
-theorem HasIntegral.sum {α : Type _} {s : Finset α} {f : α → ℝⁿ → E} {g : α → F}
+theorem HasIntegral.sum {α : Type*} {s : Finset α} {f : α → ℝⁿ → E} {g : α → F}
     (h : ∀ i ∈ s, HasIntegral I l (f i) vol (g i)) :
     HasIntegral I l (fun x => ∑ i in s, f i x) vol (∑ i in s, g i) := by
   induction' s using Finset.induction_on with a s ha ihs; · simp [hasIntegral_zero]
@@ -515,7 +516,7 @@ represented as a finite union of boxes, the integral sums of `f` over tagged pre
 cover exactly `s` form a Cauchy “sequence” along `l`. -/
 theorem cauchy_map_integralSum_toFilteriUnion (h : Integrable I l f vol) (π₀ : Prepartition I) :
     Cauchy ((l.toFilteriUnion I π₀).map (integralSum f vol)) := by
-  refine' ⟨inferInstance, _⟩
+  refine ⟨inferInstance, ?_⟩
   rw [prod_map_map_eq, ← toFilter_inf_iUnion_eq, ← prod_inf_prod, prod_principal_principal]
   exact h.tendsto_integralSum_toFilter_prod_self_inf_iUnion_eq_uniformity.mono_left
     (inf_le_inf_left _ <| principal_mono.2 fun π h => h.1.trans h.2.symm)
@@ -602,8 +603,8 @@ theorem dist_integralSum_sum_integral_le_of_memBaseSet_of_iUnion_eq (h : Integra
         dist (integralSum f vol π) (∑ J in π₀.boxes, integralSum f vol (πi J)) +
           dist (∑ J in π₀.boxes, integralSum f vol (πi J)) (∑ J in π₀.boxes, integral J l f vol) :=
       dist_triangle _ _ _
-    _ ≤ ε + δ' + ∑ _J in π₀.boxes, δ' := (add_le_add this (dist_sum_sum_le_of_le _ hπiδ'))
-    _ = ε + δ := by field_simp [H0.ne']; ring
+    _ ≤ ε + δ' + ∑ _J in π₀.boxes, δ' := add_le_add this (dist_sum_sum_le_of_le _ hπiδ')
+    _ = ε + δ := by field_simp [δ']; ring
 #align box_integral.integrable.dist_integral_sum_sum_integral_le_of_mem_base_set_of_Union_eq BoxIntegral.Integrable.dist_integralSum_sum_integral_le_of_memBaseSet_of_iUnion_eq
 
 /-- **Henstock-Sacks inequality**. Let `r : ℝⁿ → (0, ∞)` be a function such that for any tagged
@@ -637,8 +638,8 @@ theorem tendsto_integralSum_sum_integral (h : Integrable I l f vol) (π₀ : Pre
   exact h.dist_integralSum_sum_integral_le_of_memBaseSet_of_iUnion_eq ε0 hc hU
 #align box_integral.integrable.tendsto_integral_sum_sum_integral BoxIntegral.Integrable.tendsto_integralSum_sum_integral
 
-/-- If `f` is integrable on `I`, then `λ J, integral J l f vol` is box-additive on subboxes of `I`:
-if `π₁`, `π₂` are two prepartitions of `I` covering the same part of `I`, then the sum of integrals
+/-- If `f` is integrable on `I`, then `fun J ↦ integral J l f vol` is box-additive on subboxes of
+`I`: if `π₁`, `π₂` are two prepartitions of `I` covering the same part of `I`, the sum of integrals
 of `f` over the boxes of `π₁` is equal to the sum of integrals of `f` over the boxes of `π₂`.
 
 See also `BoxIntegral.Integrable.toBoxAdditive` for a bundled version. -/
@@ -650,8 +651,8 @@ theorem sum_integral_congr (h : Integrable I l f vol) {π₁ π₂ : Prepartitio
   exact h.tendsto_integralSum_sum_integral π₂
 #align box_integral.integrable.sum_integral_congr BoxIntegral.Integrable.sum_integral_congr
 
-/-- If `f` is integrable on `I`, then `λ J, integral J l f vol` is box-additive on subboxes of `I`:
-if `π₁`, `π₂` are two prepartitions of `I` covering the same part of `I`, then the sum of integrals
+/-- If `f` is integrable on `I`, then `fun J ↦ integral J l f vol` is box-additive on subboxes of
+`I`: if `π₁`, `π₂` are two prepartitions of `I` covering the same part of `I`, the sum of integrals
 of `f` over the boxes of `π₁` is equal to the sum of integrals of `f` over the boxes of `π₂`.
 
 See also `BoxIntegral.Integrable.sum_integral_congr` for an unbundled version. -/
@@ -712,8 +713,6 @@ theorem integrable_of_continuousOn [CompleteSpace E] {I : Box ι} {f : ℝⁿ �
 
 variable {l}
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See Lean 4 issue #2220
-
 /-- This is an auxiliary lemma used to prove two statements at once. Use one of the next two
 lemmas instead. -/
 theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = false)
@@ -768,14 +767,14 @@ theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = 
     refine' (sum_le_sum _).trans (hεs _ _)
     · rintro b -
       rw [← Nat.cast_two, ← Nat.cast_pow, ← nsmul_eq_mul]
-      refine' nsmul_le_nsmul (hεs0 _).le _
-      refine' (Finset.card_le_of_subset _).trans ((hπδ.isHenstock hlH).card_filter_tag_eq_le b)
+      refine' nsmul_le_nsmul_left (hεs0 _).le _
+      refine' (Finset.card_le_card _).trans ((hπδ.isHenstock hlH).card_filter_tag_eq_le b)
       exact filter_subset_filter _ (filter_subset _ _)
     · rw [Finset.coe_image, Set.image_subset_iff]
       exact fun J hJ => (Finset.mem_filter.1 hJ).2
   /- Now we deal with boxes such that `π.tag J ∉ s`.
     In this case the estimate is straightforward. -/
-  -- porting note: avoided strange elaboration issues by rewriting using `calc`
+  -- Porting note: avoided strange elaboration issues by rewriting using `calc`
   calc
     dist (∑ J in π.boxes.filter (¬tag π · ∈ s), vol J (f (tag π J)))
       (∑ J in π.boxes.filter (¬tag π · ∈ s), g J)
@@ -819,8 +818,8 @@ theorem HasIntegral.of_le_Henstock_of_forall_isLittleO (hl : l ≤ Henstock) (B 
       ∃ δ > 0, ∀ J ≤ I, Box.Icc J ⊆ Metric.closedBall x δ → x ∈ Box.Icc J →
         (l.bDistortion → J.distortion ≤ c) → dist (vol J (f x)) (g J) ≤ ε * B J) :
     HasIntegral I l f vol (g I) :=
-  have A : l.bHenstock := hl.2.1.resolve_left (by decide)
-  HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl.1.resolve_right (by decide)) B hB0 _ s hs
+  have A : l.bHenstock := Bool.eq_true_of_true_le hl.2.1
+  HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (Bool.eq_false_of_le_false hl.1) B hB0 _ s hs
     (fun _ => A) H₁ <| by simpa only [A, true_imp_iff] using H₂
 set_option linter.uppercaseLean3 false in
 #align box_integral.has_integral_of_le_Henstock_of_forall_is_o BoxIntegral.HasIntegral.of_le_Henstock_of_forall_isLittleO
