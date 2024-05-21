@@ -58,6 +58,9 @@ def Spec.topObj (R : CommRingCat.{u}) : TopCat :=
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.Top_obj AlgebraicGeometry.Spec.topObj
 
+@[simp] theorem Spec.topObj_forget {R} : (forget TopCat).obj (Spec.topObj R) = PrimeSpectrum R :=
+  rfl
+
 /-- The induced map of a ring homomorphism on the ring spectra, as a morphism of topological spaces.
 -/
 def Spec.topMap {R S : CommRingCat.{u}} (f : R ⟶ S) : Spec.topObj S ⟶ Spec.topObj R :=
@@ -431,7 +434,7 @@ theorem isLocalizedModule_toPushforwardStalkAlgHom_aux (y) :
   obtain ⟨⟨s, ⟨_, n, rfl⟩⟩, hsn⟩ :=
     @IsLocalization.surj _ _ _ _ _ _
       (StructureSheaf.IsLocalization.to_basicOpen S <| algebraMap R S r) s'
-  refine' ⟨⟨s, ⟨r, hpr⟩ ^ n⟩, _⟩
+  refine ⟨⟨s, ⟨r, hpr⟩ ^ n⟩, ?_⟩
   rw [Submonoid.smul_def, Algebra.smul_def, algebraMap_pushforward_stalk, toPushforwardStalk,
     comp_apply, comp_apply]
   iterate 2
@@ -473,13 +476,13 @@ instance isLocalizedModule_toPushforwardStalkAlgHom :
     simp only [TopCat.Presheaf.pushforwardObj_map, Functor.op_map, map_zero, ← comp_apply,
       toOpen_res] at e
     have : toOpen S (PrimeSpectrum.basicOpen <| algebraMap R S r) x = 0 := by
-      refine' Eq.trans _ e; rfl
+      refine Eq.trans ?_ e; rfl
     have :=
       (@IsLocalization.mk'_one _ _ _ _ _ _
             (StructureSheaf.IsLocalization.to_basicOpen S <| algebraMap R S r) x).trans
         this
     obtain ⟨⟨_, n, rfl⟩, e⟩ := (IsLocalization.mk'_eq_zero_iff _ _).mp this
-    refine' ⟨⟨r, hpr⟩ ^ n, _⟩
+    refine ⟨⟨r, hpr⟩ ^ n, ?_⟩
     rw [Submonoid.smul_def, Algebra.smul_def]
     -- Porting note: manually rewrite `Submonoid.coe_pow`
     change (algebraMap R S) (r ^ n) * x = 0

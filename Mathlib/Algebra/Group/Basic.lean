@@ -678,6 +678,13 @@ lemma zpow_mul' (a : α) (m n : ℤ) : a ^ (m * n) = (a ^ n) ^ m := by rw [Int.m
 #align zpow_mul' zpow_mul'
 #align mul_zsmul mul_zsmul
 
+#noalign zpow_bit0
+#noalign bit0_zsmul
+#noalign zpow_bit0'
+#noalign bit0_zsmul'
+#noalign zpow_bit1
+#noalign bit1_zsmul
+
 variable (a b c)
 
 @[to_additive, field_simps] -- The attributes are out of order on purpose
@@ -1426,16 +1433,15 @@ theorem multiplicative_of_isTotal (p : α → Prop) (hswap : ∀ {a b}, p a → 
 
 end multiplicative
 
--- 2024-03-20
-@[deprecated] alias div_mul_cancel' := div_mul_cancel
-@[deprecated] alias mul_div_cancel'' := mul_div_cancel_right
+@[deprecated (since := "2024-03-20")] alias div_mul_cancel' := div_mul_cancel
+@[deprecated (since := "2024-03-20")] alias mul_div_cancel'' := mul_div_cancel_right
 -- The name `add_sub_cancel` was reused
--- @[deprecated] alias add_sub_cancel := add_sub_cancel_right
-@[deprecated] alias div_mul_cancel''' := div_mul_cancel_right
-@[deprecated] alias sub_add_cancel'' := sub_add_cancel_right
-@[deprecated] alias mul_div_cancel''' := mul_div_cancel_left
-@[deprecated] alias add_sub_cancel' := add_sub_cancel_left
-@[deprecated] alias mul_div_cancel'_right := mul_div_cancel
-@[deprecated] alias add_sub_cancel'_right := add_sub_cancel
-@[deprecated] alias div_mul_cancel'' := div_mul_cancel_left
-@[deprecated] alias sub_add_cancel' := sub_add_cancel_left
+-- @[deprecated (since := "2024-03-20")] alias add_sub_cancel := add_sub_cancel_right
+@[deprecated (since := "2024-03-20")] alias div_mul_cancel''' := div_mul_cancel_right
+@[deprecated (since := "2024-03-20")] alias sub_add_cancel'' := sub_add_cancel_right
+@[deprecated (since := "2024-03-20")] alias mul_div_cancel''' := mul_div_cancel_left
+@[deprecated (since := "2024-03-20")] alias add_sub_cancel' := add_sub_cancel_left
+@[deprecated (since := "2024-03-20")] alias mul_div_cancel'_right := mul_div_cancel
+@[deprecated (since := "2024-03-20")] alias add_sub_cancel'_right := add_sub_cancel
+@[deprecated (since := "2024-03-20")] alias div_mul_cancel'' := div_mul_cancel_left
+@[deprecated (since := "2024-03-20")] alias sub_add_cancel' := sub_add_cancel_left

@@ -233,8 +233,7 @@ variable {F G}
 /-- Given a cocone over `F ⋙ G`, we can construct a `Cocone G` with the same cocone point.
 -/
 @[simps]
-def extendCocone : Cocone (F ⋙ G) ⥤ Cocone G
-    where
+def extendCocone : Cocone (F ⋙ G) ⥤ Cocone G where
   obj c :=
     { pt := c.pt
       ι :=
@@ -279,8 +278,7 @@ the category of cocones on `F ⋙ G` is equivalent to the category of cocones on
 for any `G : D ⥤ E`.
 -/
 @[simps]
-def coconesEquiv : Cocone (F ⋙ G) ≌ Cocone G
-    where
+def coconesEquiv : Cocone (F ⋙ G) ≌ Cocone G where
   functor := extendCocone
   inverse := Cocones.whiskering F
   unitIso := NatIso.ofComponents fun c => Cocones.ext (Iso.refl _)
@@ -306,8 +304,7 @@ def isColimitExtendCoconeEquiv (t : Cocone (F ⋙ G)) :
 
 /-- Given a colimit cocone over `G : D ⥤ E` we can construct a colimit cocone over `F ⋙ G`. -/
 @[simps]
-def colimitCoconeComp (t : ColimitCocone G) : ColimitCocone (F ⋙ G)
-    where
+def colimitCoconeComp (t : ColimitCocone G) : ColimitCocone (F ⋙ G) where
   cocone := _
   isColimit := (isColimitWhiskerEquiv F _).symm t.isColimit
 #align category_theory.functor.final.colimit_cocone_comp CategoryTheory.Functor.Final.colimitCoconeComp
@@ -340,8 +337,7 @@ end
 
 /-- Given a colimit cocone over `F ⋙ G` we can construct a colimit cocone over `G`. -/
 @[simps]
-def colimitCoconeOfComp (t : ColimitCocone (F ⋙ G)) : ColimitCocone G
-    where
+def colimitCoconeOfComp (t : ColimitCocone (F ⋙ G)) : ColimitCocone G where
   cocone := extendCocone.obj t.cocone
   isColimit := (isColimitExtendCoconeEquiv F _).symm t.isColimit
 #align category_theory.functor.final.colimit_cocone_of_comp CategoryTheory.Functor.Final.colimitCoconeOfComp
@@ -524,8 +520,7 @@ variable {F G}
 /-- Given a cone over `F ⋙ G`, we can construct a `Cone G` with the same cocone point.
 -/
 @[simps]
-def extendCone : Cone (F ⋙ G) ⥤ Cone G
-    where
+def extendCone : Cone (F ⋙ G) ⥤ Cone G where
   obj c :=
     { pt := c.pt
       π :=
@@ -573,8 +568,7 @@ the category of cones on `F ⋙ G` is equivalent to the category of cones on `G`
 for any `G : D ⥤ E`.
 -/
 @[simps]
-def conesEquiv : Cone (F ⋙ G) ≌ Cone G
-    where
+def conesEquiv : Cone (F ⋙ G) ≌ Cone G where
   functor := extendCone
   inverse := Cones.whiskering F
   unitIso := NatIso.ofComponents fun c => Cones.ext (Iso.refl _)
@@ -599,8 +593,7 @@ def isLimitExtendConeEquiv (t : Cone (F ⋙ G)) : IsLimit (extendCone.obj t) ≃
 
 /-- Given a limit cone over `G : D ⥤ E` we can construct a limit cone over `F ⋙ G`. -/
 @[simps]
-def limitConeComp (t : LimitCone G) : LimitCone (F ⋙ G)
-    where
+def limitConeComp (t : LimitCone G) : LimitCone (F ⋙ G) where
   cone := _
   isLimit := (isLimitWhiskerEquiv F _).symm t.isLimit
 #align category_theory.functor.initial.limit_cone_comp CategoryTheory.Functor.Initial.limitConeComp
@@ -633,8 +626,7 @@ end
 
 /-- Given a limit cone over `F ⋙ G` we can construct a limit cone over `G`. -/
 @[simps]
-def limitConeOfComp (t : LimitCone (F ⋙ G)) : LimitCone G
-    where
+def limitConeOfComp (t : LimitCone (F ⋙ G)) : LimitCone G where
   cone := extendCone.obj t.cone
   isLimit := (isLimitExtendConeEquiv F _).symm t.isLimit
 #align category_theory.functor.initial.limit_cone_of_comp CategoryTheory.Functor.Initial.limitConeOfComp
@@ -829,7 +821,7 @@ theorem IsFilteredOrEmpty.of_final (F : C ⥤ D) [Final F] [IsFilteredOrEmpty C]
     refine' isPreconnected_induction P _ _ h₀ _
     · rintro U V h ⟨Z, q₁, q₂, hq⟩
       obtain ⟨W, q₃, q₄, hq'⟩ := IsFiltered.span q₁ h.right
-      refine' ⟨W, q₄, q₂ ≫ q₃, _⟩
+      refine ⟨W, q₄, q₂ ≫ q₃, ?_⟩
       rw [F.map_comp, ← reassoc_of% hq, ← F.map_comp, hq', F.map_comp, StructuredArrow.w_assoc]
     · rintro U V h ⟨Z, q₁, q₂, hq⟩
       exact ⟨Z, h.right ≫ q₁, q₂, by simp only [F.map_comp, StructuredArrow.w_assoc, hq]⟩

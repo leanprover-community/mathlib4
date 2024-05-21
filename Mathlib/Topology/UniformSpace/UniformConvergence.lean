@@ -204,7 +204,7 @@ theorem TendstoUniformlyOn.mono {s' : Set α} (h : TendstoUniformlyOn F f p s) (
 theorem TendstoUniformlyOnFilter.congr {F' : ι → α → β} (hf : TendstoUniformlyOnFilter F f p p')
     (hff' : ∀ᶠ n : ι × α in p ×ˢ p', F n.fst n.snd = F' n.fst n.snd) :
     TendstoUniformlyOnFilter F' f p p' := by
-  refine' fun u hu => ((hf u hu).and hff').mono fun n h => _
+  refine fun u hu => ((hf u hu).and hff').mono fun n h => ?_
   rw [← h.right]
   exact h.left
 #align tendsto_uniformly_on_filter.congr TendstoUniformlyOnFilter.congr
@@ -212,7 +212,7 @@ theorem TendstoUniformlyOnFilter.congr {F' : ι → α → β} (hf : TendstoUnif
 theorem TendstoUniformlyOn.congr {F' : ι → α → β} (hf : TendstoUniformlyOn F f p s)
     (hff' : ∀ᶠ n in p, Set.EqOn (F n) (F' n) s) : TendstoUniformlyOn F' f p s := by
   rw [tendstoUniformlyOn_iff_tendstoUniformlyOnFilter] at hf ⊢
-  refine' hf.congr _
+  refine hf.congr ?_
   rw [eventually_iff] at hff' ⊢
   simp only [Set.EqOn] at hff'
   simp only [mem_prod_principal, hff', mem_setOf_eq]
@@ -693,12 +693,12 @@ protected theorem TendstoLocallyUniformly.tendstoLocallyUniformlyOn
 /-- On a compact space, locally uniform convergence is just uniform convergence. -/
 theorem tendstoLocallyUniformly_iff_tendstoUniformly_of_compactSpace [CompactSpace α] :
     TendstoLocallyUniformly F f p ↔ TendstoUniformly F f p := by
-  refine' ⟨fun h V hV => _, TendstoUniformly.tendstoLocallyUniformly⟩
+  refine ⟨fun h V hV => ?_, TendstoUniformly.tendstoLocallyUniformly⟩
   choose U hU using h V hV
   obtain ⟨t, ht⟩ := isCompact_univ.elim_nhds_subcover' (fun k _ => U k) fun k _ => (hU k).1
   replace hU := fun x : t => (hU x).2
   rw [← eventually_all] at hU
-  refine' hU.mono fun i hi x => _
+  refine hU.mono fun i hi x => ?_
   specialize ht (mem_univ x)
   simp only [exists_prop, mem_iUnion, SetCoe.exists, exists_and_right, Subtype.coe_mk] at ht
   obtain ⟨y, ⟨hy₁, hy₂⟩, hy₃⟩ := ht
@@ -709,7 +709,7 @@ theorem tendstoLocallyUniformly_iff_tendstoUniformly_of_compactSpace [CompactSpa
 theorem tendstoLocallyUniformlyOn_iff_tendstoUniformlyOn_of_compact (hs : IsCompact s) :
     TendstoLocallyUniformlyOn F f p s ↔ TendstoUniformlyOn F f p s := by
   haveI : CompactSpace s := isCompact_iff_compactSpace.mp hs
-  refine' ⟨fun h => _, TendstoUniformlyOn.tendstoLocallyUniformlyOn⟩
+  refine ⟨fun h => ?_, TendstoUniformlyOn.tendstoLocallyUniformlyOn⟩
   rwa [tendstoLocallyUniformlyOn_iff_tendstoLocallyUniformly_comp_coe,
     tendstoLocallyUniformly_iff_tendstoUniformly_of_compactSpace, ←
     tendstoUniformlyOn_iff_tendstoUniformly_comp_coe] at h

@@ -295,7 +295,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
       let ⟨x, hx, hx'⟩ := ht.isCompact.exists_isMinOn ht' (map_continuous g').continuousOn
       ⟨g' x, hgt' x hx, hx'⟩
   obtain ⟨g, hg, hgc⟩ := exists_mul_le_one_eqOn_ge g' hc
-  refine' ⟨g * g', _, hg, hgc.mono hgc'⟩
+  refine ⟨g * g', ?_, hg, hgc.mono hgc'⟩
   convert I.mul_mem_left ((algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g) hI'
   ext
   simp only [algebraMapCLM_coe, comp_apply, mul_apply, ContinuousMap.coe_coe, map_mul]
@@ -340,8 +340,8 @@ variable (X)
 /-- The Galois insertion `ContinuousMap.opensOfIdeal : Ideal C(X, 𝕜) → Opens X` and
 `fun s ↦ ContinuousMap.idealOfSet ↑s`. -/
 @[simps]
-def idealOpensGI : GaloisInsertion (opensOfIdeal : Ideal C(X, 𝕜) → Opens X) fun s => idealOfSet 𝕜 s
-    where
+def idealOpensGI :
+    GaloisInsertion (opensOfIdeal : Ideal C(X, 𝕜) → Opens X) fun s => idealOfSet 𝕜 s where
   choice I _ := opensOfIdeal I.closure
   gc I s := ideal_gc X 𝕜 I s
   le_l_u s := (setOfIdeal_ofSet_of_isOpen 𝕜 s.isOpen).ge
