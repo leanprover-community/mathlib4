@@ -90,7 +90,7 @@ theorem coe_toCLM (φ : characterSpace 𝕜 A) : ⇑(toCLM φ) = φ :=
 /-- Elements of the character space are non-unital algebra homomorphisms. -/
 instance instNonUnitalAlgHomClass : NonUnitalAlgHomClass (characterSpace 𝕜 A) 𝕜 A 𝕜 :=
   { CharacterSpace.instContinuousLinearMapClass with
-    map_smul := fun φ => map_smulₛₗ φ
+    map_smulₛₗ := fun φ => map_smul φ
     map_zero := fun φ => map_zero φ
     map_mul := fun φ => φ.prop.2 }
 
@@ -171,7 +171,7 @@ theorem eq_set_map_one_map_mul [Nontrivial 𝕜] :
     lift φ to characterSpace 𝕜 A using hφ
     exact ⟨map_one φ, map_mul φ⟩
   · rintro ⟨hφ₁, hφ₂⟩
-    refine' ⟨_, hφ₂⟩
+    refine ⟨?_, hφ₂⟩
     rintro rfl
     exact zero_ne_one hφ₁
 #align weak_dual.character_space.eq_set_map_one_map_mul WeakDual.CharacterSpace.eq_set_map_one_map_mul

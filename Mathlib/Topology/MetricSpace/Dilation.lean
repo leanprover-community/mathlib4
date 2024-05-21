@@ -224,7 +224,7 @@ def mkOfNNDistEq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (f : α �
   toFun := f
   edist_eq' := by
     rcases h with ⟨r, hne, h⟩
-    refine' ⟨r, hne, fun x y => _⟩
+    refine ⟨r, hne, fun x y => ?_⟩
     rw [edist_nndist, edist_nndist, ← ENNReal.coe_mul, h x y]
 #align dilation.mk_of_nndist_eq Dilation.mkOfNNDistEq
 
@@ -301,7 +301,7 @@ protected theorem injective {α : Type*} [EMetricSpace α] [FunLike F α β]  [D
 /-- The identity is a dilation -/
 protected def id (α) [PseudoEMetricSpace α] : α →ᵈ α where
   toFun := id
-  edist_eq' := ⟨1, one_ne_zero, fun x y => by simp only [id.def, ENNReal.coe_one, one_mul]⟩
+  edist_eq' := ⟨1, one_ne_zero, fun x y => by simp only [id, ENNReal.coe_one, one_mul]⟩
 #align dilation.id Dilation.id
 
 instance : Inhabited (α →ᵈ α) :=

@@ -180,7 +180,7 @@ theorem iUnion_cylinder_update (x : ∀ n, E n) (n : ℕ) :
   · rintro ⟨k, hk⟩ i hi
     simpa [hi.ne] using hk i (Nat.lt_succ_of_lt hi)
   · intro H
-    refine' ⟨y n, fun i hi => _⟩
+    refine ⟨y n, fun i hi => ?_⟩
     rcases Nat.lt_succ_iff_lt_or_eq.1 hi with (h'i | rfl)
     · simp [H i h'i, h'i.ne]
     · simp
@@ -199,7 +199,7 @@ open List
 /-- In the case where `E` has constant value `α`,
 the cylinder `cylinder x n` can be identified with the element of `List α`
 consisting of the first `n` entries of `x`. See `cylinder_eq_res`.
-We call this list `res x n`, the restriction of `x` to `n`.-/
+We call this list `res x n`, the restriction of `x` to `n`. -/
 def res (x : ℕ → α) : ℕ → List α
   | 0 => nil
   | Nat.succ n => x n :: res x n
@@ -219,7 +219,7 @@ theorem res_succ (x : ℕ → α) (n : ℕ) : res x n.succ = x n :: res x n :=
 theorem res_length (x : ℕ → α) (n : ℕ) : (res x n).length = n := by induction n <;> simp [*]
 #align pi_nat.res_length PiNat.res_length
 
-/-- The restrictions of `x` and `y` to `n` are equal if and only if `x m = y m` for all `m < n`.-/
+/-- The restrictions of `x` and `y` to `n` are equal if and only if `x m = y m` for all `m < n`. -/
 theorem res_eq_res {x y : ℕ → α} {n : ℕ} :
     res x n = res y n ↔ ∀ ⦃m⦄, m < n → x m = y m := by
   constructor <;> intro h <;> induction' n with n ih; · simp
@@ -243,7 +243,7 @@ theorem res_injective : Injective (@res α) := by
   rw [h]
 #align pi_nat.res_injective PiNat.res_injective
 
-/-- `cylinder x n` is equal to the set of sequences `y` with the same restriction to `n` as `x`.-/
+/-- `cylinder x n` is equal to the set of sequences `y` with the same restriction to `n` as `x`. -/
 theorem cylinder_eq_res (x : ℕ → α) (n : ℕ) :
     cylinder x n = { y | res y n = res x n } := by
   ext y
@@ -295,7 +295,7 @@ theorem dist_triangle_nonarch (x y z : ∀ n, E n) : dist x z ≤ max (dist x y)
   · simp
   rcases eq_or_ne y z with (rfl | hyz)
   · simp
-  simp only [dist_eq_of_ne, hxz, hxy, hyz, inv_le_inv, one_div, inv_pow, zero_lt_two, Ne.def,
+  simp only [dist_eq_of_ne, hxz, hxy, hyz, inv_le_inv, one_div, inv_pow, zero_lt_two, Ne,
     not_false_iff, le_max_iff, pow_le_pow_iff_right, one_lt_two, pow_pos,
     min_le_iff.1 (min_firstDiff_le x y z hxz)]
 #align pi_nat.dist_triangle_nonarch PiNat.dist_triangle_nonarch
@@ -490,7 +490,7 @@ theorem exists_disjoint_cylinder {s : Set (∀ n, E n)} (hs : IsClosed s) {x : �
   · exact ⟨0, by simp⟩
   have A : 0 < infDist x s := (hs.not_mem_iff_infDist_pos hne).1 hx
   obtain ⟨n, hn⟩ : ∃ n, (1 / 2 : ℝ) ^ n < infDist x s := exists_pow_lt_of_lt_one A one_half_lt_one
-  refine' ⟨n, disjoint_left.2 fun y ys hy => ?_⟩
+  refine ⟨n, disjoint_left.2 fun y ys hy => ?_⟩
   apply lt_irrefl (infDist x s)
   calc
     infDist x s ≤ dist x y := infDist_le_dist_of_mem ys
@@ -514,7 +514,7 @@ theorem firstDiff_lt_shortestPrefixDiff {s : Set (∀ n, E n)} (hs : IsClosed s)
   have B := Nat.find_spec A
   contrapose! B
   rw [not_disjoint_iff_nonempty_inter]
-  refine' ⟨y, hy, _⟩
+  refine ⟨y, hy, ?_⟩
   rw [mem_cylinder_comm]
   exact cylinder_anti y B (mem_cylinder_firstDiff x y)
 #align pi_nat.first_diff_lt_shortest_prefix_diff PiNat.firstDiff_lt_shortestPrefixDiff
@@ -549,7 +549,7 @@ theorem inter_cylinder_longestPrefix_nonempty {s : Set (∀ n, E n)} (hs : IsClo
   rw [longestPrefix, shortestPrefixDiff, dif_pos A] at B ⊢
   obtain ⟨y, ys, hy⟩ : ∃ y : ∀ n : ℕ, E n, y ∈ s ∧ x ∈ cylinder y (Nat.find A - 1) := by
     simpa only [not_disjoint_iff, mem_cylinder_comm] using Nat.find_min A B
-  refine' ⟨y, ys, _⟩
+  refine ⟨y, ys, ?_⟩
   rw [mem_cylinder_iff_eq] at hy ⊢
   rw [hy]
 #align pi_nat.inter_cylinder_longest_prefix_nonempty PiNat.inter_cylinder_longestPrefix_nonempty
@@ -747,7 +747,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
     have diff_pos : 0 < firstDiff x.1 y.1 := by
       by_contra! h
       apply apply_firstDiff_ne hne'
-      rw [le_zero_iff.1 h]
+      rw [Nat.le_zero.1 h]
       apply apply_eq_of_dist_lt _ le_rfl
       rw [pow_zero]
       exact hxy
@@ -758,7 +758,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
       dist (g x) (g y) ≤ dist (g x) (u (x.1 n)) + dist (g y) (u (x.1 n)) :=
         dist_triangle_right _ _ _
       _ = dist (g x) (u (x.1 n)) + dist (g y) (u (y.1 n)) := by rw [← B]
-      _ ≤ (1 / 2) ^ n + (1 / 2) ^ n := (add_le_add (A x n) (A y n))
+      _ ≤ (1 / 2) ^ n + (1 / 2) ^ n := add_le_add (A x n) (A y n)
       _ = 4 * (1 / 2) ^ (n + 1) := by ring
   have g_surj : Surjective g := fun y ↦ by
     have : ∀ n : ℕ, ∃ j, y ∈ closedBall (u j) ((1 / 2) ^ n) := fun n ↦ by
@@ -766,7 +766,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
       exact ⟨j, hj.le⟩
     choose x hx using this
     have I : (⋂ n : ℕ, closedBall (u (x n)) ((1 / 2) ^ n)).Nonempty := ⟨y, mem_iInter.2 hx⟩
-    refine' ⟨⟨x, I⟩, _⟩
+    refine ⟨⟨x, I⟩, ?_⟩
     refine' dist_le_zero.1 _
     have J : ∀ n : ℕ, dist (g ⟨x, I⟩) y ≤ (1 / 2) ^ n + (1 / 2) ^ n := fun n =>
       calc

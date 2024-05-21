@@ -60,7 +60,7 @@ instance [ExtremallyDisconnected X] [T2Space X] : TotallySeparatedSpace X :=
       by simp only [Set.union_compl_self, Set.subset_univ], disjoint_compl_right⟩
     rw [Set.mem_compl_iff, mem_closure_iff]
     push_neg
-    refine' ⟨V, ⟨hUV.2.1, hUV.2.2.2.1, _⟩⟩
+    refine ⟨V, ⟨hUV.2.1, hUV.2.2.2.1, ?_⟩⟩
     rw [← Set.disjoint_iff_inter_eq_empty, disjoint_comm]
     exact hUV.2.2.2.2 }
 
@@ -248,7 +248,7 @@ noncomputable def ExtremallyDisconnected.homeoCompactToT2 [ExtremallyDisconnecte
 
 /-- Theorem 2.5 in [Gleason, *Projective topological spaces*][gleason1958]:
 in the category of compact spaces and continuous maps,
-the projective spaces are precisely the extremally disconnected spaces.-/
+the projective spaces are precisely the extremally disconnected spaces. -/
 protected theorem CompactT2.ExtremallyDisconnected.projective [ExtremallyDisconnected A]
     [CompactSpace A] [T2Space A] : CompactT2.Projective A := by
   -- let $B$ and $C$ be compact; let $f : B \twoheadrightarrow C$ and $\phi : A \to C$ be continuous

@@ -385,7 +385,7 @@ protected theorem dist_triangle (x y z : Σi, E i) : dist x z ≤ dist x y + dis
               dist x (Nonempty.some ⟨x⟩) + 1 + (dist (Nonempty.some ⟨z⟩) y + dist y z) := by
             apply_rules [add_le_add, le_rfl, dist_triangle]
           _ = _ := by abel
-      · simp only [hik, hij, hjk, Sigma.dist_ne, Ne.def, not_false_iff]
+      · simp only [hik, hij, hjk, Sigma.dist_ne, Ne, not_false_iff]
         calc
           dist x (Nonempty.some ⟨x⟩) + 1 + dist (Nonempty.some ⟨z⟩) z =
               dist x (Nonempty.some ⟨x⟩) + 1 + 0 + (0 + 0 + dist (Nonempty.some ⟨z⟩) z) := by
@@ -411,7 +411,7 @@ protected theorem isOpen_iff (s : Set (Σi, E i)) :
   · refine fun H => isOpen_sigma_iff.2 fun i => Metric.isOpen_iff.2 fun x hx => ?_
     obtain ⟨ε, εpos, hε⟩ : ∃ ε > 0, ∀ y, dist (⟨i, x⟩ : Σj, E j) y < ε → y ∈ s :=
       H ⟨i, x⟩ hx
-    refine' ⟨ε, εpos, fun y hy => _⟩
+    refine ⟨ε, εpos, fun y hy => ?_⟩
     apply hε ⟨i, y⟩
     rw [Sigma.dist_same]
     exact mem_ball'.1 hy
@@ -588,7 +588,7 @@ theorem inductiveLimitDist_eq_dist (I : ∀ n, Isometry (f n)) (x y : Σn, X n) 
       exact inductiveLimitDist_eq_dist I x y m xm ym
 #align metric.inductive_limit_dist_eq_dist Metric.inductiveLimitDist_eq_dist
 
-/-- Premetric space structure on `Σ n, X n`.-/
+/-- Premetric space structure on `Σ n, X n`. -/
 def inductivePremetric (I : ∀ n, Isometry (f n)) : PseudoMetricSpace (Σn, X n) where
   dist := inductiveLimitDist f
   dist_self x := by simp [dist, inductiveLimitDist]

@@ -406,7 +406,7 @@ namespace Measure
 /-- A finite measure coerced into a real function is a signed measure. -/
 @[simps]
 def toSignedMeasure (μ : Measure α) [hμ : IsFiniteMeasure μ] : SignedMeasure α where
-  measureOf' := fun i : Set α => if MeasurableSet i then (μ.measureOf i).toReal else 0
+  measureOf' := fun s : Set α => if MeasurableSet s then (μ s).toReal else 0
   empty' := by simp [μ.empty]
   not_measurable' _ hi := if_neg hi
   m_iUnion' f hf₁ hf₂ := by
@@ -489,7 +489,7 @@ theorem toENNRealVectorMeasure_zero : (0 : Measure α).toENNRealVectorMeasure = 
 @[simp]
 theorem toENNRealVectorMeasure_add (μ ν : Measure α) :
     (μ + ν).toENNRealVectorMeasure = μ.toENNRealVectorMeasure + ν.toENNRealVectorMeasure := by
-  refine' MeasureTheory.VectorMeasure.ext fun i hi => _
+  refine MeasureTheory.VectorMeasure.ext fun i hi => ?_
   rw [toENNRealVectorMeasure_apply_measurable hi, add_apply, VectorMeasure.add_apply,
     toENNRealVectorMeasure_apply_measurable hi, toENNRealVectorMeasure_apply_measurable hi]
 #align measure_theory.measure.to_ennreal_vector_measure_add MeasureTheory.Measure.toENNRealVectorMeasure_add
@@ -830,7 +830,6 @@ theorem le_iff' : v ≤ w ↔ ∀ i, v i ≤ w i := by
 
 end
 
--- mathport name: vector_measure.restrict
 set_option quotPrecheck false in -- Porting note: error message suggested to do this
 scoped[MeasureTheory]
   notation:50 v " ≤[" i:50 "] " w:50 =>
@@ -921,15 +920,15 @@ theorem restrict_le_restrict_iUnion {f : ℕ → Set α} (hf₁ : ∀ n, Measura
   have ha₄ : Pairwise (Disjoint on fun n => a ∩ disjointed f n) :=
     (disjoint_disjointed _).mono fun i j => Disjoint.mono inf_le_right inf_le_right
   rw [← ha₃, v.of_disjoint_iUnion_nat _ ha₄, w.of_disjoint_iUnion_nat _ ha₄]
-  refine' tsum_le_tsum (fun n => (restrict_le_restrict_iff v w (hf₁ n)).1 (hf₂ n) _ _) _ _
-  · exact ha₁.inter (MeasurableSet.disjointed hf₁ n)
-  · exact Set.Subset.trans (Set.inter_subset_right _ _) (disjointed_subset _ _)
-  · refine' (v.m_iUnion (fun n => _) _).summable
+  · refine' tsum_le_tsum (fun n => (restrict_le_restrict_iff v w (hf₁ n)).1 (hf₂ n) _ _) _ _
     · exact ha₁.inter (MeasurableSet.disjointed hf₁ n)
-    · exact (disjoint_disjointed _).mono fun i j => Disjoint.mono inf_le_right inf_le_right
-  · refine' (w.m_iUnion (fun n => _) _).summable
-    · exact ha₁.inter (MeasurableSet.disjointed hf₁ n)
-    · exact (disjoint_disjointed _).mono fun i j => Disjoint.mono inf_le_right inf_le_right
+    · exact Set.Subset.trans (Set.inter_subset_right _ _) (disjointed_subset _ _)
+    · refine' (v.m_iUnion (fun n => _) _).summable
+      · exact ha₁.inter (MeasurableSet.disjointed hf₁ n)
+      · exact (disjoint_disjointed _).mono fun i j => Disjoint.mono inf_le_right inf_le_right
+    · refine' (w.m_iUnion (fun n => _) _).summable
+      · exact ha₁.inter (MeasurableSet.disjointed hf₁ n)
+      · exact (disjoint_disjointed _).mono fun i j => Disjoint.mono inf_le_right inf_le_right
   · intro n
     exact ha₁.inter (MeasurableSet.disjointed hf₁ n)
   · exact fun n => ha₁.inter (MeasurableSet.disjointed hf₁ n)
@@ -1042,7 +1041,6 @@ def AbsolutelyContinuous (v : VectorMeasure α M) (w : VectorMeasure α N) :=
   ∀ ⦃s : Set α⦄, w s = 0 → v s = 0
 #align measure_theory.vector_measure.absolutely_continuous MeasureTheory.VectorMeasure.AbsolutelyContinuous
 
--- mathport name: vector_measure.absolutely_continuous
 @[inherit_doc VectorMeasure.AbsolutelyContinuous]
 scoped[MeasureTheory] infixl:50 " ≪ᵥ " => MeasureTheory.VectorMeasure.AbsolutelyContinuous
 
@@ -1212,7 +1210,7 @@ theorem smul_left {R : Type*} [Semiring R] [DistribMulAction R M] [ContinuousCon
 theorem neg_left {M : Type*} [AddCommGroup M] [TopologicalSpace M] [TopologicalAddGroup M]
     {v : VectorMeasure α M} {w : VectorMeasure α N} (h : v ⟂ᵥ w) : -v ⟂ᵥ w := by
   obtain ⟨u, hmu, hu₁, hu₂⟩ := h
-  refine' ⟨u, hmu, fun s hs => _, hu₂⟩
+  refine ⟨u, hmu, fun s hs => ?_, hu₂⟩
   rw [neg_apply v s, neg_eq_zero]
   exact hu₁ s hs
 #align measure_theory.vector_measure.mutually_singular.neg_left MeasureTheory.VectorMeasure.MutuallySingular.neg_left
@@ -1312,7 +1310,7 @@ def toMeasureOfZeroLE (s : SignedMeasure α) (i : Set α) (hi₁ : MeasurableSet
       intro n m hnm
       exact ((hf₂ hnm).inf_left' i).inf_right' i
     simp only [toMeasureOfZeroLE', s.restrict_apply hi₁ (MeasurableSet.iUnion hf₁), Set.inter_comm,
-      Set.inter_iUnion, s.of_disjoint_iUnion_nat h₁ h₂, ENNReal.some_eq_coe, id.def]
+      Set.inter_iUnion, s.of_disjoint_iUnion_nat h₁ h₂, ENNReal.some_eq_coe, id]
     have h : ∀ n, 0 ≤ s (i ∩ f n) := fun n =>
       s.nonneg_of_zero_le_restrict (s.zero_le_restrict_subset hi₁ (Set.inter_subset_left _ _) hi₂)
     rw [NNReal.coe_tsum_of_nonneg h, ENNReal.coe_tsum]
@@ -1392,7 +1390,7 @@ theorem zero_le_toSignedMeasure : 0 ≤ μ.toSignedMeasure := by
 theorem toSignedMeasure_toMeasureOfZeroLE :
     μ.toSignedMeasure.toMeasureOfZeroLE Set.univ MeasurableSet.univ
       ((le_restrict_univ_iff_le _ _).2 (zero_le_toSignedMeasure μ)) = μ := by
-  refine' Measure.ext fun i hi => _
+  refine Measure.ext fun i hi => ?_
   lift μ i to ℝ≥0 using (measure_lt_top _ _).ne with m hm
   rw [SignedMeasure.toMeasureOfZeroLE_apply _ _ _ hi, ENNReal.coe_inj]
   congr

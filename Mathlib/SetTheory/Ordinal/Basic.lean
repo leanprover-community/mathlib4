@@ -37,10 +37,11 @@ initial segment (or, equivalently, in any way). This total order is well founded
   universe). In some cases the universe level has to be given explicitly.
 
 * `o₁ + o₂` is the order on the disjoint union of `o₁` and `o₂` obtained by declaring that
-  every element of `o₁` is smaller than every element of `o₂`. The main properties of addition
-  (and the other operations on ordinals) are stated and proved in `Ordinal/Arithmetic.lean`. Here,
-  we only introduce it and prove its basic properties to deduce the fact that the order on ordinals
-  is total (and well founded).
+  every element of `o₁` is smaller than every element of `o₂`.
+  The main properties of addition (and the other operations on ordinals) are stated and proved in
+  `Mathlib/SetTheory/Ordinal/Arithmetic.lean`.
+  Here, we only introduce it and prove its basic properties to deduce the fact that the order on
+  ordinals is total (and well founded).
 * `succ o` is the successor of the ordinal `o`.
 * `Cardinal.ord c`: when `c` is a cardinal, `ord c` is the smallest ordinal with this cardinality.
   It is the canonical way to represent a cardinal with an ordinal.
@@ -141,8 +142,7 @@ end WellOrder
 
 /-- Equivalence relation on well orders on arbitrary types in universe `u`, given by order
 isomorphism. -/
-instance Ordinal.isEquivalent : Setoid WellOrder
-    where
+instance Ordinal.isEquivalent : Setoid WellOrder where
   r := fun ⟨_, r, _⟩ ⟨_, s, _⟩ => Nonempty (r ≃r s)
   iseqv :=
     ⟨fun _ => ⟨RelIso.refl _⟩, fun ⟨e⟩ => ⟨e.symm⟩, fun ⟨e₁⟩ ⟨e₂⟩ => ⟨e₁.trans e₂⟩⟩
@@ -317,8 +317,7 @@ theorem inductionOn {C : Ordinal → Prop} (o : Ordinal)
 /-! ### The order on ordinals -/
 
 
-instance partialOrder : PartialOrder Ordinal
-    where
+instance partialOrder : PartialOrder Ordinal where
   le a b :=
     Quotient.liftOn₂ a b (fun ⟨_, r, _⟩ ⟨_, s, _⟩ => Nonempty (r ≼i s))
       fun _ _ _ _ ⟨f⟩ ⟨g⟩ =>
@@ -549,7 +548,7 @@ theorem enum_lt_enum {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : Or
 theorem relIso_enum' {α β : Type u} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r]
     [IsWellOrder β s] (f : r ≃r s) (o : Ordinal) :
     ∀ (hr : o < type r) (hs : o < type s), f (enum r o hr) = enum s o hs := by
-  refine' inductionOn o _; rintro γ t wo ⟨g⟩ ⟨h⟩
+  refine inductionOn o ?_; rintro γ t wo ⟨g⟩ ⟨h⟩
   rw [enum_type g, enum_type (PrincipalSeg.ltEquiv g f)]; rfl
 #align ordinal.rel_iso_enum' Ordinal.relIso_enum'
 
@@ -835,7 +834,6 @@ def omega : Ordinal.{u} :=
   lift <| @type ℕ (· < ·) _
 #align ordinal.omega Ordinal.omega
 
--- mathport name: ordinal.omega
 @[inherit_doc]
 scoped notation "ω" => Ordinal.omega
 
@@ -861,7 +859,7 @@ theorem lift_omega : lift ω = ω :=
 In this paragraph, we introduce the addition on ordinals, and prove just enough properties to
 deduce that the order on ordinals is total (and therefore well-founded). Further properties of
 the addition, together with properties of the other operations, are proved in
-`Ordinal/Arithmetic.lean`.
+`Mathlib/SetTheory/Ordinal/Arithmetic.lean`.
 -/
 
 
@@ -1055,9 +1053,7 @@ theorem succ_zero : succ (0 : Ordinal) = 1 :=
 
 -- Porting note: Proof used to be rfl
 @[simp]
-theorem succ_one : succ (1 : Ordinal) = 2 := by
-  unfold instOfNatAtLeastTwo OfNat.ofNat
-  simpa using by rfl
+theorem succ_one : succ (1 : Ordinal) = 2 := by congr; simp only [Nat.unaryCast, zero_add]
 #align ordinal.succ_one Ordinal.succ_one
 
 theorem add_succ (o₁ o₂ : Ordinal) : o₁ + succ o₂ = succ (o₁ + o₂) :=
@@ -1093,18 +1089,16 @@ theorem card_succ (o : Ordinal) : card (succ o) = card o + 1 := by
   simp only [← add_one_eq_succ, card_add, card_one]
 #align ordinal.card_succ Ordinal.card_succ
 
-theorem nat_cast_succ (n : ℕ) : ↑n.succ = succ (n : Ordinal) :=
+theorem natCast_succ (n : ℕ) : ↑n.succ = succ (n : Ordinal) :=
   rfl
-#align ordinal.nat_cast_succ Ordinal.nat_cast_succ
+#align ordinal.nat_cast_succ Ordinal.natCast_succ
 
-instance uniqueIioOne : Unique (Iio (1 : Ordinal))
-    where
+instance uniqueIioOne : Unique (Iio (1 : Ordinal)) where
   default := ⟨0, by simp⟩
   uniq a := Subtype.ext <| lt_one_iff_zero.1 a.2
 #align ordinal.unique_Iio_one Ordinal.uniqueIioOne
 
-instance uniqueOutOne : Unique (1 : Ordinal).out.α
-    where
+instance uniqueOutOne : Unique (1 : Ordinal).out.α where
   default := enum (· < ·) 0 (by simp)
   uniq a := by
     unfold default
@@ -1192,8 +1186,7 @@ def enumIso (r : α → α → Prop) [IsWellOrder α r] : Subrel (· < ·) (· <
 
 /-- The order isomorphism between ordinals less than `o` and `o.out.α`. -/
 @[simps!]
-noncomputable def enumIsoOut (o : Ordinal) : Set.Iio o ≃o o.out.α
-    where
+noncomputable def enumIsoOut (o : Ordinal) : Set.Iio o ≃o o.out.α where
   toFun x :=
     enum (· < ·) x.1 <| by
       rw [type_lt]
@@ -1511,7 +1504,7 @@ theorem lift_lt_univ' (c : Cardinal) : lift.{max (u + 1) v, u} c < univ.{u, v} :
 
 @[simp]
 theorem ord_univ : ord univ.{u, v} = Ordinal.univ.{u, v} := by
-  refine' le_antisymm (ord_card_le _) <| le_of_forall_lt fun o h => lt_ord.2 ?_
+  refine le_antisymm (ord_card_le _) <| le_of_forall_lt fun o h => lt_ord.2 ?_
   have := lift.principalSeg.{u, v}.down.1 (by simpa only [lift.principalSeg_coe] using h)
   rcases this with ⟨o, h'⟩
   rw [← h', lift.principalSeg_coe, ← lift_card]

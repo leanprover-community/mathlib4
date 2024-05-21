@@ -372,6 +372,7 @@ theorem Inducing.isPreconnected_image [TopologicalSpace β] {s : Set α} {f : α
 
 /- TODO: The following lemmas about connection of preimages hold more generally for strict maps
 (the quotient and subspace topologies of the image agree) whose fibers are preconnected. -/
+
 theorem IsPreconnected.preimage_of_isOpenMap [TopologicalSpace β] {f : α → β} {s : Set β}
     (hs : IsPreconnected s) (hinj : Function.Injective f) (hf : IsOpenMap f) (hsf : s ⊆ range f) :
     IsPreconnected (f ⁻¹' s) := fun u v hu hv hsuv hsu hsv => by
@@ -484,7 +485,7 @@ theorem isPreconnected_univ_pi [∀ i, TopologicalSpace (π i)] {s : ∀ i, Set 
     simpa using hI
   · rw [Finset.piecewise_insert] at hI
     have := I.piecewise_mem_set_pi hfs hgs
-    refine' (hsuv this).elim ihI fun h => _
+    refine (hsuv this).elim ihI fun h => ?_
     set S := update (I.piecewise f g) i '' s i
     have hsub : S ⊆ pi univ s := by
       refine' image_subset_iff.2 fun z hz => _
@@ -494,7 +495,7 @@ theorem isPreconnected_univ_pi [∀ i, TopologicalSpace (π i)] {s : ∀ i, Set 
       (hs i).image _ (continuous_const.update i continuous_id).continuousOn
     have hSu : (S ∩ u).Nonempty := ⟨_, mem_image_of_mem _ (hfs _ trivial), hI⟩
     have hSv : (S ∩ v).Nonempty := ⟨_, ⟨_, this _ trivial, update_eq_self _ _⟩, h⟩
-    refine' (hconn u v uo vo (hsub.trans hsuv) hSu hSv).mono _
+    refine (hconn u v uo vo (hsub.trans hsuv) hSu hSv).mono ?_
     exact inter_subset_inter_left _ hsub
 #align is_preconnected_univ_pi isPreconnected_univ_pi
 
@@ -938,7 +939,7 @@ theorem frontier_eq_empty_iff [PreconnectedSpace α] {s : Set α} :
 
 theorem nonempty_frontier_iff [PreconnectedSpace α] {s : Set α} :
     (frontier s).Nonempty ↔ s.Nonempty ∧ s ≠ univ := by
-  simp only [nonempty_iff_ne_empty, Ne.def, frontier_eq_empty_iff, not_or]
+  simp only [nonempty_iff_ne_empty, Ne, frontier_eq_empty_iff, not_or]
 #align nonempty_frontier_iff nonempty_frontier_iff
 
 theorem Subtype.preconnectedSpace {s : Set α} (h : IsPreconnected s) : PreconnectedSpace s where
@@ -1057,7 +1058,7 @@ theorem isConnected_iff_sUnion_disjoint_open {s : Set α} :
   · induction U using Finset.induction_on with
     | empty => exact absurd (by simpa using hsU) hne.not_subset_empty
     | @insert u U uU IH =>
-      simp only [← ball_cond_comm, Finset.forall_mem_insert, Finset.exists_mem_insert,
+      simp only [← forall_cond_comm, Finset.forall_mem_insert, Finset.exists_mem_insert,
         Finset.coe_insert, sUnion_insert, implies_true, true_and] at *
       refine (h _ hUo.1 (⋃₀ ↑U) (isOpen_sUnion hUo.2) hsU ?_).imp_right ?_
       · refine subset_empty_iff.1 fun x ⟨hxs, hxu, v, hvU, hxv⟩ => ?_
@@ -1095,11 +1096,9 @@ theorem isPreconnected_iff_subset_of_disjoint_closed :
     exact h ⟨y, hys, hyu⟩ ⟨x, hxs, hxv⟩
   · rw [isPreconnected_closed_iff]
     intro u v hu hv hs hsu hsv
-    rw [nonempty_iff_ne_empty]
-    intro H
-    specialize h u v hu hv hs H
-    contrapose H
-    apply Nonempty.ne_empty
+    by_contra H
+    specialize h u v hu hv hs (Set.not_nonempty_iff_eq_empty.mp H)
+    apply H
     cases' h with h h
     · rcases hsv with ⟨x, hxs, hxv⟩
       exact ⟨x, hxs, ⟨h hxs, hxv⟩⟩

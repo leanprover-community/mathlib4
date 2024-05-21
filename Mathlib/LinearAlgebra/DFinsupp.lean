@@ -401,13 +401,13 @@ theorem mem_iSup_finset_iff_exists_sum {s : Finset ι} (p : ι → Submodule R N
         rfl
     · refine' ⟨DFinsupp.mk s _, _⟩
       · rintro ⟨i, hi⟩
-        refine' ⟨μ i, _⟩
+        refine ⟨μ i, ?_⟩
         rw [iSup_pos]
         · exact coe_mem _
         · exact hi
       simp only [DFinsupp.sum]
       rw [Finset.sum_subset support_mk_subset, ← hμ]
-      exact Finset.sum_congr rfl fun x hx => congr_arg Subtype.val <| mk_of_mem hx
+      · exact Finset.sum_congr rfl fun x hx => congr_arg Subtype.val <| mk_of_mem hx
       · intro x _ hx
         rw [mem_support_iff, not_ne_iff] at hx
         rw [hx]
@@ -508,7 +508,7 @@ theorem Independent.dfinsupp_lsum_injective {p : ι → Submodule R N} (h : Inde
   ext i : 1
   -- split `m` into the piece at `i` and the pieces elsewhere, to match `h`
   rw [DFinsupp.zero_apply, ← neg_eq_zero]
-  refine' h i (-m i) m _
+  refine h i (-m i) m ?_
   rwa [← erase_add_single i m, LinearMap.map_add, lsum_single, Submodule.subtype_apply,
     add_eq_zero_iff_eq_neg, ← Submodule.coe_neg] at hm
 #align complete_lattice.independent.dfinsupp_lsum_injective CompleteLattice.Independent.dfinsupp_lsum_injective

@@ -482,8 +482,8 @@ noncomputable def colimitIsoColimitCurryCompColim : colimit G ≅ colimit (curry
   have i : G ≅ uncurry.obj ((@curry J _ K _ C _).obj G) := currying.symm.unitIso.app G
   haveI : Limits.HasColimit (uncurry.obj ((@curry J _ K _ C _).obj G)) := hasColimitOfIso i.symm
   trans colimit (uncurry.obj ((@curry J _ K _ C _).obj G))
-  apply HasColimit.isoOfNatIso i
-  exact colimitUncurryIsoColimitCompColim ((@curry J _ K _ C _).obj G)
+  · apply HasColimit.isoOfNatIso i
+  · exact colimitUncurryIsoColimitCompColim ((@curry J _ K _ C _).obj G)
 
 @[simp, reassoc]
 theorem colimitIsoColimitCurryCompColim_ι_ι_inv {j} {k} :
@@ -517,7 +517,7 @@ noncomputable def limitCurrySwapCompLimIsoLimitCurryCompLim :
   calc
     limit (curry.obj (Prod.swap K J ⋙ G) ⋙ lim) ≅ limit (Prod.swap K J ⋙ G) :=
       (limitIsoLimitCurryCompLim _).symm
-    _ ≅ limit G := (HasLimit.isoOfEquivalence (Prod.braiding K J) (Iso.refl _))
+    _ ≅ limit G := HasLimit.isoOfEquivalence (Prod.braiding K J) (Iso.refl _)
     _ ≅ limit (curry.obj G ⋙ lim) := limitIsoLimitCurryCompLim _
 #align category_theory.limits.limit_curry_swap_comp_lim_iso_limit_curry_comp_lim CategoryTheory.Limits.limitCurrySwapCompLimIsoLimitCurryCompLim
 
@@ -568,7 +568,7 @@ noncomputable def colimitCurrySwapCompColimIsoColimitCurryCompColim :
   calc
     colimit (curry.obj (Prod.swap K J ⋙ G) ⋙ colim) ≅ colimit (Prod.swap K J ⋙ G) :=
       (colimitIsoColimitCurryCompColim _).symm
-    _ ≅ colimit G := (HasColimit.isoOfEquivalence (Prod.braiding K J) (Iso.refl _))
+    _ ≅ colimit G := HasColimit.isoOfEquivalence (Prod.braiding K J) (Iso.refl _)
     _ ≅ colimit (curry.obj G ⋙ colim) := colimitIsoColimitCurryCompColim _
 
 @[simp]

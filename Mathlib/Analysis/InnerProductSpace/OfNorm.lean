@@ -53,11 +53,11 @@ inner product space, Hilbert space, norm
 -/
 
 
-open IsROrC
+open RCLike
 
 open scoped ComplexConjugate
 
-variable {𝕜 : Type*} [IsROrC 𝕜] (E : Type*) [NormedAddCommGroup E]
+variable {𝕜 : Type*} [RCLike 𝕜] (E : Type*) [NormedAddCommGroup E]
 
 /-- Predicate for the parallelogram identity to hold in a normed group. This is a scalar-less
 version of `InnerProductSpace`. If you have an `InnerProductSpaceable` assumption, you can
@@ -126,11 +126,11 @@ theorem _root_.Continuous.inner_ {f g : ℝ → E} (hf : Continuous f) (hg : Con
 
 theorem inner_.norm_sq (x : E) : ‖x‖ ^ 2 = re (inner_ 𝕜 x x) := by
   simp only [inner_]
-  have h₁ : IsROrC.normSq (4 : 𝕜) = 16 := by
+  have h₁ : RCLike.normSq (4 : 𝕜) = 16 := by
     have : ((4 : ℝ) : 𝕜) = (4 : 𝕜) := by norm_cast
-    rw [← this, normSq_eq_def', IsROrC.norm_of_nonneg (by norm_num : (0 : ℝ) ≤ 4)]
+    rw [← this, normSq_eq_def', RCLike.norm_of_nonneg (by norm_num : (0 : ℝ) ≤ 4)]
     norm_num
-  have h₂ : ‖x + x‖ = 2 * ‖x‖ := by rw [← two_smul 𝕜, norm_smul, IsROrC.norm_two]
+  have h₂ : ‖x + x‖ = 2 * ‖x‖ := by rw [← two_smul 𝕜, norm_smul, RCLike.norm_two]
   simp only [h₁, h₂, algebraMap_eq_ofReal, sub_self, norm_zero, mul_re, inv_re, ofNat_re, map_sub,
     map_add, ofReal_re, ofNat_im, ofReal_im, mul_im, I_re, inv_im]
   ring
@@ -255,7 +255,7 @@ private theorem nat_prop (r : ℕ) : innerProp' E (r : 𝕜) := fun x y => by
 private theorem int_prop (n : ℤ) : innerProp' E (n : 𝕜) := by
   intro x y
   rw [← n.sign_mul_natAbs]
-  simp only [Int.cast_ofNat, map_natCast, map_intCast, Int.cast_mul, map_mul, mul_smul]
+  simp only [Int.cast_natCast, map_natCast, map_intCast, Int.cast_mul, map_mul, mul_smul]
   obtain hn | rfl | hn := lt_trichotomy n 0
   · rw [Int.sign_eq_neg_one_of_neg hn, innerProp_neg_one ((n.natAbs : 𝕜) • x), nat]
     simp only [map_neg, neg_mul, one_mul, mul_eq_mul_left_iff, true_or_iff, Int.natAbs_eq_zero,
@@ -270,7 +270,7 @@ private theorem int_prop (n : ℤ) : innerProp' E (n : 𝕜) := by
 private theorem rat_prop (r : ℚ) : innerProp' E (r : 𝕜) := by
   intro x y
   have : (r.den : 𝕜) ≠ 0 := by
-    haveI : CharZero 𝕜 := IsROrC.charZero_isROrC
+    haveI : CharZero 𝕜 := RCLike.charZero_rclike
     exact mod_cast r.pos.ne'
   rw [← r.num_div_den, ← mul_right_inj' this, ← nat r.den _ y, smul_smul, Rat.cast_div]
   simp only [map_natCast, Rat.cast_natCast, map_intCast, Rat.cast_intCast, map_div₀]
@@ -283,7 +283,7 @@ private theorem real_prop (r : ℝ) : innerProp' E (r : 𝕜) := by
   refine' Rat.denseEmbedding_coe_real.dense.equalizer _ _ (funext fun X => _)
   · exact (continuous_ofReal.smul continuous_const).inner_ continuous_const
   · exact (continuous_conj.comp continuous_ofReal).mul continuous_const
-  · simp only [Function.comp_apply, IsROrC.ofReal_ratCast, rat_prop _ _]
+  · simp only [Function.comp_apply, RCLike.ofReal_ratCast, rat_prop _ _]
 
 private theorem I_prop : innerProp' E (I : 𝕜) := by
   by_cases hI : (I : 𝕜) = 0

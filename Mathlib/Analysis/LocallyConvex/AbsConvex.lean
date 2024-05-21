@@ -38,7 +38,7 @@ disks, convex, balanced
 
 open NormedField Set
 
-open BigOperators NNReal Pointwise Topology
+open NNReal Pointwise Topology
 
 variable {𝕜 E F G ι : Type*}
 
@@ -125,7 +125,7 @@ instance AbsConvexOpenSets.instNonempty : Nonempty (AbsConvexOpenSets 𝕜 E) :=
 
 end AbsolutelyConvexSets
 
-variable [IsROrC 𝕜]
+variable [RCLike 𝕜]
 variable [AddCommGroup E] [TopologicalSpace E]
 variable [Module 𝕜 E] [Module ℝ E] [IsScalarTower ℝ 𝕜 E]
 variable [ContinuousSMul ℝ E]
@@ -156,7 +156,7 @@ theorem with_gaugeSeminormFamily : WithSeminorms (gaugeSeminormFamily 𝕜 E) :=
   · refine' ⟨s, ⟨_, rfl.subset⟩⟩
     convert (gaugeSeminormFamily _ _).basisSets_singleton_mem ⟨s, hs⟩ one_pos
     rw [gaugeSeminormFamily_ball, Subtype.coe_mk]
-  refine' ⟨s, ⟨_, rfl.subset⟩⟩
+  refine ⟨s, ⟨?_, rfl.subset⟩⟩
   rw [SeminormFamily.basisSets_iff] at hs
   rcases hs with ⟨t, r, hr, rfl⟩
   rw [Seminorm.ball_finset_sup_eq_iInter _ _ _ hr]

@@ -54,7 +54,6 @@ variable {α β ι E F 𝕜 : Type*}
 
 namespace MeasureTheory
 
--- mathport name: «expr →ₛ »
 local infixr:25 " →ₛ " => SimpleFunc
 
 namespace SimpleFunc
@@ -79,7 +78,7 @@ theorem norm_approxOn_y₀_le [OpensMeasurableSpace E] {f : β → E} (hf : Meas
     {y₀ : E} (h₀ : y₀ ∈ s) [SeparableSpace s] (x : β) (n : ℕ) :
     ‖approxOn f hf s y₀ h₀ n x - y₀‖ ≤ ‖f x - y₀‖ + ‖f x - y₀‖ := by
   have := edist_approxOn_y0_le hf h₀ x n
-  repeat' rw [edist_comm y₀, edist_eq_coe_nnnorm_sub] at this
+  repeat rw [edist_comm y₀, edist_eq_coe_nnnorm_sub] at this
   exact mod_cast this
 #align measure_theory.simple_func.norm_approx_on_y₀_le MeasureTheory.SimpleFunc.norm_approxOn_y₀_le
 
@@ -139,7 +138,7 @@ theorem tendsto_approxOn_Lp_snorm [OpensMeasurableSpace E] {f : β → E} (hf : 
 theorem memℒp_approxOn [BorelSpace E] {f : β → E} {μ : Measure β} (fmeas : Measurable f)
     (hf : Memℒp f p μ) {s : Set E} {y₀ : E} (h₀ : y₀ ∈ s) [SeparableSpace s]
     (hi₀ : Memℒp (fun _ => y₀) p μ) (n : ℕ) : Memℒp (approxOn f fmeas s y₀ h₀ n) p μ := by
-  refine' ⟨(approxOn f fmeas s y₀ h₀ n).aestronglyMeasurable, _⟩
+  refine ⟨(approxOn f fmeas s y₀ h₀ n).aestronglyMeasurable, ?_⟩
   suffices snorm (fun x => approxOn f fmeas s y₀ h₀ n x - y₀) p μ < ⊤ by
     have : Memℒp (fun x => approxOn f fmeas s y₀ h₀ n x - y₀) p μ :=
       ⟨(approxOn f fmeas s y₀ h₀ n - const β y₀).aestronglyMeasurable, this⟩
@@ -308,7 +307,7 @@ theorem measure_preimage_lt_top_of_memℒp (hp_pos : p ≠ 0) (hp_ne_top : p ≠
       rw [h_empty, measure_empty]; exact ENNReal.coe_lt_top
     ext1 x
     rw [Set.mem_preimage, Set.mem_singleton_iff, mem_empty_iff_false, iff_false_iff]
-    refine' fun hxy => hyf _
+    refine fun hxy => hyf ?_
     rw [mem_range, Set.mem_range]
     exact ⟨x, hxy⟩
   specialize hf_snorm y hyf
@@ -329,7 +328,7 @@ theorem memℒp_of_finite_measure_preimage (p : ℝ≥0∞) {f : α →ₛ E}
   · rw [hp0, memℒp_zero_iff_aestronglyMeasurable]; exact f.aestronglyMeasurable
   by_cases hp_top : p = ∞
   · rw [hp_top]; exact memℒp_top f μ
-  refine' ⟨f.aestronglyMeasurable, _⟩
+  refine ⟨f.aestronglyMeasurable, ?_⟩
   rw [snorm_eq_snorm' hp0 hp_top, f.snorm'_eq]
   refine' ENNReal.rpow_lt_top_of_nonneg (by simp) (ENNReal.sum_lt_top_iff.mpr fun y _ => _).ne
   by_cases hy0 : y = 0
@@ -525,8 +524,7 @@ attribute [local instance] simpleFunc.module simpleFunc.normedSpace simpleFunc.b
 section ToLp
 
 /-- Construct the equivalence class `[f]` of a simple function `f` satisfying `Memℒp`. -/
-@[reducible]
-def toLp (f : α →ₛ E) (hf : Memℒp f p μ) : Lp.simpleFunc E p μ :=
+abbrev toLp (f : α →ₛ E) (hf : Memℒp f p μ) : Lp.simpleFunc E p μ :=
   ⟨hf.toLp f, ⟨f, rfl⟩⟩
 #align measure_theory.Lp.simple_func.to_Lp MeasureTheory.Lp.simpleFunc.toLp
 
@@ -802,7 +800,7 @@ theorem coeFn_le (f g : Lp.simpleFunc G p μ) : (f : α → G) ≤ᵐ[μ] g ↔ 
 
 instance instCovariantClassLE :
     CovariantClass (Lp.simpleFunc G p μ) (Lp.simpleFunc G p μ) (· + ·) (· ≤ ·) := by
-  refine' ⟨fun f g₁ g₂ hg₁₂ => _⟩
+  refine ⟨fun f g₁ g₂ hg₁₂ => ?_⟩
   rw [← Lp.simpleFunc.coeFn_le] at hg₁₂ ⊢
   have h_add_1 : ((f + g₁ : Lp.simpleFunc G p μ) : α → G) =ᵐ[μ] (f : α → G) + g₁ := Lp.coeFn_add _ _
   have h_add_2 : ((f + g₂ : Lp.simpleFunc G p μ) : α → G) =ᵐ[μ] (f : α → G) + g₂ := Lp.coeFn_add _ _
@@ -983,7 +981,7 @@ theorem Memℒp.induction_dense (hp_ne_top : p ≠ ∞) (P : (α → E) → Prop
     obtain ⟨η, ηpos, hη⟩ := exists_Lp_half E μ p hε
     rcases hf.exists_simpleFunc_snorm_sub_lt hp_ne_top ηpos.ne' with ⟨f', hf', f'_mem⟩
     rcases H f' η ηpos.ne' f'_mem with ⟨g, hg, Pg⟩
-    refine' ⟨g, _, Pg⟩
+    refine ⟨g, ?_, Pg⟩
     convert (hη _ _ (hf.aestronglyMeasurable.sub f'.aestronglyMeasurable)
           (f'.aestronglyMeasurable.sub (h2P g Pg)) hf'.le hg).le using 2
     simp only [sub_add_sub_cancel]
@@ -993,7 +991,7 @@ theorem Memℒp.induction_dense (hp_ne_top : p ≠ ∞) (P : (α → E) → Prop
     · rcases h0P (0 : E) MeasurableSet.empty (by simp only [measure_empty, zero_lt_top])
           εpos with ⟨g, hg, Pg⟩
       rw [← snorm_neg, neg_sub] at hg
-      refine' ⟨g, _, Pg⟩
+      refine ⟨g, ?_, Pg⟩
       convert hg
       ext x
       simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise, SimpleFunc.coe_zero,
@@ -1008,7 +1006,7 @@ theorem Memℒp.induction_dense (hp_ne_top : p ≠ ∞) (P : (α → E) → Prop
       memℒp_add_of_disjoint hff' f.stronglyMeasurable f'.stronglyMeasurable] at int_ff'
     rcases hf η ηpos.ne' int_ff'.1 with ⟨g, hg, Pg⟩
     rcases hf' η ηpos.ne' int_ff'.2 with ⟨g', hg', Pg'⟩
-    refine' ⟨g + g', _, h1P g g' Pg Pg'⟩
+    refine ⟨g + g', ?_, h1P g g' Pg Pg'⟩
     convert (hη _ _ (f.aestronglyMeasurable.sub (h2P g Pg))
           (f'.aestronglyMeasurable.sub (h2P g' Pg')) hg hg').le using 2
     rw [SimpleFunc.coe_add]
@@ -1017,7 +1015,6 @@ theorem Memℒp.induction_dense (hp_ne_top : p ≠ ∞) (P : (α → E) → Prop
 
 section Integrable
 
--- mathport name: «expr →₁ₛ[ ] »
 @[inherit_doc MeasureTheory.Lp.simpleFunc]
 notation:25 α " →₁ₛ[" μ "] " E => @MeasureTheory.Lp.simpleFunc α E _ _ 1 μ
 

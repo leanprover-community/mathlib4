@@ -57,7 +57,7 @@ theorem aeval_apply_of_hasEigenvector {f : End K V} {p : K[X]} {μ : K} {x : V}
   · intro a; simp [Module.algebraMap_end_apply]
   · intro p q hp hq; simp [hp, hq, add_smul]
   · intro n a hna
-    rw [mul_comm, pow_succ, mul_assoc, AlgHom.map_mul, LinearMap.mul_apply, mul_comm, hna]
+    rw [mul_comm, pow_succ', mul_assoc, AlgHom.map_mul, LinearMap.mul_apply, mul_comm, hna]
     simp only [mem_eigenspace_iff.1 h.1, smul_smul, aeval_X, eval_mul, eval_C, eval_pow, eval_X,
       LinearMap.map_smulₛₗ, RingHom.id_apply, mul_comm]
 #align module.End.aeval_apply_of_has_eigenvector Module.End.aeval_apply_of_hasEigenvector
@@ -79,7 +79,7 @@ theorem hasEigenvalue_of_isRoot (h : (minpoly K f).IsRoot μ) : f.HasEigenvalue 
   cases' (LinearMap.isUnit_iff_ker_eq_bot _).2 con with u hu
   have p_ne_0 : p ≠ 0 := by
     intro con
-    apply minpoly.ne_zero f.isIntegral
+    apply minpoly.ne_zero (Algebra.IsIntegral.isIntegral (R := K) f)
     rw [hp, con, mul_zero]
   have : (aeval f) p = 0 := by
     have h_aeval := minpoly.aeval K f
@@ -98,7 +98,7 @@ theorem hasEigenvalue_iff_isRoot : f.HasEigenvalue μ ↔ (minpoly K f).IsRoot �
 variable (f)
 
 lemma finite_hasEigenvalue : Set.Finite f.HasEigenvalue := by
-  have h : minpoly K f ≠ 0 := minpoly.ne_zero f.isIntegral
+  have h : minpoly K f ≠ 0 := minpoly.ne_zero (Algebra.IsIntegral.isIntegral (R := K) f)
   convert (minpoly K f).rootSet_finite K
   ext μ
   change f.HasEigenvalue μ ↔ _

@@ -73,7 +73,7 @@ open scoped Classical DiscreteValuation nonZeroDivisors
 
 universe u v
 
-variable {R : Type u} [CommRing R] [IsDomain R] [IsDedekindDomain R] {K : Type v} [Field K]
+variable {R : Type u} [CommRing R] [IsDedekindDomain R] {K : Type v} [Field K]
   [Algebra R K] [IsFractionRing R K] (v : HeightOneSpectrum R)
 
 /-! ### Valuations of non-zero elements -/
@@ -95,10 +95,11 @@ theorem valuationOfNeZeroToFun_eq (x : Kˣ) :
   rw [show v.valuation (x : K) = _ * _ by rfl]
   rw [Units.val_inv_eq_inv_val]
   change _ = ite _ _ _ * (ite _ _ _)⁻¹
-  rw [IsLocalization.toLocalizationMap_sec]
-  rw [if_neg <| IsLocalization.sec_fst_ne_zero le_rfl x.ne_zero, if_neg ?_]
-  rfl
-  exact nonZeroDivisors.coe_ne_zero _
+  simp_rw [IsLocalization.toLocalizationMap_sec, SubmonoidClass.coe_subtype,
+    if_neg <| IsLocalization.sec_fst_ne_zero le_rfl x.ne_zero,
+    if_neg (nonZeroDivisors.coe_ne_zero _),
+    valuationOfNeZeroToFun, ofAdd_sub, ofAdd_neg, div_inv_eq_mul, WithZero.coe_mul,
+    WithZero.coe_inv, inv_inv]
 #align is_dedekind_domain.height_one_spectrum.valuation_of_ne_zero_to_fun_eq IsDedekindDomain.HeightOneSpectrum.valuationOfNeZeroToFun_eq
 
 /-- The multiplicative `v`-adic valuation on `Kˣ`. -/
@@ -170,7 +171,7 @@ def selmerGroup : Subgroup <| K/n where
 #align is_dedekind_domain.selmer_group IsDedekindDomain.selmerGroup
 
 -- Porting note: was `scoped[SelmerGroup]` but that does not work even using `open SelmerGroup`
-local notation K "⟮" S "," n "⟯" => @selmerGroup _ _ _ _ K _ _ _ S n
+local notation K "⟮" S "," n "⟯" => @selmerGroup _ _ _ K _ _ _ S n
 
 namespace selmerGroup
 
@@ -206,7 +207,7 @@ def fromUnit {n : ℕ} : Rˣ →* K⟮(∅ : Set <| HeightOneSpectrum R),n⟯ wh
 #align is_dedekind_domain.selmer_group.from_unit IsDedekindDomain.selmerGroup.fromUnit
 
 theorem fromUnit_ker [hn : Fact <| 0 < n] :
-    (@fromUnit R _ _ _ K _ _ _ n).ker = (powMonoidHom n : Rˣ →* Rˣ).range := by
+    (@fromUnit R _ _ K _ _ _ n).ker = (powMonoidHom n : Rˣ →* Rˣ).range := by
   ext ⟨_, _, _, _⟩
   constructor
   · intro hx
@@ -240,7 +241,7 @@ def fromUnitLift [Fact <| 0 < n] : (R/n) →* K⟮(∅ : Set <| HeightOneSpectru
 #align is_dedekind_domain.selmer_group.from_unit_lift IsDedekindDomain.selmerGroup.fromUnitLift
 
 theorem fromUnitLift_injective [Fact <| 0 < n] :
-    Function.Injective <| @fromUnitLift R _ _ _ K _ _ _ n _ := by
+    Function.Injective <| @fromUnitLift R _ _ K _ _ _ n _ := by
   dsimp only [fromUnitLift, MonoidHom.coe_comp, MulEquiv.coe_toMonoidHom]
   exact Function.Injective.comp (QuotientGroup.kerLift_injective _) (MulEquiv.injective _)
 #align is_dedekind_domain.selmer_group.from_unit_lift_injective IsDedekindDomain.selmerGroup.fromUnitLift_injective

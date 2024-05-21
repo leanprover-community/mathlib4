@@ -111,7 +111,7 @@ theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
         set g2 : { x // x ≠ i1 } → V := fun x => g x • (p x -ᵥ p i1)
         have hf2g2 : ∀ x : { x // x ≠ i1 }, f2 x = g2 x := by
           simp only [g2, hf2def]
-          refine' fun x => _
+          refine fun x => ?_
           rw [hfg]
         rw [Finset.weightedVSub_eq_weightedVSubOfPoint_of_sum_eq_zero s2 f p hf (p i1),
           Finset.weightedVSubOfPoint_insert, Finset.weightedVSubOfPoint_apply,
@@ -473,10 +473,11 @@ theorem exists_nontrivial_relation_sum_zero_of_not_affine_ind {t : Finset V}
       vsub_eq_sub, Finset.weightedVSubOfPoint_apply, sub_zero] at hwt
     let f : ∀ x : V, x ∈ t → k := fun x hx => w ⟨x, hx⟩
     refine' ⟨fun x => if hx : x ∈ t then f x hx else (0 : k), _, _, by use i; simp [hi]⟩
-    suffices (∑ e : V in t, dite (e ∈ t) (fun hx => f e hx • e) fun _ => 0) = 0 by
-      convert this
-      rename V => x
-      by_cases hx : x ∈ t <;> simp [hx]
+    on_goal 1 =>
+      suffices (∑ e : V in t, dite (e ∈ t) (fun hx => f e hx • e) fun _ => 0) = 0 by
+        convert this
+        rename V => x
+        by_cases hx : x ∈ t <;> simp [hx]
     all_goals
       simp only [Finset.sum_dite_of_true fun _ h => h, Finset.mk_coe, hwt, hw]
 #align exists_nontrivial_relation_sum_zero_of_not_affine_ind exists_nontrivial_relation_sum_zero_of_not_affine_ind
@@ -525,7 +526,7 @@ theorem weightedVSub_mem_vectorSpan_pair {p : ι → P} (h : AffineIndependent k
   rw [mem_vectorSpan_pair]
   refine' ⟨fun h => _, fun h => _⟩
   · rcases h with ⟨r, hr⟩
-    refine' ⟨r, fun i hi => _⟩
+    refine ⟨r, fun i hi => ?_⟩
     rw [s.affineCombination_vsub, ← s.weightedVSub_const_smul, ← sub_eq_zero, ← map_sub] at hr
     have hw' : (∑ j in s, (r • (w₁ - w₂) - w) j) = 0 := by
       simp_rw [Pi.sub_apply, Pi.smul_apply, Pi.sub_apply, smul_sub, Finset.sum_sub_distrib, ←
@@ -534,7 +535,7 @@ theorem weightedVSub_mem_vectorSpan_pair {p : ι → P} (h : AffineIndependent k
     rw [eq_comm, ← sub_eq_zero, ← smul_eq_mul]
     exact hr'
   · rcases h with ⟨r, hr⟩
-    refine' ⟨r, _⟩
+    refine ⟨r, ?_⟩
     let w' i := r * (w₁ i - w₂ i)
     change ∀ i ∈ s, w i = w' i at hr
     rw [s.weightedVSub_congr hr fun _ _ => rfl, s.affineCombination_vsub, ←
@@ -629,6 +630,7 @@ theorem exists_affineIndependent (s : Set P) :
 
 variable {V}
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- Two different points are affinely independent. -/
 theorem affineIndependent_of_ne {p₁ p₂ : P} (h : p₁ ≠ p₂) : AffineIndependent k ![p₁, p₂] := by
   rw [affineIndependent_iff_linearIndependent_vsub k ![p₁, p₂] 0]

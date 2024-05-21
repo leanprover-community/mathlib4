@@ -175,8 +175,8 @@ variable [TopologicalSpace H]
 instance : Membership (PartialHomeomorph H H) (StructureGroupoid H) :=
   ⟨fun (e : PartialHomeomorph H H) (G : StructureGroupoid H) ↦ e ∈ G.members⟩
 
-instance (H : Type u) [TopologicalSpace H] : SetLike (StructureGroupoid H) (PartialHomeomorph H H)
-    where
+instance (H : Type u) [TopologicalSpace H] :
+    SetLike (StructureGroupoid H) (PartialHomeomorph H H) where
   coe s := s.members
   coe_injective' N O h := by cases N; cases O; congr
 
@@ -342,12 +342,19 @@ both the function and its inverse have some property. If this property is stable
 one gets a groupoid. `Pregroupoid` bundles the properties needed for this construction, with the
 groupoid of smooth functions with smooth inverses as an application. -/
 structure Pregroupoid (H : Type*) [TopologicalSpace H] where
+  /-- Property describing membership in this groupoid: the pregroupoid "contains"
+    all functions `H → H` having the pregroupoid property on some `s : Set H` -/
   property : (H → H) → Set H → Prop
+  /-- The pregroupoid property is stable under composition -/
   comp : ∀ {f g u v}, property f u → property g v →
     IsOpen u → IsOpen v → IsOpen (u ∩ f ⁻¹' v) → property (g ∘ f) (u ∩ f ⁻¹' v)
+  /-- Pregroupoids contain the identity map (on `univ`) -/
   id_mem : property id univ
+  /-- The pregroupoid property is "local", in the sense that `f` has the pregroupoid property on `u`
+  iff its restriction to each open subset of `u` has it -/
   locality :
     ∀ {f u}, IsOpen u → (∀ x ∈ u, ∃ v, IsOpen v ∧ x ∈ v ∧ property f (u ∩ v)) → property f u
+  /-- If `f = g` on `u` and `property f u`, then `property g u` -/
   congr : ∀ {f g : H → H} {u}, IsOpen u → (∀ x ∈ u, g x = f x) → property f u → property g u
 #align pregroupoid Pregroupoid
 
@@ -412,8 +419,7 @@ theorem mem_pregroupoid_of_eqOnSource (PG : Pregroupoid H) {e e' : PartialHomeom
 #align mem_pregroupoid_of_eq_on_source mem_pregroupoid_of_eqOnSource
 
 /-- The pregroupoid of all partial maps on a topological space `H`. -/
-@[reducible]
-def continuousPregroupoid (H : Type*) [TopologicalSpace H] : Pregroupoid H where
+abbrev continuousPregroupoid (H : Type*) [TopologicalSpace H] : Pregroupoid H where
   property _ _ := True
   comp _ _ _ _ _ := trivial
   id_mem := trivial
@@ -474,7 +480,7 @@ def idRestrGroupoid : StructureGroupoid H where
     rwa [PartialHomeomorph.ofSet_trans_ofSet] at this
   symm' := by
     rintro e ⟨s, hs, hse⟩
-    refine' ⟨s, hs, _⟩
+    refine ⟨s, hs, ?_⟩
     rw [← ofSet_symm]
     exact PartialHomeomorph.EqOnSource.symm' hse
   id_mem' := ⟨univ, isOpen_univ, by simp only [mfld_simps, refl]⟩
@@ -485,7 +491,7 @@ def idRestrGroupoid : StructureGroupoid H where
     rcases h x hx with ⟨s, hs, hxs, s', hs', hes'⟩
     have hes : x ∈ (e.restr s).source := by
       rw [e.restr_source]
-      refine' ⟨hx, _⟩
+      refine ⟨hx, ?_⟩
       rw [hs.interior_eq]
       exact hxs
     simpa only [mfld_simps] using PartialHomeomorph.EqOnSource.eqOn hes' hes
@@ -503,7 +509,7 @@ instance closedUnderRestriction_idRestrGroupoid : ClosedUnderRestriction (@idRes
   ⟨by
     rintro e ⟨s', hs', he⟩ s hs
     use s' ∩ s, hs'.inter hs
-    refine' Setoid.trans (PartialHomeomorph.EqOnSource.restr he s) _
+    refine Setoid.trans (PartialHomeomorph.EqOnSource.restr he s) ?_
     exact ⟨by simp only [hs.interior_eq, mfld_simps], by simp only [mfld_simps, eqOn_refl]⟩⟩
 #align closed_under_restriction_id_restr_groupoid closedUnderRestriction_idRestrGroupoid
 
@@ -529,7 +535,7 @@ theorem closedUnderRestriction_iff_id_le (G : StructureGroupoid H) :
     constructor
     intro e he s hs
     rw [← ofSet_trans (e : PartialHomeomorph H H) hs]
-    refine' G.trans _ he
+    refine G.trans ?_ he
     apply StructureGroupoid.le_iff.mp h
     exact idRestrGroupoid_mem hs
 #align closed_under_restriction_iff_id_le closedUnderRestriction_iff_id_le
@@ -853,7 +859,8 @@ end ChartedSpace
 have a topological structure, where the topology would come from the charts. For this, one needs
 charts that are only partial equivs, and continuity properties for their composition.
 This is formalised in `ChartedSpaceCore`. -/
--- @[nolint has_nonempty_instance]  -- Porting note: commented out
+-- Porting note(#5171): this linter isn't ported yet.
+-- @[nolint has_nonempty_instance]
 structure ChartedSpaceCore (H : Type*) [TopologicalSpace H] (M : Type*) where
   atlas : Set (PartialEquiv M H)
   chartAt : M → PartialEquiv M H
@@ -1036,7 +1043,7 @@ theorem mem_maximalAtlas_iff {e : PartialHomeomorph M H} :
 of the structure groupoid. -/
 theorem StructureGroupoid.compatible_of_mem_maximalAtlas {e e' : PartialHomeomorph M H}
     (he : e ∈ G.maximalAtlas M) (he' : e' ∈ G.maximalAtlas M) : e.symm ≫ₕ e' ∈ G := by
-  refine' G.locality fun x hx ↦ _
+  refine G.locality fun x hx ↦ ?_
   set f := chartAt (H := H) (e.symm x)
   let s := e.target ∩ e.symm ⁻¹' f.source
   have hs : IsOpen s := by
@@ -1044,7 +1051,7 @@ theorem StructureGroupoid.compatible_of_mem_maximalAtlas {e e' : PartialHomeomor
   have xs : x ∈ s := by
     simp only [s, f, mem_inter_iff, mem_preimage, mem_chart_source, and_true]
     exact ((mem_inter_iff _ _ _).1 hx).1
-  refine' ⟨s, hs, xs, _⟩
+  refine ⟨s, hs, xs, ?_⟩
   have A : e.symm ≫ₕ f ∈ G := (mem_maximalAtlas_iff.1 he f (chart_mem_atlas _ _)).1
   have B : f.symm ≫ₕ e' ∈ G := (mem_maximalAtlas_iff.1 he' f (chart_mem_atlas _ _)).2
   have C : (e.symm ≫ₕ f) ≫ₕ f.symm ≫ₕ e' ∈ G := G.trans A B
@@ -1181,7 +1188,7 @@ protected instance instChartedSpace : ChartedSpace H s where
 lemma chart_eq {s : Opens M} (hs : Nonempty s) {e : PartialHomeomorph s H} (he : e ∈ atlas H s) :
     ∃ x : s, e = (chartAt H (x : M)).subtypeRestr hs := by
   rcases he with ⟨xset, ⟨x, hx⟩, he⟩
-  exact ⟨x, mem_singleton_iff.mp (by convert hx ▸ he)⟩
+  exact ⟨x, mem_singleton_iff.mp (by convert he)⟩
 
 /-- If `t` is a non-empty open subset of `H`,
   every chart of `t` is the restriction of some chart on `H`. -/
@@ -1189,7 +1196,7 @@ lemma chart_eq {s : Opens M} (hs : Nonempty s) {e : PartialHomeomorph s H} (he :
 lemma chart_eq' {t : Opens H} (ht : Nonempty t) {e' : PartialHomeomorph t H}
     (he' : e' ∈ atlas H t) : ∃ x : t, e' = (chartAt H ↑x).subtypeRestr ht := by
   rcases he' with ⟨xset, ⟨x, hx⟩, he'⟩
-  exact ⟨x, mem_singleton_iff.mp (by convert hx ▸ he')⟩
+  exact ⟨x, mem_singleton_iff.mp (by convert he')⟩
 
 /-- If a groupoid `G` is `ClosedUnderRestriction`, then an open subset of a space which is
 `HasGroupoid G` is naturally `HasGroupoid G`. -/
@@ -1249,7 +1256,8 @@ lemma StructureGroupoid.restriction_in_maximalAtlas {e : PartialHomeomorph M H}
 /-- A `G`-diffeomorphism between two charted spaces is a homeomorphism which, when read in the
 charts, belongs to `G`. We avoid the word diffeomorph as it is too related to the smooth category,
 and use structomorph instead. -/
--- @[nolint has_nonempty_instance]  -- Porting note: commented out
+-- Porting note(#5171): this linter isn't ported yet.
+-- @[nolint has_nonempty_instance]
 structure Structomorph (G : StructureGroupoid H) (M : Type*) (M' : Type*) [TopologicalSpace M]
   [TopologicalSpace M'] [ChartedSpace H M] [ChartedSpace H M'] extends Homeomorph M M' where
   mem_groupoid : ∀ c : PartialHomeomorph M H, ∀ c' : PartialHomeomorph M' H, c ∈ atlas H M →
@@ -1290,7 +1298,7 @@ def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
       Then g ∘ e ∘ c⁻¹ and c' ∘ e' ∘ g⁻¹ are both smooth as e and e' are structomorphisms, so
       their composition is smooth, and it coincides with c' ∘ e' ∘ e ∘ c⁻¹ around x. -/
       intro c c' hc hc'
-      refine' G.locality fun x hx ↦ _
+      refine G.locality fun x hx ↦ ?_
       let f₁ := e.toHomeomorph.toPartialHomeomorph
       let f₂ := e'.toHomeomorph.toPartialHomeomorph
       let f := (e.toHomeomorph.trans e'.toHomeomorph).toPartialHomeomorph

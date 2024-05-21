@@ -170,7 +170,7 @@ theorem elementalStarAlgebra.isUnit_of_isUnit_of_isStarNormal (h : IsUnit a) :
         refine' (IsSelfAdjoint.spectralRadius_eq_nnnorm _).symm
         rw [IsSelfAdjoint, star_sub, star_mul, star_star, ← algebraMap_star_comm]
         congr!
-        exact IsROrC.conj_ofReal _
+        exact RCLike.conj_ofReal _
       _ < ‖star a * a‖₊ := spectrum.spectralRadius_lt_of_forall_lt _ h₂)
 #align elemental_star_algebra.is_unit_of_is_unit_of_is_star_normal elementalStarAlgebra.isUnit_of_isUnit_of_isStarNormal
 
@@ -228,6 +228,11 @@ noncomputable def elementalStarAlgebra.characterSpaceToSpectrum (x : A)
         ⟨x, self_mem ℂ x⟩] using
       AlgHom.apply_mem_spectrum φ ⟨x, self_mem ℂ x⟩
 #align elemental_star_algebra.character_space_to_spectrum elementalStarAlgebra.characterSpaceToSpectrum
+
+-- Adaptation note: nightly-2024-04-01
+-- The simpNF linter now times out on this lemma.
+-- See https://github.com/leanprover-community/mathlib4/issues/12227
+attribute [nolint simpNF] elementalStarAlgebra.characterSpaceToSpectrum_coe
 
 theorem elementalStarAlgebra.continuous_characterSpaceToSpectrum (x : A) :
     Continuous (elementalStarAlgebra.characterSpaceToSpectrum x) :=

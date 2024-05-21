@@ -232,7 +232,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
     refine' PseudoMetricSpace.le_two_mul_dist_ofPreNNDist _ _ _ fun x₁ x₂ x₃ x₄ => _
     by_cases H : ∃ n, (x₁, x₄) ∉ U n
     · refine' (dif_pos H).trans_le _
-      rw [← NNReal.div_le_iff' two_ne_zero, ← mul_one_div (_ ^ _), ← pow_succ']
+      rw [← NNReal.div_le_iff' two_ne_zero, ← mul_one_div (_ ^ _), ← pow_succ]
       simp only [le_max_iff, hle_d, ← not_and_or]
       rintro ⟨h₁₂, h₂₃, h₃₄⟩
       refine' Nat.find_spec H (hU_comp (lt_add_one <| Nat.find H) _)
@@ -248,7 +248,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
     rw [mem_setOf_eq] at hx
     contrapose! hx
     refine' le_trans _ ((div_le_iff' (zero_lt_two' ℝ)).2 (hd_le x.1 x.2))
-    rwa [← NNReal.coe_two, ← NNReal.coe_div, ← NNReal.coe_pow, NNReal.coe_le_coe, pow_succ',
+    rwa [← NNReal.coe_two, ← NNReal.coe_div, ← NNReal.coe_pow, NNReal.coe_le_coe, pow_succ,
       mul_one_div, NNReal.div_le_iff two_ne_zero, div_mul_cancel₀ _ (two_ne_zero' ℝ≥0), hle_d]
 #align uniform_space.metrizable_uniformity UniformSpace.metrizable_uniformity
 
@@ -279,3 +279,18 @@ theorem UniformSpace.metrizableSpace [UniformSpace X] [IsCountablyGenerated (�
   letI := UniformSpace.metricSpace X
   infer_instance
 #align uniform_space.metrizable_space UniformSpace.metrizableSpace
+
+/-- A totally bounded set is separable in countably generated uniform spaces. This can be obtained
+from the more general `EMetric.subset_countable_closure_of_almost_dense_set`.-/
+lemma TotallyBounded.isSeparable [UniformSpace X] [i : IsCountablyGenerated (𝓤 X)]
+    {s : Set X} (h : TotallyBounded s) : TopologicalSpace.IsSeparable s:= by
+  letI := (UniformSpace.pseudoMetricSpace (X := X)).toPseudoEMetricSpace
+  rw [EMetric.totallyBounded_iff] at h
+  have h' : ∀ ε > 0, ∃ t, Set.Countable t ∧ s ⊆ ⋃ y ∈ t, EMetric.closedBall y ε := by
+    intro ε hε
+    obtain ⟨t, ht⟩ := h ε hε
+    refine ⟨t, ht.1.countable, subset_trans ht.2 ?_⟩
+    gcongr
+    exact EMetric.ball_subset_closedBall
+  obtain ⟨t, _, htc, hts⟩ := EMetric.subset_countable_closure_of_almost_dense_set s h'
+  exact ⟨t, htc, hts⟩

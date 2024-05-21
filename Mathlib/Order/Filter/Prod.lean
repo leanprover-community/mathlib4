@@ -114,6 +114,10 @@ theorem prod_top : f ×ˢ (⊤ : Filter β) = f.comap Prod.fst := by
   rw [Filter.prod, comap_top, inf_top_eq]
 #align filter.prod_top Filter.prod_top
 
+theorem top_prod : (⊤ : Filter α) ×ˢ g = g.comap Prod.snd := by
+  dsimp only [SProd.sprod]
+  rw [Filter.prod, comap_top, top_inf_eq]
+
 theorem sup_prod (f₁ f₂ : Filter α) (g : Filter β) : (f₁ ⊔ f₂) ×ˢ g = (f₁ ×ˢ g) ⊔ (f₂ ×ˢ g) := by
   dsimp only [SProd.sprod]
   rw [Filter.prod, comap_sup, inf_sup_right, ← Filter.prod, ← Filter.prod]
@@ -138,6 +142,20 @@ theorem tendsto_fst : Tendsto Prod.fst (f ×ˢ g) f :=
 theorem tendsto_snd : Tendsto Prod.snd (f ×ˢ g) g :=
   tendsto_inf_right tendsto_comap
 #align filter.tendsto_snd Filter.tendsto_snd
+
+/-- If a function tends to a product `g ×ˢ h` of filters, then its first component tends to
+`g`. See also `Filter.Tendsto.fst_nhds` for the special case of converging to a point in a
+product of two topological spaces. -/
+theorem Tendsto.fst {h : Filter γ} {m : α → β × γ} (H : Tendsto m f (g ×ˢ h)) :
+    Tendsto (fun a ↦ (m a).1) f g :=
+  tendsto_fst.comp H
+
+/-- If a function tends to a product `g ×ˢ h` of filters, then its second component tends to
+`h`. See also `Filter.Tendsto.snd_nhds` for the special case of converging to a point in a
+product of two topological spaces. -/
+theorem Tendsto.snd {h : Filter γ} {m : α → β × γ} (H : Tendsto m f (g ×ˢ h)) :
+    Tendsto (fun a ↦ (m a).2) f h :=
+  tendsto_snd.comp H
 
 theorem Tendsto.prod_mk {h : Filter γ} {m₁ : α → β} {m₂ : α → γ}
     (h₁ : Tendsto m₁ f g) (h₂ : Tendsto m₂ f h) : Tendsto (fun x => (m₁ x, m₂ x)) f (g ×ˢ h) :=
@@ -225,16 +243,18 @@ theorem prod_iInf_right [Nonempty ι] {f : Filter α} {g : ι → Filter β} :
   simp only [Filter.prod, eq_self_iff_true]
 #align filter.prod_infi_right Filter.prod_iInf_right
 
-@[mono]
+@[mono, gcongr]
 theorem prod_mono {f₁ f₂ : Filter α} {g₁ g₂ : Filter β} (hf : f₁ ≤ f₂) (hg : g₁ ≤ g₂) :
     f₁ ×ˢ g₁ ≤ f₂ ×ˢ g₂ :=
   inf_le_inf (comap_mono hf) (comap_mono hg)
 #align filter.prod_mono Filter.prod_mono
 
+@[gcongr]
 theorem prod_mono_left (g : Filter β) {f₁ f₂ : Filter α} (hf : f₁ ≤ f₂) : f₁ ×ˢ g ≤ f₂ ×ˢ g :=
   Filter.prod_mono hf rfl.le
 #align filter.prod_mono_left Filter.prod_mono_left
 
+@[gcongr]
 theorem prod_mono_right (f : Filter α) {g₁ g₂ : Filter β} (hf : g₁ ≤ g₂) : f ×ˢ g₁ ≤ f ×ˢ g₂ :=
   Filter.prod_mono rfl.le hf
 #align filter.prod_mono_right Filter.prod_mono_right
@@ -287,7 +307,7 @@ theorem prod_le_prod {f₁ f₂ : Filter α} {g₁ g₂ : Filter β} [NeBot f₁
 @[simp]
 theorem prod_inj {f₁ f₂ : Filter α} {g₁ g₂ : Filter β} [NeBot f₁] [NeBot g₁] :
     f₁ ×ˢ g₁ = f₂ ×ˢ g₂ ↔ f₁ = f₂ ∧ g₁ = g₂ := by
-  refine' ⟨fun h => _, fun h => h.1 ▸ h.2 ▸ rfl⟩
+  refine ⟨fun h => ?_, fun h => h.1 ▸ h.2 ▸ rfl⟩
   have hle : f₁ ≤ f₂ ∧ g₁ ≤ g₂ := prod_le_prod.1 h.le
   haveI := neBot_of_le hle.1; haveI := neBot_of_le hle.2
   exact ⟨hle.1.antisymm <| (prod_le_prod.1 h.ge).1, hle.2.antisymm <| (prod_le_prod.1 h.ge).2⟩
@@ -374,8 +394,8 @@ protected theorem map_prod (m : α × β → γ) (f : Filter α) (g : Filter β)
   simp only [Filter.ext_iff, mem_map, mem_prod_iff, mem_map_seq_iff, exists_and_left]
   intro s
   constructor
-  exact fun ⟨t, ht, s, hs, h⟩ => ⟨s, hs, t, ht, fun x hx y hy => @h ⟨x, y⟩ ⟨hx, hy⟩⟩
-  exact fun ⟨s, hs, t, ht, h⟩ => ⟨t, ht, s, hs, fun ⟨x, y⟩ ⟨hx, hy⟩ => h x hx y hy⟩
+  · exact fun ⟨t, ht, s, hs, h⟩ => ⟨s, hs, t, ht, fun x hx y hy => @h ⟨x, y⟩ ⟨hx, hy⟩⟩
+  · exact fun ⟨s, hs, t, ht, h⟩ => ⟨t, ht, s, hs, fun ⟨x, y⟩ ⟨hx, hy⟩ => h x hx y hy⟩
 #align filter.map_prod Filter.map_prod
 
 theorem prod_eq : f ×ˢ g = (f.map Prod.mk).seq g := f.map_prod id g
@@ -479,6 +499,11 @@ variable {f : Filter α} {g : Filter β}
 protected def coprod (f : Filter α) (g : Filter β) : Filter (α × β) :=
   f.comap Prod.fst ⊔ g.comap Prod.snd
 #align filter.coprod Filter.coprod
+
+theorem coprod_eq_prod_top_sup_top_prod (f : Filter α) (g : Filter β) :
+    Filter.coprod f g = f ×ˢ ⊤ ⊔ ⊤ ×ˢ g := by
+  rw [prod_top, top_prod]
+  rfl
 
 theorem mem_coprod_iff {s : Set (α × β)} {f : Filter α} {g : Filter β} :
     s ∈ f.coprod g ↔ (∃ t₁ ∈ f, Prod.fst ⁻¹' t₁ ⊆ s) ∧ ∃ t₂ ∈ g, Prod.snd ⁻¹' t₂ ⊆ s := by

@@ -339,7 +339,7 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (SimpleGrap
     bot_le := fun x v w h => h.elim
     sdiff_eq := fun x y => by
       ext v w
-      refine' ⟨fun h => ⟨h.1, ⟨_, h.2⟩⟩, fun h => ⟨h.1, h.2.2⟩⟩
+      refine ⟨fun h => ⟨h.1, ⟨?_, h.2⟩⟩, fun h => ⟨h.1, h.2.2⟩⟩
       rintro rfl
       exact x.irrefl h.1
     inf_compl_le_bot := fun G v w h => False.elim <| h.2.2 h.1
@@ -453,7 +453,7 @@ variable {G₁ G₂ : SimpleGraph V}
 `G.Adj`. This is the order embedding; for the edge set of a particular graph, see
 `SimpleGraph.edgeSet`.
 
-The way `edgeSet` is defined is such that `mem_edgeSet` is proved by `refl`.
+The way `edgeSet` is defined is such that `mem_edgeSet` is proved by `Iff.rfl`.
 (That is, `s(v, w) ∈ G.edgeSet` is definitionally equal to `G.Adj v w`.)
 -/
 -- Porting note: We need a separate definition so that dot notation works.
@@ -662,7 +662,7 @@ theorem fromEdgeSet_univ : fromEdgeSet (Set.univ : Set (Sym2 V)) = ⊤ := by
 theorem fromEdgeSet_inter (s t : Set (Sym2 V)) :
     fromEdgeSet (s ∩ t) = fromEdgeSet s ⊓ fromEdgeSet t := by
   ext v w
-  simp only [fromEdgeSet_adj, Set.mem_inter_iff, Ne.def, inf_adj]
+  simp only [fromEdgeSet_adj, Set.mem_inter_iff, Ne, inf_adj]
   tauto
 #align simple_graph.from_edge_set_inf SimpleGraph.fromEdgeSet_inter
 
@@ -683,7 +683,7 @@ theorem fromEdgeSet_sdiff (s t : Set (Sym2 V)) :
 @[mono]
 theorem fromEdgeSet_mono {s t : Set (Sym2 V)} (h : s ⊆ t) : fromEdgeSet s ≤ fromEdgeSet t := by
   rintro v w
-  simp (config := { contextual := true }) only [fromEdgeSet_adj, Ne.def, not_false_iff,
+  simp (config := { contextual := true }) only [fromEdgeSet_adj, Ne, not_false_iff,
     and_true_iff, and_imp]
   exact fun vws _ => h vws
 #align simple_graph.from_edge_set_mono SimpleGraph.fromEdgeSet_mono

@@ -46,10 +46,10 @@ universe u v
 
 namespace InnerProductSpace
 
-open IsROrC ContinuousLinearMap
+open RCLike ContinuousLinearMap
 
 variable (𝕜 : Type*)
-variable (E : Type*) [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable (E : Type*) [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
 
@@ -121,7 +121,7 @@ def toDual : E ≃ₗᵢ⋆[𝕜] NormedSpace.Dual 𝕜 E :=
         change Yᗮ ≠ ⊥ at htriv
         rw [Submodule.ne_bot_iff] at htriv
         obtain ⟨z : E, hz : z ∈ Yᗮ, z_ne_0 : z ≠ 0⟩ := htriv
-        refine' ⟨(starRingEnd (R := 𝕜) (ℓ z) / ⟪z, z⟫) • z, _⟩
+        refine ⟨(starRingEnd (R := 𝕜) (ℓ z) / ⟪z, z⟫) • z, ?_⟩
         apply ContinuousLinearMap.ext
         intro x
         have h₁ : ℓ z • x - ℓ x • z ∈ Y := by

@@ -9,7 +9,7 @@ import Mathlib.Analysis.Calculus.Deriv.Mul
 import Mathlib.Analysis.Calculus.Deriv.Comp
 import Mathlib.Analysis.Calculus.LocalExtr.Rolle
 import Mathlib.Analysis.Convex.Normed
-import Mathlib.Data.IsROrC.Basic
+import Mathlib.Analysis.RCLike.Basic
 
 #align_import analysis.calculus.mean_value from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
@@ -21,7 +21,7 @@ In this file we prove the following facts:
 * `Convex.norm_image_sub_le_of_norm_deriv_le` : if `f` is differentiable on a convex set `s`
   and the norm of its derivative is bounded by `C`, then `f` is Lipschitz continuous on `s` with
   constant `C`; also a variant in which what is bounded by `C` is the norm of the difference of the
-  derivative from a fixed linear map. This lemma and its versions are formulated using `IsROrC`,
+  derivative from a fixed linear map. This lemma and its versions are formulated using `RCLike`,
   so they work both for real and complex derivatives.
 
 * `image_le_of*`, `image_norm_le_of_*` : several similar lemmas deducing `f x ≤ B x` or
@@ -118,7 +118,7 @@ theorem image_le_of_liminf_slope_right_lt_deriv_boundary' {f f' : ℝ → ℝ} {
         (Ioi_mem_nhds hrB)
     obtain ⟨z, hfz, hzB, hz⟩ : ∃ z, slope f x z < r ∧ r < slope B x z ∧ z ∈ Ioc x y :=
       (hf'.and_eventually (HB.and (Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, hy⟩))).exists
-    refine' ⟨z, _, hz⟩
+    refine ⟨z, ?_, hz⟩
     have := (hfz.trans hzB).le
     rwa [slope_def_field, slope_def_field, div_le_div_right (sub_pos.2 hz.1), hxB,
       sub_le_sub_iff_right] at this
@@ -439,12 +439,12 @@ end
 ### Vector-valued functions `f : E → G`
 
 Theorems in this section work both for real and complex differentiable functions. We use assumptions
-`[IsROrC 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 G]` to achieve this result. For the domain `E` we
+`[RCLike 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 G]` to achieve this result. For the domain `E` we
 also assume `[NormedSpace ℝ E]` to have a notion of a `Convex` set. -/
 
 section
 
-variable {𝕜 G : Type*} [IsROrC 𝕜] [NormedSpace 𝕜 E] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {𝕜 G : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
 namespace Convex
 
@@ -931,6 +931,9 @@ lemma strictMonoOn_of_hasDerivWithinAt_pos {D : Set ℝ} (hD : Convex ℝ D) {f 
   strictMonoOn_of_deriv_pos hD hf fun x hx ↦ by
     rw [deriv_eqOn isOpen_interior hf' hx]; exact hf'₀ _ hx
 
+@[deprecated] -- 2024-03-02
+alias StrictMonoOn_of_hasDerivWithinAt_pos := strictMonoOn_of_hasDerivWithinAt_pos
+
 /-- Let `f : ℝ → ℝ` be a differentiable function. If `f'` is strictly positive, then
 `f` is a strictly monotone function. -/
 lemma strictMono_of_hasDerivAt_pos {f f' : ℝ → ℝ} (hf : ∀ x, HasDerivAt f (f' x) x)
@@ -1004,11 +1007,17 @@ lemma strictAntiOn_of_hasDerivWithinAt_neg {D : Set ℝ} (hD : Convex ℝ D) {f 
   strictAntiOn_of_deriv_neg hD hf fun x hx ↦ by
     rw [deriv_eqOn isOpen_interior hf' hx]; exact hf'₀ _ hx
 
+@[deprecated] -- 2024-03-02
+alias StrictAntiOn_of_hasDerivWithinAt_pos := strictAntiOn_of_hasDerivWithinAt_neg
+
 /-- Let `f : ℝ → ℝ` be a differentiable function. If `f'` is strictly positive, then
 `f` is a strictly monotone function. -/
 lemma strictAnti_of_hasDerivAt_neg {f f' : ℝ → ℝ} (hf : ∀ x, HasDerivAt f (f' x) x)
     (hf' : ∀ x, f' x < 0) : StrictAnti f :=
   strictAnti_of_deriv_neg fun x ↦ by rw [(hf _).deriv]; exact hf' _
+
+@[deprecated] -- 2024-03-02
+alias strictAnti_of_hasDerivAt_pos := strictAnti_of_hasDerivAt_neg
 
 /-- Let `f` be a function continuous on a convex (or, equivalently, connected) subset `D`
 of the real line. If `f` is differentiable on the interior of `D` and `f'` is nonpositive, then
@@ -1071,7 +1080,7 @@ theorem domain_mvt {f : E → ℝ} {s : Set E} {x y : E} {f' : E → E →L[ℝ]
   simpa [g] using hMVT'.symm
 #align domain_mvt domain_mvt
 
-section IsROrC
+section RCLike
 
 /-!
 ### Vector-valued functions `f : E → F`. Strict differentiability.
@@ -1083,7 +1092,7 @@ make sense and are enough. Many formulations of the mean value inequality could 
 balls over `ℝ` or `ℂ`. For now, we only include the ones that we need.
 -/
 
-variable {𝕜 : Type*} [IsROrC 𝕜] {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] {H : Type*}
+variable {𝕜 : Type*} [RCLike 𝕜] {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] {H : Type*}
   [NormedAddCommGroup H] [NormedSpace 𝕜 H] {f : G → H} {f' : G → G →L[𝕜] H} {x : G}
 
 /-- Over the reals or the complexes, a continuously differentiable function is strictly
@@ -1095,7 +1104,7 @@ theorem hasStrictFDerivAt_of_hasFDerivAt_of_continuousAt
   refine' isLittleO_iff.mpr fun c hc => Metric.eventually_nhds_iff_ball.mpr _
   -- the correct ε is the modulus of continuity of f'
   rcases Metric.mem_nhds_iff.mp (inter_mem hder (hcont <| ball_mem_nhds _ hc)) with ⟨ε, ε0, hε⟩
-  refine' ⟨ε, ε0, _⟩
+  refine ⟨ε, ε0, ?_⟩
   -- simplify formulas involving the product E × E
   rintro ⟨a, b⟩ h
   rw [← ball_prod_same, prod_mk_mem_set_prod_eq] at h
@@ -1118,4 +1127,4 @@ theorem hasStrictDerivAt_of_hasDerivAt_of_continuousAt {f f' : 𝕜 → G} {x : 
     (smulRightL 𝕜 𝕜 G 1).continuous.continuousAt.comp hcont
 #align has_strict_deriv_at_of_has_deriv_at_of_continuous_at hasStrictDerivAt_of_hasDerivAt_of_continuousAt
 
-end IsROrC
+end RCLike

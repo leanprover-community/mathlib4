@@ -908,7 +908,7 @@ theorem ContinuousWithinAt.continuousAt {f : α → β} {s : Set α} {x : α}
 
 theorem IsOpen.continuousOn_iff {f : α → β} {s : Set α} (hs : IsOpen s) :
     ContinuousOn f s ↔ ∀ ⦃a⦄, a ∈ s → ContinuousAt f a :=
-  ball_congr fun _ => continuousWithinAt_iff_continuousAt ∘ hs.mem_nhds
+  forall₂_congr fun _ => continuousWithinAt_iff_continuousAt ∘ hs.mem_nhds
 #align is_open.continuous_on_iff IsOpen.continuousOn_iff
 
 theorem ContinuousOn.continuousAt {f : α → β} {s : Set α} {x : α} (h : ContinuousOn f s)
@@ -1083,7 +1083,7 @@ theorem continuousOn_open_iff {f : α → β} {s : Set α} (hs : IsOpen s) :
     rw [inter_comm, hu]
     apply IsOpen.inter u_open hs
   · intro h t ht
-    refine' ⟨s ∩ f ⁻¹' t, h t ht, _⟩
+    refine ⟨s ∩ f ⁻¹' t, h t ht, ?_⟩
     rw [@inter_comm _ s (f ⁻¹' t), inter_assoc, inter_self]
 #align continuous_on_open_iff continuousOn_open_iff
 

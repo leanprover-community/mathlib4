@@ -3,6 +3,7 @@ Copyright (c) 2021 Aaron Anderson, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Kevin Buzzard, Yaël Dillies, Eric Wieser
 -/
+import Mathlib.Algebra.Order.Ring.CharZero
 import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Pairwise
 import Mathlib.Data.Finset.Powerset
@@ -141,7 +142,7 @@ theorem supIndep_pair [DecidableEq ι] {i j : ι} (hij : i ≠ j) :
     · convert h.symm using 1
       have : ({i, k} : Finset ι).erase k = {i} := by
         ext
-        rw [mem_erase, mem_insert, mem_singleton, mem_singleton, and_or_left, Ne.def,
+        rw [mem_erase, mem_insert, mem_singleton, mem_singleton, and_or_left, Ne,
           not_and_self_iff, or_false_iff, and_iff_right_of_imp]
         rintro rfl
         exact hij
@@ -150,7 +151,7 @@ theorem supIndep_pair [DecidableEq ι] {i j : ι} (hij : i ≠ j) :
 
 theorem supIndep_univ_bool (f : Bool → α) :
     (Finset.univ : Finset Bool).SupIndep f ↔ Disjoint (f false) (f true) :=
-  haveI : true ≠ false := by simp only [Ne.def, not_false_iff]
+  haveI : true ≠ false := by simp only [Ne, not_false_iff]
   (supIndep_pair this).trans disjoint_comm
 #align finset.sup_indep_univ_bool Finset.supIndep_univ_bool
 
@@ -184,7 +185,7 @@ example {α ι} [Lattice α] [OrderBot α] (s : Finset ι) (f : ι → α) :
 -/
 @[simp, nolint simpNF]
 theorem supIndep_attach : (s.attach.SupIndep fun a => f a) ↔ s.SupIndep f := by
-  refine' ⟨fun h t ht i his hit => _, SupIndep.attach⟩
+  refine ⟨fun h t ht i his hit => ?_, SupIndep.attach⟩
   classical
   convert h (filter_subset (fun (i : { x // x ∈ s }) => (i : ι) ∈ t) _) (mem_attach _ ⟨i, ‹_›⟩)
     fun hi => hit <| by simpa using hi using 1
@@ -264,7 +265,7 @@ theorem SupIndep.product {s : Finset ι} {t : Finset ι'} {f : ι × ι' → α}
 theorem supIndep_product_iff {s : Finset ι} {t : Finset ι'} {f : ι × ι' → α} :
     (s.product t).SupIndep f ↔ (s.SupIndep fun i => t.sup fun i' => f (i, i'))
       ∧ t.SupIndep fun i' => s.sup fun i => f (i, i') := by
-  refine' ⟨_, fun h => h.1.product h.2⟩
+  refine ⟨?_, fun h => h.1.product h.2⟩
   simp_rw [supIndep_iff_pairwiseDisjoint]
   refine' fun h => ⟨fun i hi j hj hij => _, fun i hi j hj hij => _⟩ <;>
       simp_rw [Finset.disjoint_sup_left, Finset.disjoint_sup_right] <;>

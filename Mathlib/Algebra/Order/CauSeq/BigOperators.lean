@@ -162,7 +162,7 @@ lemma of_decreasing_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham : ∀ n ≥
     not_lt_of_ge (ham m le_rfl)
       (lt_of_lt_of_le (by have := hl m (le_refl m); simpa [hl0] using this) (le_abs_self (f m)))
   cases' not_forall.1 (Nat.find_min h (Nat.pred_lt hl0)) with i hi
-  rw [not_imp, not_lt] at hi
+  rw [Classical.not_imp, not_lt] at hi
   exists i
   intro j hj
   have hfij : f j ≤ f i := (Nat.rel_of_forall_rel_succ_of_le_of_le (· ≥ ·) hnm hi.1 hj).le
@@ -172,7 +172,7 @@ lemma of_decreasing_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham : ∀ n ≥
     _ = a - l • ε + ε := by
       conv =>
         rhs
-        rw [← Nat.succ_pred_eq_of_pos (Nat.pos_of_ne_zero hl0), succ_nsmul', sub_add,
+        rw [← Nat.succ_pred_eq_of_pos (Nat.pos_of_ne_zero hl0), succ_nsmul, sub_add,
           add_sub_cancel_right]
     _ < f j + ε := add_lt_add_right (hl j (le_trans hi.1 hj)) _
 #align is_cau_of_decreasing_bounded IsCauSeq.of_decreasing_bounded
@@ -192,12 +192,12 @@ lemma geo_series [Nontrivial β] (x : β) (hx1 : abv x < 1) :
   refine' @of_mono_bounded _ _ _ _ ((1 : α) / (1 - abv x)) 0 _ _
   · intro n _
     rw [abs_of_nonneg]
-    gcongr
-    · exact sub_le_self _ (abv_pow abv x n ▸ abv_nonneg _ _)
+    · gcongr
+      exact sub_le_self _ (abv_pow abv x n ▸ abv_nonneg _ _)
     refine' div_nonneg (sub_nonneg.2 _) (sub_nonneg.2 <| le_of_lt hx1)
     exact pow_le_one _ (by positivity) hx1.le
   · intro n _
-    rw [← one_mul (abv x ^ n), pow_succ]
+    rw [← one_mul (abv x ^ n), pow_succ']
     gcongr
 #align is_cau_geo_series IsCauSeq.geo_series
 
@@ -214,7 +214,7 @@ lemma series_ratio_test {f : ℕ → β} (n : ℕ) (r : α) (hr0 : 0 ≤ r) (hr1
   obtain rfl | hr := hr0.eq_or_lt
   · have m_pos := lt_of_lt_of_le (Nat.succ_pos n) hmn
     have := h m.pred (Nat.le_of_succ_le_succ (by rwa [Nat.succ_pred_eq_of_pos m_pos]))
-    simpa [Nat.succ_pred_eq_of_pos m_pos, pow_succ] using this
+    simpa [Nat.sub_add_cancel m_pos, pow_succ] using this
   generalize hk : m - n.succ = k
   replace hk : m = k + n.succ := (tsub_eq_iff_eq_add_of_le hmn).1 hk
   induction' k with k ih generalizing m n
@@ -222,7 +222,7 @@ lemma series_ratio_test {f : ℕ → β} (n : ℕ) (r : α) (hr0 : 0 ≤ r) (hr1
     positivity
   · have kn : k + n.succ ≥ n.succ := by
       rw [← zero_add n.succ]; exact add_le_add (Nat.zero_le _) (by simp)
-    erw [hk, Nat.succ_add, pow_succ' r, ← mul_assoc]
+    erw [hk, Nat.succ_add, pow_succ r, ← mul_assoc]
     refine
       le_trans (by rw [mul_comm] <;> exact h _ (Nat.le_of_succ_le kn))
         (mul_le_mul_of_nonneg_right ?_ hr0)

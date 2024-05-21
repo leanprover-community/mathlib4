@@ -57,12 +57,12 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
   set s : ℕ → G := fun n => ∑ k in range (n + 1), u k
   have : CauchySeq s := by
     apply NormedAddCommGroup.cauchy_series_of_le_geometric'' (by norm_num) one_half_lt_one
-    rintro n (hn : n ≥ 1)
-    calc
-      ‖u n‖ ≤ C * ‖v n‖ := hnorm_u n
-      _ ≤ C * b n := by gcongr; exact (hv _ <| Nat.succ_le_iff.mp hn).le
-      _ = (1 / 2) ^ n * (ε * ‖h‖ / 2) := by simp [mul_div_cancel₀ _ hC.ne.symm]
-      _ = ε * ‖h‖ / 2 * (1 / 2) ^ n := mul_comm _ _
+    · rintro n (hn : n ≥ 1)
+      calc
+        ‖u n‖ ≤ C * ‖v n‖ := hnorm_u n
+        _ ≤ C * b n := by gcongr; exact (hv _ <| Nat.succ_le_iff.mp hn).le
+        _ = (1 / 2) ^ n * (ε * ‖h‖ / 2) := by simp [mul_div_cancel₀ _ hC.ne.symm]
+        _ = ε * ‖h‖ / 2 * (1 / 2) ^ n := mul_comm _ _
   -- We now show that the limit `g` of `s` is the desired preimage.
   obtain ⟨g : G, hg⟩ := cauchySeq_tendsto_of_complete this
   refine' ⟨g, _, _⟩
@@ -96,7 +96,7 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
         _ = ε * ‖h‖ := mul_div_cancel₀ _ two_ne_zero
     calc
       ‖s n‖ ≤ ∑ k in range (n + 1), ‖u k‖ := norm_sum_le _ _
-      _ = (∑ k in range n, ‖u (k + 1)‖) + ‖u 0‖ := (sum_range_succ' _ _)
+      _ = (∑ k in range n, ‖u (k + 1)‖) + ‖u 0‖ := sum_range_succ' _ _
       _ ≤ (∑ k in range n, C * ‖v (k + 1)‖) + ‖u 0‖ := by gcongr; apply hnorm_u
       _ ≤ (∑ k in range n, C * b (k + 1)) + (C * b 0 + C * ‖h‖) := by
         gcongr with k; exact (hv _ k.succ_pos).le

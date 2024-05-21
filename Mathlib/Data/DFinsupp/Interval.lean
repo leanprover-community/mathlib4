@@ -3,10 +3,10 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.LocallyFinite.Basic
 import Mathlib.Data.Finset.Pointwise
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.DFinsupp.Order
+import Mathlib.Order.Interval.Finset.Basic
 
 #align_import data.dfinsupp.interval from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
 
@@ -124,7 +124,7 @@ theorem mem_rangeIcc_apply_iff : a ∈ f.rangeIcc g i ↔ f i ≤ a ∧ a ≤ g 
 
 theorem support_rangeIcc_subset [DecidableEq ι] [∀ i, DecidableEq (α i)] :
     (f.rangeIcc g).support ⊆ f.support ∪ g.support := by
-  refine' fun x hx => _
+  refine fun x hx => ?_
   by_contra h
   refine' not_mem_support_iff.2 _ hx
   rw [rangeIcc_apply, not_mem_support_iff.1 (not_mem_mono (subset_union_left _ _) h),
@@ -151,7 +151,7 @@ theorem mem_pi {f : Π₀ i, Finset (α i)} {g : Π₀ i, α i} : g ∈ f.pi ↔
 @[simp]
 theorem card_pi (f : Π₀ i, Finset (α i)) : f.pi.card = f.prod fun i => (f i).card := by
   rw [pi, card_dfinsupp]
-  exact Finset.prod_congr rfl fun i _ => by simp only [Pi.nat_apply, Nat.cast_id]
+  exact Finset.prod_congr rfl fun i _ => by simp only [Pi.natCast_apply, Nat.cast_id]
 #align dfinsupp.card_pi DFinsupp.card_pi
 
 end Pi

@@ -142,7 +142,8 @@ theorem ext_abs_arg_iff {x y : ℂ} : x = y ↔ abs x = abs y ∧ arg x = arg y 
 
 theorem arg_mem_Ioc (z : ℂ) : arg z ∈ Set.Ioc (-π) π := by
   have hπ : 0 < π := Real.pi_pos
-  rcases eq_or_ne z 0 with (rfl | hz); simp [hπ, hπ.le]
+  rcases eq_or_ne z 0 with (rfl | hz)
+  · simp [hπ, hπ.le]
   rcases existsUnique_add_zsmul_mem_Ioc Real.two_pi_pos (arg z) (-π) with ⟨N, hN, -⟩
   rw [two_mul, neg_add_cancel_left, ← two_mul, zsmul_eq_mul] at hN
   rw [← abs_mul_cos_add_sin_mul_I z, ← cos_add_int_mul_two_pi _ N, ← sin_add_int_mul_two_pi _ N]
@@ -234,7 +235,7 @@ theorem arg_ofReal_of_nonneg {x : ℝ} (hx : 0 ≤ x) : arg x = 0 := by simp [ar
 
 @[simp, norm_cast]
 lemma natCast_arg {n : ℕ} : arg n = 0 :=
-  ofReal_nat_cast n ▸ arg_ofReal_of_nonneg n.cast_nonneg
+  ofReal_natCast n ▸ arg_ofReal_of_nonneg n.cast_nonneg
 
 @[simp]
 lemma ofNat_arg {n : ℕ} [n.AtLeastTwo] : arg (no_index (OfNat.ofNat n)) = 0 :=
@@ -642,7 +643,7 @@ theorem tendsto_arg_nhdsWithin_im_neg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re
     (him : z.im = 0) : Tendsto arg (𝓝[{ z : ℂ | z.im < 0 }] z) (𝓝 (-π)) := by
   suffices H : Tendsto (fun x : ℂ => Real.arcsin ((-x).im / abs x) - π)
       (𝓝[{ z : ℂ | z.im < 0 }] z) (𝓝 (-π)) by
-    refine' H.congr' _
+    refine H.congr' ?_
     have : ∀ᶠ x : ℂ in 𝓝 z, x.re < 0 := continuous_re.tendsto z (gt_mem_nhds hre)
     -- Porting note: need to specify the `nhdsWithin` set
     filter_upwards [self_mem_nhdsWithin (s := { z : ℂ | z.im < 0 }),

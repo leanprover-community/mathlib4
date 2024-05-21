@@ -166,7 +166,7 @@ instance (priority := 200) [ParacompactSpace X] [CompactSpace Y] : ParacompactSp
 /-- A compact space is paracompact. -/
 instance (priority := 100) paracompact_of_compact [CompactSpace X] : ParacompactSpace X := by
   -- the proof is trivial: we choose a finite subcover using compactness, and use it
-  refine' ⟨fun ι s ho hu ↦ _⟩
+  refine ⟨fun ι s ho hu ↦ ?_⟩
   rcases isCompact_univ.elim_finite_subcover _ ho hu.ge with ⟨T, hT⟩
   refine' ⟨(T : Set ι), fun t ↦ s t, fun t ↦ ho _, _, locallyFinite_of_finite _,
     fun t ↦ ⟨t, Subset.rfl⟩⟩
@@ -238,7 +238,7 @@ theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set [WeaklyLocal
       rintro ⟨k, c, hc⟩
       simp only [mem_iUnion, mem_setOf_eq, mem_image, Subtype.coe_mk]
       rintro ⟨x, hxB : x ∈ B c (r k c), hxK⟩
-      refine' ⟨k, _, ⟨c, hc⟩, rfl⟩
+      refine ⟨k, ?_, ⟨c, hc⟩, rfl⟩
       have := (mem_compl_iff _ _).1 (hr k c hxB)
       contrapose! this with hnk
       exact K.subset hnk (interior_subset hxK)
@@ -278,7 +278,7 @@ theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis [WeaklyLocallyCo
 `refinement_of_locallyCompact_sigmaCompact_of_nhds_basis` for a more precise statement. -/
 instance (priority := 100) paracompact_of_locallyCompact_sigmaCompact [WeaklyLocallyCompactSpace X]
     [SigmaCompactSpace X] [T2Space X] : ParacompactSpace X := by
-  refine' ⟨fun α s ho hc ↦ _⟩
+  refine ⟨fun α s ho hc ↦ ?_⟩
   choose i hi using iUnion_eq_univ_iff.1 hc
   have : ∀ x : X, (𝓝 x).HasBasis (fun t : Set X ↦ (x ∈ t ∧ IsOpen t) ∧ t ⊆ s (i x)) id :=
     fun x : X ↦ (nhds_basis_opens x).restrict_subset (IsOpen.mem_nhds (ho (i x)) (hi x))
@@ -287,7 +287,7 @@ instance (priority := 100) paracompact_of_locallyCompact_sigmaCompact [WeaklyLoc
   exact ⟨β, t, fun x ↦ (hto x).1.2, htc, htf, fun b ↦ ⟨i <| c b, (hto b).2⟩⟩
 #align paracompact_of_locally_compact_sigma_compact paracompact_of_locallyCompact_sigmaCompact
 
-/- **Dieudonné's theorem**: a paracompact Hausdorff space is normal.
+/-- **Dieudonné's theorem**: a paracompact Hausdorff space is normal.
 Formalization is based on the proof
 at [ncatlab](https://ncatlab.org/nlab/show/paracompact+Hausdorff+spaces+are+normal). -/
 instance (priority := 100) T4Space.of_paracompactSpace_t2Space [T2Space X] [ParacompactSpace X] :

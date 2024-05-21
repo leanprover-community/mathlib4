@@ -3,19 +3,21 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
+import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.Group.MinMax
 import Mathlib.Data.Finset.Preimage
-import Mathlib.Data.Set.Intervals.Disjoint
-import Mathlib.Data.Set.Intervals.OrderIso
+import Mathlib.Order.Interval.Set.Disjoint
+import Mathlib.Order.Interval.Set.OrderIso
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.Filter.Bases
 
 #align_import order.filter.at_top_bot from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
 
 /-!
-# `Filter.atTop` and `Filter.atBot` filters on preorded sets, monoids and groups.
+# `Filter.atTop` and `Filter.atBot` filters on preorders, monoids and groups.
 
 In this file we define the filters
 
@@ -30,8 +32,7 @@ set_option autoImplicit true
 variable {ι ι' α β γ : Type*}
 
 open Set
-
-open BigOperators
+open scoped BigOperators
 
 namespace Filter
 
@@ -1006,7 +1007,7 @@ theorem comap_abs_atTop : comap (abs : α → α) atTop = atBot ⊔ atTop := by
     le_antisymm (((atTop_basis.comap _).le_basis_iff (atBot_basis.sup atTop_basis)).2 _)
       (sup_le tendsto_abs_atBot_atTop.le_comap tendsto_abs_atTop_atTop.le_comap)
   rintro ⟨a, b⟩ -
-  refine' ⟨max (-a) b, trivial, fun x hx => _⟩
+  refine ⟨max (-a) b, trivial, fun x hx => ?_⟩
   rw [mem_preimage, mem_Ici, le_abs', max_le_iff, ← min_neg_neg, le_min_iff, neg_neg] at hx
   exact hx.imp And.left And.right
 #align filter.comap_abs_at_top Filter.comap_abs_atTop
@@ -1491,8 +1492,10 @@ theorem tendsto_finset_preimage_atTop_atTop {f : α → β} (hf : Function.Injec
 -- Porting note: generalized from `SemilatticeSup` to `Preorder`
 theorem prod_atTop_atTop_eq [Preorder α] [Preorder β] :
     (atTop : Filter α) ×ˢ (atTop : Filter β) = (atTop : Filter (α × β)) := by
-  cases isEmpty_or_nonempty α; exact Subsingleton.elim _ _
-  cases isEmpty_or_nonempty β; exact Subsingleton.elim _ _
+  cases isEmpty_or_nonempty α
+  · exact Subsingleton.elim _ _
+  cases isEmpty_or_nonempty β
+  · exact Subsingleton.elim _ _
   simpa [atTop, prod_iInf_left, prod_iInf_right, iInf_prod] using iInf_comm
 #align filter.prod_at_top_at_top_eq Filter.prod_atTop_atTop_eq
 
@@ -1570,12 +1573,12 @@ theorem eventually_atTop_prod_self [SemilatticeSup α] [Nonempty α] {p : α × 
 
 theorem eventually_atBot_prod_self' [SemilatticeInf α] [Nonempty α] {p : α × α → Prop} :
     (∀ᶠ x in atBot, p x) ↔ ∃ a, ∀ k ≤ a, ∀ l ≤ a, p (k, l) := by
-  simp only [eventually_atBot_prod_self, ball_cond_comm]
+  simp only [eventually_atBot_prod_self, forall_cond_comm]
 #align filter.eventually_at_bot_prod_self' Filter.eventually_atBot_prod_self'
 
 theorem eventually_atTop_prod_self' [SemilatticeSup α] [Nonempty α] {p : α × α → Prop} :
     (∀ᶠ x in atTop, p x) ↔ ∃ a, ∀ k ≥ a, ∀ l ≥ a, p (k, l) := by
-  simp only [eventually_atTop_prod_self, ball_cond_comm]
+  simp only [eventually_atTop_prod_self, forall_cond_comm]
 #align filter.eventually_at_top_prod_self' Filter.eventually_atTop_prod_self'
 
 theorem eventually_atTop_curry [SemilatticeSup α] [SemilatticeSup β] {p : α × β → Prop}
@@ -1929,7 +1932,7 @@ theorem tendsto_iff_seq_tendsto {f : α → β} {k : Filter α} {l : Filter β} 
   have : NeBot (k ⊓ 𝓟 (f ⁻¹' sᶜ)) := by simpa [neBot_iff, inf_principal_eq_bot]
   rcases (k ⊓ 𝓟 (f ⁻¹' sᶜ)).exists_seq_tendsto with ⟨x, hx⟩
   rw [tendsto_inf, tendsto_principal] at hx
-  refine' ⟨x, hx.1, fun h => _⟩
+  refine ⟨x, hx.1, fun h => ?_⟩
   rcases (hx.2.and (h hs)).exists with ⟨N, hnmem, hmem⟩
   exact hnmem hmem
 #align filter.tendsto_iff_seq_tendsto Filter.tendsto_iff_seq_tendsto
@@ -2045,7 +2048,7 @@ to a commutative monoid. Suppose that `f x = 1` outside of the range of `g`. The
 `atTop.map (fun s ↦ ∏ i in s, f (g i))` and `atTop.map (fun s ↦ ∏ i in s, f i)` coincide.
 
 The additive version of this lemma is used to prove the equality `∑' x, f (g x) = ∑' y, f y` under
-the same assumptions.-/
+the same assumptions. -/
 @[to_additive]
 theorem Function.Injective.map_atTop_finset_prod_eq [CommMonoid α] {g : γ → β}
     (hg : Function.Injective g) {f : β → α} (hf : ∀ x, x ∉ Set.range g → f x = 1) :
@@ -2057,7 +2060,7 @@ theorem Function.Injective.map_atTop_finset_prod_eq [CommMonoid α] {g : γ → 
     rw [← Finset.prod_image (hg.injOn _)]
     refine' (prod_subset (subset_union_left _ _) _).symm
     simp only [Finset.mem_union, Finset.mem_image]
-    refine' fun y hy hyt => hf y (mt _ hyt)
+    refine fun y hy hyt => hf y (mt ?_ hyt)
     rintro ⟨x, rfl⟩
     exact ⟨x, ht (Finset.mem_preimage.2 <| hy.resolve_left hyt), rfl⟩
   · refine' ⟨s.image g, fun t ht => _⟩
@@ -2071,5 +2074,5 @@ to an additive commutative monoid. Suppose that `f x = 0` outside of the range o
 filters `atTop.map (fun s ↦ ∑ i in s, f (g i))` and `atTop.map (fun s ↦ ∑ i in s, f i)` coincide.
 
 This lemma is used to prove the equality `∑' x, f (g x) = ∑' y, f y` under
-the same assumptions.-/
+the same assumptions. -/
 add_decl_doc Function.Injective.map_atTop_finset_sum_eq

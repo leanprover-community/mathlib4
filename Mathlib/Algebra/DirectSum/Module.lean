@@ -457,7 +457,7 @@ lemma isInternal_biSup_submodule_of_independent {A : ι → Submodule R M} (s : 
   refine (isInternal_submodule_iff_independent_and_iSup_eq_top _).mpr ⟨?_, by simp [iSup_subtype]⟩
   let p := ⨆ i ∈ s, A i
   have hp : ∀ i ∈ s, A i ≤ p := fun i hi ↦ le_biSup A hi
-  let e : Submodule R p ≃o Set.Iic p := Submodule.MapSubtype.relIso p
+  let e : Submodule R p ≃o Set.Iic p := p.mapIic
   suffices (e ∘ fun i : s ↦ (A i).comap p.subtype) = fun i ↦ ⟨A i, hp i i.property⟩ by
     rw [← CompleteLattice.independent_map_orderIso_iff e, this]
     exact CompleteLattice.independent_of_independent_coe_Iic_comp h

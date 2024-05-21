@@ -113,7 +113,7 @@ theorem inf_neBot_iff {f : Ultrafilter α} {g : Filter α} : NeBot (↑f ⊓ g) 
 #align ultrafilter.inf_ne_bot_iff Ultrafilter.inf_neBot_iff
 
 theorem disjoint_iff_not_le {f : Ultrafilter α} {g : Filter α} : Disjoint (↑f) g ↔ ¬↑f ≤ g := by
-  rw [← inf_neBot_iff, neBot_iff, Ne.def, not_not, disjoint_iff]
+  rw [← inf_neBot_iff, neBot_iff, Ne, not_not, disjoint_iff]
 #align ultrafilter.disjoint_iff_not_le Ultrafilter.disjoint_iff_not_le
 
 @[simp]
@@ -332,7 +332,7 @@ theorem le_cofinite_or_eq_pure (f : Ultrafilter α) : (f : Filter α) ≤ cofini
 #align ultrafilter.le_cofinite_or_eq_pure Ultrafilter.le_cofinite_or_eq_pure
 
 /-- Monadic bind for ultrafilters, coming from the one on filters
-defined in terms of map and join.-/
+defined in terms of map and join. -/
 def bind (f : Ultrafilter α) (m : α → Ultrafilter β) : Ultrafilter β :=
   ofComplNotMemIff (Filter.bind ↑f fun x => ↑(m x)) fun s => by
     simp only [mem_bind', mem_coe, ← compl_mem_iff_not_mem, compl_setOf, compl_compl]
@@ -473,7 +473,7 @@ theorem exists_ultrafilter_iff {f : Filter α} : (∃ u : Ultrafilter α, ↑u �
 
 theorem forall_neBot_le_iff {g : Filter α} {p : Filter α → Prop} (hp : Monotone p) :
     (∀ f : Filter α, NeBot f → f ≤ g → p f) ↔ ∀ f : Ultrafilter α, ↑f ≤ g → p f := by
-  refine' ⟨fun H f hf => H f f.neBot hf, _⟩
+  refine ⟨fun H f hf => H f f.neBot hf, ?_⟩
   intro H f hf hfg
   exact hp (of_le f) (H _ ((of_le f).trans hfg))
 #align filter.forall_ne_bot_le_iff Filter.forall_neBot_le_iff

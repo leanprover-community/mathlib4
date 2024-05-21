@@ -3,8 +3,8 @@ Copyright (c) 2015 Leonardo de Moura. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
+import Mathlib.Data.List.Basic
 import Mathlib.Data.Sigma.Basic
-import Mathlib.Data.List.BigOperators.Basic
 
 #align_import data.list.prod_sigma from "leanprover-community/mathlib"@"dd71334db81d0bd444af1ee339a29298bef40734"
 
@@ -51,9 +51,9 @@ theorem mem_product {l₁ : List α} {l₂ : List β} {a : α} {b : β} :
 theorem length_product (l₁ : List α) (l₂ : List β) :
     length (l₁ ×ˢ l₂) = length l₁ * length l₂ := by
   induction' l₁ with x l₁ IH
-  · exact (zero_mul _).symm
-  · simp only [length, product_cons, length_append, IH, right_distrib, one_mul, length_map,
-      add_comm]
+  · exact (Nat.zero_mul _).symm
+  · simp only [length, product_cons, length_append, IH, Nat.add_mul, Nat.one_mul, length_map,
+      Nat.add_comm]
 #align list.length_product List.length_product
 
 /-! ### sigma -/
@@ -85,11 +85,11 @@ theorem mem_sigma {l₁ : List α} {l₂ : ∀ a, List (σ a)} {a : α} {b : σ 
     exists_eq_left, heq_iff_eq, exists_eq_right]
 #align list.mem_sigma List.mem_sigma
 
-theorem length_sigma (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
-    length (l₁.sigma l₂) = (l₁.map fun a => length (l₂ a)).sum := by
+/-- See `List.length_sigma` for the corresponding statement using `List.sum`. -/
+theorem length_sigma' (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
+    length (l₁.sigma l₂) = Nat.sum (l₁.map fun a ↦ length (l₂ a)) := by
   induction' l₁ with x l₁ IH
   · rfl
-  · simp only [map, sigma_cons, length_append, length_map, IH, sum_cons]
-#align list.length_sigma List.length_sigma
+  · simp only [map, sigma_cons, length_append, length_map, IH, Nat.sum_cons]
 
 end List

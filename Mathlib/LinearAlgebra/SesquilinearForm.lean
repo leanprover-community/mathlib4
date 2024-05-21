@@ -251,6 +251,7 @@ theorem isSymm_iff_eq_flip {B : LinearMap.BilinForm R M} : B.IsSymm ↔ B = B.fl
     rw [← h, flip_apply, RingHom.id_apply]
   intro x y
   conv_lhs => rw [h]
+  rfl
 #align linear_map.is_symm_iff_eq_flip LinearMap.isSymm_iff_eq_flip
 
 end Symmetric
@@ -349,8 +350,7 @@ Note that for general (neither symmetric nor antisymmetric) bilinear maps this d
 chirality; in addition to this "left" orthogonal complement one could define a "right" orthogonal
 complement for which, for all `y` in `N`, `B y x = 0`.  This variant definition is not currently
 provided in mathlib. -/
-def orthogonalBilin (N : Submodule R₁ M₁) (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M) : Submodule R₁ M₁
-    where
+def orthogonalBilin (N : Submodule R₁ M₁) (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M) : Submodule R₁ M₁ where
   carrier := { m | ∀ n ∈ N, B.IsOrtho n m }
   zero_mem' x _ := B.isOrtho_zero_right x
   add_mem' hx hy n hn := by
@@ -632,7 +632,7 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M] [CommSemiring R₁] [Ad
 
 /-- A bilinear map is called left-separating if
 the only element that is left-orthogonal to every other element is `0`; i.e.,
-for every nonzero `x` in `M₁`, there exists `y` in `M₂` with `B x y ≠ 0`.-/
+for every nonzero `x` in `M₁`, there exists `y` in `M₂` with `B x y ≠ 0`. -/
 def SeparatingLeft (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) : Prop :=
   ∀ x : M₁, (∀ y : M₂, B x y = 0) → x = 0
 #align linear_map.separating_left LinearMap.SeparatingLeft
@@ -654,16 +654,15 @@ theorem SeparatingLeft.ne_zero [Nontrivial M₁] {B : M₁ →ₛₗ[I₁] M₂ 
 section Linear
 
 variable [AddCommMonoid Mₗ₁] [AddCommMonoid Mₗ₂] [AddCommMonoid Mₗ₁'] [AddCommMonoid Mₗ₂']
-  [AddCommMonoid M]
 
-variable [Module R Mₗ₁] [Module R Mₗ₂] [Module R Mₗ₁'] [Module R Mₗ₂'] [Module R M]
+variable [Module R Mₗ₁] [Module R Mₗ₂] [Module R Mₗ₁'] [Module R Mₗ₂']
 variable {B : Mₗ₁ →ₗ[R] Mₗ₂ →ₗ[R] M} (e₁ : Mₗ₁ ≃ₗ[R] Mₗ₁') (e₂ : Mₗ₂ ≃ₗ[R] Mₗ₂')
 
 theorem SeparatingLeft.congr (h : B.SeparatingLeft) :
     (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M)) B).SeparatingLeft := by
   intro x hx
   rw [← e₁.symm.map_eq_zero_iff]
-  refine' h (e₁.symm x) fun y ↦ _
+  refine h (e₁.symm x) fun y ↦ ?_
   specialize hx (e₂ y)
   simp only [LinearEquiv.arrowCongr_apply, LinearEquiv.symm_apply_apply,
     LinearEquiv.map_eq_zero_iff] at hx
@@ -684,7 +683,7 @@ end Linear
 
 /-- A bilinear map is called right-separating if
 the only element that is right-orthogonal to every other element is `0`; i.e.,
-for every nonzero `y` in `M₂`, there exists `x` in `M₁` with `B x y ≠ 0`.-/
+for every nonzero `y` in `M₂`, there exists `x` in `M₁` with `B x y ≠ 0`. -/
 def SeparatingRight (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) : Prop :=
   ∀ y : M₂, (∀ x : M₁, B x y = 0) → y = 0
 #align linear_map.separating_right LinearMap.SeparatingRight
@@ -746,14 +745,14 @@ variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup M₁] [Module 
 
 theorem IsRefl.nondegenerate_of_separatingLeft {B : M →ₗ[R] M →ₗ[R] M₁} (hB : B.IsRefl)
     (hB' : B.SeparatingLeft) : B.Nondegenerate := by
-  refine' ⟨hB', _⟩
+  refine ⟨hB', ?_⟩
   rw [separatingRight_iff_flip_ker_eq_bot, hB.ker_eq_bot_iff_ker_flip_eq_bot.mp]
   rwa [← separatingLeft_iff_ker_eq_bot]
 #align linear_map.is_refl.nondegenerate_of_separating_left LinearMap.IsRefl.nondegenerate_of_separatingLeft
 
 theorem IsRefl.nondegenerate_of_separatingRight {B : M →ₗ[R] M →ₗ[R] M₁} (hB : B.IsRefl)
     (hB' : B.SeparatingRight) : B.Nondegenerate := by
-  refine' ⟨_, hB'⟩
+  refine ⟨?_, hB'⟩
   rw [separatingLeft_iff_ker_eq_bot, hB.ker_eq_bot_iff_ker_flip_eq_bot.mpr]
   rwa [← separatingRight_iff_flip_ker_eq_bot]
 #align linear_map.is_refl.nondegenerate_of_separating_right LinearMap.IsRefl.nondegenerate_of_separatingRight

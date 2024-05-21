@@ -4,16 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Analysis.Complex.Basic
-import Mathlib.Data.IsROrC.Lemmas
+import Mathlib.Analysis.RCLike.Lemmas
 import Mathlib.Topology.TietzeExtension
 import Mathlib.Analysis.NormedSpace.HomeomorphBall
-import Mathlib.Analysis.NormedSpace.IsROrC
+import Mathlib.Analysis.NormedSpace.RCLike
 /-!
 # Finite dimensional topological vector spaces over `ℝ` satisfy the Tietze extension property
 
 There are two main results here:
 
-- `IsROrC.instTietzeExtensionTVS`: finite dimensional topological vector spaces over `ℝ` (or `ℂ`)
+- `RCLike.instTietzeExtensionTVS`: finite dimensional topological vector spaces over `ℝ` (or `ℂ`)
   have the Tietze extension property.
 - `BoundedContinuousFunction.exists_norm_eq_restrict_eq`: when mapping into a finite dimensional
   normed vector space over `ℝ` (or `ℂ`), the extension can be chosen to preserve the norm of the
@@ -33,22 +33,22 @@ theorem TietzeExtension.of_tvs (𝕜 : Type v) [NontriviallyNormedField 𝕜] {E
 instance Complex.instTietzeExtension : TietzeExtension ℂ :=
   TietzeExtension.of_tvs ℝ
 
-instance (priority := 900) IsROrC.instTietzeExtension {𝕜 : Type*} [IsROrC 𝕜] : TietzeExtension 𝕜 :=
-  TietzeExtension.of_tvs ℝ
+instance (priority := 900) RCLike.instTietzeExtension {𝕜 : Type*} [RCLike 𝕜] :
+    TietzeExtension 𝕜 := TietzeExtension.of_tvs ℝ
 
-instance IsROrC.instTietzeExtensionTVS {𝕜 : Type v} [IsROrC 𝕜] {E : Type w}
+instance RCLike.instTietzeExtensionTVS {𝕜 : Type v} [RCLike 𝕜] {E : Type w}
     [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E]
     [ContinuousSMul 𝕜 E] [T2Space E] [FiniteDimensional 𝕜 E] :
     TietzeExtension.{u, w} E :=
   TietzeExtension.of_tvs 𝕜
 
-instance Set.instTietzeExtensionUnitBall {𝕜 : Type v} [IsROrC 𝕜] {E : Type w}
+instance Set.instTietzeExtensionUnitBall {𝕜 : Type v} [RCLike 𝕜] {E : Type w}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E] :
     TietzeExtension.{u, w} (Metric.ball (0 : E) 1) :=
   have : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
   .of_homeo Homeomorph.unitBall.symm
 
-instance Set.instTietzeExtensionUnitClosedBall {𝕜 : Type v} [IsROrC 𝕜] {E : Type w}
+instance Set.instTietzeExtensionUnitClosedBall {𝕜 : Type v} [RCLike 𝕜] {E : Type w}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E] :
     TietzeExtension.{u, w} (Metric.closedBall (0 : E) 1) := by
   have : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
@@ -60,7 +60,7 @@ instance Set.instTietzeExtensionUnitClosedBall {𝕜 : Type v} [IsROrC 𝕜] {E 
     refine .of_retract ⟨Subtype.val, by continuity⟩ ⟨_, this.codRestrict fun x ↦ ?_⟩ ?_
     · by_cases hx : x ∈ Metric.closedBall 0 1
       · simpa [piecewise_eq_of_mem (hi := hx)] using hx
-      · simp only [g, piecewise_eq_of_not_mem (hi := hx), IsROrC.real_smul_eq_coe_smul (K := 𝕜)]
+      · simp only [g, piecewise_eq_of_not_mem (hi := hx), RCLike.real_smul_eq_coe_smul (K := 𝕜)]
         by_cases hx' : x = 0 <;> simp [hx']
     · ext x
       simp [piecewise_eq_of_mem (hi := x.property)]
@@ -72,14 +72,14 @@ instance Set.instTietzeExtensionUnitClosedBall {𝕜 : Type v} [IsROrC 𝕜] {E 
       Metric.mem_ball, dist_zero_right, not_lt, id_eq, ne_eq, norm_eq_zero]
     exact fun x hx ↦ norm_pos_iff.mp <| one_pos.trans_le hx
 
-theorem Metric.instTietzeExtensionBall {𝕜 : Type v} [IsROrC 𝕜] {E : Type w}
+theorem Metric.instTietzeExtensionBall {𝕜 : Type v} [RCLike 𝕜] {E : Type w}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E] {r : ℝ} (hr : 0 < r) :
     TietzeExtension.{u, w} (Metric.ball (0 : E) r) :=
   have : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
   .of_homeo <| show (Metric.ball (0 : E) r) ≃ₜ (Metric.ball (0 : E) 1) from
     PartialHomeomorph.unitBallBall (0 : E) r hr |>.toHomeomorphSourceTarget.symm
 
-theorem Metric.instTietzeExtensionClosedBall (𝕜 : Type v) [IsROrC 𝕜] {E : Type w}
+theorem Metric.instTietzeExtensionClosedBall (𝕜 : Type v) [RCLike 𝕜] {E : Type w}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E] (y : E) {r : ℝ} (hr : 0 < r) :
     TietzeExtension.{u, w} (Metric.closedBall y r) :=
   .of_homeo <| by
@@ -89,11 +89,11 @@ theorem Metric.instTietzeExtensionClosedBall (𝕜 : Type v) [IsROrC 𝕜] {E : 
     ext x
     simp only [mem_closedBall, dist_zero_right, DilationEquiv.coe_toHomeomorph, Set.mem_preimage,
       DilationEquiv.smulTorsor_apply, vadd_eq_add, dist_add_self_left, norm_smul,
-      IsROrC.norm_ofReal, abs_of_nonneg hr.le]
+      RCLike.norm_ofReal, abs_of_nonneg hr.le]
     exact (mul_le_iff_le_one_right hr).symm
 
 variable {X : Type u} [TopologicalSpace X] [NormalSpace X] {s : Set X} (hs : IsClosed s)
-variable (𝕜 : Type v) [IsROrC 𝕜] [TietzeExtension.{u, v} 𝕜]
+variable (𝕜 : Type v) [RCLike 𝕜] [TietzeExtension.{u, v} 𝕜]
 variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E]
 
 namespace BoundedContinuousFunction
