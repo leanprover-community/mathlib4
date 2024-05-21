@@ -84,7 +84,7 @@ theorem iInf_rat_gt_eq (f : StieltjesFunction) (x : ℝ) :
     ⨅ r : { r' : ℚ // x < r' }, f r = f x := by
   rw [← iInf_Ioi_eq f x]
   refine' (Real.iInf_Ioi_eq_iInf_rat_gt _ _ f.mono).symm
-  refine' ⟨f x, fun y => _⟩
+  refine ⟨f x, fun y => ?_⟩
   rintro ⟨y, hy_mem, rfl⟩
   exact f.mono (le_of_lt hy_mem)
 #align stieltjes_function.infi_rat_gt_eq StieltjesFunction.iInf_rat_gt_eq
@@ -202,7 +202,7 @@ theorem length_subadditive_Icc_Ioo {a b : ℝ} {c d : ℕ → ℝ} (ss : Icc a b
     refine' le_trans _ (le_iSup _ hf.toFinset)
     exact this hf.toFinset _ (by simpa only [e] )
   clear ss b
-  refine' fun s => Finset.strongInductionOn s fun s IH b cv => _
+  refine fun s => Finset.strongInductionOn s fun s IH b cv => ?_
   rcases le_total b a with ab | ab
   · rw [ENNReal.ofReal_eq_zero.2 (sub_nonpos.2 (f.mono ab))]
     exact zero_le _
@@ -328,7 +328,7 @@ theorem outer_trim : f.outer.trim = f.outer := by
   apply iInf_le_of_le (iUnion g) _
   apply iInf_le_of_le (ht.trans <| iUnion_mono fun i => (hg i).1) _
   apply iInf_le_of_le (MeasurableSet.iUnion fun i => (hg i).2.1) _
-  exact le_trans (f.outer.iUnion _) (ENNReal.tsum_le_tsum fun i => (hg i).2.2)
+  exact le_trans (measure_iUnion_le _) (ENNReal.tsum_le_tsum fun i => (hg i).2.2)
 #align stieltjes_function.outer_trim StieltjesFunction.outer_trim
 
 theorem borel_le_measurable : borel ℝ ≤ f.outer.caratheodory := by
