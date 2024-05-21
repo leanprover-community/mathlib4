@@ -10,6 +10,8 @@ import Mathlib.Order.Hom.Order
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Dynamics.FixedPoints.Basic
 
+#align_import order.omega_complete_partial_order from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
+
 /-!
 # Omega Complete Partial Orders
 
@@ -26,7 +28,6 @@ supremum helps define the meaning of recursive procedures.
 
  * class `OmegaCompletePartialOrder`
  * `ite`, `map`, `bind`, `seq` as continuous morphisms
- * the chain `approx` approximating fixed points
 
 ## Instances of `OmegaCompletePartialOrder`
 
@@ -579,7 +580,6 @@ theorem inf_continuous' {f g : α → β} (hf : Continuous' f) (hg : Continuous'
 
 end CompleteLattice
 
-
 namespace OmegaCompletePartialOrder
 
 variable {α : Type u} {α' : Type*} {β : Type v} {β' : Type*} {γ : Type*} {φ : Type*}
@@ -922,7 +922,6 @@ end ContinuousHom
 namespace fixedPoints
 
 open Function OrderHom.Nat
-
 
 /-- Iteration of a function on an initial element interpreted as a chain. -/
 def repeatChain (f : α →o α) (x : α) (h : x ≤ f x) : Chain α :=
