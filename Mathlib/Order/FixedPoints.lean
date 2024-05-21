@@ -334,9 +334,4 @@ instance completeLattice : CompleteLattice (fixedPoints f) where
       gfp f = sInf { Nat.repeat f n ⊤ | n : Nat} :=
     lfp_eq_sSup_repeat (OrderHom.dual f) h
 
-
-
-
-
-
 end fixedPoints
