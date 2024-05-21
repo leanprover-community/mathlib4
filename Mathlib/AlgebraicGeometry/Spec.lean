@@ -70,13 +70,14 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem Spec.topMap_id (R : CommRingCat.{u}) : Spec.topMap (𝟙 R) = 𝟙 (Spec.topObj R) :=
-  PrimeSpectrum.comap_id
+  rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.Top_map_id AlgebraicGeometry.Spec.topMap_id
 
+@[simp]
 theorem Spec.topMap_comp {R S T : CommRingCat.{u}} (f : R ⟶ S) (g : S ⟶ T) :
     Spec.topMap (f ≫ g) = Spec.topMap g ≫ Spec.topMap f :=
-  PrimeSpectrum.comap_comp _ _
+  rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.Top_map_comp AlgebraicGeometry.Spec.topMap_comp
 
@@ -88,8 +89,6 @@ set_option linter.uppercaseLean3 false in
 def Spec.toTop : CommRingCat.{u}ᵒᵖ ⥤ TopCat where
   obj R := Spec.topObj (unop R)
   map {R S} f := Spec.topMap f.unop
-  map_id R := by dsimp; rw [Spec.topMap_id]
-  map_comp {R S T} f g := by dsimp; rw [Spec.topMap_comp]
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.to_Top AlgebraicGeometry.Spec.toTop
 
@@ -120,11 +119,10 @@ set_option linter.uppercaseLean3 false in
 theorem Spec.sheafedSpaceMap_id {R : CommRingCat.{u}} :
     Spec.sheafedSpaceMap (𝟙 R) = 𝟙 (Spec.sheafedSpaceObj R) :=
   AlgebraicGeometry.PresheafedSpace.Hom.ext _ _ (Spec.topMap_id R) <| by
-    ext U
+    ext
     dsimp
-    erw [PresheafedSpace.id_c_app, comap_id]; swap
-    · rw [Spec.topMap_id, TopologicalSpace.Opens.map_id_obj_unop]
-    simp [eqToHom_map]
+    erw [comap_id (by simp)]
+    simp
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.SheafedSpace_map_id AlgebraicGeometry.Spec.sheafedSpaceMap_id
 
