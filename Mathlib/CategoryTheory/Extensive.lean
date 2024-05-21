@@ -306,8 +306,8 @@ noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
       fun x => ⟨⟨_, PUnit.unit⟩, x.2⟩, fun _ => by ext; rfl, fun _ => by ext; rfl⟩
   fapply BinaryCofan.isColimitMk
   classical -- Porting note: Added
-  · refine' fun s => ⟨fun x => dite _
-      (fun h => s.inl <| eX.symm ⟨x, h⟩) fun h => s.inr <| eY.symm ⟨x, (this x).resolve_left h⟩, _⟩
+  · refine fun s => ⟨fun x => dite _
+      (fun h => s.inl <| eX.symm ⟨x, h⟩) fun h => s.inr <| eY.symm ⟨x, (this x).resolve_left h⟩, ?_⟩
     rw [continuous_iff_continuousAt]
     intro x
     by_cases h : f x = Sum.inl PUnit.unit
@@ -319,8 +319,8 @@ noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
         · ext ⟨x, hx⟩
           exact dif_pos hx
         -- Porting note: this `(BinaryCofan.inl s).2` was unnecessary
-        have := (BinaryCofan.inl s).2
-        continuity
+        apply Continuous.comp' (BinaryCofan.inl s).2 (Continuous.subtype_mk ..)
+        continuity -- TODO: swap out this and above for `fun_prop`
       · convert f.2.1 _ openEmbedding_inl.isOpen_range
         rename_i x
         exact ⟨fun h => ⟨_, h.symm⟩,
@@ -333,8 +333,8 @@ noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
         · ext ⟨x, hx⟩
           exact dif_neg hx
         -- Porting note: this `(BinaryCofan.inr s).2` was unnecessary
-        have := (BinaryCofan.inr s).2
-        continuity
+        apply Continuous.comp' (BinaryCofan.inr s).2 (Continuous.subtype_mk ..)
+        continuity -- TODO: swap out this and above for `fun_prop`
       · convert f.2.1 _ openEmbedding_inr.isOpen_range
         rename_i x
         change f x ≠ Sum.inl PUnit.unit ↔ f x ∈ Set.range Sum.inr
