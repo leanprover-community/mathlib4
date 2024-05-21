@@ -161,12 +161,19 @@ We use primes in the structure names as we will reformulate them below (without 
 /-- A structure groupoid is a set of partial homeomorphisms of a topological space stable under
 composition and inverse. They appear in the definition of the smoothness class of a manifold. -/
 structure StructureGroupoid (H : Type u) [TopologicalSpace H] where
+  /-- Members of the structure groupoid are partial homeomorphisms. -/
   members : Set (PartialHomeomorph H H)
+  /-- Structure groupoids are stable under composition. -/
   trans' : ∀ e e' : PartialHomeomorph H H, e ∈ members → e' ∈ members → e ≫ₕ e' ∈ members
+  /-- Structure groupoids are stable under inverse. -/
   symm' : ∀ e : PartialHomeomorph H H, e ∈ members → e.symm ∈ members
+  /-- The identity morphism lies in the structure groupoid. -/
   id_mem' : PartialHomeomorph.refl H ∈ members
+  /-- Let `e` be a partial homeomorphism. If for every `x ∈ e.source`, the restriction of e to some
+  open set around `x` lies in the groupoid, then `e` lies in the groupoid. -/
   locality' : ∀ e : PartialHomeomorph H H,
     (∀ x ∈ e.source, ∃ s, IsOpen s ∧ x ∈ s ∧ e.restr s ∈ members) → e ∈ members
+  /-- Membership in a structure groupoid respects the equivalence of partial homeomorphisms. -/
   mem_of_eqOnSource' : ∀ e e' : PartialHomeomorph H H, e ∈ members → e' ≈ e → e' ∈ members
 #align structure_groupoid StructureGroupoid
 
@@ -251,6 +258,10 @@ theorem StructureGroupoid.mem_of_eqOnSource (G : StructureGroupoid H) {e e' : Pa
     (he : e ∈ G) (h : e' ≈ e) : e' ∈ G :=
   G.mem_of_eqOnSource' e e' he h
 #align structure_groupoid.eq_on_source StructureGroupoid.mem_of_eqOnSource
+
+theorem StructureGroupoid.mem_iff_of_eqOnSource {G : StructureGroupoid H}
+    {e e' : PartialHomeomorph H H} (h : e ≈ e') : e ∈ G ↔ e' ∈ G :=
+  ⟨fun he ↦ G.mem_of_eqOnSource he (Setoid.symm h), fun he' ↦ G.mem_of_eqOnSource he' h⟩
 
 /-- Partial order on the set of groupoids, given by inclusion of the members of the groupoid. -/
 instance StructureGroupoid.partialOrder : PartialOrder (StructureGroupoid H) :=
