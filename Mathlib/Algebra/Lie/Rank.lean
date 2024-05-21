@@ -194,7 +194,7 @@ open FiniteDimensional LieSubalgebra
 
 lemma finrank_engel (x : L) :
     finrank K (engel K x) = (ad K L x).charpoly.natTrailingDegree :=
-  (ad K L x).finrank_maximalGeneralizedEigenspace
+  (ad K L x).finrank_maxGenEigenspace
 
 lemma rank_le_finrank_engel (x : L) :
     rank K L ≤ finrank K (engel K x) :=
