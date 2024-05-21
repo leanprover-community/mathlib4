@@ -80,7 +80,7 @@ lemma fac' : p.map φ = eqToHom (domain_eq p f φ) ≫ f ≫
   simp [fac p f φ]
 
 lemma commSq : CommSq (p.map φ) (eqToHom (domain_eq p f φ))
-      (eqToHom (codomain_eq p f φ)) f where
+    (eqToHom (codomain_eq p f φ)) f where
   w := by simp only [fac p f φ, eqToHom_trans_assoc, eqToHom_refl, id_comp]
 
 end
