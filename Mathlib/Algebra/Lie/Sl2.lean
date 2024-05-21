@@ -84,7 +84,6 @@ eigenvector for the action of both `h` and `e` necessarily has eigenvalue zero f
 lemma HasPrimitiveVectorWith.mk' [NoZeroSMulDivisors ℤ M] (t : IsSl2Triple h e f) (m : M) (μ ρ : R)
     (hm : m ≠ 0) (hm' : ⁅h, m⁆ = μ • m) (he : ⁅e, m⁆ = ρ • m) :
     HasPrimitiveVectorWith t m μ  where
-  __ := t
   ne_zero := hm
   lie_h := hm'
   lie_e := by
