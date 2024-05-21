@@ -33,9 +33,9 @@ open Pointwise
 
 namespace Submodule
 
-variable {ι : Sort uι} {R L M N P : Type*}
-    [CommSemiring R] [AddCommMonoid L] [AddCommMonoid M] [AddCommMonoid N]
-    [AddCommMonoid P] [Module R L] [Module R M] [Module R N] [Module R P]
+variable {ι : Sort uι} {R M N P : Type*}
+variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
+variable [Module R M] [Module R N] [Module R P]
 
 /-- Map a pair of submodules under a bilinear map.
 
@@ -43,9 +43,6 @@ This is the submodule version of `Set.image2`.  -/
 def map₂ (f : M →ₗ[R] N →ₗ[R] P) (p : Submodule R M) (q : Submodule R N) : Submodule R P :=
   ⨆ s : p, q.map (f s)
 #align submodule.map₂ Submodule.map₂
-
-lemma map₂_eq_iSup_map (f : M →ₗ[R] N →ₗ[R] P) (p : Submodule R M) (q : Submodule R N) :
-    map₂ f p q = ⨆ s : p, q.map (f s) := rfl
 
 theorem apply_mem_map₂ (f : M →ₗ[R] N →ₗ[R] P) {m : M} {n : N} {p : Submodule R M}
     {q : Submodule R N} (hm : m ∈ p) (hn : n ∈ q) : f m n ∈ map₂ f p q :=
@@ -130,26 +127,15 @@ theorem map₂_sup_left (f : M →ₗ[R] N →ₗ[R] P) (p₁ p₂ : Submodule R
 #align submodule.map₂_sup_left Submodule.map₂_sup_left
 
 theorem image2_subset_map₂ (f : M →ₗ[R] N →ₗ[R] P) (p : Submodule R M) (q : Submodule R N) :
-    Set.image2 (fun m n => f m n) p q ⊆ (map₂ f p q) := by
+    Set.image2 (fun m n => f m n) (↑p : Set M) (↑q : Set N) ⊆ (↑(map₂ f p q) : Set P) := by
   rintro _ ⟨i, hi, j, hj, rfl⟩
   exact apply_mem_map₂ _ hi hj
 #align submodule.image2_subset_map₂ Submodule.image2_subset_map₂
 
 theorem map₂_eq_span_image2 (f : M →ₗ[R] N →ₗ[R] P) (p : Submodule R M) (q : Submodule R N) :
-    map₂ f p q = span R (Set.image2 (fun m n => f m n) p q) := by
+    map₂ f p q = span R (Set.image2 (fun m n => f m n) (p : Set M) (q : Set N)) := by
   rw [← map₂_span_span, span_eq, span_eq]
 #align submodule.map₂_eq_span_image2 Submodule.map₂_eq_span_image2
-
-theorem map₂_toAddSubmonoid_eq_closure_image2 (f : M →ₗ[R] N →ₗ[R] P)
-    (p : Submodule R M) (q : Submodule R N) :
-    (map₂ f p q).toAddSubmonoid = .closure (Set.image2 (fun m n => f m n) p q) := by
-  rw [map₂_eq_span_image2, Submodule.span_eq_closure]
-  refine congrArg _ (subset_antisymm ?_ ?_)
-  · refine smul_subset_iff.mpr ?_
-    rintro r _ _ ⟨m, hm, n, hn, rfl⟩
-    exact ⟨m, hm, r • n, q.smul_mem r hn, (f m).map_smul r n⟩
-  · conv_lhs => exact Eq.symm (Eq.trans singleton_smul (one_smul R _))
-    exact smul_subset_smul_right (singleton_subset_iff.mpr (mem_univ 1))
 
 theorem map₂_flip (f : M →ₗ[R] N →ₗ[R] P) (p : Submodule R M) (q : Submodule R N) :
     map₂ f.flip q p = map₂ f p q := by
@@ -180,24 +166,5 @@ theorem map₂_span_singleton_eq_map (f : M →ₗ[R] N →ₗ[R] P) (m : M) :
 theorem map₂_span_singleton_eq_map_flip (f : M →ₗ[R] N →ₗ[R] P) (s : Submodule R M) (n : N) :
     map₂ f s (span R {n}) = map (f.flip n) s := by rw [← map₂_span_singleton_eq_map, map₂_flip]
 #align submodule.map₂_span_singleton_eq_map_flip Submodule.map₂_span_singleton_eq_map_flip
-
-@[simp]
-lemma restrictScalars_map₂ (S : Type*) [CommSemiring S] [SMul S R]
-    [Module S M] [Module S N] [Module S P] [IsScalarTower S R M]
-    [IsScalarTower S R N] [IsScalarTower S R P] (B : M →ₗ[R] N →ₗ[R] P)
-    (M' : Submodule R M) (N' : Submodule R N) :
-    restrictScalars S (map₂ B M' N') =
-      map₂ (B.restrictScalars₁₂ S S) (restrictScalars S M') (restrictScalars S N') :=
-  toAddSubmonoid_injective <| by
-    simp_rw [toAddSubmonoid_restrictScalars,
-      map₂_toAddSubmonoid_eq_closure_image2, coe_restrictScalars,
-      LinearMap.restrictScalars₁₂_apply_apply]
-
-@[simp]
-lemma map₂_map_left (f : M →ₗ[R] N →ₗ[R] P) (g : L →ₗ[R] M)
-    (p : Submodule R L) (q : Submodule R N) :
-    map₂ f (map g p) q = map₂ (f ∘ₗ g) p q := by
-  simp_rw (config:={singlePass:=true}) [← map₂_flip, map₂, ← map_comp]
-  rfl
 
 end Submodule

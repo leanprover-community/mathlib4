@@ -43,7 +43,7 @@ lemmas from `Mathlib/GroupTheory/Submonoid/Pointwise.lean`.
 -/
 
 
-variable {α β R M : Type*}
+variable {α : Type*} {R : Type*} {M : Type*}
 
 open Pointwise
 
@@ -199,7 +199,6 @@ instance : CanonicallyOrderedAddCommMonoid (Submodule R M) :=
 section
 
 variable [Monoid α] [DistribMulAction α M] [SMulCommClass α R M]
-    [Monoid β] [DistribMulAction β M] [SMulCommClass β R M]
 
 /-- The action on a submodule corresponding to applying the action to every element.
 
@@ -219,15 +218,6 @@ protected def pointwiseDistribMulAction : DistribMulAction α (Submodule R M)
 scoped[Pointwise] attribute [instance] Submodule.pointwiseDistribMulAction
 
 open Pointwise
-
-instance pointwiseScalarTower [SMul α β] [IsScalarTower α β M] :
-    IsScalarTower α β (Submodule R M) where
-  smul_assoc a b _ := SetLike.coe_injective <|
-    Eq.trans (congrArg (· '' _) (funext (smul_assoc a b))) (Set.image_comp _ _ _)
-
-theorem pointwise_smul_def {a : α} (S : Submodule R M) :
-    a • S = S.map (DistribMulAction.toLinearMap _ _ a) :=
-  rfl
 
 @[simp]
 theorem coe_pointwise_smul (a : α) (S : Submodule R M) : ↑(a • S) = a • (S : Set M) :=

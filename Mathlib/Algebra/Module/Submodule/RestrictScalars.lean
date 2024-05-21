@@ -124,8 +124,4 @@ def restrictScalarsLatticeHom : CompleteLatticeHom (Submodule R M) (Submodule S 
   map_sInf' s := by ext; simp
   map_sSup' s := by rw [← toAddSubmonoid_eq, toAddSubmonoid_sSup, ← Set.image_comp]; simp
 
-@[simp]
-theorem restrictScalarsLatticeHom_apply (V : Submodule R M) :
-    restrictScalarsLatticeHom S R M V = restrictScalars S V := rfl
-
 end Submodule

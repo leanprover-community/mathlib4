@@ -449,8 +449,6 @@ end AddCommMonoid
 
 section AddCommGroup
 
-section
-
 variable [Ring R] [AddCommGroup M] [Module R M] (p : Submodule R M)
 variable [AddCommGroup M₂] [Module R M₂]
 
@@ -465,23 +463,6 @@ protected theorem map_neg (f : M →ₗ[R] M₂) : map (-f) p = map f p :=
 lemma comap_neg {f : M →ₗ[R] M₂} {p : Submodule R M₂} :
     p.comap (-f) = p.comap f := by
   ext; simp
-
-end
-
-section
-
-variable [Ring R] [Ring R₂] [AddCommGroup M] [AddCommGroup M₂]
-    [Module R M] [Module R₂ M₂] {σ₁₂ : R →+* R₂} [RingHomSurjective σ₁₂]
-
-theorem map_toAddSubgroup (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) :
-    (p.map f).toAddSubgroup = p.toAddSubgroup.map (f : M →+ M₂) :=
-  SetLike.coe_injective rfl
-
-theorem map_toAddSubgroup' (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) :
-    (p.map f).toAddSubgroup = p.toAddSubgroup.map f :=
-  SetLike.coe_injective rfl
-
-end
 
 end AddCommGroup
 
