@@ -75,12 +75,10 @@ lemma codomain_eq  : p.obj b = S :=
 lemma fac : f = eqToHom (domain_eq p f φ).symm ≫ p.map φ ≫ eqToHom (codomain_eq p f φ) :=
   Functor.IsHomLift.fac
 
-lemma fac' : p.map φ = eqToHom (domain_eq p f φ) ≫ f ≫
-    eqToHom (codomain_eq p f φ).symm := by
+lemma fac' : p.map φ = eqToHom (domain_eq p f φ) ≫ f ≫ eqToHom (codomain_eq p f φ).symm := by
   simp [fac p f φ]
 
-lemma commSq : CommSq (p.map φ) (eqToHom (domain_eq p f φ))
-    (eqToHom (codomain_eq p f φ)) f where
+lemma commSq : CommSq (p.map φ) (eqToHom (domain_eq p f φ)) (eqToHom (codomain_eq p f φ)) f where
   w := by simp only [fac p f φ, eqToHom_trans_assoc, eqToHom_refl, id_comp]
 
 end
@@ -89,8 +87,8 @@ lemma of_commSq {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (ha : p.o
     (h : CommSq (p.map φ) (eqToHom ha) (eqToHom hb) f) : p.IsHomLift f φ where
   fac := by simp only [h.1, eqToHom_trans_assoc, eqToHom_refl, id_comp]
 
-lemma eq_of_isHomLift {a b : 𝒳} (f : p.obj a ⟶ p.obj b) (φ : a ⟶ b)
-    [p.IsHomLift f φ] : f = p.map φ := by
+lemma eq_of_isHomLift {a b : 𝒳} (f : p.obj a ⟶ p.obj b) (φ : a ⟶ b) [p.IsHomLift f φ] :
+    f = p.map φ := by
   simpa only [eqToHom_refl, comp_id, id_comp] using fac p f φ
 
 instance comp {p : 𝒳 ⥤ 𝒮} {R S T : 𝒮} {a b c : 𝒳} {f : R ⟶ S} {g : S ⟶ T} (φ : a ⟶ b)
