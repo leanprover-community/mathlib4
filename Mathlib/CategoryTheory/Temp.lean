@@ -1,6 +1,5 @@
 import Mathlib.CategoryTheory.Closed.Cartesian
 import Mathlib.CategoryTheory.ChosenFiniteProducts
-import Mathlib.CategoryTheory.Limits.Shapes.FunctorToTypes
 import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
 
 /-!
@@ -13,7 +12,6 @@ universe v u
 
 open MonoidalCategory
 
-
 class ChosenMonoidalClosed (C : Type u) [Category.{v} C] [ChosenFiniteProducts C] where
   closed (X : C) : Closed X
 
@@ -25,7 +23,7 @@ def cartesianClosedOfChosenCartesianClosed
     closed := _
 -/
 
-namespace ChosenMonoidalClosed
+-- namespace ChosenMonoidalClosed
 
 /-
 instance (priority := 100)
@@ -37,16 +35,11 @@ variable (C : Type u) [Category.{v} C] [ChosenFiniteProducts C] [ChosenMonoidalC
 
 open Simplicial SimplexCategory
 
-namespace SSet
-
+noncomputable
 def SSetRightAdj (X : SSet) : SSet ⥤ SSet where
   obj Y := {
     obj := fun ⟨n⟩ ↦ (Δ[len n] ⊗ X) ⟶ Y
-    map := by
-      intro n m f
-      have := SSet.standardSimplex.map f.unop
-      have := whiskerRight f X
-      sorry
+    map := fun f g ↦ SSet.standardSimplex.map f.unop ▷ X ≫ g
   }
   map := sorry
 
