@@ -80,26 +80,26 @@ def IsDivSequence (W : ℤ → R) : Prop :=
 def IsEllDivSequence (W : ℤ → R) : Prop :=
   IsEllSequence W ∧ IsDivSequence W
 
-lemma IsEllSequence_id : IsEllSequence id :=
+lemma isEllSequence_id : IsEllSequence id :=
   fun _ _ _ => by simp only [id_eq]; ring1
 
-lemma IsDivSequence_id : IsDivSequence id :=
+lemma isDivSequence_id : IsDivSequence id :=
   fun _ _ => Int.ofNat_dvd.mpr
 
 /-- The identity sequence is an EDS. -/
-theorem IsEllDivSequence_id : IsEllDivSequence id :=
-  ⟨IsEllSequence_id, IsDivSequence_id⟩
+theorem isEllDivSequence_id : IsEllDivSequence id :=
+  ⟨isEllSequence_id, isDivSequence_id⟩
 
-lemma IsEllSequence_mul (x : R) {W : ℤ → R} (h : IsEllSequence W) : IsEllSequence (x • W) :=
+lemma isEllSequence_mul (x : R) {W : ℤ → R} (h : IsEllSequence W) : IsEllSequence (x • W) :=
   fun m n r => by
     linear_combination (norm := (simp only [Pi.smul_apply, smul_eq_mul]; ring1)) x ^ 4 * h m n r
 
-lemma IsDivSequence_mul (x : R) {W : ℤ → R} (h : IsDivSequence W) : IsDivSequence (x • W) :=
+lemma isDivSequence_mul (x : R) {W : ℤ → R} (h : IsDivSequence W) : IsDivSequence (x • W) :=
   fun m n r => mul_dvd_mul_left x <| h m n r
 
-lemma IsEllDivSequence_mul (x : R) {W : ℤ → R} (h : IsEllDivSequence W) :
+lemma isEllDivSequence_mul (x : R) {W : ℤ → R} (h : IsEllDivSequence W) :
     IsEllDivSequence (x • W) :=
-  ⟨IsEllSequence_mul x h.left, IsDivSequence_mul x h.right⟩
+  ⟨isEllSequence_mul x h.left, isDivSequence_mul x h.right⟩
 
 /-- The auxiliary sequence for a normalised EDS `W : ℕ → R`,
 with initial values `W(0) = 0`, `W(1) = 1`, `W(2) = 1`, `W(3) = c`, and `W(4) = d`. -/
@@ -282,3 +282,30 @@ lemma normEDS_even (m : ℕ) : normEDS b c d (2 * (m + 3)) * b =
 @[simp]
 lemma normEDS_neg (n : ℕ) : normEDS b c d (-n) = -normEDS b c d n := by
   rw [normEDS, preNormEDS_neg, Int.natAbs_neg, neg_mul, normEDS]
+
+/-- Strong recursion principle for a normalised EDS indexed by `ℕ`: if we have
+ * `P 0`, `P 1`, `P 2`, `P 3`, and `P 4`,
+ * for all `m : ℕ` we can prove `P (2 * (m + 3))` from `P k` for all `k < 2 * (m + 3)`, and
+ * for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P k` for all `k < 2 * (m + 2) + 1`,
+then we have `P n` for all `n : ℕ`. -/
+@[elab_as_elim]
+noncomputable def normEDSRec' {P : ℕ → Sort u} (base0 : P 0) (base1 : P 1) (base2 : P 2)
+    (base3 : P 3) (base4 : P 4) (even : ∀ m : ℕ, (∀ k < 2 * (m + 3), P k) → P (2 * (m + 3)))
+    (odd : ∀ m : ℕ, (∀ k < 2 * (m + 2) + 1, P k) → P (2 * (m + 2) + 1)) (n : ℕ) :
+    P n :=
+  n.evenOddStrongRec (by rintro (_ | _ | _ | _) h; exacts [base0, base2, base4, even _ h])
+    (by rintro (_ | _ | _) h; exacts [base1, base3, odd _ h])
+
+/-- Strong recursion principle for a normalised EDS indexed by `ℤ`: if we have
+ * `P 0`, `P 1`, `P 2`, `P 3`, and `P 4`,
+ * for all `m : ℕ` we can prove `P (2 * (m + 3))` from `P k` for all `k < 2 * (m + 3)`,
+ * for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P k` for all `k < 2 * (m + 2) + 1`, and
+ * for all `n : ℕ` we can extend from `P n` to `P (-n)`,
+then we have `P n` for all `n : ℤ`. -/
+@[elab_as_elim]
+noncomputable def normEDSRec {P : ℤ → Sort u} (base0 : P 0) (base1 : P 1) (base2 : P 2)
+    (base3 : P 3) (base4 : P 4) (even : ∀ m : ℕ, (∀ k < 2 * (m + 3), P k) → P (2 * (m + 3)))
+    (odd : ∀ m : ℕ, (∀ k < 2 * (m + 2) + 1, P k) → P (2 * (m + 2) + 1))
+    (neg : ∀ n : ℕ, P n → P (-n)) : ∀ n : ℤ, P n
+  | .ofNat n => normEDSRec' base0 base1 base2 base3 base4 even odd n
+  | .negSucc n => neg (n + 1) <| normEDSRec' base0 base1 base2 base3 base4 even odd <| n + 1
