@@ -9,42 +9,22 @@ import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Data.ZMod.Defs
 
-lemma UInt8.val_eq_of_lt {a : Nat} : a < UInt8.size → ((ofNat a).val : Nat) = a :=
-  Nat.mod_eq_of_lt
-
-lemma UInt16.val_eq_of_lt {a : Nat} : a < UInt16.size → ((ofNat a).val : Nat) = a :=
-  Nat.mod_eq_of_lt
-
-lemma UInt32.val_eq_of_lt {a : Nat} : a < UInt32.size → ((ofNat a).val : Nat) = a :=
-  Nat.mod_eq_of_lt
-
-lemma UInt64.val_eq_of_lt {a : Nat} : a < UInt64.size → ((ofNat a).val : Nat) = a :=
-  Nat.mod_eq_of_lt
-
-lemma USize.val_eq_of_lt {a : Nat} : a < USize.size → ((ofNat a).val : Nat) = a :=
-  Nat.mod_eq_of_lt
-
-instance UInt8.neZero : NeZero UInt8.size := ⟨by decide⟩
-
-instance UInt16.neZero : NeZero UInt16.size := ⟨by decide⟩
-
-instance UInt32.neZero : NeZero UInt32.size := ⟨by decide⟩
-
-instance UInt64.neZero : NeZero UInt64.size := ⟨by decide⟩
-
-instance USize.neZero : NeZero USize.size := NeZero.of_pos usize_size_gt_zero
-
 example : (0 : UInt8) = ⟨0⟩ := rfl
 
 set_option hygiene false in
 run_cmd
-  for typeName in [`UInt8, `UInt16, `UInt32, `UInt64].map Lean.mkIdent do -- FIXME restore USize when the next toolchain is ready
+  for typeName in [`UInt8, `UInt16, `UInt32, `UInt64, `USize].map Lean.mkIdent do
   Lean.Elab.Command.elabCommand (← `(
     namespace $typeName
       open $typeName (eq_of_val_eq)
 
+      lemma val_eq_of_lt {a : Nat} : a < size → ((ofNat a).val : Nat) = a :=
+        Nat.mod_eq_of_lt
+
       instance : Inhabited $typeName where
         default := 0
+
+      instance neZero : NeZero size := ⟨by decide⟩
 
       instance : Neg $typeName where
         neg a := mk (-a.val)
