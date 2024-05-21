@@ -889,3 +889,50 @@ scoped[DiscreteValuation] notation "ℕₘ₀" => WithZero (Multiplicative ℕ)
 scoped[DiscreteValuation] notation "ℤₘ₀" => WithZero (Multiplicative ℤ)
 
 end ValuationNotation
+
+section WithZero_Multiplicative_stuff
+
+open Multiplicative
+
+open scoped DiscreteValuation
+
+theorem WithZero.Multiplicative.eq_coe_of_pos {α : Type*} {x : WithZero (Multiplicative α)}
+    (hx : x ≠ 0) : ∃ (n : α), x = ofAdd n :=
+  Option.ne_none_iff_exists'.mp hx
+
+theorem WithZero.Multiplicative.eq_zero_or_coe {α : Type*} (x : WithZero (Multiplicative α)) :
+    x = 0 ∨ ∃ (n : α), x = ofAdd n :=
+  or_iff_not_imp_left.mpr WithZero.Multiplicative.eq_coe_of_pos
+
+open WithZero.Multiplicative
+
+-- this makes `mul_lt_mul_left`, `mul_pos` etc work on `ℤₘ₀`
+instance : PosMulStrictMono ℤₘ₀ where
+  elim := by
+    intro ⟨x, hx⟩ a b (h : a < b)
+    rcases eq_coe_of_pos hx.ne' with ⟨x, rfl⟩
+    dsimp only
+    rcases eq_zero_or_coe a with (rfl | ⟨a, rfl⟩)
+    · rw [mul_zero]
+      rcases eq_coe_of_pos h.ne' with ⟨b, rfl⟩
+      exact WithZero.zero_lt_coe _
+    · have hb : (0 : ℤₘ₀) < b := lt_trans (WithZero.zero_lt_coe (ofAdd a)) h
+      rcases eq_coe_of_pos hb.ne' with ⟨b, rfl⟩
+      norm_cast at h ⊢
+      exact Int.add_lt_add_left h x
+
+-- This makes `lt_mul_of_le_of_one_lt'` work on `ℤₘ₀`
+instance : MulPosMono ℤₘ₀ where
+  elim := by
+    intro ⟨x, hx⟩ a b (h : a ≤ b)
+    dsimp only
+    rcases eq_zero_or_coe x with (rfl | ⟨x, rfl⟩)
+    · simp only [mul_zero, le_refl]
+    · rcases eq_zero_or_coe a with (rfl | ⟨a, rfl⟩)
+      · simp only [zero_mul, zero_le']
+      · have hb : (0 : ℤₘ₀) < b := lt_of_lt_of_le (WithZero.zero_lt_coe (ofAdd a)) h
+        rcases eq_coe_of_pos hb.ne' with ⟨b, rfl⟩
+        norm_cast at h ⊢
+        exact (Int.add_le_add_iff_right x).mpr h
+
+end WithZero_Multiplicative_stuff
