@@ -433,10 +433,7 @@ theorem nmem_nonZeroDivisors_iff {P : R[X]} : P ∉ R[X]⁰ ↔ ∃ a : R, a ≠
 
 open nonZeroDivisors in
 protected lemma mem_nonZeroDivisors_iff {P : R[X]} : P ∈ R[X]⁰ ↔ ∀ a : R, a • P = 0 → a = 0 := by
-  refine ⟨fun h a ha ↦ C_eq_zero.1 <| h (C a) (smul_eq_C_mul a ▸ ha), fun h ↦  ?_⟩
-  contrapose! h
-  obtain ⟨a, ha⟩ := nmem_nonZeroDivisors_iff.1 h
-  exact ⟨a, ha.2, ha.1⟩
+  simpa [not_imp_not] using (nmem_nonZeroDivisors_iff (P := P)).not
 
 end CommSemiring
 
