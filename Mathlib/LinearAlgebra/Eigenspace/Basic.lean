@@ -188,15 +188,15 @@ theorem genEigenspace_zero (f : End R M) (k : ℕ) :
 
 /-- A nonzero element of a generalized eigenspace is a generalized eigenvector.
     (Def 8.9 of [axler2015])-/
-def HasGeneralizedEigenvector (f : End R M) (μ : R) (k : ℕ) (x : M) : Prop :=
+def HasGenEigenvector (f : End R M) (μ : R) (k : ℕ) (x : M) : Prop :=
   x ≠ 0 ∧ x ∈ genEigenspace f μ k
-#align module.End.has_generalized_eigenvector Module.End.HasGeneralizedEigenvector
+#align module.End.has_generalized_eigenvector Module.End.HasGenEigenvector
 
 /-- A scalar `μ` is a generalized eigenvalue for a linear map `f` and an exponent `k ∈ ℕ` if there
     are generalized eigenvectors for `f`, `k`, and `μ`. -/
-def HasGeneralizedEigenvalue (f : End R M) (μ : R) (k : ℕ) : Prop :=
+def HasGenEigenvalue (f : End R M) (μ : R) (k : ℕ) : Prop :=
   genEigenspace f μ k ≠ ⊥
-#align module.End.has_generalized_eigenvalue Module.End.HasGeneralizedEigenvalue
+#align module.End.has_generalized_eigenvalue Module.End.HasGenEigenvalue
 
 /-- The generalized eigenrange for a linear map `f`, a scalar `μ`, and an exponent `k ∈ ℕ` is the
     range of `(f - μ • id) ^ k`. -/
@@ -206,7 +206,7 @@ def generalizedEigenrange (f : End R M) (μ : R) (k : ℕ) : Submodule R M :=
 
 /-- The exponent of a generalized eigenvalue is never 0. -/
 theorem exp_ne_zero_of_hasGeneralizedEigenvalue {f : End R M} {μ : R} {k : ℕ}
-    (h : f.HasGeneralizedEigenvalue μ k) : k ≠ 0 := by
+    (h : f.HasGenEigenvalue μ k) : k ≠ 0 := by
   rintro rfl
   exact h LinearMap.ker_id
 #align module.End.exp_ne_zero_of_has_generalized_eigenvalue Module.End.exp_ne_zero_of_hasGeneralizedEigenvalue
@@ -246,9 +246,9 @@ theorem maxGenEigenspace_eq [h : IsNoetherian R M] (f : End R M) (μ : R) :
 /-- A generalized eigenvalue for some exponent `k` is also
     a generalized eigenvalue for exponents larger than `k`. -/
 theorem hasGeneralizedEigenvalue_of_hasGeneralizedEigenvalue_of_le {f : End R M} {μ : R} {k : ℕ}
-    {m : ℕ} (hm : k ≤ m) (hk : f.HasGeneralizedEigenvalue μ k) :
-    f.HasGeneralizedEigenvalue μ m := by
-  unfold HasGeneralizedEigenvalue at *
+    {m : ℕ} (hm : k ≤ m) (hk : f.HasGenEigenvalue μ k) :
+    f.HasGenEigenvalue μ m := by
+  unfold HasGenEigenvalue at *
   contrapose! hk
   rw [← le_bot_iff, ← hk]
   exact (f.genEigenspace μ).monotone hm
@@ -262,15 +262,15 @@ theorem eigenspace_le_genEigenspace {f : End R M} {μ : R} {k : ℕ} (hk : 0 < k
 
 /-- All eigenvalues are generalized eigenvalues. -/
 theorem hasGeneralizedEigenvalue_of_hasEigenvalue {f : End R M} {μ : R} {k : ℕ} (hk : 0 < k)
-    (hμ : f.HasEigenvalue μ) : f.HasGeneralizedEigenvalue μ k := by
+    (hμ : f.HasEigenvalue μ) : f.HasGenEigenvalue μ k := by
   apply hasGeneralizedEigenvalue_of_hasGeneralizedEigenvalue_of_le hk
-  rw [HasGeneralizedEigenvalue, genEigenspace, OrderHom.coe_mk, pow_one]
+  rw [HasGenEigenvalue, genEigenspace, OrderHom.coe_mk, pow_one]
   exact hμ
 #align module.End.has_generalized_eigenvalue_of_has_eigenvalue Module.End.hasGeneralizedEigenvalue_of_hasEigenvalue
 
 /-- All generalized eigenvalues are eigenvalues. -/
 theorem hasEigenvalue_of_hasGeneralizedEigenvalue {f : End R M} {μ : R} {k : ℕ}
-    (hμ : f.HasGeneralizedEigenvalue μ k) : f.HasEigenvalue μ := by
+    (hμ : f.HasGenEigenvalue μ k) : f.HasEigenvalue μ := by
   intro contra; apply hμ
   erw [LinearMap.ker_eq_bot] at contra ⊢; rw [LinearMap.coe_pow]
   exact Function.Injective.iterate contra k
@@ -279,7 +279,7 @@ theorem hasEigenvalue_of_hasGeneralizedEigenvalue {f : End R M} {μ : R} {k : �
 /-- Generalized eigenvalues are actually just eigenvalues. -/
 @[simp]
 theorem hasGeneralizedEigenvalue_iff_hasEigenvalue {f : End R M} {μ : R} {k : ℕ} (hk : 0 < k) :
-    f.HasGeneralizedEigenvalue μ k ↔ f.HasEigenvalue μ :=
+    f.HasGenEigenvalue μ k ↔ f.HasEigenvalue μ :=
   ⟨hasEigenvalue_of_hasGeneralizedEigenvalue, hasGeneralizedEigenvalue_of_hasEigenvalue hk⟩
 #align module.End.has_generalized_eigenvalue_iff_has_eigenvalue Module.End.hasGeneralizedEigenvalue_iff_hasEigenvalue
 
