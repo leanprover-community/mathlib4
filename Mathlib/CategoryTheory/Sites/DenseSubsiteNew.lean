@@ -273,19 +273,34 @@ noncomputable def liftAux (i : (F.oneHypercoverDenseData J₀ J X).I₀) :
             g₂ := F.map r.g₂
             w := by simpa using F.congr_map r.w =≫ _ }))
 
-lemma liftAux_map (i : (F.oneHypercoverDenseData J₀ J X).I₀) {Y : C₀}
+lemma liftAux_map' (i : (F.oneHypercoverDenseData J₀ J X).I₀) {Y : C₀}
     (f : Y ⟶ (F.oneHypercoverDenseData J₀ J X).X i)
     (hf : S.sieve.arrows (F.map f ≫ (F.oneHypercoverDenseData J₀ J X).f i)) :
     liftAux hP₀ S E i ≫ P.map (F.map f).op = E.ι { hf := hf } :=
   hP₀.amalgamate_map _ _ _ ⟨_, f, hf⟩
 
+lemma liftAux_map (i : (F.oneHypercoverDenseData J₀ J X).I₀) {Y : C}
+    (f : Y ⟶ F.obj ((F.oneHypercoverDenseData J₀ J X).X i))
+    (hf : S.sieve.arrows (f ≫ (F.oneHypercoverDenseData J₀ J X).f i)) :
+    liftAux hP₀ S E i ≫ P.map f.op = E.ι { hf := hf } := by
+  sorry
+
 noncomputable def lift : E.pt ⟶ (S.multifork P).pt :=
   Multifork.IsLimit.lift (hP X) (fun i => liftAux hP₀ S E i) (by
-    rintro ⟨⟨b₁, b₂⟩, r⟩
-    dsimp at b₁ b₂ r ⊢
-    sorry)
+    rintro ⟨⟨i₁, i₂⟩, j⟩
+    apply hP₀.hom_ext ⟨_, F.cover_lift J₀ J (J.pullback_stable
+      (F.map ((F.oneHypercoverDenseData J₀ J X).p₁ j) ≫
+        ((F.oneHypercoverDenseData J₀ J X).f i₁)) S.2)⟩
+    rintro ⟨T, f, hf⟩
+    dsimp at i₁ i₂ j ⊢
+    simp only [assoc, ← P.map_comp, ← op_comp]
+    rw [liftAux_map _ _ _ _ _ (by simpa using hf),
+      liftAux_map _ _ _ _ _ (by simpa [(F.oneHypercoverDenseData J₀ J X).w] using hf)]
+    congr 2
+    simp only [assoc, (F.oneHypercoverDenseData J₀ J X).w])
 
-lemma fac (f : S.Arrow) : lift hP₀ hP S E ≫ (S.multifork P).ι f = E.ι f := sorry
+lemma fac (f : S.Arrow) : lift hP₀ hP S E ≫ (S.multifork P).ι f = E.ι f := by
+  sorry
 
 end
 
