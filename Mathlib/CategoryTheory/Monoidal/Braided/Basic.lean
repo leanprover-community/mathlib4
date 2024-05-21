@@ -332,6 +332,12 @@ theorem braiding_rightUnitor (X : C) : (β_ (𝟙_ C) X).hom ≫ (ρ_ X).hom = (
 theorem braiding_tensorUnit_left (X : C) : (β_ (𝟙_ C) X).hom = (λ_ X).hom ≫ (ρ_ X).inv := by
   simp [← braiding_rightUnitor]
 
+@[reassoc, simp]
+theorem braiding_inv_tensorUnit_left (X : C) : (β_ (𝟙_ C) X).inv = (ρ_ X).hom ≫ (λ_ X).inv := by
+  rw [Iso.inv_ext]
+  rw [braiding_tensorUnit_left]
+  coherence
+
 @[reassoc]
 theorem leftUnitor_inv_braiding (X : C) : (λ_ X).inv ≫ (β_ (𝟙_ C) X).hom = (ρ_ X).inv := by
   simp
@@ -346,6 +352,12 @@ theorem rightUnitor_inv_braiding (X : C) : (ρ_ X).inv ≫ (β_ X (𝟙_ C)).hom
 @[reassoc, simp]
 theorem braiding_tensorUnit_right (X : C) : (β_ X (𝟙_ C)).hom = (ρ_ X).hom ≫ (λ_ X).inv := by
   simp [← rightUnitor_inv_braiding]
+
+@[reassoc, simp]
+theorem braiding_inv_tensorUnit_right (X : C) : (β_ X (𝟙_ C)).inv = (λ_ X).hom ≫ (ρ_ X).inv := by
+  rw [Iso.inv_ext]
+  rw [braiding_tensorUnit_right]
+  coherence
 
 end
 
