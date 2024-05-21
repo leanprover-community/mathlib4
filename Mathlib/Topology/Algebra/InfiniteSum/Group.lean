@@ -104,9 +104,9 @@ theorem HasProd.hasProd_iff_compl {s : Set β} (hf : HasProd (f ∘ (↑) : s �
 
 @[to_additive]
 theorem Multipliable.multipliable_compl_iff {s : Set β} (hf : Multipliable (f ∘ (↑) : s → α)) :
-    Multipliable (f ∘ (↑) : ↑sᶜ → α) ↔ Multipliable f :=
-  ⟨fun ⟨_, ha⟩ ↦ (hf.hasProd.hasProd_compl_iff.1 ha).multipliable, fun ⟨_, ha⟩ ↦
-    (hf.hasProd.hasProd_iff_compl.1 ha).multipliable⟩
+    Multipliable (f ∘ (↑) : ↑sᶜ → α) ↔ Multipliable f where
+  mp := fun ⟨_, ha⟩ ↦ (hf.hasProd.hasProd_compl_iff.1 ha).multipliable
+  mpr := fun ⟨_, ha⟩ ↦ (hf.hasProd.hasProd_iff_compl.1 ha).multipliable
 #align summable.summable_compl_iff Summable.summable_compl_iff
 
 @[to_additive]
@@ -270,7 +270,7 @@ theorem Multipliable.multipliable_of_eq_one_or_self (hf : Multipliable f)
           ∏ b in t.filter fun b ↦ g b = f b, f b = ∏ b in t.filter fun b ↦ g b = f b, g b :=
             Finset.prod_congr rfl fun b hb ↦ (Finset.mem_filter.1 hb).2.symm
           _ = ∏ b in t, g b := by
-           {refine' Finset.prod_subset (Finset.filter_subset _ _) _
+           {refine Finset.prod_subset (Finset.filter_subset _ _) ?_
             intro b hbt hb
             simp only [Finset.mem_filter, and_iff_right hbt] at hb
             exact (h b).resolve_right hb}

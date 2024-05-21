@@ -214,8 +214,8 @@ variable (f₁ : N →* H) (f₂ : G →* H)
 
 /-- Define a group hom `N ⋊[φ] G →* H`, by defining maps `N →* H` and `G →* H`  -/
 def lift (f₁ : N →* H) (f₂ : G →* H)
-    (h : ∀ g, f₁.comp (φ g).toMonoidHom = (MulAut.conj (f₂ g)).toMonoidHom.comp f₁) : N ⋊[φ] G →* H
-    where
+    (h : ∀ g, f₁.comp (φ g).toMonoidHom = (MulAut.conj (f₂ g)).toMonoidHom.comp f₁) :
+    N ⋊[φ] G →* H where
   toFun a := f₁ a.1 * f₂ a.2
   map_one' := by simp
   map_mul' a b := by

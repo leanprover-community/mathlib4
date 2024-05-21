@@ -215,7 +215,7 @@ theorem fourierSubalgebra_coe :
   refine Submonoid.closure_induction hx (fun _ => id) ⟨0, ?_⟩ ?_
   · ext1 z; exact fourier_zero
   · rintro _ _ ⟨m, rfl⟩ ⟨n, rfl⟩
-    refine' ⟨m + n, _⟩
+    refine ⟨m + n, ?_⟩
     ext1 z
     exact fourier_add
 #align fourier_subalgebra_coe fourierSubalgebra_coe

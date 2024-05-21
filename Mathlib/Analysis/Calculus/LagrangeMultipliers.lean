@@ -88,7 +88,7 @@ theorem IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt_1d {f : E → ℝ}
   refine' ⟨Λ 1, Λ₀, _, _⟩
   · contrapose! hΛ
     simp only [Prod.mk_eq_zero] at hΛ ⊢
-    refine' ⟨LinearMap.ext fun x => _, hΛ.2⟩
+    refine ⟨LinearMap.ext fun x => ?_, hΛ.2⟩
     simpa [hΛ.1] using Λ.map_smul x 1
   · ext x
     have H₁ : Λ (f' x) = f' x * Λ 1 := by

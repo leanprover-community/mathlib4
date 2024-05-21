@@ -132,7 +132,8 @@ def gluedScheme : Scheme := by
   swap
   · exact (D.U i).affineCover.map y
   constructor
-  · dsimp [-Set.mem_range]
+  · -- Without removing `Spec.topObj_forget`, we need an `erw` in the following line.
+    dsimp [-Spec.topObj_forget]
     rw [coe_comp, Set.range_comp]
     refine' Set.mem_image_of_mem _ _
     exact (D.U i).affineCover.Covers y
@@ -143,10 +144,9 @@ instance : CreatesColimit 𝖣.diagram.multispan forgetToLocallyRingedSpace :=
   createsColimitOfFullyFaithfulOfIso D.gluedScheme
     (HasColimit.isoOfNatIso (𝖣.diagramIso forgetToLocallyRingedSpace).symm)
 
--- Porting note: we need to use `CommRingCatMax.{u, u}` instead of just `CommRingCat`.
 instance : PreservesColimit (𝖣.diagram.multispan) forgetToTop :=
   inferInstanceAs (PreservesColimit (𝖣.diagram).multispan (forgetToLocallyRingedSpace ⋙
-      LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget CommRingCatMax.{u, u}))
+      LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget CommRingCat))
 
 instance : HasMulticoequalizer 𝖣.diagram :=
   hasColimit_of_created _ forgetToLocallyRingedSpace
@@ -244,7 +244,7 @@ def Rel (a b : Σ i, ((D.U i).carrier : Type _)) : Prop :=
 
 theorem ι_eq_iff (i j : D.J) (x : (D.U i).carrier) (y : (D.U j).carrier) :
     (𝖣.ι i).1.base x = (𝖣.ι j).1.base y ↔ D.Rel ⟨i, x⟩ ⟨j, y⟩ := by
-  refine' Iff.trans _
+  refine Iff.trans ?_
     (TopCat.GlueData.ι_eq_iff_rel
       D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.toPresheafedSpaceGlueData.toTopGlueData
       i j x y)
@@ -263,6 +263,7 @@ theorem isOpen_iff (U : Set D.glued.carrier) : IsOpen U ↔ ∀ i, IsOpen ((D.ι
 #align algebraic_geometry.Scheme.glue_data.is_open_iff AlgebraicGeometry.Scheme.GlueData.isOpen_iff
 
 /-- The open cover of the glued space given by the glue data. -/
+@[simps (config := .lemmasOnly)]
 def openCover (D : Scheme.GlueData) : OpenCover D.glued where
   J := D.J
   obj := D.U
@@ -452,7 +453,7 @@ If `X` is exactly (defeq to) the gluing of `U i`, then using `Multicoequalizer.d
 def glueMorphisms {Y : Scheme} (f : ∀ x, 𝒰.obj x ⟶ Y)
     (hf : ∀ x y, (pullback.fst : pullback (𝒰.map x) (𝒰.map y) ⟶ _) ≫ f x = pullback.snd ≫ f y) :
     X ⟶ Y := by
-  refine' inv 𝒰.fromGlued ≫ _
+  refine inv 𝒰.fromGlued ≫ ?_
   fapply Multicoequalizer.desc
   · exact f
   rintro ⟨i, j⟩

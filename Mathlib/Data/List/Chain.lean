@@ -403,7 +403,7 @@ theorem exists_chain_of_relationReflTransGen (h : Relation.ReflTransGen r a b) :
   · exact ⟨[], Chain.nil, rfl⟩
   · intro c d e _ ih
     obtain ⟨l, hl₁, hl₂⟩ := ih
-    refine' ⟨d :: l, Chain.cons e hl₁, _⟩
+    refine ⟨d :: l, Chain.cons e hl₁, ?_⟩
     rwa [getLast_cons_cons]
 #align list.exists_chain_of_relation_refl_trans_gen List.exists_chain_of_relationReflTransGen
 

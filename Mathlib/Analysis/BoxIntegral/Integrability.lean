@@ -82,8 +82,8 @@ theorem hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = fal
     refine' fun J hJ hJs x hx => ⟨hrsU _ ⟨hJs, π.tag_mem_Icc J⟩ _, π.le_of_mem' J hJ hx⟩
     simpa only [r, s.piecewise_eq_of_mem _ _ hJs] using hπ.1 J hJ (Box.coe_subset_Icc hx)
   refine' abs_sub_le_iff.2 ⟨_, _⟩
-  · refine' (ENNReal.le_toReal_sub B).trans (ENNReal.toReal_le_coe_of_le_coe _)
-    refine' (tsub_le_tsub (measure_mono htU) le_rfl).trans (le_measure_diff.trans _)
+  · refine (ENNReal.le_toReal_sub B).trans (ENNReal.toReal_le_coe_of_le_coe ?_)
+    refine (tsub_le_tsub (measure_mono htU) le_rfl).trans (le_measure_diff.trans ?_)
     refine' (measure_mono fun x hx => _).trans hμU.le
     exact ⟨hx.1.1, fun hx' => hx.2 ⟨hx'.1, hx.1.2⟩⟩
   · have hμt : μ t ≠ ∞ := ((measure_mono (htU.trans (inter_subset_left _ _))).trans_lt hUt).ne
@@ -91,10 +91,9 @@ theorem hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = fal
     refine' le_measure_diff.trans ((measure_mono _).trans hμF.le)
     rintro x ⟨⟨hxs, hxI⟩, hxt⟩
     refine' ⟨⟨hxs, Box.coe_subset_Icc hxI⟩, fun hxF => hxt _⟩
-    simp only [t, TaggedPrepartition.iUnion_def, TaggedPrepartition.mem_filter, Set.mem_iUnion,
-      exists_prop]
+    simp only [t, TaggedPrepartition.iUnion_def, TaggedPrepartition.mem_filter, Set.mem_iUnion]
     rcases hπp x hxI with ⟨J, hJπ, hxJ⟩
-    refine' ⟨J, ⟨hJπ, _⟩, hxJ⟩
+    refine ⟨J, ⟨hJπ, ?_⟩, hxJ⟩
     contrapose hxF
     refine' hrs'F _ ⟨π.tag_mem_Icc J, hxF⟩ _
     simpa only [r, s.piecewise_eq_of_not_mem _ _ hxF] using hπ.1 J hJπ (Box.coe_subset_Icc hxJ)

@@ -112,7 +112,7 @@ theorem isSatisfiable_iff_isFinitelySatisfiable {T : L.Theory} :
         (h (T0.map (Function.Embedding.subtype fun x => x ∈ T)) T0.map_subtype_subset).some.Carrier
       let M' := Filter.Product (Ultrafilter.of (Filter.atTop : Filter (Finset T))) M
       have h' : M' ⊨ T := by
-        refine' ⟨fun φ hφ => _⟩
+        refine ⟨fun φ hφ => ?_⟩
         rw [Ultraproduct.sentence_realize]
         refine'
           Filter.Eventually.filter_mono (Ultrafilter.of_le _)
@@ -145,7 +145,7 @@ theorem isSatisfiable_union_distinctConstantsTheory_of_card_le (T : L.Theory) (s
   have : M ⊨ (L.lhomWithConstants α).onTheory T ∪ L.distinctConstantsTheory s := by
     refine' ((LHom.onTheory_model _ _).2 inferInstance).union _
     rw [model_distinctConstantsTheory]
-    refine' fun a as b bs ab => _
+    refine fun a as b bs ab => ?_
     rw [← Subtype.coe_mk a as, ← Subtype.coe_mk b bs, ← Subtype.ext_iff]
     exact
       h.some.injective
@@ -248,7 +248,7 @@ theorem exists_elementaryEmbedding_card_eq_of_ge (M : Type w') [L.Structure M] [
   letI := (lhomWithConstants L M).reduct N
   haveI h : N ⊨ L.elementaryDiagram M :=
     (NN0.theory_model_iff (L.elementaryDiagram M)).2 inferInstance
-  refine' ⟨Bundled.of N, ⟨_⟩, hN⟩
+  refine ⟨Bundled.of N, ⟨?_⟩, hN⟩
   apply ElementaryEmbedding.ofModelsElementaryDiagram L M N
 #align first_order.language.exists_elementary_embedding_card_eq_of_ge FirstOrder.Language.exists_elementaryEmbedding_card_eq_of_ge
 
@@ -324,13 +324,13 @@ theorem models_sentence_of_mem {φ : L.Sentence} (h : φ ∈ T) : T ⊨ᵇ φ :=
 
 theorem models_iff_not_satisfiable (φ : L.Sentence) : T ⊨ᵇ φ ↔ ¬IsSatisfiable (T ∪ {φ.not}) := by
   rw [models_sentence_iff, IsSatisfiable]
-  refine'
+  refine
     ⟨fun h1 h2 =>
       (Sentence.realize_not _).1
         (realize_sentence_of_mem (T ∪ {Formula.not φ})
           (Set.subset_union_right _ _ (Set.mem_singleton _)))
         (h1 (h2.some.subtheoryModel (Set.subset_union_left _ _))),
-      fun h M => _⟩
+      fun h M => ?_⟩
   contrapose! h
   rw [← Sentence.realize_not] at h
   refine'
@@ -390,7 +390,7 @@ theorem models_not_iff (h : T.IsComplete) (φ : L.Sentence) : T ⊨ᵇ φ.not �
   cases' h.2 φ with hφ hφn
   · simp only [hφ, not_true, iff_false_iff]
     rw [models_sentence_iff, not_forall]
-    refine' ⟨h.1.some, _⟩
+    refine ⟨h.1.some, ?_⟩
     simp only [Sentence.realize_not, Classical.not_not]
     exact models_sentence_iff.1 hφ _
   · simp only [hφn, true_iff_iff]
@@ -684,7 +684,7 @@ theorem Categorical.isComplete (h : κ.Categorical T) (h1 : ℵ₀ ≤ κ)
     by_contra! con
     obtain ⟨⟨MF, hMF⟩, MT, hMT⟩ := con
     rw [Sentence.realize_not, Classical.not_not] at hMT
-    refine' hMF _
+    refine hMF ?_
     haveI := hT MT
     haveI := hT MF
     obtain ⟨NT, MNT, hNT⟩ := exists_elementarilyEquivalent_card_eq L MT κ h1 h2

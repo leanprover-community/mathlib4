@@ -172,10 +172,6 @@ class Category (obj : Type u) extends CategoryStruct.{v} obj : Type max u (v + 1
 #align category_theory.category.comp_id CategoryTheory.Category.comp_id
 #align category_theory.category.id_comp CategoryTheory.Category.id_comp
 
--- Porting note: `restate_axiom` should not be necessary in lean4
--- Hopefully we can just remove the backticks from field names,
--- then delete the invocation of `restate_axiom`.
-
 attribute [simp] Category.id_comp Category.comp_id Category.assoc
 attribute [trans] CategoryStruct.comp
 
