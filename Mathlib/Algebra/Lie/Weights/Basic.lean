@@ -58,7 +58,7 @@ open scoped BigOperators TensorProduct
 section notation_weightSpaceOf
 
 /-- Until we define `LieModule.weightSpaceOf`, it is useful to have some notation as follows: -/
-local notation3 "𝕎("M", " χ", " x")" => (toEnd R L M x).maximalGeneralizedEigenspace χ
+local notation3 "𝕎("M", " χ", " x")" => (toEnd R L M x).maxGenEigenspace χ
 
 /-- See also `bourbaki1975b` Chapter VII §1.1, Proposition 2 (ii). -/
 protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
@@ -71,7 +71,7 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
   intro m₃
   simp only [TensorProduct.mapIncl, LinearMap.mem_range, LinearMap.coe_comp,
     LieModuleHom.coe_toLinearMap, Function.comp_apply, Pi.add_apply, exists_imp,
-    Module.End.mem_maximalGeneralizedEigenspace]
+    Module.End.mem_maxGenEigenspace]
   rintro t rfl
   -- Set up some notation.
   let F : Module.End R M₃ := toEnd R L M₃ x - (χ₁ + χ₂) • ↑1
@@ -105,7 +105,7 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
     rw [← LinearMap.comp_apply, LinearMap.commute_pow_left_of_commute h_comm_square,
       LinearMap.comp_apply, hk, LinearMap.map_zero]
   -- Unpack the information we have about `m₁`, `m₂`.
-  simp only [Module.End.mem_maximalGeneralizedEigenspace] at hm₁ hm₂
+  simp only [Module.End.mem_maxGenEigenspace] at hm₁ hm₂
   obtain ⟨k₁, hk₁⟩ := hm₁
   obtain ⟨k₂, hk₂⟩ := hm₂
   have hf₁ : (f₁ ^ k₁) (m₁ ⊗ₜ m₂) = 0 := by
@@ -167,7 +167,7 @@ theorem mem_weightSpaceOf (χ : R) (x : L) (m : M) :
 
 theorem coe_weightSpaceOf_zero (x : L) :
     ↑(weightSpaceOf M (0 : R) x) = ⨆ k, LinearMap.ker (toEnd R L M x ^ k) := by
-  simp [weightSpaceOf, Module.End.maximalGeneralizedEigenspace]
+  simp [weightSpaceOf, Module.End.maxGenEigenspace]
 
 /-- If `M` is a representation of a nilpotent Lie algebra `L` and `χ : L → R` is a family of
 scalars, then `weightSpace M χ` is the intersection of the maximal generalized `χ x`-eigenspaces of
@@ -237,9 +237,9 @@ lemma weightSpaceOf_ne_bot (χ : Weight R L M) (x : L) :
 
 lemma hasEigenvalueAt (χ : Weight R L M) (x : L) :
     (toEnd R L M x).HasEigenvalue (χ x) := by
-  obtain ⟨k : ℕ, hk : (toEnd R L M x).generalizedEigenspace (χ x) k ≠ ⊥⟩ := by
-    simpa [Module.End.maximalGeneralizedEigenspace, weightSpaceOf] using χ.weightSpaceOf_ne_bot x
-  exact Module.End.hasEigenvalue_of_hasGeneralizedEigenvalue hk
+  obtain ⟨k : ℕ, hk : (toEnd R L M x).genEigenspace (χ x) k ≠ ⊥⟩ := by
+    simpa [Module.End.maxGenEigenspace, weightSpaceOf] using χ.weightSpaceOf_ne_bot x
+  exact Module.End.hasEigenvalue_of_hasGenEigenvalue hk
 
 lemma apply_eq_zero_of_isNilpotent [NoZeroSMulDivisors R M] [IsReduced R]
     (x : L) (h : _root_.IsNilpotent (toEnd R L M x)) (χ : Weight R L M) :
@@ -278,11 +278,11 @@ theorem zero_weightSpace_eq_top_of_nilpotent [IsNilpotent R L M] :
 theorem exists_weightSpace_le_ker_of_isNoetherian [IsNoetherian R M] (χ : L → R) (x : L) :
     ∃ k : ℕ,
       weightSpace M χ ≤ LinearMap.ker ((toEnd R L M x - algebraMap R _ (χ x)) ^ k) := by
-  use (toEnd R L M x).maximalGeneralizedEigenspaceIndex (χ x)
+  use (toEnd R L M x).maxGenEigenspaceIndex (χ x)
   intro m hm
-  replace hm : m ∈ (toEnd R L M x).maximalGeneralizedEigenspace (χ x) :=
+  replace hm : m ∈ (toEnd R L M x).maxGenEigenspace (χ x) :=
     weightSpace_le_weightSpaceOf M x χ hm
-  rwa [Module.End.maximalGeneralizedEigenspace_eq] at hm
+  rwa [Module.End.maxGenEigenspace_eq] at hm
 
 variable (R) in
 theorem exists_weightSpace_zero_le_ker_of_isNoetherian
@@ -598,7 +598,7 @@ end fitting_decomposition
 lemma disjoint_weightSpaceOf [NoZeroSMulDivisors R M] {x : L} {φ₁ φ₂ : R} (h : φ₁ ≠ φ₂) :
     Disjoint (weightSpaceOf M φ₁ x) (weightSpaceOf M φ₂ x) := by
   rw [LieSubmodule.disjoint_iff_coe_toSubmodule]
-  exact Module.End.disjoint_iSup_generalizedEigenspace _ h
+  exact Module.End.disjoint_iSup_genEigenspace _ h
 
 lemma disjoint_weightSpace [NoZeroSMulDivisors R M] {χ₁ χ₂ : L → R} (h : χ₁ ≠ χ₂) :
     Disjoint (weightSpace M χ₁) (weightSpace M χ₂) := by
@@ -665,7 +665,7 @@ lemma independent_weightSpace' [NoZeroSMulDivisors R M] :
 lemma independent_weightSpaceOf [NoZeroSMulDivisors R M] (x : L) :
     CompleteLattice.Independent fun (χ : R) ↦ weightSpaceOf M χ x := by
   rw [LieSubmodule.independent_iff_coe_toSubmodule]
-  exact (toEnd R L M x).independent_generalizedEigenspace
+  exact (toEnd R L M x).independent_genEigenspace
 
 lemma finite_weightSpaceOf_ne_bot [NoZeroSMulDivisors R M] [IsNoetherian R M] (x : L) :
     {χ : R | weightSpaceOf M χ x ≠ ⊥}.Finite :=
@@ -689,7 +689,7 @@ noncomputable instance Weight.instFintype [NoZeroSMulDivisors R M] [IsNoetherian
 /-- A Lie module `M` of a Lie algebra `L` is triangularizable if the endomorhpism of `M` defined by
 any `x : L` is triangularizable. -/
 class IsTriangularizable : Prop :=
-  iSup_eq_top : ∀ x, ⨆ φ, ⨆ k, (toEnd R L M x).generalizedEigenspace φ k = ⊤
+  iSup_eq_top : ∀ x, ⨆ φ, ⨆ k, (toEnd R L M x).genEigenspace φ k = ⊤
 
 @[simp]
 lemma iSup_weightSpaceOf_eq_top [IsTriangularizable R L M] (x : L) :
@@ -719,12 +719,12 @@ variable [Field K] [LieAlgebra K L] [Module K M] [LieModule K L M] [LieAlgebra.I
   [FiniteDimensional K M]
 
 instance instIsTriangularizableOfIsAlgClosed [IsAlgClosed K] : IsTriangularizable K L M :=
-  ⟨fun _ ↦ Module.End.iSup_generalizedEigenspace_eq_top _⟩
+  ⟨fun _ ↦ Module.End.iSup_genEigenspace_eq_top _⟩
 
 instance (N : LieSubmodule K L M) [IsTriangularizable K L M] : IsTriangularizable K L N := by
   refine ⟨fun y ↦ ?_⟩
   rw [← N.toEnd_restrict_eq_toEnd y]
-  exact Module.End.iSup_generalizedEigenspace_restrict_eq_top _ (IsTriangularizable.iSup_eq_top y)
+  exact Module.End.iSup_genEigenspace_restrict_eq_top _ (IsTriangularizable.iSup_eq_top y)
 
 /-- For a triangularizable Lie module in finite dimensions, the weight spaces span the entire space.
 
