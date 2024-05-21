@@ -668,8 +668,8 @@ lemma ProjIsoSpec.toSpec_eq_toSpec {f} (x : Proj| pbo f) :
 
 lemma ProjIsoSpec.mk_mem_toSpec {f} (x : Proj| pbo f)
     (z : HomogeneousLocalization.NumDenSameDeg 𝒜 (.powers f)) :
-  HomogeneousLocalization.mk z ∈ ((toSpec 𝒜 f).1.base x).asIdeal ↔
-    z.num.1 ∈ x.1.asHomogeneousIdeal := by
+    HomogeneousLocalization.mk z ∈ ((toSpec 𝒜 f).1.base x).asIdeal ↔
+      z.num.1 ∈ x.1.asHomogeneousIdeal := by
   rw [toSpec_eq_toSpec]
   exact ProjIsoSpecTopComponent.ToSpec.mk_mem_carrier _ _
 
@@ -686,7 +686,7 @@ lemma ProjIsoSpec.toSpec_preimage_basicOpen {f}
 lemma toOpen_toSpec_val_c_app (f) (U) :
     StructureSheaf.toOpen (A⁰_ f) U.unop ≫ (toSpec 𝒜 f).val.c.app U =
       awayToΓ 𝒜 f ≫ (Proj| pbo f).presheaf.map (homOfLE le_top).op :=
-  Eq.trans (by congr) <| ΓSpec.toOpen_comp_locallyRingedSpaceAdjunction_homEquiv_app (awayToΓ 𝒜 f).op U
+  Eq.trans (by congr) <| ΓSpec.toOpen_comp_locallyRingedSpaceAdjunction_homEquiv_app _ U
 
 lemma toStalk_stalkMap_toSpec (f) (x) :
     StructureSheaf.toStalk _ _ ≫ PresheafedSpace.stalkMap (toSpec 𝒜 f).1 x =
@@ -764,8 +764,8 @@ stalk of `Spec A⁰_ f` at `y` is isomorphic to `A⁰ₓ` where `y` is the point
 to `x`.
 -/
 def specStalkEquiv (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
-  (Spec.structureSheaf (A⁰_ f)).presheaf.stalk ((toSpec 𝒜 f).1.base x) ≅
-    CommRingCat.of (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) :=
+    (Spec.structureSheaf (A⁰_ f)).presheaf.stalk ((toSpec 𝒜 f).1.base x) ≅
+      CommRingCat.of (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) :=
   letI : Algebra (Away 𝒜 f) (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) :=
     (mapId 𝒜 (Submonoid.powers_le.mpr x.2)).toAlgebra
   haveI := isLocalization_atPrime 𝒜 f x f_deg hm
