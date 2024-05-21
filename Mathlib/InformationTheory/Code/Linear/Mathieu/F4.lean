@@ -2,7 +2,6 @@ import Mathlib.Data.ZMod.Defs
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.Tactic.Ring.RingNF
 
-
 @[ext]
 structure F4 where
   x0 : ZMod 2
@@ -28,20 +27,20 @@ private theorem elem_def (a : F4) : ∃x y : ZMod 2, a = ⟨x, y⟩ := by
   use a.x1
 
 
-private theorem zero_def' : (0 : F4) = ⟨0,0⟩ :=
+theorem zero_def' : (0 : F4) = ⟨0,0⟩ :=
   rfl
 
-private theorem add_def (a b :F4) : a + b = ⟨a.x0 + b.x0, a.x1 + b.x1⟩ :=
+theorem add_def (a b :F4) : a + b = ⟨a.x0 + b.x0, a.x1 + b.x1⟩ :=
   rfl
 
-private theorem neg_def (a:F4) : -a = a := rfl
+theorem neg_def (a:F4) : -a = a := rfl
 
-private theorem one_def' : (1 : F4) = ⟨1,1⟩ := rfl
+theorem one_def' : (1 : F4) = ⟨1,1⟩ := rfl
 
-private theorem mul_def (a b : F4) : a * b = ⟨(a.x0 * b.x0) + (a.x0 + a.x1) * (b.x0 + b.x1),
+theorem mul_def (a b : F4) : a * b = ⟨(a.x0 * b.x0) + (a.x0 + a.x1) * (b.x0 + b.x1),
   (a.x1 * b.x1) + (a.x0 + a.x1) * (b.x0 + b.x1)⟩ := rfl
 
-private theorem inv_def (a : F4) : a⁻¹ = ⟨a.x1,a.x0⟩ := rfl
+theorem inv_def (a : F4) : a⁻¹ = ⟨a.x1,a.x0⟩ := rfl
 
 private def h1: (4:ZMod 2) = (0:ZMod 2) := rfl
 
@@ -136,6 +135,30 @@ instance : Repr F4 where
       else
         "1"
     )
+
+instance : CharP F4 2 where
+  cast_eq_zero_iff' := fun x =>
+    ⟨by
+      intro h
+      rw [even_iff_two_dvd.symm]
+      contrapose! h
+      rw [Nat.odd_iff_not_even.symm] at h
+      obtain ⟨y,hy⟩ := h
+      rw [hy]
+      simp only [Nat.cast_add, Nat.cast_mul, Nat.cast_ofNat, Nat.cast_one, ne_eq]
+      suffices hsuf : 2 * (y:F4) = 0 by
+        rw [hsuf]
+        simp only [zero_add, one_ne_zero, not_false_eq_true]
+      simp only [mul_eq_zero]
+      left
+      decide,
+    by
+      intro h
+      rw [Nat.dvd_iff_div_mul_eq]at h
+      rw [← h]
+      simp only [Nat.cast_mul, Nat.cast_ofNat, mul_eq_zero]
+      right
+      rfl⟩
 
 @[simp]
 lemma two_eq_zero : (2:F4) = 0 := rfl
@@ -247,6 +270,9 @@ def embed_Z2 : ZMod 2 →+* F4 where
     simp only
     rw [add_def]
 
+lemma omega_inv_eq : ω⁻¹ = ⟨0,1⟩ := rfl
+
+lemma one_eq : (1:F4) = ⟨1,1⟩ := rfl
 
 lemma embed_Z2.inj : (⇑embed_Z2).Injective := fun x y h => by
   simp_rw [embed_Z2] at h
@@ -259,3 +285,57 @@ instance : Algebra (ZMod 2) F4 := {
   commutes' := fun r x => by exact mul_comm (embed_Z2 r) x
   smul_def' := fun r x => rfl
 }
+
+lemma smul_mk_apply (a b c:ZMod 2) : a • (⟨b,c⟩:F4) = ⟨ a * b,a*c⟩ := by
+  simp_rw [Algebra.smul_def,algebraMap,Algebra.toRingHom,embed_Z2]
+  simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
+  simp_rw [mul_def]
+  simp only [CharTwo.add_self_eq_zero, zero_mul, add_zero]
+
+lemma F4_basis_indep : LinearIndependent (ZMod 2) ![ω,ω⁻¹] := by
+  rw [ Fintype.linearIndependent_iff]
+  intro g
+  simp only [Fin.sum_univ_two, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons]
+  intro h
+  simp_rw [inv_def,smul_mk_apply] at h
+  simp_rw [add_def, zero_def'] at h
+  simp only [mul_one, mul_zero, add_zero, zero_add] at h
+  simp_rw [F4.ext_iff] at h
+  intro i
+  fin_cases i
+  . exact h.left
+  . exact h.right
+
+noncomputable def F4_basis : Basis (Fin 2) (ZMod 2) F4 := Basis.mk F4_basis_indep (by
+  intro i
+  simp only [Submodule.mem_top, Matrix.range_cons, Matrix.range_empty, Set.union_empty,
+    Set.union_singleton, forall_true_left]
+  rw [Submodule.mem_span]
+  intro p hp
+  rw [Set.subset_def] at hp
+  simp only [Set.mem_insert_iff, Set.mem_singleton_iff, SetLike.mem_coe, forall_eq_or_imp,
+    forall_eq] at hp
+  fin_cases i
+  . simp only [Submodule.zero_mem]
+  . rw [← omega_add_omega_inv]
+    apply p.add_mem hp.right hp.left
+  . exact hp.right
+  . exact hp.left
+  )
+
+lemma to_basis (x:F4) : x.x0 • ω + x.x1 • ω⁻¹ = x := by
+  simp_rw [inv_def,smul_mk_apply,add_def,mul_one,mul_zero,add_zero,zero_add]
+
+lemma top_le_closure : ⊤ ≤ AddSubmonoid.closure (Set.range ![ω,ω⁻¹]) := by
+  simp only [Matrix.range_cons, Matrix.range_empty, Set.union_empty, Set.union_singleton,
+    top_le_iff]
+  ext x
+  simp only [AddSubmonoid.mem_top, iff_true]
+  fin_cases x
+  . apply zero_mem
+  rw [← omega_add_omega_inv]
+  apply add_mem
+  all_goals apply AddSubmonoid.subset_closure
+  all_goals simp only [Set.mem_insert_iff, Set.mem_singleton_iff, or_true]
+  all_goals left
+  all_goals trivial

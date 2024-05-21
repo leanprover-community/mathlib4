@@ -90,18 +90,18 @@ def toLinearAut : (LinearCodeAut K gdistₖ gdistₘ s) →* (M ≃ₗ[K] M) whe
 
 
 instance applyMulDistribMulAction :
-    MulDistribMulAction (LinearCodeAut K gdistₖ gdistₘ s) (Multiplicative M) where
+    DistribMulAction (LinearCodeAut K gdistₖ gdistₘ s) (M) where
   smul := (· <| ·)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
-  smul_one := fun f => (f: M →+ M).map_zero'
-  smul_mul := fun f => (f: M →+ M).map_add'
+  smul_zero := fun f => (f: M →+ M).map_zero'
+  smul_add := fun f => (f: M →+ M).map_add'
 
 @[simp]
-protected theorem smul_def (f : LinearCodeAut K gdistₖ gdistₘ s) (a :Multiplicative M) :
+protected theorem smul_def (f : LinearCodeAut K gdistₖ gdistₘ s) (a: M) :
   f • a = f a := rfl
 
-instance apply_faithfulSMul : FaithfulSMul (LinearCodeAut K gdistₖ gdistₘ s) (Multiplicative M) :=
+instance apply_faithfulSMul : FaithfulSMul (LinearCodeAut K gdistₖ gdistₘ s) M :=
   ⟨fun h => LinearCodeEquiv.ext h⟩
 
 end LinearCodeAut

@@ -412,4 +412,16 @@ protected theorem congr_fun
     {f g : SemilinearCodeEquiv σ₁₂ gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂} (h : f = g) (x : M) :
   f x = g x := DFunLike.congr_fun h x
 
+@[simp]
+lemma mk_apply (σ : RingAut K) (e :
+  letI inst := RingHomInvPair.of_ringEquiv σ;
+  letI := inst.symm;
+  M ≃ₛₗ[(σ : K →+* K)] M₂) (m:M) (map_dist) (map_code) (invMap_code): (
+    letI inst := RingHomInvPair.of_ringEquiv σ;
+    letI := inst.symm;
+    ⟨e,map_dist,map_code,invMap_code⟩ :
+    letI inst := RingHomInvPair.of_ringEquiv σ;
+    letI := inst.symm;
+    SemilinearCodeEquiv σ gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂ ) m = e m := rfl
+
 end SemilinearCodeEquiv
