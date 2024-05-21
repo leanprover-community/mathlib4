@@ -67,6 +67,10 @@ instance (p : 𝒳 ⥤ 𝒮) (a : 𝒳) : IsHomLift p (𝟙 (p.obj a)) (𝟙 a) 
 instance (a : 𝒳) : p.IsHomLift (𝟙 (p.obj a)) (𝟙 a) := by
   rw [← p.map_id]; infer_instance
 
+/-- For any arrow `φ : a ⟶ b` in `𝒳`, `φ` lifts the arrow `p.map φ` in the base `𝒮`-/
+instance  {a b : 𝒳} (φ : a ⟶ b) : p.IsHomLift (p.map φ) φ where
+instance  (a : 𝒳) : p.IsHomLift (𝟙 (p.obj a)) (𝟙 a) where
+
 namespace IsHomLift
 
 protected lemma id {p : 𝒳 ⥤ 𝒮} {R : 𝒮} {a : 𝒳} (ha : p.obj a = R) : p.IsHomLift (𝟙 R) (𝟙 a) := by
@@ -169,12 +173,10 @@ instance lift_comp_eqToHom {R S S': 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶
   subst h; simp_all
 
 /-- If `φ : a ⟶ b` lifts `𝟙 T` and `ψ : b ⟶ c` lifts `f`, then `φ  ≫ ψ` lifts `f` -/
-lemma comp_lift_id_left {p : 𝒳 ⥤ 𝒮} {R S T : 𝒮} {a b c : 𝒳} {f : S ⟶ T}
-    {φ : a ⟶ b} [p.IsHomLift (𝟙 R) φ] {ψ : b ⟶ c} [p.IsHomLift f ψ] :
-    p.IsHomLift f (φ ≫ ψ) where
-  domain_eq := by rw [domain_eq p (𝟙 R) φ, ← codomain_eq p (𝟙 R) φ, domain_eq p f ψ]
-  codomain_eq := codomain_eq p f ψ
-  fac := by simp [fac p f ψ, fac' p (𝟙 R) φ]
+lemma comp_lift_id_left {S T : 𝒮} {a b c : 𝒳} (f : S ⟶ T) (φ : a ⟶ b) (R : 𝒮)
+    [p.IsHomLift (𝟙 R) φ] (ψ : b ⟶ c) [p.IsHomLift f ψ] : p.IsHomLift f (φ ≫ ψ) := by
+  obtain rfl : R = S := by rw [← codomain_eq p (𝟙 R) φ, domain_eq p f ψ]
+  simpa using inferInstanceAs (p.IsHomLift (𝟙 R ≫ f) (φ ≫ ψ))
 
 @[simp]
 lemma comp_eqToHom_lift_iff {R S : 𝒮} {a' a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (h : a' = a) :
