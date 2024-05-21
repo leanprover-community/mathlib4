@@ -43,14 +43,22 @@ namespace Turing
 the namespace `Turing.TM2` in `TuringMachine.lean`), with an input and output stack,
  a main function, an initial state and some finiteness guarantees. -/
 structure FinTM2 where
-  {K : Type} [kDecidableEq : DecidableEq K] [kFin : Fintype K] -- index type of stacks
-  (k₀ k₁ : K) -- input and output stack
-  (Γ : K → Type) -- type of stack elements
+  /-- Index type of stacks -/
+  {K : Type} [kDecidableEq : DecidableEq K] [kFin : Fintype K]
+  /-- Input and output stack -/
+  (k₀ k₁ : K)
+  /-- Type of stack elements -/
+  (Γ : K → Type)
+  /-- Type of function labels -/
   (Λ : Type) (main : Λ) [ΛFin : Fintype Λ] -- type of function labels
-  (σ : Type) (initialState : σ) -- type of states of the machine
+  /-- Type of states of the machine -/
+  (σ : Type)
+  /-- Initial state of the machine -/
+  (initialState : σ)
   [σFin : Fintype σ]
   [Γk₀Fin : Fintype (Γ k₀)]
-  (m : Λ → Turing.TM2.Stmt Γ Λ σ) -- the program itself, i.e. one function for every function label
+  /-- The program itself, i.e. one function for every function label -/
+  (m : Λ → Turing.TM2.Stmt Γ Λ σ)
 #align turing.fin_tm2 Turing.FinTM2
 
 namespace FinTM2
