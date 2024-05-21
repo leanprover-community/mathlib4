@@ -121,7 +121,7 @@ theorem intervalIntegrable_cpow {r : ℂ} (h : 0 ≤ r.re ∨ (0 : ℝ) ∉ [[a,
     IntervalIntegrable (fun x : ℝ => (x : ℂ) ^ r) μ a b := by
   by_cases h2 : (0 : ℝ) ∉ [[a, b]]
   · -- Easy case #1: 0 ∉ [a, b] -- use continuity.
-    refine' (ContinuousAt.continuousOn fun x hx => _).intervalIntegrable
+    refine (ContinuousAt.continuousOn fun x hx => ?_).intervalIntegrable
     exact Complex.continuousAt_ofReal_cpow_const _ _ (Or.inr <| ne_of_mem_of_not_mem hx h2)
   rw [eq_false h2, or_false_iff] at h
   rcases lt_or_eq_of_le h with (h' | h')
@@ -182,7 +182,7 @@ theorem intervalIntegrable_cpow' {r : ℂ} (h : -1 < r.re) :
         rw [Complex.norm_eq_abs, Complex.abs_cpow_eq_rpow_re_of_pos hx.1]
       · exact measurableSet_uIoc
     · refine' ContinuousOn.aestronglyMeasurable _ measurableSet_uIoc
-      refine' ContinuousAt.continuousOn fun x hx => _
+      refine ContinuousAt.continuousOn fun x hx => ?_
       rw [uIoc_of_le hc] at hx
       refine' (continuousAt_cpow_const (Or.inl _)).comp Complex.continuous_ofReal.continuousAt
       rw [Complex.ofReal_re]

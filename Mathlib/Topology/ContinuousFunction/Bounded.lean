@@ -352,7 +352,7 @@ instance instCompleteSpace [CompleteSpace β] : CompleteSpace (α →ᵇ β) :=
       exact this.continuous (eventually_of_forall fun N => (f N).continuous)
     · -- Check that `F` is bounded
       rcases (f 0).bounded with ⟨C, hC⟩
-      refine' ⟨C + (b 0 + b 0), fun x y => _⟩
+      refine ⟨C + (b 0 + b 0), fun x y => ?_⟩
       calc
         dist (F x) (F y) ≤ dist (f 0 x) (f 0 y) + (dist (f 0 x) (F x) + dist (f 0 y) (F y)) :=
           dist_triangle4_left _ _ _ _
@@ -653,7 +653,11 @@ Implementation note: The material in this section could have been written for `L
 and transported by `@[to_additive]`. We choose not to do this because this causes a few lemma
 names (for example, `coe_mul`) to conflict with later lemma names for normed rings; this is only a
 trivial inconvenience, but in any case there are no obvious applications of the multiplicative
-version. -/
+version.
+
+TODO: For consistency and possible generalizations, introduce `BoundedAdd`
+in `Mathlib.Topology.Bornology.BoundedOperation` and and use `BoundedAdd β` & `ContinuousAdd β`
+here instead of `LipschitzAdd β`. -/
 variable [TopologicalSpace α] [PseudoMetricSpace β] [AddMonoid β]
 variable [LipschitzAdd β]
 variable (f g : α →ᵇ β) {x : α} {C : ℝ}
@@ -788,6 +792,74 @@ theorem coe_sub : ⇑(f - g) = f - g := rfl
 #align bounded_continuous_function.coe_sub BoundedContinuousFunction.coe_sub
 
 end sub
+
+section casts
+
+variable [TopologicalSpace α] {β : Type*} [PseudoMetricSpace β]
+
+instance [NatCast β] : NatCast (α →ᵇ β) := ⟨fun n ↦ BoundedContinuousFunction.const _ n⟩
+
+@[simp]
+theorem natCast_apply [NatCast β] (n : ℕ) (x : α) : (n : α →ᵇ β) x = n := rfl
+
+instance [IntCast β] : IntCast (α →ᵇ β) := ⟨fun m ↦ BoundedContinuousFunction.const _ m⟩
+
+@[simp]
+theorem intCast_apply [IntCast β] (m : ℤ) (x : α) : (m : α →ᵇ β) x = m := rfl
+
+end casts
+
+section mul
+
+variable [TopologicalSpace α] {R : Type*} [PseudoMetricSpace R]
+
+instance instMul [Mul R] [BoundedMul R] [ContinuousMul R] :
+    Mul (α →ᵇ R) where
+  mul f g :=
+    { toFun := fun x ↦ f x * g x
+      continuous_toFun := f.continuous.mul g.continuous
+      map_bounded' := mul_bounded_of_bounded_of_bounded (map_bounded f) (map_bounded g) }
+
+@[simp]
+theorem coe_mul [Mul R] [BoundedMul R] [ContinuousMul R] (f g : α →ᵇ R) : ⇑(f * g) = f * g := rfl
+#align bounded_continuous_function.coe_mul BoundedContinuousFunction.coe_mul
+
+theorem mul_apply [Mul R] [BoundedMul R] [ContinuousMul R] (f g : α →ᵇ R) (x : α) :
+    (f * g) x = f x * g x := rfl
+#align bounded_continuous_function.mul_apply BoundedContinuousFunction.mul_apply
+
+instance instPow [Monoid R] [BoundedMul R] [ContinuousMul R] : Pow (α →ᵇ R) ℕ where
+  pow f n :=
+    { toFun := fun x ↦ (f x) ^ n
+      continuous_toFun := f.continuous.pow n
+      map_bounded' := by
+        obtain ⟨C, hC⟩ := Metric.isBounded_iff.mp <| isBounded_pow (isBounded_range f) n
+        exact ⟨C, fun x y ↦ @hC ((f x)^n) (by simp) ((f y)^n) (by simp)⟩ }
+
+theorem coe_pow [Monoid R] [BoundedMul R] [ContinuousMul R] (n : ℕ) (f : α →ᵇ R) :
+    ⇑(f ^ n) = (⇑f) ^ n := rfl
+#align bounded_continuous_function.coe_pow BoundedContinuousFunction.coe_pow
+
+@[simp]
+theorem pow_apply [Monoid R] [BoundedMul R] [ContinuousMul R] (n : ℕ) (f : α →ᵇ R) (x : α) :
+    (f ^ n) x = f x ^ n := rfl
+#align bounded_continuous_function.pow_apply BoundedContinuousFunction.pow_apply
+
+instance instMonoid [Monoid R] [BoundedMul R] [ContinuousMul R] :
+    Monoid (α →ᵇ R) :=
+  Injective.monoid (↑) DFunLike.coe_injective' rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+
+instance instCommMonoid [CommMonoid R] [BoundedMul R] [ContinuousMul R] :
+    CommMonoid (α →ᵇ R) where
+  __ := instMonoid
+  mul_comm f g := by ext x; simp [mul_apply, mul_comm]
+
+instance instSemiring [Semiring R] [BoundedMul R] [ContinuousMul R] [LipschitzAdd R] :
+    Semiring (α →ᵇ R) :=
+  Injective.semiring (↑) DFunLike.coe_injective'
+    rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
+
+end mul
 
 section NormedAddCommGroup
 
@@ -1219,27 +1291,16 @@ section Seminormed
 
 variable [NonUnitalSeminormedRing R]
 
-instance instMul : Mul (α →ᵇ R) where
-  mul f g :=
-    ofNormedAddCommGroup (f * g) (f.continuous.mul g.continuous) (‖f‖ * ‖g‖) fun x =>
-      le_trans (norm_mul_le (f x) (g x)) <|
-        mul_le_mul (f.norm_coe_le_norm x) (g.norm_coe_le_norm x) (norm_nonneg _) (norm_nonneg _)
-
-@[simp]
-theorem coe_mul (f g : α →ᵇ R) : ⇑(f * g) = f * g := rfl
-#align bounded_continuous_function.coe_mul BoundedContinuousFunction.coe_mul
-
-theorem mul_apply (f g : α →ᵇ R) (x : α) : (f * g) x = f x * g x := rfl
-#align bounded_continuous_function.mul_apply BoundedContinuousFunction.mul_apply
-
 instance instNonUnitalRing : NonUnitalRing (α →ᵇ R) :=
   DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ => coe_nsmul _ _) fun _ _ => coe_zsmul _ _
 
 instance instNonUnitalSeminormedRing : NonUnitalSeminormedRing (α →ᵇ R) :=
   { instSeminormedAddCommGroup with
-    norm_mul := fun _ _ =>
-      norm_ofNormedAddCommGroup_le _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) _
+    norm_mul := fun f g =>
+      norm_ofNormedAddCommGroup_le _ (mul_nonneg (norm_nonneg _) (norm_nonneg _))
+        (fun x ↦ (norm_mul_le _ _).trans <|
+          mul_le_mul (norm_coe_le_norm f x) (norm_coe_le_norm g x) (norm_nonneg _) (norm_nonneg _))
     -- Porting note: These 5 fields were missing. Add them.
     left_distrib, right_distrib, zero_mul, mul_zero, mul_assoc }
 
@@ -1266,14 +1327,6 @@ instance hasNatPow : Pow (α →ᵇ R) ℕ where
     { toContinuousMap := f.toContinuousMap ^ n
       map_bounded' := by simpa [coe_npowRec] using (npowRec n f).map_bounded' }
 #align bounded_continuous_function.has_nat_pow BoundedContinuousFunction.hasNatPow
-
-@[simp]
-theorem coe_pow (n : ℕ) (f : α →ᵇ R) : ⇑(f ^ n) = (⇑f) ^ n := rfl
-#align bounded_continuous_function.coe_pow BoundedContinuousFunction.coe_pow
-
-@[simp]
-theorem pow_apply (n : ℕ) (f : α →ᵇ R) (v : α) : (f ^ n) v = f v ^ n := rfl
-#align bounded_continuous_function.pow_apply BoundedContinuousFunction.pow_apply
 
 instance : NatCast (α →ᵇ R) :=
   ⟨fun n => BoundedContinuousFunction.const _ n⟩

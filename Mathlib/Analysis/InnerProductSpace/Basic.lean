@@ -875,7 +875,7 @@ orthonormal. -/
 theorem orthonormal_subtype_range {v : ι → E} (hv : Function.Injective v) :
     Orthonormal 𝕜 (Subtype.val : Set.range v → E) ↔ Orthonormal 𝕜 v := by
   let f : ι ≃ Set.range v := Equiv.ofInjective v hv
-  refine' ⟨fun h => h.comp f f.injective, fun h => _⟩
+  refine ⟨fun h => h.comp f f.injective, fun h => ?_⟩
   rw [← Equiv.self_comp_ofInjective_symm hv]
   exact h.comp f.symm f.symm.injective
 #align orthonormal_subtype_range orthonormal_subtype_range
@@ -946,7 +946,7 @@ theorem exists_maximal_orthonormal {s : Set E} (hs : Orthonormal 𝕜 (Subtype.v
       ∀ u ⊇ w, Orthonormal 𝕜 (Subtype.val : u → E) → u = w := by
   have := zorn_subset_nonempty { b | Orthonormal 𝕜 (Subtype.val : b → E) } ?_ _ hs
   · obtain ⟨b, bi, sb, h⟩ := this
-    refine' ⟨b, sb, bi, _⟩
+    refine ⟨b, sb, bi, ?_⟩
     exact fun u hus hu => h u hu hus
   · refine' fun c hc cc _c0 => ⟨⋃₀ c, _, _⟩
     · exact orthonormal_sUnion_of_directed cc.directedOn fun x xc => hc xc

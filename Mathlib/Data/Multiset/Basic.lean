@@ -603,7 +603,7 @@ theorem le_cons_of_not_mem (m : a ∉ s) : s ≤ a ::ₘ t ↔ s ≤ t := by
     exact fun h => (cons_le_cons_iff a).1 (this h (mem_cons_self _ _))
   introv h
   revert m
-  refine' leInductionOn h _
+  refine leInductionOn h ?_
   introv s m₁ m₂
   rcases append_of_mem m₂ with ⟨r₁, r₂, rfl⟩
   exact
@@ -1291,7 +1291,7 @@ theorem map_eq_singleton {f : α → β} {s : Multiset α} {b : β} :
   constructor
   · intro h
     obtain ⟨a, ha⟩ : ∃ a, s = {a} := by rw [← card_eq_one, ← card_map, h, card_singleton]
-    refine' ⟨a, ha, _⟩
+    refine ⟨a, ha, ?_⟩
     rw [← mem_singleton, ← h, ha, map_singleton, mem_singleton]
   · rintro ⟨a, rfl, rfl⟩
     simp
@@ -1487,7 +1487,7 @@ theorem foldr_induction' (f : α → β → β) (H : LeftCommutative f) (x : β)
     (p : β → Prop) (s : Multiset α) (hpqf : ∀ a b, q a → p b → p (f a b)) (px : p x)
     (q_s : ∀ a ∈ s, q a) : p (foldr f H x s) := by
   revert s
-  refine' Multiset.induction (by simp [px]) _
+  refine Multiset.induction (by simp [px]) ?_
   intro a s hs hsa
   rw [foldr_cons]
   have hps : ∀ x : α, x ∈ s → q x := fun x hxs => hsa x (mem_cons_of_mem hxs)

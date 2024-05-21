@@ -339,7 +339,7 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (SimpleGrap
     bot_le := fun x v w h => h.elim
     sdiff_eq := fun x y => by
       ext v w
-      refine' ⟨fun h => ⟨h.1, ⟨_, h.2⟩⟩, fun h => ⟨h.1, h.2.2⟩⟩
+      refine ⟨fun h => ⟨h.1, ⟨?_, h.2⟩⟩, fun h => ⟨h.1, h.2.2⟩⟩
       rintro rfl
       exact x.irrefl h.1
     inf_compl_le_bot := fun G v w h => False.elim <| h.2.2 h.1
@@ -990,7 +990,7 @@ theorem deleteEdges_sdiff_eq_of_le {H : SimpleGraph V} (h : H ≤ G) :
 
 theorem edgeSet_deleteEdges (s : Set (Sym2 V)) : (G.deleteEdges s).edgeSet = G.edgeSet \ s := by
   ext e
-  refine' Sym2.ind _ e
+  refine Sym2.ind ?_ e
   simp
 #align simple_graph.edge_set_delete_edges SimpleGraph.edgeSet_deleteEdges
 

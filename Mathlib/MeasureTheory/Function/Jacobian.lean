@@ -156,7 +156,7 @@ theorem exists_closed_cover_approximatesLinearOn_of_hasFDerivWithinAt [SecondCou
       ∃ (δ : ℝ), 0 < δ ∧ ball x δ ∩ s ⊆ {y | ‖f y - f x - (f' x) (y - x)‖ ≤ ε * ‖y - x‖} :=
       Metric.mem_nhdsWithin_iff.1 ((hf' x xs).isLittleO.def εpos)
     obtain ⟨n, hn⟩ : ∃ n, u n < δ := ((tendsto_order.1 u_lim).2 _ δpos).exists
-    refine' ⟨n, ⟨z, zT⟩, ⟨xs, _⟩⟩
+    refine ⟨n, ⟨z, zT⟩, ⟨xs, ?_⟩⟩
     intro y hy
     calc
       ‖f y - f x - (f' z) (y - x)‖ = ‖f y - f x - (f' x) (y - x) + (f' x - f' z) (y - x)‖ := by
@@ -175,7 +175,7 @@ theorem exists_closed_cover_approximatesLinearOn_of_hasFDerivWithinAt [SecondCou
   -- closed
   have closure_M_subset : ∀ n z, s ∩ closure (M n z) ⊆ M n z := by
     rintro n z x ⟨xs, hx⟩
-    refine' ⟨xs, fun y hy => _⟩
+    refine ⟨xs, fun y hy => ?_⟩
     obtain ⟨a, aM, a_lim⟩ : ∃ a : ℕ → E, (∀ k, a k ∈ M n z) ∧ Tendsto a atTop (𝓝 x) :=
       mem_closure_iff_seq_limit.1 hx
     have L1 :

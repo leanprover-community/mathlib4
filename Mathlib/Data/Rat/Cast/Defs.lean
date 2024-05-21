@@ -154,7 +154,7 @@ theorem commute_cast (a : α) (r : ℚ) : Commute a r :=
 @[norm_cast]
 lemma cast_divInt_of_ne_zero (a : ℤ) {b : ℤ} (b0 : (b : α) ≠ 0) : (a /. b : α) = a / b := by
   have b0' : b ≠ 0 := by
-    refine' mt _ b0
+    refine mt ?_ b0
     simp (config := { contextual := true })
   cases' e : a /. b with n d h c
   have d0 : (d : α) ≠ 0 := by
