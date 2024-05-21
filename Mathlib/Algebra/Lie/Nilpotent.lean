@@ -278,7 +278,7 @@ theorem isNilpotent_toEnd_of_isNilpotent₂ [IsNilpotent R L M] (x y : L) :
   exact iterate_toEnd_mem_lowerCentralSeries₂ R L M x y m k
 
 @[simp] lemma maxGenEigenSpace_toEnd_eq_top [IsNilpotent R L M] (x : L) :
-    ((toEnd R L M x).maximalGeneralizedEigenspace 0) = ⊤ := by
+    ((toEnd R L M x).maxGenEigenspace 0) = ⊤ := by
   ext m
   simp only [Module.End.mem_maxGenEigenspace, zero_smul, sub_zero, Submodule.mem_top,
     iff_true]
