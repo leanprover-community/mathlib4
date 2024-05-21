@@ -1,9 +1,8 @@
 /-
 Copyright (c) 2024 Wang Haocheng. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Wang Haocheng.
+Author: Wang Haocheng
 -/
-
 import Mathlib.Data.Real.EReal
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Fintype.Lattice
@@ -58,8 +57,8 @@ lemma two_different_elements {I : Type*} (h : ∃ (i j : I), i≠ j) : ∀ (i:I)
    obtain ⟨ i0 , j0 , hij ⟩  := h
    intro i
    by_cases H : i=i0
-   . use j0 ; simp [ H , hij ]
-   . use i0
+   · use j0; simp[ H , hij ]
+   · use i0
 
 
 /-!###   Structure Definition  -/
@@ -143,16 +142,16 @@ lemma gt_wins (i : a.I) (H: ∀ j , i ≠j →  b i > b j) : i = winner b := by
             apply Finset.sup'_le
             intro j _
             by_cases hji : i=j
-            . rw [hji]
-            .  have hji' := H j ( by rw [ne_eq] ; exact hji)
+            · rw [hji]
+            ·  have hji' := H j ( by rw [ne_eq]; exact hji)
                linarith
          linarith
       intro j
       constructor
-      .  intro hji
+      ·  intro hji
          rw [<-hji]
          exact imax
-      .  intro hbj
+      ·  intro hbj
          by_contra hji
          have hji' := H j (by rw [ne_eq];exact hji)
          rw [hbj] at hji'
@@ -226,8 +225,8 @@ lemma utility_nneg (i: a.I) : (b i = a.v i) → utility b i ≥ 0 := by
 theorem valuation_is_dominant (i : a.I ) : dominant i (a.v i) := by
    intro b b' hb hb'
    by_cases H : i = winner b'
-   .  by_cases H1 : a.v i >  B b' i
-      .  have h_winner_b : i = winner b := gt_wins b i (λ j hj => by
+   ·  by_cases H1 : a.v i >  B b' i
+      ·  have h_winner_b : i = winner b := gt_wins b i (λ j hj => by
          rw[hb]
          rw[hb']
          have HBi: B b' i ≥  b' j := by
@@ -250,14 +249,14 @@ theorem valuation_is_dominant (i : a.I ) : dominant i (a.v i) := by
             intro j hj
             rw [Finset.mem_erase] at hj
             exact hb' j hj.1
-         . rw [h_secondprice_eq]
-      .  rw [ge_iff_le,utility,<-H]
+         · rw [h_secondprice_eq]
+      ·  rw [ge_iff_le,utility,<-H]
          simp only [ite_true, ge_iff_le, tsub_le_iff_right]
          simp only [gt_iff_lt, not_lt] at H1
          rw [secondprice,<-H]
          have := utility_nneg b i hb
          linarith
-   .  have := utility_nneg b i hb
+   ·  have := utility_nneg b i hb
       convert this
       simp [utility,H]
 
@@ -267,8 +266,7 @@ theorem valuation_is_dominant (i : a.I ) : dominant i (a.v i) := by
 noncomputable def Utility.FirstPrice (i : a.I) : ℝ := if i = winner b then a.v i - b i else 0
 
 /-- If `i` is the winner in a first price auction, utility is their valuation minus their bid. -/
-lemma utility_first_price_winner (i :a.I) (H :i = winner b) :
-Utility.FirstPrice b i = a.v i - b i := by
+lemma utility_first_price_winner (i :a.I) (H :i = winner b) :Utility.FirstPrice b i = a.v i - b i := by
    rw[H]
    simp only [Utility.FirstPrice]
    simp only [if_true]
@@ -285,8 +283,7 @@ def Dominant.FirstPrice (i : a.I) (bi : ℝ) : Prop :=
     → Utility.FirstPrice b i  ≥ Utility.FirstPrice b' i
 
 /-- Shows that there is no dominant strategy in a first price auction for any `i` and bid `bi`. -/
-theorem first_price_has_no_dominant_strategy (i : a.I) (bi :  ℝ) : ¬ (Dominant.FirstPrice i bi):=
- by
+theorem first_price_has_no_dominant_strategy (i : a.I) (bi :  ℝ) : ¬ (Dominant.FirstPrice i bi):=by
    simp only [Dominant.FirstPrice, not_forall]
    let b := fun j => if j = i then (bi:ℝ) else bi-2
    let b' := fun j => if j = i then (bi-1:ℝ) else bi-2
