@@ -672,6 +672,14 @@ theorem IndepFun.comp {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'}
   kernel.IndepFun.comp hfg hφ hψ
 #align probability_theory.indep_fun.comp ProbabilityTheory.IndepFun.comp
 
+theorem IndepFun.neg_right {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'} [Neg β']
+    [MeasurableNeg β'] (hfg : IndepFun f g μ) :
+    IndepFun f (-g) μ := hfg.comp measurable_id measurable_neg
+
+theorem IndepFun.neg_left {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'} [Neg β]
+    [MeasurableNeg β] (hfg : IndepFun f g μ) :
+    IndepFun (-f) g μ := hfg.comp measurable_neg measurable_id
+
 section iIndepFun
 variable {β : ι → Type*} {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i}
 

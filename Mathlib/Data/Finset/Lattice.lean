@@ -3,6 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.GroupPower.CovariantClass
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Finset.Fold
 import Mathlib.Data.Finset.Option
 import Mathlib.Data.Finset.Pi
@@ -1597,8 +1600,7 @@ theorem min'_lt_max' {i j} (H1 : i ∈ s) (H2 : j ∈ s) (H3 : i ≠ j) :
 `min'_lt_max'` which is sometimes more convenient.
 -/
 theorem min'_lt_max'_of_card (h₂ : 1 < card s) :
-    s.min' (Finset.card_pos.mp <| lt_trans zero_lt_one h₂) <
-      s.max' (Finset.card_pos.mp <| lt_trans zero_lt_one h₂) := by
+    s.min' (Finset.card_pos.1 <| by omega) < s.max' (Finset.card_pos.1 <| by omega) := by
   rcases one_lt_card.1 h₂ with ⟨a, ha, b, hb, hab⟩
   exact s.min'_lt_max' ha hb hab
 #align finset.min'_lt_max'_of_card Finset.min'_lt_max'_of_card
@@ -1914,7 +1916,7 @@ end ExistsMaxMin
 
 theorem isGLB_iff_isLeast [LinearOrder α] (i : α) (s : Finset α) (hs : s.Nonempty) :
     IsGLB (s : Set α) i ↔ IsLeast (↑s) i := by
-  refine' ⟨fun his => _, IsLeast.isGLB⟩
+  refine ⟨fun his => ?_, IsLeast.isGLB⟩
   suffices i = min' s hs by
     rw [this]
     exact isLeast_min' s hs

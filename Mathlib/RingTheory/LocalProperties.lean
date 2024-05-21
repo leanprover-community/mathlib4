@@ -632,7 +632,7 @@ theorem IsLocalization.lift_mem_adjoin_finsetIntegerMultiple [Algebra R S] [Alge
   obtain ⟨⟨_, a, ha, rfl⟩, e⟩ :=
     IsLocalization.exists_smul_mem_of_mem_adjoin (M.map (algebraMap R S)) x s (Algebra.adjoin R _)
       Algebra.subset_adjoin (by rintro _ ⟨a, _, rfl⟩; exact Subalgebra.algebraMap_mem _ a) hx
-  refine' ⟨⟨a, ha⟩, _⟩
+  refine ⟨⟨a, ha⟩, ?_⟩
   simpa only [Submonoid.smul_def, algebraMap_smul] using e
 #align is_localization.lift_mem_adjoin_finset_integer_multiple IsLocalization.lift_mem_adjoin_finsetIntegerMultiple
 

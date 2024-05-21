@@ -252,7 +252,7 @@ theorem isConj_of_cycleType_eq {σ τ : Perm α} (h : cycleType σ = cycleType �
       simp [← h, hc.cycleType]
     obtain ⟨σ', hσ'l, hσ'⟩ := Multiset.mem_map.mp h'
     have key : IsConj (σ' * τ * σ'⁻¹) τ := (isConj_iff.2 ⟨σ', rfl⟩).symm
-    refine' IsConj.trans _ key
+    refine IsConj.trans ?_ key
     rw [mul_assoc]
     have hs : σ.cycleType = σ'.cycleType := by
       rw [← Finset.mem_def, mem_cycleFactorsFinset_iff] at hσ'l

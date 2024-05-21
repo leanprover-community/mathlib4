@@ -947,7 +947,7 @@ theorem add_mk (a b c d) : (mk a b : Localization M) + mk c d =
 
 theorem add_mk_self (a b c) : (mk a b : Localization M) + mk c b = mk (a + c) b := by
   rw [add_mk, mk_eq_mk_iff, r_eq_r']
-  refine' (r' M).symm ⟨1, _⟩
+  refine (r' M).symm ⟨1, ?_⟩
   simp only [Submonoid.coe_one, Submonoid.coe_mul]
   ring
 #align localization.add_mk_self Localization.add_mk_self

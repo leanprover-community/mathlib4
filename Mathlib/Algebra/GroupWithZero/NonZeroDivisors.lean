@@ -3,12 +3,10 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Devon Tuma, Oliver Nash
 -/
+import Mathlib.Algebra.Associated
 import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Algebra.Group.Submonoid.MulOpposite
-import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.GroupTheory.GroupAction.Opposite
-import Mathlib.Algebra.Ring.Opposite
 
 #align_import ring_theory.non_zero_divisors from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 
@@ -64,7 +62,7 @@ lemma nonZeroDivisorsLeft_eq_right (M₀ : Type*) [CommMonoidWithZero M₀] :
   ext x
   simp only [SetLike.mem_coe, mem_nonZeroDivisorsLeft_iff, mul_eq_zero, forall_eq_or_imp, true_and,
     Set.mem_setOf_eq]
-  refine' ⟨fun h ↦ _, fun hx y hx' ↦ by contradiction⟩
+  refine ⟨fun h ↦ ?_, fun hx y hx' ↦ by contradiction⟩
   contrapose! h
   exact ⟨1, h, one_ne_zero⟩
 
@@ -72,7 +70,7 @@ lemma nonZeroDivisorsLeft_eq_right (M₀ : Type*) [CommMonoidWithZero M₀] :
     nonZeroDivisorsRight M₀ = {x : M₀ | x ≠ 0} := by
   ext x
   simp only [SetLike.mem_coe, mem_nonZeroDivisorsRight_iff, mul_eq_zero, Set.mem_setOf_eq]
-  refine' ⟨fun h ↦ _, fun hx y hx' ↦ by aesop⟩
+  refine ⟨fun h ↦ ?_, fun hx y hx' ↦ by aesop⟩
   contrapose! h
   exact ⟨1, Or.inl h, one_ne_zero⟩
 
@@ -277,3 +275,58 @@ lemma nonZeroSMulDivisors_mulOpposite_eq_op_nonZeroDivisors :
     Rᵐᵒᵖ ⁰[R] = R⁰.op := rfl
 
 end nonZeroSMulDivisors
+
+open scoped nonZeroDivisors
+
+variable {M₀}
+
+section MonoidWithZero
+variable [MonoidWithZero M₀] {a b : M₀⁰}
+
+/-- The units of the monoid of non-zero divisors of `M₀` are equivalent to the units of `M₀`. -/
+@[simps]
+def unitsNonZeroDivisorsEquiv : M₀⁰ˣ ≃* M₀ˣ where
+  __ := Units.map M₀⁰.subtype
+  invFun u := ⟨⟨u, u.isUnit.mem_nonZeroDivisors⟩, ⟨(u⁻¹ : M₀ˣ), u⁻¹.isUnit.mem_nonZeroDivisors⟩,
+    by simp, by simp⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+@[simp, norm_cast] lemma nonZeroDivisors.associated_coe : Associated (a : M₀) b ↔ Associated a b :=
+  unitsNonZeroDivisorsEquiv.symm.exists_congr_left.trans $ by simp [Associated]; norm_cast
+
+end MonoidWithZero
+
+section CommMonoidWithZero
+variable {M₀ : Type*} [CommMonoidWithZero M₀] {a : M₀}
+
+theorem mk_mem_nonZeroDivisors_associates : Associates.mk a ∈ (Associates M₀)⁰ ↔ a ∈ M₀⁰ := by
+  rw [mem_nonZeroDivisors_iff, mem_nonZeroDivisors_iff, ← not_iff_not]
+  push_neg
+  constructor
+  · rintro ⟨⟨x⟩, hx₁, hx₂⟩
+    refine ⟨x, ?_, ?_⟩
+    · rwa [← Associates.mk_eq_zero, ← Associates.mk_mul_mk, ← Associates.quot_mk_eq_mk]
+    · rwa [← Associates.mk_ne_zero, ← Associates.quot_mk_eq_mk]
+  · refine fun ⟨b, hb₁, hb₂⟩ ↦ ⟨Associates.mk b, ?_, by rwa [Associates.mk_ne_zero]⟩
+    rw [Associates.mk_mul_mk, hb₁, Associates.mk_zero]
+
+/-- The non-zero divisors of associates of a monoid with zero `M₀` are isomorphic to the associates
+of the non-zero divisors of `M₀` under the map `⟨⟦a⟧, _⟩ ↦ ⟦⟨a, _⟩⟧`. -/
+def associatesNonZeroDivisorsEquiv : (Associates M₀)⁰ ≃* Associates M₀⁰ where
+  toEquiv := .subtypeQuotientEquivQuotientSubtype (s₂ := Associated.setoid _)
+    (· ∈ nonZeroDivisors _)
+    (by simp [mem_nonZeroDivisors_iff, Quotient.forall, Associates.mk_mul_mk])
+    (by simp [Associated.setoid])
+  map_mul' := by simp [Quotient.forall, Associates.mk_mul_mk]
+
+@[simp]
+lemma associatesNonZeroDivisorsEquiv_mk_mk (a : M₀) (ha) :
+    associatesNonZeroDivisorsEquiv ⟨⟦a⟧, ha⟩ = ⟦⟨a, mk_mem_nonZeroDivisors_associates.1 ha⟩⟧ := rfl
+
+@[simp]
+lemma associatesNonZeroDivisorsEquiv_symm_mk_mk (a : M₀) (ha) :
+    associatesNonZeroDivisorsEquiv.symm ⟦⟨a, ha⟩⟧ = ⟨⟦a⟧, mk_mem_nonZeroDivisors_associates.2 ha⟩ :=
+  rfl
+
+end CommMonoidWithZero

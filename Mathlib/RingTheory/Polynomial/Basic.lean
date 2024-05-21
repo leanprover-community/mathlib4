@@ -249,34 +249,40 @@ theorem not_finite [Nontrivial R] : ¬ Module.Finite R R[X] := by
   exact one_ne_zero this
 
 /-- The finset of nonzero coefficients of a polynomial. -/
-def frange (p : R[X]) : Finset R :=
+def coeffs (p : R[X]) : Finset R :=
   letI := Classical.decEq R
   Finset.image (fun n => p.coeff n) p.support
-#align polynomial.frange Polynomial.frange
+#align polynomial.frange Polynomial.coeffs
 
-theorem frange_zero : frange (0 : R[X]) = ∅ :=
+@[deprecated (since := "2024-05-17")] noncomputable alias frange := coeffs
+
+theorem coeffs_zero : coeffs (0 : R[X]) = ∅ :=
   rfl
-#align polynomial.frange_zero Polynomial.frange_zero
+#align polynomial.frange_zero Polynomial.coeffs_zero
 
-theorem mem_frange_iff {p : R[X]} {c : R} : c ∈ p.frange ↔ ∃ n ∈ p.support, c = p.coeff n := by
-  simp [frange, eq_comm, (Finset.mem_image)]
-#align polynomial.mem_frange_iff Polynomial.mem_frange_iff
+@[deprecated (since := "2024-05-17")] alias frange_zero := coeffs_zero
 
-theorem frange_one : frange (1 : R[X]) ⊆ {1} := by
+theorem mem_coeffs_iff {p : R[X]} {c : R} : c ∈ p.coeffs ↔ ∃ n ∈ p.support, c = p.coeff n := by
+  simp [coeffs, eq_comm, (Finset.mem_image)]
+#align polynomial.mem_frange_iff Polynomial.mem_coeffs_iff
+
+@[deprecated (since := "2024-05-17")] alias mem_frange_iff := mem_coeffs_iff
+
+theorem coeffs_one : coeffs (1 : R[X]) ⊆ {1} := by
   classical
-  simp only [frange]
-  rw [Finset.image_subset_iff]
-  simp only [mem_support_iff, ne_eq, mem_singleton, ← C_1, coeff_C]
-  intro n hn
-  simp only [exists_prop, ite_eq_right_iff, not_forall] at hn
-  simp [hn]
-#align polynomial.frange_one Polynomial.frange_one
+    simp_rw [coeffs, Finset.image_subset_iff]
+    simp_all [coeff_one]
+#align polynomial.frange_one Polynomial.coeffs_one
 
-theorem coeff_mem_frange (p : R[X]) (n : ℕ) (h : p.coeff n ≠ 0) : p.coeff n ∈ p.frange := by
+@[deprecated (since := "2024-05-17")] alias frange_one := coeffs_one
+
+theorem coeff_mem_coeffs (p : R[X]) (n : ℕ) (h : p.coeff n ≠ 0) : p.coeff n ∈ p.coeffs := by
   classical
-  simp only [frange, exists_prop, mem_support_iff, Finset.mem_image, Ne]
+  simp only [coeffs, exists_prop, mem_support_iff, Finset.mem_image, Ne]
   exact ⟨n, h, rfl⟩
-#align polynomial.coeff_mem_frange Polynomial.coeff_mem_frange
+#align polynomial.coeff_mem_frange Polynomial.coeff_mem_coeffs
+
+@[deprecated (since := "2024-05-17")] alias coeff_mem_frange := coeff_mem_coeffs
 
 theorem geom_sum_X_comp_X_add_one_eq_sum (n : ℕ) :
     (∑ i in range n, (X : R[X]) ^ i).comp (X + 1) =
@@ -332,14 +338,14 @@ variable [Ring R]
 
 /-- Given a polynomial, return the polynomial whose coefficients are in
 the ring closure of the original coefficients. -/
-def restriction (p : R[X]) : Polynomial (Subring.closure (↑p.frange : Set R)) :=
+def restriction (p : R[X]) : Polynomial (Subring.closure (↑p.coeffs : Set R)) :=
   ∑ i in p.support,
     monomial i
       (⟨p.coeff i,
           letI := Classical.decEq R
           if H : p.coeff i = 0 then H.symm ▸ (Subring.closure _).zero_mem
-          else Subring.subset_closure (p.coeff_mem_frange _ H)⟩ :
-        Subring.closure (↑p.frange : Set R))
+          else Subring.subset_closure (p.coeff_mem_coeffs _ H)⟩ :
+        Subring.closure (↑p.coeffs : Set R))
 #align polynomial.restriction Polynomial.restriction
 
 @[simp]
@@ -402,7 +408,7 @@ variable [Semiring S] {f : R →+* S} {x : S}
 
 theorem eval₂_restriction {p : R[X]} :
     eval₂ f x p =
-      eval₂ (f.comp (Subring.subtype (Subring.closure (p.frange : Set R)))) x p.restriction := by
+      eval₂ (f.comp (Subring.subtype (Subring.closure (p.coeffs : Set R)))) x p.restriction := by
   simp only [eval₂_eq_sum, sum, support_restriction, ← @coeff_restriction _ _ p, RingHom.comp_apply,
     Subring.coeSubtype]
 #align polynomial.eval₂_restriction Polynomial.eval₂_restriction
@@ -413,15 +419,15 @@ variable (p : R[X]) (T : Subring R)
 
 /-- Given a polynomial `p` and a subring `T` that contains the coefficients of `p`,
 return the corresponding polynomial whose coefficients are in `T`. -/
-def toSubring (hp : (↑p.frange : Set R) ⊆ T) : T[X] :=
+def toSubring (hp : (↑p.coeffs : Set R) ⊆ T) : T[X] :=
   ∑ i in p.support,
     monomial i
       (⟨p.coeff i,
         letI := Classical.decEq R
-        if H : p.coeff i = 0 then H.symm ▸ T.zero_mem else hp (p.coeff_mem_frange _ H)⟩ : T)
+        if H : p.coeff i = 0 then H.symm ▸ T.zero_mem else hp (p.coeff_mem_coeffs _ H)⟩ : T)
 #align polynomial.to_subring Polynomial.toSubring
 
-variable (hp : (↑p.frange : Set R) ⊆ T)
+variable (hp : (↑p.coeffs : Set R) ⊆ T)
 
 @[simp]
 theorem coeff_toSubring {n : ℕ} : ↑(coeff (toSubring p T hp) n) = coeff p n := by
@@ -462,7 +468,7 @@ theorem monic_toSubring : Monic (toSubring p T hp) ↔ Monic p := by
 #align polynomial.monic_to_subring Polynomial.monic_toSubring
 
 @[simp]
-theorem toSubring_zero : toSubring (0 : R[X]) T (by simp [frange_zero]) = 0 := by
+theorem toSubring_zero : toSubring (0 : R[X]) T (by simp [coeffs]) = 0 := by
   ext i
   simp
 #align polynomial.to_subring_zero Polynomial.toSubring_zero
@@ -470,7 +476,7 @@ theorem toSubring_zero : toSubring (0 : R[X]) T (by simp [frange_zero]) = 0 := b
 @[simp]
 theorem toSubring_one :
     toSubring (1 : R[X]) T
-        (Set.Subset.trans frange_one <| Finset.singleton_subset_set_iff.2 T.one_mem) =
+        (Set.Subset.trans coeffs_one <| Finset.singleton_subset_set_iff.2 T.one_mem) =
       1 :=
   ext fun i => Subtype.eq <| by
     rw [coeff_toSubring', coeff_one, coeff_one, apply_ite Subtype.val, ZeroMemClass.coe_zero,
@@ -501,15 +507,17 @@ theorem coeff_ofSubring (p : T[X]) (n : ℕ) : coeff (ofSubring T p) n = (coeff 
 #align polynomial.coeff_of_subring Polynomial.coeff_ofSubring
 
 @[simp]
-theorem frange_ofSubring {p : T[X]} : (↑(p.ofSubring T).frange : Set R) ⊆ T := by
+theorem coeffs_ofSubring {p : T[X]} : (↑(p.ofSubring T).coeffs : Set R) ⊆ T := by
   classical
   intro i hi
-  simp only [frange, Set.mem_image, mem_support_iff, Ne, Finset.mem_coe,
+  simp only [coeffs, Set.mem_image, mem_support_iff, Ne, Finset.mem_coe,
     (Finset.coe_image)] at hi
   rcases hi with ⟨n, _, h'n⟩
   rw [← h'n, coeff_ofSubring]
   exact Subtype.mem (coeff p n : T)
-#align polynomial.frange_of_subring Polynomial.frange_ofSubring
+#align polynomial.frange_of_subring Polynomial.coeffs_ofSubring
+
+@[deprecated (since := "2024-05-17")] alias frange_ofSubring := coeffs_ofSubring
 
 end Ring
 
@@ -770,7 +778,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
       classical
         let m := Nat.find hf
         let n := Nat.find hg
-        refine' ⟨m + n, _⟩
+        refine ⟨m + n, ?_⟩
         rw [coeff_mul, ← Finset.insert_erase ((Finset.mem_antidiagonal (a := (m,n))).mpr rfl),
           Finset.sum_insert (Finset.not_mem_erase _ _), (P.add_mem_iff_left _).not]
         · apply mt h.2
@@ -972,7 +980,7 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
         induction' k using Nat.strong_induction_on with k ih generalizing p
         rcases le_or_lt k N with h | h
         · subst k
-          refine' hs2 ⟨Polynomial.mem_degreeLE.2
+          refine hs2 ⟨Polynomial.mem_degreeLE.2
             (le_trans Polynomial.degree_le_natDegree <| WithBot.coe_le_coe.2 h), hp⟩
         · have hp0 : p ≠ 0 := by
             rintro rfl

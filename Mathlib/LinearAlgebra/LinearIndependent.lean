@@ -836,9 +836,8 @@ theorem linearIndependent_iUnion_finite {η : Type*} {ιs : η → Type*} {f : �
   · rintro ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ hxy
     by_cases h_cases : x₁ = y₁
     · subst h_cases
-      apply Sigma.eq
+      refine Sigma.eq rfl ?_
       rw [LinearIndependent.injective (hindep _) hxy]
-      rfl
     · have h0 : f x₁ x₂ = 0 := by
         apply
           disjoint_def.1 (hd x₁ {y₁} (finite_singleton y₁) fun h => h_cases (eq_of_mem_singleton h))
@@ -1317,7 +1316,7 @@ theorem linearIndependent_option' :
   rw [← linearIndependent_equiv (Equiv.optionEquivSumPUnit.{_, u'} ι).symm, linearIndependent_sum,
     @range_unique _ PUnit, @linearIndependent_unique_iff PUnit, disjoint_span_singleton]
   dsimp [(· ∘ ·)]
-  refine' ⟨fun h => ⟨h.1, fun hx => h.2.1 <| h.2.2 hx⟩, fun h => ⟨h.1, _, fun hx => (h.2 hx).elim⟩⟩
+  refine ⟨fun h => ⟨h.1, fun hx => h.2.1 <| h.2.2 hx⟩, fun h => ⟨h.1, ?_, fun hx => (h.2 hx).elim⟩⟩
   rintro rfl
   exact h.2 (zero_mem _)
 #align linear_independent_option' linearIndependent_option'
@@ -1413,7 +1412,7 @@ theorem exists_linearIndependent_extension (hs : LinearIndependent K ((↑) : s 
       · exact subset_sUnion_of_mem
   rcases this with
     ⟨b, ⟨bt, bi⟩, sb, h⟩
-  refine' ⟨b, bt, sb, fun x xt => _, bi⟩
+  refine ⟨b, bt, sb, fun x xt => ?_, bi⟩
   by_contra hn
   apply hn
   rw [← h _ ⟨insert_subset_iff.2 ⟨xt, bt⟩, bi.insert hn⟩ (subset_insert _ _)]

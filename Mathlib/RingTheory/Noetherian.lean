@@ -333,7 +333,7 @@ theorem isNoetherian_iff_fg_wellFounded :
     obtain ⟨⟨N₀, h₁⟩, e : N₀ ≤ N, h₂⟩ :=
       WellFounded.has_min H { N' : α | N'.1 ≤ N } ⟨⟨⊥, Submodule.fg_bot⟩, @bot_le _ _ _ N⟩
     convert h₁
-    refine' (e.antisymm _).symm
+    refine (e.antisymm ?_).symm
     by_contra h₃
     obtain ⟨x, hx₁ : x ∈ N, hx₂ : x ∉ N₀⟩ := Set.not_subset.mp h₃
     apply hx₂
@@ -582,7 +582,7 @@ theorem isNoetherian_of_fg_of_noetherian {R M} [Ring R] [AddCommGroup M] [Module
     change n ∈ N at hn
     rw [← hs, ← Set.image_id (s : Set M), Finsupp.mem_span_image_iff_total] at hn
     rcases hn with ⟨l, hl1, hl2⟩
-    refine' ⟨fun x => l x, Subtype.ext _⟩
+    refine ⟨fun x => l x, Subtype.ext ?_⟩
     change (∑ i in s.attach, l i • (i : M)) = n
     rw [s.sum_attach fun i ↦ l i • i, ← hl2,
       Finsupp.total_apply, Finsupp.sum, eq_comm]

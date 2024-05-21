@@ -516,7 +516,7 @@ represented as a finite union of boxes, the integral sums of `f` over tagged pre
 cover exactly `s` form a Cauchy “sequence” along `l`. -/
 theorem cauchy_map_integralSum_toFilteriUnion (h : Integrable I l f vol) (π₀ : Prepartition I) :
     Cauchy ((l.toFilteriUnion I π₀).map (integralSum f vol)) := by
-  refine' ⟨inferInstance, _⟩
+  refine ⟨inferInstance, ?_⟩
   rw [prod_map_map_eq, ← toFilter_inf_iUnion_eq, ← prod_inf_prod, prod_principal_principal]
   exact h.tendsto_integralSum_toFilter_prod_self_inf_iUnion_eq_uniformity.mono_left
     (inf_le_inf_left _ <| principal_mono.2 fun π h => h.1.trans h.2.symm)

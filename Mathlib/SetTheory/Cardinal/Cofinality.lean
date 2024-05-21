@@ -261,7 +261,7 @@ theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
 
 @[simp]
 theorem lift_cof (o) : Cardinal.lift.{u, v} (cof o) = cof (Ordinal.lift.{u, v} o) := by
-  refine' inductionOn o _
+  refine inductionOn o ?_
   intro α r _
   apply le_antisymm
   · refine' le_cof_type.2 fun S H => _
@@ -763,7 +763,7 @@ theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} :=
       rw [univ, ← lift_cof, ← Cardinal.lift_lift.{u+1, v, u}, Cardinal.lift_lt, ← Se]
       refine' lt_of_not_ge fun h => _
       cases' Cardinal.lift_down h with a e
-      refine' Quotient.inductionOn a (fun α e => _) e
+      refine Quotient.inductionOn a (fun α e => ?_) e
       cases' Quotient.exact e with f
       have f := Equiv.ulift.symm.trans f
       let g a := (f a).1
@@ -810,7 +810,7 @@ theorem infinite_pigeonhole {β α : Type u} (f : β → α) (h₁ : ℵ₀ ≤ 
       mk_iUnion_le_sum_mk.trans_lt
         ((sum_le_iSup _).trans_lt <| mul_lt_of_lt h₁ (h₂.trans_le <| cof_ord_le _) (iSup_lt h₂ h))
   cases' this with x h
-  refine' ⟨x, h.antisymm' _⟩
+  refine ⟨x, h.antisymm' ?_⟩
   rw [le_mk_iff_exists_set]
   exact ⟨_, rfl⟩
 #align ordinal.infinite_pigeonhole Ordinal.infinite_pigeonhole

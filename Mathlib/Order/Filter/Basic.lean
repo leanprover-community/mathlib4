@@ -678,6 +678,8 @@ theorem principal_mono {s t : Set α} : 𝓟 s ≤ 𝓟 t ↔ s ⊆ t := by
   simp only [le_principal_iff, iff_self_iff, mem_principal]
 #align filter.principal_mono Filter.principal_mono
 
+@[gcongr] alias ⟨_, _root_.GCongr.filter_principal_mono⟩ := principal_mono
+
 @[mono]
 theorem monotone_principal : Monotone (𝓟 : Set α → Filter α) := fun _ _ => principal_mono.2
 #align filter.monotone_principal Filter.monotone_principal
@@ -1084,7 +1086,7 @@ theorem iInf_principal_finite {ι : Type w} {s : Set ι} (hs : s.Finite) (f : ι
 
 end Lattice
 
-@[mono]
+@[mono, gcongr]
 theorem join_mono {f₁ f₂ : Filter (Filter α)} (h : f₁ ≤ f₂) : join f₁ ≤ join f₂ := fun _ hs => h hs
 #align filter.join_mono Filter.join_mono
 
@@ -1315,7 +1317,7 @@ theorem Frequently.mono {p q : α → Prop} {f : Filter α} (h : ∃ᶠ x in f, 
 
 theorem Frequently.and_eventually {p q : α → Prop} {f : Filter α} (hp : ∃ᶠ x in f, p x)
     (hq : ∀ᶠ x in f, q x) : ∃ᶠ x in f, p x ∧ q x := by
-  refine' mt (fun h => hq.mp <| h.mono _) hp
+  refine mt (fun h => hq.mp <| h.mono ?_) hp
   exact fun x hpq hq hp => hpq ⟨hp, hq⟩
 #align filter.frequently.and_eventually Filter.Frequently.and_eventually
 
@@ -2016,8 +2018,7 @@ equivalent conditions hold.
 2. The set `kernImage m s = {y | ∀ x, m x = y → x ∈ s}` belongs to `f`, see `Filter.mem_comap'`.
 3. The set `(m '' sᶜ)ᶜ` belongs to `f`, see `Filter.mem_comap_iff_compl` and
 `Filter.compl_mem_comap`. -/
-def comap (m : α → β) (f : Filter β) : Filter α
-    where
+def comap (m : α → β) (f : Filter β) : Filter α where
   sets := { s | ∃ t ∈ f, m ⁻¹' t ⊆ s }
   univ_sets := ⟨univ, univ_mem, by simp only [subset_univ, preimage_univ]⟩
   sets_of_superset := fun ⟨a', ha', ma'a⟩ ab => ⟨a', ha', ma'a.trans ab⟩

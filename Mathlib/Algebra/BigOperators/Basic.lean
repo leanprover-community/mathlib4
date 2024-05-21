@@ -973,7 +973,7 @@ theorem prod_filter (p : α → Prop) [DecidablePred p] (f : α → β) :
     ∏ a ∈ s.filter p, f a = ∏ a ∈ s.filter p, if p a then f a else 1 :=
       prod_congr rfl fun a h => by rw [if_pos]; simpa using (mem_filter.1 h).2
     _ = ∏ a ∈ s, if p a then f a else 1 := by
-      { refine' prod_subset (filter_subset _ s) fun x hs h => _
+      { refine prod_subset (filter_subset _ s) fun x hs h => ?_
         rw [mem_filter, not_and] at h
         exact if_neg (by simpa using h hs) }
 #align finset.prod_filter Finset.prod_filter
@@ -2675,5 +2675,5 @@ theorem toAdd_prod (s : Finset ι) (f : ι → Multiplicative α) :
 
 end AddCommMonoid
 
-@[deprecated] alias Equiv.prod_comp' := Fintype.prod_equiv -- 2023-12-23
-@[deprecated] alias Equiv.sum_comp' := Fintype.sum_equiv -- 2023-12-23
+@[deprecated (since := "2023-12-23")] alias Equiv.prod_comp' := Fintype.prod_equiv
+@[deprecated (since := "2023-12-23")] alias Equiv.sum_comp' := Fintype.sum_equiv

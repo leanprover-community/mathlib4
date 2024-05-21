@@ -3,7 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 
 #align_import measure_theory.function.simple_func from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
 
@@ -973,7 +973,7 @@ theorem lintegral_eq_of_subset (f : α →ₛ ℝ≥0∞) {s : Finset ℝ≥0∞
   · intros
     assumption
   · intro b _ hb
-    refine' ⟨b, _, hb, rfl⟩
+    refine ⟨b, ?_, hb, rfl⟩
     rw [mem_range, ← preimage_singleton_nonempty]
     exact nonempty_of_measure_ne_zero (mul_ne_zero_iff.1 hb).2
   · intros

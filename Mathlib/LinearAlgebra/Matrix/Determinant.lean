@@ -522,7 +522,7 @@ theorem det_eq_of_forall_row_eq_smul_add_pred_aux {n : ℕ} (k : Fin (n + 1)) :
   refine' Fin.induction _ (fun k ih => _) k <;> intro c hc M N h0 hsucc
   · congr
     ext i j
-    refine' Fin.cases (h0 j) (fun i => _) i
+    refine Fin.cases (h0 j) (fun i => ?_) i
     rw [hsucc, hc i (Fin.succ_pos _), zero_mul, add_zero]
   set M' := updateRow M k.succ (N k.succ) with hM'
   have hM : M = updateRow M' k.succ (M' k.succ + c k • M (Fin.castSucc k)) := by

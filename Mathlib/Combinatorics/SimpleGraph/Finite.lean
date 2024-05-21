@@ -160,7 +160,7 @@ theorem deleteFar_iff :
   classical
   refine ⟨fun h H _ hHG hH ↦ ?_, fun h s hs hG ↦ ?_⟩
   · have := h (sdiff_subset G.edgeFinset H.edgeFinset)
-    simp only [deleteEdges_sdiff_eq_of_le _ hHG, edgeFinset_mono hHG, card_sdiff,
+    simp only [deleteEdges_sdiff_eq_of_le hHG, edgeFinset_mono hHG, card_sdiff,
       card_le_card, coe_sdiff, coe_edgeFinset, Nat.cast_sub] at this
     exact this hH
   · classical
@@ -278,7 +278,7 @@ theorem mem_incidenceFinset [DecidableEq V] (e : Sym2 V) :
 theorem incidenceFinset_eq_filter [DecidableEq V] [Fintype G.edgeSet] :
     G.incidenceFinset v = G.edgeFinset.filter (Membership.mem v) := by
   ext e
-  refine' Sym2.ind (fun x y => _) e
+  refine Sym2.ind (fun x y => ?_) e
   simp [mk'_mem_incidenceSet_iff]
 #align simple_graph.incidence_finset_eq_filter SimpleGraph.incidenceFinset_eq_filter
 
@@ -401,7 +401,7 @@ theorem exists_maximal_degree_vertex [DecidableRel G.Adj] [Nonempty V] :
   have ht₂ := mem_of_max ht
   simp only [mem_image, mem_univ, exists_prop_of_true] at ht₂
   rcases ht₂ with ⟨v, _, rfl⟩
-  refine' ⟨v, _⟩
+  refine ⟨v, ?_⟩
   rw [maxDegree, ht]
   rfl
 #align simple_graph.exists_maximal_degree_vertex SimpleGraph.exists_maximal_degree_vertex

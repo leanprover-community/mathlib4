@@ -256,8 +256,8 @@ def toLinearMap [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) : M₁ i →ₗ[R]
 
 /-- The cartesian product of two multilinear maps, as a multilinear map. -/
 @[simps]
-def prod (f : MultilinearMap R M₁ M₂) (g : MultilinearMap R M₁ M₃) : MultilinearMap R M₁ (M₂ × M₃)
-    where
+def prod (f : MultilinearMap R M₁ M₂) (g : MultilinearMap R M₁ M₃) :
+    MultilinearMap R M₁ (M₂ × M₃) where
   toFun m := (f m, g m)
   map_add' m i x y := by simp
   map_smul' m i c x := by simp
@@ -377,8 +377,8 @@ variable {M₁'' : ι → Type*} [∀ i, AddCommMonoid (M₁'' i)] [∀ i, Modul
 /-- If `g` is a multilinear map and `f` is a collection of linear maps,
 then `g (f₁ m₁, ..., fₙ mₙ)` is again a multilinear map, that we call
 `g.compLinearMap f`. -/
-def compLinearMap (g : MultilinearMap R M₁' M₂) (f : ∀ i, M₁ i →ₗ[R] M₁' i) : MultilinearMap R M₁ M₂
-    where
+def compLinearMap (g : MultilinearMap R M₁' M₂) (f : ∀ i, M₁ i →ₗ[R] M₁' i) :
+    MultilinearMap R M₁ M₂ where
   toFun m := g fun i => f i (m i)
   map_add' m i x y := by
     have : ∀ j z, f j (update m i z j) = update (fun k => f k (m k)) i (f i z) j := fun j z =>
@@ -1875,8 +1875,8 @@ variable [Ring R] [∀ i, AddCommMonoid (M₁ i)] [AddCommMonoid M'] [AddCommMon
 /-- The pushforward of an indexed collection of submodule `p i ⊆ M₁ i` by `f : M₁ → M₂`.
 
 Note that this is not a submodule - it is not closed under addition. -/
-def map [Nonempty ι] (f : MultilinearMap R M₁ M₂) (p : ∀ i, Submodule R (M₁ i)) : SubMulAction R M₂
-    where
+def map [Nonempty ι] (f : MultilinearMap R M₁ M₂) (p : ∀ i, Submodule R (M₁ i)) :
+    SubMulAction R M₂ where
   carrier := f '' { v | ∀ i, v i ∈ p i }
   smul_mem' := fun c _ ⟨x, hx, hf⟩ => by
     let ⟨i⟩ := ‹Nonempty ι›

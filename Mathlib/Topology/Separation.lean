@@ -370,7 +370,7 @@ instance ULift.instT0Space [T0Space X] : T0Space (ULift X) :=
 
 theorem T0Space.of_cover (h : ∀ x y, Inseparable x y → ∃ s : Set X, x ∈ s ∧ y ∈ s ∧ T0Space s) :
     T0Space X := by
-  refine' ⟨fun x y hxy => _⟩
+  refine ⟨fun x y hxy => ?_⟩
   rcases h x y hxy with ⟨s, hxs, hys, hs⟩
   lift x to s using hxs; lift y to s using hys
   rw [← subtype_inseparable_iff] at hxy
@@ -867,7 +867,7 @@ theorem isOpen_singleton_of_finite_mem_nhds [T1Space X] (x : X)
 infinite. -/
 theorem infinite_of_mem_nhds {X} [TopologicalSpace X] [T1Space X] (x : X) [hx : NeBot (𝓝[≠] x)]
     {s : Set X} (hs : s ∈ 𝓝 x) : Set.Infinite s := by
-  refine' fun hsf => hx.1 _
+  refine fun hsf => hx.1 ?_
   rw [← isOpen_singleton_iff_punctured_nhds]
   exact isOpen_singleton_of_finite_mem_nhds x hs hsf
 #align infinite_of_mem_nhds infinite_of_mem_nhds
@@ -1803,7 +1803,7 @@ theorem QuotientMap.of_surjective_continuous [CompactSpace X] [T2Space Y] {f : X
 
 theorem isPreirreducible_iff_subsingleton [T2Space X] {S : Set X} :
     IsPreirreducible S ↔ S.Subsingleton := by
-  refine' ⟨fun h x hx y hy => _, Set.Subsingleton.isPreirreducible⟩
+  refine ⟨fun h x hx y hy => ?_, Set.Subsingleton.isPreirreducible⟩
   by_contra e
   obtain ⟨U, V, hU, hV, hxU, hyV, h'⟩ := t2_separation e
   exact ((h U V hU hV ⟨x, hx, hxU⟩ ⟨y, hy, hyV⟩).mono <| inter_subset_right _ _).not_disjoint h'
@@ -2083,7 +2083,7 @@ theorem RegularSpace.t3Space_iff_t0Space [RegularSpace X] : T3Space X ↔ T0Spac
 
 -- see Note [lower instance priority]
 instance (priority := 100) T3Space.t25Space [T3Space X] : T25Space X := by
-  refine' ⟨fun x y hne => _⟩
+  refine ⟨fun x y hne => ?_⟩
   rw [lift'_nhds_closure, lift'_nhds_closure]
   have : x ∉ closure {y} ∨ y ∉ closure {x} :=
     (t0Space_iff_or_not_mem_closure X).mp inferInstance hne
@@ -2195,7 +2195,7 @@ instance (priority := 100) NormalSpace.of_regularSpace_secondCountableTopology
     · simp only [← iSup_eq_iUnion, iSup_and']
       exact (((finite_le_nat n).preimage_embedding (Encodable.encode' _)).subset <|
         inter_subset_right _ _).isClosed_biUnion fun u _ => isClosed_closure
-  refine' { normal := fun s t hs ht hd => _ }
+  refine { normal := fun s t hs ht hd => ?_ }
   rcases key ht hd with ⟨U, hsU, hUd, hUc⟩
   rcases key hs hd.symm with ⟨V, htV, hVd, hVc⟩
   refine ⟨⋃ u ∈ U, ↑u \ ⋃ (v ∈ V) (_ : Encodable.encode v ≤ Encodable.encode u), closure ↑v,
@@ -2283,7 +2283,7 @@ export T5Space (completely_normal)
 theorem Embedding.t5Space [TopologicalSpace Y] [T5Space Y] {e : X → Y} (he : Embedding e) :
     T5Space X := by
   haveI := he.t1Space
-  refine' ⟨fun s t hd₁ hd₂ => _⟩
+  refine ⟨fun s t hd₁ hd₂ => ?_⟩
   simp only [he.toInducing.nhdsSet_eq_comap]
   refine disjoint_comap (completely_normal ?_ ?_)
   · rwa [← subset_compl_iff_disjoint_left, image_subset_iff, preimage_compl,
@@ -2476,7 +2476,7 @@ theorem loc_compact_Haus_tot_disc_of_zero_dim [TotallyDisconnectedSpace H] :
     have : ((↑) : u → H) = ((↑) : s → H) ∘ ((↑) : u → s) := rfl
     have f0 : Embedding ((↑) : u → H) := embedding_subtype_val.comp embedding_subtype_val
     have f1 : OpenEmbedding ((↑) : u → H) := by
-      refine' ⟨f0, _⟩
+      refine ⟨f0, ?_⟩
       · have : Set.range ((↑) : u → H) = interior s := by
           rw [this, Set.range_comp, Subtype.range_coe, Subtype.image_preimage_coe]
           apply Set.inter_eq_self_of_subset_right interior_subset

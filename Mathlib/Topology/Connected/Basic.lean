@@ -485,7 +485,7 @@ theorem isPreconnected_univ_pi [∀ i, TopologicalSpace (π i)] {s : ∀ i, Set 
     simpa using hI
   · rw [Finset.piecewise_insert] at hI
     have := I.piecewise_mem_set_pi hfs hgs
-    refine' (hsuv this).elim ihI fun h => _
+    refine (hsuv this).elim ihI fun h => ?_
     set S := update (I.piecewise f g) i '' s i
     have hsub : S ⊆ pi univ s := by
       refine' image_subset_iff.2 fun z hz => _
@@ -495,7 +495,7 @@ theorem isPreconnected_univ_pi [∀ i, TopologicalSpace (π i)] {s : ∀ i, Set 
       (hs i).image _ (continuous_const.update i continuous_id).continuousOn
     have hSu : (S ∩ u).Nonempty := ⟨_, mem_image_of_mem _ (hfs _ trivial), hI⟩
     have hSv : (S ∩ v).Nonempty := ⟨_, ⟨_, this _ trivial, update_eq_self _ _⟩, h⟩
-    refine' (hconn u v uo vo (hsub.trans hsuv) hSu hSv).mono _
+    refine (hconn u v uo vo (hsub.trans hsuv) hSu hSv).mono ?_
     exact inter_subset_inter_left _ hsub
 #align is_preconnected_univ_pi isPreconnected_univ_pi
 

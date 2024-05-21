@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Group.Int
 import Mathlib.Data.Nat.Dist
-import Mathlib.Data.Nat.Units
 import Mathlib.Data.Ordmap.Ordnode
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Linarith
@@ -1283,7 +1282,7 @@ theorem Valid'.rotateL {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : V
       erw [rl0, h, Nat.le_zero, Nat.mul_eq_zero] at H2
       rw [hr.2.size_eq, rl0, h, H2.resolve_left (by decide)] at H1
       cases H1 (by decide)
-    refine' hl.node4L hr.left hr.right rl0 _
+    refine hl.node4L hr.left hr.right rl0 ?_
     rcases Nat.eq_zero_or_pos (size l) with l0 | l0
     · replace H3 := H3_0 l0
       rcases Nat.eq_zero_or_pos (size rr) with rr0 | rr0
@@ -1367,7 +1366,7 @@ theorem Valid'.balanceL {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : 
         ∃ r', Raised (size r) r' ∧ BalancedSz (size l) r') :
     Valid' o₁ (@balanceL α l x r) o₂ := by
   rw [balanceL_eq_balance' hl.3 hr.3 hl.2 hr.2 H]
-  refine' hl.balance' hr _
+  refine hl.balance' hr ?_
   rcases H with (⟨l', e, H⟩ | ⟨r', e, H⟩)
   · exact ⟨_, _, H, Or.inl ⟨e.dist_le', rfl⟩⟩
   · exact ⟨_, _, H, Or.inr ⟨e.dist_le, rfl⟩⟩
@@ -1523,14 +1522,14 @@ theorem insertWith.valid_aux [IsTotal α (· ≤ ·)] [@DecidableRel α (· ≤ 
         ⟨⟨⟨lx.mono_right (le_trans h_2 xf), xr.mono_left (le_trans fx h_1)⟩, hs, hb⟩, Or.inl rfl⟩
     · rcases insertWith.valid_aux f x hf h.left bl (lt_of_le_not_le h_1 h_2) with ⟨vl, e⟩
       suffices H : _ by
-        refine' ⟨vl.balanceL h.right H, _⟩
+        refine ⟨vl.balanceL h.right H, ?_⟩
         rw [size_balanceL vl.3 h.3.2.2 vl.2 h.2.2.2 H, h.2.size_eq]
         exact (e.add_right _).add_right _
       exact Or.inl ⟨_, e, h.3.1⟩
     · have : y < x := lt_of_le_not_le ((total_of (· ≤ ·) _ _).resolve_left h_1) h_1
       rcases insertWith.valid_aux f x hf h.right this br with ⟨vr, e⟩
       suffices H : _ by
-        refine' ⟨h.left.balanceR vr H, _⟩
+        refine ⟨h.left.balanceR vr H, ?_⟩
         rw [size_balanceR h.3.2.1 vr.3 h.2.2.1 vr.2 H, h.2.size_eq]
         exact (e.add_left _).add_right _
       exact Or.inr ⟨_, e, h.3.1⟩

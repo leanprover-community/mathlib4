@@ -643,7 +643,7 @@ theorem tendsto_arg_nhdsWithin_im_neg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re
     (him : z.im = 0) : Tendsto arg (𝓝[{ z : ℂ | z.im < 0 }] z) (𝓝 (-π)) := by
   suffices H : Tendsto (fun x : ℂ => Real.arcsin ((-x).im / abs x) - π)
       (𝓝[{ z : ℂ | z.im < 0 }] z) (𝓝 (-π)) by
-    refine' H.congr' _
+    refine H.congr' ?_
     have : ∀ᶠ x : ℂ in 𝓝 z, x.re < 0 := continuous_re.tendsto z (gt_mem_nhds hre)
     -- Porting note: need to specify the `nhdsWithin` set
     filter_upwards [self_mem_nhdsWithin (s := { z : ℂ | z.im < 0 }),

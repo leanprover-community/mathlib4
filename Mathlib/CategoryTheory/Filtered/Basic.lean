@@ -95,8 +95,7 @@ class IsFiltered extends IsFilteredOrEmpty C : Prop where
 #align category_theory.is_filtered CategoryTheory.IsFiltered
 
 instance (priority := 100) isFilteredOrEmpty_of_semilatticeSup (α : Type u) [SemilatticeSup α] :
-    IsFilteredOrEmpty α
-    where
+    IsFilteredOrEmpty α where
   cocone_objs X Y := ⟨X ⊔ Y, homOfLE le_sup_left, homOfLE le_sup_right, trivial⟩
   cocone_maps X Y f g := ⟨Y, 𝟙 _, by
     apply ULift.ext
@@ -271,7 +270,7 @@ theorem sup_exists :
     exact ⟨S, fun mX => (f mX).some, by rintro - - - - - ⟨⟩⟩
   · obtain ⟨X, Y, mX, mY, f⟩ := h'
     obtain ⟨S', T', w'⟩ := h''
-    refine' ⟨coeq (f ≫ T' mY) (T' mX), fun mZ => T' mZ ≫ coeqHom (f ≫ T' mY) (T' mX), _⟩
+    refine ⟨coeq (f ≫ T' mY) (T' mX), fun mZ => T' mZ ≫ coeqHom (f ≫ T' mY) (T' mX), ?_⟩
     intro X' Y' mX' mY' f' mf'
     rw [← Category.assoc]
     by_cases h : X = X' ∧ Y = Y'
@@ -327,7 +326,7 @@ theorem cocone_nonempty (F : J ⥤ C) : Nonempty (Cocone F) := by
       Finset.univ.biUnion fun Y : J =>
         Finset.univ.image fun f : X ⟶ Y => ⟨F.obj X, F.obj Y, by simp [O], by simp [O], F.map f⟩
   obtain ⟨Z, f, w⟩ := sup_exists O H
-  refine' ⟨⟨Z, ⟨fun X => f (by simp [O]), _⟩⟩⟩
+  refine ⟨⟨Z, ⟨fun X => f (by simp [O]), ?_⟩⟩⟩
   intro j j' g
   dsimp
   simp only [Category.comp_id]
@@ -755,7 +754,7 @@ theorem inf_exists :
     exact ⟨S, fun mX => (f mX).some, by rintro - - - - - ⟨⟩⟩
   · obtain ⟨X, Y, mX, mY, f⟩ := h'
     obtain ⟨S', T', w'⟩ := h''
-    refine' ⟨eq (T' mX ≫ f) (T' mY), fun mZ => eqHom (T' mX ≫ f) (T' mY) ≫ T' mZ, _⟩
+    refine ⟨eq (T' mX ≫ f) (T' mY), fun mZ => eqHom (T' mX ≫ f) (T' mY) ≫ T' mZ, ?_⟩
     intro X' Y' mX' mY' f' mf'
     rw [Category.assoc]
     by_cases h : X = X' ∧ Y = Y'
@@ -811,7 +810,7 @@ theorem cone_nonempty (F : J ⥤ C) : Nonempty (Cone F) := by
       Finset.univ.biUnion fun Y : J =>
         Finset.univ.image fun f : X ⟶ Y => ⟨F.obj X, F.obj Y, by simp [O], by simp [O], F.map f⟩
   obtain ⟨Z, f, w⟩ := inf_exists O H
-  refine' ⟨⟨Z, ⟨fun X => f (by simp [O]), _⟩⟩⟩
+  refine ⟨⟨Z, ⟨fun X => f (by simp [O]), ?_⟩⟩⟩
   intro j j' g
   dsimp
   simp only [Category.id_comp]
