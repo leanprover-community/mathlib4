@@ -280,8 +280,7 @@ their domains.
 See note [bundled maps over different rings] for why separate `R` and `S` semirings are used. -/
 @[simps]
 def coprodEquiv [Module S M₃] [SMulCommClass R S M₃] :
-    ((M →ₗ[R] M₃) × (M₂ →ₗ[R] M₃)) ≃ₗ[S] M × M₂ →ₗ[R] M₃
-    where
+    ((M →ₗ[R] M₃) × (M₂ →ₗ[R] M₃)) ≃ₗ[S] M × M₂ →ₗ[R] M₃ where
   toFun f := f.1.coprod f.2
   invFun f := (f.comp (inl _ _ _), f.comp (inr _ _ _))
   left_inv f := by simp only [coprod_inl, coprod_inr]
@@ -379,8 +378,7 @@ variable (R M M₂ M₃ M₄)
 /-- `LinearMap.prodMap` as a `LinearMap` -/
 @[simps]
 def prodMapLinear [Module S M₃] [Module S M₄] [SMulCommClass R S M₃] [SMulCommClass R S M₄] :
-    (M →ₗ[R] M₃) × (M₂ →ₗ[R] M₄) →ₗ[S] M × M₂ →ₗ[R] M₃ × M₄
-    where
+    (M →ₗ[R] M₃) × (M₂ →ₗ[R] M₄) →ₗ[S] M × M₂ →ₗ[R] M₃ × M₄ where
   toFun f := prodMap f.1 f.2
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -388,8 +386,7 @@ def prodMapLinear [Module S M₃] [Module S M₄] [SMulCommClass R S M₃] [SMul
 
 /-- `LinearMap.prodMap` as a `RingHom` -/
 @[simps]
-def prodMapRingHom : (M →ₗ[R] M) × (M₂ →ₗ[R] M₂) →+* M × M₂ →ₗ[R] M × M₂
-    where
+def prodMapRingHom : (M →ₗ[R] M) × (M₂ →ₗ[R] M₂) →+* M × M₂ →ₗ[R] M × M₂ where
   toFun f := prodMap f.1 f.2
   map_one' := prodMap_one
   map_zero' := rfl
@@ -1024,8 +1021,7 @@ variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommGroup M₃]
   [Module R M] [Module R M₂] [Module R M₃] [Module R M₄] (f : M →ₗ[R] M₂) (g : M₃ →ₗ[R] M₄)
 
 /-- Graph of a linear map. -/
-def graph : Submodule R (M × M₂)
-    where
+def graph : Submodule R (M × M₂) where
   carrier := { p | p.2 = f p.1 }
   add_mem' (ha : _ = _) (hb : _ = _) := by
     change _ + _ = f (_ + _)

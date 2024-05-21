@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Robert Y. Lewis
 -/
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.GroupWithZero.Hom
-import Mathlib.Algebra.Ring.Defs
 
 #align_import algebra.group_power.ring from "leanprover-community/mathlib"@"fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e"
 
@@ -52,13 +51,3 @@ theorem pow_dvd_pow_iff [CancelCommMonoidWithZero R] {x : R} {n m : ℕ} (h0 : x
     apply pow_ne_zero m h0
   · apply pow_dvd_pow
 #align pow_dvd_pow_iff pow_dvd_pow_iff
-
-section DivisionMonoid
-variable [DivisionMonoid R] [HasDistribNeg R]
-
-set_option linter.deprecated false in
-@[simp] lemma zpow_bit0_neg (a : R) (n : ℤ) : (-a) ^ bit0 n = a ^ bit0 n := by
-  rw [zpow_bit0', zpow_bit0', neg_mul_neg]
-#align zpow_bit0_neg zpow_bit0_neg
-
-end DivisionMonoid

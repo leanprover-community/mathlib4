@@ -61,7 +61,7 @@ theorem irrational_nrt_of_notint_nrt {x : ℝ} (n : ℕ) (m : ℤ) (hxr : x ^ n 
   rw [← Int.dvd_natAbs, ← Int.coe_nat_pow, Int.natCast_dvd_natCast, Int.natAbs_pow,
     Nat.pow_dvd_pow_iff hnpos.ne'] at hdivn
   obtain rfl : D = 1 := by rw [← Nat.gcd_eq_right hdivn, C.gcd_eq_one]
-  refine' hv ⟨N, _⟩
+  refine hv ⟨N, ?_⟩
   rw [mk'_eq_divInt, Int.ofNat_one, divInt_one, cast_intCast]
 #align irrational_nrt_of_notint_nrt irrational_nrt_of_notint_nrt
 

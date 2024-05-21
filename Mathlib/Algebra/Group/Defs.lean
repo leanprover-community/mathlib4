@@ -582,10 +582,6 @@ monoids. To work, it has to map fields to fields. This means that we should also
 fields to the multiplicative structure `Monoid`, which could solve defeq problems for powers if
 needed. These problems do not come up in practice, so most of the time we will not need to adjust
 the `npow` field when defining multiplicative objects.
-
-A basic theory for the power function on monoids and the `ℕ`-action on additive monoids is built in
-the file `Algebra.GroupPower.Basic`. For now, we only register the most basic properties that we
-need right away.
 -/
 
 
