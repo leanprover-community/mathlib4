@@ -26,7 +26,7 @@ set_option autoImplicit true
 
 section Mathlib.GroupTheory.Index
 
-theorem Finset.finiteIndex_iInf {G ι : Type*} [Group G] [DecidableEq ι] [DecidableEq (Subgroup G)]
+theorem Finset.finiteIndex_iInf {G ι : Type*} [Group G] [DecidableEq ι]
     {s : Finset ι} (f : ι → Subgroup G) (hs : ∀ i ∈ s, (f i).FiniteIndex) :
       (⨅ i ∈ s, f i).FiniteIndex := by
   induction' s using Finset.induction_on with a s _ ih
@@ -139,7 +139,6 @@ theorem Fintype.finiteIndex_of_iUnion_leftCoset_eq_univ_aux
       rw [Set.eq_empty_iff_forall_not_mem]
       suffices ∀ i ∈ x • (H j : Set G), ∀ (x : ι), H x = H j → i ∉ g x • (H x : Set G) by
         simpa using this
-      simp at hx
       replace hx : ∀ i, H i = H j → x ∉ g i • (H i : Set G) := by simpa using hx
       intro y hy₁ i hi hy₂
       apply hx i hi
@@ -263,34 +262,11 @@ theorem Fintype.covers_finiteIndex_of_covers {G ι : Type*} [Group G] [Fintype �
     rw [← Set.biUnion_univ, ← Finset.coe_univ, Finset.set_biUnion_coe,
       ← Finset.univ.filter_union_filter_neg_eq (fun k => (H k.1).FiniteIndex),
       Finset.set_biUnion_union, ← hcovers]
-    apply congrArg₂ (· ∪ ·)
-    · rw [Set.iUnion_sigma]
-      apply Set.iUnion_congr
-      intro i
-      rw [Set.iUnion_congr fun a => (by
-        rw [Finset.mem_filter, eq_true (Finset.mem_univ _), true_and,
-          show (⟨i, a⟩ : κ).fst = i from rfl])]
-      rw [Finset.mem_filter, eq_true (Finset.mem_univ _), true_and, Set.iUnion_comm]
-      apply Set.iUnion_congr
-      intro hi
-      dsimp only [f, K]
-      rw [← hs i hi, Set.smul_set_iUnion, Set.iUnion_subtype, dif_pos hi, if_pos hi]
-      apply Set.iUnion_congr
-      intro x
-      rw [Set.smul_set_iUnion, leftCoset_assoc]
-    · rw [Set.iUnion_sigma]
-      apply Set.iUnion_congr
-      intro i
-      rw [Set.iUnion_congr fun a => (by
-        rw [Finset.mem_filter, eq_true (Finset.mem_univ _), true_and,
-          show (⟨i, a⟩ : κ).fst = i from rfl])]
-      rw [Finset.mem_filter, eq_true (Finset.mem_univ _), true_and, Set.iUnion_comm]
-      apply Set.iUnion_congr
-      intro hi
-      dsimp only [f, K]
-      rw [Set.iUnion_subtype, dif_neg hi, if_neg hi]
-      dsimp only
-      rw [Finset.set_biUnion_singleton, mul_one]
+    apply congrArg₂ (· ∪ ·) <;> (rw [Set.iUnion_sigma]; refine Set.iUnion_congr fun i => ?_)
+    · by_cases hi : (H i).FiniteIndex <;>
+        simp [Set.smul_set_iUnion, Set.iUnion_subtype, ← leftCoset_assoc, f, K, ← hs, hi]
+    · by_cases hi : (H i).FiniteIndex <;>
+        simp [Set.iUnion_subtype, f, K, hi]
   -- There is at least one coset of a subgroup of finite index in the original covering.
   have ⟨j, hj⟩ := Fintype.finiteIndex_of_iUnion_leftCoset_eq_univ g H hcovers
   -- Therefore a coset of `D` occurs in the new covering.
@@ -320,18 +296,16 @@ theorem Fintype.covers_finiteIndex_of_covers {G ι : Type*} [Group G] [Fintype �
   apply Set.iUnion_congr
   intro i
   rw [Set.iUnion_subtype]
+  have hD' : ¬(H i).FiniteIndex → H i ≠ D := fun h hD' => (hD' ▸ h) hD
   have (x : G) (hx : x ∈ if h : (H i).FiniteIndex then s i h else {1}) :
       (⟨i, ⟨x, hx⟩⟩ : κ) ∈ Finset.univ.filter
         (fun k => (if (H k.1).FiniteIndex then D else H k.1) = D)  ↔
       i ∈ Finset.univ.filter (fun _ => (if (H i).FiniteIndex then D else H i) = D) := by
-    split_ifs with h
-    · simp [h]
-    · by_cases h': H i = D <;> simp [h, h']
+    split_ifs with h <;> simp [h, hD']
   rw [Set.iUnion_congr fun x : G => Set.iUnion_congr fun hx => by rw [this]]
   dsimp only
   by_cases h : (H i).FiniteIndex
   · suffices g i • (H i : Set G) = g i • ⋃ x ∈ s i h, (x • (D : Set G)) from by
       simpa [h, leftCoset_assoc, Set.smul_set_iUnion₂] using this
     rw [hs i h]
-  · have : H i ≠ D := fun hD' => (hD' ▸ h) hD
-    simp [h, this]
+  · simp [h, hD' h]
