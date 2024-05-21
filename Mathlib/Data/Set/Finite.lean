@@ -1387,6 +1387,10 @@ theorem infinite_image_iff {s : Set α} {f : α → β} (hi : InjOn f s) :
   not_congr <| finite_image_iff hi
 #align set.infinite_image_iff Set.infinite_image_iff
 
+theorem infinite_range_iff {f : α → β} (hi : Injective f) :
+    (range f).Infinite ↔ Infinite α := by
+  rw [← image_univ, infinite_image_iff (hi.injOn _), infinite_univ_iff]
+
 alias ⟨_, Infinite.image⟩ := infinite_image_iff
 #align set.infinite.image Set.Infinite.image
 
