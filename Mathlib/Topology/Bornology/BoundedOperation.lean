@@ -225,20 +225,6 @@ section NNReal
 ### Bounded operations in ℝ≥0
 -/
 
--- TODO: Move to an appropriate place.
-lemma Isometry.lipschitzWith_iff {α β γ : Type*} [PseudoEMetricSpace α] [PseudoEMetricSpace β]
-    [PseudoEMetricSpace γ] {f : α → β} {g : β → γ} (K : ℝ≥0) (h : Isometry g) :
-    LipschitzWith K f ↔ LipschitzWith K (g ∘ f) := by
-  simp [LipschitzWith, h.edist_eq]
-
-lemma NNReal.lipschitzWith_sub : LipschitzWith 2 (fun (p : ℝ≥0 × ℝ≥0) ↦ p.1 - p.2) := by
-  rw [isometry_subtype_coe.lipschitzWith_iff]
-  have : Isometry (Prod.map ((↑) : ℝ≥0 → ℝ) ((↑) : ℝ≥0 → ℝ)) :=
-    isometry_subtype_coe.prod_map isometry_subtype_coe
-  convert (((LipschitzWith.prod_fst.comp this.lipschitz).sub
-    (LipschitzWith.prod_snd.comp this.lipschitz)).max_const 0)
-  norm_num
-
 instance : BoundedSub ℝ≥0 := boundedSub_of_lipschitzWith_sub NNReal.lipschitzWith_sub
 
 open Metric in
