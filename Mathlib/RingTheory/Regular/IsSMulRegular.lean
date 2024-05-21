@@ -199,13 +199,22 @@ namespace ModSMulBy
 open Submodule Function
 
 open TensorProduct in
+/-- Reducing a module modulo `r` is the same as left tensoring with `R/(r)`. -/
 noncomputable def equiv_lTensor_ring_mod (r : R) :
-    ModSMulBy M r ≃ₗ[R] ((R⧸Ideal.span {r}) ⊗[R] M) :=
+    ModSMulBy M r ≃ₗ[R] (R⧸Ideal.span {r}) ⊗[R] M :=
   quotEquivOfEq _ _ (ideal_span_singleton_smul _ _).symm ≪≫ₗ
    (lTensor_ring_mod_ideal_equiv_mod_ideal_smul M _).symm
 
+open TensorProduct in
+/-- Reducing a module modulo `r` is the same as right tensoring with `R/(r)`. -/
+noncomputable def equiv_rTensor_ring_mod (r : R) :
+    ModSMulBy M r ≃ₗ[R] M ⊗[R] (R⧸Ideal.span {r}) :=
+  quotEquivOfEq _ _ (ideal_span_singleton_smul _ _).symm ≪≫ₗ
+   (rTensor_ring_mod_ideal_equiv_mod_ideal_smul M _).symm
+
 variable {M}
 
+/-- The action of the functor `ModSMulBy · r` on morphisms. -/
 def map (r : R) : (M →ₗ[R] M') →ₗ[R] ModSMulBy M r →ₗ[R] ModSMulBy M' r :=
   Submodule.mapQLinear _ _ ∘ₗ LinearMap.id.codRestrict _ fun _ =>
     map_le_iff_le_comap.mp <| le_of_eq_of_le (map_element_smul _ _ _) <|
@@ -245,6 +254,19 @@ lemma equiv_lTensor_ring_mod_naturality (r : R) (f : M →ₗ[R] M') :
       f.lTensor (R⧸Ideal.span {r}) ∘ₗ equiv_lTensor_ring_mod M r := by
   ext x; exact equiv_lTensor_ring_mod_naturality_apply r f x
 
+lemma equiv_rTensor_ring_mod_naturality_apply (r : R) (f : M →ₗ[R] M') (x : M) :
+    equiv_rTensor_ring_mod M' r (map r f (Submodule.Quotient.mk x)) =
+      f.rTensor (R⧸Ideal.span {r})
+        (equiv_rTensor_ring_mod M r (Submodule.Quotient.mk x)) := by
+  simp only [equiv_rTensor_ring_mod, map_apply_apply, LinearEquiv.trans_apply,
+    quotEquivOfEq_mk, rTensor_ring_mod_ideal_equiv_mod_ideal_smul_symm_apply,
+    LinearMap.rTensor_tmul]
+
+lemma equiv_rTensor_ring_mod_naturality (r : R) (f : M →ₗ[R] M') :
+    equiv_rTensor_ring_mod M' r ∘ₗ map r f =
+      f.rTensor (R⧸Ideal.span {r}) ∘ₗ equiv_rTensor_ring_mod M r := by
+  ext x; exact equiv_rTensor_ring_mod_naturality_apply r f x
+
 lemma map_surjective (r : R) {f : M →ₗ[R] M'} (hf : Surjective f) :
     Surjective (map r f) :=
   @Surjective.of_comp _ _ _ _ (mkQ (r • ⊤)) <|
@@ -271,6 +293,24 @@ lemma map_first_exact_on_four_term_exact_of_isSMulRegular_last {M₂ M₃}
   refine smul_top_inf_eq_smul_of_isSMulRegular_on_quot ?_
   have := ker_liftQ_eq_bot' _ _ h₂₃.linearMap_ker_eq.symm
   exact h.isSMulRegular_of_injective_of_isSMulRegular _ <| ker_eq_bot.mp this
+
+variable (M M')
+
+open scoped TensorProduct
+
+/-- Tensoring on the left and applying `ModSMulBy · r` commute. -/
+noncomputable def lTensor_ModSMulBy_equiv_ModSMulBy (r : R) :
+    M ⊗[R] ModSMulBy M' r ≃ₗ[R] ModSMulBy (M ⊗[R] M') r :=
+  (equiv_rTensor_ring_mod M' r).lTensor M ≪≫ₗ
+    (TensorProduct.assoc R M M' (R⧸Ideal.span {r})).symm ≪≫ₗ
+      (equiv_rTensor_ring_mod (M ⊗[R] M') r).symm
+
+/-- Tensoring on the right and applying `ModSMulBy · r` commute. -/
+noncomputable def rTensor_ModSMulBy_equiv_ModSMulBy (r : R) :
+    ModSMulBy M' r ⊗[R] M ≃ₗ[R] ModSMulBy (M' ⊗[R] M) r :=
+  (equiv_lTensor_ring_mod M' r).rTensor M ≪≫ₗ
+    TensorProduct.assoc R (R⧸Ideal.span {r}) M' M ≪≫ₗ
+      (equiv_lTensor_ring_mod (M' ⊗[R] M) r).symm
 
 end ModSMulBy
 

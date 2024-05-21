@@ -19,9 +19,7 @@ import Mathlib.RingTheory.TensorProduct.Basic
 * `LinearMap.lTensor_surjective` asserts that when one tensors
   a surjective map on the left, one still gets a surjective linear map.
   More generally, `LinearMap.lTensor_range`  computes the range of
-  `LinearMap.lTensor`
-
-* `TensorProduct.rTensor_exact` says that when one tensors a short exact
+  `LinearMap.lTensor`≃ensorProduct.rTensor_exact` says that when one tensors a short exact
   sequence on the right, one still gets a short exact sequence
   (right-exactness of `TensorProduct.rTensor`),
   and `rTensor.equiv` gives the LinearEquiv that follows from this
@@ -422,6 +420,8 @@ variable (M)
 
 -- TODO: Figure out appropriate typeclasses assumptions for this
 -- (e.g. should `R` be an algebra over some base comm ring?)
+/-- Left tensoring a module with a quotient of the ring is the same as
+quotienting that module by the corresponding submodule. -/
 noncomputable def lTensor_ring_mod_ideal_equiv_mod_ideal_smul (I : Ideal R) :
     ((R⧸I) ⊗[R] M) ≃ₗ[R] M⧸(I • (⊤ : Submodule R M)) :=
   (rTensor.equiv M (exact_subtype_mkQ I) I.mkQ_surjective).symm.trans <|
@@ -434,6 +434,8 @@ noncomputable def lTensor_ring_mod_ideal_equiv_mod_ideal_smul (I : Ideal R) :
       refine Eq.trans (congrArg range ?_) (LinearMap.range_comp _ _)
       ext; rfl
 
+/-- Right tensoring a module with a quotient of the ring is the same as
+quotienting that module by the corresponding submodule. -/
 noncomputable def rTensor_ring_mod_ideal_equiv_mod_ideal_smul (I : Ideal R) :
     (M ⊗[R] (R⧸I)) ≃ₗ[R] M⧸(I • (⊤ : Submodule R M)) :=
   (lTensor.equiv M (exact_subtype_mkQ I) I.mkQ_surjective).symm.trans <|
