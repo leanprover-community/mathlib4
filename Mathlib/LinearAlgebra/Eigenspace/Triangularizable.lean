@@ -76,10 +76,10 @@ theorem iSup_genEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f : E
     -- We define `ES` to be the generalized eigenspace
     let ES := f.genEigenspace μ₀ (finrank K V)
     -- and `ER` to be the generalized eigenrange.
-    let ER := f.generalizedEigenrange μ₀ (finrank K V)
+    let ER := f.genEigenrange μ₀ (finrank K V)
     -- `f` maps `ER` into itself.
     have h_f_ER : ∀ x : V, x ∈ ER → f x ∈ ER := fun x hx =>
-      map_generalizedEigenrange_le (Submodule.mem_map_of_mem hx)
+      map_genEigenrange_le (Submodule.mem_map_of_mem hx)
     -- Therefore, we can define the restriction `f'` of `f` to `ER`.
     let f' : End K ER := f.restrict h_f_ER
     -- The dimension of `ES` is positive

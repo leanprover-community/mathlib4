@@ -200,9 +200,9 @@ def HasGenEigenvalue (f : End R M) (μ : R) (k : ℕ) : Prop :=
 
 /-- The generalized eigenrange for a linear map `f`, a scalar `μ`, and an exponent `k ∈ ℕ` is the
     range of `(f - μ • id) ^ k`. -/
-def generalizedEigenrange (f : End R M) (μ : R) (k : ℕ) : Submodule R M :=
+def genEigenrange (f : End R M) (μ : R) (k : ℕ) : Submodule R M :=
   LinearMap.range ((f - algebraMap R (End R M) μ) ^ k)
-#align module.End.generalized_eigenrange Module.End.generalizedEigenrange
+#align module.End.generalized_eigenrange Module.End.genEigenrange
 
 /-- The exponent of a generalized eigenvalue is never 0. -/
 theorem exp_ne_zero_of_hasGeneralizedEigenvalue {f : End R M} {μ : R} {k : ℕ}
@@ -466,7 +466,7 @@ theorem eigenspace_restrict_le_eigenspace (f : End R M) {p : Submodule R M} (hfp
 
 /-- Generalized eigenrange and generalized eigenspace for exponent `finrank K V` are disjoint. -/
 theorem generalized_eigenvec_disjoint_range_ker [FiniteDimensional K V] (f : End K V) (μ : K) :
-    Disjoint (f.generalizedEigenrange μ (finrank K V))
+    Disjoint (f.genEigenrange μ (finrank K V))
       (f.genEigenspace μ (finrank K V)) := by
   have h :=
     calc
@@ -478,7 +478,7 @@ theorem generalized_eigenvec_disjoint_range_ker [FiniteDimensional K V] (f : End
       _ = f.genEigenspace μ (finrank K V + finrank K V) := by rw [← pow_add]; rfl
       _ = f.genEigenspace μ (finrank K V) := by
         rw [genEigenspace_eq_genEigenspace_finrank_of_le]; omega
-  rw [disjoint_iff_inf_le, generalizedEigenrange, LinearMap.range_eq_map,
+  rw [disjoint_iff_inf_le, genEigenrange, LinearMap.range_eq_map,
     Submodule.map_inf_eq_map_inf_comap, top_inf_eq, h]
   apply Submodule.map_comap_le
 #align module.End.generalized_eigenvec_disjoint_range_ker Module.End.generalized_eigenvec_disjoint_range_ker
@@ -505,18 +505,18 @@ theorem pos_finrank_genEigenspace_of_hasEigenvalue [FiniteDimensional K V] {f : 
 #align module.End.pos_finrank_generalized_eigenspace_of_has_eigenvalue Module.End.pos_finrank_genEigenspace_of_hasEigenvalue
 
 /-- A linear map maps a generalized eigenrange into itself. -/
-theorem map_generalizedEigenrange_le {f : End K V} {μ : K} {n : ℕ} :
-    Submodule.map f (f.generalizedEigenrange μ n) ≤ f.generalizedEigenrange μ n :=
+theorem map_genEigenrange_le {f : End K V} {μ : K} {n : ℕ} :
+    Submodule.map f (f.genEigenrange μ n) ≤ f.genEigenrange μ n :=
   calc
-    Submodule.map f (f.generalizedEigenrange μ n) =
+    Submodule.map f (f.genEigenrange μ n) =
       LinearMap.range (f * (f - algebraMap _ _ μ) ^ n) := by
-        rw [generalizedEigenrange]; exact (LinearMap.range_comp _ _).symm
+        rw [genEigenrange]; exact (LinearMap.range_comp _ _).symm
     _ = LinearMap.range ((f - algebraMap _ _ μ) ^ n * f) := by
         rw [Algebra.mul_sub_algebraMap_pow_commutes]
     _ = Submodule.map ((f - algebraMap _ _ μ) ^ n) (LinearMap.range f) := LinearMap.range_comp _ _
-    _ ≤ f.generalizedEigenrange μ n := LinearMap.map_le_range
+    _ ≤ f.genEigenrange μ n := LinearMap.map_le_range
 
-#align module.End.map_generalized_eigenrange_le Module.End.map_generalizedEigenrange_le
+#align module.End.map_generalized_eigenrange_le Module.End.map_genEigenrange_le
 
 lemma iSup_genEigenspace_le_smul (f : Module.End R M) (μ t : R) :
     (⨆ k, f.genEigenspace μ k) ≤ ⨆ k, (t • f).genEigenspace (t * μ) k := by
