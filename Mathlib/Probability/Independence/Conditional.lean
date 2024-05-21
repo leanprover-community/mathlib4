@@ -89,8 +89,8 @@ given `m'` with respect to measure `μ` if for any finite set of indices `s = {i
 any sets `f i_1 ∈ m i_1, ..., f i_n ∈ m i_n`, then
 `μ⟦⋂ i in s, f i | m'⟧ =ᵐ[μ] ∏ i in s, μ⟦f i | m'⟧ `.
 See `ProbabilityTheory.iCondIndep_iff`. -/
-def iCondIndep (m : ι → MeasurableSpace Ω) (μ : @Measure Ω mΩ := by volume_tac) [IsFiniteMeasure μ] :
-    Prop :=
+def iCondIndep (m : ι → MeasurableSpace Ω)
+    (μ : @Measure Ω mΩ := by volume_tac) [IsFiniteMeasure μ] : Prop :=
   kernel.iIndep m (condexpKernel (mΩ := mΩ) μ m') (μ.trim hm')
 
 end
