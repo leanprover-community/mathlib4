@@ -104,8 +104,7 @@ variable (R : Type uR) (A : Type uA) (M : Type uM)
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- The dual space of an R-module M is the R-module of linear maps `M → R`. -/
-@[reducible]
-def Dual :=
+abbrev Dual :=
   M →ₗ[R] R
 #align module.dual Module.Dual
 
@@ -1831,7 +1830,8 @@ theorem dualDistrib_dualDistribInvOfBasis_left_inverse (b : Basis ι R M) (c : B
     Basis.repr_self, ne_eq, _root_.map_sum, map_smul, homTensorHomMap_apply, compRight_apply,
     Basis.tensorProduct_apply, coeFn_sum, Finset.sum_apply, smul_apply, LinearEquiv.coe_coe,
     map_tmul, lid_tmul, smul_eq_mul, id_coe, id_eq]
-  rw [Finset.sum_eq_single i, Finset.sum_eq_single j]; simp
+  rw [Finset.sum_eq_single i, Finset.sum_eq_single j]
+  · simp
   all_goals { intros; simp [*] at * }
 
 -- Porting note: introduced to help with timeout in dualDistribEquivOfBasis
@@ -1842,7 +1842,8 @@ theorem dualDistrib_dualDistribInvOfBasis_right_inverse (b : Basis ι R M) (c : 
   simp only [Basis.tensorProduct_apply, Basis.coe_dualBasis, coe_comp, Function.comp_apply,
     dualDistribInvOfBasis_apply, dualDistrib_apply, Basis.coord_apply, Basis.repr_self,
     ne_eq, id_coe, id_eq]
-  rw [Finset.sum_eq_single i, Finset.sum_eq_single j]; simp
+  rw [Finset.sum_eq_single i, Finset.sum_eq_single j]
+  · simp
   all_goals { intros; simp [*] at * }
 
 /-- A linear equivalence between `Dual M ⊗ Dual N` and `Dual (M ⊗ N)` given bases for `M` and `N`.

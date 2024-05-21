@@ -23,8 +23,8 @@ variable [Zero β] [One β] [Add β] [Mul β] [Neg β] [Sub β] [Pow β ℕ] [SM
   [Pow β ℤ] [Sup β] [Inf β] (f : β → α) (hf : Injective f)
 
 /-- Pullback a `LinearOrderedSemifield` under an injective map. -/
-@[reducible] -- See note [reducible non-instances]
-def linearOrderedSemifield [LinearOrderedSemifield α] (zero : f 0 = 0) (one : f 1 = 1)
+-- See note [reducible non-instances]
+abbrev linearOrderedSemifield [LinearOrderedSemifield α] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (inv : ∀ x, f x⁻¹ = (f x)⁻¹) (div : ∀ x y, f (x / y) = f x / f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (nnqsmul : ∀ (q : ℚ≥0) (x), f (q • x) = q • f x)
@@ -37,8 +37,8 @@ def linearOrderedSemifield [LinearOrderedSemifield α] (zero : f 0 = 0) (one : f
 #align function.injective.linear_ordered_semifield Function.Injective.linearOrderedSemifield
 
 /-- Pullback a `LinearOrderedField` under an injective map. -/
-@[reducible] -- See note [reducible non-instances]
-def linearOrderedField [LinearOrderedField α] (zero : f 0 = 0) (one : f 1 = 1)
+-- See note [reducible non-instances]
+abbrev linearOrderedField [LinearOrderedField α] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (neg : ∀ x, f (-x) = -f x) (sub : ∀ x y, f (x - y) = f x - f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y)

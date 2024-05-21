@@ -79,7 +79,8 @@ theorem IsAtom.of_isAtom_coe_Iic {a : Set.Iic x} (ha : IsAtom a) : IsAtom (a : �
 
 theorem isAtom_iff_le_of_ge : IsAtom a ↔ a ≠ ⊥ ∧ ∀ b ≠ ⊥, b ≤ a → a ≤ b :=
   and_congr Iff.rfl <|
-    forall_congr' fun b => by simp only [Ne, @not_imp_comm (b = ⊥), not_imp, lt_iff_le_not_le]
+    forall_congr' fun b => by
+      simp only [Ne, @not_imp_comm (b = ⊥), Classical.not_imp, lt_iff_le_not_le]
 #align is_atom_iff isAtom_iff_le_of_ge
 
 end Preorder
@@ -547,8 +548,8 @@ instance {α} [LE α] [BoundedOrder α] [IsSimpleOrder α] : IsSimpleOrder αᵒ
   isSimpleOrder_iff_isSimpleOrder_orderDual.1 (by infer_instance)
 
 /-- A simple `BoundedOrder` induces a preorder. This is not an instance to prevent loops. -/
-protected def IsSimpleOrder.preorder {α} [LE α] [BoundedOrder α] [IsSimpleOrder α] : Preorder α
-    where
+protected def IsSimpleOrder.preorder {α} [LE α] [BoundedOrder α] [IsSimpleOrder α] :
+    Preorder α where
   le := (· ≤ ·)
   le_refl a := by rcases eq_bot_or_eq_top a with (rfl | rfl) <;> simp
   le_trans a b c := by
@@ -645,8 +646,7 @@ variable [DecidableEq α] [PartialOrder α] [BoundedOrder α] [IsSimpleOrder α]
 
 /-- Every simple lattice is isomorphic to `Bool`, regardless of order. -/
 @[simps]
-def equivBool {α} [DecidableEq α] [LE α] [BoundedOrder α] [IsSimpleOrder α] : α ≃ Bool
-    where
+def equivBool {α} [DecidableEq α] [LE α] [BoundedOrder α] [IsSimpleOrder α] : α ≃ Bool where
   toFun x := x = ⊤
   invFun x := x.casesOn ⊥ ⊤
   left_inv x := by rcases eq_bot_or_eq_top x with (rfl | rfl) <;> simp [bot_ne_top]
@@ -986,7 +986,7 @@ namespace «Prop»
   simp [IsCoatom, show ⊤ = True from rfl, fun q r : Prop => show q < r ↔ _ ∧ _ from .rfl]; tauto
 
 instance : IsSimpleOrder Prop where
-  eq_bot_or_eq_top p := by by_cases h : p <;> simp [h] <;> tauto
+  eq_bot_or_eq_top p := by simp [em']
 
 end «Prop»
 

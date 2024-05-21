@@ -46,8 +46,7 @@ variable (Q : QuadraticForm R M)
 namespace EquivEven
 
 /-- The quadratic form on the augmented vector space `M × R` sending `v + r•e0` to `Q v - r^2`. -/
-@[reducible]
-def Q' : QuadraticForm R (M × R) :=
+abbrev Q' : QuadraticForm R (M × R) :=
   Q.prod <| -@QuadraticForm.sq R _
 set_option linter.uppercaseLean3 false in
 #align clifford_algebra.equiv_even.Q' CliffordAlgebra.EquivEven.Q'
@@ -248,14 +247,7 @@ theorem coe_toEven_reverse_involute (x : CliffordAlgebra Q) :
     simp only [involute_ι, Subalgebra.coe_neg, toEven_ι, reverse.map_mul, reverse_v, reverse_e0,
       reverse_ι, neg_e0_mul_v, map_neg]
   | mul x y hx hy => simp only [map_mul, Subalgebra.coe_mul, reverse.map_mul, hx, hy]
-  | add x y hx hy =>
-    -- TODO: The `()` around `map_add` are a regression from leanprover/lean4#2478
-    rw [map_add, map_add]
-    erw [RingHom.map_add, RingHom.map_add]
-    dsimp
-    -- The line below used to be sufficient but we need to use `RingHom.map_add` to avoid a timeout
-    -- and it only unifies at `default` transparency #8386
-    simp only [(map_add), Subalgebra.coe_add, hx, hy]
+  | add x y hx hy => simp only [map_add, Subalgebra.coe_add, hx, hy]
 #align clifford_algebra.coe_to_even_reverse_involute CliffordAlgebra.coe_toEven_reverse_involute
 
 /-! ### Constructions needed for `CliffordAlgebra.evenEquivEvenNeg` -/
@@ -269,9 +261,7 @@ def evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) :
     letI : HasDistribNeg (even Q') := NonUnitalNonAssocRing.toHasDistribNeg;
     { bilin := -(even.ι Q' : _).bilin
       contract := fun m => by
-      -- Not sure what causes the timeout with unqualified `map_neg`,
-      -- the synthInstance trace looks okay #8386
-        simp_rw [LinearMap.neg_apply, EvenHom.contract, h, QuadraticForm.neg_apply, RingHom.map_neg,
+        simp_rw [LinearMap.neg_apply, EvenHom.contract, h, QuadraticForm.neg_apply, map_neg,
           neg_neg]
       contract_mid := fun m₁ m₂ m₃ => by
         simp_rw [LinearMap.neg_apply, neg_mul_neg, EvenHom.contract_mid, h,

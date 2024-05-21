@@ -3,10 +3,9 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Scott Morrison
 -/
-import Mathlib.Topology.Instances.Real
-import Mathlib.Topology.Algebra.Field
-import Mathlib.Order.Interval.Set.ProjIcc
 import Mathlib.Algebra.Order.Interval.Set.Instances
+import Mathlib.Order.Interval.Set.ProjIcc
+import Mathlib.Topology.Instances.Real
 
 #align_import topology.unit_interval from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 

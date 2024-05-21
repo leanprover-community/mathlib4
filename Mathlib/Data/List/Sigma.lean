@@ -272,6 +272,9 @@ theorem lookupAll_eq_nil {a : α} :
   | ⟨a', b⟩ :: l => by
     by_cases h : a = a'
     · subst a'
+      simp only [lookupAll_cons_eq, mem_cons, Sigma.mk.inj_iff, heq_eq_eq, true_and, not_or,
+        false_iff, not_forall, not_and, not_not]
+      use b
       simp
     · simp [h, lookupAll_eq_nil]
 #align list.lookup_all_eq_nil List.lookupAll_eq_nil

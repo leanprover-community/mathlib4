@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
 import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Algebra.Regular.Pow
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Data.Finsupp.Antidiagonal
@@ -168,7 +167,7 @@ theorem single_eq_monomial (s : σ →₀ ℕ) (a : R) : Finsupp.single s a = mo
 #align mv_polynomial.single_eq_monomial MvPolynomial.single_eq_monomial
 
 theorem mul_def : p * q = p.sum fun m a => q.sum fun n b => monomial (m + n) (a * b) :=
-  rfl
+  AddMonoidAlgebra.mul_def
 #align mv_polynomial.mul_def MvPolynomial.mul_def
 
 /-- `C a` is the constant polynomial with value `a` -/
@@ -178,6 +177,7 @@ def C : R →+* MvPolynomial σ R :=
 
 variable (R σ)
 
+@[simp]
 theorem algebraMap_eq : algebraMap R (MvPolynomial σ R) = C :=
   rfl
 #align mv_polynomial.algebra_map_eq MvPolynomial.algebraMap_eq
@@ -637,8 +637,7 @@ theorem coeff_zero_X (i : σ) : coeff 0 (X i : MvPolynomial σ R) = 0 :=
 
 /-- `MvPolynomial.coeff m` but promoted to an `AddMonoidHom`. -/
 @[simps]
-def coeffAddMonoidHom (m : σ →₀ ℕ) : MvPolynomial σ R →+ R
-    where
+def coeffAddMonoidHom (m : σ →₀ ℕ) : MvPolynomial σ R →+ R where
   toFun := coeff m
   map_zero' := coeff_zero m
   map_add' := coeff_add m
@@ -881,8 +880,7 @@ section ConstantCoeff
 /-- `constantCoeff p` returns the constant term of the polynomial `p`, defined as `coeff 0 p`.
 This is a ring homomorphism.
 -/
-def constantCoeff : MvPolynomial σ R →+* R
-    where
+def constantCoeff : MvPolynomial σ R →+* R where
   toFun := coeff 0
   map_one' := by simp [AddMonoidAlgebra.one_def]
   map_mul' := by classical simp [coeff_mul, Finsupp.support_single_ne_zero]
@@ -931,7 +929,6 @@ theorem constantCoeff_comp_C : constantCoeff.comp (C : R →+* MvPolynomial σ R
   exact constantCoeff_C σ x
 #align mv_polynomial.constant_coeff_comp_C MvPolynomial.constantCoeff_comp_C
 
-@[simp]
 theorem constantCoeff_comp_algebraMap :
     constantCoeff.comp (algebraMap R (MvPolynomial σ R)) = RingHom.id R :=
   constantCoeff_comp_C _ _
@@ -1045,8 +1042,7 @@ theorem eval₂_pow {p : MvPolynomial σ R} : ∀ {n : ℕ}, (p ^ n).eval₂ f g
 #align mv_polynomial.eval₂_pow MvPolynomial.eval₂_pow
 
 /-- `MvPolynomial.eval₂` as a `RingHom`. -/
-def eval₂Hom (f : R →+* S₁) (g : σ → S₁) : MvPolynomial σ R →+* S₁
-    where
+def eval₂Hom (f : R →+* S₁) (g : σ → S₁) : MvPolynomial σ R →+* S₁ where
   toFun := eval₂ f g
   map_one' := eval₂_one _ _
   map_mul' _ _ := eval₂_mul _ _
@@ -1459,6 +1455,7 @@ section Aeval
 variable [Algebra R S₁] [CommSemiring S₂]
 variable (f : σ → S₁)
 
+@[simp]
 theorem algebraMap_apply (r : R) : algebraMap R (MvPolynomial σ S₁) r = C (algebraMap R S₁ r) := rfl
 #align mv_polynomial.algebra_map_apply MvPolynomial.algebraMap_apply
 
@@ -1475,6 +1472,10 @@ theorem aeval_def (p : MvPolynomial σ R) : aeval f p = eval₂ (algebraMap R S�
 theorem aeval_eq_eval₂Hom (p : MvPolynomial σ R) : aeval f p = eval₂Hom (algebraMap R S₁) f p :=
   rfl
 #align mv_polynomial.aeval_eq_eval₂_hom MvPolynomial.aeval_eq_eval₂Hom
+
+@[simp]
+lemma coe_aeval_eq_eval : RingHomClass.toRingHom (MvPolynomial.aeval f) = MvPolynomial.eval f :=
+  rfl
 
 @[simp]
 theorem aeval_X (s : σ) : aeval f (X s : MvPolynomial _ R) = f s :=
@@ -1642,12 +1643,10 @@ theorem aevalTower_comp_C : (aevalTower g y : MvPolynomial σ R →+* A).comp C 
   RingHom.ext <| aevalTower_C _ _
 #align mv_polynomial.aeval_tower_comp_C MvPolynomial.aevalTower_comp_C
 
-@[simp]
 theorem aevalTower_algebraMap (x : R) : aevalTower g y (algebraMap R (MvPolynomial σ R) x) = g x :=
   eval₂_C _ _ _
 #align mv_polynomial.aeval_tower_algebra_map MvPolynomial.aevalTower_algebraMap
 
-@[simp]
 theorem aevalTower_comp_algebraMap :
     (aevalTower g y : MvPolynomial σ R →+* A).comp (algebraMap R (MvPolynomial σ R)) = g :=
   aevalTower_comp_C _ _

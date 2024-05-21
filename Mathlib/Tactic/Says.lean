@@ -3,9 +3,9 @@ Copyright (c) 2023 Kim Liesinger. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Liesinger
 -/
-import Std.Data.String.Basic
+import Batteries.Data.String.Basic
 import Lean.Meta.Tactic.TryThis
-import Std.Linter.UnreachableTactic
+import Batteries.Linter.UnreachableTactic
 import Qq.Match
 
 /-!
@@ -67,7 +67,7 @@ def evalTacticCapturingMessages (tac : TSyntax `tactic) (only : Message → Bool
   try
     evalTactic tac
     let (capture, leave) := (← getThe Core.State).messages.msgs.toList.partition only
-    msgs := ⟨leave.foldl (fun m => m.push) msgs.msgs⟩
+    msgs := leave.foldl (·.add) msgs
     return capture
   catch e =>
     msgs := msgs ++ (← getThe Core.State).messages
@@ -91,7 +91,7 @@ def evalTacticCapturingTryThis (tac : TSyntax `tactic) : TacticM (TSyntax ``tact
   | _ => throwError m!"Tactic `{tac}` produced multiple messages."
   let tryThis ← match msg.dropPrefix? "Try this:" with
   | none => throwError m!"Tactic output did not begin with 'Try this:': {msg}"
-  | some S => pure (Lean.removeLeadingSpaces S.toString)
+  | some S => pure S.toString.removeLeadingSpaces
   match parseAsTacticSeq (← getEnv) tryThis with
   | .ok stx => return stx
   | .error err => throwError m!"Failed to parse tactic output: {tryThis}\n{err}"

@@ -7,6 +7,7 @@ import Mathlib.Data.DFinsupp.Lex
 import Mathlib.Order.GameAdd
 import Mathlib.Order.Antisymmetrization
 import Mathlib.SetTheory.Ordinal.Basic
+import Mathlib.Tactic.AdaptationNote
 
 #align_import data.dfinsupp.well_founded from "leanprover-community/mathlib"@"e9b8651eb1ad354f4de6be35a38ef31efcd2cfaa"
 
@@ -81,7 +82,7 @@ theorem lex_fibration [∀ (i) (s : Set ι), Decidable (i ∈ s)] :
       simp only [piecewise_apply, Set.mem_setOf_eq]
       split_ifs with h₁ h₂ <;> try rfl
       · rw [hr j h₂, if_pos (h₁ h₂)]
-      · rw [not_imp] at h₁
+      · rw [Classical.not_imp] at h₁
         rw [hr j h₁.1, if_neg h₁.2]
   · refine ⟨⟨{ j | r j i ∧ j ∈ p }, x₁, piecewise x₂ x { j | r j i }⟩,
       .snd ⟨i, fun j hj ↦ ?_, ?_⟩, ?_⟩ <;> simp only [piecewise_apply, Set.mem_setOf_eq]
@@ -224,8 +225,8 @@ protected theorem DFinsupp.wellFoundedLT [∀ i, Zero (α i)] [∀ i, Preorder (
       refine Lex.wellFounded' ?_ (fun i ↦ IsWellFounded.wf) ?_
       · rintro i ⟨a⟩
         apply hbot
-      · -- Adaptation note: nightly-2024-03-16: simp was
-        -- simp (config := { unfoldPartialApp := true }) only [Function.swap]
+      · #adaptation_note /-- nightly-2024-03-16: simp was
+        simp (config := { unfoldPartialApp := true }) only [Function.swap] -/
         simp only [Function.swap_def]
         exact IsWellFounded.wf
     refine Subrelation.wf (fun h => ?_) <| InvImage.wf (mapRange (fun i ↦ e i) fun _ ↦ rfl) this
