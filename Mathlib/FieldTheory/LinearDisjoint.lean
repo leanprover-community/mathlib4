@@ -459,7 +459,8 @@ def _root_.AlgebraicIndependent.algEquivField {ι F E : Type*} {x : ι → E} [F
         exact ⟨⟨0, 1⟩, by simp [this]⟩
       use ⟨⟨_, h1⟩, ⟨⟨_, h2⟩, mem_nonZeroDivisors_of_ne_zero fun h ↦ hzero congr(Subtype.val $h)⟩⟩
       exact Subtype.val_injective ((div_eq_iff hzero).1 h).symm
-    exists_of_eq := fun h ↦ by use 1; rw [Subtype.val_injective congr(algebraMap _ E $(h))]
+    exists_of_eq := fun {x} {y} h ↦ by
+      use 1; rw [show x = y from Subtype.val_injective congr(algebraMap _ E $(h))]
   }
   exact IsFractionRing.algEquivOfAlgEquiv _ _ hx.aevalEquiv
 
@@ -522,15 +523,17 @@ end LinearDisjoint
 
 end IntermediateField
 
--- section Absolute
+namespace Field
 
--- variable (F : Type u) (E : Type v) [Field F] [Field E] [Algebra F E]
+variable (F : Type u) (E : Type v) [Field F] [Field E] [Algebra F E]
 
--- variable (K : Type w) [Field K] [Algebra F K]
+variable (K : Type w) [Field K] [Algebra F K]
 
--- /-- Two abstract fields `E` and `K` over `F` are called linearly disjoint, if their
--- tensor product over `F` is a field. -/
--- def LinearDisjoint := IsField (E ⊗[F] K)
+/-- Two abstract fields `E` and `K` over `F` are called linearly disjoint, if their
+tensor product over `F` is a field. -/
+@[mk_iff]
+protected structure LinearDisjoint : Prop where
+  isField : IsField (E ⊗[F] K)
 
 -- set_option linter.unusedVariables false in
 -- variable {F E K} in
@@ -539,4 +542,4 @@ end IntermediateField
 -- proof_wanted LinearDisjoint.isAlgebraic (H : LinearDisjoint F E K) :
 --     Algebra.IsAlgebraic F E ∨ Algebra.IsAlgebraic F K
 
--- end Absolute
+end Field

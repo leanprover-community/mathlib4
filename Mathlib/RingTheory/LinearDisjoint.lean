@@ -516,7 +516,7 @@ theorem of_finrank_coprime_of_free [Module.Free R A] [Module.Free R B]
 
 variable (A B)
 
-theorem of_linearDisjoint_finite_left (hi : Algebra.IsIntegral R A)
+theorem of_linearDisjoint_finite_left [Algebra.IsIntegral R A]
     (H : ∀ A' : Subalgebra R S, A' ≤ A → [Module.Finite R A'] → A'.LinearDisjoint B) :
     A.LinearDisjoint B := by
   rw [linearDisjoint_iff, Submodule.linearDisjoint_iff]
@@ -527,7 +527,8 @@ theorem of_linearDisjoint_finite_left (hi : Algebra.IsIntegral R A)
   have hs' : (s : Set S) ⊆ A := by rwa [← hs, Submodule.span_le] at hM
   let A' := Algebra.adjoin R (s : Set S)
   have hf' : Submodule.FG (toSubmodule A') := fg_adjoin_of_finite s.finite_toSet fun x hx ↦
-    (isIntegral_algHom_iff A.val Subtype.val_injective).2 (hi ⟨x, hs' hx⟩)
+    (isIntegral_algHom_iff A.val Subtype.val_injective).2
+      (Algebra.IsIntegral.isIntegral (R := R) (A := A) ⟨x, hs' hx⟩)
   replace hf' : Module.Finite R A' := Module.Finite.iff_fg.2 hf'
   have hA : toSubmodule A' ≤ toSubmodule A := Algebra.adjoin_le_iff.2 hs'
   replace h : {x, y} ⊆ (LinearMap.range (LinearMap.rTensor (toSubmodule B)
@@ -542,20 +543,20 @@ theorem of_linearDisjoint_finite_left (hi : Algebra.IsIntegral R A)
   rw [← hx', ← hy']; congr
   exact (H A' hA).1.1 (by simp [← Submodule.mulMap_comp_rTensor _ _ _ hA, hx', hy', hxy])
 
-theorem of_linearDisjoint_finite_right (hi : Algebra.IsIntegral R B)
+theorem of_linearDisjoint_finite_right [Algebra.IsIntegral R B]
     (H : ∀ B' : Subalgebra R S, B' ≤ B → [Module.Finite R B'] → A.LinearDisjoint B') :
     A.LinearDisjoint B :=
-  (of_linearDisjoint_finite_left B A hi fun B' hB' _ ↦ (H B' hB').symm).symm
+  (of_linearDisjoint_finite_left B A fun B' hB' _ ↦ (H B' hB').symm).symm
 
 variable {A B}
 
 theorem of_linearDisjoint_finite
-    (hA : Algebra.IsIntegral R A) (hB : Algebra.IsIntegral R B)
+    [Algebra.IsIntegral R A] [Algebra.IsIntegral R B]
     (H : ∀ (A' B' : Subalgebra R S), A' ≤ A → B' ≤ B →
       [Module.Finite R A'] → [Module.Finite R B'] → A'.LinearDisjoint B') :
     A.LinearDisjoint B :=
-  of_linearDisjoint_finite_left A B hA fun _ hA' _ ↦
-    of_linearDisjoint_finite_right _ B hB fun _ hB' _ ↦ H _ _ hA' hB'
+  of_linearDisjoint_finite_left A B fun _ hA' _ ↦
+    of_linearDisjoint_finite_right _ B fun _ hB' _ ↦ H _ _ hA' hB'
 
 end LinearDisjoint
 
