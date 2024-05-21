@@ -431,6 +431,13 @@ theorem nmem_nonZeroDivisors_iff {P : R[X]} : P ∉ R[X]⁰ ↔ ∃ a : R, a ≠
       exact hi <| by rw [coeff_eq_zero_of_natDegree_lt H1, zero_smul]
     omega
 
+open nonZeroDivisors in
+lemma mem_nonZeroDivisors_iff {P : R[X]} : P ∈ R[X]⁰ ↔ ∀ a : R, a • P = 0 → a = 0 := by
+  refine ⟨fun h a ha ↦ C_eq_zero.1 <| h (C a) (smul_eq_C_mul a ▸ ha), fun h ↦  ?_⟩
+  contrapose! h
+  obtain ⟨a, ha⟩ := nmem_nonZeroDivisors_iff.1 h
+  exact ⟨a, ha.2, ha.1⟩
+
 end CommSemiring
 
 section CommRing
@@ -520,10 +527,10 @@ section nonZeroDivisors
 open scoped nonZeroDivisors
 
 theorem Monic.mem_nonZeroDivisors {p : R[X]} (h : p.Monic) : p ∈ R[X]⁰ :=
-  mem_nonZeroDivisors_iff.2 fun _ hx ↦ (mul_left_eq_zero_iff h).1 hx
+  _root_.mem_nonZeroDivisors_iff.2 fun _ hx ↦ (mul_left_eq_zero_iff h).1 hx
 
 theorem mem_nonZeroDivisors_of_leadingCoeff {p : R[X]} (h : p.leadingCoeff ∈ R⁰) : p ∈ R[X]⁰ := by
-  refine mem_nonZeroDivisors_iff.2 fun x hx ↦ leadingCoeff_eq_zero.1 ?_
+  refine _root_.mem_nonZeroDivisors_iff.2 fun x hx ↦ leadingCoeff_eq_zero.1 ?_
   by_contra hx'
   rw [← mul_right_mem_nonZeroDivisors_eq_zero_iff h] at hx'
   simp only [← leadingCoeff_mul' hx', hx, leadingCoeff_zero, not_true] at hx'
