@@ -286,7 +286,7 @@ theorem toLin_restrict_ker_eq_inf_orthogonal (B : BilinForm K V) (W : Subspace K
       rw [hker]
       rfl
   · simp_rw [Submodule.mem_map, LinearMap.mem_ker]
-    refine' ⟨⟨x, hx.1⟩, _, rfl⟩
+    refine ⟨⟨x, hx.1⟩, ?_, rfl⟩
     ext y
     change B x y = 0
     rw [b]

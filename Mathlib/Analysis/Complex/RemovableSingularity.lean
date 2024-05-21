@@ -36,7 +36,7 @@ theorem analyticAt_of_differentiable_on_punctured_nhds_of_continuousAt {f : ℂ 
   rcases (nhdsWithin_hasBasis nhds_basis_closedBall _).mem_iff.1 hd with ⟨R, hR0, hRs⟩
   lift R to ℝ≥0 using hR0.le
   replace hc : ContinuousOn f (closedBall c R) := by
-    refine' fun z hz => ContinuousAt.continuousWithinAt _
+    refine fun z hz => ContinuousAt.continuousWithinAt ?_
     rcases eq_or_ne z c with (rfl | hne)
     exacts [hc, (hRs ⟨hz, hne⟩).continuousAt]
   exact (hasFPowerSeriesOnBall_of_differentiable_off_countable (countable_singleton c) hc

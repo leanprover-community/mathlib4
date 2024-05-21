@@ -173,7 +173,7 @@ section
 variable [HasZeroMorphisms V] [HasEqualizers V]
 
 theorem exact_comp_hom_inv_comp (i : B ≅ D) (h : Exact f g) : Exact (f ≫ i.hom) (i.inv ≫ g) := by
-  refine' ⟨by simp [h.w], _⟩
+  refine ⟨by simp [h.w], ?_⟩
   rw [imageToKernel_comp_hom_inv_comp]
   haveI := h.epi
   infer_instance
@@ -188,7 +188,7 @@ theorem exact_comp_hom_inv_comp_iff (i : B ≅ D) : Exact (f ≫ i.hom) (i.inv �
 #align category_theory.exact_comp_hom_inv_comp_iff CategoryTheory.exact_comp_hom_inv_comp_iff
 
 theorem exact_epi_comp (hgh : Exact g h) [Epi f] : Exact (f ≫ g) h := by
-  refine' ⟨by simp [hgh.w], _⟩
+  refine ⟨by simp [hgh.w], ?_⟩
   rw [imageToKernel_comp_left]
   · haveI := hgh.epi
     infer_instance
@@ -223,7 +223,7 @@ theorem exact_comp_iso [IsIso h] : Exact f (g ≫ h) ↔ Exact f g :=
 #align category_theory.exact_comp_iso CategoryTheory.exact_comp_iso
 
 theorem exact_kernelSubobject_arrow : Exact (kernelSubobject f).arrow f := by
-  refine' ⟨by simp, _⟩
+  refine ⟨by simp, ?_⟩
   refine @IsIso.epi_of_iso _ _ _ _ _ ?_
   exact ⟨⟨factorThruImageSubobject _, by aesop_cat, by aesop_cat⟩⟩
 #align category_theory.exact_kernel_subobject_arrow CategoryTheory.exact_kernelSubobject_arrow
