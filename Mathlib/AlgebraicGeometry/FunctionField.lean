@@ -125,12 +125,14 @@ theorem genericPoint_eq_bot_of_affine (R : CommRingCat) [IsDomain R] :
 
 instance functionField_isFractionRing_of_affine (R : CommRingCat.{u}) [IsDomain R] :
     IsFractionRing R (Scheme.Spec.obj <| op R).functionField := by
-  convert StructureSheaf.IsLocalization.to_stalk R (genericPoint _)
+  convert StructureSheaf.IsLocalization.to_stalk R
+    (genericPoint (Scheme.Spec.obj (op R)).toPresheafedSpace)
   delta IsFractionRing IsLocalization.AtPrime
   -- Porting note: `congr` does not work for `Iff`
   apply Eq.to_iff
   congr 1
-  rw [genericPoint_eq_bot_of_affine]
+  #adaptation_note /-- Needs `erw` rather than `rw` after nightly-2024-05-19. -/
+  erw [genericPoint_eq_bot_of_affine]
   ext
   exact mem_nonZeroDivisors_iff_ne_zero
 #align algebraic_geometry.function_field_is_fraction_ring_of_affine AlgebraicGeometry.functionField_isFractionRing_of_affine

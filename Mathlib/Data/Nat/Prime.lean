@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Algebra.Associated
-import Mathlib.Data.Int.Dvd.Basic
-import Mathlib.Data.Int.Units
+import Mathlib.Algebra.GroupPower.CovariantClass
+import Mathlib.Algebra.Order.Ring.CharZero
+import Mathlib.Algebra.Ring.Int
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Data.Nat.Parity
 import Mathlib.Order.Bounds.Basic
 
 #align_import data.nat.prime from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
@@ -243,10 +243,19 @@ theorem minFac_lemma (n k : ℕ) (h : ¬n < k * k) : sqrt n - k < sqrt n + 2 - k
   (tsub_lt_tsub_iff_right <| le_sqrt.2 <| le_of_not_gt h).2 <| Nat.lt_add_of_pos_right (by decide)
 #align nat.min_fac_lemma Nat.minFac_lemma
 
-/-- If `n < k * k`, then `minFacAux n k = n`, if `k | n`, then `minFacAux n k = k`.
-  Otherwise, `minFacAux n k = minFacAux n (k+2)` using well-founded recursion.
-  If `n` is odd and `1 < n`, then `minFacAux n 3` is the smallest prime factor of `n`. -/
-def minFacAux (n : ℕ) : ℕ → ℕ
+/--
+If `n < k * k`, then `minFacAux n k = n`, if `k | n`, then `minFacAux n k = k`.
+Otherwise, `minFacAux n k = minFacAux n (k+2)` using well-founded recursion.
+If `n` is odd and `1 < n`, then `minFacAux n 3` is the smallest prime factor of `n`.
+
+By default this well-founded recursion would be irreducible.
+This prevents use `decide` to resolve `Nat.prime n` for small values of `n`,
+so we mark this as `@[semireducible]`.
+
+In future, we may want to remove this annotation and instead use `norm_num` instead of `decide`
+in these situations.
+-/
+@[semireducible] def minFacAux (n : ℕ) : ℕ → ℕ
   | k =>
     if n < k * k then n
     else

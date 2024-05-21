@@ -37,7 +37,6 @@ info: Try these:
 #guard_msgs in
 example : 37^2 - 35^2 = 72 * 2 := by hint
 
-unseal Nat.minFacAux in
 /--
 info: Try these:
 • decide

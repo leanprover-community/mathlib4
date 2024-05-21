@@ -298,17 +298,16 @@ def compSL : (F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ�
     1 fun f g => by simpa only [one_mul] using opNorm_comp_le f g
 #align continuous_linear_map.compSL ContinuousLinearMap.compSL
 
-theorem norm_compSL_le :
-    #adaptation_note
-    /--
-    Before https://github.com/leanprover/lean4/pull/4119 we had to create a local instance:
-    ```
-    letI : Norm ((F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G) :=
-      hasOpNorm (𝕜₂ := 𝕜₃) (E := F →SL[σ₂₃] G) (F := (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G)
-    ```
-    -/
-    set_option maxSynthPendingDepth 2 in
-    ‖compSL E F G σ₁₂ σ₂₃‖ ≤ 1 :=
+#adaptation_note
+/--
+Before https://github.com/leanprover/lean4/pull/4119 we had to create a local instance:
+```
+letI : Norm ((F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G) :=
+  hasOpNorm (𝕜₂ := 𝕜₃) (E := F →SL[σ₂₃] G) (F := (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G)
+```
+-/
+set_option maxSynthPendingDepth 2 in
+theorem norm_compSL_le : ‖compSL E F G σ₁₂ σ₂₃‖ ≤ 1 :=
   LinearMap.mkContinuous₂_norm_le _ zero_le_one _
 #align continuous_linear_map.norm_compSL_le ContinuousLinearMap.norm_compSL_le
 
@@ -340,17 +339,16 @@ def compL : (Fₗ →L[𝕜] Gₗ) →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] E �
   compSL E Fₗ Gₗ (RingHom.id 𝕜) (RingHom.id 𝕜)
 #align continuous_linear_map.compL ContinuousLinearMap.compL
 
-theorem norm_compL_le :
-    #adaptation_note
-    /--
-    Before https://github.com/leanprover/lean4/pull/4119 we had to create a local instance:
-    ```
-    letI : Norm ((Fₗ →L[𝕜] Gₗ) →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] E →L[𝕜] Gₗ) :=
-      hasOpNorm (𝕜₂ := 𝕜) (E := Fₗ →L[𝕜] Gₗ) (F := (E →L[𝕜] Fₗ) →L[𝕜] E →L[𝕜] Gₗ)
-    ```
-    -/
-    set_option maxSynthPendingDepth 2 in
-    ‖compL 𝕜 E Fₗ Gₗ‖ ≤ 1 :=
+#adaptation_note
+/--
+Before https://github.com/leanprover/lean4/pull/4119 we had to create a local instance:
+```
+letI : Norm ((Fₗ →L[𝕜] Gₗ) →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] E →L[𝕜] Gₗ) :=
+  hasOpNorm (𝕜₂ := 𝕜) (E := Fₗ →L[𝕜] Gₗ) (F := (E →L[𝕜] Fₗ) →L[𝕜] E →L[𝕜] Gₗ)
+```
+-/
+set_option maxSynthPendingDepth 2 in
+theorem norm_compL_le : ‖compL 𝕜 E Fₗ Gₗ‖ ≤ 1 :=
   norm_compSL_le _ _ _ _ _
 #align continuous_linear_map.norm_compL_le ContinuousLinearMap.norm_compL_le
 
@@ -385,8 +383,7 @@ letI : NormedSpace 𝕜 ((Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ)
 ```
 -/
 set_option maxSynthPendingDepth 2 in
-theorem norm_precompR_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) :
-    ‖precompR Eₗ L‖ ≤ ‖L‖ :=
+theorem norm_precompR_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : ‖precompR Eₗ L‖ ≤ ‖L‖ :=
   calc
     ‖precompR Eₗ L‖ ≤ ‖compL 𝕜 Eₗ Fₗ Gₗ‖ * ‖L‖ := opNorm_comp_le _ _
     _ ≤ 1 * ‖L‖ := mul_le_mul_of_nonneg_right (norm_compL_le _ _ _ _) (norm_nonneg L)
@@ -403,8 +400,7 @@ letI : Norm ((Eₗ →L[𝕜] E) →L[𝕜] Fₗ →L[𝕜] Eₗ →L[𝕜] Gₗ
 ```
 -/
 set_option maxSynthPendingDepth 2 in
-theorem norm_precompL_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) :
-    ‖precompL Eₗ L‖ ≤ ‖L‖ := by
+theorem norm_precompL_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : ‖precompL Eₗ L‖ ≤ ‖L‖ := by
   rw [precompL, opNorm_flip, ← opNorm_flip L]
   exact norm_precompR_le _ L.flip
 #align continuous_linear_map.norm_precompL_le ContinuousLinearMap.norm_precompL_le
