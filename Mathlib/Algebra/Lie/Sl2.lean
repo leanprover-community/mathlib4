@@ -96,29 +96,29 @@ namespace HasPrimitiveVectorWith
 
 variable {m : M} {μ : R} {t : IsSl2Triple h e f} (P : HasPrimitiveVectorWith t m μ)
 
-local notation "ψ" n => ((toEndomorphism R L M f) ^ n) m
+local notation "ψ" n => ((toEnd R L M f) ^ n) m
 
-lemma lie_h_pow_toEndomorphism_f (n : ℕ) :
+lemma lie_h_pow_toEnd_f (n : ℕ) :
     ⁅h, ψ n⁆ = (μ - 2 * n) • ψ n := by
   induction' n with n ih
   · simpa using P.lie_h
-  · rw [pow_succ', LinearMap.mul_apply, toEndomorphism_apply_apply, Nat.cast_add, Nat.cast_one,
+  · rw [pow_succ', LinearMap.mul_apply, toEnd_apply_apply, Nat.cast_add, Nat.cast_one,
       leibniz_lie h, t.lie_lie_smul_f R, ← neg_smul, ih, lie_smul, smul_lie, ← add_smul]
     congr
     ring
 
-lemma lie_f_pow_toEndomorphism_f (n : ℕ) :
+lemma lie_f_pow_toEnd_f (n : ℕ) :
     ⁅f, ψ n⁆ = ψ (n + 1) := by
   simp [pow_succ']
 
-lemma lie_e_pow_succ_toEndomorphism_f (n : ℕ) :
+lemma lie_e_pow_succ_toEnd_f (n : ℕ) :
     ⁅e, ψ (n + 1)⁆ = ((n + 1) * (μ - n)) • ψ n := by
   induction' n with n ih
-  · simp only [zero_add, pow_one, toEndomorphism_apply_apply, Nat.cast_zero, sub_zero, one_mul,
+  · simp only [zero_add, pow_one, toEnd_apply_apply, Nat.cast_zero, sub_zero, one_mul,
       pow_zero, LinearMap.one_apply, leibniz_lie e, t.lie_e_f, P.lie_e, P.lie_h, lie_zero,
       add_zero]
-  · rw [pow_succ', LinearMap.mul_apply, toEndomorphism_apply_apply, leibniz_lie e, t.lie_e_f,
-      lie_h_pow_toEndomorphism_f P, ih, lie_smul, lie_f_pow_toEndomorphism_f, ← add_smul,
+  · rw [pow_succ', LinearMap.mul_apply, toEnd_apply_apply, leibniz_lie e, t.lie_e_f,
+      lie_h_pow_toEnd_f P, ih, lie_smul, lie_f_pow_toEnd_f, ← add_smul,
       Nat.cast_add, Nat.cast_one]
     congr
     ring
@@ -130,16 +130,16 @@ lemma exists_nat [IsNoetherian R M] [NoZeroSMulDivisors R M] [IsDomain R] [CharZ
   suffices ∃ n : ℕ, (ψ n) = 0 by
     obtain ⟨n, hn₁, hn₂⟩ := Nat.exists_not_and_succ_of_not_zero_of_exists P.ne_zero this
     refine ⟨n, ?_⟩
-    have := lie_e_pow_succ_toEndomorphism_f P n
+    have := lie_e_pow_succ_toEnd_f P n
     rw [hn₂, lie_zero, eq_comm, smul_eq_zero_iff_left hn₁, mul_eq_zero, sub_eq_zero] at this
     exact this.resolve_left <| Nat.cast_add_one_ne_zero n
   have hs : (range <| fun (n : ℕ) ↦ μ - 2 * n).Infinite := by
     rw [infinite_range_iff (fun n m ↦ by simp)]; infer_instance
   by_contra! contra
-  exact hs ((toEndomorphism R L M h).eigenvectors_linearIndependent
+  exact hs ((toEnd R L M h).eigenvectors_linearIndependent
     {μ - 2 * n | n : ℕ}
     (fun ⟨s, hs⟩ ↦ ψ Classical.choose hs)
-    (fun ⟨r, hr⟩ ↦ by simp [lie_h_pow_toEndomorphism_f P, Classical.choose_spec hr, contra,
+    (fun ⟨r, hr⟩ ↦ by simp [lie_h_pow_toEnd_f P, Classical.choose_spec hr, contra,
       Module.End.HasEigenvector, Module.End.mem_eigenspace_iff])).finite
 
 end HasPrimitiveVectorWith
