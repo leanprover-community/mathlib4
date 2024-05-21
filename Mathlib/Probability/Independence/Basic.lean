@@ -415,7 +415,7 @@ end FromMeasurableSpacesToSetsOfSets
 
 section FromPiSystemsToMeasurableSpaces
 
-variable {m : ι → MeasurableSpace Ω} {m1 m2 : MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω} {μ : Measure Ω}
+variable {m : ι → MeasurableSpace Ω} {m1 m2 _mΩ : MeasurableSpace Ω} {μ : Measure Ω}
 
 /-! ### Independence of generating π-systems implies independence of measurable space structures -/
 
