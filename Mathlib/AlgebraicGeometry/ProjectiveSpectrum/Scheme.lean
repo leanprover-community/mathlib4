@@ -704,7 +704,7 @@ lemma mk_mem_toSpec {f} (x : Proj| pbo f)
   exact ProjIsoSpecTopComponent.ToSpec.mk_mem_carrier _ _
 
 lemma toSpec_preimage_basicOpen {f}
-      (t : HomogeneousLocalization.NumDenSameDeg 𝒜 (.powers f)) :
+    (t : HomogeneousLocalization.NumDenSameDeg 𝒜 (.powers f)) :
     toSpec 𝒜 f ⁻¹ᵁ (sbo (.mk t)) = Opens.comap ⟨_, continuous_subtype_val⟩ (pbo t.num.1) := by
   ext1
   simp only [Opens.map_coe]
