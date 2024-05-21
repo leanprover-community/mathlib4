@@ -224,7 +224,8 @@ theorem mem_of_self : m ∈ of m := List.mem_singleton_self _
 theorem mem_mul {a b : FreeMonoid α} : m ∈ (a * b) ↔ m ∈ a ∨ m ∈ b := List.mem_append
 
 @[to_additive (attr := simp)]
-theorem mem_symbols [DecidableEq α] {a : FreeMonoid α}: m ∈ FreeMonoid.symbols a ↔ m ∈ a := List.mem_toFinset
+theorem mem_symbols [DecidableEq α] {a : FreeMonoid α}: m ∈ FreeMonoid.symbols a ↔ m ∈ a :=
+  List.mem_toFinset
 
 end mem
 
@@ -434,7 +435,8 @@ theorem map_mul : map f (a * b) = map f a * map f b := MonoidHom.map_mul (map f)
 theorem mem_map {m : β} : m ∈ map f a ↔ ∃ n ∈ a, f n = m := List.mem_map
 
 @[to_additive]
-theorem map_map {α₁ : Type*} {g : α₁ → α} {x : FreeMonoid α₁} : map f (map g x) = map (f ∘ g) x := by
+theorem map_map {α₁ : Type*} {g : α₁ → α} {x : FreeMonoid α₁} : map f (map g x) = map (f ∘ g) x
+  := by
   unfold map
   simp [MonoidHom.comp_apply]
 
@@ -493,7 +495,7 @@ theorem foldr_of f (init first : α) : foldr f init (of first) = f first init :=
 
 @[to_additive (attr := simp)]
 theorem foldr_mul_of f (init first : α) (a : FreeMonoid α) :
-  foldr f init (of first * a) = f first (foldr f init a) := rfl
+    foldr f init (of first * a) = f first (foldr f init a) := rfl
 
 /-- The only invertible element of the free monoid is 1; this instance enables `units_eq_one`. -/
 @[to_additive]

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Hannah Fechtner with enormous help from Jeremy Avigad and Patrick Massot
+Authors: Hannah Fechtner with enormous help from Jeremy Avigad and Patrick Massot
 -/
 
 import Mathlib.Algebra.FreeMonoid.Basic
@@ -157,7 +157,8 @@ end ToMonoid
 
 @[ext]
 theorem ext {M : Type*} [Monoid M] (rels : FreeMonoid α → FreeMonoid α → Prop)
-  {φ ψ : PresentedMonoid rels →* M} (hx : ∀ (x : α), φ (.of rels x) = ψ (.of rels x)) : φ = ψ := by
+  {φ ψ : PresentedMonoid rels →* M} (hx : ∀ (x : α), φ (.of rels x) = ψ (.of rels x)) :
+    φ = ψ := by
   ext a
   induction' a with b
   induction b
@@ -236,10 +237,10 @@ def equivPresentedMonoid : PresentedMonoid rels ≃* PresentedMonoid (rels_iso e
     show mk rels _ = _
     simp only [MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe, Equiv.invFun_as_coe,
       EquivLike.coe_symm_apply_apply]
-  . intro b
-    induction' b with b
-    show mk (rels_iso e rels) _ = _
-    simp
+  intro b
+  induction' b with b
+  show mk (rels_iso e rels) _ = _
+  simp
 
 theorem equivPresentedMonoid_apply_of (x : α) : (((equivPresentedMonoid e rels).toFun)
   (PresentedMonoid.of rels x)) = (PresentedMonoid.of (rels_iso e rels) (e x)) := rfl
