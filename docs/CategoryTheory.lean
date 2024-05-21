@@ -1,6 +1,8 @@
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.GroupTheory.Abelianization
+import Mathlib.Algebra.MvPolynomial.CommRing
+
 -- import Mathlib
 noncomputable section -- Let's do some maths.
 
@@ -94,46 +96,44 @@ def forget' : CommRingCat ⥤ RingCat where
     intros
     rfl
 
--- This is so horrible, what has happened?!
--- def free : Type ⥤ CommRingCat where
---   obj X := CommRingCat.of (MvPolynomial X ℤ)
---   map {X Y} f := (↑(MvPolynomial.rename f : _ →ₐ[ℤ] _) : MvPolynomial X ℤ →+* MvPolynomial Y ℤ)
---   map_id := by
---     intros X
---     ext x
---     simp at *
---     sorry
---   map_comp := by
---     intros X Y Z f g
---     ext x
---     simp at *
---     sorry
-
 universe u
 
-@[simp] theorem MonoidHom.comp_id' {G : GroupCat.{u}} {H : Type u} [Group H] (f : G →* H) : f.comp (𝟙 G) = f :=
+-- @[simp]
+-- theorem CommRingCat.forget_of (R : Type u) [CommRing R] : (forget CommRingCat).obj (CommRingCat.of R) = R :=
+--   rfl
+
+-- This is so horrible, what has happened?!
+attribute [local simp] types_id types_comp in
+def free : Type ⥤ CommRingCat where
+  obj X := CommRingCat.of (MvPolynomial X ℤ)
+  map {X Y} f := (↑(MvPolynomial.rename f : _ →ₐ[ℤ] _) : MvPolynomial X ℤ →+* MvPolynomial Y ℤ)
+  map_id := by
+    -- aesop_cat
+    intros X
+    ext x
+    simp at *
+
+  map_comp := by
+    -- aesop_cat
+    intros X Y Z f g
+    ext x
+    simp at *
+
+attribute [local simp] types_id types_comp in
+def free' : Type ⥤ CommRingCat where
+  obj X := CommRingCat.of (MvPolynomial X ℤ)
+  map {X Y} f := (↑(MvPolynomial.rename f : _ →ₐ[ℤ] _) : MvPolynomial X ℤ →+* MvPolynomial Y ℤ)
+
+
+@[simp] theorem MonoidHom.comp_id' {G : GroupCat.{u}} {H : Type u} [Group H] (f : G →* H) :
+    f.comp (𝟙 G) = f :=
   Category.id_comp (GroupCat.ofHom f)
+@[simp] theorem MonoidHom.id_comp' {G : Type u} [Group G] {H : GroupCat.{u}} (f : G →* H) :
+    MonoidHom.comp (𝟙 H) f = f :=
+  Category.comp_id (GroupCat.ofHom f)
 
--- @[simp] theorem foo {G : Type _} [Group G] {x : G} :
---     @DFunLike.coe (G →* G) G (fun _ ↦ G) MonoidHom.instFunLike (𝟙 (GroupCat.of G)) x = x :=
---   rfl
-
--- @[simp] theorem foo' {G : Type _} [CommGroup G] {x : G} :
---     @DFunLike.coe (G →* G) G (fun _ ↦ G) MonoidHom.instFunLike (𝟙 (CommGroupCat.of G)) x = x :=
---   rfl
-
--- @[simp] theorem GroupCat.comp_apply {G H K : GroupCat} (f : G ⟶ H) (g : H ⟶ K) (x : G) :
---   (f ≫ g) x = g (f x) := rfl
--- @[simp] theorem CommGroupCat.comp_apply {G H K : GroupCat} (f : G ⟶ H) (g : H ⟶ K) (x : G) :
---   (f ≫ g) x = g (f x) := rfl
-
--- @[simp] theorem bar {G H K : Type _} [CommGroup G] [ CommGroup H] [CommGroup K] (f : G →* H) (g : H →* K) :
---     (@DFunLike.coe (G →* K) G (fun _ ↦ K)
---   MonoidHom.instFunLike (CategoryStruct.comp (obj := CommGroupCat) (X := CommGroupCat.of G) (Y := CommGroupCat.of H) (Z := CommGroupCat.of K) f g)) = g ∘ f := rfl
-
-
--- attribute [simp] CommGroupCat.coe_of
--- attribute [simp] CommGroupCat.comp_def GroupCat.comp_def
+attribute [simp] CommGroupCat.coe_of
+attribute [simp] CommGroupCat.comp_def GroupCat.comp_def
 def abelianize : GroupCat.{u} ⥤ CommGroupCat.{u} where
   obj G := CommGroupCat.of (Abelianization G)
   map f := Abelianization.lift (Abelianization.of.comp f)
@@ -144,11 +144,11 @@ def abelianize : GroupCat.{u} ⥤ CommGroupCat.{u} where
     -- -- dsimp at x ⊢  -- but doesn't work `at *`!
     -- simp
   map_comp := by
-    -- aesop_cat
-    intros G H K f g
-    ext
-    simp
-    simp [CommGroupCat.comp_def, GroupCat.comp_def]
+    aesop_cat
+    -- intros G H K f g
+    -- ext
+    -- simp
+    -- simp [CommGroupCat.comp_def, GroupCat.comp_def]
 
 structure PointedSpace where
   X : Type
