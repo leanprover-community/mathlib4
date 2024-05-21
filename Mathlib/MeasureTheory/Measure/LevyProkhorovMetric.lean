@@ -459,17 +459,16 @@ section Levy_Prokhorov_metrizes_convergence_in_distribution
 
 open BoundedContinuousFunction TopologicalSpace
 
-variable {ι : Type*} {Ω : Type*} [MeasurableSpace Ω]
+variable {ι : Type*} (Ω : Type*) [PseudoMetricSpace Ω] [SeparableSpace Ω]
+variable [MeasurableSpace Ω] [OpensMeasurableSpace Ω]
 
 /-- In a separable pseudometric space, for any ε > 0 there exists a countable collection of
 disjoint Borel measurable subsets of diameter at most ε that cover the whole space. -/
-lemma SeparableSpace.exists_measurable_partition_diam_le
-    (X : Type*) [PseudoMetricSpace X] [SeparableSpace X]
-    [MeasurableSpace X] [OpensMeasurableSpace X] {ε : ℝ} (ε_pos : 0 < ε) :
-    ∃ (As : ℕ → Set X), (∀ n, MeasurableSet (As n)) ∧ (∀ n, Bornology.IsBounded (As n)) ∧
+lemma SeparableSpace.exists_measurable_partition_diam_le {ε : ℝ} (ε_pos : 0 < ε) :
+    ∃ (As : ℕ → Set Ω), (∀ n, MeasurableSet (As n)) ∧ (∀ n, Bornology.IsBounded (As n)) ∧
         (∀ n, diam (As n) ≤ ε) ∧ (⋃ n, As n = univ) ∧
         (Pairwise (fun (n m : ℕ) ↦ Disjoint (As n) (As m))) := by
-  by_cases X_emp : IsEmpty X
+  by_cases X_emp : IsEmpty Ω
   · refine ⟨fun _ ↦ ∅, fun _ ↦ MeasurableSet.empty, fun _ ↦ Bornology.isBounded_empty, ?_, ?_,
             fun _ _ _ ↦ disjoint_of_subsingleton⟩
     · intro n
@@ -478,7 +477,7 @@ lemma SeparableSpace.exists_measurable_partition_diam_le
       apply Eq.symm
       simp only [univ_eq_empty_iff, X_emp]
   rw [not_isEmpty_iff] at X_emp
-  obtain ⟨xs, xs_dense⟩ := exists_dense_seq X
+  obtain ⟨xs, xs_dense⟩ := exists_dense_seq Ω
   have half_ε_pos : 0 < ε / 2 := half_pos ε_pos
   set Bs := fun n ↦ Metric.ball (xs n) (ε/2)
   set As := disjointed Bs
@@ -495,9 +494,9 @@ lemma SeparableSpace.exists_measurable_partition_diam_le
     simpa only [← aux] using iUnion_disjointed
   · exact disjoint_disjointed Bs
 
-variable [PseudoMetricSpace Ω] [OpensMeasurableSpace Ω]
+variable {Ω}
 
-lemma ProbabilityMeasure.continuous_toLevyProkhorov [SeparableSpace Ω] :
+lemma ProbabilityMeasure.continuous_toLevyProkhorov :
     Continuous (ProbabilityMeasure.toLevyProkhorov (Ω := Ω)) := by
   rw [continuous_iff_continuousAt]
   intro P
@@ -602,7 +601,7 @@ lemma ProbabilityMeasure.continuous_toLevyProkhorov [SeparableSpace Ω] :
 
 /-- The topology of the Lévy-Prokhorov metric on probability measures on a separable space
 coincides with the topology of convergence in distribution. -/
-theorem levyProkhorov_eq_convergenceInDistribution [SeparableSpace Ω] :
+theorem levyProkhorov_eq_convergenceInDistribution :
     (inferInstance : TopologicalSpace (ProbabilityMeasure Ω))
       = TopologicalSpace.coinduced (LevyProkhorov.toProbabilityMeasure (Ω := Ω)) inferInstance :=
   le_antisymm (ProbabilityMeasure.continuous_toLevyProkhorov (Ω := Ω)).coinduced_le
@@ -610,7 +609,7 @@ theorem levyProkhorov_eq_convergenceInDistribution [SeparableSpace Ω] :
 
 /-- The identity map is a homeomorphism from `ProbabilityMeasure Ω` with the topology of
 convergence in distribution to `ProbabilityMeasure Ω` with the Lévy-Prokhorov (pseudo)metric. -/
-def homeomorph_probabilityMeasure_levyProkhorov [SeparableSpace Ω] :
+def homeomorph_probabilityMeasure_levyProkhorov :
     ProbabilityMeasure Ω ≃ₜ LevyProkhorov (ProbabilityMeasure Ω) where
   toFun := ProbabilityMeasure.toLevyProkhorov (Ω := Ω)
   invFun := LevyProkhorov.toProbabilityMeasure (Ω := Ω)
@@ -620,7 +619,7 @@ def homeomorph_probabilityMeasure_levyProkhorov [SeparableSpace Ω] :
   continuous_invFun := LevyProkhorov.continuous_toProbabilityMeasure
 
 /-- The topology of convergence in distribution on a separable space is pseudo-metrizable. -/
-theorem pseudoMetrizableSpace_probabilityMeasure [SeparableSpace Ω] :
+theorem pseudoMetrizableSpace_probabilityMeasure :
     PseudoMetrizableSpace (ProbabilityMeasure Ω) :=
   (homeomorph_probabilityMeasure_levyProkhorov (Ω := Ω)).inducing.pseudoMetrizableSpace
 
