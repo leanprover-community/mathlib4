@@ -539,6 +539,20 @@ instance monMonoidal : MonoidalCategory (Mon_ C) where
   tensorHom_def := by intros; ext; simp [tensorHom_def]
 #align Mon_.Mon_monoidal Mon_.monMonoidal
 
+variable (C)
+
+/-- The forgetful functor from `Mon_ C` to `C` is monoidal when `C` is braided monoidal. -/
+def forgetMonoidal : MonoidalFunctor (Mon_ C) C :=
+  { forget C with
+    ε := 𝟙 _
+    μ := fun X Y => 𝟙 _ }
+
+@[simp] theorem forgetMonoidal_toFunctor : (forgetMonoidal C).toFunctor = forget C := rfl
+@[simp] theorem forgetMonoidal_ε : (forgetMonoidal C).ε = 𝟙 (𝟙_ C) := rfl
+@[simp] theorem forgetMonoidal_μ (X Y : Mon_ C) : (forgetMonoidal C).μ X Y = 𝟙 (X.X ⊗ Y.X) := rfl
+
+variable {C}
+
 theorem one_braiding {X Y : Mon_ C} : (X ⊗ Y).one ≫ (β_ X.X Y.X).hom = (Y ⊗ X).one := by
   simp only [monMonoidalStruct_tensorObj_X, tensor_one, Category.assoc,
     BraidedCategory.braiding_naturality, braiding_tensorUnit_right, Iso.cancel_iso_inv_left]
@@ -605,7 +619,6 @@ Projects:
   in `Mathlib.CategoryTheory.Monoidal.Internal.Module`.)
 * Can you transport this monoidal structure to `RingCat` or `AlgebraCat R`?
   How does it compare to the "native" one?
-* Show that when `C` is braided, the forgetful functor `Mon_ C ⥤ C` is monoidal.
 * Show that when `F` is a lax braided functor `C ⥤ D`, the functor `map_Mon F : Mon_ C ⥤ Mon_ D`
   is lax monoidal.
 -/
