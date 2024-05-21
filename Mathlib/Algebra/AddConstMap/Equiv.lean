@@ -43,23 +43,23 @@ instance (priority := 100) {F : Type*} {G H : outParam Type*} [Add G] [Add H]
   toDFunLike := inferInstance
   __ := h
 
+namespace AddConstEquiv
+
+variable {G H K : Type*} [Add G] [Add H] [Add K] {a : G} {b : H} {c : K}
+
+lemma toEquiv_injective : Injective (toEquiv : (G ≃+c[a, b] H) → G ≃ H)
+  | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
+
 instance {G H : Type*} [Add G] [Add H] {a : G} {b : H} :
     AddConstEquivClass (G ≃+c[a, b] H) G H a b where
   coe f := f.toEquiv
   inv f := f.toEquiv.symm
   left_inv f := f.left_inv
   right_inv f := f.right_inv
-  coe_injective' | ⟨_, _⟩, ⟨_, _⟩, h, _ => by congr; exact DFunLike.ext' h
+  coe_injective' _ _ h _ := toEquiv_injective <| DFunLike.ext' h
   map_add_const f x := f.map_add_const' x
 
-namespace AddConstEquiv
-
-variable {G H K : Type*} [Add G] [Add H] [Add K] {a : G} {b : H} {c : K}
-
 @[ext] lemma ext {e₁ e₂ : G ≃+c[a, b] H} (h : ∀ x, e₁ x = e₂ x) : e₁ = e₂ := DFunLike.ext _ _ h
-
-lemma toEquiv_injective : Injective (toEquiv : (G ≃+c[a, b] H) → G ≃ H) :=
-  Injective.of_comp <| show Injective (DFunLike.coe ∘ _) from DFunLike.coe_injective
 
 @[simp]
 lemma toEquiv_eq_iff {e₁ e₂ : G ≃+c[a, b] H} : e₁.toEquiv = e₂.toEquiv ↔ e₁ = e₂ :=
@@ -68,7 +68,6 @@ lemma toEquiv_eq_iff {e₁ e₂ : G ≃+c[a, b] H} : e₁.toEquiv = e₂.toEquiv
 @[simp] lemma coe_toEquiv (e : G ≃+c[a, b] H) : ⇑e.toEquiv = e := rfl
 
 /-- Inverse map of an `AddConstEquiv`, as an `AddConstEquiv`. -/
-@[pp_dot]
 def symm (e : G ≃+c[a, b] H) : H ≃+c[b, a] G where
   toEquiv := e.toEquiv.symm
   map_add_const' := (AddConstMapClass.semiconj e).inverse_left e.left_inv e.right_inv
@@ -89,7 +88,7 @@ def refl (a : G) : G ≃+c[a, a] G where
 @[simp] lemma symm_refl (a : G) : (refl a).symm = refl a := rfl
 
 /-- Composition of `AddConstEquiv`s, as an `AddConstEquiv`. -/
-@[simps! (config := { simpRhs := true }) toEquiv apply, pp_dot]
+@[simps! (config := { simpRhs := true }) toEquiv apply]
 def trans (e₁ : G ≃+c[a, b] H) (e₂ : H ≃+c[b, c] K) : G ≃+c[a, c] K where
   toEquiv := e₁.toEquiv.trans e₂.toEquiv
   map_add_const' := (AddConstMapClass.semiconj e₁).trans (AddConstMapClass.semiconj e₂)
