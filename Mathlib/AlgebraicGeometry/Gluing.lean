@@ -132,8 +132,9 @@ def gluedScheme : Scheme := by
   swap
   · exact (D.U i).affineCover.map y
   constructor
-  · dsimp
-    erw [coe_comp, Set.range_comp]
+  · -- Without removing `Spec.topObj_forget`, we need an `erw` in the following line.
+    dsimp [-Spec.topObj_forget]
+    rw [coe_comp, Set.range_comp]
     refine' Set.mem_image_of_mem _ _
     exact (D.U i).affineCover.Covers y
   · infer_instance
