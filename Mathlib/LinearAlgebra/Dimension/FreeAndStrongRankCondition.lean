@@ -19,6 +19,8 @@ and `Mathlib/LinearAlgebra/FiniteDimensional.lean`.
 
 open Cardinal Submodule Set FiniteDimensional
 
+universe u
+
 variable {K V : Type*} [Ring K] [StrongRankCondition K] [AddCommGroup V] [Module K V]
 
 /-- The `ι` indexed basis on `V`, where `ι` is an empty type and `V` is zero-dimensional.
