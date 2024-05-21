@@ -257,7 +257,7 @@ section induction_principles
 /-- an induction principle on free monoids, with cases for one, ofs, and multiplication -/
 @[to_additive (attr := elab_as_elim, induction_eliminator)]
 protected theorem inductionOn {C : FreeMonoid α → Prop} (z : FreeMonoid α) (one : C 1)
-  (of : ∀ (x : α), C (FreeMonoid.of x)) (mul : ∀ (x y : FreeMonoid α), C x → C y → C (x * y)) :
+    (of : ∀ (x : α), C (FreeMonoid.of x)) (mul : ∀ (x y : FreeMonoid α), C x → C y → C (x * y)) :
   C z := List.rec one (fun _ _ ih => mul [_] _ (of _) ih) z
 
 /-- an induction principle for free monoids more closely mirroring induction on lists -/
@@ -435,8 +435,8 @@ theorem map_mul : map f (a * b) = map f a * map f b := MonoidHom.map_mul (map f)
 theorem mem_map {m : β} : m ∈ map f a ↔ ∃ n ∈ a, f n = m := List.mem_map
 
 @[to_additive]
-theorem map_map {α₁ : Type*} {g : α₁ → α} {x : FreeMonoid α₁} : map f (map g x) = map (f ∘ g) x
-  := by
+theorem map_map {α₁ : Type*} {g : α₁ → α} {x : FreeMonoid α₁} :
+    map f (map g x) = map (f ∘ g) x := by
   unfold map
   simp [MonoidHom.comp_apply]
 

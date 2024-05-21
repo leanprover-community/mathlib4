@@ -97,7 +97,7 @@ theorem one_def : (1 : PresentedMonoid rels) = mk rels 1 := rfl
   respects the Steps-To closure of the relation r, then PresentedMonoid.lift f h is the
   corresponding function on PresentedMonoid rels -/
 protected def lift {M : Type*} [Monoid M] (f : α → M)
-  (h : ∀ (a b : FreeMonoid α), StepsTo rels a b → (FreeMonoid.lift f) a = (FreeMonoid.lift f) b) :
+    (h : ∀ (a b : FreeMonoid α), StepsTo rels a b → (FreeMonoid.lift f) a = (FreeMonoid.lift f) b) :
     PresentedMonoid rels → M :=
   Quot.lift (FreeMonoid.lift f) h
 
@@ -157,7 +157,7 @@ end ToMonoid
 
 @[ext]
 theorem ext {M : Type*} [Monoid M] (rels : FreeMonoid α → FreeMonoid α → Prop)
-  {φ ψ : PresentedMonoid rels →* M} (hx : ∀ (x : α), φ (.of rels x) = ψ (.of rels x)) :
+    {φ ψ : PresentedMonoid rels →* M} (hx : ∀ (x : α), φ (.of rels x) = ψ (.of rels x)) :
     φ = ψ := by
   ext a
   induction' a with b
@@ -176,7 +176,7 @@ def rels_iso : FreeMonoid β → FreeMonoid β → Prop :=
   fun a b => rels ((FreeMonoid.congr_iso e).invFun a) ((FreeMonoid.congr_iso e).invFun b)
 
 theorem iso_helper : (StepsTo rels ⇒ StepsTo (rels_iso e rels))
-  (FreeMonoid.congr_iso e).toEquiv.toFun (FreeMonoid.congr_iso e).toEquiv.toFun := by
+    (FreeMonoid.congr_iso e).toEquiv.toFun (FreeMonoid.congr_iso e).toEquiv.toFun := by
   intro x y h
   induction h with
   | basic rxy =>
@@ -193,7 +193,7 @@ theorem iso_helper : (StepsTo rels ⇒ StepsTo (rels_iso e rels))
     exact StepsTo.right ih
 
 theorem iso_helper_inv : (StepsTo (rels_iso e rels) ⇒ StepsTo rels)
-  (FreeMonoid.congr_iso e).toEquiv.invFun (FreeMonoid.congr_iso e).toEquiv.invFun := by
+    (FreeMonoid.congr_iso e).toEquiv.invFun (FreeMonoid.congr_iso e).toEquiv.invFun := by
   intro x y h
   have H : ∀ x y, ((FreeMonoid.congr_iso e).toEquiv.invFun (x*y)) =
       ((FreeMonoid.congr_iso e).toEquiv.invFun x) *
@@ -243,9 +243,9 @@ def equivPresentedMonoid : PresentedMonoid rels ≃* PresentedMonoid (rels_iso e
   simp
 
 theorem equivPresentedMonoid_apply_of (x : α) : (((equivPresentedMonoid e rels).toFun)
-  (PresentedMonoid.of rels x)) = (PresentedMonoid.of (rels_iso e rels) (e x)) := rfl
+    (PresentedMonoid.of rels x)) = (PresentedMonoid.of (rels_iso e rels) (e x)) := rfl
 
 theorem equivPresentedMonoid_symm_apply_of (x : β) : (equivPresentedMonoid e rels).symm
-  (PresentedMonoid.of (rels_iso e rels) x) = PresentedMonoid.of rels (e.symm x) := rfl
+    (PresentedMonoid.of (rels_iso e rels) x) = PresentedMonoid.of rels (e.symm x) := rfl
 
 end Isomorphism
