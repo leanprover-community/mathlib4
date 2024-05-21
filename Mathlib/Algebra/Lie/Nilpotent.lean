@@ -278,9 +278,9 @@ theorem isNilpotent_toEndomorphism_of_isNilpotent₂ [IsNilpotent R L M] (x y : 
   exact iterate_toEndomorphism_mem_lowerCentralSeries₂ R L M x y m k
 
 @[simp] lemma maxGenEigenSpace_toEndomorphism_eq_top [IsNilpotent R L M] (x : L) :
-    ((toEndomorphism R L M x).maximalGeneralizedEigenspace 0) = ⊤ := by
+    ((toEndomorphism R L M x).maxGenEigenspace 0) = ⊤ := by
   ext m
-  simp only [Module.End.mem_maximalGeneralizedEigenspace, zero_smul, sub_zero, Submodule.mem_top,
+  simp only [Module.End.mem_maxGenEigenspace, zero_smul, sub_zero, Submodule.mem_top,
     iff_true]
   obtain ⟨k, hk⟩ := exists_forall_pow_toEndomorphism_eq_zero R L M
   exact ⟨k, by simp [hk x]⟩
