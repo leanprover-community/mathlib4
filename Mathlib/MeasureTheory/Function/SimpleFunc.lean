@@ -973,7 +973,7 @@ theorem lintegral_eq_of_subset (f : α →ₛ ℝ≥0∞) {s : Finset ℝ≥0∞
   · intros
     assumption
   · intro b _ hb
-    refine' ⟨b, _, hb, rfl⟩
+    refine ⟨b, ?_, hb, rfl⟩
     rw [mem_range, ← preimage_singleton_nonempty]
     exact nonempty_of_measure_ne_zero (mul_ne_zero_iff.1 hb).2
   · intros

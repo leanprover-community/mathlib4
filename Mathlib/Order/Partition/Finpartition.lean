@@ -492,7 +492,7 @@ theorem biUnion_parts : P.parts.biUnion id = s :=
 
 theorem existsUnique_mem (ha : a ∈ s) : ∃! t, t ∈ P.parts ∧ a ∈ t := by
   obtain ⟨t, ht, ht'⟩ := P.exists_mem ha
-  refine' ⟨t, ⟨ht, ht'⟩, _⟩
+  refine ⟨t, ⟨ht, ht'⟩, ?_⟩
   rintro u ⟨hu, hu'⟩
   exact P.eq_of_mem_parts hu ht hu' ht'
 

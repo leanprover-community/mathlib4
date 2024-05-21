@@ -80,7 +80,7 @@ theorem isPositive_one : IsPositive (1 : E →L[𝕜] E) :=
 
 theorem IsPositive.add {T S : E →L[𝕜] E} (hT : T.IsPositive) (hS : S.IsPositive) :
     (T + S).IsPositive := by
-  refine' ⟨hT.isSelfAdjoint.add hS.isSelfAdjoint, fun x => _⟩
+  refine ⟨hT.isSelfAdjoint.add hS.isSelfAdjoint, fun x => ?_⟩
   rw [reApplyInnerSelf, add_apply, inner_add_left, map_add]
   exact add_nonneg (hT.inner_nonneg_left x) (hS.inner_nonneg_left x)
 #align continuous_linear_map.is_positive.add ContinuousLinearMap.IsPositive.add
