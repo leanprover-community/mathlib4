@@ -173,6 +173,14 @@ theorem ne_one_iff_exists {x : WithOne α} : x ≠ 1 ↔ ∃ a : α, ↑a = x :=
 #align with_zero.ne_zero_iff_exists WithZero.ne_zero_iff_exists
 
 @[to_additive]
+theorem eq_coe_of_ne_one {x : WithOne α} (hx : x ≠ 1) : ∃ a : α, ↑a = x :=
+  ne_one_iff_exists.mp hx
+
+@[to_additive]
+theorem eq_one_or_coe {x : WithOne α} : x = 1 ∨ ∃ a : α, ↑a = x :=
+  or_iff_not_imp_left.mpr eq_coe_of_ne_one
+
+@[to_additive]
 instance canLift : CanLift (WithOne α) α (↑) fun a => a ≠ 1 where
   prf _ := ne_one_iff_exists.1
 #align with_one.can_lift WithOne.canLift
