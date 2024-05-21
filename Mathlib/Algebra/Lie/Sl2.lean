@@ -71,11 +71,10 @@ lemma f_ne_zero (t : IsSl2Triple h e f) : f ≠ 0 := by
 
 variable {R}
 
-variable (h e f) in
 /-- Given a representation of a Lie algebra with distinguished `sl₂` triple, a vector is said to be
 primitive if it is a simultaneous eigenvector for the action of both `h`, `e`, and the eigenvalue
 for `e` is zero. -/
-structure HasPrimitiveVectorWith (m : M) (μ : R) extends IsSl2Triple h e f : Prop where
+structure HasPrimitiveVectorWith (t : IsSl2Triple h e f) (m : M) (μ : R) : Prop where
   ne_zero : m ≠ 0
   lie_h : ⁅h, m⁆ = μ • m
   lie_e : ⁅e, m⁆ = 0
@@ -84,7 +83,7 @@ structure HasPrimitiveVectorWith (m : M) (μ : R) extends IsSl2Triple h e f : Pr
 eigenvector for the action of both `h` and `e` necessarily has eigenvalue zero for `e`. -/
 lemma HasPrimitiveVectorWith.mk' [NoZeroSMulDivisors ℤ M] (t : IsSl2Triple h e f) (m : M) (μ ρ : R)
     (hm : m ≠ 0) (hm' : ⁅h, m⁆ = μ • m) (he : ⁅e, m⁆ = ρ • m) :
-    HasPrimitiveVectorWith h e f m μ  where
+    HasPrimitiveVectorWith t m μ  where
   __ := t
   ne_zero := hm
   lie_h := hm'
@@ -95,7 +94,7 @@ lemma HasPrimitiveVectorWith.mk' [NoZeroSMulDivisors ℤ M] (t : IsSl2Triple h e
 
 namespace HasPrimitiveVectorWith
 
-variable {m : M} {μ : R} (P : HasPrimitiveVectorWith h e f m μ)
+variable {m : M} {μ : R} {t : IsSl2Triple h e f} (P : HasPrimitiveVectorWith t m μ)
 
 local notation "ψ" n => ((toEndomorphism R L M f) ^ n) m
 
@@ -104,7 +103,7 @@ lemma lie_h_pow_toEndomorphism_f (n : ℕ) :
   induction' n with n ih
   · simpa using P.lie_h
   · rw [pow_succ', LinearMap.mul_apply, toEndomorphism_apply_apply, Nat.cast_add, Nat.cast_one,
-      leibniz_lie h, P.lie_lie_smul_f R, ← neg_smul, ih, lie_smul, smul_lie, ← add_smul]
+      leibniz_lie h, t.lie_lie_smul_f R, ← neg_smul, ih, lie_smul, smul_lie, ← add_smul]
     congr
     ring
 
@@ -116,9 +115,9 @@ lemma lie_e_pow_succ_toEndomorphism_f (n : ℕ) :
     ⁅e, ψ (n + 1)⁆ = ((n + 1) * (μ - n)) • ψ n := by
   induction' n with n ih
   · simp only [zero_add, pow_one, toEndomorphism_apply_apply, Nat.cast_zero, sub_zero, one_mul,
-      pow_zero, LinearMap.one_apply, leibniz_lie e, P.lie_e_f, P.lie_e, P.lie_h, lie_zero,
+      pow_zero, LinearMap.one_apply, leibniz_lie e, t.lie_e_f, P.lie_e, P.lie_h, lie_zero,
       add_zero]
-  · rw [pow_succ', LinearMap.mul_apply, toEndomorphism_apply_apply, leibniz_lie e, P.lie_e_f,
+  · rw [pow_succ', LinearMap.mul_apply, toEndomorphism_apply_apply, leibniz_lie e, t.lie_e_f,
       lie_h_pow_toEndomorphism_f P, ih, lie_smul, lie_f_pow_toEndomorphism_f, ← add_smul,
       Nat.cast_add, Nat.cast_one]
     congr
