@@ -273,8 +273,8 @@ theorem extract_gcd (f : β → α) (hs : s.Nonempty) :
       rw [gcd_eq_gcd_image, image_const hs, gcd_singleton, id, normalize_one]
     · choose g' hg using @gcd_dvd _ _ _ _ s f
       push_neg at h
-      refine' ⟨fun b ↦ if hb : b ∈ s then g' hb else 0, fun b hb ↦ _,
-          extract_gcd' f _ h fun b hb ↦ _⟩
+      refine ⟨fun b ↦ if hb : b ∈ s then g' hb else 0, fun b hb ↦ ?_,
+          extract_gcd' f _ h fun b hb ↦ ?_⟩
       · simp only [hb, hg, dite_true]
       rw [dif_pos hb, hg hb]
 #align finset.extract_gcd Finset.extract_gcd

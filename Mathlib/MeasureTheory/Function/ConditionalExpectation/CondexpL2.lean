@@ -395,7 +395,7 @@ theorem aeStronglyMeasurable'_condexpIndSMul (hm : m ≤ m0) (hs : MeasurableSet
   rw [condexpIndSMul]
   suffices AEStronglyMeasurable' m
       (toSpanSingleton ℝ x ∘ condexpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1)) μ by
-    refine' AEStronglyMeasurable'.congr this _
+    refine AEStronglyMeasurable'.congr this ?_
     refine' EventuallyEq.trans _ (coeFn_compLpL _ _).symm
     rfl
   exact AEStronglyMeasurable'.continuous_comp (toSpanSingleton ℝ x).continuous h

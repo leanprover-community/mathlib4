@@ -800,7 +800,7 @@ theorem funLeft_surjective_of_injective (f : m → n) (hf : Injective f) :
     Surjective (funLeft R M f) := by
   classical
     intro g
-    refine' ⟨fun x => if h : ∃ y, f y = x then g h.choose else 0, _⟩
+    refine ⟨fun x => if h : ∃ y, f y = x then g h.choose else 0, ?_⟩
     ext
     dsimp only [funLeft_apply]
     split_ifs with w

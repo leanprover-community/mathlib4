@@ -205,7 +205,7 @@ theorem cycleOf_mul_of_apply_right_eq_self (h : Commute f g) (x : α) (hx : g x 
   · rw [cycleOf_apply_of_not_sameCycle hxy, cycleOf_apply_of_not_sameCycle]
     contrapose! hxy
     obtain ⟨z, rfl⟩ := hxy
-    refine' ⟨z, _⟩
+    refine ⟨z, ?_⟩
     simp [h.mul_zpow, zpow_apply_eq_self_of_apply_eq_self hx]
 #align equiv.perm.cycle_of_mul_of_apply_right_eq_self Equiv.Perm.cycleOf_mul_of_apply_right_eq_self
 
@@ -455,7 +455,7 @@ theorem cycleFactorsFinset_eq_list_toFinset {σ : Perm α} {l : List (Perm α)} 
     · have := List.Perm.pairwise_iff (@Disjoint.symmetric _) hperm
       rwa [this]
     · rw [← hp', hperm.symm.prod_eq']
-      refine' hd'.imp _
+      refine hd'.imp ?_
       exact Disjoint.commute
   · rintro ⟨hc, hd, hp⟩
     refine' List.toFinset_eq_of_perm _ _ _
