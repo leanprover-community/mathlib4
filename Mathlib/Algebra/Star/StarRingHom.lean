@@ -76,10 +76,11 @@ namespace NonUnitalStarRingHom
 
 section Basic
 
-variable {A B C : Type*}
+variable {A B C D : Type*}
 variable [NonUnitalNonAssocSemiring A] [Star A]
 variable [NonUnitalNonAssocSemiring B] [Star B]
 variable [NonUnitalNonAssocSemiring C] [Star C]
+variable [NonUnitalNonAssocSemiring D] [Star D]
 
 instance : FunLike (A →⋆ₙ+* B) A B where
   coe f := f.toFun
@@ -138,6 +139,20 @@ theorem mk_coe (f : A →⋆ₙ+* B) (h₁ h₂ h₃ h₄) :
   ext
   rfl
 
+section
+
+variable (A)
+
+/-- The identity as a non-unital ⋆-algebra homomorphism. -/
+protected def id : A →⋆ₙ+* A :=
+  { (1 : A →ₙ+* A) with map_star' := fun _ => rfl }
+
+@[simp]
+theorem coe_id : ⇑(NonUnitalStarRingHom.id A) = id :=
+  rfl
+
+end
+
 /-- The composition of non-unital ⋆-ring homomorphisms, as a non-unital ⋆-ring homomorphism. -/
 def comp (f : B →⋆ₙ+* C) (g : A →⋆ₙ+* B) : A →⋆ₙ+* C :=
   { f.toNonUnitalRingHom.comp g.toNonUnitalRingHom with
@@ -145,6 +160,27 @@ def comp (f : B →⋆ₙ+* C) (g : A →⋆ₙ+* B) : A →⋆ₙ+* C :=
       (f ∘ g) (star a) = f ( g (star a)) := rfl
       _ = star (f (g a)) := by rw [map_star, map_star]
       _ = star ((f ∘ g) a) := rfl )}
+
+@[simp]
+theorem coe_comp (f : B →⋆ₙ+* C) (g : A →⋆ₙ+* B) : ⇑(comp f g) = f ∘ g :=
+  rfl
+
+@[simp]
+theorem comp_apply (f : B →⋆ₙ+* C) (g : A →⋆ₙ+* B) (a : A) : comp f g a = f (g a) :=
+  rfl
+
+@[simp]
+theorem comp_assoc (f : C →⋆ₙ+* D) (g : B →⋆ₙ+* C) (h : A →⋆ₙ+* B) :
+    (f.comp g).comp h = f.comp (g.comp h) :=
+  rfl
+
+@[simp]
+theorem id_comp (f : A →⋆ₙ+* B) : (NonUnitalStarRingHom.id _).comp f = f :=
+  ext fun _ => rfl
+
+@[simp]
+theorem comp_id (f : A →⋆ₙ+* B) : f.comp (NonUnitalStarRingHom.id _) = f :=
+  ext fun _ => rfl
 
 end Basic
 
