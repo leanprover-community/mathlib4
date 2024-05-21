@@ -226,10 +226,10 @@ lemma isSemisimple_ad_of_mem_isCartanSubalgebra {x : L} (hx : x ∈ H) :
   rw [eq_sub_of_add_eq hSN.symm] at hN
   /- Note that the semisimple part `S` is just a scalar action on each root space. -/
   have aux {α : H → K} {y : L} (hy : y ∈ rootSpace H α) : S y = α x' • y := by
-    replace hy : y ∈ (ad K L x).maximalGeneralizedEigenspace (α x') :=
+    replace hy : y ∈ (ad K L x).maxGenEigenspace (α x') :=
       (weightSpace_le_weightSpaceOf L x' α) hy
-    rw [maximalGeneralizedEigenspace_eq] at hy
-    set k := maximalGeneralizedEigenspaceIndex (ad K L x) (α x')
+    rw [maxGenEigenspace_eq] at hy
+    set k := maxGenEigenspaceIndex (ad K L x) (α x')
     rw [apply_eq_of_mem_genEigenspace_of_comm_of_isSemisimple_of_isNilpotent_sub hy hS₀ hS hN]
   /- So `S` obeys the derivation axiom if we restrict to root spaces. -/
   have h_der (y z : L) (α β : H → K) (hy : y ∈ rootSpace H α) (hz : z ∈ rootSpace H β) :
@@ -274,10 +274,10 @@ lemma isSemisimple_ad_of_mem_isCartanSubalgebra {x : L} (hx : x ∈ H) :
 
 lemma lie_eq_smul_of_mem_rootSpace {α : H → K} {x : L} (hx : x ∈ rootSpace H α) (h : H) :
     ⁅h, x⁆ = α h • x := by
-  replace hx : x ∈ (ad K L h).maximalGeneralizedEigenspace (α h) :=
+  replace hx : x ∈ (ad K L h).maxGenEigenspace (α h) :=
     weightSpace_le_weightSpaceOf L h α hx
   rw [(isSemisimple_ad_of_mem_isCartanSubalgebra
-    h.property).maximalGeneralizedEigenspace_eq_eigenspace, Module.End.mem_eigenspace_iff] at hx
+    h.property).maxGenEigenspace_eq_eigenspace, Module.End.mem_eigenspace_iff] at hx
   simpa using hx
 
 lemma lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg
