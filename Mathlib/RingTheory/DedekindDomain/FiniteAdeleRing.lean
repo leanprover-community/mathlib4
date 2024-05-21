@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
+import Mathlib.RingTheory.DedekindDomain.Factorization
 
 #align_import ring_theory.dedekind_domain.finite_adele_ring from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
@@ -133,6 +134,9 @@ section AlgebraInstances
 
 instance : Algebra K (K_hat R K) :=
   (by infer_instance : Algebra K <| ∀ v : HeightOneSpectrum R, v.adicCompletion K)
+
+lemma ProdAdicCompletions.algebraMap_apply' (k : K) :
+    algebraMap K (K_hat R K) k v = (k : v.adicCompletion K) := rfl
 
 instance ProdAdicCompletions.algebra' : Algebra R (K_hat R K) :=
   (by infer_instance : Algebra R <| ∀ v : HeightOneSpectrum R, v.adicCompletion K)
@@ -271,6 +275,54 @@ theorem one : (1 : K_hat R K).IsFiniteAdele := by
 
 open scoped DiscreteValuation
 
+open Multiplicative in
+theorem foo (x : ℤₘ₀) : x = 0 ∨ ∃ (n : ℤ), x = (↑(ofAdd n)) := by
+  cases x
+  · left; aesop
+  · right; aesop
+
+open Multiplicative in
+theorem bar {x : ℤₘ₀} (hx : 0 < x) : ∃ (n : ℤ), x = (↑(ofAdd n)) := by
+  cases foo x <;> aesop
+
+-- this makes `mul_lt_mul_left`, `mul_pos` etc work on `ℤₘ₀`
+open Multiplicative in
+instance moo : PosMulStrictMono ℤₘ₀ where
+  elim := by
+    intro ⟨x, hx⟩ a b (h : a < b)
+    rcases bar hx with ⟨x, rfl⟩
+    dsimp
+    rcases foo a with (rfl | ⟨a, rfl⟩)
+    · rw [mul_zero]
+      rcases bar h with ⟨b, rfl⟩
+      exact WithZero.zero_lt_coe _
+    · have hoo : (0 : ℤₘ₀) < b := by
+        refine lt_trans ?_ h
+        exact WithZero.zero_lt_coe (ofAdd a)
+      rcases bar hoo with ⟨b, rfl⟩
+      norm_cast at h ⊢
+      change x + a < x + b
+      change a < b at h
+      linarith
+
+-- This makes `lt_mul_of_le_of_one_lt'` work on `ℤₘ₀`
+open Multiplicative in
+instance zoo : MulPosMono ℤₘ₀ where
+  elim := by
+    intro ⟨x, hx⟩ a b (h : a ≤ b)
+    dsimp
+    clear hx
+    rcases foo x with (rfl | ⟨x, rfl⟩)
+    · simp
+    · rcases foo a with (rfl | ⟨a, rfl⟩)
+      · simp
+      · have moo : (0 : ℤₘ₀) < b := lt_of_lt_of_le (WithZero.zero_lt_coe (ofAdd a)) h
+        rcases bar moo with ⟨b, rfl⟩
+        norm_cast at h ⊢
+        change a + x ≤ b + x
+        change a ≤ b at h
+        linarith
+
 theorem algebraMap (r : R) : (algebraMap R (K_hat R K) r).IsFiniteAdele := by
   rw [IsFiniteAdele, Filter.eventually_cofinite]
   suffices h : ∀ v : HeightOneSpectrum R,
@@ -287,7 +339,27 @@ theorem algebraMap' (k : K) : (_root_.algebraMap K (K_hat R K) k).IsFiniteAdele 
   simp_rw [mem_adicCompletionIntegers]
   obtain ⟨⟨n, ⟨d, hd⟩⟩, hk⟩ := IsLocalization.surj (nonZeroDivisors R) k
   dsimp at hk
-  sorry
+  have hd' : d ≠ 0 := nonZeroDivisors.ne_zero hd
+  simp only [ProdAdicCompletions.algebraMap_apply', Valued.valuedCompletion_apply, not_le]
+  change {v : HeightOneSpectrum R | 1 < v.valuation k}.Finite
+  -- do I need to do this?
+  suffices {v : HeightOneSpectrum R | v.valuation (_root_.algebraMap R K d : K) < 1}.Finite by
+    apply Finite.subset this
+    intro v hv
+    dsimp at *
+    apply_fun v.valuation at hk
+    simp only [Valuation.map_mul, valuation_of_algebraMap] at hk
+    rw [valuation_of_algebraMap]
+    have := int_valuation_le_one v n
+    contrapose! this
+    change 1 < v.intValuation n
+    rw [← hk, mul_comm]
+    exact lt_mul_of_le_of_one_lt' this hv (by simp) (by simp)
+  simp_rw [valuation_of_algebraMap]
+  change {v : HeightOneSpectrum R | v.intValuationDef d < 1}.Finite
+  simp_rw [int_valuation_lt_one_iff_dvd]
+  apply Ideal.finite_factors
+  simpa only [Submodule.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot]
 
 end IsFiniteAdele
 
