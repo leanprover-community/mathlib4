@@ -453,8 +453,6 @@ theorem levyProkhorov_le_convergenceInDistribution :
 
 end Levy_Prokhorov_is_finer
 
-
-
 section Levy_Prokhorov_metrizes_convergence_in_distribution
 
 /-! ### On separable spaces the Lévy-Prokhorov distance metrizes convergence in distribution -/
@@ -613,11 +611,11 @@ theorem levyProkhorov_eq_convergenceInDistribution [SeparableSpace Ω] :
 /-- The identity map is a homeomorphism from `ProbabilityMeasure Ω` with the topology of
 convergence in distribution to `ProbabilityMeasure Ω` with the Lévy-Prokhorov (pseudo)metric. -/
 def homeomorph_probabilityMeasure_levyProkhorov [SeparableSpace Ω] :
-    Homeomorph (ProbabilityMeasure Ω) (LevyProkhorov (ProbabilityMeasure Ω)) where
+    ProbabilityMeasure Ω ≃ₜ LevyProkhorov (ProbabilityMeasure Ω) where
   toFun := ProbabilityMeasure.toLevyProkhorov (Ω := Ω)
   invFun := LevyProkhorov.probabilityMeasure (Ω := Ω)
   left_inv := congrFun rfl
-  right_inv := by exact congrFun rfl
+  right_inv := congrFun rfl
   continuous_toFun := continuous_probabilityMeasure_toLevyProkhorov
   continuous_invFun := continuous_levyProkhorov_to_probabilityMeasure
 
