@@ -66,7 +66,7 @@ jobs:
 
       - name: configure git setup
         run: |
-          git remote add origin-bot "https://leanprover-community-bot:${{ secrets.LCB_TOKEN }}@github.com/leanprover-community/mathlib.git"
+          git remote add origin-bot "https://leanprover-community-bot:${{ secrets.UPDATE_NOLINTS_TOKEN }}@github.com/leanprover-community/mathlib.git"
           git config user.email "leanprover.community@gmail.com"
           git config user.name "leanprover-community-bot"
 
@@ -78,4 +78,4 @@ jobs:
       - name: update nolints.json and style-exceptions.txt
         run: ./scripts/update_nolints_CI.sh
         env:
-          DEPLOY_GITHUB_TOKEN: ${{ secrets.LCB_TOKEN }}
+          DEPLOY_GITHUB_TOKEN: ${{ secrets.UPDATE_NOLINTS_TOKEN }}
