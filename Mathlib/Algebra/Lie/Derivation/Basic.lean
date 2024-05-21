@@ -327,7 +327,7 @@ variable (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
 @[simps!]
 def inner : M →ₗ[R] LieDerivation R L M where
   toFun m :=
-    { __ := (LieModule.toEndomorphism R L M : L →ₗ[R] Module.End R M).flip m
+    { __ := (LieModule.toEnd R L M : L →ₗ[R] Module.End R M).flip m
       leibniz' := by simp }
   map_add' m n := by ext; simp
   map_smul' t m := by ext; simp
