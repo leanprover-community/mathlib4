@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Hannah Fechtner with enormous help from Jeremy Avigad and Patrick Massot
+Authors: Hannah Fechtner
 -/
 
 import Mathlib.Algebra.FreeMonoid.Basic
