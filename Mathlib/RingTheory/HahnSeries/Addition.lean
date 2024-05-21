@@ -78,11 +78,11 @@ theorem support_add_subset {x y : HahnSeries Γ R} : support (x + y) ⊆ support
   rw [ha.1, ha.2, add_zero]
 #align hahn_series.support_add_subset HahnSeries.support_add_subset
 
-theorem MinLEMinAdd {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R} (hx : x ≠ 0) (hy : y ≠ 0)
+protected theorem min_le_min_add {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R} (hx : x ≠ 0) (hy : y ≠ 0)
     (hxy : x + y ≠ 0) : min (Set.IsWF.min x.isWF_support (support_nonempty_iff.2 hx))
       (Set.IsWF.min y.isWF_support (support_nonempty_iff.2 hy)) ≤
       Set.IsWF.min (x + y).isWF_support (support_nonempty_iff.2 hxy) := by
-  rw [(Set.IsWF.min_union _ _ _ _).symm]
+  rw [← Set.IsWF.min_union]
   exact Set.IsWF.min_le_min_of_subset (support_add_subset (x := x) (y := y))
 
 theorem min_orderTop_le_orderTop_add {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R} :
@@ -92,14 +92,14 @@ theorem min_orderTop_le_orderTop_add {Γ} [LinearOrder Γ] {x y : HahnSeries Γ 
   by_cases hxy : x + y = 0; · simp [hxy]
   rw [orderTop_of_ne hx, orderTop_of_ne hy, orderTop_of_ne hxy, ← @WithTop.coe_min,
     WithTop.coe_le_coe]
-  exact MinLEMinAdd hx hy hxy
+  exact HahnSeries.min_le_min_add hx hy hxy
 
 theorem min_order_le_order_add {Γ} [Zero Γ] [LinearOrder Γ] {x y : HahnSeries Γ R}
     (hxy : x + y ≠ 0) : min x.order y.order ≤ (x + y).order := by
   by_cases hx : x = 0; · simp [hx]
   by_cases hy : y = 0; · simp [hy]
   rw [order_of_ne hx, order_of_ne hy, order_of_ne hxy]
-  exact MinLEMinAdd hx hy hxy
+  exact HahnSeries.min_le_min_add hx hy hxy
 #align hahn_series.min_order_le_order_add HahnSeries.min_order_le_order_add
 
 theorem orderTop_add_eq {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
@@ -210,9 +210,7 @@ theorem sub_coeff {x y : HahnSeries Γ R} {a : Γ} : (x - y).coeff a = x.coeff a
 #align hahn_series.sub_coeff HahnSeries.sub_coeff
 
 theorem orderTop_neg {x : HahnSeries Γ R} : (-x).orderTop = x.orderTop := by
-  by_cases hx : x = 0
-  · rw [hx, neg_zero]
-  · simp only [orderTop, support_neg, neg_eq_zero]
+  simp only [orderTop, support_neg, neg_eq_zero]
 
 @[simp]
 theorem order_neg [Zero Γ] {f : HahnSeries Γ R} : (-f).order = f.order := by

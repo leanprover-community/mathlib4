@@ -373,7 +373,7 @@ theorem coeff_eq_zero_of_lt_order {x : HahnSeries Γ R} {i : Γ} (hi : i < x.ord
   exact Set.IsWF.not_lt_min _ _ hi
 #align hahn_series.coeff_eq_zero_of_lt_order HahnSeries.coeff_eq_zero_of_lt_order
 
-theorem zero_lt_orderTop_iff {x : HahnSeries Γ R}  (hx : x ≠ 0) :
+theorem zero_lt_orderTop_iff {x : HahnSeries Γ R} (hx : x ≠ 0) :
     0 < x.orderTop ↔ 0 < x.order := by
   simp_all [orderTop_of_ne hx, order_of_ne hx]
 
