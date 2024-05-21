@@ -137,6 +137,8 @@ theorem compact_spectrum {a : Matrix n n 𝕜} (ha : IsHermitian a) : CompactSpa
    apply finite_spectrum
    assumption
 
+#check AlgEquiv.ofInjective (R := ℝ) (A :=  C(spectrum ℝ A, ℝ)) (B := Matrix n n 𝕜) hA.φ
+
 instance instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus ℝ (IsHermitian : Matrix n n 𝕜 → Prop) where
 exists_cfc_of_predicate := by
@@ -152,14 +154,17 @@ exists_cfc_of_predicate := by
       · conv_rhs => rw [ha.spectral_theorem]
         congr!
       · constructor
-        intro f
-        rw [← ContinuousMap.spectrum_eq_range (𝕜 := ℝ) (X := spectrum ℝ a) f]
-        congr!
-        --apply AlgEquiv.spectrum_eq (f := ha.φ)
-        apply Set.eq_of_subset_of_subset
-        apply AlgHom.spectrum_apply_subset
-        sorry
-      ·   sorry
+        · intro f
+          rw [← ContinuousMap.spectrum_eq_range (𝕜 := ℝ) (X := spectrum ℝ a) f]
+          congr!
+          --apply Set.eq_of_subset_of_subset
+          --apply AlgHom.spectrum_apply_subset
+          have J := AlgEquiv.ofInjective (R := ℝ) (A :=  C(spectrum ℝ a, ℝ)) (B := Matrix n n 𝕜) (ha.φ)
+          have := AlgEquiv.spectrum_eq J --need injectivity. Can get, though.
+          sorry
+        · intro f
+          sorry
+
 
 
 
