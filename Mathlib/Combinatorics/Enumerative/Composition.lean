@@ -457,7 +457,7 @@ theorem blocksFun_congr {n₁ n₂ : ℕ} (c₁ : Composition n₁) (c₂ : Comp
 same sequence of blocks. -/
 theorem sigma_eq_iff_blocks_eq {c : Σn, Composition n} {c' : Σn, Composition n} :
     c = c' ↔ c.2.blocks = c'.2.blocks := by
-  refine' ⟨fun H => by rw [H], fun H => _⟩
+  refine ⟨fun H => by rw [H], fun H => ?_⟩
   rcases c with ⟨n, c⟩
   rcases c' with ⟨n', c'⟩
   have : n = n' := by rw [← c.blocks_sum, ← c'.blocks_sum, H]
@@ -943,7 +943,7 @@ theorem mem_boundaries_iff_exists_blocks_sum_take_eq {j : Fin (n + 1)} :
   · intro hj
     rcases (c.boundaries.orderIsoOfFin rfl).surjective ⟨j, hj⟩ with ⟨i, hi⟩
     rw [Subtype.ext_iff, Subtype.coe_mk] at hi
-    refine' ⟨i.1, i.2, _⟩
+    refine ⟨i.1, i.2, ?_⟩
     dsimp at hi
     rw [← hi, c.blocks_partial_sum i.2]
     rfl
@@ -1031,7 +1031,7 @@ theorem CompositionAsSet.toComposition_boundaries (c : CompositionAsSet n) :
     · simpa [c.card_boundaries_eq_succ_length] using i.2
     · simp [Composition.boundary, Composition.sizeUpTo, ← hi]
   · rintro ⟨i, i_lt, hi⟩
-    refine' ⟨i, by simp, _⟩
+    refine ⟨i, by simp, ?_⟩
     rw [c.card_boundaries_eq_succ_length] at i_lt
     simp [Composition.boundary, Nat.mod_eq_of_lt i_lt, Composition.sizeUpTo, hi]
 #align composition_as_set.to_composition_boundaries CompositionAsSet.toComposition_boundaries

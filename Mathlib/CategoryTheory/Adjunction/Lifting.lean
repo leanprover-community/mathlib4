@@ -196,7 +196,7 @@ lemma monadicAdjointTriangleLift (U : B ⥤ C) [MonadicRightAdjoint U] {R : A �
       (R' ⋙ (Monad.comparison (monadicAdjunction U)).inv)).ofNatIsoRight _).isRightAdjoint
     exact isoWhiskerLeft R (Monad.comparison _).asEquivalence.unitIso.symm ≪≫ R.rightUnitor
   let this : (R' ⋙ Monad.forget (monadicAdjunction U).toMonad).IsRightAdjoint := by
-    refine' ((Adjunction.ofIsRightAdjoint (R ⋙ U)).ofNatIsoRight _).isRightAdjoint
+    refine ((Adjunction.ofIsRightAdjoint (R ⋙ U)).ofNatIsoRight ?_).isRightAdjoint
     exact isoWhiskerLeft R (Monad.comparisonForget (monadicAdjunction U)).symm
   let this : ∀ X, RegularEpi ((Monad.adj (monadicAdjunction U).toMonad).counit.app X) := by
     intro X

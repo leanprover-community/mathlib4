@@ -111,12 +111,12 @@ variable {R}
 instance subalgebraNontrivial [Nontrivial A] : Nontrivial (Subalgebra R A[X]) :=
   ⟨⟨⊥, ⊤, by
       rw [Ne, SetLike.ext_iff, not_forall]
-      refine' ⟨X, _⟩
+      refine ⟨X, ?_⟩
       simp only [Algebra.mem_bot, not_exists, Set.mem_range, iff_true_iff, Algebra.mem_top,
         algebraMap_apply, not_forall]
       intro x
       rw [ext_iff, not_forall]
-      refine' ⟨1, _⟩
+      refine ⟨1, ?_⟩
       simp [coeff_C]⟩⟩
 
 @[simp]

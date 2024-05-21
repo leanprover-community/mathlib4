@@ -302,9 +302,7 @@ jobs:
         uses: liskin/gh-problem-matcher-wrap@v3
         with:
           linters: gcc
-          run: |
-            bash -o pipefail -c "
-            make -k -j 8 test"
+          run: lake test
 
       - name: check for unused imports
         id: shake
