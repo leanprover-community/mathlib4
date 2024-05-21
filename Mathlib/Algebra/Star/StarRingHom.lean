@@ -160,8 +160,6 @@ structure StarRingEquiv (A B : Type*) [Add A] [Add B] [Mul A] [Mul B] [Star A] [
   /-- By definition, a ⋆-ring equivalence preserves the `star` operation. -/
   map_star' : ∀ a : A, toFun (star a) = star (toFun a)
 
-@[inherit_doc StarRingEquiv] infixr:25 " ≃⋆+* " => StarRingEquiv _
-
 @[inherit_doc] notation:25 A " ≃⋆+* " B => StarRingEquiv A B
 
 /-- Reinterpret a star ring equivalence as a `RingEquiv` by forgetting the interaction with the star
