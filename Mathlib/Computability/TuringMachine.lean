@@ -348,6 +348,7 @@ theorem ListBlank.nth_modifyNth {Γ} [Inhabited Γ] (f : Γ → Γ) (n i) (L : L
 /-- A pointed map of `Inhabited` types is a map that sends one default value to the other. -/
 structure PointedMap.{u, v} (Γ : Type u) (Γ' : Type v) [Inhabited Γ] [Inhabited Γ'] :
     Type max u v where
+  /-- The map underlying this instance. -/
   f : Γ → Γ'
   map_pt' : f default = default
 #align turing.pointed_map Turing.PointedMap
@@ -494,10 +495,13 @@ theorem ListBlank.cons_bind {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (a : Γ) (l 
 /-- The tape of a Turing machine is composed of a head element (which we imagine to be the
 current position of the head), together with two `ListBlank`s denoting the portions of the tape
 going off to the left and right. When the Turing machine moves right, an element is pulled from the
-right side and becomes the new head, while the head element is consed onto the left side. -/
+right side and becomes the new head, while the head element is `cons`ed onto the left side. -/
 structure Tape (Γ : Type*) [Inhabited Γ] where
+  /-- The current position of the head. -/
   head : Γ
+  /-- The portion of the tape going off to the left. -/
   left : ListBlank Γ
+  /-- The portion of the tape going off to the right. -/
   right : ListBlank Γ
 #align turing.tape Turing.Tape
 
@@ -1011,8 +1015,7 @@ to remove the infinite tail of blanks.)
 
 namespace TM0
 
--- "TM0"
-set_option linter.uppercaseLean3 false
+set_option linter.uppercaseLean3 false -- for "TM0"
 
 section
 
@@ -1056,12 +1059,14 @@ instance Machine.inhabited : Inhabited Machine₀ := by
 #align turing.TM0.machine.inhabited Turing.TM0.Machine.inhabited
 
 /-- The configuration state of a Turing machine during operation
-  consists of a label (machine state), and a tape, represented in
-  the form `(a, L, R)` meaning the tape looks like `L.rev ++ [a] ++ R`
+  consists of a label (machine state), and a tape.
+  The tape is represented in the form `(a, L, R)`, meaning the tape looks like `L.rev ++ [a] ++ R`
   with the machine currently reading the `a`. The lists are
   automatically extended with blanks as the machine moves around. -/
 structure Cfg where
+  /-- The current machine state. -/
   q : Λ
+  /-- The current state of the tape: current symbol, left and right parts. -/
   Tape : Tape Γ
 #align turing.TM0.cfg Turing.TM0.Cfg
 
@@ -1216,8 +1221,7 @@ before the halt as the output, and `move` and `write` etc. take 0 steps in this 
 
 namespace TM1
 
--- "TM1"
-set_option linter.uppercaseLean3 false
+set_option linter.uppercaseLean3 false -- for "TM1"
 
 section
 
@@ -1262,8 +1266,11 @@ instance Stmt.inhabited : Inhabited Stmt₁ :=
 /-- The configuration of a TM1 machine is given by the currently
   evaluating statement, the variable store value, and the tape. -/
 structure Cfg where
+  /-- The statement (if any) which is currently evaluated -/
   l : Option Λ
+  /-- The current value of the variable store -/
   var : σ
+  /-- The current state of the tape -/
   Tape : Tape Γ
 #align turing.TM1.cfg Turing.TM1.Cfg
 
@@ -1430,8 +1437,7 @@ TM1 semantics.
 
 namespace TM1to0
 
--- "TM1to0"
-set_option linter.uppercaseLean3 false
+set_option linter.uppercaseLean3 false -- for "TM1to0"
 
 section
 
@@ -1603,8 +1609,7 @@ finitely long.
 
 namespace TM1to1
 
--- "TM1to1"
-set_option linter.uppercaseLean3 false
+set_option linter.uppercaseLean3 false -- for "TM1to1"
 
 open TM1
 
@@ -1966,8 +1971,7 @@ unreachable branch).
 
 namespace TM0to1
 
--- "TM0to1"
-set_option linter.uppercaseLean3 false
+set_option linter.uppercaseLean3 false -- for "TM0to1"
 
 section
 
@@ -2071,8 +2075,7 @@ as the output stack.
 
 namespace TM2
 
--- "TM2"
-set_option linter.uppercaseLean3 false
+set_option linter.uppercaseLean3 false -- for "TM2"
 
 section
 
@@ -2116,8 +2119,11 @@ instance Stmt.inhabited : Inhabited Stmt₂ :=
 local variables, and the stacks. (Note that the stacks are not `ListBlank`s, they have a definite
 size.) -/
 structure Cfg where
+  /-- The current label to run (or `none` for the halting state) -/
   l : Option Λ
+  /-- The internal state -/
   var : σ
+  /-- The (finite) collection of internal stacks -/
   stk : ∀ k, List (Γ k)
 #align turing.TM2.cfg Turing.TM2.Cfg
 
@@ -2311,8 +2317,7 @@ steps to run when emulated in TM1, where `m` is the length of the input.
 
 namespace TM2to1
 
--- "TM2to1"
-set_option linter.uppercaseLean3 false
+set_option linter.uppercaseLean3 false -- for "TM2to1"
 
 -- A displaced lemma proved in unnecessary generality
 theorem stk_nth_val {K : Type*} {Γ : K → Type*} {L : ListBlank (∀ k, Option (Γ k))} {k S} (n)
