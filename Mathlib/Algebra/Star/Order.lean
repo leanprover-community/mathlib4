@@ -50,7 +50,7 @@ convenient to declare instances using `StarOrderedRing.of_nonneg_iff`.
 
 Porting note: dropped an unneeded assumption
 `add_le_add_left : ∀ {x y}, x ≤ y → ∀ z, z + x ≤ z + y` -/
-class StarOrderedRing (R : Type u) [NonUnitalNonAssocSemiring R] [PartialOrder R]
+class StarOrderedRing (R : Type u) [NonUnitalSemiring R] [PartialOrder R]
     [StarRing R] : Prop where
   /-- characterization of the order in terms of the `StarRing` structure. -/
   le_iff :
@@ -259,9 +259,9 @@ end Semiring
 
 section OrderClass
 
-variable {F R S : Type*} [NonUnitalNonAssocSemiring R] [PartialOrder R] [StarRing R]
+variable {F R S : Type*} [NonUnitalSemiring R] [PartialOrder R] [StarRing R]
   [StarOrderedRing R]
-variable [NonUnitalNonAssocSemiring S] [PartialOrder S] [StarRing S] [StarOrderedRing S]
+variable [NonUnitalSemiring S] [PartialOrder S] [StarRing S] [StarOrderedRing S]
 
 -- we prove this auxiliary lemma in order to avoid duplicating the proof twice below.
 lemma NonUnitalStarRingHom.map_le_map_of_map_star (f : R →⋆ₙ+* S) {x y : R} (hxy : x ≤ y) :
@@ -274,7 +274,7 @@ lemma NonUnitalStarRingHom.map_le_map_of_map_star (f : R →⋆ₙ+* S) {x y : R
   all_goals aesop
 
 instance (priority := 100) StarRingHomClass.instOrderHomClass [FunLike F R S]
-    [NonUnitalNonAssocSemiring R] [StarRing R] [StarOrderedRing R] [NonUnitalNonAssocSemiring S]
+    [NonUnitalSemiring R] [StarRing R] [StarOrderedRing R] [NonUnitalSemiring S]
     [StarRing S] [StarOrderedRing S] [NonUnitalRingHomClass F R S]
     [NonUnitalStarRingHomClass F R S] : OrderHomClass F R S where
   map_rel f := (f : R →⋆ₙ+* S).map_le_map_of_map_star
