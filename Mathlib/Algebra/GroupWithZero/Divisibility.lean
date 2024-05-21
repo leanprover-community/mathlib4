@@ -72,7 +72,7 @@ theorem dvdNotUnit_of_dvd_of_not_dvd {a b : α} (hd : a ∣ b) (hnd : ¬b ∣ a)
   · rintro rfl
     exact hnd (dvd_zero _)
   · rcases hd with ⟨c, rfl⟩
-    refine' ⟨c, _, rfl⟩
+    refine ⟨c, ?_, rfl⟩
     rintro ⟨u, rfl⟩
     simp at hnd
 #align dvd_not_unit_of_dvd_of_not_dvd dvdNotUnit_of_dvd_of_not_dvd
@@ -147,7 +147,7 @@ theorem dvd_antisymm : a ∣ b → b ∣ a → a = b := by
   obtain ⟨rfl, -⟩ | rfl := hcd <;> simp
 #align dvd_antisymm dvd_antisymm
 
--- porting note: `attribute [protected]` is currently unsupported
+-- Porting note: `attribute [protected]` is currently unsupported
 -- attribute [protected] Nat.dvd_antisymm --This lemma is in core, so we protect it here
 
 theorem dvd_antisymm' : a ∣ b → b ∣ a → b = a :=

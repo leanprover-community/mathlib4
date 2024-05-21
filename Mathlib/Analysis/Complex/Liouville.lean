@@ -46,7 +46,7 @@ theorem deriv_eq_smul_circleIntegral [CompleteSpace F] {R : ℝ} {c : ℂ} {f : 
     (hf : DiffContOnCl ℂ f (ball c R)) :
     deriv f c = (2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - c) ^ (-2 : ℤ) • f z := by
   lift R to ℝ≥0 using hR.le
-  refine' (hf.hasFPowerSeriesOnBall hR).hasFPowerSeriesAt.deriv.trans _
+  refine (hf.hasFPowerSeriesOnBall hR).hasFPowerSeriesAt.deriv.trans ?_
   simp only [cauchyPowerSeries_apply, one_div, zpow_neg, pow_one, smul_smul, zpow_two, mul_inv]
 #align complex.deriv_eq_smul_circle_integral Complex.deriv_eq_smul_circleIntegral
 
@@ -111,7 +111,7 @@ open Complex
 theorem apply_eq_apply_of_bounded {f : E → F} (hf : Differentiable ℂ f) (hb : IsBounded (range f))
     (z w : E) : f z = f w := by
   set g : ℂ → F := f ∘ fun t : ℂ => t • (w - z) + z
-  suffices g 0 = g 1 by simpa
+  suffices g 0 = g 1 by simpa [g]
   apply liouville_theorem_aux
   exacts [hf.comp ((differentiable_id.smul_const (w - z)).add_const z),
     hb.subset (range_comp_subset_range _ _)]

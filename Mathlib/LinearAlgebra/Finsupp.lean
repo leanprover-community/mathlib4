@@ -208,8 +208,7 @@ section LSubtypeDomain
 variable (s : Set α)
 
 /-- Interpret `Finsupp.subtypeDomain s` as a linear map. -/
-def lsubtypeDomain : (α →₀ M) →ₗ[R] s →₀ M
-    where
+def lsubtypeDomain : (α →₀ M) →ₗ[R] s →₀ M where
   toFun := subtypeDomain fun x => x ∈ s
   map_add' _ _ := subtypeDomain_add
   map_smul' _ _ := ext fun _ => rfl
@@ -333,7 +332,7 @@ theorem supported_eq_span_single (s : Set α) :
   · rintro _ ⟨_, hp, rfl⟩
     exact single_mem_supported R 1 hp
   · rw [← l.sum_single]
-    refine' sum_mem fun i il => _
+    refine sum_mem fun i il => ?_
   -- Porting note: Needed to help this convert quite a bit replacing underscores
     convert smul_mem (M := α →₀ R) (x := single i 1) (span R ((fun i => single i 1) '' s)) (l i) ?_
     · simp [span]
@@ -344,7 +343,7 @@ theorem supported_eq_span_single (s : Set α) :
 variable (M)
 
 /-- Interpret `Finsupp.filter s` as a linear map from `α →₀ M` to `supported M R s`. -/
-def restrictDom (s : Set α) : (α →₀ M) →ₗ[R] supported M R s :=
+def restrictDom (s : Set α) [DecidablePred (· ∈ s)] : (α →₀ M) →ₗ[R] supported M R s :=
   LinearMap.codRestrict _
     { toFun := filter (· ∈ s)
       map_add' := fun _ _ => filter_add
@@ -357,21 +356,21 @@ variable {M R}
 section
 
 @[simp]
-theorem restrictDom_apply (s : Set α) (l : α →₀ M) :
-    ((restrictDom M R s : (α →₀ M) →ₗ[R] supported M R s) l : α →₀ M) = Finsupp.filter (· ∈ s) l :=
-  rfl
+theorem restrictDom_apply (s : Set α) (l : α →₀ M) [DecidablePred (· ∈ s)]:
+    (restrictDom M R s l : α →₀ M) = Finsupp.filter (· ∈ s) l := rfl
 #align finsupp.restrict_dom_apply Finsupp.restrictDom_apply
 
 end
 
-theorem restrictDom_comp_subtype (s : Set α) :
+theorem restrictDom_comp_subtype (s : Set α) [DecidablePred (· ∈ s)] :
     (restrictDom M R s).comp (Submodule.subtype _) = LinearMap.id := by
   ext l a
   by_cases h : a ∈ s <;> simp [h]
   exact ((mem_supported' R l.1).1 l.2 a h).symm
 #align finsupp.restrict_dom_comp_subtype Finsupp.restrictDom_comp_subtype
 
-theorem range_restrictDom (s : Set α) : LinearMap.range (restrictDom M R s) = ⊤ :=
+theorem range_restrictDom (s : Set α) [DecidablePred (· ∈ s)] :
+    LinearMap.range (restrictDom M R s) = ⊤ :=
   range_eq_top.2 <|
     Function.RightInverse.surjective <| LinearMap.congr_fun (restrictDom_comp_subtype s)
 #align finsupp.range_restrict_dom Finsupp.range_restrictDom
@@ -405,8 +404,8 @@ theorem supported_iUnion {δ : Type*} (s : δ → Set α) :
   · exact zero_mem _
   · refine' fun x a l _ _ => add_mem _
     by_cases h : ∃ i, x ∈ s i <;> simp [h]
-    · cases' h with i hi
-      exact le_iSup (fun i => supported M R (s i)) i (single_mem_supported R _ hi)
+    cases' h with i hi
+    exact le_iSup (fun i => supported M R (s i)) i (single_mem_supported R _ hi)
 #align finsupp.supported_Union Finsupp.supported_iUnion
 
 theorem supported_union (s t : Set α) : supported M R (s ∪ t) = supported M R s ⊔ supported M R t :=
@@ -440,7 +439,7 @@ theorem disjoint_supported_supported_iff [Nontrivial M] {s t : Set α} :
 `supported M R s` and `s →₀ M`. -/
 def supportedEquivFinsupp (s : Set α) : supported M R s ≃ₗ[R] s →₀ M := by
   let F : supported M R s ≃ (s →₀ M) := restrictSupportEquiv s M
-  refine' F.toLinearEquiv _
+  refine F.toLinearEquiv ?_
   have :
     (F : supported M R s → ↥s →₀ M) =
       (lsubtypeDomain s : (α →₀ M) →ₗ[R] s →₀ M).comp (Submodule.subtype (supported M R s)) :=
@@ -556,8 +555,7 @@ section LMapDomain
 variable {α' : Type*} {α'' : Type*} (M R)
 
 /-- Interpret `Finsupp.mapDomain` as a linear map. -/
-def lmapDomain (f : α → α') : (α →₀ M) →ₗ[R] α' →₀ M
-    where
+def lmapDomain (f : α → α') : (α →₀ M) →ₗ[R] α' →₀ M where
   toFun := mapDomain f
   map_add' _ _ := mapDomain_add
   map_smul' := mapDomain_smul
@@ -641,8 +639,7 @@ sending `l : β →₀ M` to the finitely supported function from `α` to `M` gi
 `l` with `f`.
 
 This is the linear version of `Finsupp.comapDomain`. -/
-def lcomapDomain (f : α → β) (hf : Function.Injective f) : (β →₀ M) →ₗ[R] α →₀ M
-    where
+def lcomapDomain (f : α → β) (hf : Function.Injective f) : (β →₀ M) →ₗ[R] α →₀ M where
   toFun l := Finsupp.comapDomain f l (hf.injOn _)
   map_add' x y := by ext; simp
   map_smul' c x := by ext; simp
@@ -1087,7 +1084,6 @@ end Sum
 section Sigma
 
 variable {η : Type*} [Fintype η] {ιs : η → Type*} [Zero α]
-
 variable (R)
 
 /-- On a `Fintype η`, `Finsupp.split` is a linear equivalence between
@@ -1162,9 +1158,7 @@ end Finsupp
 section Fintype
 
 variable {α M : Type*} (R : Type*) [Fintype α] [Semiring R] [AddCommMonoid M] [Module R M]
-
 variable (S : Type*) [Semiring S] [Module S M] [SMulCommClass R S M]
-
 variable (v : α → M)
 
 /-- `Fintype.total R S v f` is the linear combination of vectors in `v` with weights in `f`.
@@ -1249,7 +1243,6 @@ end SpanRange
 end Fintype
 
 variable {R : Type*} {M : Type*} {N : Type*}
-
 variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
 
 section

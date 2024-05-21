@@ -20,7 +20,7 @@ In this file we prove a few simple facts about rectangular boxes, partitions, an
 For the last statement, we both prove it as a proposition and define a bundled
 `BoxIntegral.BoxAdditiveMap` function.
 
-### Tags
+## Tags
 
 rectangular box, measure
 -/

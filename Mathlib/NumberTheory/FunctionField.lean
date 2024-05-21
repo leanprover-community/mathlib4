@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Ashvni Narayanan
 -/
 import Mathlib.Algebra.Order.Group.TypeTags
-import Mathlib.FieldTheory.RatFunc
+import Mathlib.FieldTheory.RatFunc.Degree
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 import Mathlib.RingTheory.IntegrallyClosed
 import Mathlib.Topology.Algebra.ValuedField
@@ -234,7 +234,7 @@ theorem inftyValuation.polynomial {p : Fq[X]} (hp : p ≠ 0) :
     inftyValuationDef Fq (algebraMap Fq[X] (RatFunc Fq) p) =
       Multiplicative.ofAdd (p.natDegree : ℤ) := by
   have hp' : algebraMap Fq[X] (RatFunc Fq) p ≠ 0 := by
-    rw [Ne.def, RatFunc.algebraMap_eq_zero_iff]; exact hp
+    rw [Ne, RatFunc.algebraMap_eq_zero_iff]; exact hp
   rw [inftyValuationDef, if_neg hp', RatFunc.intDegree_polynomial]
 #align function_field.infty_valuation.polynomial FunctionField.inftyValuation.polynomial
 

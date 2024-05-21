@@ -309,7 +309,7 @@ theorem mul_right_cancel'' [ContravariantClass α α (swap (· * ·)) (· ≤ ·
     a₂ * b₂ ≤ a₁ * b₁ ↔ a₁ = a₂ ∧ b₁ = b₂ := by
   haveI := covariantClass_le_of_lt α α (· * ·)
   haveI := covariantClass_le_of_lt α α (swap (· * ·))
-  refine' ⟨fun h ↦ _, by rintro ⟨rfl, rfl⟩; rfl⟩
+  refine ⟨fun h ↦ ?_, by rintro ⟨rfl, rfl⟩; rfl⟩
   simp only [eq_iff_le_not_lt, ha, hb, true_and]
   refine' ⟨fun ha ↦ h.not_lt _, fun hb ↦ h.not_lt _⟩
   exacts [mul_lt_mul_of_lt_of_le ha hb, mul_lt_mul_of_le_of_lt ha hb]
@@ -1188,7 +1188,7 @@ theorem mul_eq_one_iff' [CovariantClass α α (· * ·) (· ≤ ·)]
       have : b = 1 := le_antisymm this hb
       And.intro ‹a = 1› ‹b = 1›)
     (by rintro ⟨rfl, rfl⟩; rw [mul_one])
-    -- porting note: original proof of the second implication,
+    -- Porting note: original proof of the second implication,
     -- `fun ⟨ha', hb'⟩ => by rw [ha', hb', mul_one]`,
     -- had its `to_additive`-ization fail due to some bug
 #align mul_eq_one_iff' mul_eq_one_iff'

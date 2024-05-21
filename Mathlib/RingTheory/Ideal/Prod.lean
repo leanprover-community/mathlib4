@@ -3,7 +3,7 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.RingTheory.Ideal.Maps
 
 #align_import ring_theory.ideal.prod from "leanprover-community/mathlib"@"052f6013363326d50cb99c6939814a4b8eb7b301"
 
@@ -87,8 +87,7 @@ theorem map_prodComm_prod :
 
 /-- Ideals of `R × S` are in one-to-one correspondence with pairs of ideals of `R` and ideals of
     `S`. -/
-def idealProdEquiv : Ideal (R × S) ≃ Ideal R × Ideal S
-    where
+def idealProdEquiv : Ideal (R × S) ≃ Ideal R × Ideal S where
   toFun I := ⟨map (RingHom.fst R S) I, map (RingHom.snd R S) I⟩
   invFun I := prod I.1 I.2
   left_inv I := (ideal_prod_eq I).symm

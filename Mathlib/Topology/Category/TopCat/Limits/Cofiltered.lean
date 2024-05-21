@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
 -/
 import Mathlib.Topology.Category.TopCat.Limits.Basic
+import Mathlib.CategoryTheory.Filtered.Basic
 
 #align_import topology.category.Top.limits.cofiltered from "leanprover-community/mathlib"@"dbdf71cee7bb20367cb7e37279c08b0c218cf967"
 
@@ -32,7 +33,7 @@ namespace TopCat
 
 section CofilteredLimit
 
-variable {J : Type v} [SmallCategory J] [IsCofiltered J] (F : J ⥤ TopCatMax.{v, u}) (C : Cone F)
+variable {J : Type v} [SmallCategory J] [IsCofiltered J] (F : J ⥤ TopCat.{max v u}) (C : Cone F)
   (hC : IsLimit C)
 
 /-- Given a *compatible* collection of topological bases for the factors in a cofiltered limit
@@ -59,12 +60,12 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
     ext U0
     constructor
     · rintro ⟨j, V, hV, rfl⟩
-      refine' ⟨D.π.app j ⁻¹' V, ⟨j, V, hV, rfl⟩, rfl⟩
+      exact ⟨D.π.app j ⁻¹' V, ⟨j, V, hV, rfl⟩, rfl⟩
     · rintro ⟨W, ⟨j, V, hV, rfl⟩, rfl⟩
-      refine' ⟨j, V, hV, rfl⟩
+      exact ⟨j, V, hV, rfl⟩
   -- Using `D`, we can apply the characterization of the topological basis of a
   -- topology defined as an infimum...
-  convert isTopologicalBasis_iInf hT fun j (x : D.pt) => D.π.app j x using 1
+  convert IsTopologicalBasis.iInf_induced hT fun j (x : D.pt) => D.π.app j x using 1
   ext U0
   constructor
   · rintro ⟨j, V, hV, rfl⟩
@@ -72,8 +73,8 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
     refine' ⟨U, {j}, _, _⟩
     · simp only [Finset.mem_singleton]
       rintro i rfl
-      simpa
-    · simp
+      simpa [U]
+    · simp [U]
   · rintro ⟨U, G, h1, h2⟩
     obtain ⟨j, hj⟩ := IsCofiltered.inf_objs_exists G
     let g : ∀ e ∈ G, j ⟶ e := fun _ he => (hj he).some
@@ -99,7 +100,7 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
       -- use the intermediate claim to finish off the goal using `univ` and `inter`.
       refine' this _ _ _ (univ _) (inter _) _
       intro e he
-      dsimp
+      dsimp [Vs]
       rw [dif_pos he]
       exact compat j e (g e he) (U e) (h1 e he)
     · -- conclude...

@@ -33,7 +33,8 @@ noncomputable section
 
 open Finsupp
 
-open BigOperators Classical Pointwise
+open scoped Classical
+open BigOperators Pointwise
 
 variable {ι α : Type*} [Zero α] {s : Finset ι} {f : ι →₀ α}
 
@@ -99,7 +100,7 @@ theorem mem_pi {f : ι →₀ Finset α} {g : ι →₀ α} : g ∈ f.pi ↔ ∀
 @[simp]
 theorem card_pi (f : ι →₀ Finset α) : f.pi.card = f.prod fun i => (f i).card := by
   rw [pi, card_finsupp]
-  exact Finset.prod_congr rfl fun i _ => by simp only [Pi.nat_apply, Nat.cast_id]
+  exact Finset.prod_congr rfl fun i _ => by simp only [Pi.natCast_apply, Nat.cast_id]
 #align finsupp.card_pi Finsupp.card_pi
 
 end Finsupp

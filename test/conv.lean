@@ -1,5 +1,4 @@
 import Mathlib.Tactic.Conv
-import Std.Tactic.GuardExpr
 
 /-- Testing nested `conv in ... => ...` -/
 example (a b c : Nat) : a + b + c = c + a + b := by

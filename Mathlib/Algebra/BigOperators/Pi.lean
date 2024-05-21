@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
 import Mathlib.Data.Fintype.Card
-import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Ring.Pi
 
@@ -78,7 +77,6 @@ theorem pi_eq_sum_univ {ι : Type*} [Fintype ι] [DecidableEq ι] {R : Type*} [S
 section MulSingle
 
 variable {I : Type*} [DecidableEq I] {Z : I → Type*}
-
 variable [∀ i, CommMonoid (Z i)]
 
 @[to_additive]
@@ -105,7 +103,7 @@ note [partially-applied ext lemmas]. -/
       "\nThis is used as the ext lemma instead of `AddMonoidHom.functions_ext` for reasons
       explained in note [partially-applied ext lemmas]."]
 theorem MonoidHom.functions_ext' [Finite I] (M : Type*) [CommMonoid M] (g h : (∀ i, Z i) →* M)
-    (H : ∀ i, g.comp (MonoidHom.single Z i) = h.comp (MonoidHom.single Z i)) : g = h :=
+    (H : ∀ i, g.comp (MonoidHom.mulSingle Z i) = h.comp (MonoidHom.mulSingle Z i)) : g = h :=
   g.functions_ext M h fun i => DFunLike.congr_fun (H i)
 #align monoid_hom.functions_ext' MonoidHom.functions_ext'
 #align add_monoid_hom.functions_ext' AddMonoidHom.functions_ext'
@@ -117,7 +115,6 @@ section RingHom
 open Pi
 
 variable {I : Type*} [DecidableEq I] {f : I → Type*}
-
 variable [∀ i, NonAssocSemiring (f i)]
 
 @[ext]

@@ -54,7 +54,6 @@ open TopologicalSpace Filter Set Bundle Function
 open scoped Topology Classical Bundle
 
 variable {ι : Type*} {B : Type*} {F : Type*} {E : B → Type*}
-
 variable (F) {Z : Type*} [TopologicalSpace B] [TopologicalSpace F] {proj : Z → B}
 
 /-- This structure contains the information left for a local trivialization (which is implemented
@@ -90,7 +89,7 @@ lemma ext' (e e' : Pretrivialization F proj) (h₁ : e.toPartialEquiv = e'.toPar
   cases e; cases e'; congr
 #align pretrivialization.ext Pretrivialization.ext'
 
--- porting note: todo: move `ext` here?
+-- Porting note (#11215): TODO: move `ext` here?
 lemma ext {e e' : Pretrivialization F proj} (h₁ : ∀ x, e x = e' x)
     (h₂ : ∀ x, e.toPartialEquiv.symm x = e'.toPartialEquiv.symm x) (h₃ : e.baseSet = e'.baseSet) :
     e = e' := by
@@ -301,7 +300,7 @@ variable [TopologicalSpace Z] [TopologicalSpace (TotalSpace F E)]
 `proj : Z → B` with fiber `F`, as a partial homeomorphism between `Z` and `B × F` defined between
 two sets of the form `proj ⁻¹' baseSet` and `baseSet × F`, acting trivially on the first coordinate.
 -/
--- porting note: todo: was @[nolint has_nonempty_instance]
+-- Porting note (#5171): was @[nolint has_nonempty_instance]
 structure Trivialization (proj : Z → B) extends PartialHomeomorph Z (B × F) where
   baseSet : Set B
   open_baseSet : IsOpen baseSet
@@ -653,7 +652,7 @@ theorem continuousOn_symm (e : Trivialization F (π F E)) :
       TotalSpace.mk z.1 (e.symm z.1 z.2) = e.toPartialHomeomorph.symm z := by
     rintro x ⟨hx : x.1 ∈ e.baseSet, _⟩
     rw [e.mk_symm hx]
-  refine' ContinuousOn.congr _ this
+  refine ContinuousOn.congr ?_ this
   rw [← e.target_eq]
   exact e.toPartialHomeomorph.continuousOn_symm
 #align trivialization.continuous_on_symm Trivialization.continuousOn_symm
@@ -688,7 +687,7 @@ def coordChange (e₁ e₂ : Trivialization F proj) (b : B) (x : F) : F :=
 theorem mk_coordChange (e₁ e₂ : Trivialization F proj) {b : B} (h₁ : b ∈ e₁.baseSet)
     (h₂ : b ∈ e₂.baseSet) (x : F) :
     (b, e₁.coordChange e₂ b x) = e₂ (e₁.toPartialHomeomorph.symm (b, x)) := by
-  refine' Prod.ext _ rfl
+  refine Prod.ext ?_ rfl
   rw [e₂.coe_fst', ← e₁.coe_fst', e₁.apply_symm_apply' h₁]
   · rwa [e₁.proj_symm_apply' h₁]
   · rwa [e₁.proj_symm_apply' h₁]
@@ -786,10 +785,7 @@ noncomputable def piecewise (e e' : Trivialization F proj) (s : Set B)
   source_eq := by simp [source_eq]
   target_eq := by simp [target_eq, prod_univ]
   proj_toFun p := by
-    rintro (⟨he, hs⟩ | ⟨he, hs⟩)
-    -- porting note: was `<;> simp [*]`
-    · simp [piecewise_eq_of_mem _ _ _ hs, *]
-    · simp [piecewise_eq_of_not_mem _ _ _ hs, *]
+    rintro (⟨he, hs⟩ | ⟨he, hs⟩) <;> simp [*]
 #align trivialization.piecewise Trivialization.piecewise
 
 /-- Given two bundle trivializations `e`, `e'` of a topological fiber bundle `proj : Z → B`

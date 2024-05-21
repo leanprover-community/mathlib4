@@ -3,7 +3,7 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 
 #align_import measure_theory.function.ae_measurable_order from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
 
@@ -25,7 +25,8 @@ as possible.
 
 open MeasureTheory Set TopologicalSpace
 
-open Classical ENNReal NNReal
+open scoped Classical
+open ENNReal NNReal
 
 /-- If a function `f : α → β` is such that the level sets `{f < p}` and `{q < f}` have measurable
 supersets which are disjoint up to measure zero when `p < q`, then `f` is almost-everywhere
@@ -64,12 +65,11 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
       μ t ≤ ∑' (p : s) (q : ↥(s ∩ Ioi p)), μ (u' p ∩ v p q) := by
         refine (measure_iUnion_le _).trans ?_
         refine ENNReal.tsum_le_tsum fun p => ?_
-        refine @measure_iUnion_le _ _ _ _ ?_ _
-        exact (s_count.mono (inter_subset_left _ _)).to_subtype
+        haveI := (s_count.mono (inter_subset_left _ (Ioi ↑p))).to_subtype
+        apply measure_iUnion_le
       _ ≤ ∑' (p : s) (q : ↥(s ∩ Ioi p)), μ (u p q ∩ v p q) := by
-        refine ENNReal.tsum_le_tsum fun p => ?_
-        refine ENNReal.tsum_le_tsum fun q => measure_mono ?_
-        exact inter_subset_inter_left _ (biInter_subset_of_mem q.2)
+        gcongr with p q
+        exact biInter_subset_of_mem q.2
       _ = ∑' (p : s) (_ : ↥(s ∩ Ioi p)), (0 : ℝ≥0∞) := by
         congr
         ext1 p
@@ -101,7 +101,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
     · intro q hq
       obtain ⟨r, ⟨xr, rq⟩, rs⟩ : ∃ r, r ∈ Ioo (f x) q ∩ s :=
         dense_iff_inter_open.1 s_dense (Ioo (f x) q) isOpen_Ioo (nonempty_Ioo.2 hq)
-      refine' ⟨⟨r, rs⟩, _⟩
+      refine ⟨⟨r, rs⟩, ?_⟩
       have A : x ∈ u' r := mem_biInter fun i _ => (huv r i).2.2.1 xr
       simp only [A, rq, piecewise_eq_of_mem, Subtype.coe_mk]
   exact ⟨f', f'_meas, ff'⟩

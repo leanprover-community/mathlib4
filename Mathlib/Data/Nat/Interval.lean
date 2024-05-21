@@ -3,7 +3,9 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.LocallyFinite.Basic
+import Mathlib.Order.Interval.Finset.Basic
+import Mathlib.Order.Interval.Multiset
+import Mathlib.Algebra.Order.Interval.Finset
 
 #align_import data.nat.interval from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
 
@@ -16,13 +18,17 @@ intervals as finsets and fintypes.
 ## TODO
 
 Some lemmas can be generalized using `OrderedGroup`, `CanonicallyOrderedCommMonoid` or `SuccOrder`
-and subsequently be moved upstream to `Data.Finset.LocallyFinite`.
+and subsequently be moved upstream to `Order.Interval.Finset`.
 -/
 
 
 open Finset Nat
 
-instance : LocallyFiniteOrder ℕ where
+variable (a b c : ℕ)
+
+namespace Nat
+
+instance instLocallyFiniteOrder : LocallyFiniteOrder ℕ where
   finsetIcc a b := ⟨List.range' a (b + 1 - a), List.nodup_range' _ _⟩
   finsetIco a b := ⟨List.range' a (b - a), List.nodup_range' _ _⟩
   finsetIoc a b := ⟨List.range' (a + 1) (b - a), List.nodup_range' _ _⟩
@@ -56,10 +62,6 @@ instance : LocallyFiniteOrder ℕ where
     | inr h =>
       rw [tsub_eq_zero_iff_le.2 h.le, add_zero]
       exact iff_of_false (fun hx => hx.2.not_le hx.1) fun hx => h.not_le (hx.1.trans hx.2)
-
-variable (a b c : ℕ)
-
-namespace Nat
 
 theorem Icc_eq_range' : Icc a b = ⟨List.range' a (b + 1 - a), List.nodup_range' _ _⟩ :=
   rfl
@@ -119,12 +121,8 @@ theorem card_uIcc : (uIcc a b).card = (b - a : ℤ).natAbs + 1 := by
   refine' (card_Icc _ _).trans (Int.ofNat.inj _)
   change ((↑) : ℕ → ℤ) _ = _
   rw [sup_eq_max, inf_eq_min, Int.ofNat_sub]
-  · rw [add_comm, Int.ofNat_add, add_sub_assoc]
-    -- porting note: `norm_cast` puts a `Int.subSubNat` in the goal
-    -- norm_cast
-    change _ = ↑(Int.natAbs (b - a) + 1)
-    push_cast
-    rw [max_sub_min_eq_abs, add_comm]
+  · change _ = ↑(Int.natAbs (b - a) + 1)
+    omega
   · exact min_le_max.trans le_self_add
 #align nat.card_uIcc Nat.card_uIcc
 
@@ -256,10 +254,10 @@ theorem Ico_image_const_sub_eq_Ico (hac : a ≤ c) :
     rw [lt_tsub_iff_left, Nat.lt_succ_iff] at ha
     have hx : x ≤ c := (Nat.le_add_left _ _).trans ha
     refine' ⟨c - x, _, tsub_tsub_cancel_of_le hx⟩
-    · rw [mem_Ico]
-      exact
-        ⟨le_tsub_of_add_le_right ha,
-          (tsub_lt_iff_left hx).2 <| succ_le_iff.1 <| tsub_le_iff_right.1 hb⟩
+    rw [mem_Ico]
+    exact
+      ⟨le_tsub_of_add_le_right ha,
+        (tsub_lt_iff_left hx).2 <| succ_le_iff.1 <| tsub_le_iff_right.1 hb⟩
 #align nat.Ico_image_const_sub_eq_Ico Nat.Ico_image_const_sub_eq_Ico
 
 theorem Ico_succ_left_eq_erase_Ico : Ico a.succ b = erase (Ico a b) a := by
@@ -285,11 +283,11 @@ theorem mod_injOn_Ico (n a : ℕ) : Set.InjOn (· % a) (Finset.Ico n (n + a)) :=
   rcases hk with ⟨hkn, rfl | hk⟩ <;> rcases hl with ⟨hln, rfl | hl⟩
   · rfl
   · rw [add_mod_right] at hkl
-    refine' (hln <| ih hl _ hkl.symm).elim
+    refine (hln <| ih hl ?_ hkl.symm).elim
     simp only [lt_add_iff_pos_right, Set.left_mem_Ico, Finset.coe_Ico, ha]
   · rw [add_mod_right] at hkl
     suffices k = n by contradiction
-    refine' ih hk _ hkl
+    refine ih hk ?_ hkl
     simp only [lt_add_iff_pos_right, Set.left_mem_Ico, Finset.coe_Ico, ha]
   · refine' ih _ _ hkl <;> simp only [Finset.mem_coe, hk, hl]
 #align nat.mod_inj_on_Ico Nat.mod_injOn_Ico
@@ -395,5 +393,12 @@ theorem Nat.cauchy_induction_two_mul (seed : ℕ) (hs : P seed.succ)
     (hm : ∀ x, seed < x → P x → P (2 * x)) (n : ℕ) : P n :=
   Nat.cauchy_induction_mul h 2 seed one_lt_two hs hm n
 #align nat.cauchy_induction_two_mul Nat.cauchy_induction_two_mul
+
+theorem Nat.pow_imp_self_of_one_lt {M} [Monoid M] (k : ℕ) (hk : 1 < k)
+    (P : M → Prop) (hmul : ∀ x y, P x → P (x * y) ∨ P (y * x))
+    (hpow : ∀ x, P (x ^ k) → P x) : ∀ n x, P (x ^ n) → P x :=
+  k.cauchy_induction_mul (fun n ih x hx ↦ ih x <| (hmul _ x hx).elim
+    (fun h ↦ by rwa [_root_.pow_succ]) fun h ↦ by rwa [_root_.pow_succ']) 0 hk
+    (fun x hx ↦ pow_one x ▸ hx) fun n _ hn x hx ↦ hpow x <| hn _ <| (pow_mul x k n).subst hx
 
 end Induction

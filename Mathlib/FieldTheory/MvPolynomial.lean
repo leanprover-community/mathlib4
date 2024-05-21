@@ -3,9 +3,9 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 import Mathlib.RingTheory.MvPolynomial.Basic
-import Mathlib.Data.MvPolynomial.CommRing
 
 #align_import field_theory.mv_polynomial from "leanprover-community/mathlib"@"039a089d2a4b93c761b234f3e5f5aeb752bac60f"
 
@@ -20,7 +20,7 @@ finitely supported functions from the indexing set to `ℕ`.
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 open Set LinearMap Submodule
 
@@ -31,7 +31,6 @@ namespace MvPolynomial
 universe u v
 
 variable {σ : Type u} {K : Type v}
-
 variable (σ K) [Field K]
 
 theorem quotient_mk_comp_C_injective (I : Ideal (MvPolynomial σ K)) (hI : I ≠ ⊤) :
@@ -52,7 +51,7 @@ universe u
 
 variable {σ : Type u} {K : Type u} [Field K]
 
-open Classical
+open scoped Classical
 
 theorem rank_mvPolynomial : Module.rank K (MvPolynomial σ K) = Cardinal.mk (σ →₀ ℕ) := by
   rw [← Cardinal.lift_inj, ← (basisMonomials σ K).mk_eq_rank]

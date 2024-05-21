@@ -98,7 +98,7 @@ namespace WithLower
 lemma toLower_inj {a b : α} : toLower a = toLower b ↔ a = b := Iff.rfl
 #align with_lower_topology.to_lower_inj Topology.WithLower.toLower_inj
 
--- porting note: removed @[simp] to make linter happy
+-- Porting note: removed @[simp] to make linter happy
 theorem ofLower_inj {a b : WithLower α} : ofLower a = ofLower b ↔ a = b :=
   Iff.rfl
 #align with_lower_topology.of_lower_inj Topology.WithLower.ofLower_inj
@@ -239,7 +239,7 @@ theorem isClosed_upperClosure (h : s.Finite) : IsClosed (upperClosure s : Set α
 
 /-- Every set open in the lower topology is a lower set. -/
 theorem isLowerSet_of_isOpen (h : IsOpen s) : IsLowerSet s := by
-  -- porting note: `rw` leaves a shadowed assumption
+  -- Porting note: `rw` leaves a shadowed assumption
   replace h := isOpen_iff_generate_Ici_compl.1 h
   induction h with
   | basic u h' => obtain ⟨a, rfl⟩ := h'; exact (isUpperSet_Ici a).compl

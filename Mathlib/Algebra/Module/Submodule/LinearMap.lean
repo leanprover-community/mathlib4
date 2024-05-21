@@ -65,11 +65,8 @@ variable [Semiring R] [AddCommMonoid M]
 -- We can infer the module structure implicitly from the bundled submodule,
 -- rather than via typeclass resolution.
 variable {module_M : Module R M}
-
 variable {p q : Submodule R M}
-
 variable {r : R} {x y : M}
-
 variable (p)
 
 /-- Embedding of a submodule `p` to the ambient space `M`. -/
@@ -90,7 +87,7 @@ theorem injective_subtype : Injective p.subtype :=
 #align submodule.injective_subtype Submodule.injective_subtype
 
 /-- Note the `AddSubmonoid` version of this lemma is called `AddSubmonoid.coe_finset_sum`. -/
--- porting note: removing the `@[simp]` attribute since it's literally `AddSubmonoid.coe_finset_sum`
+-- Porting note: removing the `@[simp]` attribute since it's literally `AddSubmonoid.coe_finset_sum`
 theorem coe_sum (x : ι → p) (s : Finset ι) : ↑(∑ i in s, x i) = ∑ i in s, (x i : M) :=
   map_sum p.subtype _ _
 #align submodule.coe_sum Submodule.coe_sum
@@ -183,6 +180,14 @@ theorem restrict_apply {f : M →ₗ[R] M₁} {p : Submodule R M} {q : Submodule
   rfl
 #align linear_map.restrict_apply LinearMap.restrict_apply
 
+lemma restrict_sub {R M M₁ : Type*}
+    [Ring R] [AddCommGroup M] [AddCommGroup M₁] [Module R M] [Module R M₁]
+    {p : Submodule R M} {q : Submodule R M₁} {f g : M →ₗ[R] M₁}
+    (hf : MapsTo f p q) (hg : MapsTo g p q)
+    (hfg : MapsTo (f - g) p q := fun _ hx ↦ q.sub_mem (hf hx) (hg hx)) :
+    f.restrict hf - g.restrict hg = (f - g).restrict hfg := by
+  ext; simp
+
 lemma restrict_comp
     {M₂ M₃ : Type*} [AddCommMonoid M₂] [AddCommMonoid M₃] [Module R M₂] [Module R M₃]
     {p : Submodule R M} {p₂ : Submodule R M₂} {p₃ : Submodule R M₃}
@@ -196,6 +201,7 @@ lemma restrict_commute {f g : M →ₗ[R] M} (h : Commute f g) {p : Submodule R 
     Commute (f.restrict hf) (g.restrict hg) := by
   change _ * _ = _ * _
   conv_lhs => rw [mul_eq_comp, ← restrict_comp]; congr; rw [← mul_eq_comp, h.eq]
+  rfl
 
 theorem subtype_comp_restrict {f : M →ₗ[R] M₁} {p : Submodule R M} {q : Submodule R M₁}
     (hf : ∀ x ∈ p, f x ∈ q) : q.subtype.comp (f.restrict hf) = f.domRestrict p :=
@@ -214,39 +220,10 @@ theorem restrict_eq_domRestrict_codRestrict {f : M →ₗ[R] M₁} {p : Submodul
   rfl
 #align linear_map.restrict_eq_dom_restrict_cod_restrict LinearMap.restrict_eq_domRestrict_codRestrict
 
-instance uniqueOfLeft [Subsingleton M] : Unique (M →ₛₗ[σ₁₂] M₂) :=
-  { inferInstanceAs (Inhabited (M →ₛₗ[σ₁₂] M₂)) with
-    uniq := fun f => ext fun x => by rw [Subsingleton.elim x 0, map_zero, map_zero] }
-#align linear_map.unique_of_left LinearMap.uniqueOfLeft
-
-instance uniqueOfRight [Subsingleton M₂] : Unique (M →ₛₗ[σ₁₂] M₂) :=
-  coe_injective.unique
-#align linear_map.unique_of_right LinearMap.uniqueOfRight
-
-/-- Evaluation of a `σ₁₂`-linear map at a fixed `a`, as an `AddMonoidHom`. -/
-@[simps]
-def evalAddMonoidHom (a : M) : (M →ₛₗ[σ₁₂] M₂) →+ M₂ where
-  toFun f := f a
-  map_add' f g := LinearMap.add_apply f g a
-  map_zero' := rfl
-#align linear_map.eval_add_monoid_hom LinearMap.evalAddMonoidHom
-
-/-- `LinearMap.toAddMonoidHom` promoted to an `AddMonoidHom`. -/
-@[simps]
-def toAddMonoidHom' : (M →ₛₗ[σ₁₂] M₂) →+ M →+ M₂ where
-  toFun := toAddMonoidHom
-  map_zero' := by ext; rfl
-  map_add' := by intros; ext; rfl
-#align linear_map.to_add_monoid_hom' LinearMap.toAddMonoidHom'
-
 theorem sum_apply (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M₂) (b : M) :
     (∑ d in t, f d) b = ∑ d in t, f d b :=
   _root_.map_sum ((AddMonoidHom.eval b).comp toAddMonoidHom') f _
 #align linear_map.sum_apply LinearMap.sum_apply
-
-instance [Nontrivial M] : Nontrivial (Module.End R M) := by
-  obtain ⟨m, ne⟩ := exists_ne (0 : M)
-  exact nontrivial_of_ne 1 0 fun p => ne (LinearMap.congr_fun p m)
 
 @[simp, norm_cast]
 theorem coeFn_sum {ι : Type*} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M₂) :
@@ -293,9 +270,7 @@ end AddCommMonoid
 section CommSemiring
 
 variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid M₂]
-
 variable [Module R M] [Module R M₂]
-
 variable (f g : M →ₗ[R] M₂)
 
 /-- Alternative version of `domRestrict` as a linear map. -/

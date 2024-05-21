@@ -38,11 +38,8 @@ namespace CategoryTheory.Limits
 section Pullback
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {D : Type u₂} [Category.{v₂} D]
-
 variable (G : C ⥤ D)
-
 variable {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} {h : W ⟶ X} {k : W ⟶ Y} (comm : h ≫ f = k ≫ g)
 
 /-- The map of a pullback cone is a limit iff the fork consisting of the mapped morphisms is a
@@ -143,11 +140,8 @@ end Pullback
 section Pushout
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {D : Type u₂} [Category.{v₂} D]
-
 variable (G : C ⥤ D)
-
 variable {W X Y Z : C} {h : X ⟶ Z} {k : Y ⟶ Z} {f : W ⟶ X} {g : W ⟶ Y} (comm : f ≫ h = g ≫ k)
 
 /-- The map of a pushout cocone is a colimit iff the cofork consisting of the mapped morphisms is a
@@ -248,15 +242,12 @@ end Pushout
 section
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {D : Type u₂} [Category.{v₁} D]
-
 variable (G : C ⥤ D)
 
 section Pullback
 
 variable {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z}
-
 variable [HasPullback f g] [HasPullback (G.map f) (G.map g)]
 
 /-- If the pullback comparison map for `G` at `(f,g)` is an isomorphism, then `G` preserves the
@@ -285,7 +276,6 @@ end Pullback
 section Pushout
 
 variable {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z}
-
 variable [HasPushout f g] [HasPushout (G.map f) (G.map g)]
 
 /-- If the pushout comparison map for `G` at `(f,g)` is an isomorphism, then `G` preserves the

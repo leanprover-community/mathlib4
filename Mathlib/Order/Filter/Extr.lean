@@ -86,7 +86,6 @@ open Filter
 section Preorder
 
 variable [Preorder β] [Preorder γ]
-
 variable (f : α → β) (s : Set α) (l : Filter α) (a : α)
 
 /-! ### Definitions -/
@@ -636,7 +635,7 @@ section Eventually
 theorem Filter.EventuallyLE.isMaxFilter {α β : Type*} [Preorder β] {f g : α → β} {a : α}
     {l : Filter α} (hle : g ≤ᶠ[l] f) (hfga : f a = g a) (h : IsMaxFilter f l a) :
     IsMaxFilter g l a := by
-  refine' hle.mp (h.mono fun x hf hgf => _)
+  refine hle.mp (h.mono fun x hf hgf => ?_)
   rw [← hfga]
   exact le_trans hgf hf
 #align filter.eventually_le.is_max_filter Filter.EventuallyLE.isMaxFilter

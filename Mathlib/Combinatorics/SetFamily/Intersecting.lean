@@ -199,7 +199,7 @@ theorem Intersecting.exists_card_eq (hs : (s : Set α).Intersecting) :
   have := hs.card_le
   rw [mul_comm, ← Nat.le_div_iff_mul_le' two_pos] at this
   revert hs
-  refine' s.strongDownwardInductionOn _ this
+  refine s.strongDownwardInductionOn ?_ this
   rintro s ih _hcard hs
   by_cases h : ∀ t : Finset α, (t : Set α).Intersecting → s ⊆ t → s = t
   · exact ⟨s, Subset.rfl, hs.is_max_iff_card_eq.1 h, hs⟩

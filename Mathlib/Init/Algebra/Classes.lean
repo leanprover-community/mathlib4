@@ -66,7 +66,7 @@ set_option autoImplicit true
 
 universe u v
 
--- porting note: removed `outParam`
+-- Porting note: removed `outParam`
 class IsSymmOp (α : Sort u) (β : Sort v) (op : α → α → β) : Prop where
   symm_op : ∀ a b, op a b = op b a
 #align is_symm_op IsSymmOp
@@ -189,6 +189,10 @@ class IsAntisymm (α : Sort u) (r : α → α → Prop) : Prop where
   antisymm : ∀ a b, r a b → r b a → a = b
 #align is_antisymm IsAntisymm
 
+instance (priority := 100) IsAsymm.toIsAntisymm {α : Sort u} (r : α → α → Prop) [IsAsymm α r] :
+    IsAntisymm α r where
+  antisymm _ _ hx hy := (IsAsymm.asymm _ _ hx hy).elim
+
 /-- `IsTrans X r` means the binary relation `r` on `X` is transitive. -/
 class IsTrans (α : Sort u) (r : α → α → Prop) : Prop where
   trans : ∀ a b c, r a b → r b c → r a c
@@ -201,7 +205,7 @@ instance (priority := 100) {α : Sort u} {r : α → α → Prop} [Trans r r r] 
   ⟨fun _ _ _ => Trans.trans⟩
 
 /-- `IsTotal X r` means that the binary relation `r` on `X` is total, that is, that for any
-`x y : X` we have `r x y` or `r y x`.-/
+`x y : X` we have `r x y` or `r y x`. -/
 class IsTotal (α : Sort u) (r : α → α → Prop) : Prop where
   total : ∀ a b, r a b ∨ r b a
 #align is_total IsTotal
@@ -412,8 +416,8 @@ instance isEquiv : IsEquiv α (@Equiv _ r) where
 
 end
 
-notation:50 -- Notation for the equivalence relation induced by lt
-a " ≈[" lt "]" b:50 => @Equiv _ lt a b
+/-- The equivalence relation induced by `lt` -/
+notation:50 a " ≈[" lt "]" b:50 => @Equiv _ lt a b--Equiv (r := lt) a b
 
 end StrictWeakOrder
 

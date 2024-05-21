@@ -135,9 +135,9 @@ theorem eqId_iff_eq : A.EqId ↔ A.1 = Δ := by
     simp only at h
     subst h
     refine' ext _ _ rfl _
-    · haveI := hf
-      simp only [eqToHom_refl, comp_id]
-      exact eq_id_of_epi f
+    haveI := hf
+    simp only [eqToHom_refl, comp_id]
+    exact eq_id_of_epi f
 #align simplicial_object.splitting.index_set.eq_id_iff_eq SimplicialObject.Splitting.IndexSet.eqId_iff_eq
 
 theorem eqId_iff_len_eq : A.EqId ↔ A.1.unop.len = Δ.unop.len := by
@@ -214,7 +214,7 @@ def cofan' (Δ : SimplexCategoryᵒᵖ) : Cofan (summand N Δ) :=
 
 end Splitting
 
---porting note: removed @[nolint has_nonempty_instance]
+--porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- A splitting of a simplicial object `X` consists of the datum of a sequence
 of objects `N`, a sequence of morphisms `ι : N n ⟶ X _[n]` such that
 for all `Δ : SimplexCategoryᵒᵖ`, the canonical map `Splitting.map X ι Δ`
@@ -314,7 +314,7 @@ end Splitting
 
 variable (C)
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- The category `SimplicialObject.Split C` is the category of simplicial objects
 in `C` equipped with a splitting, and morphisms are morphisms of simplicial objects
 which are compatible with the splittings. -/
@@ -337,7 +337,7 @@ def mk' {X : SimplicialObject C} (s : Splitting X) : Split C :=
   ⟨X, s⟩
 #align simplicial_object.split.mk' SimplicialObject.Split.mk'
 
--- porting note : removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- Morphisms in `SimplicialObject.Split C` are morphisms of simplicial objects that
 are compatible with the splittings. -/
 structure Hom (S₁ S₂ : Split C) where
@@ -383,7 +383,7 @@ variable {C}
 
 namespace Split
 
--- porting note: added as `Hom.ext` is not triggered automatically
+-- Porting note: added as `Hom.ext` is not triggered automatically
 @[ext]
 theorem hom_ext {S₁ S₂ : Split C} (Φ₁ Φ₂ : S₁ ⟶ S₂) (h : ∀ n : ℕ, Φ₁.f n = Φ₂.f n) : Φ₁ = Φ₂ :=
   Hom.ext _ _ h
