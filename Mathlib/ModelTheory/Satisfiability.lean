@@ -112,7 +112,7 @@ theorem isSatisfiable_iff_isFinitelySatisfiable {T : L.Theory} :
         (h (T0.map (Function.Embedding.subtype fun x => x ∈ T)) T0.map_subtype_subset).some.Carrier
       let M' := Filter.Product (Ultrafilter.of (Filter.atTop : Filter (Finset T))) M
       have h' : M' ⊨ T := by
-        refine' ⟨fun φ hφ => _⟩
+        refine ⟨fun φ hφ => ?_⟩
         rw [Ultraproduct.sentence_realize]
         refine'
           Filter.Eventually.filter_mono (Ultrafilter.of_le _)
@@ -145,7 +145,7 @@ theorem isSatisfiable_union_distinctConstantsTheory_of_card_le (T : L.Theory) (s
   have : M ⊨ (L.lhomWithConstants α).onTheory T ∪ L.distinctConstantsTheory s := by
     refine' ((LHom.onTheory_model _ _).2 inferInstance).union _
     rw [model_distinctConstantsTheory]
-    refine' fun a as b bs ab => _
+    refine fun a as b bs ab => ?_
     rw [← Subtype.coe_mk a as, ← Subtype.coe_mk b bs, ← Subtype.ext_iff]
     exact
       h.some.injective
@@ -245,11 +245,11 @@ theorem exists_elementaryEmbedding_card_eq_of_ge (M : Type w') [L.Structure M] [
         rw [← lift_le.{w'}, lift_lift, lift_lift] at h1
         exact ⟨h2, h1⟩)
       (hN0.trans (by rw [← lift_umax', lift_id]))
-  · letI := (lhomWithConstants L M).reduct N
-    haveI h : N ⊨ L.elementaryDiagram M :=
-      (NN0.theory_model_iff (L.elementaryDiagram M)).2 inferInstance
-    refine' ⟨Bundled.of N, ⟨_⟩, hN⟩
-    apply ElementaryEmbedding.ofModelsElementaryDiagram L M N
+  letI := (lhomWithConstants L M).reduct N
+  haveI h : N ⊨ L.elementaryDiagram M :=
+    (NN0.theory_model_iff (L.elementaryDiagram M)).2 inferInstance
+  refine ⟨Bundled.of N, ⟨?_⟩, hN⟩
+  apply ElementaryEmbedding.ofModelsElementaryDiagram L M N
 #align first_order.language.exists_elementary_embedding_card_eq_of_ge FirstOrder.Language.exists_elementaryEmbedding_card_eq_of_ge
 
 end
@@ -298,13 +298,12 @@ theorem exists_model_card_eq (h : ∃ M : ModelType.{u, v, max u v} T, Infinite 
 variable (T)
 
 /-- A theory models a (bounded) formula when any of its nonempty models realizes that formula on all
-  inputs.-/
+  inputs. -/
 def ModelsBoundedFormula (φ : L.BoundedFormula α n) : Prop :=
   ∀ (M : ModelType.{u, v, max u v} T) (v : α → M) (xs : Fin n → M), φ.Realize v xs
 #align first_order.language.Theory.models_bounded_formula FirstOrder.Language.Theory.ModelsBoundedFormula
 
 -- Porting note: In Lean3 it was `⊨` but ambiguous.
--- mathport name: models_bounded_formula
 @[inherit_doc FirstOrder.Language.Theory.ModelsBoundedFormula]
 infixl:51 " ⊨ᵇ " => ModelsBoundedFormula -- input using \|= or \vDash, but not using \models
 
@@ -325,13 +324,13 @@ theorem models_sentence_of_mem {φ : L.Sentence} (h : φ ∈ T) : T ⊨ᵇ φ :=
 
 theorem models_iff_not_satisfiable (φ : L.Sentence) : T ⊨ᵇ φ ↔ ¬IsSatisfiable (T ∪ {φ.not}) := by
   rw [models_sentence_iff, IsSatisfiable]
-  refine'
+  refine
     ⟨fun h1 h2 =>
       (Sentence.realize_not _).1
         (realize_sentence_of_mem (T ∪ {Formula.not φ})
           (Set.subset_union_right _ _ (Set.mem_singleton _)))
         (h1 (h2.some.subtheoryModel (Set.subset_union_left _ _))),
-      fun h M => _⟩
+      fun h M => ?_⟩
   contrapose! h
   rw [← Sentence.realize_not] at h
   refine'
@@ -391,7 +390,7 @@ theorem models_not_iff (h : T.IsComplete) (φ : L.Sentence) : T ⊨ᵇ φ.not �
   cases' h.2 φ with hφ hφn
   · simp only [hφ, not_true, iff_false_iff]
     rw [models_sentence_iff, not_forall]
-    refine' ⟨h.1.some, _⟩
+    refine ⟨h.1.some, ?_⟩
     simp only [Sentence.realize_not, Classical.not_not]
     exact models_sentence_iff.1 hφ _
   · simp only [hφn, true_iff_iff]
@@ -557,7 +556,7 @@ theorem sup_semanticallyEquivalent_not_inf_not :
 
 theorem inf_semanticallyEquivalent_not_sup_not :
     T.SemanticallyEquivalent (φ ⊓ ψ) (φ.not ⊔ ψ.not).not := fun M v xs => by
-  simp [and_iff_not_or_not]
+  simp
 #align first_order.language.bounded_formula.inf_semantically_equivalent_not_sup_not FirstOrder.Language.BoundedFormula.inf_semanticallyEquivalent_not_sup_not
 
 theorem all_semanticallyEquivalent_not_ex_not (φ : L.BoundedFormula α (n + 1)) :
@@ -570,7 +569,6 @@ theorem ex_semanticallyEquivalent_not_all_not (φ : L.BoundedFormula α (n + 1))
 
 theorem semanticallyEquivalent_all_liftAt : T.SemanticallyEquivalent φ (φ.liftAt 1 n).all :=
   fun M v xs => by
-  skip
   rw [realize_iff, realize_all_liftAt_one_self]
 #align first_order.language.bounded_formula.semantically_equivalent_all_lift_at FirstOrder.Language.BoundedFormula.semanticallyEquivalent_all_liftAt
 
@@ -638,8 +636,8 @@ theorem induction_on_all_ex {P : ∀ {m}, L.BoundedFormula α m → Prop} (φ : 
     (hse : ∀ {m} {φ₁ φ₂ : L.BoundedFormula α m},
       Theory.SemanticallyEquivalent ∅ φ₁ φ₂ → (P φ₁ ↔ P φ₂)) :
     P φ := by
-  suffices h' : ∀ {m} {φ : L.BoundedFormula α m}, φ.IsPrenex → P φ
-  · exact (hse φ.semanticallyEquivalent_toPrenex).2 (h' φ.toPrenex_isPrenex)
+  suffices h' : ∀ {m} {φ : L.BoundedFormula α m}, φ.IsPrenex → P φ from
+    (hse φ.semanticallyEquivalent_toPrenex).2 (h' φ.toPrenex_isPrenex)
   intro m φ hφ
   induction' hφ with _ _ hφ _ _ _ hφ _ _ _ hφ
   · exact hqf hφ
@@ -686,7 +684,7 @@ theorem Categorical.isComplete (h : κ.Categorical T) (h1 : ℵ₀ ≤ κ)
     by_contra! con
     obtain ⟨⟨MF, hMF⟩, MT, hMT⟩ := con
     rw [Sentence.realize_not, Classical.not_not] at hMT
-    refine' hMF _
+    refine hMF ?_
     haveI := hT MT
     haveI := hT MF
     obtain ⟨NT, MNT, hNT⟩ := exists_elementarilyEquivalent_card_eq L MT κ h1 h2

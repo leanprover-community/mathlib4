@@ -17,7 +17,8 @@ import Mathlib.LinearAlgebra.Dimension.Finite
 
 universe u v
 
-open Classical Cardinal
+open scoped Classical
+open Cardinal
 
 open Cardinal Submodule Module Function
 
@@ -44,7 +45,7 @@ theorem iff_rank_lt_aleph0 : IsNoetherian K V ↔ Module.rank K V < ℵ₀ := by
 
 variable (K V)
 
-@[deprecated] protected alias rank_lt_aleph0 := _root_.rank_lt_aleph0
+@[deprecated (since := "2023-01-01")] protected alias rank_lt_aleph0 := _root_.rank_lt_aleph0
 #align is_noetherian.rank_lt_aleph_0 rank_lt_aleph0
 
 variable {K V}
@@ -87,7 +88,7 @@ theorem coeSort_finsetBasisIndex [IsNoetherian K V] :
 #align is_noetherian.coe_sort_finset_basis_index IsNoetherian.coeSort_finsetBasisIndex
 
 /-- In a noetherian module over a division ring, there exists a finite basis.
-This is indexed by the `Finset` `FiniteDimensional.finsetBasisIndex`.
+This is indexed by the `Finset` `IsNoetherian.finsetBasisIndex`.
 This is in contrast to the result `finite_basis_index (Basis.ofVectorSpace K V)`,
 which provides a set and a `Set.finite`.
 -/

@@ -22,13 +22,12 @@ a minimum number of equalities.
 
 -/
 
-set_option autoImplicit true
+universe u
 
 /-- Define a `Ring` structure on a Type by proving a minimized set of axioms.
 Note that this uses the default definitions for `npow`, `nsmul`, `zsmul` and `sub`
 See note [reducible non-instances]. -/
-@[reducible]
-def Ring.ofMinimalAxioms {R : Type u}
+abbrev Ring.ofMinimalAxioms {R : Type u}
     [Add R] [Mul R] [Neg R] [Zero R] [One R]
     (add_assoc : ∀ a b c : R, a + b + c = a + (b + c))
     (zero_add : ∀ a : R, 0 + a = a)
@@ -67,13 +66,13 @@ def Ring.ofMinimalAxioms {R : Type u}
     mul_assoc := mul_assoc
     one_mul := one_mul
     mul_one := mul_one
-    add_left_neg := add_left_neg }
+    add_left_neg := add_left_neg
+    zsmul := (· • ·) }
 
 /-- Define a `CommRing` structure on a Type by proving a minimized set of axioms.
 Note that this uses the default definitions for `npow`, `nsmul`, `zsmul` and `sub`
 See note [reducible non-instances]. -/
-@[reducible]
-def CommRing.ofMinimalAxioms {R : Type u}
+abbrev CommRing.ofMinimalAxioms {R : Type u}
     [Add R] [Mul R] [Neg R] [Zero R] [One R]
     (add_assoc : ∀ a b c : R, a + b + c = a + (b + c))
     (zero_add : ∀ a : R, 0 + a = a)

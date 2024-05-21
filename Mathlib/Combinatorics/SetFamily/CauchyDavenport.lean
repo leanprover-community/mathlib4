@@ -119,8 +119,8 @@ lemma Finset.min_le_card_mul (hs : s.Nonempty) (ht : t.Nonempty) :
   clear_value x
   simp only [Prod.ext_iff] at hx
   obtain ⟨rfl, rfl⟩ := hx
-  refine' wellFoundedOn_devosMulRel.induction (P := fun x : Finset α × Finset α ↦
-    min (minOrder α) ↑(card x.1 + card x.2 - 1) ≤ card (x.1 * x.2)) ⟨hs, ht⟩ _
+  refine wellFoundedOn_devosMulRel.induction (P := fun x : Finset α × Finset α ↦
+    min (minOrder α) ↑(card x.1 + card x.2 - 1) ≤ card (x.1 * x.2)) ⟨hs, ht⟩ ?_
   clear! x
   rintro ⟨s, t⟩ ⟨hs, ht⟩ ih
   simp only [min_le_iff, tsub_le_iff_right, Prod.forall, Set.mem_setOf_eq, and_imp,
@@ -167,7 +167,7 @@ lemma Finset.min_le_card_mul (hs : s.Nonempty) (ht : t.Nonempty) :
   obtain hgt | hgt := disjoint_or_nonempty_inter t (g⁻¹ • t)
   · rw [← card_smul_finset g⁻¹ t]
     refine' Or.inr ((add_le_add_right hst _).trans _)
-    rw [← card_union_eq hgt]
+    rw [← card_union_of_disjoint hgt]
     exact (card_le_card_mul_left _ hgs).trans (le_add_of_le_left aux1)
   -- Else, we're done by induction on either `(s', t')` or `(s'', t'')` depending on whether
   -- `|s| + |t| ≤ |s'| + |t'|` or `|s| + |t| < |s''| + |t''|`. One of those two inequalities must

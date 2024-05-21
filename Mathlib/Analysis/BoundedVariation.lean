@@ -54,7 +54,7 @@ open scoped BigOperators NNReal ENNReal Topology UniformConvergence
 
 open Set MeasureTheory Filter
 
--- porting note: sectioned variables because a `wlog` was broken due to extra variables in context
+-- Porting note: sectioned variables because a `wlog` was broken due to extra variables in context
 variable {α : Type*} [LinearOrder α] {E : Type*} [PseudoEMetricSpace E]
 
 /-- The (extended real valued) variation of a function `f` on a set `s` inside a linear order is
@@ -116,7 +116,7 @@ theorem sum_le_of_monotoneOn_Icc (f : α → E) {s : Set α} {m n : ℕ} {u : �
         = ∑ i in Finset.Ico m n, edist (f (v (i + 1))) (f (v i)) :=
       Finset.sum_congr rfl fun i hi ↦ by
         rw [Finset.mem_Ico] at hi
-        simp only [projIcc_of_mem hmn ⟨hi.1, hi.2.le⟩,
+        simp only [v, π, projIcc_of_mem hmn ⟨hi.1, hi.2.le⟩,
           projIcc_of_mem hmn ⟨hi.1.trans i.le_succ, hi.2⟩]
     _ ≤ ∑ i in Finset.range n, edist (f (v (i + 1))) (f (v i)) :=
       Finset.sum_mono_set _ (Nat.Iio_eq_range ▸ Finset.Ico_subset_Iio_self)
@@ -247,18 +247,18 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
   rcases le_or_lt (u n) x with (h | h)
   · let v i := if i ≤ n then u i else x
     have vs : ∀ i, v i ∈ s := fun i ↦ by
-      simp only
+      simp only [v]
       split_ifs
       · exact us i
       · exact hx
     have hv : Monotone v := by
       refine monotone_nat_of_le_succ fun i => ?_
-      simp only
+      simp only [v]
       rcases lt_trichotomy i n with (hi | rfl | hi)
       · have : i + 1 ≤ n := Nat.succ_le_of_lt hi
         simp only [hi.le, this, if_true]
         exact hu (Nat.le_succ i)
-      · simp only [le_refl, if_true, add_le_iff_nonpos_right, le_zero_iff, Nat.one_ne_zero,
+      · simp only [le_refl, if_true, add_le_iff_nonpos_right, Nat.le_zero, Nat.one_ne_zero,
           if_false, h]
       · have A : ¬i ≤ n := hi.not_le
         have B : ¬i + 1 ≤ n := fun h => A (i.le_succ.trans h)
@@ -266,14 +266,14 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
     refine' ⟨v, n + 2, hv, vs, (mem_image _ _ _).2 ⟨n + 1, _, _⟩, _⟩
     · rw [mem_Iio]; exact Nat.lt_succ_self (n + 1)
     · have : ¬n + 1 ≤ n := Nat.not_succ_le_self n
-      simp only [this, ite_eq_right_iff, IsEmpty.forall_iff]
+      simp only [v, this, ite_eq_right_iff, IsEmpty.forall_iff]
     · calc
         (∑ i in Finset.range n, edist (f (u (i + 1))) (f (u i))) =
             ∑ i in Finset.range n, edist (f (v (i + 1))) (f (v i)) := by
           apply Finset.sum_congr rfl fun i hi => ?_
           simp only [Finset.mem_range] at hi
           have : i + 1 ≤ n := Nat.succ_le_of_lt hi
-          simp only [hi.le, this, if_true]
+          simp only [v, hi.le, this, if_true]
         _ ≤ ∑ j in Finset.range (n + 2), edist (f (v (j + 1))) (f (v j)) :=
           Finset.sum_le_sum_of_subset (Finset.range_mono (Nat.le_add_right n 2))
   have exists_N : ∃ N, N ≤ n ∧ x < u N := ⟨n, le_rfl, h⟩
@@ -281,13 +281,13 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
   have hN : N ≤ n ∧ x < u N := Nat.find_spec exists_N
   let w : ℕ → α := fun i => if i < N then u i else if i = N then x else u (i - 1)
   have ws : ∀ i, w i ∈ s := by
-    dsimp only
+    dsimp only [w]
     intro i
     split_ifs
     exacts [us _, hx, us _]
   have hw : Monotone w := by
     apply monotone_nat_of_le_succ fun i => ?_
-    dsimp only
+    dsimp only [w]
     rcases lt_trichotomy (i + 1) N with (hi | hi | hi)
     · have : i < N := Nat.lt_of_le_of_lt (Nat.le_succ i) hi
       simp only [hi, this, if_true]
@@ -307,13 +307,13 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
       · exact hN.2.le.trans (hu (le_of_not_lt A))
       · exact hu (Nat.pred_le _)
   refine' ⟨w, n + 1, hw, ws, (mem_image _ _ _).2 ⟨N, hN.1.trans_lt (Nat.lt_succ_self n), _⟩, _⟩
-  · dsimp only; rw [if_neg (lt_irrefl N), if_pos rfl]
+  · dsimp only [w]; rw [if_neg (lt_irrefl N), if_pos rfl]
   rcases eq_or_lt_of_le (zero_le N) with (Npos | Npos)
   · calc
       (∑ i in Finset.range n, edist (f (u (i + 1))) (f (u i))) =
           ∑ i in Finset.range n, edist (f (w (1 + i + 1))) (f (w (1 + i))) := by
         apply Finset.sum_congr rfl fun i _hi => ?_
-        dsimp only
+        dsimp only [w]
         simp only [← Npos, Nat.not_lt_zero, Nat.add_succ_sub_one, add_zero, if_false,
           add_eq_zero_iff, Nat.one_ne_zero, false_and_iff, Nat.succ_add_sub_one, zero_add]
         rw [add_comm 1 i]
@@ -337,42 +337,36 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
       _ = (∑ i in Finset.Ico 0 (N - 1), edist (f (w (i + 1))) (f (w i))) +
               edist (f (u N)) (f (u (N - 1))) +
             ∑ i in Finset.Ico N n, edist (f (w (1 + i + 1))) (f (w (1 + i))) := by
-        congr 1; congr 1
-        · apply Finset.sum_congr rfl fun i hi => ?_
-          simp only [Finset.mem_Ico, zero_le', true_and_iff] at hi
-          dsimp only
-          have A : i + 1 < N := Nat.lt_pred_iff.1 hi
-          have B : i < N := Nat.lt_of_succ_lt A
-          rw [if_pos A, if_pos B]
-        · have A : N - 1 + 1 = N := Nat.succ_pred_eq_of_pos Npos
-          have : Finset.Ico (N - 1) N = {N - 1} := by rw [← Nat.Ico_succ_singleton, A]
-          simp only [this, A, Finset.sum_singleton]
+        congr 1
+        · congr 1
+          · apply Finset.sum_congr rfl fun i hi => ?_
+            simp only [Finset.mem_Ico, zero_le', true_and_iff] at hi
+            dsimp only [w]
+            have A : i + 1 < N := Nat.lt_pred_iff.1 hi
+            have B : i < N := Nat.lt_of_succ_lt A
+            rw [if_pos A, if_pos B]
+          · have A : N - 1 + 1 = N := Nat.succ_pred_eq_of_pos Npos
+            have : Finset.Ico (N - 1) N = {N - 1} := by rw [← Nat.Ico_succ_singleton, A]
+            simp only [this, A, Finset.sum_singleton]
         · apply Finset.sum_congr rfl fun i hi => ?_
           rw [Finset.mem_Ico] at hi
-          dsimp only
-          have A : ¬1 + i + 1 < N := fun h => by
-            rw [add_assoc, add_comm] at h
-            exact hi.left.not_lt (i.lt_succ_self.trans (i.succ.lt_succ_self.trans h))
-          have B : ¬1 + i + 1 = N := fun h => by
-            rw [← h, add_assoc, add_comm] at hi
-            exact Nat.not_succ_le_self i (i.succ.le_succ.trans hi.left)
-          have C : ¬1 + i < N := fun h => by
-            rw [add_comm] at h
-            exact hi.left.not_lt (i.lt_succ_self.trans h)
-          have D : ¬1 + i = N := fun h => by
-            rw [← h, add_comm, Nat.succ_le_iff] at hi
-            exact hi.left.ne rfl
+          dsimp only [w]
+          have A : ¬1 + i + 1 < N := by omega
+          have B : ¬1 + i + 1 = N := by omega
+          have C : ¬1 + i < N := by omega
+          have D : ¬1 + i = N := by omega
           rw [if_neg A, if_neg B, if_neg C, if_neg D]
           congr 3 <;> · rw [add_comm, Nat.sub_one]; apply Nat.pred_succ
       _ = (∑ i in Finset.Ico 0 (N - 1), edist (f (w (i + 1))) (f (w i))) +
               edist (f (w (N + 1))) (f (w (N - 1))) +
             ∑ i in Finset.Ico (N + 1) (n + 1), edist (f (w (i + 1))) (f (w i)) := by
-        congr 1; congr 1
-        · dsimp only
-          have A : ¬N + 1 < N := Nat.not_succ_lt_self
-          have B : N - 1 < N := Nat.pred_lt Npos.ne'
-          simp only [A, not_and, not_lt, Nat.succ_ne_self, Nat.add_succ_sub_one, add_zero, if_false,
-            B, if_true]
+        congr 1
+        · congr 1
+          · dsimp only [w]
+            have A : ¬N + 1 < N := Nat.not_succ_lt_self
+            have B : N - 1 < N := Nat.pred_lt Npos.ne'
+            simp only [A, not_and, not_lt, Nat.succ_ne_self, Nat.add_succ_sub_one, add_zero,
+              if_false, B, if_true]
         · exact Finset.sum_Ico_add (fun i => edist (f (w (i + 1))) (f (w i))) N n 1
       _ ≤ ((∑ i in Finset.Ico 0 (N - 1), edist (f (w (i + 1))) (f (w i))) +
               ∑ i in Finset.Ico (N - 1) (N + 1), edist (f (w (i + 1))) (f (w i))) +
@@ -413,11 +407,11 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
   have wst : ∀ i, w i ∈ s ∪ t := by
     intro i
     by_cases hi : i ≤ n
-    · simp [hi, us]
-    · simp [hi, vt]
+    · simp [w, hi, us]
+    · simp [w, hi, vt]
   have hw : Monotone w := by
     intro i j hij
-    dsimp only
+    dsimp only [w]
     split_ifs with h_1 h_2 h_2
     · exact hu hij
     · apply h _ (us _) _ (vt _)
@@ -428,7 +422,7 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
           ∑ i : ℕ in Finset.range m, edist (f (v (i + 1))) (f (v i))) =
         (∑ i in Finset.range n, edist (f (w (i + 1))) (f (w i))) +
           ∑ i : ℕ in Finset.range m, edist (f (w (n + 1 + i + 1))) (f (w (n + 1 + i))) := by
-      dsimp only
+      dsimp only [w]
       congr 1
       · refine Finset.sum_congr rfl fun i hi => ?_
         simp only [Finset.mem_range] at hi
@@ -436,7 +430,7 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
         simp [hi.le, this]
       · refine Finset.sum_congr rfl fun i hi => ?_
         simp only [Finset.mem_range] at hi
-        have B : ¬n + 1 + i ≤ n := by linarith
+        have B : ¬n + 1 + i ≤ n := by omega
         have A : ¬n + 1 + i + 1 ≤ n := fun h => B ((n + 1 + i).le_succ.trans h)
         have C : n + 1 + i - n = i + 1 := by
           rw [tsub_eq_iff_eq_add_of_le]
@@ -474,10 +468,9 @@ theorem union (f : α → E) {s t : Set α} {x : α} (hs : IsGreatest s x) (ht :
   obtain ⟨v, m, hv, vst, xv, huv⟩ : ∃ (v : ℕ → α) (m : ℕ),
     Monotone v ∧ (∀ i, v i ∈ s ∪ t) ∧ x ∈ v '' Iio m ∧
       (∑ i in Finset.range n, edist (f (u (i + 1))) (f (u i))) ≤
-        ∑ j in Finset.range m, edist (f (v (j + 1))) (f (v j))
-  exact eVariationOn.add_point f (mem_union_left t hs.1) u hu ust n
-  obtain ⟨N, hN, Nx⟩ : ∃ N, N < m ∧ v N = x
-  exact xv
+        ∑ j in Finset.range m, edist (f (v (j + 1))) (f (v j)) :=
+    eVariationOn.add_point f (mem_union_left t hs.1) u hu ust n
+  obtain ⟨N, hN, Nx⟩ : ∃ N, N < m ∧ v N = x := xv
   calc
     (∑ j in Finset.range n, edist (f (u (j + 1))) (f (u j))) ≤
         ∑ j in Finset.range m, edist (f (v (j + 1))) (f (v j)) :=
@@ -533,10 +526,10 @@ theorem comp_le_of_antitoneOn (f : α → E) {s : Set α} {t : Set β} (φ : β 
     ⟨n, fun i => φ (u <| n - i), fun x y xy => hφ (ut _) (ut _) (hu <| Nat.sub_le_sub_left xy n),
       fun i => φst (ut _)⟩
     le_rfl
-  dsimp only [Subtype.coe_mk]
-  rw [edist_comm, Nat.sub_sub, add_comm, Nat.sub_succ, Nat.add_one, Nat.succ_pred_eq_of_pos]
-  simp only [Function.comp_apply]
-  simpa only [tsub_pos_iff_lt, Finset.mem_range] using hx
+  rw [Finset.mem_range] at hx
+  dsimp only [Subtype.coe_mk, Function.comp_apply]
+  rw [edist_comm]
+  congr 4 <;> omega
 #align evariation_on.comp_le_of_antitone_on eVariationOn.comp_le_of_antitoneOn
 
 theorem comp_eq_of_monotoneOn (f : α → E) {t : Set β} (φ : β → α) (hφ : MonotoneOn φ t) :
@@ -570,7 +563,7 @@ theorem comp_inter_Icc_eq_of_monotoneOn (f : α → E) {t : Set β} (φ : β →
       · rw [← le_antisymm vφx (hφ us hx ux)]
         exact ⟨x, ⟨hx, ⟨le_rfl, h⟩⟩, rfl⟩
     · rintro _ ⟨u, ⟨⟨hu, xu, uy⟩, rfl⟩⟩
-      refine' ⟨⟨u, hu, rfl⟩, ⟨hφ hx hu xu, hφ hu hy uy⟩⟩
+      exact ⟨⟨u, hu, rfl⟩, ⟨hφ hx hu xu, hφ hu hy uy⟩⟩
   · rw [eVariationOn.subsingleton, eVariationOn.subsingleton]
     exacts [(Set.subsingleton_Icc_of_ge (hφ hy hx h)).anti (Set.inter_subset_right _ _),
       (Set.subsingleton_Icc_of_ge h).anti (Set.inter_subset_right _ _)]
@@ -767,7 +760,7 @@ protected theorem sub_self_monotoneOn {f : α → ℝ} {s : Set α} (hf : Locall
       apply eVariationOn.edist_le f
       exacts [⟨bs, le_rfl, bc⟩, ⟨cs, bc, le_rfl⟩]
     _ = variationOnFromTo f s a c - variationOnFromTo f s a b := by
-      rw [← variationOnFromTo.add hf as bs cs, add_sub_cancel']
+      rw [← variationOnFromTo.add hf as bs cs, add_sub_cancel_left]
 
 #align variation_on_from_to.sub_self_monotone_on variationOnFromTo.sub_self_monotoneOn
 
@@ -885,8 +878,8 @@ is differentiable almost everywhere in this set. -/
 theorem ae_differentiableWithinAt_of_mem {f : ℝ → V} {s : Set ℝ}
     (h : LocallyBoundedVariationOn f s) : ∀ᵐ x, x ∈ s → DifferentiableWithinAt ℝ f s x := by
   let A := (Basis.ofVectorSpace ℝ V).equivFun.toContinuousLinearEquiv
-  suffices H : ∀ᵐ x, x ∈ s → DifferentiableWithinAt ℝ (A ∘ f) s x
-  · filter_upwards [H] with x hx xs
+  suffices H : ∀ᵐ x, x ∈ s → DifferentiableWithinAt ℝ (A ∘ f) s x by
+    filter_upwards [H] with x hx xs
     have : f = (A.symm ∘ A) ∘ f := by
       simp only [ContinuousLinearEquiv.symm_comp_self, Function.id_comp]
     rw [this]
@@ -934,7 +927,7 @@ theorem LipschitzOnWith.ae_differentiableWithinAt_real {C : ℝ≥0} {f : ℝ �
 
 /-- A real Lipschitz function into a finite dimensional real vector space is differentiable
 almost everywhere. For the general Rademacher theorem assuming
-that the source space is finite dimensional, see `LipschitzWith.ae_differentiableAt`.-/
+that the source space is finite dimensional, see `LipschitzWith.ae_differentiableAt`. -/
 theorem LipschitzWith.ae_differentiableAt_real {C : ℝ≥0} {f : ℝ → V} (h : LipschitzWith C f) :
     ∀ᵐ x, DifferentiableAt ℝ f x :=
   (h.locallyBoundedVariationOn univ).ae_differentiableAt

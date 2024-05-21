@@ -245,8 +245,8 @@ theorem coe_coord_of_subsingleton_eq_one [Subsingleton ι] (i : ι) : (b.coord i
     apply subsingleton_of_subsingleton
   haveI := AffineSubspace.subsingleton_of_subsingleton_span_eq_top hp b.tot
   let s : Finset ι := {i}
-  have hi : i ∈ s := by simp
-  have hw : s.sum (Function.const ι (1 : k)) = 1 := by simp
+  have hi : i ∈ s := by simp [s]
+  have hw : s.sum (Function.const ι (1 : k)) = 1 := by simp [s]
   have hq : q = s.affineCombination k b (Function.const ι (1 : k)) := by
     simp [eq_iff_true_of_subsingleton]
   rw [Pi.one_apply, hq, b.coord_apply_combination_of_mem hi hw, Function.const_apply]
@@ -257,11 +257,12 @@ theorem surjective_coord [Nontrivial ι] (i : ι) : Function.Surjective <| b.coo
     intro x
     obtain ⟨j, hij⟩ := exists_ne i
     let s : Finset ι := {i, j}
-    have hi : i ∈ s := by simp
+    have hi : i ∈ s := by simp [s]
     let w : ι → k := fun j' => if j' = i then x else 1 - x
-    have hw : s.sum w = 1 := by simp [Finset.sum_ite, Finset.filter_insert, hij]
+    have hw : s.sum w = 1 := by simp [s, w, Finset.sum_ite, Finset.filter_insert, hij,
+      Finset.filter_true_of_mem, Finset.filter_false_of_mem]
     use s.affineCombination k b w
-    simp [b.coord_apply_combination_of_mem hi hw]
+    simp [w, b.coord_apply_combination_of_mem hi hw]
 #align affine_basis.surjective_coord AffineBasis.surjective_coord
 
 /-- Barycentric coordinates as an affine map. -/
@@ -269,24 +270,9 @@ noncomputable def coords : P →ᵃ[k] ι → k where
   toFun q i := b.coord i q
   linear :=
     { toFun := fun v i => -(b.basisOf i).sumCoords v
-      map_add' := fun v w => by
-        ext i
-        simp only [LinearMap.map_add, Pi.add_apply, neg_add]
-      map_smul' := fun t v => by
-        ext i
-        simp only [LinearMap.map_smul, Pi.smul_apply, smul_neg, RingHom.id_apply, mul_neg] }
-  map_vadd' p v := by
-    ext i
-    -- Porting note:
-    -- mathlib3 proof was:
-    -- simp only [linear_eq_sumCoords, LinearMap.coe_mk, LinearMap.neg_apply, Pi.vadd_apply',
-    --   AffineMap.map_vadd]
-    -- but now we need to `dsimp` before `AffineMap.map_vadd` works.
-    rw [LinearMap.coe_mk, Pi.vadd_apply']
-    dsimp
-    rw [AffineMap.map_vadd, linear_eq_sumCoords,
-        LinearMap.neg_apply]
-    simp only [ne_eq, Basis.coe_sumCoords, vadd_eq_add]
+      map_add' := fun v w => by ext; simp only [LinearMap.map_add, Pi.add_apply, neg_add]
+      map_smul' := fun t v => by ext; simp }
+  map_vadd' p v := by ext; simp
 #align affine_basis.coords AffineBasis.coords
 
 @[simp]

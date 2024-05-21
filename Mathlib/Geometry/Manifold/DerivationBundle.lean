@@ -42,6 +42,7 @@ def PointedSmoothMap (_ : M) :=
   C^n⟮I, M; 𝕜⟯
 #align pointed_smooth_map PointedSmoothMap
 
+@[inherit_doc]
 scoped[Derivation] notation "C^" n "⟮" I ", " M "; " 𝕜 "⟯⟨" x "⟩" => PointedSmoothMap 𝕜 I M n x
 
 variable {𝕜 M}
@@ -95,8 +96,7 @@ open scoped Derivation
 
 /-- The derivations at a point of a manifold. Some regard this as a possible definition of the
 tangent space -/
-@[reducible]
-def PointDerivation (x : M) :=
+abbrev PointDerivation (x : M) :=
   Derivation 𝕜 C^∞⟮I, M; 𝕜⟯⟨x⟩ 𝕜
 #align point_derivation PointDerivation
 

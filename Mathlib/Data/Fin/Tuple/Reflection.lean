@@ -141,7 +141,7 @@ example (P : (Fin 2 → α) → Prop) : (∃ f, P f) ↔ ∃ a₀ a₁, P ![a₀
 def sum [Add α] [Zero α] : ∀ {m} (_ : Fin m → α), α
   | 0, _ => 0
   | 1, v => v 0
-  -- porting note: inline `∘` since it is no longer reducible
+  -- Porting note: inline `∘` since it is no longer reducible
   | _ + 2, v => sum (fun i => v (Fin.castSucc i)) + v (Fin.last _)
 #align fin_vec.sum FinVec.sum
 

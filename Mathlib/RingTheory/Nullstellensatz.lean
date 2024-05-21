@@ -34,7 +34,6 @@ namespace MvPolynomial
 open MvPolynomial
 
 variable {k : Type*} [Field k]
-
 variable {σ : Type*}
 
 /-- Set of points that are zeroes of all polynomials in an ideal -/
@@ -152,7 +151,7 @@ theorem vanishingIdeal_pointToPoint (V : Set (σ → k)) :
   le_antisymm
     (fun p hp x hx =>
       (((PrimeSpectrum.mem_vanishingIdeal _ _).1 hp) ⟨vanishingIdeal {x}, by infer_instance⟩ <| by
-          exact ⟨x, ⟨hx, rfl⟩⟩) -- Porting note : tactic mode code compiles but term mode does not
+          exact ⟨x, ⟨hx, rfl⟩⟩) -- Porting note: tactic mode code compiles but term mode does not
         x rfl)
     fun p hp =>
     (PrimeSpectrum.mem_vanishingIdeal _ _).2 fun I hI =>
@@ -192,7 +191,7 @@ theorem isMaximal_iff_eq_vanishingIdeal_singleton (I : Ideal (MvPolynomial σ k)
   intro p hp
   rw [← Quotient.eq_zero_iff_mem, map_mvPolynomial_eq_eval₂ (Ideal.Quotient.mk I) p, eval₂_eq']
   rw [mem_vanishingIdeal_singleton_iff, eval_eq'] at hp
-  simpa only [ϕ.map_sum, ϕ.map_mul, ϕ.map_prod, ϕ.map_pow, ϕ.map_zero, hx] using congr_arg ϕ hp
+  simpa only [map_sum ϕ, ϕ.map_mul, map_prod ϕ, ϕ.map_pow, ϕ.map_zero, hx] using congr_arg ϕ hp
 #align mv_polynomial.is_maximal_iff_eq_vanishing_ideal_singleton MvPolynomial.isMaximal_iff_eq_vanishingIdeal_singleton
 
 /-- Main statement of the Nullstellensatz -/
@@ -205,14 +204,14 @@ theorem vanishingIdeal_zeroLocus_eq_radical (I : Ideal (MvPolynomial σ k)) :
     obtain ⟨x, hx⟩ := (isMaximal_iff_eq_vanishingIdeal_singleton J).1 hJ
     refine' hx.symm ▸ vanishingIdeal_anti_mono fun y hy p hp => _
     rw [← mem_vanishingIdeal_singleton_iff, Set.mem_singleton_iff.1 hy, ← hx]
-    refine' hJI hp
+    exact hJI hp
   · rw [← mem_vanishingIdeal_singleton_iff x p]
-    refine' (mem_sInf.mp hp)
+    refine (mem_sInf.mp hp)
       ⟨le_trans (le_vanishingIdeal_zeroLocus I) (vanishingIdeal_anti_mono fun y hy => hy.symm ▸ hx),
         MvPolynomial.vanishingIdeal_singleton_isMaximal⟩
 #align mv_polynomial.vanishing_ideal_zero_locus_eq_radical MvPolynomial.vanishingIdeal_zeroLocus_eq_radical
 
--- Porting note : marked this as high priority to short cut simplifier
+-- Porting note: marked this as high priority to short cut simplifier
 @[simp (high)]
 theorem IsPrime.vanishingIdeal_zeroLocus (P : Ideal (MvPolynomial σ k)) [h : P.IsPrime] :
     vanishingIdeal (zeroLocus P) = P :=

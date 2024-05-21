@@ -53,9 +53,7 @@ namespace StateT
 section
 
 variable {σ : Type u}
-
 variable {m : Type u → Type v}
-
 variable {α : Type u}
 
 /-
@@ -67,7 +65,7 @@ following theorem as a simp theorem.
 theorem run_fun (f : σ → m (α × σ)) (st : σ) : StateT.run (fun s => f s) st = f st :=
   rfl
 ```
-If we decleare this theorem as a simp theorem, `StateT.run f st` is simplified to `f st` by eta
+If we declare this theorem as a simp theorem, `StateT.run f st` is simplified to `f st` by eta
 reduction. This breaks the structure of `StateT`.
 So, we declare a constructor-like definition `StateT.mk` and a simp theorem for it.
 -/
@@ -141,9 +139,7 @@ namespace ReaderT
 section
 
 variable {ρ : Type u}
-
 variable {m : Type u → Type v}
-
 variable {α : Type u}
 
 /-
@@ -155,7 +151,7 @@ following theorem as a simp theorem.
 theorem run_fun (f : σ → m α) (r : σ) : ReaderT.run (fun r' => f r') r = f r :=
   rfl
 ```
-If we decleare this theorem as a simp theorem, `ReaderT.run f st` is simplified to `f st` by eta
+If we declare this theorem as a simp theorem, `ReaderT.run f st` is simplified to `f st` by eta
 reduction. This breaks the structure of `ReaderT`.
 So, we declare a constructor-like definition `ReaderT.mk` and a simp theorem for it.
 -/
@@ -256,7 +252,8 @@ As discussed in https://github.com/leanprover/std4/pull/416,
 it should be possible for core to expose the lawfulness of `IO` as part of the opaque interface,
 which would remove the need for these proofs anyway.
 
-These are not in Std because Std does not want to deal with the churn from such a core refactor.
+These are not in Batteries because Batteries does not want to deal with the churn from such a core
+refactor.
 -/
 
 instance : LawfulMonad (EIO ε) := inferInstanceAs <| LawfulMonad (EStateM _ _)

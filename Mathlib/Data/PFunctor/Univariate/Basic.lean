@@ -96,6 +96,7 @@ def W :=
 /- inhabitants of W types is awkward to encode as an instance
 assumption because there needs to be a value `a : P.A`
 such that `P.B a` is empty to yield a finite tree -/
+-- Porting note(#5171): this linter isn't ported yet.
 -- attribute [nolint has_nonempty_instance] W
 
 variable {P}
@@ -199,7 +200,7 @@ theorem liftp_iff {α : Type u} (p : α → Prop) (x : P α) :
   constructor
   · rintro ⟨y, hy⟩
     cases' h : y with a f
-    refine' ⟨a, fun i => (f i).val, _, fun i => (f i).property⟩
+    refine ⟨a, fun i => (f i).val, ?_, fun i => (f i).property⟩
     rw [← hy, h, map_eq_map, PFunctor.map_eq]
     congr
   rintro ⟨a, f, xeq, pf⟩
@@ -247,7 +248,7 @@ theorem supp_eq {α : Type u} (a : P.A) (f : P.B a → α) :
   · apply @h fun x => ∃ y : P.B a, f y = x
     rw [liftp_iff']
     intro
-    refine' ⟨_, rfl⟩
+    exact ⟨_, rfl⟩
   · simp only [liftp_iff']
     cases h
     subst x

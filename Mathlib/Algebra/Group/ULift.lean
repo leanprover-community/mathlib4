@@ -104,7 +104,7 @@ def _root_.MulEquiv.ulift [Mul α] : ULift α ≃* α :=
   { Equiv.ulift with map_mul' := fun _ _ => rfl }
 #align mul_equiv.ulift MulEquiv.ulift
 
--- porting notes: below failed due to error above, manually added
+-- Porting note: below failed due to error above, manually added
 --@[to_additive]
 instance semigroup [Semigroup α] : Semigroup (ULift α) :=
   (MulEquiv.ulift.injective.semigroup _) fun _ _ => rfl
@@ -143,15 +143,21 @@ instance commMonoid [CommMonoid α] : CommMonoid (ULift α) :=
 #align ulift.comm_monoid ULift.commMonoid
 #align ulift.add_comm_monoid ULift.addCommMonoid
 
-instance natCast [NatCast α] : NatCast (ULift α) := ⟨λ a ↦ up a⟩
-#align ulift.has_nat_cast ULift.natCast
-instance intCast [IntCast α] : IntCast (ULift α) := ⟨λ a ↦ up a⟩
-#align ulift.has_int_cast ULift.intCast
+instance instNatCast [NatCast α] : NatCast (ULift α) := ⟨(up ·)⟩
+instance instIntCast [IntCast α] : IntCast (ULift α) := ⟨(up ·)⟩
+#align ulift.has_nat_cast ULift.instNatCast
+#align ulift.has_int_cast ULift.instIntCast
 
 @[simp, norm_cast]
 theorem up_natCast [NatCast α] (n : ℕ) : up (n : α) = n :=
   rfl
 #align ulift.up_nat_cast ULift.up_natCast
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem up_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
+    up (no_index (OfNat.ofNat n : α)) = OfNat.ofNat n :=
+  rfl
 
 @[simp, norm_cast]
 theorem up_intCast [IntCast α] (n : ℤ) : up (n : α) = n :=
@@ -163,6 +169,12 @@ theorem down_natCast [NatCast α] (n : ℕ) : down (n : ULift α) = n :=
   rfl
 #align ulift.down_nat_cast ULift.down_natCast
 
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem down_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
+    down (no_index (OfNat.ofNat n : ULift α)) = OfNat.ofNat n :=
+  rfl
+
 @[simp, norm_cast]
 theorem down_intCast [IntCast α] (n : ℤ) : down (n : ULift α) = n :=
   rfl
@@ -170,7 +182,7 @@ theorem down_intCast [IntCast α] (n : ℤ) : down (n : ULift α) = n :=
 
 instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (ULift α) :=
   { ULift.one, ULift.addMonoid with
-      natCast := fun n => ⟨n⟩
+      natCast := (⟨·⟩)
       natCast_zero := congr_arg ULift.up Nat.cast_zero,
       natCast_succ := fun _ => congr_arg ULift.up (Nat.cast_succ _) }
 #align ulift.add_monoid_with_one ULift.addMonoidWithOne
@@ -210,8 +222,8 @@ instance commGroup [CommGroup α] : CommGroup (ULift α) :=
 
 instance addGroupWithOne [AddGroupWithOne α] : AddGroupWithOne (ULift α) :=
   { ULift.addMonoidWithOne, ULift.addGroup with
-      intCast := fun n => ⟨n⟩,
-      intCast_ofNat := fun _ => congr_arg ULift.up (Int.cast_ofNat _),
+      intCast := (⟨·⟩),
+      intCast_ofNat := fun _ => congr_arg ULift.up (Int.cast_natCast _),
       intCast_negSucc := fun _ => congr_arg ULift.up (Int.cast_negSucc _) }
 #align ulift.add_group_with_one ULift.addGroupWithOne
 

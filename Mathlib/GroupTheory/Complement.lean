@@ -94,7 +94,7 @@ theorem IsComplement'.symm (h : IsComplement' H K) : IsComplement' K H := by
   let ψ : G ≃ G := Equiv.mk (fun g : G => g⁻¹) (fun g : G => g⁻¹) inv_inv inv_inv
   suffices hf : (ψ ∘ fun x : H × K => x.1.1 * x.2.1) = (fun x : K × H => x.1.1 * x.2.1) ∘ ϕ by
     rw [isComplement'_def, IsComplement, ← Equiv.bijective_comp ϕ]
-    apply (congr_arg Function.Bijective hf).mp -- porting note: This was a `rw` in mathlib3
+    apply (congr_arg Function.Bijective hf).mp -- Porting note: This was a `rw` in mathlib3
     rwa [ψ.comp_bijective]
   exact funext fun x => mul_inv_rev _ _
 #align subgroup.is_complement'.symm Subgroup.IsComplement'.symm
@@ -348,7 +348,7 @@ lemma exists_right_transversal (H : Subgroup G) (g : G) :
 lemma exists_left_transversal_of_le {H' H : Subgroup G} (h : H' ≤ H) :
     ∃ S : Set G, S * H' = H ∧ Nat.card S * Nat.card H' = Nat.card H := by
   let H'' : Subgroup H := H'.comap H.subtype
-  have : H' = H''.map H.subtype := by simp [h]
+  have : H' = H''.map H.subtype := by simp [H'', h]
   rw [this]
   obtain ⟨S, cmem, -⟩ := H''.exists_left_transversal 1
   refine ⟨H.subtype '' S, ?_, ?_⟩
@@ -364,7 +364,7 @@ lemma exists_left_transversal_of_le {H' H : Subgroup G} (h : H' ≤ H) :
 lemma exists_right_transversal_of_le {H' H : Subgroup G} (h : H' ≤ H) :
     ∃ S : Set G, H' * S = H ∧ Nat.card H' * Nat.card S = Nat.card H := by
   let H'' : Subgroup H := H'.comap H.subtype
-  have : H' = H''.map H.subtype := by simp [h]
+  have : H' = H''.map H.subtype := by simp [H'', h]
   rw [this]
   obtain ⟨S, cmem, -⟩ := H''.exists_right_transversal 1
   refine ⟨H.subtype '' S, ?_, ?_⟩
@@ -480,9 +480,9 @@ theorem equiv_mul_right_of_mem {g k : G} (h : k ∈ K) :
 theorem equiv_mul_left (h : H) (g : G) :
     hHT.equiv (h * g) = (h * (hHT.equiv g).fst, (hHT.equiv g).snd) := by
   have : (hHT.equiv (h * g)).2 = (hHT.equiv g).2 := hHT.equiv_snd_eq_iff_rightCosetEquivalence.2 ?_
-  ext
-  · rw [coe_mul, equiv_fst_eq_mul_inv, this, equiv_fst_eq_mul_inv, mul_assoc]
-  · rw [this]
+  · ext
+    · rw [coe_mul, equiv_fst_eq_mul_inv, this, equiv_fst_eq_mul_inv, mul_assoc]
+    · rw [this]
   · simp [RightCosetEquivalence, ← smul_smul]
 
 theorem equiv_mul_left_of_mem {h g : G} (hh : h ∈ H) :
@@ -773,7 +773,7 @@ theorem quotientEquivSigmaZMod_symm_apply (q : orbitRel.Quotient (zpowers g) (G 
 
 theorem quotientEquivSigmaZMod_apply (q : orbitRel.Quotient (zpowers g) (G ⧸ H)) (k : ℤ) :
     quotientEquivSigmaZMod H g (g ^ k • q.out') = ⟨q, k⟩ := by
-  rw [apply_eq_iff_eq_symm_apply, quotientEquivSigmaZMod_symm_apply, ZMod.coe_int_cast,
+  rw [apply_eq_iff_eq_symm_apply, quotientEquivSigmaZMod_symm_apply, ZMod.coe_intCast,
     zpow_smul_mod_minimalPeriod]
 #align subgroup.quotient_equiv_sigma_zmod_apply Subgroup.quotientEquivSigmaZMod_apply
 
@@ -832,10 +832,10 @@ theorem transferTransversal_apply'' (q : orbitRel.Quotient (zpowers g) (G ⧸ H)
       else g ^ (cast k : ℤ) * q.out'.out' := by
   rw [smul_apply_eq_smul_apply_inv_smul, transferTransversal_apply, transferFunction_apply, ←
     mul_smul, ← zpow_neg_one, ← zpow_add, quotientEquivSigmaZMod_apply, smul_eq_mul, ← mul_assoc,
-    ← zpow_one_add, Int.cast_add, Int.cast_neg, Int.cast_one, int_cast_cast, cast_id', id.def, ←
-    sub_eq_neg_add, cast_sub_one, add_sub_cancel'_right]
+    ← zpow_one_add, Int.cast_add, Int.cast_neg, Int.cast_one, intCast_cast, cast_id', id, ←
+    sub_eq_neg_add, cast_sub_one, add_sub_cancel]
   by_cases hk : k = 0
-  · rw [if_pos hk, if_pos hk, zpow_ofNat]
+  · rw [if_pos hk, if_pos hk, zpow_natCast]
   · rw [if_neg hk, if_neg hk]
 #align subgroup.transfer_transversal_apply'' Subgroup.transferTransversal_apply''
 

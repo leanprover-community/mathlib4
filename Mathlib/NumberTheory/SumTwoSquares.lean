@@ -33,7 +33,7 @@ of two squares. Also known as **Fermat's Christmas theorem**. -/
 theorem Nat.Prime.sq_add_sq {p : ℕ} [Fact p.Prime] (hp : p % 4 ≠ 3) :
     ∃ a b : ℕ, a ^ 2 + b ^ 2 = p := by
   apply sq_add_sq_of_nat_prime_of_not_irreducible p
-  rwa [PrincipalIdealRing.irreducible_iff_prime, prime_iff_mod_four_eq_three_of_nat_prime p]
+  rwa [_root_.irreducible_iff_prime, prime_iff_mod_four_eq_three_of_nat_prime p]
 #align nat.prime.sq_add_sq Nat.Prime.sq_add_sq
 
 end Fermat
@@ -57,8 +57,8 @@ theorem Nat.sq_add_sq_mul {a b x y u v : ℕ} (ha : a = x ^ 2 + y ^ 2) (hb : b =
     ∃ r s : ℕ, a * b = r ^ 2 + s ^ 2 := by
   zify at ha hb ⊢
   obtain ⟨r, s, h⟩ := _root_.sq_add_sq_mul ha hb
-  refine' ⟨r.natAbs, s.natAbs, _⟩
-  simpa only [Int.coe_natAbs, sq_abs]
+  refine ⟨r.natAbs, s.natAbs, ?_⟩
+  simpa only [Int.natCast_natAbs, sq_abs]
 #align nat.sq_add_sq_mul Nat.sq_add_sq_mul
 
 end General
@@ -133,7 +133,7 @@ theorem ZMod.isSquare_neg_one_iff' {n : ℕ} (hn : Squarefree n) :
   · exact fun _ => by norm_num
   · replace hp := H hp (dvd_of_mul_right_dvd hpq)
     replace hq := hq (dvd_of_mul_left_dvd hpq)
-    rw [show 3 = 3 % 4 by norm_num, Ne.def, ← ZMod.nat_cast_eq_nat_cast_iff'] at hp hq ⊢
+    rw [show 3 = 3 % 4 by norm_num, Ne, ← ZMod.natCast_eq_natCast_iff'] at hp hq ⊢
     rw [Nat.cast_mul]
     exact help p q hp hq
 #align zmod.is_square_neg_one_iff' ZMod.isSquare_neg_one_iff'
@@ -166,10 +166,10 @@ theorem ZMod.isSquare_neg_one_of_eq_sq_add_sq_of_isCoprime {n x y : ℤ} (h : n 
     exact (IsCoprime.pow_left_iff zero_lt_two).mp hc2.of_add_mul_right_right
   have H : u * y * (u * y) - -1 = n * (-v ^ 2 * n + u ^ 2 + 2 * v) := by
     linear_combination -u ^ 2 * h + (n * v - u * x - 1) * huv
-  refine' ⟨u * y, _⟩
+  refine ⟨u * y, ?_⟩
   conv_rhs => tactic => norm_cast
   rw [(by norm_cast : (-1 : ZMod n.natAbs) = (-1 : ℤ))]
-  exact (ZMod.int_cast_eq_int_cast_iff_dvd_sub _ _ _).mpr (Int.natAbs_dvd.mpr ⟨_, H⟩)
+  exact (ZMod.intCast_eq_intCast_iff_dvd_sub _ _ _).mpr (Int.natAbs_dvd.mpr ⟨_, H⟩)
 #align zmod.is_square_neg_one_of_eq_sq_add_sq_of_is_coprime ZMod.isSquare_neg_one_of_eq_sq_add_sq_of_isCoprime
 
 /-- If the natural number `n` is a sum of two squares of coprime natural numbers, then
@@ -187,7 +187,7 @@ theorem Nat.eq_sq_add_sq_iff_eq_sq_mul {n : ℕ} :
   constructor
   · rintro ⟨x, y, h⟩
     by_cases hxy : x = 0 ∧ y = 0
-    · exact ⟨0, 1, by rw [h, hxy.1, hxy.2, zero_pow zero_lt_two, add_zero, zero_mul],
+    · exact ⟨0, 1, by rw [h, hxy.1, hxy.2, zero_pow two_ne_zero, add_zero, zero_mul],
         ⟨0, by rw [zero_mul, neg_eq_zero, Fin.one_eq_zero_iff]⟩⟩
     · have hg := Nat.pos_of_ne_zero (mt Nat.gcd_eq_zero_iff.mp hxy)
       obtain ⟨g, x₁, y₁, _, h₂, h₃, h₄⟩ := Nat.exists_coprime' hg

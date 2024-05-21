@@ -5,7 +5,7 @@ Authors: Patrick Massot
 -/
 import Mathlib.Topology.Algebra.Nonarchimedean.Bases
 import Mathlib.Topology.Algebra.UniformFilterBasis
-import Mathlib.RingTheory.Valuation.Basic
+import Mathlib.RingTheory.Valuation.ValuationSubring
 
 #align_import topology.algebra.valuation from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -18,7 +18,8 @@ values in a group with zero. Other instances are then deduced from this.
 -/
 
 
-open Classical Topology uniformity
+open scoped Classical
+open Topology uniformity
 
 open Set Valuation
 
@@ -48,7 +49,7 @@ theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ => (v.ltAddSubgrou
       rintro - ⟨r, r_in, s, s_in, rfl⟩
       calc
         (v (r * s) : Γ₀) = v r * v s := Valuation.map_mul _ _ _
-        _ < γ₀ * γ₀ := (mul_lt_mul₀ r_in s_in)
+        _ < γ₀ * γ₀ := mul_lt_mul₀ r_in s_in
         _ ≤ γ := mod_cast h
     leftMul := by
       rintro x γ
@@ -95,7 +96,7 @@ class Valued (R : Type u) [Ring R] (Γ₀ : outParam (Type v))
   is_topological_valuation : ∀ s, s ∈ 𝓝 (0 : R) ↔ ∃ γ : Γ₀ˣ, { x : R | v x < γ } ⊆ s
 #align valued Valued
 
--- Porting note: removed
+-- Porting note(#12094): removed nolint; dangerous_instance linter not ported yet
 --attribute [nolint dangerous_instance] Valued.toUniformSpace
 
 namespace Valued
@@ -146,9 +147,8 @@ theorem mem_nhds_zero {s : Set R} : s ∈ 𝓝 (0 : R) ↔ ∃ γ : Γ₀ˣ, { x
 
 theorem loc_const {x : R} (h : (v x : Γ₀) ≠ 0) : { y : R | v y = v x } ∈ 𝓝 x := by
   rw [mem_nhds]
-  rcases Units.exists_iff_ne_zero.mpr h with ⟨γ, hx⟩
-  use γ
-  rw [hx]
+  use Units.mk0 _ h
+  rw [Units.val_mk0]
   intro y y_in
   exact Valuation.map_eq_of_sub_lt _ y_in
 #align valued.loc_const Valued.loc_const
@@ -167,5 +167,20 @@ theorem cauchy_iff {F : Filter R} : Cauchy F ↔
   · rintro h - ⟨γ, rfl⟩
     exact h γ
 #align valued.cauchy_iff Valued.cauchy_iff
+
+variable (R)
+
+/-- The unit ball of a valued ring is open. -/
+theorem integer_isOpen : IsOpen (_i.v.integer : Set R) := by
+  rw [isOpen_iff_mem_nhds]
+  intro x hx
+  rw [mem_nhds]
+  exact ⟨1,
+    fun y hy => (sub_add_cancel y x).symm ▸ le_trans (map_add _ _ _) (max_le (le_of_lt hy) hx)⟩
+
+/-- The valuation subring of a valued field is open. -/
+theorem valuationSubring_isOpen (K : Type u) [Field K] [hv : Valued K Γ₀] :
+    IsOpen (hv.v.valuationSubring : Set K) :=
+  integer_isOpen K
 
 end Valued

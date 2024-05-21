@@ -41,7 +41,6 @@ class LieModule.IsIrreducible (R : Type u) (L : Type v) (M : Type w) [CommRing R
 namespace LieAlgebra
 
 variable (R : Type u) (L : Type v)
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
 
 /-- A Lie algebra is simple if it is irreducible as a Lie module over itself via the adjoint
