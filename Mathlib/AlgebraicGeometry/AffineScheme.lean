@@ -180,6 +180,10 @@ def Scheme.affineOpens (X : Scheme) : Set (Opens X) :=
   {U : Opens X | IsAffineOpen U}
 #align algebraic_geometry.Scheme.affine_opens AlgebraicGeometry.Scheme.affineOpens
 
+instance {Y : Scheme.{u}} (U : Y.affineOpens) :
+    IsAffine (Scheme.restrict Y <| Opens.openEmbedding U.val) :=
+  U.property
+
 theorem rangeIsAffineOpenOfOpenImmersion {X Y : Scheme} [IsAffine X] (f : X ⟶ Y)
     [H : IsOpenImmersion f] : IsAffineOpen (Scheme.Hom.opensRange f) := by
   refine isAffineOfIso (IsOpenImmersion.isoOfRangeEq f (Y.ofRestrict _) ?_).inv

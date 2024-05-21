@@ -457,19 +457,11 @@ theorem affine_openCover_iff {X Y : Scheme.{u}} (f : X ⟶ Y) (𝒰 : Scheme.Ope
     (forall_congr' fun i => hP.source_affine_openCover_iff _ (𝒰' i))
 #align ring_hom.property_is_local.affine_open_cover_iff RingHom.PropertyIsLocal.affine_openCover_iff
 
--- Porting note: doesn't build without the `IsAffine` instance but the linter complains
-@[nolint unusedHavesSuffices]
 theorem source_openCover_iff {X Y : Scheme.{u}} (f : X ⟶ Y) (𝒰 : Scheme.OpenCover.{u} X) :
     affineLocally (@P) f ↔ ∀ i, affineLocally (@P) (𝒰.map i ≫ f) := by
   constructor
   · intro H i U
     rw [morphismRestrict_comp]
-    delta morphismRestrict
-    -- Porting note: Lean can no longer find these instances for the following apply
-    have : IsAffine (Scheme.restrict Y <| Opens.openEmbedding U.val) := U.property
-    have : IsOpenImmersion ((pullbackRestrictIsoRestrict (Scheme.OpenCover.map 𝒰 i)
-        ((Opens.map f.val.base).obj ↑U)).inv ≫ pullback.snd) :=
-      LocallyRingedSpace.IsOpenImmersion.comp _ _
     apply hP.sourceAffineLocally_comp_of_isOpenImmersion
     apply H
   · intro H U

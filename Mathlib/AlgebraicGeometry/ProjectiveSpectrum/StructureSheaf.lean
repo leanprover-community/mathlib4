@@ -267,9 +267,7 @@ def stalkToFiberRingHom (x : ProjectiveSpectrum.top 𝒜) :
     { pt := _
       ι :=
         { app := fun U =>
-            openToLocalization 𝒜 ((OpenNhds.inclusion _).obj U.unop) x U.unop.2
-          -- Porting note: this proof was automatic in mathlib3
-          naturality := fun _ _ _ => rfl } }
+            openToLocalization 𝒜 ((OpenNhds.inclusion _).obj U.unop) x U.unop.2 } }
 #align algebraic_geometry.stalk_to_fiber_ring_hom AlgebraicGeometry.stalkToFiberRingHom
 
 @[simp]

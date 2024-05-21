@@ -58,6 +58,9 @@ def Spec.topObj (R : CommRingCat.{u}) : TopCat :=
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.Top_obj AlgebraicGeometry.Spec.topObj
 
+@[simp] theorem Spec.topObj_forget {R} : (forget TopCat).obj (Spec.topObj R) = PrimeSpectrum R :=
+  rfl
+
 /-- The induced map of a ring homomorphism on the ring spectra, as a morphism of topological spaces.
 -/
 def Spec.topMap {R S : CommRingCat.{u}} (f : R ⟶ S) : Spec.topObj S ⟶ Spec.topObj R :=
