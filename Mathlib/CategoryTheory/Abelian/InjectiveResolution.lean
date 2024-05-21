@@ -202,12 +202,12 @@ def homotopyEquiv {X : C} (I J : InjectiveResolution X) :
     simpa [id_comp] using descIdHomotopy _ _
 #align category_theory.InjectiveResolution.homotopy_equiv CategoryTheory.InjectiveResolution.homotopyEquiv
 
-@[reassoc (attr := simp)] -- Porting note: Originally `@[simp, reassoc.1]`
+@[reassoc (attr := simp)]
 theorem homotopyEquiv_hom_ι {X : C} (I J : InjectiveResolution X) :
     I.ι ≫ (homotopyEquiv I J).hom = J.ι := by simp [homotopyEquiv]
 #align category_theory.InjectiveResolution.homotopy_equiv_hom_ι CategoryTheory.InjectiveResolution.homotopyEquiv_hom_ι
 
-@[reassoc (attr := simp)] -- Porting note: Originally `@[simp, reassoc.1]`
+@[reassoc (attr := simp)]
 theorem homotopyEquiv_inv_ι {X : C} (I J : InjectiveResolution X) :
     J.ι ≫ (homotopyEquiv I J).inv = I.ι := by simp [homotopyEquiv]
 #align category_theory.InjectiveResolution.homotopy_equiv_inv_ι CategoryTheory.InjectiveResolution.homotopyEquiv_inv_ι
