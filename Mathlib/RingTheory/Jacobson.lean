@@ -453,7 +453,8 @@ theorem isJacobson_polynomial_of_isJacobson (hR : IsJacobson R) : IsJacobson R[X
 #align ideal.polynomial.is_jacobson_polynomial_of_is_jacobson Ideal.Polynomial.isJacobson_polynomial_of_isJacobson
 
 theorem isJacobson_polynomial_iff_isJacobson : IsJacobson R[X] ↔ IsJacobson R := by
-  refine ⟨fun H => ?_, isJacobson_polynomial_of_isJacobson⟩
+  refine ⟨?_, isJacobson_polynomial_of_isJacobson⟩
+  intro H
   exact isJacobson_of_surjective ⟨eval₂RingHom (RingHom.id _) 1, fun x =>
     ⟨C x, by simp only [coe_eval₂RingHom, RingHom.id_apply, eval₂_C]⟩⟩
 #align ideal.polynomial.is_jacobson_polynomial_iff_is_jacobson Ideal.Polynomial.isJacobson_polynomial_iff_isJacobson
