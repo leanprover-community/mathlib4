@@ -232,8 +232,8 @@ lemma AcyclicShortExact {S : ShortComplex (AcyclicCategory F t₁ t₂)}
 noncomputable local instance : t₂.homology₀.ShiftSequence ℤ :=
   Functor.ShiftSequence.tautological _ _
 
-def ShortComplexHomologyFunctor {S : ShortComplex t₁.Heart} (hS₁ : AcyclicObject F t₁ t₂ S.X₁.1)
-    (hS : S.Exact) {n : ℤ} (hn : n ≠ -1 ∧ n ≠ 0) :
+noncomputable def ShortComplexHomologyFunctor {S : ShortComplex t₁.Heart}
+    (hS₁ : AcyclicObject F t₁ t₂ S.X₁.1) (hS : S.Exact) {n : ℤ} (hn : n ≠ -1 ∧ n ≠ 0) :
     (t₂.homology n).obj (F.obj (Limits.kernel S.g).1) ≅ (t₂.homology (n + 1)).obj
     (F.obj (Limits.kernel S.f).1) := by
   set S' : ShortComplex t₁.Heart := ShortComplex.mk (X₁ := Limits.kernel S.f) (X₂ := S.X₁)
@@ -267,34 +267,31 @@ def ShortComplexHomologyFunctor {S : ShortComplex t₁.Heart} (hS₁ : AcyclicOb
       aesop_cat
     · exact inferInstance
     · exact inferInstance
-  set T := t₁.heartShortExactTriangle S' hS' with hTdef
+  set T := t₁.heartShortExactTriangle S' hS'
   have hT := t₁.heartShortExactTriangle_distinguished S' hS'
   have hT' := F.map_distinguished T hT
   set f := t₂.homologyδ (F.mapTriangle.obj T) n (n + 1) rfl
-  --simp only [hTdef, hS'def, mapTriangle_obj, heartShortExactTriangle_obj₁,
-  --  heartShortExactTriangle_obj₂, heartShortExactTriangle_obj₃, heartShortExactTriangle_mor₁,
-  --  heartShortExactTriangle_mor₂, heartShortExactTriangle_mor₃, Triangle.mk_obj₃,
-  --  Triangle.mk_obj₁] at f
-  have h2 := t₂.homology_exact₁ _ hT' n (n + 1) rfl
-  simp only [mapTriangle_obj, Triangle.mk_obj₃, Triangle.mk_obj₁, Triangle.mk_obj₂,
-    Triangle.mk_mor₁] at h2
-  rw [ShortComplex.exact_iff_epi] at h2
-  swap
-  refine Limits.zero_of_target_iso_zero _ ?_
---  simp only [hTdef, hS'def, mapTriangle_obj, heartShortExactTriangle_obj₁,
---    heartShortExactTriangle_obj₂, heartShortExactTriangle_obj₃, heartShortExactTriangle_mor₁,
---    heartShortExactTriangle_mor₂, heartShortExactTriangle_mor₃, Triangle.mk_obj₂]
-  change (t₂.homology (n + 1)).obj (F.obj S.X₁.1) ≅ 0
-  refine Limits.IsZero.isoZero ?_
-  by_cases hn' : 0 ≤ n
-  · letI : t₂.IsLE (F.obj S.X₁.1) 0 := {le := hS₁.2.1}
-    exact t₂.isZero_homology_of_isLE _ (n + 1) 0 (Int.lt_add_one_iff.mpr hn')
-  · rw [← lt_iff_not_le] at hn'
-    have hn'' : n + 1 < 0 := by
-      rw [lt_iff_le_and_ne, Int.add_one_le_iff, and_iff_right hn', ne_eq, ← eq_neg_iff_add_eq_zero]
+  have h1 : Mono f := by
+    refine (ShortComplex.exact_iff_mono _ (Limits.zero_of_source_iso_zero _ ?_)).mp
+      (t₂.homology_exact₃ _ hT' n (n + 1) rfl)
+    change (t₂.homology n).obj (F.obj S.X₁.1) ≅ 0
+    refine Limits.IsZero.isoZero ?_
+    by_cases hn' : 0 ≤ n
+    · letI : t₂.IsLE (F.obj S.X₁.1) 0 := {le := hS₁.2.1}
+      exact t₂.isZero_homology_of_isLE _ n 0 (lt_iff_le_and_ne.mpr ⟨hn', Ne.symm hn.2⟩)
+    · letI : t₂.IsGE (F.obj S.X₁.1) 0 := {ge := hS₁.2.2}
+      exact t₂.isZero_homology_of_isGE _ n 0 (lt_iff_not_le.mpr hn')
+  have h2 : Epi f := by
+    refine (ShortComplex.exact_iff_epi _ (Limits.zero_of_target_iso_zero _ ?_)).mp
+      (t₂.homology_exact₁ _ hT' n (n + 1) rfl)
+    change (t₂.homology (n + 1)).obj (F.obj S.X₁.1) ≅ 0
+    refine Limits.IsZero.isoZero ?_
+    by_cases hn' : 0 ≤ n
+    · letI : t₂.IsLE (F.obj S.X₁.1) 0 := {le := hS₁.2.1}
+      exact t₂.isZero_homology_of_isLE _ (n + 1) 0 (Int.lt_add_one_iff.mpr hn')
+    · letI : t₂.IsGE (F.obj S.X₁.1) 0 := {ge := hS₁.2.2}
+      refine t₂.isZero_homology_of_isGE _ (n + 1) 0 ?_
+      rw [lt_iff_le_and_ne, Int.add_one_le_iff, and_iff_right (lt_iff_not_le.mpr hn'), ne_eq,
+          ← eq_neg_iff_add_eq_zero]
       exact hn.1
-    letI : t₂.IsGE (F.obj S.X₁.1) 0 := {ge := hS₁.2.2}
-    refine t₂.isZero_homology_of_isGE _ (n + 1) 0 hn''
-  have h1 : Mono f := sorry
-  have h2 : Epi f := h2
   exact @asIso _ _ _ _ f ((isIso_iff_mono_and_epi f).mpr ⟨h1, h2⟩)
