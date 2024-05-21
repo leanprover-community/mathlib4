@@ -261,8 +261,7 @@ namespace StarRingEquivClass
 
 -- See note [lower instance priority]
 instance (priority := 50) {F A B : Type*} {_ : Add A} {_ : Mul A} {_ : Star A} {_ : Add B}
-    {_ : Mul B} {_ : Star B} [EquivLike F A B] [RingEquivClass F A B]
-    [hF : StarRingEquivClass F A B] :
+    {_ : Mul B} {_ : Star B} [EquivLike F A B] [hF : StarRingEquivClass F A B] :
     StarHomClass F A B :=
   { hF with }
 
@@ -385,10 +384,6 @@ theorem symm_mk (f f') (h₁ h₂ h₃ h₄ h₅) :
 
 @[simp]
 theorem refl_symm : (StarRingEquiv.refl : A ≃⋆+* A).symm = StarRingEquiv.refl :=
-  rfl
-
--- should be a `simp` lemma, but causes a linter timeout
-theorem to_ringEquiv_symm (f : A ≃⋆+* B) : (f : A ≃⋆+* B).symm = f.symm :=
   rfl
 
 /-- Star ring equivalences are transitive. -/
