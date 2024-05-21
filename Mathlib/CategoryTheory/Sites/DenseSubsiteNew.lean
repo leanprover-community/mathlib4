@@ -241,10 +241,69 @@ section
 variable {P : Cᵒᵖ ⥤ A} (hP₀ : Presheaf.IsSheaf J₀ (F.op ⋙ P))
   (hP : ∀ (X : C), IsLimit ((F.oneHypercoverDenseData J₀ J X).toPreOneHypercover.multifork P))
 
+namespace isSheaf_of_isSheaf_op_comp
+
+variable {F J₀ J}
+
+lemma hom_ext {Y : A} {X : C} {S : Sieve X} (hS : S ∈ J X)
+    {f g : Y ⟶ P.obj (Opposite.op X)} (h : ∀ ⦃T : C⦄ (a : T ⟶ X) (_ : S a),
+      f ≫ P.map a.op = g ≫ P.map a.op) : f = g := by
+  apply Multifork.IsLimit.hom_ext (hP X)
+  intro i
+  apply hP₀.hom_ext ⟨_, F.cover_lift J₀ J
+    (J.pullback_stable ((F.oneHypercoverDenseData J₀ J X).f i) hS)⟩
+  rintro ⟨T, a, ha⟩
+  dsimp
+  simp only [assoc, ← Functor.map_comp, ← op_comp]
+  exact h _ ha
+
+variable {X : C} (S : J.Cover X)
+
+section
+
+variable (E : Multifork (S.index P))
+
+noncomputable def liftAux (i : (F.oneHypercoverDenseData J₀ J X).I₀) :
+    E.pt ⟶ P.obj (Opposite.op (F.obj ((F.oneHypercoverDenseData J₀ J X).X i))) :=
+  hP₀.amalgamate ⟨_, F.cover_lift J₀ J
+      (J.pullback_stable ((F.oneHypercoverDenseData J₀ J X).f i) S.2)⟩
+    (fun f => E.ι { hf := f.hf }) (fun b₁ b₂ r =>
+      E.condition (GrothendieckTopology.Cover.Relation.mk { hf := b₁.hf } { hf := b₂.hf }
+          { g₁ := F.map r.g₁
+            g₂ := F.map r.g₂
+            w := by simpa using F.congr_map r.w =≫ _ }))
+
+lemma liftAux_map (i : (F.oneHypercoverDenseData J₀ J X).I₀) {Y : C₀}
+    (f : Y ⟶ (F.oneHypercoverDenseData J₀ J X).X i)
+    (hf : S.sieve.arrows (F.map f ≫ (F.oneHypercoverDenseData J₀ J X).f i)) :
+    liftAux hP₀ S E i ≫ P.map (F.map f).op = E.ι { hf := hf } :=
+  hP₀.amalgamate_map _ _ _ ⟨_, f, hf⟩
+
+noncomputable def lift : E.pt ⟶ (S.multifork P).pt :=
+  Multifork.IsLimit.lift (hP X) (fun i => liftAux hP₀ S E i) (by
+    rintro ⟨⟨b₁, b₂⟩, r⟩
+    dsimp at b₁ b₂ r ⊢
+    sorry)
+
+lemma fac (f : S.Arrow) : lift hP₀ hP S E ≫ (S.multifork P).ι f = E.ι f := sorry
+
+end
+
+noncomputable def isLimit : IsLimit (S.multifork P) :=
+  Multifork.IsLimit.mk _ (lift hP₀ hP S) (fac hP₀ hP S) (by
+    intro E m hm
+    apply hom_ext hP₀ hP S.2
+    intro T a ha
+    exact (hm ⟨_, _, ha⟩).trans (fac hP₀ hP S E ⟨_, _, ha⟩).symm)
+
+end isSheaf_of_isSheaf_op_comp
+
 lemma isSheaf_of_isSheaf_op_comp : Presheaf.IsSheaf J P := by
   have := hP₀
   have := hP
-  sorry
+  rw [Presheaf.isSheaf_iff_multifork]
+  intro X S
+  exact ⟨isSheaf_of_isSheaf_op_comp.isLimit hP₀ hP S⟩
 
 end
 

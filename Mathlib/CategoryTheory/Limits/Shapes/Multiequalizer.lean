@@ -362,6 +362,11 @@ def ofι (I : MulticospanIndex.{w} C) (P : C) (ι : ∀ a, P ⟶ I.left a)
         apply w }
 #align category_theory.limits.multifork.of_ι CategoryTheory.Limits.Multifork.ofι
 
+@[simp]
+lemma ofι_ι (I : MulticospanIndex.{w} C) (P : C) (ι : ∀ a, P ⟶ I.left a)
+    (w : ∀ b, ι (I.fstTo b) ≫ I.fst b = ι (I.sndTo b) ≫ I.snd b) (i : I.L) :
+    (ofι I P ι w).ι i = ι i := rfl
+
 @[reassoc (attr := simp)]
 theorem condition (b) : K.ι (I.fstTo b) ≫ I.fst b = K.ι (I.sndTo b) ≫ I.snd b := by
   rw [← app_right_eq_ι_comp_fst, ← app_right_eq_ι_comp_snd]
