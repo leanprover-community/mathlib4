@@ -281,7 +281,7 @@ variable {ι : Type*} {Ω : Type*} [MeasurableSpace Ω]
 
 /-- Coercion from the type synonym `LevyProkhorov (ProbabilityMeasure Ω)`
 to `ProbabilityMeasure Ω`. -/
-def LevyProkhorov.probabilityMeasure (μ : LevyProkhorov (ProbabilityMeasure Ω)) :
+def LevyProkhorov.toProbabilityMeasure (μ : LevyProkhorov (ProbabilityMeasure Ω)) :
     ProbabilityMeasure Ω := μ
 
 /-- Coercion to the type synonym `LevyProkhorov (ProbabilityMeasure Ω)`
@@ -385,12 +385,12 @@ lemma tendsto_integral_meas_thickening_le (f : Ω →ᵇ ℝ)
     · exact measure_ne_top _ _
 
 /-- The coercion `LevyProkhorov (ProbabilityMeasure Ω) → ProbabilityMeasure Ω` is continuous. -/
-lemma continuous_levyProkhorov_to_probabilityMeasure :
-    Continuous (LevyProkhorov.probabilityMeasure (Ω := Ω)) := by
+lemma LevyProkhorov.continuous_toProbabilityMeasure :
+    Continuous (LevyProkhorov.toProbabilityMeasure (Ω := Ω)) := by
   refine SeqContinuous.continuous ?_
   intro μs ν hμs
-  set P := ν.probabilityMeasure -- more palatable notation
-  set Ps := fun n ↦ (μs n).probabilityMeasure -- more palatable notation
+  set P := ν.toProbabilityMeasure -- more palatable notation
+  set Ps := fun n ↦ (μs n).toProbabilityMeasure -- more palatable notation
   rw [ProbabilityMeasure.tendsto_iff_forall_integral_tendsto]
   refine fun f ↦ tendsto_integral_of_forall_limsup_integral_le_integral ?_ f
   intro f f_nn
@@ -447,9 +447,9 @@ lemma continuous_levyProkhorov_to_probabilityMeasure :
 /-- The topology of the Lévy-Prokhorov metric is at least as fine as the topology of convergence in
 distribution. -/
 theorem levyProkhorov_le_convergenceInDistribution :
-    TopologicalSpace.coinduced (LevyProkhorov.probabilityMeasure (Ω := Ω)) inferInstance
+    TopologicalSpace.coinduced (LevyProkhorov.toProbabilityMeasure (Ω := Ω)) inferInstance
       ≤ (inferInstance : TopologicalSpace (ProbabilityMeasure Ω)) :=
-  (continuous_levyProkhorov_to_probabilityMeasure).coinduced_le
+  (LevyProkhorov.continuous_toProbabilityMeasure).coinduced_le
 
 end Levy_Prokhorov_is_finer
 
@@ -497,7 +497,7 @@ lemma SeparableSpace.exists_measurable_partition_diam_le
 
 variable [PseudoMetricSpace Ω] [OpensMeasurableSpace Ω]
 
-lemma continuous_probabilityMeasure_toLevyProkhorov [SeparableSpace Ω] :
+lemma ProbabilityMeasure.continuous_toLevyProkhorov [SeparableSpace Ω] :
     Continuous (ProbabilityMeasure.toLevyProkhorov (Ω := Ω)) := by
   rw [continuous_iff_continuousAt]
   intro P
@@ -604,8 +604,8 @@ lemma continuous_probabilityMeasure_toLevyProkhorov [SeparableSpace Ω] :
 coincides with the topology of convergence in distribution. -/
 theorem levyProkhorov_eq_convergenceInDistribution [SeparableSpace Ω] :
     (inferInstance : TopologicalSpace (ProbabilityMeasure Ω))
-      = TopologicalSpace.coinduced (LevyProkhorov.probabilityMeasure (Ω := Ω)) inferInstance :=
-  le_antisymm (continuous_probabilityMeasure_toLevyProkhorov (Ω := Ω)).coinduced_le
+      = TopologicalSpace.coinduced (LevyProkhorov.toProbabilityMeasure (Ω := Ω)) inferInstance :=
+  le_antisymm (ProbabilityMeasure.continuous_toLevyProkhorov (Ω := Ω)).coinduced_le
               levyProkhorov_le_convergenceInDistribution
 
 /-- The identity map is a homeomorphism from `ProbabilityMeasure Ω` with the topology of
@@ -613,11 +613,11 @@ convergence in distribution to `ProbabilityMeasure Ω` with the Lévy-Prokhorov 
 def homeomorph_probabilityMeasure_levyProkhorov [SeparableSpace Ω] :
     ProbabilityMeasure Ω ≃ₜ LevyProkhorov (ProbabilityMeasure Ω) where
   toFun := ProbabilityMeasure.toLevyProkhorov (Ω := Ω)
-  invFun := LevyProkhorov.probabilityMeasure (Ω := Ω)
+  invFun := LevyProkhorov.toProbabilityMeasure (Ω := Ω)
   left_inv := congrFun rfl
   right_inv := congrFun rfl
-  continuous_toFun := continuous_probabilityMeasure_toLevyProkhorov
-  continuous_invFun := continuous_levyProkhorov_to_probabilityMeasure
+  continuous_toFun := ProbabilityMeasure.continuous_toLevyProkhorov
+  continuous_invFun := LevyProkhorov.continuous_toProbabilityMeasure
 
 /-- The topology of convergence in distribution on a separable space is pseudo-metrizable. -/
 theorem pseudoMetrizableSpace_probabilityMeasure [SeparableSpace Ω] :
