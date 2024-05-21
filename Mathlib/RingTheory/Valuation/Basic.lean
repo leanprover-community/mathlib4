@@ -894,8 +894,6 @@ section WithZero_Multiplicative_stuff
 
 open Multiplicative
 
-open scoped DiscreteValuation
-
 theorem WithZero.Multiplicative.eq_coe_of_pos {α : Type*} {x : WithZero (Multiplicative α)}
     (hx : x ≠ 0) : ∃ (n : α), x = ofAdd n :=
   Option.ne_none_iff_exists'.mp hx
