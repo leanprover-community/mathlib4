@@ -15,8 +15,8 @@ import Mathlib.Computability.TuringMachine
 
 This file contains the definition of a Turing machine with some finiteness conditions
 (bundling the definition of TM2 in `TuringMachine.lean`), a definition of when a TM gives a certain
-output (in a certain time), and the definition of computability (in polytime or any time function)
-of a function between two types that have an encoding (as in Encoding.lean).
+output (in a certain time), and the definition of computability (in polynomial time or
+any time function) of a function between two types that have an encoding (as in `Encoding.lean`).
 
 ## Main theorems
 
@@ -26,10 +26,10 @@ of a function between two types that have an encoding (as in Encoding.lean).
 ## Implementation notes
 
 To count the execution time of a Turing machine, we have decided to count the number of times the
-`step` function is used. Each step executes a statement (of type stmt); this is a function, and
-generally contains multiple "fundamental" steps (pushing, popping, so on). However, as functions
-only contain a finite number of executions and each one is executed at most once, this execution
-time is up to multiplication by a constant the amount of fundamental steps.
+`step` function is used. Each step executes a statement (of type `Stmt`); this is a function, and
+generally contains multiple "fundamental" steps (pushing, popping, and so on).
+However, as functions only contain a finite number of executions and each one is executed at most
+once, this execution time is up to multiplication by a constant the amount of fundamental steps.
 -/
 
 
@@ -53,7 +53,7 @@ structure FinTM2 where
   (Γ : K → Type)
   /-- type of function labels -/
   (Λ : Type)
-  /-- a main function XXX -/
+  /-- a main function: the initial function that is executed, given by its label -/
   (main : Λ)
   /-- A TM2 machine has finitely many function labels. -/
   [ΛFin : Fintype Λ]
@@ -68,6 +68,8 @@ structure FinTM2 where
   /-- the program itself, i.e. one function for every function label -/
   (m : Λ → Turing.TM2.Stmt Γ Λ σ)
 #align turing.fin_tm2 Turing.FinTM2
+
+attribute [nolint docBlame] FinTM2.kDecidableEq
 
 namespace FinTM2
 
