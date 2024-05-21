@@ -953,23 +953,23 @@ theorem ωSup_repeat_mem_fixedPoint (h : x ≤ f x) :
       rw [this]
       apply le_ωSup
 
-  /-- The supremum of iterating a function on x arbitrary often is smaller than any prefixed point-/
-  theorem ωSup_repeat_le_prefixedPoint (h : x ≤ f x) {a : α}
-      (h_a : f a ≤ a) (h_x_le_a : x ≤ a) :
-      ωSup (repeatChain f x h) ≤ a := by
-    apply ωSup_le
-    intro n
-    induction n with
-    | zero => exact h_x_le_a
-    | succ n h_ind => exact le_trans (f.monotone h_ind) h_a
+/-- The supremum of iterating a function on x arbitrary often is smaller than any prefixed point-/
+theorem ωSup_repeat_le_prefixedPoint (h : x ≤ f x) {a : α}
+    (h_a : f a ≤ a) (h_x_le_a : x ≤ a) :
+    ωSup (repeatChain f x h) ≤ a := by
+  apply ωSup_le
+  intro n
+  induction n with
+  | zero => exact h_x_le_a
+  | succ n h_ind => exact le_trans (f.monotone h_ind) h_a
 
-  /-- The supremum of iterating a function on x arbitrary often is smaller than any fixed point-/
-  theorem ωSup_repeat_le_fixedPoint (h : x ≤ f x) {a : α}
-      (h_a : a ∈ fixedPoints f) (h_x_le_a : x ≤ a) :
-      ωSup (repeatChain f x h) ≤ a := by
-    rw [mem_fixedPoints] at h_a
-    obtain h_a := Eq.le h_a
-    exact ωSup_repeat_le_prefixedPoint f x h h_a h_x_le_a
+/-- The supremum of iterating a function on x arbitrary often is smaller than any fixed point-/
+theorem ωSup_repeat_le_fixedPoint (h : x ≤ f x) {a : α}
+    (h_a : a ∈ fixedPoints f) (h_x_le_a : x ≤ a) :
+    ωSup (repeatChain f x h) ≤ a := by
+  rw [mem_fixedPoints] at h_a
+  obtain h_a := Eq.le h_a
+  exact ωSup_repeat_le_prefixedPoint f x h h_a h_x_le_a
 
 end fixedPoints
 
