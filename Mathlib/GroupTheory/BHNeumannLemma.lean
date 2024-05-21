@@ -217,8 +217,11 @@ theorem Fintype.finiteIndex_of_iUnion_leftCoset_eq_univ {G ι : Type*} [Group G]
   have ⟨j⟩ : Nonempty ι := not_isEmpty_iff.mp fun hempty => by
     rw [Set.iUnion_of_empty, eq_comm, Set.univ_eq_empty_iff, isEmpty_iff] at hcovers
     exact hcovers 1
-  have := Fintype.finiteIndex_of_iUnion_leftCoset_eq_univ_aux ι g H hcovers j
-  rw [ne_eq, ← or_iff_not_imp_left] at this
+  have :
+    ⋃ i ∈ Finset.univ.filter (H · = H j), g i • (H i : Set G) = Set.univ ∨
+      ∃ i, H i ≠ H j ∧ (H i).FiniteIndex := by
+    rw [or_iff_not_imp_left, ← ne_eq]
+    exact Fintype.finiteIndex_of_iUnion_leftCoset_eq_univ_aux ι g H hcovers j
   cases this with
   | inl h =>
     rw [Set.iUnion₂_congr fun i hi => by rw [(Finset.mem_filter.mp hi).right]] at h
@@ -291,21 +294,7 @@ theorem Fintype.covers_finiteIndex_of_covers {G ι : Type*} [Group G] [Fintype �
   -- The result follows by restoring the original cosets of subgroups of finite index
   -- from the cosets of `D` into which they have been decomposed.
   rw [← not_ne_iff.mp hcovers', Set.iUnion_sigma]
-  dsimp only [f, K]
-  rw [if_pos hj]
-  apply Set.iUnion_congr
-  intro i
-  rw [Set.iUnion_subtype]
+  refine Set.iUnion_congr fun i => ?_
   have hD' : ¬(H i).FiniteIndex → H i ≠ D := fun h hD' => (hD' ▸ h) hD
-  have (x : G) (hx : x ∈ if h : (H i).FiniteIndex then s i h else {1}) :
-      (⟨i, ⟨x, hx⟩⟩ : κ) ∈ Finset.univ.filter
-        (fun k => (if (H k.1).FiniteIndex then D else H k.1) = D)  ↔
-      i ∈ Finset.univ.filter (fun _ => (if (H i).FiniteIndex then D else H i) = D) := by
-    split_ifs with h <;> simp [h, hD']
-  rw [Set.iUnion_congr fun x : G => Set.iUnion_congr fun hx => by rw [this]]
-  dsimp only
-  by_cases h : (H i).FiniteIndex
-  · suffices g i • (H i : Set G) = g i • ⋃ x ∈ s i h, (x • (D : Set G)) from by
-      simpa [h, leftCoset_assoc, Set.smul_set_iUnion₂] using this
-    rw [hs i h]
-  · simp [h, hD' h]
+  by_cases hi : (H i).FiniteIndex <;>
+    simp [Set.smul_set_iUnion₂, Set.iUnion_subtype, ← leftCoset_assoc, f, K, hD', ← hs, hi, hj]
