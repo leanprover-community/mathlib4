@@ -263,9 +263,6 @@ add_decl_doc AddCommGroupCat.of
 instance : Inhabited CommGroupCat :=
   ⟨CommGroupCat.of PUnit⟩
 
--- Porting note: removed `@[simp]` here, as it makes it harder to tell when to apply
--- bundled or unbundled lemmas.
--- (This change seems dangerous!)
 @[to_additive (attr := simp)]
 theorem coe_of (R : Type u) [CommGroup R] : (CommGroupCat.of R : Type u) = R :=
   rfl
