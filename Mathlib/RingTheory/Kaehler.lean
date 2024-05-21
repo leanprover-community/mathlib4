@@ -815,7 +815,7 @@ def KaehlerDifferential.kerCotangentToTensor :
 
 @[simp]
 lemma KaehlerDifferential.kerCotangentToTensor_toCotangent (x) :
-  kerCotangentToTensor R A B (Ideal.toCotangent _ x) = 1 ⊗ₜ D _ _ x.1 := rfl
+    kerCotangentToTensor R A B (Ideal.toCotangent _ x) = 1 ⊗ₜ D _ _ x.1 := rfl
 
 theorem KaehlerDifferential.range_kerCotangentToTensor
     (h : Function.Surjective (algebraMap A B)) :
