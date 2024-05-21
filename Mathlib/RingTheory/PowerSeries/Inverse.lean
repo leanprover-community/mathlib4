@@ -367,6 +367,12 @@ instance : NormalizationMonoid k⟦X⟧ where
     rw [inv_inj, Units.ext_iff, ← hu, Unit_of_divided_by_X_pow_order_nonzero h₀.ne_zero]
     exact ((eq_divided_by_X_pow_order_Iff_Unit h₀.ne_zero).mpr h₀).symm
 
+theorem normUnit_X : normUnit (X : PowerSeries k) = 1 := by
+  simp [normUnit, ← Units.val_eq_one, Unit_of_divided_by_X_pow_order_nonzero]
+
+theorem X_eq_normalizeX : (X : PowerSeries k) = normalize X := by
+  simp only [normalize_apply, normUnit_X, Units.val_one, mul_one]
+
 open LocalRing
 
 theorem ker_coeff_eq_max_ideal : RingHom.ker (constantCoeff k) = maximalIdeal _ :=
