@@ -5,6 +5,7 @@ import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 import Mathlib.Algebra.Homology.ShortComplex.ULift
 import Mathlib.Algebra.Homology.ShortComplex.ShortComplexFour
+import Mathlib.CategoryTheory.ArrowTwo
 
 universe v v'
 
@@ -130,10 +131,10 @@ namespace Functor
 variable {C D H : Type*} [Category C] [Category D] [Category H]
   (i : C ⥤ D) [Full i] [Faithful i]
 
-def preimageNatTrans {F₁ F₂ : H ⥤ C} (τ : F₁ ⋙ i ⟶ F₂ ⋙ i) : F₁ ⟶ F₂ where
+noncomputable def preimageNatTrans {F₁ F₂ : H ⥤ C} (τ : F₁ ⋙ i ⟶ F₂ ⋙ i) : F₁ ⟶ F₂ where
   app X := i.preimage (τ.app X)
   naturality {X Y} f := i.map_injective (by
-    simp only [map_comp, image_preimage]
+    simp only [map_comp, map_preimage]
     exact τ.naturality f)
 
 @[simp]
@@ -155,7 +156,7 @@ lemma preimageNatTrans_comp {F₁ F₂ F₃ : H ⥤ C} (τ : F₁ ⋙ i ⟶ F₂
   simp
 
 @[simps]
-def preimageNatIso {F₁ F₂ : H ⥤ C} (e : F₁ ⋙ i ≅ F₂ ⋙ i) : F₁ ≅ F₂ where
+noncomputable def preimageNatIso {F₁ F₂ : H ⥤ C} (e : F₁ ⋙ i ≅ F₂ ⋙ i) : F₁ ≅ F₂ where
   hom := i.preimageNatTrans e.hom
   inv := i.preimageNatTrans e.inv
 
@@ -164,14 +165,14 @@ noncomputable def isEquivalenceFullSubcategoryLift (S : Set D) (hi : i.essImage 
       (fun X => by rw [← hi]; exact obj_mem_essImage i X)) := by
   let F := FullSubcategory.lift S i
       (fun X => by rw [← hi]; exact obj_mem_essImage i X)
-  have : Full F := fullOfSurjective _ (fun X Y f => ⟨i.preimage f, by simp [F]⟩)
-  have : Faithful F := ⟨fun {X Y} f g h => i.map_injective h⟩
-  have : EssSurj F := ⟨by
+  apply IsEquivalence.mk
+  · exact ⟨fun {X Y} f g h => i.map_injective h⟩
+  · exact fullOfSurjective _ (fun X Y f => ⟨i.preimage f, by simp [F]⟩)
+  · exact ⟨by
     rintro ⟨X, hX⟩
     rw [← hi] at hX
     obtain ⟨Y, ⟨e⟩⟩ := hX
     exact ⟨Y, ⟨(fullSubcategoryInclusion S).preimageIso e⟩⟩⟩
-  apply Functor.IsEquivalence.ofFullyFaithfullyEssSurj
 
 end Functor
 
@@ -233,7 +234,8 @@ instance : (S.tStructure t).HasHeart where
   H := t.Heart
   ι := FullSubcategory.lift _ t.ιHeart (fun X => hS.subset _ (t.ιHeart_obj_mem X))
   additive_ι := ⟨fun {X Y f g} => S.ι.map_injective (by simp)⟩
-  fullι := { preimage := fun f => t.ιHeart.preimage f }
+  fullι := { map_surjective := by intro X Y f; existsi t.ιHeart.preimage f
+                                  simp only [FullSubcategory.lift_map, Functor.map_preimage]}
   faithful_ι := ⟨fun {X Y} f g h => t.ιHeart.map_injective h⟩
   hι := by
     ext X
@@ -671,7 +673,7 @@ noncomputable def shortComplex :=
   (ShortComplex.mk _ _ (comp_distTriang_mor_zero₁₂ T hT)).map t.homology₀
 
 @[simps]
-def ιHeartAddEquiv (X Y : t.Heart) : (X ⟶ Y) ≃+ (t.ιHeart.obj X ⟶ t.ιHeart.obj Y) where
+noncomputable def ιHeartAddEquiv (X Y : t.Heart) : (X ⟶ Y) ≃+ (t.ιHeart.obj X ⟶ t.ιHeart.obj Y) where
   toFun f := t.ιHeart.map f
   invFun g := t.ιHeart.preimage g
   left_inv f := by simp
@@ -1028,7 +1030,7 @@ lemma exists_distTriang_of_shortExact :
   · dsimp
     simp
   · dsimp
-    simp only [Functor.image_preimage, id_comp, ← Functor.map_comp, he]
+    simp only [Functor.map_preimage, id_comp, ← Functor.map_comp, he]
   · dsimp
     simp
 

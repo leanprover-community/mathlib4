@@ -78,7 +78,17 @@ theorem map_surjective (F : C ⥤ D) [Full F] :
   Full.map_surjective
 #align category_theory.functor.map_surjective CategoryTheory.Functor.map_surjective
 
-/-- The choice of a preimage of a morphism under a full functor. -/
+/-- Deduce that `F` is full from the existence of preimages, using choice. -/
+noncomputable def fullOfExists (F : C ⥤ D)
+    (h : ∀ (X Y : C) (f : F.obj X ⟶ F.obj Y), ∃ p, F.map p = f) : Full F :=
+  Functor.Full.mk (fun f ↦ h _ _ f)
+
+/-- Deduce that `F` is full from surjectivity of `F.map`, using choice. -/
+noncomputable def fullOfSurjective (F : C ⥤ D)
+    (h : ∀ X Y : C, Function.Surjective (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y))) : Full F :=
+  fullOfExists _ h
+
+/-- The choice of a  preimage of a morphism under a full functor. -/
 noncomputable def preimage (F : C ⥤ D) [Full F] (f : F.obj X ⟶ F.obj Y) : X ⟶ Y :=
   (F.map_surjective f).choose
 #align category_theory.functor.preimage CategoryTheory.Functor.preimage

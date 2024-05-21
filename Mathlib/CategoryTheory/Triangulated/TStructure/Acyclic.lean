@@ -40,14 +40,14 @@ instance closedUnderIsomorphisms : ClosedUnderIsomorphisms (AcyclicObject F t₁
   intro _ _ e hX
   change t₁.heart _ ∧ t₂.heart _
   constructor
-  · exact ClosedUnderIsomorphisms.mem_of_iso e hX.1
-  · exact ClosedUnderIsomorphisms.mem_of_iso (F.mapIso e) hX.2
+  · exact ClosedUnderIsomorphisms.of_iso e hX.1
+  · exact ClosedUnderIsomorphisms.of_iso (F.mapIso e) hX.2
 
 lemma zero {X : C} (hX : IsZero X) : AcyclicObject F t₁ t₂ X := by
   simp only [AcyclicObject]
   constructor
-  · exact ClosedUnderIsomorphisms.mem_of_iso hX.isoZero.symm t₁.zero_mem_heart
-  · exact ClosedUnderIsomorphisms.mem_of_iso ((F.mapIso hX.isoZero).trans F.mapZeroObject).symm
+  · exact ClosedUnderIsomorphisms.of_iso hX.isoZero.symm t₁.zero_mem_heart
+  · exact ClosedUnderIsomorphisms.of_iso ((F.mapIso hX.isoZero).trans F.mapZeroObject).symm
       t₂.zero_mem_heart
 
 lemma prod {X Y : C} (hX : AcyclicObject F t₁ t₂ X) (hY : AcyclicObject F t₁ t₂ Y) :
@@ -55,7 +55,7 @@ lemma prod {X Y : C} (hX : AcyclicObject F t₁ t₂ X) (hY : AcyclicObject F t�
   simp only [AcyclicObject]
   constructor
   · exact prod_mem_heart t₁ X Y hX.1 hY.1
-  · refine ClosedUnderIsomorphisms.mem_of_iso (PreservesLimitPair.iso F X Y).symm
+  · refine ClosedUnderIsomorphisms.of_iso (PreservesLimitPair.iso F X Y).symm
       (prod_mem_heart t₂ _ _ hX.2 hY.2)
 
 instance : HasTerminal (AcyclicCategory F t₁ t₂) := by
@@ -246,18 +246,55 @@ def ShortComplexHomologyFunctor {S : ShortComplex t₁.Heart} (hS₁ : AcyclicOb
     refine Mono.right_cancellation (f := Abelian.image.ι S.f) _ _ ?_
     simp only [equalizer_as_kernel, assoc, kernel.lift_ι, kernel.condition, zero_comp])
     with hS''def
+  rw [← exact_iff_shortComplex_exact] at hS
   set e : S' ≅ S'' := by
---    rw [hS'def, hS''def]
-    refine ShortComplex.isoMk ?_ ?_ ?_ ?_ ?_
-    · exact Iso.refl (Limits.kernel S.f)
-    · exact Iso.refl S.X₁
-    · rw [exact_iff_shortComplex_exact] at hS
-    · sorry
-    · sorry
+    refine ShortComplex.isoMk (Iso.refl (Limits.kernel S.f)) (Iso.refl S.X₁)
+      (Limits.IsLimit.conePointUniqueUpToIso (Limits.kernelIsKernel S.g)
+      (Abelian.isLimitImage S.f S.g hS)) (by simp only [Iso.refl_hom, id_comp, comp_id]) ?_
+    refine Mono.right_cancellation (f := Abelian.image.ι S.f) _ _ ?_
+    simp only [Iso.refl_hom, id_comp, equalizer_as_kernel, kernel.lift_ι, coequalizer_as_cokernel,
+        eq_mp_eq_cast, IsLimit.lift_comp_conePointUniqueUpToIso_hom]
+    have := (Abelian.isLimitImage S.f S.g hS).fac (KernelFork.ofι S.f S.zero)
+        Limits.WalkingParallelPair.zero
+    simp only [Fork.ofι_pt, parallelPair_obj_zero, equalizer_as_kernel, coequalizer_as_cokernel,
+        Fork.ofι_π_app] at this
+    exact this.symm
   have hS' : S'.ShortExact := by
-    refine ShortComplex.ShortExact.mk' ?_ ?_ ?_
-    · sorry
+    refine ShortComplex.shortExact_of_iso e.symm (ShortComplex.ShortExact.mk' ?_ ?_ ?_)
+    · rw [← exact_iff_shortComplex_exact, ← exact_comp_mono_iff (h := Abelian.image.ι S.f)]
+      simp only [equalizer_as_kernel, kernel.lift_ι]
+      rw [Abelian.exact_iff]
+      aesop_cat
     · exact inferInstance
-    · sorry
-  set T := t₁.heartShortExactTriangle S' hS'
+    · exact inferInstance
+  set T := t₁.heartShortExactTriangle S' hS' with hTdef
   have hT := t₁.heartShortExactTriangle_distinguished S' hS'
+  have hT' := F.map_distinguished T hT
+  set f := t₂.homologyδ (F.mapTriangle.obj T) n (n + 1) rfl
+  --simp only [hTdef, hS'def, mapTriangle_obj, heartShortExactTriangle_obj₁,
+  --  heartShortExactTriangle_obj₂, heartShortExactTriangle_obj₃, heartShortExactTriangle_mor₁,
+  --  heartShortExactTriangle_mor₂, heartShortExactTriangle_mor₃, Triangle.mk_obj₃,
+  --  Triangle.mk_obj₁] at f
+  have h2 := t₂.homology_exact₁ _ hT' n (n + 1) rfl
+  simp only [mapTriangle_obj, Triangle.mk_obj₃, Triangle.mk_obj₁, Triangle.mk_obj₂,
+    Triangle.mk_mor₁] at h2
+  rw [ShortComplex.exact_iff_epi] at h2
+  swap
+  refine Limits.zero_of_target_iso_zero _ ?_
+--  simp only [hTdef, hS'def, mapTriangle_obj, heartShortExactTriangle_obj₁,
+--    heartShortExactTriangle_obj₂, heartShortExactTriangle_obj₃, heartShortExactTriangle_mor₁,
+--    heartShortExactTriangle_mor₂, heartShortExactTriangle_mor₃, Triangle.mk_obj₂]
+  change (t₂.homology (n + 1)).obj (F.obj S.X₁.1) ≅ 0
+  refine Limits.IsZero.isoZero ?_
+  by_cases hn' : 0 ≤ n
+  · letI : t₂.IsLE (F.obj S.X₁.1) 0 := {le := hS₁.2.1}
+    exact t₂.isZero_homology_of_isLE _ (n + 1) 0 (Int.lt_add_one_iff.mpr hn')
+  · rw [← lt_iff_not_le] at hn'
+    have hn'' : n + 1 < 0 := by
+      rw [lt_iff_le_and_ne, Int.add_one_le_iff, and_iff_right hn', ne_eq, ← eq_neg_iff_add_eq_zero]
+      exact hn.1
+    letI : t₂.IsGE (F.obj S.X₁.1) 0 := {ge := hS₁.2.2}
+    refine t₂.isZero_homology_of_isGE _ (n + 1) 0 hn''
+  have h1 : Mono f := sorry
+  have h2 : Epi f := h2
+  exact @asIso _ _ _ _ f ((isIso_iff_mono_and_epi f).mpr ⟨h1, h2⟩)
