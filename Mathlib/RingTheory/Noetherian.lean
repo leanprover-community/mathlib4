@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Kevin Buzzard
 -/
 import Mathlib.Order.Filter.EventuallyConst
 import Mathlib.Order.PartialSups
+import Mathlib.Algebra.Module.Submodule.IterateMapComap
 import Mathlib.RingTheory.Finiteness
 import Mathlib.RingTheory.Nilpotent.Lemmas
 
