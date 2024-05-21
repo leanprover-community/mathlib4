@@ -387,8 +387,8 @@ theorem nmem_nonZeroDivisors_iff {P : R[X]} : P ∉ R[X]⁰ ↔ ∃ a : R, a ≠
         rw [mem_setOf_eq, ← leadingCoeff_ne_zero, smul_eq_C_mul, leadingCoeff_mul']
         all_goals rwa [leadingCoeff_C, mul_comm]
       by_contra! H
-      refine Hdeg <| le_zero.1 ?_
-      simp only [hm, nonpos_iff_eq_zero, sInf_eq_zero, Set.mem_image, Set.image_eq_empty]
+      apply Hdeg
+      simp only [hm, sInf_eq_zero, Set.mem_image, Set.image_eq_empty]
       left
       refine ⟨C Q.leadingCoeff, ⟨?_, by simp [hQ.2]⟩, by simp⟩
       rw [← smul_eq_C_mul]
