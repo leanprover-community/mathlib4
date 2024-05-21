@@ -280,9 +280,9 @@ theorem quasiMeasurePreserving_hasPDF {X : Ω → E} [HasPDF X ℙ μ] (hX : AEM
     apply (HasPDF.congr' hae).mpr
     exact this hX.measurable_mk.aemeasurable hg (map_congr hX.ae_eq_mk ▸ hmap) hX.measurable_mk
   rw [hasPDF_iff, ← map_map hg.measurable hmX]
-  refine' ⟨(hg.measurable.comp hmX).aemeasurable, hmap, _⟩
+  refine ⟨(hg.measurable.comp hmX).aemeasurable, hmap, ?_⟩
   rw [map_eq_withDensity_pdf X ℙ μ]
-  refine' AbsolutelyContinuous.mk fun s hsm hs => _
+  refine AbsolutelyContinuous.mk fun s hsm hs => ?_
   rw [map_apply hg.measurable hsm, withDensity_apply _ (hg.measurable hsm)]
   have := hg.absolutelyContinuous hs
   rw [map_apply hg.measurable hsm] at this

@@ -785,7 +785,7 @@ theorem isUnit_of_isUnit_leadingCoeff_of_isUnit_map {f : R[X]} (hf : IsUnit f.le
   have dz := degree_eq_zero_of_isUnit H
   rw [degree_map_eq_of_leadingCoeff_ne_zero] at dz
   · rw [eq_C_of_degree_eq_zero dz]
-    refine' IsUnit.map C _
+    refine IsUnit.map C ?_
     convert hf
     change coeff f 0 = coeff f (natDegree f)
     rw [(degree_eq_iff_natDegree_eq _).1 dz]
