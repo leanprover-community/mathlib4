@@ -455,8 +455,7 @@ theorem mulIndicator_mul_compl_eq_piecewise [DecidablePred (· ∈ s)] (f g : α
 
 /-- `Set.mulIndicator` as a `monoidHom`. -/
 @[to_additive "`Set.indicator` as an `addMonoidHom`."]
-noncomputable def mulIndicatorHom {α} (M) [MulOneClass M] (s : Set α) : (α → M) →* α → M
-    where
+noncomputable def mulIndicatorHom {α} (M) [MulOneClass M] (s : Set α) : (α → M) →* α → M where
   toFun := mulIndicator s
   map_one' := mulIndicator_one M s
   map_mul' := mulIndicator_mul s

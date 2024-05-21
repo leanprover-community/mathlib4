@@ -59,7 +59,7 @@ theorem IsAssociatedPrime.isPrime (h : IsAssociatedPrime I M) : I.IsPrime := h.1
 theorem IsAssociatedPrime.map_of_injective (h : IsAssociatedPrime I M) (hf : Function.Injective f) :
     IsAssociatedPrime I M' := by
   obtain ⟨x, rfl⟩ := h.2
-  refine' ⟨h.1, ⟨f x, _⟩⟩
+  refine ⟨h.1, ⟨f x, ?_⟩⟩
   ext r
   rw [Submodule.mem_annihilator_span_singleton, Submodule.mem_annihilator_span_singleton, ←
     map_smul, ← f.map_zero, hf.eq_iff]

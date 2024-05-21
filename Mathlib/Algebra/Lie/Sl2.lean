@@ -28,7 +28,7 @@ about `sl₂`.
 variable (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
-open LieModule
+open LieModule Set
 
 variable {L} in
 /-- An `sl₂` triple within a Lie ring `L` is a triple of elements `h`, `e`, `f` obeying relations
@@ -50,10 +50,8 @@ lemma symm (ht : IsSl2Triple h e f) : IsSl2Triple (-h) f e where
   lie_h_e_nsmul := by rw [neg_lie, neg_eq_iff_eq_neg, ht.lie_h_f_nsmul]
   lie_h_f_nsmul := by rw [neg_lie, neg_inj, ht.lie_h_e_nsmul]
 
-@[simp] lemma symm_iff : IsSl2Triple (-h) f e ↔ IsSl2Triple h e f := by
-  suffices ∀ h e f : L, IsSl2Triple h e f → IsSl2Triple (-h) f e from
-    ⟨fun t ↦ neg_neg h ▸ this (-h) f e t, this h e f⟩
-  exact fun h e f ↦ symm
+@[simp] lemma symm_iff : IsSl2Triple (-h) f e ↔ IsSl2Triple h e f :=
+  ⟨fun t ↦ neg_neg h ▸ t.symm, symm⟩
 
 lemma lie_h_e_smul (t : IsSl2Triple h e f) : ⁅h, e⁆ = (2 : R) • e :=
   by simp [t.lie_h_e_nsmul, two_smul]
@@ -73,11 +71,10 @@ lemma f_ne_zero (t : IsSl2Triple h e f) : f ≠ 0 := by
 
 variable {R}
 
-variable (h e f) in
 /-- Given a representation of a Lie algebra with distinguished `sl₂` triple, a vector is said to be
 primitive if it is a simultaneous eigenvector for the action of both `h`, `e`, and the eigenvalue
 for `e` is zero. -/
-structure HasPrimitiveVectorWith (m : M) (μ : R) extends IsSl2Triple h e f : Prop where
+structure HasPrimitiveVectorWith (t : IsSl2Triple h e f) (m : M) (μ : R) : Prop where
   ne_zero : m ≠ 0
   lie_h : ⁅h, m⁆ = μ • m
   lie_e : ⁅e, m⁆ = 0
@@ -86,11 +83,7 @@ structure HasPrimitiveVectorWith (m : M) (μ : R) extends IsSl2Triple h e f : Pr
 eigenvector for the action of both `h` and `e` necessarily has eigenvalue zero for `e`. -/
 lemma HasPrimitiveVectorWith.mk' [NoZeroSMulDivisors ℤ M] (t : IsSl2Triple h e f) (m : M) (μ ρ : R)
     (hm : m ≠ 0) (hm' : ⁅h, m⁆ = μ • m) (he : ⁅e, m⁆ = ρ • m) :
-    HasPrimitiveVectorWith h e f m μ  where
-  h_ne_zero := t.h_ne_zero
-  lie_e_f := t.lie_e_f
-  lie_h_e_nsmul := t.lie_h_e_nsmul
-  lie_h_f_nsmul := t.lie_h_f_nsmul
+    HasPrimitiveVectorWith t m μ  where
   ne_zero := hm
   lie_h := hm'
   lie_e := by
@@ -100,31 +93,31 @@ lemma HasPrimitiveVectorWith.mk' [NoZeroSMulDivisors ℤ M] (t : IsSl2Triple h e
 
 namespace HasPrimitiveVectorWith
 
-variable {m : M} {μ : R} (P : HasPrimitiveVectorWith h e f m μ)
+variable {m : M} {μ : R} {t : IsSl2Triple h e f} (P : HasPrimitiveVectorWith t m μ)
 
-local notation "ψ" n => ((toEndomorphism R L M f) ^ n) m
+local notation "ψ" n => ((toEnd R L M f) ^ n) m
 
-lemma lie_h_pow_toEndomorphism_f (n : ℕ) :
+lemma lie_h_pow_toEnd_f (n : ℕ) :
     ⁅h, ψ n⁆ = (μ - 2 * n) • ψ n := by
   induction' n with n ih
   · simpa using P.lie_h
-  · rw [pow_succ', LinearMap.mul_apply, toEndomorphism_apply_apply, Nat.cast_add, Nat.cast_one,
-      leibniz_lie h, P.lie_lie_smul_f R, ← neg_smul, ih, lie_smul, smul_lie, ← add_smul]
+  · rw [pow_succ', LinearMap.mul_apply, toEnd_apply_apply, Nat.cast_add, Nat.cast_one,
+      leibniz_lie h, t.lie_lie_smul_f R, ← neg_smul, ih, lie_smul, smul_lie, ← add_smul]
     congr
     ring
 
-lemma lie_f_pow_toEndomorphism_f (n : ℕ) :
+lemma lie_f_pow_toEnd_f (n : ℕ) :
     ⁅f, ψ n⁆ = ψ (n + 1) := by
   simp [pow_succ']
 
-lemma lie_e_pow_succ_toEndomorphism_f (n : ℕ) :
+lemma lie_e_pow_succ_toEnd_f (n : ℕ) :
     ⁅e, ψ (n + 1)⁆ = ((n + 1) * (μ - n)) • ψ n := by
   induction' n with n ih
-  · simp only [zero_add, pow_one, toEndomorphism_apply_apply, Nat.cast_zero, sub_zero, one_mul,
-      pow_zero, LinearMap.one_apply, leibniz_lie e, P.lie_e_f, P.lie_e, P.lie_h, lie_zero,
+  · simp only [zero_add, pow_one, toEnd_apply_apply, Nat.cast_zero, sub_zero, one_mul,
+      pow_zero, LinearMap.one_apply, leibniz_lie e, t.lie_e_f, P.lie_e, P.lie_h, lie_zero,
       add_zero]
-  · rw [pow_succ', LinearMap.mul_apply, toEndomorphism_apply_apply, leibniz_lie e, P.lie_e_f,
-      lie_h_pow_toEndomorphism_f P, ih, lie_smul, lie_f_pow_toEndomorphism_f, ← add_smul,
+  · rw [pow_succ', LinearMap.mul_apply, toEnd_apply_apply, leibniz_lie e, t.lie_e_f,
+      lie_h_pow_toEnd_f P, ih, lie_smul, lie_f_pow_toEnd_f, ← add_smul,
       Nat.cast_add, Nat.cast_one]
     congr
     ring
@@ -136,17 +129,16 @@ lemma exists_nat [IsNoetherian R M] [NoZeroSMulDivisors R M] [IsDomain R] [CharZ
   suffices ∃ n : ℕ, (ψ n) = 0 by
     obtain ⟨n, hn₁, hn₂⟩ := Nat.exists_not_and_succ_of_not_zero_of_exists P.ne_zero this
     refine ⟨n, ?_⟩
-    have := lie_e_pow_succ_toEndomorphism_f P n
+    have := lie_e_pow_succ_toEnd_f P n
     rw [hn₂, lie_zero, eq_comm, smul_eq_zero_iff_left hn₁, mul_eq_zero, sub_eq_zero] at this
-    exact_mod_cast this.resolve_left <| Nat.cast_add_one_ne_zero n
-  have hs : (Set.range <| fun (n : ℕ) ↦ μ - 2 * n).Infinite := by
-    rw [← Set.image_univ, Set.infinite_image_iff (Function.Injective.injOn (fun n m ↦ by simp) _)]
-    exact Set.infinite_univ
+    exact this.resolve_left <| Nat.cast_add_one_ne_zero n
+  have hs : (range <| fun (n : ℕ) ↦ μ - 2 * n).Infinite := by
+    rw [infinite_range_iff (fun n m ↦ by simp)]; infer_instance
   by_contra! contra
-  exact hs ((toEndomorphism R L M h).eigenvectors_linearIndependent
+  exact hs ((toEnd R L M h).eigenvectors_linearIndependent
     {μ - 2 * n | n : ℕ}
     (fun ⟨s, hs⟩ ↦ ψ Classical.choose hs)
-    (fun ⟨s, hs⟩ ↦ by simp [lie_h_pow_toEndomorphism_f P, Classical.choose_spec hs, contra,
+    (fun ⟨r, hr⟩ ↦ by simp [lie_h_pow_toEnd_f P, Classical.choose_spec hr, contra,
       Module.End.HasEigenvector, Module.End.mem_eigenspace_iff])).finite
 
 end HasPrimitiveVectorWith

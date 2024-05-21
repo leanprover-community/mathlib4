@@ -105,8 +105,8 @@ lemma killingForm_apply_eq_zero_of_mem_rootSpace_of_add_ne_zero {α β : H → K
   have hσ : ∀ γ, σ γ ≠ γ := fun γ ↦ by simpa only [σ, ← add_assoc] using add_left_ne_self.mpr hαβ
   let f : Module.End K L := (ad K L x) ∘ₗ (ad K L y)
   have hf : ∀ γ, MapsTo f (rootSpace H γ) (rootSpace H (σ γ)) := fun γ ↦
-    (mapsTo_toEndomorphism_weightSpace_add_of_mem_rootSpace K L H L α (β + γ) hx).comp <|
-      mapsTo_toEndomorphism_weightSpace_add_of_mem_rootSpace K L H L β γ hy
+    (mapsTo_toEnd_weightSpace_add_of_mem_rootSpace K L H L α (β + γ) hx).comp <|
+      mapsTo_toEnd_weightSpace_add_of_mem_rootSpace K L H L β γ hy
   classical
   have hds := DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top
     (LieSubmodule.independent_iff_coe_toSubmodule.mp <| independent_weightSpace K H L)
@@ -122,13 +122,13 @@ lemma mem_ker_killingForm_of_mem_rootSpace_of_forall_rootSpace_neg
   rw [LinearMap.mem_ker]
   ext y
   have hy : y ∈ ⨆ β, rootSpace H β := by simp [iSup_weightSpace_eq_top K H L]
-  induction hy using LieSubmodule.iSup_induction'
-  · next β y hy =>
+  induction hy using LieSubmodule.iSup_induction' with
+  | hN β y hy =>
     by_cases hαβ : α + β = 0
     · exact hx' _ (add_eq_zero_iff_neg_eq.mp hαβ ▸ hy)
     · exact killingForm_apply_eq_zero_of_mem_rootSpace_of_add_ne_zero K L H hx hy hαβ
-  · simp
-  · simp_all
+  | h0 => simp
+  | hadd => simp_all
 
 namespace IsKilling
 
@@ -144,7 +144,7 @@ lemma eq_zero_of_isNilpotent_ad_of_mem_isCartanSubalgebra {x : L} (hx : x ∈ H)
   suffices ⟨x, hx⟩ ∈ LinearMap.ker (traceForm K H L) by simpa using this
   simp only [LinearMap.mem_ker]
   ext y
-  have comm : Commute (toEndomorphism K H L ⟨x, hx⟩) (toEndomorphism K H L y) := by
+  have comm : Commute (toEnd K H L ⟨x, hx⟩) (toEnd K H L y) := by
     rw [commute_iff_lie_eq, ← LieHom.map_lie, trivial_lie_zero, LieHom.map_zero]
   rw [traceForm_apply_apply, ← LinearMap.mul_eq_comp, LinearMap.zero_apply]
   exact (LinearMap.isNilpotent_trace_of_isNilpotent (comm.isNilpotent_mul_left hx')).eq_zero
@@ -175,7 +175,7 @@ lemma cartanEquivDual_symm_apply_mem_corootSpace (α : Weight K H L) :
   apply mem_ker_killingForm_of_mem_rootSpace_of_forall_rootSpace_neg (α := (0 : H → K))
   · simp only [rootSpace_zero_eq, LieSubalgebra.mem_toLieSubmodule]
     refine sub_mem ?_ (H.smul_mem _ α'.property)
-    simpa using mapsTo_toEndomorphism_weightSpace_add_of_mem_rootSpace K L H L α (-α) heα hfα
+    simpa using mapsTo_toEnd_weightSpace_add_of_mem_rootSpace K L H L α (-α) heα hfα
   · intro z hz
     replace hz : z ∈ H := by simpa using hz
     replace he : ⁅z, e⁆ = α ⟨z, hz⟩ • e := by simpa using he ⟨z, hz⟩
