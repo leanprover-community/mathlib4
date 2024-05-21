@@ -429,4 +429,44 @@ theorem rightInverse_symm (e : A ≃⋆+* B) : Function.RightInverse e.symm e :=
 
 end Basic
 
+
+section Bijective
+
+variable {F G A B : Type*}
+variable [NonUnitalNonAssocSemiring A] [Star A]
+variable [NonUnitalNonAssocSemiring B] [Star B]
+variable [FunLike F A B] [NonUnitalRingHomClass F A B] [NonUnitalStarRingHomClass F A B]
+variable [FunLike G B A] [NonUnitalRingHomClass G B A] [NonUnitalStarRingHomClass G B A]
+
+/-- If a (unital or non-unital) star ring morphism has an inverse, it is an isomorphism of
+star rings. -/
+@[simps]
+def ofStarRingHom (f : F) (g : G) (h₁ : ∀ x, g (f x) = x) (h₂ : ∀ x, f (g x) = x) : A ≃⋆+* B where
+  toFun := f
+  invFun := g
+  left_inv := h₁
+  right_inv := h₂
+  map_add' := map_add f
+  map_mul' := map_mul f
+  map_star' := map_star f
+
+/-- Promote a bijective star ring homomorphism to a star ring equivalence. -/
+noncomputable def ofBijective (f : F) (hf : Function.Bijective f) : A ≃⋆+* B :=
+  {
+    RingEquiv.ofBijective f
+      (hf : Function.Bijective (f : A → B)) with
+    toFun := f
+    map_star' := map_star f }
+
+@[simp]
+theorem coe_ofBijective {f : F} (hf : Function.Bijective f) :
+    (StarRingEquiv.ofBijective f hf : A → B) = f :=
+  rfl
+
+theorem ofBijective_apply {f : F} (hf : Function.Bijective f) (a : A) :
+    (StarRingEquiv.ofBijective f hf) a = f a :=
+  rfl
+
+end Bijective
+
 end StarRingEquiv
