@@ -269,8 +269,8 @@ lemma mem_smoothNumbers' {n m : ℕ} : m ∈ smoothNumbers n ↔ ∀ p, p.Prime 
   if `m` is a `n`-smooth number -/
 lemma primeFactors_subset_of_mem_smoothNumbers (m n : ℕ) (hms : m ∈ n.smoothNumbers) :
     m.primeFactors ⊆ n.primesBelow :=
-  have hxle (m n x : ℕ) (hpf : x ∈ m.primeFactors) (hms : m ∈ smoothNumbers n)
-      : x < n :=
+  have hxle (m n x : ℕ) (hpf : x ∈ m.primeFactors) (hms : m ∈ smoothNumbers n) :
+      x < n :=
     match mem_smoothNumbers.mp hms with
     | ⟨ _, h2 ⟩  => h2 x (mem_primeFactors_iff_mem_factors.mp hpf)
   fun w hh => mem_primesBelow.mpr ⟨hxle m n w hh hms, prime_of_mem_primeFactors hh⟩
