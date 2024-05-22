@@ -361,6 +361,19 @@ theorem Nat.decreasing_induction_of_not_bddAbove (hP : ¬BddAbove { x | P x }) (
   decreasingInduction h hl.le hm
 #align nat.decreasing_induction_of_not_bdd_above Nat.decreasing_induction_of_not_bddAbove
 
+@[elab_as_elim]
+lemma Nat.strong_decreasing_induction (base : ∃ n, ∀ m > n, P m) (step : ∀ n, (∀ m > n, P m) → P n)
+    (n : ℕ) : P n := by
+  apply Nat.decreasing_induction_of_not_bddAbove (P := fun n ↦ ∀ m ≥ n, P m) _ _ n n le_rfl
+  · intro n ih m hm
+    rcases hm.eq_or_lt with rfl | hm
+    · exact step n ih
+    · exact ih m hm
+  · rintro ⟨b, hb⟩
+    rcases base with ⟨n, hn⟩
+    specialize @hb (n + b + 1) (fun m hm ↦ hn _ _)
+    all_goals omega
+
 theorem Nat.decreasing_induction_of_infinite (hP : { x | P x }.Infinite) (n : ℕ) : P n :=
   Nat.decreasing_induction_of_not_bddAbove h (mt BddAbove.finite hP) n
 #align nat.decreasing_induction_of_infinite Nat.decreasing_induction_of_infinite

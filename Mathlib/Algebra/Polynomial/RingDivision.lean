@@ -364,6 +364,51 @@ theorem natDegree_pos_of_monic_of_not_isUnit {a : R[X]} (hu : ¬ IsUnit a) (ha :
     0 < natDegree a :=
   natDegree_pos_iff_degree_pos.mpr <| degree_pos_of_monic_of_not_isUnit hu ha
 
+theorem eq_zero_of_mul_eq_zero_of_smul (P : R[X]) (h : ∀ r : R, r • P = 0 → r = 0) :
+    ∀ (Q : R[X]), P * Q = 0 → Q = 0 := by
+  intro Q hQ
+  suffices ∀ i, P.coeff i • Q = 0 by
+    rw [← leadingCoeff_eq_zero]
+    apply h
+    simpa [ext_iff, mul_comm Q.leadingCoeff] using fun i ↦ congr_arg (·.coeff Q.natDegree) (this i)
+  apply Nat.strong_decreasing_induction
+  · use P.natDegree
+    intro i hi
+    rw [coeff_eq_zero_of_natDegree_lt hi, zero_smul]
+  intro l IH
+  obtain _|hl := (natDegree_smul_le (P.coeff l) Q).lt_or_eq
+  · apply eq_zero_of_mul_eq_zero_of_smul _ h (P.coeff l • Q)
+    rw [smul_eq_C_mul, mul_left_comm, hQ, mul_zero]
+  suffices P.coeff l * Q.leadingCoeff = 0 by
+    rwa [← leadingCoeff_eq_zero, ← coeff_natDegree, coeff_smul, hl, coeff_natDegree, smul_eq_mul]
+  let m := Q.natDegree
+  suffices (P * Q).coeff (l + m) = P.coeff l * Q.leadingCoeff by rw [← this, hQ, coeff_zero]
+  rw [coeff_mul]
+  apply Finset.sum_eq_single (l, m) _ (by simp)
+  simp only [Finset.mem_antidiagonal, ne_eq, Prod.forall, Prod.mk.injEq, not_and]
+  intro i j hij H
+  obtain hi|rfl|hi := lt_trichotomy i l
+  · have hj : m < j := by omega
+    rw [coeff_eq_zero_of_natDegree_lt hj, mul_zero]
+  · omega
+  · rw [← coeff_C_mul, ← smul_eq_C_mul, IH _ hi, coeff_zero]
+termination_by Q => Q.natDegree
+
+open nonZeroDivisors in
+/-- *McCoy theorem*: a polynomial `P : R[X]` is a zerodivisor if and only if there is `a : R`
+such that `a ≠ 0` and `a • P = 0`. -/
+theorem nmem_nonZeroDivisors_iff {P : R[X]} : P ∉ R[X]⁰ ↔ ∃ a : R, a ≠ 0 ∧ a • P = 0 := by
+  refine ⟨fun hP ↦ ?_, fun ⟨a, ha, h⟩ h1 ↦ ha <| C_eq_zero.1 <| (h1 _) <| smul_eq_C_mul a ▸ h⟩
+  by_contra! h
+  obtain ⟨Q, hQ⟩ := _root_.nmem_nonZeroDivisors_iff.1 hP
+  refine hQ.2 (eq_zero_of_mul_eq_zero_of_smul P (fun a ha ↦ ?_) Q (mul_comm P _ ▸ hQ.1))
+  contrapose! ha
+  exact h a ha
+
+open nonZeroDivisors in
+protected lemma mem_nonZeroDivisors_iff {P : R[X]} : P ∈ R[X]⁰ ↔ ∀ a : R, a • P = 0 → a = 0 := by
+  simpa [not_imp_not] using (nmem_nonZeroDivisors_iff (P := P)).not
+
 end CommSemiring
 
 section CommRing

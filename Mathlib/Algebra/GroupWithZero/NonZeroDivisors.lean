@@ -42,6 +42,10 @@ def nonZeroDivisorsLeft : Submonoid M₀ where
     x ∈ nonZeroDivisorsLeft M₀ ↔ ∀ y, y * x = 0 → y = 0 :=
   Iff.rfl
 
+lemma nmem_nonZeroDivisorsLeft_iff {r : M₀} :
+    r ∉ nonZeroDivisorsLeft M₀ ↔ {s | s * r = 0 ∧ s ≠ 0}.Nonempty := by
+  simpa [mem_nonZeroDivisorsLeft_iff] using Set.nonempty_def.symm
+
 /-- The collection of elements of a `MonoidWithZero` that are not right zero divisors form a
 `Submonoid`. -/
 def nonZeroDivisorsRight : Submonoid M₀ where
@@ -52,6 +56,10 @@ def nonZeroDivisorsRight : Submonoid M₀ where
 @[simp] lemma mem_nonZeroDivisorsRight_iff {x : M₀} :
     x ∈ nonZeroDivisorsRight M₀ ↔ ∀ y, x * y = 0 → y = 0 :=
   Iff.rfl
+
+lemma nmem_nonZeroDivisorsRight_iff {r : M₀} :
+    r ∉ nonZeroDivisorsRight M₀ ↔ {s | r * s = 0 ∧ s ≠ 0}.Nonempty := by
+  simpa [mem_nonZeroDivisorsRight_iff] using Set.nonempty_def.symm
 
 lemma nonZeroDivisorsLeft_eq_right (M₀ : Type*) [CommMonoidWithZero M₀] :
     nonZeroDivisorsLeft M₀ = nonZeroDivisorsRight M₀ := by
@@ -106,6 +114,9 @@ variable {M M' M₁ R R' F : Type*} [MonoidWithZero M] [MonoidWithZero M'] [Comm
 
 theorem mem_nonZeroDivisors_iff {r : M} : r ∈ M⁰ ↔ ∀ x, x * r = 0 → x = 0 := Iff.rfl
 #align mem_non_zero_divisors_iff mem_nonZeroDivisors_iff
+
+lemma nmem_nonZeroDivisors_iff {r : M} : r ∉ M⁰ ↔ {s | s * r = 0 ∧ s ≠ 0}.Nonempty := by
+  simpa [mem_nonZeroDivisors_iff] using Set.nonempty_def.symm
 
 theorem mul_right_mem_nonZeroDivisors_eq_zero_iff {x r : M} (hr : r ∈ M⁰) : x * r = 0 ↔ x = 0 :=
   ⟨hr _, by simp (config := { contextual := true })⟩
