@@ -471,17 +471,17 @@ theorem BHNeumann' :
   have hi' (i) (hi : (H i).FiniteIndex) : (0 : ℚ) < (H i).index :=
     Nat.cast_pos.mpr <| Nat.pos_of_ne_zero hi.finiteIndex
   apply lt_of_lt_of_le (b := ∑ _ ∈ s.filter (fun i => (H i).FiniteIndex), (1 : ℚ) / s.card)
-  . refine Finset.sum_lt_sum (fun i hi => ?_) ?_
-    . replace ⟨his, hi⟩ := Finset.mem_filter.mp hi
+  · refine Finset.sum_lt_sum (fun i hi => ?_) ?_
+    · replace ⟨his, hi⟩ := Finset.mem_filter.mp hi
       rw [div_le_div_iff (hi' i hi) hs', one_mul, one_mul]
       exact Nat.cast_le.mpr (hlt i his hi).le
-    . refine ⟨j, Finset.mem_filter.mpr ⟨hjs, hj⟩, ?_⟩
+    · refine ⟨j, Finset.mem_filter.mpr ⟨hjs, hj⟩, ?_⟩
       rw [div_lt_div_iff (hi' j hj) hs', one_mul, one_mul]
       exact Nat.cast_lt.mpr (hlt j hjs hj)
-  . rw [← mul_le_mul_iff_of_pos_left hs', Finset.mul_sum, mul_one]
+  · rw [← mul_le_mul_iff_of_pos_left hs', Finset.mul_sum, mul_one]
     trans ((s.filter fun i => (H i).FiniteIndex).card : ℚ)
-    . rw [(s.filter fun i => (H i).FiniteIndex).card_eq_sum_ones, Nat.cast_sum]
+    · rw [(s.filter fun i => (H i).FiniteIndex).card_eq_sum_ones, Nat.cast_sum]
       refine Finset.sum_le_sum fun i _ => ?_
       rw [mul_div, mul_one, div_self hs'', Nat.cast_one]
-    . rw [Nat.cast_le]
+    · rw [Nat.cast_le]
       exact Finset.card_filter_le _ _
