@@ -56,7 +56,7 @@ theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
     refine mem_of_superset this fun u hu ↦ ?_
     have hu := (List.mem_traverse _ _).1 hu
     have : List.Forall₂ (fun a s => IsOpen s ∧ a ∈ s) u v := by
-      refine' List.Forall₂.flip _
+      refine List.Forall₂.flip ?_
       replace hv := hv.flip
       #adaptation_note /-- nightly-2024-03-16: simp was
       simp only [List.forall₂_and_left, flip] at hv ⊢ -/

@@ -506,7 +506,7 @@ instance smul : SMul R (NormedAddGroupHom V₁ V₂) where
           have := dist_smul_pair r (f x) (f 0)
           rw [map_zero, smul_zero, dist_zero_right, dist_zero_right] at this
           rw [mul_assoc]
-          refine' this.trans _
+          refine this.trans ?_
           gcongr
           exact hb x⟩ }
 

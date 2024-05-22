@@ -105,7 +105,7 @@ theorem exists_one_le_pow_mul_dist {Z N R : Type*} [PseudoMetricSpace R] {d : N 
   -- A useful inequality to keep at hand
   have me0 : 0 < max (1 / ε) M := lt_max_iff.mpr (Or.inl (one_div_pos.mpr e0))
   -- The maximum between `1 / ε` and `M` works
-  refine' ⟨max (1 / ε) M, me0, fun z a => _⟩
+  refine ⟨max (1 / ε) M, me0, fun z a => ?_⟩
   -- First, let's deal with the easy case in which we are far away from `α`
   by_cases dm1 : 1 ≤ dist α (j z a) * max (1 / ε) M
   · exact one_le_mul_of_one_le_of_one_le (d0 a) dm1
@@ -114,7 +114,7 @@ theorem exists_one_le_pow_mul_dist {Z N R : Type*} [PseudoMetricSpace R] {d : N 
       refine' mem_closedBall'.mp (le_trans _ ((one_div_le me0 e0).mpr (le_max_left _ _)))
       exact (le_div_iff me0).mpr (not_le.mp dm1).le
     -- use the "separation from `1`" (assumption `L`) for numerators,
-    refine' (L this).trans _
+    refine (L this).trans ?_
     -- remove a common factor and use the Lipschitz assumption `B`
     refine' mul_le_mul_of_nonneg_left ((B this).trans _) (zero_le_one.trans (d0 a))
     exact mul_le_mul_of_nonneg_left (le_max_right _ M) dist_nonneg
@@ -168,7 +168,7 @@ theorem exists_pos_real_of_irrational_root {α : ℝ} (ha : Irrational α) {f : 
     -- We know that `α` is the only root of `fR` in our interval, and `α` is irrational:
     -- follow your nose.
     refine' (irrational_iff_ne_rational α).mp ha z (a + 1) (mem_singleton_iff.mp _).symm
-    refine' U.subset _
+    refine U.subset ?_
     refine' ⟨hq, Finset.mem_coe.mp (Multiset.mem_toFinset.mpr _)⟩
     exact (mem_roots fR0).mpr (IsRoot.def.mpr hy)
 #align liouville.exists_pos_real_of_irrational_root Liouville.exists_pos_real_of_irrational_root
@@ -204,7 +204,7 @@ protected theorem transcendental {x : ℝ} (lx : Liouville x) : Transcendental �
   · refine' (lt_div_iff' hA).mpr _
     refine' lt_of_le_of_lt _ a1
     gcongr
-    refine' hn.le.trans _
+    refine hn.le.trans ?_
     rw [one_add_one_eq_two]
     gcongr
     exact Int.cast_two.symm.le.trans (Int.cast_le.mpr (Int.add_one_le_iff.mpr b1))
