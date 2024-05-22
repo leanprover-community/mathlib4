@@ -301,7 +301,7 @@ theorem re_dotProduct_pos {M : Matrix n n 𝕜} (hM : M.PosDef) {x : n → 𝕜}
   RCLike.pos_iff.mp (hM.2 _ hx) |>.1
 
 theorem posSemidef {M : Matrix n n R} (hM : M.PosDef) : M.PosSemidef := by
-  refine' ⟨hM.1, _⟩
+  refine ⟨hM.1, ?_⟩
   intro x
   by_cases hx : x = 0
   · simp only [hx, zero_dotProduct, star_zero, RCLike.zero_re']

@@ -66,7 +66,7 @@ theorem lie_mem_weightSpace_of_mem_weightSpace {χ₁ χ₂ : H → R} {x : L} {
     rw [rootSpace, weightSpace, LieSubmodule.mem_iInf] at hx; exact hx y
   replace hm : m ∈ weightSpaceOf M (χ₂ y) y := by
     rw [weightSpace, LieSubmodule.mem_iInf] at hm; exact hm y
-  exact lie_mem_maxGenEigenspace_toEndomorphism hx hm
+  exact lie_mem_maxGenEigenspace_toEnd hx hm
 #align lie_algebra.lie_mem_weight_space_of_mem_weight_space LieAlgebra.lie_mem_weightSpace_of_mem_weightSpace
 
 variable (R L H M)
@@ -121,9 +121,9 @@ theorem coe_rootSpaceWeightSpaceProduct_tmul (χ₁ χ₂ χ₃ : H → R) (hχ 
     Submodule.coe_mk]
 #align lie_algebra.coe_root_space_weight_space_product_tmul LieAlgebra.coe_rootSpaceWeightSpaceProduct_tmul
 
-theorem mapsTo_toEndomorphism_weightSpace_add_of_mem_rootSpace (α χ : H → R)
+theorem mapsTo_toEnd_weightSpace_add_of_mem_rootSpace (α χ : H → R)
     {x : L} (hx : x ∈ rootSpace H α) :
-    MapsTo (toEndomorphism R L M x) (weightSpace M χ) (weightSpace M (α + χ)) := by
+    MapsTo (toEnd R L M x) (weightSpace M χ) (weightSpace M (α + χ)) := by
   intro m hm
   let x' : rootSpace H α := ⟨x, hx⟩
   let m' : weightSpace M χ := ⟨m, hm⟩
@@ -161,7 +161,7 @@ theorem coe_zeroRootSubalgebra : (zeroRootSubalgebra R L H : Submodule R L) = ro
 #align lie_algebra.coe_zero_root_subalgebra LieAlgebra.coe_zeroRootSubalgebra
 
 theorem mem_zeroRootSubalgebra (x : L) :
-    x ∈ zeroRootSubalgebra R L H ↔ ∀ y : H, ∃ k : ℕ, (toEndomorphism R H L y ^ k) x = 0 := by
+    x ∈ zeroRootSubalgebra R L H ↔ ∀ y : H, ∃ k : ℕ, (toEnd R H L y ^ k) x = 0 := by
   change x ∈ rootSpace H 0 ↔ _
   simp only [mem_weightSpace, Pi.zero_apply, zero_smul, sub_zero]
 #align lie_algebra.mem_zero_root_subalgebra LieAlgebra.mem_zeroRootSubalgebra
@@ -173,17 +173,17 @@ theorem toLieSubmodule_le_rootSpace_zero : H.toLieSubmodule ≤ rootSpace H 0 :=
   intro y
   obtain ⟨k, hk⟩ := (inferInstance : IsNilpotent R H)
   use k
-  let f : Module.End R H := toEndomorphism R H H y
-  let g : Module.End R L := toEndomorphism R H L y
+  let f : Module.End R H := toEnd R H H y
+  let g : Module.End R L := toEnd R H L y
   have hfg : g.comp (H : Submodule R L).subtype = (H : Submodule R L).subtype.comp f := by
     ext z
-    simp only [toEndomorphism_apply_apply, Submodule.subtype_apply,
+    simp only [toEnd_apply_apply, Submodule.subtype_apply,
       LieSubalgebra.coe_bracket_of_module, LieSubalgebra.coe_bracket, Function.comp_apply,
       LinearMap.coe_comp]
     rfl
   change (g ^ k).comp (H : Submodule R L).subtype ⟨x, hx⟩ = 0
   rw [LinearMap.commute_pow_left_of_commute hfg k]
-  have h := iterate_toEndomorphism_mem_lowerCentralSeries R H H y ⟨x, hx⟩ k
+  have h := iterate_toEnd_mem_lowerCentralSeries R H H y ⟨x, hx⟩ k
   rw [hk, LieSubmodule.mem_bot] at h
   simp only [Submodule.subtype_apply, Function.comp_apply, LinearMap.pow_apply, LinearMap.coe_comp,
     Submodule.coe_eq_zero]
@@ -209,7 +209,7 @@ theorem zeroRootSubalgebra_normalizer_eq_self :
   obtain ⟨k, hk⟩ := hx ⟨y, hy⟩
   rw [← lie_skew, LinearMap.map_neg, neg_eq_zero] at hk
   use k + 1
-  rw [LinearMap.iterate_succ, LinearMap.coe_comp, Function.comp_apply, toEndomorphism_apply_apply,
+  rw [LinearMap.iterate_succ, LinearMap.coe_comp, Function.comp_apply, toEnd_apply_apply,
     LieSubalgebra.coe_bracket_of_module, Submodule.coe_mk, hk]
 #align lie_algebra.zero_root_subalgebra_normalizer_eq_self LieAlgebra.zeroRootSubalgebra_normalizer_eq_self
 

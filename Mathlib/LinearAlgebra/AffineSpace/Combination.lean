@@ -227,7 +227,7 @@ theorem weightedVSubOfPoint_filter_of_ne (w : ι → k) (p : ι → P) (b : P) {
     (s.filter pred).weightedVSubOfPoint p b w = s.weightedVSubOfPoint p b w := by
   rw [weightedVSubOfPoint_apply, weightedVSubOfPoint_apply, sum_filter_of_ne]
   intro i hi hne
-  refine' h i hi _
+  refine h i hi ?_
   intro hw
   simp [hw] at hne
 #align finset.weighted_vsub_of_point_filter_of_ne Finset.weightedVSubOfPoint_filter_of_ne
