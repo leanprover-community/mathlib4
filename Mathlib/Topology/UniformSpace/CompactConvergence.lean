@@ -308,7 +308,7 @@ theorem uniformContinuous_comp_left (g : C(α, γ)) :
 
 /-- Any pair of a homeomorphism `X ≃ₜ Z` and an isomorphism `Y ≃ᵤ T` of uniform spaces gives rise
 to an isomorphism `C(X, Y) ≃ᵤ C(Z, T)`. -/
-protected def _root_.UniformEquiv.continuousMapCongr (φ : α ≃ₜ γ) (ψ : β ≃ᵤ δ) :
+protected def _root_.UniformEquiv.arrowCongr (φ : α ≃ₜ γ) (ψ : β ≃ᵤ δ) :
     C(α, β) ≃ᵤ C(γ, δ) where
   toFun f := .comp ψ.toHomeomorph <| f.comp φ.symm
   invFun f := .comp ψ.symm.toHomeomorph <| f.comp φ
