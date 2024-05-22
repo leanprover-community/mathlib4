@@ -366,4 +366,19 @@ theorem Memℒp.uniformIntegrable_of_identDistrib {ι : Type*} {f : ι → α �
 
 end UniformIntegrable
 
+/-- If `X` and `Y` are independent and `(X, Y)` and `(X', Y')` are identically distributed,
+then `X'` and `Y'` are independent. -/
+lemma indepFun_of_identDistrib_pair
+    {μ : Measure γ} {μ' : Measure δ} [IsFiniteMeasure μ] [IsFiniteMeasure μ']
+    {X : γ → α} {X' : δ → α} {Y : γ → β} {Y' : δ → β} (hX : AEMeasurable X μ)
+    (hX' : AEMeasurable X' μ') (hY : AEMeasurable Y μ) (hY' : AEMeasurable Y' μ')
+    (h_indep : IndepFun X Y μ)
+    (h_ident : IdentDistrib (fun ω ↦ (X ω, Y ω)) (fun ω ↦ (X' ω, Y' ω)) μ μ') :
+    IndepFun X' Y' μ' := by
+  apply (indepFun_iff_map_prod_eq_prod_map_map hX' hY').mpr
+  have iX : IdentDistrib X X' μ μ' := h_ident.comp measurable_fst
+  have iY : IdentDistrib Y Y' μ μ' := h_ident.comp measurable_snd
+  rw [← h_ident.map_eq, ← iX.map_eq, ← iY.map_eq]
+  exact indepFun_iff_map_prod_eq_prod_map_map hX hY |>.mp h_indep
+
 end ProbabilityTheory
