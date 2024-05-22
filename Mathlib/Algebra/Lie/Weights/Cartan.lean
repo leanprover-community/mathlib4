@@ -251,8 +251,9 @@ variable [H.IsCartanSubalgebra] [IsNoetherian R L] (α : H → R)
 an element of the `α` root space and an element of the `-α` root space. Informally it is often
 denoted `⁅H(α), H(-α)⁆`.
 
-When `L` is semisimple over a field of characteristic zero, it is spanned by the coroot
-corresponding to `α`, see `LieAlgebra.IsKilling.coe_corootSpace_eq_span_singleton`.
+If the Killing form is non-degenerate and the coefficients are a perfect field, this space is
+one-dimensional. See `LieAlgebra.IsKilling.coe_corootSpace_eq_span_singleton` and
+`LieAlgebra.IsKilling.coe_corootSpace_eq_span_singleton'`.
 
 Note that the name "coroot space" is not standard as this space does not seem to have a name in the
 informal literature. -/

@@ -207,6 +207,13 @@ lemma weightSpace_ne_bot (χ : Weight R L M) : weightSpace M χ ≠ ⊥ := χ.we
 
 variable {M}
 
+@[ext] lemma ext {χ₁ χ₂ : Weight R L M} (h : ∀ x, χ₁ x = χ₂ x) : χ₁ = χ₂ := by
+  cases' χ₁ with f₁ _; cases' χ₂ with f₂ _; aesop
+
+lemma exists_ne_zero (χ : Weight R L M) :
+    ∃ x ∈ weightSpace M χ, x ≠ 0 := by
+  simpa [LieSubmodule.eq_bot_iff] using χ.weightSpace_ne_bot
+
 /-- The proposition that a weight of a Lie module is zero.
 
 We make this definition because we cannot define a `Zero (Weight R L M)` instance since the weight
