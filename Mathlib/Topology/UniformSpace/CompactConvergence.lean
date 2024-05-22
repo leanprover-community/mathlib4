@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Yury Kudryashov
 -/
 import Mathlib.Topology.CompactOpen
+import Mathlib.Topology.LocallyFinite
+import Mathlib.Topology.ProperMap
 import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 
 #align_import topology.uniform_space.compact_convergence from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
@@ -299,5 +301,24 @@ theorem tendsto_iff_tendstoUniformly :
 #align continuous_map.tendsto_iff_tendsto_uniformly ContinuousMap.tendsto_iff_tendstoUniformly
 
 end CompactDomain
+
+theorem foo {δ : ι → Type*} [∀ i, TopologicalSpace (δ i)] (φ : Π i, C(δ i, α))
+    (hproper : ∀ i, IsProperMap (φ i))
+    (hlf : LocallyFinite fun i ↦ range (φ i)) (hcover : ⋃ i, range (φ i) = univ) :
+    (inferInstanceAs <| UniformSpace C(α, β)) = ⨅ i, .comap (comp · (φ i)) inferInstance := by
+  set 𝔖 : Set (Set α) := {K | IsCompact K}
+  set 𝔗 : Π i, Set (Set (δ i)) := fun i ↦ {K | IsCompact K}
+  have H₁ : ∀ i, MapsTo (φ i '' ·) (𝔗 i) 𝔖 := fun i K hK ↦ hK.image (φ i).continuous
+  have H₂ : ∀ S ∈ 𝔖, ∃ I : Set ι, I.Finite ∧ S ⊆ ⋃ i ∈ I, range (φ i) ∧
+      ∀ i ∈ I, (φ i) ⁻¹' S ∈ 𝔗 i := fun S hS ↦ by
+    refine ⟨{i | (range (φ i) ∩ S).Nonempty}, hlf.finite_nonempty_inter_compact hS,
+      inter_eq_right.mp ?_, fun i _ ↦ (hproper i).isCompact_preimage hS⟩
+    simp_rw [iUnion₂_inter, mem_setOf, iUnion_nonempty_self, ← iUnion_inter, hcover, univ_inter]
+  simp_rw [compactConvergenceUniformSpace, replaceTopology_eq, inferInstanceAs, inferInstance]
+  rw [UniformOnFun.foo _ (fun i ↦ φ i) (fun i ↦ {K : Set (δ i) | IsCompact K}) H₁ H₂]
+  rw [UniformSpace.comap_iInf]
+  congr
+  ext
+  rw [← UniformSpace.comap_comap, ← UniformSpace.comap_comap]
 
 end ContinuousMap
