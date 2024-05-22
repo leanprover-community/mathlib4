@@ -119,11 +119,11 @@ def free' : Type ⥤ CommRingCat where
   obj X := CommRingCat.of (MvPolynomial X ℤ)
   map {X Y} f := (↑(MvPolynomial.rename f : _ →ₐ[ℤ] _) : MvPolynomial X ℤ →+* MvPolynomial Y ℤ)
 
-
-@[simp] theorem MonoidHom.comp_id' {G : GroupCat.{u}} {H : Type u} [Group H] (f : G →* H) :
+-- PR'd as https://github.com/leanprover-community/mathlib4/pull/13109
+@[simp] theorem MonoidHom.comp_id_groupCat {G : GroupCat.{u}} {H : Type u} [Group H] (f : G →* H) :
     f.comp (𝟙 G) = f :=
   Category.id_comp (GroupCat.ofHom f)
-@[simp] theorem MonoidHom.id_comp' {G : Type u} [Group G] {H : GroupCat.{u}} (f : G →* H) :
+@[simp] theorem MonoidHom.id_groupCat_comp {G : Type u} [Group G] {H : GroupCat.{u}} (f : G →* H) :
     MonoidHom.comp (𝟙 H) f = f :=
   Category.comp_id (GroupCat.ofHom f)
 
