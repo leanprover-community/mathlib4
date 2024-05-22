@@ -1558,9 +1558,9 @@ theorem count_normalizedFactorsSpan_eq_count {r X : R} (hr : r ≠ 0) (hX₁ : n
       simpa only [prime_span_singleton_iff]
     · simp only [Submodule.zero_eq_bot, ne_eq, span_singleton_eq_bot, hr, not_false_eq_true]
 
+open Classical in
 /-- The number of times an ideal `I` occurs as normalized factor of another ideal `J` is stable
   when regarding at these ideals as associated elements of the monoid of ideals.-/
-open Classical in
 theorem count_normalizedFactors_eq_associates_count
     (R : Type*) [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]--cannot comment this!
     (I J : Ideal R) (hI : I ≠ 0) (hJ : J.IsPrime) (hJ₀ : J ≠ ⊥) :
