@@ -296,7 +296,7 @@ theorem exists_cons_eq_concat {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
   | nil => exact ⟨_, nil, h, rfl⟩
   | cons h' p ih =>
     obtain ⟨y, q, h'', hc⟩ := ih h'
-    refine' ⟨y, cons h q, h'', _⟩
+    refine ⟨y, cons h q, h'', ?_⟩
     rw [concat_cons, hc]
 #align simple_graph.walk.exists_cons_eq_concat SimpleGraph.Walk.exists_cons_eq_concat
 
@@ -1679,7 +1679,7 @@ protected theorem IsPath.of_map {f : G →g G'} (hp : (p.map f).IsPath) : p.IsPa
     rw [map_cons, Walk.cons_isPath_iff, support_map] at hp
     rw [Walk.cons_isPath_iff]
     cases' hp with hp1 hp2
-    refine' ⟨ih hp1, _⟩
+    refine ⟨ih hp1, ?_⟩
     contrapose! hp2
     exact List.mem_map_of_mem f hp2
 #align simple_graph.walk.is_path.of_map SimpleGraph.Walk.IsPath.of_map
@@ -1924,7 +1924,7 @@ theorem toDeleteEdges_nil (s : Set (Sym2 V)) {v : V} (hp) :
 @[simp]
 theorem toDeleteEdges_cons (s : Set (Sym2 V)) {u v w : V} (h : G.Adj u v) (p : G.Walk v w) (hp) :
     (Walk.cons h p).toDeleteEdges s hp =
-      Walk.cons ((deleteEdges_adj _ _ _ _).mpr ⟨h, hp _ (List.Mem.head _)⟩)
+      Walk.cons (deleteEdges_adj.mpr ⟨h, hp _ (List.Mem.head _)⟩)
         (p.toDeleteEdges s fun _ he => hp _ <| List.Mem.tail _ he) :=
   rfl
 #align simple_graph.walk.to_delete_edges_cons SimpleGraph.Walk.toDeleteEdges_cons
@@ -2224,14 +2224,14 @@ theorem map_mk (φ : G →g G') (v : V) :
 
 @[simp]
 theorem map_id (C : ConnectedComponent G) : C.map Hom.id = C := by
-  refine' C.ind _
+  refine C.ind ?_
   exact fun _ => rfl
 #align simple_graph.connected_component.map_id SimpleGraph.ConnectedComponent.map_id
 
 @[simp]
 theorem map_comp (C : G.ConnectedComponent) (φ : G →g G') (ψ : G' →g G'') :
     (C.map φ).map ψ = C.map (ψ.comp φ) := by
-  refine' C.ind _
+  refine C.ind ?_
   exact fun _ => rfl
 #align simple_graph.connected_component.map_comp SimpleGraph.ConnectedComponent.map_comp
 
@@ -2240,7 +2240,7 @@ variable {φ : G ≃g G'} {v : V} {v' : V'}
 @[simp]
 theorem iso_image_comp_eq_map_iff_eq_comp {C : G.ConnectedComponent} :
     G'.connectedComponentMk (φ v) = C.map ↑(↑φ : G ↪g G') ↔ G.connectedComponentMk v = C := by
-  refine' C.ind fun u => _
+  refine C.ind fun u => ?_
   simp only [Iso.reachable_iff, ConnectedComponent.map_mk, RelEmbedding.coe_toRelHom,
     RelIso.coe_toRelEmbedding, ConnectedComponent.eq]
 #align simple_graph.connected_component.iso_image_comp_eq_map_iff_eq_comp SimpleGraph.ConnectedComponent.iso_image_comp_eq_map_iff_eq_comp
@@ -2248,7 +2248,7 @@ theorem iso_image_comp_eq_map_iff_eq_comp {C : G.ConnectedComponent} :
 @[simp]
 theorem iso_inv_image_comp_eq_iff_eq_map {C : G.ConnectedComponent} :
     G.connectedComponentMk (φ.symm v') = C ↔ G'.connectedComponentMk v' = C.map φ := by
-  refine' C.ind fun u => _
+  refine C.ind fun u => ?_
   simp only [Iso.symm_apply_reachable, ConnectedComponent.eq, ConnectedComponent.map_mk,
     RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding]
 #align simple_graph.connected_component.iso_inv_image_comp_eq_iff_eq_map SimpleGraph.ConnectedComponent.iso_inv_image_comp_eq_iff_eq_map
@@ -2302,7 +2302,7 @@ def supp (C : G.ConnectedComponent) :=
 @[ext]
 theorem supp_injective :
     Function.Injective (ConnectedComponent.supp : G.ConnectedComponent → Set V) := by
-  refine' ConnectedComponent.ind₂ _
+  refine ConnectedComponent.ind₂ ?_
   intro v w
   simp only [ConnectedComponent.supp, Set.ext_iff, ConnectedComponent.eq, Set.mem_setOf_eq]
   intro h

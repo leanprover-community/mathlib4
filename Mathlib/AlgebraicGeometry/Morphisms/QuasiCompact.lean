@@ -98,7 +98,7 @@ theorem quasiCompact_iff_forall_affine :
     QuasiCompact f ↔
       ∀ U : Opens Y.carrier, IsAffineOpen U → IsCompact (f.1.base ⁻¹' (U : Set Y.carrier)) := by
   rw [quasiCompact_iff]
-  refine' ⟨fun H U hU => H U U.isOpen hU.isCompact, _⟩
+  refine ⟨fun H U hU => H U U.isOpen hU.isCompact, ?_⟩
   intro H U hU hU'
   obtain ⟨S, hS, rfl⟩ := (isCompact_open_iff_eq_finset_affine_union U).mp ⟨hU', hU⟩
   simp only [Set.preimage_iUnion]
@@ -136,8 +136,8 @@ theorem isCompact_basicOpen (X : Scheme) {U : Opens X.carrier} (hU : IsCompact (
     use V.1 ⊓ X.basicOpen f
     have : V.1.1 ⟶ U := by
       apply homOfLE; change _ ⊆ (U : Set X.carrier); rw [e]
-      convert @Set.subset_iUnion₂ _ _ _
-        (fun (U : X.affineOpens) (_ : U ∈ s) => ↑U) V V.prop using 1
+      convert Set.subset_iUnion₂ (s := fun (U : X.affineOpens) (_ : U ∈ s) => (U : Set X.carrier))
+        V V.prop using 1
     erw [← X.toLocallyRingedSpace.toRingedSpace.basicOpen_res this.op]
     exact IsAffineOpen.basicOpenIsAffine V.1.prop _
   haveI : Finite s := hs.to_subtype

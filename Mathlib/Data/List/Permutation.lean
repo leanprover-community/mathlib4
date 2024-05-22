@@ -235,7 +235,7 @@ theorem permutations_nil : permutations ([] : List α) = [[]] := by
 theorem map_permutationsAux (f : α → β) :
     ∀ ts is :
     List α, map (map f) (permutationsAux ts is) = permutationsAux (map f ts) (map f is) := by
-  refine' permutationsAux.rec (by simp) _
+  refine permutationsAux.rec (by simp) ?_
   introv IH1 IH2; rw [map] at IH2
   simp only [foldr_permutationsAux2, map_append, map, map_map_permutationsAux2, permutations,
     bind_map, IH1, append_assoc, permutationsAux_cons, cons_bind, ← IH2, map_bind]

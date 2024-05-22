@@ -1240,11 +1240,11 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : BilinForm K V} (h
         exact (smul_eq_zero.1 this).resolve_right fun h => hx <| h.symm ▸ map_zero _)
       (by
         intro y
-        refine' ⟨-B x y / B x x, fun z hz => _⟩
+        refine ⟨-B x y / B x x, fun z hz => ?_⟩
         obtain ⟨c, rfl⟩ := Submodule.mem_span_singleton.1 hz
         rw [IsOrtho, map_smul, smul_apply, map_add, map_smul, smul_eq_mul, smul_eq_mul,
           div_mul_cancel₀ _ hx, add_neg_self, mul_zero])
-  refine' ⟨b, _⟩
+  refine ⟨b, ?_⟩
   rw [Basis.coe_mkFinCons]
   intro j i
   refine' Fin.cases _ (fun i => _) i <;> refine' Fin.cases _ (fun j => _) j <;> intro hij <;>
