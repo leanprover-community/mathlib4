@@ -589,8 +589,8 @@ end Order
 
 variable {m n : ℕ} {s : Finset ℕ}
 
-/-- If all the elements of a finset of naturals are less than `n`, then the sum of their powers of
-`m ≥ 2` is less than `m ^ n`. -/
+/-- Value of a geometric sum over the naturals. Note: see `geom_sum_mul_add` for a formulation
+that avoids division and subtraction. -/
 lemma Nat.geomSum_eq (hm : 2 ≤ m) (n : ℕ) :
     ∑ k in range n, m ^ k = (m ^ n - 1) / (m - 1) := by
   refine (Nat.div_eq_of_eq_mul_left (tsub_pos_iff_lt.2 hm) <| tsub_eq_of_eq_add ?_).symm
