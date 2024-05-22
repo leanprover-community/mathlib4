@@ -15,6 +15,7 @@ import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Quotient
 import Mathlib.Algebra.Module.Projective
 import Mathlib.Data.Real.Basic
+import Mathlib.Logic.Equiv.Defs
 
 
 /-!
@@ -686,24 +687,114 @@ lemma divNatThing (j : ℕ) : (j * (j + 1) / 2 : ℕ) = (j * (j + 1) : ℚ) / 2 
 -- ¬ Submodule.map (LinearMap.inr K V W) ⊤ ≤ X (this is probably easier for by_cases)
 -- Submodule.map (LinearMap.inr K V W) ⊤ ∩ X ≠ Submodule.map (LinearMap.inr K V W) ⊤
 
-<<<<<<< HEAD
--- the second one is dependent on the first
-def subspacesBijection2 : {X : Submodule K (V × W) | ¬ Submodule.map (LinearMap.inr K V W) ⊤ ≤ X} ≃
-  {(X : (Submodule K (V × W)) × (V × W →ₗ[K] W)) | ∀ x ∈ X.1, x.2 = 0 ∧ ∀ x ∉ X.1, X.2 x = 0} where
-    toFun := _
-    invFun := _
-    left_inv := _
-    right_inv := _
-=======
 -- example {K V W : Type u} [Field K] [AddCommGroup V] [AddCommGroup W] [Module K V] [Module K W] :
 --     {X : Submodule K (V × W) | ¬ Submodule.map (LinearMap.inr K V W) ⊤ ≤ X} ≃
 --   {(X : Submodule K V) × (X →ₗ[K] W)} := sorry
 
 example : (n : ℕ) × (Fin n → ℕ) := sorry
 
-example {V : Type u} [Field K] [AddCommGroup V] [Module K V] :
+
+def subspacesBijection' : {X : Submodule K (V × W) | Submodule.map (LinearMap.inr K V W) ⊤ ≤ X} ≃
+  Submodule K V where
+    toFun := λ r => Submodule.map (LinearMap.fst K V W) r
+    invFun := λ s => ⟨Submodule.map (LinearMap.inl K V W) s ⊔ Submodule.map (LinearMap.inr K V W) ⊤,
+      by simp only [map_inl, Submodule.map_top, Set.mem_setOf_eq, le_sup_right] ⟩
+    left_inv := λ r => by
+      simp only [Set.coe_setOf, Set.mem_setOf_eq, map_inl, Submodule.map_top]
+      ext x;
+      simp only [Set.mem_setOf_eq, mem_sup]
+      refine ⟨λ h => ?_, λ h => ?_⟩
+      obtain ⟨y, ⟨hy, ⟨z, ⟨hz, rfl⟩⟩⟩⟩ := h
+      simp only [mem_prod, mem_map, LinearMap.fst_apply, Prod.exists, exists_and_right,
+        exists_eq_right, mem_bot] at hy
+      obtain ⟨z2, hz2⟩ := hy
+      simp only [LinearMap.mem_range, LinearMap.coe_inr] at hz
+      obtain ⟨a, ha⟩ := z2
+      obtain ⟨b, rfl⟩ := hz
+      have h3 : (0, a) ∈ r.1 := by
+        apply Set.mem_of_subset_of_mem r.2.subset
+        simp only [Submodule.map_top, SetLike.mem_coe, LinearMap.mem_range, LinearMap.coe_inr,
+          Prod.mk.injEq, true_and, exists_eq]
+      have h7 := add_mem ha (neg_mem h3)
+      simp only [Prod.neg_mk, neg_zero, Prod.mk_add_mk, add_zero, add_right_neg, ← hz2] at h7
+      apply add_mem h7 (Set.mem_of_subset_of_mem r.2.subset ?_)
+      simp only [Submodule.map_top, SetLike.mem_coe, LinearMap.mem_range, LinearMap.coe_inr,
+        Prod.mk.injEq, true_and, exists_eq]
+      refine ⟨(x.1, 0), ⟨?_, ⟨(0, x.2), ⟨by simp, by simp⟩⟩⟩⟩
+      simp only [mem_prod, mem_map, LinearMap.fst_apply, Prod.exists, exists_and_right,
+        exists_eq_right, mem_bot, and_true]
+      refine ⟨x.2, h⟩
+    right_inv := λ s => by
+      ext x;
+      simp only [map_inl, Submodule.map_top, Submodule.map_sup, prod_map_fst]
+      rw [mem_sup]
+      refine ⟨λ ⟨v, ⟨h1, ⟨w, ⟨h2, h3⟩⟩⟩⟩ => ?_, λ h => ⟨x, ⟨h, ⟨0, ?_⟩⟩⟩⟩
+      rw [← h3]
+      simp only [mem_map, LinearMap.mem_range, LinearMap.coe_inr, LinearMap.fst_apply,
+        exists_exists_eq_and, exists_const] at h2
+      rw [← h2]
+      simp only [add_zero]
+      apply h1
+      simp only [mem_map, LinearMap.mem_range, LinearMap.coe_inr, LinearMap.fst_apply,
+        exists_exists_eq_and, exists_const, add_zero, and_self]
+
+noncomputable def isoThing (r : {X : Submodule K (V × K) | ¬ Submodule.map (LinearMap.inr K V K) ⊤ ≤ X}) :
+  r ≃ₗ[K] Submodule.map (LinearMap.fst K V K) r := by
+  apply Equiv.toLinearEquiv (Equiv.ofBijective ((LinearMap.fst K V K).restrict (λ x (hx : x ∈ r.1) =>
+    Submodule.mem_map_of_mem hx)) ⟨?_, ?_⟩)
+  apply IsLinearMap.mk (λ x y => rfl) (λ c x => rfl)
+  intros x y hxy
+  by_contra hxy2
+  simp [LinearMap.restrict_apply] at hxy
+  have h2 : x.1.2 ≠ y.1.2 := by
+    by_contra hxy3
+    apply hxy2 (Subtype.val_inj.1 (Prod.eq_iff_fst_eq_snd_eq.2 ⟨hxy, hxy3⟩))
+  apply r.2
+  intros z hz
+  simp only [Submodule.map_top, LinearMap.mem_range, LinearMap.coe_inr] at hz
+  obtain ⟨a, rfl⟩ := hz
+  have h3 : ⟨0, x.1.2 - y.1.2⟩ ∈ r.1 := by
+    rw [← sub_self (y.1.1)]
+    nth_rewrite 1 [← hxy]
+    rw [← Prod.mk_sub_mk]
+    apply Submodule.sub_mem _ x.2 y.2
+  rw [← sub_ne_zero] at h2
+  have h4 := Submodule.smul_mem r (x.1.2 - y.1.2)⁻¹ h3
+  simp at h4
+  rw [inv_mul_cancel h2] at h4
+  have h5 := Submodule.smul_mem r a h4
+  simp at h5
+  apply h5
+  intros b
+  obtain ⟨y, hy⟩ := (Submodule.mem_map.1 b.2)
+  refine ⟨⟨y, hy.1⟩, ?_⟩
+  rw [LinearMap.restrict_apply (λ x (hx : x ∈ r.1) => Submodule.mem_map_of_mem hx) ⟨y, hy.1⟩]
+  simp
+  simp at hy
+  simp [hy.2]
+
+example {V : Type u} [Field K] [AddCommGroup V] [Module K V] [Module K W] :
     {X : Submodule K (V × K) | ¬ Submodule.map (LinearMap.inr K V K) ⊤ ≤ X}
-    ≃ (X : Submodule K V) × (X →ₗ[K] K) := sorry
+    ≃ (X : Submodule K V) × (X →ₗ[K] K) where
+      toFun := λ r => ⟨Submodule.map (LinearMap.fst K V K) r, by
+
+          sorry ⟩
+      invFun := λ sφ => by
+          refine ⟨Submodule.map (LinearMap.prod sφ.1.subtype sφ.2) ⊤, ?_⟩
+          obtain ⟨a, ha⟩ := (nontrivial_iff_exists_ne (0 : K)).1 Field.toNontrivial
+          simp only [Set.mem_setOf_eq]
+          by_contra hx
+          have h2 : ⟨0, a⟩ ∈ map (LinearMap.inr K V K) ⊤ :=
+            by simp only [Submodule.map_top, LinearMap.mem_range, LinearMap.coe_inr, Prod.mk.injEq,
+              true_and, exists_eq]
+          specialize hx h2
+          simp only [Submodule.map_top, LinearMap.mem_range, LinearMap.prod_apply, Pi.prod,
+            coeSubtype, Prod.mk.injEq, ZeroMemClass.coe_eq_zero, exists_eq_left,
+            _root_.map_zero] at hx
+          apply ha
+          rw [hx]
+      left_inv := _
+      right_inv := _
 
 
 -- -- the second one is dependent on the first
@@ -713,7 +804,6 @@ example {V : Type u} [Field K] [AddCommGroup V] [Module K V] :
 --     invFun := _
 --     left_inv := _
 --     right_inv := _
->>>>>>> 31ffd1dfeddc1b544ca7ec5347626c28c8ed6c6a
 
 /-def succDimSubspaces_equivDimSubspaces (a : V) (ha : a ≠ 0) (k : ℕ) :
   {W : Submodule K ((V ⧸ (K ∙ a)) × (K ∙ a))| FiniteDimensional.finrank K W = k + 1 ∧ ⟨0, ⟨a, mem_span_singleton_self a⟩⟩ ∈ W} ≃
