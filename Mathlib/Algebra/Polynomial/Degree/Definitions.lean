@@ -970,10 +970,10 @@ theorem coeff_mul_degree_add_degree (p q : R[X]) :
               rw [coeff_eq_zero_of_degree_lt
                   (lt_of_le_of_lt degree_le_natDegree (WithBot.coe_lt_coe.2 this)),
                 mul_zero]
-            · by_contra! H'
-              exact
-                ne_of_lt (Nat.lt_of_lt_of_le (Nat.add_lt_add_right H j) (Nat.add_le_add_left H' _))
-                  h₁
+            by_contra! H'
+            exact
+              ne_of_lt (Nat.lt_of_lt_of_le (Nat.add_lt_add_right H j) (Nat.add_le_add_left H' _))
+                h₁
       · intro H
         exfalso
         apply H
@@ -1643,8 +1643,7 @@ theorem degree_mul : degree (p * q) = degree p + degree q :=
 
 /-- `degree` as a monoid homomorphism between `R[X]` and `Multiplicative (WithBot ℕ)`.
   This is useful to prove results about multiplication and degree. -/
-def degreeMonoidHom [Nontrivial R] : R[X] →* Multiplicative (WithBot ℕ)
-    where
+def degreeMonoidHom [Nontrivial R] : R[X] →* Multiplicative (WithBot ℕ) where
   toFun := degree
   map_one' := degree_one
   map_mul' _ _ := degree_mul

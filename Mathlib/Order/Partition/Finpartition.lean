@@ -91,8 +91,7 @@ variable [Lattice α] [OrderBot α]
 /-- A `Finpartition` constructor which does not insist on `⊥` not being a part. -/
 @[simps]
 def ofErase [DecidableEq α] {a : α} (parts : Finset α) (sup_indep : parts.SupIndep id)
-    (sup_parts : parts.sup id = a) : Finpartition a
-    where
+    (sup_parts : parts.sup id = a) : Finpartition a where
   parts := parts.erase ⊥
   supIndep := sup_indep.subset (erase_subset _ _)
   sup_parts := (sup_erase_bot _).trans sup_parts
@@ -111,8 +110,7 @@ def ofSubset {a b : α} (P : Finpartition a) {parts : Finset α} (subset : parts
 
 /-- Changes the type of a finpartition to an equal one. -/
 @[simps]
-def copy {a b : α} (P : Finpartition a) (h : a = b) : Finpartition b
-    where
+def copy {a b : α} (P : Finpartition a) (h : a = b) : Finpartition b where
   parts := P.parts
   supIndep := P.supIndep
   sup_parts := h ▸ P.sup_parts
@@ -146,8 +144,7 @@ variable (α)
 
 /-- The empty finpartition. -/
 @[simps]
-protected def empty : Finpartition (⊥ : α)
-    where
+protected def empty : Finpartition (⊥ : α) where
   parts := ∅
   supIndep := supIndep_empty _
   sup_parts := Finset.sup_empty
@@ -166,8 +163,7 @@ variable {α} {a : α}
 
 /-- The finpartition in one part, aka indiscrete finpartition. -/
 @[simps]
-def indiscrete (ha : a ≠ ⊥) : Finpartition a
-    where
+def indiscrete (ha : a ≠ ⊥) : Finpartition a where
   parts := {a}
   supIndep := supIndep_singleton _ _
   sup_parts := Finset.sup_singleton
@@ -217,8 +213,7 @@ instance : Unique (Finpartition (⊥ : α)) :=
 
 -- See note [reducible non instances]
 /-- There's a unique partition of an atom. -/
-abbrev _root_.IsAtom.uniqueFinpartition (ha : IsAtom a) : Unique (Finpartition a)
-    where
+abbrev _root_.IsAtom.uniqueFinpartition (ha : IsAtom a) : Unique (Finpartition a) where
   default := indiscrete ha.1
   uniq P := by
     have h : ∀ b ∈ P.parts, b = a := fun _ hb ↦
@@ -264,8 +259,7 @@ instance : PartialOrder (Finpartition a) :=
         rwa [hbc.antisymm]
         rwa [Q.disjoint.eq_of_le hb hd (Q.ne_bot hb) (hbc.trans hcd)] }
 
-instance [Decidable (a = ⊥)] : OrderTop (Finpartition a)
-    where
+instance [Decidable (a = ⊥)] : OrderTop (Finpartition a) where
   top := if ha : a = ⊥ then (Finpartition.empty α).copy ha.symm else indiscrete ha
   le_top P := by
     split_ifs with h
@@ -381,8 +375,7 @@ variable {P : Finpartition a} {Q : ∀ i ∈ P.parts, Finpartition i}
 /-- Given a finpartition `P` of `a` and finpartitions of each part of `P`, this yields the
 finpartition of `a` obtained by juxtaposing all the subpartitions. -/
 @[simps]
-def bind (P : Finpartition a) (Q : ∀ i ∈ P.parts, Finpartition i) : Finpartition a
-    where
+def bind (P : Finpartition a) (Q : ∀ i ∈ P.parts, Finpartition i) : Finpartition a where
   parts := P.parts.attach.biUnion fun i ↦ (Q i.1 i.2).parts
   supIndep := by
     rw [supIndep_iff_pairwiseDisjoint]
@@ -431,8 +424,8 @@ end Bind
 
 /-- Adds `b` to a finpartition of `a` to make a finpartition of `a ⊔ b`. -/
 @[simps]
-def extend (P : Finpartition a) (hb : b ≠ ⊥) (hab : Disjoint a b) (hc : a ⊔ b = c) : Finpartition c
-    where
+def extend (P : Finpartition a) (hb : b ≠ ⊥) (hab : Disjoint a b) (hc : a ⊔ b = c) :
+    Finpartition c where
   parts := insert b P.parts
   supIndep := by
     rw [supIndep_iff_pairwiseDisjoint, coe_insert]
@@ -499,7 +492,7 @@ theorem biUnion_parts : P.parts.biUnion id = s :=
 
 theorem existsUnique_mem (ha : a ∈ s) : ∃! t, t ∈ P.parts ∧ a ∈ t := by
   obtain ⟨t, ht, ht'⟩ := P.exists_mem ha
-  refine' ⟨t, ⟨ht, ht'⟩, _⟩
+  refine ⟨t, ⟨ht, ht'⟩, ?_⟩
   rintro u ⟨hu, hu'⟩
   exact P.eq_of_mem_parts hu ht hu' ht'
 
@@ -631,10 +624,10 @@ def atomise (s : Finset α) (F : Finset (Finset α)) : Finpartition s :=
         obtain ⟨A, _, rfl⟩ := ht
         exact s.filter_subset _
       · rw [mem_sup]
-        refine'
+        refine
           ⟨s.filter fun i ↦ ∀ t, t ∈ F → ((t ∈ F.filter fun u ↦ a ∈ u) ↔ i ∈ t),
             mem_image_of_mem _ (mem_powerset.2 <| filter_subset _ _),
-            mem_filter.2 ⟨ha, fun t ht ↦ _⟩⟩
+            mem_filter.2 ⟨ha, fun t ht ↦ ?_⟩⟩
         rw [mem_filter]
         exact and_iff_right ht)
 #align finpartition.atomise Finpartition.atomise

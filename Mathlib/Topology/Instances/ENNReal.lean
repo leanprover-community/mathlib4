@@ -150,7 +150,7 @@ def neTopHomeomorphNNReal : { a | a ≠ ∞ } ≃ₜ ℝ≥0 where
 
 /-- The set of finite `ℝ≥0∞` numbers is homeomorphic to `ℝ≥0`. -/
 def ltTopHomeomorphNNReal : { a | a < ∞ } ≃ₜ ℝ≥0 := by
-  refine' (Homeomorph.setCongr _).trans neTopHomeomorphNNReal
+  refine (Homeomorph.setCongr ?_).trans neTopHomeomorphNNReal
   simp only [mem_setOf_eq, lt_top_iff_ne_top]
 #align ennreal.lt_top_homeomorph_nnreal ENNReal.ltTopHomeomorphNNReal
 
@@ -345,7 +345,7 @@ protected theorem tendsto_mul (ha : a ≠ 0 ∨ b ≠ ∞) (hb : b ≠ 0 ∨ a �
     rcases lt_iff_exists_nnreal_btwn.1 (pos_iff_ne_zero.2 hb) with ⟨ε, hε, hεb⟩
     have : ∀ᶠ c : ℝ≥0∞ × ℝ≥0∞ in 𝓝 (∞, b), ↑n / ↑ε < c.1 ∧ ↑ε < c.2 :=
       (lt_mem_nhds <| div_lt_top coe_ne_top hε.ne').prod_nhds (lt_mem_nhds hεb)
-    refine' this.mono fun c hc => _
+    refine this.mono fun c hc => ?_
     exact (ENNReal.div_mul_cancel hε.ne' coe_ne_top).symm.trans_lt (mul_lt_mul hc.1 hc.2)
   induction a using recTopCoe with
   | top => simp only [ne_eq, or_false, not_true_eq_false] at hb; simp [ht b hb, top_mul hb]
@@ -720,7 +720,7 @@ theorem ofReal_cinfi (f : α → ℝ) [Nonempty α] :
     rw [Real.iInf_of_not_bddBelow hf, ENNReal.ofReal_zero, ← ENNReal.bot_eq_zero, iInf_eq_bot]
     obtain ⟨y, hy_mem, hy_neg⟩ := not_bddBelow_iff.mp hf 0
     obtain ⟨i, rfl⟩ := mem_range.mpr hy_mem
-    refine' fun x hx => ⟨i, _⟩
+    refine fun x hx => ⟨i, ?_⟩
     rwa [ENNReal.ofReal_of_nonpos hy_neg.le]
 #align ennreal.of_real_cinfi ENNReal.ofReal_cinfi
 
@@ -759,14 +759,14 @@ theorem exists_upcrossings_of_not_bounded_under {ι : Type*} {l : Filter ι} {x 
       filter_upwards [hcon] with x hx using not_lt.2 (lt_of_lt_of_le hq (not_lt.1 hx)).le
     · simp only [IsBoundedUnder, IsBounded, eventually_map, eventually_atTop, ge_iff_le,
         not_exists, not_forall, not_le, exists_prop] at hbdd
-      refine' fun hcon => hbdd ↑(q + 1) _
+      refine fun hcon => hbdd ↑(q + 1) ?_
       filter_upwards [hcon] with x hx using not_lt.1 hx
   · obtain ⟨R, hR⟩ := exists_frequently_lt_of_liminf_ne_top' hf
     obtain ⟨q, hq⟩ := exists_rat_lt R
     refine' ⟨q - 1, q, (sub_lt_self_iff _).2 zero_lt_one, _, _⟩
     · simp only [IsBoundedUnder, IsBounded, eventually_map, eventually_atTop, ge_iff_le,
         not_exists, not_forall, not_le, exists_prop] at hbdd
-      refine' fun hcon => hbdd ↑(q - 1) _
+      refine fun hcon => hbdd ↑(q - 1) ?_
       filter_upwards [hcon] with x hx using not_lt.1 hx
     · refine' fun hcon => hR _
       filter_upwards [hcon] with x hx using not_lt.2 ((not_lt.1 hx).trans hq.le)
@@ -850,6 +850,10 @@ protected theorem tsum_add : ∑' a, (f a + g a) = ∑' a, f a + ∑' a, g a :=
 protected theorem tsum_le_tsum (h : ∀ a, f a ≤ g a) : ∑' a, f a ≤ ∑' a, g a :=
   tsum_le_tsum h ENNReal.summable ENNReal.summable
 #align ennreal.tsum_le_tsum ENNReal.tsum_le_tsum
+
+@[gcongr]
+protected theorem _root_.GCongr.ennreal_tsum_le_tsum (h : ∀ a, f a ≤ g a) : tsum f ≤ tsum g :=
+  ENNReal.tsum_le_tsum h
 
 protected theorem sum_le_tsum {f : α → ℝ≥0∞} (s : Finset α) : ∑ x in s, f x ≤ ∑' x, f x :=
   sum_le_tsum s (fun _ _ => zero_le _) ENNReal.summable

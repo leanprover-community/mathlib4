@@ -482,6 +482,14 @@ theorem adjoin_le_iff {S : StarSubalgebra R A} {s : Set A} : adjoin R s ≤ S �
   StarAlgebra.gc _ _
 #align star_subalgebra.adjoin_le_iff StarAlgebra.adjoin_le_iff
 
+lemma adjoin_eq (S : StarSubalgebra R A) : adjoin R (S : Set A) = S :=
+  le_antisymm (adjoin_le le_rfl) (subset_adjoin R (S : Set A))
+
+open Submodule in
+lemma adjoin_eq_span (s : Set A) :
+    Subalgebra.toSubmodule (adjoin R s).toSubalgebra = span R (Submonoid.closure (s ∪ star s)) := by
+  rw [adjoin_toSubalgebra, Algebra.adjoin_eq_span]
+
 theorem _root_.Subalgebra.starClosure_eq_adjoin (S : Subalgebra R A) :
     S.starClosure = adjoin R (S : Set A) :=
   le_antisymm (Subalgebra.starClosure_le_iff.2 <| subset_adjoin R (S : Set A))
@@ -535,7 +543,7 @@ theorem adjoin_induction' {s : Set A} {p : adjoin R s → Prop} (a : adjoin R s)
     (add : ∀ x y, p x → p y → p (x + y)) (mul : ∀ x y, p x → p y → p (x * y))
     (star : ∀ x, p x → p (star x)) : p a :=
   Subtype.recOn a fun b hb => by
-    refine' Exists.elim _ fun (hb : b ∈ adjoin R s) (hc : p ⟨b, hb⟩) => hc
+    refine Exists.elim ?_ fun (hb : b ∈ adjoin R s) (hc : p ⟨b, hb⟩) => hc
     refine adjoin_induction hb ?_ ?_ ?_ ?_ ?_
     exacts [fun x hx => ⟨subset_adjoin R s hx, mem x hx⟩, fun r =>
       ⟨StarSubalgebra.algebraMap_mem _ r, algebraMap r⟩, fun x y hx hy =>

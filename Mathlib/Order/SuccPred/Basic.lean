@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 import Mathlib.Order.CompleteLattice
 import Mathlib.Order.Cover
 import Mathlib.Order.Iterate
+import Mathlib.Order.WellFounded
 
 #align_import order.succ_pred.basic from "leanprover-community/mathlib"@"0111834459f5d7400215223ea95ae38a1265a907"
 
@@ -192,6 +193,23 @@ def PredOrder.ofLePredIff (pred : α → α) (hle_pred_iff : ∀ {a b}, a ≤ pr
     le_pred_of_lt := fun h => hle_pred_iff.2 h
     le_of_pred_lt := fun {_ _} h => le_of_not_lt ((not_congr hle_pred_iff).1 h.not_le) }
 #align pred_order.of_le_pred_iff PredOrder.ofLePredIff
+
+open scoped Classical
+
+variable (α)
+
+/-- A well-order is a `SuccOrder`. -/
+noncomputable def SuccOrder.ofLinearWellFoundedLT [WellFoundedLT α] : SuccOrder α :=
+  ofCore (fun a ↦ if h : (Ioi a).Nonempty then wellFounded_lt.min _ h else a)
+    (fun ha _ ↦ by
+      rw [not_isMax_iff] at ha
+      simp_rw [Set.Nonempty, mem_Ioi, dif_pos ha]
+      exact ⟨(wellFounded_lt.min_le · ha), lt_of_lt_of_le (wellFounded_lt.min_mem _ ha)⟩)
+    fun a ha ↦ dif_neg (not_not_intro ha <| not_isMax_iff.mpr ·)
+
+/-- A linear order with well-founded greater-than relation is a `PredOrder`. -/
+noncomputable def PredOrder.ofLinearWellFoundedGT (α) [LinearOrder α] [WellFoundedGT α] :
+    PredOrder α := letI := SuccOrder.ofLinearWellFoundedLT αᵒᵈ; inferInstanceAs (PredOrder αᵒᵈᵒᵈ)
 
 end LinearOrder
 
@@ -646,6 +664,14 @@ theorem le_pred_iff_of_not_isMin (ha : ¬IsMin a) : b ≤ pred a ↔ b < a :=
 lemma pred_lt_pred_of_not_isMin (h : a < b) (ha : ¬ IsMin a) : pred a < pred b :=
   (pred_lt_iff_of_not_isMin ha).2 <| le_pred_of_lt h
 
+theorem pred_lt_pred_iff_of_not_isMin (ha : ¬IsMin a) (hb : ¬IsMin b) :
+    pred a < pred b ↔ a < b := by
+  rw [pred_lt_iff_of_not_isMin ha, le_pred_iff_of_not_isMin hb]
+
+theorem pred_le_pred_iff_of_not_isMin (ha : ¬IsMin a) (hb : ¬IsMin b) :
+    pred a ≤ pred b ↔ a ≤ b := by
+  rw [le_pred_iff_of_not_isMin hb, pred_lt_iff_of_not_isMin ha]
+
 @[simp, mono]
 theorem pred_le_pred {a b : α} (h : a ≤ b) : pred a ≤ pred b :=
   succ_le_succ h.dual
@@ -776,6 +802,11 @@ theorem pred_eq_iff_isMin : pred a = a ↔ IsMin a :=
 
 alias ⟨_, _root_.IsMin.pred_eq⟩ := pred_eq_iff_isMin
 #align is_min.pred_eq IsMin.pred_eq
+
+theorem pred_eq_pred_iff_of_not_isMin (ha : ¬IsMin a) (hb : ¬IsMin b) :
+    pred a = pred b ↔ a = b := by
+  rw [eq_iff_le_not_lt, eq_iff_le_not_lt, pred_le_pred_iff_of_not_isMin ha hb,
+    pred_lt_pred_iff_of_not_isMin ha hb]
 
 theorem pred_le_le_iff {a b : α} : pred a ≤ b ∧ b ≤ a ↔ b = a ∨ b = pred a := by
   refine'
@@ -1113,7 +1144,7 @@ theorem pred_coe (a : α) : pred (↑a : WithTop α) = ↑(pred a) :=
 @[simp]
 theorem pred_untop :
     ∀ (a : WithTop α) (ha : a ≠ ⊤),
-      pred (a.untop ha) = (pred a).untop (by induction a using WithTop.recTopCoe <;> simp)
+      pred (a.untop ha) = (pred a).untop (by induction a <;> simp)
   | ⊤, ha => (ha rfl).elim
   | (a : α), _ => rfl
 #align with_top.pred_untop WithTop.pred_untop
@@ -1224,7 +1255,7 @@ theorem succ_coe (a : α) : succ (↑a : WithBot α) = ↑(succ a) :=
 @[simp]
 theorem succ_unbot :
     ∀ (a : WithBot α) (ha : a ≠ ⊥),
-      succ (a.unbot ha) = (succ a).unbot (by induction a using WithBot.recBotCoe <;> simp)
+      succ (a.unbot ha) = (succ a).unbot (by induction a <;> simp)
   | ⊥, ha => (ha rfl).elim
   | (a : α), _ => rfl
 #align with_bot.succ_unbot WithBot.succ_unbot
@@ -1524,7 +1555,7 @@ instance (priority := 100) IsWellOrder.toIsPredArchimedean [h : IsWellOrder α (
     · cases (min_of_le_pred hb).not_lt hab
     dsimp at ih
     obtain ⟨k, hk⟩ := ih (pred b) hb (le_pred_of_lt hab)
-    refine' ⟨k + 1, _⟩
+    refine ⟨k + 1, ?_⟩
     rw [iterate_add_apply, iterate_one, hk]⟩
 #align is_well_order.to_is_pred_archimedean IsWellOrder.toIsPredArchimedean
 

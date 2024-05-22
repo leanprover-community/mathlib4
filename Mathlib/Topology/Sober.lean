@@ -202,7 +202,7 @@ theorem OpenEmbedding.quasiSober {f : α → β} (hf : OpenEmbedding f) [QuasiSo
       exact closure_mono (inter_subset_left _ _) hx.mem
     obtain ⟨y, rfl⟩ : x ∈ range f := by
       rw [hx.mem_open_set_iff hf.isOpen_range]
-      refine' Nonempty.mono _ hS''.1
+      refine Nonempty.mono ?_ hS''.1
       simpa using subset_closure
     use y
     change _ = _

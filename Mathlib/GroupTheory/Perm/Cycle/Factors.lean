@@ -205,7 +205,7 @@ theorem cycleOf_mul_of_apply_right_eq_self (h : Commute f g) (x : α) (hx : g x 
   · rw [cycleOf_apply_of_not_sameCycle hxy, cycleOf_apply_of_not_sameCycle]
     contrapose! hxy
     obtain ⟨z, rfl⟩ := hxy
-    refine' ⟨z, _⟩
+    refine ⟨z, ?_⟩
     simp [h.mul_zpow, zpow_apply_eq_self_of_apply_eq_self hx]
 #align equiv.perm.cycle_of_mul_of_apply_right_eq_self Equiv.Perm.cycleOf_mul_of_apply_right_eq_self
 
@@ -455,7 +455,7 @@ theorem cycleFactorsFinset_eq_list_toFinset {σ : Perm α} {l : List (Perm α)} 
     · have := List.Perm.pairwise_iff (@Disjoint.symmetric _) hperm
       rwa [this]
     · rw [← hp', hperm.symm.prod_eq']
-      refine' hd'.imp _
+      refine hd'.imp ?_
       exact Disjoint.commute
   · rintro ⟨hc, hd, hp⟩
     refine' List.toFinset_eq_of_perm _ _ _
@@ -552,7 +552,7 @@ theorem cycleFactorsFinset_eq_singleton_iff {f g : Perm α} :
   exact Iff.rfl
 #align equiv.perm.cycle_factors_finset_eq_singleton_iff Equiv.Perm.cycleFactorsFinset_eq_singleton_iff
 
-/-- Two permutations `f g : perm α` have the same cycle factors iff they are the same. -/
+/-- Two permutations `f g : Perm α` have the same cycle factors iff they are the same. -/
 theorem cycleFactorsFinset_injective : Function.Injective (@cycleFactorsFinset α _ _) := by
   intro f g h
   rw [← cycleFactorsFinset_noncommProd f]
@@ -607,8 +607,8 @@ theorem cycle_is_cycleOf {f c : Equiv.Perm α} {a : α} (ha : a ∈ c.support)
   let hfc := (Equiv.Perm.disjoint_mul_inv_of_mem_cycleFactorsFinset hc).symm
   let hfc2 := Perm.Disjoint.commute hfc
   rw [← Equiv.Perm.cycleOf_mul_of_apply_right_eq_self hfc2]
-  simp only [hfc2.eq, inv_mul_cancel_right]
-  -- a est dans le support de c, donc pas dans celui de g c⁻¹
+  · simp only [hfc2.eq, inv_mul_cancel_right]
+  -- `a` is in the support of `c`, hence it is not in the support of `g c⁻¹`
   exact
     Equiv.Perm.not_mem_support.mp
       (Finset.disjoint_left.mp (Equiv.Perm.Disjoint.disjoint_support hfc) ha)

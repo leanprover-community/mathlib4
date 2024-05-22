@@ -496,7 +496,7 @@ theorem inner_eq_zero_iff_eq_zero_or_eq_smul_rotation_pi_div_two {x y : V} :
         (o.oangle_eq_iff_eq_pos_smul_rotation_of_ne_zero
           (o.left_ne_zero_of_oangle_eq_neg_pi_div_two h)
           (o.right_ne_zero_of_oangle_eq_neg_pi_div_two h) _).1 h
-      refine' Or.inr ⟨-r, _⟩
+      refine Or.inr ⟨-r, ?_⟩
       rw [neg_smul, ← smul_neg, o.neg_rotation_pi_div_two]
   · rcases h with (rfl | ⟨r, rfl⟩)
     · exact Or.inl rfl

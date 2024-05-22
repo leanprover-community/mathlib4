@@ -172,7 +172,7 @@ theorem homOfPair.val (t : X) (g : G) : (homOfPair t g).val = g :=
 /-- Any morphism in the action groupoid is given by some pair. -/
 protected def cases {P : ∀ ⦃a b : ActionCategory G X⦄, (a ⟶ b) → Sort*}
     (hyp : ∀ t g, P (homOfPair t g)) ⦃a b⦄ (f : a ⟶ b) : P f := by
-  refine' cast _ (hyp b.back f.val)
+  refine cast ?_ (hyp b.back f.val)
   rcases a with ⟨⟨⟩, a : X⟩
   rcases b with ⟨⟨⟩, b : X⟩
   rcases f with ⟨g : G, h : g • a = b⟩
@@ -201,13 +201,13 @@ def curry (F : ActionCategory G X ⥤ SingleObj H) : G →* (X → H) ⋊[mulAut
     map_one' := by
       dsimp
       ext1
-      ext b
-      exact F_map_eq.symm.trans (F.map_id b)
+      · ext b
+        exact F_map_eq.symm.trans (F.map_id b)
       rfl
     map_mul' := by
       intro g h
       ext b
-      exact F_map_eq.symm.trans (F.map_comp (homOfPair (g⁻¹ • b) h) (homOfPair b g))
+      · exact F_map_eq.symm.trans (F.map_comp (homOfPair (g⁻¹ • b) h) (homOfPair b g))
       rfl }
 #align category_theory.action_category.curry CategoryTheory.ActionCategory.curry
 
