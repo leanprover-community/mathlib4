@@ -55,7 +55,7 @@ import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.Lift
-import Mathlib.Tactic.Lint
+import Mathlib.Tactic.Linter
 import Mathlib.Tactic.MkIffOfInductiveProp
 -- NormNum imports `Algebra.Order.Invertible`, `Data.Int.Basic`, `Data.Nat.Cast.Commute`
 -- import Mathlib.Tactic.NormNum.Basic

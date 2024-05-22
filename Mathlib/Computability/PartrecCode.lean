@@ -589,7 +589,7 @@ theorem exists_code {f : ℕ →. ℕ} : Nat.Partrec f ↔ ∃ c : Code, eval c 
       exact ⟨prec cf cg, rfl⟩
     | rfind pf hf =>
       rcases hf with ⟨cf, rfl⟩
-      refine' ⟨comp (rfind' cf) (pair Code.id zero), _⟩
+      refine ⟨comp (rfind' cf) (pair Code.id zero), ?_⟩
       simp [eval, Seq.seq, pure, PFun.pure, Part.map_id']
   · rintro ⟨c, rfl⟩
     induction c with
@@ -739,7 +739,7 @@ theorem evaln_complete {c n x} : x ∈ eval c n ↔ ∃ k, x ∈ evaln k c n := 
   | pair cf cg hf hg =>
     rcases h with ⟨x, hx, y, hy, rfl⟩
     rcases hf hx with ⟨k₁, hk₁⟩; rcases hg hy with ⟨k₂, hk₂⟩
-    refine' ⟨max k₁ k₂, _⟩
+    refine ⟨max k₁ k₂, ?_⟩
     refine'
       ⟨le_max_of_le_left <| Nat.le_of_lt_succ <| evaln_bound hk₁, _,
         evaln_mono (Nat.succ_le_succ <| le_max_left _ _) hk₁, _,
@@ -747,7 +747,7 @@ theorem evaln_complete {c n x} : x ∈ eval c n ↔ ∃ k, x ∈ evaln k c n := 
   | comp cf cg hf hg =>
     rcases h with ⟨y, hy, hx⟩
     rcases hg hy with ⟨k₁, hk₁⟩; rcases hf hx with ⟨k₂, hk₂⟩
-    refine' ⟨max k₁ k₂, _⟩
+    refine ⟨max k₁ k₂, ?_⟩
     exact
       ⟨le_max_of_le_left <| Nat.le_of_lt_succ <| evaln_bound hk₁, _,
         evaln_mono (Nat.succ_le_succ <| le_max_left _ _) hk₁,

@@ -862,8 +862,6 @@ theorem tail_append_of_ne_nil (l l' : List α) (h : l ≠ []) : (l ++ l').tail =
   · simp
 #align list.tail_append_of_ne_nil List.tail_append_of_ne_nil
 
-theorem get_eq_iff {l : List α} {n : Fin l.length} {x : α} : l.get n = x ↔ l.get? n.1 = some x := by
-  simp [get?_eq_some]
 #align list.nth_le_eq_iff List.get_eq_iff
 
 theorem get_eq_get? (l : List α) (i : Fin l.length) :
@@ -940,7 +938,7 @@ decreasing_by
 @[simp]
 theorem reverseRecOn_nil {motive : List α → Sort*} (nil : motive [])
     (append_singleton : ∀ (l : List α) (a : α), motive l → motive (l ++ [a])) :
-    reverseRecOn [] nil append_singleton = nil := by unfold reverseRecOn; rfl
+    reverseRecOn [] nil append_singleton = nil := reverseRecOn.eq_1 ..
 
 -- `unusedHavesSuffices` is getting confused by the unfolding of `reverseRecOn`
 @[simp, nolint unusedHavesSuffices]
@@ -986,8 +984,7 @@ termination_by l => l.length
 theorem bidirectionalRec_nil {motive : List α → Sort*}
     (nil : motive []) (singleton : ∀ a : α, motive [a])
     (cons_append : ∀ (a : α) (l : List α) (b : α), motive l → motive (a :: (l ++ [b]))) :
-    bidirectionalRec nil singleton cons_append [] = nil := by
-  unfold bidirectionalRec; rfl
+    bidirectionalRec nil singleton cons_append [] = nil := bidirectionalRec.eq_1 ..
 
 
 @[simp]
@@ -1984,7 +1981,7 @@ def foldrRecOn {C : β → Sort*} (l : List α) (op : α → β → β) (b : β)
   | nil => exact hb
   | cons hd tl IH =>
     refine' hl _ _ hd (mem_cons_self hd tl)
-    refine' IH _
+    refine IH ?_
     intro y hy x hx
     exact hl y hy x (mem_cons_of_mem hd hx)
 #align list.foldr_rec_on List.foldrRecOn
@@ -2441,7 +2438,7 @@ theorem splitOn_intercalate [DecidableEq α] (x : α) (hx : ∀ l ∈ ls, x ∉ 
     refine' splitOnP_eq_single _ _ _
     intro y hy H
     rw [eq_of_beq H] at hy
-    refine' hx hd _ hy
+    refine hx hd ?_ hy
     simp
   · simp only [intersperse_cons_cons, singleton_append, join]
     specialize ih _ _
@@ -3123,15 +3120,6 @@ theorem erase_get [DecidableEq ι] {l : List ι} (i : Fin l.length) :
       by_cases ha : a = l.get i
       · simpa [ha] using .trans (perm_cons_erase (l.get_mem i i.isLt)) (.cons _ (IH i))
       · simpa [ha] using IH i
-
-theorem eraseIdx_eq_take_drop_succ {l : List ι} {i : ℕ} :
-    l.eraseIdx i = l.take i ++ l.drop i.succ := by
-  induction l generalizing i with
-  | nil => simp
-  | cons a l IH =>
-    cases i with
-    | zero => simp
-    | succ i => simp [IH]
 
 end Erase
 

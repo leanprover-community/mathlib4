@@ -413,8 +413,8 @@ end Rep
 variable (G)
 
 /-- The simplicial `G`-set sending `[n]` to `Gⁿ⁺¹` equipped with the diagonal action of `G`. -/
-def classifyingSpaceUniversalCover [Monoid G] : SimplicialObject (Action (Type u) <| MonCat.of G)
-    where
+def classifyingSpaceUniversalCover [Monoid G] :
+    SimplicialObject (Action (Type u) <| MonCat.of G) where
   obj n := Action.ofMulAction G (Fin (n.unop.len + 1) → G)
   map f :=
     { hom := fun x => x ∘ f.unop.toOrderHom
@@ -650,7 +650,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem d_comp_ε : (groupCohomology.resolution k G).d 1 0 ≫ ε k G = 0 := by
   ext : 1
-  refine' LinearMap.ext fun x => _
+  refine LinearMap.ext fun x => ?_
   have : (forget₂ToModuleCat k G).d 1 0
       ≫ (forget₂ (Rep k G) (ModuleCat.{u} k)).map (ε k G) = 0 := by
     rw [← forget₂ToModuleCatHomotopyEquiv_f_0_eq,

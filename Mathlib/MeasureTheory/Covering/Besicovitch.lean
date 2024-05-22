@@ -141,6 +141,21 @@ structure Besicovitch.SatelliteConfig (α : Type*) [MetricSpace α] (N : ℕ) (�
 #align besicovitch.satellite_config.hlast Besicovitch.SatelliteConfig.hlast
 #align besicovitch.satellite_config.inter Besicovitch.SatelliteConfig.inter
 
+namespace Mathlib.Meta.Positivity
+
+open Lean Meta Qq
+
+/-- Extension for the `positivity` tactic: `Besicovitch.SatelliteConfig.r`. -/
+@[positivity Besicovitch.SatelliteConfig.r _ _]
+def evalBesicovitchSatelliteConfigR : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@Besicovitch.SatelliteConfig.r $β $inst $N $τ $self $i) =>
+    assertInstancesCommute
+    return .positive q(Besicovitch.SatelliteConfig.rpos $self $i)
+  | _, _, _ => throwError "not Besicovitch.SatelliteConfig.r"
+
+end Mathlib.Meta.Positivity
+
 /-- A metric space has the Besicovitch covering property if there exist `N` and `τ > 1` such that
 there are no satellite configuration of parameter `τ` with `N+1` points. This is the condition that
 guarantees that the measurable Besicovitch covering theorem holds. It is satisfied by
@@ -511,7 +526,7 @@ theorem exist_disjoint_covering_families {N : ℕ} {τ : ℝ} (hτ : 1 < τ)
     have h : p.color jy ∈ univ \ A := by
       rw [color_j]
       apply csInf_mem
-      refine' ⟨N, _⟩
+      refine ⟨N, ?_⟩
       simp only [A, not_exists, true_and_iff, exists_prop, mem_iUnion, mem_singleton_iff, not_and,
         mem_univ, mem_diff, Subtype.exists, Subtype.coe_mk]
       intro k hk _
@@ -650,8 +665,8 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
       μ o = 1 / (N + 1) * μ s + N / (N + 1) * μ s := by
         rw [μo, ← add_mul, ENNReal.div_add_div_same, add_comm, ENNReal.div_self, one_mul] <;> simp
       _ ≤ μ ((⋃ x ∈ w, closedBall (↑x) (r ↑x)) ∩ o) + N / (N + 1) * μ s := by
-        refine' add_le_add _ le_rfl
-        rw [div_eq_mul_inv, one_mul, mul_comm, ← div_eq_mul_inv]
+        gcongr
+        rw [one_div, mul_comm, ← div_eq_mul_inv]
         apply hw.le.trans (le_of_eq _)
         rw [← Finset.set_biUnion_coe, inter_comm _ o, inter_iUnion₂, Finset.set_biUnion_coe,
           measure_biUnion_finset]
@@ -736,7 +751,7 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
       · intro p hp q hq hpq
         rcases (mem_image _ _ _).1 hp with ⟨p', p'v, rfl⟩
         rcases (mem_image _ _ _).1 hq with ⟨q', q'v, rfl⟩
-        refine' hv p'v q'v fun hp'q' => _
+        refine hv p'v q'v fun hp'q' => ?_
         rw [hp'q'] at hpq
         exact hpq rfl
       · intro p hp q hq hpq
@@ -783,8 +798,7 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
         μ (s \ ⋃ (p : α × ℝ) (_ : p ∈ ⋃ n : ℕ, (u n : Set (α × ℝ))), closedBall p.fst p.snd) ≤
           μ (s \ ⋃ (p : α × ℝ) (_ : p ∈ u n), closedBall p.fst p.snd) := by
       intro n
-      apply measure_mono
-      apply diff_subset_diff (Subset.refl _)
+      gcongr μ (s \ ?_)
       exact biUnion_subset_biUnion_left (subset_iUnion (fun i => (u i : Set (α × ℝ))) n)
     have B :
         ∀ n, μ (s \ ⋃ (p : α × ℝ) (_ : p ∈ u n), closedBall p.fst p.snd) ≤
@@ -939,7 +953,7 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SigmaFinit
       simp only [s', not_exists, exists_prop, mem_iUnion, mem_closedBall, not_and, not_lt, not_le,
         mem_diff, not_forall]
       intro _
-      refine' ⟨x, hx, _⟩
+      refine ⟨x, hx, ?_⟩
       rw [dist_self]
       exact (hr0 x hx).2.1.le
     simp only [r, if_neg this]
@@ -1029,12 +1043,10 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SigmaFinit
             ∑ i : Fin N, ∑' x : ((↑) : s' → α) '' S i, μ (closedBall x (r x)) :=
         (add_le_add le_rfl (ENNReal.tsum_iUnion_le (fun x => μ (closedBall x (r x))) _))
       _ ≤ μ s + ε / 2 + ∑ i : Fin N, ε / 2 / N := by
-        refine' add_le_add A _
-        refine' Finset.sum_le_sum _
-        intro i _
-        exact B i
+        gcongr
+        apply B
       _ ≤ μ s + ε / 2 + ε / 2 := by
-        refine' add_le_add le_rfl _
+        gcongr
         simp only [Finset.card_fin, Finset.sum_const, nsmul_eq_mul, ENNReal.mul_div_le]
       _ = μ s + ε := by rw [add_assoc, ENNReal.add_halves]
 #align besicovitch.exists_closed_ball_covering_tsum_measure_le Besicovitch.exists_closedBall_covering_tsum_measure_le
