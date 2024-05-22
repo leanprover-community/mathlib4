@@ -123,7 +123,6 @@ theorem Spec.sheafedSpaceMap_id {R : CommRingCat.{u}} :
     dsimp
     erw [comap_id (by simp)]
     simp
-    rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.SheafedSpace_map_id AlgebraicGeometry.Spec.sheafedSpaceMap_id
 
