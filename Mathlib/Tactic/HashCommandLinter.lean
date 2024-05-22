@@ -21,7 +21,7 @@ namespace Mathlib.Linter
 /--
 The linter emits a warning on any command beginning with `#` that itself emits no message.
 For example, `#guard true` and `#check_tactic True ~> True by skip` trigger a message.
-There is a `whitelist` of silent `#`-command that are allowed.
+There is a list of silent `#`-command that are allowed.
 -/
 register_option linter.hashCommand : Bool := {
   defValue := true
