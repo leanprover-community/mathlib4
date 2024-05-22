@@ -98,11 +98,6 @@ def forget' : CommRingCat ⥤ RingCat where
 
 universe u
 
--- @[simp]
--- theorem CommRingCat.forget_of (R : Type u) [CommRing R] : (forget CommRingCat).obj (CommRingCat.of R) = R :=
---   rfl
-
--- This is so horrible, what has happened?!
 attribute [local simp] types_id types_comp in
 def free : Type ⥤ CommRingCat where
   obj X := CommRingCat.of (MvPolynomial X ℤ)
@@ -202,5 +197,5 @@ def PointedSpaceEquiv_inverse : Under (TopCat.of Unit) ⥤ PointedSpace where
 def equiv : PointedSpace ≌ Under (TopCat.of Unit) where
   functor := PointedSpaceEquiv_functor
   inverse := PointedSpaceEquiv_inverse
-  unitIso := NatIso.ofComponents (fun X => Iso.refl _)
-  counitIso := NatIso.ofComponents (fun X => Iso.refl _)
+  unitIso := NatIso.ofComponents fun X => Iso.refl _
+  counitIso := NatIso.ofComponents fun X => Iso.refl _
