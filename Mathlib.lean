@@ -365,6 +365,7 @@ import Mathlib.Algebra.Lie.Quotient
 import Mathlib.Algebra.Lie.Rank
 import Mathlib.Algebra.Lie.Semisimple
 import Mathlib.Algebra.Lie.SkewAdjoint
+import Mathlib.Algebra.Lie.Sl2
 import Mathlib.Algebra.Lie.Solvable
 import Mathlib.Algebra.Lie.Subalgebra
 import Mathlib.Algebra.Lie.Submodule
@@ -3663,6 +3664,7 @@ import Mathlib.Tactic.Attr.Core
 import Mathlib.Tactic.Attr.Register
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ByContra
+import Mathlib.Tactic.CC
 import Mathlib.Tactic.CC.Addition
 import Mathlib.Tactic.CC.Datatypes
 import Mathlib.Tactic.CC.Lemmas
