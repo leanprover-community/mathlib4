@@ -35,8 +35,7 @@ and require `0⁻¹ = 0`.
 
 -/
 
-assert_not_exists OrderDual
-assert_not_exists Lex
+assert_not_exists DenselyOrdered
 
 open scoped Classical
 
