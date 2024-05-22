@@ -376,8 +376,9 @@ theorem image_id (s : Set α) : id '' s = s := by simp
 #align set.image_id Set.image_id
 
 lemma image_iterate_eq {f : α → α} {n : ℕ} : image (f^[n]) = (image f)^[n] := by
-  induction' n with n ih; · simp
-  rw [iterate_succ', iterate_succ',← ih, image_comp_eq]
+  induction n with
+  | zero => simp
+  | succ n ih => rw [iterate_succ', iterate_succ', ← ih, image_comp_eq]
 
 theorem compl_compl_image [BooleanAlgebra α] (S : Set α) :
     HasCompl.compl '' (HasCompl.compl '' S) = S := by

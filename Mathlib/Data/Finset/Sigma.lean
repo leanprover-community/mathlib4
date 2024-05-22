@@ -110,8 +110,8 @@ theorem inf_sigma [SemilatticeInf β] [OrderTop β] :
 #align finset.inf_sigma Finset.inf_sigma
 
 theorem _root_.biSup_finsetSigma [CompleteLattice β] (s : Finset ι) (t : ∀ i, Finset (α i))
-    (f : Sigma α → β) : ⨆ ij ∈ s.sigma t, f ij = ⨆ (i ∈ s) (j ∈ t i), f ⟨i, j⟩ :=
-  by simp_rw [← Finset.iSup_coe, Finset.coe_sigma, biSup_sigma]
+    (f : Sigma α → β) : ⨆ ij ∈ s.sigma t, f ij = ⨆ (i ∈ s) (j ∈ t i), f ⟨i, j⟩ := by
+  simp_rw [← Finset.iSup_coe, Finset.coe_sigma, biSup_sigma]
 
 theorem _root_.biSup_finsetSigma' [CompleteLattice β] (s : Finset ι) (t : ∀ i, Finset (α i))
     (f : ∀ i, α i → β) : ⨆ (i ∈ s) (j ∈ t i), f i j = ⨆ ij ∈ s.sigma t, f ij.fst ij.snd :=

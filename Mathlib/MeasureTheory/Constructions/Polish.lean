@@ -558,7 +558,7 @@ theorem measurableSet_preimage_iff_of_surjective [CountablySeparated Z]
     exact h.compl.analyticSet_image hf
 #align measurable.measurable_set_preimage_iff_of_surjective Measurable.measurableSet_preimage_iff_of_surjective
 
-theorem map_measurableSpace_eq  [CountablySeparated Z]
+theorem map_measurableSpace_eq [CountablySeparated Z]
     {f : X → Z} (hf : Measurable f)
     (hsurj : Surjective f) : MeasurableSpace.map f ‹MeasurableSpace X› = ‹MeasurableSpace Z› :=
   MeasurableSpace.ext fun _ => hf.measurableSet_preimage_iff_of_surjective hsurj
