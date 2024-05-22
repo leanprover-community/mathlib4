@@ -245,7 +245,7 @@ theorem localRingHom_comp_stalkIso {R S : CommRingCat.{u}} (f : R ⟶ S) (p : Pr
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.local_ring_hom_comp_stalk_iso AlgebraicGeometry.localRingHom_comp_stalkIso
 
-set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
+-- set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 /--
 The induced map of a ring homomorphism on the prime spectra, as a morphism of locally ringed spaces.
 -/
@@ -304,7 +304,7 @@ section SpecΓ
 
 open AlgebraicGeometry.LocallyRingedSpace
 
-set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
+-- set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 /-- The counit morphism `R ⟶ Γ(Spec R)` given by `AlgebraicGeometry.StructureSheaf.toOpen`.  -/
 @[simps!]
 def toSpecΓ (R : CommRingCat.{u}) : R ⟶ Γ.obj (op (Spec.toLocallyRingedSpace.obj (op R))) :=
@@ -332,8 +332,8 @@ set_option linter.uppercaseLean3 false in
 -- Adaptation note: 2024-04-23
 -- This `maxHeartbeats` was not previously required.
 -- Without the backwards compatibility flag even more is needed.
-set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
-set_option maxHeartbeats 800000 in
+-- set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
+-- set_option maxHeartbeats 800000 in
 /-- The counit (`SpecΓIdentity.inv.op`) of the adjunction `Γ ⊣ Spec` is an isomorphism. -/
 @[simps! hom_app inv_app]
 def SpecΓIdentity : Spec.toLocallyRingedSpace.rightOp ⋙ Γ ≅ 𝟭 _ :=
