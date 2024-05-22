@@ -5,13 +5,14 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Order.Group.Synonym
-import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Data.Prod.Lex
 
 #align_import algebra.order.monoid.prod from "leanprover-community/mathlib"@"2258b40dacd2942571c8ce136215350c702dc78f"
 
 /-! # Products of ordered monoids -/
+
+assert_not_exists MonoidWithZero
 
 namespace Prod
 
