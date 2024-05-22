@@ -101,7 +101,7 @@ universe u
 attribute [local simp] types_id types_comp in
 def free : Type ⥤ CommRingCat where
   obj X := CommRingCat.of (MvPolynomial X ℤ)
-  map {X Y} f := (↑(MvPolynomial.rename f : _ →ₐ[ℤ] _) : MvPolynomial X ℤ →+* MvPolynomial Y ℤ)
+  map {X Y} f := (MvPolynomial.rename (R := ℤ) f : MvPolynomial X ℤ →+* MvPolynomial Y ℤ)
   map_id := by
     -- aesop_cat
     intros X
@@ -117,7 +117,7 @@ def free : Type ⥤ CommRingCat where
 attribute [local simp] types_id types_comp in
 def free' : Type ⥤ CommRingCat where
   obj X := CommRingCat.of (MvPolynomial X ℤ)
-  map {X Y} f := (↑(MvPolynomial.rename f : _ →ₐ[ℤ] _) : MvPolynomial X ℤ →+* MvPolynomial Y ℤ)
+  map {X Y} f := (MvPolynomial.rename (R := ℤ) f : MvPolynomial X ℤ →+* MvPolynomial Y ℤ)
 
 -- PR'd as https://github.com/leanprover-community/mathlib4/pull/13109
 @[simp] theorem MonoidHom.comp_id_groupCat {G : GroupCat.{u}} {H : Type u} [Group H] (f : G →* H) :
@@ -127,8 +127,8 @@ def free' : Type ⥤ CommRingCat where
     MonoidHom.comp (𝟙 H) f = f :=
   Category.comp_id (GroupCat.ofHom f)
 
-attribute [simp] CommGroupCat.coe_of
-attribute [simp] CommGroupCat.comp_def GroupCat.comp_def
+attribute [local simp] CommGroupCat.coe_of in
+attribute [local simp] CommGroupCat.comp_def GroupCat.comp_def in
 def abelianize : GroupCat.{u} ⥤ CommGroupCat.{u} where
   obj G := CommGroupCat.of (Abelianization G)
   map f := Abelianization.lift (Abelianization.of.comp f)
