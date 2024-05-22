@@ -244,3 +244,77 @@ theorem cardinal_lt_aleph0_of_finiteDimensional (K V : Type u) [Ring K] [StrongR
   rw [cardinal_mk_eq_cardinal_mk_field_pow_rank K V]
   exact Cardinal.power_lt_aleph0 (Cardinal.lt_aleph0_of_finite K) (rank_lt_aleph0 K V)
 #align cardinal_lt_aleph_0_of_finite_dimensional cardinal_lt_aleph0_of_finiteDimensional
+
+theorem Subalgebra.eq_bot_of_rank_le_one
+    {F E : Type*} [CommRing F] [StrongRankCondition F] [Ring E] [Algebra F E]
+    {S : Subalgebra F E} (h : Module.rank F S ≤ 1) [Module.Free F S] : S = ⊥ := by
+  nontriviality E
+  obtain ⟨κ, b⟩ := Module.Free.exists_basis (R := F) (M := S)
+  by_cases h1 : Module.rank F S = 1
+  · refine bot_unique fun x hx ↦ Algebra.mem_bot.2 ?_
+    rw [← b.mk_eq_rank'', Cardinal.eq_one_iff_unique, ← unique_iff_subsingleton_and_nonempty] at h1
+    obtain ⟨h1⟩ := h1
+    obtain ⟨y, hy⟩ := (bijective_algebraMap_of_linearEquiv (b.repr ≪≫ₗ
+      Finsupp.LinearEquiv.finsuppUnique _ _ _).symm).surjective ⟨x, hx⟩
+    exact ⟨y, congr(Subtype.val $(hy))⟩
+  haveI := Cardinal.mk_eq_zero_iff.1 (b.mk_eq_rank''.symm ▸ lt_one_iff_zero.1 (h.lt_of_ne h1))
+  haveI := b.repr.toEquiv.subsingleton
+  exact False.elim <| one_ne_zero congr(S.val $(Subsingleton.elim 1 0))
+#align subalgebra.eq_bot_of_rank_le_one Subalgebra.eq_bot_of_rank_le_one
+
+theorem Subalgebra.eq_bot_of_finrank_one
+    {F E : Type*} [CommRing F] [StrongRankCondition F] [Ring E] [Algebra F E]
+    {S : Subalgebra F E} (h : finrank F S = 1) [Module.Free F S] : S = ⊥ := by
+  refine Subalgebra.eq_bot_of_rank_le_one ?_
+  rw [finrank, Cardinal.toNat_eq_one] at h
+  rw [h]
+#align subalgebra.eq_bot_of_finrank_one Subalgebra.eq_bot_of_finrank_one
+
+@[simp]
+theorem Subalgebra.rank_eq_one_iff {F E : Type*} [CommRing F] [StrongRankCondition F] [Ring E]
+    [Algebra F E] [Nontrivial E] {S : Subalgebra F E} [Module.Free F S] :
+    Module.rank F S = 1 ↔ S = ⊥ := by
+  refine ⟨fun h ↦ Subalgebra.eq_bot_of_rank_le_one h.le, ?_⟩
+  rintro rfl
+  obtain ⟨κ, b⟩ := Module.Free.exists_basis (R := F) (M := (⊥ : Subalgebra F E))
+  refine le_antisymm ?_ ?_
+  · have := lift_rank_range_le (Algebra.linearMap F E)
+    rwa [← one_eq_range, rank_self, lift_one, lift_le_one_iff] at this
+  · by_contra H
+    rw [not_le, lt_one_iff_zero] at H
+    haveI := Cardinal.mk_eq_zero_iff.1 (H ▸ b.mk_eq_rank'')
+    haveI := b.repr.toEquiv.subsingleton
+    exact one_ne_zero congr((⊥ : Subalgebra F E).val $(Subsingleton.elim 1 0))
+#align subalgebra.rank_eq_one_iff Subalgebra.rank_eq_one_iff
+
+@[simp]
+theorem Subalgebra.finrank_eq_one_iff {F E : Type*} [CommRing F] [StrongRankCondition F] [Ring E]
+    [Algebra F E] [Nontrivial E] {S : Subalgebra F E} [Module.Free F S] :
+    finrank F S = 1 ↔ S = ⊥ := by
+  rw [← Subalgebra.rank_eq_one_iff]
+  exact Cardinal.toNat_eq_iff one_ne_zero
+#align subalgebra.finrank_eq_one_iff Subalgebra.finrank_eq_one_iff
+
+theorem Subalgebra.bot_eq_top_iff_rank_eq_one {F E : Type*} [CommRing F] [StrongRankCondition F]
+    [Ring E] [Algebra F E] [Nontrivial E] [Module.Free F E] :
+    (⊥ : Subalgebra F E) = ⊤ ↔ Module.rank F E = 1 := by
+  haveI := Module.Free.of_equiv (Subalgebra.topEquiv (R := F) (A := E)).toLinearEquiv.symm
+  -- Porting note: removed `subalgebra_top_rank_eq_submodule_top_rank`
+  rw [← rank_top, Subalgebra.rank_eq_one_iff, eq_comm]
+#align subalgebra.bot_eq_top_iff_rank_eq_one Subalgebra.bot_eq_top_iff_rank_eq_one
+
+theorem Subalgebra.bot_eq_top_iff_finrank_eq_one {F E : Type*} [CommRing F] [StrongRankCondition F]
+    [Ring E] [Algebra F E] [Nontrivial E] [Module.Free F E] :
+    (⊥ : Subalgebra F E) = ⊤ ↔ finrank F E = 1 := by
+  haveI := Module.Free.of_equiv (Subalgebra.topEquiv (R := F) (A := E)).toLinearEquiv.symm
+  rw [← finrank_top, ← subalgebra_top_finrank_eq_submodule_top_finrank,
+    Subalgebra.finrank_eq_one_iff, eq_comm]
+#align subalgebra.bot_eq_top_iff_finrank_eq_one Subalgebra.bot_eq_top_iff_finrank_eq_one
+
+alias ⟨_, Subalgebra.bot_eq_top_of_rank_eq_one⟩ := Subalgebra.bot_eq_top_iff_rank_eq_one
+#align subalgebra.bot_eq_top_of_rank_eq_one Subalgebra.bot_eq_top_of_rank_eq_one
+
+alias ⟨_, Subalgebra.bot_eq_top_of_finrank_eq_one⟩ := Subalgebra.bot_eq_top_iff_finrank_eq_one
+#align subalgebra.bot_eq_top_of_finrank_eq_one Subalgebra.bot_eq_top_of_finrank_eq_one
+
+attribute [simp] Subalgebra.bot_eq_top_of_finrank_eq_one Subalgebra.bot_eq_top_of_rank_eq_one
