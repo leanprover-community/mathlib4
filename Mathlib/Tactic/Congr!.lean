@@ -436,7 +436,7 @@ instance for both the LHS and the RHS.
 
 If successful, this reduces proving `@HEq α x β y` to proving `α = β`.
 -/
-def Lean.MVarId.fastSubsingletonHelim? (mvarId : MVarId) : MetaM (Option (List MVarId)) :=
+def Lean.MVarId.subsingletonHelim? (mvarId : MVarId) : MetaM (Option (List MVarId)) :=
   mvarId.withContext <| observing? do
     mvarId.checkNotAssigned `subsingletonHelim
     let some (α, lhs, β, rhs) := (← withReducible mvarId.getType').heq? | failure
@@ -468,7 +468,7 @@ def Lean.MVarId.congrPasses! :
   [("user congr", userCongr?),
    ("hcongr lemma", smartHCongr?),
    ("congr simp lemma", when (·.useCongrSimp) congrSimp?),
-   ("Subsingleton.helim", fun _ => fastSubsingletonHelim?),
+   ("Subsingleton.helim", fun _ => subsingletonHelim?),
    ("BEq instances", when (·.beqEq) fun _ => beqInst?),
    ("obvious funext", fun _ => obviousFunext?),
    ("obvious hfunext", fun _ => obviousHfunext?),
@@ -512,7 +512,7 @@ private theorem eq_imp_of_iff_imp {p : x = y → Prop} (h : (he : x ↔ y) → p
 /--
 Does `Lean.MVarId.intros` but then cleans up the introduced hypotheses, removing anything
 that is trivial. If there are any patterns in the current `CongrMetaM` state then instead
-of `Lean.MVarId.intros` it does `Std.Tactic.RCases.rintro`.
+of `Lean.MVarId.intros` it does `Lean.Elab..Tactic.RCases.rintro`.
 
 Cleaning up includes:
 - deleting hypotheses of the form `HEq x x`, `x = x`, and `x ↔ x`.

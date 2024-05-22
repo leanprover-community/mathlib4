@@ -53,45 +53,6 @@ example (α : Type) (inst1 inst2 : BEq α) [@LawfulBEq α inst1] [@LawfulBEq α 
   subsingleton
 
 /-!
-Using `subsingleton` to turn a `HEq` into an `Eq` of the underlying types.
--/
-example (p q : Prop) (h : p = q) (instp : Decidable p) (instq : Decidable q) :
-    HEq instp instq := by
-  subsingleton
-  guard_target =ₛ Decidable p = Decidable q
-  exact congrArg Decidable h
-
-/-!
-Can't apply `Subsingleton.helim`
--/
-/--
-error: tactic 'subsingleton' could not synthesize either
-  Subsingleton α
-or
-  Subsingleton β
-to make progress on `HEq` goal using `Subsingleton.helim`
--/
-#guard_msgs in
-example (α β : Type) (x : α) (y : β) : HEq x y := by
-  subsingleton
-
-/-!
-`Subsingleton.helim` with left argument
--/
-example (α β : Type) (h : α = β) [Subsingleton α] (x : α) (y : β) : HEq x y := by
-  subsingleton
-  guard_target =ₛ α = β
-  exact h
-
-/-!
-`Subsingleton.helim` with right argument
--/
-example (α β : Type) (h : α = β) [Subsingleton β] (x : α) (y : β) : HEq x y := by
-  subsingleton
-  guard_target =ₛ α = β
-  exact h
-
-/-!
 `subsingleton` suggests `rfl` when it fails
 -/
 /-- info: Try this: rfl -/

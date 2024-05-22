@@ -100,32 +100,6 @@ def Lean.MVarId.subsingleton (g : MVarId) (insts : Array (Term × AbstractMVarsR
       throwError "tactic 'subsingleton' could not prove heterogenous equality"
     throwError "tactic 'subsingleton' failed, goal is neither an equality nor heterogenous equality"
 
-/--
-Tries to apply `Subsingleton.helim` to the goal, returning the new equality goal.
--/
-def Lean.MVarId.subsingletonHElim (g : MVarId) (insts : Array (Term × AbstractMVarsResult) := #[]) :
-    MetaM MVarId := do
-  let tgt ← whnfR (← g.getType)
-  let some (xTy, x, yTy, y) := tgt.heq? | failure
-  let u ← getLevel xTy
-  let g' ← mkFreshExprSyntheticOpaqueMVar (← mkEq xTy yTy) (← g.getTag)
-  try
-    let inst ← synthSubsingletonInst xTy insts
-    g.assign <| mkApp6 (.const ``Subsingleton.helim [u]) xTy yTy inst g' x y
-    return g'.mvarId!
-  catch _ => pure ()
-  try
-    let inst ← synthSubsingletonInst yTy insts
-    let pf ← mkHEqSymm <|
-      mkApp6 (.const ``Subsingleton.helim [u]) yTy xTy inst (← mkEqSymm g') y x
-    g.assign pf
-    return g'.mvarId!
-  catch _ =>
-    throwError "\
-      tactic 'subsingleton' could not synthesize either\
-      {indentD (← mkSubsingleton xTy)}\nor{indentD (← mkSubsingleton yTy)}\n\
-      to make progress on `HEq` goal using `Subsingleton.helim`"
-
 namespace Mathlib.Tactic
 
 /--
@@ -136,8 +110,6 @@ To a first approximation, it does `apply Subsingleton.elim`.
 As a nicety, `subsingleton` first runs the `intros` tactic.
 
 - If the goal is an equality, it either closes the goal or fails.
-- If the goal is a `HEq`, it can try applying `Subsingleton.helim`
-  to convert a `@HEq α x β y` goal into an `α = β` goal.
 - `subsingleton [inst1, inst2, ...]` can be used to add additional `Subsingleton` instances
   to the local context. This can be more flexible than
   `have := inst1; have := inst2; ...; subsingleton` since the tactic does not require that
@@ -148,7 +120,6 @@ Techniques the `subsingleton` tactic can apply:
 - heterogenous proof irrelevance (via `proof_irrel_heq`)
 - using `Subsingleton` (via `Subsingleton.elim`)
 - proving `BEq` instances are equal if they are both lawful (via `lawful_beq_subsingleton`)
-- turning a `HEq` of subsingleton types into an equality of types (via `Subsingleton.helim`)
 
 ### Properties
 
@@ -207,18 +178,15 @@ where
 
 elab_rules : tactic
   | `(tactic| subsingleton $[[$[$instTerms?],*]]?) => withMainContext do
-  let recover := (← read).recover
-  let insts ← elabSubsingletonInsts instTerms?
-  Elab.Tactic.liftMetaTactic1 fun g => do
-    let (fvars, g) ← g.intros
-    -- note: `insts` are still valid after `intros`
-    try
-      g.subsingleton (insts := insts)
-      return none
-    catch e =>
-      if (← whnfR (← g.getType)).isHEq then
-        g.subsingletonHElim (insts := insts)
-      else
+    let recover := (← read).recover
+    let insts ← elabSubsingletonInsts instTerms?
+    Elab.Tactic.liftMetaTactic1 fun g => do
+      let (fvars, g) ← g.intros
+      -- note: `insts` are still valid after `intros`
+      try
+        g.subsingleton (insts := insts)
+        return none
+      catch e =>
         -- Try `refl` when all else fails, to give a hint to the user
         if recover then
           try
