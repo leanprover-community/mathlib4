@@ -317,7 +317,6 @@ theorem _root_.MeasurableSet.analyticSet {α : Type*} [t : TopologicalSpace α] 
   simp only [id, image_id']
 #align measurable_set.analytic_set MeasurableSet.analyticSet
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- Given a Borel-measurable function from a Polish space to a second-countable space, there exists
 a finer Polish topology on the source space for which the function is continuous. -/
 theorem _root_.Measurable.exists_continuous {α β : Type*} [t : TopologicalSpace α] [PolishSpace α]
@@ -334,7 +333,7 @@ theorem _root_.Measurable.exists_continuous {α β : Type*} [t : TopologicalSpac
   choose T Tt Tpolish _ Topen using this
   obtain ⟨t', t'T, t't, t'_polish⟩ :
       ∃ t' : TopologicalSpace α, (∀ i, t' ≤ T i) ∧ t' ≤ t ∧ @PolishSpace α t' :=
-    exists_polishSpace_forall_le T Tt Tpolish
+    exists_polishSpace_forall_le (t := t) T Tt Tpolish
   refine ⟨t', t't, ?_, t'_polish⟩
   have : Continuous[t', _] (rangeFactorization f) :=
     hb.continuous_iff.2 fun s hs => t'T ⟨s, hs⟩ _ (Topen ⟨s, hs⟩)

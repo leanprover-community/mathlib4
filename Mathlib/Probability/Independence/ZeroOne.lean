@@ -21,18 +21,14 @@ is measurable with respect to the tail σ-algebra `limsup s atTop` has probabili
   σ-algebras `s` has probability 0 or 1.
 -/
 
--- See https://github.com/leanprover-community/mathlib4/issues/12532
--- This option is needed so often in this file that we set it for the whole file.
-set_option backward.synthInstance.canonInstances false
-
 open MeasureTheory MeasurableSpace
 
 open scoped MeasureTheory ENNReal
 
 namespace ProbabilityTheory
 
-variable {α Ω ι : Type*} {_mα : MeasurableSpace α} {m m0 : MeasurableSpace Ω}
-  {κ : kernel α Ω} {μα : Measure α} {μ : Measure Ω}
+variable {α Ω ι : Type*} {_mα : MeasurableSpace α} {s : ι → MeasurableSpace Ω}
+  {m m0 : MeasurableSpace Ω} {κ : kernel α Ω} {μα : Measure α} {μ : Measure Ω}
 
 theorem kernel.measure_eq_zero_or_one_or_top_of_indepSet_self {t : Set Ω}
     (h_indep : kernel.IndepSet t t κ μα) :
@@ -77,7 +73,7 @@ theorem condexp_eq_zero_or_one_of_condIndepSet_self
   | inl h => exact Or.inl (Or.inl h)
   | inr h => exact Or.inr h
 
-variable [IsMarkovKernel κ] [IsProbabilityMeasure μ] {s : ι → MeasurableSpace Ω}
+variable [IsMarkovKernel κ] [IsProbabilityMeasure μ]
 
 open Filter
 
