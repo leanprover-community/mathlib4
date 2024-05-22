@@ -335,7 +335,7 @@ protected theorem IsSeqCompact.isCompact (hs : IsSeqCompact s) : IsCompact s :=
   isCompact_iff_totallyBounded_isComplete.2 ⟨hs.totallyBounded, hs.isComplete⟩
 #align is_seq_compact.is_compact IsSeqCompact.isCompact
 
-/-- A version of Bolzano-Weistrass: in a uniform space with countably generated uniformity filter
+/-- A version of Bolzano-Weierstrass: in a uniform space with countably generated uniformity filter
 (e.g., in a metric space), a set is compact if and only if it is sequentially compact. -/
 protected theorem UniformSpace.isCompact_iff_isSeqCompact : IsCompact s ↔ IsSeqCompact s :=
   ⟨fun H => H.isSeqCompact, fun H => H.isCompact⟩
