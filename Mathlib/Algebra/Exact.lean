@@ -15,7 +15,7 @@ import Mathlib.LinearAlgebra.Quotient
 `Function.Exact f g` says that `Set.range f = Set.preimage {1}
 
 * For linear maps `f : M →ₗ[R] N`  and `g : N →ₗ[R] P`,
-`Exact f g` says that `range f = ker g``
+`Exact f g` says that `range f = ker g`
 
 ## TODO :
 
@@ -58,9 +58,9 @@ section LinearMap
 
 open LinearMap
 
-variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid M']
-  [AddCommMonoid N] [AddCommMonoid N'] [AddCommMonoid P] [AddCommMonoid P']
-  [Module R M] [Module R M'] [Module R N] [Module R N'] [Module R P] [Module R P']
+variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M'] [AddCommMonoid N]
+  [AddCommMonoid N'] [AddCommMonoid P] [AddCommMonoid P'] [Module R M]
+  [Module R M'] [Module R N] [Module R N'] [Module R P] [Module R P']
 
 variable {f : M →ₗ[R] N} {g : N →ₗ[R] P}
 
@@ -126,7 +126,7 @@ section Ring
 
 open LinearMap Submodule
 
-variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
+variable [Ring R] [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
     [Module R M] [Module R N] [Module R P]
 
 lemma Exact.descends_to_quotient_iff {f : M →ₗ[R] N} {g : N →ₗ[R] P}
