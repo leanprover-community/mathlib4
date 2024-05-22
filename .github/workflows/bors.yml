@@ -207,7 +207,7 @@ jobs:
 
       - name: upload cache
         # We only upload the cache if the build started (whether succeeding, failing, or cancelled)
-        # but not if any earlier step failed.
+        # but not if any earlier step failed or was cancelled.
         # See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Some.20files.20not.20found.20in.20the.20cache/near/407183836
         if: ${{ always() && steps.get.outcome == 'success' }}
         run: |
