@@ -611,7 +611,7 @@ theorem mul_braiding {X Y : Mon_ C} :
   simp only [Category.assoc]
 
 instance : SymmetricCategory (Mon_ C) where
-  braiding := fun X Y => isoOfIso (β_ X.X Y.X) one_braiding mul_braiding
+  braiding := fun X Y => mkIso (β_ X.X Y.X) one_braiding mul_braiding
   symmetry := fun X Y => by
     ext
     simp [← SymmetricCategory.braiding_swap_eq_inv_braiding]
