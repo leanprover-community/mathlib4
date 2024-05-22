@@ -239,6 +239,12 @@ where
     rw [Int.add_lt_add_iff_left]; apply negSucc_lt_zero
 #align int.induction_on' Int.inductionOn'
 
+/-- Inductively define a function on `ℤ` by defining it on `ℕ` and extending it from `n` to `-n`. -/
+@[elab_as_elim] protected def negInduction {C : ℤ → Sort*} (nat : ∀ n : ℕ, C n)
+    (neg : ∀ n : ℕ, C n → C (-n)) : ∀ n : ℤ, C n
+  | .ofNat n => nat n
+  | .negSucc n => neg _ <| nat <| n + 1
+
 /-- See `Int.inductionOn'` for an induction in both directions. -/
 protected lemma le_induction {P : ℤ → Prop} {m : ℤ} (h0 : P m)
     (h1 : ∀ n : ℤ, m ≤ n → P n → P (n + 1)) (n : ℤ) : m ≤ n → P n := by
