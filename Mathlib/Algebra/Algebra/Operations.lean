@@ -188,7 +188,7 @@ protected theorem mul_induction_on' {C : ∀ r, r ∈ M * N → Prop}
     (mem_mul_mem : ∀ m (hm : m ∈ M) n (hn : n ∈ N), C (m * n) (mul_mem_mul hm hn))
     (add : ∀ x hx y hy, C x hx → C y hy → C (x + y) (add_mem hx hy)) {r : A} (hr : r ∈ M * N) :
     C r hr := by
-  refine' Exists.elim _ fun (hr : r ∈ M * N) (hc : C r hr) => hc
+  refine Exists.elim ?_ fun (hr : r ∈ M * N) (hc : C r hr) => hc
   exact
     Submodule.mul_induction_on hr
       (fun x hx y hy => ⟨_, mem_mul_mem _ hx _ hy⟩)
@@ -265,12 +265,12 @@ protected theorem map_mul {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A')
       ext S
       constructor <;> rintro ⟨y, hy⟩
       · use ⟨f y, mem_map.mpr ⟨y.1, y.2, rfl⟩⟩  -- Porting note: added `⟨⟩`
-        refine' Eq.trans _ hy
+        refine Eq.trans ?_ hy
         ext
         simp
       · obtain ⟨y', hy', fy_eq⟩ := mem_map.mp y.2
         use ⟨y', hy'⟩  -- Porting note: added `⟨⟩`
-        refine' Eq.trans _ hy
+        refine Eq.trans ?_ hy
         rw [f.toLinearMap_apply] at fy_eq
         ext
         simp [fy_eq]

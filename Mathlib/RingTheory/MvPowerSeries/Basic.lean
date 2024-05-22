@@ -628,7 +628,7 @@ theorem X_pow_dvd_iff {s : σ} {n : ℕ} {φ : MvPowerSeries σ R} :
     rw [← hij, Finsupp.add_apply, Finsupp.single_eq_same]
     exact Nat.le_add_right n _
   · intro h
-    refine' ⟨fun m => coeff R (m + single s n) φ, _⟩
+    refine ⟨fun m => coeff R (m + single s n) φ, ?_⟩
     ext m
     by_cases H : m - single s n + single s n = m
     · rw [coeff_mul, Finset.sum_eq_single (single s n, m - single s n)]
@@ -641,7 +641,7 @@ theorem X_pow_dvd_iff {s : σ} {n : ℕ} {φ : MvPowerSeries σ R} :
         · exfalso
           apply hne
           rw [← hij, ← hi, Prod.mk.inj_iff]
-          refine' ⟨rfl, _⟩
+          refine ⟨rfl, ?_⟩
           ext t
           simp only [add_tsub_cancel_left, Finsupp.add_apply, Finsupp.tsub_apply]
         · exact zero_mul _
@@ -755,11 +755,11 @@ instance [Nonempty σ] [Nontrivial R] : Nontrivial (Subalgebra R (MvPowerSeries 
       classical
       rw [Ne, SetLike.ext_iff, not_forall]
       inhabit σ
-      refine' ⟨X default, _⟩
+      refine ⟨X default, ?_⟩
       simp only [Algebra.mem_bot, not_exists, Set.mem_range, iff_true_iff, Algebra.mem_top]
       intro x
       rw [ext_iff, not_forall]
-      refine' ⟨Finsupp.single default 1, _⟩
+      refine ⟨Finsupp.single default 1, ?_⟩
       simp [algebraMap_apply, coeff_C]⟩⟩
 
 end Algebra

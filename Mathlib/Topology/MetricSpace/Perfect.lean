@@ -94,7 +94,7 @@ theorem Perfect.exists_nat_bool_injection [CompleteSpace α] :
     exact ⟨(h1 _ _ _).1, (h1 _ _ _).2.1⟩
   let D : List Bool → Set α := fun l => (DP l).val
   have hanti : ClosureAntitone D := by
-    refine' Antitone.closureAntitone _ fun l => (DP l).property.1.closed
+    refine Antitone.closureAntitone ?_ fun l => (DP l).property.1.closed
     intro l a
     cases a
     · exact (h0 _ _ _).2.2.1
@@ -104,7 +104,7 @@ theorem Perfect.exists_nat_bool_injection [CompleteSpace α] :
     apply tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds hu
     · simp
     rw [eventually_atTop]
-    refine' ⟨1, fun m (hm : 1 ≤ m) => _⟩
+    refine ⟨1, fun m (hm : 1 ≤ m) => ?_⟩
     rw [Nat.one_le_iff_ne_zero] at hm
     rcases Nat.exists_eq_succ_of_ne_zero hm with ⟨n, rfl⟩
     dsimp

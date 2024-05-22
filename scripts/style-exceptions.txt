@@ -49,7 +49,6 @@ Mathlib/Data/Set/Lattice.lean : line 1 : ERR_NUM_LIN : 2400 file contains 2275 l
 Mathlib/Data/String/Lemmas.lean : line 10 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Data/UInt.lean : line 13 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Data/UnionFind.lean : line 10 : ERR_MOD : Module docstring missing, or too late
-Mathlib/FieldTheory/RatFunc.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1781 lines, try to split it up
 Mathlib/Geometry/Manifold/SmoothManifoldWithCorners.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1607 lines, try to split it up
 Mathlib/GroupTheory/MonoidLocalization.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2153 lines, try to split it up
 Mathlib/GroupTheory/Perm/Cycle/Basic.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1980 lines, try to split it up

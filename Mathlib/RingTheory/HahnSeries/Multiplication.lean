@@ -63,7 +63,7 @@ theorem support_one [MulZeroOneClass R] [Nontrivial R] : support (1 : HahnSeries
 
 @[simp]
 theorem order_one [MulZeroOneClass R] : order (1 : HahnSeries Γ R) = 0 := by
-  cases' subsingleton_or_nontrivial R with h h <;> haveI := h
+  cases subsingleton_or_nontrivial R
   · rw [Subsingleton.elim (1 : HahnSeries Γ R) 0, order_zero]
   · exact order_single one_ne_zero
 #align hahn_series.order_one HahnSeries.order_one
@@ -404,12 +404,12 @@ instance [CommRing R] : CommRing (HahnSeries Γ R) :=
 
 instance {Γ} [LinearOrderedCancelAddCommMonoid Γ] [NonUnitalNonAssocSemiring R] [NoZeroDivisors R] :
     NoZeroDivisors (HahnSeries Γ R) where
-    eq_zero_or_eq_zero_of_mul_eq_zero {x y} xy := by
-      contrapose! xy
-      rw [Ne, HahnSeries.ext_iff, Function.funext_iff, not_forall]
-      refine' ⟨x.order + y.order, _⟩
-      rw [mul_coeff_order_add_order x y, zero_coeff, mul_eq_zero]
-      simp [coeff_order_ne_zero, xy]
+  eq_zero_or_eq_zero_of_mul_eq_zero {x y} xy := by
+    contrapose! xy
+    rw [Ne, HahnSeries.ext_iff, Function.funext_iff, not_forall]
+    refine ⟨x.order + y.order, ?_⟩
+    rw [mul_coeff_order_add_order x y, zero_coeff, mul_eq_zero]
+    simp [coeff_order_ne_zero, xy]
 
 instance {Γ} [LinearOrderedCancelAddCommMonoid Γ] [Ring R] [IsDomain R] :
     IsDomain (HahnSeries Γ R) :=
@@ -616,11 +616,11 @@ instance [Nontrivial Γ] [Nontrivial R] : Nontrivial (Subalgebra R (HahnSeries �
   ⟨⟨⊥, ⊤, by
       rw [Ne, SetLike.ext_iff, not_forall]
       obtain ⟨a, ha⟩ := exists_ne (0 : Γ)
-      refine' ⟨single a 1, _⟩
+      refine ⟨single a 1, ?_⟩
       simp only [Algebra.mem_bot, not_exists, Set.mem_range, iff_true_iff, Algebra.mem_top]
       intro x
       rw [HahnSeries.ext_iff, Function.funext_iff, not_forall]
-      refine' ⟨a, _⟩
+      refine ⟨a, ?_⟩
       rw [single_coeff_same, algebraMap_apply, C_apply, single_coeff_of_ne ha]
       exact zero_ne_one⟩⟩
 
