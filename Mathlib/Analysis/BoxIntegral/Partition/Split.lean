@@ -311,9 +311,9 @@ theorem eventually_not_disjoint_imp_le_of_mem_splitMany (s : Finset (Box ι)) :
     ∀ᶠ t : Finset (ι × ℝ) in atTop, ∀ (I : Box ι), ∀ J ∈ s, ∀ J' ∈ splitMany I t,
       ¬Disjoint (J : WithBot (Box ι)) J' → J' ≤ J := by
   cases nonempty_fintype ι
-  refine' eventually_atTop.2
+  refine eventually_atTop.2
     ⟨s.biUnion fun J => Finset.univ.biUnion fun i => {(i, J.lower i), (i, J.upper i)},
-      fun t ht I J hJ J' hJ' => not_disjoint_imp_le_of_subset_of_mem_splitMany (fun i => _) hJ'⟩
+      fun t ht I J hJ J' hJ' => not_disjoint_imp_le_of_subset_of_mem_splitMany (fun i => ?_) hJ'⟩
   exact fun p hp =>
     ht (Finset.mem_biUnion.2 ⟨J, hJ, Finset.mem_biUnion.2 ⟨i, Finset.mem_univ _, hp⟩⟩)
 #align box_integral.prepartition.eventually_not_disjoint_imp_le_of_mem_split_many BoxIntegral.Prepartition.eventually_not_disjoint_imp_le_of_mem_splitMany

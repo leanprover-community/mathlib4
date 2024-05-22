@@ -720,6 +720,14 @@ theorem cancel_left {g : β →+* γ} {f₁ f₂ : α →+* β} (hg : Injective 
 
 end RingHom
 
+section Semiring
+variable [Semiring α] [Semiring β]
+
+protected lemma RingHom.map_pow (f : α →+* β) (a) : ∀ n : ℕ, f (a ^ n) = f a ^ n := map_pow f a
+#align ring_hom.map_pow RingHom.map_pow
+
+end Semiring
+
 namespace AddMonoidHom
 
 variable [CommRing α] [IsDomain α] [CommRing β] (f : β →+ α)

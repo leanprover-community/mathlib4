@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Associated
-import Mathlib.RingTheory.Int.Basic
-import Mathlib.Tactic.Ring
 import Mathlib.Algebra.Star.Unitary
+import Mathlib.RingTheory.Int.Basic
+import Mathlib.RingTheory.PrincipalIdealDomain
+import Mathlib.Tactic.Ring
 
 #align_import number_theory.zsqrtd.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -777,7 +778,7 @@ theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
     | ⟨Int.ofNat x, -[y+1]⟩ => ⟨0, y + 1, by simp [add_def, Int.negSucc_coe, add_assoc]; trivial⟩
     | ⟨-[x+1], Int.ofNat y⟩ => ⟨x + 1, 0, by simp [Int.negSucc_coe, add_assoc]; trivial⟩
     | ⟨-[x+1], -[y+1]⟩ => ⟨x + 1, y + 1, by simp [Int.negSucc_coe, add_assoc]; trivial⟩
-  refine' ⟨x + d * y, h.trans _⟩
+  refine ⟨x + d * y, h.trans ?_⟩
   change Nonneg ⟨↑x + d * y - ↑x, 0 - ↑y⟩
   cases' y with y
   · simp

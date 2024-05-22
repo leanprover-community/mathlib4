@@ -57,7 +57,7 @@ protected def scheme (X : LocallyRingedSpace.{u})
     obtain ⟨R, f, h₁, h₂⟩ := h x
     refine' ⟨⟨⟨_, h₂.base_open.isOpen_range⟩, h₁⟩, R, ⟨_⟩⟩
     apply LocallyRingedSpace.isoOfSheafedSpaceIso
-    refine' SheafedSpace.forgetToPresheafedSpace.preimageIso _
+    refine SheafedSpace.forgetToPresheafedSpace.preimageIso ?_
     apply PresheafedSpace.IsOpenImmersion.isoOfRangeEq (PresheafedSpace.ofRestrict _ _) f.1
     · exact Subtype.range_coe_subtype
     · exact Opens.openEmbedding _ -- Porting note (#11187): was `infer_instance`

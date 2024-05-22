@@ -283,9 +283,9 @@ theorem vertical_strip (hfd : DiffContOnCl ℂ f (re ⁻¹' Ioo a b))
     (hzb : re z ≤ b) : ‖f z‖ ≤ C := by
   suffices ‖f (z * I * -I)‖ ≤ C by simpa [mul_assoc] using this
   have H : MapsTo (· * -I) (im ⁻¹' Ioo a b) (re ⁻¹' Ioo a b) := fun z hz ↦ by simpa using hz
-  refine' horizontal_strip (f := fun z ↦ f (z * -I))
-    (hfd.comp (differentiable_id.mul_const _).diffContOnCl H) _ (fun z hz => hle_a _ _)
-    (fun z hz => hle_b _ _) _ _
+  refine horizontal_strip (f := fun z ↦ f (z * -I))
+    (hfd.comp (differentiable_id.mul_const _).diffContOnCl H) ?_ (fun z hz => hle_a _ ?_)
+    (fun z hz => hle_b _ ?_) ?_ ?_
   · rcases hB with ⟨c, hc, B, hO⟩
     refine ⟨c, hc, B, ?_⟩
     have : Tendsto (· * -I) (comap (|re ·|) atTop ⊓ 𝓟 (im ⁻¹' Ioo a b))
@@ -376,11 +376,11 @@ nonrec theorem quadrant_I (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Ioi 0))
     -- `f ∘ exp` with the same `c` and `B' = max B 0`.
     rw [sub_zero, div_div_cancel' Real.pi_pos.ne']
     rcases hB with ⟨c, hc, B, hO⟩
-    refine' ⟨c, hc, max B 0, _⟩
+    refine ⟨c, hc, max B 0, ?_⟩
     rw [← comap_comap, comap_abs_atTop, comap_sup, inf_sup_right]
     -- We prove separately the estimates as `ζ.re → ∞` and as `ζ.re → -∞`
-    refine' IsBigO.sup _
-      ((hO.comp_tendsto <| tendsto_exp_comap_re_atTop.inf H.tendsto).trans <| .of_bound 1 _)
+    refine IsBigO.sup ?_
+      ((hO.comp_tendsto <| tendsto_exp_comap_re_atTop.inf H.tendsto).trans <| .of_bound 1 ?_)
     · -- For the estimate as `ζ.re → -∞`, note that `f` is continuous within the first quadrant at
       -- zero, hence `f (exp ζ)` has a limit as `ζ.re → -∞`, `0 < ζ.im < π / 2`.
       have hc : ContinuousWithinAt f (Ioi 0 ×ℂ Ioi 0) 0 := by
@@ -859,16 +859,7 @@ theorem eqOn_right_half_plane_of_superexponential_decay {g : ℂ → E}
   suffices EqOn (f - g) 0 {z : ℂ | 0 ≤ z.re} by
     simpa only [EqOn, Pi.sub_apply, Pi.zero_apply, sub_eq_zero] using this
   refine' eq_zero_on_right_half_plane_of_superexponential_decay (hfd.sub hgd) _ hre _
-  · set l : Filter ℂ := cobounded ℂ ⊓ 𝓟 {z : ℂ | 0 < z.re}
-    suffices ∀ {c₁ c₂ B₁ B₂ : ℝ}, c₁ ≤ c₂ → B₁ ≤ B₂ → 0 ≤ B₂ →
-        (fun z => expR (B₁ * abs z ^ c₁)) =O[l] fun z => expR (B₂ * abs z ^ c₂) by
-      rcases hfexp with ⟨cf, hcf, Bf, hOf⟩; rcases hgexp with ⟨cg, hcg, Bg, hOg⟩
-      refine' ⟨max cf cg, max_lt hcf hcg, max 0 (max Bf Bg), _⟩
-      refine' .sub (hOf.trans <| this _ _ _) (hOg.trans <| this _ _ _) <;> simp
-    refine fun hc hB hB₂ ↦ .of_bound 1 ?_
-    filter_upwards [(eventually_cobounded_le_norm 1).filter_mono inf_le_left] with z hz
-    simp only [Real.norm_eq_abs, Complex.norm_eq_abs, Real.abs_exp, one_mul] at hz ⊢
-    gcongr; assumption
+  · exact isBigO_sub_exp_rpow hfexp hgexp
   · rcases hfim with ⟨Cf, hCf⟩; rcases hgim with ⟨Cg, hCg⟩
     exact ⟨Cf + Cg, fun x => norm_sub_le_of_le (hCf x) (hCg x)⟩
 #align phragmen_lindelof.eq_on_right_half_plane_of_superexponential_decay PhragmenLindelof.eqOn_right_half_plane_of_superexponential_decay

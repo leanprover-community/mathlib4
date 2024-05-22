@@ -875,7 +875,7 @@ orthonormal. -/
 theorem orthonormal_subtype_range {v : ι → E} (hv : Function.Injective v) :
     Orthonormal 𝕜 (Subtype.val : Set.range v → E) ↔ Orthonormal 𝕜 v := by
   let f : ι ≃ Set.range v := Equiv.ofInjective v hv
-  refine' ⟨fun h => h.comp f f.injective, fun h => _⟩
+  refine ⟨fun h => h.comp f f.injective, fun h => ?_⟩
   rw [← Equiv.self_comp_ofInjective_symm hv]
   exact h.comp f.symm f.symm.injective
 #align orthonormal_subtype_range orthonormal_subtype_range
@@ -946,7 +946,7 @@ theorem exists_maximal_orthonormal {s : Set E} (hs : Orthonormal 𝕜 (Subtype.v
       ∀ u ⊇ w, Orthonormal 𝕜 (Subtype.val : u → E) → u = w := by
   have := zorn_subset_nonempty { b | Orthonormal 𝕜 (Subtype.val : b → E) } ?_ _ hs
   · obtain ⟨b, bi, sb, h⟩ := this
-    refine' ⟨b, sb, bi, _⟩
+    refine ⟨b, sb, bi, ?_⟩
     exact fun u hus hu => h u hu hus
   · refine' fun c hc cc _c0 => ⟨⋃₀ c, _, _⟩
     · exact orthonormal_sUnion_of_directed cc.directedOn fun x xc => hc xc
@@ -1590,7 +1590,8 @@ theorem norm_inner_eq_norm_tfae (x y : E) :
       sub_eq_zero] at h
     rw [div_eq_inv_mul, mul_smul, h, inv_smul_smul₀]
     rwa [inner_self_ne_zero]
-  tfae_have 2 → 3; exact fun h => h.imp_right fun h' => ⟨_, h'⟩
+  tfae_have 2 → 3
+  · exact fun h => h.imp_right fun h' => ⟨_, h'⟩
   tfae_have 3 → 1
   · rintro (rfl | ⟨r, rfl⟩) <;>
     simp [inner_smul_right, norm_smul, inner_self_eq_norm_sq_to_K, inner_self_eq_norm_mul_norm,
@@ -2229,11 +2230,15 @@ theorem real_inner_I_smul_self (x : E) :
 set_option linter.uppercaseLean3 false in
 #align real_inner_I_smul_self real_inner_I_smul_self
 
-/-- A complex inner product implies a real inner product -/
-instance InnerProductSpace.complexToReal [NormedAddCommGroup G] [InnerProductSpace ℂ G] :
+/-- A complex inner product implies a real inner product. This cannot be an instance since it
+creates a diamond with `PiLp.innerProductSpace` because `re (sum i, inner (x i) (y i))` and
+`sum i, re (inner (x i) (y i))` are not defeq. -/
+def InnerProductSpace.complexToReal [NormedAddCommGroup G] [InnerProductSpace ℂ G] :
     InnerProductSpace ℝ G :=
   InnerProductSpace.rclikeToReal ℂ G
 #align inner_product_space.complex_to_real InnerProductSpace.complexToReal
+
+instance : InnerProductSpace ℝ ℂ := InnerProductSpace.complexToReal
 
 @[simp]
 protected theorem Complex.inner (w z : ℂ) : ⟪w, z⟫_ℝ = (conj w * z).re :=

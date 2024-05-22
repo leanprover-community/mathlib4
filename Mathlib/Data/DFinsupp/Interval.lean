@@ -124,7 +124,7 @@ theorem mem_rangeIcc_apply_iff : a ∈ f.rangeIcc g i ↔ f i ≤ a ∧ a ≤ g 
 
 theorem support_rangeIcc_subset [DecidableEq ι] [∀ i, DecidableEq (α i)] :
     (f.rangeIcc g).support ⊆ f.support ∪ g.support := by
-  refine' fun x hx => _
+  refine fun x hx => ?_
   by_contra h
   refine' not_mem_support_iff.2 _ hx
   rw [rangeIcc_apply, not_mem_support_iff.1 (not_mem_mono (subset_union_left _ _) h),

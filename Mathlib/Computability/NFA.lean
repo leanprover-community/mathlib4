@@ -138,8 +138,7 @@ namespace DFA
 
 /-- `M.toNFA` is an `NFA` constructed from a `DFA` `M` by using the same start and accept
   states and a transition function which sends `s` with input `a` to the singleton `M.step s a`. -/
-@[simps] def toNFA (M : DFA α σ') : NFA α σ'
-    where
+@[simps] def toNFA (M : DFA α σ') : NFA α σ' where
   step s a := {M.step s a}
   start := {M.start}
   accept := M.accept

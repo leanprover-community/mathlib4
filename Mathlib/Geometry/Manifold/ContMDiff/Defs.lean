@@ -136,9 +136,9 @@ theorem contDiffWithinAt_localInvariantProp (n : ℕ∞) :
     have := (mem_groupoid_of_pregroupoid.2 he).2.contDiffWithinAt this
     convert (h.comp' _ (this.of_le le_top)).mono_of_mem _ using 1
     · ext y; simp only [mfld_simps]
-    refine' mem_nhdsWithin.mpr
+    refine mem_nhdsWithin.mpr
       ⟨I.symm ⁻¹' e.target, e.open_target.preimage I.continuous_symm, by
-        simp_rw [mem_preimage, I.left_inv, e.mapsTo hx], _⟩
+        simp_rw [mem_preimage, I.left_inv, e.mapsTo hx], ?_⟩
     mfld_set_tac
   congr_of_forall := by
     intro s x f g h hx hf
@@ -555,7 +555,7 @@ theorem contMDiffOn_iff :
               (extChartAt I x).symm ⁻¹' (s ∩ f ⁻¹' (extChartAt I' y).source)) := by
   constructor
   · intro h
-    refine' ⟨fun x hx => (h x hx).1, fun x y z hz => _⟩
+    refine ⟨fun x hx => (h x hx).1, fun x y z hz => ?_⟩
     simp only [mfld_simps] at hz
     let w := (extChartAt I x).symm z
     have : w ∈ s := by simp only [w, hz, mfld_simps]
@@ -567,7 +567,7 @@ theorem contMDiffOn_iff :
     · mfld_set_tac
   · rintro ⟨hcont, hdiff⟩ x hx
     refine' (contDiffWithinAt_localInvariantProp I I' n).liftPropWithinAt_iff.mpr _
-    refine' ⟨hcont x hx, _⟩
+    refine ⟨hcont x hx, ?_⟩
     dsimp [ContDiffWithinAtProp]
     convert hdiff x (f x) (extChartAt I x x) (by simp only [hx, mfld_simps]) using 1
     mfld_set_tac

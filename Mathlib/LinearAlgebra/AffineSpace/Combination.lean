@@ -227,7 +227,7 @@ theorem weightedVSubOfPoint_filter_of_ne (w : ι → k) (p : ι → P) (b : P) {
     (s.filter pred).weightedVSubOfPoint p b w = s.weightedVSubOfPoint p b w := by
   rw [weightedVSubOfPoint_apply, weightedVSubOfPoint_apply, sum_filter_of_ne]
   intro i hi hne
-  refine' h i hi _
+  refine h i hi ?_
   intro hw
   simp [hw] at hne
 #align finset.weighted_vsub_of_point_filter_of_ne Finset.weightedVSubOfPoint_filter_of_ne
@@ -365,8 +365,7 @@ the weights.  This is intended to be used when the sum of the weights
 is 1, in which case it is an affine combination (barycenter) of the
 points with the given weights; that condition is specified as a
 hypothesis on those lemmas that require it. -/
-def affineCombination (p : ι → P) : (ι → k) →ᵃ[k] P
-    where
+def affineCombination (p : ι → P) : (ι → k) →ᵃ[k] P where
   toFun w := s.weightedVSubOfPoint p (Classical.choice S.nonempty) w +ᵥ Classical.choice S.nonempty
   linear := s.weightedVSub p
   map_vadd' w₁ w₂ := by simp_rw [vadd_vadd, weightedVSub, vadd_eq_add, LinearMap.map_add]
