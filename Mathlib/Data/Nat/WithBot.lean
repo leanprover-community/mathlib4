@@ -82,7 +82,7 @@ theorem add_one_le_of_lt {n m : WithBot ℕ} (h : n < m) : n + 1 ≤ m := by
   cases n
   · exact bot_le
   cases m
-  exacts [(not_lt_bot h).elim, WithBot.some_le_some.2 (WithBot.some_lt_some.1 h)]
+  exacts [(not_lt_bot h).elim, WithBot.coe_le_coe.2 (WithBot.coe_lt_coe.1 h)]
 #align nat.with_bot.add_one_le_of_lt Nat.WithBot.add_one_le_of_lt
 
 end WithBot

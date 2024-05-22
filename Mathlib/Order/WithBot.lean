@@ -217,7 +217,7 @@ theorem coe_le_coe : (a : WithBot α) ≤ b ↔ a ≤ b := by
 instance orderBot : OrderBot (WithBot α) where
   bot_le _ := fun _ h => Option.noConfusion h
 
-@[simp]
+@[simp, deprecated coe_le_coe "Don't mix Option and WithBot"]
 theorem some_le_some : @LE.le (WithBot α) _ (Option.some a) (Option.some b) ↔ a ≤ b :=
   coe_le_coe
 #align with_bot.some_le_some WithBot.some_le_some
@@ -260,7 +260,7 @@ theorem le_coe_iff : ∀ {x : WithBot α}, x ≤ b ↔ ∀ a : α, x = ↑a → 
 
 protected theorem _root_.IsMax.withBot (h : IsMax a) : IsMax (a : WithBot α)
   | ⊥, _ => bot_le
-  | (_ : α), hb => some_le_some.2 <| h <| some_le_some.1 hb
+  | (_ : α), hb => coe_le_coe.2 <| h <| coe_le_coe.1 hb
 #align is_max.with_bot IsMax.withBot
 
 theorem le_unbot_iff {a : α} {b : WithBot α} (h : b ≠ ⊥) :
@@ -496,7 +496,7 @@ instance decidableEq [DecidableEq α] : DecidableEq (WithBot α) :=
 instance decidableLE [LE α] [@DecidableRel α (· ≤ ·)] : @DecidableRel (WithBot α) (· ≤ ·)
   | none, x => isTrue fun a h => Option.noConfusion h
   | Option.some x, Option.some y =>
-      if h : x ≤ y then isTrue (some_le_some.2 h) else isFalse <| by simp [*]
+      if h : x ≤ y then isTrue (coe_le_coe.2 h) else isFalse <| by simp [*]
   | Option.some x, none => isFalse fun h => by rcases h x rfl with ⟨y, ⟨_⟩, _⟩
 #align with_bot.decidable_le WithBot.decidableLE
 
@@ -512,7 +512,7 @@ instance isTotal_le [LE α] [IsTotal α (· ≤ ·)] : IsTotal (WithBot α) (· 
     match a, b with
     | none, _ => Or.inl bot_le
     | _, none => Or.inr bot_le
-    | Option.some x, Option.some y => (total_of (· ≤ ·) x y).imp some_le_some.2 some_le_some.2⟩
+    | Option.some x, Option.some y => (total_of (· ≤ ·) x y).imp coe_le_coe.2 coe_le_coe.2⟩
 #align with_bot.is_total_le WithBot.isTotal_le
 
 instance linearOrder [LinearOrder α] : LinearOrder (WithBot α) :=
@@ -895,7 +895,7 @@ theorem coe_le_coe : (a : WithTop α) ≤ b ↔ a ≤ b := by
   simp only [← toDual_le_toDual_iff, toDual_apply_coe, WithBot.coe_le_coe, toDual_le_toDual]
 #align with_top.coe_le_coe WithTop.coe_le_coe
 
-@[simp]
+@[simp, deprecated coe_le_coe "Don't mix Option and WithTop"]
 theorem some_le_some : @LE.le (WithTop α) _ (Option.some a) (Option.some b) ↔ a ≤ b :=
   coe_le_coe
 #align with_top.some_le_some WithTop.some_le_some
