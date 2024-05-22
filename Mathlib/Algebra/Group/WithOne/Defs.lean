@@ -115,7 +115,7 @@ instance coeTC : CoeTC α (WithOne α) :=
   ⟨coe⟩
 
 /-- Recursor for `WithOne` using the preferred forms `1` and `↑a`. -/
-@[to_additive (attr := elab_as_elim)
+@[to_additive (attr := elab_as_elim, induction_eliminator)
   "Recursor for `WithZero` using the preferred forms `0` and `↑a`."]
 def recOneCoe {C : WithOne α → Sort*} (h₁ : C 1) (h₂ : ∀ a : α, C a) : ∀ n : WithOne α, C n
   | Option.none => h₁
@@ -127,7 +127,7 @@ def recOneCoe {C : WithOne α → Sort*} (h₁ : C 1) (h₂ : ∀ a : α, C a) :
 -- would automatically get this; right now in Lean 4...I don't
 -- know if it does or not, and I don't know how to check, so
 -- I'll add it manually just to be sure.
-attribute [elab_as_elim] WithZero.recZeroCoe
+attribute [elab_as_elim, induction_eliminator] WithZero.recZeroCoe
 
 
 /-- Deconstruct an `x : WithOne α` to the underlying value in `α`, given a proof that `x ≠ 1`. -/

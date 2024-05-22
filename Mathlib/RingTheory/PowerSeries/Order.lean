@@ -261,7 +261,7 @@ theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [CommRing R] (k : ℕ)
 
 -- TODO: link with `X_pow_dvd_iff`
 theorem X_pow_order_dvd (h : (order φ).Dom) : X ^ (order φ).get h ∣ φ := by
-  refine' ⟨PowerSeries.mk fun n => coeff R (n + (order φ).get h) φ, _⟩
+  refine ⟨PowerSeries.mk fun n => coeff R (n + (order φ).get h) φ, ?_⟩
   ext n
   simp only [coeff_mul, coeff_X_pow, coeff_mk, boole_mul, Finset.sum_ite,
     Finset.sum_const_zero, add_zero]
@@ -283,9 +283,9 @@ theorem order_eq_multiplicity_X {R : Type*} [Semiring R] [@DecidableRel R⟦X⟧
   · simp [hφ] at ho
   have hn : φ.order.get (order_finite_iff_ne_zero.mpr hφ) = n := by simp [ho]
   rw [← hn]
-  refine'
+  refine
     le_antisymm (le_multiplicity_of_pow_dvd <| X_pow_order_dvd (order_finite_iff_ne_zero.mpr hφ))
-      (PartENat.find_le _ _ _)
+      (PartENat.find_le _ _ ?_)
   rintro ⟨ψ, H⟩
   have := congr_arg (coeff R n) H
   rw [← (ψ.commute_X.pow_right _).eq, coeff_mul_of_lt_order, ← hn] at this
