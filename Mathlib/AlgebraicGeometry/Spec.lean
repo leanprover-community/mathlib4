@@ -144,8 +144,7 @@ set_option linter.uppercaseLean3 false in
 def Spec.toSheafedSpace : CommRingCat.{u}ᵒᵖ ⥤ SheafedSpace CommRingCat where
   obj R := Spec.sheafedSpaceObj (unop R)
   map f := Spec.sheafedSpaceMap f.unop
-  map_id R := by dsimp; rw [Spec.sheafedSpaceMap_id]
-  map_comp f g := by dsimp; rw [Spec.sheafedSpaceMap_comp]
+  map_comp f g := by simp [Spec.sheafedSpaceMap_comp]
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.to_SheafedSpace AlgebraicGeometry.Spec.toSheafedSpace
 
@@ -245,7 +244,6 @@ theorem localRingHom_comp_stalkIso {R S : CommRingCat.{u}} (f : R ⟶ S) (p : Pr
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.local_ring_hom_comp_stalk_iso AlgebraicGeometry.localRingHom_comp_stalkIso
 
-set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 /--
 The induced map of a ring homomorphism on the prime spectra, as a morphism of locally ringed spaces.
 -/
