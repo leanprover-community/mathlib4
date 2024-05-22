@@ -526,7 +526,7 @@ theorem exist_disjoint_covering_families {N : ℕ} {τ : ℝ} (hτ : 1 < τ)
     have h : p.color jy ∈ univ \ A := by
       rw [color_j]
       apply csInf_mem
-      refine' ⟨N, _⟩
+      refine ⟨N, ?_⟩
       simp only [A, not_exists, true_and_iff, exists_prop, mem_iUnion, mem_singleton_iff, not_and,
         mem_univ, mem_diff, Subtype.exists, Subtype.coe_mk]
       intro k hk _
@@ -751,7 +751,7 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
       · intro p hp q hq hpq
         rcases (mem_image _ _ _).1 hp with ⟨p', p'v, rfl⟩
         rcases (mem_image _ _ _).1 hq with ⟨q', q'v, rfl⟩
-        refine' hv p'v q'v fun hp'q' => _
+        refine hv p'v q'v fun hp'q' => ?_
         rw [hp'q'] at hpq
         exact hpq rfl
       · intro p hp q hq hpq
@@ -953,7 +953,7 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SigmaFinit
       simp only [s', not_exists, exists_prop, mem_iUnion, mem_closedBall, not_and, not_lt, not_le,
         mem_diff, not_forall]
       intro _
-      refine' ⟨x, hx, _⟩
+      refine ⟨x, hx, ?_⟩
       rw [dist_self]
       exact (hr0 x hx).2.1.le
     simp only [r, if_neg this]
