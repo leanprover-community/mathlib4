@@ -635,8 +635,8 @@ example : (forget₂ RingCat AddCommGroupCat).ReflectsIsomorphisms := by infer_i
   Category.comp_id (RingCat.ofHom f)
 
 @[simp] theorem RingHom.comp_id_commRingCat
-    {G : RingCat.{u}} {H : Type u} [Ring H] (f : G →+* H) : f.comp (𝟙 G) = f :=
-  Category.id_comp (RingCat.ofHom f)
+    {G : CommRingCat.{u}} {H : Type u} [CommRing H] (f : G →+* H) : f.comp (𝟙 G) = f :=
+  Category.id_comp (CommRingCat.ofHom f)
 @[simp] theorem RingHom.id_commRingCat_comp
-    {G : Type u} [Ring G] {H : RingCat.{u}} (f : G →+* H) : RingHom.comp (𝟙 H) f = f :=
-  Category.comp_id (RingCat.ofHom f)
+    {G : Type u} [CommRing G] {H : CommRingCat.{u}} (f : G →+* H) : RingHom.comp (𝟙 H) f = f :=
+  Category.comp_id (CommRingCat.ofHom f)
