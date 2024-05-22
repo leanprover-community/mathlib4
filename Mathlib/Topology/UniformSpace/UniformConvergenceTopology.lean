@@ -1022,11 +1022,10 @@ protected def uniformEquivProdArrow [UniformSpace γ] :
       erw [inf_uniformity]
       rw [uniformity_comap, uniformity_comap]
       rfl
+-- the relevant diagram commutes by definition
 #align uniform_on_fun.uniform_equiv_prod_arrow UniformOnFun.uniformEquivProdArrow
 
--- the relevant diagram commutes by definition
-variable (𝔖) (δ : ι → Type*) [∀ i, UniformSpace (δ i)]
-
+variable (𝔖) (δ : ι → Type*) [∀ i, UniformSpace (δ i)] in
 /-- The natural bijection between `α → Π i, δ i` and `Π i, α → δ i`, upgraded to a uniform
 isomorphism between `α →ᵤ[𝔖] (Π i, δ i)` and `Π i, α →ᵤ[𝔖] δ i`. -/
 protected def uniformEquivPiComm : (α →ᵤ[𝔖] ((i:ι) → δ i)) ≃ᵤ ((i:ι) → α →ᵤ[𝔖] δ i) :=
@@ -1048,9 +1047,8 @@ protected def uniformEquivPiComm : (α →ᵤ[𝔖] ((i:ι) → δ i)) ≃ᵤ ((
     refine' iInf_congr fun i => _
     rw [← UniformSpace.comap_comap, UniformOnFun.comap_eq]
     rfl
-#align uniform_on_fun.uniform_equiv_Pi_comm UniformOnFun.uniformEquivPiComm
-
 -- Like in the previous lemma, the diagram actually commutes by definition
+#align uniform_on_fun.uniform_equiv_Pi_comm UniformOnFun.uniformEquivPiComm
 
 /-- Suppose that the topology on `α` is defined by its restrictions to the sets of `𝔖`.
 
@@ -1065,6 +1063,23 @@ theorem isClosed_setOf_continuous_of_le [t : TopologicalSpace α]
     (huf s hs).continuousOn <| hu fun _ ↦ Continuous.continuousOn
   refine continuous_le_dom h ?_
   simpa only [continuous_iSup_dom, continuous_coinduced_dom] using fun s hs ↦ (hcont s hs).restrict
+
+variable (𝔖) in
+theorem foo {δ : ι → Type*} (φ : Π i, δ i → α) (𝔗 : ∀ i, Set (Set (δ i)))
+    (H₁ : ∀ i, MapsTo (φ i '' ·) (𝔗 i) 𝔖)
+    (H₂ : ∀ S ∈ 𝔖, ∃ I : Set ι, I.Finite ∧ S ⊆ ⋃ i ∈ I, range (φ i) ∧ ∀ i ∈ I, (φ i) ⁻¹' S ∈ 𝔗 i) :
+    𝒱(α, β, 𝔖, _) = ⨅ i, .comap (ofFun (𝔗 i) ∘ (· ∘ φ i) ∘ toFun 𝔖) 𝒱(δ i, β, 𝔗 i, _) := by
+  refine le_antisymm (le_iInf fun i ↦ ?_) (le_iInf₂ fun S hS ↦ ?_)
+  · rw [← uniformContinuous_iff]
+    exact UniformOnFun.precomp_uniformContinuous (H₁ i)
+  · rcases H₂ S hS with ⟨I, I_finite, I_cover, hSI⟩
+    refine UniformFun.hasBasis_uniformity S β |>.comap _ |>.ge_iff.mpr fun U hU ↦ ?_
+    simp_rw [iInf_uniformity]
+    refine mem_iInf_of_iInter I_finite
+      (fun i ↦ preimage_mem_comap <| UniformOnFun.gen_mem_uniformity β (𝔗 i) (hSI i i.2) hU)
+      (fun ⟨f, g⟩ hfg ⟨x, hx⟩ ↦ ?_)
+    rcases mem_iUnion₂.mp (I_cover hx) with ⟨i, hi, y, rfl⟩
+    exact mem_iInter.mp hfg ⟨i, hi⟩ y hx
 
 end UniformOnFun
 
