@@ -3741,7 +3741,6 @@ import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.Group
 import Mathlib.Tactic.GuardGoalNums
 import Mathlib.Tactic.GuardHypNums
-import Mathlib.Tactic.HashCommandLinter
 import Mathlib.Tactic.Have
 import Mathlib.Tactic.HaveI
 import Mathlib.Tactic.HelpCmd
@@ -3769,6 +3768,7 @@ import Mathlib.Tactic.Linarith.SimplexAlgorithm.SimplexAlgorithm
 import Mathlib.Tactic.Linarith.Verification
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Linter
+import Mathlib.Tactic.Linter.HashCommandLinter
 import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.Measurability
 import Mathlib.Tactic.Measurability.Init
