@@ -19,11 +19,11 @@ and `Mathlib/LinearAlgebra/FiniteDimensional.lean`.
 
 open Cardinal Submodule Set FiniteDimensional
 
-universe u
+universe u v
 
 section Module
 
-variable {K V : Type*} [Ring K] [StrongRankCondition K] [AddCommGroup V] [Module K V]
+variable {K : Type u} {V : Type v} [Ring K] [StrongRankCondition K] [AddCommGroup V] [Module K V]
 
 /-- The `ι` indexed basis on `V`, where `ι` is an empty type and `V` is zero-dimensional.
 
@@ -33,7 +33,7 @@ noncomputable def Basis.ofRankEqZero [Module.Free K V] {ι : Type*} [IsEmpty ι]
     (hV : Module.rank K V = 0) : Basis ι K V :=
   haveI : Subsingleton V := by
     obtain ⟨_, b⟩ := Module.Free.exists_basis (R := K) (M := V)
-    haveI := Cardinal.mk_eq_zero_iff.1 (hV ▸ b.mk_eq_rank'')
+    haveI := mk_eq_zero_iff.1 (hV ▸ b.mk_eq_rank'')
     exact b.repr.toEquiv.subsingleton
   Basis.empty _
 #align basis.of_rank_eq_zero Basis.ofRankEqZero
@@ -53,7 +53,7 @@ theorem le_rank_iff_exists_linearIndependent [Module.Free K V] {c : Cardinal} :
     have : LinearIndependent K ((↑) : Set.range t' → V) := by
       convert t.linearIndependent
       ext; exact (Basis.reindexRange_apply _ _).symm
-    rw [← t.mk_eq_rank'', Cardinal.le_mk_iff_exists_subset] at h
+    rw [← t.mk_eq_rank'', le_mk_iff_exists_subset] at h
     rcases h with ⟨s, hst, hsc⟩
     exact ⟨s, hsc, this.mono hst⟩
   · rintro ⟨s, rfl, si⟩
@@ -63,7 +63,7 @@ theorem le_rank_iff_exists_linearIndependent [Module.Free K V] {c : Cardinal} :
 theorem le_rank_iff_exists_linearIndependent_finset
     [Module.Free K V] {n : ℕ} : ↑n ≤ Module.rank K V ↔
     ∃ s : Finset V, s.card = n ∧ LinearIndependent K ((↑) : ↥(s : Set V) → V) := by
-  simp only [le_rank_iff_exists_linearIndependent, Cardinal.mk_set_eq_nat_iff_finset]
+  simp only [le_rank_iff_exists_linearIndependent, mk_set_eq_nat_iff_finset]
   constructor
   · rintro ⟨s, ⟨t, rfl, rfl⟩, si⟩
     exact ⟨t, rfl, si⟩
@@ -78,7 +78,7 @@ theorem rank_le_one_iff [Module.Free K V] :
   obtain ⟨κ, b⟩ := Module.Free.exists_basis (R := K) (M := V)
   constructor
   · intro hd
-    rw [← b.mk_eq_rank'', Cardinal.le_one_iff_subsingleton] at hd
+    rw [← b.mk_eq_rank'', le_one_iff_subsingleton] at hd
     rcases isEmpty_or_nonempty κ with hb | ⟨⟨i⟩⟩
     · use 0
       have h' : ∀ v : V, v = 0 := by
@@ -114,7 +114,7 @@ theorem rank_eq_one_iff [Module.Free K V] :
   · by_contra H
     rw [not_le, lt_one_iff_zero] at H
     obtain ⟨κ, b⟩ := Module.Free.exists_basis (R := K) (M := V)
-    haveI := Cardinal.mk_eq_zero_iff.1 (H ▸ b.mk_eq_rank'')
+    haveI := mk_eq_zero_iff.1 (H ▸ b.mk_eq_rank'')
     haveI := b.repr.toEquiv.subsingleton
     exact h (Subsingleton.elim _ _)
 
@@ -203,7 +203,7 @@ theorem finrank_eq_one_iff [Module.Free K V] (ι : Type*) [Unique ι] :
 theorem finrank_eq_one_iff' [Module.Free K V] :
     finrank K V = 1 ↔ ∃ v ≠ 0, ∀ w : V, ∃ c : K, c • v = w := by
   rw [← rank_eq_one_iff]
-  exact Cardinal.toNat_eq_iff one_ne_zero
+  exact toNat_eq_iff one_ne_zero
 #align finrank_eq_one_iff' finrank_eq_one_iff'
 
 -- Not sure why this aren't found automatically.
@@ -212,39 +212,45 @@ there is some `v : V` so every vector is a multiple of `v`.
 -/
 theorem finrank_le_one_iff [Module.Free K V] [Module.Finite K V] :
     finrank K V ≤ 1 ↔ ∃ v : V, ∀ w : V, ∃ c : K, c • v = w := by
-  rw [← rank_le_one_iff, ← finrank_eq_rank, ← Cardinal.natCast_le,
-    Nat.cast_one]
+  rw [← rank_le_one_iff, ← finrank_eq_rank, ← natCast_le, Nat.cast_one]
 #align finrank_le_one_iff finrank_le_one_iff
 
 theorem Submodule.finrank_le_one_iff_isPrincipal
     (W : Submodule K V) [Module.Free K W] [Module.Finite K W] :
     finrank K W ≤ 1 ↔ W.IsPrincipal := by
-  rw [← W.rank_le_one_iff_isPrincipal, ← finrank_eq_rank, ← Cardinal.natCast_le, Nat.cast_one]
+  rw [← W.rank_le_one_iff_isPrincipal, ← finrank_eq_rank, ← natCast_le, Nat.cast_one]
 #align submodule.finrank_le_one_iff_is_principal Submodule.finrank_le_one_iff_isPrincipal
 
 theorem Module.finrank_le_one_iff_top_isPrincipal [Module.Free K V] [Module.Finite K V] :
     finrank K V ≤ 1 ↔ (⊤ : Submodule K V).IsPrincipal := by
-  rw [← Module.rank_le_one_iff_top_isPrincipal, ← finrank_eq_rank, ← Cardinal.natCast_le,
-    Nat.cast_one]
+  rw [← Module.rank_le_one_iff_top_isPrincipal, ← finrank_eq_rank, ← natCast_le, Nat.cast_one]
 #align module.finrank_le_one_iff_top_is_principal Module.finrank_le_one_iff_top_isPrincipal
 
-theorem cardinal_mk_eq_cardinal_mk_field_pow_rank (K V : Type u) [Ring K] [StrongRankCondition K]
-    [AddCommGroup V] [Module K V] [Module.Free K V] [Module.Finite K V] :
-    #V = #K ^ Module.rank K V := by
+variable (K V) in
+theorem lift_cardinal_mk_eq_lift_cardinal_mk_field_pow_lift_rank [Module.Free K V]
+    [Module.Finite K V] : lift.{u} #V = lift.{v} #K ^ lift.{u} (Module.rank K V) := by
   haveI := nontrivial_of_invariantBasisNumber K
   obtain ⟨s, hs⟩ := Module.Free.exists_basis (R := K) (M := V)
   -- `Module.Finite.finite_basis` is in a much later file, so we copy its proof to here
   haveI : Finite s := by
     obtain ⟨t, ht⟩ := ‹Module.Finite K V›
     exact basis_finite_of_finite_spans _ t.finite_toSet ht hs
-  simp_rw [hs.repr.toEquiv.cardinal_eq, Finsupp.equivFunOnFinite.cardinal_eq, Cardinal.mk_arrow,
-    Cardinal.lift_id, hs.mk_eq_rank'']
+  have := lift_mk_eq'.2 ⟨hs.repr.toEquiv⟩
+  rwa [Finsupp.equivFunOnFinite.cardinal_eq, mk_arrow, hs.mk_eq_rank'', lift_power, lift_lift,
+    lift_lift, lift_umax'] at this
+
+theorem cardinal_mk_eq_cardinal_mk_field_pow_rank (K V : Type u) [Ring K] [StrongRankCondition K]
+    [AddCommGroup V] [Module K V] [Module.Free K V] [Module.Finite K V] :
+    #V = #K ^ Module.rank K V := by
+  simpa using lift_cardinal_mk_eq_lift_cardinal_mk_field_pow_lift_rank K V
 #align cardinal_mk_eq_cardinal_mk_field_pow_rank cardinal_mk_eq_cardinal_mk_field_pow_rank
 
-theorem cardinal_lt_aleph0_of_finiteDimensional (K V : Type u) [Ring K] [StrongRankCondition K]
-    [AddCommGroup V] [Module K V] [Finite K] [Module.Free K V] [Module.Finite K V] : #V < ℵ₀ := by
-  rw [cardinal_mk_eq_cardinal_mk_field_pow_rank K V]
-  exact Cardinal.power_lt_aleph0 (Cardinal.lt_aleph0_of_finite K) (rank_lt_aleph0 K V)
+variable (K V) in
+theorem cardinal_lt_aleph0_of_finiteDimensional [Finite K] [Module.Free K V] [Module.Finite K V] :
+    #V < ℵ₀ := by
+  rw [← lift_lt_aleph0.{v, u}, lift_cardinal_mk_eq_lift_cardinal_mk_field_pow_lift_rank K V]
+  exact power_lt_aleph0 (lift_lt_aleph0.2 (lt_aleph0_of_finite K))
+    (lift_lt_aleph0.2 (rank_lt_aleph0 K V))
 #align cardinal_lt_aleph_0_of_finite_dimensional cardinal_lt_aleph0_of_finiteDimensional
 
 end Module
@@ -259,19 +265,19 @@ theorem eq_bot_of_rank_le_one (h : Module.rank F S ≤ 1) [Module.Free F S] : S 
   obtain ⟨κ, b⟩ := Module.Free.exists_basis (R := F) (M := S)
   by_cases h1 : Module.rank F S = 1
   · refine bot_unique fun x hx ↦ Algebra.mem_bot.2 ?_
-    rw [← b.mk_eq_rank'', Cardinal.eq_one_iff_unique, ← unique_iff_subsingleton_and_nonempty] at h1
+    rw [← b.mk_eq_rank'', eq_one_iff_unique, ← unique_iff_subsingleton_and_nonempty] at h1
     obtain ⟨h1⟩ := h1
     obtain ⟨y, hy⟩ := (bijective_algebraMap_of_linearEquiv (b.repr ≪≫ₗ
       Finsupp.LinearEquiv.finsuppUnique _ _ _).symm).surjective ⟨x, hx⟩
     exact ⟨y, congr(Subtype.val $(hy))⟩
-  haveI := Cardinal.mk_eq_zero_iff.1 (b.mk_eq_rank''.symm ▸ lt_one_iff_zero.1 (h.lt_of_ne h1))
+  haveI := mk_eq_zero_iff.1 (b.mk_eq_rank''.symm ▸ lt_one_iff_zero.1 (h.lt_of_ne h1))
   haveI := b.repr.toEquiv.subsingleton
   exact False.elim <| one_ne_zero congr(S.val $(Subsingleton.elim 1 0))
 #align subalgebra.eq_bot_of_rank_le_one Subalgebra.eq_bot_of_rank_le_one
 
 theorem eq_bot_of_finrank_one (h : finrank F S = 1) [Module.Free F S] : S = ⊥ := by
   refine Subalgebra.eq_bot_of_rank_le_one ?_
-  rw [finrank, Cardinal.toNat_eq_one] at h
+  rw [finrank, toNat_eq_one] at h
   rw [h]
 #align subalgebra.eq_bot_of_finrank_one Subalgebra.eq_bot_of_finrank_one
 
@@ -285,7 +291,7 @@ theorem rank_eq_one_iff [Nontrivial E] [Module.Free F S] : Module.rank F S = 1 �
     rwa [← one_eq_range, rank_self, lift_one, lift_le_one_iff] at this
   · by_contra H
     rw [not_le, lt_one_iff_zero] at H
-    haveI := Cardinal.mk_eq_zero_iff.1 (H ▸ b.mk_eq_rank'')
+    haveI := mk_eq_zero_iff.1 (H ▸ b.mk_eq_rank'')
     haveI := b.repr.toEquiv.subsingleton
     exact one_ne_zero congr((⊥ : Subalgebra F E).val $(Subsingleton.elim 1 0))
 #align subalgebra.rank_eq_one_iff Subalgebra.rank_eq_one_iff
@@ -293,7 +299,7 @@ theorem rank_eq_one_iff [Nontrivial E] [Module.Free F S] : Module.rank F S = 1 �
 @[simp]
 theorem finrank_eq_one_iff [Nontrivial E] [Module.Free F S] : finrank F S = 1 ↔ S = ⊥ := by
   rw [← Subalgebra.rank_eq_one_iff]
-  exact Cardinal.toNat_eq_iff one_ne_zero
+  exact toNat_eq_iff one_ne_zero
 #align subalgebra.finrank_eq_one_iff Subalgebra.finrank_eq_one_iff
 
 theorem bot_eq_top_iff_rank_eq_one [Nontrivial E] [Module.Free F E] :
