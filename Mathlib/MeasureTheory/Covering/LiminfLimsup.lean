@@ -130,7 +130,7 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le_aux (p : ℕ → Prop) {s
   have h₄ : ∀ᶠ j in atTop, μ (B j) ≤ C * μ (b j) :=
     (hr.eventually (IsUnifLocDoublingMeasure.eventually_measure_le_scaling_constant_mul'
       μ M hM)).mono fun j hj => hj (w j)
-  refine' (h₃.and h₄).mono fun j hj₀ => _
+  refine (h₃.and h₄).mono fun j hj₀ => ?_
   change μ (W ∩ B j) / μ (B j) ≤ ↑(1 - C⁻¹)
   rcases eq_or_ne (μ (B j)) ∞ with (hB | hB); · simp [hB]
   apply ENNReal.div_le_of_le_mul

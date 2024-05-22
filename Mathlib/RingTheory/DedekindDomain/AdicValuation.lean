@@ -464,10 +464,6 @@ instance : NoZeroSMulDivisors R (v.adicCompletionIntegers K) where
     exact
       IsFractionRing.injective R K (UniformSpace.Completion.coe_injective K (Subtype.ext_iff.mp hc))
 
--- Working around a possible bug: see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/erw.20and.20IsDedekindDomain.2EHeightOneSpectrum.2EadicCompletion/near/439391917
-
-instance : Algebra (v.adicCompletion K) (v.adicCompletion K) := Algebra.id _
-
 instance AdicCompletion.instIsScalarTower' :
     IsScalarTower R (v.adicCompletionIntegers K) (v.adicCompletion K) where
   smul_assoc x y z := by simp only [Algebra.smul_def]; apply mul_assoc

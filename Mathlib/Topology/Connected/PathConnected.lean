@@ -1099,7 +1099,7 @@ theorem IsPathConnected.exists_path_through_family {n : ℕ}
     rw [Fin.val_cast_of_lt hk]
   use γ.cast (hpp' 0 n.zero_lt_succ) (hpp' n n.lt_succ_self)
   simp only [γ.cast_coe]
-  refine' And.intro hγ.2 _
+  refine And.intro hγ.2 ?_
   rintro ⟨i, hi⟩
   suffices p ⟨i, hi⟩ = p' i by convert hγ.1 i (Nat.le_of_lt_succ hi)
   rw [← hpp' i hi]
