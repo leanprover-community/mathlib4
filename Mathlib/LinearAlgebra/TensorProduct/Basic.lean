@@ -868,6 +868,12 @@ lemma range_mapIncl (p : Submodule R P) (q : Submodule R Q) :
   rw [mapIncl, map_range_eq_span_tmul]
   congr; ext; simp
 
+theorem map₂_eq_range_lift_comp_mapIncl (f : P →ₗ[R] Q →ₗ[R] M)
+    (p : Submodule R P) (q : Submodule R Q) :
+    Submodule.map₂ f p q = LinearMap.range (lift f ∘ₗ mapIncl p q) := by
+  simp_rw [LinearMap.range_comp, range_mapIncl, Submodule.map_span,
+    Set.image_image2, Submodule.map₂_eq_span_image2, lift.tmul]
+
 section
 
 variable {P' Q' : Type*}
