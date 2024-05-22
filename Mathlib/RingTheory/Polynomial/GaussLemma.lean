@@ -175,7 +175,7 @@ theorem Monic.irreducible_iff_irreducible_map_fraction_map [IsIntegrallyClosed R
         (Exists.intro (C a.leadingCoeff) <| by rw [← C_mul, this, C_1]))
   · exact Polynomial.map_injective _ (IsFractionRing.injective R K) H
   · by_contra h_contra
-    refine' hₐ _
+    refine hₐ ?_
     rw [← ha, ← Polynomial.coe_mapRingHom]
     exact
       IsUnit.mul (IsUnit.map _ h_contra)
@@ -207,8 +207,8 @@ theorem Monic.dvd_of_fraction_map_dvd_fraction_map [IsIntegrallyClosed R] {p q :
   obtain ⟨r, hr⟩ := h
   obtain ⟨d', hr'⟩ := IsIntegrallyClosed.eq_map_mul_C_of_dvd K hp (dvd_of_mul_left_eq _ hr.symm)
   rw [Monic.leadingCoeff, C_1, mul_one] at hr'
-  rw [← hr', ← Polynomial.map_mul] at hr
-  exact dvd_of_mul_right_eq _ (Polynomial.map_injective _ (IsFractionRing.injective R K) hr.symm)
+  · rw [← hr', ← Polynomial.map_mul] at hr
+    exact dvd_of_mul_right_eq _ (Polynomial.map_injective _ (IsFractionRing.injective R K) hr.symm)
   · exact Monic.of_mul_monic_left (hq.map (algebraMap R K)) (by simpa [← hr] using hp.map _)
 #align polynomial.monic.dvd_of_fraction_map_dvd_fraction_map Polynomial.Monic.dvd_of_fraction_map_dvd_fraction_map
 

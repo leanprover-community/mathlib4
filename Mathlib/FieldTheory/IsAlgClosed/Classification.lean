@@ -36,13 +36,13 @@ section AlgebraicClosure
 namespace Algebra.IsAlgebraic
 
 variable (R L : Type u) [CommRing R] [CommRing L] [IsDomain L] [Algebra R L]
-variable [NoZeroSMulDivisors R L] (halg : Algebra.IsAlgebraic R L)
+variable [NoZeroSMulDivisors R L] [Algebra.IsAlgebraic R L]
 
 theorem cardinal_mk_le_sigma_polynomial :
     #L ≤ #(Σ p : R[X], { x : L // x ∈ p.aroots L }) :=
   @mk_le_of_injective L (Σ p : R[X], {x : L | x ∈ p.aroots L})
     (fun x : L =>
-      let p := Classical.indefiniteDescription _ (halg x)
+      let p := Classical.indefiniteDescription _ (Algebra.IsAlgebraic.isAlgebraic x)
       ⟨p.1, x, by
         dsimp
         have h : p.1.map (algebraMap R L) ≠ 0 := by
@@ -64,7 +64,7 @@ of the base ring or `ℵ₀` -/
 theorem cardinal_mk_le_max : #L ≤ max #R ℵ₀ :=
   calc
     #L ≤ #(Σ p : R[X], { x : L // x ∈ p.aroots L }) :=
-      cardinal_mk_le_sigma_polynomial R L halg
+      cardinal_mk_le_sigma_polynomial R L
     _ = Cardinal.sum fun p : R[X] => #{x : L | x ∈ p.aroots L} := by
       rw [← mk_sigma]; rfl
     _ ≤ Cardinal.sum.{u, u} fun _ : R[X] => ℵ₀ :=
@@ -110,7 +110,7 @@ def equivOfTranscendenceBasis [IsAlgClosed K] [IsAlgClosed L] (e : ι ≃ κ)
   letI := isAlgClosure_of_transcendence_basis v hv
   letI := isAlgClosure_of_transcendence_basis w hw
   have e : Algebra.adjoin R (Set.range v) ≃+* Algebra.adjoin R (Set.range w) := by
-    refine' hv.1.aevalEquiv.symm.toRingEquiv.trans _
+    refine hv.1.aevalEquiv.symm.toRingEquiv.trans ?_
     refine' (AlgEquiv.ofAlgHom (MvPolynomial.rename e)
       (MvPolynomial.rename e.symm) _ _).toRingEquiv.trans _
     · ext; simp
@@ -135,7 +135,7 @@ theorem cardinal_le_max_transcendence_basis (hv : IsTranscendenceBasis R v) :
   calc
     #K ≤ max #(Algebra.adjoin R (Set.range v)) ℵ₀ :=
       letI := isAlgClosure_of_transcendence_basis v hv
-      Algebra.IsAlgebraic.cardinal_mk_le_max _ _ IsAlgClosure.algebraic
+      Algebra.IsAlgebraic.cardinal_mk_le_max _ _
     _ = max #(MvPolynomial ι R) ℵ₀ := by rw [Cardinal.eq.2 ⟨hv.1.aevalEquiv.toEquiv⟩]
     _ ≤ max (max (max #R #ι) ℵ₀) ℵ₀ := max_le_max MvPolynomial.cardinal_mk_le_max le_rfl
     _ = _ := by simp [max_assoc]

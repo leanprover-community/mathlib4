@@ -350,8 +350,7 @@ Note that for general (neither symmetric nor antisymmetric) bilinear maps this d
 chirality; in addition to this "left" orthogonal complement one could define a "right" orthogonal
 complement for which, for all `y` in `N`, `B y x = 0`.  This variant definition is not currently
 provided in mathlib. -/
-def orthogonalBilin (N : Submodule R₁ M₁) (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M) : Submodule R₁ M₁
-    where
+def orthogonalBilin (N : Submodule R₁ M₁) (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M) : Submodule R₁ M₁ where
   carrier := { m | ∀ n ∈ N, B.IsOrtho n m }
   zero_mem' x _ := B.isOrtho_zero_right x
   add_mem' hx hy n hn := by
@@ -663,7 +662,7 @@ theorem SeparatingLeft.congr (h : B.SeparatingLeft) :
     (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M)) B).SeparatingLeft := by
   intro x hx
   rw [← e₁.symm.map_eq_zero_iff]
-  refine' h (e₁.symm x) fun y ↦ _
+  refine h (e₁.symm x) fun y ↦ ?_
   specialize hx (e₂ y)
   simp only [LinearEquiv.arrowCongr_apply, LinearEquiv.symm_apply_apply,
     LinearEquiv.map_eq_zero_iff] at hx
@@ -746,14 +745,14 @@ variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup M₁] [Module 
 
 theorem IsRefl.nondegenerate_of_separatingLeft {B : M →ₗ[R] M →ₗ[R] M₁} (hB : B.IsRefl)
     (hB' : B.SeparatingLeft) : B.Nondegenerate := by
-  refine' ⟨hB', _⟩
+  refine ⟨hB', ?_⟩
   rw [separatingRight_iff_flip_ker_eq_bot, hB.ker_eq_bot_iff_ker_flip_eq_bot.mp]
   rwa [← separatingLeft_iff_ker_eq_bot]
 #align linear_map.is_refl.nondegenerate_of_separating_left LinearMap.IsRefl.nondegenerate_of_separatingLeft
 
 theorem IsRefl.nondegenerate_of_separatingRight {B : M →ₗ[R] M →ₗ[R] M₁} (hB : B.IsRefl)
     (hB' : B.SeparatingRight) : B.Nondegenerate := by
-  refine' ⟨_, hB'⟩
+  refine ⟨?_, hB'⟩
   rw [separatingLeft_iff_ker_eq_bot, hB.ker_eq_bot_iff_ker_flip_eq_bot.mpr]
   rwa [← separatingRight_iff_flip_ker_eq_bot]
 #align linear_map.is_refl.nondegenerate_of_separating_right LinearMap.IsRefl.nondegenerate_of_separatingRight
