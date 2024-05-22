@@ -11,6 +11,9 @@ import Qq
 -- Tools for analysing imports, like `#find_home`, `#minimize_imports`, ...
 import ImportGraph.Imports
 
+-- Linters
+import Mathlib.Command.Linter
+
 -- Now import all tactics defined in Mathlib that do not require theory files.
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.ApplyCongr
