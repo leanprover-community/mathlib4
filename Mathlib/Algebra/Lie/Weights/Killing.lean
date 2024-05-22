@@ -402,7 +402,6 @@ lemma exists_isSl2Triple_of_weight_isNonZero {α : Weight K H L} (hα : α.IsNon
   have hef := lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg heα hfα
   let h : H := ⟨⁅e, f'⁆, hef ▸ Submodule.smul_mem _ _ (Submodule.coe_mem _)⟩
   have hh : α h ≠ 0 := by
-    change (α : H →ₗ[K] K) h ≠ 0
     have : h = killingForm K L e f' • (cartanEquivDual H).symm α := by simp [Subtype.ext_iff, hef]
     rw [this, map_smul, smul_eq_mul, ne_eq, mul_eq_zero, not_or]
     exact ⟨hf, root_apply_cartanEquivDual_symm_ne_zero hα⟩
@@ -432,8 +431,7 @@ lemma _root_.IsSl2Triple.h_eq_coroot {α : Weight K H L} (hα : α.IsNonZero)
     exact smul_left_injective K ht.e_ne_zero this.symm
   suffices ∃ s : K, s • h' = coroot α by
     obtain ⟨s, hs⟩ := this
-    have := congr_arg (α : H →ₗ[K] K) hs
-    replace this : s = 1 := by simpa [root_apply_coroot hα, key] using this
+    replace this : s = 1 := by simpa [root_apply_coroot hα, key] using congr_arg α hs
     rwa [this, one_smul] at hs
   set α' := (cartanEquivDual H).symm α with hα'
   have h_eq : h' = killingForm K L e f • α' := by
@@ -464,8 +462,8 @@ lemma finrank_rootSpace_eq_one (α : Weight K H L) (hα : α.IsNonZero) :
         ← H.coe_bracket_of_module, lie_eq_smul_of_mem_rootSpace hyα (coroot α),
         root_apply_coroot hα]
       lie_e := by rw [← lie_skew, hy, neg_zero] }
-  obtain ⟨z, hz⟩ := P.exists_nat
-  replace hz : -2 = (z : ℤ) := by norm_cast at hz
+  obtain ⟨n, hn⟩ := P.exists_nat
+  replace hn : -2 = (n : ℤ) := by norm_cast at hn
   omega
 
 end CharZero
