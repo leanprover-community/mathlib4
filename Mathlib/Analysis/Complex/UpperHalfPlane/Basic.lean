@@ -72,9 +72,6 @@ instance canLift : CanLift ℂ ℍ ((↑) : ℍ → ℂ) fun z => 0 < z.im :=
   Subtype.canLift fun (z : ℂ) => 0 < z.im
 #align upper_half_plane.can_lift UpperHalfPlane.canLift
 
-lemma coe_image_eq : UpperHalfPlane.coe '' ⊤ = {z : ℂ | 0 < z.im} :=
-  Subtype.coe_image_univ _
-
 /-- Imaginary part -/
 def im (z : ℍ) :=
   (z : ℂ).im

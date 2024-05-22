@@ -186,7 +186,7 @@ lemma eisensteinSeries_tendstoLocallyUniformlyOn {k : ℤ} {N : ℕ} (hk : 3 ≤
     (a : Fin 2 → ZMod N) : TendstoLocallyUniformlyOn (fun (s : Finset (gammaSet N a )) ↦
       ↑ₕ(fun (z : ℍ) ↦ ∑ x in s, eisSummand k x z )) (↑ₕ(eisensteinSeries_SIF a k).toFun)
           Filter.atTop {z : ℂ | 0 < z.im} := by
-  rw [← coe_image_eq]
+  rw [← Subtype.coe_image_univ {z : ℂ | 0 < z.im}]
   apply TendstoLocallyUniformlyOn.comp (s := ⊤) _ _ _ (PartialHomeomorph.continuousOn_symm _)
   · simp only [SlashInvariantForm.toFun_eq_coe, Set.top_eq_univ, tendstoLocallyUniformlyOn_univ]
     apply eisensteinSeries_tendstoLocallyUniformly hk

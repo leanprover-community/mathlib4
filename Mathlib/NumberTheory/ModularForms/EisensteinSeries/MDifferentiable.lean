@@ -49,7 +49,7 @@ lemma eisSummand_extension_differentiableOn (k : ℤ) (a : Fin 2 → ℤ) :
   apply DifferentiableOn.congr (div_linear_zpow_differentiableOn k a)
   intro z hz
   lift z to ℍ using hz
-  exact extends_def (eisSummand k a) z
+  exact extends_def _ _
 
 /-- Eisenstein series are MDifferentiable (i.e. holomorphic functions from `ℍ → ℂ`). -/
 theorem eisensteinSeries_SIF_MDifferentiable {k : ℤ} {N : ℕ} (hk : 3 ≤ k) (a : Fin 2 → ZMod N) :
