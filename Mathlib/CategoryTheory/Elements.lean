@@ -90,8 +90,7 @@ theorem map_snd {F : C ⥤ Type w} {p q : F.Elements} (f : p ⟶ q) : (F.map f.v
 end CategoryOfElements
 
 instance groupoidOfElements {G : Type u} [Groupoid.{v} G] (F : G ⥤ Type w) :
-    Groupoid F.Elements
-    where
+    Groupoid F.Elements where
   inv {p q} f :=
     ⟨Groupoid.inv f.val,
       calc
@@ -129,8 +128,7 @@ instance : (π F).ReflectsIsomorphisms where
 /-- A natural transformation between functors induces a functor between the categories of elements.
 -/
 @[simps]
-def map {F₁ F₂ : C ⥤ Type w} (α : F₁ ⟶ F₂) : F₁.Elements ⥤ F₂.Elements
-    where
+def map {F₁ F₂ : C ⥤ Type w} (α : F₁ ⟶ F₂) : F₁.Elements ⥤ F₂.Elements where
   obj t := ⟨t.1, α.app t.1 t.2⟩
   map {t₁ t₂} k := ⟨k.1, by simpa [← map_snd] using (FunctorToTypes.naturality _ _ α k.1 t₁.2).symm⟩
 #align category_theory.category_of_elements.map CategoryTheory.CategoryOfElements.map
@@ -193,8 +191,7 @@ open Opposite
 given by `CategoryTheory.yonedaEquiv`.
 -/
 @[simps]
-def toCostructuredArrow (F : Cᵒᵖ ⥤ Type v) : F.Elementsᵒᵖ ⥤ CostructuredArrow yoneda F
-    where
+def toCostructuredArrow (F : Cᵒᵖ ⥤ Type v) : F.Elementsᵒᵖ ⥤ CostructuredArrow yoneda F where
   obj X := CostructuredArrow.mk (yonedaEquiv.symm (unop X).2)
   map f := by
     fapply CostructuredArrow.homMk

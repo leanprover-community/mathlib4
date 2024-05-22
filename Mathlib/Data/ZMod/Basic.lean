@@ -568,7 +568,7 @@ theorem nat_coe_zmod_eq_iff (p : ℕ) (n : ℕ) (z : ZMod p) [NeZero p] :
     ↑n = z ↔ ∃ k, n = z.val + p * k := by
   constructor
   · rintro rfl
-    refine' ⟨n / p, _⟩
+    refine ⟨n / p, ?_⟩
     rw [val_natCast, Nat.mod_add_div]
   · rintro ⟨k, rfl⟩
     rw [Nat.cast_add, natCast_zmod_val, Nat.cast_mul, natCast_self, zero_mul,
@@ -579,7 +579,7 @@ theorem int_coe_zmod_eq_iff (p : ℕ) (n : ℤ) (z : ZMod p) [NeZero p] :
     ↑n = z ↔ ∃ k, n = z.val + p * k := by
   constructor
   · rintro rfl
-    refine' ⟨n / p, _⟩
+    refine ⟨n / p, ?_⟩
     rw [val_intCast, Int.emod_add_ediv]
   · rintro ⟨k, rfl⟩
     rw [Int.cast_add, Int.cast_mul, Int.cast_natCast, Int.cast_natCast, natCast_val,
@@ -823,8 +823,7 @@ protected theorem inv_eq_of_mul_eq_one (n : ℕ) (a b : ZMod n) (h : a * b = 1) 
 -- TODO: this equivalence is true for `ZMod 0 = ℤ`, but needs to use different functions.
 /-- Equivalence between the units of `ZMod n` and
 the subtype of terms `x : ZMod n` for which `x.val` is coprime to `n` -/
-def unitsEquivCoprime {n : ℕ} [NeZero n] : (ZMod n)ˣ ≃ { x : ZMod n // Nat.Coprime x.val n }
-    where
+def unitsEquivCoprime {n : ℕ} [NeZero n] : (ZMod n)ˣ ≃ { x : ZMod n // Nat.Coprime x.val n } where
   toFun x := ⟨x, val_coe_unit_coprime x⟩
   invFun x := unitOfCoprime x.1.val x.2
   left_inv := fun ⟨_, _, _, _⟩ => Units.ext (natCast_zmod_val _)
