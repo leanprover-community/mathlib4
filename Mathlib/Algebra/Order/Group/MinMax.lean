@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.Group.Abs
-import Mathlib.Algebra.Order.Monoid.MinMax
+import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 
 #align_import algebra.order.group.min_max from "leanprover-community/mathlib"@"10b4e499f43088dd3bb7b5796184ad5216648ab1"
 

@@ -6,7 +6,7 @@ Authors: Damiano Testa
 import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.Algebra.Order.Monoid.Lemmas
+import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 import Mathlib.Tactic.NthRewrite
 
 #align_import algebra.regular.basic from "leanprover-community/mathlib"@"5cd3c25312f210fec96ba1edb2aebfb2ccf2010f"
