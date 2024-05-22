@@ -745,7 +745,7 @@ def orderIsoPUnitSumLex : WithBot α ≃o PUnit ⊕ₗ α :=
     · simp only [elim_inr, elim_inl, Lex.sep, none_le]
     · simp only [elim_inl, elim_inr, lex_inr_inl, false_iff]
       exact not_coe_le_bot _
-    · simp only [elim_inl, lex_inr_inr, some_le_some]
+    · simp only [elim_inl, lex_inr_inr, coe_le_coe]
   ⟩
 #align with_bot.order_iso_punit_sum_lex WithBot.orderIsoPUnitSumLex
 
@@ -787,7 +787,7 @@ def orderIsoSumLexPUnit : WithTop α ≃o α ⊕ₗ PUnit :=
     · simp only [lex_inr_inl, false_iff]
       exact not_top_le_coe _
     · simp only [Lex.sep, le_none]
-    · simp only [lex_inl_inl, some_le_some]
+    · simp only [lex_inl_inl, coe_le_coe]
 
   ⟩
 #align with_top.order_iso_sum_lex_punit WithTop.orderIsoSumLexPUnit

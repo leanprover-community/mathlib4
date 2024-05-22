@@ -101,7 +101,7 @@ protected theorem map_one {β} (f : α → β) : (1 : WithTop α).map f = (f 1 :
 #align with_top.map_zero WithTop.map_zero
 
 instance zeroLEOneClass [Zero α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithTop α) :=
-  ⟨some_le_some.2 zero_le_one⟩
+  ⟨coe_le_coe.2 zero_le_one⟩
 
 end One
 
@@ -530,7 +530,7 @@ protected theorem map_one {β} (f : α → β) : (1 : WithBot α).map f = (f 1 :
 #align with_bot.map_zero WithBot.map_zero
 
 instance zeroLEOneClass [Zero α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithBot α) :=
-  ⟨some_le_some.2 zero_le_one⟩
+  ⟨coe_le_coe.2 zero_le_one⟩
 
 end One
 

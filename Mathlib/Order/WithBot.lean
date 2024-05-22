@@ -900,16 +900,15 @@ theorem some_le_some : @LE.le (WithTop α) _ (Option.some a) (Option.some b) ↔
   coe_le_coe
 #align with_top.some_le_some WithTop.some_le_some
 
-@[simp]
-theorem le_none {a : WithTop α} : @LE.le (WithTop α) _ a none :=
-  toDual_le_toDual_iff.mp (@WithBot.none_le αᵒᵈ _ _)
+instance orderTop : OrderTop (WithTop α) where
+  le_top := fun _ => toDual_le_toDual_iff.mp bot_le
+
+@[simp, deprecated le_top "Don't mix Option and WithTop"]
+theorem le_none {a : WithTop α} : @LE.le (WithTop α) _ a none := le_top
 #align with_top.le_none WithTop.le_none
 
-instance orderTop : OrderTop (WithTop α) :=
-  { WithTop.top with le_top := fun _ => le_none }
-
 instance orderBot [OrderBot α] : OrderBot (WithTop α) where
-  bot := some ⊥
+  bot := (⊥ : α)
   bot_le o a ha := by cases ha; exact ⟨_, rfl, bot_le⟩
 #align with_top.order_bot WithTop.orderBot
 
