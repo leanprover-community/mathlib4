@@ -65,7 +65,7 @@ instance : LocPathConnectedSpace ℍ :=
   locPathConnected_of_isOpen <| isOpen_lt continuous_const Complex.continuous_im
 
 instance : NoncompactSpace ℍ := by
-  refine' ⟨fun h => _⟩
+  refine ⟨fun h => ?_⟩
   have : IsCompact (Complex.im ⁻¹' Ioi 0) := isCompact_iff_isCompact_univ.2 h
   replace := this.isClosed.closure_eq
   rw [closure_preimage_im, closure_Ioi, Set.ext_iff] at this
@@ -82,6 +82,20 @@ def verticalStrip (A B : ℝ) := {z : ℍ | |z.re| ≤ A ∧ B ≤ z.im}
 
 theorem mem_verticalStrip_iff (A B : ℝ) (z : ℍ) : z ∈ verticalStrip A B ↔ |z.re| ≤ A ∧ B ≤ z.im :=
   Iff.rfl
+
+@[gcongr]
+lemma verticalStrip_mono {A B A' B' : ℝ} (hA : A ≤ A') (hB : B' ≤ B) :
+    verticalStrip A B ⊆ verticalStrip A' B' := by
+  rintro z ⟨hzre, hzim⟩
+  exact ⟨hzre.trans hA, hB.trans hzim⟩
+
+@[gcongr]
+lemma verticalStrip_mono_left {A A'} (h : A ≤ A') (B) : verticalStrip A B ⊆ verticalStrip A' B :=
+  verticalStrip_mono h le_rfl
+
+@[gcongr]
+lemma verticalStrip_anti_right (A) {B B'} (h : B' ≤ B) : verticalStrip A B ⊆ verticalStrip A B' :=
+  verticalStrip_mono le_rfl h
 
 lemma subset_verticalStrip_of_isCompact {K : Set ℍ} (hK : IsCompact K) :
     ∃ A B : ℝ, 0 < B ∧ K ⊆ verticalStrip A B := by

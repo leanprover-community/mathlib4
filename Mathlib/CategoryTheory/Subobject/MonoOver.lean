@@ -278,7 +278,7 @@ theorem map_obj_arrow (f : X ⟶ Y) [Mono f] (g : MonoOver X) : ((map f).obj g).
 
 instance full_map (f : X ⟶ Y) [Mono f] : Functor.Full (map f) where
   map_surjective {g h} e := by
-    refine' ⟨homMk e.left _, rfl⟩
+    refine ⟨homMk e.left ?_, rfl⟩
     · rw [← cancel_mono f, assoc]
       apply w e
 #align category_theory.mono_over.full_map CategoryTheory.MonoOver.full_map
@@ -403,11 +403,11 @@ def imageForgetAdj : image ⊣ forget X :=
             exact (Over.w k).symm } }
 #align category_theory.mono_over.image_forget_adj CategoryTheory.MonoOver.imageForgetAdj
 
-instance : IsRightAdjoint (forget X) where
-  left := image
-  adj := imageForgetAdj
+instance : (forget X).IsRightAdjoint :=
+  ⟨_, ⟨imageForgetAdj⟩⟩
 
 instance reflective : Reflective (forget X) where
+  adj := imageForgetAdj
 #align category_theory.mono_over.reflective CategoryTheory.MonoOver.reflective
 
 /-- Forgetting that a monomorphism over `X` is a monomorphism, then taking its image,

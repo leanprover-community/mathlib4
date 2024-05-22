@@ -160,7 +160,7 @@ variable {A : Type*} [CommRing R] [CommRing A]
 
 theorem scaleRoots.isWeaklyEisensteinAt (p : R[X]) {x : R} {P : Ideal R} (hP : x ∈ P) :
     (scaleRoots p x).IsWeaklyEisensteinAt P := by
-  refine' ⟨fun i => _⟩
+  refine ⟨fun i => ?_⟩
   rw [coeff_scaleRoots]
   rw [natDegree_scaleRoots, ← tsub_pos_iff_lt] at i
   exact Ideal.mul_mem_left _ _ (Ideal.pow_mem_of_mem P hP _ i)
@@ -175,7 +175,7 @@ theorem dvd_pow_natDegree_of_eval₂_eq_zero {f : R →+* A} (hf : Function.Inje
           (Ideal.mem_span_singleton.mpr <| dvd_refl x)).pow_natDegree_le_of_root_of_monic_mem
       _ ((monic_scaleRoots_iff x).mpr hp) _ le_rfl
   rw [injective_iff_map_eq_zero'] at hf
-  have : eval₂ _ _ (p.scaleRoots x) = 0 := scaleRoots_eval₂_eq_zero f h
+  have : eval₂ f _ (p.scaleRoots x) = 0 := scaleRoots_eval₂_eq_zero f h
   rwa [hz, Polynomial.eval₂_at_apply, hf] at this
 #align polynomial.dvd_pow_nat_degree_of_eval₂_eq_zero Polynomial.dvd_pow_natDegree_of_eval₂_eq_zero
 

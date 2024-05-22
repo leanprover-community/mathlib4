@@ -5,7 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.LinearAlgebra.Quotient
-import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Nilpotent.Defs
 
 #align_import ring_theory.nilpotent from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
@@ -110,6 +110,12 @@ lemma isNilpotent_toMatrix_iff (b : Basis ι R M) (f : M →ₗ[R] M) :
 end LinearMap
 
 namespace Module.End
+
+lemma isNilpotent.restrict {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    {f : M →ₗ[R] M} {p : Submodule R M} (hf : MapsTo f p p) (hnil : IsNilpotent f) :
+    IsNilpotent (f.restrict hf) := by
+  obtain ⟨n, hn⟩ := hnil
+  exact ⟨n, LinearMap.ext fun m ↦ by simp [LinearMap.pow_restrict n, LinearMap.restrict_apply, hn]⟩
 
 variable {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
 variable {f : Module.End R M} {p : Submodule R M} (hp : p ≤ p.comap f)

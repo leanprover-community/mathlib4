@@ -128,7 +128,7 @@ theorem linearly_dependent_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : F}
   obtain ⟨a, b, h₁, h₂⟩ :=
     IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt_1d H (hasStrictFDerivAt_norm_sq x₀)
       (hT.isSymmetric.hasStrictFDerivAt_reApplyInnerSelf x₀)
-  refine' ⟨a, b, h₁, _⟩
+  refine ⟨a, b, h₁, ?_⟩
   apply (InnerProductSpace.toDualMap ℝ F).injective
   simp only [LinearIsometry.map_add, LinearIsometry.map_smul, LinearIsometry.map_zero]
   -- Note: #8386 changed `map_smulₛₗ` into `map_smulₛₗ _`
@@ -146,7 +146,7 @@ theorem eq_smul_self_of_isLocalExtrOn_real (hT : IsSelfAdjoint T) {x₀ : F}
   · simp [hx₀]
   by_cases hb : b = 0
   · have : a ≠ 0 := by simpa [hb] using h₁
-    refine' absurd _ hx₀
+    refine absurd ?_ hx₀
     apply smul_right_injective F this
     simpa [hb] using h₂
   let c : ℝ := -b⁻¹ * a
@@ -180,7 +180,7 @@ centred at the origin is an eigenvector of `T`. -/
 theorem hasEigenvector_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : E} (hx₀ : x₀ ≠ 0)
     (hextr : IsLocalExtrOn T.reApplyInnerSelf (sphere (0 : E) ‖x₀‖) x₀) :
     HasEigenvector (T : E →ₗ[𝕜] E) (↑(T.rayleighQuotient x₀)) x₀ := by
-  refine' ⟨_, hx₀⟩
+  refine ⟨?_, hx₀⟩
   rw [Module.End.mem_eigenspace_iff]
   exact hT.eq_smul_self_of_isLocalExtrOn hextr
 #align is_self_adjoint.has_eigenvector_of_is_local_extr_on IsSelfAdjoint.hasEigenvector_of_isLocalExtrOn
@@ -248,7 +248,7 @@ theorem hasEigenvalue_iSup_of_finiteDimensional (hT : T.IsSymmetric) :
   have H₂ : (sphere (0 : E) ‖x‖).Nonempty := ⟨x, by simp⟩
   -- key point: in finite dimension, a continuous function on the sphere has a max
   obtain ⟨x₀, hx₀', hTx₀⟩ :=
-    H₁.exists_forall_ge H₂ T'.val.reApplyInnerSelf_continuous.continuousOn
+    H₁.exists_isMaxOn H₂ T'.val.reApplyInnerSelf_continuous.continuousOn
   have hx₀ : ‖x₀‖ = ‖x‖ := by simpa using hx₀'
   have : IsMaxOn T'.val.reApplyInnerSelf (sphere 0 ‖x₀‖) x₀ := by simpa only [← hx₀] using hTx₀
   have hx₀_ne : x₀ ≠ 0 := by
@@ -268,7 +268,7 @@ theorem hasEigenvalue_iInf_of_finiteDimensional (hT : T.IsSymmetric) :
   have H₂ : (sphere (0 : E) ‖x‖).Nonempty := ⟨x, by simp⟩
   -- key point: in finite dimension, a continuous function on the sphere has a min
   obtain ⟨x₀, hx₀', hTx₀⟩ :=
-    H₁.exists_forall_le H₂ T'.val.reApplyInnerSelf_continuous.continuousOn
+    H₁.exists_isMinOn H₂ T'.val.reApplyInnerSelf_continuous.continuousOn
   have hx₀ : ‖x₀‖ = ‖x‖ := by simpa using hx₀'
   have : IsMinOn T'.val.reApplyInnerSelf (sphere 0 ‖x₀‖) x₀ := by simpa only [← hx₀] using hTx₀
   have hx₀_ne : x₀ ≠ 0 := by

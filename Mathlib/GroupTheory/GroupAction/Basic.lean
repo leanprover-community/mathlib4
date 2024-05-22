@@ -3,12 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Data.Setoid.Basic
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.GroupAction.Group
-import Mathlib.Data.Setoid.Basic
-import Mathlib.Data.Set.Pointwise.SMul
-import Mathlib.GroupTheory.Subgroup.Basic
 
 #align_import group_theory.group_action.basic from "leanprover-community/mathlib"@"d30d31261cdb4d2f5e612eabc3c4bf45556350d5"
 
@@ -435,7 +435,7 @@ theorem quotient_preimage_image_eq_union_mul (U : Set α) :
     rw [Set.mem_iUnion] at hx
     obtain ⟨g, u, hu₁, hu₂⟩ := hx
     rw [Set.mem_preimage, Set.mem_image]
-    refine' ⟨g⁻¹ • a, _, by simp only [f, Quotient.eq']; use g⁻¹⟩
+    refine ⟨g⁻¹ • a, ?_, by simp only [f, Quotient.eq']; use g⁻¹⟩
     rw [← hu₂]
     convert hu₁
     simp only [inv_smul_smul]

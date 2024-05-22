@@ -337,12 +337,12 @@ theorem midpoint_mem_segment [Invertible (2 : 𝕜)] (x y : E) : midpoint 𝕜 x
 #align midpoint_mem_segment midpoint_mem_segment
 
 theorem mem_segment_sub_add [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x - y -[𝕜] x + y] := by
-  convert @midpoint_mem_segment 𝕜 _ _ _ _ _ _ _
+  convert @midpoint_mem_segment 𝕜 _ _ _ _ _ (x - y) (x + y)
   rw [midpoint_sub_add]
 #align mem_segment_sub_add mem_segment_sub_add
 
 theorem mem_segment_add_sub [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x + y -[𝕜] x - y] := by
-  convert @midpoint_mem_segment 𝕜 _ _ _ _ _ _ _
+  convert @midpoint_mem_segment 𝕜 _ _ _ _ _ (x + y) (x - y)
   rw [midpoint_add_sub]
 #align mem_segment_add_sub mem_segment_add_sub
 
@@ -377,7 +377,7 @@ theorem mem_segment_iff_div :
     use a, b, ha, hb
     simp [*]
   · rintro ⟨a, b, ha, hb, hab, rfl⟩
-    refine' ⟨a / (a + b), b / (a + b), by positivity, by positivity, _, rfl⟩
+    refine ⟨a / (a + b), b / (a + b), by positivity, by positivity, ?_, rfl⟩
     rw [← add_div, div_self hab.ne']
 #align mem_segment_iff_div mem_segment_iff_div
 
@@ -389,7 +389,7 @@ theorem mem_openSegment_iff_div : x ∈ openSegment 𝕜 y z ↔
     rw [hab, div_one, div_one]
   · rintro ⟨a, b, ha, hb, rfl⟩
     have hab : 0 < a + b := by positivity
-    refine' ⟨a / (a + b), b / (a + b), by positivity, by positivity, _, rfl⟩
+    refine ⟨a / (a + b), b / (a + b), by positivity, by positivity, ?_, rfl⟩
     rw [← add_div, div_self hab.ne']
 #align mem_open_segment_iff_div mem_openSegment_iff_div
 

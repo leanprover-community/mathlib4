@@ -212,7 +212,7 @@ variable {p a}
 
 theorem coe_eq_coe_iff_of_mem_Ico {x y : 𝕜} (hx : x ∈ Ico a (a + p)) (hy : y ∈ Ico a (a + p)) :
     (x : AddCircle p) = y ↔ x = y := by
-  refine' ⟨fun h => _, by tauto⟩
+  refine ⟨fun h => ?_, by tauto⟩
   suffices (⟨x, hx⟩ : Ico a (a + p)) = ⟨y, hy⟩ by exact Subtype.mk.inj this
   apply_fun equivIco p a at h
   rw [← (equivIco p a).right_inv ⟨x, hx⟩, ← (equivIco p a).right_inv ⟨y, hy⟩]
@@ -529,9 +529,7 @@ theorem card_addOrderOf_eq_totient {n : ℕ} :
 
 theorem finite_setOf_add_order_eq {n : ℕ} (hn : 0 < n) :
     { u : AddCircle p | addOrderOf u = n }.Finite :=
-  finite_coe_iff.mp <|
-    Nat.finite_of_card_ne_zero <| by
-      simpa only [coe_setOf, card_addOrderOf_eq_totient p] using (Nat.totient_pos hn).ne'
+  finite_coe_iff.mp <| Nat.finite_of_card_ne_zero <| by simp [hn.ne']
 #align add_circle.finite_set_of_add_order_eq AddCircle.finite_setOf_add_order_eq
 
 end FiniteOrderPoints

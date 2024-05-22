@@ -46,7 +46,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
           (Q.parts.filter fun i => card i = m + 1).card = b := by
   -- Get rid of the easy case `m = 0`
   obtain rfl | m_pos := m.eq_zero_or_pos
-  · refine' ⟨⊥, by simp, _, by simpa using hs.symm⟩
+  · refine' ⟨⊥, by simp, _, by simpa [Finset.filter_true_of_mem] using hs.symm⟩
     simp only [le_zero_iff, card_eq_zero, mem_biUnion, exists_prop, mem_filter, id, and_assoc,
       sdiff_eq_empty_iff_subset, subset_iff]
     exact fun x hx a ha =>

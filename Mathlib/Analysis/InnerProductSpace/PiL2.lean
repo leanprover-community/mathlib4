@@ -102,8 +102,7 @@ theorem PiLp.inner_apply {ι : Type*} [Fintype ι] {f : ι → Type*} [∀ i, No
 
 /-- The standard real/complex Euclidean space, functions on a finite type. For an `n`-dimensional
 space use `EuclideanSpace 𝕜 (Fin n)`. -/
-@[reducible]
-def EuclideanSpace (𝕜 : Type*) (n : Type*) : Type _ :=
+abbrev EuclideanSpace (𝕜 : Type*) (n : Type*) : Type _ :=
   PiLp 2 fun _ : n => 𝕜
 #align euclidean_space EuclideanSpace
 
@@ -186,7 +185,7 @@ def DirectSum.IsInternal.isometryL2OfOrthogonalFamily [DecidableEq ι] {V : ι �
     E ≃ₗᵢ[𝕜] PiLp 2 fun i => V i := by
   let e₁ := DirectSum.linearEquivFunOnFintype 𝕜 ι fun i => V i
   let e₂ := LinearEquiv.ofBijective (DirectSum.coeLinearMap V) hV
-  refine' LinearEquiv.isometryOfInner (e₂.symm.trans e₁) _
+  refine LinearEquiv.isometryOfInner (e₂.symm.trans e₁) ?_
   suffices ∀ (v w : PiLp 2 fun i => V i), ⟪v, w⟫ = ⟪e₂ (e₁.symm v), e₂ (e₁.symm w)⟫ by
     intro v₀ w₀
     convert this (e₁ (e₂.symm v₀)) (e₁ (e₂.symm w₀)) <;>
@@ -577,7 +576,7 @@ protected def mkOfOrthogonalEqBot (hon : Orthonormal 𝕜 v) (hsp : (span 𝕜 (
     OrthonormalBasis ι 𝕜 E :=
   OrthonormalBasis.mk hon
     (by
-      refine' Eq.ge _
+      refine Eq.ge ?_
       haveI : FiniteDimensional 𝕜 (span 𝕜 (range v)) :=
         FiniteDimensional.span_of_finite 𝕜 (finite_range v)
       haveI : CompleteSpace (span 𝕜 (range v)) := FiniteDimensional.complete 𝕜 _
@@ -828,7 +827,7 @@ theorem Orthonormal.exists_orthonormalBasis_extension_of_card_eq {ι : Type*} [F
   obtain ⟨g, hg⟩ := hvsY.exists_equiv_extend_of_card_eq hιY hsv'
   use b₀.reindex g.symm
   intro i hi
-  · simp [hb₀, hg i hi]
+  simp [hb₀, hg i hi]
 #align orthonormal.exists_orthonormal_basis_extension_of_card_eq Orthonormal.exists_orthonormalBasis_extension_of_card_eq
 
 variable (𝕜 E)
