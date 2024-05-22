@@ -446,7 +446,7 @@ end
 
 /-- The functor which sends `S : SnakeInput C` to its zeroth line `S.L₀`. -/
 @[simps]
-def functorL₉ : SnakeInput C ⥤ ShortComplex C where
+def functorL₀ : SnakeInput C ⥤ ShortComplex C where
   obj S := S.L₀
   map f := f.f₀
 
