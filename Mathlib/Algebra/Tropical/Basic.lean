@@ -516,6 +516,7 @@ instance covariant_swap_mul [LE R] [Add R] [AddRightMono R] :
 
 instance covariant_add [LinearOrder R] : AddLeftMono (Tropical R) :=
   ⟨fun x y z h => by
+    dsimp
     rcases le_total x y with hx | hy
     · rw [add_eq_left hx, add_eq_left (hx.trans h)]
     · rw [add_eq_right hy]

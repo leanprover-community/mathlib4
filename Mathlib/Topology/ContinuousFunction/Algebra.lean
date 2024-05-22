@@ -899,15 +899,15 @@ variable {β : Type*} [TopologicalSpace β]
 /-! `C(α, β)`is a lattice ordered group -/
 
 @[to_additive]
-instance instCovariantClass_mul_le_left [PartialOrder β] [Mul β] [ContinuousMul β]
+instance instMulLeftMono [PartialOrder β] [Mul β] [ContinuousMul β]
     [MulLeftMono β] :
-    CovariantClass C(α, β) C(α, β) (· * ·) (· ≤ ·) :=
+    MulLeftMono C(α, β) :=
   ⟨fun _ _ _ hg₁₂ x => mul_le_mul_left' (hg₁₂ x) _⟩
 
 @[to_additive]
-instance instCovariantClass_mul_le_right [PartialOrder β] [Mul β] [ContinuousMul β]
+instance instMulRightMono [PartialOrder β] [Mul β] [ContinuousMul β]
     [MulRightMono β] :
-    CovariantClass C(α, β) C(α, β) (Function.swap (· * ·)) (· ≤ ·) :=
+    MulRightMono C(α, β) :=
   ⟨fun _ _ _ hg₁₂ x => mul_le_mul_right' (hg₁₂ x) _⟩
 
 variable [Group β] [TopologicalGroup β] [Lattice β] [TopologicalLattice β]

@@ -169,9 +169,9 @@ protected theorem add_lt_add_of_lt_of_le : c ≠ ∞ → a < b → c ≤ d → a
   WithTop.add_lt_add_of_lt_of_le
 #align ennreal.add_lt_add_of_lt_of_le ENNReal.add_lt_add_of_lt_of_le
 
-instance contravariantClass_add_lt : AddLeftReflectLT ℝ≥0∞ :=
-  WithTop.contravariantClass_add_lt
-#align ennreal.contravariant_class_add_lt ENNReal.contravariantClass_add_lt
+instance addLeftReflectLT : AddLeftReflectLT ℝ≥0∞ :=
+  WithTop.addLeftReflectLT
+#align ennreal.contravariant_class_add_lt ENNReal.addLeftReflectLT
 
 theorem lt_add_right (ha : a ≠ ∞) (hb : b ≠ 0) : a < a + b := by
   rwa [← pos_iff_ne_zero, ← ENNReal.add_lt_add_iff_left ha, add_zero] at hb

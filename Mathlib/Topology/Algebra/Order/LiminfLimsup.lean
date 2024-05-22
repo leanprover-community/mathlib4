@@ -603,7 +603,7 @@ lemma limsup_add_const (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]
 
 /-- `liminf (c + xᵢ) = c + limsup xᵢ`. -/
 lemma liminf_const_add (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]
-    [CovariantClass R R (fun x y ↦ x + y) fun x y ↦ x ≤ y]  (f : ι → R) (c : R)
+    [AddLeftMono R] (f : ι → R) (c : R)
     (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
     Filter.liminf (fun i ↦ c + f i) F = c + Filter.liminf f F :=
   (Monotone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ c + x)
@@ -611,7 +611,7 @@ lemma liminf_const_add (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]
 
 /-- `liminf (xᵢ + c) = (liminf xᵢ) + c`. -/
 lemma liminf_add_const (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]
-    [CovariantClass R R (Function.swap fun x y ↦ x + y) fun x y ↦ x ≤ y] (f : ι → R) (c : R)
+    [AddRightMono R] (f : ι → R) (c : R)
     (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
     Filter.liminf (fun i ↦ f i + c) F = Filter.liminf f F + c :=
   (Monotone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ x + c)
@@ -620,7 +620,7 @@ lemma liminf_add_const (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]
 
 /-- `limsup (c - xᵢ) = c - liminf xᵢ`. -/
 lemma limsup_const_sub (F : Filter ι) [NeBot F] [AddCommSemigroup R] [Sub R] [ContinuousSub R]
-    [OrderedSub R] [CovariantClass R R (fun x y ↦ x + y) fun x y ↦ x ≤ y] (f : ι → R) (c : R)
+    [OrderedSub R] [AddLeftMono R] (f : ι → R) (c : R)
     (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
     Filter.limsup (fun i ↦ c - f i) F = c - Filter.liminf f F :=
   (Antitone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ c - x)
@@ -638,7 +638,7 @@ lemma limsup_sub_const (F : Filter ι) [NeBot F] [AddCommSemigroup R] [Sub R] [C
 
 /-- `liminf (c - xᵢ) = c - limsup xᵢ`. -/
 lemma liminf_const_sub (F : Filter ι) [NeBot F] [AddCommSemigroup R] [Sub R] [ContinuousSub R]
-    [OrderedSub R] [CovariantClass R R (fun x y ↦ x + y) fun x y ↦ x ≤ y] (f : ι → R) (c : R)
+    [OrderedSub R] [AddLeftMono R] (f : ι → R) (c : R)
     (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
     Filter.liminf (fun i ↦ c - f i) F = c - Filter.limsup f F :=
   (Antitone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ c - x)
