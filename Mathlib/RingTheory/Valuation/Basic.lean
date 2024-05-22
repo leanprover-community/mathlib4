@@ -128,6 +128,9 @@ instance : ValuationClass (Valuation R Γ₀) R Γ₀ where
   map_zero f := f.map_zero'
   map_add_le_max f := f.map_add_le_max'
 
+@[simp]
+theorem coe_mk (f : R →*₀ Γ₀) (h) : ⇑(Valuation.mk f h) = f := rfl
+
 theorem toFun_eq_coe (v : Valuation R Γ₀) : v.toFun = v := rfl
 #align valuation.to_fun_eq_coe Valuation.toFun_eq_coe
 
