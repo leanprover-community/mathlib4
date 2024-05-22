@@ -127,7 +127,7 @@ def recOneCoe {C : WithOne α → Sort*} (h₁ : C 1) (h₂ : ∀ a : α, C a) :
 -- would automatically get this; right now in Lean 4...I don't
 -- know if it does or not, and I don't know how to check, so
 -- I'll add it manually just to be sure.
-attribute [elab_as_elim] WithZero.recZeroCoe
+attribute [elab_as_elim, induction_eliminator] WithZero.recZeroCoe
 
 
 /-- Deconstruct an `x : WithOne α` to the underlying value in `α`, given a proof that `x ≠ 1`. -/
