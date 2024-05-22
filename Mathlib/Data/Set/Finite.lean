@@ -1231,7 +1231,7 @@ theorem seq_of_forall_finite_exists {γ : Type*} {P : γ → Set γ → Prop}
   choose! c hc using h
   set f : (n : ℕ) → (g : (m : ℕ) → m < n → γ) → γ := fun n g => c (range fun k : Iio n => g k.1 k.2)
   set u : ℕ → γ := fun n => Nat.strongRecOn' n f
-  refine' ⟨u, fun n => _⟩
+  refine ⟨u, fun n => ?_⟩
   convert hc (u '' Iio n) ((finite_lt_nat _).image _)
   rw [image_eq_range]
   exact Nat.strongRecOn'_beta
@@ -1386,6 +1386,10 @@ theorem infinite_image_iff {s : Set α} {f : α → β} (hi : InjOn f s) :
     (f '' s).Infinite ↔ s.Infinite :=
   not_congr <| finite_image_iff hi
 #align set.infinite_image_iff Set.infinite_image_iff
+
+theorem infinite_range_iff {f : α → β} (hi : Injective f) :
+    (range f).Infinite ↔ Infinite α := by
+  rw [← image_univ, infinite_image_iff (hi.injOn _), infinite_univ_iff]
 
 alias ⟨_, Infinite.image⟩ := infinite_image_iff
 #align set.infinite.image Set.Infinite.image

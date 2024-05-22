@@ -105,8 +105,7 @@ calc   const.run (traverse (fun y ↦ const.mk' (flip f y)) [y₀,y₁]) x
 And this is how `const` turns a monoid into an applicative functor and
 how the monoid of endofunctions define `Foldl`.
 -/
-@[reducible]
-def Foldl (α : Type u) : Type u :=
+abbrev Foldl (α : Type u) : Type u :=
   (End α)ᵐᵒᵖ
 #align monoid.foldl Monoid.Foldl
 
@@ -119,8 +118,7 @@ def Foldl.get (x : Foldl α) : α → α :=
 #align monoid.foldl.get Monoid.Foldl.get
 
 @[simps]
-def Foldl.ofFreeMonoid (f : β → α → β) : FreeMonoid α →* Monoid.Foldl β
-    where
+def Foldl.ofFreeMonoid (f : β → α → β) : FreeMonoid α →* Monoid.Foldl β where
   toFun xs := op <| flip (List.foldl f) (FreeMonoid.toList xs)
   map_one' := rfl
   map_mul' := by
@@ -132,8 +130,7 @@ def Foldl.ofFreeMonoid (f : β → α → β) : FreeMonoid α →* Monoid.Foldl 
     rfl
 #align monoid.foldl.of_free_monoid Monoid.Foldl.ofFreeMonoid
 
-@[reducible]
-def Foldr (α : Type u) : Type u :=
+abbrev Foldr (α : Type u) : Type u :=
   End α
 #align monoid.foldr Monoid.Foldr
 
@@ -146,15 +143,13 @@ def Foldr.get (x : Foldr α) : α → α :=
 #align monoid.foldr.get Monoid.Foldr.get
 
 @[simps]
-def Foldr.ofFreeMonoid (f : α → β → β) : FreeMonoid α →* Monoid.Foldr β
-    where
+def Foldr.ofFreeMonoid (f : α → β → β) : FreeMonoid α →* Monoid.Foldr β where
   toFun xs := flip (List.foldr f) (FreeMonoid.toList xs)
   map_one' := rfl
   map_mul' _ _ := funext fun _ => List.foldr_append _ _ _ _
 #align monoid.foldr.of_free_monoid Monoid.Foldr.ofFreeMonoid
 
-@[reducible]
-def foldlM (m : Type u → Type u) [Monad m] (α : Type u) : Type u :=
+abbrev foldlM (m : Type u → Type u) [Monad m] (α : Type u) : Type u :=
   MulOpposite <| End <| KleisliCat.mk m α
 #align monoid.mfoldl Monoid.foldlM
 
@@ -167,15 +162,13 @@ def foldlM.get (x : foldlM m α) : α → m α :=
 #align monoid.mfoldl.get Monoid.foldlM.get
 
 @[simps]
-def foldlM.ofFreeMonoid [LawfulMonad m] (f : β → α → m β) : FreeMonoid α →* Monoid.foldlM m β
-    where
+def foldlM.ofFreeMonoid [LawfulMonad m] (f : β → α → m β) : FreeMonoid α →* Monoid.foldlM m β where
   toFun xs := op <| flip (List.foldlM f) (FreeMonoid.toList xs)
   map_one' := rfl
   map_mul' := by intros; apply unop_injective; funext; apply List.foldlM_append
 #align monoid.mfoldl.of_free_monoid Monoid.foldlM.ofFreeMonoid
 
-@[reducible]
-def foldrM (m : Type u → Type u) [Monad m] (α : Type u) : Type u :=
+abbrev foldrM (m : Type u → Type u) [Monad m] (α : Type u) : Type u :=
   End <| KleisliCat.mk m α
 #align monoid.mfoldr Monoid.foldrM
 
@@ -188,8 +181,7 @@ def foldrM.get (x : foldrM m α) : α → m α :=
 #align monoid.mfoldr.get Monoid.foldrM.get
 
 @[simps]
-def foldrM.ofFreeMonoid [LawfulMonad m] (f : α → β → m β) : FreeMonoid α →* Monoid.foldrM m β
-    where
+def foldrM.ofFreeMonoid [LawfulMonad m] (f : α → β → m β) : FreeMonoid α →* Monoid.foldrM m β where
   toFun xs := flip (List.foldrM f) (FreeMonoid.toList xs)
   map_one' := rfl
   map_mul' := by intros; funext; apply List.foldrM_append
@@ -259,8 +251,7 @@ variable {α β γ : Type u}
 
 open Function hiding const
 
-def mapFold [Monoid α] [Monoid β] (f : α →* β) : ApplicativeTransformation (Const α) (Const β)
-    where
+def mapFold [Monoid α] [Monoid β] (f : α →* β) : ApplicativeTransformation (Const α) (Const β) where
   app _ := f
   preserves_seq' := by intros; simp only [Seq.seq, map_mul]
   preserves_pure' := by intros; simp only [map_one, pure]

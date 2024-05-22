@@ -148,7 +148,7 @@ theorem Gamma_mul_Gamma_eq_betaIntegral {s t : ℂ} (hs : 0 < re s) (ht : 0 < re
   congr 1 with y : 1
   push_cast
   suffices Complex.exp (-x) = Complex.exp (-y) * Complex.exp (-(x - y)) by rw [this]; ring
-  · rw [← Complex.exp_add]; congr 1; abel
+  rw [← Complex.exp_add]; congr 1; abel
 #align complex.Gamma_mul_Gamma_eq_beta_integral Complex.Gamma_mul_Gamma_eq_betaIntegral
 
 /-- Recurrence formula for the Beta function. -/

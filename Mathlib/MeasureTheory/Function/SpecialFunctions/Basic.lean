@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
 
 #align_import measure_theory.function.special_functions.basic from "leanprover-community/mathlib"@"83a66c8775fa14ee5180c85cab98e970956401ad"
 

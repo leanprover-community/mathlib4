@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Shing Tak Lam, Mario Carneiro
 -/
 import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.List.Lemmas
-import Mathlib.Algebra.Parity
+import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Log
@@ -13,6 +12,7 @@ import Mathlib.Data.List.Indexes
 import Mathlib.Data.List.Palindrome
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
 
 #align_import data.nat.digits from "leanprover-community/mathlib"@"369525b73f229ccd76a6ec0e0e0bf2be57599768"
 
@@ -191,6 +191,9 @@ theorem ofDigits_eq_sum_mapIdx (b : ℕ) (L : List ℕ) :
   · simpa [List.range_succ_eq_map, List.zipWith_map_left, ofDigits_eq_sum_map_with_index_aux] using
       Or.inl hl
 #align nat.of_digits_eq_sum_map_with_index Nat.ofDigits_eq_sum_mapIdx
+
+@[simp]
+theorem ofDigits_nil {b : ℕ} : ofDigits b [] = 0 := rfl
 
 @[simp]
 theorem ofDigits_singleton {b n : ℕ} : ofDigits b [n] = n := by simp [ofDigits]
@@ -660,6 +663,19 @@ theorem ofDigits_mod (b k : ℕ) (L : List ℕ) : ofDigits b L % k = ofDigits (b
   ofDigits_modEq b k L
 #align nat.of_digits_mod Nat.ofDigits_mod
 
+theorem ofDigits_mod_eq_head! (b : ℕ) (l : List ℕ) : ofDigits b l % b = l.head! % b := by
+  induction l <;> simp [Nat.ofDigits, Int.ModEq]
+
+theorem head!_digits {b n : ℕ} (h : b ≠ 1) : (Nat.digits b n).head! = n % b := by
+  by_cases hb : 1 < b
+  · rcases n with _ | n
+    · simp
+    · nth_rw 2 [← Nat.ofDigits_digits b (n + 1)]
+      rw [Nat.ofDigits_mod_eq_head! _ _]
+      exact (Nat.mod_eq_of_lt (Nat.digits_lt_base hb <| List.head!_mem_self <|
+          Nat.digits_ne_nil_iff_ne_zero.mpr <| Nat.succ_ne_zero n)).symm
+  · rcases n with _ | _ <;> simp_all [show b = 0 by omega]
+
 theorem ofDigits_zmodeq' (b b' : ℤ) (k : ℕ) (h : b ≡ b' [ZMOD k]) (L : List ℕ) :
     ofDigits b L ≡ ofDigits b' L [ZMOD k] := by
   induction' L with d L ih
@@ -852,7 +868,7 @@ theorem digits_succ (b n m r l) (e : r + b * m = n) (hr : r < b)
   rcases h with ⟨h, b2, m0⟩
   have b0 : 0 < b := by omega
   have n0 : 0 < n := by linarith [mul_pos b0 m0]
-  refine' ⟨_, b2, n0⟩
+  refine ⟨?_, b2, n0⟩
   obtain ⟨rfl, rfl⟩ := (Nat.div_mod_unique b0).2 ⟨e, hr⟩
   subst h; exact Nat.digits_def' b2 n0
 #align nat.norm_digits.digits_succ Nat.NormDigits.digits_succ
@@ -860,7 +876,7 @@ theorem digits_succ (b n m r l) (e : r + b * m = n) (hr : r < b)
 theorem digits_one (b n) (n0 : 0 < n) (nb : n < b) : Nat.digits b n = [n] ∧ 1 < b ∧ 0 < n := by
   have b2 : 1 < b :=
     lt_iff_add_one_le.mpr (le_trans (add_le_add_right (lt_iff_add_one_le.mp n0) 1) nb)
-  refine' ⟨_, b2, n0⟩
+  refine ⟨?_, b2, n0⟩
   rw [Nat.digits_def' b2 n0, Nat.mod_eq_of_lt nb,
     (Nat.div_eq_zero_iff ((zero_le n).trans_lt nb)).2 nb, Nat.digits_zero]
 #align nat.norm_digits.digits_one Nat.NormDigits.digits_one

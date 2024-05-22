@@ -676,8 +676,8 @@ def reflectsLimitsOfShapeOfReflectsIsomorphisms {G : C ⥤ D} [G.ReflectsIsomorp
 limits.
 -/
 def reflectsLimitsOfReflectsIsomorphisms {G : C ⥤ D} [G.ReflectsIsomorphisms]
-    [HasLimitsOfSize.{w', w} C] [PreservesLimitsOfSize.{w', w} G] : ReflectsLimitsOfSize.{w', w} G
-    where
+    [HasLimitsOfSize.{w', w} C] [PreservesLimitsOfSize.{w', w} G] :
+    ReflectsLimitsOfSize.{w', w} G where
   reflectsLimitsOfShape := reflectsLimitsOfShapeOfReflectsIsomorphisms
 #align category_theory.limits.reflects_limits_of_reflects_isomorphisms CategoryTheory.Limits.reflectsLimitsOfReflectsIsomorphisms
 

@@ -72,8 +72,8 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
       fun h => h ^ 2 := by
   -- it suffices to check that the expression is bounded by `ε * ((‖v‖ + ‖w‖) * ‖w‖) * h^2` for
   -- small enough `h`, for any positive `ε`.
-  refine' IsLittleO.trans_isBigO
-    (isLittleO_iff.2 fun ε εpos => _) (isBigO_const_mul_self ((‖v‖ + ‖w‖) * ‖w‖) _ _)
+  refine IsLittleO.trans_isBigO
+    (isLittleO_iff.2 fun ε εpos => ?_) (isBigO_const_mul_self ((‖v‖ + ‖w‖) * ‖w‖) _ _)
   -- consider a ball of radius `δ` around `x` in which the Taylor approximation for `f''` is
   -- good up to `δ`.
   rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO, isLittleO_iff] at hx
@@ -169,7 +169,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
       zero_smul, Ne, not_false_iff, bit0_eq_zero, zero_pow]
     abel
   · simp only [Real.norm_eq_abs, abs_mul, add_nonneg (norm_nonneg v) (norm_nonneg w), abs_of_nonneg,
-      hpos.le, mul_assoc, pow_bit0_abs, norm_nonneg, abs_pow]
+      hpos.le, mul_assoc, norm_nonneg, abs_pow]
 #align convex.taylor_approx_two_segment Convex.taylor_approx_two_segment
 
 /-- One can get `f'' v w` as the limit of `h ^ (-2)` times the alternate sum of the values of `f`

@@ -567,6 +567,14 @@ theorem one_eq_pi_single {i j} : (1 : Matrix n n α) i j = Pi.single (f := fun _
   simp only [one_apply, Pi.single_apply, eq_comm]
 #align matrix.one_eq_pi_single Matrix.one_eq_pi_single
 
+lemma zero_le_one_elem [Preorder α] [ZeroLEOneClass α] (i j : n) :
+    0 ≤ (1 : Matrix n n α) i j := by
+  by_cases hi : i = j <;> simp [hi]
+
+lemma zero_le_one_row [Preorder α] [ZeroLEOneClass α] (i : n) :
+    0 ≤ (1 : Matrix n n α) i :=
+  zero_le_one_elem i
+
 end One
 
 instance instAddMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (Matrix n n α) where
@@ -893,6 +901,9 @@ theorem neg_dotProduct : -v ⬝ᵥ w = -(v ⬝ᵥ w) := by simp [dotProduct]
 @[simp]
 theorem dotProduct_neg : v ⬝ᵥ -w = -(v ⬝ᵥ w) := by simp [dotProduct]
 #align matrix.dot_product_neg Matrix.dotProduct_neg
+
+lemma neg_dotProduct_neg : -v ⬝ᵥ -w = v ⬝ᵥ w := by
+  rw [neg_dotProduct, dotProduct_neg, neg_neg]
 
 @[simp]
 theorem sub_dotProduct : (u - v) ⬝ᵥ w = u ⬝ᵥ w - v ⬝ᵥ w := by simp [sub_eq_add_neg]
@@ -1936,6 +1947,9 @@ theorem vecMul_neg [Fintype m] (v : m → α) (A : Matrix m n α) : v ᵥ* (-A) 
   apply dotProduct_neg
 #align matrix.vec_mul_neg Matrix.vecMul_neg
 
+lemma neg_vecMul_neg [Fintype m] (v : m → α) (A : Matrix m n α) : (-v) ᵥ* (-A) = v ᵥ* A := by
+  rw [vecMul_neg, neg_vecMul, neg_neg]
+
 theorem neg_mulVec [Fintype n] (v : n → α) (A : Matrix m n α) : (-A) *ᵥ v = - (A *ᵥ v) := by
   ext
   apply neg_dotProduct
@@ -1945,6 +1959,9 @@ theorem mulVec_neg [Fintype n] (v : n → α) (A : Matrix m n α) : A *ᵥ (-v) 
   ext
   apply dotProduct_neg
 #align matrix.mul_vec_neg Matrix.mulVec_neg
+
+lemma neg_mulVec_neg [Fintype n] (v : n → α) (A : Matrix m n α) : (-A) *ᵥ (-v) = A *ᵥ v := by
+  rw [mulVec_neg, neg_mulVec, neg_neg]
 
 theorem mulVec_sub [Fintype n] (A : Matrix m n α) (x y : n → α) :
     A *ᵥ (x - y) = A *ᵥ x - A *ᵥ y := by
@@ -2699,53 +2716,45 @@ theorem submatrix_mul_transpose_submatrix [Fintype m] [Fintype n] [AddCommMonoid
 #align matrix.submatrix_mul_transpose_submatrix Matrix.submatrix_mul_transpose_submatrix
 
 /-- The left `n × l` part of an `n × (l+r)` matrix. -/
-@[reducible]
-def subLeft {m l r : Nat} (A : Matrix (Fin m) (Fin (l + r)) α) : Matrix (Fin m) (Fin l) α :=
+abbrev subLeft {m l r : Nat} (A : Matrix (Fin m) (Fin (l + r)) α) : Matrix (Fin m) (Fin l) α :=
   submatrix A id (Fin.castAdd r)
 #align matrix.sub_left Matrix.subLeft
 
 /-- The right `n × r` part of an `n × (l+r)` matrix. -/
-@[reducible]
-def subRight {m l r : Nat} (A : Matrix (Fin m) (Fin (l + r)) α) : Matrix (Fin m) (Fin r) α :=
+abbrev subRight {m l r : Nat} (A : Matrix (Fin m) (Fin (l + r)) α) : Matrix (Fin m) (Fin r) α :=
   submatrix A id (Fin.natAdd l)
 #align matrix.sub_right Matrix.subRight
 
 /-- The top `u × n` part of a `(u+d) × n` matrix. -/
-@[reducible]
-def subUp {d u n : Nat} (A : Matrix (Fin (u + d)) (Fin n) α) : Matrix (Fin u) (Fin n) α :=
+abbrev subUp {d u n : Nat} (A : Matrix (Fin (u + d)) (Fin n) α) : Matrix (Fin u) (Fin n) α :=
   submatrix A (Fin.castAdd d) id
 #align matrix.sub_up Matrix.subUp
 
 /-- The bottom `d × n` part of a `(u+d) × n` matrix. -/
-@[reducible]
-def subDown {d u n : Nat} (A : Matrix (Fin (u + d)) (Fin n) α) : Matrix (Fin d) (Fin n) α :=
+abbrev subDown {d u n : Nat} (A : Matrix (Fin (u + d)) (Fin n) α) : Matrix (Fin d) (Fin n) α :=
   submatrix A (Fin.natAdd u) id
 #align matrix.sub_down Matrix.subDown
 
 /-- The top-right `u × r` part of a `(u+d) × (l+r)` matrix. -/
-@[reducible]
-def subUpRight {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
+abbrev subUpRight {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
     Matrix (Fin u) (Fin r) α :=
   subUp (subRight A)
 #align matrix.sub_up_right Matrix.subUpRight
 
 /-- The bottom-right `d × r` part of a `(u+d) × (l+r)` matrix. -/
-@[reducible]
-def subDownRight {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
+abbrev subDownRight {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
     Matrix (Fin d) (Fin r) α :=
   subDown (subRight A)
 #align matrix.sub_down_right Matrix.subDownRight
 
 /-- The top-left `u × l` part of a `(u+d) × (l+r)` matrix. -/
-@[reducible]
-def subUpLeft {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
+abbrev subUpLeft {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
     Matrix (Fin u) (Fin l) α :=
   subUp (subLeft A)
 #align matrix.sub_up_left Matrix.subUpLeft
 
 /-- The bottom-left `d × l` part of a `(u+d) × (l+r)` matrix. -/
-@[reducible]
-def subDownLeft {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
+abbrev subDownLeft {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
     Matrix (Fin d) (Fin l) α :=
   subDown (subLeft A)
 #align matrix.sub_down_left Matrix.subDownLeft

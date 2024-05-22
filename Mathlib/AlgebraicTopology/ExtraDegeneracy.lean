@@ -311,8 +311,8 @@ theorem ExtraDegeneracy.s_comp_base (n : ℕ) :
 #align category_theory.arrow.augmented_cech_nerve.extra_degeneracy.s_comp_base CategoryTheory.Arrow.AugmentedCechNerve.ExtraDegeneracy.s_comp_base
 
 /-- The augmented Čech nerve associated to a split epimorphism has an extra degeneracy. -/
-noncomputable def extraDegeneracy : SimplicialObject.Augmented.ExtraDegeneracy f.augmentedCechNerve
-    where
+noncomputable def extraDegeneracy :
+    SimplicialObject.Augmented.ExtraDegeneracy f.augmentedCechNerve where
   s' := S.section_ ≫ WidePullback.lift f.hom (fun _ => 𝟙 _) fun i => by rw [id_comp]
   s n := ExtraDegeneracy.s f S n
   s'_comp_ε := by

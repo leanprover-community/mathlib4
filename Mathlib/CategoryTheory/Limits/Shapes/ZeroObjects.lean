@@ -87,8 +87,7 @@ theorem eq_of_tgt (hX : IsZero X) (f g : Y ⟶ X) : f = g :=
 #align category_theory.limits.is_zero.eq_of_tgt CategoryTheory.Limits.IsZero.eq_of_tgt
 
 /-- Any two zero objects are isomorphic. -/
-def iso (hX : IsZero X) (hY : IsZero Y) : X ≅ Y
-    where
+def iso (hX : IsZero X) (hY : IsZero Y) : X ≅ Y where
   hom := hX.to_ Y
   inv := hX.from_ Y
   hom_inv_id := hX.eq_of_src _ _

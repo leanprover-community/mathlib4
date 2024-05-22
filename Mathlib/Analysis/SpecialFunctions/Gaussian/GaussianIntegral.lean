@@ -63,7 +63,7 @@ theorem rpow_mul_exp_neg_mul_sq_isLittleO_exp_neg {b : ℝ} (hb : 0 < b) (s : �
 theorem integrableOn_rpow_mul_exp_neg_rpow {p s : ℝ} (hs : -1 < s) (hp : 1 ≤ p) :
     IntegrableOn (fun x : ℝ => x ^ s * exp (- x ^ p)) (Ioi 0) := by
   obtain hp | hp := le_iff_lt_or_eq.mp hp
-  · have h_exp : ∀ x, ContinuousAt (fun x => exp (- x)) x := fun x => continuousAt_neg.exp
+  · have h_exp : ∀ x, ContinuousAt (fun x => exp (- x)) x := fun x => continuousAt_neg.rexp
     rw [← Ioc_union_Ioi_eq_Ioi zero_le_one, integrableOn_union]
     constructor
     · rw [← integrableOn_Icc_iff_integrableOn_Ioc]
@@ -161,8 +161,8 @@ theorem norm_cexp_neg_mul_sq (b : ℂ) (x : ℝ) :
 
 theorem integrable_cexp_neg_mul_sq {b : ℂ} (hb : 0 < b.re) :
     Integrable fun x : ℝ => cexp (-b * (x : ℂ) ^ 2) := by
-  refine' ⟨(Complex.continuous_exp.comp
-    (continuous_const.mul (continuous_ofReal.pow 2))).aestronglyMeasurable, _⟩
+  refine ⟨(Complex.continuous_exp.comp
+    (continuous_const.mul (continuous_ofReal.pow 2))).aestronglyMeasurable, ?_⟩
   rw [← hasFiniteIntegral_norm_iff]
   simp_rw [norm_cexp_neg_mul_sq]
   exact (integrable_exp_neg_mul_sq hb).2

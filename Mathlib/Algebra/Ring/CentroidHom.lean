@@ -658,8 +658,8 @@ variable [NonUnitalRing α]
 -- Porting note: Not sure why Lean didn't like `CentroidHom.Ring`
 -- See note [reducible non instances]
 /-- A prime associative ring has commutative centroid. -/
-@[reducible]
-def commRing (h : ∀ a b : α, (∀ r : α, a * r * b = 0) → a = 0 ∨ b = 0) : CommRing (CentroidHom α) :=
+abbrev commRing
+    (h : ∀ a b : α, (∀ r : α, a * r * b = 0) → a = 0 ∨ b = 0) : CommRing (CentroidHom α) :=
   { CentroidHom.instRing with
     mul_comm := fun f g ↦ by
       ext

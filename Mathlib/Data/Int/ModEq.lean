@@ -3,10 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Std.Data.Int.DivMod
+import Batteries.Data.Int.DivMod
 import Mathlib.Data.Nat.ModEq
+import Mathlib.Tactic.Abel
 import Mathlib.Tactic.GCongr.Core
-import Mathlib.Tactic.Ring
 
 #align_import data.int.modeq from "leanprover-community/mathlib"@"47a1a73351de8dd6c8d3d32b569c8e434b03ca47"
 
@@ -139,9 +139,7 @@ protected theorem mul_right' (h : a ≡ b [ZMOD n]) : a * c ≡ b * c [ZMOD n * 
 
 @[gcongr]
 protected theorem add (h₁ : a ≡ b [ZMOD n]) (h₂ : c ≡ d [ZMOD n]) : a + c ≡ b + d [ZMOD n] :=
-  modEq_iff_dvd.2 <| by
-    convert dvd_add h₁.dvd h₂.dvd using 1
-    ring
+  modEq_iff_dvd.2 <| by convert dvd_add h₁.dvd h₂.dvd using 1; abel
 #align int.modeq.add Int.ModEq.add
 
 @[gcongr] protected theorem add_left (c : ℤ) (h : a ≡ b [ZMOD n]) : c + a ≡ c + b [ZMOD n] :=
@@ -154,7 +152,7 @@ protected theorem add (h₁ : a ≡ b [ZMOD n]) (h₂ : c ≡ d [ZMOD n]) : a + 
 
 protected theorem add_left_cancel (h₁ : a ≡ b [ZMOD n]) (h₂ : a + c ≡ b + d [ZMOD n]) :
     c ≡ d [ZMOD n] :=
-  have : d - c = b + d - (a + c) - (b - a) := by ring
+  have : d - c = b + d - (a + c) - (b - a) := by abel
   modEq_iff_dvd.2 <| by
     rw [this]
     exact dvd_sub h₂.dvd h₁.dvd
@@ -286,8 +284,7 @@ theorem modEq_add_fac {a b n : ℤ} (c : ℤ) (ha : a ≡ b [ZMOD n]) : a + n * 
 #align int.modeq_add_fac Int.modEq_add_fac
 
 theorem modEq_sub_fac {a b n : ℤ} (c : ℤ) (ha : a ≡ b [ZMOD n]) : a - n * c ≡ b [ZMOD n] := by
-  convert Int.modEq_add_fac (-c) ha using 1
-  ring
+  convert Int.modEq_add_fac (-c) ha using 1; rw [mul_neg, sub_eq_add_neg]
 
 theorem modEq_add_fac_self {a t n : ℤ} : a + n * t ≡ a [ZMOD n] :=
   modEq_add_fac _ ModEq.rfl

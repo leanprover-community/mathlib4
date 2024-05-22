@@ -3,6 +3,7 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
+import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.List.Prime
 import Mathlib.Data.List.Sort
@@ -36,8 +37,8 @@ def factors : ℕ → List ℕ
   | 1 => []
   | k + 2 =>
     let m := minFac (k + 2)
-    have : (k + 2) / m < (k + 2) := factors_lemma
     m :: factors ((k + 2) / m)
+decreasing_by show (k + 2) / m < (k + 2); exact factors_lemma
 #align nat.factors Nat.factors
 
 @[simp]
@@ -47,6 +48,9 @@ theorem factors_zero : factors 0 = [] := by rw [factors]
 @[simp]
 theorem factors_one : factors 1 = [] := by rw [factors]
 #align nat.factors_one Nat.factors_one
+
+@[simp]
+theorem factors_two : factors 2 = [2] := by simp [factors]
 
 theorem prime_of_mem_factors {n : ℕ} : ∀ {p : ℕ}, (h : p ∈ factors n) → Prime p := by
   match n with

@@ -157,7 +157,7 @@ theorem iteratedFDeriv_const_of_ne {n : ℕ} (hn : n ≠ 0) (c : F) :
 theorem IsBoundedLinearMap.contDiff (hf : IsBoundedLinearMap 𝕜 f) : ContDiff 𝕜 n f := by
   suffices h : ContDiff 𝕜 ∞ f from h.of_le le_top
   rw [contDiff_top_iff_fderiv]
-  refine' ⟨hf.differentiable, _⟩
+  refine ⟨hf.differentiable, ?_⟩
   simp_rw [hf.fderiv]
   exact contDiff_const
 #align is_bounded_linear_map.cont_diff IsBoundedLinearMap.contDiff
@@ -201,7 +201,7 @@ theorem contDiffOn_id {s} : ContDiffOn 𝕜 n (id : E → E) s :=
 theorem IsBoundedBilinearMap.contDiff (hb : IsBoundedBilinearMap 𝕜 b) : ContDiff 𝕜 n b := by
   suffices h : ContDiff 𝕜 ∞ b from h.of_le le_top
   rw [contDiff_top_iff_fderiv]
-  refine' ⟨hb.differentiable, _⟩
+  refine ⟨hb.differentiable, ?_⟩
   simp only [hb.fderiv]
   exact hb.isBoundedLinearMap_deriv.contDiff
 #align is_bounded_bilinear_map.cont_diff IsBoundedBilinearMap.contDiff
@@ -250,8 +250,8 @@ theorem ContinuousLinearMap.iteratedFDerivWithin_comp_left {f : E → F} (g : F 
     (hf : ContDiffOn 𝕜 n f s) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) {i : ℕ} (hi : (i : ℕ∞) ≤ n) :
     iteratedFDerivWithin 𝕜 i (g ∘ f) s x =
       g.compContinuousMultilinearMap (iteratedFDerivWithin 𝕜 i f s x) :=
-  (((hf.ftaylorSeriesWithin hs).continuousLinearMap_comp g).eq_ftaylor_series_of_uniqueDiffOn hi hs
-      hx).symm
+  (((hf.ftaylorSeriesWithin hs).continuousLinearMap_comp g).eq_iteratedFDerivWithin_of_uniqueDiffOn
+    hi hs hx).symm
 #align continuous_linear_map.iterated_fderiv_within_comp_left ContinuousLinearMap.iteratedFDerivWithin_comp_left
 
 /-- The iterated derivative of the composition with a linear map on the left is
@@ -416,8 +416,8 @@ theorem ContinuousLinearMap.iteratedFDerivWithin_comp_right {f : E → F} (g : G
     (hx : g x ∈ s) {i : ℕ} (hi : (i : ℕ∞) ≤ n) :
     iteratedFDerivWithin 𝕜 i (f ∘ g) (g ⁻¹' s) x =
       (iteratedFDerivWithin 𝕜 i f s (g x)).compContinuousLinearMap fun _ => g :=
-  (((hf.ftaylorSeriesWithin hs).compContinuousLinearMap g).eq_ftaylor_series_of_uniqueDiffOn hi h's
-      hx).symm
+  (((hf.ftaylorSeriesWithin hs).compContinuousLinearMap g).eq_iteratedFDerivWithin_of_uniqueDiffOn
+    hi h's hx).symm
 #align continuous_linear_map.iterated_fderiv_within_comp_right ContinuousLinearMap.iteratedFDerivWithin_comp_right
 
 /-- The iterated derivative within a set of the composition with a linear equiv on the right is
@@ -1032,7 +1032,7 @@ theorem ContDiffWithinAt.fderivWithin'' {f : E → F → G} {g : E → F} {t : S
     refine hf'.congr_of_eventuallyEq_insert ?_
     filter_upwards [hv, ht]
     exact fun y hy h2y => (hvf' y hy).fderivWithin h2y
-  induction' m using WithTop.recTopCoe with m
+  induction' m using ENat.recTopCoe with m
   · obtain rfl := eq_top_iff.mpr hmn
     rw [contDiffWithinAt_top]
     exact fun m => this m le_top
@@ -1055,7 +1055,7 @@ protected theorem ContDiffWithinAt.fderivWithin {f : E → F → G} {g : E → F
     (hg : ContDiffWithinAt 𝕜 m g s x₀) (ht : UniqueDiffOn 𝕜 t) (hmn : m + 1 ≤ n) (hx₀ : x₀ ∈ s)
     (hst : s ⊆ g ⁻¹' t) : ContDiffWithinAt 𝕜 m (fun x => fderivWithin 𝕜 (f x) t (g x)) s x₀ := by
   rw [← insert_eq_self.mpr hx₀] at hf
-  refine' hf.fderivWithin' hg _ hmn hst
+  refine hf.fderivWithin' hg ?_ hmn hst
   rw [insert_eq_self.mpr hx₀]
   exact eventually_of_mem self_mem_nhdsWithin fun x hx => ht _ (hst hx)
 #align cont_diff_within_at.fderiv_within ContDiffWithinAt.fderivWithin
@@ -1304,7 +1304,7 @@ theorem iteratedFDerivWithin_add_apply {f g : E → F} (hf : ContDiffOn 𝕜 i f
     iteratedFDerivWithin 𝕜 i (f + g) s x =
       iteratedFDerivWithin 𝕜 i f s x + iteratedFDerivWithin 𝕜 i g s x :=
   Eq.symm <| ((hf.ftaylorSeriesWithin hu).add
-    (hg.ftaylorSeriesWithin hu)).eq_ftaylor_series_of_uniqueDiffOn le_rfl hu hx
+    (hg.ftaylorSeriesWithin hu)).eq_iteratedFDerivWithin_of_uniqueDiffOn le_rfl hu hx
 #align iterated_fderiv_within_add_apply iteratedFDerivWithin_add_apply
 
 /-- The iterated derivative of the sum of two functions is the sum of the iterated derivatives.

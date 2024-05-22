@@ -103,7 +103,7 @@ theorem Disjoint.map_injective (hA : CantorScheme.Disjoint A) : Injective (induc
   ext n : 1
   induction' n with n ih; · simp
   simp only [res_succ, cons.injEq]
-  refine' ⟨_, ih⟩
+  refine ⟨?_, ih⟩
   contrapose hA
   simp only [CantorScheme.Disjoint, _root_.Pairwise, Ne, not_forall, exists_prop]
   refine' ⟨res x n, _, _, hA, _⟩

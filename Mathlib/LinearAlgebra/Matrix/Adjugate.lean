@@ -469,12 +469,12 @@ theorem isRegular_of_isLeftRegular_det {A : Matrix n n α} (hA : IsLeftRegular A
     IsRegular A := by
   constructor
   · intro B C h
-    refine' hA.matrix _
+    refine hA.matrix ?_
     simp only at h ⊢
     rw [← Matrix.one_mul B, ← Matrix.one_mul C, ← Matrix.smul_mul, ← Matrix.smul_mul, ←
       adjugate_mul, Matrix.mul_assoc, Matrix.mul_assoc, h]
   · intro B C (h : B * A = C * A)
-    refine' hA.matrix _
+    refine hA.matrix ?_
     simp only
     rw [← Matrix.mul_one B, ← Matrix.mul_one C, ← Matrix.mul_smul, ← Matrix.mul_smul, ←
       mul_adjugate, ← Matrix.mul_assoc, ← Matrix.mul_assoc, h]
@@ -509,7 +509,7 @@ theorem adjugate_mul_distrib (A B : Matrix n n α) : adjugate (A * B) = adjugate
     rw [RingHom.map_mul, f'_inv, f'_inv]
   have hu : ∀ M : Matrix n n α, IsRegular (g M).det := by
     intro M
-    refine' Polynomial.Monic.isRegular _
+    refine Polynomial.Monic.isRegular ?_
     simp only [g, Polynomial.Monic.def, ← Polynomial.leadingCoeff_det_X_one_add_C M, add_comm]
   rw [← f'_adj, ← f'_adj, ← f'_adj, ← f'.map_mul, ←
     adjugate_mul_distrib_aux _ _ (hu A).left (hu B).left, RingHom.map_adjugate,

@@ -3,7 +3,7 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Data.Fin.Basic
+import Mathlib.Algebra.Group.Fin
 import Mathlib.Data.List.Basic
 
 #align_import data.array.lemmas from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
@@ -12,7 +12,7 @@ import Mathlib.Data.List.Basic
 Porting note:
 Following the discussion on [Zulip](https://leanprover.zulipchat.com/#narrow/stream/287929-
 mathlib4/topic/porting.20.60.2Earray.60.20files.20whose.20PR's.20were.20closed.3F), these
-will wait until Std4 has finalized `DArray` and `Array'` types so we can translates
+will wait until Batteries has finalized `DArray` and `Array'` types so we can translates
 apples to apples.
 
 `align` for lemmas about lean3/mathlib3 versions of d_array and array with mathport output

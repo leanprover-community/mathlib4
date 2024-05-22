@@ -110,7 +110,7 @@ theorem norm_eq {x : ℝ} : ‖(x : AddCircle p)‖ = |x - round (p⁻¹ * x) * 
   · simp only [QuotientAddGroup.mk'_apply, Real.norm_eq_abs, le_csInf_iff h₁ h₂]
     rintro b' ⟨b, hb, rfl⟩
     simp only [mem_setOf, QuotientAddGroup.eq_iff_sub_mem, mem_zmultiples_iff,
-      smul_one_eq_coe] at hb
+      smul_one_eq_cast] at hb
     obtain ⟨z, hz⟩ := hb
     rw [(by rw [hz]; abel : x = b - z), fract_sub_int, ← abs_sub_round_eq_min]
     convert round_le b 0
@@ -188,7 +188,7 @@ theorem coe_real_preimage_closedBall_eq_iUnion (x ε : ℝ) :
   ext y
   simp only [dist_eq_norm, mem_preimage, mem_closedBall, zsmul_eq_mul, mem_iUnion, Real.norm_eq_abs,
     ← QuotientAddGroup.mk_sub, norm_eq, ← sub_sub]
-  refine' ⟨fun h => ⟨round (p⁻¹ * (y - x)), h⟩, _⟩
+  refine ⟨fun h => ⟨round (p⁻¹ * (y - x)), h⟩, ?_⟩
   rintro ⟨n, hn⟩
   rw [← mul_le_mul_left (abs_pos.mpr <| inv_ne_zero hp), ← abs_mul, mul_sub, mul_comm _ p,
     inv_mul_cancel_left₀ hp] at hn ⊢
@@ -249,7 +249,7 @@ theorem exists_norm_eq_of_isOfFinAddOrder {u : AddCircle p} (hu : IsOfFinAddOrde
   let n := addOrderOf u
   change ∃ k : ℕ, ‖u‖ = p * (k / n)
   obtain ⟨m, -, -, hm⟩ := exists_gcd_eq_one_of_isOfFinAddOrder hu
-  refine' ⟨min (m % n) (n - m % n), _⟩
+  refine ⟨min (m % n) (n - m % n), ?_⟩
   rw [← hm, norm_div_natCast]
 #align add_circle.exists_norm_eq_of_fin_add_order AddCircle.exists_norm_eq_of_isOfFinAddOrder
 
