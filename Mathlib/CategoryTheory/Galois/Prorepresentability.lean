@@ -173,11 +173,9 @@ noncomputable def autGaloisSystem : PointedGaloisObject F ⥤ GroupCat.{u₂} wh
   map_id := fun A ↦ by
     ext (σ : Aut A.obj)
     simp
-    rfl
   map_comp {A B C} f g := by
     ext (σ : Aut A.obj)
     simp
-    rfl
 
 end PreGaloisCategory
 
