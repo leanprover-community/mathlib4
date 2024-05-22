@@ -90,14 +90,16 @@ lemma isDivSequence_id : IsDivSequence id :=
 theorem isEllDivSequence_id : IsEllDivSequence id :=
   ⟨isEllSequence_id, isDivSequence_id⟩
 
-lemma IsEllSequence.smul (h : IsEllSequence W) (x : R) : IsEllSequence <| x • W :=
+variable {W}
+
+lemma IsEllSequence.smul (h : IsEllSequence W) (x : R) : IsEllSequence (x • W) :=
   fun m n r => by
     linear_combination (norm := (simp only [Pi.smul_apply, smul_eq_mul]; ring1)) x ^ 4 * h m n r
 
-lemma IsDivSequence.smul (h : IsDivSequence W) (x : R) : IsDivSequence <| x • W :=
+lemma IsDivSequence.smul (h : IsDivSequence W) (x : R) : IsDivSequence (x • W) :=
   fun m n r => mul_dvd_mul_left x <| h m n r
 
-lemma isEllDivSequence_mul (h : IsEllDivSequence W) (x : R) : IsEllDivSequence <| x • W :=
+lemma IsEllDivSequence.smul (h : IsEllDivSequence W) (x : R) : IsEllDivSequence (x • W) :=
   ⟨h.left.smul W x, h.right.smul W x⟩
 
 /-- The auxiliary sequence for a normalised EDS `W : ℕ → R`,
@@ -288,8 +290,9 @@ lemma normEDS_neg (n : ℕ) : normEDS b c d (-n) = -normEDS b c d n := by
  * for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P k` for all `k < 2 * (m + 2) + 1`,
 then we have `P n` for all `n : ℕ`. -/
 @[elab_as_elim]
-noncomputable def normEDSRec' {P : ℕ → Sort u} (base0 : P 0) (base1 : P 1) (base2 : P 2)
-    (base3 : P 3) (base4 : P 4) (even : ∀ m : ℕ, (∀ k < 2 * (m + 3), P k) → P (2 * (m + 3)))
+noncomputable def normEDSRec' {P : ℕ → Sort u}
+    (base0 : P 0) (base1 : P 1) (base2 : P 2) (base3 : P 3) (base4 : P 4)
+    (even : ∀ m : ℕ, (∀ k < 2 * (m + 3), P k) → P (2 * (m + 3)))
     (odd : ∀ m : ℕ, (∀ k < 2 * (m + 2) + 1, P k) → P (2 * (m + 2) + 1)) (n : ℕ) : P n :=
   n.evenOddStrongRec (by rintro (_ | _ | _ | _) h; exacts [base0, base2, base4, even _ h])
     (by rintro (_ | _ | _) h; exacts [base1, base3, odd _ h])
@@ -302,8 +305,8 @@ noncomputable def normEDSRec' {P : ℕ → Sort u} (base0 : P 0) (base1 : P 1) (
     and `P (m + 4)`,
 then we have `P n` for all `n : ℕ`. -/
 @[elab_as_elim]
-noncomputable def normEDSRec {P : ℕ → Sort u} (base0 : P 0) (base1 : P 1) (base2 : P 2)
-    (base3 : P 3) (base4 : P 4)
+noncomputable def normEDSRec {P : ℕ → Sort u}
+    (base0 : P 0) (base1 : P 1) (base2 : P 2) (base3 : P 3) (base4 : P 4)
     (even : ∀ m : ℕ, P (m + 1) → P (m + 2) → P (m + 3) → P (m + 4) → P (m + 5) → P (2 * (m + 3)))
     (odd : ∀ m : ℕ, P (m + 1) → P (m + 2) → P (m + 3) → P (m + 4) → P (2 * (m + 2) + 1)) (n : ℕ) :
     P n :=
