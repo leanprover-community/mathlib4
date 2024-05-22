@@ -287,6 +287,11 @@ lemma smoothNumbers_succ {N : ℕ} (hN : ¬ N.Prime) : N.succ.smoothNumbers = N.
 @[gcongr] lemma smoothNumbers_mono {N M : ℕ} (hNM : N ≤ M) : N.smoothNumbers ⊆ M.smoothNumbers :=
   fun _ hx ↦ ⟨hx.1, fun p hp => (hx.2 p hp).trans_le hNM⟩
 
+/-- All `m`, `0 < m < n` are `n`-smooth numbers -/
+lemma mem_smoothNumbers_of_lt {m n : ℕ} (hm : 0 < m) (hmn : m < n) : m ∈ n.smoothNumbers :=
+  smoothNumbers_eq_factoredNumbers _ ▸ ⟨not_eq_zero_of_lt hm,
+  fun _ h => Finset.mem_range.mpr <| lt_of_le_of_lt (le_of_mem_factors h) hmn⟩
+
 /-- The non-zero non-`N`-smooth numbers are `≥ N`. -/
 lemma smoothNumbers_compl (N : ℕ) : (N.smoothNumbers)ᶜ \ {0} ⊆ {n | N ≤ n} := by
   simpa only [smoothNumbers_eq_factoredNumbers]
