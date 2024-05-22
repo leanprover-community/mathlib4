@@ -107,7 +107,6 @@ def free : Type ⥤ CommRingCat where
     intros X
     ext x
     simp at *
-
   map_comp := by
     -- aesop_cat
     intros X Y Z f g
@@ -127,6 +126,7 @@ def free' : Type ⥤ CommRingCat where
     MonoidHom.comp (𝟙 H) f = f :=
   Category.comp_id (GroupCat.ofHom f)
 
+-- PR'd as https://github.com/leanprover-community/mathlib4/pull/13055
 attribute [local simp] CommGroupCat.coe_of in
 attribute [local simp] CommGroupCat.comp_def GroupCat.comp_def in
 def abelianize : GroupCat.{u} ⥤ CommGroupCat.{u} where
