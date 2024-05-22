@@ -112,7 +112,7 @@ theorem continuous_comp_left (f : C(X, Y)) : Continuous (fun g => g.comp f : C(Y
 
 /-- Any pair of homeomorphisms `X ≃ₜ Z` and `Y ≃ₜ T` gives rise to a homeomorphism
 `C(X, Y) ≃ₜ C(Z, T)`. -/
-protected def _root_.Homeomorph.continuousMapCongr (φ : X ≃ₜ Z) (ψ : Y ≃ₜ T) :
+protected def _root_.Homeomorph.arrowCongr (φ : X ≃ₜ Z) (ψ : Y ≃ₜ T) :
     C(X, Y) ≃ₜ C(Z, T) where
   toFun f := .comp ψ <| f.comp φ.symm
   invFun f := .comp ψ.symm <| f.comp φ

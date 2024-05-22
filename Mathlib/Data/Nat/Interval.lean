@@ -118,11 +118,9 @@ theorem card_Ioo : (Ioo a b).card = b - a - 1 :=
 
 @[simp]
 theorem card_uIcc : (uIcc a b).card = (b - a : ℤ).natAbs + 1 := by
-  refine' (card_Icc _ _).trans (Int.ofNat.inj _)
-  change ((↑) : ℕ → ℤ) _ = _
+  refine (card_Icc _ _).trans (Int.natCast_inj.mp ?_)
   rw [sup_eq_max, inf_eq_min, Int.ofNat_sub]
-  · change _ = ↑(Int.natAbs (b - a) + 1)
-    omega
+  · omega
   · exact min_le_max.trans le_self_add
 #align nat.card_uIcc Nat.card_uIcc
 
@@ -283,11 +281,11 @@ theorem mod_injOn_Ico (n a : ℕ) : Set.InjOn (· % a) (Finset.Ico n (n + a)) :=
   rcases hk with ⟨hkn, rfl | hk⟩ <;> rcases hl with ⟨hln, rfl | hl⟩
   · rfl
   · rw [add_mod_right] at hkl
-    refine' (hln <| ih hl _ hkl.symm).elim
+    refine (hln <| ih hl ?_ hkl.symm).elim
     simp only [lt_add_iff_pos_right, Set.left_mem_Ico, Finset.coe_Ico, ha]
   · rw [add_mod_right] at hkl
     suffices k = n by contradiction
-    refine' ih hk _ hkl
+    refine ih hk ?_ hkl
     simp only [lt_add_iff_pos_right, Set.left_mem_Ico, Finset.coe_Ico, ha]
   · refine' ih _ _ hkl <;> simp only [Finset.mem_coe, hk, hl]
 #align nat.mod_inj_on_Ico Nat.mod_injOn_Ico

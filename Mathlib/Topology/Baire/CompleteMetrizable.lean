@@ -27,7 +27,7 @@ Since `Mathlib` does not have the notion of a completely metrizable topological 
 we state it for a complete uniform space with countably generated uniformity filter. -/
 instance (priority := 100) BaireSpace.of_pseudoEMetricSpace_completeSpace : BaireSpace X := by
   let _ := UniformSpace.pseudoMetricSpace X
-  refine' ⟨fun f ho hd => _⟩
+  refine ⟨fun f ho hd => ?_⟩
   let B : ℕ → ℝ≥0∞ := fun n => 1 / 2 ^ n
   have Bpos : ∀ n, 0 < B n := fun n ↦
     ENNReal.div_pos one_ne_zero <| ENNReal.pow_ne_top ENNReal.coe_ne_top

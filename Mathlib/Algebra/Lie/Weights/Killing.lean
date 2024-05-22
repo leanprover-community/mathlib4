@@ -103,8 +103,8 @@ lemma killingForm_apply_eq_zero_of_mem_rootSpace_of_add_ne_zero {α β : H → K
   have hσ : ∀ γ, σ γ ≠ γ := fun γ ↦ by simpa only [σ, ← add_assoc] using add_left_ne_self.mpr hαβ
   let f : Module.End K L := (ad K L x) ∘ₗ (ad K L y)
   have hf : ∀ γ, MapsTo f (rootSpace H γ) (rootSpace H (σ γ)) := fun γ ↦
-    (mapsTo_toEndomorphism_weightSpace_add_of_mem_rootSpace K L H L α (β + γ) hx).comp <|
-      mapsTo_toEndomorphism_weightSpace_add_of_mem_rootSpace K L H L β γ hy
+    (mapsTo_toEnd_weightSpace_add_of_mem_rootSpace K L H L α (β + γ) hx).comp <|
+      mapsTo_toEnd_weightSpace_add_of_mem_rootSpace K L H L β γ hy
   classical
   have hds := DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top
     (LieSubmodule.independent_iff_coe_toSubmodule.mp <| independent_weightSpace K H L)
@@ -142,7 +142,7 @@ lemma eq_zero_of_isNilpotent_ad_of_mem_isCartanSubalgebra {x : L} (hx : x ∈ H)
   suffices ⟨x, hx⟩ ∈ LinearMap.ker (traceForm K H L) by simpa using this
   simp only [LinearMap.mem_ker]
   ext y
-  have comm : Commute (toEndomorphism K H L ⟨x, hx⟩) (toEndomorphism K H L y) := by
+  have comm : Commute (toEnd K H L ⟨x, hx⟩) (toEnd K H L y) := by
     rw [commute_iff_lie_eq, ← LieHom.map_lie, trivial_lie_zero, LieHom.map_zero]
   rw [traceForm_apply_apply, ← LinearMap.mul_eq_comp, LinearMap.zero_apply]
   exact (LinearMap.isNilpotent_trace_of_isNilpotent (comm.isNilpotent_mul_left hx')).eq_zero
@@ -157,16 +157,16 @@ lemma isSemisimple_ad_of_mem_isCartanSubalgebra [PerfectField K] {x : L} (hx : x
   rw [eq_sub_of_add_eq hSN.symm] at hN
   /- Note that the semisimple part `S` is just a scalar action on each root space. -/
   have aux {α : H → K} {y : L} (hy : y ∈ rootSpace H α) : S y = α x' • y := by
-    replace hy : y ∈ (ad K L x).maximalGeneralizedEigenspace (α x') :=
+    replace hy : y ∈ (ad K L x).maxGenEigenspace (α x') :=
       (weightSpace_le_weightSpaceOf L x' α) hy
-    rw [maximalGeneralizedEigenspace_eq] at hy
-    set k := maximalGeneralizedEigenspaceIndex (ad K L x) (α x')
+    rw [maxGenEigenspace_eq] at hy
+    set k := maxGenEigenspaceIndex (ad K L x) (α x')
     rw [apply_eq_of_mem_genEigenspace_of_comm_of_isSemisimple_of_isNilpotent_sub hy hS₀ hS hN]
   /- So `S` obeys the derivation axiom if we restrict to root spaces. -/
   have h_der (y z : L) (α β : H → K) (hy : y ∈ rootSpace H α) (hz : z ∈ rootSpace H β) :
       S ⁅y, z⁆ = ⁅S y, z⁆ + ⁅y, S z⁆ := by
     have hyz : ⁅y, z⁆ ∈ rootSpace H (α + β) :=
-      mapsTo_toEndomorphism_weightSpace_add_of_mem_rootSpace K L H L α β hy hz
+      mapsTo_toEnd_weightSpace_add_of_mem_rootSpace K L H L α β hy hz
     rw [aux hy, aux hz, aux hyz, smul_lie, lie_smul, ← add_smul, ← Pi.add_apply]
   /- Thus `S` is a derivation since root spaces span. -/
   replace h_der (y z : L) : S ⁅y, z⁆ = ⁅S y, z⁆ + ⁅y, S z⁆ := by
@@ -229,7 +229,7 @@ lemma cartanEquivDual_symm_apply_mem_corootSpace (α : Weight K H L) :
   apply mem_ker_killingForm_of_mem_rootSpace_of_forall_rootSpace_neg (α := (0 : H → K))
   · simp only [rootSpace_zero_eq, LieSubalgebra.mem_toLieSubmodule]
     refine sub_mem ?_ (H.smul_mem _ α'.property)
-    simpa using mapsTo_toEndomorphism_weightSpace_add_of_mem_rootSpace K L H L α (-α) heα hfα
+    simpa using mapsTo_toEnd_weightSpace_add_of_mem_rootSpace K L H L α (-α) heα hfα
   · intro z hz
     replace hz : z ∈ H := by simpa using hz
     replace he : ⁅z, e⁆ = α ⟨z, hz⟩ • e := by simpa using he ⟨z, hz⟩

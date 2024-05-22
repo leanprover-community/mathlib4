@@ -299,10 +299,10 @@ def trans (e : C ≌ D) (f : D ≌ E) : C ≌ E where
   functor := e.functor ⋙ f.functor
   inverse := f.inverse ⋙ e.inverse
   unitIso := by
-    refine' Iso.trans e.unitIso _
+    refine Iso.trans e.unitIso ?_
     exact isoWhiskerLeft e.functor (isoWhiskerRight f.unitIso e.inverse)
   counitIso := by
-    refine' Iso.trans _ f.counitIso
+    refine Iso.trans ?_ f.counitIso
     exact isoWhiskerLeft f.inverse (isoWhiskerRight e.counitIso f.functor)
   -- We wouldn't have needed to give this proof if we'd used `Equivalence.mk`,
   -- but we choose to avoid using that here, for the sake of good structure projection `simp`
