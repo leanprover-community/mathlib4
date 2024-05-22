@@ -95,7 +95,7 @@ theorem coe_ne_bot : (a : WithBot α) ≠ ⊥ :=
 #align with_bot.coe_ne_bot WithBot.coe_ne_bot
 
 /-- Recursor for `WithBot` using the preferred forms `⊥` and `↑a`. -/
-@[elab_as_elim]
+@[elab_as_elim, induction_eliminator]
 def recBotCoe {C : WithBot α → Sort*} (bot : C ⊥) (coe : ∀ a : α, C a) : ∀ n : WithBot α, C n
   | ⊥ => bot
   | (a : α) => coe a
@@ -133,7 +133,7 @@ theorem coe_eq_coe : (a : WithBot α) = b ↔ a = b := coe_inj
 #align with_bot.coe_eq_coe WithBot.coe_eq_coe
 
 theorem unbot'_eq_iff {d y : α} {x : WithBot α} : unbot' d x = y ↔ x = y ∨ x = ⊥ ∧ y = d := by
-  induction x using recBotCoe <;> simp [@eq_comm _ d]
+  induction x <;> simp [@eq_comm _ d]
 #align with_bot.unbot'_eq_iff WithBot.unbot'_eq_iff
 
 @[simp] theorem unbot'_eq_self_iff {d : α} {x : WithBot α} : unbot' d x = d ↔ x = d ∨ x = ⊥ := by
@@ -142,7 +142,7 @@ theorem unbot'_eq_iff {d y : α} {x : WithBot α} : unbot' d x = y ↔ x = y ∨
 
 theorem unbot'_eq_unbot'_iff {d : α} {x y : WithBot α} :
     unbot' d x = unbot' d y ↔ x = y ∨ x = d ∧ y = ⊥ ∨ x = ⊥ ∧ y = d := by
- induction y using recBotCoe <;> simp [unbot'_eq_iff, or_comm]
+ induction y <;> simp [unbot'_eq_iff, or_comm]
 #align with_bot.unbot'_eq_unbot'_iff WithBot.unbot'_eq_unbot'_iff
 
 /-- Lift a map `f : α → β` to `WithBot α → WithBot β`. Implemented using `Option.map`. -/
@@ -276,7 +276,7 @@ theorem unbot_le_iff {a : WithBot α} (h : a ≠ ⊥) {b : α} :
 
 theorem unbot'_le_iff {a : WithBot α} {b c : α} (h : a = ⊥ → b ≤ c) :
     a.unbot' b ≤ c ↔ a ≤ c := by
-  induction a using recBotCoe
+  induction a
   · simpa using h rfl
   · simp
 #align with_bot.unbot'_bot_le_iff WithBot.unbot'_le_iff
@@ -334,7 +334,7 @@ protected theorem bot_lt_iff_ne_bot : ∀ {x : WithBot α}, ⊥ < x ↔ x ≠ �
 
 theorem unbot'_lt_iff {a : WithBot α} {b c : α} (h : a = ⊥ → b < c) :
     a.unbot' b < c ↔ a < c := by
-  induction a using recBotCoe
+  induction a
   · simpa [bot_lt_coe] using h rfl
   · simp
 
@@ -660,7 +660,7 @@ theorem coe_ne_top : (a : WithTop α) ≠ ⊤ :=
 #align with_top.coe_ne_top WithTop.coe_ne_top
 
 /-- Recursor for `WithTop` using the preferred forms `⊤` and `↑a`. -/
-@[elab_as_elim]
+@[elab_as_elim, induction_eliminator]
 def recTopCoe {C : WithTop α → Sort*} (top : C ⊤) (coe : ∀ a : α, C a) : ∀ n : WithTop α, C n
   | none => top
   | Option.some a => coe a
