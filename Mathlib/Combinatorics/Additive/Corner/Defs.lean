@@ -29,7 +29,7 @@ variable [AddCommMonoid G] [AddCommMonoid H] {A B : Set (G × G)} {s : Set G} {t
 `(x, y), (x + d, y), (x, y + d)`. It is **nontrivial** if `d ≠ 0`.
 
 Here we define it as triples `(x₁, y₁), (x₂, y₁), (x₁, y₂)` where `x₁ + y₂ = x₂ + y₁` in order for
-the definition to make sense in `ℕ`. -/
+the definition to make sense in commutative monoids, the motivating example being `ℕ`. -/
 @[mk_iff]
 structure IsCorner (A : Set (G × G)) (x₁ y₁ x₂ y₂ : G) : Prop where
   fst_fst_mem : (x₁, y₁) ∈ A
@@ -54,11 +54,17 @@ lemma IsCorner.mono (hAB : A ⊆ B) (hA : IsCorner A x₁ y₁ x₂ y₂) : IsCo
   snd_fst_mem := hAB hA.snd_fst_mem
   add_eq_add := hA.add_eq_add
 
-lemma IsCornerFree.mono (hst : A ⊆ B) (ht : IsCornerFree B) : IsCornerFree A :=
-  fun _x₁ _y₁ _x₂ _y₂ hxyd ↦ ht $ hxyd.mono hst
+lemma IsCornerFree.mono (hAB : A ⊆ B) (hB : IsCornerFree B) : IsCornerFree A :=
+  fun _x₁ _y₁ _x₂ _y₂ hxyd ↦ hB $ hxyd.mono hAB
 
 @[simp] lemma not_isCorner_empty : ¬ IsCorner ∅ x₁ y₁ x₂ y₂ := by simp [isCorner_iff]
-@[simp] lemma isCornerFree_empty : IsCornerFree (∅ : Set (G × G)) := by simp [IsCornerFree]
+
+@[simp] lemma Set.Subsingleton.isCornerFree (hA : A.Subsingleton) : IsCornerFree A :=
+  fun _x₁ _y₁ _x₂ _y₂ hxyd ↦ by simpa using hA hxyd.fst_fst_mem hxyd.snd_fst_mem
+
+@[simp] lemma isCornerFree_empty : IsCornerFree (∅ : Set (G × G)) := subsingleton_empty.isCornerFree
+@[simp] lemma isCornerFree_singleton (x : G × G) : IsCornerFree {x} :=
+  subsingleton_singleton.isCornerFree
 
 /-- Corners are preserved under `2`-Freiman homomorphisms. --/
 lemma IsCorner.image (hf : IsAddFreimanHom 2 s t f) (hAs : (A : Set (G × G)) ⊆ s ×ˢ s)
