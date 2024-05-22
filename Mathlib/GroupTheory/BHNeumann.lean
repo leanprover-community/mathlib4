@@ -448,8 +448,40 @@ theorem BHNeumann :
   · rw [← Nat.cast_zero, Nat.cast_lt]
     exact Nat.zero_lt_of_ne_zero hK.finiteIndex
 
+open BigOperators in
 theorem BHNeumann' :
-    ∃ i ∈ s, (H i).index ≤ s.card :=
-  sorry
-
-#print axioms BHNeumann
+    ∃ i ∈ s, (H i).FiniteIndex ∧ (H i).index ≤ s.card := by
+  classical
+  have hf {K : Subgroup G} : K.FiniteIndex ↔ K.index ≠ 0 := ⟨fun h => h.finiteIndex, fun h => ⟨h⟩⟩
+  have hsum : (1 : ℚ) ≤ ∑ i ∈ s, (1 : ℚ) / (H i).index := BHNeumann G s H g covers
+  have ⟨j, hjs, hj⟩ : ∃ j ∈ s, (H j).FiniteIndex := by
+    have ⟨j, hjs, h⟩ := Finset.exists_ne_zero_of_sum_ne_zero ((zero_lt_one.trans_le hsum).ne.symm)
+    exact ⟨j, hjs, hf.mpr <| Nat.cast_ne_zero.mp <| ne_zero_of_one_div_ne_zero h⟩
+  contrapose! hsum with hlt
+  suffices ∑ x ∈ Finset.filter (fun i ↦ (H i).FiniteIndex) s, (1 : ℚ) / (H x).index < 1 from by
+    have : ∑ x ∈ Finset.filter (fun a ↦ ¬(H a).FiniteIndex) s, (1 : ℚ) / ↑(H x).index = 0 := by
+      refine Finset.sum_eq_zero fun i hi => by
+        replace hi := (Finset.mem_filter.mp hi).2
+        rw [hf, not_ne_iff, ← Nat.cast_eq_zero (R := ℚ)] at hi
+        rw [hi]
+        norm_num
+    rwa [← s.sum_filter_add_sum_filter_not (fun i => (H i).FiniteIndex), this, add_zero]
+  have hs' : (0 : ℚ) < s.card := Nat.cast_pos.mpr <| Finset.card_pos.mpr ⟨j, hjs⟩
+  have hs'' : (s.card : ℚ) ≠ 0 := Nat.cast_ne_zero.mpr <| Finset.card_ne_zero.mpr ⟨j, hjs⟩
+  have hi' (i) (hi : (H i).FiniteIndex) : (0 : ℚ) < (H i).index :=
+    Nat.cast_pos.mpr <| Nat.pos_of_ne_zero hi.finiteIndex
+  apply lt_of_lt_of_le (b := ∑ _ ∈ s.filter (fun i => (H i).FiniteIndex), (1 : ℚ) / s.card)
+  . refine Finset.sum_lt_sum (fun i hi => ?_) ?_
+    . replace ⟨his, hi⟩ := Finset.mem_filter.mp hi
+      rw [div_le_div_iff (hi' i hi) hs', one_mul, one_mul]
+      exact Nat.cast_le.mpr (hlt i his hi).le
+    . refine ⟨j, Finset.mem_filter.mpr ⟨hjs, hj⟩, ?_⟩
+      rw [div_lt_div_iff (hi' j hj) hs', one_mul, one_mul]
+      exact Nat.cast_lt.mpr (hlt j hjs hj)
+  . rw [← mul_le_mul_iff_of_pos_left hs', Finset.mul_sum, mul_one]
+    trans ((s.filter fun i => (H i).FiniteIndex).card : ℚ)
+    . rw [(s.filter fun i => (H i).FiniteIndex).card_eq_sum_ones, Nat.cast_sum]
+      refine Finset.sum_le_sum fun i _ => ?_
+      rw [mul_div, mul_one, div_self hs'', Nat.cast_one]
+    . rw [Nat.cast_le]
+      exact Finset.card_filter_le _ _
