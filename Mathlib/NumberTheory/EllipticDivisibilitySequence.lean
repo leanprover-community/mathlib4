@@ -100,7 +100,7 @@ lemma IsDivSequence.smul (h : IsDivSequence W) (x : R) : IsDivSequence (x • W)
   fun m n r => mul_dvd_mul_left x <| h m n r
 
 lemma IsEllDivSequence.smul (h : IsEllDivSequence W) (x : R) : IsEllDivSequence (x • W) :=
-  ⟨h.left.smul W x, h.right.smul W x⟩
+  ⟨h.left.smul x, h.right.smul x⟩
 
 /-- The auxiliary sequence for a normalised EDS `W : ℕ → R`,
 with initial values `W(0) = 0`, `W(1) = 1`, `W(2) = 1`, `W(3) = c`, and `W(4) = d`. -/
