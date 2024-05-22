@@ -103,6 +103,18 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddGroup.coe_of AddGroupCat.coe_of
 
+@[to_additive (attr := simp)]
+theorem coe_comp' {G H K : Type _} [Group G] [Group H] [Group K] (f : G →* H) (g : H →* K) :
+    @DFunLike.coe (G →* K) G (fun _ ↦ K) MonoidHom.instFunLike (CategoryStruct.comp
+      (X := GroupCat.of G) (Y := GroupCat.of H) (Z := GroupCat.of K) f g) = g ∘ f :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem coe_id' {G : Type _} [Group G] :
+    @DFunLike.coe (G →* G) G (fun _ ↦ G) MonoidHom.instFunLike
+      (CategoryStruct.id (X := GroupCat.of G)) = id :=
+  rfl
+
 @[to_additive]
 instance : Inhabited GroupCat :=
   ⟨GroupCat.of PUnit⟩
@@ -251,16 +263,26 @@ add_decl_doc AddCommGroupCat.of
 instance : Inhabited CommGroupCat :=
   ⟨CommGroupCat.of PUnit⟩
 
--- Porting note: removed `@[simp]` here, as it makes it harder to tell when to apply
--- bundled or unbundled lemmas.
--- (This change seems dangerous!)
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem coe_of (R : Type u) [CommGroup R] : (CommGroupCat.of R : Type u) = R :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align CommGroup.coe_of CommGroupCat.coe_of
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.coe_of AddCommGroupCat.coe_of
+
+@[to_additive (attr := simp)]
+theorem coe_comp' {G H K : Type _} [CommGroup G] [CommGroup H] [CommGroup K]
+    (f : G →* H) (g : H →* K) :
+    @DFunLike.coe (G →* K) G (fun _ ↦ K) MonoidHom.instFunLike (CategoryStruct.comp
+      (X := CommGroupCat.of G) (Y := CommGroupCat.of H) (Z := CommGroupCat.of K) f g) = g ∘ f :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem coe_id' {G : Type _} [CommGroup G] :
+    @DFunLike.coe (G →* G) G (fun _ ↦ G) MonoidHom.instFunLike
+      (CategoryStruct.id (X := CommGroupCat.of G)) = id :=
+  rfl
 
 @[to_additive]
 instance ofUnique (G : Type*) [CommGroup G] [i : Unique G] : Unique (CommGroupCat.of G) :=
@@ -318,7 +340,7 @@ add_decl_doc AddCommGroupCat.ofHom
 
 @[to_additive (attr := simp)]
 theorem ofHom_apply {X Y : Type _} [CommGroup X] [CommGroup Y] (f : X →* Y) (x : X) :
-    (ofHom f) x = f x :=
+    @DFunLike.coe (X →* Y) X (fun _ ↦ Y) _ (ofHom f) x = f x :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align CommGroup.of_hom_apply CommGroupCat.ofHom_apply
@@ -344,7 +366,8 @@ set_option linter.uppercaseLean3 false in
 #align AddCommGroup.as_hom AddCommGroupCat.asHom
 
 @[simp]
-theorem asHom_apply {G : AddCommGroupCat.{0}} (g : G) (i : ℤ) : (asHom g) i = i • g :=
+theorem asHom_apply {G : AddCommGroupCat.{0}} (g : G) (i : ℤ) :
+    @DFunLike.coe (ℤ →+ ↑G) ℤ (fun _ ↦ ↑G) _ (asHom g) i = i • g :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.as_hom_apply AddCommGroupCat.asHom_apply

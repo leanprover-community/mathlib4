@@ -562,7 +562,13 @@ open HomComplex
 
 /-- The cochain complex of homomorphisms between two cochain complexes `F` and `G`.
 In degree `n : ℤ`, it consists of the abelian group `HomComplex.Cochain F G n`. -/
-@[simps! X d_apply]
+-- We also constructed the `d_apply` lemma using `@[simps]`
+-- until we made `AddCommGroupCat.coe_of` a simp lemma,
+-- after which the simp normal form linter complains.
+-- It was not used a simp lemma in Mathlib.
+-- Possible solution: higher priority function coercions that remove the `of`?
+-- @[simp]
+@[simps! X]
 def HomComplex : CochainComplex AddCommGroupCat ℤ where
   X i := AddCommGroupCat.of (Cochain F G i)
   d i j := AddCommGroupCat.ofHom (δ_hom ℤ F G i j)
