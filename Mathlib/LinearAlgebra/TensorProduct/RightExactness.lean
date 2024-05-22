@@ -165,6 +165,7 @@ variable {R M N P : Type*} [CommRing R]
 
 open Function LinearMap
 
+-- TODO: Move this and related lemmas to another file
 lemma LinearMap.exact_subtype_mkQ (Q : Submodule R N) :
     Exact (Submodule.subtype Q) (Submodule.mkQ Q) := by
   rw [exact_iff, Submodule.ker_mkQ, Submodule.range_subtype Q]
@@ -415,6 +416,58 @@ theorem TensorProduct.map_ker :
     Submodule.map_top]
   rw [range_eq_top.mpr (rTensor_surjective M' hg), Submodule.map_top]
   rw [Exact.linearMap_ker_eq (lTensor_exact P hfg' hg')]
+
+variable (M)
+
+/-- Left tensoring a module with a quotient of the ring is the same as
+quotienting that module by the corresponding submodule. -/
+noncomputable def lTensor_ring_mod_ideal_equiv_mod_ideal_smul (I : Ideal R) :
+    ((R⧸I) ⊗[R] M) ≃ₗ[R] M⧸(I • (⊤ : Submodule R M)) :=
+  (rTensor.equiv M (exact_subtype_mkQ I) I.mkQ_surjective).symm.trans <|
+    Submodule.Quotient.equiv _ _ (TensorProduct.lid R M) <|
+      Eq.trans (LinearMap.range_comp _ _).symm <|
+        Eq.trans ((Submodule.topEquiv.lTensor I).range_comp _).symm <|
+          Eq.symm <| Eq.trans (map₂_eq_range_lift_comp_mapIncl _ _ _) <|
+            congrArg _ (TensorProduct.ext' (fun _ _ => rfl))
+
+/-- Right tensoring a module with a quotient of the ring is the same as
+quotienting that module by the corresponding submodule. -/
+noncomputable def rTensor_ring_mod_ideal_equiv_mod_ideal_smul (I : Ideal R) :
+    (M ⊗[R] (R⧸I)) ≃ₗ[R] M⧸(I • (⊤ : Submodule R M)) :=
+  TensorProduct.comm R M _ ≪≫ₗ lTensor_ring_mod_ideal_equiv_mod_ideal_smul M I
+
+variable {M}
+
+@[simp]
+lemma lTensor_ring_mod_ideal_equiv_mod_ideal_smul_apply
+    (I : Ideal R) (r : R) (x : M) :
+    lTensor_ring_mod_ideal_equiv_mod_ideal_smul M I
+      (Ideal.Quotient.mk I r ⊗ₜ[R] x) = Submodule.Quotient.mk (r • x) :=
+  (lTensor_ring_mod_ideal_equiv_mod_ideal_smul M I).eq_symm_apply.mp <|
+    Eq.trans (congrArg (· ⊗ₜ[R] x) <|
+        Eq.trans (congrArg (Ideal.Quotient.mk I)
+                    (Eq.trans (smul_eq_mul R) (mul_one r))).symm <|
+          Submodule.Quotient.mk_smul I r 1) <|
+      smul_tmul r _ x
+
+@[simp]
+lemma lTensor_ring_mod_ideal_equiv_mod_ideal_smul_symm_apply
+    (I : Ideal R) (x : M) :
+    (lTensor_ring_mod_ideal_equiv_mod_ideal_smul M I).symm
+      (Submodule.Quotient.mk x) = 1 ⊗ₜ[R] x := rfl
+
+@[simp]
+lemma rTensor_ring_mod_ideal_equiv_mod_ideal_smul_apply
+    (I : Ideal R) (r : R) (x : M) :
+    rTensor_ring_mod_ideal_equiv_mod_ideal_smul M I
+      (x ⊗ₜ[R] Ideal.Quotient.mk I r) = Submodule.Quotient.mk (r • x) :=
+  lTensor_ring_mod_ideal_equiv_mod_ideal_smul_apply I r x
+
+@[simp]
+lemma rTensor_ring_mod_ideal_equiv_mod_ideal_smul_symm_apply
+    (I : Ideal R) (x : M) :
+    (rTensor_ring_mod_ideal_equiv_mod_ideal_smul M I).symm
+      (Submodule.Quotient.mk x) = x ⊗ₜ[R] 1 := rfl
 
 end Modules
 
