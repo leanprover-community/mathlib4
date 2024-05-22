@@ -35,9 +35,6 @@ instance addCommSemigroup (n : ℕ) : AddCommSemigroup (Fin n) where
   add_comm := by simp [ext_iff, add_def, Nat.add_comm]
 #align fin.add_comm_semigroup Fin.addCommSemigroup
 
-instance [NeZero n] {a : ℕ} : OfNat (Fin n) a where
-  ofNat := Fin.ofNat' a n.pos_of_neZero
-
 instance (n) : AddCommSemigroup (Fin n) where
   add_assoc := by simp [ext_iff, add_def, Nat.add_assoc]
   add_comm := by simp [ext_iff, add_def, add_comm]
