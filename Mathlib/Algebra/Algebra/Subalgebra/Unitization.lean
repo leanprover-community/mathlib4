@@ -3,11 +3,10 @@ Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-
-import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
-import Mathlib.Algebra.Star.Subalgebra
 import Mathlib.Algebra.Algebra.Unitization
 import Mathlib.Algebra.Star.NonUnitalSubalgebra
+import Mathlib.Algebra.Star.Subalgebra
+import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # Relating unital and non-unital substructures
@@ -15,7 +14,7 @@ import Mathlib.Algebra.Star.NonUnitalSubalgebra
 This file relates various algebraic structures and provides maps (generally algebra homomorphisms),
 from the unitization of a non-unital subobject into the full structure. The range of this map is
 the unital closure of the non-unital subobject (e.g., `Algebra.adjoin`, `Subring.closure`,
-`Subsemiring.closure` or `StarSubalgebra.adjoin`). When the underlying scalar ring is a field, for
+`Subsemiring.closure` or `StarAlgebra.adjoin`). When the underlying scalar ring is a field, for
 this map to be injective it suffices that the range omits `1`. In this setting we provide suitable
 `AlgEquiv` (or `StarAlgEquiv`) onto the range.
 
@@ -41,7 +40,7 @@ this map to be injective it suffices that the range omits `1`. In this setting w
 * `NonUnitalStarSubalgebra s : Unitization R s →⋆ₐ[R] A`: a version of
   `NonUnitalSubalgebra.unitization` for star algebras.
 * `NonUnitalStarSubalgebra.unitizationStarAlgEquiv s :`
-  `Unitization R s ≃⋆ₐ[R] StarSubalgebra.adjoin R (s : Set A)`:
+  `Unitization R s ≃⋆ₐ[R] StarAlgebra.adjoin R (s : Set A)`:
   a version of `NonUnitalSubalgebra.unitizationAlgEquiv` for star algebras.
 -/
 
@@ -74,6 +73,24 @@ theorem Subalgebra.toNonUnitalSubalgebra_toSubalgebra (S : Subalgebra R A) :
 theorem NonUnitalSubalgebra.toSubalgebra_toNonUnitalSubalgebra (S : NonUnitalSubalgebra R A)
     (h1 : (1 : A) ∈ S) : (NonUnitalSubalgebra.toSubalgebra S h1).toNonUnitalSubalgebra = S := by
   cases S; rfl
+
+open Submodule in
+lemma Algebra.adjoin_nonUnitalSubalgebra_eq_span (s : NonUnitalSubalgebra R A) :
+    Subalgebra.toSubmodule (adjoin R (s : Set A)) = span R {1} ⊔ s.toSubmodule := by
+  rw [adjoin_eq_span, Submonoid.closure_eq_one_union, span_union, ← NonUnitalAlgebra.adjoin_eq_span,
+      NonUnitalAlgebra.adjoin_eq]
+
+variable (R)
+
+lemma NonUnitalAlgebra.adjoin_le_algebra_adjoin (s : Set A) :
+    adjoin R s ≤ (Algebra.adjoin R s).toNonUnitalSubalgebra :=
+  adjoin_le Algebra.subset_adjoin
+
+lemma Algebra.adjoin_nonUnitalSubalgebra (s : Set A) :
+    adjoin R (NonUnitalAlgebra.adjoin R s : Set A) = adjoin R s :=
+  le_antisymm
+    (adjoin_le <| NonUnitalAlgebra.adjoin_le_algebra_adjoin R s)
+    (adjoin_le <| (NonUnitalAlgebra.subset_adjoin R).trans subset_adjoin)
 
 end Subalgebra
 
@@ -127,11 +144,12 @@ are a commutative ring. When the scalars are a field, one should use the more na
 `NonUnitalStarSubalgebra.unitization_injective` whose hypothesis is easier to verify. -/
 theorem _root_.AlgHomClass.unitization_injective' {F R S A : Type*} [CommRing R] [Ring A]
     [Algebra R A] [SetLike S A] [hSA : NonUnitalSubringClass S A] [hSRA : SMulMemClass S R A]
-    (s : S) (h : ∀ r, r ≠ 0 → algebraMap R A r ∉ s) [AlgHomClass F R (Unitization R s) A] (f : F)
-    (hf : ∀ x : s, f x = x) : Function.Injective f := by
-  refine' (injective_iff_map_eq_zero _).mpr fun x hx => _
+    (s : S) (h : ∀ r, r ≠ 0 → algebraMap R A r ∉ s)
+    [FunLike F (Unitization R s) A] [AlgHomClass F R (Unitization R s) A]
+    (f : F) (hf : ∀ x : s, f x = x) : Function.Injective f := by
+  refine' (injective_iff_map_eq_zero f).mpr fun x hx => _
   induction' x using Unitization.ind with r a
-  simp_rw [map_add, hf, ←Unitization.algebraMap_eq_inl, AlgHomClass.commutes] at hx
+  simp_rw [map_add, hf, ← Unitization.algebraMap_eq_inl, AlgHomClass.commutes] at hx
   rw [add_eq_zero_iff_eq_neg] at hx ⊢
   by_cases hr : r = 0
   · ext <;> simp [hr] at hx ⊢
@@ -142,8 +160,8 @@ theorem _root_.AlgHomClass.unitization_injective' {F R S A : Type*} [CommRing R]
 `NonUnitalSubalgebra.unitization_injective` and `NonUnitalStarSubalgebra.unitization_injective`. -/
 theorem _root_.AlgHomClass.unitization_injective {F R S A : Type*} [Field R] [Ring A]
     [Algebra R A] [SetLike S A] [hSA : NonUnitalSubringClass S A] [hSRA : SMulMemClass S R A]
-    (s : S) (h1 : 1 ∉ s) [AlgHomClass F R (Unitization R s) A] (f : F)
-    (hf : ∀ x : s, f x = x) : Function.Injective f := by
+    (s : S) (h1 : 1 ∉ s) [FunLike F (Unitization R s) A] [AlgHomClass F R (Unitization R s) A]
+    (f : F) (hf : ∀ x : s, f x = x) : Function.Injective f := by
   refine AlgHomClass.unitization_injective' s (fun r hr hr' ↦ ?_) f hf
   rw [Algebra.algebraMap_eq_smul_one] at hr'
   exact h1 <| inv_smul_smul₀ hr (1 : A) ▸ SMulMemClass.smul_mem r⁻¹ hr'
@@ -167,7 +185,7 @@ noncomputable def unitizationAlgEquiv (h1 : (1 : A) ∉ s) :
   AlgEquiv.ofBijective algHom <| by
     refine ⟨?_, fun x ↦ ?_⟩
     · have := AlgHomClass.unitization_injective s h1
-        ((Subalgebra.val _).comp algHom) fun _ ↦ by simp
+        ((Subalgebra.val _).comp algHom) fun _ ↦ by simp [algHom]
       rw [AlgHom.coe_comp] at this
       exact this.of_comp
     · obtain (⟨a, ha⟩ : (x : A) ∈ (unitization s).range) :=
@@ -309,6 +327,24 @@ theorem NonUnitalStarSubalgebra.toStarSubalgebra_toNonUnitalStarSubalgebra
     (S.toStarSubalgebra h1).toNonUnitalStarSubalgebra = S := by
   cases S; rfl
 
+open Submodule in
+lemma StarAlgebra.adjoin_nonUnitalStarSubalgebra_eq_span (s : NonUnitalStarSubalgebra R A) :
+    Subalgebra.toSubmodule (adjoin R (s : Set A)).toSubalgebra = span R {1} ⊔ s.toSubmodule := by
+  rw [adjoin_eq_span, Submonoid.closure_eq_one_union, span_union,
+    ← NonUnitalStarAlgebra.adjoin_eq_span, NonUnitalStarAlgebra.adjoin_eq]
+
+variable (R)
+
+lemma NonUnitalStarAlgebra.adjoin_le_starAlgebra_adjoin (s : Set A) :
+    adjoin R s ≤ (StarAlgebra.adjoin R s).toNonUnitalStarSubalgebra :=
+  adjoin_le <| StarAlgebra.subset_adjoin R s
+
+lemma StarAlgebra.adjoin_nonUnitalStarSubalgebra (s : Set A) :
+    adjoin R (NonUnitalStarAlgebra.adjoin R s : Set A) = adjoin R s :=
+  le_antisymm
+    (adjoin_le <| NonUnitalStarAlgebra.adjoin_le_starAlgebra_adjoin R s)
+    (adjoin_le <| (NonUnitalStarAlgebra.subset_adjoin R s).trans <| subset_adjoin R _)
+
 end StarSubalgebra
 
 namespace Unitization
@@ -328,9 +364,9 @@ theorem starLift_range_le
     | _ r a => simpa using add_mem (algebraMap_mem S r) (h ⟨a, rfl⟩)
 
 theorem starLift_range (f : A →⋆ₙₐ[R] C) :
-    (starLift f).range = StarSubalgebra.adjoin R (NonUnitalStarAlgHom.range f : Set C) :=
+    (starLift f).range = StarAlgebra.adjoin R (NonUnitalStarAlgHom.range f : Set C) :=
   eq_of_forall_ge_iff fun c ↦ by
-    rw [starLift_range_le, StarSubalgebra.adjoin_le_iff]
+    rw [starLift_range_le, StarAlgebra.adjoin_le_iff]
     rfl
 
 end Unitization
@@ -343,7 +379,7 @@ variable {R S A : Type*} [CommSemiring R] [StarRing R] [Semiring A] [StarRing A]
   [StarModule R A] [SetLike S A] [hSA : NonUnitalSubsemiringClass S A] [hSRA : SMulMemClass S R A]
   [StarMemClass S A] (s : S)
 /-- The natural star `R`-algebra homomorphism from the unitization of a non-unital star subalgebra
-to its `StarSubalgebra.adjoin`. -/
+to its `StarAlgebra.adjoin`. -/
 def unitization : Unitization R s →⋆ₐ[R] A :=
   Unitization.starLift <| NonUnitalStarSubalgebraClass.subtype s
 
@@ -351,7 +387,7 @@ def unitization : Unitization R s →⋆ₐ[R] A :=
 theorem unitization_apply (x : Unitization R s) : unitization s x = algebraMap R A x.fst + x.snd :=
   rfl
 
-theorem unitization_range : (unitization s).range = StarSubalgebra.adjoin R s := by
+theorem unitization_range : (unitization s).range = StarAlgebra.adjoin R s := by
   rw [unitization, Unitization.starLift_range]
   simp only [NonUnitalStarAlgHom.coe_range, NonUnitalStarSubalgebraClass.coeSubtype,
     Subtype.range_coe_subtype]
@@ -369,17 +405,17 @@ theorem unitization_injective (h1 : (1 : A) ∉ s) : Function.Injective (unitiza
   AlgHomClass.unitization_injective s h1 (unitization s) fun _ ↦ by simp
 
 /-- If a `NonUnitalStarSubalgebra` over a field does not contain `1`, then its unitization is
-isomorphic to its `StarSubalgebra.adjoin`. -/
+isomorphic to its `StarAlgebra.adjoin`. -/
 @[simps! apply_coe]
 noncomputable def unitizationStarAlgEquiv (h1 : (1 : A) ∉ s) :
-    Unitization R s ≃⋆ₐ[R] StarSubalgebra.adjoin R (s : Set A) :=
-  let starAlgHom : Unitization R s →⋆ₐ[R] StarSubalgebra.adjoin R (s : Set A) :=
+    Unitization R s ≃⋆ₐ[R] StarAlgebra.adjoin R (s : Set A) :=
+  let starAlgHom : Unitization R s →⋆ₐ[R] StarAlgebra.adjoin R (s : Set A) :=
     ((unitization s).codRestrict _
       fun x ↦ (unitization_range s).le <| Set.mem_range_self x)
   StarAlgEquiv.ofBijective starAlgHom <| by
     refine ⟨?_, fun x ↦ ?_⟩
     · have := AlgHomClass.unitization_injective s h1 ((StarSubalgebra.subtype _).comp starAlgHom)
-        fun _ ↦ by simp
+        fun _ ↦ by simp [starAlgHom]
       rw [StarAlgHom.coe_comp] at this
       exact this.of_comp
     · obtain (⟨a, ha⟩ : (x : A) ∈ (unitization s).range) :=

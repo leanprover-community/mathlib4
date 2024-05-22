@@ -263,7 +263,7 @@ protected lemma monotone_iff_continuous [TopologicalSpace α] [TopologicalSpace 
     exact fun _ hs ↦ IsUpperSet.preimage hs hf
   · intro hf a b hab
     rw [← mem_Iic, ← closure_singleton] at hab ⊢
-    apply (Continuous.closure_preimage_subset hf {f b})
+    apply Continuous.closure_preimage_subset hf {f b}
     apply mem_of_mem_of_subset hab
     apply closure_mono
     rw [singleton_subset_iff, mem_preimage, mem_singleton_iff]
@@ -333,7 +333,7 @@ protected lemma monotone_iff_continuous [TopologicalSpace α] [TopologicalSpace 
     [Topology.IsLowerSet α] [Topology.IsLowerSet β] {f : α → β} : Monotone f ↔ Continuous f := by
   rw [← monotone_dual_iff]
   exact IsUpperSet.monotone_iff_continuous (α := αᵒᵈ) (β := βᵒᵈ)
-    (f:= (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ))
+    (f := (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ))
 
 lemma monotone_to_lowerTopology_continuous [TopologicalSpace α] [TopologicalSpace β]
     [Topology.IsLowerSet α] [IsLower β] {f : α → β} (hf : Monotone f) : Continuous f :=
@@ -364,7 +364,7 @@ variable [Preorder α] [Preorder β] [Preorder γ]
 with the upper set topology. -/
 def map (f : α →o β) : C(WithUpperSet α, WithUpperSet β) where
   toFun := toUpperSet ∘ f ∘ ofUpperSet
-  continuous_toFun := continuous_def.2 λ _s hs ↦ IsUpperSet.preimage hs f.monotone
+  continuous_toFun := continuous_def.2 fun _s hs ↦ IsUpperSet.preimage hs f.monotone
 
 @[simp] lemma map_id : map (OrderHom.id : α →o α) = ContinuousMap.id _ := rfl
 @[simp] lemma map_comp (g : β →o γ) (f : α →o β): map (g.comp f) = (map g).comp (map f) := rfl
@@ -392,7 +392,7 @@ variable [Preorder α] [Preorder β] [Preorder γ]
 with the lower set topology. -/
 def map (f : α →o β) : C(WithLowerSet α, WithLowerSet β) where
   toFun := toLowerSet ∘ f ∘ ofLowerSet
-  continuous_toFun := continuous_def.2 λ _s hs ↦ IsLowerSet.preimage hs f.monotone
+  continuous_toFun := continuous_def.2 fun _s hs ↦ IsLowerSet.preimage hs f.monotone
 
 @[simp] lemma map_id : map (OrderHom.id : α →o α) = ContinuousMap.id _ := rfl
 @[simp] lemma map_comp (g : β →o γ) (f : α →o β): map (g.comp f) = (map g).comp (map f) := rfl

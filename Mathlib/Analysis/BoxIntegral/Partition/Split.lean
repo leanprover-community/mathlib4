@@ -40,7 +40,8 @@ rectangular box, partition, hyperplane
 
 noncomputable section
 
-open Classical BigOperators Filter
+open scoped Classical
+open BigOperators Filter
 
 open Function Set Filter
 
@@ -66,7 +67,7 @@ theorem coe_splitLower : (splitLower I i x : Set (ι → ℝ)) = ↑I ∩ { y | 
   ext y
   simp only [mem_univ_pi, mem_Ioc, mem_inter_iff, mem_coe, mem_setOf_eq, forall_and, ← Pi.le_def,
     le_update_iff, le_min_iff, and_assoc, and_forall_ne (p := fun j => y j ≤ upper I j) i, mem_def]
-  rw [and_comm (a := y i ≤ x), Pi.le_def]
+  rw [and_comm (a := y i ≤ x)]
 #align box_integral.box.coe_split_lower BoxIntegral.Box.coe_splitLower
 
 theorem splitLower_le : I.splitLower i x ≤ I :=
@@ -89,7 +90,8 @@ theorem splitLower_def [DecidableEq ι] {i x} (h : x ∈ Ioo (I.lower i) (I.uppe
       (forall_update_iff I.upper fun j y => I.lower j < y).2
         ⟨h.1, fun j _ => I.lower_lt_upper _⟩) :
     I.splitLower i x = (⟨I.lower, update I.upper i x, h'⟩ : Box ι) := by
-  simp only [splitLower, mk'_eq_coe, min_eq_left h.2.le, update]
+  simp (config := { unfoldPartialApp := true }) only [splitLower, mk'_eq_coe, min_eq_left h.2.le,
+    update, and_self]
 #align box_integral.box.split_lower_def BoxIntegral.Box.splitLower_def
 
 /-- Given a box `I` and `x ∈ (I.lower i, I.upper i)`, the hyperplane `{y : ι → ℝ | y i = x}` splits
@@ -130,7 +132,8 @@ theorem splitUpper_def [DecidableEq ι] {i x} (h : x ∈ Ioo (I.lower i) (I.uppe
       (forall_update_iff I.lower fun j y => y < I.upper j).2
         ⟨h.2, fun j _ => I.lower_lt_upper _⟩) :
     I.splitUpper i x = (⟨update I.lower i x, I.upper, h'⟩ : Box ι) := by
-  simp only [splitUpper, mk'_eq_coe, max_eq_left h.1.le, update]
+  simp (config := { unfoldPartialApp := true }) only [splitUpper, mk'_eq_coe, max_eq_left h.1.le,
+    update, and_self]
 #align box_integral.box.split_upper_def BoxIntegral.Box.splitUpper_def
 
 theorem disjoint_splitLower_splitUpper (I : Box ι) (i : ι) (x : ℝ) :
@@ -147,7 +150,7 @@ theorem splitLower_ne_splitUpper (I : Box ι) (i : ι) (x : ℝ) :
   · rw [splitUpper_eq_self.2 h, splitLower_eq_bot.2 h]
     exact WithBot.bot_ne_coe
   · refine' (disjoint_splitLower_splitUpper I i x).ne _
-    rwa [Ne.def, splitLower_eq_bot, not_le]
+    rwa [Ne, splitLower_eq_bot, not_le]
 #align box_integral.box.split_lower_ne_split_upper BoxIntegral.Box.splitLower_ne_splitUpper
 
 end Box
@@ -295,7 +298,7 @@ theorem not_disjoint_imp_le_of_subset_of_mem_splitMany {I J Js : Box ι} {s : Fi
     exact (Hle hy).2
 #align box_integral.prepartition.not_disjoint_imp_le_of_subset_of_mem_split_many BoxIntegral.Prepartition.not_disjoint_imp_le_of_subset_of_mem_splitMany
 
-section Fintype
+section Finite
 
 variable [Finite ι]
 
@@ -308,9 +311,9 @@ theorem eventually_not_disjoint_imp_le_of_mem_splitMany (s : Finset (Box ι)) :
     ∀ᶠ t : Finset (ι × ℝ) in atTop, ∀ (I : Box ι), ∀ J ∈ s, ∀ J' ∈ splitMany I t,
       ¬Disjoint (J : WithBot (Box ι)) J' → J' ≤ J := by
   cases nonempty_fintype ι
-  refine' eventually_atTop.2
+  refine eventually_atTop.2
     ⟨s.biUnion fun J => Finset.univ.biUnion fun i => {(i, J.lower i), (i, J.upper i)},
-      fun t ht I J hJ J' hJ' => not_disjoint_imp_le_of_subset_of_mem_splitMany (fun i => _) hJ'⟩
+      fun t ht I J hJ J' hJ' => not_disjoint_imp_le_of_subset_of_mem_splitMany (fun i => ?_) hJ'⟩
   exact fun p hp =>
     ht (Finset.mem_biUnion.2 ⟨J, hJ, Finset.mem_biUnion.2 ⟨i, Finset.mem_univ _, hp⟩⟩)
 #align box_integral.prepartition.eventually_not_disjoint_imp_le_of_mem_split_many BoxIntegral.Prepartition.eventually_not_disjoint_imp_le_of_mem_splitMany
@@ -384,7 +387,7 @@ theorem compl_top : (⊤ : Prepartition I).compl = ⊥ :=
   (isPartitionTop I).compl_eq_bot
 #align box_integral.prepartition.compl_top BoxIntegral.Prepartition.compl_top
 
-end Fintype
+end Finite
 
 end Prepartition
 

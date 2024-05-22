@@ -6,7 +6,8 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.Order.Field.Pi
 import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.Normed.Order.Basic
-import Mathlib.Topology.Algebra.Order.UpperLower
+import Mathlib.Algebra.Order.UpperLower
+import Mathlib.Data.Real.Sqrt
 
 #align_import analysis.normed.order.upper_lower from "leanprover-community/mathlib"@"992efbda6f85a5c9074375d3c7cb9764c64d8f72"
 
@@ -84,7 +85,7 @@ theorem IsUpperSet.mem_interior_of_forall_lt (hs : IsUpperSet s) (hx : x ∈ clo
   obtain ⟨δ, hδ, hyz⟩ := Pi.exists_forall_pos_add_lt hyz
   refine' mem_interior.2 ⟨ball y δ, _, isOpen_ball, mem_ball_self hδ⟩
   rintro w hw
-  refine' hs (fun i => _) hz
+  refine hs (fun i => ?_) hz
   simp_rw [ball_pi _ hδ, Real.ball_eq_Ioo] at hw
   exact ((lt_sub_iff_add_lt.2 <| hyz _).trans (hw _ <| mem_univ _).1).le
 #align is_upper_set.mem_interior_of_forall_lt IsUpperSet.mem_interior_of_forall_lt
@@ -103,7 +104,7 @@ theorem IsLowerSet.mem_interior_of_forall_lt (hs : IsLowerSet s) (hx : x ∈ clo
   obtain ⟨δ, hδ, hyz⟩ := Pi.exists_forall_pos_add_lt hyz
   refine' mem_interior.2 ⟨ball y δ, _, isOpen_ball, mem_ball_self hδ⟩
   rintro w hw
-  refine' hs (fun i => _) hz
+  refine hs (fun i => ?_) hz
   simp_rw [ball_pi _ hδ, Real.ball_eq_Ioo] at hw
   exact ((hw _ <| mem_univ _).2.trans <| hyz _).le
 #align is_lower_set.mem_interior_of_forall_lt IsLowerSet.mem_interior_of_forall_lt
@@ -119,8 +120,8 @@ theorem IsUpperSet.exists_subset_ball (hs : IsUpperSet s) (hx : x ∈ closure s)
   refine' ⟨x + const _ (3 / 4 * δ), closedBall_subset_closedBall' _, _⟩
   · rw [dist_self_add_left]
     refine' (add_le_add_left (pi_norm_const_le <| 3 / 4 * δ) _).trans_eq _
-    simp [Real.norm_of_nonneg, hδ.le, zero_le_three]
-    simp [abs_of_pos, abs_of_pos hδ]
+    simp only [norm_mul, norm_div, Real.norm_eq_abs]
+    simp only [gt_iff_lt, zero_lt_three, abs_of_pos, zero_lt_four, abs_of_pos hδ]
     ring
   obtain ⟨y, hy, hxy⟩ := Metric.mem_closure_iff.1 hx _ (div_pos hδ zero_lt_four)
   refine' fun z hz => hs.mem_interior_of_forall_lt (subset_closure hy) fun i => _
@@ -138,7 +139,8 @@ theorem IsLowerSet.exists_subset_ball (hs : IsLowerSet s) (hx : x ∈ closure s)
   refine' ⟨x - const _ (3 / 4 * δ), closedBall_subset_closedBall' _, _⟩
   · rw [dist_self_sub_left]
     refine' (add_le_add_left (pi_norm_const_le <| 3 / 4 * δ) _).trans_eq _
-    simp [abs_of_pos, abs_of_pos hδ]
+    simp only [norm_mul, norm_div, Real.norm_eq_abs, gt_iff_lt, zero_lt_three, abs_of_pos,
+      zero_lt_four, abs_of_pos hδ]
     ring
   obtain ⟨y, hy, hxy⟩ := Metric.mem_closure_iff.1 hx _ (div_pos hδ zero_lt_four)
   refine' fun z hz => hs.mem_interior_of_forall_lt (subset_closure hy) fun i => _

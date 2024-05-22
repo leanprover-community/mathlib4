@@ -4,13 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
-import Mathlib.Data.Polynomial.Degree.Lemmas
+import Mathlib.Algebra.Polynomial.Degree.Lemmas
 
 /-!
 
-# `compute_degree` a tactic for computing degrees of polynomials
+# `compute_degree` and `monicity`: tactics for explicit polynomials
 
-This file defines the tactic `compute_degree`.
+This file defines two related tactics: `compute_degree` and `monicity`.
 
 Using `compute_degree` when the goal is of one of the five forms
 *  `natDegree f ≤ d`,
@@ -21,11 +21,17 @@ Using `compute_degree` when the goal is of one of the five forms
 tries to solve the goal.
 It may leave side-goals, in case it is not entirely successful.
 
-See the doc-string for more details.
+Using `monicity` when the goal is of the form `Monic f` tries to solve the goal.
+It may leave side-goals, in case it is not entirely successful.
+
+Both tactics admit a `!` modifier (`compute_degree!` and `monicity!`) instructing
+Lean to try harder to close the goal.
+
+See the doc-strings for more details.
 
 ##  Future work
 
-* Currently, the tactic does not deal correctly with some edge cases.  For instance,
+* Currently, `compute_degree` does not deal correctly with some edge cases.  For instance,
   ```lean
   example [Semiring R] : natDegree (C 0 : R[X]) = 0 := by
     compute_degree
@@ -85,7 +91,7 @@ variable [Semiring R]
 
 theorem natDegree_C_le (a : R) : natDegree (C a) ≤ 0 := (natDegree_C a).le
 
-theorem natDegree_nat_cast_le (n : ℕ) : natDegree (n : R[X]) ≤ 0 := (natDegree_nat_cast _).le
+theorem natDegree_natCast_le (n : ℕ) : natDegree (n : R[X]) ≤ 0 := (natDegree_natCast _).le
 theorem natDegree_zero_le : natDegree (0 : R[X]) ≤ 0 := natDegree_zero.le
 theorem natDegree_one_le : natDegree (1 : R[X]) ≤ 0 := natDegree_one.le
 
@@ -105,7 +111,7 @@ theorem coeff_mul_add_of_le_natDegree_of_eq_ite {d df dg : ℕ} {a b : R} {f g :
     · exact natDegree_mul_le_of_le ‹_› ‹_›
     · exact ne_comm.mp h
 
-theorem coeff_pow_of_natDegree_le_of_eq_ite' [Semiring R] {m n o : ℕ} {a : R} {p : R[X]}
+theorem coeff_pow_of_natDegree_le_of_eq_ite' {m n o : ℕ} {a : R} {p : R[X]}
     (h_pow : natDegree p ≤ n) (h_exp : m * n ≤ o) (h_pow_bas : coeff p n = a) :
     coeff (p ^ m) o = if o = m * n then a ^ m else 0 := by
   split_ifs with h
@@ -115,6 +121,16 @@ theorem coeff_pow_of_natDegree_le_of_eq_ite' [Semiring R] {m n o : ℕ} {a : R} 
     apply lt_of_le_of_lt ?_ (lt_of_le_of_ne ‹_› ?_)
     · exact natDegree_pow_le_of_le m ‹_›
     · exact Iff.mp ne_comm h
+
+theorem natDegree_smul_le_of_le {n : ℕ} {a : R} {f : R[X]} (hf : natDegree f ≤ n) :
+    natDegree (a • f) ≤ n :=
+  (natDegree_smul_le a f).trans hf
+
+theorem degree_smul_le_of_le {n : ℕ} {a : R} {f : R[X]} (hf : degree f ≤ n) :
+    degree (a • f) ≤ n :=
+  (degree_smul_le a f).trans hf
+
+theorem coeff_smul {n : ℕ} {a : R} {f : R[X]} : (a • f).coeff n = a * f.coeff n := rfl
 
 section congr_lemmas
 
@@ -157,13 +173,13 @@ end semiring
 section ring
 variable [Ring R]
 
-theorem natDegree_int_cast_le (n : ℤ) : natDegree (n : R[X]) ≤ 0 := (natDegree_int_cast _).le
+theorem natDegree_intCast_le (n : ℤ) : natDegree (n : R[X]) ≤ 0 := (natDegree_intCast _).le
 
 theorem coeff_sub_of_eq {n : ℕ} {a b : R} {f g : R[X]} (hf : f.coeff n = a) (hg : g.coeff n = b) :
     (f - g).coeff n = a - b := by subst hf hg; apply coeff_sub
 
-theorem coeff_int_cast_ite {n : ℕ} {a : ℤ} : (Int.cast a : R[X]).coeff n = ite (n = 0) a 0 := by
-  simp only [← C_eq_int_cast, coeff_C, Int.cast_ite, Int.cast_zero]
+theorem coeff_intCast_ite {n : ℕ} {a : ℤ} : (Int.cast a : R[X]).coeff n = ite (n = 0) a 0 := by
+  simp only [← C_eq_intCast, coeff_C, Int.cast_ite, Int.cast_zero]
 
 end ring
 
@@ -211,7 +227,7 @@ def twoHeadsArgs (e : Expr) : Name × Name × Sum Name Name × List Bool := Id.r
     | some 1 => .inl `one
     | some _ => .inl `many
     | none => match pol.getAppFnArgs with
-      | (``FunLike.coe, #[_, _, _, _, polFun, _]) =>
+      | (``DFunLike.coe, #[_, _, _, _, polFun, _]) =>
         let na := polFun.getAppFn.constName
         if na ∈ [``Polynomial.monomial, ``Polynomial.C] then
           .inr na
@@ -255,7 +271,8 @@ def getCongrLemma (twoH : Name × Name × List Bool) (debug : Bool := false) : N
       | true, true   => ``id
     | _ => ``id
   if debug then
-    let natr := if nam.getString == `trans then nam else nam.getString
+    let last := nam.lastComponentAsString
+    let natr := if last == "trans" then nam.toString else last
     dbg_trace f!"congr lemma: '{natr}'"
     nam
   else
@@ -289,12 +306,12 @@ def dispatchLemma
           | _, ``LE.le => ``le_rfl
           | _, _ => ``rfl
         if debug then
-          dbg_trace f!"{lem.getString}\n{msg}"
+          dbg_trace f!"{lem.lastComponentAsString}\n{msg}"
         lem
       match head with
         | .inl `zero => π ``natDegree_zero_le ``degree_zero_le ``coeff_zero
         | .inl `one  => π ``natDegree_one_le ``degree_one_le ``coeff_one
-        | .inl `many => π ``natDegree_nat_cast_le ``degree_nat_cast_le ``coeff_nat_cast_ite
+        | .inl `many => π ``natDegree_natCast_le ``degree_natCast_le ``coeff_natCast_ite
         | .inl .anonymous => π ``le_rfl ``le_rfl ``rfl
         | .inr ``HAdd.hAdd =>
           π ``natDegree_add_le_of_le ``degree_add_le_of_le ``coeff_add_of_eq
@@ -309,17 +326,19 @@ def dispatchLemma
         | .inr ``Polynomial.X =>
           π ``natDegree_X_le ``degree_X_le ``coeff_X
         | .inr ``Nat.cast =>
-          π ``natDegree_nat_cast_le ``degree_nat_cast_le ``coeff_nat_cast_ite
+          π ``natDegree_natCast_le ``degree_natCast_le ``coeff_natCast_ite
         | .inr ``NatCast.natCast =>
-          π ``natDegree_nat_cast_le ``degree_nat_cast_le ``coeff_nat_cast_ite
+          π ``natDegree_natCast_le ``degree_natCast_le ``coeff_natCast_ite
         | .inr ``Int.cast =>
-          π ``natDegree_int_cast_le ``degree_int_cast_le ``coeff_int_cast_ite
+          π ``natDegree_intCast_le ``degree_intCast_le ``coeff_intCast_ite
         | .inr ``IntCast.intCast =>
-          π ``natDegree_int_cast_le ``degree_int_cast_le ``coeff_int_cast_ite
+          π ``natDegree_intCast_le ``degree_intCast_le ``coeff_intCast_ite
         | .inr ``Polynomial.monomial =>
           π ``natDegree_monomial_le ``degree_monomial_le ``coeff_monomial
         | .inr ``Polynomial.C =>
           π ``natDegree_C_le ``degree_C_le ``coeff_C
+        | .inr ``HSMul.hSMul =>
+          π ``natDegree_smul_le_of_le ``degree_smul_le_of_le ``coeff_smul
         | _ => π ``le_rfl ``le_rfl ``rfl
 
 /-- `try_rfl mvs` takes as input a list of `MVarId`s, scans them partitioning them into two
@@ -433,14 +452,14 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$bang]?) => focus <| withMain
     | _ => none
   let twoH := twoHeadsArgs gt
   match twoH with
-    | (_, .anonymous, _) => throwError
-        (m!"'compute_degree' inapplicable. The goal{indentD gt}\nis expected to be '≤' or '='.")
-    | (.anonymous, _, _) => throwError
-        (m!"'compute_degree' inapplicable. The LHS must be an application of {
-          ""}'natDegree', 'degree', or 'coeff'.")
+    | (_, .anonymous, _) => throwError m!"'compute_degree' inapplicable. \
+        The goal{indentD gt}\nis expected to be '≤' or '='."
+    | (.anonymous, _, _) => throwError m!"'compute_degree' inapplicable. \
+        The LHS must be an application of 'natDegree', 'degree', or 'coeff'."
     | _ =>
       let lem := dispatchLemma twoH
-      trace[Tactic.compute_degree] f!"'compute_degree' first applies lemma '{lem.getString}'"
+      trace[Tactic.compute_degree]
+        f!"'compute_degree' first applies lemma '{lem.lastComponentAsString}'"
       let mut (gls, static) := (← goal.applyConst lem, [])
       while gls != [] do (gls, static) ← splitApply gls static
       let rfled ← try_rfl static
@@ -448,12 +467,14 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$bang]?) => focus <| withMain
       --  simplify the left-hand sides, since this is where the degree computations leave
       --  expressions such as `max (0 * 1) (max (1 + 0 + 3 * 4) (7 * 0))`
       evalTactic
-        (← `(tactic| try any_goals conv_lhs => (simp only [Nat.cast_withBot]; norm_num)))
+        (← `(tactic| try any_goals conv_lhs =>
+                       (simp (config := {decide := true}) only [Nat.cast_withBot]; norm_num)))
       if bang.isSome then
         let mut false_goals : Array MVarId := #[]
         let mut new_goals : Array MVarId := #[]
         for g in ← getGoals do
-          let gs' ← run g do evalTactic (← `(tactic| try (any_goals norm_num <;> try assumption)))
+          let gs' ← run g do evalTactic (←
+            `(tactic| try (any_goals norm_num <;> norm_cast <;> try assumption)))
           new_goals := new_goals ++ gs'.toArray
           if ← gs'.anyM fun g' => g'.withContext do return (← g'.getType'').isConstOf ``False then
             false_goals := false_goals.push g
@@ -463,6 +484,19 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$bang]?) => focus <| withMain
           unless errors.isEmpty do
             throwError Lean.MessageData.joinSep
               (m!"The given degree is '{deg}'.  However,\n" :: errors) "\n"
+
+/-- `monicity` tries to solve a goal of the form `Monic f`.
+It converts the goal into a goal of the form `natDegree f ≤ n` and one of the form `f.coeff n = 1`
+and calls `compute_degree` on those two goals.
+
+The variant `monicity!` starts like `monicity`, but calls `compute_degree!` on the two side-goals.
+-/
+macro (name := monicityMacro) "monicity" : tactic =>
+  `(tactic| (apply monic_of_natDegree_le_of_coeff_eq_one <;> compute_degree))
+
+@[inherit_doc monicityMacro]
+macro "monicity!" : tactic =>
+  `(tactic| (apply monic_of_natDegree_le_of_coeff_eq_one <;> compute_degree!))
 
 end Tactic
 

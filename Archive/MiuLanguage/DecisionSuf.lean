@@ -59,7 +59,7 @@ private theorem der_cons_replicate (n : ℕ) : Derivable (M :: replicate (2 ^ n)
   · -- base case
     constructor
   · -- inductive step
-    rw [succ_eq_add_one, pow_add, pow_one 2, mul_two, replicate_add]
+    rw [pow_add, pow_one 2, mul_two, replicate_add]
     exact Derivable.r2 hk
 
 /-!
@@ -119,7 +119,7 @@ theorem der_cons_replicate_I_replicate_U_append_of_der_cons_replicate_I_append (
     specialize ha (U :: xs)
     intro h₂
     -- We massage the goal into a form amenable to the application of `ha`.
-    rw [succ_eq_add_one, replicate_add, ← append_assoc, ← cons_append, replicate_one, append_assoc,
+    rw [replicate_add, ← append_assoc, ← cons_append, replicate_one, append_assoc,
       singleton_append]
     apply ha
     apply Derivable.r3
@@ -157,7 +157,7 @@ private theorem le_pow2_and_pow2_eq_mod3' (c : ℕ) (x : ℕ) (h : c = 1 ∨ c =
   refine' ⟨g + 2, _, _⟩
   · rw [mul_succ, ← add_assoc, pow_add]
     change c + 3 * k + 3 ≤ 2 ^ g * (1 + 3); rw [mul_add (2 ^ g) 1 3, mul_one]
-    linarith [hkg, one_le_two_pow g]
+    linarith [hkg, @Nat.one_le_two_pow g]
   · rw [pow_add, ← mul_one c]
     exact ModEq.mul hgmod rfl
 
@@ -267,8 +267,7 @@ theorem count_I_eq_length_of_count_U_zero_and_neg_mem {ys : Miustr} (hu : count 
       · simpa only [count]
       · rw [mem_cons, not_or] at hm; exact hm.2
     · -- case `x = U` gives a contradiction.
-      exfalso; simp only [count, countP_cons_of_pos] at hu
-      exact succ_ne_zero _ hu
+      exfalso; simp only [count, countP_cons_of_pos (· == U) _ (rfl : U == U)] at hu
 set_option linter.uppercaseLean3 false in
 #align miu.count_I_eq_length_of_count_U_zero_and_neg_mem Miu.count_I_eq_length_of_count_U_zero_and_neg_mem
 
@@ -277,7 +276,8 @@ set_option linter.uppercaseLean3 false in
 theorem base_case_suf (en : Miustr) (h : Decstr en) (hu : count U en = 0) : Derivable en := by
   rcases h with ⟨⟨mhead, nmtail⟩, hi⟩
   have : en ≠ nil := by
-    intro k; simp only [k, count, countP, if_false, zero_mod, zero_ne_one, false_or_iff] at hi
+    intro k
+    simp only [k, count, countP, countP.go, if_false, zero_mod, zero_ne_one, false_or_iff] at hi
   rcases exists_cons_of_ne_nil this with ⟨y, ys, rfl⟩
   rcases mhead
   rsuffices ⟨c, rfl, hc⟩ : ∃ c, replicate c I = ys ∧ (c % 3 = 1 ∨ c % 3 = 2)
@@ -305,7 +305,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem eq_append_cons_U_of_count_U_pos {k : ℕ} {zs : Miustr} (h : count U zs = succ k) :
     ∃ as bs : Miustr, zs = as ++ ↑(U :: bs) :=
-  mem_split (mem_of_count_U_eq_succ h)
+  append_of_mem (mem_of_count_U_eq_succ h)
 set_option linter.uppercaseLean3 false in
 #align miu.eq_append_cons_U_of_count_U_pos Miu.eq_append_cons_U_of_count_U_pos
 
@@ -331,7 +331,7 @@ theorem ind_hyp_suf (k : ℕ) (ys : Miustr) (hu : count U ys = succ k) (hdec : D
     rw [cons_append, cons_append]
     dsimp [tail] at nmtail ⊢
     rw [mem_append] at nmtail
-    simpa only [mem_append, mem_cons, false_or_iff, or_false_iff] using nmtail
+    simpa only [append_assoc, cons_append, nil_append, mem_append, mem_cons, false_or] using nmtail
   · rw [count_append, count_append]; rw [← cons_append, count_append] at hic
     simp only [count_cons_self, count_nil, count_cons, if_false] at hic ⊢
     rw [add_right_comm, add_mod_right]; exact hic

@@ -94,9 +94,9 @@ theorem Sized.univ_mem_iff [Fintype α] (hA : A.Sized r) : Finset.univ ∈ A ↔
   hA.isAntichain.top_mem_iff
 #align set.sized.univ_mem_iff Set.Sized.univ_mem_iff
 
-theorem sized_powersetLen (s : Finset α) (r : ℕ) : (powersetLen r s : Set (Finset α)).Sized r :=
-  fun _t ht => (mem_powersetLen.1 ht).2
-#align set.sized_powerset_len Set.sized_powersetLen
+theorem sized_powersetCard (s : Finset α) (r : ℕ) : (powersetCard r s : Set (Finset α)).Sized r :=
+  fun _t ht => (mem_powersetCard.1 ht).2
+#align set.sized_powerset_len Set.sized_powersetCard
 
 end Set
 
@@ -106,17 +106,17 @@ section Sized
 
 variable [Fintype α] {𝒜 : Finset (Finset α)} {s : Finset α} {r : ℕ}
 
-theorem subset_powersetLen_univ_iff : 𝒜 ⊆ powersetLen r univ ↔ (𝒜 : Set (Finset α)).Sized r :=
-  forall_congr' fun A => by rw [mem_powersetLen_univ, mem_coe]
-#align finset.subset_powerset_len_univ_iff Finset.subset_powersetLen_univ_iff
+theorem subset_powersetCard_univ_iff : 𝒜 ⊆ powersetCard r univ ↔ (𝒜 : Set (Finset α)).Sized r :=
+  forall_congr' fun A => by rw [mem_powersetCard_univ, mem_coe]
+#align finset.subset_powerset_len_univ_iff Finset.subset_powersetCard_univ_iff
 
-alias ⟨_, _root_.Set.Sized.subset_powersetLen_univ⟩ := subset_powersetLen_univ_iff
-#align set.sized.subset_powerset_len_univ Set.Sized.subset_powersetLen_univ
+alias ⟨_, _root_.Set.Sized.subset_powersetCard_univ⟩ := subset_powersetCard_univ_iff
+#align set.sized.subset_powerset_len_univ Set.Sized.subset_powersetCard_univ
 
 theorem _root_.Set.Sized.card_le (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
     card 𝒜 ≤ (Fintype.card α).choose r := by
-  rw [Fintype.card, ← card_powersetLen]
-  exact card_le_of_subset (subset_powersetLen_univ_iff.mpr h𝒜)
+  rw [Fintype.card, ← card_powersetCard]
+  exact card_le_card (subset_powersetCard_univ_iff.mpr h𝒜)
 #align set.sized.card_le Set.Sized.card_le
 
 end Sized
@@ -133,7 +133,6 @@ def slice (𝒜 : Finset (Finset α)) (r : ℕ) : Finset (Finset α) :=
   𝒜.filter fun i => i.card = r
 #align finset.slice Finset.slice
 
--- mathport name: finset.slice
 -- Porting note: old code: scoped[FinsetFamily]
 @[inherit_doc]
 scoped[Finset] infixl:90 " # " => Finset.slice

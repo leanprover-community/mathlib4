@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.LinearAlgebra.Span
-import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.RingTheory.Ideal.IsPrimary
 import Mathlib.RingTheory.Ideal.QuotientOperations
 import Mathlib.RingTheory.Noetherian
 
@@ -49,7 +49,6 @@ def associatedPrimes : Set (Ideal R) :=
 #align associated_primes associatedPrimes
 
 variable {I J M R}
-
 variable {M' : Type*} [AddCommGroup M'] [Module R M'] (f : M →ₗ[R] M')
 
 theorem AssociatePrimes.mem_iff : I ∈ associatedPrimes R M ↔ IsAssociatedPrime I M := Iff.rfl
@@ -60,7 +59,7 @@ theorem IsAssociatedPrime.isPrime (h : IsAssociatedPrime I M) : I.IsPrime := h.1
 theorem IsAssociatedPrime.map_of_injective (h : IsAssociatedPrime I M) (hf : Function.Injective f) :
     IsAssociatedPrime I M' := by
   obtain ⟨x, rfl⟩ := h.2
-  refine' ⟨h.1, ⟨f x, _⟩⟩
+  refine ⟨h.1, ⟨f x, ?_⟩⟩
   ext r
   rw [Submodule.mem_annihilator_span_singleton, Submodule.mem_annihilator_span_singleton, ←
     map_smul, ← f.map_zero, hf.eq_iff]
@@ -84,7 +83,7 @@ variable (R)
 theorem exists_le_isAssociatedPrime_of_isNoetherianRing [H : IsNoetherianRing R] (x : M)
     (hx : x ≠ 0) : ∃ P : Ideal R, IsAssociatedPrime P M ∧ (R ∙ x).annihilator ≤ P := by
   have : (R ∙ x).annihilator ≠ ⊤ := by
-    rwa [Ne.def, Ideal.eq_top_iff_one, Submodule.mem_annihilator_span_singleton, one_smul]
+    rwa [Ne, Ideal.eq_top_iff_one, Submodule.mem_annihilator_span_singleton, one_smul]
   obtain ⟨P, ⟨l, h₁, y, rfl⟩, h₃⟩ :=
     set_has_maximal_iff_noetherian.mpr H
       { P | (R ∙ x).annihilator ≤ P ∧ P ≠ ⊤ ∧ ∃ y : M, P = (R ∙ y).annihilator }
@@ -99,7 +98,7 @@ theorem exists_le_isAssociatedPrime_of_isNoetherianRing [H : IsNoetherianRing R]
     rw [Submodule.mem_annihilator_span_singleton] at hc ⊢
     rw [smul_comm, hc, smul_zero]
   have H₂ : (Submodule.span R {a • y}).annihilator ≠ ⊤ := by
-    rwa [Ne.def, Submodule.annihilator_eq_top_iff, Submodule.span_singleton_eq_bot]
+    rwa [Ne, Submodule.annihilator_eq_top_iff, Submodule.span_singleton_eq_bot]
   rwa [H₁.eq_of_not_lt (h₃ (R ∙ a • y).annihilator ⟨l.trans H₁, H₂, _, rfl⟩),
     Submodule.mem_annihilator_span_singleton, smul_comm, smul_smul]
 #align exists_le_is_associated_prime_of_is_noetherian_ring exists_le_isAssociatedPrime_of_isNoetherianRing
@@ -146,8 +145,8 @@ theorem IsAssociatedPrime.eq_radical (hI : I.IsPrimary) (h : IsAssociatedPrime J
     apply hJ.1
     rwa [Submodule.span_singleton_eq_bot.mpr rfl, Submodule.annihilator_bot] at e
   obtain ⟨x, rfl⟩ := Ideal.Quotient.mkₐ_surjective R _ x
-  replace e : ∀ {y}, y ∈ J ↔ x * y ∈ I
-  · intro y
+  replace e : ∀ {y}, y ∈ J ↔ x * y ∈ I := by
+    intro y
     rw [e, Submodule.mem_annihilator_span_singleton, ← map_smul, smul_eq_mul, mul_comm,
       Ideal.Quotient.mkₐ_eq_mk, ← Ideal.Quotient.mk_eq_mk, Submodule.Quotient.mk_eq_zero]
   apply le_antisymm
@@ -166,7 +165,7 @@ theorem associatedPrimes.eq_singleton_of_isPrimary [IsNoetherianRing R] (hI : I.
   rintro rfl
   haveI : Nontrivial (R ⧸ I) := by
     refine ⟨(Ideal.Quotient.mk I : _) 1, (Ideal.Quotient.mk I : _) 0, ?_⟩
-    rw [Ne.def, Ideal.Quotient.eq, sub_zero, ← Ideal.eq_top_iff_one]
+    rw [Ne, Ideal.Quotient.eq, sub_zero, ← Ideal.eq_top_iff_one]
     exact hI.1
   obtain ⟨a, ha⟩ := associatedPrimes.nonempty R (R ⧸ I)
   exact ha.eq_radical hI ▸ ha

@@ -3,7 +3,7 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.Algebra.Algebra.Opposite
 
 /-! # `MulOpposite` distributes over `⊗`
@@ -13,10 +13,11 @@ The main result in this file is:
 * `Algebra.TensorProduct.opAlgEquiv R S A B : Aᵐᵒᵖ ⊗[R] Bᵐᵒᵖ ≃ₐ[S] (A ⊗[R] B)ᵐᵒᵖ`
 -/
 
+suppress_compilation
+
 open scoped TensorProduct
 
 variable (R S A B : Type*)
-
 variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
 variable [Algebra R S] [Algebra R A] [Algebra R B] [Algebra S A]
 variable [IsScalarTower R S A]

@@ -5,7 +5,7 @@ Authors: Violeta Hernández Palacios
 -/
 import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.Tactic.TFAE
-import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Order.Monotone
 
 #align_import set_theory.ordinal.topology from "leanprover-community/mathlib"@"740acc0e6f9adf4423f92a485d0456fc271482da"
 
@@ -53,8 +53,8 @@ theorem isOpen_singleton_iff : IsOpen ({a} : Set Ordinal) ↔ ¬IsLimit a := by
     · exact (ha ha').elim
 #align ordinal.is_open_singleton_iff Ordinal.isOpen_singleton_iff
 
--- porting note: todo: generalize to a `SuccOrder`
-theorem nhds_right' (a : Ordinal) : 𝓝[>] a = ⊥ := (covby_succ a).nhdsWithin_Ioi
+-- Porting note (#11215): TODO: generalize to a `SuccOrder`
+theorem nhds_right' (a : Ordinal) : 𝓝[>] a = ⊥ := (covBy_succ a).nhdsWithin_Ioi
 
 -- todo: generalize to a `SuccOrder`
 theorem nhds_left'_eq_nhds_ne (a : Ordinal) : 𝓝[<] a = 𝓝[≠] a := by
@@ -96,7 +96,7 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
     exact id
   tfae_have 2 → 3
   · intro h
-    cases' (s ∩ Iic a).eq_empty_or_nonempty with he hne
+    rcases (s ∩ Iic a).eq_empty_or_nonempty with he | hne
     · simp [he] at h
     · refine ⟨hne, (isLUB_of_mem_closure ?_ h).csSup_eq hne⟩
       exact fun x hx => hx.2
@@ -197,9 +197,8 @@ theorem isNormal_iff_strictMono_and_continuous (f : Ordinal.{u} → Ordinal.{u})
         Set.mem_preimage.2 (has ⟨hab.trans (h.strictMono hc.1), h.strictMono hc.2⟩)⟩
   · rw [isNormal_iff_strictMono_limit]
     rintro ⟨h, h'⟩
-    refine' ⟨h, fun o ho a h => _⟩
-    suffices : o ∈ f ⁻¹' Set.Iic a
-    exact Set.mem_preimage.1 this
+    refine ⟨h, fun o ho a h => ?_⟩
+    suffices o ∈ f ⁻¹' Set.Iic a from Set.mem_preimage.1 this
     rw [mem_closed_iff_sup (IsClosed.preimage h' (@isClosed_Iic _ _ _ _ a))]
     exact
       ⟨_, out_nonempty_iff_ne_zero.2 ho.1, typein (· < ·), fun i => h _ (typein_lt_self i),
@@ -222,14 +221,14 @@ theorem enumOrd_isNormal_iff_isClosed (hs : s.Unbounded (· < ·)) :
     change ((enumOrdOrderIso hs) _).val = f x
     rw [OrderIso.apply_symm_apply]
   · rw [isClosed_iff_bsup] at h
-    suffices : enumOrd s a ≤ bsup.{u, u} a fun b (_ : b < a) => enumOrd s b
-    exact this.trans (bsup_le H)
+    suffices enumOrd s a ≤ bsup.{u, u} a fun b (_ : b < a) => enumOrd s b from
+      this.trans (bsup_le H)
     cases' enumOrd_surjective hs _
         (h ha.1 (fun b _ => enumOrd s b) fun b _ => enumOrd_mem hs b) with
       b hb
     rw [← hb]
     apply Hs.monotone
-    by_contra' hba
+    by_contra! hba
     apply (Hs (lt_succ b)).not_le
     rw [hb]
     exact le_bsup.{u, u} _ _ (ha.2 _ hba)

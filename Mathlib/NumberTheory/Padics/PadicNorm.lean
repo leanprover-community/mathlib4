@@ -62,7 +62,7 @@ protected theorem nonneg (q : ℚ) : 0 ≤ padicNorm p q :=
     unfold padicNorm
     split_ifs
     apply zpow_nonneg
-    exact_mod_cast Nat.zero_le _
+    exact mod_cast Nat.zero_le _
 #align padic_norm.nonneg padicNorm.nonneg
 
 /-- The `p`-adic norm of `0` is `0`. -/
@@ -71,7 +71,7 @@ protected theorem zero : padicNorm p 0 = 0 := by simp [padicNorm]
 #align padic_norm.zero padicNorm.zero
 
 /-- The `p`-adic norm of `1` is `1`. -/
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 protected theorem one : padicNorm p 1 = 1 := by simp [padicNorm]
 #align padic_norm.one padicNorm.one
 
@@ -93,7 +93,7 @@ theorem padicNorm_p_of_prime [Fact p.Prime] : padicNorm p p = (p : ℚ)⁻¹ :=
 /-- The `p`-adic norm of `q` is `1` if `q` is prime and not equal to `p`. -/
 theorem padicNorm_of_prime_of_ne {q : ℕ} [p_prime : Fact p.Prime] [q_prime : Fact q.Prime]
     (neq : p ≠ q) : padicNorm p q = 1 := by
-  have p : padicValRat p q = 0 := by exact_mod_cast padicValNat_primes neq
+  have p : padicValRat p q = 0 := mod_cast padicValNat_primes neq
   rw [padicNorm, p]
   simp [q_prime.1.ne_zero]
 #align padic_norm.padic_norm_of_prime_of_ne padicNorm.padicNorm_of_prime_of_ne
@@ -103,7 +103,7 @@ theorem padicNorm_of_prime_of_ne {q : ℕ} [p_prime : Fact p.Prime] [q_prime : F
 See also `padicNorm.padicNorm_p_lt_one_of_prime` for a version assuming `p` is prime. -/
 theorem padicNorm_p_lt_one (hp : 1 < p) : padicNorm p p < 1 := by
   rw [padicNorm_p hp, inv_lt_one_iff]
-  exact_mod_cast Or.inr hp
+  exact mod_cast Or.inr hp
 #align padic_norm.padic_norm_p_lt_one padicNorm.padicNorm_p_lt_one
 
 /-- The `p`-adic norm of `p` is less than `1` if `p` is prime.
@@ -129,8 +129,8 @@ variable [hp : Fact p.Prime]
 /-- If `q ≠ 0`, then `padicNorm p q ≠ 0`. -/
 protected theorem nonzero {q : ℚ} (hq : q ≠ 0) : padicNorm p q ≠ 0 := by
   rw [padicNorm.eq_zpow_of_nonzero hq]
-  apply zpow_ne_zero_of_ne_zero
-  exact_mod_cast ne_of_gt hp.1.pos
+  apply zpow_ne_zero
+  exact mod_cast ne_of_gt hp.1.pos
 #align padic_norm.nonzero padicNorm.nonzero
 
 /-- If the `p`-adic norm of `q` is 0, then `q` is `0`. -/
@@ -138,8 +138,8 @@ theorem zero_of_padicNorm_eq_zero {q : ℚ} (h : padicNorm p q = 0) : q = 0 := b
   apply by_contradiction; intro hq
   unfold padicNorm at h; rw [if_neg hq] at h
   apply absurd h
-  apply zpow_ne_zero_of_ne_zero
-  exact_mod_cast hp.1.ne_zero
+  apply zpow_ne_zero
+  exact mod_cast hp.1.ne_zero
 #align padic_norm.zero_of_padic_norm_eq_zero padicNorm.zero_of_padicNorm_eq_zero
 
 /-- The `p`-adic norm is multiplicative. -/
@@ -157,7 +157,7 @@ protected theorem mul (q r : ℚ) : padicNorm p (q * r) = padicNorm p q * padicN
 @[simp]
 protected theorem div (q r : ℚ) : padicNorm p (q / r) = padicNorm p q / padicNorm p r :=
   if hr : r = 0 then by simp [hr]
-  else eq_div_of_mul_eq (padicNorm.nonzero hr) (by rw [← padicNorm.mul, div_mul_cancel _ hr])
+  else eq_div_of_mul_eq (padicNorm.nonzero hr) (by rw [← padicNorm.mul, div_mul_cancel₀ _ hr])
 #align padic_norm.div padicNorm.div
 
 /-- The `p`-adic norm of an integer is at most `1`. -/
@@ -167,11 +167,11 @@ protected theorem of_int (z : ℤ) : padicNorm p z ≤ 1 :=
     unfold padicNorm
     rw [if_neg _]
     · refine' zpow_le_one_of_nonpos _ _
-      · exact_mod_cast le_of_lt hp.1.one_lt
+      · exact mod_cast le_of_lt hp.1.one_lt
       · rw [padicValRat.of_int, neg_nonpos]
         norm_cast
         simp
-    exact_mod_cast hz
+    exact mod_cast hz
 #align padic_norm.of_int padicNorm.of_int
 
 private theorem nonarchimedean_aux {q r : ℚ} (h : padicValRat p q ≤ padicValRat p r) :
@@ -188,7 +188,7 @@ private theorem nonarchimedean_aux {q r : ℚ} (h : padicValRat p q ≤ padicVal
         apply le_max_iff.2
         left
         apply zpow_le_of_le
-        · exact_mod_cast le_of_lt hp.1.one_lt
+        · exact mod_cast le_of_lt hp.1.one_lt
         · apply neg_le_neg
           have : padicValRat p q = min (padicValRat p q) (padicValRat p r) := (min_eq_left h).symm
           rw [this]
@@ -245,8 +245,7 @@ theorem add_eq_max_of_ne {q r : ℚ} (hne : padicNorm p q ≠ padicNorm p r) :
 
 /-- The `p`-adic norm is an absolute value: positive-definite and multiplicative, satisfying the
 triangle inequality. -/
-instance : IsAbsoluteValue (padicNorm p)
-    where
+instance : IsAbsoluteValue (padicNorm p) where
   abv_nonneg' := padicNorm.nonneg
   abv_eq_zero' := ⟨zero_of_padicNorm_eq_zero, fun hx ↦ by simp [hx]⟩
   abv_add' := padicNorm.triangle_ineq
@@ -261,14 +260,14 @@ theorem dvd_iff_norm_le {n : ℕ} {z : ℤ} : ↑(p ^ n) ∣ z ↔ padicNorm p z
     · norm_cast
       rw [← PartENat.coe_le_coe, PartENat.natCast_get, ← multiplicity.pow_dvd_iff_le_multiplicity,
         Nat.cast_pow]
-      exact_mod_cast hz
-    · exact_mod_cast hp.1.one_lt
+      exact mod_cast hz
+    · exact mod_cast hp.1.one_lt
 #align padic_norm.dvd_iff_norm_le padicNorm.dvd_iff_norm_le
 
 /-- The `p`-adic norm of an integer `m` is one iff `p` doesn't divide `m`. -/
 theorem int_eq_one_iff (m : ℤ) : padicNorm p m = 1 ↔ ¬(p : ℤ) ∣ m := by
   nth_rw 2 [← pow_one p]
-  simp only [dvd_iff_norm_le, Int.cast_ofNat, Nat.cast_one, zpow_neg, zpow_one, not_le]
+  simp only [dvd_iff_norm_le, Int.cast_natCast, Nat.cast_one, zpow_neg, zpow_one, not_le]
   constructor
   · intro h
     rw [h, inv_lt_one_iff_of_pos] <;> norm_cast
@@ -281,8 +280,7 @@ theorem int_eq_one_iff (m : ℤ) : padicNorm p m = 1 ↔ ¬(p : ℤ) ∣ m := by
       exact (Nat.not_lt_zero p h).elim
     · have : 1 < (p : ℚ) := by norm_cast; exact Nat.Prime.one_lt (Fact.out : Nat.Prime p)
       rw [← zpow_neg_one, zpow_lt_iff_lt this]
-      have : 0 ≤ padicValRat p m
-      simp only [of_int, Nat.cast_nonneg]
+      have : 0 ≤ padicValRat p m := by simp only [of_int, Nat.cast_nonneg]
       intro h
       rw [← zpow_zero (p : ℚ), zpow_inj] <;> linarith
 #align padic_norm.int_eq_one_iff padicNorm.int_eq_one_iff
@@ -298,11 +296,11 @@ theorem of_nat (m : ℕ) : padicNorm p m ≤ 1 :=
 
 /-- The `p`-adic norm of a natural `m` is one iff `p` doesn't divide `m`. -/
 theorem nat_eq_one_iff (m : ℕ) : padicNorm p m = 1 ↔ ¬p ∣ m := by
-  rw [← Int.coe_nat_dvd, ← int_eq_one_iff, Int.cast_ofNat]
+  rw [← Int.natCast_dvd_natCast, ← int_eq_one_iff, Int.cast_natCast]
 #align padic_norm.nat_eq_one_iff padicNorm.nat_eq_one_iff
 
 theorem nat_lt_one_iff (m : ℕ) : padicNorm p m < 1 ↔ p ∣ m := by
-  rw [← Int.coe_nat_dvd, ← int_lt_one_iff, Int.cast_ofNat]
+  rw [← Int.natCast_dvd_natCast, ← int_lt_one_iff, Int.cast_natCast]
 #align padic_norm.nat_lt_one_iff padicNorm.nat_lt_one_iff
 
 /-- If a rational is not a p-adic integer, it is not an integer. -/

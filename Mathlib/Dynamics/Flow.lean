@@ -12,7 +12,7 @@ import Mathlib.Logic.Function.Iterate
 # Flows and invariant sets
 
 This file defines a flow on a topological space `α` by a topological
-monoid `τ` as a continuous monoid-act of `τ` on `α`. Anticipating the
+monoid `τ` as a continuous monoid-action of `τ` on `α`. Anticipating the
 cases where `τ` is one of `ℕ`, `ℤ`, `ℝ⁺`, or `ℝ`, we use additive
 notation for the monoids, though the definition does not require
 commutativity.
@@ -34,8 +34,6 @@ open Set Function Filter
 /-!
 ### Invariant sets
 -/
-
-
 section Invariant
 
 variable {τ : Type*} {α : Type*}
@@ -62,15 +60,16 @@ theorem IsInvariant.isFwInvariant [Preorder τ] [Zero τ] {ϕ : τ → α → α
     (h : IsInvariant ϕ s) : IsFwInvariant ϕ s := fun t _ht => h t
 #align is_invariant.is_fw_invariant IsInvariant.isFwInvariant
 
-/-- If `τ` is a `CanonicallyOrderedAddMonoid` (e.g., `ℕ` or `ℝ≥0`), then the notions
+/-- If `τ` is a `CanonicallyOrderedAddCommMonoid` (e.g., `ℕ` or `ℝ≥0`), then the notions
 `IsFwInvariant` and `IsInvariant` are equivalent. -/
-theorem IsFwInvariant.isInvariant [CanonicallyOrderedAddMonoid τ] {ϕ : τ → α → α} {s : Set α}
+theorem IsFwInvariant.isInvariant [CanonicallyOrderedAddCommMonoid τ] {ϕ : τ → α → α} {s : Set α}
     (h : IsFwInvariant ϕ s) : IsInvariant ϕ s := fun t => h (zero_le t)
 #align is_fw_invariant.is_invariant IsFwInvariant.isInvariant
 
-/-- If `τ` is a `CanonicallyOrderedAddMonoid` (e.g., `ℕ` or `ℝ≥0`), then the notions
+/-- If `τ` is a `CanonicallyOrderedAddCommMonoid` (e.g., `ℕ` or `ℝ≥0`), then the notions
 `IsFwInvariant` and `IsInvariant` are equivalent. -/
-theorem isFwInvariant_iff_isInvariant [CanonicallyOrderedAddMonoid τ] {ϕ : τ → α → α} {s : Set α} :
+theorem isFwInvariant_iff_isInvariant [CanonicallyOrderedAddCommMonoid τ] {ϕ : τ → α → α}
+    {s : Set α} :
     IsFwInvariant ϕ s ↔ IsInvariant ϕ s :=
   ⟨IsFwInvariant.isInvariant, IsInvariant.isFwInvariant⟩
 #align is_fw_invariant_iff_is_invariant isFwInvariant_iff_isInvariant
@@ -81,11 +80,11 @@ end Invariant
 ### Flows
 -/
 
-
 /-- A flow on a topological space `α` by an additive topological
-    monoid `τ` is a continuous monoid action of `τ` on `α`.-/
+    monoid `τ` is a continuous monoid action of `τ` on `α`. -/
 structure Flow (τ : Type*) [TopologicalSpace τ] [AddMonoid τ] [ContinuousAdd τ] (α : Type*)
   [TopologicalSpace α] where
+  /-- The map `τ → α → α` underlying a flow of `τ` on `α`. -/
   toFun : τ → α → α
   cont' : Continuous (uncurry toFun)
   map_add' : ∀ t₁ t₂ x, toFun (t₁ + t₂) x = toFun t₁ (toFun t₂ x)
@@ -94,8 +93,8 @@ structure Flow (τ : Type*) [TopologicalSpace τ] [AddMonoid τ] [ContinuousAdd 
 
 namespace Flow
 
-variable {τ : Type*} [AddMonoid τ] [TopologicalSpace τ] [ContinuousAdd τ] {α : Type*}
-  [TopologicalSpace α] (ϕ : Flow τ α)
+variable {τ : Type*} [AddMonoid τ] [TopologicalSpace τ] [ContinuousAdd τ]
+  {α : Type*} [TopologicalSpace α] (ϕ : Flow τ α)
 
 instance : Inhabited (Flow τ α) :=
   ⟨{  toFun := fun _ x => x
@@ -136,7 +135,7 @@ theorem map_zero_apply (x : α) : ϕ 0 x = x := ϕ.map_zero' x
     to itself defines a semiflow by `ℕ` on `α`. -/
 def fromIter {g : α → α} (h : Continuous g) : Flow ℕ α where
   toFun n x := g^[n] x
-  cont' := continuous_uncurry_of_discreteTopology_left (Continuous.iterate h)
+  cont' := continuous_prod_of_discrete_left.mpr (Continuous.iterate h)
   map_add' := iterate_add_apply _
   map_zero' _x := rfl
 #align flow.from_iter Flow.fromIter
@@ -153,8 +152,8 @@ end Flow
 
 namespace Flow
 
-variable {τ : Type*} [AddCommGroup τ] [TopologicalSpace τ] [TopologicalAddGroup τ] {α : Type*}
-  [TopologicalSpace α] (ϕ : Flow τ α)
+variable {τ : Type*} [AddCommGroup τ] [TopologicalSpace τ] [TopologicalAddGroup τ]
+  {α : Type*} [TopologicalSpace α] (ϕ : Flow τ α)
 
 theorem isInvariant_iff_image_eq (s : Set α) : IsInvariant ϕ s ↔ ∀ t, ϕ t '' s = s :=
   (isInvariant_iff_image _ _).trans
@@ -177,7 +176,7 @@ def reverse : Flow τ α where
 -- Porting note: Homeomorphism.continuous_invFun : Continuous invFun := by continuity
 @[continuity]
 theorem continuous_toFun (t : τ) : Continuous (ϕ.toFun t) := by
-  rw [←curry_uncurry ϕ.toFun]
+  rw [← curry_uncurry ϕ.toFun]
   apply continuous_curry
   exact ϕ.cont'
 

@@ -52,7 +52,7 @@ def HolderWith (C r : ℝ≥0) (f : X → Y) : Prop :=
 #align holder_with HolderWith
 
 /-- A function `f : X → Y` between two `PseudoEMetricSpace`s is Hölder continuous with constant
-`C : ℝ≥0` and exponent `r : ℝ≥0` on a set `s : set X`, if `edist (f x) (f y) ≤ C * edist x y ^ r`
+`C : ℝ≥0` and exponent `r : ℝ≥0` on a set `s : Set X`, if `edist (f x) (f y) ≤ C * edist x y ^ r`
 for all `x y ∈ s`. -/
 def HolderOnWith (C r : ℝ≥0) (f : X → Y) (s : Set X) : Prop :=
   ∀ x ∈ s, ∀ y ∈ s, edist (f x) (f y) ≤ (C : ℝ≥0∞) * edist x y ^ (r : ℝ)
@@ -114,21 +114,21 @@ theorem edist_le (h : HolderOnWith C r f s) {x y : X} (hx : x ∈ s) (hy : y ∈
 
 theorem edist_le_of_le (h : HolderOnWith C r f s) {x y : X} (hx : x ∈ s) (hy : y ∈ s) {d : ℝ≥0∞}
     (hd : edist x y ≤ d) : edist (f x) (f y) ≤ (C : ℝ≥0∞) * d ^ (r : ℝ) :=
-  (h.edist_le hx hy).trans (mul_le_mul_left' (ENNReal.rpow_le_rpow hd r.coe_nonneg) _)
+  (h.edist_le hx hy).trans <| by gcongr
 #align holder_on_with.edist_le_of_le HolderOnWith.edist_le_of_le
 
 theorem comp {Cg rg : ℝ≥0} {g : Y → Z} {t : Set Y} (hg : HolderOnWith Cg rg g t) {Cf rf : ℝ≥0}
     {f : X → Y} (hf : HolderOnWith Cf rf f s) (hst : MapsTo f s t) :
-    HolderOnWith (Cg * NNReal.rpow Cf rg) (rg * rf) (g ∘ f) s := by
+    HolderOnWith (Cg * Cf ^ (rg : ℝ)) (rg * rf) (g ∘ f) s := by
   intro x hx y hy
-  rw [ENNReal.coe_mul, mul_comm rg, NNReal.coe_mul, ENNReal.rpow_mul, mul_assoc, NNReal.rpow_eq_pow,
+  rw [ENNReal.coe_mul, mul_comm rg, NNReal.coe_mul, ENNReal.rpow_mul, mul_assoc,
     ← ENNReal.coe_rpow_of_nonneg _ rg.coe_nonneg, ← ENNReal.mul_rpow_of_nonneg _ _ rg.coe_nonneg]
   exact hg.edist_le_of_le (hst hx) (hst hy) (hf.edist_le hx hy)
 #align holder_on_with.comp HolderOnWith.comp
 
 theorem comp_holderWith {Cg rg : ℝ≥0} {g : Y → Z} {t : Set Y} (hg : HolderOnWith Cg rg g t)
     {Cf rf : ℝ≥0} {f : X → Y} (hf : HolderWith Cf rf f) (ht : ∀ x, f x ∈ t) :
-    HolderWith (Cg * NNReal.rpow Cf rg) (rg * rf) (g ∘ f) :=
+    HolderWith (Cg * Cf ^ (rg : ℝ)) (rg * rf) (g ∘ f) :=
   holderOnWith_univ.mp <| hg.comp (hf.holderOnWith univ) fun x _ => ht x
 #align holder_on_with.comp_holder_with HolderOnWith.comp_holderWith
 
@@ -199,13 +199,13 @@ theorem edist_le_of_le (h : HolderWith C r f) {x y : X} {d : ℝ≥0∞} (hd : e
 #align holder_with.edist_le_of_le HolderWith.edist_le_of_le
 
 theorem comp {Cg rg : ℝ≥0} {g : Y → Z} (hg : HolderWith Cg rg g) {Cf rf : ℝ≥0} {f : X → Y}
-    (hf : HolderWith Cf rf f) : HolderWith (Cg * NNReal.rpow Cf rg) (rg * rf) (g ∘ f) :=
+    (hf : HolderWith Cf rf f) : HolderWith (Cg * Cf ^ (rg : ℝ)) (rg * rf) (g ∘ f) :=
   (hg.holderOnWith univ).comp_holderWith hf fun _ => trivial
 #align holder_with.comp HolderWith.comp
 
 theorem comp_holderOnWith {Cg rg : ℝ≥0} {g : Y → Z} (hg : HolderWith Cg rg g) {Cf rf : ℝ≥0}
     {f : X → Y} {s : Set X} (hf : HolderOnWith Cf rf f s) :
-    HolderOnWith (Cg * NNReal.rpow Cf rg) (rg * rf) (g ∘ f) s :=
+    HolderOnWith (Cg * Cf ^ (rg : ℝ)) (rg * rf) (g ∘ f) s :=
   (hg.holderOnWith univ).comp hf fun _ _ => trivial
 #align holder_with.comp_holder_on_with HolderWith.comp_holderOnWith
 
@@ -236,7 +236,6 @@ namespace HolderWith
 
 theorem nndist_le_of_le (hf : HolderWith C r f) {x y : X} {d : ℝ≥0} (hd : nndist x y ≤ d) :
     nndist (f x) (f y) ≤ C * d ^ (r : ℝ) := by
-  norm_cast
   rw [← ENNReal.coe_le_coe, ← edist_nndist, ENNReal.coe_mul, ←
     ENNReal.coe_rpow_of_nonneg _ r.coe_nonneg]
   apply hf.edist_le_of_le

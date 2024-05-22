@@ -8,4 +8,4 @@ Authors: Floris van Doorn, Leonardo de Moura
 # Notation `ℕ` for the natural numbers.
 -/
 
-notation "ℕ" => Nat
+@[inherit_doc] notation "ℕ" => Nat

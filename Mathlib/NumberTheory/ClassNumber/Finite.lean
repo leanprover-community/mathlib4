@@ -36,21 +36,13 @@ open scoped BigOperators
 section EuclideanDomain
 
 variable {R S : Type*} (K L : Type*) [EuclideanDomain R] [CommRing S] [IsDomain S]
-
 variable [Field K] [Field L]
-
 variable [Algebra R K] [IsFractionRing R K]
-
 variable [Algebra K L] [FiniteDimensional K L] [IsSeparable K L]
-
 variable [algRL : Algebra R L] [IsScalarTower R K L]
-
 variable [Algebra R S] [Algebra S L]
-
 variable [ist : IsScalarTower R S L] [iic : IsIntegralClosure S R L]
-
 variable (abv : AbsoluteValue R ℤ)
-
 variable {ι : Type*} [DecidableEq ι] [Fintype ι] (bS : Basis ι R S)
 
 /-- If `b` is an `R`-basis of `S` of cardinality `n`, then `normBound abv b` is an integer
@@ -69,7 +61,7 @@ noncomputable def normBound : ℤ :=
 
 theorem normBound_pos : 0 < normBound abv bS := by
   obtain ⟨i, j, k, hijk⟩ : ∃ i j k, Algebra.leftMulMatrix bS (bS i) j k ≠ 0 := by
-    by_contra' h
+    by_contra! h
     obtain ⟨i⟩ := bS.index_nonempty
     apply bS.ne_zero i
     apply
@@ -77,8 +69,8 @@ theorem normBound_pos : 0 < normBound abv bS := by
     ext j k
     simp [h, DMatrix.zero_apply]
   simp only [normBound, Algebra.smul_def, eq_natCast]
-  refine' mul_pos (Int.coe_nat_pos.mpr (Nat.factorial_pos _)) _
-  refine' pow_pos (mul_pos (Int.coe_nat_pos.mpr (Fintype.card_pos_iff.mpr ⟨i⟩)) _) _
+  refine' mul_pos (Int.natCast_pos.mpr (Nat.factorial_pos _)) _
+  refine' pow_pos (mul_pos (Int.natCast_pos.mpr (Fintype.card_pos_iff.mpr ⟨i⟩)) _) _
   refine' lt_of_lt_of_le (abv.pos hijk) (Finset.le_max' _ _ _)
   exact Finset.mem_image.mpr ⟨⟨i, j, k⟩, Finset.mem_univ _, rfl⟩
 #align class_group.norm_bound_pos ClassGroup.normBound_pos
@@ -91,15 +83,7 @@ theorem norm_le (a : S) {y : ℤ} (hy : ∀ k, abv (bS.repr a k) ≤ y) :
   rw [Algebra.norm_apply, ← LinearMap.det_toMatrix bS]
   simp only [Algebra.norm_apply, AlgHom.map_sum, AlgHom.map_smul, map_sum,
     map_smul, Algebra.toMatrix_lmul_eq, normBound, smul_mul_assoc, ← mul_pow]
-  --Porting note: rest of proof was
-  -- convert Matrix.det_sum_smul_le Finset.univ _ hy using 3
-  -- · rw [Finset.card_univ, smul_mul_assoc, mul_comm]
-  -- · intro i j k
-  --   apply Finset.le_max'
-  --   exact finset.mem_image.mpr ⟨⟨i, j, k⟩, Finset.mem_univ _, rfl⟩
-  rw [← LinearMap.det_toMatrix bS]
-  convert Matrix.det_sum_smul_le (n := ι) Finset.univ _ hy using 3
-  · simp; rfl
+  convert Matrix.det_sum_smul_le Finset.univ _ hy using 3
   · rw [Finset.card_univ, smul_mul_assoc, mul_comm]
   · intro i j k
     apply Finset.le_max'
@@ -129,21 +113,19 @@ theorem norm_lt {T : Type*} [LinearOrderedRing T] (a : S) {y : T}
   apply (Int.cast_le.mpr (norm_le abv bS a hy')).trans_lt
   simp only [Int.cast_mul, Int.cast_pow]
   apply mul_lt_mul' le_rfl
-  · exact pow_lt_pow_of_lt_left this (Int.cast_nonneg.mpr y'_nonneg) (Fintype.card_pos_iff.mpr ⟨i⟩)
+  · exact pow_lt_pow_left this (Int.cast_nonneg.mpr y'_nonneg) (@Fintype.card_ne_zero _ _ ⟨i⟩)
   · exact pow_nonneg (Int.cast_nonneg.mpr y'_nonneg) _
   · exact Int.cast_pos.mpr (normBound_pos abv bS)
 #align class_group.norm_lt ClassGroup.norm_lt
 
 
 /-- A nonzero ideal has an element of minimal norm. -/
--- porting note: port of Int.exists_least_of_bdd requires DecidablePred, so we use classical
 theorem exists_min (I : (Ideal S)⁰) :
     ∃ b ∈ (I : Ideal S),
       b ≠ 0 ∧ ∀ c ∈ (I : Ideal S), abv (Algebra.norm R c) < abv (Algebra.norm R b) → c =
       (0 : S) := by
-  classical
   obtain ⟨_, ⟨b, b_mem, b_ne_zero, rfl⟩, min⟩ := @Int.exists_least_of_bdd
-      (fun a => ∃ b ∈ (I : Ideal S), b ≠ (0 : S) ∧ abv (Algebra.norm R b) = a) _
+      (fun a => ∃ b ∈ (I : Ideal S), b ≠ (0 : S) ∧ abv (Algebra.norm R b) = a)
     (by
       use 0
       rintro _ ⟨b, _, _, rfl⟩
@@ -151,10 +133,10 @@ theorem exists_min (I : (Ideal S)⁰) :
     (by
       obtain ⟨b, b_mem, b_ne_zero⟩ := (I : Ideal S).ne_bot_iff.mp (nonZeroDivisors.coe_ne_zero I)
       exact ⟨_, ⟨b, b_mem, b_ne_zero, rfl⟩⟩)
-  · refine' ⟨b, b_mem, b_ne_zero, _⟩
-    intro c hc lt
-    contrapose! lt with c_ne_zero
-    exact min _ ⟨c, hc, c_ne_zero, rfl⟩
+  refine' ⟨b, b_mem, b_ne_zero, _⟩
+  intro c hc lt
+  contrapose! lt with c_ne_zero
+  exact min _ ⟨c, hc, c_ne_zero, rfl⟩
 #align class_group.exists_min ClassGroup.exists_min
 
 section IsAdmissible
@@ -200,12 +182,12 @@ theorem mem_finsetApprox {x : R} :
   simp only [finsetApprox, Finset.mem_erase, Finset.mem_image]
   constructor
   · rintro ⟨hx, ⟨i, j⟩, _, rfl⟩
-    refine' ⟨i, j, _, rfl⟩
+    refine ⟨i, j, ?_, rfl⟩
     rintro rfl
     simp at hx
   · rintro ⟨i, j, hij, rfl⟩
     refine' ⟨_, ⟨i, j⟩, Finset.mem_univ _, rfl⟩
-    rw [Ne.def, sub_eq_zero]
+    rw [Ne, sub_eq_zero]
     exact fun h => hij ((distinctElems bS adm).injective h)
 #align class_group.mem_finset_approx ClassGroup.mem_finsetApprox
 
@@ -223,12 +205,13 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
   have dim_pos := Fintype.card_pos_iff.mpr bS.index_nonempty
   set ε : ℝ := normBound abv bS ^ (-1 / Fintype.card ι : ℝ) with ε_eq
   have hε : 0 < ε := Real.rpow_pos_of_pos (Int.cast_pos.mpr (normBound_pos abv bS)) _
-  have ε_le : (normBound abv bS : ℝ) * (abv b • ε) ^ Fintype.card ι ≤ abv b ^ Fintype.card ι := by
+  have ε_le : (normBound abv bS : ℝ) * (abv b • ε) ^ (Fintype.card ι : ℝ)
+                ≤ abv b ^ (Fintype.card ι : ℝ) := by
     have := normBound_pos abv bS
     have := abv.nonneg b
-    rw [ε_eq, Algebra.smul_def, eq_intCast, mul_rpow, ← rpow_mul, div_mul_cancel, rpow_neg_one,
-      mul_left_comm, mul_inv_cancel, mul_one, rpow_nat_cast] <;>
-      try norm_cast; linarith
+    rw [ε_eq, Algebra.smul_def, eq_intCast, mul_rpow, ← rpow_mul, div_mul_cancel₀, rpow_neg_one,
+      mul_left_comm, mul_inv_cancel, mul_one, rpow_natCast] <;>
+      try norm_cast; omega
     · exact Iff.mpr Int.cast_nonneg this
     · linarith
   set μ : Fin (cardM bS adm).succ ↪ R := distinctElems bS adm with hμ
@@ -243,7 +226,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
   have μ_mul_a_eq : ∀ j, μ j • a = b • ∑ i, qs j i • bS i + ∑ i, rs j i • bS i := by
     intro j
     rw [← bS.sum_repr a]
-    simp only [Finset.smul_sum, ← Finset.sum_add_distrib]
+    simp only [μ, qs, rs, Finset.smul_sum, ← Finset.sum_add_distrib]
     refine'
       Finset.sum_congr rfl fun i _ => _
 -- Porting note `← hμ, ← r_eq` and the final `← μ_eq` were not needed.
@@ -255,7 +238,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
   refine' ⟨q, r, (mem_finsetApprox bS adm).mpr _, _⟩
   · exact ⟨k, j, j_ne_k.symm, rfl⟩
   have : r • a - b • q = ∑ x : ι, (rs k x • bS x - rs j x • bS x) := by
-    simp only [r_eq, sub_smul, μ_mul_a_eq, Finset.smul_sum, ← Finset.sum_add_distrib,
+    simp only [q, r_eq, sub_smul, μ_mul_a_eq, Finset.smul_sum, ← Finset.sum_add_distrib,
       ← Finset.sum_sub_distrib, smul_sub]
     refine' Finset.sum_congr rfl fun x _ => _
     ring
@@ -263,22 +246,22 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
   refine' Int.cast_lt.mp ((norm_lt abv bS _ fun i => lt_of_le_of_lt _ (hjk' i)).trans_le _)
   · apply le_of_eq
     congr
-    simp_rw [map_sum, LinearEquiv.map_sub, LinearEquiv.map_smul, Finset.sum_apply',
+    simp_rw [map_sum, map_sub, map_smul, Finset.sum_apply',
       Finsupp.sub_apply, Finsupp.smul_apply, Finset.sum_sub_distrib, Basis.repr_self_apply,
       smul_eq_mul, mul_boole, Finset.sum_ite_eq', Finset.mem_univ, if_true]
-  · exact_mod_cast ε_le
+  · exact mod_cast ε_le
 #align class_group.exists_mem_finset_approx ClassGroup.exists_mem_finsetApprox
 
 /-- We can approximate `a / b : L` with `q / r`, where `r` has finitely many options for `L`. -/
-theorem exists_mem_finset_approx' (h : Algebra.IsAlgebraic R L) (a : S) {b : S} (hb : b ≠ 0) :
+theorem exists_mem_finset_approx' [Algebra.IsAlgebraic R L] (a : S) {b : S} (hb : b ≠ 0) :
     ∃ q : S,
       ∃ r ∈ finsetApprox bS adm, abv (Algebra.norm R (r • a - q * b)) < abv (Algebra.norm R b) := by
   have inj : Function.Injective (algebraMap R L) := by
     rw [IsScalarTower.algebraMap_eq R S L]
     exact (IsIntegralClosure.algebraMap_injective S R L).comp bS.algebraMap_injective
-  obtain ⟨a', b', hb', h⟩ := IsIntegralClosure.exists_smul_eq_mul h inj a hb
+  obtain ⟨a', b', hb', h⟩ := IsIntegralClosure.exists_smul_eq_mul inj a hb
   obtain ⟨q, r, hr, hqr⟩ := exists_mem_finsetApprox bS adm a' hb'
-  refine' ⟨q, r, hr, _⟩
+  refine ⟨q, r, hr, ?_⟩
   refine'
     lt_of_mul_lt_mul_left _ (show 0 ≤ abv (Algebra.norm R (algebraMap R S b')) from abv.nonneg _)
   refine'
@@ -306,7 +289,7 @@ theorem ne_bot_of_prod_finsetApprox_mem (J : Ideal S)
 
 /-- Each class in the class group contains an ideal `J`
 such that `M := Π m ∈ finsetApprox` is in `J`. -/
-theorem exists_mk0_eq_mk0 [IsDedekindDomain S] (h : Algebra.IsAlgebraic R L) (I : (Ideal S)⁰) :
+theorem exists_mk0_eq_mk0 [IsDedekindDomain S] [Algebra.IsAlgebraic R L] (I : (Ideal S)⁰) :
     ∃ J : (Ideal S)⁰,
       ClassGroup.mk0 I = ClassGroup.mk0 J ∧
         algebraMap _ _ (∏ m in finsetApprox bS adm, m) ∈ (J : Ideal S) := by
@@ -332,7 +315,7 @@ theorem exists_mk0_eq_mk0 [IsDedekindDomain S] (h : Algebra.IsAlgebraic R L) (I 
   rw [Ideal.dvd_iff_le, Ideal.mul_le]
   intro r' hr' a ha
   rw [Ideal.mem_span_singleton] at hr' ⊢
-  obtain ⟨q, r, r_mem, lt⟩ := exists_mem_finset_approx' L bS adm h a b_ne_zero
+  obtain ⟨q, r, r_mem, lt⟩ := exists_mem_finset_approx' L bS adm a b_ne_zero
   apply @dvd_of_mul_left_dvd _ _ q
   simp only [Algebra.smul_def] at lt
   rw [←
@@ -351,36 +334,36 @@ noncomputable def mkMMem [IsDedekindDomain S]
 set_option linter.uppercaseLean3 false in
 #align class_group.mk_M_mem ClassGroup.mkMMem
 
-theorem mkMMem_surjective [IsDedekindDomain S] (h : Algebra.IsAlgebraic R L) :
+theorem mkMMem_surjective [IsDedekindDomain S] [Algebra.IsAlgebraic R L] :
     Function.Surjective (ClassGroup.mkMMem bS adm) := by
   intro I'
   obtain ⟨⟨I, hI⟩, rfl⟩ := ClassGroup.mk0_surjective I'
-  obtain ⟨J, mk0_eq_mk0, J_dvd⟩ := exists_mk0_eq_mk0 L bS adm h ⟨I, hI⟩
+  obtain ⟨J, mk0_eq_mk0, J_dvd⟩ := exists_mk0_eq_mk0 L bS adm ⟨I, hI⟩
   exact ⟨⟨J, J_dvd⟩, mk0_eq_mk0.symm⟩
 set_option linter.uppercaseLean3 false in
 #align class_group.mk_M_mem_surjective ClassGroup.mkMMem_surjective
 
 open scoped Classical
 
-/-- The main theorem: the class group of an integral closure `S` of `R` in an
+/-- The **class number theorem**: the class group of an integral closure `S` of `R` in an
 algebraic extension `L` is finite if there is an admissible absolute value.
 
 See also `ClassGroup.fintypeOfAdmissibleOfFinite` where `L` is a finite
 extension of `K = Frac(R)`, supplying most of the required assumptions automatically.
 -/
 noncomputable def fintypeOfAdmissibleOfAlgebraic [IsDedekindDomain S]
-    (h : Algebra.IsAlgebraic R L) : Fintype (ClassGroup S) :=
+    [Algebra.IsAlgebraic R L] : Fintype (ClassGroup S) :=
   @Fintype.ofSurjective _ _ _
     (@Fintype.ofEquiv _
       { J // J ∣ Ideal.span ({algebraMap R S (∏ m : R in finsetApprox bS adm, m)} : Set S) }
       (UniqueFactorizationMonoid.fintypeSubtypeDvd _
         (by
-          rw [Ne.def, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]
+          rw [Ne, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]
           exact prod_finsetApprox_ne_zero bS adm))
       ((Equiv.refl _).subtypeEquiv fun I =>
         Ideal.dvd_iff_le.trans (by
           rw [Equiv.refl_apply, Ideal.span_le, Set.singleton_subset_iff]; rfl)))
-    (ClassGroup.mkMMem bS adm) (ClassGroup.mkMMem_surjective L bS adm h)
+    (ClassGroup.mkMMem bS adm) (ClassGroup.mkMMem_surjective L bS adm)
 #align class_group.fintype_of_admissible_of_algebraic ClassGroup.fintypeOfAdmissibleOfAlgebraic
 
 /-- The main theorem: the class group of an integral closure `S` of `R` in a
@@ -408,8 +391,9 @@ noncomputable def fintypeOfAdmissibleOfFinite : Fintype (ClassGroup S) := by
     · exact Submodule.quotEquivOfEqBot _ rfl
     · exact IsIntegralClosure.algebraMap_injective _ R _
   let bS := b.map ((LinearMap.quotKerEquivRange _).symm ≪≫ₗ f)
-  exact fintypeOfAdmissibleOfAlgebraic L bS adm (fun x =>
-    (IsFractionRing.isAlgebraic_iff R K L).mpr (Algebra.isAlgebraic_of_finite K _ x))
+  have : Algebra.IsAlgebraic R L := ⟨fun x =>
+    (IsFractionRing.isAlgebraic_iff R K L).mpr (Algebra.IsAlgebraic.isAlgebraic x)⟩
+  exact fintypeOfAdmissibleOfAlgebraic L bS adm
 #align class_group.fintype_of_admissible_of_finite ClassGroup.fintypeOfAdmissibleOfFinite
 
 end IsAdmissible

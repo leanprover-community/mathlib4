@@ -30,8 +30,6 @@ When `k` is also a field, this `b` can be chosen to be a unit of `𝕎 k`.
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 namespace WittVector
 
 variable {p : ℕ} [hp : Fact p.Prime]
@@ -70,7 +68,7 @@ def mkUnit {a : Units k} {A : 𝕎 k} (hA : A.coeff 0 = a) : Units (𝕎 k) :=
     have H := Units.mul_inv (a ^ p ^ (n + 1))
     linear_combination (norm := skip) -H_coeff * H
     have ha : (a : k) ^ p ^ (n + 1) = ↑(a ^ p ^ (n + 1)) := by norm_cast
-    have ha_inv : (↑a⁻¹ : k) ^ p ^ (n + 1) = ↑(a ^ p ^ (n + 1))⁻¹ := by norm_cast; norm_num
+    have ha_inv : (↑a⁻¹ : k) ^ p ^ (n + 1) = ↑(a ^ p ^ (n + 1))⁻¹ := by norm_cast
     simp only [nthRemainder_spec, inverseCoeff, succNthValUnits, hA,
       one_coeff_eq_of_pos, Nat.succ_pos', ha_inv, ha, inv_pow]
     ring!)
@@ -100,7 +98,7 @@ theorem irreducible : Irreducible (p : 𝕎 k) := by
     intro hp
     simpa only [constantCoeff_apply, coeff_p_zero, not_isUnit_zero] using
       (constantCoeff : WittVector p k →+* _).isUnit_map hp
-  refine' ⟨hp, fun a b hab => _⟩
+  refine ⟨hp, fun a b hab => ?_⟩
   obtain ⟨ha0, hb0⟩ : a ≠ 0 ∧ b ≠ 0 := by
     rw [← mul_ne_zero_iff]; intro h; rw [h] at hab; exact p_nonzero p k hab
   obtain ⟨m, a, ha, rfl⟩ := verschiebung_nonzero ha0
@@ -130,8 +128,7 @@ theorem exists_eq_pow_p_mul (a : 𝕎 k) (ha : a ≠ 0) :
   rw [← this] at hcm
   refine' ⟨m, b, _, _⟩
   · contrapose! hc
-    have : 0 < p ^ m := pow_pos (Nat.Prime.pos Fact.out) _
-    simp [hc, zero_pow this]
+    simp [hc, zero_pow $ pow_ne_zero _ hp.out.ne_zero]
   · simp_rw [← mul_left_iterate (p : 𝕎 k) m]
     convert hcm using 2
     ext1 x
@@ -162,7 +159,7 @@ https://github.com/leanprover/lean4/issues/1102
 -/
 theorem discreteValuationRing : DiscreteValuationRing (𝕎 k) :=
   DiscreteValuationRing.ofHasUnitMulPowIrreducibleFactorization (by
-    refine' ⟨p, irreducible p, fun {x} hx => _⟩
+    refine ⟨p, irreducible p, fun {x} hx => ?_⟩
     obtain ⟨n, b, hb⟩ := exists_eq_pow_p_mul' x hx
     exact ⟨n, b, hb.symm⟩)
 #align witt_vector.discrete_valuation_ring WittVector.discreteValuationRing

@@ -32,6 +32,11 @@ scalar multiplication.
 The proof in [Halmos] seems to contain an omission in §60 Th. A, see
 `MeasureTheory.measure_lintegral_div_measure`.
 
+Note that this theory only applies in measurable groups, i.e., when multiplication and inversion
+are measurable. This is not the case in general in locally compact groups, or even in compact
+groups, when the topology is not second-countable. For arguments along the same line, but using
+continuous functions instead of measurable sets and working in the general locally compact
+setting, see the file `MeasureTheory.Measure.Haar.Unique.lean`.
 -/
 
 
@@ -46,9 +51,7 @@ open Filter hiding map
 open scoped Classical ENNReal Pointwise MeasureTheory
 
 variable (G : Type*) [MeasurableSpace G]
-
 variable [Group G] [MeasurableMul₂ G]
-
 variable (μ ν : Measure G) [SigmaFinite ν] [SigmaFinite μ] {s : Set G}
 
 /-- The map `(x, y) ↦ (x, xy)` as a `MeasurableEquiv`. -/
@@ -225,7 +228,7 @@ theorem measure_mul_right_ne_zero (h2s : μ s ≠ 0) (y : G) : μ ((fun x => x *
 
 @[to_additive]
 theorem absolutelyContinuous_map_mul_right (g : G) : μ ≪ map (· * g) μ := by
-  refine' AbsolutelyContinuous.mk fun s hs => _
+  refine AbsolutelyContinuous.mk fun s hs => ?_
   rw [map_apply (measurable_mul_const g) hs, measure_mul_right_null]; exact id
 #align measure_theory.absolutely_continuous_map_mul_right MeasureTheory.absolutelyContinuous_map_mul_right
 #align measure_theory.absolutely_continuous_map_add_right MeasureTheory.absolutelyContinuous_map_add_right
@@ -264,7 +267,7 @@ theorem measure_mul_lintegral_eq [IsMulLeftInvariant ν] (sm : MeasurableSet s) 
 @[to_additive
 " Any two nonzero left-invariant measures are absolutely continuous w.r.t. each other. "]
 theorem absolutelyContinuous_of_isMulLeftInvariant [IsMulLeftInvariant ν] (hν : ν ≠ 0) : μ ≪ ν := by
-  refine' AbsolutelyContinuous.mk fun s sm hνs => _
+  refine AbsolutelyContinuous.mk fun s sm hνs => ?_
   have h1 := measure_mul_lintegral_eq μ ν sm 1 measurable_one
   simp_rw [Pi.one_apply, lintegral_one, mul_one, (measure_mul_right_null ν _).mpr hνs,
     lintegral_zero, mul_eq_zero (M₀ := ℝ≥0∞), measure_univ_eq_zero.not.mpr hν, or_false_iff] at h1
@@ -295,7 +298,7 @@ theorem ae_measure_preimage_mul_right_lt_top_of_ne_zero [IsMulLeftInvariant ν]
     ∀ᵐ x ∂μ, ν ((fun y => y * x) ⁻¹' s) < ∞ := by
   refine' (ae_measure_preimage_mul_right_lt_top ν ν sm h3s).filter_mono _
   refine' (absolutelyContinuous_of_isMulLeftInvariant μ ν _).ae_le
-  refine' mt _ h2s
+  refine mt ?_ h2s
   intro hν
   rw [hν, Measure.coe_zero, Pi.zero_apply]
 #align measure_theory.ae_measure_preimage_mul_right_lt_top_of_ne_zero MeasureTheory.ae_measure_preimage_mul_right_lt_top_of_ne_zero
@@ -325,7 +328,7 @@ theorem measure_lintegral_div_measure [IsMulLeftInvariant ν] (sm : MeasurableSe
   set g := fun y => f y⁻¹ / ν ((fun x => x * y⁻¹) ⁻¹' s)
   have hg : Measurable g :=
     (hf.comp measurable_inv).div ((measurable_measure_mul_right ν sm).comp measurable_inv)
-  simp_rw [measure_mul_lintegral_eq μ ν sm g hg, inv_inv]
+  simp_rw [measure_mul_lintegral_eq μ ν sm g hg, g, inv_inv]
   refine' lintegral_congr_ae _
   refine' (ae_measure_preimage_mul_right_lt_top_of_ne_zero μ ν sm h2s h3s).mono fun x hx => _
   simp_rw [ENNReal.mul_div_cancel' (measure_mul_right_ne_zero ν h2s _) hx.ne]

@@ -6,7 +6,6 @@ Authors: Markus Himmel, Scott Morrison
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 import Mathlib.CategoryTheory.Preadditive.Projective
 import Mathlib.Algebra.Category.GroupCat.EpiMono
-import Mathlib.Algebra.Category.ModuleCat.EpiMono
 
 #align_import category_theory.preadditive.yoneda.projective from "leanprover-community/mathlib"@"f8d8465c3c392a93b9ed226956e26dee00975946"
 

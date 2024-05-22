@@ -40,7 +40,6 @@ namespace DirectSum
 section AddCommMonoid
 
 variable [DecidableEq ι] [AddCommMonoid M]
-
 variable [SetLike σ M] [AddSubmonoidClass σ M] (ℳ : ι → σ)
 
 /-- A decomposition is an equivalence between an additive monoid `M` and a direct sum of additive
@@ -48,7 +47,10 @@ submonoids `ℳ i` of that `M`, such that the "recomposition" is canonical. This
 works for additive groups and modules.
 
 This is a version of `DirectSum.IsInternal` which comes with a constructive inverse to the
-canonical "recomposition" rather than just a proof that the "recomposition" is bijective. -/
+canonical "recomposition" rather than just a proof that the "recomposition" is bijective.
+
+Often it is easier to construct a term of this type via `Decomposition.ofAddHom` or
+`Decomposition.ofLinearMap`. -/
 class Decomposition where
   decompose' : M → ⨁ i, ℳ i
   left_inv : Function.LeftInverse (DirectSum.coeAddMonoidHom ℳ) decompose'
@@ -62,6 +64,22 @@ instance : Subsingleton (Decomposition ℳ) :=
     cases' y with y yl yr
     congr
     exact Function.LeftInverse.eq_rightInverse xr yl⟩
+
+/-- A convenience method to construct a decomposition from an `AddMonoidHom`, such that the proofs
+of left and right inverse can be constructed via `ext`. -/
+abbrev Decomposition.ofAddHom (decompose : M →+ ⨁ i, ℳ i)
+    (h_left_inv : (DirectSum.coeAddMonoidHom ℳ).comp decompose = .id _)
+    (h_right_inv : decompose.comp (DirectSum.coeAddMonoidHom ℳ) = .id _) : Decomposition ℳ where
+  decompose' := decompose
+  left_inv := DFunLike.congr_fun h_left_inv
+  right_inv := DFunLike.congr_fun h_right_inv
+
+/-- Noncomputably conjure a decomposition instance from a `DirectSum.IsInternal` proof. -/
+noncomputable def IsInternal.chooseDecomposition (h : IsInternal ℳ) :
+    DirectSum.Decomposition ℳ where
+  decompose' := (Equiv.ofBijective _ h).symm
+  left_inv := (Equiv.ofBijective _ h).right_inv
+  right_inv := (Equiv.ofBijective _ h).left_inv
 
 variable [Decomposition ℳ]
 
@@ -123,6 +141,10 @@ theorem decompose_of_mem_ne {x : M} {i j : ι} (hx : x ∈ ℳ i) (hij : i ≠ j
     (decompose ℳ x j : M) = 0 := by
   rw [decompose_of_mem _ hx, DirectSum.of_eq_of_ne _ _ _ _ hij, ZeroMemClass.coe_zero]
 #align direct_sum.decompose_of_mem_ne DirectSum.decompose_of_mem_ne
+
+theorem degree_eq_of_mem_mem {x : M} {i j : ι} (hxi : x ∈ ℳ i) (hxj : x ∈ ℳ j) (hx : x ≠ 0) :
+    i = j := by
+  contrapose! hx; rw [← decompose_of_mem_same ℳ hxj, decompose_of_mem_ne ℳ hxi hx]
 
 /-- If `M` is graded by `ι` with degree `i` component `ℳ i`, then it is isomorphic as
 an additive monoid to a direct sum of components. -/
@@ -196,9 +218,7 @@ instance addCommGroupSetLike [AddCommGroup M] [SetLike σ M] [AddSubgroupClass �
 section AddCommGroup
 
 variable [DecidableEq ι] [AddCommGroup M]
-
 variable [SetLike σ M] [AddSubgroupClass σ M] (ℳ : ι → σ)
-
 variable [Decomposition ℳ]
 
 @[simp]
@@ -227,23 +247,52 @@ end AddCommGroup
 section Module
 
 variable [DecidableEq ι] [Semiring R] [AddCommMonoid M] [Module R M]
-
 variable (ℳ : ι → Submodule R M)
+
+/-- A convenience method to construct a decomposition from an `LinearMap`, such that the proofs
+of left and right inverse can be constructed via `ext`. -/
+abbrev Decomposition.ofLinearMap (decompose : M →ₗ[R] ⨁ i, ℳ i)
+    (h_left_inv : DirectSum.coeLinearMap ℳ ∘ₗ decompose = .id)
+    (h_right_inv : decompose ∘ₗ DirectSum.coeLinearMap ℳ = .id) : Decomposition ℳ where
+  decompose' := decompose
+  left_inv := DFunLike.congr_fun h_left_inv
+  right_inv := DFunLike.congr_fun h_right_inv
 
 variable [Decomposition ℳ]
 
 /-- If `M` is graded by `ι` with degree `i` component `ℳ i`, then it is isomorphic as
 a module to a direct sum of components. -/
-@[simps! (config := { fullyApplied := false })]
 def decomposeLinearEquiv : M ≃ₗ[R] ⨁ i, ℳ i :=
   LinearEquiv.symm
     { (decomposeAddEquiv ℳ).symm with map_smul' := map_smul (DirectSum.coeLinearMap ℳ) }
 #align direct_sum.decompose_linear_equiv DirectSum.decomposeLinearEquiv
 
+@[simp] theorem decomposeLinearEquiv_apply (m : M) :
+    decomposeLinearEquiv ℳ m = decompose ℳ m := rfl
+
+@[simp] theorem decomposeLinearEquiv_symm_apply (m : ⨁ i, ℳ i) :
+    (decomposeLinearEquiv ℳ).symm m = (decompose ℳ).symm m := rfl
+
 @[simp]
 theorem decompose_smul (r : R) (x : M) : decompose ℳ (r • x) = r • decompose ℳ x :=
   map_smul (decomposeLinearEquiv ℳ) r x
 #align direct_sum.decompose_smul DirectSum.decompose_smul
+
+@[simp] theorem decomposeLinearEquiv_symm_comp_lof (i : ι) :
+    (decomposeLinearEquiv ℳ).symm ∘ₗ lof R ι (ℳ ·) i = (ℳ i).subtype :=
+  LinearMap.ext <| decompose_symm_of _
+
+/-- Two linear maps from a module with a decomposition agree if they agree on every piece.
+
+Note this cannot be `@[ext]` as `ℳ` cannot be inferred. -/
+theorem decompose_lhom_ext {N} [AddCommMonoid N] [Module R N] ⦃f g : M →ₗ[R] N⦄
+    (h : ∀ i, f ∘ₗ (ℳ i).subtype = g ∘ₗ (ℳ i).subtype) : f = g :=
+  LinearMap.ext <| (decomposeLinearEquiv ℳ).symm.surjective.forall.mpr <|
+    suffices f ∘ₗ (decomposeLinearEquiv ℳ).symm
+           = (g ∘ₗ (decomposeLinearEquiv ℳ).symm : (⨁ i, ℳ i) →ₗ[R] N) from
+      DFunLike.congr_fun this
+    linearMap_ext _ fun i => by
+      simp_rw [LinearMap.comp_assoc, decomposeLinearEquiv_symm_comp_lof ℳ i, h]
 
 end Module
 

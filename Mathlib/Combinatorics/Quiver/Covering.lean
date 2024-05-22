@@ -52,27 +52,23 @@ variable {U : Type _} [Quiver.{u + 1} U] {V : Type _} [Quiver.{v + 1} V] (φ : U
 
 /-- The `Quiver.Star` at a vertex is the collection of arrows whose source is the vertex.
 The type `Quiver.Star u` is defined to be `Σ (v : U), (u ⟶ v)`. -/
-@[reducible]
-def Quiver.Star (u : U) :=
+abbrev Quiver.Star (u : U) :=
   Σ v : U, u ⟶ v
 #align quiver.star Quiver.Star
 
 /-- Constructor for `Quiver.Star`. Defined to be `Sigma.mk`. -/
-@[reducible]
-protected def Quiver.Star.mk {u v : U} (f : u ⟶ v) : Quiver.Star u :=
+protected abbrev Quiver.Star.mk {u v : U} (f : u ⟶ v) : Quiver.Star u :=
   ⟨_, f⟩
 #align quiver.star.mk Quiver.Star.mk
 
 /-- The `Quiver.Costar` at a vertex is the collection of arrows whose target is the vertex.
 The type `Quiver.Costar v` is defined to be `Σ (u : U), (u ⟶ v)`. -/
-@[reducible]
-def Quiver.Costar (v : U) :=
+abbrev Quiver.Costar (v : U) :=
   Σ u : U, u ⟶ v
 #align quiver.costar Quiver.Costar
 
 /-- Constructor for `Quiver.Costar`. Defined to be `Sigma.mk`. -/
-@[reducible]
-protected def Quiver.Costar.mk {u v : U} (f : u ⟶ v) : Quiver.Costar v :=
+protected abbrev Quiver.Costar.mk {u v : U} (f : u ⟶ v) : Quiver.Costar v :=
   ⟨_, f⟩
 #align quiver.costar.mk Quiver.Costar.mk
 
@@ -158,9 +154,10 @@ theorem Prefunctor.symmetrifyStar (u : U) :
     φ.symmetrify.star u =
       (Quiver.symmetrifyStar _).symm ∘ Sum.map (φ.star u) (φ.costar u) ∘
         Quiver.symmetrifyStar u := by
-  rw [Equiv.eq_symm_comp]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [Equiv.eq_symm_comp]
   ext ⟨v, f | g⟩ <;>
-    -- Porting note: was `simp [Quiver.symmetrifyStar]`
+    -- porting note (#10745): was `simp [Quiver.symmetrifyStar]`
     simp only [Quiver.symmetrifyStar, Function.comp_apply] <;>
     erw [Equiv.sigmaSumDistrib_apply, Equiv.sigmaSumDistrib_apply] <;>
     simp
@@ -170,9 +167,10 @@ protected theorem Prefunctor.symmetrifyCostar (u : U) :
     φ.symmetrify.costar u =
       (Quiver.symmetrifyCostar _).symm ∘
         Sum.map (φ.costar u) (φ.star u) ∘ Quiver.symmetrifyCostar u := by
-  rw [Equiv.eq_symm_comp]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [Equiv.eq_symm_comp]
   ext ⟨v, f | g⟩ <;>
-    -- Porting note: was `simp [Quiver.symmetrifyCostar]`
+    -- porting note (#10745): was `simp [Quiver.symmetrifyCostar]`
     simp only [Quiver.symmetrifyCostar, Function.comp_apply] <;>
     erw [Equiv.sigmaSumDistrib_apply, Equiv.sigmaSumDistrib_apply] <;>
     simp
@@ -183,21 +181,19 @@ protected theorem Prefunctor.IsCovering.symmetrify (hφ : φ.IsCovering) :
   refine' ⟨fun u => _, fun u => _⟩ <;>
     -- Porting note: was
     -- simp [φ.symmetrifyStar, φ.symmetrifyCostar, hφ.star_bijective u, hφ.costar_bijective u]
-    simp only [φ.symmetrifyStar, φ.symmetrifyCostar, EquivLike.comp_bijective] <;>
-    erw [EquivLike.bijective_comp] <;>
+    simp only [φ.symmetrifyStar, φ.symmetrifyCostar] <;>
+    erw [EquivLike.comp_bijective, EquivLike.bijective_comp] <;>
     simp [hφ.star_bijective u, hφ.costar_bijective u]
 #align prefunctor.is_covering.symmetrify Prefunctor.IsCovering.symmetrify
 
 /-- The path star at a vertex `u` is the type of all paths starting at `u`.
 The type `Quiver.PathStar u` is defined to be `Σ v : U, Path u v`. -/
-@[reducible]
-def Quiver.PathStar (u : U) :=
+abbrev Quiver.PathStar (u : U) :=
   Σ v : U, Path u v
 #align quiver.path_star Quiver.PathStar
 
 /-- Constructor for `Quiver.PathStar`. Defined to be `Sigma.mk`. -/
-@[reducible]
-protected def Quiver.PathStar.mk {u v : U} (p : Path u v) : Quiver.PathStar u :=
+protected abbrev Quiver.PathStar.mk {u v : U} (p : Path u v) : Quiver.PathStar u :=
   ⟨_, p⟩
 #align quiver.path_star.mk Quiver.PathStar.mk
 
@@ -214,7 +210,7 @@ theorem Prefunctor.pathStar_apply {u v : U} (p : Path u v) :
 
 theorem Prefunctor.pathStar_injective (hφ : ∀ u, Injective (φ.star u)) (u : U) :
     Injective (φ.pathStar u) := by
-  dsimp [Prefunctor.pathStar, Quiver.PathStar.mk]
+  dsimp (config := { unfoldPartialApp := true }) [Prefunctor.pathStar, Quiver.PathStar.mk]
   rintro ⟨v₁, p₁⟩
   induction' p₁ with x₁ y₁ p₁ e₁ ih <;>
     rintro ⟨y₂, p₂⟩ <;>
@@ -249,7 +245,7 @@ theorem Prefunctor.pathStar_injective (hφ : ∀ u, Injective (φ.star u)) (u : 
 
 theorem Prefunctor.pathStar_surjective (hφ : ∀ u, Surjective (φ.star u)) (u : U) :
     Surjective (φ.pathStar u) := by
-  dsimp [Prefunctor.pathStar, Quiver.PathStar.mk]
+  dsimp (config := { unfoldPartialApp := true }) [Prefunctor.pathStar, Quiver.PathStar.mk]
   rintro ⟨v, p⟩
   induction' p with v' v'' p' ev ih
   · use ⟨u, Path.nil⟩
@@ -263,7 +259,7 @@ theorem Prefunctor.pathStar_surjective (hφ : ∀ u, Surjective (φ.star u)) (u 
     obtain ⟨rfl, k⟩ := k
     simp only [heq_eq_eq] at k
     subst k
-    use⟨_, q'.cons eu⟩
+    use ⟨_, q'.cons eu⟩
     simp only [Prefunctor.mapPath_cons, eq_self_iff_true, heq_iff_eq, and_self_iff]
 #align prefunctor.path_star_surjective Prefunctor.pathStar_surjective
 

@@ -3,11 +3,15 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Bhavik Mehta
 -/
-import Mathlib.Topology.SubsetProperties
+import Mathlib.Topology.Constructions
 import Mathlib.Topology.Separation
 
 /-!
 # Discrete subsets of topological spaces
+
+This file contains various additional properties of discrete subsets of topological spaces.
+
+## Discreteness and compact sets
 
 Given a topological space `X` together with a subset `s ⊆ X`, there are two distinct concepts of
 "discreteness" which may hold. These are:
@@ -19,16 +23,23 @@ Given a topological space `X` together with a subset `s ⊆ X`, there are two di
 When `s` is closed, the two conditions are equivalent provided `X` is locally compact and T1,
 see `IsClosed.tendsto_coe_cofinite_iff`.
 
-## Main statements
+### Main statements
 
  * `tendsto_cofinite_cocompact_iff`:
  * `IsClosed.tendsto_coe_cofinite_iff`:
+
+## Co-discrete open sets
+
+In a topological space the sets which are open with discrete complement form a filter. We
+formalise this as `Filter.codiscrete`.
 
 -/
 
 open Set Filter Function Topology
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y}
+
+section cofinite_cocompact
 
 lemma tendsto_cofinite_cocompact_iff :
     Tendsto f cofinite (cocompact _) ↔ ∀ K, IsCompact K → Set.Finite (f ⁻¹' K) := by
@@ -62,3 +73,35 @@ lemma IsClosed.tendsto_coe_cofinite_iff [T1Space X] [WeaklyLocallyCompactSpace X
     Tendsto ((↑) : s → X) cofinite (cocompact _) ↔ DiscreteTopology s :=
   ⟨continuous_subtype_val.discrete_of_tendsto_cofinite_cocompact,
    fun _ ↦ hs.tendsto_coe_cofinite_of_discreteTopology inferInstance⟩
+
+end cofinite_cocompact
+
+section codiscrete_filter
+
+/-- Criterion for a subset `S ⊆ X` to be closed and discrete in terms of the punctured
+neighbourhood filter at an arbitrary point of `X`. (Compare `discreteTopology_subtype_iff`.) -/
+theorem isClosed_and_discrete_iff {S : Set X} :
+    IsClosed S ∧ DiscreteTopology S ↔ ∀ x, Disjoint (𝓝[≠] x) (𝓟 S) := by
+  rw [discreteTopology_subtype_iff, isClosed_iff_clusterPt, ← forall_and]
+  congrm (∀ x, ?_)
+  rw [← not_imp_not, clusterPt_iff_not_disjoint, not_not, ← disjoint_iff]
+  constructor <;> intro H
+  · by_cases hx : x ∈ S
+    exacts [H.2 hx, (H.1 hx).mono_left nhdsWithin_le_nhds]
+  · refine ⟨fun hx ↦ ?_, fun _ ↦ H⟩
+    simpa [disjoint_iff, nhdsWithin, inf_assoc, hx] using H
+
+/-- In any topological space, the open sets with with discrete complement form a filter. -/
+def Filter.codiscrete (X : Type*) [TopologicalSpace X] : Filter X where
+  sets := {U | IsOpen U ∧ DiscreteTopology ↑Uᶜ}
+  univ_sets := ⟨isOpen_univ, compl_univ.symm ▸ Subsingleton.discreteTopology⟩
+  sets_of_superset := by
+    intro U V hU hV
+    simp_rw [← isClosed_compl_iff, isClosed_and_discrete_iff] at hU ⊢
+    exact fun x ↦ (hU x).mono_right (principal_mono.mpr <| compl_subset_compl.mpr hV)
+  inter_sets := by
+    intro U V hU hV
+    simp_rw [← isClosed_compl_iff, isClosed_and_discrete_iff] at hU hV ⊢
+    exact fun x ↦ compl_inter U V ▸ sup_principal ▸ disjoint_sup_right.mpr ⟨hU x, hV x⟩
+
+end codiscrete_filter

@@ -42,7 +42,8 @@ independence, convex position
 -/
 
 
-open Affine BigOperators Classical
+open scoped Classical
+open Affine BigOperators
 
 open Finset Function
 
@@ -64,14 +65,14 @@ variable {𝕜}
 theorem Subsingleton.convexIndependent [Subsingleton ι] (p : ι → E) : ConvexIndependent 𝕜 p := by
   intro s x hx
   have : (convexHull 𝕜 (p '' s)).Nonempty := ⟨p x, hx⟩
-  rw [convexHull_nonempty_iff, Set.nonempty_image_iff] at this
+  rw [convexHull_nonempty_iff, Set.image_nonempty] at this
   rwa [Subsingleton.mem_iff_nonempty]
 #align subsingleton.convex_independent Subsingleton.convexIndependent
 
 /-- A convex independent family is injective. -/
 protected theorem ConvexIndependent.injective {p : ι → E} (hc : ConvexIndependent 𝕜 p) :
     Function.Injective p := by
-  refine' fun i j hij => hc {j} i _
+  refine fun i j hij => hc {j} i ?_
   rw [hij, Set.image_singleton, convexHull_singleton]
   exact Set.mem_singleton _
 #align convex_independent.injective ConvexIndependent.injective
@@ -135,7 +136,7 @@ theorem convexIndependent_iff_not_mem_convexHull_diff {p : ι → E} :
   · rw [hc.mem_convexHull_iff] at h
     exact h.2 (Set.mem_singleton _)
   · by_contra H
-    refine' h i s _
+    refine h i s ?_
     rw [Set.diff_singleton_eq_self H]
     exact hi
 #align convex_independent_iff_not_mem_convex_hull_diff convexIndependent_iff_not_mem_convexHull_diff
@@ -144,7 +145,7 @@ theorem convexIndependent_set_iff_inter_convexHull_subset {s : Set E} :
     ConvexIndependent 𝕜 ((↑) : s → E) ↔ ∀ t, t ⊆ s → s ∩ convexHull 𝕜 t ⊆ t := by
   constructor
   · rintro hc t h x ⟨hxs, hxt⟩
-    refine' hc { x | ↑x ∈ t } ⟨x, hxs⟩ _
+    refine hc { x | ↑x ∈ t } ⟨x, hxs⟩ ?_
     rw [Subtype.coe_image_of_subset h]
     exact hxt
   · intro hc t x h
@@ -180,18 +181,18 @@ theorem convexIndependent_iff_finset {p : ι → E} :
   have hp : Injective p := by
     rintro a b hab
     rw [← mem_singleton]
-    refine' h {b} a _
+    refine h {b} a ?_
     rw [hab, image_singleton, coe_singleton, convexHull_singleton]
     exact Set.mem_singleton _
   rw [convexHull_eq_union_convexHull_finite_subsets] at hx
   simp_rw [Set.mem_iUnion] at hx
   obtain ⟨t, ht, hx⟩ := hx
   rw [← hp.mem_set_image]
-  refine' ht _
+  refine ht ?_
   suffices x ∈ t.preimage p (hp.injOn _) by rwa [mem_preimage, ← mem_coe] at this
   refine' h _ x _
   rwa [t.image_preimage p (hp.injOn _), filter_true_of_mem]
-  · exact fun y hy => s.image_subset_range p (ht <| mem_coe.2 hy)
+  exact fun y hy => s.image_subset_range p (ht <| mem_coe.2 hy)
 #align convex_independent_iff_finset convexIndependent_iff_finset
 
 /-! ### Extreme points -/

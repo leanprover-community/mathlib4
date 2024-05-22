@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
+import Mathlib.Tactic.NormNum.Prime
 
 #align_import cyclotomic_105 from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
 
@@ -69,7 +70,7 @@ theorem cyclotomic_15 : cyclotomic 15 ℤ = 1 - X + X ^ 3 - X ^ 4 + X ^ 5 - X ^ 
   refine' ((eq_cyclotomic_iff (by norm_num) _).2 _).symm
   rw [properDivisors_15, Finset.prod_insert _, Finset.prod_insert _, Finset.prod_singleton,
     cyclotomic_one, cyclotomic_3, cyclotomic_5]
-  ring
+  · ring
   repeat' norm_num
 #align counterexample.cyclotomic_15 Counterexample.cyclotomic_15
 
@@ -78,7 +79,7 @@ theorem cyclotomic_21 :
   refine' ((eq_cyclotomic_iff (by norm_num) _).2 _).symm
   rw [properDivisors_21, Finset.prod_insert _, Finset.prod_insert _, Finset.prod_singleton,
     cyclotomic_one, cyclotomic_3, cyclotomic_7]
-  ring
+  · ring
   repeat' norm_num
 #align counterexample.cyclotomic_21 Counterexample.cyclotomic_21
 
@@ -89,7 +90,7 @@ theorem cyclotomic_35 :
   refine' ((eq_cyclotomic_iff (by norm_num) _).2 _).symm
   rw [properDivisors_35, Finset.prod_insert _, Finset.prod_insert _, Finset.prod_singleton,
     cyclotomic_one, cyclotomic_5, cyclotomic_7]
-  ring
+  · ring
   repeat' norm_num
 #align counterexample.cyclotomic_35 Counterexample.cyclotomic_35
 
@@ -101,15 +102,15 @@ theorem cyclotomic_105 :
         X ^ 46 + X ^ 47 + X ^ 48 := by
   refine' ((eq_cyclotomic_iff (by norm_num) _).2 _).symm
   rw [properDivisors_105]
-  repeat' rw [Finset.prod_insert (α := ℕ) (β := ℤ[X])]
-  rw [Finset.prod_singleton, cyclotomic_one, cyclotomic_3, cyclotomic_5, cyclotomic_7,
-    cyclotomic_15, cyclotomic_21, cyclotomic_35]
-  ring
+  repeat rw [Finset.prod_insert (α := ℕ) (β := ℤ[X])]
+  · rw [Finset.prod_singleton, cyclotomic_one, cyclotomic_3, cyclotomic_5, cyclotomic_7,
+      cyclotomic_15, cyclotomic_21, cyclotomic_35]
+    ring
   repeat' norm_num
 #align counterexample.cyclotomic_105 Counterexample.cyclotomic_105
 
 theorem coeff_cyclotomic_105 : coeff (cyclotomic 105 ℤ) 7 = -2 := by
-  simp [cyclotomic_105, coeff_X_pow, coeff_one, coeff_X_of_ne_one, coeff_bit0_mul, two_mul]
+  simp [cyclotomic_105, coeff_one, coeff_X_of_ne_one]
 #align counterexample.coeff_cyclotomic_105 Counterexample.coeff_cyclotomic_105
 
 theorem not_forall_coeff_cyclotomic_neg_one_zero_one :

@@ -3,10 +3,10 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
+import Mathlib.Algebra.Polynomial.Degree.CardPowDegree
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
 import Mathlib.RingTheory.Ideal.LocalRing
-import Mathlib.Data.Polynomial.Degree.CardPowDegree
 
 #align_import number_theory.class_number.admissible_card_pow_degree from "leanprover-community/mathlib"@"0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8"
 
@@ -111,7 +111,7 @@ theorem exists_approx_polynomial {b : Fq[X]} (hb : b ≠ 0) {ε : ℝ} (hε : 0 
     exact mul_pos (Int.cast_pos.mpr (AbsoluteValue.pos _ hb)) hε
   have one_lt_q : 1 < Fintype.card Fq := Fintype.one_lt_card
   have one_lt_q' : (1 : ℝ) < Fintype.card Fq := by assumption_mod_cast
-  have q_pos : 0 < Fintype.card Fq := by linarith
+  have q_pos : 0 < Fintype.card Fq := by omega
   have q_pos' : (0 : ℝ) < Fintype.card Fq := by assumption_mod_cast
   -- If `b` is already small enough, then the remainders are equal and we are done.
   by_cases le_b : b.natDegree ≤ ⌈-log ε / log (Fintype.card Fq)⌉₊
@@ -133,10 +133,10 @@ theorem exists_approx_polynomial {b : Fq[X]} (hb : b ≠ 0) {ε : ℝ} (hε : 0 
   suffices (natDegree (A i₁ % b - A i₀ % b) : ℝ) < b.natDegree + log ε / log (Fintype.card Fq) by
     rwa [← Real.log_lt_log_iff (Int.cast_pos.mpr (cardPowDegree.pos h')) hbε,
       cardPowDegree_nonzero _ h', cardPowDegree_nonzero _ hb, Algebra.smul_def, eq_intCast,
-      Int.cast_pow, Int.cast_ofNat, Int.cast_pow, Int.cast_ofNat,
-      log_mul (pow_ne_zero _ q_pos'.ne') hε.ne', ← rpow_nat_cast, ← rpow_nat_cast, log_rpow q_pos',
+      Int.cast_pow, Int.cast_natCast, Int.cast_pow, Int.cast_natCast,
+      log_mul (pow_ne_zero _ q_pos'.ne') hε.ne', ← rpow_natCast, ← rpow_natCast, log_rpow q_pos',
       log_rpow q_pos', ← lt_div_iff (log_pos one_lt_q'), add_div,
-      mul_div_cancel _ (log_pos one_lt_q').ne']
+      mul_div_cancel_right₀ _ (log_pos one_lt_q').ne']
   -- And that result follows from manipulating the result from `exists_approx_polynomial_aux`
   -- to turn the `-⌈-stuff⌉₊` into `+ stuff`.
   refine' lt_of_lt_of_le (Nat.cast_lt.mpr (WithBot.coe_lt_coe.mp _)) _
@@ -159,13 +159,13 @@ theorem cardPowDegree_anti_archimedean {x y z : Fq[X]} {a : ℤ} (hxy : cardPowD
   · rwa [← hyz']
   by_cases hxz' : x = z
   · rwa [hxz', sub_self, map_zero]
-  rw [← Ne.def, ← sub_ne_zero] at hxy' hyz' hxz'
+  rw [← Ne, ← sub_ne_zero] at hxy' hyz' hxz'
   refine' lt_of_le_of_lt _ (max_lt hxy hyz)
   rw [cardPowDegree_nonzero _ hxz', cardPowDegree_nonzero _ hxy',
     cardPowDegree_nonzero _ hyz']
-  have : (1 : ℤ) ≤ Fintype.card Fq := by exact_mod_cast (@Fintype.one_lt_card Fq _ _).le
-  simp only [Int.cast_pow, Int.cast_ofNat, le_max_iff]
-  refine' Or.imp (pow_le_pow this) (pow_le_pow this) _
+  have : (1 : ℤ) ≤ Fintype.card Fq := mod_cast (@Fintype.one_lt_card Fq _ _).le
+  simp only [Int.cast_pow, Int.cast_natCast, le_max_iff]
+  refine' Or.imp (pow_le_pow_right this) (pow_le_pow_right this) _
   rw [natDegree_le_iff_degree_le, natDegree_le_iff_degree_le, ← le_max_iff, ←
     degree_eq_natDegree hxy', ← degree_eq_natDegree hyz']
   convert degree_add_le (x - y) (y - z) using 2
@@ -210,13 +210,12 @@ theorem exists_partition_polynomial_aux (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b :
   -- but not that `j` is uniquely defined (which is needed to keep the induction going).
   obtain ⟨j, hj⟩ : ∃ j, ∀ i : Fin n,
       t' i = j → (cardPowDegree (A 0 % b - A i.succ % b) : ℝ) < cardPowDegree b • ε := by
-    by_contra hg
-    push_neg at hg
+    by_contra! hg
     obtain ⟨j₀, j₁, j_ne, approx⟩ := exists_approx_polynomial hb hε
       (Fin.cons (A 0) fun j => A (Fin.succ (Classical.choose (hg j))))
     revert j_ne approx
     refine' Fin.cases _ (fun j₀ => _) j₀ <;>
-      refine' Fin.cases (fun j_ne approx => _) (fun j₁ j_ne approx => _) j₁
+      refine Fin.cases (fun j_ne approx => ?_) (fun j₁ j_ne approx => ?_) j₁
     · exact absurd rfl j_ne
     · rw [Fin.cons_succ, Fin.cons_zero, ← not_le, AbsoluteValue.map_sub] at approx
       have := (Classical.choose_spec (hg j₁)).2
@@ -225,7 +224,7 @@ theorem exists_partition_polynomial_aux (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b :
       have := (Classical.choose_spec (hg j₀)).2
       contradiction
     · rw [Fin.cons_succ, Fin.cons_succ] at approx
-      rw [Ne.def, Fin.succ_inj] at j_ne
+      rw [Ne, Fin.succ_inj] at j_ne
       have : j₀ = j₁ := (Classical.choose_spec (hg j₀)).1.symm.trans
         (((ht' (Classical.choose (hg j₀)) (Classical.choose (hg j₁))).mpr approx).trans
           (Classical.choose_spec (hg j₁)).1)
@@ -239,7 +238,7 @@ theorem exists_partition_polynomial_aux (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b :
     rw [AbsoluteValue.map_sub]
     exact hj _ hi
   -- And otherwise, we can just take any `j`, since those are empty.
-  refine' ⟨j, fun i => ⟨hj i, fun hi => _⟩⟩
+  refine ⟨j, fun i => ⟨hj i, fun hi => ?_⟩⟩
   have := exists_nonempty_j ⟨t' i, ⟨i, rfl⟩, fun i' hi' => anti_archim' hi ((ht' _ _).mp hi')⟩
   contradiction
 #align polynomial.exists_partition_polynomial_aux Polynomial.exists_partition_polynomial_aux

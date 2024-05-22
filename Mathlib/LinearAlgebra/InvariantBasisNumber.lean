@@ -191,7 +191,7 @@ theorem card_eq_of_linearEquiv {α β : Type*} [Fintype α] [Fintype β] (f : (�
     ((LinearEquiv.funCongrLeft R R (Fintype.equivFin α)).trans f ≪≫ₗ
       (LinearEquiv.funCongrLeft R R (Fintype.equivFin β)).symm)
 #align card_eq_of_lequiv card_eq_of_linearEquiv
--- porting note: this was not well-named because `lequiv` could mean other things
+-- Porting note: this was not well-named because `lequiv` could mean other things
 -- (e.g., `localEquiv`)
 
 theorem nontrivial_of_invariantBasisNumber : Nontrivial R := by
@@ -199,14 +199,14 @@ theorem nontrivial_of_invariantBasisNumber : Nontrivial R := by
   refine' zero_ne_one (eq_of_fin_equiv R _)
   haveI := not_nontrivial_iff_subsingleton.1 h
   haveI : Subsingleton (Fin 1 → R) :=
-    Subsingleton.intro <| fun a b => funext fun x => Subsingleton.elim _ _
+    Subsingleton.intro fun a b => funext fun x => Subsingleton.elim _ _
   exact
     { toFun := 0
       invFun := 0
       map_add' := by aesop
       map_smul' := by aesop
-      left_inv := fun _ => by simp
-      right_inv := fun _ => by simp }
+      left_inv := fun _ => by simp [eq_iff_true_of_subsingleton]
+      right_inv := fun _ => by simp [eq_iff_true_of_subsingleton] }
 #align nontrivial_of_invariant_basis_number nontrivial_of_invariantBasisNumber
 
 end
@@ -267,12 +267,12 @@ private def induced_map (I : Ideal R) (e : (ι → R) →ₗ[R] ι' → R) :
     (ι → R) ⧸ I.pi ι → (ι' → R) ⧸ I.pi ι' := fun x =>
   Quotient.liftOn' x (fun y => Ideal.Quotient.mk (I.pi ι') (e y))
     (by
-      refine' fun a b hab => Ideal.Quotient.eq.2 fun h => _
+      refine fun a b hab => Ideal.Quotient.eq.2 fun h => ?_
       rw [Submodule.quotientRel_r_def] at hab
       rw [← LinearMap.map_sub]
       exact Ideal.map_pi _ _ hab e h)
 #noalign induced_map
--- porting note: `#noalign` since this is marked `private`
+-- Porting note: `#noalign` since this is marked `private`
 
 /-- An isomorphism of `R`-modules `R^n ≃ R^m` induces an isomorphism of `R/I`-modules
     `R^n/I^n ≃ R^m/I^m`. -/
@@ -283,19 +283,19 @@ private def induced_equiv [Fintype ι'] (I : Ideal R) (e : (ι → R) ≃ₗ[R] 
       invFun := induced_map I e.symm.. }
   all_goals
     first |rintro ⟨a⟩ ⟨b⟩|rintro ⟨a⟩
-  -- porting note: the next 4 lines were necessary because Lean couldn't correctly infer `(I.pi ι)`
+  -- Porting note: the next 4 lines were necessary because Lean couldn't correctly infer `(I.pi ι)`
   -- and `(I.pi ι')` on its own.
   pick_goal 3
-  convert_to Ideal.Quotient.mk (I.pi ι) _ = Ideal.Quotient.mk (I.pi ι) _
-  congr
-  simp only [LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply]
+  · convert_to Ideal.Quotient.mk (I.pi ι) _ = Ideal.Quotient.mk (I.pi ι) _
+    congr
+    simp only [LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply]
   all_goals
     convert_to Ideal.Quotient.mk (I.pi ι') _ = Ideal.Quotient.mk (I.pi ι') _
     congr
     simp only [map_add, LinearEquiv.coe_coe, LinearEquiv.map_smulₛₗ, RingHom.id_apply,
       LinearEquiv.apply_symm_apply]
 #noalign induced_equiv
--- porting note: `#noalign` since this is marked `private`
+-- Porting note: `#noalign` since this is marked `private`
 
 end
 

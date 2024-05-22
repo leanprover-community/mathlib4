@@ -25,8 +25,7 @@ import Mathlib.MeasureTheory.Function.LpSpace
 
 set_option linter.uppercaseLean3 false
 
-open TopologicalSpace MeasureTheory LatticeOrderedCommGroup
-
+open TopologicalSpace MeasureTheory
 open scoped ENNReal
 
 variable {α E : Type*} {m : MeasurableSpace α} {μ : Measure α} {p : ℝ≥0∞}
@@ -52,7 +51,7 @@ theorem coeFn_nonneg (f : Lp E p μ) : 0 ≤ᵐ[μ] f ↔ 0 ≤ f := by
 #align measure_theory.Lp.coe_fn_nonneg MeasureTheory.Lp.coeFn_nonneg
 
 instance instCovariantClassLE : CovariantClass (Lp E p μ) (Lp E p μ) (· + ·) (· ≤ ·) := by
-  refine' ⟨fun f g₁ g₂ hg₁₂ => _⟩
+  refine ⟨fun f g₁ g₂ hg₁₂ => ?_⟩
   rw [← coeFn_le] at hg₁₂ ⊢
   filter_upwards [coeFn_add f g₁, coeFn_add f g₂, hg₁₂] with _ h1 h2 h3
   rw [h1, h2, Pi.add_apply, Pi.add_apply]

@@ -65,9 +65,9 @@ def hallMatchingsOn {ι : Type u} {α : Type v} (t : ι → Finset α) (ι' : Fi
 /-- Given a matching on a finset, construct the restriction of that matching to a subset. -/
 def hallMatchingsOn.restrict {ι : Type u} {α : Type v} (t : ι → Finset α) {ι' ι'' : Finset ι}
     (h : ι' ⊆ ι'') (f : hallMatchingsOn t ι'') : hallMatchingsOn t ι' := by
-  refine' ⟨fun i => f.val ⟨i, h i.property⟩, _⟩
+  refine ⟨fun i => f.val ⟨i, h i.property⟩, ?_⟩
   cases' f.property with hinj hc
-  refine' ⟨_, fun i => hc ⟨i, h i.property⟩⟩
+  refine ⟨?_, fun i => hc ⟨i, h i.property⟩⟩
   rintro ⟨i, hi⟩ ⟨j, hj⟩ hh
   simpa only [Subtype.mk_eq_mk] using hinj hh
 #align hall_matchings_on.restrict hallMatchingsOn.restrict
@@ -82,14 +82,14 @@ theorem hallMatchingsOn.nonempty {ι : Type u} {α : Type v} [DecidableEq α] (t
     apply (all_card_le_biUnion_card_iff_existsInjective' fun i : ι' => t i).mp
     intro s'
     convert h (s'.image (↑)) using 1
-    simp only [card_image_of_injective s' Subtype.coe_injective]
-    rw [image_biUnion]
+    · simp only [card_image_of_injective s' Subtype.coe_injective]
+    · rw [image_biUnion]
 #align hall_matchings_on.nonempty hallMatchingsOn.nonempty
 
 /-- This is the `hallMatchingsOn` sets assembled into a directed system.
 -/
-def hallMatchingsFunctor {ι : Type u} {α : Type v} (t : ι → Finset α) : (Finset ι)ᵒᵖ ⥤ Type max u v
-    where
+def hallMatchingsFunctor {ι : Type u} {α : Type v} (t : ι → Finset α) :
+    (Finset ι)ᵒᵖ ⥤ Type max u v where
   obj ι' := hallMatchingsOn t ι'.unop
   map {ι' ι''} g f := hallMatchingsOn.restrict t (CategoryTheory.leOfHom g.unop) f
 #align hall_matchings_functor hallMatchingsFunctor
@@ -100,14 +100,14 @@ instance hallMatchingsOn.finite {ι : Type u} {α : Type v} (t : ι → Finset �
     rw [hallMatchingsOn]
     let g : hallMatchingsOn t ι' → ι' → ι'.biUnion t := by
       rintro f i
-      refine' ⟨f.val i, _⟩
+      refine ⟨f.val i, ?_⟩
       rw [mem_biUnion]
       exact ⟨i, i.property, f.property.2 i⟩
     apply Finite.of_injective g
     intro f f' h
     ext a
     rw [Function.funext_iff] at h
-    simpa using h a
+    simpa [g] using h a
 #align hall_matchings_on.finite hallMatchingsOn.finite
 
 /-- This is the version of **Hall's Marriage Theorem** in terms of indexed
@@ -156,7 +156,7 @@ theorem Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α :
   · -- The reverse direction is a straightforward cardinality argument
     rintro ⟨f, hf₁, hf₂⟩ s
     rw [← Finset.card_image_of_injective s hf₁]
-    apply Finset.card_le_of_subset
+    apply Finset.card_le_card
     intro
     rw [Finset.mem_image, Finset.mem_biUnion]
     rintro ⟨x, hx, rfl⟩
@@ -219,8 +219,8 @@ theorem Fintype.all_card_le_filter_rel_iff_exists_injective {α : Type u} {β : 
   have h : ∀ A : Finset α, (univ.filter fun b : β => ∃ a ∈ A, r a b) = A.biUnion r' := by
     intro A
     ext b
-    simp
-  have h' : ∀ (f : α → β) (x), r x (f x) ↔ f x ∈ r' x := by simp
+    simp [r']
+  have h' : ∀ (f : α → β) (x), r x (f x) ↔ f x ∈ r' x := by simp [r']
   simp_rw [h, h']
   apply Finset.all_card_le_biUnion_card_iff_exists_injective
 #align fintype.all_card_le_filter_rel_iff_exists_injective Fintype.all_card_le_filter_rel_iff_exists_injective

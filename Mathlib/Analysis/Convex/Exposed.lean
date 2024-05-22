@@ -6,7 +6,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 import Mathlib.Analysis.Convex.Extreme
 import Mathlib.Analysis.Convex.Function
 import Mathlib.Topology.Algebra.Module.Basic
-import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Order.OrderClosed
 
 #align_import analysis.convex.exposed from "leanprover-community/mathlib"@"48024901a8e2a462363650c50d62248a77cbcab3"
 
@@ -46,7 +46,8 @@ More not-yet-PRed stuff is available on the branch `sperner_again`.
 -/
 
 
-open Classical Affine BigOperators
+open scoped Classical
+open Affine BigOperators
 
 open Set
 
@@ -99,7 +100,7 @@ protected theorem antisymm (hB : IsExposed 𝕜 A B) (hA : IsExposed 𝕜 B A) :
   hA.subset.antisymm hB.subset
 #align is_exposed.antisymm IsExposed.antisymm
 
-/- `IsExposed` is *not* transitive: Consider a (topologically) open cube with vertices
+/-! `IsExposed` is *not* transitive: Consider a (topologically) open cube with vertices
 `A₀₀₀, ..., A₁₁₁` and add to it the triangle `A₀₀₀A₀₀₁A₀₁₀`. Then `A₀₀₁A₀₁₀` is an exposed subset
 of `A₀₀₀A₀₀₁A₀₁₀` which is an exposed subset of the cube, but `A₀₀₁A₀₁₀` is not itself an exposed
 subset of the cube. -/
@@ -250,7 +251,7 @@ protected theorem convex (hAB : IsExposed 𝕜 A B) (hA : Convex 𝕜 A) : Conve
 #align is_exposed.convex IsExposed.convex
 
 protected theorem isExtreme (hAB : IsExposed 𝕜 A B) : IsExtreme 𝕜 A B := by
-  refine' ⟨hAB.subset, fun x₁ hx₁A x₂ hx₂A x hxB hx => _⟩
+  refine ⟨hAB.subset, fun x₁ hx₁A x₂ hx₂A x hxB hx => ?_⟩
   obtain ⟨l, rfl⟩ := hAB ⟨x, hxB⟩
   have hl : ConvexOn 𝕜 univ l := l.toLinearMap.convexOn convex_univ
   have hlx₁ := hxB.2 x₁ hx₁A
@@ -265,7 +266,7 @@ protected theorem isExtreme (hAB : IsExposed 𝕜 A B) : IsExtreme 𝕜 A B := b
 end IsExposed
 
 theorem exposedPoints_subset_extremePoints : A.exposedPoints 𝕜 ⊆ A.extremePoints 𝕜 := fun _ hx =>
-  mem_extremePoints_iff_extreme_singleton.2 (mem_exposedPoints_iff_exposed_singleton.1 hx).isExtreme
+  (mem_exposedPoints_iff_exposed_singleton.1 hx).isExtreme.mem_extremePoints
 #align exposed_points_subset_extreme_points exposedPoints_subset_extremePoints
 
 end LinearOrderedRing

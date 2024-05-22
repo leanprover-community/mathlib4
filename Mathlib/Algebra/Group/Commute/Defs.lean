@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Semiconj.Defs
+import Mathlib.Init.Algebra.Classes
 
 #align_import algebra.group.commute from "leanprover-community/mathlib"@"05101c3df9d9cfe9430edc205860c79b6d660102"
 
@@ -27,20 +28,26 @@ Most of the proofs come from the properties of `SemiconjBy`.
 -/
 
 
-variable {G : Type*}
+variable {G M S : Type*}
 
 /-- Two elements commute if `a * b = b * a`. -/
-@[to_additive AddCommute "Two elements additively commute if `a + b = b + a`"]
-def Commute {S : Type*} [Mul S] (a b : S) : Prop :=
+@[to_additive "Two elements additively commute if `a + b = b + a`"]
+def Commute [Mul S] (a b : S) : Prop :=
   SemiconjBy a b b
 #align commute Commute
 #align add_commute AddCommute
+
+/--
+Two elements `a` and `b` commute if `a * b = b * a`.
+-/
+@[to_additive]
+theorem commute_iff_eq [Mul S] (a b : S) : Commute a b ↔ a * b = b * a := Iff.rfl
 
 namespace Commute
 
 section Mul
 
-variable {S : Type*} [Mul S]
+variable [Mul S]
 
 /-- Equality behind `Commute a b`; useful for rewriting. -/
 @[to_additive "Equality behind `AddCommute a b`; useful for rewriting."]
@@ -67,7 +74,7 @@ protected theorem symm {a b : S} (h : Commute a b) : Commute b a :=
 protected theorem semiconjBy {a b : S} (h : Commute a b) : SemiconjBy a b b :=
   h
 #align commute.semiconj_by Commute.semiconjBy
-#align add_commute.semiconj_by AddCommute.semiconjBy
+#align add_commute.semiconj_by AddCommute.addSemiconjBy
 
 @[to_additive]
 protected theorem symm_iff {a b : S} : Commute a b ↔ Commute b a :=
@@ -90,7 +97,7 @@ end Mul
 
 section Semigroup
 
-variable {S : Type*} [Semigroup S] {a b c : S}
+variable [Semigroup S] {a b c : S}
 
 /-- If `a` commutes with both `b` and `c`, then it commutes with their product. -/
 @[to_additive (attr := simp)
@@ -133,7 +140,7 @@ protected theorem mul_mul_mul_comm (hbc : Commute b c) (a d : S) :
 end Semigroup
 
 @[to_additive]
-protected theorem all {S : Type*} [CommSemigroup S] (a b : S) : Commute a b :=
+protected theorem all [CommMagma S] (a b : S) : Commute a b :=
   mul_comm a b
 #align commute.all Commute.allₓ
 #align add_commute.all AddCommute.allₓ
@@ -141,7 +148,7 @@ protected theorem all {S : Type*} [CommSemigroup S] (a b : S) : Commute a b :=
 
 section MulOneClass
 
-variable {M : Type*} [MulOneClass M]
+variable [MulOneClass M]
 
 @[to_additive (attr := simp)]
 theorem one_right (a : M) : Commute a 1 :=
@@ -161,7 +168,7 @@ end MulOneClass
 
 section Monoid
 
-variable {M : Type*} [Monoid M] {a b : M}
+variable [Monoid M] {a b : M}
 
 @[to_additive (attr := simp)]
 theorem pow_right (h : Commute a b) (n : ℕ) : Commute a (b ^ n) :=
@@ -185,7 +192,7 @@ theorem pow_pow (h : Commute a b) (m n : ℕ) : Commute (a ^ m) (b ^ n) :=
 #align add_commute.nsmul_nsmul AddCommute.nsmul_nsmulₓ
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
--- porting note: `simpNF` told me to remove the `simp` attribute
+-- Porting note: `simpNF` told me to remove the `simp` attribute
 @[to_additive]
 theorem self_pow (a : M) (n : ℕ) : Commute a (a ^ n) :=
   (Commute.refl a).pow_right n
@@ -193,7 +200,7 @@ theorem self_pow (a : M) (n : ℕ) : Commute a (a ^ n) :=
 #align add_commute.self_nsmul AddCommute.self_nsmulₓ
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
--- porting note: `simpNF` told me to remove the `simp` attribute
+-- Porting note: `simpNF` told me to remove the `simp` attribute
 @[to_additive]
 theorem pow_self (a : M) (n : ℕ) : Commute (a ^ n) a :=
   (Commute.refl a).pow_left n
@@ -201,7 +208,7 @@ theorem pow_self (a : M) (n : ℕ) : Commute (a ^ n) a :=
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 #align commute.pow_self Commute.pow_self
 
--- porting note: `simpNF` told me to remove the `simp` attribute
+-- Porting note: `simpNF` told me to remove the `simp` attribute
 @[to_additive]
 theorem pow_pow_self (a : M) (m n : ℕ) : Commute (a ^ m) (a ^ n) :=
   (Commute.refl a).pow_pow m n
@@ -209,11 +216,10 @@ theorem pow_pow_self (a : M) (m n : ℕ) : Commute (a ^ m) (a ^ n) :=
 #align add_commute.nsmul_nsmul_self AddCommute.nsmul_nsmul_selfₓ
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
-@[to_additive succ_nsmul']
-theorem _root_.pow_succ' (a : M) (n : ℕ) : a ^ (n + 1) = a ^ n * a :=
-  (pow_succ a n).trans (self_pow _ _)
-#align pow_succ' pow_succ'
-#align succ_nsmul' succ_nsmul'
+@[to_additive] lemma mul_pow (h : Commute a b) : ∀ n, (a * b) ^ n = a ^ n * b ^ n
+  | 0 => by rw [pow_zero, pow_zero, pow_zero, one_mul]
+  | n + 1 => by simp only [pow_succ', h.mul_pow n, ← mul_assoc, (h.pow_left n).right_comm]
+#align commute.mul_pow Commute.mul_pow
 
 end Monoid
 
@@ -230,6 +236,13 @@ protected theorem mul_inv (hab : Commute a b) : (a * b)⁻¹ = a⁻¹ * b⁻¹ :
 protected theorem inv (hab : Commute a b) : (a * b)⁻¹ = a⁻¹ * b⁻¹ := by rw [hab.eq, mul_inv_rev]
 #align commute.inv Commute.inv
 #align add_commute.neg AddCommute.neg
+
+@[to_additive AddCommute.zsmul_add]
+protected lemma mul_zpow (h : Commute a b) : ∀ n : ℤ, (a * b) ^ n = a ^ n * b ^ n
+  | (n : ℕ)    => by simp [zpow_natCast, h.mul_pow n]
+  | .negSucc n => by simp [h.mul_pow, (h.pow_pow _ _).eq, mul_inv_rev]
+#align commute.mul_zpow Commute.mul_zpow
+#align add_commute.zsmul_add AddCommute.zsmul_add
 
 end DivisionMonoid
 
@@ -253,20 +266,30 @@ end Group
 
 end Commute
 
-section CommGroup
+set_option linter.deprecated false
 
-variable [CommGroup G] (a b : G)
+section Monoid
+variable [Monoid M]
 
-@[to_additive (attr := simp)]
-theorem mul_inv_cancel_comm : a * b * a⁻¹ = b :=
-  (Commute.all a b).mul_inv_cancel
-#align mul_inv_cancel_comm mul_inv_cancel_comm
-#align add_neg_cancel_comm add_neg_cancel_comm
+@[to_additive bit0_nsmul]
+lemma pow_bit0 (a : M) (n : ℕ) : a ^ bit0 n = a ^ n * a ^ n := pow_add _ _ _
+#align pow_bit0 pow_bit0
+#align bit0_nsmul bit0_nsmul
 
-@[to_additive (attr := simp)]
-theorem mul_inv_cancel_comm_assoc : a * (b * a⁻¹) = b :=
-  (Commute.all a b).mul_inv_cancel_assoc
-#align mul_inv_cancel_comm_assoc mul_inv_cancel_comm_assoc
-#align add_neg_cancel_comm_assoc add_neg_cancel_comm_assoc
+@[to_additive bit1_nsmul]
+lemma pow_bit1 (a : M) (n : ℕ) : a ^ bit1 n = a ^ n * a ^ n * a := by rw [bit1, pow_succ, pow_bit0]
+#align pow_bit1 pow_bit1
+#align bit1_nsmul bit1_nsmul
 
-end CommGroup
+@[to_additive bit0_nsmul']
+lemma pow_bit0' (a : M) (n : ℕ) : a ^ bit0 n = (a * a) ^ n := by
+  rw [pow_bit0, (Commute.refl a).mul_pow]
+#align pow_bit0' pow_bit0'
+#align bit0_nsmul' bit0_nsmul'
+
+@[to_additive bit1_nsmul']
+lemma pow_bit1' (a : M) (n : ℕ) : a ^ bit1 n = (a * a) ^ n * a := by rw [bit1, pow_succ, pow_bit0']
+#align pow_bit1' pow_bit1'
+#align bit1_nsmul' bit1_nsmul'
+
+end Monoid

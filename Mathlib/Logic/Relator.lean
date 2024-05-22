@@ -4,15 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 
-import Mathlib.Logic.Basic
+import Mathlib.Init.Function
 
 #align_import logic.relator from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
 /-!
 # Relator for functions, pairs, sums, and lists.
 -/
-
-set_option autoImplicit true
 
 namespace Relator
 universe u₁ u₂ v₁ v₂
@@ -80,7 +78,7 @@ lemma RightTotal.rel_forall (h : RightTotal R) :
 
 lemma LeftTotal.rel_exists (h : LeftTotal R) :
     ((R ⇒ (· → ·)) ⇒ (· → ·)) (fun p => ∃i, p i) (fun q => ∃i, q i) :=
-  fun _ _ Hrel ⟨a, pa⟩ => (h a).imp $ fun _ Rab => Hrel Rab pa
+  fun _ _ Hrel ⟨a, pa⟩ => (h a).imp fun _ Rab => Hrel Rab pa
 #align relator.left_total.rel_exists Relator.LeftTotal.rel_exists
 
 lemma BiTotal.rel_forall (h : BiTotal R) :
@@ -93,8 +91,8 @@ lemma BiTotal.rel_forall (h : BiTotal R) :
 lemma BiTotal.rel_exists (h : BiTotal R) :
     ((R ⇒ Iff) ⇒ Iff) (fun p => ∃i, p i) (fun q => ∃i, q i) :=
   fun _ _ Hrel =>
-    ⟨fun ⟨a, pa⟩ => (h.left a).imp $ fun _ Rab => (Hrel Rab).1 pa,
-      fun ⟨b, qb⟩ => (h.right b).imp $ fun _ Rab => (Hrel Rab).2 qb⟩
+    ⟨fun ⟨a, pa⟩ => (h.left a).imp fun _ Rab => (Hrel Rab).1 pa,
+      fun ⟨b, qb⟩ => (h.right b).imp fun _ Rab => (Hrel Rab).2 qb⟩
 #align relator.bi_total.rel_exists Relator.BiTotal.rel_exists
 
 lemma left_unique_of_rel_eq {eq' : β → β → Prop} (he : (R ⇒ (R ⇒ Iff)) Eq eq') : LeftUnique R :=
@@ -135,10 +133,13 @@ lemma rel_iff : ((·↔·) ⇒ (·↔·) ⇒ (·↔·)) (·↔·) (·↔·) :=
 #align relator.rel_iff Relator.rel_iff
 
 lemma rel_eq {r : α → β → Prop} (hr : BiUnique r) : (r ⇒ r ⇒ (·↔·)) (·=·) (·=·) :=
-  fun _ _ h₁ _ _ h₂ => ⟨fun h => hr.right h₁ $ h.symm ▸ h₂, fun h => hr.left h₁ $ h.symm ▸ h₂⟩
+  fun _ _ h₁ _ _ h₂ => ⟨fun h => hr.right h₁ <| h.symm ▸ h₂, fun h => hr.left h₁ <| h.symm ▸ h₂⟩
 #align relator.rel_eq Relator.rel_eq
 
 open Function
+
+variable {α : Type*} {r₁₁ : α → α → Prop} {r₁₂ : α → β → Prop} {r₂₁ : β → α → Prop}
+  {r₂₃ : β → γ → Prop} {r₁₃ : α → γ → Prop}
 
 namespace LeftTotal
 
@@ -158,8 +159,7 @@ end LeftTotal
 
 namespace RightTotal
 
-protected lemma refl (hr : ∀ a : α, r₁₁ a a) :
-    RightTotal r₁₁ :=
+protected lemma refl (hr : ∀ a : α, r₁₁ a a) : RightTotal r₁₁ :=
   LeftTotal.refl hr
 
 protected lemma symm (hr : ∀ (a : α) (b : β), r₁₂ a b → r₂₁ b a) :

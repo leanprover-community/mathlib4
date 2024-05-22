@@ -17,7 +17,7 @@ and `S : D` as a subtype of the subobjects of `A.right`. We deduce that `Structu
 well-powered if `C` is.
 
 ## Main declarations
-* `StructuredArrow.subobjectEquiv `: the order-equivalence between `Subobject A` and a subtype of
+* `StructuredArrow.subobjectEquiv`: the order-equivalence between `Subobject A` and a subtype of
   `Subobject A.right`.
 
 ## Implementation notes
@@ -48,7 +48,7 @@ variable {S : D} {T : C ⥤ D}
     object. -/
 def projectSubobject [HasLimits C] [PreservesLimits T] {A : StructuredArrow S T} :
     Subobject A → Subobject A.right := by
-  refine' Subobject.lift (fun P f hf => Subobject.mk f.right) _
+  refine Subobject.lift (fun P f hf => Subobject.mk f.right) ?_
   intro P Q f g hf hg i hi
   refine' Subobject.mk_eq_mk_of_comm _ _ ((proj S T).mapIso i) _
   exact congr_arg CommaMorphism.right hi
@@ -114,6 +114,10 @@ def subobjectEquiv [HasLimits C] [PreservesLimits T] (A : StructuredArrow S T) :
       exact congr_arg CommaMorphism.right (Subobject.ofMkLEMk_comp h)
 #align category_theory.structured_arrow.subobject_equiv CategoryTheory.StructuredArrow.subobjectEquiv
 
+-- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] CategoryTheory.StructuredArrow.subobjectEquiv_symm_apply
+  CategoryTheory.StructuredArrow.subobjectEquiv_apply_coe
+
 /-- If `C` is well-powered and complete and `T` preserves limits, then `StructuredArrow S T` is
     well-powered. -/
 instance wellPowered_structuredArrow [WellPowered C] [HasLimits C] [PreservesLimits T] :
@@ -131,7 +135,7 @@ variable {S : C ⥤ D} {T : D}
     object. -/
 def projectQuotient [HasColimits C] [PreservesColimits S] {A : CostructuredArrow S T} :
     Subobject (op A) → Subobject (op A.left) := by
-  refine' Subobject.lift (fun P f hf => Subobject.mk f.unop.left.op) _
+  refine Subobject.lift (fun P f hf => Subobject.mk f.unop.left.op) ?_
   intro P Q f g hf hg i hi
   refine' Subobject.mk_eq_mk_of_comm _ _ ((proj S T).mapIso i.unop).op (Quiver.Hom.unop_inj _)
   have := congr_arg Quiver.Hom.unop hi

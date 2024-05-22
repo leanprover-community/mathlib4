@@ -41,7 +41,6 @@ class LieModule.IsIrreducible (R : Type u) (L : Type v) (M : Type w) [CommRing R
 namespace LieAlgebra
 
 variable (R : Type u) (L : Type v)
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
 
 /-- A Lie algebra is simple if it is irreducible as a Lie module over itself via the adjoint
@@ -98,7 +97,7 @@ theorem subsingleton_of_semisimple_lie_abelian [IsSemisimple R L] [h : IsLieAbel
 #align lie_algebra.subsingleton_of_semisimple_lie_abelian LieAlgebra.subsingleton_of_semisimple_lie_abelian
 
 theorem abelian_radical_of_semisimple [IsSemisimple R L] : IsLieAbelian (radical R L) := by
-  rw [IsSemisimple.semisimple]; exact isLieAbelian_bot R L
+  rw [IsSemisimple.semisimple]; infer_instance
 #align lie_algebra.abelian_radical_of_semisimple LieAlgebra.abelian_radical_of_semisimple
 
 /-- The two properties shown to be equivalent here are possible definitions for a Lie algebra
@@ -111,7 +110,7 @@ theorem abelian_radical_iff_solvable_is_abelian [IsNoetherian R L] :
   constructor
   · rintro h₁ I h₂
     rw [LieIdeal.solvable_iff_le_radical] at h₂
-    exact (LieIdeal.homOfLe_injective h₂).isLieAbelian h₁
+    exact (LieIdeal.inclusion_injective h₂).isLieAbelian h₁
   · intro h; apply h; infer_instance
 #align lie_algebra.abelian_radical_iff_solvable_is_abelian LieAlgebra.abelian_radical_iff_solvable_is_abelian
 

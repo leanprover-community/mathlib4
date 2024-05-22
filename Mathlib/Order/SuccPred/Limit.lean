@@ -43,12 +43,12 @@ def IsSuccLimit (a : α) : Prop :=
   ∀ b, ¬b ⋖ a
 #align order.is_succ_limit Order.IsSuccLimit
 
-theorem not_isSuccLimit_iff_exists_covby (a : α) : ¬IsSuccLimit a ↔ ∃ b, b ⋖ a := by
+theorem not_isSuccLimit_iff_exists_covBy (a : α) : ¬IsSuccLimit a ↔ ∃ b, b ⋖ a := by
   simp [IsSuccLimit]
-#align order.not_is_succ_limit_iff_exists_covby Order.not_isSuccLimit_iff_exists_covby
+#align order.not_is_succ_limit_iff_exists_covby Order.not_isSuccLimit_iff_exists_covBy
 
 @[simp]
-theorem isSuccLimit_of_dense [DenselyOrdered α] (a : α) : IsSuccLimit a := fun _ => not_covby
+theorem isSuccLimit_of_dense [DenselyOrdered α] (a : α) : IsSuccLimit a := fun _ => not_covBy
 #align order.is_succ_limit_of_dense Order.isSuccLimit_of_dense
 
 end LT
@@ -69,7 +69,7 @@ variable [SuccOrder α]
 
 protected theorem IsSuccLimit.isMax (h : IsSuccLimit (succ a)) : IsMax a := by
   by_contra H
-  exact h a (covby_succ_of_not_isMax H)
+  exact h a (covBy_succ_of_not_isMax H)
 #align order.is_succ_limit.is_max Order.IsSuccLimit.isMax
 
 theorem not_isSuccLimit_succ_of_not_isMax (ha : ¬IsMax a) : ¬IsSuccLimit (succ a) := by
@@ -120,14 +120,14 @@ section PartialOrder
 variable [PartialOrder α] [SuccOrder α] {a b : α} {C : α → Sort*}
 
 theorem isSuccLimit_of_succ_ne (h : ∀ b, succ b ≠ a) : IsSuccLimit a := fun b hba =>
-  h b (Covby.succ_eq hba)
+  h b (CovBy.succ_eq hba)
 #align order.is_succ_limit_of_succ_ne Order.isSuccLimit_of_succ_ne
 
 theorem not_isSuccLimit_iff : ¬IsSuccLimit a ↔ ∃ b, ¬IsMax b ∧ succ b = a := by
-  rw [not_isSuccLimit_iff_exists_covby]
-  refine' exists_congr fun b => ⟨fun hba => ⟨hba.lt.not_isMax, (Covby.succ_eq hba)⟩, _⟩
+  rw [not_isSuccLimit_iff_exists_covBy]
+  refine' exists_congr fun b => ⟨fun hba => ⟨hba.lt.not_isMax, (CovBy.succ_eq hba)⟩, _⟩
   rintro ⟨h, rfl⟩
-  exact covby_succ_of_not_isMax h
+  exact covBy_succ_of_not_isMax h
 #align order.not_is_succ_limit_iff Order.not_isSuccLimit_iff
 
 /-- See `not_isSuccLimit_iff` for a version that states that `a` is a successor of a value other
@@ -138,14 +138,14 @@ theorem mem_range_succ_of_not_isSuccLimit (h : ¬IsSuccLimit a) : a ∈ range (@
 #align order.mem_range_succ_of_not_is_succ_limit Order.mem_range_succ_of_not_isSuccLimit
 
 theorem isSuccLimit_of_succ_lt (H : ∀ a < b, succ a < b) : IsSuccLimit b := fun a hab =>
-  (H a hab.lt).ne (Covby.succ_eq hab)
+  (H a hab.lt).ne (CovBy.succ_eq hab)
 #align order.is_succ_limit_of_succ_lt Order.isSuccLimit_of_succ_lt
 
 theorem IsSuccLimit.succ_lt (hb : IsSuccLimit b) (ha : a < b) : succ a < b := by
   by_cases h : IsMax a
   · rwa [h.succ_eq]
   · rw [lt_iff_le_and_ne, succ_le_iff_of_not_isMax h]
-    refine' ⟨ha, fun hab => _⟩
+    refine ⟨ha, fun hab => ?_⟩
     subst hab
     exact (h hb.isMax).elim
 #align order.is_succ_limit.succ_lt Order.IsSuccLimit.succ_lt
@@ -184,6 +184,41 @@ theorem isSuccLimitRecOn_succ' (hs : ∀ a, ¬IsMax a → C (succ a)) (hl : ∀ 
     exact (succ_eq_succ_iff_of_not_isMax H.left hb).mp H.right |
     exact proof_irrel_heq H.left hb
 #align order.is_succ_limit_rec_on_succ' Order.isSuccLimitRecOn_succ'
+
+section limitRecOn
+
+variable [WellFoundedLT α]
+  (H_succ : ∀ a, ¬IsMax a → C a → C (succ a))
+  (H_lim : ∀ a, IsSuccLimit a → (∀ b < a, C b) → C a)
+
+open scoped Classical in
+variable (a) in
+/-- Recursion principle on a well-founded partial `SuccOrder`. -/
+@[elab_as_elim] noncomputable def _root_.SuccOrder.limitRecOn : C a :=
+  wellFounded_lt.fix
+    (fun a IH ↦ if h : IsSuccLimit a then H_lim a h IH else
+      let x := Classical.indefiniteDescription _ (not_isSuccLimit_iff.mp h)
+      x.2.2 ▸ H_succ x x.2.1 (IH x <| x.2.2.subst <| lt_succ_of_not_isMax x.2.1))
+    a
+
+@[simp]
+theorem _root_.SuccOrder.limitRecOn_succ (ha : ¬ IsMax a) :
+    SuccOrder.limitRecOn (succ a) H_succ H_lim
+      = H_succ a ha (SuccOrder.limitRecOn a H_succ H_lim) := by
+  have h := not_isSuccLimit_succ_of_not_isMax ha
+  rw [SuccOrder.limitRecOn, WellFounded.fix_eq, dif_neg h]
+  have {b c hb hc} {x : ∀ a, C a} (h : b = c) :
+    congr_arg succ h ▸ H_succ b hb (x b) = H_succ c hc (x c) := by subst h; rfl
+  let x := Classical.indefiniteDescription _ (not_isSuccLimit_iff.mp h)
+  exact this ((succ_eq_succ_iff_of_not_isMax x.2.1 ha).mp x.2.2)
+
+@[simp]
+theorem _root_.SuccOrder.limitRecOn_limit (ha : IsSuccLimit a) :
+    SuccOrder.limitRecOn a H_succ H_lim
+      = H_lim a ha fun x _ ↦ SuccOrder.limitRecOn x H_succ H_lim := by
+  rw [SuccOrder.limitRecOn, WellFounded.fix_eq, dif_pos ha]; rfl
+
+end limitRecOn
 
 section NoMaxOrder
 
@@ -245,11 +280,11 @@ def IsPredLimit (a : α) : Prop :=
   ∀ b, ¬a ⋖ b
 #align order.is_pred_limit Order.IsPredLimit
 
-theorem not_isPredLimit_iff_exists_covby (a : α) : ¬IsPredLimit a ↔ ∃ b, a ⋖ b := by
+theorem not_isPredLimit_iff_exists_covBy (a : α) : ¬IsPredLimit a ↔ ∃ b, a ⋖ b := by
   simp [IsPredLimit]
-#align order.not_is_pred_limit_iff_exists_covby Order.not_isPredLimit_iff_exists_covby
+#align order.not_is_pred_limit_iff_exists_covby Order.not_isPredLimit_iff_exists_covBy
 
-theorem isPredLimit_of_dense [DenselyOrdered α] (a : α) : IsPredLimit a := fun _ => not_covby
+theorem isPredLimit_of_dense [DenselyOrdered α] (a : α) : IsPredLimit a := fun _ => not_covBy
 #align order.is_pred_limit_of_dense Order.isPredLimit_of_dense
 
 @[simp]
@@ -286,7 +321,7 @@ variable [PredOrder α]
 
 protected theorem IsPredLimit.isMin (h : IsPredLimit (pred a)) : IsMin a := by
   by_contra H
-  exact h a (pred_covby_of_not_isMin H)
+  exact h a (pred_covBy_of_not_isMin H)
 #align order.is_pred_limit.is_min Order.IsPredLimit.isMin
 
 theorem not_isPredLimit_pred_of_not_isMin (ha : ¬IsMin a) : ¬IsPredLimit (pred a) := by
@@ -334,7 +369,7 @@ section PartialOrder
 variable [PartialOrder α] [PredOrder α] {a b : α} {C : α → Sort*}
 
 theorem isPredLimit_of_pred_ne (h : ∀ b, pred b ≠ a) : IsPredLimit a := fun b hba =>
-  h b (Covby.pred_eq hba)
+  h b (CovBy.pred_eq hba)
 #align order.is_pred_limit_of_pred_ne Order.isPredLimit_of_pred_ne
 
 theorem not_isPredLimit_iff : ¬IsPredLimit a ↔ ∃ b, ¬IsMin b ∧ pred b = a := by
@@ -350,7 +385,7 @@ theorem mem_range_pred_of_not_isPredLimit (h : ¬IsPredLimit a) : a ∈ range (@
 #align order.mem_range_pred_of_not_is_pred_limit Order.mem_range_pred_of_not_isPredLimit
 
 theorem isPredLimit_of_pred_lt (H : ∀ a > b, pred a < b) : IsPredLimit b := fun a hab =>
-  (H a hab.lt).ne (Covby.pred_eq hab)
+  (H a hab.lt).ne (CovBy.pred_eq hab)
 #align order.is_pred_limit_of_pred_lt Order.isPredLimit_of_pred_lt
 
 theorem IsPredLimit.lt_pred (h : IsPredLimit a) : a < b → a < pred b :=
@@ -381,6 +416,41 @@ theorem isPredLimitRecOn_pred' (hs : ∀ a, ¬IsMin a → C (pred a)) (hl : ∀ 
     {b : α} (hb : ¬IsMin b) : @isPredLimitRecOn α _ _ C (pred b) hs hl = hs b hb :=
   isSuccLimitRecOn_succ' _ _ _
 #align order.is_pred_limit_rec_on_pred' Order.isPredLimitRecOn_pred'
+
+section limitRecOn
+
+variable [WellFoundedGT α]
+  (H_pred : ∀ a, ¬IsMin a → C a → C (pred a))
+  (H_lim : ∀ a, IsPredLimit a → (∀ b > a, C b) → C a)
+
+open scoped Classical in
+variable (a) in
+/-- Recursion principle on a well-founded partial `PredOrder`. -/
+@[elab_as_elim] noncomputable def _root_.PredOrder.limitRecOn : C a :=
+  wellFounded_gt.fix
+    (fun a IH ↦ if h : IsPredLimit a then H_lim a h IH else
+      let x := Classical.indefiniteDescription _ (not_isPredLimit_iff.mp h)
+      x.2.2 ▸ H_pred x x.2.1 (IH x <| x.2.2.subst <| pred_lt_of_not_isMin x.2.1))
+    a
+
+@[simp]
+theorem _root_.PredOrder.limitRecOn_pred (ha : ¬ IsMin a) :
+    PredOrder.limitRecOn (pred a) H_pred H_lim
+      = H_pred a ha (PredOrder.limitRecOn a H_pred H_lim) := by
+  have h := not_isPredLimit_pred_of_not_isMin ha
+  rw [PredOrder.limitRecOn, WellFounded.fix_eq, dif_neg h]
+  have {b c hb hc} {x : ∀ a, C a} (h : b = c) :
+    congr_arg pred h ▸ H_pred b hb (x b) = H_pred c hc (x c) := by subst h; rfl
+  let x := Classical.indefiniteDescription _ (not_isPredLimit_iff.mp h)
+  exact this ((pred_eq_pred_iff_of_not_isMin x.2.1 ha).mp x.2.2)
+
+@[simp]
+theorem _root_.PredOrder.limitRecOn_limit (ha : IsPredLimit a) :
+    PredOrder.limitRecOn a H_pred H_lim
+      = H_lim a ha fun x _ ↦ PredOrder.limitRecOn x H_pred H_lim := by
+  rw [PredOrder.limitRecOn, WellFounded.fix_eq, dif_pos ha]; rfl
+
+end limitRecOn
 
 section NoMinOrder
 

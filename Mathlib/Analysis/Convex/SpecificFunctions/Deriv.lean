@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Calculus.Deriv.ZPow
-import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 import Mathlib.Analysis.SpecialFunctions.Sqrt
+import Mathlib.Analysis.SpecialFunctions.Log.Deriv
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+import Mathlib.Analysis.Convex.Deriv
 
 #align_import analysis.convex.specific_functions.deriv from "leanprover-community/mathlib"@"a16665637b378379689c566204817ae792ac8b39"
 
@@ -34,15 +36,12 @@ open Real Set
 
 open scoped BigOperators NNReal
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 /-- `x^n`, `n : ℕ` is strictly convex on `[0, +∞)` for all `n` greater than `2`. -/
 theorem strictConvexOn_pow {n : ℕ} (hn : 2 ≤ n) : StrictConvexOn ℝ (Ici 0) fun x : ℝ => x ^ n := by
   apply StrictMonoOn.strictConvexOn_of_deriv (convex_Ici _) (continuousOn_pow _)
   rw [deriv_pow', interior_Ici]
-  exact fun x (hx : 0 < x) y hy hxy =>
-    mul_lt_mul_of_pos_left (pow_lt_pow_of_lt_left hxy hx.le <| Nat.sub_pos_of_lt hn)
-      (Nat.cast_pos.2 <| zero_lt_two.trans_le hn)
+  exact fun x (hx : 0 < x) y _ hxy => mul_lt_mul_of_pos_left
+    (pow_lt_pow_left hxy hx.le <| Nat.sub_ne_zero_of_lt hn) (by positivity)
 #align strict_convex_on_pow strictConvexOn_pow
 
 /-- `x^n`, `n : ℕ` is strictly convex on the whole real line whenever `n ≠ 0` is even. -/
@@ -63,7 +62,7 @@ theorem Finset.prod_nonneg_of_card_nonpos_even {α β : Type*} [LinearOrderedCom
       Finset.prod_nonneg fun x _ => by
         split_ifs with hx
         · simp [hx]
-        simp at hx ⊢
+        simp? at hx ⊢ says simp only [not_le, one_mul] at hx ⊢
         exact le_of_lt hx
     _ = _ := by
       rw [Finset.prod_mul_distrib, Finset.prod_ite, Finset.prod_const_one, mul_one,
@@ -76,10 +75,10 @@ theorem int_prod_range_nonneg (m : ℤ) (n : ℕ) (hn : Even n) :
   induction' n with n ihn
   · simp
   rw [← two_mul] at ihn
-  rw [← two_mul, Nat.succ_eq_add_one, mul_add, mul_one, ← one_add_one_eq_two, ← add_assoc,
+  rw [← two_mul, mul_add, mul_one, ← one_add_one_eq_two, ← add_assoc,
     Finset.prod_range_succ, Finset.prod_range_succ, mul_assoc]
   refine' mul_nonneg ihn _; generalize (1 + 1) * n = k
-  cases' le_or_lt m k with hmk hmk
+  rcases le_or_lt m k with hmk | hmk
   · have : m ≤ k + 1 := hmk.trans (lt_add_one (k : ℤ)).le
     convert mul_nonneg_of_nonpos_of_nonpos (sub_nonpos_of_le hmk) _
     convert sub_nonpos_of_le this
@@ -105,7 +104,7 @@ theorem strictConvexOn_zpow {m : ℤ} (hm₀ : m ≠ 0) (hm₁ : m ≠ 1) :
   rw [iter_deriv_zpow]
   refine' mul_pos _ (zpow_pos_of_pos hx _)
   norm_cast
-  refine' int_prod_range_pos (by simp only) fun hm => _
+  refine' int_prod_range_pos (by decide) fun hm => _
   rw [← Finset.coe_Ico] at hm
   norm_cast at hm
   fin_cases hm <;> simp_all -- Porting note: `simp_all` was `cc`
@@ -114,14 +113,14 @@ theorem strictConvexOn_zpow {m : ℤ} (hm₀ : m ≠ 0) (hm₁ : m ≠ 1) :
 section SqrtMulLog
 
 theorem hasDerivAt_sqrt_mul_log {x : ℝ} (hx : x ≠ 0) :
-    HasDerivAt (fun x => sqrt x * log x) ((2 + log x) / (2 * sqrt x)) x := by
+    HasDerivAt (fun x => √x * log x) ((2 + log x) / (2 * √x)) x := by
   convert (hasDerivAt_sqrt hx).mul (hasDerivAt_log hx) using 1
-  rw [add_div, div_mul_right (sqrt x) two_ne_zero, ← div_eq_mul_inv, sqrt_div_self', add_comm,
-    div_eq_mul_one_div, mul_comm]
+  rw [add_div, div_mul_cancel_left₀ two_ne_zero, ← div_eq_mul_inv, sqrt_div_self', add_comm,
+    one_div, one_div, ← div_eq_inv_mul]
 #align has_deriv_at_sqrt_mul_log hasDerivAt_sqrt_mul_log
 
 theorem deriv_sqrt_mul_log (x : ℝ) :
-    deriv (fun x => sqrt x * log x) x = (2 + log x) / (2 * sqrt x) := by
+    deriv (fun x => √x * log x) x = (2 + log x) / (2 * √x) := by
   cases' lt_or_le 0 x with hx hx
   · exact (hasDerivAt_sqrt_mul_log hx.ne').deriv
   · rw [sqrt_eq_zero_of_nonpos hx, mul_zero, div_zero]
@@ -131,29 +130,29 @@ theorem deriv_sqrt_mul_log (x : ℝ) :
 #align deriv_sqrt_mul_log deriv_sqrt_mul_log
 
 theorem deriv_sqrt_mul_log' :
-    (deriv fun x => sqrt x * log x) = fun x => (2 + log x) / (2 * sqrt x) :=
+    (deriv fun x => √x * log x) = fun x => (2 + log x) / (2 * √x) :=
   funext deriv_sqrt_mul_log
 #align deriv_sqrt_mul_log' deriv_sqrt_mul_log'
 
 theorem deriv2_sqrt_mul_log (x : ℝ) :
-    deriv^[2] (fun x => sqrt x * log x) x = -log x / (4 * sqrt x ^ 3) := by
+    deriv^[2] (fun x => √x * log x) x = -log x / (4 * √x ^ 3) := by
   simp only [Nat.iterate, deriv_sqrt_mul_log']
-  cases' le_or_lt x 0 with hx hx
-  · rw [sqrt_eq_zero_of_nonpos hx, zero_pow zero_lt_three, mul_zero, div_zero]
+  rcases le_or_lt x 0 with hx | hx
+  · rw [sqrt_eq_zero_of_nonpos hx, zero_pow three_ne_zero, mul_zero, div_zero]
     refine' HasDerivWithinAt.deriv_eq_zero _ (uniqueDiffOn_Iic 0 x hx)
     refine' (hasDerivWithinAt_const _ _ 0).congr_of_mem (fun x hx => _) hx
     rw [sqrt_eq_zero_of_nonpos hx, mul_zero, div_zero]
-  · have h₀ : sqrt x ≠ 0 := sqrt_ne_zero'.2 hx
+  · have h₀ : √x ≠ 0 := sqrt_ne_zero'.2 hx
     convert (((hasDerivAt_log hx.ne').const_add 2).div ((hasDerivAt_sqrt hx.ne').const_mul 2) <|
       mul_ne_zero two_ne_zero h₀).deriv using 1
     nth_rw 3 [← mul_self_sqrt hx.le]
-    generalize sqrt x = sqx at h₀ -- else field_simp rewrites sqrt x * sqrt x back to x
+    generalize √x = sqx at h₀ -- else field_simp rewrites sqrt x * sqrt x back to x
     field_simp
     ring
 #align deriv2_sqrt_mul_log deriv2_sqrt_mul_log
 
 theorem strictConcaveOn_sqrt_mul_log_Ioi :
-    StrictConcaveOn ℝ (Set.Ioi 1) fun x => sqrt x * log x := by
+    StrictConcaveOn ℝ (Set.Ioi 1) fun x => √x * log x := by
   apply strictConcaveOn_of_deriv2_neg' (convex_Ioi 1) _ fun x hx => ?_
   · exact continuous_sqrt.continuousOn.mul
       (continuousOn_log.mono fun x hx => ne_of_gt (zero_lt_one.trans hx))
