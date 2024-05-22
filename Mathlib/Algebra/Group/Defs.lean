@@ -729,15 +729,26 @@ lemma pow_right_comm (a : M) (m n : ℕ) : (a ^ m) ^ n = (a ^ n) ^ m := by
 end Monoid
 
 /-- An additive commutative monoid is an additive monoid with commutative `(+)`. -/
-class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
+class AddCommMonoid (M : Type u) extends AddMonoid M where
+  protected add_comm : ∀ a b : M, a + b = b + a
 #align add_comm_monoid AddCommMonoid
+
+instance (priority := 100) AddCommMonoid.toAddCommSemigroup (M : Type u) [AddCommMonoid M] :
+    AddCommSemigroup M :=
+  { add_comm := AddCommMonoid.add_comm }
 
 /-- A commutative monoid is a monoid with commutative `(*)`. -/
 @[to_additive]
-class CommMonoid (M : Type u) extends Monoid M, CommSemigroup M
+class CommMonoid (M : Type u) extends Monoid M where
+  protected mul_comm : ∀ a b : M, a * b = b * a
 #align comm_monoid CommMonoid
 
-attribute [to_additive existing] CommMonoid.toCommSemigroup
+@[to_additive existing]
+instance (priority := 100) CommMonoid.toCommSemigroup (M : Type u) [CommMonoid M] :
+    CommSemigroup M :=
+  { mul_comm := CommMonoid.mul_comm }
+
+-- attribute [to_additive existing] CommMonoid.toCommMagma
 
 section LeftCancelMonoid
 
