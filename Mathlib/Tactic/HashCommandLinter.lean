@@ -9,11 +9,16 @@ import Lean.Linter.Util
 import Batteries.Lean.HashSet
 
 /-!
-#  `#`-command linter
+# `#`-command linter
 
 The `#`-command linter produces a warning when a command starting with `#` is used *and*
 * either the command emits no message;
 * or `warningAsError` is set to `true`.
+
+The rationale behind this is that `#`-commands are intended to be transient:
+they provide useful information in development, but are not intended to be present in final code.
+Most of them are noisy and get picked up anyway by CI, but even the quiet ones are not expected to
+outlive their in-development status.
 -/
 
 namespace Mathlib.Linter
@@ -21,7 +26,7 @@ namespace Mathlib.Linter
 /--
 The linter emits a warning on any command beginning with `#` that itself emits no message.
 For example, `#guard true` and `#check_tactic True ~> True by skip` trigger a message.
-There is a `whitelist` of silent `#`-command that are allowed.
+There is a `HashSet` of silent `#`-command that are allowed.
 -/
 register_option linter.hashCommand : Bool := {
   defValue := true
@@ -50,12 +55,12 @@ private partial def withSetOptionIn' (cmd : CommandElab) : CommandElab := fun st
   else
     cmd stx
 
-/-- `whitelist` is the array of `#`-commands that are allowed in 'Mathlib'. -/
-private abbrev whitelist : HashSet String :=
+/-- `allowed_commands` is the `HashSet` of `#`-commands that are allowed in 'Mathlib'. -/
+private abbrev allowed_commands : HashSet String :=
   { "#align", "#align_import", "#noalign" }
 
 /-- Checks that no command beginning with `#` is present in 'Mathlib',
-except for the ones in `whitelist`.
+except for the ones in `allowed_commands`.
 
 If `warningAsError` is `true`, then the linter logs an info (rather than a warning).
 This means that CI will eventually fail on `#`-commands, but not stop it from continuing.
@@ -68,7 +73,7 @@ def hashCommandLinter : Linter where run := withSetOptionIn' fun stx => do
     match stx.getHead? with
     | some sa =>
       let a := sa.getAtomVal
-      if (a.get ⟨0⟩ == '#' && ! whitelist.contains a) then
+      if (a.get ⟨0⟩ == '#' && ! allowed_commands.contains a) then
         let msg := m!"`#`-commands, such as '{a}', are not allowed in 'Mathlib'"
         if warningAsError.get (← getOptions) then
           logInfoAt sa (msg ++ " [linter.hashCommand]")
