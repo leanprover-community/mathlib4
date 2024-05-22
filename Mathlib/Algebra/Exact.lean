@@ -9,7 +9,7 @@ import Mathlib.LinearAlgebra.Quotient
 /-! # Exactness of a pair
 
 * For two maps `f : M → N` and `g : N → P`, with `Zero P`,
-`Function.AddExact f g` says that `Set.range f = Set.preimage {0}
+`Function.Exact f g` says that `Set.range f = Set.preimage {0}
 
 * For linear maps `f : M →ₗ[R] N`  and `g : N →ₗ[R] P`,
 `Exact f g` says that `range f = ker g`
