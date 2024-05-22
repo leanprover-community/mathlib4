@@ -15,6 +15,7 @@ import Mathlib.GroupTheory.Index
 /-! # B. H. Neumann's theorem on coverings of a group by cosets
 
 Let the group $G$ be the union of finitely many, let us say $n$, left cosets
+
 of subgroups $C₁$, $C₂$, ..., $Cₙ$: $$ G = ⋃_{i = 1}^n C_i g_i. $$
 Then the index of (at least) one of these subgroups does not exceed $n$.
 
