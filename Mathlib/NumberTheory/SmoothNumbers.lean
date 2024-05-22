@@ -267,8 +267,8 @@ lemma mem_smoothNumbers' {n m : ℕ} : m ∈ smoothNumbers n ↔ ∀ p, p.Prime 
 
 /-- The prime factors of `m > 1` are contained in the set of primes below `n`
   if `m` is a `n`-smooth number -/
-lemma primeFactors_subset_of_mem_smoothNumbers (m n : ℕ) (hms : m ∈ n.smoothNumbers)
-    : m.primeFactors ⊆ n.primesBelow :=
+lemma primeFactors_subset_of_mem_smoothNumbers (m n : ℕ) (hms : m ∈ n.smoothNumbers) :
+    m.primeFactors ⊆ n.primesBelow :=
   have hxle (m n x : ℕ) (hpf : x ∈ m.primeFactors) (hms : m ∈ smoothNumbers n)
       : x < n :=
     match mem_smoothNumbers.mp hms with
@@ -342,8 +342,8 @@ lemma map_prime_pow_mul {F : Type*} [CommSemiring F] {f : ℕ → F}
 
 /-- The product of two `n`-smooth numbers is a `n`-smooth number -/
 theorem mul_mem_smoothNumbers (m₁ m₂ n : ℕ)
-    (hm1 : m₁ ∈ n.smoothNumbers) (hm2 : m₂ ∈ n.smoothNumbers)
-      : (m₁ * m₂) ∈ n.smoothNumbers := by
+    (hm1 : m₁ ∈ n.smoothNumbers) (hm2 : m₂ ∈ n.smoothNumbers) :
+      (m₁ * m₂) ∈ n.smoothNumbers := by
   have hm1z : m₁ ≠ 0 := ne_zero_of_mem_smoothNumbers hm1
   have hm2z : m₂ ≠ 0 := ne_zero_of_mem_smoothNumbers hm2
   apply primeFactors_subset_of_mem_smoothNumbers at hm1
