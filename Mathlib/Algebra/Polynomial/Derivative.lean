@@ -193,7 +193,7 @@ theorem of_mem_support_derivative {p : R[X]} {n : ℕ} (h : n ∈ p.derivative.s
 
 theorem degree_derivative_lt {p : R[X]} (hp : p ≠ 0) : p.derivative.degree < p.degree :=
   (Finset.sup_lt_iff <| bot_lt_iff_ne_bot.2 <| mt degree_eq_bot.1 hp).2 fun n hp =>
-    lt_of_lt_of_le (WithBot.some_lt_some.2 n.lt_succ_self) <|
+    lt_of_lt_of_le (WithBot.coe_lt_coe.2 n.lt_succ_self) <|
       Finset.le_sup <| of_mem_support_derivative hp
 #align polynomial.degree_derivative_lt Polynomial.degree_derivative_lt
 
