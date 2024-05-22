@@ -15,9 +15,11 @@ import Mathlib.GroupTheory.Index
 /-! # B. H. Neumann's theorem on coverings of a group by cosets
 
 Let the group $G$ be the union of finitely many, let us say $n$, left cosets
-
 of subgroups $C₁$, $C₂$, ..., $Cₙ$: $$ G = ⋃_{i = 1}^n C_i g_i. $$
-Then the index of (at least) one of these subgroups does not exceed $n$.
+
+* `BHNeumann` : the sum of the inverse of the indexes of the $C_i$ is greater than or equal to $1$.
+
+* `BHNeumann'` : the index of (at least) one of these subgroups does not exceed $n$.
 
 [1] [Neumann-1954], *Groups Covered By Permutable Subsets*, Lemma 4.1
 [2] <https://mathoverflow.net/a/17398/3332>
