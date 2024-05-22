@@ -911,7 +911,7 @@ instance {α : Type*} [Mul α] [Preorder α] [CovariantClass α α (· * ·) (·
     | ⟨(x : α), hx⟩, (a : α), (b : α), h => by
         dsimp only
         norm_cast at h ⊢
-        exact mul_lt_mul_left' (α := α) h x
+        exact mul_lt_mul_left' h x
 
 -- This makes `lt_mul_of_le_of_one_lt'` work on `ℤₘ₀`
 instance {α : Type*} [Mul α] [Preorder α] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]:
@@ -926,6 +926,6 @@ instance {α : Type*} [Mul α] [Preorder α] [CovariantClass α α (swap (· * �
     | ⟨(x : α), hx⟩, (a : α), (b : α), h => by
         dsimp only
         norm_cast at h ⊢
-        exact mul_le_mul_right' (α := α) h x
+        exact mul_le_mul_right' h x
 
 end WithZero_Multiplicative_stuff
