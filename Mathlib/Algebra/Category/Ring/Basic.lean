@@ -398,6 +398,8 @@ instance : CoeSort CommRingCat (Type*) where
 unif_hint forget_obj_eq_coe (R : CommRingCat) where ⊢
   (forget CommRingCat).obj R ≟ R
 
+@[simp] theorem forget_obj_eq_coe' (R : CommRingCat) : (forget CommRingCat).obj R = R := rfl
+
 instance instCommRing (X : CommRingCat) : CommRing X := X.str
 
 instance instCommRing' (X : CommRingCat) : CommRing <| (forget CommRingCat).obj X := X.str
@@ -475,6 +477,31 @@ theorem coe_of (R : Type u) [CommRing R] : (CommRingCat.of R : Type u) = R :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align CommRing.coe_of CommRingCat.coe_of
+
+-- Coercing `𝟙 (of X)` to a function should be expressed as the coercion of `RingHom.id X`.
+@[simp] theorem coe_id_of {X : Type u} [CommRing X] (x : X) :
+    @DFunLike.coe no_index (CommRingCat.of X ⟶ CommRingCat.of X) X
+      (fun _ ↦ X) _
+      (𝟙 (of X)) x =
+    @DFunLike.coe (X →+* X) X (fun _ ↦ X) _ (RingHom.id X) x :=
+  rfl
+
+-- Coercing `f ≫ g`, where `f : of X ⟶ of Y` and `g : of Y ⟶ of Z`, to a function should be
+-- expressed in terms of the coercion of `g.comp f`.
+@[simp] theorem coe_comp_of {X Y Z : Type u} [CommRing X] [CommRing Y] [CommRing Z] (x : X)
+    (f : X →+* Y) (g : Y →+* Z) :
+    @DFunLike.coe no_index (CommRingCat.of X ⟶ CommRingCat.of Z) X
+      (fun _ ↦ Z) _
+      (CategoryStruct.comp (X := CommRingCat.of X) (Y := CommRingCat.of Y) (Z := CommRingCat.of Z)
+        f g) x =
+    @DFunLike.coe (X →+* Z) X (fun _ ↦ Z) _ (RingHom.comp g f) x :=
+  rfl
+
+-- Sometimes neither the `ext` lemma for `CommRingCat` nor for `RingHom` is applicable.
+@[ext] theorem ext_of {X Y : Type u} [CommRing X] [CommRing Y] (f g : X →+* Y)
+    (h : ∀ x, f x = g x) :
+    @Eq (CommRingCat.of X ⟶ CommRingCat.of Y) f g :=
+  RingHom.ext h
 
 instance hasForgetToRingCat : HasForget₂ CommRingCat RingCat :=
   BundledHom.forget₂ _ _
