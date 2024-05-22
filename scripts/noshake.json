@@ -87,7 +87,7 @@
   "Mathlib.Tactic.Linarith.Frontend",
   "Mathlib.Tactic.Linarith.Lemmas",
   "Mathlib.Tactic.LinearCombination",
-  "Mathlib.Tactic.Linters",
+  "Mathlib.Tactic.Linter",
   "Mathlib.Tactic.Measurability",
   "Mathlib.Tactic.MkIffOfInductiveProp",
   "Mathlib.Tactic.ModCases",
@@ -185,7 +185,7 @@
  "ignoreAll":
  ["Batteries.Tactic.Basic",
   "Mathlib.Mathport.Syntax",
-  "Mathlib.Tactic.Linters"],
+  "Mathlib.Tactic.Linter"],
  "ignore":
  {"Batteries.Tactic.OpenPrivate": ["Lean.Parser.Module"],
   "Batteries.Tactic.Omega.OmegaM": ["Batteries.Tactic.Omega.Int"],

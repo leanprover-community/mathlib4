@@ -1,5 +1,5 @@
 /-
-This is the Linters file: it only imports files defining linters and is
+This is the `Linter`s file: it only imports files defining linters and is
 intended to be imported fairly early in `Mathlib`.
 
 This file is ignored by `Shake`:
