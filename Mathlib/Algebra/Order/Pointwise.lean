@@ -54,7 +54,7 @@ end One
 
 section Group
 
-variable [Group α] [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
+variable [Group α] [MulLeftMono α] [MulRightMono α]
   (s t : Set α)
 
 @[to_additive]
@@ -123,7 +123,7 @@ end One
 
 section Group
 
-variable [Group α] [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
+variable [Group α] [MulLeftMono α] [MulRightMono α]
   {s t : Set α}
 
 @[to_additive]

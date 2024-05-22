@@ -105,7 +105,7 @@ instance toLinearOrderedCancelCommMonoid [LinearOrderedCancelCommMonoid M] (S : 
 
 section Preorder
 variable (M)
-variable [Monoid M] [Preorder M] [CovariantClass M M (· * ·) (· ≤ ·)] {a : M}
+variable [Monoid M] [Preorder M] [MulLeftMono M] {a : M}
 
 /-- The submonoid of elements greater than `1`. -/
 @[to_additive (attr := simps) nonneg "The submonoid of nonnegative elements."]

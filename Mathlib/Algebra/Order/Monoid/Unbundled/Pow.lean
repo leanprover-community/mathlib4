@@ -25,10 +25,10 @@ variable [Preorder M]
 
 section Left
 
-variable [CovariantClass M M (· * ·) (· ≤ ·)] {x : M}
+variable [MulLeftMono M] {x : M}
 
 @[to_additive (attr := mono, gcongr) nsmul_le_nsmul_right]
-theorem pow_le_pow_left' [CovariantClass M M (swap (· * ·)) (· ≤ ·)] {a b : M} (hab : a ≤ b) :
+theorem pow_le_pow_left' [MulRightMono M] {a b : M} (hab : a ≤ b) :
     ∀ i : ℕ, a ^ i ≤ b ^ i
   | 0 => by simp
   | k + 1 => by
@@ -85,7 +85,7 @@ theorem pow_lt_one' {a : M} (ha : a < 1) {k : ℕ} (hk : k ≠ 0) : a ^ k < 1 :=
 #align nsmul_neg nsmul_neg
 
 @[to_additive (attr := gcongr) nsmul_lt_nsmul_left]
-theorem pow_lt_pow_right' [CovariantClass M M (· * ·) (· < ·)] {a : M} {n m : ℕ} (ha : 1 < a)
+theorem pow_lt_pow_right' [MulLeftStrictMono M] {a : M} {n m : ℕ} (ha : 1 < a)
     (h : n < m) : a ^ n < a ^ m := by
   rcases Nat.le.dest h with ⟨k, rfl⟩; clear h
   rw [pow_add, pow_succ, mul_assoc, ← pow_succ']
@@ -94,7 +94,7 @@ theorem pow_lt_pow_right' [CovariantClass M M (· * ·) (· < ·)] {a : M} {n m 
 #align nsmul_lt_nsmul_left nsmul_lt_nsmul_left
 
 @[to_additive nsmul_left_strictMono]
-theorem pow_right_strictMono' [CovariantClass M M (· * ·) (· < ·)] {a : M} (ha : 1 < a) :
+theorem pow_right_strictMono' [MulLeftStrictMono M] {a : M} (ha : 1 < a) :
     StrictMono ((a ^ ·) : ℕ → M) := fun _ _ => pow_lt_pow_right' ha
 #align pow_strict_mono_left pow_right_strictMono'
 #align nsmul_strict_mono_right nsmul_left_strictMono
@@ -121,7 +121,7 @@ end Left
 
 section Right
 
-variable [CovariantClass M M (swap (· * ·)) (· ≤ ·)] {x : M}
+variable [MulRightMono M] {x : M}
 
 @[to_additive Right.pow_nonneg]
 theorem Right.one_le_pow_of_le (hx : 1 ≤ x) : ∀ {n : ℕ}, 1 ≤ x ^ n
@@ -145,8 +145,8 @@ end Right
 
 section CovariantLTSwap
 
-variable [Preorder β] [CovariantClass M M (· * ·) (· < ·)]
-  [CovariantClass M M (swap (· * ·)) (· < ·)] {f : β → M} {n : ℕ}
+variable [Preorder β] [MulLeftStrictMono M]
+  [MulRightStrictMono M] {f : β → M} {n : ℕ}
 
 @[to_additive StrictMono.const_nsmul]
 theorem StrictMono.pow_const (hf : StrictMono f) : ∀ {n : ℕ}, n ≠ 0 → StrictMono (f · ^ n)
@@ -171,8 +171,7 @@ end CovariantLTSwap
 
 section CovariantLESwap
 
-variable [Preorder β] [CovariantClass M M (· * ·) (· ≤ ·)]
-  [CovariantClass M M (swap (· * ·)) (· ≤ ·)]
+variable [Preorder β] [MulLeftMono M] [MulRightMono M]
 
 @[to_additive Monotone.const_nsmul]
 theorem Monotone.pow_const {f : β → M} (hf : Monotone f) : ∀ n : ℕ, Monotone fun a => f a ^ n
@@ -191,7 +190,7 @@ theorem pow_left_mono (n : ℕ) : Monotone fun a : M => a ^ n := monotone_id.pow
 end CovariantLESwap
 
 @[to_additive Left.pow_neg]
-theorem Left.pow_lt_one_of_lt [CovariantClass M M (· * ·) (· < ·)] {n : ℕ} {x : M} (hn : 0 < n)
+theorem Left.pow_lt_one_of_lt [MulLeftStrictMono M] {n : ℕ} {x : M} (hn : 0 < n)
     (h : x < 1) : x ^ n < 1 :=
   Nat.le_induction ((pow_one _).trans_lt h)
     (fun n _ ih => by
@@ -202,7 +201,7 @@ theorem Left.pow_lt_one_of_lt [CovariantClass M M (· * ·) (· < ·)] {n : ℕ}
 #align left.pow_neg Left.pow_neg
 
 @[to_additive Right.pow_neg]
-theorem Right.pow_lt_one_of_lt [CovariantClass M M (swap (· * ·)) (· < ·)] {n : ℕ} {x : M}
+theorem Right.pow_lt_one_of_lt [MulRightStrictMono M] {n : ℕ} {x : M}
     (hn : 0 < n) (h : x < 1) : x ^ n < 1 :=
   Nat.le_induction ((pow_one _).trans_lt h)
     (fun n _ ih => by
@@ -220,7 +219,7 @@ variable [LinearOrder M]
 
 section CovariantLE
 
-variable [CovariantClass M M (· * ·) (· ≤ ·)]
+variable [MulLeftMono M]
 
 -- This generalises to lattices. See `pow_two_semiclosed`
 @[to_additive nsmul_nonneg_iff]
@@ -254,7 +253,7 @@ theorem pow_eq_one_iff {x : M} {n : ℕ} (hn : n ≠ 0) : x ^ n = 1 ↔ x = 1 :=
 #align pow_eq_one_iff pow_eq_one_iff
 #align nsmul_eq_zero_iff nsmul_eq_zero_iff
 
-variable [CovariantClass M M (· * ·) (· < ·)] {a : M} {m n : ℕ}
+variable [MulLeftStrictMono M] {a : M} {m n : ℕ}
 
 @[to_additive nsmul_le_nsmul_iff_left]
 theorem pow_le_pow_iff_right' (ha : 1 < a) : a ^ m ≤ a ^ n ↔ m ≤ n :=
@@ -272,7 +271,7 @@ end CovariantLE
 
 section CovariantLESwap
 
-variable [CovariantClass M M (· * ·) (· ≤ ·)] [CovariantClass M M (swap (· * ·)) (· ≤ ·)]
+variable [MulLeftMono M] [MulRightMono M]
 
 @[to_additive lt_of_nsmul_lt_nsmul_right]
 theorem lt_of_pow_lt_pow_left' {a b : M} (n : ℕ) : a ^ n < b ^ n → a < b :=
@@ -296,7 +295,7 @@ end CovariantLESwap
 
 section CovariantLTSwap
 
-variable [CovariantClass M M (· * ·) (· < ·)] [CovariantClass M M (swap (· * ·)) (· < ·)]
+variable [MulLeftStrictMono M] [MulRightStrictMono M]
 
 @[to_additive le_of_nsmul_le_nsmul_right]
 theorem le_of_pow_le_pow_left' {a b : M} {n : ℕ} (hn : n ≠ 0) : a ^ n ≤ b ^ n → a ≤ b :=
@@ -319,22 +318,22 @@ theorem le_max_of_sq_le_mul {a b c : M} (h : a ^ 2 ≤ b * c) : a ≤ max b c :=
 end CovariantLTSwap
 
 @[to_additive Left.nsmul_neg_iff]
-theorem Left.pow_lt_one_iff' [CovariantClass M M (· * ·) (· < ·)] {n : ℕ} {x : M} (hn : 0 < n) :
+theorem Left.pow_lt_one_iff' [MulLeftStrictMono M] {n : ℕ} {x : M} (hn : 0 < n) :
     x ^ n < 1 ↔ x < 1 :=
-  haveI := covariantClass_le_of_lt M M (· * ·)
+  haveI := mulLeftMono_of_mulLeftStrictMono M
   pow_lt_one_iff hn.ne'
 #align left.nsmul_neg_iff Left.nsmul_neg_iff
 
-theorem Left.pow_lt_one_iff [CovariantClass M M (· * ·) (· < ·)] {n : ℕ} {x : M} (hn : 0 < n) :
+theorem Left.pow_lt_one_iff [MulLeftStrictMono M] {n : ℕ} {x : M} (hn : 0 < n) :
     x ^ n < 1 ↔ x < 1 := Left.pow_lt_one_iff' hn
 #align left.pow_lt_one_iff Left.pow_lt_one_iff
 
 @[to_additive]
-theorem Right.pow_lt_one_iff [CovariantClass M M (swap (· * ·)) (· < ·)] {n : ℕ} {x : M}
+theorem Right.pow_lt_one_iff [MulRightStrictMono M] {n : ℕ} {x : M}
     (hn : 0 < n) : x ^ n < 1 ↔ x < 1 :=
   ⟨fun H =>
     not_le.mp fun k =>
-      haveI := covariantClass_le_of_lt M M (swap (· * ·))
+      haveI := mulRightMono_of_mulRightStrictMono M
       H.not_le <| Right.one_le_pow_of_le k,
     Right.pow_lt_one_of_lt hn⟩
 #align right.pow_lt_one_iff Right.pow_lt_one_iff
@@ -346,7 +345,7 @@ end Monoid
 
 section DivInvMonoid
 
-variable [DivInvMonoid G] [Preorder G] [CovariantClass G G (· * ·) (· ≤ ·)]
+variable [DivInvMonoid G] [Preorder G] [MulLeftMono G]
 
 @[to_additive zsmul_nonneg]
 theorem one_le_zpow {x : G} (H : 1 ≤ x) {n : ℤ} (hn : 0 ≤ n) : 1 ≤ x ^ n := by

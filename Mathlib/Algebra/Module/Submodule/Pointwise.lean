@@ -238,7 +238,7 @@ theorem smul_mem_pointwise_smul (m : M) (a : α) (S : Submodule R M) : m ∈ S �
   (Set.smul_mem_smul_set : _ → _ ∈ a • (S : Set M))
 #align submodule.smul_mem_pointwise_smul Submodule.smul_mem_pointwise_smul
 
-instance : CovariantClass α (Submodule R M) HSMul.hSMul LE.le :=
+instance : SMulLeftMono α (Submodule R M) :=
   ⟨fun _ _ => map_mono⟩
 
 /-- See also `Submodule.smul_bot`. -/
@@ -375,7 +375,7 @@ lemma set_smul_eq_of_le (p : Submodule R M)
     s • N = p :=
   le_antisymm (set_smul_le s N p closed_under_smul) le
 
-instance : CovariantClass (Set S) (Submodule R M) HSMul.hSMul LE.le :=
+instance : SMulLeftMono (Set S) (Submodule R M) :=
   ⟨fun _ _ _ le => set_smul_le _ _ _ fun _ _ hr hm => mem_set_smul_of_mem_mem (mem1 := hr)
     (mem2 := le hm)⟩
 

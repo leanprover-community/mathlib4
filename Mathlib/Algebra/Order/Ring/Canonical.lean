@@ -55,8 +55,8 @@ instance (priority := 100) toNoZeroDivisors : NoZeroDivisors α :=
 #align canonically_ordered_comm_semiring.to_no_zero_divisors CanonicallyOrderedCommSemiring.toNoZeroDivisors
 
 -- see Note [lower instance priority]
-instance (priority := 100) toCovariantClassMulLE : CovariantClass α α (· * ·) (· ≤ ·) := by
-  refine ⟨fun a b c h => ?_⟩
+instance (priority := 100) toCovariantClassMulLE : MulLeftMono α := by
+  refine ⟨fun a b c h => ?_⟩; dsimp
   rcases exists_add_of_le h with ⟨c, rfl⟩
   rw [mul_add]
   apply self_le_add_right
@@ -114,7 +114,7 @@ protected theorem tsub_mul (h : AddLECancellable (b * c)) : (a - b) * c = a * c 
 
 end AddLECancellable
 
-variable [ContravariantClass α α (· + ·) (· ≤ ·)]
+variable [AddLeftReflectLE α]
 
 theorem mul_tsub (a b c : α) : a * (b - c) = a * b - a * c :=
   Contravariant.AddLECancellable.mul_tsub

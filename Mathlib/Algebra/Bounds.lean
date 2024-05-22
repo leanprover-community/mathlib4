@@ -25,8 +25,8 @@ open Pointwise
 
 section InvNeg
 
-variable {G : Type*} [Group G] [Preorder G] [CovariantClass G G (· * ·) (· ≤ ·)]
-  [CovariantClass G G (swap (· * ·)) (· ≤ ·)] {s : Set G} {a : G}
+variable {G : Type*} [Group G] [Preorder G] [MulLeftMono G]
+  [MulRightMono G] {s : Set G} {a : G}
 
 @[to_additive (attr := simp)]
 theorem bddAbove_inv : BddAbove s⁻¹ ↔ BddBelow s :=
@@ -102,8 +102,7 @@ end InvNeg
 
 section mul_add
 
-variable {M : Type*} [Mul M] [Preorder M] [CovariantClass M M (· * ·) (· ≤ ·)]
-  [CovariantClass M M (swap (· * ·)) (· ≤ ·)]
+variable {M : Type*} [Mul M] [Preorder M] [MulLeftMono M] [MulRightMono M]
 
 @[to_additive]
 theorem mul_mem_upperBounds_mul {s t : Set M} {a b : M} (ha : a ∈ upperBounds s)
@@ -163,7 +162,7 @@ section ConditionallyCompleteLattice
 section Right
 
 variable {ι G : Type*} [Group G] [ConditionallyCompleteLattice G]
-  [CovariantClass G G (Function.swap (· * ·)) (· ≤ ·)] [Nonempty ι] {f : ι → G}
+  [MulRightMono G] [Nonempty ι] {f : ι → G}
 
 @[to_additive]
 theorem ciSup_mul (hf : BddAbove (range f)) (a : G) : (⨆ i, f i) * a = ⨆ i, f i * a :=
@@ -190,7 +189,7 @@ end Right
 section Left
 
 variable {ι : Sort*} {G : Type*} [Group G] [ConditionallyCompleteLattice G]
-  [CovariantClass G G (· * ·) (· ≤ ·)] [Nonempty ι] {f : ι → G}
+  [MulLeftMono G] [Nonempty ι] {f : ι → G}
 
 @[to_additive]
 theorem mul_ciSup (hf : BddAbove (range f)) (a : G) : (a * ⨆ i, f i) = ⨆ i, a * f i :=

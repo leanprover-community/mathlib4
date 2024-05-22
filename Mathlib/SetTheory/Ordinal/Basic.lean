@@ -913,7 +913,7 @@ theorem card_ofNat (n : ℕ) [n.AtLeastTwo] :
   card_nat n
 
 -- Porting note: Rewritten proof of elim, previous version was difficult to debug
-instance add_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· ≤ ·) where
+instance addLeftMono : AddLeftMono Ordinal.{u} where
   elim := fun c a b h => by
     revert h c
     refine inductionOn a (fun α₁ r₁ _ ↦ ?_)
@@ -934,11 +934,10 @@ instance add_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (· + ·
       | Sum.inr a, Sum.inr b, H =>
         let ⟨w, h⟩ := fi _ _ (Sum.lex_inr_inr.1 H)
         exact ⟨Sum.inr w, congr_arg Sum.inr h⟩
-#align ordinal.add_covariant_class_le Ordinal.add_covariantClass_le
+#align ordinal.add_covariant_class_le Ordinal.addLeftMono
 
 -- Porting note: Rewritten proof of elim, previous version was difficult to debug
-instance add_swap_covariantClass_le :
-    CovariantClass Ordinal.{u} Ordinal.{u} (swap (· + ·)) (· ≤ ·) where
+instance addRightMono : AddRightMono Ordinal.{u} where
   elim := fun c a b h => by
     revert h c
     refine inductionOn a (fun α₁ r₁ _ ↦ ?_)
@@ -952,7 +951,7 @@ instance add_swap_covariantClass_le :
                 · cases' a with a a <;> cases' b with b b <;> cases H <;> constructor <;>
                     [rwa [← fo]; assumption]
                 · cases H <;> constructor <;> [rwa [fo]; assumption]⟩
-#align ordinal.add_swap_covariant_class_le Ordinal.add_swap_covariantClass_le
+#align ordinal.add_swap_covariant_class_le Ordinal.addRightMono
 
 theorem le_add_right (a b : Ordinal) : a ≤ a + b := by
   simpa only [add_zero] using add_le_add_left (Ordinal.zero_le b) a

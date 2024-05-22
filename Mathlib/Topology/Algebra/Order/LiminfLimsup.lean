@@ -586,7 +586,7 @@ variable [ConditionallyCompleteLinearOrder R] [TopologicalSpace R] [OrderTopolog
 
 /-- `liminf (c + xᵢ) = c + liminf xᵢ`. -/
 lemma limsup_const_add (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]
-    [CovariantClass R R (fun x y ↦ x + y) fun x y ↦ x ≤ y] (f : ι → R) (c : R)
+    [AddLeftMono R] (f : ι → R) (c : R)
     (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
     Filter.limsup (fun i ↦ c + f i) F = c + Filter.limsup f F :=
   (Monotone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ c + x)
@@ -594,7 +594,7 @@ lemma limsup_const_add (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]
 
 /-- `limsup (xᵢ + c) = (limsup xᵢ) + c`. -/
 lemma limsup_add_const (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]
-    [CovariantClass R R (Function.swap fun x y ↦ x + y) fun x y ↦ x ≤ y] (f : ι → R) (c : R)
+    [AddRightMono R] (f : ι → R) (c : R)
     (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
     Filter.limsup (fun i ↦ f i + c) F = Filter.limsup f F + c :=
   (Monotone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ x + c)

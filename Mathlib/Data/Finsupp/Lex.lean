@@ -114,15 +114,15 @@ See `Counterexamples/ZeroDivisorsInAddMonoidAlgebras.lean` for a counterexample.
 
 section Left
 
-variable [CovariantClass N N (· + ·) (· < ·)]
+variable [AddLeftStrictMono N]
 
 instance Lex.covariantClass_lt_left :
-    CovariantClass (Lex (α →₀ N)) (Lex (α →₀ N)) (· + ·) (· < ·) :=
+    AddLeftStrictMono (Lex (α →₀ N)) :=
   ⟨fun _ _ _ ⟨a, lta, ha⟩ ↦ ⟨a, fun j ja ↦ congr_arg _ (lta j ja), add_lt_add_left ha _⟩⟩
 #align finsupp.lex.covariant_class_lt_left Finsupp.Lex.covariantClass_lt_left
 
 instance Lex.covariantClass_le_left :
-    CovariantClass (Lex (α →₀ N)) (Lex (α →₀ N)) (· + ·) (· ≤ ·) :=
+    AddLeftMono (Lex (α →₀ N)) :=
   covariantClass_le_of_lt _ _ _
 #align finsupp.lex.covariant_class_le_left Finsupp.Lex.covariantClass_le_left
 
@@ -130,16 +130,16 @@ end Left
 
 section Right
 
-variable [CovariantClass N N (Function.swap (· + ·)) (· < ·)]
+variable [AddRightStrictMono N]
 
 instance Lex.covariantClass_lt_right :
-    CovariantClass (Lex (α →₀ N)) (Lex (α →₀ N)) (Function.swap (· + ·)) (· < ·) :=
+    AddRightStrictMono (Lex (α →₀ N)) :=
   ⟨fun f _ _ ⟨a, lta, ha⟩ ↦
     ⟨a, fun j ja ↦ congr_arg (· + ofLex f j) (lta j ja), add_lt_add_right ha _⟩⟩
 #align finsupp.lex.covariant_class_lt_right Finsupp.Lex.covariantClass_lt_right
 
 instance Lex.covariantClass_le_right :
-    CovariantClass (Lex (α →₀ N)) (Lex (α →₀ N)) (Function.swap (· + ·)) (· ≤ ·) :=
+    AddRightMono (Lex (α →₀ N)) :=
   covariantClass_le_of_lt _ _ _
 #align finsupp.lex.covariant_class_le_right Finsupp.Lex.covariantClass_le_right
 

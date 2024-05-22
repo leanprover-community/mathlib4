@@ -19,7 +19,7 @@ variable {α : Type*}
 section DenselyOrdered
 
 variable [Group α] [LinearOrder α]
-variable [CovariantClass α α (· * ·) (· ≤ ·)]
+variable [MulLeftMono α]
 variable [DenselyOrdered α] {a b c : α}
 
 @[to_additive]

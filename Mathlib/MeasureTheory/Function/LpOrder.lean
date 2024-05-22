@@ -50,7 +50,7 @@ theorem coeFn_nonneg (f : Lp E p μ) : 0 ≤ᵐ[μ] f ↔ 0 ≤ f := by
   · rwa [← h2]
 #align measure_theory.Lp.coe_fn_nonneg MeasureTheory.Lp.coeFn_nonneg
 
-instance instCovariantClassLE : CovariantClass (Lp E p μ) (Lp E p μ) (· + ·) (· ≤ ·) := by
+instance instCovariantClassLE : AddLeftMono (Lp E p μ) := by
   refine ⟨fun f g₁ g₂ hg₁₂ => ?_⟩
   rw [← coeFn_le] at hg₁₂ ⊢
   filter_upwards [coeFn_add f g₁, coeFn_add f g₂, hg₁₂] with _ h1 h2 h3

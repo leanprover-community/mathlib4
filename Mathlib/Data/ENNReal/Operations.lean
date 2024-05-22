@@ -40,11 +40,11 @@ theorem mul_lt_mul (ac : a < c) (bd : b < d) : a * b < c * d := by
     _ ≤ c * d := mul_le_mul' a'c.le b'd.le
 #align ennreal.mul_lt_mul ENNReal.mul_lt_mul
 
--- TODO: generalize to `CovariantClass α α (· * ·) (· ≤ ·)`
+-- TODO: generalize to `MulLeftMono α`
 theorem mul_left_mono : Monotone (a * ·) := fun _ _ => mul_le_mul' le_rfl
 #align ennreal.mul_left_mono ENNReal.mul_left_mono
 
--- TODO: generalize to `CovariantClass α α (swap (· * ·)) (· ≤ ·)`
+-- TODO: generalize to `MulRightMono α`
 theorem mul_right_mono : Monotone (· * a) := fun _ _ h => mul_le_mul' h le_rfl
 #align ennreal.mul_right_mono ENNReal.mul_right_mono
 
@@ -169,7 +169,7 @@ protected theorem add_lt_add_of_lt_of_le : c ≠ ∞ → a < b → c ≤ d → a
   WithTop.add_lt_add_of_lt_of_le
 #align ennreal.add_lt_add_of_lt_of_le ENNReal.add_lt_add_of_lt_of_le
 
-instance contravariantClass_add_lt : ContravariantClass ℝ≥0∞ ℝ≥0∞ (· + ·) (· < ·) :=
+instance contravariantClass_add_lt : AddLeftReflectLT ℝ≥0∞ :=
   WithTop.contravariantClass_add_lt
 #align ennreal.contravariant_class_add_lt ENNReal.contravariantClass_add_lt
 

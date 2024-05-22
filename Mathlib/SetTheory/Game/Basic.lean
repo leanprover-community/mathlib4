@@ -163,25 +163,25 @@ theorem PGame.fuzzy_iff_game_fuzzy {x y : PGame} : PGame.Fuzzy x y ↔ ⟦x⟧ �
   Iff.rfl
 #align game.pgame.fuzzy_iff_game_fuzzy SetTheory.Game.PGame.fuzzy_iff_game_fuzzy
 
-instance covariantClass_add_le : CovariantClass Game Game (· + ·) (· ≤ ·) :=
+instance covariantClass_add_le : AddLeftMono Game :=
   ⟨by
     rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ h
     exact @add_le_add_left _ _ _ _ b c h a⟩
 #align game.covariant_class_add_le SetTheory.Game.covariantClass_add_le
 
-instance covariantClass_swap_add_le : CovariantClass Game Game (swap (· + ·)) (· ≤ ·) :=
+instance covariantClass_swap_add_le : AddRightMono Game :=
   ⟨by
     rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ h
     exact @add_le_add_right _ _ _ _ b c h a⟩
 #align game.covariant_class_swap_add_le SetTheory.Game.covariantClass_swap_add_le
 
-instance covariantClass_add_lt : CovariantClass Game Game (· + ·) (· < ·) :=
+instance covariantClass_add_lt : AddLeftStrictMono Game :=
   ⟨by
     rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ h
     exact @add_lt_add_left _ _ _ _ b c h a⟩
 #align game.covariant_class_add_lt SetTheory.Game.covariantClass_add_lt
 
-instance covariantClass_swap_add_lt : CovariantClass Game Game (swap (· + ·)) (· < ·) :=
+instance covariantClass_swap_add_lt : AddRightStrictMono Game :=
   ⟨by
     rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ h
     exact @add_lt_add_right _ _ _ _ b c h a⟩

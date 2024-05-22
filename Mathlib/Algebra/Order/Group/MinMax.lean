@@ -15,7 +15,7 @@ import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 
 section
 
-variable {α : Type*} [Group α] [LinearOrder α] [CovariantClass α α (· * ·) (· ≤ ·)]
+variable {α : Type*} [Group α] [LinearOrder α] [MulLeftMono α]
 
 -- TODO: This duplicates `oneLePart_div_leOnePart`
 @[to_additive (attr := simp)]

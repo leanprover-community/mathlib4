@@ -158,15 +158,15 @@ monotone, when it is "just" monotone on `α i`. -/
 
 section Left
 
-variable [∀ i, CovariantClass (α i) (α i) (· + ·) (· < ·)]
+variable [∀ i, AddLeftStrictMono (α i)]
 
 instance Lex.covariantClass_lt_left :
-    CovariantClass (Lex (Π₀ i, α i)) (Lex (Π₀ i, α i)) (· + ·) (· < ·) :=
+    AddLeftStrictMono (Lex (Π₀ i, α i)) :=
   ⟨fun _ _ _ ⟨a, lta, ha⟩ ↦ ⟨a, fun j ja ↦ congr_arg _ (lta j ja), add_lt_add_left ha _⟩⟩
 #align dfinsupp.lex.covariant_class_lt_left DFinsupp.Lex.covariantClass_lt_left
 
 instance Lex.covariantClass_le_left :
-    CovariantClass (Lex (Π₀ i, α i)) (Lex (Π₀ i, α i)) (· + ·) (· ≤ ·) :=
+    AddLeftMono (Lex (Π₀ i, α i)) :=
   covariantClass_le_of_lt _ _ _
 #align dfinsupp.lex.covariant_class_le_left DFinsupp.Lex.covariantClass_le_left
 
@@ -174,16 +174,16 @@ end Left
 
 section Right
 
-variable [∀ i, CovariantClass (α i) (α i) (Function.swap (· + ·)) (· < ·)]
+variable [∀ i, AddRightStrictMono (α i)]
 
 instance Lex.covariantClass_lt_right :
-    CovariantClass (Lex (Π₀ i, α i)) (Lex (Π₀ i, α i)) (Function.swap (· + ·)) (· < ·) :=
+    AddRightStrictMono (Lex (Π₀ i, α i)) :=
   ⟨fun f _ _ ⟨a, lta, ha⟩ ↦
     ⟨a, fun j ja ↦ congr_arg (· + ofLex f j) (lta j ja), add_lt_add_right ha _⟩⟩
 #align dfinsupp.lex.covariant_class_lt_right DFinsupp.Lex.covariantClass_lt_right
 
 instance Lex.covariantClass_le_right :
-    CovariantClass (Lex (Π₀ i, α i)) (Lex (Π₀ i, α i)) (Function.swap (· + ·)) (· ≤ ·) :=
+    AddRightMono (Lex (Π₀ i, α i)) :=
   covariantClass_le_of_lt _ _ _
 #align dfinsupp.lex.covariant_class_le_right DFinsupp.Lex.covariantClass_le_right
 

@@ -330,7 +330,7 @@ theorem smul_mem_pointwise_smul (m : G) (a : α) (S : Subgroup G) : m ∈ S → 
   (Set.smul_mem_smul_set : _ → _ ∈ a • (S : Set G))
 #align subgroup.smul_mem_pointwise_smul Subgroup.smul_mem_pointwise_smul
 
-instance : CovariantClass α (Subgroup G) HSMul.hSMul LE.le :=
+instance : SMulLeftMono α (Subgroup G) :=
   ⟨fun _ _ => image_subset _⟩
 
 theorem mem_smul_pointwise_iff_exists (m : G) (a : α) (S : Subgroup G) :

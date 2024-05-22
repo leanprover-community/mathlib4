@@ -81,7 +81,7 @@ theorem lift_succ (a : Ordinal.{v}) : lift.{u} (succ a) = succ (lift.{u} a) := b
   rfl
 #align ordinal.lift_succ Ordinal.lift_succ
 
-instance add_contravariantClass_le : ContravariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· ≤ ·) :=
+instance addLeftReflectLE : AddLeftReflectLE Ordinal.{u} :=
   ⟨fun a b c =>
     inductionOn a fun α r hr =>
       inductionOn b fun β₁ s₁ hs₁ =>
@@ -112,7 +112,7 @@ instance add_contravariantClass_le : ContravariantClass Ordinal.{u} Ordinal.{u} 
                   cases h
                 · rw [fr] at h
                   exact ⟨a', Sum.inr.inj h⟩⟩⟩⟩
-#align ordinal.add_contravariant_class_le Ordinal.add_contravariantClass_le
+#align ordinal.add_contravariant_class_le Ordinal.addLeftReflectLE
 
 theorem add_left_cancel (a) {b c : Ordinal} : a + b = a + c ↔ b = c := by
   simp only [le_antisymm_iff, add_le_add_iff_left]
@@ -121,18 +121,17 @@ theorem add_left_cancel (a) {b c : Ordinal} : a + b = a + c ↔ b = c := by
 private theorem add_lt_add_iff_left' (a) {b c : Ordinal} : a + b < a + c ↔ b < c := by
   rw [← not_le, ← not_le, add_le_add_iff_left]
 
-instance add_covariantClass_lt : CovariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· < ·) :=
+instance addLeftStrictMono : AddLeftStrictMono Ordinal.{u} :=
   ⟨fun a _b _c => (add_lt_add_iff_left' a).2⟩
-#align ordinal.add_covariant_class_lt Ordinal.add_covariantClass_lt
+#align ordinal.add_covariant_class_lt Ordinal.addLeftStrictMono
 
-instance add_contravariantClass_lt : ContravariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· < ·) :=
+instance addLeftReflectLT : AddLeftReflectLT Ordinal.{u} :=
   ⟨fun a _b _c => (add_lt_add_iff_left' a).1⟩
-#align ordinal.add_contravariant_class_lt Ordinal.add_contravariantClass_lt
+#align ordinal.add_contravariant_class_lt Ordinal.addLeftReflectLT
 
-instance add_swap_contravariantClass_lt :
-    ContravariantClass Ordinal.{u} Ordinal.{u} (swap (· + ·)) (· < ·) :=
+instance addRightReflectLT : AddRightReflectLT Ordinal.{u} :=
   ⟨fun _a _b _c => lt_imp_lt_of_le_imp_le fun h => add_le_add_right h _⟩
-#align ordinal.add_swap_contravariant_class_lt Ordinal.add_swap_contravariantClass_lt
+#align ordinal.add_swap_contravariant_class_lt Ordinal.addRightReflectLT
 
 theorem add_le_add_iff_right {a b : Ordinal} : ∀ n : ℕ, a + n ≤ b + n ↔ a ≤ b
   | 0 => by simp
@@ -713,7 +712,7 @@ theorem mul_succ (a b : Ordinal) : a * succ b = a * b + a :=
   mul_add_one a b
 #align ordinal.mul_succ Ordinal.mul_succ
 
-instance mul_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (· * ·) (· ≤ ·) :=
+instance mulLeftMono : MulLeftMono Ordinal.{u} :=
   ⟨fun c a b =>
     Quotient.inductionOn₃ a b c fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ ⟨f⟩ => by
       refine'
@@ -721,10 +720,9 @@ instance mul_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (· * ·
       cases' h with a₁ b₁ a₂ b₂ h' a b₁ b₂ h'
       · exact Prod.Lex.left _ _ (f.toRelEmbedding.map_rel_iff.2 h')
       · exact Prod.Lex.right _ h'⟩
-#align ordinal.mul_covariant_class_le Ordinal.mul_covariantClass_le
+#align ordinal.mul_covariant_class_le Ordinal.mulLeftMono
 
-instance mul_swap_covariantClass_le :
-    CovariantClass Ordinal.{u} Ordinal.{u} (swap (· * ·)) (· ≤ ·) :=
+instance mulRightMono : MulRightMono Ordinal.{u} :=
   ⟨fun c a b =>
     Quotient.inductionOn₃ a b c fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ ⟨f⟩ => by
       refine'
@@ -732,7 +730,7 @@ instance mul_swap_covariantClass_le :
       cases' h with a₁ b₁ a₂ b₂ h' a b₁ b₂ h'
       · exact Prod.Lex.left _ _ h'
       · exact Prod.Lex.right _ (f.toRelEmbedding.map_rel_iff.2 h')⟩
-#align ordinal.mul_swap_covariant_class_le Ordinal.mul_swap_covariantClass_le
+#align ordinal.mul_swap_covariant_class_le Ordinal.mulRightMono
 
 theorem le_mul_left (a : Ordinal) {b : Ordinal} (hb : 0 < b) : a ≤ a * b := by
   convert mul_le_mul_left' (one_le_iff_pos.2 hb) a

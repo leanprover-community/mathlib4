@@ -21,8 +21,8 @@ section Monoid
 variable [Monoid M]
 
 @[to_additive sum_le_sum]
-lemma Forall₂.prod_le_prod' [Preorder M] [CovariantClass M M (Function.swap (· * ·)) (· ≤ ·)]
-    [CovariantClass M M (· * ·) (· ≤ ·)] {l₁ l₂ : List M} (h : Forall₂ (· ≤ ·) l₁ l₂) :
+lemma Forall₂.prod_le_prod' [Preorder M] [MulRightMono M]
+    [MulLeftMono M] {l₁ l₂ : List M} (h : Forall₂ (· ≤ ·) l₁ l₂) :
     l₁.prod ≤ l₂.prod := by
   induction' h with a b la lb hab ih ih'
   · rfl
@@ -37,8 +37,8 @@ of `∀ a ∈ l₂, 1 ≤ a` but this lemma is not yet in `mathlib`. -/
   then `l₁.sum ≤ l₂.sum`.
   One can prove a stronger version assuming `∀ a ∈ l₂.diff l₁, 0 ≤ a` instead of `∀ a ∈ l₂, 0 ≤ a`
   but this lemma is not yet in `mathlib`."]
-lemma Sublist.prod_le_prod' [Preorder M] [CovariantClass M M (Function.swap (· * ·)) (· ≤ ·)]
-    [CovariantClass M M (· * ·) (· ≤ ·)] {l₁ l₂ : List M} (h : l₁ <+ l₂)
+lemma Sublist.prod_le_prod' [Preorder M] [MulRightMono M]
+    [MulLeftMono M] {l₁ l₂ : List M} (h : l₁ <+ l₂)
     (h₁ : ∀ a ∈ l₂, (1 : M) ≤ a) : l₁.prod ≤ l₂.prod := by
   induction h with
   | slnil => rfl
@@ -53,7 +53,7 @@ lemma Sublist.prod_le_prod' [Preorder M] [CovariantClass M M (Function.swap (· 
 
 @[to_additive sum_le_sum]
 lemma SublistForall₂.prod_le_prod' [Preorder M]
-    [CovariantClass M M (Function.swap (· * ·)) (· ≤ ·)] [CovariantClass M M (· * ·) (· ≤ ·)]
+    [MulRightMono M] [MulLeftMono M]
     {l₁ l₂ : List M} (h : SublistForall₂ (· ≤ ·) l₁ l₂) (h₁ : ∀ a ∈ l₂, (1 : M) ≤ a) :
     l₁.prod ≤ l₂.prod :=
   let ⟨_, hall, hsub⟩ := sublistForall₂_iff.1 h
@@ -62,17 +62,17 @@ lemma SublistForall₂.prod_le_prod' [Preorder M]
 #align list.sublist_forall₂.sum_le_sum List.SublistForall₂.sum_le_sum
 
 @[to_additive sum_le_sum]
-lemma prod_le_prod' [Preorder M] [CovariantClass M M (Function.swap (· * ·)) (· ≤ ·)]
-    [CovariantClass M M (· * ·) (· ≤ ·)] {l : List ι} {f g : ι → M} (h : ∀ i ∈ l, f i ≤ g i) :
+lemma prod_le_prod' [Preorder M] [MulRightMono M]
+    [MulLeftMono M] {l : List ι} {f g : ι → M} (h : ∀ i ∈ l, f i ≤ g i) :
     (l.map f).prod ≤ (l.map g).prod :=
   Forall₂.prod_le_prod' <| by simpa
 #align list.prod_le_prod' List.prod_le_prod'
 #align list.sum_le_sum List.sum_le_sum
 
 @[to_additive sum_lt_sum]
-lemma prod_lt_prod' [Preorder M] [CovariantClass M M (· * ·) (· < ·)]
-    [CovariantClass M M (· * ·) (· ≤ ·)] [CovariantClass M M (Function.swap (· * ·)) (· < ·)]
-    [CovariantClass M M (Function.swap (· * ·)) (· ≤ ·)] {l : List ι} (f g : ι → M)
+lemma prod_lt_prod' [Preorder M] [MulLeftStrictMono M]
+    [MulLeftMono M] [MulRightStrictMono M]
+    [MulRightMono M] {l : List ι} (f g : ι → M)
     (h₁ : ∀ i ∈ l, f i ≤ g i) (h₂ : ∃ i ∈ l, f i < g i) : (l.map f).prod < (l.map g).prod := by
   induction' l with i l ihl
   · rcases h₂ with ⟨_, ⟨⟩, _⟩
@@ -85,9 +85,9 @@ lemma prod_lt_prod' [Preorder M] [CovariantClass M M (· * ·) (· < ·)]
 #align list.sum_lt_sum List.sum_lt_sum
 
 @[to_additive]
-lemma prod_lt_prod_of_ne_nil [Preorder M] [CovariantClass M M (· * ·) (· < ·)]
-    [CovariantClass M M (· * ·) (· ≤ ·)] [CovariantClass M M (Function.swap (· * ·)) (· < ·)]
-    [CovariantClass M M (Function.swap (· * ·)) (· ≤ ·)] {l : List ι} (hl : l ≠ []) (f g : ι → M)
+lemma prod_lt_prod_of_ne_nil [Preorder M] [MulLeftStrictMono M]
+    [MulLeftMono M] [MulRightStrictMono M]
+    [MulRightMono M] {l : List ι} (hl : l ≠ []) (f g : ι → M)
     (hlt : ∀ i ∈ l, f i < g i) : (l.map f).prod < (l.map g).prod :=
   (prod_lt_prod' f g fun i hi => (hlt i hi).le) <|
     (exists_mem_of_ne_nil l hl).imp fun i hi => ⟨hi, hlt i hi⟩
@@ -95,24 +95,24 @@ lemma prod_lt_prod_of_ne_nil [Preorder M] [CovariantClass M M (· * ·) (· < ·
 #align list.sum_lt_sum_of_ne_nil List.sum_lt_sum_of_ne_nil
 
 @[to_additive sum_le_card_nsmul]
-lemma prod_le_pow_card [Preorder M] [CovariantClass M M (Function.swap (· * ·)) (· ≤ ·)]
-    [CovariantClass M M (· * ·) (· ≤ ·)] (l : List M) (n : M) (h : ∀ x ∈ l, x ≤ n) :
+lemma prod_le_pow_card [Preorder M] [MulRightMono M]
+    [MulLeftMono M] (l : List M) (n : M) (h : ∀ x ∈ l, x ≤ n) :
     l.prod ≤ n ^ l.length := by
       simpa only [map_id', map_const', prod_replicate] using prod_le_prod' h
 #align list.prod_le_pow_card List.prod_le_pow_card
 #align list.sum_le_card_nsmul List.sum_le_card_nsmul
 
 @[to_additive card_nsmul_le_sum]
-lemma pow_card_le_prod [Preorder M] [CovariantClass M M (Function.swap (· * ·)) (· ≤ ·)]
-    [CovariantClass M M (· * ·) (· ≤ ·)] (l : List M) (n : M) (h : ∀ x ∈ l, n ≤ x) :
+lemma pow_card_le_prod [Preorder M] [MulRightMono M]
+    [MulLeftMono M] (l : List M) (n : M) (h : ∀ x ∈ l, n ≤ x) :
     n ^ l.length ≤ l.prod :=
   @prod_le_pow_card Mᵒᵈ _ _ _ _ l n h
 #align list.pow_card_le_prod List.pow_card_le_prod
 #align list.card_nsmul_le_sum List.card_nsmul_le_sum
 
 @[to_additive exists_lt_of_sum_lt]
-lemma exists_lt_of_prod_lt' [LinearOrder M] [CovariantClass M M (Function.swap (· * ·)) (· ≤ ·)]
-    [CovariantClass M M (· * ·) (· ≤ ·)] {l : List ι} (f g : ι → M)
+lemma exists_lt_of_prod_lt' [LinearOrder M] [MulRightMono M]
+    [MulLeftMono M] {l : List ι} (f g : ι → M)
     (h : (l.map f).prod < (l.map g).prod) : ∃ i ∈ l, f i < g i := by
   contrapose! h
   exact prod_le_prod' h
@@ -120,9 +120,9 @@ lemma exists_lt_of_prod_lt' [LinearOrder M] [CovariantClass M M (Function.swap (
 #align list.exists_lt_of_sum_lt List.exists_lt_of_sum_lt
 
 @[to_additive exists_le_of_sum_le]
-lemma exists_le_of_prod_le' [LinearOrder M] [CovariantClass M M (· * ·) (· < ·)]
-    [CovariantClass M M (· * ·) (· ≤ ·)] [CovariantClass M M (Function.swap (· * ·)) (· < ·)]
-    [CovariantClass M M (Function.swap (· * ·)) (· ≤ ·)] {l : List ι} (hl : l ≠ []) (f g : ι → M)
+lemma exists_le_of_prod_le' [LinearOrder M] [MulLeftStrictMono M]
+    [MulLeftMono M] [MulRightStrictMono M]
+    [MulRightMono M] {l : List ι} (hl : l ≠ []) (f g : ι → M)
     (h : (l.map f).prod ≤ (l.map g).prod) : ∃ x ∈ l, f x ≤ g x := by
   contrapose! h
   exact prod_lt_prod_of_ne_nil hl _ _ h
@@ -130,7 +130,7 @@ lemma exists_le_of_prod_le' [LinearOrder M] [CovariantClass M M (· * ·) (· < 
 #align list.exists_le_of_sum_le List.exists_le_of_sum_le
 
 @[to_additive sum_nonneg]
-lemma one_le_prod_of_one_le [Preorder M] [CovariantClass M M (· * ·) (· ≤ ·)] {l : List M}
+lemma one_le_prod_of_one_le [Preorder M] [MulLeftMono M] {l : List M}
     (hl₁ : ∀ x ∈ l, (1 : M) ≤ x) : 1 ≤ l.prod := by
   -- We don't use `pow_card_le_prod` to avoid assumption
   -- [covariant_class M M (function.swap (*)) (≤)]
