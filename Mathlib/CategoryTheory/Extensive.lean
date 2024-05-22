@@ -287,7 +287,6 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
 
 section TopCat
 
-set_option maxHeartbeats 250000 in
 /-- (Implementation) An auxiliary lemma for the proof that `TopCat` is finitary extensive. -/
 noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
     (f : Z ⟶ TopCat.of (Sum PUnit.{u + 1} PUnit.{u + 1})) :
