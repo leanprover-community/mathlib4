@@ -96,27 +96,31 @@ def forget' : CommRingCat ⥤ RingCat where
     intros
     rfl
 
-universe u
+/-!
+# Example: the free commuative ring on a type.
+
+This should send each `X : Type` to
+multivariable polynomials with integer coefficients in `X` variables.
+
+A function between types `X → Y` should induce a ring homomorphism given be renaming variables.
+-/
 
 attribute [local simp] types_id types_comp in
 def free : Type ⥤ CommRingCat where
   obj X := CommRingCat.of (MvPolynomial X ℤ)
   map {X Y} f := (MvPolynomial.rename (R := ℤ) f : MvPolynomial X ℤ →+* MvPolynomial Y ℤ)
-  map_id := by
-    -- aesop_cat
-    intros X
-    ext x
-    simp at *
-  map_comp := by
-    -- aesop_cat
-    intros X Y Z f g
-    ext x
-    simp at *
 
-attribute [local simp] types_id types_comp in
-def free' : Type ⥤ CommRingCat where
-  obj X := CommRingCat.of (MvPolynomial X ℤ)
-  map {X Y} f := (MvPolynomial.rename (R := ℤ) f : MvPolynomial X ℤ →+* MvPolynomial Y ℤ)
+/-!
+# Example: the abelianization of a group.
+
+We send each group to it abelianization.
+
+Given a morphism `G → H` of groups, we can build a morphism `Abelianization G ⟶ Abelianization H`
+using the adjunction `Abelianization.lift : (G →* A) ≃ (Abelianization G →* A)` and
+the projection `Abelianization.of : G →* Abelianization G`.
+-/
+
+universe u
 
 -- PR'd as https://github.com/leanprover-community/mathlib4/pull/13109
 @[simp] theorem MonoidHom.comp_id_groupCat {G : GroupCat.{u}} {H : Type u} [Group H] (f : G →* H) :
@@ -126,24 +130,10 @@ def free' : Type ⥤ CommRingCat where
     MonoidHom.comp (𝟙 H) f = f :=
   Category.comp_id (GroupCat.ofHom f)
 
--- PR'd as https://github.com/leanprover-community/mathlib4/pull/13055
-attribute [local simp] CommGroupCat.coe_of in
 attribute [local simp] CommGroupCat.comp_def GroupCat.comp_def in
 def abelianize : GroupCat.{u} ⥤ CommGroupCat.{u} where
   obj G := CommGroupCat.of (Abelianization G)
   map f := Abelianization.lift (Abelianization.of.comp f)
-  map_id := by
-    aesop_cat
-    -- intros--; simp only [MonoidHom.mk_coe, coe_id]
-    -- ext x
-    -- -- dsimp at x ⊢  -- but doesn't work `at *`!
-    -- simp
-  map_comp := by
-    aesop_cat
-    -- intros G H K f g
-    -- ext
-    -- simp
-    -- simp [CommGroupCat.comp_def, GroupCat.comp_def]
 
 structure PointedSpace where
   X : Type
