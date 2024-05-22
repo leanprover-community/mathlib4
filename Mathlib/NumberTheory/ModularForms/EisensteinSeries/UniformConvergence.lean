@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, David Loeffler
 -/
 
-import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
+import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 import Mathlib.Analysis.NormedSpace.FunctionSeries
 import Mathlib.Analysis.PSeries
 import Mathlib.Order.Interval.Finset.Box
@@ -31,7 +31,8 @@ noncomputable section
 
 open Complex UpperHalfPlane Set Finset
 
-open scoped BigOperators
+open scoped BigOperators UpperHalfPlane
+
 
 variable (z : ℍ)
 
@@ -178,9 +179,6 @@ theorem eisensteinSeries_tendstoLocallyUniformly {k : ℤ} (hk : 3 ≤ k) {N : �
     (fun p z hz ↦ ?_)).mono HABK
   simpa only [eisSummand, one_div, ← zpow_neg, norm_eq_abs, abs_zpow, ← Real.rpow_intCast,
     Int.cast_neg] using summand_bound_of_mem_verticalStrip (by positivity) p hB hz
-
-/-- Extend a function on `ℍ` arbitrarily to a function on all of `ℂ`. -/
-local notation "↑ₕ" f => f ∘ (PartialHomeomorph.symm (openEmbedding_coe.toPartialHomeomorph _))
 
 /-- Variant of `eisensteinSeries_tendstoLocallyUniformly` formulated with maps `ℂ → ℂ`, which is
 nice to have for holomorphicity later. -/
