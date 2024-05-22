@@ -588,6 +588,7 @@ theorem mem_closedBall_comm : x ∈ closedBall y ε ↔ y ∈ closedBall x ε :=
 theorem mem_sphere_comm : x ∈ sphere y ε ↔ y ∈ sphere x ε := by rw [mem_sphere', mem_sphere]
 #align metric.mem_sphere_comm Metric.mem_sphere_comm
 
+@[gcongr]
 theorem ball_subset_ball (h : ε₁ ≤ ε₂) : ball x ε₁ ⊆ ball x ε₂ := fun _y yx =>
   lt_of_lt_of_le (mem_ball.1 yx) h
 #align metric.ball_subset_ball Metric.ball_subset_ball
@@ -603,6 +604,7 @@ theorem ball_subset_ball' (h : ε₁ + dist x y ≤ ε₂) : ball x ε₁ ⊆ ba
     _ ≤ ε₂ := h
 #align metric.ball_subset_ball' Metric.ball_subset_ball'
 
+@[gcongr]
 theorem closedBall_subset_closedBall (h : ε₁ ≤ ε₂) : closedBall x ε₁ ⊆ closedBall x ε₂ :=
   fun _y (yx : _ ≤ ε₁) => le_trans yx h
 #align metric.closed_ball_subset_closed_ball Metric.closedBall_subset_closedBall

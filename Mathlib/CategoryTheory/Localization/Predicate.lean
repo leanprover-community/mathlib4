@@ -54,8 +54,7 @@ class IsLocalization : Prop where
   isEquivalence : IsEquivalence (Localization.Construction.lift L inverts)
 #align category_theory.functor.is_localization CategoryTheory.Functor.IsLocalization
 
-instance q_isLocalization : W.Q.IsLocalization W
-    where
+instance q_isLocalization : W.Q.IsLocalization W where
   inverts := W.Q_inverts
   isEquivalence := by
     suffices Localization.Construction.lift W.Q W.Q_inverts = 𝟭 _ by
@@ -88,8 +87,7 @@ structure StrictUniversalPropertyFixedTarget where
 /-- The localized category `W.Localization` that was constructed satisfies
 the universal property of the localization. -/
 @[simps]
-def strictUniversalPropertyFixedTargetQ : StrictUniversalPropertyFixedTarget W.Q W E
-    where
+def strictUniversalPropertyFixedTargetQ : StrictUniversalPropertyFixedTarget W.Q W E where
   inverts := W.Q_inverts
   lift := Construction.lift
   fac := Construction.fac
@@ -104,8 +102,7 @@ instance : Inhabited (StrictUniversalPropertyFixedTarget W.Q W E) :=
 of the localization. -/
 @[simps]
 def strictUniversalPropertyFixedTargetId (hW : W ≤ MorphismProperty.isomorphisms C) :
-    StrictUniversalPropertyFixedTarget (𝟭 C) W E
-    where
+    StrictUniversalPropertyFixedTarget (𝟭 C) W E where
   inverts X Y f hf := hW f hf
   lift F _ := F
   fac F hF := by
@@ -353,8 +350,7 @@ if `(F₁' F₂' : D ⥤ E)` are functors which lifts functors `(F₁ F₂ : C �
 a natural isomorphism `τ : F₁ ⟶ F₂` lifts to a natural isomorphism `F₁' ⟶ F₂'`. -/
 @[simps]
 def liftNatIso (F₁ F₂ : C ⥤ E) (F₁' F₂' : D ⥤ E) [h₁ : Lifting L W F₁ F₁'] [h₂ : Lifting L W F₂ F₂']
-    (e : F₁ ≅ F₂) : F₁' ≅ F₂'
-    where
+    (e : F₁ ≅ F₂) : F₁' ≅ F₂' where
   hom := liftNatTrans L W F₁ F₂ F₁' F₂' e.hom
   inv := liftNatTrans L W F₂ F₁ F₂' F₁' e.inv
 #align category_theory.localization.lift_nat_iso CategoryTheory.Localization.liftNatIso

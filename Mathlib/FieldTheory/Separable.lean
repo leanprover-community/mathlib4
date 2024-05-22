@@ -272,7 +272,7 @@ theorem separable_X_pow_sub_C_unit {n : ℕ} (u : Rˣ) (hn : IsUnit (n : R)) :
   · simp at hn
   apply (separable_def' (X ^ n - C (u : R))).2
   obtain ⟨n', hn'⟩ := hn.exists_left_inv
-  refine' ⟨-C ↑u⁻¹, C (↑u⁻¹ : R) * C n' * X, _⟩
+  refine ⟨-C ↑u⁻¹, C (↑u⁻¹ : R) * C n' * X, ?_⟩
   rw [derivative_sub, derivative_C, sub_zero, derivative_pow X n, derivative_X, mul_one]
   calc
     -C ↑u⁻¹ * (X ^ n - C ↑u) + C ↑u⁻¹ * C n' * X * (↑n * X ^ (n - 1)) =
@@ -399,7 +399,7 @@ theorem exists_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : p 
       rw [← mul_one g.natDegree, ← hg1]
       exact Nat.mul_lt_mul_of_pos_left hp.one_lt hg2.bot_lt
     rcases ih _ hg3 hg rfl with ⟨n, g, hg4, rfl⟩
-    refine' ⟨n + 1, g, hg4, _⟩
+    refine ⟨n + 1, g, hg4, ?_⟩
     rw [← hgf, expand_expand, pow_succ']
 #align polynomial.exists_separable_of_irreducible Polynomial.exists_separable_of_irreducible
 
@@ -603,8 +603,8 @@ theorem AlgEquiv.isSeparable_iff : IsSeparable F K ↔ IsSeparable F E :=
 
 variable (F K)
 
-theorem IsSeparable.isAlgebraic [Nontrivial F] [IsSeparable F K] : Algebra.IsAlgebraic F K :=
-  fun x ↦ (IsSeparable.isIntegral F x).isAlgebraic
+instance IsSeparable.isAlgebraic [Nontrivial F] [IsSeparable F K] : Algebra.IsAlgebraic F K :=
+  ⟨fun x ↦ (IsSeparable.isIntegral F x).isAlgebraic⟩
 
 end CommRing
 

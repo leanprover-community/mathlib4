@@ -60,7 +60,7 @@ theorem ae_eq_zero_of_forall_inner [NormedAddCommGroup E] [InnerProductSpace �
   let s := denseSeq E
   have hs : DenseRange s := denseRange_denseSeq E
   have hf' : ∀ᵐ x ∂μ, ∀ n : ℕ, inner (s n) (f x) = (0 : 𝕜) := ae_all_iff.mpr fun n => hf (s n)
-  refine' hf'.mono fun x hx => _
+  refine hf'.mono fun x hx => ?_
   rw [Pi.zero_apply, ← @inner_self_eq_zero 𝕜]
   have h_closed : IsClosed {c : E | inner c (f x) = (0 : 𝕜)} :=
     isClosed_eq (continuous_id.inner continuous_const) continuous_const

@@ -3,7 +3,6 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Data.Finset.Sort
 
@@ -1247,7 +1246,7 @@ variable [Semiring R] [Nontrivial R]
 instance nontrivial : Nontrivial R[X] := by
   have h : Nontrivial R[ℕ] := by infer_instance
   rcases h.exists_pair_ne with ⟨x, y, hxy⟩
-  refine' ⟨⟨⟨x⟩, ⟨y⟩, _⟩⟩
+  refine ⟨⟨⟨x⟩, ⟨y⟩, ?_⟩⟩
   simp [hxy]
 #align polynomial.nontrivial Polynomial.nontrivial
 

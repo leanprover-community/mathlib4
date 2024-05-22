@@ -232,8 +232,8 @@ instance isSeparable [Algebra k K] [IsSepClosure k K] : IsSeparable k K :=
 
 instance (priority := 100) isGalois [Algebra k K] [IsSepClosure k K] : IsGalois k K where
   to_isSeparable := IsSepClosure.separable
-  to_normal := ⟨fun x ↦ (IsSeparable.isIntegral k x).isAlgebraic,
-    fun x ↦ (IsSepClosure.sep_closed k).splits_codomain _ (IsSeparable.separable k x)⟩
+  to_normal.toIsAlgebraic :=  inferInstance
+  to_normal.splits' x := (IsSepClosure.sep_closed k).splits_codomain _ (IsSeparable.separable k x)
 
 end IsSepClosure
 
@@ -270,7 +270,7 @@ noncomputable def equiv : L ≃ₐ[K] M :=
   -- Porting note (#10754): added to replace local instance above
   haveI : IsSepClosed L := IsSepClosure.sep_closed K
   haveI : IsSepClosed M := IsSepClosure.sep_closed K
-  AlgEquiv.ofBijective _ (Normal.isAlgebraic'.algHom_bijective₂
+  AlgEquiv.ofBijective _ (Normal.toIsAlgebraic.algHom_bijective₂
     (IsSepClosed.lift : L →ₐ[K] M) (IsSepClosed.lift : M →ₐ[K] L)).1
 
 end IsSepClosure

@@ -50,7 +50,7 @@ theorem mem_ideal_span_X_image {x : MvPolynomial σ R} {s : Set σ} :
       ∀ m ∈ x.support, ∃ i ∈ s, (m : σ →₀ ℕ) i ≠ 0 := by
   have := @mem_ideal_span_monomial_image σ R _ x ((fun i => Finsupp.single i 1) '' s)
   rw [Set.image_image] at this
-  refine' this.trans _
+  refine this.trans ?_
   simp [Nat.one_le_iff_ne_zero]
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.mem_ideal_span_X_image MvPolynomial.mem_ideal_span_X_image
