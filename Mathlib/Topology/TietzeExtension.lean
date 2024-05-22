@@ -59,17 +59,17 @@ variable {e : X₁ → X} (he : ClosedEmbedding e)
 variable {Y : Type v} [TopologicalSpace Y] [TietzeExtension.{u, v} Y]
 
 /-- **Tietze extension theorem** for `TietzeExtension` spaces, a version for a closed set. Let
-`s` be a closed set in a normal topological space `X₂`. Let `f` be a continuous function
+`s` be a closed set in a normal topological space `X`. Let `f` be a continuous function
 on `s` with values in a `TietzeExtension` space `Y`. Then there exists a continuous function
-`g : C(X₂, Y)` such that `g.restrict s = f`. -/
+`g : C(X, Y)` such that `g.restrict s = f`. -/
 theorem ContinuousMap.exists_restrict_eq (f : C(s, Y)) : ∃ (g : C(X, Y)), g.restrict s = f :=
   TietzeExtension.exists_restrict_eq' s hs f
 #align continuous_map.exists_restrict_eq_of_closed ContinuousMap.exists_restrict_eq
 
 /-- **Tietze extension theorem** for `TietzeExtension` spaces. Let `e` be a closed embedding of a
-nonempty topological space `X₁` into a normal topological space `X₂`. Let `f` be a continuous
+nonempty topological space `X₁` into a normal topological space `X`. Let `f` be a continuous
 function on `X₁` with values in a `TietzeExtension` space `Y`. Then there exists a
-continuous function `g : C(X₂, Y)` such that `g ∘ e = f`. -/
+continuous function `g : C(X, Y)` such that `g ∘ e = f`. -/
 theorem ContinuousMap.exists_extension (f : C(X₁, Y)) :
     ∃ (g : C(X, Y)), g.comp ⟨e, he.continuous⟩ = f := by
   let e' : X₁ ≃ₜ Set.range e := Homeomorph.ofEmbedding _ he.toEmbedding
@@ -77,9 +77,9 @@ theorem ContinuousMap.exists_extension (f : C(X₁, Y)) :
   exact ⟨g, by ext x; simpa using congr($(hg) ⟨e' x, x, rfl⟩)⟩
 
 /-- **Tietze extension theorem** for `TietzeExtension` spaces. Let `e` be a closed embedding of a
-nonempty topological space `X₁` into a normal topological space `X₂`. Let `f` be a continuous
+nonempty topological space `X₁` into a normal topological space `X`. Let `f` be a continuous
 function on `X₁` with values in a `TietzeExtension` space `Y`. Then there exists a
-continuous function `g : C(X₂, Y)` such that `g ∘ e = f`.
+continuous function `g : C(X, Y)` such that `g ∘ e = f`.
 
 This version is provided for convenience and backwards compatibility. Here the composition is
 phrased in terms of bare functions. -/

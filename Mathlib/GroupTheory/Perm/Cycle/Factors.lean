@@ -552,7 +552,7 @@ theorem cycleFactorsFinset_eq_singleton_iff {f g : Perm α} :
   exact Iff.rfl
 #align equiv.perm.cycle_factors_finset_eq_singleton_iff Equiv.Perm.cycleFactorsFinset_eq_singleton_iff
 
-/-- Two permutations `f g : perm α` have the same cycle factors iff they are the same. -/
+/-- Two permutations `f g : Perm α` have the same cycle factors iff they are the same. -/
 theorem cycleFactorsFinset_injective : Function.Injective (@cycleFactorsFinset α _ _) := by
   intro f g h
   rw [← cycleFactorsFinset_noncommProd f]

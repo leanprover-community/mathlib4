@@ -10,13 +10,10 @@ import Mathlib.Algebra.Module.Submodule.Range
 /-! # Exactness of a pair
 
 * For two maps `f : M → N` and `g : N → P`, with `Zero P`,
-`Function.AddExact f g` says that `Set.range f = Set.preimage {0}
-
-* For two maps `f : M → N` and `g : N → P`, with `One P`,
-`Function.Exact f g` says that `Set.range f = Set.preimage {1}
+`Function.Exact f g` says that `Set.range f = Set.preimage g {0}`
 
 * For linear maps `f : M →ₗ[R] N`  and `g : N →ₗ[R] P`,
-`Exact f g` says that `range f = ker g``
+`Exact f g` says that `range f = ker g`
 
 ## TODO :
 
