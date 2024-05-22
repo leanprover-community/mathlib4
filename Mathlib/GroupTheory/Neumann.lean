@@ -18,8 +18,9 @@ Let the group $G$ be the union of finitely many, let us say $n$, left cosets
 of subgroups $C₁$, $C₂$, ..., $Cₙ$: $$ G = ⋃_{i = 1}^n C_i g_i. $$
 Then the index of (at least) one of these subgroups does not exceed $n$.
 
-[1] <https://mathoverflow.net/a/17398/3332>
-[2] <http://alpha.math.uga.edu/~pete/Neumann54.pdf>
+[1] [Neumann-1954], *Groups Covered By Permutable Subsets*, Lemma 4.1
+[2] <https://mathoverflow.net/a/17398/3332>
+[3] <http://alpha.math.uga.edu/~pete/Neumann54.pdf>
 
 The result is also needed to show an algebraic extension of fields is
 determined by the set of all minimal polynomials.
