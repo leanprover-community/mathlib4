@@ -692,7 +692,7 @@ theorem closure_induction' {s : Set R} {p : closure s → Prop} (a : closure s)
     (add : ∀ x y, p x → p y → p (x + y)) (neg : ∀ x, p x → p (-x))
     (mul : ∀ x y, p x → p y → p (x * y)) : p a :=
   Subtype.recOn a fun b hb => by
-    refine' Exists.elim _ fun (hb : b ∈ closure s) (hc : p ⟨b, hb⟩) => hc
+    refine Exists.elim ?_ fun (hb : b ∈ closure s) (hc : p ⟨b, hb⟩) => hc
     refine'
       closure_induction hb (fun x hx => ⟨subset_closure hx, mem x hx⟩)
         ⟨zero_mem (closure s), zero⟩ _ _ _

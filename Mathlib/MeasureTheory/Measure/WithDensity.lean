@@ -96,7 +96,7 @@ lemma withDensity_mono {f g : α → ℝ≥0∞} (hfg : f ≤ᵐ[μ] g) :
 
 theorem withDensity_add_left {f : α → ℝ≥0∞} (hf : Measurable f) (g : α → ℝ≥0∞) :
     μ.withDensity (f + g) = μ.withDensity f + μ.withDensity g := by
-  refine' Measure.ext fun s hs => _
+  refine Measure.ext fun s hs => ?_
   rw [withDensity_apply _ hs, Measure.add_apply, withDensity_apply _ hs, withDensity_apply _ hs,
     ← lintegral_add_left hf]
   simp only [Pi.add_apply]
@@ -121,7 +121,7 @@ theorem withDensity_sum {ι : Type*} {m : MeasurableSpace α} (μ : ι → Measu
 
 theorem withDensity_smul (r : ℝ≥0∞) {f : α → ℝ≥0∞} (hf : Measurable f) :
     μ.withDensity (r • f) = r • μ.withDensity f := by
-  refine' Measure.ext fun s hs => _
+  refine Measure.ext fun s hs => ?_
   rw [withDensity_apply _ hs, Measure.coe_smul, Pi.smul_apply, withDensity_apply _ hs,
     smul_eq_mul, ← lintegral_const_mul r hf]
   simp only [Pi.smul_apply, smul_eq_mul]
@@ -129,7 +129,7 @@ theorem withDensity_smul (r : ℝ≥0∞) {f : α → ℝ≥0∞} (hf : Measurab
 
 theorem withDensity_smul' (r : ℝ≥0∞) (f : α → ℝ≥0∞) (hr : r ≠ ∞) :
     μ.withDensity (r • f) = r • μ.withDensity f := by
-  refine' Measure.ext fun s hs => _
+  refine Measure.ext fun s hs => ?_
   rw [withDensity_apply _ hs, Measure.coe_smul, Pi.smul_apply, withDensity_apply _ hs,
     smul_eq_mul, ← lintegral_const_mul' r f hr]
   simp only [Pi.smul_apply, smul_eq_mul]
@@ -149,7 +149,7 @@ theorem isFiniteMeasure_withDensity {f : α → ℝ≥0∞} (hf : ∫⁻ a, f a 
 
 theorem withDensity_absolutelyContinuous {m : MeasurableSpace α} (μ : Measure α) (f : α → ℝ≥0∞) :
     μ.withDensity f ≪ μ := by
-  refine' AbsolutelyContinuous.mk fun s hs₁ hs₂ => _
+  refine AbsolutelyContinuous.mk fun s hs₁ hs₂ => ?_
   rw [withDensity_apply _ hs₁]
   exact set_lintegral_measure_zero _ _ hs₂
 #align measure_theory.with_density_absolutely_continuous MeasureTheory.withDensity_absolutelyContinuous

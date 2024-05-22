@@ -180,6 +180,10 @@ def Scheme.affineOpens (X : Scheme) : Set (Opens X) :=
   {U : Opens X | IsAffineOpen U}
 #align algebraic_geometry.Scheme.affine_opens AlgebraicGeometry.Scheme.affineOpens
 
+instance {Y : Scheme.{u}} (U : Y.affineOpens) :
+    IsAffine (Scheme.restrict Y <| Opens.openEmbedding U.val) :=
+  U.property
+
 theorem rangeIsAffineOpenOfOpenImmersion {X Y : Scheme} [IsAffine X] (f : X ⟶ Y)
     [H : IsOpenImmersion f] : IsAffineOpen (Scheme.Hom.opensRange f) := by
   refine isAffineOfIso (IsOpenImmersion.isoOfRangeEq f (Y.ofRestrict _) ?_).inv
@@ -572,7 +576,7 @@ theorem basicOpen_union_eq_self_iff (s : Set (X.presheaf.obj <| op U)) :
         at h
       simp only [Set.inter_self, Opens.carrier_eq_coe, Set.inter_eq_right] at h
       ext1
-      refine' Set.Subset.antisymm _ h
+      refine Set.Subset.antisymm ?_ h
       simp only [Set.iUnion_subset_iff, SetCoe.forall, Opens.coe_iSup]
       intro x _
       exact X.basicOpen_le x
@@ -622,7 +626,7 @@ theorem of_affine_open_cover {X : Scheme} (V : X.affineOpens) (S : Set X.affineO
     intro x
     obtain ⟨W, hW⟩ := Set.mem_iUnion.mp (by simpa only [← hS] using Set.mem_univ (x : X))
     obtain ⟨f, g, e, hf⟩ := exists_basicOpen_le_affine_inter V.prop W.1.prop x ⟨x.prop, hW⟩
-    refine' ⟨f, hf, _⟩
+    refine ⟨f, hf, ?_⟩
     convert hP₁ _ g (hS' W) using 1
     ext1
     exact e
