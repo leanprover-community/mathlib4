@@ -123,7 +123,6 @@ theorem Spec.sheafedSpaceMap_id {R : CommRingCat.{u}} :
     dsimp
     erw [comap_id (by simp)]
     simp
-    rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.SheafedSpace_map_id AlgebraicGeometry.Spec.sheafedSpaceMap_id
 
@@ -145,8 +144,7 @@ set_option linter.uppercaseLean3 false in
 def Spec.toSheafedSpace : CommRingCat.{u}ᵒᵖ ⥤ SheafedSpace CommRingCat where
   obj R := Spec.sheafedSpaceObj (unop R)
   map f := Spec.sheafedSpaceMap f.unop
-  map_id R := by dsimp; rw [Spec.sheafedSpaceMap_id]
-  map_comp f g := by dsimp; rw [Spec.sheafedSpaceMap_comp]
+  map_comp f g := by simp [Spec.sheafedSpaceMap_comp]
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.to_SheafedSpace AlgebraicGeometry.Spec.toSheafedSpace
 
@@ -246,7 +244,6 @@ theorem localRingHom_comp_stalkIso {R S : CommRingCat.{u}} (f : R ⟶ S) (p : Pr
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.local_ring_hom_comp_stalk_iso AlgebraicGeometry.localRingHom_comp_stalkIso
 
-set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 /--
 The induced map of a ring homomorphism on the prime spectra, as a morphism of locally ringed spaces.
 -/
@@ -263,9 +260,8 @@ def Spec.locallyRingedSpaceMap {R S : CommRingCat.{u}} (f : R ⟶ S) :
       -- It's this `erw` that is blowing up. The implicit arguments differ significantly.
       erw [← localRingHom_comp_stalkIso_apply] at ha
       replace ha := (stalkIso S p).hom.isUnit_map ha
-      rw [show localizationToStalk S p = (stalkIso S p).inv from rfl] at ha
-      erw [← comp_apply] at ha
-      rw [Iso.inv_hom_id, id_apply] at ha
+      rw [← comp_apply, show localizationToStalk S p = (stalkIso S p).inv from rfl,
+        Iso.inv_hom_id, id_apply] at ha
       -- Porting note: `f` had to be made explicit
       replace ha := IsLocalRingHom.map_nonunit
         (f := (Localization.localRingHom (PrimeSpectrum.comap f p).asIdeal p.asIdeal f _)) _ ha
