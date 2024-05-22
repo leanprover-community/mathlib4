@@ -894,45 +894,37 @@ section WithZero_Multiplicative_stuff
 
 open Multiplicative
 
--- in the process of moving these
+-- in the process of moving this
 theorem WithZero.eq_coe_of_ne_zero {α : Type*} {x : WithZero α}
     (hx : x ≠ 0) : ∃ (n : α), x = n :=
   Option.ne_none_iff_exists'.mp hx
 
-theorem WithZero.eq_zero_or_coe {α : Type*} (x : WithZero α) :
-    x = 0 ∨ ∃ (n : α), x = n :=
-  or_iff_not_imp_left.mpr Option.ne_none_iff_exists'.mp
-
 open WithZero
 
 -- this makes `mul_lt_mul_left`, `mul_pos` etc work on `ℤₘ₀`
-instance foo {α : Type*} [Mul α] [Preorder α] [CovariantClass α α (· * ·) (· < ·)]:
+instance {α : Type*} [Mul α] [Preorder α] [CovariantClass α α (· * ·) (· < ·)]:
     PosMulStrictMono (WithZero α) where
-  elim := by
-    intro ⟨x, hx⟩ a b (h : a < b)
-    rcases eq_coe_of_ne_zero hx.ne' with ⟨x, rfl⟩
-    dsimp only
-    rcases eq_zero_or_coe a with (rfl | ⟨a, rfl⟩)
-    · rw [mul_zero]
-      rcases eq_coe_of_ne_zero h.ne' with ⟨b, rfl⟩
-      exact WithZero.zero_lt_coe _
-    · have hb : 0 < b := lt_trans (WithZero.zero_lt_coe (ofAdd a)) h
-      rcases eq_coe_of_ne_zero hb.ne' with ⟨b, rfl⟩
-      norm_cast at h ⊢
-      exact mul_lt_mul_left' (α := α) h x
+  elim := @fun
+    | ⟨(x : α), hx⟩, 0, (b : α), _ => by
+        rw [mul_zero]
+        exact WithZero.zero_lt_coe _
+    | ⟨(x : α), hx⟩, (a : α), (b : α), h => by
+        dsimp only
+        norm_cast at h ⊢
+        exact mul_lt_mul_left' (α := α) h x
 
 -- This makes `lt_mul_of_le_of_one_lt'` work on `ℤₘ₀`
 instance {α : Type*} [Mul α] [Preorder α] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]:
     MulPosMono (WithZero α) where
-  elim := by
-    intro ⟨x, hx⟩ a b (h : a ≤ b)
-    dsimp only
-    rcases eq_zero_or_coe x with (rfl | ⟨x, rfl⟩)
-    · simp only [mul_zero, le_refl]
-    · rcases eq_zero_or_coe a with (rfl | ⟨a, rfl⟩)
-      · simp only [zero_mul, WithZero.zero_le]
-      · have hb : 0 < b := lt_of_lt_of_le (WithZero.zero_lt_coe (ofAdd a)) h
-        rcases eq_coe_of_ne_zero hb.ne' with ⟨b, rfl⟩
+  elim := @fun
+    | ⟨0, _⟩, a, b, _ => by
+        simp only [mul_zero, le_refl]
+    | ⟨(x : α), _⟩, 0, _, _ => by
+        simp only [zero_mul, WithZero.zero_le]
+    | ⟨(x : α), hx⟩, (a : α), 0, h =>
+        (lt_irrefl 0 (lt_of_lt_of_le (WithZero.zero_lt_coe a) h)).elim
+    | ⟨(x : α), hx⟩, (a : α), (b : α), h => by
+        dsimp only
         norm_cast at h ⊢
         exact mul_le_mul_right' (α := α) h x
 
