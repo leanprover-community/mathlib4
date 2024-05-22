@@ -19,7 +19,9 @@ import Mathlib.RingTheory.TensorProduct.Basic
 * `LinearMap.lTensor_surjective` asserts that when one tensors
   a surjective map on the left, one still gets a surjective linear map.
   More generally, `LinearMap.lTensor_range`  computes the range of
-  `LinearMap.lTensor`≃ensorProduct.rTensor_exact` says that when one tensors a short exact
+  `LinearMap.lTensor`
+
+* `TensorProduct.rTensor_exact` says that when one tensors a short exact
   sequence on the right, one still gets a short exact sequence
   (right-exactness of `TensorProduct.rTensor`),
   and `rTensor.equiv` gives the LinearEquiv that follows from this
