@@ -68,26 +68,6 @@ lemma measurable_cast {α β} [mα : MeasurableSpace α] [mβ : MeasurableSpace 
   exact measurable_id
 
 @[simp]
-lemma kernel.compProd_zero_right [MeasurableSpace α] [MeasurableSpace β]
-    (κ : kernel α β) (γ : Type _) [MeasurableSpace γ] :
-    κ ⊗ₖ (0 : kernel (α × β) γ) = 0 := by
-  by_cases h : IsSFiniteKernel κ
-  · ext a s hs
-    rw [kernel.compProd_apply _ _ _ hs]
-    simp
-  · rw [kernel.compProd_of_not_isSFiniteKernel_left _ _ h]
-
-@[simp]
-lemma kernel.compProd_zero_left [MeasurableSpace α] [MeasurableSpace β]
-  [MeasurableSpace γ] (κ : kernel (α × β) γ)  :
-    (0 : kernel α β) ⊗ₖ κ = 0 := by
-  by_cases h : IsSFiniteKernel κ
-  · ext a s hs
-    rw [kernel.compProd_apply _ _ _ hs]
-    simp
-  · rw [kernel.compProd_of_not_isSFiniteKernel_right _ _ h]
-
-@[simp]
 lemma kernel.map_zero_left (α : Type _) [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
     (f : β → γ) (hf : Measurable f) :
     kernel.map (0 : kernel α β) f hf = 0 := by
@@ -300,7 +280,7 @@ def el (i j : ι) (hij : i ≤ j) [∀ i j : ι, Decidable (i ≤ j)] :
     split_ifs <;> rfl
   measurable_toFun := by
     apply measurable_pi_lambda _ (fun (x : Iic j) ↦ ?_)
-    by_cases x ≤ i
+    by_cases h : x ≤ i
     · simp only [Equiv.coe_fn_mk, h, dite_true]
       exact measurable_fst.eval
     · simp only [Equiv.coe_fn_mk, h, dite_false]
@@ -325,7 +305,7 @@ def er (i j k : ι) (hij : i < j) (hjk : j ≤ k) :
     split_ifs <;> rfl
   measurable_toFun := by
     apply measurable_pi_lambda _ (fun x ↦ ?_)
-    by_cases x ≤ j
+    by_cases h : x ≤ j
     · simp only [Equiv.coe_fn_mk, h, dite_true]
       exact measurable_fst.eval
     · simp only [Equiv.coe_fn_mk, h, dite_false]

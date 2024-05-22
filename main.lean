@@ -46,23 +46,26 @@ theorem isProjectiveMeasureFamily_prod {ι : Type*} {α : ι → Type*} [∀ i, 
     Finset.toFinset_coe, Finset.toFinset_coe,
     Finset.prod_subset hST (fun _ h h' ↦ by simp [h, h'])]
 
+theorem cyl_dependsOn (s : Finset ℕ) (S : Set ((n : s) → X n)) :
+    DependsOn ((cylinder s S).indicator (1 : (∀ n, X n) → ℝ≥0∞)) s := by
+  intro x y hxy
+  have : x ∈ cylinder s S ↔ y ∈ cylinder s S := by simp [hxy]
+  by_cases h : x ∈ cylinder s S
+  · simp [h, this.1 h]
+  · simp [h, this.not.1 h]
+
 theorem cylinders_nat : cylinders X =
     ⋃ (N) (S) (_ : MeasurableSet S), {cylinder (Icc 0 N) S} := by
   ext s
   simp only [mem_cylinders, exists_prop, mem_iUnion, mem_singleton_iff]
   constructor
   · rintro ⟨t, S, mS, rfl⟩
-    use t.sup id
-    use (fun (f : (∀ n : Finset.Icc 0 (t.sup id), X n)) (k : t) ↦
-      f ⟨k.1, Finset.mem_Icc.2 ⟨Nat.zero_le k.1, Finset.le_sup (f := id) k.2⟩⟩) ⁻¹' S
-    constructor
-    · apply mS.preimage
-      rw [measurable_pi_iff]
-      intro a
-      measurability
-    · dsimp only [cylinder]
-      rw [← preimage_comp]
-      rfl
+    refine ⟨t.sup id, (fun (f : (∀ n : Finset.Icc 0 (t.sup id), X n)) (k : t) ↦
+      f ⟨k.1, Finset.mem_Icc.2 ⟨Nat.zero_le k.1, Finset.le_sup (f := id) k.2⟩⟩) ⁻¹' S,
+      by measurability, ?_⟩
+    dsimp only [cylinder]
+    rw [← preimage_comp]
+    rfl
   · rintro ⟨N, S, mS, rfl⟩
     exact ⟨Finset.Icc 0 N, S, mS, rfl⟩
 
@@ -72,22 +75,6 @@ lemma useful (s : Set (∀ n, X n)) (s_mem : s ∈ cylinders X) :
 
 noncomputable def proba (s : Finset ℕ) (S : Set ((n : s) → X n)) : ℝ≥0∞ :=
   (∫⋯∫⁻_s, (cylinder s S).indicator 1 ∂μ) (Classical.ofNonempty)
-
-theorem cyl_dependsOn (s : Finset ℕ) (S : Set ((n : s) → X n)) :
-    DependsOn ((cylinder s S).indicator (1 : (∀ n, X n) → ℝ≥0∞)) s := by
-  intro x y hxy
-  have xy : (fun (i : s) ↦ x i) = fun (i : s) ↦ y i := by simp [hxy]
-  by_cases h : x ∈ cylinder s S
-  · simp only [h, indicator_of_mem, Pi.one_apply]
-    have : y ∈ cylinder s S := by
-      simp only [mem_cylinder] at *
-      rwa [← xy]
-    simp [this]
-  · simp only [h, not_false_eq_true, indicator_of_not_mem]
-    have : y ∉ cylinder s S := by
-      simp only [mem_cylinder] at *
-      rwa [← xy]
-    simp [this]
 
 theorem eq (s : Finset ℕ) (S : Set ((n : s) → X n)) (mS : MeasurableSet S) :
     kolContent (isProjectiveMeasureFamily_prod μ) ((cylinder s S)) = proba μ s S := by
@@ -107,79 +94,16 @@ theorem ge_of_int {α : Type*} [MeasurableSpace α] {m : Measure α} [IsProbabil
       (eventually_of_forall this)
   exact not_le_of_lt this hf
 
-example (n : ℕ) (h : n ≠ 0) : n - 1 + 1 = n := by exact Nat.succ_pred_eq_of_ne_zero h
-
-theorem prod_meas (S : Finset ℕ) (a : ℕ) (ha : a ∈ S) (μ : (n : S) → Measure (X n))
-    [∀ n, IsProbabilityMeasure (μ n)]
-    (s : (n : S) → Set (X n)) :
-    (Measure.pi μ) (univ.pi s) = ((μ ⟨a, ha⟩) (s ⟨a, ha⟩)) *
-    ((Measure.pi (fun (n : S.erase a) ↦ μ ⟨n.1, Finset.mem_of_mem_erase n.2⟩))
-    (univ.pi (fun n : S.erase a ↦ s ⟨n.1, Finset.mem_of_mem_erase n.2⟩))) := by
-  rw [Measure.pi_pi, Measure.pi_pi, mul_comm]
-  have h1 : (@Finset.univ S _).prod (fun n ↦ (μ n) (s n)) =
-      (@Finset.univ S.toSet _).prod (fun n ↦
-      ((fun n : ℕ ↦ if hn : n ∈ S then (μ ⟨n, hn⟩) (s ⟨n, hn⟩) else 1) n)) := by
-    apply Finset.prod_congr rfl (by simp)
-  have h2 : (@Finset.univ (S.erase a) _).prod (fun n ↦ (μ ⟨n.1, Finset.mem_of_mem_erase n.2⟩)
-      (s ⟨n.1, Finset.mem_of_mem_erase n.2⟩)) =
-      (@Finset.univ (S.erase a).toSet _).prod (fun n ↦
-      ((fun n : ℕ ↦ if hn : n ∈ S then (μ ⟨n, hn⟩) (s ⟨n, hn⟩) else 1) n)) := by
-    apply Finset.prod_congr rfl (fun x _ ↦ by simp [(Finset.mem_erase.1 x.2).2])
-  rw [h1, h2,
-    Finset.prod_set_coe (f := (fun n : ℕ ↦ if hn : n ∈ S then (μ ⟨n, hn⟩) (s ⟨n, hn⟩) else 1)),
-    Finset.prod_set_coe (f := (fun n : ℕ ↦ if hn : n ∈ S then (μ ⟨n, hn⟩) (s ⟨n, hn⟩) else 1)),
-    Finset.toFinset_coe, Finset.toFinset_coe, ← Finset.prod_erase_mul S _ ha]
-  congr
-  simp [ha]
-
-example (n : ℕ) (h : n ≠ 0) : 1 ≤ n := by exact Nat.one_le_iff_ne_zero.2 h
-
-theorem omg (k N : ℕ) (h : k ≤ N) : Finset.Icc k N = (Finset.Icc (k + 1) N) ∪ {k} := by
-  ext x; simp [Finset.mem_Icc]; constructor
-  · rintro ⟨h1, h2⟩
-    by_cases hxk : x = k
-    · exact Or.inr hxk
-    · refine Or.inl ⟨?_, h2⟩
-      rw [Nat.succ_le]
-      exact Nat.lt_of_le_of_ne h1 fun a => hxk (id (Eq.symm a))
-  · rintro (⟨h1, h2⟩ | h')
-    · exact ⟨Nat.le_of_succ_le h1, h2⟩
-    · exact ⟨h' ▸ le_refl _, h' ▸ h⟩
-
-example : μ 0 ≠ 0 := by exact Ne.symm (NeZero.ne' (μ 0))
-
-lemma important (k : ℕ) (y : ∀ n : Finset.Icc 0 k, X n) (z : X (k + 1)) :
-    ∃ t, ∀ x : ∀ n, X n, Function.update (Function.updateFinset x (Finset.Icc 0 k) y) (k + 1) z =
-    Function.updateFinset x (Finset.Icc 0 (k + 1)) t := by
-  let t : ∀ n : Finset.Icc 0 (k + 1), X n := fun n ↦ by
-    cases n with
-    | mk i hi =>
-      by_cases h : i = k + 1
-      · use h ▸ z
-      · have : i ∈ Finset.Icc 0 k := by
-          rw [Finset.mem_Icc] at *
-          simp
-          rcases Nat.le_or_eq_of_le_succ hi.2 with h' | h'
-          exact h'
-          exact (h h').elim
-        use y ⟨i, this⟩
-  use t
-  intro x
-  ext i
-  simp [Function.update, Function.updateFinset]
-  by_cases h : i = k + 1
-  · simp [h, t]
-    aesop
-  · simp [h, t]
-    by_cases h' : i ≤ k
-    · have : i ≤ k + 1 := le_trans h' (Nat.le_succ _)
-      simp [h', this]
-    · have : ¬i ≤ k + 1 := by
-        intro h''
-        rcases Nat.le_iff_lt_or_eq.1 h'' with h'' | h''
-        linarith [h', h'']
-        exact h h''
-      simp [h', this]
+theorem Finset.Icc_eq_left_union (h : k ≤ N) : Finset.Icc k N = {k} ∪ (Finset.Icc (k + 1) N) := by
+  ext x
+  simp
+  refine ⟨fun ⟨h1, h2⟩ ↦ ?_, ?_⟩
+  · by_cases hxk : x = k
+    · exact Or.inl hxk
+    · exact Or.inr ⟨Nat.succ_le_of_lt <| Nat.lt_of_le_of_ne h1 (fun h ↦ hxk h.symm), h2⟩
+  · rintro (h1 | ⟨h2, h3⟩)
+    · exact ⟨h1 ▸ le_refl _, h1 ▸ h⟩
+    · exact ⟨Nat.le_of_succ_le h2, h3⟩
 
 theorem thm1 (f : ℕ → (∀ n, X n) → ℝ≥0∞) (anti : Antitone f) (ε : ℝ≥0∞)
     (N : ℕ → ℕ) (hcte : ∀ n, DependsOn (f n) (Finset.Icc 0 (N n)))
@@ -230,9 +154,8 @@ theorem thm1 (f : ℕ → (∀ n, X n) → ℝ≥0∞) (anti : Antitone f) (ε :
       fun n ↦ (∫⋯∫⁻_{0}, F n ∂μ) x := by
     intro x
     ext1 n
-    rw [omg 0 (N n), lmarginal_union']
+    rw [Finset.Icc_eq_left_union (Nat.zero_le (N n)), lmarginal_union]
     exact mf n
-    simp [Finset.mem_Icc]
     simp
   have F_le : ∀ n x, F n x ≤ bound := by
     intro n x
@@ -350,10 +273,9 @@ theorem bonjour (f : ℕ → (∀ n, X n) → ℝ≥0∞) (anti : Antitone f) (�
     intro x
     ext1 n
     by_cases h : k + 1 ≤ N n
-    · rw [omg (k + 1) (N n), lmarginal_union']
+    · rw [Finset.Icc_eq_left_union h, lmarginal_union]
       exact mf n
-      simp [Finset.mem_Icc]
-      exact h
+      simp
     · simp [F]
       rw [Finset.Icc_eq_empty h, lmarginal_eq (hcte n), lmarginal_eq (hcte n),
         lmarginal_eq (hcte n)]
@@ -584,6 +506,29 @@ theorem firstLemma (A : ℕ → Set (∀ n, X n)) (A_mem : ∀ n, A n ∈ cylind
     rw [← this, ← hl' Classical.ofNonempty]
     exact hl _
 
+
+theorem prod_meas (S : Finset ℕ) (a : ℕ) (ha : a ∈ S) (μ : (n : S) → Measure (X n))
+    [∀ n, IsProbabilityMeasure (μ n)]
+    (s : (n : S) → Set (X n)) :
+    (Measure.pi μ) (univ.pi s) = ((μ ⟨a, ha⟩) (s ⟨a, ha⟩)) *
+    ((Measure.pi (fun (n : S.erase a) ↦ μ ⟨n.1, Finset.mem_of_mem_erase n.2⟩))
+    (univ.pi (fun n : S.erase a ↦ s ⟨n.1, Finset.mem_of_mem_erase n.2⟩))) := by
+  rw [Measure.pi_pi, Measure.pi_pi, mul_comm]
+  have h1 : (@Finset.univ S _).prod (fun n ↦ (μ n) (s n)) =
+      (@Finset.univ S.toSet _).prod (fun n ↦
+      ((fun n : ℕ ↦ if hn : n ∈ S then (μ ⟨n, hn⟩) (s ⟨n, hn⟩) else 1) n)) := by
+    apply Finset.prod_congr rfl (by simp)
+  have h2 : (@Finset.univ (S.erase a) _).prod (fun n ↦ (μ ⟨n.1, Finset.mem_of_mem_erase n.2⟩)
+      (s ⟨n.1, Finset.mem_of_mem_erase n.2⟩)) =
+      (@Finset.univ (S.erase a).toSet _).prod (fun n ↦
+      ((fun n : ℕ ↦ if hn : n ∈ S then (μ ⟨n, hn⟩) (s ⟨n, hn⟩) else 1) n)) := by
+    apply Finset.prod_congr rfl (fun x _ ↦ by simp [(Finset.mem_erase.1 x.2).2])
+  rw [h1, h2,
+    Finset.prod_set_coe (f := (fun n : ℕ ↦ if hn : n ∈ S then (μ ⟨n, hn⟩) (s ⟨n, hn⟩) else 1)),
+    Finset.prod_set_coe (f := (fun n : ℕ ↦ if hn : n ∈ S then (μ ⟨n, hn⟩) (s ⟨n, hn⟩) else 1)),
+    Finset.toFinset_coe, Finset.toFinset_coe, ← Finset.prod_erase_mul S _ ha]
+  congr
+  simp [ha]
 
 
   -- have := tendsto_of_antitone anti
