@@ -116,6 +116,7 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
 --because the dimension can only be less if there are fewer open sets. Check this.
 --finiteDimensional_finsupp
 -- linearEquivFunOnFinite
+-- StarAlgHom.injective_codRestrict
 
 --variable [CompactSpace (spectrum ℝ A)]
 --isCompact_iff_compactSpace
@@ -137,8 +138,6 @@ theorem compact_spectrum {a : Matrix n n 𝕜} (ha : IsHermitian a) : CompactSpa
    apply finite_spectrum
    assumption
 
-#check AlgEquiv.ofInjective (R := ℝ) (A :=  C(spectrum ℝ A, ℝ)) (B := Matrix n n 𝕜) hA.φ
-
 instance instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus ℝ (IsHermitian : Matrix n n 𝕜 → Prop) where
 exists_cfc_of_predicate := by
@@ -159,9 +158,16 @@ exists_cfc_of_predicate := by
           congr!
           --apply Set.eq_of_subset_of_subset
           --apply AlgHom.spectrum_apply_subset
+          have hφ : LinearMap.ker ha.φ = ⊥ := by sorry
+          have I := LinearMap.map_injective hφ
+          have II : Function.Injective ha.φ := by sorry
           have J := AlgEquiv.ofInjective (R := ℝ) (A :=  C(spectrum ℝ a, ℝ)) (B := Matrix n n 𝕜) (ha.φ)
-          have := AlgEquiv.spectrum_eq J --need injectivity. Can get, though.
-          sorry
+          have G := AlgEquiv.spectrum_eq (J II) f
+          rw [← G]
+          refine Set.ext ?h.right.right.left.h
+          intro x
+          constructor
+          intro hx
         · intro f
           sorry
 
