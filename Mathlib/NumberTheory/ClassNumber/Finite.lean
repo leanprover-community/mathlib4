@@ -182,7 +182,7 @@ theorem mem_finsetApprox {x : R} :
   simp only [finsetApprox, Finset.mem_erase, Finset.mem_image]
   constructor
   · rintro ⟨hx, ⟨i, j⟩, _, rfl⟩
-    refine' ⟨i, j, _, rfl⟩
+    refine ⟨i, j, ?_, rfl⟩
     rintro rfl
     simp at hx
   · rintro ⟨i, j, hij, rfl⟩
@@ -253,15 +253,15 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
 #align class_group.exists_mem_finset_approx ClassGroup.exists_mem_finsetApprox
 
 /-- We can approximate `a / b : L` with `q / r`, where `r` has finitely many options for `L`. -/
-theorem exists_mem_finset_approx' (h : Algebra.IsAlgebraic R L) (a : S) {b : S} (hb : b ≠ 0) :
+theorem exists_mem_finset_approx' [Algebra.IsAlgebraic R L] (a : S) {b : S} (hb : b ≠ 0) :
     ∃ q : S,
       ∃ r ∈ finsetApprox bS adm, abv (Algebra.norm R (r • a - q * b)) < abv (Algebra.norm R b) := by
   have inj : Function.Injective (algebraMap R L) := by
     rw [IsScalarTower.algebraMap_eq R S L]
     exact (IsIntegralClosure.algebraMap_injective S R L).comp bS.algebraMap_injective
-  obtain ⟨a', b', hb', h⟩ := IsIntegralClosure.exists_smul_eq_mul h inj a hb
+  obtain ⟨a', b', hb', h⟩ := IsIntegralClosure.exists_smul_eq_mul inj a hb
   obtain ⟨q, r, hr, hqr⟩ := exists_mem_finsetApprox bS adm a' hb'
-  refine' ⟨q, r, hr, _⟩
+  refine ⟨q, r, hr, ?_⟩
   refine'
     lt_of_mul_lt_mul_left _ (show 0 ≤ abv (Algebra.norm R (algebraMap R S b')) from abv.nonneg _)
   refine'
@@ -289,7 +289,7 @@ theorem ne_bot_of_prod_finsetApprox_mem (J : Ideal S)
 
 /-- Each class in the class group contains an ideal `J`
 such that `M := Π m ∈ finsetApprox` is in `J`. -/
-theorem exists_mk0_eq_mk0 [IsDedekindDomain S] (h : Algebra.IsAlgebraic R L) (I : (Ideal S)⁰) :
+theorem exists_mk0_eq_mk0 [IsDedekindDomain S] [Algebra.IsAlgebraic R L] (I : (Ideal S)⁰) :
     ∃ J : (Ideal S)⁰,
       ClassGroup.mk0 I = ClassGroup.mk0 J ∧
         algebraMap _ _ (∏ m in finsetApprox bS adm, m) ∈ (J : Ideal S) := by
@@ -315,7 +315,7 @@ theorem exists_mk0_eq_mk0 [IsDedekindDomain S] (h : Algebra.IsAlgebraic R L) (I 
   rw [Ideal.dvd_iff_le, Ideal.mul_le]
   intro r' hr' a ha
   rw [Ideal.mem_span_singleton] at hr' ⊢
-  obtain ⟨q, r, r_mem, lt⟩ := exists_mem_finset_approx' L bS adm h a b_ne_zero
+  obtain ⟨q, r, r_mem, lt⟩ := exists_mem_finset_approx' L bS adm a b_ne_zero
   apply @dvd_of_mul_left_dvd _ _ q
   simp only [Algebra.smul_def] at lt
   rw [←
@@ -334,11 +334,11 @@ noncomputable def mkMMem [IsDedekindDomain S]
 set_option linter.uppercaseLean3 false in
 #align class_group.mk_M_mem ClassGroup.mkMMem
 
-theorem mkMMem_surjective [IsDedekindDomain S] (h : Algebra.IsAlgebraic R L) :
+theorem mkMMem_surjective [IsDedekindDomain S] [Algebra.IsAlgebraic R L] :
     Function.Surjective (ClassGroup.mkMMem bS adm) := by
   intro I'
   obtain ⟨⟨I, hI⟩, rfl⟩ := ClassGroup.mk0_surjective I'
-  obtain ⟨J, mk0_eq_mk0, J_dvd⟩ := exists_mk0_eq_mk0 L bS adm h ⟨I, hI⟩
+  obtain ⟨J, mk0_eq_mk0, J_dvd⟩ := exists_mk0_eq_mk0 L bS adm ⟨I, hI⟩
   exact ⟨⟨J, J_dvd⟩, mk0_eq_mk0.symm⟩
 set_option linter.uppercaseLean3 false in
 #align class_group.mk_M_mem_surjective ClassGroup.mkMMem_surjective
@@ -352,7 +352,7 @@ See also `ClassGroup.fintypeOfAdmissibleOfFinite` where `L` is a finite
 extension of `K = Frac(R)`, supplying most of the required assumptions automatically.
 -/
 noncomputable def fintypeOfAdmissibleOfAlgebraic [IsDedekindDomain S]
-    (h : Algebra.IsAlgebraic R L) : Fintype (ClassGroup S) :=
+    [Algebra.IsAlgebraic R L] : Fintype (ClassGroup S) :=
   @Fintype.ofSurjective _ _ _
     (@Fintype.ofEquiv _
       { J // J ∣ Ideal.span ({algebraMap R S (∏ m : R in finsetApprox bS adm, m)} : Set S) }
@@ -363,7 +363,7 @@ noncomputable def fintypeOfAdmissibleOfAlgebraic [IsDedekindDomain S]
       ((Equiv.refl _).subtypeEquiv fun I =>
         Ideal.dvd_iff_le.trans (by
           rw [Equiv.refl_apply, Ideal.span_le, Set.singleton_subset_iff]; rfl)))
-    (ClassGroup.mkMMem bS adm) (ClassGroup.mkMMem_surjective L bS adm h)
+    (ClassGroup.mkMMem bS adm) (ClassGroup.mkMMem_surjective L bS adm)
 #align class_group.fintype_of_admissible_of_algebraic ClassGroup.fintypeOfAdmissibleOfAlgebraic
 
 /-- The main theorem: the class group of an integral closure `S` of `R` in a
@@ -391,8 +391,9 @@ noncomputable def fintypeOfAdmissibleOfFinite : Fintype (ClassGroup S) := by
     · exact Submodule.quotEquivOfEqBot _ rfl
     · exact IsIntegralClosure.algebraMap_injective _ R _
   let bS := b.map ((LinearMap.quotKerEquivRange _).symm ≪≫ₗ f)
-  exact fintypeOfAdmissibleOfAlgebraic L bS adm (fun x =>
-    (IsFractionRing.isAlgebraic_iff R K L).mpr (Algebra.IsAlgebraic.of_finite K _ x))
+  have : Algebra.IsAlgebraic R L := ⟨fun x =>
+    (IsFractionRing.isAlgebraic_iff R K L).mpr (Algebra.IsAlgebraic.isAlgebraic x)⟩
+  exact fintypeOfAdmissibleOfAlgebraic L bS adm
 #align class_group.fintype_of_admissible_of_finite ClassGroup.fintypeOfAdmissibleOfFinite
 
 end IsAdmissible

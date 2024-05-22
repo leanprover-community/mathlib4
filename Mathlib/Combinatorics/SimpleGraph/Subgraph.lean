@@ -180,8 +180,8 @@ theorem spanningCoe_inj : G₁.spanningCoe = G₂.spanningCoe ↔ G₁.Adj = G�
 
 /-- `spanningCoe` is equivalent to `coe` for a subgraph that `IsSpanning`. -/
 @[simps]
-def spanningCoeEquivCoeOfSpanning (G' : Subgraph G) (h : G'.IsSpanning) : G'.spanningCoe ≃g G'.coe
-    where
+def spanningCoeEquivCoeOfSpanning (G' : Subgraph G) (h : G'.IsSpanning) :
+    G'.spanningCoe ≃g G'.coe where
   toFun v := ⟨v, h v⟩
   invFun v := v
   left_inv _ := rfl
@@ -223,8 +223,8 @@ theorem mem_neighborSet (G' : Subgraph G) (v w : V) : w ∈ G'.neighborSet v ↔
 #align simple_graph.subgraph.mem_neighbor_set SimpleGraph.Subgraph.mem_neighborSet
 
 /-- A subgraph as a graph has equivalent neighbor sets. -/
-def coeNeighborSetEquiv {G' : Subgraph G} (v : G'.verts) : G'.coe.neighborSet v ≃ G'.neighborSet v
-    where
+def coeNeighborSetEquiv {G' : Subgraph G} (v : G'.verts) :
+    G'.coe.neighborSet v ≃ G'.neighborSet v where
   toFun w := ⟨w, w.2⟩
   invFun w := ⟨⟨w, G'.edge_vert (G'.adj_symm w.2)⟩, w.2⟩
   left_inv _ := rfl
@@ -246,7 +246,7 @@ theorem mem_edgeSet {G' : Subgraph G} {v w : V} : s(v, w) ∈ G'.edgeSet ↔ G'.
 theorem mem_verts_if_mem_edge {G' : Subgraph G} {e : Sym2 V} {v : V} (he : e ∈ G'.edgeSet)
     (hv : v ∈ e) : v ∈ G'.verts := by
   revert hv
-  refine' Sym2.ind (fun v w he ↦ _) e he
+  refine Sym2.ind (fun v w he ↦ ?_) e he
   intro hv
   rcases Sym2.mem_iff.mp hv with (rfl | rfl)
   · exact G'.edge_vert he
@@ -895,7 +895,7 @@ instance nonempty_subgraphOfAdj_verts {v w : V} (hvw : G.Adj v w) :
 theorem edgeSet_subgraphOfAdj {v w : V} (hvw : G.Adj v w) :
     (G.subgraphOfAdj hvw).edgeSet = {s(v, w)} := by
   ext e
-  refine' e.ind _
+  refine e.ind ?_
   simp only [eq_comm, Set.mem_singleton_iff, Subgraph.mem_edgeSet, subgraphOfAdj_adj, iff_self_iff,
     forall₂_true_iff]
 #align simple_graph.edge_set_subgraph_of_adj SimpleGraph.edgeSet_subgraphOfAdj
@@ -1090,7 +1090,7 @@ theorem deleteEdges_coe_eq (s : Set (Sym2 G'.verts)) :
   intro
   constructor
   · intro hs
-    refine' Sym2.ind _
+    refine Sym2.ind ?_
     rintro ⟨v', hv'⟩ ⟨w', hw'⟩
     simp only [Sym2.map_pair_eq, Sym2.eq]
     contrapose!

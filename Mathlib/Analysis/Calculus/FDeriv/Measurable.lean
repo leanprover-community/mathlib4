@@ -135,7 +135,7 @@ theorem isOpen_A (L : E →L[𝕜] F) (r ε : ℝ) : IsOpen (A f L r ε) := by
   rintro x ⟨r', r'_mem, hr'⟩
   obtain ⟨s, s_gt, s_lt⟩ : ∃ s : ℝ, r / 2 < s ∧ s < r' := exists_between r'_mem.1
   have : s ∈ Ioc (r / 2) r := ⟨s_gt, le_of_lt (s_lt.trans_le r'_mem.2)⟩
-  refine' ⟨r' - s, by linarith, fun x' hx' => ⟨s, this, _⟩⟩
+  refine ⟨r' - s, by linarith, fun x' hx' => ⟨s, this, ?_⟩⟩
   have B : ball x' s ⊆ ball x r' := ball_subset (le_of_lt hx')
   intro y hy z hz
   exact hr' y (B hy) z (B hz)
@@ -167,7 +167,7 @@ theorem mem_A_of_differentiable {ε : ℝ} (hε : 0 < ε) {x : E} (hx : Differen
     eventually_nhds_iff_ball.1 <| hx.hasFDerivAt.isLittleO.bound <| by positivity
   refine' ⟨R, R_pos, fun r hr => _⟩
   have : r ∈ Ioc (r / 2) r := right_mem_Ioc.2 <| half_lt_self hr.1
-  refine' ⟨r, this, fun y hy z hz => _⟩
+  refine ⟨r, this, fun y hy z hz => ?_⟩
   calc
     ‖f z - f y - (fderiv 𝕜 f x) (z - y)‖ =
         ‖f z - f x - (fderiv 𝕜 f x) (z - x) - (f y - f x - (fderiv 𝕜 f x) (y - x))‖ :=
@@ -231,7 +231,7 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
     intro e
     have := mem_iInter.1 hx e
     rcases mem_iUnion.1 this with ⟨n, hn⟩
-    refine' ⟨n, fun p q hp hq => _⟩
+    refine ⟨n, fun p q hp hq => ?_⟩
     simp only [mem_iInter, ge_iff_le] at hn
     rcases mem_iUnion.1 (hn p hp q hq) with ⟨L, hL⟩
     exact ⟨L, exists_prop.mp <| mem_iUnion.1 hL⟩
@@ -283,7 +283,7 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
     intro ε εpos
     obtain ⟨e, he⟩ : ∃ e : ℕ, (1 / 2) ^ e < ε / (12 * ‖c‖) :=
       exists_pow_lt_of_lt_one (by positivity) (by norm_num)
-    refine' ⟨e, fun e' he' => _⟩
+    refine ⟨e, fun e' he' => ?_⟩
     rw [dist_comm, dist_eq_norm]
     calc
       ‖L0 e - L0 e'‖ ≤ 12 * ‖c‖ * (1 / 2) ^ e := M _ _ _ _ _ _ le_rfl le_rfl le_rfl le_rfl he'
@@ -309,7 +309,7 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
     obtain ⟨e, he⟩ : ∃ e : ℕ, (1 / 2) ^ e < ε / (4 + 12 * ‖c‖) :=
       exists_pow_lt_of_lt_one (div_pos εpos pos) (by norm_num)
     rw [eventually_nhds_iff_ball]
-    refine' ⟨(1 / 2) ^ (n e + 1), P, fun y hy => _⟩
+    refine ⟨(1 / 2) ^ (n e + 1), P, fun y hy => ?_⟩
     -- We need to show that `f (x + y) - f x - f' y` is small. For this, we will work at scale
     -- `k` where `k` is chosen with `‖y‖ ∼ 2 ^ (-k)`.
     by_cases y_pos : y = 0;
@@ -516,9 +516,9 @@ theorem mem_A_of_differentiable {ε : ℝ} (hε : 0 < ε) {x : ℝ}
   have := hx.hasDerivWithinAt
   simp_rw [hasDerivWithinAt_iff_isLittleO, isLittleO_iff] at this
   rcases mem_nhdsWithin_Ici_iff_exists_Ico_subset.1 (this (half_pos hε)) with ⟨m, xm, hm⟩
-  refine' ⟨m - x, by linarith [show x < m from xm], fun r hr => _⟩
+  refine ⟨m - x, by linarith [show x < m from xm], fun r hr => ?_⟩
   have : r ∈ Ioc (r / 2) r := ⟨half_lt_self hr.1, le_rfl⟩
-  refine' ⟨r, this, fun y hy z hz => _⟩
+  refine ⟨r, this, fun y hy z hz => ?_⟩
   calc
     ‖f z - f y - (z - y) • derivWithin f (Ici x) x‖ =
         ‖f z - f x - (z - x) • derivWithin f (Ici x) x -
@@ -584,7 +584,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
     intro e
     have := mem_iInter.1 hx e
     rcases mem_iUnion.1 this with ⟨n, hn⟩
-    refine' ⟨n, fun p q hp hq => _⟩
+    refine ⟨n, fun p q hp hq => ?_⟩
     simp only [mem_iInter, ge_iff_le] at hn
     rcases mem_iUnion.1 (hn p hp q hq) with ⟨L, hL⟩
     exact ⟨L, exists_prop.mp <| mem_iUnion.1 hL⟩
@@ -637,7 +637,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
     intro ε εpos
     obtain ⟨e, he⟩ : ∃ e : ℕ, (1 / 2) ^ e < ε / 12 :=
       exists_pow_lt_of_lt_one (div_pos εpos (by norm_num)) (by norm_num)
-    refine' ⟨e, fun e' he' => _⟩
+    refine ⟨e, fun e' he' => ?_⟩
     rw [dist_comm, dist_eq_norm]
     calc
       ‖L0 e - L0 e'‖ ≤ 12 * (1 / 2) ^ e := M _ _ _ _ _ _ le_rfl le_rfl le_rfl le_rfl he'
