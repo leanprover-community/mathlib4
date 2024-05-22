@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Stoll
+Authors: Michael Stoll, Ralf Stephan
 -/
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.Nat.Squarefree
@@ -265,6 +265,23 @@ lemma mem_smoothNumbers_iff_forall_le {n m : ℕ} :
 lemma mem_smoothNumbers' {n m : ℕ} : m ∈ smoothNumbers n ↔ ∀ p, p.Prime → p ∣ m → p < n := by
   simp only [smoothNumbers_eq_factoredNumbers, mem_factoredNumbers', Finset.mem_range]
 
+/-- The prime factors of `m > 1` are contained in the set of primes below `n`
+  if `m` is a `n`-smooth number -/
+lemma primeFactors_subset_of_mem_smoothNumbers (m n : ℕ) (hms : m ∈ n.smoothNumbers)
+    : m.primeFactors ⊆ n.primesBelow :=
+  have hxle (m n x : ℕ) (hpf : x ∈ m.primeFactors) (hms : m ∈ smoothNumbers n)
+      : x < n :=
+    match mem_smoothNumbers.mp hms with
+    | ⟨ _, h2 ⟩  => h2 x (mem_primeFactors_iff_mem_factors.mp hpf)
+  fun w hh => mem_primesBelow.mpr ⟨hxle m n w hh hms, prime_of_mem_primeFactors hh⟩
+
+/-- `m > 1` is a `n`-smooth number if all of its prime factors are contained in the set of
+  primes below `n` -/
+lemma mem_smoothNumbers_of_primeFactors_subset (m n : ℕ) (hm : m ≠ 0)
+    (hp : m.primeFactors ⊆ n.primesBelow) : m ∈ n.smoothNumbers :=
+  ⟨ hm, fun _ h' => lt_of_mem_primesBelow <| hp <| mem_primeFactors_iff_mem_factors.mpr h' ⟩
+
+/-- Zero is never a smooth number -/
 lemma ne_zero_of_mem_smoothNumbers {n m : ℕ} (h : m ∈ smoothNumbers n) : m ≠ 0 := h.1
 
 @[simp]
@@ -322,6 +339,17 @@ lemma map_prime_pow_mul {F : Type*} [CommSemiring F] {f : ℕ → F}
     {m : p.smoothNumbers} :
     f (p ^ e * m) = f (p ^ e) * f m :=
   hmul <| Coprime.pow_left _ <| hp.smoothNumbers_coprime <| Subtype.mem m
+
+/-- The product of two `n`-smooth numbers is a `n`-smooth number -/
+theorem mul_mem_smoothNumbers (m₁ m₂ n : ℕ)
+    (hm1 : m₁ ∈ n.smoothNumbers) (hm2 : m₂ ∈ n.smoothNumbers)
+      : (m₁ * m₂) ∈ n.smoothNumbers := by
+  have hm1z : m₁ ≠ 0 := ne_zero_of_mem_smoothNumbers hm1
+  have hm2z : m₂ ≠ 0 := ne_zero_of_mem_smoothNumbers hm2
+  apply primeFactors_subset_of_mem_smoothNumbers at hm1
+  apply primeFactors_subset_of_mem_smoothNumbers at hm2
+  exact mem_smoothNumbers_of_primeFactors_subset (m₁ * m₂) n (mul_ne_zero hm1z hm2z)
+    <| (primeFactors_mul hm1z hm2z) ▸ Finset.union_subset hm1 hm2
 
 open List Perm Equiv in
 /-- We establish the bijection from `ℕ × smoothNumbers p` to `smoothNumbers (p+1)`
