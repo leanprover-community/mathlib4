@@ -157,6 +157,24 @@ noncomputable def cartanEquivDual :
     H ≃ₗ[K] Module.Dual K H :=
   (traceForm K H L).toDual <| traceForm_cartan_nondegenerate K L H
 
+variable {K L H} in
+lemma lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg_aux
+    {α : Weight K H L} {e f : L} (heα : e ∈ rootSpace H α) (hfα : f ∈ rootSpace H (-α))
+    (aux : ∀ (h : H), ⁅h, e⁆ = α h • e) :
+    ⁅e, f⁆ = killingForm K L e f • (cartanEquivDual H).symm α := by
+  set α' := (cartanEquivDual H).symm α
+  rw [← sub_eq_zero, ← Submodule.mem_bot (R := K), ← ker_killingForm_eq_bot]
+  apply mem_ker_killingForm_of_mem_rootSpace_of_forall_rootSpace_neg (α := (0 : H → K))
+  · simp only [rootSpace_zero_eq, LieSubalgebra.mem_toLieSubmodule]
+    refine sub_mem ?_ (H.smul_mem _ α'.property)
+    simpa using mapsTo_toEnd_weightSpace_add_of_mem_rootSpace K L H L α (-α) heα hfα
+  · intro z hz
+    replace hz : z ∈ H := by simpa using hz
+    have he : ⁅z, e⁆ = α ⟨z, hz⟩ • e := aux ⟨z, hz⟩
+    have hαz : killingForm K L α' (⟨z, hz⟩ : H) = α ⟨z, hz⟩ :=
+      LinearMap.BilinForm.apply_toDual_symm_apply (hB := traceForm_cartan_nondegenerate K L H) _ _
+    simp [traceForm_comm K L L ⁅e, f⁆, ← traceForm_apply_lie_apply, he, mul_comm _ (α ⟨z, hz⟩), hαz]
+
 /-- This is Proposition 4.18 from [carter2005] except that we use
 `LieModule.exists_forall_lie_eq_smul` instead of Lie's theorem (and so avoid
 assuming `K` has characteristic zero). -/
@@ -170,18 +188,7 @@ lemma cartanEquivDual_symm_apply_mem_corootSpace (α : Weight K H L) :
   suffices ⁅e, f⁆ = killingForm K L e f • ((cartanEquivDual H).symm α : L) from
     (mem_corootSpace α).mpr <| Submodule.subset_span ⟨(killingForm K L e f)⁻¹ • e,
       Submodule.smul_mem _ _ heα, f, hfα, by simpa [inv_smul_eq_iff₀ hf]⟩
-  set α' := (cartanEquivDual H).symm α
-  rw [← sub_eq_zero, ← Submodule.mem_bot (R := K), ← ker_killingForm_eq_bot]
-  apply mem_ker_killingForm_of_mem_rootSpace_of_forall_rootSpace_neg (α := (0 : H → K))
-  · simp only [rootSpace_zero_eq, LieSubalgebra.mem_toLieSubmodule]
-    refine sub_mem ?_ (H.smul_mem _ α'.property)
-    simpa using mapsTo_toEnd_weightSpace_add_of_mem_rootSpace K L H L α (-α) heα hfα
-  · intro z hz
-    replace hz : z ∈ H := by simpa using hz
-    replace he : ⁅z, e⁆ = α ⟨z, hz⟩ • e := by simpa using he ⟨z, hz⟩
-    have hαz : killingForm K L α' (⟨z, hz⟩ : H) = α ⟨z, hz⟩ :=
-      LinearMap.BilinForm.apply_toDual_symm_apply (hB := traceForm_cartan_nondegenerate K L H) _ _
-    simp [traceForm_comm K L L ⁅e, f⁆, ← traceForm_apply_lie_apply, he, mul_comm _ (α ⟨z, hz⟩), hαz]
+  exact lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg_aux heα hfα he
 
 /-- Given a splitting Cartan subalgebra `H` of a finite-dimensional Lie algebra with non-singular
 Killing form, the corresponding roots span the dual space of `H`. -/
@@ -283,24 +290,14 @@ lemma lie_eq_smul_of_mem_rootSpace {α : H → K} {x : L} (hx : x ∈ rootSpace 
 lemma lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg
     {α : Weight K H L} {e f : L} (heα : e ∈ rootSpace H α) (hfα : f ∈ rootSpace H (-α)) :
     ⁅e, f⁆ = killingForm K L e f • (cartanEquivDual H).symm α := by
-  set α' := (cartanEquivDual H).symm α
-  rw [← sub_eq_zero, ← Submodule.mem_bot (R := K), ← ker_killingForm_eq_bot]
-  apply mem_ker_killingForm_of_mem_rootSpace_of_forall_rootSpace_neg (α := (0 : H → K))
-  · simp only [rootSpace_zero_eq, LieSubalgebra.mem_toLieSubmodule]
-    refine sub_mem ?_ (H.smul_mem _ α'.property)
-    simpa using mapsTo_toEnd_weightSpace_add_of_mem_rootSpace K L H L α (-α) heα hfα
-  · intro z hz
-    replace hz : z ∈ H := by simpa using hz
-    have he : ⁅z, e⁆ = α ⟨z, hz⟩ • e := lie_eq_smul_of_mem_rootSpace heα ⟨z, hz⟩
-    have hαz : killingForm K L α' (⟨z, hz⟩ : H) = α ⟨z, hz⟩ :=
-      LinearMap.BilinForm.apply_toDual_symm_apply (hB := traceForm_cartan_nondegenerate K L H) _ _
-    simp [traceForm_comm K L L ⁅e, f⁆, ← traceForm_apply_lie_apply, he, mul_comm _ (α ⟨z, hz⟩), hαz]
+  apply lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg_aux heα hfα
+  exact lie_eq_smul_of_mem_rootSpace heα
 
 lemma coe_corootSpace_eq_span_singleton' (α : Weight K H L) :
-    LieSubmodule.toSubmodule (corootSpace α) = K ∙ (cartanEquivDual H).symm α := by
+    (corootSpace α).toSubmodule = K ∙ (cartanEquivDual H).symm α := by
   refine le_antisymm ?_ ?_
   · intro ⟨x, hx⟩ hx'
-    have : {x | ∃ y ∈ rootSpace H α, ∃ z ∈ rootSpace H (-α), ⁅y, z⁆ = x} ⊆
+    have : {⁅y, z⁆ | (y ∈ rootSpace H α) (z ∈ rootSpace H (-α))} ⊆
         K ∙ ((cartanEquivDual H).symm α : L) := by
       rintro - ⟨e, heα, f, hfα, rfl⟩
       rw [lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg heα hfα, SetLike.mem_coe,
@@ -369,7 +366,7 @@ lemma root_apply_coroot {α : Weight K H L} (hα : α.IsNonZero) :
   · simp [coroot, Weight.coe_toLinear_eq_zero_iff.mpr hα]
 
 lemma coe_corootSpace_eq_span_singleton (α : Weight K H L) :
-    LieSubmodule.toSubmodule (corootSpace α) = K ∙ coroot α := by
+    (corootSpace α).toSubmodule = K ∙ coroot α := by
   if hα : α.IsZero then
     simp [hα.eq, coroot_eq_zero_iff.mpr hα]
   else
@@ -399,32 +396,31 @@ lemma isCompl_ker_weight_span_coroot (α : Weight K H L) :
 lemma exists_isSl2Triple_of_weight_isNonZero {α : Weight K H L} (hα : α.IsNonZero) :
     ∃ h e f : L, IsSl2Triple h e f ∧ e ∈ rootSpace H α ∧ f ∈ rootSpace H (- α) := by
   obtain ⟨e, heα : e ∈ rootSpace H α, he₀ : e ≠ 0⟩ := α.exists_ne_zero
-  obtain ⟨f, hfα, hf⟩ : ∃ f ∈ rootSpace H (-α), killingForm K L e f ≠ 0 := by
+  obtain ⟨f', hfα, hf⟩ : ∃ f ∈ rootSpace H (-α), killingForm K L e f ≠ 0 := by
     contrapose! he₀
     simpa using mem_ker_killingForm_of_mem_rootSpace_of_forall_rootSpace_neg K L H heα he₀
   have hef := lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg heα hfα
-  let h : H := ⟨⁅e, f⁆, hef ▸ Submodule.smul_mem _ _ (Submodule.coe_mem _)⟩
+  let h : H := ⟨⁅e, f'⁆, hef ▸ Submodule.smul_mem _ _ (Submodule.coe_mem _)⟩
   have hh : α h ≠ 0 := by
     change (α : H →ₗ[K] K) h ≠ 0
-    have : h = killingForm K L e f • (cartanEquivDual H).symm α := by simp [Subtype.ext_iff, hef]
+    have : h = killingForm K L e f' • (cartanEquivDual H).symm α := by simp [Subtype.ext_iff, hef]
     rw [this, map_smul, smul_eq_mul, ne_eq, mul_eq_zero, not_or]
     exact ⟨hf, root_apply_cartanEquivDual_symm_ne_zero hα⟩
-  let f' := (2 * (α h)⁻¹) • f
-  replace hef : ⁅⁅e, f'⁆, e⁆ = 2 • e := by
-    have : ⁅⁅e, f⁆, e⁆ = α h • e := lie_eq_smul_of_mem_rootSpace heα h
+  let f := (2 * (α h)⁻¹) • f'
+  replace hef : ⁅⁅e, f⁆, e⁆ = 2 • e := by
+    have : ⁅⁅e, f'⁆, e⁆ = α h • e := lie_eq_smul_of_mem_rootSpace heα h
     rw [lie_smul, smul_lie, this, ← smul_assoc, smul_eq_mul, mul_assoc, inv_mul_cancel hh,
       mul_one, two_smul, two_smul]
-  refine ⟨⁅e, f'⁆, e, f', ⟨fun contra ↦ ?_, rfl, hef, ?_⟩, heα, Submodule.smul_mem _ _ hfα⟩
+  refine ⟨⁅e, f⁆, e, f, ⟨fun contra ↦ ?_, rfl, hef, ?_⟩, heα, Submodule.smul_mem _ _ hfα⟩
   · rw [contra] at hef
     have _i : NoZeroSMulDivisors ℤ L := NoZeroSMulDivisors.int_of_charZero K L
     simp only [zero_lie, eq_comm (a := (0 : L)), smul_eq_zero, OfNat.ofNat_ne_zero, false_or] at hef
     contradiction
-  · have : ⁅⁅e, f⁆, f⁆ = - α h • f := lie_eq_smul_of_mem_rootSpace hfα h
-    rw [lie_smul, lie_smul, smul_lie, this, ← smul_assoc, smul_eq_mul, mul_assoc]
-    simp only [neg_smul, smul_neg, ← smul_assoc, smul_eq_mul, mul_assoc, neg_inj, f']
-    field_simp
+  · have : ⁅⁅e, f'⁆, f'⁆ = - α h • f' := lie_eq_smul_of_mem_rootSpace hfα h
+    rw [lie_smul, lie_smul, smul_lie, this]
+    simp [← smul_assoc, f, hh, mul_comm _ (2 * (α h)⁻¹)]
 
-lemma isSl2Triple_h_eq_coroot {α : Weight K H L} (hα : α.IsNonZero)
+lemma _root_.IsSl2Triple.h_eq_coroot {α : Weight K H L} (hα : α.IsNonZero)
     {h e f : L} (ht : IsSl2Triple h e f) (heα : e ∈ rootSpace H α) (hfα : f ∈ rootSpace H (- α)) :
     h = coroot α := by
   have hef := lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg heα hfα
@@ -464,7 +460,7 @@ lemma finrank_rootSpace_eq_one (α : Weight K H L) (hα : α.IsNonZero) :
     simpa [this] using lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg hyα hfα
   have P : IsSl2Triple.HasPrimitiveVectorWith ht.symm y (-2 : K) :=
     { ne_zero := by simpa using hy₀
-      lie_h := by simp only [neg_smul, neg_lie, neg_inj, isSl2Triple_h_eq_coroot hα ht heα hfα,
+      lie_h := by simp only [neg_smul, neg_lie, neg_inj, ht.h_eq_coroot hα heα hfα,
         ← H.coe_bracket_of_module, lie_eq_smul_of_mem_rootSpace hyα (coroot α),
         root_apply_coroot hα]
       lie_e := by rw [← lie_skew, hy, neg_zero] }
