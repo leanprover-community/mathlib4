@@ -1555,7 +1555,7 @@ theorem count_normalizedFactors_eq_count_normalizedFactors_span
 
 open Classical in
 theorem count_normalizedFactors_eq_associates_count
-  (R : Type*) [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]--cannot comment this!
+    (R : Type*) [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]--cannot comment this!
     (I J : Ideal R) (hI : I ≠ 0) (hJ : J.IsPrime) (hJ₀ : J ≠ ⊥) :
     Multiset.count J (normalizedFactors I) = (Associates.mk J).count (Associates.mk I).factors := by
   replace hI : Associates.mk I ≠ 0 := Associates.mk_ne_zero.mpr hI
