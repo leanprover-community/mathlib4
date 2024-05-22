@@ -1082,6 +1082,14 @@ theorem nnnorm_eq (x : ℝ≥0) : ‖(x : ℝ)‖₊ = x :=
   NNReal.eq <| Real.norm_of_nonneg x.2
 #align nnreal.nnnorm_eq NNReal.nnnorm_eq
 
+lemma lipschitzWith_sub : LipschitzWith 2 (fun (p : ℝ≥0 × ℝ≥0) ↦ p.1 - p.2) := by
+  rw [← isometry_subtype_coe.lipschitzWith_iff]
+  have : Isometry (Prod.map ((↑) : ℝ≥0 → ℝ) ((↑) : ℝ≥0 → ℝ)) :=
+    isometry_subtype_coe.prod_map isometry_subtype_coe
+  convert (((LipschitzWith.prod_fst.comp this.lipschitz).sub
+    (LipschitzWith.prod_snd.comp this.lipschitz)).max_const 0)
+  norm_num
+
 end NNReal
 
 @[simp 1001] -- Porting note: increase priority so that the LHS doesn't simplify

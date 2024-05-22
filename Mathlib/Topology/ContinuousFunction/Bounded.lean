@@ -642,39 +642,17 @@ theorem one_compContinuous [TopologicalSpace γ] (f : C(γ, α)) : (1 : α →�
 
 end One
 
-section LipschitzAdd
+section add
 
-/- In this section, if `β` is an `AddMonoid` whose addition operation is Lipschitz, then we show
-that the space of bounded continuous functions from `α` to `β` inherits a topological `AddMonoid`
-structure, by using pointwise operations and checking that they are compatible with the uniform
-distance.
-
-Implementation note: The material in this section could have been written for `LipschitzMul`
-and transported by `@[to_additive]`. We choose not to do this because this causes a few lemma
-names (for example, `coe_mul`) to conflict with later lemma names for normed rings; this is only a
-trivial inconvenience, but in any case there are no obvious applications of the multiplicative
-version.
-
-TODO: For consistency and possible generalizations, introduce `BoundedAdd`
-in `Mathlib.Topology.Bornology.BoundedOperation` and and use `BoundedAdd β` & `ContinuousAdd β`
-here instead of `LipschitzAdd β`. -/
-variable [TopologicalSpace α] [PseudoMetricSpace β] [AddMonoid β]
-variable [LipschitzAdd β]
+variable [TopologicalSpace α] [PseudoMetricSpace β] [AddMonoid β] [BoundedAdd β] [ContinuousAdd β]
 variable (f g : α →ᵇ β) {x : α} {C : ℝ}
 
 /-- The pointwise sum of two bounded continuous functions is again bounded continuous. -/
 instance instAdd : Add (α →ᵇ β) where
   add f g :=
-    BoundedContinuousFunction.mkOfBound (f.toContinuousMap + g.toContinuousMap)
-      (↑(LipschitzAdd.C β) * max (Classical.choose f.bounded) (Classical.choose g.bounded))
-      (by
-        intro x y
-        refine' le_trans (lipschitz_with_lipschitz_const_add ⟨f x, g x⟩ ⟨f y, g y⟩) _
-        rw [Prod.dist_eq]
-        refine' mul_le_mul_of_nonneg_left _ (LipschitzAdd.C β).coe_nonneg
-        apply max_le_max
-        · exact Classical.choose_spec f.bounded x y
-        · exact Classical.choose_spec g.bounded x y)
+    { toFun := fun x ↦ f x + g x
+      continuous_toFun := f.continuous.add g.continuous
+      map_bounded' := add_bounded_of_bounded_of_bounded (map_bounded f) (map_bounded g) }
 
 @[simp]
 theorem coe_add : ⇑(f + g) = f + g := rfl
@@ -715,18 +693,6 @@ theorem nsmul_apply (r : ℕ) (f : α →ᵇ β) (v : α) : (r • f) v = r • 
 instance instAddMonoid : AddMonoid (α →ᵇ β) :=
   DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => coe_nsmul _ _
 
-instance instLipschitzAdd : LipschitzAdd (α →ᵇ β) where
-  lipschitz_add :=
-    ⟨LipschitzAdd.C β, by
-      have C_nonneg := (LipschitzAdd.C β).coe_nonneg
-      rw [lipschitzWith_iff_dist_le_mul]
-      rintro ⟨f₁, g₁⟩ ⟨f₂, g₂⟩
-      rw [dist_le (mul_nonneg C_nonneg dist_nonneg)]
-      intro x
-      refine' le_trans (lipschitz_with_lipschitz_const_add ⟨f₁ x, g₁ x⟩ ⟨f₂ x, g₂ x⟩) _
-      refine' mul_le_mul_of_nonneg_left _ C_nonneg
-      apply max_le_max <;> exact dist_coe_le_dist x⟩
-
 /-- Coercion of a `NormedAddGroupHom` is an `AddMonoidHom`. Similar to `AddMonoidHom.coeFn`. -/
 @[simps]
 def coeFnAddHom : (α →ᵇ β) →+ α → β where
@@ -748,11 +714,12 @@ def toContinuousMapAddHom : (α →ᵇ β) →+ C(α, β) where
     simp
 #align bounded_continuous_function.to_continuous_map_add_hom BoundedContinuousFunction.toContinuousMapAddHom
 
-end LipschitzAdd
+end add
 
-section CommHasLipschitzAdd
+section comm_add
 
-variable [TopologicalSpace α] [PseudoMetricSpace β] [AddCommMonoid β] [LipschitzAdd β]
+variable [TopologicalSpace α]
+variable [PseudoMetricSpace β] [AddCommMonoid β] [BoundedAdd β] [ContinuousAdd β]
 
 @[to_additive]
 instance instAddCommMonoid : AddCommMonoid (α →ᵇ β) where
@@ -770,7 +737,37 @@ theorem sum_apply {ι : Type*} (s : Finset ι) (f : ι → α →ᵇ β) (a : α
     (∑ i in s, f i) a = ∑ i in s, f i a := by simp
 #align bounded_continuous_function.sum_apply BoundedContinuousFunction.sum_apply
 
-end CommHasLipschitzAdd
+end comm_add
+
+section LipschitzAdd
+
+/- In this section, if `β` is an `AddMonoid` whose addition operation is Lipschitz, then we show
+that the space of bounded continuous functions from `α` to `β` inherits a topological `AddMonoid`
+structure, by using pointwise operations and checking that they are compatible with the uniform
+distance.
+
+Implementation note: The material in this section could have been written for `LipschitzMul`
+and transported by `@[to_additive]`. We choose not to do this because this causes a few lemma
+names (for example, `coe_mul`) to conflict with later lemma names for normed rings; this is only a
+trivial inconvenience, but in any case there are no obvious applications of the multiplicative
+version. -/
+
+variable [TopologicalSpace α] [PseudoMetricSpace β] [AddMonoid β] [LipschitzAdd β]
+variable (f g : α →ᵇ β) {x : α} {C : ℝ}
+
+instance instLipschitzAdd : LipschitzAdd (α →ᵇ β) where
+  lipschitz_add :=
+    ⟨LipschitzAdd.C β, by
+      have C_nonneg := (LipschitzAdd.C β).coe_nonneg
+      rw [lipschitzWith_iff_dist_le_mul]
+      rintro ⟨f₁, g₁⟩ ⟨f₂, g₂⟩
+      rw [dist_le (mul_nonneg C_nonneg dist_nonneg)]
+      intro x
+      refine' le_trans (lipschitz_with_lipschitz_const_add ⟨f₁ x, g₁ x⟩ ⟨f₂ x, g₂ x⟩) _
+      refine' mul_le_mul_of_nonneg_left _ C_nonneg
+      apply max_le_max <;> exact dist_coe_le_dist x⟩
+
+end LipschitzAdd
 
 section sub
 
@@ -854,7 +851,8 @@ instance instCommMonoid [CommMonoid R] [BoundedMul R] [ContinuousMul R] :
   __ := instMonoid
   mul_comm f g := by ext x; simp [mul_apply, mul_comm]
 
-instance instSemiring [Semiring R] [BoundedMul R] [ContinuousMul R] [LipschitzAdd R] :
+instance instSemiring [Semiring R] [BoundedMul R] [ContinuousMul R]
+    [BoundedAdd R] [ContinuousAdd R] :
     Semiring (α →ᵇ R) :=
   Injective.semiring (↑) DFunLike.coe_injective'
     rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
@@ -1183,7 +1181,7 @@ end MulAction
 section DistribMulAction
 
 variable [MonoidWithZero 𝕜] [AddMonoid β] [DistribMulAction 𝕜 β] [BoundedSMul 𝕜 β]
-variable [LipschitzAdd β]
+variable [BoundedAdd β] [ContinuousAdd β]
 
 instance instDistribMulAction : DistribMulAction 𝕜 (α →ᵇ β) :=
   DFunLike.coe_injective.distribMulAction ⟨⟨_, coe_zero⟩, coe_add⟩ coe_smul
@@ -1194,7 +1192,7 @@ section Module
 
 variable [Semiring 𝕜] [AddCommMonoid β] [Module 𝕜 β] [BoundedSMul 𝕜 β]
 variable {f g : α →ᵇ β} {x : α} {C : ℝ}
-variable [LipschitzAdd β]
+variable [BoundedAdd β] [ContinuousAdd β]
 
 instance instModule : Module 𝕜 (α →ᵇ β) :=
   DFunLike.coe_injective.module _ ⟨⟨_, coe_zero⟩, coe_add⟩  coe_smul
