@@ -89,7 +89,6 @@ variable {R : Type u} [CommRing R] (W : WeierstrassCurve R)
 
 /-- The polynomial $4X^3 + b_2X^2 + 2b_4X + b_6$ congruent to the square $\psi_2^2$ of the
 $2$-division polynomial $\psi_2 = 2Y + a_1X + a_3$ under $R[W]$. -/
-@[pp_dot]
 noncomputable def divisionPolynomial2Sq : R[X] :=
   C 4 * X ^ 3 + C W.b₂ * X ^ 2 + C (2 * W.b₄) * X + C W.b₆
 
@@ -110,7 +109,6 @@ lemma coeff_divisionPolynomial2Sq : W.divisionPolynomial2Sq.coeff 3 = 4 := by
 
 /-- The univariate polynomials congruent under $R[W]$ to the bivariate auxiliary polynomials
 $\tilde{\psi}_n$ associated to the $n$-division polynomials $\psi_n$ for $n \in \mathbb{N}$. -/
-@[pp_dot]
 noncomputable def divisionPolynomial' (n : ℕ) : R[X] :=
   preNormEDS' (W.divisionPolynomial2Sq ^ 2)
     (3 * X ^ 4 + C W.b₂ * X ^ 3 + 3 * C W.b₄ * X ^ 2 + 3 * C W.b₆ * X + C W.b₈)
@@ -154,6 +152,54 @@ lemma divisionPolynomial'_even (m : ℕ) : W.divisionPolynomial' (2 * (m + 3)) =
       W.divisionPolynomial' (m + 4) ^ 2 :=
   preNormEDS'_even ..
 
+private lemma natDegree_odd {a b c d e f : R[X]} {da db dc dd de df n : ℕ}
+    (ha : a.natDegree ≤ da) (hb : b.natDegree ≤ db) (hc : c.natDegree ≤ dc)
+    (hd : d.natDegree ≤ dd) (he : e.natDegree ≤ de) (hf : f.natDegree ≤ df)
+    (habc : n = da + 3 * db + 2 * dc) (hdef : n = dd + 3 * de + 2 * df) :
+    (a * b ^ 3 * c ^ 2 - d * e ^ 3 * f ^ 2).natDegree ≤ n := by
+  nth_rw 1 [← max_self n, habc, hdef]
+  convert natDegree_sub_le_of_le .. using 1
+  · exact natDegree_mul_le_of_le (natDegree_mul_le_of_le ha <| natDegree_pow_le_of_le 3 hb) <|
+      natDegree_pow_le_of_le 2 hc
+  · exact natDegree_mul_le_of_le (natDegree_mul_le_of_le hd <| natDegree_pow_le_of_le 3 he) <|
+      natDegree_pow_le_of_le 2 hf
+
+private lemma coeff_odd {a b c d e f : R[X]} {da db dc dd de df n : ℕ}
+    (ha : a.natDegree ≤ da) (hb : b.natDegree ≤ db) (hc : c.natDegree ≤ dc)
+    (hd : d.natDegree ≤ dd) (he : e.natDegree ≤ de) (hf : f.natDegree ≤ df)
+    (habc : n = da + 3 * db + 2 * dc) (hdef : n = dd + 3 * de + 2 * df) :
+    (a * b ^ 3 * c ^ 2 - d * e ^ 3 * f ^ 2).coeff n = a.coeff da * b.coeff db ^ 3 * c.coeff dc ^ 2 -
+      d.coeff dd * e.coeff de ^ 3 * f.coeff df ^ 2 := by
+  rw [coeff_sub, habc, coeff_mul_of_natDegree_le
+      (natDegree_mul_le_of_le ha <| natDegree_pow_le_of_le 3 hb) <| natDegree_pow_le_of_le 2 hc,
+    coeff_pow_of_natDegree_le hc, coeff_mul_of_natDegree_le ha <| natDegree_pow_le_of_le 3 hb,
+    coeff_pow_of_natDegree_le hb, ← habc, hdef, coeff_mul_of_natDegree_le
+      (natDegree_mul_le_of_le hd <| natDegree_pow_le_of_le 3 he) <| natDegree_pow_le_of_le 2 hf,
+    coeff_mul_of_natDegree_le hd <| natDegree_pow_le_of_le 3 he, coeff_pow_of_natDegree_le he,
+    coeff_pow_of_natDegree_le hf]
+
+private lemma natDegree_even {a b c d e f : R[X]} {da db dc dd de df n : ℕ}
+    (ha : a.natDegree ≤ da) (hb : b.natDegree ≤ db) (hc : c.natDegree ≤ dc)
+    (hd : d.natDegree ≤ dd) (he : e.natDegree ≤ de) (hf : f.natDegree ≤ df)
+    (habc : n = 2 * da + db + dc) (hdef : n = dd + de + 2 * df) :
+    (a ^ 2 * b * c - d * e * f ^ 2).natDegree ≤ n := by
+  nth_rw 1 [← max_self n, habc, hdef]
+  convert natDegree_sub_le_of_le .. using 1
+  · exact natDegree_mul_le_of_le (natDegree_mul_le_of_le (natDegree_pow_le_of_le 2 ha) hb) hc
+  · exact natDegree_mul_le_of_le (natDegree_mul_le_of_le hd he) <| natDegree_pow_le_of_le 2 hf
+
+private lemma coeff_even {a b c d e f : R[X]} {da db dc dd de df n : ℕ}
+    (ha : a.natDegree ≤ da) (hb : b.natDegree ≤ db) (hc : c.natDegree ≤ dc)
+    (hd : d.natDegree ≤ dd) (he : e.natDegree ≤ de) (hf : f.natDegree ≤ df)
+    (habc : n = 2 * da + db + dc) (hdef : n = dd + de + 2 * df) :
+    (a ^ 2 * b * c - d * e * f ^ 2).coeff n =
+      a.coeff da ^ 2 * b.coeff db * c.coeff dc - d.coeff dd * e.coeff de * f.coeff df ^ 2 := by
+  rw [coeff_sub, habc, coeff_mul_of_natDegree_le
+      (natDegree_mul_le_of_le (natDegree_pow_le_of_le 2 ha) hb) hc,
+    coeff_mul_of_natDegree_le (natDegree_pow_le_of_le 2 ha) hb, coeff_pow_of_natDegree_le ha,
+    ← habc, hdef, coeff_mul_of_natDegree_le (natDegree_mul_le_of_le hd he) <|
+      natDegree_pow_le_of_le 2 hf, coeff_mul_of_natDegree_le hd he, coeff_pow_of_natDegree_le hf]
+
 private lemma natDegree_divisionPolynomial'_zero : (W.divisionPolynomial' 0).natDegree = 0 := by
   rw [divisionPolynomial'_zero, natDegree_zero]
 
@@ -189,40 +235,51 @@ private lemma coeff_divisionPolynomial'_four : (W.divisionPolynomial' 4).coeff 6
   compute_degree!
 
 private lemma natDegree_divisionPolynomial'_five : (W.divisionPolynomial' 5).natDegree ≤ 12 := by
-  rw [show 5 = 2 * 2 + 1 by rfl, divisionPolynomial'_odd, divisionPolynomial2Sq]
-  simp
-  compute_degree
+  rw [show 5 = 2 * 2 + 1 by rfl, divisionPolynomial'_odd, if_pos even_zero, if_pos even_zero,
+    ← @one_pow R[X]]
+  exact natDegree_odd W.natDegree_divisionPolynomial'_four W.natDegree_divisionPolynomial'_two.le
+    W.natDegree_divisionPolynomial2Sq W.natDegree_divisionPolynomial'_one.le
+    W.natDegree_divisionPolynomial'_three natDegree_one.le rfl rfl
 
 private lemma coeff_divisionPolynomial'_five : (W.divisionPolynomial' 5).coeff 12 = 5 := by
-  rw [show 5 = 2 * 2 + 1 by rfl, divisionPolynomial'_odd, divisionPolynomial2Sq]
-  simp [-coeff_sub]
-  compute_degree!
+  rw [show 5 = 2 * 2 + 1 by rfl, divisionPolynomial'_odd, if_pos even_zero, if_pos even_zero,
+    ← @one_pow R[X], coeff_odd W.natDegree_divisionPolynomial'_four
+      W.natDegree_divisionPolynomial'_two.le W.natDegree_divisionPolynomial2Sq
+      W.natDegree_divisionPolynomial'_one.le W.natDegree_divisionPolynomial'_three natDegree_one.le
+      rfl rfl, coeff_divisionPolynomial'_four, coeff_divisionPolynomial'_two,
+    coeff_divisionPolynomial2Sq, coeff_divisionPolynomial'_one, coeff_divisionPolynomial'_three,
+    coeff_one_zero]
+  norm_num1
 
 private lemma natDegree_divisionPolynomial'_six : (W.divisionPolynomial' 6).natDegree ≤ 16 := by
-  rw [show 6 = 2 * 3 by rfl, divisionPolynomial'_even, show 0 + 5 = 2 * 2 + 1 by rfl,
-    divisionPolynomial'_odd, divisionPolynomial2Sq]
-  simp
-  compute_degree
+  rw [show 6 = 2 * 3 by rfl, divisionPolynomial'_even]
+  exact natDegree_even W.natDegree_divisionPolynomial'_two.le W.natDegree_divisionPolynomial'_three
+    W.natDegree_divisionPolynomial'_five W.natDegree_divisionPolynomial'_one.le
+    W.natDegree_divisionPolynomial'_three W.natDegree_divisionPolynomial'_four rfl rfl
 
 private lemma coeff_divisionPolynomial'_six : (W.divisionPolynomial' 6).coeff 16 = 3 := by
-  rw [show 6 = 2 * 3 by rfl, divisionPolynomial'_even, show 0 + 5 = 2 * 2 + 1 by rfl,
-    divisionPolynomial'_odd, divisionPolynomial2Sq]
-  simp [-coeff_sub]
-  compute_degree!
+  rw [show 6 = 2 * 3 by rfl, divisionPolynomial'_even, coeff_even
+      W.natDegree_divisionPolynomial'_two.le W.natDegree_divisionPolynomial'_three
+      W.natDegree_divisionPolynomial'_five W.natDegree_divisionPolynomial'_one.le
+      W.natDegree_divisionPolynomial'_three W.natDegree_divisionPolynomial'_four rfl rfl,
+    coeff_divisionPolynomial'_two, coeff_divisionPolynomial'_three, coeff_divisionPolynomial'_five,
+    coeff_divisionPolynomial'_one, coeff_divisionPolynomial'_four]
+  norm_num1
 
 private lemma natDegree_divisionPolynomial'_eight : (W.divisionPolynomial' 8).natDegree ≤ 30 := by
-  rw [show 8 = 2 * 4 by rfl, divisionPolynomial'_even, show 1 + 5 = 2 * 3 by rfl,
-    divisionPolynomial'_even, show 0 + 5 = 2 * 2 + 1 by rfl, divisionPolynomial'_odd,
-    divisionPolynomial2Sq]
-  simp
-  compute_degree
+  rw [show 8 = 2 * 4 by rfl, divisionPolynomial'_even]
+  exact natDegree_even W.natDegree_divisionPolynomial'_three W.natDegree_divisionPolynomial'_four
+    W.natDegree_divisionPolynomial'_six W.natDegree_divisionPolynomial'_two.le
+    W.natDegree_divisionPolynomial'_four W.natDegree_divisionPolynomial'_five rfl rfl
 
 private lemma coeff_divisionPolynomial'_eight : (W.divisionPolynomial' 8).coeff 30 = 4 := by
-  rw [show 8 = 2 * 4 by rfl, divisionPolynomial'_even, show 1 + 5 = 2 * 3 by rfl,
-    divisionPolynomial'_even, show 0 + 5 = 2 * 2 + 1 by rfl, divisionPolynomial'_odd,
-    divisionPolynomial2Sq]
-  simp [-coeff_sub]
-  compute_degree!
+  rw [show 8 = 2 * 4 by rfl, divisionPolynomial'_even, coeff_even
+      W.natDegree_divisionPolynomial'_three W.natDegree_divisionPolynomial'_four
+      W.natDegree_divisionPolynomial'_six W.natDegree_divisionPolynomial'_two.le
+      W.natDegree_divisionPolynomial'_four W.natDegree_divisionPolynomial'_five rfl rfl,
+    coeff_divisionPolynomial'_three, coeff_divisionPolynomial'_four, coeff_divisionPolynomial'_six,
+    coeff_divisionPolynomial'_two, coeff_divisionPolynomial'_five]
+  norm_num1
 
 section Inductive
 
@@ -281,7 +338,6 @@ private lemma natDegree_divisionPolynomial'_add_five :
   rcases m with _ | m
   · exact W.natDegree_divisionPolynomial'_five
   · convert (ih (m + 3) <| by linarith only).right.left using 1
-    rw [← Nat.add_one]
     ring1
 
 private lemma coeff_divisionPolynomial'_add_five :
@@ -289,7 +345,6 @@ private lemma coeff_divisionPolynomial'_add_five :
   rcases m with _ | m
   · exact W.coeff_divisionPolynomial'_five
   · convert (ih (m + 3) <| by linarith only).right.right using 2
-    rw [← Nat.add_one]
     ring1
 
 private lemma natDegree_divisionPolynomial'_add_six :
@@ -308,22 +363,9 @@ private lemma coeff_divisionPolynomial'_add_six :
   · convert (ih (m + 5) <| by linarith only).left.right using 2
     rw [show 2 * (m + 5) ^ 2 = 2 * (m + 4) * (m + 6) + 2 by ring1, Nat.add_sub_cancel]
 
-private lemma natDegree_odd {a b c d e f : R[X]} {da db dc dd de df n : ℕ}
-    (ha : a.natDegree ≤ da) (hb : b.natDegree ≤ db) (hc : c.natDegree ≤ dc)
-    (hd : d.natDegree ≤ dd) (he : e.natDegree ≤ de) (hf : f.natDegree ≤ df)
-    (habc : n = da + 3 * db + 2 * dc) (hdef : n = dd + 3 * de + 2 * df) :
-    (a * b ^ 3 * c ^ 2 - d * e ^ 3 * f ^ 2).natDegree ≤ n := by
-  nth_rw 1 [← max_self n, habc, hdef]
-  convert natDegree_sub_le_of_le .. using 1
-  · exact natDegree_mul_le_of_le (natDegree_mul_le_of_le ha <| natDegree_pow_le_of_le 3 hb) <|
-      natDegree_pow_le_of_le 2 hc
-  · exact natDegree_mul_le_of_le (natDegree_mul_le_of_le hd <| natDegree_pow_le_of_le 3 he) <|
-      natDegree_pow_le_of_le 2 hf
-
 private lemma natDegree_odd_divisionPolynomial'_even :
     (W.divisionPolynomial' <| 2 * (2 * m + 2) + 1).natDegree ≤ 2 * (2 * m + 2) * (2 * m + 3) := by
-  rw [divisionPolynomial'_odd, if_pos <| even_two_mul m, if_pos <| even_two_mul m,
-    ← @one_pow R[X] _ 2]
+  rw [divisionPolynomial'_odd, if_pos <| even_two_mul m, if_pos <| even_two_mul m, ← @one_pow R[X]]
   exact natDegree_odd (natDegree_divisionPolynomial'_add_four m ih)
     (natDegree_divisionPolynomial'_add_two m ih) W.natDegree_divisionPolynomial2Sq
     (natDegree_divisionPolynomial'_add_one m ih) (natDegree_divisionPolynomial'_add_three m ih)
@@ -331,32 +373,18 @@ private lemma natDegree_odd_divisionPolynomial'_even :
 
 private lemma natDegree_odd_divisionPolynomial'_odd :
     (W.divisionPolynomial' <| 2 * (2 * m + 3) + 1).natDegree ≤ 2 * (2 * m + 3) * (2 * m + 4) := by
-  rw [divisionPolynomial'_odd, if_neg m.not_even_two_mul_add_one, ← @one_pow R[X] _ 2,
+  rw [divisionPolynomial'_odd, if_neg m.not_even_two_mul_add_one, ← @one_pow R[X],
     if_neg m.not_even_two_mul_add_one]
   exact natDegree_odd (natDegree_divisionPolynomial'_add_five m ih)
     (natDegree_divisionPolynomial'_add_three m ih) natDegree_one.le
     (natDegree_divisionPolynomial'_add_two m ih) (natDegree_divisionPolynomial'_add_four m ih)
     W.natDegree_divisionPolynomial2Sq (by ring1) (by ring1)
 
-private lemma coeff_odd {a b c d e f : R[X]} {da db dc dd de df n : ℕ}
-    (ha : a.natDegree ≤ da) (hb : b.natDegree ≤ db) (hc : c.natDegree ≤ dc)
-    (hd : d.natDegree ≤ dd) (he : e.natDegree ≤ de) (hf : f.natDegree ≤ df)
-    (habc : n = da + 3 * db + 2 * dc) (hdef : n = dd + 3 * de + 2 * df) :
-    (a * b ^ 3 * c ^ 2 - d * e ^ 3 * f ^ 2).coeff n = a.coeff da * b.coeff db ^ 3 * c.coeff dc ^ 2 -
-      d.coeff dd * e.coeff de ^ 3 * f.coeff df ^ 2 := by
-  rw [coeff_sub, habc, coeff_mul_of_natDegree_le
-      (natDegree_mul_le_of_le ha <| natDegree_pow_le_of_le 3 hb) <| natDegree_pow_le_of_le 2 hc,
-    coeff_pow_of_natDegree_le hc, coeff_mul_of_natDegree_le ha <| natDegree_pow_le_of_le 3 hb,
-    coeff_pow_of_natDegree_le hb, ← habc, hdef, coeff_mul_of_natDegree_le
-      (natDegree_mul_le_of_le hd <| natDegree_pow_le_of_le 3 he) <| natDegree_pow_le_of_le 2 hf,
-    coeff_mul_of_natDegree_le hd <| natDegree_pow_le_of_le 3 he, coeff_pow_of_natDegree_le he,
-    coeff_pow_of_natDegree_le hf]
-
 private lemma coeff_odd_divisionPolynomial'_even :
     (W.divisionPolynomial' <| 2 * (2 * m + 2) + 1).coeff (2 * (2 * m + 2) * (2 * m + 3)) =
       (2 * (2 * m + 2) + 1 : ℕ) := by
-  rw [divisionPolynomial'_odd, if_pos <| even_two_mul m, if_pos <| even_two_mul m,
-    ← @one_pow R[X] _ 2, coeff_odd (natDegree_divisionPolynomial'_add_four m ih)
+  rw [divisionPolynomial'_odd, if_pos <| even_two_mul m, if_pos <| even_two_mul m, ← @one_pow R[X],
+    coeff_odd (natDegree_divisionPolynomial'_add_four m ih)
       (natDegree_divisionPolynomial'_add_two m ih) W.natDegree_divisionPolynomial2Sq
       (natDegree_divisionPolynomial'_add_one m ih) (natDegree_divisionPolynomial'_add_three m ih)
       natDegree_one.le (by ring1) (by ring1), coeff_divisionPolynomial'_add_four m ih,
@@ -369,7 +397,7 @@ private lemma coeff_odd_divisionPolynomial'_even :
 private lemma coeff_odd_divisionPolynomial'_odd :
     (W.divisionPolynomial' <| 2 * (2 * m + 3) + 1).coeff (2 * (2 * m + 3) * (2 * m + 4)) =
       (2 * (2 * m + 3) + 1 : ℕ) := by
-  rw [divisionPolynomial'_odd, if_neg m.not_even_two_mul_add_one, ← @one_pow R[X] _ 2,
+  rw [divisionPolynomial'_odd, if_neg m.not_even_two_mul_add_one, ← @one_pow R[X],
     if_neg m.not_even_two_mul_add_one, coeff_odd (natDegree_divisionPolynomial'_add_five m ih)
       (natDegree_divisionPolynomial'_add_three m ih) natDegree_one.le
       (natDegree_divisionPolynomial'_add_two m ih) (natDegree_divisionPolynomial'_add_four m ih)
@@ -379,16 +407,6 @@ private lemma coeff_odd_divisionPolynomial'_odd :
     coeff_divisionPolynomial2Sq]
   push_cast
   ring1
-
-private lemma natDegree_even {a b c d e f : R[X]} {da db dc dd de df n : ℕ}
-    (ha : a.natDegree ≤ da) (hb : b.natDegree ≤ db) (hc : c.natDegree ≤ dc)
-    (hd : d.natDegree ≤ dd) (he : e.natDegree ≤ de) (hf : f.natDegree ≤ df)
-    (habc : n = 2 * da + db + dc) (hdef : n = dd + de + 2 * df) :
-    (a ^ 2 * b * c - d * e * f ^ 2).natDegree ≤ n := by
-  nth_rw 1 [← max_self n, habc, hdef]
-  convert natDegree_sub_le_of_le .. using 1
-  · exact natDegree_mul_le_of_le (natDegree_mul_le_of_le (natDegree_pow_le_of_le 2 ha) hb) hc
-  · exact natDegree_mul_le_of_le (natDegree_mul_le_of_le hd he) <| natDegree_pow_le_of_le 2 hf
 
 private lemma natDegree_even_divisionPolynomial'_even :
     (W.divisionPolynomial' <| 2 * (2 * m + 3)).natDegree ≤ 2 * (2 * m + 2) * (2 * m + 4) := by
@@ -405,18 +423,6 @@ private lemma natDegree_even_divisionPolynomial'_odd :
     (natDegree_divisionPolynomial'_add_four m ih) (natDegree_divisionPolynomial'_add_six m ih)
     (natDegree_divisionPolynomial'_add_two m ih) (natDegree_divisionPolynomial'_add_four m ih)
     (natDegree_divisionPolynomial'_add_five m ih) (by ring1) (by ring1)
-
-private lemma coeff_even {a b c d e f : R[X]} {da db dc dd de df n : ℕ}
-    (ha : a.natDegree ≤ da) (hb : b.natDegree ≤ db) (hc : c.natDegree ≤ dc)
-    (hd : d.natDegree ≤ dd) (he : e.natDegree ≤ de) (hf : f.natDegree ≤ df)
-    (habc : n = 2 * da + db + dc) (hdef : n = dd + de + 2 * df) :
-    (a ^ 2 * b * c - d * e * f ^ 2).coeff n =
-      a.coeff da ^ 2 * b.coeff db * c.coeff dc - d.coeff dd * e.coeff de * f.coeff df ^ 2 := by
-  rw [coeff_sub, habc, coeff_mul_of_natDegree_le
-      (natDegree_mul_le_of_le (natDegree_pow_le_of_le 2 ha) hb) hc,
-    coeff_mul_of_natDegree_le (natDegree_pow_le_of_le 2 ha) hb, coeff_pow_of_natDegree_le ha,
-    ← habc, hdef, coeff_mul_of_natDegree_le (natDegree_mul_le_of_le hd he) <|
-      natDegree_pow_le_of_le 2 hf, coeff_mul_of_natDegree_le hd he, coeff_pow_of_natDegree_le hf]
 
 private lemma coeff_even_divisionPolynomial'_even :
     (W.divisionPolynomial' <| 2 * (2 * m + 3)).coeff (2 * (2 * m + 2) * (2 * m + 4)) =
@@ -478,7 +484,7 @@ private lemma natDegree_coeff_divisionPolynomial' (n : ℕ) :
       show (2 * (m + 2) + 1) ^ 2 = 2 * (2 * (m + 2) * (m + 3)) + 1 by ring1, Nat.add_sub_cancel,
       Nat.mul_div_cancel_left _ two_pos]
     by_cases hm : Even m
-    · rcases (even_iff_exists_two_mul m).mp hm with ⟨m, rfl⟩
+    · rcases even_iff_exists_two_mul.mp hm with ⟨m, rfl⟩
       simp only [natDegree_odd_divisionPolynomial'_even m ih,
         coeff_odd_divisionPolynomial'_even m ih, natDegree_even_divisionPolynomial'_even m ih,
         coeff_even_divisionPolynomial'_even m ih, and_self]
@@ -505,7 +511,6 @@ lemma coeff_divisionPolynomial' (n : ℕ) :
 
 /-- The univariate polynomials congruent under $R[W]$ to the bivariate auxiliary polynomials
 $\tilde{\psi}_n$ associated to the $n$-division polynomials $\psi_n$ for $n \in \mathbb{Z}$. -/
-@[pp_dot]
 noncomputable def divisionPolynomial (n : ℤ) : R[X] :=
   n.sign * W.divisionPolynomial' n.natAbs
 
@@ -561,11 +566,11 @@ private lemma natDegree_coeff_divisionPolynomial (n : ℤ) :
     exact W.divisionPolynomial_ofNat n ▸ W.natDegree_coeff_divisionPolynomial' n
   · simp only [even_neg, Int.even_coe_nat, divisionPolynomial_neg, natDegree_neg,
       divisionPolynomial_ofNat, Int.natAbs_neg, Int.natAbs_cast, coeff_neg, neg_eq_iff_eq_neg,
-      Int.cast_neg, Int.cast_ofNat, neg_neg]
+      Int.cast_neg, Int.cast_natCast, neg_neg]
     convert W.natDegree_coeff_divisionPolynomial' n using 3 with hn
-    rcases (even_iff_exists_two_mul _).mp hn with ⟨_, rfl⟩
+    rcases even_iff_exists_two_mul.mp hn with ⟨_, rfl⟩
     rw [Nat.cast_mul, neg_mul_eq_mul_neg, Nat.cast_ofNat, Int.mul_ediv_cancel_left _ two_ne_zero,
-      Int.cast_neg, neg_neg, Int.cast_ofNat, Nat.mul_div_cancel_left _ two_pos]
+      Int.cast_neg, neg_neg, Int.cast_natCast, Nat.mul_div_cancel_left _ two_pos]
 
 lemma natDegree_divisionPolynomial (n : ℤ) : (W.divisionPolynomial n).natDegree ≤
     if Even n then (n.natAbs ^ 2 - 4) / 2 else (n.natAbs ^ 2 - 1) / 2 := by
@@ -584,7 +589,6 @@ lemma coeff_divisionPolynomial (n : ℤ) :
 
 /-- The univariate polynomials congruent under $R[W]$ to the bivariate squares $\psi_n^2$ of the
 $n$-division polynomials $\psi_n$ for $n \in \mathbb{Z}$. -/
-@[pp_dot]
 noncomputable def divisionPolynomialZSq (n : ℤ) : R[X] :=
   W.divisionPolynomial n ^ 2 * if Even n.natAbs then W.divisionPolynomial2Sq else 1
 
@@ -629,7 +633,7 @@ private lemma natDegree_coeff_divisionPolynomialZSq_ofNat (n : ℕ) :
     simp only [divisionPolynomialZSq, divisionPolynomial_ofNat, Int.natAbs_even, Int.even_coe_nat,
       Nat.even_add_one, ite_not] at h ⊢
     by_cases hn : Even n
-    · rcases (even_iff_exists_two_mul n).mp hn with ⟨m, rfl⟩
+    · rcases even_iff_exists_two_mul.mp hn with ⟨m, rfl⟩
       rw [if_pos hn, show (2 * m + 1) ^ 2 = 2 * (2 * m * (m + 1)) + 1 by ring1, Nat.add_sub_cancel,
         Nat.mul_div_cancel_left _ two_pos] at h
       rw [if_pos hn, mul_one, show (2 * m + 1) ^ 2 = 2 * (2 * m * (m + 1)) + 1 by ring1,
@@ -673,7 +677,6 @@ lemma coeff_divisionPolynomialZSq (n : ℤ) :
 
 /-- The univariate polynomials congruent under $R[W]$ to the bivariate polynomials $\phi_n$ defined
 in terms of the $n$-division polynomials $\psi_n$ for $n \in \mathbb{Z}$. -/
-@[pp_dot]
 noncomputable def divisionPolynomialX (n : ℤ) : R[X] :=
   X * W.divisionPolynomialZSq n - W.divisionPolynomial (n + 1) * W.divisionPolynomial (n - 1) *
     if Even n.natAbs then 1 else W.divisionPolynomial2Sq
@@ -685,7 +688,7 @@ lemma divisionPolynomialX_ofNat (n : ℕ) : W.divisionPolynomialX (n + 1) =
     W.divisionPolynomial' (n + 2) * W.divisionPolynomial' n *
       (if Even n then W.divisionPolynomial2Sq else 1) := by
   erw [divisionPolynomialX, divisionPolynomialZSq_ofNat, ← mul_assoc, divisionPolynomial_ofNat,
-    add_sub_cancel, divisionPolynomial_ofNat, Int.natAbs_cast]
+    add_sub_cancel_right, divisionPolynomial_ofNat, Int.natAbs_cast]
   simp only [Nat.even_add_one, ite_not]
 
 @[simp]
@@ -737,10 +740,10 @@ private lemma natDegree_coeff_divisionPolynomialX_ofNat (n : ℕ) :
     have h2 := W.natDegree_coeff_divisionPolynomialZSq (n + 2 : ℕ)
     have h3 := W.natDegree_coeff_divisionPolynomial' <| n + 3
     simp only [divisionPolynomialX, Int.natAbs_cast, Nat.even_add_one, ite_not] at h1 h3 ⊢
-    erw [← Nat.cast_add, divisionPolynomial_ofNat, ← Nat.cast_sub <| by linarith only,
-      divisionPolynomial_ofNat, ← Nat.add_one, Nat.add_sub_cancel]
+    erw [divisionPolynomial_ofNat, ← Nat.cast_sub <| by linarith only, divisionPolynomial_ofNat,
+      Nat.add_sub_cancel]
     by_cases hn : Even n
-    · rcases (even_iff_exists_two_mul n).mp hn with ⟨m, rfl⟩
+    · rcases even_iff_exists_two_mul.mp hn with ⟨m, rfl⟩
       rw [if_pos hn, show (2 * m + 1) ^ 2 = 2 * (2 * m * (m + 1)) + 1 by ring1, Nat.add_sub_cancel,
         Nat.mul_div_cancel_left _ two_pos] at h1
       rw [Int.natAbs_cast, show (2 * m + 2) ^ 2 = 4 * m * (m + 2) + 4 by ring1, Nat.succ_sub_one]
@@ -797,7 +800,6 @@ lemma coeff_divisionPolynomialX (n : ℤ) : (W.divisionPolynomialX n).coeff (n.n
 /-! ### The bivariate $n$-division polynomials $\psi_n$ for $n \in \mathbb{Z}$ -/
 
 /-- The bivariate $n$-division polynomials $\psi_n$ for $n \in \mathbb{Z}$. -/
-@[pp_dot]
 noncomputable def divisionPolynomialZ (n : ℤ) : R[X][Y] :=
   C (W.divisionPolynomial n) * if Even n.natAbs then Y - W.toAffine.negPolynomial else 1
 
