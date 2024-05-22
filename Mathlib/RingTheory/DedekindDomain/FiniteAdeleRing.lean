@@ -310,7 +310,7 @@ open ProdAdicCompletions.IsFiniteAdele
 
 /-- The finite adèle ring of `R` is the restricted product over all maximal ideals `v` of `R`
 of `adicCompletion` with respect to `adicCompletionIntegers`. -/
-def finiteAdeleRing : Type _ := (
+def FiniteAdeleRing : Type _ := (
   { carrier := {x : K_hat R K | x.IsFiniteAdele}
     mul_mem' := mul
     one_mem' := one
@@ -318,10 +318,10 @@ def finiteAdeleRing : Type _ := (
     zero_mem' := zero
     algebraMap_mem' := algebraMap'
   } : Subalgebra K (K_hat R K))
-#align dedekind_domain.finite_adele_ring DedekindDomain.finiteAdeleRing
+#align dedekind_domain.finite_adele_ring DedekindDomain.FiniteAdeleRing
 
-instance : CommRing (finiteAdeleRing R K) := Subalgebra.toCommRing _
+instance : CommRing (FiniteAdeleRing R K) := Subalgebra.toCommRing _
 
-instance : Algebra K (finiteAdeleRing R K) := Subalgebra.algebra _
+instance : Algebra K (FiniteAdeleRing R K) := Subalgebra.algebra _
 
 end DedekindDomain
