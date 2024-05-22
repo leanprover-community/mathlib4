@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
 -/
 import Mathlib.Data.Fin.OrderHom
-import Mathlib.Data.Pi.Lex
+import Mathlib.Order.PiLex
 import Mathlib.Order.Interval.Set.Basic
 
 #align_import data.fin.tuple.basic from "leanprover-community/mathlib"@"ef997baa41b5c428be3fb50089a7139bf4ee886b"
@@ -694,7 +694,7 @@ theorem append_snoc {α} (as : Fin n → α) (bs : Fin m → α) (b : α) :
     Fin.append as (snoc bs b) = snoc (Fin.append as bs) b := by
   funext i
   rcases i with ⟨i, isLt⟩
-  simp only [append, addCases, castLT, cast_mk, subNat_mk, natAdd_mk, cast, ge_iff_le, snoc._eq_1,
+  simp only [append, addCases, castLT, cast_mk, subNat_mk, natAdd_mk, cast, ge_iff_le, snoc.eq_1,
     cast_eq, eq_rec_constant, Nat.add_eq, Nat.add_zero, castLT_mk]
   split_ifs with lt_n lt_add sub_lt nlt_add lt_add <;> (try rfl)
   · have := Nat.lt_add_right m lt_n

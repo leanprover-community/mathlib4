@@ -538,38 +538,40 @@ theorem exists_ne_zero_mem_ideal_lt' (w₀ : {w : InfinitePlace K // IsComplex w
 
 /-- A version of `exists_ne_zero_mem_ideal_lt` for the ring of integers of `K`. -/
 theorem exists_ne_zero_mem_ringOfIntegers_lt (h : minkowskiBound K ↑1 < volume (convexBodyLT K f)) :
-    ∃ a ∈ 𝓞 K, a ≠ 0 ∧ ∀ w : InfinitePlace K, w a < f w := by
+    ∃ a : 𝓞 K, a ≠ 0 ∧ ∀ w : InfinitePlace K, w a < f w := by
   obtain ⟨_, h_mem, h_nz, h_bd⟩ := exists_ne_zero_mem_ideal_lt K ↑1 h
-  obtain ⟨⟨a, ha⟩, rfl⟩ := (FractionalIdeal.mem_one_iff _).mp h_mem
-  exact ⟨a, ha, h_nz, h_bd⟩
+  obtain ⟨a, rfl⟩ := (FractionalIdeal.mem_one_iff _).mp h_mem
+  exact ⟨a, RingOfIntegers.coe_ne_zero_iff.mp h_nz, h_bd⟩
 
 /-- A version of `exists_ne_zero_mem_ideal_lt'` for the ring of integers of `K`. -/
 theorem exists_ne_zero_mem_ringOfIntegers_lt' (w₀ : {w : InfinitePlace K // IsComplex w})
     (h : minkowskiBound K ↑1 < volume (convexBodyLT' K f w₀)) :
-    ∃ a ∈ 𝓞 K, a ≠ 0 ∧ (∀ w : InfinitePlace K, w ≠ w₀ → w a < f w) ∧
+    ∃ a : 𝓞 K, a ≠ 0 ∧ (∀ w : InfinitePlace K, w ≠ w₀ → w a < f w) ∧
       |(w₀.val.embedding a).re| < 1 ∧ |(w₀.val.embedding a).im| < (f w₀ : ℝ) ^ 2 := by
   obtain ⟨_, h_mem, h_nz, h_bd⟩ := exists_ne_zero_mem_ideal_lt' K ↑1 w₀ h
-  obtain ⟨⟨a, ha⟩, rfl⟩ := (FractionalIdeal.mem_one_iff _).mp h_mem
-  exact ⟨a, ha, h_nz, h_bd⟩
+  obtain ⟨a, rfl⟩ := (FractionalIdeal.mem_one_iff _).mp h_mem
+  exact ⟨a, RingOfIntegers.coe_ne_zero_iff.mp h_nz, h_bd⟩
 
 theorem exists_primitive_element_lt_of_isReal {w₀ : InfinitePlace K} (hw₀ : IsReal w₀) {B : ℝ≥0}
     (hB : minkowskiBound K ↑1 < convexBodyLTFactor K * B) :
-    ∃ a ∈ 𝓞 K, ℚ⟮(a:K)⟯ = ⊤ ∧ (∀ w : InfinitePlace K, w a < max B 1) := by
+    ∃ a : 𝓞 K, ℚ⟮(a : K)⟯ = ⊤ ∧
+      ∀ w : InfinitePlace K, w a < max B 1 := by
   have : minkowskiBound K ↑1 < volume (convexBodyLT K (fun w ↦ if w = w₀ then B else 1)) := by
     rw [convexBodyLT_volume, ← Finset.prod_erase_mul _ _ (Finset.mem_univ w₀)]
     simp_rw [ite_pow, one_pow]
     rw [Finset.prod_ite_eq']
     simp_rw [Finset.not_mem_erase, ite_false, mult, hw₀, ite_true, one_mul, pow_one]
     exact hB
-  obtain ⟨a, ha, h_nz, h_le⟩ := exists_ne_zero_mem_ringOfIntegers_lt K this
-  refine ⟨a, ha, ?_, fun w ↦ lt_of_lt_of_le (h_le w) ?_⟩
-  · exact is_primitive_element_of_infinitePlace_lt (x := ⟨a, ha⟩) (Subtype.coe_ne_coe.1 h_nz)
+  obtain ⟨a, h_nz, h_le⟩ := exists_ne_zero_mem_ringOfIntegers_lt K this
+  refine ⟨a, ?_, fun w ↦ lt_of_lt_of_le (h_le w) ?_⟩
+  · exact is_primitive_element_of_infinitePlace_lt h_nz
       (fun w h_ne ↦ by convert (if_neg h_ne) ▸ h_le w) (Or.inl hw₀)
   · split_ifs <;> simp
 
 theorem exists_primitive_element_lt_of_isComplex {w₀ : InfinitePlace K} (hw₀ : IsComplex w₀)
     {B : ℝ≥0} (hB : minkowskiBound K ↑1 < convexBodyLT'Factor K * B) :
-    ∃ a ∈ 𝓞 K, ℚ⟮(a:K)⟯ = ⊤ ∧ (∀ w : InfinitePlace K, w a < Real.sqrt (1 + B ^ 2)) := by
+    ∃ a : 𝓞 K, ℚ⟮(a : K)⟯ = ⊤ ∧
+      ∀ w : InfinitePlace K, w a < Real.sqrt (1 + B ^ 2) := by
   have : minkowskiBound K ↑1 <
       volume (convexBodyLT' K (fun w ↦ if w = w₀ then NNReal.sqrt B else 1) ⟨w₀, hw₀⟩) := by
     rw [convexBodyLT'_volume, ← Finset.prod_erase_mul _ _ (Finset.mem_univ w₀)]
@@ -578,15 +580,15 @@ theorem exists_primitive_element_lt_of_isComplex {w₀ : InfinitePlace K} (hw₀
     simp_rw [Finset.not_mem_erase, ite_false, mult, not_isReal_iff_isComplex.mpr hw₀,
       ite_true, ite_false, one_mul, NNReal.sq_sqrt]
     exact hB
-  obtain ⟨a, ha, h_nz, h_le, h_le₀⟩ := exists_ne_zero_mem_ringOfIntegers_lt' K ⟨w₀, hw₀⟩ this
-  refine ⟨a, ha, ?_, fun w ↦ ?_⟩
-  · exact is_primitive_element_of_infinitePlace_lt (x := ⟨a, ha⟩) (Subtype.coe_ne_coe.1 h_nz)
+  obtain ⟨a, h_nz, h_le, h_le₀⟩ := exists_ne_zero_mem_ringOfIntegers_lt' K ⟨w₀, hw₀⟩ this
+  refine ⟨a, ?_, fun w ↦ ?_⟩
+  · exact is_primitive_element_of_infinitePlace_lt h_nz
       (fun w h_ne ↦ by convert if_neg h_ne ▸ h_le w h_ne) (Or.inr h_le₀.1)
   · by_cases h_eq : w = w₀
     · rw [if_pos rfl] at h_le₀
       dsimp only at h_le₀
       rw [h_eq, ← norm_embedding_eq, Real.lt_sqrt (norm_nonneg _), ← Complex.re_add_im
-        (embedding w₀ a), Complex.norm_eq_abs, Complex.abs_add_mul_I, Real.sq_sqrt (by positivity)]
+        (embedding w₀ _), Complex.norm_eq_abs, Complex.abs_add_mul_I, Real.sq_sqrt (by positivity)]
       refine add_lt_add ?_ ?_
       · rw [← sq_abs, sq_lt_one_iff (abs_nonneg _)]
         exact h_le₀.1
@@ -604,7 +606,7 @@ that `|Norm a| < (B / d) ^ d` where `d` is the degree of `K`. -/
 theorem exists_ne_zero_mem_ideal_of_norm_le {B : ℝ}
     (h : (minkowskiBound K I) ≤ volume (convexBodySum K B)) :
     ∃ a ∈ (I : FractionalIdeal (𝓞 K)⁰ K), a ≠ 0 ∧
-      |Algebra.norm ℚ (a:K)| ≤ (B / (finrank ℚ K)) ^ (finrank ℚ K) := by
+      |Algebra.norm ℚ (a:K)| ≤ (B / finrank ℚ K) ^ finrank ℚ K := by
   have hB : 0 ≤ B := by
     contrapose! h
     rw [convexBodySum_volume_eq_zero_of_le_zero K (le_of_lt h)]
@@ -636,10 +638,10 @@ theorem exists_ne_zero_mem_ideal_of_norm_le {B : ℝ}
 
 theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le {B : ℝ}
     (h : (minkowskiBound K ↑1) ≤ volume (convexBodySum K B)) :
-    ∃ a ∈ 𝓞 K, a ≠ 0 ∧ |Algebra.norm ℚ (a:K)| ≤ (B / (finrank ℚ K)) ^ (finrank ℚ K) := by
+    ∃ a : 𝓞 K, a ≠ 0 ∧ |Algebra.norm ℚ (a : K)| ≤ (B / finrank ℚ K) ^ finrank ℚ K := by
   obtain ⟨_, h_mem, h_nz, h_bd⟩ := exists_ne_zero_mem_ideal_of_norm_le K ↑1 h
-  obtain ⟨⟨a, ha⟩, rfl⟩ := (FractionalIdeal.mem_one_iff _).mp h_mem
-  exact ⟨a, ha, h_nz, h_bd⟩
+  obtain ⟨a, rfl⟩ := (FractionalIdeal.mem_one_iff _).mp h_mem
+  exact ⟨a, RingOfIntegers.coe_ne_zero_iff.mp h_nz, h_bd⟩
 
 end minkowski
 

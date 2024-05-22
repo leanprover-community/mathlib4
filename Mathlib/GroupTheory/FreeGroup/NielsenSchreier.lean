@@ -205,8 +205,8 @@ theorem loopOfHom_eq_id {a b : Generators G} (e) (H : e ∈ wideSubquiverSymmetr
 /-- Since a hom gives a loop, any homomorphism from the vertex group at the root
     extends to a functor on the whole groupoid. -/
 @[simps]
-def functorOfMonoidHom {X} [Monoid X] (f : End (root' T) →* X) : G ⥤ CategoryTheory.SingleObj X
-    where
+def functorOfMonoidHom {X} [Monoid X] (f : End (root' T) →* X) :
+    G ⥤ CategoryTheory.SingleObj X where
   obj _ := ()
   map p := f (loopOfHom T p)
   map_id := by

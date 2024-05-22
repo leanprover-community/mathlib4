@@ -3,13 +3,13 @@ Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland
 -/
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Data.Nat.Parity
-import Mathlib.Tactic.Abel
+import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Algebra.Ring.Opposite
+import Mathlib.Tactic.Abel
 
 #align_import algebra.geom_sum from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
@@ -445,7 +445,7 @@ theorem Nat.geom_sum_le {b : ℕ} (hb : 2 ≤ b) (a n : ℕ) :
 theorem Nat.geom_sum_Ico_le {b : ℕ} (hb : 2 ≤ b) (a n : ℕ) :
     ∑ i in Ico 1 n, a / b ^ i ≤ a / (b - 1) := by
   cases' n with n
-  · rw [zero_eq, Ico_eq_empty_of_le (zero_le_one' ℕ), sum_empty]
+  · rw [Ico_eq_empty_of_le (zero_le_one' ℕ), sum_empty]
     exact Nat.zero_le _
   rw [← add_le_add_iff_left a]
   calc

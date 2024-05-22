@@ -8,7 +8,7 @@ import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.Module.Submodule.Ker
 import Mathlib.Algebra.Module.Submodule.RestrictScalars
 import Mathlib.Algebra.Module.ULift
-import Mathlib.RingTheory.Subring.Basic
+import Mathlib.Algebra.Ring.Subring.Basic
 
 #align_import algebra.algebra.basic from "leanprover-community/mathlib"@"36b8aa61ea7c05727161f96a0532897bd72aedab"
 
@@ -152,8 +152,7 @@ variable (R)
 
 /-- A `Semiring` that is an `Algebra` over a commutative ring carries a natural `Ring` structure.
 See note [reducible non-instances]. -/
-@[reducible]
-def semiringToRing [Semiring A] [Algebra R A] : Ring A :=
+abbrev semiringToRing [Semiring A] [Algebra R A] : Ring A :=
   { __ := (inferInstance : Semiring A)
     __ := Module.addCommMonoidToAddCommGroup R
     intCast := fun z => algebraMap R A z
@@ -416,7 +415,7 @@ theorem intCast_smul {k V : Type*} [CommRing k] [AddCommGroup V] [Module k V] (r
 theorem NoZeroSMulDivisors.trans (R A M : Type*) [CommRing R] [Ring A] [IsDomain A] [Algebra R A]
     [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M] [NoZeroSMulDivisors R A]
     [NoZeroSMulDivisors A M] : NoZeroSMulDivisors R M := by
-  refine' ⟨fun {r m} h => _⟩
+  refine ⟨fun {r m} h => ?_⟩
   rw [algebra_compatible_smul A r m] at h
   cases' smul_eq_zero.1 h with H H
   · have : Function.Injective (algebraMap R A) :=

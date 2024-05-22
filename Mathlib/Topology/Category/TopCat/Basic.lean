@@ -85,14 +85,28 @@ instance topologicalSpace_coe (X : TopCat) : TopologicalSpace X :=
   X.str
 
 -- Porting note: cannot see through forget; made reducible to get closer to Lean 3 behavior
-@[reducible]
-instance topologicalSpace_forget (X : TopCat) : TopologicalSpace <| (forget TopCat).obj X :=
+@[instance] abbrev topologicalSpace_forget
+    (X : TopCat) : TopologicalSpace <| (forget TopCat).obj X :=
   X.str
 
 @[simp]
 theorem coe_of (X : Type u) [TopologicalSpace X] : (of X : Type u) = X := rfl
 set_option linter.uppercaseLean3 false in
 #align Top.coe_of TopCat.coe_of
+
+/--
+Replace a function coercion for a morphism `TopCat.of X ⟶ TopCat.of Y` with the definitionally
+equal function coercion for a continuous map `C(X, Y)`.
+-/
+@[simp] theorem coe_of_of {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y]
+    {f : C(X, Y)} {x} :
+    @DFunLike.coe (TopCat.of X ⟶ TopCat.of Y) ((CategoryTheory.forget TopCat).obj (TopCat.of X))
+      (fun _ ↦ (CategoryTheory.forget TopCat).obj (TopCat.of Y)) ConcreteCategory.instFunLike
+      f x =
+    @DFunLike.coe C(X, Y) X
+      (fun _ ↦ Y) _
+      f x :=
+  rfl
 
 instance inhabited : Inhabited TopCat :=
   ⟨TopCat.of Empty⟩

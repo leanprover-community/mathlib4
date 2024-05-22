@@ -5,10 +5,10 @@ Authors: Kyle Miller
 -/
 import Lean.Elab.Tactic.Config
 import Lean.Elab.Tactic.RCases
+import Lean.Meta.Tactic.Assumption
+import Lean.Meta.Tactic.Rfl
 import Mathlib.Lean.Meta.CongrTheorems
 import Mathlib.Logic.Basic
-import Mathlib.Tactic.Relation.Rfl
-import Std.Logic
 
 /-!
 # The `congr!` tactic
@@ -512,7 +512,7 @@ private theorem eq_imp_of_iff_imp {p : x = y → Prop} (h : (he : x ↔ y) → p
 /--
 Does `Lean.MVarId.intros` but then cleans up the introduced hypotheses, removing anything
 that is trivial. If there are any patterns in the current `CongrMetaM` state then instead
-of `Lean.MVarId.intros` it does `Std.Tactic.RCases.rintro`.
+of `Lean.MVarId.intros` it does `Lean.Elab..Tactic.RCases.rintro`.
 
 Cleaning up includes:
 - deleting hypotheses of the form `HEq x x`, `x = x`, and `x ↔ x`.

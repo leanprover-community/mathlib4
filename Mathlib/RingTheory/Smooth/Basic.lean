@@ -167,7 +167,7 @@ instance mvPolynomial (σ : Type u) : FormallySmooth R (MvPolynomial σ R) := by
   have : ∀ s : σ, ∃ c : C, Ideal.Quotient.mk I c = f (MvPolynomial.X s) := fun s =>
     Ideal.Quotient.mk_surjective _
   choose g hg using this
-  refine' ⟨MvPolynomial.aeval g, _⟩
+  refine ⟨MvPolynomial.aeval g, ?_⟩
   ext s
   rw [← hg, AlgHom.comp_apply, MvPolynomial.aeval_X]
   rfl
@@ -205,6 +205,7 @@ variable {R S : Type u} [CommRing R] [CommSemiring S]
 variable {P A : Type u} [CommRing A] [Algebra R A] [CommRing P] [Algebra R P]
 variable (I : Ideal P) (f : P →ₐ[R] A) (hf : Function.Surjective f)
 
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 theorem of_split [FormallySmooth R P] (g : A →ₐ[R] P ⧸ (RingHom.ker f.toRingHom) ^ 2)
     (hg : f.kerSquareLift.comp g = AlgHom.id R A) : FormallySmooth R A := by
   constructor
@@ -252,6 +253,7 @@ theorem iff_split_surjection [FormallySmooth R P] :
     -- rw [AlgEquiv.apply_symm_apply] at this
     erw [AlgEquiv.apply_symm_apply] at this
     conv_rhs => rw [← this, AlgHom.id_apply]
+    rfl
     -- Porting note: lean3 was not finished here:
     -- obtain ⟨y, e⟩ :=
     --   Ideal.Quotient.mk_surjective
@@ -324,7 +326,7 @@ theorem localization_base [FormallySmooth R Sₘ] : FormallySmooth Rₘ Sₘ := 
   letI := ((algebraMap Rₘ Q).comp (algebraMap R Rₘ)).toAlgebra
   letI : IsScalarTower R Rₘ Q := IsScalarTower.of_algebraMap_eq' rfl
   let f : Sₘ →ₐ[Rₘ] Q := by
-    refine' { FormallySmooth.lift I ⟨2, e⟩ (f.restrictScalars R) with commutes' := _ }
+    refine { FormallySmooth.lift I ⟨2, e⟩ (f.restrictScalars R) with commutes' := ?_ }
     intro r
     change
       (RingHom.comp (FormallySmooth.lift I ⟨2, e⟩ (f.restrictScalars R) : Sₘ →+* Q)

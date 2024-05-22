@@ -108,7 +108,7 @@ attribute [to_additive existing] finprod_def'
 
 end
 
-open Std.ExtendedBinder
+open Batteries.ExtendedBinder
 
 /-- `∑ᶠ x, f x` is notation for `finsum f`. It is the sum of `f x`, where `x` ranges over the
 support of `f`, if it's finite, zero otherwise. Taking the sum over multiple arguments or

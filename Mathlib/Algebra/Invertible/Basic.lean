@@ -7,7 +7,6 @@ import Mathlib.Algebra.Invertible.GroupWithZero
 import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Group.Units
-import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 
 #align_import algebra.invertible from "leanprover-community/mathlib"@"722b3b152ddd5e0cf21c0a29787c76596cb6b422"
@@ -92,8 +91,7 @@ section Monoid
 variable [Monoid α]
 
 /-- This is the `Invertible` version of `Units.isUnit_units_mul` -/
-@[reducible]
-def invertibleOfInvertibleMul (a b : α) [Invertible a] [Invertible (a * b)] : Invertible b where
+abbrev invertibleOfInvertibleMul (a b : α) [Invertible a] [Invertible (a * b)] : Invertible b where
   invOf := ⅟ (a * b) * a
   invOf_mul_self := by rw [mul_assoc, invOf_mul_self]
   mul_invOf_self := by
@@ -102,8 +100,7 @@ def invertibleOfInvertibleMul (a b : α) [Invertible a] [Invertible (a * b)] : I
 #align invertible_of_invertible_mul invertibleOfInvertibleMul
 
 /-- This is the `Invertible` version of `Units.isUnit_mul_units` -/
-@[reducible]
-def invertibleOfMulInvertible (a b : α) [Invertible (a * b)] [Invertible b] : Invertible a where
+abbrev invertibleOfMulInvertible (a b : α) [Invertible (a * b)] [Invertible b] : Invertible a where
   invOf := b * ⅟ (a * b)
   invOf_mul_self := by
     rw [← (isUnit_of_invertible b).mul_left_inj, mul_assoc, mul_assoc, invOf_mul_self, mul_one,

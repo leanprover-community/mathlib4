@@ -3,12 +3,12 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Jujian Zhang
 -/
-import Mathlib.GroupTheory.Subgroup.Pointwise
-import Mathlib.LinearAlgebra.Span
-import Mathlib.LinearAlgebra.Finsupp
-import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.Order.Group.Action
+import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.LinearAlgebra.Span
+import Mathlib.RingTheory.Ideal.Basic
 
 #align_import algebra.module.submodule.pointwise from "leanprover-community/mathlib"@"48085f140e684306f9e7da907cd5932056d1aded"
 
@@ -90,8 +90,7 @@ theorem mem_neg {g : M} {S : Submodule R M} : g ∈ -S ↔ -g ∈ S :=
 /-- `Submodule.pointwiseNeg` is involutive.
 
 This is available as an instance in the `Pointwise` locale. -/
-protected def involutivePointwiseNeg : InvolutiveNeg (Submodule R M)
-    where
+protected def involutivePointwiseNeg : InvolutiveNeg (Submodule R M) where
   neg := Neg.neg
   neg_neg _S := SetLike.coe_injective <| neg_neg _
 #align submodule.has_involutive_pointwise_neg Submodule.involutivePointwiseNeg
@@ -108,8 +107,7 @@ theorem neg_le (S T : Submodule R M) : -S ≤ T ↔ S ≤ -T :=
 #align submodule.neg_le Submodule.neg_le
 
 /-- `Submodule.pointwiseNeg` as an order isomorphism. -/
-def negOrderIso : Submodule R M ≃o Submodule R M
-    where
+def negOrderIso : Submodule R M ≃o Submodule R M where
   toEquiv := Equiv.neg _
   map_rel_iff' := @neg_le_neg _ _ _ _ _
 #align submodule.neg_order_iso Submodule.negOrderIso
@@ -203,8 +201,7 @@ variable [Monoid α] [DistribMulAction α M] [SMulCommClass α R M]
 /-- The action on a submodule corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale. -/
-protected def pointwiseDistribMulAction : DistribMulAction α (Submodule R M)
-    where
+protected def pointwiseDistribMulAction : DistribMulAction α (Submodule R M) where
   smul a S := S.map (DistribMulAction.toLinearMap R M a : M →ₗ[R] M)
   one_smul S :=
     (congr_arg (fun f : Module.End R M => S.map f) (LinearMap.ext <| one_smul α)).trans S.map_id

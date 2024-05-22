@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
 import Mathlib.Algebra.GroupPower.IterateHom
+import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Data.List.Cycle
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.PNat.Basic
@@ -373,7 +374,7 @@ theorem iterate_eq_iterate_iff_of_lt_minimalPeriod {m n : ℕ} (hm : m < minimal
 theorem minimalPeriod_eq_one_iff_isFixedPt : minimalPeriod f x = 1 ↔ IsFixedPt f x := by
   refine' ⟨fun h => _, fun h => _⟩
   · rw [← iterate_one f]
-    refine' Function.IsPeriodicPt.isFixedPt _
+    refine Function.IsPeriodicPt.isFixedPt ?_
     rw [← h]
     exact isPeriodicPt_minimalPeriod f x
   · exact
@@ -505,7 +506,7 @@ theorem periodicOrbit_length : (periodicOrbit f x).length = minimalPeriod f x :=
 @[simp]
 theorem periodicOrbit_eq_nil_iff_not_periodic_pt :
     periodicOrbit f x = Cycle.nil ↔ x ∉ periodicPts f := by
-  simp only [periodicOrbit._eq_1, Cycle.coe_eq_nil, List.map_eq_nil, List.range_eq_nil]
+  simp only [periodicOrbit.eq_1, Cycle.coe_eq_nil, List.map_eq_nil, List.range_eq_nil]
   exact minimalPeriod_eq_zero_iff_nmem_periodicPts
 #align function.periodic_orbit_eq_nil_iff_not_periodic_pt Function.periodicOrbit_eq_nil_iff_not_periodic_pt
 

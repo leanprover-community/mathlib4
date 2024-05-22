@@ -38,7 +38,7 @@ We define the completion of `K` with respect to the `v`-adic valuation, denoted
   ideal `(r)`.
 - `IsDedekindDomain.HeightOneSpectrum.int_valuation_exists_uniformizer` : There exists `π ∈ R`
   with `v`-adic valuation `Multiplicative.ofAdd (-1)`.
-- IsDedekindDomain.HeightOneSpectrum.valuation_of_mk'` : The `v`-adic valuation of `r/s ∈ K`
+- `IsDedekindDomain.HeightOneSpectrum.valuation_of_mk'` : The `v`-adic valuation of `r/s ∈ K`
   is the valuation of `r` divided by the valuation of `s`.
 - `IsDedekindDomain.HeightOneSpectrum.valuation_of_algebraMap` : The `v`-adic valuation on `K`
   extends the `v`-adic valuation on `R`.
@@ -204,18 +204,18 @@ theorem IntValuation.map_add_le_max' (x y : R) :
         have h_dvd_x : x ∈ v.asIdeal ^ nmin := by
           rw [← Associates.le_singleton_iff x nmin _,
             Associates.prime_pow_dvd_iff_le (Associates.mk_ne_zero'.mpr hx) _]
-          exact min_le_left _ _
+          · exact min_le_left _ _
           apply v.associates_irreducible
         have h_dvd_y : y ∈ v.asIdeal ^ nmin := by
           rw [← Associates.le_singleton_iff y nmin _,
             Associates.prime_pow_dvd_iff_le (Associates.mk_ne_zero'.mpr hy) _]
-          exact min_le_right _ _
+          · exact min_le_right _ _
           apply v.associates_irreducible
         have h_dvd_xy : Associates.mk v.asIdeal ^ nmin ≤ Associates.mk (Ideal.span {x + y}) := by
           rw [Associates.le_singleton_iff]
           exact Ideal.add_mem (v.asIdeal ^ nmin) h_dvd_x h_dvd_y
         rw [Associates.prime_pow_dvd_iff_le (Associates.mk_ne_zero'.mpr hxy) _] at h_dvd_xy
-        exact h_dvd_xy
+        · exact h_dvd_xy
         apply v.associates_irreducible
 #align is_dedekind_domain.height_one_spectrum.int_valuation.map_add_le_max' IsDedekindDomain.HeightOneSpectrum.IntValuation.map_add_le_max'
 

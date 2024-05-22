@@ -3,9 +3,8 @@ Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
-import Mathlib.Data.Fin.Basic
-import Mathlib.Data.List.Sort
 import Mathlib.Data.List.Duplicate
+import Mathlib.Data.List.Sort
 
 #align_import data.list.nodup_equiv_fin from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
 
@@ -41,7 +40,7 @@ for a version giving an equivalence when there is decidable equality. -/
 @[simps]
 def getBijectionOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, x ∈ l) :
     { f : Fin l.length → α // Function.Bijective f } :=
-  ⟨fun i => l.get i, fun _ _ h => Fin.ext <| (nd.nthLe_inj_iff _ _).1 h,
+  ⟨fun i => l.get i, fun _ _ h => nd.get_inj_iff.1 h,
    fun x =>
     let ⟨i, hl⟩ := List.mem_iff_get.1 (h x)
     ⟨i, hl⟩⟩
@@ -65,8 +64,8 @@ an equivalence between `Fin l.length` and `α`.
 See `List.Nodup.getBijectionOfForallMemList` for a version without
 decidable equality. -/
 @[simps]
-def getEquivOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, x ∈ l) : Fin l.length ≃ α
-    where
+def getEquivOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, x ∈ l) :
+    Fin l.length ≃ α where
   toFun i := l.get i
   invFun a := ⟨_, indexOf_lt_length.2 (h a)⟩
   left_inv i := by simp [List.get_indexOf, nd]
@@ -234,6 +233,7 @@ theorem duplicate_iff_exists_distinct_get {l : List α} {x : α} :
         · simpa using h
         · simpa using h'
 
+set_option linter.deprecated false in
 /-- An element `x : α` of `l : List α` is a duplicate iff it can be found
 at two distinct indices `n m : ℕ` inside the list `l`.
 -/

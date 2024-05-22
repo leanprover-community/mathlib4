@@ -282,7 +282,6 @@ theorem induction_linear {P : PolynomialModule R M → Prop} (f : PolynomialModu
   Finsupp.induction_linear f h0 hadd hsingle
 #align polynomial_module.induction_linear PolynomialModule.induction_linear
 
-@[semireducible]
 noncomputable instance polynomialModule : Module R[X] (PolynomialModule R M) :=
   inferInstanceAs (Module R[X] (Module.AEval' (Finsupp.lmapDomain M R Nat.succ)))
 #align polynomial_module.polynomial_module PolynomialModule.polynomialModule
@@ -311,10 +310,10 @@ theorem monomial_smul_single (i : ℕ) (r : R) (j : ℕ) (m : M) :
     Module.algebraMap_end_apply, smul_def]
   induction i generalizing r j m with
   | zero =>
-    rw [Nat.zero_eq, Function.iterate_zero, zero_add]
+    rw [Function.iterate_zero, zero_add]
     exact Finsupp.smul_single r j m
   | succ n hn =>
-    rw [Function.iterate_succ, Function.comp_apply, Nat.succ_eq_add_one, add_assoc, ← hn]
+    rw [Function.iterate_succ, Function.comp_apply, add_assoc, ← hn]
     congr 2
     rw [Nat.one_add]
     exact Finsupp.mapDomain_single

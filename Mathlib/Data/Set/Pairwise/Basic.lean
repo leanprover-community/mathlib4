@@ -101,7 +101,7 @@ theorem Nonempty.pairwise_iff_exists_forall [IsEquiv α r] {s : Set ι} (hs : s.
     s.Pairwise (r on f) ↔ ∃ z, ∀ x ∈ s, r (f x) z := by
   constructor
   · rcases hs with ⟨y, hy⟩
-    refine' fun H => ⟨f y, fun x hx => _⟩
+    refine fun H => ⟨f y, fun x hx => ?_⟩
     rcases eq_or_ne x y with (rfl | hne)
     · apply IsRefl.refl
     · exact H hx hy hne
@@ -139,8 +139,8 @@ theorem pairwise_union :
     s.Pairwise r ∧ t.Pairwise r ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b ∧ r b a := by
   simp only [Set.Pairwise, mem_union, or_imp, forall_and]
   exact
-    ⟨fun H => ⟨H.1.1, H.2.2, H.2.1, fun x hx y hy hne => H.1.2 y hy x hx hne.symm⟩, fun H =>
-      ⟨⟨H.1, fun x hx y hy hne => H.2.2.2 y hy x hx hne.symm⟩, H.2.2.1, H.2.1⟩⟩
+    ⟨fun H => ⟨H.1.1, H.2.2, H.1.2, fun x hx y hy hne => H.2.1 y hy x hx hne.symm⟩,
+     fun H => ⟨⟨H.1, H.2.2.1⟩, fun x hx y hy hne => H.2.2.2 y hy x hx hne.symm, H.2.1⟩⟩
 #align set.pairwise_union Set.pairwise_union
 
 theorem pairwise_union_of_symmetric (hr : Symmetric r) :

@@ -91,7 +91,7 @@ def inducedTopology : GrothendieckTopology C where
     apply K.pullback_stable i
     refine' K.superset_covering _ (H' hg)
     rintro W _ ⟨Z', g', i', hg, rfl⟩
-    refine' ⟨Z', g' ≫ g , i', hg, _⟩
+    refine ⟨Z', g' ≫ g , i', hg, ?_⟩
     simp
 #align category_theory.locally_cover_dense.induced_topology CategoryTheory.LocallyCoverDense.inducedTopology
 
@@ -117,8 +117,8 @@ theorem Functor.locallyCoverDense_of_isCoverDense [Full G] [G.IsCoverDense K] :
   rintro Y _ ⟨Z, _, f, hf, ⟨W, g, f', rfl : _ = _⟩, rfl⟩
   use W; use G.preimage (f' ≫ f); use g
   constructor
-  simpa using T.val.downward_closed hf f'
-  simp
+  · simpa using T.val.downward_closed hf f'
+  · simp
 #align category_theory.cover_dense.locally_cover_dense CategoryTheory.Functor.locallyCoverDense_of_isCoverDense
 
 /-- Given a fully faithful cover-dense functor `G : C ⥤ (D, K)`, we may induce a topology on `C`.

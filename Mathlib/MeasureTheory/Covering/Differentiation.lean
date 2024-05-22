@@ -213,7 +213,7 @@ that `ρ s ≤ c * μ s`, and the second one that `ρ s ≥ d * μ s`, a contrad
 theorem null_of_frequently_le_of_frequently_ge {c d : ℝ≥0} (hcd : c < d) (s : Set α)
     (hc : ∀ x ∈ s, ∃ᶠ a in v.filterAt x, ρ a ≤ c * μ a)
     (hd : ∀ x ∈ s, ∃ᶠ a in v.filterAt x, (d : ℝ≥0∞) * μ a ≤ ρ a) : μ s = 0 := by
-  apply null_of_locally_null s fun x _ => ?_
+  apply measure_null_of_locally_null s fun x _ => ?_
   obtain ⟨o, xo, o_open, μo⟩ : ∃ o : Set α, x ∈ o ∧ IsOpen o ∧ μ o < ∞ :=
     Measure.exists_isOpen_measure_lt_top μ x
   refine' ⟨s ∩ o, inter_mem_nhdsWithin _ (o_open.mem_nhds xo), _⟩
@@ -256,7 +256,10 @@ theorem ae_tendsto_div : ∀ᵐ x ∂μ, ∃ c, Tendsto (fun a => ρ a / μ a) (
       exact ENNReal.mul_le_of_le_div ha.le
   have B : ∀ᵐ x ∂μ, ∀ c ∈ w, ∀ d ∈ w, c < d →
       ¬((∃ᶠ a in v.filterAt x, ρ a / μ a < c) ∧ ∃ᶠ a in v.filterAt x, d < ρ a / μ a) := by
-    simpa only [ae_ball_iff w_count, ae_all_iff]
+    -- Adaptation note: 2024-04-23
+    -- The next two lines were previously just `simpa only [ae_ball_iff w_count, ae_all_iff]`
+    rw [ae_ball_iff w_count]; intro x hx; rw [ae_ball_iff w_count]; revert x
+    simpa only [ae_all_iff]
   filter_upwards [B]
   intro x hx
   exact tendsto_of_no_upcrossings w_dense hx
@@ -481,7 +484,7 @@ theorem mul_measure_le_of_subset_lt_limRatioMeas {q : ℝ≥0} {s : Set α}
 
 /-- The points with `v.limRatioMeas hρ x = ∞` have measure `0` for `μ`. -/
 theorem measure_limRatioMeas_top : μ {x | v.limRatioMeas hρ x = ∞} = 0 := by
-  refine' null_of_locally_null _ fun x _ => _
+  refine' measure_null_of_locally_null _ fun x _ => _
   obtain ⟨o, xo, o_open, μo⟩ : ∃ o : Set α, x ∈ o ∧ IsOpen o ∧ ρ o < ∞ :=
     Measure.exists_isOpen_measure_lt_top ρ x
   let s := {x : α | v.limRatioMeas hρ x = ∞} ∩ o
@@ -506,7 +509,7 @@ theorem measure_limRatioMeas_top : μ {x | v.limRatioMeas hρ x = ∞} = 0 := by
 
 /-- The points with `v.limRatioMeas hρ x = 0` have measure `0` for `ρ`. -/
 theorem measure_limRatioMeas_zero : ρ {x | v.limRatioMeas hρ x = 0} = 0 := by
-  refine' null_of_locally_null _ fun x _ => _
+  refine' measure_null_of_locally_null _ fun x _ => _
   obtain ⟨o, xo, o_open, μo⟩ : ∃ o : Set α, x ∈ o ∧ IsOpen o ∧ μ o < ∞ :=
     Measure.exists_isOpen_measure_lt_top μ x
   let s := {x : α | v.limRatioMeas hρ x = 0} ∩ o
@@ -807,7 +810,10 @@ theorem ae_tendsto_lintegral_nnnorm_sub_div'_of_integrable {f : α → E} (hf : 
       ∀ᵉ (n : ℕ) (c ∈ t),
         Tendsto (fun a => (∫⁻ y in a, ‖f y - (A.set n).indicator (fun _ => c) y‖₊ ∂μ) / μ a)
           (v.filterAt x) (𝓝 ‖f x - (A.set n).indicator (fun _ => c) x‖₊) := by
-    simp_rw [ae_all_iff, ae_ball_iff t_count]
+    -- Adaptation note: 2024-04-23
+    -- The next two lines were previously just `simp_rw [ae_all_iff, ae_ball_iff t_count]`.
+    simp_rw [ae_all_iff]
+    intro x; rw [ae_ball_iff t_count]; revert x
     intro n c _
     apply ae_tendsto_lintegral_div'
     · refine' (h'f.sub _).ennnorm
@@ -918,7 +924,7 @@ theorem ae_tendsto_average_norm_sub {f : α → E} (hf : LocallyIntegrable f μ)
     simp_rw [coe_nnnorm]
     exact (h''a.sub (integrableOn_const.2 (Or.inr h'a))).norm
   rw [lintegral_coe_eq_integral _ A, ENNReal.toReal_ofReal (by positivity)]
-  rfl
+  simp only [coe_nnnorm, smul_eq_mul]
 
 /-- *Lebesgue differentiation theorem*: for almost every point `x`, the
 average of `f` on `a` tends to `f x` as `a` shrinks to `x` along a Vitali family. -/

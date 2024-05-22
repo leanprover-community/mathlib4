@@ -542,9 +542,8 @@ def mkInductiveAux₂ :
     ⟨(P.xNextIso rfl).hom ≫ I.1, I.2.1 ≫ (Q.xPrevIso rfl).inv, by simpa using I.2.2⟩
 #align homotopy.mk_inductive_aux₂ Homotopy.mkInductiveAux₂
 
--- Adaptation note:
--- During the port we marked these lemmas with `@[eqns]` to emulate the old Lean 3 behaviour.
--- See https://github.com/leanprover-community/mathlib4/issues/11647
+-- Porting note(#11647): during the port we marked these lemmas
+-- with `@[eqns]` to emulate the old Lean 3 behaviour.
 
 @[simp] theorem mkInductiveAux₂_zero :
     mkInductiveAux₂ e zero comm_zero one comm_one succ 0 =
@@ -681,9 +680,8 @@ def mkCoinductiveAux₂ :
     ⟨I.1 ≫ (Q.xPrevIso rfl).inv, (P.xNextIso rfl).hom ≫ I.2.1, by simpa using I.2.2⟩
 #align homotopy.mk_coinductive_aux₂ Homotopy.mkCoinductiveAux₂
 
--- Adaptation note:
--- During the port we marked these lemmas with `@[eqns]` to emulate the old Lean 3 behaviour.
--- See https://github.com/leanprover-community/mathlib4/issues/11647
+-- Porting note (#11647): during the port we marked these lemmas with `@[eqns]`
+-- to emulate the old Lean 3 behaviour.
 
 @[simp] theorem mkCoinductiveAux₂_zero :
     mkCoinductiveAux₂ e zero comm_zero one comm_one succ 0 =

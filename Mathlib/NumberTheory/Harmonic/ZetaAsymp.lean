@@ -106,7 +106,7 @@ lemma term_one {n : ℕ} (hn : 0 < n) :
 
 lemma term_sum_one (N : ℕ) : term_sum 1 N = log (N + 1) - harmonic (N + 1) + 1 := by
   induction' N with N hN
-  · simp_rw [term_sum, Finset.sum_range_zero, harmonic_succ, harmonic_zero, Nat.zero_eq,
+  · simp_rw [term_sum, Finset.sum_range_zero, harmonic_succ, harmonic_zero,
       Nat.cast_zero, zero_add, Nat.cast_one, inv_one, Rat.cast_one, log_one, sub_add_cancel]
   · unfold term_sum at hN ⊢
     rw [Finset.sum_range_succ, hN, harmonic_succ (N + 1),
@@ -124,7 +124,7 @@ lemma term_tsum_one : HasSum (fun n ↦ term (n + 1) 1) (1 - eulerMascheroniCons
   refine Tendsto.add ?_ tendsto_const_nhds
   have := (tendsto_eulerMascheroniSeq'.comp (tendsto_add_atTop_nat 1)).neg
   refine this.congr' (eventually_of_forall (fun n ↦ ?_))
-  simp_rw [Function.comp_apply, eulerMascheroniSeq', (by positivity : n + 1 ≠ 0), if_false]
+  simp_rw [Function.comp_apply, eulerMascheroniSeq', if_false]
   push_cast
   abel
 
@@ -319,7 +319,7 @@ theorem _root_.tendsto_riemannZeta_sub_one_div :
     refine hC.comp (tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ ?_ ?_)
     · exact (Complex.continuous_ofReal.tendsto 1).mono_left (nhdsWithin_le_nhds ..)
     · filter_upwards [self_mem_nhdsWithin] with a ha
-      rw [mem_compl_singleton_iff, ← Complex.ofReal_one, Ne.def, Complex.ofReal_inj]
+      rw [mem_compl_singleton_iff, ← Complex.ofReal_one, Ne, Complex.ofReal_inj]
       exact ne_of_gt ha
   refine ⟨_, Complex.tendsto_limUnder_of_differentiable_on_punctured_nhds_of_isLittleO ?_ ?_⟩
   · filter_upwards [self_mem_nhdsWithin] with s hs

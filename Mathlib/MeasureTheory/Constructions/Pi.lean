@@ -118,7 +118,9 @@ theorem generateFrom_pi_eq {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCountabl
     apply MeasurableSet.iUnion
     intro n; apply measurableSet_generateFrom
     apply mem_image_of_mem; intro j _; dsimp only
-    by_cases h : j = i; subst h; rwa [update_same]; rw [update_noteq h]; apply h1t
+    by_cases h : j = i
+    · subst h; rwa [update_same]
+    · rw [update_noteq h]; apply h1t
   · apply generateFrom_le; rintro _ ⟨s, hs, rfl⟩
     rw [univ_pi_eq_iInter]; apply MeasurableSet.iInter; intro i
     apply @measurable_pi_apply _ _ (fun i => generateFrom (C i))
@@ -174,7 +176,7 @@ theorem piPremeasure_pi' {s : ∀ i, Set (α i)} : piPremeasure m (pi univ s) = 
 
 theorem piPremeasure_pi_mono {s t : Set (∀ i, α i)} (h : s ⊆ t) :
     piPremeasure m s ≤ piPremeasure m t :=
-  Finset.prod_le_prod' fun i _ => (m i).mono' (image_subset _ h)
+  Finset.prod_le_prod' fun _ _ => measure_mono (image_subset _ h)
 #align measure_theory.pi_premeasure_pi_mono MeasureTheory.piPremeasure_pi_mono
 
 theorem piPremeasure_pi_eval {s : Set (∀ i, α i)} :
@@ -194,7 +196,8 @@ protected def pi (m : ∀ i, OuterMeasure (α i)) : OuterMeasure (∀ i, α i) :
 
 theorem pi_pi_le (m : ∀ i, OuterMeasure (α i)) (s : ∀ i, Set (α i)) :
     OuterMeasure.pi m (pi univ s) ≤ ∏ i, m i (s i) := by
-  rcases (pi univ s).eq_empty_or_nonempty with h | h; simp [h]
+  rcases (pi univ s).eq_empty_or_nonempty with h | h
+  · simp [h]
   exact (boundedBy_le _).trans_eq (piPremeasure_pi h)
 #align measure_theory.outer_measure.pi_pi_le MeasureTheory.OuterMeasure.pi_pi_le
 
@@ -249,8 +252,12 @@ instance sigmaFinite_tprod (l : List δ) (μ : ∀ i, Measure (π i)) [∀ i, Si
 theorem tprod_tprod (l : List δ) (μ : ∀ i, Measure (π i)) [∀ i, SigmaFinite (μ i)]
     (s : ∀ i, Set (π i)) :
     Measure.tprod l μ (Set.tprod l s) = (l.map fun i => (μ i) (s i)).prod := by
-  induction' l with i l ih; · simp
-  rw [tprod_cons, Set.tprod, prod_prod, map_cons, prod_cons, ih]
+  induction l with
+  | nil => simp
+  | cons a l ih =>
+    rw [tprod_cons, Set.tprod]
+    erw [prod_prod] -- TODO: why `rw` fails?
+    rw [map_cons, prod_cons, ih]
 #align measure_theory.measure.tprod_tprod MeasureTheory.Measure.tprod_tprod
 
 end Tprod
@@ -290,8 +297,8 @@ theorem pi_caratheodory :
   simp_rw [piPremeasure]
   refine' Finset.prod_add_prod_le' (Finset.mem_univ i) _ _ _
   · simp [image_inter_preimage, image_diff_preimage, measure_inter_add_diff _ hs, le_refl]
-  · rintro j - _; apply mono'; apply image_subset; apply inter_subset_left
-  · rintro j - _; apply mono'; apply image_subset; apply diff_subset
+  · rintro j - _; gcongr; apply inter_subset_left
+  · rintro j - _; gcongr; apply diff_subset
 #align measure_theory.measure.pi_caratheodory MeasureTheory.Measure.pi_caratheodory
 
 /-- `Measure.pi μ` is the finite product of the measures `{μ i | i : ι}`.
@@ -330,8 +337,8 @@ def FiniteSpanningSetsIn.pi {C : ∀ i, Set (Set (α i))}
     (Measure.pi μ).FiniteSpanningSetsIn (pi univ '' pi univ C) := by
   haveI := fun i => (hμ i).sigmaFinite
   haveI := Fintype.toEncodable ι
-  refine' ⟨fun n => Set.pi univ fun i => (hμ i).set ((@decode (ι → ℕ) _ n).iget i),
-    fun n => _, fun n => _, _⟩ <;>
+  refine ⟨fun n => Set.pi univ fun i => (hμ i).set ((@decode (ι → ℕ) _ n).iget i),
+    fun n => ?_, fun n => ?_, ?_⟩ <;>
   -- TODO (kmill) If this let comes before the refine, while the noncomputability checker
   -- correctly sees this definition is computable, the Lean VM fails to see the binding is
   -- computationally irrelevant. The `noncomputable section` doesn't help because all it does
@@ -579,7 +586,7 @@ instance {α : ι → Type*} [Nonempty ι] [∀ i, MeasureSpace (α i)]
 instance pi.isLocallyFiniteMeasure
     [∀ i, TopologicalSpace (α i)] [∀ i, IsLocallyFiniteMeasure (μ i)] :
     IsLocallyFiniteMeasure (Measure.pi μ) := by
-  refine' ⟨fun x => _⟩
+  refine ⟨fun x => ?_⟩
   choose s hxs ho hμ using fun i => (μ i).exists_isOpen_measure_lt_top (x i)
   refine' ⟨pi univ s, set_pi_mem_nhds finite_univ fun i _ => IsOpen.mem_nhds (ho i) (hxs i), _⟩
   rw [pi_pi]
@@ -758,7 +765,7 @@ theorem measurePreserving_piEquivPiSubtypeProd (p : ι → Prop) [DecidablePred 
     MeasurePreserving (MeasurableEquiv.piEquivPiSubtypeProd α p) (Measure.pi μ)
       ((Measure.pi fun i : Subtype p => μ i).prod (Measure.pi fun i => μ i)) := by
   set e := (MeasurableEquiv.piEquivPiSubtypeProd α p).symm
-  refine' MeasurePreserving.symm e _
+  refine MeasurePreserving.symm e ?_
   refine' ⟨e.measurable, (pi_eq fun s _ => _).symm⟩
   have : e ⁻¹' pi univ s =
       (pi univ fun i : { i // p i } => s i) ×ˢ pi univ fun i : { i // ¬p i } => s i :=
@@ -820,7 +827,7 @@ theorem measurePreserving_piFinSuccAbove {n : ℕ} {α : Fin (n + 1) → Type u}
     MeasurePreserving (MeasurableEquiv.piFinSuccAbove α i) (Measure.pi μ)
       ((μ i).prod <| Measure.pi fun j => μ (i.succAbove j)) := by
   set e := (MeasurableEquiv.piFinSuccAbove α i).symm
-  refine' MeasurePreserving.symm e _
+  refine MeasurePreserving.symm e ?_
   refine' ⟨e.measurable, (pi_eq fun s _ => _).symm⟩
   rw [e.map_apply, i.prod_univ_succAbove _, ← pi_pi, ← prod_prod]
   congr 1 with ⟨x, f⟩
@@ -841,10 +848,10 @@ theorem measurePreserving_piUnique {π : ι → Type*} [Unique ι] {m : ∀ i, M
     set e := MeasurableEquiv.piUnique π
     have : (piPremeasure fun i => (μ i).toOuterMeasure) = Measure.map e.symm (μ default) := by
       ext1 s
-      rw [piPremeasure, Fintype.prod_unique, e.symm.map_apply]
+      rw [piPremeasure, Fintype.prod_unique, e.symm.map_apply, coe_toOuterMeasure]
       congr 1; exact e.toEquiv.image_eq_preimage s
-    simp_rw [Measure.pi, OuterMeasure.pi, this, boundedBy_eq_self, toOuterMeasure_toMeasure,
-      MeasurableEquiv.map_map_symm]
+    simp_rw [Measure.pi, OuterMeasure.pi, this, ← coe_toOuterMeasure, boundedBy_eq_self,
+      toOuterMeasure_toMeasure, MeasurableEquiv.map_map_symm]
 
 theorem volume_preserving_piUnique (π : ι → Type*) [Unique ι] [∀ i, MeasureSpace (π i)] :
     MeasurePreserving (MeasurableEquiv.piUnique π) volume volume :=
@@ -901,7 +908,7 @@ theorem measurePreserving_pi_empty {ι : Type u} {α : ι → Type v} [Fintype �
     MeasurePreserving (MeasurableEquiv.ofUniqueOfUnique (∀ i, α i) Unit) (Measure.pi μ)
       (Measure.dirac ()) := by
   set e := MeasurableEquiv.ofUniqueOfUnique (∀ i, α i) Unit
-  refine' ⟨e.measurable, _⟩
+  refine ⟨e.measurable, ?_⟩
   rw [Measure.pi_of_empty, Measure.map_dirac e.measurable]
 #align measure_theory.measure_preserving_pi_empty MeasureTheory.measurePreserving_pi_empty
 

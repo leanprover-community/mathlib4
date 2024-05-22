@@ -320,7 +320,7 @@ theorem dist_next_apply_le_of_le {f₁ f₂ : FunSpace v} {n : ℕ} {d : ℝ}
 theorem dist_iterate_next_apply_le (f₁ f₂ : FunSpace v) (n : ℕ) (t : Icc v.tMin v.tMax) :
     dist (next^[n] f₁ t) (next^[n] f₂ t) ≤ (v.L * |t.1 - v.t₀|) ^ n / n ! * dist f₁ f₂ := by
   induction' n with n ihn generalizing t
-  · rw [Nat.zero_eq, pow_zero, Nat.factorial_zero, Nat.cast_one, div_one, one_mul]
+  · rw [pow_zero, Nat.factorial_zero, Nat.cast_one, div_one, one_mul]
     exact dist_apply_le_dist f₁ f₂ t
   · rw [iterate_succ_apply', iterate_succ_apply']
     exact dist_next_apply_le_of_le ihn _
@@ -403,7 +403,7 @@ theorem exists_isPicardLindelof_const_of_contDiffAt (hv : ContDiffAt ℝ 1 v x�
   set ε := min R₁ R₂ / 2 / (1 + ‖v x₀‖) with hε
   have hε0 : 0 < ε := hε ▸ div_pos (half_pos <| lt_min hR₁ hR₂)
     (add_pos_of_pos_of_nonneg zero_lt_one (norm_nonneg _))
-  refine' ⟨ε, hε0, L, min R₁ R₂ / 2, 1 + ‖v x₀‖, _⟩
+  refine ⟨ε, hε0, L, min R₁ R₂ / 2, 1 + ‖v x₀‖, ?_⟩
   exact
     { ht₀ := Real.closedBall_eq_Icc ▸ mem_closedBall_self hε0.le
       hR := by positivity
