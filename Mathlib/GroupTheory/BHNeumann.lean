@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 Antoine Chambert-Loir and Richard Copley. All rights reserved.
+Copyright (c) 2024 Antoine Chambert-Loir, Richard Copley. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Antoine Chambert-Loir and Richard Copley
+Authors: Antoine Chambert-Loir, Richard Copley
 -/
 
 import Mathlib.Algebra.BigOperators.Basic
@@ -35,7 +35,7 @@ open scoped Pointwise
 
 section Mathlib.GroupTheory.Index
 
-theorem Finset.finiteIndex_iInf {G ι : Type*} [Group G] [DecidableEq ι]
+theorem Finset.finiteIndex_iInf {G ι : Type*} [Group G]
     {s : Finset ι} (f : ι → Subgroup G) (hs : ∀ i ∈ s, (f i).FiniteIndex) :
       (⨅ i ∈ s, f i).FiniteIndex := by
   constructor
@@ -178,17 +178,15 @@ theorem Fintype.finiteIndex_of_iUnion_leftCoset_eq_univ_aux
       rwa [mem_leftCoset_iff, mul_inv_rev, mul_inv_rev, inv_inv, mul_assoc, ← mem_leftCoset_iff]
     -- Then `G` can also be covered by a finite union `U k, f k • K k` of left cosets
     -- of the subgroups `H k ≠ H j`.
-    let κ :=
-      { i // i ∈ Finset.univ.filter (H · ≠ H j) } ×
-        Option { i // i ∈ Finset.univ.filter (H · = H j) }
+    let κ := ↥(Finset.univ.filter (H · ≠ H j)) × Option ↥(Finset.univ.filter (H · = H j))
     let f : κ → G
     | ⟨k₁, some k₂⟩ => g k₂ * x⁻¹ * g k₁
     | ⟨k₁, none⟩  => g k₁
-    let K (k : κ) : Subgroup G := H k.fst.val
+    let K (k : κ) : Subgroup G := H k.1.val
     have hK' (k : κ) : K k ∈ s.erase (H j) :=
-      Finset.mem_erase.mpr ⟨(Finset.mem_filter.mp k.fst.property).right, hsH k.fst.val⟩
+      Finset.mem_erase.mpr ⟨(Finset.mem_filter.mp k.1.property).right, hsH k.1.val⟩
     have hK (k : κ) : K k ≠ H j := ((Finset.mem_erase.mp (hK' k)).left ·)
-    have hcovers : ⋃ k, f k • (K k : Set G) = Set.univ := Set.iUnion_eq_univ_iff.mpr fun y => by
+    replace hcovers : ⋃ k, f k • (K k : Set G) = Set.univ := Set.iUnion_eq_univ_iff.mpr fun y => by
       cases (Set.mem_union _ _ _).mp (hcovers.symm.subset (Set.mem_univ y)) with
       | inl hy =>
         have ⟨k, hk, hy⟩ := Set.mem_iUnion₂.mp hy
@@ -205,7 +203,7 @@ theorem Fintype.finiteIndex_of_iUnion_leftCoset_eq_univ_aux
     -- If `G` is the union of the cosets of `H k` in the new covering, we are done.
     by_cases h : ⋃ i ∈ Finset.filter (K · = K k) Finset.univ, f i • (K i : Set G) = Set.univ
     · rw [Set.iUnion₂_congr fun i hi => by rw [(Finset.mem_filter.mp hi).right]] at h
-      exact ⟨k.fst, hK k, Finset.finiteIndex_of_iUnion_leftCoset_same_subgroup_eq_univ _ _ h⟩
+      exact ⟨k.1, hK k, Finset.finiteIndex_of_iUnion_leftCoset_same_subgroup_eq_univ _ _ h⟩
     -- Otherwise, by the induction hypothesis, one of the subgroups `H k ≠ H j` has finite index.
     have hn : (Finset.univ.image K).card ≤ n + 1 := by
       trans (s.erase (H j)).card
@@ -214,7 +212,7 @@ theorem Fintype.finiteIndex_of_iUnion_leftCoset_eq_univ_aux
         exact fun ⟨k, hk⟩ => hk ▸ hK' k
       · rwa [Finset.card_erase_of_mem (hsH j), Nat.sub_le_iff_le_add]
     have ⟨k', hk'⟩ := ih κ f K hcovers k h _ rfl hn
-    exact ⟨k'.fst, hK k', hk'.right⟩
+    exact ⟨k'.1, hK k', hk'.right⟩
 
 /-- Let the group `G` be the union of finitely many left cosets `g i • H i`.
 Then at least one subgroup `H i` has finite index in `G`. -/
@@ -238,7 +236,7 @@ theorem Fintype.finiteIndex_of_iUnion_leftCoset_eq_univ {G ι : Type*} [Group G]
     exact match h with | ⟨i, _, h⟩ => ⟨i, h⟩
 
 /-- Let the group `G` be the union of finitely many left cosets `g i • H i`.
-Then the cosets of subsets of infinite index may be omitted from the covering. -/
+Then the cosets of subgroups of infinite index may be omitted from the covering. -/
 theorem Fintype.covers_finiteIndex_of_covers {G ι : Type*} [Group G] [Fintype ι]
     [DecidablePred fun (H : Subgroup G) => H.FiniteIndex]
     (g : ι → G) (H : ι → Subgroup G) (hcovers : ⋃ k, g k • (H k : Set G) = Set.univ) :
@@ -247,8 +245,6 @@ theorem Fintype.covers_finiteIndex_of_covers {G ι : Type*} [Group G] [Fintype �
   let D := ⨅ k ∈ Finset.univ.filter (fun i => (H i).FiniteIndex), H k
   -- `D`, as the finite intersection of subgroups of finite index, also has finite index.
   have hD : D.FiniteIndex := by
-    -- have ⟨k, hk⟩ := Fintype.finiteIndex_of_iUnion_leftCoset_eq_univ G ι H g hcovers
-    -- have : D ≤ H k := iInf₂_le k <| by exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, hk⟩
     have h (x) (hx : x ∈ (Finset.univ.filter (fun i => (H i).FiniteIndex)).image H) :
         x.FiniteIndex := by
       have ⟨i, hi⟩ := Finset.mem_image.mp hx
@@ -256,23 +252,21 @@ theorem Fintype.covers_finiteIndex_of_covers {G ι : Type*} [Group G] [Fintype �
     have := Finset.finiteIndex_iInf _ h
     rwa [Finset.iInf_finset_image] at this
   -- Each subgroup of finite index in the cover is a finite union of left cosets of `D`.
-  have (i) (hi : (H i).FiniteIndex) : ∃ s : Finset G, ⋃ g ∈ s, g • (D : Set G) = H i := by
-    have : D ≤ H i := iInf₂_le _ <| by
+  have (i) (hi : (H i).FiniteIndex) : ∃ s : Finset G, ⋃ g ∈ s, g • (D : Set G) = H i :=
+    Finset.covers_subgroup <| iInf₂_le _ <| by
       rw [Finset.mem_filter]
       exact ⟨Finset.mem_univ _, hi⟩
-    exact Finset.covers_subgroup this
   choose s hs using this
   -- Construct a cover of `G` by the cosets of subgroups of infinite index and of `D`.
   let κ := (i : ι) × { x // x ∈ (if h : (H i).FiniteIndex then s i h else {1}) }
   let f (k : κ) : G := g k.1 * k.2.val
   let K (k : κ) : Subgroup G := if (H k.1).FiniteIndex then D else H k.1
   have hcovers' : ⋃ k, f k • (K k : Set G) = Set.univ := by
-    rw [← Set.biUnion_univ, ← Finset.coe_univ, Finset.set_biUnion_coe,
-      ← Finset.univ.filter_union_filter_neg_eq (fun i => (H i).FiniteIndex),
-      Finset.set_biUnion_union] at hcovers
-    rw [← Set.biUnion_univ, ← Finset.coe_univ, Finset.set_biUnion_coe,
-      ← Finset.univ.filter_union_filter_neg_eq (fun k => (H k.1).FiniteIndex),
-      Finset.set_biUnion_union, ← hcovers]
+    rw [← hcovers, ← Set.biUnion_univ (α := κ), ← Set.biUnion_univ (α := ι),
+     ← Finset.coe_univ, ← Finset.coe_univ, Finset.set_biUnion_coe, Finset.set_biUnion_coe,
+     ← Finset.univ.filter_union_filter_neg_eq (fun i => (H i).FiniteIndex),
+     ← Finset.univ.filter_union_filter_neg_eq (fun k => (H k.1).FiniteIndex),
+     Finset.set_biUnion_union, Finset.set_biUnion_union]
     apply congrArg₂ (· ∪ ·) <;> (rw [Set.iUnion_sigma]; refine Set.iUnion_congr fun i => ?_)
     · by_cases hi : (H i).FiniteIndex <;>
         simp [Set.smul_set_iUnion, Set.iUnion_subtype, ← leftCoset_assoc, f, K, ← hs, hi]
@@ -285,9 +279,7 @@ theorem Fintype.covers_finiteIndex_of_covers {G ι : Type*} [Group G] [Fintype �
     specialize hs j hj
     rw [hempty, ← Finset.set_biUnion_coe, Finset.coe_empty, Set.biUnion_empty, eq_comm,
       Set.eq_empty_iff_forall_not_mem] at hs
-    apply hs 1
-    rw [SetLike.mem_coe]
-    exact Subgroup.one_mem (H j)
+    exact hs 1 <| SetLike.mem_coe.mpr (Subgroup.one_mem (H j))
   let k : κ := ⟨j, ⟨x, dif_pos hj ▸ hx⟩⟩
   -- Since `D` is the unique subgroup of finite index whose cosets occur in the new covering,
   -- the cosets of the other subgroups can be omitted.
