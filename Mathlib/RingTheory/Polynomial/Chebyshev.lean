@@ -99,7 +99,6 @@ theorem T_zero : T R 0 = 1 := rfl
 theorem T_one : T R 1 = X := rfl
 #align polynomial.chebyshev.T_one Polynomial.Chebyshev.T_one
 
-@[simp]
 theorem T_neg_one : T R (-1) = X := (by ring : 2 * X * 1 - X = X)
 
 theorem T_two : T R 2 = 2 * X ^ 2 - 1 := by
@@ -110,7 +109,7 @@ theorem T_two : T R 2 = 2 * X ^ 2 - 1 := by
 theorem T_neg (n : ℤ) : T R (-n) = T R n := by
   induction n using T.induct R with
   | case1 => rfl
-  | case2 => simp [T]
+  | case2 => show 2 * X * 1 - X = X; ring
   | case3 n ih1 ih2 =>
     have h₁ := T_add_two R n
     have h₂ := T_sub_two R (-n)
