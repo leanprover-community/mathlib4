@@ -259,7 +259,7 @@ theorem smul_restrictScalars {R S M} [CommSemiring R] [CommSemiring S]
 
 @[simp]
 theorem smul_top_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
-    (I : Ideal R) : I • (⊤ : Submodule R S) = (I.map (algebraMap R S)).restrictScalars R := 
+    (I : Ideal R) : I • (⊤ : Submodule R S) = (I.map (algebraMap R S)).restrictScalars R :=
   Eq.trans (smul_restrictScalars I (⊤ : Ideal S)) <|
     congrArg _ <| Eq.trans (Ideal.smul_eq_mul _ _) (Ideal.mul_top _)
 #align ideal.smul_top_eq_map Ideal.smul_top_eq_map
