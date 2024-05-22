@@ -213,11 +213,9 @@ instance : Zero (A →⋆ₙ+* B) :=
 instance : Inhabited (A →⋆ₙ+* B) :=
   ⟨0⟩
 
-instance : MonoidWithZero (A →⋆ₙ+* A) :=
-  { inferInstanceAs (Monoid (A →⋆ₙ+* A)),
-    inferInstanceAs (Zero (A →⋆ₙ+* A)) with
-    zero_mul := fun _ => ext fun _ => rfl
-    mul_zero := fun f => ext fun _ => map_zero f }
+instance : MonoidWithZero (A →⋆ₙ+* A) where
+  zero_mul := fun _ => ext fun _ => rfl
+  mul_zero := fun f => ext fun _ => map_zero f
 
 @[simp]
 theorem coe_zero : ((0 : A →⋆ₙ+* B) : A → B) = 0 :=
