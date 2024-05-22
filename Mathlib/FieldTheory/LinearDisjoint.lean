@@ -320,6 +320,36 @@ theorem _root_.transcendental_algebraMap_iff {R S A : Type*} [CommRing R] [CommR
     Transcendental R ((algebraMap S A) a) ↔ Transcendental R a := by
   simp_rw [Transcendental, isAlgebraic_algebraMap_iff h]
 
+-- TODO: remove once #13101 is merged
+theorem _root_.Polynomial.aeval_comp!!! {R : Type*} [CommSemiring R] {p q : Polynomial R}
+    {A : Type*} [Semiring A] [Algebra R A] (x : A) :
+    (Polynomial.aeval x) (p.comp q) = (Polynomial.aeval ((Polynomial.aeval x) q)) p :=
+  Polynomial.eval₂_comp' x p q
+
+-- TODO: move to suitable place
+theorem _root_.IsAlgebraic.of_aeval {R A : Type*} [CommRing R] [Ring A] [Algebra R A] {r : A}
+    (f : Polynomial R) (hf : f.natDegree ≠ 0) (hf' : f.leadingCoeff ∈ nonZeroDivisors R)
+    (H : IsAlgebraic R (Polynomial.aeval r f)) :
+    IsAlgebraic R r := by
+  obtain ⟨p, h1, h2⟩ := H
+  have : (p.comp f).coeff (p.natDegree * f.natDegree) ≠ 0 := fun h ↦ h1 <| by
+    rwa [Polynomial.coeff_comp_degree_mul_degree hf,
+      mul_right_mem_nonZeroDivisors_eq_zero_iff (pow_mem hf' _),
+      Polynomial.leadingCoeff_eq_zero] at h
+  exact ⟨p.comp f, fun h ↦ this (by simp [h]), by rwa [Polynomial.aeval_comp!!!]⟩
+
+-- TODO: move to suitable place
+theorem _root_.Transcendental.aeval {R A : Type*} [CommRing R] [Ring A] [Algebra R A] {r : A}
+    (H : Transcendental R r) (f : Polynomial R) (hf : f.natDegree ≠ 0)
+    (hf' : f.leadingCoeff ∈ nonZeroDivisors R) :
+    Transcendental R (Polynomial.aeval r f) := fun h ↦ H (h.of_aeval f hf hf')
+
+-- TODO: move to suitable place
+theorem _root_.Polynomial.transcendental {R : Type v} [CommRing R] (f : Polynomial R)
+    (hf : f.natDegree ≠ 0) (hf' : f.leadingCoeff ∈ nonZeroDivisors R) :
+    Transcendental R f := by
+  simpa using (Polynomial.transcendental_X R).aeval f hf hf'
+
 -- TODO: move to suitable place
 theorem _root_.Transcendental.linearIndependent_sub_inv
     {F E : Type*} [Field F] [Field E] [Algebra F E] {x : E} (H : Transcendental F x) :
