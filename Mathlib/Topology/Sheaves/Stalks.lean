@@ -179,13 +179,18 @@ theorem id (ℱ : X.Presheaf C) (x : X) :
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pushforward.id TopCat.Presheaf.stalkPushforward.id
 
-set_option maxHeartbeats 300000 in
 @[simp]
 theorem comp (ℱ : X.Presheaf C) (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
     ℱ.stalkPushforward C (f ≫ g) x =
       (f _* ℱ).stalkPushforward C g (f x) ≫ ℱ.stalkPushforward C f x := by
   ext
-  simp [germ, stalkFunctor, stalkPushforward]
+  simp only [germ, stalkPushforward]
+  -- Now `simp` finishes, but slowly:
+  simp only [pushforwardObj_obj, Functor.op_obj, Opens.map_comp_obj, whiskeringLeft_obj_obj,
+    OpenNhds.inclusionMapIso_inv, NatTrans.op_id, colim_map, ι_colimMap_assoc, Functor.comp_obj,
+    OpenNhds.inclusion_obj, OpenNhds.map_obj, whiskerRight_app, NatTrans.id_app,
+    CategoryTheory.Functor.map_id, colimit.ι_pre, Category.id_comp, Category.assoc,
+    pushforwardObj_map, Functor.op_map, unop_id, op_id, colimit.ι_pre_assoc]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pushforward.comp TopCat.Presheaf.stalkPushforward.comp
 
