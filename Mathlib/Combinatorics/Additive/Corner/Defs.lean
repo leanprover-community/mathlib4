@@ -62,9 +62,8 @@ lemma IsCornerFree.mono (hAB : A ⊆ B) (hB : IsCornerFree B) : IsCornerFree A :
 @[simp] lemma Set.Subsingleton.isCornerFree (hA : A.Subsingleton) : IsCornerFree A :=
   fun _x₁ _y₁ _x₂ _y₂ hxyd ↦ by simpa using hA hxyd.fst_fst_mem hxyd.snd_fst_mem
 
-@[simp] lemma isCornerFree_empty : IsCornerFree (∅ : Set (G × G)) := subsingleton_empty.isCornerFree
-@[simp] lemma isCornerFree_singleton (x : G × G) : IsCornerFree {x} :=
-  subsingleton_singleton.isCornerFree
+lemma isCornerFree_empty : IsCornerFree (∅ : Set (G × G)) := subsingleton_empty.isCornerFree
+lemma isCornerFree_singleton (x : G × G) : IsCornerFree {x} := subsingleton_singleton.isCornerFree
 
 /-- Corners are preserved under `2`-Freiman homomorphisms. --/
 lemma IsCorner.image (hf : IsAddFreimanHom 2 s t f) (hAs : (A : Set (G × G)) ⊆ s ×ˢ s)
