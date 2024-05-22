@@ -39,7 +39,7 @@ also `star`-preserving. -/
 structure NonUnitalStarRingHom (A B : Type*) [NonUnitalNonAssocSemiring A]
   [Star A] [NonUnitalNonAssocSemiring B]
   [Star B] extends A →ₙ+* B where
-  /-- By definition, a non-unital ⋆-algebra homomorphism preserves the `star` operation. -/
+  /-- By definition, a non-unital ⋆-ring homomorphism preserves the `star` operation. -/
   map_star' : ∀ a : A, toFun (star a) = star (toFun a)
 
 /-- `α →⋆ₙ+* β` denotes the type of non-unital ring homomorphisms from `α` to `β`. -/
@@ -145,7 +145,7 @@ section
 
 variable (A)
 
-/-- The identity as a non-unital ⋆-algebra homomorphism. -/
+/-- The identity as a non-unital ⋆-ring homomorphism. -/
 protected def id : A →⋆ₙ+* A :=
   { (1 : A →ₙ+* A) with map_star' := fun _ => rfl }
 
@@ -269,11 +269,11 @@ instance (priority := 100) {F A B : Type*} {_ : NonUnitalNonAssocSemiring A} {_ 
     [StarRingEquivClass F A B] : NonUnitalStarRingHomClass F A B :=
   { }
 
-/-- Turn an element of a type `F` satisfying `StarAlgEquivClass F R A B` into an actual
-`StarAlgEquiv`. This is declared as the default coercion from `F` to `A ≃⋆ₐ[R] B`. -/
+/-- Turn an element of a type `F` satisfying `StarRingEquivClass F A B` into an actual
+`StarRingEquiv`. This is declared as the default coercion from `F` to `A ≃⋆+* B`. -/
 @[coe]
 def toStarRingEquiv {F A B : Type*} [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B]
-    [EquivLike F A B] [RingEquivClass F A B] [StarRingEquivClass F A B] (f : F) : A  ≃⋆+* B :=
+    [EquivLike F A B] [RingEquivClass F A B] [StarRingEquivClass F A B] (f : F) : A ≃⋆+* B :=
   { (f : A ≃+* B) with
     map_star' := map_star f}
 
@@ -329,7 +329,6 @@ theorem ext_iff {f g : A ≃⋆+* B} : f = g ↔ ∀ a, f a = g a :=
 def refl : A ≃⋆+* A :=
   { RingEquiv.refl A with
     map_star' := fun _ => rfl }
-#align star_alg_equiv.refl StarRingEquiv.refl
 
 instance : Inhabited (A ≃⋆+* A) :=
   ⟨refl⟩
