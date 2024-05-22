@@ -141,14 +141,14 @@ theorem card_sigma : #(Σn, L.Term (Sum α (Fin n))) = max ℵ₀ #(Sum α (Σi,
     · rw [Cardinal.le_def]
       refine' ⟨⟨Sum.elim (fun i => ⟨0, var (Sum.inl i)⟩)
         fun F => ⟨1, func F.2 fun _ => var (Sum.inr 0)⟩, _⟩⟩
-      · rintro (a | a) (b | b) h
-        · simp only [Sum.elim_inl, Sigma.mk.inj_iff, heq_eq_eq, var.injEq, Sum.inl.injEq, true_and]
-            at h
-          rw [h]
-        · simp only [Sum.elim_inl, Sum.elim_inr, Sigma.mk.inj_iff, false_and] at h
-        · simp only [Sum.elim_inr, Sum.elim_inl, Sigma.mk.inj_iff, false_and] at h
-        · simp only [Sum.elim_inr, Sigma.mk.inj_iff, heq_eq_eq, func.injEq, true_and] at h
-          rw [Sigma.ext_iff.2 ⟨h.1, h.2.1⟩]
+      rintro (a | a) (b | b) h
+      · simp only [Sum.elim_inl, Sigma.mk.inj_iff, heq_eq_eq, var.injEq, Sum.inl.injEq, true_and]
+          at h
+        rw [h]
+      · simp only [Sum.elim_inl, Sum.elim_inr, Sigma.mk.inj_iff, false_and] at h
+      · simp only [Sum.elim_inr, Sum.elim_inl, Sigma.mk.inj_iff, false_and] at h
+      · simp only [Sum.elim_inr, Sigma.mk.inj_iff, heq_eq_eq, func.injEq, true_and] at h
+        rw [Sigma.ext_iff.2 ⟨h.1, h.2.1⟩]
 #align first_order.language.term.card_sigma FirstOrder.Language.Term.card_sigma
 
 instance [Encodable α] [Encodable (Σi, L.Functions i)] : Encodable (L.Term α) :=
@@ -248,33 +248,33 @@ theorem listDecode_encode_list (l : List (Σn, L.BoundedFormula α n)) :
     · simp only [eq_mp_eq_cast, cast_eq, eq_self_iff_true, heq_iff_eq, and_self_iff, nil_append]
     · simp only [eq_self_iff_true, heq_iff_eq, and_self_iff]
   · rw [listEncode, cons_append, cons_append, singleton_append, cons_append, listDecode]
-    · have h : ∀ i : Fin φ_l, ((List.map Sum.getLeft? (List.map (fun i : Fin φ_l =>
-        Sum.inl (⟨(⟨φ_n, rel φ_R ts⟩ : Σn, L.BoundedFormula α n).fst, ts i⟩ :
-          Σn, L.Term (Sum α (Fin n)))) (finRange φ_l) ++ l)).get? ↑i).join = some ⟨_, ts i⟩ := by
-        intro i
-        simp only [Option.join, map_append, map_map, Option.bind_eq_some, id, exists_eq_right,
-          get?_eq_some, length_append, length_map, length_finRange]
-        refine' ⟨lt_of_lt_of_le i.2 le_self_add, _⟩
-        rw [get_append, get_map]
-        · simp only [Sum.getLeft?, get_finRange, Fin.eta, Function.comp_apply, eq_self_iff_true,
-            heq_iff_eq, and_self_iff]
-        · simp only [length_map, length_finRange, is_lt]
-      rw [dif_pos]
-      swap
-      · exact fun i => Option.isSome_iff_exists.2 ⟨⟨_, ts i⟩, h i⟩
-      rw [dif_pos]
-      swap
-      · intro i
-        obtain ⟨h1, h2⟩ := Option.eq_some_iff_get_eq.1 (h i)
-        rw [h2]
-      simp only [Sigma.mk.inj_iff, heq_eq_eq, rel.injEq, true_and]
-      refine' ⟨funext fun i => _, _⟩
-      · obtain ⟨h1, h2⟩ := Option.eq_some_iff_get_eq.1 (h i)
-        rw [eq_mp_eq_cast, cast_eq_iff_heq]
-        exact (Sigma.ext_iff.1 ((Sigma.eta (Option.get _ h1)).trans h2)).2
-      rw [List.drop_append_eq_append_drop, length_map, length_finRange, Nat.sub_self, drop,
-        drop_eq_nil_of_le, nil_append]
-      rw [length_map, length_finRange]
+    have h : ∀ i : Fin φ_l, ((List.map Sum.getLeft? (List.map (fun i : Fin φ_l =>
+      Sum.inl (⟨(⟨φ_n, rel φ_R ts⟩ : Σn, L.BoundedFormula α n).fst, ts i⟩ :
+        Σn, L.Term (Sum α (Fin n)))) (finRange φ_l) ++ l)).get? ↑i).join = some ⟨_, ts i⟩ := by
+      intro i
+      simp only [Option.join, map_append, map_map, Option.bind_eq_some, id, exists_eq_right,
+        get?_eq_some, length_append, length_map, length_finRange]
+      refine' ⟨lt_of_lt_of_le i.2 le_self_add, _⟩
+      rw [get_append, get_map]
+      · simp only [Sum.getLeft?, get_finRange, Fin.eta, Function.comp_apply, eq_self_iff_true,
+          heq_iff_eq, and_self_iff]
+      · simp only [length_map, length_finRange, is_lt]
+    rw [dif_pos]
+    swap
+    · exact fun i => Option.isSome_iff_exists.2 ⟨⟨_, ts i⟩, h i⟩
+    rw [dif_pos]
+    swap
+    · intro i
+      obtain ⟨h1, h2⟩ := Option.eq_some_iff_get_eq.1 (h i)
+      rw [h2]
+    simp only [Sigma.mk.inj_iff, heq_eq_eq, rel.injEq, true_and]
+    refine' ⟨funext fun i => _, _⟩
+    · obtain ⟨h1, h2⟩ := Option.eq_some_iff_get_eq.1 (h i)
+      rw [eq_mp_eq_cast, cast_eq_iff_heq]
+      exact (Sigma.ext_iff.1 ((Sigma.eta (Option.get _ h1)).trans h2)).2
+    rw [List.drop_append_eq_append_drop, length_map, length_finRange, Nat.sub_self, drop,
+      drop_eq_nil_of_le, nil_append]
+    rw [length_map, length_finRange]
   · rw [listEncode, List.append_assoc, cons_append, listDecode]
     simp only [] at *
     rw [(ih1 _).1, (ih1 _).2, (ih2 _).1, (ih2 _).2, sigmaImp]

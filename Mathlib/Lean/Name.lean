@@ -42,7 +42,7 @@ def allNamesByModule (p : Name → Bool) : CoreM (Batteries.HashMap Name (Array 
   (← getEnv).constants.foldM (init := Batteries.HashMap.empty) fun names n _ => do
     if p n && !(← isBlackListed n) then
       let some m ← findModuleOf? n | return names
-      -- TODO use `Std.HashMap.modify` when we bump Std4 (or `alter` if that is written).
+      -- TODO use `Batteries.HashMap.modify` when we bump Batteries (or `alter` if that is written).
       match names.find? m with
       | some others => return names.insert m (others.push n)
       | none => return names.insert m #[n]

@@ -117,7 +117,7 @@ theorem applyComposition_ones (p : FormalMultilinearSeries 𝕜 E F) (n : ℕ) :
 theorem applyComposition_single (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ} (hn : 0 < n)
     (v : Fin n → E) : p.applyComposition (Composition.single n hn) v = fun _j => p n v := by
   ext j
-  refine' p.congr (by simp) fun i hi1 hi2 => _
+  refine p.congr (by simp) fun i hi1 hi2 => ?_
   dsimp
   congr 1
   convert Composition.single_embedding hn ⟨i, hi2⟩ using 1
@@ -275,7 +275,7 @@ theorem comp_coeff_one (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultili
     Finset.eq_univ_of_card _ (by simp [composition_card])
   simp only [FormalMultilinearSeries.comp, compAlongComposition_apply, ← this,
     Finset.sum_singleton]
-  refine' q.congr (by simp) fun i hi1 hi2 => _
+  refine q.congr (by simp) fun i hi1 hi2 => ?_
   simp only [applyComposition_ones]
   exact p.congr rfl fun j _hj1 hj2 => by congr! -- Porting note: needed the stronger `congr!`
 #align formal_multilinear_series.comp_coeff_one FormalMultilinearSeries.comp_coeff_one
@@ -331,9 +331,7 @@ the norms of the relevant bits of `q` and `p`. -/
 theorem compAlongComposition_norm {n : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
     (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n) :
     ‖q.compAlongComposition p c‖ ≤ ‖q c.length‖ * ∏ i, ‖p (c.blocksFun i)‖ :=
-  ContinuousMultilinearMap.opNorm_le_bound _
-    (mul_nonneg (norm_nonneg _) (Finset.prod_nonneg fun _i _hi => norm_nonneg _))
-    (compAlongComposition_bound _ _ _)
+  ContinuousMultilinearMap.opNorm_le_bound _ (by positivity) (compAlongComposition_bound _ _ _)
 #align formal_multilinear_series.comp_along_composition_norm FormalMultilinearSeries.compAlongComposition_norm
 
 theorem compAlongComposition_nnnorm {n : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
@@ -393,18 +391,18 @@ theorem comp_id (p : FormalMultilinearSeries 𝕜 E F) : p.comp (id 𝕜 E) = p 
   ext1 n
   dsimp [FormalMultilinearSeries.comp]
   rw [Finset.sum_eq_single (Composition.ones n)]
-  show compAlongComposition p (id 𝕜 E) (Composition.ones n) = p n
-  · ext v
+  · show compAlongComposition p (id 𝕜 E) (Composition.ones n) = p n
+    ext v
     rw [compAlongComposition_apply]
     apply p.congr (Composition.ones_length n)
     intros
     rw [applyComposition_ones]
     refine' congr_arg v _
     rw [Fin.ext_iff, Fin.coe_castLE, Fin.val_mk]
-  show
+  · show
     ∀ b : Composition n,
       b ∈ Finset.univ → b ≠ Composition.ones n → compAlongComposition p (id 𝕜 E) b = 0
-  · intro b _ hb
+    intro b _ hb
     obtain ⟨k, hk, lt_k⟩ : ∃ (k : ℕ), k ∈ Composition.blocks b ∧ 1 < k :=
       Composition.ne_ones_iff.1 hb
     obtain ⟨i, hi⟩ : ∃ (i : Fin b.blocks.length), b.blocks.get i = k :=
@@ -432,16 +430,16 @@ theorem id_comp (p : FormalMultilinearSeries 𝕜 E F) (h : p 0 = 0) : (id 𝕜 
   · dsimp [FormalMultilinearSeries.comp]
     have n_pos : 0 < n := bot_lt_iff_ne_bot.mpr hn
     rw [Finset.sum_eq_single (Composition.single n n_pos)]
-    show compAlongComposition (id 𝕜 F) p (Composition.single n n_pos) = p n
-    · ext v
+    · show compAlongComposition (id 𝕜 F) p (Composition.single n n_pos) = p n
+      ext v
       rw [compAlongComposition_apply, id_apply_one' _ _ (Composition.single_length n_pos)]
       dsimp [applyComposition]
       refine' p.congr rfl fun i him hin => congr_arg v <| _
       ext; simp
-    show
+    · show
       ∀ b : Composition n,
         b ∈ Finset.univ → b ≠ Composition.single n n_pos → compAlongComposition (id 𝕜 F) p b = 0
-    · intro b _ hb
+      intro b _ hb
       have A : b.length ≠ 1 := by simpa [Composition.eq_single_iff_length] using hb
       ext v
       rw [compAlongComposition_apply, id_apply_ne_one _ _ A]
@@ -750,7 +748,7 @@ theorem HasFPowerSeriesAt.comp {g : F → G} {f : E → F} {q : FormalMultilinea
     simp only [rf', r_pos, Hf.r_pos, δpos, lt_min_iff, ENNReal.coe_pos, and_self_iff]
   /- We will show that `g ∘ f` admits the power series `q.comp p` in the disk of
     radius `min (r, rf', δ)`. -/
-  refine' ⟨min rf' r, _⟩
+  refine ⟨min rf' r, ?_⟩
   refine'
     ⟨le_trans (min_le_right rf' r) (FormalMultilinearSeries.le_comp_radius_of_summable q p r hr),
       min_pos, @fun y hy => _⟩
@@ -779,7 +777,7 @@ theorem HasFPowerSeriesAt.comp {g : F → G} {f : E → F} {q : FormalMultilinea
       ∀ᶠ n in atTop, (∑ a in Finset.range n, p a fun _b => y) - f x
         = ∑ a in Finset.Ico 1 n, p a fun _b => y := by
       rw [eventually_atTop]
-      refine' ⟨1, fun n hn => _⟩
+      refine ⟨1, fun n hn => ?_⟩
       symm
       rw [eq_sub_iff_add_eq', Finset.range_eq_Ico, ← Hf.coeff_zero fun _i => y,
         Finset.sum_eq_sum_Ico_succ_bot hn]
@@ -934,7 +932,7 @@ variable {n : ℕ}
 non-dependent terms with lists, requiring that the blocks coincide. -/
 theorem sigma_composition_eq_iff (i j : Σ a : Composition n, Composition a.length) :
     i = j ↔ i.1.blocks = j.1.blocks ∧ i.2.blocks = j.2.blocks := by
-  refine' ⟨by rintro rfl; exact ⟨rfl, rfl⟩, _⟩
+  refine ⟨by rintro rfl; exact ⟨rfl, rfl⟩, ?_⟩
   rcases i with ⟨a, b⟩
   rcases j with ⟨a', b'⟩
   rintro ⟨h, h'⟩
@@ -948,7 +946,7 @@ non-dependent terms with lists, requiring that the lists of blocks coincide. -/
 theorem sigma_pi_composition_eq_iff
     (u v : Σ c : Composition n, ∀ i : Fin c.length, Composition (c.blocksFun i)) :
     u = v ↔ (ofFn fun i => (u.2 i).blocks) = ofFn fun i => (v.2 i).blocks := by
-  refine' ⟨fun H => by rw [H], fun H => _⟩
+  refine ⟨fun H => by rw [H], fun H => ?_⟩
   rcases u with ⟨a, b⟩
   rcases v with ⟨a', b'⟩
   dsimp at H
@@ -1122,7 +1120,7 @@ def sigmaEquivSigmaPi (n : ℕ) :
       have A : length (gather a b) = List.length (splitWrtComposition a.blocks b) := by
         simp only [length, gather, length_map, length_splitWrtComposition]
       congr! 2
-      · exact (Fin.heq_fun_iff A (α := List ℕ)).2 fun i => rfl
+      exact (Fin.heq_fun_iff A (α := List ℕ)).2 fun i => rfl
     · have B : Composition.length (Composition.gather a b) = List.length b.blocks :=
         Composition.length_gather _ _
       conv_rhs => rw [← ofFn_get b.blocks]
@@ -1146,14 +1144,14 @@ def sigmaEquivSigmaPi (n : ℕ) :
       simp only [map_ofFn]
       rfl
     · rw [Fin.heq_fun_iff]
-      intro i
-      dsimp [Composition.sigmaCompositionAux]
-      rw [get_of_eq (splitWrtComposition_join _ _ _)]
-      · simp only [get_ofFn]
-        rfl
-      · simp only [map_ofFn]
-        rfl
-      · congr
+      · intro i
+        dsimp [Composition.sigmaCompositionAux]
+        rw [get_of_eq (splitWrtComposition_join _ _ _)]
+        · simp only [get_ofFn]
+          rfl
+        · simp only [map_ofFn]
+          rfl
+        · congr
 #align composition.sigma_equiv_sigma_pi Composition.sigmaEquivSigmaPi
 
 end Composition

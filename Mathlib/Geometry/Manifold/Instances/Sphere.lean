@@ -97,7 +97,7 @@ theorem stereoToFun_apply (x : E) :
 
 theorem contDiffOn_stereoToFun :
     ContDiffOn ℝ ⊤ (stereoToFun v) {x : E | innerSL _ v x ≠ (1 : ℝ)} := by
-  refine' ContDiffOn.smul _ (orthogonalProjection (ℝ ∙ v)ᗮ).contDiff.contDiffOn
+  refine ContDiffOn.smul ?_ (orthogonalProjection (ℝ ∙ v)ᗮ).contDiff.contDiffOn
   refine' contDiff_const.contDiffOn.div _ _
   · exact (contDiff_const.sub (innerSL ℝ v).contDiff).contDiffOn
   · intro x h h'
@@ -245,8 +245,8 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
   · simp [a, inner_add_right, inner_smul_right, hvy, real_inner_self_eq_norm_mul_norm, hv, mul_smul,
       mul_pow, Real.norm_eq_abs, sq_abs, norm_smul]
     -- Porting note: used to be simp only [split, add_comm] but get maxRec errors
-    · rw [split, add_comm]
-      ac_rfl
+    rw [split, add_comm]
+    ac_rfl
   -- Porting note: this branch did not exit in ml3
   · rw [split, add_comm]
     congr!

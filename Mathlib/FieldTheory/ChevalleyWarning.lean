@@ -93,10 +93,10 @@ theorem MvPolynomial.sum_eval_eq_zero (f : MvPolynomial σ K)
     _ = a ^ d i * ∏ j, x₀ j ^ d j := congr_arg _ (Fintype.prod_congr _ _ ?_)
     -- see below
     _ = (∏ j, x₀ j ^ d j) * a ^ d i := mul_comm _ _
-  · -- the remaining step of the calculation above
-    rintro ⟨j, hj⟩
-    show (e a : σ → K) j ^ d j = x₀ ⟨j, hj⟩ ^ d j
-    rw [Equiv.subtypeEquivCodomain_symm_apply_ne]
+  -- the remaining step of the calculation above
+  rintro ⟨j, hj⟩
+  show (e a : σ → K) j ^ d j = x₀ ⟨j, hj⟩ ^ d j
+  rw [Equiv.subtypeEquivCodomain_symm_apply_ne]
 #align mv_polynomial.sum_eval_eq_zero MvPolynomial.sum_eval_eq_zero
 
 variable [DecidableEq K] (p : ℕ) [CharP K p]
