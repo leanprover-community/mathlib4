@@ -5,6 +5,7 @@ Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.DedekindDomain.Factorization
+import Mathlib.Algebra.Order.Field.Canonical.Defs
 
 #align_import ring_theory.dedekind_domain.finite_adele_ring from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
@@ -275,15 +276,8 @@ theorem one : (1 : K_hat R K).IsFiniteAdele := by
 
 open scoped DiscreteValuation
 
-open Multiplicative in
-theorem foo (x : ℤₘ₀) : x = 0 ∨ ∃ (n : ℤ), x = (↑(ofAdd n)) := by
-  cases x
-  · left; aesop
-  · right; aesop
-
-open Multiplicative in
-theorem bar {x : ℤₘ₀} (hx : 0 < x) : ∃ (n : ℤ), x = (↑(ofAdd n)) := by
-  cases foo x <;> aesop
+-- this should work now? If it does then the instances can go
+#synth PosMulStrictMono ℤₘ₀
 
 -- this makes `mul_lt_mul_left`, `mul_pos` etc work on `ℤₘ₀`
 open Multiplicative in
