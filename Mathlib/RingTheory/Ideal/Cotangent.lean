@@ -7,6 +7,7 @@ import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Algebra.Module.Torsion
 import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.Filtration
 import Mathlib.RingTheory.Nakayama
@@ -31,7 +32,6 @@ namespace Ideal
 universe u v w
 
 variable {R : Type u} {S : Type v} {S' : Type w} [CommRing R] [CommSemiring S] [Algebra S R]
-
 variable [CommSemiring S'] [Algebra S' R] [Algebra S S'] [IsScalarTower S S' R] (I : Ideal R)
 
 -- Porting note: instances that were derived automatically need to be proved by hand (see below)
@@ -54,10 +54,10 @@ instance Cotangent.isScalarTower : IsScalarTower S S' I.Cotangent :=
 #align ideal.cotangent.is_scalar_tower Ideal.Cotangent.isScalarTower
 
 instance [IsNoetherian R I] : IsNoetherian R I.Cotangent :=
-  Submodule.Quotient.isNoetherian _
+  inferInstanceAs (IsNoetherian R (I ⧸ (I • ⊤ : Submodule R I)))
 
 /-- The quotient map from `I` to `I ⧸ I ^ 2`. -/
-@[simps!] --  (config := lemmasOnly) apply -- Porting note: this option does not exist anymore
+@[simps! (config := .lemmasOnly) apply]
 def toCotangent : I →ₗ[R] I.Cotangent := Submodule.mkQ _
 #align ideal.to_cotangent Ideal.toCotangent
 
@@ -110,7 +110,7 @@ theorem to_quotient_square_comp_toCotangent :
   LinearMap.ext fun _ => rfl
 #align ideal.to_quotient_square_comp_to_cotangent Ideal.to_quotient_square_comp_toCotangent
 
--- @[simp] -- Porting note: not in simpNF
+@[simp]
 theorem toCotangent_to_quotient_square (x : I) :
     I.cotangentToQuotientSquare (I.toCotangent x) = (I ^ 2).mkQ x := rfl
 #align ideal.to_cotangent_to_quotient_square Ideal.toCotangent_to_quotient_square
@@ -129,6 +129,7 @@ theorem cotangentIdeal_square (I : Ideal R) : I.cotangentIdeal ^ 2 = ⊥ := by
   · intro x y hx hy; exact add_mem hx hy
 #align ideal.cotangent_ideal_square Ideal.cotangentIdeal_square
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem to_quotient_square_range :
     LinearMap.range I.cotangentToQuotientSquare = I.cotangentIdeal.restrictScalars R := by
   trans LinearMap.range (I.cotangentToQuotientSquare.comp I.toCotangent)
@@ -136,6 +137,7 @@ theorem to_quotient_square_range :
   · rw [to_quotient_square_comp_toCotangent, LinearMap.range_comp, I.range_subtype]; ext; rfl
 #align ideal.to_quotient_square_range Ideal.to_quotient_square_range
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- The equivalence of the two definitions of `I / I ^ 2`, either as the quotient of `I` or the
 ideal of `R / I ^ 2`. -/
 noncomputable def cotangentEquivIdeal : I.Cotangent ≃ₗ[R] I.cotangentIdeal := by
@@ -202,8 +204,7 @@ namespace LocalRing
 variable (R : Type*) [CommRing R] [LocalRing R]
 
 /-- The `A ⧸ I`-vector space `I ⧸ I ^ 2`. -/
-@[reducible]
-def CotangentSpace : Type _ := (maximalIdeal R).Cotangent
+abbrev CotangentSpace : Type _ := (maximalIdeal R).Cotangent
 #align local_ring.cotangent_space LocalRing.CotangentSpace
 
 instance : Module (ResidueField R) (CotangentSpace R) := Ideal.cotangentModule _
@@ -237,8 +238,8 @@ lemma CotangentSpace.span_image_eq_top_iff [IsNoetherianRing R] {s : Set (maxima
       Submodule.span R s = ⊤ := by
   rw [← map_eq_top_iff, ← (Submodule.restrictScalars_injective R ..).eq_iff,
     Submodule.restrictScalars_span]
-  simp only [Ideal.toCotangent_apply, Submodule.restrictScalars_top, Submodule.map_span]
-  exact Ideal.Quotient.mk_surjective
+  · simp only [Ideal.toCotangent_apply, Submodule.restrictScalars_top, Submodule.map_span]
+  · exact Ideal.Quotient.mk_surjective
 
 open FiniteDimensional
 

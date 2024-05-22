@@ -43,9 +43,9 @@ such that `f ≫ retraction f = 𝟙 X`.
 
 Every split monomorphism is a monomorphism.
 -/
-/- Porting note: @[nolint has_nonempty_instance] -/
+/- Porting note(#5171): removed @[nolint has_nonempty_instance] -/
 /- Porting note: `@[ext]` used to accept lemmas like this. Now we add an aesop rule -/
-@[aesop apply safe (rule_sets [CategoryTheory])]
+@[ext, aesop apply safe (rule_sets := [CategoryTheory])]
 structure SplitMono {X Y : C} (f : X ⟶ Y) where
   /-- The map splitting `f` -/
   retraction : Y ⟶ X
@@ -73,9 +73,9 @@ such that `section_ f ≫ f = 𝟙 Y`.
 
 Every split epimorphism is an epimorphism.
 -/
-/- Porting note: @[nolint has_nonempty_instance] -/
+/- Porting note(#5171): removed @[nolint has_nonempty_instance] -/
 /- Porting note: `@[ext]` used to accept lemmas like this. Now we add an aesop rule -/
-@[aesop apply safe (rule_sets [CategoryTheory])]
+@[ext, aesop apply safe (rule_sets := [CategoryTheory])]
 structure SplitEpi {X Y : C} (f : X ⟶ Y) where
   /-- The map splitting `f` -/
   section_ : Y ⟶ X
@@ -251,16 +251,14 @@ variable {D : Type u₂} [Category.{v₂} D]
 
 /-- Split monomorphisms are also absolute monomorphisms. -/
 @[simps]
-def SplitMono.map {X Y : C} {f : X ⟶ Y} (sm : SplitMono f) (F : C ⥤ D) : SplitMono (F.map f)
-    where
+def SplitMono.map {X Y : C} {f : X ⟶ Y} (sm : SplitMono f) (F : C ⥤ D) : SplitMono (F.map f) where
   retraction := F.map sm.retraction
   id := by rw [← Functor.map_comp, SplitMono.id, Functor.map_id]
 #align category_theory.split_mono.map CategoryTheory.SplitMono.map
 
 /-- Split epimorphisms are also absolute epimorphisms. -/
 @[simps]
-def SplitEpi.map {X Y : C} {f : X ⟶ Y} (se : SplitEpi f) (F : C ⥤ D) : SplitEpi (F.map f)
-    where
+def SplitEpi.map {X Y : C} {f : X ⟶ Y} (se : SplitEpi f) (F : C ⥤ D) : SplitEpi (F.map f) where
   section_ := F.map se.section_
   id := by rw [← Functor.map_comp, SplitEpi.id, Functor.map_id]
 #align category_theory.split_epi.map CategoryTheory.SplitEpi.map

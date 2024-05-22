@@ -40,7 +40,7 @@ elab "delta% " t:term : term <= expectedType => do
   let some t ← delta? t | throwError "cannot delta reduce {t}"
   pure t
 
-/- `eta_helper f = (· + 3)` elabs to `∀ x, f x = x + 3` -/
+/-- `eta_helper f = (· + 3)` elabs to `∀ x, f x = x + 3` -/
 local elab "eta_helper " t:term : term => do
   let t ← elabTerm t none
   let some (_, lhs, rhs) := t.eq? | throwError "not an equation: {t}"

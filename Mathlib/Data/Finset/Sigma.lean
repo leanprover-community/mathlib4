@@ -56,7 +56,7 @@ theorem coe_sigma (s : Finset ι) (t : ∀ i, Finset (α i)) :
   Set.ext fun _ => mem_sigma
 #align finset.coe_sigma Finset.coe_sigma
 
-@[simp]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 theorem sigma_nonempty : (s.sigma t).Nonempty ↔ ∃ i ∈ s, (t i).Nonempty := by simp [Finset.Nonempty]
 #align finset.sigma_nonempty Finset.sigma_nonempty
 
@@ -110,8 +110,8 @@ theorem inf_sigma [SemilatticeInf β] [OrderTop β] :
 #align finset.inf_sigma Finset.inf_sigma
 
 theorem _root_.biSup_finsetSigma [CompleteLattice β] (s : Finset ι) (t : ∀ i, Finset (α i))
-    (f : Sigma α → β) : ⨆ ij ∈ s.sigma t, f ij = ⨆ (i ∈ s) (j ∈ t i), f ⟨i, j⟩ :=
-  by simp_rw [← Finset.iSup_coe, Finset.coe_sigma, biSup_sigma]
+    (f : Sigma α → β) : ⨆ ij ∈ s.sigma t, f ij = ⨆ (i ∈ s) (j ∈ t i), f ⟨i, j⟩ := by
+  simp_rw [← Finset.iSup_coe, Finset.coe_sigma, biSup_sigma]
 
 theorem _root_.biSup_finsetSigma' [CompleteLattice β] (s : Finset ι) (t : ∀ i, Finset (α i))
     (f : ∀ i, α i → β) : ⨆ (i ∈ s) (j ∈ t i), f i j = ⨆ ij ∈ s.sigma t, f ij.fst ij.snd :=

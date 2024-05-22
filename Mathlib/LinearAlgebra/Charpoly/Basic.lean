@@ -27,7 +27,6 @@ in any basis is in `LinearAlgebra/Charpoly/ToMatrix`.
 universe u v w
 
 variable {R : Type u} {M : Type v} [CommRing R] [Nontrivial R]
-
 variable [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M] (f : M →ₗ[R] M)
 
 open Matrix Polynomial

@@ -127,7 +127,7 @@ theorem exists_mulVec_eq_zero_iff_aux {K : Type*} [DecidableEq n] [Field K] {M :
           LinearMap.toMatrix'
             ((LinearEquiv.ofInjectiveEndo (Matrix.toLin' M) this).symm : (n → K) →ₗ[K] n → K) =
         1 := by
-      refine' Matrix.toLin'.injective (LinearMap.ext fun v => _)
+      refine Matrix.toLin'.injective (LinearMap.ext fun v => ?_)
       rw [Matrix.toLin'_mul, Matrix.toLin'_one, Matrix.toLin'_toMatrix', LinearMap.comp_apply]
       exact (LinearEquiv.ofInjectiveEndo (Matrix.toLin' M) this).apply_symm_apply v
     exact Matrix.det_ne_zero_of_right_inverse this
@@ -157,7 +157,7 @@ theorem exists_mulVec_eq_zero_iff' {A : Type*} (K : Type*) [DecidableEq n] [Comm
         IsFractionRing.to_map_eq_zero_iff] at this
       exact this.resolve_left (nonZeroDivisors.ne_zero hb)
     · ext i
-      refine' IsFractionRing.injective A K _
+      refine IsFractionRing.injective A K ?_
       calc
         algebraMap A K ((M *ᵥ (fun i : n => f (v i) _)) i) =
             ((algebraMap A K).mapMatrix M *ᵥ algebraMap _ K b • v) i := ?_
@@ -221,7 +221,7 @@ lemma det_ne_zero_of_sum_col_pos [DecidableEq n] {S : Type*} [LinearOrderedCommR
         simp_rw [not_exists, not_lt] at h_sup
         refine ⟨i, ?_⟩
         rw [Pi.smul_apply, neg_smul, one_smul, Left.neg_pos_iff]
-        refine Ne.lt_of_le hi (h_sup i)
+        exact Ne.lt_of_le hi (h_sup i)
     · obtain ⟨j₀, -, h_j₀⟩ := Finset.exists_mem_eq_sup' Finset.univ_nonempty v
       refine ⟨j₀, ?_⟩
       rw [← mul_le_mul_left (h_j₀ ▸ h_sup), Finset.mul_sum, mul_zero]

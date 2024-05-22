@@ -231,7 +231,6 @@ def compression (a : α) (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
       exact this (mem_filter.1 h₁).1
 #align down.compression Down.compression
 
--- mathport name: down.compression
 @[inherit_doc]
 scoped[FinsetFamily] notation "𝓓 " => Down.compression
 -- Porting note: had to open this
@@ -258,7 +257,7 @@ theorem erase_mem_compression (hs : s ∈ 𝒜) : s.erase a ∈ 𝓓 a 𝒜 := b
 -- This is a special case of `erase_mem_compression` once we have `compression_idem`.
 theorem erase_mem_compression_of_mem_compression : s ∈ 𝓓 a 𝒜 → s.erase a ∈ 𝓓 a 𝒜 := by
   simp_rw [mem_compression, erase_idem]
-  refine' Or.imp (fun h => ⟨h.2, h.2⟩) fun h => _
+  refine Or.imp (fun h => ⟨h.2, h.2⟩) fun h => ?_
   rwa [erase_eq_of_not_mem (insert_ne_self.1 <| ne_of_mem_of_not_mem h.2 h.1)]
 #align down.erase_mem_compression_of_mem_compression Down.erase_mem_compression_of_mem_compression
 

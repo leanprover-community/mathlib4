@@ -215,6 +215,16 @@ theorem ite_mul {α} [Mul α] (P : Prop) [Decidable P] (a b c : α) :
 -- `mul_ite` and `ite_mul`.
 attribute [simp] mul_ite ite_mul
 
+theorem ite_sub_ite {α} [Sub α] (P : Prop) [Decidable P] (a b c d : α) :
+    ((if P then a else b) - if P then c else d) = if P then a - c else b - d := by
+  split
+  repeat rfl
+
+theorem ite_add_ite {α} [Add α] (P : Prop) [Decidable P] (a b c d : α) :
+    ((if P then a else b) + if P then c else d) = if P then a + c else b + d := by
+  split
+  repeat rfl
+
 section MulZeroClass
 variable [MulZeroClass α] (P Q : Prop) [Decidable P] [Decidable Q] (a b : α)
 
@@ -250,6 +260,7 @@ multiplication by zero law (`MulZeroClass`). -/
 class NonUnitalCommSemiring (α : Type u) extends NonUnitalSemiring α, CommSemigroup α
 #align non_unital_comm_semiring NonUnitalCommSemiring
 
+/-- A commutative semiring is a semiring with commutative multiplication. -/
 class CommSemiring (R : Type u) extends Semiring R, CommMonoid R
 #align comm_semiring CommSemiring
 
@@ -272,6 +283,17 @@ variable [CommSemiring α] {a b c : α}
 theorem add_mul_self_eq (a b : α) : (a + b) * (a + b) = a * a + 2 * a * b + b * b := by
   simp only [two_mul, add_mul, mul_add, add_assoc, mul_comm b]
 #align add_mul_self_eq add_mul_self_eq
+
+lemma add_sq (a b : α) : (a + b) ^ 2 = a ^ 2 + 2 * a * b + b ^ 2 := by
+  simp only [sq, add_mul_self_eq]
+#align add_sq add_sq
+
+lemma add_sq' (a b : α) : (a + b) ^ 2 = a ^ 2 + b ^ 2 + 2 * a * b := by
+  rw [add_sq, add_assoc, add_comm _ (b ^ 2), add_assoc]
+#align add_sq' add_sq'
+
+alias add_pow_two := add_sq
+#align add_pow_two add_pow_two
 
 end CommSemiring
 
@@ -418,7 +440,7 @@ instance (priority := 100) Ring.toNonAssocRing : NonAssocRing α :=
   { ‹Ring α› with }
 #align ring.to_non_assoc_ring Ring.toNonAssocRing
 
-/- The instance from `Ring` to `Semiring` happens often in linear algebra, for which all the basic
+/-- The instance from `Ring` to `Semiring` happens often in linear algebra, for which all the basic
 definitions are given in terms of semirings, but many applications use rings or fields. We increase
 a little bit its priority above 100 to try it quickly, but remaining below the default 1000 so that
 more specific instances are tried first. -/
@@ -443,6 +465,7 @@ instance (priority := 100) NonUnitalCommRing.toNonUnitalCommSemiring [s : NonUni
   { s with }
 #align non_unital_comm_ring.to_non_unital_comm_semiring NonUnitalCommRing.toNonUnitalCommSemiring
 
+/-- A commutative ring is a ring with commutative multiplication. -/
 class CommRing (α : Type u) extends Ring α, CommMonoid α
 #align comm_ring CommRing
 
@@ -460,13 +483,13 @@ instance (priority := 100) CommRing.toAddCommGroupWithOne [s : CommRing α] :
     AddCommGroupWithOne α :=
   { s with }
 
-/-- A domain is a nontrivial semiring such multiplication by a non zero element is cancellative,
-  on both sides. In other words, a nontrivial semiring `R` satisfying
-  `∀ {a b c : R}, a ≠ 0 → a * b = a * c → b = c` and
-  `∀ {a b c : R}, b ≠ 0 → a * b = c * b → a = c`.
+/-- A domain is a nontrivial semiring such that multiplication by a non zero element
+is cancellative on both sides. In other words, a nontrivial semiring `R` satisfying
+`∀ {a b c : R}, a ≠ 0 → a * b = a * c → b = c` and
+`∀ {a b c : R}, b ≠ 0 → a * b = c * b → a = c`.
 
-  This is implemented as a mixin for `Semiring α`.
-  To obtain an integral domain use `[CommRing α] [IsDomain α]`. -/
+This is implemented as a mixin for `Semiring α`.
+To obtain an integral domain use `[CommRing α] [IsDomain α]`. -/
 class IsDomain (α : Type u) [Semiring α] extends IsCancelMulZero α, Nontrivial α : Prop
 #align is_domain IsDomain
 

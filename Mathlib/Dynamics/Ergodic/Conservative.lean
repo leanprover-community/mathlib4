@@ -40,9 +40,11 @@ conservative dynamical system, Poincare recurrence theorem
 
 noncomputable section
 
-open Classical Set Filter MeasureTheory Finset Function TopologicalSpace
+open scoped Classical
+open Set Filter MeasureTheory Finset Function TopologicalSpace
 
-open Classical Topology
+open scoped Classical
+open Topology
 
 variable {ι : Type*} {α : Type*} [MeasurableSpace α] {f : α → α} {s : Set α} {μ : Measure α}
 
@@ -81,7 +83,7 @@ after `m` iterations of `f`. -/
 theorem frequently_measure_inter_ne_zero (hf : Conservative f μ) (hs : MeasurableSet s)
     (h0 : μ s ≠ 0) : ∃ᶠ m in atTop, μ (s ∩ f^[m] ⁻¹' s) ≠ 0 := by
   by_contra H
-  simp only [not_frequently, eventually_atTop, Ne.def, Classical.not_not] at H
+  simp only [not_frequently, eventually_atTop, Ne, Classical.not_not] at H
   rcases H with ⟨N, hN⟩
   induction' N with N ihN
   · apply h0
@@ -156,7 +158,7 @@ theorem ae_forall_image_mem_imp_frequently_image_mem (hf : Conservative f μ)
   refine' ae_all_iff.2 fun k => _
   refine' (hf.ae_mem_imp_frequently_image_mem (hf.measurable.iterate k hs)).mono fun x hx hk => _
   rw [← map_add_atTop_eq_nat k, frequently_map]
-  refine' (hx hk).mono fun n hn => _
+  refine (hx hk).mono fun n hn => ?_
   rwa [add_comm, iterate_add_apply]
 #align measure_theory.conservative.ae_forall_image_mem_imp_frequently_image_mem MeasureTheory.Conservative.ae_forall_image_mem_imp_frequently_image_mem
 

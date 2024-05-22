@@ -6,6 +6,7 @@ Authors: Joseph Myers
 import Mathlib.Init.Core
 import Mathlib.LinearAlgebra.AffineSpace.Basis
 import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 
 #align_import linear_algebra.affine_space.finite_dimensional from "leanprover-community/mathlib"@"67e606eaea14c7854bdc556bd53d98aefdf76ec0"
 
@@ -30,7 +31,6 @@ open BigOperators Affine
 section AffineSpace'
 
 variable (k : Type*) {V : Type*} {P : Type*}
-
 variable {ι : Type*}
 
 open AffineSubspace FiniteDimensional Module
@@ -187,7 +187,6 @@ theorem affineIndependent_iff_finrank_vectorSpan_eq [Fintype ι] (p : ι → P) 
   rw [affineIndependent_iff_linearIndependent_vsub _ _ i₁,
     linearIndependent_iff_card_eq_finrank_span, eq_comm,
     vectorSpan_range_eq_span_range_vsub_right_ne k p i₁, Set.finrank]
-  congr
   rw [← Finset.card_univ] at hc
   rw [Fintype.subtype_card]
   simp [Finset.filter_ne', Finset.card_erase_of_mem, hc]
@@ -353,7 +352,7 @@ instance finiteDimensional_vectorSpan_insert (s : AffineSubspace k P)
   rcases (s : Set P).eq_empty_or_nonempty with (hs | ⟨p₀, hp₀⟩)
   · rw [coe_eq_bot_iff] at hs
     rw [hs, bot_coe, span_empty, bot_coe, direction_affineSpan]
-    convert finiteDimensional_bot _ _ <;> simp
+    convert finiteDimensional_bot k V <;> simp
   · rw [affineSpan_coe, direction_affineSpan_insert hp₀]
     infer_instance
 #align finite_dimensional_vector_span_insert finiteDimensional_vectorSpan_insert
@@ -584,7 +583,7 @@ theorem Collinear.mem_affineSpan_of_mem_of_ne {s : Set P} (h : Collinear k s) {p
   rcases h p₂ hp₂ with ⟨r₂, rfl⟩
   rcases h p₃ hp₃ with ⟨r₃, rfl⟩
   rw [vadd_left_mem_affineSpan_pair]
-  refine' ⟨r₃ / r₂, _⟩
+  refine ⟨r₃ / r₂, ?_⟩
   have h₂ : r₂ ≠ 0 := by
     rintro rfl
     simp at hp₁p₂
@@ -772,7 +771,7 @@ theorem finrank_vectorSpan_insert_le (s : AffineSubspace k P) (p : P) :
     have h := v.property
     rw [Submodule.mem_span_singleton] at h
     rcases h with ⟨c, hc⟩
-    refine' ⟨c, _⟩
+    refine ⟨c, ?_⟩
     ext
     exact hc
 #align finrank_vector_span_insert_le finrank_vectorSpan_insert_le
@@ -824,7 +823,6 @@ namespace AffineBasis
 universe u₁ u₂ u₃ u₄
 
 variable {ι : Type u₁} {k : Type u₂} {V : Type u₃} {P : Type u₄}
-
 variable [AddCommGroup V] [AffineSpace V P]
 
 section DivisionRing
@@ -855,7 +853,7 @@ theorem exists_affineBasis_of_finiteDimensional [Fintype ι] [FiniteDimensional 
     (h : Fintype.card ι = FiniteDimensional.finrank k V + 1) : Nonempty (AffineBasis ι k P) := by
   obtain ⟨s, b, hb⟩ := AffineBasis.exists_affineBasis k V P
   lift s to Finset P using b.finite_set
-  refine' ⟨b.reindex <| Fintype.equivOfCardEq _⟩
+  refine ⟨b.reindex <| Fintype.equivOfCardEq ?_⟩
   rw [h, ← b.card_eq_finrank_add_one]
 #align affine_basis.exists_affine_basis_of_finite_dimensional AffineBasis.exists_affineBasis_of_finiteDimensional
 
