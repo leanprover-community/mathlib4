@@ -364,72 +364,46 @@ theorem natDegree_pos_of_monic_of_not_isUnit {a : R[X]} (hu : ¬ IsUnit a) (ha :
     0 < natDegree a :=
   natDegree_pos_iff_degree_pos.mpr <| degree_pos_of_monic_of_not_isUnit hu ha
 
-open nonZeroDivisors Nat Set in
+theorem eq_zero_of_mul_eq_zero_of_smul (P : R[X]) (h : ∀ r : R, r • P = 0 → r = 0) :
+    ∀ (Q : R[X]), P * Q = 0 → Q = 0 := by
+  intro Q hQ
+  suffices ∀ i, P.coeff i • Q = 0 by
+    rw [← leadingCoeff_eq_zero]
+    apply h
+    simpa [ext_iff, mul_comm Q.leadingCoeff] using fun i ↦ congr_arg (·.coeff Q.natDegree) (this i)
+  apply Nat.strong_decreasing_induction
+  · use P.natDegree
+    intro i hi
+    rw [coeff_eq_zero_of_natDegree_lt hi, zero_smul]
+  intro l IH
+  obtain _|hl := (natDegree_smul_le (P.coeff l) Q).lt_or_eq
+  · apply eq_zero_of_mul_eq_zero_of_smul _ h (P.coeff l • Q)
+    rw [smul_eq_C_mul, mul_left_comm, hQ, mul_zero]
+  suffices P.coeff l * Q.leadingCoeff = 0 by
+    rwa [← leadingCoeff_eq_zero, ← coeff_natDegree, coeff_smul, hl, coeff_natDegree, smul_eq_mul]
+  let m := Q.natDegree
+  suffices (P * Q).coeff (l + m) = P.coeff l * Q.leadingCoeff by rw [← this, hQ, coeff_zero]
+  rw [coeff_mul]
+  apply Finset.sum_eq_single (l, m) _ (by simp)
+  simp only [Finset.mem_antidiagonal, ne_eq, Prod.forall, Prod.mk.injEq, not_and]
+  intro i j hij H
+  obtain hi|rfl|hi := lt_trichotomy i l
+  · have hj : m < j := by omega
+    rw [coeff_eq_zero_of_natDegree_lt hj, mul_zero]
+  · omega
+  · rw [← coeff_C_mul, ← smul_eq_C_mul, IH _ hi, coeff_zero]
+termination_by Q => Q.natDegree
+
+open nonZeroDivisors in
 /-- *McCoy theorem*: a polynomial `P : R[X]` is a zerodivisor if and only if there is `a : R`
-such that `a ≠ 0` and `a • P = 0`. We follow the proof given in
-https://math.stackexchange.com/questions/83121/zero-divisor-in-rx/83171#83171. -/
+such that `a ≠ 0` and `a • P = 0`. -/
 theorem nmem_nonZeroDivisors_iff {P : R[X]} : P ∉ R[X]⁰ ↔ ∃ a : R, a ≠ 0 ∧ a • P = 0 := by
   refine ⟨fun hP ↦ ?_, fun ⟨a, ha, h⟩ h1 ↦ ha <| C_eq_zero.1 <| (h1 _) <| smul_eq_C_mul a ▸ h⟩
-  let S := {Q | Q * P = 0 ∧ Q ≠ 0}
-  set m := sInf (natDegree '' S) with hm
-  obtain ⟨Q, hQ, hQdeg⟩ : ∃ Q ∈ {Q | Q * P = 0 ∧ Q ≠ 0}, Q.natDegree = m :=
-    sInf_mem <| image_nonempty.2 <| _root_.nmem_nonZeroDivisors_iff.1 hP
-  suffices m = 0 by
-    rw [this, natDegree_eq_zero] at hQdeg
-    obtain ⟨a, ha⟩ := hQdeg
-    exact ⟨a, fun ha0 ↦ hQ.2 (by simpa [← ha] using ha0), by rw [smul_eq_C_mul, ha, hQ.1]⟩
-  by_contra! Hdeg
-  let l := sSup {i | P.coeff i • Q ≠ 0}
-  have Hl : l ∈ {i | P.coeff i • Q ≠ 0} := by
-    refine sSup_mem ?_ ⟨P.natDegree, fun i hi ↦ ?_⟩
-    · rsuffices ⟨i, hi⟩ : ∃ i, Q.leadingCoeff * P.coeff i ≠ 0
-      · refine ⟨i, ?_⟩
-        rw [mem_setOf_eq, ← leadingCoeff_ne_zero, smul_eq_C_mul, leadingCoeff_mul']
-        all_goals rwa [leadingCoeff_C, mul_comm]
-      by_contra! H
-      apply Hdeg
-      simp only [hm, sInf_eq_zero, Set.mem_image, Set.image_eq_empty]
-      left
-      refine ⟨C Q.leadingCoeff, ⟨?_, by simp [hQ.2]⟩, by simp⟩
-      rw [← smul_eq_C_mul]
-      exact leadingCoeff_eq_zero.1 <| H _
-    · by_contra! H
-      exact hi (by rw [coeff_eq_zero_of_natDegree_lt H, zero_smul])
-  suffices (P.coeff l • Q).natDegree < Q.natDegree by
-    rw [hQdeg, lt_iff_not_le] at this
-    refine this <| Nat.sInf_le ⟨P.coeff l • Q, ⟨?_, fun hl ↦ ?_⟩, rfl⟩
-    · rw [smul_eq_C_mul, mul_assoc, hQ.1, mul_zero]
-    · suffices l ∈ {i | P.coeff i • Q ≠ 0} by exact this hl
-      refine sSup_mem ⟨l, Hl⟩ ⟨P.natDegree, fun i hi ↦ ?_⟩
-      by_contra! H
-      exact hi (by rw [coeff_eq_zero_of_natDegree_lt H, zero_smul])
-  refine lt_of_le_of_ne (natDegree_smul_le (coeff P l) Q) (fun h ↦ Hl ?_)
-  rw [← leadingCoeff_eq_zero, ← coeff_natDegree, coeff_smul, h, coeff_natDegree]
-  suffices (Q * P).coeff (l + m) = P.coeff l • Q.leadingCoeff by
-    simp only [← this, hQ.1, coeff_zero]
-  have : P.coeff l * Q.coeff (l+m-l) = P.coeff l • Q.leadingCoeff := by simp [leadingCoeff, hQdeg]
-  rw [smul_eq_mul, ← add_zero (P.coeff l * _), mul_comm Q, coeff_mul, ← zero_add 0,
-    sum_antidiagonal_eq_sum_range_succ (fun i j ↦ P.coeff i * Q.coeff j), ← succ_add, sum_range_add,
-    sum_range_succ, this, add_comm _ (P.coeff l • _), add_assoc]
-  congr
-  · refine sum_eq_zero (fun k hk ↦ ?_)
-    suffices m < l + m - k by
-      nth_rewrite 1 [← hQdeg] at this
-      rw [coeff_eq_zero_of_natDegree_lt this, mul_zero]
-    simp only [Finset.mem_range] at hk
-    rw [add_comm, Nat.add_sub_assoc hk.le]
-    simpa
-  · refine Finset.sum_eq_zero (fun k _ ↦ ?_)
-    suffices l < l.succ + k by
-      suffices P.coeff (l.succ + k) • Q = 0 by
-        rw [← C_mul'] at this
-        simp [← coeff_C_mul, this]
-      by_contra! H
-      rw [lt_iff_not_le] at this
-      refine this (le_csSup ⟨P.natDegree, fun i hi ↦ ?_⟩ H)
-      by_contra! H1
-      exact hi <| by rw [coeff_eq_zero_of_natDegree_lt H1, zero_smul]
-    omega
+  by_contra! h
+  obtain ⟨Q, hQ⟩ := _root_.nmem_nonZeroDivisors_iff.1 hP
+  refine hQ.2 (eq_zero_of_mul_eq_zero_of_smul P (fun a ha ↦ ?_) Q (mul_comm P _ ▸ hQ.1))
+  contrapose! ha
+  exact h a ha
 
 open nonZeroDivisors in
 protected lemma mem_nonZeroDivisors_iff {P : R[X]} : P ∈ R[X]⁰ ↔ ∀ a : R, a • P = 0 → a = 0 := by
