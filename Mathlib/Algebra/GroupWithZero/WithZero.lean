@@ -128,10 +128,10 @@ lemma map'_zero (f : α →* β) : map' f 0 = 0 := rfl
 
 @[simp]
 lemma map'_id : map' (MonoidHom.id β) = MonoidHom.id (WithZero β) := by
-  ext x; induction x using WithOne.cases_on <;> rfl
+  ext x; induction x <;> rfl
 
 lemma map'_map'  (f : α →* β) (g : β →* γ) (x) : map' g (map' f x) = map' (g.comp f) x := by
-  induction x using WithOne.cases_on <;> rfl
+  induction x <;> rfl
 
 @[simp]
 lemma map'_comp (f : α →* β) (g : β →* γ) : map' (g.comp f) = (map' g).comp (map' f) :=
