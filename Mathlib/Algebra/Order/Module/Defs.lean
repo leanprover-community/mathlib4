@@ -3,8 +3,8 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled
 import Mathlib.Algebra.Order.Module.Synonym
-import Mathlib.Algebra.Order.Ring.Lemmas
 import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.Tactic.Positivity.Core
 
@@ -95,7 +95,7 @@ because:
   anyway. It is easily copied over.
 
 In the future, it would be good to make the corresponding typeclasses in
-`Mathlib.Algebra.Order.Ring.Lemmas` custom typeclasses too.
+`Mathlib.Algebra.Order.GroupWithZero.Unbundled` custom typeclasses too.
 
 ## TODO
 
