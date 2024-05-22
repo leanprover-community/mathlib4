@@ -78,11 +78,6 @@ lemma useful (s : Set (∀ n, X n)) (s_mem : s ∈ cylinders X) :
 noncomputable def proba (s : Finset ℕ) (S : Set ((n : s) → X n)) : ℝ≥0∞ :=
   (∫⋯∫⁻_s, (cylinder s S).indicator 1 ∂μ) (Classical.ofNonempty)
 
-theorem eq (s : Finset ℕ) (S : Set ((n : s) → X n)) :
-  kolContent (isProjectiveMeasureFamily_prod μ) ((cylinder s S)) = proba μ s S := by sorry
-
-#check Finset.Icc
-
 theorem cyl_dependsOn (s : Finset ℕ) (S : Set ((n : s) → X n)) :
     DependsOn ((cylinder s S).indicator (1 : (∀ n, X n) → ℝ≥0∞)) s := by
   intro x y hxy
@@ -98,6 +93,19 @@ theorem cyl_dependsOn (s : Finset ℕ) (S : Set ((n : s) → X n)) :
       simp at *
       rwa [← xy]
     simp [this]
+
+theorem eq (s : Finset ℕ) (S : Set ((n : s) → X n)) (mS : MeasurableSet S) :
+    kolContent (isProjectiveMeasureFamily_prod μ) ((cylinder s S)) = proba μ s S := by
+  set μ_proj := isProjectiveMeasureFamily_prod μ
+  rw [kolContent_congr μ_proj (by simp; exact ⟨s, S, mS, rfl⟩) rfl mS,
+    ← lintegral_indicator_one₀]
+  simp [proba, lmarginal]
+  apply lintegral_congr
+  intro a
+  by_cases ha : a ∈ S
+  · simp [ha, Function.updateFinset]
+  · simp [ha, Function.updateFinset]
+  exact mS.nullMeasurableSet
 
 theorem ge_of_int {α : Type*} [MeasurableSpace α] {m : Measure α} [IsProbabilityMeasure m]
     (ε : ℝ≥0∞) (f : α → ℝ≥0∞) (hf : ε ≤ ∫⁻ a, f a ∂m) (fin_lint : ∫⁻ a, f a ∂m ≠ ∞) :
@@ -188,11 +196,11 @@ lemma important (k : ℕ) (y : ∀ n : Finset.Icc 0 k, X n) (z : X (k + 1)) :
 
 theorem thm1 (f : ℕ → (∀ n, X n) → ℝ≥0∞) (anti : Antitone f) (ε : ℝ≥0∞)
     (N : ℕ → ℕ) (hcte : ∀ n, DependsOn (f n) (Finset.Icc 0 (N n)))
-    (mf : ∀ n, Measurable (f n)) (x : ∀ n, X n)
+    (mf : ∀ n, Measurable (f n))
     (bound : ℝ≥0∞) (le_bound : ∀ n y, f n y ≤ bound) (fin_bound : bound ≠ ∞)
-    (hpos : ∀ n, ε ≤ (∫⋯∫⁻_Finset.Icc 0 (N n), f n ∂μ) x) :
-    ∃ x₀, ∀ n, ε ≤ (∫⋯∫⁻_Finset.Icc 1 (N n), f n ∂μ)
-    (Function.updateFinset x (Finset.Icc 0 0) x₀) := by
+    (hpos : ∀ x n, ε ≤ (∫⋯∫⁻_Finset.Icc 0 (N n), f n ∂μ) x) :
+    ∃ x₀, ∀ x n, ε ≤ (∫⋯∫⁻_Finset.Icc 1 (N n), f n ∂μ)
+    (Function.update x 0 x₀) := by
   let F : ℕ → (∀ n, X n) → ℝ≥0∞ := fun n ↦ (∫⋯∫⁻_Finset.Icc 1 (N n), f n ∂μ)
   have antiF : Antitone F := by
     intro m n hmn
@@ -259,35 +267,37 @@ theorem thm1 (f : ℕ → (∀ n, X n) → ℝ≥0∞) (anti : Antitone f) (ε :
       simp [fin_bound]
     apply eventually_of_forall
     simp [hl]
-  have le_int_l : ε ≤ (∫⋯∫⁻_{0}, l ∂μ) x := by
+  have le_int_l : ∀ x, ε ≤ (∫⋯∫⁻_{0}, l ∂μ) x := by
+    intro x
     apply ge_of_tendsto (tendsto_int _)
     simp [hpos]
-  have imp : ∀ y, ∃ z, Function.update x 0 y = Function.updateFinset x (Finset.Icc 0 0) z := by
-    intro y
-    let z : ∀ n : Finset.Icc 0 0, X n := fun n ↦ by
-      have := n.2
-      simp [Finset.Icc_self 0] at this
-      rw [this]
-      use y
-    use z
-    rw [Function.update_eq_updateFinset]
-    rfl
-  have : ∃ x', ε ≤ l (Function.update x 0 x') := by
+  have : ∀ x, ∃ x', ε ≤ l (Function.update x 0 x') := by
+    intro x
     simp_rw [lmarginal_singleton] at le_int_l
-    apply ge_of_int ε _ le_int_l
+    apply ge_of_int ε _ (le_int_l x)
     apply ne_top_of_le_ne_top fin_bound
     rw [← mul_one bound, ← measure_univ (μ := μ 0), ← lintegral_const]
     apply lintegral_mono
     intro y
     apply le_of_tendsto' (hl _)
     simp [F_le]
-  rcases this with ⟨x', hx'⟩
-  rcases imp x' with ⟨z, hz⟩
-  use z
-  intro n
+  let x_ : ∀ n, X n := Classical.ofNonempty
+  rcases this x_ with ⟨x', hx'⟩
+  use x'
+  intro x n
   have : ∀ x, Antitone (F · x) := fun x ↦ fun m n hmn ↦ antiF hmn x
   have := le_trans hx' ((this _).le_of_tendsto (hl _) n)
-  rw [hz] at this
+  have aux : F n (Function.update x_ 0 x') = F n (Function.update x 0 x') := by
+    simp [F]
+    apply lmarginal_dependsOn _ (hcte n)
+    intro i hi
+    simp [Finset.mem_Icc] at hi
+    have : i = 0 := by
+      by_contra!
+      rw [← Nat.one_le_iff_ne_zero] at this
+      linarith [hi.1, hi.2 this]
+    simp [Function.update, this]
+  rw [aux] at this
   exact this
 
 theorem bonjour (f : ℕ → (∀ n, X n) → ℝ≥0∞) (anti : Antitone f) (ε : ℝ≥0∞) (k : ℕ)
@@ -518,15 +528,58 @@ theorem firstLemma (A : ℕ → Set (∀ n, X n)) (A_mem : ∀ n, A n ∈ cylind
     simp
   choose a b using
     fun k y h ↦ bonjour μ χA anti l' k NA χA_dep mχA 1 χA_le (by norm_num) y h
-  let z : ∀ k, (X k) × (∀ x n, l' ≤ (∫⋯∫⁻_Finset.Icc (k + 1) (NA n), χA n ∂μ)
-      (Function.updateFinset x (Finset.Icc 0 k) (fun i : Finset.Icc 0 k ↦ z i))) := by sorry
-  have crucial : ∀ k, ∃ z, ∀ x n, l' ≤ (∫⋯∫⁻_Finset.Icc (k + 1) (NA n), χA n ∂μ)
-      (Function.updateFinset x (Finset.Icc 0 k) z) := by
-    have init := fun x ↦ thm1 μ χA anti l' NA χA_dep mχA x 1 χA_le (by norm_num) (this · x)
+  let key : ∀ k, ((i : Finset.Icc 0 k) → X i) → X (k + 1) := by
+    intro k y
+    use (if h : ∀ (x : (i : ℕ) → X i) (n : ℕ), l' ≤ (∫⋯∫⁻_Finset.Icc (k + 1) (NA n), χA n ∂μ)
+        (Function.updateFinset x (Finset.Icc 0 k) y)
+      then a k y h
+      else Classical.ofNonempty)
+  rcases thm1 μ χA anti l' NA χA_dep mχA 1 χA_le (by norm_num) (fun x n ↦ this n x) with
+    ⟨omg, mais_non⟩
+  let z : ∀ k, (X k) := by
+    intro k
+    induction k using Nat.strongRec' with
+    | H m hm => cases m with
+      | zero => use omg
+      | succ i => use key i (fun j ↦ hm j.1 (Nat.lt_succ.2 <| (Finset.mem_Icc.1 j.2).2))
+
+  have crucial : ∀ k x n, l' ≤ (∫⋯∫⁻_Finset.Icc (k + 1) (NA n), χA n ∂μ)
+      (Function.updateFinset x (Finset.Icc 0 k) (fun (i : Finset.Icc 0 k) ↦ z i)) := by
     intro k
     induction k with
-    | zero => exact init
-    | succ m hm => exact fun x ↦ ind m x hm
+    | zero =>
+      intro x n
+      have : Function.updateFinset x (Finset.Icc 0 0) (fun i ↦ z i) =
+          Function.update x 0 (z 0) := by
+        ext i
+        simp [Function.update, Function.updateFinset, Finset.mem_Icc]
+        by_cases h : i = 0
+        · simp [h]
+          aesop
+        · simp [h]
+      rw [this]
+      convert mais_non x n
+    | succ m hm =>
+      intro x n
+      have : Function.updateFinset x (Finset.Icc 0 (m + 1)) (fun i ↦ z i) =
+          Function.update (Function.updateFinset x (Finset.Icc 0 m) (fun i ↦ z i))
+          (m + 1) (z (m + 1)) := by
+        ext i
+        simp [Function.updateFinset, Function.update, Finset.mem_Icc]
+        by_cases hi : i ≤ m + 1
+        · simp [hi]
+          by_cases hi' : i = m + 1
+          · simp [hi']
+            aesop
+          · have : i ≤ m := Nat.lt_succ.1 <| lt_iff_le_and_ne.2 ⟨hi, hi'⟩
+            simp [hi', this]
+        have h1 : ¬i = m + 1 := fun h ↦ hi (le_of_eq h)
+        have h2 : ¬i ≤ m := fun h ↦ hi (le_trans h (Nat.le_succ _))
+        simp [hi, h1, h2]
+      rw [this]
+      have h : ¬m + 1 = 0 := by simp
+      convert b m (fun i ↦ z i) hm x n
+
   let x_ : ∀ n, X n := Classical.ofNonempty
   have crucial' : ∃ z : ∀ n, X n, ∀ k n, l' ≤ (∫⋯∫⁻_Finset.Icc (k + 1) (NA n), χA n ∂μ)
       (Function.updateFinset x_ (Finset.Icc 0 k) (fun i : Finset.Icc 0 k ↦ z i)) := by
