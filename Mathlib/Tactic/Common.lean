@@ -17,7 +17,7 @@ import ImportGraph.Imports
 import ProofWidgets
 
 -- Import Mathlib-specific linters.
-import Mathlib.Linter.Lint
+import Mathlib.Tactic.Linter.Lint
 
 -- Now import all tactics defined in Mathlib that do not require theory files.
 import Mathlib.Mathport.Rename
