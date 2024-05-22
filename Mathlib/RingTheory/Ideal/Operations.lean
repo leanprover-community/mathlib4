@@ -153,7 +153,7 @@ theorem smul_induction_on {p : M → Prop} {x} (H : x ∈ I • N) (smul : ∀ r
 theorem smul_induction_on' {x : M} (hx : x ∈ I • N) {p : ∀ x, x ∈ I • N → Prop}
     (smul : ∀ (r : R) (hr : r ∈ I) (n : M) (hn : n ∈ N), p (r • n) (smul_mem_smul hr hn))
     (add : ∀ x hx y hy, p x hx → p y hy → p (x + y) (Submodule.add_mem _ ‹_› ‹_›)) : p x hx := by
-  refine' Exists.elim _ fun (h : x ∈ I • N) (H : p x h) => H
+  refine Exists.elim ?_ fun (h : x ∈ I • N) (H : p x h) => H
   exact
     smul_induction_on hx (fun a ha x hx => ⟨_, smul _ ha _ hx⟩) fun x y ⟨_, hx⟩ ⟨_, hy⟩ =>
       ⟨_, add _ _ _ _ hx hy⟩
@@ -830,7 +830,7 @@ theorem isCoprime_iff_codisjoint : IsCoprime I J ↔ Codisjoint I J := by
     rw [hxy]
     simp only [one_eq_top, Submodule.mem_top]
   · intro h
-    refine' ⟨1, 1, _⟩
+    refine ⟨1, 1, ?_⟩
     simpa only [one_eq_top, top_mul, Submodule.add_eq_sup]
 
 theorem isCoprime_iff_add : IsCoprime I J ↔ I + J = 1 := by
@@ -961,6 +961,19 @@ theorem IsPrime.isRadical (H : IsPrime I) : I.IsRadical := fun _ ⟨n, hrni⟩ =
 theorem IsPrime.radical (H : IsPrime I) : radical I = I :=
   IsRadical.radical H.isRadical
 #align ideal.is_prime.radical Ideal.IsPrime.radical
+
+theorem mem_radical_of_pow_mem {I : Ideal R} {x : R} {m : ℕ} (hx : x ^ m ∈ radical I) :
+    x ∈ radical I :=
+  radical_idem I ▸ ⟨m, hx⟩
+#align ideal.mem_radical_of_pow_mem Ideal.mem_radical_of_pow_mem
+
+theorem disjoint_powers_iff_not_mem (y : R) (hI : I.IsRadical) :
+    Disjoint (Submonoid.powers y : Set R) ↑I ↔ y ∉ I.1 := by
+  refine' ⟨fun h => Set.disjoint_left.1 h (Submonoid.mem_powers _),
+      fun h => disjoint_iff.mpr (eq_bot_iff.mpr _)⟩
+  rintro x ⟨⟨n, rfl⟩, hx'⟩
+  exact h (hI <| mem_radical_of_pow_mem <| le_radical hx')
+#align ideal.disjoint_powers_iff_not_mem Ideal.disjoint_powers_iff_not_mem
 
 variable (I J)
 
@@ -1158,7 +1171,7 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
         erw [Set.union_eq_self_of_subset_right hfji] at h
         exact h
       specialize ih hp' hn' h'
-      refine' ih.imp id (Or.imp id (Exists.imp fun k => _))
+      refine ih.imp id (Or.imp id (Exists.imp fun k => ?_))
       exact And.imp (fun hk => Finset.insert_subset_insert i (Finset.subset_insert j u) hk) id
     by_cases Ha : f a ≤ f i
     · have h' : (I : Set R) ⊆ f i ∪ f b ∪ ⋃ j ∈ (↑t : Set ι), f j := by
@@ -1334,10 +1347,10 @@ theorem range_finsuppTotal :
     LinearMap.range (finsuppTotal ι M I v) = I • Submodule.span R (Set.range v) := by
   ext
   rw [Submodule.mem_ideal_smul_span_iff_exists_sum]
-  refine' ⟨fun ⟨f, h⟩ => ⟨Finsupp.mapRange.linearMap I.subtype f, fun i => (f i).2, h⟩, _⟩
+  refine ⟨fun ⟨f, h⟩ => ⟨Finsupp.mapRange.linearMap I.subtype f, fun i => (f i).2, h⟩, ?_⟩
   rintro ⟨a, ha, rfl⟩
   classical
-    refine' ⟨a.mapRange (fun r => if h : r ∈ I then ⟨r, h⟩ else 0) (by simp), _⟩
+    refine ⟨a.mapRange (fun r => if h : r ∈ I then ⟨r, h⟩ else 0) (by simp), ?_⟩
     rw [finsuppTotal_apply, Finsupp.sum_mapRange_index]
     · apply Finsupp.sum_congr
       intro i _

@@ -185,7 +185,7 @@ theorem atom_iff_nonzero_span (W : Submodule K V) :
   refine' ⟨fun h => _, fun h => _⟩
   · cases' h with hbot h
     rcases (Submodule.ne_bot_iff W).1 hbot with ⟨v, ⟨hW, hv⟩⟩
-    refine' ⟨v, ⟨hv, _⟩⟩
+    refine ⟨v, ⟨hv, ?_⟩⟩
     by_contra heq
     specialize h (span K {v})
     rw [span_singleton_eq_bot, lt_iff_le_and_ne] at h
