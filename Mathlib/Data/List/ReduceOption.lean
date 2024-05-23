@@ -60,7 +60,7 @@ theorem reduceOption_length_eq {l : List (Option α)} :
 
 theorem length_eq_reduceOption_length_add_filter_none {l : List (Option α)} :
     l.length = l.reduceOption.length + (l.filter Option.isNone).length := by
-  rw [reduceOption_length_eq, ← Option.not_comp_isSome, length_eq_length_filter_add Option.isSome]
+  simp_rw [reduceOption_length_eq, l.length_eq_length_filter_add Option.isSome, Option.bnot_isSome]
 
 theorem reduceOption_length_le (l : List (Option α)) : l.reduceOption.length ≤ l.length := by
   rw [length_eq_reduceOption_length_add_filter_none]
@@ -69,8 +69,7 @@ theorem reduceOption_length_le (l : List (Option α)) : l.reduceOption.length �
 
 theorem reduceOption_length_eq_iff {l : List (Option α)} :
     l.reduceOption.length = l.length ↔ ∀ x ∈ l, Option.isSome x := by
-  rw [length_eq_reduceOption_length_add_filter_none]
-  simp [length_eq_zero, filter_eq_nil]
+  rw [reduceOption_length_eq, List.filter_length_eq_length]
 #align list.reduce_option_length_eq_iff List.reduceOption_length_eq_iff
 
 theorem reduceOption_length_lt_iff {l : List (Option α)} :

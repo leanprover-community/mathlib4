@@ -439,22 +439,22 @@ theorem elim_apply {f : γ → α → β} {x : α → β} {i : Option γ} {y : �
     i.elim x f y = i.elim (x y) fun j => f j y := by rw [elim_comp fun f : α → β => f y]
 
 @[simp]
-lemma bnot_isSome (a : Option α) : a.isSome.not = a.isNone := by
+lemma bnot_isSome (a : Option α) : (! a.isSome) = a.isNone := by
   funext
   cases a <;> simp
 
 @[simp]
-lemma not_comp_isSome : Bool.not ∘ @Option.isSome α = Option.isNone := by
+lemma not_comp_isSome : (! ·) ∘ @Option.isSome α = Option.isNone := by
   funext
   simp
 
 @[simp]
-lemma bnot_isNone (a : Option α) : a.isNone.not = a.isSome := by
+lemma bnot_isNone (a : Option α) : (! a.isNone) = a.isSome := by
   funext
   cases a <;> simp
 
 @[simp]
-lemma not_comp_isNone : Bool.not ∘ @Option.isNone α = Option.isSome := by
+lemma not_comp_isNone : (! ·) ∘ @Option.isNone α = Option.isSome := by
   funext x
   simp
 

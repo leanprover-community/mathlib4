@@ -2864,10 +2864,9 @@ end Lookmap
 /-! ### filter -/
 
 theorem length_eq_length_filter_add {l : List (α)} (f : α → Bool) :
-    l.length = (l.filter f).length + (l.filter (Bool.not ∘ f)).length := by
-  induction' l with hd tl hl
-  · simp
-  · cases hfd : f hd <;> simp [length_cons, hl, filter_cons, hfd] <;> omega
+    l.length = (l.filter f).length + (l.filter (! f ·)).length := by
+  simp_rw [← List.countP_eq_length_filter, l.length_eq_countP_add_countP f, Bool.not_eq_true,
+    Bool.decide_eq_false]
 
 /-! ### filterMap -/
 
