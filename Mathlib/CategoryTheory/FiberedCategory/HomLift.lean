@@ -209,7 +209,7 @@ lemma isoOfIsoLift_inv_hom_id {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a �
   (isoOfIsoLift p f φ).inv_hom_id
 
 @[simp]
-lemma comp_isoOfIsoLift {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ≅ b) [p.IsHomLift f φ.hom] :
+lemma isoOfIsoLift_hom_inv_id {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ≅ b) [p.IsHomLift f φ.hom] :
     f ≫ (isoOfIsoLift p f φ).inv = 𝟙 R :=
   (isoOfIsoLift p f φ).hom_inv_id
 
