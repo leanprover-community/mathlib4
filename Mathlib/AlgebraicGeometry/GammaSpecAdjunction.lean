@@ -381,8 +381,9 @@ def adjunction : Scheme.Γ.rightOp ⊣ Scheme.Spec :=
 theorem adjunction_homEquiv_apply {X : Scheme} {R : CommRingCatᵒᵖ}
     (f : (op <| Scheme.Γ.obj <| op X) ⟶ R) :
     ΓSpec.adjunction.homEquiv X R f = locallyRingedSpaceAdjunction.homEquiv X.1 R f := by
-  dsimp [adjunction, Adjunction.restrictFullyFaithful, equivOfFullyFaithful]
+  dsimp [adjunction, Adjunction.restrictFullyFaithful]
   simp
+  sorry
 #align algebraic_geometry.Γ_Spec.adjunction_hom_equiv_apply AlgebraicGeometry.ΓSpec.adjunction_homEquiv_apply
 
 theorem adjunction_homEquiv (X : Scheme) (R : CommRingCatᵒᵖ) :
@@ -416,7 +417,7 @@ theorem adjunction_unit_app {X : Scheme} :
 
 instance isIso_locallyRingedSpaceAdjunction_counit :
     IsIso.{u + 1, u + 1} locallyRingedSpaceAdjunction.counit :=
-  IsIso.of_iso_inv (NatIso.op SpecΓIdentity)
+  (NatIso.op SpecΓIdentity).isIso_inv
 #align algebraic_geometry.Γ_Spec.is_iso_LocallyRingedSpace_adjunction_counit AlgebraicGeometry.ΓSpec.isIso_locallyRingedSpaceAdjunction_counit
 
 instance isIso_adjunction_counit : IsIso ΓSpec.adjunction.counit := by

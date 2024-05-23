@@ -87,7 +87,7 @@ def toCompHaus : Stonean.{u} ⥤ CompHaus.{u} :=
   inducedFunctor _
 
 /-- The forgetful functor `Stonean ⥤ CompHaus` is fully faithful. -/
-def fullyFaithfulToCompHaus : FullyFaithful toCompHaus :=
+def fullyFaithfulToCompHaus : toCompHaus.FullyFaithful  :=
   fullyFaithfulInducedFunctor _
 
 /-- Construct a term of `Stonean` from a type endowed with the structure of a
@@ -150,7 +150,7 @@ example : toProfinite ⋙ profiniteToCompHaus = toCompHaus :=
 noncomputable
 def isoOfHomeo {X Y : Stonean} (f : X ≃ₜ Y) : X ≅ Y :=
   @asIso _ _ _ _ ⟨f, f.continuous⟩
-  (@isIso_of_reflects_iso _ _ _ _ _ _ _ toCompHaus (IsIso.of_iso (CompHaus.isoOfHomeo f)) _)
+  (@isIso_of_reflects_iso _ _ _ _ _ _ _ toCompHaus (CompHaus.isoOfHomeo f).isIso_hom _)
 
 /-- Construct a homeomorphism from an isomorphism. -/
 @[simps!]
