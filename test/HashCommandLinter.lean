@@ -8,6 +8,7 @@ theorem fo₁ : True := .intro
 -- `#align` is allowed by the linter
 #align true fo₁
 
+#guard_msgs in
 #adaptation_note /-- testing that the hashCommand linter ignores this. -/
 
 /-- info: 0 -/
