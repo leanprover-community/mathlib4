@@ -97,7 +97,7 @@ A topological space `X` is said to be perfect if its universe is a perfect set.
 Equivalently, this means that `𝓝[≠] x ≠ ⊥` for every point `x : X`.
 -/
 @[mk_iff perfectSpace_def]
-class PerfectSpace: Prop :=
+class PerfectSpace : Prop :=
   univ_preperfect : Preperfect (Set.univ : Set α)
 
 theorem PerfectSpace.univ_perfect [PerfectSpace α] : Perfect (Set.univ : Set α) :=
@@ -222,7 +222,7 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
 theorem exists_perfect_nonempty_of_isClosed_of_not_countable [SecondCountableTopology α]
     (hclosed : IsClosed C) (hunc : ¬C.Countable) : ∃ D : Set α, Perfect D ∧ D.Nonempty ∧ D ⊆ C := by
   rcases exists_countable_union_perfect_of_isClosed hclosed with ⟨V, D, Vct, Dperf, VD⟩
-  refine' ⟨D, ⟨Dperf, _⟩⟩
+  refine ⟨D, ⟨Dperf, ?_⟩⟩
   constructor
   · rw [nonempty_iff_ne_empty]
     by_contra h

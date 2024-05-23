@@ -92,7 +92,7 @@ theorem riesz_lemma_of_norm_lt {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖
   obtain ⟨d, d0, dxlt, ledx, -⟩ :
     ∃ d : 𝕜, d ≠ 0 ∧ ‖d • x‖ < R ∧ R / ‖c‖ ≤ ‖d • x‖ ∧ ‖d‖⁻¹ ≤ R⁻¹ * ‖c‖ * ‖x‖ :=
     rescale_to_shell hc Rpos x0
-  refine' ⟨d • x, dxlt.le, fun y hy => _⟩
+  refine ⟨d • x, dxlt.le, fun y hy => ?_⟩
   set y' := d⁻¹ • y
   have yy' : y = d • y' := by simp [y', smul_smul, mul_inv_cancel d0]
   calc

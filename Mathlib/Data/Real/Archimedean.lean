@@ -60,7 +60,7 @@ theorem exists_isLUB {S : Set ℝ} (hne : S.Nonempty) (hbdd : BddAbove S) : ∃ 
   rcases hne, hbdd with ⟨⟨L, hL⟩, ⟨U, hU⟩⟩
   have : ∀ d : ℕ, BddAbove { m : ℤ | ∃ y ∈ S, (m : ℝ) ≤ y * d } := by
     cases' exists_int_gt U with k hk
-    refine' fun d => ⟨k * d, fun z h => _⟩
+    refine fun d => ⟨k * d, fun z h => ?_⟩
     rcases h with ⟨y, yS, hy⟩
     refine' Int.cast_le.1 (hy.trans _)
     push_cast

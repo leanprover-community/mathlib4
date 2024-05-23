@@ -118,7 +118,7 @@ theorem le_ofFunction {μ : OuterMeasure α} :
   ⟨fun H s => le_trans (H s) (ofFunction_le s), fun H _ =>
     le_iInf fun f =>
       le_iInf fun hs =>
-        le_trans (μ.mono hs) <| le_trans (μ.iUnion f) <| ENNReal.tsum_le_tsum fun _ => H _⟩
+        le_trans (μ.mono hs) <| le_trans (measure_iUnion_le f) <| ENNReal.tsum_le_tsum fun _ => H _⟩
 #align measure_theory.outer_measure.le_of_function MeasureTheory.OuterMeasure.le_ofFunction
 
 theorem isGreatest_ofFunction :
@@ -140,7 +140,7 @@ theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
     (h : ∀ u, (s ∩ u).Nonempty → (t ∩ u).Nonempty → m u = ∞) :
     OuterMeasure.ofFunction m m_empty (s ∪ t) =
       OuterMeasure.ofFunction m m_empty s + OuterMeasure.ofFunction m m_empty t := by
-  refine' le_antisymm (OuterMeasure.union _ _ _) (le_iInf fun f => le_iInf fun hf => _)
+  refine le_antisymm (measure_union_le _ _) (le_iInf₂ fun f hf ↦ ?_)
   set μ := OuterMeasure.ofFunction m m_empty
   rcases Classical.em (∃ i, (s ∩ f i).Nonempty ∧ (t ∩ f i).Nonempty) with (⟨i, hs, ht⟩ | he)
   · calc
@@ -156,7 +156,7 @@ theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
         μ.mono fun x hx =>
           let ⟨i, hi⟩ := mem_iUnion.1 (hf (hu hx))
           mem_iUnion.2 ⟨⟨i, ⟨x, hx, hi⟩⟩, hi⟩
-      _ ≤ ∑' i : I u, μ (f i) := μ.iUnion _
+      _ ≤ ∑' i : I u, μ (f i) := measure_iUnion_le _
 
   calc
     μ s + μ t ≤ (∑' i : I s, μ (f i)) + ∑' i : I t, μ (f i) :=
@@ -167,7 +167,6 @@ theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
       (tsum_le_tsum_of_inj (↑) Subtype.coe_injective (fun _ _ => zero_le _) (fun _ => le_rfl)
         ENNReal.summable ENNReal.summable)
     _ ≤ ∑' i, m (f i) := ENNReal.tsum_le_tsum fun i => ofFunction_le _
-
 #align measure_theory.outer_measure.of_function_union_of_top_of_nonempty_inter MeasureTheory.OuterMeasure.ofFunction_union_of_top_of_nonempty_inter
 
 theorem comap_ofFunction {β} (f : β → α) (h : Monotone m ∨ Surjective f) :
@@ -265,7 +264,7 @@ theorem boundedBy_eq (s : Set α) (m_empty : m ∅ = 0) (m_mono : ∀ ⦃t : Set
 
 @[simp]
 theorem boundedBy_eq_self (m : OuterMeasure α) : boundedBy m = m :=
-  ext fun _ => boundedBy_eq _ m.empty' (fun _ ht => m.mono' ht) m.iUnion
+  ext fun _ => boundedBy_eq _ measure_empty (fun _ ht => measure_mono ht) measure_iUnion_le
 #align measure_theory.outer_measure.bounded_by_eq_self MeasureTheory.OuterMeasure.boundedBy_eq_self
 
 theorem le_boundedBy {μ : OuterMeasure α} : μ ≤ boundedBy m ↔ ∀ s, μ s ≤ m s := by
