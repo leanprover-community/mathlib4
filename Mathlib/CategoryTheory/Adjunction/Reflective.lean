@@ -52,6 +52,10 @@ instance [Reflective i] : i.IsRightAdjoint := ⟨_, ⟨reflectorAdjunction i⟩�
 
 instance [Reflective i] : (reflector i).IsLeftAdjoint := ⟨_, ⟨reflectorAdjunction i⟩⟩
 
+/-- A reflective functor is fully faithful. -/
+def Functor.fullyFaithfulOfReflective [Reflective i] : i.FullyFaithful :=
+  (reflectorAdjunction i).fullyFaithfulROfIsIsoCounit
+
 -- TODO: This holds more generally for idempotent adjunctions, not just reflective adjunctions.
 /-- For a reflective functor `i` (with left adjoint `L`), with unit `η`, we have `η_iL = iL η`.
 -/

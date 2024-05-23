@@ -143,12 +143,17 @@ theorem fullSubcategoryInclusion.map {X Y} {f : X ⟶ Y} : (fullSubcategoryInclu
   rfl
 #align category_theory.full_subcategory_inclusion.map CategoryTheory.fullSubcategoryInclusion.map
 
+/-- The inclusion of a full subcategory is fully faithful. -/
+abbrev fullyFaithfulFullSubcategoryInclusion :
+    (fullSubcategoryInclusion Z).FullyFaithful :=
+  fullyFaithfulInducedFunctor _
+
 instance FullSubcategory.full : (fullSubcategoryInclusion Z).Full :=
-  InducedCategory.full _
+  (fullyFaithfulFullSubcategoryInclusion _).full
 #align category_theory.full_subcategory.full CategoryTheory.FullSubcategory.full
 
 instance FullSubcategory.faithful : (fullSubcategoryInclusion Z).Faithful :=
-  InducedCategory.faithful _
+  (fullyFaithfulFullSubcategoryInclusion _).faithful
 #align category_theory.full_subcategory.faithful CategoryTheory.FullSubcategory.faithful
 
 variable {Z} {Z' : C → Prop}

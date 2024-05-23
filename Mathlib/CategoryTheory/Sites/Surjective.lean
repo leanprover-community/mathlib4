@@ -14,7 +14,7 @@ import Mathlib.CategoryTheory.Sites.CompatibleSheafification
 ## Main definitions
 
 - `IsLocallySurjective` : A morphism of presheaves valued in a concrete category is locally
-  surjective with respect to a grothendieck topology if every section in the target is locally
+  surjective with respect to a Grothendieck topology if every section in the target is locally
   in the set-theoretic image, i.e. the image sheaf coincides with the target.
 
 ## Main results
