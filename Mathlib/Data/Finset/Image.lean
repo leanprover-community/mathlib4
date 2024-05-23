@@ -6,7 +6,6 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 import Mathlib.Algebra.Group.Embedding
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Finset.Union
-import Mathlib.Algebra.Order.Ring.Int
 
 #align_import data.finset.image from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
@@ -28,8 +27,15 @@ choosing between `insert` and `Finset.cons`, or between `Finset.union` and `Fins
 * `Finset.subtype`: `s.subtype p` is the finset of `Subtype p` whose elements belong to `s`.
 * `Finset.fin`:`s.fin n` is the finset of all elements of `s` less than `n`.
 
+## TODO
+
+Move the material about `Finset.range` so that the `Mathlib.Algebra.Group.Embedding` import can be
+removed.
 -/
 
+-- TODO
+-- assert_not_exists OrderedCommMonoid
+-- assert_not_exists Ring
 
 variable {α β γ : Type*}
 
@@ -289,23 +295,11 @@ theorem attach_map_val {s : Finset α} : s.attach.map (Embedding.subtype _) = s 
 #align finset.attach_map_val Finset.attach_map_val
 
 theorem disjoint_range_addLeftEmbedding (a b : ℕ) :
-    Disjoint (range a) (map (addLeftEmbedding a) (range b)) := by
-  refine' disjoint_iff_inf_le.mpr _
-  intro k hk
-  simp only [exists_prop, mem_range, inf_eq_inter, mem_map, addLeftEmbedding, mem_inter]
-    at hk
-  obtain ⟨a, _, ha⟩ := hk.2
-  simpa [← ha] using hk.1
+    Disjoint (range a) (map (addLeftEmbedding a) (range b)) := by simp [disjoint_left]; omega
 #align finset.disjoint_range_add_left_embedding Finset.disjoint_range_addLeftEmbedding
 
 theorem disjoint_range_addRightEmbedding (a b : ℕ) :
-    Disjoint (range a) (map (addRightEmbedding a) (range b)) := by
-  refine' disjoint_iff_inf_le.mpr _
-  intro k hk
-  simp only [exists_prop, mem_range, inf_eq_inter, mem_map, addRightEmbedding, mem_inter]
-    at hk
-  obtain ⟨a, _, ha⟩ := hk.2
-  simpa [← ha] using hk.1
+    Disjoint (range a) (map (addRightEmbedding a) (range b)) := by simp [disjoint_left]; omega
 #align finset.disjoint_range_add_right_embedding Finset.disjoint_range_addRightEmbedding
 
 theorem map_disjiUnion {f : α ↪ β} {s : Finset α} {t : β → Finset γ} {h} :

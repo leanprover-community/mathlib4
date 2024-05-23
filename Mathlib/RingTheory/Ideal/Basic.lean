@@ -399,7 +399,7 @@ theorem IsMaximal.exists_inv {I : Ideal α} (hI : I.IsMaximal) {x} (hx : x ∉ I
       (H₂ (span (insert x I)) x (Set.Subset.trans (subset_insert _ _) subset_span) hx
         (subset_span (mem_insert _ _))) with
     ⟨y, z, hz, hy⟩
-  refine' ⟨y, z, _, hy.symm⟩
+  refine ⟨y, z, ?_, hy.symm⟩
   rwa [← span_eq I]
 #align ideal.is_maximal.exists_inv Ideal.IsMaximal.exists_inv
 
@@ -670,7 +670,7 @@ theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
   have : span ({(x:α) ^ (n + 1)} : Set α) ≤ span ((fun x : α => x ^ (n + 1)) '' s) := by
     rw [span_le, Set.singleton_subset_iff]
     exact subset_span ⟨x, x.prop, rfl⟩
-  refine' this _
+  refine this ?_
   rw [mul_pow, mem_span_singleton]
   exact ⟨f x ^ (n + 1), mul_comm _ _⟩
 #align ideal.span_pow_eq_top Ideal.span_pow_eq_top

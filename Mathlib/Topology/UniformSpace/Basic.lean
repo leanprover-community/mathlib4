@@ -494,7 +494,7 @@ theorem eventually_uniformity_iterate_comp_subset {s : Set (α × α)} (hs : s �
   induction' n with n ihn generalizing s
   · simpa
   rcases comp_mem_uniformity_sets hs with ⟨t, htU, hts⟩
-  refine' (ihn htU).mono fun U hU => _
+  refine (ihn htU).mono fun U hU => ?_
   rw [Function.iterate_succ_apply']
   exact
     ⟨hU.1.trans <| (subset_comp_self <| refl_le_uniformity htU).trans hts,
@@ -585,8 +585,8 @@ theorem uniformity_lift_le_comp {f : Set (α × α) → Filter β} (h : Monotone
   calc
     ((𝓤 α).lift fun s => f (s ○ s)) = ((𝓤 α).lift' fun s : Set (α × α) => s ○ s).lift f := by
       rw [lift_lift'_assoc]
-      exact monotone_id.compRel monotone_id
-      exact h
+      · exact monotone_id.compRel monotone_id
+      · exact h
     _ ≤ (𝓤 α).lift f := lift_mono comp_le_uniformity le_rfl
 #align uniformity_lift_le_comp uniformity_lift_le_comp
 
@@ -928,7 +928,7 @@ theorem uniformity_hasBasis_closed :
   refine' Filter.hasBasis_self.2 fun t h => _
   rcases comp_comp_symm_mem_uniformity_sets h with ⟨w, w_in, w_symm, r⟩
   refine' ⟨closure w, mem_of_superset w_in subset_closure, isClosed_closure, _⟩
-  refine' Subset.trans _ r
+  refine Subset.trans ?_ r
   rw [closure_eq_uniformity]
   apply iInter_subset_of_subset
   apply iInter_subset
@@ -1236,8 +1236,8 @@ abbrev UniformSpace.comap (f : α → β) (u : UniformSpace β) : UniformSpace �
   comp := le_trans
     (by
       rw [comap_lift'_eq, comap_lift'_eq2]
-      exact lift'_mono' fun s _ ⟨a₁, a₂⟩ ⟨x, h₁, h₂⟩ => ⟨f x, h₁, h₂⟩
-      exact monotone_id.compRel monotone_id)
+      · exact lift'_mono' fun s _ ⟨a₁, a₂⟩ ⟨x, h₁, h₂⟩ => ⟨f x, h₁, h₂⟩
+      · exact monotone_id.compRel monotone_id)
     (comap_mono u.comp)
   toTopologicalSpace := u.toTopologicalSpace.induced f
   nhds_eq_comap_uniformity x := by

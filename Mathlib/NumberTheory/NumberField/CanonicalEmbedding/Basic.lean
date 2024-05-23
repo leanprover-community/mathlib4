@@ -258,66 +258,129 @@ open scoped Classical
 
 open BigOperators
 
-variable [NumberField K] {K}
+variable {K}
 
-/-- The norm of `x` is `∏ w real, ‖x‖_w * ∏ w complex, ‖x‖_w ^ 2`. It is defined such that
-the norm of `mixedEmbedding K a` for `a : K` is equal to the absolute value of the norm of `a`
-over `ℚ`, see `norm_eq_norm`. -/
-protected def norm  : (E K) →*₀ ℝ where
-  toFun := fun x ↦ (∏ w, ‖x.1 w‖) * ∏ w, ‖x.2 w‖ ^ 2
-  map_one' := by simp only [Prod.fst_one, Pi.one_apply, norm_one, Finset.prod_const_one,
-    Prod.snd_one, one_pow, mul_one]
-  map_zero' := by
-    simp_rw [Prod.fst_zero, Prod.snd_zero, Pi.zero_apply, norm_zero, zero_pow (two_ne_zero),
-      mul_eq_zero, Finset.prod_const, pow_eq_zero_iff', true_and, Finset.card_univ]
-    by_contra!
-    have : finrank ℚ K = 0 := by
-      rw [← card_add_two_mul_card_eq_rank, NrRealPlaces, NrComplexPlaces, this.1, this.2]
-    exact ne_of_gt finrank_pos this
-  map_mul' _ _ := by simp only [Prod.fst_mul, Pi.mul_apply, norm_mul, Real.norm_eq_abs,
-      Finset.prod_mul_distrib, Prod.snd_mul, Complex.norm_eq_abs, mul_pow]; ring
+/-- The norm at the place infinite `w` of an element of
+`({w // IsReal w} → ℝ) × ({ w // IsComplex w } → ℂ)`. -/
+def normAtPlace (w : InfinitePlace K) : (E K) →*₀ ℝ where
+  toFun x := if hw : IsReal w then ‖x.1 ⟨w, hw⟩‖ else ‖x.2 ⟨w, not_isReal_iff_isComplex.mp hw⟩‖
+  map_zero' := by simp
+  map_one' := by simp
+  map_mul' x y := by split_ifs <;> simp
+
+theorem normAtPlace_nonneg  (w : InfinitePlace K) (x : E K) :
+    0 ≤ normAtPlace w x := by
+  rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
+  split_ifs <;> exact norm_nonneg _
+
+theorem normAtPlace_neg (w : InfinitePlace K) (x : E K)  :
+    normAtPlace w (- x) = normAtPlace w x := by
+  rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
+  split_ifs <;> simp
+
+theorem normAtPlace_add_le (w : InfinitePlace K) (x y : E K) :
+    normAtPlace w (x + y) ≤ normAtPlace w x + normAtPlace w y := by
+  rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
+  split_ifs <;> exact norm_add_le _ _
+
+theorem normAtPlace_smul (w : InfinitePlace K) (x : E K) (c : ℝ) :
+    normAtPlace w (c • x) = |c| * normAtPlace w x := by
+  rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
+  split_ifs
+  · rw [Prod.smul_fst, Pi.smul_apply, norm_smul, Real.norm_eq_abs]
+  · rw [Prod.smul_snd, Pi.smul_apply, norm_smul, Real.norm_eq_abs, Complex.norm_eq_abs]
+
+theorem normAtPlace_real (w : InfinitePlace K) (c : ℝ) :
+    normAtPlace w ((fun _ ↦ c, fun _ ↦ c) : (E K)) = |c| := by
+  rw [show ((fun _ ↦ c, fun _ ↦ c) : (E K)) = c • 1 by ext <;> simp, normAtPlace_smul, map_one,
+    mul_one]
+
+@[simp]
+theorem normAtPlace_apply_isReal {w : InfinitePlace K} (hw : IsReal w) (x : E K):
+    normAtPlace w x = ‖x.1 ⟨w, hw⟩‖ := by
+  rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, dif_pos]
+
+@[simp]
+theorem normAtPlace_apply_isComplex {w : InfinitePlace K} (hw : IsComplex w) (x : E K) :
+    normAtPlace w x = ‖x.2 ⟨w, hw⟩‖ := by
+  rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
+    dif_neg (not_isReal_iff_isComplex.mpr hw)]
+
+@[simp]
+theorem normAtPlace_apply (w : InfinitePlace K) (x : K) :
+    normAtPlace w (mixedEmbedding K x) = w x := by
+  simp_rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, mixedEmbedding,
+    RingHom.prod_apply, Pi.ringHom_apply, norm_embedding_of_isReal, norm_embedding_eq, dite_eq_ite,
+    ite_id]
+
+theorem normAtPlace_eq_zero {x : E K} :
+    (∀ w, normAtPlace w x = 0) ↔ x = 0 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · ext w
+    · exact norm_eq_zero'.mp (normAtPlace_apply_isReal w.prop _ ▸ h w.1)
+    · exact norm_eq_zero'.mp (normAtPlace_apply_isComplex w.prop _ ▸ h w.1)
+  · simp_rw [h, map_zero, implies_true]
+
+variable [NumberField K]
+
+theorem nnnorm_eq_sup_normAtPlace (x : E K) :
+    ‖x‖₊ = Finset.univ.sup fun w ↦ ⟨normAtPlace w x, normAtPlace_nonneg w x⟩ := by
+  rw [show (Finset.univ : Finset (InfinitePlace K)) = (Finset.univ.image
+    (fun w : {w : InfinitePlace K // IsReal w} ↦ w.1)) ∪
+    (Finset.univ.image (fun w : {w : InfinitePlace K // IsComplex w} ↦ w.1))
+    by ext; simp [isReal_or_isComplex], Finset.sup_union, Finset.univ.sup_image,
+    Finset.univ.sup_image, sup_eq_max, Prod.nnnorm_def', Pi.nnnorm_def, Pi.nnnorm_def]
+  congr
+  · ext w
+    simp [normAtPlace_apply_isReal w.prop]
+  · ext w
+    simp [normAtPlace_apply_isComplex w.prop]
+
+theorem norm_eq_sup'_normAtPlace (x : E K) :
+    ‖x‖ = Finset.univ.sup' Finset.univ_nonempty fun w ↦ normAtPlace w x := by
+  rw [← coe_nnnorm, nnnorm_eq_sup_normAtPlace, ← Finset.sup'_eq_sup Finset.univ_nonempty,
+    ← NNReal.val_eq_coe, ← OrderHom.Subtype.val_coe, map_finset_sup', OrderHom.Subtype.val_coe]
+  rfl
+
+/-- The norm of `x` is `∏ w, (normedAtPlace x) ^ mult w`. It is defined such that the norm of
+`mixedEmbedding K a` for `a : K` is equal to the absolute value of the norm of `a` over `ℚ`,
+see `norm_eq_norm`. -/
+protected def norm : (E K) →*₀ ℝ where
+  toFun x := ∏ w, (normAtPlace w x) ^ (mult w)
+  map_one' := by simp only [map_one, one_pow, Finset.prod_const_one]
+  map_zero' := by simp [mult]
+  map_mul' _ _ := by simp only [map_mul, mul_pow, Finset.prod_mul_distrib]
 
 protected theorem norm_apply (x : E K) :
-    mixedEmbedding.norm x =  (∏ w, ‖x.1 w‖) * (∏ w, ‖x.2 w‖ ^ 2) := rfl
+    mixedEmbedding.norm x = ∏ w, (normAtPlace w x) ^ (mult w) := rfl
 
 protected theorem norm_nonneg (x : E K) :
-    0 ≤ mixedEmbedding.norm x := by
-  refine mul_nonneg ?_ ?_
-  · exact Finset.prod_nonneg (fun _ _ ↦ norm_nonneg _)
-  · exact Finset.prod_nonneg (fun _ _ ↦ pow_nonneg (norm_nonneg _) _)
+    0 ≤ mixedEmbedding.norm x :=
+  Finset.univ.prod_nonneg fun _ _ ↦ pow_nonneg (normAtPlace_nonneg _ _) _
 
 protected theorem norm_eq_zero_iff {x : E K} :
-    mixedEmbedding.norm x = 0 ↔ (∃ w, x.1 w = 0) ∨ (∃ w, x.2 w = 0) := by
-  simp_rw [mixedEmbedding.norm, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, mul_eq_zero,
-    Finset.prod_eq_zero_iff, Finset.mem_univ, true_and, pow_eq_zero_iff two_ne_zero, norm_eq_zero]
+    mixedEmbedding.norm x = 0 ↔ ∃ w, normAtPlace w x = 0 := by
+  simp_rw [mixedEmbedding.norm,  MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, Finset.prod_eq_zero_iff,
+    Finset.mem_univ, true_and, pow_eq_zero_iff mult_ne_zero]
 
 protected theorem norm_ne_zero_iff {x : E K} :
-    mixedEmbedding.norm x ≠ 0 ↔ (∀ w, x.1 w ≠ 0) ∧ (∀ w, x.2 w ≠ 0) := by
+    mixedEmbedding.norm x ≠ 0 ↔ ∀ w, normAtPlace w x ≠ 0 := by
   rw [← not_iff_not]
-  simp_rw [ne_eq, mixedEmbedding.norm_eq_zero_iff, not_and_or, not_forall, not_not]
+  simp_rw [ne_eq, mixedEmbedding.norm_eq_zero_iff, not_not, not_forall, not_not]
+
+theorem norm_smul (c : ℝ) (x : E K) :
+    mixedEmbedding.norm (c • x) = |c| ^ finrank ℚ K * (mixedEmbedding.norm x) := by
+  simp_rw [mixedEmbedding.norm_apply, normAtPlace_smul, mul_pow, Finset.prod_mul_distrib,
+    Finset.prod_pow_eq_pow_sum, sum_mult_eq]
 
 theorem norm_real (c : ℝ) :
     mixedEmbedding.norm ((fun _ ↦ c, fun _ ↦ c) : (E K)) = |c| ^ finrank ℚ K := by
-  simp_rw [mixedEmbedding.norm, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, Real.norm_eq_abs,
-    Complex.norm_eq_abs, Complex.abs_ofReal, Finset.prod_const, ← pow_mul,
-    ← card_add_two_mul_card_eq_rank, Finset.card_univ, pow_add]
-
-protected theorem norm_smul (c : ℝ) (x : E K) :
-    mixedEmbedding.norm (c • x) = |c| ^ finrank ℚ K * (mixedEmbedding.norm x) := by
-  rw [show c • x = ((fun _ ↦ c, fun _ ↦ c) : (E K)) * x by rfl, map_mul, norm_real]
+  rw [show ((fun _ ↦ c, fun _ ↦ c) : (E K)) = c • 1 by ext <;> simp, norm_smul, map_one, mul_one]
 
 @[simp]
 theorem norm_eq_norm (x : K) :
     mixedEmbedding.norm (mixedEmbedding K x) = |Algebra.norm ℚ x| := by
-  simp_rw [← prod_eq_abs_norm, mixedEmbedding.norm, mixedEmbedding, RingHom.prod_apply,
-    MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, Pi.ringHom_apply, norm_embedding_eq,
-    norm_embedding_of_isReal]
-  rw [← Fintype.prod_subtype_mul_prod_subtype (fun w : InfinitePlace K ↦ IsReal w)]
-  congr 1
-  · exact Finset.prod_congr rfl (fun w _ ↦ by rw [mult, if_pos w.prop, pow_one])
-  · refine (Fintype.prod_equiv (Equiv.subtypeEquivRight ?_) _ _ (fun w ↦ ?_)).symm
-    · exact fun _ ↦ not_isReal_iff_isComplex
-    · rw [Equiv.subtypeEquivRight_apply_coe, mult, if_neg w.prop]
+  simp_rw [mixedEmbedding.norm_apply, normAtPlace_apply, prod_eq_abs_norm]
 
 theorem norm_eq_zero_iff' {x : E K} (hx : x ∈ Set.range (mixedEmbedding K)) :
     mixedEmbedding.norm x = 0 ↔ x = 0 := by
@@ -327,8 +390,14 @@ theorem norm_eq_zero_iff' {x : E K} (hx : x ∈ Set.range (mixedEmbedding K)) :
 
 theorem norm_unit (u : (𝓞 K)ˣ) :
     mixedEmbedding.norm (mixedEmbedding K u) = 1 := by
-  rw [norm_eq_norm, show |(Algebra.norm ℚ) (u : K)| = 1
-      by exact NumberField.isUnit_iff_norm.mp (Units.isUnit u), Rat.cast_one]
+  rw [norm_eq_norm, show |Algebra.norm ℚ (u : K)| = 1 by
+    exact isUnit_iff_norm.mp (u.isUnit), Rat.cast_one]
+
+variable (K) in
+protected theorem continuous_norm : Continuous (mixedEmbedding.norm : (E K) → ℝ) := by
+  refine continuous_finset_prod Finset.univ fun _ _ ↦ ?_
+  simp_rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, dite_pow]
+  split_ifs <;> fun_prop
 
 end norm
 

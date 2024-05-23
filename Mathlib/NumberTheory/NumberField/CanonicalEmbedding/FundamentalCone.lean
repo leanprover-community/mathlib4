@@ -102,41 +102,28 @@ open Classical in
 defined in such way that: 1) it factors the map `logEmbedding`, see `logMap_eq_logEmbedding`;
 2) it is constant on the lines `{c • x | c ∈ ℝ}`, see `logMap_smul`. -/
 def logMap (x : E K) : {w : InfinitePlace K // w ≠ w₀} → ℝ := fun w ↦
-    if hw : IsReal w.val then
-      Real.log ‖x.1 ⟨w.val, hw⟩‖ - Real.log (mixedEmbedding.norm x) * (finrank ℚ K : ℝ)⁻¹
-    else
-      2 * (Real.log ‖x.2 ⟨w.val, not_isReal_iff_isComplex.mp hw⟩‖ -
-        Real.log (mixedEmbedding.norm x) * (finrank ℚ K : ℝ)⁻¹)
+  mult w.val * (Real.log (normAtPlace w.val x) -
+    Real.log (mixedEmbedding.norm x) * (finrank ℚ K : ℝ)⁻¹)
 
 @[simp]
 theorem logMap_zero : logMap (0 : E K) = 0 := by
   ext
-  simp_rw [logMap, Prod.fst_zero, Prod.snd_zero, map_zero, Pi.zero_apply, norm_zero, Real.log_zero,
-    zero_mul, sub_zero, mul_zero, dite_eq_ite, ite_self]
+  rw [logMap, map_zero, map_zero, Real.log_zero, zero_mul, sub_self, mul_zero, Pi.zero_apply]
 
 theorem logMap_mul {x y : E K} (hx : mixedEmbedding.norm x ≠ 0) (hy : mixedEmbedding.norm y ≠ 0) :
     logMap (x * y) = logMap x + logMap y := by
   ext w
   simp_rw [Pi.add_apply, logMap]
-  split_ifs with hw
-  · rw [Prod.fst_mul, Pi.mul_apply, norm_mul, map_mul, Real.log_mul, Real.log_mul hx hy, add_mul]
-    · ring
-    · exact norm_ne_zero_iff.mpr <| (mixedEmbedding.norm_ne_zero_iff.mp hx).1 ⟨_, hw⟩
-    · exact norm_ne_zero_iff.mpr <| (mixedEmbedding.norm_ne_zero_iff.mp hy).1 ⟨_, hw⟩
-  · replace hw := not_isReal_iff_isComplex.mp hw
-    rw [Prod.snd_mul, Pi.mul_apply, norm_mul, map_mul, Real.log_mul, Real.log_mul hx hy, add_mul]
-    · ring
-    · exact norm_ne_zero_iff.mpr <| (mixedEmbedding.norm_ne_zero_iff.mp hx).2 ⟨_, hw⟩
-    · exact norm_ne_zero_iff.mpr <| (mixedEmbedding.norm_ne_zero_iff.mp hy).2 ⟨_, hw⟩
+  rw [map_mul, map_mul, Real.log_mul, Real.log_mul hx hy, add_mul]
+  · ring
+  · exact mixedEmbedding.norm_ne_zero_iff.mp hx w
+  · exact mixedEmbedding.norm_ne_zero_iff.mp hy w
 
 theorem logMap_eq_logEmbedding (u : (𝓞 K)ˣ) :
     logMap (mixedEmbedding K u) = logEmbedding K u := by
   ext
-  simp_rw [logMap, mixedEmbedding.norm_unit, Real.log_one, zero_mul, sub_zero, logEmbedding,
-    AddMonoidHom.coe_mk, ZeroHom.coe_mk, mult, Nat.cast_ite, ite_mul, Nat.cast_one, one_mul,
-    Nat.cast_ofNat, mixedEmbedding, RingHom.prod_apply, Pi.ringHom_apply, norm_embedding_eq,
-    norm_embedding_of_isReal]
-  rfl
+  simp_rw [logMap, mixedEmbedding.norm_unit, Real.log_one, zero_mul, sub_zero, normAtPlace_apply,
+    logEmbedding_component]
 
 theorem logMap_unitSMul (u : (𝓞 K)ˣ) {x : E K} (hx : mixedEmbedding.norm x ≠ 0) :
     logMap (u • x) = logEmbedding K u + logMap x := by
@@ -145,22 +132,19 @@ theorem logMap_unitSMul (u : (𝓞 K)ˣ) {x : E K} (hx : mixedEmbedding.norm x �
 theorem logMap_torsion_unitSMul (x : E K) {ζ : (𝓞 K)ˣ} (hζ : ζ ∈ torsion K) :
     logMap (ζ • x) = logMap x := by
   ext
-  simp_rw [logMap, unitSMul_smul, Prod.fst_mul, Prod.snd_mul, Pi.mul_apply, norm_mul, map_mul,
-    norm_eq_norm, mixedEmbedding, RingHom.prod_apply, Pi.ringHom_apply,
-    show |(Algebra.norm ℚ) (ζ : K)| = 1 by exact NumberField.isUnit_iff_norm.mp (Units.isUnit ζ),
-    Rat.cast_one, one_mul, norm_embedding_eq, norm_embedding_of_isReal, (mem_torsion K).mp hζ,
-    one_mul]
+  simp_rw [logMap, unitSMul_smul, map_mul, norm_eq_norm, show |(Algebra.norm ℚ) (ζ : K)| = 1 by
+    exact isUnit_iff_norm.mp ζ.isUnit, Rat.cast_one, one_mul, normAtPlace_apply,
+    (mem_torsion K).mp hζ, one_mul]
 
 theorem logMap_smul {x : E K} (hx : mixedEmbedding.norm x ≠ 0) {c : ℝ} (hc : c ≠ 0) :
     logMap (c • x) = logMap x := by
   rw [show c • x = ((fun _ ↦ c, fun _ ↦ c) : (E K)) * x by rfl, logMap_mul _ hx, add_left_eq_self]
-  ext
-  have hr : (finrank ℚ K : ℝ) ≠ 0 :=  Nat.cast_ne_zero.mpr (ne_of_gt finrank_pos)
-  simp_rw [logMap, Pi.zero_apply, norm_real, Real.log_pow, mul_comm, inv_mul_cancel_left₀ hr,
-    Real.norm_eq_abs, Complex.norm_eq_abs,  Complex.abs_ofReal, sub_self, mul_zero, dite_eq_ite,
-    ite_self]
-  rw [norm_real]
-  exact pow_ne_zero _ (abs_ne_zero.mpr hc)
+  · ext
+    have hr : (finrank ℚ K : ℝ) ≠ 0 :=  Nat.cast_ne_zero.mpr (ne_of_gt finrank_pos)
+    simp_rw [logMap, normAtPlace_real, norm_real, Real.log_pow, mul_comm, inv_mul_cancel_left₀ hr,
+      sub_self, zero_mul, Pi.zero_apply]
+  · rw [norm_real]
+    exact pow_ne_zero _ (abs_ne_zero.mpr hc)
 
 end logMap
 

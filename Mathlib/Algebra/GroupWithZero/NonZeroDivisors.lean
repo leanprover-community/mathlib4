@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Devon Tuma, Oliver Nash
 -/
 import Mathlib.Algebra.Associated
+import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.GroupTheory.GroupAction.Opposite
-import Mathlib.Algebra.Group.Submonoid.Membership
 
 #align_import ring_theory.non_zero_divisors from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 
@@ -42,6 +42,10 @@ def nonZeroDivisorsLeft : Submonoid M₀ where
     x ∈ nonZeroDivisorsLeft M₀ ↔ ∀ y, y * x = 0 → y = 0 :=
   Iff.rfl
 
+lemma nmem_nonZeroDivisorsLeft_iff {r : M₀} :
+    r ∉ nonZeroDivisorsLeft M₀ ↔ {s | s * r = 0 ∧ s ≠ 0}.Nonempty := by
+  simpa [mem_nonZeroDivisorsLeft_iff] using Set.nonempty_def.symm
+
 /-- The collection of elements of a `MonoidWithZero` that are not right zero divisors form a
 `Submonoid`. -/
 def nonZeroDivisorsRight : Submonoid M₀ where
@@ -53,6 +57,10 @@ def nonZeroDivisorsRight : Submonoid M₀ where
     x ∈ nonZeroDivisorsRight M₀ ↔ ∀ y, x * y = 0 → y = 0 :=
   Iff.rfl
 
+lemma nmem_nonZeroDivisorsRight_iff {r : M₀} :
+    r ∉ nonZeroDivisorsRight M₀ ↔ {s | r * s = 0 ∧ s ≠ 0}.Nonempty := by
+  simpa [mem_nonZeroDivisorsRight_iff] using Set.nonempty_def.symm
+
 lemma nonZeroDivisorsLeft_eq_right (M₀ : Type*) [CommMonoidWithZero M₀] :
     nonZeroDivisorsLeft M₀ = nonZeroDivisorsRight M₀ := by
   ext x; simp [mul_comm x]
@@ -62,7 +70,7 @@ lemma nonZeroDivisorsLeft_eq_right (M₀ : Type*) [CommMonoidWithZero M₀] :
   ext x
   simp only [SetLike.mem_coe, mem_nonZeroDivisorsLeft_iff, mul_eq_zero, forall_eq_or_imp, true_and,
     Set.mem_setOf_eq]
-  refine' ⟨fun h ↦ _, fun hx y hx' ↦ by contradiction⟩
+  refine ⟨fun h ↦ ?_, fun hx y hx' ↦ by contradiction⟩
   contrapose! h
   exact ⟨1, h, one_ne_zero⟩
 
@@ -70,7 +78,7 @@ lemma nonZeroDivisorsLeft_eq_right (M₀ : Type*) [CommMonoidWithZero M₀] :
     nonZeroDivisorsRight M₀ = {x : M₀ | x ≠ 0} := by
   ext x
   simp only [SetLike.mem_coe, mem_nonZeroDivisorsRight_iff, mul_eq_zero, Set.mem_setOf_eq]
-  refine' ⟨fun h ↦ _, fun hx y hx' ↦ by aesop⟩
+  refine ⟨fun h ↦ ?_, fun hx y hx' ↦ by aesop⟩
   contrapose! h
   exact ⟨1, Or.inl h, one_ne_zero⟩
 
@@ -106,6 +114,9 @@ variable {M M' M₁ R R' F : Type*} [MonoidWithZero M] [MonoidWithZero M'] [Comm
 
 theorem mem_nonZeroDivisors_iff {r : M} : r ∈ M⁰ ↔ ∀ x, x * r = 0 → x = 0 := Iff.rfl
 #align mem_non_zero_divisors_iff mem_nonZeroDivisors_iff
+
+lemma nmem_nonZeroDivisors_iff {r : M} : r ∉ M⁰ ↔ {s | s * r = 0 ∧ s ≠ 0}.Nonempty := by
+  simpa [mem_nonZeroDivisors_iff] using Set.nonempty_def.symm
 
 theorem mul_right_mem_nonZeroDivisors_eq_zero_iff {x r : M} (hr : r ∈ M⁰) : x * r = 0 ↔ x = 0 :=
   ⟨hr _, by simp (config := { contextual := true })⟩
@@ -276,30 +287,31 @@ lemma nonZeroSMulDivisors_mulOpposite_eq_op_nonZeroDivisors :
 
 end nonZeroSMulDivisors
 
-noncomputable section Associated
+open scoped nonZeroDivisors
 
-open nonZeroDivisors
+variable {M₀}
 
-/-- The units of the monoid of non zero divisors of `α` are equivalent to the units of `α`. -/
-def nonZeroDivisorsUnitsEquiv (α : Type*) [MonoidWithZero α] :
-    (α⁰)ˣ ≃* αˣ :=
-  MulEquiv.ofBijective (Units.map α⁰.subtype) ⟨Units.map_injective Subtype.val_injective,
-    fun u ↦ ⟨IsUnit.unit ⟨⟨⟨u, IsUnit.mem_nonZeroDivisors u.isUnit⟩, ⟨(u⁻¹ : αˣ),
-        IsUnit.mem_nonZeroDivisors u⁻¹.isUnit⟩, by simp, by simp⟩, rfl⟩,
-      by rw [Units.ext_iff, IsUnit.unit_of_val_units, Units.coe_map, Submonoid.coe_subtype]⟩⟩
+section MonoidWithZero
+variable [MonoidWithZero M₀] {a b : M₀⁰}
 
-@[simp]
-theorem nonZeroDivisorsUnitsEquiv_apply (α : Type*) [MonoidWithZero α] (u : (α⁰)ˣ) :
-    nonZeroDivisorsUnitsEquiv α u = (u : α) := rfl
+/-- The units of the monoid of non-zero divisors of `M₀` are equivalent to the units of `M₀`. -/
+@[simps]
+def unitsNonZeroDivisorsEquiv : M₀⁰ˣ ≃* M₀ˣ where
+  __ := Units.map M₀⁰.subtype
+  invFun u := ⟨⟨u, u.isUnit.mem_nonZeroDivisors⟩, ⟨(u⁻¹ : M₀ˣ), u⁻¹.isUnit.mem_nonZeroDivisors⟩,
+    by simp, by simp⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
 
-@[simp]
-theorem nonZeroDivisorsUnitsEquiv_symm_apply (α : Type*) [MonoidWithZero α] (u : αˣ) :
-    ((nonZeroDivisorsUnitsEquiv α).symm u : α) = (u : α) := by
-  obtain ⟨v, rfl⟩ := (nonZeroDivisorsUnitsEquiv α).surjective u
-  rw [MulEquiv.symm_apply_apply, nonZeroDivisorsUnitsEquiv_apply]
+@[simp, norm_cast] lemma nonZeroDivisors.associated_coe : Associated (a : M₀) b ↔ Associated a b :=
+  unitsNonZeroDivisorsEquiv.symm.exists_congr_left.trans $ by simp [Associated]; norm_cast
 
-theorem Associates_mk_mem_nonZeroDivisors_iff {α : Type*} [CommMonoidWithZero α] (a : α) :
-    Associates.mk a ∈ (Associates α)⁰ ↔ a ∈ α⁰ := by
+end MonoidWithZero
+
+section CommMonoidWithZero
+variable {M₀ : Type*} [CommMonoidWithZero M₀] {a : M₀}
+
+theorem mk_mem_nonZeroDivisors_associates : Associates.mk a ∈ (Associates M₀)⁰ ↔ a ∈ M₀⁰ := by
   rw [mem_nonZeroDivisors_iff, mem_nonZeroDivisors_iff, ← not_iff_not]
   push_neg
   constructor
@@ -310,43 +322,22 @@ theorem Associates_mk_mem_nonZeroDivisors_iff {α : Type*} [CommMonoidWithZero �
   · refine fun ⟨b, hb₁, hb₂⟩ ↦ ⟨Associates.mk b, ?_, by rwa [Associates.mk_ne_zero]⟩
     rw [Associates.mk_mul_mk, hb₁, Associates.mk_zero]
 
-/-- To any class in `Associates α⁰`, one can associate a class in `(Associates α)⁰` by sending a
-representative `a : α⁰` of the class to the class of `(a : α)`. The map obtained is in fact a
-`MulEquiv`, see `AssociatesNonZeroDivisorsMulEquiv`. -/
-def AssociatesNonZeroDivisorsMonoidHom (α : Type*) [CommMonoidWithZero α] :
-    Associates α⁰ →* (Associates α)⁰ where
-  toFun := Quotient.lift (fun ⟨x, _⟩ ↦  ⟨Associates.mk x, by
-      rwa [Associates_mk_mem_nonZeroDivisors_iff]⟩) (by
-    rintro _ _ ⟨v, hv⟩
-    rw [Subtype.mk.injEq, Associates.mk_eq_mk_iff_associated]
-    exact ⟨nonZeroDivisorsUnitsEquiv α v, by
-      rw [nonZeroDivisorsUnitsEquiv_apply, ← hv, Submonoid.coe_mul]⟩)
-  map_one' := rfl
-  map_mul' x y := Quotient.inductionOn₂ x y fun _ _ ↦ rfl
+/-- The non-zero divisors of associates of a monoid with zero `M₀` are isomorphic to the associates
+of the non-zero divisors of `M₀` under the map `⟨⟦a⟧, _⟩ ↦ ⟦⟨a, _⟩⟧`. -/
+def associatesNonZeroDivisorsEquiv : (Associates M₀)⁰ ≃* Associates M₀⁰ where
+  toEquiv := .subtypeQuotientEquivQuotientSubtype (s₂ := Associated.setoid _)
+    (· ∈ nonZeroDivisors _)
+    (by simp [mem_nonZeroDivisors_iff, Quotient.forall, Associates.mk_mul_mk])
+    (by simp [Associated.setoid])
+  map_mul' := by simp [Quotient.forall, Associates.mk_mul_mk]
 
 @[simp]
-theorem AssociatesNonZeroDivisorsMonoidHom_apply (α : Type*) [CommMonoidWithZero α] (a : α⁰) :
-    (AssociatesNonZeroDivisorsMonoidHom α ⟦a⟧ : Associates α) = Associates.mk (a : α) := rfl
-
-/-- This is the `MulEquiv` version of `AssociatesNonZeroDivisorsMonoidHom`. -/
-def AssociatesNonZeroDivisorsMulEquiv (α : Type*) [CommMonoidWithZero α] :
-    Associates α⁰ ≃* (Associates α)⁰  := by
-  refine MulEquiv.ofBijective (AssociatesNonZeroDivisorsMonoidHom α) ⟨?_, ?_⟩
-  · rintro ⟨_⟩ ⟨_⟩ h
-    rw [Subtype.ext_iff, Associates.quot_mk_eq_mk, Associates.quot_mk_eq_mk,
-      AssociatesNonZeroDivisorsMonoidHom_apply, AssociatesNonZeroDivisorsMonoidHom_apply] at h
-    obtain ⟨u, hu⟩ := Associates.mk_eq_mk_iff_associated.mp h
-    rw [Associates.quot_mk_eq_mk, Associates.quot_mk_eq_mk]
-    refine Associates.mk_eq_mk_iff_associated.mpr ⟨?_, ?_⟩
-    · exact (nonZeroDivisorsUnitsEquiv α).symm u
-    · rwa [Subtype.ext_iff, Submonoid.coe_mul, nonZeroDivisorsUnitsEquiv_symm_apply]
-  · rintro ⟨⟨y⟩, hy⟩
-    refine ⟨⟦⟨y, ?_⟩⟧, ?_⟩
-    · rwa [← Associates_mk_mem_nonZeroDivisors_iff, ← Associates.quot_mk_eq_mk]
-    · rw [Subtype.ext_iff, AssociatesNonZeroDivisorsMonoidHom_apply, ← Associates.quot_mk_eq_mk]
+lemma associatesNonZeroDivisorsEquiv_mk_mk (a : M₀) (ha) :
+    associatesNonZeroDivisorsEquiv ⟨⟦a⟧, ha⟩ = ⟦⟨a, mk_mem_nonZeroDivisors_associates.1 ha⟩⟧ := rfl
 
 @[simp]
-theorem AssociatesNonZeroDivisorsMulEquiv_apply (α : Type*) [CommMonoidWithZero α] (a : α⁰) :
-    (AssociatesNonZeroDivisorsMulEquiv α ⟦a⟧ : Associates α) = Associates.mk (a : α) := rfl
+lemma associatesNonZeroDivisorsEquiv_symm_mk_mk (a : M₀) (ha) :
+    associatesNonZeroDivisorsEquiv.symm ⟦⟨a, ha⟩⟧ = ⟨⟦a⟧, mk_mem_nonZeroDivisors_associates.2 ha⟩ :=
+  rfl
 
-end Associated
+end CommMonoidWithZero
