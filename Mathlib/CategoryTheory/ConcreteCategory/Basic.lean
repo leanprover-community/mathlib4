@@ -286,6 +286,7 @@ def HasForget₂.mk' {C : Type u} {D : Type u'} [Category.{v} C] [ConcreteCatego
 #align category_theory.has_forget₂.mk' CategoryTheory.HasForget₂.mk'
 
 /-- Composition of `HasForget₂` instances. -/
+@[reducible]
 def HasForget₂.trans (C : Type u) [Category.{v} C] [ConcreteCategory.{w} C]
     (D : Type u') [Category.{v'} D] [ConcreteCategory.{w} D]
     (E : Type u'') [Category.{v''} E] [ConcreteCategory.{w} E]

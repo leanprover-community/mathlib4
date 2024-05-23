@@ -14,7 +14,7 @@ import Mathlib.Topology.Category.TopCat.Basic
 For a concrete category `V`, where the forgetful functor factors via `TopCat`,
 and a monoid `G`, equipped with a topological space instance,
 we define the full subcategory `ContAction V G` of all objects of `Action V G`
-where the induced action is continuouos.
+where the induced action is continuous.
 
 We also define a category `DiscreteContAction V G` as the full subcategory of `ContAction V G`,
 where the underlying topological space is discrete.
@@ -28,10 +28,10 @@ universe u v
 
 open CategoryTheory Limits
 
-namespace Action
-
 variable (V : Type (u + 1)) [LargeCategory V] [ConcreteCategory V] [HasForget₂ V TopCat]
 variable (G : MonCat.{u}) [TopologicalSpace G]
+
+namespace Action
 
 instance : HasForget₂ (Action V G) TopCat :=
   HasForget₂.trans (Action V G) V TopCat
@@ -53,9 +53,15 @@ the underlying topological space is continuous. -/
 def IsContinuous (X : Action V G) : Prop :=
   ContinuousSMul G ((CategoryTheory.forget₂ _ TopCat).obj X)
 
+end Action
+
+open Action
+
 /-- For `HasForget₂ V TopCat`, this is the full subcategory of `Action V G` where the induced
 action is continuous. -/
 def ContAction : Type _ := FullSubcategory (IsContinuous V G)
+
+namespace ContAction
 
 instance : Category (ContAction V G) :=
   FullSubcategory.category (IsContinuous V G)
@@ -72,17 +78,17 @@ instance : HasForget₂ (ContAction V G) V :=
 instance : HasForget₂ (ContAction V G) TopCat :=
   HasForget₂.trans (ContAction V G) (Action V G) TopCat
 
-namespace ContAction
-
 instance : Coe (ContAction V G) (Action V G) where
   coe X := X.obj
-
-section Discrete
 
 /-- A predicate on an `X : ContAction V G` saying that the topology on the underlying type of `X`
 is discrete. -/
 def IsDiscrete (X : ContAction V G) : Prop :=
   DiscreteTopology ((CategoryTheory.forget₂ _ TopCat).obj X)
+
+end ContAction
+
+open ContAction
 
 /-- The subcategory of `ContAction V G` where the topology is discrete. -/
 def DiscreteContAction : Type _ := FullSubcategory (IsDiscrete V G)
@@ -108,7 +114,3 @@ instance (X : DiscreteContAction V G) :
   X.property
 
 end DiscreteContAction
-
-end Discrete
-
-end ContAction
