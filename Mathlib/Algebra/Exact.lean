@@ -66,7 +66,7 @@ lemma Exact.linearMap_ker_eq (hfg : Exact f g) : ker g = range f :=
 
 lemma _root_.LinearMap.exact_iff :
     Exact f g ↔ LinearMap.ker g = LinearMap.range f :=
-  Iff.symm <| SetLike.ext_iff
+  Iff.symm SetLike.ext_iff
 
 lemma _root_.LinearMap.exact_of_comp_eq_zero_of_ker_le_range
     (h1 : g ∘ₗ f = 0) (h2 : ker g ≤ range f) : Exact f g :=
