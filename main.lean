@@ -77,7 +77,7 @@ theorem eq (s : Finset ℕ) (S : Set ((n : s) → X n)) (mS : MeasurableSet S) (
     kolContent (isProjectiveMeasureFamily_prod μ) ((cylinder s S)) =
     (∫⋯∫⁻_s, (cylinder s S).indicator 1 ∂μ) x := by
   rw [kolContent_congr (isProjectiveMeasureFamily_prod μ)
-      (by simp only [mem_cylinders, exists_prop]; exact ⟨s, S, mS, rfl⟩) rfl mS,
+      (by rw [mem_cylinders]; exact ⟨s, S, mS, rfl⟩) rfl mS,
     ← lintegral_indicator_one₀ mS.nullMeasurableSet]
   refine lintegral_congr <| fun a ↦ ?_
   by_cases ha : a ∈ S <;> simp [ha, Function.updateFinset]
