@@ -182,26 +182,23 @@ lemma eqToHom_comp_lift_iff {R S : 𝒮} {a b b' : 𝒳} (f : R ⟶ S) (φ : a �
 @[simp]
 lemma lift_eqToHom_comp_iff {R' R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (h : R' = R) :
     p.IsHomLift (eqToHom h ≫ f) φ ↔ p.IsHomLift f φ where
-  mp := by intro hφ'; subst h; simpa using hφ'
+  mp := fun hφ' => by subst h; simpa using hφ'
   mpr := fun hφ => inferInstance
 
 @[simp]
 lemma lift_comp_eqToHom_iff {R S S' : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (h : S = S') :
     p.IsHomLift (f ≫ eqToHom h) φ ↔ p.IsHomLift f φ where
-  mp := by intro hφ'; subst h; simpa using hφ'
+  mp := fun hφ' => by subst h; simpa using hφ'
   mpr := fun hφ => inferInstance
 
 /-- The isomorphism `R ≅ S` obtained from an isomorphism `φ : a ≅ b` lifting `f` -/
+@[simps hom]
 def isoOfIsoLift  {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ≅ b) [p.IsHomLift f φ.hom] :
     R ≅ S where
   hom := f
   inv := eqToHom (codomain_eq p f φ.hom).symm ≫ (p.mapIso φ).inv ≫ eqToHom (domain_eq p f φ.hom)
   hom_inv_id := by subst_hom_lift p f φ.hom; simp [← p.map_comp]
   inv_hom_id := by subst_hom_lift p f φ.hom; simp [← p.map_comp]
-
-@[simp]
-lemma isoOfIsoLift_hom {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ≅ b) [p.IsHomLift f φ.hom] :
-    (isoOfIsoLift p f φ).hom = f := rfl
 
 @[simp]
 lemma isoOfIsoLift_inv_hom_id {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ≅ b) [p.IsHomLift f φ.hom] :
