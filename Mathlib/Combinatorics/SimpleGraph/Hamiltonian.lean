@@ -74,7 +74,11 @@ lemma IsHamiltonianCycle.isCycle (hp : p.IsHamiltonianCycle) : p.IsCycle :=
 
 lemma IsHamiltonianCycle.map {H : SimpleGraph β} (f : G →g H) (hf : Bijective f)
     (hp : p.IsHamiltonianCycle) : (p.map f).IsHamiltonianCycle where
-  toIsCycle := sorry
+    -- need to get it to a statement about every vertex, then I can apply surjectiveness and injectiveness
+  toIsCycle := by
+    rw [map_isCycle_iff_of_injective]
+    exact isCycle hp
+    exact Bijective.injective hf
   isHamiltonian_tail := by
     have := hp.isHamiltonian_tail.map _ hf
     sorry
@@ -116,7 +120,7 @@ def IsHamiltonian (G : SimpleGraph α) : Prop :=
 
 lemma IsHamiltonian.mono {H : SimpleGraph α} (hGH : G ≤ H) (hG : G.IsHamiltonian) :
     H.IsHamiltonian :=
-  fun hα ↦ let ⟨_, p, hp⟩ := hG hα; ⟨_, p.map $ .ofLe hGH, hp.map _ bijective_id⟩
+  fun hα ↦ let ⟨_, p, hp⟩ := hG hα; ⟨_, p.map $ .ofLE hGH, hp.map _ bijective_id⟩
 
 lemma IsHamiltonian.connected (hG : G.IsHamiltonian) : G.Connected where
   preconnected a b := by
