@@ -36,7 +36,7 @@ variable {α β γ : Sort*} {p q : α → Prop}
 
 #noalign subtype.tag_irrelevant
 #noalign subtype.exists_of_subtype
-#align subtype.inhabited Subtype.instInhabited
+#noalign subtype.inhabited
 
 attribute [coe] Subtype.val
 
