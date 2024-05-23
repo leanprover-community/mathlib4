@@ -559,7 +559,7 @@ theorem Set.Countable.exists_pos_forall_sum_le {ι : Type*} {s : Set ι} (hs : s
     (hε : 0 < ε) : ∃ ε' : ι → ℝ,
     (∀ i, 0 < ε' i) ∧ ∀ t : Finset ι, ↑t ⊆ s → ∑ i in t, ε' i ≤ ε := by
   rcases hs.exists_pos_hasSum_le hε with ⟨ε', hpos, c, hε'c, hcε⟩
-  refine' ⟨ε', hpos, fun t ht ↦ _⟩
+  refine ⟨ε', hpos, fun t ht ↦ ?_⟩
   rw [← sum_subtype_of_mem _ ht]
   refine' (sum_le_hasSum _ _ hε'c).trans hcε
   exact fun _ _ ↦ (hpos _).le

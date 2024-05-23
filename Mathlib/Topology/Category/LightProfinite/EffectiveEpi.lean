@@ -70,7 +70,7 @@ theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
         dsimp [g, LocallyConstant.ofIsClopen]
         erw [comp_apply, ContinuousMap.coe_mk, comp_apply, ContinuousMap.coe_mk,
           Function.comp_apply, if_neg]
-        refine' mt (fun α => hVU α) _
+        refine mt (fun α => hVU α) ?_
         simp only [C, concreteCategory_forget_obj, Set.mem_compl_iff, Set.mem_range, not_exists,
           not_forall, not_not]
         exact ⟨x, rfl⟩

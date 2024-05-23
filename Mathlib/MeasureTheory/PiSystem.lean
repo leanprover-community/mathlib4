@@ -399,7 +399,7 @@ theorem piiUnionInter_singleton_left (s : ι → Set α) (S : Set ι) :
   simp_rw [piiUnionInter, Set.mem_singleton_iff, exists_prop, Set.mem_setOf_eq]
   refine' ⟨fun h => _, fun ⟨t, htS, h_eq⟩ => ⟨t, htS, s, fun _ _ => rfl, h_eq⟩⟩
   obtain ⟨t, htS, f, hft_eq, rfl⟩ := h
-  refine' ⟨t, htS, _⟩
+  refine ⟨t, htS, ?_⟩
   congr! 3
   apply hft_eq
   assumption
@@ -626,7 +626,7 @@ inductive GenerateHas (s : Set (Set α)) : Set α → Prop
 #align measurable_space.dynkin_system.generate_has MeasurableSpace.DynkinSystem.GenerateHas
 
 theorem generateHas_compl {C : Set (Set α)} {s : Set α} : GenerateHas C sᶜ ↔ GenerateHas C s := by
-  refine' ⟨_, GenerateHas.compl⟩
+  refine ⟨?_, GenerateHas.compl⟩
   intro h
   convert GenerateHas.compl h
   simp
