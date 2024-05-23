@@ -59,17 +59,17 @@ variable {e : X₁ → X} (he : ClosedEmbedding e)
 variable {Y : Type v} [TopologicalSpace Y] [TietzeExtension.{u, v} Y]
 
 /-- **Tietze extension theorem** for `TietzeExtension` spaces, a version for a closed set. Let
-`s` be a closed set in a normal topological space `X₂`. Let `f` be a continuous function
+`s` be a closed set in a normal topological space `X`. Let `f` be a continuous function
 on `s` with values in a `TietzeExtension` space `Y`. Then there exists a continuous function
-`g : C(X₂, Y)` such that `g.restrict s = f`. -/
+`g : C(X, Y)` such that `g.restrict s = f`. -/
 theorem ContinuousMap.exists_restrict_eq (f : C(s, Y)) : ∃ (g : C(X, Y)), g.restrict s = f :=
   TietzeExtension.exists_restrict_eq' s hs f
 #align continuous_map.exists_restrict_eq_of_closed ContinuousMap.exists_restrict_eq
 
 /-- **Tietze extension theorem** for `TietzeExtension` spaces. Let `e` be a closed embedding of a
-nonempty topological space `X₁` into a normal topological space `X₂`. Let `f` be a continuous
+nonempty topological space `X₁` into a normal topological space `X`. Let `f` be a continuous
 function on `X₁` with values in a `TietzeExtension` space `Y`. Then there exists a
-continuous function `g : C(X₂, Y)` such that `g ∘ e = f`. -/
+continuous function `g : C(X, Y)` such that `g ∘ e = f`. -/
 theorem ContinuousMap.exists_extension (f : C(X₁, Y)) :
     ∃ (g : C(X, Y)), g.comp ⟨e, he.continuous⟩ = f := by
   let e' : X₁ ≃ₜ Set.range e := Homeomorph.ofEmbedding _ he.toEmbedding
@@ -77,9 +77,9 @@ theorem ContinuousMap.exists_extension (f : C(X₁, Y)) :
   exact ⟨g, by ext x; simpa using congr($(hg) ⟨e' x, x, rfl⟩)⟩
 
 /-- **Tietze extension theorem** for `TietzeExtension` spaces. Let `e` be a closed embedding of a
-nonempty topological space `X₁` into a normal topological space `X₂`. Let `f` be a continuous
+nonempty topological space `X₁` into a normal topological space `X`. Let `f` be a continuous
 function on `X₁` with values in a `TietzeExtension` space `Y`. Then there exists a
-continuous function `g : C(X₂, Y)` such that `g ∘ e = f`.
+continuous function `g : C(X, Y)` such that `g ∘ e = f`.
 
 This version is provided for convenience and backwards compatibility. Here the composition is
 phrased in terms of bare functions. -/
@@ -360,7 +360,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
     replace hgf : ∀ x, (g + dg) (e x) = f x := by
       intro x
       simp [dg0 (Or.inl <| mem_range_self _), ← hgf]
-    refine' ⟨g + dg, fun y => _, funext hgf⟩
+    refine ⟨g + dg, fun y => ?_, funext hgf⟩
     have hay : a < (g + dg) y := by
       rcases (hg_mem y).1.eq_or_lt with (rfl | hlt)
       · refine' (lt_add_iff_pos_right _).2 _
@@ -369,7 +369,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
           _ = dg y := (dga rfl).symm
       · exact hlt.trans_le ((le_add_iff_nonneg_right _).2 <| (dgmem y).1)
     rcases ha.exists_between hay with ⟨_, ⟨x, rfl⟩, _, hxy⟩
-    refine' ⟨x, hxy.le, _⟩
+    refine ⟨x, hxy.le, ?_⟩
     rcases le_total c (g y) with hc | hc
     · simp [dg0 (Or.inr hc), (hg_mem y).2]
     · calc
@@ -393,7 +393,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
   replace hgf : ∀ x, (g - dg) (e x) = f x := by
     intro x
     simp [dg0 (Or.inl <| mem_range_self _), ← hgf]
-  refine' ⟨g - dg, fun y => _, funext hgf⟩
+  refine ⟨g - dg, fun y => ?_, funext hgf⟩
   have hyb : (g - dg) y < b := by
     rcases (hgb y).eq_or_lt with (rfl | hlt)
     · refine' (sub_lt_self_iff _).2 _
@@ -433,7 +433,7 @@ theorem exists_extension_forall_mem_of_closedEmbedding (f : X →ᵇ ℝ) {t : S
   · rcases hne with ⟨c, hc⟩
     exact ⟨const Y c, fun _ => hc, funext fun x => isEmptyElim x⟩
   rcases exists_extension_forall_exists_le_ge_of_closedEmbedding f he with ⟨g, hg, hgf⟩
-  refine' ⟨g, fun y => _, hgf⟩
+  refine ⟨g, fun y => ?_, hgf⟩
   rcases hg y with ⟨xl, xu, h⟩
   exact hs.out (hf _) (hf _) h
 #align bounded_continuous_function.exists_extension_forall_mem_of_closed_embedding BoundedContinuousFunction.exists_extension_forall_mem_of_closedEmbedding

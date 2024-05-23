@@ -240,9 +240,13 @@ def IsLimit (o : Ordinal) : Prop :=
   o ≠ 0 ∧ ∀ a < o, succ a < o
 #align ordinal.is_limit Ordinal.IsLimit
 
+theorem IsLimit.isSuccLimit {o} (h : IsLimit o) : IsSuccLimit o := isSuccLimit_iff_succ_lt.mpr h.2
+
 theorem IsLimit.succ_lt {o a : Ordinal} (h : IsLimit o) : a < o → succ a < o :=
   h.2 a
 #align ordinal.is_limit.succ_lt Ordinal.IsLimit.succ_lt
+
+theorem isSuccLimit_zero : IsSuccLimit (0 : Ordinal) := isSuccLimit_bot
 
 theorem not_zero_isLimit : ¬IsLimit 0
   | ⟨h, _⟩ => h rfl
@@ -308,36 +312,25 @@ theorem zero_or_succ_or_limit (o : Ordinal) : o = 0 ∨ (∃ a, o = succ a) ∨ 
 @[elab_as_elim]
 def limitRecOn {C : Ordinal → Sort*} (o : Ordinal) (H₁ : C 0) (H₂ : ∀ o, C o → C (succ o))
     (H₃ : ∀ o, IsLimit o → (∀ o' < o, C o') → C o) : C o :=
-  lt_wf.fix
-    (fun o IH =>
-      if o0 : o = 0 then by rw [o0]; exact H₁
-      else
-        if h : ∃ a, o = succ a then by
-          rw [← succ_pred_iff_is_succ.2 h]; exact H₂ _ (IH _ <| pred_lt_iff_is_succ.2 h)
-        else H₃ _ ⟨o0, fun a => (succ_lt_of_not_succ h).2⟩ IH)
-    o
+  SuccOrder.limitRecOn o (fun o _ ↦ H₂ o) fun o hl ↦
+    if h : o = 0 then fun _ ↦ h ▸ H₁ else H₃ o ⟨h, fun _ ↦ hl.succ_lt⟩
 #align ordinal.limit_rec_on Ordinal.limitRecOn
 
 @[simp]
 theorem limitRecOn_zero {C} (H₁ H₂ H₃) : @limitRecOn C 0 H₁ H₂ H₃ = H₁ := by
-  rw [limitRecOn, lt_wf.fix_eq, dif_pos rfl]; rfl
+  rw [limitRecOn, SuccOrder.limitRecOn_limit _ _ isSuccLimit_zero, dif_pos rfl]
 #align ordinal.limit_rec_on_zero Ordinal.limitRecOn_zero
 
 @[simp]
 theorem limitRecOn_succ {C} (o H₁ H₂ H₃) :
     @limitRecOn C (succ o) H₁ H₂ H₃ = H₂ o (@limitRecOn C o H₁ H₂ H₃) := by
-  have h : ∃ a, succ o = succ a := ⟨_, rfl⟩
-  rw [limitRecOn, lt_wf.fix_eq, dif_neg (succ_ne_zero o), dif_pos h]
-  generalize limitRecOn.proof_2 (succ o) h = h₂
-  generalize limitRecOn.proof_3 (succ o) h = h₃
-  revert h₂ h₃; generalize e : pred (succ o) = o'; intros
-  rw [pred_succ] at e; subst o'; rfl
+  rw [limitRecOn, SuccOrder.limitRecOn_succ _ _ (not_isMax _)]; rfl
 #align ordinal.limit_rec_on_succ Ordinal.limitRecOn_succ
 
 @[simp]
 theorem limitRecOn_limit {C} (o H₁ H₂ H₃ h) :
     @limitRecOn C o H₁ H₂ H₃ = H₃ o h fun x _h => @limitRecOn C x H₁ H₂ H₃ := by
-  rw [limitRecOn, lt_wf.fix_eq, dif_neg h.1, dif_neg (not_succ_of_isLimit h)]; rfl
+  rw [limitRecOn, SuccOrder.limitRecOn_limit _ _ h.isSuccLimit, dif_neg h.1]; rfl
 #align ordinal.limit_rec_on_limit Ordinal.limitRecOn_limit
 
 instance orderTopOutSucc (o : Ordinal) : OrderTop (succ o).out.α :=
@@ -378,7 +371,7 @@ theorem bounded_singleton {r : α → α → Prop} [IsWellOrder α r] (hr : (typ
 theorem type_subrel_lt (o : Ordinal.{u}) :
     type (Subrel ((· < ·) : Ordinal → Ordinal → Prop) { o' : Ordinal | o' < o })
       = Ordinal.lift.{u + 1} o := by
-  refine' Quotient.inductionOn o _
+  refine Quotient.inductionOn o ?_
   rintro ⟨α, r, wo⟩; apply Quotient.sound
   -- Porting note: `symm; refine' [term]` → `refine' [term].symm`
   constructor; refine' ((RelIso.preimage Equiv.ulift r).trans (enumIso r).symm).symm
@@ -636,8 +629,7 @@ theorem one_add_of_omega_le {o} (h : ω ≤ o) : 1 + o = o := by
 
 /-- The multiplication of ordinals `o₁` and `o₂` is the (well founded) lexicographic order on
 `o₂ × o₁`. -/
-instance monoid : Monoid Ordinal.{u}
-    where
+instance monoid : Monoid Ordinal.{u} where
   mul a b :=
     Quotient.liftOn₂ a b
       (fun ⟨α, r, wo⟩ ⟨β, s, wo'⟩ => ⟦⟨β × α, Prod.Lex s r, inferInstance⟩⟧ :

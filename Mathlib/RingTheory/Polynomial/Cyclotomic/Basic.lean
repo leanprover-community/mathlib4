@@ -8,9 +8,9 @@ import Mathlib.Algebra.Polynomial.BigOperators
 import Mathlib.Algebra.Polynomial.Lifts
 import Mathlib.Algebra.Polynomial.Splits
 import Mathlib.RingTheory.RootsOfUnity.Complex
-import Mathlib.FieldTheory.RatFunc
 import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.RingTheory.RootsOfUnity.Basic
+import Mathlib.FieldTheory.RatFunc.AsPolynomial
 
 #align_import ring_theory.polynomial.cyclotomic.basic from "leanprover-community/mathlib"@"7fdeecc0d03cd40f7a165e6cf00a4d2286db599f"
 
@@ -238,7 +238,7 @@ theorem unique_int_coeff_of_cycl {K : Type*} [CommRing K] [IsDomain K] [CharZero
     {n : ℕ+} (h : IsPrimitiveRoot ζ n) :
     ∃! P : ℤ[X], map (Int.castRingHom K) P = cyclotomic' n K := by
   obtain ⟨P, hP⟩ := int_coeff_of_cyclotomic' h
-  refine' ⟨P, hP.1, fun Q hQ => _⟩
+  refine ⟨P, hP.1, fun Q hQ => ?_⟩
   apply map_injective (Int.castRingHom K) Int.cast_injective
   rw [hP.1, hQ]
 #align polynomial.unique_int_coeff_of_cycl Polynomial.unique_int_coeff_of_cycl

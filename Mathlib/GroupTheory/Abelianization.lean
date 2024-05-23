@@ -180,6 +180,10 @@ def map : Abelianization G →* Abelianization H :=
   lift (of.comp f)
 #align abelianization.map Abelianization.map
 
+/-- Use `map` as the preferred simp normal form. -/
+@[simp] theorem lift_of_comp :
+    Abelianization.lift (Abelianization.of.comp f) = Abelianization.map f := rfl
+
 @[simp]
 theorem map_of (x : G) : map f (of x) = of (f x) :=
   rfl

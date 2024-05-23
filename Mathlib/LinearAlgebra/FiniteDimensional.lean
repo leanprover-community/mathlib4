@@ -698,6 +698,14 @@ theorem finrank_range_add_finrank_ker [FiniteDimensional K V] (f : V →ₗ[K] V
   exact Submodule.finrank_quotient_add_finrank _
 #align linear_map.finrank_range_add_finrank_ker LinearMap.finrank_range_add_finrank_ker
 
+lemma ker_ne_bot_of_finrank_lt [FiniteDimensional K V] [FiniteDimensional K V₂] {f : V →ₗ[K] V₂}
+    (h : finrank K V₂ < finrank K V) :
+    LinearMap.ker f ≠ ⊥ := by
+  have h₁ := f.finrank_range_add_finrank_ker
+  have h₂ : finrank K (LinearMap.range f) ≤ finrank K V₂ := (LinearMap.range f).finrank_le
+  suffices 0 < finrank K (LinearMap.ker f) from Submodule.one_le_finrank_iff.mp this
+  omega
+
 theorem comap_eq_sup_ker_of_disjoint {p : Submodule K V} [FiniteDimensional K p] {f : V →ₗ[K] V}
     (h : ∀ x ∈ p, f x ∈ p) (h' : Disjoint p (ker f)) :
     p.comap f = p ⊔ ker f := by
@@ -1029,8 +1037,7 @@ section finrank_eq_one
 -/
 theorem finrank_eq_one_iff_of_nonzero (v : V) (nz : v ≠ 0) :
     finrank K V = 1 ↔ span K ({v} : Set V) = ⊤ :=
-  -- Porting note: need explicit universe on PUnit
-  ⟨fun h => by simpa using (basisSingleton PUnit.{u+1} h v nz).span_eq, fun s =>
+  ⟨fun h => by simpa using (basisSingleton Unit h v nz).span_eq, fun s =>
     finrank_eq_card_basis
       (Basis.mk (linearIndependent_singleton nz)
         (by
@@ -1045,57 +1052,6 @@ theorem finrank_eq_one_iff_of_nonzero' (v : V) (nz : v ≠ 0) :
   rw [finrank_eq_one_iff_of_nonzero v nz]
   apply span_singleton_eq_top_iff
 #align finrank_eq_one_iff_of_nonzero' finrank_eq_one_iff_of_nonzero'
-
-/-- A module has dimension 1 iff there is some `v : V` so `{v}` is a basis.
--/
-theorem finrank_eq_one_iff (ι : Type*) [Unique ι] : finrank K V = 1 ↔ Nonempty (Basis ι K V) := by
-  constructor
-  · intro h
-    haveI : FiniteDimensional K V := .of_finrank_eq_succ h
-    exact ⟨FiniteDimensional.basisUnique ι h⟩
-  · rintro ⟨b⟩
-    simpa using finrank_eq_card_basis b
-#align finrank_eq_one_iff finrank_eq_one_iff
-
-/-- A module has dimension 1 iff there is some nonzero `v : V` so every vector is a multiple of `v`.
--/
-theorem finrank_eq_one_iff' : finrank K V = 1 ↔ ∃ v ≠ 0, ∀ w : V, ∃ c : K, c • v = w := by
-  -- Porting note: was a messy `convert` proof
-  rw [finrank_eq_one_iff PUnit.{u+1}, Basis.basis_singleton_iff PUnit]
-#align finrank_eq_one_iff' finrank_eq_one_iff'
-
--- Not sure why this aren't found automatically.
-/-- A finite dimensional module has dimension at most 1 iff
-there is some `v : V` so every vector is a multiple of `v`.
--/
-theorem finrank_le_one_iff [FiniteDimensional K V] :
-    finrank K V ≤ 1 ↔ ∃ v : V, ∀ w : V, ∃ c : K, c • v = w := by
-  constructor
-  · intro h
-    by_cases h' : finrank K V = 0
-    · use 0
-      intro w
-      use 0
-      haveI := finrank_zero_iff.mp h'
-      apply Subsingleton.elim
-    · replace h' := zero_lt_iff.mpr h'
-      have : finrank K V = 1 := by omega
-      obtain ⟨v, -, p⟩ := finrank_eq_one_iff'.mp this
-      use v, p
-  · rintro ⟨v, p⟩
-    exact finrank_le_one v p
-#align finrank_le_one_iff finrank_le_one_iff
-
-theorem Submodule.finrank_le_one_iff_isPrincipal (W : Submodule K V) [FiniteDimensional K W] :
-    finrank K W ≤ 1 ↔ W.IsPrincipal := by
-  rw [← W.rank_le_one_iff_isPrincipal, ← finrank_eq_rank, ← Cardinal.natCast_le, Nat.cast_one]
-#align submodule.finrank_le_one_iff_is_principal Submodule.finrank_le_one_iff_isPrincipal
-
-theorem Module.finrank_le_one_iff_top_isPrincipal [FiniteDimensional K V] :
-    finrank K V ≤ 1 ↔ (⊤ : Submodule K V).IsPrincipal := by
-  rw [← Module.rank_le_one_iff_top_isPrincipal, ← finrank_eq_rank, ← Cardinal.natCast_le,
-    Nat.cast_one]
-#align module.finrank_le_one_iff_top_is_principal Module.finrank_le_one_iff_top_isPrincipal
 
 -- We use the `LinearMap.CompatibleSMul` typeclass here, to encompass two situations:
 -- * `A = K`
@@ -1308,30 +1264,5 @@ theorem ker_pow_le_ker_pow_finrank [FiniteDimensional K V] (f : End K V) (m : �
 #align module.End.ker_pow_le_ker_pow_finrank Module.End.ker_pow_le_ker_pow_finrank
 
 end End
-
-end Module
-
-section Module
-
-open Module
-
-open Cardinal
-
-theorem cardinal_mk_eq_cardinal_mk_field_pow_rank (K V : Type u) [DivisionRing K] [AddCommGroup V]
-    [Module K V] [FiniteDimensional K V] : #V = #K ^ Module.rank K V := by
-  let s := Basis.ofVectorSpaceIndex K V
-  let hs := Basis.ofVectorSpace K V
-  calc
-    #V = #(s →₀ K) := Quotient.sound ⟨hs.repr.toEquiv⟩
-    _ = #(s → K) := Quotient.sound ⟨Finsupp.equivFunOnFinite⟩
-    _ = _ := by rw [← Cardinal.lift_inj.1 hs.mk_eq_rank, Cardinal.power_def]
-#align cardinal_mk_eq_cardinal_mk_field_pow_rank cardinal_mk_eq_cardinal_mk_field_pow_rank
-
-theorem cardinal_lt_aleph0_of_finiteDimensional (K V : Type u) [DivisionRing K] [AddCommGroup V]
-    [Module K V] [Finite K] [FiniteDimensional K V] : #V < ℵ₀ := by
-  letI : IsNoetherian K V := IsNoetherian.iff_fg.2 inferInstance
-  rw [cardinal_mk_eq_cardinal_mk_field_pow_rank K V]
-  exact Cardinal.power_lt_aleph0 (Cardinal.lt_aleph0_of_finite K) (rank_lt_aleph0 K V)
-#align cardinal_lt_aleph_0_of_finite_dimensional cardinal_lt_aleph0_of_finiteDimensional
 
 end Module

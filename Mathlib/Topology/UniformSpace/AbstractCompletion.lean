@@ -265,8 +265,7 @@ theorem inverse_compare : pkg.compare pkg' ∘ pkg'.compare pkg = id := by
 #align abstract_completion.inverse_compare AbstractCompletion.inverse_compare
 
 /-- The uniform bijection between two completions of the same uniform space. -/
-def compareEquiv : pkg.space ≃ᵤ pkg'.space
-    where
+def compareEquiv : pkg.space ≃ᵤ pkg'.space where
   toFun := pkg.compare pkg'
   invFun := pkg'.compare pkg
   left_inv := congr_fun (pkg'.inverse_compare pkg)
@@ -294,8 +293,7 @@ local notation "hatβ" => pkg'.space
 local notation "ι'" => pkg'.coe
 
 /-- Products of completions -/
-protected def prod : AbstractCompletion (α × β)
-    where
+protected def prod : AbstractCompletion (α × β) where
   space := hatα × hatβ
   coe p := ⟨ι p.1, ι' p.2⟩
   uniformStruct := inferInstance

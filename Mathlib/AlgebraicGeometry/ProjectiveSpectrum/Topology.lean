@@ -458,7 +458,7 @@ theorem isTopologicalBasis_basic_opens :
   · rintro p U hp ⟨s, hs⟩
     rw [← compl_compl U, Set.mem_compl_iff, ← hs, mem_zeroLocus, Set.not_subset] at hp
     obtain ⟨f, hfs, hfp⟩ := hp
-    refine' ⟨basicOpen 𝒜 f, ⟨f, rfl⟩, hfp, _⟩
+    refine ⟨basicOpen 𝒜 f, ⟨f, rfl⟩, hfp, ?_⟩
     rw [← Set.compl_subset_compl, ← hs, basicOpen_eq_zeroLocus_compl, compl_compl]
     exact zeroLocus_anti_mono 𝒜 (Set.singleton_subset_iff.mpr hfs)
 #align projective_spectrum.is_topological_basis_basic_opens ProjectiveSpectrum.isTopologicalBasis_basic_opens

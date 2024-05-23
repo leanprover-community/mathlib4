@@ -99,7 +99,7 @@ def conesEquivSieveCompatibleFamily :
   invFun x :=
     { app := fun f => x.1 f.unop.1.hom f.unop.2
       naturality := fun f f' g => by
-        refine' Eq.trans _ (x.2 f.unop.1.hom g.unop.left f.unop.2)
+        refine Eq.trans ?_ (x.2 f.unop.1.hom g.unop.left f.unop.2)
         dsimp
         rw [id_comp]
         convert rfl
@@ -125,8 +125,8 @@ def _root_.CategoryTheory.Presieve.FamilyOfElements.SieveCompatible.cone :
 /-- Cone morphisms from the cone corresponding to a sieve_compatible family to the natural
     cone associated to a sieve `S` and a presheaf `P` are in 1-1 correspondence with amalgamations
     of the family. -/
-def homEquivAmalgamation : (hx.cone ⟶ P.mapCone S.arrows.cocone.op) ≃ { t // x.IsAmalgamation t }
-    where
+def homEquivAmalgamation :
+    (hx.cone ⟶ P.mapCone S.arrows.cocone.op) ≃ { t // x.IsAmalgamation t } where
   toFun l := ⟨l.hom, fun _ f hf => l.w (op ⟨Over.mk f, hf⟩)⟩
   invFun t := ⟨t.1, fun f => t.2 f.unop.1.hom f.unop.2⟩
   left_inv _ := rfl
@@ -681,7 +681,7 @@ def isSheafForIsSheafFor' (P : Cᵒᵖ ⥤ A) (s : A ⥤ Type max v₁ u₁)
 theorem isSheaf_iff_isSheaf' : IsSheaf J P' ↔ IsSheaf' J P' := by
   constructor
   · intro h U R hR
-    refine' ⟨_⟩
+    refine ⟨?_⟩
     apply coyonedaJointlyReflectsLimits
     intro X
     have q : Presieve.IsSheafFor (P' ⋙ coyoneda.obj X) _ := h X.unop _ hR
@@ -691,7 +691,7 @@ theorem isSheaf_iff_isSheaf' : IsSheaf J P' ↔ IsSheaf' J P' := by
     apply (isSheafForIsSheafFor' _ _ _ _).symm q
   · intro h U X S hS
     rw [Equalizer.Presieve.sheaf_condition]
-    refine' ⟨_⟩
+    refine ⟨?_⟩
     refine' isSheafForIsSheafFor' _ _ _ _ _
     letI := preservesSmallestLimitsOfPreservesLimits (coyoneda.obj (op U))
     apply isLimitOfPreserves

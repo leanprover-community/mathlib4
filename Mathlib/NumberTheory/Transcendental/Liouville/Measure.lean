@@ -50,7 +50,7 @@ theorem setOf_liouvilleWith_subset_aux :
   refine' ((hxp.frequently_lt_rpow_neg hn).and_eventually (eventually_ge_atTop 1)).mono _
   rintro b ⟨⟨a, -, hlt⟩, hb⟩
   rw [rpow_neg b.cast_nonneg, ← one_div, ← Nat.cast_succ] at hlt
-  refine' ⟨a, _, hlt⟩
+  refine ⟨a, ?_, hlt⟩
   replace hb : (1 : ℝ) ≤ b := Nat.one_le_cast.2 hb
   have hb0 : (0 : ℝ) < b := zero_lt_one.trans_le hb
   replace hlt : |x - a / b| < 1 / b := by

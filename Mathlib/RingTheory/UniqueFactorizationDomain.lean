@@ -327,7 +327,7 @@ theorem WfDvdMonoid.of_exists_prime_factors : WfDvdMonoid α :=
       · rw [dif_neg h]
         erw [WithTop.coe_lt_coe]
         have cne0 : c ≠ 0 := by
-          refine' mt (fun con => _) h
+          refine mt (fun con => ?_) h
           rw [b_eq, con, mul_zero]
         calc
           Multiset.card (Classical.choose (pf a ane0)) <
@@ -355,7 +355,7 @@ theorem WfDvdMonoid.of_exists_prime_factors : WfDvdMonoid α :=
 theorem irreducible_iff_prime_of_exists_prime_factors {p : α} : Irreducible p ↔ Prime p := by
   by_cases hp0 : p = 0
   · simp [hp0]
-  refine' ⟨fun h => _, Prime.irreducible⟩
+  refine ⟨fun h => ?_, Prime.irreducible⟩
   obtain ⟨f, hf⟩ := pf p hp0
   obtain ⟨q, hq, rfl⟩ := prime_factors_irreducible h hf
   rw [hq.prime_iff]
@@ -708,7 +708,7 @@ theorem normalizedFactors_mul {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
     Multiset.map_congr rfl normalize_normalized_factor, ←
     Multiset.map_congr rfl normalize_normalized_factor, ← Multiset.map_add, h, ←
     Multiset.map_map Associates.out, eq_comm, ← Multiset.map_map Associates.out]
-  refine' congr rfl _
+  refine congr rfl ?_
   apply Multiset.map_mk_eq_map_mk_of_rel
   apply factors_unique
   · intro x hx
@@ -1287,7 +1287,7 @@ theorem prod_mono : ∀ {a b : FactorSet α}, a ≤ b → a.prod ≤ b.prod
 #align associates.prod_mono Associates.prod_mono
 
 theorem FactorSet.prod_eq_zero_iff [Nontrivial α] (p : FactorSet α) : p.prod = 0 ↔ p = ⊤ := by
-  induction p using WithTop.recTopCoe
+  induction p using WithTop.recTopCoe -- TODO: `induction_eliminator` doesn't work with `abbrev`
   · simp only [iff_self_iff, eq_self_iff_true, Associates.prod_top]
   · rw [prod_coe, Multiset.prod_eq_zero_iff, Multiset.mem_map, eq_false WithTop.coe_ne_top,
       iff_false_iff, not_exists]
@@ -1391,6 +1391,7 @@ theorem unique' {p q : Multiset (Associates α)} :
 #align associates.unique' Associates.unique'
 
 theorem FactorSet.unique [Nontrivial α] {p q : FactorSet α} (h : p.prod = q.prod) : p = q := by
+  -- TODO: `induction_eliminator` doesn't work with `abbrev`
   induction p using WithTop.recTopCoe <;> induction q using WithTop.recTopCoe
   · rfl
   · rw [eq_comm, ← FactorSet.prod_eq_zero_iff, ← h, Associates.prod_top]
@@ -2019,7 +2020,7 @@ noncomputable def fintypeSubtypeDvd {M : Type*} [CancelCommMonoidWithZero M]
     exact Multiset.prod_dvd_prod_of_le hs
   · rintro (h : x ∣ y)
     have hx : x ≠ 0 := by
-      refine' mt (fun hx => _) hy
+      refine mt (fun hx => ?_) hy
       rwa [hx, zero_dvd_iff] at h
     obtain ⟨u, hu⟩ := normalizedFactors_prod hx
     refine' ⟨⟨normalizedFactors x, u⟩, _, (mul_comm _ _).trans hu⟩
