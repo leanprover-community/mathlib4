@@ -3,7 +3,6 @@ Copyright (c) 2022 Henrik Böving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving
 -/
-import Mathlib.Algebra.Group.Fin
 import Mathlib.Control.ULiftable
 import Mathlib.Order.Fin
 
@@ -30,6 +29,7 @@ defining objects that can be created randomly.
 * Similar library in Haskell: https://hackage.haskell.org/package/MonadRandom
 
 -/
+
 
 set_option autoImplicit true
 

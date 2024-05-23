@@ -243,7 +243,7 @@ theorem mul_inf_assoc (A B C : Subgroup G) (h : A ≤ C) :
     refine' ⟨_, mul_mem (h hy) hzC⟩
     exact ⟨y, hy, z, hzB, rfl⟩
   rintro ⟨⟨y, hy, z, hz, rfl⟩, hyz⟩
-  refine' ⟨y, hy, z, ⟨hz, _⟩, rfl⟩
+  refine ⟨y, hy, z, ⟨hz, ?_⟩, rfl⟩
   suffices y⁻¹ * (y * z) ∈ C by simpa
   exact mul_mem (inv_mem (h hy)) hyz
 #align subgroup.mul_inf_assoc Subgroup.mul_inf_assoc
@@ -259,7 +259,7 @@ theorem inf_mul_assoc (A B C : Subgroup G) (h : C ≤ A) :
     refine' ⟨A.mul_mem hyA (h hz), _⟩
     exact ⟨y, hyB, z, hz, rfl⟩
   rintro ⟨hyz, y, hy, z, hz, rfl⟩
-  refine' ⟨y, ⟨_, hy⟩, z, hz, rfl⟩
+  refine ⟨y, ⟨?_, hy⟩, z, hz, rfl⟩
   suffices y * z * z⁻¹ ∈ A by simpa
   exact mul_mem hyz (inv_mem (h hz))
 #align subgroup.inf_mul_assoc Subgroup.inf_mul_assoc
@@ -497,6 +497,10 @@ protected def pointwiseMulAction : MulAction α (AddSubgroup A) where
 #align add_subgroup.pointwise_mul_action AddSubgroup.pointwiseMulAction
 
 scoped[Pointwise] attribute [instance] AddSubgroup.pointwiseMulAction
+
+theorem pointwise_smul_def {a : α} (S : AddSubgroup A) :
+    a • S = S.map (DistribMulAction.toAddMonoidEnd _ _ a) :=
+  rfl
 
 @[simp]
 theorem coe_pointwise_smul (a : α) (S : AddSubgroup A) : ↑(a • S) = a • (S : Set A) :=

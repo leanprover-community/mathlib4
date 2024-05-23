@@ -132,7 +132,7 @@ theorem generator_maximal_submoduleImage_dvd {N O : Submodule R M} (hNO : N ≤ 
     let ψ' : O →ₗ[R] R := r₁ • ϕ + r₂ • ψ
     have : span R {d} ≤ ψ'.submoduleImage N := by
       rw [span_le, singleton_subset_iff, SetLike.mem_coe, LinearMap.mem_submoduleImage_of_le hNO]
-      refine' ⟨y, yN, _⟩
+      refine ⟨y, yN, ?_⟩
       change r₁ * ϕ ⟨y, hNO yN⟩ + r₂ * ψ ⟨y, hNO yN⟩ = d
       rw [d_eq, ϕy_eq]
     refine'
@@ -267,7 +267,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
       rfl
   -- It remains to show the extended bases are compatible with each other.
   intro as h
-  refine' ⟨Fin.cons a as, _⟩
+  refine ⟨Fin.cons a as, ?_⟩
   intro i
   rw [Basis.coe_mkFinConsOfLE, Basis.coe_mkFinConsOfLE]
   refine' Fin.cases _ (fun i ↦ _) i
@@ -289,18 +289,16 @@ theorem Submodule.nonempty_basis_of_pid {ι : Type*} [Finite ι] (b : Basis ι R
     (N : Submodule R M) : ∃ n : ℕ, Nonempty (Basis (Fin n) R N) := by
   haveI := Classical.decEq M
   cases nonempty_fintype ι
-  induction' N using inductionOnRank with N ih
-  · exact b
-  · let b' := (b.reindex (Fintype.equivFin ι)).map (LinearEquiv.ofTop _ rfl).symm
-    by_cases N_bot : N = ⊥
-    · subst N_bot
-      exact ⟨0, ⟨Basis.empty _⟩⟩
-    obtain ⟨y, -, a, hay, M', -, N', N'_le_N, -, -, ay_ortho, h'⟩ :=
-      Submodule.basis_of_pid_aux ⊤ N b' N_bot le_top
-    obtain ⟨n', ⟨bN'⟩⟩ := ih N' N'_le_N _ hay ay_ortho
-    obtain ⟨bN, _hbN⟩ := h' n' bN'
-    exact ⟨n' + 1, ⟨bN⟩⟩
-  infer_instance
+  induction N using inductionOnRank b with | ih N ih =>
+  let b' := (b.reindex (Fintype.equivFin ι)).map (LinearEquiv.ofTop _ rfl).symm
+  by_cases N_bot : N = ⊥
+  · subst N_bot
+    exact ⟨0, ⟨Basis.empty _⟩⟩
+  obtain ⟨y, -, a, hay, M', -, N', N'_le_N, -, -, ay_ortho, h'⟩ :=
+    Submodule.basis_of_pid_aux ⊤ N b' N_bot le_top
+  obtain ⟨n', ⟨bN'⟩⟩ := ih N' N'_le_N _ hay ay_ortho
+  obtain ⟨bN, _hbN⟩ := h' n' bN'
+  exact ⟨n' + 1, ⟨bN⟩⟩
 #align submodule.nonempty_basis_of_pid Submodule.nonempty_basis_of_pid
 
 /-- A submodule of a free `R`-module of finite rank is also a free `R`-module of finite rank,
@@ -510,24 +508,19 @@ theorem Submodule.exists_smith_normal_form_of_le [Finite ι] (b : Basis ι R M) 
     ∃ (n o : ℕ) (hno : n ≤ o) (bO : Basis (Fin o) R O) (bN : Basis (Fin n) R N) (a : Fin n → R),
       ∀ i, (bN i : M) = a i • bO (Fin.castLE hno i) := by
   cases nonempty_fintype ι
-  revert N
-  induction' O using inductionOnRank with M0 ih
-  · exact b
-  · intro N N_le_M0
-    obtain ⟨m, b'M⟩ := M0.basisOfPid b
-    by_cases N_bot : N = ⊥
-    · subst N_bot
-      exact ⟨0, m, Nat.zero_le _, b'M, Basis.empty _, finZeroElim, finZeroElim⟩
-    obtain ⟨y, hy, a, _, M', M'_le_M, N', _, N'_le_M', y_ortho, _, h⟩ :=
-      Submodule.basis_of_pid_aux M0 N b'M N_bot N_le_M0
+  induction O using inductionOnRank b generalizing N with | ih M0 ih =>
+  obtain ⟨m, b'M⟩ := M0.basisOfPid b
+  by_cases N_bot : N = ⊥
+  · subst N_bot
+    exact ⟨0, m, Nat.zero_le _, b'M, Basis.empty _, finZeroElim, finZeroElim⟩
+  obtain ⟨y, hy, a, _, M', M'_le_M, N', _, N'_le_M', y_ortho, _, h⟩ :=
+    Submodule.basis_of_pid_aux M0 N b'M N_bot N_le_O
 
-    obtain ⟨n', m', hn'm', bM', bN', as', has'⟩ := ih M' M'_le_M y hy y_ortho N' N'_le_M'
-    obtain ⟨bN, h'⟩ := h n' bN'
-    obtain ⟨hmn, bM, h''⟩ := h' m' hn'm' bM'
-    obtain ⟨as, has⟩ := h'' as' has'
-    exact ⟨_, _, hmn, bM, bN, as, has⟩
--- Porting note: Lean generates a goal Fintype ι for some reason
-  infer_instance
+  obtain ⟨n', m', hn'm', bM', bN', as', has'⟩ := ih M' M'_le_M y hy y_ortho N' N'_le_M'
+  obtain ⟨bN, h'⟩ := h n' bN'
+  obtain ⟨hmn, bM, h''⟩ := h' m' hn'm' bM'
+  obtain ⟨as, has⟩ := h'' as' has'
+  exact ⟨_, _, hmn, bM, bN, as, has⟩
 #align submodule.exists_smith_normal_form_of_le Submodule.exists_smith_normal_form_of_le
 
 /-- If `M` is finite free over a PID `R`, then any submodule `N` is free
