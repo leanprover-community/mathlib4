@@ -108,6 +108,17 @@ scoped notation "𝟙" => CategoryStruct.id  -- type as \b1
 /-- Notation for composition of morphisms in a category. -/
 scoped infixr:80 " ≫ " => CategoryStruct.comp -- type as \gg
 
+/-- Close the main goal with `sorry` if its type contains `sorry`, and fail otherwise. -/
+syntax (name := sorryIfSorry) "sorry_if_sorry" : tactic
+
+open Lean Meta Elab.Tactic in
+@[tactic sorryIfSorry, inherit_doc sorryIfSorry] def evalSorryIfSorry : Tactic := fun _ => do
+  let goalType ← getMainTarget
+  if goalType.hasSorry then
+    closeMainGoal (← mkSorry goalType true)
+  else
+    throwError "The goal does not contain `sorry`"
+
 /--
 A thin wrapper for `aesop` which adds the `CategoryTheory` rule set and
 allows `aesop` to look through semireducible definitions when calling `intros`.
@@ -117,6 +128,7 @@ use in auto-params.
 -/
 macro (name := aesop_cat) "aesop_cat" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
+  first | sorry_if_sorry |
   aesop $c* (config := { introsTransparency? := some .default, terminal := true })
             (simp_config := { decide := true, zetaDelta := true })
             (rule_sets := [$(Lean.mkIdent `CategoryTheory):ident]))
@@ -126,6 +138,7 @@ We also use `aesop_cat?` to pass along a `Try this` suggestion when using `aesop
 -/
 macro (name := aesop_cat?) "aesop_cat?" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
+  first | sorry_if_sorry |
   aesop? $c* (config := { introsTransparency? := some .default, terminal := true })
              (simp_config := { decide := true, zetaDelta := true })
              (rule_sets := [$(Lean.mkIdent `CategoryTheory):ident]))
