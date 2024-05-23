@@ -242,7 +242,7 @@ theorem elementalStarAlgebra.continuous_characterSpaceToSpectrum (x : A) :
 
 theorem elementalStarAlgebra.bijective_characterSpaceToSpectrum :
     Function.Bijective (elementalStarAlgebra.characterSpaceToSpectrum a) := by
-  refine ⟨fun φ ψ h => starAlgHomClass_ext ℂ ?_ ?_? ?_, _⟩
+  refine ⟨fun φ ψ h => starAlgHomClass_ext ℂ ?_ ?_ ?_, ?_⟩
   · exact (map_continuous φ)
   · exact (map_continuous ψ)
   · simpa only [elementalStarAlgebra.characterSpaceToSpectrum, Subtype.mk_eq_mk,

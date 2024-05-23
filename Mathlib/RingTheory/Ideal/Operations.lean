@@ -336,7 +336,7 @@ theorem mem_ideal_smul_span_iff_exists_sum {ι : Type*} (f : ι → M) (x : M) :
   constructor; swap
   · rintro ⟨a, ha, rfl⟩
     exact Submodule.sum_mem _ fun c _ => smul_mem_smul (ha c) <| subset_span <| Set.mem_range_self _
-  refine fun hx => span_induction (mem_smul_span.mp hx) ?_? ?_ ?_ _
+  refine fun hx => span_induction (mem_smul_span.mp hx) ?_ ?_ ?_ ?_
   · simp only [Set.mem_iUnion, Set.mem_range, Set.mem_singleton_iff]
     rintro x ⟨y, hy, x, ⟨i, rfl⟩, rfl⟩
     refine ⟨Finsupp.single i y, fun j => ?_, ?_⟩

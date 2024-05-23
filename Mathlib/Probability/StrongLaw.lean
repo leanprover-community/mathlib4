@@ -200,7 +200,7 @@ theorem integral_truncation_le_integral_of_nonneg (hf : Integrable f μ) (h'f : 
 integral of the whole function. -/
 theorem tendsto_integral_truncation {f : α → ℝ} (hf : Integrable f μ) :
     Tendsto (fun A => ∫ x, truncation f A x ∂μ) atTop (𝓝 (∫ x, f x ∂μ)) := by
-  refine tendsto_integral_filter_of_dominated_convergence (fun x => abs (f x)) ?_? ?_ ?_ _
+  refine tendsto_integral_filter_of_dominated_convergence (fun x => abs (f x)) ?_ ?_ ?_ ?_
   · exact eventually_of_forall fun A ↦ hf.aestronglyMeasurable.truncation
   · filter_upwards with A
     filter_upwards with x
