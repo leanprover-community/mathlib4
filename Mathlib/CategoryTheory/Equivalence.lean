@@ -295,15 +295,14 @@ variable {E : Type u₃} [Category.{v₃} E]
 
 /-- Equivalence of categories is transitive. -/
 @[trans, simps]
-def trans (e : C ≌ D) (f : D ≌ E) : C ≌ E
-    where
+def trans (e : C ≌ D) (f : D ≌ E) : C ≌ E where
   functor := e.functor ⋙ f.functor
   inverse := f.inverse ⋙ e.inverse
   unitIso := by
-    refine' Iso.trans e.unitIso _
+    refine Iso.trans e.unitIso ?_
     exact isoWhiskerLeft e.functor (isoWhiskerRight f.unitIso e.inverse)
   counitIso := by
-    refine' Iso.trans _ f.counitIso
+    refine Iso.trans ?_ f.counitIso
     exact isoWhiskerLeft f.inverse (isoWhiskerRight e.counitIso f.functor)
   -- We wouldn't have needed to give this proof if we'd used `Equivalence.mk`,
   -- but we choose to avoid using that here, for the sake of good structure projection `simp`
@@ -567,8 +566,7 @@ end IsEquivalence
 
 /-- A quasi-inverse `D ⥤ C` to a functor that `F : C ⥤ D` that is an equivalence,
 i.e. faithful, full, and essentially surjective. -/
-noncomputable def inv (F : C ⥤ D) [F.IsEquivalence] : D ⥤ C
-    where
+noncomputable def inv (F : C ⥤ D) [F.IsEquivalence] : D ⥤ C where
   obj X := F.objPreimage X
   map {X Y} f := F.preimage ((F.objObjPreimageIso X).hom ≫ f ≫ (F.objObjPreimageIso Y).inv)
   map_id X := by apply F.map_injective; aesop_cat

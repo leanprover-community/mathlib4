@@ -1643,8 +1643,7 @@ theorem degree_mul : degree (p * q) = degree p + degree q :=
 
 /-- `degree` as a monoid homomorphism between `R[X]` and `Multiplicative (WithBot ℕ)`.
   This is useful to prove results about multiplication and degree. -/
-def degreeMonoidHom [Nontrivial R] : R[X] →* Multiplicative (WithBot ℕ)
-    where
+def degreeMonoidHom [Nontrivial R] : R[X] →* Multiplicative (WithBot ℕ) where
   toFun := degree
   map_one' := degree_one
   map_mul' _ _ := degree_mul

@@ -202,7 +202,7 @@ theorem isTheta_exp_arg_mul_im (hl : IsBoundedUnder (· ≤ ·) l fun x => |(g x
   rcases hl with ⟨b, hb⟩
   refine' Real.isTheta_exp_comp_one.2 ⟨π * b, _⟩
   rw [eventually_map] at hb ⊢
-  refine' hb.mono fun x hx => _
+  refine hb.mono fun x hx => ?_
   erw [abs_mul]
   exact mul_le_mul (abs_arg_le_pi _) hx (abs_nonneg _) Real.pi_pos.le
 #align complex.is_Theta_exp_arg_mul_im Complex.isTheta_exp_arg_mul_im

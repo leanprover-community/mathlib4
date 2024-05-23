@@ -58,8 +58,8 @@ def extendFan {n : ℕ} {f : Fin (n + 1) → C} (c₁ : Fan fun i : Fin n => f i
 limit.
 -/
 def extendFanIsLimit {n : ℕ} (f : Fin (n + 1) → C) {c₁ : Fan fun i : Fin n => f i.succ}
-    {c₂ : BinaryFan (f 0) c₁.pt} (t₁ : IsLimit c₁) (t₂ : IsLimit c₂) : IsLimit (extendFan c₁ c₂)
-    where
+    {c₂ : BinaryFan (f 0) c₁.pt} (t₁ : IsLimit c₁) (t₂ : IsLimit c₂) :
+    IsLimit (extendFan c₁ c₂) where
   lift s := by
     apply (BinaryFan.IsLimit.lift' t₂ (s.π.app ⟨0⟩) _).1
     apply t₁.lift ⟨_, Discrete.natTrans fun ⟨i⟩ => s.π.app ⟨i.succ⟩⟩
@@ -104,7 +104,7 @@ private theorem hasProduct_fin : ∀ (n : ℕ) (f : Fin n → C), HasProduct f
 
 /-- If `C` has a terminal object and binary products, then it has finite products. -/
 theorem hasFiniteProducts_of_has_binary_and_terminal : HasFiniteProducts C := by
-  refine' ⟨fun n => ⟨fun K => _⟩⟩
+  refine ⟨fun n => ⟨fun K => ?_⟩⟩
   letI := hasProduct_fin n fun n => K.obj ⟨n⟩
   let that : (Discrete.functor fun n => K.obj ⟨n⟩) ≅ K := Discrete.natIso fun ⟨i⟩ => Iso.refl _
   apply @hasLimitOfIso _ _ _ _ _ _ this that
@@ -138,7 +138,7 @@ noncomputable def preservesFinOfPreservesBinaryAndTerminal :
     let this :=
       extendFanIsLimit (fun i => F.obj (f i)) (isLimitOfHasProductOfPreservesLimit F _)
         (isLimitOfHasBinaryProductOfPreservesLimit F _ _)
-    refine' IsLimit.ofIsoLimit this _
+    refine IsLimit.ofIsoLimit this ?_
     apply Cones.ext _ _
     · apply Iso.refl _
     rintro ⟨j⟩
@@ -243,7 +243,7 @@ private theorem hasCoproduct_fin : ∀ (n : ℕ) (f : Fin n → C), HasCoproduct
 
 /-- If `C` has an initial object and binary coproducts, then it has finite coproducts. -/
 theorem hasFiniteCoproducts_of_has_binary_and_initial : HasFiniteCoproducts C := by
-  refine' ⟨fun n => ⟨fun K => _⟩⟩
+  refine ⟨fun n => ⟨fun K => ?_⟩⟩
   letI := hasCoproduct_fin n fun n => K.obj ⟨n⟩
   let that : K ≅ Discrete.functor fun n => K.obj ⟨n⟩ := Discrete.natIso fun ⟨i⟩ => Iso.refl _
   apply @hasColimitOfIso _ _ _ _ _ _ this that
@@ -278,7 +278,7 @@ noncomputable def preservesFinOfPreservesBinaryAndInitial :
       extendCofanIsColimit (fun i => F.obj (f i))
         (isColimitOfHasCoproductOfPreservesColimit F _)
         (isColimitOfHasBinaryCoproductOfPreservesColimit F _ _)
-    refine' IsColimit.ofIsoColimit this _
+    refine IsColimit.ofIsoColimit this ?_
     apply Cocones.ext _ _
     · apply Iso.refl _
     rintro ⟨j⟩

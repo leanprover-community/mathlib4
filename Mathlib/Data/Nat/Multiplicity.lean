@@ -308,7 +308,7 @@ theorem multiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), multiplicit
         simpa [succ_eq_add_one, multiplicity.mul, h2, prime_two, Nat.bit1_eq_succ_bit0,
           bit0_eq_two_mul n, factorial]
       rw [multiplicity_eq_zero.2 (two_not_dvd_two_mul_add_one n), zero_add]
-      refine' this.trans _
+      refine this.trans ?_
       exact mod_cast lt_succ_self _
 #align nat.multiplicity_two_factorial_lt Nat.multiplicity_two_factorial_lt
 

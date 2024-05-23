@@ -228,15 +228,12 @@ theorem exists0' {p : ∀ g : G₀, g ≠ 0 → Prop} :
 #align units.exists0' Units.exists0'
 
 @[simp]
-theorem exists_iff_ne_zero {x : G₀} : (∃ u : G₀ˣ, ↑u = x) ↔ x ≠ 0 := by simp [exists0]
+theorem exists_iff_ne_zero {p : G₀ → Prop} : (∃ u : G₀ˣ, p u) ↔ ∃ x ≠ 0, p x := by
+  simp [exists0]
 #align units.exists_iff_ne_zero Units.exists_iff_ne_zero
 
 theorem _root_.GroupWithZero.eq_zero_or_unit (a : G₀) : a = 0 ∨ ∃ u : G₀ˣ, a = u := by
-  by_cases h : a = 0
-  · left
-    exact h
-  · right
-    simpa only [eq_comm] using Units.exists_iff_ne_zero.mpr h
+  simpa using em _
 #align group_with_zero.eq_zero_or_unit GroupWithZero.eq_zero_or_unit
 
 end Units
@@ -250,7 +247,7 @@ theorem IsUnit.mk0 (x : G₀) (hx : x ≠ 0) : IsUnit x :=
 
 @[simp]
 theorem isUnit_iff_ne_zero : IsUnit a ↔ a ≠ 0 :=
-  Units.exists_iff_ne_zero
+  (Units.exists_iff_ne_zero (p := (· = a))).trans (by simp)
 #align is_unit_iff_ne_zero isUnit_iff_ne_zero
 
 alias ⟨_, Ne.isUnit⟩ := isUnit_iff_ne_zero
@@ -462,6 +459,17 @@ theorem Ring.inverse_eq_inv (a : G₀) : Ring.inverse a = a⁻¹ := by
 theorem Ring.inverse_eq_inv' : (Ring.inverse : G₀ → G₀) = Inv.inv :=
   funext Ring.inverse_eq_inv
 #align ring.inverse_eq_inv' Ring.inverse_eq_inv'
+
+/-- In a `GroupWithZero` `α`, the unit group `αˣ` is equivalent to the subtype of nonzero
+elements. -/
+@[simps] def unitsEquivNeZero [GroupWithZero α] : αˣ ≃ {a : α // a ≠ 0} where
+  toFun a := ⟨a, a.ne_zero⟩
+  invFun a := Units.mk0 _ a.prop
+  left_inv _ := Units.ext rfl
+  right_inv _ := rfl
+#align units_equiv_ne_zero unitsEquivNeZero
+#align units_equiv_ne_zero_apply_coe unitsEquivNeZero_apply_coe
+#align units_equiv_ne_zero_symm_apply unitsEquivNeZero_symm_apply
 
 end GroupWithZero
 
