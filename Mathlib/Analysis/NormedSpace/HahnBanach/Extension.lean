@@ -51,12 +51,12 @@ theorem exists_extension_norm_eq (p : Subspace ℝ E) (f : p →L[ℝ] ℝ) :
       fun x => le_trans (le_abs_self _) (f.le_opNorm _) with ⟨g, g_eq, g_le⟩
   set g' :=
     g.mkContinuous ‖f‖ fun x => abs_le.2 ⟨neg_le.1 <| g.map_neg x ▸ norm_neg x ▸ g_le (-x), g_le x⟩
-  · refine' ⟨g', g_eq, _⟩
-    · apply le_antisymm (g.mkContinuous_norm_le (norm_nonneg f) _)
-      refine' f.opNorm_le_bound (norm_nonneg _) fun x => _
-      dsimp at g_eq
-      rw [← g_eq]
-      apply g'.le_opNorm
+  refine' ⟨g', g_eq, _⟩
+  apply le_antisymm (g.mkContinuous_norm_le (norm_nonneg f) _)
+  refine' f.opNorm_le_bound (norm_nonneg _) fun x => _
+  dsimp at g_eq
+  rw [← g_eq]
+  apply g'.le_opNorm
 #align real.exists_extension_norm_eq Real.exists_extension_norm_eq
 
 end Real
@@ -81,7 +81,7 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : p →L[𝕜] 𝕜) :
   -- we'll call `g : E →L[ℝ] ℝ`.
   rcases Real.exists_extension_norm_eq (p.restrictScalars ℝ) fr with ⟨g, ⟨hextends, hnormeq⟩⟩
   -- Now `g` can be extended to the `E →L[𝕜] 𝕜` we need.
-  refine' ⟨g.extendTo𝕜, _⟩
+  refine ⟨g.extendTo𝕜, ?_⟩
   -- It is an extension of `f`.
   have h : ∀ x : p, g.extendTo𝕜 x = f x := by
     intro x
@@ -172,7 +172,7 @@ theorem exists_dual_vector' [Nontrivial E] (x : E) : ∃ g : E →L[𝕜] 𝕜, 
   by_cases hx : x = 0
   · obtain ⟨y, hy⟩ := exists_ne (0 : E)
     obtain ⟨g, hg⟩ : ∃ g : E →L[𝕜] 𝕜, ‖g‖ = 1 ∧ g y = ‖y‖ := exists_dual_vector 𝕜 y hy
-    refine' ⟨g, hg.left, _⟩
+    refine ⟨g, hg.left, ?_⟩
     simp [hx]
   · exact exists_dual_vector 𝕜 x hx
 #align exists_dual_vector' exists_dual_vector'

@@ -119,6 +119,12 @@ variable {μ} in
 lemma cond_absolutelyContinuous : μ[|s] ≪ μ :=
   smul_absolutelyContinuous.trans restrict_le_self.absolutelyContinuous
 
+variable {μ} in
+lemma absolutelyContinuous_cond_univ [IsFiniteMeasure μ] : μ ≪ μ[|univ] := by
+  rw [cond, restrict_univ]
+  refine absolutelyContinuous_smul ?_
+  simp [measure_ne_top]
+
 section Bayes
 
 @[simp]
@@ -165,11 +171,10 @@ lemma cond_cond_eq_cond_inter' (hms : MeasurableSet s) (hmt : MeasurableSet t) (
   ext u
   rw [cond_apply _ hmt, cond_apply _ hms, cond_apply _ hms, cond_apply _ (hms.inter hmt)]
   obtain hst | hst := eq_or_ne (μ (s ∩ t)) 0
-  · have : μ (s ∩ t ∩ u) = 0 :=
-      le_antisymm (le_trans (measure_mono (Set.inter_subset_left _ _)) hst.le) bot_le
+  · have : μ (s ∩ t ∩ u) = 0 := measure_mono_null (Set.inter_subset_left _ _) hst
     simp [this, ← Set.inter_assoc]
   · have hcs' : μ s ≠ 0 :=
-      (μ.toOuterMeasure.pos_of_subset_ne_zero (Set.inter_subset_left _ _) hst).ne'
+      (measure_pos_of_superset (Set.inter_subset_left _ _) hst).ne'
     simp [*, ← mul_assoc, ← Set.inter_assoc, ENNReal.mul_inv, ENNReal.mul_inv_cancel,
       mul_right_comm _ _ (μ s)⁻¹]
 #align probability_theory.cond_cond_eq_cond_inter' ProbabilityTheory.cond_cond_eq_cond_inter'

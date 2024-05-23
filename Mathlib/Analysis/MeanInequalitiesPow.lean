@@ -103,7 +103,7 @@ theorem arith_mean_le_rpow_mean (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
     ∑ i in s, w i * z i ≤ (∑ i in s, w i * z i ^ p) ^ (1 / p) := by
   have : 0 < p := by positivity
   rw [← rpow_le_rpow_iff _ _ this, ← rpow_mul, one_div_mul_cancel (ne_of_gt this), rpow_one]
-  exact rpow_arith_mean_le_arith_mean_rpow s w z hw hw' hz hp
+  · exact rpow_arith_mean_le_arith_mean_rpow s w z hw hw' hz hp
   all_goals
     apply_rules [sum_nonneg, rpow_nonneg]
     intro i hi

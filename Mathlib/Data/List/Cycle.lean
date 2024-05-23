@@ -3,9 +3,7 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.Order.Ring.CharZero
 import Mathlib.Data.Fintype.List
-import Mathlib.Data.List.Rotate
 
 #align_import data.list.cycle from "leanprover-community/mathlib"@"7413128c3bcb3b0818e3e18720abc9ea3100fb49"
 
@@ -592,8 +590,7 @@ def Subsingleton (s : Cycle α) : Prop :=
   s.length ≤ 1
 #align cycle.subsingleton Cycle.Subsingleton
 
-theorem subsingleton_nil : Subsingleton (@nil α) :=
-  zero_le_one
+theorem subsingleton_nil : Subsingleton (@nil α) := Nat.zero_le _
 #align cycle.subsingleton_nil Cycle.subsingleton_nil
 
 theorem length_subsingleton_iff {s : Cycle α} : Subsingleton s ↔ length s ≤ 1 :=
@@ -627,7 +624,7 @@ theorem nontrivial_coe_nodup_iff {l : List α} (hl : l.Nodup) :
   · simp
   · simp only [mem_cons, exists_prop, mem_coe_iff, List.length, Ne, Nat.succ_le_succ_iff,
       zero_le, iff_true_iff]
-    refine' ⟨hd, hd', _, by simp⟩
+    refine ⟨hd, hd', ?_, by simp⟩
     simp only [not_or, mem_cons, nodup_cons] at hl
     exact hl.left.left
 #align cycle.nontrivial_coe_nodup_iff Cycle.nontrivial_coe_nodup_iff

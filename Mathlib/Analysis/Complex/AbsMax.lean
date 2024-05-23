@@ -115,7 +115,7 @@ theorem norm_max_aux₁ [CompleteSpace F] {f : ℂ → F} {z w : ℂ}
   have hr : 0 < r := dist_pos.2 (ne_of_apply_ne (norm ∘ f) hw_lt.ne)
   -- Due to Cauchy integral formula, it suffices to prove the following inequality.
   suffices ‖∮ ζ in C(z, r), (ζ - z)⁻¹ • f ζ‖ < 2 * π * ‖f z‖ by
-    refine' this.ne _
+    refine this.ne ?_
     have A : (∮ ζ in C(z, r), (ζ - z)⁻¹ • f ζ) = (2 * π * I : ℂ) • f z :=
       hd.circleIntegral_sub_inv_smul (mem_ball_self hr)
     simp [A, norm_smul, Real.pi_pos.le]
@@ -133,8 +133,8 @@ theorem norm_max_aux₁ [CompleteSpace F] {f : ℂ → F} {z w : ℂ}
     rw [le_div_iff hr, norm_smul, norm_inv, norm_eq_abs, hζ, mul_comm, mul_inv_cancel_left₀ hr.ne']
     exact hz (hsub hζ)
   show ‖(w - z)⁻¹ • f w‖ < ‖f z‖ / r
-  · rw [norm_smul, norm_inv, norm_eq_abs, ← div_eq_inv_mul]
-    exact (div_lt_div_right hr).2 hw_lt
+  rw [norm_smul, norm_inv, norm_eq_abs, ← div_eq_inv_mul]
+  exact (div_lt_div_right hr).2 hw_lt
 #align complex.norm_max_aux₁ Complex.norm_max_aux₁
 
 /-!

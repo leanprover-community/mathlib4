@@ -917,8 +917,8 @@ theorem translationNumber_lt_of_forall_lt_add (hf : Continuous f) {z : ℝ} (hz 
 theorem lt_translationNumber_of_forall_add_lt (hf : Continuous f) {z : ℝ} (hz : ∀ x, x + z < f x) :
     z < τ f := by
   obtain ⟨x, -, hx⟩ : ∃ x ∈ Icc (0 : ℝ) 1, ∀ y ∈ Icc (0 : ℝ) 1, f x - x ≤ f y - y
-  exact isCompact_Icc.exists_isMinOn (nonempty_Icc.2 zero_le_one)
-    (hf.sub continuous_id).continuousOn
+  · exact isCompact_Icc.exists_isMinOn (nonempty_Icc.2 zero_le_one)
+      (hf.sub continuous_id).continuousOn
   refine' lt_of_lt_of_le (lt_sub_iff_add_lt'.2 <| hz x) _
   apply le_translationNumber_of_add_le
   simp only [← le_sub_iff_add_le']
@@ -971,7 +971,7 @@ theorem semiconj_of_group_action_of_forall_translationNumber_eq {G : Type*} [Gro
   -- Equality of translation number guarantees that for each `x`
   -- the set `{f₂ g⁻¹ (f₁ g x) | g : G}` is bounded above.
   have : ∀ x, BddAbove (range fun g => f₂ g⁻¹ (f₁ g x)) := by
-    refine' fun x => ⟨x + 2, _⟩
+    refine fun x => ⟨x + 2, ?_⟩
     rintro _ ⟨g, rfl⟩
     have : τ (f₂ g⁻¹) = -τ (f₂ g) := by
       rw [← MonoidHom.coe_toHomUnits, MonoidHom.map_inv, translationNumber_units_inv,

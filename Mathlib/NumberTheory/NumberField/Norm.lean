@@ -78,7 +78,6 @@ theorem isUnit_norm_of_isGalois [IsGalois K L] {x : 𝓞 L} : IsUnit (norm K x) 
       prod_mem fun σ _ => x.2.map (σ : L →+* L).toIntAlgHom⟩ _ _
   convert hx using 1
   ext
-  push_cast
   convert_to ((univ \ {AlgEquiv.refl}).prod fun σ : L ≃ₐ[K] L => σ x) *
     ∏ σ : L ≃ₐ[K] L in {AlgEquiv.refl}, σ x = _
   · rw [prod_singleton, AlgEquiv.coe_refl, _root_.id, RingOfIntegers.coe_eq_algebraMap, map_mul,
@@ -114,7 +113,7 @@ theorem isUnit_norm [CharZero K] {x : 𝓞 F} : IsUnit (norm K x) ↔ IsUnit x :
   let L := normalClosure K F (AlgebraicClosure F)
   haveI : FiniteDimensional F L := FiniteDimensional.right K F L
   haveI : IsAlgClosure K (AlgebraicClosure F) :=
-    IsAlgClosure.ofAlgebraic K F (AlgebraicClosure F) (Algebra.IsAlgebraic.of_finite K F)
+    IsAlgClosure.ofAlgebraic K F (AlgebraicClosure F)
   haveI : IsGalois F L := IsGalois.tower_top_of_isGalois K F L
   calc
     IsUnit (norm K x) ↔ IsUnit ((norm K) x ^ finrank F L) :=

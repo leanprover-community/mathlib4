@@ -399,7 +399,7 @@ theorem piiUnionInter_singleton_left (s : ι → Set α) (S : Set ι) :
   simp_rw [piiUnionInter, Set.mem_singleton_iff, exists_prop, Set.mem_setOf_eq]
   refine' ⟨fun h => _, fun ⟨t, htS, h_eq⟩ => ⟨t, htS, s, fun _ _ => rfl, h_eq⟩⟩
   obtain ⟨t, htS, f, hft_eq, rfl⟩ := h
-  refine' ⟨t, htS, _⟩
+  refine ⟨t, htS, ?_⟩
   congr! 3
   apply hft_eq
   assumption
@@ -603,8 +603,7 @@ instance : PartialOrder (DynkinSystem α) :=
     le_antisymm := fun a b h₁ h₂ => ext fun s => ⟨h₁ s, h₂ s⟩ }
 
 /-- Every measurable space (σ-algebra) forms a Dynkin system -/
-def ofMeasurableSpace (m : MeasurableSpace α) : DynkinSystem α
-    where
+def ofMeasurableSpace (m : MeasurableSpace α) : DynkinSystem α where
   Has := m.MeasurableSet'
   has_empty := m.measurableSet_empty
   has_compl {a} := m.measurableSet_compl a
@@ -627,15 +626,14 @@ inductive GenerateHas (s : Set (Set α)) : Set α → Prop
 #align measurable_space.dynkin_system.generate_has MeasurableSpace.DynkinSystem.GenerateHas
 
 theorem generateHas_compl {C : Set (Set α)} {s : Set α} : GenerateHas C sᶜ ↔ GenerateHas C s := by
-  refine' ⟨_, GenerateHas.compl⟩
+  refine ⟨?_, GenerateHas.compl⟩
   intro h
   convert GenerateHas.compl h
   simp
 #align measurable_space.dynkin_system.generate_has_compl MeasurableSpace.DynkinSystem.generateHas_compl
 
 /-- The least Dynkin system containing a collection of basic sets. -/
-def generate (s : Set (Set α)) : DynkinSystem α
-    where
+def generate (s : Set (Set α)) : DynkinSystem α where
   Has := GenerateHas s
   has_empty := GenerateHas.empty
   has_compl {_} := GenerateHas.compl

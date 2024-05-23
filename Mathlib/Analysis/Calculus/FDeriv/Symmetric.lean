@@ -72,8 +72,8 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
       fun h => h ^ 2 := by
   -- it suffices to check that the expression is bounded by `ε * ((‖v‖ + ‖w‖) * ‖w‖) * h^2` for
   -- small enough `h`, for any positive `ε`.
-  refine' IsLittleO.trans_isBigO
-    (isLittleO_iff.2 fun ε εpos => _) (isBigO_const_mul_self ((‖v‖ + ‖w‖) * ‖w‖) _ _)
+  refine IsLittleO.trans_isBigO
+    (isLittleO_iff.2 fun ε εpos => ?_) (isBigO_const_mul_self ((‖v‖ + ‖w‖) * ‖w‖) _ _)
   -- consider a ball of radius `δ` around `x` in which the Taylor approximation for `f''` is
   -- good up to `δ`.
   rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO, isLittleO_iff] at hx

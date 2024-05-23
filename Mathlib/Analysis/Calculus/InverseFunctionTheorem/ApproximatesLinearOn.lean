@@ -236,11 +236,14 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
         _ ≤ f'symm.nnnorm * dist (f (u n)) y + dist (u n) b := add_le_add (A _) le_rfl
         _ ≤ f'symm.nnnorm * (((c : ℝ) * f'symm.nnnorm) ^ n * dist (f b) y) +
               f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) / (1 - c * f'symm.nnnorm) *
-                dist (f b) y := by gcongr; exact IH.1; exact IH.2
+                dist (f b) y := by
+                  gcongr
+                  · exact IH.1
+                  · exact IH.2
         _ = f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n.succ) /
               (1 - (c : ℝ) * f'symm.nnnorm) * dist (f b) y := by
           field_simp [Jcf', pow_succ]; ring
-    refine' ⟨_, Ign⟩
+    refine ⟨?_, Ign⟩
     calc
       dist (f (g (u n))) y ≤ c * f'symm.nnnorm * dist (f (u n)) y :=
         B _ (C n _ IH.2) (C n.succ _ Ign)
@@ -262,7 +265,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
   -- As all the `uₙ` belong to the ball `closedBall b ε`, so does their limit `x`.
   have xmem : x ∈ closedBall b ε :=
     isClosed_ball.mem_of_tendsto hx (eventually_of_forall fun n => C n _ (D n).2)
-  refine' ⟨x, xmem, _⟩
+  refine ⟨x, xmem, ?_⟩
   -- It remains to check that `f x = y`. This follows from continuity of `f` on `closedBall b ε`
   -- and from the fact that `f uₙ` is converging to `y` by construction.
   have hx' : Tendsto u atTop (𝓝[closedBall b ε] x) := by
