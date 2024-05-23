@@ -196,14 +196,68 @@ instance (priority := 100) isSemisimple_of_isSimple [h : IsSimple R L] :
     rw [lie_abelian_iff_equiv_lie_abelian LieIdeal.topEquiv] at hI₂
     contradiction
 
-/-- A semisimple Lie algebra has trivial radical. -/
-instance (priority := 100) [h : IsSemisimple R L] :
-    IsAtomic (LieIdeal R L) where
-  eq_bot_or_exists_atom_le I := by
-    sorry
+-- instance (priority := 100) [h : IsSemisimple R L] :
+--     ComplementedLattice (LieIdeal R L) where
+--       exists_isCompl := _
+
+-- instance (priority := 100) [h : IsSemisimple R L] :
+--     BooleanAlgebra (LieIdeal R L) where
+--   __ := (inferInstance : CompleteLattice (LieIdeal R L))
+--   le_sup_inf := _
+--   compl := _
+--   inf_compl_le_bot := _
+--   top_le_sup_compl := _
+--   sdiff := _
+--   himp := _
+--   sdiff_eq := _
+--   himp_eq := _
+
+lemma _root_.LieIdeal.sSup_inter [IsSemisimple R L] (S T : Set (LieIdeal R L))
+    (hS : S ⊆ {I | IsAtom I}) (hT : T ⊆ {I | IsAtom I}) :
+    sSup (S ∩ T) = (sSup S) ⊓ (sSup T) := by
+  sorry
+
+lemma _root_.LieIdeal.sSup_atoms_le_eq [IsSemisimple R L] (J : LieIdeal R L) :
+    sSup {I | IsAtom I ∧ I ≤ J} = J := by
+  sorry
+
+instance (priority := 100) [IsSemisimple R L] : DistribLattice (LieIdeal R L) where
+  __ := (inferInstance : CompleteLattice (LieIdeal R L))
+  le_sup_inf I₁ I₂ I₃ := by
+    apply le_of_eq
+    rw [← I₁.sSup_atoms_le_eq, ← I₂.sSup_atoms_le_eq, ← I₃.sSup_atoms_le_eq,
+        ← sSup_union, ← sSup_union, ← LieIdeal.sSup_inter, ← LieIdeal.sSup_inter, ← sSup_union]
+    · congr 1
+      ext
+      simp only [Set.mem_union, Set.mem_inter_iff, Set.mem_setOf_eq]
+      tauto
+    all_goals simp (config := { contextual := true })
+
+instance (priority := 100) [IsSemisimple R L] :
+    ComplementedLattice (LieIdeal R L) where
+  exists_isCompl J := by
+    use sSup {I | IsAtom I ∧ ¬ I ≤ J}
+    nth_rewrite 1 [← J.sSup_atoms_le_eq]
+    constructor
+    · rw [disjoint_iff, ← LieIdeal.sSup_inter]
+      · simp only [sSup_eq_bot, Set.mem_inter_iff, Set.mem_setOf_eq, and_imp]
+        intro I _ h₁ _ h₂
+        contradiction
+      · simp only [Set.setOf_subset_setOf, and_imp]
+        intro I hI _
+        exact hI
+      · simp only [Set.setOf_subset_setOf, and_imp]
+        intro I hI _
+        exact hI
+    · rw [codisjoint_iff, ← sSup_union]
+      · suffices {I | IsAtom I ∧ I ≤ J} ∪ {I | IsAtom I ∧ ¬I ≤ J} = {I | IsAtom I} by
+          rw [this, IsSemisimple.spanning]
+        ext
+        simp only [Set.mem_union, Set.mem_setOf_eq]
+        tauto
 
 /-- A semisimple Lie algebra has trivial radical. -/
-instance (priority := 100) hasTrivialRadical_of_isSemisimple [h : IsSemisimple R L] :
+instance (priority := 100) hasTrivialRadical_of_isSemisimple [IsSemisimple R L] :
     HasTrivialRadical R L := by
   rw [hasTrivialRadical_iff_no_abelian_ideals]
   intro I hI
