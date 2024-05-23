@@ -261,13 +261,15 @@ lemma monotone_of_continuous (hf : Continuous f) : Monotone f := fun _ b hab ↦
   simpa only [mem_compl_iff, mem_preimage, mem_Iic, le_refl, not_true]
     using isUpperSet_of_isOpen ((isOpen_compl_iff.2 isClosed_Iic).preimage hf) hab h
 
-@[simp] lemma scottContinuous_iff_continuous : ScottContinuous f ↔ Continuous f := by
+@[simp] lemma scottContinuous_iff_continuous : ScottContinuous univ f ↔ Continuous f := by
   refine ⟨fun h ↦ continuous_def.2 fun u hu ↦ ?_, ?_⟩
   · rw [isOpen_iff_isUpperSet_and_dirSupInacc]
-    exact ⟨(isUpperSet_of_isOpen hu).preimage h.monotone, fun _ hd₁ hd₂ _ hd₃ ha ↦
-      image_inter_nonempty_iff.mp <| (isOpen_iff_isUpperSet_and_dirSupInacc.mp hu).2 (hd₁.image f)
-        (directedOn_image.mpr (hd₂.mono @(h.monotone))) (h hd₁ hd₂ hd₃) ha⟩
-  · refine fun hf _ d₁ d₂ _ d₃ ↦ ⟨(monotone_of_continuous hf).mem_upperBounds_image d₃.1,
+    exact ⟨(isUpperSet_of_isOpen hu).preimage (h.monotone (by exact fun _ _ ↦ trivial)),
+      fun _ hd₁ hd₂ _ hd₃ ha ↦
+        image_inter_nonempty_iff.mp <| (isOpen_iff_isUpperSet_and_dirSupInacc.mp hu).2 (hd₁.image f)
+        (directedOn_image.mpr (hd₂.mono @(h.monotone (by exact fun _ _ ↦ trivial))))
+        (h hd₁ hd₂ (trivial) hd₃) ha⟩
+  · refine fun hf _ d₁ d₂ _ _ d₃ ↦ ⟨(monotone_of_continuous hf).mem_upperBounds_image d₃.1,
       fun b hb ↦ ?_⟩
     by_contra h
     let u := (Iic b)ᶜ
