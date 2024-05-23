@@ -289,10 +289,10 @@ theorem integralPointToAssociates_surjective :
     rw [map_ne_zero, RingOfIntegers.coe_ne_zero_iff]
     exact nonZeroDivisors.coe_ne_zero _
   refine ⟨⟨u • mixedEmbedding K (x : 𝓞 K), hu⟩,
-    Quotient.sound ⟨(nonZeroDivisorsUnitsEquiv (𝓞 K)).symm u⁻¹, ?_⟩⟩
+    Quotient.sound ⟨unitsNonZeroDivisorsEquiv.symm u⁻¹, ?_⟩⟩
   simp_rw [Subtype.ext_iff, RingOfIntegers.ext_iff, ← (mixedEmbedding_injective K).eq_iff,
     Submonoid.coe_mul, map_mul, mixedEmbedding_preimageOfIntegralPoint,
-    nonZeroDivisorsUnitsEquiv_symm_apply, unitSMul_smul, ← map_mul, mul_comm,
+    unitSMul_smul, ← map_mul, mul_comm, map_inv, val_inv_unitsNonZeroDivisorsEquiv_symm_apply_coe,
     Units.mul_inv_cancel_right]
 
 @[simps]
@@ -314,9 +314,9 @@ theorem integralPointToAssociates_eq_iff (a b : integralPoint K) :
     RingOfIntegers.ext_iff, ← (mixedEmbedding_injective K).eq_iff, Submonoid.coe_mul, map_mul,
     mixedEmbedding_preimageOfIntegralPoint, integralPoint_torsionSMul_smul_coe]
   refine ⟨fun ⟨u, hu⟩ ↦ ?_, fun ⟨⟨ζ, _⟩, h⟩ ↦ ?_⟩
-  · refine ⟨⟨(nonZeroDivisorsUnitsEquiv (𝓞 K)) u, ?_⟩, by simp [hu]⟩
+  · refine ⟨⟨unitsNonZeroDivisorsEquiv u, ?_⟩, by simp [hu]⟩
     exact (unitSMul_mem_iff_mem_torsion a.prop.1 _).mp (by simp [hu, b.prop.1])
-  · exact ⟨(nonZeroDivisorsUnitsEquiv (𝓞 K)).symm ζ, by rwa [nonZeroDivisorsUnitsEquiv_symm_apply]⟩
+  · exact ⟨unitsNonZeroDivisorsEquiv.symm ζ, by simpa using h⟩
 
 variable (K) in
 /-- The equivalence between `fundamentalCone.integralPoint K / torsion K` and

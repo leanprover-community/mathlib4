@@ -959,10 +959,10 @@ theorem associatesEquivIsPrincipal_mem_nonZeroDivisors {x : R} :
 /-- A version of `Ideal.associatesEquivIsPrincipal` for non-zero-divisor generators. -/
 def associatesNonZeroDivisorsEquivIsPrincipal :
     Associates R⁰ ≃ {I : (Ideal R)⁰ // IsPrincipal (I : Ideal R)} :=
-  calc Associates R⁰ ≃ (Associates R)⁰ := (AssociatesNonZeroDivisorsMulEquiv R).toEquiv
+  calc Associates R⁰ ≃ (Associates R)⁰ := associatesNonZeroDivisorsEquiv.toEquiv.symm
     _ ≃ {I : {I : Ideal R // IsPrincipal I} // I.1 ∈ (Ideal R)⁰} :=
       Equiv.subtypeEquiv (Ideal.associatesEquivIsPrincipal R)
-        (fun x ↦ by rw [← Associates.quot_out x, Associates_mk_mem_nonZeroDivisors_iff,
+        (fun x ↦ by rw [← Associates.quot_out x, mk_mem_nonZeroDivisors_associates,
           Ideal.associatesEquivIsPrincipal_mem_nonZeroDivisors])
     _ ≃ {I : Ideal R // IsPrincipal I ∧ I ∈ (Ideal R)⁰} :=
       Equiv.subtypeSubtypeEquivSubtypeInter (fun I ↦ IsPrincipal I) (fun I ↦ I ∈ (Ideal R)⁰)
