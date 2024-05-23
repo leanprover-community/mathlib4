@@ -471,7 +471,10 @@ def toSSet_monoidal : MonoidalFunctor TopCat SSet :=
   μ_natural_left := sorry
   μ_natural_right := sorry
   associativity := sorry -- These subgoals are hiding some horrors;
-                         -- solve them to become an expert in concrete categories in Mathlib!
+                         -- Ask me if you're interested in examples of dependent type theory hell,
+                         -- or solve them to become an expert in concrete categories in Mathlib!
+                         -- Ideally with the right `simp` and `ext` lemmas these are all handled
+                         -- by `aesop`.
   left_unitality := sorry
   right_unitality := sorry }
 
