@@ -13,7 +13,24 @@ def DependsOn (f : (∀ i, X i) → ℝ≥0∞) (s : Finset ι) : Prop :=
 theorem const_dependsOn (c : ℝ≥0∞) : DependsOn (fun _ : ∀ i, X i ↦ c) ∅ := by
   simp [DependsOn]
 
+theorem dependsOn_empty (hf : DependsOn f ∅) : ∀ x y, f x = f y := fun x y ↦ hf x y (by simp)
+
 variable (hf : DependsOn f s)
+
+theorem updateFinset_dependsOn (t : Finset ι) (y : (i : t) → X i) :
+    DependsOn (fun x ↦ f (Function.updateFinset x t y)) (s \ t) := by
+  intro x₁ x₂ h
+  apply hf
+  intro i hi
+  simp only [Function.updateFinset_def]
+  split_ifs with h'
+  · rfl
+  · exact h i <| Finset.mem_sdiff.2 ⟨hi, h'⟩
+
+theorem update_dependsOn (i : ι) (y : X i) :
+    DependsOn (fun x ↦ f (Function.update x i y)) (s.erase i) := by
+  simp_rw [Function.update_eq_updateFinset, erase_eq]
+  apply updateFinset_dependsOn hf
 
 theorem lmarginal_dependsOn (t : Finset ι) (hf : DependsOn f s) :
     DependsOn (∫⋯∫⁻_t, f ∂μ) (s \ t) := by
