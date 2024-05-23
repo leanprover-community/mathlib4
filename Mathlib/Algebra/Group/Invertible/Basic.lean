@@ -3,17 +3,18 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Invertible.GroupWithZero
 import Mathlib.Algebra.Group.Commute.Units
+import Mathlib.Algebra.Group.Invertible.Defs
 import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.Units
-import Mathlib.Algebra.GroupWithZero.Units.Basic
+import Mathlib.Logic.Equiv.Defs
 
 #align_import algebra.invertible from "leanprover-community/mathlib"@"722b3b152ddd5e0cf21c0a29787c76596cb6b422"
 /-!
 # Theorems about invertible elements
 
 -/
+
+assert_not_exists MonoidWithZero
 
 universe u
 
@@ -147,49 +148,6 @@ def invertibleOfPowEqOne (x : α) (n : ℕ) (hx : x ^ n = 1) (hn : n ≠ 0) : In
 
 end Monoid
 
-section MonoidWithZero
-
-variable [MonoidWithZero α]
-
-/-- A variant of `Ring.inverse_unit`. -/
-@[simp]
-theorem Ring.inverse_invertible (x : α) [Invertible x] : Ring.inverse x = ⅟ x :=
-  Ring.inverse_unit (unitOfInvertible _)
-#align ring.inverse_invertible Ring.inverse_invertible
-
-end MonoidWithZero
-
-section GroupWithZero
-
-variable [GroupWithZero α]
-
-@[simp]
-theorem div_mul_cancel_of_invertible (a b : α) [Invertible b] : a / b * b = a :=
-  div_mul_cancel₀ a (nonzero_of_invertible b)
-#align div_mul_cancel_of_invertible div_mul_cancel_of_invertible
-
-@[simp]
-theorem mul_div_cancel_of_invertible (a b : α) [Invertible b] : a * b / b = a :=
-  mul_div_cancel_right₀ a (nonzero_of_invertible b)
-#align mul_div_cancel_of_invertible mul_div_cancel_of_invertible
-
-@[simp]
-theorem div_self_of_invertible (a : α) [Invertible a] : a / a = 1 :=
-  div_self (nonzero_of_invertible a)
-#align div_self_of_invertible div_self_of_invertible
-
-/-- `b / a` is the inverse of `a / b` -/
-def invertibleDiv (a b : α) [Invertible a] [Invertible b] : Invertible (a / b) :=
-  ⟨b / a, by simp [← mul_div_assoc], by simp [← mul_div_assoc]⟩
-#align invertible_div invertibleDiv
-
--- Porting note (#10618): removed `simp` attribute as `simp` can prove it
-theorem invOf_div (a b : α) [Invertible a] [Invertible b] [Invertible (a / b)] :
-    ⅟ (a / b) = b / a :=
-  invOf_eq_right_inv (by simp [← mul_div_assoc])
-#align inv_of_div invOf_div
-
-end GroupWithZero
 
 /-- Monoid homs preserve invertibility. -/
 def Invertible.map {R : Type*} {S : Type*} {F : Type*} [MulOneClass R] [MulOneClass S]
@@ -226,9 +184,7 @@ def Invertible.ofLeftInverse {R : Type*} {S : Type*} {G : Type*} [MulOneClass R]
 @[simps]
 def invertibleEquivOfLeftInverse {R : Type*} {S : Type*} {F G : Type*} [Monoid R] [Monoid S]
     [FunLike F R S] [MonoidHomClass F R S] [FunLike G S R] [MonoidHomClass G S R]
-    (f : F) (g : G) (r : R) (h : Function.LeftInverse g f) :
-    Invertible (f r) ≃
-      Invertible r where
+    (f : F) (g : G) (r : R) (h : Function.LeftInverse g f) : Invertible (f r) ≃ Invertible r where
   toFun _ := Invertible.ofLeftInverse f _ _ h
   invFun _ := Invertible.map f _
   left_inv _ := Subsingleton.elim _ _
