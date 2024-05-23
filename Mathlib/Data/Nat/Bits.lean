@@ -286,10 +286,7 @@ lemma testBit_bit_zero (b n) : testBit (bit b n) 0 = b := by
   rw [testBit, bit]
   cases b
   · simp [bit0, ← Nat.mul_two]
-  · simp only [cond_true, bit1, bit0, shiftRight_zero, one_and_eq_mod_two, bne_iff_ne]
-    simp only [← Nat.mul_two]
-    rw [Nat.add_mod]
-    simp
+  · simp [bit0, bit1, ← Nat.mul_two]
 
 #align nat.test_bit_zero Nat.testBit_zero
 
