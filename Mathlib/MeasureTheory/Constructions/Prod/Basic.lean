@@ -938,7 +938,7 @@ theorem lintegral_prod_of_measurable :
     ∀ (f : α × β → ℝ≥0∞), Measurable f → ∫⁻ z, f z ∂μ.prod ν = ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ := by
   have m := @measurable_prod_mk_left
   refine Measurable.ennreal_induction
-    (P := fun f => ∫⁻ z, f z ∂μ.prod ν = ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ) ?_ ??_ _
+    (P := fun f => ∫⁻ z, f z ∂μ.prod ν = ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ) ?_ ?_ ?_
   · intro c s hs
     conv_rhs =>
       enter [2, x, 2, y]

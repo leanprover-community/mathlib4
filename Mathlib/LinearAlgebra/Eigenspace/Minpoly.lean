@@ -53,7 +53,7 @@ theorem ker_aeval_ring_hom'_unit_polynomial (f : End K V) (c : K[X]ˣ) :
 
 theorem aeval_apply_of_hasEigenvector {f : End K V} {p : K[X]} {μ : K} {x : V}
     (h : f.HasEigenvector μ x) : aeval f p x = p.eval μ • x := by
-  refine p.induction_on ?_ ??_ _
+  refine p.induction_on ?_ ?_ ?_
   · intro a; simp [Module.algebraMap_end_apply]
   · intro p q hp hq; simp [hp, hq, add_smul]
   · intro n a hna

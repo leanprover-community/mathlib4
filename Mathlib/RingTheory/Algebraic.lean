@@ -465,7 +465,7 @@ theorem Subalgebra.inv_mem_of_algebraic {x : A} (hx : _root_.IsAlgebraic K (x : 
   obtain ⟨p, ne_zero, aeval_eq⟩ := hx
   rw [Subalgebra.aeval_coe, Subalgebra.coe_eq_zero] at aeval_eq
   revert ne_zero aeval_eq
-  refine p.recOnHorner ?_ ??_ _
+  refine p.recOnHorner ?_ ?_ ?_
   · intro h
     contradiction
   · intro p a hp ha _ih _ne_zero aeval_eq

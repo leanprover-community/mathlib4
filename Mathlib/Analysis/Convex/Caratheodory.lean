@@ -174,7 +174,7 @@ theorem eq_pos_convex_span_of_mem_convexHull {x : E} (hx : x ∈ convexHull 𝕜
   simp only [t.convexHull_eq, exists_prop, Set.mem_setOf_eq] at ht₃
   obtain ⟨w, hw₁, hw₂, hw₃⟩ := ht₃
   let t' := t.filter fun i => w i ≠ 0
-  refine ⟨t', t'.fintypeCoeSort, ((↑) : t' → E), w ∘ ((↑) : t' → E), ?_,? _, ?_,?? _, _⟩
+  refine ⟨t', t'.fintypeCoeSort, ((↑) : t' → E), w ∘ ((↑) : t' → E), ?_, ?_, ?_,? _, ?_⟩
   · rw [Subtype.range_coe_subtype]
     exact Subset.trans (Finset.filter_subset _ t) ht₁
   · exact ht₂.comp_embedding ⟨_, inclusion_injective (Finset.filter_subset (fun i => w i ≠ 0) t)⟩

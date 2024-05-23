@@ -844,7 +844,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
     -- to prove the main inequality, argue that `s p` is `ε`-dense in `p`, and `s q` is `ε`-dense
     -- in `q`, and `s p` and `s q` are almost isometric. Then closeness follows
     -- from `ghDist_le_of_approx_subsets`
-    refine ghDist_le_of_approx_subsets Φ ?_ ??_ _
+    refine ghDist_le_of_approx_subsets Φ ?_ ?_ ?_
     · show ∀ x : p.Rep, ∃ y ∈ s p, dist x y ≤ ε
       -- by construction, `s p` is `ε`-dense
       intro x

@@ -959,7 +959,7 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SigmaFinit
     simp only [r, if_neg this]
   -- the desired covering set is given by the union of the families constructed in the first and
   -- second steps.
-  refine ⟨t0 ∪ ⋃ i : Fin N, ((↑) : s' → α) '' S i, r, ?_,? _, ?_,?? _, _⟩
+  refine ⟨t0 ∪ ⋃ i : Fin N, ((↑) : s' → α) '' S i, r, ?_,? _, ?_, ?_, ?_⟩
   -- it remains to check that they have the desired properties
   · exact t0_count.union (countable_iUnion fun i => (S_count i).image _)
   · simp only [t0s, true_and_iff, union_subset_iff, image_subset_iff, iUnion_subset_iff]

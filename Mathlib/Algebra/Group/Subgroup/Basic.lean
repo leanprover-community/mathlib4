@@ -1264,7 +1264,7 @@ theorem iSup_eq_closure {ι : Sort*} (p : ι → Subgroup G) :
       natural number multiples of the element."]
 theorem mem_closure_singleton {x y : G} : y ∈ closure ({x} : Set G) ↔ ∃ n : ℤ, x ^ n = y := by
   refine
-    ⟨fun hy => closure_induction hy ?_ ??_ _ ?_, fun ⟨n, hn⟩ =>
+    ⟨fun hy => closure_induction hy ?_ ?_ ?_ ?_, fun ⟨n, hn⟩ =>
       hn ▸ zpow_mem (subset_closure <| mem_singleton x) n⟩
   · intro y hy
     rw [eq_of_mem_singleton hy]

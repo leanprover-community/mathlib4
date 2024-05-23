@@ -236,7 +236,7 @@ theorem condexpL2_const_inner (hm : m ≤ m0) (f : Lp E 2 μ) (c : E) :
     h_mem_Lp.coeFn_toLp
   refine EventuallyEq.trans ?_ h_eq
   refine Lp.ae_eq_of_forall_setIntegral_eq' 𝕜 hm _ _ two_ne_zero ENNReal.coe_ne_top
-    (fun s _ hμs => integrableOn_condexpL2_of_measure_ne_top hm hμs.ne _) ?_ ?_ ??_ _
+    (fun s _ hμs => integrableOn_condexpL2_of_measure_ne_top hm hμs.ne _) ?_ ?_ ?_ ?_
   · intro s _ hμs
     rw [IntegrableOn, integrable_congr (ae_restrict_of_ae h_eq)]
     exact (integrableOn_condexpL2_of_measure_ne_top hm hμs.ne _).const_inner _

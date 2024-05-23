@@ -459,7 +459,7 @@ theorem mvPolynomial_aeval_of_surjective_of_closure [AddCommMonoid M] [CommSemir
   intro f
   induction' f using induction_on with m f g ihf ihg r f ih
   · have : m ∈ closure S := hS.symm ▸ mem_top _
-    refine AddSubmonoid.closure_induction this (fun m hm => ?_) ??_ _
+    refine AddSubmonoid.closure_induction this (fun m hm => ?_) ?_ ?_
     · exact ⟨MvPolynomial.X ⟨m, hm⟩, MvPolynomial.aeval_X _ _⟩
     · exact ⟨1, AlgHom.map_one _⟩
     · rintro m₁ m₂ ⟨P₁, hP₁⟩ ⟨P₂, hP₂⟩
@@ -485,7 +485,7 @@ theorem freeAlgebra_lift_of_surjective_of_closure [CommSemiring R] {S : Set M}
   intro f
   induction' f using induction_on with m f g ihf ihg r f ih
   · have : m ∈ closure S := hS.symm ▸ mem_top _
-    refine AddSubmonoid.closure_induction this (fun m hm => ?_) ??_ _
+    refine AddSubmonoid.closure_induction this (fun m hm => ?_) ?_ ?_
     · exact ⟨FreeAlgebra.ι R ⟨m, hm⟩, FreeAlgebra.lift_ι_apply _ _⟩
     · exact ⟨1, AlgHom.map_one _⟩
     · rintro m₁ m₂ ⟨P₁, hP₁⟩ ⟨P₂, hP₂⟩

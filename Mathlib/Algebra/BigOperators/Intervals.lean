@@ -82,7 +82,7 @@ lemma prod_prod_Ioi_mul_eq_prod_prod_off_diag (f : α → α → M) :
   simp_rw [← Ioi_disjUnion_Iio, prod_disjUnion, prod_mul_distrib]
   congr 1
   rw [prod_sigma', prod_sigma']
-  refine prod_nbij' (fun i ↦ ⟨i.2, i.1⟩) (fun i ↦ ⟨i.2, i.1⟩) ?_ ??_ _? _? _ <;> simp
+  refine prod_nbij' (fun i ↦ ⟨i.2, i.1⟩) (fun i ↦ ⟨i.2, i.1⟩) ?_ ?_ ?_? _? _ <;> simp
 #align finset.prod_prod_Ioi_mul_eq_prod_prod_off_diag Finset.prod_prod_Ioi_mul_eq_prod_prod_off_diag
 #align finset.sum_sum_Ioi_add_eq_sum_sum_off_diag Finset.sum_sum_Ioi_add_eq_sum_sum_off_diag
 

@@ -254,7 +254,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
     neighborhood of `y`. Moreover, `(‖(star fₓ * fₓ) y‖₊ : 𝕜) = (star fₓ * fₓ) y`, so composition of
     this map with the natural embedding is just `star fₓ * fₓ ∈ I`. -/
   have : ∃ g' : C(X, ℝ≥0), (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g' ∈ I ∧ ∀ x ∈ t, 0 < g' x := by
-    refine ht.isCompact.induction_on ?_ ?_ ??_ _
+    refine ht.isCompact.induction_on ?_ ?_ ?_ ?_
     · refine ⟨0, ?_, fun x hx => False.elim hx⟩
       convert I.zero_mem
       ext

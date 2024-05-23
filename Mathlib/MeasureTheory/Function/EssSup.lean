@@ -177,7 +177,7 @@ theorem essInf_const_top : essInf (fun _ : α => (⊤ : β)) μ = (⊤ : β) :=
 
 theorem OrderIso.essSup_apply {m : MeasurableSpace α} {γ} [CompleteLattice γ] (f : α → β)
     (μ : Measure α) (g : β ≃o γ) : g (essSup f μ) = essSup (fun x => g (f x)) μ := by
-  refine OrderIso.limsup_apply g ?_ ?_ ??_ _
+  refine OrderIso.limsup_apply g ?_ ?_ ?_ ?_
   all_goals isBoundedDefault
 #align order_iso.ess_sup_apply OrderIso.essSup_apply
 

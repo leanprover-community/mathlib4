@@ -1552,7 +1552,7 @@ private theorem lintegral_rpow_tsum_coe_nnnorm_sub_le_tsum {f : ℕ → α → E
     refine lintegral_congr fun x => ?_
     have h_rpow_mono := ENNReal.strictMono_rpow_of_pos (zero_lt_one.trans_le hp1)
     have h_rpow_surj := (ENNReal.rpow_left_bijective hp_pos.ne.symm).2
-    refine (h_rpow_mono.orderIsoOfSurjective _ h_rpow_surj).liminf_apply ?_ ?_ ??_ _
+    refine (h_rpow_mono.orderIsoOfSurjective _ h_rpow_surj).liminf_apply ?_ ?_ ?_ ?_
     all_goals isBoundedDefault
   rw [h_liminf_pow]
   refine (lintegral_liminf_le' ?_).trans ?_

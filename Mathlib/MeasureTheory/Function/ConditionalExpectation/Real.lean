@@ -275,7 +275,7 @@ theorem condexp_stronglyMeasurable_mul_of_bound (hm : m ≤ m0) [IsFiniteMeasure
     exact integrable_condexp.bdd_mul' (hf.mono hm).aestronglyMeasurable hf_bound
   rw [← this]
   refine tendsto_condexp_unique (fun n x => fs n x * g x) (fun n x => fs n x * (μ[g|m]) x) (f * g)
-    (f * μ[g|m]) ?_ ?_ ??_ _ (c * ‖g ·‖)? _ (c * ‖(μ[g|m]) ·‖) ??_ ?_ ?_ _
+    (f * μ[g|m]) ?_ ?_ ?_ ?_ (c * ‖g ·‖) ?_ (c * ‖(μ[g|m]) ·‖) ?_ ?_ ?_ ?_
   · exact fun n => hg.bdd_mul' ((SimpleFunc.stronglyMeasurable (fs n)).mono hm).aestronglyMeasurable
       (eventually_of_forall (hfs_bound n))
   · exact fun n => integrable_condexp.bdd_mul'

@@ -302,7 +302,7 @@ theorem induction_with_natDegree_le (P : R[X] → Prop) (N : ℕ) (P_0 : P 0)
         rw [← card_support_eq_zero, card_support_eraseLead' f0]
       · rw [leadingCoeff_ne_zero, Ne, ← card_support_eq_zero, f0]
         exact zero_ne_one.symm
-    refine P_C_add f.eraseLead _ ?_ ??_ _? _
+    refine P_C_add f.eraseLead _ ?_ ?_ ?_? _
     · refine (eraseLead_natDegree_lt ?_).trans_le (le_of_eq ?_)
       · exact (Nat.succ_le_succ (Nat.succ_le_succ (Nat.zero_le _))).trans f0.ge
       · rw [natDegree_C_mul_X_pow _ _ (leadingCoeff_ne_zero.mpr _)]

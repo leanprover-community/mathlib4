@@ -500,7 +500,7 @@ theorem iIndepSet.indep_generateFrom_of_disjoint [IsMarkovKernel κ] {s : ι →
   refine
     IndepSets.indep'
       (fun t ht => generateFrom_piiUnionInter_le _ ?_ _ _ (measurableSet_generateFrom ht))
-      (fun t ht => generateFrom_piiUnionInter_le _ ?_ _ _ (measurableSet_generateFrom ht)) ?_ ??_ _
+      (fun t ht => generateFrom_piiUnionInter_le _ ?_ _ _ (measurableSet_generateFrom ht)) ?_ ?_ ?_
   · exact fun k => generateFrom_le fun t ht => (Set.mem_singleton_iff.1 ht).symm ▸ hsm k
   · exact fun k => generateFrom_le fun t ht => (Set.mem_singleton_iff.1 ht).symm ▸ hsm k
   · exact isPiSystem_piiUnionInter _ (fun k => IsPiSystem.singleton _) _

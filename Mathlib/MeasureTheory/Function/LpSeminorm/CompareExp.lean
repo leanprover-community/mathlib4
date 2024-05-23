@@ -254,7 +254,7 @@ theorem snorm_le_snorm_mul_snorm_of_nnnorm {p q r : ℝ≥0∞}
     · simp only [hr_top, one_div, Ne, ENNReal.inv_eq_zero, not_false_iff]
   rw [snorm_eq_snorm' hp_zero (hpq.trans_le le_top).ne, snorm_eq_snorm' hq_ne_zero hq_top,
     snorm_eq_snorm' hr_ne_zero hr_top]
-  refine snorm'_le_snorm'_mul_snorm' hf hg _ h ?_ ??_ _
+  refine snorm'_le_snorm'_mul_snorm' hf hg _ h ?_ ?_ ?_
   · exact ENNReal.toReal_pos hp_zero (hpq.trans_le le_top).ne
   · exact ENNReal.toReal_strict_mono hq_top hpq
   rw [← ENNReal.one_toReal, ← ENNReal.toReal_div, ← ENNReal.toReal_div, ← ENNReal.toReal_div, hpqr,

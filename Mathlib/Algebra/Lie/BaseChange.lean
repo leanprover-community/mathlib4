@@ -72,7 +72,7 @@ private theorem bracket_lie_self (x : A ⊗[R] L) : ⁅x, x⁆ = 0 := by
         zero_add, add_zero, add_comm, this]
     refine z₁.induction_on ?_ ?_ ?_
     · simp only [LinearMap.map_zero, add_zero, LinearMap.zero_apply]
-    · intro a₁ l₁; refine z₂.induction_on ?_ ??_ _
+    · intro a₁ l₁; refine z₂.induction_on ?_ ?_ ?_
       · simp only [LinearMap.map_zero, add_zero, LinearMap.zero_apply]
       · intro a₂ l₂
         simp only [← lie_skew l₂ l₁, mul_comm a₁ a₂, TensorProduct.tmul_neg, bracket'_tmul,

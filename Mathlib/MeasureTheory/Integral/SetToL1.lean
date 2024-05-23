@@ -1760,7 +1760,7 @@ theorem tendsto_setToFun_filter_of_dominated_convergence (hT : DominatedFinMeasA
     inter_mem hfs_meas h_bound
   obtain ⟨k, h⟩ := hxl _ h
   rw [← tendsto_add_atTop_iff_nat k]
-  refine tendsto_setToFun_of_dominated_convergence hT bound ?_ bound_integrable ??_ _
+  refine tendsto_setToFun_of_dominated_convergence hT bound ?_ bound_integrable ?_ ?_
   · exact fun n => (h _ (self_le_add_left _ _)).1
   · exact fun n => (h _ (self_le_add_left _ _)).2
   · filter_upwards [h_lim]

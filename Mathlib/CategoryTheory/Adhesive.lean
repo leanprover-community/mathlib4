@@ -90,7 +90,7 @@ theorem IsPushout.isVanKampen_iff (H : IsPushout f g h i) :
     · intro h; exact ⟨h _, h _⟩
   · introv H W' hf hg hh hi w
     refine
-      Iff.trans ?_ ((H w.cocone ⟨by rintro (_ | _ | _); exacts [αW, αX, αY], ?_⟩ αZ ??_ _).trans ?_)
+      Iff.trans ?_ ((H w.cocone ⟨by rintro (_ | _ | _); exacts [αW, αX, αY], ?_⟩ αZ ?_ ?_).trans ?_)
     rotate_left
     · rintro i _ (_ | _ | _)
       · dsimp; simp only [Functor.map_id, Category.comp_id, Category.id_comp]

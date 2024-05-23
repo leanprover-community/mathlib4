@@ -475,7 +475,7 @@ alias set_integral_condexpL1CLM :=
 theorem aestronglyMeasurable'_condexpL1CLM (f : α →₁[μ] F') :
     AEStronglyMeasurable' m (condexpL1CLM F' hm μ f) μ := by
   refine @Lp.induction _ _ _ _ _ _ _ ENNReal.one_ne_top
-    (fun f : α →₁[μ] F' => AEStronglyMeasurable' m (condexpL1CLM F' hm μ f) μ) ?_ ??_ _ f
+    (fun f : α →₁[μ] F' => AEStronglyMeasurable' m (condexpL1CLM F' hm μ f) μ) ?_ ?_ ?_ f
   · intro c s hs hμs
     rw [condexpL1CLM_indicatorConst hs hμs.ne c]
     exact aestronglyMeasurable'_condexpInd hs hμs.ne c

@@ -52,7 +52,7 @@ theorem wilsons_lemma : ((p - 1)! : ZMod p) = -1 := by
         simp_rw [prod_univ_units_id_eq_neg_one, Units.coeHom_apply, Units.val_neg, Units.val_one]
   have hp : 0 < p := (Fact.out (p := p.Prime)).pos
   symm
-  refine prod_bij (fun a _ => (a : ZMod p).val) ?_ ??_ _? _
+  refine prod_bij (fun a _ => (a : ZMod p).val) ?_ ?_ ?_? _
   · intro a ha
     rw [mem_Ico, ← Nat.succ_sub hp, Nat.add_one_sub_one]
     constructor

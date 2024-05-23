@@ -240,7 +240,7 @@ theorem LocallyIntegrable.integrableOn_isCompact {k : Set X} (hf : LocallyIntegr
 compact set. -/
 theorem LocallyIntegrable.integrableOn_nhds_isCompact (hf : LocallyIntegrable f μ) {k : Set X}
     (hk : IsCompact k) : ∃ u, IsOpen u ∧ k ⊆ u ∧ IntegrableOn f u μ := by
-  refine IsCompact.induction_on hk ?_ ??_ ?_ _
+  refine IsCompact.induction_on hk ?_ ?_ ?_ ?_
   · refine' ⟨∅, isOpen_empty, Subset.rfl, integrableOn_empty⟩
   · rintro s t hst ⟨u, u_open, tu, hu⟩
     exact ⟨u, u_open, hst.trans tu, hu⟩

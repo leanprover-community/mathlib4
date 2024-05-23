@@ -1129,7 +1129,7 @@ theorem limsup_lintegral_le {f : ℕ → α → ℝ≥0∞} {g : α → ℝ≥0�
       limsup_eq_iInf_iSup_of_nat
     _ ≤ ⨅ n : ℕ, ∫⁻ a, ⨆ i ≥ n, f i a ∂μ := iInf_mono fun n => iSup₂_lintegral_le _
     _ = ∫⁻ a, ⨅ n : ℕ, ⨆ i ≥ n, f i a ∂μ := by
-      refine (lintegral_iInf ?_ ??_ _).symm
+      refine (lintegral_iInf ?_ ?_ ?_).symm
       · intro n
         exact measurable_biSup _ (to_countable _) (fun i _ ↦ hf_meas i)
       · intro n m hnm a
@@ -1194,7 +1194,7 @@ theorem tendsto_lintegral_filter_of_dominated_convergence {ι} {l : Filter ι}
   replace h := hxl _ h
   rcases h with ⟨k, h⟩
   rw [← tendsto_add_atTop_iff_nat k]
-  refine tendsto_lintegral_of_dominated_convergence ?_ ?_ ??_ ?_ _
+  refine tendsto_lintegral_of_dominated_convergence ?_ ?_ ?_ ?_ ?_
   · exact bound
   · intro
     refine (h _ ?_).1

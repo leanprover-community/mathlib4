@@ -279,7 +279,7 @@ theorem isElementary_of_exists (f : M ↪[L] N)
       φ.Realize (f ∘ default) (f ∘ xs) ↔ φ.Realize default xs by
     intro n φ x
     exact φ.realize_relabel_sum_inr.symm.trans (_root_.trans (h n _ _) φ.realize_relabel_sum_inr)
-  refine fun n φ => φ.recOn ?_ ?_ ???_ _ _
+  refine fun n φ => φ.recOn ?_ ?_ ?_ ?_ ?_
   · exact fun {_} _ => Iff.rfl
   · intros
     simp [BoundedFormula.Realize, ← Sum.comp_elim, Embedding.realize_term]

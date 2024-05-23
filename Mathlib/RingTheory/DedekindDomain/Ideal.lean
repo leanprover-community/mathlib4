@@ -809,7 +809,7 @@ theorem Ideal.exist_integer_multiples_not_mem {J : Ideal A} (hJ : J ≠ ⊤) {ι
     · contrapose! hpI
       -- And if all `a`-multiples of `I` are an element of `J`,
       -- then `a` is actually an element of `J / I`, contradiction.
-      refine (mem_div_iff_of_nonzero hI0).mpr fun y hy => Submodule.span_induction hy ?_ ??_ ?_ _
+      refine (mem_div_iff_of_nonzero hI0).mpr fun y hy => Submodule.span_induction hy ?_ ?_ ?_ ?_
       · rintro _ ⟨i, hi, rfl⟩; exact hpI i hi
       · rw [mul_zero]; exact Submodule.zero_mem _
       · intro x y hx hy; rw [mul_add]; exact Submodule.add_mem _ hx hy

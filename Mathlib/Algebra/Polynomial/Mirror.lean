@@ -100,7 +100,7 @@ theorem coeff_mirror (n : ℕ) :
 --TODO: Extract `Finset.sum_range_rev_at` lemma.
 theorem mirror_eval_one : p.mirror.eval 1 = p.eval 1 := by
   simp_rw [eval_eq_sum_range, one_pow, mul_one, mirror_natDegree]
-  refine Finset.sum_bij_ne_zero ?_ ?_?? _ _ ?_
+  refine Finset.sum_bij_ne_zero ?_ ?_ ?_ ?_ ?_
   · exact fun n _ _ => revAt (p.natDegree + p.natTrailingDegree) n
   · intro n hn hp
     rw [Finset.mem_range_succ_iff] at *

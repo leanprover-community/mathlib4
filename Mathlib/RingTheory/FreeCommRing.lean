@@ -239,7 +239,7 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
   have : ∀ x, IsSupported x s →
         ∃ n : ℤ, lift (fun a => if a ∈ s then (0 : ℤ[X]) else Polynomial.X) x = n := by
     intro x hx
-    refine Subring.InClosure.recOn hx ?_ ?_ ??_ _
+    refine Subring.InClosure.recOn hx ?_ ?_ ?_ ?_
     · use 1
       rw [RingHom.map_one]
       norm_cast

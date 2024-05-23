@@ -80,7 +80,7 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure [NormedAddC
   simp_rw [AddSubgroup.vadd_def, vadd_eq_add, add_comm _ w, ← sub_eq_sub_iff_add_eq_add, ←
     AddSubgroup.coe_sub] at hvw
   rw [← hvw, ← inv_smul_smul₀ (two_ne_zero' ℝ) (_ - _), smul_sub, sub_eq_add_neg, smul_add]
-  refine h_conv hw (h_symm _ hv) ?_ ??_ _ <;> norm_num
+  refine h_conv hw (h_symm _ hv) ?_ ?_ ?_ <;> norm_num
 #align measure_theory.exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure MeasureTheory.exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
 
 /-- The **Minkowski Convex Body Theorem for compact domain**. If `s` is a convex compact symmetric

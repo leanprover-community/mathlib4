@@ -968,7 +968,7 @@ def lintegral {_m : MeasurableSpace α} (f : α →ₛ ℝ≥0∞) (μ : Measure
 theorem lintegral_eq_of_subset (f : α →ₛ ℝ≥0∞) {s : Finset ℝ≥0∞}
     (hs : ∀ x, f x ≠ 0 → μ (f ⁻¹' {f x}) ≠ 0 → f x ∈ s) :
     f.lintegral μ = ∑ x in s, x * μ (f ⁻¹' {x}) := by
-  refine Finset.sum_bij_ne_zero (fun r _ _ => r) ?_ ??_ _ ?_
+  refine Finset.sum_bij_ne_zero (fun r _ _ => r) ?_ ?_ ?_ ?_
   · simpa only [forall_mem_range, mul_ne_zero_iff, and_imp]
   · intros
     assumption

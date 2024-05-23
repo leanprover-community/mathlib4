@@ -216,7 +216,7 @@ theorem extremePoints_pi (s : ∀ i, Set (π i)) :
   simp only [mem_extremePoints, mem_pi, mem_univ, true_imp_iff, @forall_and ι]
   refine and_congr_right fun hx ↦ ⟨fun h i ↦ ?_, fun h ↦? _⟩
   · rintro x₁ hx₁ x₂ hx₂ hi
-    refine (h (update x i x₁) ?_ (update x i x₂) ??_ _).imp (fun h₁ ↦ by rw [← h₁, update_same])
+    refine (h (update x i x₁) ?_ (update x i x₂) ?_ ?_).imp (fun h₁ ↦ by rw [← h₁, update_same])
         fun h₂ ↦ by rw [← h₂, update_same]
     iterate 2
       rintro j

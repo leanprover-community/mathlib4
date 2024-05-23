@@ -2771,7 +2771,7 @@ theorem tr_supports {S} (ss : TM2.Supports M S) : TM1.Supports (tr M) (trSupp M 
         this _ (ss.2 l lS) fun x hx ↦ Finset.mem_biUnion.2 ⟨_, lS, Finset.mem_insert_of_mem hx⟩
       rcases Finset.mem_insert.1 h with (rfl | h) <;> [exact this.1; exact this.2 _ h]
     clear h l'
-    refine stmtStRec ?_ ??_ ?_ _? _
+    refine stmtStRec ?_ ?_ ?_ ?_ ?_
     · intro _ s _ IH ss' sub -- stack op
       rw [TM2to1.supports_run] at ss'
       simp only [TM2to1.trStmts₁_run, Finset.mem_union, Finset.mem_insert, Finset.mem_singleton]
