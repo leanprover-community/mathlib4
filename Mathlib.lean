@@ -32,15 +32,15 @@ import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.BigOperators.Group.List
+import Mathlib.Algebra.BigOperators.Group.Multiset
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Module
-import Mathlib.Algebra.BigOperators.Multiset.Basic
-import Mathlib.Algebra.BigOperators.Multiset.Lemmas
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
 import Mathlib.Algebra.BigOperators.Option
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.Ring.List
+import Mathlib.Algebra.BigOperators.Ring.Multiset
 import Mathlib.Algebra.BigOperators.RingEquiv
 import Mathlib.Algebra.BigOperators.WithTop
 import Mathlib.Algebra.Bounds
@@ -264,6 +264,7 @@ import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.GroupWithZero.Pi
+import Mathlib.Algebra.GroupWithZero.Prod
 import Mathlib.Algebra.GroupWithZero.Semiconj
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Equiv
@@ -364,6 +365,7 @@ import Mathlib.Algebra.Lie.Quotient
 import Mathlib.Algebra.Lie.Rank
 import Mathlib.Algebra.Lie.Semisimple
 import Mathlib.Algebra.Lie.SkewAdjoint
+import Mathlib.Algebra.Lie.Sl2
 import Mathlib.Algebra.Lie.Solvable
 import Mathlib.Algebra.Lie.Subalgebra
 import Mathlib.Algebra.Lie.Submodule
@@ -2944,6 +2946,7 @@ import Mathlib.MeasureTheory.Measure.Complex
 import Mathlib.MeasureTheory.Measure.Content
 import Mathlib.MeasureTheory.Measure.Count
 import Mathlib.MeasureTheory.Measure.Dirac
+import Mathlib.MeasureTheory.Measure.DiracProba
 import Mathlib.MeasureTheory.Measure.Doubling
 import Mathlib.MeasureTheory.Measure.EverywherePos
 import Mathlib.MeasureTheory.Measure.FiniteMeasure
@@ -3662,6 +3665,7 @@ import Mathlib.Tactic.Attr.Core
 import Mathlib.Tactic.Attr.Register
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ByContra
+import Mathlib.Tactic.CC
 import Mathlib.Tactic.CC.Addition
 import Mathlib.Tactic.CC.Datatypes
 import Mathlib.Tactic.CC.Lemmas

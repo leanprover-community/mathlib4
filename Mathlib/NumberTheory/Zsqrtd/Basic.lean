@@ -778,7 +778,7 @@ theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
     | ⟨Int.ofNat x, -[y+1]⟩ => ⟨0, y + 1, by simp [add_def, Int.negSucc_coe, add_assoc]; trivial⟩
     | ⟨-[x+1], Int.ofNat y⟩ => ⟨x + 1, 0, by simp [Int.negSucc_coe, add_assoc]; trivial⟩
     | ⟨-[x+1], -[y+1]⟩ => ⟨x + 1, y + 1, by simp [Int.negSucc_coe, add_assoc]; trivial⟩
-  refine' ⟨x + d * y, h.trans _⟩
+  refine ⟨x + d * y, h.trans ?_⟩
   change Nonneg ⟨↑x + d * y - ↑x, 0 - ↑y⟩
   cases' y with y
   · simp

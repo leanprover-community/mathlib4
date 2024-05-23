@@ -553,12 +553,12 @@ noncomputable instance instSupSet : SupSet (Seminorm 𝕜 E) where
           · simp [Real.iSup_of_isEmpty]
           haveI : Nonempty ↑s := h.coe_sort
           simp only [iSup_apply]
-          refine' ciSup_le fun i =>
+          refine ciSup_le fun i =>
             ((i : Seminorm 𝕜 E).add_le' x y).trans <| add_le_add
               -- Porting note: `f` is provided to force `Subtype.val` to appear.
               -- A type ascription on `_` would have also worked, but would have been more verbose.
-              (le_ciSup (f := fun i => (Subtype.val i : Seminorm 𝕜 E).toFun x) ⟨q x, _⟩ i)
-              (le_ciSup (f := fun i => (Subtype.val i : Seminorm 𝕜 E).toFun y) ⟨q y, _⟩ i)
+              (le_ciSup (f := fun i => (Subtype.val i : Seminorm 𝕜 E).toFun x) ⟨q x, ?_⟩ i)
+              (le_ciSup (f := fun i => (Subtype.val i : Seminorm 𝕜 E).toFun y) ⟨q y, ?_⟩ i)
           <;> rw [mem_upperBounds, forall_mem_range]
           <;> exact fun j => hq (mem_image_of_mem _ j.2) _
         neg' := fun x => by

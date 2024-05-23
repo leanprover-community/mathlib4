@@ -440,7 +440,7 @@ theorem infsep_eq_iInf [Decidable s.Nontrivial] :
     s.infsep = if s.Nontrivial then ⨅ d : s.offDiag, (uncurry dist) (d : α × α) else 0 := by
   split_ifs with hs
   · have hb : BddBelow (uncurry dist '' s.offDiag) := by
-      refine' ⟨0, fun d h => _⟩
+      refine ⟨0, fun d h => ?_⟩
       simp_rw [mem_image, Prod.exists, uncurry_apply_pair] at h
       rcases h with ⟨_, _, _, rfl⟩
       exact dist_nonneg
