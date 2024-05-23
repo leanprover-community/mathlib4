@@ -158,7 +158,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff_aux {f : PartialHomeomorph M 
     have hc' : ContMDiffOn I I ⊤ c'.symm _ := contMDiffOn_chart_symm
     have he'' : ContMDiffOn I I ⊤ e _ := contMDiffOn_of_mem_contDiffGroupoid he
     have hc : ContMDiffOn I I ⊤ c _ := contMDiffOn_chart
-    refine' (hc'.comp' (he''.comp' hc)).mono _
+    refine (hc'.comp' (he''.comp' hc)).mono ?_
     dsimp [s]
     mfld_set_tac
   have H₂ : EqOn f (c'.symm ∘ e ∘ c) s := by
@@ -171,7 +171,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff_aux {f : PartialHomeomorph M 
       f y = c'.symm (c' (f y)) := by rw [c'.left_inv hy₁]
       _ = c'.symm (c' (f (c.symm (c y)))) := by rw [c.left_inv hy₂]
       _ = c'.symm (e (c y)) := by rw [← he' hy₃]; rfl
-  refine' (H₁.congr H₂).mono _
+  refine (H₁.congr H₂).mono ?_
   mfld_set_tac
 #align is_local_structomorph_on_cont_diff_groupoid_iff_aux isLocalStructomorphOn_contDiffGroupoid_iff_aux
 
@@ -192,7 +192,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : PartialHomeomorph M M') 
     let c := chartAt H x
     let c' := chartAt H X
     obtain ⟨-, hxf⟩ := h x hx
-    refine' ⟨(f.symm.continuousAt hX).continuousWithinAt, fun h2x => _⟩
+    refine ⟨(f.symm.continuousAt hX).continuousWithinAt, fun h2x => ?_⟩
     obtain ⟨e, he, h2e, hef, hex⟩ :
       ∃ e : PartialHomeomorph H H,
         e ∈ contDiffGroupoid ⊤ I ∧
@@ -223,7 +223,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : PartialHomeomorph M M') 
         exact PartialHomeomorph.mapsTo _ (h2e <| e.symm.mapsTo hx)
       rw [inter_self] at h1
       rwa [inter_eq_right.mpr]
-      refine' h2.trans _
+      refine h2.trans ?_
       mfld_set_tac
     refine' ⟨e.symm, StructureGroupoid.symm _ he, h3e, _⟩
     rw [h2X]; exact e.mapsTo hex
@@ -232,7 +232,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : PartialHomeomorph M M') 
     -- `((chart_at H x).symm.trans f).trans (chart_at H (f x))` as a candidate for a structomorphism
     -- of `H`.
     rintro ⟨h₁, h₂⟩ x hx
-    refine' ⟨(h₁ x hx).continuousWithinAt, _⟩
+    refine ⟨(h₁ x hx).continuousWithinAt, ?_⟩
     let c := chartAt H x
     let c' := chartAt H (f x)
     rintro (hx' : c x ∈ c.symm ⁻¹' f.source)

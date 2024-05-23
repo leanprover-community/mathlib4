@@ -113,7 +113,7 @@ theorem MonoidHom.map_cyclic {G : Type*} [Group G] [h : IsCyclic G] (σ : G →*
     ∃ m : ℤ, ∀ g : G, σ g = g ^ m := by
   obtain ⟨h, hG⟩ := IsCyclic.exists_generator (α := G)
   obtain ⟨m, hm⟩ := hG (σ h)
-  refine' ⟨m, fun g => _⟩
+  refine ⟨m, fun g => ?_⟩
   obtain ⟨n, rfl⟩ := hG g
   rw [MonoidHom.map_zpow, ← hm, ← zpow_mul, ← zpow_mul']
 #align monoid_hom.map_cyclic MonoidHom.map_cyclic
@@ -203,7 +203,7 @@ theorem Infinite.orderOf_eq_zero_of_forall_mem_zpowers [Infinite α] {g : α}
     (h : ∀ x, x ∈ zpowers g) : orderOf g = 0 := by
   classical
     rw [orderOf_eq_zero_iff']
-    refine' fun n hn hgn => _
+    refine fun n hn hgn => ?_
     have ho := isOfFinOrder_iff_pow_eq_one.mpr ⟨n, hn, hgn⟩
     obtain ⟨x, hx⟩ :=
       Infinite.exists_not_mem_finset
@@ -216,7 +216,7 @@ theorem Infinite.orderOf_eq_zero_of_forall_mem_zpowers [Infinite α] {g : α}
     · exact ⟨k, mod_cast hk⟩
     rw [← zpow_mod_orderOf] at hk
     have : 0 ≤ (-k % orderOf g : ℤ) := Int.emod_nonneg (-k) (mod_cast ho.orderOf_pos.ne')
-    refine' ⟨(-k % orderOf g : ℤ).toNat, _⟩
+    refine ⟨(-k % orderOf g : ℤ).toNat, ?_⟩
     rwa [← zpow_natCast, Int.toNat_of_nonneg this]
 #align infinite.order_of_eq_zero_of_forall_mem_zpowers Infinite.orderOf_eq_zero_of_forall_mem_zpowers
 #align infinite.add_order_of_eq_zero_of_forall_mem_zmultiples Infinite.addOrderOf_eq_zero_of_forall_mem_zmultiples
@@ -588,7 +588,7 @@ instance (priority := 100) isCyclic : IsCyclic α := by
   cases' subsingleton_or_nontrivial α with hi hi <;> haveI := hi
   · apply isCyclic_of_subsingleton
   · obtain ⟨g, hg⟩ := exists_ne (1 : α)
-    refine' ⟨⟨g, fun x => _⟩⟩
+    refine ⟨⟨g, fun x => ?_⟩⟩
     cases' IsSimpleOrder.eq_bot_or_eq_top (Subgroup.zpowers g) with hb ht
     · exfalso
       apply hg

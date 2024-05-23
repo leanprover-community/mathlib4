@@ -241,7 +241,7 @@ theorem C_injective (σ : Type*) (R : Type*) [CommSemiring R] :
 
 theorem C_surjective {R : Type*} [CommSemiring R] (σ : Type*) [IsEmpty σ] :
     Function.Surjective (C : R → MvPolynomial σ R) := by
-  refine' fun p => ⟨p.toFun 0, Finsupp.ext fun a => _⟩
+  refine fun p => ⟨p.toFun 0, Finsupp.ext fun a => ?_⟩
   simp only [C_apply, ← single_eq_monomial, (Finsupp.ext isEmptyElim (α := σ) : a = 0),
     single_eq_same]
   rfl

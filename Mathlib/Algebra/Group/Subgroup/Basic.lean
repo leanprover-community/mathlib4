@@ -1131,7 +1131,7 @@ theorem closure_induction' {p : ∀ x, x ∈ closure k → Prop}
     (mem : ∀ (x) (h : x ∈ k), p x (subset_closure h)) (one : p 1 (one_mem _))
     (mul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
     (inv : ∀ x hx, p x hx → p x⁻¹ (inv_mem hx)) {x} (hx : x ∈ closure k) : p x hx := by
-  refine' Exists.elim _ fun (hx : x ∈ closure k) (hc : p x hx) => hc
+  refine Exists.elim ?_ fun (hx : x ∈ closure k) (hc : p x hx) => hc
   exact
     closure_induction hx (fun x hx => ⟨_, mem x hx⟩) ⟨_, one⟩
       (fun x y ⟨hx', hx⟩ ⟨hy', hy⟩ => ⟨_, mul _ _ _ _ hx hy⟩) fun x ⟨hx', hx⟩ => ⟨_, inv _ _ hx⟩

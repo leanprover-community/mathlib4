@@ -345,7 +345,7 @@ theorem exists_mem_support_of_mem_support_prod {l : List (Perm α)} {x : α}
   · rw [List.prod_cons, mul_apply, ih, hx]
     · simp only [List.find?, List.mem_cons, true_or]
     intros f' hf'
-    refine' hx f' _
+    refine hx f' ?_
     simp only [List.find?, List.mem_cons]
     exact Or.inr hf'
 #align equiv.perm.exists_mem_support_of_mem_support_prod Equiv.Perm.exists_mem_support_of_mem_support_prod
@@ -555,7 +555,7 @@ theorem support_extend_domain (f : α ≃ Subtype p) {g : Perm α} :
   · rw [extendDomain_apply_subtype _ _ pb]
     constructor
     · rintro h
-      refine' ⟨f.symm ⟨b, pb⟩, _, by simp⟩
+      refine ⟨f.symm ⟨b, pb⟩, ?_, by simp⟩
       contrapose! h
       simp [h]
     · rintro ⟨a, ha, hb⟩
@@ -626,7 +626,7 @@ theorem card_support_eq_two {f : Perm α} : f.support.card = 2 ↔ IsSwap f := b
   · obtain ⟨x, t, hmem, hins, ht⟩ := card_eq_succ.1 h
     obtain ⟨y, rfl⟩ := card_eq_one.1 ht
     rw [mem_singleton] at hmem
-    refine' ⟨x, y, hmem, _⟩
+    refine ⟨x, y, hmem, ?_⟩
     ext a
     have key : ∀ b, f b ≠ b ↔ _ := fun b => by rw [← mem_support, ← hins, mem_insert, mem_singleton]
     by_cases ha : f a = a
@@ -701,8 +701,7 @@ variable {α : Type*} [Fintype α] [DecidableEq α] {σ τ : Perm α}
 theorem support_conj : (σ * τ * σ⁻¹).support = τ.support.map σ.toEmbedding := by
   ext
   simp only [mem_map_equiv, Perm.coe_mul, Function.comp_apply, Ne, Perm.mem_support,
-    Equiv.eq_symm_apply]
-  rfl
+    Equiv.eq_symm_apply, inv_def]
 #align equiv.perm.support_conj Equiv.Perm.support_conj
 
 theorem card_support_conj : (σ * τ * σ⁻¹).support.card = τ.support.card := by simp
