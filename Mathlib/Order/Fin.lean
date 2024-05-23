@@ -9,7 +9,7 @@ import Mathlib.Order.Hom.Set
 #align_import data.fin.basic from "leanprover-community/mathlib"@"3a2b5524a138b5d0b818b858b516d4ac8a484b03"
 
 /-!
-# `Fin n` forms a ounded linear order
+# `Fin n` forms a bounded linear order
 
 This file contains the linear ordered instance on `Fin n`.
 
