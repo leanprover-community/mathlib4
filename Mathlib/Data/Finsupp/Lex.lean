@@ -116,15 +116,15 @@ section Left
 
 variable [AddLeftStrictMono N]
 
-instance Lex.covariantClass_lt_left :
+instance Lex.addLeftStrictMono :
     AddLeftStrictMono (Lex (α →₀ N)) :=
   ⟨fun _ _ _ ⟨a, lta, ha⟩ ↦ ⟨a, fun j ja ↦ congr_arg _ (lta j ja), add_lt_add_left ha _⟩⟩
-#align finsupp.lex.covariant_class_lt_left Finsupp.Lex.covariantClass_lt_left
+#align finsupp.lex.covariant_class_lt_left Finsupp.Lex.addLeftStrictMono
 
-instance Lex.covariantClass_le_left :
+instance Lex.addLeftMono :
     AddLeftMono (Lex (α →₀ N)) :=
-  covariantClass_le_of_lt _ _ _
-#align finsupp.lex.covariant_class_le_left Finsupp.Lex.covariantClass_le_left
+  addLeftMono_of_addLeftStrictMono _
+#align finsupp.lex.covariant_class_le_left Finsupp.Lex.addLeftMono
 
 end Left
 
@@ -132,16 +132,16 @@ section Right
 
 variable [AddRightStrictMono N]
 
-instance Lex.covariantClass_lt_right :
+instance Lex.addRightStrictMono :
     AddRightStrictMono (Lex (α →₀ N)) :=
   ⟨fun f _ _ ⟨a, lta, ha⟩ ↦
     ⟨a, fun j ja ↦ congr_arg (· + ofLex f j) (lta j ja), add_lt_add_right ha _⟩⟩
-#align finsupp.lex.covariant_class_lt_right Finsupp.Lex.covariantClass_lt_right
+#align finsupp.lex.covariant_class_lt_right Finsupp.Lex.addRightStrictMono
 
-instance Lex.covariantClass_le_right :
+instance Lex.addRightMono :
     AddRightMono (Lex (α →₀ N)) :=
-  covariantClass_le_of_lt _ _ _
-#align finsupp.lex.covariant_class_le_right Finsupp.Lex.covariantClass_le_right
+  addRightMono_of_addRightStrictMono _
+#align finsupp.lex.covariant_class_le_right Finsupp.Lex.addRightMono
 
 end Right
 

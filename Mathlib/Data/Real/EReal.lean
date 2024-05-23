@@ -1331,7 +1331,7 @@ instance : CommMonoidWithZero EReal :=
       simp only [mul_assoc, abs_mul, eq_self_iff_true, sign_mul, and_self_iff]
     mul_comm := EReal.mul_comm }
 
-instance : PosMulMono EReal := posMulMono_iff_covariant_pos.2 <| .mk <| by
+instance : PosMulMono EReal := posMulMono_iff_covariant_pos.2 <| by
   rintro ⟨x, x0⟩ a b h
   simp only [le_iff_sign, EReal.sign_mul, sign_pos x0, one_mul, EReal.abs_mul] at h ⊢
   exact h.imp_right <| Or.imp (And.imp_right <| And.imp_right (mul_le_mul_left' · _)) <|
