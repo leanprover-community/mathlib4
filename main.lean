@@ -32,18 +32,17 @@ theorem isProjectiveMeasureFamily_prod {ι : Type*} {α : ι → Type*} [∀ i, 
   rw [Measure.map_apply (measurable_proj₂' (α := α) T S hST) (MeasurableSet.univ_pi ms),
     preimage_proj S T hST, Measure.pi_pi]
   have h1 : (@Finset.univ T _).prod (fun n ↦ (m n) (if hn : n.1 ∈ S then s ⟨n.1, hn⟩ else univ)) =
-      (@Finset.univ T.toSet _).prod (fun n ↦ (fun k : ι ↦ if k ∈ T then (m k)
-        (if hk' : k ∈ S then s ⟨k, hk'⟩ else univ) else 1) n) := Finset.prod_congr rfl (by simp)
+      (@Finset.univ T.toSet _).prod
+      (fun n ↦ (fun k ↦ (m k) (if hk : k ∈ S then s ⟨k, hk⟩ else univ)) n) :=
+    Finset.prod_congr rfl (by simp)
   have h2 : (@Finset.univ S _).prod (fun n ↦ (m n) (s n)) =
-      (@Finset.univ S.toSet _).prod (fun n ↦ (fun k : ι ↦ if k ∈ T then (m k)
-        (if hk' : k ∈ S then s ⟨k, hk'⟩ else univ) else 1) n) := by
-    apply Finset.prod_congr rfl
-    simp only [univ_eq_attach, mem_attach, coe_mem, ↓reduceDite, true_implies, Subtype.forall]
-    exact fun a ha ↦ by simp [hST ha]
-  rw [h1, h2, Finset.prod_set_coe (f := fun k : ι ↦ if k ∈ T then (m k)
-      (if hk' : k ∈ S then s ⟨k, hk'⟩ else univ) else 1),
-    Finset.prod_set_coe (f := fun k : ι ↦ if k ∈ T then (m k)
-      (if hk' : k ∈ S then s ⟨k, hk'⟩ else univ) else 1),
+      (@Finset.univ S.toSet _).prod
+      (fun n ↦ (fun k ↦ (m k) (if hk : k ∈ S then s ⟨k, hk⟩ else univ)) n) :=
+    Finset.prod_congr rfl (by simp)
+  rw [h1, h2, Finset.prod_set_coe
+      (f := fun n ↦ (fun k ↦ (m k) (if hk : k ∈ S then s ⟨k, hk⟩ else univ)) n),
+    Finset.prod_set_coe
+      (f := fun n ↦ (fun k ↦ (m k) (if hk : k ∈ S then s ⟨k, hk⟩ else univ)) n),
     Finset.toFinset_coe, Finset.toFinset_coe,
     Finset.prod_subset hST (fun _ h h' ↦ by simp [h, h'])]
 
