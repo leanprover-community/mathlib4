@@ -32,8 +32,7 @@ instance {α : Type*} [Mul α] [Preorder α] [CovariantClass α α (· * ·) (·
     PosMulStrictMono (WithZero α) where
   elim := @fun
     | ⟨(x : α), hx⟩, 0, (b : α), _ => by
-        rw [mul_zero]
-        exact WithZero.zero_lt_coe _
+        simpa only [mul_zero] using WithZero.zero_lt_coe _
     | ⟨(x : α), hx⟩, (a : α), (b : α), h => by
         dsimp only
         norm_cast at h ⊢
