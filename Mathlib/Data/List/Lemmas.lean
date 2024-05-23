@@ -36,7 +36,7 @@ theorem injOn_insertNth_index_of_not_mem (l : List α) (x : α) (hx : x ∉ l) :
     · simp [Ne.symm hx.left] at h
     · simp only [true_and_iff, eq_self_iff_true, insertNth_succ_cons] at h
       rw [Nat.succ_inj']
-      refine' IH hx.right _ _ (by injection h)
+      refine IH hx.right ?_ ?_ (by injection h)
       · simpa [Nat.succ_le_succ_iff] using hn
       · simpa [Nat.succ_le_succ_iff] using hm
 #align list.inj_on_insert_nth_index_of_not_mem List.injOn_insertNth_index_of_not_mem

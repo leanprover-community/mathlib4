@@ -794,7 +794,7 @@ theorem eq_bot_of_rank_eq_zero [NoZeroDivisors R] (b : Basis ι R M) (N : Submod
   rw [Submodule.eq_bot_iff]
   intro x hx
   contrapose! rank_eq with x_ne
-  refine' ⟨1, fun _ => ⟨x, hx⟩, _, one_ne_zero⟩
+  refine ⟨1, fun _ => ⟨x, hx⟩, ?_, one_ne_zero⟩
   rw [Fintype.linearIndependent_iff]
   rintro g sum_eq i
   cases' i with _ hi
@@ -833,7 +833,7 @@ theorem basis_singleton_iff {R M : Type*} [Ring R] [Nontrivial R] [AddCommGroup 
     Nonempty (Basis ι R M) ↔ ∃ x ≠ 0, ∀ y : M, ∃ r : R, r • x = y := by
   constructor
   · rintro ⟨b⟩
-    refine' ⟨b default, b.linearIndependent.ne_zero _, _⟩
+    refine ⟨b default, b.linearIndependent.ne_zero _, ?_⟩
     simpa [span_singleton_eq_top_iff, Set.range_unique] using b.span_eq
   · rintro ⟨x, nz, w⟩
     refine ⟨ofRepr <| LinearEquiv.symm
@@ -846,7 +846,7 @@ theorem basis_singleton_iff {R M : Type*} [Ring R] [Nontrivial R] [AddCommGroup 
     · simp [Finsupp.add_apply, add_smul]
     · simp only [Finsupp.coe_smul, Pi.smul_apply, RingHom.id_apply]
       rw [← smul_assoc]
-    · refine' smul_left_injective _ nz _
+    · refine smul_left_injective _ nz ?_
       simp only [Finsupp.single_eq_same]
       exact (w (f default • x)).choose_spec
     · simp only [Finsupp.single_eq_same]
@@ -1051,7 +1051,7 @@ theorem sum_repr_mul_repr {ι'} [Fintype ι'] (b' : Basis ι' R M) (x : M) (i : 
     (∑ j : ι', b.repr (b' j) i * b'.repr x j) = b.repr x i := by
   conv_rhs => rw [← b'.sum_repr x]
   simp_rw [map_sum, map_smul, Finset.sum_apply']
-  refine' Finset.sum_congr rfl fun j _ => _
+  refine Finset.sum_congr rfl fun j _ => ?_
   rw [Finsupp.smul_apply, smul_eq_mul, mul_comm]
 #align basis.sum_repr_mul_repr Basis.sum_repr_mul_repr
 
@@ -1090,7 +1090,7 @@ theorem maximal [Nontrivial R] (b : Basis ι R M) : b.linearIndependent.Maximal 
   change ((b.repr x).sum fun (i : ι) (a : R) ↦ a • (u i : M)) = ((⟨x, p⟩ : w) : M) at e
   rw [← Finsupp.sum_embDomain (f := u) (g := fun x r ↦ r • (x : M)), ← Finsupp.total_apply] at e
   -- Now we can contradict the linear independence of `hi`
-  refine' hi.total_ne_of_not_mem_support _ _ e
+  refine hi.total_ne_of_not_mem_support _ ?_ e
   simp only [Finset.mem_map, Finsupp.support_embDomain]
   rintro ⟨j, -, W⟩
   simp only [u, Embedding.coeFn_mk, Subtype.mk_eq_mk] at W

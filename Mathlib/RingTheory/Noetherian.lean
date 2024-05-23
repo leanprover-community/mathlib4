@@ -396,8 +396,8 @@ the module is Noetherian. -/
 theorem LinearIndependent.finite_of_isNoetherian [Nontrivial R] {ι} {v : ι → M}
     (hv : LinearIndependent R v) : Finite ι := by
   have hwf := isNoetherian_iff_wellFounded.mp (by infer_instance : IsNoetherian R M)
-  refine' CompleteLattice.WellFounded.finite_of_independent hwf hv.independent_span_singleton
-    fun i contra => _
+  refine CompleteLattice.WellFounded.finite_of_independent hwf hv.independent_span_singleton
+    fun i contra => ?_
   apply hv.ne_zero i
   have : v i ∈ R ∙ v i := Submodule.mem_span_singleton_self (v i)
   rwa [contra, Submodule.mem_bot] at this
@@ -586,7 +586,7 @@ theorem isNoetherian_of_fg_of_noetherian {R M} [Ring R] [AddCommGroup M] [Module
     change (∑ i in s.attach, l i • (i : M)) = n
     rw [s.sum_attach fun i ↦ l i • i, ← hl2,
       Finsupp.total_apply, Finsupp.sum, eq_comm]
-    refine' Finset.sum_subset hl1 fun x _ hx => _
+    refine Finset.sum_subset hl1 fun x _ hx => ?_
     rw [Finsupp.not_mem_support_iff.1 hx, zero_smul]
 #align is_noetherian_of_fg_of_noetherian isNoetherian_of_fg_of_noetherian
 
