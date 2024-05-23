@@ -50,13 +50,14 @@ theorem coeFn_nonneg (f : Lp E p μ) : 0 ≤ᵐ[μ] f ↔ 0 ≤ f := by
   · rwa [← h2]
 #align measure_theory.Lp.coe_fn_nonneg MeasureTheory.Lp.coeFn_nonneg
 
-instance instCovariantClassLE : AddLeftMono (Lp E p μ) := by
+instance instAddLeftMono : AddLeftMono (Lp E p μ) := by
   refine ⟨fun f g₁ g₂ hg₁₂ => ?_⟩
+  dsimp at hg₁₂ ⊢
   rw [← coeFn_le] at hg₁₂ ⊢
   filter_upwards [coeFn_add f g₁, coeFn_add f g₂, hg₁₂] with _ h1 h2 h3
   rw [h1, h2, Pi.add_apply, Pi.add_apply]
   exact add_le_add le_rfl h3
-#align measure_theory.Lp.has_le.le.covariant_class MeasureTheory.Lp.instCovariantClassLE
+#align measure_theory.Lp.has_le.le.covariant_class MeasureTheory.Lp.instAddLeftMono
 
 instance instOrderedAddCommGroup : OrderedAddCommGroup (Lp E p μ) :=
   { Subtype.partialOrder _, AddSubgroup.toAddCommGroup _ with
