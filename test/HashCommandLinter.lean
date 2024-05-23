@@ -8,6 +8,12 @@ theorem fo₁ : True := .intro
 -- `#align` is allowed by the linter
 #align true fo₁
 
+-- `#guard_msgs in` without a doc-string triggers the linter, but with the `doc-string does not
+/--
+warning: `#`-commands, such as '#guard_msgs', are not allowed in 'Mathlib'
+note: this linter can be disabled with `set_option linter.hashCommand false`
+-/
+#guard_msgs in
 #guard_msgs in
 #adaptation_note /-- testing that the hashCommand linter ignores this. -/
 

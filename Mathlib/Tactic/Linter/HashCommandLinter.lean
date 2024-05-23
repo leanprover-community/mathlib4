@@ -57,8 +57,7 @@ private partial def withSetOptionIn' (cmd : CommandElab) : CommandElab := fun st
 
 /-- `allowed_commands` is the `HashSet` of `#`-commands that are allowed in 'Mathlib'. -/
 private abbrev allowed_commands : HashSet String :=
-  { "#align", "#align_import", "#noalign", "#adaptation_note",
-    "#guard_msgs", "#guard", "#guard_expr" }
+  { "#align", "#align_import", "#noalign", "#adaptation_note" }
 
 /-- Checks that no command beginning with `#` is present in 'Mathlib',
 except for the ones in `allowed_commands`.
@@ -69,8 +68,12 @@ This means that CI will eventually fail on `#`-commands, but not stop it from co
 However, in order to avoid local clutter, when `warningAsError` is `false`, the linter
 logs a warning only for the `#`-commands that do not already emit a message. -/
 def hashCommandLinter : Linter where run := withSetOptionIn' fun stx => do
+  let mod := (← getMainModule).components
   if getLinterHash (← getOptions) &&
-    ((← get).messages.msgs.size == 0 || warningAsError.get (← getOptions)) then
+    ((← get).messages.msgs.size == 0 || warningAsError.get (← getOptions)) &&
+    -- we check that the module is either not in `test` or, is `test.HashCommandLinter`
+    (mod.getD 0 default != `test || (mod == [`test, `HashCommandLinter]))
+    then
     match stx.getHead? with
     | some sa =>
       let a := sa.getAtomVal
