@@ -50,7 +50,7 @@ example : x < x + 1 := exact?%
 /-- info: Try this: exact p -/
 #guard_msgs in
 example (P : Prop) (p : P) : P := by apply?
-/-- info: Try this: exact (np p).elim -/
+/-- info: Try this: exact False.elim (np p) -/
 #guard_msgs in
 example (P : Prop) (p : P) (np : ¬P) : false := by apply?
 /-- info: Try this: exact h x rfl -/
@@ -76,7 +76,7 @@ by apply?
 example (n m k : ℕ) : n * (m - k) = n * m - n * k :=
 by apply?
 
-/-- info: Try this: exact (Nat.mul_sub_left_distrib n m k).symm -/
+/-- info: Try this: exact Eq.symm (Nat.mul_sub_left_distrib n m k) -/
 #guard_msgs in
 example (n m k : ℕ) : n * m - n * k = n * (m - k) :=
 by apply?

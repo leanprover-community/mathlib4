@@ -119,9 +119,9 @@ theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (
         Fin.insertNth_zero']
       refine' Fin.cases (Fin.cons_zero _ _) (fun i => _) x
       · simp only [Fin.cons_succ, mul_left_inj, inv_inj, Fin.castSucc_fin_succ] -/
-    · dsimp [actionDiagonalSucc]
-      erw [hn (fun (j : Fin (n + 1)) => f j.succ)]
-      exact Fin.cases rfl (fun i => rfl) x
+    dsimp [actionDiagonalSucc]
+    erw [hn (fun (j : Fin (n + 1)) => f j.succ)]
+    exact Fin.cases rfl (fun i => rfl) x
 set_option linter.uppercaseLean3 false in
 #align group_cohomology.resolution.Action_diagonal_succ_hom_apply groupCohomology.resolution.actionDiagonalSucc_hom_apply
 
@@ -237,7 +237,7 @@ theorem diagonalSucc_inv_single_left (g : G) (f : Gⁿ →₀ k) (r : k) :
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [diagonalSucc_inv_single_single]
     rw [sum_single_index, mul_comm]
-    · rw [zero_mul, single_zero]
+    rw [zero_mul, single_zero]
 #align group_cohomology.resolution.diagonal_succ_inv_single_left groupCohomology.resolution.diagonalSucc_inv_single_left
 
 theorem diagonalSucc_inv_single_right (g : G →₀ k) (f : Gⁿ) (r : k) :
@@ -258,7 +258,7 @@ theorem diagonalSucc_inv_single_right (g : G →₀ k) (f : Gⁿ) (r : k) :
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [diagonalSucc_inv_single_single]
     rw [sum_single_index]
-    · rw [zero_mul, single_zero]
+    rw [zero_mul, single_zero]
 #align group_cohomology.resolution.diagonal_succ_inv_single_right groupCohomology.resolution.diagonalSucc_inv_single_right
 
 end Rep
@@ -413,8 +413,8 @@ end Rep
 variable (G)
 
 /-- The simplicial `G`-set sending `[n]` to `Gⁿ⁺¹` equipped with the diagonal action of `G`. -/
-def classifyingSpaceUniversalCover [Monoid G] : SimplicialObject (Action (Type u) <| MonCat.of G)
-    where
+def classifyingSpaceUniversalCover [Monoid G] :
+    SimplicialObject (Action (Type u) <| MonCat.of G) where
   obj n := Action.ofMulAction G (Fin (n.unop.len + 1) → G)
   map f :=
     { hom := fun x => x ∘ f.unop.toOrderHom
@@ -650,7 +650,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem d_comp_ε : (groupCohomology.resolution k G).d 1 0 ≫ ε k G = 0 := by
   ext : 1
-  refine' LinearMap.ext fun x => _
+  refine LinearMap.ext fun x => ?_
   have : (forget₂ToModuleCat k G).d 1 0
       ≫ (forget₂ (Rep k G) (ModuleCat.{u} k)).map (ε k G) = 0 := by
     rw [← forget₂ToModuleCatHomotopyEquiv_f_0_eq,

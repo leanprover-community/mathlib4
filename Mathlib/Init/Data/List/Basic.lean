@@ -5,9 +5,9 @@ Authors: Leonardo de Moura
 -/
 import Mathlib.Mathport.Rename
 import Mathlib.Init.Data.Nat.Notation
-import Std.Data.List.Basic
+import Batteries.Data.List.Basic
 /-!
-Definitions for `List` not (yet) in `Std`
+Definitions for `List` not (yet) in `Batteries`
 -/
 
 set_option autoImplicit true

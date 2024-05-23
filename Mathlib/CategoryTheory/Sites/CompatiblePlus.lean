@@ -74,7 +74,7 @@ variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ F]
 def plusCompIso : J.plusObj P ⋙ F ≅ J.plusObj (P ⋙ F) :=
   NatIso.ofComponents
     (fun X => by
-      refine' _ ≪≫ HasColimit.isoOfNatIso (J.diagramCompIso F P X.unop)
+      refine ?_ ≪≫ HasColimit.isoOfNatIso (J.diagramCompIso F P X.unop)
       refine'
         (isColimitOfPreserves F
               (colimit.isColimit (J.diagram P (unop X)))).coconePointUniqueUpToIso
@@ -207,13 +207,10 @@ theorem whiskerRight_toPlus_comp_plusCompIso_hom :
   simp only [ι_plusCompIso_hom, Functor.map_comp, Category.assoc]
   simp only [← Category.assoc]
   congr 1
-  -- Porting note: this used to work with `ext`
   -- See https://github.com/leanprover-community/mathlib4/issues/5229
-  apply Multiequalizer.hom_ext
-  delta Cover.toMultiequalizer
-  simp only [diagramCompIso_hom_ι, Category.assoc, ← F.map_comp]
-  simp only [unop_op, limit.lift_π, Multifork.ofι_π_app, Functor.comp_obj, Functor.comp_map,
-    implies_true]
+  apply Multiequalizer.hom_ext; intro a
+  rw [Category.assoc, diagramCompIso_hom_ι, ← F.map_comp]
+  simp only [unop_op, limit.lift_π, Multifork.ofι_π_app, Functor.comp_obj, Functor.comp_map]
 #align category_theory.grothendieck_topology.whisker_right_to_plus_comp_plus_comp_iso_hom CategoryTheory.GrothendieckTopology.whiskerRight_toPlus_comp_plusCompIso_hom
 
 @[simp]

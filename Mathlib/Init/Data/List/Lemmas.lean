@@ -3,12 +3,12 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn
 -/
-import Std.Data.List.Lemmas
+import Batteries.Data.List.Lemmas
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Cases
 
 /-!
-Lemmas for `List` not (yet) in `Std`
+Lemmas for `List` not (yet) in `Batteries`
 -/
 
 #align_import init.data.list.lemmas from "leanprover-community/lean"@"4a03bdeb31b3688c31d02d7ff8e0ff2e5d6174db"
@@ -89,8 +89,8 @@ theorem not_exists_mem_nil (p : α → Prop) : ¬∃ x ∈ @nil α, p x :=
 /-! list subset -/
 
 #align list.subset List.Subset
--- This is relying on an automatically generated instance name from Std.
-#align list.has_subset List.instHasSubset_std
+-- This is relying on an automatically generated instance name from Batteries.
+#align list.has_subset List.instHasSubset_batteries
 #align list.nil_subset List.nil_subset
 #align list.subset.refl List.Subset.refl
 #align list.subset.trans List.Subset.trans

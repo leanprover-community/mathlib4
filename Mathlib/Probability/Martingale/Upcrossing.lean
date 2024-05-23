@@ -301,7 +301,7 @@ theorem exists_upperCrossingTime_eq (f : ℕ → Ω → ℝ) (N : ℕ) (ω : Ω)
 theorem upperCrossingTime_lt_bddAbove (hab : a < b) :
     BddAbove {n | upperCrossingTime a b f N n ω < N} := by
   obtain ⟨k, hk⟩ := exists_upperCrossingTime_eq f N ω hab
-  refine' ⟨k, fun n (hn : upperCrossingTime a b f N n ω < N) => _⟩
+  refine ⟨k, fun n (hn : upperCrossingTime a b f N n ω < N) => ?_⟩
   by_contra hn'
   exact hn.ne (upperCrossingTime_stabilize (not_le.1 hn').le hk)
 #align measure_theory.upper_crossing_time_lt_bdd_above MeasureTheory.upperCrossingTime_lt_bddAbove
@@ -345,10 +345,10 @@ theorem Adapted.isStoppingTime_crossing (hf : Adapted ℱ f) :
       simp_rw [upperCrossingTime_succ_eq]
       exact isStoppingTime_hitting_isStoppingTime ih₂ (fun _ => lowerCrossingTime_le)
         measurableSet_Ici hf _
-    refine' ⟨this, _⟩
-    · intro n
-      exact isStoppingTime_hitting_isStoppingTime this (fun _ => upperCrossingTime_le)
-        measurableSet_Iic hf _
+    refine ⟨this, ?_⟩
+    intro n
+    exact isStoppingTime_hitting_isStoppingTime this (fun _ => upperCrossingTime_le)
+      measurableSet_Iic hf _
 #align measure_theory.adapted.is_stopping_time_crossing MeasureTheory.Adapted.isStoppingTime_crossing
 
 theorem Adapted.isStoppingTime_upperCrossingTime (hf : Adapted ℱ f) :
@@ -511,7 +511,7 @@ theorem crossing_eq_crossing_of_lowerCrossingTime_lt {M : ℕ} (hNM : N ≤ M)
         rw [eq_comm, ih.2]
         exact hitting_eq_hitting_of_exists hNM ⟨j, ⟨hj₁.1, hj₁.2.le⟩, hj₂⟩
       · exact le_rfl
-    refine' ⟨this, _⟩
+    refine ⟨this, ?_⟩
     simp only [lowerCrossingTime, eq_comm, this, Nat.succ_eq_add_one]
     refine' hitting_eq_hitting_of_exists hNM _
     rw [lowerCrossingTime, hitting_lt_iff _ le_rfl] at h
@@ -525,7 +525,7 @@ theorem crossing_eq_crossing_of_upperCrossingTime_lt {M : ℕ} (hNM : N ≤ M)
       lowerCrossingTime a b f M n ω = lowerCrossingTime a b f N n ω := by
   have := (crossing_eq_crossing_of_lowerCrossingTime_lt hNM
     (lt_of_le_of_lt lowerCrossingTime_le_upperCrossingTime_succ h)).2
-  refine' ⟨_, this⟩
+  refine ⟨?_, this⟩
   rw [upperCrossingTime_succ_eq, upperCrossingTime_succ_eq, eq_comm, this]
   refine' hitting_eq_hitting_of_exists hNM _
   rw [upperCrossingTime_succ_eq, hitting_lt_iff] at h
@@ -558,18 +558,18 @@ theorem upcrossingsBefore_lt_of_exists_upcrossing (hab : a < b) {N₁ N₂ : ℕ
     upcrossingsBefore a b f N ω < upcrossingsBefore a b f (N₂ + 1) ω := by
   refine' lt_of_lt_of_le (Nat.lt_succ_self _) (le_csSup (upperCrossingTime_lt_bddAbove hab) _)
   rw [Set.mem_setOf_eq, upperCrossingTime_succ_eq, hitting_lt_iff _ le_rfl]
-  · refine' ⟨N₂, ⟨_, Nat.lt_succ_self _⟩, hN₂'.le⟩
-    rw [lowerCrossingTime, hitting_le_iff_of_lt _ (Nat.lt_succ_self _)]
-    refine' ⟨N₁, ⟨le_trans _ hN₁, hN₂⟩, hN₁'.le⟩
-    by_cases hN : 0 < N
-    · have : upperCrossingTime a b f N (upcrossingsBefore a b f N ω) ω < N :=
-        Nat.sSup_mem (upperCrossingTime_lt_nonempty hN) (upperCrossingTime_lt_bddAbove hab)
-      rw [upperCrossingTime_eq_upperCrossingTime_of_lt (hN₁.trans (hN₂.trans <| Nat.le_succ _))
-        this]
-      exact this.le
-    · rw [not_lt, Nat.le_zero] at hN
-      rw [hN, upcrossingsBefore_zero, upperCrossingTime_zero]
-      rfl
+  refine' ⟨N₂, ⟨_, Nat.lt_succ_self _⟩, hN₂'.le⟩
+  rw [lowerCrossingTime, hitting_le_iff_of_lt _ (Nat.lt_succ_self _)]
+  refine' ⟨N₁, ⟨le_trans _ hN₁, hN₂⟩, hN₁'.le⟩
+  by_cases hN : 0 < N
+  · have : upperCrossingTime a b f N (upcrossingsBefore a b f N ω) ω < N :=
+      Nat.sSup_mem (upperCrossingTime_lt_nonempty hN) (upperCrossingTime_lt_bddAbove hab)
+    rw [upperCrossingTime_eq_upperCrossingTime_of_lt (hN₁.trans (hN₂.trans <| Nat.le_succ _))
+      this]
+    exact this.le
+  · rw [not_lt, Nat.le_zero] at hN
+    rw [hN, upcrossingsBefore_zero, upperCrossingTime_zero]
+    rfl
 #align measure_theory.upcrossings_before_lt_of_exists_upcrossing MeasureTheory.upcrossingsBefore_lt_of_exists_upcrossing
 
 theorem lowerCrossingTime_lt_of_lt_upcrossingsBefore (hN : 0 < N) (hab : a < b)
@@ -707,7 +707,7 @@ theorem crossing_pos_eq (hab : a < b) :
       · refine' False.elim (h₁ _)
         simp_all only [Set.mem_Ici]
       · rfl
-    refine' ⟨this, _⟩
+    refine ⟨this, ?_⟩
     ext ω
     simp only [lowerCrossingTime, this, hitting, Set.mem_Iic]
     split_ifs with h₁ h₂ h₂

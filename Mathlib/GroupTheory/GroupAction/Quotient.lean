@@ -344,7 +344,7 @@ theorem sum_card_fixedBy_eq_card_orbits_mul_card_group [Fintype α] [∀ a : α,
 instance isPretransitive_quotient (G) [Group G] (H : Subgroup G) : IsPretransitive G (G ⧸ H) where
   exists_smul_eq := by
     { rintro ⟨x⟩ ⟨y⟩
-      refine' ⟨y * x⁻¹, QuotientGroup.eq.mpr _⟩
+      refine ⟨y * x⁻¹, QuotientGroup.eq.mpr ?_⟩
       simp only [smul_eq_mul, H.one_mem, mul_left_inv, inv_mul_cancel_right]}
 #align mul_action.is_pretransitive_quotient MulAction.isPretransitive_quotient
 #align add_action.is_pretransitive_quotient AddAction.isPretransitive_quotient
@@ -359,8 +359,8 @@ theorem ConjClasses.card_carrier {G : Type*} [Group G] [Fintype G] (g : G)
   classical
   rw [Fintype.card_congr <| ConjAct.toConjAct (G := G) |>.toEquiv]
   rw [← MulAction.card_orbit_mul_card_stabilizer_eq_card_group (ConjAct G) g, Nat.mul_div_cancel]
-  simp_rw [ConjAct.orbit_eq_carrier_conjClasses]
-  exact Fintype.card_pos_iff.mpr inferInstance
+  · simp_rw [ConjAct.orbit_eq_carrier_conjClasses]
+  · exact Fintype.card_pos_iff.mpr inferInstance
 
 namespace Subgroup
 
