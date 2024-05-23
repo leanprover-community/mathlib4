@@ -31,8 +31,6 @@ open scoped Filter BigOperators ENNReal Topology NNReal
 
 open Filter Set Metric MeasureTheory Real
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 theorem setOf_liouvilleWith_subset_aux :
     { x : ℝ | ∃ p > 2, LiouvilleWith p x } ⊆
       ⋃ m : ℤ, (· + (m : ℝ)) ⁻¹' ⋃ n > (0 : ℕ),
@@ -47,16 +45,16 @@ theorem setOf_liouvilleWith_subset_aux :
     have hx : x + ↑(-⌊x⌋) ∈ Ico (0 : ℝ) 1 := by
       simp only [Int.floor_le, Int.lt_floor_add_one, add_neg_lt_iff_le_add', zero_add, and_self_iff,
         mem_Ico, Int.cast_neg, le_add_neg_iff_add_le]
-    refine' ⟨-⌊x⌋, n + 1, n.succ_pos, this _ (hxp.add_int _) hx⟩
+    exact ⟨-⌊x⌋, n + 1, n.succ_pos, this _ (hxp.add_int _) hx⟩
   clear hxp x; intro x hxp hx01
   refine' ((hxp.frequently_lt_rpow_neg hn).and_eventually (eventually_ge_atTop 1)).mono _
   rintro b ⟨⟨a, -, hlt⟩, hb⟩
   rw [rpow_neg b.cast_nonneg, ← one_div, ← Nat.cast_succ] at hlt
-  refine' ⟨a, _, hlt⟩
-  replace hb : (1 : ℝ) ≤ b; exact Nat.one_le_cast.2 hb
+  refine ⟨a, ?_, hlt⟩
+  replace hb : (1 : ℝ) ≤ b := Nat.one_le_cast.2 hb
   have hb0 : (0 : ℝ) < b := zero_lt_one.trans_le hb
-  replace hlt : |x - a / b| < 1 / b
-  · refine' hlt.trans_le (one_div_le_one_div_of_le hb0 _)
+  replace hlt : |x - a / b| < 1 / b := by
+    refine' hlt.trans_le (one_div_le_one_div_of_le hb0 _)
     calc
       (b : ℝ) = (b : ℝ) ^ (1 : ℝ) := (rpow_one _).symm
       _ ≤ (b : ℝ) ^ (2 + 1 / (n + 1 : ℕ) : ℝ) :=
@@ -83,13 +81,13 @@ theorem volume_iUnion_setOf_liouvilleWith :
   rw [measure_iUnion_null_iff]; intro m; rw [measure_preimage_add_right]; clear m
   refine' (measure_biUnion_null_iff <| to_countable _).2 fun n (hn : 1 ≤ n) => _
   generalize hr : (2 + 1 / n : ℝ) = r
-  replace hr : 2 < r; · simp [← hr, zero_lt_one.trans_le hn]
+  replace hr : 2 < r := by simp [← hr, zero_lt_one.trans_le hn]
   clear hn n
   refine' measure_setOf_frequently_eq_zero _
   simp only [setOf_exists, ← exists_prop, ← Real.dist_eq, ← mem_ball, setOf_mem_eq]
   set B : ℤ → ℕ → Set ℝ := fun a b => ball (a / b) (1 / (b : ℝ) ^ r)
   have hB : ∀ a b, volume (B a b) = ↑((2 : ℝ≥0) / (b : ℝ≥0) ^ r) := fun a b ↦ by
-    rw [Real.volume_ball, mul_one_div, ← NNReal.coe_two, ← NNReal.coe_nat_cast, ← NNReal.coe_rpow,
+    rw [Real.volume_ball, mul_one_div, ← NNReal.coe_two, ← NNReal.coe_natCast, ← NNReal.coe_rpow,
       ← NNReal.coe_div, ENNReal.ofReal_coe_nnreal]
   have : ∀ b : ℕ, volume (⋃ a ∈ Finset.Icc (0 : ℤ) b, B a b) ≤
       ↑(2 * ((b : ℝ≥0) ^ (1 - r) + (b : ℝ≥0) ^ (-r))) := fun b ↦
@@ -98,10 +96,10 @@ theorem volume_iUnion_setOf_liouvilleWith :
         measure_biUnion_finset_le _ _
       _ = ↑((b + 1) * (2 / (b : ℝ≥0) ^ r)) := by
         simp only [hB, Int.card_Icc, Finset.sum_const, nsmul_eq_mul, sub_zero, ← Int.ofNat_succ,
-          Int.toNat_coe_nat, ← Nat.cast_succ, ENNReal.coe_mul, ENNReal.coe_nat]
+          Int.toNat_natCast, ← Nat.cast_succ, ENNReal.coe_mul, ENNReal.coe_natCast]
       _ = _ := by
         have : 1 - r ≠ 0 := by linarith
-        rw [ENNReal.coe_eq_coe]
+        rw [ENNReal.coe_inj]
         simp [add_mul, div_eq_mul_inv, NNReal.rpow_neg, NNReal.rpow_sub' _ this, mul_add,
           mul_left_comm]
   refine' ne_top_of_le_ne_top (ENNReal.tsum_coe_ne_top_iff_summable.2 _) (ENNReal.tsum_le_tsum this)

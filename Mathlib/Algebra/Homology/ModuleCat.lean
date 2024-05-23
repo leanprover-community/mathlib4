@@ -6,7 +6,7 @@ Authors: Scott Morrison
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Category.ModuleCat.Subobject
-import Mathlib.CategoryTheory.Limits.ConcreteCategory
+import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 
 #align_import algebra.homology.Module from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -27,7 +27,6 @@ noncomputable section
 open CategoryTheory Limits HomologicalComplex
 
 variable {R : Type v} [Ring R]
-
 variable {ι : Type*} {c : ComplexShape ι} {C D : HomologicalComplex (ModuleCat.{u} R) c}
 
 namespace ModuleCat
@@ -35,15 +34,15 @@ namespace ModuleCat
 /-- To prove that two maps out of a homology group are equal,
 it suffices to check they are equal on the images of cycles.
 -/
-theorem homology'_ext {L M N K : ModuleCat R} {f : L ⟶ M} {g : M ⟶ N} (w : f ≫ g = 0)
+theorem homology'_ext {L M N K : ModuleCat.{u} R} {f : L ⟶ M} {g : M ⟶ N} (w : f ≫ g = 0)
     {h k : homology' f g w ⟶ K}
     (w :
       ∀ x : LinearMap.ker g,
         h (cokernel.π (imageToKernel _ _ w) (toKernelSubobject x)) =
           k (cokernel.π (imageToKernel _ _ w) (toKernelSubobject x))) :
     h = k := by
-  refine' cokernel_funext fun n => _
-  -- porting note: as `equiv_rw` was not ported, it was replaced by `Equiv.surjective`
+  refine' Concrete.cokernel_funext fun n => _
+  -- Porting note: as `equiv_rw` was not ported, it was replaced by `Equiv.surjective`
   -- Gosh it would be nice if `equiv_rw` could directly use an isomorphism, or an enriched `≃`.
   obtain ⟨n, rfl⟩ := (kernelSubobjectIso g ≪≫
     ModuleCat.kernelIsoKer g).toLinearEquiv.toEquiv.symm.surjective n
@@ -67,7 +66,7 @@ theorem cycles'_ext {C : HomologicalComplex (ModuleCat.{u} R) c} {i : ι}
 set_option linter.uppercaseLean3 false in
 #align Module.cycles_ext ModuleCat.cycles'_ext
 
--- porting note: both proofs by `rw` were proofs by `simp` which no longer worked
+-- Porting note: both proofs by `rw` were proofs by `simp` which no longer worked
 -- see https://github.com/leanprover-community/mathlib4/issues/5026
 @[simp]
 theorem cycles'Map_toCycles' (f : C ⟶ D) {i : ι} (x : LinearMap.ker (C.dFrom i)) :
@@ -90,14 +89,14 @@ set_option linter.uppercaseLean3 false in
 
 @[ext]
 theorem homology'_ext' {M : ModuleCat R} (i : ι) {h k : C.homology' i ⟶ M}
-    (w : ∀ x : LinearMap.ker (C.dFrom i), h (toHomology' x) = k (toHomology' x)) : h = k :=
-  homology'_ext _ w
+    (w : ∀ x : LinearMap.ker (C.dFrom i), h (toHomology' x) = k (toHomology' x)) : h = k := by
+  apply homology'_ext _ w
 set_option linter.uppercaseLean3 false in
 #align Module.homology_ext' ModuleCat.homology'_ext'
 
--- porting note: `erw` had to be used instead of `simp`
+-- Porting note: `erw` had to be used instead of `simp`
 -- see https://github.com/leanprover-community/mathlib4/issues/5026
-/-- We give an alternative proof of `homology_map_eq_of_homotopy`,
+/-- We give an alternative proof of `homology'_map_eq_of_homotopy`,
 specialized to the setting of `V = Module R`,
 to demonstrate the use of extensionality lemmas for homology in `Module R`. -/
 example (f g : C ⟶ D) (h : Homotopy f g) (i : ι) :
@@ -120,9 +119,8 @@ example (f g : C ⟶ D) (h : Homotopy f g) (i : ι) :
   erw [LinearMap.add_apply]
   rw [LinearMap.add_apply, prevD_eq_toPrev_dTo, dNext_eq_dFrom_fromNext]
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [comp_apply, comp_apply, comp_apply]
+  erw [comp_apply, comp_apply]
   erw [x.2, map_zero]
-  dsimp
   abel
 
 end ModuleCat

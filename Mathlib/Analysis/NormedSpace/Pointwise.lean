@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yaël Dillies
 -/
 import Mathlib.Analysis.Normed.Group.Pointwise
-import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.NormedSpace.Real
 
 #align_import analysis.normed_space.pointwise from "leanprover-community/mathlib"@"bc91ed7093bf098d253401e69df601fc33dde156"
 
@@ -26,7 +26,6 @@ variable {𝕜 E : Type*}
 section SMulZeroClass
 
 variable [SeminormedAddCommGroup 𝕜] [SeminormedAddCommGroup E]
-
 variable [SMulZeroClass 𝕜 E] [BoundedSMul 𝕜 E]
 
 theorem ediam_smul_le (c : 𝕜) (s : Set E) : EMetric.diam (c • s) ≤ ‖c‖₊ • EMetric.diam s :=
@@ -38,7 +37,6 @@ end SMulZeroClass
 section DivisionRing
 
 variable [NormedDivisionRing 𝕜] [SeminormedAddCommGroup E]
-
 variable [Module 𝕜 E] [BoundedSMul 𝕜 E]
 
 theorem ediam_smul₀ (c : 𝕜) (s : Set E) : EMetric.diam (c • s) = ‖c‖₊ • EMetric.diam s := by
@@ -49,7 +47,7 @@ theorem ediam_smul₀ (c : 𝕜) (s : Set E) : EMetric.diam (c • s) = ‖c‖�
     simp [zero_smul_set hs, ← Set.singleton_zero]
   · have := (lipschitzWith_smul c⁻¹).ediam_image_le (c • s)
     rwa [← smul_eq_mul, ← ENNReal.smul_def, Set.image_smul, inv_smul_smul₀ hc s, nnnorm_inv,
-      ENNReal.le_inv_smul_iff (nnnorm_ne_zero_iff.mpr hc)] at this
+      le_inv_smul_iff_of_pos (nnnorm_pos.2 hc)] at this
 #align ediam_smul₀ ediam_smul₀
 
 theorem diam_smul₀ (c : 𝕜) (x : Set E) : diam (c • x) = ‖c‖ * diam x := by
@@ -108,8 +106,16 @@ theorem smul_closedBall' {c : 𝕜} (hc : c ≠ 0) (x : E) (r : ℝ) :
   simp only [← ball_union_sphere, Set.smul_set_union, _root_.smul_ball hc, smul_sphere' hc]
 #align smul_closed_ball' smul_closedBall'
 
+theorem set_smul_sphere_zero {s : Set 𝕜} (hs : 0 ∉ s) (r : ℝ) :
+    s • sphere (0 : E) r = (‖·‖) ⁻¹' ((‖·‖ * r) '' s) :=
+  calc
+    s • sphere (0 : E) r = ⋃ c ∈ s, c • sphere (0 : E) r := iUnion_smul_left_image.symm
+    _ = ⋃ c ∈ s, sphere (0 : E) (‖c‖ * r) := iUnion₂_congr fun c hc ↦ by
+      rw [smul_sphere' (ne_of_mem_of_not_mem hc hs), smul_zero]
+    _ = (‖·‖) ⁻¹' ((‖·‖ * r) '' s) := by ext; simp [eq_comm]
+
 /-- Image of a bounded set in a normed space under scalar multiplication by a constant is
-bounded. See also `Metric.Bounded.smul` for a similar lemma about an isometric action. -/
+bounded. See also `Bornology.IsBounded.smul` for a similar lemma about an isometric action. -/
 theorem Bornology.IsBounded.smul₀ {s : Set E} (hs : IsBounded s) (c : 𝕜) : IsBounded (c • s) :=
   (lipschitzWith_smul c).isBounded_image hs
 #align metric.bounded.smul Bornology.IsBounded.smul₀
@@ -134,7 +140,7 @@ theorem eventually_singleton_add_smul_subset {x : E} {s : Set E} (hs : Bornology
       _ = ε := by field_simp
   have : y = x + r • z := by simp only [hz, add_neg_cancel_left]
   apply hε
-  simpa only [this, dist_eq_norm, add_sub_cancel', mem_closedBall] using I
+  simpa only [this, dist_eq_norm, add_sub_cancel_left, mem_closedBall] using I
 #align eventually_singleton_add_smul_subset eventually_singleton_add_smul_subset
 
 variable [NormedSpace ℝ E] {x y z : E} {δ ε : ℝ}
@@ -144,6 +150,13 @@ constant `r` is the ball of radius `r`. -/
 theorem smul_unitBall_of_pos {r : ℝ} (hr : 0 < r) : r • ball (0 : E) 1 = ball (0 : E) r := by
   rw [smul_unitBall hr.ne', Real.norm_of_nonneg hr.le]
 #align smul_unit_ball_of_pos smul_unitBall_of_pos
+
+lemma Ioo_smul_sphere_zero {a b r : ℝ} (ha : 0 ≤ a) (hr : 0 < r) :
+    Ioo a b • sphere (0 : E) r = ball 0 (b * r) \ closedBall 0 (a * r) := by
+  have : EqOn (‖·‖) id (Ioo a b) := fun x hx ↦ abs_of_pos (ha.trans_lt hx.1)
+  rw [set_smul_sphere_zero (by simp [ha.not_lt]), ← image_image (· * r), this.image_eq, image_id,
+    image_mul_right_Ioo _ _ hr]
+  ext x; simp [and_comm]
 
 -- This is also true for `ℚ`-normed spaces
 theorem exists_dist_eq (x z : E) {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1) :
@@ -253,8 +266,8 @@ theorem infEdist_thickening (hδ : 0 < δ) (s : Set E) (x : E) :
     refine' sub_pos_of_lt _
     have := hs.trans_lt ((infEdist_le_edist_of_mem hz).trans_lt h)
     rw [ofReal_eq_coe_nnreal hδ.le, some_eq_coe] at this
-    exact_mod_cast this
-  rw [some_eq_coe, edist_lt_coe, ← dist_lt_coe, ← add_sub_cancel'_right δ ↑r] at h
+    exact mod_cast this
+  rw [some_eq_coe, edist_lt_coe, ← dist_lt_coe, ← add_sub_cancel δ ↑r] at h
   obtain ⟨y, hxy, hyz⟩ := exists_dist_lt_lt hr hδ h
   refine' (ENNReal.add_lt_add_right ofReal_ne_top <|
     infEdist_lt_iff.2 ⟨_, mem_thickening_iff.2 ⟨_, hz, hyz⟩, edist_lt_ofReal.2 hxy⟩).trans_le _
@@ -414,8 +427,8 @@ theorem NormedSpace.sphere_nonempty [Nontrivial E] {x : E} {r : ℝ} :
   refine' ⟨fun h => nonempty_closedBall.1 (h.mono sphere_subset_closedBall), fun hr =>
     ⟨r • ‖y - x‖⁻¹ • (y - x) + x, _⟩⟩
   have : ‖y - x‖ ≠ 0 := by simpa [sub_eq_zero]
-  simp only [mem_sphere_iff_norm, add_sub_cancel, norm_smul, Real.norm_eq_abs, norm_inv, norm_norm,
-    ne_eq, norm_eq_zero]
+  simp only [mem_sphere_iff_norm, add_sub_cancel_right, norm_smul, Real.norm_eq_abs, norm_inv,
+    norm_norm, ne_eq, norm_eq_zero]
   simp only [abs_norm, ne_eq, norm_eq_zero]
   rw [inv_mul_cancel this, mul_one, abs_eq_self.mpr hr]
 #align normed_space.sphere_nonempty NormedSpace.sphere_nonempty

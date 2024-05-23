@@ -5,9 +5,11 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.LinearAlgebra.Quotient
 import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.GroupTheory.Finiteness
-import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.RingTheory.Ideal.Maps
+import Mathlib.RingTheory.Nilpotent.Defs
 
 #align_import ring_theory.finiteness from "leanprover-community/mathlib"@"c813ed7de0f5115f956239124e9b30f3a621966f"
 
@@ -74,7 +76,7 @@ theorem fg_iff_exists_fin_generating_family {N : Submodule R M} :
     obtain ⟨n, f, rfl⟩ := Sfin.fin_embedding
     exact ⟨n, f, hS⟩
   · rintro ⟨n, s, hs⟩
-    refine' ⟨range s, finite_range s, hs⟩
+    exact ⟨range s, finite_range s, hs⟩
 #align submodule.fg_iff_exists_fin_generating_family Submodule.fg_iff_exists_fin_generating_family
 
 /-- **Nakayama's Lemma**. Atiyah-Macdonald 2.5, Eisenbud 4.7, Matsumura 2.2,
@@ -99,7 +101,7 @@ theorem exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul {R : Type*} [CommRi
   revert this
   refine' Set.Finite.dinduction_on _ hfs (fun H => _) @fun i s _ _ ih H => _
   · rcases H with ⟨r, hr1, hrn, _⟩
-    refine' ⟨r, hr1, fun n hn => _⟩
+    refine ⟨r, hr1, fun n hn => ?_⟩
     specialize hrn hn
     rwa [mem_comap, span_empty, smul_bot, mem_bot] at hrn
   apply ih
@@ -117,7 +119,7 @@ theorem exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul {R : Type*} [CommRi
     constructor
     · rw [sub_right_comm]
       exact I.sub_mem hr1 hci
-    · rw [sub_smul, ← hyz, add_sub_cancel']
+    · rw [sub_smul, ← hyz, add_sub_cancel_left]
       exact hz
   rcases this with ⟨c, hc1, hci⟩
   refine' ⟨c * r, _, _, hs.2⟩
@@ -192,14 +194,13 @@ theorem fg_biSup {ι : Type*} (s : Finset ι) (N : ι → Submodule R M) (h : �
     (⨆ i ∈ s, N i).FG := by simpa only [Finset.sup_eq_iSup] using fg_finset_sup s N h
 #align submodule.fg_bsupr Submodule.fg_biSup
 
-theorem fg_iSup {ι : Type*} [Finite ι] (N : ι → Submodule R M) (h : ∀ i, (N i).FG) :
+theorem fg_iSup {ι : Sort*} [Finite ι] (N : ι → Submodule R M) (h : ∀ i, (N i).FG) :
     (iSup N).FG := by
-  cases nonempty_fintype ι
-  simpa using fg_biSup Finset.univ N fun i _ => h i
+  cases nonempty_fintype (PLift ι)
+  simpa [iSup_plift_down] using fg_biSup Finset.univ (N ∘ PLift.down) fun i _ => h i.down
 #align submodule.fg_supr Submodule.fg_iSup
 
 variable {P : Type*} [AddCommMonoid P] [Module R P]
-
 variable (f : M →ₗ[R] P)
 
 theorem FG.map {N : Submodule R M} (hs : N.FG) : (N.map f).FG :=
@@ -254,7 +255,8 @@ theorem fg_pi {ι : Type*} {M : ι → Type*} [Finite ι] [∀ i, AddCommMonoid 
     -- Porting note: `refine'` doesn't work here
     refine
       ⟨⋃ i, (LinearMap.single i : _ →ₗ[R] _) '' t i, Set.finite_iUnion fun i => (htf i).image _, ?_⟩
-    simp_rw [span_iUnion, span_image, hts, Submodule.iSup_map_single]
+    -- Note: #8386 changed `span_image` into `span_image _`
+    simp_rw [span_iUnion, span_image _, hts, Submodule.iSup_map_single]
 #align submodule.fg_pi Submodule.fg_pi
 
 /-- If 0 → M' → M → M'' → 0 is exact and M' and M'' are
@@ -306,29 +308,29 @@ theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type*} [Ring R] [AddCommGroup M] [Mo
     mem_sup.2
       ⟨(Finsupp.total M M R id).toFun ((Finsupp.lmapDomain R R g : (P →₀ R) → M →₀ R) l), _,
         x - Finsupp.total M M R id ((Finsupp.lmapDomain R R g : (P →₀ R) → M →₀ R) l), _,
-        add_sub_cancel'_right _ _⟩
+        add_sub_cancel _ _⟩
   · rw [← Set.image_id (g '' ↑t1), Finsupp.mem_span_image_iff_total]
     refine' ⟨_, _, rfl⟩
     haveI : Inhabited P := ⟨0⟩
     rw [← Finsupp.lmapDomain_supported _ _ g, mem_map]
-    refine' ⟨l, hl1, _⟩
+    refine ⟨l, hl1, ?_⟩
     rfl
   rw [ht2, mem_inf]
   constructor
   · apply s.sub_mem hx
     rw [Finsupp.total_apply, Finsupp.lmapDomain_apply, Finsupp.sum_mapDomain_index]
-    refine' s.sum_mem _
-    · intro y hy
+    · refine' s.sum_mem _
+      intro y hy
       exact s.smul_mem _ (hg y (hl1 hy)).1
     · exact zero_smul _
     · exact fun _ _ _ => add_smul _ _ _
   · rw [LinearMap.mem_ker, f.map_sub, ← hl2]
     rw [Finsupp.total_apply, Finsupp.total_apply, Finsupp.lmapDomain_apply]
     rw [Finsupp.sum_mapDomain_index, Finsupp.sum, Finsupp.sum, map_sum]
-    rw [sub_eq_zero]
-    refine' Finset.sum_congr rfl fun y hy => _
-    unfold id
-    rw [f.map_smul, (hg y (hl1 hy)).2]
+    · rw [sub_eq_zero]
+      refine' Finset.sum_congr rfl fun y hy => _
+      unfold id
+      rw [f.map_smul, (hg y (hl1 hy)).2]
     · exact zero_smul _
     · exact fun _ _ _ => add_smul _ _ _
 #align submodule.fg_of_fg_map_of_fg_inf_ker Submodule.fg_of_fg_map_of_fg_inf_ker
@@ -367,7 +369,7 @@ theorem fg_restrictScalars {R S M : Type*} [CommSemiring R] [Semiring S] [Algebr
   exact (Submodule.restrictScalars_span R S h (X : Set M)).symm
 #align submodule.fg_restrict_scalars Submodule.fg_restrictScalars
 
-theorem FG.stablizes_of_iSup_eq {M' : Submodule R M} (hM' : M'.FG) (N : ℕ →o Submodule R M)
+theorem FG.stabilizes_of_iSup_eq {M' : Submodule R M} (hM' : M'.FG) (N : ℕ →o Submodule R M)
     (H : iSup N = M') : ∃ n, M' = N n := by
   obtain ⟨S, hS⟩ := hM'
   have : ∀ s : S, ∃ n, (s : M) ∈ N n := fun s =>
@@ -384,7 +386,7 @@ theorem FG.stablizes_of_iSup_eq {M' : Submodule R M} (hM' : M'.FG) (N : ℕ →o
     exact N.2 (Finset.le_sup <| S.mem_attach ⟨s, hs⟩) (hf _)
   · rw [← H]
     exact le_iSup _ _
-#align submodule.fg.stablizes_of_supr_eq Submodule.FG.stablizes_of_iSup_eq
+#align submodule.fg.stablizes_of_supr_eq Submodule.FG.stabilizes_of_iSup_eq
 
 /-- Finitely generated submodules are precisely compact elements in the submodule lattice. -/
 theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ CompleteLattice.IsCompactElement s := by
@@ -396,7 +398,7 @@ theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ CompleteLattice.IsCompactE
     constructor
     · rintro ⟨t, rfl⟩
       rw [span_eq_iSup_of_singleton_spans, ← supr_rw, ← Finset.sup_eq_iSup t sp]
-      apply CompleteLattice.finset_sup_compact_of_compact
+      apply CompleteLattice.isCompactElement_finsetSup
       exact fun n _ => singleton_span_isCompactElement n
     · intro h
       -- s is the Sup of the spans of its elements.
@@ -405,17 +407,37 @@ theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ CompleteLattice.IsCompactE
       -- by h, s is then below (and equal to) the sup of the spans of finitely many elements.
       obtain ⟨u, ⟨huspan, husup⟩⟩ := h (sp '' ↑s) (le_of_eq sSup')
       have ssup : s = u.sup id := by
-        suffices : u.sup id ≤ s
-        exact le_antisymm husup this
+        suffices u.sup id ≤ s from le_antisymm husup this
         rw [sSup', Finset.sup_id_eq_sSup]
         exact sSup_le_sSup huspan
       -- Porting note: had to split this out of the `obtain`
       have := Finset.subset_image_iff.mp huspan
       obtain ⟨t, ⟨-, rfl⟩⟩ := this
-      rw [Finset.sup_image, Function.comp.left_id, Finset.sup_eq_iSup, supr_rw, ←
+      rw [Finset.sup_image, Function.id_comp, Finset.sup_eq_iSup, supr_rw, ←
         span_eq_iSup_of_singleton_spans, eq_comm] at ssup
       exact ⟨t, ssup⟩
 #align submodule.fg_iff_compact Submodule.fg_iff_compact
+
+open TensorProduct LinearMap in
+/-- Every `x : I ⊗ M` is the image of some `y : J ⊗ M`, where `J ≤ I` is finitely generated,
+under the tensor product of `J.inclusion ‹J ≤ I› : J → I` and the identity `M → M`. -/
+theorem exists_fg_le_eq_rTensor_inclusion {R M N : Type*} [CommRing R] [AddCommGroup M]
+    [AddCommGroup N] [Module R M] [Module R N] {I : Submodule R N} (x : I ⊗ M) :
+      ∃ (J : Submodule R N) (_ : J.FG) (hle : J ≤ I) (y : J ⊗ M),
+        x = rTensor M (J.inclusion hle) y := by
+  induction x using TensorProduct.induction_on with
+  | zero => exact ⟨⊥, fg_bot, zero_le _, 0, rfl⟩
+  | tmul i m => exact ⟨R ∙ i.val, fg_span_singleton i.val,
+      (span_singleton_le_iff_mem _ _).mpr i.property,
+      ⟨i.val, mem_span_singleton_self _⟩ ⊗ₜ[R] m, rfl⟩
+  | add x₁ x₂ ihx₁ ihx₂ =>
+    obtain ⟨J₁, hfg₁, hle₁, y₁, rfl⟩ := ihx₁
+    obtain ⟨J₂, hfg₂, hle₂, y₂, rfl⟩ := ihx₂
+    refine ⟨J₁ ⊔ J₂, hfg₁.sup hfg₂, sup_le hle₁ hle₂,
+      rTensor M (J₁.inclusion (le_sup_left : J₁ ≤ J₁ ⊔ J₂)) y₁ +
+        rTensor M (J₂.inclusion (le_sup_right : J₂ ≤ J₁ ⊔ J₂)) y₂, ?_⟩
+    rewrite [map_add, ← rTensor_comp_apply, ← rTensor_comp_apply]
+    rfl
 
 end Submodule
 
@@ -424,9 +446,7 @@ namespace Submodule
 section Map₂
 
 variable {R M N P : Type*}
-
 variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
-
 variable [Module R M] [Module R N] [Module R P]
 
 theorem FG.map₂ (f : M →ₗ[R] N →ₗ[R] P) {p : Submodule R M} {q : Submodule R N} (hp : p.FG)
@@ -443,7 +463,6 @@ end Map₂
 section Mul
 
 variable {R : Type*} {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
-
 variable {M N : Submodule R A}
 
 theorem FG.mul (hm : M.FG) (hn : N.FG) : (M * N).FG :=
@@ -451,7 +470,7 @@ theorem FG.mul (hm : M.FG) (hn : N.FG) : (M * N).FG :=
 #align submodule.fg.mul Submodule.FG.mul
 
 theorem FG.pow (h : M.FG) (n : ℕ) : (M ^ n).FG :=
-  Nat.recOn n ⟨{1}, by simp [one_eq_span]⟩ fun n ih => by simpa [pow_succ] using h.mul ih
+  Nat.recOn n ⟨{1}, by simp [one_eq_span]⟩ fun n ih => by simpa [pow_succ] using ih.mul h
 #align submodule.fg.pow Submodule.FG.pow
 
 end Mul
@@ -476,7 +495,7 @@ theorem FG.map {R S : Type*} [Semiring R] [Semiring S] {I : Ideal R} (h : I.FG) 
     (I.map f).FG := by
   classical
     obtain ⟨s, hs⟩ := h
-    refine' ⟨s.image f, _⟩
+    refine ⟨s.image f, ?_⟩
     rw [Finset.coe_image, ← Ideal.map_span, hs]
 #align ideal.fg.map Ideal.FG.map
 
@@ -506,9 +525,9 @@ theorem exists_radical_pow_le_of_fg {R : Type*} [CommSemiring R] (I : Ideal R) (
     rw [← Ideal.add_eq_sup, add_pow, Ideal.sum_eq_sup, Finset.sup_le_iff]
     refine' fun i _ => Ideal.mul_le_right.trans _
     obtain h | h := le_or_lt n i
-    · apply Ideal.mul_le_right.trans ((Ideal.pow_le_pow h).trans hn)
+    · apply Ideal.mul_le_right.trans ((Ideal.pow_le_pow_right h).trans hn)
     · apply Ideal.mul_le_left.trans
-      refine' (Ideal.pow_le_pow _).trans hm
+      refine' (Ideal.pow_le_pow_right _).trans hm
       rw [add_comm, Nat.add_sub_assoc h.le]
       apply Nat.le_add_right
 #align ideal.exists_radical_pow_le_of_fg Ideal.exists_radical_pow_le_of_fg
@@ -556,16 +575,22 @@ theorem exists_fin [Finite R M] : ∃ (n : ℕ) (s : Fin n → M), Submodule.spa
   Submodule.fg_iff_exists_fin_generating_family.mp out
 #align module.finite.exists_fin Module.Finite.exists_fin
 
-lemma exists_fin' (R M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M] [Finite R M] :
-    ∃ (n : ℕ) (f : (Fin n → R) →ₗ[R] M), Surjective f := by
+variable (R M) in
+lemma exists_fin' [Finite R M] : ∃ (n : ℕ) (f : (Fin n → R) →ₗ[R] M), Surjective f := by
   have ⟨n, s, hs⟩ := exists_fin (R := R) (M := M)
-  exact ⟨n, piEquiv (Fin n) R M s, by simpa⟩
+  refine ⟨n, Basis.constr (Pi.basisFun R _) ℕ s, ?_⟩
+  rw [← LinearMap.range_eq_top, Basis.constr_range, hs]
 
 theorem of_surjective [hM : Finite R M] (f : M →ₗ[R] N) (hf : Surjective f) : Finite R N :=
   ⟨by
     rw [← LinearMap.range_eq_top.2 hf, ← Submodule.map_top]
     exact hM.1.map f⟩
 #align module.finite.of_surjective Module.Finite.of_surjective
+
+instance quotient (R) {A M} [Semiring R] [AddCommGroup M] [Ring A] [Module A M] [Module R M]
+    [SMul R A] [IsScalarTower R A M] [Finite R M]
+    (N : Submodule A M) : Finite R (M ⧸ N) :=
+  Module.Finite.of_surjective (N.mkQ.restrictScalars R) N.mkQ_surjective
 
 /-- The range of a linear map from a finite module is finite. -/
 instance range [Finite R M] (f : M →ₗ[R] N) : Finite R (LinearMap.range f) :=
@@ -616,11 +641,55 @@ theorem equiv [Finite R M] (e : M ≃ₗ[R] N) : Finite R N :=
   of_surjective (e : M →ₗ[R] N) e.surjective
 #align module.finite.equiv Module.Finite.equiv
 
+theorem equiv_iff (e : M ≃ₗ[R] N) : Finite R M ↔ Finite R N :=
+  ⟨fun _ ↦ equiv e, fun _ ↦ equiv e.symm⟩
+
 instance ulift [Finite R M] : Finite R (ULift M) := equiv ULift.moduleEquiv.symm
+
+theorem iff_fg {N : Submodule R M} : Module.Finite R N ↔ N.FG := Module.finite_def.trans (fg_top _)
+
+variable (R M)
+
+instance bot : Module.Finite R (⊥ : Submodule R M) := iff_fg.mpr fg_bot
+
+instance top [Finite R M] : Module.Finite R (⊤ : Submodule R M) := iff_fg.mpr out
+
+variable {M}
+
+/-- The submodule generated by a finite set is `R`-finite. -/
+theorem span_of_finite {A : Set M} (hA : Set.Finite A) :
+    Module.Finite R (Submodule.span R A) :=
+  ⟨(Submodule.fg_top _).mpr ⟨hA.toFinset, hA.coe_toFinset.symm ▸ rfl⟩⟩
+
+/-- The submodule generated by a single element is `R`-finite. -/
+instance span_singleton (x : M) : Module.Finite R (R ∙ x) :=
+  Module.Finite.span_of_finite R <| Set.finite_singleton _
+
+/-- The submodule generated by a finset is `R`-finite. -/
+instance span_finset (s : Finset M) : Module.Finite R (span R (s : Set M)) :=
+  ⟨(Submodule.fg_top _).mpr ⟨s, rfl⟩⟩
+
+
+theorem Module.End.isNilpotent_iff_of_finite {R M : Type*} [CommSemiring R] [AddCommMonoid M]
+    [Module R M] [Module.Finite R M] {f : End R M} :
+    IsNilpotent f ↔ ∀ m : M, ∃ n : ℕ, (f ^ n) m = 0 := by
+  refine ⟨fun ⟨n, hn⟩ m ↦ ⟨n, by simp [hn]⟩, fun h ↦ ?_⟩
+  rcases Module.Finite.out (R := R) (M := M) with ⟨S, hS⟩
+  choose g hg using h
+  use Finset.sup S g
+  ext m
+  have hm : m ∈ Submodule.span R S := by simp [hS]
+  induction hm using Submodule.span_induction'
+  · next x hx => exact LinearMap.pow_map_zero_of_le (Finset.le_sup hx) (hg x)
+  · simp
+  · simp_all
+  · simp_all
+
+variable {R}
 
 section Algebra
 
-theorem trans {R : Type*} (A M : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
+theorem trans {R : Type*} (A M : Type*) [Semiring R] [Semiring A] [Module R A]
     [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M] :
     ∀ [Finite R A] [Finite A M], Finite R M
   | ⟨⟨s, hs⟩⟩, ⟨⟨t, ht⟩⟩ =>
@@ -630,6 +699,21 @@ theorem trans {R : Type*} (A M : Type*) [CommSemiring R] [Semiring A] [Algebra R
           erw [Set.image2_smul, Submodule.span_smul_of_span_eq_top hs (↑t : Set M), ht,
             Submodule.restrictScalars_top]⟩⟩
 #align module.finite.trans Module.Finite.trans
+
+lemma of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommRing A₁] [CommRing B₁]
+    [CommRing A₂] [CommRing B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
+    (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁))
+    [Module.Finite A₁ B₁] : Module.Finite A₂ B₂ := by
+  letI := e₁.toRingHom.toAlgebra
+  letI := ((algebraMap A₁ B₁).comp e₁.symm.toRingHom).toAlgebra
+  haveI : IsScalarTower A₁ A₂ B₁ := IsScalarTower.of_algebraMap_eq
+    (fun x ↦ by simp [RingHom.algebraMap_toAlgebra])
+  let e : B₁ ≃ₐ[A₂] B₂ :=
+    { e₂ with
+      commutes' := fun r ↦ by
+        simpa [RingHom.algebraMap_toAlgebra] using DFunLike.congr_fun he.symm (e₁.symm r) }
+  haveI := Module.Finite.of_restrictScalars_finite A₁ A₂ B₁
+  exact Module.Finite.equiv e.toLinearEquiv
 
 end Algebra
 
@@ -648,10 +732,11 @@ instance Module.Finite.base_change [CommSemiring R] [Semiring A] [Algebra R A] [
     [Module R M] [h : Module.Finite R M] : Module.Finite A (TensorProduct R A M) := by
   classical
     obtain ⟨s, hs⟩ := h.out
-    refine' ⟨⟨s.image (TensorProduct.mk R A M 1), eq_top_iff.mpr fun x _ => _⟩⟩
-    apply @TensorProduct.induction_on _ _ _ _ _ _ _ _ _ x
-    · exact zero_mem _
-    · intro x y
+    refine ⟨⟨s.image (TensorProduct.mk R A M 1), eq_top_iff.mpr ?_⟩⟩
+    rintro x -
+    induction x using TensorProduct.induction_on with
+    | zero => exact zero_mem _
+    | tmul x y =>
       -- Porting note: new TC reminder
       haveI : IsScalarTower R A (TensorProduct R A M) := TensorProduct.isScalarTower_left
       rw [Finset.coe_image, ← Submodule.span_span_of_tower R, Submodule.span_image, hs,
@@ -659,7 +744,7 @@ instance Module.Finite.base_change [CommSemiring R] [Semiring A] [Algebra R A] [
       change _ ∈ Submodule.span A (Set.range <| TensorProduct.mk R A M 1)
       rw [← mul_one x, ← smul_eq_mul, ← TensorProduct.smul_tmul']
       exact Submodule.smul_mem _ x (Submodule.subset_span <| Set.mem_range_self y)
-    · exact fun _ _ => Submodule.add_mem _
+    | add x y hx hy => exact Submodule.add_mem _ hx hy
 #align module.finite.base_change Module.Finite.base_change
 
 instance Module.Finite.tensorProduct [CommSemiring R] [AddCommMonoid M] [Module R M]
@@ -668,7 +753,59 @@ instance Module.Finite.tensorProduct [CommSemiring R] [AddCommMonoid M] [Module 
   out := (TensorProduct.map₂_mk_top_top_eq_top R M N).subst (hM.out.map₂ _ hN.out)
 #align module.finite.tensor_product Module.Finite.tensorProduct
 
+/-- If a free module is finite, then any arbitrary basis is finite. -/
+lemma Module.Finite.finite_basis {R M} [Ring R] [Nontrivial R] [AddCommGroup M] [Module R M]
+    {ι} [Module.Finite R M] (b : Basis ι R M) :
+    _root_.Finite ι :=
+  let ⟨s, hs⟩ := ‹Module.Finite R M›
+  basis_finite_of_finite_spans (↑s) s.finite_toSet hs b
+
 end ModuleAndAlgebra
+
+namespace Submodule
+
+open Module
+
+variable {R V} [Ring R] [AddCommGroup V] [Module R V]
+
+/-- The sup of two fg submodules is finite. Also see `Submodule.FG.sup`. -/
+instance finite_sup (S₁ S₂ : Submodule R V) [h₁ : Module.Finite R S₁]
+    [h₂ : Module.Finite R S₂] : Module.Finite R (S₁ ⊔ S₂ : Submodule R V) := by
+  rw [finite_def] at *
+  exact (fg_top _).2 (((fg_top S₁).1 h₁).sup ((fg_top S₂).1 h₂))
+
+/-- The submodule generated by a finite supremum of finite dimensional submodules is
+finite-dimensional.
+
+Note that strictly this only needs `∀ i ∈ s, FiniteDimensional K (S i)`, but that doesn't
+work well with typeclass search. -/
+instance finite_finset_sup {ι : Type*} (s : Finset ι) (S : ι → Submodule R V)
+    [∀ i, Module.Finite R (S i)] : Module.Finite R (s.sup S : Submodule R V) := by
+  refine'
+    @Finset.sup_induction _ _ _ _ s S (fun i => Module.Finite R ↑i) (Module.Finite.bot R V)
+      _ fun i _ => by infer_instance
+  intro S₁ hS₁ S₂ hS₂
+  exact Submodule.finite_sup S₁ S₂
+
+/-- The submodule generated by a supremum of finite dimensional submodules, indexed by a finite
+sort is finite-dimensional. -/
+instance finite_iSup {ι : Sort*} [Finite ι] (S : ι → Submodule R V)
+    [∀ i, Module.Finite R (S i)] : Module.Finite R ↑(⨆ i, S i) := by
+  cases nonempty_fintype (PLift ι)
+  rw [← iSup_plift_down, ← Finset.sup_univ_eq_iSup]
+  exact Submodule.finite_finset_sup _ _
+
+end Submodule
+
+section
+
+variable {R V} [Ring R] [AddCommGroup V] [Module R V]
+
+instance Module.Finite.finsupp {ι : Type*} [_root_.Finite ι] [Module.Finite R V] :
+    Module.Finite R (ι →₀ V) :=
+  Module.Finite.equiv (Finsupp.linearEquivFunOnFinite R V ι).symm
+
+end
 
 namespace RingHom
 
@@ -721,9 +858,7 @@ end RingHom
 namespace AlgHom
 
 variable {R A B C : Type*} [CommRing R]
-
 variable [CommRing A] [CommRing B] [CommRing C]
-
 variable [Algebra R A] [Algebra R B] [Algebra R C]
 
 /-- An algebra morphism `A →ₐ[R] B` is finite if it is finite as ring morphism.
@@ -757,3 +892,6 @@ theorem of_comp_finite {f : A →ₐ[R] B} {g : B →ₐ[R] C} (h : (g.comp f).F
 end Finite
 
 end AlgHom
+
+instance Subalgebra.finite_bot {F E : Type*} [CommSemiring F] [Semiring E] [Algebra F E] :
+    Module.Finite F (⊥ : Subalgebra F E) := Module.Finite.range (Algebra.linearMap F E)

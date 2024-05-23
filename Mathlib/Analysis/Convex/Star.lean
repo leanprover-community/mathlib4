@@ -3,6 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Analysis.Convex.Segment
 import Mathlib.Tactic.GCongr
 
@@ -94,7 +95,7 @@ theorem starConvex_iff_pointwise_add_subset :
   refine'
     ⟨_, fun h y hy a b ha hb hab =>
       h ha hb hab (add_mem_add (smul_mem_smul_set <| mem_singleton _) ⟨_, hy, rfl⟩)⟩
-  rintro hA a b ha hb hab w ⟨au, bv, ⟨u, rfl : u = x, rfl⟩, ⟨v, hv, rfl⟩, rfl⟩
+  rintro hA a b ha hb hab w ⟨au, ⟨u, rfl : u = x, rfl⟩, bv, ⟨v, hv, rfl⟩, rfl⟩
   exact hA hv ha hb hab
 #align star_convex_iff_pointwise_add_subset starConvex_iff_pointwise_add_subset
 
@@ -114,7 +115,7 @@ theorem starConvex_sInter {S : Set (Set E)} (h : ∀ s ∈ S, StarConvex 𝕜 x 
 
 theorem starConvex_iInter {ι : Sort*} {s : ι → Set E} (h : ∀ i, StarConvex 𝕜 x (s i)) :
     StarConvex 𝕜 x (⋂ i, s i) :=
-  sInter_range s ▸ starConvex_sInter <| forall_range_iff.2 h
+  sInter_range s ▸ starConvex_sInter <| forall_mem_range.2 h
 #align star_convex_Inter starConvex_iInter
 
 theorem StarConvex.union (hs : StarConvex 𝕜 x s) (ht : StarConvex 𝕜 x t) :
@@ -162,7 +163,7 @@ theorem StarConvex.mem (hs : StarConvex 𝕜 x s) (h : s.Nonempty) : x ∈ s := 
 
 theorem starConvex_iff_forall_pos (hx : x ∈ s) : StarConvex 𝕜 x s ↔
     ∀ ⦃y⦄, y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 → a • x + b • y ∈ s := by
-  refine' ⟨fun h y hy a b ha hb hab => h hy ha.le hb.le hab, _⟩
+  refine ⟨fun h y hy a b ha hb hab => h hy ha.le hb.le hab, ?_⟩
   intro h y hy a b ha hb hab
   obtain rfl | ha := ha.eq_or_lt
   · rw [zero_add] at hab
@@ -201,10 +202,9 @@ theorem starConvex_singleton (x : E) : StarConvex 𝕜 x {x} := by
 #align star_convex_singleton starConvex_singleton
 
 theorem StarConvex.linear_image (hs : StarConvex 𝕜 x s) (f : E →ₗ[𝕜] F) :
-    StarConvex 𝕜 (f x) (s.image f) := by
-  intro y hy a b ha hb hab
-  obtain ⟨y', hy', rfl⟩ := hy
-  exact ⟨a • x + b • y', hs hy' ha hb hab, by rw [f.map_add, f.map_smul, f.map_smul]⟩
+    StarConvex 𝕜 (f x) (f '' s) := by
+  rintro _ ⟨y, hy, rfl⟩ a b ha hb hab
+  exact ⟨a • x + b • y, hs hy ha hb hab, by rw [f.map_add, f.map_smul, f.map_smul]⟩
 #align star_convex.linear_image StarConvex.linear_image
 
 theorem StarConvex.is_linear_image (hs : StarConvex 𝕜 x s) {f : E → F} (hf : IsLinearMap 𝕜 f) :
@@ -213,7 +213,7 @@ theorem StarConvex.is_linear_image (hs : StarConvex 𝕜 x s) {f : E → F} (hf 
 #align star_convex.is_linear_image StarConvex.is_linear_image
 
 theorem StarConvex.linear_preimage {s : Set F} (f : E →ₗ[𝕜] F) (hs : StarConvex 𝕜 (f x) s) :
-    StarConvex 𝕜 x (s.preimage f) := by
+    StarConvex 𝕜 x (f ⁻¹' s) := by
   intro y hy a b ha hb hab
   rw [mem_preimage, f.map_add, f.map_smul, f.map_smul]
   exact hs hy ha hb hab
@@ -234,7 +234,7 @@ theorem StarConvex.add_left (hs : StarConvex 𝕜 x s) (z : E) :
     StarConvex 𝕜 (z + x) ((fun x => z + x) '' s) := by
   intro y hy a b ha hb hab
   obtain ⟨y', hy', rfl⟩ := hy
-  refine' ⟨a • x + b • y', hs hy' ha hb hab, _⟩
+  refine ⟨a • x + b • y', hs hy' ha hb hab, ?_⟩
   rw [smul_add, smul_add, add_add_add_comm, ← add_smul, hab, one_smul]
 #align star_convex.add_left StarConvex.add_left
 
@@ -242,7 +242,7 @@ theorem StarConvex.add_right (hs : StarConvex 𝕜 x s) (z : E) :
     StarConvex 𝕜 (x + z) ((fun x => x + z) '' s) := by
   intro y hy a b ha hb hab
   obtain ⟨y', hy', rfl⟩ := hy
-  refine' ⟨a • x + b • y', hs hy' ha hb hab, _⟩
+  refine ⟨a • x + b • y', hs hy' ha hb hab, ?_⟩
   rw [smul_add, smul_add, add_add_add_comm, ← add_smul, hab, one_smul]
 #align star_convex.add_right StarConvex.add_right
 
@@ -360,7 +360,7 @@ theorem StarConvex.affine_preimage (f : E →ᵃ[𝕜] F) {s : Set F} (hs : Star
 theorem StarConvex.affine_image (f : E →ᵃ[𝕜] F) {s : Set E} (hs : StarConvex 𝕜 x s) :
     StarConvex 𝕜 (f x) (f '' s) := by
   rintro y ⟨y', ⟨hy', hy'f⟩⟩ a b ha hb hab
-  refine' ⟨a • x + b • y', ⟨hs hy' ha hb hab, _⟩⟩
+  refine ⟨a • x + b • y', ⟨hs hy' ha hb hab, ?_⟩⟩
   rw [Convex.combo_affine_apply hab, hy'f]
 #align star_convex.affine_image StarConvex.affine_image
 
@@ -376,6 +376,28 @@ theorem StarConvex.sub (hs : StarConvex 𝕜 x s) (ht : StarConvex 𝕜 y t) :
 #align star_convex.sub StarConvex.sub
 
 end AddCommGroup
+
+section OrderedAddCommGroup
+
+variable [OrderedAddCommGroup E] [Module 𝕜 E] [OrderedSMul 𝕜 E] {x y : E}
+
+/-- If `x < y`, then `(Set.Iic x)ᶜ` is star convex at `y`. -/
+lemma starConvex_compl_Iic (h : x < y) : StarConvex 𝕜 y (Iic x)ᶜ := by
+  refine (starConvex_iff_forall_pos <| by simp [h.not_le]).mpr fun z hz a b ha hb hab ↦ ?_
+  rw [mem_compl_iff, mem_Iic] at hz ⊢
+  contrapose! hz
+  refine (lt_of_smul_lt_smul_of_nonneg_left ?_ hb.le).le
+  calc
+    b • z ≤ (a + b) • x - a • y := by rwa [le_sub_iff_add_le', hab, one_smul]
+    _ < b • x := by
+      rw [add_smul, sub_lt_iff_lt_add']
+      gcongr
+
+/-- If `x < y`, then `(Set.Ici y)ᶜ` is star convex at `x`. -/
+lemma starConvex_compl_Ici (h : x < y) : StarConvex 𝕜 x (Ici y)ᶜ :=
+  starConvex_compl_Iic (E := Eᵒᵈ) h
+
+end OrderedAddCommGroup
 
 end OrderedRing
 
@@ -418,25 +440,26 @@ end LinearOrderedField
 Relates `starConvex` and `Set.ordConnected`.
 -/
 
-
 section OrdConnected
 
+/-- If `s` is an order-connected set in an ordered module over an ordered semiring
+and all elements of `s` are comparable with `x ∈ s`, then `s` is `StarConvex` at `x`. -/
 theorem Set.OrdConnected.starConvex [OrderedSemiring 𝕜] [OrderedAddCommMonoid E] [Module 𝕜 E]
     [OrderedSMul 𝕜 E] {x : E} {s : Set E} (hs : s.OrdConnected) (hx : x ∈ s)
     (h : ∀ y ∈ s, x ≤ y ∨ y ≤ x) : StarConvex 𝕜 x s := by
   intro y hy a b ha hb hab
   obtain hxy | hyx := h _ hy
   · refine' hs.out hx hy (mem_Icc.2 ⟨_, _⟩)
-    calc
-      x = a • x + b • x := (Convex.combo_self hab _).symm
-      _ ≤ a • x + b • y := by gcongr
+    · calc
+        x = a • x + b • x := (Convex.combo_self hab _).symm
+        _ ≤ a • x + b • y := by gcongr
     calc
       a • x + b • y ≤ a • y + b • y := by gcongr
       _ = y := Convex.combo_self hab _
   · refine' hs.out hy hx (mem_Icc.2 ⟨_, _⟩)
-    calc
-      y = a • y + b • y := (Convex.combo_self hab _).symm
-      _ ≤ a • x + b • y := by gcongr
+    · calc
+        y = a • y + b • y := (Convex.combo_self hab _).symm
+        _ ≤ a • x + b • y := by gcongr
     calc
       a • x + b • y ≤ a • x + b • x := by gcongr
       _ = x := Convex.combo_self hab _

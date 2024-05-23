@@ -5,33 +5,35 @@ Authors: Simon Hudon, Patrick Massot, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.Units.Hom
-import Mathlib.Algebra.GroupWithZero.Units.Basic
 
 #align_import algebra.group.prod from "leanprover-community/mathlib"@"cd391184c85986113f8c00844cfe6dda1d34be3d"
 
 /-!
 # Monoid, group etc structures on `M × N`
 
-In this file we define one-binop (`Monoid`, `Group` etc) structures on `M × N`. We also prove
-trivial `simp` lemmas, and define the following operations on `MonoidHom`s:
+In this file we define one-binop (`Monoid`, `Group` etc) structures on `M × N`.
+We also prove trivial `simp` lemmas, and define the following operations on `MonoidHom`s:
 
 * `fst M N : M × N →* M`, `snd M N : M × N →* N`: projections `Prod.fst` and `Prod.snd`
   as `MonoidHom`s;
 * `inl M N : M →* M × N`, `inr M N : N →* M × N`: inclusions of first/second monoid
   into the product;
 * `f.prod g` : `M →* N × P`: sends `x` to `(f x, g x)`;
-* `f.coprod g : M × N →* P`: sends `(x, y)` to `f x * g y`;
+* When `P` is commutative, `f.coprod g : M × N →* P` sends `(x, y)` to `f x * g y`
+  (without the commutativity assumption on `P`, see `MonoidHom.noncommPiCoprod`);
 * `f.prodMap g : M × N → M' × N'`: `prod.map f g` as a `MonoidHom`,
   sends `(x, y)` to `(f x, g y)`.
 
 ## Main declarations
 
-* `mulMulHom`/`mulMonoidHom`/`mulMonoidWithZeroHom`: Multiplication bundled as a
-  multiplicative/monoid/monoid with zero homomorphism.
-* `divMonoidHom`/`divMonoidWithZeroHom`: Division bundled as a monoid/monoid with zero
-  homomorphism.
+* `mulMulHom`/`mulMonoidHom`: Multiplication bundled as a
+  multiplicative/monoid homomorphism.
+* `divMonoidHom`: Division bundled as a monoid homomorphism.
 -/
 
+assert_not_exists MonoidWithZero
+-- TODO:
+-- assert_not_exists AddMonoidWithOne
 
 variable {A : Type*} {B : Type*} {G : Type*} {H : Type*} {M : Type*} {N : Type*} {P : Type*}
 
@@ -187,10 +189,6 @@ theorem swap_div [Div G] [Div H] (a b : G × H) : (a / b).swap = a.swap / b.swap
 #align prod.swap_div Prod.swap_div
 #align prod.swap_sub Prod.swap_sub
 
-instance [MulZeroClass M] [MulZeroClass N] : MulZeroClass (M × N) :=
-  { zero_mul := fun a => Prod.recOn a fun _ _ => mk.inj_iff.mpr ⟨zero_mul _, zero_mul _⟩,
-    mul_zero := fun a => Prod.recOn a fun _ _ => mk.inj_iff.mpr ⟨mul_zero _, mul_zero _⟩ }
-
 @[to_additive]
 instance instSemigroup [Semigroup M] [Semigroup N] : Semigroup (M × N) :=
   { mul_assoc := fun _ _ _ => mk.inj_iff.mpr ⟨mul_assoc _ _ _, mul_assoc _ _ _⟩ }
@@ -198,10 +196,6 @@ instance instSemigroup [Semigroup M] [Semigroup N] : Semigroup (M × N) :=
 @[to_additive]
 instance instCommSemigroup [CommSemigroup G] [CommSemigroup H] : CommSemigroup (G × H) :=
   { mul_comm := fun _ _ => mk.inj_iff.mpr ⟨mul_comm _ _, mul_comm _ _⟩ }
-
-instance [SemigroupWithZero M] [SemigroupWithZero N] : SemigroupWithZero (M × N) :=
-  { zero_mul := by simp,
-    mul_zero := by simp }
 
 @[to_additive]
 instance instMulOneClass [MulOneClass M] [MulOneClass N] : MulOneClass (M × N) :=
@@ -241,14 +235,25 @@ instance instGroup [Group G] [Group H] : Group (G × H) :=
   { mul_left_inv := fun _ => mk.inj_iff.mpr ⟨mul_left_inv _, mul_left_inv _⟩ }
 
 @[to_additive]
+instance [Mul G] [Mul H] [IsLeftCancelMul G] [IsLeftCancelMul H] : IsLeftCancelMul (G × H) where
+  mul_left_cancel _ _ _ h :=
+      Prod.ext (mul_left_cancel (Prod.ext_iff.1 h).1) (mul_left_cancel (Prod.ext_iff.1 h).2)
+
+@[to_additive]
+instance [Mul G] [Mul H] [IsRightCancelMul G] [IsRightCancelMul H] : IsRightCancelMul (G × H) where
+  mul_right_cancel _ _ _ h :=
+      Prod.ext (mul_right_cancel (Prod.ext_iff.1 h).1) (mul_right_cancel (Prod.ext_iff.1 h).2)
+
+@[to_additive]
+instance [Mul G] [Mul H] [IsCancelMul G] [IsCancelMul H] : IsCancelMul (G × H) where
+
+@[to_additive]
 instance [LeftCancelSemigroup G] [LeftCancelSemigroup H] : LeftCancelSemigroup (G × H) :=
-  { mul_left_cancel := fun _ _ _ h =>
-      Prod.ext (mul_left_cancel (Prod.ext_iff.1 h).1) (mul_left_cancel (Prod.ext_iff.1 h).2) }
+  { mul_left_cancel := fun _ _ _ => mul_left_cancel }
 
 @[to_additive]
 instance [RightCancelSemigroup G] [RightCancelSemigroup H] : RightCancelSemigroup (G × H) :=
-  { mul_right_cancel := fun _ _ _ h =>
-      Prod.ext (mul_right_cancel (Prod.ext_iff.1 h).1) (mul_right_cancel (Prod.ext_iff.1 h).2) }
+  { mul_right_cancel := fun _ _ _ => mul_right_cancel }
 
 @[to_additive]
 instance [LeftCancelMonoid M] [LeftCancelMonoid N] : LeftCancelMonoid (M × N) :=
@@ -272,23 +277,33 @@ instance instCommMonoid [CommMonoid M] [CommMonoid N] : CommMonoid (M × N) :=
 instance [CancelCommMonoid M] [CancelCommMonoid N] : CancelCommMonoid (M × N) :=
   { mul_comm := fun ⟨m₁, n₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mk_mul_mk, mul_comm m₁, mul_comm n₁] }
 
-instance [MulZeroOneClass M] [MulZeroOneClass N] : MulZeroOneClass (M × N) :=
-  { zero_mul := by simp,
-    mul_zero := by simp }
-
-instance [MonoidWithZero M] [MonoidWithZero N] : MonoidWithZero (M × N) :=
-  { zero_mul := by simp,
-    mul_zero := by simp }
-
-instance [CommMonoidWithZero M] [CommMonoidWithZero N] : CommMonoidWithZero (M × N) :=
-  { zero_mul := by simp,
-    mul_zero := by simp }
-
 @[to_additive]
 instance instCommGroup [CommGroup G] [CommGroup H] : CommGroup (G × H) :=
   { mul_comm := fun ⟨g₁, h₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mk_mul_mk, mul_comm g₁, mul_comm h₁] }
 
 end Prod
+
+section
+variable [Mul M] [Mul N]
+
+@[to_additive AddSemiconjBy.prod]
+theorem SemiconjBy.prod {x y z : M × N}
+    (hm : SemiconjBy x.1 y.1 z.1) (hn : SemiconjBy x.2 y.2 z.2) : SemiconjBy x y z :=
+  Prod.ext hm hn
+
+@[to_additive]
+theorem Prod.semiconjBy_iff {x y z : M × N} :
+    SemiconjBy x y z ↔ SemiconjBy x.1 y.1 z.1 ∧ SemiconjBy x.2 y.2 z.2 := ext_iff
+
+@[to_additive AddCommute.prod]
+theorem Commute.prod {x y : M × N} (hm : Commute x.1 y.1) (hn : Commute x.2 y.2) : Commute x y :=
+  .prod hm hn
+
+@[to_additive]
+theorem Prod.commute_iff {x y : M × N} :
+    Commute x y ↔ Commute x.1 y.1 ∧ Commute x.2 y.2 := semiconjBy_iff
+
+end
 
 namespace MulHom
 
@@ -296,7 +311,7 @@ section Prod
 
 variable (M N) [Mul M] [Mul N] [Mul P]
 
-/-- Given magmas `M`, `N`, the natural projection homomorphism from `M × N` to `M`.-/
+/-- Given magmas `M`, `N`, the natural projection homomorphism from `M × N` to `M`. -/
 @[to_additive
       "Given additive magmas `A`, `B`, the natural projection homomorphism
       from `A × B` to `A`"]
@@ -305,7 +320,7 @@ def fst : M × N →ₙ* M :=
 #align mul_hom.fst MulHom.fst
 #align add_hom.fst AddHom.fst
 
-/-- Given magmas `M`, `N`, the natural projection homomorphism from `M × N` to `N`.-/
+/-- Given magmas `M`, `N`, the natural projection homomorphism from `M × N` to `N`. -/
 @[to_additive
       "Given additive magmas `A`, `B`, the natural projection homomorphism
       from `A × B` to `B`"]
@@ -410,10 +425,12 @@ section Coprod
 variable [Mul M] [Mul N] [CommSemigroup P] (f : M →ₙ* P) (g : N →ₙ* P)
 
 /-- Coproduct of two `MulHom`s with the same codomain:
-`f.coprod g (p : M × N) = f p.1 * g p.2`. -/
+  `f.coprod g (p : M × N) = f p.1 * g p.2`.
+  (Commutative codomain; for the general case, see `MulHom.noncommCoprod`) -/
 @[to_additive
-      "Coproduct of two `AddHom`s with the same codomain:
-      `f.coprod g (p : M × N) = f p.1 + g p.2`."]
+    "Coproduct of two `AddHom`s with the same codomain:
+    `f.coprod g (p : M × N) = f p.1 + g p.2`.
+    (Commutative codomain; for the general case, see `AddHom.noncommCoprod`)"]
 def coprod : M × N →ₙ* P :=
   f.comp (fst M N) * g.comp (snd M N)
 #align mul_hom.coprod MulHom.coprod
@@ -440,7 +457,7 @@ namespace MonoidHom
 
 variable (M N) [MulOneClass M] [MulOneClass N]
 
-/-- Given monoids `M`, `N`, the natural projection homomorphism from `M × N` to `M`.-/
+/-- Given monoids `M`, `N`, the natural projection homomorphism from `M × N` to `M`. -/
 @[to_additive
       "Given additive monoids `A`, `B`, the natural projection homomorphism
       from `A × B` to `A`"]
@@ -451,7 +468,7 @@ def fst : M × N →* M :=
 #align monoid_hom.fst MonoidHom.fst
 #align add_monoid_hom.fst AddMonoidHom.fst
 
-/-- Given monoids `M`, `N`, the natural projection homomorphism from `M × N` to `N`.-/
+/-- Given monoids `M`, `N`, the natural projection homomorphism from `M × N` to `N`. -/
 @[to_additive
       "Given additive monoids `A`, `B`, the natural projection homomorphism
       from `A × B` to `B`"]
@@ -533,6 +550,10 @@ theorem snd_comp_inr : (snd M N).comp (inr M N) = id N :=
   rfl
 #align monoid_hom.snd_comp_inr MonoidHom.snd_comp_inr
 #align add_monoid_hom.snd_comp_inr AddMonoidHom.snd_comp_inr
+
+@[to_additive]
+theorem commute_inl_inr (m : M) (n : N) : Commute (inl M N m) (inr M N n) :=
+  Commute.prod (.one_right m) (.one_left n)
 
 section Prod
 
@@ -621,10 +642,12 @@ section Coprod
 variable [CommMonoid P] (f : M →* P) (g : N →* P)
 
 /-- Coproduct of two `MonoidHom`s with the same codomain:
-`f.coprod g (p : M × N) = f p.1 * g p.2`. -/
+  `f.coprod g (p : M × N) = f p.1 * g p.2`.
+  (Commutative case; for the general case, see `MonoidHom.noncommCoprod`.)-/
 @[to_additive
-      "Coproduct of two `AddMonoidHom`s with the same codomain:
-      `f.coprod g (p : M × N) = f p.1 + g p.2`."]
+    "Coproduct of two `AddMonoidHom`s with the same codomain:
+    `f.coprod g (p : M × N) = f p.1 + g p.2`.
+    (Commutative case; for the general case, see `AddHom.noncommCoprod`.)"]
 def coprod : M × N →* P :=
   f.comp (fst M N) * g.comp (snd M N)
 #align monoid_hom.coprod MonoidHom.coprod
@@ -706,9 +729,9 @@ section
 
 variable (M N M' N')
 
-/-- Four-way commutativity of `prod`. The name matches `mul_mul_mul_comm`. -/
+/-- Four-way commutativity of `Prod`. The name matches `mul_mul_mul_comm`. -/
 @[to_additive (attr := simps apply) prodProdProdComm
-    "Four-way commutativity of `prod`.\nThe name matches `mul_mul_mul_comm`"]
+    "Four-way commutativity of `Prod`.\nThe name matches `mul_mul_mul_comm`"]
 def prodProdProdComm : (M × N) × M' × N' ≃* (M × M') × N × N' :=
   { Equiv.prodProdProdComm M N M' N' with
     toFun := fun mnmn => ((mnmn.1.1, mnmn.2.1), (mnmn.1.2, mnmn.2.2))
@@ -731,7 +754,7 @@ theorem prodProdProdComm_symm : (prodProdProdComm M N M' N').symm = prodProdProd
 
 end
 
-/-- Product of multiplicative isomorphisms; the maps come from `Equiv.prodCongr`.-/
+/-- Product of multiplicative isomorphisms; the maps come from `Equiv.prodCongr`. -/
 @[to_additive prodCongr "Product of additive isomorphisms; the maps come from `Equiv.prodCongr`."]
 def prodCongr (f : M ≃* M') (g : N ≃* N') : M × N ≃* M' × N' :=
   { f.toEquiv.prodCongr g.toEquiv with
@@ -739,14 +762,14 @@ def prodCongr (f : M ≃* M') (g : N ≃* N') : M × N ≃* M' × N' :=
 #align mul_equiv.prod_congr MulEquiv.prodCongr
 #align add_equiv.prod_congr AddEquiv.prodCongr
 
-/-- Multiplying by the trivial monoid doesn't change the structure.-/
+/-- Multiplying by the trivial monoid doesn't change the structure. -/
 @[to_additive uniqueProd "Multiplying by the trivial monoid doesn't change the structure."]
 def uniqueProd [Unique N] : N × M ≃* M :=
   { Equiv.uniqueProd M N with map_mul' := fun _ _ => rfl }
 #align mul_equiv.unique_prod MulEquiv.uniqueProd
 #align add_equiv.unique_prod AddEquiv.uniqueProd
 
-/-- Multiplying by the trivial monoid doesn't change the structure.-/
+/-- Multiplying by the trivial monoid doesn't change the structure. -/
 @[to_additive prodUnique "Multiplying by the trivial monoid doesn't change the structure."]
 def prodUnique [Unique N] : M × N ≃* M :=
   { Equiv.prodUnique M N with map_mul' := fun _ _ => rfl }
@@ -836,13 +859,6 @@ def mulMonoidHom [CommMonoid α] : α × α →* α :=
 #align mul_monoid_hom_apply mulMonoidHom_apply
 #align add_add_monoid_hom_apply addAddMonoidHom_apply
 
-/-- Multiplication as a multiplicative homomorphism with zero. -/
-@[simps]
-def mulMonoidWithZeroHom [CommMonoidWithZero α] : α × α →*₀ α :=
-  { mulMonoidHom with map_zero' := mul_zero _ }
-#align mul_monoid_with_zero_hom mulMonoidWithZeroHom
-#align mul_monoid_with_zero_hom_apply mulMonoidWithZeroHom_apply
-
 /-- Division as a monoid homomorphism. -/
 @[to_additive (attr := simps) "Subtraction as an additive monoid homomorphism."]
 def divMonoidHom [DivisionCommMonoid α] : α × α →* α where
@@ -853,15 +869,5 @@ def divMonoidHom [DivisionCommMonoid α] : α × α →* α where
 #align sub_add_monoid_hom subAddMonoidHom
 #align div_monoid_hom_apply divMonoidHom_apply
 #align sub_add_monoid_hom_apply subAddMonoidHom_apply
-
-/-- Division as a multiplicative homomorphism with zero. -/
-@[simps]
-def divMonoidWithZeroHom [CommGroupWithZero α] : α × α →*₀ α where
-  toFun a := a.1 / a.2
-  map_zero' := zero_div _
-  map_one' := div_one _
-  map_mul' _ _ := mul_div_mul_comm _ _ _ _
-#align div_monoid_with_zero_hom divMonoidWithZeroHom
-#align div_monoid_with_zero_hom_apply divMonoidWithZeroHom_apply
 
 end BundledMulDiv

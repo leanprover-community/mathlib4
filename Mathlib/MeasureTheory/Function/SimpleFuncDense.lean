@@ -36,7 +36,8 @@ by a sequence of simple functions.
 
 open Set Function Filter TopologicalSpace ENNReal EMetric Finset
 
-open Classical Topology ENNReal MeasureTheory BigOperators
+open scoped Classical
+open Topology ENNReal MeasureTheory BigOperators
 
 variable {α β ι E F 𝕜 : Type*}
 
@@ -44,7 +45,6 @@ noncomputable section
 
 namespace MeasureTheory
 
--- mathport name: «expr →ₛ »
 local infixr:25 " →ₛ " => SimpleFunc
 
 namespace SimpleFunc
@@ -168,7 +168,7 @@ theorem tendsto_approxOn {f : β → α} (hf : Measurable f) {s : Set α} {y₀ 
 theorem edist_approxOn_mono {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s)
     [SeparableSpace s] (x : β) {m n : ℕ} (h : m ≤ n) :
     edist (approxOn f hf s y₀ h₀ n x) (f x) ≤ edist (approxOn f hf s y₀ h₀ m x) (f x) := by
-  dsimp only [approxOn, coe_comp, Function.comp]
+  dsimp only [approxOn, coe_comp, Function.comp_def]
   exact edist_nearestPt_le _ _ ((nearestPtInd_le _ _ _).trans h)
 #align measure_theory.simple_func.edist_approx_on_mono MeasureTheory.SimpleFunc.edist_approxOn_mono
 

@@ -3,7 +3,7 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Johan Commelin
 -/
-import Mathlib.Data.Polynomial.FieldDivision
+import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.FieldTheory.Minpoly.Basic
 import Mathlib.RingTheory.Algebraic
 
@@ -19,12 +19,12 @@ are irreducible, and uniquely determined by their defining property.
 -/
 
 
-open Classical Polynomial Set Function minpoly
+open scoped Classical
+open Polynomial Set Function minpoly
 
 namespace minpoly
 
 variable {A B : Type*}
-
 variable (A) [Field A]
 
 section Ring
@@ -43,7 +43,7 @@ theorem degree_le_of_ne_zero {p : A[X]} (pnz : p ≠ 0) (hp : Polynomial.aeval x
 #align minpoly.degree_le_of_ne_zero minpoly.degree_le_of_ne_zero
 
 theorem ne_zero_of_finite (e : B) [FiniteDimensional A B] : minpoly A e ≠ 0 :=
-  minpoly.ne_zero <| isIntegral_of_finite _ _
+  minpoly.ne_zero <| .of_finite A _
 #align minpoly.ne_zero_of_finite_field_extension minpoly.ne_zero_of_finite
 
 /-- The minimal polynomial of an element `x` is uniquely characterized by its defining property:
@@ -56,8 +56,7 @@ theorem unique {p : A[X]} (pmonic : p.Monic) (hp : Polynomial.aeval x p = 0)
   have hx : IsIntegral A x := ⟨p, pmonic, hp⟩
   symm; apply eq_of_sub_eq_zero
   by_contra hnz
-  have hd := degree_le_of_ne_zero A x hnz (by simp [hp])
-  contrapose! hd
+  apply degree_le_of_ne_zero A x hnz (by simp [hp]) |>.not_lt
   apply degree_sub_lt _ (minpoly.ne_zero hx)
   · rw [(monic hx).leadingCoeff, pmonic.leadingCoeff]
   · exact le_antisymm (min A x pmonic hp) (pmin (minpoly A x) (monic hx) (aeval A x))
@@ -69,21 +68,25 @@ stronger assumptions on `B`. -/
 theorem dvd {p : A[X]} (hp : Polynomial.aeval x p = 0) : minpoly A x ∣ p := by
   by_cases hp0 : p = 0
   · simp only [hp0, dvd_zero]
-  have hx : IsIntegral A x := by
-    rw [← isAlgebraic_iff_isIntegral]
-    exact ⟨p, hp0, hp⟩
-  rw [← dvd_iff_modByMonic_eq_zero (monic hx)]
+  have hx : IsIntegral A x := IsAlgebraic.isIntegral ⟨p, hp0, hp⟩
+  rw [← modByMonic_eq_zero_iff_dvd (monic hx)]
   by_contra hnz
-  have hd := degree_le_of_ne_zero A x hnz
-    ((aeval_modByMonic_eq_self_of_root (monic hx) (aeval _ _)).trans hp)
-  contrapose! hd
+  apply degree_le_of_ne_zero A x hnz
+    ((aeval_modByMonic_eq_self_of_root (monic hx) (aeval _ _)).trans hp) |>.not_lt
   exact degree_modByMonic_lt _ (monic hx)
 #align minpoly.dvd minpoly.dvd
+
+variable {A x} in
+lemma dvd_iff {p : A[X]} : minpoly A x ∣ p ↔ Polynomial.aeval x p = 0 :=
+  ⟨fun ⟨q, hq⟩ ↦ by rw [hq, map_mul, aeval, zero_mul], minpoly.dvd A x⟩
+
+theorem isRadical [IsReduced B] : IsRadical (minpoly A x) := fun n p dvd ↦ by
+  rw [dvd_iff] at dvd ⊢; rw [map_pow] at dvd; exact IsReduced.eq_zero _ ⟨n, dvd⟩
 
 theorem dvd_map_of_isScalarTower (A K : Type*) {R : Type*} [CommRing A] [Field K] [CommRing R]
     [Algebra A K] [Algebra A R] [Algebra K R] [IsScalarTower A K R] (x : R) :
     minpoly K x ∣ (minpoly A x).map (algebraMap A K) := by
-  refine' minpoly.dvd K x _
+  refine minpoly.dvd K x ?_
   rw [aeval_map_algebraMap, minpoly.aeval]
 #align minpoly.dvd_map_of_is_scalar_tower minpoly.dvd_map_of_isScalarTower
 
@@ -105,6 +108,15 @@ theorem aeval_of_isScalarTower (R : Type*) {K T U : Type*} [CommRing R] [Field K
     eval₂_eq_zero_of_dvd_of_eval₂_eq_zero (algebraMap K U) y
       (minpoly.dvd_map_of_isScalarTower R K x) hy
 #align minpoly.aeval_of_is_scalar_tower minpoly.aeval_of_isScalarTower
+
+/-- See also `minpoly.ker_eval` which relaxes the assumptions on `A` in exchange for
+stronger assumptions on `B`. -/
+@[simp]
+lemma ker_aeval_eq_span_minpoly :
+    RingHom.ker (Polynomial.aeval x) = A[X] ∙ minpoly A x := by
+  ext p
+  simp_rw [RingHom.mem_ker, ← minpoly.dvd_iff, Submodule.mem_span_singleton,
+    dvd_iff_exists_eq_mul_left, smul_eq_mul, eq_comm (a := p)]
 
 variable {A x}
 
@@ -156,7 +168,7 @@ noncomputable def Fintype.subtypeProd {E : Type*} {X : Set E} (hX : X.Finite) {L
 variable (F E K : Type*) [Field F] [Ring E] [CommRing K] [IsDomain K] [Algebra F E] [Algebra F K]
   [FiniteDimensional F E]
 
--- Porting note: removed `noncomputable!` since it seems not to be slow in lean 4,
+-- Porting note (#11083): removed `noncomputable!` since it seems not to be slow in lean 4,
 -- though it isn't very computable in practice (since neither `finrank` nor `finBasis` are).
 /-- Function from Hom_K(E,L) to pi type Π (x : basis), roots of min poly of x -/
 def rootsOfMinPolyPiType (φ : E →ₐ[F] K)
@@ -169,7 +181,8 @@ def rootsOfMinPolyPiType (φ : E →ₐ[F] K)
 
 theorem aux_inj_roots_of_min_poly : Injective (rootsOfMinPolyPiType F E K) := by
   intro f g h
-  suffices (f : E →ₗ[F] K) = g by rwa [FunLike.ext'_iff] at this ⊢
+  -- needs explicit coercion on the RHS
+  suffices (f : E →ₗ[F] K) = (g : E →ₗ[F] K) by rwa [DFunLike.ext'_iff] at this ⊢
   rw [funext_iff] at h
   exact LinearMap.ext_on (FiniteDimensional.finBasis F E).span_eq fun e he =>
     Subtype.ext_iff.mp (h ⟨e, he⟩)
@@ -219,7 +232,6 @@ end Ring
 section IsDomain
 
 variable [Ring B] [IsDomain B] [Algebra A B]
-
 variable {A} {x : B}
 
 /-- A minimal polynomial is prime. -/
@@ -263,3 +275,38 @@ theorem coeff_zero_ne_zero (hx : IsIntegral A x) (h : x ≠ 0) : coeff (minpoly 
 end IsDomain
 
 end minpoly
+
+section AlgHom
+
+variable {K L} [Field K] [CommRing L] [IsDomain L] [Algebra K L]
+
+/-- The minimal polynomial (over `K`) of `σ : Gal(L/K)` is `X ^ (orderOf σ) - 1`. -/
+lemma minpoly_algEquiv_toLinearMap (σ : L ≃ₐ[K] L) (hσ : IsOfFinOrder σ) :
+    minpoly K σ.toLinearMap = X ^ (orderOf σ) - C 1 := by
+  refine (minpoly.unique _ _ (monic_X_pow_sub_C _ hσ.orderOf_pos.ne.symm) ?_ ?_).symm
+  · rw [(aeval σ.toLinearMap).map_sub (X ^ orderOf σ) (C (1 : K))]
+    simp [← AlgEquiv.pow_toLinearMap, pow_orderOf_eq_one]
+  · intros q hq hs
+    rw [degree_eq_natDegree hq.ne_zero, degree_X_pow_sub_C hσ.orderOf_pos, Nat.cast_le, ← not_lt]
+    intro H
+    rw [aeval_eq_sum_range' H, ← Fin.sum_univ_eq_sum_range] at hs
+    simp_rw [← AlgEquiv.pow_toLinearMap] at hs
+    apply hq.ne_zero
+    simpa using Fintype.linearIndependent_iff.mp
+      (((linearIndependent_algHom_toLinearMap' K L L).comp _ AlgEquiv.coe_algHom_injective).comp _
+        (Subtype.val_injective.comp ((finEquivPowers σ hσ).injective)))
+      (q.coeff ∘ (↑)) hs ⟨_, H⟩
+
+/-- The minimal polynomial (over `K`) of `σ : Gal(L/K)` is `X ^ (orderOf σ) - 1`. -/
+lemma minpoly_algHom_toLinearMap (σ : L →ₐ[K] L) (hσ : IsOfFinOrder σ) :
+    minpoly K σ.toLinearMap = X ^ (orderOf σ) - C 1 := by
+  have : orderOf σ = orderOf (AlgEquiv.algHomUnitsEquiv _ _ hσ.unit) := by
+    rw [← MonoidHom.coe_coe, orderOf_injective (AlgEquiv.algHomUnitsEquiv K L)
+      (AlgEquiv.algHomUnitsEquiv K L).injective, ← orderOf_units, IsOfFinOrder.val_unit]
+  rw [this, ← minpoly_algEquiv_toLinearMap]
+  · apply congr_arg
+    ext
+    simp
+  · rwa [← orderOf_pos_iff, ← this, orderOf_pos_iff]
+
+end AlgHom

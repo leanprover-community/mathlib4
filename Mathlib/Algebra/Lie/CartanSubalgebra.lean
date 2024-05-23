@@ -29,7 +29,6 @@ lie subalgebra, normalizer, idealizer, cartan subalgebra
 universe u v w w₁ w₂
 
 variable {R : Type u} {L : Type v}
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L] (H : LieSubalgebra R L)
 
 /-- Given a Lie module `M` of a Lie algebra `L`, `LieSubmodule.IsUcsLimit` is the proposition
@@ -44,7 +43,9 @@ def LieSubmodule.IsUcsLimit {M : Type*} [AddCommGroup M] [Module R M] [LieRingMo
 
 namespace LieSubalgebra
 
-/-- A Cartan subalgebra is a nilpotent, self-normalizing subalgebra. -/
+/-- A Cartan subalgebra is a nilpotent, self-normalizing subalgebra.
+
+A _splitting_ Cartan subalgebra can be defined by mixing in `LieModule.IsTriangularizable R H L`. -/
 class IsCartanSubalgebra : Prop where
   nilpotent : LieAlgebra.IsNilpotent R H
   self_normalizing : H.normalizer = H
@@ -76,7 +77,7 @@ theorem isCartanSubalgebra_iff_isUcsLimit : H.IsCartanSubalgebra ↔ H.toLieSubm
     replace hk : H.toLieSubmodule = LieSubmodule.ucs k ⊥ :=
       le_antisymm hk
         (LieSubmodule.ucs_le_of_normalizer_eq_self H.normalizer_eq_self_of_isCartanSubalgebra k)
-    refine' ⟨k, fun l hl => _⟩
+    refine ⟨k, fun l hl => ?_⟩
     rw [← Nat.sub_add_cancel hl, LieSubmodule.ucs_add, ← hk,
       LieSubalgebra.ucs_eq_self_of_isCartanSubalgebra]
   · rintro ⟨k, hk⟩

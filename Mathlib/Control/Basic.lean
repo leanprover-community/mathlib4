@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Init.Control.Combinators
+import Mathlib.Init.Function
 import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.Attr.Core
-import Std.Data.List.Basic
 
 #align_import control.basic from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
@@ -87,30 +87,32 @@ theorem map_bind (x : m α) {g : α → m β} {f : β → γ} :
 
 theorem seq_bind_eq (x : m α) {g : β → m γ} {f : α → β} :
     f <$> x >>= g = x >>= g ∘ f :=
-  show bind (f <$> x) g = bind x (g ∘ f)
-  by rw [← bind_pure_comp, bind_assoc]; simp [pure_bind, (· ∘ ·)]
+  show bind (f <$> x) g = bind x (g ∘ f) by
+    rw [← bind_pure_comp, bind_assoc]
+    simp [pure_bind, Function.comp_def]
 #align seq_bind_eq seq_bind_eq
 
 #align seq_eq_bind_map seq_eq_bind_mapₓ
 -- order of implicits and `Seq.seq` has a lazily evaluated second argument using `Unit`
 
 @[functor_norm]
-theorem fish_pure {α β} (f : α → m β) : f >=> pure = f := by simp only [(· >=> ·), functor_norm]
+theorem fish_pure {α β} (f : α → m β) : f >=> pure = f := by
+  simp (config := { unfoldPartialApp := true }) only [(· >=> ·), functor_norm]
 #align fish_pure fish_pure
 
 @[functor_norm]
-theorem fish_pipe {α β} (f : α → m β) : pure >=> f = f := by simp only [(· >=> ·), functor_norm]
+theorem fish_pipe {α β} (f : α → m β) : pure >=> f = f := by
+  simp (config := { unfoldPartialApp := true }) only [(· >=> ·), functor_norm]
 #align fish_pipe fish_pipe
 
 -- note: in Lean 3 `>=>` is left-associative, but in Lean 4 it is right-associative.
 @[functor_norm]
 theorem fish_assoc {α β γ φ} (f : α → m β) (g : β → m γ) (h : γ → m φ) :
     (f >=> g) >=> h = f >=> g >=> h := by
-  simp only [(· >=> ·), functor_norm]
+  simp (config := { unfoldPartialApp := true }) only [(· >=> ·), functor_norm]
 #align fish_assoc fish_assoc
 
 variable {β' γ' : Type v}
-
 variable {m' : Type v → Type w} [Monad m']
 
 /-- Takes a value `β` and `List α` and accumulates pairs according to a monadic function `f`.
@@ -141,16 +143,16 @@ variable {m : Type u → Type u} [Monad m] [LawfulMonad m]
 
 theorem joinM_map_map {α β : Type u} (f : α → β) (a : m (m α)) :
     joinM (Functor.map f <$> a) = f <$> joinM a := by
-  simp only [joinM, (· ∘ ·), id.def, ← bind_pure_comp, bind_assoc, map_bind, pure_bind]
+  simp only [joinM, (· ∘ ·), id, ← bind_pure_comp, bind_assoc, map_bind, pure_bind]
 #align mjoin_map_map joinM_map_map
 
 theorem joinM_map_joinM {α : Type u} (a : m (m (m α))) : joinM (joinM <$> a) = joinM (joinM a) := by
-  simp only [joinM, (· ∘ ·), id.def, map_bind, ← bind_pure_comp, bind_assoc, pure_bind]
+  simp only [joinM, (· ∘ ·), id, map_bind, ← bind_pure_comp, bind_assoc, pure_bind]
 #align mjoin_map_mjoin joinM_map_joinM
 
 @[simp]
 theorem joinM_map_pure {α : Type u} (a : m α) : joinM (pure <$> a) = a := by
-  simp only [joinM, (· ∘ ·), id.def, map_bind, ← bind_pure_comp, bind_assoc, pure_bind, bind_pure]
+  simp only [joinM, (· ∘ ·), id, map_bind, ← bind_pure_comp, bind_assoc, pure_bind, bind_pure]
 #align mjoin_map_pure joinM_map_pure
 
 @[simp]
@@ -251,7 +253,7 @@ theorem CommApplicative.commutative_map {m : Type u → Type v} [h : Applicative
   f <$> a <*> b = flip f <$> b <*> a :=
   calc
     f <$> a <*> b = (fun p : α × β => f p.1 p.2) <$> (Prod.mk <$> a <*> b) := by
-      simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map]; rfl
+      simp only [map_seq, map_map]; rfl
     _ = (fun b a => f a b) <$> b <*> a := by
       rw [@CommApplicative.commutative_prod m h]
       simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map, (· ∘ ·)]

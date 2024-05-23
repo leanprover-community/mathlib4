@@ -3,7 +3,7 @@ Copyright (c) 2020 Hanting Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hanting Zhang
 -/
-import Mathlib.Data.Polynomial.Splits
+import Mathlib.Algebra.Polynomial.Splits
 import Mathlib.RingTheory.MvPolynomial.Symmetric
 
 #align_import ring_theory.polynomial.vieta from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
@@ -35,9 +35,9 @@ section Semiring
 
 variable {R : Type*} [CommSemiring R]
 
-/-- A sum version of Vieta's formula for `Multiset`: the product of the linear terms `X + λ` where
-`λ` runs through a multiset `s` is equal to a linear combination of the symmetric functions
-`esymm s` of the `λ`'s .-/
+/-- A sum version of **Vieta's formula** for `Multiset`: the product of the linear terms `X + λ`
+where `λ` runs through a multiset `s` is equal to a linear combination of the symmetric functions
+`esymm s` of the `λ`'s . -/
 theorem prod_X_add_C_eq_sum_esymm (s : Multiset R) :
     (s.map fun r => X + C r).prod =
       ∑ j in Finset.range (Multiset.card s + 1), (C (s.esymm j) * X ^ (Multiset.card s - j)) := by
@@ -64,11 +64,11 @@ theorem prod_X_add_C_coeff (s : Multiset R) {k : ℕ} (h : k ≤ Multiset.card s
   · rw [if_pos (Nat.sub_sub_self h).symm]
   · intro j hj1 hj2
     suffices k ≠ card s - j by rw [if_neg this]
-    · intro hn
-      rw [hn, Nat.sub_sub_self (Nat.lt_succ_iff.mp (Finset.mem_range.mp hj1))] at hj2
-      exact Ne.irrefl hj2
+    intro hn
+    rw [hn, Nat.sub_sub_self (Nat.lt_succ_iff.mp (Finset.mem_range.mp hj1))] at hj2
+    exact Ne.irrefl hj2
   · rw [Finset.mem_range]
-    exact Nat.sub_lt_succ (Multiset.card s) k
+    exact Nat.lt_succ_of_le (Nat.sub_le (Multiset.card s) k)
 set_option linter.uppercaseLean3 false in
 #align multiset.prod_X_add_C_coeff Multiset.prod_X_add_C_coeff
 
@@ -93,11 +93,11 @@ variable {R : Type*} [CommRing R]
 
 theorem esymm_neg (s : Multiset R) (k : ℕ) : (map Neg.neg s).esymm k = (-1) ^ k * esymm s k := by
   rw [esymm, esymm, ← Multiset.sum_map_mul_left, Multiset.powersetCard_map, Multiset.map_map,
-    map_congr (Eq.refl _)]
+    map_congr rfl]
   intro x hx
   rw [(mem_powersetCard.mp hx).right.symm, ← prod_replicate, ← Multiset.map_const]
   nth_rw 3 [← map_id' x]
-  rw [← prod_map_mul, map_congr (Eq.refl _)];rfl
+  rw [← prod_map_mul, map_congr rfl, Function.comp_apply]
   exact fun z _ => neg_one_mul z
 #align multiset.esymm_neg Multiset.esymm_neg
 
@@ -171,10 +171,10 @@ theorem MvPolynomial.prod_C_add_X_eq_sum_esymm :
         (MvPolynomial.esymm σ R j) * Polynomial.X ^ (card σ - j) := by
   let s := Finset.univ.val.map fun i : σ => (MvPolynomial.X i : MvPolynomial σ R)
   have : Fintype.card σ = Multiset.card s := by
-    rw [Multiset.card_map, ←Finset.card_univ, Finset.card_def]
+    rw [Multiset.card_map, ← Finset.card_univ, Finset.card_def]
   simp_rw [this, MvPolynomial.esymm_eq_multiset_esymm σ R, Finset.prod_eq_multiset_prod]
   convert Multiset.prod_X_add_C_eq_sum_esymm s
-  simp_rw [Multiset.map_map, Function.comp_apply]
+  simp_rw [s, Multiset.map_map, Function.comp_apply]
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.prod_C_add_X_eq_sum_esymm MvPolynomial.prod_C_add_X_eq_sum_esymm
 
@@ -183,12 +183,12 @@ theorem MvPolynomial.prod_X_add_C_coeff (k : ℕ) (h : k ≤ card σ) :
     MvPolynomial.esymm σ R (card σ - k) := by
   let s := Finset.univ.val.map fun i => (MvPolynomial.X i : MvPolynomial σ R)
   have : Fintype.card σ = Multiset.card s := by
-    rw [Multiset.card_map, ←Finset.card_univ, Finset.card_def]
+    rw [Multiset.card_map, ← Finset.card_univ, Finset.card_def]
   rw [this] at h ⊢
   rw [MvPolynomial.esymm_eq_multiset_esymm σ R, Finset.prod_eq_multiset_prod]
   convert Multiset.prod_X_add_C_coeff s h
   dsimp
-  simp_rw [Multiset.map_map, Function.comp_apply]
+  simp_rw [s, Multiset.map_map, Function.comp_apply]
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.prod_X_add_C_coeff MvPolynomial.prod_X_add_C_coeff
 

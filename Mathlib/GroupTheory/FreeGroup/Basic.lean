@@ -3,10 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.List.Sublists
-import Mathlib.Data.List.Basic
-import Mathlib.GroupTheory.Subgroup.Basic
+import Mathlib.Data.List.InsertNth
 
 #align_import group_theory.free_group from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
 
@@ -58,7 +58,7 @@ variable {α : Type u}
 
 attribute [local simp] List.append_eq_has_append
 
--- porting notes: to_additive.map_namespace is not supported yet
+-- Porting note: to_additive.map_namespace is not supported yet
 -- worked around it by putting a few extra manual mappings (but not too many all in all)
 -- run_cmd to_additive.map_namespace `FreeGroup `FreeAddGroup
 
@@ -166,7 +166,7 @@ theorem Step.cons_left_iff {a : α} {b : Bool} :
       simp [*]
     · simp at hL
       rcases hL with ⟨rfl, rfl⟩
-      refine' Or.inl ⟨s' ++ e, Step.not, _⟩
+      refine Or.inl ⟨s' ++ e, Step.not, ?_⟩
       simp
   · rintro (⟨L, h, rfl⟩ | rfl)
     · exact Step.cons h
@@ -345,8 +345,8 @@ theorem red_iff_irreducible {x1 b1 x2 b2} (h : (x1, b1) ≠ (x2, b2)) :
   generalize eq : [(x1, not b1), (x2, b2)] = L'
   intro L h'
   cases h'
-  simp [List.cons_eq_append_iff, List.nil_eq_append] at eq
-  rcases eq with ⟨rfl, ⟨rfl, rfl⟩, ⟨rfl, rfl⟩, rfl⟩; subst_vars
+  simp [List.cons_eq_append, List.nil_eq_append] at eq
+  rcases eq with ⟨rfl, ⟨rfl, rfl⟩, ⟨rfl, rfl⟩, rfl⟩
   simp at h
 #align free_group.red.red_iff_irreducible FreeGroup.Red.red_iff_irreducible
 #align free_add_group.red.red_iff_irreducible FreeAddGroup.Red.red_iff_irreducible
@@ -402,8 +402,8 @@ theorem length_le (h : Red L₁ L₂) : L₂.length ≤ L₁.length :=
 theorem sizeof_of_step : ∀ {L₁ L₂ : List (α × Bool)},
     Step L₁ L₂ → sizeOf L₂ < sizeOf L₁
   | _, _, @Step.not _ L1 L2 x b => by
-    induction' L1 with hd tl ih
-    case nil =>
+    induction L1 with
+    | nil =>
       -- dsimp [sizeOf]
       dsimp
       simp only [Bool.sizeOf_eq_one]
@@ -416,7 +416,7 @@ theorem sizeof_of_step : ∀ {L₁ L₂ : List (α × Bool)},
       apply Nat.lt_add_of_pos_right
       apply Nat.lt_add_right
       apply Nat.zero_lt_one
-    case cons =>
+    | cons hd tl ih =>
       dsimp
       exact Nat.add_lt_add_left ih _
 #align free_group.red.sizeof_of_step FreeGroup.Red.sizeof_of_step
@@ -528,6 +528,9 @@ theorem one_eq_mk : (1 : FreeGroup α) = mk [] :=
 @[to_additive]
 instance : Inhabited (FreeGroup α) :=
   ⟨1⟩
+
+@[to_additive]
+instance [IsEmpty α] : Unique (FreeGroup α) := by unfold FreeGroup; infer_instance
 
 @[to_additive]
 instance : Mul (FreeGroup α) :=
@@ -734,7 +737,7 @@ theorem lift.of {x} : lift f (of x) = f x :=
 @[to_additive]
 theorem lift.unique (g : FreeGroup α →* β) (hg : ∀ x, g (FreeGroup.of x) = f x) {x} :
     g x = FreeGroup.lift f x :=
-  FunLike.congr_fun (lift.symm_apply_eq.mp (funext hg : g ∘ FreeGroup.of = f)) x
+  DFunLike.congr_fun (lift.symm_apply_eq.mp (funext hg : g ∘ FreeGroup.of = f)) x
 #align free_group.lift.unique FreeGroup.lift.unique
 #align free_add_group.lift.unique FreeAddGroup.lift.unique
 
@@ -750,8 +753,12 @@ theorem ext_hom {G : Type*} [Group G] (f g : FreeGroup α →* G) (h : ∀ a, f 
 #align free_add_group.ext_hom FreeAddGroup.ext_hom
 
 @[to_additive]
+theorem lift_of_eq_id (α) : lift of = MonoidHom.id (FreeGroup α) :=
+  lift.apply_symm_apply (MonoidHom.id _)
+
+@[to_additive]
 theorem lift.of_eq (x : FreeGroup α) : lift FreeGroup.of x = x :=
-  FunLike.congr_fun (lift.apply_symm_apply (MonoidHom.id _)) x
+  DFunLike.congr_fun (lift_of_eq_id α) x
 #align free_group.lift.of_eq FreeGroup.lift.of_eq
 #align free_add_group.lift.of_eq FreeAddGroup.lift.of_eq
 
@@ -773,6 +780,14 @@ theorem lift.range_eq_closure : (lift f).range = Subgroup.closure (Set.range f) 
   exact ⟨FreeGroup.of a, by simp only [lift.of]⟩
 #align free_group.lift.range_eq_closure FreeGroup.lift.range_eq_closure
 #align free_add_group.lift.range_eq_closure FreeAddGroup.lift.range_eq_closure
+
+/-- The generators of `FreeGroup α` generate `FreeGroup α`. That is, the subgroup closure of the
+set of generators equals `⊤`. -/
+@[to_additive (attr := simp)]
+theorem closure_range_of (α) :
+    Subgroup.closure (Set.range (FreeGroup.of : α → FreeGroup α)) = ⊤ := by
+  rw [← lift.range_eq_closure, lift_of_eq_id]
+  exact MonoidHom.range_top_of_surjective _ Function.surjective_id
 
 end lift
 
@@ -931,7 +946,7 @@ section Sum
 variable [AddGroup α] (x y : FreeGroup α)
 
 /-- If `α` is a group, then any function from `α` to `α` extends uniquely to a homomorphism from the
-free group over `α` to `α`. This is the additive version of `prod`. -/
+free group over `α` to `α`. This is the additive version of `Prod`. -/
 def sum : α :=
   @prod (Multiplicative _) _ x
 #align free_group.sum FreeGroup.sum
@@ -945,7 +960,7 @@ theorem sum_mk : sum (mk L) = List.sum (L.map fun x => cond x.2 x.1 (-x.1)) :=
 
 @[simp]
 theorem sum.of {x : α} : sum (of x) = x :=
-  prod.of
+  @prod.of _ (_) _
 #align free_group.sum.of FreeGroup.sum.of
 
 -- note: there are no bundled homs with different notation in the domain and codomain, so we copy
@@ -970,8 +985,7 @@ end Sum
 /-- The bijection between the free group on the empty type, and a type with one element. -/
 @[to_additive "The bijection between the additive free group on the empty type, and a type with one
   element."]
-def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit
-    where
+def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit where
   toFun _ := ()
   invFun _ := 1
   left_inv := by rintro ⟨_ | ⟨⟨⟨⟩, _⟩, _⟩⟩; rfl
@@ -980,8 +994,7 @@ def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit
 #align free_add_group.free_add_group_empty_equiv_add_unit FreeAddGroup.freeAddGroupEmptyEquivAddUnit
 
 /-- The bijection between the free group on a singleton, and the integers. -/
-def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ
-    where
+def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ where
   toFun x := sum (by
     revert x
     change (FreeGroup Unit →* FreeGroup ℤ)
@@ -997,10 +1010,10 @@ def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ
   right_inv x :=
     Int.induction_on x (by simp)
       (fun i ih => by
-        simp only [zpow_coe_nat, map_pow, map.of] at ih
+        simp only [zpow_natCast, map_pow, map.of] at ih
         simp [zpow_add, ih])
       (fun i ih => by
-        simp only [zpow_neg, zpow_coe_nat, map_inv, map_pow, map.of, sum.map_inv, neg_inj] at ih
+        simp only [zpow_neg, zpow_natCast, map_inv, map_pow, map.of, sum.map_inv, neg_inj] at ih
         simp [zpow_add, ih, sub_eq_add_neg])
 #align free_group.free_group_unit_equiv_int FreeGroup.freeGroupUnitEquivInt
 
@@ -1023,7 +1036,7 @@ protected theorem induction_on {C : FreeGroup α → Prop} (z : FreeGroup α) (C
 #align free_group.induction_on FreeGroup.induction_on
 #align free_add_group.induction_on FreeAddGroup.induction_on
 
--- porting note: simp can prove this: by simp only [@map_pure]
+-- porting note (#10618): simp can prove this: by simp only [@map_pure]
 @[to_additive]
 theorem map_pure (f : α → β) (x : α) : f <$> (pure x : FreeGroup α) = pure (f x) :=
   map.of
@@ -1048,7 +1061,7 @@ theorem map_inv (f : α → β) (x : FreeGroup α) : f <$> x⁻¹ = (f <$> x)⁻
 #align free_group.map_inv FreeGroup.map_inv
 #align free_add_group.map_neg FreeAddGroup.map_neg
 
--- porting note: simp can prove this: by simp only [@pure_bind]
+-- porting note (#10618): simp can prove this: by simp only [@pure_bind]
 @[to_additive]
 theorem pure_bind (f : α → FreeGroup β) (x) : pure x >>= f = f x :=
   lift.of
@@ -1120,64 +1133,56 @@ theorem reduce.cons (x) :
 @[to_additive "The first theorem that characterises the function `reduce`: a word reduces to its
   maximal reduction."]
 theorem reduce.red : Red L (reduce L) := by
-  induction' L with hd1 tl1 ih
-  case nil => constructor
-  case cons =>
+  induction L with
+  | nil => constructor
+  | cons hd1 tl1 ih =>
     dsimp
     revert ih
     generalize htl : reduce tl1 = TL
     intro ih
-    cases' TL with hd2 tl2
-    case nil => exact Red.cons_cons ih
-    case cons =>
+    cases TL with
+    | nil => exact Red.cons_cons ih
+    | cons hd2 tl2 =>
       dsimp only
       split_ifs with h
-      · trans
-        · cases hd1
-          cases hd2
-          cases h
-          dsimp at *
-          subst_vars
-          apply Red.trans (Red.cons_cons ih)
-          exact Red.Step.cons_not_rev.to_red
+      · cases hd1
+        cases hd2
+        cases h
+        dsimp at *
+        subst_vars
+        apply Red.trans (Red.cons_cons ih)
+        exact Red.Step.cons_not_rev.to_red
       · exact Red.cons_cons ih
 #align free_group.reduce.red FreeGroup.reduce.red
 #align free_add_group.reduce.red FreeAddGroup.reduce.red
 
--- porting notes: deleted mathport junk and manually formatted below.
 @[to_additive]
-theorem reduce.not {p : Prop} : ∀ {L₁ L₂ L₃ : List (α × Bool)} {x : α} {b},
-    ((reduce L₁) = L₂ ++ ((x,b)::(x ,!b)::L₃)) → p
-  | [], L2 ,L3, _, _ => fun h => by cases L2 <;> injections
-  | (x, b)::L1, L2, L3, x', b' => by
-      dsimp
-      cases r : reduce L1 with
-      | nil =>
-        dsimp
-        intro h
-        exfalso
-        have := congr_arg List.length h
-        simp [List.length] at this
-        rw [add_comm, add_assoc, add_assoc, add_comm, <-add_assoc] at this
-        simp [Nat.one_eq_succ_zero, Nat.succ_add] at this
-        -- Porting note: needed to add this step in #3414.
-        -- This is caused by https://github.com/leanprover/lean4/pull/2146.
-        -- Nevertheless the proof could be cleaned up.
-        cases this
-      | cons hd tail =>
-        cases' hd with y c
-        dsimp only
-        split_ifs with h <;> intro H
-        · rw [ H ] at r
-          exact @reduce.not _ L1 ((y, c)::L2) L3 x' b' r
-        · rcases L2 with ( _ | ⟨ a , L2 ⟩ )
-          · injections
-            subst_vars
-            simp at h
-          · refine' @reduce.not _ L1 L2 L3 x' b' _
-            injection H with _ H
-            rw [ r , H ]
-            rfl
+theorem reduce.not {p : Prop} :
+    ∀ {L₁ L₂ L₃ : List (α × Bool)} {x b}, reduce L₁ = L₂ ++ (x, b) :: (x, !b) :: L₃ → p
+  | [], L2, L3, _, _ => fun h => by cases L2 <;> injections
+  | (x, b) :: L1, L2, L3, x', b' => by
+    dsimp
+    cases r : reduce L1 with
+    | nil =>
+      dsimp; intro h
+      exfalso
+      have := congr_arg List.length h
+      simp? [List.length] at this says
+        simp only [List.length, zero_add, List.length_append] at this
+      rw [add_comm, add_assoc, add_assoc, add_comm, <-add_assoc] at this
+      omega
+    | cons hd tail =>
+      cases' hd with y c
+      dsimp only
+      split_ifs with h <;> intro H
+      · rw [H] at r
+        exact @reduce.not _ L1 ((y, c) :: L2) L3 x' b' r
+      rcases L2 with (_ | ⟨a, L2⟩)
+      · injections; subst_vars
+        simp at h
+      · refine' @reduce.not _ L1 L2 L3 x' b' _
+        injection H with _ H
+        rw [r, H]; rfl
 #align free_group.reduce.not FreeGroup.reduce.not
 #align free_add_group.reduce.not FreeAddGroup.reduce.not
 
@@ -1340,8 +1345,8 @@ theorem toWord_inv {x : FreeGroup α} : x⁻¹.toWord = invRev x.toWord := by
 #align free_group.to_word_inv FreeGroup.toWord_inv
 #align free_add_group.to_word_neg FreeAddGroup.toWord_neg
 
-/-- Constructive Church-Rosser theorem (compare `church_rosser`). -/
-@[to_additive "Constructive Church-Rosser theorem (compare `church_rosser`)."]
+/-- **Constructive Church-Rosser theorem** (compare `church_rosser`). -/
+@[to_additive "**Constructive Church-Rosser theorem** (compare `church_rosser`)."]
 def reduce.churchRosser (H12 : Red L₁ L₂) (H13 : Red L₁ L₃) : { L₄ // Red L₂ L₄ ∧ Red L₃ L₄ } :=
   ⟨reduce L₁, reduce.rev H12, reduce.rev H13⟩
 #align free_group.reduce.church_rosser FreeGroup.reduce.churchRosser
@@ -1363,7 +1368,7 @@ instance Red.decidableRel : DecidableRel (@Red α)
     if h : (x1, b1) = (x2, b2) then
       match Red.decidableRel tl1 tl2 with
       | isTrue H => isTrue <| h ▸ Red.cons_cons H
-      | isFalse H => isFalse fun H2 => H $ (Red.cons_cons_iff _).1 $ h.symm ▸ H2
+      | isFalse H => isFalse fun H2 => H <| (Red.cons_cons_iff _).1 <| h.symm ▸ H2
     else
       match Red.decidableRel tl1 ((x1, ! b1) :: (x2, b2) :: tl2) with
       | isTrue H => isTrue <| (Red.cons_cons H).tail Red.Step.cons_not

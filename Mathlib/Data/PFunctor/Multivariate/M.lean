@@ -84,7 +84,7 @@ instance M.Path.inhabited (x : P.last.M) {i} [Inhabited (P.drop.B x.head i)] :
       (PFunctor.M.casesOn' x
         (r := fun _ => PFunctor.M.dest x = ⟨a, f⟩)
         <| by
-        intros; simp [PFunctor.M.dest_mk, PFunctor.M.children_mk]; rfl)
+        intros; simp [a, PFunctor.M.dest_mk, PFunctor.M.children_mk]; rfl)
       _ default⟩
 #align mvpfunctor.M.path.inhabited MvPFunctor.M.Path.inhabited
 
@@ -213,12 +213,11 @@ theorem M.dest_corec' {α : TypeVec.{u} n} {β : Type u} (g₀ : β → P.A)
 theorem M.dest_corec {α : TypeVec n} {β : Type u} (g : β → P (α.append1 β)) (x : β) :
     M.dest P (M.corec P g x) = appendFun id (M.corec P g) <$$> g x := by
   trans
-  apply M.dest_corec'
+  · apply M.dest_corec'
   cases' g x with a f; dsimp
   rw [MvPFunctor.map_eq]; congr
-  conv =>
-    rhs
-    rw [← split_dropFun_lastFun f, appendFun_comp_splitFun]
+  conv_rhs => rw [← split_dropFun_lastFun f, appendFun_comp_splitFun]
+  rfl
 #align mvpfunctor.M.dest_corec MvPFunctor.M.dest_corec
 
 theorem M.bisim_lemma {α : TypeVec n} {a₁ : (mp P).A} {f₁ : (mp P).B a₁ ⟹ α} {a' : P.A}
@@ -285,7 +284,7 @@ theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equ
   rw [map_eq, map_eq] at h
   injection h with h₀ h₁
   subst ay
-  simp at h₁
+  simp? at h₁ says simp only [heq_eq_eq] at h₁
   have Hdrop : dropFun fx = dropFun fy := by
     replace h₁ := congr_arg dropFun h₁
     simpa using h₁
@@ -294,7 +293,8 @@ theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equ
   simp only [true_and]
   intro i
   replace h₁ := congr_fun (congr_fun h₁ Fin2.fz) i
-  simp [(· ⊚ ·), appendFun, splitFun] at h₁
+  simp? [(· ⊚ ·), appendFun, splitFun] at h₁ says
+    simp only [TypeVec.comp, appendFun, splitFun] at h₁
   replace h₁ := Quot.exact _ h₁
   rw [h₀.eqvGen_iff] at h₁
   exact h₁
@@ -312,7 +312,7 @@ theorem M.bisim' {α : TypeVec n} (R : P.M α → P.M α → Prop)
     induction Hr
     · rw [← Quot.factor_mk_eq R (EqvGen R) this]
       rwa [appendFun_comp_id, ← MvFunctor.map_map, ← MvFunctor.map_map, h]
-    -- porting note: `cc` was replaced with `aesop`, maybe there is a more light-weight solution?
+    -- Porting note: `cc` was replaced with `aesop`, maybe there is a more light-weight solution?
     all_goals aesop
 #align mvpfunctor.M.bisim' MvPFunctor.M.bisim'
 
@@ -323,6 +323,7 @@ theorem M.dest_map {α β : TypeVec n} (g : α ⟹ β) (x : P.M α) :
   conv =>
     rhs
     rw [M.dest, M.dest', map_eq, appendFun_comp_splitFun]
+  rfl
 #align mvpfunctor.M.dest_map MvPFunctor.M.dest_map
 
 theorem M.map_dest {α β : TypeVec n} (g : (α ::: P.M α) ⟹ (β ::: P.M β)) (x : P.M α)

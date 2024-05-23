@@ -22,9 +22,6 @@ The proof is based on the Cauchy integral formula for the derivative of an analy
 `Complex.deriv_eq_smul_circleIntegral`.
 -/
 
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open TopologicalSpace Metric Set Filter Asymptotics Function MeasureTheory Bornology
 
 open scoped Topology Filter NNReal Real
@@ -49,7 +46,7 @@ theorem deriv_eq_smul_circleIntegral [CompleteSpace F] {R : ℝ} {c : ℂ} {f : 
     (hf : DiffContOnCl ℂ f (ball c R)) :
     deriv f c = (2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - c) ^ (-2 : ℤ) • f z := by
   lift R to ℝ≥0 using hR.le
-  refine' (hf.hasFPowerSeriesOnBall hR).hasFPowerSeriesAt.deriv.trans _
+  refine (hf.hasFPowerSeriesOnBall hR).hasFPowerSeriesAt.deriv.trans ?_
   simp only [cauchyPowerSeries_apply, one_div, zpow_neg, pow_one, smul_smul, zpow_two, mul_inv]
 #align complex.deriv_eq_smul_circle_integral Complex.deriv_eq_smul_circleIntegral
 
@@ -90,7 +87,7 @@ theorem norm_deriv_le_of_forall_mem_sphere_norm_le {c : ℂ} {R C : ℝ} {f : �
 /-- An auxiliary lemma for Liouville's theorem `Differentiable.apply_eq_apply_of_bounded`. -/
 theorem liouville_theorem_aux {f : ℂ → F} (hf : Differentiable ℂ f) (hb : IsBounded (range f))
     (z w : ℂ) : f z = f w := by
-  suffices : ∀ c, deriv f c = 0; exact is_const_of_deriv_eq_zero hf this z w
+  suffices ∀ c, deriv f c = 0 from is_const_of_deriv_eq_zero hf this z w
   clear z w; intro c
   obtain ⟨C, C₀, hC⟩ : ∃ C > (0 : ℝ), ∀ z, ‖f z‖ ≤ C := by
     rcases isBounded_iff_forall_norm_le.1 hb with ⟨C, hC⟩
@@ -114,7 +111,7 @@ open Complex
 theorem apply_eq_apply_of_bounded {f : E → F} (hf : Differentiable ℂ f) (hb : IsBounded (range f))
     (z w : E) : f z = f w := by
   set g : ℂ → F := f ∘ fun t : ℂ => t • (w - z) + z
-  suffices g 0 = g 1 by simpa
+  suffices g 0 = g 1 by simpa [g]
   apply liouville_theorem_aux
   exacts [hf.comp ((differentiable_id.smul_const (w - z)).add_const z),
     hb.subset (range_comp_subset_range _ _)]
@@ -131,5 +128,26 @@ theorem exists_eq_const_of_bounded {f : E → F} (hf : Differentiable ℂ f)
     (hb : IsBounded (range f)) : ∃ c, f = const E c :=
   (hf.exists_const_forall_eq_of_bounded hb).imp fun _ => funext
 #align differentiable.exists_eq_const_of_bounded Differentiable.exists_eq_const_of_bounded
+
+/-- A corollary of Liouville's theorem where the function tends to a finite value at infinity
+(i.e., along `Filter.cocompact`, which in proper spaces coincides with `Bornology.cobounded`). -/
+theorem eq_const_of_tendsto_cocompact [Nontrivial E] {f : E → F} (hf : Differentiable ℂ f) {c : F}
+    (hb : Tendsto f (cocompact E) (𝓝 c)) : f = Function.const E c := by
+  have h_bdd : Bornology.IsBounded (Set.range f) := by
+    obtain ⟨s, hs, hs_bdd⟩ := Metric.exists_isBounded_image_of_tendsto hb
+    obtain ⟨t, ht, hts⟩ := mem_cocompact.mp hs
+    apply ht.image hf.continuous |>.isBounded.union hs_bdd |>.subset
+    simpa [Set.image_union, Set.image_univ] using Set.image_subset _ <| calc
+      Set.univ = t ∪ tᶜ := t.union_compl_self.symm
+      _        ⊆ t ∪ s  := by gcongr
+  obtain ⟨c', hc'⟩ := hf.exists_eq_const_of_bounded h_bdd
+  convert hc'
+  exact tendsto_nhds_unique hb (by simpa [hc'] using tendsto_const_nhds)
+
+/-- A corollary of Liouville's theorem where the function tends to a finite value at infinity
+(i.e., along `Filter.cocompact`, which in proper spaces coincides with `Bornology.cobounded`). -/
+theorem apply_eq_of_tendsto_cocompact [Nontrivial E] {f : E → F} (hf : Differentiable ℂ f) {c : F}
+    (x : E) (hb : Tendsto f (cocompact E) (𝓝 c)) : f x = c :=
+  congr($(hf.eq_const_of_tendsto_cocompact hb) x)
 
 end Differentiable

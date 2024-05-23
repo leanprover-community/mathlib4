@@ -3,7 +3,7 @@ Copyright (c) 2021 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
-import Lean
+import Lean.Elab.ElabRules
 
 open Lean Elab Term Meta
 
@@ -43,16 +43,6 @@ elab "(" "↑" ")" : term <= expectedType =>
     else
       throwError "cannot coerce{indentExpr x}\nto type{indentExpr b}"
 
-/-- `⇑ t` coerces `t` to a function. -/
--- We increase the right precedence so this goes above most binary operators.
--- Otherwise `⇑f = g` will parse as `⇑(f = g)`.
-elab "⇑" m:term:80 : term => do
-  let x ← elabTerm m none
-  if let some ty ← coerceToFunction? x then
-    return ty
-  else
-    throwError "cannot coerce to function{indentExpr x}"
-
 /-- Partially applied function coercion.  Equivalent to the η-reduction of `(⇑ ·)` -/
 elab "(" "⇑" ")" : term <= expectedType =>
   elabPartiallyAppliedCoe "⇑" expectedType fun b x => do
@@ -60,14 +50,6 @@ elab "(" "⇑" ")" : term <= expectedType =>
       ensureHasType b ty
     else
       throwError "cannot coerce to function{indentExpr x}"
-
-/-- `↥ t` coerces `t` to a type. -/
-elab "↥" t:term:80 : term => do
-  let x ← elabTerm t none
-  if let some ty ← coerceToSort? x then
-    return ty
-  else
-    throwError "cannot coerce to sort{indentExpr x}"
 
 /-- Partially applied type coercion.  Equivalent to the η-reduction of `(↥ ·)` -/
 elab "(" "↥" ")" : term <= expectedType =>

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 import Mathlib.Topology.ExtremallyDisconnected
-import Mathlib.CategoryTheory.Sites.Coherent
 import Mathlib.Topology.Category.CompHaus.Projective
 import Mathlib.Topology.Category.Profinite.Basic
 /-!
@@ -36,6 +35,7 @@ can be lifted along epimorphisms).
 universe u
 
 open CategoryTheory
+open scoped Topology
 
 /-- `Stonean` is the category of extremally disconnected compact Hausdorff spaces. -/
 structure Stonean where
@@ -94,18 +94,18 @@ def of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
   ⟨⟨⟨X, inferInstance⟩⟩⟩
 
 /-- The forgetful functor `Stonean ⥤ CompHaus` is full. -/
-instance : Full toCompHaus where
-  preimage := fun f => f
+instance : toCompHaus.Full where
+  map_surjective f := ⟨f, rfl⟩
 
 /-- The forgetful functor `Stonean ⥤ CompHaus` is faithful. -/
-instance : Faithful toCompHaus := {}
+instance : toCompHaus.Faithful := {}
 
 /-- Stonean spaces are a concrete category. -/
 instance : ConcreteCategory Stonean where
   forget := toCompHaus ⋙ forget _
 
 instance : CoeSort Stonean.{u} (Type u) := ConcreteCategory.hasCoeToSort _
-instance {X Y : Stonean.{u}} : FunLike (X ⟶ Y) X (fun _ => Y) := ConcreteCategory.funLike
+instance {X Y : Stonean.{u}} : FunLike (X ⟶ Y) X Y := ConcreteCategory.instFunLike
 
 /-- Stonean spaces are topological spaces. -/
 instance instTopologicalSpace (X : Stonean.{u}) : TopologicalSpace X :=
@@ -127,15 +127,15 @@ instance (X : Stonean.{u}) : ExtremallyDisconnected X :=
 def toProfinite : Stonean.{u} ⥤ Profinite.{u} where
   obj X :=
     { toCompHaus := X.compHaus,
-      IsTotallyDisconnected := show TotallyDisconnectedSpace X from inferInstance }
+      isTotallyDisconnected := show TotallyDisconnectedSpace X from inferInstance }
   map f := f
 
 /-- The functor from Stonean spaces to profinite spaces is full. -/
-instance : Full toProfinite where
-  preimage f := f
+instance : toProfinite.Full where
+  map_surjective f := ⟨f, rfl⟩
 
 /-- The functor from Stonean spaces to profinite spaces is faithful. -/
-instance : Faithful toProfinite := {}
+instance : toProfinite.Faithful := {}
 
 /-- The functor from Stonean spaces to compact Hausdorff spaces
     factors through profinite spaces. -/
@@ -185,16 +185,16 @@ lemma epi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
   refine ⟨?_, ConcreteCategory.epi_of_surjective _⟩
   dsimp [Function.Surjective]
   intro h y
-  by_contra' hy
+  by_contra! hy
   let C := Set.range f
   have hC : IsClosed C := (isCompact_range f.continuous).isClosed
   let U := Cᶜ
-  have hUy : U ∈ nhds y := by
-    simp only [Set.mem_range, hy, exists_false, not_false_eq_true, hC.compl_mem_nhds]
-  obtain ⟨V, hV, hyV, hVU⟩ := isTopologicalBasis_clopen.mem_nhds_iff.mp hUy
+  have hUy : U ∈ 𝓝 y := by
+    simp only [C, Set.mem_range, hy, exists_false, not_false_eq_true, hC.compl_mem_nhds]
+  obtain ⟨V, hV, hyV, hVU⟩ := isTopologicalBasis_isClopen.mem_nhds_iff.mp hUy
   classical
   let g : Y ⟶ mkFinite (ULift (Fin 2)) :=
-    ⟨(LocallyConstant.ofClopen hV).map ULift.up, LocallyConstant.continuous _⟩
+    ⟨(LocallyConstant.ofIsClopen hV).map ULift.up, LocallyConstant.continuous _⟩
   let h : Y ⟶ mkFinite (ULift (Fin 2)) := ⟨fun _ => ⟨1⟩, continuous_const⟩
   have H : h = g := by
     rw [← cancel_epi f]
@@ -203,7 +203,7 @@ lemma epi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
     change 1 = ite _ _ _ -- why is `dsimp` not getting me here?
     rw [if_neg]
     refine mt (hVU ·) ?_ -- what would be an idiomatic tactic for this step?
-    simpa only [Set.mem_compl_iff, Set.mem_range, not_exists, not_forall, not_not]
+    simpa only [U, Set.mem_compl_iff, Set.mem_range, not_exists, not_forall, not_not]
       using exists_apply_eq_apply f x
   apply_fun fun e => (e y).down at H
   change 1 = ite _ _ _ at H -- why is `dsimp at H` not getting me here?
@@ -219,7 +219,7 @@ instance {X Y : Stonean} (f : X ⟶ Y) [@Epi CompHaus _ _ _ f] : Epi f := by
   rwa [CompHaus.epi_iff_surjective] at *
 
 /-- Every Stonean space is projective in `CompHaus` -/
-instance (X : Stonean) : Projective X.compHaus where
+instance instProjectiveCompHausCompHaus (X : Stonean) : Projective X.compHaus where
   factors := by
     intro B C φ f _
     haveI : ExtremallyDisconnected X.compHaus.toTop := X.extrDisc
@@ -313,7 +313,7 @@ lemma Gleason (X : CompHaus.{u}) :
   · intro h
     let X' : Stonean := ⟨X⟩
     show Projective X'.compHaus
-    apply Stonean.instProjectiveCompHausCategoryCompHaus
+    apply Stonean.instProjectiveCompHausCompHaus
 
 end CompHaus
 

@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Mario Carneiro, Simon Hudon
 -/
 import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.TypeVec
+import Mathlib.Logic.Equiv.Defs
 
 #align_import control.functor.multivariate from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
 
@@ -84,9 +85,7 @@ export LawfulMvFunctor (comp_map)
 open LawfulMvFunctor
 
 variable {α β γ : TypeVec.{u} n}
-
 variable {F : TypeVec.{u} n → Type v} [MvFunctor F]
-
 variable (P : α ⟹ «repeat» n Prop) (R : α ⊗ α ⟹ «repeat» n Prop)
 
 /-- adapt `MvFunctor.LiftP` to accept predicates as arrows -/
@@ -129,7 +128,7 @@ theorem exists_iff_exists_of_mono {P : F α → Prop} {q : F β → Prop}
   · refine ⟨f <$$> u, ?_⟩
     apply (h₁ u).mp h₂
   · refine ⟨g <$$> u, ?_⟩
-    apply (h₁ _).mpr _
+    rw [h₁]
     simp only [MvFunctor.map_map, h₀, LawfulMvFunctor.id_map, h₂]
 #align mvfunctor.exists_iff_exists_of_mono MvFunctor.exists_iff_exists_of_mono
 
@@ -144,8 +143,9 @@ theorem LiftR_def (x y : F α) :
       ∃ u : F (Subtype_ R),
         (TypeVec.prod.fst ⊚ subtypeVal R) <$$> u = x ∧
           (TypeVec.prod.snd ⊚ subtypeVal R) <$$> u = y :=
-  exists_iff_exists_of_mono _ _ _ (toSubtype'_of_subtype' R)
-    (by simp only [map_map, comp_assoc, subtypeVal_toSubtype']; simp [comp])
+  exists_iff_exists_of_mono _ _ _ (toSubtype'_of_subtype' R) (by
+    simp only [map_map, comp_assoc, subtypeVal_toSubtype']
+    simp (config := { unfoldPartialApp := true }) [comp])
 #align mvfunctor.liftr_def MvFunctor.LiftR_def
 
 end LiftP'
@@ -165,7 +165,6 @@ variable {F : TypeVec.{u} (n + 1) → Type*} [MvFunctor F] [LawfulMvFunctor F] {
 open MvFunctor
 
 variable {β : Type u}
-
 variable (pp : β → Prop)
 
 private def f :
@@ -192,9 +191,9 @@ theorem LiftP_PredLast_iff {β} (P : β → Prop) (x : F (α ::: β)) :
     cases i <;> rfl
   · intros
     rw [MvFunctor.map_map]
-    dsimp [(· ⊚ ·)]
+    dsimp (config := { unfoldPartialApp := true }) [(· ⊚ ·)]
     suffices (fun i => Subtype.val) = (fun i x => (MvFunctor.f P n α i x).val)
-      by rw[this];
+      by rw [this];
     ext i ⟨x, _⟩
     cases i <;> rfl
 #align mvfunctor.liftp_last_pred_iff MvFunctor.LiftP_PredLast_iff
@@ -228,17 +227,22 @@ theorem LiftR_RelLast_iff (x y : F (α ::: β)) :
   · ext i ⟨x, _⟩ : 2
     cases i <;> rfl
   · intros
-    simp [MvFunctor.map_map, (· ⊚ ·)]
-    -- porting note: proof was
+    simp (config := { unfoldPartialApp := true }) [MvFunctor.map_map, (· ⊚ ·)]
+    -- Porting note: proof was
     -- rw [MvFunctor.map_map, MvFunctor.map_map, (· ⊚ ·), (· ⊚ ·)]
     -- congr <;> ext i ⟨x, _⟩ <;> cases i <;> rfl
     suffices  (fun i t => t.val.fst) = ((fun i x => (MvFunctor.f' rr n α i x).val.fst))
             ∧ (fun i t => t.val.snd) = ((fun i x => (MvFunctor.f' rr n α i x).val.snd))
     by  rcases this with ⟨left, right⟩
-        rw[left, right];
+        rw [left, right];
     constructor <;> ext i ⟨x, _⟩ <;> cases i <;> rfl
 #align mvfunctor.liftr_last_rel_iff MvFunctor.LiftR_RelLast_iff
 
 end LiftPLastPredIff
+
+/-- Any type function that is (extensionally) equivalent to a functor, is itself a functor -/
+def ofEquiv {F F' : TypeVec.{u} n → Type*} [MvFunctor F'] (eqv : ∀ α, F α ≃ F' α) :
+    MvFunctor F where
+  map f x := (eqv _).symm <| f <$$> eqv _ x
 
 end MvFunctor

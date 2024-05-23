@@ -25,7 +25,8 @@ noncomputable section
 
 variable {α β γ : Type*}
 
-open Classical BigOperators NNReal ENNReal
+open scoped Classical
+open BigOperators NNReal ENNReal
 
 open MeasureTheory
 
@@ -53,7 +54,7 @@ theorem support_pure : (pure a).support = {a} :=
 theorem mem_support_pure_iff : a' ∈ (pure a).support ↔ a' = a := by simp
 #align pmf.mem_support_pure_iff PMF.mem_support_pure_iff
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem pure_apply_self : pure a a = 1 :=
   if_pos rfl
 #align pmf.pure_apply_self PMF.pure_apply_self
@@ -130,7 +131,7 @@ theorem mem_support_bind_iff (b : β) :
 @[simp]
 theorem pure_bind (a : α) (f : α → PMF β) : (pure a).bind f = f a := by
   have : ∀ b a', ite (a' = a) (f a' b) 0 = ite (a' = a) (f a b) 0 := fun b a' => by
-    split_ifs with h <;> simp; subst h; simp
+    split_ifs with h <;> simp [h]
   ext b
   simp [this]
 #align pmf.pure_bind PMF.pure_bind
@@ -150,14 +151,14 @@ theorem bind_const (p : PMF α) (q : PMF β) : (p.bind fun _ => q) = q :=
 @[simp]
 theorem bind_bind : (p.bind f).bind g = p.bind fun a => (f a).bind g :=
   PMF.ext fun b => by
-    simpa only [ENNReal.coe_eq_coe.symm, bind_apply, ENNReal.tsum_mul_left.symm,
+    simpa only [ENNReal.coe_inj.symm, bind_apply, ENNReal.tsum_mul_left.symm,
       ENNReal.tsum_mul_right.symm, mul_assoc, mul_left_comm, mul_comm] using ENNReal.tsum_comm
 #align pmf.bind_bind PMF.bind_bind
 
 theorem bind_comm (p : PMF α) (q : PMF β) (f : α → β → PMF γ) :
     (p.bind fun a => q.bind (f a)) = q.bind fun b => p.bind fun a => f a b :=
   PMF.ext fun b => by
-    simpa only [ENNReal.coe_eq_coe.symm, bind_apply, ENNReal.tsum_mul_left.symm,
+    simpa only [ENNReal.coe_inj.symm, bind_apply, ENNReal.tsum_mul_left.symm,
       ENNReal.tsum_mul_right.symm, mul_assoc, mul_left_comm, mul_comm] using ENNReal.tsum_comm
 #align pmf.bind_comm PMF.bind_comm
 
@@ -171,10 +172,10 @@ theorem toOuterMeasure_bind_apply :
   calc
     (p.bind f).toOuterMeasure s = ∑' b, if b ∈ s then ∑' a, p a * f a b else 0 := by
       simp [toOuterMeasure_apply, Set.indicator_apply]
-    _ = ∑' (b) (a), p a * if b ∈ s then f a b else 0 := (tsum_congr fun b => by split_ifs <;> simp)
+    _ = ∑' (b) (a), p a * if b ∈ s then f a b else 0 := tsum_congr fun b => by split_ifs <;> simp
     _ = ∑' (a) (b), p a * if b ∈ s then f a b else 0 :=
       (tsum_comm' ENNReal.summable (fun _ => ENNReal.summable) fun _ => ENNReal.summable)
-    _ = ∑' a, p a * ∑' b, if b ∈ s then f a b else 0 := (tsum_congr fun a => ENNReal.tsum_mul_left)
+    _ = ∑' a, p a * ∑' b, if b ∈ s then f a b else 0 := tsum_congr fun a => ENNReal.tsum_mul_left
     _ = ∑' a, p a * ∑' b, if b ∈ s then f a b else 0 :=
       (tsum_congr fun a => (congr_arg fun x => p a * x) <| tsum_congr fun b => by split_ifs <;> rfl)
     _ = ∑' a, p a * (f a).toOuterMeasure s :=
@@ -223,8 +224,8 @@ theorem bindOnSupport_apply (b : β) :
 @[simp]
 theorem support_bindOnSupport :
     (p.bindOnSupport f).support = ⋃ (a : α) (h : a ∈ p.support), (f a h).support := by
-  refine' Set.ext fun b => _
-  simp only [ENNReal.tsum_eq_zero, not_or, mem_support_iff, bindOnSupport_apply, Ne.def, not_forall,
+  refine Set.ext fun b => ?_
+  simp only [ENNReal.tsum_eq_zero, not_or, mem_support_iff, bindOnSupport_apply, Ne, not_forall,
     mul_eq_zero, Set.mem_iUnion]
   exact
     ⟨fun hb =>
@@ -261,7 +262,7 @@ theorem bindOnSupport_eq_zero_iff (b : β) :
 @[simp]
 theorem pure_bindOnSupport (a : α) (f : ∀ (a' : α) (_ : a' ∈ (pure a).support), PMF β) :
     (pure a).bindOnSupport f = f a ((mem_support_pure_iff a a).mpr rfl) := by
-  refine' PMF.ext fun b => _
+  refine PMF.ext fun b => ?_
   simp only [bindOnSupport_apply, pure_apply]
   refine' _root_.trans (tsum_congr fun a' => _) (tsum_ite_eq a _)
   by_cases h : a' = a <;> simp [h]
@@ -278,7 +279,7 @@ theorem bindOnSupport_bindOnSupport (p : PMF α) (f : ∀ a ∈ p.support, PMF �
       p.bindOnSupport fun a ha =>
         (f a ha).bindOnSupport fun b hb =>
           g b ((mem_support_bindOnSupport_iff f b).mpr ⟨a, ha, hb⟩) := by
-  refine' PMF.ext fun a => _
+  refine PMF.ext fun a => ?_
   dsimp only [bindOnSupport_apply]
   simp only [← tsum_dite_right, ENNReal.tsum_mul_left.symm, ENNReal.tsum_mul_right.symm]
   simp only [ENNReal.tsum_eq_zero, dite_eq_left_iff]
@@ -286,7 +287,7 @@ theorem bindOnSupport_bindOnSupport (p : PMF α) (f : ∀ a ∈ p.support, PMF �
   split_ifs with h _ h_1 _ h_2
   any_goals ring1
   · have := h_1 a'
-    simp [h] at this
+    simp? [h] at this says simp only [h, ↓reduceDite, mul_eq_zero, false_or] at this
     contradiction
   · simp [h_2]
 #align pmf.bind_on_support_bind_on_support PMF.bindOnSupport_bindOnSupport
@@ -295,7 +296,7 @@ theorem bindOnSupport_comm (p : PMF α) (q : PMF β) (f : ∀ a ∈ p.support, �
     (p.bindOnSupport fun a ha => q.bindOnSupport (f a ha)) =
       q.bindOnSupport fun b hb => p.bindOnSupport fun a ha => f a ha b hb := by
   apply PMF.ext; rintro c
-  simp only [ENNReal.coe_eq_coe.symm, bindOnSupport_apply, ← tsum_dite_right,
+  simp only [ENNReal.coe_inj.symm, bindOnSupport_apply, ← tsum_dite_right,
     ENNReal.tsum_mul_left.symm, ENNReal.tsum_mul_right.symm]
   refine' _root_.trans ENNReal.tsum_comm (tsum_congr fun b => tsum_congr fun a => _)
   split_ifs with h1 h2 h2 <;> ring

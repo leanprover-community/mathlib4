@@ -96,9 +96,9 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
   -- The strategy is to show that the exceptional locus in nonempty
   -- by running a descent argument that starts with the given point p = (x,y).
   -- Our assumptions ensure that we can then prove the claim.
-  suffices exc : exceptional.Nonempty
-  · -- Suppose that there exists an element in the exceptional locus.
-    simp only [Set.Nonempty, Prod.exists, Set.mem_setOf_eq] at exc
+  suffices exc : exceptional.Nonempty by
+    -- Suppose that there exists an element in the exceptional locus.
+    simp only [Set.Nonempty, Prod.exists, Set.mem_setOf_eq, exceptional] at exc
     -- Let (a,b) be such an element, and consider all the possible cases.
     rcases exc with ⟨a, b, hH, hb⟩
     rcases hb with (_ | rfl | rfl | hB | hB)
@@ -144,7 +144,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
   -- This means that m_y = m,
   -- and the conditions H(m_x, m_y) and m_x < m_y are satisfied.
   simp only at mx_lt_my hHm m_eq
-  simp only [hHm, Set.mem_setOf_eq, true_and] at h_base
+  simp only [exceptional, hHm, Set.mem_setOf_eq, true_and] at h_base
   push_neg at h_base
   -- Finally, it also means that (m_x, m_y) does not lie in the base locus,
   -- that m_x ≠ 0, m_x ≠ m_y, B(m_x) ≠ m_y, and B(m_x) ≠ m_x + m_y.
@@ -182,9 +182,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
     rw [H_symm, H_quad]
     simpa using h_root
   · -- For the second condition, we note that it suffices to check that c ≠ m_x.
-    suffices hc : c ≠ mx
-    · refine' lt_of_le_of_ne _ hc
-      exact_mod_cast c_lt
+    suffices hc : c ≠ mx from lt_of_le_of_ne (mod_cast c_lt) hc
     -- However, recall that B(m_x) ≠ m_x + m_y.
     -- If c = m_x, we can prove B(m_x) = m_x + m_y.
     contrapose! hm_B₂
@@ -209,7 +207,7 @@ theorem imo1988_q6 {a b : ℕ} (h : a * b + 1 ∣ a ^ 2 + b ^ 2) :
     clear hk a b
   · -- We will now show that the fibers of the solution set are described by a quadratic equation.
     intro x y
-    rw [← Int.coe_nat_inj', ← sub_eq_zero]
+    rw [← Int.natCast_inj, ← sub_eq_zero]
     apply eq_iff_eq_cancel_right.2
     simp; ring
   · -- Show that the solution set is symmetric in a and b.
@@ -221,7 +219,7 @@ theorem imo1988_q6 {a b : ℕ} (h : a * b + 1 ∣ a ^ 2 + b ^ 2) :
   · -- Show that the claim is true if a = b.
     intro x hx
     suffices k ≤ 1 by
-      rw [Nat.le_add_one_iff, le_zero_iff] at this
+      rw [Nat.le_add_one_iff, Nat.le_zero] at this
       rcases this with (rfl | rfl)
       · use 0; simp
       · use 1; simp
@@ -229,7 +227,7 @@ theorem imo1988_q6 {a b : ℕ} (h : a * b + 1 ∣ a ^ 2 + b ^ 2) :
     apply ne_of_lt
     calc
       x * x + x * x = x * x * 2 := by rw [mul_two]
-      _ ≤ x * x * k := (Nat.mul_le_mul_left (x * x) k_lt_one)
+      _ ≤ x * x * k := Nat.mul_le_mul_left (x * x) k_lt_one
       _ < (x * x + 1) * k := by linarith
   · -- Show the descent step.
     intro x y hx x_lt_y _ _ z h_root _ hV₀
@@ -237,14 +235,14 @@ theorem imo1988_q6 {a b : ℕ} (h : a * b + 1 ∣ a ^ 2 + b ^ 2) :
     · have hpos : z * z + x * x > 0 := by
         apply add_pos_of_nonneg_of_pos
         · apply mul_self_nonneg
-        · apply mul_pos <;> exact_mod_cast hx
+        · apply mul_pos <;> exact mod_cast hx
       have hzx : z * z + x * x = (z * x + 1) * k := by
         rw [← sub_eq_zero, ← h_root]
         ring
       rw [hzx] at hpos
       replace hpos : z * x + 1 > 0 := pos_of_mul_pos_left hpos (Int.ofNat_zero_le k)
       replace hpos : z * x ≥ 0 := Int.le_of_lt_add_one hpos
-      apply nonneg_of_mul_nonneg_left hpos (by exact_mod_cast hx)
+      apply nonneg_of_mul_nonneg_left hpos (mod_cast hx)
     · contrapose! hV₀ with x_lt_z
       apply ne_of_gt
       calc
@@ -267,7 +265,7 @@ example {a b : ℕ} (h : a * b ∣ a ^ 2 + b ^ 2 + 1) : 3 * a * b = a ^ 2 + b ^ 
     clear hk a b
   · -- We will now show that the fibers of the solution set are described by a quadratic equation.
     intro x y
-    rw [← Int.coe_nat_inj', ← sub_eq_zero]
+    rw [← Int.natCast_inj, ← sub_eq_zero]
     apply eq_iff_eq_cancel_right.2
     simp; ring
   · -- Show that the solution set is symmetric in a and b.
@@ -284,7 +282,7 @@ example {a b : ℕ} (h : a * b ∣ a ^ 2 + b ^ 2 + 1) : 3 * a * b = a ^ 2 + b ^ 
   · -- Show the descent step.
     intro x y _ hx h_base _ z _ _ hV₀
     constructor
-    · have zy_pos : z * y ≥ 0 := by rw [hV₀]; exact_mod_cast Nat.zero_le _
+    · have zy_pos : z * y ≥ 0 := by rw [hV₀]; exact mod_cast Nat.zero_le _
       apply nonneg_of_mul_nonneg_left zy_pos
       linarith
     · contrapose! hV₀ with x_lt_z
@@ -299,7 +297,7 @@ example {a b : ℕ} (h : a * b ∣ a ^ 2 + b ^ 2 + 1) : 3 * a * b = a ^ 2 + b ^ 
           assumption_mod_cast
   · -- Show the base case.
     intro x y h h_base
-    obtain rfl | rfl : x = 0 ∨ x = 1 := by rwa [Nat.le_add_one_iff, le_zero_iff] at h_base
+    obtain rfl | rfl : x = 0 ∨ x = 1 := by rwa [Nat.le_add_one_iff, Nat.le_zero] at h_base
     · simp at h
     · rw [mul_one, one_mul, add_right_comm] at h
       have y_dvd : y ∣ y * k := dvd_mul_right y k

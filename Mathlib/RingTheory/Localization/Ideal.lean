@@ -23,7 +23,6 @@ namespace IsLocalization
 section CommSemiring
 
 variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemiring S]
-
 variable [Algebra R S] [IsLocalization M S]
 
 /-- Explicit characterization of the ideal given by `Ideal.map (algebraMap R S) I`.
@@ -79,7 +78,7 @@ theorem map_comap (J : Ideal S) : Ideal.map (algebraMap R S) (Ideal.comap (algeb
 theorem comap_map_of_isPrime_disjoint (I : Ideal R) (hI : I.IsPrime) (hM : Disjoint (M : Set R) I) :
     Ideal.comap (algebraMap R S) (Ideal.map (algebraMap R S) I) = I := by
   refine' le_antisymm _ Ideal.le_comap_map
-  refine' (fun a ha => _)
+  refine (fun a ha => ?_)
   obtain ⟨⟨b, s⟩, h⟩ := (mem_map_algebraMap_iff M S).1 (Ideal.mem_comap.1 ha)
   replace h : algebraMap R S (s * a) = algebraMap R S b := by
     simpa only [← map_mul, mul_comm] using h
@@ -98,8 +97,8 @@ def orderEmbedding : Ideal S ↪o Ideal R where
   map_rel_iff' := by
     rintro J₁ J₂
     constructor
-    exact (fun hJ => (map_comap M S) J₁ ▸ (map_comap M S) J₂ ▸ Ideal.map_mono hJ)
-    exact (fun hJ => Ideal.comap_mono hJ)
+    · exact fun hJ => (map_comap M S) J₁ ▸ (map_comap M S) J₂ ▸ Ideal.map_mono hJ
+    · exact fun hJ => Ideal.comap_mono hJ
 #align is_localization.order_embedding IsLocalization.orderEmbedding
 
 /-- If `R` is a ring, then prime ideals in the localization at `M`
@@ -154,9 +153,9 @@ def orderIsoOfPrime :
   map_rel_iff' := by
     rintro I I'
     constructor
-    exact (fun h => show I.val ≤ I'.val from map_comap M S I.val ▸
-      map_comap M S I'.val ▸ Ideal.map_mono h)
-    exact (fun h x hx => h hx)
+    · exact (fun h => show I.val ≤ I'.val from map_comap M S I.val ▸
+        map_comap M S I'.val ▸ Ideal.map_mono h)
+    exact fun h x hx => h hx
 #align is_localization.order_iso_of_prime IsLocalization.orderIsoOfPrime
 
 end CommSemiring
@@ -164,7 +163,6 @@ end CommSemiring
 section CommRing
 
 variable {R : Type*} [CommRing R] (M : Submonoid R) (S : Type*) [CommRing S]
-
 variable [Algebra R S] [IsLocalization M S]
 
 /-- `quotientMap` applied to maximal ideals of a localization is `surjective`.
@@ -186,7 +184,7 @@ theorem surjective_quotientMap_of_maximal_of_localization {I : Ideal S} [I.IsPri
   · rw [Ideal.Quotient.maximal_ideal_iff_isField_quotient] at hI
     obtain ⟨n, hn⟩ := hI.3 hM
     obtain ⟨rn, rfl⟩ := Ideal.Quotient.mk_surjective n
-    refine' ⟨(Ideal.Quotient.mk J) (r * rn), _⟩
+    refine ⟨(Ideal.Quotient.mk J) (r * rn), ?_⟩
     -- The rest of the proof is essentially just algebraic manipulations to prove the equality
     replace hn := congr_arg (Ideal.quotientMap I (algebraMap R S) le_rfl) hn
     rw [RingHom.map_one, RingHom.map_mul] at hn
@@ -201,7 +199,7 @@ theorem surjective_quotientMap_of_maximal_of_localization {I : Ideal S} [I.IsPri
               (Ideal.Quotient.eq_zero_iff_mem.2
                 (Ideal.mem_comap.2 (Ideal.Quotient.eq_zero_iff_mem.1 hn))))
           (_root_.trans hn ?_))
-    -- Porting note: was `rw`, but this took extremely long.
+    -- Porting note (#10691): was `rw`, but this took extremely long.
     refine Eq.trans ?_ (RingHom.map_mul (Ideal.Quotient.mk I) (algebraMap R S m) (mk' S 1 ⟨m, hm⟩))
     rw [← mk'_eq_mul_mk'_one, mk'_self, RingHom.map_one]
 #align is_localization.surjective_quotient_map_of_maximal_of_localization IsLocalization.surjective_quotientMap_of_maximal_of_localization

@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis
 -/
 import Mathlib.Tactic.Basic
-import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.Attr.Register
+import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Order.Basic
 
 /-!
 # `zify` tactic
@@ -92,11 +93,24 @@ def zifyProof (simpArgs : Option (Syntax.TSepArray `Lean.Parser.Tactic.simpStar 
   let (r, _) ← simp prop ctx_result.ctx
   applySimpResultToProp' proof prop r
 
-@[zify_simps] lemma nat_cast_eq (a b : Nat) : a = b ↔ (a : Int) = (b : Int) := Int.ofNat_inj.symm
-@[zify_simps] lemma nat_cast_le (a b : Nat) : a ≤ b ↔ (a : Int) ≤ (b : Int) := Int.ofNat_le.symm
-@[zify_simps] lemma nat_cast_lt (a b : Nat) : a < b ↔ (a : Int) < (b : Int) := Int.ofNat_lt.symm
-@[zify_simps] lemma nat_cast_ne (a b : Nat) : a ≠ b ↔ (a : Int) ≠ (b : Int) :=
+@[zify_simps] lemma natCast_eq (a b : Nat) : a = b ↔ (a : Int) = (b : Int) := Int.ofNat_inj.symm
+@[zify_simps] lemma natCast_le (a b : Nat) : a ≤ b ↔ (a : Int) ≤ (b : Int) := Int.ofNat_le.symm
+@[zify_simps] lemma natCast_lt (a b : Nat) : a < b ↔ (a : Int) < (b : Int) := Int.ofNat_lt.symm
+@[zify_simps] lemma natCast_ne (a b : Nat) : a ≠ b ↔ (a : Int) ≠ (b : Int) :=
   not_congr Int.ofNat_inj.symm
-@[zify_simps] lemma nat_cast_dvd (a b : Nat) : a ∣ b ↔ (a : Int) ∣ (b : Int) := Int.ofNat_dvd.symm
+@[zify_simps] lemma natCast_dvd (a b : Nat) : a ∣ b ↔ (a : Int) ∣ (b : Int) := Int.ofNat_dvd.symm
 -- TODO: is it worth adding lemmas for Prime and Coprime as well?
 -- Doing so in this file would require adding imports.
+
+
+-- `Nat.cast_sub` is already tagged as `norm_cast` but it does allow to use assumptions like
+-- `m < n` or more generally `m + k ≤ n`. We add two lemmas to increase the probability that
+-- `zify` will push through `ℕ` subtraction.
+
+variable {R : Type*} [AddGroupWithOne R]
+
+@[norm_cast] theorem Nat.cast_sub_of_add_le {m n k} (h : m + k ≤ n) :
+    ((n - m : ℕ) : R) = n - m := Nat.cast_sub (m.le_add_right k |>.trans h)
+
+@[norm_cast] theorem Nat.cast_sub_of_lt {m n} (h : m < n) :
+    ((n - m : ℕ) : R) = n - m := Nat.cast_sub h.le

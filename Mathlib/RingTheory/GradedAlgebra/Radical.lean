@@ -41,11 +41,8 @@ open GradedRing DirectSum SetLike Finset
 open BigOperators
 
 variable {ι σ A : Type*}
-
 variable [CommRing A]
-
 variable [LinearOrderedCancelAddCommMonoid ι]
-
 variable [SetLike σ A] [AddSubmonoidClass σ A] {𝒜 : ι → σ} [GradedRing 𝒜]
 
 -- Porting note: This proof needs a long time to elaborate
@@ -56,8 +53,7 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
     Ideal.IsPrime I :=
   ⟨I_ne_top, by
     intro x y hxy
-    by_contra rid
-    push_neg at rid
+    by_contra! rid
     obtain ⟨rid₁, rid₂⟩ := rid
     classical
       /-
@@ -94,7 +90,7 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
           ((decompose 𝒜 x).support ×ˢ (decompose 𝒜 y).support).filter (fun z : ι × ι =>
             z.1 + z.2 = max₁ + max₂) with ha
         have mem_antidiag : (max₁, max₂) ∈ antidiag := by
-          simp only [add_sum_erase, mem_filter, mem_product]
+          simp only [antidiag, add_sum_erase, mem_filter, mem_product]
           exact ⟨⟨mem_of_mem_filter _ mem_max₁, mem_of_mem_filter _ mem_max₂⟩, trivial⟩
         have eq_add_sum :=
           calc
@@ -107,7 +103,7 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
         rw [eq_sub_of_add_eq eq_add_sum.symm]
         refine' Ideal.sub_mem _ hxy (Ideal.sum_mem _ fun z H => _)
         rcases z with ⟨i, j⟩
-        simp only [mem_erase, Prod.mk.inj_iff, Ne.def, mem_filter, mem_product] at H
+        simp only [antidiag, mem_erase, Prod.mk.inj_iff, Ne, mem_filter, mem_product] at H
         rcases H with ⟨H₁, ⟨H₂, H₃⟩, H₄⟩
         have max_lt : max₁ < i ∨ max₂ < j := by
           rcases lt_trichotomy max₁ i with (h | rfl | h)
@@ -122,13 +118,13 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
           have not_mem : i ∉ set₁ := fun h =>
             lt_irrefl _ ((max'_lt_iff set₁ (nonempty x rid₁)).mp max_lt i h)
           rw [set₁_eq] at not_mem
-          simp only [not_and, Classical.not_not, Ne.def, mem_filter] at not_mem
+          simp only [not_and, Classical.not_not, Ne, mem_filter] at not_mem
           exact Ideal.mul_mem_right _ I (not_mem H₂)
         · -- in this case `max₂ < j`, then `yⱼ ∈ I`; for otherwise `j ∈ set₂`, then `j ≤ max₂`.
           have not_mem : j ∉ set₂ := fun h =>
             lt_irrefl _ ((max'_lt_iff set₂ (nonempty y rid₂)).mp max_lt j h)
           rw [set₂_eq] at not_mem
-          simp only [not_and, Classical.not_not, Ne.def, mem_filter] at not_mem
+          simp only [not_and, Classical.not_not, Ne, mem_filter] at not_mem
           exact Ideal.mul_mem_left I _ (not_mem H₃)
       have not_mem_I : proj 𝒜 max₁ x * proj 𝒜 max₂ y ∉ I := by
         have neither_mem : proj 𝒜 max₁ x ∉ I ∧ proj 𝒜 max₂ y ∉ I := by

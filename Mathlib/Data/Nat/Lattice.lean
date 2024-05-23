@@ -22,7 +22,7 @@ open Set
 
 namespace Nat
 
-open Classical
+open scoped Classical
 
 noncomputable instance : InfSet ℕ :=
   ⟨fun s ↦ if h : ∃ n, n ∈ s then @Nat.find (fun n ↦ n ∈ s) _ h else 0⟩
@@ -63,8 +63,13 @@ theorem sInf_empty : sInf ∅ = 0 := by
 
 @[simp]
 theorem iInf_of_empty {ι : Sort*} [IsEmpty ι] (f : ι → ℕ) : iInf f = 0 := by
-  rw [iInf_of_empty', sInf_empty]
+  rw [iInf_of_isEmpty, sInf_empty]
 #align nat.infi_of_empty Nat.iInf_of_empty
+
+/-- This combines `Nat.iInf_of_empty` with `ciInf_const`. -/
+@[simp]
+lemma iInf_const_zero {ι : Sort*} : ⨅ i : ι, 0 = 0 :=
+  (isEmpty_or_nonempty ι).elim (fun h ↦ by simp) fun h ↦ sInf_eq_zero.2 <| by simp
 
 theorem sInf_mem {s : Set ℕ} (h : s.Nonempty) : sInf s ∈ s := by
   rw [Nat.sInf_def h]
@@ -106,11 +111,12 @@ theorem sInf_upward_closed_eq_succ_iff {s : Set ℕ} (hs : ∀ k₁ k₂ : ℕ, 
   constructor
   · intro H
     rw [eq_Ici_of_nonempty_of_upward_closed (nonempty_of_sInf_eq_succ _) hs, H, mem_Ici, mem_Ici]
-    exact ⟨le_rfl, k.not_succ_le_self⟩;
-    exact k; assumption
+    · exact ⟨le_rfl, k.not_succ_le_self⟩;
+    · exact k
+    · assumption
   · rintro ⟨H, H'⟩
     rw [sInf_def (⟨_, H⟩ : s.Nonempty), find_eq_iff]
-    exact ⟨H, fun n hnk hns ↦ H' <| hs n k (lt_succ_iff.mp hnk) hns⟩
+    exact ⟨H, fun n hnk hns ↦ H' <| hs n k (Nat.lt_succ_iff.mp hnk) hns⟩
 #align nat.Inf_upward_closed_eq_succ_iff Nat.sInf_upward_closed_eq_succ_iff
 
 /-- This instance is necessary, otherwise the lattice operations would be derived via
@@ -144,7 +150,7 @@ noncomputable instance : ConditionallyCompleteLinearOrderBot ℕ :=
 
 theorem sSup_mem {s : Set ℕ} (h₁ : s.Nonempty) (h₂ : BddAbove s) : sSup s ∈ s :=
   let ⟨k, hk⟩ := h₂
-  h₁.cSup_mem ((finite_le_nat k).subset hk)
+  h₁.csSup_mem ((finite_le_nat k).subset hk)
 #align nat.Sup_mem Nat.sSup_mem
 
 theorem sInf_add {n : ℕ} {p : ℕ → Prop} (hn : n ≤ sInf { m | p m }) :
@@ -153,8 +159,7 @@ theorem sInf_add {n : ℕ} {p : ℕ → Prop} (hn : n ≤ sInf { m | p m }) :
   · rw [h, Nat.sInf_empty, zero_add]
     obtain hnp | hnp := hn.eq_or_lt
     · exact hnp
-    suffices hp : p (sInf { m | p m } - n + n)
-    · exact (h.subset hp).elim
+    suffices hp : p (sInf { m | p m } - n + n) from (h.subset hp).elim
     rw [tsub_add_cancel_of_le hn]
     exact csInf_mem (nonempty_of_pos_sInf <| n.zero_le.trans_lt hnp)
   · have hp : ∃ n, n ∈ { m | p m } := ⟨_, hm⟩
@@ -165,9 +170,9 @@ theorem sInf_add {n : ℕ} {p : ℕ → Prop} (hn : n ≤ sInf { m | p m }) :
 
 theorem sInf_add' {n : ℕ} {p : ℕ → Prop} (h : 0 < sInf { m | p m }) :
     sInf { m | p m } + n = sInf { m | p (m - n) } := by
-  suffices h₁ : n ≤ sInf {m | p (m - n)}
-  convert sInf_add h₁
-  · simp_rw [add_tsub_cancel_right]
+  suffices h₁ : n ≤ sInf {m | p (m - n)} by
+    convert sInf_add h₁
+    simp_rw [add_tsub_cancel_right]
   obtain ⟨m, hm⟩ := nonempty_of_pos_sInf h
   refine'
     le_csInf ⟨m + n, _⟩ fun b hb ↦

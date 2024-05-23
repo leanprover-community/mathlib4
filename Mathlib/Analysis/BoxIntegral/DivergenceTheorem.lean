@@ -5,10 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.BoxIntegral.Basic
 import Mathlib.Analysis.BoxIntegral.Partition.Additive
-import Mathlib.Analysis.Calculus.FDeriv.Add
-import Mathlib.Analysis.Calculus.FDeriv.Mul
-import Mathlib.Analysis.Calculus.FDeriv.Equiv
-import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
+import Mathlib.Analysis.Calculus.FDeriv.Prod
 
 #align_import analysis.box_integral.divergence_theorem from "leanprover-community/mathlib"@"e3fb84046afd187b710170887195d50bada934ee"
 
@@ -107,8 +104,8 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
       simp only [← this, f'.map_sub]; abel
     · have : ∀ z ∈ Icc (I.lower i) (I.upper i), e z y ∈ (Box.Icc I) := fun z hz =>
         I.mapsTo_insertNth_face_Icc hz hy
-      replace hε : ∀ y ∈ (Box.Icc I), ‖g y‖ ≤ ε * diam (Box.Icc I)
-      · intro y hy
+      replace hε : ∀ y ∈ (Box.Icc I), ‖g y‖ ≤ ε * diam (Box.Icc I) := by
+        intro y hy
         refine' (hε y hy).trans (mul_le_mul_of_nonneg_left _ h0.le)
         rw [← dist_eq_norm]
         exact dist_le_diam_of_mem I.isCompact_Icc.isBounded hy hxI
@@ -132,14 +129,12 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
       -- with `c * (I.upper i - I.lower i)`
       refine' norm_integral_le_of_le_const (fun y hy => (this y hy).trans _) volume
       rw [mul_assoc (2 * ε)]
-      exact mul_le_mul_of_nonneg_left (I.diam_Icc_le_of_distortion_le i hc)
-        (mul_nonneg zero_le_two h0.le)
+      gcongr
+      exact I.diam_Icc_le_of_distortion_le i hc
     _ = 2 * ε * c * ∏ j, (I.upper j - I.lower j) := by
       rw [← Measure.toBoxAdditive_apply, Box.volume_apply, ← I.volume_face_mul i]
       ac_rfl
 #align box_integral.norm_volume_sub_integral_face_upper_sub_lower_smul_le BoxIntegral.norm_volume_sub_integral_face_upper_sub_lower_smul_le
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 /-- If `f : ℝⁿ⁺¹ → E` is differentiable on a closed rectangular box `I` with derivative `f'`, then
 the partial derivative `fun x ↦ f' x (Pi.single i 1)` is Henstock-Kurzweil integrable with integral
@@ -190,12 +185,11 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
       · rcases ((nhdsWithin_hasBasis nhds_basis_closedBall _).tendsto_iff nhds_basis_closedBall).1
             (Hs x hx.2) _ (half_pos <| half_pos ε0) with ⟨δ₁, δ₁0, hδ₁⟩
         filter_upwards [Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, δ₁0⟩] with δ hδ y₁ hy₁ y₂ hy₂
-        have : closedBall x δ ∩ (Box.Icc I) ⊆ closedBall x δ₁ ∩ (Box.Icc I) :=
-          inter_subset_inter_left _ (closedBall_subset_closedBall hδ.2)
+        have : closedBall x δ ∩ (Box.Icc I) ⊆ closedBall x δ₁ ∩ (Box.Icc I) := by gcongr; exact hδ.2
         rw [← dist_eq_norm]
         calc
           dist (f y₁) (f y₂) ≤ dist (f y₁) (f x) + dist (f y₂) (f x) := dist_triangle_right _ _ _
-          _ ≤ ε / 2 / 2 + ε / 2 / 2 := (add_le_add (hδ₁ _ <| this hy₁) (hδ₁ _ <| this hy₂))
+          _ ≤ ε / 2 / 2 + ε / 2 / 2 := add_le_add (hδ₁ _ <| this hy₁) (hδ₁ _ <| this hy₂)
           _ = ε / 2 := add_halves _
       · have : ContinuousWithinAt (fun δ : ℝ => (2 * δ) ^ (n + 1) * ‖f' x (Pi.single i 1)‖)
             (Ioi 0) 0 := ((continuousWithinAt_id.const_mul _).pow _).mul_const _
@@ -214,7 +208,7 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
     have Hmaps : ∀ z ∈ Icc (J.lower i) (J.upper i),
         MapsTo (i.insertNth z) (Box.Icc (J.face i)) (closedBall x δ ∩ (Box.Icc I)) := fun z hz =>
       (J.mapsTo_insertNth_face_Icc hz).mono Subset.rfl hJδ'
-    simp only [dist_eq_norm]; dsimp
+    simp only [dist_eq_norm]; dsimp [F]
     rw [← integral_sub (Hi _ Hu) (Hi _ Hl)]
     refine' (norm_sub_le _ _).trans (add_le_add _ _)
     · simp_rw [BoxAdditiveMap.volume_apply, norm_smul, Real.norm_eq_abs, abs_prod]
@@ -222,8 +216,8 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
       have : ∀ j, |J.upper j - J.lower j| ≤ 2 * δ := fun j ↦
         calc
           dist (J.upper j) (J.lower j) ≤ dist J.upper J.lower := dist_le_pi_dist _ _ _
-          _ ≤ dist J.upper x + dist J.lower x := (dist_triangle_right _ _ _)
-          _ ≤ δ + δ := (add_le_add (hJδ J.upper_mem_Icc) (hJδ J.lower_mem_Icc))
+          _ ≤ dist J.upper x + dist J.lower x := dist_triangle_right _ _ _
+          _ ≤ δ + δ := add_le_add (hJδ J.upper_mem_Icc) (hJδ J.lower_mem_Icc)
           _ = 2 * δ := (two_mul δ).symm
       calc
         ∏ j, |J.upper j - J.lower j| ≤ ∏ j : Fin (n + 1), 2 * δ :=
@@ -238,18 +232,18 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
         J.upper (i.succAbove j) - J.lower (i.succAbove j) ≤
             dist (J.upper (i.succAbove j)) (J.lower (i.succAbove j)) :=
           le_abs_self _
-        _ ≤ dist J.upper J.lower := (dist_le_pi_dist J.upper J.lower (i.succAbove j))
-        _ ≤ dist J.upper x + dist J.lower x := (dist_triangle_right _ _ _)
-        _ ≤ δ + δ := (add_le_add (hJδ J.upper_mem_Icc) (hJδ J.lower_mem_Icc))
-        _ ≤ 1 / 2 + 1 / 2 := (add_le_add hδ12 hδ12)
+        _ ≤ dist J.upper J.lower := dist_le_pi_dist J.upper J.lower (i.succAbove j)
+        _ ≤ dist J.upper x + dist J.lower x := dist_triangle_right _ _ _
+        _ ≤ δ + δ := add_le_add (hJδ J.upper_mem_Icc) (hJδ J.lower_mem_Icc)
+        _ ≤ 1 / 2 + 1 / 2 := by gcongr
         _ = 1 := add_halves 1
   · intro c x hx ε ε0
     /- At a point `x ∉ s`, we unfold the definition of Fréchet differentiability, then use
         an estimate we proved earlier in this file. -/
     rcases exists_pos_mul_lt ε0 (2 * c) with ⟨ε', ε'0, hlt⟩
-    rcases (nhdsWithin_hasBasis nhds_basis_closedBall _).mem_iff.1 ((Hd x hx).def ε'0) with
-      ⟨δ, δ0, Hδ⟩
-    refine' ⟨δ, δ0, fun J hle hJδ hxJ hJc => _⟩
+    rcases (nhdsWithin_hasBasis nhds_basis_closedBall _).mem_iff.1
+      ((Hd x hx).isLittleO.def ε'0) with ⟨δ, δ0, Hδ⟩
+    refine ⟨δ, δ0, fun J hle hJδ hxJ hJc => ?_⟩
     simp only [BoxAdditiveMap.volume_apply, Box.volume_apply, dist_eq_norm]
     refine' (norm_volume_sub_integral_face_upper_sub_lower_smul_le _
       (Hc.mono <| Box.le_iff_Icc.1 hle) hxJ ε'0 (fun y hy => Hδ _) (hJc rfl)).trans _

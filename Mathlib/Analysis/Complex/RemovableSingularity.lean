@@ -23,8 +23,6 @@ open TopologicalSpace Metric Set Filter Asymptotics Function
 
 open scoped Topology Filter NNReal Real
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 universe u
 
 variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E]
@@ -37,8 +35,8 @@ theorem analyticAt_of_differentiable_on_punctured_nhds_of_continuousAt {f : ℂ 
     (hd : ∀ᶠ z in 𝓝[≠] c, DifferentiableAt ℂ f z) (hc : ContinuousAt f c) : AnalyticAt ℂ f c := by
   rcases (nhdsWithin_hasBasis nhds_basis_closedBall _).mem_iff.1 hd with ⟨R, hR0, hRs⟩
   lift R to ℝ≥0 using hR0.le
-  replace hc : ContinuousOn f (closedBall c R)
-  · refine' fun z hz => ContinuousAt.continuousWithinAt _
+  replace hc : ContinuousOn f (closedBall c R) := by
+    refine fun z hz => ContinuousAt.continuousWithinAt ?_
     rcases eq_or_ne z c with (rfl | hne)
     exacts [hc, (hRs ⟨hz, hne⟩).continuousAt]
   exact (hasFPowerSeriesOnBall_of_differentiable_off_countable (countable_singleton c) hc
@@ -160,7 +158,7 @@ theorem two_pi_I_inv_smul_circleIntegral_sub_sq_inv_smul_of_differentiable {U : 
       zero_smul, sub_zero]
   · refine' circleIntegral.integral_congr (pos_of_mem_ball hw₀).le fun z hz => _
     simp only [dslope_of_ne, Metric.sphere_disjoint_ball.ne_of_mem hz hw₀, slope, ← smul_assoc, sq,
-      mul_inv, Ne.def, not_false_iff, vsub_eq_sub, Algebra.id.smul_eq_mul]
+      mul_inv, Ne, not_false_iff, vsub_eq_sub, Algebra.id.smul_eq_mul]
 set_option linter.uppercaseLean3 false in
 #align complex.two_pi_I_inv_smul_circle_integral_sub_sq_inv_smul_of_differentiable Complex.two_pi_I_inv_smul_circleIntegral_sub_sq_inv_smul_of_differentiable
 

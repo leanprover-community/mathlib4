@@ -4,13 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov, Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.Order
-import Mathlib.Algebra.IndicatorFunction
-import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.Order.Support
 import Mathlib.Order.LiminfLimsup
 import Mathlib.Order.Filter.Archimedean
 import Mathlib.Order.Filter.CountableInter
-import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Data.Set.Lattice
+import Mathlib.Topology.Order.Monotone
 
 #align_import topology.algebra.order.liminf_limsup from "leanprover-community/mathlib"@"ce64cd319bb6b3e82f31c2d38e79080d377be451"
 
@@ -91,7 +92,7 @@ instance Prod.instBoundedLENhdsClass : BoundedLENhdsClass (α × β) := by
 
 instance Pi.instBoundedLENhdsClass [Finite ι] [∀ i, Preorder (π i)] [∀ i, TopologicalSpace (π i)]
     [∀ i, BoundedLENhdsClass (π i)] : BoundedLENhdsClass (∀ i, π i) := by
-  refine' ⟨fun x ↦ _⟩
+  refine ⟨fun x ↦ ?_⟩
   rw [nhds_pi]
   choose f hf using fun i ↦ isBounded_le_nhds (x i)
   exact ⟨f, eventually_pi hf⟩
@@ -183,7 +184,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem limsSup_nhds (a : α) : limsSup (𝓝 a) = a :=
   csInf_eq_of_forall_ge_of_forall_gt_exists_lt (isBounded_le_nhds a)
-    (fun a' (h : { n : α | n ≤ a' } ∈ 𝓝 a) ↦ show a ≤ a' from @mem_of_mem_nhds α _ a _ h)
+    (fun a' (h : { n : α | n ≤ a' } ∈ 𝓝 a) ↦ show a ≤ a' from @mem_of_mem_nhds α a _ _ h)
     fun b (hba : a < b) ↦
     show ∃ c, { n : α | n ≤ c } ∈ 𝓝 a ∧ c < b from
       match dense_or_discrete a b with
@@ -261,9 +262,9 @@ theorem tendsto_of_no_upcrossings [DenselyOrdered α] {f : Filter β} {u : β �
     ∃ c : α, Tendsto u f (𝓝 c) := by
   rcases f.eq_or_neBot with rfl | hbot
   · exact ⟨sInf ∅, tendsto_bot⟩
-  refine' ⟨limsup u f, _⟩
+  refine ⟨limsup u f, ?_⟩
   apply tendsto_of_le_liminf_of_limsup_le _ le_rfl h h'
-  by_contra' hlt
+  by_contra! hlt
   obtain ⟨a, ⟨⟨la, au⟩, as⟩⟩ : ∃ a, (f.liminf u < a ∧ a < f.limsup u) ∧ a ∈ s :=
     dense_iff_inter_open.1 hs (Set.Ioo (f.liminf u) (f.limsup u)) isOpen_Ioo
       (Set.nonempty_Ioo.2 hlt)
@@ -357,13 +358,13 @@ theorem Antitone.map_limsSup_of_continuousAt {F : Filter R} [NeBot F] {f : R →
       have B : ∃ᶠ n in F, F.limsSup ≤ n := by
         apply (frequently_lt_of_lt_limsSup cobdd c_lt).mono
         intro x hx
-        by_contra'
+        by_contra!
         have : (Set.Ioo c F.limsSup).Nonempty := ⟨x, ⟨hx, this⟩⟩
         simp only [hc, Set.not_nonempty_empty] at this
       apply liminf_le_of_frequently_le _ (bdd_above.isBoundedUnder f_decr)
-      exact (B.mono fun x hx ↦ f_decr hx)
+      exact B.mono fun x hx ↦ f_decr hx
     push_neg at h'
-    by_contra' H
+    by_contra! H
     have not_bot : ¬ IsBot F.limsSup := fun maybe_bot ↦
       lt_irrefl (F.liminf f) <| lt_of_le_of_lt
         (liminf_le_of_frequently_le (frequently_of_forall (fun r ↦ f_decr (maybe_bot r)))
@@ -522,8 +523,8 @@ theorem limsup_eq_tendsto_sum_indicator_nat_atTop (s : ℕ → Set α) :
     simp only [mem_upperBounds, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff] at h
     induction' i with k hk
     · obtain ⟨j, hj₁, hj₂⟩ := hω 1
-      refine' not_lt.2 (h <| j + 1)
-        (lt_of_le_of_lt (Finset.sum_const_zero.symm : 0 = ∑ k in Finset.range (j + 1), 0).le _)
+      refine not_lt.2 (h <| j + 1)
+        (lt_of_le_of_lt (Finset.sum_const_zero.symm : 0 = ∑ k in Finset.range (j + 1), 0).le ?_)
       refine' Finset.sum_lt_sum (fun m _ ↦ Set.indicator_nonneg (fun _ _ ↦ zero_le_one) _)
         ⟨j - 1, Finset.mem_range.2 (lt_of_le_of_lt (Nat.sub_le _ _) j.lt_succ_self), _⟩
       rw [Nat.sub_add_cancel hj₁, Set.indicator_of_mem hj₂]
@@ -546,8 +547,7 @@ theorem limsup_eq_tendsto_sum_indicator_nat_atTop (s : ℕ → Set α) :
       exact zero_lt_one
   · rintro hω i
     rw [Set.mem_setOf_eq, tendsto_atTop_atTop] at hω
-    by_contra hcon
-    push_neg at hcon
+    by_contra! hcon
     obtain ⟨j, h⟩ := hω (i + 1)
     have : (∑ k in Finset.range j, (s (k + 1)).indicator 1 ω) ≤ i := by
       have hle : ∀ j ≤ i, (∑ k in Finset.range j, (s (k + 1)).indicator 1 ω) ≤ i := by
@@ -574,7 +574,7 @@ theorem limsup_eq_tendsto_sum_indicator_atTop (R : Type*) [StrictOrderedSemiring
   simp only [Set.mem_setOf_eq]
   rw [(_ : (fun n ↦ ∑ k in Finset.range n, (s (k + 1)).indicator (1 : α → R) ω) = fun n ↦
     ↑(∑ k in Finset.range n, (s (k + 1)).indicator (1 : α → ℕ) ω))]
-  · exact tendsto_nat_cast_atTop_iff.symm
+  · exact tendsto_natCast_atTop_iff.symm
   · ext n
     simp only [Set.indicator, Pi.one_apply, Finset.sum_boole, Nat.cast_id]
 #align limsup_eq_tendsto_sum_indicator_at_top limsup_eq_tendsto_sum_indicator_atTop

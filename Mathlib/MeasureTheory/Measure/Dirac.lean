@@ -3,7 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.MeasureTheory.Measure.Typeclasses
 import Mathlib.MeasureTheory.Measure.MutuallySingular
+import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
+
 /-!
 # Dirac measure
 
@@ -11,14 +14,12 @@ In this file we define the Dirac measure `MeasureTheory.Measure.dirac a`
 and prove some basic facts about it.
 -/
 
-set_option autoImplicit true
-
 open Function Set
 open scoped ENNReal Classical
 
 noncomputable section
 
-variable [MeasurableSpace α] [MeasurableSpace β] {s : Set α}
+variable {α β δ : Type*} [MeasurableSpace α] [MeasurableSpace β] {s : Set α} {a : α}
 
 namespace MeasureTheory
 
@@ -56,7 +57,6 @@ theorem dirac_apply [MeasurableSingletonClass α] (a : α) (s : Set α) :
   calc
     dirac a s ≤ dirac a {a}ᶜ := measure_mono (subset_compl_comm.1 <| singleton_subset_iff.2 h)
     _ = 0 := by simp [dirac_apply' _ (measurableSet_singleton _).compl]
-
 #align measure_theory.measure.dirac_apply MeasureTheory.Measure.dirac_apply
 
 theorem map_dirac {f : α → β} (hf : Measurable f) (a : α) : (dirac a).map f = dirac (f a) :=
@@ -65,8 +65,8 @@ theorem map_dirac {f : α → β} (hf : Measurable f) (a : α) : (dirac a).map f
 
 lemma map_const (μ : Measure α) (c : β) : μ.map (fun _ ↦ c) = (μ Set.univ) • dirac c := by
   ext s hs
-  simp only [aemeasurable_const, measurable_const, smul_toOuterMeasure, OuterMeasure.coe_smul,
-    Pi.smul_apply, dirac_apply' _ hs, smul_eq_mul]
+  simp only [aemeasurable_const, measurable_const, Measure.coe_smul, Pi.smul_apply,
+    dirac_apply' _ hs, smul_eq_mul]
   classical
   rw [Measure.map_apply measurable_const hs, Set.preimage_const]
   by_cases hsc : c ∈ s
@@ -86,7 +86,7 @@ theorem restrict_singleton (μ : Measure α) (a : α) : μ.restrict {a} = μ {a}
 /-- If `f` is a map with countable codomain, then `μ.map f` is a sum of Dirac measures. -/
 theorem map_eq_sum [Countable β] [MeasurableSingletonClass β] (μ : Measure α) (f : α → β)
     (hf : Measurable f) : μ.map f = sum fun b : β => μ (f ⁻¹' {b}) • dirac b := by
-  ext1 s hs
+  ext s
   have : ∀ y ∈ s, MeasurableSet (f ⁻¹' {y}) := fun y _ => hf (measurableSet_singleton _)
   simp [← tsum_measure_preimage_singleton (to_countable s) this, *,
     tsum_subtype s fun b => μ (f ⁻¹' {b}), ← indicator_mul_right s fun b => μ (f ⁻¹' {b})]
@@ -138,10 +138,14 @@ theorem ae_eq_dirac [MeasurableSingletonClass α] {a : α} (f : α → δ) :
     f =ᵐ[dirac a] const α (f a) := by simp [Filter.EventuallyEq]
 #align measure_theory.ae_eq_dirac MeasureTheory.ae_eq_dirac
 
-instance Measure.dirac.isProbabilityMeasure [MeasurableSpace α] {x : α} :
-    IsProbabilityMeasure (dirac x) :=
+instance Measure.dirac.isProbabilityMeasure {x : α} : IsProbabilityMeasure (dirac x) :=
   ⟨dirac_apply_of_mem <| mem_univ x⟩
 #align measure_theory.measure.dirac.is_probability_measure MeasureTheory.Measure.dirac.isProbabilityMeasure
+
+/-! Extra instances to short-circuit type class resolution -/
+
+instance Measure.dirac.instIsFiniteMeasure {a : α} : IsFiniteMeasure (dirac a) := inferInstance
+instance Measure.dirac.instSigmaFinite {a : α} : SigmaFinite (dirac a) := inferInstance
 
 theorem restrict_dirac' (hs : MeasurableSet s) [Decidable (a ∈ s)] :
     (Measure.dirac a).restrict s = if a ∈ s then Measure.dirac a else 0 := by
@@ -162,3 +166,63 @@ theorem restrict_dirac [MeasurableSingletonClass α] [Decidable (a ∈ s)] :
 lemma mutuallySingular_dirac [MeasurableSingletonClass α] (x : α) (μ : Measure α) [NoAtoms μ] :
     Measure.dirac x ⟂ₘ μ :=
   ⟨{x}ᶜ, (MeasurableSet.singleton x).compl, by simp, by simp⟩
+
+section dirac_injective
+
+/-- Dirac delta measures at two points are equal if every measurable set contains either both or
+neither of the points. -/
+lemma dirac_eq_dirac_iff_forall_mem_iff_mem {x y : α} :
+    Measure.dirac x = Measure.dirac y ↔ ∀ A, MeasurableSet A → (x ∈ A ↔ y ∈ A) := by
+  constructor
+  · intro h A A_mble
+    have obs := congr_arg (fun μ ↦ μ A) h
+    simp only [Measure.dirac_apply' _ A_mble] at obs
+    by_cases x_in_A : x ∈ A
+    · simpa only [x_in_A, indicator_of_mem, Pi.one_apply, true_iff, Eq.comm (a := (1 : ℝ≥0∞)),
+                  indicator_eq_one_iff_mem] using obs
+    · simpa only [x_in_A, indicator_of_not_mem, Eq.comm (a := (0 : ℝ≥0∞)), indicator_apply_eq_zero,
+                  false_iff, not_false_eq_true, Pi.one_apply, one_ne_zero, imp_false] using obs
+  · intro h
+    ext A A_mble
+    by_cases x_in_A : x ∈ A
+    · simp only [Measure.dirac_apply' _ A_mble, x_in_A, indicator_of_mem, Pi.one_apply,
+                 (h A A_mble).mp x_in_A]
+    · have y_notin_A : y ∉ A := by simp_all only [false_iff, not_false_eq_true]
+      simp only [Measure.dirac_apply' _ A_mble, x_in_A, y_notin_A,
+                 not_false_eq_true, indicator_of_not_mem]
+
+/-- Dirac delta measures at two points are different if and only if there is a measurable set
+containing one of the points but not the other. -/
+lemma dirac_ne_dirac_iff_exists_measurableSet {x y : α} :
+    Measure.dirac x ≠ Measure.dirac y ↔ ∃ A, MeasurableSet A ∧ x ∈ A ∧ y ∉ A := by
+  apply not_iff_not.mp
+  simp only [ne_eq, not_not, not_exists, not_and, dirac_eq_dirac_iff_forall_mem_iff_mem]
+  refine ⟨fun h A A_mble ↦ by simp only [h A A_mble, imp_self], fun h A A_mble ↦ ?_⟩
+  by_cases x_in_A : x ∈ A
+  · simp only [x_in_A, h A A_mble x_in_A]
+  · simpa only [x_in_A, false_iff] using h Aᶜ (MeasurableSet.compl_iff.mpr A_mble) x_in_A
+
+open MeasurableSpace
+/-- Dirac delta measures at two different points are different, assuming the measurable space
+separates points. -/
+lemma dirac_ne_dirac [SeparatesPoints α] {x y : α} (x_ne_y : x ≠ y) :
+    Measure.dirac x ≠ Measure.dirac y := by
+  obtain ⟨A, A_mble, x_in_A, y_notin_A⟩ := exists_measurableSet_of_ne x_ne_y
+  exact dirac_ne_dirac_iff_exists_measurableSet.mpr ⟨A, A_mble, x_in_A, y_notin_A⟩
+
+/-- Dirac delta measures at two points are different if and only if the two points are different,
+assuming the measurable space separates points. -/
+lemma dirac_ne_dirac_iff [SeparatesPoints α] {x y : α} :
+    Measure.dirac x ≠ Measure.dirac y ↔ x ≠ y :=
+  ⟨fun h x_eq_y ↦ h <| congrArg dirac x_eq_y, fun h ↦ dirac_ne_dirac h⟩
+
+/-- Dirac delta measures at two points are equal if and only if the two points are equal,
+assuming the measurable space separates points. -/
+lemma dirac_eq_dirac_iff [SeparatesPoints α] {x y : α} :
+    Measure.dirac x = Measure.dirac y ↔ x = y := not_iff_not.mp dirac_ne_dirac_iff
+
+/-- The assignment `x ↦ dirac x` is injective, assuming the measurable space separates points. -/
+lemma injective_dirac [SeparatesPoints α] :
+    Function.Injective (fun (x : α) ↦ dirac x) := fun x y x_ne_y ↦ by rwa [← dirac_eq_dirac_iff]
+
+end dirac_injective

@@ -3,11 +3,9 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.LinearAlgebra.FiniteDimensional
-import Mathlib.LinearAlgebra.Basic
-import Mathlib.RingTheory.MvPolynomial.Basic
-import Mathlib.Data.MvPolynomial.Expand
+import Mathlib.Algebra.MvPolynomial.Expand
 import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.RingTheory.MvPolynomial.Basic
 
 #align_import field_theory.finite.polynomial from "leanprover-community/mathlib"@"5aa3c1de9f3c642eac76e11071c852766f220fd0"
 
@@ -24,7 +22,7 @@ variable {σ : Type*}
 if and only if it is zero over `ZMod n`. -/
 theorem C_dvd_iff_zmod (n : ℕ) (φ : MvPolynomial σ ℤ) :
     C (n : ℤ) ∣ φ ↔ map (Int.castRingHom (ZMod n)) φ = 0 :=
-  C_dvd_iff_map_hom_eq_zero _ _ (CharP.int_cast_eq_zero_iff (ZMod n) n) _
+  C_dvd_iff_map_hom_eq_zero _ _ (CharP.intCast_eq_zero_iff (ZMod n) n) _
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.C_dvd_iff_zmod MvPolynomial.C_dvd_iff_zmod
 
@@ -75,7 +73,7 @@ theorem eval_indicator_apply_eq_one (a : σ → K) : eval a (indicator a) = 1 :=
   nontriviality
   have : 0 < Fintype.card K - 1 := tsub_pos_of_lt Fintype.one_lt_card
   simp only [indicator, map_prod, map_sub, map_one, map_pow, eval_X, eval_C, sub_self,
-    zero_pow this, sub_zero, Finset.prod_const_one]
+    zero_pow this.ne', sub_zero, Finset.prod_const_one]
 #align mv_polynomial.eval_indicator_apply_eq_one MvPolynomial.eval_indicator_apply_eq_one
 
 theorem degrees_indicator (c : σ → K) :
@@ -84,7 +82,7 @@ theorem degrees_indicator (c : σ → K) :
   refine' le_trans (degrees_prod _ _) (Finset.sum_le_sum fun s _ => _)
   refine' le_trans (degrees_sub _ _) _
   rw [degrees_one, ← bot_eq_zero, bot_sup_eq]
-  refine' le_trans (degrees_pow _ _) (nsmul_le_nsmul_of_le_right _ _)
+  refine' le_trans (degrees_pow _ _) (nsmul_le_nsmul_right _ _)
   refine' le_trans (degrees_sub _ _) _
   rw [degrees_C, ← bot_eq_zero, sup_bot_eq]
   exact degrees_X' _
@@ -95,13 +93,13 @@ theorem indicator_mem_restrictDegree (c : σ → K) :
   rw [mem_restrictDegree_iff_sup, indicator]
   intro n
   refine' le_trans (Multiset.count_le_of_le _ <| degrees_indicator _) (le_of_eq _)
-  simp_rw [← Multiset.coe_countAddMonoidHom, (Multiset.countAddMonoidHom n).map_sum,
+  simp_rw [← Multiset.coe_countAddMonoidHom, map_sum,
     AddMonoidHom.map_nsmul, Multiset.coe_countAddMonoidHom, nsmul_eq_mul, Nat.cast_id]
   trans
-  refine' Finset.sum_eq_single n _ _
-  · intro b _ ne
-    simp [Multiset.count_singleton, ne, if_neg (Ne.symm _)]
-  · intro h; exact (h <| Finset.mem_univ _).elim
+  · refine' Finset.sum_eq_single n _ _
+    · intro b _ ne
+      simp [Multiset.count_singleton, ne, if_neg (Ne.symm _)]
+    · intro h; exact (h <| Finset.mem_univ _).elim
   · rw [Multiset.count_singleton_self, mul_one]
 #align mv_polynomial.indicator_mem_restrict_degree MvPolynomial.indicator_mem_restrictDegree
 
@@ -135,7 +133,7 @@ def evalₗ [CommSemiring K] : MvPolynomial σ K →ₗ[K] (σ → K) → K wher
 variable [Field K] [Fintype K] [Finite σ]
 
 -- Porting note: `K` and `σ` were implicit in mathlib3, even if they were declared via
--- `variables (K σ)` (I don't understand why). They are now explicit, as expected.
+-- `variable (K σ)` (I don't understand why). They are now explicit, as expected.
 theorem map_restrict_dom_evalₗ : (restrictDegree σ K (Fintype.card K - 1)).map (evalₗ K σ) = ⊤ := by
   cases nonempty_fintype σ
   refine' top_unique (SetLike.le_def.2 fun e _ => mem_map.2 _)
@@ -168,7 +166,7 @@ universe u
 
 variable (σ : Type u) (K : Type u) [Fintype K]
 
---Porting note: `@[derive [add_comm_group, module K, inhabited]]` done by hand.
+-- Porting note: `@[derive [add_comm_group, module K, inhabited]]` done by hand.
 /-- The submodule of multivariate polynomials whose degree of each variable is strictly less
 than the cardinality of K. -/
 def R [CommRing K] : Type u :=
@@ -211,7 +209,7 @@ theorem rank_R [Fintype σ] : Module.rank K (R σ K) = Fintype.card (σ → K) :
         (Finsupp.supportedEquivFinsupp { s : σ →₀ ℕ | ∀ n : σ, s n ≤ Fintype.card K - 1 })
     _ = #{ s : σ →₀ ℕ | ∀ n : σ, s n ≤ Fintype.card K - 1 } := by rw [rank_finsupp_self']
     _ = #{ s : σ → ℕ | ∀ n : σ, s n < Fintype.card K } := by
-      refine' Quotient.sound ⟨Equiv.subtypeEquiv Finsupp.equivFunOnFinite fun f => _⟩
+      refine Quotient.sound ⟨Equiv.subtypeEquiv Finsupp.equivFunOnFinite fun f => ?_⟩
       refine' forall_congr' fun n => le_tsub_iff_right _
       exact Fintype.card_pos_iff.2 ⟨0⟩
     _ = #(σ → { n // n < Fintype.card K }) :=
@@ -241,7 +239,7 @@ theorem range_evalᵢ [Finite σ] : range (evalᵢ σ K) = ⊤ := by
   exact map_restrict_dom_evalₗ K σ
 #align mv_polynomial.range_evalᵢ MvPolynomial.range_evalᵢ
 
---Porting note: was `(evalᵢ σ K).ker`.
+-- Porting note: was `(evalᵢ σ K).ker`.
 theorem ker_evalₗ [Finite σ] : ker (evalᵢ σ K) = ⊥ := by
   cases nonempty_fintype σ
   refine' (ker_eq_bot_iff_range_eq_top_of_finrank_eq_finrank _).mpr (range_evalᵢ σ K)

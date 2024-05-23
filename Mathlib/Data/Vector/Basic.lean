@@ -3,9 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.BigOperators.Group.List
 import Mathlib.Data.Vector
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.OfFn
+import Mathlib.Data.List.InsertNth
 import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
 
@@ -67,7 +69,7 @@ theorem eq_cons_iff (a : α) (v : Vector α n.succ) (v' : Vector α n) :
 #align vector.eq_cons_iff Vector.eq_cons_iff
 
 theorem ne_cons_iff (a : α) (v : Vector α n.succ) (v' : Vector α n) :
-    v ≠ a ::ᵥ v' ↔ v.head ≠ a ∨ v.tail ≠ v' := by rw [Ne.def, eq_cons_iff a v v', not_and_or]
+    v ≠ a ::ᵥ v' ↔ v.head ≠ a ∨ v.tail ≠ v' := by rw [Ne, eq_cons_iff a v v', not_and_or]
 #align vector.ne_cons_iff Vector.ne_cons_iff
 
 theorem exists_eq_cons (v : Vector α n.succ) : ∃ (a : α) (as : Vector α n), v = a ::ᵥ as :=
@@ -76,7 +78,7 @@ theorem exists_eq_cons (v : Vector α n.succ) : ∃ (a : α) (as : Vector α n),
 
 @[simp]
 theorem toList_ofFn : ∀ {n} (f : Fin n → α), toList (ofFn f) = List.ofFn f
-  | 0, f => rfl
+  | 0, f => by rw [ofFn, List.ofFn_zero, toList, nil]
   | n + 1, f => by rw [ofFn, List.ofFn_succ, toList_cons, toList_ofFn]
 #align vector.to_list_of_fn Vector.toList_ofFn
 
@@ -88,7 +90,7 @@ theorem mk_toList : ∀ (v : Vector α n) (h), (⟨toList v, h⟩ : Vector α n)
 
 @[simp] theorem length_val (v : Vector α n) : v.val.length = n := v.2
 
--- porting notes: not used in mathlib and coercions done differently in Lean 4
+-- Porting note: not used in mathlib and coercions done differently in Lean 4
 -- @[simp]
 -- theorem length_coe (v : Vector α n) :
 --     ((coe : { l : List α // l.length = n } → List α) v).length = n :=
@@ -117,12 +119,6 @@ theorem get_eq_get (v : Vector α n) (i : Fin n) :
     v.get i = v.toList.get (Fin.cast v.toList_length.symm i) :=
   rfl
 #align vector.nth_eq_nth_le Vector.get_eq_getₓ
-
--- porting notes: `nthLe` deprecated for `get`
-@[deprecated get_eq_get]
-theorem nth_eq_nthLe :
-    ∀ (v : Vector α n) (i), get v i = v.toList.nthLe i.1 (by rw [toList_length]; exact i.2)
-  | ⟨_, _⟩, _ => rfl
 
 @[simp]
 theorem get_replicate (a : α) (i : Fin n) : (Vector.replicate n a).get i = a := by
@@ -169,7 +165,7 @@ theorem get_tail (x : Vector α n) (i) :
   cases' i with i ih; dsimp
   rcases x with ⟨_ | _, h⟩ <;> try rfl
   rw [List.length] at h
-  rw [←h] at ih
+  rw [← h] at ih
   contradiction
 #align vector.nth_tail Vector.get_tail
 
@@ -270,7 +266,7 @@ theorem head_ofFn {n : ℕ} (f : Fin n.succ → α) : head (ofFn f) = f 0 := by
   rw [← get_zero, get_ofFn]
 #align vector.head_of_fn Vector.head_ofFn
 
---@[simp] Porting note: simp can prove it
+--@[simp] Porting note (#10618): simp can prove it
 theorem get_cons_zero (a : α) (v : Vector α n) : get (a ::ᵥ v) 0 = a := by simp [get_zero]
 #align vector.nth_cons_zero Vector.get_cons_zero
 
@@ -310,9 +306,7 @@ theorem reverse_get_zero {v : Vector α (n + 1)} : v.reverse.head = v.last := by
 section Scan
 
 variable {β : Type*}
-
 variable (f : β → α → β) (b : β)
-
 variable (v : Vector α n)
 
 /-- Construct a `Vector β (n + 1)` from a `Vector α n` by scanning `f : β → α → β`
@@ -455,7 +449,7 @@ This can be used as `induction v using Vector.inductionOn`. -/
 @[elab_as_elim]
 def inductionOn {C : ∀ {n : ℕ}, Vector α n → Sort*} {n : ℕ} (v : Vector α n)
     (h_nil : C nil) (h_cons : ∀ {n : ℕ} {x : α} {w : Vector α n}, C w → C (x ::ᵥ w)) : C v := by
-  -- porting notes: removed `generalizing`: already generalized
+  -- Porting note: removed `generalizing`: already generalized
   induction' n with n ih
   · rcases v with ⟨_ | ⟨-, -⟩, - | -⟩
     exact h_nil
@@ -476,7 +470,7 @@ def inductionOn₂ {C : ∀ {n}, Vector α n → Vector β n → Sort*}
     (v : Vector α n) (w : Vector β n)
     (nil : C nil nil) (cons : ∀ {n a b} {x : Vector α n} {y}, C x y → C (a ::ᵥ x) (b ::ᵥ y)) :
     C v w := by
-  -- porting notes: removed `generalizing`: already generalized
+  -- Porting note: removed `generalizing`: already generalized
   induction' n with n ih
   · rcases v with ⟨_ | ⟨-, -⟩, - | -⟩
     rcases w with ⟨_ | ⟨-, -⟩, - | -⟩
@@ -496,7 +490,7 @@ def inductionOn₃ {C : ∀ {n}, Vector α n → Vector β n → Vector γ n →
     (u : Vector α n) (v : Vector β n) (w : Vector γ n) (nil : C nil nil nil)
     (cons : ∀ {n a b c} {x : Vector α n} {y z}, C x y z → C (a ::ᵥ x) (b ::ᵥ y) (c ::ᵥ z)) :
     C u v w := by
-  -- porting notes: removed `generalizing`: already generalized
+  -- Porting note: removed `generalizing`: already generalized
   induction' n with n ih
   · rcases u with ⟨_ | ⟨-, -⟩, - | -⟩
     rcases v with ⟨_ | ⟨-, -⟩, - | -⟩
@@ -562,41 +556,47 @@ theorem insertNth_val {i : Fin (n + 1)} {v : Vector α n} :
 #align vector.insert_nth_val Vector.insertNth_val
 
 @[simp]
-theorem removeNth_val {i : Fin n} : ∀ {v : Vector α n}, (removeNth i v).val = v.val.removeNth i
+theorem eraseIdx_val {i : Fin n} : ∀ {v : Vector α n}, (eraseIdx i v).val = v.val.eraseIdx i
   | _ => rfl
-#align vector.remove_nth_val Vector.removeNth_val
+#align vector.remove_nth_val Vector.eraseIdx_val
 
-theorem removeNth_insertNth {v : Vector α n} {i : Fin (n + 1)} :
-    removeNth i (insertNth a i v) = v :=
-  Subtype.eq <| List.removeNth_insertNth i.1 v.1
-#align vector.remove_nth_insert_nth Vector.removeNth_insertNth
+@[deprecated (since := "2024-05-04")] alias removeNth_val := eraseIdx_val
 
-theorem removeNth_insertNth' {v : Vector α (n + 1)} :
+theorem eraseIdx_insertNth {v : Vector α n} {i : Fin (n + 1)} :
+    eraseIdx i (insertNth a i v) = v :=
+  Subtype.eq <| List.eraseIdx_insertNth i.1 v.1
+#align vector.remove_nth_insert_nth Vector.eraseIdx_insertNth
+
+@[deprecated (since := "2024-05-04")] alias removeNth_insertNth := eraseIdx_insertNth
+
+theorem eraseIdx_insertNth' {v : Vector α (n + 1)} :
     ∀ {i : Fin (n + 1)} {j : Fin (n + 2)},
-      removeNth (j.succAbove i) (insertNth a j v) = insertNth a (i.predAbove j) (removeNth i v)
+      eraseIdx (j.succAbove i) (insertNth a j v) = insertNth a (i.predAbove j) (eraseIdx i v)
   | ⟨i, hi⟩, ⟨j, hj⟩ => by
-    dsimp [insertNth, removeNth, Fin.succAbove, Fin.predAbove]
+    dsimp [insertNth, eraseIdx, Fin.succAbove, Fin.predAbove]
     rw [Subtype.mk_eq_mk]
     simp only [Fin.lt_iff_val_lt_val]
     split_ifs with hij
     · rcases Nat.exists_eq_succ_of_ne_zero
         (Nat.pos_iff_ne_zero.1 (lt_of_le_of_lt (Nat.zero_le _) hij)) with ⟨j, rfl⟩
-      rw [← List.insertNth_removeNth_of_ge]
+      rw [← List.insertNth_eraseIdx_of_ge]
       · simp; rfl
       · simpa
       · simpa [Nat.lt_succ_iff] using hij
     · dsimp
-      rw [← List.insertNth_removeNth_of_le i j _ _ _]
+      rw [← List.insertNth_eraseIdx_of_le i j _ _ _]
       · rfl
       · simpa
       · simpa [not_lt] using hij
-#align vector.remove_nth_insert_nth' Vector.removeNth_insertNth'
+#align vector.remove_nth_insert_nth' Vector.eraseIdx_insertNth'
+
+@[deprecated (since := "2024-05-04")] alias removeNth_insertNth' := eraseIdx_insertNth'
 
 theorem insertNth_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :
     ∀ v : Vector α n,
       (v.insertNth a i).insertNth b j.succ = (v.insertNth b j).insertNth a (Fin.castSucc i)
   | ⟨l, hl⟩ => by
-    refine' Subtype.eq _
+    refine Subtype.eq ?_
     simp only [insertNth_val, Fin.val_succ, Fin.castSucc, Fin.coe_castAdd]
     apply List.insertNth_comm
     · assumption
@@ -606,7 +606,7 @@ theorem insertNth_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :
 
 end InsertNth
 
--- porting notes: renamed to `set` from `updateNth` to align with `List`
+-- Porting note: renamed to `set` from `updateNth` to align with `List`
 section ModifyNth
 
 /-- `set v n a` replaces the `n`th element of `v` with `a` -/
@@ -661,7 +661,6 @@ namespace Vector
 section Traverse
 
 variable {F G : Type u → Type u}
-
 variable [Applicative F] [Applicative G]
 
 open Applicative Functor
@@ -700,7 +699,6 @@ end
 open Function
 
 variable [LawfulApplicative F] [LawfulApplicative G]
-
 variable {α β γ : Type u}
 
 -- We need to turn off the linter here as
@@ -710,8 +708,8 @@ protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : Vector 
     Vector.traverse (Comp.mk ∘ Functor.map f ∘ g) x =
       Comp.mk (Vector.traverse f <$> Vector.traverse g x) := by
   induction' x using Vector.inductionOn with n x xs ih
-  simp! [cast, *, functor_norm]
-  · rfl
+  · simp! [cast, *, functor_norm]
+    rfl
   · rw [Vector.traverse_def, ih]
     simp [functor_norm, (· ∘ ·)]
 #align vector.comp_traverse Vector.comp_traverse
@@ -746,7 +744,7 @@ instance : LawfulTraversable.{u} (flip Vector n) where
   comp_map := by intro _ _ _ _ _ x; cases x; simp! [(· <$> ·)]
   map_const := rfl
 
---Porting note: not porting meta instances
+-- Porting note: not porting meta instances
 -- unsafe instance reflect [reflected_univ.{u}] {α : Type u} [has_reflect α]
 --     [reflected _ α] {n : ℕ} : has_reflect (Vector α n) := fun v =>
 --   @Vector.inductionOn α (fun n => reflected _) n v
@@ -799,10 +797,10 @@ variable (ys : Vector β n)
 theorem get_map₂ (v₁ : Vector α n) (v₂ : Vector β n) (f : α → β → γ) (i : Fin n) :
     get (map₂ f v₁ v₂) i = f (get v₁ i) (get v₂ i) := by
   clear * - v₁ v₂
-  induction v₁, v₂ using inductionOn₂
-  case nil =>
+  induction v₁, v₂ using inductionOn₂ with
+  | nil =>
     exact Fin.elim0 i
-  case cons x xs y ys ih =>
+  | cons ih =>
     rw [map₂_cons]
     cases i using Fin.cases
     · simp only [get_zero, head_cons]

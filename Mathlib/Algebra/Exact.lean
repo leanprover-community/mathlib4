@@ -4,19 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
-import Mathlib.LinearAlgebra.Quotient
+import Mathlib.Algebra.Module.Submodule.Range
 
 
 /-! # Exactness of a pair
 
 * For two maps `f : M → N` and `g : N → P`, with `Zero P`,
-`Function.AddExact f g` says that `Set.range f = Set.preimage {0}
-
-* For two maps `f : M → N` and `g : N → P`, with `One P`,
-`Function.Exact f g` says that `Set.range f = Set.preimage {1}
+`Function.Exact f g` says that `Set.range f = Set.preimage g {0}`
 
 * For linear maps `f : M →ₗ[R] N`  and `g : N →ₗ[R] P`,
-`Exact f g` says that `range f = ker g``
+`Exact f g` says that `range f = ker g`
 
 ## TODO :
 
@@ -60,7 +57,7 @@ lemma LinearMap.exact_iff : Exact f g ↔ LinearMap.ker g = LinearMap.range f :=
   Iff.symm <| SetLike.ext_iff
 
 lemma Exact.linearMap_comp_eq_zero (h : Exact f g) : g.comp f = 0 :=
-  FunLike.coe_injective h.comp_eq_zero
+  DFunLike.coe_injective h.comp_eq_zero
 
 end LinearMap
 

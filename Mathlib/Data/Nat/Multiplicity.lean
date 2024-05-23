@@ -5,9 +5,9 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.Nat.Log
-import Mathlib.Data.Nat.Parity
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Nat.Digits
 import Mathlib.RingTheory.Multiplicity
@@ -67,12 +67,12 @@ theorem multiplicity_eq_card_pow_dvd {m n b : ℕ} (hm : m ≠ 1) (hn : 0 < n) (
       congr_arg _ <|
         congr_arg card <|
           Finset.ext fun i => by
-            rw [mem_filter, mem_Ico, mem_Ico, lt_succ_iff, ← @PartENat.coe_le_coe i,
+            rw [mem_filter, mem_Ico, mem_Ico, Nat.lt_succ_iff, ← @PartENat.coe_le_coe i,
               PartENat.natCast_get, ← pow_dvd_iff_le_multiplicity, and_right_comm]
             refine' (and_iff_left_of_imp fun h => lt_of_le_of_lt _ hb).symm
             cases' m with m
-            · rw [zero_eq, zero_pow, zero_dvd_iff] at h
-              exacts [(hn.ne' h.2).elim, h.1]
+            · rw [zero_pow, zero_dvd_iff] at h
+              exacts [(hn.ne' h.2).elim, one_le_iff_ne_zero.1 h.1]
             exact le_log_of_pow_le (one_lt_iff_ne_zero_and_ne_one.2 ⟨m.succ_ne_zero, hm⟩)
                 (le_of_dvd hn h.2)
 #align nat.multiplicity_eq_card_pow_dvd Nat.multiplicity_eq_card_pow_dvd
@@ -140,12 +140,10 @@ theorem multiplicity_factorial_mul_succ {n p : ℕ} (hp : p.Prime) :
   have hp' := hp.prime
   have h0 : 2 ≤ p := hp.two_le
   have h1 : 1 ≤ p * n + 1 := Nat.le_add_left _ _
-  have h2 : p * n + 1 ≤ p * (n + 1)
-  · linarith
-  have h3 : p * n + 1 ≤ p * (n + 1) + 1
-  · linarith
+  have h2 : p * n + 1 ≤ p * (n + 1) := by linarith
+  have h3 : p * n + 1 ≤ p * (n + 1) + 1 := by omega
   have hm : multiplicity p (p * n)! ≠ ⊤ := by
-    rw [Ne.def, eq_top_iff_not_finite, Classical.not_not, finite_nat_iff]
+    rw [Ne, eq_top_iff_not_finite, Classical.not_not, finite_nat_iff]
     exact ⟨hp.ne_one, factorial_pos _⟩
   revert hm
   have h4 : ∀ m ∈ Ico (p * n + 1) (p * (n + 1)), multiplicity p m = 0 := by
@@ -256,7 +254,7 @@ theorem multiplicity_choose_prime_pow_add_multiplicity (hp : p.Prime) (hkn : k �
       rw [multiplicity_choose hp hkn (lt_succ_self _),
         multiplicity_eq_card_pow_dvd (ne_of_gt hp.one_lt) hk0.bot_lt
           (lt_succ_of_le (log_mono_right hkn)),
-        ← Nat.cast_add, PartENat.coe_le_coe, log_pow hp.one_lt, ← card_disjoint_union hdisj,
+        ← Nat.cast_add, PartENat.coe_le_coe, log_pow hp.one_lt, ← card_union_of_disjoint hdisj,
         filter_union_right]
       have filter_le_Ico := (Ico 1 n.succ).card_filter_le
         fun x => p ^ x ≤ k % p ^ x + (p ^ n - k) % p ^ x ∨ p ^ x ∣ k
@@ -297,8 +295,8 @@ theorem multiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), multiplicit
       simp only [ne_eq, bit_eq_zero, true_and, Bool.not_eq_false] at h
       simp only [h, bit_true, bit1_zero, factorial, mul_one, Nat.isUnit_iff, cast_one]
       rw [Prime.multiplicity_one]
-      simp only [zero_lt_one]
-      decide
+      · simp only [zero_lt_one]
+      · decide
     have : multiplicity 2 (2 * n)! < (2 * n : ℕ) := by
       rw [prime_two.multiplicity_factorial_mul]
       refine' (PartENat.add_lt_add_right (ih hn) (PartENat.natCast_ne_top _)).trans_le _
@@ -310,8 +308,8 @@ theorem multiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), multiplicit
         simpa [succ_eq_add_one, multiplicity.mul, h2, prime_two, Nat.bit1_eq_succ_bit0,
           bit0_eq_two_mul n, factorial]
       rw [multiplicity_eq_zero.2 (two_not_dvd_two_mul_add_one n), zero_add]
-      refine' this.trans _
-      exact_mod_cast lt_succ_self _
+      refine this.trans ?_
+      exact mod_cast lt_succ_self _
 #align nat.multiplicity_two_factorial_lt Nat.multiplicity_two_factorial_lt
 
 end Nat

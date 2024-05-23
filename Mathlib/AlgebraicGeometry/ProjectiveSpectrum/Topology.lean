@@ -6,6 +6,7 @@ Authors: Jujian Zhang, Johan Commelin
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.Sets.Opens
+import Mathlib.Data.Set.Subsingleton
 
 #align_import algebraic_geometry.projective_spectrum.topology from "leanprover-community/mathlib"@"d39590fc8728fbf6743249802486f8c91ffe07bc"
 
@@ -42,12 +43,10 @@ noncomputable section
 open DirectSum BigOperators Pointwise SetLike TopCat TopologicalSpace CategoryTheory Opposite
 
 variable {R A : Type*}
-
 variable [CommSemiring R] [CommRing A] [Algebra R A]
-
 variable (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜]
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- The projective spectrum of a graded commutative ring is the subtype of all homogenous ideals
 that are prime and do not contain the irrelevant ideal. -/
 @[ext]
@@ -453,13 +452,13 @@ theorem basicOpen_eq_union_of_projection (f : A) :
 theorem isTopologicalBasis_basic_opens :
     TopologicalSpace.IsTopologicalBasis
       (Set.range fun r : A => (basicOpen 𝒜 r : Set (ProjectiveSpectrum 𝒜))) := by
-  apply TopologicalSpace.isTopologicalBasis_of_open_of_nhds
+  apply TopologicalSpace.isTopologicalBasis_of_isOpen_of_nhds
   · rintro _ ⟨r, rfl⟩
     exact isOpen_basicOpen 𝒜
   · rintro p U hp ⟨s, hs⟩
     rw [← compl_compl U, Set.mem_compl_iff, ← hs, mem_zeroLocus, Set.not_subset] at hp
     obtain ⟨f, hfs, hfp⟩ := hp
-    refine' ⟨basicOpen 𝒜 f, ⟨f, rfl⟩, hfp, _⟩
+    refine ⟨basicOpen 𝒜 f, ⟨f, rfl⟩, hfp, ?_⟩
     rw [← Set.compl_subset_compl, ← hs, basicOpen_eq_zeroLocus_compl, compl_compl]
     exact zeroLocus_anti_mono 𝒜 (Set.singleton_subset_iff.mpr hfs)
 #align projective_spectrum.is_topological_basis_basic_opens ProjectiveSpectrum.isTopologicalBasis_basic_opens

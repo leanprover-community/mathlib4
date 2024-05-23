@@ -28,8 +28,6 @@ that is solvable by radicals has a solvable Galois group.
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open scoped Classical Polynomial IntermediateField
 
 open Polynomial IntermediateField
@@ -141,14 +139,14 @@ theorem gal_X_pow_sub_C_isSolvable_aux (n : ℕ) (a : F)
   rw [mem_rootSet_of_ne hn'', map_sub, aeval_X_pow, aeval_C, sub_eq_zero] at hb
   have hb' : b ≠ 0 := by
     intro hb'
-    rw [hb', zero_pow hn'] at hb
+    rw [hb', zero_pow hn] at hb
     exact ha' hb.symm
   have key : ∀ σ : (X ^ n - C a).Gal, ∃ c, σ b = b * algebraMap F _ c := by
     intro σ
     have key : (σ b / b) ^ n = 1 := by rw [div_pow, ← σ.map_pow, hb, σ.commutes, div_self ha']
     obtain ⟨c, hc⟩ := mem_range key
     use c
-    rw [hc, mul_div_cancel' (σ b) hb']
+    rw [hc, mul_div_cancel₀ (σ b) hb']
   obtain ⟨c, hc⟩ := key σ
   obtain ⟨d, hd⟩ := key τ
   rw [σ.mul_apply, τ.mul_apply, hc, τ.map_mul, τ.commutes, hd, σ.map_mul, σ.commutes, hc,
@@ -170,7 +168,7 @@ theorem splits_X_pow_sub_one_of_X_pow_sub_C {F : Type*} [Field F] {E : Type*} [F
   rw [eval₂_sub, eval₂_X_pow, eval₂_C, sub_eq_zero] at hb
   have hb' : b ≠ 0 := by
     intro hb'
-    rw [hb', zero_pow hn'] at hb
+    rw [hb', zero_pow hn] at hb
     exact ha' hb.symm
   let s := ((X ^ n - C a).map i).roots
   have hs : _ = _ * (s.map _).prod := eq_prod_roots_of_splits h
@@ -188,7 +186,7 @@ theorem splits_X_pow_sub_one_of_X_pow_sub_C {F : Type*} [Field F] {E : Type*} [F
       C b * (X - C (c / b)) := by
     ext1 c
     dsimp only [Function.comp_apply]
-    rw [sub_comp, X_comp, C_comp, mul_sub, ← C_mul, mul_div_cancel' c hb']
+    rw [sub_comp, X_comp, C_comp, mul_sub, ← C_mul, mul_div_cancel₀ c hb']
   rw [key1, hs, multiset_prod_comp, Multiset.map_map, key2, Multiset.prod_map_mul,
     -- Porting note: needed for `Multiset.map_const` to work
     show (fun (_ : E) => C b) = Function.const E (C b) by rfl,
@@ -286,16 +284,15 @@ theorem isIntegral (α : solvableByRad F E) : IsIntegral F α := by
   revert α
   apply solvableByRad.induction
   · exact fun _ => isIntegral_algebraMap
-  · exact fun _ _ => isIntegral_add
-  · exact fun _ => isIntegral_neg
-  · exact fun _ _ => isIntegral_mul
+  · exact fun _ _ => IsIntegral.add
+  · exact fun _ => IsIntegral.neg
+  · exact fun _ _ => IsIntegral.mul
   · intro α hα
     exact Subalgebra.inv_mem_of_algebraic (integralClosure F (solvableByRad F E))
-      (show IsAlgebraic F ↑(⟨α, hα⟩ : integralClosure F (solvableByRad F E)) from
-        isAlgebraic_iff_isIntegral.mpr hα)
+      (show IsAlgebraic F ↑(⟨α, hα⟩ : integralClosure F (solvableByRad F E)) from hα.isAlgebraic)
   · intro α n hn hα
-    obtain ⟨p, h1, h2⟩ := isAlgebraic_iff_isIntegral.mpr hα
-    refine' isAlgebraic_iff_isIntegral.mp ⟨p.comp (X ^ n),
+    obtain ⟨p, h1, h2⟩ := hα.isAlgebraic
+    refine' IsAlgebraic.isIntegral ⟨p.comp (X ^ n),
       ⟨fun h => h1 (leadingCoeff_eq_zero.mp _), by rw [aeval_comp, aeval_X_pow, h2]⟩⟩
     rwa [← leadingCoeff_eq_zero, leadingCoeff_comp, leadingCoeff_X_pow, one_pow, mul_one] at h
     rwa [natDegree_X_pow]
@@ -341,21 +338,18 @@ theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮α, β⟯) (
   have hpq := Polynomial.splits_of_splits_mul _
     (mul_ne_zero (minpoly.ne_zero (isIntegral α)) (minpoly.ne_zero (isIntegral β)))
     (SplittingField.splits (p * q))
-  let f : ↥F⟮α, β⟯ →ₐ[F] (p * q).SplittingField := Classical.choice <| algHom_mk_adjoin_splits (by
-    intro x hx
-    cases' hx with hx hx
-    rw [hx]
-    exact ⟨isIntegral α, hpq.1⟩
-    cases hx
-    exact ⟨isIntegral β, hpq.2⟩)
+  let f : ↥F⟮α, β⟯ →ₐ[F] (p * q).SplittingField :=
+    Classical.choice <| nonempty_algHom_adjoin_of_splits <| by
+      intro x hx
+      simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hx
+      cases hx with rw [hx]
+      | inl hx => exact ⟨isIntegral α, hpq.1⟩
+      | inr hx => exact ⟨isIntegral β, hpq.2⟩
   have key : minpoly F γ = minpoly F (f ⟨γ, hγ⟩) := by
     refine' minpoly.eq_of_irreducible_of_monic
       (minpoly.irreducible (isIntegral γ)) _ (minpoly.monic (isIntegral γ))
     suffices aeval (⟨γ, hγ⟩ : F⟮α, β⟯) (minpoly F γ) = 0 by
       rw [aeval_algHom_apply, this, AlgHom.map_zero]
-    -- Porting note: this instance is needed for the following `apply`
-    haveI := @IntermediateField.toAlgebra F (solvableByRad F E) _ _ _ F⟮α, β⟯
-      (solvableByRad F E) _ (Algebra.id (solvableByRad F E))
     apply (algebraMap (↥F⟮α, β⟯) (solvableByRad F E)).injective
     simp only [map_zero, _root_.map_eq_zero]
     -- Porting note: end of the proof was `exact minpoly.aeval F γ`.

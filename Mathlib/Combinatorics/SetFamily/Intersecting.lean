@@ -183,7 +183,7 @@ theorem Intersecting.is_max_iff_card_eq (hs : (s : Set α).Intersecting) :
       image_eq_preimage_of_inverse compl_compl compl_compl]
     refine' eq_univ_of_forall fun a => _
     simp_rw [mem_union, mem_preimage]
-    by_contra' ha
+    by_contra! ha
     refine' s.ne_insert_of_not_mem _ ha.1 (h _ _ <| s.subset_insert _)
     rw [coe_insert]
     refine' hs.insert _ fun b hb hab => ha.2 <| (hs.isUpperSet' h) hab.le_compl_left hb
@@ -199,7 +199,7 @@ theorem Intersecting.exists_card_eq (hs : (s : Set α).Intersecting) :
   have := hs.card_le
   rw [mul_comm, ← Nat.le_div_iff_mul_le' two_pos] at this
   revert hs
-  refine' s.strongDownwardInductionOn _ this
+  refine s.strongDownwardInductionOn ?_ this
   rintro s ih _hcard hs
   by_cases h : ∀ t : Finset α, (t : Set α).Intersecting → s ⊆ t → s = t
   · exact ⟨s, Subset.rfl, hs.is_max_iff_card_eq.1 h, hs⟩

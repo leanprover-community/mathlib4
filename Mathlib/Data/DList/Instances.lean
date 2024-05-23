@@ -3,7 +3,7 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Data.DList.Basic
+import Mathlib.Data.DList.Defs
 import Mathlib.Control.Traversable.Equiv
 import Mathlib.Control.Traversable.Instances
 
@@ -19,7 +19,7 @@ for `DList`.
 
 open Function Equiv
 
-namespace Std
+namespace Batteries
 
 variable (α : Type*)
 
@@ -30,7 +30,7 @@ def DList.listEquivDList : List α ≃ DList α := by
       { toFun := DList.ofList
         invFun := DList.toList.. } <;>
     simp [Function.RightInverse, Function.LeftInverse, DList.toList_ofList, DList.ofList_toList]
-#align dlist.list_equiv_dlist Std.DList.listEquivDList
+#align dlist.list_equiv_dlist Batteries.DList.listEquivDList
 
 instance : Traversable DList :=
   Equiv.traversable DList.listEquivDList
@@ -41,4 +41,4 @@ instance : LawfulTraversable DList :=
 instance {α} : Inhabited (DList α) :=
   ⟨DList.empty⟩
 
-end Std
+end Batteries

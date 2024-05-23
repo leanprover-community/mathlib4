@@ -54,8 +54,7 @@ all intermediate fields `E` with `E/K` finite dimensional.
 - `krullTopology K L` is defined as an instance for type class inference.
 -/
 
-
-open scoped Classical
+open scoped Classical Pointwise
 
 /-- Mapping intermediate fields along the identity does not change them -/
 theorem IntermediateField.map_id {K L : Type*} [Field K] [Field L] [Algebra K L]
@@ -87,7 +86,7 @@ def fixedByFinite (K L : Type*) [Field K] [Field L] [Algebra K L] : Set (Subgrou
 /-- For a field extension `L/K`, the intermediate field `K` is finite-dimensional over `K` -/
 theorem IntermediateField.finiteDimensional_bot (K L : Type*) [Field K] [Field L] [Algebra K L] :
     FiniteDimensional K (⊥ : IntermediateField K L) :=
-  finiteDimensional_of_rank_eq_one IntermediateField.rank_bot
+  .of_rank_eq_one IntermediateField.rank_bot
 #align intermediate_field.finite_dimensional_bot IntermediateField.finiteDimensional_bot
 
 /-- This lemma says that `Gal(L/K) = L ≃ₐ[K] L` -/
@@ -159,7 +158,7 @@ def galGroupBasis (K L : Type*) [Field K] [Field L] [Algebra K L] :
   mul' {U} hU :=
     ⟨U, hU, by
       rcases hU with ⟨H, _, rfl⟩
-      rintro x ⟨a, b, haH, hbH, rfl⟩
+      rintro x ⟨a, haH, b, hbH, rfl⟩
       exact H.mul_mem haH hbH⟩
   inv' {U} hU :=
     ⟨U, hU, by
@@ -220,26 +219,28 @@ theorem IntermediateField.fixingSubgroup_isClosed {K L : Type*} [Field K] [Field
 
 /-- If `L/K` is an algebraic extension, then the Krull topology on `L ≃ₐ[K] L` is Hausdorff. -/
 theorem krullTopology_t2 {K L : Type*} [Field K] [Field L] [Algebra K L]
-    (h_int : Algebra.IsIntegral K L) : T2Space (L ≃ₐ[K] L) :=
+    [Algebra.IsIntegral K L] : T2Space (L ≃ₐ[K] L) :=
   { t2 := fun f g hfg => by
       let φ := f⁻¹ * g
-      cases' FunLike.exists_ne hfg with x hx
+      cases' DFunLike.exists_ne hfg with x hx
       have hφx : φ x ≠ x := by
         apply ne_of_apply_ne f
         change f (f.symm (g x)) ≠ f x
         rw [AlgEquiv.apply_symm_apply f (g x), ne_comm]
         exact hx
       let E : IntermediateField K L := IntermediateField.adjoin K {x}
-      let h_findim : FiniteDimensional K E := IntermediateField.adjoin.finiteDimensional (h_int x)
+      let h_findim : FiniteDimensional K E := IntermediateField.adjoin.finiteDimensional
+        (Algebra.IsIntegral.isIntegral x)
       let H := E.fixingSubgroup
       have h_basis : (H : Set (L ≃ₐ[K] L)) ∈ galGroupBasis K L := ⟨H, ⟨E, ⟨h_findim, rfl⟩⟩, rfl⟩
       have h_nhd := GroupFilterBasis.mem_nhds_one (galGroupBasis K L) h_basis
       rw [mem_nhds_iff] at h_nhd
       rcases h_nhd with ⟨W, hWH, hW_open, hW_1⟩
-      refine' ⟨leftCoset f W, leftCoset g W,
+      refine' ⟨f • W, g • W,
         ⟨hW_open.leftCoset f, hW_open.leftCoset g, ⟨1, hW_1, mul_one _⟩, ⟨1, hW_1, mul_one _⟩, _⟩⟩
       rw [Set.disjoint_left]
       rintro σ ⟨w1, hw1, h⟩ ⟨w2, hw2, rfl⟩
+      dsimp at h
       rw [eq_inv_mul_iff_mul_eq.symm, ← mul_assoc, mul_inv_eq_iff_eq_mul.symm] at h
       have h_in_H : w1 * w2⁻¹ ∈ H := H.mul_mem (hWH hw1) (H.inv_mem (hWH hw2))
       rw [h] at h_in_H
@@ -259,15 +260,16 @@ section TotallyDisconnected
 /-- If `L/K` is an algebraic field extension, then the Krull topology on `L ≃ₐ[K] L` is
   totally disconnected. -/
 theorem krullTopology_totallyDisconnected {K L : Type*} [Field K] [Field L] [Algebra K L]
-    (h_int : Algebra.IsIntegral K L) : IsTotallyDisconnected (Set.univ : Set (L ≃ₐ[K] L)) := by
-  apply isTotallyDisconnected_of_clopen_set
+    [Algebra.IsIntegral K L] : IsTotallyDisconnected (Set.univ : Set (L ≃ₐ[K] L)) := by
+  apply isTotallyDisconnected_of_isClopen_set
   intro σ τ h_diff
-  have hστ : σ⁻¹ * τ ≠ 1 := by rwa [Ne.def, inv_mul_eq_one]
-  rcases FunLike.exists_ne hστ with ⟨x, hx : (σ⁻¹ * τ) x ≠ x⟩
+  have hστ : σ⁻¹ * τ ≠ 1 := by rwa [Ne, inv_mul_eq_one]
+  rcases DFunLike.exists_ne hστ with ⟨x, hx : (σ⁻¹ * τ) x ≠ x⟩
   let E := IntermediateField.adjoin K ({x} : Set L)
-  haveI := IntermediateField.adjoin.finiteDimensional (h_int x)
-  refine' ⟨leftCoset σ E.fixingSubgroup,
-    ⟨E.fixingSubgroup_isOpen.leftCoset σ, E.fixingSubgroup_isClosed.leftCoset σ⟩,
+  haveI := IntermediateField.adjoin.finiteDimensional
+    (Algebra.IsIntegral.isIntegral (R := K) x)
+  refine' ⟨σ • E.fixingSubgroup,
+    ⟨E.fixingSubgroup_isClosed.leftCoset σ, E.fixingSubgroup_isOpen.leftCoset σ⟩,
     ⟨1, E.fixingSubgroup.one_mem', mul_one σ⟩, _⟩
   simp only [mem_leftCoset_iff, SetLike.mem_coe, IntermediateField.mem_fixingSubgroup_iff,
     not_forall]
@@ -275,3 +277,20 @@ theorem krullTopology_totallyDisconnected {K L : Type*} [Field K] [Field L] [Alg
 #align krull_topology_totally_disconnected krullTopology_totallyDisconnected
 
 end TotallyDisconnected
+
+@[simp] lemma IntermediateField.fixingSubgroup_top (K L : Type*) [Field K] [Field L] [Algebra K L] :
+    IntermediateField.fixingSubgroup (⊤ : IntermediateField K L) = ⊥ := by
+  ext
+  simp [mem_fixingSubgroup_iff, DFunLike.ext_iff]
+
+@[simp] lemma IntermediateField.fixingSubgroup_bot (K L : Type*) [Field K] [Field L] [Algebra K L] :
+    IntermediateField.fixingSubgroup (⊥ : IntermediateField K L) = ⊤ := by
+  ext
+  simp [mem_fixingSubgroup_iff, mem_bot]
+
+instance krullTopology_discreteTopology_of_finiteDimensional (K L : Type) [Field K] [Field L]
+    [Algebra K L] [FiniteDimensional K L] : DiscreteTopology (L ≃ₐ[K] L) := by
+  rw [discreteTopology_iff_isOpen_singleton_one]
+  change IsOpen (⊥ : Subgroup (L ≃ₐ[K] L))
+  rw [← IntermediateField.fixingSubgroup_top]
+  exact IntermediateField.fixingSubgroup_isOpen ⊤

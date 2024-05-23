@@ -3,10 +3,10 @@ Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.CategoryTheory.DiscreteCategory
 import Mathlib.CategoryTheory.EpiMono
-import Mathlib.CategoryTheory.Over
+import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 #align_import category_theory.limits.shapes.binary_products from "leanprover-community/mathlib"@"fec1d95fc61c750c1ddbb5b1f7f48b8e811a80d7"
 
@@ -147,7 +147,7 @@ section
 variable {F G : Discrete WalkingPair ⥤ C} (f : F.obj ⟨left⟩ ⟶ G.obj ⟨left⟩)
   (g : F.obj ⟨right⟩ ⟶ G.obj ⟨right⟩)
 
-attribute [local aesop safe tactic (rule_sets [CategoryTheory])]
+attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
   CategoryTheory.Discrete.discreteCases
 
 /-- The natural transformation between two functors out of the
@@ -290,10 +290,10 @@ variable {X Y : C}
 
 section
 
-attribute [local aesop safe tactic (rule_sets [CategoryTheory])]
+attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
   CategoryTheory.Discrete.discreteCases
 -- Porting note: would it be okay to use this more generally?
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] Eq
+attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Eq
 
 /-- A binary fan with vertex `P` consists of the two projections `π₁ : P ⟶ X` and `π₂ : P ⟶ Y`. -/
 @[simps pt]
@@ -618,7 +618,7 @@ abbrev codiag (X : C) [HasBinaryCoproduct X X] : X ⨿ X ⟶ X :=
   coprod.desc (𝟙 _) (𝟙 _)
 #align category_theory.limits.codiag CategoryTheory.Limits.codiag
 
--- Porting note: simp removes as simp can prove this
+-- Porting note (#10618): simp removes as simp can prove this
 @[reassoc]
 theorem prod.lift_fst {W X Y : C} [HasBinaryProduct X Y] (f : W ⟶ X) (g : W ⟶ Y) :
     prod.lift f g ≫ prod.fst = f :=
@@ -626,7 +626,7 @@ theorem prod.lift_fst {W X Y : C} [HasBinaryProduct X Y] (f : W ⟶ X) (g : W �
 #align category_theory.limits.prod.lift_fst CategoryTheory.Limits.prod.lift_fst
 #align category_theory.limits.prod.lift_fst_assoc CategoryTheory.Limits.prod.lift_fst_assoc
 
--- Porting note: simp removes as simp can prove this
+-- Porting note (#10618): simp removes as simp can prove this
 @[reassoc]
 theorem prod.lift_snd {W X Y : C} [HasBinaryProduct X Y] (f : W ⟶ X) (g : W ⟶ Y) :
     prod.lift f g ≫ prod.snd = g :=
@@ -808,19 +808,19 @@ instance prod.map_mono {C : Type*} [Category C] {W X Y Z : C} (f : W ⟶ Y) (g :
       simpa using congr_arg (fun f => f ≫ prod.snd) h⟩
 #align category_theory.limits.prod.map_mono CategoryTheory.Limits.prod.map_mono
 
-@[reassoc] -- Porting note: simp can prove these
+@[reassoc] -- Porting note (#10618): simp can prove these
 theorem prod.diag_map {X Y : C} (f : X ⟶ Y) [HasBinaryProduct X X] [HasBinaryProduct Y Y] :
     diag X ≫ prod.map f f = f ≫ diag Y := by simp
 #align category_theory.limits.prod.diag_map CategoryTheory.Limits.prod.diag_map
 #align category_theory.limits.prod.diag_map_assoc CategoryTheory.Limits.prod.diag_map_assoc
 
-@[reassoc] -- Porting note: simp can prove these
+@[reassoc] -- Porting note (#10618): simp can prove these
 theorem prod.diag_map_fst_snd {X Y : C} [HasBinaryProduct X Y] [HasBinaryProduct (X ⨯ Y) (X ⨯ Y)] :
     diag (X ⨯ Y) ≫ prod.map prod.fst prod.snd = 𝟙 (X ⨯ Y) := by simp
 #align category_theory.limits.prod.diag_map_fst_snd CategoryTheory.Limits.prod.diag_map_fst_snd
 #align category_theory.limits.prod.diag_map_fst_snd_assoc CategoryTheory.Limits.prod.diag_map_fst_snd_assoc
 
-@[reassoc] -- Porting note: simp can prove these
+@[reassoc] -- Porting note (#10618): simp can prove these
 theorem prod.diag_map_fst_snd_comp [HasLimitsOfShape (Discrete WalkingPair) C] {X X' Y Y' : C}
     (g : X ⟶ Y) (g' : X' ⟶ Y') :
     diag (X ⨯ X') ≫ prod.map (prod.fst ≫ g) (prod.snd ≫ g') = prod.map g g' := by simp
@@ -1072,7 +1072,7 @@ variable [HasTerminal C]
 def prod.leftUnitor (P : C) [HasBinaryProduct (⊤_ C) P] : (⊤_ C) ⨯ P ≅ P where
   hom := prod.snd
   inv := prod.lift (terminal.from P) (𝟙 _)
-  hom_inv_id := by apply prod.hom_ext <;> simp
+  hom_inv_id := by apply prod.hom_ext <;> simp [eq_iff_true_of_subsingleton]
   inv_hom_id := by simp
 #align category_theory.limits.prod.left_unitor CategoryTheory.Limits.prod.leftUnitor
 
@@ -1081,7 +1081,7 @@ def prod.leftUnitor (P : C) [HasBinaryProduct (⊤_ C) P] : (⊤_ C) ⨯ P ≅ P
 def prod.rightUnitor (P : C) [HasBinaryProduct P (⊤_ C)] : P ⨯ ⊤_ C ≅ P where
   hom := prod.fst
   inv := prod.lift (𝟙 _) (terminal.from P)
-  hom_inv_id := by apply prod.hom_ext <;> simp
+  hom_inv_id := by apply prod.hom_ext <;> simp [eq_iff_true_of_subsingleton]
   inv_hom_id := by simp
 #align category_theory.limits.prod.right_unitor CategoryTheory.Limits.prod.rightUnitor
 
@@ -1123,7 +1123,7 @@ end
 
 section
 
--- Porting note: added category instance as it did not propagate
+-- Porting note (#10754): added category instance as it did not propagate
 variable {C} [Category.{v} C] [HasBinaryCoproducts C]
 
 /-- The braiding isomorphism which swaps a binary coproduct. -/
@@ -1173,7 +1173,7 @@ variable [HasInitial C]
 def coprod.leftUnitor (P : C) : (⊥_ C) ⨿ P ≅ P where
   hom := coprod.desc (initial.to P) (𝟙 _)
   inv := coprod.inr
-  hom_inv_id := by apply coprod.hom_ext <;> simp
+  hom_inv_id := by apply coprod.hom_ext <;> simp [eq_iff_true_of_subsingleton]
   inv_hom_id := by simp
 #align category_theory.limits.coprod.left_unitor CategoryTheory.Limits.coprod.leftUnitor
 
@@ -1182,7 +1182,7 @@ def coprod.leftUnitor (P : C) : (⊥_ C) ⨿ P ≅ P where
 def coprod.rightUnitor (P : C) : P ⨿ ⊥_ C ≅ P where
   hom := coprod.desc (𝟙 _) (initial.to P)
   inv := coprod.inl
-  hom_inv_id := by apply coprod.hom_ext <;> simp
+  hom_inv_id := by apply coprod.hom_ext <;> simp [eq_iff_true_of_subsingleton]
   inv_hom_id := by simp
 #align category_theory.limits.coprod.right_unitor CategoryTheory.Limits.coprod.rightUnitor
 
@@ -1196,7 +1196,7 @@ end
 
 section ProdFunctor
 
--- Porting note: added category instance as it did not propagate
+-- Porting note (#10754): added category instance as it did not propagate
 variable {C} [Category.{v} C] [HasBinaryProducts C]
 
 /-- The binary product functor. -/
@@ -1219,7 +1219,7 @@ end ProdFunctor
 
 section CoprodFunctor
 
--- Porting note: added category instance as it did not propagate
+-- Porting note (#10754): added category instance as it did not propagate
 variable {C} [Category.{v} C] [HasBinaryCoproducts C]
 
 /-- The binary coproduct functor. -/
@@ -1244,11 +1244,8 @@ section ProdComparison
 universe w
 
 variable {C} {D : Type u₂} [Category.{w} D]
-
 variable (F : C ⥤ D) {A A' B B' : C}
-
 variable [HasBinaryProduct A B] [HasBinaryProduct A' B']
-
 variable [HasBinaryProduct (F.obj A) (F.obj B)] [HasBinaryProduct (F.obj A') (F.obj B')]
 
 /-- The product comparison morphism.
@@ -1259,6 +1256,8 @@ def prodComparison (F : C ⥤ D) (A B : C) [HasBinaryProduct A B]
     [HasBinaryProduct (F.obj A) (F.obj B)] : F.obj (A ⨯ B) ⟶ F.obj A ⨯ F.obj B :=
   prod.lift (F.map prod.fst) (F.map prod.snd)
 #align category_theory.limits.prod_comparison CategoryTheory.Limits.prodComparison
+
+variable (A B)
 
 @[reassoc (attr := simp)]
 theorem prodComparison_fst : prodComparison F A B ≫ prod.fst = F.map prod.fst :=
@@ -1271,6 +1270,8 @@ theorem prodComparison_snd : prodComparison F A B ≫ prod.snd = F.map prod.snd 
   prod.lift_snd _ _
 #align category_theory.limits.prod_comparison_snd CategoryTheory.Limits.prodComparison_snd
 #align category_theory.limits.prod_comparison_snd_assoc CategoryTheory.Limits.prodComparison_snd_assoc
+
+variable {A B}
 
 /-- Naturality of the `prodComparison` morphism in both arguments. -/
 @[reassoc]
@@ -1334,11 +1335,8 @@ section CoprodComparison
 universe w
 
 variable {C} {D : Type u₂} [Category.{w} D]
-
 variable (F : C ⥤ D) {A A' B B' : C}
-
 variable [HasBinaryCoproduct A B] [HasBinaryCoproduct A' B']
-
 variable [HasBinaryCoproduct (F.obj A) (F.obj B)] [HasBinaryCoproduct (F.obj A') (F.obj B')]
 
 /-- The coproduct comparison morphism.
@@ -1442,14 +1440,14 @@ def Over.coprod [HasBinaryCoproducts C] {A : C} : Over A ⥤ Over A ⥤ Over A w
     { app := fun g => Over.homMk (coprod.map k.left (𝟙 _)) (by
         dsimp; rw [coprod.map_desc, Category.id_comp, Over.w k])
       naturality := fun f g k => by
-        ext;
-          · dsimp; simp }
+        ext
+        dsimp; simp }
   map_id X := by
     ext
-    · dsimp; simp
+    dsimp; simp
   map_comp f g := by
     ext
-    · dsimp; simp
+    dsimp; simp
 #align category_theory.over.coprod CategoryTheory.Over.coprod
 
 end CategoryTheory

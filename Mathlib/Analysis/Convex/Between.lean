@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
 import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Data.Set.Intervals.Group
+import Mathlib.Algebra.Order.Interval.Set.Group
 import Mathlib.Analysis.Convex.Segment
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 import Mathlib.Tactic.FieldSimp
@@ -34,7 +34,6 @@ open BigOperators
 section OrderedRing
 
 variable [OrderedRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
-
 variable [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
 
 /-- The segment of points weakly between `x` and `y`. When convexity is refactored to support
@@ -50,7 +49,7 @@ theorem affineSegment_eq_segment (x y : V) : affineSegment R x y = segment R x y
 #align affine_segment_eq_segment affineSegment_eq_segment
 
 theorem affineSegment_comm (x y : P) : affineSegment R x y = affineSegment R y x := by
-  refine' Set.ext fun z => _
+  refine Set.ext fun z => ?_
   constructor <;>
     · rintro ⟨t, ht, hxy⟩
       refine' ⟨1 - t, _, _⟩
@@ -68,11 +67,11 @@ theorem right_mem_affineSegment (x y : P) : y ∈ affineSegment R x y :=
 
 @[simp]
 theorem affineSegment_same (x : P) : affineSegment R x x = {x} := by
-  -- porting note: added as this doesn't do anything in `simp_rw` any more
+  -- Porting note: added as this doesn't do anything in `simp_rw` any more
   rw [affineSegment]
   -- Note: when adding "simp made no progress" in lean4#2336,
   -- had to change `lineMap_same` to `lineMap_same _`. Not sure why?
-  -- porting note: added `_ _` and `Function.const`
+  -- Porting note: added `_ _` and `Function.const`
   simp_rw [lineMap_same _, AffineMap.coe_const _ _, Function.const,
     (Set.nonempty_Icc.mpr zero_le_one).image_const]
 #align affine_segment_same affineSegment_same
@@ -538,14 +537,13 @@ theorem Sbtw.affineCombination_of_mem_affineSpan_pair [NoZeroDivisors R] [NoZero
   rw [hr i his, sbtw_mul_sub_add_iff] at hs
   change ∀ i ∈ s, w i = (r • (w₂ - w₁) + w₁) i at hr
   rw [s.affineCombination_congr hr fun _ _ => rfl]
-  dsimp only
   rw [← s.weightedVSub_vadd_affineCombination, s.weightedVSub_const_smul,
     ← s.affineCombination_vsub, ← lineMap_apply, sbtw_lineMap_iff, and_iff_left hs.2,
     ← @vsub_ne_zero V, s.affineCombination_vsub]
   intro hz
   have hw₁w₂ : (∑ i in s, (w₁ - w₂) i) = 0 := by
     simp_rw [Pi.sub_apply, Finset.sum_sub_distrib, hw₁, hw₂, sub_self]
-  refine' hs.1 _
+  refine hs.1 ?_
   have ha' := ha s (w₁ - w₂) hw₁w₂ hz i his
   rwa [Pi.sub_apply, sub_eq_zero] at ha'
 #align sbtw.affine_combination_of_mem_affine_span_pair Sbtw.affineCombination_of_mem_affineSpan_pair
@@ -555,7 +553,6 @@ end OrderedRing
 section StrictOrderedCommRing
 
 variable [StrictOrderedCommRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
-
 variable {R}
 
 theorem Wbtw.sameRay_vsub {x y z : P} (h : Wbtw R x y z) : SameRay R (y -ᵥ x) (z -ᵥ y) := by
@@ -584,7 +581,6 @@ end StrictOrderedCommRing
 section LinearOrderedRing
 
 variable [LinearOrderedRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
-
 variable {R}
 
 /-- Suppose lines from two vertices of a triangle to interior points of the opposite side meet at
@@ -611,7 +607,8 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [NoZeroSMulDivisors R V]
   have hu : (Finset.univ : Finset (Fin 3)) = {i₁, i₂, i₃} := by
     clear h₁ h₂ h₁' h₂'
     -- Porting note: Originally `decide!`
-    fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃ <;> simp at h₁₂ h₁₃ h₂₃ ⊢
+    fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃
+      <;> simp (config := {decide := true}) at h₁₂ h₁₃ h₂₃ ⊢
   have hp : p ∈ affineSpan R (Set.range t.points) := by
     have hle : line[R, t.points i₁, p₁] ≤ affineSpan R (Set.range t.points) := by
       refine' affineSpan_pair_le_of_mem_of_mem (mem_affineSpan R (Set.mem_range_self _)) _
@@ -629,17 +626,17 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [NoZeroSMulDivisors R V]
   rcases h₂i with ⟨r₂, ⟨hr₂0, hr₂1⟩, rfl⟩
   rcases eq_affineCombination_of_mem_affineSpan_of_fintype hp with ⟨w, hw, rfl⟩
   have h₁s :=
-    sign_eq_of_affineCombination_mem_affineSpan_single_lineMap t.Independent hw (Finset.mem_univ _)
+    sign_eq_of_affineCombination_mem_affineSpan_single_lineMap t.independent hw (Finset.mem_univ _)
       (Finset.mem_univ _) (Finset.mem_univ _) h₁₂ h₁₃ h₂₃ hr₁0 hr₁1 h₁'
   have h₂s :=
-    sign_eq_of_affineCombination_mem_affineSpan_single_lineMap t.Independent hw (Finset.mem_univ _)
+    sign_eq_of_affineCombination_mem_affineSpan_single_lineMap t.independent hw (Finset.mem_univ _)
       (Finset.mem_univ _) (Finset.mem_univ _) h₁₂.symm h₂₃ h₁₃ hr₂0 hr₂1 h₂'
   rw [← Finset.univ.affineCombination_affineCombinationSingleWeights R t.points
       (Finset.mem_univ i₁),
     ← Finset.univ.affineCombination_affineCombinationLineMapWeights t.points (Finset.mem_univ _)
       (Finset.mem_univ _)] at h₁' ⊢
   refine'
-    Sbtw.affineCombination_of_mem_affineSpan_pair t.Independent hw
+    Sbtw.affineCombination_of_mem_affineSpan_pair t.independent hw
       (Finset.univ.sum_affineCombinationSingleWeights R (Finset.mem_univ _))
       (Finset.univ.sum_affineCombinationLineMapWeights (Finset.mem_univ _) (Finset.mem_univ _) _)
       h₁' (Finset.mem_univ i₁) _
@@ -655,7 +652,7 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [NoZeroSMulDivisors R V]
   have hs' := sign_sum Finset.univ_nonempty (SignType.sign (w i₃)) fun i _ => hs i
   rw [hs'] at hss
   simp_rw [hss, sign_eq_one_iff] at hs
-  refine' ⟨hs i₁, _⟩
+  refine ⟨hs i₁, ?_⟩
   rw [hu] at hw
   rw [Finset.sum_insert, Finset.sum_insert, Finset.sum_singleton] at hw
   · by_contra hle
@@ -670,7 +667,6 @@ end LinearOrderedRing
 section LinearOrderedField
 
 variable [LinearOrderedField R] [AddCommGroup V] [Module R V] [AddTorsor V P]
-
 variable {R}
 
 theorem wbtw_iff_left_eq_or_right_mem_image_Ici {x y z : P} :
@@ -847,7 +843,7 @@ theorem Sbtw.trans_right_left {w x y z : P} (h₁ : Sbtw R w x z) (h₂ : Sbtw R
 
 theorem Wbtw.collinear {x y z : P} (h : Wbtw R x y z) : Collinear R ({x, y, z} : Set P) := by
   rw [collinear_iff_exists_forall_eq_smul_vadd]
-  refine' ⟨x, z -ᵥ x, _⟩
+  refine ⟨x, z -ᵥ x, ?_⟩
   intro p hp
   simp_rw [Set.mem_insert_iff, Set.mem_singleton_iff] at hp
   rcases hp with (rfl | rfl | rfl)

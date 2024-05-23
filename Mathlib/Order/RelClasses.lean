@@ -185,8 +185,7 @@ theorem extensional_of_trichotomous_of_irrefl (r : α → α → Prop) [IsTricho
 /-- Construct a partial order from an `isStrictOrder` relation.
 
 See note [reducible non-instances]. -/
-@[reducible]
-def partialOrderOfSO (r) [IsStrictOrder α r] : PartialOrder α where
+abbrev partialOrderOfSO (r) [IsStrictOrder α r] : PartialOrder α where
   le x y := x = y ∨ r x y
   lt := r
   le_refl x := Or.inl rfl
@@ -209,13 +208,12 @@ set_option linter.uppercaseLean3 false in
 /-- Construct a linear order from an `IsStrictTotalOrder` relation.
 
 See note [reducible non-instances]. -/
-@[reducible]
-def linearOrderOfSTO (r) [IsStrictTotalOrder α r] [∀ x y, Decidable ¬r x y] : LinearOrder α :=
+abbrev linearOrderOfSTO (r) [IsStrictTotalOrder α r] [∀ x y, Decidable ¬r x y] : LinearOrder α :=
   let hD : DecidableRel (fun x y => x = y ∨ r x y) := fun x y =>
       decidable_of_iff (¬r y x)
         ⟨fun h => ((trichotomous_of r y x).resolve_left h).imp Eq.symm id, fun h =>
           h.elim (fun h => h ▸ irrefl_of _ _) (asymm_of r)⟩
-  { partialOrderOfSO r with
+  { __ := partialOrderOfSO r
     le_total := fun x y =>
       match y, trichotomous_of r x y with
       | y, Or.inl h => Or.inl (Or.inr h)
@@ -258,8 +256,8 @@ theorem isStrictWeakOrder_of_isOrderConnected [IsAsymm α r] [IsOrderConnected �
 -- see Note [lower instance priority]
 instance (priority := 100) isStrictOrderConnected_of_isStrictTotalOrder [IsStrictTotalOrder α r] :
     IsOrderConnected α r :=
-  ⟨λ _ _ _ h => (trichotomous _ _).imp_right
-    fun o => o.elim (fun e => e ▸ h) fun h' => _root_.trans h' h⟩
+  ⟨fun _ _ _ h ↦ (trichotomous _ _).imp_right
+    fun o ↦ o.elim (fun e ↦ e ▸ h) fun h' ↦ _root_.trans h' h⟩
 #align is_order_connected_of_is_strict_total_order isStrictOrderConnected_of_isStrictTotalOrder
 
 -- see Note [lower instance priority]
@@ -276,7 +274,7 @@ instance (priority := 100) isStrictTotalOrder_of_isStrictTotalOrder [IsStrictTot
   /-- The relation is `WellFounded`, as a proposition. -/
   wf : WellFounded r
 #align is_well_founded IsWellFounded
-#align is_well_founded_iff IsWellFounded_iff
+#align is_well_founded_iff isWellFounded_iff
 
 #align has_well_founded WellFoundedRelation
 set_option linter.uppercaseLean3 false in
@@ -289,7 +287,7 @@ instance WellFoundedRelation.isWellFounded [h : WellFoundedRelation α] :
 theorem WellFoundedRelation.asymmetric {α : Sort*} [WellFoundedRelation α] {a b : α} :
     WellFoundedRelation.rel a b → ¬ WellFoundedRelation.rel b a :=
   fun hab hba => WellFoundedRelation.asymmetric hba hab
-termination_by _ => a
+termination_by a
 
 lemma WellFounded.prod_lex {ra : α → α → Prop} {rb : β → β → Prop} (ha : WellFounded ra)
     (hb : WellFounded rb) : WellFounded (Prod.Lex ra rb) :=
@@ -345,14 +343,12 @@ instance (r : α → α → Prop) [i : IsWellFounded α r] : IsWellFounded α (R
   ⟨i.wf.transGen⟩
 
 /-- A class for a well founded relation `<`. -/
-@[reducible]
-def WellFoundedLT (α : Type*) [LT α] : Prop :=
+abbrev WellFoundedLT (α : Type*) [LT α] : Prop :=
   IsWellFounded α (· < ·)
 #align well_founded_lt WellFoundedLT
 
 /-- A class for a well founded relation `>`. -/
-@[reducible]
-def WellFoundedGT (α : Type*) [LT α] : Prop :=
+abbrev WellFoundedGT (α : Type*) [LT α] : Prop :=
   IsWellFounded α (· > ·)
 #align well_founded_gt WellFoundedGT
 
@@ -385,8 +381,8 @@ instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] :
     IsStrictTotalOrder α r where
 
 -- see Note [lower instance priority]
-instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] : IsTrichotomous α r :=
-  by infer_instance
+instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] : IsTrichotomous α r := by
+  infer_instance
 
 -- see Note [lower instance priority]
 instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] : IsTrans α r := by
@@ -547,7 +543,7 @@ def Unbounded (r : α → α → Prop) (s : Set α) : Prop :=
   ∀ a, ∃ b ∈ s, ¬r b a
 #align set.unbounded Set.Unbounded
 
-/-- A bounded or final set. Not to be confused with `Metric.bounded`. -/
+/-- A bounded or final set. Not to be confused with `Bornology.IsBounded`. -/
 def Bounded (r : α → α → Prop) (s : Set α) : Prop :=
   ∃ a, ∀ b ∈ s, r b a
 #align set.bounded Set.Bounded
@@ -620,7 +616,7 @@ variable [HasSubset α] {a b c : α}
 lemma subset_of_eq_of_subset (hab : a = b) (hbc : b ⊆ c) : a ⊆ c := by rwa [hab]
 #align subset_of_eq_of_subset subset_of_eq_of_subset
 
-lemma subset_of_subset_of_eq (hab : a ⊆ b) (hbc : b = c) : a ⊆ c := by rwa [←hbc]
+lemma subset_of_subset_of_eq (hab : a ⊆ b) (hbc : b = c) : a ⊆ c := by rwa [← hbc]
 #align subset_of_subset_of_eq subset_of_subset_of_eq
 
 @[refl]
@@ -689,7 +685,7 @@ variable [HasSSubset α] {a b c : α}
 lemma ssubset_of_eq_of_ssubset (hab : a = b) (hbc : b ⊂ c) : a ⊂ c := by rwa [hab]
 #align ssubset_of_eq_of_ssubset ssubset_of_eq_of_ssubset
 
-lemma ssubset_of_ssubset_of_eq (hab : a ⊂ b) (hbc : b = c) : a ⊂ c := by rwa [←hbc]
+lemma ssubset_of_ssubset_of_eq (hab : a ⊂ b) (hbc : b = c) : a ⊂ c := by rwa [← hbc]
 #align ssubset_of_ssubset_of_eq ssubset_of_ssubset_of_eq
 
 lemma ssubset_irrefl [IsIrrefl α (· ⊂ ·)] (a : α) : ¬a ⊂ a := irrefl _
@@ -793,6 +789,12 @@ theorem ssubset_or_eq_of_subset [IsAntisymm α (· ⊆ ·)] (h : a ⊆ b) : a �
   (eq_or_ssubset_of_subset h).symm
 #align ssubset_or_eq_of_subset ssubset_or_eq_of_subset
 
+lemma eq_of_subset_of_not_ssubset [IsAntisymm α (· ⊆ ·)] (hab : a ⊆ b) (hba : ¬ a ⊂ b) : a = b :=
+  (eq_or_ssubset_of_subset hab).resolve_right hba
+
+lemma eq_of_superset_of_not_ssuperset [IsAntisymm α (· ⊆ ·)] (hab : a ⊆ b) (hba : ¬ a ⊂ b) :
+    b = a := ((eq_or_ssubset_of_subset hab).resolve_right hba).symm
+
 alias HasSubset.Subset.trans_ssubset := ssubset_of_subset_of_ssubset
 #align has_subset.subset.trans_ssubset HasSubset.Subset.trans_ssubset
 
@@ -810,6 +812,9 @@ alias HasSubset.Subset.eq_or_ssubset := eq_or_ssubset_of_subset
 
 alias HasSubset.Subset.ssubset_or_eq := ssubset_or_eq_of_subset
 #align has_subset.subset.ssubset_or_eq HasSubset.Subset.ssubset_or_eq
+
+alias HasSubset.Subset.eq_of_not_ssubset := eq_of_subset_of_not_ssubset
+alias HasSubset.Subset.eq_of_not_ssuperset := eq_of_superset_of_not_ssuperset
 
 theorem ssubset_iff_subset_ne [IsAntisymm α (· ⊆ ·)] : a ⊂ b ↔ a ⊆ b ∧ a ≠ b :=
   ⟨fun h => ⟨h.subset, h.ne⟩, fun h => h.1.ssubset_of_ne h.2⟩

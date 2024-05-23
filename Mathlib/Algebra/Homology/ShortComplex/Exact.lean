@@ -7,7 +7,7 @@ import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
 import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
 import Mathlib.CategoryTheory.Abelian.Exact
-import Mathlib.CategoryTheory.MorphismProperty
+import Mathlib.CategoryTheory.Preadditive.Injective
 
 /-!
 # Exact short complexes
@@ -112,6 +112,22 @@ lemma exact_of_iso (e : S₁ ≅ S₂) (h : S₁.Exact) : S₂.Exact := by
 
 lemma exact_iff_of_iso (e : S₁ ≅ S₂) : S₁.Exact ↔ S₂.Exact :=
   ⟨exact_of_iso e, exact_of_iso e.symm⟩
+
+lemma exact_and_mono_f_iff_of_iso (e : S₁ ≅ S₂) :
+    S₁.Exact ∧ Mono S₁.f ↔ S₂.Exact ∧ Mono S₂.f := by
+  have : Mono S₁.f ↔ Mono S₂.f :=
+    MorphismProperty.RespectsIso.arrow_mk_iso_iff
+      (MorphismProperty.RespectsIso.monomorphisms C)
+      (Arrow.isoMk (ShortComplex.π₁.mapIso e) (ShortComplex.π₂.mapIso e) e.hom.comm₁₂)
+  rw [exact_iff_of_iso e, this]
+
+lemma exact_and_epi_g_iff_of_iso (e : S₁ ≅ S₂) :
+    S₁.Exact ∧ Epi S₁.g ↔ S₂.Exact ∧ Epi S₂.g := by
+  have : Epi S₁.g ↔ Epi S₂.g :=
+    MorphismProperty.RespectsIso.arrow_mk_iso_iff
+      (MorphismProperty.RespectsIso.epimorphisms C)
+      (Arrow.isoMk (ShortComplex.π₂.mapIso e) (ShortComplex.π₃.mapIso e) e.hom.comm₂₃)
+  rw [exact_iff_of_iso e, this]
 
 lemma exact_of_isZero_X₂ (h : IsZero S.X₂) : S.Exact := by
   rw [(HomologyData.ofZeros S (IsZero.eq_of_tgt h _ _) (IsZero.eq_of_src h _ _)).exact_iff]
@@ -224,7 +240,7 @@ variable (S)
 
 lemma exact_map_iff_of_faithful [S.HasHomology]
     (F : C ⥤ D) [F.PreservesZeroMorphisms] [F.PreservesLeftHomologyOf S]
-    [F.PreservesRightHomologyOf S] [Faithful F] :
+    [F.PreservesRightHomologyOf S] [F.Faithful] :
     (S.map F).Exact ↔ S.Exact := by
   constructor
   · intro h
@@ -344,8 +360,8 @@ noncomputable def Exact.leftHomologyDataOfIsLimitKernelFork
     have := hS.hasHomology
     refine' ((MorphismProperty.RespectsIso.epimorphisms C).arrow_mk_iso_iff _).1
       hS.epi_toCycles
-    refine' Arrow.isoMk (Iso.refl _)
-      (IsLimit.conePointUniqueUpToIso S.cyclesIsKernel hkf) _
+    refine Arrow.isoMk (Iso.refl _)
+      (IsLimit.conePointUniqueUpToIso S.cyclesIsKernel hkf) ?_
     apply Fork.IsLimit.hom_ext hkf
     simp [IsLimit.conePointUniqueUpToIso]) (isZero_zero C)
 
@@ -480,10 +496,10 @@ attribute [reassoc (attr := simp)] f_r s_g
 variable {S}
 
 @[reassoc]
-lemma r_f (s : S.Splitting) : s.r ≫ S.f = 𝟙 _ - S.g ≫ s.s := by rw [← s.id, add_sub_cancel]
+lemma r_f (s : S.Splitting) : s.r ≫ S.f = 𝟙 _ - S.g ≫ s.s := by rw [← s.id, add_sub_cancel_right]
 
 @[reassoc]
-lemma g_s (s : S.Splitting) : S.g ≫ s.s = 𝟙 _ - s.r ≫ S.f := by rw [← s.id, add_sub_cancel']
+lemma g_s (s : S.Splitting) : S.g ≫ s.s = 𝟙 _ - s.r ≫ S.f := by rw [← s.id, add_sub_cancel_left]
 
 /-- Given a splitting of a short complex `S`, this shows that `S.f` is a split monomorphism. -/
 @[simps] def splitMono_f (s : S.Splitting) : SplitMono S.f := ⟨s.r, s.f_r⟩
@@ -798,6 +814,24 @@ lemma epi_τ₂_of_exact_of_epi {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂
   have := mono_τ₂_of_exact_of_mono (opMap φ) h₂.op
   exact unop_epi_of_mono (opMap φ).τ₂
 
+variable (S)
+
+lemma exact_and_mono_f_iff_f_is_kernel [S.HasHomology] :
+    S.Exact ∧ Mono S.f ↔ Nonempty (IsLimit (KernelFork.ofι S.f S.zero)) := by
+  constructor
+  · intro ⟨hS, _⟩
+    exact ⟨hS.fIsKernel⟩
+  · intro ⟨hS⟩
+    exact ⟨S.exact_of_f_is_kernel hS, mono_of_isLimit_fork hS⟩
+
+lemma exact_and_epi_g_iff_g_is_cokernel [S.HasHomology] :
+    S.Exact ∧ Epi S.g ↔ Nonempty (IsColimit (CokernelCofork.ofπ S.g S.zero)) := by
+  constructor
+  · intro ⟨hS, _⟩
+    exact ⟨hS.gIsCokernel⟩
+  · intro ⟨hS⟩
+    exact ⟨S.exact_of_g_is_cokernel hS, epi_of_isColimit_cofork hS⟩
+
 end Balanced
 
 end Preadditive
@@ -821,7 +855,7 @@ lemma quasiIso_iff_of_zeros {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
     have : Mono φ.τ₂ := by
       rw [← S₂.liftCycles_i φ.τ₂ w]
       apply mono_comp
-    refine' ⟨_, this⟩
+    refine ⟨?_, this⟩
     apply exact_of_f_is_kernel
     exact IsLimit.ofIsoLimit S₂.cyclesIsKernel
       (Fork.ext (asIso (S₂.liftCycles φ.τ₂ w)).symm (by simp))
@@ -850,6 +884,40 @@ lemma quasiIso_iff_of_zeros' {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
   have : Mono φ.τ₂.op ↔ Epi φ.τ₂ :=
     ⟨fun _ => unop_epi_of_mono φ.τ₂.op, fun _ => op_mono_of_epi _⟩
   tauto
+
+variable {S : ShortComplex C}
+
+/-- If `S` is an exact short complex and `f : S.X₂ ⟶ J` is a morphism to an injective object `J`
+such that `S.f ≫ f = 0`, this is a morphism `φ : S.X₃ ⟶ J` such that `S.g ≫ φ = f`. -/
+noncomputable def Exact.descToInjective
+    (hS : S.Exact) {J : C} (f : S.X₂ ⟶ J) [Injective J] (hf : S.f ≫ f = 0) :
+    S.X₃ ⟶ J := by
+  have := hS.mono_fromOpcycles
+  exact Injective.factorThru (S.descOpcycles f hf) S.fromOpcycles
+
+@[reassoc (attr := simp, nolint unusedHavesSuffices)]
+lemma Exact.comp_descToInjective
+    (hS : S.Exact) {J : C} (f : S.X₂ ⟶ J) [Injective J] (hf : S.f ≫ f = 0) :
+    S.g ≫ hS.descToInjective f hf = f := by
+  have := hS.mono_fromOpcycles
+  dsimp [descToInjective]
+  simp only [← p_fromOpcycles, assoc, Injective.comp_factorThru, p_descOpcycles]
+
+/-- If `S` is an exact short complex and `f : P ⟶ S.X₂` is a morphism from a projective object `P`
+such that `f ≫ S.g = 0`, this is a morphism `φ : P ⟶ S.X₁` such that `φ ≫ S.f = f`. -/
+noncomputable def Exact.liftFromProjective
+    (hS : S.Exact) {P : C} (f : P ⟶ S.X₂) [Projective P] (hf : f ≫ S.g = 0) :
+    P ⟶ S.X₁ := by
+  have := hS.epi_toCycles
+  exact Projective.factorThru (S.liftCycles f hf) S.toCycles
+
+@[reassoc (attr := simp, nolint unusedHavesSuffices)]
+lemma Exact.liftFromProjective_comp
+    (hS : S.Exact) {P : C} (f : P ⟶ S.X₂) [Projective P] (hf : f ≫ S.g = 0) :
+    hS.liftFromProjective f hf ≫ S.f = f := by
+  have := hS.epi_toCycles
+  dsimp [liftFromProjective]
+  rw [← toCycles_i, Projective.factorThru_comp_assoc, liftCycles_i]
 
 end Abelian
 
