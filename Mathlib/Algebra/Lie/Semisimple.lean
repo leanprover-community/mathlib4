@@ -20,9 +20,10 @@ and prove some basic related results.
 
   * `LieModule.IsIrreducible`
   * `LieAlgebra.IsSimple`
+  * `LieAlgebra.HasTrivialRadical`
   * `LieAlgebra.IsSemisimple`
-  * `LieAlgebra.isSemisimple_iff_no_solvable_ideals`
-  * `LieAlgebra.isSemisimple_iff_no_abelian_ideals`
+  * `LieAlgebra.hasTrivialRadical_iff_no_solvable_ideals`
+  * `LieAlgebra.hasTrivialRadical_iff_no_abelian_ideals`
   * `LieAlgebra.abelian_radical_iff_solvable_is_abelian`
 
 ## Tags
@@ -37,7 +38,7 @@ universe u v w w₁ w₂
 class LieModule.IsIrreducible (R : Type u) (L : Type v) (M : Type w) [CommRing R] [LieRing L]
     [LieAlgebra R L] [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M] :
     Prop where
-  Irreducible : ∀ N : LieSubmodule R L M, N ≠ ⊥ → N = ⊤
+  irreducible : ∀ N : LieSubmodule R L M, N ≠ ⊥ → N = ⊤
 #align lie_module.is_irreducible LieModule.IsIrreducible
 
 namespace LieAlgebra
@@ -80,9 +81,11 @@ For example [Seligman, page 15](seligman1967) uses the label for `LieAlgebra.Has
 the weakest of the various properties which are all equivalent over a field of characteristic zero.
 -/
 class IsSemisimple : Prop where
-  spanning : ⨆ (I : LieIdeal R L) (_hI : IsAtom I), I = ⊤
+  spanning : sSup {I : LieIdeal R L | IsAtom I} = ⊤
   independent : CompleteLattice.SetIndependent {I : LieIdeal R L | IsAtom I}
-  isSimple_of_isAtom : ∀ I : LieIdeal R L, IsAtom I → IsSimple R I
+  non_abelian_of_isAtom : ∀ I : LieIdeal R L, IsAtom I → ¬ IsLieAbelian I
+
+-- TODO: show that the atomic ideals of a semisimple Lie algebra are simple
 
 theorem hasTrivialRadical_iff_no_solvable_ideals :
     HasTrivialRadical R L ↔ ∀ I : LieIdeal R L, IsSolvable R I → I = ⊥ :=
@@ -99,12 +102,13 @@ theorem hasTrivialRadical_iff_no_abelian_ideals :
 #align lie_algebra.is_semisimple_iff_no_abelian_ideals LieAlgebra.hasTrivialRadical_iff_no_abelian_ideals
 
 @[simp]
-theorem center_eq_bot_of_semisimple [h : HasTrivialRadical R L] : center R L = ⊥ := by
+theorem center_eq_bot_of_hasTrivialRadical [h : HasTrivialRadical R L] : center R L = ⊥ := by
   rw [hasTrivialRadical_iff_no_abelian_ideals] at h; apply h; infer_instance
-#align lie_algebra.center_eq_bot_of_semisimple LieAlgebra.center_eq_bot_of_semisimple
+#align lie_algebra.center_eq_bot_of_semisimple LieAlgebra.center_eq_bot_of_hasTrivialRadical
 
 /-- A simple Lie algebra is has trivial radical. -/
-instance (priority := 100) hasTrivialRadicalOfIsSimple [h : IsSimple R L] : HasTrivialRadical R L := by
+instance (priority := 100) hasTrivialRadicalOfIsSimple [h : IsSimple R L] :
+    HasTrivialRadical R L := by
   rw [hasTrivialRadical_iff_no_abelian_ideals]
   intro I hI
   obtain @⟨⟨h₁⟩, h₂⟩ := id h
@@ -116,13 +120,14 @@ instance (priority := 100) hasTrivialRadicalOfIsSimple [h : IsSimple R L] : HasT
 /-- An abelian Lie algebra with trivial radical is trivial. -/
 theorem subsingleton_of_hasTrivialRadical_lie_abelian [HasTrivialRadical R L] [h : IsLieAbelian L] :
     Subsingleton L := by
-  rw [isLieAbelian_iff_center_eq_top R L, center_eq_bot_of_semisimple] at h
+  rw [isLieAbelian_iff_center_eq_top R L, center_eq_bot_of_hasTrivialRadical] at h
   exact (LieSubmodule.subsingleton_iff R L L).mp (subsingleton_of_bot_eq_top h)
 #align lie_algebra.subsingleton_of_semisimple_lie_abelian LieAlgebra.subsingleton_of_hasTrivialRadical_lie_abelian
 
-theorem abelian_radical_of_semisimple [HasTrivialRadical R L] : IsLieAbelian (radical R L) := by
+theorem abelian_radical_of_hasTrivialRadical [HasTrivialRadical R L] :
+    IsLieAbelian (radical R L) := by
   rw [HasTrivialRadical.trivial_radical]; infer_instance
-#align lie_algebra.abelian_radical_of_semisimple LieAlgebra.abelian_radical_of_semisimple
+#align lie_algebra.abelian_radical_of_semisimple LieAlgebra.abelian_radical_of_hasTrivialRadical
 
 /-- The two properties shown to be equivalent here are possible definitions for a Lie algebra
 to be reductive.
@@ -138,7 +143,7 @@ theorem abelian_radical_iff_solvable_is_abelian [IsNoetherian R L] :
   · intro h; apply h; infer_instance
 #align lie_algebra.abelian_radical_iff_solvable_is_abelian LieAlgebra.abelian_radical_iff_solvable_is_abelian
 
-theorem ad_ker_eq_bot_of_semisimple [HasTrivialRadical R L] : (ad R L).ker = ⊥ := by simp
-#align lie_algebra.ad_ker_eq_bot_of_semisimple LieAlgebra.ad_ker_eq_bot_of_semisimple
+theorem ad_ker_eq_bot_of_hasTrivialRadical [HasTrivialRadical R L] : (ad R L).ker = ⊥ := by simp
+#align lie_algebra.ad_ker_eq_bot_of_semisimple LieAlgebra.ad_ker_eq_bot_of_hasTrivialRadical
 
 end LieAlgebra
