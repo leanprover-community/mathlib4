@@ -54,6 +54,8 @@ theorem Quiver.Hom.op_unop {X Y : Cᵒᵖ} (f : X ⟶ Y) : f.unop.op = f :=
   rfl
 #align quiver.hom.op_unop Quiver.Hom.op_unop
 
+@[simp] theorem Quiver.Hom.unop_mk {X Y : Cᵒᵖ} (f : X ⟶ Y) : Quiver.Hom.unop {unop := f} = f := rfl
+
 end Quiver
 
 namespace CategoryTheory
