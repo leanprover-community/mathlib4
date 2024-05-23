@@ -1247,10 +1247,10 @@ theorem Ideal.IsPrime.mem_pow_mul (I : Ideal R) [hI : I.IsPrime] {a b : R} {n : 
 
 section
 
-open scoped Classical
+-- open scoped Classical
 
 theorem Ideal.count_normalizedFactors_eq {p x : Ideal R} [hp : p.IsPrime] {n : ℕ} (hle : x ≤ p ^ n)
-    (hlt : ¬x ≤ p ^ (n + 1)) : (normalizedFactors x).count p = n :=
+    [DecidableEq (Ideal R)] (hlt : ¬x ≤ p ^ (n + 1)) : (normalizedFactors x).count p = n :=
   count_normalizedFactors_eq' ((Ideal.isPrime_iff_bot_or_prime.mp hp).imp_right Prime.irreducible)
     (normalize_eq _) (Ideal.dvd_iff_le.mpr hle) (mt Ideal.le_of_dvd hlt)
   #align ideal.count_normalized_factors_eq Ideal.count_normalizedFactors_eq
@@ -1548,7 +1548,8 @@ theorem count_normalizedFactorsSpan_eq_count {r X : R} (hr : r ≠ 0) (hX₁ : n
     (hX : Prime X) : Multiset.count X (normalizedFactors r) =
       Multiset.count (Ideal.span {X} : Ideal R) (normalizedFactors (Ideal.span {r})) := by
     have := multiplicity_eq_multiplicity_span (R := R) (a := X) (b := r)
-    rw [multiplicity_eq_count_normalizedFactors (Prime.irreducible hX) hr,
+    rw [multiplicity_eq_count_normalizedFactors
+    (Prime.irreducible hX) hr,
         multiplicity_eq_count_normalizedFactors] at this
     · simp_all only [ne_eq, normalize_apply, normUnit_eq_one, Units.val_one, one_eq_top, mul_top,
       mul_one, Nat.cast_inj]
@@ -1558,11 +1559,11 @@ theorem count_normalizedFactorsSpan_eq_count {r X : R} (hr : r ≠ 0) (hX₁ : n
       simpa only [prime_span_singleton_iff]
     · simp only [Submodule.zero_eq_bot, ne_eq, span_singleton_eq_bot, hr, not_false_eq_true]
 
-open Classical in
+-- open Classical in
 /-- The number of times an ideal `I` occurs as normalized factor of another ideal `J` is stable
   when regarding at these ideals as associated elements of the monoid of ideals.-/
 theorem count_normalizedFactors_eq_associates_count
-    (R : Type*) [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]--cannot comment this!
+    [DecidableEq <| Associates (Ideal R)] [∀ (p : Associates <| Ideal R) , Decidable (Irreducible p)]
     (I J : Ideal R) (hI : I ≠ 0) (hJ : J.IsPrime) (hJ₀ : J ≠ ⊥) :
     Multiset.count J (normalizedFactors I) = (Associates.mk J).count (Associates.mk I).factors := by
   replace hI : Associates.mk I ≠ 0 := Associates.mk_ne_zero.mpr hI
