@@ -2,27 +2,52 @@ import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.AlgebraicTopology.SingularSet
+import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
+import Mathlib.Algebra.Category.ModuleCat.Adjunctions
+import Mathlib.Algebra.Category.ModuleCat.Abelian
+import Mathlib.Algebra.Homology.HomotopyCategory
+import Mathlib.CategoryTheory.Monoidal.FunctorCategory
+import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 
--- import Mathlib
-noncomputable section -- Let's do some maths.
+noncomputable section -- Much of the category theory library is noncomputable,
+                      -- so lets get this out of the way at the beginning!
 
 /-!
 # Category theory in Mathlib
+
+* Basics
+* Constructing functors
+  * Forgetful functors
+  * Free commutative ring on a type
+  * Abelianization of a group
+* Constructing the category of pointed spaces
+  * Prove the equivalence between `PointedSpace` and `Under (TopCat.of Unit)`
+
+
+Further ideas:
+* Simplicial homology?
+* An `Ext` calculation??
+* Something about complexes and abelian categories?
+* Schemes? Group schemes??
 -/
 
 /-!
 ## Basics
 -/
 
--- To talk about an arbitrary category, we write something like:
-
+/-!
+Much of Mathlib happily takes over the root namespace.
+Category theory is nearly all in the `CategoryTheory` namespace, so we need:
+-/
 open CategoryTheory
 
 section
 
+/-! To talk about an arbitrary category, we write something like: -/
 variable (C : Type) [Category C]
 
-/-- And now we can prove a trivial fact:
+/-- We start by proving an easy fact:
 
 If the two squares in
 ```
@@ -35,18 +60,19 @@ If the two squares in
 ```
 commutes, then the outer rectangle commutes as well.
 -/
-example {X₁ X₂ X₃ Y₁ Y₂ Y₃ : C}
+example {X₁ X₂ X₃ Y₁ Y₂ Y₃ : C} -- Copilot will write the theorem statement, given the doc-string!
     {f₁ : X₁ ⟶ X₂} {f₂ : X₂ ⟶ X₃}
     {g₁ : X₁ ⟶ Y₁} {g₂ : X₂ ⟶ Y₂} {g₃ : X₃ ⟶ Y₃}
     {h₁ : Y₁ ⟶ Y₂} {h₂ : Y₂ ⟶ Y₃}
     (comm₁ : g₁ ≫ h₁ = f₁ ≫ g₂) (comm₂ : g₂ ≫ h₂ = f₂ ≫ g₃) :
     g₁ ≫ h₁ ≫ h₂ = f₁ ≫ f₂ ≫ g₃ := by
+  -- Now a simple rewriting proof:
   rw [← Category.assoc]
   rw [comm₁]
   rw [Category.assoc]
   rw [comm₂]
 
-/-
+/-!
 For people who've already seen this, here are two alternative proofs of the same fact:
 ```
   simp [reassoc_of% comm₁, comm₂]
@@ -59,8 +85,11 @@ or
 How do these work?
 -/
 
-
 end
+
+/-!
+## Constructing functors.
+-/
 
 /-!
 Sometimes we want to talk about the category consisting of all algebraic structures of some flavour.
@@ -97,7 +126,7 @@ def forget' : CommRingCat ⥤ RingCat where
     rfl
 
 /-!
-# Example: the free commuative ring on a type.
+### Example: the free commutative ring on a type.
 
 This should send each `X : Type` to
 multivariable polynomials with integer coefficients in `X` variables.
@@ -105,13 +134,82 @@ multivariable polynomials with integer coefficients in `X` variables.
 A function between types `X → Y` should induce a ring homomorphism given be renaming variables.
 -/
 
-attribute [local simp] types_id types_comp in
+/-- Let's get started specifying it at object level. -/
+example : Type ⥤ CommRingCat where
+  obj X := CommRingCat.of (MvPolynomial X ℤ)
+  map {X Y} f := sorry
+
+#check MvPolynomial.rename  -- Looks promising!
+  -- I would find this either by https://www.moogle.ai/search/raw?q=Rename%20variables%20in%20multivariable%20polynomials
+  -- or by typing `polynomial.*rename` in the search bar in VS Code,
+
+-- /-- First attempt at the morphism level: -/
+-- example : Type ⥤ CommRingCat where
+--   obj X := CommRingCat.of (MvPolynomial X ℤ)
+--   map {X Y} f := MvPolynomial.rename f
+
+/-!
+There are some messages from `aesop` here, prematurely trying to prove functoriality,
+but the important message is
+```
+type mismatch
+  MvPolynomial.rename f
+has type
+  MvPolynomial X ?m →ₐ[?m] MvPolynomial Y ?m : Type ?u
+but is expected to have type
+  (fun X ↦ CommRingCat.of (MvPolynomial X ℤ)) X ⟶ (fun X ↦ CommRingCat.of (MvPolynomial X ℤ)) Y : Type
+```
+This is telling us that Lean expects a morphism in `CommRingCat`,
+but we're giving it at algebra homomorphism (that's the `→ₐ[?m]` in the type),
+and moreover it can't work out which ring the coefficients should be in.
+-/
+
+-- /-- Second attempt at the morphism level. Let's remind Lean we're working over `ℤ`. -/
+-- example : Type ⥤ CommRingCat where
+--   obj X := CommRingCat.of (MvPolynomial X ℤ)
+--   map {X Y} f := MvPolynomial.rename (R := ℤ) f
+
+/-!
+Pretty much the same error message:
+let's explicit coerce from an algebra homomorphism to a ring homomorphism to help out.
+-/
+
+-- /-- Third attempt. -/
+-- example : Type ⥤ CommRingCat where
+--   obj X := CommRingCat.of (MvPolynomial X ℤ)
+--   map {X Y} f := (MvPolynomial.rename (R := ℤ) f : MvPolynomial X ℤ →+* MvPolynomial Y ℤ)
+
+/-!
+Now Lean accepts our definitions, but there are unsolved goals errors after `aesop` tries
+to discharge the functoriality proofs.
+
+`aesop` got stuck at
+```
+tactic 'aesop' failed, failed to prove the goal after exhaustive search.
+X : Type
+x✝ : MvPolynomial X ℤ
+m✝ : X →₀ ℕ
+⊢ MvPolynomial.coeff m✝ ((MvPolynomial.rename (𝟙 X)) x✝) = MvPolynomial.coeff m✝ x✝
+```
+which suggests that the problem may just be that `simp` won't unfold the definition `𝟙 X`
+as the identity function!
+
+To find the relevant theorem, I would use:
+```
+example (X : Type) : 𝟙 X = id := by rw?
+```
+which suggests the lemma `types_id`.
+
+(Actually, first I tried `by exact?` above, but that is too powerful and just suggests `rfl`.)
+
+-/
+attribute [local simp] types_id in
 def free : Type ⥤ CommRingCat where
   obj X := CommRingCat.of (MvPolynomial X ℤ)
   map {X Y} f := (MvPolynomial.rename (R := ℤ) f : MvPolynomial X ℤ →+* MvPolynomial Y ℤ)
 
 /-!
-# Example: the abelianization of a group.
+### Example: the abelianization of a group.
 
 We send each group to it abelianization.
 
@@ -122,40 +220,69 @@ the projection `Abelianization.of : G →* Abelianization G`.
 
 universe u
 
--- PR'd as https://github.com/leanprover-community/mathlib4/pull/13109
-@[simp] theorem MonoidHom.comp_id_groupCat {G : GroupCat.{u}} {H : Type u} [Group H] (f : G →* H) :
-    f.comp (𝟙 G) = f :=
-  Category.id_comp (GroupCat.ofHom f)
-@[simp] theorem MonoidHom.id_groupCat_comp {G : Type u} [Group G] {H : GroupCat.{u}} (f : G →* H) :
-    MonoidHom.comp (𝟙 H) f = f :=
-  Category.comp_id (GroupCat.ofHom f)
+-- /-- First attempt: -/
+-- example : GroupCat.{u} ⥤ CommGroupCat.{u} where
+--   obj G := CommGroupCat.of (Abelianization G)
+--   map f := Abelianization.lift (Abelianization.of.comp f)
+
+/-!
+This fails when `aesop` gets stuck at
+`⊢ Abelianization.map (f ≫ g) = Abelianization.map f ≫ Abelianization.map g`.
+Since `Abelianization.map` is about `→*`, i.e. unbundled group homomorphisms, probably this
+already exists as a theorem, we just need to convert the categorical compositions `≫`
+into `MulHom.comp`.
+-/
+
+#check Abelianization.map_comp -- Looks promising!
 
 attribute [local simp] CommGroupCat.comp_def GroupCat.comp_def in
 def abelianize : GroupCat.{u} ⥤ CommGroupCat.{u} where
   obj G := CommGroupCat.of (Abelianization G)
   map f := Abelianization.lift (Abelianization.of.comp f)
 
-structure PointedSpace where
-  X : Type
-  base : X
-  [inst : TopologicalSpace X]
+/-!
+## Example: Constructing the category of pointed spaces.
+-/
 
-attribute [instance] PointedSpace.inst
+/--
+A `PointedSpace` consists of
+* an underlying type `X`
+* the topological space structure on `X`
+* and a distinguished point `base : X`.
+-/
+structure PointedSpace where
+  carrier : Type
+  [inst : TopologicalSpace carrier] -- We use `[]` so that Lean can infer this automatically
+                                    -- What breaks below, and why, if we remove this?
+  base : carrier
+
+attribute [instance] PointedSpace.inst -- If `M : PointedSpace`,  this makes the topological space
+                                       -- instance on `M.carrier` available.
+                                       -- Check what breaks below if we remove it!
 
 namespace PointedSpace
 
+/--
+A morphism of `PointedSpace`s is a continuous map between the underlying topological spaces,
+which takes the base point to the base point.
+-/
 structure Hom (X Y : PointedSpace) where
-  map : ContinuousMap X.X Y.X
+  map : ContinuousMap X.carrier Y.carrier
   base : map X.base = Y.base
 
-attribute [simp] Hom.base
+attribute [simp] Hom.base -- Allow `simp` to use the fact that morphisms are base-preserving.
 
 namespace Hom
 
+/-- The identity morphism on a `PointedSpace`. -/
 def id (X : PointedSpace) : Hom X X := ⟨ContinuousMap.id _, rfl⟩
 
+/-- Composition of morphisms of `PointedSpace`s. -/
 def comp {X Y Z : PointedSpace} (f : Hom X Y) (g : Hom Y Z) : Hom X Z :=
-   ⟨g.map.comp f.map, by simp⟩
+   ⟨g.map.comp f.map, by simp⟩ -- Check that if we remove the `simp` attribute on `Hom.base`
+                               -- then this stops working!
+                               -- Exercise: set up an `auto_param` to `base`,
+                               -- so you can omit this proof entirely.
 
 end Hom
 
@@ -163,29 +290,245 @@ instance : Category PointedSpace where
   Hom := Hom
   id := Hom.id
   comp := Hom.comp
+  -- 🎉 No proofs required!
 
 end PointedSpace
 
+/-!
+### We next construct the equivalence between `PointedSpace` and `Under (TopCat.of Unit)`.
 
+`Under (TopCat.of Unit)` means "topological spaces equipped with a map from the one-point space".
+-/
+
+/-- The forward direction. -/
 def PointedSpaceEquiv_functor : PointedSpace ⥤ Under (TopCat.of Unit) where
-  obj := fun X => Under.mk (Y := TopCat.of X.X) (ContinuousMap.mk fun _ => X.base)
+  obj := fun X => Under.mk (Y := TopCat.of X.carrier) (ContinuousMap.mk fun _ => X.base)
   map := fun f => Under.homMk f.map
 
+/-- The reverse direction. -/
 def PointedSpaceEquiv_inverse : Under (TopCat.of Unit) ⥤ PointedSpace where
   obj := fun X =>
-  { X := X.right
+  { carrier := X.right -- The `Under` category is implemented as a `Comma` category.
+                       -- An object `X` consists of
+                       -- `X.left : PUnit` (unrelated to our 1-point space! what is it?)
+                       -- `X.right : TopCat` (the topological space)
+                       -- `X.hom`, the continuous map.
+                       -- Here we're using the coercion of `X.right` from a `TopCat` to a type,
+                       -- and Lean can automatically find the topological space instance.
     base := X.hom () }
   map := fun f =>
-  { map := f.right
+  { map := f.right -- A morphism `f` in an `Under` category consists of
+                  -- `f.left` (uninteresting)
+                  -- `f.right` (a continuous map)
+                  -- `f.w` (a proof that the diagram commutes)
     base := by
+      -- Our first proof today!
+      -- We just need to take `f.w`, which is an equation of continuous maps,
+      -- and evaluate both sides at the unique point in `TopCat.of Unit`,
+      -- and then massage things into shape.
       have := f.w
       replace this := DFunLike.congr_fun this ()
       simp [- Under.w] at this    -- Because `simp at this` gives us an unhelpful `True`!
       simp
       exact this.symm }
 
+/-- Putting it all together. -/
 def equiv : PointedSpace ≌ Under (TopCat.of Unit) where
   functor := PointedSpaceEquiv_functor
   inverse := PointedSpaceEquiv_inverse
-  unitIso := NatIso.ofComponents fun X => Iso.refl _
+  unitIso := NatIso.ofComponents fun X => Iso.refl _ -- 🎉 naturality is checked by automation
   counitIso := NatIso.ofComponents fun X => Iso.refl _
+  -- 🎉 the triangle identity is checked by automation!
+  -- Aside: categorical equivalences in Mathlib are "half-adjoint equivalences".
+  -- Jump to definition on `≌` and read the doc-string for details.
+
+/-!
+## Advanced topic: Setting up singular homology
+
+Someone should PR parts of this section to Mathlib, but it's not me!
+Even though it is definitions, and no theorems, they are the right definitions,
+and may provoke someone into starting on the theory!
+
+If you're excited about this section, see the `tuesday_9am` branch of the old mathlib 3 repository,
+which contains some more in this direction.
+-/
+
+namespace TopCat
+
+open AlgebraicTopology
+
+variable (R : Type) [Ring R]
+
+/--
+Turn a topological space into a simplicial R-module, by composing the simplicial set with
+the free R-module functor.
+-/
+def toSModule : TopCat.{0} ⥤ SimplicialObject (ModuleCat R) :=
+  toSSet ⋙ -- The functor `TopCat ⥤ SSet`
+    (SimplicialObject.whiskering _ _).obj (ModuleCat.free R)
+    -- The free functor from simplicial sets to simplicial modules.
+
+/-- Compute the singular chain complex of a topological space,
+by using the "alternating face map" functor. -/
+def singularChains : TopCat.{0} ⥤ ChainComplex (ModuleCat R) ℕ :=
+  toSModule R ⋙ alternatingFaceMapComplex _
+
+def singularHomology (n : ℕ) : TopCat.{0} ⥤ ModuleCat R :=
+(singularChains R ⋙ HomotopyCategory.quotient _ _) ⋙ HomotopyCategory.homologyFunctor _ _ n
+
+-- Challenge: do any computation at all, e.g.
+example : (singularHomology ℤ 0).obj (TopCat.of Unit) ≅ ModuleCat.of ℤ ℤ := sorry
+-- This one might be doable via the isomorphisms:
+example : toSSet.obj (TopCat.of Unit) ≅ (SimplicialObject.const _).obj Unit := sorry
+example :
+    (toSModule R).obj (TopCat.of Unit) ≅ (SimplicialObject.const _).obj (ModuleCat.of R R) :=
+  sorry
+example (X : ModuleCat R) :
+    (alternatingFaceMapComplex _).obj ((SimplicialObject.const _).obj X) ≅
+    (ChainComplex.single₀ _).obj X :=
+  sorry
+example (X : ModuleCat R) :
+    (HomologicalComplex.homologyFunctor _ _ 0).obj ((ChainComplex.single₀ _).obj X) ≅ X :=
+  sorry
+
+-- One day we would like to have lots of theory, e.g. the Kunneth formula.
+-- The code below is far from everything needed for Kunneth, but starts describing how
+-- `toSSet`, `toSModule`, and `alternatingFaceMapComplex` interact with the monoidal structures.
+
+
+open MonoidalCategory
+
+section
+
+variable (C : Type u) [Category C] [MonoidalCategory C]
+
+@[simps!]
+instance : MonoidalCategory (SimplicialObject C) :=
+  inferInstanceAs <| MonoidalCategory (SimplexCategoryᵒᵖ ⥤ C)
+
+-- instance : MonoidalCategory SSet := inferInstanceAs <| MonoidalCategory (SimplexCategoryᵒᵖ ⥤ Type)
+
+-- TODO: use `ChosenFiniteProducts`
+
+instance : MonoidalCategory TopCat :=
+  monoidalOfChosenFiniteProducts
+    ⟨{ pt := TopCat.of PUnit, π := sorry }, sorry⟩
+    fun X Y => ⟨{ pt := TopCat.of (X × Y), π := sorry }, sorry⟩
+
+@[simp] theorem forget_tensorObj {X Y : TopCat} : (forget TopCat).obj (X ⊗ Y) = (X × Y) := rfl
+
+instance : SymmetricCategory TopCat := symmetricOfChosenFiniteProducts _ _
+end
+
+-- @[simps]
+-- instance {X : TopCat} {n} : FunLike ((toSSet.obj X).obj n) (SimplexCategory.toTop.obj n.unop) X :=
+--   inferInstanceAs <| FunLike (of n.unop.toTopObj ⟶ X) (SimplexCategory.toTop.obj n.unop) X
+
+-- @[ext]
+-- theorem foo {X : TopCat} {n} {f g : (toSSet.obj X).obj n} (h : ∀ x : SimplexCategory.toTopObj n.unop, f x = g x) : f = g := by
+--   sorry
+
+@[simp]
+theorem forget_of (X : Type _) [TopologicalSpace X] : (forget TopCat).obj (of X) = X := rfl
+
+@[simp] theorem coe_continuousMap {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y]
+    {f : C(X, Y)} :
+    @DFunLike.coe (@Quiver.Hom TopCat _ no_index (of X) no_index (of Y)) X (fun _ ↦ Y) _ f =
+    @DFunLike.coe C(X, Y) X (fun _ ↦ Y) _ f :=
+  rfl
+
+@[simp] theorem coe_comp {X : Type u} [TopologicalSpace X] {Y Z : TopCat}
+    {f : C(X, no_index Y)} {g : Y ⟶ Z} {x} :
+    @DFunLike.coe no_index (@Quiver.Hom TopCat _ no_index (of X) Z) no_index X no_index (fun _ ↦ Z) _ no_index (@CategoryStruct.comp TopCat _ no_index _ no_index _ no_index _ no_index f no_index g) no_index x =
+    (g : Y → Z) ((f : X → Y) x) :=
+  rfl
+#check coe_comp
+@[simp] theorem associator_hom_apply_1 {X Y Z : Type u} {x} :
+    (((α_ X Y Z).hom : (X ⊗ Y) ⊗ Z → X ⊗ Y ⊗ Z) x).1 = x.1.1 :=
+  rfl
+
+@[simp] theorem associator_hom_apply_2_1 {X Y Z : Type u} {x} :
+    (((α_ X Y Z).hom : (X ⊗ Y) ⊗ Z → X ⊗ Y ⊗ Z) x).2.1 = x.1.2 :=
+  rfl
+
+@[simp] theorem associator_hom_apply_2_2 {X Y Z : Type u} {x} :
+    (((α_ X Y Z).hom : (X ⊗ Y) ⊗ Z → X ⊗ Y ⊗ Z) x).2.2 = x.2 :=
+  rfl
+
+@[simp] theorem associator_inv_apply_1_1 {X Y Z : Type u} {x} :
+    (((α_ X Y Z).inv : X ⊗ Y ⊗ Z → (X ⊗ Y) ⊗ Z) x).1.1 = x.1 :=
+  rfl
+
+@[simp] theorem associator_inv_apply_1_2 {X Y Z : Type u} {x} :
+    (((α_ X Y Z).inv : X ⊗ Y ⊗ Z → (X ⊗ Y) ⊗ Z) x).1.2 = x.2.1 :=
+  rfl
+
+@[simp] theorem associator_inv_apply_2 {X Y Z : Type u} {x} :
+    (((α_ X Y Z).inv : X ⊗ Y ⊗ Z → (X ⊗ Y) ⊗ Z) x).2 = x.2.2 :=
+  rfl
+
+attribute [local simp] toSSet in
+def toSSet_monoidal : MonoidalFunctor TopCat SSet :=
+{ TopCat.toSSet with
+  ε := { app := fun n x => ContinuousMap.const _ x }
+  μ := fun X Y => { app := fun n x => ContinuousMap.prodMk x.1 x.2 }
+  ε_isIso := sorry
+  μ_isIso := sorry
+  μ_natural_left := sorry
+  μ_natural_right := sorry
+  associativity := by
+    aesop_cat_nonterminal
+    rename_i n a x
+    dsimp at a
+    -- simp only [comp_app]
+    erw [comp_app]
+  left_unitality := sorry
+  right_unitality := sorry }
+
+-- This has no dependencies: you could fill in the sorries here and PR just this declaration!
+def whiskeringRight_monoidal
+  (C : Type*) [Category C]
+  (D : Type*) [Category D] [MonoidalCategory D]
+  (E : Type*) [Category E] [MonoidalCategory E] :
+  (MonoidalFunctor D E) ⥤ (MonoidalFunctor (C ⥤ D) (C ⥤ E)) :=
+{ obj := fun F =>
+  { (whiskeringRight C D E).obj F.toFunctor with
+    ε :=
+    { app := fun X => F.ε, },
+    μ := fun G H =>
+    { app := fun X => F.μ _ _ },
+    ε_isIso := sorry
+    μ_isIso := sorry },
+  map := sorry, }
+
+def SimplicialObject.map_monoidal
+    (C : Type u) [Category C] [MonoidalCategory C] (D : Type u) [Category D] [MonoidalCategory D] :
+    (MonoidalFunctor C D) ⥤ MonoidalFunctor (SimplicialObject C) (SimplicialObject D) :=
+  whiskeringRight_monoidal _ _ _
+
+def toSModule_monoidal (R : Type) [CommRing R] :
+    MonoidalFunctor TopCat.{0} (SimplicialObject (ModuleCat.{0} R)) :=
+  toSSet_monoidal ⊗⋙ ((SimplicialObject.map_monoidal _ _).obj (ModuleCat.monoidalFree R))
+
+open Limits MonoidalCategory
+
+variable {C : Type _} [Category C] [MonoidalCategory C]
+  [Preadditive C] [HasFiniteBiproducts C] (X Y : SimplicialObject C)
+
+-- This one is a lot of work: Joël Riou has been working towards it.
+-- He's detouring via bicomplexes.
+instance : MonoidalCategory (ChainComplex C ℕ) := sorry
+
+-- Once you have this, we'd still need to describe how homology behaves:
+-- it's a lax monoidal functor.
+
+set_option quotPrecheck false in
+notation "C" => (alternatingFaceMapComplex C).obj
+
+def alexanderWhitney : C (X ⊗ Y) ⟶ C X ⊗ C Y := sorry
+def eilenbergZilber : C X ⊗ C Y ⟶ C (X ⊗ Y) := sorry
+
+def homotopy_1 : Homotopy (eilenbergZilber X Y ≫ alexanderWhitney X Y) (𝟙 _) := sorry
+def homotopy_2 : Homotopy (alexanderWhitney X Y ≫ eilenbergZilber X Y) (𝟙 _) := sorry
+
+end TopCat
