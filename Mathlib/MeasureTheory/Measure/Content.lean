@@ -370,7 +370,7 @@ theorem borel_le_caratheodory : S ≤ μ.outerMeasure.caratheodory := by
   have hL'U : (L' : Set G) ⊆ U := IsCompact.closure_subset_of_isOpen L.2 hU hL.2
   have hL'U' : (L' : Set G) ⊆ (U' : Set G) := IsCompact.closure_subset_of_isOpen L.2 U'.2 hL.1
   have : ↑U' \ U ⊆ U' \ L' := diff_subset_diff_right hL'U
-  refine' le_trans (add_le_add_left (μ.outerMeasure.mono' this) _) _
+  refine' le_trans (add_le_add_left (measure_mono this) _) _
   rw [μ.outerMeasure_of_isOpen (↑U' \ L') (IsOpen.sdiff U'.2 isClosed_closure)]
   simp only [innerContent, iSup_subtype']
   rw [Opens.coe_mk]
@@ -412,11 +412,11 @@ instance outerRegular : μ.measure.OuterRegular := by
 /-- In a locally compact space, any measure constructed from a content is regular. -/
 instance regular [WeaklyLocallyCompactSpace G] : μ.measure.Regular := by
   have : IsFiniteMeasureOnCompacts μ.measure := by
-    refine' ⟨fun K hK => _⟩
+    refine ⟨fun K hK => ?_⟩
     apply (measure_mono subset_closure).trans_lt _
     rw [measure_apply _ isClosed_closure.measurableSet]
     exact μ.outerMeasure_lt_top_of_isCompact hK.closure
-  refine' ⟨fun U hU r hr => _⟩
+  refine ⟨fun U hU r hr => ?_⟩
   rw [measure_apply _ hU.measurableSet, μ.outerMeasure_of_isOpen U hU] at hr
   simp only [innerContent, lt_iSup_iff] at hr
   rcases hr with ⟨K, hKU, hr⟩

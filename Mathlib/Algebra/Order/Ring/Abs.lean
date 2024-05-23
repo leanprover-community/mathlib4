@@ -33,6 +33,9 @@ variable [LinearOrderedCommGroup α] {a b : α}
 
 end LinearOrderedAddCommGroup
 
+lemma odd_abs [LinearOrder α] [Ring α] {a : α} : Odd (abs a) ↔ Odd a := by
+  cases' abs_choice a with h h <;> simp only [h, odd_neg]
+
 section LinearOrderedRing
 
 variable [LinearOrderedRing α] {n : ℕ} {a b c : α}

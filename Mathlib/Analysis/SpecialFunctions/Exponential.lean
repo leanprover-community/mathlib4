@@ -217,7 +217,7 @@ theorem hasDerivAt_exp_zero : HasDerivAt (exp 𝕂) (1 : 𝕂) 0 :=
 end DerivRCLike
 
 theorem Complex.exp_eq_exp_ℂ : Complex.exp = NormedSpace.exp ℂ := by
-  refine' funext fun x => _
+  refine funext fun x => ?_
   rw [Complex.exp, exp_eq_tsum_div]
   have : CauSeq.IsComplete ℂ norm := Complex.instIsComplete
   exact tendsto_nhds_unique x.exp'.tendsto_limit (expSeries_div_summable ℝ x).hasSum.tendsto_sum_nat

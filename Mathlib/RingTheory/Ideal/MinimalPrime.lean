@@ -106,13 +106,13 @@ theorem Ideal.exists_comap_eq_of_mem_minimalPrimes_of_injective {f : R →+* S}
     ∃ p' : Ideal S, p'.IsPrime ∧ p'.comap f = p := by
   have := H.1.1
   have : Nontrivial (Localization (Submonoid.map f p.primeCompl)) := by
-    refine' ⟨⟨1, 0, _⟩⟩
+    refine ⟨⟨1, 0, ?_⟩⟩
     convert (IsLocalization.map_injective_of_injective p.primeCompl (Localization.AtPrime p)
         (Localization <| p.primeCompl.map f) hf).ne one_ne_zero
     · rw [map_one]
     · rw [map_zero]
   obtain ⟨M, hM⟩ := Ideal.exists_maximal (Localization (Submonoid.map f p.primeCompl))
-  refine' ⟨M.comap (algebraMap S <| Localization (Submonoid.map f p.primeCompl)), inferInstance, _⟩
+  refine ⟨M.comap (algebraMap S <| Localization (Submonoid.map f p.primeCompl)), inferInstance, ?_⟩
   rw [Ideal.comap_comap, ← @IsLocalization.map_comp _ _ _ _ _ _ _ _ Localization.isLocalization
       _ _ _ _ p.primeCompl.le_comap_map _ Localization.isLocalization,
     ← Ideal.comap_comap]
@@ -168,7 +168,7 @@ theorem Ideal.exists_minimalPrimes_comap_eq {I : Ideal S} (f : R →+* S) (p)
     (H : p ∈ (I.comap f).minimalPrimes) : ∃ p' ∈ I.minimalPrimes, Ideal.comap f p' = p := by
   obtain ⟨p', h₁, h₂, h₃⟩ := Ideal.exists_comap_eq_of_mem_minimalPrimes f p H
   obtain ⟨q, hq, hq'⟩ := Ideal.exists_minimalPrimes_le h₂
-  refine' ⟨q, hq, Eq.symm _⟩
+  refine ⟨q, hq, Eq.symm ?_⟩
   have := hq.1.1
   have := (Ideal.comap_mono hq').trans_eq h₃
   exact (H.2 ⟨inferInstance, Ideal.comap_mono hq.1.2⟩ this).antisymm this
