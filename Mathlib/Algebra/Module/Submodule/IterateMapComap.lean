@@ -14,7 +14,7 @@ Some preliminary work for establishing the strong rank condition for noetherian 
 Given two linear maps `f i : M →ₗ[R] M₂` and a submodule `K : Submodule R M`, we can define
 `LinearMap.iterateMapComapAux f i n K : Submodule R M` to be `f⁻¹(i(⋯(f⁻¹(i(K)))))` (`n` times).
 If `f(K) ≤ i(K)`, then this sequence is non-decreasing (`LinearMap.iterateMapComap`).
-If moreover `f` is surjective, `i` is injective, there exists some `m` such that
+If moreover `f` is surjective, `i` is injective, and there exists some `m` such that
 `LinearMap.iterateMapComapAux f i m K = LinearMap.iterateMapComapAux f i (m + 1) K`,
 then for any `n`,
 `LinearMap.iterateMapComapAux f i n K = LinearMap.iterateMapComapAux f i (n + 1) K`.
@@ -75,7 +75,7 @@ theorem iterateMapComapAux_lt_succ (K : Submodule R M)
     rw [iterateMapComapAux, iterateMapComapAux, iterate_succ', iterate_succ'] at H
     exact ih.ne (map_injective_of_injective hi (comap_injective_of_surjective hf H))
 
-/-- If `f(K) ≤ i(K)`, `f` is surjective, `i` is injective, there exists some `m` such that
+/-- If `f(K) ≤ i(K)`, `f` is surjective, `i` is injective, and there exists some `m` such that
 `LinearMap.iterateMapComapAux f i m K = LinearMap.iterateMapComapAux f i (m + 1) K`,
 then for any `n`,
 `LinearMap.iterateMapComapAux f i n K = LinearMap.iterateMapComapAux f i (n + 1) K`.
@@ -94,7 +94,7 @@ theorem iterateMapComapAux_eq_succ (K : Submodule R M) (h : K.map f ≤ K.map i)
     rw [iterateMapComapAux, iterateMapComapAux, iterate_succ', iterate_succ',
       Function.comp_apply, Function.comp_apply, ← iterateMapComapAux, ← iterateMapComapAux, ih]
 
-/-- If `f(K) ≤ i(K)`, `f` is surjective, `i` is injective, there exists some `m` such that
+/-- If `f(K) ≤ i(K)`, `f` is surjective, `i` is injective, and there exists some `m` such that
 `LinearMap.iterateMapComapAux f i m K = LinearMap.iterateMapComapAux f i (m + 1) K`,
 then the kernel of `f` is contained in `K`.
 This is a corollary of `LinearMap.iterateMapComapAux_eq_succ` and `LinearMap.ker_le_comap`.
