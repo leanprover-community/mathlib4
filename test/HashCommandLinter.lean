@@ -1,6 +1,6 @@
 import Lean.Elab.GuardMsgs
 import Mathlib.Mathport.Rename
-import Mathlib.Tactic.HashCommandLinter
+import Mathlib.Tactic.Linter.HashCommandLinter
 
 section ignored_commands
 theorem fo₁ : True := .intro
@@ -76,6 +76,10 @@ note: this linter can be disabled with `set_option linter.hashCommand false`
 open Nat in
 variable (n : Nat) in
 #guard true
+
+-- a test for `withSetOptionIn'`
+set_option linter.unusedVariables false in
+example {n : Nat} : Nat := 0
 
 section warningAsError
 

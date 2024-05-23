@@ -47,7 +47,7 @@ Intended to be used in the `hashCommand` linter, where we want to enter `set_opt
 private partial def withSetOptionIn' (cmd : CommandElab) : CommandElab := fun stx => do
   if stx.getKind == ``Lean.Parser.Command.in then
     if stx[0].getKind == ``Lean.Parser.Command.set_option then
-      let opts ← Elab.elabSetOption stx[0][1] stx[0][2]
+      let opts ← Elab.elabSetOption stx[0][1] stx[0][3]
       withScope (fun scope => { scope with opts }) do
         withSetOptionIn' cmd stx[2]
     else
