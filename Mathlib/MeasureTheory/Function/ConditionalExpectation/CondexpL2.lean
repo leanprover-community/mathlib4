@@ -395,7 +395,7 @@ theorem aeStronglyMeasurable'_condexpIndSMul (hm : m ≤ m0) (hs : MeasurableSet
   rw [condexpIndSMul]
   suffices AEStronglyMeasurable' m
       (toSpanSingleton ℝ x ∘ condexpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1)) μ by
-    refine' AEStronglyMeasurable'.congr this _
+    refine AEStronglyMeasurable'.congr this ?_
     refine' EventuallyEq.trans _ (coeFn_compLpL _ _).symm
     rfl
   exact AEStronglyMeasurable'.continuous_comp (toSpanSingleton ℝ x).continuous h
@@ -463,7 +463,7 @@ theorem integrable_condexpIndSMul (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (hs
 #align measure_theory.integrable_condexp_ind_smul MeasureTheory.integrable_condexpIndSMul
 
 theorem condexpIndSMul_empty {x : G} : condexpIndSMul hm MeasurableSet.empty
-    ((@measure_empty _ _ μ).le.trans_lt ENNReal.coe_lt_top).ne x = 0 := by
+    ((measure_empty (μ := μ)).le.trans_lt ENNReal.coe_lt_top).ne x = 0 := by
   rw [condexpIndSMul, indicatorConstLp_empty]
   simp only [Submodule.coe_zero, ContinuousLinearMap.map_zero]
 #align measure_theory.condexp_ind_smul_empty MeasureTheory.condexpIndSMul_empty

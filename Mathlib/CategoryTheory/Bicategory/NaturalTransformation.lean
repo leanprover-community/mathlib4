@@ -75,9 +75,6 @@ attribute [nolint docBlame] CategoryTheory.OplaxNatTrans.app
   CategoryTheory.OplaxNatTrans.naturality_id
   CategoryTheory.OplaxNatTrans.naturality_comp
 
-/- Porting note: removed primes from field names and removed `restate_axiom` since that is no longer
-  needed in Lean 4 -/
-
 attribute [reassoc (attr := simp)] OplaxNatTrans.naturality_naturality OplaxNatTrans.naturality_id
   OplaxNatTrans.naturality_comp
 

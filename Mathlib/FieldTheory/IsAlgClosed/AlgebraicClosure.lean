@@ -354,7 +354,7 @@ theorem exists_root {f : Polynomial (AlgebraicClosureAux k)}
   rw [monic_map_iff] at hfm
   have := hfm.irreducible_of_irreducible_map (ofStep k n) p hfi
   obtain ⟨x, hx⟩ := toStepSucc.exists_root k hfm this
-  refine' ⟨ofStep k (n + 1) x, _⟩
+  refine ⟨ofStep k (n + 1) x, ?_⟩
   rw [← ofStep_succ k n, eval_map, ← hom_eval₂, hx, RingHom.map_zero]
 #noalign algebraic_closure.exists_root
 
@@ -380,10 +380,11 @@ def ofStepHom (n) : Step k n →ₐ[k] AlgebraicClosureAux k :=
           0 n n.zero_le x }
 #noalign algebraic_closure.of_step_hom
 
-theorem isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosureAux k) := fun z =>
-  IsIntegral.isAlgebraic <|
-    let ⟨n, x, hx⟩ := exists_ofStep k z
-    hx ▸ (Step.isIntegral k n x).map (ofStepHom k n)
+instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosureAux k) :=
+  ⟨fun z =>
+    IsIntegral.isAlgebraic <|
+      let ⟨n, x, hx⟩ := exists_ofStep k z
+      hx ▸ (Step.isIntegral k n x).map (ofStepHom k n)⟩
 
 @[local instance] theorem isAlgClosure : IsAlgClosure k (AlgebraicClosureAux k) :=
   ⟨AlgebraicClosureAux.instIsAlgClosed k, isAlgebraic k⟩
@@ -451,10 +452,9 @@ instance isAlgClosed : IsAlgClosed (AlgebraicClosure k) :=
 
 instance : IsAlgClosure k (AlgebraicClosure k) := by
   rw [isAlgClosure_iff]
-  refine ⟨inferInstance, (algEquivAlgebraicClosureAux k).symm.isAlgebraic <|
-    AlgebraicClosureAux.isAlgebraic _⟩
+  exact ⟨inferInstance, (algEquivAlgebraicClosureAux k).symm.isAlgebraic⟩
 
-theorem isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) :=
+instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) :=
   IsAlgClosure.algebraic
 #align algebraic_closure.is_algebraic AlgebraicClosure.isAlgebraic
 
