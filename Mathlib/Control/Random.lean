@@ -30,7 +30,6 @@ defining objects that can be created randomly.
 
 -/
 
-
 set_option autoImplicit true
 
 /-- A monad transformer to generate random objects using the generic generator type `g` -/
