@@ -61,6 +61,13 @@ def Ideal.IsHomogeneous : Prop :=
   ∀ (i : ι) ⦃r : A⦄, r ∈ I → (DirectSum.decompose 𝒜 r i : A) ∈ I
 #align ideal.is_homogeneous Ideal.IsHomogeneous
 
+theorem Ideal.IsHomogeneous.mem_iff {I} (hI : Ideal.IsHomogeneous 𝒜 I) {x} :
+    x ∈ I ↔ ∀ i, (decompose 𝒜 x i : A) ∈ I := by
+  classical
+  refine ⟨fun hx i ↦ hI i hx, fun hx ↦ ?_⟩
+  rw [← DirectSum.sum_support_decompose 𝒜 x]
+  exact Ideal.sum_mem _ (fun i _ ↦ hx i)
+
 /-- For any `Semiring A`, we collect the homogeneous ideals of `A` into a type. -/
 structure HomogeneousIdeal extends Submodule A A where
   is_homogeneous' : Ideal.IsHomogeneous 𝒜 toSubmodule
@@ -91,6 +98,13 @@ instance HomogeneousIdeal.setLike : SetLike (HomogeneousIdeal 𝒜) A where
 theorem HomogeneousIdeal.ext {I J : HomogeneousIdeal 𝒜} (h : I.toIdeal = J.toIdeal) : I = J :=
   HomogeneousIdeal.toIdeal_injective h
 #align homogeneous_ideal.ext HomogeneousIdeal.ext
+
+theorem HomogeneousIdeal.ext' {I J : HomogeneousIdeal 𝒜} (h : ∀ i, ∀ x ∈ 𝒜 i, x ∈ I ↔ x ∈ J) :
+    I = J := by
+  ext
+  rw [I.isHomogeneous.mem_iff, J.isHomogeneous.mem_iff]
+  apply forall_congr'
+  exact fun i ↦ h i _ (decompose 𝒜 _ i).2
 
 @[simp]
 theorem HomogeneousIdeal.mem_iff {I : HomogeneousIdeal 𝒜} {x : A} : x ∈ I.toIdeal ↔ x ∈ I :=
@@ -259,7 +273,7 @@ theorem sup {I J : Ideal A} (HI : I.IsHomogeneous 𝒜) (HJ : J.IsHomogeneous �
     (I ⊔ J).IsHomogeneous 𝒜 := by
   rw [iff_exists] at HI HJ ⊢
   obtain ⟨⟨s₁, rfl⟩, ⟨s₂, rfl⟩⟩ := HI, HJ
-  refine' ⟨s₁ ∪ s₂, _⟩
+  refine ⟨s₁ ∪ s₂, ?_⟩
   rw [Set.image_union]
   exact (Submodule.span_union _ _).symm
 #align ideal.is_homogeneous.sup Ideal.IsHomogeneous.sup
@@ -268,7 +282,7 @@ protected theorem iSup {κ : Sort*} {f : κ → Ideal A} (h : ∀ i, (f i).IsHom
     (⨆ i, f i).IsHomogeneous 𝒜 := by
   simp_rw [iff_exists] at h ⊢
   choose s hs using h
-  refine' ⟨⋃ i, s i, _⟩
+  refine ⟨⋃ i, s i, ?_⟩
   simp_rw [Set.image_iUnion, Ideal.span_iUnion]
   congr
   exact funext hs
@@ -502,7 +516,7 @@ theorem Ideal.homogeneousCore'_eq_sSup :
   convert coe_mono.map_isGreatest (Ideal.homogeneousCore.gc 𝒜).isGreatest_u using 1
   ext x
   rw [mem_image, mem_setOf_eq]
-  refine' ⟨fun hI => ⟨⟨x, hI.1⟩, ⟨hI.2, rfl⟩⟩, _⟩
+  refine ⟨fun hI => ⟨⟨x, hI.1⟩, ⟨hI.2, rfl⟩⟩, ?_⟩
   rintro ⟨x, ⟨hx, rfl⟩⟩
   exact ⟨x.isHomogeneous, hx⟩
 #align ideal.homogeneous_core'_eq_Sup Ideal.homogeneousCore'_eq_sSup

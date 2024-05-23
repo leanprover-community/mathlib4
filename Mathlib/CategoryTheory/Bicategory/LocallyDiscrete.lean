@@ -59,8 +59,7 @@ instance [DecidableEq C] : DecidableEq (LocallyDiscrete C) :=
 instance [Inhabited C] : Inhabited (LocallyDiscrete C) :=
   ⟨⟨default⟩⟩
 
-instance categoryStruct [CategoryStruct.{v} C] : CategoryStruct (LocallyDiscrete C)
-    where
+instance categoryStruct [CategoryStruct.{v} C] : CategoryStruct (LocallyDiscrete C) where
   Hom := fun a b => Discrete (a.as ⟶ b.as)
   id := fun a => ⟨𝟙 a.as⟩
   comp f g := ⟨f.as ≫ g.as⟩
@@ -97,8 +96,7 @@ variable [Category.{v} C]
 1-morphisms are the same as those in the underlying category, and the 2-morphisms are the
 equalities between 1-morphisms.
 -/
-instance locallyDiscreteBicategory : Bicategory (LocallyDiscrete C)
-    where
+instance locallyDiscreteBicategory : Bicategory (LocallyDiscrete C) where
   whiskerLeft f g h η := eqToHom (congr_arg₂ (· ≫ ·) rfl (LocallyDiscrete.eq_of_hom η))
   whiskerRight η h := eqToHom (congr_arg₂ (· ≫ ·) (LocallyDiscrete.eq_of_hom η) rfl)
   associator f g h := eqToIso <| by apply Discrete.ext; simp
@@ -120,8 +118,7 @@ If `B` is a strict bicategory and `I` is a (1-)category, any functor (of 1-categ
 be promoted to a pseudofunctor from `LocallyDiscrete I` to `B`.
 -/
 @[simps]
-def Functor.toPseudoFunctor (F : I ⥤ B) : Pseudofunctor (LocallyDiscrete I) B
-    where
+def Functor.toPseudoFunctor (F : I ⥤ B) : Pseudofunctor (LocallyDiscrete I) B where
   obj i := F.obj i.as
   map f := F.map f.as
   map₂ η := eqToHom (congr_arg _ (LocallyDiscrete.eq_of_hom η))
@@ -133,8 +130,7 @@ If `B` is a strict bicategory and `I` is a (1-)category, any functor (of 1-categ
 be promoted to an oplax functor from `LocallyDiscrete I` to `B`.
 -/
 @[simps]
-def Functor.toOplaxFunctor (F : I ⥤ B) : OplaxFunctor (LocallyDiscrete I) B
-    where
+def Functor.toOplaxFunctor (F : I ⥤ B) : OplaxFunctor (LocallyDiscrete I) B where
   obj i := F.obj i.as
   map f := F.map f.as
   map₂ η := eqToHom (congr_arg _ (LocallyDiscrete.eq_of_hom η))

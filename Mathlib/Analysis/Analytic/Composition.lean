@@ -117,7 +117,7 @@ theorem applyComposition_ones (p : FormalMultilinearSeries 𝕜 E F) (n : ℕ) :
 theorem applyComposition_single (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ} (hn : 0 < n)
     (v : Fin n → E) : p.applyComposition (Composition.single n hn) v = fun _j => p n v := by
   ext j
-  refine' p.congr (by simp) fun i hi1 hi2 => _
+  refine p.congr (by simp) fun i hi1 hi2 => ?_
   dsimp
   congr 1
   convert Composition.single_embedding hn ⟨i, hi2⟩ using 1
@@ -275,7 +275,7 @@ theorem comp_coeff_one (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultili
     Finset.eq_univ_of_card _ (by simp [composition_card])
   simp only [FormalMultilinearSeries.comp, compAlongComposition_apply, ← this,
     Finset.sum_singleton]
-  refine' q.congr (by simp) fun i hi1 hi2 => _
+  refine q.congr (by simp) fun i hi1 hi2 => ?_
   simp only [applyComposition_ones]
   exact p.congr rfl fun j _hj1 hj2 => by congr! -- Porting note: needed the stronger `congr!`
 #align formal_multilinear_series.comp_coeff_one FormalMultilinearSeries.comp_coeff_one
@@ -748,7 +748,7 @@ theorem HasFPowerSeriesAt.comp {g : F → G} {f : E → F} {q : FormalMultilinea
     simp only [rf', r_pos, Hf.r_pos, δpos, lt_min_iff, ENNReal.coe_pos, and_self_iff]
   /- We will show that `g ∘ f` admits the power series `q.comp p` in the disk of
     radius `min (r, rf', δ)`. -/
-  refine' ⟨min rf' r, _⟩
+  refine ⟨min rf' r, ?_⟩
   refine'
     ⟨le_trans (min_le_right rf' r) (FormalMultilinearSeries.le_comp_radius_of_summable q p r hr),
       min_pos, @fun y hy => _⟩
@@ -777,7 +777,7 @@ theorem HasFPowerSeriesAt.comp {g : F → G} {f : E → F} {q : FormalMultilinea
       ∀ᶠ n in atTop, (∑ a in Finset.range n, p a fun _b => y) - f x
         = ∑ a in Finset.Ico 1 n, p a fun _b => y := by
       rw [eventually_atTop]
-      refine' ⟨1, fun n hn => _⟩
+      refine ⟨1, fun n hn => ?_⟩
       symm
       rw [eq_sub_iff_add_eq', Finset.range_eq_Ico, ← Hf.coeff_zero fun _i => y,
         Finset.sum_eq_sum_Ico_succ_bot hn]
@@ -932,7 +932,7 @@ variable {n : ℕ}
 non-dependent terms with lists, requiring that the blocks coincide. -/
 theorem sigma_composition_eq_iff (i j : Σ a : Composition n, Composition a.length) :
     i = j ↔ i.1.blocks = j.1.blocks ∧ i.2.blocks = j.2.blocks := by
-  refine' ⟨by rintro rfl; exact ⟨rfl, rfl⟩, _⟩
+  refine ⟨by rintro rfl; exact ⟨rfl, rfl⟩, ?_⟩
   rcases i with ⟨a, b⟩
   rcases j with ⟨a', b'⟩
   rintro ⟨h, h'⟩
@@ -946,7 +946,7 @@ non-dependent terms with lists, requiring that the lists of blocks coincide. -/
 theorem sigma_pi_composition_eq_iff
     (u v : Σ c : Composition n, ∀ i : Fin c.length, Composition (c.blocksFun i)) :
     u = v ↔ (ofFn fun i => (u.2 i).blocks) = ofFn fun i => (v.2 i).blocks := by
-  refine' ⟨fun H => by rw [H], fun H => _⟩
+  refine ⟨fun H => by rw [H], fun H => ?_⟩
   rcases u with ⟨a, b⟩
   rcases v with ⟨a', b'⟩
   dsimp at H
