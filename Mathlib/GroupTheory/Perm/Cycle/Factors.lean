@@ -42,8 +42,7 @@ section CycleOf
 
 variable {f g : Perm α} {x y : α} [DecidableRel f.SameCycle] [DecidableRel g.SameCycle]
 
---[DecidableEq α]
-
+/-- `f.cycleOf x` is the cycle of the permutation `f` to which `x` belongs. -/
 def cycleOf (f : Perm α) [DecidableRel f.SameCycle] (x : α) : Perm α :=
   ofSubtype (subtypePerm f fun _ => sameCycle_apply_right.symm : Perm { y // SameCycle f x y })
 #align equiv.perm.cycle_of Equiv.Perm.cycleOf
