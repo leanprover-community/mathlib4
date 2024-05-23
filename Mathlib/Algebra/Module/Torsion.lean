@@ -231,7 +231,7 @@ end Module
 
 end Defs
 
-lemma IsSMulRegular.isSMulRegular_iff_torsionBy_top_eq_bot {R} (M : Type*)
+lemma isSMulRegular_iff_torsionBy_top_eq_bot {R} (M : Type*)
     [CommRing R] [AddCommGroup M] [Module R M] (r : R) :
     IsSMulRegular M r ↔ Submodule.torsionBy R M r = ⊥ :=
   Iff.symm (DistribMulAction.toLinearMap R M r).ker_eq_bot
@@ -519,13 +519,13 @@ namespace Module
 
 variable {I : Ideal R} {r : R}
 
-/-- can't be an instance because hM can't be inferred -/
+/-- can't be an instance because `hM` can't be inferred -/
 def IsTorsionBySet.hasSMul (hM : IsTorsionBySet R M I) : SMul (R ⧸ I) M where
   smul b x := I.liftQ (LinearMap.lsmul R M)
                 ((isTorsionBySet_iff_subseteq_ker_lsmul _).mp hM) b x
 #align module.is_torsion_by_set.has_smul Module.IsTorsionBySet.hasSMul
 
-/-- See documentation for `IsTorsionBySet.hasSMul`. -/
+/-- can't be an instance because `hM` can't be inferred -/
 abbrev IsTorsionBy.hasSMul (hM : IsTorsionBy R M r) : SMul (R ⧸ Ideal.span {r}) M :=
   ((isTorsionBySet_span_singleton_iff r).mpr hM).hasSMul
 
@@ -569,7 +569,7 @@ theorem isTorsionBy_quotient_iff (N : Submodule R M) (r : R) :
   Iff.trans N.mkQ_surjective.forall <| forall_congr' fun _ =>
     Submodule.Quotient.mk_eq_zero N
 
-theorem isTorsionBy_quotient_of_isTorsionBy (N : Submodule R M) (r : R)
+theorem IsTorsionBy.quotient (N : Submodule R M) {r : R}
     (h : IsTorsionBy R M r) : IsTorsionBy R (M⧸N) r :=
   (isTorsionBy_quotient_iff N r).mpr fun x => @h x ▸ N.zero_mem
 
@@ -579,7 +579,7 @@ theorem isTorsionBySet_quotient_iff (N : Submodule R M) (s : Set R) :
     Iff.trans Subtype.forall <| forall₂_congr fun _ _ =>
       Submodule.Quotient.mk_eq_zero N
 
-theorem isTorsionBySet_quotient_of_isTorsionBySet (N : Submodule R M) {s}
+theorem IsTorsionBySet.quotient (N : Submodule R M) {s}
     (h : IsTorsionBySet R M s) : IsTorsionBySet R (M⧸N) s :=
   (isTorsionBySet_quotient_iff N s).mpr fun x r h' => @h x ⟨r, h'⟩ ▸ N.zero_mem
 
