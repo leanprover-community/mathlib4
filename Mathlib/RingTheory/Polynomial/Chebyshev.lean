@@ -57,7 +57,7 @@ set_option linter.uppercaseLean3 false -- `T` `U` `X`
 open Polynomial
 
 local macro "int_ring_nf" : tactic => `(tactic | (
-  try simp only [Int.negSucc_eq, Int.ofNat_eq_coe, Nat.succ_eq_add_one]
+  try simp only [Int.negSucc_eq, Int.ofNat_eq_coe]
   try push_cast
   ring_nf))
 
@@ -274,7 +274,7 @@ theorem one_sub_X_sq_mul_derivative_T_eq_poly_in_T (n : ℤ) :
   linear_combination (norm := int_ring_nf) (-n - 1) * h₁ + (-(X:R[X]) ^ 2 + 1) * H₂ + (n + 1) * H₁
 #align polynomial.chebyshev.one_sub_X_sq_mul_derivative_T_eq_poly_in_T Polynomial.Chebyshev.one_sub_X_sq_mul_derivative_T_eq_poly_in_T
 
-theorem add_one_mul_T_eq_poly_in_U (n : ℕ) :
+theorem add_one_mul_T_eq_poly_in_U (n : ℤ) :
     ((n : R[X]) + 1) * T R (n + 1) = X * U R n - (1 - X ^ 2) * derivative (U R n) := by
   have h₁ := congr_arg derivative <| T_eq_X_mul_T_sub_pol_U R n
   simp only [derivative_sub, derivative_mul, derivative_X, derivative_one, derivative_X_pow,
