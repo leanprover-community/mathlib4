@@ -127,7 +127,7 @@ theorem Compares.inj [Preorder α] {o₁} :
 -- Porting note: mathlib3 proof uses `change ... at hab`
 theorem compares_iff_of_compares_impl [LinearOrder α] [Preorder β] {a b : α} {a' b' : β}
     (h : ∀ {o}, Compares o a b → Compares o a' b') (o) : Compares o a b ↔ Compares o a' b' := by
-  refine' ⟨h, fun ho => _⟩
+  refine ⟨h, fun ho => ?_⟩
   cases' lt_trichotomy a b with hab hab
   · have hab : Compares Ordering.lt a b := hab
     rwa [ho.inj (h hab)]
