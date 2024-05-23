@@ -8,7 +8,9 @@ import Mathlib.MeasureTheory.Integral.Marginal
 
 open Set MeasureTheory Filter Topology ENNReal Finset symmDiff
 
-theorem preimage_proj {ι : Type*} {X : ι → Type*} (I J : Finset ι) [∀ j : J, Decidable (j.1 ∈ I)]
+open scoped Classical
+
+theorem preimage_proj {ι : Type*} {X : ι → Type*} (I J : Finset ι)
     (hIJ : I ⊆ J) (s : ∀ i : I, Set (X i)) :
     (fun t : (∀ j : J, X j) ↦ fun i : I ↦ t ⟨i, hIJ i.2⟩) ⁻¹' (univ.pi s) =
     (@Set.univ J).pi (fun j ↦ if h : j.1 ∈ I then s ⟨j.1, h⟩ else univ) := by
@@ -22,7 +24,6 @@ theorem preimage_proj {ι : Type*} {X : ι → Type*} (I J : Finset ι) [∀ j :
 variable {X : ℕ → Type*} [∀ n, MeasurableSpace (X n)] [∀ n, Nonempty (X n)]
 variable (μ : (n : ℕ) → Measure (X n)) [∀ n, IsProbabilityMeasure (μ n)]
 
-open scoped Classical in
 theorem isProjectiveMeasureFamily_prod {ι : Type*} {α : ι → Type*} [∀ i, MeasurableSpace (α i)]
     (m : (i : ι) → Measure (α i)) [∀ i, IsProbabilityMeasure (m i)] :
     IsProjectiveMeasureFamily (fun S : Finset ι ↦ (Measure.pi (fun n : S ↦ m n))) := by
@@ -73,9 +74,6 @@ lemma useful (s : Set (∀ n, X n)) (s_mem : s ∈ cylinders X) :
     ∃ N S, MeasurableSet S ∧ s = cylinder (Finset.Icc 0 N) S := by
   simpa [cylinders_nat] using s_mem
 
-noncomputable def proba (s : Finset ℕ) (S : Set ((n : s) → X n)) : ℝ≥0∞ :=
-  (∫⋯∫⁻_s, (cylinder s S).indicator 1 ∂μ) (Classical.ofNonempty)
-
 theorem eq (s : Finset ℕ) (S : Set ((n : s) → X n)) (mS : MeasurableSet S) (x : ∀ n, X n) :
     kolContent (isProjectiveMeasureFamily_prod μ) ((cylinder s S)) =
     (∫⋯∫⁻_s, (cylinder s S).indicator 1 ∂μ) x := by
@@ -106,13 +104,15 @@ theorem Finset.Icc_eq_left_union (h : k ≤ N) : Finset.Icc k N = {k} ∪ (Finse
     · exact ⟨h1 ▸ le_refl _, h1 ▸ h⟩
     · exact ⟨Nat.le_of_succ_le h2, h3⟩
 
-theorem bonjour' (f : ℕ → (∀ n, X n) → ℝ≥0∞) (ε : ℝ≥0∞) (k : ℕ)
-    (N : ℕ → ℕ) (hcte : ∀ n, DependsOn (f n) (Finset.Icc 0 (N n))) (mf : ∀ n, Measurable (f n))
-    (bound : ℝ≥0∞) (le_bound : ∀ n x, f n x ≤ bound) (fin_bound : bound ≠ ∞)
-    (y : (n : Finset.Ico 0 k) → X n)
-    (l : ((n : ℕ) → X n) → ℝ≥0∞)
+theorem auxiliaire (f : ℕ → (∀ n, X n) → ℝ≥0∞) (N : ℕ → ℕ)
+    (hcte : ∀ n, DependsOn (f n) (Finset.Icc 0 (N n))) (mf : ∀ n, Measurable (f n))
+    (bound : ℝ≥0∞) (fin_bound : bound ≠ ∞) (le_bound : ∀ n x, f n x ≤ bound)
+    (k : ℕ)
     (anti : ∀ x, Antitone (fun n ↦ (∫⋯∫⁻_Finset.Icc (k + 1) (N n), f n ∂μ) x))
+    (l : ((n : ℕ) → X n) → ℝ≥0∞)
     (htendsto : ∀ x, Tendsto (fun n ↦ (∫⋯∫⁻_Finset.Icc (k + 1) (N n), f n ∂μ) x) atTop (𝓝 (l x)))
+    (ε : ℝ≥0∞)
+    (y : (n : Finset.Ico 0 k) → X n)
     (hpos : ∀ x, ∀ n,
     ε ≤ (∫⋯∫⁻_Finset.Icc k (N n), f n ∂μ) (Function.updateFinset x (Finset.Ico 0 k) y)) :
     ∃ z, ∀ x n, ε ≤ (∫⋯∫⁻_Finset.Icc (k + 1) (N n), f n ∂μ)
@@ -144,15 +144,15 @@ theorem bonjour' (f : ℕ → (∀ n, X n) → ℝ≥0∞) (ε : ℝ≥0∞) (k 
       (fun n ↦ eventually_of_forall <| fun y ↦ F_le n _)
       (by simp [fin_bound])
       (eventually_of_forall (fun _ ↦ tendstoF _))
-  have le_int_l : ∀ x, ε ≤ (∫⋯∫⁻_{k}, l ∂μ) (Function.updateFinset x _ y) :=
+  have ε_le_lint : ∀ x, ε ≤ (∫⋯∫⁻_{k}, l ∂μ) (Function.updateFinset x _ y) :=
     fun _ ↦ ge_of_tendsto (tendsto_int _) (by simp [hpos])
   have : ∀ x, ε ≤ ∫⁻ xₐ : X k,
     l (Function.update (Function.updateFinset x _ y) k xₐ) ∂μ k := by
-    simpa [lmarginal_singleton] using le_int_l
+    simpa [lmarginal_singleton] using ε_le_lint
   let x_ : ∀ n, X n := Classical.ofNonempty
   have : ∃ x', ε ≤ l (Function.update (Function.updateFinset x_ _ y) k x') := by
-    simp_rw [lmarginal_singleton] at le_int_l
-    apply ge_of_int (le_int_l x_)
+    simp_rw [lmarginal_singleton] at ε_le_lint
+    apply ge_of_int (ε_le_lint x_)
     apply ne_top_of_le_ne_top fin_bound
     rw [← mul_one bound, ← measure_univ (μ := μ k), ← lintegral_const]
     exact lintegral_mono <| fun y ↦ le_of_tendsto' (tendstoF _) <| fun _ ↦ F_le _ _
@@ -189,21 +189,12 @@ def key (init : X 0) (ind : (k : ℕ) → ((i : Finset.Ico 0 (k + 1)) → X i) �
     decreasing_by
     exact (Finset.mem_Ico.1 i.2).2
 
-example (a : ℝ≥0∞) (h : ¬0 < a) : a = 0 := nonpos_iff_eq_zero.1 <| not_lt.1 h
+lemma not_mem_symmDiff {s t : Finset ℕ} {x : ℕ} :
+    (x ∈ s ∧ x ∈ t) ∨ (x ∉ s ∧ x ∉ t) → x ∉ s ∆ t := by
+  rw [Finset.mem_symmDiff.not]
+  push_neg
+  rintro (⟨hs, ht⟩ | ⟨hs, ht⟩) <;> simp [hs, ht]
 
-lemma not_mem_symmDiff {s t : Finset ℕ} {x : ℕ} (h1 : x ∈ s) (h2 : x ∈ t) : x ∉ s ∆ t := by
-  intro h
-  rcases Finset.mem_symmDiff.1 h with h' | h'
-  · exact h'.2 h2
-  · exact h'.2 h1
-
-lemma not_mem_symmDiff' {s t : Finset ℕ} {x : ℕ} (h1 : x ∉ s) (h2 : x ∉ t) : x ∉ s ∆ t := by
-  intro h
-  rcases Finset.mem_symmDiff.1 h with h' | h'
-  · exact h1 h'.1
-  · exact h2 h'.1
-
-open scoped Classical in
 theorem firstLemma (A : ℕ → Set (∀ n, X n)) (A_mem : ∀ n, A n ∈ cylinders X) (A_anti : Antitone A)
     (A_inter : ⋂ n, A n = ∅) :
     Tendsto (fun n ↦ kolContent (isProjectiveMeasureFamily_prod μ) (A n)) atTop (𝓝 0) := by
@@ -258,9 +249,9 @@ theorem firstLemma (A : ℕ → Set (∀ n, X n)) (A_mem : ∀ n, A n ∈ cylind
       ext i
       simp
       by_cases h : k ≤ i
-      · exact fun h' ↦ not_mem_symmDiff (Finset.mem_Icc.2 ⟨h, h'⟩)
-          (Finset.mem_union_right _ (Finset.mem_Icc.2 ⟨h, h'⟩))
-      · refine fun _ ↦ not_mem_symmDiff' ?_ ?_
+      · exact fun h' ↦ not_mem_symmDiff <| Or.inl ⟨(Finset.mem_Icc.2 ⟨h, h'⟩),
+          (Finset.mem_union_right _ (Finset.mem_Icc.2 ⟨h, h'⟩))⟩
+      · refine fun _ ↦ not_mem_symmDiff <| Or.inr ⟨?_, ?_⟩
         · exact fun h' ↦ h (Finset.mem_Icc.1 h').1
         · exact Finset.not_mem_union.2
             ⟨fun h' ↦ h (Finset.mem_Icc.1 h').1, fun h' ↦ h (Finset.mem_Icc.1 h').1⟩
@@ -268,9 +259,9 @@ theorem firstLemma (A : ℕ → Set (∀ n, X n)) (A_mem : ∀ n, A n ∈ cylind
       ext i
       simp
       by_cases h : k ≤ i
-      · exact fun h' ↦ not_mem_symmDiff (Finset.mem_Icc.2 ⟨h, h'⟩)
-          (Finset.mem_union_left _ (Finset.mem_Icc.2 ⟨h, h'⟩))
-      · refine fun _ ↦ not_mem_symmDiff' ?_ ?_
+      · exact fun h' ↦ not_mem_symmDiff <| Or.inl ⟨(Finset.mem_Icc.2 ⟨h, h'⟩),
+          (Finset.mem_union_left _ (Finset.mem_Icc.2 ⟨h, h'⟩))⟩
+      · refine fun _ ↦ not_mem_symmDiff <| Or.inr ⟨?_, ?_⟩
         · exact fun h' ↦ h (Finset.mem_Icc.1 h').1
         · exact Finset.not_mem_union.2
             ⟨fun h' ↦ h (Finset.mem_Icc.1 h').1, fun h' ↦ h (Finset.mem_Icc.1 h').1⟩
@@ -302,12 +293,12 @@ theorem firstLemma (A : ℕ → Set (∀ n, X n)) (A_mem : ∀ n, A n ∈ cylind
     simp [χ]
     apply Set.indicator_le
     simp
-  rcases bonjour' μ χ l' 0 N χ_dep mχ 1 χ_le (by norm_num)
-    Classical.ofNonempty (l 1) (anti_lma 1) (hl 1) hpos with ⟨init, hinit⟩
+  rcases auxiliaire μ χ N χ_dep mχ 1 (by norm_num) χ_le 0 (anti_lma 1) (l 1) (hl 1) l'
+    Classical.ofNonempty hpos with ⟨init, hinit⟩
   simp [Function.updateFinset_def] at hinit
   choose! ind hind using
-    fun k y h ↦ bonjour' μ χ l' (k + 1) N χ_dep mχ 1 χ_le (by norm_num)
-      y (l (k + 2)) (anti_lma (k + 2)) (hl (k + 2)) h
+    fun k y h ↦ auxiliaire μ χ N χ_dep mχ 1 (by norm_num) χ_le (k + 1) (anti_lma (k + 2))
+      (l (k + 2)) (hl (k + 2)) l' y h
   let z := key init ind
   have crucial : ∀ k x n, l' ≤ (∫⋯∫⁻_Finset.Icc (k + 1) (N n), χ n ∂μ)
       (Function.updateFinset x (Finset.Icc 0 k) (fun (i : Finset.Icc 0 k) ↦ z i)) := by
@@ -363,6 +354,41 @@ theorem firstLemma (A : ℕ → Set (∀ n, X n)) (A_mem : ∀ n, A n ∈ cylind
     rw [← this, ← hl' Classical.ofNonempty]
     exact hl _ _
 
+theorem kolContent_sigma_subadditive_bis ⦃f : ℕ → Set (∀ n, X n)⦄
+    (hf : ∀ i, f i ∈ cylinders X) (hf_Union : (⋃ i, f i) ∈ cylinders X) :
+    kolContent (isProjectiveMeasureFamily_prod μ) (⋃ i, f i) ≤
+    ∑' i, kolContent (isProjectiveMeasureFamily_prod μ) (f i) := by
+  refine (kolContent (isProjectiveMeasureFamily_prod μ)).sigma_subadditive_of_sigma_additive
+    setRing_cylinders (fun f hf hf_Union hf' ↦ ?_) f hf hf_Union
+  refine sigma_additive_addContent_of_tendsto_zero setRing_cylinders
+    (kolContent (isProjectiveMeasureFamily_prod μ)) (fun hs ↦ ?_) ?_ hf hf_Union hf'
+  · rename_i s
+    rcases useful _ hs with ⟨N, S, mS, s_eq⟩
+    rw [s_eq, eq μ (mS := mS) (x := Classical.ofNonempty)]
+    refine ne_of_lt (lt_of_le_of_lt ?_ (by norm_num : (1 : ℝ≥0∞) < ⊤))
+    rw [← lmarginal_const (μ := μ) (s := Finset.Icc 0 N) 1 Classical.ofNonempty]
+    apply lmarginal_mono
+    intro x
+    apply Set.indicator_le
+    simp
+  · intro s hs anti_s inter_s
+    exact firstLemma μ s hs anti_s inter_s
+
+noncomputable def measure_produit : Measure (∀ n, X n) :=
+  Measure.ofAddContent setSemiringCylinders generateFrom_cylinders
+    (kolContent (isProjectiveMeasureFamily_prod μ))
+    (kolContent_sigma_subadditive_bis μ)
+
+theorem isProjectiveLimit_measure_produit :
+    IsProjectiveLimit (measure_produit μ) (fun S : Finset ℕ ↦ (Measure.pi (fun n : S ↦ μ n))) := by
+  intro S
+  ext1 s hs
+  rw [Measure.map_apply _ hs]
+  swap; · apply measurable_proj
+  have h_mem : (fun (x : ∀ n : ℕ, (fun i : ℕ ↦ X i) n) (n : ↥S) ↦ x ↑n) ⁻¹' s ∈ cylinders X := by
+    rw [mem_cylinders]; exact ⟨S, s, hs, rfl⟩
+  rw [measure_produit, Measure.ofAddContent_eq _ _ _ _ h_mem,
+    kolContent_congr (isProjectiveMeasureFamily_prod μ) h_mem rfl hs]
 
 theorem prod_meas (S : Finset ℕ) (a : ℕ) (ha : a ∈ S) (μ : (n : S) → Measure (X n))
     [∀ n, IsProbabilityMeasure (μ n)]
