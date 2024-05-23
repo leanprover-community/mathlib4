@@ -26,8 +26,12 @@ if {n_vars!r} != 0:
     [{", ".join(var_list)}] = P.gens()
     p = P({target})
     if p==0:
+        # The "radicalization trick" implemented below does not work if the target polynomial p is 0
+        # since it requires substituting 1/p.
         print('1;'+serialize_polynomials(len({eq_list})*[P(0)]))
     else:
+        # Implements the trick described in 2.2 of arxiv.org/pdf/1007.3615.pdf
+        # for testing membership in the radical.
         gens = {eq_list} + [1 - p*aux]
         I = P.ideal(gens)
         coeffs = P(1).lift(I)
