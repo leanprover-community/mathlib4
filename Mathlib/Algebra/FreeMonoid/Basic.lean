@@ -157,7 +157,9 @@ section Length
 variable {a : FreeMonoid α}
 
 /-- the length of a free monoid element: 1.length = 0 and (a * b).length = a.length + b.length -/
-@[to_additive] def length (a : FreeMonoid α) : ℕ := List.length a
+@[to_additive "the length of a additive free monoid element: 1.length = 0 and (a * b).length =
+  a.length + b.length"]
+def length (a : FreeMonoid α) : ℕ := List.length a
 
 @[to_additive (attr := simp)]
 theorem length_one : length (1 : FreeMonoid α) = 0 := rfl
@@ -184,7 +186,8 @@ section Symbols
 variable [DecidableEq α]
 
 /-- the set of unique symbols in a free monoid element -/
-@[to_additive] def symbols (a : FreeMonoid α) : Finset α := List.toFinset a
+@[to_additive "the set of unique symbols in an additive free monoid element"]
+def symbols (a : FreeMonoid α) : Finset α := List.toFinset a
 
 @[to_additive (attr := simp)]
 theorem symbols_one : symbols (1 : FreeMonoid α) = ∅ := rfl
@@ -206,7 +209,8 @@ section mem
 variable {m : α}
 
 /-- membership in a free monoid element -/
-@[to_additive] def mem (m : α) (a : FreeMonoid α) := m ∈ toList a
+@[to_additive "membership in a free monoid element"]
+def mem (m : α) (a : FreeMonoid α) := m ∈ toList a
 
 @[to_additive]
 instance : Membership α (FreeMonoid α) := ⟨mem⟩
@@ -470,7 +474,7 @@ end Map
 /-! ### reverse -/
 
 /-- reverses the symbols in a free monoid element -/
-@[to_additive]
+@[to_additive "reverses the symbols in an additive free monoid element"]
 def reverse : FreeMonoid α → FreeMonoid α := List.reverse
 
 @[to_additive (attr := simp)]
@@ -481,10 +485,11 @@ theorem reverse_mul {a b : FreeMonoid α} : reverse (a * b) = reverse b * revers
 /-! ### foldr -/
 
 /--
-Applies function `f` to all of the elements of the list, from right to left.
-* `foldr f init (of a * of b * of c) = f a <| f b <| f c <| iniit
+Applies function `f` to all of the elements of the free monoid, from right to left.
+* `foldr f init (of a * of b * of c) = f a <| f b <| f c <| init
 -/
-@[to_additive (attr := specialize)]
+@[to_additive (attr := specialize) "Applies function `f` to all of the elements of the free monoid,
+from right to left. `foldr f init (of a + of b + of c) = f a <| f b <| f c <| init"]
 def foldr (f : α → α → α) (init : α) (a : FreeMonoid α) := List.foldr f init a
 
 @[to_additive (attr := simp)]
@@ -505,6 +510,8 @@ instance uniqueUnits : Unique (FreeMonoid α)ˣ where
     (List.append_eq_nil.mp this).1
 
 /-- if two types are isomorphic, the free monoids over those types are isomorphic -/
+@[to_additive "if two types are isomorphic, the additive free monoids over those types are
+isomorphic"]
 def congr_iso {α : Type u_1} {β : Type u_2} (e : α ≃ β) : FreeMonoid α ≃* FreeMonoid β := by
   apply MulEquiv.mk' ⟨FreeMonoid.map e.toFun, FreeMonoid.map e.invFun, _, _⟩
   · simp

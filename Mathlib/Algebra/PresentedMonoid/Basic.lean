@@ -128,7 +128,7 @@ theorem lift_eq_lift_of_stepsTo (a b : FreeMonoid α) (st : StepsTo rels a b) :
 
 /-- The extension of a map `f : α → M` that satisfies the given relations to a monoid homomorphism
 from `PresentedaMonoid rels → M`. -/
-instance toMonoid : MonoidHom (PresentedMonoid rels) M where
+def toMonoid : MonoidHom (PresentedMonoid rels) M where
   toFun := PresentedMonoid.lift f (lift_eq_lift_of_stepsTo f h)
   map_one' := rfl
   map_mul' := fun a b => PresentedMonoid.inductionOn₂ a b (map_mul (FreeMonoid.lift f))
