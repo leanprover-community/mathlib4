@@ -66,8 +66,7 @@ protected def map : (Comp F G) α → (Comp F G) β :=
   (map fun _i ↦ map f : (F fun i ↦ G i α) → F fun i ↦ G i β)
 #align mvqpf.comp.map MvQPF.Comp.map
 
-instance : MvFunctor (Comp F G) where
-  map f := Comp.map f
+instance : MvFunctor (Comp F G) where map f := Comp.map f
 
 theorem map_mk (x : F fun i ↦ G i α) :
     f <$$> Comp.mk x = Comp.mk ((fun i (x : G i α) ↦ f <$$> x) <$$> x) := rfl

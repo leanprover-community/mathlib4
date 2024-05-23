@@ -80,8 +80,7 @@ end Sigma
 
 namespace Pi
 
-instance [∀ α, MvFunctor <| F α] : MvFunctor (Pi F) where
-  map f x a := f <$$> x a
+instance [∀ α, MvFunctor <| F α] : MvFunctor (Pi F) where map f x a := f <$$> x a
 
 variable [∀ α, MvQPF <| F α]
 
