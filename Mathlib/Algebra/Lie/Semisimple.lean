@@ -106,16 +106,58 @@ theorem center_eq_bot_of_hasTrivialRadical [h : HasTrivialRadical R L] : center 
   rw [hasTrivialRadical_iff_no_abelian_ideals] at h; apply h; infer_instance
 #align lie_algebra.center_eq_bot_of_semisimple LieAlgebra.center_eq_bot_of_hasTrivialRadical
 
-/-- A simple Lie algebra is has trivial radical. -/
-instance (priority := 100) hasTrivialRadicalOfIsSimple [h : IsSimple R L] :
+variable {R L} in
+lemma eq_top_of_isAtom [IsSimple R L] (I : LieIdeal R L) (hI : IsAtom I) : I = ⊤ :=
+  LieModule.IsIrreducible.irreducible I hI.1
+
+lemma isAtom_top [IsSimple R L] : IsAtom (⊤ : LieIdeal R L) := by
+  constructor
+  · intro h
+    apply IsSimple.non_abelian R (L := L)
+    constructor
+    intro x y
+    rw [← LieSubmodule.mem_bot (R := R) (L := L), ← h]
+    trivial
+  · intro I hI
+    have := LieModule.IsIrreducible.irreducible I
+    contrapose! this
+    exact ⟨this, hI.ne⟩
+
+variable {R L} in
+lemma isAtom_iff_eq_top [IsSimple R L] (I : LieIdeal R L) : IsAtom I ↔ I = ⊤ :=
+  ⟨eq_top_of_isAtom I, fun h ↦ h ▸ isAtom_top R L⟩
+
+-- move this to `Mathlib.Order.SupIndep`
+lemma _root_.CompleteLattice.setIndependent_singleton {α : Type w} [CompleteLattice α] (a : α) :
+    CompleteLattice.SetIndependent ({a} : Set α) := by
+  intro i hi
+  simp_all
+
+/-- A simple Lie algebra is semisimple. -/
+instance (priority := 100) isSemisimple_of_isSimple [h : IsSimple R L] :
+    IsSemisimple R L := by
+  have aux : {I : LieIdeal R L | IsAtom I} = {⊤} := by
+    ext I
+    simp only [Set.mem_setOf_eq, Set.mem_singleton_iff, isAtom_iff_eq_top]
+  constructor
+  · simp [aux]
+  · simpa [aux] using _root_.CompleteLattice.setIndependent_singleton _
+  · intro I hI₁ hI₂
+    rw [isAtom_iff_eq_top] at hI₁
+    subst I
+    obtain @⟨⟨h₁⟩, h₂⟩ := id h
+    rw [lie_abelian_iff_equiv_lie_abelian LieIdeal.topEquiv] at hI₂
+    contradiction
+
+/-- A semisimple Lie algebra has trivial radical. -/
+instance (priority := 100) hasTrivialRadical_of_isSemisimple [h : IsSemisimple R L] :
     HasTrivialRadical R L := by
-  rw [hasTrivialRadical_iff_no_abelian_ideals]
-  intro I hI
-  obtain @⟨⟨h₁⟩, h₂⟩ := id h
-  by_contra contra
-  rw [h₁ I contra, lie_abelian_iff_equiv_lie_abelian LieIdeal.topEquiv] at hI
-  exact h₂ hI
-#align lie_algebra.is_semisimple_of_is_simple LieAlgebra.hasTrivialRadicalOfIsSimple
+  sorry
+
+/-- A simple Lie algebra has trivial radical. -/
+instance (priority := 100) hasTrivialRadical_of_isSimple [IsSimple R L] :
+    HasTrivialRadical R L := inferInstance
+#align lie_algebra.is_semisimple_of_is_simple LieAlgebra.hasTrivialRadical_of_isSimple
 
 /-- An abelian Lie algebra with trivial radical is trivial. -/
 theorem subsingleton_of_hasTrivialRadical_lie_abelian [HasTrivialRadical R L] [h : IsLieAbelian L] :
