@@ -253,7 +253,7 @@ instance (f : Perm α) [DecidableRel (SameCycle f)] :
     DecidableRel (SameCycle f⁻¹) := fun x y =>
   decidable_of_iff (f.SameCycle x y) (sameCycle_inv).symm
 
-instance [DecidableEq α] : DecidableRel (SameCycle (1 : Perm α)) := fun x y =>
+instance (priority := 100) [DecidableEq α] : DecidableRel (SameCycle (1 : Perm α)) := fun x y =>
   decidable_of_iff (x = y) sameCycle_one.symm
 
 instance [Fintype α] [DecidableEq α] (f : Perm α) : DecidableRel (SameCycle f) := fun x y =>

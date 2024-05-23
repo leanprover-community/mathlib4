@@ -167,8 +167,8 @@ protected theorem IsCycle.cycleOf [DecidableEq α] (hf : IsCycle f) :
   · rwa [if_neg hx, hf.cycleOf_eq]
 #align equiv.perm.is_cycle.cycle_of Equiv.Perm.IsCycle.cycleOf
 
-theorem cycleOf_one [DecidableEq α] (x : α) : cycleOf 1 x = 1 :=
-  (cycleOf_eq_one_iff 1).mpr rfl
+theorem cycleOf_one [DecidableRel (1 : Perm α).SameCycle] (x : α) :
+    cycleOf 1 x = 1 := (cycleOf_eq_one_iff 1).mpr rfl
 #align equiv.perm.cycle_of_one Equiv.Perm.cycleOf_one
 
 theorem isCycle_cycleOf (f : Perm α) [DecidableRel f.SameCycle] (hx : f x ≠ x) :
