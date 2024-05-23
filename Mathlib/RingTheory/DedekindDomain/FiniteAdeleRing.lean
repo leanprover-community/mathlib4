@@ -19,7 +19,7 @@ We define the ring of finite adèles of a Dedekind domain `R`.
 - `DedekindDomain.ProdAdicCompletions` : the product of `adicCompletion`, where `v` runs over
   all maximal ideals of `R`.
 - `DedekindDomain.finiteAdeleRing` : The finite adèle ring of `R`, defined as the
-  restricted product `Π'_v K_v`.
+  restricted product `Π'_v K_v`. We give this ring a `K`-algebra structure.
 
 ## Implementation notes
 We are only interested on Dedekind domains of Krull dimension 1 (i.e., not fields). If `R` is a
@@ -136,6 +136,7 @@ section AlgebraInstances
 instance : Algebra K (K_hat R K) :=
   (by infer_instance : Algebra K <| ∀ v : HeightOneSpectrum R, v.adicCompletion K)
 
+@[simp]
 lemma ProdAdicCompletions.algebraMap_apply' (k : K) :
     algebraMap K (K_hat R K) k v = (k : v.adicCompletion K) := rfl
 
@@ -143,6 +144,7 @@ instance ProdAdicCompletions.algebra' : Algebra R (K_hat R K) :=
   (by infer_instance : Algebra R <| ∀ v : HeightOneSpectrum R, v.adicCompletion K)
 #align dedekind_domain.prod_adic_completions.algebra' DedekindDomain.ProdAdicCompletions.algebra'
 
+@[simp]
 lemma ProdAdicCompletions.algebraMap_apply (r : R) :
     algebraMap R (K_hat R K) r v = (algebraMap R K r : v.adicCompletion K) := rfl
 
