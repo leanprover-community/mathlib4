@@ -99,7 +99,12 @@ section
 variable (R : Type u) [Semiring R]
 
 /-- We say that `R` satisfies the Orzech property, if for any finitely generated `R`-module `M`,
-    any surjective homomorphism `f : N → M` from a submodule `N` of `M` to `M` is injective. -/
+any surjective homomorphism `f : N → M` from a submodule `N` of `M` to `M` is injective.
+
+NOTE: In the definition we need to assume that `M` has the same universe level as `R`, but it
+in fact implies the universe polymorphic versions
+`OrzechProperty.injective_of_surjective_of_injective`
+and `OrzechProperty.injective_of_surjective_of_submodule`. -/
 @[mk_iff]
 class OrzechProperty : Prop where
   injective_of_surjective_of_submodule' : ∀ {M : Type u} [AddCommMonoid M] [Module R M]
