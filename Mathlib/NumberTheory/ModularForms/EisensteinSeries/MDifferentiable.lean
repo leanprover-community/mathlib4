@@ -7,6 +7,7 @@ Authors: Chris Birkbeck
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConvergence
 import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 import Mathlib.Analysis.Complex.LocallyUniformLimit
+import Mathlib.Analysis.Complex.HalfPlane
 import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 
 /-!
