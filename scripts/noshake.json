@@ -5,7 +5,7 @@
   "Lean.Elab.ElabRules",
   "Lean.Elab.Tactic.Config",
   "Lean.Meta.Tactic.Simp.RegisterCommand",
-  "Mathlib.Algebra.Invertible.Defs",
+  "Mathlib.Algebra.Group.Invertible.Defs",
   "Mathlib.AlgebraicGeometry.Restrict",
   "Mathlib.AlgebraicTopology.DoldKan.Notations",
   "Mathlib.CategoryTheory.Category.Init",
