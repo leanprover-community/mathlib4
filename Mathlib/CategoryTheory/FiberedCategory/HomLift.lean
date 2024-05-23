@@ -68,8 +68,13 @@ instance (a : 𝒳) : p.IsHomLift (𝟙 (p.obj a)) (𝟙 a) := by
   rw [← p.map_id]; infer_instance
 
 /-- For any arrow `φ : a ⟶ b` in `𝒳`, `φ` lifts the arrow `p.map φ` in the base `𝒮`-/
-instance  {a b : 𝒳} (φ : a ⟶ b) : p.IsHomLift (p.map φ) φ where
-instance  (a : 𝒳) : p.IsHomLift (𝟙 (p.obj a)) (𝟙 a) where
+@[simp]
+instance {a b : 𝒳} (φ : a ⟶ b) : p.IsHomLift (p.map φ) φ where
+  cond := by constructor
+
+@[simp]
+instance (a : 𝒳) : p.IsHomLift (𝟙 (p.obj a)) (𝟙 a) := by
+  rw [←p.map_id]; infer_instance
 
 namespace IsHomLift
 
