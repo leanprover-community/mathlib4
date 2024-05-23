@@ -220,6 +220,7 @@ theorem IntValuation.map_add_le_max' (x y : R) :
 #align is_dedekind_domain.height_one_spectrum.int_valuation.map_add_le_max' IsDedekindDomain.HeightOneSpectrum.IntValuation.map_add_le_max'
 
 /-- The `v`-adic valuation on `R`. -/
+@[simps]
 def intValuation : Valuation R ℤₘ₀ where
   toFun := v.intValuationDef
   map_zero' := IntValuation.map_zero' v

@@ -22,10 +22,10 @@ Note the universe level of the modules must be at least the universe level of th
 so that we have a monoidal unit.
 For now, we simplify by insisting both universe levels are the same.
 
-We construct the monoidal closed structure on `Module R` in
+We construct the monoidal closed structure on `ModuleCat R` in
 `Algebra.Category.ModuleCat.Monoidal.Closed`.
 
-If you're happy using the bundled `Module R`, it may be possible to mostly
+If you're happy using the bundled `ModuleCat R`, it may be possible to mostly
 use this as an interface and not need to interact much with the implementation details.
 -/
 
