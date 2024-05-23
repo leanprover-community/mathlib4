@@ -412,3 +412,21 @@ instance CommMonCat.forget₂_full : (forget₂ CommMonCat MonCat).Full where
   map_surjective f := ⟨f, rfl⟩
 
 example : (forget₂ CommMonCat MonCat).ReflectsIsomorphisms := inferInstance
+
+/-!
+`@[simp]` lemmas for `MonoidHom.comp` and categorical identities.
+-/
+
+@[to_additive (attr := simp)] theorem MonoidHom.comp_id_monCat
+    {G : MonCat.{u}} {H : Type u} [Monoid H] (f : G →* H) : f.comp (𝟙 G) = f :=
+  Category.id_comp (MonCat.ofHom f)
+@[to_additive (attr := simp)] theorem MonoidHom.id_monCat_comp
+    {G : Type u} [Monoid G] {H : MonCat.{u}} (f : G →* H) : MonoidHom.comp (𝟙 H) f = f :=
+  Category.comp_id (MonCat.ofHom f)
+
+@[to_additive (attr := simp)] theorem MonoidHom.comp_id_commMonCat
+    {G : CommMonCat.{u}} {H : Type u} [CommMonoid H] (f : G →* H) : f.comp (𝟙 G) = f :=
+  Category.id_comp (CommMonCat.ofHom f)
+@[to_additive (attr := simp)] theorem MonoidHom.id_commMonCat_comp
+    {G : Type u} [CommMonoid G] {H : CommMonCat.{u}} (f : G →* H) : MonoidHom.comp (𝟙 H) f = f :=
+  Category.comp_id (CommMonCat.ofHom f)
