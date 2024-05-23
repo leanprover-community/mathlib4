@@ -298,12 +298,14 @@ theorem inv_hom_id_assoc (f : X ⟶ Y) [I : IsIso f] {Z} (g : Y ⟶ Z) : inv f �
 
 end IsIso
 
-instance Iso.isIso_hom (e : X ≅ Y) : IsIso e.hom :=
+lemma Iso.isIso_hom (e : X ≅ Y) : IsIso e.hom :=
   ⟨e.inv, by simp, by simp⟩
 #align category_theory.is_iso.of_iso CategoryTheory.Iso.isIso_hom
 
-instance Iso.isIso_inv (e : X ≅ Y) : IsIso e.inv := e.symm.isIso_hom
+lemma Iso.isIso_inv (e : X ≅ Y) : IsIso e.inv := e.symm.isIso_hom
 #align category_theory.is_iso.of_iso_inv CategoryTheory.Iso.isIso_inv
+
+attribute [instance] Iso.isIso_hom Iso.isIso_inv
 
 open IsIso
 

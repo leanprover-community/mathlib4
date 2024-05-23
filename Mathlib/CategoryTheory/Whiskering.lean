@@ -114,6 +114,8 @@ instance faithful_whiskeringRight_obj {F : D ⥤ E} [F.Faithful] :
     exact F.map_injective <| congr_fun (congr_arg NatTrans.app hαβ) X
 #align category_theory.faithful_whiskering_right_obj CategoryTheory.faithful_whiskeringRight_obj
 
+/-- If `F : D ⥤ E` is fully faithful, then so is
+`(whiskeringRight C D E).obj F : (C ⥤ D) ⥤ C ⥤ E`. -/
 @[simps]
 def Functor.FullyFaithful.whiskeringRight {F : D ⥤ E} (hF : F.FullyFaithful)
     (C : Type*) [Category C] :
