@@ -406,7 +406,7 @@ theorem liftR_map_last [lawful : LawfulMvFunctor F]
       simp only [prod_map_id, dropFun_prod, dropFun_appendFun, dropFun_diag, TypeVec.id_comp,
         dropFun_toSubtype]
       erw [toSubtype_of_subtype_assoc, TypeVec.id_comp]
-      clear liftR_map_last q mvf lawful F x R f g hh h b c
+      clear liftR_map_last q lawful F x R f g hh h b c
       ext (i x) : 2
       induction i with
       | fz => rfl

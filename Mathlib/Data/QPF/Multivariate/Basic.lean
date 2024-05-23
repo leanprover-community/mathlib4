@@ -281,7 +281,7 @@ theorem liftpPreservation_iff_uniform : q.LiftPPreservation ↔ q.IsUniform := b
 
 /-- Any type function `F` that is (extensionally) equivalent to a QPF, is itself a QPF,
 assuming that the functorial map of `F` behaves similar to `MvFunctor.ofEquiv eqv` -/
-def ofEquiv {F F' : TypeVec.{u} n → Type*} [MvFunctor F'] [q : MvQPF F'] [MvFunctor F]
+def ofEquiv {F F' : TypeVec.{u} n → Type*} [q : MvQPF F'] [MvFunctor F]
     (eqv : ∀ α, F α ≃ F' α)
     (map_eq : ∀ (α β : TypeVec n) (f : α ⟹ β) (a : F α),
       f <$$> a = ((eqv _).symm <| f <$$> eqv _ a) := by intros; rfl) :
