@@ -1569,7 +1569,7 @@ theorem count_normalizedFactors_eq_associates_count
   have hJ' : Irreducible (Associates.mk J) := by
     simpa only [Associates.irreducible_mk] using (Ideal.prime_of_isPrime hJ₀ hJ).irreducible
   apply Ideal.count_normalizedFactors_eq (p := J) (x := I)
-  any_goals
+  all_goals
     rw [← Ideal.dvd_iff_le, ← Associates.mk_dvd_mk, Associates.mk_pow]
     simp only [Associates.dvd_eq_le]
     rw [Associates.prime_pow_dvd_iff_le hI hJ']
