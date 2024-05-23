@@ -391,13 +391,13 @@ theorem Quotient.mk_out [Setoid α] (a : α) : ⟦a⟧.out ≈ a :=
 
 theorem Quotient.mk_eq_iff_out [s : Setoid α] {x : α} {y : Quotient s} :
     ⟦x⟧ = y ↔ x ≈ Quotient.out y := by
-  refine' Iff.trans _ Quotient.eq
+  refine Iff.trans ?_ Quotient.eq
   rw [Quotient.out_eq y]
 #align quotient.mk_eq_iff_out Quotient.mk_eq_iff_out
 
 theorem Quotient.eq_mk_iff_out [s : Setoid α] {x : Quotient s} {y : α} :
     x = ⟦y⟧ ↔ Quotient.out x ≈ y := by
-  refine' Iff.trans _ Quotient.eq
+  refine Iff.trans ?_ Quotient.eq
   rw [Quotient.out_eq x]
 #align quotient.eq_mk_iff_out Quotient.eq_mk_iff_out
 

@@ -301,7 +301,7 @@ theorem re_dotProduct_pos {M : Matrix n n 𝕜} (hM : M.PosDef) {x : n → 𝕜}
   RCLike.pos_iff.mp (hM.2 _ hx) |>.1
 
 theorem posSemidef {M : Matrix n n R} (hM : M.PosDef) : M.PosSemidef := by
-  refine' ⟨hM.1, _⟩
+  refine ⟨hM.1, ?_⟩
   intro x
   by_cases hx : x = 0
   · simp only [hx, zero_dotProduct, star_zero, RCLike.zero_re']
@@ -317,7 +317,7 @@ theorem transpose {M : Matrix n n R} (hM : M.PosDef) : Mᵀ.PosDef := by
 
 theorem of_toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.IsSymm)
     (hMq : M.toQuadraticForm'.PosDef) : M.PosDef := by
-  refine' ⟨hM, fun x hx => _⟩
+  refine ⟨hM, fun x hx => ?_⟩
   simp only [toQuadraticForm', QuadraticForm.PosDef, LinearMap.BilinForm.toQuadraticForm_apply,
     toLinearMap₂'_apply'] at hMq
   apply hMq x hx

@@ -81,7 +81,7 @@ theorem evariance_eq_top [IsFiniteMeasure μ] (hXm : AEStronglyMeasurable X μ) 
     rw [snorm_eq_lintegral_rpow_nnnorm two_ne_zero ENNReal.two_ne_top]
     simp only [coe_two, ENNReal.one_toReal, ENNReal.rpow_two, Ne]
     exact ENNReal.rpow_lt_top_of_nonneg (by linarith) h.ne
-  refine' hX _
+  refine hX ?_
   -- Porting note: `μ[X]` without whitespace is ambiguous as it could be GetElem,
   -- and `convert` cannot disambiguate based on typeclass inference failure.
   convert this.add (memℒp_const <| μ [X])
