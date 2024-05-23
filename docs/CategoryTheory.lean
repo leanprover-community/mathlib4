@@ -436,31 +436,6 @@ theorem forget_of (X : Type _) [TopologicalSpace X] : (forget TopCat).obj (of X)
 @[simp] theorem of_hom {X : Type u} [TopologicalSpace X] {Y : TopCat.{u}} : (of X ⟶ Y) = C(X, Y) := rfl
 @[simp] theorem hom_of {X : TopCat.{u}} {Y : Type u} [TopologicalSpace Y] : (X ⟶ of Y) = C(X, Y) := rfl
 
-
-@[simp] theorem associator_hom_apply_1 {X Y Z : Type u} {x} :
-    (((α_ X Y Z).hom : (X ⊗ Y) ⊗ Z → X ⊗ Y ⊗ Z) x).1 = x.1.1 :=
-  rfl
-
-@[simp] theorem associator_hom_apply_2_1 {X Y Z : Type u} {x} :
-    (((α_ X Y Z).hom : (X ⊗ Y) ⊗ Z → X ⊗ Y ⊗ Z) x).2.1 = x.1.2 :=
-  rfl
-
-@[simp] theorem associator_hom_apply_2_2 {X Y Z : Type u} {x} :
-    (((α_ X Y Z).hom : (X ⊗ Y) ⊗ Z → X ⊗ Y ⊗ Z) x).2.2 = x.2 :=
-  rfl
-
-@[simp] theorem associator_inv_apply_1_1 {X Y Z : Type u} {x} :
-    (((α_ X Y Z).inv : X ⊗ Y ⊗ Z → (X ⊗ Y) ⊗ Z) x).1.1 = x.1 :=
-  rfl
-
-@[simp] theorem associator_inv_apply_1_2 {X Y Z : Type u} {x} :
-    (((α_ X Y Z).inv : X ⊗ Y ⊗ Z → (X ⊗ Y) ⊗ Z) x).1.2 = x.2.1 :=
-  rfl
-
-@[simp] theorem associator_inv_apply_2 {X Y Z : Type u} {x} :
-    (((α_ X Y Z).inv : X ⊗ Y ⊗ Z → (X ⊗ Y) ⊗ Z) x).2 = x.2.2 :=
-  rfl
-
 attribute [local simp] toSSet in
 def toSSet_monoidal : MonoidalFunctor TopCat SSet :=
 { TopCat.toSSet with

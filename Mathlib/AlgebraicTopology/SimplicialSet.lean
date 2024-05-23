@@ -42,7 +42,7 @@ open Simplicial
 /-- The category of simplicial sets.
 This is the category of contravariant functors from
 `SimplexCategory` to `Type u`. -/
-abbrev SSet : Type (u + 1) :=
+def SSet : Type (u + 1) :=
   SimplicialObject (Type u)
 set_option linter.uppercaseLean3 false in
 #align sSet SSet
