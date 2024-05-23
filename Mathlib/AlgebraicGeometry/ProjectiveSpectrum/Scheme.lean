@@ -79,7 +79,7 @@ If we further assume `m` is positive
 
 noncomputable section
 
-set_option linter.uppercaseLean3 false
+set_option linter.uppercaseLean3 false -- Porting note: Proj and Spec
 
 namespace AlgebraicGeometry
 

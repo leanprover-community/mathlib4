@@ -341,9 +341,7 @@ theorem mk_dest (x : M F) : M.mk (dest x) = x := by
   cases' h : x.approx (succ n) with _ hd ch
   have h' : hd = head' (x.approx 1) := by
     rw [← head_succ' n, h, head']
-    · split
-      injections
-    · apply x.consistent
+    apply x.consistent
   revert ch
   rw [h']
   intros ch h

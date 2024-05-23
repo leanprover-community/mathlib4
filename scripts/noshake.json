@@ -5,7 +5,7 @@
   "Lean.Elab.ElabRules",
   "Lean.Elab.Tactic.Config",
   "Lean.Meta.Tactic.Simp.RegisterCommand",
-  "Mathlib.Algebra.Group.Invertible.Defs",
+  "Mathlib.Algebra.Invertible.Defs",
   "Mathlib.AlgebraicGeometry.Restrict",
   "Mathlib.AlgebraicTopology.DoldKan.Notations",
   "Mathlib.CategoryTheory.Category.Init",
@@ -87,7 +87,6 @@
   "Mathlib.Tactic.Linarith.Frontend",
   "Mathlib.Tactic.Linarith.Lemmas",
   "Mathlib.Tactic.LinearCombination",
-  "Mathlib.Tactic.Linter",
   "Mathlib.Tactic.Measurability",
   "Mathlib.Tactic.MkIffOfInductiveProp",
   "Mathlib.Tactic.ModCases",
@@ -182,10 +181,7 @@
   "Batteries.Util.LibraryNote",
   "Batteries.Util.ProofWanted",
   "Batteries.Util.TermUnsafe"],
- "ignoreAll":
- ["Batteries.Tactic.Basic",
-  "Mathlib.Mathport.Syntax",
-  "Mathlib.Tactic.Linter"],
+ "ignoreAll": ["Batteries.Tactic.Basic", "Mathlib.Mathport.Syntax"],
  "ignore":
  {"Batteries.Tactic.OpenPrivate": ["Lean.Parser.Module"],
   "Batteries.Tactic.Omega.OmegaM": ["Batteries.Tactic.Omega.Int"],

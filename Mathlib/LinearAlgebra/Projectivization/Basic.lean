@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 import Mathlib.LinearAlgebra.FiniteDimensional
-import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 
 #align_import linear_algebra.projective_space.basic from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
@@ -113,7 +112,7 @@ theorem mk_eq_mk_iff' (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) :
   · rintro ⟨a, ha⟩
     exact ⟨a, ha⟩
   · rintro ⟨a, ha⟩
-    refine ⟨Units.mk0 a fun c => hv.symm ?_, ha⟩
+    refine' ⟨Units.mk0 a fun c => hv.symm _, ha⟩
     rwa [c, zero_smul] at ha
 #align projectivization.mk_eq_mk_iff' Projectivization.mk_eq_mk_iff'
 

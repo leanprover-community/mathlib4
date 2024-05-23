@@ -8,7 +8,10 @@ import Mathlib.Tactic.Lift
 import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
-# Lemmas about the interaction of power operations with order in terms of `CovariantClass`
+# Lemmas about the interaction of power operations with order in terms of CovariantClass
+
+More lemmas with bundled algebra+order typeclasses are in `Algebra/GroupPower/Order.lean`
+and `Algebra/GroupPower/Lemmas.lean`.
 -/
 
 open Function

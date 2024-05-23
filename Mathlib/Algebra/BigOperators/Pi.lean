@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
 import Mathlib.Data.Fintype.Card
+import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Ring.Pi
 

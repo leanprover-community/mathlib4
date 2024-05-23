@@ -7,7 +7,7 @@ import Mathlib.Tactic.NormNum.Core
 import Mathlib.Tactic.HaveI
 import Mathlib.Data.Nat.Cast.Commute
 import Mathlib.Algebra.Ring.Int
-import Mathlib.Algebra.GroupWithZero.Invertible
+import Mathlib.Algebra.Invertible.Basic
 import Mathlib.Tactic.ClearExclamation
 import Mathlib.Data.Nat.Cast.Basic
 
