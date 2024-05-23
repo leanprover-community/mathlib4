@@ -1011,13 +1011,19 @@ protected lemma IsEllSequence.normEDS : IsEllSequence (normEDS b c d) := by
 provided the first two terms are not zero divisors. -/
 protected lemma IsEllSequence.ext (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
     (h1 : W 1 = U 1) (h2 : W 2 = U 2) (h3 : W 3 = U 3) (h4 : W 4 = U 4) : W = U :=
-  funext <| normEDSRec (by rw [ellW.zero 1 two, ellU.zero 1 (h2 ▸ two)]) h1 h2 h3 h4
-    (fun m _ h₂' h₁' h₀ h₁ h₂ ↦ by
-      rw [← mul_cancel_right_mem_nonZeroDivisors two, ← mul_cancel_right_mem_nonZeroDivisors
-      (pow_mem one 2), ellW.evenRec, h1, h2, ellU.evenRec, h₂', h₁', h₀, h₁, h₂])
-    (fun m _ h₁' h₀ h₁ h₂ ↦ by rw [← mul_cancel_right_mem_nonZeroDivisors (pow_mem one 3),
-      ellW.oddRec, h1, ellU.oddRec, h₁', h₀, h₁, h₂])
-    fun m ih ↦ by rw [ellW.neg one two, ellU.neg (h1 ▸ one) (h2 ▸ two), ih]
+  funext fun n ↦ by
+    induction n using Int.negInduction with
+    | nat n =>
+      refine normEDSRec ?_ h1 h2 h3 h4 (fun m h₁ h₂ h₃ h₄ h₅ ↦ ?_) (fun m h₁ h₂ h₃ h₄ ↦ ?_) n
+      · rw [Nat.cast_zero, ellW.zero 1 two, ellU.zero 1 (h2 ▸ two)]
+      · erw [← mul_cancel_right_mem_nonZeroDivisors (mul_mem two <| pow_mem one 2), ← mul_assoc,
+          ← mul_assoc, Nat.cast_mul, Nat.cast_add, ellW.evenRec, h1, h2, ellU.evenRec]
+        convert congr($h₃ * ($h₂ ^ 2 * $h₅ - $h₁ * $h₄ ^ 2)) <;> abel
+      · rw [← mul_cancel_right_mem_nonZeroDivisors (pow_mem one 3)]
+        erw [Nat.cast_add, Nat.cast_mul, Nat.cast_add, ellW.oddRec, h1, ellU.oddRec]
+        convert congr($h₄ * $h₂ ^ 3 - $h₁ * $h₃ ^ 3) <;> abel
+    | neg n hn =>
+      rw [ellW.neg one two, ellU.neg (h1 ▸ one) (h2 ▸ two), hn]
 
 lemma normEDS_two_three_two : normEDS 2 3 2 = id :=
   IsEllSequence.normEDS.ext isEllSequence_id (mem_nonZeroDivisors_of_ne_zero one_ne_zero)

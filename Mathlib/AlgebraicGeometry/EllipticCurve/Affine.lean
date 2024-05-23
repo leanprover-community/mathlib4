@@ -186,27 +186,6 @@ lemma eval_polynomial_zero : (W.polynomial.eval 0).eval 0 = -W.a₆ := by
   simp only [← C_0, eval_polynomial, zero_add, zero_sub, mul_zero, zero_pow <| Nat.succ_ne_zero _]
 #align weierstrass_curve.eval_polynomial_zero WeierstrassCurve.Affine.eval_polynomial_zero
 
-section map
-
-variable {S} [CommRing S] (f : R →+* S)
-
-lemma map_polynomial : polynomial (W.map f) = W.polynomial.map (mapRingHom f) := by
-  simp [polynomial]
-
-lemma map_polynomial_eval (x : R[X]) :
-    (polynomial (W.map f)).eval (x.map f) = (W.polynomial.eval x).map f := by
-  rw [map_polynomial, eval_map, ← coe_mapRingHom, eval₂_hom]
-
-lemma map_polynomial_eval_eval (x : R[X]) (y : R) :
-    ((polynomial (W.map f)).eval (x.map f)).eval (f y) = f ((W.polynomial.eval x).eval y) := by
-  rw [map_polynomial_eval, eval_map, eval₂_hom]
-
-lemma map_polynomial_eval_C_eval (x y : R) :
-    ((polynomial (W.map f)).eval (C (f x))).eval (f y) = f ((W.polynomial.eval (C x)).eval y) := by
-  rw [← map_polynomial_eval_eval, map_C]
-
-end map
-
 /-- The proposition that an affine point $(x, y)$ lies in `W`. In other words, $W(x, y) = 0$. -/
 def Equation (x y : R) : Prop :=
   (W.polynomial.eval <| C y).eval x = 0
@@ -494,6 +473,36 @@ lemma nonsingular_add_of_eval_derivative_ne_zero {x₁ x₂ y₁ L : R}
 #align weierstrass_curve.nonsingular_add_of_eval_derivative_ne_zero WeierstrassCurve.Affine.nonsingular_add_of_eval_derivative_ne_zero
 
 end Ring
+
+section map
+
+variable {S} [CommRing S] (f : R →+* S)
+
+lemma map_polynomial : polynomial (W.map f) = W.polynomial.map (mapRingHom f) := by
+  simp [polynomial]
+
+lemma map_polynomial_eval (x : R[X]) :
+    (polynomial (W.map f)).eval (x.map f) = (W.polynomial.eval x).map f := by
+  rw [map_polynomial, eval_map, ← coe_mapRingHom, eval₂_hom]
+
+lemma map_polynomial_eval_eval (x : R[X]) (y : R) :
+    ((polynomial (W.map f)).eval (x.map f)).eval (f y) = f ((W.polynomial.eval x).eval y) := by
+  rw [map_polynomial_eval, eval_map, eval₂_hom]
+
+lemma map_polynomial_eval_C_eval (x y : R) :
+    ((polynomial (W.map f)).eval (C (f x))).eval (f y) = f ((W.polynomial.eval (C x)).eval y) := by
+  rw [← map_polynomial_eval_eval, map_C]
+
+lemma map_polynomialX : polynomialX (W.map f) = W.polynomialX.map (mapRingHom f) := by
+  simp [polynomialX]
+
+lemma map_polynomialY : polynomialY (W.map f) = W.polynomialY.map (mapRingHom f) := by
+  simp [polynomialY]
+
+lemma map_negPolynomial : negPolynomial (W.map f) = W.negPolynomial.map (mapRingHom f) := by
+  simp [negPolynomial]
+
+end map
 
 section Field
 

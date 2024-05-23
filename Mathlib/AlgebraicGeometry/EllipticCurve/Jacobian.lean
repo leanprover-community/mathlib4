@@ -1340,4 +1340,29 @@ end Point
 
 end Affine
 
+section map
+
+lemma comp_fin3 {S} (f : R → S) (X Y Z : R) : f ∘ ![X, Y, Z] = ![f X, f Y, f Z] := by
+  ext i; fin_cases i <;> rfl
+
+variable {S : Type*} [CommRing S] (f : R →+* S) (P Q : Fin 3 → R)
+
+@[simp] lemma map_addZ : addZ (f ∘ P) (f ∘ Q) = f (addZ P Q) := by simp [addZ]
+@[simp] lemma map_addX : addX (V.map f) (f ∘ P) (f ∘ Q) = f (V.addX P Q) := by simp [addX]
+@[simp] lemma map_addY' : addY' (V.map f) (f ∘ P) (f ∘ Q) = f (V.addY' P Q) := by simp [addY']
+@[simp] lemma map_negY : negY (V.map f) (f ∘ P) = f (V.negY P) := by simp [negY]
+
+@[simp] lemma map_neg : neg (V.map f) (f ∘ P) = f ∘ V.neg P := by
+  ext i; fin_cases i <;> simp [neg]
+
+@[simp] lemma map_addY : addY (V.map f) (f ∘ P) (f ∘ Q) = f (V.addY P Q) := by
+  simp [addY, ← comp_fin3]
+
+@[simp] lemma map_dblZ : dblZ (V.map f) (f ∘ P) = f (V.dblZ P) := by simp [dblZ]
+@[simp] lemma map_dblX : dblX (V.map f) (f ∘ P) = f (V.dblX P) := by simp [dblX]
+@[simp] lemma map_dblY' : dblY' (V.map f) (f ∘ P) = f (V.dblY' P) := by simp [dblY']
+@[simp] lemma map_dblY : dblY (V.map f) (f ∘ P) = f (V.dblY P) := by simp [dblY, ← comp_fin3]
+
+end map
+
 end WeierstrassCurve.Jacobian

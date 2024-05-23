@@ -29,8 +29,9 @@ noncomputable section
 
 open scoped PolynomialPolynomial
 
-/-- The second division polynomial. -/
-protected def ψ₂ : R[X][X] := 2 * Y + C (C W.a₁ * X + C W.a₃)
+/-- The second division polynomial is simply the derivative of the Weierstrass polynomial
+with respect to `Y`. -/
+protected abbrev ψ₂ : R[X][X] := W.toAffine.polynomialY
 /- Implementation note: protect to force the use of dot notation,
    since ψ etc. are common variable names. -/
 
@@ -61,13 +62,13 @@ protected def φ (n : ℤ) : R[X][X] := C X * W.ψ n ^ 2 - W.ψ (n + 1) * W.ψ (
 /-- The complement of ψ(n) in ψ(2n). -/
 def ψc : ℤ → R[X][X] := compl₂EDS W.ψ₂ (C W.ψ₃) (C W.ψc₂)
 
-open Affine (polynomial)
+open Affine (polynomial polynomialX polynomialY negPolynomial)
 open EllSequence
 
 open WeierstrassCurve (ψc₂ ψ₂ ψ₂Sq ψ₃ ψ φ ψc)
 
 lemma ψ₂_sq : W.ψ₂ ^ 2 = C W.ψ₂Sq + 4 * polynomial W := by
-  rw [Affine.polynomial, ψ₂, ψ₂Sq, b₂, b₄, b₆]; C_simp; ring
+  rw [Affine.polynomial, ψ₂, polynomialY, ψ₂Sq, b₂, b₄, b₆]; C_simp; ring
 
 lemma ψc₂_add_ψ₂Sq_sq : W.ψc₂ + W.ψ₂Sq ^ 2 = W.invar * W.ψ₃ := by
   rw [ψc₂, ψ₂Sq, invar, ψ₃]
@@ -78,13 +79,14 @@ lemma ψc₂_add_ψ₂_pow_four :
   simp_rw [show 4 = 2 * 2 by rfl, pow_mul, ψ₂_sq, add_sq,
     ← add_assoc, ← C_pow, ← C_add, ψc₂_add_ψ₂Sq_sq]; C_simp; ring
 
+suppress_compilation in
 /-- The `ω` family of division polynomials: `ω n` gives the second (`Y`) coordinate in
 Jacobian coordinates of the scalar multiplication by `n`. -/
 protected def ω (n : ℤ) : R[X][X] :=
   redInvarDenom W.ψ₂ (C W.ψ₃) (C W.ψc₂) n *
-    ((C (C W.a₁) * Y + C (3 * X ^ 2 + C (W.b₂ - 2 * W.a₂) * X + C (W.b₄ - W.a₄))) * C W.ψ₃
+    ((C (C W.a₁) * polynomialY W - polynomialX W) * C W.ψ₃
       + 4 * polynomial W * (2 * polynomial W + C W.ψ₂Sq))
-  - invarNumAux W.ψ₂ (C W.ψ₃) (C W.ψc₂) n - (Y + C (C W.a₁ * X + C W.a₃)) * W.ψ n ^ 3
+  - invarNumAux W.ψ₂ (C W.ψ₃) (C W.ψc₂) n + negPolynomial W * W.ψ n ^ 3
 
 lemma φ_mul_ψ (n : ℤ) : W.φ n * W.ψ n = C X * W.ψ n ^ 3 - invarDenom W.ψ 1 n := by
   rw [φ, invarDenom]; ring
@@ -92,13 +94,14 @@ lemma φ_mul_ψ (n : ℤ) : W.φ n * W.ψ n = C X * W.ψ n ^ 3 - invarDenom W.ψ
 open WeierstrassCurve (ω)
 lemma ω_spec (n : ℤ) :
     2 * W.ω n + C (C W.a₁) * W.φ n * W.ψ n + C (C W.a₃) * W.ψ n ^ 3 = W.ψc n := by
-  rw [ψc, compl₂EDS_eq_redInvarNum_sub, redInvar_normEDS₂, ψc₂_add_ψ₂_pow_four,
-    mul_assoc (C _), φ_mul_ψ, ψ, invarDenom_eq_redInvarDenom_mul, ω, ← ψ, invar, b₂, b₄, ψ₂]
+  rw [ψc, compl₂EDS_eq_redInvarNum_sub, redInvar_normEDS, ψc₂_add_ψ₂_pow_four, mul_assoc (C _),
+    φ_mul_ψ, ψ, invarDenom_eq_redInvarDenom_mul, ω, ← ψ, invar, b₂, b₄, ψ₂,
+    polynomialY, polynomialX, negPolynomial]
   C_simp; ring
 
 lemma ψc_spec (n : ℤ) : W.ψ n * W.ψc n = W.ψ (2 * n) := normEDS_mul_compl₂EDS _ _ _ _
 
-@[simp] lemma map_ψ₂ : (W.map f).ψ₂ = W.ψ₂.map (mapRingHom f) := by simp [ψ₂]
+@[simp] lemma map_ψ₂ : (W.map f).ψ₂ = W.ψ₂.map (mapRingHom f) := by simp [ψ₂, polynomialY]
 @[simp] lemma map_ψ₃ : (W.map f).ψ₃ = W.ψ₃.map f := by simp [ψ₃]
 @[simp] lemma map_ψc₂ : (W.map f).ψc₂ = W.ψc₂.map f := by simp [ψc₂]
 @[simp] lemma map_ψ₂Sq : (W.map f).ψ₂Sq = W.ψ₂Sq.map f := by simp [ψ₂Sq]
@@ -108,9 +111,10 @@ lemma ψc_spec (n : ℤ) : W.ψ n * W.ψc n = W.ψ (2 * n) := normEDS_mul_compl�
 
 @[simp] lemma map_φ (n : ℤ) : (W.map f).φ n = (W.φ n).map (mapRingHom f) := by simp [φ]
 
+open Affine in
 @[simp] lemma map_ω (n : ℤ) : (W.map f).ω n = (W.ω n).map (mapRingHom f) := by
-  simp_rw [ω, ← coe_mapRingHom, map_sub, map_mul, map_redInvarDenom, map_invarNumAux]
-  simp [Affine.map_polynomial]
+  simp_rw [ω, ← coe_mapRingHom, map_add, map_sub, map_mul, map_redInvarDenom, map_invarNumAux,
+    map_polynomial, map_polynomialX, map_polynomialY, map_negPolynomial]; simp
 
 
 
@@ -119,4 +123,4 @@ open Jacobian
 
 end
 
-end WeierstrassCurve.DivisionPolynomial
+end WeierstrassCurve
