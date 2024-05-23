@@ -135,7 +135,7 @@ lemma Odd.add_even (ha : Odd a) (hb : Even b) : Odd (a + b) := add_comm a b ▸ 
 
 lemma Odd.add_odd : Odd a → Odd b → Even (a + b) := by
   rintro ⟨a, rfl⟩ ⟨b, rfl⟩
-  refine' ⟨a + b + 1, _⟩
+  refine ⟨a + b + 1, ?_⟩
   rw [two_mul, two_mul]
   ac_rfl
 #align odd.add_odd Odd.add_odd
@@ -154,13 +154,15 @@ lemma odd_two_mul_add_one (a : α) : Odd (2 * a + 1) := ⟨_, rfl⟩
 @[simp] lemma odd_add_one_self : Odd (a + 1 + a) := by simp [add_comm _ a]
 @[simp] lemma odd_add_one_self' : Odd (a + (1 + a)) := by simp [add_comm 1 a]
 
+#noalign one_add_self_self
+
 lemma Odd.map [FunLike F α β] [RingHomClass F α β] (f : F) : Odd a → Odd (f a) := by
   rintro ⟨a, rfl⟩; exact ⟨f a, by simp [two_mul]⟩
 #align odd.map Odd.map
 
 @[simp] lemma Odd.mul : Odd a → Odd b → Odd (a * b) := by
   rintro ⟨a, rfl⟩ ⟨b, rfl⟩
-  refine' ⟨2 * a * b + b + a, _⟩
+  refine ⟨2 * a * b + b + a, ?_⟩
   rw [mul_add, add_mul, mul_one, ← add_assoc, one_mul, mul_assoc, ← mul_add, ← mul_add, ← mul_assoc,
     ← Nat.cast_two, ← Nat.cast_comm]
 #align odd.mul Odd.mul
