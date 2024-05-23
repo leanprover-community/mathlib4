@@ -5,8 +5,7 @@ Authors: Hannah Fechtner
 -/
 
 import Mathlib.Algebra.FreeMonoid.Basic
-import Mathlib.GroupTheory.FreeGroup.Basic
-import Mathlib.GroupTheory.QuotientGroup
+import Mathlib.Algebra.Group.Submonoid.Operations
 
 /-!
 # Defining a monoid given by generators and relations
@@ -120,7 +119,7 @@ variable {α M : Type*} [Monoid M] (f : α → M)
 variable {rels : FreeMonoid α → FreeMonoid α → Prop}
 variable (h : ∀ a b : FreeMonoid α, rels a b →  FreeMonoid.lift f a = FreeMonoid.lift f b)
 
-theorem universal_helper (a b : FreeMonoid α) (st : StepsTo rels a b) :
+theorem lift_eq_lift_of_stepsTo (a b : FreeMonoid α) (st : StepsTo rels a b) :
     FreeMonoid.lift f a = FreeMonoid.lift f b := by
   induction st with
   | basic ih => exact h _ _ ih
@@ -130,7 +129,7 @@ theorem universal_helper (a b : FreeMonoid α) (st : StepsTo rels a b) :
 /-- The extension of a map `f : α → M` that satisfies the given relations to a monoid homomorphism
 from `PresentedaMonoid rels → M`. -/
 instance toMonoid : MonoidHom (PresentedMonoid rels) M where
-  toFun := PresentedMonoid.lift f (universal_helper f h)
+  toFun := PresentedMonoid.lift f (lift_eq_lift_of_stepsTo f h)
   map_one' := rfl
   map_mul' := fun a b => PresentedMonoid.inductionOn₂ a b (map_mul (FreeMonoid.lift f))
 
@@ -138,11 +137,10 @@ theorem toMonoid.unique (g : MonoidHom (PresentedMonoid rels) M)
     (hg : ∀ a : α, g (of rels a) = f a) : g = toMonoid f h := by
   ext x
   induction' x with a
-  induction a
+  induction' a with b
   · rw [← one_def, MonoidHom.map_one]
-    exact rfl
-  · rename_i x
-    exact hg x
+    rfl
+  · exact hg b
   rename_i x y hx hy
   show g ((mk rels x) * (mk rels y)) = (toMonoid f h) ((mk rels x) * (mk rels y))
   rw [map_mul, hx, hy, map_mul]
@@ -175,8 +173,8 @@ variable {β : Type*} (e : α ≃ β) (rels : FreeMonoid α → FreeMonoid α �
 def rels_iso : FreeMonoid β → FreeMonoid β → Prop :=
   fun a b => rels ((FreeMonoid.congr_iso e).invFun a) ((FreeMonoid.congr_iso e).invFun b)
 
-theorem iso_helper : (StepsTo rels ⇒ StepsTo (rels_iso e rels))
-    (FreeMonoid.congr_iso e).toEquiv.toFun (FreeMonoid.congr_iso e).toEquiv.toFun := by
+private theorem iso_helper : (StepsTo rels ⇒ StepsTo (rels_iso e rels))
+    (FreeMonoid.congr_iso e).toFun (FreeMonoid.congr_iso e).toFun := by
   intro x y h
   induction h with
   | basic rxy =>
@@ -192,15 +190,14 @@ theorem iso_helper : (StepsTo rels ⇒ StepsTo (rels_iso e rels))
     rw [(FreeMonoid.congr_iso e).map_mul', (FreeMonoid.congr_iso e).map_mul']
     exact StepsTo.right ih
 
-theorem iso_helper_inv : (StepsTo (rels_iso e rels) ⇒ StepsTo rels)
-    (FreeMonoid.congr_iso e).toEquiv.invFun (FreeMonoid.congr_iso e).toEquiv.invFun := by
+private theorem iso_helper_inv : (StepsTo (rels_iso e rels) ⇒ StepsTo rels)
+    (FreeMonoid.congr_iso e).invFun (FreeMonoid.congr_iso e).invFun := by
   intro x y h
-  have H : ∀ x y, ((FreeMonoid.congr_iso e).toEquiv.invFun (x*y)) =
-      ((FreeMonoid.congr_iso e).toEquiv.invFun x) *
-      ((FreeMonoid.congr_iso e).toEquiv.invFun y) := by
+  have H : ∀ x y, ((FreeMonoid.congr_iso e).invFun (x*y)) =
+      ((FreeMonoid.congr_iso e).invFun x) * ((FreeMonoid.congr_iso e).invFun y) := by
     intro x y
-    rcases (Equiv.surjective (FreeMonoid.congr_iso e).toEquiv x) with ⟨_, ha⟩
-    rcases (Equiv.surjective (FreeMonoid.congr_iso e).toEquiv y) with ⟨_, hb⟩
+    rcases (FreeMonoid.congr_iso e).surjective x with ⟨_, ha⟩
+    rcases (FreeMonoid.congr_iso e).surjective y with ⟨_, hb⟩
     rw [← ha, ← hb]
     simp
   induction h with
@@ -215,11 +212,11 @@ theorem iso_helper_inv : (StepsTo (rels_iso e rels) ⇒ StepsTo rels)
     exact StepsTo.right ih
 
 /-- forward direction of the bijection for the isomorphism -/
-def iso_function : PresentedMonoid rels → PresentedMonoid (rels_iso e rels) :=
+private def iso_function : PresentedMonoid rels → PresentedMonoid (rels_iso e rels) :=
   Quot.map ((FreeMonoid.congr_iso e).toFun) (iso_helper e rels)
 
 /-- reverse direction of the bijection for the isomorphism -/
-def iso_function_inv : PresentedMonoid (rels_iso e rels) → PresentedMonoid rels :=
+private def iso_function_inv : PresentedMonoid (rels_iso e rels) → PresentedMonoid rels :=
   Quot.map ((FreeMonoid.congr_iso e).invFun) (iso_helper_inv e rels)
 
 /-- Presented groups of isomorphic types are isomorphic. -/

@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.Group.List
-import Mathlib.Algebra.Group.Units
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.Data.Finset.Basic
+
 
 #align_import algebra.free_monoid.basic from "leanprover-community/mathlib"@"657df4339ae6ceada048c8a2980fb10e393143ec"
 
@@ -420,16 +420,16 @@ def map (f : α → β) : FreeMonoid α →* FreeMonoid β where
 #align free_monoid.map FreeMonoid.map
 #align free_add_monoid.map FreeAddMonoid.map
 
-@[to_additive (attr := simp)]
-theorem map_one : map f 1 = 1 := rfl
+-- @[to_additive (attr := simp)]
+-- theorem map_one : map f 1 = 1 := rfl
 
 @[to_additive (attr := simp)]
 theorem map_of (f : α → β) (x : α) : map f (of x) = of (f x) := rfl
 #align free_monoid.map_of FreeMonoid.map_of
 #align free_add_monoid.map_of FreeAddMonoid.map_of
 
-@[to_additive (attr := simp)]
-theorem map_mul : map f (a * b) = map f a * map f b := MonoidHom.map_mul (map f) a b
+-- @[to_additive (attr := simp)]
+-- theorem map_mul : map f (a * b) = map f a * map f b := MonoidHom.map_mul (map f) a b
 
 @[to_additive (attr := simp)]
 theorem mem_map {m : β} : m ∈ map f a ↔ ∃ n ∈ a, f n = m := List.mem_map
@@ -511,6 +511,5 @@ def congr_iso {α : Type u_1} {β : Type u_2} (e : α ≃ β) : FreeMonoid α �
   all_goals
   intro x
   simp [map_map]
-
 
 end FreeMonoid
