@@ -212,13 +212,27 @@ instance (priority := 100) isSemisimple_of_isSimple [h : IsSimple R L] :
 --   sdiff_eq := _
 --   himp_eq := _
 
+lemma exists_unique_sum [IsSemisimple R L] (x : L) :
+    ∃! a : {I : LieIdeal R L // IsAtom I} →₀ L, a.sum (fun _ ↦ id) = x ∧ ∀ I, a I ∈ I.1 := by
+  sorry
+
 lemma _root_.LieIdeal.sSup_inter [IsSemisimple R L] (S T : Set (LieIdeal R L))
     (hS : S ⊆ {I | IsAtom I}) (hT : T ⊆ {I | IsAtom I}) :
     sSup (S ∩ T) = (sSup S) ⊓ (sSup T) := by
+  apply le_antisymm
+  · apply le_inf
+    · apply sSup_le_sSup (Set.inter_subset_left S T)
+    · apply sSup_le_sSup (Set.inter_subset_right S T)
+  rintro x ⟨hxS, hxT⟩
   sorry
 
 lemma _root_.LieIdeal.sSup_atoms_le_eq [IsSemisimple R L] (J : LieIdeal R L) :
     sSup {I | IsAtom I ∧ I ≤ J} = J := by
+  apply le_antisymm
+  · apply sSup_le
+    rintro I ⟨hI, hIJ⟩
+    exact hIJ
+  -- intro x hx
   sorry
 
 instance (priority := 100) [IsSemisimple R L] : DistribLattice (LieIdeal R L) where
