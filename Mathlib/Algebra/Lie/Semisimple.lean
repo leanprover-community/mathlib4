@@ -196,6 +196,38 @@ instance (priority := 100) isSemisimple_of_isSimple [h : IsSimple R L] :
     rw [lie_abelian_iff_equiv_lie_abelian LieIdeal.topEquiv] at hI₂
     contradiction
 
+-- move this
+lemma _root_.Submodule.exists_sum_of_mem_sSup {R : Type u} {M : Type v} [Ring R] [AddCommGroup M]
+    [Module R M] (S : Set (Submodule R M)) (x : M) (hx : x ∈ sSup S) :
+    ∃ (T : Finset (Submodule R M)) (_ : ↑T ⊆ S) (f : Submodule R M → M),
+      T.sum f = x ∧ ∀ N ∈ T, f N ∈ N := by
+  rw [← Submodule.span_singleton_le_iff_mem] at hx
+  obtain ⟨T, h₁, h₂⟩ := Submodule.singleton_span_isCompactElement _ _ hx
+  rw [Submodule.span_singleton_le_iff_mem] at h₂
+  use T, h₁
+  clear h₁ hx S
+  revert x
+  classical
+  refine T.induction_on (by simp) ?_
+  intro N s hNs IH x hx
+  rw [Finset.sup_insert, Submodule.mem_sup] at hx
+  obtain ⟨n, hn : n ∈ N, x, hx, rfl⟩ := hx
+  obtain ⟨f, rfl, hf⟩ := IH x hx
+  use Function.update f N n
+  simp only [hNs, not_false_eq_true, Finset.sum_insert, Function.update_same, add_right_inj,
+    Finset.mem_insert, forall_eq_or_imp, hn, true_and]
+  constructor
+  · apply Finset.sum_congr rfl
+    intro M hM
+    rw [Function.update_noteq]
+    rintro rfl
+    contradiction
+  · intro M hM
+    rw [Function.update_noteq]
+    · exact hf M hM
+    rintro rfl
+    contradiction
+
 -- instance (priority := 100) [h : IsSemisimple R L] :
 --     ComplementedLattice (LieIdeal R L) where
 --       exists_isCompl := _
@@ -214,7 +246,26 @@ instance (priority := 100) isSemisimple_of_isSimple [h : IsSimple R L] :
 
 lemma exists_unique_sum [IsSemisimple R L] (x : L) :
     ∃! a : {I : LieIdeal R L // IsAtom I} →₀ L, a.sum (fun _ ↦ id) = x ∧ ∀ I, a I ∈ I.1 := by
-  sorry
+  have hx : x ∈ (⊤ : LieIdeal R L) := trivial
+  rw [← IsSemisimple.spanning] at hx
+  obtain ⟨T, hT, f, rfl, hf⟩ := Submodule.exists_sum_of_mem_sSup _ _ hx
+  classical
+  let a : {I : LieIdeal R L // IsAtom I} →₀ L :=
+  { toFun := fun I ↦ if (I : Submodule R L) ∈ T then f I else 0
+    support := (T.preimage ?coe ?inj).filter fun I ↦ f I ≠ 0
+    mem_support_toFun := ?cond }
+  case coe => exact fun I ↦ I
+  case cond => intro I; simp
+  case inj =>
+   intro I hI J hJ hIJ
+   ext
+   rw [SetLike.ext_iff] at hIJ
+   apply hIJ
+  refine ⟨a, ?_, ?_⟩
+  · sorry
+  · intro b hb
+    ext ⟨I, hI⟩
+    sorry
 
 lemma _root_.LieIdeal.sSup_inter [IsSemisimple R L] (S T : Set (LieIdeal R L))
     (hS : S ⊆ {I | IsAtom I}) (hT : T ⊆ {I | IsAtom I}) :
