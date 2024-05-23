@@ -307,6 +307,7 @@ theorem mem_of_span_eq_top_of_smul_pow_mem (M' : Submodule R M) (s : Set R) (hs 
 
 variable {M' : Type w} [AddCommMonoid M'] [Module R M']
 
+@[simp]
 theorem map_smul'' (f : M →ₗ[R] M') : (I • N).map f = I • N.map f :=
   le_antisymm
       (map_le_iff_le_comap.2 <|
@@ -319,6 +320,7 @@ theorem map_smul'' (f : M →ₗ[R] M') : (I • N).map f = I • N.map f :=
 #align submodule.map_smul'' Submodule.map_smul''
 
 open Pointwise in
+@[simp]
 theorem map_pointwise_smul (r : R) (N : Submodule R M) (f : M →ₗ[R] M') :
     (r • N).map f = r • N.map f :=
   by simp_rw [← ideal_span_singleton_smul, map_smul'']
@@ -1407,6 +1409,7 @@ lemma span_smul_eq
     Ideal.span s • N = s • N := by
   rw [← coe_set_smul, coe_span_smul]
 
+@[simp]
 theorem set_smul_top_eq_span (s : Set R) :
     s • ⊤ = Ideal.span s :=
   Eq.trans (span_smul_eq s ⊤).symm <|
