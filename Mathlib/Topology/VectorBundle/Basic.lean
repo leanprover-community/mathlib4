@@ -89,7 +89,7 @@ variable [AddCommMonoid F] [Module R F] [∀ x, AddCommMonoid (E x)] [∀ x, Mod
 /-- A fiberwise linear inverse to `e`. -/
 @[simps!]
 protected def symmₗ (e : Pretrivialization F (π F E)) [e.IsLinear R] (b : B) : F →ₗ[R] E b := by
-  refine' IsLinearMap.mk' (e.symm b) _
+  refine IsLinearMap.mk' (e.symm b) ?_
   by_cases hb : b ∈ e.baseSet
   · exact (((e.linear R hb).mk' _).inverse (e.symm b) (e.symm_apply_apply_mk hb) fun v ↦
       congr_arg Prod.snd <| e.apply_mk_symm hb v).isLinear
@@ -433,7 +433,7 @@ def continuousLinearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B)
     cont := by
       dsimp
       rw [e.coe_linearMapAt b]
-      refine' continuous_if_const _ (fun hb => _) fun _ => continuous_zero
+      refine continuous_if_const _ (fun hb => ?_) fun _ => continuous_zero
       exact (e.continuousOn.comp_continuous (FiberBundle.totalSpaceMk_inducing F E b).continuous
         fun x => e.mem_source.mpr hb).snd }
 #align trivialization.continuous_linear_map_at Trivialization.continuousLinearMapAt

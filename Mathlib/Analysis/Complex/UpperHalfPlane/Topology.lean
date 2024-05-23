@@ -65,7 +65,7 @@ instance : LocPathConnectedSpace ℍ :=
   locPathConnected_of_isOpen <| isOpen_lt continuous_const Complex.continuous_im
 
 instance : NoncompactSpace ℍ := by
-  refine' ⟨fun h => _⟩
+  refine ⟨fun h => ?_⟩
   have : IsCompact (Complex.im ⁻¹' Ioi 0) := isCompact_iff_isCompact_univ.2 h
   replace := this.isClosed.closure_eq
   rw [closure_preimage_im, closure_Ioi, Set.ext_iff] at this
