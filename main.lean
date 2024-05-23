@@ -128,11 +128,9 @@ theorem bonjour' (f : ℕ → (∀ n, X n) → ℝ≥0∞) (ε : ℝ≥0∞) (k 
       exact mf n
       simp
     · have : ¬k + 1 ≤ N n := fun h' ↦ h <| le_trans k.le_succ h'
-      simp [F]
-      rw [Finset.Icc_eq_empty h, Finset.Icc_eq_empty this, lmarginal_eq (hcte n),
-        lmarginal_eq (hcte n)]
-      · simp [h]
-      · exact disjoint_empty_right _
+      simp only [F]
+      rw [Finset.Icc_eq_empty h, Finset.Icc_eq_empty this,
+        lmarginal_eq (hcte n) (disjoint_empty_right _), lmarginal_eq (hcte n) (by simp [h])]
   have F_le : ∀ n x, F n x ≤ bound := by
     intro n x
     rw [← lmarginal_const (μ := μ) (s := Finset.Icc (k + 1) (N n)) bound x]
@@ -152,30 +150,23 @@ theorem bonjour' (f : ℕ → (∀ n, X n) → ℝ≥0∞) (ε : ℝ≥0∞) (k 
     l (Function.update (Function.updateFinset x _ y) k xₐ) ∂μ k := by
     simpa [lmarginal_singleton] using le_int_l
   let x_ : ∀ n, X n := Classical.ofNonempty
-  have : ∃ x', ε ≤ l (Function.update
-      (Function.updateFinset x_ _ y) k x') := by
+  have : ∃ x', ε ≤ l (Function.update (Function.updateFinset x_ _ y) k x') := by
     simp_rw [lmarginal_singleton] at le_int_l
     apply ge_of_int (le_int_l x_)
     apply ne_top_of_le_ne_top fin_bound
     rw [← mul_one bound, ← measure_univ (μ := μ k), ← lintegral_const]
-    apply lintegral_mono
-    intro y
-    apply le_of_tendsto' (tendstoF _)
-    simp [F_le]
+    exact lintegral_mono <| fun y ↦ le_of_tendsto' (tendstoF _) <| fun _ ↦ F_le _ _
   rcases this with ⟨x', hx'⟩
-  use x'
-  intro x n
+  refine ⟨x', fun x n ↦ ?_⟩
   have := le_trans hx' ((anti _).le_of_tendsto (tendstoF _) n)
   have aux : F n (Function.update
       (Function.updateFinset x_ (Finset.Ico 0 k) y) k x') =
       F n (Function.update
       (Function.updateFinset x (Finset.Ico 0 k) y) k x') := by
-    apply dependsOn_empty (f := fun x ↦ F n (Function.update
-      (Function.updateFinset x (Finset.Ico 0 k) y) k x'))
     simp only [F]
-    have := lmarginal_dependsOn (μ := μ) (Finset.Icc (k + 1) (N n)) (hcte n)
-    have := update_dependsOn this k x'
-    have := updateFinset_dependsOn this (Finset.Ico 0 k) y
+    have := updateFinset_dependsOn
+      (update_dependsOn (lmarginal_dependsOn (μ := μ) (Finset.Icc (k + 1) (N n)) (hcte n)) k x')
+      (Finset.Ico 0 k) y
     have aux : (Finset.Icc 0 (N n) \ Finset.Icc (k + 1) (N n)).erase k \ Finset.Ico 0 k = ∅ := by
       ext i
       simp
@@ -184,116 +175,141 @@ theorem bonjour' (f : ℕ → (∀ n, X n) → ℝ≥0∞) (ε : ℝ≥0∞) (k 
       by_contra!
       rw [← Nat.succ_le] at this
       linarith [h2, h3 this]
-    rwa [aux] at this
+    rw [aux] at this
+    apply dependsOn_empty this
   simp [F] at aux
   rw [aux] at this
   exact this
 
-def key (init : X 0) (ind : (k : ℕ) → ((i : Finset.Icc 0 k) → X i) → X (k + 1)) :
+def key (init : X 0) (ind : (k : ℕ) → ((i : Finset.Ico 0 (k + 1)) → X i) → X (k + 1)) :
     (k : ℕ) → X k
   | 0 => init
   | m + 1 => by
     use ind m (fun i ↦ key init ind i)
     decreasing_by
-    exact Nat.lt_succ_iff.2 (Finset.mem_Icc.1 i.2).2
+    exact (Finset.mem_Ico.1 i.2).2
 
 example (a : ℝ≥0∞) (h : ¬0 < a) : a = 0 := nonpos_iff_eq_zero.1 <| not_lt.1 h
+
+lemma not_mem_symmDiff {s t : Finset ℕ} {x : ℕ} (h1 : x ∈ s) (h2 : x ∈ t) : x ∉ s ∆ t := by
+  intro h
+  rcases Finset.mem_symmDiff.1 h with h' | h'
+  · exact h'.2 h2
+  · exact h'.2 h1
+
+lemma not_mem_symmDiff' {s t : Finset ℕ} {x : ℕ} (h1 : x ∉ s) (h2 : x ∉ t) : x ∉ s ∆ t := by
+  intro h
+  rcases Finset.mem_symmDiff.1 h with h' | h'
+  · exact h1 h'.1
+  · exact h2 h'.1
 
 open scoped Classical in
 theorem firstLemma (A : ℕ → Set (∀ n, X n)) (A_mem : ∀ n, A n ∈ cylinders X) (A_anti : Antitone A)
     (A_inter : ⋂ n, A n = ∅) :
-    Tendsto (kolContent (isProjectiveMeasureFamily_prod μ) ∘ A) atTop (𝓝 0) := by
+    Tendsto (fun n ↦ kolContent (isProjectiveMeasureFamily_prod μ) (A n)) atTop (𝓝 0) := by
   have A_cyl := fun n ↦ useful (A n) (A_mem n)
-  choose NA SA mSA A_eq using A_cyl
+  choose N S mS A_eq using A_cyl
   set μ_proj := isProjectiveMeasureFamily_prod μ
-  let χA := fun n ↦ (A n).indicator (1 : (∀ n, X n) → ℝ≥0∞)
-  have concl : ∀ x, (kolContent μ_proj) ∘ A =
-      fun n ↦ (∫⋯∫⁻_Finset.Icc 0 (NA n), χA n ∂μ) x := by
+  let χ := fun n ↦ (A n).indicator (1 : (∀ n, X n) → ℝ≥0∞)
+  have concl : ∀ x, (fun n ↦ kolContent μ_proj (A n)) =
+      fun n ↦ (∫⋯∫⁻_Finset.Icc 0 (N n), χ n ∂μ) x := by
     intro x
     ext n
-    simp [A_eq, Function.updateFinset_def, χA]
-    simp_rw [eq μ (Finset.Icc 0 (NA n)) (SA n) (mSA n) x]
-  have mχA : ∀ n, Measurable (χA n) := by
+    simp only [χ, A_eq]
+    simp_rw [eq μ (Finset.Icc 0 (N n)) (S n) (mS n) x]
+  have mχ : ∀ n, Measurable (χ n) := by
     intro n
-    simp [χA, A_eq]
-    have : (1 : (∀ n, X n) → ℝ≥0∞) = fun x ↦ 1 := rfl
-    rw [this, measurable_indicator_const_iff]
-    apply measurableSet_cylinder
-    exact mSA n
-  have χA_dep : ∀ n, DependsOn (χA n) (Finset.Icc 0 (NA n)) := by
+    simp only [χ, A_eq]
+    exact (measurable_indicator_const_iff 1).2 <| measurableSet_cylinder _ _ (mS n)
+  have χ_dep : ∀ n, DependsOn (χ n) (Finset.Icc 0 (N n)) := by
     intro n
-    simp [χA, A_eq]
+    simp only [χ, A_eq]
     apply cyl_dependsOn
-  have anti : Antitone χA := by
+  have lma_const : ∀ k x y z,
+      (fun n ↦(∫⋯∫⁻_Finset.Icc k (N n), χ n ∂μ) (Function.updateFinset x (Finset.Ico 0 k) z)) =
+      fun n ↦ (∫⋯∫⁻_Finset.Icc k (N n), χ n ∂μ) (Function.updateFinset y (Finset.Ico 0 k) z) := by
+    intro k x y z; ext n
+    have := lmarginal_dependsOn (μ := μ) (Finset.Icc k (N n)) (χ_dep n)
+    have := updateFinset_dependsOn this (Finset.Ico 0 k) z
+    have aux : (Finset.Icc 0 (N n) \ Finset.Icc k (N n)) \ Finset.Ico 0 k = ∅ := by
+      ext i
+      simp
+      intro h1 h2
+      by_contra!
+      linarith [h1, h2 this]
+    apply this
+    rw [aux]
+    simp
+  have anti : Antitone χ := by
     intro m n hmn y
-    simp [χA]
+    simp only [χ]
     apply indicator_le
     intro a ha
     simp [A_anti hmn ha]
-  have anti_lma : ∀ x, Antitone fun n ↦ (∫⋯∫⁻_Finset.Icc 0 (NA n), χA n ∂μ) x := by
-    intro x m n hmn
+  have anti_lma : ∀ k x, Antitone fun n ↦ (∫⋯∫⁻_Finset.Icc k (N n), χ n ∂μ) x := by
+    intro k x m n hmn
     simp
-    rw [lmarginal_eq'' (χA_dep n) (mχA n) (Finset.Icc 0 (NA n))
-        ((Finset.Icc 0 (NA n)) ∪ (Finset.Icc 0 (NA m)))]
-    rw [lmarginal_eq'' (χA_dep m) (mχA m) (Finset.Icc 0 (NA m))
-        ((Finset.Icc 0 (NA n)) ∪ (Finset.Icc 0 (NA m)))]
-    exact lmarginal_mono (anti hmn) x
-    rw [symmDiff_def, disjoint_sup_right]
-    constructor
-    · rw [Finset.sdiff_eq_empty_iff_subset.2]
-      exact Finset.disjoint_empty_right _
-      exact Finset.subset_union_right ..
-    · rw [Finset.union_sdiff_right, Finset.disjoint_iff_inter_eq_empty, ← Finset.inter_sdiff_assoc,
-        Finset.inter_comm, Finset.inter_sdiff_assoc]
+    rw [lmarginal_eq'' (χ_dep n) (mχ n) (Finset.Icc k (N n))
+        ((Finset.Icc k (N n)) ∪ (Finset.Icc k (N m))),
+      lmarginal_eq'' (χ_dep m) (mχ m) (Finset.Icc k (N m))
+        ((Finset.Icc k (N n)) ∪ (Finset.Icc k (N m)))]
+    · exact lmarginal_mono (anti hmn) x
+    · rw [Finset.disjoint_iff_inter_eq_empty]
+      ext i
       simp
-    rw [symmDiff_def, disjoint_sup_right]
-    constructor
-    · rw [Finset.sdiff_eq_empty_iff_subset.2]
-      exact Finset.disjoint_empty_right _
-      exact Finset.subset_union_left ..
-    · rw [Finset.union_sdiff_left, Finset.disjoint_iff_inter_eq_empty, ← Finset.inter_sdiff_assoc,
-        Finset.inter_comm, Finset.inter_sdiff_assoc]
+      by_cases h : k ≤ i
+      · exact fun h' ↦ not_mem_symmDiff (Finset.mem_Icc.2 ⟨h, h'⟩)
+          (Finset.mem_union_right _ (Finset.mem_Icc.2 ⟨h, h'⟩))
+      · refine fun _ ↦ not_mem_symmDiff' ?_ ?_
+        · exact fun h' ↦ h (Finset.mem_Icc.1 h').1
+        · exact Finset.not_mem_union.2
+            ⟨fun h' ↦ h (Finset.mem_Icc.1 h').1, fun h' ↦ h (Finset.mem_Icc.1 h').1⟩
+    · rw [Finset.disjoint_iff_inter_eq_empty]
+      ext i
       simp
-  have : ∀ x, ∃ l, Tendsto (fun n ↦ (∫⋯∫⁻_Finset.Icc 0 (NA n), χA n ∂μ) x) atTop (𝓝 l) := by
-    intro x
-    have := tendsto_of_antitone <| anti_lma x
+      by_cases h : k ≤ i
+      · exact fun h' ↦ not_mem_symmDiff (Finset.mem_Icc.2 ⟨h, h'⟩)
+          (Finset.mem_union_left _ (Finset.mem_Icc.2 ⟨h, h'⟩))
+      · refine fun _ ↦ not_mem_symmDiff' ?_ ?_
+        · exact fun h' ↦ h (Finset.mem_Icc.1 h').1
+        · exact Finset.not_mem_union.2
+            ⟨fun h' ↦ h (Finset.mem_Icc.1 h').1, fun h' ↦ h (Finset.mem_Icc.1 h').1⟩
+  have : ∀ k x, ∃ l, Tendsto (fun n ↦ (∫⋯∫⁻_Finset.Icc k (N n), χ n ∂μ) x) atTop (𝓝 l) := by
+    intro k x
+    have := tendsto_of_antitone <| anti_lma k x
     rcases this with h | h
     · rw [OrderBot.atBot_eq] at h
       exact ⟨0, h.mono_right <| pure_le_nhds 0⟩
     · exact h
   choose l hl using this
-  have l_const : ∀ x y, l x = l y := by
+  have l_const : ∀ x y, l 0 x = l 0 y := by
     intro x y
-    have lol : (fun n ↦ (∫⋯∫⁻_Finset.Icc 0 (NA n), χA n ∂μ) x) =
-        fun n ↦ (∫⋯∫⁻_Finset.Icc 0 (NA n), χA n ∂μ) y := by
-      ext n
-      apply lmarginal_dependsOn (Finset.Icc 0 (NA n)) (χA_dep n)
-      simp
-    have := hl x
-    rw [lol] at this
-    exact tendsto_nhds_unique this (hl y)
-  have : ∃ l', ∀ x, l x = l' := by
-    use l Classical.ofNonempty
+    have := hl 0 x
+    have aux := lma_const 0 x y Classical.ofNonempty
+    rw [Finset.Ico_self 0] at aux
+    simp [Function.updateFinset] at aux
+    rw [aux] at this
+    exact tendsto_nhds_unique this (hl 0 _)
+  have : ∃ l', ∀ x, l 0 x = l' := by
+    use l 0 Classical.ofNonempty
     exact fun x ↦ l_const ..
-  rcases this with ⟨l', hl'⟩
-  have : ∀ n x, l' ≤ (∫⋯∫⁻_Finset.Icc 0 (NA n), χA n ∂μ) x := by
+  choose l' hl' using this
+  have hpos : ∀ x n, l' ≤ (∫⋯∫⁻_Finset.Icc 0 (N n), χ n ∂μ) x := by
+    intro x n
+    exact hl' x ▸ ((anti_lma 0 _).le_of_tendsto (hl 0 _)) n
+  have χ_le : ∀ n x, χ n x ≤ 1 := by
     intro n x
-    exact hl' x ▸ ((anti_lma x).le_of_tendsto (hl x)) n
-  have χA_le : ∀ n x, χA n x ≤ 1 := by
-    intro n x
-    simp [χA]
+    simp [χ]
     apply Set.indicator_le
     simp
-  have hpos : ∀ y x n,
-      l' ≤ (∫⋯∫⁻_Finset.Icc 0 (NA n), χA n ∂μ) (Function.updateFinset x (Finset.Ico 0 0) y) := by
-    exact fun _ x n ↦ this n x
-  rcases bonjour' μ χA anti l' 0 NA χA_dep mχA 1 χA_le (by norm_num)
-    Classical.ofNonempty (hpos (Classical.ofNonempty)) with ⟨init, hinit⟩
+  rcases bonjour' μ χ l' 0 N χ_dep mχ 1 χ_le (by norm_num)
+    Classical.ofNonempty (l 1) (anti_lma 1) (hl 1) hpos with ⟨init, hinit⟩
   simp [Function.updateFinset_def] at hinit
   choose! ind hind using
-    fun k y h ↦ bonjour' μ χA anti l' (k + 1) NA χA_dep mχA 1 χA_le (by norm_num) y h
+    fun k y h ↦ bonjour' μ χ l' (k + 1) N χ_dep mχ 1 χ_le (by norm_num)
+      y (l (k + 2)) (anti_lma (k + 2)) (hl (k + 2)) h
   let z := key init ind
-  have crucial : ∀ k x n, l' ≤ (∫⋯∫⁻_Finset.Icc (k + 1) (NA n), χA n ∂μ)
+  have crucial : ∀ k x n, l' ≤ (∫⋯∫⁻_Finset.Icc (k + 1) (N n), χ n ∂μ)
       (Function.updateFinset x (Finset.Icc 0 k) (fun (i : Finset.Icc 0 k) ↦ z i)) := by
     intro k
     induction k with
@@ -330,14 +346,14 @@ theorem firstLemma (A : ℕ → Set (∀ n, X n)) (A_mem : ∀ n, A n ∈ cylind
   by_cases l'_eq : 0 < l'
   · have incr : ∀ n, z ∈ A n := by
       intro n
-      have : χA n z = (∫⋯∫⁻_Finset.Icc (NA n + 1) (NA n), χA n ∂μ)
-          (Function.updateFinset z (Finset.Icc 0 (NA n)) (fun i ↦ z i)) := by
+      have : χ n z = (∫⋯∫⁻_Finset.Icc (N n + 1) (N n), χ n ∂μ)
+          (Function.updateFinset z (Finset.Icc 0 (N n)) (fun i ↦ z i)) := by
         rw [Finset.Icc_eq_empty, lmarginal_empty]
         congr
         ext i
-        by_cases h : i ∈ Finset.Icc 0 (NA n) <;> simp [Function.updateFinset, h]
+        by_cases h : i ∈ Finset.Icc 0 (N n) <;> simp [Function.updateFinset, h]
         simp
-      have : 0 < χA n z := by
+      have : 0 < χ n z := by
         rw [this]
         exact lt_of_lt_of_le l'_eq (crucial _ _ _)
       exact mem_of_indicator_ne_zero (ne_of_lt this).symm
@@ -345,7 +361,7 @@ theorem firstLemma (A : ℕ → Set (∀ n, X n)) (A_mem : ∀ n, A n ∈ cylind
   · have : l' = 0 := nonpos_iff_eq_zero.1 <| not_lt.1 l'_eq
     rw [concl Classical.ofNonempty]
     rw [← this, ← hl' Classical.ofNonempty]
-    exact hl _
+    exact hl _ _
 
 
 theorem prod_meas (S : Finset ℕ) (a : ℕ) (ha : a ∈ S) (μ : (n : S) → Measure (X n))
