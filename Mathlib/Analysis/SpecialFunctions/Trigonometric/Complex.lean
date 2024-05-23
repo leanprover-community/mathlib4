@@ -188,7 +188,7 @@ theorem cos_eq_iff_quadratic {z w : ℂ} :
     cos z = w ↔ exp (z * I) ^ 2 - 2 * w * exp (z * I) + 1 = 0 := by
   rw [← sub_eq_zero]
   field_simp [cos, exp_neg, exp_ne_zero]
-  refine' Eq.congr _ rfl
+  refine Eq.congr ?_ rfl
   ring
 #align complex.cos_eq_iff_quadratic Complex.cos_eq_iff_quadratic
 
@@ -198,7 +198,7 @@ theorem cos_surjective : Function.Surjective cos := by
     rcases exists_quadratic_eq_zero one_ne_zero
         ⟨_, (cpow_nat_inv_pow _ two_ne_zero).symm.trans <| pow_two _⟩ with
       ⟨w, hw⟩
-    refine' ⟨w, _, hw⟩
+    refine ⟨w, ?_, hw⟩
     rintro rfl
     simp only [zero_add, one_ne_zero, mul_zero] at hw
   refine' ⟨log w / I, cos_eq_iff_quadratic.2 _⟩

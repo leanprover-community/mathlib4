@@ -290,7 +290,7 @@ theorem iSup_induction' {ι : Sort*} (S : ι → Submonoid M) {C : ∀ x, (x ∈
     (mem : ∀ (i), ∀ (x) (hxS : x ∈ S i), C x (mem_iSup_of_mem i hxS)) (one : C 1 (one_mem _))
     (mul : ∀ x y hx hy, C x hx → C y hy → C (x * y) (mul_mem ‹_› ‹_›)) {x : M}
     (hx : x ∈ ⨆ i, S i) : C x hx := by
-  refine' Exists.elim (_ : ∃ Hx, C x Hx) fun (hx : x ∈ ⨆ i, S i) (hc : C x hx) => hc
+  refine Exists.elim (?_ : ∃ Hx, C x Hx) fun (hx : x ∈ ⨆ i, S i) (hc : C x hx) => hc
   refine' @iSup_induction _ _ ι S (fun m => ∃ hm, C m hm) _ hx (fun i x hx => _) _ fun x y => _
   · exact ⟨_, mem _ _ hx⟩
   · exact ⟨_, one⟩
@@ -781,7 +781,7 @@ theorem ofMul_image_powers_eq_multiples_ofMul [Monoid M] {x : M} :
     use n
     simpa [← ofMul_pow, hy1]
   · rintro ⟨n, hn⟩
-    refine' ⟨x ^ n, ⟨n, rfl⟩, _⟩
+    refine ⟨x ^ n, ⟨n, rfl⟩, ?_⟩
     rwa [ofMul_pow]
 #align of_mul_image_powers_eq_multiples_of_mul ofMul_image_powers_eq_multiples_ofMul
 

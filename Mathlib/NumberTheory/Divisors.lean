@@ -559,7 +559,7 @@ theorem image_div_divisors_eq_divisors (n : ℕ) :
   · rw [mem_image]
     rintro ⟨x, hx1, hx2⟩
     rw [mem_divisors] at *
-    refine' ⟨_, hn⟩
+    refine ⟨?_, hn⟩
     rw [← hx2]
     exact div_dvd_of_dvd hx1.1
   · rw [mem_divisors, mem_image]

@@ -340,7 +340,7 @@ theorem finSuccEquiv_comp_C_eq_C {R : Type u} [CommSemiring R] (n : ℕ) :
     (↑(MvPolynomial.finSuccEquiv R n).symm : Polynomial (MvPolynomial (Fin n) R) →+* _).comp
         (Polynomial.C.comp MvPolynomial.C) =
       (MvPolynomial.C : R →+* MvPolynomial (Fin n.succ) R) := by
-  refine' RingHom.ext fun x => _
+  refine RingHom.ext fun x => ?_
   rw [RingHom.comp_apply]
   refine'
     (MvPolynomial.finSuccEquiv R n).injective
@@ -454,7 +454,7 @@ theorem finSuccEquiv_support (f : MvPolynomial (Fin (n + 1)) R) :
     rw [← support_coeff_finSuccEquiv]
     simpa using hm
   · rintro ⟨m, h, rfl⟩
-    refine' ⟨tail m, _⟩
+    refine ⟨tail m, ?_⟩
     rwa [← coeff, zero_apply, ← mem_support_iff, support_coeff_finSuccEquiv, cons_tail]
 #align mv_polynomial.fin_succ_equiv_support MvPolynomial.finSuccEquiv_support
 
