@@ -498,6 +498,10 @@ protected def pointwiseMulAction : MulAction α (AddSubgroup A) where
 
 scoped[Pointwise] attribute [instance] AddSubgroup.pointwiseMulAction
 
+theorem pointwise_smul_def {a : α} (S : AddSubgroup A) :
+    a • S = S.map (DistribMulAction.toAddMonoidEnd _ _ a) :=
+  rfl
+
 @[simp]
 theorem coe_pointwise_smul (a : α) (S : AddSubgroup A) : ↑(a • S) = a • (S : Set A) :=
   rfl

@@ -486,6 +486,10 @@ theorem ker_liftQ_eq_bot (f : M →ₛₗ[τ₁₂] M₂) (h) (h' : ker f ≤ p)
   rw [ker_liftQ, le_antisymm h h', mkQ_map_self]
 #align submodule.ker_liftq_eq_bot Submodule.ker_liftQ_eq_bot
 
+theorem ker_liftQ_eq_bot' (f : M →ₛₗ[τ₁₂] M₂) (h : p = ker f) :
+    ker (p.liftQ f (le_of_eq h)) = ⊥ :=
+  ker_liftQ_eq_bot p f h.le h.ge
+
 /-- The correspondence theorem for modules: there is an order isomorphism between submodules of the
 quotient of `M` by `p`, and submodules of `M` larger than `p`. -/
 def comapMkQRelIso : Submodule R (M ⧸ p) ≃o { p' : Submodule R M // p ≤ p' } where

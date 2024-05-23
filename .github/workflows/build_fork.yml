@@ -196,6 +196,7 @@ jobs:
           rm -rf .lake/packages/proofwidgets/.lake/build/ir
 
       - name: get cache
+        id: get
         run: |
           lake exe cache clean
           lake exe cache get
@@ -209,9 +210,10 @@ jobs:
             bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
 
       - name: upload cache
-        # We only upload the cache if the build ran (either succeeding or failing),
-        # but not if it was skipped.
-        if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
+        # We only upload the cache if the build started (whether succeeding, failing, or cancelled)
+        # but not if any earlier step failed or was cancelled.
+        # See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Some.20files.20not.20found.20in.20the.20cache/near/407183836
+        if: ${{ always() && steps.get.outcome == 'success' }}
         run: |
           # TODO: this is not doing anything currently, and needs to be integrated with put-unpacked
           # lake exe cache commit || true
@@ -274,10 +276,10 @@ jobs:
             ##  we exploit `lake`s replay feature: since the cache is present, running
             ##  `lake build` will reproduce all the outputs without having to recompute
             lake build Mathlib Archive Counterexamples |
-            ##  we filter out the output lines that begin with `[xx/yy]`, where xx, yy
-            ##  are either numbers or ?
-            ##  we keep the rest, which are actual outputs of the files
-            awk '!($1 ~ "^[[?0-9]*/[?0-9]*]"){ print $0 }')"
+            ##  we filter out the output lines that begin with `✔ [xx/yy]`, where xx, yy
+            ##  are either numbers or ?, and the "Build completed successfully." message.
+            ##  We keep the rest, which are actual outputs of the files
+            awk '!($0 ~ "^\\s*✔ \\[[?0-9]*/[?0-9]*\\]" || $0 == "Build completed successfully."){ print $0 }')"
           if [ -n "${buildMsgs}" ]
           then
             printf $'%s\n' "${buildMsgs}"
