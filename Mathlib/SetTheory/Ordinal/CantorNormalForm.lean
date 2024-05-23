@@ -138,7 +138,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- Every coefficient in a Cantor normal form is positive. -/
 theorem CNF_lt_snd {b o : Ordinal.{u}} {x : Ordinal × Ordinal} : x ∈ CNF b o → 0 < x.2 := by
-  refine' CNFRec b (by simp) (fun o ho IH ↦ _) o
+  refine CNFRec b (by simp) (fun o ho IH ↦ ?_) o
   rw [CNF_ne_zero ho]
   rintro (h | ⟨_, h⟩)
   · exact div_opow_log_pos b ho
@@ -168,7 +168,7 @@ theorem CNF_sorted (b o : Ordinal) : ((CNF b o).map Prod.fst).Sorted (· > ·) :
     · cases' lt_or_le o b with hob hbo
       · simp only [CNF_of_lt ho hob, gt_iff_lt, map_cons, map, sorted_singleton]
       · rw [CNF_ne_zero ho, map_cons, sorted_cons]
-        refine' ⟨fun a H ↦ _, IH⟩
+        refine ⟨fun a H ↦ ?_, IH⟩
         rw [mem_map] at H
         rcases H with ⟨⟨a, a'⟩, H, rfl⟩
         exact (CNF_fst_le_log H).trans_lt (log_mod_opow_log_lt_log_self hb ho hbo)
