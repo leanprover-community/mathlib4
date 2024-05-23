@@ -798,16 +798,17 @@ theorem coeFn_le (f g : Lp.simpleFunc G p μ) : (f : α → G) ≤ᵐ[μ] g ↔ 
   rw [← Subtype.coe_le_coe, ← Lp.coeFn_le]
 #align measure_theory.Lp.simple_func.coe_fn_le MeasureTheory.Lp.simpleFunc.coeFn_le
 
-instance instCovariantClassLE :
+instance instAddLeftMono :
     AddLeftMono (Lp.simpleFunc G p μ) := by
   refine ⟨fun f g₁ g₂ hg₁₂ => ?_⟩
+  dsimp at hg₁₂ ⊢
   rw [← Lp.simpleFunc.coeFn_le] at hg₁₂ ⊢
   have h_add_1 : ((f + g₁ : Lp.simpleFunc G p μ) : α → G) =ᵐ[μ] (f : α → G) + g₁ := Lp.coeFn_add _ _
   have h_add_2 : ((f + g₂ : Lp.simpleFunc G p μ) : α → G) =ᵐ[μ] (f : α → G) + g₂ := Lp.coeFn_add _ _
   filter_upwards [h_add_1, h_add_2, hg₁₂] with _ h1 h2 h3
   rw [h1, h2, Pi.add_apply, Pi.add_apply]
   exact add_le_add le_rfl h3
-#align measure_theory.Lp.simple_func.has_le.le.covariant_class MeasureTheory.Lp.simpleFunc.instCovariantClassLE
+#align measure_theory.Lp.simple_func.has_le.le.covariant_class MeasureTheory.Lp.simpleFunc.instAddLeftMono
 
 variable (p μ G)
 
