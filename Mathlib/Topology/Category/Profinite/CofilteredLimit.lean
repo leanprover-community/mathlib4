@@ -32,6 +32,8 @@ open CategoryTheory
 
 open CategoryTheory.Limits
 
+attribute [local instance] ConcreteCategory.instFunLike -- TODO remove this?
+
 universe u v
 
 variable {J : Type v} [SmallCategory J] [IsCofiltered J] {F : J ⥤ Profinite.{max u v}} (C : Cone F)

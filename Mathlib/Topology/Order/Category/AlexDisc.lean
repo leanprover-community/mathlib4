@@ -45,6 +45,8 @@ def of (α : Type*) [TopologicalSpace α] [AlexandrovDiscrete α] : AlexDisc := 
 @[simp] lemma forgetToTop_of (α : Type*) [TopologicalSpace α] [AlexandrovDiscrete α] :
   (forget₂ AlexDisc TopCat).obj (of α) = TopCat.of α := rfl
 
+attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike -- TODO remove this?
+
 /-- Constructs an equivalence between preorders from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : AlexDisc} (e : α ≃ₜ β) : α ≅ β where

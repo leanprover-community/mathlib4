@@ -31,6 +31,7 @@ universe u v w
 
 open CategoryTheory Function
 
+attribute [local instance] ConcreteCategory.instFunLike -- TODO remove this?
 namespace Profinite
 
 set_option linter.uppercaseLean3 false

@@ -77,6 +77,8 @@ instance : ConcreteCategory MeasCat := by
 instance : Inhabited MeasCat :=
   ⟨MeasCat.of Empty⟩
 
+attribute [local instance] ConcreteCategory.instFunLike -- TODO remove this?
+
 /-- `Measure X` is the measurable space of measures over the measurable space `X`. It is the
 weakest measurable space, s.t. `fun μ ↦ μ s` is measurable for all measurable sets `s` in `X`. An
 important purpose is to assign a monadic structure on it, the Giry monad. In the Giry monad,

@@ -34,6 +34,8 @@ universe u
 
 open CategoryTheory Limits FintypeCat Opposite TopologicalSpace
 
+attribute [local instance] ConcreteCategory.instFunLike -- TODO remove this?
+
 open scoped Classical
 
 namespace Profinite

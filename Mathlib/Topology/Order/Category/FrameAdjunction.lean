@@ -76,6 +76,8 @@ lemma isOpen_iff (U : Set (PT L)) : IsOpen U ↔ ∃ u : L, {x | x u} = U := Iff
 
 end PT
 
+attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike -- TODO remove this?
+
 /-- The covariant functor `pt` from the category of locales to the category of
 topological spaces, which sends a locale `L` to the topological space `PT L` of homomorphisms
 from `L` to `Prop` and a locale homomorphism `f` to a continuous function between the spaces

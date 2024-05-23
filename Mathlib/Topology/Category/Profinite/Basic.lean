@@ -35,6 +35,8 @@ profinite
 
 -/
 
+attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike -- TODO remove this?
+
 set_option linter.uppercaseLean3 false
 
 universe v u

@@ -32,6 +32,8 @@ introduced.
 
 universe v u
 
+attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike -- TODO remove this?
+
 open CategoryTheory
 
 /-- The type of Compact Hausdorff topological spaces. -/
