@@ -74,12 +74,12 @@ variable (R M : Type u) [Ring R] [AddCommGroup M] [Module R M] in
 /-- A finitely presented module is isomorphic to the quotient of a finite free module by a finitely
 generated submodule. -/
 theorem Module.FinitePresentation.equiv_quotient [fp : Module.FinitePresentation R M] :
-    ∃ (L : Type u) (_ : AddCommGroup L) (_ : Module R L) (_ : Module.Free R L)
-      (_ : Module.Finite R L) (K : Submodule R L) (_ : K.FG), Nonempty (M ≃ₗ[R] L ⧸ K) := by
+    ∃ (L : Type u) (_ : AddCommGroup L) (_ : Module R L) (K : Submodule R L) (_ : M ≃ₗ[R] L ⧸ K),
+      Module.Free R L ∧ Module.Finite R L ∧ K.FG := by
   obtain ⟨ι, ⟨hι₁, hι₂⟩⟩ := fp
-  use ι →₀ R, inferInstance, inferInstance, inferInstance, inferInstance
-  use LinearMap.ker (Finsupp.total { x // x ∈ ι } M R Subtype.val), hι₂
-  refine ⟨(LinearMap.quotKerEquivOfSurjective _ ?_).symm⟩
+  use ι →₀ R, inferInstance, inferInstance
+  use LinearMap.ker (Finsupp.total { x // x ∈ ι } M R Subtype.val)
+  refine ⟨(LinearMap.quotKerEquivOfSurjective _ ?_).symm, inferInstance, inferInstance, hι₂⟩
   apply LinearMap.range_eq_top.mp
   simpa only [Finsupp.range_total, Subtype.range_coe_subtype, Finset.setOf_mem]
 
