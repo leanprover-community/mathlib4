@@ -1,7 +1,7 @@
 import Lean.Elab.GuardMsgs
 import Mathlib.Mathport.Rename
-import Mathlib.Tactic.Linter.HashCommandLinter
 import Mathlib.Tactic.AdaptationNote
+import Mathlib.Tactic.Linter.HashCommandLinter
 
 section ignored_commands
 theorem fo₁ : True := .intro

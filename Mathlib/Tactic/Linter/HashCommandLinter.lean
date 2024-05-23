@@ -74,14 +74,14 @@ def hashCommandLinter : Linter where run := withSetOptionIn' fun stx => do
     -- we check that the module is either not in `test` or, is `test.HashCommandLinter`
     (mod.getD 0 default != `test || (mod == [`test, `HashCommandLinter]))
     then
-    match stx.getHead? with
-    | some sa =>
+    if let some sa := stx.getHead? then
       let a := sa.getAtomVal
       if (a.get ⟨0⟩ == '#' && ! allowed_commands.contains a) then
         let msg := m!"`#`-commands, such as '{a}', are not allowed in 'Mathlib'"
         if warningAsError.get (← getOptions) then
           logInfoAt sa (msg ++ " [linter.hashCommand]")
         else Linter.logLint linter.hashCommand sa msg
-    | none => return
 
 initialize addLinter hashCommandLinter
+
+end HashCommandLinter
