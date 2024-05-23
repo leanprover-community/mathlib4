@@ -106,7 +106,7 @@ theorem uniformEquicontinuous_of_continuity_modulus {ι : Type*} [PseudoMetricSp
   rw [Metric.uniformEquicontinuous_iff]
   intro ε ε0
   rcases tendsto_nhds_nhds.1 b_lim ε ε0 with ⟨δ, δ0, hδ⟩
-  refine' ⟨δ, δ0, fun x y hxy i => _⟩
+  refine ⟨δ, δ0, fun x y hxy i => ?_⟩
   calc
     dist (F i x) (F i y) ≤ b (dist x y) := H x y i
     _ ≤ |b (dist x y)| := le_abs_self _

@@ -652,7 +652,7 @@ theorem continuousOn_symm (e : Trivialization F (π F E)) :
       TotalSpace.mk z.1 (e.symm z.1 z.2) = e.toPartialHomeomorph.symm z := by
     rintro x ⟨hx : x.1 ∈ e.baseSet, _⟩
     rw [e.mk_symm hx]
-  refine' ContinuousOn.congr _ this
+  refine ContinuousOn.congr ?_ this
   rw [← e.target_eq]
   exact e.toPartialHomeomorph.continuousOn_symm
 #align trivialization.continuous_on_symm Trivialization.continuousOn_symm
@@ -687,7 +687,7 @@ def coordChange (e₁ e₂ : Trivialization F proj) (b : B) (x : F) : F :=
 theorem mk_coordChange (e₁ e₂ : Trivialization F proj) {b : B} (h₁ : b ∈ e₁.baseSet)
     (h₂ : b ∈ e₂.baseSet) (x : F) :
     (b, e₁.coordChange e₂ b x) = e₂ (e₁.toPartialHomeomorph.symm (b, x)) := by
-  refine' Prod.ext _ rfl
+  refine Prod.ext ?_ rfl
   rw [e₂.coe_fst', ← e₁.coe_fst', e₁.apply_symm_apply' h₁]
   · rwa [e₁.proj_symm_apply' h₁]
   · rwa [e₁.proj_symm_apply' h₁]

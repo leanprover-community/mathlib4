@@ -37,7 +37,7 @@ theorem MonotoneOn.exists_monotone_extension (h : MonotoneOn f s) (hl : BddBelow
       have : IsGreatest (Iic x ∩ s) x := ⟨⟨right_mem_Iic, hx⟩, fun y hy => hy.1⟩
       rw [if_neg this.nonempty.not_disjoint,
         ((h.mono <| inter_subset_right _ _).map_isGreatest this).csSup_eq]
-    refine' ⟨g, fun x y hxy => _, hgs⟩
+    refine ⟨g, fun x y hxy => ?_, hgs⟩
     by_cases hx : Disjoint (Iic x) s <;> by_cases hy : Disjoint (Iic y) s <;>
       simp only [g, if_pos, if_neg, not_false_iff, *, refl]
     · rcases not_disjoint_iff_nonempty_inter.1 hy with ⟨z, hz⟩
