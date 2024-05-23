@@ -285,7 +285,7 @@ theorem objSupIsoProdEqLocus_inv_eq_iff {X : TopCat.{u}} (F : X.Sheaf CommRingCa
     simp only [← Functor.map_comp, ← op_comp, Category.assoc, homOfLE_comp, and_self]
   · rintro ⟨e₁, e₂⟩
     refine F.eq_of_locally_eq₂
-      (homOfLE (inf_le_right : U ⊓ W ≤ W)) (homOfLE (inf_le_right : V ⊓ W ≤ W)) ?_ _ _? ?_ _
+      (homOfLE (inf_le_right : U ⊓ W ≤ W)) (homOfLE (inf_le_right : V ⊓ W ≤ W)) ?_ _ _ ?_ ?_
     · rw [← inf_sup_right]
       exact le_inf e le_rfl
     · rw [← e₁, ← TopCat.Sheaf.objSupIsoProdEqLocus_inv_fst]

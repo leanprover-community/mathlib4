@@ -699,7 +699,7 @@ theorem integrable_of_continuousOn [CompleteSpace E] {I : Box ι} {f : ℝⁿ �
     refine mul_le_mul_of_nonneg_left ?_ this
     refine Hδ _ (TaggedPrepartition.tag_mem_Icc _ _) _ (TaggedPrepartition.tag_mem_Icc _ _) ?_
     rw [← add_halves δ]
-    refine (dist_triangle_left _ _ J.upper).trans (add_le_add (h₁.1 _ ?_ ?_) (h₂.1 _? ?_ _))
+    refine (dist_triangle_left _ _ J.upper).trans (add_le_add (h₁.1 _ ?_ ?_) (h₂.1 _ ?_ ?_))
     · exact Prepartition.biUnionIndex_mem _ hJ
     · exact Box.le_iff_Icc.1 (Prepartition.le_biUnionIndex _ hJ) J.upper_mem_Icc
     · rw [_root_.inf_comm] at hJ

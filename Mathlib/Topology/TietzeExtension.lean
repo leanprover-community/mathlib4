@@ -348,7 +348,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
         function `dg : Y → ℝ` such that `dg ∘ e = 0`, `dg y = 0` whenever `c ≤ g y`, `dg y = c - a`
         whenever `g y = a`, and `0 ≤ dg y ≤ c - a` for all `y`.  -/
     have hd : Disjoint (range e ∪ g ⁻¹' Ici c) (g ⁻¹' {a}) := by
-      refine disjoint_union_left.2 ⟨?_, Disjoint.preimage _? _⟩
+      refine disjoint_union_left.2 ⟨?_, Disjoint.preimage _ ?_⟩
       · rw [Set.disjoint_left]
         rintro _ ⟨x, rfl⟩ (rfl : g (e x) = a)
         exact ha' ⟨x, (congr_fun hgf x).symm⟩
@@ -381,7 +381,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
   rcases em (∃ x, f x = b) with (⟨x, rfl⟩ | hb')
   · exact ⟨g, fun y => ⟨xl y, x, hxl y, hgb y⟩, hgf⟩
   have hd : Disjoint (range e ∪ g ⁻¹' Iic c) (g ⁻¹' {b}) := by
-    refine disjoint_union_left.2 ⟨?_, Disjoint.preimage _? _⟩
+    refine disjoint_union_left.2 ⟨?_, Disjoint.preimage _ ?_⟩
     · rw [Set.disjoint_left]
       rintro _ ⟨x, rfl⟩ (rfl : g (e x) = b)
       exact hb' ⟨x, (congr_fun hgf x).symm⟩

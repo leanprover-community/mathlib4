@@ -666,7 +666,7 @@ theorem of.zero_exact_aux2 {x : FreeCommRing (Σi, G i)} {s t} [DecidablePred (�
     (hk : ∀ z : Σi, G i, z ∈ t → z.1 ≤ k) (hjk : j ≤ k) (hst : s ⊆ t) :
     f' j k hjk (lift (fun ix : s => f' ix.1.1 j (hj ix ix.2) ix.1.2) (restriction s x)) =
       lift (fun ix : t => f' ix.1.1 k (hk ix ix.2) ix.1.2) (restriction t x) := by
-  refine Subring.InClosure.recOn hxs ?_ ?_? _ ?_
+  refine Subring.InClosure.recOn hxs ?_ ?_ ?_ ?_
   · rw [(restriction _).map_one, (FreeCommRing.lift _).map_one, (f' j k hjk).map_one,
       (restriction _).map_one, (FreeCommRing.lift _).map_one]
   · -- Porting note: Lean 3 had `(FreeCommRing.lift _).map_neg` but I needed to replace it with

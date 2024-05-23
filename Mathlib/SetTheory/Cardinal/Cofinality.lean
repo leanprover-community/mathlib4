@@ -624,7 +624,7 @@ theorem exists_fundamental_sequence (a : Ordinal.{u}) :
   let hrr' : r' ↪r r := Subrel.relEmbedding _ _
   haveI := hrr'.isWellOrder
   refine
-    ⟨_, _, hrr'.ordinal_type_le.trans ?_, @fun i j _ h _ => (enum r' j h).prop _? _,
+    ⟨_, _, hrr'.ordinal_type_le.trans ?_, @fun i j _ h _ => (enum r' j h).prop _ ?_,
       le_antisymm (blsub_le fun i hi => lsub_le_iff.1 hf.le _) ?_⟩
   · rw [← hι, hr]
   · change r (hrr'.1 _) (hrr'.1 _)
@@ -639,7 +639,7 @@ theorem exists_fundamental_sequence (a : Ordinal.{u}) :
       rw [bfamilyOfFamily'_typein]
     · push_neg at h
       cases' wo.wf.min_mem _ h with hji hij
-      refine ⟨typein r' ⟨_, fun k hkj => lt_of_lt_of_le ?_ hij⟩, typein_lt_type _? _?, _⟩
+      refine ⟨typein r' ⟨_, fun k hkj => lt_of_lt_of_le ?_ hij⟩, typein_lt_type _ ?_, ?_⟩
       · by_contra! H
         exact (wo.wf.not_lt_min _ h ⟨IsTrans.trans _ _ _ hkj hji, H⟩) hkj
       · rwa [bfamilyOfFamily'_typein]
@@ -828,7 +828,7 @@ theorem infinite_pigeonhole_set {β α : Type u} {s : Set β} (f : s → α) (θ
     (hθ : θ ≤ #s) (h₁ : ℵ₀ ≤ θ) (h₂ : #α < θ.ord.cof) :
     ∃ (a : α) (t : Set β) (h : t ⊆ s), θ ≤ #t ∧ ∀ ⦃x⦄ (hx : x ∈ t), f ⟨x, h hx⟩ = a := by
   cases' infinite_pigeonhole_card f θ hθ h₁ h₂ with a ha
-  refine ⟨a, { x | ∃ h, f ⟨x, h⟩ = a }, ?_,? _?, _⟩
+  refine ⟨a, { x | ∃ h, f ⟨x, h⟩ = a }, ?_,? _, ?_⟩
   · rintro x ⟨hx, _⟩
     exact hx
   · refine

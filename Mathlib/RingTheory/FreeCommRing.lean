@@ -268,7 +268,7 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
 -- Porting note: Changed `(Subtype.val : s → α)` to `(↑)` in the type
 theorem map_subtype_val_restriction {x} (s : Set α) [DecidablePred (· ∈ s)]
     (hxs : IsSupported x s) : map (↑) (restriction s x) = x := by
-  refine Subring.InClosure.recOn hxs ?_? ?_ _? _
+  refine Subring.InClosure.recOn hxs ?_ ?_ ?_ ?_
   · rw [RingHom.map_one]
     rfl
   · rw [map_neg, map_one]

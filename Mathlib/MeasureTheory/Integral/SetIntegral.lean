@@ -1522,7 +1522,7 @@ theorem integral_withDensity_eq_integral_smul {f : X → ℝ≥0} (f_meas : Meas
   · rw [integral_undef hg, integral_undef]
     rwa [← integrable_withDensity_iff_integrable_smul f_meas]
   refine Integrable.induction
-    (P := fun g => ∫ x, g x ∂μ.withDensity (fun x => f x) = ∫ x, f x • g x ∂μ) ?_ ?_ ?_? _ hg
+    (P := fun g => ∫ x, g x ∂μ.withDensity (fun x => f x) = ∫ x, f x • g x ∂μ) ?_ ?_ ?_ ?_ hg
   · intro c s s_meas hs
     rw [integral_indicator s_meas]
     simp_rw [← indicator_smul_apply, integral_indicator s_meas]

@@ -512,7 +512,7 @@ theorem valley_mi : Valley cs (cs (mi h v)).shiftUp := by
           (le_trans (hp2 j).1 <| le_of_lt (h2p2 j).2) (le_trans (h2p2 j).1 <| le_of_lt (hp2 j).2)
           ⟨hj, hp1 j⟩ with
         ⟨w, hw, h2w, h3w⟩
-      refine ⟨fun j' => if j' = j then w else p2 j', ?_,? _?, _⟩
+      refine ⟨fun j' => if j' = j then w else p2 j', ?_,? _, ?_⟩
       · intro j'; by_cases h : j' = j
         · simp only [if_pos h]; exact h ▸ h3w
         · simp only [if_neg h]; exact hp2 j'

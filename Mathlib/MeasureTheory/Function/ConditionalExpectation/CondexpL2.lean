@@ -172,7 +172,7 @@ theorem lintegral_nnnorm_condexpL2_le (hs : MeasurableSet[m] s) (hμs : μ s ≠
     simp_rw [hx]
   rw [lintegral_congr_ae hg_nnnorm_eq.symm]
   refine
-    lintegral_nnnorm_le_of_forall_fin_meas_integral_eq hm (Lp.stronglyMeasurable f) ?_ ?_? _ ?_ hs hμs
+    lintegral_nnnorm_le_of_forall_fin_meas_integral_eq hm (Lp.stronglyMeasurable f) ?_ ?_ ?_ ?_ hs hμs
   · exact integrableOn_Lp_of_measure_ne_top f fact_one_le_two_ennreal.elim hμs
   · exact hg_meas
   · rw [IntegrableOn, integrable_congr hg_eq_restrict]
@@ -284,7 +284,7 @@ theorem condexpL2_comp_continuousLinearMap (hm : m ≤ m0) (T : E' →L[ℝ] E''
     T.compLp (condexpL2 E' 𝕜 hm f : α →₂[μ] E') := by
   refine Lp.ae_eq_of_forall_setIntegral_eq' 𝕜' hm _ _ two_ne_zero ENNReal.coe_ne_top
     (fun s _ hμs => integrableOn_condexpL2_of_measure_ne_top hm hμs.ne _) (fun s _ hμs =>
-      integrableOn_Lp_of_measure_ne_top _ fact_one_le_two_ennreal.elim hμs.ne) ?_? ?_ _
+      integrableOn_Lp_of_measure_ne_top _ fact_one_le_two_ennreal.elim hμs.ne) ?_ ?_ ?_
   · intro s hs hμs
     rw [T.setIntegral_compLp _ (hm s hs),
       T.integral_comp_comm

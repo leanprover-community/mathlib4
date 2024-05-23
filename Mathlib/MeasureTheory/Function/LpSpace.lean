@@ -1355,7 +1355,7 @@ theorem snorm'_lim_le_liminf_snorm' {E} [NormedAddCommGroup E] {f : ℕ → α �
     (atTop.liminf fun n => snorm' (f n) p μ) ^ p = atTop.liminf fun n => snorm' (f n) p μ ^ p := by
     have h_rpow_mono := ENNReal.strictMono_rpow_of_pos hp_pos
     have h_rpow_surj := (ENNReal.rpow_left_bijective hp_pos.ne.symm).2
-    refine (h_rpow_mono.orderIsoOfSurjective _ h_rpow_surj).liminf_apply ?_ ?_? ?_ _
+    refine (h_rpow_mono.orderIsoOfSurjective _ h_rpow_surj).liminf_apply ?_ ?_ ?_ ?_
     all_goals isBoundedDefault
   rw [h_pow_liminf]
   simp_rw [snorm', ← ENNReal.rpow_mul, one_div, inv_mul_cancel hp_pos.ne.symm, ENNReal.rpow_one]

@@ -256,7 +256,7 @@ variable (f₁ f₂ f₃ f₄) [Fintype α]
 private lemma four_functions_theorem_aux (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 ≤ f₃) (h₄ : 0 ≤ f₄)
     (h : ∀ s t, f₁ s * f₂ t ≤ f₃ (s ∩ t) * f₄ (s ∪ t)) (𝒜 ℬ : Finset (Finset α)) :
     (∑ s in 𝒜, f₁ s) * ∑ s in ℬ, f₂ s ≤ (∑ s in 𝒜 ⊼ ℬ, f₃ s) * ∑ s in 𝒜 ⊻ ℬ, f₄ s := by
-  refine univ.four_functions_theorem h₁ h₂ h₃ h₄ ?_? ?_ _ <;> simp [h]
+  refine univ.four_functions_theorem h₁ h₂ h₃ h₄ ?_ ?_ ?_ <;> simp [h]
 
 end Finset
 

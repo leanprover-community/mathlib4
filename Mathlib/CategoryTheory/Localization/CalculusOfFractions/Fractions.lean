@@ -205,7 +205,7 @@ lemma map_eq_iff {X Y : C} (φ ψ : W.LeftFraction₂ X Y) :
       rw [← reassoc_of% hst, ← reassoc_of% hα, ← reassoc_of% hst']
     obtain ⟨Z''', u', hu', fac'⟩ := HasLeftCalculusOfFractions.ext _ _ _ ψ.hs hα'
     simp only [Category.assoc] at fac fac'
-    refine ⟨Z''', t₁' ≫ α.s ≫ u ≫ u', t₂' ≫ α.s ≫ u ≫ u', ?_, ?_?, _, ?_⟩
+    refine ⟨Z''', t₁' ≫ α.s ≫ u ≫ u', t₂' ≫ α.s ≫ u ≫ u', ?_, ?_, ?_, ?_⟩
     · rw [reassoc_of% hst']
     · rw [reassoc_of% fac, reassoc_of% hft, fac']
     · rw [reassoc_of% hft']
@@ -304,7 +304,7 @@ lemma exists_leftFraction₃ {X Y : C} (f f' f'' : L.obj X ⟶ L.obj Y) :
   have : IsIso (L.map (β.s ≫ γ.s)) := by
     rw [L.map_comp]
     infer_instance
-  refine ⟨ψ, ?_, ?_?, _⟩
+  refine ⟨ψ, ?_, ?_, ?_⟩
   · rw [← cancel_mono (L.map (β.s ≫ γ.s)), LeftFraction.map_comp_map_s, hα, hγ,
       L.map_comp, LeftFraction.map_comp_map_s_assoc, L.map_comp]
   · rw [← cancel_mono (L.map (β.s ≫ γ.s)), LeftFraction.map_comp_map_s, hα', hγ,

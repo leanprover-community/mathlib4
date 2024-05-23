@@ -334,7 +334,7 @@ theorem not_separatedNhds_rat_irrational_antidiag :
     rcases mem_closure_iff_nhds.1 this _ (mem_interior_iff_mem_nhds.1 hr) with ⟨x', hx', hx'ε⟩
     exact mem_closure_iff.1 hx' _ isOpen_Ioo hx'ε
   refine UV.le_bot (?_ : (toReal.symm x, -(r : ℝₗ)) ∈ _)
-  refine ⟨hn ⟨?_, ?_⟩, hkV (toReal.symm x) hx_irr ⟨?_?, _⟩⟩
+  refine ⟨hn ⟨?_, ?_⟩, hkV (toReal.symm x) hx_irr ⟨?_, ?_⟩⟩
   · exact Ioo_subset_Ico_self hxn
   · exact left_mem_Ico.2 h₀'
   · exact left_mem_Ico.2 h₀'

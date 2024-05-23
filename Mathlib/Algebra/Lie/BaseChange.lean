@@ -86,7 +86,7 @@ private theorem bracket_leibniz_lie (x y : A ⊗[R] L) (z : A ⊗[R] M) :
     ⁅x, ⁅y, z⁆⁆ = ⁅⁅x, y⁆, z⁆ + ⁅y, ⁅x, z⁆⁆ := by
   -- Porting note: replaced some `simp`s by `rw`s to avoid raising heartbeats
   simp only [bracket_def]
-  refine x.induction_on ?_? ?_ _
+  refine x.induction_on ?_ ?_ ?_
   · simp only [LinearMap.map_zero, add_zero, LinearMap.zero_apply]
   · intro a₁ l₁
     refine y.induction_on ?_ ?_ ?_

@@ -150,7 +150,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
   have hM_lt : M < length L := by rwa [hL_len, Nat.lt_succ_iff]
   have hM_ltx : M < length (x::l) := lt_length_left_of_zipWith hM_lt
   have hM_lty : M < length (l ++ [y]) := lt_length_right_of_zipWith hM_lt
-  refine ⟨(x::l).get ⟨M, hM_ltx⟩, (l ++ [y]).get ⟨M, hM_lty⟩, ?_, ?_?, _⟩
+  refine ⟨(x::l).get ⟨M, hM_ltx⟩, (l ++ [y]).get ⟨M, hM_lty⟩, ?_, ?_, ?_⟩
   · cases M with
     | zero =>
       simp [dist_self, List.get]

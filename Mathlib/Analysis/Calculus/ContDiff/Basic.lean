@@ -1899,7 +1899,7 @@ theorem PartialHomeomorph.contDiffAt_symm [CompleteSpace E] (f : PartialHomeomor
         exact hf'.continuousAt.preimage_mem_nhds hf₀'
       obtain ⟨t, htu, ht, htf⟩ := mem_nhds_iff.mp (Filter.inter_mem hu h_nhds)
       use f.target ∩ f.symm ⁻¹' t
-      refine ⟨IsOpen.mem_nhds ?_ ?_?, _⟩
+      refine ⟨IsOpen.mem_nhds ?_ ?_, ?_⟩
       · exact f.isOpen_inter_preimage_symm ht
       · exact mem_inter ha (mem_preimage.mpr htf)
       intro x hx

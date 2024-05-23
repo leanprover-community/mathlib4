@@ -1445,7 +1445,7 @@ variable [TopologicalSpace α] [MeasurableSpace α] {μ : Measure α} {s : Set �
 superset of finite measure. -/
 theorem exists_open_superset_measure_lt_top' (h : IsCompact s)
     (hμ : ∀ x ∈ s, μ.FiniteAtFilter (𝓝 x)) : ∃ U ⊇ s, IsOpen U ∧ μ U < ∞ := by
-  refine IsCompact.induction_on h ?_ ?_? _? _
+  refine IsCompact.induction_on h ?_ ?_ ?_ ?_
   · use ∅
     simp [Superset]
   · rintro s t hst ⟨U, htU, hUo, hU⟩

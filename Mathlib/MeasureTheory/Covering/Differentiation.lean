@@ -303,7 +303,7 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0} (hpq : p < q) :
   -- `n`.
   refine
     ⟨toMeasurable μ sᶜ ∪ ⋃ n, toMeasurable (ρ + μ) (u n),
-      toMeasurable μ sᶜ ∪ ⋃ n, toMeasurable (ρ + μ) (w n), ?_, ?_?, _?, ?_, _⟩
+      toMeasurable μ sᶜ ∪ ⋃ n, toMeasurable (ρ + μ) (w n), ?_, ?_, ?_?, ?_, _⟩
   -- check that these sets are measurable supersets as required
   · exact
       (measurableSet_toMeasurable _ _).union
@@ -331,7 +331,7 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0} (hpq : p < q) :
           ⋃ (m) (n), toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n) := by
       simp only [inter_union_distrib_left, union_inter_distrib_right, true_and_iff,
         subset_union_left, union_subset_iff, inter_self]
-      refine ⟨?_, ?_?, _⟩
+      refine ⟨?_, ?_, ?_⟩
       · exact (inter_subset_right _ _).trans (subset_union_left _ _)
       · exact (inter_subset_left _ _).trans (subset_union_left _ _)
       · simp_rw [iUnion_inter, inter_iUnion]; exact subset_union_right _ _

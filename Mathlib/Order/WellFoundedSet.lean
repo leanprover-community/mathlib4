@@ -102,7 +102,7 @@ theorem wellFoundedOn_range : (range f).WellFoundedOn r ↔ WellFounded (r on f)
   let f' : β → range f := fun c => ⟨f c, c, rfl⟩
   refine ⟨fun h => (InvImage.wf f' h).mono fun c c' => id, fun h => ⟨?_⟩⟩
   rintro ⟨_, c, rfl⟩
-  refine Acc.of_downward_closed f' ?_ _? _
+  refine Acc.of_downward_closed f' ?_ _ ?_
   · rintro _ ⟨_, c', rfl⟩ -
     exact ⟨c', rfl⟩
   · exact h.apply _

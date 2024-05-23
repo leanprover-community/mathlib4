@@ -1269,7 +1269,7 @@ theorem Valid'.rotateL {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : V
       decide
     replace H3 := H3p l0
     rcases hr.3.1.resolve_left (hlp l0) with ⟨_, hb₂⟩
-    refine ⟨Or.inr ⟨?_,? _⟩, Or.inr? ⟨_?, _⟩⟩
+    refine ⟨Or.inr ⟨?_,? _⟩, Or.inr? ⟨_, ?_⟩⟩
     · exact Valid'.rotateL_lemma₁ H2 hb₂
     · exact Nat.le_of_lt_succ (Valid'.rotateL_lemma₂ H3 h)
     · exact Valid'.rotateL_lemma₃ H2 h

@@ -472,7 +472,7 @@ theorem IsCycle.existsUnique_cycle {f : Perm α} (hf : IsCycle f) :
   · simp [formPerm_toList, hf.cycleOf_eq hx]
   · rintro ⟨l⟩ ⟨hn, rfl⟩
     simp only [Cycle.mk_eq_coe, Cycle.coe_eq_coe, Subtype.coe_mk, Cycle.formPerm_coe]
-    refine (toList_formPerm_isRotated_self _ ?_ hn _? _).symm
+    refine (toList_formPerm_isRotated_self _ ?_ hn _ ?_).symm
     · contrapose! hx
       suffices formPerm l = 1 by simp [this]
       rw [formPerm_eq_one_iff _ hn]

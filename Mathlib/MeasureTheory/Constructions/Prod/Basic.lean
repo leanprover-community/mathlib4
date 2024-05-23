@@ -217,7 +217,7 @@ theorem MeasurableEmbedding.prod_mk {α β γ δ : Type*} {mα : MeasurableSpace
     refine fun s hs =>
       @MeasurableSpace.induction_on_inter _
         (fun s => MeasurableSet ((fun x : γ × α => (g x.fst, f x.snd)) '' s)) _ _
-        generateFrom_prod.symm isPiSystem_prod ?_? ?_ _? _ _ hs
+        generateFrom_prod.symm isPiSystem_prod ?_ ?_ ?_ ?_ _ hs
     · simp only [Set.image_empty, MeasurableSet.empty]
     · rintro t ⟨t₁, ht₁, t₂, ht₂, rfl⟩
       rw [← Set.prod_image_image_eq]

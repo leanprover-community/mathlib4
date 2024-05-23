@@ -381,7 +381,7 @@ theorem piiUnionInter_singleton (π : ι → Set (Set α)) (i : ι) :
       simp [ht_empty, Finset.not_mem_empty, iInter_false, iInter_univ, Set.mem_singleton univ,
         or_true_iff]
   · cases' h with hs hs
-    · refine ⟨{i}, ?_, fun _ => s, ⟨fun x hx => ?_?, _⟩⟩
+    · refine ⟨{i}, ?_, fun _ => s, ⟨fun x hx => ?_, ?_⟩⟩
       · rw [Finset.coe_singleton]
       · rw [Finset.mem_singleton] at hx
         rwa [hx]

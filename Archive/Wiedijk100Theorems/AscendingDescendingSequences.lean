@@ -109,7 +109,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
       refine' ⟨insert j t, _, _⟩
       -- First make sure it's valid, i.e., that this subsequence ends at `j` and is increasing
       · rw [mem_filter]
-        refine ⟨?_, ?_?, _⟩
+        refine ⟨?_, ?_, ?_⟩
         · rw [mem_powerset]; apply subset_univ
         -- It ends at `j` since `i < j`.
         · convert max_insert (a := j) (s := t)

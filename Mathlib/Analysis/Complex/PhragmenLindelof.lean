@@ -370,7 +370,7 @@ nonrec theorem quadrant_I (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Ioi 0))
     have : 0 < Real.sin z.im :=
       Real.sin_pos_of_mem_Ioo ⟨hz.1, hz.2.trans (half_lt_self Real.pi_pos)⟩
     constructor <;> positivity
-  refine horizontal_strip (hd.comp differentiable_exp.diffContOnCl H) ?_ ?_? _ hζ.1 hζ.2
+  refine horizontal_strip (hd.comp differentiable_exp.diffContOnCl H) ?_ ?_ ?_ hζ.1 hζ.2
   -- Porting note: failed to clear hζ ζ
   · -- The estimate `hB` on `f` implies the required estimate on
     -- `f ∘ exp` with the same `c` and `B' = max B 0`.

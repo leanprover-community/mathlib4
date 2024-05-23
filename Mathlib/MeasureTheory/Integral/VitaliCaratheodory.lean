@@ -176,7 +176,7 @@ theorem exists_le_lowerSemicontinuous_lintegral_ge (f : α → ℝ≥0∞) (hf :
     SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge μ (SimpleFunc.eapproxDiff f n)
       (δpos n).ne'
   choose g f_le_g gcont hg using this
-  refine ⟨fun x => ∑' n, g n x, fun x => ?_,? _?, _⟩
+  refine ⟨fun x => ∑' n, g n x, fun x => ?_,? _, ?_⟩
   · rw [← SimpleFunc.tsum_eapproxDiff f hf]
     exact ENNReal.tsum_le_tsum fun n => ENNReal.coe_le_coe.2 (f_le_g n x)
   · refine lowerSemicontinuous_tsum fun n => ?_
@@ -508,7 +508,7 @@ theorem exists_lt_lowerSemicontinuous_integral_lt [SigmaFinite μ] (f : α → �
     show ∀ x, (f x : EReal) < g x
     intro x
     rw [EReal.coe_real_ereal_eq_coe_toNNReal_sub_coe_toNNReal (f x)]
-    refine EReal.sub_lt_sub_of_lt_of_le ?_ ?_ ?_? _
+    refine EReal.sub_lt_sub_of_lt_of_le ?_ ?_ ?_ ?_
     · simp only [EReal.coe_ennreal_lt_coe_ennreal_iff]; exact fp_lt_gp x
     · simp only [ENNReal.coe_le_coe, EReal.coe_ennreal_le_coe_ennreal_iff]
       exact gm_le_fm x

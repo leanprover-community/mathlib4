@@ -413,7 +413,7 @@ theorem carrier.zero_mem : (0 : A) ∈ carrier f_deg q := fun i => by
 
 theorem carrier.smul_mem (c x : A) (hx : x ∈ carrier f_deg q) : c • x ∈ carrier f_deg q := by
   revert c
-  refine DirectSum.Decomposition.inductionOn 𝒜 ?_? ?_ _
+  refine DirectSum.Decomposition.inductionOn 𝒜 ?_ ?_ ?_
   · rw [zero_smul]; exact carrier.zero_mem f_deg hm _
   · rintro n ⟨a, ha⟩ i
     simp_rw [proj_apply, smul_eq_mul, coe_decompose_mul_of_left_mem 𝒜 i ha]

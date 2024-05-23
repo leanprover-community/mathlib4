@@ -338,7 +338,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
       have : ∀ x, x ∈ Set.range c.inl ∨ x ∈ Set.range c.inr := by
         rw [eq_compl_iff_isCompl.mpr h₃.symm]
         exact fun _ => or_not
-      refine ⟨BinaryCofan.IsColimit.mk _ ?_? ?_ _? _⟩
+      refine ⟨BinaryCofan.IsColimit.mk _ ?_ ?_ ?_ ?_⟩
       · intro T f g
         refine ContinuousMap.mk ?_ ?_
         · exact fun x =>

@@ -252,7 +252,7 @@ lemma trans {X Y : C} {z₁ z₂ z₃ : W.LeftFraction X Y}
     simpa only [← reassoc_of% hsu, reassoc_of% hst] using fac
   obtain ⟨Z₇, w, hw, fac'⟩ := HasLeftCalculusOfFractions.ext _ _ _ z₂.hs eq
   simp only [Category.assoc] at fac'
-  refine ⟨Z₇, t₁ ≫ v₄ ≫ w, u₃ ≫ v₅ ≫ w, ?_, ?_?, _⟩
+  refine ⟨Z₇, t₁ ≫ v₄ ≫ w, u₃ ≫ v₅ ≫ w, ?_, ?_, ?_⟩
   · rw [reassoc_of% fac]
   · rw [reassoc_of% hft, ← fac', reassoc_of% hfu]
   · rw [← reassoc_of% fac, ← reassoc_of% hsu, ← Category.assoc]

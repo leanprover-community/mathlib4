@@ -46,7 +46,7 @@ theorem measurable_kernel_prod_mk_left_of_finite {t : Set (α × β)} (ht : Meas
   -- Porting note: added motive
   refine MeasurableSpace.induction_on_inter
     (C := fun t => Measurable fun a => κ a (Prod.mk a ⁻¹' t))
-    generateFrom_prod.symm isPiSystem_prod ?_ ?_? _? _ ht
+    generateFrom_prod.symm isPiSystem_prod ?_ ?_ ?_ ?_ ht
   ·-- case `t = ∅`
     simp only [preimage_empty, measure_empty, measurable_const]
   · -- case of a box: `t = t₁ ×ˢ t₂` for measurable sets `t₁` and `t₂`

@@ -644,7 +644,7 @@ theorem cycleFactorsFinset_mul_inv_mem_eq_sdiff [DecidableEq α] [Fintype α] {f
   refine
     cycle_induction_on (P := fun {g : Perm α} ↦
       ∀ {f}, (f ∈ cycleFactorsFinset g)
-        → cycleFactorsFinset (g * f⁻¹) = cycleFactorsFinset g \ {f}) _ ?_ ?_? _
+        → cycleFactorsFinset (g * f⁻¹) = cycleFactorsFinset g \ {f}) _ ?_ ?_ ?_
   · simp
   · intro σ hσ f hf
     simp only [cycleFactorsFinset_eq_singleton_self_iff.mpr hσ, mem_singleton] at hf ⊢

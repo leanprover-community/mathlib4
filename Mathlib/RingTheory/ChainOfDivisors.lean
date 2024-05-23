@@ -66,7 +66,7 @@ namespace DivisorChain
 theorem exists_chain_of_prime_pow {p : Associates M} {n : ℕ} (hn : n ≠ 0) (hp : Prime p) :
     ∃ c : Fin (n + 1) → Associates M,
       c 1 = p ∧ StrictMono c ∧ ∀ {r : Associates M}, r ≤ p ^ n ↔ ∃ i, r = c i := by
-  refine ⟨fun i => p ^ (i : ℕ), ?_, fun n m h => ?_, @fun y => ⟨fun h => ?_?, _⟩⟩
+  refine ⟨fun i => p ^ (i : ℕ), ?_, fun n m h => ?_, @fun y => ⟨fun h => ?_, ?_⟩⟩
   · dsimp only
     rw [Fin.val_one', Nat.mod_eq_of_lt, pow_one]
     exact Nat.lt_succ_of_le (Nat.one_le_iff_ne_zero.mpr hn)
@@ -264,7 +264,7 @@ theorem pow_image_of_prime_by_factor_orderIso_dvd
   have c₂_def : ∀ t, c₂ t = d ⟨c₁ t, _⟩ := fun t => rfl
   rw [← c₂_def]
   refine
-    (eq_pow_second_of_chain_of_has_chain hs (fun t u h => ?_) (@fun r => ⟨@fun hr =>? _?, _⟩)? _).symm
+    (eq_pow_second_of_chain_of_has_chain hs (fun t u h => ?_) (@fun r => ⟨@fun hr =>? _, ?_⟩)? _).symm
   · rw [c₂_def, c₂_def, Subtype.coe_lt_coe, d.lt_iff_lt, Subtype.mk_lt_mk, hc₁'.lt_iff_lt]
     exact h
   · have : r ≤ n := hr.trans (d ⟨c₁ 1 ^ s, _⟩).2

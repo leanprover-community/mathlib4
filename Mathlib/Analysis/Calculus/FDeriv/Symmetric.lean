@@ -112,7 +112,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
   have g_deriv : ∀ t ∈ Icc (0 : ℝ) 1, HasDerivWithinAt g (g' t) (Icc 0 1) t := by
     intro t ht
     apply_rules [HasDerivWithinAt.sub, HasDerivWithinAt.add]
-    · refine (hf _ ?_).comp_hasDerivWithinAt _? _
+    · refine (hf _ ?_).comp_hasDerivWithinAt _ ?_
       · exact xt_mem t ht
       apply_rules [HasDerivAt.hasDerivWithinAt, HasDerivAt.const_add, HasDerivAt.smul_const,
         hasDerivAt_mul_const]

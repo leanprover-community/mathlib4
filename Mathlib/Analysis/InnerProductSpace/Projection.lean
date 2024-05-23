@@ -1438,7 +1438,7 @@ theorem maximal_orthonormal_iff_basis_of_finiteDimensional (hv : Orthonormal �
   rw [Submodule.orthogonal_eq_bot_iff]
   have hv_coe : range ((↑) : v → E) = v := by simp
   constructor
-  · refine fun h => ⟨Basis.mk hv.linearIndependent ?_, Basis.coe_mk _? _⟩
+  · refine fun h => ⟨Basis.mk hv.linearIndependent ?_, Basis.coe_mk _ ?_⟩
     convert h.ge
   · rintro ⟨h, coe_h⟩
     rw [← h.span_eq, coe_h, hv_coe]

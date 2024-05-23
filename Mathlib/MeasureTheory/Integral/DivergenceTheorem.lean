@@ -183,7 +183,7 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₂ (I : Box (
       Tendsto (fun k => ∫ x in Box.Icc ((J k).face i), f (i.insertNth (c k) x) i) atTop
         (𝓝 <| ∫ x in Box.Icc (I.face i), f (i.insertNth d x) i) by
     rw [Box.Icc_eq_pi] at hJ_sub'
-    refine tendsto_finset_sum _ fun i _ => (this _ _ _ ?_ (hJu _)).sub (this _ _ _? _ (hJl _))
+    refine tendsto_finset_sum _ fun i _ => (this _ _ _ ?_ (hJu _)).sub (this _ _ _ ?_ (hJl _))
     exacts [fun k => hJ_sub' k (J k).upper_mem_Icc _ trivial, fun k =>
       hJ_sub' k (J k).lower_mem_Icc _ trivial]
   intro i c d hc hcd

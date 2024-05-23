@@ -217,7 +217,7 @@ theorem set_lintegral_condDistrib_of_measurableSet (hX : Measurable X) (hY : AEM
 `s` is equal to the conditional expectation of the indicator of `Y ⁻¹' s`. -/
 theorem condDistrib_ae_eq_condexp (hX : Measurable X) (hY : Measurable Y) (hs : MeasurableSet s) :
     (fun a => (condDistrib Y X μ (X a) s).toReal) =ᵐ[μ] μ⟦Y ⁻¹' s|mβ.comap X⟧ := by
-  refine ae_eq_condexp_of_forall_setIntegral_eq hX.comap_le ?_ ?_? ?_ _
+  refine ae_eq_condexp_of_forall_setIntegral_eq hX.comap_le ?_ ?_ ?_ ?_
   · exact (integrable_const _).indicator (hY hs)
   · exact fun t _ _ => (integrable_toReal_condDistrib hX.aemeasurable hs).integrableOn
   · intro t ht _

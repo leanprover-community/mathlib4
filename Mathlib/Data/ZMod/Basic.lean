@@ -1136,7 +1136,7 @@ theorem valMinAbs_neg_of_ne_half {n : ℕ} {a : ZMod n} (ha : 2 * a.val ≠ n) :
   cases' eq_zero_or_neZero n with h h
   · subst h
     rfl
-  refine (valMinAbs_spec _ _).2 ⟨?_, ?_?, _⟩
+  refine (valMinAbs_spec _ _).2 ⟨?_, ?_, ?_⟩
   · rw [Int.cast_neg, coe_valMinAbs]
   · rw [neg_mul, neg_lt_neg_iff]
     exact a.valMinAbs_mem_Ioc.2.lt_of_ne (mt a.valMinAbs_mul_two_eq_iff.1 ha)

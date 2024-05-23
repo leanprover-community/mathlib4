@@ -804,7 +804,7 @@ theorem Orthonormal.exists_orthonormalBasis_extension (hv : Orthonormal 𝕜 ((�
   let u : Finset E := hu₀_finite.toFinset
   let fu : ↥u ≃ ↥u₀ := hu₀_finite.subtypeEquivToFinset.symm
   have hu : Orthonormal 𝕜 ((↑) : u → E) := by simpa using hu₀.comp _ fu.injective
-  refine ⟨u, OrthonormalBasis.mkOfOrthogonalEqBot hu ?_,? _?, _⟩
+  refine ⟨u, OrthonormalBasis.mkOfOrthogonalEqBot hu ?_,? _, ?_⟩
   · simpa [u] using hu₀_max
   · simpa [u] using hu₀s
   · simp

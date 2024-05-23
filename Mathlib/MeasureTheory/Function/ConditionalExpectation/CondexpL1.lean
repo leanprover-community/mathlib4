@@ -498,7 +498,7 @@ theorem condexpL1CLM_lpMeas (f : lpMeas F' ℝ m 1 μ) :
   rw [hfg]
   refine @Lp.induction α F' m _ 1 (μ.trim hm) _ ENNReal.coe_ne_top (fun g : α →₁[μ.trim hm] F' =>
     condexpL1CLM F' hm μ ((lpMeasToLpTrimLie F' ℝ 1 μ hm).symm g : α →₁[μ] F') =
-    ↑((lpMeasToLpTrimLie F' ℝ 1 μ hm).symm g)) ?_ ?_? _ g
+    ↑((lpMeasToLpTrimLie F' ℝ 1 μ hm).symm g)) ?_ ?_ ?_ g
   · intro c s hs hμs
     rw [@Lp.simpleFunc.coe_indicatorConst _ _ m, lpMeasToLpTrimLie_symm_indicator hs hμs.ne c,
       condexpL1CLM_indicatorConstLp]

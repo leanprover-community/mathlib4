@@ -59,7 +59,7 @@ theorem exists_smooth_tsupport_subset {s : Set E} {x : E} (hs : s ∈ 𝓝 x) :
   have f_tsupp : tsupport f ⊆ Euclidean.closedBall x d := by
     rw [tsupport, ← Euclidean.closure_ball _ d_pos.ne']
     exact closure_mono f_supp
-  refine ⟨f, f_tsupp.trans hd, ?_,? _,? _?, _⟩
+  refine ⟨f, f_tsupp.trans hd, ?_,? _,? _, ?_⟩
   · refine isCompact_of_isClosed_isBounded isClosed_closure ?_
     have : IsBounded (Euclidean.closedBall x d) := Euclidean.isCompact_closedBall.isBounded
     refine this.subset (Euclidean.isClosed_closedBall.closure_subset_iff.2 ?_)

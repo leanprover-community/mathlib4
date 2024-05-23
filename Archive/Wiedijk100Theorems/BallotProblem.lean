@@ -128,7 +128,7 @@ theorem counted_succ_succ (p q : ℕ) :
     have hlnil := counted_ne_nil_left (Nat.succ_ne_zero p) hl
     obtain ⟨hl₀, hl₁, hl₂⟩ := hl
     obtain hlast | hlast := hl₂ (l.head hlnil) (List.head_mem hlnil)
-    · refine Or.inl ⟨l.tail, ⟨?_, ?_?, _⟩?, _⟩
+    · refine Or.inl ⟨l.tail, ⟨?_, ?_, ?_⟩?, _⟩
       · rw [List.count_tail l 1 hlnil, hl₀, hlast, if_pos rfl, Nat.add_sub_cancel]
       · rw [List.count_tail l (-1) hlnil, hl₁, hlast, if_neg (by decide), Nat.sub_zero]
       · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)

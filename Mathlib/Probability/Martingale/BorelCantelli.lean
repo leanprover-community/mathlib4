@@ -105,7 +105,7 @@ theorem Submartingale.stoppedValue_leastGE [IsFiniteMeasure μ] (hf : Submarting
     obtain ⟨n, hπ_le_n⟩ := hπ_bdd
     simp_rw [stoppedValue_stoppedValue_leastGE f σ r fun i => (hσ_le_π i).trans (hπ_le_n i)]
     simp_rw [stoppedValue_stoppedValue_leastGE f π r hπ_le_n]
-    refine hf.expected_stoppedValue_mono ?_? ?_ _ fun ω => (min_le_left _ _).trans (hπ_le_n ω)
+    refine hf.expected_stoppedValue_mono ?_ ?_ ?_ fun ω => (min_le_left _ _).trans (hπ_le_n ω)
     · exact hσ.min (hf.adapted.isStoppingTime_leastGE _ _)
     · exact hπ.min (hf.adapted.isStoppingTime_leastGE _ _)
     · exact fun ω => min_le_min (hσ_le_π ω) le_rfl

@@ -309,7 +309,7 @@ theorem lhopital_zero_nhds_left (hff' : ∀ᶠ x in 𝓝[<] a, HasDerivAt f (f' 
   have hs : s ∈ 𝓝[<] a := inter_mem (inter_mem hs₁ hs₂) hs₃
   rw [mem_nhdsWithin_Iio_iff_exists_Ioo_subset] at hs
   rcases hs with ⟨l, hal, hl⟩
-  refine lhopital_zero_left_on_Ioo hal ?_? ?_ _ hfa hga hdiv <;> intro x hx <;> apply_assumption <;>
+  refine lhopital_zero_left_on_Ioo hal ?_ ?_ ?_ hfa hga hdiv <;> intro x hx <;> apply_assumption <;>
     first | exact (hl hx).1.1| exact (hl hx).1.2| exact (hl hx).2
 #align has_deriv_at.lhopital_zero_nhds_left HasDerivAt.lhopital_zero_nhds_left
 

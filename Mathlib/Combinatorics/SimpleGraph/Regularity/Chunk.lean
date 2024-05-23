@@ -284,11 +284,11 @@ private theorem density_sub_eps_le_sum_density_div_card [Nonempty α]
     refine (mul_le_mul_of_nonneg_right (one_sub_le_m_div_m_add_one_sq hPα hPε) ?_).trans ?_
     · exact mod_cast _root_.zero_le _
     rw [sq, mul_mul_mul_comm, mul_comm ((m : ℝ) / _), mul_comm ((m : ℝ) / _)]
-    refine mul_le_mul ?_? ?_ _ (cast_nonneg _)
+    refine mul_le_mul ?_ ?_ ?_ (cast_nonneg _)
     · apply le_sum_card_subset_chunk_parts hA hx
     · apply le_sum_card_subset_chunk_parts hB hy
     · positivity
-  refine mul_pos (mul_pos ?_ ?_) (mul_pos? _? _) <;> rw [cast_pos, Finset.card_pos]
+  refine mul_pos (mul_pos ?_ ?_) (mul_pos? _ ?_) <;> rw [cast_pos, Finset.card_pos]
   exacts [⟨_, hx⟩, nonempty_of_mem_parts _ (hA hx), ⟨_, hy⟩, nonempty_of_mem_parts _ (hB hy)]
 
 private theorem sum_density_div_card_le_density_add_eps [Nonempty α]

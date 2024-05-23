@@ -786,7 +786,7 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
         and_self_iff, pairwiseDisjoint_empty]
     · rw [u_succ]
       exact (hF (u n) IH).2.1
-  refine ⟨⋃ n, u n, countable_iUnion fun n => (u n).countable_toSet, ?_, ?_?, _,? _⟩
+  refine ⟨⋃ n, u n, countable_iUnion fun n => (u n).countable_toSet, ?_, ?_, ?_,? _⟩
   · intro p hp
     rcases mem_iUnion.1 hp with ⟨n, hn⟩
     exact (Pu n).2.1 p (Finset.mem_coe.1 hn)

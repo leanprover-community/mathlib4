@@ -69,7 +69,7 @@ theorem functionField_iff (Fqt : Type*) [Field Fqt] [Algebra Fq[X] Fqt]
     rw [Algebra.smul_def, Algebra.smul_def]
     congr
     refine congr_fun (f := fun c => algebraMap Fqt F (e c)) ?_ c -- Porting note: Added `(f := _)`
-    refine IsLocalization.ext (nonZeroDivisors Fq[X]) _ _ ?_ ?_? _? ?_ _ <;> intros <;>
+    refine IsLocalization.ext (nonZeroDivisors Fq[X]) _ _ ?_ ?_ ?_ ?_ ?_ <;> intros <;>
       simp only [AlgEquiv.map_one, RingHom.map_one, AlgEquiv.map_mul, RingHom.map_mul,
         AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
   constructor <;> intro h

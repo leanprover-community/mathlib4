@@ -175,7 +175,7 @@ and of `μ ^ m` are the same. -/
 theorem minpoly_eq_pow_coprime {m : ℕ} (hcop : Nat.Coprime m n) :
     minpoly ℤ μ = minpoly ℤ (μ ^ m) := by
   revert n hcop
-  refine UniqueFactorizationMonoid.induction_on_prime m ?_? ?_ _
+  refine UniqueFactorizationMonoid.induction_on_prime m ?_ ?_ ?_
   · intro h hn
     congr
     simpa [(Nat.coprime_zero_left _).mp hn] using h
