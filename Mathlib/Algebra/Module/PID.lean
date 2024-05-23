@@ -65,12 +65,10 @@ open Submodule
 open UniqueFactorizationMonoid
 
 theorem Submodule.isSemisimple_torsionBy_of_irreducible {a : R} (h : Irreducible a) :
-    IsSemisimpleModule R (torsionBy R M a) := by
-  rw [IsSemisimpleModule, ← (submodule_torsionBy_orderIso a).complementedLattice_iff]
-  set I : Ideal R := R ∙ a
-  have _i2 : I.IsMaximal := PrincipalIdealRing.isMaximal_of_irreducible h
-  let _i3 : Field (R ⧸ I) := Ideal.Quotient.field I
-  exact Module.Submodule.complementedLattice
+    IsSemisimpleModule R (torsionBy R M a) :=
+  haveI := PrincipalIdealRing.isMaximal_of_irreducible h
+  letI := Ideal.Quotient.field (R ∙ a)
+  (submodule_torsionBy_orderIso a).complementedLattice
 
 /-- A finitely generated torsion module over a PID is an internal direct sum of its
 `p i ^ e i`-torsion submodules for some primes `p i` and numbers `e i`. -/
