@@ -118,11 +118,9 @@ theorem card_Ioo : (Ioo a b).card = b - a - 1 :=
 
 @[simp]
 theorem card_uIcc : (uIcc a b).card = (b - a : ℤ).natAbs + 1 := by
-  refine' (card_Icc _ _).trans (Int.ofNat.inj _)
-  change ((↑) : ℕ → ℤ) _ = _
+  refine (card_Icc _ _).trans (Int.natCast_inj.mp ?_)
   rw [sup_eq_max, inf_eq_min, Int.ofNat_sub]
-  · change _ = ↑(Int.natAbs (b - a) + 1)
-    omega
+  · omega
   · exact min_le_max.trans le_self_add
 #align nat.card_uIcc Nat.card_uIcc
 
@@ -362,6 +360,19 @@ theorem Nat.decreasing_induction_of_not_bddAbove (hP : ¬BddAbove { x | P x }) (
   let ⟨_, hm, hl⟩ := not_bddAbove_iff.1 hP n
   decreasingInduction h hl.le hm
 #align nat.decreasing_induction_of_not_bdd_above Nat.decreasing_induction_of_not_bddAbove
+
+@[elab_as_elim]
+lemma Nat.strong_decreasing_induction (base : ∃ n, ∀ m > n, P m) (step : ∀ n, (∀ m > n, P m) → P n)
+    (n : ℕ) : P n := by
+  apply Nat.decreasing_induction_of_not_bddAbove (P := fun n ↦ ∀ m ≥ n, P m) _ _ n n le_rfl
+  · intro n ih m hm
+    rcases hm.eq_or_lt with rfl | hm
+    · exact step n ih
+    · exact ih m hm
+  · rintro ⟨b, hb⟩
+    rcases base with ⟨n, hn⟩
+    specialize @hb (n + b + 1) (fun m hm ↦ hn _ _)
+    all_goals omega
 
 theorem Nat.decreasing_induction_of_infinite (hP : { x | P x }.Infinite) (n : ℕ) : P n :=
   Nat.decreasing_induction_of_not_bddAbove h (mt BddAbove.finite hP) n
