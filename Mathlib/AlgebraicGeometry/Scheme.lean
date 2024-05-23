@@ -84,7 +84,7 @@ def forgetToLocallyRingedSpace : Scheme ⥤ LocallyRingedSpace :=
 #align algebraic_geometry.Scheme.forget_to_LocallyRingedSpace AlgebraicGeometry.Scheme.forgetToLocallyRingedSpace
 
 /-- The forget functor `Scheme ⥤ LocallyRingedSpace` is fully faithful. -/
-@[simps! preimage]
+@[simps!]
 def fullyFaithfulForgetToLocallyRingedSpace :
     forgetToLocallyRingedSpace.FullyFaithful :=
   fullyFaithfulInducedFunctor _
