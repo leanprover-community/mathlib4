@@ -47,7 +47,9 @@ Some examples of EDSs include
 
 ## Main statements
 
- * `isEllDivSequence_normEDS`: `normEDS` satisfies `IsEllDivSequence`.
+ * `IsEllDivSequence.normEDS`: `normEDS` satisfies `IsEllDivSequence`.
+ * `IsEllDivSequence.eq_normEDS`: an EDS whose first two terms are not zero divisors
+  is a constant multiple of a normalised EDS.
 
 ## Implementation notes
 
