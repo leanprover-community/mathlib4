@@ -288,53 +288,56 @@ theorem firstLemma (A : ℕ → Set (∀ n, X n)) (A_mem : ∀ n, A n ∈ cylind
     fun k y h ↦ auxiliaire μ χ N χ_dep mχ 1 (by norm_num) χ_le (k + 1) (anti_lma (k + 2))
       (l (k + 2)) (hl (k + 2)) ε y h
   let z := key init ind
-  have crucial : ∀ k x n, ε ≤ (∫⋯∫⁻_Finset.Icc (k + 1) (N n), χ n ∂μ)
-      (Function.updateFinset x (Finset.Icc 0 k) (fun (i : Finset.Icc 0 k) ↦ z i)) := by
+  have crucial : ∀ k x n, ε ≤ (∫⋯∫⁻_Finset.Icc k (N n), χ n ∂μ)
+      (Function.updateFinset x (Finset.Ico 0 k) (fun i ↦ z i)) := by
     intro k
     induction k with
-    | zero =>
-      intro x n
-      have : Function.updateFinset x (Finset.Icc 0 0) (fun i ↦ z i) =
-          Function.update x 0 (z 0) := by
-        ext i
-        simp [Function.updateFinset, Function.update]
-        split_ifs with h
-        · aesop
-        · rfl
-      rw [this]
-      convert hinit x n
+    | zero => simp [hpos]
     | succ m hm =>
-      intro x n
-      have : Function.updateFinset x (Finset.Icc 0 (m + 1)) (fun i ↦ z i) =
-          Function.update (Function.updateFinset x (Finset.Icc 0 m) (fun i ↦ z i))
-          (m + 1) (z (m + 1)) := by
-        ext i
-        simp [Function.updateFinset, Function.update]
-        by_cases hi : i ≤ m + 1
-        · simp [hi]
-          by_cases hi' : i = m + 1
-          · simp [hi']
-            aesop
-          · have : i ≤ m := Nat.lt_succ.1 <| lt_iff_le_and_ne.2 ⟨hi, hi'⟩
-            simp [hi', this]
-        have h1 : ¬i = m + 1 := fun h ↦ hi (le_of_eq h)
-        have h2 : ¬i ≤ m := fun h ↦ hi (le_trans h (Nat.le_succ _))
-        simp [hi, h1, h2]
-      rw [this]
-      convert hind m (fun i ↦ z i) hm x n using 2
+      induction m with
+      | zero =>
+        intro x n
+        have : Function.updateFinset x (Finset.Ico 0 1) (fun i ↦ z i) =
+            Function.update x 0 (z 0) := by
+          ext i
+          simp [Function.updateFinset, Function.update]
+          split_ifs with h
+          · aesop
+          · rfl
+        rw [this]
+        exact hinit x n
+      | succ p _ =>
+        intro x n
+        have : Function.updateFinset x (Finset.Ico 0 (p + 2)) (fun i ↦ z i) =
+            Function.update (Function.updateFinset x (Finset.Ico 0 (p + 1)) (fun i ↦ z i))
+            (p + 1) (z (p + 1)) := by
+          ext i
+          simp [Function.updateFinset, Function.update]
+          split_ifs with h1 h2 h3 h4 h5
+          · aesop
+          · rfl
+          · rw [Nat.lt_succ] at h1
+            exact (not_or.2 ⟨h2, h3⟩ <| le_iff_eq_or_lt.1 h1).elim
+          · rw [h4] at h1
+            exfalso
+            linarith [h1]
+          · exact (h1 <| lt_trans h5 (p + 1).lt_succ_self).elim
+          · rfl
+        rw [this]
+        exact hind p (fun i ↦ z i) hm x n
   by_cases ε_eq : 0 < ε
   · have incr : ∀ n, z ∈ A n := by
       intro n
       have : χ n z = (∫⋯∫⁻_Finset.Icc (N n + 1) (N n), χ n ∂μ)
-          (Function.updateFinset z (Finset.Icc 0 (N n)) (fun i ↦ z i)) := by
+          (Function.updateFinset z (Finset.Ico 0 (N n + 1)) (fun i ↦ z i)) := by
         rw [Finset.Icc_eq_empty, lmarginal_empty]
         · congr
           ext i
-          by_cases h : i ∈ Finset.Icc 0 (N n) <;> simp [Function.updateFinset, h]
+          by_cases h : i ∈ Finset.Ico 0 (N n + 1) <;> simp [Function.updateFinset, h]
         · simp
       have : 0 < χ n z := by
         rw [this]
-        exact lt_of_lt_of_le ε_eq (crucial _ _ _)
+        exact lt_of_lt_of_le ε_eq (crucial (N n + 1) z n)
       exact mem_of_indicator_ne_zero (ne_of_lt this).symm
     exact (A_inter ▸ mem_iInter.2 incr).elim
   · have : ε = 0 := nonpos_iff_eq_zero.1 <| not_lt.1 ε_eq
@@ -342,7 +345,7 @@ theorem firstLemma (A : ℕ → Set (∀ n, X n)) (A_mem : ∀ n, A n ∈ cylind
     rw [← this, ← hε Classical.ofNonempty]
     exact hl _ _
 
-theorem kolContent_sigma_subadditive_bis ⦃f : ℕ → Set (∀ n, X n)⦄
+theorem kolContent_sigma_subadditive ⦃f : ℕ → Set (∀ n, X n)⦄
     (hf : ∀ i, f i ∈ cylinders X) (hf_Union : (⋃ i, f i) ∈ cylinders X) :
     kolContent (isProjectiveMeasureFamily_prod μ) (⋃ i, f i) ≤
     ∑' i, kolContent (isProjectiveMeasureFamily_prod μ) (f i) := by
@@ -365,7 +368,7 @@ theorem kolContent_sigma_subadditive_bis ⦃f : ℕ → Set (∀ n, X n)⦄
 noncomputable def measure_produit : Measure (∀ n, X n) :=
   Measure.ofAddContent setSemiringCylinders generateFrom_cylinders
     (kolContent (isProjectiveMeasureFamily_prod μ))
-    (kolContent_sigma_subadditive_bis μ)
+    (kolContent_sigma_subadditive μ)
 
 theorem isProjectiveLimit_measure_produit :
     IsProjectiveLimit (measure_produit μ) (fun S : Finset ℕ ↦ (Measure.pi (fun n : S ↦ μ n))) := by
