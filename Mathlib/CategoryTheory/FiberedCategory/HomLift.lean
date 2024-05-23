@@ -12,22 +12,17 @@ import Mathlib.CategoryTheory.CommSq
 # HomLift
 
 Given a functor `p : 𝒳 ⥤ 𝒮`, this file provides API for expressing the fact that `p(φ) = f`
-for given morphisms `φ` and `f`.
+for given morphisms `φ` and `f`. The reason this API is needed is because, in general, `p.map φ = f`
+does not make sense when the domain and/or codomain of `φ` and `f` are not definitionally equal.
 
 ## Main definition
 
-Given morphism `φ : a ⟶ b` in `𝒳` and `f : R ⟶ S` in `𝒮`, `p.IsHomLift f φ` is defined as a
-structure containing the data that `p(a) = R`, `p(b) = S` and the fact that the following square
-commutes
-```
-  p(a) --p(φ)--> p(b)
-  |               |
-  |               |
-  v               v
-  R -----f------> S
-```
-where the vertical arrows are given by `eqToHom` corresponding to the equalities `p(a) = R` and
-`p(b) = S`.
+Given morphism `φ : a ⟶ b` in `𝒳` and `f : R ⟶ S` in `𝒮`, `p.IsHomLift f φ` is a class, defined
+using the auxillary inductive type `IsHomLiftAux` which expresses the fact that `f = p(φ)`.
+
+We also define a macro `subst_hom_lift p f φ` which can be used to substitute `f` with `p(φ)` in a
+goal, this tactic is just short for `obtain ⟨⟩ := Functor.IsHomLift.cond (p:=p) (f:=f) (φ:=φ)`, and
+it is used to make the code more readable.
 
 -/
 
