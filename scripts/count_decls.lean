@@ -12,6 +12,21 @@ This file is used by the `Periodic reports` script to generate a tally of declar
 in `Mathlib`, `Batteries` and core.
 
 Source: https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Metamathematics.3A.20Theorems.20by.20Domain.20Areas/near/374090639
+
+## "Minimal" imports
+
+These are somewhat minimized imports.
+The list highlights what commands should be expected to be present in the environment
+for the report to work.
+This may be useful to run the report on older versions of `Mathlib`.
+
+```lean
+import Lean.Data.HashSet       -- for instance `HashSet` ;-)
+import Lean.Meta.InferType     -- for instance `isProp`
+import Lean.Elab.Command       -- for instance `Command.liftCoreM`
+import Batteries.Lean.SMap     -- for instance `Lean.SMap.foldM`
+import Mathlib.Lean.Expr.Basic -- for instance `Lean.Name.isBlackListed`
+```
 -/
 
 namespace PeriodicReports
@@ -24,10 +39,10 @@ open Lean Elab Meta
 * `defns` are all remaining declarations.
 -/
 structure Tally where
-  props : HashSet Name := {}
-  defns : HashSet Name := {}
-  preds : HashSet Name := {}
-  types : HashSet Name := {}
+  props : HashSet Name := .empty
+  defns : HashSet Name := .empty
+  preds : HashSet Name := .empty
+  types : HashSet Name := .empty
 
 /-- `toString t` produces a string where each line is either
 * the (human-readable) name of a field of `t : Tally`, or
