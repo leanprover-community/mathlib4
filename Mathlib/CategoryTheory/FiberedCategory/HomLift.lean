@@ -141,7 +141,7 @@ instance eqToHom_comp_lift {R S : 𝒮} {a b b' : 𝒳} (f : R ⟶ S) (φ : a �
   comp_id f ▸ comp φ (eqToHom h)
 
 instance lift_eqToHom_comp {R' R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (h : R' = R)
-    [p.IsHomLift f φ] : p.IsHomLift ((eqToHom h) ≫ f) φ :=
+    [p.IsHomLift f φ] : p.IsHomLift (eqToHom h ≫ f) φ :=
   have := id_lift_eqToHom_codomain h (domain_eq p f φ)
   id_comp φ ▸ comp (𝟙 a) φ
 
