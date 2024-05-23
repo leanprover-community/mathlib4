@@ -421,8 +421,8 @@ variable (M)
 
 /-- Left tensoring a module with a quotient of the ring is the same as
 quotienting that module by the corresponding submodule. -/
-noncomputable def lTensor_ring_mod_ideal_equiv_mod_ideal_smul (I : Ideal R) :
-    ((R⧸I) ⊗[R] M) ≃ₗ[R] M⧸(I • (⊤ : Submodule R M)) :=
+noncomputable def quotTensorEquivQuotSMul (I : Ideal R) :
+    (R ⧸ I) ⊗[R] M ≃ₗ[R] M ⧸ (I • ⊤ : Submodule R M) :=
   (rTensor.equiv M (exact_subtype_mkQ I) I.mkQ_surjective).symm.trans <|
     Submodule.Quotient.equiv _ _ (TensorProduct.lid R M) <|
       Eq.trans (LinearMap.range_comp _ _).symm <|
@@ -432,42 +432,59 @@ noncomputable def lTensor_ring_mod_ideal_equiv_mod_ideal_smul (I : Ideal R) :
 
 /-- Right tensoring a module with a quotient of the ring is the same as
 quotienting that module by the corresponding submodule. -/
-noncomputable def rTensor_ring_mod_ideal_equiv_mod_ideal_smul (I : Ideal R) :
-    (M ⊗[R] (R⧸I)) ≃ₗ[R] M⧸(I • (⊤ : Submodule R M)) :=
-  TensorProduct.comm R M _ ≪≫ₗ lTensor_ring_mod_ideal_equiv_mod_ideal_smul M I
+noncomputable def tensorQuotEquivQuotSMul (I : Ideal R) :
+    M ⊗[R] (R ⧸ I) ≃ₗ[R] M ⧸ (I • ⊤ : Submodule R M) :=
+  TensorProduct.comm R M _ ≪≫ₗ quotTensorEquivQuotSMul M I
 
 variable {M}
 
 @[simp]
-lemma lTensor_ring_mod_ideal_equiv_mod_ideal_smul_apply
-    (I : Ideal R) (r : R) (x : M) :
-    lTensor_ring_mod_ideal_equiv_mod_ideal_smul M I
-      (Ideal.Quotient.mk I r ⊗ₜ[R] x) = Submodule.Quotient.mk (r • x) :=
-  (lTensor_ring_mod_ideal_equiv_mod_ideal_smul M I).eq_symm_apply.mp <|
+lemma quotTensorEquivQuotSMul_mk_tmul (I : Ideal R) (r : R) (x : M) :
+    quotTensorEquivQuotSMul M I (Ideal.Quotient.mk I r ⊗ₜ[R] x) =
+      Submodule.Quotient.mk (r • x) :=
+  (quotTensorEquivQuotSMul M I).eq_symm_apply.mp <|
     Eq.trans (congrArg (· ⊗ₜ[R] x) <|
         Eq.trans (congrArg (Ideal.Quotient.mk I)
                     (Eq.trans (smul_eq_mul R) (mul_one r))).symm <|
           Submodule.Quotient.mk_smul I r 1) <|
       smul_tmul r _ x
 
-@[simp]
-lemma lTensor_ring_mod_ideal_equiv_mod_ideal_smul_symm_apply
-    (I : Ideal R) (x : M) :
-    (lTensor_ring_mod_ideal_equiv_mod_ideal_smul M I).symm
-      (Submodule.Quotient.mk x) = 1 ⊗ₜ[R] x := rfl
+lemma quotTensorEquivQuotSMul_comp_mkQ_rTensor (I : Ideal R) :
+    quotTensorEquivQuotSMul M I ∘ₗ I.mkQ.rTensor M =
+      (I • ⊤ : Submodule R M).mkQ ∘ₗ TensorProduct.lid R M :=
+  TensorProduct.ext' (quotTensorEquivQuotSMul_mk_tmul I)
 
 @[simp]
-lemma rTensor_ring_mod_ideal_equiv_mod_ideal_smul_apply
-    (I : Ideal R) (r : R) (x : M) :
-    rTensor_ring_mod_ideal_equiv_mod_ideal_smul M I
-      (x ⊗ₜ[R] Ideal.Quotient.mk I r) = Submodule.Quotient.mk (r • x) :=
-  lTensor_ring_mod_ideal_equiv_mod_ideal_smul_apply I r x
+lemma quotTensorEquivQuotSMul_symm_mk (I : Ideal R) (x : M) :
+    (quotTensorEquivQuotSMul M I).symm (Submodule.Quotient.mk x) = 1 ⊗ₜ[R] x :=
+  rfl
+
+lemma quotTensorEquivQuotSMul_symm_comp_mkQ (I : Ideal R) :
+    (quotTensorEquivQuotSMul M I).symm ∘ₗ (I • ⊤ : Submodule R M).mkQ =
+      TensorProduct.mk R (R ⧸ I) M 1 :=
+  LinearMap.ext (quotTensorEquivQuotSMul_symm_mk I)
 
 @[simp]
-lemma rTensor_ring_mod_ideal_equiv_mod_ideal_smul_symm_apply
-    (I : Ideal R) (x : M) :
-    (rTensor_ring_mod_ideal_equiv_mod_ideal_smul M I).symm
-      (Submodule.Quotient.mk x) = x ⊗ₜ[R] 1 := rfl
+lemma tensorQuotEquivQuotSMul_tmul_mk (I : Ideal R) (x : M) (r : R) :
+    tensorQuotEquivQuotSMul M I (x ⊗ₜ[R] Ideal.Quotient.mk I r) =
+      Submodule.Quotient.mk (r • x) :=
+  quotTensorEquivQuotSMul_mk_tmul I r x
+
+lemma tensorQuotEquivQuotSMul_comp_mkQ_lTensor (I : Ideal R) :
+    tensorQuotEquivQuotSMul M I ∘ₗ I.mkQ.lTensor M =
+      (I • ⊤ : Submodule R M).mkQ ∘ₗ TensorProduct.rid R M :=
+  TensorProduct.ext' (tensorQuotEquivQuotSMul_tmul_mk I)
+
+@[simp]
+lemma tensorQuotEquivQuotSMul_symm_mk (I : Ideal R) (x : M) :
+    (tensorQuotEquivQuotSMul M I).symm (Submodule.Quotient.mk x) = x ⊗ₜ[R] 1 :=
+  rfl
+
+lemma tensorQuotEquivQuotSMul_symm_comp_mkQ (I : Ideal R) :
+    (tensorQuotEquivQuotSMul M I).symm ∘ₗ (I • ⊤ : Submodule R M).mkQ =
+      (TensorProduct.mk R M (R ⧸ I)).flip 1 :=
+  LinearMap.ext (tensorQuotEquivQuotSMul_symm_mk I)
+
 
 end Modules
 
