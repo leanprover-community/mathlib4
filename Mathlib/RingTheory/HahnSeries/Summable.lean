@@ -65,8 +65,48 @@ theorem support_pow_subset_closure [OrderedCancelAddCommMonoid Γ] [Semiring R] 
 
 theorem support_smul_pow_subset_closure [OrderedCancelAddCommMonoid Γ] [Semiring R]
     (f : ℕ → R) (x : HahnSeries Γ R) (n : ℕ) :
-    support (f n • x ^ n) ⊆ AddSubmonoid.closure (support x) :=
+    (f n • x ^ n).support ⊆ AddSubmonoid.closure x.support :=
   (Function.support_const_smul_subset (f n) (x ^ n).coeff).trans (support_pow_subset_closure x n)
+
+theorem support_prod_subset_add_support [OrderedCancelAddCommMonoid Γ] [CommSemiring R]
+    (σ : Type*) (x : σ →₀ HahnSeries Γ R) (s : Finset σ):
+    (∏ i ∈ s, (x i)).support ⊆ ∑ i ∈ s, (x i).support := by
+  refine Finset.cons_induction ?_ ?_ s
+  · rw [prod_empty, sum_empty, ← single_zero_one, ← Set.singleton_zero]
+    exact support_single_subset
+  · intros _ _ _ his _ hg
+    simp_all only [cons_eq_insert, not_false_eq_true, prod_insert, sum_insert]
+    exact support_mul_subset_add_support.trans (Set.add_subset_add (fun ⦃a⦄ a ↦ a) his) hg
+
+theorem support_MVpow_subset_closure [OrderedCancelAddCommMonoid Γ] [CommSemiring R]
+    (σ : Type*) (x : σ →₀ HahnSeries Γ R) (n : σ →₀ ℕ) :
+    (∏ i ∈ x.support, (x i) ^ (n i)).support ⊆ AddSubmonoid.closure (⋃ i : σ, (x i).support) := by
+  refine Finset.cons_induction ?_ ?_ x.support
+  · rw [prod_empty, ← single_zero_one]
+    have h₂ : 0 ∈ AddSubmonoid.closure (⋃ i, (x i).support) := by
+      exact AddSubmonoid.zero_mem (AddSubmonoid.closure (⋃ i, (x i).support))
+    intro g hg
+    simp_all
+  · intro i _ _ hx
+    rw [prod_cons]
+    have hi : (x i ^ n i).support ⊆ AddSubmonoid.closure (⋃ i, (x i).support) :=
+      (support_pow_subset_closure (x i) (n i)).trans <| AddSubmonoid.closure_mono <|
+        Set.subset_iUnion_of_subset i fun ⦃a⦄ a ↦ a
+    exact (support_mul_subset_add_support (x := x i ^ n i)).trans (AddSubmonoid.add_subset hi hx)
+
+theorem support_smul_MVpow_subset_closure [OrderedCancelAddCommMonoid Γ] [CommSemiring R]
+    (σ : Type*) (f : (σ →₀ ℕ) → R) (x : σ →₀ HahnSeries Γ R) (n : σ →₀ ℕ) :
+    support (f n • ∏ i ∈ x.support, (x i) ^ (n i)) ⊆
+      AddSubmonoid.closure (⋃ i : σ, (x i).support) := by
+  exact (Function.support_const_smul_subset (f n) (∏ i ∈ x.support, x i ^ n i).coeff).trans
+    (support_MVpow_subset_closure σ x n)
+
+/-!
+theorem isPWO_iUnion_support_MVpow [LinearOrderedCancelAddCommMonoid Γ] [CommSemiring R]
+    (σ : Type*) (f : (σ →₀ ℕ) → R) (x : σ →₀ HahnSeries Γ R) (hx : ∀ i : σ, 0 ≤ (x i).order)
+    (n : σ →₀ ℕ) : (⋃ n : σ →₀ ℕ, (f n •  ∏ i ∈ x.support, (x i) ^ (n i)).support).IsPWO := by
+  sorry
+-/
 
 theorem isPWO_iUnion_support_smul_pow [LinearOrderedCancelAddCommMonoid Γ] [Semiring R] (f : ℕ → R)
     (x : HahnSeries Γ R) (hx : 0 ≤ x.order) :
