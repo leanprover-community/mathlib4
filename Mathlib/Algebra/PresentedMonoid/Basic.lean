@@ -209,7 +209,7 @@ private theorem iso_helper_inv : (StepsTo (rels_iso e rels) ⇒ StepsTo rels)
     exact StepsTo.left ih
   | right _ ih =>
     rw [H, H]
-    exact StepsTo.right ih 
+    exact StepsTo.right ih
 
 /-- forward direction of the bijection for the isomorphism -/
 private def iso_function : PresentedMonoid rels → PresentedMonoid (rels_iso e rels) :=
