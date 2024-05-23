@@ -279,8 +279,8 @@ def HasForget₂.mk' {C : Type u} {D : Type u'} [Category.{v} C] [ConcreteCatego
     [Category.{v'} D] [ConcreteCategory.{w} D]
     (obj : C → D) (h_obj : ∀ X, (forget D).obj (obj X) = (forget C).obj X)
     (map : ∀ {X Y}, (X ⟶ Y) → (obj X ⟶ obj Y))
-    (h_map : ∀ {X Y} {f : X ⟶ Y}, HEq ((forget D).map (map f)) ((forget C).map f)) : HasForget₂ C D
-    where
+    (h_map : ∀ {X Y} {f : X ⟶ Y}, HEq ((forget D).map (map f)) ((forget C).map f)) :
+    HasForget₂ C D where
   forget₂ := Functor.Faithful.div _ _ _ @h_obj _ @h_map
   forget_comp := by apply Functor.Faithful.div_comp
 #align category_theory.has_forget₂.mk' CategoryTheory.HasForget₂.mk'

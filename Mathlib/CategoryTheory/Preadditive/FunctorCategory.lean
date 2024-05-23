@@ -85,8 +85,7 @@ variable {F G : C ⥤ D}
 /-- Application of a natural transformation at a fixed object,
 as group homomorphism -/
 @[simps]
-def appHom (X : C) : (F ⟶ G) →+ (F.obj X ⟶ G.obj X)
-    where
+def appHom (X : C) : (F ⟶ G) →+ (F.obj X ⟶ G.obj X) where
   toFun α := α.app X
   map_zero' := rfl
   map_add' _ _ := rfl

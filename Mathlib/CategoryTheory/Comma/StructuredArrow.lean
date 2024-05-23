@@ -308,8 +308,8 @@ instance isEquivalence_pre (S : D) (F : B ⥤ C) (G : C ⥤ D) [F.IsEquivalence]
 
 /-- The functor `(S, F) ⥤ (G(S), F ⋙ G)`. -/
 @[simps]
-def post (S : C) (F : B ⥤ C) (G : C ⥤ D) : StructuredArrow S F ⥤ StructuredArrow (G.obj S) (F ⋙ G)
-    where
+def post (S : C) (F : B ⥤ C) (G : C ⥤ D) :
+    StructuredArrow S F ⥤ StructuredArrow (G.obj S) (F ⋙ G) where
   obj X := StructuredArrow.mk (G.map X.hom)
   map f := StructuredArrow.homMk f.right (by simp [Functor.comp_map, ← G.map_comp, ← f.w])
 #align category_theory.structured_arrow.post CategoryTheory.StructuredArrow.post
@@ -847,8 +847,7 @@ category of structured arrows `op d ⟶ F.op.obj c` to the category of costructu
 -/
 @[simps]
 def toCostructuredArrow' (F : C ⥤ D) (d : D) :
-    (StructuredArrow (op d) F.op)ᵒᵖ ⥤ CostructuredArrow F d
-    where
+    (StructuredArrow (op d) F.op)ᵒᵖ ⥤ CostructuredArrow F d where
   obj X := @CostructuredArrow.mk _ _ _ _ _ (unop X.unop.right) F X.unop.hom.unop
   map f :=
     CostructuredArrow.homMk f.unop.right.unop
@@ -868,8 +867,8 @@ category of costructured arrows `F.obj c ⟶ d` to the category of structured ar
 `op d ⟶ F.op.obj c`.
 -/
 @[simps]
-def toStructuredArrow (F : C ⥤ D) (d : D) : (CostructuredArrow F d)ᵒᵖ ⥤ StructuredArrow (op d) F.op
-    where
+def toStructuredArrow (F : C ⥤ D) (d : D) :
+    (CostructuredArrow F d)ᵒᵖ ⥤ StructuredArrow (op d) F.op where
   obj X := @StructuredArrow.mk _ _ _ _ _ (op X.unop.left) F.op X.unop.hom.op
   map f :=
     StructuredArrow.homMk f.unop.left.op
@@ -884,8 +883,8 @@ category of costructured arrows `F.op.obj c ⟶ op d` to the category of structu
 `d ⟶ F.obj c`.
 -/
 @[simps]
-def toStructuredArrow' (F : C ⥤ D) (d : D) : (CostructuredArrow F.op (op d))ᵒᵖ ⥤ StructuredArrow d F
-    where
+def toStructuredArrow' (F : C ⥤ D) (d : D) :
+    (CostructuredArrow F.op (op d))ᵒᵖ ⥤ StructuredArrow d F where
   obj X := @StructuredArrow.mk _ _ _ _ _ (unop X.unop.left) F X.unop.hom.unop
   map f :=
     StructuredArrow.homMk f.unop.left.unop

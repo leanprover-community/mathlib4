@@ -192,7 +192,7 @@ theorem isIntegral_coe (x : 𝓞 K) : IsIntegral ℤ (algebraMap _ K x) :=
 
 theorem isIntegral (x : 𝓞 K) : IsIntegral ℤ x := by
   obtain ⟨P, hPm, hP⟩ := x.isIntegral_coe
-  refine' ⟨P, hPm, _⟩
+  refine ⟨P, hPm, ?_⟩
   rwa [IsScalarTower.algebraMap_eq (S := 𝓞 K), ← Polynomial.hom_eval₂, coe_eq_zero_iff] at hP
 #align number_field.is_integral_of_mem_ring_of_integers NumberField.RingOfIntegers.isIntegral
 

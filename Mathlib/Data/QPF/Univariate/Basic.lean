@@ -530,7 +530,7 @@ def comp : QPF (Functor.Comp F₂ F₁) where
   repr {α} := by
     dsimp [Functor.Comp]
     intro y
-    refine' ⟨⟨(repr y).1, fun u => (repr ((repr y).2 u)).1⟩, _⟩
+    refine ⟨⟨(repr y).1, fun u => (repr ((repr y).2 u)).1⟩, ?_⟩
     dsimp [PFunctor.comp]
     intro x
     exact (repr ((repr y).2 x.1)).snd x.2
@@ -631,7 +631,7 @@ theorem has_good_supp_iff {α : Type u} (x : F α) :
     have : Liftp (supp x) x := by rw [h]; intro u; exact id
     rw [liftp_iff] at this
     rcases this with ⟨a, f, xeq, h'⟩
-    refine' ⟨a, f, xeq.symm, _⟩
+    refine ⟨a, f, xeq.symm, ?_⟩
     intro a' f' h''
     rintro u ⟨i, _, hfi⟩
     have : u ∈ supp x := by rw [← hfi]; apply h'
@@ -642,7 +642,7 @@ theorem has_good_supp_iff {α : Type u} (x : F α) :
     rw [← f'ieq]
     apply h'
   intro h'
-  refine' ⟨a, f, xeq.symm, _⟩; intro i
+  refine ⟨a, f, xeq.symm, ?_⟩; intro i
   apply h'; rw [mem_supp]
   intro a' f' xeq'
   apply h a' f' xeq'
