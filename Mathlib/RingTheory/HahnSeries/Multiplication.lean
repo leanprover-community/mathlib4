@@ -74,7 +74,7 @@ theorem orderTop_one [MulZeroOneClass R] [Nontrivial R] : orderTop (1 : HahnSeri
 
 @[simp]
 theorem order_one [MulZeroOneClass R] : order (1 : HahnSeries Γ R) = 0 := by
-  cases' subsingleton_or_nontrivial R with h h <;> haveI := h
+  cases subsingleton_or_nontrivial R
   · rw [Subsingleton.elim (1 : HahnSeries Γ R) 0, order_zero]
   · exact order_single one_ne_zero
 #align hahn_series.order_one HahnSeries.order_one
