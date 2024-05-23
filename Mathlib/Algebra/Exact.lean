@@ -44,8 +44,8 @@ lemma Exact.apply_apply_eq_zero [Zero P] (h : Exact f g) (x : M) :
 lemma Exact.comp_eq_zero [Zero P] (h : Exact f g) : g.comp f = 0 :=
   funext h.apply_apply_eq_zero
 
-lemma Exact.of_comp_eq_zero_of_eq_zero_imp_mem_range [Zero P]
-    (h1 : g ∘ f = 0) (h2 : ∀ x, g x = 0 → x ∈ Set.range f) : Exact f g :=
+lemma Exact.of_comp_of_mem_range [Zero P] (h1 : g ∘ f = 0)
+    (h2 : ∀ x, g x = 0 → x ∈ Set.range f) : Exact f g :=
   fun y => Iff.intro (h2 y) <|
     Exists.rec ((forall_apply_eq_imp_iff (p := (g · = 0))).mpr (congrFun h1) y)
 
@@ -70,21 +70,21 @@ lemma _root_.LinearMap.exact_iff :
 
 lemma _root_.LinearMap.exact_of_comp_eq_zero_of_ker_le_range
     (h1 : g ∘ₗ f = 0) (h2 : ker g ≤ range f) : Exact f g :=
-  Exact.of_comp_eq_zero_of_eq_zero_imp_mem_range (congrArg DFunLike.coe h1) h2
+  Exact.of_comp_of_mem_range (congrArg DFunLike.coe h1) h2
 
-lemma _root_.LinearMap.exact_of_comp_eq_zero_of_eq_zero_imp_mem_range
+lemma _root_.LinearMap.exact_of_comp_of_mem_range
     (h1 : g ∘ₗ f = 0) (h2 : ∀ x, g x = 0 → x ∈ range f) : Exact f g :=
   exact_of_comp_eq_zero_of_ker_le_range h1 h2
 
 lemma Exact.linearMap_comp_eq_zero (h : Exact f g) : g.comp f = 0 :=
   DFunLike.coe_injective h.comp_eq_zero
 
-lemma Surjective.precomp_exact_iff_exact {p : M' →ₗ[R] M} (h : Surjective p) :
+lemma Surjective.comp_exact_iff_exact {p : M' →ₗ[R] M} (h : Surjective p) :
     Exact (f ∘ₗ p) g ↔ Exact f g :=
   iff_of_eq <| forall_congr fun x =>
     congrArg (g x = 0 ↔ x ∈ ·) (h.range_comp f)
 
-lemma Injective.postcomp_exact_iff_exact {i : P →ₗ[R] P'} (h : Injective i) :
+lemma Injective.comp_exact_iff_exact {i : P →ₗ[R] P'} (h : Injective i) :
     Exact f (i ∘ₗ g) ↔ Exact f g :=
   forall_congr' fun _ => iff_congr (LinearMap.map_eq_zero_iff _ h) Iff.rfl
 
@@ -97,15 +97,15 @@ variable
     {f₁₂ : M →ₗ[R] N} {f₂₃ : N →ₗ[R] P} {g₁₂ : M' →ₗ[R] N'}
     {g₂₃ : N' →ₗ[R] P'} {e₁ : M ≃ₗ[R] M'} {e₂ : N ≃ₗ[R] N'} {e₃ : P ≃ₗ[R] P'}
 
-lemma Exact.of_ladder_linear_equiv_of_exact
+lemma Exact.of_ladder_linearEquiv_of_exact
     (h₁₂ : g₁₂ ∘ₗ e₁ = e₂ ∘ₗ f₁₂) (h₂₃ : g₂₃ ∘ₗ e₂ = e₃ ∘ₗ f₂₃)
     (H : Exact f₁₂ f₂₃) : Exact g₁₂ g₂₃ := by
   rw [← LinearEquiv.eq_comp_toLinearMap_symm] at h₁₂ h₂₃
   rwa [h₁₂, h₂₃, comp_assoc, LinearEquiv.conj_exact_iff_exact,
-    e₁.symm.surjective.precomp_exact_iff_exact,
-    e₃.injective.postcomp_exact_iff_exact]
+    e₁.symm.surjective.comp_exact_iff_exact,
+    e₃.injective.comp_exact_iff_exact]
 
-lemma Exact.iff_of_ladder_linear_equiv
+lemma Exact.iff_of_ladder_linearEquiv
     (h₁₂ : g₁₂ ∘ₗ e₁ = e₂ ∘ₗ f₁₂) (h₂₃ : g₂₃ ∘ₗ e₂ = e₃ ∘ₗ f₂₃) :
     Exact g₁₂ g₂₃ ↔ Exact f₁₂ f₂₃ where
   mp := have h₂₁ := (e₂.eq_toLinearMap_symm_comp (f₁₂ ∘ₗ e₁.symm) g₁₂).mpr <|
@@ -114,8 +114,8 @@ lemma Exact.iff_of_ladder_linear_equiv
         have h₃₂ := (e₃.eq_toLinearMap_symm_comp (f₂₃ ∘ₗ e₂.symm) g₂₃).mpr <|
           Eq.trans (comp_assoc _ _ _).symm <|
             (e₂.comp_toLinearMap_symm_eq g₂₃ (e₃ ∘ₗ f₂₃)).mpr h₂₃.symm
-        of_ladder_linear_equiv_of_exact h₂₁ h₃₂
-  mpr := of_ladder_linear_equiv_of_exact h₁₂ h₂₃
+        of_ladder_linearEquiv_of_exact h₂₁ h₃₂
+  mpr := of_ladder_linearEquiv_of_exact h₁₂ h₂₃
 
 end LinearMap
 
@@ -126,7 +126,8 @@ open LinearMap Submodule
 variable [Ring R] [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
     [Module R M] [Module R N] [Module R P]
 
-lemma Exact.descends_to_quotient_iff {f : M →ₗ[R] N} {g : N →ₗ[R] P}
+/-- A necessary and sufficient condition for an exact sequence to descend to a quotient. -/
+lemma Exact.exact_mapQ_iff {f : M →ₗ[R] N} {g : N →ₗ[R] P}
     (hfg : Exact f g) {p q r} (hpq : p ≤ comap f q) (hqr : q ≤ comap g r) :
     Exact (mapQ p q f hpq) (mapQ q r g hqr) ↔ range g ⊓ r ≤ map g q := by
   rw [exact_iff, ← (comap_injective_of_surjective (mkQ_surjective _)).eq_iff]
