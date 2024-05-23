@@ -916,7 +916,7 @@ theorem _root_.FirstOrder.Language.Formula.realize_iAlls
   let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
   rw [Formula.iAlls]
   simp only [Nat.add_zero, realize_alls, realize_relabel, Function.comp,
-    castAdd_zero, castIso_refl, OrderIso.refl_apply, Sum.elim_map, id_eq]
+    castAdd_zero, finCongr_refl, OrderIso.refl_apply, Sum.elim_map, id_eq]
   refine Equiv.forall_congr ?_ ?_
   · exact ⟨fun v => v ∘ e, fun v => v ∘ e.symm,
       fun _ => by simp [Function.comp],
@@ -942,7 +942,7 @@ theorem _root_.FirstOrder.Language.Formula.realize_iExs
   let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
   rw [Formula.iExs]
   simp only [Nat.add_zero, realize_exs, realize_relabel, Function.comp,
-    castAdd_zero, castIso_refl, OrderIso.refl_apply, Sum.elim_map, id_eq]
+    castAdd_zero, finCongr_refl, OrderIso.refl_apply, Sum.elim_map, id_eq]
   rw [← not_iff_not, not_exists, not_exists]
   refine Equiv.forall_congr ?_ ?_
   · exact ⟨fun v => v ∘ e, fun v => v ∘ e.symm,

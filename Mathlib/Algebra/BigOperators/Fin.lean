@@ -188,14 +188,14 @@ theorem sum_const [AddCommMonoid α] (n : ℕ) (x : α) : ∑ _i : Fin n, x = n 
 @[to_additive]
 theorem prod_Ioi_zero {M : Type*} [CommMonoid M] {n : ℕ} {v : Fin n.succ → M} :
     ∏ i in Ioi 0, v i = ∏ j : Fin n, v j.succ := by
-  rw [Ioi_zero_eq_map, Finset.prod_map, RelEmbedding.coe_toEmbedding, val_succEmb]
+  rw [Ioi_zero_eq_map, Finset.prod_map, val_succEmb]
 #align fin.prod_Ioi_zero Fin.prod_Ioi_zero
 #align fin.sum_Ioi_zero Fin.sum_Ioi_zero
 
 @[to_additive]
 theorem prod_Ioi_succ {M : Type*} [CommMonoid M] {n : ℕ} (i : Fin n) (v : Fin n.succ → M) :
     ∏ j in Ioi i.succ, v j = ∏ j in Ioi i, v j.succ := by
-  rw [Ioi_succ, Finset.prod_map, RelEmbedding.coe_toEmbedding, val_succEmb]
+  rw [Ioi_succ, Finset.prod_map, val_succEmb]
 #align fin.prod_Ioi_succ Fin.prod_Ioi_succ
 #align fin.sum_Ioi_succ Fin.sum_Ioi_succ
 
@@ -345,7 +345,7 @@ def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=
     fun a => by
       dsimp
       induction' n with n ih
-      · haveI : Subsingleton (Fin (m ^ 0)) := (Fin.castIso <| pow_zero _).toEquiv.subsingleton
+      · haveI : Subsingleton (Fin (m ^ 0)) := (finCongr <| pow_zero _).subsingleton
         exact Subsingleton.elim _ _
       simp_rw [Fin.forall_iff, Fin.ext_iff] at ih
       ext
@@ -402,14 +402,14 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
       refine' Fin.consInduction _ _ n
       · intro a
         haveI : Subsingleton (Fin (∏ i : Fin 0, i.elim0)) :=
-          (Fin.castIso <| prod_empty).toEquiv.subsingleton
+          (finCongr <| prod_empty).subsingleton
         exact Subsingleton.elim _ _
       · intro n x xs ih a
         simp_rw [Fin.forall_iff, Fin.ext_iff] at ih
         ext
         simp_rw [Fin.sum_univ_succ, Fin.cons_succ]
         have := fun i : Fin n =>
-          Fintype.prod_equiv (Fin.castIso <| Fin.val_succ i).toEquiv
+          Fintype.prod_equiv (finCongr <| Fin.val_succ i)
             (fun j => (Fin.cons x xs : _ → ℕ) (Fin.castLE (Fin.is_lt _).le j))
             (fun j => (Fin.cons x xs : _ → ℕ) (Fin.castLE (Nat.succ_le_succ (Fin.is_lt _).le) j))
             fun j => rfl

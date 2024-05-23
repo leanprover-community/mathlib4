@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Vladimir Ivanov
 -/
 import Mathlib.Data.Int.SuccPred
+import Mathlib.Order.Fin
 
 #align_import order.grade from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 

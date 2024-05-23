@@ -3,7 +3,6 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Order.Ring.CharZero
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Functor.Const
@@ -361,7 +360,8 @@ lemma map_comp {i j k : Fin (n + 1 + 1)} (hij : i ≤ j) (hjk : j ≤ k) :
       · rfl
     · obtain _ | _ | k := k
       · simp [Fin.ext_iff] at hjk
-      · simp [Fin.le_def, Nat.succ_eq_add_one] at hjk
+      · simp [Fin.le_def] at hjk
+        omega
       · dsimp
         rw [assoc, ← F.map_comp, homOfLE_comp]
   · obtain _ | j := j

@@ -3,6 +3,7 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
 -/
+import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Data.Fin.OrderHom
 import Mathlib.Order.PiLex
 import Mathlib.Order.Interval.Set.Basic
@@ -32,6 +33,7 @@ We define the following operations:
 
 -/
 
+assert_not_exists MonoidWithZero
 
 universe u v
 
@@ -307,7 +309,7 @@ theorem append_right {α : Type*} (u : Fin m → α) (v : Fin n → α) (i : Fin
 #align fin.append_right Fin.append_right
 
 theorem append_right_nil {α : Type*} (u : Fin m → α) (v : Fin n → α) (hv : n = 0) :
-    append u v = u ∘ Fin.cast (by rw [hv, add_zero]) := by
+    append u v = u ∘ Fin.cast (by rw [hv, Nat.add_zero]) := by
   refine' funext (Fin.addCases (fun l => _) fun r => _)
   · rw [append_left, Function.comp_apply]
     refine' congr_arg u (Fin.ext _)
@@ -317,12 +319,12 @@ theorem append_right_nil {α : Type*} (u : Fin m → α) (v : Fin n → α) (hv 
 
 @[simp]
 theorem append_elim0 {α : Type*} (u : Fin m → α) :
-    append u Fin.elim0 = u ∘ Fin.cast (add_zero _) :=
+    append u Fin.elim0 = u ∘ Fin.cast (Nat.add_zero _) :=
   append_right_nil _ _ rfl
 #align fin.append_elim0 Fin.append_elim0
 
 theorem append_left_nil {α : Type*} (u : Fin m → α) (v : Fin n → α) (hu : m = 0) :
-    append u v = v ∘ Fin.cast (by rw [hu, zero_add]) := by
+    append u v = v ∘ Fin.cast (by rw [hu, Nat.zero_add]) := by
   refine' funext (Fin.addCases (fun l => _) fun r => _)
   · exact (Fin.cast hu l).elim0
   · rw [append_right, Function.comp_apply]
@@ -332,12 +334,12 @@ theorem append_left_nil {α : Type*} (u : Fin m → α) (v : Fin n → α) (hu :
 
 @[simp]
 theorem elim0_append {α : Type*} (v : Fin n → α) :
-    append Fin.elim0 v = v ∘ Fin.cast (zero_add _) :=
+    append Fin.elim0 v = v ∘ Fin.cast (Nat.zero_add _) :=
   append_left_nil _ _ rfl
 #align fin.elim0_append Fin.elim0_append
 
 theorem append_assoc {p : ℕ} {α : Type*} (a : Fin m → α) (b : Fin n → α) (c : Fin p → α) :
-    append (append a b) c = append a (append b c) ∘ Fin.cast (add_assoc _ _ _) := by
+    append (append a b) c = append a (append b c) ∘ Fin.cast (Nat.add_assoc ..) := by
   ext i
   rw [Function.comp_apply]
   refine' Fin.addCases (fun l => _) (fun r => _) i
@@ -353,7 +355,7 @@ theorem append_assoc {p : ℕ} {α : Type*} (a : Fin m → α) (b : Fin n → α
 
 /-- Appending a one-tuple to the left is the same as `Fin.cons`. -/
 theorem append_left_eq_cons {α : Type*} {n : ℕ} (x₀ : Fin 1 → α) (x : Fin n → α) :
-    Fin.append x₀ x = Fin.cons (x₀ 0) x ∘ Fin.cast (add_comm _ _) := by
+    Fin.append x₀ x = Fin.cons (x₀ 0) x ∘ Fin.cast (Nat.add_comm ..) := by
   ext i
   refine' Fin.addCases _ _ i <;> clear i
   · intro i
@@ -366,7 +368,7 @@ theorem append_left_eq_cons {α : Type*} {n : ℕ} (x₀ : Fin 1 → α) (x : Fi
 
 /-- `Fin.cons` is the same as appending a one-tuple to the left. -/
 theorem cons_eq_append {α : Type*} (x : α) (xs : Fin n → α) :
-    cons x xs = append (cons x Fin.elim0) xs ∘ Fin.cast (add_comm ..) := by
+    cons x xs = append (cons x Fin.elim0) xs ∘ Fin.cast (Nat.add_comm ..) := by
   funext i; simp [append_left_eq_cons]
 
 @[simp] lemma append_cast_left {n m} {α : Type*} (xs : Fin n → α) (ys : Fin m → α) (n' : ℕ)
@@ -380,7 +382,7 @@ theorem cons_eq_append {α : Type*} (x : α) (xs : Fin n → α) :
   subst h; simp
 
 lemma append_rev {m n} {α : Type*} (xs : Fin m → α) (ys : Fin n → α) (i : Fin (m + n)) :
-    append xs ys (rev i) = append (ys ∘ rev) (xs ∘ rev) (cast (add_comm _ _) i) := by
+    append xs ys (rev i) = append (ys ∘ rev) (xs ∘ rev) (cast (Nat.add_comm ..) i) := by
   rcases rev_surjective i with ⟨i, rfl⟩
   rw [rev_rev]
   induction i using Fin.addCases
@@ -388,7 +390,7 @@ lemma append_rev {m n} {α : Type*} (xs : Fin m → α) (ys : Fin n → α) (i :
   · simp [cast_rev, rev_addNat]
 
 lemma append_comp_rev {m n} {α : Type*} (xs : Fin m → α) (ys : Fin n → α) :
-    append xs ys ∘ rev = append (ys ∘ rev) (xs ∘ rev) ∘ cast (add_comm _ _) :=
+    append xs ys ∘ rev = append (ys ∘ rev) (xs ∘ rev) ∘ cast (Nat.add_comm ..) :=
   funext <| append_rev xs ys
 
 end Append
@@ -409,12 +411,12 @@ theorem repeat_apply {α : Type*} (a : Fin n → α) (i : Fin (m * n)) :
 
 @[simp]
 theorem repeat_zero {α : Type*} (a : Fin n → α) :
-    Fin.repeat 0 a = Fin.elim0 ∘ cast (zero_mul _) :=
-  funext fun x => (cast (zero_mul _) x).elim0
+    Fin.repeat 0 a = Fin.elim0 ∘ cast (Nat.zero_mul _) :=
+  funext fun x => (cast (Nat.zero_mul _) x).elim0
 #align fin.repeat_zero Fin.repeat_zero
 
 @[simp]
-theorem repeat_one {α : Type*} (a : Fin n → α) : Fin.repeat 1 a = a ∘ cast (one_mul _) := by
+theorem repeat_one {α : Type*} (a : Fin n → α) : Fin.repeat 1 a = a ∘ cast (Nat.one_mul _) := by
   generalize_proofs h
   apply funext
   rw [(Fin.rightInverse_cast h.symm).surjective.forall]
@@ -424,7 +426,7 @@ theorem repeat_one {α : Type*} (a : Fin n → α) : Fin.repeat 1 a = a ∘ cast
 
 theorem repeat_succ {α : Type*} (a : Fin n → α) (m : ℕ) :
     Fin.repeat m.succ a =
-      append a (Fin.repeat m a) ∘ cast ((Nat.succ_mul _ _).trans (add_comm _ _)) := by
+      append a (Fin.repeat m a) ∘ cast ((Nat.succ_mul _ _).trans (Nat.add_comm ..)) := by
   generalize_proofs h
   apply funext
   rw [(Fin.rightInverse_cast h.symm).surjective.forall]
@@ -435,7 +437,7 @@ theorem repeat_succ {α : Type*} (a : Fin n → α) (m : ℕ) :
 
 @[simp]
 theorem repeat_add {α : Type*} (a : Fin n → α) (m₁ m₂ : ℕ) : Fin.repeat (m₁ + m₂) a =
-    append (Fin.repeat m₁ a) (Fin.repeat m₂ a) ∘ cast (add_mul _ _ _) := by
+    append (Fin.repeat m₁ a) (Fin.repeat m₂ a) ∘ cast (Nat.add_mul ..) := by
   generalize_proofs h
   apply funext
   rw [(Fin.rightInverse_cast h.symm).surjective.forall]

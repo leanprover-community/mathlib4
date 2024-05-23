@@ -165,7 +165,7 @@ See `Fintype.equivFinOfCardEq` for the noncomputable definition,
 and `Fintype.truncEquivFin` and `Fintype.equivFin` for the bijection `α ≃ Fin (card α)`.
 -/
 def truncEquivFinOfCardEq [DecidableEq α] {n : ℕ} (h : Fintype.card α = n) : Trunc (α ≃ Fin n) :=
-  (truncEquivFin α).map fun e => e.trans (Fin.castIso h).toEquiv
+  (truncEquivFin α).map fun e => e.trans (finCongr h)
 #align fintype.trunc_equiv_fin_of_card_eq Fintype.truncEquivFinOfCardEq
 
 /-- If the cardinality of `α` is `n`, there is noncomputably a bijection between `α` and `Fin n`.
@@ -556,7 +556,7 @@ def cardEqZeroEquivEquivEmpty : card α = 0 ≃ (α ≃ Empty) :=
 #align fintype.card_eq_zero_equiv_equiv_empty Fintype.cardEqZeroEquivEquivEmpty
 
 theorem card_pos_iff : 0 < card α ↔ Nonempty α :=
-  pos_iff_ne_zero.trans <| not_iff_comm.mp <| not_nonempty_iff.trans card_eq_zero_iff.symm
+  Nat.pos_iff_ne_zero.trans <| not_iff_comm.mp <| not_nonempty_iff.trans card_eq_zero_iff.symm
 #align fintype.card_pos_iff Fintype.card_pos_iff
 
 theorem card_pos [h : Nonempty α] : 0 < card α :=
@@ -826,7 +826,7 @@ def truncOfCardLE [Fintype α] [Fintype β] [DecidableEq α] [DecidableEq β]
     (h : Fintype.card α ≤ Fintype.card β) : Trunc (α ↪ β) :=
   (Fintype.truncEquivFin α).bind fun ea =>
     (Fintype.truncEquivFin β).map fun eb =>
-      ea.toEmbedding.trans ((Fin.castLEEmb h).toEmbedding.trans eb.symm.toEmbedding)
+      ea.toEmbedding.trans ((Fin.castLEEmb h).trans eb.symm.toEmbedding)
 #align function.embedding.trunc_of_card_le Function.Embedding.truncOfCardLE
 
 theorem nonempty_of_card_le [Fintype α] [Fintype β] (h : Fintype.card α ≤ Fintype.card β) :

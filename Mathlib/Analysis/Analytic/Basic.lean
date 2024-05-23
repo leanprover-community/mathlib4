@@ -1190,7 +1190,7 @@ def changeOriginIndexEquiv :
   invFun s :=
     ⟨s.1 - s.2.card, s.2.card,
       ⟨s.2.map
-        (Fin.castIso <| (tsub_add_cancel_of_le <| card_finset_fin_le s.2).symm).toEquiv.toEmbedding,
+        (finCongr <| (tsub_add_cancel_of_le <| card_finset_fin_le s.2).symm).toEmbedding,
         Finset.card_map _⟩⟩
   left_inv := by
     rintro ⟨k, l, ⟨s : Finset (Fin <| k + l), hs : s.card = l⟩⟩
@@ -1198,15 +1198,15 @@ def changeOriginIndexEquiv :
     -- Lean can't automatically generalize `k' = k + l - s.card`, `l' = s.card`, so we explicitly
     -- formulate the generalized goal
     suffices ∀ k' l', k' = k → l' = l → ∀ (hkl : k + l = k' + l') (hs'),
-        (⟨k', l', ⟨Finset.map (Fin.castIso hkl).toEquiv.toEmbedding s, hs'⟩⟩ :
+        (⟨k', l', ⟨s.map (finCongr hkl).toEmbedding, hs'⟩⟩ :
           Σk l : ℕ, { s : Finset (Fin (k + l)) // s.card = l }) = ⟨k, l, ⟨s, hs⟩⟩ by
       apply this <;> simp only [hs, add_tsub_cancel_right]
     rintro _ _ rfl rfl hkl hs'
-    simp only [Equiv.refl_toEmbedding, Fin.castIso_refl, Finset.map_refl, eq_self_iff_true,
+    simp only [Equiv.refl_toEmbedding, finCongr_refl, Finset.map_refl, eq_self_iff_true,
       OrderIso.refl_toEquiv, and_self_iff, heq_iff_eq]
   right_inv := by
     rintro ⟨n, s⟩
-    simp [tsub_add_cancel_of_le (card_finset_fin_le s), Fin.castIso_to_equiv]
+    simp [tsub_add_cancel_of_le (card_finset_fin_le s), finCongr_eq_equivCast]
 #align formal_multilinear_series.change_origin_index_equiv FormalMultilinearSeries.changeOriginIndexEquiv
 
 lemma changeOriginSeriesTerm_changeOriginIndexEquiv_symm (n t) :
@@ -1214,7 +1214,7 @@ lemma changeOriginSeriesTerm_changeOriginIndexEquiv_symm (n t) :
     p.changeOriginSeriesTerm s.1 s.2.1 s.2.2 s.2.2.2 (fun _ ↦ x) (fun _ ↦ y) =
     p n (t.piecewise (fun _ ↦ x) fun _ ↦ y) := by
   have : ∀ (m) (hm : n = m), p n (t.piecewise (fun _ ↦ x) fun _ ↦ y) =
-      p m ((t.map (Fin.castIso hm).toEmbedding).piecewise (fun _ ↦ x) fun _ ↦ y) := by
+      p m ((t.map (finCongr hm).toEmbedding).piecewise (fun _ ↦ x) fun _ ↦ y) := by
     rintro m rfl
     simp (config := { unfoldPartialApp := true }) [Finset.piecewise]
   simp_rw [changeOriginSeriesTerm_apply, eq_comm]; apply this

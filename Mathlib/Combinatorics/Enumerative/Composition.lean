@@ -292,12 +292,11 @@ theorem orderEmbOfFin_boundaries :
 /-- Embedding the `i`-th block of a composition (identified with `Fin (c.blocks_fun i)`) into
 `Fin n` at the relevant position. -/
 def embedding (i : Fin c.length) : Fin (c.blocksFun i) ↪o Fin n :=
-  (Fin.natAddEmb <| c.sizeUpTo i).trans <|
-    Fin.castLEEmb <|
-      calc
-        c.sizeUpTo i + c.blocksFun i = c.sizeUpTo (i + 1) := (c.sizeUpTo_succ _).symm
-        _ ≤ c.sizeUpTo c.length := monotone_sum_take _ i.2
-        _ = n := c.sizeUpTo_length
+  (Fin.natAddOrderEmb <| c.sizeUpTo i).trans <| Fin.castLEOrderEmb <|
+    calc
+      c.sizeUpTo i + c.blocksFun i = c.sizeUpTo (i + 1) := (c.sizeUpTo_succ _).symm
+      _ ≤ c.sizeUpTo c.length := monotone_sum_take _ i.2
+      _ = n := c.sizeUpTo_length
 #align composition.embedding Composition.embedding
 
 @[simp]
