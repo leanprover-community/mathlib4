@@ -67,7 +67,7 @@ instance {a b : 𝒳} (φ : a ⟶ b) : p.IsHomLift (p.map φ) φ where
 
 @[simp]
 instance (a : 𝒳) : p.IsHomLift (𝟙 (p.obj a)) (𝟙 a) := by
-  rw [←p.map_id]; infer_instance
+  rw [← p.map_id]; infer_instance
 
 namespace IsHomLift
 
