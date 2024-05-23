@@ -3121,6 +3121,17 @@ theorem erase_get [DecidableEq ι] {l : List ι} (i : Fin l.length) :
       · simpa [ha] using .trans (perm_cons_erase (l.get_mem i i.isLt)) (.cons _ (IH i))
       · simpa [ha] using IH i
 
+theorem length_eraseIdx_add_one {l : List ι} {i : ℕ} (h : i < l.length) :
+    (l.eraseIdx i).length + 1 = l.length := calc
+  (l.eraseIdx i).length + 1
+  _ = (l.take i ++ l.drop (i + 1)).length + 1         := by rw [eraseIdx_eq_take_drop_succ]
+  _ = (l.take i).length + (l.drop (i + 1)).length + 1 := by rw [length_append]
+  _ = i + (l.drop (i + 1)).length + 1                 := by rw [length_take_of_le (le_of_lt h)]
+  _ = i + (l.length - (i + 1)) + 1                    := by rw [length_drop]
+  _ = (i + 1) + (l.length - (i + 1))                  := by omega
+  _ = l.length                                        := Nat.add_sub_cancel' (succ_le_of_lt h)
+
+
 end Erase
 
 /-! ### diff -/
