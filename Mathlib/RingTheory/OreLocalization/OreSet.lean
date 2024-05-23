@@ -11,9 +11,9 @@ import Mathlib.Algebra.Ring.Regular
 
 /-!
 
-# (Right) Ore sets
+# (Left) Ore sets
 
-This defines right Ore sets on arbitrary monoids.
+This defines left Ore sets on arbitrary monoids.
 
 ## References
 
