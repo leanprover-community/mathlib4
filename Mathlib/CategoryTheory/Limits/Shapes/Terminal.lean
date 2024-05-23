@@ -378,6 +378,10 @@ instance uniqueFromInitial [HasInitial C] (P : C) : Unique (⊥_ C ⟶ P) :=
   isInitialEquivUnique _ (⊥_ C) initialIsInitial P
 #align category_theory.limits.unique_from_initial CategoryTheory.Limits.uniqueFromInitial
 
+@[ext] theorem terminal.hom_ext [HasTerminal C] {P : C} (f g : P ⟶ ⊤_ C) : f = g := by ext ⟨⟨⟩⟩
+
+@[ext] theorem initial.hom_ext [HasInitial C] {P : C} (f g : ⊥_ C ⟶ P) : f = g := by ext ⟨⟨⟩⟩
+
 @[simp]
 theorem terminal.comp_from [HasTerminal C] {P Q : C} (f : P ⟶ Q) :
     f ≫ terminal.from Q = terminal.from P := by
