@@ -216,20 +216,11 @@ theorem firstLemma (A : ℕ → Set (∀ n, X n)) (A_mem : ∀ n, A n ∈ cylind
     intro n
     simp only [χ, A_eq]
     apply cyl_dependsOn
-  have lma_const : ∀ k x y z,
-      (fun n ↦(∫⋯∫⁻_Finset.Icc k (N n), χ n ∂μ) (Function.updateFinset x (Finset.Ico 0 k) z)) =
-      fun n ↦ (∫⋯∫⁻_Finset.Icc k (N n), χ n ∂μ) (Function.updateFinset y (Finset.Ico 0 k) z) := by
-    intro k x y z; ext n
-    have := lmarginal_dependsOn (μ := μ) (Finset.Icc k (N n)) (χ_dep n)
-    have := updateFinset_dependsOn this (Finset.Ico 0 k) z
-    have aux : (Finset.Icc 0 (N n) \ Finset.Icc k (N n)) \ Finset.Ico 0 k = ∅ := by
-      ext i
-      simp
-      intro h1 h2
-      by_contra!
-      linarith [h1, h2 this]
-    apply this
-    rw [aux]
+  have lma_const : ∀ x y,
+      (fun n ↦ (∫⋯∫⁻_Finset.Icc 0 (N n), χ n ∂μ) x) =
+      fun n ↦ (∫⋯∫⁻_Finset.Icc 0 (N n), χ n ∂μ) y := by
+    intro x y; ext n
+    apply lmarginal_dependsOn (μ := μ) (Finset.Icc 0 (N n)) (χ_dep n)
     simp
   have anti : Antitone χ := by
     intro m n hmn y
@@ -276,31 +267,28 @@ theorem firstLemma (A : ℕ → Set (∀ n, X n)) (A_mem : ∀ n, A n ∈ cylind
   have l_const : ∀ x y, l 0 x = l 0 y := by
     intro x y
     have := hl 0 x
-    have aux := lma_const 0 x y Classical.ofNonempty
-    rw [Finset.Ico_self 0] at aux
-    simp [Function.updateFinset] at aux
-    rw [aux] at this
+    rw [lma_const x y] at this
     exact tendsto_nhds_unique this (hl 0 _)
-  have : ∃ l', ∀ x, l 0 x = l' := by
+  have : ∃ ε, ∀ x, l 0 x = ε := by
     use l 0 Classical.ofNonempty
     exact fun x ↦ l_const ..
-  choose l' hl' using this
-  have hpos : ∀ x n, l' ≤ (∫⋯∫⁻_Finset.Icc 0 (N n), χ n ∂μ) x := by
+  choose ε hε using this
+  have hpos : ∀ x n, ε ≤ (∫⋯∫⁻_Finset.Icc 0 (N n), χ n ∂μ) x := by
     intro x n
-    exact hl' x ▸ ((anti_lma 0 _).le_of_tendsto (hl 0 _)) n
+    exact hε x ▸ ((anti_lma 0 _).le_of_tendsto (hl 0 _)) n
   have χ_le : ∀ n x, χ n x ≤ 1 := by
     intro n x
     simp [χ]
     apply Set.indicator_le
     simp
-  rcases auxiliaire μ χ N χ_dep mχ 1 (by norm_num) χ_le 0 (anti_lma 1) (l 1) (hl 1) l'
+  rcases auxiliaire μ χ N χ_dep mχ 1 (by norm_num) χ_le 0 (anti_lma 1) (l 1) (hl 1) ε
     Classical.ofNonempty hpos with ⟨init, hinit⟩
   simp [Function.updateFinset_def] at hinit
   choose! ind hind using
     fun k y h ↦ auxiliaire μ χ N χ_dep mχ 1 (by norm_num) χ_le (k + 1) (anti_lma (k + 2))
-      (l (k + 2)) (hl (k + 2)) l' y h
+      (l (k + 2)) (hl (k + 2)) ε y h
   let z := key init ind
-  have crucial : ∀ k x n, l' ≤ (∫⋯∫⁻_Finset.Icc (k + 1) (N n), χ n ∂μ)
+  have crucial : ∀ k x n, ε ≤ (∫⋯∫⁻_Finset.Icc (k + 1) (N n), χ n ∂μ)
       (Function.updateFinset x (Finset.Icc 0 k) (fun (i : Finset.Icc 0 k) ↦ z i)) := by
     intro k
     induction k with
@@ -334,24 +322,24 @@ theorem firstLemma (A : ℕ → Set (∀ n, X n)) (A_mem : ∀ n, A n ∈ cylind
         simp [hi, h1, h2]
       rw [this]
       convert hind m (fun i ↦ z i) hm x n using 2
-  by_cases l'_eq : 0 < l'
+  by_cases ε_eq : 0 < ε
   · have incr : ∀ n, z ∈ A n := by
       intro n
       have : χ n z = (∫⋯∫⁻_Finset.Icc (N n + 1) (N n), χ n ∂μ)
           (Function.updateFinset z (Finset.Icc 0 (N n)) (fun i ↦ z i)) := by
         rw [Finset.Icc_eq_empty, lmarginal_empty]
-        congr
-        ext i
-        by_cases h : i ∈ Finset.Icc 0 (N n) <;> simp [Function.updateFinset, h]
-        simp
+        · congr
+          ext i
+          by_cases h : i ∈ Finset.Icc 0 (N n) <;> simp [Function.updateFinset, h]
+        · simp
       have : 0 < χ n z := by
         rw [this]
-        exact lt_of_lt_of_le l'_eq (crucial _ _ _)
+        exact lt_of_lt_of_le ε_eq (crucial _ _ _)
       exact mem_of_indicator_ne_zero (ne_of_lt this).symm
     exact (A_inter ▸ mem_iInter.2 incr).elim
-  · have : l' = 0 := nonpos_iff_eq_zero.1 <| not_lt.1 l'_eq
+  · have : ε = 0 := nonpos_iff_eq_zero.1 <| not_lt.1 ε_eq
     rw [concl Classical.ofNonempty]
-    rw [← this, ← hl' Classical.ofNonempty]
+    rw [← this, ← hε Classical.ofNonempty]
     exact hl _ _
 
 theorem kolContent_sigma_subadditive_bis ⦃f : ℕ → Set (∀ n, X n)⦄
