@@ -14,7 +14,7 @@ import Mathlib.Logic.Equiv.Defs
 We define typeclasses `Full` and `Faithful`, decorating functors. These typeclasses
 carry no data. However, we also introduce a structure `Functor.FullyFaithful` which
 contains the data of the inverse map `(F.obj X ⟶ F.obj Y) ⟶ (X ⟶ Y)` of the
-map induced on morphisms by a functor `C`.
+map induced on morphisms by a functor `F`.
 
 ## Main definitions and results
 * Use `F.map_injective` to retrieve the fact that `F.map` is injective when `[Faithful F]`.
@@ -129,7 +129,7 @@ theorem preimageIso_mapIso (f : X ≅ Y) : F.preimageIso (F.mapIso f) = f := by
   simp
 #align category_theory.functor.preimage_iso_map_iso CategoryTheory.Functor.preimageIso_mapIso
 
-/-- Structure containing the data of inverses map `(F.obj X ⟶ F.obj Y) ⟶ (X ⟶ Y)` of `F.map`
+/-- Structure containing the data of inverse map `(F.obj X ⟶ F.obj Y) ⟶ (X ⟶ Y)` of `F.map`
 in order to express that `F` is a fully faithful functor. -/
 structure FullyFaithful where
   /-- The inverse map `(F.obj X ⟶ F.obj Y) ⟶ (X ⟶ Y)` of `F.map`. -/
