@@ -83,10 +83,10 @@ local macro "map_simp" : tactic =>
    WeierstrassCurve.map])
 
 /-- The notation `Y` for `X` in the `PolynomialPolynomial` scope. -/
-scoped[PolynomialPolynomial] notation "Y" => Polynomial.X
+scoped[PolynomialPolynomial] notation3 "Y" => Polynomial.X (R := Polynomial _)
 
 /-- The notation `R[X][Y]` for `R[X][X]` in the `PolynomialPolynomial` scope. -/
-scoped[PolynomialPolynomial] notation R "[X][Y]" => Polynomial (Polynomial R)
+scoped[PolynomialPolynomial] notation:9000 R "[X][Y]" => Polynomial (Polynomial R)
 
 open Polynomial PolynomialPolynomial
 
@@ -341,8 +341,14 @@ section Ring
 
 /-- The polynomial $-Y - a_1X - a_3$ associated to negation. -/
 noncomputable def negPolynomial : R[X][Y] :=
-  -Y - C (C W.a₁ * X + C W.a₃)
+  -(Y : R[X][Y]) - C (C W.a₁ * X + C W.a₃)
 #align weierstrass_curve.neg_polynomial WeierstrassCurve.Affine.negPolynomial
+
+lemma Y_minus_polynomialY : Y - W.polynomialY = W.negPolynomial := by
+  rw [polynomialY, negPolynomial]; C_simp; ring
+
+lemma Y_minus_negPolynomial : Y - W.negPolynomial = W.polynomialY := by
+  rw [← Y_minus_polynomialY, sub_sub_cancel]
 
 /-- The $Y$-coordinate of the negation of an affine point in `W`.
 
