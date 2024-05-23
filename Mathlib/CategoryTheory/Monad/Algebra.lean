@@ -56,12 +56,6 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.monad.algebra.unit CategoryTheory.Monad.Algebra.unit
 #align category_theory.monad.algebra.assoc CategoryTheory.Monad.Algebra.assoc
 
--- Porting note: no need to restate axioms in lean4.
-
---restate_axiom algebra.unit'
-
---restate_axiom algebra.assoc'
-
 attribute [reassoc] Algebra.unit Algebra.assoc
 
 namespace Algebra

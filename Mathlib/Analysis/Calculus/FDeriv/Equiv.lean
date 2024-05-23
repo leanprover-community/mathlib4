@@ -132,7 +132,7 @@ theorem comp_hasFDerivWithinAt_iff {f : G → E} {s : Set G} {x : G} {f' : G →
 
 theorem comp_hasStrictFDerivAt_iff {f : G → E} {x : G} {f' : G →L[𝕜] E} :
     HasStrictFDerivAt (iso ∘ f) ((iso : E →L[𝕜] F).comp f') x ↔ HasStrictFDerivAt f f' x := by
-  refine' ⟨fun H => _, fun H => iso.hasStrictFDerivAt.comp x H⟩
+  refine ⟨fun H => ?_, fun H => iso.hasStrictFDerivAt.comp x H⟩
   convert iso.symm.hasStrictFDerivAt.comp x H using 1 <;>
     ext z <;> apply (iso.symm_apply_apply _).symm
 #align continuous_linear_equiv.comp_has_strict_fderiv_at_iff ContinuousLinearEquiv.comp_hasStrictFDerivAt_iff

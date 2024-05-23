@@ -355,8 +355,8 @@ lemma distinguished_cocone_triangle {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     ∃ (Z : Cᵒᵖ) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧),
       Triangle.mk f g h ∈ distinguishedTriangles C := by
   obtain ⟨Z, g, h, H⟩ := Pretriangulated.distinguished_cocone_triangle₁ f.unop
-  refine' ⟨_, g.op, (opShiftFunctorEquivalence C 1).counitIso.inv.app (Opposite.op Z) ≫
-    (shiftFunctor Cᵒᵖ (1 : ℤ)).map h.op, _⟩
+  refine ⟨_, g.op, (opShiftFunctorEquivalence C 1).counitIso.inv.app (Opposite.op Z) ≫
+    (shiftFunctor Cᵒᵖ (1 : ℤ)).map h.op, ?_⟩
   simp only [mem_distinguishedTriangles_iff]
   refine' Pretriangulated.isomorphic_distinguished _ H _ _
   exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) (by aesop_cat) (by aesop_cat)
