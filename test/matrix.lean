@@ -158,4 +158,11 @@ example {α : Type _} [CommRing α] {a b c d e f g h i : α} :
       Finset.card_singleton, one_smul]
   ring
 
+example {R : Type*} [Semiring R] {a b c d : R} :
+    !![a, b] * (transpose !![c, d]) = !![a * c + b * d] := by
+  ext i j
+  fin_cases i
+  fin_cases j
+  simp [Matrix.vecHead, Matrix.vecTail]
+
 end Matrix
