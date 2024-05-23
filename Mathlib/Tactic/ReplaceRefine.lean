@@ -59,25 +59,30 @@ def toExample {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation m] :
   | _ => return none
 
 /-- replaces each `refine'` by `refine` in succession in `cmd` and, each time, catches the errors
-of missing `?`, collecting their positions.  Eventually, it returns the array of such positions. -/
-def getQuestions (cmd : Syntax) : Command.CommandElabM (Array Position) := do
+of missing `?`, collecting their positions.  Eventually, it returns the pair of array of positions
+of the `refine'` and of the missing `?`. -/
+def getQuestions (cmd : Syntax) : Command.CommandElabM (Array Position × Array Position) := do
   let s ← get
+  let fm ← getFileMap
   let refine's := getRefine' cmd
   let newCmds := refine's.map fun (r, si, args) => Id.run do
-      cmd.replaceM fun s => if s == r then
+      let ncm ← cmd.replaceM fun s => if s == r then
         let args := args.modify 0 fun _ => mkAtomFrom args[0]! "refine "
         return some (.node si ``Lean.Parser.Tactic.refine args)
         else return none
+      return (r, ncm)
   let mut poss := #[]
-  for ncmd in newCmds do
+  let mut refs := #[]
+  for (r, ncmd) in newCmds do
     if let some (exm, _) ← toExample ncmd then
       Elab.Command.elabCommand exm
       let msgs := (← get).messages.msgs
       let ph := msgs.filter (fun m => isSyntPlaceHolder m.data)
-      if ph.toArray.isEmpty then logInfoAt cmd "oh"
-      poss := poss ++ (ph.map (·.pos)).toArray
+      if ph.toArray.isEmpty then logInfoAt cmd "oh" else
+        refs := refs.push <| fm.toPosition (r.getPos?.getD default)
+        poss := poss ++ (ph.map (·.pos)).toArray
     set s
-  return poss
+  return (refs, poss)
 
 /-- Gets the value of the `linter.refine'ToRefine` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.refine'ToRefine o
@@ -85,7 +90,7 @@ def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.refine'To
 /-- Reports the positions of missing `?`. -/
 def refine'ToRefineLinter : Linter where run stx := do
   if getLinterHash (← getOptions) then
-    let pos ← getQuestions stx
-    if pos != #[] then dbg_trace s!"{pos}"
+    let (refs, pos) ← getQuestions stx
+    if pos != #[] then dbg_trace s!"refine': {refs}\n?: {pos}"
 
 initialize addLinter refine'ToRefineLinter
