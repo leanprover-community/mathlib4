@@ -85,7 +85,54 @@ class IsSemisimple : Prop where
   independent : CompleteLattice.SetIndependent {I : LieIdeal R L | IsAtom I}
   non_abelian_of_isAtom : ∀ I : LieIdeal R L, IsAtom I → ¬ IsLieAbelian I
 
--- TODO: show that the atomic ideals of a semisimple Lie algebra are simple
+lemma isSimple_of_isAtom [IsSemisimple R L] (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
+    non_abelian := IsSemisimple.non_abelian_of_isAtom I hI
+    irreducible J hJ := by
+      let J' : LieIdeal R L :=
+      { __ := J.toSubmodule.map I.incl.toLinearMap
+        lie_mem := by
+          rintro x _ ⟨y, hy, rfl⟩
+          dsimp
+          have hx : x ∈ I ⊔ sSup ({I' : LieIdeal R L | IsAtom I'} \ {I}) := by
+            nth_rewrite 1 [← sSup_singleton (a := I)]
+            rw [← sSup_union, Set.union_diff_self, Set.union_eq_self_of_subset_left,
+              IsSemisimple.spanning]
+            · apply LieSubmodule.mem_top
+            · simp only [Set.singleton_subset_iff, Set.mem_setOf_eq, hI]
+          rw [LieSubmodule.mem_sup] at hx
+          obtain ⟨a, ha, b, hb, rfl⟩ := hx
+          simp only [add_lie, AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
+            Submodule.mem_toAddSubmonoid]
+          apply add_mem
+          · simp only [Submodule.mem_map, LieSubmodule.mem_coeSubmodule, Submodule.coeSubtype,
+              Subtype.exists, exists_and_right, exists_eq_right, ha, lie_mem_left, exists_true_left]
+            exact lie_mem_right R I J ⟨a, ha⟩ y hy
+          · suffices ⁅b, y.val⁆ = 0 by simp only [this, zero_mem]
+            rw [← LieSubmodule.mem_bot (R := R) (L := L), ← (IsSemisimple.independent hI).eq_bot]
+            exact ⟨lie_mem_right R L I b y y.2, lie_mem_left _ _ _ _ _ hb⟩ }
+      contrapose! hJ
+      suffices J' = ⊥ by
+        have aux : (fun J : LieIdeal R I ↦ J.toSubmodule.map I.incl.toLinearMap).Injective := by
+          intro J₁ J₂ h
+          ext x
+          rw [SetLike.ext_iff] at h
+          specialize h x
+          simpa only [LieIdeal.incl_coe, LieIdeal.coe_to_lieSubalgebra_to_submodule,
+            Submodule.mem_map, LieSubmodule.mem_coeSubmodule, Submodule.coeSubtype,
+            SetLike.coe_eq_coe, exists_eq_right] using h
+        apply aux
+        simpa [J'] using this
+      apply hI.2
+      rw [lt_iff_le_and_ne]
+      constructor
+      · rintro _ ⟨x, -, rfl⟩
+        exact x.2
+      contrapose! hJ
+      rw [eq_top_iff]
+      rintro ⟨x, hx⟩ -
+      rw [← hJ] at hx
+      rcases hx with ⟨y, hy, rfl⟩
+      exact hy
 
 theorem hasTrivialRadical_iff_no_solvable_ideals :
     HasTrivialRadical R L ↔ ∀ I : LieIdeal R L, IsSolvable R I → I = ⊥ :=
@@ -96,8 +143,8 @@ theorem hasTrivialRadical_iff_no_abelian_ideals :
     HasTrivialRadical R L ↔ ∀ I : LieIdeal R L, IsLieAbelian I → I = ⊥ := by
   rw [hasTrivialRadical_iff_no_solvable_ideals]
   constructor <;> intro h₁ I h₂
-  · haveI : IsLieAbelian I := h₂; apply h₁; exact LieAlgebra.ofAbelianIsSolvable R I
-  · haveI : IsSolvable R I := h₂; rw [← abelian_of_solvable_ideal_eq_bot_iff]; apply h₁
+  · apply h₁; exact LieAlgebra.ofAbelianIsSolvable R I
+  · rw [← abelian_of_solvable_ideal_eq_bot_iff]; apply h₁
     exact abelian_derivedAbelianOfIdeal I
 #align lie_algebra.is_semisimple_iff_no_abelian_ideals LieAlgebra.hasTrivialRadical_iff_no_abelian_ideals
 
@@ -150,9 +197,26 @@ instance (priority := 100) isSemisimple_of_isSimple [h : IsSimple R L] :
     contradiction
 
 /-- A semisimple Lie algebra has trivial radical. -/
+instance (priority := 100) [h : IsSemisimple R L] :
+    IsAtomic (LieIdeal R L) where
+  eq_bot_or_exists_atom_le I := by
+    sorry
+
+/-- A semisimple Lie algebra has trivial radical. -/
 instance (priority := 100) hasTrivialRadical_of_isSemisimple [h : IsSemisimple R L] :
     HasTrivialRadical R L := by
-  sorry
+  rw [hasTrivialRadical_iff_no_abelian_ideals]
+  intro I hI
+  apply (eq_bot_or_exists_atom_le I).resolve_right
+  rintro ⟨J, hJ, hJ'⟩
+  apply IsSemisimple.non_abelian_of_isAtom J hJ
+  constructor
+  intro x y
+  ext
+  simp only [LieIdeal.coe_bracket_of_module, LieSubmodule.coe_bracket, ZeroMemClass.coe_zero]
+  have : (⁅(⟨x, hJ' x.2⟩ : I), ⟨y, hJ' y.2⟩⁆ : I) = 0 := trivial_lie_zero _ _ _ _
+  apply_fun Subtype.val at this
+  exact this
 
 /-- A simple Lie algebra has trivial radical. -/
 instance (priority := 100) hasTrivialRadical_of_isSimple [IsSimple R L] :
