@@ -1,11 +1,15 @@
 #! /usr/bin/env bash
 
+# Generate a file importing all the files of a Lean folder.
+# By default, it generates the files for the libraries
+# `Mathlib.lean`, `Mathlib/Tactic.lean`, `Archive.lean` and `Counterexamples.lean`.
+
 ##  Standard use:
 ##  ./scripts/mk_all.sh
 ##
 ##  updates `Mathlib` `Mathlib/Tactic` `Counterexamples` `Archive`
 ##
-##  Pro use:
+##  Advanced use:
 ##  ./scripts/mk_all.sh <space_separated_list_of_dirs>
 ##
 ##  for each dir in <space_separated_list_of_dirs>, create a file with all the imports of the dir
