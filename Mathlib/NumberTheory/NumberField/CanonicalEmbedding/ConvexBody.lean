@@ -279,7 +279,21 @@ variable {K}
 /-- The function that sends `x : ({w // IsReal w} → ℝ) × ({w // IsComplex w} → ℂ)` to
   `∑ w, ‖x.1 w‖ + 2 * ∑ w, ‖x.2 w‖`. It defines a norm and it used to define `convexBodySum`. -/
 noncomputable abbrev convexBodySumFun (x : E K) : ℝ := ∑ w, mult w * normAtPlace w x
--- ∑ w, ‖x.1 w‖ + 2 * ∑ w, ‖x.2 w‖
+
+theorem convexBodySumFun_apply (x : E K) :
+    convexBodySumFun x = ∑ w,  mult w * normAtPlace w x := rfl
+
+theorem convexBodySumFun_apply' (x : E K) :
+    convexBodySumFun x = ∑ w, ‖x.1 w‖ + 2 * ∑ w, ‖x.2 w‖ := by
+  simp_rw [convexBodySumFun_apply, ← Finset.sum_add_sum_compl {w | IsReal w}.toFinset,
+    Set.toFinset_setOf, Finset.compl_filter, not_isReal_iff_isComplex, ← Finset.subtype_univ,
+    ← Finset.univ.sum_subtype_eq_sum_filter, Finset.mul_sum]
+  congr
+  · ext w
+    rw [mult, if_pos w.prop, normAtPlace_apply_isReal, Nat.cast_one, one_mul]
+  · ext w
+    rw [mult, if_neg (not_isReal_iff_isComplex.mpr w.prop), normAtPlace_apply_isComplex,
+      Nat.cast_ofNat]
 
 theorem convexBodySumFun_nonneg (x : E K) :
     0 ≤ convexBodySumFun x :=
@@ -312,7 +326,7 @@ theorem convexBodySumFun_eq_zero_iff (x : E K) :
 theorem norm_le_convexBodySumFun (x : E K) : ‖x‖ ≤ convexBodySumFun x := by
   rw [norm_eq_sup'_normAtPlace]
   refine (Finset.sup'_le_iff _ _).mpr fun w _ ↦ ?_
-  rw [convexBodySumFun, ← Finset.univ.add_sum_erase _ (Finset.mem_univ w)]
+  rw [convexBodySumFun_apply, ← Finset.univ.add_sum_erase _ (Finset.mem_univ w)]
   refine le_add_of_le_of_nonneg  ?_ ?_
   · exact le_mul_of_one_le_left (normAtPlace_nonneg w x) one_le_mult
   · exact Finset.sum_nonneg (fun _ _ => mul_nonneg mult_pos.le (normAtPlace_nonneg _ _))
@@ -417,14 +431,8 @@ theorem convexBodySum_volume :
     calc
       _ = (∫ x : {w : InfinitePlace K // IsReal w} → ℝ, ∏ w, exp (- ‖x w‖)) *
               (∫ x : {w : InfinitePlace K // IsComplex w} → ℂ, ∏ w, exp (- 2 * ‖x w‖)) := by
-        simp_rw [convexBodySumFun, ← Finset.sum_neg_distrib, exp_sum, ← Finset.prod_mul_prod_compl
-          {w | IsReal w}.toFinset, Set.toFinset_setOf, Finset.compl_filter,
-          not_isReal_iff_isComplex, ← integral_prod_mul, ← Finset.subtype_univ,
-          ← Finset.univ.prod_subtype_eq_prod_filter]
-        congr! 5 with _ _ _ w _ w
-        · rw [mult, if_pos w.prop, normAtPlace_apply_isReal, Nat.cast_one, one_mul]
-        · rw [mult, if_neg (not_isReal_iff_isComplex.mpr w.prop), normAtPlace_apply_isComplex,
-            Nat.cast_ofNat, neg_mul]
+        simp_rw [convexBodySumFun_apply', neg_add, ← neg_mul, Finset.mul_sum,
+          ← Finset.sum_neg_distrib, exp_add, exp_sum, ← integral_prod_mul, volume_eq_prod]
       _ = (∫ x : ℝ, exp (-|x|)) ^ NrRealPlaces K *
               (∫ x : ℂ, Real.exp (-2 * ‖x‖)) ^ NrComplexPlaces K := by
         rw [integral_fintype_prod_eq_pow _ (fun x => exp (- ‖x‖)), integral_fintype_prod_eq_pow _

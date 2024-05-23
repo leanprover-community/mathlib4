@@ -250,7 +250,8 @@ open BigOperators
 
 variable {K}
 
-/-- Def. -/
+/-- The norm at the place infinite `w` of an element of
+`({w // IsReal w} → ℝ) × ({ w // IsComplex w } → ℂ)`. -/
 def normAtPlace (w : InfinitePlace K) : (E K) →*₀ ℝ where
   toFun x := if hw : IsReal w then ‖x.1 ⟨w, hw⟩‖ else ‖x.2 ⟨w, not_isReal_iff_isComplex.mp hw⟩‖
   map_zero' := by simp
