@@ -145,7 +145,7 @@ theorem quasilinearOn_iff_mem_uIcc : QuasilinearOn 𝕜 s f ↔ Convex 𝕜 s �
 
 theorem QuasiconvexOn.convex_lt (hf : QuasiconvexOn 𝕜 s f) (r : β) :
     Convex 𝕜 ({ x ∈ s | f x < r }) := by
-  refine' fun x hx y hy a b ha hb hab => _
+  refine fun x hx y hy a b ha hb hab => ?_
   have h := hf _ ⟨hx.1, le_max_left _ _⟩ ⟨hy.1, le_max_right _ _⟩ ha hb hab
   exact ⟨h.1, h.2.trans_lt <| max_lt hx.2 hy.2⟩
 #align quasiconvex_on.convex_lt QuasiconvexOn.convex_lt

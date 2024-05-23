@@ -57,8 +57,7 @@ variable {ι}
 
 /-- A cone over `Ran.diagram ι F x` used to define `Ran`. -/
 @[simp]
-def cone {F : S ⥤ D} {G : L ⥤ D} (x : L) (f : ι ⋙ G ⟶ F) : Cone (diagram ι F x)
-    where
+def cone {F : S ⥤ D} {G : L ⥤ D} (x : L) (f : ι ⋙ G ⟶ F) : Cone (diagram ι F x) where
   pt := G.obj x
   π :=
     { app := fun i => G.map i.hom ≫ f.app i.right
@@ -77,8 +76,7 @@ variable (ι)
 
 /-- An auxiliary definition used to define `Ran`. -/
 @[simps]
-def loc (F : S ⥤ D) [h : ∀ x, HasLimit (diagram ι F x)] : L ⥤ D
-    where
+def loc (F : S ⥤ D) [h : ∀ x, HasLimit (diagram ι F x)] : L ⥤ D where
   obj x := limit (diagram ι F x)
   map {X Y} f :=
     haveI : HasLimit <| StructuredArrow.map f ⋙ diagram ι F X := h Y
@@ -104,8 +102,7 @@ set_option linter.uppercaseLean3 false in
 /-- An auxiliary definition used to define `Ran` and `Ran.adjunction`. -/
 @[simps]
 def equiv (F : S ⥤ D) [h : ∀ x, HasLimit (diagram ι F x)] (G : L ⥤ D) :
-    (G ⟶ loc ι F) ≃ (((whiskeringLeft _ _ _).obj ι).obj G ⟶ F)
-    where
+    (G ⟶ loc ι F) ≃ (((whiskeringLeft _ _ _).obj ι).obj G ⟶ F) where
   toFun f :=
     { app := fun x => f.app _ ≫ limit.π (diagram ι F (ι.obj x)) (StructuredArrow.mk (𝟙 _))
       naturality := by
@@ -206,8 +203,7 @@ variable {ι}
 
 /-- A cocone over `Lan.diagram ι F x` used to define `Lan`. -/
 @[simp]
-def cocone {F : S ⥤ D} {G : L ⥤ D} (x : L) (f : F ⟶ ι ⋙ G) : Cocone (diagram ι F x)
-    where
+def cocone {F : S ⥤ D} {G : L ⥤ D} (x : L) (f : F ⟶ ι ⋙ G) : Cocone (diagram ι F x) where
   pt := G.obj x
   ι :=
     { app := fun i => f.app i.left ≫ G.map i.hom
@@ -224,8 +220,7 @@ variable (ι)
 
 /-- An auxiliary definition used to define `Lan`. -/
 @[simps]
-def loc (F : S ⥤ D) [I : ∀ x, HasColimit (diagram ι F x)] : L ⥤ D
-    where
+def loc (F : S ⥤ D) [I : ∀ x, HasColimit (diagram ι F x)] : L ⥤ D where
   obj x := colimit (diagram ι F x)
   map {x y} f :=
     haveI : HasColimit (CostructuredArrow.map f ⋙ diagram ι F y) := I _
@@ -263,8 +258,7 @@ set_option linter.uppercaseLean3 false in
 /-- An auxiliary definition used to define `Lan` and `Lan.adjunction`. -/
 @[simps]
 def equiv (F : S ⥤ D) [I : ∀ x, HasColimit (diagram ι F x)] (G : L ⥤ D) :
-    (loc ι F ⟶ G) ≃ (F ⟶ ((whiskeringLeft _ _ _).obj ι).obj G)
-    where
+    (loc ι F ⟶ G) ≃ (F ⟶ ((whiskeringLeft _ _ _).obj ι).obj G) where
   toFun f :=
     { app := fun x => colimit.ι (diagram ι F (ι.obj x)) (CostructuredArrow.mk (𝟙 _)) ≫ f.app _
       naturality := by

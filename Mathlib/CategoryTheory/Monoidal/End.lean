@@ -307,8 +307,7 @@ noncomputable def unitOfTensorIsoUnit (m n : M) (h : m ⊗ n ≅ 𝟙_ M) : F.ob
   then `F.obj m` and `F.obj n` forms a self-equivalence of `C`. -/
 @[simps]
 noncomputable def equivOfTensorIsoUnit (m n : M) (h₁ : m ⊗ n ≅ 𝟙_ M) (h₂ : n ⊗ m ≅ 𝟙_ M)
-    (H : h₁.hom ▷ m ≫ (λ_ m).hom = (α_ m n m).hom ≫ m ◁ h₂.hom ≫ (ρ_ m).hom) : C ≌ C
-    where
+    (H : h₁.hom ▷ m ≫ (λ_ m).hom = (α_ m n m).hom ≫ m ◁ h₂.hom ≫ (ρ_ m).hom) : C ≌ C where
   functor := F.obj m
   inverse := F.obj n
   unitIso := (unitOfTensorIsoUnit F m n h₁).symm

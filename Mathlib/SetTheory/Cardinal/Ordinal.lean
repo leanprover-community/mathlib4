@@ -70,6 +70,8 @@ theorem ord_isLimit {c} (co : ℵ₀ ≤ c) : (ord c).IsLimit := by
       exact omega_isLimit
 #align cardinal.ord_is_limit Cardinal.ord_isLimit
 
+theorem noMaxOrder {c} (h : ℵ₀ ≤ c) : NoMaxOrder c.ord.out.α :=
+  Ordinal.out_no_max_of_succ_lt (ord_isLimit h).2
 
 /-! ### Aleph cardinals -/
 section aleph
@@ -275,7 +277,7 @@ theorem aleph_zero : aleph 0 = ℵ₀ := by rw [aleph, add_zero, aleph'_omega]
 theorem aleph_limit {o : Ordinal} (ho : o.IsLimit) : aleph o = ⨆ a : Iio o, aleph a := by
   apply le_antisymm _ (ciSup_le' _)
   · rw [aleph, aleph'_limit (ho.add _)]
-    refine' ciSup_mono' (bddAbove_of_small _) _
+    refine ciSup_mono' (bddAbove_of_small _) ?_
     rintro ⟨i, hi⟩
     cases' lt_or_le i ω with h h
     · rcases lt_omega.1 h with ⟨n, rfl⟩

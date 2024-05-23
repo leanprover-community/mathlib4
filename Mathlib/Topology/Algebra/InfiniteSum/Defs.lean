@@ -152,13 +152,13 @@ protected theorem Finset.hasProd (s : Finset β) (f : β → α) :
 /-- If a function `f` is `1` outside of a finite set `s`, then it `HasProd` `∏ b in s, f b`. -/
 @[to_additive "If a function `f` vanishes outside of a finite set `s`, then it `HasSum`
 `∑ b in s, f b`."]
-theorem hasProd_prod_of_ne_finset_one (hf : ∀ (b) (_ : b ∉ s), f b = 1) :
+theorem hasProd_prod_of_ne_finset_one (hf : ∀ b ∉ s, f b = 1) :
     HasProd f (∏ b in s, f b) :=
   (hasProd_subtype_iff_of_mulSupport_subset <| mulSupport_subset_iff'.2 hf).1 <| s.hasProd f
 #align has_sum_sum_of_ne_finset_zero hasSum_sum_of_ne_finset_zero
 
 @[to_additive]
-theorem multipliable_of_ne_finset_one (hf : ∀ (b) (_ : b ∉ s), f b = 1) : Multipliable f :=
+theorem multipliable_of_ne_finset_one (hf : ∀ b ∉ s, f b = 1) : Multipliable f :=
   (hasProd_prod_of_ne_finset_one hf).multipliable
 #align summable_of_ne_finset_zero summable_of_ne_finset_zero
 

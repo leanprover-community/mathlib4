@@ -456,7 +456,7 @@ theorem liftPropWithinAt_mono_of_mem
 
 theorem liftPropWithinAt_mono (mono : ∀ ⦃s x t⦄ ⦃f : H → H'⦄, t ⊆ s → P f s x → P f t x)
     (h : LiftPropWithinAt P g s x) (hts : t ⊆ s) : LiftPropWithinAt P g t x := by
-  refine' ⟨h.1.mono hts, mono (fun y hy ↦ _) h.2⟩
+  refine ⟨h.1.mono hts, mono (fun y hy ↦ ?_) h.2⟩
   simp only [mfld_simps] at hy
   simp only [hy, hts _, mfld_simps]
 #align structure_groupoid.local_invariant_prop.lift_prop_within_at_mono StructureGroupoid.LocalInvariantProp.liftPropWithinAt_mono
@@ -498,7 +498,7 @@ theorem liftPropAt_symm_of_mem_maximalAtlas [HasGroupoid M G] {x : H}
   suffices h : Q (e ∘ e.symm) univ x by
     have : e.symm x ∈ e.source := by simp only [hx, mfld_simps]
     rw [LiftPropAt, hG.liftPropWithinAt_indep_chart G.id_mem_maximalAtlas (mem_univ _) he this]
-    refine' ⟨(e.symm.continuousAt hx).continuousWithinAt, _⟩
+    refine ⟨(e.symm.continuousAt hx).continuousWithinAt, ?_⟩
     simp only [h, mfld_simps]
   exact hG.congr' (e.eventually_right_inverse hx) (hQ x)
 #align structure_groupoid.local_invariant_prop.lift_prop_at_symm_of_mem_maximal_atlas StructureGroupoid.LocalInvariantProp.liftPropAt_symm_of_mem_maximalAtlas
@@ -630,7 +630,7 @@ theorem isLocalStructomorphWithinAt_localInvariantProp [ClosedUnderRestriction G
     congr_of_forall := by
       intro s x f g hfgs _ h hx
       rcases h hx with ⟨e, heG, hef, hex⟩
-      refine' ⟨e, heG, _, hex⟩
+      refine ⟨e, heG, ?_, hex⟩
       intro y hy
       rw [← hef hy, hfgs y hy.1]
     left_invariance' := by

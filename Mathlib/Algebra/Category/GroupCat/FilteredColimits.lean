@@ -96,7 +96,7 @@ theorem colimitInvAux_eq_of_rel (x y : Σ j, F.obj j)
 @[to_additive "Negation in the colimit. See also `colimitNegAux`."]
 instance colimitInv : Inv (G.{v, u} F) where
   inv x := by
-    refine' Quot.lift (colimitInvAux.{v, u} F) _ x
+    refine Quot.lift (colimitInvAux.{v, u} F) ?_ x
     intro x y h
     apply colimitInvAux_eq_of_rel
     apply Types.FilteredColimit.rel_of_quot_rel

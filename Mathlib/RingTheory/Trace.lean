@@ -372,7 +372,7 @@ theorem trace_eq_sum_embeddings_gen (pb : PowerBasis K L)
       (@Finset.univ _ (PowerBasis.AlgHom.fintype pb)).sum fun σ => σ pb.gen := by
   letI := Classical.decEq E
   -- Porting note: the following `letI` was not needed.
-  letI : Fintype (L →ₐ[K] E) := (PowerBasis.AlgHom.fintype pb)
+  letI : Fintype (L →ₐ[K] E) := PowerBasis.AlgHom.fintype pb
   rw [pb.trace_gen_eq_sum_roots hE, Fintype.sum_equiv pb.liftEquiv', Finset.sum_mem_multiset,
     Finset.sum_eq_multiset_sum, Multiset.toFinset_val, Multiset.dedup_eq_self.mpr _,
     Multiset.map_id]
@@ -490,7 +490,7 @@ theorem traceMatrix_of_matrix_vecMul [Fintype κ] (b : κ → B) (P : Matrix κ 
 
 theorem traceMatrix_of_matrix_mulVec [Fintype κ] (b : κ → B) (P : Matrix κ κ A) :
     traceMatrix A (P.map (algebraMap A B) *ᵥ b) = P * traceMatrix A b * Pᵀ := by
-  refine' AddEquiv.injective (transposeAddEquiv κ κ A) _
+  refine AddEquiv.injective (transposeAddEquiv κ κ A) ?_
   rw [transposeAddEquiv_apply, transposeAddEquiv_apply, ← vecMul_transpose, ← transpose_map,
     traceMatrix_of_matrix_vecMul, transpose_transpose]
 #align algebra.trace_matrix_of_matrix_mul_vec Algebra.traceMatrix_of_matrix_mulVec
@@ -587,7 +587,7 @@ variable (pb : PowerBasis K L)
 
 theorem det_traceMatrix_ne_zero' [IsSeparable K L] : det (traceMatrix K pb.basis) ≠ 0 := by
   suffices algebraMap K (AlgebraicClosure L) (det (traceMatrix K pb.basis)) ≠ 0 by
-    refine' mt (fun ht => _) this
+    refine mt (fun ht => ?_) this
     rw [ht, RingHom.map_zero]
   haveI : FiniteDimensional K L := pb.finite
   let e : Fin pb.dim ≃ (L →ₐ[K] AlgebraicClosure L) := (Fintype.equivFinOfCardEq ?_).symm
