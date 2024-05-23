@@ -1335,7 +1335,7 @@ theorem lTensor_smul_action (r : R) :
 theorem rTensor_smul_action (r : R) :
     (DistribMulAction.toLinearMap R N r).rTensor M =
       DistribMulAction.toLinearMap R (N ⊗[R] M) r :=
-  Eq.trans (rTensor_smul M r LinearMap.id) (congrArg _ (rTensor_id M N))
+  (rTensor_smul M r LinearMap.id).trans (congrArg _ (rTensor_id M N))
 
 variable {N}
 
