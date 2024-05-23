@@ -192,8 +192,8 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
       dsimp only
       split_ifs with hi hj hj
       · rwa [Fin.val_fin_lt, f.lt_iff_lt]
-      · rw [add_comm]
-        exact lt_add_of_lt_of_pos (Fin.is_lt _) (i.zero_le.trans_lt h)
+      · have := (f ⟨i, hi⟩).is_lt
+        omega
       · exact absurd (h.trans hj) hi
       · simpa using h
     · intro i
@@ -217,8 +217,7 @@ theorem duplicate_iff_exists_distinct_get {l : List α} {x : α} :
       sublist_iff_exists_fin_orderEmbedding_get_eq]
     constructor
     · rintro ⟨f, hf⟩
-      refine' ⟨f ⟨0, by simp⟩, f ⟨1, by simp⟩,
-        f.lt_iff_lt.2 (show (0 : ℕ) < 1 from zero_lt_one), _⟩
+      refine ⟨f ⟨0, by simp⟩, f ⟨1, by simp⟩, f.lt_iff_lt.2 (Nat.zero_lt_one), ?_⟩
       rw [← hf, ← hf]; simp
     · rintro ⟨n, m, hnm, h, h'⟩
       refine' ⟨OrderEmbedding.ofStrictMono (fun i => if (i : ℕ) = 0 then n else m) _, _⟩
@@ -226,8 +225,7 @@ theorem duplicate_iff_exists_distinct_get {l : List α} {x : α} :
         · simp
         · simp [hnm]
         · simp
-        · simp only [Nat.lt_succ_iff, Nat.succ_le_succ_iff, replicate, length,
-            nonpos_iff_eq_zero] at hi hj
+        · simp only [Nat.lt_succ_iff, Nat.succ_le_succ_iff, replicate, length, Nat.le_zero] at hi hj
           simp [hi, hj]
       · rintro ⟨⟨_ | i⟩, hi⟩
         · simpa using h

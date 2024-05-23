@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Finset.Image
-import Mathlib.Data.Fin.OrderHom
 import Mathlib.Data.List.FinRange
 
 #align_import data.fintype.basic from "leanprover-community/mathlib"@"d78597269638367c3863d40d45108f52207e03cf"
@@ -40,6 +39,8 @@ Types which have a surjection from/an injection to a `Fintype` are themselves fi
 See `Fintype.ofInjective` and `Fintype.ofSurjective`.
 -/
 
+-- TODO: After #12974,
+-- assert_not_exists MonoidWithZero
 
 open Function
 
@@ -846,8 +847,8 @@ theorem Fin.univ_succ (n : ℕ) :
 /-- Embed `Fin n` into `Fin (n + 1)` by appending a new `Fin.last n` to the `univ` -/
 theorem Fin.univ_castSuccEmb (n : ℕ) :
     (univ : Finset (Fin (n + 1))) =
-      Finset.cons (Fin.last n) (univ.map Fin.castSuccEmb.toEmbedding) (by simp [map_eq_image]) :=
-  by simp [map_eq_image]
+      Finset.cons (Fin.last n) (univ.map Fin.castSuccEmb) (by simp [map_eq_image]) := by
+  simp [map_eq_image]
 #align fin.univ_cast_succ Fin.univ_castSuccEmb
 
 /-- Embed `Fin n` into `Fin (n + 1)` by inserting
@@ -1020,32 +1021,6 @@ instance Subtype.fintype (p : α → Prop) [DecidablePred p] [Fintype α] : Fint
 def setFintype [Fintype α] (s : Set α) [DecidablePred (· ∈ s)] : Fintype s :=
   Subtype.fintype fun x => x ∈ s
 #align set_fintype setFintype
-
-section
-
-variable (α)
-
-/-- The `αˣ` type is equivalent to a subtype of `α × α`. -/
-@[simps]
-def unitsEquivProdSubtype [Monoid α] : αˣ ≃ { p : α × α // p.1 * p.2 = 1 ∧ p.2 * p.1 = 1 } where
-  toFun u := ⟨(u, ↑u⁻¹), u.val_inv, u.inv_val⟩
-  invFun p := Units.mk (p : α × α).1 (p : α × α).2 p.prop.1 p.prop.2
-  left_inv _ := Units.ext rfl
-  right_inv _ := Subtype.ext <| Prod.ext rfl rfl
-#align units_equiv_prod_subtype unitsEquivProdSubtype
-#align units_equiv_prod_subtype_apply_coe unitsEquivProdSubtype_apply_coe
-
-/-- In a `GroupWithZero` `α`, the unit group `αˣ` is equivalent to the subtype of nonzero
-elements. -/
-@[simps]
-def unitsEquivNeZero [GroupWithZero α] : αˣ ≃ { a : α // a ≠ 0 } :=
-  ⟨fun a => ⟨a, a.ne_zero⟩, fun a => Units.mk0 _ a.prop, fun _ => Units.ext rfl, fun _ =>
-    Subtype.ext rfl⟩
-#align units_equiv_ne_zero unitsEquivNeZero
-#align units_equiv_ne_zero_apply_coe unitsEquivNeZero_apply_coe
-#align units_equiv_ne_zero_symm_apply unitsEquivNeZero_symm_apply
-
-end
 
 namespace Fintype
 variable [Fintype α]
