@@ -410,7 +410,7 @@ instance : MonoidalCategory (SimplicialObject C) :=
 
 -- TODO: use `ChosenFiniteProducts`
 
-instance : MonoidalCategory TopCat :=
+instance : MonoidalCategory TopCat.{u} :=
   monoidalOfChosenFiniteProducts
     ⟨{ pt := TopCat.of PUnit, π := sorry }, sorry⟩
     fun X Y => ⟨{ pt := TopCat.of (X × Y), π := sorry }, sorry⟩
@@ -419,14 +419,6 @@ instance : MonoidalCategory TopCat :=
 
 instance : SymmetricCategory TopCat := symmetricOfChosenFiniteProducts _ _
 end
-
--- @[simps]
--- instance {X : TopCat} {n} : FunLike ((toSSet.obj X).obj n) (SimplexCategory.toTop.obj n.unop) X :=
---   inferInstanceAs <| FunLike (of n.unop.toTopObj ⟶ X) (SimplexCategory.toTop.obj n.unop) X
-
--- @[ext]
--- theorem foo {X : TopCat} {n} {f g : (toSSet.obj X).obj n} (h : ∀ x : SimplexCategory.toTopObj n.unop, f x = g x) : f = g := by
---   sorry
 
 @[simp]
 theorem forget_of (X : Type _) [TopologicalSpace X] : (forget TopCat).obj (of X) = X := rfl
@@ -437,12 +429,14 @@ theorem forget_of (X : Type _) [TopologicalSpace X] : (forget TopCat).obj (of X)
     @DFunLike.coe C(X, Y) X (fun _ ↦ Y) _ f :=
   rfl
 
-@[simp] theorem coe_comp {X : Type u} [TopologicalSpace X] {Y Z : TopCat}
-    {f : C(X, no_index Y)} {g : Y ⟶ Z} {x} :
-    @DFunLike.coe no_index (@Quiver.Hom TopCat _ no_index (of X) Z) no_index X no_index (fun _ ↦ Z) _ no_index (@CategoryStruct.comp TopCat _ no_index _ no_index _ no_index _ no_index f no_index g) no_index x =
-    (g : Y → Z) ((f : X → Y) x) :=
-  rfl
-#check coe_comp
+-- This is really aggressive.
+@[simp] theorem continuousMap_comp {X : Type u} [TopologicalSpace X] {Y Z : TopCat} (f : C(X, Y)) (g : Y ⟶ Z) :
+  @CategoryStruct.comp TopCat _ (of X) Y Z f g = ContinuousMap.comp g f := rfl
+
+@[simp] theorem of_hom {X : Type u} [TopologicalSpace X] {Y : TopCat.{u}} : (of X ⟶ Y) = C(X, Y) := rfl
+@[simp] theorem hom_of {X : TopCat.{u}} {Y : Type u} [TopologicalSpace Y] : (X ⟶ of Y) = C(X, Y) := rfl
+
+
 @[simp] theorem associator_hom_apply_1 {X Y Z : Type u} {x} :
     (((α_ X Y Z).hom : (X ⊗ Y) ⊗ Z → X ⊗ Y ⊗ Z) x).1 = x.1.1 :=
   rfl
@@ -476,12 +470,8 @@ def toSSet_monoidal : MonoidalFunctor TopCat SSet :=
   μ_isIso := sorry
   μ_natural_left := sorry
   μ_natural_right := sorry
-  associativity := by
-    aesop_cat_nonterminal
-    rename_i n a x
-    dsimp at a
-    -- simp only [comp_app]
-    erw [comp_app]
+  associativity := sorry -- These subgoals are hiding some horrors;
+                         -- solve them to become an expert in concrete categories in Mathlib!
   left_unitality := sorry
   right_unitality := sorry }
 
