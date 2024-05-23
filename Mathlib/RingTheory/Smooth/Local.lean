@@ -1,5 +1,5 @@
 import Mathlib.RingTheory.Smooth.Projective
-import Mathlib
+-- import Mathlib
 
 universe u
 
