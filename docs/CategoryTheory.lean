@@ -406,7 +406,7 @@ variable (C : Type u) [Category C] [MonoidalCategory C]
 instance : MonoidalCategory (SimplicialObject C) :=
   inferInstanceAs <| MonoidalCategory (SimplexCategoryᵒᵖ ⥤ C)
 
--- instance : MonoidalCategory SSet := inferInstanceAs <| MonoidalCategory (SimplexCategoryᵒᵖ ⥤ Type)
+instance : MonoidalCategory SSet := inferInstanceAs <| MonoidalCategory (SimplexCategoryᵒᵖ ⥤ Type)
 
 -- TODO: use `ChosenFiniteProducts`
 
