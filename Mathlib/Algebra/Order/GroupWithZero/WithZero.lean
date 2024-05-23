@@ -25,6 +25,8 @@ theory. These instances enable lemmas such as `mul_pos` to fire on `ℤₘ₀`.
 
 -/
 
+assert_not_exists Ring
+
 -- this makes `mul_lt_mul_left`, `mul_pos` etc work on `ℤₘ₀`
 instance {α : Type*} [Mul α] [Preorder α] [CovariantClass α α (· * ·) (· < ·)]:
     PosMulStrictMono (WithZero α) where
