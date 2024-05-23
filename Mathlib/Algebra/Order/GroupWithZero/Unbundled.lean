@@ -189,22 +189,22 @@ section Preorder
 
 variable [Preorder α]
 
-instance PosMulMono.to_covariant_pos_mul_le [PosMulMono α] :
+theorem PosMulMono.to_covariant_pos_mul_le [PosMulMono α] :
     Covariant α>0 α (fun x y => x * y) (· ≤ ·) :=
   fun a _ _ bc => PosMulMono.elim ⟨_, a.2.le⟩ bc
 #align pos_mul_mono.to_covariant_class_pos_mul_le PosMulMono.to_covariant_pos_mul_le
 
-instance MulPosMono.to_covariant_pos_mul_le [MulPosMono α] :
+theorem MulPosMono.to_covariant_pos_mul_le [MulPosMono α] :
     Covariant α>0 α (fun x y => y * x) (· ≤ ·) :=
   fun a _ _ bc => MulPosMono.elim ⟨_, a.2.le⟩ bc
 #align mul_pos_mono.to_covariant_class_pos_mul_le MulPosMono.to_covariant_pos_mul_le
 
-instance PosMulReflectLT.to_contravariant_pos_mul_lt [PosMulReflectLT α] :
+theorem PosMulReflectLT.to_contravariant_pos_mul_lt [PosMulReflectLT α] :
     Contravariant α>0 α (fun x y => x * y) (· < ·) :=
   fun a _ _ bc => PosMulReflectLT.elim ⟨_, a.2.le⟩ bc
 #align pos_mul_reflect_lt.to_contravariant_class_pos_mul_lt PosMulReflectLT.to_contravariant_pos_mul_lt
 
-instance MulPosReflectLT.to_contravariant_pos_mul_lt [MulPosReflectLT α] :
+theorem MulPosReflectLT.to_contravariant_pos_mul_lt [MulPosReflectLT α] :
     Contravariant α>0 α (fun x y => y * x) (· < ·) :=
   fun a _ _ bc => MulPosReflectLT.elim ⟨_, a.2.le⟩ bc
 #align mul_pos_reflect_lt.to_contravariant_class_pos_mul_lt MulPosReflectLT.to_contravariant_pos_mul_lt
