@@ -1539,7 +1539,7 @@ theorem multiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_multipl
     multiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_multiplicity hr ha]
 #align multiplicity_normalized_factors_equiv_span_normalized_factors_symm_eq_multiplicity multiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_multiplicity
 
-/-- The bijection `normalized_factors_equiv_span_normalized_factors.symm` between the set of prime
+/-- The bijection `normalizedFactorsEquivSpanNormalizedFactors.symm` between the set of prime
     factors of the ideal `⟨r⟩` and the set of prime factors of `r` preserves `count` of the
     corresponding multisets. See
     `multiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_multiplicity` for the version
