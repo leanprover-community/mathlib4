@@ -77,7 +77,7 @@ theorem isCartanSubalgebra_iff_isUcsLimit : H.IsCartanSubalgebra ↔ H.toLieSubm
     replace hk : H.toLieSubmodule = LieSubmodule.ucs k ⊥ :=
       le_antisymm hk
         (LieSubmodule.ucs_le_of_normalizer_eq_self H.normalizer_eq_self_of_isCartanSubalgebra k)
-    refine' ⟨k, fun l hl => _⟩
+    refine ⟨k, fun l hl => ?_⟩
     rw [← Nat.sub_add_cancel hl, LieSubmodule.ucs_add, ← hk,
       LieSubalgebra.ucs_eq_self_of_isCartanSubalgebra]
   · rintro ⟨k, hk⟩

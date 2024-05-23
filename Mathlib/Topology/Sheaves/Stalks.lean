@@ -149,9 +149,7 @@ set_option linter.uppercaseLean3 false in
 theorem stalkPushforward_germ (f : X ⟶ Y) (F : X.Presheaf C) (U : Opens Y)
     (x : (Opens.map f).obj U) :
       (f _* F).germ ⟨(f : X → Y) (x : X), x.2⟩ ≫ F.stalkPushforward C f x = F.germ x := by
-  rw [stalkPushforward, germ, colimit.ι_map_assoc, colimit.ι_pre, whiskerRight_app]
-  erw [CategoryTheory.Functor.map_id, Category.id_comp]
-  rfl
+  simp [germ, stalkPushforward]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pushforward_germ TopCat.Presheaf.stalkPushforward_germ
 
@@ -174,26 +172,25 @@ namespace stalkPushforward
 @[simp]
 theorem id (ℱ : X.Presheaf C) (x : X) :
     ℱ.stalkPushforward C (𝟙 X) x = (stalkFunctor C x).map (Pushforward.id ℱ).hom := by
-  -- Porting note: We need to this to help ext tactic.
-  change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
-  ext1 j
-  induction' j with j
-  rcases j with ⟨⟨_, _⟩, _⟩
-  erw [colimit.ι_map_assoc]
-  simp [stalkFunctor, stalkPushforward]
+  ext
+  simp only [stalkPushforward, germ, colim_map, ι_colimMap_assoc, whiskerRight_app]
+  erw [CategoryTheory.Functor.map_id]
+  simp [stalkFunctor]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pushforward.id TopCat.Presheaf.stalkPushforward.id
 
--- This proof is sadly not at all robust:
--- having to use `erw` at all is a bad sign.
 @[simp]
 theorem comp (ℱ : X.Presheaf C) (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
     ℱ.stalkPushforward C (f ≫ g) x =
       (f _* ℱ).stalkPushforward C g (f x) ≫ ℱ.stalkPushforward C f x := by
-  change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
-  ext U
-  rcases U with ⟨⟨_, _⟩, _⟩
-  simp [stalkFunctor, stalkPushforward]
+  ext
+  simp only [germ, stalkPushforward]
+  -- Now `simp` finishes, but slowly:
+  simp only [pushforwardObj_obj, Functor.op_obj, Opens.map_comp_obj, whiskeringLeft_obj_obj,
+    OpenNhds.inclusionMapIso_inv, NatTrans.op_id, colim_map, ι_colimMap_assoc, Functor.comp_obj,
+    OpenNhds.inclusion_obj, OpenNhds.map_obj, whiskerRight_app, NatTrans.id_app,
+    CategoryTheory.Functor.map_id, colimit.ι_pre, Category.id_comp, Category.assoc,
+    pushforwardObj_map, Functor.op_map, unop_id, op_id, colimit.ι_pre_assoc]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pushforward.comp TopCat.Presheaf.stalkPushforward.comp
 
@@ -208,7 +205,7 @@ theorem stalkPushforward_iso_of_openEmbedding {f : X ⟶ Y} (hf : OpenEmbedding 
   swap
   · fapply NatIso.ofComponents
     · intro U
-      refine' F.mapIso (eqToIso _)
+      refine F.mapIso (eqToIso ?_)
       dsimp only [Functor.op]
       exact congr_arg op (Opens.ext <| Set.preimage_image_eq (unop U).1.1 hf.inj)
     · intro U V i; erw [← F.map_comp, ← F.map_comp]; congr 1

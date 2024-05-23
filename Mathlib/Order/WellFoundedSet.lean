@@ -77,7 +77,7 @@ theorem wellFoundedOn_iff :
     s.WellFoundedOn r ↔ WellFounded fun a b : α => r a b ∧ a ∈ s ∧ b ∈ s := by
   have f : RelEmbedding (fun (a : s) (b : s) => r a b) fun a b : α => r a b ∧ a ∈ s ∧ b ∈ s :=
     ⟨⟨(↑), Subtype.coe_injective⟩, by simp⟩
-  refine' ⟨fun h => _, f.wellFounded⟩
+  refine ⟨fun h => ?_, f.wellFounded⟩
   rw [WellFounded.wellFounded_iff_has_min]
   intro t ht
   by_cases hst : (s ∩ t).Nonempty
@@ -100,7 +100,7 @@ theorem _root_.WellFounded.wellFoundedOn : WellFounded r → s.WellFoundedOn r :
 @[simp]
 theorem wellFoundedOn_range : (range f).WellFoundedOn r ↔ WellFounded (r on f) := by
   let f' : β → range f := fun c => ⟨f c, c, rfl⟩
-  refine' ⟨fun h => (InvImage.wf f' h).mono fun c c' => id, fun h => ⟨_⟩⟩
+  refine ⟨fun h => (InvImage.wf f' h).mono fun c c' => id, fun h => ⟨?_⟩⟩
   rintro ⟨_, c, rfl⟩
   refine' Acc.of_downward_closed f' _ _ _
   · rintro _ ⟨_, c', rfl⟩ -
@@ -119,7 +119,7 @@ protected theorem induction (hs : s.WellFoundedOn r) (hx : x ∈ s) {P : α → 
     (hP : ∀ y ∈ s, (∀ z ∈ s, r z y → P z) → P y) : P x := by
   let Q : s → Prop := fun y => P y
   change Q ⟨x, hx⟩
-  refine' WellFounded.induction hs ⟨x, hx⟩ _
+  refine WellFounded.induction hs ⟨x, hx⟩ ?_
   simpa only [Subtype.forall]
 #align set.well_founded_on.induction Set.WellFoundedOn.induction
 
@@ -181,10 +181,10 @@ theorem wellFoundedOn_iff_no_descending_seq :
   constructor
   · rintro ⟨⟨f, hf⟩⟩
     have H : ∀ n, f n ∈ s := fun n => (hf.2 n.lt_succ_self).2.2
-    refine' ⟨⟨f, _⟩, H⟩
+    refine ⟨⟨f, ?_⟩, H⟩
     simpa only [H, and_true_iff] using @hf
   · rintro ⟨⟨f, hf⟩, hfs : ∀ n, f n ∈ s⟩
-    refine' ⟨⟨f, _⟩⟩
+    refine ⟨⟨f, ?_⟩⟩
     simpa only [hfs, and_true_iff] using @hf
 #align set.well_founded_on_iff_no_descending_seq Set.wellFoundedOn_iff_no_descending_seq
 

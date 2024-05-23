@@ -638,7 +638,7 @@ noncomputable def lift' (g : M →ₗ[R] M'')
       simp only [Submonoid.smul_def, ← g.map_smul, eq1]
     have : Function.Injective (h c).unit.inv := by
       rw [Function.injective_iff_hasLeftInverse]
-      refine' ⟨(h c).unit, _⟩
+      refine ⟨(h c).unit, ?_⟩
       intro x
       change ((h c).unit.1 * (h c).unit.inv) x = x
       simp only [Units.inv_eq_val_inv, IsUnit.mul_val_inv, LinearMap.one_apply]
@@ -746,7 +746,7 @@ instance localizedModuleIsLocalizedModule :
           rfl⟩
   surj' p :=
     p.induction_on fun m t => by
-      refine' ⟨⟨m, t⟩, _⟩
+      refine ⟨⟨m, t⟩, ?_⟩
       erw [LocalizedModule.smul'_mk, LocalizedModule.mkLinearMap_apply, Submonoid.coe_subtype,
         LocalizedModule.mk_cancel t]
   exists_of_eq eq1 := by simpa only [eq_comm, one_smul] using LocalizedModule.mk_eq.mp eq1

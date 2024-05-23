@@ -95,7 +95,7 @@ theorem FractionalIdeal.isPrincipal_of_unit_of_comap_mul_span_singleton_eq_top {
     rw [← hJ, h, IsLocalization.coeSubmodule_top, Submodule.mem_one]
     exact ⟨1, (algebraMap R _).map_one⟩
   obtain ⟨w, hw, hvw⟩ := Submodule.mem_mul_span_singleton.1 this
-  refine' ⟨⟨w, _⟩⟩
+  refine ⟨⟨w, ?_⟩⟩
   rw [← FractionalIdeal.coe_spanSingleton S, ← inv_inv I, eq_comm]
   refine' congr_arg (↑) (Units.eq_inv_of_mul_eq_one_left (le_antisymm _ _))
   · conv_rhs => rw [← hinv, mul_comm]

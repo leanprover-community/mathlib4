@@ -127,7 +127,7 @@ theorem exists_Lp_half (p : ℝ≥0∞) {δ : ℝ≥0∞} (hδ : δ ≠ 0) :
       nhdsWithin_le_nhds
   simp only [add_zero, mul_zero] at this
   rcases (((tendsto_order.1 this).2 δ hδ.bot_lt).and self_mem_nhdsWithin).exists with ⟨η, hη, ηpos⟩
-  refine' ⟨η, ηpos, fun f g hf hg Hf Hg => _⟩
+  refine ⟨η, ηpos, fun f g hf hg Hf Hg => ?_⟩
   calc
     snorm (f + g) p μ ≤ LpAddConst p * (snorm f p μ + snorm g p μ) := snorm_add_le' hf hg p
     _ ≤ LpAddConst p * (η + η) := by gcongr

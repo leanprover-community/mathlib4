@@ -73,7 +73,7 @@ variable {W : Type*} [Category W] [Preadditive W] [HasCokernels W] [HasImages W]
 /-- A homotopy equivalence is a quasi-isomorphism. -/
 theorem toQuasiIso' {C D : HomologicalComplex W c} (e : HomotopyEquiv C D) : QuasiIso' e.hom :=
   ⟨fun i => by
-    refine' ⟨⟨(homology'Functor W c i).map e.inv, _⟩⟩
+    refine ⟨⟨(homology'Functor W c i).map e.inv, ?_⟩⟩
     simp only [← Functor.map_comp, ← (homology'Functor W c i).map_id]
     constructor <;> apply homology'_map_eq_of_homotopy
     exacts [e.homotopyHomInvId, e.homotopyInvHomId]⟩
