@@ -57,7 +57,8 @@ private partial def withSetOptionIn' (cmd : CommandElab) : CommandElab := fun st
 
 /-- `allowed_commands` is the `HashSet` of `#`-commands that are allowed in 'Mathlib'. -/
 private abbrev allowed_commands : HashSet String :=
-  { "#align", "#align_import", "#noalign", "#adaptation_note", "#guard_msgs" }
+  { "#align", "#align_import", "#noalign", "#adaptation_note",
+    "#guard_msgs", "#guard", "#guard_expr" }
 
 /-- Checks that no command beginning with `#` is present in 'Mathlib',
 except for the ones in `allowed_commands`.
