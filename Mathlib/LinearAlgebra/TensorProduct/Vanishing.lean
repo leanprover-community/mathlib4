@@ -5,6 +5,7 @@ Authors: Mitchell Lee
 -/
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.LinearAlgebra.TensorProduct.Finiteness
+import Mathlib.Data.Countable.Small
 
 /-! # Vanishing of elements in a tensor product of two modules
 
@@ -50,22 +51,21 @@ is injective for every submodule $M' \subseteq M$.
 ## TODO
 
 * Prove the same theorems with $M$ and $N$ swapped.
-* Prove the same theorems with universe polymorphism.
 
 -/
 
-universe u
+universe uR uM uN uι uκ uκ'
 
-variable (R : Type u) [CommRing R]
-variable {M : Type u} [AddCommGroup M] [Module R M]
-variable {N : Type u} [AddCommGroup N] [Module R N]
+variable (R : Type uR) [CommRing R]
+variable {M : Type uM} [AddCommGroup M] [Module R M]
+variable {N : Type uN} [AddCommGroup N] [Module R N]
 
 open Classical DirectSum LinearMap Function Submodule
 open scoped BigOperators
 
 namespace TensorProduct
 
-variable {ι : Type u} [Fintype ι] {m : ι → M} {n : ι → N}
+variable {ι : Type uι} [Fintype ι] {m : ι → M} {n : ι → N}
 
 variable (m n) in
 /-- An expression $\sum_i m_i \otimes n_i$ in $M \otimes N$
@@ -78,8 +78,37 @@ $$\sum_{i} a_{ij} m_i = 0.$$
 Note that this condition is not symmetric in $M$ and $N$.
 (The terminology "trivial" comes from [Stacks 00HK](https://stacks.math.columbia.edu/tag/00HK).)-/
 abbrev VanishesTrivially : Prop :=
-  ∃ (κ : Type u) (_ : Fintype κ) (a : ι → κ → R) (y : κ → N),
+  ∃ (κ : Type uκ) (_ : Fintype κ) (a : ι → κ → R) (y : κ → N),
     (∀ i, n i = ∑ j, a i j • y j) ∧ ∀ j, ∑ i, a i j • m i = 0
+
+variable {R} in
+/-- Shift a `VanishesTrivially` from one universe to another. -/
+@[pp_with_univ]
+theorem VanishesTrivially.universe_shift (h : VanishesTrivially.{_, _, _, _, uκ} R m n) :
+    VanishesTrivially.{_, _, _, _, uκ'} R m n := by
+  obtain ⟨κ, hκ, a, y, h₁, h₂⟩ := h
+  let κ' := Shrink.{uκ', uκ} κ
+  have hκ' : Fintype κ' := Fintype.ofEquiv _ (equivShrink _)
+  refine ⟨κ', hκ', fun i j ↦ a i ((equivShrink _).symm j), fun j ↦ y ((equivShrink _).symm j),
+    ?_, ?_⟩
+  · intro i
+    rw [← Equiv.sum_comp (equivShrink _)]
+    simp only [Equiv.symm_apply_apply]
+    exact h₁ i
+  · rw [← Equiv.forall_congr_left (equivShrink _)]
+    simpa
+
+variable {R} in
+theorem VanishesTrivially.equiv.{uι'} {ι' : Type uι'} [Fintype ι']
+    (h : VanishesTrivially R m n) (f : ι' ≃ ι) :
+    VanishesTrivially R (m ∘ f) (n ∘ f) := by
+  apply VanishesTrivially.universe_shift
+  obtain ⟨κ, hκ, a, y, h₁, h₂⟩ := h
+  refine ⟨κ, hκ, a ∘ f, y, ?_, ?_⟩
+  · simp_rw [f.symm.surjective.forall, Function.comp_apply, Equiv.apply_symm_apply]
+    exact h₁
+  · simp_rw [← f.symm.bijective.sum_comp, Function.comp_apply, Equiv.apply_symm_apply]
+    exact h₂
 
 /-- **Equational criterion for vanishing**
 [A. Altman and S. Kleiman, *A term of commutative algebra* (Lemma 8.16)][altman2021term],
@@ -102,6 +131,7 @@ Assume that the $m_i$ generate $M$. If the expression $\sum_i m_i \otimes n_i$
 vanishes, then it vanishes trivially. -/
 theorem vanishesTrivially_of_sum_tmul_eq_zero (hm : Submodule.span R (Set.range m) = ⊤)
     (hmn : ∑ i, m i ⊗ₜ n i = (0 : M ⊗[R] N)) : VanishesTrivially R m n := by
+  apply VanishesTrivially.universe_shift
   -- Define a map $G \colon R^\iota \to M$ whose matrix entries are the $m_i$. It is surjective.
   set G : (ι →₀ R) →ₗ[R] M := Finsupp.total ι M R m with hG
   have G_basis_eq (i : ι) : G (Finsupp.single i 1) = m i := by simp [hG, toModule_lof]
@@ -210,16 +240,22 @@ theorem vanishesTrivially_iff_sum_tmul_eq_zero_of_rTensor_injective
 Assume that every expression $\sum_i m_i \otimes n_i$ which vanishes also vanishes trivially.
 Then, for every submodule $M' \subseteq M$, the map $M' \otimes N \to M \otimes N$ is injective. -/
 theorem rTensor_injective_of_forall_vanishesTrivially
-    (hMN : ∀ {ι : Type u} [Fintype ι] {m : ι → M} {n : ι → N},
+    (hMN : ∀ {ι : Type uι} [Fintype ι] {m : ι → M} {n : ι → N},
       ∑ i, m i ⊗ₜ n i = (0 : M ⊗[R] N) → VanishesTrivially R m n)
     (M' : Submodule R M) : Injective (rTensor N M'.subtype) := by
+  have h₂MN {ι : Type (max uM uN)} [Fintype ι] {m : ι → M} {n : ι → N}
+      (h : ∑ i, m i ⊗ₜ n i = (0 : M ⊗[R] N)) : VanishesTrivially.{_, _, _, _, 0} R m n := by
+    haveI : Small.{uι} ι := Countable.toSmall ι
+    haveI : Fintype (Shrink.{uι, max uM uN} ι) := Fintype.ofEquiv _ (equivShrink _)
+    rw [← (equivShrink _).symm.sum_comp] at h
+    convert (hMN h).equiv (equivShrink.{uι, max uM uN} ι) <;> (ext i; simp)
   apply (injective_iff_map_eq_zero _).mpr
   rintro x hx
   obtain ⟨s, rfl⟩ := exists_finset x
   rw [← Finset.sum_attach]
   apply sum_tmul_eq_zero_of_vanishesTrivially
   simp only [map_sum, rTensor_tmul, coeSubtype] at hx
-  have := hMN ((Finset.sum_attach s _).trans hx)
+  have := h₂MN ((Finset.sum_attach s _).trans hx)
   unfold VanishesTrivially at this ⊢
   convert this with κ _ a y j
   symm
@@ -229,7 +265,7 @@ theorem rTensor_injective_of_forall_vanishesTrivially
 /-- Every expression $\sum_i m_i \otimes n_i$ which vanishes also vanishes trivially if and only if
 for every submodule $M' \subseteq M$, the map $M' \otimes N \to M \otimes N$ is injective. -/
 theorem forall_vanishesTrivially_iff_forall_rTensor_injective :
-    (∀ {ι : Type u} [Fintype ι] {m : ι → M} {n : ι → N},
+    (∀ {ι : Type uι} [Fintype ι] {m : ι → M} {n : ι → N},
       ∑ i, m i ⊗ₜ n i = (0 : M ⊗[R] N) → VanishesTrivially R m n) ↔
     ∀ M' : Submodule R M, Injective (rTensor N M'.subtype) := by
   constructor
@@ -242,7 +278,7 @@ theorem forall_vanishesTrivially_iff_forall_rTensor_injective :
 for every finitely generated submodule $M' \subseteq M$, the map $M' \otimes N \to M \otimes N$ is
 injective. -/
 theorem forall_vanishesTrivially_iff_forall_FG_rTensor_injective :
-    (∀ {ι : Type u} [Fintype ι] {m : ι → M} {n : ι → N},
+    (∀ {ι : Type uι} [Fintype ι] {m : ι → M} {n : ι → N},
       ∑ i, m i ⊗ₜ n i = (0 : M ⊗[R] N) → VanishesTrivially R m n) ↔
     ∀ (M' : Submodule R M) (_ : M'.FG), Injective (rTensor N M'.subtype) := by
   constructor
@@ -257,7 +293,7 @@ $M' \subseteq M$, then it is in fact injective for every submodule $M' \subseteq
 theorem rTensor_injective_of_forall_FG_rTensor_injective
     (hMN : ∀ (M' : Submodule R M) (_ : M'.FG), Injective (rTensor N M'.subtype))
     (M' : Submodule R M) : Injective (rTensor N M'.subtype) :=
-  (forall_vanishesTrivially_iff_forall_rTensor_injective R).mp
+  (forall_vanishesTrivially_iff_forall_rTensor_injective.{0, _, _, _, 0} R).mp
     ((forall_vanishesTrivially_iff_forall_FG_rTensor_injective R).mpr hMN) M'
 
 end TensorProduct
