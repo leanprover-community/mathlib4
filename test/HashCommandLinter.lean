@@ -1,11 +1,14 @@
 import Lean.Elab.GuardMsgs
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Linter.HashCommandLinter
+import Mathlib.Tactic.AdaptationNote
 
 section ignored_commands
 theorem fo₁ : True := .intro
 -- `#align` is allowed by the linter
 #align true fo₁
+
+#adaptation_note /-- testing that the hashCommand linter ignores this. -/
 
 /-- info: 0 -/
 #guard_msgs in
