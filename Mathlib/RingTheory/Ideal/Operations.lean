@@ -319,7 +319,7 @@ theorem map_smul'' (f : M →ₗ[R] M') : (I • N).map f = I • N.map f :=
 #align submodule.map_smul'' Submodule.map_smul''
 
 open Pointwise in
-theorem map_element_smul (r : R) (N : Submodule R M) (f : M →ₗ[R] M') :
+theorem map_pointwise_smul (r : R) (N : Submodule R M) (f : M →ₗ[R] M') :
     (r • N).map f = r • N.map f :=
   by simp_rw [← ideal_span_singleton_smul, map_smul'']
 
