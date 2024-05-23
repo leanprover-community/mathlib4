@@ -15,9 +15,8 @@ import Mathlib.Tactic.Lemma
 namespace Mathlib.Linter
 
 /--
-The linter emits a warning on any command beginning with `#` that itself emits no message.
-For example, `#guard true` and `#check_tactic True ~> True by skip` trigger a message.
-There is a list of silent `#`-command that are allowed.
+The linter helps with the conversion `refine'` to `refine`, by printing the positions of
+missing `?`.
 -/
 register_option linter.refine'ToRefine : Bool := {
   defValue := true
@@ -28,10 +27,13 @@ namespace refine'ToRefine
 
 open Lean Elab
 
+/-- checks whether a `MessageData` refers to an error of a missing `?` is `refine`. -/
 def isSyntPlaceHolder : MessageData → Bool
   | .withNamingContext _ (.withContext _ (.tagged `Elab.synthPlaceholder _)) => true
   | _ => false
 
+/-- extracts `refine'` from the given `Syntax`, returning also the `SourceInfo` and the arguments
+of the `refine'` node. -/
 partial
 def getRefine' : Syntax → Array (Syntax × SourceInfo × Array Syntax)
   | stx@(.node si ``Lean.Parser.Tactic.refine' args) =>
@@ -56,6 +58,8 @@ def toExample {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation m] :
     return some (← `($dm:declModifiers example $ds $dv:declVal), mkIdent `example)
   | _ => return none
 
+/-- replaces each `refine'` by `refine` in succession in `cmd` and, each time, catches the errors
+of missing `?`, collecting their positions.  Eventually, it returns the array of such positions. -/
 def getQuestions (cmd : Syntax) : Command.CommandElabM (Array Position) := do
   let s ← get
   let refine's := getRefine' cmd
