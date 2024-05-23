@@ -352,7 +352,7 @@ theorem cauchySeq_of_controlled [SemilatticeSup β] [Nonempty β] (U : β → Se
       intro s hs
       rw [mem_map, mem_atTop_sets]
       cases' hU s hs with N hN
-      refine' ⟨(N, N), fun mn hmn => _⟩
+      refine ⟨(N, N), fun mn hmn => ?_⟩
       cases' mn with m n
       exact hN (hf hmn.1 hmn.2))
 #align cauchy_seq_of_controlled cauchySeq_of_controlled
@@ -393,12 +393,12 @@ theorem isComplete_iUnion_separated {ι : Sort*} {s : ι → Set α} (hs : ∀ i
   cases' cauchy_iff.1 hl with hl_ne hl'
   obtain ⟨t, htS, htl, htU⟩ : ∃ t, t ⊆ S ∧ t ∈ l ∧ t ×ˢ t ⊆ U := by
     rcases hl' U hU with ⟨t, htl, htU⟩
-    exact ⟨t ∩ S, inter_subset_right _ _, inter_mem htl hls,
-      (Set.prod_mono (inter_subset_left _ _) (inter_subset_left _ _)).trans htU⟩
+    refine ⟨t ∩ S, inter_subset_right _ _, inter_mem htl hls, Subset.trans ?_ htU⟩
+    gcongr <;> apply inter_subset_left
   obtain ⟨i, hi⟩ : ∃ i, t ⊆ s i := by
     rcases Filter.nonempty_of_mem htl with ⟨x, hx⟩
     rcases mem_iUnion.1 (htS hx) with ⟨i, hi⟩
-    refine' ⟨i, fun y hy => _⟩
+    refine ⟨i, fun y hy => ?_⟩
     rcases mem_iUnion.1 (htS hy) with ⟨j, hj⟩
     rwa [hd i j x hi y hj (htU <| mk_mem_prod hx hy)]
   rcases hs i l hl (le_principal_iff.2 <| mem_of_superset htl hi) with ⟨x, hxs, hlx⟩

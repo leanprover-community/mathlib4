@@ -376,7 +376,7 @@ protected theorem bounded (f : F) : ∃ C, ∀ x y : α, dist ((f : α → β) x
   obtain ⟨K : Set α, hK₁, hK₂⟩ := mem_cocompact.mp
     (tendsto_def.mp (zero_at_infty (f : F)) _ (closedBall_mem_nhds (0 : β) zero_lt_one))
   obtain ⟨C, hC⟩ := (hK₁.image (map_continuous f)).isBounded.subset_closedBall (0 : β)
-  refine' ⟨max C 1 + max C 1, fun x y => _⟩
+  refine ⟨max C 1 + max C 1, fun x y => ?_⟩
   have : ∀ x, f x ∈ closedBall (0 : β) (max C 1) := by
     intro x
     by_cases hx : x ∈ K

@@ -91,7 +91,7 @@ theorem prime_of_aleph0_le (ha : ℵ₀ ≤ a) : Prime a := by
 
 theorem not_irreducible_of_aleph0_le (ha : ℵ₀ ≤ a) : ¬Irreducible a := by
   rw [irreducible_iff, not_and_or]
-  refine' Or.inr fun h => _
+  refine Or.inr fun h => ?_
   simpa [mul_aleph0_eq ha, isUnit_iff, (one_lt_aleph0.trans_le ha).ne', one_lt_aleph0.ne'] using
     h a ℵ₀
 #align cardinal.not_irreducible_of_aleph_0_le Cardinal.not_irreducible_of_aleph0_le
@@ -129,9 +129,9 @@ theorem nat_is_prime_iff : Prime (n : Cardinal) ↔ n.Prime := by
     cases hbc <;> contradiction
   wlog hℵ₀b : ℵ₀ ≤ b
   refine' (this h c b _ _ hc hb hℵ₀.symm hn (hℵ₀.resolve_left hℵ₀b)).symm <;> try assumption
-  rwa [mul_comm] at hbc
-  rwa [mul_comm] at h'
-  exact Or.inl (dvd_of_le_of_aleph0_le hn ((nat_lt_aleph0 n).le.trans hℵ₀b) hℵ₀b)
+  · rwa [mul_comm] at hbc
+  · rwa [mul_comm] at h'
+  · exact Or.inl (dvd_of_le_of_aleph0_le hn ((nat_lt_aleph0 n).le.trans hℵ₀b) hℵ₀b)
 #align cardinal.nat_is_prime_iff Cardinal.nat_is_prime_iff
 
 theorem is_prime_iff {a : Cardinal} : Prime a ↔ ℵ₀ ≤ a ∨ ∃ p : ℕ, a = p ∧ p.Prime := by
