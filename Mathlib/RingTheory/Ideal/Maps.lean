@@ -243,24 +243,25 @@ theorem le_comap_sup : comap f K ⊔ comap f L ≤ comap f (K ⊔ L) :=
   (gc_map_comap f : GaloisConnection (map f) (comap f)).monotone_u.le_map_sup _ _
 #align ideal.le_comap_sup Ideal.le_comap_sup
 
+-- TODO: Should these be simp lemmas?
 theorem _root_.element_smul_restrictScalars {R S M}
     [CommSemiring R] [CommSemiring S] [Algebra R S] [AddCommMonoid M]
     [Module R M] [Module S M] [IsScalarTower R S M] (r : R) (N : Submodule S M) :
-    r • N.restrictScalars R = (algebraMap R S r • N).restrictScalars R :=
-  SetLike.coe_injective (congrArg (· '' _) (funext (algebra_compatible_smul S r)))
+    (algebraMap R S r • N).restrictScalars R = r • N.restrictScalars R :=
+  SetLike.coe_injective (congrArg (· '' _) (funext (algebraMap_smul S r)))
 
 theorem smul_restrictScalars {R S M} [CommSemiring R] [CommSemiring S]
     [Algebra R S] [AddCommMonoid M] [Module R M] [Module S M]
     [IsScalarTower R S M] (I : Ideal R) (N : Submodule S M) :
-    I • N.restrictScalars R = (I.map (algebraMap R S) • N).restrictScalars R := by
+    (I.map (algebraMap R S) • N).restrictScalars R = I • N.restrictScalars R := by
   simp_rw [map, Submodule.span_smul_eq, ← Submodule.coe_set_smul,
-    Submodule.set_smul_eq_iSup, element_smul_restrictScalars, iSup_image]
-  exact (_root_.map_iSup₂ (Submodule.restrictScalarsLatticeHom R S M) _).symm
+    Submodule.set_smul_eq_iSup, ← element_smul_restrictScalars, iSup_image]
+  exact (_root_.map_iSup₂ (Submodule.restrictScalarsLatticeHom R S M) _)
 
 @[simp]
 theorem smul_top_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
     (I : Ideal R) : I • (⊤ : Submodule R S) = (I.map (algebraMap R S)).restrictScalars R :=
-  Eq.trans (smul_restrictScalars I (⊤ : Ideal S)) <|
+  Eq.trans (smul_restrictScalars I (⊤ : Ideal S)).symm <|
     congrArg _ <| Eq.trans (Ideal.smul_eq_mul _ _) (Ideal.mul_top _)
 #align ideal.smul_top_eq_map Ideal.smul_top_eq_map
 
