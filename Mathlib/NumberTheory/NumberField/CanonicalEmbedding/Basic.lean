@@ -285,12 +285,10 @@ theorem normAtPlace_real (w : InfinitePlace K) (c : ℝ) :
   rw [show ((fun _ ↦ c, fun _ ↦ c) : (E K)) = c • 1 by ext <;> simp, normAtPlace_smul, map_one,
     mul_one]
 
-@[simp]
 theorem normAtPlace_apply_isReal {w : InfinitePlace K} (hw : IsReal w) (x : E K):
     normAtPlace w x = ‖x.1 ⟨w, hw⟩‖ := by
   rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, dif_pos]
 
-@[simp]
 theorem normAtPlace_apply_isComplex {w : InfinitePlace K} (hw : IsComplex w) (x : E K) :
     normAtPlace w x = ‖x.2 ⟨w, hw⟩‖ := by
   rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
