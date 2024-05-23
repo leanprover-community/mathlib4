@@ -170,7 +170,7 @@ lemma lift_eqToHom_comp_iff {R' R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a �
 
 @[simp]
 lemma lift_comp_eqToHom_iff {R S S' : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (h : S = S') :
-    p.IsHomLift (f ≫ (eqToHom h)) φ ↔ p.IsHomLift f φ where
+    p.IsHomLift (f ≫ eqToHom h) φ ↔ p.IsHomLift f φ where
   mp := by intro hφ'; subst h; simpa using hφ'
   mpr := fun hφ => inferInstance
 
