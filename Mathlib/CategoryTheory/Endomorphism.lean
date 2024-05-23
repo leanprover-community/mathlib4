@@ -217,7 +217,7 @@ noncomputable def mulEquivEnd (X : C) :
   toEquiv := hf.homEquiv
   __ := mapEnd X f
 
-/-- `mulEquivAutf` as an isomorphism between automorphism groups. -/
+/-- `mulEquivAut` as an isomorphism between automorphism groups. -/
 @[simps!]
 noncomputable def autMulEquivOfFullyFaithful (X : C) :
     Aut X ≃* Aut (f.obj X) where
