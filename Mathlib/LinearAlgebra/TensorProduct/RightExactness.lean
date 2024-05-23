@@ -464,6 +464,12 @@ lemma quotTensorEquivQuotSMul_symm_comp_mkQ (I : Ideal R) :
       TensorProduct.mk R (R ⧸ I) M 1 :=
   LinearMap.ext (quotTensorEquivQuotSMul_symm_mk I)
 
+lemma quotTensorEquivQuotSMul_comp_mk (I : Ideal R) :
+    quotTensorEquivQuotSMul M I ∘ₗ TensorProduct.mk R (R ⧸ I) M 1 =
+      Submodule.mkQ (I • ⊤) :=
+  Eq.symm <| (LinearEquiv.toLinearMap_symm_comp_eq _ _).mp <|
+    quotTensorEquivQuotSMul_symm_comp_mkQ I
+
 @[simp]
 lemma tensorQuotEquivQuotSMul_tmul_mk (I : Ideal R) (x : M) (r : R) :
     tensorQuotEquivQuotSMul M I (x ⊗ₜ[R] Ideal.Quotient.mk I r) =
@@ -485,6 +491,11 @@ lemma tensorQuotEquivQuotSMul_symm_comp_mkQ (I : Ideal R) :
       (TensorProduct.mk R M (R ⧸ I)).flip 1 :=
   LinearMap.ext (tensorQuotEquivQuotSMul_symm_mk I)
 
+lemma tensorQuotEquivQuotSMul_comp_mk (I : Ideal R) :
+    tensorQuotEquivQuotSMul M I ∘ₗ (TensorProduct.mk R M (R ⧸ I)).flip 1 =
+      Submodule.mkQ (I • ⊤) :=
+  Eq.symm <| (LinearEquiv.toLinearMap_symm_comp_eq _ _).mp <|
+    tensorQuotEquivQuotSMul_symm_comp_mkQ I
 
 end Modules
 
