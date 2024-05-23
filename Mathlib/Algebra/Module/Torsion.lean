@@ -604,14 +604,8 @@ instance : Module (R ⧸ Ideal.span s) (M ⧸ s • (⊤ : Submodule R M)) :=
   ((isTorsionBySet_iff_is_torsion_by_span s).mp
     (isTorsionBySet_quotient_set_smul M s)).module
 
-instance : IsScalarTower R (R ⧸ Ideal.span s) (M ⧸ s • (⊤ : Submodule R M)) :=
-  IsTorsionBySet.isScalarTower _
-
 instance : Module (R ⧸ I) (M ⧸ I • (⊤ : Submodule R M)) :=
   (isTorsionBySet_quotient_ideal_smul M I).module
-
-instance : IsScalarTower R (R ⧸ I) (M ⧸ I • (⊤ : Submodule R M)) :=
-  IsTorsionBySet.isScalarTower _
 
 instance : Module (R ⧸ Ideal.span {r}) (M ⧸ r • (⊤ : Submodule R M)) :=
   (isTorsionBy_quotient_element_smul M r).module
