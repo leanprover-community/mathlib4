@@ -1788,13 +1788,13 @@ private theorem add_le_add_right' : ∀ {x y z : PGame}, x ≤ y → x + z ≤ y
         Or.inr ⟨@toRightMovesAdd _ ⟨_, _, _, _⟩ (Sum.inr i), add_le_add_right' h⟩
 termination_by x y z => (x, y, z)
 
-instance covariantClass_swap_add_le : AddRightMono PGame :=
+instance addRightMono : AddRightMono PGame :=
   ⟨fun _ _ _ => add_le_add_right'⟩
-#align pgame.covariant_class_swap_add_le SetTheory.PGame.covariantClass_swap_add_le
+#align pgame.covariant_class_swap_add_le SetTheory.PGame.addRightMono
 
-instance covariantClass_add_le : AddLeftMono PGame :=
+instance addLeftMono : AddLeftMono PGame :=
   ⟨fun x _ _ h => (add_comm_le.trans (add_le_add_right h x)).trans add_comm_le⟩
-#align pgame.covariant_class_add_le SetTheory.PGame.covariantClass_add_le
+#align pgame.covariant_class_add_le SetTheory.PGame.addLeftMono
 
 theorem add_lf_add_right {y z : PGame} (h : y ⧏ z) (x) : y + x ⧏ z + x :=
   suffices z + x ≤ y + x → z ≤ y by
@@ -1817,13 +1817,13 @@ theorem add_lf_add_left {y z : PGame} (h : y ⧏ z) (x) : x + y ⧏ x + z := by
   apply add_lf_add_right h
 #align pgame.add_lf_add_left SetTheory.PGame.add_lf_add_left
 
-instance covariantClass_swap_add_lt : AddRightStrictMono PGame :=
+instance addRightStrictMono : AddRightStrictMono PGame :=
   ⟨fun x _ _ h => ⟨add_le_add_right h.1 x, add_lf_add_right h.2 x⟩⟩
-#align pgame.covariant_class_swap_add_lt SetTheory.PGame.covariantClass_swap_add_lt
+#align pgame.covariant_class_swap_add_lt SetTheory.PGame.addRightStrictMono
 
-instance covariantClass_add_lt : AddLeftStrictMono PGame :=
+instance addLeftStrictMono : AddLeftStrictMono PGame :=
   ⟨fun x _ _ h => ⟨add_le_add_left h.1 x, add_lf_add_left h.2 x⟩⟩
-#align pgame.covariant_class_add_lt SetTheory.PGame.covariantClass_add_lt
+#align pgame.covariant_class_add_lt SetTheory.PGame.addLeftStrictMono
 
 theorem add_lf_add_of_lf_of_le {w x y z : PGame} (hwx : w ⧏ x) (hyz : y ≤ z) : w + y ⧏ x + z :=
   lf_of_lf_of_le (add_lf_add_right hwx y) (add_le_add_left hyz x)

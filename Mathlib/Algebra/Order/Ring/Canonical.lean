@@ -55,12 +55,12 @@ instance (priority := 100) toNoZeroDivisors : NoZeroDivisors α :=
 #align canonically_ordered_comm_semiring.to_no_zero_divisors CanonicallyOrderedCommSemiring.toNoZeroDivisors
 
 -- see Note [lower instance priority]
-instance (priority := 100) toCovariantClassMulLE : MulLeftMono α := by
+instance (priority := 100) toMulLeftMono : MulLeftMono α := by
   refine ⟨fun a b c h => ?_⟩; dsimp
   rcases exists_add_of_le h with ⟨c, rfl⟩
   rw [mul_add]
   apply self_le_add_right
-#align canonically_ordered_comm_semiring.to_covariant_mul_le CanonicallyOrderedCommSemiring.toCovariantClassMulLE
+#align canonically_ordered_comm_semiring.to_covariant_mul_le CanonicallyOrderedCommSemiring.toMulLeftMono
 
 -- see Note [lower instance priority]
 instance (priority := 100) toOrderedCommMonoid : OrderedCommMonoid α where

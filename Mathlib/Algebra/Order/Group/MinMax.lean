@@ -40,16 +40,14 @@ variable {α : Type*} [LinearOrderedCommGroup α] {a b c : α}
 @[to_additive min_neg_neg]
 theorem min_inv_inv' (a b : α) : min a⁻¹ b⁻¹ = (max a b)⁻¹ :=
   Eq.symm <| (@Monotone.map_max α αᵒᵈ _ _ Inv.inv a b) fun _ _ =>
-  -- Porting note: Explicit `α` necessary to infer `CovariantClass` instance
-    (@inv_le_inv_iff α _ _ _).mpr
+    inv_le_inv_iff.mpr
 #align min_inv_inv' min_inv_inv'
 #align min_neg_neg min_neg_neg
 
 @[to_additive max_neg_neg]
 theorem max_inv_inv' (a b : α) : max a⁻¹ b⁻¹ = (min a b)⁻¹ :=
   Eq.symm <| (@Monotone.map_min α αᵒᵈ _ _ Inv.inv a b) fun _ _ =>
-  -- Porting note: Explicit `α` necessary to infer `CovariantClass` instance
-    (@inv_le_inv_iff α _ _ _).mpr
+    inv_le_inv_iff.mpr
 #align max_inv_inv' max_inv_inv'
 #align max_neg_neg max_neg_neg
 

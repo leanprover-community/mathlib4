@@ -32,7 +32,7 @@ implications if a bi-implication can be proven under the same assumptions.
 Lemmas using this class are named using `tsub` instead of `sub` (short for "truncated subtraction").
 This is to avoid naming conflicts with similar lemmas about ordered groups.
 
-We provide a second version of most results that require `[ContravariantClass α α (+) (≤)]`. In the
+We provide a second version of most results that require `[AddLeftReflectLE α]`. In the
 second version we replace this type-class assumption by explicit `AddLECancellable` assumptions.
 
 TODO: maybe we should make a multiplicative version of this, so that we can replace some identical
@@ -66,7 +66,7 @@ theorem tsub_le_iff_right [LE α] [Add α] [Sub α] [OrderedSub α] {a b c : α}
 
 variable [Preorder α] [Add α] [Sub α] [OrderedSub α] {a b c d : α}
 
-/-- See `add_tsub_cancel_right` for the equality if `ContravariantClass α α (+) (≤)`. -/
+/-- See `add_tsub_cancel_right` for the equality if `AddLeftReflectLE α`. -/
 theorem add_tsub_le_right : a + b - b ≤ a :=
   tsub_le_iff_right.mpr le_rfl
 #align add_tsub_le_right add_tsub_le_right
@@ -98,7 +98,7 @@ theorem le_add_tsub : a ≤ b + (a - b) :=
   tsub_le_iff_left.mp le_rfl
 #align le_add_tsub le_add_tsub
 
-/-- See `add_tsub_cancel_left` for the equality if `ContravariantClass α α (+) (≤)`. -/
+/-- See `add_tsub_cancel_left` for the equality if `AddLeftReflectLE α`. -/
 theorem add_tsub_le_left : a + b - a ≤ b :=
   tsub_le_iff_left.mpr le_rfl
 #align add_tsub_le_left add_tsub_le_left

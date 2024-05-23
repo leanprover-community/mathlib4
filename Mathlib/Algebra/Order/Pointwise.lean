@@ -17,7 +17,7 @@ This file contains lemmas about the effect of pointwise operations on sets with 
 ## TODO
 
 `sSup (s • t) = sSup s • sSup t` and `sInf (s • t) = sInf s • sInf t` hold as well but
-`CovariantClass` is currently not polymorphic enough to state it.
+`Covariant` is currently not polymorphic enough to state it.
 -/
 
 

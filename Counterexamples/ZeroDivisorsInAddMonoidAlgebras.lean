@@ -30,8 +30,8 @@ nontrivial ring `R` and the additive group `G` with a torsion element can be any
 Besides this example, we also address a comment in `Data.Finsupp.Lex` to the effect that the proof
 that addition is monotone on `α →₀ N` uses that it is *strictly* monotone on `N`.
 
-The specific statement is about `Finsupp.Lex.covariantClass_lt_left` and its analogue
-`Finsupp.Lex.covariantClass_le_right`.  We do not need two separate counterexamples, since the
+The specific statement is about `Finsupp.Lex.addLeftStrictMono` and its analogue
+`Finsupp.Lex.addRightStrictMono`.  We do not need two separate counterexamples, since the
 operation is commutative.
 
 The example is very simple.  Let `F = {0, 1}` with order determined by `0 < 1` and absorbing
@@ -192,15 +192,15 @@ instance : AddCommMonoid F where
   add_comm := by boom
   nsmul := nsmulRec
 
-/-- The `CovariantClass`es asserting monotonicity of addition hold for `F`. -/
-instance covariantClass_add_le : AddLeftMono F :=
+/-- The `AddLeftMono`es asserting monotonicity of addition hold for `F`. -/
+instance addLeftMono : AddLeftMono F :=
   ⟨by boom⟩
-#align counterexample.F.covariant_class_add_le Counterexample.F.covariantClass_add_le
+#align counterexample.F.covariant_class_add_le Counterexample.F.addLeftMono
 
 example : AddRightMono F := by infer_instance
 
 /-- The following examples show that `F` has all the typeclasses used by
-`Finsupp.Lex.covariantClass_le_left`... -/
+`Finsupp.Lex.addLeftStrictMono`... -/
 example : LinearOrder F := by infer_instance
 
 example : AddMonoid F := by infer_instance
@@ -236,7 +236,7 @@ theorem f110 : ofLex (Finsupp.single (1 : F) (1 : F)) 0 = 0 :=
 
 /-- Here we see that (not-necessarily strict) monotonicity of addition on `Lex (F →₀ F)` is not
 a consequence of monotonicity of addition on `F`.  Strict monotonicity of addition on `F` is
-enough and is the content of `Finsupp.Lex.covariantClass_le_left`. -/
+enough and is the content of `Finsupp.Lex.addLeftStrictMono`. -/
 example : ¬AddLeftMono (Lex (F →₀ F)) := by
   rintro ⟨h⟩
   refine (not_lt (α := Lex (F →₀ F))).mpr (@h (Finsupp.single (0 : F) (1 : F))

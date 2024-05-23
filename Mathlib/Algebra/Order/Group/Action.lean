@@ -7,7 +7,7 @@ import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 import Mathlib.Order.CompleteLattice
 
 /-!
-# Results about `CovariantClass G α HSMul.hSMul LE.le`
+# Results about `SMulLeftMono G α`
 
 When working with group actions rather than modules, we drop the `0 < c` condition.
 

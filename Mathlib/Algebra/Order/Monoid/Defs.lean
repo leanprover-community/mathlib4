@@ -37,17 +37,17 @@ section OrderedCommMonoid
 variable [OrderedCommMonoid α]
 
 @[to_additive]
-instance OrderedCommMonoid.toCovariantClassLeft : MulLeftMono α where
+instance OrderedCommMonoid.toMulLeftMono : MulLeftMono α where
   elim := fun a _ _ bc ↦ OrderedCommMonoid.mul_le_mul_left _ _ bc a
-#align ordered_comm_monoid.to_covariant_class_left OrderedCommMonoid.toCovariantClassLeft
-#align ordered_add_comm_monoid.to_covariant_class_left OrderedAddCommMonoid.toCovariantClassLeft
+#align ordered_comm_monoid.to_covariant_class_left OrderedCommMonoid.toMulLeftMono
+#align ordered_add_comm_monoid.to_covariant_class_left OrderedAddCommMonoid.toAddLeftMono
 
 @[to_additive]
-theorem OrderedCommMonoid.toCovariantClassRight (M : Type*) [OrderedCommMonoid M] :
+theorem OrderedCommMonoid.toMulRightMono (M : Type*) [OrderedCommMonoid M] :
     MulRightMono M :=
   inferInstance
-#align ordered_comm_monoid.to_covariant_class_right OrderedCommMonoid.toCovariantClassRight
-#align ordered_add_comm_monoid.to_covariant_class_right OrderedAddCommMonoid.toCovariantClassRight
+#align ordered_comm_monoid.to_covariant_class_right OrderedCommMonoid.toMulRightMono
+#align ordered_add_comm_monoid.to_covariant_class_right OrderedAddCommMonoid.toAddRightMono
 
 end OrderedCommMonoid
 
@@ -72,28 +72,28 @@ variable [OrderedCancelCommMonoid α]
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 200) OrderedCancelCommMonoid.toContravariantClassLeLeft :
+instance (priority := 200) OrderedCancelCommMonoid.toMulLeftReflectLE :
     MulLeftReflectLE α :=
   ⟨OrderedCancelCommMonoid.le_of_mul_le_mul_left⟩
-#align ordered_cancel_comm_monoid.to_contravariant_class_le_left OrderedCancelCommMonoid.toContravariantClassLeLeft
-#align ordered_cancel_add_comm_monoid.to_contravariant_class_le_left OrderedCancelAddCommMonoid.toContravariantClassLeLeft
+#align ordered_cancel_comm_monoid.to_contravariant_class_le_left OrderedCancelCommMonoid.toMulLeftReflectLE
+#align ordered_cancel_add_comm_monoid.to_contravariant_class_le_left OrderedCancelAddCommMonoid.toAddLeftReflectLE
 
 #noalign ordered_cancel_comm_monoid.lt_of_mul_lt_mul_left
 #noalign ordered_cancel_add_comm_monoid.lt_of_add_lt_add_left
 
 @[to_additive]
-instance OrderedCancelCommMonoid.toContravariantClassLeft :
+instance OrderedCancelCommMonoid.toMulLeftReflectLT :
     MulLeftReflectLT α where
   elim := contravariant_lt_of_contravariant_le MulLeftReflectLE.elim
-#align ordered_cancel_comm_monoid.to_contravariant_class_left OrderedCancelCommMonoid.toContravariantClassLeft
-#align ordered_cancel_add_comm_monoid.to_contravariant_class_left OrderedCancelAddCommMonoid.toContravariantClassLeft
+#align ordered_cancel_comm_monoid.to_contravariant_class_left OrderedCancelCommMonoid.toMulLeftReflectLT
+#align ordered_cancel_add_comm_monoid.to_contravariant_class_left OrderedCancelAddCommMonoid.toAddLeftReflectLT
 
 @[to_additive]
-theorem OrderedCancelCommMonoid.toContravariantClassRight :
+theorem OrderedCancelCommMonoid.toMulRightReflectLT :
     MulRightReflectLT α :=
   inferInstance
-#align ordered_cancel_comm_monoid.to_contravariant_class_right OrderedCancelCommMonoid.toContravariantClassRight
-#align ordered_cancel_add_comm_monoid.to_contravariant_class_right OrderedCancelAddCommMonoid.toContravariantClassRight
+#align ordered_cancel_comm_monoid.to_contravariant_class_right OrderedCancelCommMonoid.toMulRightReflectLT
+#align ordered_cancel_add_comm_monoid.to_contravariant_class_right OrderedCancelAddCommMonoid.toAddRightReflectLT
 
 -- See note [lower instance priority]
 @[to_additive OrderedCancelAddCommMonoid.toCancelAddCommMonoid]

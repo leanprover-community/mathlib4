@@ -1260,7 +1260,7 @@ section PartialOrder
 variable [PartialOrder α]
 
 /- This is not instance, since we want to have an instance from `LeftCancelSemigroup`s
-to the appropriate `CovariantClass`. -/
+to the appropriate covariant class. -/
 /-- A semigroup with a partial order and satisfying `LeftCancelSemigroup`
 (i.e. `a * c < b * c → a < b`) is a `left_cancel Semigroup`. -/
 @[to_additive
@@ -1273,7 +1273,7 @@ def Contravariant.toLeftCancelSemigroup [MulLeftReflectLE α] :
 #align contravariant.to_left_cancel_add_semigroup Contravariant.toAddLeftCancelSemigroup
 
 /- This is not instance, since we want to have an instance from `RightCancelSemigroup`s
-to the appropriate `CovariantClass`. -/
+to the appropriate covariant class. -/
 /-- A semigroup with a partial order and satisfying `RightCancelSemigroup`
 (i.e. `a * c < b * c → a < b`) is a `right_cancel Semigroup`. -/
 @[to_additive
@@ -1584,13 +1584,13 @@ theorem cmp_mul_right' {α : Type*} [Mul α] [LinearOrder α]
 end Mono
 
 /-- An element `a : α` is `MulLECancellable` if `x ↦ a * x` is order-reflecting.
-We will make a separate version of many lemmas that require `[ContravariantClass α α (*) (≤)]` with
+We will make a separate version of many lemmas that require `[MulLeftReflectLE α]` with
 `MulLECancellable` assumptions instead. These lemmas can then be instantiated to specific types,
 like `ENNReal`, where we can replace the assumption `AddLECancellable x` by `x ≠ ∞`.
 -/
 @[to_additive
 "An element `a : α` is `AddLECancellable` if `x ↦ a + x` is order-reflecting.
-We will make a separate version of many lemmas that require `[ContravariantClass α α (+) (≤)]` with
+We will make a separate version of many lemmas that require `[MulLeftReflectLE α]` with
 `AddLECancellable` assumptions instead. These lemmas can then be instantiated to specific types,
 like `ENNReal`, where we can replace the assumption `AddLECancellable x` by `x ≠ ∞`. "]
 def MulLECancellable [Mul α] [LE α] (a : α) : Prop :=

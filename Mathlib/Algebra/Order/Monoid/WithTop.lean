@@ -713,22 +713,22 @@ variable [Preorder α]
 
 instance addLeftMono [AddLeftMono α] :
     AddLeftMono (WithBot α) :=
-  OrderDual.covariantClass_add_le (α := WithTop αᵒᵈ)
+  OrderDual.addLeftMono (α := WithTop αᵒᵈ)
 #align with_bot.covariant_class_add_le WithBot.addLeftMono
 
 instance addRightMono [AddRightMono α] :
     AddRightMono (WithBot α) :=
-  OrderDual.covariantClass_swap_add_le (α := WithTop αᵒᵈ)
+  OrderDual.addRightMono (α := WithTop αᵒᵈ)
 #align with_bot.covariant_class_swap_add_le WithBot.addRightMono
 
 instance addLeftReflectLT [AddLeftReflectLT α] :
     AddLeftReflectLT (WithBot α) :=
-  OrderDual.contravariantClass_add_lt (α := WithTop αᵒᵈ)
+  OrderDual.addLeftReflectLT (α := WithTop αᵒᵈ)
 #align with_bot.contravariant_class_add_lt WithBot.addLeftReflectLT
 
 instance addRightReflectLT [AddRightReflectLT α] :
     AddRightReflectLT (WithBot α) :=
-  OrderDual.contravariantClass_swap_add_lt (α := WithTop αᵒᵈ)
+  OrderDual.addRightReflectLT (α := WithTop αᵒᵈ)
 #align with_bot.contravariant_class_swap_add_lt WithBot.addRightReflectLT
 
 protected theorem le_of_add_le_add_left [AddLeftReflectLE α] (ha : a ≠ ⊥)

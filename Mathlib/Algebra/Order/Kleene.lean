@@ -179,16 +179,16 @@ instance (priority := 100) IdemSemiring.toCanonicallyOrderedAddCommMonoid :
 #align idem_semiring.to_canonically_ordered_add_monoid IdemSemiring.toCanonicallyOrderedAddCommMonoid
 
 -- See note [lower instance priority]
-instance (priority := 100) IdemSemiring.toCovariantClass_mul_le :
+instance (priority := 100) IdemSemiring.toMulLeftMono :
     MulLeftMono α :=
   ⟨fun a b c hbc ↦ add_eq_left_iff_le.1 <| by rw [← mul_add, hbc.add_eq_left]⟩
-#align idem_semiring.to_covariant_class_mul_le IdemSemiring.toCovariantClass_mul_le
+#align idem_semiring.to_covariant_class_mul_le IdemSemiring.toMulLeftMono
 
 -- See note [lower instance priority]
-instance (priority := 100) IdemSemiring.toCovariantClass_swap_mul_le :
+instance (priority := 100) IdemSemiring.toMulRightMono :
     MulRightMono α :=
   ⟨fun a b c hbc ↦ add_eq_left_iff_le.1 <| by rw [← add_mul, hbc.add_eq_left]⟩
-#align idem_semiring.to_covariant_class_swap_mul_le IdemSemiring.toCovariantClass_swap_mul_le
+#align idem_semiring.to_covariant_class_swap_mul_le IdemSemiring.toMulRightMono
 
 end IdemSemiring
 

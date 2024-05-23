@@ -163,29 +163,29 @@ theorem PGame.fuzzy_iff_game_fuzzy {x y : PGame} : PGame.Fuzzy x y ↔ ⟦x⟧ �
   Iff.rfl
 #align game.pgame.fuzzy_iff_game_fuzzy SetTheory.Game.PGame.fuzzy_iff_game_fuzzy
 
-instance covariantClass_add_le : AddLeftMono Game :=
+instance addLeftMono : AddLeftMono Game :=
   ⟨by
     rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ h
     exact @add_le_add_left _ _ _ _ b c h a⟩
-#align game.covariant_class_add_le SetTheory.Game.covariantClass_add_le
+#align game.covariant_class_add_le SetTheory.Game.addLeftMono
 
-instance covariantClass_swap_add_le : AddRightMono Game :=
+instance addRightMono : AddRightMono Game :=
   ⟨by
     rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ h
     exact @add_le_add_right _ _ _ _ b c h a⟩
-#align game.covariant_class_swap_add_le SetTheory.Game.covariantClass_swap_add_le
+#align game.covariant_class_swap_add_le SetTheory.Game.addRightMono
 
-instance covariantClass_add_lt : AddLeftStrictMono Game :=
+instance addLeftStrictMono : AddLeftStrictMono Game :=
   ⟨by
     rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ h
     exact @add_lt_add_left _ _ _ _ b c h a⟩
-#align game.covariant_class_add_lt SetTheory.Game.covariantClass_add_lt
+#align game.covariant_class_add_lt SetTheory.Game.addLeftStrictMono
 
-instance covariantClass_swap_add_lt : AddRightStrictMono Game :=
+instance addRightStrictMono : AddRightStrictMono Game :=
   ⟨by
     rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ h
     exact @add_lt_add_right _ _ _ _ b c h a⟩
-#align game.covariant_class_swap_add_lt SetTheory.Game.covariantClass_swap_add_lt
+#align game.covariant_class_swap_add_lt SetTheory.Game.addRightStrictMono
 
 theorem add_lf_add_right : ∀ {b c : Game} (_ : b ⧏ c) (a), (b + a : Game) ⧏ c + a := by
   rintro ⟨b⟩ ⟨c⟩ h ⟨a⟩
@@ -199,7 +199,7 @@ theorem add_lf_add_left : ∀ {b c : Game} (_ : b ⧏ c) (a), (a + b : Game) ⧏
 
 instance orderedAddCommGroup : OrderedAddCommGroup Game :=
   { Game.instAddCommGroupWithOneGame, Game.instPartialOrderGame with
-    add_le_add_left := @add_le_add_left _ _ _ Game.covariantClass_add_le }
+    add_le_add_left := @add_le_add_left _ _ _ Game.addLeftMono }
 #align game.ordered_add_comm_group SetTheory.Game.orderedAddCommGroup
 
 /-- A small family of games is bounded above. -/

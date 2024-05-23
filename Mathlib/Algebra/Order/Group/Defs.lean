@@ -45,11 +45,11 @@ class OrderedCommGroup (α : Type u) extends CommGroup α, PartialOrder α where
 attribute [to_additive] OrderedCommGroup
 
 @[to_additive]
-instance OrderedCommGroup.to_covariantClass_left_le (α : Type u) [OrderedCommGroup α] :
+instance OrderedCommGroup.toMulLeftMono (α : Type u) [OrderedCommGroup α] :
     MulLeftMono α where
       elim a b c bc := OrderedCommGroup.mul_le_mul_left b c bc a
-#align ordered_comm_group.to_covariant_class_left_le OrderedCommGroup.to_covariantClass_left_le
-#align ordered_add_comm_group.to_covariant_class_left_le OrderedAddCommGroup.to_covariantClass_left_le
+#align ordered_comm_group.to_covariant_class_left_le OrderedCommGroup.toMulLeftMono
+#align ordered_add_comm_group.to_covariant_class_left_le OrderedAddCommGroup.toAddLeftMono
 
 -- See note [lower instance priority]
 @[to_additive OrderedAddCommGroup.toOrderedCancelAddCommMonoid]
@@ -68,22 +68,22 @@ example (α : Type u) [OrderedAddCommGroup α] : AddRightStrictMono α :=
 -- but without the motivation clearly explained.
 /-- A choice-free shortcut instance. -/
 @[to_additive "A choice-free shortcut instance."]
-theorem OrderedCommGroup.to_contravariantClass_left_le (α : Type u) [OrderedCommGroup α] :
+theorem OrderedCommGroup.toMulLeftReflectLE (α : Type u) [OrderedCommGroup α] :
     MulLeftReflectLE α where
       elim a b c bc := by simpa using mul_le_mul_left' bc a⁻¹
-#align ordered_comm_group.to_contravariant_class_left_le OrderedCommGroup.to_contravariantClass_left_le
-#align ordered_add_comm_group.to_contravariant_class_left_le OrderedAddCommGroup.to_contravariantClass_left_le
+#align ordered_comm_group.to_contravariant_class_left_le OrderedCommGroup.toMulLeftReflectLE
+#align ordered_add_comm_group.to_contravariant_class_left_le OrderedAddCommGroup.toAddLeftReflectLE
 
 -- Porting note: this instance is not used,
 -- and causes timeouts after lean4#2210.
--- See further explanation on `OrderedCommGroup.to_contravariantClass_left_le`.
+-- See further explanation on `OrderedCommGroup.toMulLeftReflectLE`.
 /-- A choice-free shortcut instance. -/
 @[to_additive "A choice-free shortcut instance."]
-theorem OrderedCommGroup.to_contravariantClass_right_le (α : Type u) [OrderedCommGroup α] :
+theorem OrderedCommGroup.toMulRightReflectLE (α : Type u) [OrderedCommGroup α] :
     MulRightReflectLE α where
       elim a b c bc := by simpa using mul_le_mul_right' bc a⁻¹
-#align ordered_comm_group.to_contravariant_class_right_le OrderedCommGroup.to_contravariantClass_right_le
-#align ordered_add_comm_group.to_contravariant_class_right_le OrderedAddCommGroup.to_contravariantClass_right_le
+#align ordered_comm_group.to_contravariant_class_right_le OrderedCommGroup.toMulRightReflectLE
+#align ordered_add_comm_group.to_contravariant_class_right_le OrderedAddCommGroup.toAddRightReflectLE
 
 section Group
 
