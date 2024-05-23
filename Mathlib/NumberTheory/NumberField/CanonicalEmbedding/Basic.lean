@@ -280,6 +280,11 @@ theorem normAtPlace_smul (w : InfinitePlace K) (x : E K) (c : ℝ) :
   · rw [Prod.smul_fst, Pi.smul_apply, norm_smul, Real.norm_eq_abs]
   · rw [Prod.smul_snd, Pi.smul_apply, norm_smul, Real.norm_eq_abs, Complex.norm_eq_abs]
 
+theorem normAtPlace_real (w : InfinitePlace K) (c : ℝ) :
+    normAtPlace w ((fun _ ↦ c, fun _ ↦ c) : (E K)) = |c| := by
+  rw [show ((fun _ ↦ c, fun _ ↦ c) : (E K)) = c • 1 by ext <;> simp, normAtPlace_smul, map_one,
+    mul_one]
+
 @[simp]
 theorem normAtPlace_apply_isReal {w : InfinitePlace K} (hw : IsReal w) (x : E K):
     normAtPlace w x = ‖x.1 ⟨w, hw⟩‖ := by
@@ -336,8 +341,12 @@ protected def norm : (E K) →*₀ ℝ where
   map_zero' := by simp [mult]
   map_mul' _ _ := by simp only [map_mul, mul_pow, Finset.prod_mul_distrib]
 
-theorem norm_apply (x : E K) :
+protected theorem norm_apply (x : E K) :
     mixedEmbedding.norm x = ∏ w, (normAtPlace w x) ^ (mult w) := rfl
+
+protected theorem norm_nonneg (x : E K) :
+    0 ≤ mixedEmbedding.norm x :=
+  Finset.univ.prod_nonneg fun _ _ ↦ pow_nonneg (normAtPlace_nonneg _ _) _
 
 protected theorem norm_eq_zero_iff {x : E K} :
     mixedEmbedding.norm x = 0 ↔ ∃ w, normAtPlace w x = 0 := by
@@ -351,7 +360,7 @@ protected theorem norm_ne_zero_iff {x : E K} :
 
 theorem norm_smul (c : ℝ) (x : E K) :
     mixedEmbedding.norm (c • x) = |c| ^ finrank ℚ K * (mixedEmbedding.norm x) := by
-  simp_rw [norm_apply, normAtPlace_smul, mul_pow, Finset.prod_mul_distrib,
+  simp_rw [mixedEmbedding.norm_apply, normAtPlace_smul, mul_pow, Finset.prod_mul_distrib,
     Finset.prod_pow_eq_pow_sum, sum_mult_eq]
 
 theorem norm_real (c : ℝ) :
