@@ -123,8 +123,8 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
         restrict_apply] using h
     obtain ⟨u, su, u_open, μu⟩ : ∃ (u : _), u ⊇ s ∧ IsOpen u ∧ μ u < μ s + ε / c :=
       s.exists_isOpen_lt_of_lt _ this
-    refine
-      ⟨Set.indicator u fun _ => c, fun x => ?_, u_open.lowerSemicontinuous_indicator (zero_le _),? _⟩
+    refine ⟨Set.indicator u fun _ => c,
+            fun x => ?_, u_open.lowerSemicontinuous_indicator (zero_le _), ?_⟩
     · simp only [SimpleFunc.coe_const, SimpleFunc.const_zero, SimpleFunc.coe_zero,
         Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise]
       exact Set.indicator_le_indicator_of_subset su (fun x => zero_le _) _

@@ -400,9 +400,8 @@ theorem HasStrictFDerivAt.of_local_left_inverse {f : E → F} {f' : E ≃L[𝕜]
     simp
   refine this.trans_isLittleO ?_
   clear this
-  refine
-    ((hf.comp_tendsto hg).symm.congr' (hfg.mono ?_) (eventually_of_forall fun _ => rfl)).trans_isBigO
-      ?_
+  refine ((hf.comp_tendsto hg).symm.congr'
+    (hfg.mono ?_) (eventually_of_forall fun _ => rfl)).trans_isBigO ?_
   · rintro p ⟨hp1, hp2⟩
     simp [hp1, hp2]
   · refine (hf.isBigO_sub_rev.comp_tendsto hg).congr' (eventually_of_forall fun _ => rfl)

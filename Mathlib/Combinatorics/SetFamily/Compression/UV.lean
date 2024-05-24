@@ -347,10 +347,9 @@ theorem shadow_compression_subset_compression_shadow (u v : Finset α)
           (disjoint_erase_comm.2 huvs.1)
       rwa [sup_eq_union, sdiff_erase (mem_union_left _ <| hvt hbv), union_erase_of_mem hat, ←
         erase_union_of_mem hau] at hsb
-    · refine
-        mem_shadow_iff.2
-          ⟨(t ⊔ u) \ v,
-            sup_sdiff_mem_of_mem_compression Ht hvt <| disjoint_of_erase_right hau huvs.1, a, ?_, ?_⟩
+    · refine mem_shadow_iff.2
+        ⟨(t ⊔ u) \ v,
+          sup_sdiff_mem_of_mem_compression Ht hvt <| disjoint_of_erase_right hau huvs.1, a, ?_, ?_⟩
       · rw [sup_eq_union, mem_sdiff, mem_union]
         exact ⟨Or.inl hat, hav⟩
       · rw [← erase_sdiff_comm, sup_eq_union, erase_union_distrib, erase_eq_of_not_mem hau]

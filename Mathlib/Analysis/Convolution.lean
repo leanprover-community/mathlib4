@@ -240,8 +240,8 @@ theorem ConvolutionExistsAt.ofNorm' {x₀ : G}
     (h : ConvolutionExistsAt (fun x => ‖f x‖) (fun x => ‖g x‖) x₀ (mul ℝ ℝ) μ)
     (hmf : AEStronglyMeasurable f μ) (hmg : AEStronglyMeasurable g <| map (fun t => x₀ - t) μ) :
     ConvolutionExistsAt f g x₀ L μ := by
-  refine
-    (h.const_mul ‖L‖).mono' (hmf.convolution_integrand_snd' L hmg) (eventually_of_forall fun x => ?_)
+  refine (h.const_mul ‖L‖).mono'
+    (hmf.convolution_integrand_snd' L hmg) (eventually_of_forall fun x => ?_)
   rw [mul_apply', ← mul_assoc]
   apply L.le_opNorm₂
 #align convolution_exists_at.of_norm' MeasureTheory.ConvolutionExistsAt.ofNorm'

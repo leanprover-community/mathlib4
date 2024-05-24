@@ -335,8 +335,8 @@ theorem inner_pos_or_eq_of_dist_le_radius {s : Sphere P} {p₁ p₂ : P} (hp₁ 
   rw [mem_sphere] at hp₁
   rw [← vsub_sub_vsub_cancel_right p₁ p₂ s.center, inner_sub_left,
     real_inner_self_eq_norm_mul_norm, sub_pos]
-  refine
-    lt_of_le_of_ne ((real_inner_le_norm _ _).trans (mul_le_mul_of_nonneg_right ?_ (norm_nonneg _))) ?_
+  refine lt_of_le_of_ne
+    ((real_inner_le_norm _ _).trans (mul_le_mul_of_nonneg_right ?_ (norm_nonneg _))) ?_
   · rwa [← dist_eq_norm_vsub, ← dist_eq_norm_vsub, hp₁]
   · rcases hp₂.lt_or_eq with (hp₂' | hp₂')
     · refine ((real_inner_le_norm _ _).trans_lt (mul_lt_mul_of_pos_right ?_ ?_)).ne

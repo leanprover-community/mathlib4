@@ -165,7 +165,8 @@ theorem MonovaryOn.sum_comp_perm_smul_eq_sum_smul_iff (hfg : MonovaryOn f g s)
     (hσ : { x | σ x ≠ x } ⊆ s) :
     ((∑ i in s, f (σ i) • g i) = ∑ i in s, f i • g i) ↔ MonovaryOn (f ∘ σ) g s := by
   have hσinv : { x | σ⁻¹ x ≠ x } ⊆ s := (set_support_inv_eq _).subset.trans hσ
-  refine (Iff.trans ?_ <| hfg.sum_smul_comp_perm_eq_sum_smul_iff hσinv).trans ⟨fun h ↦? _, fun h ↦ ?_⟩
+  refine (Iff.trans ?_ <| hfg.sum_smul_comp_perm_eq_sum_smul_iff hσinv).trans
+    ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · apply eq_iff_eq_cancel_right.2
     rw [σ.sum_comp' s (fun i j ↦ f i • g j) hσ]
     congr

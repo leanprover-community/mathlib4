@@ -172,8 +172,8 @@ theorem AEStronglyMeasurable'.aeStronglyMeasurable'_of_measurableSpace_le_on {α
     (hf : AEStronglyMeasurable' m f μ) (hf_zero : f =ᵐ[μ.restrict sᶜ] 0) :
     AEStronglyMeasurable' m₂ f μ := by
   have h_ind_eq : s.indicator (hf.mk f) =ᵐ[μ] f := by
-    refine
-      Filter.EventuallyEq.trans ?_ (indicator_ae_eq_of_restrict_compl_ae_eq_zero (hm _ hs_m) hf_zero)
+    refine Filter.EventuallyEq.trans ?_ <|
+      indicator_ae_eq_of_restrict_compl_ae_eq_zero (hm _ hs_m) hf_zero
     filter_upwards [hf.ae_eq_mk] with x hx
     by_cases hxs : x ∈ s
     · simp [hxs, hx]

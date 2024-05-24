@@ -1335,7 +1335,8 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
       · simp only [changeOriginSeries, ContinuousMultilinearMap.sum_apply]
         apply hasSum_fintype
       · refine .of_nnnorm_bounded _
-          (p.changeOriginSeries_summable_aux₂ (mem_emetric_ball_zero_iff.1 x_mem_ball) k) fun s => ?_
+          (p.changeOriginSeries_summable_aux₂ (mem_emetric_ball_zero_iff.1 x_mem_ball) k)
+            fun s => ?_
         refine (ContinuousMultilinearMap.le_opNNNorm _ _).trans_eq ?_
         simp
   refine hf.unique (changeOriginIndexEquiv.symm.hasSum_iff.1 ?_)

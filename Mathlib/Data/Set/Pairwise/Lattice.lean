@@ -112,8 +112,8 @@ theorem pairwiseDisjoint_prod_left {s : Set ι} {t : Set ι'} {f : ι × ι' →
       (s.PairwiseDisjoint fun i => ⨆ i' ∈ t, f (i, i')) ∧
         t.PairwiseDisjoint fun i' => ⨆ i ∈ s, f (i, i') := by
   refine
-        ⟨fun h => ⟨fun i hi j hj hij => ?_, fun i hi j hj hij => ?_⟩, fun h => h.1.prod_left h.2⟩ <;>
-      simp_rw [Function.onFun, iSup_disjoint_iff, disjoint_iSup_iff] <;>
+      ⟨fun h => ⟨fun i hi j hj hij => ?_, fun i hi j hj hij => ?_⟩, fun h => h.1.prod_left h.2⟩ <;>
+    simp_rw [Function.onFun, iSup_disjoint_iff, disjoint_iSup_iff] <;>
     intro i' hi' j' hj'
   · exact h (mk_mem_prod hi hi') (mk_mem_prod hj hj') (ne_of_apply_ne Prod.fst hij)
   · exact h (mk_mem_prod hi' hi) (mk_mem_prod hj' hj) (ne_of_apply_ne Prod.snd hij)

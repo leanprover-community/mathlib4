@@ -186,8 +186,8 @@ theorem vars_sum_subset [DecidableEq σ] :
   | empty => simp
   | insert has hsum =>
     rw [Finset.biUnion_insert, Finset.sum_insert has]
-    refine
-      Finset.Subset.trans (vars_add_subset _ _) (Finset.union_subset_union (Finset.Subset.refl _) ?_)
+    refine Finset.Subset.trans
+      (vars_add_subset _ _) (Finset.union_subset_union (Finset.Subset.refl _) ?_)
     assumption
 #align mv_polynomial.vars_sum_subset MvPolynomial.vars_sum_subset
 

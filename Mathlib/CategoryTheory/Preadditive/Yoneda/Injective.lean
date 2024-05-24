@@ -43,8 +43,8 @@ theorem injective_iff_preservesEpimorphisms_preadditiveYoneda_obj (J : C) :
 theorem injective_iff_preservesEpimorphisms_preadditive_yoneda_obj' (J : C) :
     Injective J ↔ (preadditiveYonedaObj J).PreservesEpimorphisms := by
   rw [injective_iff_preservesEpimorphisms_yoneda_obj]
-  refine
-    ⟨fun h : (preadditiveYonedaObj J ⋙ (forget <| ModuleCat (End J))).PreservesEpimorphisms => ?_,? _⟩
+  refine ⟨fun h : (preadditiveYonedaObj J ⋙ (forget <| ModuleCat (End J))).PreservesEpimorphisms =>
+    ?_, ?_⟩
   · exact
       Functor.preservesEpimorphisms_of_preserves_of_reflects (preadditiveYonedaObj J) (forget _)
   · intro

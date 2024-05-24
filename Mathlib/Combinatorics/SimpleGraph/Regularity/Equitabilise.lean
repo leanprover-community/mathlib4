@@ -106,7 +106,8 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
   obtain ⟨R, hR₁, hR₂, hR₃⟩ :=
     @ih (s \ t) (sdiff_ssubset (htu.trans <| P.le hu₁) ht) (if 0 < a then a - 1 else a)
       (if 0 < a then b else b - 1) (P.avoid t) hcard
-  refine ⟨R.extend ht.ne_empty sdiff_disjoint (sdiff_sup_cancel <| htu.trans <| P.le hu₁), ?_,? _, ?_⟩
+  refine
+    ⟨R.extend ht.ne_empty sdiff_disjoint (sdiff_sup_cancel <| htu.trans <| P.le hu₁), ?_, ?_, ?_⟩
   · simp only [mem_insert, forall_eq_or_imp, extend_parts, and_iff_left hR₁, htn, hn]
     exact ite_eq_or_eq _ _ _
   · conv in _ ∈ _ => rw [← insert_erase hu₁]

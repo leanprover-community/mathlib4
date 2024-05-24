@@ -195,9 +195,9 @@ theorem StarSubalgebra.isUnit_coe_inv_mem {S : StarSubalgebra ℂ A} (hS : IsClo
 `x` is invertible in `S`. -/
 theorem StarSubalgebra.coe_isUnit {S : StarSubalgebra ℂ A} (hS : IsClosed (S : Set A)) {x : S} :
     IsUnit (x : A) ↔ IsUnit x := by
-  refine
-    ⟨fun hx => ⟨⟨x, ⟨(↑hx.unit⁻¹ : A), StarSubalgebra.isUnit_coe_inv_mem hS hx x.prop⟩, ?_,? _⟩, rfl⟩,
-      fun hx => hx.map S.subtype⟩
+  refine ⟨fun hx =>
+           ⟨⟨x, ⟨(↑hx.unit⁻¹ : A), StarSubalgebra.isUnit_coe_inv_mem hS hx x.prop⟩, ?_,? _⟩, rfl⟩,
+          fun hx => hx.map S.subtype⟩
   exacts [Subtype.coe_injective hx.mul_val_inv, Subtype.coe_injective hx.val_inv_mul]
 #align star_subalgebra.coe_is_unit StarSubalgebra.coe_isUnit
 

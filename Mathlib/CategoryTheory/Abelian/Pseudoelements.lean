@@ -371,8 +371,8 @@ theorem pseudo_exact_of_exact {P Q R : C} {f : P ⟶ Q} {g : Q ⟶ R} (h : Exact
       -- It remains to show that the image of this element under `f` is pseudo-equal to `b`.
       apply Quotient.sound
       -- `pullback.snd` is an epimorphism because the map onto the image is!
-      refine
-        ⟨pullback (Abelian.factorThruImage f) c, 𝟙 _, pullback.snd, inferInstance, inferInstance, ?_⟩
+      refine ⟨pullback (Abelian.factorThruImage f) c, 𝟙 _,
+              pullback.snd, inferInstance, inferInstance, ?_⟩
       -- Now we can verify that the diagram commutes.
       calc
         𝟙 (pullback (Abelian.factorThruImage f) c) ≫ pullback.fst ≫ f = pullback.fst ≫ f :=

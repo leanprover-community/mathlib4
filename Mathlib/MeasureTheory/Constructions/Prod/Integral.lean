@@ -107,7 +107,8 @@ theorem MeasureTheory.StronglyMeasurable.integral_prod_right [SigmaFinite ν] �
       refine
         tendsto_integral_of_dominated_convergence (fun y => ‖f x y‖ + ‖f x y‖)
           (fun n => (s' n x).aestronglyMeasurable) (hfx.norm.add hfx.norm) ?_ ?_
-      · refine fun n => eventually_of_forall fun y => SimpleFunc.norm_approxOn_zero_le ?_ ?_ (x, y) n
+      · refine fun n => eventually_of_forall fun y =>
+          SimpleFunc.norm_approxOn_zero_le ?_ ?_ (x, y) n
         -- Porting note: Lean 3 solved the following two subgoals on its own
         · exact hf.measurable
         · simp

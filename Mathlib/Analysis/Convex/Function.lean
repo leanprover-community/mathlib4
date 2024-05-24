@@ -315,9 +315,8 @@ variable [Module 𝕜 E] [Module 𝕜 β]
 theorem convexOn_iff_forall_pos {s : Set E} {f : E → β} :
     ConvexOn 𝕜 s f ↔ Convex 𝕜 s ∧ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b →
       a + b = 1 → f (a • x + b • y) ≤ a • f x + b • f y := by
-  refine
-    and_congr_right'
-      ⟨fun h x hx y hy a b ha hb hab => h hx hy ha.le hb.le hab, fun h x hx y hy a b ha hb hab => ?_⟩
+  refine and_congr_right'
+    ⟨fun h x hx y hy a b ha hb hab => h hx hy ha.le hb.le hab, fun h x hx y hy a b ha hb hab => ?_⟩
   obtain rfl | ha' := ha.eq_or_lt
   · rw [zero_add] at hab
     subst b

@@ -141,7 +141,8 @@ theorem convexJoin_assoc_aux (s t u : Set E) :
   have hab : 0 < a₂ * b₁ + b₂ := add_pos_of_nonneg_of_pos ha₂b₁ hb₂
   refine
     ⟨x, hx, (a₂ * b₁ / (a₂ * b₁ + b₂)) • y + (b₂ / (a₂ * b₁ + b₂)) • z,
-      ⟨y, hy, z, hz, _, _, ?_, ?_, ?_, rfl⟩, a₂ * a₁, a₂ * b₁ + b₂, mul_nonneg ha₂ ha₁, hab.le,? _,? _⟩
+      ⟨y, hy, z, hz, _, _, ?_, ?_, ?_, rfl⟩,
+      a₂ * a₁, a₂ * b₁ + b₂, mul_nonneg ha₂ ha₁, hab.le, ?_, ?_⟩
   · exact div_nonneg ha₂b₁ hab.le
   · exact div_nonneg hb₂.le hab.le
   · rw [← add_div, div_self hab.ne']

@@ -924,8 +924,8 @@ theorem mem_iInf_finset {s : Finset α} {f : α → Filter β} {t : Set β} :
   simp only [← Finset.set_biInter_coe, biInter_eq_iInter, iInf_subtype']
   refine ⟨fun h => ?_,? _⟩
   · rcases (mem_iInf_of_finite _).1 h with ⟨p, hp, rfl⟩
-    refine
-      ⟨fun a => if h : a ∈ s then p ⟨a, h⟩ else univ, fun a ha => by simpa [ha] using hp ⟨a, ha⟩, ?_⟩
+    refine ⟨fun a => if h : a ∈ s then p ⟨a, h⟩ else univ,
+            fun a ha => by simpa [ha] using hp ⟨a, ha⟩, ?_⟩
     refine iInter_congr_of_surjective id surjective_id ?_
     rintro ⟨a, ha⟩
     simp [ha]

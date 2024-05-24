@@ -349,8 +349,8 @@ theorem mem_ideal_smul_span_iff_exists_sum {ι : Type*} (f : ι → M) (x : M) :
     simp
   · exact ⟨0, fun _ => I.zero_mem, Finsupp.sum_zero_index⟩
   · rintro x y ⟨ax, hax, rfl⟩ ⟨ay, hay, rfl⟩
-    refine ⟨ax + ay, fun i => I.add_mem (hax i) (hay i), Finsupp.sum_add_index' ?_ ?_⟩ <;> intros <;>
-      simp only [zero_smul, add_smul]
+    refine ⟨ax + ay, fun i => I.add_mem (hax i) (hay i), Finsupp.sum_add_index' ?_ ?_⟩ <;>
+      intros <;> simp only [zero_smul, add_smul]
   · rintro c x ⟨a, ha, rfl⟩
     refine ⟨c • a, fun i => I.mul_mem_left c (ha i), ?_⟩
     rw [Finsupp.sum_smul_index, Finsupp.smul_sum] <;> intros <;> simp only [zero_smul, mul_smul]

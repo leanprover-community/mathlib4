@@ -263,8 +263,8 @@ theorem pow_image_of_prime_by_factor_orderIso_dvd
   let c₂ : Fin (s + 1) → Associates N := fun t => d ⟨c₁ t, le_trans (hc₁''.2 ⟨t, by simp⟩) hs'⟩
   have c₂_def : ∀ t, c₂ t = d ⟨c₁ t, _⟩ := fun t => rfl
   rw [← c₂_def]
-  refine
-    (eq_pow_second_of_chain_of_has_chain hs (fun t u h => ?_) (@fun r => ⟨@fun hr =>? _, ?_⟩)? _).symm
+  refine (eq_pow_second_of_chain_of_has_chain hs (fun t u h => ?_)
+    (@fun r => ⟨@fun hr => ?_, ?_⟩) ?_).symm
   · rw [c₂_def, c₂_def, Subtype.coe_lt_coe, d.lt_iff_lt, Subtype.mk_lt_mk, hc₁'.lt_iff_lt]
     exact h
   · have : r ≤ n := hr.trans (d ⟨c₁ 1 ^ s, _⟩).2
@@ -285,7 +285,8 @@ theorem map_prime_of_factor_orderIso {m p : Associates M} {n : Associates N} (hn
     (hp : p ∈ normalizedFactors m) (d : Set.Iic m ≃o Set.Iic n) :
     Prime (d ⟨p, dvd_of_mem_normalizedFactors hp⟩ : Associates N) := by
   rw [← irreducible_iff_prime]
-  refine (Associates.isAtom_iff <| ne_zero_of_dvd_ne_zero hn (d ⟨p, _⟩).prop).mp ⟨?_, fun b hb => ?_⟩
+  refine (Associates.isAtom_iff <|
+    ne_zero_of_dvd_ne_zero hn (d ⟨p, _⟩).prop).mp ⟨?_, fun b hb => ?_⟩
   · rw [Ne, ← Associates.isUnit_iff_eq_bot, Associates.isUnit_iff_eq_one,
       coe_factor_orderIso_map_eq_one_iff _ d]
     rintro rfl
