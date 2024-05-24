@@ -87,7 +87,7 @@ theorem weightedVSubOfPoint_congr {w₁ w₂ : ι → k} (hw : ∀ i ∈ s, w₁
     (hp : ∀ i ∈ s, p₁ i = p₂ i) (b : P) :
     s.weightedVSubOfPoint p₁ b w₁ = s.weightedVSubOfPoint p₂ b w₂ := by
   simp_rw [weightedVSubOfPoint_apply]
-  refine sum_congr rfl fun i hi => ?_
+  refine sum_congr rfl fun i hi => _
   rw [hw i hi, hp i hi]
 #align finset.weighted_vsub_of_point_congr Finset.weightedVSubOfPoint_congr
 
@@ -227,7 +227,7 @@ theorem weightedVSubOfPoint_filter_of_ne (w : ι → k) (p : ι → P) (b : P) {
     (s.filter pred).weightedVSubOfPoint p b w = s.weightedVSubOfPoint p b w := by
   rw [weightedVSubOfPoint_apply, weightedVSubOfPoint_apply, sum_filter_of_ne]
   intro i hi hne
-  refine h i hi ?_
+  refine h i hi _
   intro hw
   simp [hw] at hne
 #align finset.weighted_vsub_of_point_filter_of_ne Finset.weightedVSubOfPoint_filter_of_ne
@@ -475,7 +475,7 @@ theorem affineCombination_of_eq_one_of_eq_zero (w : ι → k) (p : ι → P) {i 
   rw [s.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one w p h1 (p i),
     weightedVSubOfPoint_apply]
   convert zero_vadd V (p i)
-  refine sum_eq_zero ?_
+  refine sum_eq_zero _
   intro i2 hi2
   by_cases h : i2 = i
   · simp [h]
@@ -540,7 +540,7 @@ theorem affineCombination_eq_of_weightedVSub_eq_zero_of_eq_neg_one {w : ι → k
       ← s.affineCombination_sdiff_sub (singleton_subset_iff.2 his), sdiff_singleton_eq_erase,
       ← filter_ne']
     congr
-    refine (affineCombination_of_eq_one_of_eq_zero _ _ _ (mem_singleton_self _) ?_ ?_).symm
+    refine (affineCombination_of_eq_one_of_eq_zero _ _ _ (mem_singleton_self _) _ _).symm
     · simp [hwi]
     · simp
 #align finset.affine_combination_eq_of_weighted_vsub_eq_zero_of_eq_neg_one Finset.affineCombination_eq_of_weightedVSub_eq_zero_of_eq_neg_one
@@ -583,7 +583,7 @@ theorem eq_weightedVSubOfPoint_subset_iff_eq_weightedVSubOfPoint_subtype {v : V}
     · rintro ⟨fs, w, rfl, rfl⟩
       refine
           ⟨fs.map (Function.Embedding.subtype _), map_subtype_subset _, fun i =>
-            if h : i ∈ s then w ⟨i, h⟩ else 0, ?_, ?_⟩ <;>
+            if h : i ∈ s then w ⟨i, h⟩ else 0, _, _⟩ <;>
         simp
 #align finset.eq_weighted_vsub_of_point_subset_iff_eq_weighted_vsub_of_point_subtype Finset.eq_weightedVSubOfPoint_subset_iff_eq_weightedVSubOfPoint_subtype
 
@@ -737,7 +737,7 @@ variable (k)
 @[simp]
 theorem affineCombination_affineCombinationSingleWeights [DecidableEq ι] (p : ι → P) {i : ι}
     (hi : i ∈ s) : s.affineCombination k p (affineCombinationSingleWeights k i) = p i := by
-  refine s.affineCombination_of_eq_one_of_eq_zero _ _ hi (by simp) ?_
+  refine s.affineCombination_of_eq_one_of_eq_zero _ _ hi (by simp) _
   rintro j - hj
   simp [hj]
 #align finset.affine_combination_affine_combination_single_weights Finset.affineCombination_affineCombinationSingleWeights
@@ -805,7 +805,7 @@ theorem sum_centroidWeights_eq_one_of_card_ne_zero [CharZero k] (h : card s ≠ 
     ∑ i in s, s.centroidWeights k i = 1 := by
   -- Porting note: `simp` cannot find `mul_inv_cancel` and does not use `norm_cast`
   simp only [centroidWeights_apply, sum_const, nsmul_eq_mul, ne_eq, Nat.cast_eq_zero, card_eq_zero]
-  refine mul_inv_cancel ?_
+  refine mul_inv_cancel _
   norm_cast
 #align finset.sum_centroid_weights_eq_one_of_card_ne_zero Finset.sum_centroidWeights_eq_one_of_card_ne_zero
 
@@ -955,7 +955,7 @@ theorem centroid_eq_centroid_image_of_inj_on {p : ι → P}
       exact (hf' i).1
     · intro hx
       use ⟨p x, hps.symm ▸ Set.mem_image_of_mem _ hx⟩, mem_univ _
-      refine hi _ (hf' _).1 _ hx ?_
+      refine hi _ (hf' _).1 _ hx _
       rw [(hf' _).2]
   rw [← hu, centroid_map]
   congr with x
@@ -1106,7 +1106,7 @@ theorem eq_affineCombination_of_mem_affineSpan {p1 : P} {p : ι → P}
     have hw0s : s'.affineCombination k p w0 = p i0 :=
       s'.affineCombination_of_eq_one_of_eq_zero w0 p (Finset.mem_insert_self _ _)
         (Function.update_same _ _ _) fun _ _ hne => Function.update_noteq hne _ _
-    refine ⟨s', w0 + w', ?_, ?_⟩
+    refine ⟨s', w0 + w', _, _⟩
     · -- Porting note: proof was `simp [Pi.add_apply, Finset.sum_add_distrib, hw0, h']`
       simp only [Pi.add_apply, Finset.sum_add_distrib, hw0, h', add_zero]
     · rw [add_comm, ← Finset.weightedVSub_vadd_affineCombination, hw0s, hs', vsub_vadd]
@@ -1118,7 +1118,7 @@ theorem eq_affineCombination_of_mem_affineSpan_of_fintype [Fintype ι] {p1 : P} 
   classical
     obtain ⟨s, w, hw, rfl⟩ := eq_affineCombination_of_mem_affineSpan h
     refine
-      ⟨(s : Set ι).indicator w, ?_, Finset.affineCombination_indicator_subset w p s.subset_univ⟩
+      ⟨(s : Set ι).indicator w, _, Finset.affineCombination_indicator_subset w p s.subset_univ⟩
     simp only [Finset.mem_coe, Set.indicator_apply, ← hw]
     rw [Fintype.sum_extend_by_zero s w]
 #align eq_affine_combination_of_mem_affine_span_of_fintype eq_affineCombination_of_mem_affineSpan_of_fintype

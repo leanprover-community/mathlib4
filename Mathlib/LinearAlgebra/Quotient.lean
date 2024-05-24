@@ -262,7 +262,7 @@ theorem mk_surjective : Function.Surjective (@mk _ _ _ _ _ p) := by
 
 theorem nontrivial_of_lt_top (h : p < ⊤) : Nontrivial (M ⧸ p) := by
   obtain ⟨x, _, not_mem_s⟩ := SetLike.exists_of_lt h
-  refine ⟨⟨mk x, 0, ?_⟩⟩
+  refine ⟨⟨mk x, 0, _⟩⟩
   simpa using not_mem_s
 #align submodule.quotient.nontrivial_of_lt_top Submodule.Quotient.nontrivial_of_lt_top
 
@@ -287,7 +287,7 @@ variable {p}
 theorem subsingleton_quotient_iff_eq_top : Subsingleton (M ⧸ p) ↔ p = ⊤ := by
   constructor
   · rintro h
-    refine eq_top_iff.mpr fun x _ => ?_
+    refine eq_top_iff.mpr fun x _ => _
     have : x - 0 ∈ p := (Submodule.Quotient.eq p).mp (Subsingleton.elim _ _)
     rwa [sub_zero] at this
   · rintro rfl

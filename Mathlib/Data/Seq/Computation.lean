@@ -214,7 +214,7 @@ set_option linter.uppercaseLean3 false in
   If `f b = inl a` then `corec f b = pure a`, and if `f b = inl b'` then
   `corec f b = think (corec f b')`. -/
 def corec (f : β → Sum α β) (b : β) : Computation α := by
-  refine ⟨Stream'.corec' (Corec.f f) (Sum.inr b), fun n a' h => ?_⟩
+  refine ⟨Stream'.corec' (Corec.f f) (Sum.inr b), fun n a' h => _⟩
   rw [Stream'.corec'_eq]
   change Stream'.corec' (Corec.f f) (Corec.f f (Sum.inr b)).2 n = some a'
   revert h; generalize Sum.inr b = o; revert o
@@ -401,7 +401,7 @@ theorem not_terminates_empty : ¬Terminates (empty α) := fun ⟨⟨a, h⟩⟩ =
 theorem eq_empty_of_not_terminates {s} (H : ¬Terminates s) : s = empty α := by
   apply Subtype.eq; funext n
   induction' h : s.val n with _; · rfl
-  refine absurd ?_ H; exact ⟨⟨_, _, h.symm⟩⟩
+  refine absurd _ H; exact ⟨⟨_, _, h.symm⟩⟩
 #align computation.eq_empty_of_not_terminates Computation.eq_empty_of_not_terminates
 
 theorem thinkN_mem {s : Computation α} {a} : ∀ n, a ∈ thinkN s n ↔ a ∈ s
@@ -1273,7 +1273,7 @@ theorem LiftRelRec.lem {R : α → β → Prop} (C : Computation α → Computat
     (ha : a ∈ ca) : LiftRel R ca cb := by
   revert cb
   refine memRecOn (C := (fun ca ↦ ∀ (cb : Computation β), C ca cb → LiftRel R ca cb))
-    ha ?_ (fun ca' IH => ?_) <;> intro cb Hc <;> have h := H Hc
+    ha _ (fun ca' IH => _) <;> intro cb Hc <;> have h := H Hc
   · simp only [destruct_pure, LiftRelAux.ret_left] at h
     simp [h]
   · simp only [liftRel_think_left]

@@ -41,12 +41,12 @@ variable [F.PreservesFiniteEffectiveEpiFamilies] [F.ReflectsFiniteEffectiveEpiFa
   [F.Full] [F.Faithful] [F.EffectivelyEnough] [Precoherent D]
 
 instance : F.IsCoverDense (coherentTopology _) := by
-  refine F.isCoverDense_of_generate_singleton_functor_π_mem _ fun B ↦ ⟨_, F.effectiveEpiOver B, ?_⟩
+  refine F.isCoverDense_of_generate_singleton_functor_π_mem _ fun B ↦ ⟨_, F.effectiveEpiOver B, _⟩
   apply Coverage.saturate.of
   refine ⟨Unit, inferInstance, fun _ => F.effectiveEpiOverObj B,
-    fun _ => F.effectiveEpiOver B, ?_ , ?_⟩
+    fun _ => F.effectiveEpiOver B, _ , _⟩
   · funext; ext -- Do we want `Presieve.ext`?
-    refine ⟨fun ⟨⟩ ↦ ⟨()⟩, ?_⟩
+    refine ⟨fun ⟨⟩ ↦ ⟨()⟩, _⟩
     rintro ⟨⟩
     simp
   · rw [← effectiveEpi_iff_effectiveEpiFamily]
@@ -56,19 +56,19 @@ theorem exists_effectiveEpiFamily_iff_mem_induced (X : C) (S : Sieve X) :
     (∃ (α : Type) (_ : Finite α) (Y : α → C) (π : (a : α) → (Y a ⟶ X)),
       EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) ) ↔
     (S ∈ F.inducedTopologyOfIsCoverDense (coherentTopology _) X) := by
-  refine ⟨fun ⟨α, _, Y, π, ⟨H₁, H₂⟩⟩ ↦ ?_, fun hS ↦ ?_⟩
+  refine ⟨fun ⟨α, _, Y, π, ⟨H₁, H₂⟩⟩ ↦ _, fun hS ↦ _⟩
   · apply (mem_sieves_iff_hasEffectiveEpiFamily (Sieve.functorPushforward _ S)).mpr
     refine ⟨α, inferInstance, fun i => F.obj (Y i),
-      fun i => F.map (π i), ⟨?_,
+      fun i => F.map (π i), ⟨_,
       fun a => Sieve.image_mem_functorPushforward F S (H₂ a)⟩⟩
     exact F.map_finite_effectiveEpiFamily _ _
   · obtain ⟨α, _, Y, π, ⟨H₁, H₂⟩⟩ := (mem_sieves_iff_hasEffectiveEpiFamily _).mp hS
-    refine ⟨α, inferInstance, ?_⟩
+    refine ⟨α, inferInstance, _⟩
     let Z : α → C := fun a ↦ (Functor.EffectivelyEnough.presentation (F := F) (Y a)).some.p
     let g₀ : (a : α) → F.obj (Z a) ⟶ Y a := fun a ↦ F.effectiveEpiOver (Y a)
     have : EffectiveEpiFamily _ (fun a ↦ g₀ a ≫ π a) := inferInstance
-    refine ⟨Z , fun a ↦ F.preimage (g₀ a ≫ π a), ?_, fun a ↦ (?_ : S.arrows (F.preimage _))⟩
-    · refine F.finite_effectiveEpiFamily_of_map _ _ ?_
+    refine ⟨Z , fun a ↦ F.preimage (g₀ a ≫ π a), _, fun a ↦ (_ : S.arrows (F.preimage _))⟩
+    · refine F.finite_effectiveEpiFamily_of_map _ _ _
       simpa using this
     · obtain ⟨W, g₁, g₂, h₁, h₂⟩ := H₂ a
       rw [h₂]
@@ -150,11 +150,11 @@ variable [F.PreservesEffectiveEpis] [F.ReflectsEffectiveEpis] [F.Full] [F.Faithf
   [F.EffectivelyEnough] [Preregular D]
 
 instance : F.IsCoverDense (regularTopology _) := by
-  refine F.isCoverDense_of_generate_singleton_functor_π_mem _ fun B ↦ ⟨_, F.effectiveEpiOver B, ?_⟩
+  refine F.isCoverDense_of_generate_singleton_functor_π_mem _ fun B ↦ ⟨_, F.effectiveEpiOver B, _⟩
   apply Coverage.saturate.of
-  refine ⟨F.effectiveEpiOverObj B, F.effectiveEpiOver B, ?_, inferInstance⟩
+  refine ⟨F.effectiveEpiOverObj B, F.effectiveEpiOver B, _, inferInstance⟩
   funext; ext -- Do we want `Presieve.ext`?
-  refine ⟨fun ⟨⟩ ↦ ⟨()⟩, ?_⟩
+  refine ⟨fun ⟨⟩ ↦ ⟨()⟩, _⟩
   rintro ⟨⟩
   simp
 
@@ -162,14 +162,14 @@ theorem exists_effectiveEpi_iff_mem_induced (X : C) (S : Sieve X) :
     (∃ (Y : C) (π : Y ⟶ X),
       EffectiveEpi π ∧ S.arrows π) ↔
     (S ∈ F.inducedTopologyOfIsCoverDense (regularTopology _) X) := by
-  refine ⟨fun ⟨Y, π, ⟨H₁, H₂⟩⟩ ↦ ?_, fun hS ↦ ?_⟩
+  refine ⟨fun ⟨Y, π, ⟨H₁, H₂⟩⟩ ↦ _, fun hS ↦ _⟩
   · apply (mem_sieves_iff_hasEffectiveEpi (Sieve.functorPushforward _ S)).mpr
-    refine ⟨F.obj Y, F.map π, ⟨?_, Sieve.image_mem_functorPushforward F S H₂⟩⟩
+    refine ⟨F.obj Y, F.map π, ⟨_, Sieve.image_mem_functorPushforward F S H₂⟩⟩
     exact F.map_effectiveEpi _
   · obtain ⟨Y, π, ⟨H₁, H₂⟩⟩ := (mem_sieves_iff_hasEffectiveEpi _).mp hS
     let g₀ := F.effectiveEpiOver Y
-    refine ⟨_, F.preimage (g₀ ≫ π), ?_, (?_ : S.arrows (F.preimage _))⟩
-    · refine F.effectiveEpi_of_map _ ?_
+    refine ⟨_, F.preimage (g₀ ≫ π), _, (_ : S.arrows (F.preimage _))⟩
+    · refine F.effectiveEpi_of_map _ _
       simp only [map_preimage]
       infer_instance
     · obtain ⟨W, g₁, g₂, h₁, h₂⟩ := H₂
@@ -255,7 +255,7 @@ lemma isSheaf_coherent_of_hasPullbacks_comp [Preregular C] [FinitaryExtensive C]
     (hF : IsSheaf (coherentTopology C) F) : IsSheaf (coherentTopology C) (F ⋙ s) := by
   rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition (h := h)] at hF ⊢
   have := hF.1.some
-  refine ⟨⟨inferInstance⟩, fun _ _ π _ c hc ↦ ⟨?_⟩⟩
+  refine ⟨⟨inferInstance⟩, fun _ _ π _ c hc ↦ ⟨_⟩⟩
   exact isLimitForkMapOfIsLimit s _ (hF.2 π c hc).some
 
 lemma isSheaf_coherent_of_hasPullbacks_of_comp [Preregular C] [FinitaryExtensive C]
@@ -263,7 +263,7 @@ lemma isSheaf_coherent_of_hasPullbacks_of_comp [Preregular C] [FinitaryExtensive
     [ReflectsFiniteLimits s]
     (hF : IsSheaf (coherentTopology C) (F ⋙ s)) : IsSheaf (coherentTopology C) F := by
   rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition (h := h)] at hF ⊢
-  refine ⟨⟨⟨fun J _ ↦ ⟨fun {K} ↦ ⟨fun {c} hc ↦ ?_⟩⟩⟩⟩, fun _ _ π _ c hc ↦ ⟨?_⟩⟩
+  refine ⟨⟨⟨fun J _ ↦ ⟨fun {K} ↦ ⟨fun {c} hc ↦ _⟩⟩⟩⟩, fun _ _ π _ c hc ↦ ⟨_⟩⟩
   · exact isLimitOfReflects s ((hF.1.some.1 J).1.1 hc)
   · exact isLimitOfIsLimitForkMap s _ (hF.2 π c hc).some
 
@@ -279,7 +279,7 @@ lemma isSheaf_coherent_of_projective_of_comp [Preregular C] [FinitaryExtensive C
     [ReflectsFiniteProducts s]
     (hF : IsSheaf (coherentTopology C) (F ⋙ s)) : IsSheaf (coherentTopology C) F := by
   rw [isSheaf_iff_preservesFiniteProducts_of_projective] at hF ⊢
-  refine ⟨⟨fun J _ ↦ ⟨fun {K} ↦ ⟨fun {c} hc ↦ ?_⟩⟩⟩⟩
+  refine ⟨⟨fun J _ ↦ ⟨fun {K} ↦ ⟨fun {c} hc ↦ _⟩⟩⟩⟩
   exact isLimitOfReflects s ((hF.some.1 J).1.1 hc)
 
 instance [Preregular C] [FinitaryExtensive C]

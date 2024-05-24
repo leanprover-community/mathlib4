@@ -49,7 +49,7 @@ polynomial over the fraction field. See `minpoly.isIntegrallyClosed_eq_field_fra
 `S` is already a `K`-algebra. -/
 theorem isIntegrallyClosed_eq_field_fractions [IsDomain S] {s : S} (hs : IsIntegral R s) :
     minpoly K (algebraMap S L s) = (minpoly R s).map (algebraMap R K) := by
-  refine (eq_of_irreducible_of_monic ?_ ?_ ?_).symm
+  refine (eq_of_irreducible_of_monic _ _ _).symm
   · exact ((monic hs).irreducible_iff_irreducible_map_fraction_map).1 (irreducible hs)
   · rw [aeval_map_algebraMap, aeval_algebraMap_apply, aeval, map_zero]
   · exact (monic hs).map _
@@ -80,7 +80,7 @@ theorem isIntegrallyClosed_dvd {s : S} (hs : IsIntegral R s) {p : R[X]}
   have := FractionRing.isScalarTower_liftAlgebra R L
   have : minpoly K (algebraMap S L s) ∣ map (algebraMap R K) (p %ₘ minpoly R s) := by
     rw [map_modByMonic _ (minpoly.monic hs), modByMonic_eq_sub_mul_div]
-    · refine dvd_sub (minpoly.dvd K (algebraMap S L s) ?_) ?_
+    · refine dvd_sub (minpoly.dvd K (algebraMap S L s) _) _
       · rw [← map_aeval_eq_aeval_map, hp, map_zero]
         rw [← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq]
       apply dvd_mul_of_dvd_left
@@ -129,8 +129,8 @@ theorem _root_.IsIntegrallyClosed.minpoly.unique {s : S} {P : R[X]} (hmo : P.Mon
   have hs : IsIntegral R s := ⟨P, hmo, hP⟩
   symm; apply eq_of_sub_eq_zero
   by_contra hnz
-  refine IsIntegrallyClosed.degree_le_of_ne_zero hs hnz (by simp [hP]) |>.not_lt ?_
-  refine degree_sub_lt ?_ (ne_zero hs) ?_
+  refine IsIntegrallyClosed.degree_le_of_ne_zero hs hnz (by simp [hP]) |>.not_lt _
+  refine degree_sub_lt _ (ne_zero hs) _
   · exact le_antisymm (min R s hmo hP) (Pmin (minpoly R s) (monic hs) (aeval R s))
   · rw [(monic hs).leadingCoeff, hmo.leadingCoeff]
 #align minpoly.is_integrally_closed.minpoly.unique IsIntegrallyClosed.minpoly.unique
@@ -139,7 +139,7 @@ theorem prime_of_isIntegrallyClosed {x : S} (hx : IsIntegral R x) : Prime (minpo
   refine
     ⟨(minpoly.monic hx).ne_zero,
       ⟨fun h_contra => (ne_of_lt (minpoly.degree_pos hx)) (degree_eq_zero_of_isUnit h_contra).symm,
-        fun a b h => or_iff_not_imp_left.mpr fun h' => ?_⟩⟩
+        fun a b h => or_iff_not_imp_left.mpr fun h' => _⟩⟩
   rw [← minpoly.isIntegrallyClosed_dvd_iff hx] at h' h ⊢
   rw [aeval_mul] at h
   exact eq_zero_of_ne_zero_of_mul_left_eq_zero h' h
@@ -152,7 +152,7 @@ open Algebra Polynomial AdjoinRoot
 variable {x : S}
 
 theorem ToAdjoin.injective (hx : IsIntegral R x) : Function.Injective (Minpoly.toAdjoin R x) := by
-  refine (injective_iff_map_eq_zero _).2 fun P₁ hP₁ => ?_
+  refine (injective_iff_map_eq_zero _).2 fun P₁ hP₁ => _
   obtain ⟨P, rfl⟩ := mk_surjective P₁
   rwa [Minpoly.toAdjoin_apply', liftHom_mk, ← Subalgebra.coe_eq_zero, aeval_subalgebra_coe,
     isIntegrallyClosed_dvd_iff hx, ← AdjoinRoot.mk_eq_zero] at hP₁

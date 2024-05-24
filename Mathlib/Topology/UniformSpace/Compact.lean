@@ -49,13 +49,13 @@ variable {α β γ : Type*} [UniformSpace α] [UniformSpace β]
 /-- On a compact uniform space, the topology determines the uniform structure, entourages are
 exactly the neighborhoods of the diagonal. -/
 theorem nhdsSet_diagonal_eq_uniformity [CompactSpace α] : 𝓝ˢ (diagonal α) = 𝓤 α := by
-  refine nhdsSet_diagonal_le_uniformity.antisymm ?_
+  refine nhdsSet_diagonal_le_uniformity.antisymm _
   have :
     (𝓤 (α × α)).HasBasis (fun U => U ∈ 𝓤 α) fun U =>
       (fun p : (α × α) × α × α => ((p.1.1, p.2.1), p.1.2, p.2.2)) ⁻¹' U ×ˢ U := by
     rw [uniformity_prod_eq_comap_prod]
     exact (𝓤 α).basis_sets.prod_self.comap _
-  refine (isCompact_diagonal.nhdsSet_basis_uniformity this).ge_iff.2 fun U hU => ?_
+  refine (isCompact_diagonal.nhdsSet_basis_uniformity this).ge_iff.2 fun U hU => _
   exact mem_of_superset hU fun ⟨x, y⟩ hxy => mem_iUnion₂.2
     ⟨(x, x), rfl, refl_mem_uniformity hU, hxy⟩
 #align nhds_set_diagonal_eq_uniformity nhdsSet_diagonal_eq_uniformity
@@ -69,7 +69,7 @@ theorem compactSpace_uniformity [CompactSpace α] : 𝓤 α = ⨆ x, 𝓝 (x, x)
 theorem unique_uniformity_of_compact [t : TopologicalSpace γ] [CompactSpace γ]
     {u u' : UniformSpace γ} (h : u.toTopologicalSpace = t) (h' : u'.toTopologicalSpace = t) :
     u = u' := by
-  refine UniformSpace.ext ?_
+  refine UniformSpace.ext _
   have : @CompactSpace γ u.toTopologicalSpace := by rwa [h]
   have : @CompactSpace γ u'.toTopologicalSpace := by rwa [h']
   rw [@compactSpace_uniformity _ u, compactSpace_uniformity, h, h']
@@ -189,7 +189,7 @@ theorem IsCompact.uniformContinuousAt_of_continuousAt {r : Set (β × β)} {s : 
   rintro ⟨a₁, a₂⟩ h h₁
   obtain ⟨a, ha, haU⟩ := Set.mem_iUnion₂.1 (hsU h₁)
   apply htr
-  refine ⟨f a, htsymm.mk_mem_comm.1 (hb _ _ _ haU ?_), hb _ _ _ haU ?_⟩
+  refine ⟨f a, htsymm.mk_mem_comm.1 (hb _ _ _ haU _), hb _ _ _ haU _⟩
   exacts [mem_ball_self _ (hT a a.2), mem_iInter₂.1 h a ha]
 #align is_compact.uniform_continuous_at_of_continuous_at IsCompact.uniformContinuousAt_of_continuousAt
 
@@ -217,7 +217,7 @@ theorem HasCompactMulSupport.is_one_at_infty {f : α → γ} [TopologicalSpace �
   -- Porting note: move to src/topology/support.lean once the port is over
   intro N hN
   rw [mem_map, mem_cocompact']
-  refine ⟨mulTSupport f, h.isCompact, ?_⟩
+  refine ⟨mulTSupport f, h.isCompact, _⟩
   rw [compl_subset_comm]
   intro v hv
   rw [mem_preimage, image_eq_one_of_nmem_mulTSupport hv]
@@ -267,7 +267,7 @@ lemma IsCompact.mem_uniformity_of_prod
   · intro t' t ht't ⟨v, v_mem, hv⟩
     exact ⟨v, v_mem, fun p hp x hx ↦ hv p hp x (ht't hx)⟩
   · intro t t' ⟨v, v_mem, hv⟩ ⟨v', v'_mem, hv'⟩
-    refine ⟨v ∩ v', inter_mem v_mem v'_mem, fun p hp x hx ↦ ?_⟩
+    refine ⟨v ∩ v', inter_mem v_mem v'_mem, fun p hp x hx ↦ _⟩
     rcases hx with h'x|h'x
     · exact hv p hp.1 x h'x
     · exact hv' p hp.2 x h'x
@@ -276,7 +276,7 @@ lemma IsCompact.mem_uniformity_of_prod
     obtain ⟨v, hv, w, hw, hvw⟩ :
       ∃ v ∈ 𝓝[s] q, ∃ w ∈ 𝓝[k] x, v ×ˢ w ⊆ f.uncurry ⁻¹' {z | (f q x, z) ∈ u'} :=
         mem_nhdsWithin_prod_iff.1 (hf (q, x) ⟨hq, hx⟩ (mem_nhds_left (f q x) u'_mem))
-    refine ⟨w, hw, v, hv, fun p hp y hy ↦ ?_⟩
+    refine ⟨w, hw, v, hv, fun p hp y hy ↦ _⟩
     have A : (f q x, f p y) ∈ u' := hvw (⟨hp, hy⟩ : (p, y) ∈ v ×ˢ w)
     have B : (f q x, f q y) ∈ u' := hvw (⟨mem_of_mem_nhdsWithin hq hv, hy⟩ : (q, y) ∈ v ×ˢ w)
     exact hu' (prod_mk_mem_compRel (u'_symm A) B)

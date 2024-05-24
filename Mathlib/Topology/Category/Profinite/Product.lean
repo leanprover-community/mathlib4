@@ -98,8 +98,8 @@ instance isIso_indexCone_lift :
   haveI : CompactSpace C := by rwa [← isCompact_iff_compactSpace]
   isIso_of_bijective _
     (by
-      refine ⟨fun a b h ↦ ?_, fun a ↦ ?_⟩
-      · refine eq_of_forall_π_app_eq a b (fun J ↦ ?_)
+      refine ⟨fun a b h ↦ _, fun a ↦ _⟩
+      · refine eq_of_forall_π_app_eq a b (fun J ↦ _)
         apply_fun fun f : (limitCone.{u, u} (indexFunctor hC)).pt => f.val (op J) at h
         exact h
       · rsuffices ⟨b, hb⟩ : ∃ (x : C), ∀ (J : Finset ι), π_app C (· ∈ J) x = a.val (op J)
@@ -110,7 +110,7 @@ instance isIso_indexCone_lift :
           exact hb (unop J)
         have hc : ∀ (J : Finset ι) s, IsClosed ((π_app C (· ∈ J)) ⁻¹' {s}) := by
           intro J s
-          refine IsClosed.preimage (π_app C (· ∈ J)).continuous ?_
+          refine IsClosed.preimage (π_app C (· ∈ J)).continuous _
           exact T1Space.t1 s
         have H₁ : ∀ (Q₁ Q₂ : Finset ι), Q₁ ≤ Q₂ →
             π_app C (· ∈ Q₁) ⁻¹' {a.val (op Q₁)} ⊇

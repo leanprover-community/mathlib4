@@ -81,7 +81,7 @@ lemma integrable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
   have hg : Integrable g := by
     suffices g = fun x ↦ (√(2 * π * v))⁻¹ * rexp (- (2 * v)⁻¹ * x ^ 2) by
       rw [this]
-      refine (integrable_exp_neg_mul_sq ?_).const_mul (√(2 * π * v))⁻¹
+      refine (integrable_exp_neg_mul_sq _).const_mul (√(2 * π * v))⁻¹
       simp [lt_of_le_of_ne (zero_le _) (Ne.symm hv)]
     ext x
     simp only [g, zero_lt_two, mul_nonneg_iff_of_pos_left, NNReal.zero_le_coe, Real.sqrt_mul',
@@ -134,7 +134,7 @@ lemma gaussianPDFReal_inv_mul {μ : ℝ} {v : ℝ≥0} {c : ℝ} (hc : c ≠ 0) 
   simp only [gaussianPDFReal.eq_1, zero_lt_two, mul_nonneg_iff_of_pos_left, NNReal.zero_le_coe,
     Real.sqrt_mul', one_div, mul_inv_rev, NNReal.coe_mul, NNReal.coe_mk, NNReal.coe_pos]
   rw [← mul_assoc]
-  refine congr_arg₂ _ ?_ ?_
+  refine congr_arg₂ _ _ _
   · field_simp
     rw [Real.sqrt_sq_eq_abs]
     ring_nf
@@ -217,7 +217,7 @@ lemma gaussianReal_absolutelyContinuous (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) 
 lemma gaussianReal_absolutelyContinuous' (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) :
     volume ≪ gaussianReal μ v := by
   rw [gaussianReal_of_var_ne_zero _ hv]
-  refine withDensity_absolutelyContinuous' ?_ ?_ ?_
+  refine withDensity_absolutelyContinuous' _ _ _
   · exact (measurable_gaussianPDF _ _).aemeasurable
   · exact ae_of_all _ (fun _ ↦ (gaussianPDF_pos _ hv _).ne')
   · exact ae_of_all _ (fun _ ↦ ENNReal.ofReal_ne_top)
@@ -226,7 +226,7 @@ lemma rnDeriv_gaussianReal (μ : ℝ) (v : ℝ≥0) :
     ∂(gaussianReal μ v)/∂volume =ₐₛ gaussianPDF μ v := by
   by_cases hv : v = 0
   · simp only [hv, gaussianReal_zero_var, gaussianPDF_zero_var]
-    refine (Measure.eq_rnDeriv measurable_zero (mutuallySingular_dirac μ volume) ?_).symm
+    refine (Measure.eq_rnDeriv measurable_zero (mutuallySingular_dirac μ volume) _).symm
     rw [withDensity_zero, add_zero]
   · rw [gaussianReal_of_var_ne_zero _ hv]
     exact Measure.rnDeriv_withDensity _ (measurable_gaussianPDF μ v)

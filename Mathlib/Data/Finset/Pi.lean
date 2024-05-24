@@ -99,7 +99,7 @@ theorem pi_insert [∀ a, DecidableEq (β a)] {s : Finset α} {t : ∀ a : α, F
   rw [← (pi (insert a s) t).2.dedup]
   refine
     (fun s' (h : s' = a ::ₘ s.1) =>
-        (?_ :
+        (_ :
           dedup (Multiset.pi s' fun a => (t a).1) =
             dedup
               ((t a).1.bind fun b =>

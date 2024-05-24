@@ -445,7 +445,7 @@ theorem tendsto_implicitFunction (hf : HasStrictFDerivAt f f' a) (hf' : range f'
     (h₂ : Tendsto g₂ l (𝓝 0)) :
     Tendsto (fun t => hf.implicitFunction f f' hf' (g₁ t) (g₂ t)) l (𝓝 a) := by
   refine ((hf.implicitToPartialHomeomorph f f' hf').tendsto_symm
-    (hf.mem_implicitToPartialHomeomorph_source hf')).comp ?_
+    (hf.mem_implicitToPartialHomeomorph_source hf')).comp _
   rw [implicitToPartialHomeomorph_self]
   exact h₁.prod_mk_nhds h₂
 #align has_strict_fderiv_at.tendsto_implicit_function HasStrictFDerivAt.tendsto_implicitFunction

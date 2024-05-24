@@ -194,7 +194,7 @@ section Nth
 #noalign array.to_list_nth_le' -- Array'.toList_nth_le'
 
 -- theorem toList_get? {i v} : List.get? a.toList i = some v ↔ ∃ h, a.read ⟨i, h⟩ = v := by
---   rw [List.get?_eq_some']
+--   rw [List.get_eq_some']
 --   have ll := to_list_length a
 --   constructor <;> intro h <;> cases' h with h e <;> subst v
 --   · exact ⟨ll ▸ h, (to_list_nth_le _ _ _).symm⟩
@@ -206,14 +206,14 @@ section Nth
 --     have h₃ : j < n := by simpa using h₁
 --     rw [to_list_nth_le _ h₃]
 --     refine
---       let ⟨_, e⟩ := List.get?_eq_some'.1 _
+--       let ⟨_, e⟩ := List.get_eq_some'.1 _
 --       e.symm
 --     by_cases ij : (i : ℕ) = j
 --     · subst j
 --       rw [show (⟨(i : ℕ), h₃⟩ : Fin _) = i from Fin.eq_of_veq rfl, Array'.read_write,
---         List.get?_set_eq_of_lt]
+--         List.get_set_eq_of_lt]
 --       simp [h₃]
---     · rw [List.get?_set_ne _ _ ij, a.read_write_of_ne, to_list_nth.2 ⟨h₃, rfl⟩]
+--     · rw [List.get_set_ne _ _ ij, a.read_write_of_ne, to_list_nth.2 ⟨h₃, rfl⟩]
 --       exact Fin.ne_of_vne ij
 #noalign array.write_to_list --Array'.write_toList
 

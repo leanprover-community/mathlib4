@@ -194,11 +194,11 @@ theorem norm_eval_le_injectiveSeminorm (f : ContinuousMultilinearMap 𝕜 E F) (
   have hle : Seminorm.comp (normSeminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
       (toDualContinuousMultilinearMap G (𝕜 := 𝕜) (E := E)) ≤ injectiveSeminorm := by
     simp only [injectiveSeminorm]
-    refine le_csSup dualSeminorms_bounded ?_
+    refine le_csSup dualSeminorms_bounded _
     rw [Set.mem_setOf]
     existsi G, inferInstance, inferInstance
     rfl
-  refine le_trans ?_ (mul_le_mul_of_nonneg_left (hle x) (norm_nonneg f'))
+  refine le_trans _ (mul_le_mul_of_nonneg_left (hle x) (norm_nonneg f'))
   simp only [Seminorm.comp_apply, coe_normSeminorm, ← toDualContinuousMultilinearMap_apply_apply]
   rw [mul_comm]
   exact ContinuousLinearMap.le_opNorm _ _
@@ -206,7 +206,7 @@ theorem norm_eval_le_injectiveSeminorm (f : ContinuousMultilinearMap 𝕜 E F) (
 theorem injectiveSeminorm_le_projectiveSeminorm :
     injectiveSeminorm (𝕜 := 𝕜) (E := E) ≤ projectiveSeminorm := by
   rw [injectiveSeminorm]
-  refine csSup_le ?_ ?_
+  refine csSup_le _ _
   · existsi 0
     simp only [Set.mem_setOf_eq]
     existsi PUnit, inferInstance, inferInstance
@@ -249,7 +249,7 @@ noncomputable def liftEquiv : ContinuousMultilinearMap 𝕜 E F ≃ₗ[𝕜] (�
     ContinuousLinearMap.coe_smul', Pi.smul_apply]
   invFun l := MultilinearMap.mkContinuous (lift.symm l.toLinearMap) ‖l‖ (fun x ↦ by
     simp only [lift_symm, LinearMap.compMultilinearMap_apply, ContinuousLinearMap.coe_coe]
-    refine le_trans (ContinuousLinearMap.le_opNorm _ _) (mul_le_mul_of_nonneg_left ?_
+    refine le_trans (ContinuousLinearMap.le_opNorm _ _) (mul_le_mul_of_nonneg_left _
       (norm_nonneg l))
     exact injectiveSeminorm_tprod_le x)
   left_inv f := by ext x; simp only [LinearMap.mkContinuous_coe, LinearEquiv.symm_apply_apply,
@@ -270,7 +270,7 @@ noncomputable def liftIsometry  : ContinuousMultilinearMap 𝕜 E F ≃ₗᵢ[�
   { liftEquiv 𝕜 E F with
     norm_map' := by
       intro f
-      refine le_antisymm ?_ ?_
+      refine le_antisymm _ _
       · simp only [liftEquiv, lift_symm, LinearEquiv.coe_mk]
         exact LinearMap.mkContinuous_norm_le _ (norm_nonneg f) _
       · conv_lhs => rw [← (liftEquiv 𝕜 E F).left_inv f]
@@ -429,11 +429,11 @@ theorem mapL_opNorm : ‖mapL f‖ ≤ ∏ i, ‖f i‖ := by
   rw [mapL, liftIsometry]
   simp only [LinearIsometryEquiv.coe_mk, liftEquiv_apply, LinearMap.mkContinuous_apply]
   refine le_trans (norm_eval_le_injectiveSeminorm _ _)
-    (mul_le_mul_of_nonneg_right ?_ (norm_nonneg x))
+    (mul_le_mul_of_nonneg_right _ (norm_nonneg x))
   rw [ContinuousMultilinearMap.opNorm_le_iff _ (Finset.prod_nonneg (fun _ _ ↦ norm_nonneg _))]
   intro m
   simp only [ContinuousMultilinearMap.compContinuousLinearMap_apply]
-  refine le_trans (injectiveSeminorm_tprod_le (fun i ↦ (f i) (m i))) ?_
+  refine le_trans (injectiveSeminorm_tprod_le (fun i ↦ (f i) (m i))) _
   rw [← Finset.prod_mul_distrib]
   exact Finset.prod_le_prod (fun _ _ ↦ norm_nonneg _) (fun _ _ ↦ ContinuousLinearMap.le_opNorm _ _ )
 

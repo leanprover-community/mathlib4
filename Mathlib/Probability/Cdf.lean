@@ -85,7 +85,7 @@ instance instIsProbabilityMeasurecdf : IsProbabilityMeasure (cdf μ).measure := 
 
 /-- The measure associated to the cdf of a probability measure is the same probability measure. -/
 lemma measure_cdf [IsProbabilityMeasure μ] : (cdf μ).measure = μ := by
-  refine Measure.ext_of_Iic (cdf μ).measure μ (fun a ↦ ?_)
+  refine Measure.ext_of_Iic (cdf μ).measure μ (fun a ↦ _)
   rw [StieltjesFunction.measure_Iic _ (tendsto_cdf_atBot μ), sub_zero, ofReal_cdf]
 
 end ExplicitMeasureArg
@@ -93,7 +93,7 @@ end ExplicitMeasureArg
 lemma cdf_measure_stieltjesFunction (f : StieltjesFunction) (hf0 : Tendsto f atBot (𝓝 0))
     (hf1 : Tendsto f atTop (𝓝 1)) :
     cdf f.measure = f := by
-  refine (cdf f.measure).eq_of_measure_of_tendsto_atBot f ?_ (tendsto_cdf_atBot _) hf0
+  refine (cdf f.measure).eq_of_measure_of_tendsto_atBot f _ (tendsto_cdf_atBot _) hf0
   have h_prob : IsProbabilityMeasure f.measure :=
     ⟨by rw [f.measure_univ hf0 hf1, sub_zero, ENNReal.ofReal_one]⟩
   exact measure_cdf f.measure

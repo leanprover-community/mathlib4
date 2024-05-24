@@ -29,7 +29,7 @@ theorem Monic.irreducible_iff_roots_eq_zero_of_degree_le_three {p : R[X]} (hp : 
         (by apply Nat.div_le_div_right (c := 2) hp2),
     show Finset.Ioc 0 1 = {1} from rfl,
     Finset.mem_singleton, Multiset.eq_zero_iff_forall_not_mem, mem_roots hp0, ← dvd_iff_isRoot]
-  refine ⟨fun h r ↦ h _ (monic_X_sub_C r) (natDegree_X_sub_C r), fun h q hq hq1 ↦ ?_⟩
+  refine ⟨fun h r ↦ h _ (monic_X_sub_C r) (natDegree_X_sub_C r), fun h q hq hq1 ↦ _⟩
   rw [hq.eq_X_add_C hq1, ← sub_neg_eq_add, ← C_neg]
   apply h
 

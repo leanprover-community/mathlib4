@@ -337,7 +337,7 @@ theorem ediam_image2_le (f : α → β → γ) {K₁ K₂ : ℝ≥0} (s : Set α
     EMetric.diam (Set.image2 f s t) ≤ ↑K₁ * EMetric.diam s + ↑K₂ * EMetric.diam t := by
   simp only [EMetric.diam_le_iff, forall_image2_iff]
   intro a₁ ha₁ b₁ hb₁ a₂ ha₂ b₂ hb₂
-  refine (edist_triangle _ (f a₂ b₁) _).trans ?_
+  refine (edist_triangle _ (f a₂ b₁) _).trans _
   exact
     add_le_add
       ((hf₁ b₁ hb₁ ha₁ ha₂).trans <| ENNReal.mul_left_mono <| EMetric.edist_le_diam_of_mem ha₁ ha₂)
@@ -376,7 +376,7 @@ protected lemma comp  {f : β → γ} {g : α → β}
   -- g is Lipschitz on t ∋ x, f is Lipschitz on u ∋ g(x)
   rcases hg x with ⟨Kg, t, ht, hgL⟩
   rcases hf (g x) with ⟨Kf, u, hu, hfL⟩
-  refine ⟨Kf * Kg, t ∩ g⁻¹' u, inter_mem ht (hg.continuous.continuousAt hu), ?_⟩
+  refine ⟨Kf * Kg, t ∩ g⁻¹' u, inter_mem ht (hg.continuous.continuousAt hu), _⟩
   exact hfL.comp (hgL.mono (inter_subset_left _ _))
     ((mapsTo_preimage g u).mono_left (inter_subset_right _ _))
 
@@ -386,7 +386,7 @@ protected lemma prod {f : α → β} (hf : LocallyLipschitz f) {g : α → γ} (
   intro x
   rcases hf x with ⟨Kf, t₁, h₁t, hfL⟩
   rcases hg x with ⟨Kg, t₂, h₂t, hgL⟩
-  refine ⟨max Kf Kg, t₁ ∩ t₂, Filter.inter_mem h₁t h₂t, ?_⟩
+  refine ⟨max Kf Kg, t₁ ∩ t₂, Filter.inter_mem h₁t h₂t, _⟩
   exact (hfL.mono (inter_subset_left t₁ t₂)).prod (hgL.mono (inter_subset_right t₁ t₂))
 
 protected theorem prod_mk_left (a : α) : LocallyLipschitz (Prod.mk a : β → α × β) :=
@@ -424,7 +424,7 @@ theorem continuousOn_prod_of_subset_closure_continuousOn_lipschitzOnWith [Pseudo
     (ha : ∀ a ∈ s', ContinuousOn (fun y => f (a, y)) t)
     (hb : ∀ b ∈ t, LipschitzOnWith K (fun x => f (x, b)) s) : ContinuousOn f (s ×ˢ t) := by
   rintro ⟨x, y⟩ ⟨hx : x ∈ s, hy : y ∈ t⟩
-  refine EMetric.nhds_basis_closed_eball.tendsto_right_iff.2 fun ε (ε0 : 0 < ε) => ?_
+  refine EMetric.nhds_basis_closed_eball.tendsto_right_iff.2 fun ε (ε0 : 0 < ε) => _
   replace ε0 : 0 < ε / 2 := ENNReal.half_pos ε0.ne'
   obtain ⟨δ, δpos, hδ⟩ : ∃ δ : ℝ≥0, 0 < δ ∧ (δ : ℝ≥0∞) * ↑(3 * K) < ε / 2 :=
     ENNReal.exists_nnreal_pos_mul_lt ENNReal.coe_ne_top ε0.ne'
@@ -440,7 +440,7 @@ theorem continuousOn_prod_of_subset_closure_continuousOn_lipschitzOnWith [Pseudo
         edist (f (x', y)) (f (x, y)) := edist_triangle4 _ _ _ _
     _ ≤ K * (δ + δ) + ε / 2 + K * δ := by
       gcongr
-      · refine (hb b hbt).edist_le_mul_of_le has (hs' hx') ?_
+      · refine (hb b hbt).edist_le_mul_of_le has (hs' hx') _
         exact (edist_triangle _ _ _).trans (add_le_add (le_of_lt hax) hxx'.le)
       · exact hby
       · exact (hb y hy).edist_le_mul_of_le (hs' hx') hx ((edist_comm _ _).trans_le hxx'.le)

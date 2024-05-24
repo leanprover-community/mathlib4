@@ -29,11 +29,11 @@ theorem extend_partialOrder {α : Type u} (r : α → α → Prop) [IsPartialOrd
   have hS : ∀ c, c ⊆ S → IsChain (· ≤ ·) c → ∀ y ∈ c, ∃ ub ∈ S, ∀ z ∈ c, z ≤ ub := by
     rintro c hc₁ hc₂ s hs
     haveI := (hc₁ hs).1
-    refine ⟨sSup c, ?_, fun z hz => le_sSup hz⟩
+    refine ⟨sSup c, _, fun z hz => le_sSup hz⟩
     refine
-        { refl := ?_
-          trans := ?_
-          antisymm := ?_ } <;>
+        { refl := _
+          trans := _
+          antisymm := _ } <;>
       simp_rw [binary_relation_sSup_iff]
     · intro x
       exact ⟨s, hs, refl x⟩
@@ -51,7 +51,7 @@ theorem extend_partialOrder {α : Type u} (r : α → α → Prop) [IsPartialOrd
       · apply antisymm h₂s₁ (h _ _ h₂s₂)
   obtain ⟨s, hs₁ : IsPartialOrder _ _, rs, hs₂⟩ := zorn_nonempty_partialOrder₀ S hS r ‹_›
   haveI : IsPartialOrder α s := hs₁
-  refine ⟨s, { total := ?_, refl := hs₁.refl, trans := hs₁.trans, antisymm := hs₁.antisymm } , rs⟩
+  refine ⟨s, { total := _, refl := hs₁.refl, trans := hs₁.trans, antisymm := hs₁.antisymm } , rs⟩
   intro x y
   by_contra! h
   let s' x' y' := s x' y' ∨ s x' x ∧ s y y'
@@ -59,8 +59,8 @@ theorem extend_partialOrder {α : Type u} (r : α → α → Prop) [IsPartialOrd
   · apply h.1 (Or.inr ⟨refl _, refl _⟩)
   · refine
     { refl := fun x ↦ Or.inl (refl _)
-      trans := ?_
-      antisymm := ?_ }
+      trans := _
+      antisymm := _ }
     · rintro a b c (ab | ⟨ax : s a x, yb : s y b⟩) (bc | ⟨bx : s b x, yc : s y c⟩)
       · exact Or.inl (_root_.trans ab bc)
       · exact Or.inr ⟨_root_.trans ab bx, yc⟩

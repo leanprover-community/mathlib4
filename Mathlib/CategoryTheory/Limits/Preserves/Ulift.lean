@@ -75,10 +75,10 @@ def descSet (ls : Set lc.pt) : Set c.pt := {x | (hc.desc (coconeOfSet ls) x).dow
   element in the lifted diagram lie in `ls`. -/
 lemma descSet_spec (s : Set c.pt) (ls : Set lc.pt) :
     descSet hc ls = s ↔ ∀ j x, lc.ι.app j ⟨x⟩ ∈ ls ↔ c.ι.app j x ∈ s := by
-  refine ⟨?_, fun he ↦ funext fun x ↦ ?_⟩
+  refine ⟨_, fun he ↦ funext fun x ↦ _⟩
   · rintro rfl j x
     exact (congr_arg ULift.down (congr_fun (hc.fac (coconeOfSet ls) j) x).symm).to_iff
-  · refine (congr_arg ULift.down (congr_fun (hc.uniq (coconeOfSet ls) (⟨· ∈ s⟩) fun j ↦ ?_) x)).symm
+  · refine (congr_arg ULift.down (congr_fun (hc.uniq (coconeOfSet ls) (⟨· ∈ s⟩) fun j ↦ _) x)).symm
     ext y; exact congr_arg ULift.up (propext (he j y).symm)
 
 lemma mem_descSet_singleton {x : lc.pt} {j : J} {y : K.obj j} :
@@ -125,7 +125,7 @@ lemma descFun_apply_spec {x : c.pt} {y : lc.pt} : descFun hc lc x = y ↔ x ∈ 
 
 lemma descFun_spec (f : c.pt → lc.pt) :
     f = descFun hc lc ↔ ∀ j, f ∘ c.ι.app j = lc.ι.app j ∘ ULift.up := by
-  refine ⟨?_, fun he ↦ funext fun x ↦ ((descFun_apply_spec hc lc).mpr ?_).symm⟩
+  refine ⟨_, fun he ↦ funext fun x ↦ ((descFun_apply_spec hc lc).mpr _).symm⟩
   · rintro rfl j; ext
     apply (descFun_apply_spec hc lc).mpr
     rw [mem_descSet_singleton]; rfl

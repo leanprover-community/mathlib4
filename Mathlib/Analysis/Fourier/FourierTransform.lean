@@ -96,7 +96,7 @@ theorem fourierIntegral_smul_const (e : AddChar 𝕜 𝕊) (μ : Measure V)
 theorem norm_fourierIntegral_le_integral_norm (e : AddChar 𝕜 𝕊) (μ : Measure V)
     (L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜) (f : V → E) (w : W) :
     ‖fourierIntegral e μ L f w‖ ≤ ∫ v : V, ‖f v‖ ∂μ := by
-  refine (norm_integral_le_integral_norm _).trans (le_of_eq ?_)
+  refine (norm_integral_le_integral_norm _).trans (le_of_eq _)
   simp_rw [norm_circle_smul]
 #align vector_fourier.norm_fourier_integral_le_integral_norm VectorFourier.norm_fourierIntegral_le_integral_norm
 
@@ -140,7 +140,7 @@ theorem fourierIntegral_convergent_iff (he : Continuous e)
     simp_rw [← integrable_norm_iff (c.aestronglyMeasurable.smul hg.1), norm_circle_smul]
     exact hg.norm
   -- then use it for both directions
-  refine ⟨fun hf ↦ ?_, fun hf ↦ aux hf w⟩
+  refine ⟨fun hf ↦ _, fun hf ↦ aux hf w⟩
   have := aux hf (-w)
   simp_rw [← mul_smul (e _) (e _) (f _), ← e.map_add_mul, LinearMap.map_neg, neg_add_self,
     e.map_zero_one, one_smul] at this -- the `(e _)` speeds up elaboration considerably
@@ -171,7 +171,7 @@ theorem fourierIntegral_continuous [FirstCountableTopology W] (he : Continuous e
   · exact fun w ↦ ((fourierIntegral_convergent_iff he hL w).2 hf).1
   · exact fun w ↦ ae_of_all _ fun v ↦ le_of_eq (norm_circle_smul _ _)
   · exact hf.norm
-  · refine ae_of_all _ fun v ↦ (he.comp ?_).smul continuous_const
+  · refine ae_of_all _ fun v ↦ (he.comp _).smul continuous_const
     exact (hL.comp (continuous_prod_mk.mpr ⟨continuous_const, continuous_id⟩)).neg
 #align vector_fourier.fourier_integral_continuous VectorFourier.fourierIntegral_continuous
 
@@ -209,7 +209,7 @@ theorem integral_bilin_fourierIntegral_eq_flip
       -- speeds up compilation.
       change AEStronglyMeasurable (fun p : W × V ↦ (M (e (-(L p.2) p.1) • f p.2) (g p.1))) _
       have A : AEStronglyMeasurable (fun (p : W × V) ↦ e (-L p.2 p.1) • f p.2) (ν.prod μ) := by
-        refine (Continuous.aestronglyMeasurable ?_).smul hf.1.snd
+        refine (Continuous.aestronglyMeasurable _).smul hf.1.snd
         exact he.comp (hL.comp continuous_swap).neg
       have A' : AEStronglyMeasurable (fun p ↦ (g p.1, e (-(L p.2) p.1) • f p.2) : W × V → F × E)
         (Measure.prod ν μ) := hg.1.fst.prod_mk A

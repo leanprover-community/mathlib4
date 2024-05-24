@@ -61,7 +61,7 @@ lemma exists_set_linearIndependent :
 
 variable (R) in
 instance (priority := 100) : Nontrivial R := by
-  refine (subsingleton_or_nontrivial R).resolve_left fun H ↦ ?_
+  refine (subsingleton_or_nontrivial R).resolve_left fun H ↦ _
   have := rank_quotient_add_rank (R := R) (M := PUnit) ⊥
   simp [one_add_one_eq_two] at this
 
@@ -100,7 +100,7 @@ theorem exists_linearIndependent_of_lt_rank [StrongRankCondition R]
     apply ht'.ne_zero ⟨x, hxt⟩
     rw [Subtype.coe_mk, ← hsec x, Submodule.Quotient.mk_eq_zero]
     exact Submodule.subset_span hxs
-  refine ⟨s ∪ sec '' t, subset_union_left _ _, ?_, ?_⟩
+  refine ⟨s ∪ sec '' t, subset_union_left _ _, _, _⟩
   · rw [Cardinal.mk_union_of_disjoint hst, Cardinal.mk_image_eq, ht,
       ← rank_quotient_add_rank (Submodule.span R s), add_comm, rank_span_set hs]
     exact HasLeftInverse.injective ⟨Submodule.Quotient.mk, hsec⟩
@@ -115,7 +115,7 @@ theorem exists_linearIndependent_cons_of_lt_rank [StrongRankCondition R] {n : �
     ∃ (x : M), LinearIndependent R (Fin.cons x v) := by
   obtain ⟨t, h₁, h₂, h₃⟩ := exists_linearIndependent_of_lt_rank hv.to_subtype_range
   have : range v ≠ t := by
-    refine fun e ↦ h.ne ?_
+    refine fun e ↦ h.ne _
     rw [← e, ← lift_injective.eq_iff, mk_range_eq_of_injective hv.injective] at h₂
     simpa only [mk_fintype, Fintype.card_fin, lift_natCast, lift_id'] using h₂
   obtain ⟨x, hx, hx'⟩ := nonempty_of_ssubset (h₁.ssubset_of_ne this)

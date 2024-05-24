@@ -33,7 +33,7 @@ variable [Ring R] [AddCommGroup M] [Module R M] [Module.Free R M]
 /-- If a free module is finite, then the arbitrary basis is finite. -/
 noncomputable instance ChooseBasisIndex.fintype [Module.Finite R M] :
     Fintype (Module.Free.ChooseBasisIndex R M) := by
-  refine @Fintype.ofFinite _ ?_
+  refine @Fintype.ofFinite _ _
   cases subsingleton_or_nontrivial R
   · have := Module.subsingleton R M
     rw [ChooseBasisIndex]
@@ -54,7 +54,7 @@ theorem _root_.Module.Finite.of_basis {R M ι : Type*} [Semiring R] [AddCommMono
     [_root_.Finite ι] (b : Basis ι R M) : Module.Finite R M := by
   cases nonempty_fintype ι
   classical
-    refine ⟨⟨Finset.univ.image b, ?_⟩⟩
+    refine ⟨⟨Finset.univ.image b, _⟩⟩
     simp only [Set.image_univ, Finset.coe_univ, Finset.coe_image, Basis.span_eq]
 #align module.finite.of_basis Module.Finite.of_basis
 

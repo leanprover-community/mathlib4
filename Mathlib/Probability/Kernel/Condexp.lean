@@ -87,7 +87,7 @@ variable [NormedAddCommGroup F] {f : Ω → F}
 theorem measurable_condexpKernel {s : Set Ω} (hs : MeasurableSet s) :
     Measurable[m] fun ω => condexpKernel μ m ω s := by
   simp_rw [condexpKernel_apply_eq_condDistrib]
-  refine Measurable.mono ?_ (inf_le_left : m ⊓ mΩ ≤ m) le_rfl
+  refine Measurable.mono _ (inf_le_left : m ⊓ mΩ ≤ m) le_rfl
   convert measurable_condDistrib (μ := μ) hs
   rw [MeasurableSpace.comap_id]
 #align probability_theory.measurable_condexp_kernel ProbabilityTheory.measurable_condexpKernel
@@ -182,7 +182,7 @@ lemma condexpKernel_ae_eq_trim_condexp [IsFiniteMeasure μ]
     (fun ω ↦ (condexpKernel μ m ω s).toReal) =ᵐ[μ.trim hm] μ⟦s | m⟧ := by
   rw [ae_eq_trim_iff hm _ stronglyMeasurable_condexp]
   · exact condexpKernel_ae_eq_condexp hm hs
-  · refine Measurable.stronglyMeasurable ?_
+  · refine Measurable.stronglyMeasurable _
     exact @Measurable.ennreal_toReal _ m _ (measurable_condexpKernel hs)
 
 theorem condexp_ae_eq_integral_condexpKernel' [NormedAddCommGroup F] {f : Ω → F}

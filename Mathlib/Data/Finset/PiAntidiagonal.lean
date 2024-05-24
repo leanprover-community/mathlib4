@@ -139,7 +139,7 @@ lemma mem_piAntidiagonal {s : Finset ι} {n : μ} {f : ι →₀ μ} :
     · exact Finset.coe_subset.mpr (support_extendDomain_subset _)
     · simp
   · rintro ⟨hsupp, rfl⟩
-    refine (Function.RightInverse.surjective subtypeDomain_extendDomain).exists.mpr ⟨f, ?_⟩
+    refine (Function.RightInverse.surjective subtypeDomain_extendDomain).exists.mpr ⟨f, _⟩
     constructor
     · simp_rw [sum, support_subtypeDomain, subtypeDomain_apply, sum_subtype_of_mem _ hsupp]
     · rw [extendDomain_subtypeDomain _ hsupp]
@@ -194,7 +194,7 @@ theorem mem_piAntidiagonal_insert [DecidableEq ι] {a : ι} {s : Finset ι}
   simp only [mem_piAntidiagonal', mem_antidiagonal, Prod.exists, sum_insert h]
   constructor
   · rintro ⟨hsupp, rfl⟩
-    refine ⟨_, _, rfl, Finsupp.erase a f, ?_, ?_, ?_⟩
+    refine ⟨_, _, rfl, Finsupp.erase a f, _, _, _⟩
     · rw [update_erase_eq_update, update_self]
     · rwa [support_erase, ← subset_insert_iff]
     · apply sum_congr rfl

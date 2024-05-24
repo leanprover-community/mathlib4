@@ -24,11 +24,11 @@ lemma LinearEquiv.isOfFinOrder_of_finite_of_span_eq_top_of_mapsTo
   let e' := he.equiv
   have : Finite Φ := finite_coe_iff.mpr hΦ₁
   obtain ⟨k, hk₀, hk⟩ := isOfFinOrder_of_finite e'
-  refine ⟨k, hk₀, ?_⟩
+  refine ⟨k, hk₀, _⟩
   ext m
   have hm : m ∈ span R Φ := hΦ₂ ▸ Submodule.mem_top
   simp only [mul_left_iterate, mul_one, LinearEquiv.coe_one, id_eq]
-  refine Submodule.span_induction hm (fun x hx ↦ ?_) (by simp)
+  refine Submodule.span_induction hm (fun x hx ↦ _) (by simp)
     (fun x y hx hy ↦ by simp [map_add, hx, hy]) (fun t x hx ↦ by simp [map_smul, hx])
   rw [LinearEquiv.pow_apply, ← he.1.coe_iterate_restrict ⟨x, hx⟩ k]
   replace hk : (e') ^ k = 1 := by simpa [IsPeriodicPt, IsFixedPt] using hk

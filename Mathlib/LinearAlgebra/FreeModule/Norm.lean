@@ -36,10 +36,10 @@ theorem associated_norm_prod_smith [Fintype ι] (b : Basis ι R S) {f : S} (hf :
   let e :=
     (b'.equiv ((span {f}).selfBasis b hI) <| Equiv.refl _).trans
       ((LinearEquiv.coord S S f hf).restrictScalars R)
-  refine (LinearMap.associated_det_of_eq_comp e _ _ ?_).symm
+  refine (LinearMap.associated_det_of_eq_comp e _ _ _).symm
   dsimp only [e, LinearEquiv.trans_apply]
   simp_rw [← LinearEquiv.coe_toLinearMap, ← LinearMap.comp_apply, ← LinearMap.ext_iff]
-  refine b'.ext fun i => ?_
+  refine b'.ext fun i => _
   simp_rw [LinearMap.comp_apply, LinearEquiv.coe_toLinearMap, Matrix.toLin_apply, Basis.repr_self,
     Finsupp.single_eq_pi_single, Matrix.diagonal_mulVec_single, Pi.single_apply, ite_smul,
     zero_smul, Finset.sum_ite_eq', mul_one, if_pos (Finset.mem_univ _), b'.equiv_apply]
@@ -65,8 +65,8 @@ instance (b : Basis ι F[X] S) {I : Ideal S} (hI : I ≠ ⊥) (i : ι) :
   -- operations to the `Quotient.lift` level and then end up comparing huge
   -- terms.  We should probably make most of the quotient operations
   -- irreducible so that they don't expose `Quotient.lift` accidentally.
-  refine PowerBasis.finite ?_
-  refine AdjoinRoot.powerBasis ?_
+  refine PowerBasis.finite _
+  refine AdjoinRoot.powerBasis _
   exact I.smithCoeffs_ne_zero b hI i
 
 /-- For a nonzero element `f` in a `F[X]`-module `S`, the dimension of $S/\langle f \rangle$ as an

@@ -192,7 +192,7 @@ lemma isQuasiregular_iff {x : R} :
   · rintro ⟨u, rfl⟩
     exact ⟨equiv.symm u⁻¹.val, by simp⟩
   · rintro ⟨y, hy₁, hy₂⟩
-    refine ⟨⟨equiv x, equiv y, ?_, ?_⟩, rfl⟩
+    refine ⟨⟨equiv x, equiv y, _, _⟩, rfl⟩
     all_goals
       apply equiv.symm.injective
       assumption
@@ -209,13 +209,13 @@ lemma IsQuasiregular.map {F R S : Type*} [NonUnitalSemiring R] [NonUnitalSemirin
 lemma IsQuasiregular.isUnit_one_add {R : Type*} [Semiring R] {x : R} (hx : IsQuasiregular x) :
     IsUnit (1 + x) := by
   obtain ⟨y, hy₁, hy₂⟩ := isQuasiregular_iff.mp hx
-  refine ⟨⟨1 + x, 1 + y, ?_, ?_⟩, rfl⟩
+  refine ⟨⟨1 + x, 1 + y, _, _⟩, rfl⟩
   · convert congr(1 + $(hy₁)) using 1 <;> [noncomm_ring; simp]
   · convert congr(1 + $(hy₂)) using 1 <;> [noncomm_ring; simp]
 
 lemma isQuasiregular_iff_isUnit {R : Type*} [Ring R] {x : R} :
     IsQuasiregular x ↔ IsUnit (1 + x) := by
-  refine ⟨IsQuasiregular.isUnit_one_add, fun hx ↦ ?_⟩
+  refine ⟨IsQuasiregular.isUnit_one_add, fun hx ↦ _⟩
   rw [isQuasiregular_iff]
   use hx.unit⁻¹ - 1
   constructor
@@ -230,7 +230,7 @@ lemma isQuasiregular_iff_isUnit {R : Type*} [Ring R] {x : R} :
 lemma isQuasiregular_iff_isUnit' (R : Type*) {A : Type*} [CommSemiring R] [NonUnitalSemiring A]
     [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] {x : A} :
     IsQuasiregular x ↔ IsUnit (1 + x : Unitization R A) := by
-  refine ⟨?_, fun hx ↦ ?_⟩
+  refine ⟨_, fun hx ↦ _⟩
   · rintro ⟨u, rfl⟩
     exact (Unitization.unitsFstOne_mulEquiv_quasiregular R).symm u |>.val.isUnit
   · exact ⟨(Unitization.unitsFstOne_mulEquiv_quasiregular R) ⟨hx.unit, by simp⟩, by simp⟩
@@ -294,11 +294,11 @@ namespace Unitization
 
 lemma isQuasiregular_inr_iff (a : A) :
     IsQuasiregular (a : Unitization R A) ↔ IsQuasiregular a := by
-  refine ⟨fun ha ↦ ?_, IsQuasiregular.map (inrNonUnitalAlgHom R A)⟩
+  refine ⟨fun ha ↦ _, IsQuasiregular.map (inrNonUnitalAlgHom R A)⟩
   rw [isQuasiregular_iff] at ha ⊢
   obtain ⟨y, hy₁, hy₂⟩ := ha
   lift y to A using by simpa using congr(fstHom R A $(hy₁))
-  refine ⟨y, ?_, ?_⟩ <;> exact inr_injective (R := R) <| by simpa
+  refine ⟨y, _, _⟩ <;> exact inr_injective (R := R) <| by simpa
 
 lemma zero_mem_spectrum_inr (R S : Type*) {A : Type*} [CommSemiring R]
     [CommRing S] [Nontrivial S] [NonUnitalRing A] [Algebra R S] [Module S A] [IsScalarTower S A A]
@@ -318,7 +318,7 @@ lemma quasispectrum_eq_spectrum_inr (R : Type*) {A : Type*} [CommRing R] [Ring A
   ext r
   have : { r | ¬ IsUnit r} ⊆ spectrum R _ := mem_spectrum_inr_of_not_isUnit a
   rw [← Set.union_eq_left.mpr this, ← quasispectrum_eq_spectrum_union]
-  apply forall_congr' fun hr ↦ ?_
+  apply forall_congr' fun hr ↦ _
   rw [not_iff_not, Units.smul_def, Units.smul_def, ← inr_smul, ← inr_neg, isQuasiregular_inr_iff]
 
 lemma quasispectrum_eq_spectrum_inr' (R S : Type*) {A : Type*} [Semifield R]
@@ -328,7 +328,7 @@ lemma quasispectrum_eq_spectrum_inr' (R S : Type*) {A : Type*} [Semifield R]
   ext r
   have := Set.singleton_subset_iff.mpr (zero_mem_spectrum_inr R S a)
   rw [← Set.union_eq_self_of_subset_right this, ← quasispectrum_eq_spectrum_union_zero]
-  apply forall_congr' fun x ↦ ?_
+  apply forall_congr' fun x ↦ _
   rw [not_iff_not, Units.smul_def, Units.smul_def, ← inr_smul, ← inr_neg, isQuasiregular_inr_iff]
 
 end Unitization
@@ -419,7 +419,7 @@ theorem of_subset_range_algebraMap (hf : f.LeftInverse (algebraMap R S))
 variable [IsScalarTower R S A] (h : QuasispectrumRestricts a f)
 
 theorem algebraMap_image : algebraMap R S '' quasispectrum R a = quasispectrum S a := by
-  refine Set.eq_of_subset_of_subset ?_ fun s hs => ⟨f s, ?_⟩
+  refine Set.eq_of_subset_of_subset _ fun s hs => ⟨f s, _⟩
   · simpa only [quasispectrum.preimage_algebraMap] using
       (quasispectrum S a).image_preimage_subset (algebraMap R S)
   exact ⟨quasispectrum.of_algebraMap_mem S ((h.rightInvOn hs).symm ▸ hs), h.rightInvOn hs⟩
@@ -500,7 +500,7 @@ theorem of_subset_range_algebraMap (hf : f.LeftInverse (algebraMap R S))
 variable [IsScalarTower R S A] (h : SpectrumRestricts a f)
 
 theorem algebraMap_image : algebraMap R S '' spectrum R a = spectrum S a := by
-  refine Set.eq_of_subset_of_subset ?_ fun s hs => ⟨f s, ?_⟩
+  refine Set.eq_of_subset_of_subset _ fun s hs => ⟨f s, _⟩
   · simpa only [spectrum.preimage_algebraMap] using
       (spectrum S a).image_preimage_subset (algebraMap R S)
   exact ⟨spectrum.of_algebraMap_mem S ((h.rightInvOn hs).symm ▸ hs), h.rightInvOn hs⟩
@@ -536,8 +536,8 @@ theorem quasispectrumRestricts_iff_spectrumRestricts {R S A : Type*} [Semifield 
     [Ring A] [Algebra R S] [Algebra R A] [Algebra S A] {a : A} {f : S → R} :
     QuasispectrumRestricts a f ↔ SpectrumRestricts a f := by
   rw [quasispectrumRestricts_iff, spectrumRestricts_iff, quasispectrum_eq_spectrum_union_zero]
-  refine and_congr_left fun h ↦ ?_
-  refine ⟨(Set.RightInvOn.mono · (Set.subset_union_left _ _)), fun h' x hx ↦ ?_⟩
+  refine and_congr_left fun h ↦ _
+  refine ⟨(Set.RightInvOn.mono · (Set.subset_union_left _ _)), fun h' x hx ↦ _⟩
   simp only [Set.union_singleton, Set.mem_insert_iff] at hx
   obtain (rfl | hx) := hx
   · simpa using h 0

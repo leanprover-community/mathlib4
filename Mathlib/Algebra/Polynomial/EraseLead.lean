@@ -237,7 +237,7 @@ theorem eraseLead_natDegree_le (f : R[X]) : (eraseLead f).natDegree ≤ f.natDeg
 
 lemma natDegree_eraseLead (h : f.nextCoeff ≠ 0) : f.eraseLead.natDegree = f.natDegree - 1 := by
   have := natDegree_pos_of_nextCoeff_ne_zero h
-  refine f.eraseLead_natDegree_le.antisymm $ le_natDegree_of_ne_zero ?_
+  refine f.eraseLead_natDegree_le.antisymm $ le_natDegree_of_ne_zero _
   rwa [eraseLead_coeff_of_ne _ (tsub_lt_self _ _).ne, ← nextCoeff_of_natDegree_pos]
   all_goals positivity
 
@@ -248,7 +248,7 @@ lemma natDegree_eraseLead_add_one (h : f.nextCoeff ≠ 0) :
 
 theorem natDegree_eraseLead_le_of_nextCoeff_eq_zero (h : f.nextCoeff = 0) :
     f.eraseLead.natDegree ≤ f.natDegree - 2 := by
-  refine natDegree_le_pred (n := f.natDegree - 1) (eraseLead_natDegree_le f) ?_
+  refine natDegree_le_pred (n := f.natDegree - 1) (eraseLead_natDegree_le f) _
   rw [nextCoeff_eq_zero, natDegree_eq_zero] at h
   obtain ⟨a, rfl⟩ | ⟨hf, h⟩ := h
   · simp
@@ -297,20 +297,20 @@ theorem induction_with_natDegree_le (P : R[X] → Prop) (N : ℕ) (P_0 : P 0)
   · intro f df f0
     rw [← eraseLead_add_C_mul_X_pow f]
     cases c
-    · convert P_C_mul_pow f.natDegree f.leadingCoeff ?_ df using 1
+    · convert P_C_mul_pow f.natDegree f.leadingCoeff _ df using 1
       · convert zero_add (C (leadingCoeff f) * X ^ f.natDegree)
         rw [← card_support_eq_zero, card_support_eraseLead' f0]
       · rw [leadingCoeff_ne_zero, Ne, ← card_support_eq_zero, f0]
         exact zero_ne_one.symm
-    refine P_C_add f.eraseLead _ ?_ ?_ ?_ ?_
-    · refine (eraseLead_natDegree_lt ?_).trans_le (le_of_eq ?_)
+    refine P_C_add f.eraseLead _ _ _ _ _
+    · refine (eraseLead_natDegree_lt _).trans_le (le_of_eq _)
       · exact (Nat.succ_le_succ (Nat.succ_le_succ (Nat.zero_le _))).trans f0.ge
       · rw [natDegree_C_mul_X_pow _ _ (leadingCoeff_ne_zero.mpr _)]
         rintro rfl
         simp at f0
     · exact (natDegree_C_mul_X_pow_le f.leadingCoeff f.natDegree).trans df
     · exact hc _ (eraseLead_natDegree_le_aux.trans df) (card_support_eraseLead' f0)
-    · refine P_C_mul_pow _ _ ?_ df
+    · refine P_C_mul_pow _ _ _ df
       rw [Ne, leadingCoeff_eq_zero, ← card_support_eq_zero, f0]
       exact Nat.succ_ne_zero _
 #align polynomial.induction_with_nat_degree_le Polynomial.induction_with_natDegree_le
@@ -327,7 +327,7 @@ theorem mono_map_natDegree_eq {S F : Type*} [Semiring S]
     (φ_mon_nat : ∀ n c, c ≠ 0 → (φ (monomial n c)).natDegree = fu n) :
     (φ p).natDegree = fu p.natDegree := by
   refine induction_with_natDegree_le (fun p => (φ p).natDegree = fu p.natDegree)
-    p.natDegree (by simp [fu0]) ?_ ?_ _ rfl.le
+    p.natDegree (by simp [fu0]) _ _ _ rfl.le
   · intro n r r0 _
     rw [natDegree_C_mul_X_pow _ _ r0, C_mul_X_pow_eq_monomial, φ_mon_nat _ _ r0]
   · intro f g fg _ fk gk
@@ -367,7 +367,7 @@ theorem card_support_eq' {n : ℕ} (k : Fin n → ℕ) (x : Fin n → R) (hk : F
     rw [this, univ.card_image_of_injective hk, card_fin]
   simp_rw [Finset.ext_iff, mem_support_iff, finset_sum_coeff, coeff_C_mul_X_pow, mem_image,
     mem_univ, true_and]
-  refine fun i => ⟨fun h => ?_, ?_⟩
+  refine fun i => ⟨fun h => _, _⟩
   · obtain ⟨j, _, h⟩ := exists_ne_zero_of_sum_ne_zero h
     exact ⟨j, (ite_ne_right_iff.mp h).1.symm⟩
   · rintro ⟨j, _, rfl⟩
@@ -380,7 +380,7 @@ theorem card_support_eq {n : ℕ} :
     f.support.card = n ↔
       ∃ (k : Fin n → ℕ) (x : Fin n → R) (hk : StrictMono k) (hx : ∀ i, x i ≠ 0),
         f = ∑ i, C (x i) * X ^ k i := by
-  refine ⟨?_, fun ⟨k, x, hk, hx, hf⟩ => hf.symm ▸ card_support_eq' k x hk.injective hx⟩
+  refine ⟨_, fun ⟨k, x, hk, hx, hf⟩ => hf.symm ▸ card_support_eq' k x hk.injective hx⟩
   induction' n with n hn generalizing f
   · exact fun hf => ⟨0, 0, fun x => x.elim0, fun x => x.elim0, card_support_eq_zero.mp hf⟩
   · intro h
@@ -390,7 +390,7 @@ theorem card_support_eq {n : ℕ} :
       exact i.castSucc_lt_last.ne hi
     refine
       ⟨Function.extend Fin.castSucc k fun _ => f.natDegree,
-        Function.extend Fin.castSucc x fun _ => f.leadingCoeff, ?_, ?_, ?_⟩
+        Function.extend Fin.castSucc x fun _ => f.leadingCoeff, _, _, _⟩
     · intro i j hij
       have hi : i ∈ Set.range (Fin.castSucc : Fin n → Fin (n + 1)) := by
         rw [Fin.range_castSucc, Set.mem_def]
@@ -424,7 +424,7 @@ theorem card_support_eq {n : ℕ} :
 
 theorem card_support_eq_one : f.support.card = 1 ↔
     ∃ (k : ℕ) (x : R) (hx : x ≠ 0), f = C x * X ^ k := by
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h => _, _⟩
   · obtain ⟨k, x, _, hx, rfl⟩ := card_support_eq.mp h
     exact ⟨k 0, x 0, hx 0, Fin.sum_univ_one _⟩
   · rintro ⟨k, x, hx, rfl⟩
@@ -435,9 +435,9 @@ theorem card_support_eq_two :
     f.support.card = 2 ↔
       ∃ (k m : ℕ) (hkm : k < m) (x y : R) (hx : x ≠ 0) (hy : y ≠ 0),
         f = C x * X ^ k + C y * X ^ m := by
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h => _, _⟩
   · obtain ⟨k, x, hk, hx, rfl⟩ := card_support_eq.mp h
-    refine ⟨k 0, k 1, hk Nat.zero_lt_one, x 0, x 1, hx 0, hx 1, ?_⟩
+    refine ⟨k 0, k 1, hk Nat.zero_lt_one, x 0, x 1, hx 0, hx 1, _⟩
     rw [Fin.sum_univ_castSucc, Fin.sum_univ_one]
     rfl
   · rintro ⟨k, m, hkm, x, y, hx, hy, rfl⟩
@@ -448,11 +448,11 @@ theorem card_support_eq_three :
     f.support.card = 3 ↔
       ∃ (k m n : ℕ) (hkm : k < m) (hmn : m < n) (x y z : R) (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0),
         f = C x * X ^ k + C y * X ^ m + C z * X ^ n := by
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h => _, _⟩
   · obtain ⟨k, x, hk, hx, rfl⟩ := card_support_eq.mp h
     refine
       ⟨k 0, k 1, k 2, hk Nat.zero_lt_one, hk (Nat.lt_succ_self 1), x 0, x 1, x 2, hx 0, hx 1, hx 2,
-        ?_⟩
+        _⟩
     rw [Fin.sum_univ_castSucc, Fin.sum_univ_castSucc, Fin.sum_univ_one]
     rfl
   · rintro ⟨k, m, n, hkm, hmn, x, y, z, hx, hy, hz, rfl⟩

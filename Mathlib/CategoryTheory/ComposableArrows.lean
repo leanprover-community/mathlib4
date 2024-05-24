@@ -857,7 +857,7 @@ lemma mkOfObjOfMapSucc_exists : ∃ (F : ComposableArrows C n) (e : ∀ i, F.obj
     obtain ⟨F, e, h⟩ := hn (fun i => obj i.succ) (fun i => mapSucc i.succ)
     refine ⟨F.precomp (mapSucc 0 ≫ (e 0).inv), fun i => match i with
       | 0 => Iso.refl _
-      | ⟨i + 1, hi⟩ => e _, fun i hi => ?_⟩
+      | ⟨i + 1, hi⟩ => e _, fun i hi => _⟩
     obtain _ | i := i
     · dsimp
       rw [assoc, Iso.inv_hom_id, comp_id]

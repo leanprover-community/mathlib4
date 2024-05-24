@@ -706,7 +706,7 @@ export ComplementedLattice (exists_isCompl)
 
 instance Subsingleton.instComplementedLattice
     [Lattice α] [BoundedOrder α] [Subsingleton α] : ComplementedLattice α := by
-  refine ⟨fun a ↦ ⟨⊥, disjoint_bot_right, ?_⟩⟩
+  refine ⟨fun a ↦ ⟨⊥, disjoint_bot_right, _⟩⟩
   rw [Subsingleton.elim ⊥ ⊤]
   exact codisjoint_top_right
 

@@ -103,7 +103,7 @@ theorem comp_attachBound_mem_closure (A : Subalgebra ℝ C(X, ℝ)) (f : A)
   refine
     ((compRightContinuousMap ℝ (attachBound (f : C(X, ℝ)))).continuousAt
             p).tendsto.frequently_map
-      _ ?_ frequently_mem_polynomials
+      _ _ frequently_mem_polynomials
   -- but need to show that those pullbacks are actually in `A`.
   rintro _ ⟨g, ⟨-, rfl⟩⟩
   simp only [SetLike.mem_coe, AlgHom.coe_toRingHom, compRightContinuousMap_apply,
@@ -127,7 +127,7 @@ theorem inf_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f g : A) :
       (A.topologicalClosure.sub_mem
         (A.topologicalClosure.add_mem (A.le_topologicalClosure f.property)
           (A.le_topologicalClosure g.property))
-        ?_)
+        _)
       _
   exact mod_cast abs_mem_subalgebra_closure A _
 #align continuous_map.inf_mem_subalgebra_closure ContinuousMap.inf_mem_subalgebra_closure
@@ -149,7 +149,7 @@ theorem sup_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f g : A) :
       (A.topologicalClosure.add_mem
         (A.topologicalClosure.add_mem (A.le_topologicalClosure f.property)
           (A.le_topologicalClosure g.property))
-        ?_)
+        _)
       _
   exact mod_cast abs_mem_subalgebra_closure A _
 #align continuous_map.sup_mem_subalgebra_closure ContinuousMap.sup_mem_subalgebra_closure
@@ -175,7 +175,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   rintro f -
   refine
     Filter.Frequently.mem_closure
-      ((Filter.HasBasis.frequently_iff Metric.nhds_basis_ball).mpr fun ε pos => ?_)
+      ((Filter.HasBasis.frequently_iff Metric.nhds_basis_ball).mpr fun ε pos => _)
   simp only [exists_prop, Metric.mem_ball]
   -- It will be helpful to assume `X` is nonempty later,
   -- so we get that out of the way here.
@@ -197,7 +197,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   let U : X → X → Set X := fun x y => {z | f z - ε < g x y z}
   have U_nhd_y : ∀ x y, U x y ∈ 𝓝 y := by
     intro x y
-    refine IsOpen.mem_nhds ?_ ?_
+    refine IsOpen.mem_nhds _ _
     · apply isOpen_lt <;> continuity
     · rw [Set.mem_setOf_eq, w₂]
       exact sub_lt_self _ pos
@@ -231,7 +231,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   -- This is still a neighbourhood of `x`.
   have W_nhd : ∀ x, W x ∈ 𝓝 x := by
     intro x
-    refine IsOpen.mem_nhds ?_ ?_
+    refine IsOpen.mem_nhds _ _
     · -- Porting note: mathlib3 `continuity` found `continuous_set_coe`
       apply isOpen_lt (continuous_set_coe _ _)
       continuity
@@ -248,7 +248,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   let k : (L : Type _) :=
     ⟨xs.inf' xs_nonempty fun x => (h x : C(X, ℝ)),
       Finset.inf'_mem _ inf_mem _ _ _ fun x _ => (h x).2⟩
-  refine ⟨k.1, ?_, k.2⟩
+  refine ⟨k.1, _, k.2⟩
   -- We just need to verify the bound, which we do pointwise.
   rw [dist_lt_iff pos]
   intro z
@@ -360,12 +360,12 @@ theorem Subalgebra.SeparatesPoints.rclike_to_real {A : StarSubalgebra 𝕜 C(X, 
   let F : C(X, 𝕜) := f - const _ (f x₂)
   -- Subtract the constant `f x₂` from `f`; this is still an element of the subalgebra
   have hFA : F ∈ A := by
-    refine A.sub_mem hfA (@Eq.subst _ (· ∈ A) _ _ ?_ <| A.smul_mem A.one_mem <| f x₂)
+    refine A.sub_mem hfA (@Eq.subst _ (· ∈ A) _ _ _ <| A.smul_mem A.one_mem <| f x₂)
     ext1
     simp only [coe_smul, coe_one, smul_apply, one_apply, Algebra.id.smul_eq_mul, mul_one,
       const_apply]
   -- Consider now the function `fun x ↦ |f x - f x₂| ^ 2`
-  refine ⟨_, ⟨⟨(‖F ·‖ ^ 2), by continuity⟩, ?_, rfl⟩, ?_⟩
+  refine ⟨_, ⟨⟨(‖F ·‖ ^ 2), by continuity⟩, _, rfl⟩, _⟩
   · -- This is also an element of the subalgebra, and takes only real values
     rw [SetLike.mem_coe, Subalgebra.mem_comap]
     convert (A.restrictScalars ℝ).mul_mem hFA (star_mem hFA : star F ∈ A)

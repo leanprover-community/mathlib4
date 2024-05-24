@@ -99,8 +99,8 @@ theorem iInf_iSup_eq [CompletelyDistribLattice α] {f : ∀ a, κ a → α} :
       simp_rw [iInf_subtype, iInf_range, iSup_subtype, iSup_range]
     _ = _ := CompletelyDistribLattice.iInf_iSup_eq _
     _ ≤ _ := iSup_le fun g => by
-      refine le_trans ?_ <| le_iSup _ fun a => Classical.choose (g ⟨_, a, rfl⟩).2
-      refine le_iInf fun a => le_trans (iInf_le _ ⟨range (f a), a, rfl⟩) ?_
+      refine le_trans _ <| le_iSup _ fun a => Classical.choose (g ⟨_, a, rfl⟩).2
+      refine le_iInf fun a => le_trans (iInf_le _ ⟨range (f a), a, rfl⟩) _
       rw [← Classical.choose_spec (g ⟨_, a, rfl⟩).2]
 
 theorem iSup_iInf_le [CompleteLattice α] {f : ∀ a, κ a → α} :
@@ -109,16 +109,16 @@ theorem iSup_iInf_le [CompleteLattice α] {f : ∀ a, κ a → α} :
 
 theorem iSup_iInf_eq [CompletelyDistribLattice α] {f : ∀ a, κ a → α} :
     (⨆ a, ⨅ b, f a b) = ⨅ g : ∀ a, κ a, ⨆ a, f a (g a) := by
-  refine le_antisymm iSup_iInf_le ?_
+  refine le_antisymm iSup_iInf_le _
   rw [iInf_iSup_eq]
-  refine iSup_le fun g => ?_
+  refine iSup_le fun g => _
   have ⟨a, ha⟩ : ∃ a, ∀ b, ∃ f, ∃ h : a = g f, h ▸ b = f (g f) := of_not_not fun h => by
     push_neg at h
     choose h hh using h
     have := hh _ h rfl
     contradiction
-  refine le_trans ?_ (le_iSup _ a)
-  refine le_iInf fun b => ?_
+  refine le_trans _ (le_iSup _ a)
+  refine le_iInf fun b => _
   obtain ⟨h, rfl, rfl⟩ := ha b
   exact iInf_le _ _
 
@@ -132,7 +132,7 @@ instance (priority := 100) CompletelyDistribLattice.toCompleteDistribLattice
         simp [h, iInf_subtype, ← sInf_eq_iInf]
       else
         have ⟨i, h⟩ : ∃ i, f i = true := by simpa using h
-        refine le_trans (iInf_le _ i) ?_
+        refine le_trans (iInf_le _ i) _
         simp [h]
   inf_sSup_le_iSup_inf a s := calc
     _ = ⨅ x : Bool, ⨆ y : cond x PUnit s, match x with | true => a | false => y.1 := by
@@ -140,8 +140,8 @@ instance (priority := 100) CompletelyDistribLattice.toCompleteDistribLattice
     _ = _ := iInf_iSup_eq
     _ ≤ _ := by
       simp_rw [iInf_bool_eq]
-      refine iSup_le fun g => le_trans ?_ (le_iSup _ (g false).1)
-      refine le_trans ?_ (le_iSup _ (g false).2)
+      refine iSup_le fun g => le_trans _ (le_iSup _ (g false).1)
+      refine le_trans _ (le_iSup _ (g false).2)
       rfl
 
 -- See note [lower instance priority]
@@ -158,10 +158,10 @@ instance (priority := 100) CompleteLinearOrder.toCompletelyDistribLattice [Compl
         lt_iSup_iff.1 <| lt_of_not_le fun h =>
             lt_irrefl x (lt_of_lt_of_le hl (le_trans (iInf_le _ a) h))
       choose f hf using this
-      refine le_trans ?_ (le_iSup _ f)
+      refine le_trans _ (le_iSup _ f)
       exact le_iInf fun a => le_of_lt (hf a)
     else
-      refine le_of_not_lt fun hrl : rhs < lhs => not_le_of_lt hrl ?_
+      refine le_of_not_lt fun hrl : rhs < lhs => not_le_of_lt hrl _
       replace h : ∀ x, x ≤ rhs ∨ lhs ≤ x := by
         simpa only [not_exists, not_and_or, not_or, not_lt] using h
       have : ∀ a, ∃ b, rhs < g a b := fun a =>
@@ -169,7 +169,7 @@ instance (priority := 100) CompleteLinearOrder.toCompletelyDistribLattice [Compl
       choose f hf using this
       have : ∀ a, lhs ≤ g a (f a) := fun a =>
         (h (g a (f a))).resolve_left (by simpa using hf a)
-      refine le_trans ?_ (le_iSup _ f)
+      refine le_trans _ (le_iSup _ f)
       exact le_iInf fun a => this _
 
 section Frame

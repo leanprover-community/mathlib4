@@ -655,7 +655,7 @@ def IsUnit [Monoid M] (a : M) : Prop :=
 /-- See `isUnit_iff_exists_and_exists` for a similar lemma with two existentials. -/
 @[to_additive "See `isAddUnit_iff_exists_and_exists` for a similar lemma with two existentials."]
 lemma isUnit_iff_exists [Monoid M] {x : M} : IsUnit x ↔ ∃ b, x * b = 1 ∧ b * x = 1 := by
-  refine ⟨fun ⟨u, hu⟩ => ?_, fun ⟨b, h1b, h2b⟩ => ⟨⟨x, b, h1b, h2b⟩, rfl⟩⟩
+  refine ⟨fun ⟨u, hu⟩ => _, fun ⟨b, h1b, h2b⟩ => ⟨⟨x, b, h1b, h2b⟩, rfl⟩⟩
   subst x
   exact ⟨u.inv, u.val_inv, u.inv_val⟩
 

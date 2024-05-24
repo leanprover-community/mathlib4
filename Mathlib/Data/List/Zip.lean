@@ -259,7 +259,7 @@ theorem reverse_revzip (l : List α) : reverse l.revzip = revzip l.reverse := by
 theorem revzip_swap (l : List α) : (revzip l).map Prod.swap = revzip l.reverse := by simp [revzip]
 #align list.revzip_swap List.revzip_swap
 
-theorem get?_zip_with (f : α → β → γ) (l₁ : List α) (l₂ : List β) (i : ℕ) :
+theorem get_zip_with (f : α → β → γ) (l₁ : List α) (l₂ : List β) (i : ℕ) :
     (zipWith f l₁ l₂).get? i = ((l₁.get? i).map f).bind fun g => (l₂.get? i).map g := by
   induction' l₁ with head tail generalizing l₂ i
   · rw [zipWith] <;> simp
@@ -267,36 +267,36 @@ theorem get?_zip_with (f : α → β → γ) (l₁ : List α) (l₂ : List β) (
     · simp only [zipWith, Seq.seq, Functor.map, get?, Option.map_none']
       cases (head :: tail).get? i <;> rfl
     · cases i <;> simp only [Option.map_some', get?, Option.some_bind', *]
-#align list.nth_zip_with List.get?_zip_with
+#align list.nth_zip_with List.get_zip_with
 
-theorem get?_zip_with_eq_some {α β γ} (f : α → β → γ) (l₁ : List α) (l₂ : List β) (z : γ) (i : ℕ) :
+theorem get_zip_with_eq_some {α β γ} (f : α → β → γ) (l₁ : List α) (l₂ : List β) (z : γ) (i : ℕ) :
     (zipWith f l₁ l₂).get? i = some z ↔
       ∃ x y, l₁.get? i = some x ∧ l₂.get? i = some y ∧ f x y = z := by
   induction l₁ generalizing l₂ i
   · simp [zipWith]
   · cases l₂ <;> simp only [zipWith, get?, exists_false, and_false_iff, false_and_iff]
     cases i <;> simp [*]
-#align list.nth_zip_with_eq_some List.get?_zip_with_eq_some
+#align list.nth_zip_with_eq_some List.get_zip_with_eq_some
 
-theorem get?_zip_eq_some (l₁ : List α) (l₂ : List β) (z : α × β) (i : ℕ) :
+theorem get_zip_eq_some (l₁ : List α) (l₂ : List β) (z : α × β) (i : ℕ) :
     (zip l₁ l₂).get? i = some z ↔ l₁.get? i = some z.1 ∧ l₂.get? i = some z.2 := by
   cases z
-  rw [zip, get?_zip_with_eq_some]; constructor
+  rw [zip, get_zip_with_eq_some]; constructor
   · rintro ⟨x, y, h₀, h₁, h₂⟩
     simpa [h₀, h₁] using h₂
   · rintro ⟨h₀, h₁⟩
     exact ⟨_, _, h₀, h₁, rfl⟩
-#align list.nth_zip_eq_some List.get?_zip_eq_some
+#align list.nth_zip_eq_some List.get_zip_eq_some
 
 @[simp]
 theorem get_zipWith {f : α → β → γ} {l : List α} {l' : List β} {i : Fin (zipWith f l l').length} :
     (zipWith f l l').get i =
       f (l.get ⟨i, lt_length_left_of_zipWith i.isLt⟩)
         (l'.get ⟨i, lt_length_right_of_zipWith i.isLt⟩) := by
-  rw [← Option.some_inj, ← get?_eq_get, get?_zip_with_eq_some]
+  rw [← Option.some_inj, ← get_eq_get, get_zip_with_eq_some]
   exact
     ⟨l.get ⟨i, lt_length_left_of_zipWith i.isLt⟩, l'.get ⟨i, lt_length_right_of_zipWith i.isLt⟩,
-      by rw [get?_eq_get], by rw [get?_eq_get]; exact ⟨rfl, rfl⟩⟩
+      by rw [get_eq_get], by rw [get_eq_get]; exact ⟨rfl, rfl⟩⟩
 
 set_option linter.deprecated false in
 @[simp, deprecated get_zipWith (since := "2024-05-09")]

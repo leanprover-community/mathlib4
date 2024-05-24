@@ -136,7 +136,7 @@ theorem rfindOpt_dom {α} {f : ℕ → Option α} : (rfindOpt f).Dom ↔ ∃ n a
     have s := Nat.find_spec h'
     have fd : (rfind fun n => (f n).isSome).Dom :=
       ⟨Nat.find h', by simpa using s.symm, fun _ _ => trivial⟩
-    refine ⟨fd, ?_⟩
+    refine ⟨fd, _⟩
     have := rfind_spec (get_mem fd)
     simpa using this⟩
 #align nat.rfind_opt_dom Nat.rfindOpt_dom
@@ -180,13 +180,13 @@ theorem of_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) : Partrec f := by
   | left => exact left
   | right => exact right
   | pair _ _ pf pg =>
-    refine (pf.pair pg).of_eq_tot fun n => ?_
+    refine (pf.pair pg).of_eq_tot fun n => _
     simp [Seq.seq]
   | comp _ _ pf pg =>
-    refine (pf.comp pg).of_eq_tot fun n => ?_
+    refine (pf.comp pg).of_eq_tot fun n => _
     simp
   | prec _ _ pf pg =>
-    refine (pf.prec pg).of_eq_tot fun n => ?_
+    refine (pf.prec pg).of_eq_tot fun n => _
     simp only [unpaired, PFun.coe_val, bind_eq_bind]
     induction n.unpair.2 with
     | zero => simp
@@ -569,7 +569,7 @@ theorem rfind {p : α → ℕ →. Bool} (hp : Partrec₂ p) : Partrec fun a => 
     cases' e : decode (α := α) n with a <;> simp [e, Nat.rfind_zero_none, map_id']
     congr; funext n
     simp only [map_map, Function.comp]
-    refine map_id' (fun b => ?_) _
+    refine map_id' (fun b => _) _
     cases b <;> rfl
 #align partrec.rfind Partrec.rfind
 
@@ -582,7 +582,7 @@ theorem nat_casesOn_right {f : α → ℕ} {g : α → σ} {h : α → ℕ →. 
     (hg : Computable g) (hh : Partrec₂ h) : Partrec fun a => (f a).casesOn (some (g a)) (h a) :=
   (nat_rec hf hg (hh.comp fst (pred.comp <| hf.comp fst)).to₂).of_eq fun a => by
     simp; cases' f a with n <;> simp
-    refine ext fun b => ⟨fun H => ?_, fun H => ?_⟩
+    refine ext fun b => ⟨fun H => _, fun H => _⟩
     · rcases mem_bind_iff.1 H with ⟨c, _, h₂⟩
       exact h₂
     · have : ∀ m, (Nat.rec (motive := fun _ => Part σ)
@@ -651,7 +651,7 @@ theorem bind_decode_iff {f : α → β → Option σ} :
         (h := fun (a : α × ℕ) (n : ℕ) ↦ map (fun b ↦ f a.1 b) (Part.ofOption (decode n)))
         (Primrec.encdec.to_comp.comp snd) (const Option.none)
         ((ofOption (Computable.decode.comp snd)).map (hf.comp (fst.comp <| fst.comp fst) snd).to₂)
-    refine this.of_eq fun a => ?_
+    refine this.of_eq fun a => _
     simp; cases decode (α := β) a.2 <;> simp [encodek]⟩
 #align computable.bind_decode_iff Computable.bind_decode_iff
 
@@ -725,7 +725,7 @@ theorem nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ
   suffices Computable₂ fun a n => (List.range n).map (f a) from
     option_some_iff.1 <|
       (list_get?.comp (this.comp fst (succ.comp snd)) snd).to₂.of_eq fun a => by
-        simp [List.get?_range (Nat.lt_succ_self a.2)]
+        simp [List.get_range (Nat.lt_succ_self a.2)]
   option_some_iff.1 <|
     (nat_rec snd (const (Option.some []))
           (to₂ <|
@@ -815,7 +815,7 @@ theorem fix_aux {α σ} (f : α →. Sum σ α) (a : α) (b : σ) :
         ((∃ b' : σ, Sum.inl b' ∈ F a n) ∧ ∀ {m : ℕ}, m < n → ∃ b : α, Sum.inr b ∈ F a m) ∧
           Sum.inl b ∈ F a n) ↔
       b ∈ PFun.fix f a := by
-  intro F; refine ⟨fun h => ?_, fun h => ?_⟩
+  intro F; refine ⟨fun h => _, fun h => _⟩
   · rcases h with ⟨n, ⟨_x, h₁⟩, h₂⟩
     have : ∀ m a', Sum.inr a' ∈ F a m → b ∈ PFun.fix f a' → b ∈ PFun.fix f a := by
       intro m a' am ba
@@ -836,12 +836,12 @@ theorem fix_aux {α σ} (f : α →. Sum σ α) (a : α) (b : σ) :
     apply @PFun.fixInduction _ _ _ _ _ _ h₁
     intro a₂ h₂ IH k hk
     rcases PFun.mem_fix_iff.1 h₂ with (h₂ | ⟨a₃, am₃, _⟩)
-    · refine ⟨k.succ, ?_, fun m mk km => ⟨a₂, ?_⟩⟩
+    · refine ⟨k.succ, _, fun m mk km => ⟨a₂, _⟩⟩
       · simp [F]
         exact Or.inr ⟨_, hk, h₂⟩
       · rwa [le_antisymm (Nat.le_of_lt_succ mk) km]
     · rcases IH _ am₃ k.succ (by simp [F]; exact ⟨_, hk, am₃⟩) with ⟨n, hn₁, hn₂⟩
-      refine ⟨n, hn₁, fun m mn km => ?_⟩
+      refine ⟨n, hn₁, fun m mn km => _⟩
       cases' km.lt_or_eq_dec with km km
       · exact hn₂ _ mn km
       · exact km ▸ ⟨_, hk⟩

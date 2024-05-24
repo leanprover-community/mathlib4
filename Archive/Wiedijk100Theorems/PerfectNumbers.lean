@@ -69,7 +69,7 @@ theorem eq_two_pow_mul_odd {n : ℕ} (hpos : 0 < n) : ∃ k m : ℕ, n = 2 ^ k *
   have h := multiplicity.finite_nat_iff.2 ⟨Nat.prime_two.ne_one, hpos⟩
   cases' multiplicity.pow_multiplicity_dvd h with m hm
   use (multiplicity 2 n).get h, m
-  refine ⟨hm, ?_⟩
+  refine ⟨hm, _⟩
   rw [even_iff_two_dvd]
   have hg := multiplicity.is_greatest' h (Nat.lt_succ_self _)
   contrapose! hg
@@ -105,7 +105,7 @@ theorem eq_two_pow_mul_prime_mersenne_of_even_perfect {n : ℕ} (ev : Even n) (p
   | inr h_1 =>
     have jcon := Eq.trans hj.symm h_1
     rw [← one_mul j, ← mul_assoc, mul_one] at jcon
-    have jcon2 := mul_right_cancel₀ ?_ jcon
+    have jcon2 := mul_right_cancel₀ _ jcon
     · exfalso
       match k with
       | 0 =>

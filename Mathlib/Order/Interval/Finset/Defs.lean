@@ -86,7 +86,7 @@ lemma exists_min_greater [LinearOrder α] [LocallyFiniteOrder α] {x ub : α} (h
   · exact (Finset.mem_Ioc.mp <| Finset.min'_mem _ h).1
   rintro y hxy
   obtain hy | hy := le_total y ub
-  · refine Finset.min'_le (Ioc x ub) y ?_
+  · refine Finset.min'_le (Ioc x ub) y _
     simp [*] at *
   · exact (Finset.min'_le _ _ (Finset.mem_Ioc.2 ⟨hx, le_rfl⟩)).trans hy
 ```
@@ -1157,28 +1157,28 @@ variable (hp : ∀ ⦃a b x⦄, a ≤ x → x ≤ b → p a → p b → p x)
 
 theorem map_subtype_embedding_Icc : (Icc a b).map (Embedding.subtype p) = (Icc a b : Finset α) := by
   rw [subtype_Icc_eq]
-  refine Finset.subtype_map_of_mem fun x hx => ?_
+  refine Finset.subtype_map_of_mem fun x hx => _
   rw [mem_Icc] at hx
   exact hp hx.1 hx.2 a.prop b.prop
 #align finset.map_subtype_embedding_Icc Finset.map_subtype_embedding_Icc
 
 theorem map_subtype_embedding_Ico : (Ico a b).map (Embedding.subtype p) = (Ico a b : Finset α) := by
   rw [subtype_Ico_eq]
-  refine Finset.subtype_map_of_mem fun x hx => ?_
+  refine Finset.subtype_map_of_mem fun x hx => _
   rw [mem_Ico] at hx
   exact hp hx.1 hx.2.le a.prop b.prop
 #align finset.map_subtype_embedding_Ico Finset.map_subtype_embedding_Ico
 
 theorem map_subtype_embedding_Ioc : (Ioc a b).map (Embedding.subtype p) = (Ioc a b : Finset α) := by
   rw [subtype_Ioc_eq]
-  refine Finset.subtype_map_of_mem fun x hx => ?_
+  refine Finset.subtype_map_of_mem fun x hx => _
   rw [mem_Ioc] at hx
   exact hp hx.1.le hx.2 a.prop b.prop
 #align finset.map_subtype_embedding_Ioc Finset.map_subtype_embedding_Ioc
 
 theorem map_subtype_embedding_Ioo : (Ioo a b).map (Embedding.subtype p) = (Ioo a b : Finset α) := by
   rw [subtype_Ioo_eq]
-  refine Finset.subtype_map_of_mem fun x hx => ?_
+  refine Finset.subtype_map_of_mem fun x hx => _
   rw [mem_Ioo] at hx
   exact hp hx.1.le hx.2.le a.prop b.prop
 #align finset.map_subtype_embedding_Ioo Finset.map_subtype_embedding_Ioo

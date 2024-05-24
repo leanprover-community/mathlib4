@@ -189,14 +189,14 @@ theorem _root_.lipschitzWith_min : LipschitzWith 1 fun p : ℝ × ℝ => min p.1
 #align lipschitz_with_min lipschitzWith_min
 
 lemma _root_.Real.lipschitzWith_toNNReal : LipschitzWith 1 Real.toNNReal := by
-  refine lipschitzWith_iff_dist_le_mul.mpr (fun x y ↦ ?_)
+  refine lipschitzWith_iff_dist_le_mul.mpr (fun x y ↦ _)
   simpa only [ge_iff_le, NNReal.coe_one, dist_prod_same_right, one_mul, Real.dist_eq] using
     lipschitzWith_iff_dist_le_mul.mp lipschitzWith_max (x, 0) (y, 0)
 
 lemma cauchySeq_comp (hf : LipschitzWith K f) {u : ℕ → α} (hu : CauchySeq u) :
     CauchySeq (f ∘ u) := by
   rcases cauchySeq_iff_le_tendsto_0.1 hu with ⟨b, b_nonneg, hb, blim⟩
-  refine cauchySeq_iff_le_tendsto_0.2 ⟨fun n ↦ K * b n, ?_, ?_, ?_⟩
+  refine cauchySeq_iff_le_tendsto_0.2 ⟨fun n ↦ K * b n, _, _, _⟩
   · exact fun n ↦ mul_nonneg (by positivity) (b_nonneg n)
   · exact fun n m N hn hm ↦ hf.dist_le_mul_of_le (hb n m N hn hm)
   · rw [← mul_zero (K : ℝ)]
@@ -319,7 +319,7 @@ lemma cauchySeq_comp (hf : LipschitzOnWith K f s)
     {u : ℕ → α} (hu : CauchySeq u) (h'u : range u ⊆ s) :
     CauchySeq (f ∘ u) := by
   rcases cauchySeq_iff_le_tendsto_0.1 hu with ⟨b, b_nonneg, hb, blim⟩
-  refine cauchySeq_iff_le_tendsto_0.2 ⟨fun n ↦ K * b n, ?_, ?_, ?_⟩
+  refine cauchySeq_iff_le_tendsto_0.2 ⟨fun n ↦ K * b n, _, _, _⟩
   · exact fun n ↦ mul_nonneg (by positivity) (b_nonneg n)
   · intro n m N hn hm
     have A n : u n ∈ s := h'u (mem_range_self _)
@@ -372,9 +372,9 @@ theorem continuousAt_of_locally_lipschitz {x : α} {r : ℝ} (hr : 0 < r) (K : �
     (h : ∀ y, dist y x < r → dist (f y) (f x) ≤ K * dist y x) : ContinuousAt f x := by
   -- We use `h` to squeeze `dist (f y) (f x)` between `0` and `K * dist y x`
   refine tendsto_iff_dist_tendsto_zero.2 (squeeze_zero' (eventually_of_forall fun _ => dist_nonneg)
-    (mem_of_superset (ball_mem_nhds _ hr) h) ?_)
+    (mem_of_superset (ball_mem_nhds _ hr) h) _)
   -- Then show that `K * dist y x` tends to zero as `y → x`
-  refine (continuous_const.mul (continuous_id.dist continuous_const)).tendsto' _ _ ?_
+  refine (continuous_const.mul (continuous_id.dist continuous_const)).tendsto' _ _ _
   simp
 #align continuous_at_of_locally_lipschitz continuousAt_of_locally_lipschitz
 
@@ -392,7 +392,7 @@ theorem LipschitzOnWith.extend_real {f : α → ℝ} {s : Set α} {K : ℝ≥0} 
   let g := fun y : α => iInf fun x : s => f x + K * dist y x
   have B : ∀ y : α, BddBelow (range fun x : s => f x + K * dist y x) := fun y => by
     rcases hs with ⟨z, hz⟩
-    refine ⟨f z - K * dist y z, ?_⟩
+    refine ⟨f z - K * dist y z, _⟩
     rintro w ⟨t, rfl⟩
     dsimp
     rw [sub_le_iff_le_add, add_assoc, ← mul_add, add_comm (dist y t)]
@@ -400,11 +400,11 @@ theorem LipschitzOnWith.extend_real {f : α → ℝ} {s : Set α} {K : ℝ≥0} 
       f z ≤ f t + K * dist z t := hf.le_add_mul hz t.2
       _ ≤ f t + K * (dist y z + dist y t) := by gcongr; apply dist_triangle_left
   have E : EqOn f g s := fun x hx => by
-    refine le_antisymm (le_ciInf fun y => hf.le_add_mul hx y.2) ?_
+    refine le_antisymm (le_ciInf fun y => hf.le_add_mul hx y.2) _
     simpa only [add_zero, Subtype.coe_mk, mul_zero, dist_self] using ciInf_le (B x) ⟨x, hx⟩
-  refine ⟨g, LipschitzWith.of_le_add_mul K fun x y => ?_, E⟩
+  refine ⟨g, LipschitzWith.of_le_add_mul K fun x y => _, E⟩
   rw [← sub_le_iff_le_add]
-  refine le_ciInf fun z => ?_
+  refine le_ciInf fun z => _
   rw [sub_le_iff_le_add]
   calc
     g x ≤ f z + K * dist x z := ciInf_le (B x) _
@@ -425,7 +425,7 @@ theorem LipschitzOnWith.extend_pi [Fintype ι] {f : α → ι → ℝ} {s : Set 
         (dist_le_pi_dist _ _ i).trans (hf.dist_le_mul x hx y hy)
     exact this.extend_real
   choose g hg using this
-  refine ⟨fun x i => g i x, LipschitzWith.of_dist_le_mul fun x y => ?_, fun x hx ↦ ?_⟩
+  refine ⟨fun x i => g i x, LipschitzWith.of_dist_le_mul fun x y => _, fun x hx ↦ _⟩
   · exact (dist_pi_le_iff (mul_nonneg K.2 dist_nonneg)).2 fun i => (hg i).1.dist_le_mul x y
   · ext1 i
     exact (hg i).2 hx

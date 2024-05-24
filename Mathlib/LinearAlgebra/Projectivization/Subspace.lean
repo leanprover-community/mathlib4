@@ -135,7 +135,7 @@ instance instInfSet : InfSet (Subspace K V) :=
 instance : CompleteLattice (Subspace K V) :=
   { __ := completeLatticeOfInf (Subspace K V)
       (by
-        refine fun s => ⟨fun a ha x hx => hx _ ⟨a, ha, rfl⟩, fun a ha x hx E => ?_⟩
+        refine fun s => ⟨fun a ha x hx => hx _ ⟨a, ha, rfl⟩, fun a ha x hx E => _⟩
         rintro ⟨E, hE, rfl⟩
         exact ha hE hx)
     inf_le_left := fun A B _ hx => (@inf_le_left _ _ A B) hx
@@ -210,7 +210,7 @@ subspaces which contain the set. -/
 theorem span_eq_sInf {S : Set (ℙ K V)} : span S = sInf { W : Subspace K V| S ⊆ W } := by
   ext x
   simp_rw [mem_carrier_iff, mem_span x]
-  refine ⟨fun hx => ?_, fun hx W hW => ?_⟩
+  refine ⟨fun hx => _, fun hx W hW => _⟩
   · rintro W ⟨T, hT, rfl⟩
     exact hx T hT
   · exact (@sInf_le _ _ { W : Subspace K V | S ⊆ ↑W } W hW) hx

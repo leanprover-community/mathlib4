@@ -369,7 +369,7 @@ theorem IsImage.lift_ι {F : MonoFactorisation f} (hF : IsImage F) :
 -- and show that an `imageOf f` gives an initial object there
 -- (uniqueness of the lift comes for free).
 instance image.lift_mono (F' : MonoFactorisation f) : Mono (image.lift F') := by
-  refine @mono_of_mono _ _ _ _ _ _ F'.m ?_
+  refine @mono_of_mono _ _ _ _ _ _ F'.m _
   simpa using MonoFactorisation.m_mono _
 #align category_theory.limits.image.lift_mono CategoryTheory.Limits.image.lift_mono
 
@@ -554,7 +554,7 @@ theorem image.factorThruImage_preComp [HasImage g] [HasImage (f ≫ g)] :
 /-- `image.preComp f g` is a monomorphism.
 -/
 instance image.preComp_mono [HasImage g] [HasImage (f ≫ g)] : Mono (image.preComp f g) := by
-  refine @mono_of_mono _ _ _ _ _ _ (image.ι g) ?_
+  refine @mono_of_mono _ _ _ _ _ _ (image.ι g) _
   simp only [image.preComp_ι]
   infer_instance
 #align category_theory.limits.image.pre_comp_mono CategoryTheory.Limits.image.preComp_mono
@@ -581,7 +581,7 @@ variable [HasEqualizers C]
 -/
 instance image.preComp_epi_of_epi [HasImage g] [HasImage (f ≫ g)] [Epi f] :
     Epi (image.preComp f g) := by
-  apply @epi_of_epi_fac _ _ _ _ _ _ _ _ ?_ (image.factorThruImage_preComp _ _)
+  apply @epi_of_epi_fac _ _ _ _ _ _ _ _ _ (image.factorThruImage_preComp _ _)
   exact epi_comp _ _
 #align category_theory.limits.image.pre_comp_epi_of_epi CategoryTheory.Limits.image.preComp_epi_of_epi
 
@@ -620,7 +620,7 @@ instance hasImage_comp_iso [HasImage f] [IsIso g] : HasImage (f ≫ g) :=
         lift_fac := fun F' => by
           rw [← Category.comp_id (image.lift (MonoFactorisation.ofCompIso F') ≫ F'.m),
             ← IsIso.inv_hom_id g,← Category.assoc]
-          refine congrArg (· ≫ g) ?_
+          refine congrArg (· ≫ g) _
           have : (image.lift (MonoFactorisation.ofCompIso F') ≫ F'.m) ≫ inv g =
             image.lift (MonoFactorisation.ofCompIso F') ≫
             ((MonoFactorisation.ofCompIso F').m) := by

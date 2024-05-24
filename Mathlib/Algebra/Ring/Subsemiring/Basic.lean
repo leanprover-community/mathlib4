@@ -804,8 +804,8 @@ theorem subsemiringClosure_toAddSubmonoid :
 theorem subsemiringClosure_eq_closure : M.subsemiringClosure = Subsemiring.closure (M : Set R) := by
   ext
   refine
-    ⟨fun hx => ?_, fun hx =>
-      (Subsemiring.mem_closure.mp hx) M.subsemiringClosure fun s sM => ?_⟩
+    ⟨fun hx => _, fun hx =>
+      (Subsemiring.mem_closure.mp hx) M.subsemiringClosure fun s sM => _⟩
   <;> rintro - ⟨H1, rfl⟩
   <;> rintro - ⟨H2, rfl⟩
   · exact AddSubmonoid.mem_closure.mp hx H1.toAddSubmonoid H2
@@ -840,11 +840,11 @@ theorem mem_closure_iff {s : Set R} {x} :
 theorem closure_addSubmonoid_closure {s : Set R} :
     closure ↑(AddSubmonoid.closure s) = closure s := by
   ext x
-  refine ⟨fun hx => ?_, fun hx => closure_mono AddSubmonoid.subset_closure hx⟩
+  refine ⟨fun hx => _, fun hx => closure_mono AddSubmonoid.subset_closure hx⟩
   rintro - ⟨H, rfl⟩
   rintro - ⟨J, rfl⟩
-  refine (AddSubmonoid.mem_closure.mp (mem_closure_iff.mp hx)) H.toAddSubmonoid fun y hy => ?_
-  refine (Submonoid.mem_closure.mp hy) H.toSubmonoid fun z hz => ?_
+  refine (AddSubmonoid.mem_closure.mp (mem_closure_iff.mp hx)) H.toAddSubmonoid fun y hy => _
+  refine (Submonoid.mem_closure.mp hy) H.toSubmonoid fun z hz => _
   exact (AddSubmonoid.mem_closure.mp hz) H.toAddSubmonoid fun w hw => J hw
 #align subsemiring.closure_add_submonoid_closure Subsemiring.closure_addSubmonoid_closure
 
@@ -865,10 +865,10 @@ theorem closure_induction' {s : Set R} {p : ∀ x, x ∈ closure s → Prop}
     (add : ∀ x hx y hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
     (mul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
     {a : R} (ha : a ∈ closure s) : p a ha := by
-  refine Exists.elim ?_ fun (ha : a ∈ closure s) (hc : p a ha) => hc
+  refine Exists.elim _ fun (ha : a ∈ closure s) (hc : p a ha) => hc
   refine
     closure_induction ha (fun m hm => ⟨subset_closure hm, mem m hm⟩) ⟨zero_mem _, zero⟩
-      ⟨one_mem _, one⟩ ?_ ?_
+      ⟨one_mem _, one⟩ _ _
   · exact (fun x y hx hy => hx.elim fun hx' hx => hy.elim fun hy' hy =>
       ⟨add_mem hx' hy', add _ _ _ _ hx hy⟩)
   · exact (fun x y hx hy => hx.elim fun hx' hx => hy.elim fun hy' hy =>
@@ -1038,7 +1038,7 @@ def prodEquiv (s : Subsemiring R) (t : Subsemiring S) : s.prod t ≃+* s × t :=
 
 theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subsemiring R} (hS : Directed (· ≤ ·) S)
     {x : R} : (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
-  refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup S i hi⟩
+  refine ⟨_, fun ⟨i, hi⟩ ↦ le_iSup S i hi⟩
   let U : Subsemiring R :=
     Subsemiring.mk' (⋃ i, (S i : Set R))
       (⨆ i, (S i).toSubmonoid) (Submonoid.coe_iSup_of_directed hS)

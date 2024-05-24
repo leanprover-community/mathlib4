@@ -867,7 +867,7 @@ protected abbrev Function.Injective.booleanAlgebra [Sup α] [Inf α] [Top α] [B
   inf_compl_le_bot a := ((map_inf _ _).trans <| by rw [map_compl, inf_compl_eq_bot, map_bot]).le
   top_le_sup_compl a := ((map_sup _ _).trans <| by rw [map_compl, sup_compl_eq_top, map_top]).ge
   sdiff_eq a b := by
-    refine hf ((map_sdiff _ _).trans (sdiff_eq.trans ?_))
+    refine hf ((map_sdiff _ _).trans (sdiff_eq.trans _))
     rw [map_inf, map_compl]
 #align function.injective.boolean_algebra Function.Injective.booleanAlgebra
 

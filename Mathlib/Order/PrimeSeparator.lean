@@ -57,7 +57,7 @@ theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : S
   have chainub : ∀ c ⊆ S, IsChain (· ⊆ ·) c → c.Nonempty →  ∃ ub ∈ S, ∀ s ∈ c, s ⊆ ub := by
     intros c hcS hcC hcNe
     use sUnion c
-    refine ⟨?_, fun s hs ↦ le_sSup hs⟩
+    refine ⟨_, fun s hs ↦ le_sSup hs⟩
     simp only [le_eq_subset, mem_setOf_eq, disjoint_sUnion_right, S]
     let ⟨J, hJ⟩ := hcNe
     refine ⟨Order.isIdeal_sUnion_of_isChain (fun _ hJ ↦ (hcS hJ).1) hcC hcNe,
@@ -72,7 +72,7 @@ theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : S
   clear chainub IinS
 
   -- By construction, J contains I and is disjoint from F. It remains to prove that J is prime.
-  refine ⟨?_, ⟨IJ, JF⟩⟩
+  refine ⟨_, ⟨IJ, JF⟩⟩
 
   -- First note that J is proper: ⊤ ∈ F so ⊤ ∉ J because F and J are disjoint.
   have Jpr : IsProper J := isProper_of_not_mem (Set.disjoint_left.1 JF F.top_mem)

@@ -85,7 +85,7 @@ theorem strictMono_sym2 : StrictMono (Finset.sym2 : Finset α → _) :=
 theorem sym2_toFinset [DecidableEq α] (m : Multiset α) :
     m.toFinset.sym2 = m.sym2.toFinset := by
   ext z
-  refine z.ind fun x y ↦ ?_
+  refine z.ind fun x y ↦ _
   simp only [mk_mem_sym2_iff, Multiset.mem_toFinset, Multiset.mk_mem_sym2_iff]
 
 @[simp]
@@ -121,7 +121,7 @@ variable [DecidableEq α] {s t : Finset α} {a b : α}
 
 theorem sym2_eq_image : s.sym2 = (s ×ˢ s).image Sym2.mk := by
   ext z
-  refine z.ind fun x y ↦ ?_
+  refine z.ind fun x y ↦ _
   rw [mk_mem_sym2_iff, mem_image]
   constructor
   · intro h
@@ -189,10 +189,10 @@ theorem sym_succ : s.sym (n + 1) = s.sup fun a ↦ (s.sym n).image <| Sym.cons a
 @[simp]
 theorem mem_sym_iff {m : Sym α n} : m ∈ s.sym n ↔ ∀ a ∈ m, a ∈ s := by
   induction' n with n ih
-  · refine mem_singleton.trans ⟨?_, fun _ ↦ Sym.eq_nil_of_card_zero _⟩
+  · refine mem_singleton.trans ⟨_, fun _ ↦ Sym.eq_nil_of_card_zero _⟩
     rintro rfl
     exact fun a ha ↦ (Finset.not_mem_empty _ ha).elim
-  refine mem_sup.trans ⟨?_, fun h ↦ ?_⟩
+  refine mem_sup.trans ⟨_, fun h ↦ _⟩
   · rintro ⟨a, ha, he⟩ b hb
     rw [mem_image] at he
     obtain ⟨m, he, rfl⟩ := he
@@ -235,7 +235,7 @@ theorem eq_empty_of_sym_eq_empty (h : s.sym n = ∅) : s = ∅ := by
 theorem sym_eq_empty : s.sym n = ∅ ↔ n ≠ 0 ∧ s = ∅ := by
   cases n
   · exact iff_of_false (singleton_ne_empty _) fun h ↦ (h.1 rfl).elim
-  · refine ⟨fun h ↦ ⟨Nat.succ_ne_zero _, eq_empty_of_sym_eq_empty h⟩, ?_⟩
+  · refine ⟨fun h ↦ ⟨Nat.succ_ne_zero _, eq_empty_of_sym_eq_empty h⟩, _⟩
     rintro ⟨_, rfl⟩
     exact sym_empty _
 #align finset.sym_eq_empty Finset.sym_eq_empty
@@ -291,7 +291,7 @@ def symInsertEquiv (h : a ∉ s) : (insert a s).sym n ≃ Σi : Fin (n + 1), s.s
     · exact fun i ↦ Sym α (n - i)
     swap
     · exact Subtype.coe_injective
-    refine Eq.trans ?_ (Sym.filter_ne_fill a _ ?_)
+    refine Eq.trans _ (Sym.filter_ne_fill a _ _)
     exacts [rfl, h ∘ mem_sym_iff.1 hm a]
 #align finset.sym_insert_equiv Finset.symInsertEquiv
 

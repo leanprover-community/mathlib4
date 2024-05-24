@@ -43,7 +43,7 @@ theorem primorial_pos (n : ℕ) : 0 < n# :=
 #align primorial_pos primorial_pos
 
 theorem primorial_succ {n : ℕ} (hn1 : n ≠ 1) (hn : Odd n) : (n + 1)# = n# := by
-  refine prod_congr ?_ fun _ _ ↦ rfl
+  refine prod_congr _ fun _ _ ↦ rfl
   rw [range_succ, filter_insert, if_neg fun h ↦ odd_iff_not_even.mp hn _]
   exact fun h ↦ h.even_sub_one <| mt succ.inj hn1
 #align primorial_succ primorial_succ

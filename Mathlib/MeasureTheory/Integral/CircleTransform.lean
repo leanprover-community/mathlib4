@@ -140,7 +140,7 @@ theorem circleTransformDeriv_bound {R : ℝ} (hR : 0 < R) {z x : ℂ} {f : ℂ �
   let V : ℝ → ℂ → ℂ := fun θ w => circleTransformDeriv R z w (fun _ => 1) θ
   obtain ⟨X, -, HX2⟩ := (isCompact_sphere z R).exists_isMaxOn
     (NormedSpace.sphere_nonempty.2 hR.le) hf.norm
-  refine ⟨abs (V b a) * abs (f X), ε', hε', H.trans (ball_subset_ball hr.le), fun y v hv ↦ ?_⟩
+  refine ⟨abs (V b a) * abs (f X), ε', hε', H.trans (ball_subset_ball hr.le), fun y v hv ↦ _⟩
   obtain ⟨y1, hy1, hfun⟩ :=
     Periodic.exists_mem_Ico₀ (circleTransformDeriv_periodic R z v f) Real.two_pi_pos y
   have hy2 : y1 ∈ [[0, 2 * π]] := Icc_subset_uIcc <| Ico_subset_Icc_self hy1

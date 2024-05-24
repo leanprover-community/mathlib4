@@ -46,7 +46,7 @@ theorem measurable_kernel_prod_mk_left_of_finite {t : Set (α × β)} (ht : Meas
   -- Porting note: added motive
   refine MeasurableSpace.induction_on_inter
     (C := fun t => Measurable fun a => κ a (Prod.mk a ⁻¹' t))
-    generateFrom_prod.symm isPiSystem_prod ?_ ?_ ?_ ?_ ht
+    generateFrom_prod.symm isPiSystem_prod _ _ _ _ ht
   ·-- case `t = ∅`
     simp only [preimage_empty, measure_empty, measurable_const]
   · -- case of a box: `t = t₁ ×ˢ t₂` for measurable sets `t₁` and `t₂`
@@ -106,7 +106,7 @@ theorem measurable_kernel_prod_mk_left [IsSFiniteKernel κ] {t : Set (α × β)}
       ∑' n, kernel.seq κ n a (Prod.mk a ⁻¹' t) := fun a =>
     kernel.sum_apply' _ _ (measurable_prod_mk_left ht)
   simp_rw [this]
-  refine Measurable.ennreal_tsum fun n => ?_
+  refine Measurable.ennreal_tsum fun n => _
   exact measurable_kernel_prod_mk_left_of_finite ht inferInstance
 #align probability_theory.kernel.measurable_kernel_prod_mk_left ProbabilityTheory.kernel.measurable_kernel_prod_mk_left
 
@@ -115,7 +115,7 @@ theorem measurable_kernel_prod_mk_left' [IsSFiniteKernel η] {s : Set (β × γ)
   have : ∀ b, Prod.mk b ⁻¹' s = {c | ((a, b), c) ∈ {p : (α × β) × γ | (p.1.2, p.2) ∈ s}} := by
     intro b; rfl
   simp_rw [this]
-  refine (measurable_kernel_prod_mk_left ?_).comp measurable_prod_mk_left
+  refine (measurable_kernel_prod_mk_left _).comp measurable_prod_mk_left
   exact (measurable_fst.snd.prod_mk measurable_snd) hs
 #align probability_theory.kernel.measurable_kernel_prod_mk_left' ProbabilityTheory.kernel.measurable_kernel_prod_mk_left'
 
@@ -162,9 +162,9 @@ theorem _root_.Measurable.lintegral_kernel_prod_right {f : α → β → ℝ≥0
   simp_rw [this]
   -- Porting note: trouble finding the induction motive
   -- refine measurable_iSup fun n => SimpleFunc.induction _ _ (F n)
-  refine measurable_iSup fun n => ?_
+  refine measurable_iSup fun n => _
   refine SimpleFunc.induction
-    (P := fun f => Measurable (fun (a : α) => ∫⁻ (b : β), f (a, b) ∂κ a)) ?_ ?_ (F n)
+    (P := fun f => Measurable (fun (a : α) => ∫⁻ (b : β), f (a, b) ∂κ a)) _ _ (F n)
   · intro c t ht
     simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise, SimpleFunc.coe_const,
       SimpleFunc.coe_zero, Set.piecewise_eq_indicator]
@@ -185,7 +185,7 @@ theorem _root_.Measurable.lintegral_kernel_prod_right {f : α → β → ℝ≥0
 
 theorem _root_.Measurable.lintegral_kernel_prod_right' {f : α × β → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun a => ∫⁻ b, f (a, b) ∂κ a := by
-  refine Measurable.lintegral_kernel_prod_right ?_
+  refine Measurable.lintegral_kernel_prod_right _
   have : (uncurry fun (a : α) (b : β) => f (a, b)) = f := by
     ext x; rw [uncurry_apply_pair]
   rwa [this]
@@ -199,7 +199,7 @@ theorem _root_.Measurable.lintegral_kernel_prod_right'' {f : β × γ → ℝ≥
       ((fun x => ∫⁻ y, (fun u : (α × β) × γ => f (u.1.2, u.2)) (x, y) ∂η x) ∘ Prod.mk a)
   -- Porting note: specified `κ`, `f`.
   refine (Measurable.lintegral_kernel_prod_right' (κ := η)
-    (f := (fun u ↦ f (u.fst.snd, u.snd))) ?_).comp measurable_prod_mk_left
+    (f := (fun u ↦ f (u.fst.snd, u.snd))) _).comp measurable_prod_mk_left
   exact hf.comp (measurable_fst.snd.prod_mk measurable_snd)
 #align measurable.lintegral_kernel_prod_right'' Measurable.lintegral_kernel_prod_right''
 
@@ -233,7 +233,7 @@ theorem _root_.Measurable.lintegral_kernel {f : β → ℝ≥0∞} (hf : Measura
 theorem _root_.Measurable.set_lintegral_kernel {f : β → ℝ≥0∞} (hf : Measurable f) {s : Set β}
     (hs : MeasurableSet s) : Measurable fun a => ∫⁻ b in s, f b ∂κ a := by
   -- Porting note: was term mode proof (`Function.comp` reducibility)
-  refine Measurable.set_lintegral_kernel_prod_right ?_ hs
+  refine Measurable.set_lintegral_kernel_prod_right _ hs
   convert hf.comp measurable_snd
 #align measurable.set_lintegral_kernel Measurable.set_lintegral_kernel
 
@@ -270,13 +270,13 @@ theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
   let f' : ℕ → α → E := fun n =>
     {x | Integrable (f x) (κ x)}.indicator fun x => (s' n x).integral (κ x)
   have hf' : ∀ n, StronglyMeasurable (f' n) := by
-    intro n; refine StronglyMeasurable.indicator ?_ (measurableSet_kernel_integrable hf)
+    intro n; refine StronglyMeasurable.indicator _ (measurableSet_kernel_integrable hf)
     have : ∀ x, ((s' n x).range.filter fun x => x ≠ 0) ⊆ (s n).range := by
-      intro x; refine Finset.Subset.trans (Finset.filter_subset _ _) ?_; intro y
+      intro x; refine Finset.Subset.trans (Finset.filter_subset _ _) _; intro y
       simp_rw [SimpleFunc.mem_range]; rintro ⟨z, rfl⟩; exact ⟨(x, z), rfl⟩
     simp only [SimpleFunc.integral_eq_sum_of_subset (this _)]
-    refine Finset.stronglyMeasurable_sum _ fun x _ => ?_
-    refine (Measurable.ennreal_toReal ?_).stronglyMeasurable.smul_const _
+    refine Finset.stronglyMeasurable_sum _ fun x _ => _
+    refine (Measurable.ennreal_toReal _).stronglyMeasurable.smul_const _
     simp only [s', SimpleFunc.coe_comp, preimage_comp]
     apply kernel.measurable_kernel_prod_mk_left
     exact (s n).measurableSet_fiber x
@@ -291,7 +291,7 @@ theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
         mem_setOf_eq]
       refine
         tendsto_integral_of_dominated_convergence (fun y => ‖f x y‖ + ‖f x y‖)
-          (fun n => (s' n x).aestronglyMeasurable) (hfx.norm.add hfx.norm) ?_ ?_
+          (fun n => (s' n x).aestronglyMeasurable) (hfx.norm.add hfx.norm) _ _
       · -- Porting note: was
         -- exact fun n => eventually_of_forall fun y =>
         --   SimpleFunc.norm_approxOn_zero_le _ _ (x, y) n
@@ -299,7 +299,7 @@ theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
           SimpleFunc.norm_approxOn_zero_le hf.measurable (by simp) (x, y) n
       · -- Porting note:
         -- refine eventually_of_forall fun y => SimpleFunc.tendsto_approxOn _ _ _
-        refine eventually_of_forall fun y => SimpleFunc.tendsto_approxOn hf.measurable (by simp) ?_
+        refine eventually_of_forall fun y => SimpleFunc.tendsto_approxOn hf.measurable (by simp) _
         apply subset_closure
         simp [-uncurry_apply_pair]
     · simp [f', hfx, integral_undef]

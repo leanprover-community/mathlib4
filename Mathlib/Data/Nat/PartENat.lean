@@ -532,7 +532,7 @@ theorem add_one_le_of_lt {x y : PartENat} (h : x < y) : x + 1 ≤ y := by
 #align part_enat.add_one_le_of_lt PartENat.add_one_le_of_lt
 
 theorem add_one_le_iff_lt {x y : PartENat} (hx : x ≠ ⊤) : x + 1 ≤ y ↔ x < y := by
-  refine ⟨fun h => ?_, add_one_le_of_lt⟩
+  refine ⟨fun h => _, add_one_le_of_lt⟩
   rcases ne_top_iff.mp hx with ⟨m, rfl⟩
   induction' y using PartENat.casesOn with n
   · apply natCast_lt_top
@@ -545,7 +545,7 @@ theorem coe_succ_le_iff {n : ℕ} {e : PartENat} : ↑n.succ ≤ e ↔ ↑n < e 
 #align part_enat.coe_succ_le_succ_iff PartENat.coe_succ_le_iff
 
 theorem lt_add_one_iff_lt {x y : PartENat} (hx : x ≠ ⊤) : x < y + 1 ↔ x ≤ y := by
-  refine ⟨le_of_lt_add_one, fun h => ?_⟩
+  refine ⟨le_of_lt_add_one, fun h => _⟩
   rcases ne_top_iff.mp hx with ⟨m, rfl⟩
   induction' y using PartENat.casesOn with n
   · rw [top_add]
@@ -559,16 +559,16 @@ lemma lt_coe_succ_iff_le {x : PartENat} {n : ℕ} (hx : x ≠ ⊤) : x < n.succ 
 #align part_enat.lt_coe_succ_iff_le PartENat.lt_coe_succ_iff_le
 
 theorem add_eq_top_iff {a b : PartENat} : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ := by
-  refine PartENat.casesOn a ?_ ?_
-  <;> refine PartENat.casesOn b ?_ ?_
+  refine PartENat.casesOn a _ _
+  <;> refine PartENat.casesOn b _ _
   <;> simp [top_add, add_top]
   simp only [← Nat.cast_add, PartENat.natCast_ne_top, forall_const, not_false_eq_true]
 #align part_enat.add_eq_top_iff PartENat.add_eq_top_iff
 
 protected theorem add_right_cancel_iff {a b c : PartENat} (hc : c ≠ ⊤) : a + c = b + c ↔ a = b := by
   rcases ne_top_iff.1 hc with ⟨c, rfl⟩
-  refine PartENat.casesOn a ?_ ?_
-  <;> refine PartENat.casesOn b ?_ ?_
+  refine PartENat.casesOn a _ _
+  <;> refine PartENat.casesOn b _ _
   <;> simp [add_eq_top_iff, natCast_ne_top, @eq_comm _ (⊤ : PartENat), top_add]
   simp only [← Nat.cast_add, add_left_cancel_iff, PartENat.natCast_inj, add_comm, forall_const]
 #align part_enat.add_right_cancel_iff PartENat.add_right_cancel_iff
@@ -731,7 +731,7 @@ open scoped Classical
 
 @[simp]
 theorem toWithTop_add {x y : PartENat} : toWithTop (x + y) = toWithTop x + toWithTop y := by
-  refine PartENat.casesOn y ?_ ?_ <;> refine PartENat.casesOn x ?_ ?_
+  refine PartENat.casesOn y _ _ <;> refine PartENat.casesOn x _ _
   -- Porting note: was `simp [← Nat.cast_add, ← ENat.coe_add]`
   · simp only [add_top, toWithTop_top', _root_.add_top]
   · simp only [add_top, toWithTop_top', toWithTop_natCast', _root_.add_top, forall_const]
@@ -862,7 +862,7 @@ theorem lt_find (n : ℕ) (h : ∀ m ≤ n, ¬P m) : (n : PartENat) < find P := 
 #align part_enat.lt_find PartENat.lt_find
 
 theorem lt_find_iff (n : ℕ) : (n : PartENat) < find P ↔ ∀ m ≤ n, ¬P m := by
-  refine ⟨?_, lt_find P n⟩
+  refine ⟨_, lt_find P n⟩
   intro h m hm
   by_cases H : (find P).Dom
   · apply Nat.find_min H

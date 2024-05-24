@@ -146,7 +146,7 @@ section Terminal
 
 /-- The trivial ring is the (strict) terminal object of `CommRingCat`. -/
 def punitIsTerminal : IsTerminal (CommRingCat.of.{u} PUnit) := by
-  refine IsTerminal.ofUnique (h := fun X => ⟨⟨⟨⟨1, rfl⟩, fun _ _ => rfl⟩, ?_, ?_⟩, ?_⟩)
+  refine IsTerminal.ofUnique (h := fun X => ⟨⟨⟨⟨1, rfl⟩, fun _ _ => rfl⟩, _, _⟩, _⟩)
   · rfl
   · intros; dsimp
   · intros f; ext; rfl
@@ -156,7 +156,7 @@ set_option linter.uppercaseLean3 false in
 instance commRingCat_hasStrictTerminalObjects : HasStrictTerminalObjects CommRingCat.{u} := by
   apply hasStrictTerminalObjects_of_terminal_is_strict (CommRingCat.of PUnit)
   intro X f
-  refine ⟨⟨⟨1, rfl, fun _ _ => rfl⟩, by ext; rfl, ?_⟩⟩
+  refine ⟨⟨⟨1, rfl, fun _ _ => rfl⟩, by ext; rfl, _⟩⟩
   ext x
   have e : (0 : X) = 1 := by
     rw [← f.map_one, ← f.map_zero]
@@ -353,7 +353,7 @@ def pullbackConeIsLimit {A B C : CommRingCat.{u}} (f : A ⟶ C) (g : B ⟶ C) :
     ext x
     rfl
   · intro s m e₁ e₂
-    refine RingHom.ext fun (x : s.pt) => Subtype.ext ?_
+    refine RingHom.ext fun (x : s.pt) => Subtype.ext _
     change (m x).1 = (_, _)
     have eq1 := (congr_arg (fun f : s.pt →+* A => f x) e₁ : _)
     have eq2 := (congr_arg (fun f : s.pt →+* B => f x) e₂ : _)

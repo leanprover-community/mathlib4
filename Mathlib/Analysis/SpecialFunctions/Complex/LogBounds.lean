@@ -83,7 +83,7 @@ lemma hasDerivAt_logTaylor (n : ℕ) (z : ℂ) :
     rw [logTaylor_succ]
     simp only [cpow_natCast, Nat.cast_add, Nat.cast_one, Nat.odd_iff_not_even,
       Finset.sum_range_succ, (show (-1) ^ (n + 1 + 1) = (-1) ^ n by ring)]
-    refine HasDerivAt.add ih ?_
+    refine HasDerivAt.add ih _
     simp only [Nat.odd_iff_not_even, Int.cast_pow, Int.cast_neg, Int.cast_one, mul_div_assoc]
     have : HasDerivAt (fun x : ℂ ↦ (x ^ (n + 1) / (n + 1))) (z ^ n) z := by
       simp_rw [div_eq_mul_inv]
@@ -112,7 +112,7 @@ lemma norm_one_add_mul_inv_le {t : ℝ} (ht : t ∈ Set.Icc 0 1) {z : ℂ} (hz :
     ‖(1 + t * z)⁻¹‖ ≤ (1 - ‖z‖)⁻¹ := by
   rw [Set.mem_Icc] at ht
   rw [norm_inv, norm_eq_abs]
-  refine inv_le_inv_of_le (by linarith) ?_
+  refine inv_le_inv_of_le (by linarith) _
   calc 1 - ‖z‖
     _ ≤ 1 - t * ‖z‖ := by
       nlinarith [norm_nonneg z]
@@ -157,12 +157,12 @@ lemma norm_log_sub_logTaylor_le (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
   simp_rw [neg_pow (_ * z) n, mul_assoc, intervalIntegral.integral_const_mul, mul_pow,
     mul_comm _ (z ^ n), mul_assoc, intervalIntegral.integral_const_mul, norm_mul, norm_pow,
     norm_neg, norm_one, one_pow, one_mul, ← mul_assoc, ← pow_succ', mul_div_assoc]
-  refine mul_le_mul_of_nonneg_left ?_ (pow_nonneg (norm_nonneg z) (n + 1))
+  refine mul_le_mul_of_nonneg_left _ (pow_nonneg (norm_nonneg z) (n + 1))
   calc ‖∫ t in (0 : ℝ)..1, (t : ℂ) ^ n * (1 + t * z)⁻¹‖
     _ ≤ ∫ t in (0 : ℝ)..1, ‖(t : ℂ) ^ n * (1 + t * z)⁻¹‖ :=
         intervalIntegral.norm_integral_le_integral_norm zero_le_one
     _ = ∫ t in (0 : ℝ)..1, t ^ n * ‖(1 + t * z)⁻¹‖ := by
-        refine intervalIntegral.integral_congr <| fun t ht ↦ ?_
+        refine intervalIntegral.integral_congr <| fun t ht ↦ _
         rw [Set.uIcc_of_le zero_le_one, Set.mem_Icc] at ht
         simp_rw [norm_mul, norm_pow, norm_eq_abs, abs_of_nonneg ht.1]
     _ ≤ ∫ t in (0 : ℝ)..1, t ^ n * (1 - ‖z‖)⁻¹ :=
@@ -202,8 +202,8 @@ open Filter Asymptotics in
 open unit disk. -/
 lemma hasSum_taylorSeries_log {z : ℂ} (hz : ‖z‖ < 1) :
     HasSum (fun n : ℕ ↦ (-1) ^ (n + 1) * z ^ n / n) (log (1 + z)) := by
-  refine (hasSum_iff_tendsto_nat_of_summable_norm ?_).mpr ?_
-  · refine (summable_geometric_of_norm_lt_one hz).norm.of_nonneg_of_le (fun _ ↦ norm_nonneg _) ?_
+  refine (hasSum_iff_tendsto_nat_of_summable_norm _).mpr _
+  · refine (summable_geometric_of_norm_lt_one hz).norm.of_nonneg_of_le (fun _ ↦ norm_nonneg _) _
     intro n
     simp only [norm_div, norm_mul, norm_pow, norm_neg, norm_one, one_pow, one_mul, norm_nat]
     rcases n.eq_zero_or_pos with rfl | hn
@@ -214,7 +214,7 @@ lemma hasSum_taylorSeries_log {z : ℂ} (hz : ‖z‖ < 1) :
   · rw [← tendsto_sub_nhds_zero_iff]
     conv => enter [1, x]; rw [← div_one (_ - _), ← logTaylor]
     rw [← isLittleO_iff_tendsto fun _ h ↦ (one_ne_zero h).elim]
-    refine IsLittleO.trans_isBigO ?_ <| isBigO_const_one ℂ (1 : ℝ) atTop
+    refine IsLittleO.trans_isBigO _ <| isBigO_const_one ℂ (1 : ℝ) atTop
     have H : (fun n ↦ logTaylor n z - log (1 + z)) =O[atTop] (fun n : ℕ ↦ ‖z‖ ^ n) := by
       have (n : ℕ) : ‖logTaylor n z - log (1 + z)‖
           ≤ (max ‖log (1 + z)‖ (1 - ‖z‖)⁻¹) * ‖(‖z‖ ^ n)‖ := by
@@ -222,13 +222,13 @@ lemma hasSum_taylorSeries_log {z : ℂ} (hz : ‖z‖ < 1) :
         cases n with
         | zero => simp [logTaylor_zero]
         | succ n =>
-            refine (norm_log_sub_logTaylor_le n hz).trans ?_
+            refine (norm_log_sub_logTaylor_le n hz).trans _
             rw [mul_comm, ← div_one ((max _ _) * _)]
             gcongr
             · exact le_max_right ..
             · linarith
       exact (isBigOWith_of_le' atTop this).isBigO
-    refine IsBigO.trans_isLittleO H ?_
+    refine IsBigO.trans_isLittleO H _
     convert isLittleO_pow_pow_of_lt_left (norm_nonneg z) hz
     exact (one_pow _).symm
 
@@ -236,7 +236,7 @@ lemma hasSum_taylorSeries_log {z : ℂ} (hz : ‖z‖ < 1) :
 lemma hasSum_taylorSeries_neg_log {z : ℂ} (hz : ‖z‖ < 1) :
     HasSum (fun n : ℕ ↦ z ^ n / n) (-log (1 - z)) := by
   conv => enter [1, n]; rw [← neg_neg (z ^ n / n)]
-  refine HasSum.neg ?_
+  refine HasSum.neg _
   convert hasSum_taylorSeries_log (z := -z) (norm_neg z ▸ hz) using 2 with n
   rcases n.eq_zero_or_pos with rfl | hn
   · simp

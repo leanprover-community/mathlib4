@@ -31,12 +31,12 @@ theorem coherentTopology.mem_sieves_of_hasEffectiveEpiFamily (S : Sieve X) :
       EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) ) →
         (S ∈ GrothendieckTopology.sieves (coherentTopology C) X) := by
   intro ⟨α, _, Y, π, hπ⟩
-  refine Coverage.saturate_of_superset (coherentCoverage C) ?_
+  refine Coverage.saturate_of_superset (coherentCoverage C) _
     (Coverage.saturate.of X _ ⟨α, inferInstance, Y, π, rfl, hπ.1⟩)
   rw [Sieve.sets_iff_generate]
   apply Presieve.le_of_factorsThru_sieve (Presieve.ofArrows (fun i => Y i) π) S _
   intro W g f
-  refine ⟨W, 𝟙 W, ?_⟩
+  refine ⟨W, 𝟙 W, _⟩
   rcases f with ⟨i⟩
   exact ⟨π i, hπ.2 i, by simp⟩
 
@@ -92,7 +92,7 @@ theorem coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily (S : Sieve X) :
   · intro h
     induction' h with Y T hS Y Y R S _ _ a b
     · rcases hS with ⟨a, h, Y', π, h', _⟩
-      refine ⟨a, h, Y', π, inferInstance, fun a' ↦ ?_⟩
+      refine ⟨a, h, Y', π, inferInstance, fun a' ↦ _⟩
       rcases h' with ⟨rfl, _⟩
       exact ⟨Y' a', 𝟙 Y' a', π a', Presieve.ofArrows.mk a', by simp⟩
     · exact ⟨Unit, inferInstance, fun _ => Y, fun _ => (𝟙 Y), inferInstance, by simp⟩

@@ -69,9 +69,9 @@ variable (G : D ⥤ C)
 theorem solutionSetCondition_of_isRightAdjoint [G.IsRightAdjoint] : SolutionSetCondition G := by
   intro A
   refine
-    ⟨PUnit, fun _ => G.leftAdjoint.obj A, fun _ => (Adjunction.ofIsRightAdjoint G).unit.app A, ?_⟩
+    ⟨PUnit, fun _ => G.leftAdjoint.obj A, fun _ => (Adjunction.ofIsRightAdjoint G).unit.app A, _⟩
   intro B h
-  refine ⟨PUnit.unit, ((Adjunction.ofIsRightAdjoint G).homEquiv _ _).symm h, ?_⟩
+  refine ⟨PUnit.unit, ((Adjunction.ofIsRightAdjoint G).homEquiv _ _).symm h, _⟩
   rw [← Adjunction.homEquiv_unit, Equiv.apply_symm_apply]
 #align category_theory.solution_set_condition_of_is_right_adjoint CategoryTheory.solutionSetCondition_of_isRightAdjoint
 
@@ -80,7 +80,7 @@ if `G` satisfies the solution set condition then `G` is a right adjoint.
 -/
 lemma isRightAdjoint_of_preservesLimits_of_solutionSetCondition [HasLimits D]
     [PreservesLimits G] (hG : SolutionSetCondition G) : G.IsRightAdjoint := by
-  refine @isRightAdjointOfStructuredArrowInitials _ _ _ _ G ?_
+  refine @isRightAdjointOfStructuredArrowInitials _ _ _ _ G _
   intro A
   specialize hG A
   choose ι B f g using hG

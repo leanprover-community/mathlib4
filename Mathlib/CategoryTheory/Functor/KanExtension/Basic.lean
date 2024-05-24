@@ -113,7 +113,7 @@ lemma isRightKanExtension_iff_of_iso {F' F'' : D ⥤ H} (e : F' ≅ F'') {L : C 
   · intro
     exact isRightKanExtension_of_iso e α α' comm
   · intro
-    refine isRightKanExtension_of_iso e.symm α' α ?_
+    refine isRightKanExtension_of_iso e.symm α' α _
     rw [← comm, ← whiskerLeft_comp_assoc, Iso.symm_hom, e.inv_hom_id, whiskerLeft_id', id_comp]
 
 end
@@ -178,7 +178,7 @@ lemma isLeftKanExtension_iff_of_iso {F' F'' : D ⥤ H} (e : F' ≅ F'')
   · intro
     exact isLeftKanExtension_of_iso e α α' comm
   · intro
-    refine isLeftKanExtension_of_iso e.symm α' α ?_
+    refine isLeftKanExtension_of_iso e.symm α' α _
     rw [← comm, assoc, ← whiskerLeft_comp, Iso.symm_hom, e.hom_inv_id, whiskerLeft_id', comp_id]
 
 /-- Two left Kan extensions are (canonically) isomorphic. -/

@@ -109,8 +109,8 @@ theorem restrictStalkIso_inv_eq_ofRestrict {U : TopCat} (X : PresheafedSpace.{_,
     {f : U ⟶ (X : TopCat.{v})} (h : OpenEmbedding f) (x : U) :
     (X.restrictStalkIso h x).inv = stalkMap (X.ofRestrict h) x := by
   -- We can't use `ext` here due to https://github.com/leanprover/std4/pull/159
-  refine colimit.hom_ext fun V => ?_
-  induction V with | h V => ?_
+  refine colimit.hom_ext fun V => _
+  induction V with | h V => _
   let i : (h.isOpenMap.functorNhds x).obj ((OpenNhds.map f x).obj V) ⟶ V :=
     homOfLE (Set.image_preimage_subset f _)
   erw [Iso.comp_inv_eq, colimit.ι_map_assoc, colimit.ι_map_assoc, colimit.ι_pre]
@@ -153,8 +153,8 @@ theorem comp {X Y Z : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (β : Y ⟶ Z)
         (stalkMap α x : Y.stalk (α.base x) ⟶ X.stalk x) := by
   dsimp [stalkMap, stalkFunctor, stalkPushforward]
   -- We can't use `ext` here due to https://github.com/leanprover/std4/pull/159
-  refine colimit.hom_ext fun U => ?_
-  induction U with | h U => ?_
+  refine colimit.hom_ext fun U => _
+  induction U with | h U => _
   cases U
   simp only [whiskeringLeft_obj_obj, comp_obj, op_obj, unop_op, OpenNhds.inclusion_obj,
     ι_colimMap_assoc, pushforwardObj_obj, Opens.map_comp_obj, whiskerLeft_app, comp_c_app,
@@ -234,8 +234,8 @@ theorem stalkSpecializes_stalkMap {X Y : PresheafedSpace.{_, _, v} C}
   -- I had to uglify this
   dsimp [stalkSpecializes, stalkMap, stalkFunctor, stalkPushforward]
   -- We can't use `ext` here due to https://github.com/leanprover/std4/pull/159
-  refine colimit.hom_ext fun j => ?_
-  induction j with | h j => ?_
+  refine colimit.hom_ext fun j => _
+  induction j with | h j => _
   dsimp
   simp only [colimit.ι_desc_assoc, comp_obj, op_obj, unop_op, ι_colimMap_assoc, colimit.map_desc,
     OpenNhds.inclusion_obj, pushforwardObj_obj, whiskerLeft_app, OpenNhds.map_obj, whiskerRight_app,

@@ -78,7 +78,7 @@ def ofComposition (n : ℕ) (c : Composition n) : Partition n where
 
 theorem ofComposition_surj {n : ℕ} : Function.Surjective (ofComposition n) := by
   rintro ⟨b, hb₁, hb₂⟩
-  induction b using Quotient.inductionOn with | _ b => ?_
+  induction b using Quotient.inductionOn with | _ b => _
   exact ⟨⟨b, hb₁, by simpa using hb₂⟩, Partition.ext _ _ rfl⟩
 #align nat.partition.of_composition_surj Nat.Partition.ofComposition_surj
 

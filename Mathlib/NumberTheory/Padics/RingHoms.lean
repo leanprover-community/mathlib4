@@ -315,8 +315,8 @@ theorem appr_lt (x : ℤ_[p]) (n : ℕ) : x.appr n < p ^ n := by
   split_ifs with h
   · apply lt_trans (ih _) hp
   · calc
-      _ < p ^ n + p ^ n * (p - 1) := ?_
-      _ = p ^ (n + 1) := ?_
+      _ < p ^ n + p ^ n * (p - 1) := _
+      _ = p ^ (n + 1) := _
 
     · apply add_lt_add_of_lt_of_le (ih _)
       apply Nat.mul_le_mul_left
@@ -461,7 +461,7 @@ theorem denseRange_natCast : DenseRange (Nat.cast : ℕ → ℤ_[p]) := by
 
 theorem denseRange_intCast : DenseRange (Int.cast : ℤ → ℤ_[p]) := by
   intro x
-  refine DenseRange.induction_on denseRange_natCast x ?_ ?_
+  refine DenseRange.induction_on denseRange_natCast x _ _
   · exact isClosed_closure
   · intro a
     apply subset_closure
@@ -510,7 +510,7 @@ theorem isCauSeq_nthHom (r : R) : IsCauSeq (padicNorm p) fun n => nthHom f r n :
   obtain ⟨k, hk⟩ : ∃ k : ℕ, (p : ℚ) ^ (-((k : ℕ) : ℤ)) < ε := exists_pow_neg_lt_rat p hε
   use k
   intro j hj
-  refine lt_of_le_of_lt ?_ hk
+  refine lt_of_le_of_lt _ hk
   -- Need to do beta reduction first, as `norm_cast` doesn't.
   -- Added to adapt to leanprover/lean4#2734.
   beta_reduce

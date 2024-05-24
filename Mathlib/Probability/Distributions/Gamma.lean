@@ -113,7 +113,7 @@ lemma lintegral_gammaPDF_eq_one {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
   · rw [EventuallyLE, ae_restrict_iff' measurableSet_Ici]
     exact ae_of_all _ (fun x (hx : 0 ≤ x) ↦ by positivity)
   · apply (measurable_gammaPDFReal a r).aestronglyMeasurable.congr
-    refine (ae_restrict_iff' measurableSet_Ici).mpr <| ae_of_all _ fun x (hx : 0 ≤ x) ↦ ?_
+    refine (ae_restrict_iff' measurableSet_Ici).mpr <| ae_of_all _ fun x (hx : 0 ≤ x) ↦ _
     simp_rw [gammaPDFReal, eq_true_intro hx, ite_true]
 
 end GammaPDF
@@ -140,7 +140,7 @@ lemma gammaCDFReal_eq_integral {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
     gammaCDFReal a r x = ∫ x in Iic x, gammaPDFReal a r x := by
   have : IsProbabilityMeasure (gammaMeasure a r) := isProbabilityMeasureGamma ha hr
   rw [gammaCDFReal, cdf_eq_toReal, gammaMeasure, withDensity_apply _ measurableSet_Iic]
-  refine (integral_eq_lintegral_of_nonneg_ae ?_ ?_).symm
+  refine (integral_eq_lintegral_of_nonneg_ae _ _).symm
   · exact ae_of_all _ fun b ↦ by simp only [Pi.zero_apply, gammaPDFReal_nonneg ha hr]
   · exact (measurable_gammaPDFReal a r).aestronglyMeasurable.restrict
 

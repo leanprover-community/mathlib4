@@ -66,14 +66,14 @@ lemma closedEmbedding_starAlgHom {a : A} {φ : C(spectrum S a, S) →⋆ₐ[S] A
   simp only [RingHom.coe_coe, StarAlgHom.coe_toAlgHom, StarAlgHom.comp_apply,
     ContinuousMap.compStarAlgHom'_apply, ContinuousMap.compStarAlgHom_apply]
   have : CompactSpace (spectrum R a) := h.compactSpace
-  apply Isometry.closedEmbedding ?_
+  apply Isometry.closedEmbedding _
   simp only [isometry_iff_dist_eq]
-  refine fun g₁ g₂ ↦ le_antisymm ?_ ?_
-  all_goals refine (ContinuousMap.dist_le dist_nonneg).mpr fun x ↦ ?_
+  refine fun g₁ g₂ ↦ le_antisymm _ _
+  all_goals refine (ContinuousMap.dist_le dist_nonneg).mpr fun x ↦ _
   · simpa [h_isom.dist_eq] using ContinuousMap.dist_apply_le_dist _
   · obtain ⟨y, y_mem, hy⟩ : (x : R) ∈ f '' spectrum S a := h.image.symm ▸ x.2
     lift y to spectrum S a using y_mem
-    refine le_of_eq_of_le ?_ <| ContinuousMap.dist_apply_le_dist y
+    refine le_of_eq_of_le _ <| ContinuousMap.dist_apply_le_dist y
     simp only [ContinuousMap.coe_mk, ContinuousMap.comp_apply, StarAlgHom.ofId_apply]
     rw [h_isom.dist_eq]
     congr <;> exact Subtype.ext hy.symm
@@ -113,15 +113,15 @@ protected theorem cfc (f : C(S, R)) (h_isom : Isometry (algebraMap R S))
         exact ⟨_, this⟩
       · rintro ⟨y, rfl⟩
         rw [Set.mem_preimage]
-        refine ⟨⟨algebraMap R S y, spectrum.algebraMap_mem S y.prop⟩, ?_⟩
+        refine ⟨⟨algebraMap R S y, spectrum.algebraMap_mem S y.prop⟩, _⟩
         simp only [ContinuousMap.coe_mk, ContinuousMap.comp_apply, StarAlgHom.ofId_apply]
         congr
         exact Subtype.ext (((h a).mp ha).2.left_inv y)
     case predicate_hom =>
       intro g
       rw [h]
-      refine ⟨cfcHom_predicate _ _, ?_⟩
-      refine .of_rightInvOn (((h a).mp ha).2.left_inv) fun s hs ↦ ?_
+      refine ⟨cfcHom_predicate _ _, _⟩
+      refine .of_rightInvOn (((h a).mp ha).2.left_inv) fun s hs ↦ _
       rw [SpectrumRestricts.starAlgHom_apply, cfcHom_map_spectrum] at hs
       obtain ⟨r, rfl⟩ := hs
       simp [((h a).mp ha).2.left_inv _]
@@ -141,11 +141,11 @@ lemma cfc_eq_restrict (f : C(S, R)) (h_isom : Isometry (algebraMap R S)) {a : A}
   by_cases hg : ContinuousOn g (spectrum R a)
   · rw [cfc_apply g a, cfcHom_eq_restrict f h_isom hpa hqa h, SpectrumRestricts.starAlgHom_apply,
       cfcHom_eq_cfc_extend 0]
-    apply cfc_congr fun x hx ↦ ?_
+    apply cfc_congr fun x hx ↦ _
     lift x to spectrum S a using hx
     simp [Function.comp, Subtype.val_injective.extend_apply]
   · have : ¬ ContinuousOn (fun x ↦ algebraMap R S (g (f x)) : S → S) (spectrum S a) := by
-      refine fun hg' ↦ hg ?_
+      refine fun hg' ↦ hg _
       rw [h_isom.embedding.continuousOn_iff]
       simpa [h_isom.embedding.continuousOn_iff, Function.comp, h.left_inv _] using
         hg'.comp h_isom.continuous.continuousOn (fun _ : R ↦ spectrum.algebraMap_mem S)

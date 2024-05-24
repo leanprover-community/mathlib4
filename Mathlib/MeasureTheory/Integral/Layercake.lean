@@ -171,7 +171,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable_of_sigmaFinite
         (Ioc 0 (f x)).indicator (fun t : ℝ => ENNReal.ofReal (g t)) y) =
       {p : α × ℝ | p.2 ∈ Ioc 0 (f p.1)}.indicator fun p => ENNReal.ofReal (g p.2) := by
     funext p
-    cases p with | mk p_fst p_snd => ?_
+    cases p with | mk p_fst p_snd => _
     rw [Function.uncurry_apply_pair]
     by_cases h : p_snd ∈ Ioc 0 (f p_fst)
     · have h' : (p_fst, p_snd) ∈ {p : α × ℝ | p.snd ∈ Ioc 0 (f p.fst)} := h
@@ -237,7 +237,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
           rw [lintegral_const_mul, ENNReal.top_mul I_pos]
           exact ENNReal.measurable_ofReal.comp g_mble
       _ ≤ ∫⁻ t in Ioc 0 s, μ {a : α | t ≤ f a} * ENNReal.ofReal (g t) := by
-          apply set_lintegral_mono' measurableSet_Ioc (fun x hx ↦ ?_)
+          apply set_lintegral_mono' measurableSet_Ioc (fun x hx ↦ _)
           rw [← h's]
           gcongr
           exact fun a ha ↦ hx.2.trans (le_of_lt ha)
@@ -255,7 +255,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
           rw [ENNReal.mul_top]
           simpa [intervalIntegral.integral_of_le s_pos.le] using hs
       _ ≤ ∫⁻ ω in {a | s < f a}, ENNReal.ofReal (∫ t in (0)..f ω, g t) ∂μ := by
-          apply set_lintegral_mono' (measurableSet_lt measurable_const f_mble) (fun a ha ↦ ?_)
+          apply set_lintegral_mono' (measurableSet_lt measurable_const f_mble) (fun a ha ↦ _)
           apply ENNReal.ofReal_le_ofReal
           apply intervalIntegral.integral_mono_interval le_rfl s_pos.le (le_of_lt ha)
           · filter_upwards [ae_restrict_mem measurableSet_Ioc] with t ht using g_nn _ ht.1
@@ -331,12 +331,12 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
               (g_intble (u n) (M_nonneg.trans_lt (uM n))).1).1 Ig
           have : u n ≤ M := le_csSup M_bdd J
           exact lt_irrefl _ (this.trans_lt (uM n))
-        refine lt_of_le_of_lt (measure_union_le _ _) ?_
+        refine lt_of_le_of_lt (measure_union_le _ _) _
         rw [I, zero_add]
         apply lt_of_le_of_lt _ J
         exact restrict_le_self _
       spanning := by
-        apply eq_univ_iff_forall.2 (fun a ↦ ?_)
+        apply eq_univ_iff_forall.2 (fun a ↦ _)
         rcases le_or_lt (f a) M with ha|ha
         · exact mem_iUnion.2 ⟨0, Or.inl ha⟩
         · obtain ⟨n, hn⟩ : ∃ n, u n < f a := ((tendsto_order.1 ulim).2 _ ha).exists
@@ -349,11 +349,11 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
     have meas : MeasurableSet {a | M < f a} := measurableSet_lt measurable_const f_mble
     have I : ∫⁻ ω in {a | M < f a}ᶜ, ENNReal.ofReal (∫ t in (0).. f ω, g t) ∂μ
              = ∫⁻ _ in {a | M < f a}ᶜ, 0 ∂μ := by
-      apply set_lintegral_congr_fun meas.compl (eventually_of_forall (fun s hs ↦ ?_))
+      apply set_lintegral_congr_fun meas.compl (eventually_of_forall (fun s hs ↦ _))
       have : ∫ (t : ℝ) in (0)..f s, g t = ∫ (t : ℝ) in (0)..f s, 0 := by
         simp_rw [intervalIntegral.integral_of_le (f_nonneg s)]
         apply integral_congr_ae
-        apply ae_mono (restrict_mono ?_ le_rfl) hgM
+        apply ae_mono (restrict_mono _ le_rfl) hgM
         apply Ioc_subset_Ioc_right
         simpa using hs
       simp [this]
@@ -370,7 +370,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
       simp [ht]
     have B2 : ∫⁻ t in Ioi M, μ {a : α | t ≤ f a} * ENNReal.ofReal (g t)
               = ∫⁻ t in Ioi M, ν {a : α | t ≤ f a} * ENNReal.ofReal (g t) := by
-      apply set_lintegral_congr_fun measurableSet_Ioi (eventually_of_forall (fun t ht ↦ ?_))
+      apply set_lintegral_congr_fun measurableSet_Ioi (eventually_of_forall (fun t ht ↦ _))
       rw [Measure.restrict_apply (measurableSet_le measurable_const f_mble)]
       congr 3
       exact (inter_eq_left.2 (fun a ha ↦ (mem_Ioi.1 ht).trans_le ha)).symm
@@ -402,17 +402,17 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul (μ : Measure α) (f_nn : 0 ≤�
       ∫⁻ t in Ioi 0, μ {a : α | t ≤ f a} * ENNReal.ofReal (g t) := by
   obtain ⟨G, G_mble, G_nn, g_eq_G⟩ : ∃ G : ℝ → ℝ, Measurable G ∧ 0 ≤ G
       ∧ g =ᵐ[volume.restrict (Ioi 0)] G := by
-    refine AEMeasurable.exists_measurable_nonneg ?_ g_nn
+    refine AEMeasurable.exists_measurable_nonneg _ g_nn
     exact aemeasurable_Ioi_of_forall_Ioc fun t ht => (g_intble t ht).1.1.aemeasurable
   have g_eq_G_on : ∀ t, g =ᵐ[volume.restrict (Ioc 0 t)] G := fun t =>
     ae_mono (Measure.restrict_mono Ioc_subset_Ioi_self le_rfl) g_eq_G
   have G_intble : ∀ t > 0, IntervalIntegrable G volume 0 t := by
-    refine fun t t_pos => ⟨(g_intble t t_pos).1.congr_fun_ae (g_eq_G_on t), ?_⟩
+    refine fun t t_pos => ⟨(g_intble t t_pos).1.congr_fun_ae (g_eq_G_on t), _⟩
     rw [Ioc_eq_empty_of_le t_pos.lt.le]
     exact integrableOn_empty
   obtain ⟨F, F_mble, F_nn, f_eq_F⟩ : ∃ F : α → ℝ, Measurable F ∧ 0 ≤ F ∧ f =ᵐ[μ] F := by
     refine ⟨fun ω ↦ max (f_mble.mk f ω) 0, f_mble.measurable_mk.max measurable_const,
-        fun ω ↦ le_max_right _ _, ?_⟩
+        fun ω ↦ le_max_right _ _, _⟩
     filter_upwards [f_mble.ae_eq_mk, f_nn] with ω hω h'ω
     rw [← hω]
     exact (max_eq_left h'ω).symm
@@ -430,7 +430,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul (μ : Measure α) (f_nn : 0 ≤�
     filter_upwards [f_eq_F] with ω fω_nn
     rw [fω_nn]
     congr 1
-    refine intervalIntegral.integral_congr_ae ?_
+    refine intervalIntegral.integral_congr_ae _
     have fω_nn : 0 ≤ F ω := F_nn ω
     rw [uIoc_of_le fω_nn, ←
       ae_restrict_iff' (measurableSet_Ioc : MeasurableSet (Ioc (0 : ℝ) (F ω)))]
@@ -587,14 +587,14 @@ theorem Integrable.integral_eq_integral_meas_lt
   convert (ENNReal.toReal_eq_toReal lhs_finite.ne rhs_finite.ne).mpr key
   · exact integral_eq_lintegral_of_nonneg_ae f_nn f_intble.aestronglyMeasurable
   · have aux := @integral_eq_lintegral_of_nonneg_ae _ _ ((volume : Measure ℝ).restrict (Set.Ioi 0))
-      (fun t ↦ ENNReal.toReal (μ {a : α | t < f a})) ?_ ?_
+      (fun t ↦ ENNReal.toReal (μ {a : α | t < f a})) _ _
     · rw [aux]
       congr 1
       apply set_lintegral_congr_fun measurableSet_Ioi (eventually_of_forall _)
       exact fun t t_pos ↦ ENNReal.ofReal_toReal (rhs_integrand_finite t t_pos).ne
     · exact eventually_of_forall (fun x ↦ by simp only [Pi.zero_apply, ENNReal.toReal_nonneg])
     · apply Measurable.aestronglyMeasurable
-      refine Measurable.ennreal_toReal ?_
+      refine Measurable.ennreal_toReal _
       exact Antitone.measurable (fun _ _ hst ↦ measure_mono (fun _ h ↦ lt_of_le_of_lt hst h))
 
 theorem Integrable.integral_eq_integral_meas_le
@@ -610,8 +610,8 @@ lemma Integrable.integral_eq_integral_Ioc_meas_le {f : α → ℝ} {M : ℝ}
     ∫ ω, f ω ∂μ = ∫ t in Ioc 0 M, ENNReal.toReal (μ {a : α | t ≤ f a}) := by
   rw [f_intble.integral_eq_integral_meas_le f_nn]
   rw [setIntegral_eq_of_subset_of_ae_diff_eq_zero
-      measurableSet_Ioi.nullMeasurableSet Ioc_subset_Ioi_self ?_]
-  apply eventually_of_forall (fun t ht ↦ ?_)
+      measurableSet_Ioi.nullMeasurableSet Ioc_subset_Ioi_self _]
+  apply eventually_of_forall (fun t ht ↦ _)
   have htM : M < t := by simp_all only [mem_diff, mem_Ioi, mem_Ioc, not_and, not_le]
   have obs : μ {a | M < f a} = 0 := by
     rw [measure_zero_iff_ae_nmem]

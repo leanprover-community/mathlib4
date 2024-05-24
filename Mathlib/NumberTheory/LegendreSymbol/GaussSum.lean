@@ -102,7 +102,7 @@ private theorem gaussSum_mul_aux {χ : MulChar R R'} (hχ : IsNontrivial χ) (ψ
       Finset.sum_const_zero, map_zero_one, mul_one]
     exact (hχ.sum_eq_zero).symm
   · -- case `b ≠ 0`
-    refine (Fintype.sum_bijective _ (mulLeft_bijective₀ b hb) _ _ fun x => ?_).symm
+    refine (Fintype.sum_bijective _ (mulLeft_bijective₀ b hb) _ _ fun x => _).symm
     rw [mul_assoc, mul_comm x, ← mul_assoc, mul_inv_cancel hb, one_mul, mul_sub, mul_one]
 
 /-- We have `gaussSum χ ψ * gaussSum χ⁻¹ ψ⁻¹ = Fintype.card R`
@@ -296,14 +296,14 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
   let ψ₈char : AddChar (ZMod 8) FF := ψ₈.char
   let τ : FF := ψ₈char 1
   have τ_spec : τ ^ 4 = -1 := by
-    refine (sq_eq_one_iff.1 ?_).resolve_left ?_
+    refine (sq_eq_one_iff.1 _).resolve_left _
     · rw [← pow_mul, ← map_nsmul_pow ψ₈char]
       -- doesn't match syntactically for `rw`
-      refine (AddChar.IsPrimitive.zmod_char_eq_one_iff 8 ψ₈.prim _).2 ?_
+      refine (AddChar.IsPrimitive.zmod_char_eq_one_iff 8 ψ₈.prim _).2 _
       decide
     · rw [← map_nsmul_pow ψ₈char]
       -- doesn't match syntactically for `rw`
-      refine (AddChar.IsPrimitive.zmod_char_eq_one_iff 8 ψ₈.prim _).not.2 ?_
+      refine (AddChar.IsPrimitive.zmod_char_eq_one_iff 8 ψ₈.prim _).not.2 _
       decide
 
   -- we consider `χ₈` as a multiplicative character `ℤ/8ℤ → FF`

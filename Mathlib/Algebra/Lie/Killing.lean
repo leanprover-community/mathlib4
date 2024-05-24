@@ -86,7 +86,7 @@ lemma isKilling_of_equiv [IsKilling R L] (e : L ≃ₗ⁅R⁆ L') : IsKilling R 
   constructor
   ext x'
   simp_rw [LieIdeal.mem_killingCompl, LieModule.traceForm_comm]
-  refine ⟨fun hx' ↦ ?_, fun hx y _ ↦ hx ▸ LinearMap.map_zero₂ (killingForm R L') y⟩
+  refine ⟨fun hx' ↦ _, fun hx y _ ↦ hx ▸ LinearMap.map_zero₂ (killingForm R L') y⟩
   suffices e.symm x' ∈ LinearMap.ker (killingForm R L) by
     rw [IsKilling.ker_killingForm_eq_bot] at this
     simpa using (e : L ≃ₗ[R] L').congr_arg this

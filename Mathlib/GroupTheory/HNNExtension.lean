@@ -277,7 +277,7 @@ def cons (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set u)
       · exact h1
       · exact w.mem_set _ _ h'
     chain := by
-      refine List.chain'_cons'.2 ⟨?_, w.chain⟩
+      refine List.chain'_cons'.2 ⟨_, w.chain⟩
       rintro ⟨u', g'⟩ hu' hw1
       exact h2 _ (by simp_all) hw1 }
 
@@ -401,7 +401,7 @@ theorem unitsSMul_cancels_iff (u : ℤˣ) (w : NormalWord d) :
     | cons g u' w h1 h2 _ =>
       intro hc
       apply not_cancels_of_cons_hyp _ _ h2
-      simp only [Cancels, cons_head, cons_toList, List.head?_cons,
+      simp only [Cancels, cons_head, cons_toList, List.head_cons,
         Option.map_some', Option.some.injEq] at h
       cases h.2
       simpa [Cancels, unitsSMulWithCancel,
@@ -593,7 +593,7 @@ open NormalWord
 theorem of_injective : Function.Injective (of : G → HNNExtension G A B φ) := by
   rcases TransversalPair.nonempty G A B with ⟨d⟩
   refine Function.Injective.of_comp
-    (f := ((· • ·) : HNNExtension G A B φ → NormalWord d → NormalWord d)) ?_
+    (f := ((· • ·) : HNNExtension G A B φ → NormalWord d → NormalWord d)) _
   intros _ _ h
   exact eq_of_smul_eq_smul (fun w : NormalWord d =>
     by simp_all [Function.funext_iff, of_smul_eq_smul])
@@ -630,7 +630,7 @@ theorem exists_normalWord_prod_eq
   | cons a l ih =>
     rcases ih (List.chain'_cons'.1 chain).2 with ⟨w', hw'1, hw'2, hw'3⟩
     clear ih
-    refine ⟨(t^(a.1 : ℤ) * of a.2 : HNNExtension G A B φ) • w', ?_, ?_⟩
+    refine ⟨(t^(a.1 : ℤ) * of a.2 : HNNExtension G A B φ) • w', _, _⟩
     · rw [prod_smul, hw'1]
       simp [ReducedWord.prod]
     · have : ¬ Cancels a.1 (a.2 • w') := by
@@ -638,15 +638,15 @@ theorem exists_normalWord_prod_eq
           Prod.exists, exists_and_right, exists_eq_right, not_and, not_exists]
         intro hS x hx
         have hx' := congr_arg (Option.map Prod.fst) hx
-        rw [← List.head?_map, hw'2, List.head?_map, Option.map_some'] at hx'
+        rw [← List.head_map, hw'2, List.head_map, Option.map_some'] at hx'
         have : w'.head ∈ toSubgroup A B a.fst := by
           simpa using hw'3 _ hx'
         rw [mul_mem_cancel_right this] at hS
         have : a.fst = -a.fst := by
           have hl : l ≠ [] := by rintro rfl; simp_all
           have : a.fst = (l.head hl).fst := (List.chain'_cons'.1 chain).1 (l.head hl)
-            (List.head?_eq_head _ _) hS
-          rwa [List.head?_eq_head _ hl, Option.map_some', ← this, Option.some_inj] at hx'
+            (List.head_eq_head _ _) hS
+          rwa [List.head_eq_head _ hl, Option.map_some', ← this, Option.some_inj] at hx'
         simp at this
       erw [List.map_cons, mul_smul, of_smul_eq_smul, NormalWord.group_smul_def,
         t_pow_smul_eq_unitsSMul, unitsSMul, dif_neg this, ← hw'2]
@@ -667,11 +667,11 @@ theorem map_fst_eq_and_of_prod_eq {w₁ w₂ : ReducedWord G A B}
   have : w₁' = w₂' :=
     NormalWord.prod_injective φ d (by dsimp only; rw [hw₁'1, hw₂'1, hprod])
   subst this
-  refine ⟨by rw [← hw₁'2, hw₂'2], ?_⟩
+  refine ⟨by rw [← hw₁'2, hw₂'2], _⟩
   simp only [← leftCoset_eq_iff] at *
   intro u hu
   rw [← hw₁'3 _ hu, ← hw₂'3 _]
-  rwa [← List.head?_map, ← hw₂'2, hw₁'2, List.head?_map]
+  rwa [← List.head_map, ← hw₂'2, hw₁'2, List.head_map]
 
 /-- **Britton's Lemma**. Any reduced word whose product is an element of `G`, has no
 occurences of `t`.  -/

@@ -213,11 +213,11 @@ local notation "D_" => TopCat.GlueData.toGlueData <|
 underlying spaces -/
 def isoCarrier :
     D.glued.carrier ≅ (D_).glued := by
-  refine (PresheafedSpace.forget _).mapIso ?_ ≪≫
+  refine (PresheafedSpace.forget _).mapIso _ ≪≫
     GlueData.gluedIso _ (PresheafedSpace.forget.{_, _, u} _)
-  refine SheafedSpace.forgetToPresheafedSpace.mapIso ?_ ≪≫
+  refine SheafedSpace.forgetToPresheafedSpace.mapIso _ ≪≫
     SheafedSpace.GlueData.isoPresheafedSpace _
-  refine LocallyRingedSpace.forgetToSheafedSpace.mapIso ?_ ≪≫
+  refine LocallyRingedSpace.forgetToSheafedSpace.mapIso _ ≪≫
     LocallyRingedSpace.GlueData.isoSheafedSpace _
   exact Scheme.GlueData.isoLocallyRingedSpace _
 #align algebraic_geometry.Scheme.glue_data.iso_carrier AlgebraicGeometry.Scheme.GlueData.isoCarrier
@@ -244,7 +244,7 @@ def Rel (a b : Σ i, ((D.U i).carrier : Type _)) : Prop :=
 
 theorem ι_eq_iff (i j : D.J) (x : (D.U i).carrier) (y : (D.U j).carrier) :
     (𝖣.ι i).1.base x = (𝖣.ι j).1.base y ↔ D.Rel ⟨i, x⟩ ⟨j, y⟩ := by
-  refine Iff.trans ?_
+  refine Iff.trans _
     (TopCat.GlueData.ι_eq_iff_rel
       D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.toPresheafedSpaceGlueData.toTopGlueData
       i j x y)
@@ -453,7 +453,7 @@ If `X` is exactly (defeq to) the gluing of `U i`, then using `Multicoequalizer.d
 def glueMorphisms {Y : Scheme} (f : ∀ x, 𝒰.obj x ⟶ Y)
     (hf : ∀ x y, (pullback.fst : pullback (𝒰.map x) (𝒰.map y) ⟶ _) ≫ f x = pullback.snd ≫ f y) :
     X ⟶ Y := by
-  refine inv 𝒰.fromGlued ≫ ?_
+  refine inv 𝒰.fromGlued ≫ _
   fapply Multicoequalizer.desc
   · exact f
   rintro ⟨i, j⟩

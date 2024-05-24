@@ -130,7 +130,7 @@ lemma bodd_add_div2 : ∀ n, cond (bodd n) 1 0 + 2 * div2 n = n
 
 lemma div2_val (n) : div2 n = n / 2 := by
   refine Nat.eq_of_mul_eq_mul_left (by decide)
-    (Nat.add_left_cancel (Eq.trans ?_ (Nat.mod_add_div n 2).symm))
+    (Nat.add_left_cancel (Eq.trans _ (Nat.mod_add_div n 2).symm))
   rw [mod_two_of_bodd, bodd_add_div2]
 #align nat.div2_val Nat.div2_val
 
@@ -491,7 +491,7 @@ lemma bit_lt_bit (a b) (h : m < n) : bit a m < bit b n :=
 
 @[simp]
 lemma bit0_le_bit1_iff : bit0 m ≤ bit1 n ↔ m ≤ n := by
-  refine ⟨fun h ↦ ?_, fun h ↦ le_of_lt (Nat.bit0_lt_bit1 h)⟩
+  refine ⟨fun h ↦ _, fun h ↦ le_of_lt (Nat.bit0_lt_bit1 h)⟩
   rwa [← Nat.lt_succ_iff, n.bit1_eq_succ_bit0, ← n.bit0_succ_eq, Nat.bit0_lt_bit0, Nat.lt_succ_iff]
     at h
 #align nat.bit0_le_bit1_iff Nat.bit0_le_bit1_iff

@@ -280,7 +280,7 @@ def noncommProd (s : Finset α) (f : α → β)
 lemma noncommProd_induction (s : Finset α) (f : α → β) (comm)
     (p : β → Prop) (hom : ∀ a b, p a → p b → p (a * b)) (unit : p 1) (base : ∀ x ∈ s, p (f x)) :
     p (s.noncommProd f comm) := by
-  refine Multiset.noncommProd_induction _ _ _ hom unit fun b hb ↦ ?_
+  refine Multiset.noncommProd_induction _ _ _ hom unit fun b hb ↦ _
   obtain (⟨a, ha : a ∈ s, rfl : f a = b⟩) := by simpa using hb
   exact base a ha
 
@@ -450,7 +450,7 @@ theorem noncommProd_mul_distrib {s : Finset α} (f : α → β) (g : α → β) 
   rw [Finset.noncommProd_cons, Finset.noncommProd_cons, Finset.noncommProd_cons, Pi.mul_apply,
     ih (comm_ff.mono fun _ => mem_cons_of_mem) (comm_gg.mono fun _ => mem_cons_of_mem)
       (comm_gf.mono fun _ => mem_cons_of_mem),
-    (noncommProd_commute _ _ _ _ fun y hy => ?_).mul_mul_mul_comm]
+    (noncommProd_commute _ _ _ _ fun y hy => _).mul_mul_mul_comm]
   exact comm_gf (mem_cons_self x s) (mem_cons_of_mem hy) (ne_of_mem_of_not_mem hy hnmem).symm
 #align finset.noncomm_prod_mul_distrib Finset.noncommProd_mul_distrib
 #align finset.noncomm_sum_add_distrib Finset.noncommSum_add_distrib

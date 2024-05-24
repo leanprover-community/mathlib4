@@ -31,7 +31,7 @@ then the support of every element in the group is finite. -/
 theorem finite_compl_fixedBy_closure_iff {S : Set G} :
     (∀ g ∈ closure S, (fixedBy α g)ᶜ.Finite) ↔ ∀ g ∈ S, (fixedBy α g)ᶜ.Finite :=
   ⟨fun h g hg ↦ h g (subset_closure hg), fun h g hg ↦ by
-    refine closure_induction hg h (by simp) (fun g g' hg hg' ↦ (hg.union hg').subset ?_) (by simp)
+    refine closure_induction hg h (by simp) (fun g g' hg hg' ↦ (hg.union hg').subset _) (by simp)
     simp_rw [← compl_inter, compl_subset_compl, fixedBy_mul]⟩
 
 theorem finite_compl_fixedBy_swap {x y : α} : (fixedBy α (swap x y))ᶜ.Finite :=
@@ -65,7 +65,7 @@ theorem exists_smul_not_mem_of_subset_orbit_closure (S : Set G) (T : Set α) {a 
     contrapose! not_mem with h
     exact smul_mem_smul_set_iff.mp ((h σ.2).symm ▸ hb)
   contrapose! key0
-  refine (closure_le _).mpr fun σ hσ ↦ ?_
+  refine (closure_le _).mpr fun σ hσ ↦ _
   simp_rw [SetLike.mem_coe, mem_stabilizer_iff, Set.ext_iff, mem_smul_set_iff_inv_smul_mem]
   exact fun a ↦ ⟨fun h ↦ smul_inv_smul σ a ▸ key0 σ hσ (σ⁻¹ • a) h, key0 σ⁻¹ (hS σ hσ) a⟩
 
@@ -73,15 +73,15 @@ theorem exists_smul_not_mem_of_subset_orbit_closure (S : Set G) (T : Set α) {a 
   subgroup if and only if `x` lies in the same orbit as `y`. -/
 theorem swap_mem_closure_isSwap {S : Set (Perm α)} (hS : ∀ f ∈ S, f.IsSwap) {x y : α} :
     swap x y ∈ closure S ↔ x ∈ orbit (closure S) y := by
-  refine ⟨fun h ↦ ⟨⟨swap x y, h⟩, swap_apply_right x y⟩, fun hf ↦ ?_⟩
+  refine ⟨fun h ↦ ⟨⟨swap x y, h⟩, swap_apply_right x y⟩, fun hf ↦ _⟩
   by_contra h
   have := exists_smul_not_mem_of_subset_orbit_closure S {x | swap x y ∈ closure S}
-    (fun f hf ↦ ?_) (fun z hz ↦ ?_) h ⟨y, ?_⟩
+    (fun f hf ↦ _) (fun z hz ↦ _) h ⟨y, _⟩
   · obtain ⟨σ, hσ, a, ha, hσa⟩ := this
     obtain ⟨z, w, hzw, rfl⟩ := hS σ hσ
     have := ne_of_mem_of_not_mem ha hσa
     rw [Perm.smul_def, ne_comm, swap_apply_ne_self_iff, and_iff_right hzw] at this
-    refine hσa (SubmonoidClass.swap_mem_trans (closure S) ?_ ha)
+    refine hσa (SubmonoidClass.swap_mem_trans (closure S) _ ha)
     obtain rfl | rfl := this <;> simpa [swap_comm] using subset_closure hσ
   · obtain ⟨x, y, -, rfl⟩ := hS f hf; rwa [swap_inv]
   · exact orbit_eq_iff.mpr hf ▸ ⟨⟨swap z y, hz⟩, swap_apply_right z y⟩
@@ -91,7 +91,7 @@ theorem swap_mem_closure_isSwap {S : Set (Perm α)} (hS : ∀ f ∈ S, f.IsSwap)
   and only if `f` has finite support and `f x` always lies in the same orbit as `x`. -/
 theorem mem_closure_isSwap {S : Set (Perm α)} (hS : ∀ f ∈ S, f.IsSwap) {f : Perm α} :
     f ∈ closure S ↔ (fixedBy α f)ᶜ.Finite ∧ ∀ x, f x ∈ orbit (closure S) x := by
-  refine ⟨fun hf ↦ ⟨?_, fun x ↦ mem_orbit_iff.mpr ⟨⟨f, hf⟩, rfl⟩⟩, ?_⟩
+  refine ⟨fun hf ↦ ⟨_, fun x ↦ mem_orbit_iff.mpr ⟨⟨f, hf⟩, rfl⟩⟩, _⟩
   · exact finite_compl_fixedBy_closure_iff.mpr (fun f hf ↦ (hS f hf).finite_compl_fixedBy) _ hf
   rintro ⟨fin, hf⟩
   set supp := (fixedBy α f)ᶜ with supp_eq
@@ -101,7 +101,7 @@ theorem mem_closure_isSwap {S : Set (Perm α)} (hS : ∀ f ∈ S, f.IsSwap) {f :
   · rintro f - emp; convert (closure S).one_mem; ext; by_contra h; exact emp h
   rintro a s - - ih f hf supp_subset
   refine (mul_mem_cancel_left ((swap_mem_closure_isSwap hS).2 (hf a))).1
-    (ih (fun b ↦ ?_) fun b hb ↦ ?_)
+    (ih (fun b ↦ _) fun b hb ↦ _)
   · rw [Perm.mul_apply, swap_apply_def]; split_ifs with h1 h2
     · rw [← orbit_eq_iff.mpr (hf b), h1, orbit_eq_iff.mpr (hf a)]; apply mem_orbit_self
     · rw [← orbit_eq_iff.mpr (hf b), h2]; apply hf
@@ -117,7 +117,7 @@ theorem mem_closure_isSwap {S : Set (Perm α)} (hS : ∀ f ∈ S, f.IsSwap) {f :
 theorem mem_closure_isSwap' {f : Perm α} :
     f ∈ closure {σ : Perm α | σ.IsSwap} ↔ (fixedBy α f)ᶜ.Finite := by
   refine (mem_closure_isSwap fun _ ↦ id).trans
-    (and_iff_left fun x ↦ ⟨⟨swap x (f x), ?_⟩, swap_apply_left x (f x)⟩)
+    (and_iff_left fun x ↦ ⟨⟨swap x (f x), _⟩, swap_apply_left x (f x)⟩)
   by_cases h : x = f x
   · rw [← h, swap_self]
     apply Subgroup.one_mem

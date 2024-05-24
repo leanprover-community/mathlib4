@@ -88,7 +88,7 @@ private theorem pairMap_mem_pairs {k : ℕ} (t : Finset σ × σ) (h : t ∈ pai
   · rw [pairMap_of_snd_mem_fst σ h1]
     simp only [h1, implies_true, and_true] at h
     simp only [card_erase_of_mem h1, tsub_le_iff_right, mem_erase, ne_eq, h1]
-    refine ⟨le_step h, ?_⟩
+    refine ⟨le_step h, _⟩
     by_contra h2
     simp only [not_true_eq_false, and_true, not_forall, not_false_eq_true, exists_prop] at h2
     rw [← h2] at h
@@ -165,7 +165,7 @@ private theorem sum_filter_pairs_eq_sum_filter_antidiagonal_powersetCard_sum (k 
       ∑ a in (antidiagonal k).filter fun a ↦ a.fst < k,
         ∑ A in powersetCard a.fst univ, ∑ j, f (A, j) := by
   rw [filter_pairs_lt, sum_product, sum_disjiUnion]
-  refine sum_nbij' (fun n ↦ (n, k - n)) Prod.fst ?_ ?_ ?_ ?_ ?_ <;>
+  refine sum_nbij' (fun n ↦ (n, k - n)) Prod.fst _ _ _ _ _ <;>
     simp (config := { contextual := true }) [@eq_comm _ _ k, Nat.add_sub_cancel', le_of_lt]
 
 private theorem disjoint_filter_pairs_lt_filter_pairs_eq (k : ℕ) :
@@ -181,7 +181,7 @@ private theorem disjUnion_filter_pairs_eq_pairs (k : ℕ) :
   simp only [disjUnion_eq_union, Finset.ext_iff, pairs, filter_filter, mem_filter]
   intro a
   rw [← filter_or, mem_filter]
-  refine ⟨fun ha ↦ by tauto, fun ha ↦ ?_⟩
+  refine ⟨fun ha ↦ by tauto, fun ha ↦ _⟩
   have hacard := le_iff_lt_or_eq.mp ha.2.1
   tauto
 
@@ -200,9 +200,9 @@ private theorem esymm_mul_psum_summand_to_weight (k : ℕ) (a : ℕ × ℕ) (ha 
     (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd := by
   simp only [esymm, psum_def, weight, ← mul_assoc, mul_sum]
   rw [sum_comm]
-  refine sum_congr rfl fun x _ ↦ ?_
+  refine sum_congr rfl fun x _ ↦ _
   rw [sum_mul]
-  refine sum_congr rfl fun s hs ↦ ?_
+  refine sum_congr rfl fun s hs ↦ _
   rw [mem_powersetCard_univ.mp hs, ← mem_antidiagonal.mp ha, add_sub_self_left]
 
 private theorem esymm_mul_psum_to_weight (k : ℕ) :
@@ -261,7 +261,7 @@ theorem psum_eq_mul_esymm_sub_sum (k : ℕ) (h : 0 < k) : psum σ R k =
   have : filter (fun a ↦ a.fst < k ∧ ¬0 < a.fst) (antidiagonal k) = {(0, k)} := by
     ext a
     rw [mem_filter, mem_antidiagonal, mem_singleton]
-    refine ⟨?_, by rintro rfl; omega⟩
+    refine ⟨_, by rintro rfl; omega⟩
     rintro ⟨ha, ⟨_, ha0⟩⟩
     rw [← ha, Nat.eq_zero_of_not_pos ha0, zero_add, ← Nat.eq_zero_of_not_pos ha0]
   rw [this, sum_singleton] at sub_both_sides

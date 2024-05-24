@@ -88,7 +88,7 @@ def base : H →* PushoutI φ :=
 theorem of_comp_eq_base (i : ι) : (of i).comp (φ i) = (base φ) := by
   ext x
   apply (Con.eq _).2
-  refine ConGen.Rel.of _ _ ?_
+  refine ConGen.Rel.of _ _ _
   simp only [MonoidHom.comp_apply, Set.mem_iUnion, Set.mem_range]
   exact ⟨_, _, rfl, rfl⟩
 
@@ -102,7 +102,7 @@ def lift (f : ∀ i, G i →* K) (k : H →* K)
     (hf : ∀ i, (f i).comp (φ i) = k) :
     PushoutI φ →* K :=
   Con.lift _ (Coprod.lift (CoprodI.lift f) k) <| by
-    apply Con.conGen_le fun x y => ?_
+    apply Con.conGen_le fun x y => _
     rintro ⟨i, x', rfl, rfl⟩
     simp only [DFunLike.ext_iff, MonoidHom.coe_comp, comp_apply] at hf
     simp [hf]
@@ -301,7 +301,7 @@ theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
       exact hw _ _ (List.head_mem _)
     · rw [equiv_one (d.compl i) (one_mem _) (d.one_mem _)]
   by_contra hh1
-  have := hφw i (φ i h * (Word.equivPair i w).head) ?_
+  have := hφw i (φ i h * (Word.equivPair i w).head) _
   · apply hh1
     rw [equiv_mul_left_of_mem (d.compl i) ⟨_, rfl⟩, hhead] at this
     simpa [((injective_iff_map_eq_one' _).1 (d.injective i))] using this
@@ -321,12 +321,12 @@ theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
       dsimp
       split_ifs with hep
       · rcases hep with ⟨hnil, rfl⟩
-        rw [head?_eq_head _ hnil]
+        rw [head_eq_head _ hnil]
         simp_all
       · push_neg at hep
         by_cases hw : w.toList = []
         · simp [hw, Word.fstIdx]
-        · simp [head?_eq_head _ hw, Word.fstIdx, hep hw]
+        · simp [head_eq_head _ hw, Word.fstIdx, hep hw]
 
 theorem ext_smul {w₁ w₂ : NormalWord d} (i : ι)
     (h : CoprodI.of (φ i w₁.head) • w₁.toWord =
@@ -483,14 +483,14 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
     (h_base : ∀ (h : H) (w : NormalWord d), w.head = 1 → motive w → motive
       (base φ h • w)) : motive w := by
   rcases w with ⟨w, head, h3⟩
-  convert h_base head ⟨w, 1, h3⟩ rfl ?_
+  convert h_base head ⟨w, 1, h3⟩ rfl _
   · simp [base_smul_def]
   · induction w using Word.consRecOn with
     | h_empty => exact h_empty
     | h_cons i g w h1 hg1 ih =>
       convert h_cons i g ⟨w, 1, fun _ _ h => h3 _ _ (List.mem_cons_of_mem _ h)⟩
-        h1 (h3 _ _ (List.mem_cons_self _ _)) ?_ rfl
-        (ih ?_)
+        h1 (h3 _ _ (List.mem_cons_self _ _)) _ rfl
+        (ih _)
       · ext
         simp only [Word.cons, Option.mem_def, cons, map_one, mul_one,
           (equiv_snd_eq_self_iff_mem (d.compl i) (one_mem _)).2
@@ -595,7 +595,7 @@ theorem of_injective (hφ : ∀ i, Function.Injective (φ i)) (i : ι) :
   let _ := Classical.decEq ι
   let _ := fun i => Classical.decEq (G i)
   refine Function.Injective.of_comp
-    (f := ((· • ·) : PushoutI φ → NormalWord d → NormalWord d)) ?_
+    (f := ((· • ·) : PushoutI φ → NormalWord d → NormalWord d)) _
   intros _ _ h
   exact eq_of_smul_eq_smul (fun w : NormalWord d =>
     by simp_all [Function.funext_iff, of_smul_eq_smul])
@@ -606,7 +606,7 @@ theorem base_injective (hφ : ∀ i, Function.Injective (φ i)) :
   let _ := Classical.decEq ι
   let _ := fun i => Classical.decEq (G i)
   refine Function.Injective.of_comp
-    (f := ((· • ·) : PushoutI φ → NormalWord d → NormalWord d)) ?_
+    (f := ((· • ·) : PushoutI φ → NormalWord d → NormalWord d)) _
   intros _ _ h
   exact eq_of_smul_eq_smul (fun w : NormalWord d =>
     by simp_all [Function.funext_iff, base_smul_eq_smul])
@@ -632,8 +632,8 @@ theorem Reduced.exists_normalWord_prod_eq (d : Transversal φ) {w : Word G} (hw 
   | h_cons i g w hIdx hg1 ih =>
     rcases ih (fun _ hg => hw _ (List.mem_cons_of_mem _ hg)) with
       ⟨w', hw'prod, hw'map⟩
-    refine ⟨cons g w' ?_ ?_, ?_⟩
-    · rwa [Word.fstIdx, ← List.head?_map, hw'map, List.head?_map]
+    refine ⟨cons g w' _ _, _⟩
+    · rwa [Word.fstIdx, ← List.head_map, hw'map, List.head_map]
     · exact hw _ (List.mem_cons_self _ _)
     · simp [hw'prod, hw'map]
 

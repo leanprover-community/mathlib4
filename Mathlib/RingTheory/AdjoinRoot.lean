@@ -235,7 +235,7 @@ theorem aeval_eq (p : R[X]) : aeval (root f) p = mk f p :=
 
 -- Porting note: the following proof was partly in term-mode, but I was not able to fix it.
 theorem adjoinRoot_eq_top : Algebra.adjoin R ({root f} : Set (AdjoinRoot f)) = ⊤ := by
-  refine Algebra.eq_top_iff.2 fun x => ?_
+  refine Algebra.eq_top_iff.2 fun x => _
   induction x using AdjoinRoot.induction_on with
     | ih p => exact (Algebra.adjoin_singleton_eq_range_aeval R (root f)).symm ▸ ⟨p, aeval_eq p⟩
 #align adjoin_root.adjoin_root_eq_top AdjoinRoot.adjoinRoot_eq_top
@@ -488,7 +488,7 @@ def powerBasisAux' (hg : g.Monic) : Basis (Fin g.natDegree) R (AdjoinRoot g) :=
         intro f
         induction f using AdjoinRoot.induction_on
         simp only [modByMonicHom_mk, sum_modByMonic_coeff hg degree_le_natDegree]
-        refine (mk_eq_mk.mpr ?_).symm
+        refine (mk_eq_mk.mpr _).symm
         rw [modByMonic_eq_sub_mul_div _ hg, sub_sub_cancel]
         exact dvd_mul_right _ _
       right_inv := fun x =>
@@ -545,7 +545,7 @@ theorem isIntegral_root (hf : f ≠ 0) : IsIntegral K (root f) :=
 
 theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff⁻¹ := by
   have f'_monic : Monic _ := monic_mul_leadingCoeff_inv hf
-  refine (minpoly.unique K _ f'_monic ?_ ?_).symm
+  refine (minpoly.unique K _ f'_monic _ _).symm
   · rw [AlgHom.map_mul, aeval_eq, mk_self, zero_mul]
   intro q q_monic q_aeval
   have commutes : (lift (algebraMap K (AdjoinRoot f)) (root f) q_aeval).comp (mk q) = mk f := by

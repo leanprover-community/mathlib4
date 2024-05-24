@@ -281,14 +281,14 @@ variable [Field K] [Algebra R K] [IsFractionRing R K]
 
 theorem iff_dvd_total : ValuationRing R ↔ IsTotal R (· ∣ ·) := by
   classical
-  refine ⟨fun H => ⟨fun a b => ?_⟩, fun H => ⟨fun a b => ?_⟩⟩
+  refine ⟨fun H => ⟨fun a b => _⟩, fun H => ⟨fun a b => _⟩⟩
   · obtain ⟨c, rfl | rfl⟩ := ValuationRing.cond a b <;> simp
   · obtain ⟨c, rfl⟩ | ⟨c, rfl⟩ := @IsTotal.total _ _ H a b <;> use c <;> simp
 #align valuation_ring.iff_dvd_total ValuationRing.iff_dvd_total
 
 theorem iff_ideal_total : ValuationRing R ↔ IsTotal (Ideal R) (· ≤ ·) := by
   classical
-  refine ⟨fun _ => ⟨le_total⟩, fun H => iff_dvd_total.mpr ⟨fun a b => ?_⟩⟩
+  refine ⟨fun _ => ⟨le_total⟩, fun H => iff_dvd_total.mpr ⟨fun a b => _⟩⟩
   have := @IsTotal.total _ _ H (Ideal.span {a}) (Ideal.span {b})
   simp_rw [Ideal.span_singleton_le_span_singleton] at this
   exact this.symm
@@ -354,7 +354,7 @@ instance (priority := 100) [ValuationRing R] : IsBezout R := by
 
 instance (priority := 100) [LocalRing R] [IsBezout R] : ValuationRing R := by
   classical
-  refine iff_dvd_total.mpr ⟨fun a b => ?_⟩
+  refine iff_dvd_total.mpr ⟨fun a b => _⟩
   obtain ⟨g, e : _ = Ideal.span _⟩ := IsBezout.span_pair_isPrincipal a b
   obtain ⟨a, rfl⟩ := Ideal.mem_span_singleton'.mp
       (show a ∈ Ideal.span {g} by rw [← e]; exact Ideal.subset_span (by simp))

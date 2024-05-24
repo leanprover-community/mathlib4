@@ -325,11 +325,11 @@ theorem IsClosed.vadd_right_of_isCompact {s : Set V} {t : Set P} (hs : IsClosed 
     (ht : IsCompact t) : IsClosed (s +ᵥ t) := by
   -- This result is still true for any `AddTorsor` where `-ᵥ` is continuous,
   -- but we don't yet have a nice way to state it.
-  refine IsSeqClosed.isClosed (fun u p husv hup ↦ ?_)
+  refine IsSeqClosed.isClosed (fun u p husv hup ↦ _)
   choose! a ha v hv hav using husv
   rcases ht.isSeqCompact hv with ⟨q, hqt, φ, φ_mono, hφq⟩
   refine ⟨p -ᵥ q, hs.mem_of_tendsto ((hup.comp φ_mono.tendsto_atTop).vsub hφq)
-    (eventually_of_forall fun n ↦ ?_), q, hqt, vsub_vadd _ _⟩
+    (eventually_of_forall fun n ↦ _), q, hqt, vsub_vadd _ _⟩
   convert ha (φ n) using 1
   exact (eq_vadd_iff_vsub_eq _ _ _).mp (hav (φ n)).symm
 

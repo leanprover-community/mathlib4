@@ -114,7 +114,7 @@ def equiv (F : S ⥤ D) [h : ∀ x, HasLimit (diagram ι F x)] (G : L ⥤ D) :
         erw [limit.pre_π]
         let t : StructuredArrow.mk (𝟙 (ι.obj x)) ⟶
           (StructuredArrow.map (ι.map ff)).obj (StructuredArrow.mk (𝟙 (ι.obj y))) :=
-          StructuredArrow.homMk ff ?_
+          StructuredArrow.homMk ff _
         · convert (limit.w (diagram ι F (ι.obj x)) t).symm using 1
         · simp }
   invFun f :=

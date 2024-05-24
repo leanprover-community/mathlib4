@@ -203,20 +203,20 @@ def braidedCategoryOfFaithful {C D : Type*} [Category C] [Category D] [MonoidalC
   braiding_naturality_left := by
     intros
     apply F.map_injective
-    refine (cancel_epi (F.μ ?_ ?_)).1 ?_
+    refine (cancel_epi (F.μ _ _)).1 _
     rw [Functor.map_comp, ← LaxMonoidalFunctor.μ_natural_left_assoc, w, Functor.map_comp,
       reassoc_of% w, braiding_naturality_left_assoc, LaxMonoidalFunctor.μ_natural_right]
   braiding_naturality_right := by
     intros
     apply F.map_injective
-    refine (cancel_epi (F.μ ?_ ?_)).1 ?_
+    refine (cancel_epi (F.μ _ _)).1 _
     rw [Functor.map_comp, ← LaxMonoidalFunctor.μ_natural_right_assoc, w, Functor.map_comp,
       reassoc_of% w, braiding_naturality_right_assoc, LaxMonoidalFunctor.μ_natural_left]
   hexagon_forward := by
     intros
     apply F.map_injective
-    refine (cancel_epi (F.μ _ _)).1 ?_
-    refine (cancel_epi (F.μ _ _ ▷ _)).1 ?_
+    refine (cancel_epi (F.μ _ _)).1 _
+    refine (cancel_epi (F.μ _ _ ▷ _)).1 _
     rw [Functor.map_comp, Functor.map_comp, Functor.map_comp, Functor.map_comp, ←
       LaxMonoidalFunctor.μ_natural_left_assoc, ← comp_whiskerRight_assoc, w,
       comp_whiskerRight_assoc, LaxMonoidalFunctor.associativity_assoc,
@@ -227,8 +227,8 @@ def braidedCategoryOfFaithful {C D : Type*} [Category C] [Category D] [MonoidalC
   hexagon_reverse := by
     intros
     apply F.toFunctor.map_injective
-    refine (cancel_epi (F.μ _ _)).1 ?_
-    refine (cancel_epi (_ ◁ F.μ _ _)).1 ?_
+    refine (cancel_epi (F.μ _ _)).1 _
+    refine (cancel_epi (_ ◁ F.μ _ _)).1 _
     rw [Functor.map_comp, Functor.map_comp, Functor.map_comp, Functor.map_comp, ←
       LaxMonoidalFunctor.μ_natural_right_assoc, ← MonoidalCategory.whiskerLeft_comp_assoc, w,
       MonoidalCategory.whiskerLeft_comp_assoc, LaxMonoidalFunctor.associativity_inv_assoc,

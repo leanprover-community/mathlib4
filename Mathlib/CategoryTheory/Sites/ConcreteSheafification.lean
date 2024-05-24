@@ -419,7 +419,7 @@ theorem isSheaf_of_sep (P : Cᵒᵖ ⥤ D)
     Presheaf.IsSheaf J (J.plusObj P) := by
   rw [Presheaf.isSheaf_iff_multiequalizer]
   intro X S
-  apply @isIso_of_reflects_iso _ _ _ _ _ _ _ (forget D) ?_
+  apply @isIso_of_reflects_iso _ _ _ _ _ _ _ (forget D) _
   rw [isIso_iff_bijective]
   constructor
   · intro x y h

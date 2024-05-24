@@ -94,7 +94,7 @@ open Submodule Submodule.Quotient IsLocalization in
 instance IsLocalizedModule.toLocalizedQuotient' (M' : Submodule R M) :
     IsLocalizedModule p (M'.toLocalizedQuotient' S p f) where
   map_units x := by
-    refine (Module.End_isUnit_iff _).mpr ⟨fun m n e ↦ ?_, fun m ↦ ⟨(IsLocalization.mk' S 1 x) • m,
+    refine (Module.End_isUnit_iff _).mpr ⟨fun m n e ↦ _, fun m ↦ ⟨(IsLocalization.mk' S 1 x) • m,
         by rw [Module.algebraMap_end_apply, ← smul_assoc, smul_mk'_one, mk'_self', one_smul]⟩⟩
     obtain ⟨⟨m, rfl⟩, n, rfl⟩ := PProd.mk (mk_surjective _ m) (mk_surjective _ n)
     simp only [Module.algebraMap_end_apply, ← mk_smul, Submodule.Quotient.eq, ← smul_sub] at e

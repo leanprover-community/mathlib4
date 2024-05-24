@@ -476,7 +476,7 @@ variable {I J : Ideal P}
 
 theorem eq_sup_of_le_sup {x i j : P} (hi : i ∈ I) (hj : j ∈ J) (hx : x ≤ i ⊔ j) :
     ∃ i' ∈ I, ∃ j' ∈ J, x = i' ⊔ j' := by
-  refine ⟨x ⊓ i, I.lower inf_le_right hi, x ⊓ j, J.lower inf_le_right hj, ?_⟩
+  refine ⟨x ⊓ i, I.lower inf_le_right hi, x ⊓ j, J.lower inf_le_right hj, _⟩
   calc
     x = x ⊓ (i ⊔ j) := left_eq_inf.mpr hx
     _ = x ⊓ i ⊔ x ⊓ j := inf_sup_left _ _ _
@@ -611,7 +611,7 @@ variable [Preorder P]
 /-- A non-empty directed union of ideals of sets in a preorder is an ideal. -/
 lemma isIdeal_sUnion_of_directedOn {C : Set (Set P)} (hidl : ∀ I ∈ C, IsIdeal I)
     (hD : DirectedOn (· ⊆ ·) C) (hNe : C.Nonempty) : IsIdeal C.sUnion := by
-  refine ⟨isLowerSet_sUnion (fun I hI ↦ (hidl I hI).1), Set.nonempty_sUnion.2 ?_,
+  refine ⟨isLowerSet_sUnion (fun I hI ↦ (hidl I hI).1), Set.nonempty_sUnion.2 _,
     directedOn_sUnion hD (fun J hJ => (hidl J hJ).3)⟩
   let ⟨I, hI⟩ := hNe
   exact ⟨I, ⟨hI, (hidl I hI).2⟩⟩

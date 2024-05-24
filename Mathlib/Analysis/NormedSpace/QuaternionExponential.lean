@@ -44,8 +44,8 @@ theorem expSeries_even_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) (n : �
   letI k : ℝ := ↑(2 * n)!
   calc
     k⁻¹ • q ^ (2 * n) = k⁻¹ • (-normSq q) ^ n := by rw [pow_mul, hq2]
-    _ = k⁻¹ • ↑((-1 : ℝ) ^ n * ‖q‖ ^ (2 * n)) := ?_
-    _ = ↑((-1 : ℝ) ^ n * ‖q‖ ^ (2 * n) / k) := ?_
+    _ = k⁻¹ • ↑((-1 : ℝ) ^ n * ‖q‖ ^ (2 * n)) := _
+    _ = ↑((-1 : ℝ) ^ n * ‖q‖ ^ (2 * n) / k) := _
   · congr 1
     rw [neg_pow, normSq_eq_norm_mul_self, pow_mul, sq]
     push_cast
@@ -67,8 +67,8 @@ theorem expSeries_odd_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) (n : ℕ
   let k : ℝ := ↑(2 * n + 1)!
   calc
     k⁻¹ • q ^ (2 * n + 1) = k⁻¹ • ((-normSq q) ^ n * q) := by rw [pow_succ, pow_mul, hq2]
-    _ = k⁻¹ • ((-1 : ℝ) ^ n * ‖q‖ ^ (2 * n)) • q := ?_
-    _ = ((-1 : ℝ) ^ n * ‖q‖ ^ (2 * n + 1) / k / ‖q‖) • q := ?_
+    _ = k⁻¹ • ((-1 : ℝ) ^ n * ‖q‖ ^ (2 * n)) • q := _
+    _ = ((-1 : ℝ) ^ n * ‖q‖ ^ (2 * n + 1) / k / ‖q‖) • q := _
   · congr 1
     rw [neg_pow, normSq_eq_norm_mul_self, pow_mul, sq, ← coe_mul_eq_smul]
     norm_cast
@@ -85,7 +85,7 @@ theorem hasSum_expSeries_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) {c s 
     HasSum (fun n => expSeries ℝ (Quaternion ℝ) n fun _ => q) (↑c + (s / ‖q‖) • q) := by
   replace hc := hasSum_coe.mpr hc
   replace hs := (hs.div_const ‖q‖).smul_const q
-  refine HasSum.even_add_odd ?_ ?_
+  refine HasSum.even_add_odd _ _
   · convert hc using 1
     ext n : 1
     rw [expSeries_even_of_imaginary hq]
@@ -98,7 +98,7 @@ theorem hasSum_expSeries_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) {c s 
 theorem exp_of_re_eq_zero (q : Quaternion ℝ) (hq : q.re = 0) :
     exp ℝ q = ↑(Real.cos ‖q‖) + (Real.sin ‖q‖ / ‖q‖) • q := by
   rw [exp_eq_tsum]
-  refine HasSum.tsum_eq ?_
+  refine HasSum.tsum_eq _
   simp_rw [← expSeries_apply_eq]
   exact hasSum_expSeries_of_imaginary hq (Real.hasSum_cos _) (Real.hasSum_sin _)
 #align quaternion.exp_of_re_eq_zero Quaternion.exp_of_re_eq_zero

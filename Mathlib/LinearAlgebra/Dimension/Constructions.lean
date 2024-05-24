@@ -48,8 +48,8 @@ theorem LinearIndependent.sum_elim_of_quotient
     {M' : Submodule R M} {ι₁ ι₂} {f : ι₁ → M'} (hf : LinearIndependent R f) (g : ι₂ → M)
     (hg : LinearIndependent R (Submodule.Quotient.mk (p := M') ∘ g)) :
       LinearIndependent R (Sum.elim (f · : ι₁ → M) g) := by
-  refine .sum_type (hf.map' M'.subtype M'.ker_subtype) (.of_comp M'.mkQ hg) ?_
-  refine disjoint_def.mpr fun x h₁ h₂ ↦ ?_
+  refine .sum_type (hf.map' M'.subtype M'.ker_subtype) (.of_comp M'.mkQ hg) _
+  refine disjoint_def.mpr fun x h₁ h₂ ↦ _
   have : x ∈ M' := span_le.mpr (Set.range_subset_iff.mpr fun i ↦ (f i).prop) h₁
   obtain ⟨c, rfl⟩ := Finsupp.mem_span_range_iff_exists_finsupp.mp h₂
   simp_rw [← Quotient.mk_eq_zero, ← mkQ_apply, map_finsupp_sum, map_smul, mkQ_apply] at this
@@ -60,7 +60,7 @@ theorem LinearIndependent.union_of_quotient
   {t : Set M} (ht : LinearIndependent (ι := t) R (Submodule.Quotient.mk (p := M') ∘ Subtype.val)) :
     LinearIndependent (ι := (s ∪ t : _)) R Subtype.val := by
   refine (LinearIndependent.sum_elim_of_quotient (f := Set.embeddingOfSubset s M' hs)
-    (of_comp M'.subtype (by simpa using hs')) Subtype.val ht).to_subtype_range' ?_
+    (of_comp M'.subtype (by simpa using hs')) Subtype.val ht).to_subtype_range' _
   simp only [embeddingOfSubset_apply_coe, Sum.elim_range, Subtype.range_val]
 
 theorem rank_quotient_add_rank_le [Nontrivial R] (M' : Submodule R M) :
@@ -69,7 +69,7 @@ theorem rank_quotient_add_rank_le [Nontrivial R] (M' : Submodule R M) :
   have := nonempty_linearIndependent_set R (M ⧸ M')
   have := nonempty_linearIndependent_set R M'
   rw [Cardinal.ciSup_add_ciSup _ (bddAbove_range.{v, v} _) _ (bddAbove_range.{v, v} _)]
-  refine ciSup_le fun ⟨s, hs⟩ ↦ ciSup_le fun ⟨t, ht⟩ ↦ ?_
+  refine ciSup_le fun ⟨s, hs⟩ ↦ ciSup_le fun ⟨t, ht⟩ ↦ _
   choose f hf using Quotient.mk_surjective M'
   simpa [add_comm] using (LinearIndependent.sum_elim_of_quotient ht (fun (i : s) ↦ f i)
     (by simpa [Function.comp, hf] using hs)).cardinal_le_rank
@@ -84,7 +84,7 @@ theorem rank_quotient_eq_of_le_torsion {R M} [CommRing R] [AddCommGroup M] [Modu
     nontriviality R
     rw [Module.rank]
     have := nonempty_linearIndependent_set R M
-    refine ciSup_le fun ⟨s, hs⟩ ↦ LinearIndependent.cardinal_le_rank (v := (M'.mkQ ·)) ?_
+    refine ciSup_le fun ⟨s, hs⟩ ↦ LinearIndependent.cardinal_le_rank (v := (M'.mkQ ·)) _
     rw [linearIndependent_iff'] at hs ⊢
     simp_rw [← map_smul, ← map_sum, mkQ_apply, Quotient.mk_eq_zero]
     intro t g hg i hi
@@ -114,10 +114,10 @@ open LinearMap in
 theorem lift_rank_add_lift_rank_le_rank_prod [Nontrivial R] :
     lift.{v'} (Module.rank R M) + lift.{v} (Module.rank R M') ≤ Module.rank R (M × M') := by
   convert rank_quotient_add_rank_le (ker <| LinearMap.fst R M M')
-  · refine Eq.trans ?_ (lift_id'.{v, v'} _)
+  · refine Eq.trans _ (lift_id'.{v, v'} _)
     rw [(quotKerEquivRange _).lift_rank_eq,
         rank_range_of_surjective _ fst_surjective, lift_umax.{v, v'}]
-  · refine Eq.trans ?_ (lift_id'.{v', v} _)
+  · refine Eq.trans _ (lift_id'.{v', v} _)
     rw [ker_fst, ← (LinearEquiv.ofInjective _ <| inr_injective (M := M) (M₂ := M')).lift_rank_eq,
         lift_umax.{v', v}]
 
@@ -438,7 +438,7 @@ variable [StrongRankCondition R]
 
 theorem rank_span_le (s : Set M) : Module.rank R (span R s) ≤ #s := by
   rw [Finsupp.span_eq_range_total, ← lift_strictMono.le_iff_le]
-  refine (lift_rank_range_le _).trans ?_
+  refine (lift_rank_range_le _).trans _
   rw [rank_finsupp_self]
   simp only [lift_lift, ge_iff_le, le_refl]
 #align rank_span_le rank_span_le
@@ -474,7 +474,7 @@ theorem finrank_span_finset_le_card (s : Finset M) : (s : Set M).finrank R ≤ s
 theorem finrank_range_le_card {ι : Type*} [Fintype ι] (b : ι → M) :
     (Set.range b).finrank R ≤ Fintype.card ι := by
   classical
-  refine (finrank_span_le_card _).trans ?_
+  refine (finrank_span_le_card _).trans _
   rw [Set.toFinset_range]
   exact Finset.card_image_le
 #align finrank_range_le_card finrank_range_le_card

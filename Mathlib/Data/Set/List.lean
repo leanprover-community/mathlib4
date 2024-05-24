@@ -23,7 +23,7 @@ namespace Set
 
 theorem range_list_map (f : α → β) : range (map f) = { l | ∀ x ∈ l, x ∈ range f } := by
   refine antisymm (range_subset_iff.2 fun l => forall_mem_map_iff.2 fun y _ => mem_range_self _)
-      fun l hl => ?_
+      fun l hl => _
   induction' l with a l ihl; · exact ⟨[], rfl⟩
   rcases ihl fun x hx => hl x <| subset_cons _ _ hx with ⟨l, rfl⟩
   rcases hl a (mem_cons_self _ _) with ⟨a, rfl⟩
@@ -44,8 +44,8 @@ theorem range_list_get : range l.get = { x | x ∈ l } := by
 theorem range_list_get? : range l.get? = insert none (some '' { x | x ∈ l }) := by
   rw [← range_list_get, ← range_comp]
   refine (range_subset_iff.2 fun n => _).antisymm (insert_subset_iff.2 ⟨_, _⟩)
-  exacts [(le_or_lt l.length n).imp get?_eq_none.2 (fun hlt => ⟨⟨_, hlt⟩, (get?_eq_get hlt).symm⟩),
-    ⟨_, get?_eq_none.2 le_rfl⟩, range_subset_iff.2 fun k => ⟨_, get?_eq_get _⟩]
+  exacts [(le_or_lt l.length n).imp get_eq_none.2 (fun hlt => ⟨⟨_, hlt⟩, (get_eq_get hlt).symm⟩),
+    ⟨_, get_eq_none.2 le_rfl⟩, range_subset_iff.2 fun k => ⟨_, get_eq_get _⟩]
 #align set.range_list_nth Set.range_list_get?
 
 @[simp]

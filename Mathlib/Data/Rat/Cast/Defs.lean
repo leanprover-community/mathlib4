@@ -56,7 +56,7 @@ lemma cast_comm (q : ℚ≥0) (a : α) : q * a = a * q := cast_commute _ _
   rw [← Rat.num_nonneg] at hn
   lift n to ℕ using hn
   have hd : (d : α) ≠ 0 := by
-    refine fun hd ↦ hb ?_
+    refine fun hd ↦ hb _
     have : Rat.divInt a b = _ := congr_arg NNRat.cast e
     obtain ⟨k, rfl⟩ : d ∣ b := by simpa [Int.natCast_dvd_natCast, this] using Rat.den_dvd a b
     simp [*]
@@ -154,7 +154,7 @@ theorem commute_cast (a : α) (r : ℚ) : Commute a r :=
 @[norm_cast]
 lemma cast_divInt_of_ne_zero (a : ℤ) {b : ℤ} (b0 : (b : α) ≠ 0) : (a /. b : α) = a / b := by
   have b0' : b ≠ 0 := by
-    refine mt ?_ b0
+    refine mt _ b0
     simp (config := { contextual := true })
   cases' e : a /. b with n d h c
   have d0 : (d : α) ≠ 0 := by

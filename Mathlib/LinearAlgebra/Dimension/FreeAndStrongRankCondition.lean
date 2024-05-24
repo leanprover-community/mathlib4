@@ -96,7 +96,7 @@ theorem rank_le_one_iff [Module.Free K V] :
       ext
       simp [mem_span_singleton, hv₀]
     rw [← rank_top, ← h]
-    refine (rank_span_le _).trans_eq ?_
+    refine (rank_span_le _).trans_eq _
     simp
 #align rank_le_one_iff rank_le_one_iff
 
@@ -105,9 +105,9 @@ single non-zero vector of which all vectors are multiples. -/
 theorem rank_eq_one_iff [Module.Free K V] :
     Module.rank K V = 1 ↔ ∃ v₀ : V, v₀ ≠ 0 ∧ ∀ v, ∃ r : K, r • v₀ = v := by
   haveI := nontrivial_of_invariantBasisNumber K
-  refine ⟨fun h ↦ ?_, fun ⟨v₀, h, hv⟩ ↦ (rank_le_one_iff.2 ⟨v₀, hv⟩).antisymm ?_⟩
+  refine ⟨fun h ↦ _, fun ⟨v₀, h, hv⟩ ↦ (rank_le_one_iff.2 ⟨v₀, hv⟩).antisymm _⟩
   · obtain ⟨v₀, hv⟩ := rank_le_one_iff.1 h.le
-    refine ⟨v₀, fun hzero ↦ ?_, hv⟩
+    refine ⟨v₀, fun hzero ↦ _, hv⟩
     simp_rw [hzero, smul_zero, exists_const] at hv
     haveI : Subsingleton V := .intro fun _ _ ↦ by simp_rw [← hv]
     exact one_ne_zero (h ▸ rank_subsingleton' K V)
@@ -145,8 +145,8 @@ its span. -/
 theorem rank_submodule_eq_one_iff (s : Submodule K V) [Module.Free K s] :
     Module.rank K s = 1 ↔ ∃ v₀ ∈ s, v₀ ≠ 0 ∧ s ≤ K ∙ v₀ := by
   simp_rw [rank_eq_one_iff, le_span_singleton_iff]
-  refine ⟨fun ⟨⟨v₀, hv₀⟩, H, h⟩ ↦ ⟨v₀, hv₀, fun h' ↦ by simp [h'] at H, fun v hv ↦ ?_⟩,
-    fun ⟨v₀, hv₀, H, h⟩ ↦ ⟨⟨v₀, hv₀⟩, fun h' ↦ H (by simpa using h'), fun ⟨v, hv⟩ ↦ ?_⟩⟩
+  refine ⟨fun ⟨⟨v₀, hv₀⟩, H, h⟩ ↦ ⟨v₀, hv₀, fun h' ↦ by simp [h'] at H, fun v hv ↦ _⟩,
+    fun ⟨v₀, hv₀, H, h⟩ ↦ ⟨⟨v₀, hv₀⟩, fun h' ↦ H (by simpa using h'), fun ⟨v, hv⟩ ↦ _⟩⟩
   · obtain ⟨r, hr⟩ := h ⟨v, hv⟩
     exact ⟨r, by rwa [Subtype.ext_iff, coe_smul] at hr⟩
   · obtain ⟨r, hr⟩ := h v hv
@@ -264,7 +264,7 @@ theorem eq_bot_of_rank_le_one (h : Module.rank F S ≤ 1) [Module.Free F S] : S 
   nontriviality E
   obtain ⟨κ, b⟩ := Module.Free.exists_basis (R := F) (M := S)
   by_cases h1 : Module.rank F S = 1
-  · refine bot_unique fun x hx ↦ Algebra.mem_bot.2 ?_
+  · refine bot_unique fun x hx ↦ Algebra.mem_bot.2 _
     rw [← b.mk_eq_rank'', eq_one_iff_unique, ← unique_iff_subsingleton_and_nonempty] at h1
     obtain ⟨h1⟩ := h1
     obtain ⟨y, hy⟩ := (bijective_algebraMap_of_linearEquiv (b.repr ≪≫ₗ
@@ -276,17 +276,17 @@ theorem eq_bot_of_rank_le_one (h : Module.rank F S ≤ 1) [Module.Free F S] : S 
 #align subalgebra.eq_bot_of_rank_le_one Subalgebra.eq_bot_of_rank_le_one
 
 theorem eq_bot_of_finrank_one (h : finrank F S = 1) [Module.Free F S] : S = ⊥ := by
-  refine Subalgebra.eq_bot_of_rank_le_one ?_
+  refine Subalgebra.eq_bot_of_rank_le_one _
   rw [finrank, toNat_eq_one] at h
   rw [h]
 #align subalgebra.eq_bot_of_finrank_one Subalgebra.eq_bot_of_finrank_one
 
 @[simp]
 theorem rank_eq_one_iff [Nontrivial E] [Module.Free F S] : Module.rank F S = 1 ↔ S = ⊥ := by
-  refine ⟨fun h ↦ Subalgebra.eq_bot_of_rank_le_one h.le, ?_⟩
+  refine ⟨fun h ↦ Subalgebra.eq_bot_of_rank_le_one h.le, _⟩
   rintro rfl
   obtain ⟨κ, b⟩ := Module.Free.exists_basis (R := F) (M := (⊥ : Subalgebra F E))
-  refine le_antisymm ?_ ?_
+  refine le_antisymm _ _
   · have := lift_rank_range_le (Algebra.linearMap F E)
     rwa [← one_eq_range, rank_self, lift_one, lift_le_one_iff] at this
   · by_contra H

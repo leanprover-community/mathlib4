@@ -142,8 +142,8 @@ theorem AdjoinMonic.isIntegral (z : AdjoinMonic k) : IsIntegral k z := by
     | h_C => exact isIntegral_algebraMap
     | h_add _ _ ha hb => exact (ha _ rfl).add (hb _ rfl)
     | h_X p f ih =>
-      refine @IsIntegral.mul k _ _ _ _ _ (Ideal.Quotient.mk (maxIdeal k) _) (ih _ rfl) ?_
-      refine ⟨f, f.2.1, ?_⟩
+      refine @IsIntegral.mul k _ _ _ _ _ (Ideal.Quotient.mk (maxIdeal k) _) (ih _ rfl) _
+      refine ⟨f, f.2.1, _⟩
       erw [AdjoinMonic.algebraMap, ← hom_eval₂, Ideal.Quotient.eq_zero_iff_mem]
       exact le_maxIdeal k (Ideal.subset_span ⟨f, rfl⟩)
 #align algebraic_closure.adjoin_monic.is_integral AlgebraicClosure.AdjoinMonic.isIntegral
@@ -354,7 +354,7 @@ theorem exists_root {f : Polynomial (AlgebraicClosureAux k)}
   rw [monic_map_iff] at hfm
   have := hfm.irreducible_of_irreducible_map (ofStep k n) p hfi
   obtain ⟨x, hx⟩ := toStepSucc.exists_root k hfm this
-  refine ⟨ofStep k (n + 1) x, ?_⟩
+  refine ⟨ofStep k (n + 1) x, _⟩
   rw [← ofStep_succ k n, eval_map, ← hom_eval₂, hx, RingHom.map_zero]
 #noalign algebraic_closure.exists_root
 

@@ -42,27 +42,27 @@ lemma FormalMultilinearSeries.radius_prod_eq_min
     (p : FormalMultilinearSeries 𝕜 E F) (q : FormalMultilinearSeries 𝕜 E G) :
     (p.prod q).radius = min p.radius q.radius := by
   apply le_antisymm
-  · refine ENNReal.le_of_forall_nnreal_lt fun r hr => ?_
+  · refine ENNReal.le_of_forall_nnreal_lt fun r hr => _
     rw [le_min_iff]
     have := (p.prod q).isLittleO_one_of_lt_radius hr
     constructor
     all_goals
       apply FormalMultilinearSeries.le_radius_of_isBigO
-      refine (isBigO_of_le _ fun n ↦ ?_).trans this.isBigO
+      refine (isBigO_of_le _ fun n ↦ _).trans this.isBigO
       rw [norm_mul, norm_norm, norm_mul, norm_norm]
-      refine mul_le_mul_of_nonneg_right ?_ (norm_nonneg _)
+      refine mul_le_mul_of_nonneg_right _ (norm_nonneg _)
       rw [FormalMultilinearSeries.prod, ContinuousMultilinearMap.opNorm_prod]
     · apply le_max_left
     · apply le_max_right
-  · refine ENNReal.le_of_forall_nnreal_lt fun r hr => ?_
+  · refine ENNReal.le_of_forall_nnreal_lt fun r hr => _
     rw [lt_min_iff] at hr
     have := ((p.isLittleO_one_of_lt_radius hr.1).add
       (q.isLittleO_one_of_lt_radius hr.2)).isBigO
-    refine (p.prod q).le_radius_of_isBigO ((isBigO_of_le _ fun n ↦ ?_).trans this)
+    refine (p.prod q).le_radius_of_isBigO ((isBigO_of_le _ fun n ↦ _).trans this)
     rw [norm_mul, norm_norm, ← add_mul, norm_mul]
-    refine mul_le_mul_of_nonneg_right ?_ (norm_nonneg _)
+    refine mul_le_mul_of_nonneg_right _ (norm_nonneg _)
     rw [FormalMultilinearSeries.prod, ContinuousMultilinearMap.opNorm_prod]
-    refine (max_le_add_of_nonneg (norm_nonneg _) (norm_nonneg _)).trans ?_
+    refine (max_le_add_of_nonneg (norm_nonneg _) (norm_nonneg _)).trans _
     apply Real.le_norm_self
 
 lemma HasFPowerSeriesOnBall.prod {e : E} {f : E → F} {g : E → G} {r s : ℝ≥0∞}
@@ -76,7 +76,7 @@ lemma HasFPowerSeriesOnBall.prod {e : E} {f : E → F} {g : E → G} {r s : ℝ�
   hasSum := by
     intro y hy
     simp_rw [FormalMultilinearSeries.prod, ContinuousMultilinearMap.prod_apply]
-    refine (hf.hasSum ?_).prod_mk (hg.hasSum ?_)
+    refine (hf.hasSum _).prod_mk (hg.hasSum _)
     · exact EMetric.mem_ball.mpr (lt_of_lt_of_le hy (min_le_left _ _))
     · exact EMetric.mem_ball.mpr (lt_of_lt_of_le hy (min_le_right _ _))
 
@@ -213,25 +213,25 @@ lemma formalMultilinearSeries_geometric_radius (𝕜) [NontriviallyNormedField �
     (A : Type*) [NormedRing A] [NormOneClass A] [NormedAlgebra 𝕜 A] :
     (formalMultilinearSeries_geometric 𝕜 A).radius = 1 := by
   apply le_antisymm
-  · refine le_of_forall_nnreal_lt (fun r hr ↦ ?_)
+  · refine le_of_forall_nnreal_lt (fun r hr ↦ _)
     rw [← ENNReal.coe_one, ENNReal.coe_le_coe]
     have := FormalMultilinearSeries.isLittleO_one_of_lt_radius _ hr
     simp_rw [formalMultilinearSeries_geometric_apply_norm, one_mul] at this
     contrapose! this
     simp_rw [IsLittleO, IsBigOWith, not_forall, norm_one, mul_one,
       not_eventually]
-    refine ⟨1, one_pos, ?_⟩
-    refine ((eventually_ne_atTop 0).mp (eventually_of_forall ?_)).frequently
+    refine ⟨1, one_pos, _⟩
+    refine ((eventually_ne_atTop 0).mp (eventually_of_forall _)).frequently
     intro n hn
     push_neg
     rwa [norm_pow, one_lt_pow_iff_of_nonneg (norm_nonneg _) hn,
       Real.norm_of_nonneg (NNReal.coe_nonneg _), ← NNReal.coe_one,
       NNReal.coe_lt_coe]
-  · refine le_of_forall_nnreal_lt (fun r hr ↦ ?_)
+  · refine le_of_forall_nnreal_lt (fun r hr ↦ _)
     rw [← Nat.cast_one, ENNReal.coe_lt_natCast, Nat.cast_one] at hr
     apply FormalMultilinearSeries.le_radius_of_isBigO
     simp_rw [formalMultilinearSeries_geometric_apply_norm, one_mul]
-    refine isBigO_of_le atTop (fun n ↦ ?_)
+    refine isBigO_of_le atTop (fun n ↦ _)
     rw [norm_one, Real.norm_of_nonneg (pow_nonneg (coe_nonneg r) _)]
     exact pow_le_one _ (coe_nonneg r) hr.le
 

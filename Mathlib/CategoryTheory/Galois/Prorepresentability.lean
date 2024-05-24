@@ -100,12 +100,12 @@ instance : IsCofilteredOrEmpty (PointedGaloisObject F) where
   cone_objs := fun ⟨A, a, _⟩ ⟨B, b, _⟩ ↦ by
     obtain ⟨Z, f, z, hgal, hfz⟩ := exists_hom_from_galois_of_fiber F (A ⨯ B)
       <| (fiberBinaryProductEquiv F A B).symm (a, b)
-    refine ⟨⟨Z, z, hgal⟩, ⟨f ≫ prod.fst, ?_⟩, ⟨f ≫ prod.snd, ?_⟩, trivial⟩
+    refine ⟨⟨Z, z, hgal⟩, ⟨f ≫ prod.fst, _⟩, ⟨f ≫ prod.snd, _⟩, trivial⟩
     · simp only [F.map_comp, hfz, FintypeCat.comp_apply, fiberBinaryProductEquiv_symm_fst_apply]
     · simp only [F.map_comp, hfz, FintypeCat.comp_apply, fiberBinaryProductEquiv_symm_snd_apply]
   cone_maps := fun ⟨A, a, _⟩ ⟨B, b, _⟩ ⟨f, hf⟩ ⟨g, hg⟩ ↦ by
     obtain ⟨Z, h, z, hgal, hhz⟩ := exists_hom_from_galois_of_fiber F A a
-    refine ⟨⟨Z, z, hgal⟩, ⟨h, hhz⟩, hom_ext ?_⟩
+    refine ⟨⟨Z, z, hgal⟩, ⟨h, hhz⟩, hom_ext _⟩
     apply evaluation_injective_of_isConnected F Z B z
     simp [hhz, hf, hg]
 
@@ -141,19 +141,19 @@ lemma cocone_app (A : PointedGaloisObject F) (B : C) (f : (A : C) ⟶ B) :
 
 /-- `cocone F` is a colimit cocone, i.e. `F` is pro-represented by `incl F`. -/
 noncomputable def isColimit : IsColimit (cocone F) := by
-  refine evaluationJointlyReflectsColimits _ (fun X ↦ ?_)
-  refine Types.FilteredColimit.isColimitOf _ _ ?_ ?_
+  refine evaluationJointlyReflectsColimits _ (fun X ↦ _)
+  refine Types.FilteredColimit.isColimitOf _ _ _ _
   · intro (x : F.obj X)
     obtain ⟨Y, i, y, h1, _, _⟩ := fiber_in_connected_component F X x
     obtain ⟨Z, f, z, hgal, hfz⟩ := exists_hom_from_galois_of_fiber F Y y
-    refine ⟨⟨Z, z, hgal⟩, f ≫ i, ?_⟩
+    refine ⟨⟨Z, z, hgal⟩, f ≫ i, _⟩
     simp only [mapCocone_ι_app, evaluation_obj_map, cocone_app, map_comp,
       ← h1, FintypeCat.comp_apply, hfz]
   · intro ⟨A, a, _⟩ ⟨B, b, _⟩ (u : (A : C) ⟶ X) (v : (B : C) ⟶ X) (h : F.map u a = F.map v b)
     obtain ⟨⟨Z, z, _⟩, ⟨f, hf⟩, ⟨g, hg⟩, _⟩ :=
       IsFilteredOrEmpty.cocone_objs (C := (PointedGaloisObject F)ᵒᵖ)
         ⟨{ obj := A, pt := a}⟩ ⟨{obj := B, pt := b}⟩
-    refine ⟨⟨{ obj := Z, pt := z }⟩, ⟨f, hf⟩, ⟨g, hg⟩, ?_⟩
+    refine ⟨⟨{ obj := Z, pt := z }⟩, ⟨f, hf⟩, ⟨g, hg⟩, _⟩
     apply evaluation_injective_of_isConnected F Z X z
     change F.map (f ≫ u) z = F.map (g ≫ v) z
     rw [map_comp, FintypeCat.comp_apply, hf, map_comp, FintypeCat.comp_apply, hg, h]

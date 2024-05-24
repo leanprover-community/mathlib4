@@ -143,7 +143,7 @@ good definitional behaviour for the module instance on adic completions -/
 instance : SMul (R ⧸ (I • ⊤ : Ideal R)) (M ⧸ (I • ⊤ : Submodule R M)) where
   smul r x :=
     Quotient.liftOn r (· • x) fun b₁ b₂ (h : Setoid.Rel _ b₁ b₂) ↦ by
-      refine Quotient.inductionOn' x (fun x ↦ ?_)
+      refine Quotient.inductionOn' x (fun x ↦ _)
       have h : b₁ - b₂ ∈ (I : Submodule R R) := by
         rwa [show I = I • ⊤ by simp, ← Submodule.quotientRel_r_def]
       rw [← sub_eq_zero, ← sub_smul, Submodule.Quotient.mk''_eq_mk,
@@ -162,8 +162,8 @@ instance : Module (R ⧸ (I • ⊤ : Ideal R)) (M ⧸ (I • ⊤ : Submodule R 
 
 instance : IsScalarTower R (R ⧸ (I • ⊤ : Ideal R)) (M ⧸ (I • ⊤ : Submodule R M)) where
   smul_assoc r s x := by
-    refine Quotient.inductionOn' s (fun s ↦ ?_)
-    refine Quotient.inductionOn' x (fun x ↦ ?_)
+    refine Quotient.inductionOn' s (fun s ↦ _)
+    refine Quotient.inductionOn' x (fun x ↦ _)
     simp only [Submodule.Quotient.mk''_eq_mk]
     rw [← Submodule.Quotient.mk_smul, Ideal.Quotient.mk_eq_mk, mk_smul_mk, smul_assoc]
     rfl
@@ -172,8 +172,8 @@ instance smul : SMul (AdicCompletion I R) (AdicCompletion I M) where
   smul r x := {
     val := fun n ↦ eval I R n r • eval I M n x
     property := fun {m n} hmn ↦ by
-      apply induction_on I R r (fun r ↦ ?_)
-      apply induction_on I M x (fun x ↦ ?_)
+      apply induction_on I R r (fun r ↦ _)
+      apply induction_on I M x (fun x ↦ _)
       simp only [coe_eval, mk_apply_coe, mkQ_apply, Ideal.Quotient.mk_eq_mk,
         mk_smul_mk, LinearMapClass.map_smul, transitionMap_mk]
       rw [smul_mk I hmn]

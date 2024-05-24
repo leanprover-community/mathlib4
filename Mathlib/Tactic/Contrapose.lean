@@ -31,7 +31,7 @@ Transforms the goal into its contrapositive.
 -/
 syntax (name := contrapose) "contrapose" (ppSpace colGt ident (" with " ident)?)? : tactic
 macro_rules
-  | `(tactic| contrapose) => `(tactic| (refine mtr ?_))
+  | `(tactic| contrapose) => `(tactic| (refine mtr _))
   | `(tactic| contrapose $e) => `(tactic| (revert $e:ident; contrapose; intro $e:ident))
   | `(tactic| contrapose $e with $e') => `(tactic| (revert $e:ident; contrapose; intro $e':ident))
 

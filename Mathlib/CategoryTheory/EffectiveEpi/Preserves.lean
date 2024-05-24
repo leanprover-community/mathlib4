@@ -61,7 +61,7 @@ def effectiveEpiFamilyStructOfEquivalence : EffectiveEpiFamilyStruct (fun a ↦ 
       Equivalence.toAdjunction_counit]
     have := EffectiveEpiFamily.uniq X π (fun a ↦ e.unit.app _ ≫ e.inverse.map (ε a))
       (effectiveEpiFamilyStructOfEquivalence_aux e X π ε h)
-    specialize this (e.unit.app _ ≫ e.inverse.map m) fun a ↦ ?_
+    specialize this (e.unit.app _ ≫ e.inverse.map m) fun a ↦ _
     · rw [← congrArg e.inverse.map (hm a)]
       simp
     · simp [← this]

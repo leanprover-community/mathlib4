@@ -332,7 +332,7 @@ theorem union_ae_eq_right_iff_ae_subset : (s ∪ t : Set α) =ᵐ[μ] t ↔ s �
 
 theorem ae_eq_of_ae_subset_of_measure_ge (h₁ : s ≤ᵐ[μ] t) (h₂ : μ t ≤ μ s) (hsm : MeasurableSet s)
     (ht : μ t ≠ ∞) : s =ᵐ[μ] t := by
-  refine eventuallyLE_antisymm_iff.mpr ⟨h₁, ae_le_set.mpr ?_⟩
+  refine eventuallyLE_antisymm_iff.mpr ⟨h₁, ae_le_set.mpr _⟩
   replace h₂ : μ t = μ s := h₂.antisymm (measure_mono_ae h₁)
   replace ht : μ s ≠ ∞ := h₂ ▸ ht
   rw [measure_diff' t hsm ht, measure_congr (union_ae_eq_left_iff_ae_subset.mpr h₁), h₂, tsub_self]
@@ -351,10 +351,10 @@ theorem measure_iUnion_congr_of_subset [Countable β] {s : β → Set α} {t : �
       μ (⋃ b, s b) = ∞ := top_unique (hb ▸ (h_le b).trans <| measure_mono <| subset_iUnion _ _)
       _ = μ (⋃ b, t b) := Eq.symm <| top_unique <| hb ▸ measure_mono (subset_iUnion _ _)
   push_neg at htop
-  refine le_antisymm (measure_mono (iUnion_mono hsub)) ?_
+  refine le_antisymm (measure_mono (iUnion_mono hsub)) _
   set M := toMeasurable μ
   have H : ∀ b, (M (t b) ∩ M (⋃ b, s b) : Set α) =ᵐ[μ] M (t b) := by
-    refine fun b => ae_eq_of_subset_of_measure_ge (inter_subset_left _ _) ?_ ?_ ?_
+    refine fun b => ae_eq_of_subset_of_measure_ge (inter_subset_left _ _) _ _ _
     · calc
         μ (M (t b)) = μ (t b) := measure_toMeasurable _
         _ ≤ μ (s b) := h_le b
@@ -480,7 +480,7 @@ theorem measure_iUnion_eq_iSup [Countable ι] {s : ι → Set α} (hd : Directed
     exact this.trans (iSup_extend_bot Encodable.encode_injective _)
   clear! ι
   -- The `≥` inequality is trivial
-  refine le_antisymm ?_ (iSup_le fun i => measure_mono <| subset_iUnion _ _)
+  refine le_antisymm _ (iSup_le fun i => measure_mono <| subset_iUnion _ _)
   -- Choose `T n ⊇ t n` of the same measure, put `Td n = disjointed T`
   set T : ℕ → Set α := fun n => toMeasurable μ (t n)
   set Td : ℕ → Set α := disjointed T
@@ -532,7 +532,7 @@ theorem measure_iInter_eq_iInf [Countable ι] {s : ι → Set α} (h : ∀ i, Me
     measure_diff (iInter_subset _ k) (MeasurableSet.iInter h) (this _ (iInter_subset _ k)),
     diff_iInter, measure_iUnion_eq_iSup]
   · congr 1
-    refine le_antisymm (iSup_mono' fun i => ?_) (iSup_mono fun i => ?_)
+    refine le_antisymm (iSup_mono' fun i => _) (iSup_mono fun i => _)
     · rcases hd i k with ⟨j, hji, hjk⟩
       use j
       rw [← measure_diff hjk (h _) (this _ hjk)]
@@ -611,7 +611,7 @@ theorem tendsto_measure_biInter_gt {ι : Type*} [LinearOrder ι] [TopologicalSpa
     [OrderTopology ι] [DenselyOrdered ι] [FirstCountableTopology ι] {s : ι → Set α}
     {a : ι} (hs : ∀ r > a, MeasurableSet (s r)) (hm : ∀ i j, a < i → i ≤ j → s i ⊆ s j)
     (hf : ∃ r > a, μ (s r) ≠ ∞) : Tendsto (μ ∘ s) (𝓝[Ioi a] a) (𝓝 (μ (⋂ r > a, s r))) := by
-  refine tendsto_order.2 ⟨fun l hl => ?_, fun L hL => ?_⟩
+  refine tendsto_order.2 ⟨fun l hl => _, fun L hL => _⟩
   · filter_upwards [self_mem_nhdsWithin (s := Ioi a)] with r hr using hl.trans_le
         (measure_mono (biInter_subset_of_mem hr))
   obtain ⟨u, u_anti, u_pos, u_lim⟩ :
@@ -620,12 +620,12 @@ theorem tendsto_measure_biInter_gt {ι : Type*} [LinearOrder ι] [TopologicalSpa
     rcases exists_seq_strictAnti_tendsto' ar with ⟨w, w_anti, w_mem, w_lim⟩
     exact ⟨w, w_anti, fun n => (w_mem n).1, w_lim⟩
   have A : Tendsto (μ ∘ s ∘ u) atTop (𝓝 (μ (⋂ n, s (u n)))) := by
-    refine tendsto_measure_iInter (fun n => hs _ (u_pos n)) ?_ ?_
+    refine tendsto_measure_iInter (fun n => hs _ (u_pos n)) _ _
     · intro m n hmn
       exact hm _ _ (u_pos n) (u_anti.antitone hmn)
     · rcases hf with ⟨r, rpos, hr⟩
       obtain ⟨n, hn⟩ : ∃ n : ℕ, u n < r := ((tendsto_order.1 u_lim).2 r rpos).exists
-      refine ⟨n, ne_of_lt (lt_of_le_of_lt ?_ hr.lt_top)⟩
+      refine ⟨n, ne_of_lt (lt_of_le_of_lt _ hr.lt_top)⟩
       exact measure_mono (hm _ _ (u_pos n) hn.le)
   have B : ⋂ n, s (u n) = ⋂ r > a, s r := by
     apply Subset.antisymm
@@ -666,7 +666,7 @@ theorem measure_limsup_eq_zero {s : ℕ → Set α} (hs : (∑' i, μ (s i)) ≠
   refine
     le_of_tendsto_of_tendsto'
       (tendsto_measure_iInter
-        (fun i => MeasurableSet.iUnion fun b => measurableSet_toMeasurable _ _) ?_
+        (fun i => MeasurableSet.iUnion fun b => measurableSet_toMeasurable _ _) _
         ⟨0, ne_top_of_le_ne_top ht (measure_iUnion_le t)⟩)
       (ENNReal.tendsto_sum_nat_add (μ ∘ t) ht) fun n => measure_iUnion_le _
   intro n m hnm x
@@ -747,7 +747,7 @@ theorem le_toMeasure_apply (m : OuterMeasure α) (h : ms ≤ m.caratheodory) (s 
 
 theorem toMeasure_apply₀ (m : OuterMeasure α) (h : ms ≤ m.caratheodory) {s : Set α}
     (hs : NullMeasurableSet s (m.toMeasure h)) : m.toMeasure h s = m s := by
-  refine le_antisymm ?_ (le_toMeasure_apply _ _ _)
+  refine le_antisymm _ (le_toMeasure_apply _ _ _)
   rcases hs.exists_measurable_subset_ae_eq with ⟨t, hts, htm, heq⟩
   calc
     m.toMeasure h s = m.toMeasure h t := measure_congr heq.symm
@@ -782,7 +782,7 @@ then for any measurable set `s` one also has `μ (t ∩ s) = μ (u ∩ s)`. -/
 theorem measure_inter_eq_of_measure_eq {s t u : Set α} (hs : MeasurableSet s) (h : μ t = μ u)
     (htu : t ⊆ u) (ht_ne_top : μ t ≠ ∞) : μ (t ∩ s) = μ (u ∩ s) := by
   rw [h] at ht_ne_top
-  refine le_antisymm (by gcongr) ?_
+  refine le_antisymm (by gcongr) _
   have A : μ (u ∩ s) + μ (u \ s) ≤ μ (t ∩ s) + μ (u \ s) :=
     calc
       μ (u ∩ s) + μ (u \ s) = μ u := measure_inter_add_diff _ hs
@@ -973,7 +973,7 @@ theorem ae_smul_measure_iff {p : α → Prop} {c : ℝ≥0∞} (hc : c ≠ 0) :
 
 theorem measure_eq_left_of_subset_of_measure_add_eq {s t : Set α} (h : (μ + ν) t ≠ ∞) (h' : s ⊆ t)
     (h'' : (μ + ν) s = (μ + ν) t) : μ s = μ t := by
-  refine le_antisymm (measure_mono h') ?_
+  refine le_antisymm (measure_mono h') _
   have : μ t + ν t ≤ μ s + ν t :=
     calc
       μ t + ν t = μ s + ν s := h''.symm
@@ -990,9 +990,9 @@ theorem measure_eq_right_of_subset_of_measure_add_eq {s t : Set α} (h : (μ + �
 
 theorem measure_toMeasurable_add_inter_left {s t : Set α} (hs : MeasurableSet s)
     (ht : (μ + ν) t ≠ ∞) : μ (toMeasurable (μ + ν) t ∩ s) = μ (t ∩ s) := by
-  refine (measure_inter_eq_of_measure_eq hs ?_ (subset_toMeasurable _ _) ?_).symm
+  refine (measure_inter_eq_of_measure_eq hs _ (subset_toMeasurable _ _) _).symm
   · refine
-      measure_eq_left_of_subset_of_measure_add_eq ?_ (subset_toMeasurable _ _)
+      measure_eq_left_of_subset_of_measure_add_eq _ (subset_toMeasurable _ _)
         (measure_toMeasurable t).symm
     rwa [measure_toMeasurable t]
   · simp only [not_or, ENNReal.add_eq_top, Pi.add_apply, Ne, coe_add] at ht
@@ -1055,7 +1055,7 @@ variable {m : Set (Measure α)}
 theorem sInf_caratheodory (s : Set α) (hs : MeasurableSet s) :
     MeasurableSet[(sInf (toOuterMeasure '' m)).caratheodory] s := by
   rw [OuterMeasure.sInf_eq_boundedBy_sInfGen]
-  refine OuterMeasure.boundedBy_caratheodory fun t => ?_
+  refine OuterMeasure.boundedBy_caratheodory fun t => _
   simp only [OuterMeasure.sInfGen, le_iInf_iff, forall_mem_image, measure_eq_iInf t,
     coe_toOuterMeasure]
   intro μ hμ u htu _hu
@@ -1096,7 +1096,7 @@ instance instCompleteLattice [MeasurableSpace α] : CompleteLattice (Measure α)
       { toOuterMeasure := ⊤,
         m_iUnion := by
           intro f _ _
-          refine (measure_iUnion_le _).antisymm ?_
+          refine (measure_iUnion_le _).antisymm _
           if hne : (⋃ i, f i).Nonempty then
             rw [OuterMeasure.top_apply hne]
             exact le_top
@@ -1439,8 +1439,8 @@ theorem ae_eq_image_of_ae_eq_comap {β} [MeasurableSpace α] {mβ : MeasurableSp
 theorem NullMeasurableSet.image {β} [MeasurableSpace α] {mβ : MeasurableSpace β} (f : α → β)
     (μ : Measure β) (hfi : Injective f) (hf : ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ)
     {s : Set α} (hs : NullMeasurableSet s (μ.comap f)) : NullMeasurableSet (f '' s) μ := by
-  refine ⟨toMeasurable μ (f '' toMeasurable (μ.comap f) s), measurableSet_toMeasurable _ _, ?_⟩
-  refine EventuallyEq.trans ?_ (NullMeasurableSet.toMeasurable_ae_eq ?_).symm
+  refine ⟨toMeasurable μ (f '' toMeasurable (μ.comap f) s), measurableSet_toMeasurable _ _, _⟩
+  refine EventuallyEq.trans _ (NullMeasurableSet.toMeasurable_ae_eq _).symm
   swap
   · exact hf _ (measurableSet_toMeasurable _ _)
   have h : toMeasurable (comap f μ) s =ᵐ[comap f μ] s :=
@@ -1476,7 +1476,7 @@ theorem sum_apply (f : ι → Measure α) {s : Set α} (hs : MeasurableSet s) :
 
 theorem sum_apply₀ (f : ι → Measure α) {s : Set α} (hs : NullMeasurableSet s (sum f)) :
     sum f s = ∑' i, f i s := by
-  apply le_antisymm ?_ (le_sum_apply _ _)
+  apply le_antisymm _ (le_sum_apply _ _)
   rcases hs.exists_measurable_subset_ae_eq  with ⟨t, ts, t_meas, ht⟩
   calc
   sum f s = sum f t := measure_congr ht.symm
@@ -1493,7 +1493,7 @@ containing `x₀` (as such a set is uncountable), and by outer regularity one ge
 -/
 theorem sum_apply_of_countable [Countable ι] (f : ι → Measure α) (s : Set α) :
     sum f s = ∑' i, f i s := by
-  apply le_antisymm ?_ (le_sum_apply _ _)
+  apply le_antisymm _ (le_sum_apply _ _)
   rcases exists_measurable_superset_forall_eq f s with ⟨t, hst, htm, ht⟩
   calc
   sum f s ≤ sum f t := measure_mono hst
@@ -1666,7 +1666,7 @@ protected lemma add (h1 : μ₁ ≪ ν) (h2 : μ₂ ≪ ν') : μ₁ + μ₂ ≪
 
 lemma add_left_iff {μ₁ μ₂ ν : Measure α} :
     μ₁ + μ₂ ≪ ν ↔ μ₁ ≪ ν ∧ μ₂ ≪ ν := by
-  refine ⟨fun h ↦ ?_, fun h ↦ (h.1.add h.2).trans ?_⟩
+  refine ⟨fun h ↦ _, fun h ↦ (h.1.add h.2).trans _⟩
   · have : ∀ s, ν s = 0 → μ₁ s = 0 ∧ μ₂ s = 0 := by intro s hs0; simpa using h hs0
     exact ⟨fun s hs0 ↦ (this s hs0).1, fun s hs0 ↦ (this s hs0).2⟩
   · have : ν + ν = 2 • ν := by ext; simp [two_mul]
@@ -1693,7 +1693,7 @@ lemma absolutelyContinuous_sum_left {μs : ι → Measure α} (hμs : ∀ i, μs
 
 lemma absolutelyContinuous_sum_right {μs : ι → Measure α} (i : ι) (hνμ : ν ≪ μs i) :
     ν ≪ Measure.sum μs := by
-  refine AbsolutelyContinuous.mk fun s hs hs0 ↦ ?_
+  refine AbsolutelyContinuous.mk fun s hs hs0 ↦ _
   simp only [sum_apply _ hs, ENNReal.tsum_eq_zero] at hs0
   exact hνμ (hs0 i)
 
@@ -2153,7 +2153,7 @@ open MeasureTheory Measure
 variable {m0 : MeasurableSpace α} {m1 : MeasurableSpace β} {f : α → β} (hf : MeasurableEmbedding f)
 
 nonrec theorem map_apply (μ : Measure α) (s : Set β) : μ.map f s = μ (f ⁻¹' s) := by
-  refine le_antisymm ?_ (le_map_apply hf.measurable.aemeasurable s)
+  refine le_antisymm _ (le_map_apply hf.measurable.aemeasurable s)
   set t := f '' toMeasurable μ (f ⁻¹' s) ∪ (range f)ᶜ
   have htm : MeasurableSet t :=
     (hf.measurableSet_image.2 <| measurableSet_toMeasurable _ _).union

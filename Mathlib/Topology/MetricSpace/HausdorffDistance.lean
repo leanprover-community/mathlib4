@@ -134,7 +134,7 @@ theorem infEdist_le_edist_add_infEdist : infEdist x s ≤ edist x y + infEdist y
 
 theorem edist_le_infEdist_add_ediam (hy : y ∈ s) : edist x y ≤ infEdist x s + diam s := by
   simp_rw [infEdist, ENNReal.iInf_add]
-  refine le_iInf₂ fun i hi => ?_
+  refine le_iInf₂ fun i hi => _
   calc
     edist x y ≤ edist x i + edist i y := edist_triangle _ _ _
     _ ≤ edist x i + diam s := add_le_add le_rfl (edist_le_diam_of_mem hi hy)
@@ -149,8 +149,8 @@ theorem continuous_infEdist : Continuous fun x => infEdist x s :=
 
 /-- The edist to a set and to its closure coincide -/
 theorem infEdist_closure : infEdist x (closure s) = infEdist x s := by
-  refine le_antisymm (infEdist_anti subset_closure) ?_
-  refine ENNReal.le_of_forall_pos_le_add fun ε εpos h => ?_
+  refine le_antisymm (infEdist_anti subset_closure) _
+  refine ENNReal.le_of_forall_pos_le_add fun ε εpos h => _
   have ε0 : 0 < (ε / 2 : ℝ≥0∞) := by simpa [pos_iff_ne_zero] using εpos
   have : infEdist x (closure s) < infEdist x (closure s) + ε / 2 :=
     ENNReal.lt_add_right h.ne ε0.ne'
@@ -228,9 +228,9 @@ theorem _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
     by_contra h
     have : infEdist x Uᶜ ≠ 0 := ((ENNReal.pow_pos a_pos _).trans_le hx).ne'
     exact this (infEdist_zero_of_mem h)
-  refine ⟨F, fun n => IsClosed.preimage continuous_infEdist isClosed_Ici, F_subset, ?_, ?_⟩
+  refine ⟨F, fun n => IsClosed.preimage continuous_infEdist isClosed_Ici, F_subset, _, _⟩
   · show ⋃ n, F n = U
-    refine Subset.antisymm (by simp only [iUnion_subset_iff, F_subset, forall_const]) fun x hx => ?_
+    refine Subset.antisymm (by simp only [iUnion_subset_iff, F_subset, forall_const]) fun x hx => _
     have : ¬x ∈ Uᶜ := by simpa using hx
     rw [mem_iff_infEdist_zero_of_closed hU.isClosed_compl] at this
     have B : 0 < infEdist x Uᶜ := by simpa [pos_iff_ne_zero] using this
@@ -304,7 +304,7 @@ theorem hausdorffEdist_le_of_infEdist {r : ℝ≥0∞} (H1 : ∀ x ∈ s, infEdi
 another point in the other set at controlled distance -/
 theorem hausdorffEdist_le_of_mem_edist {r : ℝ≥0∞} (H1 : ∀ x ∈ s, ∃ y ∈ t, edist x y ≤ r)
     (H2 : ∀ x ∈ t, ∃ y ∈ s, edist x y ≤ r) : hausdorffEdist s t ≤ r := by
-  refine hausdorffEdist_le_of_infEdist (fun x xs ↦ ?_) (fun x xt ↦ ?_)
+  refine hausdorffEdist_le_of_infEdist (fun x xs ↦ _) (fun x xt ↦ _)
   · rcases H1 x xs with ⟨y, yt, hy⟩
     exact le_trans (infEdist_le_edist_of_mem yt) hy
   · rcases H2 x xt with ⟨y, ys, hy⟩
@@ -314,7 +314,7 @@ theorem hausdorffEdist_le_of_mem_edist {r : ℝ≥0∞} (H1 : ∀ x ∈ s, ∃ y
 /-- The distance to a set is controlled by the Hausdorff distance. -/
 theorem infEdist_le_hausdorffEdist_of_mem (h : x ∈ s) : infEdist x t ≤ hausdorffEdist s t := by
   rw [hausdorffEdist_def]
-  refine le_trans ?_ le_sup_left
+  refine le_trans _ le_sup_left
   exact le_iSup₂ (α := ℝ≥0∞) x h
 #align emetric.inf_edist_le_Hausdorff_edist_of_mem EMetric.infEdist_le_hausdorffEdist_of_mem
 
@@ -360,7 +360,7 @@ theorem hausdorffEdist_le_ediam (hs : s.Nonempty) (ht : t.Nonempty) :
     hausdorffEdist s t ≤ diam (s ∪ t) := by
   rcases hs with ⟨x, xs⟩
   rcases ht with ⟨y, yt⟩
-  refine hausdorffEdist_le_of_mem_edist ?_ ?_
+  refine hausdorffEdist_le_of_mem_edist _ _
   · intro z hz
     exact ⟨y, yt, edist_le_diam_of_mem (subset_union_left _ _ hz) (subset_union_right _ _ yt)⟩
   · intro z hz
@@ -405,7 +405,7 @@ theorem hausdorffEdist_self_closure : hausdorffEdist s (closure s) = 0 := by
 /-- Replacing a set by its closure does not change the Hausdorff edistance. -/
 @[simp]
 theorem hausdorffEdist_closure₁ : hausdorffEdist (closure s) t = hausdorffEdist s t := by
-  refine le_antisymm ?_ ?_
+  refine le_antisymm _ _
   · calc
       _ ≤ hausdorffEdist (closure s) s + hausdorffEdist s t := hausdorffEdist_triangle
       _ = hausdorffEdist s t := by simp [hausdorffEdist_comm]
@@ -540,7 +540,7 @@ theorem infDist_lt_iff {r : ℝ} (hs : s.Nonempty) : infDist x s < r ↔ ∃ y �
 the distance between `x` and `y`. -/
 theorem infDist_le_infDist_add_dist : infDist x s ≤ infDist y s + dist x y := by
   rw [infDist, infDist, dist_edist]
-  refine ENNReal.toReal_le_add' infEdist_le_infEdist_add_edist ?_ (flip absurd (edist_ne_top _ _))
+  refine ENNReal.toReal_le_add' infEdist_le_infEdist_add_edist _ (flip absurd (edist_ne_top _ _))
   simp only [infEdist_eq_top_iff, imp_self]
 #align metric.inf_dist_le_inf_dist_add_dist Metric.infDist_le_infDist_add_dist
 
@@ -624,7 +624,7 @@ theorem continuousAt_inv_infDist_pt (h : x ∉ closure s) :
     ContinuousAt (fun x ↦ (infDist x s)⁻¹) x := by
   rcases s.eq_empty_or_nonempty with (rfl | hs)
   · simp only [infDist_empty, continuousAt_const]
-  · refine (continuous_infDist_pt s).continuousAt.inv₀ ?_
+  · refine (continuous_infDist_pt s).continuousAt.inv₀ _
     rwa [Ne, ← mem_closure_iff_infDist_zero hs]
 
 /-- The infimum distance is invariant under isometries. -/
@@ -635,8 +635,8 @@ theorem infDist_image (hΦ : Isometry Φ) : infDist (Φ x) (Φ '' t) = infDist x
 theorem infDist_inter_closedBall_of_mem (h : y ∈ s) :
     infDist x (s ∩ closedBall x (dist y x)) = infDist x s := by
   replace h : y ∈ s ∩ closedBall x (dist y x) := ⟨h, mem_closedBall.2 le_rfl⟩
-  refine le_antisymm ?_ (infDist_le_infDist_of_subset (inter_subset_left _ _) ⟨y, h⟩)
-  refine not_lt.1 fun hlt => ?_
+  refine le_antisymm _ (infDist_le_infDist_of_subset (inter_subset_left _ _) ⟨y, h⟩)
+  refine not_lt.1 fun hlt => _
   rcases (infDist_lt_iff ⟨y, h.1⟩).mp hlt with ⟨z, hzs, hz⟩
   rcases le_or_lt (dist z x) (dist y x) with hle | hlt
   · exact hz.not_le (infDist_le_dist_of_mem ⟨hzs, hle⟩)
@@ -796,7 +796,7 @@ theorem hausdorffDist_le_diam (hs : s.Nonempty) (bs : IsBounded s) (ht : t.Nonem
     (bt : IsBounded t) : hausdorffDist s t ≤ diam (s ∪ t) := by
   rcases hs with ⟨x, xs⟩
   rcases ht with ⟨y, yt⟩
-  refine hausdorffDist_le_of_mem_dist diam_nonneg ?_ ?_
+  refine hausdorffDist_le_of_mem_dist diam_nonneg _ _
   · exact fun z hz => ⟨y, yt, dist_le_diam_of_mem (bs.union bt) (subset_union_left _ _ hz)
       (subset_union_right _ _ yt)⟩
   · exact fun z hz => ⟨x, xs, dist_le_diam_of_mem (bs.union bt) (subset_union_right _ _ hz)
@@ -835,7 +835,7 @@ theorem exists_dist_lt_of_hausdorffDist_lt' {r : ℝ} (h : y ∈ t) (H : hausdor
 between `s` and `t` -/
 theorem infDist_le_infDist_add_hausdorffDist (fin : hausdorffEdist s t ≠ ⊤) :
     infDist x t ≤ infDist x s + hausdorffDist s t := by
-  refine toReal_le_add' infEdist_le_infEdist_add_hausdorffEdist (fun h ↦ ?_) (flip absurd fin)
+  refine toReal_le_add' infEdist_le_infEdist_add_hausdorffEdist (fun h ↦ _) (flip absurd fin)
   rw [infEdist_eq_top_iff, ← not_nonempty_iff_eq_empty] at h ⊢
   rw [hausdorffEdist_comm] at fin
   exact mt (nonempty_of_hausdorffEdist_ne_top · fin) h
@@ -850,7 +850,7 @@ theorem hausdorffDist_image (h : Isometry Φ) :
 /-- The Hausdorff distance satisfies the triangle inequality. -/
 theorem hausdorffDist_triangle (fin : hausdorffEdist s t ≠ ⊤) :
     hausdorffDist s u ≤ hausdorffDist s t + hausdorffDist t u := by
-  refine toReal_le_add' hausdorffEdist_triangle (flip absurd fin) (not_imp_not.1 fun h ↦ ?_)
+  refine toReal_le_add' hausdorffEdist_triangle (flip absurd fin) (not_imp_not.1 fun h ↦ _)
   rw [hausdorffEdist_comm] at fin
   exact ne_top_of_le_ne_top (add_ne_top.2 ⟨fin, h⟩) hausdorffEdist_triangle
 #align metric.Hausdorff_dist_triangle Metric.hausdorffDist_triangle

@@ -395,7 +395,7 @@ theorem natSepDegree_mul_eq_iff (g : F[X]) :
         isCoprime_comm] using this g f h.symm (h.resolve_left hf)
     rw [hf, zero_mul, natSepDegree_zero, zero_add, isCoprime_zero_left, isUnit_iff, eq_comm,
       natSepDegree_eq_zero_iff, natDegree_eq_zero]
-    refine ⟨fun ⟨x, h⟩ ↦ ?_, ?_⟩
+    refine ⟨fun ⟨x, h⟩ ↦ _, _⟩
     · by_cases hx : x = 0
       · exact .inl ⟨rfl, by rw [← h, hx, map_zero]⟩
       exact .inr ⟨x, Ne.isUnit hx, h⟩
@@ -406,7 +406,7 @@ theorem natSepDegree_mul_eq_iff (g : F[X]) :
     Finset.card_union_eq_card_add_card, Finset.disjoint_iff_ne, Multiset.mem_toFinset, mem_aroots]
   rw [mul_eq_zero, not_or] at h
   refine ⟨fun H ↦ .inr (isCoprime_of_irreducible_dvd (not_and.2 fun _ ↦ h.2)
-    fun u hu ⟨v, hf⟩ ⟨w, hg⟩ ↦ ?_), ?_⟩
+    fun u hu ⟨v, hf⟩ ⟨w, hg⟩ ↦ _), _⟩
   · obtain ⟨x, hx⟩ := IsAlgClosed.exists_aeval_eq_zero
       (AlgebraicClosure F) _ (degree_pos_of_irreducible hu).ne'
     exact H x ⟨h.1, by simpa only [map_mul, hx, zero_mul] using congr(aeval x $hf)⟩
@@ -479,7 +479,7 @@ for some `n : ℕ` and `y : F`. -/
 theorem natSepDegree_eq_one_iff_of_monic' (q : ℕ) [ExpChar F q] (hm : f.Monic)
     (hi : Irreducible f) : f.natSepDegree = 1 ↔
     ∃ (n : ℕ) (y : F), f = expand F (q ^ n) (X - C y) := by
-  refine ⟨fun h ↦ ?_, fun ⟨n, y, h⟩ ↦ ?_⟩
+  refine ⟨fun h ↦ _, fun ⟨n, y, h⟩ ↦ _⟩
   · obtain ⟨g, h1, n, rfl⟩ := hi.hasSeparableContraction q
     have h2 : g.natDegree = 1 := by
       rwa [natSepDegree_expand _ q, h1.natSepDegree_eq_natDegree] at h
@@ -531,7 +531,7 @@ theorem eq_X_pow_char_pow_sub_C_of_natSepDegree_eq_one_of_irreducible (q : ℕ) 
     simp_rw [one_pow, pow_one] at hf ⊢
     exact ⟨0, y, .inl rfl, hf⟩
   | prime hq =>
-    refine ⟨n, y, (em _).imp id fun hn ⟨z, hy⟩ ↦ ?_, hf⟩
+    refine ⟨n, y, (em _).imp id fun hn ⟨z, hy⟩ ↦ _, hf⟩
     haveI := expChar_of_injective_ringHom (R := F) C_injective q
     rw [hf, ← Nat.succ_pred hn, pow_succ, pow_mul, ← hy, frobenius_def, map_pow,
       ← sub_pow_expChar] at hi
@@ -551,7 +551,7 @@ theorem eq_X_pow_char_pow_sub_C_pow_of_natSepDegree_eq_one (q : ℕ) [ExpChar F 
   obtain ⟨n, y, H, hp⟩ := hM.eq_X_pow_char_pow_sub_C_of_natSepDegree_eq_one_of_irreducible q hI hD
   have hF := multiplicity_finite_of_degree_pos_of_monic (degree_pos_of_irreducible hI) hM hm.ne_zero
   have hne := (multiplicity.pos_of_dvd hF hf).ne'
-  refine ⟨_, n, y, hne, H, ?_⟩
+  refine ⟨_, n, y, hne, H, _⟩
   obtain ⟨c, hf, H⟩ := multiplicity.exists_eq_pow_mul_and_not_dvd hF
   rw [hf, natSepDegree_mul_of_isCoprime _ c <| IsCoprime.pow_left <|
     (hI.coprime_or_dvd c).resolve_right H, natSepDegree_pow_of_ne_zero _ hne, hD,
@@ -564,7 +564,7 @@ if and only if it is of the form `(X ^ (q ^ n) - C y) ^ m` for some non-zero nat
 some natural number `n`, and some element `y` of `F`. -/
 theorem natSepDegree_eq_one_iff (q : ℕ) [ExpChar F q] (hm : f.Monic) :
     f.natSepDegree = 1 ↔ ∃ (m n : ℕ) (y : F), m ≠ 0 ∧ f = (X ^ q ^ n - C y) ^ m := by
-  refine ⟨fun h ↦ ?_, fun ⟨m, n, y, hm, h⟩ ↦ ?_⟩
+  refine ⟨fun h ↦ _, fun ⟨m, n, y, hm, h⟩ ↦ _⟩
   · obtain ⟨m, n, y, hm, -, h⟩ := hm.eq_X_pow_char_pow_sub_C_pow_of_natSepDegree_eq_one q h
     exact ⟨m, n, y, hm, h⟩
   simp_rw [h, natSepDegree_pow, hm, ite_false, natSepDegree_X_pow_char_pow_sub_C]
@@ -583,7 +583,7 @@ separable degree one if and only if the minimal polynomial is of the form
 `Polynomial.expand F (q ^ n) (X - C y)` for some `n : ℕ` and `y : F`. -/
 theorem natSepDegree_eq_one_iff_eq_expand_X_sub_C : (minpoly F x).natSepDegree = 1 ↔
     ∃ (n : ℕ) (y : F), minpoly F x = expand F (q ^ n) (X - C y) := by
-  refine ⟨fun h ↦ ?_, fun ⟨n, y, h⟩ ↦ ?_⟩
+  refine ⟨fun h ↦ _, fun ⟨n, y, h⟩ ↦ _⟩
   · have halg : IsIntegral F x := by_contra fun h' ↦ by
       simp only [eq_zero h', natSepDegree_zero, zero_ne_one] at h
     exact (minpoly.irreducible halg).natSepDegree_eq_one_iff_of_monic' q
@@ -603,12 +603,12 @@ theorem natSepDegree_eq_one_iff_pow_mem : (minpoly F x).natSepDegree = 1 ↔
     ∃ n : ℕ, x ^ q ^ n ∈ (algebraMap F E).range := by
   convert_to _ ↔ ∃ (n : ℕ) (y : F), Polynomial.aeval x (X ^ q ^ n - C y) = 0
   · simp_rw [RingHom.mem_range, map_sub, map_pow, aeval_C, aeval_X, sub_eq_zero, eq_comm]
-  refine ⟨fun h ↦ ?_, fun ⟨n, y, h⟩ ↦ ?_⟩
+  refine ⟨fun h ↦ _, fun ⟨n, y, h⟩ ↦ _⟩
   · obtain ⟨n, y, hx⟩ := (minpoly.natSepDegree_eq_one_iff_eq_X_pow_sub_C q).1 h
     exact ⟨n, y, hx ▸ aeval F x⟩
   have hnezero := X_pow_sub_C_ne_zero (expChar_pow_pos F q n) y
   refine ((natSepDegree_le_of_dvd _ _ (minpoly.dvd F x h) hnezero).trans_eq <|
-    natSepDegree_X_pow_char_pow_sub_C q n y).antisymm ?_
+    natSepDegree_X_pow_char_pow_sub_C q n y).antisymm _
   rw [Nat.one_le_iff_ne_zero, natSepDegree_ne_zero_iff, ← Nat.one_le_iff_ne_zero]
   exact minpoly.natDegree_pos <| IsAlgebraic.isIntegral ⟨_, hnezero, h⟩
 
@@ -619,7 +619,7 @@ theorem natSepDegree_eq_one_iff_eq_X_sub_C_pow : (minpoly F x).natSepDegree = 1 
     ∃ n : ℕ, (minpoly F x).map (algebraMap F E) = (X - C x) ^ q ^ n := by
   haveI := expChar_of_injective_algebraMap (algebraMap F E).injective q
   haveI := expChar_of_injective_algebraMap (NoZeroSMulDivisors.algebraMap_injective E E[X]) q
-  refine ⟨fun h ↦ ?_, fun ⟨n, h⟩ ↦ (natSepDegree_eq_one_iff_pow_mem q).2 ?_⟩
+  refine ⟨fun h ↦ _, fun ⟨n, h⟩ ↦ (natSepDegree_eq_one_iff_pow_mem q).2 _⟩
   · obtain ⟨n, y, h⟩ := (natSepDegree_eq_one_iff_eq_X_pow_sub_C q).1 h
     have hx := congr_arg (Polynomial.aeval x) h.symm
     rw [minpoly.aeval, map_sub, map_pow, aeval_X, aeval_C, sub_eq_zero, eq_comm] at hx
@@ -679,7 +679,7 @@ theorem finSepDegree_dvd_finrank : finSepDegree F E ∣ finrank F E := by
   by_cases hfd : FiniteDimensional F E
   · rw [← finSepDegree_top F, ← finrank_top F E]
     refine induction_on_adjoin (fun K : IntermediateField F E ↦ finSepDegree F K ∣ finrank F K)
-      (by simp_rw [finSepDegree_bot, IntermediateField.finrank_bot, one_dvd]) (fun L x h ↦ ?_) ⊤
+      (by simp_rw [finSepDegree_bot, IntermediateField.finrank_bot, one_dvd]) (fun L x h ↦ _) ⊤
     simp only at h ⊢
     have hdvd := mul_dvd_mul h <| finSepDegree_adjoin_simple_dvd_finrank L E x
     set M := L⟮x⟯
@@ -711,7 +711,7 @@ theorem finSepDegree_eq_finrank_of_isSeparable [IsSeparable F E] :
     linarith only [h', hd, Nat.le_mul_of_pos_right (finrank F L) (Nat.pos_of_ne_zero hd')]
   rw [← finSepDegree_top F, ← finrank_top F E]
   refine induction_on_adjoin (fun K : IntermediateField F E ↦ finSepDegree F K = finrank F K)
-    (by simp_rw [finSepDegree_bot, IntermediateField.finrank_bot]) (fun L x h ↦ ?_) ⊤
+    (by simp_rw [finSepDegree_bot, IntermediateField.finrank_bot]) (fun L x h ↦ _) ⊤
   simp only at h ⊢
   have heq : _ * _ = _ * _ := congr_arg₂ (· * ·) h <|
     (finSepDegree_adjoin_simple_eq_finrank_iff L E x (IsAlgebraic.of_finite L x)).2 <|
@@ -730,7 +730,7 @@ theorem finSepDegree_eq_finrank_iff [FiniteDimensional F E] :
   ⟨fun heq ↦ ⟨fun x ↦ by
     have halg := IsAlgebraic.of_finite F x
     refine (finSepDegree_adjoin_simple_eq_finrank_iff F E x halg).1 <| le_antisymm
-      (finSepDegree_adjoin_simple_le_finrank F E x halg) <| le_of_not_lt fun h ↦ ?_
+      (finSepDegree_adjoin_simple_le_finrank F E x halg) <| le_of_not_lt fun h ↦ _
     have := Nat.mul_lt_mul_of_lt_of_le' h (finSepDegree_le_finrank F⟮x⟯ E) Fin.size_pos'
     rw [finSepDegree_mul_finSepDegree_of_isAlgebraic F F⟮x⟯ E,
       FiniteDimensional.finrank_mul_finrank F F⟮x⟯ E] at this
@@ -746,7 +746,7 @@ lemma IntermediateField.separable_of_mem_isSeparable {L : IntermediateField F E}
 As a consequence, any rational function of `x` is also a separable element. -/
 theorem IntermediateField.isSeparable_adjoin_simple_iff_separable {x : E} :
     IsSeparable F F⟮x⟯ ↔ (minpoly F x).Separable := by
-  refine ⟨fun _ ↦ ?_, fun hsep ↦ ?_⟩
+  refine ⟨fun _ ↦ _, fun hsep ↦ _⟩
   · exact separable_of_mem_isSeparable F E <| mem_adjoin_simple_self F x
   · have h := hsep.isIntegral
     haveI := adjoin.finiteDimensional h
@@ -835,7 +835,7 @@ end Field
 if and only if every separable degree one polynomial splits. -/
 theorem perfectField_iff_splits_of_natSepDegree_eq_one (F : Type*) [Field F] :
     PerfectField F ↔ ∀ f : F[X], f.natSepDegree = 1 → f.Splits (RingHom.id F) := by
-  refine ⟨fun ⟨h⟩ f hf ↦ or_iff_not_imp_left.2 fun hn g hg hd ↦ ?_, fun h ↦ ?_⟩
+  refine ⟨fun ⟨h⟩ f hf ↦ or_iff_not_imp_left.2 fun hn g hg hd ↦ _, fun h ↦ _⟩
   · rw [map_id] at hn hd
     have := natSepDegree_le_of_dvd g f hd hn
     rw [hf, (h hg).natSepDegree_eq_natDegree] at this

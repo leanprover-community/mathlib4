@@ -415,7 +415,7 @@ theorem intCast_smul {k V : Type*} [CommRing k] [AddCommGroup V] [Module k V] (r
 theorem NoZeroSMulDivisors.trans (R A M : Type*) [CommRing R] [Ring A] [IsDomain A] [Algebra R A]
     [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M] [NoZeroSMulDivisors R A]
     [NoZeroSMulDivisors A M] : NoZeroSMulDivisors R M := by
-  refine ⟨fun {r m} h => ?_⟩
+  refine ⟨fun {r m} h => _⟩
   rw [algebra_compatible_smul A r m] at h
   cases' smul_eq_zero.1 h with H H
   · have : Function.Injective (algebraMap R A) :=
@@ -536,7 +536,7 @@ theorem surjective_algebraMap_of_linearMap (hb : Function.Surjective b) :
     Function.Surjective (algebraMap F E) := fun x ↦ by
   obtain ⟨x, rfl⟩ := hb x
   obtain ⟨y, hy⟩ := hb (b 1 * b 1)
-  refine ⟨x * y, ?_⟩
+  refine ⟨x * y, _⟩
   obtain ⟨z, hz⟩ := hb 1
   apply_fun (x • z • ·) at hy
   rwa [← map_smul, smul_eq_mul, mul_comm, ← smul_mul_assoc, ← map_smul _ z, smul_eq_mul, mul_one,

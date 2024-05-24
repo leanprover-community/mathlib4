@@ -77,7 +77,7 @@ theorem summable_norm_sum_mul_antidiagonal_of_summable_norm {f g : ℕ → R}
   have :=
     summable_sum_mul_antidiagonal_of_summable_mul
       (Summable.mul_of_nonneg hf hg (fun _ => norm_nonneg _) fun _ => norm_nonneg _)
-  refine this.of_nonneg_of_le (fun _ => norm_nonneg _) (fun n ↦ ?_)
+  refine this.of_nonneg_of_le (fun _ => norm_nonneg _) (fun n ↦ _)
   calc
     ‖∑ kl in antidiagonal n, f kl.1 * g kl.2‖ ≤ ∑ kl in antidiagonal n, ‖f kl.1 * g kl.2‖ :=
       norm_sum_le _ _

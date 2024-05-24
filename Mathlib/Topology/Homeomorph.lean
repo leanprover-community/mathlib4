@@ -320,7 +320,7 @@ theorem isConnected_preimage {s : Set Y} (h : X ≃ₜ Y) :
 
 theorem image_connectedComponentIn {s : Set X} (h : X ≃ₜ Y) {x : X} (hx : x ∈ s) :
     h '' connectedComponentIn s x = connectedComponentIn (h '' s) (h x) := by
-  refine (h.continuous.image_connectedComponentIn_subset hx).antisymm ?_
+  refine (h.continuous.image_connectedComponentIn_subset hx).antisymm _
   have := h.symm.continuous.image_connectedComponentIn_subset (mem_image_of_mem h hx)
   rwa [image_subset_iff, h.preimage_symm, h.image_symm, h.preimage_image, h.symm_apply_apply]
     at this
@@ -464,7 +464,7 @@ theorem locallyConnectedSpace [i : LocallyConnectedSpace Y] (h : X ≃ₜ Y) :
       (h.symm '' ·) := fun x ↦ by
     rw [← h.symm_map_nhds_eq]
     exact (i.1 _).map _
-  refine locallyConnectedSpace_of_connected_bases _ _ this fun _ _ hs ↦ ?_
+  refine locallyConnectedSpace_of_connected_bases _ _ this fun _ _ hs ↦ _
   exact hs.2.2.2.image _ h.symm.continuous.continuousOn
 
 /-- The codomain of a homeomorphism is a locally compact space if and only if
@@ -518,7 +518,7 @@ theorem comp_continuousWithinAt_iff (h : X ≃ₜ Y) (f : Z → X) (s : Set Z) (
 
 @[simp]
 theorem comp_isOpenMap_iff (h : X ≃ₜ Y) {f : Z → X} : IsOpenMap (h ∘ f) ↔ IsOpenMap f := by
-  refine ⟨?_, fun hf => h.isOpenMap.comp hf⟩
+  refine ⟨_, fun hf => h.isOpenMap.comp hf⟩
   intro hf
   rw [← Function.id_comp f, ← h.symm_comp_self, Function.comp.assoc]
   exact h.symm.isOpenMap.comp hf
@@ -526,7 +526,7 @@ theorem comp_isOpenMap_iff (h : X ≃ₜ Y) {f : Z → X} : IsOpenMap (h ∘ f) 
 
 @[simp]
 theorem comp_isOpenMap_iff' (h : X ≃ₜ Y) {f : Y → Z} : IsOpenMap (f ∘ h) ↔ IsOpenMap f := by
-  refine ⟨?_, fun hf => hf.comp h.isOpenMap⟩
+  refine ⟨_, fun hf => hf.comp h.isOpenMap⟩
   intro hf
   rw [← Function.comp_id f, ← h.self_comp_symm, ← Function.comp.assoc]
   exact hf.comp h.symm.isOpenMap

@@ -143,7 +143,7 @@ lemma nilpotencyClass_eq_succ_iff {k : ℕ} :
 
 @[simp] lemma pos_nilpotencyClass_iff [Nontrivial R] :
     0 < nilpotencyClass x ↔ IsNilpotent x := by
-  refine ⟨isNilpotent_of_pos_nilpotencyClass, fun hx ↦ Nat.pos_of_ne_zero fun hx' ↦ ?_⟩
+  refine ⟨isNilpotent_of_pos_nilpotencyClass, fun hx ↦ Nat.pos_of_ne_zero fun hx' ↦ _⟩
   replace hx := pow_nilpotencyClass hx
   rw [hx', pow_zero] at hx
   exact one_ne_zero hx

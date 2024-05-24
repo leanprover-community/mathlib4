@@ -141,7 +141,7 @@ namespace ConjClasses
 
 theorem mk_bijOn (G : Type*) [Group G] :
     Set.BijOn ConjClasses.mk (↑(Subgroup.center G)) (noncenter G)ᶜ := by
-  refine ⟨fun g hg ↦ ?_, fun x hx y _ H ↦ ?_, ?_⟩
+  refine ⟨fun g hg ↦ _, fun x hx y _ H ↦ _, _⟩
   · simp only [mem_noncenter, Set.compl_def, Set.mem_setOf, Set.not_nontrivial_iff]
     intro x hx y hy
     simp only [mem_carrier_iff_mk_eq, mk_eq_mk_iff_isConj] at hx hy
@@ -149,12 +149,12 @@ theorem mk_bijOn (G : Type*) [Group G] :
   · rw [mk_eq_mk_iff_isConj] at H
     exact H.eq_of_left_mem_center hx
   · rintro ⟨g⟩ hg
-    refine ⟨g, ?_, rfl⟩
+    refine ⟨g, _, rfl⟩
     simp only [mem_noncenter, Set.compl_def, Set.mem_setOf, Set.not_nontrivial_iff] at hg
     rw [SetLike.mem_coe, Subgroup.mem_center_iff]
     intro h
     rw [← mul_inv_eq_iff_eq_mul]
-    refine hg ?_ mem_carrier_mk
+    refine hg _ mem_carrier_mk
     rw [mem_carrier_iff_mk_eq]
     apply mk_eq_mk_iff_isConj.mpr
     rw [isConj_comm, isConj_iff]

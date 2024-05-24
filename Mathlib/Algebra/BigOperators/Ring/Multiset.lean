@@ -79,7 +79,7 @@ lemma prod_map_sum {s : Multiset (Multiset α)} :
 lemma prod_map_add {s : Multiset ι} {f g : ι → α} :
     prod (s.map fun i ↦ f i + g i) =
       sum ((antidiagonal s).map fun p ↦ (p.1.map f).prod * (p.2.map g).prod) := by
-  refine s.induction_on ?_ fun a s ih ↦ ?_
+  refine s.induction_on _ fun a s ih ↦ _
   · simp only [map_zero, prod_zero, antidiagonal_zero, map_singleton, mul_one, sum_singleton]
   · simp only [map_cons, prod_cons, ih, sum_map_mul_left.symm, add_mul, mul_left_comm (f a),
       mul_left_comm (g a), sum_map_add, antidiagonal_cons, Prod_map, id_eq, map_add, map_map,

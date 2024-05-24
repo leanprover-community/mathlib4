@@ -56,7 +56,7 @@ example [Decidable p] (x y : Nat) (h : x = y) : True := by
   trivial
 
 example (x y z w : Nat) (h : x = y) (h' : z = w) : 1 + x * z^2 = 1 + y * w^2 := by
-  refine congr(1 + $(?_) * $(?_)^2)
+  refine congr(1 + $(_) * $(_)^2)
   · exact h
   · exact h'
 
@@ -68,7 +68,7 @@ example (x y z w : Nat) (h : x = y) (h' : z = w) : 1 + x * z^2 = 1 + y * w^2 := 
 example (p q : Prop) (h : p = q) : p ↔ q := congr($h)
 
 example (p q : Prop) (h : p = q) : p ↔ q := by
-  refine congr($(?_))
+  refine congr($(_))
   guard_target = p ↔ q
   exact congr($h)
 
@@ -91,7 +91,7 @@ example (f g : Nat → Nat) (h : ∀ n, f n = g n) :
 
 example (f g : Nat → Nat) (h : ∀ n, f n = g n) :
     (fun n => 1 + f n) = (fun n => 1 + g n) := by
-  refine congr(fun n => 1 + $(?_))
+  refine congr(fun n => 1 + $(_))
   guard_target = f n = g n
   apply h
 

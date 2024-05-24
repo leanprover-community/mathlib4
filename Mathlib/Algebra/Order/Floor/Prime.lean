@@ -25,8 +25,8 @@ theorem exists_prime_mul_pow_lt_factorial [LinearOrderedRing K] [FloorRing K] (n
   use p, pn, pp
   calc a * c ^ p
     _ ≤ |a * c ^ p| := le_abs_self _
-    _ ≤ ⌈|a|⌉ * (⌈|c|⌉ : K) ^ p := ?_
-    _ = ↑(Int.natAbs ⌈|a|⌉ * Int.natAbs ⌈|c|⌉ ^ p) := ?_
+    _ ≤ ⌈|a|⌉ * (⌈|c|⌉ : K) ^ p := _
+    _ = ↑(Int.natAbs ⌈|a|⌉ * Int.natAbs ⌈|c|⌉ ^ p) := _
     _ < ↑(p - 1)! := Nat.cast_lt.mpr h
   · rw [abs_mul, abs_pow]
     gcongr <;> try first | positivity | apply Int.le_ceil

@@ -296,7 +296,7 @@ theorem exists_cons_eq_concat {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
   | nil => exact ⟨_, nil, h, rfl⟩
   | cons h' p ih =>
     obtain ⟨y, q, h'', hc⟩ := ih h'
-    refine ⟨y, cons h q, h'', ?_⟩
+    refine ⟨y, cons h q, h'', _⟩
     rw [concat_cons, hc]
 #align simple_graph.walk.exists_cons_eq_concat SimpleGraph.Walk.exists_cons_eq_concat
 
@@ -1347,7 +1347,7 @@ protected theorem IsTrail.rotate {u v : V} {c : G.Walk v v} (hc : c.IsTrail) (h 
 
 protected theorem IsCircuit.rotate {u v : V} {c : G.Walk v v} (hc : c.IsCircuit)
     (h : u ∈ c.support) : (c.rotate h).IsCircuit := by
-  refine ⟨hc.isTrail.rotate _, ?_⟩
+  refine ⟨hc.isTrail.rotate _, _⟩
   cases c
   · exact (hc.ne_nil rfl).elim
   · intro hn
@@ -1358,7 +1358,7 @@ protected theorem IsCircuit.rotate {u v : V} {c : G.Walk v v} (hc : c.IsCircuit)
 
 protected theorem IsCycle.rotate {u v : V} {c : G.Walk v v} (hc : c.IsCycle) (h : u ∈ c.support) :
     (c.rotate h).IsCycle := by
-  refine ⟨hc.isCircuit.rotate _, ?_⟩
+  refine ⟨hc.isCircuit.rotate _, _⟩
   rw [List.IsRotated.nodup_iff (support_rotate _ _)]
   exact hc.support_nodup
 #align simple_graph.walk.is_cycle.rotate SimpleGraph.Walk.IsCycle.rotate
@@ -1679,7 +1679,7 @@ protected theorem IsPath.of_map {f : G →g G'} (hp : (p.map f).IsPath) : p.IsPa
     rw [map_cons, Walk.cons_isPath_iff, support_map] at hp
     rw [Walk.cons_isPath_iff]
     cases' hp with hp1 hp2
-    refine ⟨ih hp1, ?_⟩
+    refine ⟨ih hp1, _⟩
     contrapose! hp2
     exact List.mem_map_of_mem f hp2
 #align simple_graph.walk.is_path.of_map SimpleGraph.Walk.IsPath.of_map
@@ -2224,14 +2224,14 @@ theorem map_mk (φ : G →g G') (v : V) :
 
 @[simp]
 theorem map_id (C : ConnectedComponent G) : C.map Hom.id = C := by
-  refine C.ind ?_
+  refine C.ind _
   exact fun _ => rfl
 #align simple_graph.connected_component.map_id SimpleGraph.ConnectedComponent.map_id
 
 @[simp]
 theorem map_comp (C : G.ConnectedComponent) (φ : G →g G') (ψ : G' →g G'') :
     (C.map φ).map ψ = C.map (ψ.comp φ) := by
-  refine C.ind ?_
+  refine C.ind _
   exact fun _ => rfl
 #align simple_graph.connected_component.map_comp SimpleGraph.ConnectedComponent.map_comp
 
@@ -2240,7 +2240,7 @@ variable {φ : G ≃g G'} {v : V} {v' : V'}
 @[simp]
 theorem iso_image_comp_eq_map_iff_eq_comp {C : G.ConnectedComponent} :
     G'.connectedComponentMk (φ v) = C.map ↑(↑φ : G ↪g G') ↔ G.connectedComponentMk v = C := by
-  refine C.ind fun u => ?_
+  refine C.ind fun u => _
   simp only [Iso.reachable_iff, ConnectedComponent.map_mk, RelEmbedding.coe_toRelHom,
     RelIso.coe_toRelEmbedding, ConnectedComponent.eq]
 #align simple_graph.connected_component.iso_image_comp_eq_map_iff_eq_comp SimpleGraph.ConnectedComponent.iso_image_comp_eq_map_iff_eq_comp
@@ -2248,7 +2248,7 @@ theorem iso_image_comp_eq_map_iff_eq_comp {C : G.ConnectedComponent} :
 @[simp]
 theorem iso_inv_image_comp_eq_iff_eq_map {C : G.ConnectedComponent} :
     G.connectedComponentMk (φ.symm v') = C ↔ G'.connectedComponentMk v' = C.map φ := by
-  refine C.ind fun u => ?_
+  refine C.ind fun u => _
   simp only [Iso.symm_apply_reachable, ConnectedComponent.eq, ConnectedComponent.map_mk,
     RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding]
 #align simple_graph.connected_component.iso_inv_image_comp_eq_iff_eq_map SimpleGraph.ConnectedComponent.iso_inv_image_comp_eq_iff_eq_map
@@ -2302,7 +2302,7 @@ def supp (C : G.ConnectedComponent) :=
 @[ext]
 theorem supp_injective :
     Function.Injective (ConnectedComponent.supp : G.ConnectedComponent → Set V) := by
-  refine ConnectedComponent.ind₂ ?_
+  refine ConnectedComponent.ind₂ _
   intro v w
   simp only [ConnectedComponent.supp, Set.ext_iff, ConnectedComponent.eq, Set.mem_setOf_eq]
   intro h
@@ -2433,8 +2433,8 @@ theorem finite_neighborSet_toSubgraph (p : G.Walk u v) : (p.toSubgraph.neighborS
     apply Set.toFinite
   | cons ha _ ih =>
     rw [Walk.toSubgraph, Subgraph.neighborSet_sup]
-    refine Set.Finite.union ?_ ih
-    refine Set.Finite.subset ?_ (neighborSet_subgraphOfAdj_subset ha)
+    refine Set.Finite.union _ ih
+    refine Set.Finite.subset _ (neighborSet_subgraphOfAdj_subset ha)
     apply Set.toFinite
 #align simple_graph.walk.finite_neighbor_set_to_subgraph SimpleGraph.Walk.finite_neighborSet_toSubgraph
 
@@ -2575,8 +2575,8 @@ theorem reachable_iff_exists_finsetWalkLength_nonempty (u v : V) :
     G.Reachable u v ↔ ∃ n : Fin (Fintype.card V), (G.finsetWalkLength n u v).Nonempty := by
   constructor
   · intro r
-    refine r.elim_path fun p => ?_
-    refine ⟨⟨_, p.isPath.length_lt⟩, p, ?_⟩
+    refine r.elim_path fun p => _
+    refine ⟨⟨_, p.isPath.length_lt⟩, p, _⟩
     simp [Walk.mem_finsetWalkLength_iff_length_eq]
   · rintro ⟨_, p, _⟩
     exact ⟨p⟩
@@ -2624,7 +2624,7 @@ theorem reachable_delete_edges_iff_exists_walk {v w : V} :
     rintro ⟨e, h, rfl⟩
     simpa using p.edges_subset_edgeSet h
   · rintro ⟨p, h⟩
-    refine ⟨p.transfer _ fun e ep => ?_⟩
+    refine ⟨p.transfer _ fun e ep => _⟩
     simp only [edgeSet_sdiff, edgeSet_fromEdgeSet, edgeSet_sdiff_sdiff_isDiag, Set.mem_diff,
       Set.mem_singleton_iff]
     exact ⟨p.edges_subset_edgeSet ep, fun h' => h (h' ▸ ep)⟩
@@ -2671,21 +2671,21 @@ theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
   rw [reachable_delete_edges_iff_exists_walk]
   constructor
   · rintro ⟨h, p, hp⟩
-    refine ⟨w, Walk.cons h.symm p.toPath, ?_, ?_⟩
+    refine ⟨w, Walk.cons h.symm p.toPath, _, _⟩
     · apply Path.cons_isCycle
       rw [Sym2.eq_swap]
       intro h
       cases hp (Walk.edges_toPath_subset p h)
     · simp only [Sym2.eq_swap, Walk.edges_cons, List.mem_cons, eq_self_iff_true, true_or_iff]
   · rintro ⟨u, c, hc, he⟩
-    refine ⟨c.adj_of_mem_edges he, ?_⟩
+    refine ⟨c.adj_of_mem_edges he, _⟩
     by_contra! hb
     have hb' : ∀ p : G.Walk w v, s(w, v) ∈ p.edges := by
       intro p
       simpa [Sym2.eq_swap] using hb p.reverse
     have hvc : v ∈ c.support := Walk.fst_mem_support_of_mem_edges c he
     refine reachable_deleteEdges_iff_exists_cycle.aux hb' (c.rotate hvc) (hc.isTrail.rotate hvc)
-      ?_ (Walk.start_mem_support _)
+      _ (Walk.start_mem_support _)
     rwa [(Walk.rotate_edges c hvc).mem_iff, Sym2.eq_swap]
 #align simple_graph.adj_and_reachable_delete_edges_iff_exists_cycle SimpleGraph.adj_and_reachable_delete_edges_iff_exists_cycle
 

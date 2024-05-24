@@ -44,10 +44,10 @@ namespace Subsemigroup
 @[to_additive]
 theorem mem_iSup_of_directed {S : ι → Subsemigroup M} (hS : Directed (· ≤ ·) S) {x : M} :
     (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
-  refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup S i hi⟩
+  refine ⟨_, fun ⟨i, hi⟩ ↦ le_iSup S i hi⟩
   suffices x ∈ closure (⋃ i, (S i : Set M)) → ∃ i, x ∈ S i by
     simpa only [closure_iUnion, closure_eq (S _)] using this
-  refine fun hx ↦ closure_induction hx (fun y hy ↦ mem_iUnion.mp hy) ?_
+  refine fun hx ↦ closure_induction hx (fun y hy ↦ mem_iUnion.mp hy) _
   rintro x y ⟨i, hi⟩ ⟨j, hj⟩
   rcases hS i j with ⟨k, hki, hkj⟩
   exact ⟨k, (S k).mul_mem (hki hi) (hkj hj)⟩
@@ -121,7 +121,7 @@ the supremum of `S`."]
 theorem iSup_induction (S : ι → Subsemigroup M) {C : M → Prop} {x₁ : M} (hx₁ : x₁ ∈ ⨆ i, S i)
     (mem : ∀ i, ∀ x₂ ∈ S i, C x₂) (mul : ∀ x y, C x → C y → C (x * y)) : C x₁ := by
   rw [iSup_eq_closure] at hx₁
-  refine closure_induction hx₁ (fun x₂ hx₂ => ?_) mul
+  refine closure_induction hx₁ (fun x₂ hx₂ => _) mul
   obtain ⟨i, hi⟩ := Set.mem_iUnion.mp hx₂
   exact mem _ _ hi
 #align subsemigroup.supr_induction Subsemigroup.iSup_induction
@@ -134,9 +134,9 @@ theorem iSup_induction' (S : ι → Subsemigroup M) {C : ∀ x, (x ∈ ⨆ i, S 
     (mem : ∀ (i) (x) (hxS : x ∈ S i), C x (mem_iSup_of_mem i ‹_›))
     (mul : ∀ x y hx hy, C x hx → C y hy → C (x * y) (mul_mem ‹_› ‹_›)) {x₁ : M}
     (hx₁ : x₁ ∈ ⨆ i, S i) : C x₁ hx₁ := by
-  refine Exists.elim ?_ fun (hx₁' : x₁ ∈ ⨆ i, S i) (hc : C x₁ hx₁') => hc
+  refine Exists.elim _ fun (hx₁' : x₁ ∈ ⨆ i, S i) (hc : C x₁ hx₁') => hc
   refine @iSup_induction _ _ _ S (fun x' => ∃ hx'', C x' hx'') _ hx₁
-      (fun i x₂ hx₂ => ?_) fun x₃ y => ?_
+      (fun i x₂ hx₂ => _) fun x₃ y => _
   · exact ⟨_, mem _ _ hx₂⟩
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
     exact ⟨_, mul _ _ _ _ Cx Cy⟩

@@ -104,7 +104,7 @@ theorem adjoin_induction₂ {p : A → A → Prop} {a b : A} (ha : a ∈ adjoin 
     (Hadd_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ + y₂))
     (Hmul_left : ∀ x₁ x₂ y, p x₁ y → p x₂ y → p (x₁ * x₂) y)
     (Hmul_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ * y₂)) : p a b := by
-  refine adjoin_induction hb ?_ (fun r => ?_) (Hadd_right a) (Hmul_right a)
+  refine adjoin_induction hb _ (fun r => _) (Hadd_right a) (Hmul_right a)
   · exact adjoin_induction ha Hs Halg_left
       (fun x y Hx Hy z hz => Hadd_left x y z (Hx z hz) (Hy z hz))
       fun x y Hx Hy z hz => Hmul_left x y z (Hx z hz) (Hy z hz)
@@ -119,7 +119,7 @@ theorem adjoin_induction' {p : adjoin R s → Prop} (mem : ∀ (x) (h : x ∈ s)
     (algebraMap : ∀ r, p (algebraMap R _ r)) (add : ∀ x y, p x → p y → p (x + y))
     (mul : ∀ x y, p x → p y → p (x * y)) (x : adjoin R s) : p x :=
   Subtype.recOn x fun x hx => by
-    refine Exists.elim ?_ fun (hx : x ∈ adjoin R s) (hc : p ⟨x, hx⟩) => hc
+    refine Exists.elim _ fun (hx : x ∈ adjoin R s) (hc : p ⟨x, hx⟩) => hc
     exact adjoin_induction hx (fun x hx => ⟨subset_adjoin hx, mem x hx⟩)
       (fun r => ⟨Subalgebra.algebraMap_mem _ r, algebraMap r⟩)
       (fun x y hx hy =>
@@ -137,13 +137,13 @@ theorem adjoin_induction'' {x : A} (hx : x ∈ adjoin R s)
     (add : ∀ x hx y hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
     (mul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy)) :
     p x hx := by
-  refine adjoin_induction' mem algebraMap ?_ ?_ ⟨x, hx⟩ (p := fun x : adjoin R s ↦ p x.1 x.2)
+  refine adjoin_induction' mem algebraMap _ _ ⟨x, hx⟩ (p := fun x : adjoin R s ↦ p x.1 x.2)
   exacts [fun x y ↦ add x.1 x.2 y.1 y.2, fun x y ↦ mul x.1 x.2 y.1 y.2]
 
 @[simp]
 theorem adjoin_adjoin_coe_preimage {s : Set A} : adjoin R (((↑) : adjoin R s → A) ⁻¹' s) = ⊤ := by
   refine eq_top_iff.2 fun x ↦
-      adjoin_induction' (fun a ha ↦ ?_) (fun r ↦ ?_) (fun _ _ ↦ ?_) (fun _ _ ↦ ?_) x
+      adjoin_induction' (fun a ha ↦ _) (fun r ↦ _) (fun _ _ ↦ _) (fun _ _ ↦ _) x
   · exact subset_adjoin ha
   · exact Subalgebra.algebraMap_mem _ r
   · exact Subalgebra.add_mem _
@@ -179,7 +179,7 @@ theorem adjoin_eq_span : Subalgebra.toSubmodule (adjoin R s) = span R (Submonoid
     · exact zero_mem _
     rw [List.forall_mem_cons] at HL
     rw [List.map_cons, List.sum_cons]
-    refine Submodule.add_mem _ ?_ (ih HL.2)
+    refine Submodule.add_mem _ _ (ih HL.2)
     replace HL := HL.1
     clear ih tl
     suffices ∃ (z r : _) (_hr : r ∈ Submonoid.closure s), z • r = List.prod hd by
@@ -192,12 +192,12 @@ theorem adjoin_eq_span : Subalgebra.toSubmodule (adjoin R s) = span R (Submonoid
     rcases ih HL.2 with ⟨z, r, hr, hzr⟩
     rw [List.prod_cons, ← hzr]
     rcases HL.1 with (⟨hd, rfl⟩ | hs)
-    · refine ⟨hd * z, r, hr, ?_⟩
+    · refine ⟨hd * z, r, hr, _⟩
       rw [Algebra.smul_def, Algebra.smul_def, (algebraMap _ _).map_mul, _root_.mul_assoc]
     · exact
         ⟨z, hd * r, Submonoid.mul_mem _ (Submonoid.subset_closure hs) hr,
           (mul_smul_comm _ _ _).symm⟩
-  refine span_le.2 ?_
+  refine span_le.2 _
   change Submonoid.closure s ≤ (adjoin R s).toSubsemiring.toSubmonoid
   exact Submonoid.closure_le.2 subset_adjoin
 #align algebra.adjoin_eq_span Algebra.adjoin_eq_span
@@ -248,7 +248,7 @@ theorem mem_adjoin_of_map_mul {s} {x : A} {f : A →ₗ[R] B} (hf : ∀ a₁ a�
     (h : x ∈ adjoin R s) : f x ∈ adjoin R (f '' (s ∪ {1})) := by
   refine
     @adjoin_induction R A _ _ _ _ (fun a => f a ∈ adjoin R (f '' (s ∪ {1}))) x h
-      (fun a ha => subset_adjoin ⟨a, ⟨Set.subset_union_left _ _ ha, rfl⟩⟩) (fun r => ?_)
+      (fun a ha => subset_adjoin ⟨a, ⟨Set.subset_union_left _ _ ha, rfl⟩⟩) (fun r => _)
       (fun y z hy hz => by simpa [hy, hz] using Subalgebra.add_mem _ hy hz) fun y z hy hz => by
       simpa [hy, hz, hf y z] using Subalgebra.mul_mem _ hy hz
   have : f 1 ∈ adjoin R (f '' (s ∪ {1})) :=
@@ -344,7 +344,7 @@ theorem adjoin_adjoin_of_tower (s : Set A) : adjoin S (adjoin R s : Set A) = adj
   apply le_antisymm (adjoin_le _)
   · exact adjoin_mono subset_adjoin
   · change adjoin R s ≤ (adjoin S s).restrictScalars R
-    refine adjoin_le ?_
+    refine adjoin_le _
     -- Porting note: unclear why this was broken
     have : (Subalgebra.restrictScalars R (adjoin S s) : Set A) = adjoin S s := rfl
     rw [this]
@@ -397,7 +397,7 @@ theorem pow_smul_mem_of_smul_subset_of_mem_adjoin [CommSemiring B] [Algebra R B]
   use l.support.sup n₁
   intro n hn
   rw [Finsupp.smul_sum]
-  refine B'.toSubmodule.sum_mem ?_
+  refine B'.toSubmodule.sum_mem _
   intro a ha
   have : n ≥ n₁ a := le_trans (Finset.le_sup ha) hn
   dsimp only
@@ -405,7 +405,7 @@ theorem pow_smul_mem_of_smul_subset_of_mem_adjoin [CommSemiring B] [Algebra R B]
     IsScalarTower.algebraMap_smul A (l a) (a : B), smul_smul (r ^ n₁ a), mul_comm, ← smul_smul,
     smul_def, map_pow, IsScalarTower.algebraMap_smul]
   apply Subalgebra.mul_mem _ (Subalgebra.pow_mem _ hr _) _
-  refine Subalgebra.smul_mem _ ?_ _
+  refine Subalgebra.smul_mem _ _ _
   change _ ∈ B'.toSubmonoid
   rw [← Submonoid.closure_eq B'.toSubmonoid]
   apply Submonoid.closure_mono hs (n₂ a)

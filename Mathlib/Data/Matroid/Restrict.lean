@@ -137,11 +137,11 @@ theorem restrict_finite {R : Set α} (hR : R.Finite) : (M ↾ R).Finite :=
   rw [Dep, restrict_indep_iff, restrict_ground_eq]; tauto
 
 @[simp] theorem restrict_ground_eq_self (M : Matroid α) : (M ↾ M.E) = M := by
-  refine eq_of_indep_iff_indep_forall rfl ?_; aesop
+  refine eq_of_indep_iff_indep_forall rfl _; aesop
 
 theorem restrict_restrict_eq {R₁ R₂ : Set α} (M : Matroid α) (hR : R₂ ⊆ R₁) :
     (M ↾ R₁) ↾ R₂ = M ↾ R₂ := by
-  refine eq_of_indep_iff_indep_forall rfl ?_
+  refine eq_of_indep_iff_indep_forall rfl _
   simp only [restrict_ground_eq, restrict_indep_iff, and_congr_left_iff, and_iff_left_iff_imp]
   exact fun _ h _ _ ↦ h.trans hR
 
@@ -167,7 +167,7 @@ instance restrict_finiteRk [M.FiniteRk] (R : Set α) : (M ↾ R).FiniteRk :=
   hB.finiteRk_of_finite (hB.indep.of_restrict.finite)
 
 instance restrict_finitary [Finitary M] (R : Set α) : Finitary (M ↾ R) := by
-  refine ⟨fun I hI ↦ ?_⟩
+  refine ⟨fun I hI ↦ _⟩
   simp only [restrict_indep_iff] at *
   rw [indep_iff_forall_finite_subset_indep]
   exact ⟨fun J hJ hJfin ↦ (hI J hJ hJfin).1,
@@ -197,7 +197,7 @@ theorem basis_restrict_iff (hR : R ⊆ M.E := by aesop_mat) :
 
 theorem restrict_eq_restrict_iff (M M' : Matroid α) (X : Set α) :
     M ↾ X = M' ↾ X ↔ ∀ I, I ⊆ X → (M.Indep I ↔ M'.Indep I) := by
-  refine ⟨fun h I hIX ↦ ?_, fun h ↦ eq_of_indep_iff_indep_forall rfl fun I (hI : I ⊆ X) ↦ ?_⟩
+  refine ⟨fun h I hIX ↦ _, fun h ↦ eq_of_indep_iff_indep_forall rfl fun I (hI : I ⊆ X) ↦ _⟩
   · rw [← and_iff_left (a := (M.Indep I)) hIX, ← and_iff_left (a := (M'.Indep I)) hIX,
       ← restrict_indep_iff, h, restrict_indep_iff]
   rw [restrict_indep_iff, and_iff_left hI, restrict_indep_iff, and_iff_left hI, h _ hI]
@@ -304,7 +304,7 @@ theorem StrictRestriction.irrefl (M : Matroid α) : ¬ (M <r M) :=
 
 theorem StrictRestriction.ssubset (h : N <r M) : N.E ⊂ M.E := by
   obtain ⟨R, -, rfl⟩ := h.1
-  refine h.restriction.subset.ssubset_of_ne (fun h' ↦ h.2 ⟨R, Subset.rfl, ?_⟩)
+  refine h.restriction.subset.ssubset_of_ne (fun h' ↦ h.2 ⟨R, Subset.rfl, _⟩)
   rw [show R = M.E from h', restrict_idem, restrict_ground_eq_self]
 
 theorem StrictRestriction.eq_restrict (h : N <r M) : M ↾ N.E = N :=
@@ -320,7 +320,7 @@ theorem Restriction.eq_or_strictRestriction (h : N ≤r M) : N = M ∨ N <r M :=
   simpa using eq_or_lt_of_le (ofMatroid_le_iff.2 h)
 
 theorem restrict_strictRestriction {M : Matroid α} (hR : R ⊂ M.E) : M ↾ R <r M := by
-  refine (M.restrict_restriction R hR.subset).strictRestriction_of_ne (fun h ↦ ?_)
+  refine (M.restrict_restriction R hR.subset).strictRestriction_of_ne (fun h ↦ _)
   rw [← h, restrict_ground_eq] at hR
   exact hR.ne rfl
 

@@ -135,7 +135,7 @@ theorem concaveOn_of_slope_anti_adjacent (hs : Convex 𝕜 s)
         x ∈ s → z ∈ s → x < y → y < z → (f z - f y) / (z - y) ≤ (f y - f x) / (y - x)) :
     ConcaveOn 𝕜 s f := by
   rw [← neg_convexOn_iff]
-  refine convexOn_of_slope_mono_adjacent hs fun hx hz hxy hyz => ?_
+  refine convexOn_of_slope_mono_adjacent hs fun hx hz hxy hyz => _
   rw [← neg_le_neg_iff]
   simp_rw [← neg_div, neg_sub, Pi.neg_apply, neg_sub_neg]
   exact hf hx hz hxy hyz
@@ -183,7 +183,7 @@ theorem strictConcaveOn_of_slope_strict_anti_adjacent (hs : Convex 𝕜 s)
         x ∈ s → z ∈ s → x < y → y < z → (f z - f y) / (z - y) < (f y - f x) / (y - x)) :
     StrictConcaveOn 𝕜 s f := by
   rw [← neg_strictConvexOn_iff]
-  refine strictConvexOn_of_slope_strict_mono_adjacent hs fun hx hz hxy hyz => ?_
+  refine strictConvexOn_of_slope_strict_mono_adjacent hs fun hx hz hxy hyz => _
   rw [← neg_lt_neg_iff]
   simp_rw [← neg_div, neg_sub, Pi.neg_apply, neg_sub_neg]
   exact hf hx hz hxy hyz
@@ -243,9 +243,9 @@ theorem ConvexOn.secant_mono_aux1 (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx : 
   have ha : 0 ≤ (z - y) / (z - x) := by positivity
   have hb : 0 ≤ (y - x) / (z - x) := by positivity
   calc
-    f y = f ((z - y) / (z - x) * x + (y - x) / (z - x) * z) := ?_
-    _ ≤ (z - y) / (z - x) * f x + (y - x) / (z - x) * f z := hf.2 hx hz ha hb ?_
-    _ = ((z - y) * f x + (y - x) * f z) / (z - x) := ?_
+    f y = f ((z - y) / (z - x) * x + (y - x) / (z - x) * z) := _
+    _ ≤ (z - y) / (z - x) * f x + (y - x) / (z - x) * f z := hf.2 hx hz ha hb _
+    _ = ((z - y) * f x + (y - x) * f z) / (z - x) := _
   · congr 1
     field_simp
     ring
@@ -293,9 +293,9 @@ theorem StrictConvexOn.secant_strict_mono_aux1 (hf : StrictConvexOn 𝕜 s f) {x
   have ha : 0 < (z - y) / (z - x) := by positivity
   have hb : 0 < (y - x) / (z - x) := by positivity
   calc
-    f y = f ((z - y) / (z - x) * x + (y - x) / (z - x) * z) := ?_
-    _ < (z - y) / (z - x) * f x + (y - x) / (z - x) * f z := hf.2 hx hz (by linarith) ha hb ?_
-    _ = ((z - y) * f x + (y - x) * f z) / (z - x) := ?_
+    f y = f ((z - y) / (z - x) * x + (y - x) / (z - x) * z) := _
+    _ < (z - y) / (z - x) * f x + (y - x) / (z - x) * f z := hf.2 hx hz (by linarith) ha hb _
+    _ = ((z - y) * f x + (y - x) * f z) / (z - x) := _
   · congr 1
     field_simp
     ring
@@ -349,12 +349,12 @@ theorem ConvexOn.strict_mono_of_lt (hf : ConvexOn 𝕜 s f) {x y : 𝕜} (hx : x
   intro u hu v hv huv
   have step1 : ∀ {z : 𝕜}, z ∈ s ∩ Set.Ioi y → f y < f z := by
     intros z hz
-    refine hf.lt_right_of_left_lt hx hz.1 ?_ hxy'
+    refine hf.lt_right_of_left_lt hx hz.1 _ hxy'
     rw [openSegment_eq_Ioo (hxy.trans hz.2)]
     exact ⟨hxy, hz.2⟩
   rcases eq_or_lt_of_le hu.2 with (rfl | hu2)
   · exact step1 ⟨hv.1, huv⟩
-  · refine hf.lt_right_of_left_lt ?_ hv.1 ?_ (step1 ⟨hu.1, hu2⟩)
+  · refine hf.lt_right_of_left_lt _ hv.1 _ (step1 ⟨hu.1, hu2⟩)
     · apply hf.1.segment_subset hx hu.1
       rw [segment_eq_Icc (hxy.le.trans hu.2)]
       exact ⟨hxy.le, hu.2⟩

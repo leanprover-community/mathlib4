@@ -676,7 +676,7 @@ theorem algHom_ext {F : Type*}
     (h : ∀ a : A, φ a = ψ a)
     (h' : ∀ r, φ (algebraMap R (Unitization R A) r) = ψ (algebraMap R (Unitization R A) r)) :
     φ = ψ := by
-  refine DFunLike.ext φ ψ (fun x ↦ ?_)
+  refine DFunLike.ext φ ψ (fun x ↦ _)
   induction x using Unitization.ind
   simp only [map_add, ← algebraMap_eq_inl, h, h']
 #align unitization.alg_hom_ext Unitization.algHom_ext

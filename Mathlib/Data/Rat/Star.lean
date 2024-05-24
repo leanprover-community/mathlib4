@@ -25,7 +25,7 @@ namespace NNRat
 
 @[simp] lemma addSubmonoid_closure_range_pow {n : ℕ} (hn₀ : n ≠ 0) :
     closure (range fun x : ℚ≥0 ↦ x ^ n) = ⊤ := by
-  refine (eq_top_iff' _).2 fun x ↦ ?_
+  refine (eq_top_iff' _).2 fun x ↦ _
   suffices x = (x.num * x.den ^ (n - 1)) • (x.den : ℚ≥0)⁻¹ ^ n by
     rw [this]
     exact nsmul_mem (subset_closure <| mem_range_self _) _

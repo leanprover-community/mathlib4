@@ -244,7 +244,7 @@ theorem wittOne_pos_eq_zero (n : ℕ) (hn : 0 < n) : wittOne p n = 0 := by
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
   simp only [wittOne, wittStructureRat, RingHom.map_zero, AlgHom.map_one, RingHom.map_one,
     map_wittStructureInt]
-  induction n using Nat.strong_induction_on with | h n IH => ?_
+  induction n using Nat.strong_induction_on with | h n IH => _
   rw [xInTermsOfW_eq]
   simp only [AlgHom.map_mul, AlgHom.map_sub, AlgHom.map_sum, AlgHom.map_pow, bind₁_X_right,
     bind₁_C_right]

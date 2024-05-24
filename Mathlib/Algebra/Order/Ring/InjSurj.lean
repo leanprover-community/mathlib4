@@ -31,9 +31,9 @@ protected abbrev orderedSemiring [OrderedSemiring α] (zero : f 0 = 0) (one : f 
   __ := hf.orderedAddCommMonoid f zero add (swap nsmul)
   zero_le_one := show f 0 ≤ f 1 by simp only [zero, one, zero_le_one]
   mul_le_mul_of_nonneg_left a b c h hc := show f (c * a) ≤ f (c * b) by
-    rw [mul, mul]; refine mul_le_mul_of_nonneg_left h ?_; rwa [← zero]
+    rw [mul, mul]; refine mul_le_mul_of_nonneg_left h _; rwa [← zero]
   mul_le_mul_of_nonneg_right a b c h hc := show f (a * c) ≤ f (b * c) by
-    rw [mul, mul]; refine mul_le_mul_of_nonneg_right h ?_; rwa [← zero]
+    rw [mul, mul]; refine mul_le_mul_of_nonneg_right h _; rwa [← zero]
 #align function.injective.ordered_semiring Function.Injective.orderedSemiring
 
 /-- Pullback an `OrderedCommSemiring` under an injective map. -/

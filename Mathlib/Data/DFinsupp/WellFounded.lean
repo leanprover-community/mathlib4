@@ -73,7 +73,7 @@ theorem lex_fibration [∀ (i) (s : Set ι), Decidable (i ∈ s)] :
   simp_rw [piecewise_apply] at hs hr
   split_ifs at hs with hp
   · refine ⟨⟨{ j | r j i → j ∈ p }, piecewise x₁ x { j | r j i }, x₂⟩,
-      .fst ⟨i, fun j hj ↦ ?_, ?_⟩, ?_⟩ <;> simp only [piecewise_apply, Set.mem_setOf_eq]
+      .fst ⟨i, fun j hj ↦ _, _⟩, _⟩ <;> simp only [piecewise_apply, Set.mem_setOf_eq]
     · simp only [if_pos hj]
     · split_ifs with hi
       · rwa [hr i hi, if_pos hp] at hs
@@ -85,7 +85,7 @@ theorem lex_fibration [∀ (i) (s : Set ι), Decidable (i ∈ s)] :
       · rw [Classical.not_imp] at h₁
         rw [hr j h₁.1, if_neg h₁.2]
   · refine ⟨⟨{ j | r j i ∧ j ∈ p }, x₁, piecewise x₂ x { j | r j i }⟩,
-      .snd ⟨i, fun j hj ↦ ?_, ?_⟩, ?_⟩ <;> simp only [piecewise_apply, Set.mem_setOf_eq]
+      .snd ⟨i, fun j hj ↦ _, _⟩, _⟩ <;> simp only [piecewise_apply, Set.mem_setOf_eq]
     · exact if_pos hj
     · split_ifs with hi
       · rwa [hr i hi, if_neg hp] at hs
@@ -123,8 +123,8 @@ theorem Lex.acc_of_single [DecidableEq ι] [∀ (i) (x : α i), Decidable (x ≠
     · intro x ht
       rw [support_eq_empty.1 ht]
       exact fun _ => Lex.acc_zero hbot
-    refine fun x ht h => Lex.acc_of_single_erase b (h b <| t.mem_insert_self b) ?_
-    refine ih _ (by rw [support_erase, ht, Finset.erase_insert hb]) fun a ha => ?_
+    refine fun x ht h => Lex.acc_of_single_erase b (h b <| t.mem_insert_self b) _
+    refine ih _ (by rw [support_erase, ht, Finset.erase_insert hb]) fun a ha => _
     rw [erase_ne (ha.ne_of_not_mem hb)]
     exact h a (Finset.mem_insert_of_mem ha)
 #align dfinsupp.lex.acc_of_single DFinsupp.Lex.acc_of_single
@@ -135,8 +135,8 @@ theorem Lex.acc_single [DecidableEq ι] {i : ι} (hi : Acc (rᶜ ⊓ (· ≠ ·)
     ∀ a, Acc (DFinsupp.Lex r s) (single i a) := by
   induction' hi with i _ ih
   refine fun a => WellFounded.induction (hs i)
-    (C := fun x ↦ Acc (DFinsupp.Lex r s) (single i x)) a fun a ha ↦ ?_
-  refine Acc.intro _ fun x ↦ ?_
+    (C := fun x ↦ Acc (DFinsupp.Lex r s) (single i x)) a fun a ha ↦ _
+  refine Acc.intro _ fun x ↦ _
   rintro ⟨k, hr, hs⟩
   rw [single_apply] at hs
   split_ifs at hs with hik
@@ -144,7 +144,7 @@ theorem Lex.acc_single [DecidableEq ι] {i : ι} (hi : Acc (rᶜ ⊓ (· ≠ ·)
   · exact (hbot hs).elim
   subst hik
   classical
-    refine Lex.acc_of_single hbot x fun j hj ↦ ?_
+    refine Lex.acc_of_single hbot x fun j hj ↦ _
     obtain rfl | hij := eq_or_ne i j
     · exact ha _ hs
     by_cases h : r j i
@@ -188,7 +188,7 @@ theorem Pi.Lex.wellFounded [IsStrictTotalOrder ι r] [Finite ι] (hs : ∀ i, We
   · convert emptyWf.wf
   letI : ∀ i, Zero (α i) := fun i => ⟨(hs i).min ⊤ ⟨x i, trivial⟩⟩
   haveI := IsTrans.swap r; haveI := IsIrrefl.swap r; haveI := Fintype.ofFinite ι
-  refine InvImage.wf equivFunOnFintype.symm (Lex.wellFounded' (fun i a => ?_) hs ?_)
+  refine InvImage.wf equivFunOnFintype.symm (Lex.wellFounded' (fun i a => _) hs _)
   exacts [(hs i).not_lt_min ⊤ _ trivial, Finite.wellFounded_of_trans_of_irrefl (Function.swap r)]
 #align pi.lex.well_founded Pi.Lex.wellFounded
 
@@ -222,14 +222,14 @@ protected theorem DFinsupp.wellFoundedLT [∀ i, Zero (α i)] [∀ i, Preorder (
     have : WellFounded (DFinsupp.Lex (Function.swap <| @WellOrderingRel ι)
         (fun _ ↦ (· < ·) : (i : ι) → β i → β i → Prop)) := by
       have := IsTrichotomous.swap (@WellOrderingRel ι)
-      refine Lex.wellFounded' ?_ (fun i ↦ IsWellFounded.wf) ?_
+      refine Lex.wellFounded' _ (fun i ↦ IsWellFounded.wf) _
       · rintro i ⟨a⟩
         apply hbot
       · #adaptation_note /-- nightly-2024-03-16: simp was
         simp (config := { unfoldPartialApp := true }) only [Function.swap] -/
         simp only [Function.swap_def]
         exact IsWellFounded.wf
-    refine Subrelation.wf (fun h => ?_) <| InvImage.wf (mapRange (fun i ↦ e i) fun _ ↦ rfl) this
+    refine Subrelation.wf (fun h => _) <| InvImage.wf (mapRange (fun i ↦ e i) fun _ ↦ rfl) this
     have := IsStrictOrder.swap (@WellOrderingRel ι)
     obtain ⟨i, he, hl⟩ := lex_lt_of_lt_of_preorder (Function.swap WellOrderingRel) h
     exact ⟨i, fun j hj ↦ Quot.sound (he j hj), hl⟩⟩
@@ -247,7 +247,7 @@ instance Pi.wellFoundedLT [Finite ι] [∀ i, Preorder (α i)] [hw : ∀ i, Well
     · convert emptyWf.wf
     letI : ∀ i, Zero (α i) := fun i => ⟨(hw i).wf.min ⊤ ⟨x i, trivial⟩⟩
     haveI := Fintype.ofFinite ι
-    refine InvImage.wf equivFunOnFintype.symm (DFinsupp.wellFoundedLT fun i a => ?_).wf
+    refine InvImage.wf equivFunOnFintype.symm (DFinsupp.wellFoundedLT fun i a => _).wf
     exact (hw i).wf.not_lt_min ⊤ _ trivial⟩
 #align pi.well_founded_lt Pi.wellFoundedLT
 

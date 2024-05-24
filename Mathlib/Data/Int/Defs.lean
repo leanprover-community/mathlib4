@@ -234,7 +234,7 @@ where
   neg : ∀ n : ℕ, C (b + -[n+1])
   | 0 => Hp _ (Int.le_refl _) H0
   | n+1 => by
-    refine _root_.cast (by rw [Int.add_sub_assoc]; rfl) (Hp _ (Int.le_of_lt ?_) (neg n))
+    refine _root_.cast (by rw [Int.add_sub_assoc]; rfl) (Hp _ (Int.le_of_lt _) (neg n))
     conv => rhs; exact b.add_zero.symm
     rw [Int.add_lt_add_iff_left]; apply negSucc_lt_zero
 #align int.induction_on' Int.inductionOn'
@@ -248,7 +248,7 @@ where
 /-- See `Int.inductionOn'` for an induction in both directions. -/
 protected lemma le_induction {P : ℤ → Prop} {m : ℤ} (h0 : P m)
     (h1 : ∀ n : ℤ, m ≤ n → P n → P (n + 1)) (n : ℤ) : m ≤ n → P n := by
-  refine Int.inductionOn' n m ?_ ?_ ?_
+  refine Int.inductionOn' n m _ _ _
   · intro
     exact h0
   · intro k hle hi _
@@ -468,7 +468,7 @@ lemma ediv_dvd_ediv : ∀ {a b c : ℤ}, a ∣ b → b ∣ c → b / a ∣ c / a
   for some `k`. -/
 lemma exists_lt_and_lt_iff_not_dvd (m : ℤ) (hn : 0 < n) :
     (∃ k, n * k < m ∧ m < n * (k + 1)) ↔ ¬n ∣ m := by
-  refine ⟨?_, fun h ↦ ?_⟩
+  refine ⟨_, fun h ↦ _⟩
   · rintro ⟨k, h1k, h2k⟩ ⟨l, rfl⟩
     replace h1k := lt_of_mul_lt_mul_left h1k (by omega)
     replace h2k := lt_of_mul_lt_mul_left h2k (by omega)
@@ -476,7 +476,7 @@ lemma exists_lt_and_lt_iff_not_dvd (m : ℤ) (hn : 0 < n) :
     exact h2k h1k
   · rw [dvd_iff_emod_eq_zero, ← Ne] at h
     rw [← emod_add_ediv m n]
-    refine ⟨m / n, Int.lt_add_of_pos_left _ ?_, ?_⟩
+    refine ⟨m / n, Int.lt_add_of_pos_left _ _, _⟩
     · have := emod_nonneg m (Int.ne_of_gt hn)
       omega
     · rw [Int.add_comm _ (1 : ℤ), Int.mul_add, Int.mul_one]

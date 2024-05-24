@@ -105,7 +105,7 @@ theorem ofEquiv_ofNat (α) {β} [Denumerable α] (e : β ≃ α) (n) :
     @ofNat β (ofEquiv _ e) n = e.symm (ofNat α n) := by
   -- Porting note: added `letI`
   letI := ofEquiv _ e
-  refine ofNat_of_decode ?_
+  refine ofNat_of_decode _
   rw [decode_ofEquiv e]
   simp
 #align denumerable.of_equiv_of_nat Denumerable.ofEquiv_ofNat
@@ -289,14 +289,14 @@ theorem ofNat_surjective_aux : ∀ {x : ℕ} (hx : x ∈ s), ∃ n, ofNat s n = 
     have wf : ∀ m : s, List.maximum t = m → ↑m < x := fun m hmax => by
       simpa using hmt.mp (List.maximum_mem hmax)
     cases' hmax : List.maximum t with m
-    · refine ⟨0, le_antisymm bot_le (le_of_not_gt fun h => List.not_mem_nil (⊥ : s) ?_)⟩
+    · refine ⟨0, le_antisymm bot_le (le_of_not_gt fun h => List.not_mem_nil (⊥ : s) _)⟩
       rwa [← List.maximum_eq_none.1 hmax, hmt]
     cases' ofNat_surjective_aux m.2 with a ha
-    refine ⟨a + 1, le_antisymm ?_ ?_⟩ <;> rw [ofNat]
-    · refine succ_le_of_lt ?_
+    refine ⟨a + 1, le_antisymm _ _⟩ <;> rw [ofNat]
+    · refine succ_le_of_lt _
       rw [ha]
       exact wf _ hmax
-    · refine le_succ_of_forall_lt_le fun z hz => ?_
+    · refine le_succ_of_forall_lt_le fun z hz => _
       rw [ha]
       cases m
       exact List.le_maximum_of_mem (hmt.2 hz) hmax

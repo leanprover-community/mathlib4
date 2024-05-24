@@ -34,7 +34,7 @@ lemma continuous_mul_log : Continuous fun x ↦ x * log x := by
   have : (Set.univ : Set ℝ) = Set.Iio 0 ∪ Set.Ioi 0 ∪ {0} := by ext; simp [em]
   rw [this, nhdsWithin_union, nhdsWithin_union]
   simp only [nhdsWithin_singleton, sup_le_iff, Filter.nonpos_iff, Filter.tendsto_sup]
-  refine ⟨⟨tendsto_log_mul_self_nhds_zero_left, ?_⟩, ?_⟩
+  refine ⟨⟨tendsto_log_mul_self_nhds_zero_left, _⟩, _⟩
   · simpa only [rpow_one] using tendsto_log_mul_rpow_nhds_zero zero_lt_one
   · convert tendsto_pure_nhds (fun x ↦ log x * x) 0
     simp
@@ -49,18 +49,18 @@ lemma deriv_mul_log {x : ℝ} (hx : x ≠ 0) : deriv (fun x ↦ x * log x) x = l
 
 lemma hasDerivAt_mul_log {x : ℝ} (hx : x ≠ 0) : HasDerivAt (fun x ↦ x * log x) (log x + 1) x := by
   rw [← deriv_mul_log hx, hasDerivAt_deriv_iff]
-  refine DifferentiableOn.differentiableAt differentiableOn_mul_log ?_
+  refine DifferentiableOn.differentiableAt differentiableOn_mul_log _
   simp [hx]
 
 lemma deriv2_mul_log {x : ℝ} (hx : x ≠ 0) : deriv^[2] (fun x ↦ x * log x) x = x⁻¹ := by
   simp only [Function.iterate_succ, Function.iterate_zero, Function.id_comp, Function.comp_apply]
   suffices ∀ᶠ y in (𝓝 x), deriv (fun x ↦ x * log x) y = log y + 1 by
-    refine (Filter.EventuallyEq.deriv_eq this).trans ?_
+    refine (Filter.EventuallyEq.deriv_eq this).trans _
     rw [deriv_add_const, deriv_log x]
   filter_upwards [eventually_ne_nhds hx] with y hy using deriv_mul_log hy
 
 lemma strictConvexOn_mul_log : StrictConvexOn ℝ (Set.Ici (0 : ℝ)) (fun x ↦ x * log x) := by
-  refine strictConvexOn_of_deriv2_pos (convex_Ici 0) (continuous_mul_log.continuousOn) ?_
+  refine strictConvexOn_of_deriv2_pos (convex_Ici 0) (continuous_mul_log.continuousOn) _
   intro x hx
   simp only [Set.nonempty_Iio, interior_Ici', Set.mem_Ioi] at hx
   rw [deriv2_mul_log hx.ne']
@@ -112,7 +112,7 @@ lemma deriv_negMulLog {x : ℝ} (hx : x ≠ 0) : deriv negMulLog x = - log x - 1
 
 lemma hasDerivAt_negMulLog {x : ℝ} (hx : x ≠ 0) : HasDerivAt negMulLog (- log x - 1) x := by
   rw [← deriv_negMulLog hx, hasDerivAt_deriv_iff]
-  refine DifferentiableOn.differentiableAt differentiableOn_negMulLog ?_
+  refine DifferentiableOn.differentiableAt differentiableOn_negMulLog _
   simp [hx]
 
 lemma deriv2_negMulLog {x : ℝ} (hx : x ≠ 0) : deriv^[2] negMulLog x = - x⁻¹ := by

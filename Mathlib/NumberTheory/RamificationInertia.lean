@@ -84,10 +84,10 @@ theorem ramificationIdx_spec {n : ℕ} (hle : map f p ≤ P ^ n) (hgt : ¬map f 
   let Q : ℕ → Prop := fun m => ∀ k : ℕ, map f p ≤ P ^ k → k ≤ m
   have : Q n := by
     intro k hk
-    refine le_of_not_lt fun hnk => ?_
+    refine le_of_not_lt fun hnk => _
     exact hgt (hk.trans (Ideal.pow_le_pow_right hnk))
   rw [ramificationIdx_eq_find ⟨n, this⟩]
-  refine le_antisymm (Nat.find_min' _ this) (le_of_not_gt fun h : Nat.find _ < n => ?_)
+  refine le_antisymm (Nat.find_min' _ this) (le_of_not_gt fun h : Nat.find _ < n => _)
   obtain this' := Nat.find_spec ⟨n, this⟩
   exact h.not_le (this' _ hle)
 #align ideal.ramification_idx_spec Ideal.ramificationIdx_spec
@@ -97,7 +97,7 @@ theorem ramificationIdx_lt {n : ℕ} (hgt : ¬map f p ≤ P ^ n) : ramificationI
   · simp at hgt
   · rw [Nat.lt_succ_iff]
     have : ∀ k, map f p ≤ P ^ k → k ≤ n := by
-      refine fun k hk => le_of_not_lt fun hnk => ?_
+      refine fun k hk => le_of_not_lt fun hnk => _
       exact hgt (hk.trans (Ideal.pow_le_pow_right hnk))
     rw [ramificationIdx_eq_find ⟨n, this⟩]
     exact Nat.find_min' ⟨n, this⟩ this
@@ -143,7 +143,7 @@ variable [IsDedekindDomain S]
 theorem ramificationIdx_eq_normalizedFactors_count (hp0 : map f p ≠ ⊥) (hP : P.IsPrime)
     (hP0 : P ≠ ⊥) : ramificationIdx f p P = (normalizedFactors (map f p)).count P := by
   have hPirr := (Ideal.prime_of_isPrime hP0 hP).irreducible
-  refine ramificationIdx_spec (Ideal.le_of_dvd ?_) (mt Ideal.dvd_iff_le.mpr ?_) <;>
+  refine ramificationIdx_spec (Ideal.le_of_dvd _) (mt Ideal.dvd_iff_le.mpr _) <;>
     rw [dvd_iff_normalizedFactors_le_normalizedFactors (pow_ne_zero _ hP0) hp0,
       normalizedFactors_pow, normalizedFactors_irreducible hPirr, normalize_eq,
       Multiset.nsmul_singleton, ← Multiset.le_count_iff_replicate_le]
@@ -210,7 +210,7 @@ theorem inertiaDeg_algebraMap [Algebra R S] [Algebra (R ⧸ p) (S ⧸ P)]
   have := comap_eq_of_scalar_tower_quotient (algebraMap (R ⧸ p) (S ⧸ P)).injective
   rw [inertiaDeg, dif_pos this]
   congr
-  refine Algebra.algebra_ext _ _ fun x' => Quotient.inductionOn' x' fun x => ?_
+  refine Algebra.algebra_ext _ _ fun x' => Quotient.inductionOn' x' fun x => _
   change Ideal.Quotient.lift p _ _ (Ideal.Quotient.mk p x) = algebraMap _ _ (Ideal.Quotient.mk p x)
   rw [Ideal.Quotient.lift_mk, ← Ideal.Quotient.algebraMap_eq P, ← IsScalarTower.algebraMap_eq,
     ← Ideal.Quotient.algebraMap_eq, ← IsScalarTower.algebraMap_apply]
@@ -263,10 +263,10 @@ theorem FinrankQuotientMap.linearIndependent_of_nontrivial [IsDedekindDomain R]
   have hgI : algebraMap R S (g' j) ≠ 0 := by
     simp only [FractionalIdeal.mem_coeIdeal, not_exists, not_and'] at hgI
     exact hgI _ (hg' j hjs)
-  refine ⟨fun i => algebraMap R S (g' i), ?_, j, hjs, hgI⟩
+  refine ⟨fun i => algebraMap R S (g' i), _, j, hjs, hgI⟩
   have eq : f (∑ i in s, g' i • b i) = 0 := by
     rw [map_sum, ← smul_zero a, ← eq, Finset.smul_sum]
-    refine Finset.sum_congr rfl ?_
+    refine Finset.sum_congr rfl _
     intro i hi
     rw [LinearMap.map_smul, ← IsScalarTower.algebraMap_smul K, hg' i hi, ← smul_assoc,
       smul_eq_mul, Function.comp_apply]
@@ -314,7 +314,7 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
     obtain ⟨a'', ha'', hx⟩ := (Submodule.mem_ideal_smul_span_iff_exists_sum p a x).1
       (by { rw [ha, smul_top_eq]; exact Submodule.mem_top } :
         x ∈ p • Submodule.span R (Set.range a))
-    · refine ⟨fun i => a'' i, fun i => ha'' _, ?_⟩
+    · refine ⟨fun i => a'' i, fun i => ha'' _, _⟩
       rw [← hx, Finsupp.sum_fintype]
       exact fun _ => zero_smul _ _
   choose A' hA'p hA' using fun i => exists_sum (a i)
@@ -329,9 +329,9 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
   have d_smul : ∀ i, A.det • a i = 0 := by
     intro i
     calc
-      A.det • a i = ∑ j, (B * A) i j • a j := ?_
-      _ = ∑ k, B i k • ∑ j, A k j • a j := ?_
-      _ = 0 := Finset.sum_eq_zero fun k _ => ?_
+      A.det • a i = ∑ j, (B * A) i j • a j := _
+      _ = ∑ k, B i k • ∑ j, A k j • a j := _
+      _ = 0 := Finset.sum_eq_zero fun k _ => _
     · simp only [B, Matrix.adjugate_mul, Matrix.smul_apply, Matrix.one_apply, smul_eq_mul, ite_true,
         mul_ite, mul_one, mul_zero, ite_smul, zero_smul, Finset.sum_ite_eq, Finset.mem_univ]
     · simp only [Matrix.mul_apply, Finset.smul_sum, Finset.sum_smul, smul_smul]
@@ -352,26 +352,26 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
     exact Finset.sum_const_zero
   refine top_le_iff.mp
       (calc
-        ⊤ = (Ideal.span {algebraMap R L A.det}).restrictScalars K := ?_
-        _ ≤ Submodule.span K (algebraMap S L '' b) := ?_)
+        ⊤ = (Ideal.span {algebraMap R L A.det}).restrictScalars K := _
+        _ ≤ Submodule.span K (algebraMap S L '' b) := _)
   -- Because `det A ≠ 0`, we have `span L {det A} = ⊤`.
   · rw [eq_comm, Submodule.restrictScalars_eq_top_iff, Ideal.span_singleton_eq_top]
-    refine IsUnit.mk0 _ ((map_ne_zero_iff (algebraMap R L) hRL).mpr ?_)
-    refine ne_zero_of_map (f := Ideal.Quotient.mk p) ?_
+    refine IsUnit.mk0 _ ((map_ne_zero_iff (algebraMap R L) hRL).mpr _)
+    refine ne_zero_of_map (f := Ideal.Quotient.mk p) _
     haveI := Ideal.Quotient.nontrivial hp
     calc
       Ideal.Quotient.mk p A.det = Matrix.det ((Ideal.Quotient.mk p).mapMatrix A) := by
         rw [RingHom.map_det]
       _ = Matrix.det ((Ideal.Quotient.mk p).mapMatrix (Matrix.of A' - 1)) := rfl
       _ = Matrix.det fun i j =>
-          (Ideal.Quotient.mk p) (A' i j) - (1 : Matrix (Fin n) (Fin n) (R ⧸ p)) i j := ?_
-      _ = Matrix.det (-1 : Matrix (Fin n) (Fin n) (R ⧸ p)) := ?_
+          (Ideal.Quotient.mk p) (A' i j) - (1 : Matrix (Fin n) (Fin n) (R ⧸ p)) i j := _
+      _ = Matrix.det (-1 : Matrix (Fin n) (Fin n) (R ⧸ p)) := _
       _ = (-1 : R ⧸ p) ^ n := by rw [Matrix.det_neg, Fintype.card_fin, Matrix.det_one, mul_one]
       _ ≠ 0 := IsUnit.ne_zero (isUnit_one.neg.pow _)
-    · refine congr_arg Matrix.det (Matrix.ext fun i j => ?_)
+    · refine congr_arg Matrix.det (Matrix.ext fun i j => _)
       rw [map_sub, RingHom.mapMatrix_apply, map_one]
       rfl
-    · refine congr_arg Matrix.det (Matrix.ext fun i j => ?_)
+    · refine congr_arg Matrix.det (Matrix.ext fun i j => _)
       rw [Ideal.Quotient.eq_zero_iff_mem.mpr (hA'p i j), zero_sub]
       rfl
   -- And we conclude `L = span L {det A} ≤ span K b`, so `span K b` spans everything.
@@ -404,14 +404,14 @@ theorem finrank_quotient_map [IsDomain S] [IsDedekindDomain R] [Algebra K L]
   -- We claim `b'` is a basis for `Frac(S)` over `Frac(R)` because it is linear independent
   -- and spans the whole of `Frac(S)`.
   let b'' : ι → L := algebraMap S L ∘ b'
-  have b''_li : LinearIndependent K b'' := ?_
-  · have b''_sp : Submodule.span K (Set.range b'') = ⊤ := ?_
+  have b''_li : LinearIndependent K b'' := _
+  · have b''_sp : Submodule.span K (Set.range b'') = ⊤ := _
     -- Since the two bases have the same index set, the spaces have the same dimension.
     · let c : Basis ι K L := Basis.mk b''_li b''_sp.ge
       rw [finrank_eq_card_basis b, finrank_eq_card_basis c]
     -- It remains to show that the basis is indeed linear independent and spans the whole space.
     · rw [Set.range_comp]
-      refine FinrankQuotientMap.span_eq_top p hp.ne_top _ (top_le_iff.mp ?_)
+      refine FinrankQuotientMap.span_eq_top p hp.ne_top _ (top_le_iff.mp _)
       -- The nicest way to show `S ≤ span b' ⊔ pS` is by reducing both sides modulo pS.
       -- However, this would imply distinguishing between `pS` as `S`-ideal,
       -- and `pS` as `R`-submodule, since they have different (non-defeq) quotients.
@@ -534,7 +534,7 @@ noncomputable def quotientToQuotientRangePowQuotSucc {i : ℕ} {a : S} (a_mem : 
     intro x y; refine Quotient.inductionOn' x fun x => Quotient.inductionOn' y fun y => _
     simp only [Submodule.Quotient.mk''_eq_mk, RingHom.id_apply,
       quotientToQuotientRangePowQuotSuccAux_mk]
-    refine congr_arg Submodule.Quotient.mk ?_
+    refine congr_arg Submodule.Quotient.mk _
     ext
     simp only [mul_assoc, _root_.map_mul, Quotient.mk_eq_mk, Submodule.coe_smul_of_tower,
       Algebra.smul_def, Quotient.algebraMap_quotient_pow_ramificationIdx]
@@ -578,11 +578,11 @@ theorem quotientToQuotientRangePowQuotSucc_surjective [IsDedekindDomain S]
   suffices hx' : x ∈ Ideal.span {a} ⊔ P ^ (i + 1) by
     obtain ⟨y', hy', z, hz, rfl⟩ := Submodule.mem_sup.mp hx'
     obtain ⟨y, rfl⟩ := Ideal.mem_span_singleton.mp hy'
-    refine ⟨Submodule.Quotient.mk y, ?_⟩
+    refine ⟨Submodule.Quotient.mk y, _⟩
     simp only [Submodule.Quotient.quot_mk_eq_mk, quotientToQuotientRangePowQuotSucc_mk,
       Submodule.Quotient.eq, LinearMap.mem_range, Subtype.ext_iff, Subtype.coe_mk,
       Submodule.coe_sub]
-    refine ⟨⟨_, Ideal.mem_map_of_mem _ (Submodule.neg_mem _ hz)⟩, ?_⟩
+    refine ⟨⟨_, Ideal.mem_map_of_mem _ (Submodule.neg_mem _ hz)⟩, _⟩
     rw [powQuotSuccInclusion_apply_coe, Subtype.coe_mk, Ideal.Quotient.mk_eq_mk, map_add,
       sub_add_cancel_left, map_neg]
   letI := Classical.decEq (Ideal S)
@@ -633,7 +633,7 @@ theorem rank_pow_quot [IsDedekindDomain S] [p.IsMaximal] [P.IsPrime] (hP0 : P �
   let Q : ℕ → Prop :=
     fun i => Module.rank (R ⧸ p) { x // x ∈ map (Quotient.mk (P ^ e)) (P ^ i) }
       = (e - i) • Module.rank (R ⧸ p) (S ⧸ P)
-  refine Nat.decreasingInduction' (P := Q) (fun j lt_e _le_j ih => ?_) hi ?_
+  refine Nat.decreasingInduction' (P := Q) (fun j lt_e _le_j ih => _) hi _
   · dsimp only [Q]
     rw [rank_pow_quot_aux f p P _ lt_e, ih, ← succ_nsmul', Nat.sub_succ, ← Nat.succ_eq_add_one,
       Nat.succ_pred_eq_of_pos (Nat.sub_pos_of_lt lt_e)]
@@ -674,7 +674,7 @@ theorem finrank_prime_pow_ramificationIdx [IsDedekindDomain S] (hP0 : P ≠ ⊥)
   by_cases hP : FiniteDimensional (R ⧸ p) (S ⧸ P)
   · haveI := hP
     haveI := (finiteDimensional_iff_of_rank_eq_nsmul he hdim).mpr hP
-    refine Cardinal.natCast_injective ?_
+    refine Cardinal.natCast_injective _
     rw [finrank_eq_rank', Nat.cast_mul, finrank_eq_rank', hdim, nsmul_eq_mul]
   have hPe := mt (finiteDimensional_iff_of_rank_eq_nsmul he hdim).mp hP
   simp only [finrank_of_infinite_dimensional hP, finrank_of_infinite_dimensional hPe,
@@ -748,7 +748,7 @@ theorem Factors.inertiaDeg_ne_zero [IsNoetherian R S] [p.IsMaximal]
 instance Factors.finiteDimensional_quotient_pow [IsNoetherian R S] [p.IsMaximal]
     (P : (factors (map (algebraMap R S) p)).toFinset) :
     FiniteDimensional (R ⧸ p) (S ⧸ (P : Ideal S) ^ ramificationIdx (algebraMap R S) p P) := by
-  refine .of_finrank_pos ?_
+  refine .of_finrank_pos _
   rw [pos_iff_ne_zero, Factors.finrank_pow_ramificationIdx]
   exact mul_ne_zero (Factors.ramificationIdx_ne_zero p P) (Factors.inertiaDeg_ne_zero p P)
 #align ideal.factors.finite_dimensional_quotient_pow Ideal.Factors.finiteDimensional_quotient_pow
@@ -822,22 +822,22 @@ theorem sum_ramification_inertia (K L : Type*) [Field K] [Field L] [IsDedekindDo
     rw [IsScalarTower.algebraMap_eq R K L, RingHom.coe_comp]
     exact (RingHom.injective _).comp (IsFractionRing.injective R K)
   have inj_RS : Function.Injective (algebraMap R S) := by
-    refine Function.Injective.of_comp (show Function.Injective (algebraMap S L ∘ _) from ?_)
+    refine Function.Injective.of_comp (show Function.Injective (algebraMap S L ∘ _) from _)
     rw [← RingHom.coe_comp, ← IsScalarTower.algebraMap_eq]
     exact inj_RL
   calc
     (∑ P in (factors (map (algebraMap R S) p)).toFinset, e P * f P) =
         ∑ P in (factors (map (algebraMap R S) p)).toFinset.attach,
-          finrank (R ⧸ p) (S ⧸ (P : Ideal S) ^ e P) := ?_
+          finrank (R ⧸ p) (S ⧸ (P : Ideal S) ^ e P) := _
     _ = finrank (R ⧸ p)
           (∀ P : (factors (map (algebraMap R S) p)).toFinset, S ⧸ (P : Ideal S) ^ e P) :=
       (finrank_pi_fintype (R ⧸ p)).symm
-    _ = finrank (R ⧸ p) (S ⧸ map (algebraMap R S) p) := ?_
-    _ = finrank K L := ?_
+    _ = finrank (R ⧸ p) (S ⧸ map (algebraMap R S) p) := _
+    _ = finrank K L := _
   · rw [← Finset.sum_attach]
-    refine Finset.sum_congr rfl fun P _ => ?_
+    refine Finset.sum_congr rfl fun P _ => _
     rw [Factors.finrank_pow_ramificationIdx]
-  · refine LinearEquiv.finrank_eq (Factors.piQuotientLinearEquiv S p ?_).symm
+  · refine LinearEquiv.finrank_eq (Factors.piQuotientLinearEquiv S p _).symm
     rwa [Ne, Ideal.map_eq_bot_iff_le_ker, (RingHom.injective_iff_ker_eq_bot _).mp inj_RS,
       le_bot_iff]
   · exact finrank_quotient_map p K L

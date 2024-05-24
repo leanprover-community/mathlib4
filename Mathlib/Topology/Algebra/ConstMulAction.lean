@@ -535,7 +535,7 @@ instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Sp
   let V₀₀ := ⋂ γ ∈ bad_Γ_set, v γ
   let V₀ := V₀₀ ∩ L₀
   have U_nhds : f '' U₀ ∈ 𝓝 (f x₀) := by
-    refine f_op.image_mem_nhds (inter_mem ((biInter_mem bad_Γ_finite).mpr fun γ _ => ?_) K₀_in)
+    refine f_op.image_mem_nhds (inter_mem ((biInter_mem bad_Γ_finite).mpr fun γ _ => _) K₀_in)
     exact (continuous_const_smul _).continuousAt (hu γ)
   have V_nhds : f '' V₀ ∈ 𝓝 (f y₀) :=
     f_op.image_mem_nhds (inter_mem ((biInter_mem bad_Γ_finite).mpr fun γ _ => hv γ) L₀_in)
@@ -576,7 +576,7 @@ theorem set_smul_mem_nhds_smul {c : G₀} {s : Set α} {x : α} (hs : s ∈ 𝓝
 
 theorem set_smul_mem_nhds_smul_iff {c : G₀} {s : Set α} {x : α} (hc : c ≠ 0) :
     c • s ∈ 𝓝 (c • x : α) ↔ s ∈ 𝓝 x := by
-  refine ⟨fun h => ?_, fun h => set_smul_mem_nhds_smul h hc⟩
+  refine ⟨fun h => _, fun h => set_smul_mem_nhds_smul h hc⟩
   rw [← inv_smul_smul₀ hc x, ← inv_smul_smul₀ hc s]
   exact set_smul_mem_nhds_smul h (inv_ne_zero hc)
 #align set_smul_mem_nhds_smul_iff set_smul_mem_nhds_smul_iff
@@ -590,7 +590,7 @@ variable {G₀ : Type*} [GroupWithZero G₀] [AddMonoid α] [DistribMulAction G�
 
 theorem set_smul_mem_nhds_zero_iff {s : Set α} {c : G₀} (hc : c ≠ 0) :
     c • s ∈ 𝓝 (0 : α) ↔ s ∈ 𝓝 (0 : α) := by
-  refine Iff.trans ?_ (set_smul_mem_nhds_smul_iff hc)
+  refine Iff.trans _ (set_smul_mem_nhds_smul_iff hc)
   rw [smul_zero]
 #align set_smul_mem_nhds_zero_iff set_smul_mem_nhds_zero_iff
 

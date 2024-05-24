@@ -715,7 +715,7 @@ lemma exists_or_forall_not (P : α → Prop) : (∃ a, P a) ∨ ∀ a, ¬ P a :=
 theorem forall_imp_iff_exists_imp {α : Sort*} {p : α → Prop} {b : Prop} [ha : Nonempty α] :
     (∀ x, p x) → b ↔ ∃ x, p x → b := by
   let ⟨a⟩ := ha
-  refine ⟨fun h ↦ not_forall_not.1 fun h' ↦ ?_, fun ⟨x, hx⟩ h ↦ hx (h x)⟩
+  refine ⟨fun h ↦ not_forall_not.1 fun h' ↦ _, fun ⟨x, hx⟩ h ↦ hx (h x)⟩
   exact if hb : b then h' a fun _ ↦ hb else hb <| h fun x ↦ (_root_.not_imp.1 (h' x)).1
 #align forall_imp_iff_exists_imp forall_imp_iff_exists_imp
 

@@ -43,11 +43,11 @@ open Polynomial
 
 theorem cyclotomic_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] :
     ((cyclotomic p ℤ).comp (X + 1)).IsEisensteinAt 𝓟 := by
-  refine Monic.isEisensteinAt_of_mem_of_not_mem ?_
+  refine Monic.isEisensteinAt_of_mem_of_not_mem _
       (Ideal.IsPrime.ne_top <| (Ideal.span_singleton_prime (mod_cast hp.out.ne_zero)).2 <|
-        Nat.prime_iff_prime_int.1 hp.out) (fun {i hi} => ?_) ?_
+        Nat.prime_iff_prime_int.1 hp.out) (fun {i hi} => _) _
   · rw [show (X + 1 : ℤ[X]) = X + C 1 by simp]
-    refine (cyclotomic.monic p ℤ).comp (monic_X_add_C 1) fun h => ?_
+    refine (cyclotomic.monic p ℤ).comp (monic_X_add_C 1) fun h => _
     rw [natDegree_X_add_C] at h
     exact zero_ne_one h.symm
   · rw [cyclotomic_prime, geom_sum_X_comp_X_add_one_eq_sum, ← lcoeff_apply, map_sum]
@@ -76,11 +76,11 @@ set_option linter.uppercaseLean3 false in
 
 theorem cyclotomic_prime_pow_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] (n : ℕ) :
     ((cyclotomic (p ^ (n + 1)) ℤ).comp (X + 1)).IsEisensteinAt 𝓟 := by
-  refine Monic.isEisensteinAt_of_mem_of_not_mem ?_
+  refine Monic.isEisensteinAt_of_mem_of_not_mem _
       (Ideal.IsPrime.ne_top <| (Ideal.span_singleton_prime (mod_cast hp.out.ne_zero)).2 <|
-        Nat.prime_iff_prime_int.1 hp.out) ?_ ?_
+        Nat.prime_iff_prime_int.1 hp.out) _ _
   · rw [show (X + 1 : ℤ[X]) = X + C 1 by simp]
-    refine (cyclotomic.monic _ ℤ).comp (monic_X_add_C 1) fun h => ?_
+    refine (cyclotomic.monic _ ℤ).comp (monic_X_add_C 1) fun h => _
     rw [natDegree_X_add_C] at h
     exact zero_ne_one h.symm
   · induction' n with n hn
@@ -157,7 +157,7 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
       p ^ n.succ ∣ Q.coeff 0 ^ n.succ * ((-1) ^ (n.succ * n) * (minpoly R B.gen).coeff 0 ^ n) by
     have hndiv : ¬p ^ 2 ∣ (minpoly R B.gen).coeff 0 := fun h =>
       hei.not_mem ((span_singleton_pow p 2).symm ▸ Ideal.mem_span_singleton.2 h)
-    refine @Prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd R _ _ _ _ n hp (?_ : _ ∣ _) hndiv
+    refine @Prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd R _ _ _ _ n hp (_ : _ ∣ _) hndiv
     convert (IsUnit.dvd_mul_right ⟨(-1) ^ (n.succ * n), rfl⟩).mpr this using 1
     push_cast
     ring_nf
@@ -172,7 +172,7 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
   have hintsum :
     IsIntegral R
       (z * B.gen ^ n - ∑ x : ℕ in (range (Q.natDegree + 1)).erase 0, Q.coeff x • f (x + n)) := by
-    refine (hzint.mul (hBint.pow _)).sub (.sum _ fun i hi => .smul _ ?_)
+    refine (hzint.mul (hBint.pow _)).sub (.sum _ fun i hi => .smul _ _)
     exact adjoin_le_integralClosure hBint (hf _ (aux i hi)).1
   obtain ⟨r, hr⟩ := isIntegral_iff.1 (isIntegral_norm K hintsum)
   use r
@@ -182,11 +182,11 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
   simp only [_root_.map_mul, _root_.map_pow, _root_.map_neg, _root_.map_one]
   -- Both sides are actually norms:
   calc
-    _ = norm K (Q.coeff 0 • B.gen ^ n) := ?_
+    _ = norm K (Q.coeff 0 • B.gen ^ n) := _
     _ = norm K (p • (z * B.gen ^ n) -
           ∑ x : ℕ in (range (Q.natDegree + 1)).erase 0, p • Q.coeff x • f (x + n)) :=
-        (congr_arg (norm K) (eq_sub_of_add_eq ?_))
-    _ = _ := ?_
+        (congr_arg (norm K) (eq_sub_of_add_eq _))
+    _ = _ := _
   · simp only [Algebra.smul_def, algebraMap_apply R K L, Algebra.norm_algebraMap, _root_.map_mul,
       _root_.map_pow, finrank_K_L, PowerBasis.norm_gen_eq_coeff_zero_minpoly,
       minpoly.isIntegrallyClosed_eq_field_fractions' K hBint, coeff_map, ← hn]
@@ -196,11 +196,11 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
       Algebra.norm_algebraMap, finrank_K_L, hr, ← hn]
   calc
     _ = (Q.coeff 0 • ↑1 + ∑ x : ℕ in (range (Q.natDegree + 1)).erase 0, Q.coeff x • B.gen ^ x) *
-          B.gen ^ n := ?_
+          B.gen ^ n := _
     _ = (Q.coeff 0 • B.gen ^ 0 +
         ∑ x : ℕ in (range (Q.natDegree + 1)).erase 0, Q.coeff x • B.gen ^ x) * B.gen ^ n :=
       by rw [_root_.pow_zero]
-    _ = aeval B.gen Q * B.gen ^ n := ?_
+    _ = aeval B.gen Q * B.gen ^ n := _
     _ = _ := by rw [hQ, Algebra.smul_mul_assoc]
   · have : ∀ i ∈ (range (Q.natDegree + 1)).erase 0,
         Q.coeff i • (B.gen ^ i * B.gen ^ n) = p • Q.coeff i • f (i + n) := by
@@ -266,7 +266,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
       exact Subalgebra.zero_mem _
   -- It is enough to prove that all coefficients of `Q` are divisible by `p`, by induction.
   -- The base case is `dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt`.
-  refine mem_adjoin_of_dvd_coeff_of_dvd_aeval hp.ne_zero (fun i => ?_) hQ
+  refine mem_adjoin_of_dvd_coeff_of_dvd_aeval hp.ne_zero (fun i => _) hQ
   induction' i using Nat.case_strong_induction_on with j hind
   · intro _
     exact dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt hp hBint hQ hzint hei
@@ -309,7 +309,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
         ← (hf (k + P.natDegree - 1) _).2, mul_smul_comm]
       rw [(minpoly.monic hBint).natDegree_map, add_comm, Nat.add_sub_assoc, le_add_iff_nonneg_right]
       · exact Nat.zero_le _
-      · refine one_le_iff_ne_zero.2 fun h => ?_
+      · refine one_le_iff_ne_zero.2 fun h => _
         rw [h] at hk
         simp at hk
 
@@ -347,13 +347,13 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
           Q.coeff (j + 1 + x) • f (x + P.natDegree - 1) +
             ∑ x : ℕ in range (j + 1), g x • B.gen ^ x * B.gen ^ (P.natDegree - (j + 2)))) := by
       refine (hzint.mul (hBint.pow _)).sub
-        (.add (.sum _ fun k hk => .smul _ ?_)
+        (.add (.sum _ fun k hk => .smul _ _)
           (.sum _ fun k _ => .mul (.smul _ (.pow hBint _)) (hBint.pow _)))
-      refine adjoin_le_integralClosure hBint (hf _ ?_).1
+      refine adjoin_le_integralClosure hBint (hf _ _).1
       rw [(minpoly.monic hBint).natDegree_map (algebraMap R L)]
       rw [add_comm, Nat.add_sub_assoc, le_add_iff_nonneg_right]
       · exact _root_.zero_le _
-      · refine one_le_iff_ne_zero.2 fun h => ?_
+      · refine one_le_iff_ne_zero.2 fun h => _
         rw [h] at hk
         simp at hk
     obtain ⟨r, hr⟩ := isIntegral_iff.1 (isIntegral_norm K hintsum)

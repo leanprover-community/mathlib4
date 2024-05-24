@@ -115,7 +115,7 @@ then the image of `separableClosure F E` in `K` is equal to `separableClosure F 
 theorem separableClosure.map_eq_of_separableClosure_eq_bot [Algebra E K] [IsScalarTower F E K]
     (h : separableClosure E K = ⊥) :
     (separableClosure F E).map (IsScalarTower.toAlgHom F E K) = separableClosure F K := by
-  refine le_antisymm (map_le_of_algHom _) (fun x hx ↦ ?_)
+  refine le_antisymm (map_le_of_algHom _) (fun x hx ↦ _)
   obtain ⟨y, rfl⟩ := mem_bot.1 <| h ▸ mem_separableClosure_iff.2
     (mem_separableClosure_iff.1 hx |>.map_minpoly E)
   exact ⟨y, (map_mem_separableClosure_iff <| IsScalarTower.toAlgHom F E K).mp hx, rfl⟩
@@ -185,7 +185,7 @@ instance separableClosure.isGalois [Normal F E] : IsGalois F (separableClosure F
 of `F` in `E` is equal to `F` if and only if `F` is separably closed. -/
 theorem IsSepClosed.separableClosure_eq_bot_iff [IsSepClosed E] :
     separableClosure F E = ⊥ ↔ IsSepClosed F := by
-  refine ⟨fun h ↦ IsSepClosed.of_exists_root _ fun p _ hirr hsep ↦ ?_,
+  refine ⟨fun h ↦ IsSepClosed.of_exists_root _ fun p _ hirr hsep ↦ _,
     fun _ ↦ IntermediateField.eq_bot_of_isSepClosed_of_isSeparable _⟩
   obtain ⟨x, hx⟩ := IsSepClosed.exists_aeval_eq_zero E p (degree_pos_of_irreducible hirr).ne' hsep
   obtain ⟨x, rfl⟩ := h ▸ mem_separableClosure_iff.2 (hsep.of_dvd <| minpoly.dvd _ x hx)

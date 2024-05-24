@@ -142,6 +142,6 @@ protected theorem CompleteSpace.iInf {ι X : Type*} {u : ι → UniformSpace X}
   have : Pi.topologicalSpace (t₂ := fun i ↦ (u i).toTopologicalSpace) ≤
          Pi.topologicalSpace (t₂ := fun _ ↦ t) :=
     iInf_mono fun i ↦ induced_mono <| hut i
-  refine IsClosed.isComplete <| .mono ?_ this
+  refine IsClosed.isComplete <| .mono _ this
   exact isClosed_iInter fun i ↦ isClosed_iInter fun j ↦
     isClosed_eq (continuous_apply _) (continuous_apply _)

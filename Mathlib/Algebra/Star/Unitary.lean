@@ -140,7 +140,7 @@ theorem toUnits_injective : Function.Injective (toUnits : unitary R → Rˣ) := 
 
 theorem _root_.IsUnit.mem_unitary_of_star_mul_self  {u : R} (hu : IsUnit u)
     (h_mul : star u * u = 1) : u ∈ unitary R := by
-  refine unitary.mem_iff.mpr ⟨h_mul, ?_⟩
+  refine unitary.mem_iff.mpr ⟨h_mul, _⟩
   lift u to Rˣ using hu
   exact left_inv_eq_right_inv h_mul u.mul_inv ▸ u.mul_inv
 

@@ -214,7 +214,7 @@ theorem adjoin_rootSet (n : ℕ) :
     have := IsScalarTower.adjoin_range_toAlgHom K (AdjoinRoot f.factor)
         (SplittingFieldAux n f.removeFactor)
         (f.removeFactor.rootSet (SplittingFieldAux n f.removeFactor))
-    refine this.trans ?_
+    refine this.trans _
     rw [ih _ (natDegree_removeFactor' hfn), Subalgebra.restrictScalars_top]
 #align polynomial.splitting_field_aux.adjoin_root_set Polynomial.SplittingFieldAux.adjoin_rootSet
 

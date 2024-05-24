@@ -209,12 +209,12 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     let z := α • u + x'
     obtain hz₀|hz₀ := eq_or_ne z 0
     · -- If `z = 0`, then `⁅α • u + x, x⁆` vanishes and we use our assumption `x ≠ 0`.
-      refine ⟨⟨x, self_mem_engel K x⟩, ?_, ?_⟩
+      refine ⟨⟨x, self_mem_engel K x⟩, _, _⟩
       · simpa [coe_bracket_of_module, ne_eq, Submodule.mk_eq_zero] using hx₀
       · dsimp only [z] at hz₀
         simp only [coe_bracket_of_module, hz₀, LieHom.map_zero, LinearMap.zero_apply]
     -- If `z ≠ 0`, then `⁅α • u + x, z⁆` vanishes per axiom of Lie algebras
-    refine ⟨⟨z, hUle z.2⟩, ?_, ?_⟩
+    refine ⟨⟨z, hUle z.2⟩, _, _⟩
     · simpa only [coe_bracket_of_module, ne_eq, Submodule.mk_eq_zero, Subtype.ext_iff] using hz₀
     · show ⁅z, _⁆ = (0 : E)
       ext
@@ -261,8 +261,8 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     let t := (constantCoeff ψ).roots.toFinset
     -- We show that `t` has cardinality at most `finrank K L - r`.
     have ht : t.card ≤ finrank K L - r := by
-      refine (Multiset.toFinset_card_le _).trans ?_
-      refine (card_roots' _).trans ?_
+      refine (Multiset.toFinset_card_le _).trans _
+      refine (card_roots' _).trans _
       rw [constantCoeff_apply]
       -- Indeed, `constantCoeff ψ` has degree at most `finrank K Q = finrank K L - r`.
       apply lieCharpoly_coeff_natDegree
@@ -272,8 +272,8 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     -- and `constantCoeff ψ` takes non-zero values on all of this subset.
     obtain ⟨s, hs⟩ := exists_finset_le_card K _ hLK
     use s \ t
-    refine ⟨?_, ?_⟩
-    · refine le_trans ?_ (Finset.le_card_sdiff _ _)
+    refine ⟨_, _⟩
+    · refine le_trans _ (Finset.le_card_sdiff _ _)
       omega
     · intro α hα
       simp only [Finset.mem_sdiff, Multiset.mem_toFinset, mem_roots', IsRoot.def, not_and, t] at hα
@@ -339,7 +339,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   contrapose! hsψ
   -- Indeed `⁅v, _⁆` kills `⁅v, _⁆ ^ k` applied to `z'`.
   use (toEnd K U Q v ^ k) z'
-  refine ⟨?_, ?_⟩
+  refine ⟨_, _⟩
   · -- And `⁅v, _⁆ ^ k` applied to `z'` is non-zero by definition of `n`.
     apply Nat.find_min hz'; omega
   · rw [← hn, hk, pow_succ', LinearMap.mul_apply]
@@ -350,7 +350,7 @@ lemma exists_isCartanSubalgebra_engel_of_finrank_le_card (h : finrank K L ≤ #K
     ∃ x : L, IsCartanSubalgebra (engel K x) := by
   obtain ⟨x, hx⟩ := exists_isRegular_of_finrank_le_card K L h
   use x
-  refine ⟨?_, normalizer_engel _ _⟩
+  refine ⟨_, normalizer_engel _ _⟩
   apply isNilpotent_of_forall_le_engel
   intro y hy
   set Ex : {engel K z | z ∈ engel K x} := ⟨engel K x, x, self_mem_engel _ _, rfl⟩

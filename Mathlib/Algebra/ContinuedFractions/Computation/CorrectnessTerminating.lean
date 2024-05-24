@@ -148,7 +148,7 @@ theorem compExactValue_correctness_of_stream_eq_some :
       have : ifp_n' = ifp_n := by injection Eq.trans nth_stream_eq'.symm nth_stream_eq
       cases this
       have s_nth_eq : g.s.get? n = some ⟨1, ⌊ifp_n.fr⁻¹⌋⟩ :=
-        get?_of_eq_some_of_get?_intFractPair_stream_fr_ne_zero nth_stream_eq nth_fract_ne_zero
+        get_of_eq_some_of_get_intFractPair_stream_fr_ne_zero nth_stream_eq nth_fract_ne_zero
       rw [← ifp_n_fract_inv_eq_floor] at s_nth_eq
       suffices v = compExactValue ppconts pconts ifp_n.fr by
         simpa [conts, continuantsAux, s_nth_eq, compExactValue, nth_fract_ne_zero] using this
@@ -169,7 +169,7 @@ theorem compExactValue_correctness_of_stream_eq_some :
       cases this
       -- get the correspondence between ifp_n and g.s.nth n
       have s_nth_eq : g.s.get? n = some ⟨1, (⌊ifp_n.fr⁻¹⌋ : K)⟩ :=
-        get?_of_eq_some_of_get?_intFractPair_stream_fr_ne_zero nth_stream_eq ifp_n_fract_ne_zero
+        get_of_eq_some_of_get_intFractPair_stream_fr_ne_zero nth_stream_eq ifp_n_fract_ne_zero
       -- the claim now follows by unfolding the definitions and tedious calculations
       -- some shorthand notation
       let ppA := ppconts.a

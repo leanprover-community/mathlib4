@@ -274,7 +274,7 @@ lemma LinearMap.range_dualMap_dual_eq_span_singleton (f : Dual R M₁) :
     range f.dualMap = R ∙ f := by
   ext m
   rw [Submodule.mem_span_singleton]
-  refine ⟨fun ⟨r, hr⟩ ↦ ⟨r 1, ?_⟩, fun ⟨r, hr⟩ ↦ ⟨r • LinearMap.id, ?_⟩⟩
+  refine ⟨fun ⟨r, hr⟩ ↦ ⟨r 1, _⟩, fun ⟨r, hr⟩ ↦ ⟨r • LinearMap.id, _⟩⟩
   · ext; simp [dualMap_apply', ← hr]
   · ext; simp [dualMap_apply', ← hr]
 
@@ -372,9 +372,9 @@ theorem toDual_ker : LinearMap.ker b.toDual = ⊥ :=
 
 -- Porting note (#11036): broken dot notation lean4#1910 LinearMap.range
 theorem toDual_range [Finite ι] : LinearMap.range b.toDual = ⊤ := by
-  refine eq_top_iff'.2 fun f => ?_
+  refine eq_top_iff'.2 fun f => _
   let lin_comb : ι →₀ R := Finsupp.equivFunOnFinite.symm fun i => f (b i)
-  refine ⟨Finsupp.total ι M R b lin_comb, b.ext fun i => ?_⟩
+  refine ⟨Finsupp.total ι M R b lin_comb, b.ext fun i => _⟩
   rw [b.toDual_eq_repr _ i, repr_total b]
   rfl
 #align basis.to_dual_range Basis.toDual_range
@@ -421,7 +421,7 @@ theorem toDualEquiv_apply (m : M) : b.toDualEquiv m = b.toDual m :=
   a consequence of the Erdős-Kaplansky theorem. -/
 theorem linearEquiv_dual_iff_finiteDimensional [Field K] [AddCommGroup V] [Module K V] :
     Nonempty (V ≃ₗ[K] Dual K V) ↔ FiniteDimensional K V := by
-  refine ⟨fun ⟨e⟩ ↦ ?_, fun h ↦ ⟨(Module.Free.chooseBasis K V).toDualEquiv⟩⟩
+  refine ⟨fun ⟨e⟩ ↦ _, fun h ↦ ⟨(Module.Free.chooseBasis K V).toDualEquiv⟩⟩
   rw [FiniteDimensional, ← Module.rank_lt_alpeh0_iff]
   by_contra!
   apply (lift_rank_lt_rank_dual this).ne
@@ -466,7 +466,7 @@ theorem coe_dualBasis : ⇑b.dualBasis = b.coord := by
 
 @[simp]
 theorem toDual_toDual : b.dualBasis.toDual.comp b.toDual = Dual.eval R M := by
-  refine b.ext fun i => b.dualBasis.ext fun j => ?_
+  refine b.ext fun i => b.dualBasis.ext fun j => _
   rw [LinearMap.comp_apply, toDual_apply_left, coe_toDual_self, ← coe_dualBasis,
     Dual.eval_apply, Basis.repr_self, Finsupp.single_apply, dualBasis_apply_self]
 #align basis.to_dual_to_dual Basis.toDual_toDual
@@ -575,7 +575,7 @@ theorem forall_dual_apply_eq_zero_iff (v : V) : (∀ φ : Module.Dual K V, φ v 
 @[simp]
 theorem subsingleton_dual_iff :
     Subsingleton (Dual K V) ↔ Subsingleton V := by
-  refine ⟨fun h ↦ ⟨fun v w ↦ ?_⟩, fun h ↦ ⟨fun f g ↦ ?_⟩⟩
+  refine ⟨fun h ↦ ⟨fun v w ↦ _⟩, fun h ↦ ⟨fun f g ↦ _⟩⟩
   · rw [← sub_eq_zero, ← forall_dual_apply_eq_zero_iff K (v - w)]
     intros f
     simp [Subsingleton.elim f 0]
@@ -600,7 +600,7 @@ theorem finite_dual_iff : Finite K (Dual K V) ↔ Finite K V := by
     nontriviality K
     obtain ⟨⟨s, span_s⟩⟩ := h
     classical
-    haveI := (b.linearIndependent.map' _ b.toDual_ker).finite_of_le_span_finite _ s ?_
+    haveI := (b.linearIndependent.map' _ b.toDual_ker).finite_of_le_span_finite _ s _
     · exact Finite.of_basis b
     · rw [span_s]; apply le_top
   · infer_instance
@@ -813,7 +813,7 @@ theorem coeffs_lc (l : ι →₀ R) : h.coeffs (DualBases.lc e l) = l := by
 /-- For any m : M n, \sum_{p ∈ Q n} (ε p m) • e p = m -/
 @[simp]
 theorem lc_coeffs (m : M) : DualBases.lc e (h.coeffs m) = m := by
-  refine eq_of_sub_eq_zero <| h.total fun i ↦ ?_
+  refine eq_of_sub_eq_zero <| h.total fun i ↦ _
   simp [LinearMap.map_sub, h.dual_lc, sub_eq_zero]
 #align module.dual_bases.lc_coeffs Module.DualBases.lc_coeffs
 
@@ -897,7 +897,7 @@ def dualAnnihilator {R : Type u} {M : Type v} [CommSemiring R] [AddCommMonoid M]
 
 @[simp]
 theorem mem_dualAnnihilator (φ : Module.Dual R M) : φ ∈ W.dualAnnihilator ↔ ∀ w ∈ W, φ w = 0 := by
-  refine LinearMap.mem_ker.trans ?_
+  refine LinearMap.mem_ker.trans _
   simp_rw [LinearMap.ext_iff, dualRestrict_apply]
   exact ⟨fun h w hw => h ⟨w, hw⟩, fun h w => h w.1 w.2⟩
 #align submodule.mem_dual_annihilator Submodule.mem_dualAnnihilator
@@ -1056,11 +1056,11 @@ theorem dualCoannihilator_top (W : Subspace K V) :
 @[simp]
 theorem dualAnnihilator_dualCoannihilator_eq {W : Subspace K V} :
     W.dualAnnihilator.dualCoannihilator = W := by
-  refine le_antisymm (fun v ↦ Function.mtr ?_) (le_dualAnnihilator_dualCoannihilator _)
+  refine le_antisymm (fun v ↦ Function.mtr _) (le_dualAnnihilator_dualCoannihilator _)
   simp only [mem_dualAnnihilator, mem_dualCoannihilator]
   rw [← Quotient.mk_eq_zero W, ← Module.forall_dual_apply_eq_zero_iff K]
   push_neg
-  refine fun ⟨φ, hφ⟩ ↦ ⟨φ.comp W.mkQ, fun w hw ↦ ?_, hφ⟩
+  refine fun ⟨φ, hφ⟩ ↦ ⟨φ.comp W.mkQ, fun w hw ↦ _, hφ⟩
   rw [comp_apply, mkQ_apply, (Quotient.mk_eq_zero W).mpr hw, φ.map_zero]
 #align subspace.dual_annihilator_dual_coannihilator_eq Subspace.dualAnnihilator_dualCoannihilator_eq
 
@@ -1425,7 +1425,7 @@ theorem range_dualMap_eq_dualAnnihilator_ker_of_subtype_range_surjective (f : M 
   -- Porting note (#11036): broken dot notation lean4#1910
   · calc
       _ = range ((range f).subtype.comp f.rangeRestrict).dualMap := by simp
-      _ = _ := ?_
+      _ = _ := _
     rw [← dualMap_comp_dualMap, range_comp_of_range_eq_top]
     rwa [range_eq_top]
   · apply congr_arg
@@ -1474,7 +1474,7 @@ lemma finrank_ker_add_one_of_ne_zero :
 lemma isCompl_ker_of_disjoint_of_ne_bot {p : Submodule K V₁}
     (hpf : Disjoint (LinearMap.ker f) p) (hp : p ≠ ⊥) :
     IsCompl (LinearMap.ker f) p := by
-  refine ⟨hpf, codisjoint_iff.mpr <| eq_of_le_of_finrank_le le_top ?_⟩
+  refine ⟨hpf, codisjoint_iff.mpr <| eq_of_le_of_finrank_le le_top _⟩
   have : finrank K ↑(LinearMap.ker f ⊔ p) = finrank K (LinearMap.ker f) + finrank K p := by
     simp [← Submodule.finrank_sup_add_finrank_inf_eq (LinearMap.ker f) p, hpf.eq_bot]
   rwa [finrank_top, this, ← finrank_ker_add_one_of_ne_zero hf, add_le_add_iff_left,
@@ -1548,7 +1548,7 @@ theorem dualCopairing_nondegenerate (W : Subspace K V₁) : W.dualCopairing.Nond
 -- Argument from https://math.stackexchange.com/a/2423263/172988
 theorem dualAnnihilator_inf_eq (W W' : Subspace K V₁) :
     (W ⊓ W').dualAnnihilator = W.dualAnnihilator ⊔ W'.dualAnnihilator := by
-  refine le_antisymm ?_ (sup_dualAnnihilator_le_inf W W')
+  refine le_antisymm _ (sup_dualAnnihilator_le_inf W W')
   let F : V₁ →ₗ[K] (V₁ ⧸ W) × V₁ ⧸ W' := (Submodule.mkQ W).prod (Submodule.mkQ W')
   -- Porting note (#11036): broken dot notation lean4#1910 LinearMap.ker
   have : LinearMap.ker F = W ⊓ W' := by simp only [F, LinearMap.ker_prod, ker_mkQ]
@@ -1623,7 +1623,7 @@ theorem finrank_range_dualMap_eq_finrank_range (f : V₁ →ₗ[K] V₂) :
 @[simp]
 theorem dualMap_injective_iff {f : V₁ →ₗ[K] V₂} :
     Function.Injective f.dualMap ↔ Function.Surjective f := by
-  refine ⟨Function.mtr fun not_surj inj ↦ ?_, dualMap_injective_of_surjective⟩
+  refine ⟨Function.mtr fun not_surj inj ↦ _, dualMap_injective_of_surjective⟩
   rw [← range_eq_top, ← Ne, ← lt_top_iff_ne_top] at not_surj
   obtain ⟨φ, φ0, range_le_ker⟩ := (range f).exists_le_ker_of_lt_top not_surj
   exact φ0 (inj <| ext fun x ↦ range_le_ker ⟨x, rfl⟩)

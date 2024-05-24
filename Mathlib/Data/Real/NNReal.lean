@@ -516,7 +516,7 @@ theorem coe_sSup (s : Set ℝ≥0) : (↑(sSup s) : ℝ) = sSup (((↑) : ℝ≥
       exact y.2
     exact (@subset_sSup_of_within ℝ (Set.Ici (0 : ℝ)) _ _ (_) s hs H A).symm
   · simp only [csSup_of_not_bddAbove H, csSup_empty, bot_eq_zero', NNReal.coe_zero]
-    apply (Real.sSup_of_not_bddAbove ?_).symm
+    apply (Real.sSup_of_not_bddAbove _).symm
     contrapose! H
     exact bddAbove_coe.1 H
 #align nnreal.coe_Sup NNReal.coe_sSup
@@ -1142,7 +1142,7 @@ theorem image_coe_nnreal_real (h : t.OrdConnected) : ((↑) '' t : Set ℝ).OrdC
 
 -- Porting note (#11215): TODO: does it generalize to a `GaloisInsertion`?
 theorem image_real_toNNReal (h : s.OrdConnected) : (Real.toNNReal '' s).OrdConnected := by
-  refine ⟨forall_mem_image.2 fun x hx => forall_mem_image.2 fun y hy z hz => ?_⟩
+  refine ⟨forall_mem_image.2 fun x hx => forall_mem_image.2 fun y hy z hz => _⟩
   rcases le_total y 0 with hy₀ | hy₀
   · rw [mem_Icc, Real.toNNReal_of_nonpos hy₀, nonpos_iff_eq_zero] at hz
     exact ⟨y, hy, (toNNReal_of_nonpos hy₀).trans hz.2.symm⟩

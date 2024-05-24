@@ -50,7 +50,7 @@ lemma Continuous.mapPullback {X₁ X₂ Y₁ Y₂ Z₁ Z₂}
     {mapZ : Z₁ → Z₂} (contZ : Continuous mapZ)
     {commX : f₂ ∘ mapX = mapY ∘ f₁} {commZ : g₂ ∘ mapZ = mapY ∘ g₁} :
     Continuous (Function.mapPullback mapX mapY mapZ commX commZ) := by
-  refine continuous_induced_rng.mpr (continuous_prod_mk.mpr ⟨?_, ?_⟩) <;>
+  refine continuous_induced_rng.mpr (continuous_prod_mk.mpr ⟨_, _⟩) <;>
   apply_rules [continuous_fst, continuous_snd, continuous_subtype_val, Continuous.comp]
 
 /-- A function from a topological space `X` to a type `Y` is a separated map if any two distinct
@@ -80,7 +80,7 @@ theorem isSeparatedMap_iff_isClosed_diagonal {f : X → Y} :
     IsSeparatedMap f ↔ IsClosed f.pullbackDiagonal := by
   simp_rw [isSeparatedMap_iff_nhds, ← isOpen_compl_iff, isOpen_iff_mem_nhds,
     Subtype.forall, Prod.forall, nhds_induced, nhds_prod_eq]
-  refine forall₄_congr fun x₁ x₂ _ _ ↦ ⟨fun h ↦ ?_, fun ⟨t, ht, t_sub⟩ ↦ ?_⟩
+  refine forall₄_congr fun x₁ x₂ _ _ ↦ ⟨fun h ↦ _, fun ⟨t, ht, t_sub⟩ ↦ _⟩
   · simp_rw [← Filter.disjoint_iff, ← compl_diagonal_mem_prod] at h
     exact ⟨_, h, subset_rfl⟩
   · obtain ⟨s₁, h₁, s₂, h₂, s_sub⟩ := mem_prod_iff.mp ht
@@ -102,7 +102,7 @@ theorem IsSeparatedMap.pullback {f : X → Y} (sep : IsSeparatedMap f) (g : A �
     IsSeparatedMap (@snd X Y A f g) := by
   rw [isSeparatedMap_iff_isClosed_diagonal] at sep ⊢
   rw [← preimage_map_fst_pullbackDiagonal]
-  refine sep.preimage (Continuous.mapPullback ?_ ?_) <;>
+  refine sep.preimage (Continuous.mapPullback _ _) <;>
   apply_rules [continuous_fst, continuous_subtype_val, Continuous.comp]
 
 theorem IsSeparatedMap.comp_left {f : X → Y} (sep : IsSeparatedMap f) {g : Y → A}
@@ -132,7 +132,7 @@ theorem isLocallyInjective_iff_isOpen_diagonal {f : X → Y} :
     IsLocallyInjective f ↔ IsOpen f.pullbackDiagonal := by
   simp_rw [isLocallyInjective_iff_nhds, isOpen_iff_mem_nhds,
     Subtype.forall, Prod.forall, nhds_induced, nhds_prod_eq, Filter.mem_comap]
-  refine ⟨?_, fun h x ↦ ?_⟩
+  refine ⟨_, fun h x ↦ _⟩
   · rintro h x x' hx (rfl : x = x')
     obtain ⟨U, hn, hi⟩ := h x
     exact ⟨_, Filter.prod_mem_prod hn hn, fun {p} hp ↦ hi hp.1 hp.2 p.2⟩
@@ -155,8 +155,8 @@ theorem isLocallyInjective_iff_isOpenMap {f : X → Y} :
 theorem discreteTopology_iff_locallyInjective (y : Y) :
     DiscreteTopology X ↔ IsLocallyInjective fun _ : X ↦ y := by
   rw [discreteTopology_iff_singleton_mem_nhds, isLocallyInjective_iff_nhds]
-  refine forall_congr' fun x ↦ ⟨fun h ↦ ⟨{x}, h, Set.injOn_singleton _ _⟩, fun ⟨U, hU, inj⟩ ↦ ?_⟩
-  convert hU; ext x'; refine ⟨?_, fun h ↦ inj h (mem_of_mem_nhds hU) rfl⟩
+  refine forall_congr' fun x ↦ ⟨fun h ↦ ⟨{x}, h, Set.injOn_singleton _ _⟩, fun ⟨U, hU, inj⟩ ↦ _⟩
+  convert hU; ext x'; refine ⟨_, fun h ↦ inj h (mem_of_mem_nhds hU) rfl⟩
   rintro rfl; exact mem_of_mem_nhds hU
 
 theorem IsLocallyInjective.comp_left {f : X → Y} (hf : IsLocallyInjective f) {g : Y → A}

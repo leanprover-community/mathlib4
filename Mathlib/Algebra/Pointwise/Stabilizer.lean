@@ -36,7 +36,7 @@ lemma stabilizer_singleton (b : α) : stabilizer G ({b} : Set α) = stabilizer G
 
 @[to_additive]
 lemma mem_stabilizer_set {s : Set α} : a ∈ stabilizer G s ↔ ∀ b, a • b ∈ s ↔ b ∈ s := by
-  refine mem_stabilizer_iff.trans ⟨fun h b ↦ ?_, fun h ↦ ?_⟩
+  refine mem_stabilizer_iff.trans ⟨fun h b ↦ _, fun h ↦ _⟩
   · rw [← (smul_mem_smul_set_iff : a • b ∈ _ ↔ _), h]
   simp_rw [Set.ext_iff, mem_smul_set_iff_inv_smul_mem]
   exact ((MulAction.toPerm a).forall_congr' <| by simp [Iff.comm]).1 h
@@ -52,7 +52,7 @@ lemma map_stabilizer_le (f : G →* H) (s : Set G) :
 @[to_additive (attr := simp)]
 lemma stabilizer_mul_self (s : Set G) : (stabilizer G s : Set G) * s = s := by
   ext
-  refine ⟨?_, fun h ↦ ⟨_, (stabilizer G s).one_mem, _, h, one_mul _⟩⟩
+  refine ⟨_, fun h ↦ ⟨_, (stabilizer G s).one_mem, _, h, one_mul _⟩⟩
   rintro ⟨a, ha, b, hb, rfl⟩
   rw [← mem_stabilizer_iff.1 ha]
   exact smul_mem_smul_set hb
@@ -68,20 +68,20 @@ section Subgroup
 @[to_additive (attr := simp)]
 lemma stabilizer_subgroup (s : Subgroup G) : stabilizer G (s : Set G) = s := by
   simp_rw [SetLike.ext_iff, mem_stabilizer_set]
-  refine fun a ↦ ⟨fun h ↦ ?_, fun ha b ↦ s.mul_mem_cancel_left ha⟩
+  refine fun a ↦ ⟨fun h ↦ _, fun ha b ↦ s.mul_mem_cancel_left ha⟩
   simpa only [smul_eq_mul, SetLike.mem_coe, mul_one] using (h 1).2 s.one_mem
 
 @[to_additive (attr := simp)]
 lemma stabilizer_op_subgroup (s : Subgroup G) : stabilizer Gᵐᵒᵖ (s : Set G) = s.op := by
   simp_rw [SetLike.ext_iff, mem_stabilizer_set]
   simp? says simp only [smul_eq_mul_unop, SetLike.mem_coe, Subgroup.mem_op]
-  refine fun a ↦ ⟨fun h ↦ ?_, fun ha b ↦ s.mul_mem_cancel_right ha⟩
+  refine fun a ↦ ⟨fun h ↦ _, fun ha b ↦ s.mul_mem_cancel_right ha⟩
   simpa only [op_smul_eq_mul, SetLike.mem_coe, one_mul] using (h 1).2 s.one_mem
 
 @[to_additive (attr := simp)]
 lemma stabilizer_subgroup_op (s : Subgroup Gᵐᵒᵖ) : stabilizer G (s : Set Gᵐᵒᵖ) = s.unop := by
   simp_rw [SetLike.ext_iff, mem_stabilizer_set]
-  refine fun a ↦ ⟨fun h ↦ ?_, fun ha b ↦ s.mul_mem_cancel_right ha⟩
+  refine fun a ↦ ⟨fun h ↦ _, fun ha b ↦ s.mul_mem_cancel_right ha⟩
   have : 1 * MulOpposite.op a ∈ s := (h 1).2 s.one_mem
   simpa only [op_smul_eq_mul, SetLike.mem_coe, one_mul] using this
 
@@ -175,7 +175,7 @@ lemma stabilizer_image_coe_quotient : stabilizer Q (q '' s) = ⊥ := by
   have : q a • q '' s = q '' (a • s) :=
     (image_smul_distrib (QuotientGroup.mk' <| stabilizer G s) _ _).symm
   rw [this]
-  refine ⟨fun h ↦ ?_, fun h ↦ by rw [h]⟩
+  refine ⟨fun h ↦ _, fun h ↦ by rw [h]⟩
   rwa [QuotientGroup.image_coe_inj, mul_smul_comm, stabilizer_mul_self] at h
 
 end MulAction

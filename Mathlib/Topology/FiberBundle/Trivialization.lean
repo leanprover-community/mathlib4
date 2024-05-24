@@ -101,7 +101,7 @@ lemma ext {e e' : Pretrivialization F proj} (h₁ : ∀ x, e x = e' x)
 /-- If the fiber is nonempty, then the projection also is. -/
 lemma toPartialEquiv_injective [Nonempty F] :
     Injective (toPartialEquiv : Pretrivialization F proj → PartialEquiv Z (B × F)) := by
-  refine fun e e' h ↦ ext' _ _ h ?_
+  refine fun e e' h ↦ ext' _ _ h _
   simpa only [fst_image_prod, univ_nonempty, target_eq]
     using congr_arg (Prod.fst '' PartialEquiv.target ·) h
 
@@ -180,7 +180,7 @@ theorem symm_apply_mk_proj {x : Z} (ex : x ∈ e.source) :
 @[simp, mfld_simps]
 theorem preimage_symm_proj_baseSet :
     e.toPartialEquiv.symm ⁻¹' (proj ⁻¹' e.baseSet) ∩ e.target = e.target := by
-  refine inter_eq_right.mpr fun x hx => ?_
+  refine inter_eq_right.mpr fun x hx => _
   simp only [mem_preimage, PartialEquiv.invFun_as_coe, e.proj_symm_apply hx]
   exact e.mem_target.mp hx
 #align pretrivialization.preimage_symm_proj_base_set Pretrivialization.preimage_symm_proj_baseSet
@@ -462,7 +462,7 @@ theorem tendsto_nhds_iff {α : Type*} {l : Filter α} {f : α → Z} {z : Z} (hz
     tendsto_principal, coe_fst _ hz]
   by_cases hl : ∀ᶠ x in l, f x ∈ e.source
   · simp only [hl, and_true]
-    refine (tendsto_congr' ?_).and Iff.rfl
+    refine (tendsto_congr' _).and Iff.rfl
     exact hl.mono fun x ↦ e.coe_fst
   · simp only [hl, and_false, false_iff, not_and]
     rw [e.source_eq] at hl hz
@@ -470,7 +470,7 @@ theorem tendsto_nhds_iff {α : Type*} {l : Filter α} {f : α → Z} {z : Z} (hz
 
 theorem nhds_eq_inf_comap {z : Z} (hz : z ∈ e.source) :
     𝓝 z = comap proj (𝓝 (proj z)) ⊓ comap (Prod.snd ∘ e) (𝓝 (e z).2) := by
-  refine eq_of_forall_le_iff fun l ↦ ?_
+  refine eq_of_forall_le_iff fun l ↦ _
   rw [le_inf_iff, ← tendsto_iff_comap, ← tendsto_iff_comap]
   exact e.tendsto_nhds_iff hz
 
@@ -652,7 +652,7 @@ theorem continuousOn_symm (e : Trivialization F (π F E)) :
       TotalSpace.mk z.1 (e.symm z.1 z.2) = e.toPartialHomeomorph.symm z := by
     rintro x ⟨hx : x.1 ∈ e.baseSet, _⟩
     rw [e.mk_symm hx]
-  refine ContinuousOn.congr ?_ this
+  refine ContinuousOn.congr _ this
   rw [← e.target_eq]
   exact e.toPartialHomeomorph.continuousOn_symm
 #align trivialization.continuous_on_symm Trivialization.continuousOn_symm
@@ -687,7 +687,7 @@ def coordChange (e₁ e₂ : Trivialization F proj) (b : B) (x : F) : F :=
 theorem mk_coordChange (e₁ e₂ : Trivialization F proj) {b : B} (h₁ : b ∈ e₁.baseSet)
     (h₂ : b ∈ e₂.baseSet) (x : F) :
     (b, e₁.coordChange e₂ b x) = e₂ (e₁.toPartialHomeomorph.symm (b, x)) := by
-  refine Prod.ext ?_ rfl
+  refine Prod.ext _ rfl
   rw [e₂.coe_fst', ← e₁.coe_fst', e₁.apply_symm_apply' h₁]
   · rwa [e₁.proj_symm_apply' h₁]
   · rwa [e₁.proj_symm_apply' h₁]
@@ -717,7 +717,7 @@ theorem coordChange_coordChange (e₁ e₂ e₃ : Trivialization F proj) {b : B}
 theorem continuous_coordChange (e₁ e₂ : Trivialization F proj) {b : B} (h₁ : b ∈ e₁.baseSet)
     (h₂ : b ∈ e₂.baseSet) : Continuous (e₁.coordChange e₂ b) := by
   refine continuous_snd.comp (e₂.toPartialHomeomorph.continuousOn.comp_continuous
-    (e₁.toPartialHomeomorph.continuousOn_symm.comp_continuous ?_ ?_) ?_)
+    (e₁.toPartialHomeomorph.continuousOn_symm.comp_continuous _ _) _)
   · exact continuous_const.prod_mk continuous_id
   · exact fun x => e₁.mem_target.2 h₁
   · intro x

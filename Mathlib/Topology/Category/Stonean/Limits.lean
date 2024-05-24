@@ -105,21 +105,21 @@ lemma finiteCoproduct.openEmbedding_ι {α : Type} [Finite α] (Z : α → Stone
 /-- The inclusion maps into the abstract finite coproduct are open embeddings. -/
 lemma Sigma.openEmbedding_ι {α : Type} [Finite α] (Z : α → Stonean.{u}) (a : α) :
     OpenEmbedding (Sigma.ι Z a) := by
-  refine OpenEmbedding.of_comp _ (homeoOfIso (coproductIsoCoproduct Z).symm).openEmbedding ?_
+  refine OpenEmbedding.of_comp _ (homeoOfIso (coproductIsoCoproduct Z).symm).openEmbedding _
   convert finiteCoproduct.openEmbedding_ι Z a
   ext x
   change ((Sigma.ι Z a) ≫ (coproductIsoCoproduct Z).inv) x = _
   simp [coproductIsoCoproduct]
 
 instance : PreservesFiniteCoproducts Stonean.toCompHaus := by
-  refine ⟨fun J hJ ↦ ⟨fun {F} ↦ ?_⟩⟩
+  refine ⟨fun J hJ ↦ ⟨fun {F} ↦ _⟩⟩
   suffices PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) Stonean.toCompHaus from
     preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
   apply preservesColimitOfPreservesColimitCocone (Stonean.finiteCoproduct.isColimit _)
   exact CompHaus.finiteCoproduct.isColimit _
 
 instance : PreservesFiniteCoproducts Stonean.toProfinite := by
-  refine ⟨fun J hJ ↦ ⟨fun {F} ↦ ?_⟩⟩
+  refine ⟨fun J hJ ↦ ⟨fun {F} ↦ _⟩⟩
   suffices PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) Stonean.toProfinite from
     preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
   apply preservesColimitOfPreservesColimitCocone (Stonean.finiteCoproduct.isColimit _)
@@ -148,7 +148,7 @@ def pullback : Stonean where
     is_compact := by
       dsimp [TopCat.of]
       rw [← isCompact_iff_compactSpace]
-      refine IsClosed.isCompact (IsClosed.preimage f.continuous (IsCompact.isClosed ?_))
+      refine IsClosed.isCompact (IsClosed.preimage f.continuous (IsCompact.isClosed _))
       simp only [← Set.image_univ]
       exact IsCompact.image isCompact_univ i.continuous
     is_hausdorff := by
@@ -276,7 +276,7 @@ def pullbackIsoPullback : Stonean.pullback f hi ≅
     inv_hom_id := by
       refine Limits.pullback.hom_ext (k := (pullback.lift f hi Limits.pullback.fst
         Limits.pullback.snd Limits.pullback.condition ≫ Limits.pullback.lift
-        (pullback.fst _ hi) (pullback.snd _ hi) (pullback.condition f hi))) ?_ ?_
+        (pullback.fst _ hi) (pullback.snd _ hi) (pullback.condition f hi))) _ _
       · simp only [Category.assoc, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
           pullback.lift_fst, Category.id_comp]
       · rw [Category.id_comp, Category.assoc, Limits.pullback.lift_snd, pullback.lift_snd] }
@@ -289,8 +289,8 @@ def createsPullbacksOfOpenEmbedding :
     CreatesLimit (cospan f i) (Stonean.toCompHaus ⋙ compHausToTop) :=
   createsLimitOfFullyFaithfulOfIso (Stonean.pullback f hi) (by
     refine (@TopCat.isoOfHomeo (TopCat.of _) (TopCat.of _)
-      (TopCat.pullbackHomeoPreimage f f.2 i hi.toEmbedding)).symm ≪≫ ?_
-    refine ?_ ≪≫ Limits.lim.mapIso (diagramIsoCospan _).symm
+      (TopCat.pullbackHomeoPreimage f f.2 i hi.toEmbedding)).symm ≪≫ _
+    refine _ ≪≫ Limits.lim.mapIso (diagramIsoCospan _).symm
     exact (TopCat.pullbackConeIsLimit f i).conePointUniqueUpToIso (limit.isLimit _))
 
 instance : HasPullbacksOfInclusions Stonean where

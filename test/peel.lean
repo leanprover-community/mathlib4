@@ -117,7 +117,7 @@ example (x y : ℝ) : (∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, x + n = y + ε) ↔
 
 example : (∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, 1 / (n + 1 : ℚ) < ε) ↔
     ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, 1 / (n + 1 : ℚ) ≤ ε := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  refine ⟨fun h ↦ _, fun h ↦ _⟩
   · peel 5 h
     exact this.le
   · intro ε hε
@@ -126,7 +126,7 @@ example : (∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, 1 / (n + 1 : ℚ) < ε) ↔
 
 example : (∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, 1 / (n + 1 : ℚ) < ε) ↔
     ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, 1 / (n + 1 : ℚ) ≤ ε := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  refine ⟨fun h ↦ _, fun h ↦ _⟩
   · peel 5 h using this.le
   · intro ε hε
     peel 3 h (ε / 2) (half_pos hε) using this.trans_lt (half_lt_self hε)

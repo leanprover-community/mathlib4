@@ -138,7 +138,7 @@ lemma InjectiveResolution.isoRightDerivedObj_inv_naturality
 lemma Functor.isZero_rightDerived_obj_injective_succ
     (F : C ⥤ D) [F.Additive] (n : ℕ) (X : C) [Injective X] :
     IsZero ((F.rightDerived (n+1)).obj X) := by
-  refine IsZero.of_iso ?_ ((InjectiveResolution.self X).isoRightDerivedObj F (n + 1))
+  refine IsZero.of_iso _ ((InjectiveResolution.self X).isoRightDerivedObj F (n + 1))
   erw [← HomologicalComplex.exactAt_iff_isZero_homology]
   exact ShortComplex.exact_of_isZero_X₂ _ (F.map_isZero (by apply isZero_zero))
 
@@ -274,7 +274,7 @@ instance (F : C ⥤ D) [F.Additive] (X : C) [Injective X] :
     IsIso ((InjectiveResolution.self X).toRightDerivedZero' F) := by
   dsimp [InjectiveResolution.toRightDerivedZero']
   rw [CochainComplex.isIso_liftCycles_iff]
-  refine ⟨ShortComplex.Splitting.exact ?_, inferInstance⟩
+  refine ⟨ShortComplex.Splitting.exact _, inferInstance⟩
   exact
     { r := 𝟙 _
       s := 0

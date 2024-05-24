@@ -277,7 +277,7 @@ variable [FunLike F α β]
 def orderEmbeddingOfInjective [SemilatticeInf α] [SemilatticeInf β] (f : F) [InfHomClass F α β]
     (hf : Injective f) : α ↪o β :=
   OrderEmbedding.ofMapLEIff f (fun x y ↦ by
-    refine ⟨fun h ↦ ?_, fun h ↦ OrderHomClass.mono f h⟩
+    refine ⟨fun h ↦ _, fun h ↦ OrderHomClass.mono f h⟩
     rwa [← inf_eq_left, ← hf.eq_iff, map_inf, inf_eq_left])
 
 end OrderEmbedding

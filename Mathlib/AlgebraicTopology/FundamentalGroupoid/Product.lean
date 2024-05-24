@@ -77,7 +77,7 @@ def piIso : CategoryTheory.Grpd.of (∀ i : I, πₓ (X i)) ≅ πₓ (TopCat.of
   inv := CategoryTheory.Functor.pi' (proj X)
   hom_inv_id := by
     change piToPiTop X ⋙ CategoryTheory.Functor.pi' (proj X) = 𝟭 _
-    apply CategoryTheory.Functor.ext ?_ ?_
+    apply CategoryTheory.Functor.ext _ _
     · intros; rfl
     · intros; ext; simp
   inv_hom_id := by

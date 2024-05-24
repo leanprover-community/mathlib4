@@ -318,7 +318,7 @@ set_option maxHeartbeats 800000 in
 /-- The canonical isomorphism `(triangle φ)⟦n⟧ ≅ triangle (φ⟦n⟧')`. -/
 noncomputable def shiftTriangleIso (n : ℤ) :
     (Triangle.shiftFunctor _ n).obj (triangle φ) ≅ triangle (φ⟦n⟧') := by
-  refine Triangle.isoMk _ _ (Iso.refl _) (n.negOnePow • Iso.refl _) (shiftIso φ n) ?_ ?_ ?_
+  refine Triangle.isoMk _ _ (Iso.refl _) (n.negOnePow • Iso.refl _) (shiftIso φ n) _ _ _
   · simp? [Units.smul_def, smul_smul] says
       simp only [Triangle.shiftFunctor_obj, triangle_obj₁, triangle_obj₂, triangle_obj₃,
         triangle_mor₁, Units.smul_def, triangle_mor₂, Functor.comp_obj, Triangle.mk_obj₁,
@@ -385,7 +385,7 @@ lemma isomorphic_distinguished (T₁ : Triangle (HomotopyCategory C (ComplexShap
 lemma contractible_distinguished (X : HomotopyCategory C (ComplexShape.up ℤ)) :
     Pretriangulated.contractibleTriangle X ∈ distinguishedTriangles C := by
   obtain ⟨X⟩ := X
-  refine ⟨_, _, 𝟙 X, ⟨?_⟩⟩
+  refine ⟨_, _, 𝟙 X, ⟨_⟩⟩
   have h := (isZero_quotient_obj_iff _).2 ⟨CochainComplex.mappingCone.homotopyToZeroOfId X⟩
   exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) h.isoZero.symm
     (by simp) (h.eq_of_tgt _ _) (by dsimp; ext)

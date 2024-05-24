@@ -162,14 +162,14 @@ namespace Finset
 theorem sum_powerset_apply_card {α β : Type*} [AddCommMonoid α] (f : ℕ → α) {x : Finset β} :
     ∑ m in x.powerset, f m.card = ∑ m in range (x.card + 1), x.card.choose m • f m := by
   trans ∑ m in range (x.card + 1), ∑ j in x.powerset.filter fun z ↦ z.card = m, f j.card
-  · refine (sum_fiberwise_of_maps_to ?_ _).symm
+  · refine (sum_fiberwise_of_maps_to _ _).symm
     intro y hy
     rw [mem_range, Nat.lt_succ_iff]
     rw [mem_powerset] at hy
     exact card_le_card hy
-  · refine sum_congr rfl fun y _ ↦ ?_
+  · refine sum_congr rfl fun y _ ↦ _
     rw [← card_powersetCard, ← sum_const]
-    refine sum_congr powersetCard_eq_filter.symm fun z hz ↦ ?_
+    refine sum_congr powersetCard_eq_filter.symm fun z hz ↦ _
     rw [(mem_powersetCard.1 hz).2]
 #align finset.sum_powerset_apply_card Finset.sum_powerset_apply_card
 
@@ -211,9 +211,9 @@ theorem prod_antidiagonal_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ �
   simp only [Nat.prod_antidiagonal_eq_prod_range_succ_mk, prod_pow_choose_succ]
   have : ∀ i ∈ range (n + 1), i ≤ n := fun i hi ↦ by simpa [Nat.lt_succ_iff] using hi
   congr 1
-  · refine prod_congr rfl fun i hi ↦ ?_
+  · refine prod_congr rfl fun i hi ↦ _
     rw [tsub_add_eq_add_tsub (this _ hi)]
-  · refine prod_congr rfl fun i hi ↦ ?_
+  · refine prod_congr rfl fun i hi ↦ _
     rw [Nat.choose_symm (this _ hi)]
 
 -- Porting note: moved from `Mathlib.Analysis.Calculus.ContDiff`

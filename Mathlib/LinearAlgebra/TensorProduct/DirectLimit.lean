@@ -75,10 +75,10 @@ variable [IsDirected ι (· ≤ ·)]
 -/
 noncomputable def directLimitLeft :
     DirectLimit G f ⊗[R] M ≃ₗ[R] DirectLimit (G · ⊗[R] M) (f ▷ M) := by
-  refine LinearEquiv.ofLinear (toDirectLimit f M) (fromDirectLimit f M) ?_ ?_
+  refine LinearEquiv.ofLinear (toDirectLimit f M) (fromDirectLimit f M) _ _
     <;> cases isEmpty_or_nonempty ι
   · ext; apply Subsingleton.elim
-  · refine DFunLike.ext _ _ fun x ↦ x.induction_on fun i g ↦ g.induction_on ?_ ?_ ?_ <;> aesop
+  · refine DFunLike.ext _ _ fun x ↦ x.induction_on fun i g ↦ g.induction_on _ _ _ <;> aesop
   · ext; apply Subsingleton.elim
   · exact ext (DFunLike.ext _ _ fun g ↦ DFunLike.ext _ _ fun _ ↦ g.induction_on <| by aesop)
 

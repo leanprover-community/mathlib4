@@ -60,7 +60,7 @@ theorem mem_nonMemberSubfamily : s ∈ 𝒜.nonMemberSubfamily a ↔ s ∈ 𝒜 
 @[simp]
 theorem mem_memberSubfamily : s ∈ 𝒜.memberSubfamily a ↔ insert a s ∈ 𝒜 ∧ a ∉ s := by
   simp_rw [memberSubfamily, mem_image, mem_filter]
-  refine ⟨?_, fun h => ⟨insert a s, ⟨h.1, by simp⟩, erase_insert h.2⟩⟩
+  refine ⟨_, fun h => ⟨insert a s, ⟨h.1, by simp⟩, erase_insert h.2⟩⟩
   rintro ⟨s, ⟨hs1, hs2⟩, rfl⟩
   rw [insert_erase hs2]
   exact ⟨hs1, not_mem_erase _ _⟩
@@ -140,7 +140,7 @@ lemma memberSubfamily_image_insert (h𝒜 : ∀ s ∈ 𝒜, a ∉ s) :
     (𝒜.image <| insert a).memberSubfamily a = 𝒜 := by
   ext s
   simp only [mem_memberSubfamily, mem_image]
-  refine ⟨?_, fun hs ↦ ⟨⟨s, hs, rfl⟩, h𝒜 _ hs⟩⟩
+  refine ⟨_, fun hs ↦ ⟨⟨s, hs, rfl⟩, h𝒜 _ hs⟩⟩
   rintro ⟨⟨t, ht, hts⟩, hs⟩
   rwa [← insert_erase_invOn.2.injOn (h𝒜 _ ht) hs hts]
 
@@ -155,7 +155,7 @@ lemma image_insert_memberSubfamily (𝒜 : Finset (Finset α)) (a : α) :
     (𝒜.memberSubfamily a).image (insert a) = 𝒜.filter (a ∈ ·) := by
   ext s
   simp only [mem_memberSubfamily, mem_image, mem_filter]
-  refine ⟨?_, fun ⟨hs, ha⟩ ↦ ⟨erase s a, ⟨?_, not_mem_erase _ _⟩, insert_erase ha⟩⟩
+  refine ⟨_, fun ⟨hs, ha⟩ ↦ ⟨erase s a, ⟨_, not_mem_erase _ _⟩, insert_erase ha⟩⟩
   · rintro ⟨s, ⟨hs, -⟩, rfl⟩
     exact ⟨hs, mem_insert_self _ _⟩
   · rwa [insert_erase ha]
@@ -184,7 +184,7 @@ lemma memberFamily_induction_on {p : Finset (Finset α) → Prop}
   · simp_rw [subset_empty] at hu
     rw [← subset_singleton_iff', subset_singleton_iff] at hu
     obtain rfl | rfl := hu <;> assumption
-  refine subfamily a (ih _ ?_) (ih _ ?_)
+  refine subfamily a (ih _ _) (ih _ _)
   · simp only [mem_nonMemberSubfamily, and_imp]
     exact fun s hs has ↦ (subset_insert_iff_of_not_mem has).1 <| hu _ hs
   · simp only [mem_memberSubfamily, and_imp]
@@ -210,7 +210,7 @@ protected lemma family_induction_on {p : Finset (Finset α) → Prop}
       (∀ s ∈ 𝒜, a ∉ s) → p 𝒜 → p (𝒜.image <| insert a))
     (subfamily : ∀ (a : α) ⦃𝒜 : Finset (Finset α)⦄,
       p (𝒜.filter (a ∉ ·)) → p (𝒜.filter (a ∈ ·)) → p 𝒜) : p 𝒜 := by
-  refine memberFamily_induction_on 𝒜 empty singleton_empty fun a 𝒜 h𝒜₀ h𝒜₁ ↦ subfamily a h𝒜₀ ?_
+  refine memberFamily_induction_on 𝒜 empty singleton_empty fun a 𝒜 h𝒜₀ h𝒜₁ ↦ subfamily a h𝒜₀ _
   rw [← image_insert_memberSubfamily]
   exact image_insert _ (by simp) h𝒜₁
 
@@ -243,21 +243,21 @@ theorem mem_compression : s ∈ 𝓓 a 𝒜 ↔ s ∈ 𝒜 ∧ s.erase a ∈ �
   refine
     or_congr_right
       (and_congr_left fun hs =>
-        ⟨?_, fun h => ⟨_, h, erase_insert <| insert_ne_self.1 <| ne_of_mem_of_not_mem h hs⟩⟩)
+        ⟨_, fun h => ⟨_, h, erase_insert <| insert_ne_self.1 <| ne_of_mem_of_not_mem h hs⟩⟩)
   rintro ⟨t, ht, rfl⟩
   rwa [insert_erase (erase_ne_self.1 (ne_of_mem_of_not_mem ht hs).symm)]
 #align down.mem_compression Down.mem_compression
 
 theorem erase_mem_compression (hs : s ∈ 𝒜) : s.erase a ∈ 𝓓 a 𝒜 := by
   simp_rw [mem_compression, erase_idem, and_self_iff]
-  refine (em _).imp_right fun h => ⟨h, ?_⟩
+  refine (em _).imp_right fun h => ⟨h, _⟩
   rwa [insert_erase (erase_ne_self.1 (ne_of_mem_of_not_mem hs h).symm)]
 #align down.erase_mem_compression Down.erase_mem_compression
 
 -- This is a special case of `erase_mem_compression` once we have `compression_idem`.
 theorem erase_mem_compression_of_mem_compression : s ∈ 𝓓 a 𝒜 → s.erase a ∈ 𝓓 a 𝒜 := by
   simp_rw [mem_compression, erase_idem]
-  refine Or.imp (fun h => ⟨h.2, h.2⟩) fun h => ?_
+  refine Or.imp (fun h => ⟨h.2, h.2⟩) fun h => _
   rwa [erase_eq_of_not_mem (insert_ne_self.1 <| ne_of_mem_of_not_mem h.2 h.1)]
 #align down.erase_mem_compression_of_mem_compression Down.erase_mem_compression_of_mem_compression
 
@@ -272,7 +272,7 @@ theorem mem_compression_of_insert_mem_compression (h : insert a s ∈ 𝓓 a �
 @[simp]
 theorem compression_idem (a : α) (𝒜 : Finset (Finset α)) : 𝓓 a (𝓓 a 𝒜) = 𝓓 a 𝒜 := by
   ext s
-  refine mem_compression.trans ⟨?_, fun h => Or.inl ⟨h, erase_mem_compression_of_mem_compression h⟩⟩
+  refine mem_compression.trans ⟨_, fun h => Or.inl ⟨h, erase_mem_compression_of_mem_compression h⟩⟩
   rintro (h | h)
   · exact h.1
   · cases h.1 (mem_compression_of_insert_mem_compression h.2)

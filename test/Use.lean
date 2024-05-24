@@ -58,7 +58,7 @@ example : ∃ x : String × String, x.1 = x.2 := by use! "a", "a"
 
 -- This example is why `use` always tries applying the constructor before refining.
 example : ∃ x : Nat, x = x := by
-  use ?_
+  use _
   exact 42
 
 example (α : Type) : ∃ S : List α, S = S := by use ∅

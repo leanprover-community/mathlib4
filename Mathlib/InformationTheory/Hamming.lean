@@ -62,7 +62,7 @@ theorem hammingDist_triangle (x y z : ∀ i, β i) :
     hammingDist x z ≤ hammingDist x y + hammingDist y z := by
   classical
     unfold hammingDist
-    refine le_trans (card_mono ?_) (card_union_le _ _)
+    refine le_trans (card_mono _) (card_union_le _ _)
     rw [← filter_or]
     exact monotone_filter_right _ fun i h ↦ (h.ne_or_ne _).imp_right Ne.symm
 #align hamming_dist_triangle hammingDist_triangle

@@ -81,7 +81,7 @@ variable (hP G ε)
 
 theorem increment_isEquipartition : (increment hP G ε).IsEquipartition := by
   simp_rw [IsEquipartition, Set.equitableOn_iff_exists_eq_eq_add_one]
-  refine ⟨m, fun A hA => ?_⟩
+  refine ⟨m, fun A hA => _⟩
   rw [mem_coe, increment, mem_bind] at hA
   obtain ⟨U, hU, hA⟩ := hA
   exact card_eq_of_mem_parts_chunk hA
@@ -100,7 +100,7 @@ private theorem distinctPairs_increment :
   simp only [distinctPairs, increment, mem_offDiag, bind_parts, mem_biUnion, Prod.exists,
     exists_and_left, exists_prop, mem_product, mem_attach, true_and_iff, Subtype.exists, and_imp,
     mem_offDiag, forall_exists_index, exists₂_imp, Ne]
-  refine fun U V hUV hUi hVj => ⟨⟨_, hUV.1, hUi⟩, ⟨_, hUV.2.1, hVj⟩, ?_⟩
+  refine fun U V hUV hUi hVj => ⟨⟨_, hUV.1, hUi⟩, ⟨_, hUV.2.1, hVj⟩, _⟩
   rintro rfl
   obtain ⟨i, hi⟩ := nonempty_of_mem_parts _ hUi
   exact hUV.2.2 (P.disjoint.elim_finset hUV.1 hUV.2.1 i (Finpartition.le _ hUi hi) <|
@@ -148,7 +148,7 @@ theorem energy_increment (hP : P.IsEquipartition) (hP₇ : 7 ≤ P.parts.card)
           P.parts.card ^ 2 * (ε ^ 5 / 4) : ℝ) / P.parts.card ^ 2 := by
         rw [coe_energy, add_div, mul_div_cancel_left₀]; positivity
     _ ≤ (∑ x in P.parts.offDiag.attach, (∑ i in distinctPairs hP G ε x,
-          G.edgeDensity i.1 i.2 ^ 2 : ℝ) / 16 ^ P.parts.card) / P.parts.card ^ 2 := ?_
+          G.edgeDensity i.1 i.2 ^ 2 : ℝ) / 16 ^ P.parts.card) / P.parts.card ^ 2 := _
     _ = (∑ x in P.parts.offDiag.attach, ∑ i in distinctPairs hP G ε x,
           G.edgeDensity i.1 i.2 ^ 2 : ℝ) / (increment hP G ε).parts.card ^ 2 := by
         rw [card_increment hPα hPG, coe_stepBound, mul_pow, pow_right_comm,
@@ -163,7 +163,7 @@ theorem energy_increment (hP : P.IsEquipartition) (hP₇ : 7 ≤ P.parts.card)
   calc
     _ ≤ ∑ x in P.parts.offDiag, (edgeDensity G x.1 x.2 : ℝ) ^ 2 +
         ((nonUniforms P G ε).card * (ε ^ 4 / 3) - P.parts.offDiag.card * (ε ^ 5 / 25)) :=
-        add_le_add_left ?_ _
+        add_le_add_left _ _
     _ = ∑ x in P.parts.offDiag, ((G.edgeDensity x.1 x.2 : ℝ) ^ 2 +
         ((if G.IsUniform ε x.1 x.2 then (0 : ℝ) else ε ^ 4 / 3) - ε ^ 5 / 25) : ℝ) := by
         rw [sum_add_distrib, sum_sub_distrib, sum_const, nsmul_eq_mul, sum_ite, sum_const_zero,
@@ -174,11 +174,11 @@ theorem energy_increment (hP : P.IsEquipartition) (hP₇ : 7 ≤ P.parts.card)
   calc
     _ = (6/7 * P.parts.card ^ 2) * ε ^ 5 * (7 / 24) := by ring
     _ ≤ P.parts.offDiag.card * ε ^ 5 * (22 / 75) := by
-        gcongr ?_ * _ * ?_
+        gcongr _ * _ * _
         · rw [← mul_div_right_comm, div_le_iff (by norm_num), offDiag_card]
           norm_cast
           rw [tsub_mul]
-          refine le_tsub_of_add_le_left ?_
+          refine le_tsub_of_add_le_left _
           nlinarith
         · norm_num
     _ = (P.parts.offDiag.card * ε * (ε ^ 4 / 3) - P.parts.offDiag.card * (ε ^ 5 / 25)) := by ring

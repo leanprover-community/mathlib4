@@ -257,7 +257,7 @@ theorem sum_pow_of_commute [Semiring R] (x : α → R)
   · exact fun _ hb => hc (mem_insert_self a s) (mem_insert_of_mem hb)
       (ne_of_mem_of_not_mem hb ha).symm
   · simp_rw [ih, mul_sum, sum_mul, sum_sigma', univ_sigma_univ]
-    refine (Fintype.sum_equiv (symInsertEquiv ha) _ _ fun m => ?_).symm
+    refine (Fintype.sum_equiv (symInsertEquiv ha) _ _ fun m => _).symm
     rw [m.1.1.multinomial_filter_ne a]
     conv in m.1.1.map _ => rw [← m.1.1.filter_add_not (a = ·), Multiset.map_add]
     simp_rw [Multiset.noncommProd_add, m.1.1.filter_eq, Multiset.map_replicate, m.1.2]
@@ -284,9 +284,9 @@ theorem multinomial_coe_fill_of_not_mem {m : Fin (n + 1)} {s : Sym α (n - m)} {
     (fill x m s : Multiset α).multinomial = n.choose m * (s : Multiset α).multinomial := by
   rw [Multiset.multinomial_filter_ne x]
   rw [← mem_coe] at hx
-  refine congrArg₂ _ ?_ ?_
+  refine congrArg₂ _ _ _
   · rw [card_coe, count_coe_fill_self_of_not_mem hx]
-  · refine congrArg _ ?_
+  · refine congrArg _ _
     rw [coe_fill, coe_replicate, Multiset.filter_add]
     rw [Multiset.filter_eq_self.mpr]
     · rw [add_right_eq_self]

@@ -61,11 +61,11 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
       have ⟨t', ht₁, ht₂, ht₃⟩ := normalize' (l.insert v true) t
       have ⟨e', he₁, he₂, he₃⟩ := normalize' (l.insert v false) e
       ⟨if t' = e' then t' else .ite (var v) t' e', by
-        refine ⟨fun f => ?_, ?_, fun w b => ?_⟩
+        refine ⟨fun f => _, _, fun w b => _⟩
         · simp only [eval, apply_ite, ite_eq_iff']
           cases hfv : f v
           · simp (config := {contextual := true}) only [cond_false, h, he₁]
-            refine ⟨fun _ => ?_, fun _ => ?_⟩
+            refine ⟨fun _ => _, fun _ => _⟩
             · congr
               ext w
               by_cases h : w = v
@@ -79,7 +79,7 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
                 simp_all
               · simp_all
           · simp only [cond_true, h, ht₁]
-            refine ⟨fun _ => ?_, fun _ => ?_⟩
+            refine ⟨fun _ => _, fun _ => _⟩
             · congr
               ext w
               by_cases h : w = v

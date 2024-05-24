@@ -53,9 +53,9 @@ private lemma three_dvd_b_of_dvd_a_of_gcd_eq_one_of_case2 {a b c : ℤ} (ha : a 
     (H : ∀ a b c : ℤ, c ≠ 0 → ¬ 3 ∣ a → ¬ 3 ∣ b  → 3 ∣ c → IsCoprime a b → a ^ 3 + b ^ 3 ≠ c ^ 3) :
     3 ∣ b := by
   have hbc : IsCoprime (-b) (-c) := by
-    refine IsCoprime.neg_neg ?_
+    refine IsCoprime.neg_neg _
     rw [add_comm (a ^ 3), add_assoc, add_comm (a ^ 3), ← add_assoc] at HF
-    refine isCoprime_of_gcd_eq_one_of_FLT ?_ HF
+    refine isCoprime_of_gcd_eq_one_of_FLT _ HF
     convert Hgcd using 2
     rw [Finset.pair_comm, Finset.Insert.comm]
   by_contra! h3b
@@ -63,7 +63,7 @@ private lemma three_dvd_b_of_dvd_a_of_gcd_eq_one_of_case2 {a b c : ℤ} (ha : a 
   · apply h3b
     rw [add_assoc, add_comm (b ^ 3), ← add_assoc] at HF
     exact dvd_c_of_prime_of_dvd_a_of_dvd_b_of_FLT Int.prime_three h3a h3c HF
-  · refine H (-b) (-c) a ha (by simp [h3b]) (by simp [h3c]) h3a hbc ?_
+  · refine H (-b) (-c) a ha (by simp [h3b]) (by simp [h3c]) h3a hbc _
     rw [add_eq_zero_iff_eq_neg, ← (show Odd 3 by decide).neg_pow] at HF
     rw [← HF]
     ring
@@ -76,10 +76,10 @@ private lemma fermatLastTheoremThree_of_dvd_a_of_gcd_eq_one_of_case2 {a b c : �
   intro HF
   apply (show ¬(3 ∣ (1 : ℤ)) by decide)
   rw [← Hgcd]
-  refine dvd_gcd (fun x hx ↦ ?_)
+  refine dvd_gcd (fun x hx ↦ _)
   simp only [mem_insert, mem_singleton] at hx
   have h3b : 3 ∣ b := by
-    refine three_dvd_b_of_dvd_a_of_gcd_eq_one_of_case2 ha ?_ h3a HF H
+    refine three_dvd_b_of_dvd_a_of_gcd_eq_one_of_case2 ha _ h3a HF H
     simp only [← Hgcd, gcd_insert, gcd_singleton, id_eq, ← Int.abs_eq_normalize, abs_neg]
   rcases hx with (hx | hx | hx)
   · exact hx ▸ h3a
@@ -96,21 +96,21 @@ theorem fermatLastTheoremThree_of_three_dvd_only_c
     (H : ∀ a b c : ℤ, c ≠ 0 → ¬ 3 ∣ a → ¬ 3 ∣ b  → 3 ∣ c → IsCoprime a b → a ^ 3 + b ^ 3 ≠ c ^ 3) :
     FermatLastTheoremFor 3 := by
   rw [fermatLastTheoremFor_iff_int]
-  refine fermatLastTheoremWith_of_fermatLastTheoremWith_coprime (fun a b c ha hb hc Hgcd hF ↦?_)
+  refine fermatLastTheoremWith_of_fermatLastTheoremWith_coprime (fun a b c ha hb hc Hgcd hF ↦_)
   by_cases h1 : 3 ∣ a * b * c
   swap
   · exact fermatLastTheoremThree_case_1 h1 hF
   rw [(prime_three).dvd_mul, (prime_three).dvd_mul] at h1
   rw [← sub_eq_zero, sub_eq_add_neg, ← (show Odd 3 by decide).neg_pow] at hF
   rcases h1 with ((h3a | h3b) | h3c)
-  · refine fermatLastTheoremThree_of_dvd_a_of_gcd_eq_one_of_case2 ha h3a ?_ H hF
+  · refine fermatLastTheoremThree_of_dvd_a_of_gcd_eq_one_of_case2 ha h3a _ H hF
     simp only [← Hgcd, Insert.comm, gcd_insert, gcd_singleton, id_eq, ← abs_eq_normalize, abs_neg]
   · rw [add_comm (a ^ 3)] at hF
-    refine fermatLastTheoremThree_of_dvd_a_of_gcd_eq_one_of_case2 hb h3b ?_ H hF
+    refine fermatLastTheoremThree_of_dvd_a_of_gcd_eq_one_of_case2 hb h3b _ H hF
     simp only [← Hgcd, Insert.comm, gcd_insert, gcd_singleton, id_eq, ← abs_eq_normalize, abs_neg]
   · rw [add_comm _ ((-c) ^ 3), ← add_assoc] at hF
     refine fermatLastTheoremThree_of_dvd_a_of_gcd_eq_one_of_case2 (neg_ne_zero.2 hc) (by simp [h3c])
-      ?_ H hF
+      _ H hF
     rw [Finset.Insert.comm (-c), Finset.pair_comm (-c) b]
     simp only [← Hgcd, Insert.comm, gcd_insert, gcd_singleton, id_eq, ← abs_eq_normalize, abs_neg]
 
@@ -135,8 +135,8 @@ def FermatLastTheoremForThreeGen : Prop :=
 lemma FermatLastTheoremForThree_of_FermatLastTheoremThreeGen :
     FermatLastTheoremForThreeGen hζ → FermatLastTheoremFor 3 := by
   intro H
-  refine fermatLastTheoremThree_of_three_dvd_only_c (fun a b c hc ha hb ⟨x, hx⟩ hcoprime h ↦ ?_)
-  refine H a b c 1 (by simp [hc]) (fun hdvd ↦ ha ?_) (fun hdvd ↦ hb ?_) ?_ ?_ ?_
+  refine fermatLastTheoremThree_of_three_dvd_only_c (fun a b c hc ha hb ⟨x, hx⟩ hcoprime h ↦ _)
+  refine H a b c 1 (by simp [hc]) (fun hdvd ↦ ha _) (fun hdvd ↦ hb _) _ _ _
   · rwa [← Ideal.norm_dvd_iff (hζ.prime_norm_toInteger_sub_one_of_prime_ne_two' (by decide)),
       hζ.norm_toInteger_sub_one_of_prime_ne_two' (by decide)] at hdvd
   · rwa [← Ideal.norm_dvd_iff (hζ.prime_norm_toInteger_sub_one_of_prime_ne_two' (by decide)),

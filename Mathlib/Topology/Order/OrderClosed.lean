@@ -158,7 +158,7 @@ theorem disjoint_nhds_atBot_iff : Disjoint (𝓝 a) atBot ↔ ¬IsBot a := by
     exact mem_of_mem_nhds hd le_rfl
   · simp only [IsBot, not_forall]
     rintro ⟨b, hb⟩
-    refine disjoint_of_disjoint_of_mem disjoint_compl_left ?_ (Iic_mem_atBot b)
+    refine disjoint_of_disjoint_of_mem disjoint_compl_left _ (Iic_mem_atBot b)
     exact isClosed_Iic.isOpen_compl.mem_nhds hb
 
 end Preorder
@@ -801,7 +801,7 @@ theorem frontier_le_subset_eq (hf : Continuous f) (hg : Continuous g) :
     frontier { b | f b ≤ g b } ⊆ { b | f b = g b } := by
   rw [frontier_eq_closure_inter_closure, closure_le_eq hf hg]
   rintro b ⟨hb₁, hb₂⟩
-  refine le_antisymm hb₁ (closure_lt_subset_le hg hf ?_)
+  refine le_antisymm hb₁ (closure_lt_subset_le hg hf _)
   convert hb₂ using 2; simp only [not_le.symm]; rfl
 #align frontier_le_subset_eq frontier_le_subset_eq
 
@@ -822,7 +822,7 @@ theorem continuous_if_le [TopologicalSpace γ] [∀ x, Decidable (f x ≤ g x)] 
     (hf : Continuous f) (hg : Continuous g) (hf' : ContinuousOn f' { x | f x ≤ g x })
     (hg' : ContinuousOn g' { x | g x ≤ f x }) (hfg : ∀ x, f x = g x → f' x = g' x) :
     Continuous fun x => if f x ≤ g x then f' x else g' x := by
-  refine continuous_if (fun a ha => hfg _ (frontier_le_subset_eq hf hg ha)) ?_ (hg'.mono ?_)
+  refine continuous_if (fun a ha => hfg _ (frontier_le_subset_eq hf hg ha)) _ (hg'.mono _)
   · rwa [(isClosed_le hf hg).closure_eq]
   · simp only [not_le]
     exact closure_lt_subset_le hg hf
@@ -930,7 +930,7 @@ theorem Dense.exists_between [DenselyOrdered α] {s : Set α} (hs : Dense s) {x 
 
 theorem Dense.Ioi_eq_biUnion [DenselyOrdered α] {s : Set α} (hs : Dense s) (x : α) :
     Ioi x = ⋃ y ∈ s ∩ Ioi x, Ioi y := by
-  refine Subset.antisymm (fun z hz ↦ ?_) (iUnion₂_subset fun y hy ↦ Ioi_subset_Ioi (le_of_lt hy.2))
+  refine Subset.antisymm (fun z hz ↦ _) (iUnion₂_subset fun y hy ↦ Ioi_subset_Ioi (le_of_lt hy.2))
   rcases hs.exists_between hz with ⟨y, hys, hxy, hyz⟩
   exact mem_iUnion₂.2 ⟨y, ⟨hys, hxy⟩, hyz⟩
 

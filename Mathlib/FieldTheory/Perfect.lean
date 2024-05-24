@@ -187,7 +187,7 @@ lemma PerfectRing.toPerfectField (K : Type*) (p : ℕ)
     [Field K] [ExpChar K p] [PerfectRing K p] : PerfectField K := by
   obtain hp | ⟨hp⟩ := ‹ExpChar K p›
   · exact ⟨Irreducible.separable⟩
-  refine PerfectField.mk fun hf ↦ ?_
+  refine PerfectField.mk fun hf ↦ _
   rcases separable_or p hf with h | ⟨-, g, -, rfl⟩
   · assumption
   · exfalso; revert hf; haveI := Fact.mk hp; simp
@@ -237,7 +237,7 @@ instance toPerfectRing (p : ℕ) [ExpChar K p] : PerfectRing K p := by
   exact minpoly.degree_pos ha
 
 theorem separable_iff_squarefree {g : K[X]} : g.Separable ↔ Squarefree g := by
-  refine ⟨Separable.squarefree, fun sqf ↦ isCoprime_of_irreducible_dvd (sqf.ne_zero ·.1) ?_⟩
+  refine ⟨Separable.squarefree, fun sqf ↦ isCoprime_of_irreducible_dvd (sqf.ne_zero ·.1) _⟩
   rintro p (h : Irreducible p) ⟨q, rfl⟩ (dvd : p ∣ derivative (p * q))
   replace dvd : p ∣ q := by
     rw [derivative_mul, dvd_add_left (dvd_mul_right p _)] at dvd
@@ -267,7 +267,7 @@ open Multiset
 theorem roots_expand_pow_map_iterateFrobenius_le :
     (expand R (p ^ n) f).roots.map (iterateFrobenius R p n) ≤ p ^ n • f.roots := by
   classical
-  refine le_iff_count.2 fun r ↦ ?_
+  refine le_iff_count.2 fun r ↦ _
   by_cases h : ∃ s, r = s ^ p ^ n
   · obtain ⟨s, rfl⟩ := h
     simp_rw [count_nsmul, count_roots, ← rootMultiplicity_expand_pow, ← count_roots, count_map,
@@ -300,7 +300,7 @@ variable [PerfectRing R p]
 theorem roots_expand_pow :
     (expand R (p ^ n) f).roots = p ^ n • f.roots.map (iterateFrobeniusEquiv R p n).symm := by
   classical
-  refine ext' fun r ↦ ?_
+  refine ext' fun r ↦ _
   rw [count_roots, rootMultiplicity_expand_pow, ← count_roots, count_nsmul, count_map,
     count_eq_card_filter_eq]; congr; ext
   exact (iterateFrobeniusEquiv R p n).eq_symm_apply.symm

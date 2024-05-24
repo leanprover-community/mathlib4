@@ -109,13 +109,13 @@ theorem infinite_of_nonempty_of_isEmpty (a b : α) [ha : Nonempty (β a)] [he : 
       not_injective_infinite_finite
         (fun n : ℕ =>
           show WType β from Nat.recOn n ⟨b, IsEmpty.elim' he⟩ fun _ ih => ⟨a, fun _ => ih⟩)
-        ?_
+        _
     intro n m h
     induction' n with n ih generalizing m
     · cases' m with m <;> simp_all
     · cases' m with m
       · simp_all
-      · refine congr_arg Nat.succ (ih ?_)
+      · refine congr_arg Nat.succ (ih _)
         simp_all [Function.funext_iff]⟩
 #align W_type.infinite_of_nonempty_of_is_empty WType.infinite_of_nonempty_of_isEmpty
 

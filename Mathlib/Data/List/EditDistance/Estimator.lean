@@ -109,7 +109,7 @@ instance estimator' :
         simpa using b_eq
       rw [b_eq]
       constructor
-      · refine (?_ : _ ≤ _).trans (List.minimum_of_length_pos_le_getElem _)
+      · refine (_ : _ ≤ _).trans (List.minimum_of_length_pos_le_getElem _)
         simp only [List.minimum_of_length_pos_le_iff, List.coe_minimum_of_length_pos, d_eq]
         apply le_suffixLevenshtein_cons_minimum
       · simp [← split]

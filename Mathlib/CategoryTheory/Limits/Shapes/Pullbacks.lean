@@ -626,7 +626,7 @@ theorem IsLimit.hom_ext {t : PullbackCone f g} (ht : IsLimit t) {W : C} {k l : W
 
 theorem mono_snd_of_is_pullback_of_mono {t : PullbackCone f g} (ht : IsLimit t) [Mono f] :
     Mono t.snd := by
-  refine ⟨fun {W} h k i => IsLimit.hom_ext ht ?_ i⟩
+  refine ⟨fun {W} h k i => IsLimit.hom_ext ht _ i⟩
   rw [← cancel_mono f, Category.assoc, Category.assoc, condition]
   have := congrArg (· ≫ g) i; dsimp at this
   rwa [Category.assoc, Category.assoc] at this
@@ -634,7 +634,7 @@ theorem mono_snd_of_is_pullback_of_mono {t : PullbackCone f g} (ht : IsLimit t) 
 
 theorem mono_fst_of_is_pullback_of_mono {t : PullbackCone f g} (ht : IsLimit t) [Mono g] :
     Mono t.fst := by
-  refine ⟨fun {W} h k i => IsLimit.hom_ext ht i ?_⟩
+  refine ⟨fun {W} h k i => IsLimit.hom_ext ht i _⟩
   rw [← cancel_mono g, Category.assoc, Category.assoc, ← condition]
   have := congrArg (· ≫ f) i; dsimp at this
   rwa [Category.assoc, Category.assoc] at this
@@ -772,7 +772,7 @@ def isLimitOfCompMono (f : X ⟶ W) (g : Y ⟶ W) (i : W ⟶ Z) [Mono i] (s : Pu
   rcases PullbackCone.IsLimit.lift' H s.fst s.snd
       ((cancel_mono i).mp (by simpa using s.condition)) with
     ⟨l, h₁, h₂⟩
-  refine ⟨l, h₁, h₂, ?_⟩
+  refine ⟨l, h₁, h₂, _⟩
   intro m hm₁ hm₂
   exact (PullbackCone.IsLimit.hom_ext H (hm₁.trans h₁.symm) (hm₂.trans h₂.symm) : _)
 #align category_theory.limits.pullback_cone.is_limit_of_comp_mono CategoryTheory.Limits.PullbackCone.isLimitOfCompMono
@@ -1042,7 +1042,7 @@ def isColimitOfEpiComp (f : X ⟶ Y) (g : X ⟶ Z) (h : W ⟶ X) [Epi h] (s : Pu
   rcases PushoutCocone.IsColimit.desc' H s.inl s.inr
       ((cancel_epi h).mp (by simpa using s.condition)) with
     ⟨l, h₁, h₂⟩
-  refine ⟨l, h₁, h₂, ?_⟩
+  refine ⟨l, h₁, h₂, _⟩
   intro m hm₁ hm₂
   exact (PushoutCocone.IsColimit.hom_ext H (hm₁.trans h₁.symm) (hm₂.trans h₂.symm) : _)
 #align category_theory.limits.pushout_cocone.is_colimit_of_epi_comp CategoryTheory.Limits.PushoutCocone.isColimitOfEpiComp

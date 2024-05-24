@@ -89,7 +89,7 @@ variable {G : Type*} [FunLike G S R] [rcg : RingHomClass G S R]
 
 theorem map_le_comap_of_inv_on (g : G) (I : Ideal R) (hf : Set.LeftInvOn g f I) :
     I.map f ≤ I.comap g := by
-  refine Ideal.span_le.2 ?_
+  refine Ideal.span_le.2 _
   rintro x ⟨x, hx, rfl⟩
   rw [SetLike.mem_coe, mem_comap, hf hx]
   exact hx
@@ -147,7 +147,7 @@ theorem map_map {T : Type*} [Semiring T] {I : Ideal R} (f : R →+* S) (g : S �
 #align ideal.map_map Ideal.map_map
 
 theorem map_span (f : F) (s : Set R) : map f (span s) = span (f '' s) := by
-  refine (Submodule.span_eq_of_le _ ?_ ?_).symm
+  refine (Submodule.span_eq_of_le _ _ _).symm
   · rintro _ ⟨x, hx, rfl⟩; exact mem_map_of_mem f (subset_span hx)
   · rw [map_le_iff_le_comap, span_le, coe_comap, ← Set.image_subset_iff]
     exact subset_span
@@ -356,7 +356,7 @@ section Injective
 variable (hf : Function.Injective f)
 
 theorem comap_bot_le_of_injective : comap f ⊥ ≤ I := by
-  refine le_trans (fun x hx => ?_) bot_le
+  refine le_trans (fun x hx => _) bot_le
   rw [mem_comap, Submodule.mem_bot, ← map_zero f] at hx
   exact Eq.symm (hf hx) ▸ Submodule.zero_mem ⊥
 #align ideal.comap_bot_le_of_injective Ideal.comap_bot_le_of_injective
@@ -444,16 +444,16 @@ def orderEmbeddingOfSurjective : Ideal S ↪o Ideal R :=
 
 theorem map_eq_top_or_isMaximal_of_surjective {I : Ideal R} (H : IsMaximal I) :
     map f I = ⊤ ∨ IsMaximal (map f I) := by
-  refine or_iff_not_imp_left.2 fun ne_top => ⟨⟨fun h => ne_top h, fun J hJ => ?_⟩⟩
+  refine or_iff_not_imp_left.2 fun ne_top => ⟨⟨fun h => ne_top h, fun J hJ => _⟩⟩
   · refine
       (relIsoOfSurjective f hf).injective
-        (Subtype.ext_iff.2 (Eq.trans (H.1.2 (comap f J) (lt_of_le_of_ne ?_ ?_)) comap_top.symm))
+        (Subtype.ext_iff.2 (Eq.trans (H.1.2 (comap f J) (lt_of_le_of_ne _ _)) comap_top.symm))
     · exact map_le_iff_le_comap.1 (le_of_lt hJ)
     · exact fun h => hJ.right (le_map_of_comap_le_of_surjective f hf (le_of_eq h.symm))
 #align ideal.map_eq_top_or_is_maximal_of_surjective Ideal.map_eq_top_or_isMaximal_of_surjective
 
 theorem comap_isMaximal_of_surjective {K : Ideal S} [H : IsMaximal K] : IsMaximal (comap f K) := by
-  refine ⟨⟨comap_ne_top _ H.1.1, fun J hJ => ?_⟩⟩
+  refine ⟨⟨comap_ne_top _ H.1.1, fun J hJ => _⟩⟩
   suffices map f J = ⊤ by
     have := congr_arg (comap f) this
     rw [comap_top, comap_map_of_surjective _ hf, eq_top_iff] at this
@@ -462,7 +462,7 @@ theorem comap_isMaximal_of_surjective {K : Ideal S} [H : IsMaximal K] : IsMaxima
   refine
     H.1.2 (map f J)
       (lt_of_le_of_ne (le_map_of_comap_le_of_surjective _ hf (le_of_lt hJ)) fun h =>
-        ne_of_lt hJ (_root_.trans (congr_arg (comap f) h) ?_))
+        ne_of_lt hJ (_root_.trans (congr_arg (comap f) h) _))
   rw [comap_map_of_surjective _ hf, sup_eq_left]
   exact le_trans (comap_mono bot_le) (le_of_lt hJ)
 #align ideal.comap_is_maximal_of_surjective Ideal.comap_isMaximal_of_surjective
@@ -497,7 +497,7 @@ theorem comap_le_iff_le_map {I : Ideal R} {K : Ideal S} : comap f K ≤ I ↔ K 
 
 theorem map.isMaximal {I : Ideal R} (H : IsMaximal I) : IsMaximal (map f I) := by
   refine
-    or_iff_not_imp_left.1 (map_eq_top_or_isMaximal_of_surjective f hf.right H) fun h => H.1.1 ?_
+    or_iff_not_imp_left.1 (map_eq_top_or_isMaximal_of_surjective f hf.right H) fun h => H.1.1 _
   calc
     I = comap f (map f I) := ((relIsoOfBijective f hf).right_inv I).symm
     _ = comap f ⊤ := by rw [h]
@@ -693,11 +693,11 @@ theorem ker_isMaximal_of_surjective {R K F : Type*} [Ring R] [Field K]
     (hf : Function.Surjective f) : (ker f).IsMaximal := by
   refine
     Ideal.isMaximal_iff.mpr
-      ⟨fun h1 => one_ne_zero' K <| map_one f ▸ (mem_ker f).mp h1, fun J x hJ hxf hxJ => ?_⟩
+      ⟨fun h1 => one_ne_zero' K <| map_one f ▸ (mem_ker f).mp h1, fun J x hJ hxf hxJ => _⟩
   obtain ⟨y, hy⟩ := hf (f x)⁻¹
   have H : 1 = y * x - (y * x - 1) := (sub_sub_cancel _ _).symm
   rw [H]
-  refine J.sub_mem (J.mul_mem_left _ hxJ) (hJ ?_)
+  refine J.sub_mem (J.mul_mem_left _ hxJ) (hJ _)
   rw [mem_ker]
   simp only [hy, map_sub, map_one, map_mul, inv_mul_cancel (mt (mem_ker f).mpr hxf), sub_self]
 #align ring_hom.ker_is_maximal_of_surjective RingHom.ker_isMaximal_of_surjective
@@ -735,7 +735,7 @@ variable [Ring R] [Ring S] [FunLike F R S] [rc : RingHomClass F R S]
 
 theorem map_sInf {A : Set (Ideal R)} {f : F} (hf : Function.Surjective f) :
     (∀ J ∈ A, RingHom.ker f ≤ J) → map f (sInf A) = sInf (map f '' A) := by
-  refine fun h => le_antisymm (le_sInf ?_) ?_
+  refine fun h => le_antisymm (le_sInf _) _
   · intro j hj y hy
     cases' (mem_map_iff_of_surjective f hf).1 hy with x hx
     cases' (Set.mem_image _ _ _).mp hj with J hJ
@@ -743,7 +743,7 @@ theorem map_sInf {A : Set (Ideal R)} {f : F} (hf : Function.Surjective f) :
     exact mem_map_of_mem f (sInf_le_of_le hJ.left (le_of_eq rfl) hx.left)
   · intro y hy
     cases' hf y with x hx
-    refine hx ▸ mem_map_of_mem f ?_
+    refine hx ▸ mem_map_of_mem f _
     have : ∀ I ∈ A, y ∈ map f I := by simpa using hy
     rw [Submodule.mem_sInf]
     intro J hJ
@@ -756,11 +756,11 @@ theorem map_sInf {A : Set (Ideal R)} {f : F} (hf : Function.Surjective f) :
 
 theorem map_isPrime_of_surjective {f : F} (hf : Function.Surjective f) {I : Ideal R} [H : IsPrime I]
     (hk : RingHom.ker f ≤ I) : IsPrime (map f I) := by
-  refine ⟨fun h => H.ne_top (eq_top_iff.2 ?_), fun {x y} => ?_⟩
+  refine ⟨fun h => H.ne_top (eq_top_iff.2 _), fun {x y} => _⟩
   · replace h := congr_arg (comap f) h
     rw [comap_map_of_surjective _ hf, comap_top] at h
     exact h ▸ sup_le (le_of_eq rfl) hk
-  · refine fun hxy => (hf x).recOn fun a ha => (hf y).recOn fun b hb => ?_
+  · refine fun hxy => (hf x).recOn fun a ha => (hf y).recOn fun b hb => _
     rw [← ha, ← hb, ← _root_.map_mul f, mem_map_iff_of_surjective _ hf] at hxy
     rcases hxy with ⟨c, hc, hc'⟩
     rw [← sub_eq_zero, ← map_sub] at hc'
@@ -793,7 +793,7 @@ theorem map_radical_of_surjective {f : R →+* S} (hf : Function.Surjective f) {
   rw [radical_eq_sInf, radical_eq_sInf]
   have : ∀ J ∈ {J : Ideal R | I ≤ J ∧ J.IsPrime}, RingHom.ker f ≤ J := fun J hJ => h.trans hJ.left
   convert map_sInf hf this
-  refine funext fun j => propext ⟨?_, ?_⟩
+  refine funext fun j => propext ⟨_, _⟩
   · rintro ⟨hj, hj'⟩
     haveI : j.IsPrime := hj'
     exact

@@ -305,7 +305,7 @@ theorem isRat_sub {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
     (h₂ : Nat.mul da db = Nat.mul k dc) :
     IsRat (f a b) nc dc := by
   rw [hf, sub_eq_add_neg]
-  refine isRat_add rfl ra (isRat_neg (n' := -nb) rfl rb rfl) (k := k) (nc := nc) ?_ h₂
+  refine isRat_add rfl ra (isRat_neg (n' := -nb) rfl rb rfl) (k := k) (nc := nc) _ h₂
   rw [show Int.mul (-nb) _ = _ from neg_mul ..]; exact h₁
 
 /-- The `norm_num` extension which identifies expressions of the form `a - b` in a ring,
@@ -366,7 +366,7 @@ theorem isRat_mul {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
   rintro rfl ⟨_, rfl⟩ ⟨_, rfl⟩ (h₁ : na * nb = k * nc) (h₂ : da * db = k * dc)
   have : Invertible (↑(da * db) : α) := by simpa using invertibleMul (da:α) db
   have := invertibleOfMul' (α := α) h₂
-  refine ⟨this, ?_⟩
+  refine ⟨this, _⟩
   have H := (Nat.cast_commute (α := α) da db).invOf_left.invOf_right.right_comm
   have h₁ := congr_arg (Int.cast (R := α)) h₁
   simp only [Int.cast_mul, Int.cast_natCast] at h₁

@@ -179,9 +179,9 @@ namespace HomotopyCategory
 lemma mappingConeCompTriangleh_distinguished :
     (CochainComplex.mappingConeCompTriangleh f g) ∈
       distTriang (HomotopyCategory C (ComplexShape.up ℤ)) := by
-  refine ⟨_, _, (CochainComplex.mappingConeCompTriangle f g).mor₁, ⟨?_⟩⟩
+  refine ⟨_, _, (CochainComplex.mappingConeCompTriangle f g).mor₁, ⟨_⟩⟩
   refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (isoOfHomotopyEquiv
-    (CochainComplex.mappingConeCompHomotopyEquiv f g)) (by aesop_cat) (by simp) ?_
+    (CochainComplex.mappingConeCompHomotopyEquiv f g)) (by aesop_cat) (by simp) _
   dsimp [CochainComplex.mappingConeCompTriangleh]
   rw [CategoryTheory.Functor.map_id, comp_id, ← Functor.map_comp_assoc]
   congr 2
@@ -199,7 +199,7 @@ noncomputable instance : IsTriangulated (HomotopyCategory C (ComplexShape.up ℤ
     let α := CochainComplex.mappingCone.triangleMap u₁₂ (u₁₂ ≫ u₂₃) (𝟙 X₁) u₂₃ (by rw [id_comp])
     let β := CochainComplex.mappingCone.triangleMap (u₁₂ ≫ u₂₃) u₂₃ u₁₂ (𝟙 X₃) (by rw [comp_id])
     refine Triangulated.Octahedron.mk ((HomotopyCategory.quotient _ _).map α.hom₃)
-      ((HomotopyCategory.quotient _ _).map β.hom₃) ?_ ?_ ?_ ?_ ?_
+      ((HomotopyCategory.quotient _ _).map β.hom₃) _ _ _ _ _
     · exact ((quotient _ _).mapTriangle.map α).comm₂
     · exact ((quotient _ _).mapTriangle.map α).comm₃.symm.trans (by simp [α])
     · exact ((quotient _ _).mapTriangle.map β).comm₂.trans (by simp [β])

@@ -109,12 +109,12 @@ theorem measurePreserving_homeomorphUnitSphereProd :
     MeasurePreserving (homeomorphUnitSphereProd E) (μ.comap (↑))
       (μ.toSphere.prod (volumeIoiPow (dim E - 1))) := by
   nontriviality E
-  refine ⟨(homeomorphUnitSphereProd E).measurable, .symm ?_⟩
+  refine ⟨(homeomorphUnitSphereProd E).measurable, .symm _⟩
   refine prod_eq_generateFrom generateFrom_measurableSet
     ((borel_eq_generateFrom_Iio _).symm.trans BorelSpace.measurable_eq.symm)
     isPiSystem_measurableSet isPiSystem_Iio
     μ.toSphere.toFiniteSpanningSetsIn (finiteSpanningSetsIn_volumeIoiPow_range_Iio _)
-    fun s hs ↦ forall_mem_range.2 fun r ↦ ?_
+    fun s hs ↦ forall_mem_range.2 fun r ↦ _
   have : Ioo (0 : ℝ) r = r.1 • Ioo (0 : ℝ) 1 := by
     rw [LinearOrderedField.smul_Ioo r.2.out, smul_zero, smul_eq_mul, mul_one]
   have hpos : 0 < dim E := FiniteDimensional.finrank_pos
@@ -145,7 +145,7 @@ lemma integral_fun_norm_addHaar (f : ℝ → F) :
       rw [integral_withDensity_eq_integral_smul, μ.toSphere_apply_univ,
         ENNReal.toReal_mul, ENNReal.toReal_nat, ← nsmul_eq_mul, smul_assoc,
         integral_subtype_comap measurableSet_Ioi fun a ↦ Real.toNNReal (a ^ (dim E - 1)) • f a,
-        setIntegral_congr measurableSet_Ioi fun x hx ↦ ?_]
+        setIntegral_congr measurableSet_Ioi fun x hx ↦ _]
       · rw [NNReal.smul_def, Real.coe_toNNReal _ (pow_nonneg hx.out.le _)]
       · exact (measurable_subtype_coe.pow_const _).real_toNNReal
 

@@ -98,7 +98,7 @@ theorem mem_essImage_of_unit_isSplitMono [Reflective i] {A : C}
   haveI : IsIso (η.app (i.obj ((reflector i).obj A))) :=
     Functor.essImage.unit_isIso ((i.obj_mem_essImage _))
   have : Epi (η.app A) := by
-    refine @epi_of_epi _ _ _ _ _ (retraction (η.app A)) (η.app A) ?_
+    refine @epi_of_epi _ _ _ _ _ (retraction (η.app A)) (η.app A) _
     rw [show retraction _ ≫ η.app A = _ from η.naturality (retraction (η.app A))]
     apply epi_comp (η.app (i.obj ((reflector i).obj A)))
   haveI := isIso_of_epi_of_isSplitMono (η.app A)
@@ -173,8 +173,8 @@ Functor.essImage.unit_isIso X.property
 by `equivEssImageOfReflective` when the functor `i` is reflective. -/
 def equivEssImageOfReflective_counitIso_app [Reflective i] (X : Functor.EssImageSubcategory i) :
     ((Functor.essImageInclusion i ⋙ reflector i) ⋙ Functor.toEssImage i).obj X ≅ X := by
-  refine Iso.symm (@asIso _ _ X _ ((reflectorAdjunction i).unit.app X.obj) ?_)
-  refine @isIso_of_reflects_iso _ _ _ _ _ _ _ i.essImageInclusion ?_ _
+  refine Iso.symm (@asIso _ _ X _ ((reflectorAdjunction i).unit.app X.obj) _)
+  refine @isIso_of_reflects_iso _ _ _ _ _ _ _ i.essImageInclusion _ _
   dsimp
   exact inferInstance
 

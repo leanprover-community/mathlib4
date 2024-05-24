@@ -41,7 +41,7 @@ theorem iteratedDerivWithin_const_add (hn : 0 < n) (c : F) :
     iteratedDerivWithin n (fun z => c + f z) s x = iteratedDerivWithin n f s x := by
   obtain ⟨n, rfl⟩ := n.exists_eq_succ_of_ne_zero hn.ne'
   rw [iteratedDerivWithin_succ' h hx, iteratedDerivWithin_succ' h hx]
-  refine iteratedDerivWithin_congr h ?_ hx
+  refine iteratedDerivWithin_congr h _ hx
   intro y hy
   exact derivWithin_const_add (h.uniqueDiffWithinAt hy) _
 
@@ -49,7 +49,7 @@ theorem iteratedDerivWithin_const_neg (hn : 0 < n) (c : F) :
     iteratedDerivWithin n (fun z => c - f z) s x = iteratedDerivWithin n (fun z => -f z) s x := by
   obtain ⟨n, rfl⟩ := n.exists_eq_succ_of_ne_zero hn.ne'
   rw [iteratedDerivWithin_succ' h hx, iteratedDerivWithin_succ' h hx]
-  refine iteratedDerivWithin_congr h ?_ hx
+  refine iteratedDerivWithin_congr h _ hx
   intro y hy
   have : UniqueDiffWithinAt 𝕜 s y := h.uniqueDiffWithinAt hy
   rw [derivWithin.neg this]

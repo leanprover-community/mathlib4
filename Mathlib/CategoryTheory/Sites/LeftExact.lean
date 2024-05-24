@@ -155,7 +155,7 @@ theorem liftToPlusObjLimitObj_fac {K : Type max v u} [SmallCategory K] [FinCateg
   congr 1
   dsimp
   rw [Category.assoc, Category.assoc, ← Iso.eq_inv_comp, Iso.inv_comp_eq, Iso.inv_comp_eq]
-  refine colimit.hom_ext (fun j => ?_)
+  refine colimit.hom_ext (fun j => _)
   dsimp [plusMap]
   simp only [HasColimit.isoOfNatIso_ι_hom_assoc, ι_colimMap]
   dsimp [IsLimit.conePointUniqueUpToIso, HasLimit.isoOfNatIso, IsLimit.map]
@@ -241,7 +241,7 @@ instance preservesLimitsOfShape_presheafToSheaf :
     · intro j j'
       show Fintype (ULift _)
       infer_instance
-  refine @preservesLimitsOfShapeOfEquiv _ _ _ _ _ _ _ _ e.symm _ (show _ from ?_)
+  refine @preservesLimitsOfShapeOfEquiv _ _ _ _ _ _ _ _ e.symm _ (show _ from _)
   constructor; intro F; constructor; intro S hS
   apply isLimitOfReflects (sheafToPresheaf J D)
   have : ReflectsLimitsOfShape (AsSmall.{max v u} (FinCategory.AsType K)) (forget D) :=

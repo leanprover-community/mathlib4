@@ -107,7 +107,7 @@ theorem coeff_mul_add_of_le_natDegree_of_eq_ite {d df dg : ℕ} {a b : R} {f g :
   · subst h_mul_left h_mul_right h
     exact coeff_mul_of_natDegree_le ‹_› ‹_›
   · apply coeff_eq_zero_of_natDegree_lt
-    apply lt_of_le_of_lt ?_ (lt_of_le_of_ne ddf ?_)
+    apply lt_of_le_of_lt _ (lt_of_le_of_ne ddf _)
     · exact natDegree_mul_le_of_le ‹_› ‹_›
     · exact ne_comm.mp h
 
@@ -118,7 +118,7 @@ theorem coeff_pow_of_natDegree_le_of_eq_ite' {m n o : ℕ} {a : R} {p : R[X]}
   · subst h h_pow_bas
     exact coeff_pow_of_natDegree_le ‹_›
   · apply coeff_eq_zero_of_natDegree_lt
-    apply lt_of_le_of_lt ?_ (lt_of_le_of_ne ‹_› ?_)
+    apply lt_of_le_of_lt _ (lt_of_le_of_ne ‹_› _)
     · exact natDegree_pow_le_of_le m ‹_›
     · exact Iff.mp ne_comm h
 
@@ -246,7 +246,7 @@ one of the five target
 *  `coeff f d = r`.
 
 The end goals are of the form
-* `natDegree f ≤ ?_`, `degree f ≤ ?_`, `coeff f ?_ = ?_`, with fresh metavariables;
+* `natDegree f ≤ _`, `degree f ≤ _`, `coeff f _ = _`, with fresh metavariables;
 * `coeff f m ≠ s` with `m, s` not necessarily metavariables;
 * several equalities/inequalities between expressions and assignments for metavariables.
 
@@ -344,7 +344,7 @@ def dispatchLemma
 /-- `try_rfl mvs` takes as input a list of `MVarId`s, scans them partitioning them into two
 lists: the goals containing some metavariables and the goals not containing any metavariable.
 
-If a goal containing a metavariable has the form `?_ = x`, `x = ?_`, where `?_` is a metavariable
+If a goal containing a metavariable has the form `_ = x`, `x = _`, where `_` is a metavariable
 and `x` is an expression that does not involve metavariables, then it closes this goal using `rfl`,
 effectively assigning the metavariable to `x`.
 

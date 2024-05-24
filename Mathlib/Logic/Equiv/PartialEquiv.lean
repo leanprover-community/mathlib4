@@ -880,7 +880,7 @@ theorem symm_trans_self : e.symm.trans e ≈ ofSet e.target :=
 /-- Two equivalent partial equivs are equal when the source and target are `univ`. -/
 theorem eq_of_eqOnSource_univ (e e' : PartialEquiv α β) (h : e ≈ e') (s : e.source = univ)
     (t : e.target = univ) : e = e' := by
-  refine PartialEquiv.ext (fun x => ?_) (fun x => ?_) h.1
+  refine PartialEquiv.ext (fun x => _) (fun x => _) h.1
   · apply h.2
     rw [s]
     exact mem_univ _

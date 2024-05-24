@@ -61,7 +61,7 @@ def FunctorCategory.prodPreservesColimits [HasBinaryProducts D] [HasColimits D]
       preservesColimit := fun {K : J ⥤ C ⥤ D} =>
         ( {
           preserves := fun {c : Cocone K} (t : IsColimit c) => by
-            apply evaluationJointlyReflectsColimits _ fun {k} => ?_
+            apply evaluationJointlyReflectsColimits _ fun {k} => _
             change IsColimit ((prod.functor.obj F ⋙ (evaluation _ _).obj k).mapCocone c)
             let this :=
               isColimitOfPreserves ((evaluation C D).obj k ⋙ prod.functor.obj (F.obj k)) t
@@ -90,7 +90,7 @@ instance whiskeringRightPreservesLimitsOfShape {C : Type*} [Category C] {D : Typ
     PreservesLimitsOfShape J ((whiskeringRight C D E).obj F) :=
   ⟨fun {K} =>
     ⟨fun c {hc} => by
-      apply evaluationJointlyReflectsLimits _ (fun k => ?_)
+      apply evaluationJointlyReflectsLimits _ (fun k => _)
       change IsLimit (((evaluation _ _).obj k ⋙ F).mapCone c)
       exact PreservesLimit.preserves hc⟩⟩
 #align category_theory.whiskering_right_preserves_limits_of_shape CategoryTheory.whiskeringRightPreservesLimitsOfShape
@@ -107,7 +107,7 @@ instance whiskeringRightPreservesLimits {C : Type*} [Category C] {D : Type*} [Ca
 noncomputable def preservesLimitOfLanPreservesLimit {C D : Type u} [SmallCategory C]
     [SmallCategory D] (F : C ⥤ D) (J : Type u) [SmallCategory J]
     [PreservesLimitsOfShape J (lan F.op : _ ⥤ Dᵒᵖ ⥤ Type u)] : PreservesLimitsOfShape J F := by
-  apply @preservesLimitsOfShapeOfReflectsOfPreserves _ _ _ _ _ _ _ _ F yoneda ?_
+  apply @preservesLimitsOfShapeOfReflectsOfPreserves _ _ _ _ _ _ _ _ F yoneda _
   exact preservesLimitsOfShapeOfNatIso (compYonedaIsoYonedaCompLan F).symm
 set_option linter.uppercaseLean3 false in
 #align category_theory.preserves_limit_of_Lan_preserves_limit CategoryTheory.preservesLimitOfLanPreservesLimit

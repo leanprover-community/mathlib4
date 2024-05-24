@@ -199,10 +199,10 @@ namespace Submonoid
 @[to_additive]
 theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Submonoid M} (hS : Directed (· ≤ ·) S)
     {x : M} : (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
-  refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup S i hi⟩
+  refine ⟨_, fun ⟨i, hi⟩ ↦ le_iSup S i hi⟩
   suffices x ∈ closure (⋃ i, (S i : Set M)) → ∃ i, x ∈ S i by
     simpa only [closure_iUnion, closure_eq (S _)] using this
-  refine fun hx ↦ closure_induction hx (fun _ ↦ mem_iUnion.1) ?_ ?_
+  refine fun hx ↦ closure_induction hx (fun _ ↦ mem_iUnion.1) _ _
   · exact hι.elim fun i ↦ ⟨i, (S i).one_mem⟩
   · rintro x y ⟨i, hi⟩ ⟨j, hj⟩
     rcases hS i j with ⟨k, hki, hkj⟩
@@ -278,7 +278,7 @@ then it holds for all elements of the supremum of `S`. -/
 theorem iSup_induction {ι : Sort*} (S : ι → Submonoid M) {C : M → Prop} {x : M} (hx : x ∈ ⨆ i, S i)
     (mem : ∀ (i), ∀ x ∈ S i, C x) (one : C 1) (mul : ∀ x y, C x → C y → C (x * y)) : C x := by
   rw [iSup_eq_closure] at hx
-  refine closure_induction hx (fun x hx => ?_) one mul
+  refine closure_induction hx (fun x hx => _) one mul
   obtain ⟨i, hi⟩ := Set.mem_iUnion.mp hx
   exact mem _ _ hi
 #align submonoid.supr_induction Submonoid.iSup_induction
@@ -290,8 +290,8 @@ theorem iSup_induction' {ι : Sort*} (S : ι → Submonoid M) {C : ∀ x, (x ∈
     (mem : ∀ (i), ∀ (x) (hxS : x ∈ S i), C x (mem_iSup_of_mem i hxS)) (one : C 1 (one_mem _))
     (mul : ∀ x y hx hy, C x hx → C y hy → C (x * y) (mul_mem ‹_› ‹_›)) {x : M}
     (hx : x ∈ ⨆ i, S i) : C x hx := by
-  refine Exists.elim (?_ : ∃ Hx, C x Hx) fun (hx : x ∈ ⨆ i, S i) (hc : C x hx) => hc
-  refine @iSup_induction _ _ ι S (fun m => ∃ hm, C m hm) _ hx (fun i x hx => ?_) ?_ fun x y => ?_
+  refine Exists.elim (_ : ∃ Hx, C x Hx) fun (hx : x ∈ ⨆ i, S i) (hc : C x hx) => hc
+  refine @iSup_induction _ _ ι S (fun m => ∃ hm, C m hm) _ hx (fun i x hx => _) _ fun x y => _
   · exact ⟨_, mem _ _ hx⟩
   · exact ⟨_, one⟩
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
@@ -424,7 +424,7 @@ theorem closure_induction_left {s : Set M} {p : (m : M) → m ∈ closure s → 
   induction' l using FreeMonoid.recOn with x y ih
   · exact one
   · simp only [map_mul, FreeMonoid.lift_eval_of]
-    refine mul_left _ x.prop (FreeMonoid.lift Subtype.val y) _ (ih ?_)
+    refine mul_left _ x.prop (FreeMonoid.lift Subtype.val y) _ (ih _)
     simp only [closure_eq_mrange, mem_mrange, exists_apply_eq_apply]
 #align submonoid.closure_induction_left Submonoid.closure_induction_left
 #align add_submonoid.closure_induction_left AddSubmonoid.closure_induction_left
@@ -609,7 +609,7 @@ end Submonoid
 theorem IsScalarTower.of_mclosure_eq_top {N α} [Monoid M] [MulAction M N] [SMul N α] [MulAction M α]
     {s : Set M} (htop : Submonoid.closure s = ⊤)
     (hs : ∀ x ∈ s, ∀ (y : N) (z : α), (x • y) • z = x • y • z) : IsScalarTower M N α := by
-  refine ⟨fun x => Submonoid.induction_of_closure_eq_top_left htop x ?_ ?_⟩
+  refine ⟨fun x => Submonoid.induction_of_closure_eq_top_left htop x _ _⟩
   · intro y z
     rw [one_smul, one_smul]
   · clear x
@@ -622,7 +622,7 @@ theorem IsScalarTower.of_mclosure_eq_top {N α} [Monoid M] [MulAction M N] [SMul
 theorem SMulCommClass.of_mclosure_eq_top {N α} [Monoid M] [SMul N α] [MulAction M α] {s : Set M}
     (htop : Submonoid.closure s = ⊤) (hs : ∀ x ∈ s, ∀ (y : N) (z : α), x • y • z = y • x • z) :
     SMulCommClass M N α := by
-  refine ⟨fun x => Submonoid.induction_of_closure_eq_top_left htop x ?_ ?_⟩
+  refine ⟨fun x => Submonoid.induction_of_closure_eq_top_left htop x _ _⟩
   · intro y z
     rw [one_smul, one_smul]
   · clear x
@@ -781,7 +781,7 @@ theorem ofMul_image_powers_eq_multiples_ofMul [Monoid M] {x : M} :
     use n
     simpa [← ofMul_pow, hy1]
   · rintro ⟨n, hn⟩
-    refine ⟨x ^ n, ⟨n, rfl⟩, ?_⟩
+    refine ⟨x ^ n, ⟨n, rfl⟩, _⟩
     rwa [ofMul_pow]
 #align of_mul_image_powers_eq_multiples_of_mul ofMul_image_powers_eq_multiples_ofMul
 

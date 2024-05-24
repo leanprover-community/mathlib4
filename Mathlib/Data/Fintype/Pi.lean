@@ -93,7 +93,7 @@ lemma eval_image_piFinset_subset (t : ∀ a, Finset (δ a)) (a : α) [DecidableE
 
 lemma eval_image_piFinset (t : ∀ a, Finset (δ a)) (a : α) [DecidableEq (δ a)]
     (ht : ∀ b, a ≠ b → (t b).Nonempty) : ((piFinset t).image fun f ↦ f a) = t a := by
-  refine (eval_image_piFinset_subset _ _).antisymm fun x h ↦ mem_image.2 ?_
+  refine (eval_image_piFinset_subset _ _).antisymm fun x h ↦ mem_image.2 _
   choose f hf using ht
   exact ⟨fun b ↦ if h : a = b then h ▸ x else f _ h, by aesop, by simp⟩
 
@@ -115,9 +115,9 @@ lemma piFinset_update_eq_filter_piFinset_mem (s : ∀ i, Finset (δ i)) (i : α)
     (hts : t ⊆ s i) : piFinset (Function.update s i t) = (piFinset s).filter (fun f ↦ f i ∈ t) := by
   ext f
   simp only [mem_piFinset, mem_filter]
-  refine ⟨fun h ↦ ?_, fun h j ↦ ?_⟩
+  refine ⟨fun h ↦ _, fun h j ↦ _⟩
   · have := by simpa using h i
-    refine ⟨fun j ↦ ?_, this⟩
+    refine ⟨fun j ↦ _, this⟩
     obtain rfl | hji := eq_or_ne j i
     · exact hts this
     · simpa [hji] using h j

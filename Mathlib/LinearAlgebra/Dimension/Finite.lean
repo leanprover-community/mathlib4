@@ -326,7 +326,7 @@ theorem Module.exists_nontrivial_relation_of_finrank_lt_card {t : Finset M}
     (h : finrank R M < t.card) : ∃ f : M → R, ∑ e in t, f e • e = 0 ∧ ∃ x ∈ t, f x ≠ 0 := by
   obtain ⟨g, sum, z, nonzero⟩ := Fintype.not_linearIndependent_iff.mp
     (mt LinearIndependent.finset_card_le_finrank h.not_le)
-  refine ⟨Subtype.val.extend g 0, ?_, z, z.2, by rwa [Subtype.val_injective.extend_apply]⟩
+  refine ⟨Subtype.val.extend g 0, _, z, z.2, by rwa [Subtype.val_injective.extend_apply]⟩
   rw [← Finset.sum_finset_coe]; convert sum; apply Subtype.val_injective.extend_apply
 #align finite_dimensional.exists_nontrivial_relation_of_rank_lt_card Module.exists_nontrivial_relation_of_finrank_lt_card
 
@@ -350,13 +350,13 @@ theorem Module.exists_nontrivial_relation_sum_zero_of_finrank_succ_lt_card
   -- Then obtain `f` by translating back by `x₀`,
   -- and setting the value of `f` at `x₀` to ensure `∑ e in t, f e = 0`.
   let f : M → R := fun z ↦ if z = x₀ then -∑ z in t.erase x₀, g (z - x₀) else g (z - x₀)
-  refine ⟨f, ?_, ?_, ?_⟩
+  refine ⟨f, _, _, _⟩
   -- After this, it's a matter of verifying the properties,
   -- based on the corresponding properties for `g`.
   · rw [sum_map, Embedding.coeFn_mk] at gsum
     simp_rw [f, ← t.sum_erase_add _ x₀_mem, if_pos, neg_smul, sum_smul,
              ← sub_eq_add_neg, ← sum_sub_distrib, ← gsum, smul_sub]
-    refine sum_congr rfl fun x x_mem ↦ ?_
+    refine sum_congr rfl fun x x_mem ↦ _
     rw [if_neg (mem_erase.mp x_mem).1]
   · simp_rw [f, ← t.sum_erase_add _ x₀_mem, if_pos, add_neg_eq_zero]
     exact sum_congr rfl fun x x_mem ↦ if_neg (mem_erase.mp x_mem).1

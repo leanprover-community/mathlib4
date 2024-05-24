@@ -61,7 +61,7 @@ theorem borel_eq_top_of_discrete [TopologicalSpace α] [DiscreteTopology α] : b
 #align borel_eq_top_of_discrete borel_eq_top_of_discrete
 
 theorem borel_eq_top_of_countable [TopologicalSpace α] [T1Space α] [Countable α] : borel α = ⊤ := by
-  refine top_le_iff.1 fun s _ => biUnion_of_singleton s ▸ ?_
+  refine top_le_iff.1 fun s _ => biUnion_of_singleton s ▸ _
   apply MeasurableSet.biUnion s.to_countable
   intro x _
   apply MeasurableSet.of_compl
@@ -157,7 +157,7 @@ def addBorelInstance (e : Expr) : TacticM Unit := do
     refine_lift
       letI : MeasurableSpace $t := borel $t
       haveI : BorelSpace $t := ⟨rfl⟩
-      ?_)
+      _)
 
 /-- Given a type `e`, an assumption `i : MeasurableSpace e`, and an instance `[BorelSpace e]`,
 replace `i` with `borel e`. -/
@@ -177,7 +177,7 @@ def borelToRefl (e : Expr) (i : FVarId) : TacticM Unit := do
   evalTactic <| ← `(tactic|
     refine_lift
       letI : MeasurableSpace $te := borel $te
-      ?_)
+      _)
 
 /-- Given a type `$t`, if there is an assumption `[i : MeasurableSpace $t]`, then try to prove
 `[BorelSpace $t]` and replace `i` with `borel $t`. Otherwise, add instances
@@ -230,13 +230,13 @@ instance Subtype.opensMeasurableSpace {α : Type*} [TopologicalSpace α] [Measur
 lemma opensMeasurableSpace_iff_forall_measurableSet
     [TopologicalSpace α] [MeasurableSpace α] :
     OpensMeasurableSpace α ↔  (∀ (s : Set α), IsOpen s → MeasurableSet s) := by
-  refine ⟨fun h s hs ↦ ?_, fun h ↦ ⟨generateFrom_le h⟩⟩
+  refine ⟨fun h s hs ↦ _, fun h ↦ ⟨generateFrom_le h⟩⟩
   exact OpensMeasurableSpace.borel_le _ <| GenerateMeasurable.basic _ hs
 
 instance (priority := 100) BorelSpace.countablyGenerated {α : Type*} [TopologicalSpace α]
     [MeasurableSpace α] [BorelSpace α] [SecondCountableTopology α] : CountablyGenerated α := by
   obtain ⟨b, bct, -, hb⟩ := exists_countable_basis α
-  refine ⟨⟨b, bct, ?_⟩⟩
+  refine ⟨⟨b, bct, _⟩⟩
   borelize α
   exact hb.borel_eq_generateFrom
 #align borel_space.countably_generated BorelSpace.countablyGenerated
@@ -313,7 +313,7 @@ for a version that assumes `μ` to be outer regular
 but does not assume the `σ`-algebra to be Borel.  -/
 theorem IsCompact.measure_closure [R1Space γ] {K : Set γ} (hK : IsCompact K) (μ : Measure γ) :
     μ (closure K) = μ K := by
-  refine le_antisymm ?_ (measure_mono subset_closure)
+  refine le_antisymm _ (measure_mono subset_closure)
   calc
     μ (closure K) ≤ μ (toMeasurable μ K) := measure_mono <|
       hK.closure_subset_measurableSet (measurableSet_toMeasurable ..) (subset_toMeasurable ..)
@@ -415,7 +415,7 @@ instance (priority := 100) secondCountableTopologyEither_of_right (α β : Type*
 product sigma-algebra. -/
 instance Prod.opensMeasurableSpace [h : SecondCountableTopologyEither α β] :
     OpensMeasurableSpace (α × β) := by
-  apply opensMeasurableSpace_iff_forall_measurableSet.2 (fun s hs ↦ ?_)
+  apply opensMeasurableSpace_iff_forall_measurableSet.2 (fun s hs ↦ _)
   rcases h.out with hα|hβ
   · let F : Set α → Set β := fun a ↦ {y | ∃ b, IsOpen b ∧ y ∈ b ∧ a ×ˢ b ⊆ s}
     have A : ∀ a, IsOpen (F a) := by
@@ -436,7 +436,7 @@ instance Prod.opensMeasurableSpace [h : SecondCountableTopologyEither α β] :
         rcases hy with ⟨a, ya, -, b, -, yb, hb⟩
         exact hb (mem_prod.2 ⟨ya, yb⟩)
     rw [this]
-    apply MeasurableSet.biUnion (countable_countableBasis α) (fun a ha ↦ ?_)
+    apply MeasurableSet.biUnion (countable_countableBasis α) (fun a ha ↦ _)
     exact (isOpen_of_mem_countableBasis ha).measurableSet.prod (A a).measurableSet
   · let F : Set β → Set α := fun a ↦ {y | ∃ b, IsOpen b ∧ y ∈ b ∧ b ×ˢ a ⊆ s}
     have A : ∀ a, IsOpen (F a) := by
@@ -457,7 +457,7 @@ instance Prod.opensMeasurableSpace [h : SecondCountableTopologyEither α β] :
         rcases hy with ⟨a, ⟨b, -, yb, hb⟩, -, ya⟩
         exact hb (mem_prod.2 ⟨yb, ya⟩)
     rw [this]
-    apply MeasurableSet.biUnion (countable_countableBasis β) (fun a ha ↦ ?_)
+    apply MeasurableSet.biUnion (countable_countableBasis β) (fun a ha ↦ _)
     exact (A a).measurableSet.prod (isOpen_of_mem_countableBasis ha).measurableSet
 
 variable {α' : Type*} [TopologicalSpace α'] [MeasurableSpace α']
@@ -494,9 +494,9 @@ instance separatesPointsOfOpensMeasurableSpaceOfT0Space [T0Space α] :
     intro x_ne_y
     obtain ⟨U, U_open, mem_U⟩ := exists_isOpen_xor'_mem x_ne_y
     by_cases x_in_U : x ∈ U
-    · refine ⟨U, U_open.measurableSet, x_in_U, ?_⟩
+    · refine ⟨U, U_open.measurableSet, x_in_U, _⟩
       simp_all only [ne_eq, xor_true, not_false_eq_true]
-    · refine ⟨Uᶜ, U_open.isClosed_compl.measurableSet, x_in_U, ?_⟩
+    · refine ⟨Uᶜ, U_open.isClosed_compl.measurableSet, x_in_U, _⟩
       simp_all only [ne_eq, xor_false, id_eq, mem_compl_iff, not_true_eq_false, not_false_eq_true]
 
 /-- A continuous function from an `OpensMeasurableSpace` to a `BorelSpace`
@@ -520,7 +520,7 @@ respective pieces, then it is measurable. -/
 theorem ContinuousOn.measurable_piecewise {f g : α → γ} {s : Set α} [∀ j : α, Decidable (j ∈ s)]
     (hf : ContinuousOn f s) (hg : ContinuousOn g sᶜ) (hs : MeasurableSet s) :
     Measurable (s.piecewise f g) := by
-  refine measurable_of_isOpen fun t ht => ?_
+  refine measurable_of_isOpen fun t ht => _
   rw [piecewise_preimage, Set.ite]
   apply MeasurableSet.union
   · rcases _root_.continuousOn_iff'.1 hf t ht with ⟨u, u_open, hu⟩
@@ -656,7 +656,7 @@ theorem pi_le_borel_pi {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace
 
 theorem prod_le_borel_prod : Prod.instMeasurableSpace ≤ borel (α × β) := by
   rw [‹BorelSpace α›.measurable_eq, ‹BorelSpace β›.measurable_eq]
-  refine sup_le ?_ ?_
+  refine sup_le _ _
   · exact comap_le_iff_le_map.mpr continuous_fst.borel_measurable
   · exact comap_le_iff_le_map.mpr continuous_snd.borel_measurable
 #align prod_le_borel_prod prod_le_borel_prod

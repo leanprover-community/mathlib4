@@ -272,7 +272,7 @@ theorem C_injective : Function.Injective (C R) := by
   rwa [coeff_zero_C, coeff_zero_C] at this
 
 protected theorem subsingleton_iff : Subsingleton R⟦X⟧ ↔ Subsingleton R := by
-  refine ⟨fun h ↦ ?_, fun _ ↦ inferInstance⟩
+  refine ⟨fun h ↦ _, fun _ ↦ inferInstance⟩
   rw [subsingleton_iff] at h ⊢
   exact fun a b ↦ C_injective (h (C R a) (C R b))
 
@@ -332,7 +332,7 @@ theorem coeff_zero_one : coeff R 0 (1 : R⟦X⟧) = 1 :=
 theorem coeff_mul (n : ℕ) (φ ψ : R⟦X⟧) :
     coeff R n (φ * ψ) = ∑ p in antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ := by
   -- `rw` can't see that `PowerSeries = MvPowerSeries Unit`, so use `.trans`
-  refine (MvPowerSeries.coeff_mul _ φ ψ).trans ?_
+  refine (MvPowerSeries.coeff_mul _ φ ψ).trans _
   rw [Finsupp.antidiagonal_single, Finset.sum_map]
   rfl
 #align power_series.coeff_mul PowerSeries.coeff_mul
@@ -468,7 +468,7 @@ theorem coeff_mul_X_pow' (p : R⟦X⟧) (n d : ℕ) :
     coeff R d (p * X ^ n) = ite (n ≤ d) (coeff R (d - n) p) 0 := by
   split_ifs with h
   · rw [← tsub_add_cancel_of_le h, coeff_mul_X_pow, add_tsub_cancel_right]
-  · refine (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => ?_)
+  · refine (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => _)
     rw [coeff_X_pow, if_neg, mul_zero]
     exact ((le_of_add_le_right (mem_antidiagonal.mp hx).le).trans_lt <| not_le.mp h).ne
 set_option linter.uppercaseLean3 false in
@@ -479,7 +479,7 @@ theorem coeff_X_pow_mul' (p : R⟦X⟧) (n d : ℕ) :
   split_ifs with h
   · rw [← tsub_add_cancel_of_le h, coeff_X_pow_mul]
     simp
-  · refine (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => ?_)
+  · refine (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => _)
     rw [coeff_X_pow, if_neg, zero_mul]
     have := mem_antidiagonal.mp hx
     rw [add_comm] at this

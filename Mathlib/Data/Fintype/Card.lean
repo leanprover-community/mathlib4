@@ -610,7 +610,7 @@ theorem card_eq_one_of_forall_eq {i : α} (h : ∀ j, j = i) : card α = 1 :=
 theorem exists_unique_iff_card_one {α} [Fintype α] (p : α → Prop) [DecidablePred p] :
     (∃! a : α, p a) ↔ (Finset.univ.filter p).card = 1 := by
   rw [Finset.card_eq_one]
-  refine exists_congr fun x => ?_
+  refine exists_congr fun x => _
   simp only [forall_true_left, Subset.antisymm_iff, subset_singleton_iff', singleton_subset_iff,
       true_and, and_comm, mem_univ, mem_filter]
 
@@ -876,7 +876,7 @@ theorem Fintype.card_subtype_lt [Fintype α] {p : α → Prop} [DecidablePred p]
 
 theorem Fintype.card_subtype [Fintype α] (p : α → Prop) [DecidablePred p] :
     Fintype.card { x // p x } = ((Finset.univ : Finset α).filter p).card := by
-  refine Fintype.card_of_subtype _ ?_
+  refine Fintype.card_of_subtype _ _
   simp
 #align fintype.card_subtype Fintype.card_subtype
 
@@ -1015,7 +1015,7 @@ theorem of_injective_to_set {s : Set α} (hs : s ≠ Set.univ) {f : α → s} (h
     Infinite α :=
   of_not_fintype fun h => by
     classical
-      refine lt_irrefl (Fintype.card α) ?_
+      refine lt_irrefl (Fintype.card α) _
       calc
         Fintype.card α ≤ Fintype.card s := Fintype.card_le_of_injective f hf
         _ = s.toFinset.card := s.toFinset_card.symm
@@ -1123,8 +1123,8 @@ private theorem natEmbeddingAux_injective (α : Type*) [Infinite α] :
   have hmn : m < n := lt_of_le_of_ne hmlen hmn
   refine (Classical.choose_spec (exists_not_mem_finset
     ((Multiset.range n).pmap (fun m (_ : m < n) ↦ natEmbeddingAux α m)
-      (fun _ ↦ Multiset.mem_range.1)).toFinset)) ?_
-  refine Multiset.mem_toFinset.2 (Multiset.mem_pmap.2 ⟨m, Multiset.mem_range.2 hmn, ?_⟩)
+      (fun _ ↦ Multiset.mem_range.1)).toFinset)) _
+  refine Multiset.mem_toFinset.2 (Multiset.mem_pmap.2 ⟨m, Multiset.mem_range.2 hmn, _⟩)
   rw [h, natEmbeddingAux]
 
 /-- Embedding of `ℕ` into an infinite type. -/
@@ -1148,7 +1148,7 @@ theorem exists_superset_card_eq [Infinite α] (s : Finset α) (n : ℕ) (hn : s.
     · exact ⟨s, subset_refl _, hn'⟩
     obtain ⟨t, hs, ht⟩ := IH _ (Nat.le_of_lt_succ hn')
     obtain ⟨x, hx⟩ := exists_not_mem_finset t
-    refine ⟨Finset.cons x t hx, hs.trans (Finset.subset_cons _), ?_⟩
+    refine ⟨Finset.cons x t hx, hs.trans (Finset.subset_cons _), _⟩
     simp [hx, ht]
 #align infinite.exists_superset_card_eq Infinite.exists_superset_card_eq
 
@@ -1249,7 +1249,7 @@ theorem List.exists_pw_disjoint_with_card {α : Type*} [Fintype α]
     rw [hl u hu]
     exact ranges_nodup hu
   · -- pairwise disjoint
-    refine Pairwise.map _ (fun s t ↦ disjoint_map (Equiv.injective _)) ?_
+    refine Pairwise.map _ (fun s t ↦ disjoint_map (Equiv.injective _)) _
     -- List.Pairwise List.disjoint l
     apply Pairwise.pmap (List.ranges_disjoint c)
     intro u hu v hv huv

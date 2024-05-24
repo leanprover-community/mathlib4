@@ -81,7 +81,7 @@ lemma convolution_def {R : Type*} [Semiring R] (f g : ℕ → R) :
   ext n
   simp only [convolution, toArithmeticFunction, ArithmeticFunction.mul_apply,
     ArithmeticFunction.coe_mk, mul_ite, mul_zero, ite_mul, zero_mul]
-  refine Finset.sum_congr rfl fun p hp ↦ ?_
+  refine Finset.sum_congr rfl fun p hp ↦ _
   obtain ⟨h₁, h₂⟩ := ne_zero_of_mem_divisorsAntidiagonal hp
   simp only [h₂, ↓reduceIte, h₁]
 
@@ -102,7 +102,7 @@ lemma term_convolution (f g : ℕ → ℂ) (s : ℂ) (n : ℕ) :
   · simp only [term_zero, divisorsAntidiagonal_zero, Finset.sum_empty]
   -- now `n ≠ 0`
   rw [term_of_ne_zero hn, convolution_def, Finset.sum_div]
-  refine Finset.sum_congr rfl fun p hp ↦ ?_
+  refine Finset.sum_congr rfl fun p hp ↦ _
   have ⟨hp₁, hp₂⟩ := ne_zero_of_mem_divisorsAntidiagonal hp
   rw [term_of_ne_zero hp₁ f s, term_of_ne_zero hp₂ g s, mul_comm_div, div_div, ← mul_div_assoc,
     ← natCast_mul_natCast_cpow, ← cast_mul, mul_comm p.2, (mem_divisorsAntidiagonal.mp hp).1]
@@ -118,7 +118,7 @@ lemma term_convolution' (f g : ℕ → ℂ) (s : ℂ) :
   ext n
   rcases eq_or_ne n 0 with rfl | hn
   · -- show that both sides vanish when `n = 0`; this is the hardest part of the proof!
-    refine (term_zero ..).trans ?_
+    refine (term_zero ..).trans _
     -- the right hand sum is over the union below, but in each term, one factor is always zero
     have hS : (fun p ↦ p.1 * p.2) ⁻¹' {0} = {0} ×ˢ univ ∪ univ ×ˢ {0} := by
       ext

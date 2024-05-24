@@ -69,7 +69,7 @@ theorem matrix_eq_sum_std_basis [Fintype m] [Fintype n] (x : Matrix m n α) :
   ext i j; symm
   iterate 2 rw [Finset.sum_apply]
   -- Porting note: was `convert`
-  refine (Fintype.sum_eq_single i ?_).trans ?_; swap
+  refine (Fintype.sum_eq_single i _).trans _; swap
   · -- Porting note: `simp` seems unwilling to apply `Fintype.sum_apply`
     simp (config := { unfoldPartialApp := true }) only [stdBasisMatrix]
     rw [Fintype.sum_apply, Fintype.sum_apply]
@@ -214,7 +214,7 @@ theorem mul_of_ne {k l : n} (h : j ≠ k) (d : α) :
   by_cases h₁ : i = a
   -- porting note (#10745): was `simp [h₁, h, h.symm]`
   · simp only [h₁, true_and, mul_ite, ite_mul, zero_mul, mul_zero, ← ite_and, zero_apply]
-    refine Finset.sum_eq_zero (fun x _ => ?_)
+    refine Finset.sum_eq_zero (fun x _ => _)
     apply if_neg
     rintro ⟨⟨rfl, rfl⟩, h⟩
     contradiction
@@ -252,7 +252,7 @@ theorem mem_range_scalar_of_commute_stdBasisMatrix {M : Matrix n n α}
   cases isEmpty_or_nonempty n
   · exact ⟨0, Subsingleton.elim _ _⟩
   obtain ⟨i⟩ := ‹Nonempty n›
-  refine ⟨M i i, Matrix.ext fun j k => ?_⟩
+  refine ⟨M i i, Matrix.ext fun j k => _⟩
   simp only [scalar_apply]
   obtain rfl | hkl := Decidable.eq_or_ne j k
   · rw [diagonal_apply_eq]
@@ -266,14 +266,14 @@ theorem mem_range_scalar_of_commute_stdBasisMatrix {M : Matrix n n α}
 
 theorem mem_range_scalar_iff_commute_stdBasisMatrix {M : Matrix n n α} :
     M ∈ Set.range (Matrix.scalar n) ↔ ∀ (i j : n), i ≠ j → Commute (stdBasisMatrix i j 1) M := by
-  refine ⟨fun ⟨r, hr⟩ i j _ => hr ▸ Commute.symm ?_, mem_range_scalar_of_commute_stdBasisMatrix⟩
+  refine ⟨fun ⟨r, hr⟩ i j _ => hr ▸ Commute.symm _, mem_range_scalar_of_commute_stdBasisMatrix⟩
   rw [scalar_commute_iff]
   simp
 
 /-- `M` is a scalar matrix if and only if it commutes with every `stdBasisMatrix`.​ -/
 theorem mem_range_scalar_iff_commute_stdBasisMatrix' {M : Matrix n n α} :
     M ∈ Set.range (Matrix.scalar n) ↔ ∀ (i j : n), Commute (stdBasisMatrix i j 1) M := by
-  refine ⟨fun ⟨r, hr⟩ i j => hr ▸ Commute.symm ?_,
+  refine ⟨fun ⟨r, hr⟩ i j => hr ▸ Commute.symm _,
     fun hM => mem_range_scalar_iff_commute_stdBasisMatrix.mpr <| fun i j _ => hM i j⟩
   rw [scalar_commute_iff]
   simp

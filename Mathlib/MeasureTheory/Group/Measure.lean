@@ -182,7 +182,7 @@ theorem forall_measure_preimage_mul_iff (μ : Measure G) :
       IsMulLeftInvariant μ := by
   trans ∀ g, map (g * ·) μ = μ
   · simp_rw [Measure.ext_iff]
-    refine forall_congr' fun g => forall_congr' fun A => forall_congr' fun hA => ?_
+    refine forall_congr' fun g => forall_congr' fun A => forall_congr' fun hA => _
     rw [map_apply (measurable_const_mul g) hA]
   exact ⟨fun h => ⟨h⟩, fun h => h.1⟩
 #align measure_theory.forall_measure_preimage_mul_iff MeasureTheory.forall_measure_preimage_mul_iff
@@ -195,7 +195,7 @@ theorem forall_measure_preimage_mul_right_iff (μ : Measure G) :
       IsMulRightInvariant μ := by
   trans ∀ g, map (· * g) μ = μ
   · simp_rw [Measure.ext_iff]
-    refine forall_congr' fun g => forall_congr' fun A => forall_congr' fun hA => ?_
+    refine forall_congr' fun g => forall_congr' fun A => forall_congr' fun hA => _
     rw [map_apply (measurable_mul_const g) hA]
   exact ⟨fun h => ⟨h⟩, fun h => h.1⟩
 #align measure_theory.forall_measure_preimage_mul_right_iff MeasureTheory.forall_measure_preimage_mul_right_iff
@@ -229,7 +229,7 @@ instance Measure.prod.instIsMulRightInvariant [IsMulRightInvariant μ] [SFinite 
 theorem isMulLeftInvariant_map {H : Type*} [MeasurableSpace H] [Mul H] [MeasurableMul H]
     [IsMulLeftInvariant μ] (f : G →ₙ* H) (hf : Measurable f) (h_surj : Surjective f) :
     IsMulLeftInvariant (Measure.map f μ) := by
-  refine ⟨fun h => ?_⟩
+  refine ⟨fun h => _⟩
   rw [map_map (measurable_const_mul _) hf]
   obtain ⟨g, rfl⟩ := h_surj h
   conv_rhs => rw [← map_mul_left_eq_self μ g]
@@ -638,7 +638,7 @@ any open set. -/
 any open set."]
 theorem isOpenPosMeasure_of_mulLeftInvariant_of_compact (K : Set G) (hK : IsCompact K)
     (h : μ K ≠ 0) : IsOpenPosMeasure μ := by
-  refine ⟨fun U hU hne => ?_⟩
+  refine ⟨fun U hU hne => _⟩
   contrapose! h
   rw [← nonpos_iff_eq_zero]
   rw [← hU.interior_eq] at hne
@@ -774,7 +774,7 @@ theorem measure_univ_of_isMulLeftInvariant [WeaklyLocallyCompactSpace G] [Noncom
 @[to_additive]
 lemma _root_.MeasurableSet.mul_closure_one_eq {s : Set G} (hs : MeasurableSet s) :
     s * (closure {1} : Set G) = s := by
-  apply MeasurableSet.induction_on_open (C := fun t ↦ t • (closure {1} : Set G) = t) ?_ ?_ ?_ hs
+  apply MeasurableSet.induction_on_open (C := fun t ↦ t • (closure {1} : Set G) = t) _ _ _ hs
   · intro U hU
     exact hU.mul_closure_one_eq
   · rintro t - ht
@@ -791,7 +791,7 @@ lemma _root_.IsCompact.closure_subset_of_measurableSet_of_group {k s : Set G}
 @[to_additive (attr := simp)]
 lemma measure_mul_closure_one (s : Set G) (μ : Measure G) :
     μ (s * (closure {1} : Set G)) = μ s := by
-  apply le_antisymm ?_ (measure_mono (subset_mul_closure_one s))
+  apply le_antisymm _ (measure_mono (subset_mul_closure_one s))
   conv_rhs => rw [measure_eq_iInf]
   simp only [le_iInf_iff]
   intro t kt t_meas
@@ -809,7 +809,7 @@ lemma innerRegularWRT_isCompact_isClosed_measure_ne_top_of_group [h : InnerRegul
     InnerRegularWRT μ (fun s ↦ IsCompact s ∧ IsClosed s) (fun s ↦ MeasurableSet s ∧ μ s ≠ ∞) := by
   intro s ⟨s_meas, μs⟩ r hr
   rcases h.innerRegular ⟨s_meas, μs⟩ r hr with ⟨K, Ks, K_comp, hK⟩
-  refine ⟨closure K, ?_, ⟨K_comp.closure, isClosed_closure⟩, ?_⟩
+  refine ⟨closure K, _, ⟨K_comp.closure, isClosed_closure⟩, _⟩
   · exact IsCompact.closure_subset_measurableSet K_comp s_meas Ks
   · rwa [K_comp.measure_closure]
 

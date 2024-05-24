@@ -170,7 +170,7 @@ theorem length_mul_simple_ne (w : W) (i : B) : ℓ (w * s i) ≠ ℓ w := by
 
 theorem length_simple_mul_ne (w : W) (i : B) : ℓ (s i * w) ≠ ℓ w := by
   convert cs.length_mul_simple_ne w⁻¹ i using 1
-  · convert cs.length_inv ?_ using 2
+  · convert cs.length_inv _ using 2
     simp
   · simp
 

@@ -99,7 +99,7 @@ Any linear map `L : A → B⋆` induces a character in `(A ⊗ B)⋆` by `a ⊗ 
 @[simps] noncomputable def uncurry :
     (A →ₗ[R] CharacterModule B) →ₗ[R] CharacterModule (A ⊗[R] B) where
   toFun c := TensorProduct.liftAddHom c.toAddMonoidHom fun r a b ↦ congr($(c.map_smul r a) b)
-  map_add' c c' := DFunLike.ext _ _ fun x ↦ by refine x.induction_on ?_ ?_ ?_ <;> aesop
+  map_add' c c' := DFunLike.ext _ _ fun x ↦ by refine x.induction_on _ _ _ <;> aesop
   map_smul' r c := DFunLike.ext _ _ fun x ↦ x.induction_on
     (by simp_rw [map_zero]) (fun a b ↦ congr($(c.map_smul r a) b).symm) (by aesop)
 
@@ -121,7 +121,7 @@ Linear maps into a character module are exactly characters of the tensor product
 -/
 @[simps!] noncomputable def homEquiv :
     (A →ₗ[R] CharacterModule B) ≃ₗ[R] CharacterModule (A ⊗[R] B) :=
-  .ofLinear uncurry curry (by ext _ z; refine z.induction_on ?_ ?_ ?_ <;> aesop) (by aesop)
+  .ofLinear uncurry curry (by ext _ z; refine z.induction_on _ _ _ <;> aesop) (by aesop)
 
 theorem dual_rTensor_conj_homEquiv (f : A →ₗ[R] A') :
     homEquiv.symm.toLinearMap ∘ₗ dual (f.rTensor B) ∘ₗ homEquiv.toLinearMap = f.lcomp R _ := rfl

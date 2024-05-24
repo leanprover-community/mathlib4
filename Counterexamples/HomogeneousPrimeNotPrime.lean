@@ -165,7 +165,7 @@ theorem I_not_prime : ¬I.IsPrime := by
 
 theorem I_isHomogeneous : Ideal.IsHomogeneous (grading R) I := by
   rw [Ideal.IsHomogeneous.iff_exists]
-  refine ⟨{⟨(2, 2), ⟨0, rfl⟩⟩}, ?_⟩
+  refine ⟨{⟨(2, 2), ⟨0, rfl⟩⟩}, _⟩
   rw [Set.image_singleton]
   rfl
 #align counterexample.counterexample_not_prime_but_homogeneous_prime.I_is_homogeneous Counterexample.CounterexampleNotPrimeButHomogeneousPrime.I_isHomogeneous
@@ -175,7 +175,7 @@ theorem homogeneous_mem_or_mem {x y : R × R} (hx : SetLike.Homogeneous (grading
   -- Porting note: added `h2` for later use; the proof is hideous
   have h2 : Prime (2:R) := by
     unfold Prime
-    refine ⟨by decide, by decide, ?_⟩
+    refine ⟨by decide, by decide, _⟩
     intro a b
     have aux2 : (Fin.mk 2 _ : R) = 2 := rfl
     have aux3 : (Fin.mk 3 _ : R) = -1 := rfl

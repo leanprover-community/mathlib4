@@ -171,7 +171,7 @@ def nilFun {α : TypeVec 0} {β : TypeVec 0} : α ⟹ β := fun i => by apply Fi
 theorem eq_of_drop_last_eq {α β : TypeVec (n + 1)} {f g : α ⟹ β} (h₀ : dropFun f = dropFun g)
     (h₁ : lastFun f = lastFun g) : f = g := by
   -- Porting note: FIXME: congr_fun h₀ <;> ext1 ⟨⟩ <;> apply_assumption
-  refine funext (fun x => ?_)
+  refine funext (fun x => _)
   cases x
   · apply h₁
   · apply congr_fun h₀
@@ -327,7 +327,7 @@ protected theorem casesCons_append1 (n : ℕ) {β : TypeVec (n + 1) → Sort*}
 def typevecCasesNil₃ {β : ∀ v v' : TypeVec 0, v ⟹ v' → Sort*}
     (f : β Fin2.elim0 Fin2.elim0 nilFun) :
     ∀ v v' fs, β v v' fs := fun v v' fs => by
-  refine cast ?_ f
+  refine cast _ f
   have eq₁ : v = Fin2.elim0 := by funext i; contradiction
   have eq₂ : v' = Fin2.elim0 := by funext i; contradiction
   have eq₃ : fs = nilFun := by funext i; contradiction

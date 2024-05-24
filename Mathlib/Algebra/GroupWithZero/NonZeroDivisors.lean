@@ -70,7 +70,7 @@ lemma nonZeroDivisorsLeft_eq_right (M₀ : Type*) [CommMonoidWithZero M₀] :
   ext x
   simp only [SetLike.mem_coe, mem_nonZeroDivisorsLeft_iff, mul_eq_zero, forall_eq_or_imp, true_and,
     Set.mem_setOf_eq]
-  refine ⟨fun h ↦ ?_, fun hx y hx' ↦ by contradiction⟩
+  refine ⟨fun h ↦ _, fun hx y hx' ↦ by contradiction⟩
   contrapose! h
   exact ⟨1, h, one_ne_zero⟩
 
@@ -78,7 +78,7 @@ lemma nonZeroDivisorsLeft_eq_right (M₀ : Type*) [CommMonoidWithZero M₀] :
     nonZeroDivisorsRight M₀ = {x : M₀ | x ≠ 0} := by
   ext x
   simp only [SetLike.mem_coe, mem_nonZeroDivisorsRight_iff, mul_eq_zero, Set.mem_setOf_eq]
-  refine ⟨fun h ↦ ?_, fun hx y hx' ↦ by aesop⟩
+  refine ⟨fun h ↦ _, fun hx y hx' ↦ by aesop⟩
   contrapose! h
   exact ⟨1, Or.inl h, one_ne_zero⟩
 
@@ -136,7 +136,7 @@ theorem mul_left_coe_nonZeroDivisors_eq_zero_iff {c : M₁⁰} {x : M₁} : (c :
 #align mul_left_coe_non_zero_divisors_eq_zero_iff mul_left_coe_nonZeroDivisors_eq_zero_iff
 
 theorem mul_cancel_right_mem_nonZeroDivisors {x y r : R} (hr : r ∈ R⁰) : x * r = y * r ↔ x = y := by
-  refine ⟨fun h ↦ ?_, congrArg (· * r)⟩
+  refine ⟨fun h ↦ _, congrArg (· * r)⟩
   rw [← sub_eq_zero, ← mul_right_mem_nonZeroDivisors_eq_zero_iff hr, sub_mul, h, sub_self]
 #align mul_cancel_right_mem_non_zero_divisor mul_cancel_right_mem_nonZeroDivisors
 
@@ -257,7 +257,7 @@ theorem nonZeroDivisors_le_comap_nonZeroDivisors_of_injective [NoZeroDivisors M'
 /-- In a finite ring, an element is a unit iff it is a non-zero-divisor. -/
 lemma isUnit_iff_mem_nonZeroDivisors_of_finite [Finite R] {a : R} :
     IsUnit a ↔ a ∈ nonZeroDivisors R := by
-  refine ⟨IsUnit.mem_nonZeroDivisors, fun ha ↦ ?_⟩
+  refine ⟨IsUnit.mem_nonZeroDivisors, fun ha ↦ _⟩
   rw [IsUnit.isUnit_iff_mulRight_bijective, ← Finite.injective_iff_bijective]
   intro b c hbc
   rw [← sub_eq_zero, ← sub_mul] at hbc
@@ -316,10 +316,10 @@ theorem mk_mem_nonZeroDivisors_associates : Associates.mk a ∈ (Associates M₀
   push_neg
   constructor
   · rintro ⟨⟨x⟩, hx₁, hx₂⟩
-    refine ⟨x, ?_, ?_⟩
+    refine ⟨x, _, _⟩
     · rwa [← Associates.mk_eq_zero, ← Associates.mk_mul_mk, ← Associates.quot_mk_eq_mk]
     · rwa [← Associates.mk_ne_zero, ← Associates.quot_mk_eq_mk]
-  · refine fun ⟨b, hb₁, hb₂⟩ ↦ ⟨Associates.mk b, ?_, by rwa [Associates.mk_ne_zero]⟩
+  · refine fun ⟨b, hb₁, hb₂⟩ ↦ ⟨Associates.mk b, _, by rwa [Associates.mk_ne_zero]⟩
     rw [Associates.mk_mul_mk, hb₁, Associates.mk_zero]
 
 /-- The non-zero divisors of associates of a monoid with zero `M₀` are isomorphic to the associates

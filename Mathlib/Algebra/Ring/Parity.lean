@@ -135,7 +135,7 @@ lemma Odd.add_even (ha : Odd a) (hb : Even b) : Odd (a + b) := add_comm a b ▸ 
 
 lemma Odd.add_odd : Odd a → Odd b → Even (a + b) := by
   rintro ⟨a, rfl⟩ ⟨b, rfl⟩
-  refine ⟨a + b + 1, ?_⟩
+  refine ⟨a + b + 1, _⟩
   rw [two_mul, two_mul]
   ac_rfl
 #align odd.add_odd Odd.add_odd
@@ -162,7 +162,7 @@ lemma Odd.map [FunLike F α β] [RingHomClass F α β] (f : F) : Odd a → Odd (
 
 @[simp] lemma Odd.mul : Odd a → Odd b → Odd (a * b) := by
   rintro ⟨a, rfl⟩ ⟨b, rfl⟩
-  refine ⟨2 * a * b + b + a, ?_⟩
+  refine ⟨2 * a * b + b + a, _⟩
   rw [mul_add, add_mul, mul_one, ← add_assoc, one_mul, mul_assoc, ← mul_add, ← mul_add, ← mul_assoc,
     ← Nat.cast_two, ← Nat.cast_comm]
 #align odd.mul Odd.mul
@@ -183,7 +183,7 @@ lemma Odd.pow_add_pow_eq_zero [IsCancelAdd α] (hn : Odd n) (hab : a + b = 0) :
     calc
       a ^ 2 + a * b = 0 := by rw [sq, ← mul_add, hab, mul_zero]
       _ = b ^ 2 + a * b := by rw [sq, ← add_mul, add_comm, hab, zero_mul]
-  refine add_right_cancel (b := b ^ (2 * k + 1) * a ^ 2) ?_
+  refine add_right_cancel (b := b ^ (2 * k + 1) * a ^ 2) _
   calc
     _ = (a ^ (2 * k + 1) + b ^ (2 * k + 1)) * a ^ 2 + b ^ (2 * k + 3) := by
       rw [add_mul, ← pow_add, add_right_comm]; rfl

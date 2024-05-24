@@ -86,15 +86,15 @@ singleton. -/
 theorem isConnected_iff_colimit_constPUnitFunctor_iso_pUnit
     [HasColimit (constPUnitFunctor.{w} C)] :
     IsConnected C ↔ Nonempty (colimit (constPUnitFunctor.{w} C) ≅ PUnit) := by
-  refine ⟨fun _ => ⟨colimitConstPUnitIsoPUnit.{w} C⟩, fun ⟨h⟩ => ?_⟩
+  refine ⟨fun _ => ⟨colimitConstPUnitIsoPUnit.{w} C⟩, fun ⟨h⟩ => _⟩
   have : Nonempty C := nonempty_of_nonempty_colimit <| Nonempty.map h.inv inferInstance
-  refine zigzag_isConnected <| fun c d => ?_
-  refine zigzag_of_eqvGen_quot_rel _ (constPUnitFunctor C) ⟨c, PUnit.unit⟩ ⟨d, PUnit.unit⟩ ?_
+  refine zigzag_isConnected <| fun c d => _
+  refine zigzag_of_eqvGen_quot_rel _ (constPUnitFunctor C) ⟨c, PUnit.unit⟩ ⟨d, PUnit.unit⟩ _
   exact colimit_eq <| h.toEquiv.injective rfl
 
 theorem isConnected_iff_isColimit_pUnitCocone :
     IsConnected C ↔ Nonempty (IsColimit (pUnitCocone.{w} C)) := by
-  refine ⟨fun inst => ⟨isColimitPUnitCocone C⟩, fun ⟨h⟩ => ?_⟩
+  refine ⟨fun inst => ⟨isColimitPUnitCocone C⟩, fun ⟨h⟩ => _⟩
   let colimitCocone : ColimitCocone (constPUnitFunctor C) := ⟨pUnitCocone.{w} C, h⟩
   have : HasColimit (constPUnitFunctor.{w} C) := ⟨⟨colimitCocone⟩⟩
   simp only [isConnected_iff_colimit_constPUnitFunctor_iso_pUnit.{w} C]

@@ -107,7 +107,7 @@ set_option linter.uppercaseLean3 false in
 -/
 def limitConeIsLimit : IsLimit (limitCone F) := by
   refine IsLimit.ofFaithful (forget SemiRingCat.{u}) (Types.Small.limitConeIsLimit.{v, u} _)
-    (fun s => { toFun := _, map_one' := ?_, map_mul' := ?_, map_zero' := ?_, map_add' := ?_})
+    (fun s => { toFun := _, map_one' := _, map_mul' := _, map_zero' := _, map_add' := _})
     (fun s => rfl)
   · simp only [Functor.mapCone_π_app, forget_map, map_one]
     rfl

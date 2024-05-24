@@ -270,7 +270,7 @@ theorem Chain'.rel_head {x y l} (h : Chain' R (x :: y :: l)) : R x y :=
 #align list.chain'.rel_head List.Chain'.rel_head
 
 theorem Chain'.rel_head? {x l} (h : Chain' R (x :: l)) ⦃y⦄ (hy : y ∈ head? l) : R x y := by
-  rw [← cons_head?_tail hy] at h
+  rw [← cons_head_tail hy] at h
   exact h.rel_head
 #align list.chain'.rel_head' List.Chain'.rel_head?
 
@@ -377,7 +377,7 @@ theorem chain'_iff_nthLe {R} {l : List α} : Chain' R l ↔
 theorem Chain'.append_overlap {l₁ l₂ l₃ : List α} (h₁ : Chain' R (l₁ ++ l₂))
     (h₂ : Chain' R (l₂ ++ l₃)) (hn : l₂ ≠ []) : Chain' R (l₁ ++ l₂ ++ l₃) :=
   h₁.append h₂.right_of_append <| by
-    simpa only [getLast?_append_of_ne_nil _ hn] using (chain'_append.1 h₂).2.2
+    simpa only [getLast_append_of_ne_nil _ hn] using (chain'_append.1 h₂).2.2
 #align list.chain'.append_overlap List.Chain'.append_overlap
 
 -- Porting note (#10756): new lemma
@@ -390,7 +390,7 @@ lemma chain'_join : ∀ {L : List (List α)}, [] ∉ L →
     rw [mem_cons, not_or, ← Ne] at hL
     rw [join, chain'_append, chain'_join hL.2, forall_mem_cons, chain'_cons]
     rw [mem_cons, not_or, ← Ne] at hL
-    simp only [forall_mem_cons, and_assoc, join, head?_append_of_ne_nil _ hL.2.1.symm]
+    simp only [forall_mem_cons, and_assoc, join, head_append_of_ne_nil _ hL.2.1.symm]
     exact Iff.rfl.and (Iff.rfl.and <| Iff.rfl.and and_comm)
 
 /-- If `a` and `b` are related by the reflexive transitive closure of `r`, then there is an
@@ -399,11 +399,11 @@ The converse of `relationReflTransGen_of_exists_chain`.
 -/
 theorem exists_chain_of_relationReflTransGen (h : Relation.ReflTransGen r a b) :
     ∃ l, Chain r a l ∧ getLast (a :: l) (cons_ne_nil _ _) = b := by
-  refine Relation.ReflTransGen.head_induction_on h ?_ ?_
+  refine Relation.ReflTransGen.head_induction_on h _ _
   · exact ⟨[], Chain.nil, rfl⟩
   · intro c d e _ ih
     obtain ⟨l, hl₁, hl₂⟩ := ih
-    refine ⟨d :: l, Chain.cons e hl₁, ?_⟩
+    refine ⟨d :: l, Chain.cons e hl₁, _⟩
     rwa [getLast_cons_cons]
 #align list.exists_chain_of_relation_refl_trans_gen List.exists_chain_of_relationReflTransGen
 
@@ -459,7 +459,7 @@ theorem Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}
       exact (List.Lex.not_nil_right (·<·) _ hmas).elim
     | cons a' as =>
       rw [List.chain'_cons] at ha
-      refine gt_of_gt_of_ge ha.1 ?_
+      refine gt_of_gt_of_ge ha.1 _
       rw [le_iff_lt_or_eq] at hmas
       cases' hmas with hmas hmas
       · by_contra! hh
@@ -494,7 +494,7 @@ theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r 
   obtain ⟨_ | ⟨a, l⟩, hl⟩ := l
   · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
   specialize acc a _
-  · rw [List.head?_cons, Option.mem_some_iff]
+  · rw [List.head_cons, Option.mem_some_iff]
   /- For an r-decreasing chain of the form a :: l, apply induction on a -/
   induction acc generalizing l with
   | intro a _ ih =>

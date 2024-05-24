@@ -80,9 +80,9 @@ theorem localization_localization_surj [IsLocalization N T] (x : T) :
   rcases IsLocalization.surj M (s : S) with ⟨⟨z', t'⟩, eq₃⟩
   -- s = z' / t'
   dsimp only at eq₁ eq₂ eq₃
-  refine ⟨⟨z * t', z' * t, ?_⟩, ?_⟩ -- x = y / s = (z * t') / (z' * t)
+  refine ⟨⟨z * t', z' * t, _⟩, _⟩ -- x = y / s = (z * t') / (z' * t)
   · rw [mem_localizationLocalizationSubmodule]
-    refine ⟨s, t * t', ?_⟩
+    refine ⟨s, t * t', _⟩
     rw [RingHom.map_mul, ← eq₃, mul_assoc, ← RingHom.map_mul, mul_comm t, Submonoid.coe_mul]
   · simp only [Subtype.coe_mk, RingHom.map_mul, IsScalarTower.algebraMap_apply R S T, ← eq₃, ← eq₂,
       ← eq₁]
@@ -99,9 +99,9 @@ theorem localization_localization_exists_of_eq [IsLocalization N T] (x y : R) :
   dsimp only at eq₂
   suffices (algebraMap R S) (x * z' : R) = (algebraMap R S) (y * z') by
     obtain ⟨c, eq₃ : ↑c * (x * z') = ↑c * (y * z')⟩ := (IsLocalization.eq_iff_exists M S).mp this
-    refine ⟨⟨c * z', ?_⟩, ?_⟩
+    refine ⟨⟨c * z', _⟩, _⟩
     · rw [mem_localizationLocalizationSubmodule]
-      refine ⟨z, c * s, ?_⟩
+      refine ⟨z, c * s, _⟩
       rw [map_mul, ← eq₂, Submonoid.coe_mul, map_mul, mul_left_comm]
     · rwa [mul_comm _ z', mul_comm _ z', ← mul_assoc, ← mul_assoc] at eq₃
   rw [map_mul, map_mul, ← eq₂, ← mul_assoc, ← mul_assoc, mul_comm _ (z : S), eq₁,
@@ -204,12 +204,12 @@ theorem isLocalization_of_submonoid_le (M N : Submonoid R) (h : M ≤ N) [IsLoca
       exact (IsScalarTower.algebraMap_apply _ _ _ _).symm
     surj' := fun y => by
       obtain ⟨⟨x, s⟩, e⟩ := IsLocalization.surj N y
-      refine ⟨⟨algebraMap R S x, _, _, s.prop, rfl⟩, ?_⟩
+      refine ⟨⟨algebraMap R S x, _, _, s.prop, rfl⟩, _⟩
       simpa [← IsScalarTower.algebraMap_apply] using e
     exists_of_eq := fun {x₁ x₂} => by
       obtain ⟨⟨y₁, s₁⟩, e₁⟩ := IsLocalization.surj M x₁
       obtain ⟨⟨y₂, s₂⟩, e₂⟩ := IsLocalization.surj M x₂
-      refine (Set.exists_image_iff (algebraMap R S) N fun c => c * x₁ = c * x₂).mpr.comp ?_
+      refine (Set.exists_image_iff (algebraMap R S) N fun c => c * x₁ = c * x₂).mpr.comp _
       dsimp only at e₁ e₂ ⊢
       suffices algebraMap R T (y₁ * s₂) = algebraMap R T (y₂ * s₁) →
           ∃ a : N, algebraMap R S (a * (y₁ * s₂)) = algebraMap R S (a * (y₂ * s₁)) by
@@ -262,13 +262,13 @@ theorem isFractionRing_of_isLocalization (S T : Type*) [CommRing S] [CommRing T]
     [Algebra R T] [Algebra S T] [IsScalarTower R S T] [IsLocalization M S] [IsFractionRing R T]
     (hM : M ≤ nonZeroDivisors R) : IsFractionRing S T := by
   have := isLocalization_of_submonoid_le S T M (nonZeroDivisors R) hM
-  refine @isLocalization_of_is_exists_mul_mem _ _ _ _ _ _ _ this ?_ ?_
+  refine @isLocalization_of_is_exists_mul_mem _ _ _ _ _ _ _ this _ _
   · exact map_nonZeroDivisors_le M S
   · rintro ⟨x, hx⟩
     obtain ⟨⟨y, s⟩, e⟩ := IsLocalization.surj M x
     use algebraMap R S s
     rw [mul_comm, Subtype.coe_mk, e]
-    refine Set.mem_image_of_mem (algebraMap R S) ?_
+    refine Set.mem_image_of_mem (algebraMap R S) _
     intro z hz
     apply IsLocalization.injective S hM
     rw [map_zero]

@@ -157,7 +157,7 @@ theorem fract_fract (m : E) : fract b (fract b m) = fract b m :=
 theorem fract_zspan_add (m : E) {v : E} (h : v ∈ span ℤ (Set.range b)) :
     fract b (v + m) = fract b m := by
   classical
-  refine (Basis.ext_elem_iff b).mpr fun i => ?_
+  refine (Basis.ext_elem_iff b).mpr fun i => _
   simp_rw [repr_fract_apply, Int.fract_eq_fract]
   use (b.restrictScalars ℤ).repr ⟨v, h⟩ i
   rw [map_add, Finsupp.coe_add, Pi.add_apply, add_tsub_cancel_right,
@@ -206,7 +206,7 @@ theorem norm_fract_le [HasSolidNorm K] (m : E) : ‖fract b m‖ ≤ ∑ i, ‖b
     _ = ‖∑ i, Int.fract (b.repr m i) • b i‖ := by simp_rw [repr_fract_apply]
     _ ≤ ∑ i, ‖Int.fract (b.repr m i) • b i‖ := norm_sum_le _ _
     _ = ∑ i, ‖Int.fract (b.repr m i)‖ * ‖b i‖ := by simp_rw [norm_smul]
-    _ ≤ ∑ i, ‖b i‖ := Finset.sum_le_sum fun i _ => ?_
+    _ ≤ ∑ i, ‖b i‖ := Finset.sum_le_sum fun i _ => _
   suffices ‖Int.fract ((b.repr m) i)‖ ≤ 1 by
     convert mul_le_mul_of_nonneg_right this (norm_nonneg _ : 0 ≤ ‖b i‖)
     exact (one_mul _).symm
@@ -237,7 +237,7 @@ end Fintype
 theorem fundamentalDomain_isBounded [Finite ι] [HasSolidNorm K] :
     IsBounded (fundamentalDomain b) := by
   cases nonempty_fintype ι
-  refine isBounded_iff_forall_norm_le.2 ⟨∑ j, ‖b j‖, fun x hx ↦ ?_⟩
+  refine isBounded_iff_forall_norm_le.2 ⟨∑ j, ‖b j‖, fun x hx ↦ _⟩
   rw [← fract_eq_self.mpr hx]
   apply norm_fract_le
 #align zspan.fundamental_domain_bounded Zspan.fundamentalDomain_isBounded
@@ -252,7 +252,7 @@ theorem vadd_mem_fundamentalDomain [Fintype ι] (y : span ℤ (Set.range b)) (x 
 theorem exist_unique_vadd_mem_fundamentalDomain [Finite ι] (x : E) :
     ∃! v : span ℤ (Set.range b), v +ᵥ x ∈ fundamentalDomain b := by
   cases nonempty_fintype ι
-  refine ⟨-floor b x, ?_, fun y h => ?_⟩
+  refine ⟨-floor b x, _, fun y h => _⟩
   · exact (vadd_mem_fundamentalDomain b (-floor b x) x).mpr rfl
   · exact (vadd_mem_fundamentalDomain b y x).mp h
 #align zspan.exist_unique_vadd_mem_fundamental_domain Zspan.exist_unique_vadd_mem_fundamentalDomain
@@ -261,11 +261,11 @@ theorem exist_unique_vadd_mem_fundamentalDomain [Finite ι] (x : E) :
 and `Zspan.fundamentalDomain b`. -/
 def quotientEquiv [Fintype ι] :
     E ⧸ span ℤ (Set.range b) ≃ (fundamentalDomain b) := by
-  refine Equiv.ofBijective ?_ ⟨fun x y => ?_, fun x => ?_⟩
-  · refine fun q => Quotient.liftOn q (fractRestrict b) (fun _ _ h => ?_)
+  refine Equiv.ofBijective _ ⟨fun x y => _, fun x => _⟩
+  · refine fun q => Quotient.liftOn q (fractRestrict b) (fun _ _ h => _)
     rw [Subtype.mk.injEq, fractRestrict_apply, fractRestrict_apply, fract_eq_fract]
     exact QuotientAddGroup.leftRel_apply.mp h
-  · refine Quotient.inductionOn₂ x y (fun _ _ hxy => ?_)
+  · refine Quotient.inductionOn₂ x y (fun _ _ hxy => _)
     rw [Quotient.liftOn_mk (s := quotientRel (span ℤ (Set.range b))), fractRestrict,
       Quotient.liftOn_mk (s := quotientRel (span ℤ (Set.range b))),  fractRestrict,
       Subtype.mk.injEq] at hxy
@@ -291,11 +291,11 @@ section Real
 theorem discreteTopology_pi_basisFun [Finite ι] :
     DiscreteTopology (span ℤ (Set.range (Pi.basisFun ℝ ι))) := by
   cases nonempty_fintype ι
-  refine discreteTopology_iff_isOpen_singleton_zero.mpr ⟨Metric.ball 0 1, Metric.isOpen_ball, ?_⟩
+  refine discreteTopology_iff_isOpen_singleton_zero.mpr ⟨Metric.ball 0 1, Metric.isOpen_ball, _⟩
   ext x
   rw [Set.mem_preimage, mem_ball_zero_iff, pi_norm_lt_iff zero_lt_one, Set.mem_singleton_iff]
   simp_rw [← coe_eq_zero, Function.funext_iff, Pi.zero_apply, Real.norm_eq_abs]
-  refine forall_congr' (fun i => ?_)
+  refine forall_congr' (fun i => _)
   rsuffices ⟨y, hy⟩ : ∃ (y : ℤ), (y : ℝ) = (x : ι → ℝ) i
   · rw [← hy, ← Int.cast_abs, ← Int.cast_one,  Int.cast_lt, Int.abs_lt_one_iff, Int.cast_eq_zero]
   exact ((Pi.basisFun ℝ ι).mem_span_iff_repr_mem ℤ x).mp (SetLike.coe_mem x) i
@@ -311,7 +311,7 @@ instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)) := by
   have h : Set.MapsTo b.equivFun (span ℤ (Set.range b)) (span ℤ (Set.range (Pi.basisFun ℝ ι))) := by
     intro _ hx
     rwa [SetLike.mem_coe, Basis.mem_span_iff_repr_mem] at hx ⊢
-  convert DiscreteTopology.of_continuous_injective ((continuous_equivFun_basis b).restrict h) ?_
+  convert DiscreteTopology.of_continuous_injective ((continuous_equivFun_basis b).restrict h) _
   · exact discreteTopology_pi_basisFun
   · refine Subtype.map_injective _ (Basis.equivFun b).injective
 
@@ -325,7 +325,7 @@ theorem fundamentalDomain_measurableSet [MeasurableSpace E] [OpensMeasurableSpac
   haveI : FiniteDimensional ℝ E := FiniteDimensional.of_fintype_basis b
   let D : Set (ι → ℝ) := Set.pi Set.univ fun _ : ι => Set.Ico (0 : ℝ) 1
   rw [(_ : fundamentalDomain b = b.equivFun.toLinearMap ⁻¹' D)]
-  · refine measurableSet_preimage (LinearMap.continuous_of_finiteDimensional _).measurable ?_
+  · refine measurableSet_preimage (LinearMap.continuous_of_finiteDimensional _).measurable _
     exact MeasurableSet.pi Set.countable_univ fun _ _ => measurableSet_Ico
   · ext
     simp only [D, fundamentalDomain, Set.mem_Ico, Set.mem_setOf_eq, LinearEquiv.coe_coe,
@@ -378,9 +378,9 @@ theorem fundamentalDomain_ae_parallelepiped [Fintype ι] [MeasurableSpace E] (μ
   suffices (parallelepiped b \ fundamentalDomain b) ⊆ ⋃ i,
       AffineSubspace.mk' (b i) (span ℝ (b '' (Set.univ \ {i}))) by
     refine measure_mono_null this
-      (measure_iUnion_null_iff.mpr fun i ↦ Measure.addHaar_affineSubspace μ _ ?_)
+      (measure_iUnion_null_iff.mpr fun i ↦ Measure.addHaar_affineSubspace μ _ _)
     refine (ne_of_mem_of_not_mem' (AffineSubspace.mem_top _ _ 0)
-      (AffineSubspace.mem_mk'_iff_vsub_mem.not.mpr ?_)).symm
+      (AffineSubspace.mem_mk'_iff_vsub_mem.not.mpr _)).symm
     simp_rw [vsub_eq_sub, zero_sub, neg_mem_iff]
     exact linearIndependent_iff_not_mem_span.mp b.linearIndependent i
   intro x hx
@@ -390,7 +390,7 @@ theorem fundamentalDomain_ae_parallelepiped [Fintype ι] [MeasurableSpace E] (μ
   have : b.repr x i = 1 := le_antisymm (hx.1 i).2 (hi (hx.1 i).1)
   rw [← b.sum_repr x, ← Finset.sum_erase_add _ _ (Finset.mem_univ i), this, one_smul, ← vadd_eq_add]
   refine Set.mem_iUnion.mpr ⟨i, AffineSubspace.vadd_mem_mk' _
-    (sum_smul_mem _ _ (fun i hi ↦ Submodule.subset_span ?_))⟩
+    (sum_smul_mem _ _ (fun i hi ↦ Submodule.subset_span _))⟩
   exact ⟨i, Set.mem_diff_singleton.mpr ⟨trivial, Finset.ne_of_mem_erase hi⟩, rfl⟩
 
 end Real
@@ -424,28 +424,28 @@ theorem Zlattice.FG [hs : IsZlattice K L] : AddSubgroup.FG L := by
   -- Let `s` be a maximal `K`-linear independent family of elements of `L`. We show that
   -- `L` is finitely generated (as a ℤ-module) because it fits in the exact sequence
   -- `0 → span ℤ s → L → L ⧸ span ℤ s → 0` with `span ℤ s` and `L ⧸ span ℤ s` finitely generated.
-  refine fg_of_fg_map_of_fg_inf_ker (span ℤ s).mkQ ?_ ?_
+  refine fg_of_fg_map_of_fg_inf_ker (span ℤ s).mkQ _ _
   · -- Let `b` be the `K`-basis of `E` formed by the vectors in `s`. The elements of
     -- `L ⧸ span ℤ s = L ⧸ span ℤ b` are in bijection with elements of `L ∩ fundamentalDomain b`
     -- so there are finitely many since `fundamentalDomain b` is bounded.
-    refine fg_def.mpr ⟨map (span ℤ s).mkQ (AddSubgroup.toIntSubmodule L), ?_, span_eq _⟩
+    refine fg_def.mpr ⟨map (span ℤ s).mkQ (AddSubgroup.toIntSubmodule L), _, span_eq _⟩
     let b := Basis.mk h_lind (by
       rw [← hs.span_top, ← h_span]
       exact span_mono (by simp only [Subtype.range_coe_subtype, Set.setOf_mem_eq, subset_rfl]))
     rw [show span ℤ s = span ℤ (Set.range b) by simp [b, Basis.coe_mk, Subtype.range_coe_subtype]]
     have : Fintype s := h_lind.setFinite.fintype
-    refine Set.Finite.of_finite_image (f := ((↑) : _ →  E) ∘ Zspan.quotientEquiv b) ?_
+    refine Set.Finite.of_finite_image (f := ((↑) : _ →  E) ∘ Zspan.quotientEquiv b) _
       (Function.Injective.injOn (Subtype.coe_injective.comp (Zspan.quotientEquiv b).injective) _)
     have : Set.Finite ((Zspan.fundamentalDomain b) ∩ L) :=
       Metric.finite_isBounded_inter_isClosed (Zspan.fundamentalDomain_isBounded b) inferInstance
-    refine Set.Finite.subset this ?_
+    refine Set.Finite.subset this _
     rintro _ ⟨_, ⟨⟨x, ⟨h_mem, rfl⟩⟩, rfl⟩⟩
     rw [Function.comp_apply, mkQ_apply, Zspan.quotientEquiv_apply_mk, Zspan.fractRestrict_apply]
-    refine ⟨?_, ?_⟩
+    refine ⟨_, _⟩
     · exact Zspan.fract_mem_fundamentalDomain b x
     · rw [Zspan.fract, SetLike.mem_coe, sub_eq_add_neg]
       refine AddSubgroup.add_mem _ h_mem
-        (neg_mem (Set.mem_of_subset_of_mem ?_ (Subtype.mem (Zspan.floor b x))))
+        (neg_mem (Set.mem_of_subset_of_mem _ (Subtype.mem (Zspan.floor b x))))
       rw [show (L : Set E) = AddSubgroup.toIntSubmodule L by rfl]
       rw [SetLike.coe_subset_coe, Basis.coe_mk, Subtype.range_coe_subtype, Set.setOf_mem_eq]
       exact span_le.mpr h_incl
@@ -470,7 +470,7 @@ instance instModuleFinite_of_discrete_addSubgroup {E : Type*} [NormedAddCommGrou
       SetLike.ext'_iff.mpr h_img
     convert this ▸ Module.Finite.map L₀ (f.restrictScalars ℤ)
   have : DiscreteTopology L₀.toAddSubgroup := by
-    refine DiscreteTopology.preimage_of_continuous_injective (L : Set E) ?_ (injective_subtype _)
+    refine DiscreteTopology.preimage_of_continuous_injective (L : Set E) _ (injective_subtype _)
     exact LinearMap.continuous_of_finiteDimensional f
   have : IsZlattice ℝ L₀.toAddSubgroup := ⟨by
     rw [← (Submodule.map_injective_of_injective (injective_subtype _)).eq_iff, Submodule.map_span,
@@ -522,7 +522,7 @@ theorem Zlattice.rank [hs : IsZlattice K L] : finrank ℤ L = finrank K E := by
     · exact Subtype.coe_injective.comp (Basis.injective _)
   rw [finrank_eq_card_chooseBasisIndex]
     -- We prove that `finrank ℤ L ≤ finrank K E` and `finrank K E ≤ finrank ℤ L`
-  refine le_antisymm ?_ ?_
+  refine le_antisymm _ _
   · -- To prove that `finrank ℤ L ≤ finrank K E`, we proceed by contradiction and prove that, in
     -- this case, there is a ℤ-relation between the vectors of `b`
     obtain ⟨t, ⟨ht_inc, ⟨ht_span, ht_lin⟩⟩⟩ := exists_linearIndependent K (Set.range b)
@@ -544,7 +544,7 @@ theorem Zlattice.rank [hs : IsZlattice K L] : finrank ℤ L = finrank K E := by
     -- Assume that `e ∪ {v}` is not `ℤ`-linear independent then we get the contradiction
     suffices ¬ LinearIndependent ℤ (fun x : ↥(insert v (Set.range e)) => (x : E)) by
       contrapose! this
-      refine LinearIndependent.mono ?_ this
+      refine LinearIndependent.mono _ this
       exact Set.insert_subset (Set.mem_of_mem_diff hv) (by simp [e, ht_inc])
     -- We prove finally that `e ∪ {v}` is not ℤ-linear independent or, equivalently,
     -- not ℚ-linear independent by showing that `v ∈ span ℚ e`.
@@ -557,10 +557,10 @@ theorem Zlattice.rank [hs : IsZlattice K L] : finrank ℤ L = finrank K E := by
     have h_mapsto : Set.MapsTo (fun n : ℤ => Zspan.fract e (n • v)) Set.univ
         (Metric.closedBall 0 (∑ i, ‖e i‖) ∩ (L : Set E)) := by
       rw [Set.mapsTo_inter, Set.mapsTo_univ_iff, Set.mapsTo_univ_iff]
-      refine ⟨fun _ ↦ mem_closedBall_zero_iff.mpr (Zspan.norm_fract_le e _), fun _ => ?_⟩
+      refine ⟨fun _ ↦ mem_closedBall_zero_iff.mpr (Zspan.norm_fract_le e _), fun _ => _⟩
       · change _ ∈ AddSubgroup.toIntSubmodule L
         rw [← h_spanL]
-        refine sub_mem ?_ ?_
+        refine sub_mem _ _
         · exact zsmul_mem (subset_span (Set.diff_subset _ _ hv)) _
         · exact span_mono (by simp [e, ht_inc]) (coe_mem _)
     have h_finite : Set.Finite (Metric.closedBall 0 (∑ i, ‖e i‖) ∩ (L : Set E)) :=
@@ -570,7 +570,7 @@ theorem Zlattice.rank [hs : IsZlattice K L] : finrank ℤ L = finrank K E := by
     have h_nz : (-n + m : ℚ) ≠ 0 := by
       rwa [Ne, add_eq_zero_iff_eq_neg.not, neg_inj, Rat.coe_int_inj, ← Ne]
     apply (smul_mem_iff _ h_nz).mp
-    refine span_subset_span ℤ ℚ _ ?_
+    refine span_subset_span ℤ ℚ _ _
     rwa [add_smul, neg_smul, SetLike.mem_coe, ← Zspan.fract_eq_fract, ← zsmul_eq_smul_cast ℚ,
       ← zsmul_eq_smul_cast ℚ]
   · -- To prove that `finrank K E ≤ finrank ℤ L`, we use the fact `b` generates `E` over `K`
@@ -588,7 +588,7 @@ def Basis.ofZlatticeBasis :
   have : Free ℤ L := Zlattice.module_free K L
   let e :=  Basis.indexEquiv (Free.chooseBasis ℤ L) b
   have : Fintype ι := Fintype.ofEquiv _ e
-  refine basisOfTopLeSpanOfCardEqFinrank (L.subtype.toIntLinearMap ∘ b) ?_ ?_
+  refine basisOfTopLeSpanOfCardEqFinrank (L.subtype.toIntLinearMap ∘ b) _ _
   · rw [← span_span_of_tower ℤ, Set.range_comp, ← map_span, Basis.span_eq, Submodule.map_top,
       top_le_iff, AddMonoidHom.coe_toIntLinearMap_range, AddSubgroup.subtype_range,
       AddSubgroup.coe_toIntSubmodule, hs.span_top]
@@ -604,7 +604,7 @@ theorem Basis.ofZlatticeBasis_repr_apply (x : L) (i : ι) :
   suffices ((b.ofZlatticeBasis K L).repr.toLinearMap.restrictScalars ℤ) ∘ₗ L.subtype.toIntLinearMap
       = Finsupp.mapRange.linearMap (Algebra.linearMap ℤ K) ∘ₗ b.repr.toLinearMap by
     exact DFunLike.congr_fun (LinearMap.congr_fun this x) i
-  refine Basis.ext b fun i ↦ ?_
+  refine Basis.ext b fun i ↦ _
   simp_rw [LinearMap.coe_comp, Function.comp_apply, LinearMap.coe_restrictScalars,
     LinearEquiv.coe_coe, AddMonoidHom.coe_toIntLinearMap, AddSubgroup.coeSubtype,
     ← b.ofZlatticeBasis_apply K, repr_self, Finsupp.mapRange.linearMap_apply,

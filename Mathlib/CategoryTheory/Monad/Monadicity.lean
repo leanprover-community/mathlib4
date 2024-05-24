@@ -254,10 +254,10 @@ def createsGSplitCoequalizersOfMonadic [MonadicRightAdjoint G] ⦃A B⦄ (f g : 
     [G.IsSplitPair f g] : CreatesColimit (parallelPair f g) G := by
   apply (config := {allowSynthFailures := true}) monadicCreatesColimitOfPreservesColimit
     -- Porting note: oddly (config := {allowSynthFailures := true}) had no effect here and below
-  · apply @preservesColimitOfIsoDiagram _ _ _ _ _ _ _ _ _ (diagramIsoParallelPair.{v₁} _).symm ?_
+  · apply @preservesColimitOfIsoDiagram _ _ _ _ _ _ _ _ _ (diagramIsoParallelPair.{v₁} _).symm _
     dsimp
     infer_instance
-  · apply @preservesColimitOfIsoDiagram _ _ _ _ _ _ _ _ _ (diagramIsoParallelPair.{v₁} _).symm ?_
+  · apply @preservesColimitOfIsoDiagram _ _ _ _ _ _ _ _ _ (diagramIsoParallelPair.{v₁} _).symm _
     dsimp
     infer_instance
 set_option linter.uppercaseLean3 false in
@@ -316,7 +316,7 @@ def monadicOfHasPreservesReflectsGSplitCoequalizers [HasCoequalizerOfIsSplitPair
   eqv := by
     have : ∀ (X : Algebra adj.toMonad), IsIso ((comparisonAdjunction adj).unit.app X) := by
       intro X
-      apply @isIso_of_reflects_iso _ _ _ _ _ _ _ (Monad.forget adj.toMonad) ?_ _
+      apply @isIso_of_reflects_iso _ _ _ _ _ _ _ (Monad.forget adj.toMonad) _ _
       · change IsIso ((comparisonAdjunction adj).unit.app X).f
         rw [comparisonAdjunction_unit_f]
         change
@@ -328,10 +328,10 @@ def monadicOfHasPreservesReflectsGSplitCoequalizers [HasCoequalizerOfIsSplitPair
       intro Y
       rw [comparisonAdjunction_counit_app]
       -- Porting note: passing instances through
-      change IsIso (IsColimit.coconePointUniqueUpToIso _ ?_).hom
+      change IsIso (IsColimit.coconePointUniqueUpToIso _ _).hom
       infer_instance
       -- Porting note: passing instances through
-      apply @counitCoequalizerOfReflectsCoequalizer _ _ _ _ _ _ _ _ ?_
+      apply @counitCoequalizerOfReflectsCoequalizer _ _ _ _ _ _ _ _ _
       letI _ :
         G.IsSplitPair (F.map (G.map (adj.counit.app Y)))
           (adj.counit.app (F.obj (G.obj Y))) :=
@@ -362,7 +362,7 @@ This is the converse of `createsGSplitOfMonadic`.
 def monadicOfCreatesGSplitCoequalizers [CreatesColimitOfIsSplitPair G] :
     MonadicRightAdjoint G := by
   let I {A B} (f g : A ⟶ B) [G.IsSplitPair f g] : HasColimit (parallelPair f g ⋙ G) := by
-    apply @hasColimitOfIso _ _ _ _ _ _ ?_ (diagramIsoParallelPair.{v₁} _)
+    apply @hasColimitOfIso _ _ _ _ _ _ _ (diagramIsoParallelPair.{v₁} _)
     exact inferInstanceAs <| HasCoequalizer (G.map f) (G.map g)
   have : HasCoequalizerOfIsSplitPair G := ⟨fun _ _ => hasColimit_of_created (parallelPair _ _) G⟩
   have : PreservesColimitOfIsSplitPair G := ⟨by intros; infer_instance⟩
@@ -414,7 +414,7 @@ def monadicOfHasPreservesReflexiveCoequalizersOfReflectsIsomorphisms : MonadicRi
     have : ∀ (X : Algebra adj.toMonad), IsIso ((comparisonAdjunction adj).unit.app X) := by
       intro X
       apply
-        @isIso_of_reflects_iso _ _ _ _ _ _ _ (Monad.forget adj.toMonad) ?_ _
+        @isIso_of_reflects_iso _ _ _ _ _ _ _ (Monad.forget adj.toMonad) _ _
       · change IsIso ((comparisonAdjunction adj).unit.app X).f
         rw [comparisonAdjunction_unit_f]
         change
@@ -426,10 +426,10 @@ def monadicOfHasPreservesReflexiveCoequalizersOfReflectsIsomorphisms : MonadicRi
       intro Y
       rw [comparisonAdjunction_counit_app]
       -- Porting note: passing instances through
-      change IsIso (IsColimit.coconePointUniqueUpToIso _ ?_).hom
+      change IsIso (IsColimit.coconePointUniqueUpToIso _ _).hom
       infer_instance
       -- Porting note: passing instances through
-      apply @counitCoequalizerOfReflectsCoequalizer _ _ _ _ _ _ _ _ ?_
+      apply @counitCoequalizerOfReflectsCoequalizer _ _ _ _ _ _ _ _ _
       apply reflectsColimitOfReflectsIsomorphisms
     exact (comparisonAdjunction adj).toEquivalence.isEquivalence_inverse
 #align category_theory.monad.monadic_of_has_preserves_reflexive_coequalizers_of_reflects_isomorphisms CategoryTheory.Monad.monadicOfHasPreservesReflexiveCoequalizersOfReflectsIsomorphisms

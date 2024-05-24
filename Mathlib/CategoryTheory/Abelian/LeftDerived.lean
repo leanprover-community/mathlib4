@@ -137,7 +137,7 @@ lemma ProjectiveResolution.isoLeftDerivedObj_inv_naturality
 lemma Functor.isZero_leftDerived_obj_projective_succ
     (F : C ⥤ D) [F.Additive] (n : ℕ) (X : C) [Projective X] :
     IsZero ((F.leftDerived (n + 1)).obj X) := by
-  refine IsZero.of_iso ?_ ((ProjectiveResolution.self X).isoLeftDerivedObj F (n + 1))
+  refine IsZero.of_iso _ ((ProjectiveResolution.self X).isoLeftDerivedObj F (n + 1))
   erw [← HomologicalComplex.exactAt_iff_isZero_homology]
   exact ShortComplex.exact_of_isZero_X₂ _ (F.map_isZero (by apply isZero_zero))
 
@@ -267,7 +267,7 @@ instance (F : C ⥤ D) [F.Additive] (X : C) [Projective X] :
     IsIso ((ProjectiveResolution.self X).fromLeftDerivedZero' F) := by
   dsimp [ProjectiveResolution.fromLeftDerivedZero']
   rw [ChainComplex.isIso_descOpcycles_iff]
-  refine ⟨ShortComplex.Splitting.exact ?_, inferInstance⟩
+  refine ⟨ShortComplex.Splitting.exact _, inferInstance⟩
   exact
     { r := 0
       s := 𝟙 _

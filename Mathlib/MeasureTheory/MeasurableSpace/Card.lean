@@ -97,7 +97,7 @@ theorem cardinal_generateMeasurableRec_le (s : Set (Set α)) (i : ω₁) :
     aleph_one_le_continuum.trans (power_le_power_right (le_max_right _ _))
   have C : ℵ₀ ≤ max #s 2 ^ aleph0.{u} := A.trans B
   have J : #(⋃ j : Iio i, generateMeasurableRec s j.1) ≤ max #s 2 ^ aleph0.{u} := by
-    refine (mk_iUnion_le _).trans ?_
+    refine (mk_iUnion_le _).trans _
     have D : ⨆ j : Iio i, #(generateMeasurableRec s j) ≤ _ := ciSup_le' fun ⟨j, hj⟩ => IH j hj
     apply (mul_le_mul' ((mk_subtype_le _).trans (aleph 1).mk_ord_out.le) D).trans
     rw [mul_eq_max A C]
@@ -117,7 +117,7 @@ theorem cardinal_generateMeasurableRec_le (s : Set (Set α)) (i : ω₁) :
 theorem generateMeasurable_eq_rec (s : Set (Set α)) :
     { t | GenerateMeasurable s t } =
         ⋃ (i : (Quotient.out (aleph 1).ord).α), generateMeasurableRec s i := by
-  ext t; refine ⟨fun ht => ?_, fun ht => ?_⟩
+  ext t; refine ⟨fun ht => _, fun ht => _⟩
   · inhabit ω₁
     induction' ht with u hu u _ IH f _ IH
     · exact mem_iUnion.2 ⟨default, self_subset_generateMeasurableRec s _ hu⟩
@@ -129,10 +129,10 @@ theorem generateMeasurable_eq_rec (s : Set (Set α)) :
       choose I hI using this
       have : IsWellOrder (ω₁ : Type u) (· < ·) := isWellOrder_out_lt _
       refine mem_iUnion.2
-        ⟨Ordinal.enum (· < ·) (Ordinal.lsub fun n => Ordinal.typein.{u} (· < ·) (I n)) ?_,
-          iUnion_mem_generateMeasurableRec fun n => ⟨I n, ?_, hI n⟩⟩
+        ⟨Ordinal.enum (· < ·) (Ordinal.lsub fun n => Ordinal.typein.{u} (· < ·) (I n)) _,
+          iUnion_mem_generateMeasurableRec fun n => ⟨I n, _, hI n⟩⟩
       · rw [Ordinal.type_lt]
-        refine Ordinal.lsub_lt_ord_lift ?_ fun i => Ordinal.typein_lt_self _
+        refine Ordinal.lsub_lt_ord_lift _ fun i => Ordinal.typein_lt_self _
         rw [mk_denumerable, lift_aleph0, isRegular_aleph_one.cof_eq]
         exact aleph0_lt_aleph_one
       · rw [← Ordinal.typein_lt_typein (· < ·), Ordinal.typein_enum]
@@ -146,7 +146,7 @@ theorem generateMeasurable_eq_rec (s : Set (Set α)) :
     · exact .basic t h
     · exact .empty
     · exact .compl u (H k hk u hu)
-    · refine .iUnion _ @fun n => ?_
+    · refine .iUnion _ @fun n => _
       obtain ⟨-, ⟨⟨k, hk⟩, rfl⟩, hf⟩ := (f n).prop
       exact H k hk _ hf
 #align measurable_space.generate_measurable_eq_rec MeasurableSpace.generateMeasurable_eq_rec
@@ -159,8 +159,8 @@ theorem cardinal_generateMeasurable_le (s : Set (Set α)) :
   apply (mk_iUnion_le _).trans
   rw [(aleph 1).mk_ord_out]
   refine le_trans (mul_le_mul' aleph_one_le_continuum
-      (ciSup_le' fun i => cardinal_generateMeasurableRec_le s i)) ?_
-  refine (mul_le_max_of_aleph0_le_left aleph0_le_continuum).trans (max_le ?_ le_rfl)
+      (ciSup_le' fun i => cardinal_generateMeasurableRec_le s i)) _
+  refine (mul_le_max_of_aleph0_le_left aleph0_le_continuum).trans (max_le _ le_rfl)
   exact power_le_power_right (le_max_right _ _)
 #align measurable_space.cardinal_generate_measurable_le MeasurableSpace.cardinal_generateMeasurable_le
 

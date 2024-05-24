@@ -120,8 +120,8 @@ theorem HasCountableSeparatingOn.of_subtype {α : Type*} {p : Set α → Prop} {
     (hpq : ∀ U, q U → ∃ V, p V ∧ (↑) ⁻¹' V = U) : HasCountableSeparatingOn α p t := by
   rcases h.1 with ⟨S, hSc, hSq, hS⟩
   choose! V hpV hV using fun s hs ↦ hpq s (hSq s hs)
-  refine ⟨⟨V '' S, hSc.image _, forall_mem_image.2 hpV, fun x hx y hy h ↦ ?_⟩⟩
-  refine congr_arg Subtype.val (hS ⟨x, hx⟩ trivial ⟨y, hy⟩ trivial fun U hU ↦ ?_)
+  refine ⟨⟨V '' S, hSc.image _, forall_mem_image.2 hpV, fun x hx y hy h ↦ _⟩⟩
+  refine congr_arg Subtype.val (hS ⟨x, hx⟩ trivial ⟨y, hy⟩ trivial fun U hU ↦ _)
   rw [← hV U hU]
   exact h _ (mem_image_of_mem _ hU)
 
@@ -131,7 +131,7 @@ theorem HasCountableSeparatingOn.subtype_iff {α : Type*} {p : Set α → Prop} 
   constructor <;> intro h
   · exact h.of_subtype $ fun s ↦ id
   rcases h with ⟨S, Sct, Sp, hS⟩
-  use {Subtype.val ⁻¹' s | s ∈ S}, Sct.image _, ?_, ?_
+  use {Subtype.val ⁻¹' s | s ∈ S}, Sct.image _, _, _
   · rintro u ⟨t, tS, rfl⟩
     exact ⟨t, Sp _ tS, rfl⟩
   rintro x - y - hxy
@@ -159,11 +159,11 @@ theorem exists_subset_subsingleton_mem_of_forall_separating (p : Set α → Prop
     {s : Set α} [h : HasCountableSeparatingOn α p s] (hs : s ∈ l)
     (hl : ∀ U, p U → U ∈ l ∨ Uᶜ ∈ l) : ∃ t, t ⊆ s ∧ t.Subsingleton ∧ t ∈ l := by
   rcases h.1 with ⟨S, hSc, hSp, hS⟩
-  refine ⟨s ∩ ⋂₀ (S ∩ l.sets) ∩ ⋂ (U ∈ S) (_ : Uᶜ ∈ l), Uᶜ, ?_, ?_, ?_⟩
+  refine ⟨s ∩ ⋂₀ (S ∩ l.sets) ∩ ⋂ (U ∈ S) (_ : Uᶜ ∈ l), Uᶜ, _, _, _⟩
   · exact fun _ h ↦ h.1.1
   · intro x hx y hy
     simp only [mem_sInter, mem_inter_iff, mem_iInter, mem_compl_iff] at hx hy
-    refine hS x hx.1.1 y hy.1.1 (fun s hsS ↦ ?_)
+    refine hS x hx.1.1 y hy.1.1 (fun s hsS ↦ _)
     cases hl s (hSp s hsS) with
     | inl hsl => simp only [hx.1.2 s ⟨hsS, hsl⟩, hy.1.2 s ⟨hsS, hsl⟩]
     | inr hsl => simp only [hx.2 s hsS hsl, hy.2 s hsS hsl]

@@ -105,9 +105,9 @@ lemma isSheafFor_of_factorsThru
     T.IsSheafFor P := by
   simp only [← Presieve.isSeparatedFor_and_exists_isAmalgamation_iff_isSheafFor] at *
   choose W i e h1 h2 using H
-  refine ⟨?_, fun x hx => ?_⟩
+  refine ⟨_, fun x hx => _⟩
   · intro x y₁ y₂ h₁ h₂
-    refine hS.1.ext (fun Y g hg => ?_)
+    refine hS.1.ext (fun Y g hg => _)
     simp only [← h2 hg, op_comp, P.map_comp, types_comp_apply, h₁ _ (h1 _ ), h₂ _ (h1 _)]
   let y : S.FamilyOfElements P := fun Y g hg => P.map (i _).op (x (e hg) (h1 _))
   have hy : y.Compatible := by
@@ -119,10 +119,10 @@ lemma isSheafFor_of_factorsThru
     simp only [h2, h, Category.assoc]
   let ⟨_, h2'⟩ := hS
   obtain ⟨z, hz⟩ := h2' y hy
-  refine ⟨z, fun Y g hg => ?_⟩
+  refine ⟨z, fun Y g hg => _⟩
   obtain ⟨R, hR1, hR2⟩ := h hg
   choose WW ii ee hh1 hh2 using hR2
-  refine hR1.ext (fun Q t ht => ?_)
+  refine hR1.ext (fun Q t ht => _)
   rw [← types_comp_apply (P.map g.op) (P.map t.op), ← P.map_comp, ← op_comp, ← hh2 ht,
     op_comp, P.map_comp, types_comp_apply, hz _ (hh1 _),
     ← types_comp_apply _ (P.map (ii ht).op), ← P.map_comp, ← op_comp]
@@ -166,7 +166,7 @@ def ofGrothendieck (J : GrothendieckTopology C) : Coverage C where
   covering X := { S | Sieve.generate S ∈ J X }
   pullback := by
     intro X Y f S (hS : Sieve.generate S ∈ J X)
-    refine ⟨(Sieve.generate S).pullback f, ?_, fun Z g h => h⟩
+    refine ⟨(Sieve.generate S).pullback f, _, fun Z g h => h⟩
     dsimp
     rw [Sieve.generate_sieve]
     exact J.pullback_stable _ hS
@@ -227,7 +227,7 @@ def toGrothendieck (K : Coverage C) : GrothendieckTopology C where
         saturate_of_superset _ this (saturate.of _ _ hR1)
       rintro Z g ⟨W, i, e, h1, h2⟩
       obtain ⟨WW, ii, ee, hh1, hh2⟩ := hR2 h1
-      refine ⟨WW, i ≫ ii, ee, hh1, ?_⟩
+      refine ⟨WW, i ≫ ii, ee, hh1, _⟩
       simp only [hh2, reassoc_of% h2, Category.assoc]
     | top X => apply saturate.top
     | transitive X R S _ hS H1 _ =>
@@ -345,10 +345,10 @@ theorem isSheaf_coverage (K : Coverage C) (P : Cᵒᵖ ⥤ Type*) :
       simp only [← Presieve.isSeparatedFor_and_exists_isAmalgamation_iff_isSheafFor] at *
       choose H1 H1' using H1
       choose H2 H2' using H2
-      refine ⟨?_, fun x hx => ?_⟩
+      refine ⟨_, fun x hx => _⟩
       · intro x t₁ t₂ h₁ h₂
-        refine (H1 f).ext (fun Z g hg => ?_)
-        refine (H2 hg (𝟙 _)).ext (fun ZZ gg hgg => ?_)
+        refine (H1 f).ext (fun Z g hg => _)
+        refine (H2 hg (𝟙 _)).ext (fun ZZ gg hgg => _)
         simp only [Sieve.pullback_id, Sieve.pullback_apply] at hgg
         simp only [← types_comp_apply]
         rw [← P.map_comp, ← op_comp, h₁, h₂]
@@ -373,14 +373,14 @@ theorem isSheaf_coverage (K : Coverage C) (P : Cᵒᵖ ⥤ Type*) :
         · simpa [reassoc_of% h] using hgg
         · simpa using hgg
       obtain ⟨t, ht⟩ := H1' f q hq
-      refine ⟨t, fun Z g hg => ?_⟩
-      refine (H1 (g ≫ f)).ext (fun ZZ gg hgg => ?_)
+      refine ⟨t, fun Z g hg => _⟩
+      refine (H1 (g ≫ f)).ext (fun ZZ gg hgg => _)
       rw [← types_comp_apply _ (P.map gg.op), ← P.map_comp, ← op_comp, ht]
       on_goal 2 => simpa using hgg
-      refine (H2 hgg (𝟙 _)).ext (fun ZZZ ggg hggg => ?_)
+      refine (H2 hgg (𝟙 _)).ext (fun ZZZ ggg hggg => _)
       rw [← types_comp_apply _ (P.map ggg.op), ← P.map_comp, ← op_comp, hz]
       on_goal 2 => simpa using hggg
-      refine (H2 hgg ggg).ext (fun ZZZZ gggg _ => ?_)
+      refine (H2 hgg ggg).ext (fun ZZZZ gggg _ => _)
       rw [← types_comp_apply _ (P.map gggg.op), ← P.map_comp, ← op_comp]
       apply hx
       simp
@@ -393,7 +393,7 @@ theorem isSheaf_sup (K L : Coverage C) (P : Cᵒᵖ ⥤ Type*) :
     (Presieve.IsSheaf ((K ⊔ L).toGrothendieck C)) P ↔
     (Presieve.IsSheaf (K.toGrothendieck C)) P ∧ (Presieve.IsSheaf (L.toGrothendieck C)) P := by
   refine ⟨fun h ↦ ⟨Presieve.isSheaf_of_le _ ((gi C).gc.monotone_l le_sup_left) h,
-      Presieve.isSheaf_of_le _ ((gi C).gc.monotone_l le_sup_right) h⟩, fun h ↦ ?_⟩
+      Presieve.isSheaf_of_le _ ((gi C).gc.monotone_l le_sup_right) h⟩, fun h ↦ _⟩
   rw [isSheaf_coverage, isSheaf_coverage] at h
   rw [isSheaf_coverage]
   intro X R hR

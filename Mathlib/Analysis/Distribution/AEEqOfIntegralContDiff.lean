@@ -49,7 +49,7 @@ theorem ae_eq_zero_of_integral_smooth_smul_eq_zero (hf : LocallyIntegrable f μ)
   have := ManifoldWithCorners.metrizableSpace I M
   let _ : MetricSpace M := TopologicalSpace.metrizableSpaceMetric M
   -- it suffices to show that the integral of the function vanishes on any compact set `s`
-  apply ae_eq_zero_of_forall_setIntegral_isCompact_eq_zero' hf (fun s hs ↦ Eq.symm ?_)
+  apply ae_eq_zero_of_forall_setIntegral_isCompact_eq_zero' hf (fun s hs ↦ Eq.symm _)
   obtain ⟨δ, δpos, hδ⟩ : ∃ δ, 0 < δ ∧ IsCompact (cthickening δ s) := hs.exists_isCompact_cthickening
   -- choose a sequence of smooth functions `gₙ` equal to `1` on `s` and vanishing outside of the
   -- `uₙ`-neighborhood of `s`, where `uₙ` tends to zero. Then each integral `∫ gₙ f` vanishes,
@@ -79,7 +79,7 @@ theorem ae_eq_zero_of_integral_smooth_smul_eq_zero (hf : LocallyIntegrable f μ)
       intro n
       filter_upwards with x
       rw [norm_smul]
-      refine le_indicator_apply (fun _ ↦ ?_) (fun hxK ↦ ?_)
+      refine le_indicator_apply (fun _ ↦ _) (fun hxK ↦ _)
       · have : ‖g n x‖ ≤ 1 := by
           have := g_range n (mem_range_self (f := g n) x)
           rw [Real.norm_of_nonneg this.1]
@@ -106,7 +106,7 @@ theorem ae_eq_zero_of_integral_smooth_smul_eq_zero (hf : LocallyIntegrable f μ)
     exact tendsto_integral_of_dominated_convergence bound A B C D
   -- deduce that `∫ x in s, f = 0` as each integral `∫ gₙ f` vanishes by assumption
   have : ∀ n, ∫ x, g n x • f x ∂μ = 0 := by
-    refine fun n ↦ h _ (g_diff n) ?_
+    refine fun n ↦ h _ (g_diff n) _
     apply HasCompactSupport.of_support_subset_isCompact K_compact
     simpa [g_supp] using vK n
   simpa [this] using L
@@ -125,12 +125,12 @@ nonrec theorem IsOpen.ae_eq_zero_of_integral_smooth_smul_eq_zero' {U : Set M} (h
   let U : Opens M := ⟨U, hU⟩
   change ∀ᵐ (x : U) ∂_, _
   haveI : SigmaCompactSpace U := isSigmaCompact_iff_sigmaCompactSpace.mp hSig
-  refine ae_eq_zero_of_integral_smooth_smul_eq_zero I ?_ fun g g_smth g_supp ↦ ?_
+  refine ae_eq_zero_of_integral_smooth_smul_eq_zero I _ fun g g_smth g_supp ↦ _
   · exact (locallyIntegrable_comap meas_U).mpr hf
   specialize h (Subtype.val.extend g 0) (g_smth.extend_zero g_supp)
     (g_supp.extend_zero continuous_subtype_val) ((g_supp.tsupport_extend_zero_subset
       continuous_subtype_val).trans <| Subtype.coe_image_subset _ _)
-  rw [← setIntegral_eq_integral_of_forall_compl_eq_zero (s := U) fun x hx ↦ ?_] at h
+  rw [← setIntegral_eq_integral_of_forall_compl_eq_zero (s := U) fun x hx ↦ _] at h
   · rw [← integral_subtype_comap] at h
     · simp_rw [Subtype.val_injective.extend_apply] at h; exact h
     · exact meas_U

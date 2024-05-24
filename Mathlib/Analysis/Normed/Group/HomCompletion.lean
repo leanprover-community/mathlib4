@@ -171,7 +171,7 @@ theorem NormedAddGroupHom.ker_le_ker_completion (f : NormedAddGroupHom G H) :
 theorem NormedAddGroupHom.ker_completion {f : NormedAddGroupHom G H} {C : ℝ}
     (h : f.SurjectiveOnWith f.range C) :
     (f.completion.ker : Set <| Completion G) = closure (toCompl.comp <| incl f.ker).range := by
-  refine le_antisymm ?_ (closure_minimal f.ker_le_ker_completion f.completion.isClosed_ker)
+  refine le_antisymm _ (closure_minimal f.ker_le_ker_completion f.completion.isClosed_ker)
   rintro hatg (hatg_in : f.completion hatg = 0)
   rw [SeminormedAddCommGroup.mem_closure_iff]
   intro ε ε_pos
@@ -181,7 +181,7 @@ theorem NormedAddGroupHom.ker_completion {f : NormedAddGroupHom G H} {C : ℝ}
     SeminormedAddCommGroup.mem_closure_iff.mp (Completion.denseInducing_coe.dense hatg) δ δ_pos
   obtain ⟨g' : G, hgg' : f g' = f g, hfg : ‖g'‖ ≤ C' * ‖f g‖⟩ := hC' (f g) (mem_range_self _ g)
   have mem_ker : g - g' ∈ f.ker := by rw [f.mem_ker, map_sub, sub_eq_zero.mpr hgg'.symm]
-  refine ⟨_, ⟨⟨g - g', mem_ker⟩, rfl⟩, ?_⟩
+  refine ⟨_, ⟨⟨g - g', mem_ker⟩, rfl⟩, _⟩
   have : ‖f g‖ ≤ ‖f‖ * δ := calc
     ‖f g‖ ≤ ‖f‖ * ‖hatg - g‖ := by simpa [hatg_in] using f.completion.le_opNorm (hatg - g)
     _ ≤ ‖f‖ * δ := by gcongr

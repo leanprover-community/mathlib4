@@ -95,7 +95,7 @@ theorem IsGδ.iInter_of_isOpen [Countable ι'] {f : ι' → Set X} (hf : ∀ i, 
 
 lemma isGδ_iff_eq_iInter_nat {s : Set X} :
     IsGδ s ↔ ∃ (f : ℕ → Set X), (∀ n, IsOpen (f n)) ∧ s = ⋂ n, f n := by
-  refine ⟨?_, ?_⟩
+  refine ⟨_, _⟩
   · rintro ⟨T, hT, T_count, rfl⟩
     rcases Set.eq_empty_or_nonempty T with rfl|hT
     · exact ⟨fun _n ↦ univ, fun _n ↦ isOpen_univ, by simp⟩
@@ -144,7 +144,7 @@ theorem IsGδ.union {s t : Set X} (hs : IsGδ s) (ht : IsGδ t) : IsGδ (s ∪ t
   rcases hs with ⟨S, Sopen, Scount, rfl⟩
   rcases ht with ⟨T, Topen, Tcount, rfl⟩
   rw [sInter_union_sInter]
-  refine .biInter_of_isOpen (Scount.prod Tcount) ?_
+  refine .biInter_of_isOpen (Scount.prod Tcount) _
   rintro ⟨a, b⟩ ⟨ha, hb⟩
   exact (Sopen a ha).union (Topen b hb)
 #align is_Gδ.union IsGδ.union
@@ -175,7 +175,7 @@ theorem IsClosed.isGδ {X : Type*} [UniformSpace X] [IsCountablyGenerated (𝓤 
     (hs : IsClosed s) : IsGδ s := by
   rcases (@uniformity_hasBasis_open X _).exists_antitone_subbasis with ⟨U, hUo, hU, -⟩
   rw [← hs.closure_eq, ← hU.biInter_biUnion_ball]
-  refine .biInter (to_countable _) fun n _ => IsOpen.isGδ ?_
+  refine .biInter (to_countable _) fun n _ => IsOpen.isGδ _
   exact isOpen_biUnion fun x _ => UniformSpace.isOpen_ball _ (hUo _).2
 #align is_closed.is_Gδ IsClosed.isGδ
 
@@ -235,7 +235,7 @@ theorem IsGδ.setOf_continuousAt [UniformSpace Y] [IsCountablyGenerated (𝓤 Y)
   simp only [Uniform.continuousAt_iff_prod, nhds_prod_eq]
   simp only [(nhds_basis_opens _).prod_self.tendsto_iff hU.toHasBasis, forall_prop_of_true,
     setOf_forall, id]
-  refine .iInter fun k ↦ IsOpen.isGδ <| isOpen_iff_mem_nhds.2 fun x ↦ ?_
+  refine .iInter fun k ↦ IsOpen.isGδ <| isOpen_iff_mem_nhds.2 fun x ↦ _
   rintro ⟨s, ⟨hsx, hso⟩, hsU⟩
   filter_upwards [IsOpen.mem_nhds hso hsx] with _ hy using ⟨s, ⟨hy, hso⟩, hsU⟩
 #align is_Gδ_set_of_continuous_at IsGδ.setOf_continuousAt
@@ -339,7 +339,7 @@ lemma isMeagre_iff_countable_union_isNowhereDense {s : Set X} :
   rw [IsMeagre, mem_residual_iff, compl_bijective.surjective.image_surjective.exists]
   simp_rw [← and_assoc, ← forall_and, forall_mem_image, ← isClosed_isNowhereDense_iff_compl,
     sInter_image, ← compl_iUnion₂, compl_subset_compl, ← sUnion_eq_biUnion, and_assoc]
-  refine ⟨fun ⟨S, hS, hc, hsub⟩ ↦ ⟨S, fun s hs ↦ (hS hs).2, ?_, hsub⟩, ?_⟩
+  refine ⟨fun ⟨S, hS, hc, hsub⟩ ↦ ⟨S, fun s hs ↦ (hS hs).2, _, hsub⟩, _⟩
   · rw [← compl_compl_image S]; exact hc.image _
   · intro ⟨S, hS, hc, hsub⟩
     use closure '' S

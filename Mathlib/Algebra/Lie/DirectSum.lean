@@ -73,7 +73,7 @@ variable (R ι L M)
 def lieModuleOf [DecidableEq ι] (j : ι) : M j →ₗ⁅R,L⁆ ⨁ i, M i :=
   { lof R ι M j with
     map_lie' := fun {x m} => by
-      refine DFinsupp.ext fun i => ?_ -- Porting note: Originally `ext i`
+      refine DFinsupp.ext fun i => _ -- Porting note: Originally `ext i`
       by_cases h : j = i
       · rw [← h]; simp
       · -- This used to be the end of the proof before leanprover/lean4#2644
@@ -129,7 +129,7 @@ theorem lie_of_same [DecidableEq ι] {i : ι} (x y : L i) :
 
 theorem lie_of_of_ne [DecidableEq ι] {i j : ι} (hij : i ≠ j) (x : L i) (y : L j) :
     ⁅of L i x, of L j y⁆ = 0 := by
-  refine DFinsupp.ext fun k => ?_
+  refine DFinsupp.ext fun k => _
   rw [bracket_apply]
   obtain rfl | hik := Decidable.eq_or_ne i k
   · rw [of_eq_of_ne _ _ _ _ hij.symm, lie_zero, zero_apply]
@@ -159,7 +159,7 @@ def lieAlgebraOf [DecidableEq ι] (j : ι) : L j →ₗ⁅R⁆ ⨁ i, L i :=
   { lof R ι L j with
     toFun := of L j
     map_lie' := fun {x y} => by
-      refine DFinsupp.ext fun i => ?_ -- Porting note: Originally `ext i`
+      refine DFinsupp.ext fun i => _ -- Porting note: Originally `ext i`
       by_cases h : j = i
       · rw [← h]
         -- This used to be the end of the proof before leanprover/lean4#2644

@@ -86,7 +86,7 @@ theorem chineseRemainderOfList_lt_prod (l : List ι)
       intro j hj
       exact (List.pairwise_cons.mp co).1 j hj
     refine chineseRemainder_lt_mul this (a i) (chineseRemainderOfList a s l co.of_cons)
-      (hs i (List.mem_cons_self _ l)) ?_
+      (hs i (List.mem_cons_self _ l)) _
     simp only [ne_eq, List.prod_eq_zero_iff, List.mem_map, not_exists, not_and]
     intro j hj
     exact hs j (List.mem_cons_of_mem _ hj)

@@ -66,7 +66,7 @@ theorem hasProd_le_inj {g : κ → α} (e : ι → κ) (he : Injective e)
     (hs : ∀ c, c ∉ Set.range e → 1 ≤ g c) (h : ∀ i, f i ≤ g (e i)) (hf : HasProd f a₁)
     (hg : HasProd g a₂) : a₁ ≤ a₂ := by
   rw [← hasProd_extend_one he] at hf
-  refine hasProd_le (fun c ↦ ?_) hf hg
+  refine hasProd_le (fun c ↦ _) hf hg
   obtain ⟨i, rfl⟩ | h := em (c ∈ Set.range e)
   · rw [he.extend_apply]
     exact h _
@@ -164,7 +164,7 @@ theorem tprod_le_one (h : ∀ i, f i ≤ 1) : ∏' i, f i ≤ 1 := by
 -- Porting note: generalized from `OrderedAddCommGroup` to `OrderedAddCommMonoid`
 @[to_additive]
 theorem hasProd_one_iff_of_one_le (hf : ∀ i, 1 ≤ f i) : HasProd f 1 ↔ f = 1 := by
-  refine ⟨fun hf' ↦ ?_, ?_⟩
+  refine ⟨fun hf' ↦ _, _⟩
   · ext i
     exact (hf i).antisymm' (le_hasProd hf' _ fun j _ ↦ hf j)
   · rintro rfl

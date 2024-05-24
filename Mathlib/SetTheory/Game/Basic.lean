@@ -206,7 +206,7 @@ instance orderedAddCommGroup : OrderedAddCommGroup Game :=
 lemma bddAbove_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Game.{u}) :
     BddAbove (Set.range f) := by
   obtain ⟨x, hx⟩ := PGame.bddAbove_range_of_small (Quotient.out ∘ f)
-  refine ⟨⟦x⟧, Set.forall_mem_range.2 fun i ↦ ?_⟩
+  refine ⟨⟦x⟧, Set.forall_mem_range.2 fun i ↦ _⟩
   simpa [PGame.le_iff_game_le] using hx $ Set.mem_range_self i
 
 /-- A small set of games is bounded above. -/
@@ -218,7 +218,7 @@ lemma bddAbove_of_small (s : Set Game.{u}) [Small.{u} s] : BddAbove s := by
 lemma bddBelow_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Game.{u}) :
     BddBelow (Set.range f) := by
   obtain ⟨x, hx⟩ := PGame.bddBelow_range_of_small (Quotient.out ∘ f)
-  refine ⟨⟦x⟧, Set.forall_mem_range.2 fun i ↦ ?_⟩
+  refine ⟨⟦x⟧, Set.forall_mem_range.2 fun i ↦ _⟩
   simpa [PGame.le_iff_game_le] using hx $ Set.mem_range_self i
 
 /-- A small set of games is bounded below. -/
@@ -526,7 +526,7 @@ theorem quot_left_distrib (x y z : PGame) : (⟦x * (y + z)⟧ : Game) = ⟦x * 
     let x := mk xl xr xL xR
     let y := mk yl yr yL yR
     let z := mk zl zr zL zR
-    refine quot_eq_of_mk'_quot_eq ?_ ?_ ?_ ?_
+    refine quot_eq_of_mk'_quot_eq _ _ _ _
     · fconstructor
       · rintro (⟨_, _ | _⟩ | ⟨_, _ | _⟩) <;>
           -- Porting note: we've increased `maxDepth` here from `5` to `6`.
@@ -655,7 +655,7 @@ def mulOneRelabelling : ∀ x : PGame.{u}, x * 1 ≡r x
     -- Porting note: changed `refine` to `refine`,
     -- otherwise there are typeclass inference failures.
     refine ⟨(Equiv.sumEmpty _ _).trans (Equiv.prodPUnit _),
-      (Equiv.emptySum _ _).trans (Equiv.prodPUnit _), ?_, ?_⟩ <;>
+      (Equiv.emptySum _ _).trans (Equiv.prodPUnit _), _, _⟩ <;>
     (try rintro (⟨i, ⟨⟩⟩ | ⟨i, ⟨⟩⟩)) <;>
     { dsimp
       apply (Relabelling.subCongr (Relabelling.refl _) (mulZeroRelabelling _)).trans
@@ -695,7 +695,7 @@ theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * 
     let x := mk xl xr xL xR
     let y := mk yl yr yL yR
     let z := mk zl zr zL zR
-    refine quot_eq_of_mk'_quot_eq ?_ ?_ ?_ ?_
+    refine quot_eq_of_mk'_quot_eq _ _ _ _
     · fconstructor
       · rintro (⟨⟨_, _⟩ | ⟨_, _⟩, _⟩ | ⟨⟨_, _⟩ | ⟨_, _⟩, _⟩) <;>
           -- Porting note: as above, increased the `maxDepth` here by 1.

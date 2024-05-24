@@ -71,7 +71,7 @@ theorem base_mul_eq_succ {p n : ℕ} (hp : 1 < p) (hn : 0 < n) :
   dsimp [maxPowDiv]
   rw [maxPowDiv.go, if_pos, mul_div_right _ this]
   · apply go_succ
-  · refine ⟨hp, ?_, by simp⟩
+  · refine ⟨hp, _, by simp⟩
     apply Nat.mul_pos this hn
 
 theorem base_pow_mul {p n exp : ℕ} (hp : 1 < p) (hn : 0 < n) :

@@ -247,7 +247,7 @@ theorem cfcHom_comp [UniqueContinuousFunctionalCalculus R A] (f : C(spectrum R a
   let φ : C(spectrum R (cfcHom ha f), R) →⋆ₐ[R] A :=
     (cfcHom ha).comp <| ContinuousMap.compStarAlgHom' R R f'
   suffices cfcHom (cfcHom_predicate ha f) = φ from DFunLike.congr_fun this.symm g
-  refine cfcHom_eq_of_continuous_of_map_id (cfcHom_predicate ha f) φ ?_ ?_
+  refine cfcHom_eq_of_continuous_of_map_id (cfcHom_predicate ha f) φ _ _
   · exact (cfcHom_closedEmbedding ha).continuous.comp f'.continuous_comp_left
   · simp only [φ, StarAlgHom.comp_apply, ContinuousMap.compStarAlgHom'_apply]
     congr
@@ -589,7 +589,7 @@ lemma cfc_inv (hf' : ∀ x ∈ spectrum R a, f x ≠ 0)
 lemma cfc_inv_id (a : Aˣ) (ha : p a := by cfc_tac) :
     cfc (fun x ↦ x⁻¹ : R → R) (a : A) = a⁻¹ := by
   rw [← Ring.inverse_unit]
-  convert cfc_inv (id : R → R) (a : A) ?_
+  convert cfc_inv (id : R → R) (a : A) _
   · exact (cfc_id R (a : A)).symm
   · rintro x hx rfl
     exact spectrum.zero_not_mem R a.isUnit hx
@@ -742,7 +742,7 @@ lemma algebraMap_le_cfc (f : R → R) (r : R) (a : A) (h : ∀ x ∈ spectrum R 
   cfc_const r a ▸ cfc_mono h
 
 lemma cfc_le_one (f : R → R) (a : A) (h : ∀ x ∈ spectrum R a, f x ≤ 1) : cfc f a ≤ 1 := by
-  apply cfc_cases (· ≤ 1) _ _ (by simpa using star_mul_self_nonneg (1 : A)) fun hf ha ↦ ?_
+  apply cfc_cases (· ≤ 1) _ _ (by simpa using star_mul_self_nonneg (1 : A)) fun hf ha ↦ _
   rw [← map_one (cfcHom ha (R := R))]
   apply cfcHom_mono ha
   simpa [ContinuousMap.le_def] using h

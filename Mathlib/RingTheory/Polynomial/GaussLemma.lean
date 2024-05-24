@@ -57,16 +57,16 @@ theorem integralClosure.mem_lifts_of_monic_of_dvd_map {f : R[X]} (hf : f.Monic) 
   have := mem_lift_of_splits_of_roots_mem_range (integralClosure R g.SplittingField)
     ((splits_id_iff_splits _).2 <| SplittingField.splits g) (hg.map _) fun a ha =>
       (SetLike.ext_iff.mp (integralClosure R g.SplittingField).range_algebraMap _).mpr <|
-        roots_mem_integralClosure hf ?_
+        roots_mem_integralClosure hf _
   · rw [lifts_iff_coeff_lifts, ← RingHom.coe_range, Subalgebra.range_algebraMap] at this
-    refine (lifts_iff_coeff_lifts _).2 fun n => ?_
+    refine (lifts_iff_coeff_lifts _).2 fun n => _
     rw [← RingHom.coe_range, Subalgebra.range_algebraMap]
     obtain ⟨p, hp, he⟩ := SetLike.mem_coe.mp (this n); use p, hp
     rw [IsScalarTower.algebraMap_eq R K, coeff_map, ← eval₂_map, eval₂_at_apply] at he
     rw [eval₂_eq_eval_map]; apply (injective_iff_map_eq_zero _).1 _ _ he
     apply RingHom.injective
   rw [aroots_def, IsScalarTower.algebraMap_eq R K _, ← map_map]
-  refine Multiset.mem_of_le (roots.le_of_dvd ((hf.map _).map _).ne_zero ?_) ha
+  refine Multiset.mem_of_le (roots.le_of_dvd ((hf.map _).map _).ne_zero _) ha
   exact map_dvd (algebraMap K g.SplittingField) hd
 #align integral_closure.mem_lifts_of_monic_of_dvd_map integralClosure.mem_lifts_of_monic_of_dvd_map
 
@@ -96,7 +96,7 @@ theorem IsIntegrallyClosed.eq_map_mul_C_of_dvd [IsIntegrallyClosed R] {f : R[X]}
     (mem_lifts _).1
       (integralClosure.mem_lifts_of_monic_of_dvd_map K hf (monic_mul_leadingCoeff_inv g_ne_0)
         g_mul_dvd)
-  refine ⟨map algeq.toAlgHom.toRingHom ?_, ?_⟩
+  refine ⟨map algeq.toAlgHom.toRingHom _, _⟩
   · use! Classical.choose H
   · rw [map_map, this]
     exact Classical.choose_spec H
@@ -113,7 +113,7 @@ variable {S : Type*} [CommRing S] [IsDomain S]
 variable {φ : R →+* S} (hinj : Function.Injective φ) {f : R[X]} (hf : f.IsPrimitive)
 
 theorem IsPrimitive.isUnit_iff_isUnit_map_of_injective : IsUnit f ↔ IsUnit (map φ f) := by
-  refine ⟨(mapRingHom φ).isUnit_map, fun h => ?_⟩
+  refine ⟨(mapRingHom φ).isUnit_map, fun h => _⟩
   rcases isUnit_iff.1 h with ⟨_, ⟨u, rfl⟩, hu⟩
   have hdeg := degree_C u.ne_zero
   rw [hu, degree_map_eq_of_injective hinj] at hdeg
@@ -125,7 +125,7 @@ theorem IsPrimitive.irreducible_of_irreducible_map_of_injective (h_irr : Irreduc
     Irreducible f := by
   refine
     ⟨fun h => h_irr.not_unit (IsUnit.map (mapRingHom φ) h), fun a b h =>
-      (h_irr.isUnit_or_isUnit <| by rw [h, Polynomial.map_mul]).imp ?_ ?_⟩
+      (h_irr.isUnit_or_isUnit <| by rw [h, Polynomial.map_mul]).imp _ _⟩
   all_goals apply ((isPrimitive_of_dvd hf _).isUnit_iff_isUnit_map_of_injective hinj).mpr
   exacts [Dvd.intro _ h.symm, Dvd.intro_left _ h.symm]
 #align polynomial.is_primitive.irreducible_of_irreducible_map_of_injective Polynomial.IsPrimitive.irreducible_of_irreducible_map_of_injective
@@ -158,7 +158,7 @@ theorem Monic.irreducible_iff_irreducible_map_fraction_map [IsIntegrallyClosed R
     ⟨fun hp =>
       irreducible_iff.mpr
         ⟨hp.not_unit.imp h.isPrimitive.isUnit_iff_isUnit_map.mpr, fun a b H =>
-          or_iff_not_imp_left.mpr fun hₐ => ?_⟩,
+          or_iff_not_imp_left.mpr fun hₐ => _⟩,
       fun hp =>
       h.isPrimitive.irreducible_of_irreducible_map_of_injective (IsFractionRing.injective R K) hp⟩
   obtain ⟨a', ha⟩ := eq_map_mul_C_of_dvd K h (dvd_of_mul_right_eq b H.symm)
@@ -169,13 +169,13 @@ theorem Monic.irreducible_iff_irreducible_map_fraction_map [IsIntegrallyClosed R
     C_mul, this, C_1, one_mul, ← Polynomial.map_mul] at H
   rw [← hb, ← Polynomial.coe_mapRingHom]
   refine
-    IsUnit.mul (IsUnit.map _ (Or.resolve_left (hp.isUnit_or_isUnit ?_) (show ¬IsUnit a' from ?_)))
+    IsUnit.mul (IsUnit.map _ (Or.resolve_left (hp.isUnit_or_isUnit _) (show ¬IsUnit a' from _)))
       (isUnit_iff_exists_inv'.mpr
         -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5073): was `rwa`
         (Exists.intro (C a.leadingCoeff) <| by rw [← C_mul, this, C_1]))
   · exact Polynomial.map_injective _ (IsFractionRing.injective R K) H
   · by_contra h_contra
-    refine hₐ ?_
+    refine hₐ _
     rw [← ha, ← Polynomial.coe_mapRingHom]
     exact
       IsUnit.mul (IsUnit.map _ h_contra)
@@ -194,7 +194,7 @@ theorem isIntegrallyClosed_iff' :
   · intro H
     refine
       (isIntegrallyClosed_iff K).mpr fun {x} hx =>
-        RingHom.mem_range.mp <| minpoly.mem_range_of_degree_eq_one R x ?_
+        RingHom.mem_range.mp <| minpoly.mem_range_of_degree_eq_one R x _
     rw [← Monic.degree_map (minpoly.monic hx) (algebraMap R K)]
     apply
       degree_eq_one_of_irreducible_of_root ((H _ <| minpoly.monic hx).mp (minpoly.irreducible hx))
@@ -235,7 +235,7 @@ theorem isUnit_or_eq_zero_of_isUnit_integerNormalization_primPart {p : K[X]} (h0
   rw [← hc, (integerNormalization R⁰ p).eq_C_content_mul_primPart, ← hu, ← RingHom.map_mul,
     isUnit_iff]
   refine
-    ⟨algebraMap R K ((integerNormalization R⁰ p).content * ↑u), isUnit_iff_ne_zero.2 fun con => ?_,
+    ⟨algebraMap R K ((integerNormalization R⁰ p).content * ↑u), isUnit_iff_ne_zero.2 fun con => _,
       by simp⟩
   replace con := (injective_iff_map_eq_zero (algebraMap R K)).1 (IsFractionRing.injective _ _) _ con
   rw [mul_eq_zero, content_eq_zero_iff, IsFractionRing.integerNormalization_eq_zero_iff] at con
@@ -250,7 +250,7 @@ theorem IsPrimitive.irreducible_iff_irreducible_map_fraction_map {p : R[X]} (hp 
     Irreducible p ↔ Irreducible (p.map (algebraMap R K)) := by
   -- Porting note: was `(IsFractionRing.injective _ _)`
   refine
-    ⟨fun hi => ⟨fun h => hi.not_unit (hp.isUnit_iff_isUnit_map.2 h), fun a b hab => ?_⟩,
+    ⟨fun hi => ⟨fun h => hi.not_unit (hp.isUnit_iff_isUnit_map.2 h), fun a b hab => _⟩,
       hp.irreducible_of_irreducible_map_of_injective (IsFractionRing.injective R K)⟩
   obtain ⟨⟨c, c0⟩, hc⟩ := integerNormalization_map_to_map R⁰ a
   obtain ⟨⟨d, d0⟩, hd⟩ := integerNormalization_map_to_map R⁰ b

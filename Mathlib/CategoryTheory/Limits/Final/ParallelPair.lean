@@ -35,7 +35,7 @@ lemma parallelPair_initial_mk' {X Y : C} (f g : X ⟶ Y)
       (mk (Y := zero) (h₁ Z).some) := by
         rintro ⟨(_|_), ⟨⟩, φ⟩
         · apply h₂
-        · refine Zigzag.trans ?_ (h₂ (f ≫ φ) _)
+        · refine Zigzag.trans _ (h₂ (f ≫ φ) _)
           exact Zigzag.of_inv (homMk left)
     exact zigzag_isConnected (fun x y => (this x).trans (this y).symm)
 

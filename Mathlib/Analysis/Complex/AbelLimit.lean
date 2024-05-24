@@ -57,9 +57,9 @@ theorem nhdsWithin_lt_le_nhdsWithin_stolzSet {M : ℝ} (hM : 1 < M) :
     (𝓝[<] 1).map ofReal' ≤ 𝓝[stolzSet M] 1 := by
   rw [← tendsto_id']
   refine tendsto_map' <| tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within ofReal'
-    (tendsto_nhdsWithin_of_tendsto_nhds <| ofRealCLM.continuous.tendsto' 1 1 rfl) ?_
+    (tendsto_nhdsWithin_of_tendsto_nhds <| ofRealCLM.continuous.tendsto' 1 1 rfl) _
   simp only [eventually_iff, norm_eq_abs, abs_ofReal, abs_lt, mem_nhdsWithin]
-  refine ⟨Set.Ioo 0 2, isOpen_Ioo, by norm_num, fun x hx ↦ ?_⟩
+  refine ⟨Set.Ioo 0 2, isOpen_Ioo, by norm_num, fun x hx ↦ _⟩
   simp only [Set.mem_inter_iff, Set.mem_Ioo, Set.mem_Iio] at hx
   simp only [Set.mem_setOf_eq, stolzSet, ← ofReal_one, ← ofReal_sub, norm_eq_abs, abs_ofReal,
     abs_of_pos hx.1.1, abs_of_pos <| sub_pos.mpr hx.2]
@@ -70,7 +70,7 @@ private lemma stolzCone_subset_stolzSet_aux' (s : ℝ) :
     ∃ M ε, 0 < M ∧ 0 < ε ∧ ∀ x y, 0 < x → x < ε → |y| < s * x →
       sqrt (x ^ 2 + y ^ 2) < M * (1 - sqrt ((1 - x) ^ 2 + y ^ 2)) := by
   refine ⟨2 * sqrt (1 + s ^ 2) + 1, 1 / (1 + s ^ 2), by positivity, by positivity,
-    fun x y hx₀ hx₁ hy ↦ ?_⟩
+    fun x y hx₀ hx₁ hy ↦ _⟩
   have H : sqrt ((1 - x) ^ 2 + y ^ 2) ≤ 1 - x / 2 := by
     calc sqrt ((1 - x) ^ 2 + y ^ 2)
       _ ≤ sqrt ((1 - x) ^ 2 + (s * x) ^ 2) := sqrt_le_sqrt <| by rw [← _root_.sq_abs y]; gcongr
@@ -79,7 +79,7 @@ private lemma stolzCone_subset_stolzSet_aux' (s : ℝ) :
       _ = sqrt (1 - x) := by congr 1; field_simp; ring
       _ ≤ 1 - x / 2 := by
         simp_rw [sub_eq_add_neg, ← neg_div]
-        refine sqrt_one_add_le <| neg_le_neg_iff.mpr (hx₁.trans_le ?_).le
+        refine sqrt_one_add_le <| neg_le_neg_iff.mpr (hx₁.trans_le _).le
         rw [div_le_one (by positivity)]
         exact le_add_of_nonneg_right <| sq_nonneg s
   calc sqrt (x ^ 2 + y ^ 2)
@@ -109,7 +109,7 @@ lemma nhdsWithin_stolzCone_le_nhdsWithin_stolzSet {s : ℝ} (hs : 0 < s) :
   obtain ⟨M, ε, _, hε, H⟩ := stolzCone_subset_stolzSet_aux hs
   use M
   rw [nhdsWithin_le_iff, mem_nhdsWithin]
-  refine ⟨{w | 1 - ε < w.re}, isOpen_lt continuous_const continuous_re, ?_, H⟩
+  refine ⟨{w | 1 - ε < w.re}, isOpen_lt continuous_const continuous_re, _, H⟩
   simp only [Set.mem_setOf_eq, one_re, sub_lt_self_iff, hε]
 
 end StolzSet

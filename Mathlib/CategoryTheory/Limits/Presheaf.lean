@@ -449,7 +449,7 @@ def tautologicalCocone : Cocone (CostructuredArrow.proj yoneda P ⋙ yoneda) whe
     Proposition 2.6.3(i) in [Kashiwara2006] -/
 def isColimitTautologicalCocone : IsColimit (tautologicalCocone P) where
   desc := fun s => by
-    refine ⟨fun X t => yonedaEquiv (s.ι.app (CostructuredArrow.mk (yonedaEquiv.symm t))), ?_⟩
+    refine ⟨fun X t => yonedaEquiv (s.ι.app (CostructuredArrow.mk (yonedaEquiv.symm t))), _⟩
     intros X Y f
     ext t
     dsimp
@@ -491,7 +491,7 @@ theorem final_toCostructuredArrow_comp_pre {c : Cocone (F ⋙ yoneda)} (hc : IsC
       CostructuredArrow.toOver yoneda c.pt)) by
     apply IsTerminal.isTerminalOfObj (overEquivPresheafCostructuredArrow c.pt).inverse
     apply IsTerminal.ofIso this
-    refine ?_ ≪≫ (preservesColimitIso (overEquivPresheafCostructuredArrow c.pt).inverse _).symm
+    refine _ ≪≫ (preservesColimitIso (overEquivPresheafCostructuredArrow c.pt).inverse _).symm
     apply HasColimit.isoOfNatIso
     exact isoWhiskerLeft _
       (CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow c.pt).isoCompInverse

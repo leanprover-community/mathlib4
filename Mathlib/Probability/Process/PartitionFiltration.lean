@@ -66,7 +66,7 @@ lemma measurable_memPartitionSet_subtype (ht : ∀ n, MeasurableSet (t n)) (n : 
     @Measurable α (memPartition t n) (partitionFiltration ht n) m
       (fun a ↦ ⟨memPartitionSet t n a, memPartitionSet_mem t n a⟩) := by
   refine @measurable_to_countable' (memPartition t n) α m _
-    (partitionFiltration ht n) _ (fun s ↦ ?_)
+    (partitionFiltration ht n) _ (fun s ↦ _)
   rcases s with ⟨s, hs⟩
   suffices MeasurableSet[partitionFiltration ht n] {x | memPartitionSet t n x = s} by
     convert this

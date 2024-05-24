@@ -744,7 +744,7 @@ theorem exists_nhds_square {s : Set (X × X)} {x : X} (hx : s ∈ 𝓝 (x, x)) :
 /-- `Prod.fst` maps neighborhood of `x : X × Y` within the section `Prod.snd ⁻¹' {x.2}`
 to `𝓝 x.1`. -/
 theorem map_fst_nhdsWithin (x : X × Y) : map Prod.fst (𝓝[Prod.snd ⁻¹' {x.2}] x) = 𝓝 x.1 := by
-  refine le_antisymm (continuousAt_fst.mono_left inf_le_left) fun s hs => ?_
+  refine le_antisymm (continuousAt_fst.mono_left inf_le_left) fun s hs => _
   rcases x with ⟨x, y⟩
   rw [mem_map, nhdsWithin, mem_inf_principal, mem_nhds_prod_iff] at hs
   rcases hs with ⟨u, hu, v, hv, H⟩
@@ -765,7 +765,7 @@ theorem isOpenMap_fst : IsOpenMap (@Prod.fst X Y) :=
 /-- `Prod.snd` maps neighborhood of `x : X × Y` within the section `Prod.fst ⁻¹' {x.1}`
 to `𝓝 x.2`. -/
 theorem map_snd_nhdsWithin (x : X × Y) : map Prod.snd (𝓝[Prod.fst ⁻¹' {x.1}] x) = 𝓝 x.2 := by
-  refine le_antisymm (continuousAt_snd.mono_left inf_le_left) fun s hs => ?_
+  refine le_antisymm (continuousAt_snd.mono_left inf_le_left) fun s hs => _
   rcases x with ⟨x, y⟩
   rw [mem_map, nhdsWithin, mem_inf_principal, mem_nhds_prod_iff] at hs
   rcases hs with ⟨u, hu, v, hv, H⟩
@@ -792,7 +792,7 @@ theorem isOpen_prod_iff' {s : Set X} {t : Set Y} :
   · have st : s.Nonempty ∧ t.Nonempty := prod_nonempty_iff.1 h
     constructor
     · intro (H : IsOpen (s ×ˢ t))
-      refine Or.inl ⟨?_, ?_⟩
+      refine Or.inl ⟨_, _⟩
       · show IsOpen s
         rw [← fst_image_prod s st.2]
         exact isOpenMap_fst _ H
@@ -1420,16 +1420,16 @@ theorem isOpen_pi_iff {s : Set (∀ a, π a)} :
         (∀ a, a ∈ I → IsOpen (u a) ∧ f a ∈ u a) ∧ (I : Set ι).pi u ⊆ s := by
   rw [isOpen_iff_nhds]
   simp_rw [le_principal_iff, nhds_pi, Filter.mem_pi', mem_nhds_iff]
-  refine forall₂_congr fun a _ => ⟨?_, ?_⟩
+  refine forall₂_congr fun a _ => ⟨_, _⟩
   · rintro ⟨I, t, ⟨h1, h2⟩⟩
-    refine ⟨I, fun a => eval a '' (I : Set ι).pi fun a => (h1 a).choose, fun i hi => ?_, ?_⟩
+    refine ⟨I, fun a => eval a '' (I : Set ι).pi fun a => (h1 a).choose, fun i hi => _, _⟩
     · simp_rw [Set.eval_image_pi (Finset.mem_coe.mpr hi)
           (pi_nonempty_iff.mpr fun i => ⟨_, fun _ => (h1 i).choose_spec.2.2⟩)]
       exact (h1 i).choose_spec.2
     · exact Subset.trans
         (Set.pi_mono fun i hi => (Set.eval_image_pi_subset hi).trans (h1 i).choose_spec.1) h2
   · rintro ⟨I, t, ⟨h1, h2⟩⟩
-    refine ⟨I, fun a => ite (a ∈ I) (t a) Set.univ, fun i => ?_, ?_⟩
+    refine ⟨I, fun a => ite (a ∈ I) (t a) Set.univ, fun i => _, _⟩
     · by_cases hi : i ∈ I
       · use t i
         simp_rw [if_pos hi]
@@ -1447,12 +1447,12 @@ theorem isOpen_pi_iff' [Finite ι] {s : Set (∀ a, π a)} :
   cases nonempty_fintype ι
   rw [isOpen_iff_nhds]
   simp_rw [le_principal_iff, nhds_pi, Filter.mem_pi', mem_nhds_iff]
-  refine forall₂_congr fun a _ => ⟨?_, ?_⟩
+  refine forall₂_congr fun a _ => ⟨_, _⟩
   · rintro ⟨I, t, ⟨h1, h2⟩⟩
     refine
       ⟨fun i => (h1 i).choose,
         ⟨fun i => (h1 i).choose_spec.2,
-          (Set.pi_mono fun i _ => (h1 i).choose_spec.1).trans (Subset.trans ?_ h2)⟩⟩
+          (Set.pi_mono fun i _ => (h1 i).choose_spec.1).trans (Subset.trans _ h2)⟩⟩
     rw [← Set.pi_inter_compl (I : Set ι)]
     exact inter_subset_left _ _
   · exact fun ⟨u, ⟨h1, _⟩⟩ =>
@@ -1490,7 +1490,7 @@ theorem exists_finset_piecewise_mem_of_mem_nhds [DecidableEq ι] {s : Set (∀ a
     (hs : s ∈ 𝓝 x) (y : ∀ a, π a) : ∃ I : Finset ι, I.piecewise x y ∈ s := by
   simp only [nhds_pi, Filter.mem_pi'] at hs
   rcases hs with ⟨I, t, htx, hts⟩
-  refine ⟨I, hts fun i hi => ?_⟩
+  refine ⟨I, hts fun i hi => _⟩
   simpa [Finset.mem_coe.1 hi] using mem_of_mem_nhds (htx i)
 #align exists_finset_piecewise_mem_of_mem_nhds exists_finset_piecewise_mem_of_mem_nhds
 
@@ -1498,13 +1498,13 @@ theorem pi_generateFrom_eq {π : ι → Type*} {g : ∀ a, Set (Set (π a))} :
     (@Pi.topologicalSpace ι π fun a => generateFrom (g a)) =
       generateFrom
         { t | ∃ (s : ∀ a, Set (π a)) (i : Finset ι), (∀ a ∈ i, s a ∈ g a) ∧ t = pi (↑i) s } := by
-  refine le_antisymm ?_ ?_
+  refine le_antisymm _ _
   · apply le_generateFrom
     rintro _ ⟨s, i, hi, rfl⟩
     letI := fun a => generateFrom (g a)
     exact isOpen_set_pi i.finite_toSet (fun a ha => GenerateOpen.basic _ (hi a ha))
-  · refine le_iInf fun i => coinduced_le_iff_le_induced.1 <| le_generateFrom fun s hs => ?_
-    refine GenerateOpen.basic _ ⟨update (fun i => univ) i s, {i}, ?_⟩
+  · refine le_iInf fun i => coinduced_le_iff_le_induced.1 <| le_generateFrom fun s hs => _
+    refine GenerateOpen.basic _ ⟨update (fun i => univ) i s, {i}, _⟩
     simp [hs]
 #align pi_generate_from_eq pi_generateFrom_eq
 
@@ -1524,15 +1524,15 @@ theorem pi_generateFrom_eq_finite {π : ι → Type*} {g : ∀ a, Set (Set (π a
       generateFrom { t | ∃ s : ∀ a, Set (π a), (∀ a, s a ∈ g a) ∧ t = pi univ s } := by
   cases nonempty_fintype ι
   rw [pi_generateFrom_eq]
-  refine le_antisymm (generateFrom_anti ?_) (le_generateFrom ?_)
+  refine le_antisymm (generateFrom_anti _) (le_generateFrom _)
   · exact fun s ⟨t, ht, Eq⟩ => ⟨t, Finset.univ, by simp [ht, Eq]⟩
   · rintro s ⟨t, i, ht, rfl⟩
     letI := generateFrom { t | ∃ s : ∀ a, Set (π a), (∀ a, s a ∈ g a) ∧ t = pi univ s }
-    refine isOpen_iff_forall_mem_open.2 fun f hf => ?_
+    refine isOpen_iff_forall_mem_open.2 fun f hf => _
     choose c hcg hfc using fun a => sUnion_eq_univ_iff.1 (hg a) (f a)
-    refine ⟨pi i t ∩ pi ((↑i)ᶜ : Set ι) c, inter_subset_left _ _, ?_, ⟨hf, fun a _ => hfc a⟩⟩
+    refine ⟨pi i t ∩ pi ((↑i)ᶜ : Set ι) c, inter_subset_left _ _, _, ⟨hf, fun a _ => hfc a⟩⟩
     rw [← univ_pi_piecewise]
-    refine GenerateOpen.basic _ ⟨_, fun a => ?_, rfl⟩
+    refine GenerateOpen.basic _ ⟨_, fun a => _, rfl⟩
     by_cases a ∈ i <;> simp [*]
 #align pi_generate_from_eq_finite pi_generateFrom_eq_finite
 
@@ -1665,11 +1665,11 @@ component under `f` can be separated from the images of all other components by 
 theorem inducing_sigma {f : Sigma σ → X} :
     Inducing f ↔ (∀ i, Inducing (f ∘ Sigma.mk i)) ∧
       (∀ i, ∃ U, IsOpen U ∧ ∀ x, f x ∈ U ↔ x.1 = i) := by
-  refine ⟨fun h ↦ ⟨fun i ↦ h.comp embedding_sigmaMk.1, fun i ↦ ?_⟩, ?_⟩
+  refine ⟨fun h ↦ ⟨fun i ↦ h.comp embedding_sigmaMk.1, fun i ↦ _⟩, _⟩
   · rcases h.isOpen_iff.1 (isOpen_range_sigmaMk (i := i)) with ⟨U, hUo, hU⟩
-    refine ⟨U, hUo, ?_⟩
+    refine ⟨U, hUo, _⟩
     simpa [Set.ext_iff] using hU
-  · refine fun ⟨h₁, h₂⟩ ↦ inducing_iff_nhds.2 fun ⟨i, x⟩ ↦ ?_
+  · refine fun ⟨h₁, h₂⟩ ↦ inducing_iff_nhds.2 fun ⟨i, x⟩ ↦ _
     rw [Sigma.nhds_mk, (h₁ i).nhds_eq_comap, comp_apply, ← comap_comap, map_comap_of_mem]
     rcases h₂ i with ⟨U, hUo, hU⟩
     filter_upwards [preimage_mem_comap <| hUo.mem_nhds <| (hU _).2 rfl] with y hy

@@ -494,7 +494,7 @@ theorem eventually_uniformity_iterate_comp_subset {s : Set (α × α)} (hs : s �
   induction' n with n ihn generalizing s
   · simpa
   rcases comp_mem_uniformity_sets hs with ⟨t, htU, hts⟩
-  refine (ihn htU).mono fun U hU => ?_
+  refine (ihn htU).mono fun U hU => _
   rw [Function.iterate_succ_apply']
   exact
     ⟨hU.1.trans <| (subset_comp_self <| refl_le_uniformity htU).trans hts,
@@ -512,7 +512,7 @@ theorem eventually_uniformity_comp_subset {s : Set (α × α)} (hs : s ∈ 𝓤 
 theorem Filter.Tendsto.uniformity_trans {l : Filter β} {f₁ f₂ f₃ : β → α}
     (h₁₂ : Tendsto (fun x => (f₁ x, f₂ x)) l (𝓤 α))
     (h₂₃ : Tendsto (fun x => (f₂ x, f₃ x)) l (𝓤 α)) : Tendsto (fun x => (f₁ x, f₃ x)) l (𝓤 α) := by
-  refine le_trans (le_lift'.2 fun s hs => mem_map.2 ?_) comp_le_uniformity
+  refine le_trans (le_lift'.2 fun s hs => mem_map.2 _) comp_le_uniformity
   filter_upwards [mem_map.1 (h₁₂ hs), mem_map.1 (h₂₃ hs)] with x hx₁₂ hx₂₃ using ⟨_, hx₁₂, hx₂₃⟩
 #align filter.tendsto.uniformity_trans Filter.Tendsto.uniformity_trans
 
@@ -867,7 +867,7 @@ theorem nhds_eq_uniformity_prod {a b : α} :
       (𝓤 α).lift' fun s : Set (α × α) => { y : α | (y, a) ∈ s } ×ˢ { y : α | (b, y) ∈ s } := by
   rw [nhds_prod_eq, nhds_nhds_eq_uniformity_uniformity_prod, lift_lift'_same_eq_lift']
   · exact fun s => monotone_const.set_prod monotone_preimage
-  · refine fun t => Monotone.set_prod ?_ monotone_const
+  · refine fun t => Monotone.set_prod _ monotone_const
     exact monotone_preimage (f := fun y => (y, a))
 #align nhds_eq_uniformity_prod nhds_eq_uniformity_prod
 
@@ -925,10 +925,10 @@ theorem closure_eq_uniformity (s : Set <| α × α) :
 
 theorem uniformity_hasBasis_closed :
     HasBasis (𝓤 α) (fun V : Set (α × α) => V ∈ 𝓤 α ∧ IsClosed V) id := by
-  refine Filter.hasBasis_self.2 fun t h => ?_
+  refine Filter.hasBasis_self.2 fun t h => _
   rcases comp_comp_symm_mem_uniformity_sets h with ⟨w, w_in, w_symm, r⟩
-  refine ⟨closure w, mem_of_superset w_in subset_closure, isClosed_closure, ?_⟩
-  refine Subset.trans ?_ r
+  refine ⟨closure w, mem_of_superset w_in subset_closure, isClosed_closure, _⟩
+  refine Subset.trans _ r
   rw [closure_eq_uniformity]
   apply iInter_subset_of_subset
   apply iInter_subset
@@ -1000,7 +1000,7 @@ theorem isOpen_iff_open_ball_subset {s : Set α} :
 /-- The uniform neighborhoods of all points of a dense set cover the whole space. -/
 theorem Dense.biUnion_uniformity_ball {s : Set α} {U : Set (α × α)} (hs : Dense s) (hU : U ∈ 𝓤 α) :
     ⋃ x ∈ s, ball x U = univ := by
-  refine iUnion₂_eq_univ_iff.2 fun y => ?_
+  refine iUnion₂_eq_univ_iff.2 fun y => _
   rcases hs.inter_nhds_nonempty (mem_nhds_right y hU) with ⟨x, hxs, hxy : (x, y) ∈ U⟩
   exact ⟨x, hxs, hxy⟩
 #align dense.bUnion_uniformity_ball Dense.biUnion_uniformity_ball
@@ -1027,7 +1027,7 @@ of `𝓤 α`. -/
 theorem uniformity_hasBasis_open_symmetric :
     HasBasis (𝓤 α) (fun V : Set (α × α) => V ∈ 𝓤 α ∧ IsOpen V ∧ SymmetricRel V) id := by
   simp only [← and_assoc]
-  refine uniformity_hasBasis_open.restrict fun s hs => ⟨symmetrizeRel s, ?_⟩
+  refine uniformity_hasBasis_open.restrict fun s hs => ⟨symmetrizeRel s, _⟩
   exact
     ⟨⟨symmetrize_mem_uniformity hs.1, IsOpen.inter hs.2 (hs.2.preimage continuous_swap)⟩,
       symmetric_symmetrizeRel s, symmetrizeRel_subset_self s⟩
@@ -1797,7 +1797,7 @@ theorem lebesgue_number_lemma {ι : Sort*} {U : ι → Set α} (hK : IsCompact K
   choose ind W hW hWU using this
   rcases hK.elim_nhds_subcover' (fun x hx ↦ ball x (W x hx)) (fun x hx ↦ ball_mem_nhds _ (hW x hx))
     with ⟨t, ht⟩
-  refine ⟨⋂ x ∈ t, W x x.2, (biInter_finset_mem _).2 fun x _ ↦ hW x x.2, fun x hx ↦ ?_⟩
+  refine ⟨⋂ x ∈ t, W x x.2, (biInter_finset_mem _).2 fun x _ ↦ hW x x.2, fun x hx ↦ _⟩
   rcases mem_iUnion₂.1 (ht hx) with ⟨y, hyt, hxy⟩
   exact ⟨ind y y.2, fun z hz ↦ hWU _ _ ⟨x, hxy, mem_iInter₂.1 hz _ hyt⟩⟩
 #align lebesgue_number_lemma lebesgue_number_lemma
@@ -1811,7 +1811,7 @@ protected theorem Filter.HasBasis.lebesgue_number_lemma {ι' ι : Sort*} {p : ι
     {V : ι' → Set (α × α)} {U : ι → Set α} (hbasis : (𝓤 α).HasBasis p V) (hK : IsCompact K)
     (hopen : ∀ j, IsOpen (U j)) (hcover : K ⊆ ⋃ j, U j) :
     ∃ i, p i ∧ ∀ x ∈ K, ∃ j, ball x (V i) ⊆ U j := by
-  refine (hbasis.exists_iff ?_).1 (lebesgue_number_lemma hK hopen hcover)
+  refine (hbasis.exists_iff _).1 (lebesgue_number_lemma hK hopen hcover)
   exact fun s t hst ht x hx ↦ (ht x hx).imp fun i hi ↦ Subset.trans (ball_mono hst _) hi
 
 /-- Let `c : Set (Set α)` be an open cover of a compact set `s`. Then there exists an entourage
@@ -1839,7 +1839,7 @@ theorem IsCompact.nhdsSet_basis_uniformity {p : ι → Prop} {V : ι → Set (α
         simpa using hbasis.lebesgue_number_lemma hK (fun _ ↦ isOpen_interior) HKU
       exact ⟨i, hpi, hi.trans interior_subset⟩
     · rintro ⟨i, hpi, hi⟩
-      refine mem_of_superset (bUnion_mem_nhdsSet fun x _ ↦ ?_) hi
+      refine mem_of_superset (bUnion_mem_nhdsSet fun x _ ↦ _) hi
       exact ball_mem_nhds _ <| hbasis.mem_of_mem hpi
 #align is_compact.nhds_set_basis_uniformity IsCompact.nhdsSet_basis_uniformity
 
@@ -1850,7 +1850,7 @@ theorem Disjoint.exists_uniform_thickening {A B : Set α} (hA : IsCompact A) (hB
   rw [(hA.nhdsSet_basis_uniformity (Filter.basis_sets _)).mem_iff] at this
   rcases this with ⟨U, hU, hUAB⟩
   rcases comp_symm_mem_uniformity_sets hU with ⟨V, hV, hVsymm, hVU⟩
-  refine ⟨V, hV, Set.disjoint_left.mpr fun x => ?_⟩
+  refine ⟨V, hV, Set.disjoint_left.mpr fun x => _⟩
   simp only [mem_iUnion₂]
   rintro ⟨a, ha, hxa⟩ ⟨b, hb, hxb⟩
   rw [mem_ball_symmetry hVsymm] at hxa hxb
@@ -1967,13 +1967,13 @@ lemma exists_is_open_mem_uniformity_of_forall_mem_eq
     have A : {z | (f x, f z) ∈ t} ∈ 𝓝 x := (hf x hx).preimage_mem_nhds (mem_nhds_left (f x) ht)
     have B : {z | (g x, g z) ∈ t} ∈ 𝓝 x := (hg x hx).preimage_mem_nhds (mem_nhds_left (g x) ht)
     rcases _root_.mem_nhds_iff.1 (inter_mem A B) with ⟨u, hu, u_open, xu⟩
-    refine ⟨u, u_open, xu, fun y hy ↦ ?_⟩
+    refine ⟨u, u_open, xu, fun y hy ↦ _⟩
     have I1 : (f y, f x) ∈ t := (htsymm.mk_mem_comm).2 (hu hy).1
     have I2 : (g x, g y) ∈ t := (hu hy).2
     rw [hfg hx] at I1
     exact htr (prod_mk_mem_compRel I1 I2)
   choose! t t_open xt ht using A
-  refine ⟨⋃ x ∈ s, t x, isOpen_biUnion t_open, fun x hx ↦ mem_biUnion hx (xt x hx), ?_⟩
+  refine ⟨⋃ x ∈ s, t x, isOpen_biUnion t_open, fun x hx ↦ mem_biUnion hx (xt x hx), _⟩
   rintro x hx
   simp only [mem_iUnion, exists_prop] at hx
   rcases hx with ⟨y, ys, hy⟩

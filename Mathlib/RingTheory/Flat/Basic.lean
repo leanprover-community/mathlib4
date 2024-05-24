@@ -98,7 +98,7 @@ restrict to finitely generated ideals `I`. --/
 theorem iff_rTensor_injective' :
     Flat R M ↔ ∀ I : Ideal R, Function.Injective (rTensor M I.subtype) := by
   rewrite [Flat.iff_rTensor_injective]
-  refine ⟨fun h I => ?_, fun h I _ => h I⟩
+  refine ⟨fun h I => _, fun h I _ => h I⟩
   rewrite [injective_iff_map_eq_zero]
   intro x hx₀
   obtain ⟨J, hfg, hle, y, rfl⟩ := Submodule.exists_fg_le_eq_rTensor_inclusion x

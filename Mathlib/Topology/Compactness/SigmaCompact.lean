@@ -81,7 +81,7 @@ lemma isSigmaCompact_biUnion {s : Set ι} {S : ι → Set X} (hc : Set.Countable
 lemma IsSigmaCompact.of_isClosed_subset {s t : Set X} (ht : IsSigmaCompact t)
     (hs : IsClosed s) (h : s ⊆ t) : IsSigmaCompact s := by
   rcases ht with ⟨K, hcompact, hcov⟩
-  refine ⟨(fun n ↦ s ∩ (K n)), fun n ↦ (hcompact n).inter_left hs, ?_⟩
+  refine ⟨(fun n ↦ s ∩ (K n)), fun n ↦ (hcompact n).inter_left hs, _⟩
   rw [← inter_iUnion, hcov]
   exact inter_eq_left.mpr h
 
@@ -89,7 +89,7 @@ lemma IsSigmaCompact.of_isClosed_subset {s t : Set X} (ht : IsSigmaCompact t)
 lemma IsSigmaCompact.image_of_continuousOn {f : X → Y} {s : Set X} (hs : IsSigmaCompact s)
     (hf : ContinuousOn f s) : IsSigmaCompact (f '' s) := by
   rcases hs with ⟨K, hcompact, hcov⟩
-  refine ⟨fun n ↦ f '' K n, ?_, hcov.symm ▸ image_iUnion.symm⟩
+  refine ⟨fun n ↦ f '' K n, _, hcov.symm ▸ image_iUnion.symm⟩
   exact fun n ↦ (hcompact n).image_of_continuousOn (hf.mono (hcov.symm ▸ subset_iUnion K n))
 
 /-- If `s` is σ-compact and `f` continuous, `f(s)` is σ-compact. -/
@@ -106,7 +106,7 @@ lemma Inducing.isSigmaCompact_iff {f : X → Y} {s : Set X}
     -- Suppose f(s) is σ-compact; we want to show s is σ-compact.
     -- Write f(s) as a union of compact sets L n, so s = ⋃ K n with K n := f⁻¹(L n) ∩ s.
     -- Since f is inducing, each K n is compact iff L n is.
-    refine ⟨fun n ↦ f ⁻¹' (L n) ∩ s, ?_, ?_⟩
+    refine ⟨fun n ↦ f ⁻¹' (L n) ∩ s, _, _⟩
     · intro n
       have : f '' (f ⁻¹' (L n) ∩ s) = L n := by
         rw [image_preimage_inter, inter_eq_left.mpr]
@@ -272,7 +272,7 @@ only countably many elements, `Set.Countable` version. -/
 protected theorem LocallyFinite.countable_univ {f : ι → Set X} (hf : LocallyFinite f)
     (hne : ∀ i, (f i).Nonempty) : (univ : Set ι).Countable := by
   have := fun n => hf.finite_nonempty_inter_compact (isCompact_compactCovering X n)
-  refine (countable_iUnion fun n => (this n).countable).mono fun i _ => ?_
+  refine (countable_iUnion fun n => (this n).countable).mono fun i _ => _
   rcases hne i with ⟨x, hx⟩
   rcases iUnion_eq_univ_iff.1 (iUnion_compactCovering X) x with ⟨n, hn⟩
   exact mem_iUnion.2 ⟨n, x, hx, hn⟩
@@ -295,7 +295,7 @@ theorem countable_cover_nhdsWithin_of_sigma_compact {f : X → Set X} {s : Set X
     ((isCompact_compactCovering X n).inter_right hs).elim_nhds_subcover _ fun x hx => hf x hx.right
   refine
     ⟨⋃ n, (t n : Set X), iUnion_subset fun n x hx => (ht n x hx).2,
-      countable_iUnion fun n => (t n).countable_toSet, fun x hx => mem_iUnion₂.2 ?_⟩
+      countable_iUnion fun n => (t n).countable_toSet, fun x hx => mem_iUnion₂.2 _⟩
   rcases exists_mem_compactCovering x with ⟨n, hn⟩
   rcases mem_iUnion₂.1 (hsub n ⟨hn, hx⟩) with ⟨y, hyt : y ∈ t n, hyf : x ∈ s → x ∈ f y⟩
   exact ⟨y, mem_iUnion.2 ⟨n, hyt⟩, hyf hx⟩
@@ -380,7 +380,7 @@ theorem exists_mem (x : X) : ∃ n, x ∈ K n :=
 /-- A compact exhaustion eventually covers any compact set. -/
 theorem exists_superset_of_isCompact {s : Set X} (hs : IsCompact s) : ∃ n, s ⊆ K n := by
   suffices ∃ n, s ⊆ interior (K n) from this.imp fun _ ↦ (Subset.trans · interior_subset)
-  refine hs.elim_directed_cover (interior ∘ K) (fun _ ↦ isOpen_interior) ?_ ?_
+  refine hs.elim_directed_cover (interior ∘ K) (fun _ ↦ isOpen_interior) _ _
   · intro x _
     rcases K.exists_mem x with ⟨k, hk⟩
     exact mem_iUnion.2 ⟨k + 1, K.subset_interior_succ _ hk⟩

@@ -51,7 +51,7 @@ def sectionOfCone (c : Cone F) (x : c.pt) : F.sections :=
 
 theorem isLimit_iff (c : Cone F) :
     Nonempty (IsLimit c) ↔ ∀ s ∈ F.sections, ∃! x : c.pt, ∀ j, c.π.app j x = s j := by
-  refine ⟨fun ⟨t⟩ s hs ↦ ?_, fun h ↦ ⟨?_⟩⟩
+  refine ⟨fun ⟨t⟩ s hs ↦ _, fun h ↦ ⟨_⟩⟩
   · let cs := coneOfSection hs
     exact ⟨t.lift cs ⟨⟩, fun j ↦ congr_fun (t.fac cs j) ⟨⟩,
       fun x hx ↦ congr_fun (t.uniq cs (fun _ ↦ x) fun j ↦ funext fun _ ↦ hx j) ⟨⟩⟩
@@ -400,17 +400,17 @@ lemma Quot.desc_toCocone_desc {α : Type u} (f : Quot F → α) (hc : IsColimit 
 
 theorem isColimit_iff_bijective_desc : Nonempty (IsColimit c) ↔ (Quot.desc c).Bijective := by
   classical
-  refine ⟨?_, ?_⟩
-  · refine fun ⟨hc⟩ => ⟨fun x y h => ?_, fun x => ?_⟩
+  refine ⟨_, _⟩
+  · refine fun ⟨hc⟩ => ⟨fun x y h => _, fun x => _⟩
     · let f : Quot F → ULift.{u} Bool := fun z => ULift.up (x = z)
       suffices f x = f y by simpa [f] using this
       rw [← Quot.desc_toCocone_desc c f hc x, h, Quot.desc_toCocone_desc]
     · let f₁ : c.pt ⟶ ULift.{u} Bool := fun _ => ULift.up true
       let f₂ : c.pt ⟶ ULift.{u} Bool := fun x => ULift.up (∃ a, Quot.desc c a = x)
       suffices f₁ = f₂ by simpa [f₁, f₂] using congrFun this x
-      refine hc.hom_ext fun j => funext fun x => ?_
+      refine hc.hom_ext fun j => funext fun x => _
       simpa [f₁, f₂] using ⟨Quot.ι F j x, by simp⟩
-  · refine fun h => ⟨?_⟩
+  · refine fun h => ⟨_⟩
     let e := Equiv.ofBijective _ h
     have h : ∀ j x, e.symm (c.ι.app j x) = Quot.ι F j x :=
       fun j x => e.injective (Equiv.ofBijective_apply_symm_apply _ _ _)
@@ -602,7 +602,7 @@ theorem jointly_surjective_of_isColimit {F : J ⥤ Type u} {t : Cocone F} (h : I
   by_contra hx
   simp_rw [not_exists] at hx
   apply (_ : (fun _ ↦ ULift.up True) ≠ (⟨· ≠ x⟩))
-  · refine h.hom_ext fun j ↦ ?_
+  · refine h.hom_ext fun j ↦ _
     ext y
     exact (true_iff _).mpr (hx j y)
   · exact fun he ↦ of_eq_true (congr_arg ULift.down <| congr_fun he x).symm rfl

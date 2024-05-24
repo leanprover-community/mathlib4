@@ -175,7 +175,7 @@ theorem isArtinian_iff_wellFounded :
 theorem IsArtinian.finite_of_linearIndependent [Nontrivial R] [IsArtinian R M] {s : Set M}
     (hs : LinearIndependent R ((↑) : s → M)) : s.Finite := by
   refine by_contradiction fun hf => (RelEmbedding.wellFounded_iff_no_descending_seq.1
-    (wellFounded_submodule_lt (R := R) (M := M))).elim' ?_
+    (wellFounded_submodule_lt (R := R) (M := M))).elim' _
   have f : ℕ ↪ s := Set.Infinite.natEmbedding s hf
   have : ∀ n, (↑) ∘ f '' { m | n ≤ m } ⊆ s := by
     rintro n x ⟨y, _, rfl⟩
@@ -244,7 +244,7 @@ theorem eventually_codisjoint_ker_pow_range_pow (f : M →ₗ[R] M) :
     ∀ᶠ n in atTop, Codisjoint (LinearMap.ker (f ^ n)) (LinearMap.range (f ^ n)) := by
   obtain ⟨n, hn : ∀ m, n ≤ m → LinearMap.range (f ^ n) = LinearMap.range (f ^ m)⟩ :=
     monotone_stabilizes f.iterateRange
-  refine eventually_atTop.mpr ⟨n, fun m hm ↦ codisjoint_iff.mpr ?_⟩
+  refine eventually_atTop.mpr ⟨n, fun m hm ↦ codisjoint_iff.mpr _⟩
   simp_rw [← hn _ hm, Submodule.eq_top_iff', Submodule.mem_sup]
   intro x
   rsuffices ⟨y, hy⟩ : ∃ y, (f ^ m) ((f ^ n) y) = (f ^ m) x
@@ -259,7 +259,7 @@ lemma eventually_iInf_range_pow_eq (f : Module.End R M) :
     ∀ᶠ n in atTop, ⨅ m, LinearMap.range (f ^ m) = LinearMap.range (f ^ n) := by
   obtain ⟨n, hn : ∀ m, n ≤ m → LinearMap.range (f ^ n) = LinearMap.range (f ^ m)⟩ :=
     monotone_stabilizes f.iterateRange
-  refine eventually_atTop.mpr ⟨n, fun l hl ↦ le_antisymm (iInf_le _ _) (le_iInf fun m ↦ ?_)⟩
+  refine eventually_atTop.mpr ⟨n, fun l hl ↦ le_antisymm (iInf_le _ _) (le_iInf fun m ↦ _)⟩
   rcases le_or_lt l m with h | h
   · rw [← hn _ (hl.trans h), hn _ hl]
   · exact f.iterateRange.monotone h.le
@@ -317,7 +317,7 @@ theorem disjoint_partial_infs_eventually_top (f : ℕ → Submodule R M)
     · apply w
       exact Nat.succ_le_succ_iff.mp p
   obtain ⟨n, w⟩ := monotone_stabilizes (partialSups (OrderDual.toDual ∘ f))
-  refine ⟨n, fun m p => ?_⟩
+  refine ⟨n, fun m p => _⟩
   exact (h m).eq_bot_of_ge (sup_eq_left.1 <| (w (m + 1) <| le_add_right p).symm.trans <| w m p)
 #align is_artinian.disjoint_partial_infs_eventually_top IsArtinian.disjoint_partial_infs_eventually_top
 
@@ -399,14 +399,14 @@ theorem isArtinian_of_fg_of_artinian {R M} [Ring R] [AddCommGroup M] [Module R M
   haveI := Classical.decEq M
   haveI := Classical.decEq R
   have : ∀ x ∈ s, x ∈ N := fun x hx => hs ▸ Submodule.subset_span hx
-  refine @isArtinian_of_surjective _ ((↑s : Set M) →₀ R) N _ _ _ _ _ ?_ ?_ isArtinian_finsupp
+  refine @isArtinian_of_surjective _ ((↑s : Set M) →₀ R) N _ _ _ _ _ _ _ isArtinian_finsupp
   · exact Finsupp.total (↑s : Set M) N R (fun i => ⟨i, hs ▸ subset_span i.2⟩)
   · rw [← LinearMap.range_eq_top, eq_top_iff,
        ← map_le_map_iff_of_injective (show Injective (Submodule.subtype N)
          from Subtype.val_injective), Submodule.map_top, range_subtype,
          ← Submodule.map_top, ← Submodule.map_comp, Submodule.map_top]
     subst N
-    refine span_le.2 (fun i hi => ?_)
+    refine span_le.2 (fun i hi => _)
     use Finsupp.single ⟨i, hi⟩ 1
     simp
 #align is_artinian_of_fg_of_artinian isArtinian_of_fg_of_artinian
@@ -450,7 +450,7 @@ theorem isNilpotent_jacobson_bot : IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) 
   let Jac := Ideal.jacobson (⊥ : Ideal R)
   let f : ℕ →o (Ideal R)ᵒᵈ := ⟨fun n => Jac ^ n, fun _ _ h => Ideal.pow_le_pow_right h⟩
   obtain ⟨n, hn⟩ : ∃ n, ∀ m, n ≤ m → Jac ^ n = Jac ^ m := IsArtinian.monotone_stabilizes f
-  refine ⟨n, ?_⟩
+  refine ⟨n, _⟩
   let J : Ideal R := annihilator (Jac ^ n)
   suffices J = ⊤ by
     have hJ : J • Jac ^ n = ⊥ := annihilator_smul (Jac ^ n)
@@ -470,15 +470,15 @@ theorem isNilpotent_jacobson_bot : IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) 
   have : Jac * Ideal.span {x} ≤ J := by -- Need version 4 of Nakayama's lemma on Stacks
     by_contra H
     refine H (Ideal.mul_le_left.trans (le_of_le_smul_of_le_jacobson_bot (fg_span_singleton _) le_rfl
-      (le_sup_right.trans_eq (this.eq_of_not_lt (hJ' _ ?_)).symm)))
+      (le_sup_right.trans_eq (this.eq_of_not_lt (hJ' _ _)).symm)))
     exact lt_of_le_of_ne le_sup_left fun h => H <| h.symm ▸ le_sup_right
   have : Ideal.span {x} * Jac ^ (n + 1) ≤ ⊥ := calc
     Ideal.span {x} * Jac ^ (n + 1) = Ideal.span {x} * Jac * Jac ^ n := by
       rw [pow_succ', ← mul_assoc]
     _ ≤ J * Jac ^ n := mul_le_mul (by rwa [mul_comm]) le_rfl
     _ = ⊥ := by simp [J]
-  refine hxJ (mem_annihilator.2 fun y hy => (mem_bot R).1 ?_)
-  refine this (mul_mem_mul (mem_span_singleton_self x) ?_)
+  refine hxJ (mem_annihilator.2 fun y hy => (mem_bot R).1 _)
+  refine this (mul_mem_mul (mem_span_singleton_self x) _)
   rwa [← hn (n + 1) (Nat.le_succ _)]
 #align is_artinian_ring.is_nilpotent_jacobson_bot IsArtinianRing.isNilpotent_jacobson_bot
 
@@ -527,7 +527,7 @@ lemma primeSpectrum_finite : {I : Ideal R | I.IsPrime}.Finite := by
   set Spec := {I : Ideal R | I.IsPrime}
   obtain ⟨_, ⟨s, rfl⟩, H⟩ := set_has_minimal
     (range (Finset.inf · Subtype.val : Finset Spec → Ideal R)) ⟨⊤, ∅, by simp⟩
-  refine Set.finite_def.2 ⟨s, fun p ↦ ?_⟩
+  refine Set.finite_def.2 ⟨s, fun p ↦ _⟩
   classical
   obtain ⟨q, hq1, hq2⟩ := p.2.inf_le'.mp <| inf_eq_right.mp <|
     inf_le_right.eq_of_not_lt (H (p ⊓ s.inf Subtype.val) ⟨insert p s, by simp⟩)

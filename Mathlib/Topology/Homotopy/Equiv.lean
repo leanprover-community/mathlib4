@@ -145,10 +145,10 @@ def trans (h₁ : X ≃ₕ Y) (h₂ : Y ≃ₕ Z) : X ≃ₕ Z where
   toFun := h₂.toFun.comp h₁.toFun
   invFun := h₁.invFun.comp h₂.invFun
   left_inv := by
-    refine Homotopic.trans ?_ h₁.left_inv
+    refine Homotopic.trans _ h₁.left_inv
     exact ((Homotopic.refl _).hcomp h₂.left_inv).hcomp (Homotopic.refl _)
   right_inv := by
-    refine Homotopic.trans ?_ h₂.right_inv
+    refine Homotopic.trans _ h₂.right_inv
     exact ((Homotopic.refl _).hcomp h₁.right_inv).hcomp (Homotopic.refl _)
 #align continuous_map.homotopy_equiv.trans ContinuousMap.HomotopyEquiv.trans
 #align continuous_map.homotopy_equiv.trans_apply ContinuousMap.HomotopyEquiv.trans_apply

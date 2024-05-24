@@ -241,7 +241,7 @@ theorem sInf_coe (P : Set (Submodule R M)) : (↑(sInf P) : Set M) = ⋂ p ∈ P
 theorem finset_inf_coe {ι} (s : Finset ι) (p : ι → Submodule R M) :
     (↑(s.inf p) : Set M) = ⋂ i ∈ s, ↑(p i) := by
   letI := Classical.decEq ι
-  refine s.induction_on ?_ fun i s _ ih ↦ ?_
+  refine s.induction_on _ fun i s _ ih ↦ _
   · simp
   · rw [Finset.inf_insert, inf_coe, ih]
     simp
@@ -325,8 +325,8 @@ theorem toAddSubmonoid_sSup (s : Set (Submodule R M)) :
       smul_mem' := fun t {m} h ↦ by
         simp_rw [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup, sSup_eq_iSup'] at h ⊢
         refine AddSubmonoid.iSup_induction'
-          (C := fun x _ ↦ t • x ∈ ⨆ p : toAddSubmonoid '' s, (p : AddSubmonoid M)) ?_ ?_
-          (fun x y _ _ ↦ ?_) h
+          (C := fun x _ ↦ t • x ∈ ⨆ p : toAddSubmonoid '' s, (p : AddSubmonoid M)) _ _
+          (fun x y _ _ ↦ _) h
         · rintro ⟨-, ⟨p : Submodule R M, hp : p ∈ s, rfl⟩⟩ x (hx : x ∈ p)
           suffices p.toAddSubmonoid ≤ ⨆ q : toAddSubmonoid '' s, (q : AddSubmonoid M) by
             exact this (smul_mem p t hx)
@@ -335,7 +335,7 @@ theorem toAddSubmonoid_sSup (s : Set (Submodule R M)) :
           exact ⟨p, hp, rfl⟩
         · simpa only [smul_zero] using zero_mem _
         · simp_rw [smul_add]; exact add_mem }
-  refine le_antisymm (?_ : sSup s ≤ p) ?_
+  refine le_antisymm (_ : sSup s ≤ p) _
   · exact sSup_le fun q hq ↦ le_sSup <| Set.mem_image_of_mem toAddSubmonoid hq
   · exact sSup_le fun _ ⟨q, hq, hq'⟩ ↦ hq'.symm ▸ le_sSup hq
 

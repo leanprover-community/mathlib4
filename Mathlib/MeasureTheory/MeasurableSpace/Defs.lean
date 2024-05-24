@@ -409,7 +409,7 @@ theorem generateFrom_measurableSet [MeasurableSpace α] :
 
 theorem forall_generateFrom_mem_iff_mem_iff {S : Set (Set α)} {x y : α} :
     (∀ s, MeasurableSet[generateFrom S] s → (x ∈ s ↔ y ∈ s)) ↔ (∀ s ∈ S, x ∈ s ↔ y ∈ s) := by
-  refine ⟨fun H s hs ↦ H s (.basic s hs), fun H s ↦ ?_⟩
+  refine ⟨fun H s hs ↦ H s (.basic s hs), fun H s ↦ _⟩
   apply generateFrom_induction
   · exact H
   · rfl

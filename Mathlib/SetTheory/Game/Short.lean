@@ -267,19 +267,19 @@ def leLFDecidable : ∀ (x y : PGame.{u}) [Short x] [Short y], Decidable (x ≤ 
   | mk xl xr xL xR, mk yl yr yL yR, shortx, shorty => by
     constructor
     · refine @decidable_of_iff' _ _ mk_le_mk (id _)
-      apply @And.decidable _ _ ?_ ?_
-      · apply @Fintype.decidableForallFintype xl _ ?_ _
+      apply @And.decidable _ _ _ _
+      · apply @Fintype.decidableForallFintype xl _ _ _
         intro i
         apply (leLFDecidable _ _).2
-      · apply @Fintype.decidableForallFintype yr _ ?_ _
+      · apply @Fintype.decidableForallFintype yr _ _ _
         intro i
         apply (leLFDecidable _ _).2
     · refine @decidable_of_iff' _ _ mk_lf_mk (id _)
-      apply @Or.decidable _ _ ?_ ?_
-      · apply @Fintype.decidableExistsFintype yl _ ?_ _
+      apply @Or.decidable _ _ _ _
+      · apply @Fintype.decidableExistsFintype yl _ _ _
         intro i
         apply (leLFDecidable _ _).1
-      · apply @Fintype.decidableExistsFintype xr _ ?_ _
+      · apply @Fintype.decidableExistsFintype xr _ _ _
         intro i
         apply (leLFDecidable _ _).1
 termination_by x y => (x, y)

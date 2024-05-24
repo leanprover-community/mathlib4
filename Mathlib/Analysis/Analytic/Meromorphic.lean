@@ -43,7 +43,7 @@ lemma add {f g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hg : Meromorph
     MeromorphicAt (f + g) x := by
   rcases hf with ⟨m, hf⟩
   rcases hg with ⟨n, hg⟩
-  refine ⟨max m n, ?_⟩
+  refine ⟨max m n, _⟩
   have : (fun z ↦ (z - x) ^ max m n • (f + g) z) = fun z ↦ (z - x) ^ (max m n - m) •
       ((z - x) ^ m • f z) + (z - x) ^ (max m n - n) • ((z - x) ^ n • g z) := by
     simp_rw [← mul_smul, ← pow_add, Nat.sub_add_cancel (Nat.le_max_left _ _),
@@ -56,7 +56,7 @@ lemma smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f
     MeromorphicAt (f • g) x := by
   rcases hf with ⟨m, hf⟩
   rcases hg with ⟨n, hg⟩
-  refine ⟨m + n, ?_⟩
+  refine ⟨m + n, _⟩
   convert hf.smul hg using 2 with z
   rw [smul_eq_mul, ← mul_smul, mul_assoc, mul_comm (f z), ← mul_assoc, pow_add,
     ← smul_eq_mul (a' := f z), smul_assoc, Pi.smul_apply']
@@ -86,9 +86,9 @@ neighbourhood of `x` (not on `f x`) -/
 lemma congr {f g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hfg : f =ᶠ[𝓝[≠] x] g) :
     MeromorphicAt g x := by
   rcases hf with ⟨m, hf⟩
-  refine ⟨m + 1, ?_⟩
+  refine ⟨m + 1, _⟩
   have : AnalyticAt 𝕜 (fun z ↦ z - x) x := (analyticAt_id 𝕜 x).sub analyticAt_const
-  refine (this.smul hf).congr ?_
+  refine (this.smul hf).congr _
   rw [eventuallyEq_nhdsWithin_iff] at hfg
   filter_upwards [hfg] with z hz
   rcases eq_or_ne z x with rfl | hn
@@ -99,7 +99,7 @@ lemma inv {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicA
   rcases hf with ⟨m, hf⟩
   by_cases h_eq : (fun z ↦ (z - x) ^ m • f z) =ᶠ[𝓝 x] 0
   · -- silly case: f locally 0 near x
-    refine (MeromorphicAt.const 0 x).congr ?_
+    refine (MeromorphicAt.const 0 x).congr _
     rw [eventuallyEq_nhdsWithin_iff]
     filter_upwards [h_eq] with z hfz hz
     rw [Pi.inv_apply, (smul_eq_zero_iff_right <| pow_ne_zero _ (sub_ne_zero.mpr hz)).mp hfz,
@@ -109,7 +109,7 @@ lemma inv {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicA
     have : AnalyticAt 𝕜 (fun z ↦ (z - x) ^ (m + 1)) x :=
       ((analyticAt_id 𝕜 x).sub analyticAt_const).pow _
     -- use `m + 1` rather than `m` to damp out any silly issues with the value at `z = x`
-    refine ⟨n + 1, (this.smul <| hg_an.inv hg_ne).congr ?_⟩
+    refine ⟨n + 1, (this.smul <| hg_an.inv hg_ne).congr _⟩
     filter_upwards [hg_eq, hg_an.continuousAt.eventually_ne hg_ne] with z hfg hg_ne'
     rcases eq_or_ne z x with rfl | hz_ne
     · simp only [sub_self, pow_succ, mul_zero, zero_smul]
@@ -173,7 +173,7 @@ lemma order_eq_int_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (n :
   · rw [h, WithTop.map_top, ← WithTop.coe_natCast, WithTop.top_sub_coe,
       eq_false_intro WithTop.top_ne_coe, false_iff]
     rw [AnalyticAt.order_eq_top_iff] at h
-    refine fun ⟨g, hg_an, hg_ne, hg_eq⟩ ↦ hg_ne ?_
+    refine fun ⟨g, hg_an, hg_ne, hg_eq⟩ ↦ hg_ne _
     apply EventuallyEq.eq_of_nhds
     rw [EventuallyEq, ← AnalyticAt.frequently_eq_iff_eventually_eq hg_an analyticAt_const]
     apply Eventually.frequently
@@ -206,11 +206,11 @@ lemma _root_.AnalyticAt.meromorphicAt_order {f : 𝕜 → E} {x : 𝕜} (hf : An
 
 lemma iff_eventuallyEq_zpow_smul_analyticAt {f : 𝕜 → E} {x : 𝕜} : MeromorphicAt f x ↔
     ∃ (n : ℤ) (g : 𝕜 → E), AnalyticAt 𝕜 g x ∧ ∀ᶠ z in 𝓝[≠] x, f z = (z - x) ^ n • g z := by
-  refine ⟨fun ⟨n, hn⟩ ↦ ⟨-n, _, ⟨hn, eventually_nhdsWithin_iff.mpr ?_⟩⟩, ?_⟩
+  refine ⟨fun ⟨n, hn⟩ ↦ ⟨-n, _, ⟨hn, eventually_nhdsWithin_iff.mpr _⟩⟩, _⟩
   · filter_upwards with z hz
     rw [← mul_smul, ← zpow_natCast, ← zpow_add₀ (sub_ne_zero.mpr hz), add_left_neg,
       zpow_zero, one_smul]
-  · refine fun ⟨n, g, hg_an, hg_eq⟩ ↦ MeromorphicAt.congr ?_ (EventuallyEq.symm hg_eq)
+  · refine fun ⟨n, g, hg_an, hg_eq⟩ ↦ MeromorphicAt.congr _ (EventuallyEq.symm hg_eq)
     exact (((MeromorphicAt.id x).sub (.const _ x)).zpow _).smul hg_an.meromorphicAt
 
 end MeromorphicAt
@@ -265,7 +265,7 @@ lemma zpow (n : ℤ) : MeromorphicOn (s ^ n) U := fun x hx ↦ (hs x hx).zpow _
 end arithmetic
 
 lemma congr (h_eq : Set.EqOn f g U) (hu : IsOpen U) : MeromorphicOn g U := by
-  refine fun x hx ↦ (hf x hx).congr (EventuallyEq.filter_mono ?_ nhdsWithin_le_nhds)
+  refine fun x hx ↦ (hf x hx).congr (EventuallyEq.filter_mono _ nhdsWithin_le_nhds)
   exact eventually_of_mem (hu.mem_nhds hx) h_eq
 
 end MeromorphicOn

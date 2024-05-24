@@ -378,7 +378,7 @@ variable [Group R] [MulAction R M]
 
 lemma orbitRel_of_subMul (p : SubMulAction R M) :
     MulAction.orbitRel R p = (MulAction.orbitRel R M).comap Subtype.val := by
-  refine Setoid.ext_iff.2 (fun x y ↦ ?_)
+  refine Setoid.ext_iff.2 (fun x y ↦ _)
   rw [Setoid.comap_rel]
   exact mem_orbit_subMul_iff
 

@@ -63,7 +63,7 @@ def toPowerSeries : HahnSeries ℕ R ≃+* PowerSeries R where
     ext n
     simp only [PowerSeries.coeff_mul, PowerSeries.coeff_mk, mul_coeff, isPWO_support]
     classical
-    refine (sum_filter_ne_zero _).symm.trans <| (sum_congr ?_ fun _ _ ↦ rfl).trans <|
+    refine (sum_filter_ne_zero _).symm.trans <| (sum_congr _ fun _ _ ↦ rfl).trans <|
       sum_filter_ne_zero _
     ext m
     simp only [mem_antidiagonal, mem_addAntidiagonal, and_congr_left_iff, mem_filter,

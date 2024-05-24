@@ -46,8 +46,8 @@ variable (A)
 noncomputable def ofBaseChangeAux (Q : QuadraticForm R V) :
     CliffordAlgebra Q →ₐ[R] CliffordAlgebra (Q.baseChange A) :=
   CliffordAlgebra.lift Q <| by
-    refine ⟨(ι (Q.baseChange A)).restrictScalars R ∘ₗ TensorProduct.mk R A V 1, fun v => ?_⟩
-    refine (CliffordAlgebra.ι_sq_scalar (Q.baseChange A) (1 ⊗ₜ v)).trans ?_
+    refine ⟨(ι (Q.baseChange A)).restrictScalars R ∘ₗ TensorProduct.mk R A V 1, fun v => _⟩
+    refine (CliffordAlgebra.ι_sq_scalar (Q.baseChange A) (1 ⊗ₜ v)).trans _
     rw [QuadraticForm.baseChange_tmul, one_mul, ← Algebra.algebraMap_eq_smul_one,
       ← IsScalarTower.algebraMap_apply]
 
@@ -80,7 +80,7 @@ algebra. -/
 noncomputable def toBaseChange (Q : QuadraticForm R V) :
     CliffordAlgebra (Q.baseChange A) →ₐ[A] A ⊗[R] CliffordAlgebra Q :=
   CliffordAlgebra.lift _ <| by
-    refine ⟨TensorProduct.AlgebraTensorModule.map (LinearMap.id : A →ₗ[A] A) (ι Q), ?_⟩
+    refine ⟨TensorProduct.AlgebraTensorModule.map (LinearMap.id : A →ₗ[A] A) (ι Q), _⟩
     letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
     letI : Invertible (2 : A ⊗[R] CliffordAlgebra Q) :=
       (Invertible.map (algebraMap R _) 2).copy 2 (map_ofNat _ _).symm
@@ -89,7 +89,7 @@ noncomputable def toBaseChange (Q : QuadraticForm R V) :
       -- the crux is that by converting to a statement about linear maps instead of quadratic forms,
       -- we then have access to all the partially-applied `ext` lemmas.
       rw [CliffordAlgebra.forall_mul_self_eq_iff (isUnit_of_invertible _)]
-      refine TensorProduct.AlgebraTensorModule.curry_injective ?_
+      refine TensorProduct.AlgebraTensorModule.curry_injective _
       ext v w
       exact hpure_tensor v w
     intros v w
@@ -141,8 +141,8 @@ theorem toBaseChange_reverse (Q : QuadraticForm R V) (x : CliffordAlgebra (Q.bas
     toBaseChange A Q (reverse x) =
       TensorProduct.map LinearMap.id reverse (toBaseChange A Q x) := by
   have := DFunLike.congr_fun (toBaseChange_comp_reverseOp A Q) x
-  refine (congr_arg unop this).trans ?_; clear this
-  refine (LinearMap.congr_fun (TensorProduct.AlgebraTensorModule.map_comp _ _ _ _).symm _).trans ?_
+  refine (congr_arg unop this).trans _; clear this
+  refine (LinearMap.congr_fun (TensorProduct.AlgebraTensorModule.map_comp _ _ _ _).symm _).trans _
   rw [reverse, ← AlgEquiv.toLinearMap, ← AlgEquiv.toLinearEquiv_toLinearMap,
     AlgEquiv.toLinearEquiv_toOpposite]
   dsimp

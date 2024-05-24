@@ -49,7 +49,7 @@ theorem smoothOn_continuousLinearMapCoordChange
       (e₁.baseSet ∩ e₂.baseSet ∩ (e₁'.baseSet ∩ e₂'.baseSet)) := by
   have h₁ := smoothOn_coordChangeL IB e₁' e₁
   have h₂ := smoothOn_coordChangeL IB e₂ e₂'
-  refine (h₁.mono ?_).cle_arrowCongr (h₂.mono ?_) <;> mfld_set_tac
+  refine (h₁.mono _).cle_arrowCongr (h₂.mono _) <;> mfld_set_tac
 #align smooth_on_continuous_linear_map_coord_change smoothOn_continuousLinearMapCoordChange
 
 theorem hom_chart (y₀ y : LE₁E₂) :

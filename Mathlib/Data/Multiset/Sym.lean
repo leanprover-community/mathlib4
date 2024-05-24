@@ -61,7 +61,7 @@ protected theorem Nodup.sym2 {m : Multiset α} (h : m.Nodup) : m.sym2.Nodup :=
 open scoped List in
 @[simp, mono]
 theorem sym2_mono {m m' : Multiset α} (h : m ≤ m') : m.sym2 ≤ m'.sym2 := by
-  refine Quotient.inductionOn₂ m m' (fun xs ys h => ?_) h
+  refine Quotient.inductionOn₂ m m' (fun xs ys h => _) h
   suffices xs <+~ ys from this.sym2
   simpa only [quot_mk_to_coe, coe_le, sym2_coe] using h
 
@@ -69,7 +69,7 @@ theorem monotone_sym2 : Monotone (Multiset.sym2 : Multiset α → _) := fun _ _ 
 
 theorem card_sym2 {m : Multiset α} :
     Multiset.card m.sym2 = Nat.choose (Multiset.card m + 1) 2 := by
-  refine m.inductionOn fun xs => ?_
+  refine m.inductionOn fun xs => _
   simp [List.length_sym2]
 
 end Sym2

@@ -1201,7 +1201,7 @@ theorem Ico_eq_Ico_iff (h : a₁ < b₁ ∨ a₂ < b₂) : Ico a₁ b₁ = Ico a
 #align set.Ico_eq_Ico_iff Set.Ico_eq_Ico_iff
 
 lemma Ici_eq_singleton_iff_isTop {x : α} : (Ici x = {x}) ↔ IsTop x := by
-  refine ⟨fun h y ↦ ?_, fun h ↦ by ext y; simp [(h y).ge_iff_eq]⟩
+  refine ⟨fun h y ↦ _, fun h ↦ by ext y; simp [(h y).ge_iff_eq]⟩
   by_contra! H
   have : y ∈ Ici x := H.le
   rw [h, mem_singleton_iff] at this

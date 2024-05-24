@@ -53,9 +53,9 @@ def t (i j : 𝒰.J) : v 𝒰 f g i j ⟶ v 𝒰 f g j i := by
     hasPullback_assoc_symm (𝒰.map j) (𝒰.map i) (𝒰.map i ≫ f) g
   have : HasPullback (pullback.snd ≫ 𝒰.map j ≫ f) g :=
     hasPullback_assoc_symm (𝒰.map i) (𝒰.map j) (𝒰.map j ≫ f) g
-  refine (pullbackSymmetry ..).hom ≫ (pullbackAssoc ..).inv ≫ ?_
-  refine ?_ ≫ (pullbackAssoc ..).hom ≫ (pullbackSymmetry ..).hom
-  refine pullback.map _ _ _ _ (pullbackSymmetry _ _).hom (𝟙 _) (𝟙 _) ?_ ?_
+  refine (pullbackSymmetry ..).hom ≫ (pullbackAssoc ..).inv ≫ _
+  refine _ ≫ (pullbackAssoc ..).hom ≫ (pullbackSymmetry ..).hom
+  refine pullback.map _ _ _ _ (pullbackSymmetry _ _).hom (𝟙 _) (𝟙 _) _ _
   · rw [pullbackSymmetry_hom_comp_snd_assoc, pullback.condition_assoc, Category.comp_id]
   · rw [Category.comp_id, Category.id_comp]
 #align algebraic_geometry.Scheme.pullback.t AlgebraicGeometry.Scheme.Pullback.t
@@ -98,9 +98,9 @@ abbrev fV (i j : 𝒰.J) : v 𝒰 f g i j ⟶ pullback (𝒰.map i ≫ f) g :=
   `((Xⱼ ×[Z] Y) ×[X] Xₖ) ×[Xⱼ ×[Z] Y] ((Xⱼ ×[Z] Y) ×[X] Xᵢ)` needed for gluing   -/
 def t' (i j k : 𝒰.J) :
     pullback (fV 𝒰 f g i j) (fV 𝒰 f g i k) ⟶ pullback (fV 𝒰 f g j k) (fV 𝒰 f g j i) := by
-  refine (pullbackRightPullbackFstIso ..).hom ≫ ?_
+  refine (pullbackRightPullbackFstIso ..).hom ≫ _
   refine _ ≫ (pullbackSymmetry _ _).hom
-  refine ?_ ≫ (pullbackRightPullbackFstIso ..).inv
+  refine _ ≫ (pullbackRightPullbackFstIso ..).inv
   refine pullback.map _ _ _ _ (t 𝒰 f g i j) (𝟙 _) (𝟙 _) _ _
   · simp_rw [Category.comp_id, t_fst_fst_assoc, ← pullback.condition]
   · rw [Category.comp_id, Category.id_comp]
@@ -568,7 +568,7 @@ def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCove
   refine
     @openCoverOfIsIso
       (f := (pullbackSymmetry _ _).hom ≫ (limit.isoLimitCone ⟨_, this⟩).inv ≫
-        pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) _ _) ?_
+        pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) _ _) _
   · simp [← pullback.condition]
   · simp only [Category.comp_id, Category.id_comp]
   · infer_instance

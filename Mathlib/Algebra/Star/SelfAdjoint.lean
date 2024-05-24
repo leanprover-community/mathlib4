@@ -96,7 +96,7 @@ theorem mul_star_self [Mul R] [StarMul R] (x : R) : IsSelfAdjoint (x * star x) :
 /-- Self-adjoint elements commute if and only if their product is self-adjoint. -/
 lemma commute_iff {R : Type*} [Mul R] [StarMul R] {x y : R}
     (hx : IsSelfAdjoint x) (hy : IsSelfAdjoint y) : Commute x y ↔ IsSelfAdjoint (x * y) := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  refine ⟨fun h ↦ _, fun h ↦ _⟩
   · rw [isSelfAdjoint_iff, star_mul, hx.star_eq, hy.star_eq, h.eq]
   · simpa only [star_mul, hx.star_eq, hy.star_eq] using h.symm
 

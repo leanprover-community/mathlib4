@@ -52,7 +52,7 @@ def engel (x : L) : LieSubalgebra R L :=
         Submodule.mem_toAddSubmonoid, Module.End.mem_maxGenEigenspace, zero_smul,
         sub_zero, forall_exists_index]
       intro y z m hm n hn
-      refine ⟨m + n, ?_⟩
+      refine ⟨m + n, _⟩
       rw [ad_pow_lie]
       apply Finset.sum_eq_zero
       intro ij hij
@@ -104,7 +104,7 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
     normalizer H = H := by
   set N := normalizer H
   apply le_antisymm _ (le_normalizer H)
-  calc N.toSubmodule ≤ (engel R x).toSubmodule ⊔ H.toSubmodule := ?_
+  calc N.toSubmodule ≤ (engel R x).toSubmodule ⊔ H.toSubmodule := _
        _ = H := by rwa [sup_eq_right]
   have aux₁ : ∀ n ∈ N, ⁅x, n⁆ ∈ H := by
     intro n hn

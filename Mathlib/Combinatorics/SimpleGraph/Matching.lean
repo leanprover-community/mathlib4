@@ -70,7 +70,7 @@ theorem IsMatching.toEdge_eq_of_adj {M : Subgraph G} (h : M.IsMatching) {v w : V
 theorem IsMatching.toEdge.surjective {M : Subgraph G} (h : M.IsMatching) :
     Function.Surjective h.toEdge := by
   rintro ⟨e, he⟩
-  refine Sym2.ind (fun x y he => ?_) e he
+  refine Sym2.ind (fun x y he => _) e he
   exact ⟨⟨x, M.edge_vert he⟩, h.toEdge_eq_of_adj _ he⟩
 #align simple_graph.subgraph.is_matching.to_edge.surjective SimpleGraph.Subgraph.IsMatching.toEdge.surjective
 
@@ -88,7 +88,7 @@ def IsPerfectMatching : Prop := M.IsMatching ∧ M.IsSpanning
 #align simple_graph.subgraph.is_perfect_matching SimpleGraph.Subgraph.IsPerfectMatching
 
 theorem IsMatching.support_eq_verts {M : Subgraph G} (h : M.IsMatching) : M.support = M.verts := by
-  refine M.support_subset_verts.antisymm fun v hv => ?_
+  refine M.support_subset_verts.antisymm fun v hv => _
   obtain ⟨w, hvw, -⟩ := h hv
   exact ⟨_, hvw⟩
 #align simple_graph.subgraph.is_matching.support_eq_verts SimpleGraph.Subgraph.IsMatching.support_eq_verts
@@ -112,7 +112,7 @@ theorem IsMatching.even_card {M : Subgraph G} [Fintype M.verts] (h : M.IsMatchin
 #align simple_graph.subgraph.is_matching.even_card SimpleGraph.Subgraph.IsMatching.even_card
 
 theorem isPerfectMatching_iff : M.IsPerfectMatching ↔ ∀ v, ∃! w, M.Adj v w := by
-  refine ⟨?_, fun hm => ⟨fun v _ => hm v, fun v => ?_⟩⟩
+  refine ⟨_, fun hm => ⟨fun v _ => hm v, fun v => _⟩⟩
   · rintro ⟨hm, hs⟩ v
     exact hm (hs v)
   · obtain ⟨w, hw, -⟩ := hm v

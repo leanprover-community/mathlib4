@@ -128,7 +128,7 @@ instance (F : X.Sheaf CommRingCat.{w}) : Mono F.presheaf.toTotalQuotientPresheaf
   change Function.Injective (algebraMap (F.presheaf.obj U) _)
   haveI : IsLocalization _ (Localization m) := Localization.isLocalization
   -- Porting note: `M` and `S` need to be specified manually, so used a hack to save some typing
-  refine IsLocalization.injective (M := m) (S := Localization m) ?_
+  refine IsLocalization.injective (M := m) (S := Localization m) _
   intro s hs t e
   apply section_ext F (unop U)
   intro x

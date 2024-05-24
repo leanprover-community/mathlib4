@@ -125,7 +125,7 @@ theorem convexHull_zero : convexHull 𝕜 (0 : Set E) = 0 :=
 
 @[simp]
 theorem convexHull_pair (x y : E) : convexHull 𝕜 {x, y} = segment 𝕜 x y := by
-  refine (convexHull_min ?_ <| convex_segment _ _).antisymm
+  refine (convexHull_min _ <| convex_segment _ _).antisymm
     (segment_subset_convexHull (mem_insert _ _) <| subset_insert _ _ <| mem_singleton _)
   rw [insert_subset_iff, singleton_subset_iff]
   exact ⟨left_mem_segment _ _ _, right_mem_segment _ _ _⟩
@@ -199,7 +199,7 @@ theorem AffineMap.image_convexHull (f : E →ᵃ[𝕜] F) (s : Set E) :
     f '' convexHull 𝕜 s = convexHull 𝕜 (f '' s) := by
   apply Set.Subset.antisymm
   · rw [Set.image_subset_iff]
-    refine convexHull_min ?_ ((convex_convexHull 𝕜 (f '' s)).affine_preimage f)
+    refine convexHull_min _ ((convex_convexHull 𝕜 (f '' s)).affine_preimage f)
     rw [← Set.image_subset_iff]
     exact subset_convexHull 𝕜 (f '' s)
   · exact convexHull_min (Set.image_subset _ (subset_convexHull 𝕜 s))
@@ -212,7 +212,7 @@ theorem convexHull_subset_affineSpan (s : Set E) : convexHull 𝕜 s ⊆ (affine
 
 @[simp]
 theorem affineSpan_convexHull (s : Set E) : affineSpan 𝕜 (convexHull 𝕜 s) = affineSpan 𝕜 s := by
-  refine le_antisymm ?_ (affineSpan_mono 𝕜 (subset_convexHull 𝕜 s))
+  refine le_antisymm _ (affineSpan_mono 𝕜 (subset_convexHull 𝕜 s))
   rw [affineSpan_le]
   exact convexHull_subset_affineSpan s
 #align affine_span_convex_hull affineSpan_convexHull

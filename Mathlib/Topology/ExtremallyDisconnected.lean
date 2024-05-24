@@ -56,11 +56,11 @@ instance [ExtremallyDisconnected X] [T2Space X] : TotallySeparatedSpace X :=
     intro x _ y _ hxy
     obtain ⟨U, V, hUV⟩ := T2Space.t2 hxy
     refine ⟨closure U, (closure U)ᶜ, ExtremallyDisconnected.open_closure U hUV.1,
-      by simp only [isOpen_compl_iff, isClosed_closure], subset_closure hUV.2.2.1, ?_,
+      by simp only [isOpen_compl_iff, isClosed_closure], subset_closure hUV.2.2.1, _,
       by simp only [Set.union_compl_self, Set.subset_univ], disjoint_compl_right⟩
     rw [Set.mem_compl_iff, mem_closure_iff]
     push_neg
-    refine ⟨V, ⟨hUV.2.1, hUV.2.2.2.1, ?_⟩⟩
+    refine ⟨V, ⟨hUV.2.1, hUV.2.2.2.1, _⟩⟩
     rw [← Set.disjoint_iff_inter_eq_empty, disjoint_comm]
     exact hUV.2.2.2.2 }
 
@@ -88,7 +88,7 @@ theorem StoneCech.projective [DiscreteTopology X] : CompactT2.Projective (StoneC
   have ht : Continuous t := continuous_of_discreteTopology
   let h : StoneCech X → Y := stoneCechExtend ht
   have hh : Continuous h := continuous_stoneCechExtend ht
-  refine ⟨h, hh, denseRange_stoneCechUnit.equalizer (hg.comp hh) hf ?_⟩
+  refine ⟨h, hh, denseRange_stoneCechUnit.equalizer (hg.comp hh) hf _⟩
   rw [comp.assoc, stoneCechExtend_extends ht, ← comp.assoc, hs, id_comp]
 #align stone_cech.projective StoneCech.projective
 
@@ -147,7 +147,7 @@ lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {π : D
   let S : Set <| Set D := {E : Set D | IsClosed E ∧ π '' E = univ}
   suffices ∀ (C : Set <| Set D) (_ : C ⊆ S) (_ : IsChain (· ⊆ ·) C), ∃ s ∈ S, ∀ c ∈ C, s ⊆ c by
     rcases zorn_superset S this with ⟨E, ⟨E_closed, E_surj⟩, E_min⟩
-    refine ⟨E, isCompact_iff_compactSpace.mp E_closed.isCompact, E_surj, ?_⟩
+    refine ⟨E, isCompact_iff_compactSpace.mp E_closed.isCompact, E_surj, _⟩
     intro E₀ E₀_min E₀_closed
     contrapose! E₀_min
     exact eq_univ_of_image_val_eq <|
@@ -156,15 +156,15 @@ lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {π : D
   -- suffices to prove intersection of chain is minimal
   intro C C_sub C_chain
   -- prove intersection of chain is closed
-  refine ⟨iInter (fun c : C => c), ⟨isClosed_iInter fun ⟨_, h⟩ => (C_sub h).left, ?_⟩,
+  refine ⟨iInter (fun c : C => c), ⟨isClosed_iInter fun ⟨_, h⟩ => (C_sub h).left, _⟩,
     fun c hc _ h => mem_iInter.mp h ⟨c, hc⟩⟩
   -- prove intersection of chain is mapped onto $A$
   by_cases hC : Nonempty C
-  · refine eq_univ_of_forall fun a => inter_nonempty_iff_exists_left.mp ?_
+  · refine eq_univ_of_forall fun a => inter_nonempty_iff_exists_left.mp _
     -- apply Cantor's intersection theorem
     refine iInter_inter (ι := C) (π ⁻¹' {a}) _ ▸
       IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed _
-      ?_ (fun c => ?_) (fun c => IsClosed.isCompact ?_) (fun c => ?_)
+      _ (fun c => _) (fun c => IsClosed.isCompact _) (fun c => _)
     · replace C_chain : IsChain (· ⊇ ·) C := C_chain.symm
       have : ∀ s t : Set D, s ⊇ t → _ ⊇ _ := fun _ _ => inter_subset_inter_left <| π ⁻¹' {a}
       exact (directedOn_iff_directed.mp C_chain.directedOn).mono_comp (· ⊇ ·) this
@@ -271,7 +271,7 @@ protected theorem CompactT2.ExtremallyDisconnected.projective [ExtremallyDisconn
   -- prove $\rho := \pi_2|_E \circ \pi_1|_E^{-1}$ satisfies $\phi = f \circ \rho$
   let π₂ : D → B := Prod.snd ∘ Subtype.val
   have π₂_cont : Continuous π₂ := continuous_snd.comp continuous_subtype_val
-  refine ⟨E.restrict π₂ ∘ ρ'.symm, ⟨π₂_cont.continuousOn.restrict.comp ρ'.symm.continuous, ?_⟩⟩
+  refine ⟨E.restrict π₂ ∘ ρ'.symm, ⟨π₂_cont.continuousOn.restrict.comp ρ'.symm.continuous, _⟩⟩
   suffices f ∘ E.restrict π₂ = φ ∘ ρ' by
     rw [← comp.assoc, this, comp.assoc, Homeomorph.self_comp_symm, comp_id]
   ext x

@@ -146,9 +146,9 @@ theorem bounds_bddBelow {f : E →SL[σ₁₂] F} : BddBelow { c | 0 ≤ c ∧ �
 
 theorem isLeast_opNorm [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F) :
     IsLeast {c | 0 ≤ c ∧ ∀ x, ‖f x‖ ≤ c * ‖x‖} ‖f‖ := by
-  refine IsClosed.isLeast_csInf ?_ bounds_nonempty bounds_bddBelow
+  refine IsClosed.isLeast_csInf _ bounds_nonempty bounds_bddBelow
   simp only [setOf_and, setOf_forall]
-  refine isClosed_Ici.inter <| isClosed_iInter fun _ ↦ isClosed_le ?_ ?_ <;> continuity
+  refine isClosed_Ici.inter <| isClosed_iInter fun _ ↦ isClosed_le _ _ <;> continuity
 
 @[deprecated] alias isLeast_op_norm := isLeast_opNorm -- deprecated on 2024-02-02
 
@@ -275,7 +275,7 @@ theorem opNorm_le_of_shell {f : E →SL[σ₁₂] F} {ε C : ℝ} (ε_pos : 0 < 
 theorem opNorm_le_of_ball {f : E →SL[σ₁₂] F} {ε : ℝ} {C : ℝ} (ε_pos : 0 < ε) (hC : 0 ≤ C)
     (hf : ∀ x ∈ ball (0 : E) ε, ‖f x‖ ≤ C * ‖x‖) : ‖f‖ ≤ C := by
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
-  refine opNorm_le_of_shell ε_pos hC hc fun x _ hx => hf x ?_
+  refine opNorm_le_of_shell ε_pos hC hc fun x _ hx => hf x _
   rwa [ball_zero_eq]
 #align continuous_linear_map.op_norm_le_of_ball ContinuousLinearMap.opNorm_le_of_ball
 
@@ -292,11 +292,11 @@ theorem opNorm_le_of_nhds_zero {f : E →SL[σ₁₂] F} {C : ℝ} (hC : 0 ≤ C
 theorem opNorm_le_of_shell' {f : E →SL[σ₁₂] F} {ε C : ℝ} (ε_pos : 0 < ε) (hC : 0 ≤ C) {c : 𝕜}
     (hc : ‖c‖ < 1) (hf : ∀ x, ε * ‖c‖ ≤ ‖x‖ → ‖x‖ < ε → ‖f x‖ ≤ C * ‖x‖) : ‖f‖ ≤ C := by
   by_cases h0 : c = 0
-  · refine opNorm_le_of_ball ε_pos hC fun x hx => hf x ?_ ?_
+  · refine opNorm_le_of_ball ε_pos hC fun x hx => hf x _ _
     · simp [h0]
     · rwa [ball_zero_eq] at hx
   · rw [← inv_inv c, norm_inv, inv_lt_one_iff_of_pos (norm_pos_iff.2 <| inv_ne_zero h0)] at hc
-    refine opNorm_le_of_shell ε_pos hC hc ?_
+    refine opNorm_le_of_shell ε_pos hC hc _
     rwa [norm_inv, div_eq_mul_inv, inv_inv]
 #align continuous_linear_map.op_norm_le_of_shell' ContinuousLinearMap.opNorm_le_of_shell'
 
@@ -306,7 +306,7 @@ theorem opNorm_le_of_shell' {f : E →SL[σ₁₂] F} {ε C : ℝ} (ε_pos : 0 <
 one controls the norm of `f`. -/
 theorem opNorm_le_of_unit_norm [NormedSpace ℝ E] [NormedSpace ℝ F] {f : E →L[ℝ] F} {C : ℝ}
     (hC : 0 ≤ C) (hf : ∀ x, ‖x‖ = 1 → ‖f x‖ ≤ C) : ‖f‖ ≤ C := by
-  refine opNorm_le_bound' f hC fun x hx => ?_
+  refine opNorm_le_bound' f hC fun x hx => _
   have H₁ : ‖‖x‖⁻¹ • x‖ = 1 := by rw [norm_smul, norm_inv, norm_norm, inv_mul_cancel hx]
   have H₂ := hf _ H₁
   rwa [map_smul, norm_smul, norm_inv, norm_norm, ← div_eq_inv_mul, _root_.div_le_iff] at H₂
@@ -353,18 +353,18 @@ private lemma uniformity_eq_seminorm :
     𝓤 (E →SL[σ₁₂] F) = ⨅ r > 0, 𝓟 {f | ‖f.1 - f.2‖ < r} := by
   refine ContinuousLinearMap.seminorm (σ₁₂ := σ₁₂) (E := E) (F := F) |>.uniformity_eq_of_hasBasis
     (ContinuousLinearMap.hasBasis_nhds_zero_of_basis Metric.nhds_basis_closedBall)
-    ?_ fun (s, r) ⟨hs, hr⟩ ↦ ?_
+    _ fun (s, r) ⟨hs, hr⟩ ↦ _
   · rcases NormedField.exists_lt_norm 𝕜 1 with ⟨c, hc⟩
     refine ⟨‖c‖, ContinuousLinearMap.hasBasis_nhds_zero.mem_iff.2
-      ⟨(closedBall 0 1, closedBall 0 1), ?_⟩⟩
+      ⟨(closedBall 0 1, closedBall 0 1), _⟩⟩
     suffices ∀ f : E →SL[σ₁₂] F, (∀ x, ‖x‖ ≤ 1 → ‖f x‖ ≤ 1) → ‖f‖ ≤ ‖c‖ by
       simpa [NormedSpace.isVonNBounded_closedBall, closedBall_mem_nhds, subset_def] using this
     intro f hf
-    refine opNorm_le_of_shell (f := f) one_pos (norm_nonneg c) hc fun x hcx hx ↦ ?_
+    refine opNorm_le_of_shell (f := f) one_pos (norm_nonneg c) hc fun x hcx hx ↦ _
     exact (hf x hx.le).trans ((div_le_iff' <| one_pos.trans hc).1 hcx)
   · rcases (NormedSpace.isVonNBounded_iff' _ _ _).1 hs with ⟨ε, hε⟩
     rcases exists_pos_mul_lt hr ε with ⟨δ, hδ₀, hδ⟩
-    refine ⟨δ, hδ₀, fun f hf x hx ↦ ?_⟩
+    refine ⟨δ, hδ₀, fun f hf x hx ↦ _⟩
     simp only [Seminorm.mem_ball_zero, mem_closedBall_zero_iff] at hf ⊢
     rw [mul_comm] at hδ
     exact le_trans (le_of_opNorm_le_of_le _ hf.le (hε _ hx)) hδ.le
@@ -424,7 +424,7 @@ variable [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F)
 
 @[simp, nontriviality]
 theorem opNorm_subsingleton [Subsingleton E] : ‖f‖ = 0 := by
-  refine le_antisymm ?_ (norm_nonneg _)
+  refine le_antisymm _ (norm_nonneg _)
   apply opNorm_le_bound _ rfl.ge
   intro x
   simp [Subsingleton.elim x 0]

@@ -41,7 +41,7 @@ theorem exists_compact_superset [WeaklyLocallyCompactSpace X] {K : Set X} (hK : 
     ∃ K', IsCompact K' ∧ K ⊆ interior K' := by
   choose s hc hmem using fun x : X ↦ exists_compact_mem_nhds x
   rcases hK.elim_nhds_subcover _ fun x _ ↦ interior_mem_nhds.2 (hmem x) with ⟨I, -, hIK⟩
-  refine ⟨⋃ x ∈ I, s x, I.isCompact_biUnion fun _ _ ↦ hc _, hIK.trans ?_⟩
+  refine ⟨⋃ x ∈ I, s x, I.isCompact_biUnion fun _ _ ↦ hc _, hIK.trans _⟩
   exact iUnion₂_subset fun x hx ↦ interior_mono <| subset_iUnion₂ (s := fun x _ ↦ s x) x hx
 #align exists_compact_superset exists_compact_superset
 
@@ -189,7 +189,7 @@ protected theorem OpenEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f :
     rw [hf.nhds_eq_comap]
     exact ((compact_basis_nhds _).restrict_subset <| hf.isOpen_range.mem_nhds <|
       mem_range_self _).comap _
-  refine .of_hasBasis this fun x s hs => ?_
+  refine .of_hasBasis this fun x s hs => _
   rw [hf.toInducing.isCompact_iff, image_preimage_eq_of_subset hs.2]
   exact hs.1.2
 #align open_embedding.locally_compact_space OpenEmbedding.locallyCompactSpace

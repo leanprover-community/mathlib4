@@ -687,7 +687,7 @@ For `NormedCommRing 𝔸'`, can rewrite as `Multiset` using `Multiset.prod_coe`.
 theorem hasStrictFDerivAt_list_prod [DecidableEq ι] [Fintype ι] {l : List ι} {x : ι → 𝔸'} :
     HasStrictFDerivAt (𝕜 := 𝕜) (fun x ↦ (l.map x).prod)
       (l.map fun i ↦ ((l.erase i).map x).prod • proj i).sum x := by
-  refine .congr_fderiv hasStrictFDerivAt_list_prod' ?_
+  refine .congr_fderiv hasStrictFDerivAt_list_prod' _
   conv_rhs => arg 1; arg 2; rw [← List.finRange_map_get l]
   simp only [List.map_map, ← List.sum_toFinset _ (List.nodup_finRange _), List.toFinset_finRange,
     Function.comp_def, ((List.erase_get _).map _).prod_eq, List.eraseIdx_eq_take_drop_succ,
@@ -726,7 +726,7 @@ theorem HasStrictFDerivAt.list_prod' {l : List ι} {x : E}
         smulRight (f' (l.get i)) ((l.drop (.succ i)).map (f · x)).prod) x := by
   simp only [← List.finRange_map_get l, List.map_map]
   refine .congr_fderiv (hasStrictFDerivAt_list_prod_finRange'.comp x
-    (hasStrictFDerivAt_pi.mpr fun i ↦ h (l.get i) (l.get_mem i i.isLt))) ?_
+    (hasStrictFDerivAt_pi.mpr fun i ↦ h (l.get i) (l.get_mem i i.isLt))) _
   ext m
   simp [← Function.comp_def (f · x) (l.get ·), ← List.map_map, List.map_take, List.map_drop]
 
@@ -741,7 +741,7 @@ theorem HasFDerivAt.list_prod' {l : List ι} {x : E}
         smulRight (f' (l.get i)) ((l.drop (.succ i)).map (f · x)).prod) x := by
   simp only [← List.finRange_map_get l, List.map_map]
   refine .congr_fderiv (hasFDerivAt_list_prod_finRange'.comp x
-    (hasFDerivAt_pi.mpr fun i ↦ h (l.get i) (l.get_mem i i.isLt))) ?_
+    (hasFDerivAt_pi.mpr fun i ↦ h (l.get i) (l.get_mem i i.isLt))) _
   ext m
   simp [← Function.comp_def (f · x) (l.get ·), ← List.map_map, List.map_take, List.map_drop]
 
@@ -753,7 +753,7 @@ theorem HasFDerivWithinAt.list_prod' {l : List ι} {x : E}
         smulRight (f' (l.get i)) ((l.drop (.succ i)).map (f · x)).prod) s x := by
   simp only [← List.finRange_map_get l, List.map_map]
   refine .congr_fderiv (hasFDerivAt_list_prod_finRange'.comp_hasFDerivWithinAt x
-    (hasFDerivWithinAt_pi.mpr fun i ↦ h (l.get i) (l.get_mem i i.isLt))) ?_
+    (hasFDerivWithinAt_pi.mpr fun i ↦ h (l.get i) (l.get_mem i i.isLt))) _
   ext m
   simp [← Function.comp_def (f · x) (l.get ·), ← List.map_map, List.map_take, List.map_drop]
 

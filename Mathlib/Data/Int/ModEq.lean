@@ -223,7 +223,7 @@ theorem cancel_right_div_gcd (hm : 0 < m) (h : a * c ≡ b * c [ZMOD m]) :
   letI d := gcd m c
   rw [modEq_iff_dvd] at h ⊢
   -- Porting note: removed `show` due to leanprover-community/mathlib4#3305
-  refine Int.dvd_of_dvd_mul_right_of_gcd_one (?_ : m / d ∣ c / d * (b - a)) ?_
+  refine Int.dvd_of_dvd_mul_right_of_gcd_one (_ : m / d ∣ c / d * (b - a)) _
   · rw [mul_comm, ← Int.mul_ediv_assoc (b - a) gcd_dvd_right, sub_mul]
     exact Int.ediv_dvd_ediv gcd_dvd_left h
   · rw [gcd_div gcd_dvd_left gcd_dvd_right, natAbs_ofNat,
@@ -266,7 +266,7 @@ theorem modEq_and_modEq_iff_modEq_mul {a b m n : ℤ} (hmn : m.natAbs.Coprime n.
   ⟨fun h => by
     rw [modEq_iff_dvd, modEq_iff_dvd] at h
     rw [modEq_iff_dvd, ← natAbs_dvd, ← dvd_natAbs, natCast_dvd_natCast, natAbs_mul]
-    refine hmn.mul_dvd_of_dvd_of_dvd ?_ ?_ <;>
+    refine hmn.mul_dvd_of_dvd_of_dvd _ _ <;>
       rw [← natCast_dvd_natCast, natAbs_dvd, dvd_natAbs] <;>
       tauto,
     fun h => ⟨h.of_mul_right _, h.of_mul_left _⟩⟩

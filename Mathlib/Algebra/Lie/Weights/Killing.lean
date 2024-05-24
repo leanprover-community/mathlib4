@@ -166,7 +166,7 @@ lemma lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg_aux
   rw [← sub_eq_zero, ← Submodule.mem_bot (R := K), ← ker_killingForm_eq_bot]
   apply mem_ker_killingForm_of_mem_rootSpace_of_forall_rootSpace_neg (α := (0 : H → K))
   · simp only [rootSpace_zero_eq, LieSubalgebra.mem_toLieSubmodule]
-    refine sub_mem ?_ (H.smul_mem _ α'.property)
+    refine sub_mem _ (H.smul_mem _ α'.property)
     simpa using mapsTo_toEnd_weightSpace_add_of_mem_rootSpace K L H L α (-α) heα hfα
   · intro z hz
     replace hz : z ∈ H := by simpa using hz
@@ -195,7 +195,7 @@ Killing form, the corresponding roots span the dual space of `H`. -/
 @[simp]
 lemma span_weight_eq_top :
     span K (range (Weight.toLinear K H L)) = ⊤ := by
-  refine eq_top_iff.mpr (le_trans ?_ (LieModule.range_traceForm_le_span_weight K H L))
+  refine eq_top_iff.mpr (le_trans _ (LieModule.range_traceForm_le_span_weight K H L))
   rw [← traceForm_flip K H L, ← LinearMap.dualAnnihilator_ker_eq_range_flip,
     ker_traceForm_eq_bot_of_isCartanSubalgebra, Submodule.dualAnnihilator_bot]
 
@@ -209,9 +209,9 @@ lemma iInf_ker_weight_eq_bot :
 @[simp]
 lemma corootSpace_zero_eq_bot :
     corootSpace (0 : H → K) = ⊥ := by
-  refine eq_bot_iff.mpr fun x hx ↦ ?_
+  refine eq_bot_iff.mpr fun x hx ↦ _
   suffices {x | ∃ y ∈ H, ∃ z ∈ H, ⁅y, z⁆ = x} = {0} by simpa [mem_corootSpace, this] using hx
-  refine eq_singleton_iff_unique_mem.mpr ⟨⟨0, H.zero_mem, 0, H.zero_mem, zero_lie 0⟩, ?_⟩
+  refine eq_singleton_iff_unique_mem.mpr ⟨⟨0, H.zero_mem, 0, H.zero_mem, zero_lie 0⟩, _⟩
   rintro - ⟨y, hy, z, hz, rfl⟩
   suffices ⁅(⟨y, hy⟩ : H), (⟨z, hz⟩ : H)⁆ = 0 by
     simpa only [Subtype.ext_iff, LieSubalgebra.coe_bracket, ZeroMemClass.coe_zero] using this
@@ -295,7 +295,7 @@ lemma lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg
 
 lemma coe_corootSpace_eq_span_singleton' (α : Weight K H L) :
     (corootSpace α).toSubmodule = K ∙ (cartanEquivDual H).symm α := by
-  refine le_antisymm ?_ ?_
+  refine le_antisymm _ _
   · intro ⟨x, hx⟩ hx'
     have : {⁅y, z⁆ | (y ∈ rootSpace H α) (z ∈ rootSpace H (-α))} ⊆
         K ∙ ((cartanEquivDual H).symm α : L) := by
@@ -328,7 +328,7 @@ lemma eq_zero_of_apply_eq_zero_of_mem_corootSpace
     x = 0 := by
   rcases eq_or_ne α 0 with rfl | hα; · simpa using hx
   replace hx : x ∈ ⨅ β : Weight K H L, β.ker := by
-    refine (Submodule.mem_iInf _).mpr fun β ↦ ?_
+    refine (Submodule.mem_iInf _).mpr fun β ↦ _
     obtain ⟨a, b, hb, hab⟩ :=
       exists_forall_mem_corootSpace_smul_add_eq_zero L α β hα β.weightSpace_ne_bot
     simpa [hαx, hb.ne'] using hab _ hx
@@ -337,7 +337,7 @@ lemma eq_zero_of_apply_eq_zero_of_mem_corootSpace
 lemma disjoint_ker_weight_corootSpace (α : Weight K H L) :
     Disjoint α.ker (corootSpace α) := by
   rw [disjoint_iff]
-  refine (Submodule.eq_bot_iff _).mpr fun x ⟨hαx, hx⟩ ↦ ?_
+  refine (Submodule.eq_bot_iff _).mpr fun x ⟨hαx, hx⟩ ↦ _
   replace hαx : α x = 0 := by simpa using hαx
   exact eq_zero_of_apply_eq_zero_of_mem_corootSpace x α hαx hx
 
@@ -360,7 +360,7 @@ lemma root_apply_coroot {α : Weight K H L} (hα : α.IsNonZero) :
 
 @[simp] lemma coroot_eq_zero_iff {α : Weight K H L} :
     coroot α = 0 ↔ α.IsZero := by
-  refine ⟨fun hα ↦ ?_, fun hα ↦ ?_⟩
+  refine ⟨fun hα ↦ _, fun hα ↦ _⟩
   · by_contra contra
     simpa [hα, ← α.coe_coe, map_zero] using root_apply_coroot contra
   · simp [coroot, Weight.coe_toLinear_eq_zero_iff.mpr hα]
@@ -410,7 +410,7 @@ lemma exists_isSl2Triple_of_weight_isNonZero {α : Weight K H L} (hα : α.IsNon
     have : ⁅⁅e, f'⁆, e⁆ = α h • e := lie_eq_smul_of_mem_rootSpace heα h
     rw [lie_smul, smul_lie, this, ← smul_assoc, smul_eq_mul, mul_assoc, inv_mul_cancel hh,
       mul_one, two_smul, two_smul]
-  refine ⟨⁅e, f⁆, e, f, ⟨fun contra ↦ ?_, rfl, hef, ?_⟩, heα, Submodule.smul_mem _ _ hfα⟩
+  refine ⟨⁅e, f⁆, e, f, ⟨fun contra ↦ _, rfl, hef, _⟩, heα, Submodule.smul_mem _ _ hfα⟩
   · rw [contra] at hef
     have _i : NoZeroSMulDivisors ℤ L := NoZeroSMulDivisors.int_of_charZero K L
     simp only [zero_lie, eq_comm (a := (0 : L)), smul_eq_zero, OfNat.ofNat_ne_zero, false_or] at hef

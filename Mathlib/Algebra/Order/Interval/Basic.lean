@@ -516,10 +516,10 @@ variable [OrderedCommGroup α] {s t : NonemptyInterval α}
 
 @[to_additive]
 protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pure b ∧ a * b = 1 := by
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h => _, _⟩
   · rw [NonemptyInterval.ext_iff, Prod.ext_iff] at h
     have := (mul_le_mul_iff_of_ge s.fst_le_snd t.fst_le_snd).1 (h.2.trans h.1.symm).le
-    refine ⟨s.fst, t.fst, ?_, ?_, h.1⟩ <;> apply NonemptyInterval.ext <;> dsimp [pure]
+    refine ⟨s.fst, t.fst, _, _, h.1⟩ <;> apply NonemptyInterval.ext <;> dsimp [pure]
     · nth_rw 2 [this.1]
     · nth_rw 2 [this.2]
   · rintro ⟨b, c, rfl, rfl, h⟩
@@ -533,11 +533,11 @@ instance subtractionCommMonoid {α : Type u} [OrderedAddCommGroup α] :
     neg := Neg.neg
     sub := Sub.sub
     sub_eq_add_neg := fun s t => by
-      refine NonemptyInterval.ext _ _ (Prod.ext ?_ ?_) <;>
+      refine NonemptyInterval.ext _ _ (Prod.ext _ _) <;>
       exact sub_eq_add_neg _ _
     neg_neg := fun s => by apply NonemptyInterval.ext; exact neg_neg _
     neg_add_rev := fun s t => by
-      refine NonemptyInterval.ext _ _ (Prod.ext ?_ ?_) <;>
+      refine NonemptyInterval.ext _ _ (Prod.ext _ _) <;>
       exact neg_add_rev _ _
     neg_eq_of_add := fun s t h => by
       obtain ⟨a, b, rfl, rfl, hab⟩ := NonemptyInterval.add_eq_zero_iff.1 h
@@ -551,11 +551,11 @@ instance divisionCommMonoid : DivisionCommMonoid (NonemptyInterval α) :=
     inv := Inv.inv
     div := (· / ·)
     div_eq_mul_inv := fun s t => by
-      refine NonemptyInterval.ext _ _ (Prod.ext ?_ ?_) <;>
+      refine NonemptyInterval.ext _ _ (Prod.ext _ _) <;>
       exact div_eq_mul_inv _ _
     inv_inv := fun s => by apply NonemptyInterval.ext; exact inv_inv _
     mul_inv_rev := fun s t => by
-      refine NonemptyInterval.ext _ _ (Prod.ext ?_ ?_) <;>
+      refine NonemptyInterval.ext _ _ (Prod.ext _ _) <;>
       exact mul_inv_rev _ _
     inv_eq_of_mul := fun s t h => by
       obtain ⟨a, b, rfl, rfl, hab⟩ := NonemptyInterval.mul_eq_one_iff.1 h

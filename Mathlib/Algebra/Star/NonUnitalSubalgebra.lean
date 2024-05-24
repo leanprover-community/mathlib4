@@ -652,7 +652,7 @@ lemma adjoin_induction' {s : Set A} {p : ∀ x, x ∈ adjoin R s → Prop} {a : 
     (zero : p 0 (zero_mem _)) (mul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
     (smul : ∀ (r : R) x hx, p x hx → p (r • x) (SMulMemClass.smul_mem r hx))
     (star : ∀ x hx, p x hx → p (star x) (star_mem hx)) : p a ha := by
-  refine NonUnitalAlgebra.adjoin_induction' (fun x hx ↦ ?_) add zero mul smul ha
+  refine NonUnitalAlgebra.adjoin_induction' (fun x hx ↦ _) add zero mul smul ha
   simp only [Set.mem_union, Set.mem_star] at hx
   obtain (hx | hx) := hx
   · exact mem x hx

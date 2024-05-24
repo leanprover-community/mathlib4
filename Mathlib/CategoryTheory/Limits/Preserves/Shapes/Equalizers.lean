@@ -80,7 +80,7 @@ def PreservesEqualizer.ofIsoComparison [i : IsIso (equalizerComparison f g G)] :
     PreservesLimit (parallelPair f g) G := by
   apply preservesLimitOfPreservesLimitCone (equalizerIsEqualizer f g)
   apply (isLimitMapConeForkEquiv _ _).symm _
-  refine @IsLimit.ofPointIso _ _ _ _ _ _ _ (limit.isLimit (parallelPair (G.map f) (G.map g))) ?_
+  refine @IsLimit.ofPointIso _ _ _ _ _ _ _ (limit.isLimit (parallelPair (G.map f) (G.map g))) _
   apply i
 #align category_theory.limits.preserves_equalizer.of_iso_comparison CategoryTheory.Limits.PreservesEqualizer.ofIsoComparison
 
@@ -170,7 +170,7 @@ def ofIsoComparison [i : IsIso (coequalizerComparison f g G)] :
   apply preservesColimitOfPreservesColimitCocone (coequalizerIsCoequalizer f g)
   apply (isColimitMapCoconeCoforkEquiv _ _).symm _
   refine
-    @IsColimit.ofPointIso _ _ _ _ _ _ _ (colimit.isColimit (parallelPair (G.map f) (G.map g))) ?_
+    @IsColimit.ofPointIso _ _ _ _ _ _ _ (colimit.isColimit (parallelPair (G.map f) (G.map g))) _
   apply i
 #align category_theory.limits.of_iso_comparison CategoryTheory.Limits.ofIsoComparison
 

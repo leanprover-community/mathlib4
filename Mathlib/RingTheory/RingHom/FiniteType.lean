@@ -81,7 +81,7 @@ theorem finiteType_ofLocalizationSpanTarget : OfLocalizationSpanTarget @FiniteTy
       (∃ m : (Submonoid.powers (r : S)), (m : S) • x ∈ Algebra.adjoin R A) by
       { exact fun _ => by simp [Submonoid.mem_powers_iff] }]
     refine IsLocalization.exists_smul_mem_of_mem_adjoin
-      (Submonoid.powers (r : S)) x (t r) (Algebra.adjoin R _) ?_ ?_ ?_
+      (Submonoid.powers (r : S)) x (t r) (Algebra.adjoin R _) _ _ _
     · intro x hx
       apply Algebra.subset_adjoin
       exact Or.inl (Or.inl ⟨_, ⟨r, rfl⟩, _, ⟨s.mem_attach r, rfl⟩, hx⟩)

@@ -324,7 +324,7 @@ theorem of_no_dummies (S : Set (α → ℕ)) (p : Poly α) (h : ∀ v, S v ↔ p
 theorem inject_dummies_lem (f : β → γ) (g : γ → Option β) (inv : ∀ x, g (f x) = some x)
     (p : Poly (Sum α β)) (v : α → ℕ) :
     (∃ t, p (v ⊗ t) = 0) ↔ ∃ t, p.map (inl ⊗ inr ∘ f) (v ⊗ t) = 0 := by
-  dsimp; refine ⟨fun t => ?_, fun t => ?_⟩ <;> cases' t with t ht
+  dsimp; refine ⟨fun t => _, fun t => _⟩ <;> cases' t with t ht
   · have : (v ⊗ (0 ::ₒ t) ∘ g) ∘ (inl ⊗ inr ∘ f) = v ⊗ t :=
       funext fun s => by cases' s with a b <;> dsimp [(· ∘ ·)]; try rw [inv]; rfl
     exact ⟨(0 ::ₒ t) ∘ g, by rwa [this]⟩
@@ -371,7 +371,7 @@ theorem DiophList.forall (l : List (Set <| α → ℕ)) (d : l.Forall Dioph) :
             ⟨m ⊗ n, by
               rw [show (v ⊗ m ⊗ n) ∘ (inl ⊗ inr ∘ inl) = v ⊗ m from
                     funext fun s => by cases' s with a b <;> rfl]; exact hm, by
-              refine List.Forall.imp (fun q hq => ?_) hn; dsimp [Function.comp_def]
+              refine List.Forall.imp (fun q hq => _) hn; dsimp [Function.comp_def]
               rw [show
                     (fun x : Sum α γ => (v ⊗ m ⊗ n) ((inl ⊗ fun x : γ => inr (inr x)) x)) = v ⊗ n
                     from funext fun s => by cases' s with a b <;> rfl]; exact hq⟩,
@@ -380,7 +380,7 @@ theorem DiophList.forall (l : List (Set <| α → ℕ)) (d : l.Forall Dioph) :
                 rwa [show (v ⊗ t) ∘ (inl ⊗ inr ∘ inl) = v ⊗ t ∘ inl from
                     funext fun s => by cases' s with a b <;> rfl] at hl⟩,
               ⟨t ∘ inr, by
-                refine List.Forall.imp (fun q hq => ?_) hr; dsimp [Function.comp_def] at hq
+                refine List.Forall.imp (fun q hq => _) hr; dsimp [Function.comp_def] at hq
                 rwa [show
                     (fun x : Sum α γ => (v ⊗ t) ((inl ⊗ fun x : γ => inr (inr x)) x)) =
                       v ⊗ t ∘ inr
@@ -394,17 +394,17 @@ theorem union : ∀ (_ : Dioph S) (_ : Dioph S'), Dioph (S ∪ S')
   | ⟨β, p, pe⟩, ⟨γ, q, qe⟩ =>
     ⟨Sum β γ, p.map (inl ⊗ inr ∘ inl) * q.map (inl ⊗ inr ∘ inr), fun v => by
       refine
-        Iff.trans (or_congr ((pe v).trans ?_) ((qe v).trans ?_))
+        Iff.trans (or_congr ((pe v).trans _) ((qe v).trans _))
           (exists_or.symm.trans
             (exists_congr fun t =>
               (@mul_eq_zero _ _ _ (p ((v ⊗ t) ∘ (inl ⊗ inr ∘ inl)))
                   (q ((v ⊗ t) ∘ (inl ⊗ inr ∘ inr)))).symm))
       -- Porting note: putting everything on the same line fails
-      · refine inject_dummies_lem _ ?_ ?_ _ _
+      · refine inject_dummies_lem _ _ _ _ _
         · exact some ⊗ fun _ => none
         · exact fun _ => by simp only [elim_inl]
       -- Porting note: putting everything on the same line fails
-      · refine inject_dummies_lem _ ?_ ?_ _ _
+      · refine inject_dummies_lem _ _ _ _ _
         · exact (fun _ => none) ⊗ some
         · exact fun _ => by simp only [elim_inr]⟩
 #align dioph.union Dioph.union
@@ -465,7 +465,7 @@ theorem dom_dioph {f : (α → ℕ) →. ℕ} (d : DiophPFun f) : Dioph f.Dom :=
 #align dioph.dom_dioph Dioph.dom_dioph
 
 theorem diophFn_iff_pFun (f : (α → ℕ) → ℕ) : DiophFn f = @DiophPFun α f := by
-  refine congr_arg Dioph (Set.ext fun v => ?_); exact PFun.lift_graph.symm
+  refine congr_arg Dioph (Set.ext fun v => _); exact PFun.lift_graph.symm
 #align dioph.dioph_fn_iff_pfun Dioph.diophFn_iff_pFun
 
 theorem abs_poly_dioph (p : Poly α) : DiophFn fun v => (p v).natAbs :=
@@ -482,7 +482,7 @@ theorem diophPFun_comp1 {S : Set (Option α → ℕ)} (d : Dioph S) {f} (df : Di
   ext (ex1_dioph (d.inter df)) fun v =>
     ⟨fun ⟨x, hS, (h : Exists _)⟩ => by
       rw [show (x ::ₒ v) ∘ some = v from funext fun s => rfl] at h;
-        cases' h with hf h; refine ⟨hf, ?_⟩; rw [PFun.fn, h]; exact hS,
+        cases' h with hf h; refine ⟨hf, _⟩; rw [PFun.fn, h]; exact hS,
     fun ⟨x, hS⟩ =>
       ⟨f.fn v x, hS, show Exists _ by
         rw [show (f.fn v x ::ₒ v) ∘ some = v from funext fun s => rfl]; exact ⟨x, rfl⟩⟩⟩
@@ -512,7 +512,7 @@ theorem diophFn_vec_comp1 {S : Set (Vector3 ℕ (succ n))} (d : Dioph S) {f : Ve
   Dioph.ext (diophFn_comp1 (reindex_dioph _ (none::some) d) df) (fun v => by
     dsimp
     -- Porting note: `congr` use to be enough here
-    refine iff_of_eq (congrFun (congrArg Membership.mem ?_) S)
+    refine iff_of_eq (congrFun (congrArg Membership.mem _) S)
     ext x; cases x <;> rfl)
 #align dioph.dioph_fn_vec_comp1 Dioph.diophFn_vec_comp1
 
@@ -540,7 +540,7 @@ theorem diophFn_compn :
     ext (reindex_dioph _ (id ⊗ Fin2.elim0) d) fun v => by
       dsimp
       -- Porting note: `congr` use to be enough here
-      refine iff_of_eq (congrFun (congrArg Membership.mem ?_) S)
+      refine iff_of_eq (congrFun (congrArg Membership.mem _) S)
       ext x; obtain _ | _ | _ := x; rfl
   | succ n, S, d, f =>
     f.consElim fun f fl => by
@@ -552,14 +552,14 @@ theorem diophFn_compn :
               fun v => by
                 dsimp
                 -- Porting note: `congr` use to be enough here
-                refine iff_of_eq (congrFun (congrArg Membership.mem ?_) S)
+                refine iff_of_eq (congrFun (congrArg Membership.mem _) S)
                 ext x; obtain _ | _ | _ := x <;> rfl
           have : Dioph {v | (v ⊗ f v::fun i : Fin2 n => fl i v) ∈ S} :=
             @diophFn_compn n (fun v => S (v ∘ inl ⊗ f (v ∘ inl)::v ∘ inr)) this _ dfl
           ext this fun v => by
             dsimp;
             -- Porting note: `congr` use to be enough here
-            refine iff_of_eq (congrFun (congrArg Membership.mem ?_) S)
+            refine iff_of_eq (congrFun (congrArg Membership.mem _) S)
             ext x; obtain _ | _ | _ := x <;> rfl
 #align dioph.dioph_fn_compn Dioph.diophFn_compn
 
@@ -703,7 +703,7 @@ theorem div_dioph : DiophFn fun v => f v / g v :=
       ext this <|
         (vectorAll_iff_forall _).1 fun z x y =>
           show y = 0 ∧ z = 0 ∨ z * y ≤ x ∧ x < (z + 1) * y ↔ x / y = z by
-            refine Iff.trans ?_ eq_comm
+            refine Iff.trans _ eq_comm
             exact y.eq_zero_or_pos.elim
               (fun y0 => by
                 rw [y0, Nat.div_zero]

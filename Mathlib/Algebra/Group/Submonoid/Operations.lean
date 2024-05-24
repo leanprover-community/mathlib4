@@ -1518,7 +1518,7 @@ open AddSubmonoid Set
 namespace Nat
 
 @[simp] lemma addSubmonoid_closure_one : closure ({1} : Set ℕ) = ⊤ := by
-  refine (eq_top_iff' _).2 <| Nat.rec (zero_mem _) ?_
+  refine (eq_top_iff' _).2 <| Nat.rec (zero_mem _) _
   simp_rw [Nat.succ_eq_add_one]
   exact fun n hn ↦ AddSubmonoid.add_mem _ hn <| subset_closure <| Set.mem_singleton _
 

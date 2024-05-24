@@ -68,7 +68,7 @@ theorem antidiagonal_single (a : α) (n : ℕ) :
     Function.Embedding.coeFn_mk, Prod_map, Prod.mk.injEq, Prod.exists]
   constructor
   · intro h
-    refine ⟨x a, y a, DFunLike.congr_fun h a |>.trans single_eq_same, ?_⟩
+    refine ⟨x a, y a, DFunLike.congr_fun h a |>.trans single_eq_same, _⟩
     simp_rw [DFunLike.ext_iff, ← forall_and]
     intro i
     replace h := DFunLike.congr_fun h i

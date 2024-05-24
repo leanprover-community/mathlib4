@@ -792,7 +792,7 @@ lemma image_fst_graphOn (f : α → β) (s : Set α) : Prod.fst '' graphOn f s =
 
 lemma exists_eq_graphOn_image_fst [Nonempty β] {s : Set (α × β)} :
     (∃ f : α → β, s = graphOn f (Prod.fst '' s)) ↔ InjOn Prod.fst s := by
-  refine ⟨?_, fun h ↦ ?_⟩
+  refine ⟨_, fun h ↦ _⟩
   · rintro ⟨f, hf⟩
     rw [hf]
     exact InjOn.image_of_comp <| injOn_id _
@@ -924,7 +924,7 @@ theorem surjOn_iff_surjective : SurjOn f s univ ↔ Surjective (s.restrict f) :=
 @[simp]
 theorem MapsTo.restrict_surjective_iff (h : MapsTo f s t) :
     Surjective (MapsTo.restrict _ _ _ h) ↔ SurjOn f s t := by
-  refine ⟨fun h' b hb ↦ ?_, fun h' ⟨b, hb⟩ ↦ ?_⟩
+  refine ⟨fun h' b hb ↦ _, fun h' ⟨b, hb⟩ ↦ _⟩
   · obtain ⟨⟨a, ha⟩, ha'⟩ := h' ⟨b, hb⟩
     replace ha' : f a = b := by simpa [Subtype.ext_iff] using ha'
     rw [← ha']

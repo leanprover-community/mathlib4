@@ -81,7 +81,7 @@ theorem isNoetherian_submodule {N : Submodule R M} :
   refine ⟨fun ⟨hn⟩ => fun s hs =>
     have : s ≤ LinearMap.range N.subtype := N.range_subtype.symm ▸ hs
     Submodule.map_comap_eq_self this ▸ (hn _).map _,
-    fun h => ⟨fun s => ?_⟩⟩
+    fun h => ⟨fun s => _⟩⟩
   have f := (Submodule.equivMapOfInjective N.subtype Subtype.val_injective s).symm
   have h₁ := h (s.map N.subtype) (Submodule.map_subtype_le N s)
   have h₂ : (⊤ : Submodule R (s.map N.subtype)).map f = ⊤ := by simp
@@ -217,7 +217,7 @@ instance isNoetherian_pi {R ι : Type*} {M : ι → Type*}
       rw [this]
       apply Submodule.fg_bot⟩
   refine
-    @isNoetherian_of_linearEquiv R (M a × ((i : s) → M i)) _ _ _ _ _ _ ?_ <|
+    @isNoetherian_of_linearEquiv R (M a × ((i : s) → M i)) _ _ _ _ _ _ _ <|
       @isNoetherian_prod R (M a) _ _ _ _ _ _ _ ih
   refine
   { toFun := fun f i =>
@@ -226,10 +226,10 @@ instance isNoetherian_pi {R ι : Type*} {M : ι → Type*}
         (fun h : i.1 ∈ s => show M i.1 from f.2 ⟨i.1, h⟩),
     invFun := fun f =>
       (f ⟨a, Finset.mem_insert_self _ _⟩, fun i => f ⟨i.1, Finset.mem_insert_of_mem i.2⟩),
-    map_add' := ?_,
-    map_smul' := ?_
-    left_inv := ?_,
-    right_inv := ?_ }
+    map_add' := _,
+    map_smul' := _
+    left_inv := _,
+    right_inv := _ }
   · intro f g
     ext i
     unfold Or.by_cases
@@ -333,7 +333,7 @@ theorem isNoetherian_iff_fg_wellFounded :
     obtain ⟨⟨N₀, h₁⟩, e : N₀ ≤ N, h₂⟩ :=
       WellFounded.has_min H { N' : α | N'.1 ≤ N } ⟨⟨⊥, Submodule.fg_bot⟩, @bot_le _ _ _ N⟩
     convert h₁
-    refine (e.antisymm ?_).symm
+    refine (e.antisymm _).symm
     by_contra h₃
     obtain ⟨x, hx₁ : x ∈ N, hx₂ : x ∉ N₀⟩ := Set.not_subset.mp h₃
     apply hx₂
@@ -397,7 +397,7 @@ theorem LinearIndependent.finite_of_isNoetherian [Nontrivial R] {ι} {v : ι →
     (hv : LinearIndependent R v) : Finite ι := by
   have hwf := isNoetherian_iff_wellFounded.mp (by infer_instance : IsNoetherian R M)
   refine CompleteLattice.WellFounded.finite_of_independent hwf hv.independent_span_singleton
-    fun i contra => ?_
+    fun i contra => _
   apply hv.ne_zero i
   have : v i ∈ R ∙ v i := Submodule.mem_span_singleton_self (v i)
   rwa [contra, Submodule.mem_bot] at this
@@ -437,7 +437,7 @@ theorem LinearMap.eventually_disjoint_ker_pow_range_pow (f : M →ₗ[R] M) :
     ∀ᶠ n in atTop, Disjoint (LinearMap.ker (f ^ n)) (LinearMap.range (f ^ n)) := by
   obtain ⟨n, hn : ∀ m, n ≤ m → LinearMap.ker (f ^ n) = LinearMap.ker (f ^ m)⟩ :=
     monotone_stabilizes_iff_noetherian.mpr inferInstance f.iterateKer
-  refine eventually_atTop.mpr ⟨n, fun m hm ↦ disjoint_iff.mpr ?_⟩
+  refine eventually_atTop.mpr ⟨n, fun m hm ↦ disjoint_iff.mpr _⟩
   rw [← hn _ hm, Submodule.eq_bot_iff]
   rintro - ⟨hx, ⟨x, rfl⟩⟩
   apply LinearMap.pow_map_zero_of_le hm
@@ -450,8 +450,8 @@ lemma LinearMap.eventually_iSup_ker_pow_eq (f : M →ₗ[R] M) :
     ∀ᶠ n in atTop, ⨆ m, LinearMap.ker (f ^ m) = LinearMap.ker (f ^ n) := by
   obtain ⟨n, hn : ∀ m, n ≤ m → ker (f ^ n) = ker (f ^ m)⟩ :=
     monotone_stabilizes_iff_noetherian.mpr inferInstance f.iterateKer
-  refine eventually_atTop.mpr ⟨n, fun m hm ↦ ?_⟩
-  refine le_antisymm (iSup_le fun l ↦ ?_) (le_iSup (fun i ↦ LinearMap.ker (f ^ i)) m)
+  refine eventually_atTop.mpr ⟨n, fun m hm ↦ _⟩
+  refine le_antisymm (iSup_le fun l ↦ _) (le_iSup (fun i ↦ LinearMap.ker (f ^ i)) m)
   rcases le_or_lt m l with h | h
   · rw [← hn _ (hm.trans h), hn _ hm]
   · exact f.iterateKer.monotone h.le
@@ -503,7 +503,7 @@ noncomputable def IsNoetherian.equivPUnitOfProdInjective (f : M × N →ₗ[R] M
   specialize w n (le_refl n)
   apply Nonempty.intro
   -- Porting note: refine makes this line time out at elaborator
-  refine (LinearMap.tailingLinearEquiv f i n).symm ≪≫ₗ ?_
+  refine (LinearMap.tailingLinearEquiv f i n).symm ≪≫ₗ _
   rw [w]
   apply Submodule.botEquivPUnit
 #align is_noetherian.equiv_punit_of_prod_injective IsNoetherian.equivPUnitOfProdInjective
@@ -563,7 +563,7 @@ theorem isNoetherian_of_fg_of_noetherian {R M} [Ring R] [AddCommGroup M] [Module
   have : ∀ x ∈ s, x ∈ N := fun x hx => hs ▸ Submodule.subset_span hx
   refine
     @isNoetherian_of_surjective
-      R ((↑s : Set M) → R) N _ _ _ (Pi.module _ _ _) _ ?_ ?_ isNoetherian_pi
+      R ((↑s : Set M) → R) N _ _ _ (Pi.module _ _ _) _ _ _ isNoetherian_pi
   · fapply LinearMap.mk
     · fapply AddHom.mk
       · exact fun f => ⟨∑ i in s.attach, f i • i.1, N.sum_mem fun c _ => N.smul_mem _ <| this _ c.2⟩
@@ -582,11 +582,11 @@ theorem isNoetherian_of_fg_of_noetherian {R M} [Ring R] [AddCommGroup M] [Module
     change n ∈ N at hn
     rw [← hs, ← Set.image_id (s : Set M), Finsupp.mem_span_image_iff_total] at hn
     rcases hn with ⟨l, hl1, hl2⟩
-    refine ⟨fun x => l x, Subtype.ext ?_⟩
+    refine ⟨fun x => l x, Subtype.ext _⟩
     change (∑ i in s.attach, l i • (i : M)) = n
     rw [s.sum_attach fun i ↦ l i • i, ← hl2,
       Finsupp.total_apply, Finsupp.sum, eq_comm]
-    refine Finset.sum_subset hl1 fun x _ hx => ?_
+    refine Finset.sum_subset hl1 fun x _ hx => _
     rw [Finsupp.not_mem_support_iff.1 hx, zero_smul]
 #align is_noetherian_of_fg_of_noetherian isNoetherian_of_fg_of_noetherian
 

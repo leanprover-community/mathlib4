@@ -200,7 +200,7 @@ theorem volume_le_diam (s : Set ℝ) : volume s ≤ EMetric.diam s := by
 theorem _root_.Filter.Eventually.volume_pos_of_nhds_real {p : ℝ → Prop} {a : ℝ}
     (h : ∀ᶠ x in 𝓝 a, p x) : (0 : ℝ≥0∞) < volume { x | p x } := by
   rcases h.exists_Ioo_subset with ⟨l, u, hx, hs⟩
-  refine lt_of_lt_of_le ?_ (measure_mono hs)
+  refine lt_of_lt_of_le _ (measure_mono hs)
   simpa [-mem_Ioo] using hx.1.trans hx.2
 #align filter.eventually.volume_pos_of_nhds_real Filter.Eventually.volume_pos_of_nhds_real
 
@@ -294,7 +294,7 @@ theorem volume_pi_le_diam_pow (s : Set (ι → ℝ)) : volume s ≤ EMetric.diam
 
 theorem smul_map_volume_mul_left {a : ℝ} (h : a ≠ 0) :
     ENNReal.ofReal |a| • Measure.map (a * ·) volume = volume := by
-  refine (Real.measure_ext_Ioo_rat fun p q => ?_).symm
+  refine (Real.measure_ext_Ioo_rat fun p q => _).symm
   cases' lt_or_gt_of_ne h with h h
   · simp only [Real.volume_Ioo, Measure.smul_apply, ← ENNReal.ofReal_mul (le_of_lt <| neg_pos.2 h),
       Measure.map_apply (measurable_const_mul a) measurableSet_Ioo, neg_sub_neg, neg_mul,
@@ -353,7 +353,7 @@ uses this particular case). -/
 theorem smul_map_diagonal_volume_pi [DecidableEq ι] {D : ι → ℝ} (h : det (diagonal D) ≠ 0) :
     ENNReal.ofReal (abs (det (diagonal D))) • Measure.map (toLin' (diagonal D)) volume =
       volume := by
-  refine (Measure.pi_eq fun s hs => ?_).symm
+  refine (Measure.pi_eq fun s hs => _).symm
   simp only [det_diagonal, Measure.coe_smul, Algebra.id.smul_eq_mul, Pi.smul_apply]
   rw [Measure.map_apply _ (MeasurableSet.univ_pi hs)]
   swap; · exact Continuous.measurable (LinearMap.continuous_on_pi _)
@@ -383,13 +383,13 @@ theorem volume_preserving_transvectionStruct [DecidableEq ι] (t : TransvectionS
     translation, and therefore preserves Lebesgue. -/
   have ht : Measurable (toLin' t.toMatrix) :=
     (toLin' t.toMatrix).continuous_of_finiteDimensional.measurable
-  refine ⟨ht, ?_⟩
-  refine (pi_eq fun s hs ↦ ?_).symm
+  refine ⟨ht, _⟩
+  refine (pi_eq fun s hs ↦ _).symm
   have h2s : MeasurableSet (univ.pi s) := .pi countable_univ fun i _ ↦ hs i
   simp_rw [← pi_pi, ← lintegral_indicator_one h2s]
   rw [lintegral_map (measurable_one.indicator h2s) ht, volume_pi]
   refine lintegral_eq_of_lmarginal_eq {t.i} ((measurable_one.indicator h2s).comp ht)
-    (measurable_one.indicator h2s) ?_
+    (measurable_one.indicator h2s) _
   simp_rw [lmarginal_singleton]
   ext x
   cases t with | mk t_i t_j t_hij t_c =>
@@ -457,7 +457,7 @@ theorem measurableSet_regionBetween (hf : Measurable f) (hg : Measurable g) (hs 
     MeasurableSet (regionBetween f g s) := by
   dsimp only [regionBetween, Ioo, mem_setOf_eq, setOf_and]
   refine
-    MeasurableSet.inter ?_
+    MeasurableSet.inter _
       ((measurableSet_lt (hf.comp measurable_fst) measurable_snd).inter
         (measurableSet_lt measurable_snd (hg.comp measurable_fst)))
   exact measurable_fst hs
@@ -470,7 +470,7 @@ theorem measurableSet_region_between_oc (hf : Measurable f) (hg : Measurable g)
     MeasurableSet { p : α × ℝ | p.fst ∈ s ∧ p.snd ∈ Ioc (f p.fst) (g p.fst) } := by
   dsimp only [regionBetween, Ioc, mem_setOf_eq, setOf_and]
   refine
-    MeasurableSet.inter ?_
+    MeasurableSet.inter _
       ((measurableSet_lt (hf.comp measurable_fst) measurable_snd).inter
         (measurableSet_le measurable_snd (hg.comp measurable_fst)))
   exact measurable_fst hs
@@ -483,7 +483,7 @@ theorem measurableSet_region_between_co (hf : Measurable f) (hg : Measurable g)
     MeasurableSet { p : α × ℝ | p.fst ∈ s ∧ p.snd ∈ Ico (f p.fst) (g p.fst) } := by
   dsimp only [regionBetween, Ico, mem_setOf_eq, setOf_and]
   refine
-    MeasurableSet.inter ?_
+    MeasurableSet.inter _
       ((measurableSet_le (hf.comp measurable_fst) measurable_snd).inter
         (measurableSet_lt measurable_snd (hg.comp measurable_fst)))
   exact measurable_fst hs
@@ -496,7 +496,7 @@ theorem measurableSet_region_between_cc (hf : Measurable f) (hg : Measurable g)
     MeasurableSet { p : α × ℝ | p.fst ∈ s ∧ p.snd ∈ Icc (f p.fst) (g p.fst) } := by
   dsimp only [regionBetween, Icc, mem_setOf_eq, setOf_and]
   refine
-    MeasurableSet.inter ?_
+    MeasurableSet.inter _
       ((measurableSet_le (hf.comp measurable_fst) measurable_snd).inter
         (measurableSet_le measurable_snd (hg.comp measurable_fst)))
   exact measurable_fst hs
@@ -562,7 +562,7 @@ lemma nullMeasurableSet_regionBetween (μ : Measure α)
     {s : Set α} (s_mble : NullMeasurableSet s μ) :
     NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Ioo (f p.fst) (g p.fst)} (μ.prod volume) := by
   refine NullMeasurableSet.inter
-          (s_mble.preimage quasiMeasurePreserving_fst) (NullMeasurableSet.inter ?_ ?_)
+          (s_mble.preimage quasiMeasurePreserving_fst) (NullMeasurableSet.inter _ _)
   · exact nullMeasurableSet_lt (AEMeasurable.fst f_mble) measurable_snd.aemeasurable
   · exact nullMeasurableSet_lt measurable_snd.aemeasurable (AEMeasurable.fst g_mble)
 
@@ -573,7 +573,7 @@ lemma nullMeasurableSet_region_between_oc (μ : Measure α)
     {s : Set α} (s_mble : NullMeasurableSet s μ) :
     NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Ioc (f p.fst) (g p.fst)} (μ.prod volume) := by
   refine NullMeasurableSet.inter
-          (s_mble.preimage quasiMeasurePreserving_fst) (NullMeasurableSet.inter ?_ ?_)
+          (s_mble.preimage quasiMeasurePreserving_fst) (NullMeasurableSet.inter _ _)
   · exact nullMeasurableSet_lt (AEMeasurable.fst f_mble) measurable_snd.aemeasurable
   · change NullMeasurableSet {p : α × ℝ | p.snd ≤ g p.fst} (μ.prod volume)
     rw [show {p : α × ℝ | p.snd ≤ g p.fst} = {p : α × ℝ | g p.fst < p.snd}ᶜ by
@@ -588,7 +588,7 @@ lemma nullMeasurableSet_region_between_co (μ : Measure α)
     {s : Set α} (s_mble : NullMeasurableSet s μ) :
     NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Ico (f p.fst) (g p.fst)} (μ.prod volume) := by
   refine NullMeasurableSet.inter
-          (s_mble.preimage quasiMeasurePreserving_fst) (NullMeasurableSet.inter ?_ ?_)
+          (s_mble.preimage quasiMeasurePreserving_fst) (NullMeasurableSet.inter _ _)
   · change NullMeasurableSet {p : α × ℝ | f p.fst ≤ p.snd} (μ.prod volume)
     rw [show {p : α × ℝ | f p.fst ≤ p.snd} = {p : α × ℝ | p.snd < f p.fst}ᶜ by
           ext p
@@ -603,7 +603,7 @@ lemma nullMeasurableSet_region_between_cc (μ : Measure α)
     {s : Set α} (s_mble : NullMeasurableSet s μ) :
     NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Icc (f p.fst) (g p.fst)} (μ.prod volume) := by
   refine NullMeasurableSet.inter
-          (s_mble.preimage quasiMeasurePreserving_fst) (NullMeasurableSet.inter ?_ ?_)
+          (s_mble.preimage quasiMeasurePreserving_fst) (NullMeasurableSet.inter _ _)
   · change NullMeasurableSet {p : α × ℝ | f p.fst ≤ p.snd} (μ.prod volume)
     rw [show {p : α × ℝ | f p.fst ≤ p.snd} = {p : α × ℝ | p.snd < f p.fst}ᶜ by
           ext p

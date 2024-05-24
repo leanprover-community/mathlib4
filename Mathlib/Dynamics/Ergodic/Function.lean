@@ -29,9 +29,9 @@ theorem QuasiErgodic.ae_eq_const_of_ae_eq_comp_of_ae_range₀ [Nonempty X] [Meas
     (h : QuasiErgodic f μ) (hs : ∀ᵐ x ∂μ, g x ∈ s) (hgm : NullMeasurable g μ)
     (hg_eq : g ∘ f =ᵐ[μ] g) :
     ∃ c, g =ᵐ[μ] const α c := by
-  refine exists_eventuallyEq_const_of_eventually_mem_of_forall_separating MeasurableSet hs ?_
-  refine fun U hU ↦ h.ae_mem_or_ae_nmem₀ (s := g ⁻¹' U) (hgm hU) ?_b
-  refine (hg_eq.mono fun x hx ↦ ?_).set_eq
+  refine exists_eventuallyEq_const_of_eventually_mem_of_forall_separating MeasurableSet hs _
+  refine fun U hU ↦ h.ae_mem_or_ae_nmem₀ (s := g ⁻¹' U) (hgm hU) _b
+  refine (hg_eq.mono fun x hx ↦ _).set_eq
   rw [← preimage_comp, mem_preimage, mem_preimage, hx]
 
 section CountableSeparatingOnUniv

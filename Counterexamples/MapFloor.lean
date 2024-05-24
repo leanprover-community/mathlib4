@@ -74,7 +74,7 @@ instance orderedAddCommGroup : OrderedAddCommGroup ℤ[ε] := by
 theorem pos_iff {p : ℤ[ε]} : 0 < p ↔ 0 < p.trailingCoeff := by
   rw [trailingCoeff]
   refine
-    ⟨?_, fun h =>
+    ⟨_, fun h =>
       ⟨p.natTrailingDegree, fun m hm => (coeff_eq_zero_of_lt_natTrailingDegree hm).symm, h⟩⟩
   rintro ⟨n, hn⟩
   convert hn.2

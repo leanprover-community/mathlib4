@@ -423,7 +423,7 @@ theorem continuousInv_iInf {ts' : ι' → TopologicalSpace G}
 theorem continuousInv_inf {t₁ t₂ : TopologicalSpace G} (h₁ : @ContinuousInv G t₁ _)
     (h₂ : @ContinuousInv G t₂ _) : @ContinuousInv G (t₁ ⊓ t₂) _ := by
   rw [inf_eq_iInf]
-  refine continuousInv_iInf fun b => ?_
+  refine continuousInv_iInf fun b => _
   cases b <;> assumption
 #align has_continuous_inv_inf continuousInv_inf
 #align has_continuous_neg_inf continuousNeg_inf
@@ -917,7 +917,7 @@ theorem continuous_of_continuousAt_one₂ {H M : Type*} [CommMonoid M] [Topologi
   simp only [ContinuousAt, nhds_prod_eq, ← map_mul_left_nhds_one x, ← map_mul_left_nhds_one y,
     prod_map_map_eq, tendsto_map'_iff, (· ∘ ·), map_mul, MonoidHom.mul_apply] at *
   refine ((tendsto_const_nhds.mul ((hr y).comp tendsto_fst)).mul
-    (((hl x).comp tendsto_snd).mul hf)).mono_right (le_of_eq ?_)
+    (((hl x).comp tendsto_snd).mul hf)).mono_right (le_of_eq _)
   simp only [map_one, mul_one, MonoidHom.one_apply]
 
 @[to_additive]
@@ -942,7 +942,7 @@ theorem ContinuousInv.of_nhds_one {G : Type*} [Group G] [TopologicalSpace G]
     (hinv : Tendsto (fun x : G => x⁻¹) (𝓝 1) (𝓝 1))
     (hleft : ∀ x₀ : G, 𝓝 x₀ = map (fun x : G => x₀ * x) (𝓝 1))
     (hconj : ∀ x₀ : G, Tendsto (fun x : G => x₀ * x * x₀⁻¹) (𝓝 1) (𝓝 1)) : ContinuousInv G := by
-  refine ⟨continuous_iff_continuousAt.2 fun x₀ => ?_⟩
+  refine ⟨continuous_iff_continuousAt.2 fun x₀ => _⟩
   have : Tendsto (fun x => x₀⁻¹ * (x₀ * x⁻¹ * x₀⁻¹)) (𝓝 1) (map (x₀⁻¹ * ·) (𝓝 1)) :=
     (tendsto_map.comp <| hconj x₀).comp hinv
   simpa only [ContinuousAt, hleft x₀, hleft x₀⁻¹, tendsto_map'_iff, (· ∘ ·), mul_assoc, mul_inv_rev,
@@ -973,7 +973,7 @@ theorem TopologicalGroup.of_nhds_one {G : Type u} [Group G] [TopologicalSpace G]
     (hinv : Tendsto (fun x : G => x⁻¹) (𝓝 1) (𝓝 1))
     (hleft : ∀ x₀ : G, 𝓝 x₀ = map (x₀ * ·) (𝓝 1))
     (hconj : ∀ x₀ : G, Tendsto (x₀ * · * x₀⁻¹) (𝓝 1) (𝓝 1)) : TopologicalGroup G := by
-  refine TopologicalGroup.of_nhds_one' hmul hinv hleft fun x₀ => ?_
+  refine TopologicalGroup.of_nhds_one' hmul hinv hleft fun x₀ => _
   replace hconj : ∀ x₀ : G, map (x₀ * · * x₀⁻¹) (𝓝 1) = 𝓝 1 :=
     fun x₀ => map_eq_of_inverse (x₀⁻¹ * · * x₀⁻¹⁻¹) (by ext; simp [mul_assoc]) (hconj _) (hconj _)
   rw [← hconj x₀]
@@ -1062,7 +1062,7 @@ theorem TopologicalGroup.exists_antitone_basis_nhds_one :
   have event_mul : ∀ n : ℕ, ∀ᶠ m in atTop, u m * u m ⊆ u n := by
     intro n
     rcases this n with ⟨j, k, -, h⟩
-    refine atTop_basis.eventually_iff.mpr ⟨max j k, True.intro, fun m hm => ?_⟩
+    refine atTop_basis.eventually_iff.mpr ⟨max j k, True.intro, fun m hm => _⟩
     rintro - ⟨a, ha, b, hb, rfl⟩
     exact h a b (u_anti ((le_max_left _ _).trans hm) ha) (u_anti ((le_max_right _ _).trans hm) hb)
   obtain ⟨φ, -, hφ, φ_anti_basis⟩ := HasAntitoneBasis.subbasis_with_rel ⟨hu, u_anti⟩ event_mul
@@ -1132,7 +1132,7 @@ theorem Filter.Tendsto.const_div' (b : G) {c : G} {f : α → G} {l : Filter α}
 lemma Filter.tendsto_const_div_iff {G : Type*} [CommGroup G] [TopologicalSpace G] [ContinuousDiv G]
     (b : G) {c : G} {f : α → G} {l : Filter α} :
     Tendsto (fun k : α ↦ b / f k) l (𝓝 (b / c)) ↔ Tendsto f l (𝓝 c) := by
-  refine ⟨fun h ↦ ?_, Filter.Tendsto.const_div' b⟩
+  refine ⟨fun h ↦ _, Filter.Tendsto.const_div' b⟩
   convert h.const_div' b with k <;> rw [div_div_cancel]
 
 @[to_additive sub_const]
@@ -1146,14 +1146,14 @@ lemma Filter.tendsto_div_const_iff {G : Type*}
     [CommGroupWithZero G] [TopologicalSpace G] [ContinuousDiv G]
     {b : G} (hb : b ≠ 0) {c : G} {f : α → G} {l : Filter α} :
     Tendsto (f · / b) l (𝓝 (c / b)) ↔ Tendsto f l (𝓝 c) := by
-  refine ⟨fun h ↦ ?_, fun h ↦ Filter.Tendsto.div_const' h b⟩
+  refine ⟨fun h ↦ _, fun h ↦ Filter.Tendsto.div_const' h b⟩
   convert h.div_const' b⁻¹ with k <;> rw [div_div, mul_inv_cancel hb, div_one]
 
 lemma Filter.tendsto_sub_const_iff {G : Type*}
     [AddCommGroup G] [TopologicalSpace G] [ContinuousSub G]
     (b : G) {c : G} {f : α → G} {l : Filter α} :
     Tendsto (f · - b) l (𝓝 (c - b)) ↔ Tendsto f l (𝓝 c) := by
-  refine ⟨fun h ↦ ?_, fun h ↦ Filter.Tendsto.sub_const h b⟩
+  refine ⟨fun h ↦ _, fun h ↦ Filter.Tendsto.sub_const h b⟩
   convert h.sub_const (-b) with k <;> rw [sub_sub, ← sub_eq_add_neg, sub_self, sub_zero]
 
 variable [TopologicalSpace α] {f g : α → G} {s : Set α} {x : α}
@@ -1312,10 +1312,10 @@ theorem IsClosed.smul_left_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
     IsClosed (s • t) := by
   have : ∀ x ∈ s • t, ∃ g ∈ s, g⁻¹ • x ∈ t := by
     rintro x ⟨g, hgs, y, hyt, rfl⟩
-    refine ⟨g, hgs, ?_⟩
+    refine ⟨g, hgs, _⟩
     rwa [inv_smul_smul]
   choose! f hf using this
-  refine isClosed_of_closure_subset (fun x hx ↦ ?_)
+  refine isClosed_of_closure_subset (fun x hx ↦ _)
   rcases mem_closure_iff_ultrafilter.mp hx with ⟨u, hust, hux⟩
   have : Ultrafilter.map f u ≤ 𝓟 s :=
     calc Ultrafilter.map f u ≤ map f (𝓟 (s • t)) := map_mono (le_principal_iff.mpr hust)
@@ -1466,7 +1466,7 @@ theorem subset_interior_div : interior s / interior t ⊆ interior (s / t) :=
 
 @[to_additive]
 theorem IsOpen.mul_closure (hs : IsOpen s) (t : Set G) : s * closure t = s * t := by
-  refine (mul_subset_iff.2 fun a ha b hb => ?_).antisymm (mul_subset_mul_left subset_closure)
+  refine (mul_subset_iff.2 fun a ha b hb => _).antisymm (mul_subset_mul_left subset_closure)
   rw [mem_closure_iff] at hb
   have hbU : b ∈ s⁻¹ * {a * b} := ⟨a⁻¹, Set.inv_mem_inv.2 ha, a * b, rfl, inv_mul_cancel_left _ _⟩
   obtain ⟨_, ⟨c, hc, d, rfl : d = _, rfl⟩, hcs⟩ := hb _ hs.inv.mul_right hbU
@@ -1509,7 +1509,7 @@ theorem QuotientGroup.isClosedMap_coe {H : Subgroup G} (hH : IsCompact (H : Set 
   intro t ht
   rw [← quotientMap_quotient_mk'.isClosed_preimage]
   convert ht.mul_right_of_isCompact hH
-  refine (QuotientGroup.preimage_image_mk_eq_iUnion_image _ _).trans ?_
+  refine (QuotientGroup.preimage_image_mk_eq_iUnion_image _ _).trans _
   rw [iUnion_subtype, ← iUnion_mul_right_image]
   rfl
 
@@ -1521,7 +1521,7 @@ lemma subset_mul_closure_one (s : Set G) : s ⊆ s * (closure {1} : Set G) := by
 @[to_additive]
 lemma IsCompact.mul_closure_one_eq_closure {K : Set G} (hK : IsCompact K) :
     K * (closure {1} : Set G) = closure K := by
-  apply Subset.antisymm ?_ ?_
+  apply Subset.antisymm _ _
   · calc
     K * (closure {1} : Set G) ⊆ closure K * (closure {1} : Set G) :=
       smul_subset_smul_right subset_closure
@@ -1535,7 +1535,7 @@ lemma IsCompact.mul_closure_one_eq_closure {K : Set G} (hK : IsCompact K) :
 @[to_additive]
 lemma IsClosed.mul_closure_one_eq {F : Set G} (hF : IsClosed F) :
     F * (closure {1} : Set G) = F := by
-  refine Subset.antisymm ?_ (subset_mul_closure_one F)
+  refine Subset.antisymm _ (subset_mul_closure_one F)
   calc
   F * (closure {1} : Set G) = closure F * closure ({1} : Set G) := by rw [hF.closure_eq]
   _ ⊆ closure (F * ({1} : Set G)) := smul_set_closure_subset _ _
@@ -1544,7 +1544,7 @@ lemma IsClosed.mul_closure_one_eq {F : Set G} (hF : IsClosed F) :
 @[to_additive]
 lemma compl_mul_closure_one_eq {t : Set G} (ht : t * (closure {1} : Set G) = t) :
     tᶜ * (closure {1} : Set G) = tᶜ := by
-  refine Subset.antisymm ?_ (subset_mul_closure_one tᶜ)
+  refine Subset.antisymm _ (subset_mul_closure_one tᶜ)
   rintro - ⟨x, hx, g, hg, rfl⟩
   by_contra H
   have : x ∈ t * (closure {1} : Set G) := by
@@ -1586,7 +1586,7 @@ variable (G) [TopologicalSpace G] [Group G] [TopologicalGroup G]
 
 @[to_additive]
 instance (priority := 100) TopologicalGroup.regularSpace : RegularSpace G := by
-  refine .of_exists_mem_nhds_isClosed_subset fun a s hs ↦ ?_
+  refine .of_exists_mem_nhds_isClosed_subset fun a s hs ↦ _
   have : Tendsto (fun p : G × G => p.1 * p.2) (𝓝 (a, 1)) (𝓝 a) :=
     continuous_mul.tendsto' _ _ (mul_one a)
   rcases mem_nhds_prod_iff.mp (this hs) with ⟨U, hU, V, hV, hUV⟩
@@ -1627,7 +1627,7 @@ theorem TopologicalGroup.t2Space_iff_one_closed : T2Space G ↔ IsClosed ({1} : 
 theorem TopologicalGroup.t2Space_of_one_sep (H : ∀ x : G, x ≠ 1 → ∃ U ∈ 𝓝 (1 : G), x ∉ U) :
     T2Space G := by
   suffices T1Space G from inferInstance
-  refine t1Space_iff_specializes_imp_eq.2 fun x y hspec ↦ by_contra fun hne ↦ ?_
+  refine t1Space_iff_specializes_imp_eq.2 fun x y hspec ↦ by_contra fun hne ↦ _
   rcases H (x * y⁻¹) (by rwa [Ne, mul_inv_eq_one]) with ⟨U, hU₁, hU⟩
   exact hU <| mem_of_mem_nhds <| hspec.map (continuous_mul_right y⁻¹) (by rwa [mul_inv_self])
 #align topological_group.t2_space_of_one_sep TopologicalGroup.t2Space_of_one_sep
@@ -1642,7 +1642,7 @@ theorem exists_closed_nhds_one_inv_eq_mul_subset {U : Set G} (hU : U ∈ 𝓝 1)
   rcases exists_open_nhds_one_mul_subset hU with ⟨V, V_open, V_mem, hV⟩
   rcases exists_mem_nhds_isClosed_subset (V_open.mem_nhds V_mem) with ⟨W, W_mem, W_closed, hW⟩
   refine ⟨W ∩ W⁻¹, Filter.inter_mem W_mem (inv_mem_nhds_one G W_mem), W_closed.inter W_closed.inv,
-    by simp [inter_comm], ?_⟩
+    by simp [inter_comm], _⟩
   calc
   W ∩ W⁻¹ * (W ∩ W⁻¹)
     ⊆ W * W := mul_subset_mul (inter_subset_left _ _) (inter_subset_left _ _)
@@ -1727,7 +1727,7 @@ variable [TopologicalSpace G] [MulOneClass G] [ContinuousMul G]
   `0` such that `K + V ⊆ U`."]
 theorem compact_open_separated_mul_right {K U : Set G} (hK : IsCompact K) (hU : IsOpen U)
     (hKU : K ⊆ U) : ∃ V ∈ 𝓝 (1 : G), K * V ⊆ U := by
-  refine hK.induction_on ?_ ?_ ?_ ?_
+  refine hK.induction_on _ _ _ _
   · exact ⟨univ, by simp⟩
   · rintro s t hst ⟨V, hV, hV'⟩
     exact ⟨V, hV, (mul_subset_mul_right hst).trans hV'⟩
@@ -1758,7 +1758,7 @@ theorem compact_open_separated_mul_left {K U : Set G} (hK : IsCompact K) (hU : I
   rcases compact_open_separated_mul_right (hK.image continuous_op) (opHomeomorph.isOpenMap U hU)
       (image_subset op hKU) with
     ⟨V, hV : V ∈ 𝓝 (op (1 : G)), hV' : op '' K * V ⊆ op '' U⟩
-  refine ⟨op ⁻¹' V, continuous_op.continuousAt hV, ?_⟩
+  refine ⟨op ⁻¹' V, continuous_op.continuousAt hV, _⟩
   rwa [← image_preimage_eq V op_surjective, ← image_op_mul, image_subset_iff,
     preimage_image_eq _ op_injective] at hV'
 #align compact_open_separated_mul_left compact_open_separated_mul_left
@@ -1779,10 +1779,10 @@ theorem compact_covered_by_mul_left_translates {K V : Set G} (hK : IsCompact K)
     (hV : (interior V).Nonempty) : ∃ t : Finset G, K ⊆ ⋃ g ∈ t, (g * ·) ⁻¹' V := by
   obtain ⟨t, ht⟩ : ∃ t : Finset G, K ⊆ ⋃ x ∈ t, interior ((x * ·) ⁻¹' V) := by
     refine
-      hK.elim_finite_subcover (fun x => interior <| (x * ·) ⁻¹' V) (fun x => isOpen_interior) ?_
+      hK.elim_finite_subcover (fun x => interior <| (x * ·) ⁻¹' V) (fun x => isOpen_interior) _
     cases' hV with g₀ hg₀
-    refine fun g _ => mem_iUnion.2 ⟨g₀ * g⁻¹, ?_⟩
-    refine preimage_interior_subset_interior_preimage (continuous_const.mul continuous_id) ?_
+    refine fun g _ => mem_iUnion.2 ⟨g₀ * g⁻¹, _⟩
+    refine preimage_interior_subset_interior_preimage (continuous_const.mul continuous_id) _
     rwa [mem_preimage, Function.id_def, inv_mul_cancel_right]
   exact ⟨t, Subset.trans ht <| iUnion₂_mono fun g _ => interior_subset⟩
 #align compact_covered_by_mul_left_translates compact_covered_by_mul_left_translates
@@ -1819,10 +1819,10 @@ theorem exists_disjoint_smul_of_isCompact [NoncompactSpace G] {K L : Set G} (hK 
   obtain ⟨g, hg⟩ : ∃ g, g ∉ K * L⁻¹ := by
     contrapose! A
     exact eq_univ_iff_forall.2 A
-  refine ⟨g, ?_⟩
-  refine disjoint_left.2 fun a ha h'a => hg ?_
+  refine ⟨g, _⟩
+  refine disjoint_left.2 fun a ha h'a => hg _
   rcases h'a with ⟨b, bL, rfl⟩
-  refine ⟨g * b, ha, b⁻¹, by simpa only [Set.mem_inv, inv_inv] using bL, ?_⟩
+  refine ⟨g * b, ha, b⁻¹, by simpa only [Set.mem_inv, inv_inv] using bL, _⟩
   simp only [smul_eq_mul, mul_inv_cancel_right]
 #align exists_disjoint_smul_of_is_compact exists_disjoint_smul_of_isCompact
 #align exists_disjoint_vadd_of_is_compact exists_disjoint_vadd_of_isCompact
@@ -1844,7 +1844,7 @@ locally compact. -/
 theorem IsCompact.locallyCompactSpace_of_mem_nhds_of_group {K : Set G} (hK : IsCompact K) {x : G}
     (h : K ∈ 𝓝 x) : LocallyCompactSpace G := by
   suffices WeaklyLocallyCompactSpace G from inferInstance
-  refine ⟨fun y ↦ ⟨(y * x⁻¹) • K, ?_, ?_⟩⟩
+  refine ⟨fun y ↦ ⟨(y * x⁻¹) • K, _, _⟩⟩
   · exact hK.smul _
   · rw [← preimage_smul_inv]
     exact (continuous_const_smul _).continuousAt.preimage_mem_nhds (by simpa using h)
@@ -1864,7 +1864,7 @@ theorem eq_zero_or_locallyCompactSpace_of_support_subset_isCompact_of_group
     [TopologicalSpace α] [Zero α] [T1Space α]
     {f : G → α} {k : Set G} (hk : IsCompact k) (hf : support f ⊆ k) (h'f : Continuous f) :
     f = 0 ∨ LocallyCompactSpace G := by
-  refine or_iff_not_imp_left.mpr fun h => ?_
+  refine or_iff_not_imp_left.mpr fun h => _
   simp_rw [funext_iff, Pi.zero_apply] at h
   push_neg at h
   obtain ⟨x, hx⟩ : ∃ x, f x ≠ 0 := h
@@ -1907,7 +1907,7 @@ theorem exists_isCompact_isClosed_nhds_one [WeaklyLocallyCompactSpace G] :
 /-- A quotient of a locally compact group is locally compact. -/
 @[to_additive]
 instance [LocallyCompactSpace G] (N : Subgroup G) : LocallyCompactSpace (G ⧸ N) := by
-  refine ⟨fun x n hn ↦ ?_⟩
+  refine ⟨fun x n hn ↦ _⟩
   let π := ((↑) : G → G ⧸ N)
   have C : Continuous π := continuous_quotient_mk'
   obtain ⟨y, rfl⟩ : ∃ y, π y = x := Quot.exists_rep x
@@ -2056,7 +2056,7 @@ theorem topologicalGroup_iInf {ts' : ι → TopologicalSpace G}
 theorem topologicalGroup_inf {t₁ t₂ : TopologicalSpace G} (h₁ : @TopologicalGroup G t₁ _)
     (h₂ : @TopologicalGroup G t₂ _) : @TopologicalGroup G (t₁ ⊓ t₂) _ := by
   rw [inf_eq_iInf]
-  refine topologicalGroup_iInf fun b => ?_
+  refine topologicalGroup_iInf fun b => _
   cases b <;> assumption
 #align topological_group_inf topologicalGroup_inf
 #align topological_add_group_inf topologicalAddGroup_inf

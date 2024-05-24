@@ -120,7 +120,7 @@ theorem UniqueMDiffOn.eq (U : UniqueMDiffOn I s) (hx : x ∈ s) (h : HasMFDerivW
 
 nonrec theorem UniqueMDiffWithinAt.prod {x : M} {y : M'} {s t} (hs : UniqueMDiffWithinAt I s x)
     (ht : UniqueMDiffWithinAt I' t y) : UniqueMDiffWithinAt (I.prod I') (s ×ˢ t) (x, y) := by
-  refine (hs.prod ht).mono ?_
+  refine (hs.prod ht).mono _
   rw [ModelWithCorners.range_prod, ← prod_inter_prod]
   rfl
 
@@ -140,7 +140,7 @@ theorem mdifferentiableWithinAt_iff {f : M → M'} {s : Set M} {x : M} :
         DifferentiableWithinAt 𝕜 (writtenInExtChartAt I I' x f)
           ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s) ((extChartAt I x) x) := by
   rw [mdifferentiableWithinAt_iff']
-  refine and_congr Iff.rfl (exists_congr fun f' => ?_)
+  refine and_congr Iff.rfl (exists_congr fun f' => _)
   rw [inter_comm]
   simp only [HasFDerivWithinAt, nhdsWithin_inter, nhdsWithin_extChartAt_target_eq]
 #align mdifferentiable_within_at_iff mdifferentiableWithinAt_iff
@@ -234,7 +234,7 @@ theorem HasMFDerivWithinAt.hasMFDerivAt (h : HasMFDerivWithinAt I I' f s x f') (
 
 theorem MDifferentiableWithinAt.hasMFDerivWithinAt (h : MDifferentiableWithinAt I I' f s x) :
     HasMFDerivWithinAt I I' f s x (mfderivWithin I I' f s x) := by
-  refine ⟨h.1, ?_⟩
+  refine ⟨h.1, _⟩
   simp only [mfderivWithin, h, if_pos, mfld_simps]
   exact DifferentiableWithinAt.hasFDerivWithinAt h.2
 #align mdifferentiable_within_at.has_mfderiv_within_at MDifferentiableWithinAt.hasMFDerivWithinAt
@@ -248,7 +248,7 @@ protected theorem MDifferentiableWithinAt.mfderivWithin (h : MDifferentiableWith
 
 theorem MDifferentiableAt.hasMFDerivAt (h : MDifferentiableAt I I' f x) :
     HasMFDerivAt I I' f x (mfderiv I I' f x) := by
-  refine ⟨h.continuousAt, ?_⟩
+  refine ⟨h.continuousAt, _⟩
   simp only [mfderiv, h, if_pos, mfld_simps]
   exact DifferentiableWithinAt.hasFDerivWithinAt h.differentiableWithinAt_writtenInExtChartAt
 #align mdifferentiable_at.has_mfderiv_at MDifferentiableAt.hasMFDerivAt
@@ -538,7 +538,7 @@ theorem HasMFDerivWithinAt.congr_mfderiv (h : HasMFDerivWithinAt I I' f s x f') 
 
 theorem HasMFDerivWithinAt.congr_of_eventuallyEq (h : HasMFDerivWithinAt I I' f s x f')
     (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) : HasMFDerivWithinAt I I' f₁ s x f' := by
-  refine ⟨ContinuousWithinAt.congr_of_eventuallyEq h.1 h₁ hx, ?_⟩
+  refine ⟨ContinuousWithinAt.congr_of_eventuallyEq h.1 h₁ hx, _⟩
   apply HasFDerivWithinAt.congr_of_eventuallyEq h.2
   · have :
       (extChartAt I x).symm ⁻¹' {y | f₁ y = f y} ∈
@@ -626,7 +626,7 @@ theorem mfderivWithin_congr (hs : UniqueMDiffWithinAt I s x) (hL : ∀ x ∈ s, 
 theorem tangentMapWithin_congr (h : ∀ x ∈ s, f x = f₁ x) (p : TangentBundle I M) (hp : p.1 ∈ s)
     (hs : UniqueMDiffWithinAt I s p.1) :
     tangentMapWithin I I' f s p = tangentMapWithin I I' f₁ s p := by
-  refine TotalSpace.ext _ _ (h p.1 hp) ?_
+  refine TotalSpace.ext _ _ (h p.1 hp) _
   -- This used to be `simp only`, but we need `erw` after leanprover/lean4#2644
   rw [tangentMapWithin, h p.1 hp, tangentMapWithin, mfderivWithin_congr hs h (h _ hp)]
 #align tangent_map_within_congr tangentMapWithin_congr
@@ -669,7 +669,7 @@ variable (x)
 theorem HasMFDerivWithinAt.comp (hg : HasMFDerivWithinAt I' I'' g u (f x) g')
     (hf : HasMFDerivWithinAt I I' f s x f') (hst : s ⊆ f ⁻¹' u) :
     HasMFDerivWithinAt I I'' (g ∘ f) s x (g'.comp f') := by
-  refine ⟨ContinuousWithinAt.comp hg.1 hf.1 hst, ?_⟩
+  refine ⟨ContinuousWithinAt.comp hg.1 hf.1 hst, _⟩
   have A :
     HasFDerivWithinAt (writtenInExtChartAt I' I'' (f x) g ∘ writtenInExtChartAt I I' x f)
       (ContinuousLinearMap.comp g' f' : E →L[𝕜] E'') ((extChartAt I x).symm ⁻¹' s ∩ range I)

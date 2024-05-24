@@ -52,7 +52,7 @@ theorem exists_hasSum_smul_of_apply_eq_zero (hs : HasSum (fun m => z ^ m • a m
   by_cases h : z = 0
   · have : s = 0 := hs.unique (by simpa [ha 0 hn, h] using hasSum_at_zero a)
     exact ⟨a n, by simp [h, hn.ne', this], by simpa [h] using hasSum_at_zero fun m => a (m + n)⟩
-  · refine ⟨(z ^ n)⁻¹ • s, by field_simp [smul_smul], ?_⟩
+  · refine ⟨(z ^ n)⁻¹ • s, by field_simp [smul_smul], _⟩
     have h1 : ∑ i in Finset.range n, z ^ i • a i = 0 :=
       Finset.sum_eq_zero fun k hk => by simp [ha k (Finset.mem_range.mp hk)]
     have h2 : HasSum (fun m => z ^ (m + n) • a (m + n)) s := by
@@ -71,7 +71,7 @@ theorem has_fpower_series_dslope_fslope (hp : HasFPowerSeriesAt f p z₀) :
   have hpd : deriv f z₀ = p.coeff 1 := hp.deriv
   have hp0 : p.coeff 0 = f z₀ := hp.coeff_zero 1
   simp only [hasFPowerSeriesAt_iff, apply_eq_pow_smul_coeff, coeff_fslope] at hp ⊢
-  refine hp.mono fun x hx => ?_
+  refine hp.mono fun x hx => _
   by_cases h : x = 0
   · convert hasSum_single (α := E) 0 _ <;> intros <;> simp [*]
   · have hxx : ∀ n : ℕ, x⁻¹ * x ^ (n + 1) = x ^ n := fun n => by field_simp [h, _root_.pow_succ]
@@ -196,7 +196,7 @@ theorem exists_eventuallyEq_pow_smul_nonzero_iff (hf : AnalyticAt 𝕜 f z₀) :
     contrapose! hg_ne
     apply EventuallyEq.eq_of_nhds
     rw [EventuallyEq, ← AnalyticAt.frequently_eq_iff_eventually_eq hg_an analyticAt_const]
-    refine (eventually_nhdsWithin_iff.mpr ?_).frequently
+    refine (eventually_nhdsWithin_iff.mpr _).frequently
     filter_upwards [hg_eq, hg_ne] with z hf_eq hf0 hz
     rwa [hf0, eq_comm, smul_eq_zero_iff_right] at hf_eq
     exact pow_ne_zero _ (sub_ne_zero.mpr hz)
@@ -230,7 +230,7 @@ lemma order_eq_nat_iff (hf : AnalyticAt 𝕜 f z₀) (n : ℕ) : hf.order = ↑n
     rw [← hf.exists_eventuallyEq_pow_smul_nonzero_iff]
     exact ⟨n, h⟩
   · rw [← hf.exists_eventuallyEq_pow_smul_nonzero_iff] at h
-    refine ⟨fun hn ↦ (WithTop.coe_inj.mp hn : h.choose = n) ▸ h.choose_spec, fun h' ↦ ?_⟩
+    refine ⟨fun hn ↦ (WithTop.coe_inj.mp hn : h.choose = n) ▸ h.choose_spec, fun h' ↦ _⟩
     rw [unique_eventuallyEq_pow_smul_nonzero h.choose_spec h']
 
 end AnalyticAt

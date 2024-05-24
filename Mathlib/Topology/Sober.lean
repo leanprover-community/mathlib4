@@ -175,7 +175,7 @@ noncomputable def irreducibleSetEquivPoints [QuasiSober α] [T0Space α] :
       (by rw [closure_closure]; exact isGenericPoint_closure)
   map_rel_iff' := by
     rintro ⟨s, hs⟩ ⟨t, ht⟩
-    refine specializes_iff_closure_subset.trans ?_
+    refine specializes_iff_closure_subset.trans _
     simp [hs.2.closure_eq, ht.2.closure_eq]
 #align irreducible_set_equiv_points irreducibleSetEquivPoints
 
@@ -202,7 +202,7 @@ theorem OpenEmbedding.quasiSober {f : α → β} (hf : OpenEmbedding f) [QuasiSo
       exact closure_mono (inter_subset_left _ _) hx.mem
     obtain ⟨y, rfl⟩ : x ∈ range f := by
       rw [hx.mem_open_set_iff hf.isOpen_range]
-      refine Nonempty.mono ?_ hS''.1
+      refine Nonempty.mono _ hS''.1
       simpa using subset_closure
     use y
     change _ = _
@@ -235,7 +235,7 @@ theorem quasiSober_of_open_cover (S : Set (Set α)) (hS : ∀ s : S, IsOpen (s :
     simpa using this
   rw [← image_singleton, ← closure_image_closure continuous_subtype_val, H.genericPoint_spec.def]
   refine (subset_closure_inter_of_isPreirreducible_of_isOpen h.2 (hS ⟨U, hU⟩) ⟨x, hx, hU'⟩).trans
-    (closure_mono ?_)
+    (closure_mono _)
   rw [inter_comm t, ← Subtype.image_preimage_coe]
   exact Set.image_subset _ subset_closure
 #align quasi_sober_of_open_cover quasiSober_of_open_cover

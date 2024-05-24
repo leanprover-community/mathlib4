@@ -69,7 +69,7 @@ theorem mem_finset_prod (t : Finset ι) (f : ι → Set α) (a : α) :
     simp_rw [ih]
     constructor
     · rintro ⟨x, y, hx, ⟨g, hg, rfl⟩, rfl⟩
-      refine ⟨Function.update g i x, ?_, ?_⟩
+      refine ⟨Function.update g i x, _, _⟩
       · intro j hj
         obtain rfl | hj := Finset.mem_insert.mp hj
         · rwa [Function.update_same]

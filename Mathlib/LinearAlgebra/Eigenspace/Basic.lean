@@ -137,10 +137,10 @@ lemma HasEigenvalue.isNilpotent_of_isNilpotent [NoZeroSMulDivisors R M] {f : End
 
 theorem HasEigenvalue.mem_spectrum {f : End R M} {μ : R} (hμ : HasEigenvalue f μ) :
     μ ∈ spectrum R f := by
-  refine spectrum.mem_iff.mpr fun h_unit => ?_
+  refine spectrum.mem_iff.mpr fun h_unit => _
   set f' := LinearMap.GeneralLinearGroup.toLinearEquiv h_unit.unit
   rcases hμ.exists_hasEigenvector with ⟨v, hv⟩
-  refine hv.2 ((LinearMap.ker_eq_bot'.mp f'.ker) v (?_ : μ • v - f v = 0))
+  refine hv.2 ((LinearMap.ker_eq_bot'.mp f'.ker) v (_ : μ • v - f v = 0))
   rw [hv.apply_eq_smul, sub_self]
 #align module.End.mem_spectrum_of_has_eigenvalue Module.End.HasEigenvalue.mem_spectrum
 
@@ -355,7 +355,7 @@ lemma disjoint_genEigenspace [NoZeroSMulDivisors R M]
     (mapsTo_genEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ₂) μ₁ k)
     (mapsTo_genEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ₂) μ₂ l)
   have : IsNilpotent (f₂ - f₁) := by
-    apply Commute.isNilpotent_sub (x := f₂) (y := f₁) _ ⟨l, ?_⟩ ⟨k, ?_⟩
+    apply Commute.isNilpotent_sub (x := f₂) (y := f₁) _ ⟨l, _⟩ ⟨k, _⟩
     · ext; simp [f₁, f₂, smul_sub, sub_sub, smul_comm μ₁, add_sub_left_comm]
     all_goals ext ⟨x, _, _⟩; simpa [LinearMap.restrict_apply, LinearMap.pow_restrict _] using ‹_›
   have hf₁₂ : f₂ - f₁ = algebraMap R (End R p) (μ₁ - μ₂) := by ext; simp [f₁, f₂, sub_smul]
@@ -402,15 +402,15 @@ theorem independent_genEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
   obtain ⟨k : ℕ, hk : (g ^ k) y = 0⟩ := by simpa using hy
   have hyz : (g ^ k) (y + z) ∈
       (⨆ k, genEigenspace f μ₁ k) ⊓ s.sup fun μ ↦ ⨆ k, f.genEigenspace μ k := by
-    refine ⟨f.mapsTo_iSup_genEigenspace_of_comm ?_ μ₁ hx, ?_⟩
+    refine ⟨f.mapsTo_iSup_genEigenspace_of_comm _ μ₁ hx, _⟩
     · exact Algebra.mul_sub_algebraMap_pow_commutes f μ₂ k
     · rw [SetLike.mem_coe, map_add, hk, zero_add]
       suffices (s.sup fun μ ↦ ⨆ k, f.genEigenspace μ k).map (g ^ k) ≤
           s.sup fun μ ↦ ⨆ k, f.genEigenspace μ k by exact this (Submodule.mem_map_of_mem hz)
       simp_rw [Finset.sup_eq_iSup, Submodule.map_iSup (ι := R), Submodule.map_iSup (ι := _ ∈ s)]
-      refine iSup₂_mono fun μ _ ↦ ?_
+      refine iSup₂_mono fun μ _ ↦ _
       rintro - ⟨u, hu, rfl⟩
-      refine f.mapsTo_iSup_genEigenspace_of_comm ?_ μ hu
+      refine f.mapsTo_iSup_genEigenspace_of_comm _ μ hu
       exact Algebra.mul_sub_algebraMap_pow_commutes f μ₂ k
   rw [ih.eq_bot, Submodule.mem_bot] at hyz
   simp_rw [Submodule.mem_iSup_of_chain, mem_genEigenspace]
@@ -522,7 +522,7 @@ lemma iSup_genEigenspace_le_smul (f : Module.End R M) (μ t : R) :
     (⨆ k, f.genEigenspace μ k) ≤ ⨆ k, (t • f).genEigenspace (t * μ) k := by
   intro m hm
   simp only [Submodule.mem_iSup_of_chain, mem_genEigenspace] at hm ⊢
-  refine Exists.imp (fun k hk ↦ ?_) hm
+  refine Exists.imp (fun k hk ↦ _) hm
   rw [mul_smul, ← smul_sub, smul_pow, LinearMap.smul_apply, hk, smul_zero]
 
 lemma iSup_genEigenspace_inf_le_add
@@ -540,7 +540,7 @@ lemma iSup_genEigenspace_inf_le_add
     (h.sub_right <| Algebra.commute_algebraMap_right μ₂ f₁).sub_left
       (Algebra.commute_algebraMap_left μ₁ _)
   rw [this, h.add_pow', LinearMap.coeFn_sum, Finset.sum_apply]
-  refine Finset.sum_eq_zero fun ⟨i, j⟩ hij ↦ ?_
+  refine Finset.sum_eq_zero fun ⟨i, j⟩ hij ↦ _
   suffices (((f₁ - μ₁ • 1) ^ i) * ((f₂ - μ₂ • 1) ^ j)) m = 0 by
     rw [LinearMap.smul_apply, this, smul_zero]
   cases' Nat.le_or_le_of_add_eq_add_pred (Finset.mem_antidiagonal.mp hij) with hi hj
@@ -556,7 +556,7 @@ lemma map_smul_of_iInf_genEigenspace_ne_bot [NoZeroSMulDivisors R M]
   by_contra contra
   let g : L → Submodule R M := fun x ↦ ⨆ k, (f x).genEigenspace (μ x) k
   have : ⨅ x, g x ≤ g x ⊓ g (t • x) := le_inf_iff.mpr ⟨iInf_le g x, iInf_le g (t • x)⟩
-  refine h_ne <| eq_bot_iff.mpr (le_trans this (disjoint_iff_inf_le.mp ?_))
+  refine h_ne <| eq_bot_iff.mpr (le_trans this (disjoint_iff_inf_le.mp _))
   apply Disjoint.mono_left (iSup_genEigenspace_le_smul (f x) (μ x) t)
   simp only [g, map_smul]
   exact disjoint_iSup_genEigenspace (t • f x) (Ne.symm contra)
@@ -570,7 +570,7 @@ lemma map_add_of_iInf_genEigenspace_ne_bot_of_commute [NoZeroSMulDivisors R M]
   let g : L → Submodule R M := fun x ↦ ⨆ k, (f x).genEigenspace (μ x) k
   have : ⨅ x, g x ≤ (g x ⊓ g y) ⊓ g (x + y) :=
     le_inf_iff.mpr ⟨le_inf_iff.mpr ⟨iInf_le g x, iInf_le g y⟩, iInf_le g (x + y)⟩
-  refine h_ne <| eq_bot_iff.mpr (le_trans this (disjoint_iff_inf_le.mp ?_))
+  refine h_ne <| eq_bot_iff.mpr (le_trans this (disjoint_iff_inf_le.mp _))
   apply Disjoint.mono_left (iSup_genEigenspace_inf_le_add (f x) (f y) (μ x) (μ y) (h x y))
   simp only [g, map_add]
   exact disjoint_iSup_genEigenspace (f x + f y) (Ne.symm contra)

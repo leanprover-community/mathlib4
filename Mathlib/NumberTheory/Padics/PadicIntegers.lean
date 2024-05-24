@@ -374,7 +374,7 @@ def valuation (x : ℤ_[p]) :=
 #align padic_int.valuation PadicInt.valuation
 
 theorem norm_eq_pow_val {x : ℤ_[p]} (hx : x ≠ 0) : ‖x‖ = (p : ℝ) ^ (-x.valuation) := by
-  refine @Padic.norm_eq_pow_val p hp x ?_
+  refine @Padic.norm_eq_pow_val p hp x _
   contrapose! hx
   exact Subtype.val_injective hx
 #align padic_int.norm_eq_pow_val PadicInt.norm_eq_pow_val
@@ -409,7 +409,7 @@ theorem valuation_p_pow_mul (n : ℕ) (c : ℤ_[p]) (hc : c ≠ 0) :
     contrapose! hc
     rw [mul_eq_zero] at hc
     cases' hc with hc hc
-    · refine (hp.1.ne_zero ?_).elim
+    · refine (hp.1.ne_zero _).elim
       exact_mod_cast pow_eq_zero hc
     · exact hc
   rwa [norm_eq_pow_val aux, norm_p_pow, norm_eq_pow_val hc, ← zpow_add₀, ← neg_add,
@@ -443,7 +443,7 @@ theorem inv_mul {z : ℤ_[p]} (hz : ‖z‖ = 1) : z.inv * z = 1 := by rw [mul_c
 theorem isUnit_iff {z : ℤ_[p]} : IsUnit z ↔ ‖z‖ = 1 :=
   ⟨fun h => by
     rcases isUnit_iff_dvd_one.1 h with ⟨w, eq⟩
-    refine le_antisymm (norm_le_one _) ?_
+    refine le_antisymm (norm_le_one _) _
     have := mul_le_mul_of_nonneg_left (norm_le_one w) (norm_nonneg z)
     rwa [mul_one, ← norm_mul, ← eq, norm_one] at this, fun h =>
     ⟨⟨z, z.inv, mul_inv h, inv_mul h⟩, rfl⟩⟩
@@ -520,7 +520,7 @@ theorem norm_le_pow_iff_le_valuation (x : ℤ_[p]) (hx : x ≠ 0) (n : ℕ) :
   simp only [Int.ofNat_le, zpow_neg, zpow_natCast]
   have aux : ∀ m : ℕ, 0 < (p : ℝ) ^ m := by
     intro m
-    refine pow_pos ?_ m
+    refine pow_pos _ m
     exact mod_cast hp.1.pos
   rw [inv_le_inv (aux _) (aux _)]
   have : p ^ n ≤ p ^ k ↔ n ≤ k := (pow_right_strictMono hp.1.one_lt).le_iff_le
@@ -627,13 +627,13 @@ instance : IsAdicComplete (maximalIdeal ℤ_[p]) ℤ_[p] where
   prec' x hx := by
     simp only [← Ideal.one_eq_top, smul_eq_mul, mul_one, SModEq.sub_mem, maximalIdeal_eq_span_p,
       Ideal.span_singleton_pow, ← norm_le_pow_iff_mem_span_pow] at hx ⊢
-    let x' : CauSeq ℤ_[p] norm := ⟨x, ?_⟩; swap
+    let x' : CauSeq ℤ_[p] norm := ⟨x, _⟩; swap
     · intro ε hε
       obtain ⟨m, hm⟩ := exists_pow_neg_lt p hε
-      refine ⟨m, fun n hn => lt_of_le_of_lt ?_ hm⟩
+      refine ⟨m, fun n hn => lt_of_le_of_lt _ hm⟩
       rw [← neg_sub, norm_neg]
       exact hx hn
-    · refine ⟨x'.lim, fun n => ?_⟩
+    · refine ⟨x'.lim, fun n => _⟩
       have : (0 : ℝ) < (p : ℝ) ^ (-n : ℤ) := by
         apply zpow_pos_of_pos
         exact mod_cast hp.1.pos

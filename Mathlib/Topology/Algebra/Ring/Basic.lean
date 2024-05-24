@@ -212,7 +212,7 @@ theorem TopologicalRing.of_addGroup_of_nhds_zero [TopologicalAddGroup R]
     (hmul_left : ∀ x₀ : R, Tendsto (fun x : R => x₀ * x) (𝓝 0) <| 𝓝 0)
     (hmul_right : ∀ x₀ : R, Tendsto (fun x : R => x * x₀) (𝓝 0) <| 𝓝 0) : TopologicalRing R where
   continuous_mul := by
-    refine continuous_of_continuousAt_zero₂ (AddMonoidHom.mul (R := R)) ?_ ?_ ?_ <;>
+    refine continuous_of_continuousAt_zero₂ (AddMonoidHom.mul (R := R)) _ _ _ <;>
       simpa only [ContinuousAt, mul_zero, zero_mul, nhds_prod_eq, AddMonoidHom.mul_apply]
 #align topological_ring.of_add_group_of_nhds_zero TopologicalRing.of_addGroup_of_nhds_zero
 

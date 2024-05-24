@@ -80,7 +80,7 @@ def PreservesProduct.ofIsoComparison [i : IsIso (piComparison G f)] :
   apply preservesLimitOfPreservesLimitCone (productIsProduct f)
   apply (isLimitMapConeFanMkEquiv _ _ _).symm _
   refine @IsLimit.ofPointIso _ _ _ _ _ _ _
-    (limit.isLimit (Discrete.functor fun j : J => G.obj (f j))) ?_
+    (limit.isLimit (Discrete.functor fun j : J => G.obj (f j))) _
   apply i
 #align category_theory.limits.preserves_product.of_iso_comparison CategoryTheory.Limits.PreservesProduct.ofIsoComparison
 
@@ -151,7 +151,7 @@ def PreservesCoproduct.ofIsoComparison [i : IsIso (sigmaComparison G f)] :
   apply preservesColimitOfPreservesColimitCocone (coproductIsCoproduct f)
   apply (isColimitMapCoconeCofanMkEquiv _ _ _).symm _
   refine @IsColimit.ofPointIso _ _ _ _ _ _ _
-    (colimit.isColimit (Discrete.functor fun j : J => G.obj (f j))) ?_
+    (colimit.isColimit (Discrete.functor fun j : J => G.obj (f j))) _
   apply i
 #align category_theory.limits.preserves_coproduct.of_iso_comparison CategoryTheory.Limits.PreservesCoproduct.ofIsoComparison
 

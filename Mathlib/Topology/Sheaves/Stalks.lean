@@ -140,7 +140,7 @@ stalk of `f _ * F` at `f x` and the stalk of `F` at `x`.
 def stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) (x : X) : (f _* F).stalk (f x) ⟶ F.stalk x := by
   -- This is a hack; Lean doesn't like to elaborate the term written directly.
   -- Porting note: The original proof was `trans; swap`, but `trans` does nothing.
-  refine ?_ ≫ colimit.pre _ (OpenNhds.map f x).op
+  refine _ ≫ colimit.pre _ (OpenNhds.map f x).op
   exact colim.map (whiskerRight (NatTrans.op (OpenNhds.inclusionMapIso f x).inv) F)
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pushforward TopCat.Presheaf.stalkPushforward
@@ -205,7 +205,7 @@ theorem stalkPushforward_iso_of_openEmbedding {f : X ⟶ Y} (hf : OpenEmbedding 
   swap
   · fapply NatIso.ofComponents
     · intro U
-      refine F.mapIso (eqToIso ?_)
+      refine F.mapIso (eqToIso _)
       dsimp only [Functor.op]
       exact congr_arg op (Opens.ext <| Set.preimage_image_eq (unop U).1.1 hf.inj)
     · intro U V i; erw [← F.map_comp, ← F.map_comp]; congr 1
@@ -217,7 +217,7 @@ theorem stalkPushforward_iso_of_openEmbedding {f : X ⟶ Y} (hf : OpenEmbedding 
     erw [colimit.ι_map_assoc, colimit.ι_pre, ← F.map_comp_assoc]
     apply colimit.w ((OpenNhds.inclusion (f x)).op ⋙ f _* F) _
     dsimp only [Functor.op]
-    refine ((homOfLE ?_).op : op (unop U) ⟶ _)
+    refine ((homOfLE _).op : op (unop U) ⟶ _)
     exact Set.image_preimage_subset _ _
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pushforward.stalk_pushforward_iso_of_open_embedding TopCat.Presheaf.stalkPushforward.stalkPushforward_iso_of_openEmbedding
@@ -410,7 +410,7 @@ theorem germ_exist (F : X.Presheaf C) (x : X) (t : (stalk.{v, u} F x : Type v)) 
   obtain ⟨U, s, e⟩ :=
     Types.jointly_surjective.{v, v} _ (isColimitOfPreserves (forget C) (colimit.isColimit _)) t
   revert s e
-  induction U with | h U => ?_
+  induction U with | h U => _
   cases' U with V m
   intro s e
   exact ⟨V, m, s, e⟩
@@ -563,7 +563,7 @@ set_option linter.uppercaseLean3 false in
 theorem app_surjective_of_stalkFunctor_map_bijective {F G : Sheaf C X} (f : F ⟶ G) (U : Opens X)
     (h : ∀ x : U, Function.Bijective ((stalkFunctor C x.val).map f.1)) :
     Function.Surjective (f.1.app (op U)) := by
-  refine app_surjective_of_injective_of_locally_surjective f U (fun x => (h x).1) fun t x => ?_
+  refine app_surjective_of_injective_of_locally_surjective f U (fun x => (h x).1) fun t x => _
   -- Now we need to prove our initial claim: That we can find preimages of `t` locally.
   -- Since `f` is surjective on stalks, we can find a preimage `s₀` of the germ of `t` at `x`
   obtain ⟨s₀, hs₀⟩ := (h x).2 (G.presheaf.germ x t)

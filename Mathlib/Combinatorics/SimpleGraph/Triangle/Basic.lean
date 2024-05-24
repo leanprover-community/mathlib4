@@ -72,14 +72,14 @@ lemma EdgeDisjointTriangles.map (f : α ↪ β) (hG : G.EdgeDisjointTriangles) :
   exact (hG hs ht hst).image _
 
 lemma LocallyLinear.map (f : α ↪ β) (hG : G.LocallyLinear) : (G.map f).LocallyLinear := by
-  refine ⟨hG.1.map _, ?_⟩
+  refine ⟨hG.1.map _, _⟩
   rintro _ _ ⟨a, b, h, rfl, rfl⟩
   obtain ⟨s, hs, ha, hb⟩ := hG.2 h
   exact ⟨s.map f, hs.map, mem_map_of_mem _ ha, mem_map_of_mem _ hb⟩
 
 @[simp] lemma locallyLinear_comap {G : SimpleGraph β} {e : α ≃ β} :
     (G.comap e).LocallyLinear ↔ G.LocallyLinear := by
-  refine ⟨fun h ↦ ?_, ?_⟩
+  refine ⟨fun h ↦ _, _⟩
   · rw [← comap_map_eq e.symm.toEmbedding G, comap_symm, map_symm]
     exact h.map _
   · rw [← Equiv.coe_toEmbedding, ← map_symm]
@@ -114,21 +114,21 @@ lemma edgeDisjointTriangles_iff_mem_sym2_subsingleton :
         | simp only [*, adj_comm, true_and, Ne, eq_self_iff_true, not_true] at *
           exact ⟨e, by aesop⟩
     · rintro ⟨hab, c, hac, hbc, rfl⟩
-      refine ⟨⟨a, b, c, ?_⟩, ?_⟩ <;> simp [*]
+      refine ⟨⟨a, b, c, _⟩, _⟩ <;> simp [*]
   constructor
   · rw [Sym2.forall]
     rintro hG a b hab
     simp only [Sym2.isDiag_iff_proj_eq] at hab
     rw [this _ _ (Sym2.mk_isDiag_iff.not.2 hab)]
     rintro _ ⟨hab, c, hac, hbc, rfl⟩ _ ⟨-, d, had, hbd, rfl⟩
-    refine hG.eq ?_ ?_ (Set.Nontrivial.not_subsingleton ⟨a, ?_, b, ?_, hab.ne⟩) <;>
+    refine hG.eq _ _ (Set.Nontrivial.not_subsingleton ⟨a, _, b, _, hab.ne⟩) <;>
       simp [is3Clique_triple_iff, *]
   · simp only [EdgeDisjointTriangles, is3Clique_iff, Set.Pairwise, mem_cliqueSet_iff, Ne,
       forall_exists_index, and_imp, ← Set.not_nontrivial_iff (s := _ ∩ _), not_imp_not,
       Set.Nontrivial, Set.mem_inter_iff, mem_coe]
     rintro hG _ a b c hab hac hbc rfl _ d e f hde hdf hef rfl g hg₁ hg₂ h hh₁ hh₂ hgh
-    refine hG (Sym2.mk_isDiag_iff.not.2 hgh) ⟨⟨a, b, c, ?_⟩, by simpa using And.intro hg₁ hh₁⟩
-      ⟨⟨d, e, f, ?_⟩, by simpa using And.intro hg₂ hh₂⟩ <;> simp [is3Clique_triple_iff, *]
+    refine hG (Sym2.mk_isDiag_iff.not.2 hgh) ⟨⟨a, b, c, _⟩, by simpa using And.intro hg₁ hh₁⟩
+      ⟨⟨d, e, f, _⟩, by simpa using And.intro hg₂ hh₂⟩ <;> simp [is3Clique_triple_iff, *]
 
 alias ⟨EdgeDisjointTriangles.mem_sym2_subsingleton, _⟩ :=
   edgeDisjointTriangles_iff_mem_sym2_subsingleton
@@ -144,13 +144,13 @@ instance LocallyLinear.instDecidable : Decidable G.LocallyLinear := And.decidabl
 lemma EdgeDisjointTriangles.card_edgeFinset_le (hG : G.EdgeDisjointTriangles) :
     3 * (G.cliqueFinset 3).card ≤ G.edgeFinset.card := by
   rw [mul_comm, ← mul_one G.edgeFinset.card]
-  refine card_mul_le_card_mul (fun s e ↦ e ∈ s.sym2) ?_ (fun e he ↦ ?_)
+  refine card_mul_le_card_mul (fun s e ↦ e ∈ s.sym2) _ (fun e he ↦ _)
   · simp only [is3Clique_iff, mem_cliqueFinset_iff, mem_sym2_iff, forall_exists_index, and_imp]
     rintro _ a b c hab hac hbc rfl
     have : Finset.card ({s(a, b), s(a, c), s(b, c)} : Finset (Sym2 α)) = 3 := by
-      refine card_eq_three.2 ⟨_, _, _, ?_, ?_, ?_, rfl⟩ <;> simp [hab.ne, hac.ne, hbc.ne]
+      refine card_eq_three.2 ⟨_, _, _, _, _, _, rfl⟩ <;> simp [hab.ne, hac.ne, hbc.ne]
     rw [← this]
-    refine card_mono ?_
+    refine card_mono _
     simp [insert_subset, *]
   · simpa only [card_le_one, mem_bipartiteBelow, and_imp, Set.Subsingleton, Set.mem_setOf_eq,
       mem_cliqueFinset_iff, mem_cliqueSet_iff]
@@ -158,15 +158,15 @@ lemma EdgeDisjointTriangles.card_edgeFinset_le (hG : G.EdgeDisjointTriangles) :
 
 lemma LocallyLinear.card_edgeFinset (hG : G.LocallyLinear) :
     G.edgeFinset.card = 3 * (G.cliqueFinset 3).card := by
-  refine hG.edgeDisjointTriangles.card_edgeFinset_le.antisymm' ?_
+  refine hG.edgeDisjointTriangles.card_edgeFinset_le.antisymm' _
   rw [← mul_comm, ← mul_one (Finset.card _)]
-  refine card_mul_le_card_mul (fun e s ↦ e ∈ s.sym2) ?_ ?_
+  refine card_mul_le_card_mul (fun e s ↦ e ∈ s.sym2) _ _
   · simpa [Sym2.forall, Nat.one_le_iff_ne_zero, -card_eq_zero, card_ne_zero, Finset.Nonempty]
       using hG.2
   simp only [mem_cliqueFinset_iff, is3Clique_iff, forall_exists_index, and_imp]
   rintro _ a b c hab hac hbc rfl
   calc
-    _ ≤ ({s(a, b), s(a, c), s(b, c)} : Finset _).card := card_le_card ?_
+    _ ≤ ({s(a, b), s(a, c), s(b, c)} : Finset _).card := card_le_card _
     _ ≤ 3 := (card_insert_le _ _).trans (succ_le_succ $ (card_insert_le _ _).trans_eq $ by
       rw [card_singleton])
   simp only [subset_iff, Sym2.forall, mem_sym2_iff, le_eq_subset, mem_bipartiteBelow, mem_insert,
@@ -214,11 +214,11 @@ private lemma farFromTriangleFree_of_disjoint_triangles_aux {tris : Finset (Fins
   have ⦃t⦄ (ht : t ∈ tris) :
     ∃ x y, x ∈ t ∧ y ∈ t ∧ x ≠ y ∧ s(x, y) ∈ G.edgeFinset \ H.edgeFinset := by
     by_contra! h
-    refine hH t ?_
+    refine hH t _
     simp only [not_and, mem_sdiff, not_not, mem_edgeFinset, mem_edgeSet] at h
     obtain ⟨x, y, z, xy, xz, yz, rfl⟩ := is3Clique_iff.1 (mem_cliqueFinset_iff.1 $ htris ht)
     rw [is3Clique_triple_iff]
-    refine ⟨h _ _ ?_ ?_ xy.ne xy, h _ _ ?_ ?_ xz.ne xz, h _ _ ?_ ?_ yz.ne yz⟩ <;> simp
+    refine ⟨h _ _ _ _ xy.ne xy, h _ _ _ _ xz.ne xz, h _ _ _ _ yz.ne yz⟩ <;> simp
   choose fx fy hfx hfy hfne fmem using this
   let f (t : {x // x ∈ tris}) : Sym2 α := s(fx t.2, fy t.2)
   have hf (x) (_ : x ∈ tris.attach) : f x ∈ G.edgeFinset \ H.edgeFinset := fmem _
@@ -252,19 +252,19 @@ variable [Nonempty α]
 
 lemma FarFromTriangleFree.lt_half (hG : G.FarFromTriangleFree ε) : ε < 2⁻¹ := by
   by_contra! hε
-  refine lt_irrefl (ε * card α ^ 2) ?_
+  refine lt_irrefl (ε * card α ^ 2) _
   have hε₀ : 0 < ε := hε.trans_lt' (by norm_num)
   rw [inv_pos_le_iff_one_le_mul (zero_lt_two' 𝕜)] at hε
   calc
     _ ≤ (G.edgeFinset.card : 𝕜) := by
       simpa using hG.le_card_sub_card bot_le (cliqueFree_bot (le_succ _))
     _ ≤ ε * 2 * (edgeFinset G).card := le_mul_of_one_le_left (by positivity) (by assumption)
-    _ < ε * card α ^ 2 := ?_
+    _ < ε * card α ^ 2 := _
   rw [mul_assoc, mul_lt_mul_left hε₀]
   norm_cast
   calc
     _ ≤ 2 * (⊤ : SimpleGraph α).edgeFinset.card := by gcongr; exact le_top
-    _ < card α ^ 2 := ?_
+    _ < card α ^ 2 := _
   rw [edgeFinset_top, filter_not, card_sdiff (subset_univ _), card_univ, Sym2.card,]
   simp_rw [choose_two_right, Nat.add_sub_cancel, Nat.mul_comm _ (card α),
     Sym2.isDiag_iff_mem_range_diag, univ_filter_mem_range, mul_tsub,

@@ -93,7 +93,7 @@ theorem posSemidef_lapMatrix [LinearOrderedField R] [StarRing R] [StarOrderedRin
   · rw [IsHermitian, conjTranspose_eq_transpose_of_trivial, isSymm_lapMatrix]
   · intro x
     rw [star_trivial, ← toLinearMap₂'_apply', lapMatrix_toLinearMap₂']
-    refine div_nonneg (sum_nonneg' fun i ↦ sum_nonneg' fun j ↦ ?_) two_pos.le
+    refine div_nonneg (sum_nonneg' fun i ↦ sum_nonneg' fun j ↦ _) two_pos.le
     split
     · apply sq_nonneg
     · rfl
@@ -105,15 +105,15 @@ theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj [LinearOrderedFi
     by_contra! hn
     suffices hc : toLinearMap₂' (G.lapMatrix R) x x > 0 from gt_irrefl _ (h ▸ hc)
     rw [lapMatrix_toLinearMap₂']
-    refine div_pos (sum_pos' (fun k _ ↦ sum_nonneg' (fun l ↦ ?_)) ?_) two_pos
+    refine div_pos (sum_pos' (fun k _ ↦ sum_nonneg' (fun l ↦ _)) _) two_pos
     · exact ite_nonneg (sq_nonneg _) le_rfl
-    · refine ⟨i, mem_univ _, sum_pos' (fun k _ ↦ ?_) ⟨j, mem_univ _, ?_⟩⟩
+    · refine ⟨i, mem_univ _, sum_pos' (fun k _ ↦ _) ⟨j, mem_univ _, _⟩⟩
       · exact ite_nonneg (sq_nonneg _) le_rfl
       · simpa only [hn, ite_true, gt_iff_lt, sub_pos] using
           sq_pos_of_ne_zero (sub_ne_zero.mpr hn.2)
   · intro h
     rw [lapMatrix_toLinearMap₂', div_eq_zero_iff]
-    refine Or.inl <| sum_eq_zero fun i _ ↦ (sum_eq_zero fun j _ ↦ ?_)
+    refine Or.inl <| sum_eq_zero fun i _ ↦ (sum_eq_zero fun j _ ↦ _)
     simpa only [ite_eq_right_iff, pow_eq_zero_iff two_ne_zero, sub_eq_zero] using h i j
 
 theorem lapMatrix_toLin'_apply_eq_zero_iff_forall_adj (x : V → ℝ) :
@@ -124,7 +124,7 @@ theorem lapMatrix_toLin'_apply_eq_zero_iff_forall_adj (x : V → ℝ) :
 theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable (x : V → ℝ) :
     Matrix.toLinearMap₂' (G.lapMatrix ℝ) x x = 0 ↔ ∀ i j : V, G.Reachable i j → x i = x j := by
   rw [lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj]
-  refine ⟨?_, fun h i j hA ↦ h i j hA.reachable⟩
+  refine ⟨_, fun h i j hA ↦ h i j hA.reachable⟩
   intro h i j ⟨w⟩
   induction' w with w i j _ hA _ h'
   · rfl

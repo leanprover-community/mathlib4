@@ -101,7 +101,7 @@ def prodMapL : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) →L[𝕜] M₁ 
     (fun p : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) => p.1.prodMap p.2) (by
       apply funext
       rintro ⟨φ, ψ⟩
-      refine ContinuousLinearMap.ext fun ⟨x₁, x₂⟩ => ?_
+      refine ContinuousLinearMap.ext fun ⟨x₁, x₂⟩ => _
       dsimp
       simp)
 #align continuous_linear_map.prod_mapL ContinuousLinearMap.prodMapL
@@ -158,7 +158,7 @@ variable (𝕜 E F)
 @[simp] lemma norm_fst [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] [Nontrivial E] :
     ‖fst 𝕜 E F‖ = 1 := by
-  refine le_antisymm (norm_fst_le ..) ?_
+  refine le_antisymm (norm_fst_le ..) _
   let ⟨e, he⟩ := exists_ne (0 : E)
   have : ‖e‖ ≤ _ * max ‖e‖ ‖(0 : F)‖ := (fst 𝕜 E F).le_opNorm (e, 0)
   rw [norm_zero, max_eq_left (norm_nonneg e)] at this
@@ -168,7 +168,7 @@ variable (𝕜 E F)
 @[simp] lemma norm_snd [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
     [NormedAddCommGroup F] [NormedSpace 𝕜 F] [Nontrivial F]  :
     ‖snd 𝕜 E F‖ = 1 := by
-  refine le_antisymm (norm_snd_le ..) ?_
+  refine le_antisymm (norm_snd_le ..) _
   let ⟨f, hf⟩ := exists_ne (0 : F)
   have : ‖f‖ ≤ _ * max ‖(0 : E)‖ ‖f‖ := (snd 𝕜 E F).le_opNorm (0, f)
   rw [norm_zero, max_eq_right (norm_nonneg f)] at this

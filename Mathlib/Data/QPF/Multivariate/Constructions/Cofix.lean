@@ -324,7 +324,7 @@ theorem Cofix.bisim' {α : TypeVec n} {β : Type*} (Q : β → Prop) (u v : β �
       rw [liftR_iff]
       refine
         ⟨a, q.P.appendContents f' f₀, q.P.appendContents f' f₁, xeq.symm ▸ ux'eq,
-          yeq.symm ▸ vx'eq, ?_⟩
+          yeq.symm ▸ vx'eq, _⟩
       intro i; cases i
       · apply h'
       · intro j
@@ -500,7 +500,7 @@ elab_rules : tactic
           ids[0]?.forM fun s => addLocalVarInfoForBinderIdent R s
           let sR ← exprToSyntax R
           evalTactic <| ← `(tactic|
-            refine MvQPF.Cofix.bisim₂ $sR ?_ _ _ ⟨_, rfl, rfl⟩;
+            refine MvQPF.Cofix.bisim₂ $sR _ _ _ ⟨_, rfl, rfl⟩;
             rintro $(← idss 1) $(← idss 2) ⟨$(← idss 3), $(← idss 4), $(← idss 5)⟩)
           liftMetaTactic fun g => return [← g.clear f.fvarId!]
     for n in [6 : ids.size] do
@@ -522,7 +522,7 @@ theorem corec_roll {α : TypeVec n} {X Y} {x₀ : X} (f : X → Y) (g : Y → F 
   mv_bisim x₀ with R a b x Ha Hb
   rw [Ha, Hb, Cofix.dest_corec, Cofix.dest_corec, Function.comp_apply, Function.comp_apply]
   rw [MvFunctor.map_map, ← appendFun_comp_id]
-  refine liftR_map_last _ _ _ _ ?_
+  refine liftR_map_last _ _ _ _ _
   intro a; refine ⟨a, rfl, rfl⟩
 #align mvqpf.corec_roll MvQPF.corec_roll
 

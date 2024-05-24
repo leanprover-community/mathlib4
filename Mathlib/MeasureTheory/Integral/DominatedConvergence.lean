@@ -90,11 +90,11 @@ theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι →
     filter_upwards [hb_nonneg, bound_summable]
       with _ ha0 ha_sum using le_tsum ha_sum _ fun i _ => ha0 i
   have hF_integrable : ∀ n, Integrable (F n) μ := by
-    refine fun n => bound_integrable.mono' (hF_meas n) ?_
+    refine fun n => bound_integrable.mono' (hF_meas n) _
     exact EventuallyLE.trans (h_bound n) (hb_le_tsum n)
   simp only [HasSum, ← integral_finset_sum _ fun n _ => hF_integrable n]
   refine tendsto_integral_filter_of_dominated_convergence
-      (fun a => ∑' n, bound n a) ?_ ?_ bound_integrable h_lim
+      (fun a => ∑' n, bound n a) _ _ bound_integrable h_lim
   · exact eventually_of_forall fun s => s.aestronglyMeasurable_sum fun n _ => hF_meas n
   · filter_upwards with s
     filter_upwards [eventually_countable_forall.2 h_bound, hb_nonneg, bound_summable]
@@ -112,7 +112,7 @@ theorem integral_tsum {ι} [Countable ι] {f : ι → α → G} (hf : ∀ i, AES
   have hf'' : ∀ i, AEMeasurable (fun x => (‖f i x‖₊ : ℝ≥0∞)) μ := fun i => (hf i).ennnorm
   have hhh : ∀ᵐ a : α ∂μ, Summable fun n => (‖f n a‖₊ : ℝ) := by
     rw [← lintegral_tsum hf''] at hf'
-    refine (ae_lt_top' (AEMeasurable.ennreal_tsum hf'') hf').mono ?_
+    refine (ae_lt_top' (AEMeasurable.ennreal_tsum hf'') hf').mono _
     intro x hx
     rw [← ENNReal.tsum_coe_ne_top_iff_summable_coe]
     exact hx.ne
@@ -172,14 +172,14 @@ theorem _root_.Antitone.tendsto_setIntegral (hsm : ∀ i, MeasurableSet (s i)) (
     funext fun i => (integral_indicator (hsm i)).symm
   rw [h_int_eq]
   rw [← integral_indicator (MeasurableSet.iInter hsm)]
-  refine tendsto_integral_of_dominated_convergence bound ?_ ?_ ?_ ?_
+  refine tendsto_integral_of_dominated_convergence bound _ _ _ _
   · intro n
     rw [aestronglyMeasurable_indicator_iff (hsm n)]
     exact (IntegrableOn.mono_set hfi (h_anti (zero_le n))).1
   · rw [integrable_indicator_iff (hsm 0)]
     exact hfi.norm
   · simp_rw [norm_indicator_eq_indicator_norm]
-    refine fun n => eventually_of_forall fun x => ?_
+    refine fun n => eventually_of_forall fun x => _
     exact indicator_le_indicator_of_subset (h_anti (zero_le n)) (fun a => norm_nonneg _) _
   · filter_upwards [] with a using le_trans (h_anti.tendsto_indicator _ _ _) (pure_le_nhds _)
 #align antitone.tendsto_set_integral Antitone.tendsto_setIntegral
@@ -244,8 +244,8 @@ theorem hasSum_intervalIntegral_of_summable_norm [Countable ι] {f : ι → C(�
     exact ⟨hx.1.le, hx.2⟩
   · exact ae_of_all _ fun x _ => hf_sum
   · exact intervalIntegrable_const
-  · refine ae_of_all _ fun x hx => Summable.hasSum ?_
-    let x : (⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ) := ⟨x, ?_⟩; swap
+  · refine ae_of_all _ fun x hx => Summable.hasSum _
+    let x : (⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ) := ⟨x, _⟩; swap
     · exact ⟨hx.1.le, hx.2⟩
     have := hf_sum.of_norm
     simpa only [Compacts.coe_mk, ContinuousMap.restrict_apply]
@@ -340,7 +340,7 @@ theorem continuousWithinAt_primitive (hb₀ : μ {b₀} = 0)
       · exact ⟨min_le_of_left_le (min_le_right _ _),
           le_max_of_le_right (h₁.trans <| h₂.trans (le_max_right a b₂))⟩
     apply ContinuousWithinAt.congr _ this (this _ h₀); clear this
-    refine continuousWithinAt_const.add ?_
+    refine continuousWithinAt_const.add _
     have :
       (fun b => ∫ x in b₁..b, f x ∂μ) =ᶠ[𝓝[Icc b₁ b₂] b₀] fun b =>
         ∫ x in b₁..b₂, indicator {x | x ≤ b} f x ∂μ := by
@@ -349,7 +349,7 @@ theorem continuousWithinAt_primitive (hb₀ : μ {b₀} = 0)
     apply ContinuousWithinAt.congr_of_eventuallyEq _ this (integral_indicator h₀).symm
     have : IntervalIntegrable (fun x => ‖f x‖) μ b₁ b₂ :=
       IntervalIntegrable.norm (h_int' <| right_mem_Icc.mpr h₁₂)
-    refine continuousWithinAt_of_dominated_interval ?_ ?_ this ?_ <;> clear this
+    refine continuousWithinAt_of_dominated_interval _ _ this _ <;> clear this
     · filter_upwards [self_mem_nhdsWithin]
       intro x hx
       erw [aestronglyMeasurable_indicator_iff, Measure.restrict_restrict, Iic_inter_Ioc_of_le]
@@ -402,7 +402,7 @@ theorem continuousAt_parametric_primitive_of_dominated {F : X → ℝ → E} (bo
         ∫ s in a₀..b₀, F p.1 s ∂μ + ∫ s in b₀..p.2, F x₀ s ∂μ +
           ∫ s in b₀..p.2, F p.1 s - F x₀ s ∂μ := by
     rw [nhds_prod_eq]
-    refine (h_bound.prod_mk Ioo_nhds).mono ?_
+    refine (h_bound.prod_mk Ioo_nhds).mono _
     rintro ⟨x, t⟩ ⟨hx : ∀ᵐ t : ℝ ∂μ.restrict (Ι a b), ‖F x t‖ ≤ bound t, ht : t ∈ Ioo a b⟩
     dsimp (config := { eta := false })
     have hiF : ∀ {x a₀ b₀},
@@ -418,14 +418,14 @@ theorem continuousAt_parametric_primitive_of_dominated {F : X → ℝ → E} (bo
     · exact hiF hx hb₀ ht
     · exact hiF hx₀ hb₀ ht
   rw [continuousAt_congr this]; clear this
-  refine (ContinuousAt.add ?_ ?_).add ?_
+  refine (ContinuousAt.add _ _).add _
   · exact (intervalIntegral.continuousAt_of_dominated_interval
         (eventually_of_forall fun x ↦ (hF_meas x).mono_set <| hsub ha₀ hb₀)
           (h_bound.mono fun x hx ↦
             ae_imp_of_ae_restrict <| ae_restrict_of_ae_restrict_of_subset (hsub ha₀ hb₀) hx)
           (bound_integrable.mono_set_ae <| eventually_of_forall <| hsub ha₀ hb₀) <|
           ae_imp_of_ae_restrict <| ae_restrict_of_ae_restrict_of_subset (hsub ha₀ hb₀) h_cont).fst'
-  · refine (?_ : ContinuousAt (fun t ↦ ∫ s in b₀..t, F x₀ s ∂μ) b₀).snd'
+  · refine (_ : ContinuousAt (fun t ↦ ∫ s in b₀..t, F x₀ s ∂μ) b₀).snd'
     apply ContinuousWithinAt.continuousAt _ (Icc_mem_nhds hb₀.1 hb₀.2)
     apply intervalIntegral.continuousWithinAt_primitive hμb₀
     rw [min_eq_right hb₀.1.le, max_eq_right hb₀.2.le]
@@ -435,7 +435,7 @@ theorem continuousAt_parametric_primitive_of_dominated {F : X → ℝ → E} (bo
     have : ∀ᶠ p : X × ℝ in 𝓝 (x₀, b₀),
         ‖∫ s in b₀..p.2, F p.1 s - F x₀ s ∂μ‖ ≤ |∫ s in b₀..p.2, 2 * bound s ∂μ| := by
       rw [nhds_prod_eq]
-      refine (h_bound.prod_mk Ioo_nhds).mono ?_
+      refine (h_bound.prod_mk Ioo_nhds).mono _
       rintro ⟨x, t⟩ ⟨hx : ∀ᵐ t ∂μ.restrict (Ι a b), ‖F x t‖ ≤ bound t, ht : t ∈ Ioo a b⟩
       have H : ∀ᵐ t : ℝ ∂μ.restrict (Ι b₀ t), ‖F x t - F x₀ t‖ ≤ 2 * bound t := by
         apply (ae_restrict_of_ae_restrict_of_subset (hsub hb₀ ht) (hx.and hx₀)).mono
@@ -467,7 +467,7 @@ theorem continuousOn_primitive (h_int : IntegrableOn f (Icc a b) μ) :
       simp_rw [integral_of_le x_in.1]
     rw [continuousOn_congr this]
     intro x₀ _
-    refine continuousWithinAt_primitive (measure_singleton x₀) ?_
+    refine continuousWithinAt_primitive (measure_singleton x₀) _
     simp only [intervalIntegrable_iff_integrableOn_Ioc_of_le, min_eq_left, max_eq_right, h,
       min_self]
     exact h_int.mono Ioc_subset_Icc_self le_rfl
@@ -487,7 +487,7 @@ theorem continuousOn_primitive_Icc (h_int : IntegrableOn f (Icc a b) μ) :
 /-- Note: this assumes that `f` is `IntervalIntegrable`, in contrast to some other lemmas here. -/
 theorem continuousOn_primitive_interval' (h_int : IntervalIntegrable f μ b₁ b₂)
     (ha : a ∈ [[b₁, b₂]]) : ContinuousOn (fun b => ∫ x in a..b, f x ∂μ) [[b₁, b₂]] := fun _ _ ↦ by
-  refine continuousWithinAt_primitive (measure_singleton _) ?_
+  refine continuousWithinAt_primitive (measure_singleton _) _
   rw [min_eq_right ha.1, max_eq_right ha.2]
   simpa [intervalIntegrable_iff, uIoc] using h_int
 #align interval_integral.continuous_on_primitive_interval' intervalIntegral.continuousOn_primitive_interval'

@@ -67,9 +67,9 @@ theorem lieIdeal_oper_eq_linear_span :
     have aux : ∀ (y : L), ∀ m' ∈ Submodule.span R s, ⁅y, m'⁆ ∈ Submodule.span R s := by
       intro y m' hm'
       refine Submodule.span_induction (R := R) (M := M) (s := s)
-        (p := fun m' ↦ ⁅y, m'⁆ ∈ Submodule.span R s) hm' ?_ ?_ ?_ ?_
+        (p := fun m' ↦ ⁅y, m'⁆ ∈ Submodule.span R s) hm' _ _ _ _
       · rintro m'' ⟨x, n, hm''⟩; rw [← hm'', leibniz_lie]
-        refine Submodule.add_mem _ ?_ ?_ <;> apply Submodule.subset_span
+        refine Submodule.add_mem _ _ _ <;> apply Submodule.subset_span
         · use ⟨⁅y, ↑x⁆, I.lie_mem x.property⟩, n
         · use x, ⟨⁅y, ↑n⁆, N.lie_mem n.property⟩
       · simp only [lie_zero, Submodule.zero_mem]
@@ -95,7 +95,7 @@ theorem lieIdeal_oper_eq_linear_span' :
 
 theorem lie_le_iff : ⁅I, N⁆ ≤ N' ↔ ∀ x ∈ I, ∀ m ∈ N, ⁅x, m⁆ ∈ N' := by
   rw [lieIdeal_oper_eq_span, LieSubmodule.lieSpan_le]
-  refine ⟨fun h x hx m hm => h ⟨⟨x, hx⟩, ⟨m, hm⟩, rfl⟩, ?_⟩
+  refine ⟨fun h x hx m hm => h ⟨⟨x, hx⟩, ⟨m, hm⟩, rfl⟩, _⟩
   rintro h _ ⟨⟨x, hx⟩, ⟨m, hm⟩, rfl⟩
   exact h x hx m hm
 #align lie_submodule.lie_le_iff LieSubmodule.lie_le_iff
@@ -140,7 +140,7 @@ theorem bot_lie : ⁅(⊥ : LieIdeal R L), N⁆ = ⊥ := by
 
 theorem lie_eq_bot_iff : ⁅I, N⁆ = ⊥ ↔ ∀ x ∈ I, ∀ m ∈ N, ⁅(x : L), m⁆ = 0 := by
   rw [lieIdeal_oper_eq_span, LieSubmodule.lieSpan_eq_bot_iff]
-  refine ⟨fun h x hx m hm => h ⁅x, m⁆ ⟨⟨x, hx⟩, ⟨m, hm⟩, rfl⟩, ?_⟩
+  refine ⟨fun h x hx m hm => h ⁅x, m⁆ ⟨⟨x, hx⟩, ⟨m, hm⟩, rfl⟩, _⟩
   rintro h - ⟨⟨x, hx⟩, ⟨⟨n, hn⟩, rfl⟩⟩
   exact h x hx n hn
 #align lie_submodule.lie_eq_bot_iff LieSubmodule.lie_eq_bot_iff
@@ -306,7 +306,7 @@ theorem comap_bracket_eq {J₁ J₂ : LieIdeal R L'} (h : f.IsIdealMorphism) :
     erw [LieSubmodule.mem_inf, f.mem_idealRange_iff h] at hx₁ hx₂
     obtain ⟨⟨z₁, hz₁⟩, hz₁'⟩ := hx₁; rw [← hz₁] at hz₁'
     obtain ⟨⟨z₂, hz₂⟩, hz₂'⟩ := hx₂; rw [← hz₂] at hz₂'
-    refine ⟨⁅z₁, z₂⁆, ⟨⟨z₁, hz₁'⟩, ⟨z₂, hz₂'⟩, rfl⟩, ?_⟩
+    refine ⟨⁅z₁, z₂⁆, ⟨⟨z₁, hz₁'⟩, ⟨z₂, hz₂'⟩, rfl⟩, _⟩
     simp only [hz₁, hz₂, Submodule.coe_mk, LieHom.map_lie]
   · rintro ⟨x, ⟨⟨z₁, hz₁⟩, ⟨z₂, hz₂⟩, hx⟩, hy⟩; rw [← hy, ← hx]
     have hz₁' : f z₁ ∈ f.idealRange ⊓ J₁ := by

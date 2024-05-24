@@ -59,7 +59,7 @@ theorem LinearMap.tendsto_birkhoffAverage_of_ker_subset_closure [NormedSpace �
   so it suffices to prove the theorem for `y = f x - x`. -/
   have : IsClosed {x | Tendsto (birkhoffAverage 𝕜 f _root_.id · x) atTop (𝓝 0)} :=
     isClosed_setOf_tendsto_birkhoffAverage 𝕜 hf uniformContinuous_id continuous_const
-  refine closure_minimal (Set.forall_mem_range.2 fun x ↦ ?_) this (hg_ker hy)
+  refine closure_minimal (Set.forall_mem_range.2 fun x ↦ _) this (hg_ker hy)
   /- Finally, for `y = f x - x` the average is equal to the difference between averages
   along the orbits of `f x` and `x`, and most of the terms cancel. -/
   have : IsBounded (Set.range (_root_.id <| f^[·] x)) :=
@@ -96,7 +96,7 @@ theorem ContinuousLinearMap.tendsto_birkhoffAverage_orthogonalProjection (f : E 
     rw [ker_orthogonalProjection, ← Submodule.topologicalClosure_coe, SetLike.coe_subset_coe,
       ← Submodule.orthogonal_orthogonal_eq_closure]
     /- To verify this, we verify `‖f x‖ ≤ ‖x‖` (because `‖f‖ ≤ 1`) and `⟪f x, x⟫ = ‖x‖²`. -/
-    refine Submodule.orthogonal_le fun x hx ↦ eq_of_norm_le_re_inner_eq_norm_sq (𝕜 := 𝕜) ?_ ?_
+    refine Submodule.orthogonal_le fun x hx ↦ eq_of_norm_le_re_inner_eq_norm_sq (𝕜 := 𝕜) _ _
     · simpa using f.le_of_opNorm_le hf x
     · have : ∀ y, ⟪f y, x⟫ = ⟪y, x⟫ := by
         simpa [Submodule.mem_orthogonal, inner_sub_left, sub_eq_zero] using hx

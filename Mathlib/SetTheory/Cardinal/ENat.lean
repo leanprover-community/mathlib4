@@ -141,7 +141,7 @@ lemma ofENat_inj {m n : ℕ∞} : (m : Cardinal) = n ↔ m = n := ofENat_injecti
 
 @[simp]
 lemma range_ofENat : range ofENat = Iic ℵ₀ := by
-  refine (range_subset_iff.2 ofENat_le_aleph0).antisymm fun x (hx : x ≤ ℵ₀) ↦ ?_
+  refine (range_subset_iff.2 ofENat_le_aleph0).antisymm fun x (hx : x ≤ ℵ₀) ↦ _
   rcases hx.lt_or_eq with hlt | rfl
   · lift x to ℕ using hlt
     exact mem_range_self (x : ℕ∞)

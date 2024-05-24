@@ -76,7 +76,7 @@ theorem RepresentablyFlat.id : RepresentablyFlat (𝟭 C) := inferInstance
 
 instance RepresentablyFlat.comp (F : C ⥤ D) (G : D ⥤ E) [RepresentablyFlat F]
     [RepresentablyFlat G] : RepresentablyFlat (F ⋙ G) := by
-  refine ⟨fun X => IsCofiltered.of_cone_nonempty.{0} _ (fun {J} _ _ H => ?_)⟩
+  refine ⟨fun X => IsCofiltered.of_cone_nonempty.{0} _ (fun {J} _ _ H => _)⟩
   obtain ⟨c₁⟩ := IsCofiltered.cone_nonempty (H ⋙ StructuredArrow.pre X F G)
   let H₂ : J ⥤ StructuredArrow c₁.pt.right F :=
     { obj := fun j => StructuredArrow.mk (c₁.π.app j).right

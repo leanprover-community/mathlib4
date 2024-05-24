@@ -44,7 +44,7 @@ theorem Ico_map_valMinAbs_natAbs_eq_Ico_map_id (p : ℕ) [hp : Fact p.Prime] (a 
   have hsurj : ∀ (b : ℕ) (hb : b ∈ Ico 1 (p / 2).succ),
       ∃ x, ∃ _ : x ∈ Ico 1 (p / 2).succ, (a * x : ZMod p).valMinAbs.natAbs = b := by
     intro b hb
-    refine ⟨(b / a : ZMod p).valMinAbs.natAbs, mem_Ico.mpr ⟨?_, ?_⟩, ?_⟩
+    refine ⟨(b / a : ZMod p).valMinAbs.natAbs, mem_Ico.mpr ⟨_, _⟩, _⟩
     · apply Nat.pos_of_ne_zero
       simp only [div_eq_mul_inv, hap, CharP.cast_eq_zero_iff (ZMod p) p, hpe hb, not_false_iff,
         valMinAbs_eq_zero, inv_eq_zero, Int.natAbs_eq_zero, Ne, _root_.mul_eq_zero, or_self_iff]
@@ -216,7 +216,7 @@ theorem sum_mul_div_add_sum_mul_div_eq_mul (p q : ℕ) [hp : Fact p.Prime] (hq0 
   have hdisj :
     Disjoint ((Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ).filter fun x : ℕ × ℕ => x.2 * p ≤ x.1 * q)
       ((Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ).filter fun x : ℕ × ℕ => x.1 * q ≤ x.2 * p) := by
-    apply disjoint_filter.2 fun x hx hpq hqp => ?_
+    apply disjoint_filter.2 fun x hx hpq hqp => _
     have hxp : x.1 < p := lt_of_le_of_lt
       (show x.1 ≤ p / 2 by simp_all only [Nat.lt_succ_iff, mem_Ico, mem_product])
       (Nat.div_lt_self hp.1.pos (by decide))

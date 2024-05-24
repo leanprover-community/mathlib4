@@ -201,7 +201,7 @@ theorem trace_id : trace R M id = (finrank R M : R) := by rw [← one_eq_id, tra
 theorem trace_transpose : trace R (Module.Dual R M) ∘ₗ Module.Dual.transpose = trace R M := by
   let e := dualTensorHomEquiv R M M
   have h : Function.Surjective e.toLinearMap := e.surjective
-  refine (cancel_right h).1 ?_
+  refine (cancel_right h).1 _
   ext f m; simp [e]
 #align linear_map.trace_transpose LinearMap.trace_transpose
 
@@ -210,7 +210,7 @@ theorem trace_prodMap :
       (coprod id id : R × R →ₗ[R] R) ∘ₗ prodMap (trace R M) (trace R N) := by
   let e := (dualTensorHomEquiv R M M).prod (dualTensorHomEquiv R N N)
   have h : Function.Surjective e.toLinearMap := e.surjective
-  refine (cancel_right h).1 ?_
+  refine (cancel_right h).1 _
   ext
   · simp only [e, dualTensorHomEquiv, LinearEquiv.coe_prod, dualTensorHomEquivOfBasis_toLinearMap,
       AlgebraTensorModule.curry_apply, curry_apply, coe_restrictScalars, coe_comp, coe_inl,
@@ -302,7 +302,7 @@ theorem trace_conj' (f : M →ₗ[R] M) (e : M ≃ₗ[R] N) : trace R N (e.conj 
     haveI := (Module.free_def R N).mpr ⟨_, ⟨(b.map e).reindex (e.toEquiv.image _)⟩⟩
     rw [e.conj_apply, trace_comp_comm', ← comp_assoc, LinearEquiv.comp_coe,
       LinearEquiv.self_trans_symm, LinearEquiv.refl_toLinearMap, id_comp]
-  · rw [trace, trace, dif_neg hM, dif_neg ?_, zero_apply, zero_apply]
+  · rw [trace, trace, dif_neg hM, dif_neg _, zero_apply, zero_apply]
     rintro ⟨s, ⟨b⟩⟩
     exact hM ⟨s.image e.symm, ⟨(b.map e.symm).reindex
       ((e.symm.toEquiv.image s).trans (Equiv.Set.ofEq Finset.coe_image.symm))⟩⟩
@@ -327,7 +327,7 @@ lemma trace_comp_eq_mul_of_commute_of_isNilpotent [IsReduced R] {f g : Module.En
   set n := g - algebraMap R _ μ
   replace hg : trace R M (f ∘ₗ n) = 0 := by
     rw [← isNilpotent_iff_eq_zero, ← mul_eq_comp]
-    refine isNilpotent_trace_of_isNilpotent (Commute.isNilpotent_mul_right ?_ hg)
+    refine isNilpotent_trace_of_isNilpotent (Commute.isNilpotent_mul_right _ hg)
     exact h_comm.sub_right (Algebra.commute_algebraMap_right μ f)
   have hμ : g = algebraMap R _ μ + n := eq_add_of_sub_eq' rfl
   have : f ∘ₗ algebraMap R _ μ = μ • f := by ext; simp -- TODO Surely exists?

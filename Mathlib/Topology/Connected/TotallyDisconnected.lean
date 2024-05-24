@@ -123,7 +123,7 @@ theorem totallyDisconnectedSpace_iff_connectedComponent_subsingleton :
 theorem totallyDisconnectedSpace_iff_connectedComponent_singleton :
     TotallyDisconnectedSpace α ↔ ∀ x : α, connectedComponent x = {x} := by
   rw [totallyDisconnectedSpace_iff_connectedComponent_subsingleton]
-  refine forall_congr' fun x => ?_
+  refine forall_congr' fun x => _
   rw [subsingleton_iff_singleton]
   exact mem_connectedComponent
 #align totally_disconnected_space_iff_connected_component_singleton totallyDisconnectedSpace_iff_connectedComponent_singleton
@@ -162,7 +162,7 @@ theorem Embedding.isTotallyDisconnected [TopologicalSpace β] {f : α → β} (h
 
 lemma Embedding.isTotallyDisconnected_image [TopologicalSpace β] {f : α → β} (hf : Embedding f)
     {s : Set α} : IsTotallyDisconnected (f '' s) ↔ IsTotallyDisconnected s := by
-  refine ⟨hf.isTotallyDisconnected, fun hs u hus hu ↦ ?_⟩
+  refine ⟨hf.isTotallyDisconnected, fun hs u hus hu ↦ _⟩
   obtain ⟨v, hvs, rfl⟩ : ∃ v, v ⊆ s ∧ f '' v = u :=
     ⟨f ⁻¹' u ∩ s, inter_subset_right _ _, by rwa [image_preimage_inter, inter_eq_left]⟩
   rw [hf.toInducing.isPreconnected_image] at hu
@@ -207,7 +207,7 @@ theorem isTotallyDisconnected_of_isTotallySeparated {s : Set α} (H : IsTotallyS
     ⟨u : Set α, v : Set α, hu : IsOpen u, hv : IsOpen v, hxu : x ∈ u, hyv : y ∈ v, hs : s ⊆ u ∪ v,
       huv⟩ :=
     H (hts x_in) (hts y_in) h
-  refine (ht _ _ hu hv (hts.trans hs) ⟨x, x_in, hxu⟩ ⟨y, y_in, hyv⟩).ne_empty ?_
+  refine (ht _ _ hu hv (hts.trans hs) ⟨x, x_in, hxu⟩ ⟨y, y_in, hyv⟩).ne_empty _
   rw [huv.inter_eq, inter_empty]
 #align is_totally_disconnected_of_is_totally_separated isTotallyDisconnected_of_isTotallySeparated
 

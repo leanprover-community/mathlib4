@@ -65,14 +65,14 @@ instance : LieGroup 𝓘(𝕜, R) Rˣ where
     have : ContMDiff (𝓘(𝕜, R).prod 𝓘(𝕜, R)) 𝓘(𝕜, R × R) ∞
       (fun x : Rˣ × Rˣ => ((x.1 : R), (x.2 : R))) :=
       (contMDiff_val.comp contMDiff_fst).prod_mk_space (contMDiff_val.comp contMDiff_snd)
-    refine ContMDiff.comp ?_ this
+    refine ContMDiff.comp _ this
     rw [contMDiff_iff_contDiff]
     exact contDiff_mul
   smooth_inv := by
     apply ContMDiff.of_comp_openEmbedding Units.openEmbedding_val
     have : (val : Rˣ → R) ∘ (fun x : Rˣ => x⁻¹) = Ring.inverse ∘ val := by ext; simp
     rw [this, ContMDiff]
-    refine fun x => ContMDiffAt.comp x ?_ (contMDiff_val x)
+    refine fun x => ContMDiffAt.comp x _ (contMDiff_val x)
     rw [contMDiffAt_iff_contDiffAt]
     exact contDiffAt_ring_inverse _ _
 

@@ -56,7 +56,7 @@ theorem TFAE_mem_nhdsWithin_Ioi {a b : α} (hab : a < b) (s : Set α) :
   · intro h
     rcases mem_nhdsWithin_iff_exists_mem_nhds_inter.1 h with ⟨v, va, hv⟩
     rcases exists_Ico_subset_of_mem_nhds' va hab with ⟨u, au, hu⟩
-    refine ⟨u, au, fun x hx => ?_⟩
+    refine ⟨u, au, fun x hx => _⟩
     refine hv ⟨hu ⟨le_of_lt hx.1, hx.2⟩, _⟩
     exact hx.1
   tfae_finish
@@ -311,14 +311,14 @@ variable {l : Filter β} {f g : β → α}
 
 theorem nhds_eq_iInf_abs_sub (a : α) : 𝓝 a = ⨅ r > 0, 𝓟 { b | |a - b| < r } := by
   simp only [nhds_eq_order, abs_lt, setOf_and, ← inf_principal, iInf_inf_eq]
-  refine (congr_arg₂ _ ?_ ?_).trans (inf_comm ..)
-  · refine (Equiv.subLeft a).iInf_congr fun x => ?_; simp [Ioi]
-  · refine (Equiv.subRight a).iInf_congr fun x => ?_; simp [Iio]
+  refine (congr_arg₂ _ _ _).trans (inf_comm ..)
+  · refine (Equiv.subLeft a).iInf_congr fun x => _; simp [Ioi]
+  · refine (Equiv.subRight a).iInf_congr fun x => _; simp [Iio]
 #align nhds_eq_infi_abs_sub nhds_eq_iInf_abs_sub
 
 theorem orderTopology_of_nhds_abs {α : Type*} [TopologicalSpace α] [LinearOrderedAddCommGroup α]
     (h_nhds : ∀ a : α, 𝓝 a = ⨅ r > 0, 𝓟 { b | |a - b| < r }) : OrderTopology α := by
-  refine ⟨TopologicalSpace.ext_nhds fun a => ?_⟩
+  refine ⟨TopologicalSpace.ext_nhds fun a => _⟩
   rw [h_nhds]
   letI := Preorder.topology α; letI : OrderTopology α := ⟨rfl⟩
   exact (nhds_eq_iInf_abs_sub a).symm
@@ -340,7 +340,7 @@ theorem Filter.Tendsto.add_atTop {C : α} (hf : Tendsto f l (𝓝 C)) (hg : Tend
     Tendsto (fun x => f x + g x) l atTop := by
   nontriviality α
   obtain ⟨C', hC'⟩ : ∃ C', C' < C := exists_lt C
-  refine tendsto_atTop_add_left_of_le' _ C' ?_ hg
+  refine tendsto_atTop_add_left_of_le' _ C' _ hg
   exact (hf.eventually (lt_mem_nhds hC')).mono fun x => le_of_lt
 #align filter.tendsto.add_at_top Filter.Tendsto.add_atTop
 
@@ -370,7 +370,7 @@ theorem Filter.Tendsto.atBot_add {C : α} (hf : Tendsto f l atBot) (hg : Tendsto
 theorem nhds_basis_abs_sub_lt [NoMaxOrder α] (a : α) :
     (𝓝 a).HasBasis (fun ε : α => (0 : α) < ε) fun ε => { b | |b - a| < ε } := by
   simp only [nhds_eq_iInf_abs_sub, abs_sub_comm (a := a)]
-  refine hasBasis_biInf_principal' (fun x hx y hy => ?_) (exists_gt _)
+  refine hasBasis_biInf_principal' (fun x hx y hy => _) (exists_gt _)
   exact ⟨min x y, lt_min hx hy, fun _ hz => hz.trans_le (min_le_left _ _),
     fun _ hz => hz.trans_le (min_le_right _ _)⟩
 #align nhds_basis_abs_sub_lt nhds_basis_abs_sub_lt

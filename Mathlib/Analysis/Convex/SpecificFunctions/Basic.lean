@@ -52,7 +52,7 @@ theorem strictConvexOn_exp : StrictConvexOn ℝ univ exp := by
     rw [lt_div_iff h1]
     calc
       exp y * (z - y) < exp y * (exp (z - y) - 1) := by
-        gcongr _ * ?_
+        gcongr _ * _
         linarith [add_one_lt_exp h1.ne']
       _ = exp (z - y) * exp y - exp y := by ring
       _ ≤ exp z - exp y := by rw [← exp_add]; ring_nf; rfl
@@ -210,7 +210,7 @@ theorem convexOn_rpow {p : ℝ} (hp : 1 ≤ p) : ConvexOn ℝ (Ici 0) fun x : �
 #align convex_on_rpow convexOn_rpow
 
 theorem strictConcaveOn_log_Iio : StrictConcaveOn ℝ (Iio 0) log := by
-  refine ⟨convex_Iio _, ?_⟩
+  refine ⟨convex_Iio _, _⟩
   intro x (hx : x < 0) y (hy : y < 0) hxy a b ha hb hab
   have hx' : 0 < -x := by linarith
   have hy' : 0 < -y := by linarith

@@ -96,7 +96,7 @@ theorem Seminorm.continuous_iSup
     (hp : ∀ i, Continuous (p i)) (bdd : BddAbove (range p)) :
     Continuous (⨆ i, p i) := by
   rw [← Seminorm.coe_iSup_eq bdd]
-  refine Seminorm.continuous_of_lowerSemicontinuous _ ?_
+  refine Seminorm.continuous_of_lowerSemicontinuous _ _
   rw [Seminorm.coe_iSup_eq bdd]
   rw [Seminorm.bddAbove_range_iff] at bdd
   convert lowerSemicontinuous_ciSup (f := fun i x ↦ p i x) bdd (fun i ↦ (hp i).lowerSemicontinuous)
@@ -130,7 +130,7 @@ instance BaireSpace.instBarrelledSpace [TopologicalSpace E] [TopologicalAddGroup
     rcases nonempty_interior_of_iUnion_of_closed h₁ h₂ with ⟨n, ⟨x, hxn⟩⟩
     -- To show that `p` is continuous, we will show that the `p`-closed-ball of
     -- radius `2*n` is a neighborhood of zero.
-    refine Seminorm.continuous' (r := n + n) ?_
+    refine Seminorm.continuous' (r := n + n) _
     rw [p.closedBall_zero_eq] at hxn ⊢
     have hxn' : p x ≤ n := by convert interior_subset hxn
     -- By definition, we have `p x' ≤ n` for `x'` sufficiently close to `x`.
@@ -157,7 +157,7 @@ protected theorem banach_steinhaus (H : ∀ k x, BddAbove (range fun i ↦ q k (
     UniformEquicontinuous ((↑) ∘ 𝓕) := by
   -- We just have to prove that `⊔ i, (q k) ∘ (𝓕 i)` is a (well-defined) continuous seminorm
   -- for all `k`.
-  refine (hq.uniformEquicontinuous_iff_bddAbove_and_continuous_iSup (toLinearMap ∘ 𝓕)).mpr ?_
+  refine (hq.uniformEquicontinuous_iff_bddAbove_and_continuous_iSup (toLinearMap ∘ 𝓕)).mpr _
   intro k
   -- By assumption the supremum `⊔ i, q k (𝓕 i x)` is well-defined for all `x`, hence the
   -- supremum `⊔ i, (q k) ∘ (𝓕 i)` is well defined in the lattice of seminorms.
@@ -187,7 +187,7 @@ protected def continuousLinearMapOfTendsto [T2Space F] {l : Filter α} [l.IsCoun
     rcases l.exists_seq_tendsto with ⟨u, hu⟩
     -- We claim that the limit is continuous because it's a limit of an equicontinuous family.
     -- By the Banach-Steinhaus theorem, this equicontinuity will follow from pointwise boundedness.
-    refine (h.comp hu).continuous_of_equicontinuous (hq.banach_steinhaus ?_).equicontinuous
+    refine (h.comp hu).continuous_of_equicontinuous (hq.banach_steinhaus _).equicontinuous
     -- For `k` and `x` fixed, we need to show that `(i : ℕ) ↦ q k (g i x)` is bounded.
     intro k x
     -- This follows from the fact that this sequences converges (to `q k (f x)`) by hypothesis and

@@ -318,7 +318,7 @@ theorem Convex.closure_subset_image_homothety_interior_of_one_lt {s : Set E} (hs
   intro y hy
   have hne : t ≠ 0 := (one_pos.trans ht).ne'
   refine
-    ⟨homothety x t⁻¹ y, hs.openSegment_interior_closure_subset_interior hx hy ?_,
+    ⟨homothety x t⁻¹ y, hs.openSegment_interior_closure_subset_interior hx hy _,
       (AffineEquiv.homothetyUnitsMulHom x (Units.mk0 t hne)).apply_symm_apply y⟩
   rw [openSegment_eq_image_lineMap, ← inv_one, ← inv_Ioi (zero_lt_one' ℝ), ← image_inv, image_image,
     homothety_eq_lineMap]
@@ -409,7 +409,7 @@ theorem isPathConnected_compl_of_isPathConnected_compl_zero [ContinuousSMul ℝ 
     let γ₁' : Path (_ : E) _ := γ₁.map continuous_subtype_val
     let γ₂' : Path (_ : E) _ := γ₂.map continuous_subtype_val
     refine ⟨(γ₁'.add γ₂').cast (Submodule.linear_proj_add_linearProjOfIsCompl_eq_self hpq x).symm
-      (Submodule.linear_proj_add_linearProjOfIsCompl_eq_self hpq y).symm, fun t ↦ ?_⟩
+      (Submodule.linear_proj_add_linearProjOfIsCompl_eq_self hpq y).symm, fun t ↦ _⟩
     rw [Path.cast_coe, Path.add_apply]
     change γ₁ t + (γ₂ t : E) ∉ q
     rw [← Submodule.linearProjOfIsCompl_apply_eq_zero_iff hpq, LinearMap.map_add,

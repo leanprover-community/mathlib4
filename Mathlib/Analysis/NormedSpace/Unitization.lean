@@ -146,9 +146,9 @@ theorem nnnorm_eq_sup (x : Unitization 𝕜 A) :
 theorem lipschitzWith_addEquiv :
     LipschitzWith 2 (Unitization.addEquiv 𝕜 A) := by
   rw [← Real.toNNReal_ofNat]
-  refine AddMonoidHomClass.lipschitz_of_bound (Unitization.addEquiv 𝕜 A) 2 fun x => ?_
+  refine AddMonoidHomClass.lipschitz_of_bound (Unitization.addEquiv 𝕜 A) 2 fun x => _
   rw [norm_eq_sup, Prod.norm_def]
-  refine max_le ?_ ?_
+  refine max_le _ _
   · rw [sup_eq_max, mul_max_of_nonneg _ _ (zero_le_two : (0 : ℝ) ≤ 2)]
     exact le_max_of_le_left ((le_add_of_nonneg_left (norm_nonneg _)).trans_eq (two_mul _).symm)
   · nontriviality A
@@ -163,9 +163,9 @@ theorem lipschitzWith_addEquiv :
 
 theorem antilipschitzWith_addEquiv :
     AntilipschitzWith 2 (addEquiv 𝕜 A) := by
-  refine AddMonoidHomClass.antilipschitz_of_bound (addEquiv 𝕜 A) fun x => ?_
+  refine AddMonoidHomClass.antilipschitz_of_bound (addEquiv 𝕜 A) fun x => _
   rw [norm_eq_sup, Prod.norm_def, NNReal.coe_two]
-  refine max_le ?_ ?_
+  refine max_le _ _
   · rw [mul_max_of_nonneg _ _ (zero_le_two : (0 : ℝ) ≤ 2)]
     exact le_max_of_le_left ((le_add_of_nonneg_left (norm_nonneg _)).trans_eq (two_mul _).symm)
   · nontriviality A

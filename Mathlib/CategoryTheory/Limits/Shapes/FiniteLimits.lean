@@ -44,7 +44,7 @@ class HasFiniteLimits : Prop where
 
 instance (priority := 100) hasLimitsOfShape_of_hasFiniteLimits (J : Type w) [SmallCategory J]
     [FinCategory J] [HasFiniteLimits C] : HasLimitsOfShape J C := by
-  apply @hasLimitsOfShape_of_equivalence _ _ _ _ _ _ (FinCategory.equivAsType J) ?_
+  apply @hasLimitsOfShape_of_equivalence _ _ _ _ _ _ (FinCategory.equivAsType J) _
   apply HasFiniteLimits.out
 #align category_theory.limits.has_limits_of_shape_of_has_finite_limits CategoryTheory.Limits.hasLimitsOfShape_of_hasFiniteLimits
 
@@ -98,7 +98,7 @@ class HasFiniteColimits : Prop where
 
 instance (priority := 100) hasColimitsOfShape_of_hasFiniteColimits (J : Type w) [SmallCategory J]
     [FinCategory J] [HasFiniteColimits C] : HasColimitsOfShape J C := by
-  refine @hasColimitsOfShape_of_equivalence _ _ _ _ _ _ (FinCategory.equivAsType J) ?_
+  refine @hasColimitsOfShape_of_equivalence _ _ _ _ _ _ (FinCategory.equivAsType J) _
   apply HasFiniteColimits.out
 #align category_theory.limits.has_colimits_of_shape_of_has_finite_colimits CategoryTheory.Limits.hasColimitsOfShape_of_hasFiniteColimits
 

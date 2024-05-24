@@ -49,7 +49,7 @@ lemma apply_eq_of_mem_genEigenspace_of_comm_of_isSemisimple_of_isNilpotent_sub
 lemma IsSemisimple.genEigenspace_eq_eigenspace
     (hf : f.IsSemisimple) (μ : R) {k : ℕ} (hk : 0 < k) :
     f.genEigenspace μ k = f.eigenspace μ := by
-  refine le_antisymm (fun m hm ↦ mem_eigenspace_iff.mpr ?_) (eigenspace_le_genEigenspace hk)
+  refine le_antisymm (fun m hm ↦ mem_eigenspace_iff.mpr _) (eigenspace_le_genEigenspace hk)
   exact apply_eq_of_mem_genEigenspace_of_comm_of_isSemisimple_of_isNilpotent_sub hm rfl hf (by simp)
 
 lemma IsSemisimple.maxGenEigenspace_eq_eigenspace

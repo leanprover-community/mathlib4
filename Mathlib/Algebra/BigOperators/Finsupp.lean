@@ -55,7 +55,7 @@ variable [Zero M] [Zero M'] [CommMonoid N]
 @[to_additive]
 theorem prod_of_support_subset (f : α →₀ M) {s : Finset α} (hs : f.support ⊆ s) (g : α → M → N)
     (h : ∀ i ∈ s, g i 0 = 1) : f.prod g = ∏ x in s, g x (f x) := by
-  refine Finset.prod_subset hs fun x hxs hx => h x hxs ▸ (congr_arg (g x) ?_)
+  refine Finset.prod_subset hs fun x hxs hx => h x hxs ▸ (congr_arg (g x) _)
   exact not_mem_support_iff.1 hx
 #align finsupp.prod_of_support_subset Finsupp.prod_of_support_subset
 #align finsupp.sum_of_support_subset Finsupp.sum_of_support_subset
@@ -212,7 +212,7 @@ theorem prod_congr {f : α →₀ M} {g1 g2 : α → M → N} (h : ∀ x ∈ f.s
 theorem prod_eq_single {f : α →₀ M} (a : α) {g : α → M → N}
     (h₀ : ∀ b, f b ≠ 0 → b ≠ a → g b (f b) = 1) (h₁ : f a = 0 → g a 0 = 1) :
     f.prod g = g a (f a) := by
-  refine Finset.prod_eq_single a (fun b hb₁ hb₂ => ?_) (fun h => ?_)
+  refine Finset.prod_eq_single a (fun b hb₁ hb₂ => _) (fun h => _)
   · exact h₀ b (mem_support_iff.mp hb₁) hb₂
   · simp only [not_mem_support_iff] at h
     rw [h]
@@ -484,7 +484,7 @@ theorem sum_single [AddCommMonoid M] (f : α →₀ M) : f.sum single = f :=
 theorem univ_sum_single [Fintype α] [AddCommMonoid M] (f : α →₀ M) :
     ∑ a : α, single a (f a) = f := by
   classical
-  refine DFunLike.coe_injective ?_
+  refine DFunLike.coe_injective _
   simp_rw [coe_finset_sum, single_eq_pi_single, Finset.univ_sum_single]
 
 @[simp]
@@ -579,7 +579,7 @@ theorem support_sum_eq_biUnion {α : Type*} {ι : Type*} {M : Type*} [DecidableE
     (∑ i in s, g i).support = s.biUnion fun i => (g i).support := by
   classical
   -- Porting note: apply Finset.induction_on s was not working; refine does.
-  refine Finset.induction_on s ?_ ?_
+  refine Finset.induction_on s _ _
   · simp
   · intro i s hi
     simp only [hi, sum_insert, not_false_iff, biUnion_insert]
@@ -633,7 +633,7 @@ theorem prod_dvd_prod_of_subset_of_dvd [AddCommMonoid M] [CommMonoid N] {f1 f2 :
 lemma indicator_eq_sum_attach_single [AddCommMonoid M] {s : Finset α} (f : ∀ a ∈ s, M) :
     indicator s f = ∑ x in s.attach, single ↑x (f x x.2) := by
   rw [← sum_single (indicator s f), sum, sum_subset (support_indicator_subset _ _), ← sum_attach]
-  · refine Finset.sum_congr rfl (fun _ _ => ?_)
+  · refine Finset.sum_congr rfl (fun _ _ => _)
     rw [indicator_of_mem]
   · intro i _ hi
     rw [not_mem_support_iff.mp hi, single_zero]
@@ -648,7 +648,7 @@ lemma prod_indicator_index_eq_prod_attach [Zero M] [CommMonoid N]
     {s : Finset α} (f : ∀ a ∈ s, M) {h : α → M → N} (h_zero : ∀ a ∈ s, h a 0 = 1) :
     (indicator s f).prod h = ∏ x in s.attach, h ↑x (f x x.2) := by
   rw [prod_of_support_subset _ (support_indicator_subset _ _) h h_zero, ← prod_attach]
-  refine Finset.prod_congr rfl (fun _ _ => ?_)
+  refine Finset.prod_congr rfl (fun _ _ => _)
   rw [indicator_of_mem]
 #align finsupp.prod_indicator_index Finsupp.prod_indicator_index_eq_prod_attach
 #align finsupp.sum_indicator_index Finsupp.sum_indicator_index_eq_sum_attach

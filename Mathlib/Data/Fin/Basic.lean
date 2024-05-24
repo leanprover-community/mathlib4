@@ -718,16 +718,16 @@ It is written this way to define `ENat.card` and `Nat.card` without a `Fintype` 
 assert_not_exists Fintype
 
 lemma nonempty_embedding_iff : Nonempty (Fin n ↪ Fin m) ↔ n ≤ m := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ⟨castLEEmb h⟩⟩
+  refine ⟨fun h ↦ _, fun h ↦ ⟨castLEEmb h⟩⟩
   induction n generalizing m with
   | zero => exact m.zero_le
   | succ n ihn =>
     cases' h with e
     rcases exists_eq_succ_of_ne_zero (pos_iff_nonempty.2 (Nonempty.map e inferInstance)).ne'
       with ⟨m, rfl⟩
-    refine Nat.succ_le_succ <| ihn ⟨?_⟩
+    refine Nat.succ_le_succ <| ihn ⟨_⟩
     refine ⟨fun i ↦ (e.setValue 0 0 i.succ).pred (mt e.setValue_eq_iff.1 i.succ_ne_zero),
-      fun i j h ↦ ?_⟩
+      fun i j h ↦ _⟩
     simpa only [pred_inj, EmbeddingLike.apply_eq_iff_eq, succ_inj] using h
 
 lemma equiv_iff_eq : Nonempty (Fin m ≃ Fin n) ↔ m = n :=
@@ -1333,7 +1333,7 @@ theorem liftFun_iff_succ {α : Type*} (r : α → α → Prop) [IsTrans α r] {f
   constructor
   · intro H i
     exact H i.castSucc_lt_succ
-  · refine fun H i => Fin.induction (fun h ↦ ?_) ?_
+  · refine fun H i => Fin.induction (fun h ↦ _) _
     · simp [le_def] at h
     · intro j ihj hij
       rw [← le_castSucc_iff] at hij
@@ -1396,7 +1396,7 @@ theorem add_one_le_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) : a + 1 ≤ b
 theorem exists_eq_add_of_le {n : ℕ} {a b : Fin n} (h : a ≤ b) : ∃ k ≤ b, b = a + k := by
   obtain ⟨k, hk⟩ : ∃ k : ℕ, (b : ℕ) = a + k := Nat.exists_eq_add_of_le h
   have hkb : k ≤ b := by omega
-  refine ⟨⟨k, hkb.trans_lt b.is_lt⟩, hkb, ?_⟩
+  refine ⟨⟨k, hkb.trans_lt b.is_lt⟩, hkb, _⟩
   simp [Fin.ext_iff, Fin.val_add, ← hk, Nat.mod_eq_of_lt b.is_lt]
 
 theorem exists_eq_add_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) :
@@ -1408,7 +1408,7 @@ theorem exists_eq_add_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) :
     simp [ha, hb] at h
   obtain ⟨k, hk⟩ : ∃ k : ℕ, (b : ℕ) = a + k + 1 := Nat.exists_eq_add_of_lt h
   have hkb : k < b := by omega
-  refine ⟨⟨k, hkb.trans b.is_lt⟩, hkb, ?_, ?_⟩
+  refine ⟨⟨k, hkb.trans b.is_lt⟩, hkb, _, _⟩
   · rw [Fin.le_iff_val_le_val, Fin.val_add_one]
     split_ifs <;> simp [Nat.succ_le_iff, hkb]
   simp [Fin.ext_iff, Fin.val_add, ← hk, Nat.mod_eq_of_lt b.is_lt]

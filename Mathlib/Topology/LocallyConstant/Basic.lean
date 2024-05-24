@@ -341,7 +341,7 @@ def ofIsClopen {X : Type*} [TopologicalSpace X] {U : Set X} [∀ x, Decidable (x
     (hU : IsClopen U) : LocallyConstant X (Fin 2) where
   toFun x := if x ∈ U then 0 else 1
   isLocallyConstant := by
-    refine IsLocallyConstant.iff_isOpen_fiber.2 <| Fin.forall_fin_two.2 ⟨?_, ?_⟩
+    refine IsLocallyConstant.iff_isOpen_fiber.2 <| Fin.forall_fin_two.2 ⟨_, _⟩
     · convert hU.2 using 1
       ext
       simp only [mem_singleton_iff, Fin.one_eq_zero_iff, mem_preimage, ite_eq_left_iff,

@@ -73,7 +73,7 @@ theorem ne_iff {β : α → Sort*} {f₁ f₂ : ∀ a, β a} : f₁ ≠ f₂ ↔
 
 lemma funext_iff_of_subsingleton [Subsingleton α] {g : α → β} (x y : α) :
     f x = g y ↔ f = g := by
-  refine ⟨fun h ↦ funext fun z ↦ ?_, fun h ↦ ?_⟩
+  refine ⟨fun h ↦ funext fun z ↦ _, fun h ↦ _⟩
   · rwa [Subsingleton.elim x z, Subsingleton.elim y z] at h
   · rw [h, Subsingleton.elim x y]
 
@@ -765,7 +765,7 @@ lemma apply_extend {δ} {g : α → γ} (F : γ → δ) (f : α → β) (e' : β
 
 theorem extend_injective (hf : Injective f) (e' : β → γ) : Injective fun g ↦ extend f g e' := by
   intro g₁ g₂ hg
-  refine funext fun x ↦ ?_
+  refine funext fun x ↦ _
   have H := congr_fun hg (f x)
   simp only [hf.extend_apply] at H
   exact H
@@ -1009,8 +1009,8 @@ variable {α β : Sort*}
 if and only if it is `(f · = ·)` for some function `f`. -/
 lemma forall_existsUnique_iff {r : α → β → Prop} :
     (∀ a, ∃! b, r a b) ↔ ∃ f : α → β, ∀ {a b}, r a b ↔ f a = b := by
-  refine ⟨fun h ↦ ?_, ?_⟩
-  · refine ⟨fun a ↦ (h a).choose, fun hr ↦ ?_, fun h' ↦ h' ▸ ?_⟩
+  refine ⟨fun h ↦ _, _⟩
+  · refine ⟨fun a ↦ (h a).choose, fun hr ↦ _, fun h' ↦ h' ▸ _⟩
     exacts [((h _).choose_spec.2 _ hr).symm, (h _).choose_spec.1]
   · rintro ⟨f, hf⟩
     simp [hf]
@@ -1027,7 +1027,7 @@ lemma forall_existsUnique_iff' {r : α → β → Prop} :
 if and only if it is `(f · = ·)` for some involutive function `f`. -/
 protected lemma Symmetric.forall_existsUnique_iff' {r : α → α → Prop} (hr : Symmetric r) :
     (∀ a, ∃! b, r a b) ↔ ∃ f : α → α, Involutive f ∧ r = (f · = ·) := by
-  refine ⟨fun h ↦ ?_, fun ⟨f, _, hf⟩ ↦ forall_existsUnique_iff'.2 ⟨f, hf⟩⟩
+  refine ⟨fun h ↦ _, fun ⟨f, _, hf⟩ ↦ forall_existsUnique_iff'.2 ⟨f, hf⟩⟩
   rcases forall_existsUnique_iff'.1 h with ⟨f, rfl : r = _⟩
   exact ⟨f, symmetric_apply_eq_iff.1 hr, rfl⟩
 

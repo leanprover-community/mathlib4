@@ -75,10 +75,10 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
     have hVf : ∀ y : V, f (Set.inclusion hUV y) ≠ 0 :=
       fun y ↦ hV₀f (Set.inclusion hUV y) (Set.mem_range_self y)
     -- Let `g` be the pointwise inverse of `f` on `V`, which is smooth since `f` is nonzero there
-    let g : C^∞⟮IM, V; 𝓘(𝕜), 𝕜⟯ := ⟨(f ∘ Set.inclusion hUV)⁻¹, ?_⟩
+    let g : C^∞⟮IM, V; 𝓘(𝕜), 𝕜⟯ := ⟨(f ∘ Set.inclusion hUV)⁻¹, _⟩
     -- The germ of `g` is inverse to the germ of `f`, so `f` is a unit
     · refine ⟨⟨S.germ ⟨x, hxV⟩ (SmoothMap.restrictRingHom IM 𝓘(𝕜) 𝕜 hUV f), S.germ ⟨x, hxV⟩ g,
-        ?_, ?_⟩, S.germ_res_apply hUV.hom ⟨x, hxV⟩ f⟩
+        _, _⟩, S.germ_res_apply hUV.hom ⟨x, hxV⟩ f⟩
       · rw [← map_mul]
         -- Qualified the name to avoid Lean not finding a `OneHomClass` #8386
         convert RingHom.map_one _

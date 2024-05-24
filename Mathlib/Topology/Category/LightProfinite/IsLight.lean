@@ -64,15 +64,15 @@ noncomputable def ofIsLight (S : Profinite.{u}) [S.IsLight] : LightProfinite.{u}
 
 instance (S : LightProfinite.{u}) : S.toProfinite.IsLight where
   countable_clopens := by
-    refine @Countable.of_equiv _ _ ?_ (LocallyConstant.equivClopens (X := S.toProfinite))
+    refine @Countable.of_equiv _ _ _ (LocallyConstant.equivClopens (X := S.toProfinite))
     refine @Function.Surjective.countable
-      (Σ (n : ℕ), LocallyConstant ((S.diagram ⋙ FintypeCat.toProfinite).obj ⟨n⟩) (Fin 2)) _ ?_ ?_ ?_
-    · apply @instCountableSigma _ _ _ ?_
+      (Σ (n : ℕ), LocallyConstant ((S.diagram ⋙ FintypeCat.toProfinite).obj ⟨n⟩) (Fin 2)) _ _ _ _
+    · apply @instCountableSigma _ _ _ _
       intro n
-      refine @Finite.to_countable _ ?_
-      refine @Finite.of_injective _ ((S.diagram ⋙ FintypeCat.toProfinite).obj ⟨n⟩ → (Fin 2)) ?_ _
+      refine @Finite.to_countable _ _
+      refine @Finite.of_injective _ ((S.diagram ⋙ FintypeCat.toProfinite).obj ⟨n⟩ → (Fin 2)) _ _
         LocallyConstant.coe_injective
-      refine @Pi.finite _ _ ?_ _
+      refine @Pi.finite _ _ _ _
       simp only [Functor.comp_obj, toProfinite_obj_toCompHaus_toTop_α]
       infer_instance
     · exact fun a ↦ a.snd.comap (S.cone.π.app ⟨a.fst⟩)
@@ -161,7 +161,7 @@ def lightProfiniteConeOfHom :
 instance [Mono f] : IsIso ((Profinite.limitConeIsLimit ((lightProfiniteDiagramOfHom f) ⋙
     FintypeCat.toProfinite)).lift (lightProfiniteConeOfHom f)) := by
   apply Profinite.isIso_of_bijective
-  refine ⟨fun a b h ↦ ?_, fun a ↦ ?_⟩
+  refine ⟨fun a b h ↦ _, fun a ↦ _⟩
   · have hf : Function.Injective f := by rwa [← Profinite.mono_iff_injective]
     suffices f a = f b by exact hf this
     apply LightProfinite.ext
@@ -181,7 +181,7 @@ instance [Mono f] : IsIso ((Profinite.limitConeIsLimit ((lightProfiniteDiagramOf
         (⋂ (n : ℕ), (lightProfiniteConeOfHom_π_app f (op n)) ⁻¹' {a.val (op n)}) := by
       refine IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
         (fun n ↦ (lightProfiniteConeOfHom_π_app f (op n)) ⁻¹' {a.val (op n)})
-          (directed_of_isDirected_le ?_)
+          (directed_of_isDirected_le _)
         (fun _ ↦ (Set.singleton_nonempty _).preimage fun ⟨a, ⟨b, hb⟩⟩ ↦ ⟨b, Subtype.ext hb⟩)
         (fun _ ↦ (IsClosed.preimage (lightProfiniteConeOfHom_π_app _ _).continuous
           (T1Space.t1 _)).isCompact)

@@ -249,7 +249,7 @@ protected theorem rel_map_of_Icc [LinearOrderedAddCommGroup G] [Archimedean G] [
     rcases existsUnique_sub_zsmul_mem_Ioc ha y l with ⟨n, hny, -⟩
     rcases lt_trichotomy n 0 with hn | rfl | hn
     · -- Since `l ≤ x ≤ y`, the case `n < 0` is impossible
-      refine absurd ?_ hxy.not_le
+      refine absurd _ hxy.not_le
       calc
         y ≤ l + a + n • a := sub_le_iff_le_add.1 hny.2
         _ = l + (n + 1) • a := by rw [add_comm n, add_smul, one_smul, add_assoc]
@@ -265,13 +265,13 @@ protected theorem rel_map_of_Icc [LinearOrderedAddCommGroup G] [Archimedean G] [
         exact hf x (Ico_subset_Icc_self hx) (l + a) (by simpa) hx.2
       have hy : R (f (l + n • a)) (f y) := by
         rw [← sub_add_cancel y (n • a), map_add_zsmul, map_add_zsmul]
-        refine hR _ <| hf _ ?_ _ (Ioc_subset_Icc_self hny) hny.1; simpa
+        refine hR _ <| hf _ _ _ (Ioc_subset_Icc_self hny) hny.1; simpa
       rw [← Int.add_one_le_iff, zero_add] at hn
       rcases hn.eq_or_lt with rfl | hn; · assumption
       trans f (l + n • a)
-      · refine Int.rel_of_forall_rel_succ_of_lt R (f := (f <| l + · • a)) (fun k ↦ ?_) hn
+      · refine Int.rel_of_forall_rel_succ_of_lt R (f := (f <| l + · • a)) (fun k ↦ _) hn
         simp_rw [add_comm k 1, add_zsmul, ← add_assoc, one_zsmul, map_add_zsmul]
-        refine hR (k • b) (hf _ ?_ _ ?_ ?_) <;> simpa
+        refine hR (k • b) (hf _ _ _ _ _) <;> simpa
       · assumption
 
 theorem monotone_iff_Icc [LinearOrderedAddCommGroup G] [Archimedean G] [OrderedAddCommGroup H]

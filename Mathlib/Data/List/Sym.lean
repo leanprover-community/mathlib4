@@ -88,7 +88,7 @@ theorem mk_mem_sym2_iff {xs : List α} {a b : α} :
 
 theorem mem_sym2_iff {xs : List α} {z : Sym2 α} :
     z ∈ xs.sym2 ↔ ∀ y ∈ z, y ∈ xs := by
-  refine z.ind (fun a b => ?_)
+  refine z.ind (fun a b => _)
   simp [mk_mem_sym2_iff]
 
 protected theorem Nodup.sym2 {xs : List α} (h : xs.Nodup) : xs.sym2.Nodup := by
@@ -123,7 +123,7 @@ protected theorem Perm.sym2 {xs ys : List α} (h : xs ~ ys) :
     simp only [List.sym2, map_cons, cons_append]
     conv => enter [1,2,1]; rw [Sym2.eq_swap]
     -- Explicit permutation to speed up simps that follow.
-    refine Perm.trans (Perm.swap ..) (Perm.trans (Perm.cons _ ?_) (Perm.swap ..))
+    refine Perm.trans (Perm.swap ..) (Perm.trans (Perm.cons _ _) (Perm.swap ..))
     simp only [← Multiset.coe_eq_coe, ← Multiset.cons_coe,
       ← Multiset.coe_add, ← Multiset.singleton_add]
     simp only [add_assoc, add_left_comm]

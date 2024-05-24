@@ -185,11 +185,11 @@ theorem contMDiffWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M} {x�
   simp_rw [modelWithCornersSelf_prod, FiberBundle.extChartAt, Function.comp,
     PartialEquiv.trans_apply, PartialEquiv.prod_coe, PartialEquiv.refl_coe,
     extChartAt_self_apply, modelWithCornersSelf_coe, Function.id_def, ← chartedSpaceSelf_prod]
-  refine (contMDiffWithinAt_prod_iff _).trans (and_congr ?_ Iff.rfl)
+  refine (contMDiffWithinAt_prod_iff _).trans (and_congr _ Iff.rfl)
   have h1 : (fun x => (f x).proj) ⁻¹' (trivializationAt F E (f x₀).proj).baseSet ∈ 𝓝[s] x₀ :=
     ((FiberBundle.continuous_proj F E).continuousWithinAt.comp hf (mapsTo_image f s))
       ((Trivialization.open_baseSet _).mem_nhds (mem_baseSet_trivializationAt F E _))
-  refine EventuallyEq.contMDiffWithinAt_iff (eventually_of_mem h1 fun x hx => ?_) ?_
+  refine EventuallyEq.contMDiffWithinAt_iff (eventually_of_mem h1 fun x hx => _) _
   · simp_rw [Function.comp, PartialHomeomorph.coe_coe, Trivialization.coe_coe]
     rw [Trivialization.coe_fst']
     exact hx
@@ -309,7 +309,7 @@ theorem smoothOn_symm_coordChangeL :
     SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun b : B => ((e.coordChangeL 𝕜 e' b).symm : F →L[𝕜] F))
       (e.baseSet ∩ e'.baseSet) := by
   rw [inter_comm]
-  refine (SmoothVectorBundle.smoothOn_coordChangeL e' e).congr fun b hb ↦ ?_
+  refine (SmoothVectorBundle.smoothOn_coordChangeL e' e).congr fun b hb ↦ _
   rw [e.symm_coordChangeL e' hb]
 
 theorem contMDiffOn_coordChangeL :
@@ -380,7 +380,7 @@ protected theorem ContMDiffWithinAt.coordChange
     (hf : ContMDiffWithinAt IM IB n f s x) (hg : ContMDiffWithinAt IM 𝓘(𝕜, F) n g s x)
     (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
     ContMDiffWithinAt IM 𝓘(𝕜, F) n (fun y ↦ e.coordChange e' (f y) (g y)) s x := by
-  refine ((hf.coordChangeL he he').clm_apply hg).congr_of_eventuallyEq ?_ ?_
+  refine ((hf.coordChangeL he he').clm_apply hg).congr_of_eventuallyEq _ _
   · have : e.baseSet ∩ e'.baseSet ∈ 𝓝 (f x) :=
      (e.open_baseSet.inter e'.open_baseSet).mem_nhds ⟨he, he'⟩
     filter_upwards [hf.continuousWithinAt this] with y hy
@@ -434,9 +434,9 @@ theorem Trivialization.contMDiffOn_symm_trans :
   rw [mapsTo_inter] at Hmaps
   -- TODO: drop `congr` #5473
   refine (contMDiffOn_fst.prod_mk
-    (contMDiffOn_fst.coordChange contMDiffOn_snd Hmaps.1 Hmaps.2)).congr ?_
+    (contMDiffOn_fst.coordChange contMDiffOn_snd Hmaps.1 Hmaps.2)).congr _
   rintro ⟨b, x⟩ hb
-  refine Prod.ext ?_ rfl
+  refine Prod.ext _ rfl
   have : (e.toPartialHomeomorph.symm (b, x)).1 ∈ e'.baseSet := by
     simp_all only [Trivialization.mem_target, mfld_simps]
   exact (e'.coe_fst' this).trans (e.proj_symm_apply hb.1)
@@ -449,7 +449,7 @@ theorem ContMDiffWithinAt.change_section_trivialization {f : M → TotalSpace F 
     (he : f x ∈ e.source) (he' : f x ∈ e'.source) :
     ContMDiffWithinAt IM 𝓘(𝕜, F) n (fun y ↦ (e' (f y)).2) s x := by
   rw [Trivialization.mem_source] at he he'
-  refine (hp.coordChange hf he he').congr_of_eventuallyEq ?_ ?_
+  refine (hp.coordChange hf he he').congr_of_eventuallyEq _ _
   · filter_upwards [hp.continuousWithinAt (e.open_baseSet.mem_nhds he)] with y hy
     rw [Function.comp_apply, e.coordChange_apply_snd _ hy]
   · rw [Function.comp_apply, e.coordChange_apply_snd _ he]
@@ -475,7 +475,7 @@ instance SmoothFiberwiseLinear.hasGroupoid :
     rw [mem_smoothFiberwiseLinear_iff]
     refine ⟨_, _, e.open_baseSet.inter e'.open_baseSet, smoothOn_coordChangeL IB e e',
       smoothOn_symm_coordChangeL IB e e', _⟩
-    refine PartialHomeomorph.eqOnSourceSetoid.symm ⟨?_, ?_⟩
+    refine PartialHomeomorph.eqOnSourceSetoid.symm ⟨_, _⟩
     · simp only [e.symm_trans_source_eq e', FiberwiseLinear.partialHomeomorph, trans_toPartialEquiv,
         symm_toPartialEquiv]
     · rintro ⟨b, v⟩ hb
@@ -485,13 +485,13 @@ instance SmoothFiberwiseLinear.hasGroupoid :
 /-- A smooth vector bundle `E` is naturally a smooth manifold. -/
 instance Bundle.TotalSpace.smoothManifoldWithCorners :
     SmoothManifoldWithCorners (IB.prod 𝓘(𝕜, F)) (TotalSpace F E) := by
-  refine { StructureGroupoid.HasGroupoid.comp (smoothFiberwiseLinear B F IB) ?_ with }
+  refine { StructureGroupoid.HasGroupoid.comp (smoothFiberwiseLinear B F IB) _ with }
   intro e he
   rw [mem_smoothFiberwiseLinear_iff] at he
   obtain ⟨φ, U, hU, hφ, h2φ, heφ⟩ := he
   rw [isLocalStructomorphOn_contDiffGroupoid_iff]
-  refine ⟨ContMDiffOn.congr ?_ (EqOnSource.eqOn heφ),
-      ContMDiffOn.congr ?_ (EqOnSource.eqOn (EqOnSource.symm' heφ))⟩
+  refine ⟨ContMDiffOn.congr _ (EqOnSource.eqOn heφ),
+      ContMDiffOn.congr _ (EqOnSource.eqOn (EqOnSource.symm' heφ))⟩
   · rw [EqOnSource.source_eq heφ]
     apply smoothOn_fst.prod_mk
     exact (hφ.comp contMDiffOn_fst <| prod_subset_preimage_fst _ _).clm_apply contMDiffOn_snd
@@ -565,7 +565,7 @@ theorem Trivialization.smoothOn (e : Trivialization F (π F E)) [MemTrivializati
 theorem Trivialization.smoothOn_symm (e : Trivialization F (π F E)) [MemTrivializationAtlas e] :
     SmoothOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) e.toPartialHomeomorph.symm e.target := by
   rw [e.smoothOn_iff IB e.toPartialHomeomorph.symm_mapsTo]
-  refine ⟨smoothOn_fst.congr fun x hx ↦ e.proj_symm_apply hx, smoothOn_snd.congr fun x hx ↦ ?_⟩
+  refine ⟨smoothOn_fst.congr fun x hx ↦ e.proj_symm_apply hx, smoothOn_snd.congr fun x hx ↦ _⟩
   rw [e.apply_symm_apply hx]
 
 end
@@ -594,7 +594,7 @@ is a smooth vector bundle. -/
 instance smoothVectorBundle : SmoothVectorBundle F Z.Fiber IB where
   smoothOn_coordChangeL := by
     rintro - - ⟨i, rfl⟩ ⟨i', rfl⟩
-    refine (Z.smoothOn_coordChange IB i i').congr fun b hb ↦ ?_
+    refine (Z.smoothOn_coordChange IB i i').congr fun b hb ↦ _
     ext v
     exact Z.localTriv_coordChange_eq i i' hb v
 #align vector_bundle_core.smooth_vector_bundle VectorBundleCore.smoothVectorBundle
@@ -703,7 +703,7 @@ theorem smoothVectorBundle : @SmoothVectorBundle
   letI := a.totalSpaceTopology; letI := a.toFiberBundle; letI := a.toVectorBundle
   { smoothOn_coordChangeL := by
       rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩
-      refine (a.smoothOn_smoothCoordChange he he').congr ?_
+      refine (a.smoothOn_smoothCoordChange he he').congr _
       intro b hb
       ext v
       rw [a.smoothCoordChange_apply he he' hb v, ContinuousLinearEquiv.coe_coe,

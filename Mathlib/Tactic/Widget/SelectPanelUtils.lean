@@ -32,12 +32,12 @@ def getGoalLocations (locations : Array GoalsLocation) : Array SubExpr.Pos := Id
 def insertMetaVar (e : Expr) (pos : SubExpr.Pos) : MetaM Expr :=
   replaceSubexpr (fun _ ↦ do mkFreshExprMVar none .synthetic) pos e
 
-/-- Replace all meta-variable names by "?_". -/
+/-- Replace all meta-variable names by "_". -/
 def String.renameMetaVar (s : String) : String :=
   match s.splitOn "?m." with
   | [] => ""
   | [s] => s
-  | head::tail => head ++ "?_" ++ "?_".intercalate (tail.map fun s ↦ s.dropWhile Char.isDigit)
+  | head::tail => head ++ "_" ++ "_".intercalate (tail.map fun s ↦ s.dropWhile Char.isDigit)
 
 open ProofWidgets
 

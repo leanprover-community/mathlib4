@@ -35,9 +35,9 @@ open AdjoinRoot in
 def AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly {R : Type*} [CommRing R] [Algebra F R] (x : R) :
     Algebra.adjoin F ({x} : Set R) ≃ₐ[F] AdjoinRoot (minpoly F x) :=
   AlgEquiv.symm <| AlgEquiv.ofBijective (Minpoly.toAdjoin F x) <| by
-    refine ⟨(injective_iff_map_eq_zero _).2 fun P₁ hP₁ ↦ ?_, Minpoly.toAdjoin.surjective F x⟩
+    refine ⟨(injective_iff_map_eq_zero _).2 fun P₁ hP₁ ↦ _, Minpoly.toAdjoin.surjective F x⟩
     obtain ⟨P, rfl⟩ := mk_surjective P₁
-    refine AdjoinRoot.mk_eq_zero.mpr (minpoly.dvd F x ?_)
+    refine AdjoinRoot.mk_eq_zero.mpr (minpoly.dvd F x _)
     rwa [Minpoly.toAdjoin_apply', liftHom_mk, ← Subalgebra.coe_eq_zero, aeval_subalgebra_coe] at hP₁
 #align alg_equiv.adjoin_singleton_equiv_adjoin_root_minpoly AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly
 
@@ -57,7 +57,7 @@ theorem Polynomial.lift_of_splits {F K L : Type*} [Field F] [Field K] [Field L] 
     [Algebra F L] (s : Finset K) : (∀ x ∈ s, IsIntegral F x ∧
       Splits (algebraMap F L) (minpoly F x)) → Nonempty (Algebra.adjoin F (s : Set K) →ₐ[F] L) := by
   classical
-    refine Finset.induction_on s (fun _ ↦ ?_) fun a s _ ih H ↦ ?_
+    refine Finset.induction_on s (fun _ ↦ _) fun a s _ ih H ↦ _
     · rw [coe_empty, Algebra.adjoin_empty]
       exact ⟨(Algebra.ofId F L).comp (Algebra.botEquiv F K)⟩
     rw [forall_mem_insert] at H
@@ -73,7 +73,7 @@ theorem Polynomial.lift_of_splits {F K L : Type*} [Field F] [Field K] [Field L] 
     have H5 : IsIntegral Ks a := H1.tower_top
     have H6 : (minpoly Ks a).Splits (algebraMap Ks L) := by
       refine splits_of_splits_of_dvd _ ((minpoly.monic H1).map (algebraMap F Ks)).ne_zero
-        ((splits_map_iff _ _).2 ?_) (minpoly.dvd _ _ ?_)
+        ((splits_map_iff _ _).2 _) (minpoly.dvd _ _ _)
       · rw [← IsScalarTower.algebraMap_eq]
         exact H2
       · rw [Polynomial.aeval_map_algebraMap, minpoly.aeval]

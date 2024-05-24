@@ -36,7 +36,7 @@ theorem suffixLevenshtein_minimum_le_levenshtein_cons (xs : List α) (y ys) :
         (suffixLevenshtein C (x :: xs) ys).1.minimum ≤ (C.insert y + levenshtein C (x :: xs) ys) ∧
         (suffixLevenshtein C (x :: xs) ys).1.minimum ≤ (C.substitute x y + levenshtein C xs ys) by
       simpa [suffixLevenshtein_eq_tails_map]
-    refine ⟨?_, ?_, ?_⟩
+    refine ⟨_, _, _⟩
     · calc
         _ ≤ (suffixLevenshtein C xs ys).1.minimum := by
             simp [suffixLevenshtein_cons₁_fst, List.minimum_cons]
@@ -61,7 +61,7 @@ theorem le_suffixLevenshtein_cons_minimum (xs : List α) (y ys) :
   simp only [suffixLevenshtein_eq_tails_map]
   simp only [List.mem_map, List.mem_tails, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
   intro a suff
-  refine (?_ : _ ≤ _).trans (suffixLevenshtein_minimum_le_levenshtein_cons _ _ _)
+  refine (_ : _ ≤ _).trans (suffixLevenshtein_minimum_le_levenshtein_cons _ _ _)
   simp only [suffixLevenshtein_eq_tails_map]
   apply List.le_minimum_of_forall_le
   intro b m

@@ -345,9 +345,9 @@ theorem trans_symm (γ : Path x y) (γ' : Path y z) : (γ.trans γ').symm = γ'.
   split_ifs with h h₁ h₂ <;> rw [coe_symm_eq] at h
   · have ht : (t : ℝ) = 1 / 2 := by linarith
     norm_num [ht]
-  · refine congr_arg _ (Subtype.ext ?_)
+  · refine congr_arg _ (Subtype.ext _)
     norm_num [sub_sub_eq_add_sub, mul_sub]
-  · refine congr_arg _ (Subtype.ext ?_)
+  · refine congr_arg _ (Subtype.ext _)
     norm_num [mul_sub, h]
     ring -- TODO norm_num should really do this
   · exfalso
@@ -500,7 +500,7 @@ theorem trans_continuous_family {ι : Type*} [TopologicalSpace ι]
   have h₁' := Path.continuous_uncurry_extend_of_continuous_family γ₁ h₁
   have h₂' := Path.continuous_uncurry_extend_of_continuous_family γ₂ h₂
   simp only [HasUncurry.uncurry, CoeFun.coe, Path.trans, (· ∘ ·)]
-  refine Continuous.if_le ?_ ?_ (continuous_subtype_val.comp continuous_snd) continuous_const ?_
+  refine Continuous.if_le _ _ (continuous_subtype_val.comp continuous_snd) continuous_const _
   · change
       Continuous ((fun p : ι × ℝ => (γ₁ p.1).extend p.2) ∘ Prod.map id (fun x => 2 * x : I → ℝ))
     exact h₁'.comp (continuous_id.prod_map <| continuous_const.mul continuous_subtype_val)
@@ -881,7 +881,7 @@ theorem JoinedIn.trans (hxy : JoinedIn F x y) (hyz : JoinedIn F y z) : JoinedIn 
 #align joined_in.trans JoinedIn.trans
 
 theorem Specializes.joinedIn (h : x ⤳ y) (hx : x ∈ F) (hy : y ∈ F) : JoinedIn F x y := by
-  refine ⟨⟨⟨Set.piecewise {1} (const I y) (const I x), ?_⟩, by simp, by simp⟩, fun t ↦ ?_⟩
+  refine ⟨⟨⟨Set.piecewise {1} (const I y) (const I x), _⟩, by simp, by simp⟩, fun t ↦ _⟩
   · exact isClosed_singleton.continuous_piecewise_of_specializes continuous_const continuous_const
       fun _ ↦ h
   · simp only [Path.coe_mk_mk, piecewise]
@@ -982,7 +982,7 @@ theorem IsPathConnected.image' (hF : IsPathConnected F)
   rcases hF with ⟨x, x_in, hx⟩
   use f x, mem_image_of_mem f x_in
   rintro _ ⟨y, y_in, rfl⟩
-  refine ⟨(hx y_in).somePath.map' ?_, fun t ↦ ⟨_, (hx y_in).somePath_mem t, rfl⟩⟩
+  refine ⟨(hx y_in).somePath.map' _, fun t ↦ ⟨_, (hx y_in).somePath_mem t, rfl⟩⟩
   exact hf.mono (range_subset_iff.2 (hx y_in).somePath_mem)
 
 /-- If `f` is continuous and `F` is path-connected, so is `f(F)`. -/
@@ -993,16 +993,16 @@ theorem IsPathConnected.image (hF : IsPathConnected F) {f : X → Y}
 /-- If `f : X → Y` is a `Inducing`, `f(F)` is path-connected iff `F` is. -/
 nonrec theorem Inducing.isPathConnected_iff {f : X → Y} (hf : Inducing f) :
     IsPathConnected F ↔ IsPathConnected (f '' F) := by
-  refine ⟨fun hF ↦ hF.image hf.continuous, fun hF ↦ ?_⟩
+  refine ⟨fun hF ↦ hF.image hf.continuous, fun hF ↦ _⟩
   simp? [isPathConnected_iff] at hF ⊢ says
     simp only [isPathConnected_iff, image_nonempty, mem_image, forall_exists_index,
       and_imp, forall_apply_eq_imp_iff₂] at hF ⊢
-  refine ⟨hF.1, fun x hx y hy ↦ ?_⟩
+  refine ⟨hF.1, fun x hx y hy ↦ _⟩
   rcases hF.2 x hx y hy with ⟨γ, hγ⟩
   choose γ' hγ' hγγ' using hγ
   have key₁ : Inseparable x (γ' 0) := by rw [← hf.inseparable_iff, hγγ' 0, γ.source]
   have key₂ : Inseparable (γ' 1) y := by rw [← hf.inseparable_iff, hγγ' 1, γ.target]
-  refine key₁.joinedIn hx (hγ' 0) |>.trans ⟨⟨⟨γ', ?_⟩, rfl, rfl⟩, hγ'⟩ |>.trans
+  refine key₁.joinedIn hx (hγ' 0) |>.trans ⟨⟨⟨γ', _⟩, rfl, rfl⟩, hγ'⟩ |>.trans
     (key₂.joinedIn (hγ' 1) hy)
   simpa [hf.continuous_iff] using γ.continuous.congr fun t ↦ (hγγ' t).symm
 
@@ -1028,7 +1028,7 @@ theorem IsPathConnected.subset_pathComponent (h : IsPathConnected F) (x_in : x �
 #align is_path_connected.subset_path_component IsPathConnected.subset_pathComponent
 
 theorem isPathConnected_singleton (x : X) : IsPathConnected ({x} : Set X) := by
-  refine ⟨x, rfl, ?_⟩
+  refine ⟨x, rfl, _⟩
   rintro y rfl
   exact JoinedIn.refl rfl
 
@@ -1099,7 +1099,7 @@ theorem IsPathConnected.exists_path_through_family {n : ℕ}
     rw [Fin.val_cast_of_lt hk]
   use γ.cast (hpp' 0 n.zero_lt_succ) (hpp' n n.lt_succ_self)
   simp only [γ.cast_coe]
-  refine And.intro hγ.2 ?_
+  refine And.intro hγ.2 _
   rintro ⟨i, hi⟩
   suffices p ⟨i, hi⟩ = p' i by convert hγ.1 i (Nat.le_of_lt_succ hi)
   rw [← hpp' i hi]
@@ -1135,7 +1135,7 @@ theorem pathConnectedSpace_iff_zerothHomotopy :
   letI := pathSetoid X
   constructor
   · intro h
-    refine ⟨(nonempty_quotient_iff _).mpr h.1, ⟨?_⟩⟩
+    refine ⟨(nonempty_quotient_iff _).mpr h.1, ⟨_⟩⟩
     rintro ⟨x⟩ ⟨y⟩
     exact Quotient.sound (PathConnectedSpace.joined x y)
   · unfold ZerothHomotopy
@@ -1158,12 +1158,12 @@ theorem isPathConnected_iff_pathConnectedSpace : IsPathConnected F ↔ PathConne
   rw [isPathConnected_iff]
   constructor
   · rintro ⟨⟨x, x_in⟩, h⟩
-    refine ⟨⟨⟨x, x_in⟩⟩, ?_⟩
+    refine ⟨⟨⟨x, x_in⟩⟩, _⟩
     rintro ⟨y, y_in⟩ ⟨z, z_in⟩
     have H := h y y_in z z_in
     rwa [joinedIn_iff_joined y_in z_in] at H
   · rintro ⟨⟨x, x_in⟩, H⟩
-    refine ⟨⟨x, x_in⟩, fun y y_in z z_in => ?_⟩
+    refine ⟨⟨x, x_in⟩, fun y y_in z z_in => _⟩
     rw [joinedIn_iff_joined y_in z_in]
     apply H
 #align is_path_connected_iff_path_connected_space isPathConnected_iff_pathConnectedSpace
@@ -1173,7 +1173,7 @@ theorem pathConnectedSpace_iff_univ : PathConnectedSpace X ↔ IsPathConnected (
   · intro h
     haveI := @PathConnectedSpace.nonempty X _ _
     inhabit X
-    refine ⟨default, mem_univ _, ?_⟩
+    refine ⟨default, mem_univ _, _⟩
     intros y _hy
     simpa using PathConnectedSpace.joined default y
   · intro h
@@ -1278,7 +1278,7 @@ theorem pathConnectedSpace_iff_connectedSpace [LocPathConnectedSpace X] :
   · intro hX
     rw [pathConnectedSpace_iff_eq]
     use Classical.arbitrary X
-    refine IsClopen.eq_univ ⟨?_, ?_⟩ (by simp)
+    refine IsClopen.eq_univ ⟨_, _⟩ (by simp)
     · rw [isClosed_iff_nhds]
       intro y H
       rcases (path_connected_basis y).ex_mem with ⟨U, ⟨U_in, hU⟩⟩
@@ -1313,7 +1313,7 @@ theorem locPathConnected_of_isOpen [LocPathConnectedSpace X] {U : Set X} (h : Is
         ⟨(↑) '' W,
           ⟨Filter.image_coe_mem_of_mem_comap (IsOpen.mem_nhds h x_in) W_in,
             hW.image continuous_subtype_val, Subtype.coe_image_subset U W⟩,
-          ?_⟩
+          _⟩
       rintro x ⟨y, ⟨y_in, hy⟩⟩
       rw [← Subtype.coe_injective hy]
       tauto⟩

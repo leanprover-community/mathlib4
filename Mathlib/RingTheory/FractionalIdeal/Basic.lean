@@ -125,7 +125,7 @@ noncomputable def num (I : FractionalIdeal S P) : Ideal R :=
 theorem den_mul_self_eq_num (I : FractionalIdeal S P) :
     I.den • (I : Submodule R P) = Submodule.map (Algebra.linearMap R P) I.num := by
   rw [den, num, Submodule.map_comap_eq]
-  refine (inf_of_le_right ?_).symm
+  refine (inf_of_le_right _).symm
   rintro _ ⟨a, ha, rfl⟩
   exact I.2.choose_spec.2 a ha
 
@@ -134,8 +134,8 @@ defined by mapping `x` to `den I • x`. -/
 noncomputable def equivNum [Nontrivial P] [NoZeroSMulDivisors R P]
     {I : FractionalIdeal S P} (h_nz : (I.den : R) ≠ 0) : I ≃ₗ[R] I.num := by
   refine LinearEquiv.trans
-    (LinearEquiv.ofBijective ((DistribMulAction.toLinearMap R P I.den).restrict fun _ hx ↦ ?_)
-      ⟨fun _ _ hxy ↦ ?_, fun ⟨y, hy⟩ ↦ ?_⟩)
+    (LinearEquiv.ofBijective ((DistribMulAction.toLinearMap R P I.den).restrict fun _ hx ↦ _)
+      ⟨fun _ _ hxy ↦ _, fun ⟨y, hy⟩ ↦ _⟩)
     (Submodule.equivMapOfInjective (Algebra.linearMap R P)
       (NoZeroSMulDivisors.algebraMap_injective R P) (num I)).symm
   · rw [← den_mul_self_eq_num]
@@ -537,7 +537,7 @@ theorem _root_.IsFractional.mul {I J : Submodule R P} :
     IsFractional S I → IsFractional S J → IsFractional S (I * J : Submodule R P)
   | ⟨aI, haI, hI⟩, ⟨aJ, haJ, hJ⟩ =>
     ⟨aI * aJ, S.mul_mem haI haJ, fun b hb => by
-      refine Submodule.mul_induction_on hb ?_ ?_
+      refine Submodule.mul_induction_on hb _ _
       · intro m hm n hn
         obtain ⟨n', hn'⟩ := hJ n hn
         rw [mul_smul, mul_comm m, ← smul_mul_assoc, ← hn', ← Algebra.smul_def]
@@ -688,7 +688,7 @@ theorem le_one_iff_exists_coeIdeal {J : FractionalIdeal S P} :
     J ≤ (1 : FractionalIdeal S P) ↔ ∃ I : Ideal R, ↑I = J := by
   constructor
   · intro hJ
-    refine ⟨⟨⟨⟨{ x : R | algebraMap R P x ∈ J }, ?_⟩, ?_⟩, ?_⟩, ?_⟩
+    refine ⟨⟨⟨⟨{ x : R | algebraMap R P x ∈ J }, _⟩, _⟩, _⟩, _⟩
     · intro a b ha hb
       rw [mem_setOf, RingHom.map_add]
       exact J.val.add_mem ha hb

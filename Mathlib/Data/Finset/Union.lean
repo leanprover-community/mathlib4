@@ -80,7 +80,7 @@ lemma disjiUnion_disjiUnion (s : Finset α) (f : α → Finset β) (g : β → F
           obtain ⟨xa, hfa, hga⟩ := mem_disjiUnion.mp hxa
           obtain ⟨xb, hfb, hgb⟩ := mem_disjiUnion.mp hxb
           refine disjoint_left.mp
-            (h2 (mem_disjiUnion.mpr ⟨_, a.prop, hfa⟩) (mem_disjiUnion.mpr ⟨_, b.prop, hfb⟩) ?_) hga
+            (h2 (mem_disjiUnion.mpr ⟨_, a.prop, hfa⟩) (mem_disjiUnion.mpr ⟨_, b.prop, hfb⟩) _) hga
             hgb
           rintro rfl
           exact disjoint_left.mp (h1 a.prop b.prop <| Subtype.coe_injective.ne hab) hfa hfb :=
@@ -254,7 +254,7 @@ lemma Nonempty.biUnion (hs : s.Nonempty) (ht : ∀ x ∈ s, (t x).Nonempty) :
 lemma disjoint_biUnion_left (s : Finset α) (f : α → Finset β) (t : Finset β) :
     Disjoint (s.biUnion f) t ↔ ∀ i ∈ s, Disjoint (f i) t := by
   classical
-  refine s.induction ?_ ?_
+  refine s.induction _ _
   · simp only [forall_mem_empty_iff, biUnion_empty, disjoint_empty_left]
   · intro i s his ih
     simp only [disjoint_union_left, biUnion_insert, his, forall_mem_insert, ih]

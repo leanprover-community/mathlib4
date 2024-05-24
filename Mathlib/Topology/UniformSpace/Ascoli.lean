@@ -85,11 +85,11 @@ theorem Equicontinuous.comap_uniformFun_eq [CompactSpace X] (F_eqcont : Equicont
     (UniformFun.uniformSpace X α).comap F =
     (Pi.uniformSpace _).comap F := by
   -- The `≤` inequality is trivial
-  refine le_antisymm (UniformSpace.comap_mono UniformFun.uniformContinuous_toFun) ?_
+  refine le_antisymm (UniformSpace.comap_mono UniformFun.uniformContinuous_toFun) _
   -- A bit of rewriting to get a nice intermediate statement.
   change comap _ _ ≤ comap _ _
   simp_rw [Pi.uniformity, Filter.comap_iInf, comap_comap, Function.comp]
-  refine ((UniformFun.hasBasis_uniformity X α).comap (Prod.map F F)).ge_iff.mpr ?_
+  refine ((UniformFun.hasBasis_uniformity X α).comap (Prod.map F F)).ge_iff.mpr _
   -- Core of the proof: we need to show that, for any entourage `U` in `α`,
   -- the set `𝐓(U) := {(i,j) : ι × ι | ∀ x : X, (F i x, F j x) ∈ U}` belongs to the filter
   -- `⨅ x, comap ((i,j) ↦ (F i x, F j x)) (𝓤 α)`.
@@ -338,7 +338,7 @@ theorem EquicontinuousOn.tendsto_uniformOnFun_iff_pi'
   rw [← Filter.tendsto_comap_iff (g := (⋃₀ 𝔖).restrict), ← nhds_induced]
   simp_rw [UniformOnFun.topologicalSpace_eq, Pi.induced_restrict_sUnion 𝔖 (π := fun _ ↦ α),
     nhds_iInf, nhds_induced, tendsto_iInf, tendsto_comap_iff]
-  congrm ∀ K (hK : K ∈ 𝔖), ?_
+  congrm ∀ K (hK : K ∈ 𝔖), _
   have : CompactSpace K := isCompact_iff_compactSpace.mp (𝔖_compact K hK)
   rw [← (equicontinuous_restrict_iff _ |>.mpr <| F_eqcont K hK).tendsto_uniformFun_iff_pi]
   rfl

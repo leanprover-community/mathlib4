@@ -37,7 +37,7 @@ The actual mathematical content of the proof is here.
   H (a % ↑n).toNat <| by
     have := ofNat_pos.2 <| Nat.le_of_ble_eq_true hn
     have nonneg := emod_nonneg a <| Int.ne_of_gt this
-    refine ⟨Nat.zero_le _, ?_, ?_⟩
+    refine ⟨Nat.zero_le _, _, _⟩
     · rw [Int.toNat_lt nonneg]; exact Int.emod_lt_of_pos _ this
     · rw [Int.ModEq, Int.toNat_of_nonneg nonneg, emod_emod]
 
@@ -112,7 +112,7 @@ The actual mathematical content of the proof is here.
 @[inline] def onModCases_start (p : Sort _) (a : ℕ) (n : ℕ) (hn : Nat.ble 1 n = true)
     (H : OnModCases n a (nat_lit 0) p) : p :=
   H (a % n) <| by
-    refine ⟨Nat.zero_le _, ?_, ?_⟩
+    refine ⟨Nat.zero_le _, _, _⟩
     · exact Nat.mod_lt _ (Nat.le_of_ble_eq_true hn)
     · rw [Nat.ModEq, Nat.mod_mod]
 

@@ -95,7 +95,7 @@ theorem ker_le_ker_comp (f : M →ₛₗ[τ₁₂] M₂) (g : M₂ →ₛₗ[τ�
 
 theorem ker_sup_ker_le_ker_comp_of_commute {f g : M →ₗ[R] M} (h : Commute f g) :
     ker f ⊔ ker g ≤ ker (f ∘ₗ g) := by
-  refine sup_le_iff.mpr ⟨?_, ker_le_ker_comp g f⟩
+  refine sup_le_iff.mpr ⟨_, ker_le_ker_comp g f⟩
   rw [← mul_eq_comp, h.eq, mul_eq_comp]
   exact ker_le_ker_comp f g
 
@@ -214,7 +214,7 @@ theorem ker_eq_bot {f : M →ₛₗ[τ₁₂] M₂} : ker f = ⊥ ↔ Injective 
 @[simp] lemma injective_domRestrict_iff {f : M →ₛₗ[τ₁₂] M₂} {S : Submodule R M} :
     Injective (f.domRestrict S) ↔ S ⊓ LinearMap.ker f = ⊥ := by
   rw [← LinearMap.ker_eq_bot]
-  refine ⟨fun h ↦ le_bot_iff.1 ?_, fun h ↦ le_bot_iff.1 ?_⟩
+  refine ⟨fun h ↦ le_bot_iff.1 _, fun h ↦ le_bot_iff.1 _⟩
   · intro x ⟨hx, h'x⟩
     have : ⟨x, hx⟩ ∈ LinearMap.ker (LinearMap.domRestrict f S) := by simpa using h'x
     rw [h] at this

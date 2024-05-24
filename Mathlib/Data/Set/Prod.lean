@@ -187,7 +187,7 @@ theorem prod_insert : s ×ˢ insert b t = (fun a => (a, b)) '' s ∪ s ×ˢ t :=
   -- porting note (#10745):
   -- was `simp (config := { contextual := true }) [image, iff_def, or_imp, Imp.swap]`
   simp only [mem_prod, mem_insert_iff, image, mem_union, mem_setOf_eq, Prod.mk.injEq]
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h => _, fun h => _⟩
   · obtain ⟨hx, rfl|hy⟩ := h
     · exact Or.inl ⟨x, hx, rfl, rfl⟩
     · exact Or.inr ⟨hx, hy⟩
@@ -524,7 +524,7 @@ end Diagonal
 /-- A function is `Function.const α a` for some `a` if and only if `∀ x y, f x = f y`. -/
 theorem range_const_eq_diagonal {α β : Type*} [hβ : Nonempty β] :
     range (const α) = {f : α → β | ∀ x y, f x = f y} := by
-  refine (range_eq_iff _ _).mpr ⟨fun _ _ _ ↦ rfl, fun f hf ↦ ?_⟩
+  refine (range_eq_iff _ _).mpr ⟨fun _ _ _ ↦ rfl, fun f hf ↦ _⟩
   rcases isEmpty_or_nonempty α with h|⟨⟨a⟩⟩
   · exact hβ.elim fun b ↦ ⟨b, Subsingleton.elim _ _⟩
   · exact ⟨f a, funext fun x ↦ hf _ _⟩
@@ -802,7 +802,7 @@ end Nonempty
 -- Porting note: Removing `simp` - LHS does not simplify
 theorem range_dcomp (f : ∀ i, α i → β i) :
     (range fun g : ∀ i, α i => fun i => f i (g i)) = pi univ fun i => range (f i) := by
-  refine Subset.antisymm ?_ fun x hx => ?_
+  refine Subset.antisymm _ fun x hx => _
   · rintro _ ⟨x, rfl⟩ i -
     exact ⟨x i, rfl⟩
   · choose y hy using hx
@@ -857,16 +857,16 @@ theorem union_pi_inter
   ext x
   simp only [mem_pi, mem_union, mem_inter_iff]
   refine ⟨fun h ↦ ⟨fun i his₁ ↦ (h i (Or.inl his₁)).1, fun i his₂ ↦ (h i (Or.inr his₂)).2⟩,
-    fun h i hi ↦ ?_⟩
+    fun h i hi ↦ _⟩
   cases' hi with hi hi
   · by_cases hi2 : i ∈ s₂
     · exact ⟨h.1 i hi, h.2 i hi2⟩
-    · refine ⟨h.1 i hi, ?_⟩
+    · refine ⟨h.1 i hi, _⟩
       rw [ht₂ i hi2]
       exact mem_univ _
   · by_cases hi1 : i ∈ s₁
     · exact ⟨h.1 i hi1, h.2 i hi⟩
-    · refine ⟨?_, h.2 i hi⟩
+    · refine ⟨_, h.2 i hi⟩
       rw [ht₁ i hi1]
       exact mem_univ _
 

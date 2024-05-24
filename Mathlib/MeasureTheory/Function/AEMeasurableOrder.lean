@@ -47,7 +47,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
       exact ⟨u, v, hu, hv, h'u, h'v, fun _ _ _ => hμ⟩
     · refine
         ⟨univ, univ, MeasurableSet.univ, MeasurableSet.univ, subset_univ _, subset_univ _,
-          fun ps qs pq => ?_⟩
+          fun ps qs pq => _⟩
       simp only [not_and] at H
       exact (H ps qs pq).elim
   choose! u v huv using h'
@@ -63,8 +63,8 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
   have μt : μ t ≤ 0 :=
     calc
       μ t ≤ ∑' (p : s) (q : ↥(s ∩ Ioi p)), μ (u' p ∩ v p q) := by
-        refine (measure_iUnion_le _).trans ?_
-        refine ENNReal.tsum_le_tsum fun p => ?_
+        refine (measure_iUnion_le _).trans _
+        refine ENNReal.tsum_le_tsum fun p => _
         haveI := (s_count.mono (inter_subset_left _ (Ioi ↑p))).to_subtype
         apply measure_iUnion_le
       _ ≤ ∑' (p : s) (q : ↥(s ∩ Ioi p)), μ (u p q ∩ v p q) := by
@@ -95,13 +95,13 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
       obtain ⟨r, ⟨xr, rq⟩, rs⟩ : ∃ r, r ∈ Ioo (i : β) (f x) ∩ s :=
         dense_iff_inter_open.1 s_dense (Ioo i (f x)) isOpen_Ioo (nonempty_Ioo.2 hx)
       have A : x ∈ v i r := (huv i r).2.2.2.1 rq
-      refine mem_iUnion.2 ⟨i, ?_⟩
-      refine mem_iUnion.2 ⟨⟨r, ⟨rs, xr⟩⟩, ?_⟩
+      refine mem_iUnion.2 ⟨i, _⟩
+      refine mem_iUnion.2 ⟨⟨r, ⟨rs, xr⟩⟩, _⟩
       exact ⟨H, A⟩
     · intro q hq
       obtain ⟨r, ⟨xr, rq⟩, rs⟩ : ∃ r, r ∈ Ioo (f x) q ∩ s :=
         dense_iff_inter_open.1 s_dense (Ioo (f x) q) isOpen_Ioo (nonempty_Ioo.2 hq)
-      refine ⟨⟨r, rs⟩, ?_⟩
+      refine ⟨⟨r, rs⟩, _⟩
       have A : x ∈ u' r := mem_biInter fun i _ => (huv r i).2.2.1 xr
       simp only [A, rq, piecewise_eq_of_mem, Subtype.coe_mk]
   exact ⟨f', f'_meas, ff'⟩

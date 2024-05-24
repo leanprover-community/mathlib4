@@ -71,11 +71,11 @@ theorem inv_subset_closure (S : Set G) : S⁻¹ ⊆ closure S := fun s hs => by
 @[to_additive]
 theorem closure_toSubmonoid (S : Set G) :
     (closure S).toSubmonoid = Submonoid.closure (S ∪ S⁻¹) := by
-  refine le_antisymm (fun x hx => ?_) (Submonoid.closure_le.2 ?_)
+  refine le_antisymm (fun x hx => _) (Submonoid.closure_le.2 _)
   · refine
       closure_induction hx
         (fun x hx => Submonoid.closure_mono (subset_union_left S S⁻¹) (Submonoid.subset_closure hx))
-        (Submonoid.one_mem _) (fun x y hx hy => Submonoid.mul_mem _ hx hy) fun x hx => ?_
+        (Submonoid.one_mem _) (fun x y hx hy => Submonoid.mul_mem _ hx hy) fun x hx => _
     rwa [← Submonoid.mem_closure_inv, Set.union_inv, inv_inv, Set.union_comm]
   · simp only [true_and_iff, coe_toSubmonoid, union_subset_iff, subset_closure, inv_subset_closure]
 #align subgroup.closure_to_submonoid Subgroup.closure_toSubmonoid
@@ -172,7 +172,7 @@ theorem iSup_induction' {ι : Sort*} (S : ι → Subgroup G) {C : ∀ x, (x ∈ 
     (hmul : ∀ x y hx hy, C x hx → C y hy → C (x * y) (mul_mem ‹_› ‹_›)) {x : G}
     (hx : x ∈ ⨆ i, S i) : C x hx := by
   suffices ∃ h, C x h from this.snd
-  refine iSup_induction S (C := fun x => ∃ h, C x h) hx (fun i x hx => ?_) ?_ fun x y => ?_
+  refine iSup_induction S (C := fun x => ∃ h, C x h) hx (fun i x hx => _) _ fun x y => _
   · exact ⟨_, hp i _ hx⟩
   · exact ⟨_, h1⟩
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
@@ -208,7 +208,7 @@ theorem set_mul_normal_comm (s : Set G) (N : Subgroup G) [hN : N.Normal] :
 when `N` is normal."]
 theorem mul_normal (H N : Subgroup G) [hN : N.Normal] : (↑(H ⊔ N) : Set G) = H * N := by
   rw [sup_eq_closure_mul]
-  refine Set.Subset.antisymm (fun x hx => ?_) subset_closure
+  refine Set.Subset.antisymm (fun x hx => _) subset_closure
   induction hx using closure_induction'' with
   | one => exact ⟨1, one_mem _, 1, one_mem _, mul_one 1⟩
   | mem _ hx => exact hx
@@ -219,7 +219,7 @@ theorem mul_normal (H N : Subgroup G) [hN : N.Normal] : (↑(H ⊔ N) : Set G) =
   | mul x' x' _ _ hx hx' =>
     obtain ⟨x, hx, y, hy, rfl⟩ := hx
     obtain ⟨x', hx', y', hy', rfl⟩ := hx'
-    refine ⟨x * x', mul_mem hx hx', x'⁻¹ * y * x' * y', mul_mem ?_ hy', ?_⟩
+    refine ⟨x * x', mul_mem hx hx', x'⁻¹ * y * x' * y', mul_mem _ hy', _⟩
     · simpa using hN.conj_mem _ hy x'⁻¹
     · simp only [mul_assoc, mul_inv_cancel_left]
 #align subgroup.mul_normal Subgroup.mul_normal
@@ -240,10 +240,10 @@ theorem mul_inf_assoc (A B C : Subgroup G) (h : A ≤ C) :
   simp only [coe_inf, Set.mem_mul, Set.mem_inter_iff]
   constructor
   · rintro ⟨y, hy, z, ⟨hzB, hzC⟩, rfl⟩
-    refine ⟨?_, mul_mem (h hy) hzC⟩
+    refine ⟨_, mul_mem (h hy) hzC⟩
     exact ⟨y, hy, z, hzB, rfl⟩
   rintro ⟨⟨y, hy, z, hz, rfl⟩, hyz⟩
-  refine ⟨y, hy, z, ⟨hz, ?_⟩, rfl⟩
+  refine ⟨y, hy, z, ⟨hz, _⟩, rfl⟩
   suffices y⁻¹ * (y * z) ∈ C by simpa
   exact mul_mem (inv_mem (h hy)) hyz
 #align subgroup.mul_inf_assoc Subgroup.mul_inf_assoc
@@ -256,10 +256,10 @@ theorem inf_mul_assoc (A B C : Subgroup G) (h : C ≤ A) :
   simp only [coe_inf, Set.mem_mul, Set.mem_inter_iff]
   constructor
   · rintro ⟨y, ⟨hyA, hyB⟩, z, hz, rfl⟩
-    refine ⟨A.mul_mem hyA (h hz), ?_⟩
+    refine ⟨A.mul_mem hyA (h hz), _⟩
     exact ⟨y, hyB, z, hz, rfl⟩
   rintro ⟨hyz, y, hy, z, hz, rfl⟩
-  refine ⟨y, ⟨?_, hy⟩, z, hz, rfl⟩
+  refine ⟨y, ⟨_, hy⟩, z, hz, rfl⟩
   suffices y * z * z⁻¹ ∈ A by simpa
   exact mul_mem hyz (inv_mem (h hz))
 #align subgroup.inf_mul_assoc Subgroup.inf_mul_assoc
@@ -270,7 +270,7 @@ instance sup_normal (H K : Subgroup G) [hH : H.Normal] [hK : K.Normal] : (H ⊔ 
   conj_mem n hmem g := by
     rw [← SetLike.mem_coe, normal_mul] at hmem ⊢
     rcases hmem with ⟨h, hh, k, hk, rfl⟩
-    refine ⟨g * h * g⁻¹, hH.conj_mem h hh g, g * k * g⁻¹, hK.conj_mem k hk g, ?_⟩
+    refine ⟨g * h * g⁻¹, hH.conj_mem h hh g, g * k * g⁻¹, hK.conj_mem k hk g, _⟩
     simp only [mul_assoc, inv_mul_cancel_left]
 #align subgroup.sup_normal Subgroup.sup_normal
 
@@ -364,7 +364,7 @@ theorem conj_smul_le_of_le {P H : Subgroup G} (hP : P ≤ H) (h : H) :
 
 theorem conj_smul_subgroupOf {P H : Subgroup G} (hP : P ≤ H) (h : H) :
     MulAut.conj h • P.subgroupOf H = (MulAut.conj (h : G) • P).subgroupOf H := by
-  refine le_antisymm ?_ ?_
+  refine le_antisymm _ _
   · rintro - ⟨g, hg, rfl⟩
     exact ⟨g, hg, rfl⟩
   · rintro p ⟨g, hg, hp⟩

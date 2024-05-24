@@ -521,7 +521,7 @@ theorem Subrelation.isWellFounded (r : α → α → Prop) [IsWellFounded α r] 
 instance Prod.wellFoundedLT [PartialOrder α] [WellFoundedLT α] [Preorder β] [WellFoundedLT β] :
     WellFoundedLT (α × β) where
   wf := by
-    refine @Subrelation.wf (α × β) (Prod.Lex (· < ·) (· < ·)) (· < ·) ?_ IsWellFounded.wf
+    refine @Subrelation.wf (α × β) (Prod.Lex (· < ·) (· < ·)) (· < ·) _ IsWellFounded.wf
     rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ w
     simp only [Prod.mk_lt_mk] at w
     rcases eq_or_ne a₁ a₂ with rfl | ha

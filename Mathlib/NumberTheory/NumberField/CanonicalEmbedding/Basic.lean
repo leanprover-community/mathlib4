@@ -61,7 +61,7 @@ that `conj x_φ = x_(conj φ)` for all `∀ φ : K →+* ℂ`. -/
 theorem conj_apply {x : ((K →+* ℂ) → ℂ)} (φ : K →+* ℂ)
     (hx : x ∈ Submodule.span ℝ (Set.range (canonicalEmbedding K))) :
     conj (x φ) = x (ComplexEmbedding.conjugate φ) := by
-  refine Submodule.span_induction hx ?_ ?_ (fun _ _ hx hy => ?_) (fun a _ hx => ?_)
+  refine Submodule.span_induction hx _ _ (fun _ _ hx hy => _) (fun a _ hx => _)
   · rintro _ ⟨x, rfl⟩
     rw [apply_at, apply_at, ComplexEmbedding.conjugate_coe_eq]
   · rw [Pi.zero_apply, Pi.zero_apply, map_zero]
@@ -77,7 +77,7 @@ theorem norm_le_iff [NumberField K] (x : K) (r : ℝ) :
     ‖canonicalEmbedding K x‖ ≤ r ↔ ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r := by
   obtain hr | hr := lt_or_le r 0
   · obtain ⟨φ⟩ := (inferInstance : Nonempty (K →+* ℂ))
-    refine iff_of_false ?_ ?_
+    refine iff_of_false _ _
     · exact (hr.trans_le (norm_nonneg _)).not_le
     · exact fun h => hr.not_le (le_trans (norm_nonneg _) (h φ))
   · lift r to NNReal using hr
@@ -120,7 +120,7 @@ noncomputable def latticeBasis [NumberField K] :
     suffices M.det ≠ 0 by
       rw [← isUnit_iff_ne_zero, ← Basis.det_apply, ← is_basis_iff_det] at this
       refine basisOfLinearIndependentOfCardEqFinrank
-        ((linearIndependent_equiv e.symm).mpr this.1) ?_
+        ((linearIndependent_equiv e.symm).mpr this.1) _
       rw [← finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank, finrank_fintype_fun_eq_card,
         Embeddings.card]
   -- In order to prove that the determinant is nonzero, we show that it is equal to the
@@ -219,9 +219,9 @@ see `mixedEmbedding.latticeBasis`. -/
 theorem disjoint_span_commMap_ker [NumberField K] :
     Disjoint (Submodule.span ℝ (Set.range (canonicalEmbedding.latticeBasis K)))
       (LinearMap.ker (commMap K)) := by
-  refine LinearMap.disjoint_ker.mpr (fun x h_mem h_zero => ?_)
+  refine LinearMap.disjoint_ker.mpr (fun x h_mem h_zero => _)
   replace h_mem : x ∈ Submodule.span ℝ (Set.range (canonicalEmbedding K)) := by
-    refine (Submodule.span_mono ?_) h_mem
+    refine (Submodule.span_mono _) h_mem
     rintro _ ⟨i, rfl⟩
     exact ⟨integralBasis K i, (canonicalEmbedding.latticeBasis_apply K i).symm⟩
   ext1 φ
@@ -296,7 +296,7 @@ theorem norm_eq_norm (x : K) :
   rw [← Fintype.prod_subtype_mul_prod_subtype (fun w : InfinitePlace K ↦ IsReal w)]
   congr 1
   · exact Finset.prod_congr rfl (fun w _ ↦ by rw [mult, if_pos w.prop, pow_one])
-  · refine (Fintype.prod_equiv (Equiv.subtypeEquivRight ?_) _ _ (fun w ↦ ?_)).symm
+  · refine (Fintype.prod_equiv (Equiv.subtypeEquivRight _) _ _ (fun w ↦ _)).symm
     · exact fun _ ↦ not_isReal_iff_isComplex
     · rw [Equiv.subtypeEquivRight_apply_coe, mult, if_neg w.prop]
 
@@ -353,7 +353,7 @@ theorem fundamentalDomain_stdBasis :
 theorem volume_fundamentalDomain_stdBasis :
     volume (fundamentalDomain (stdBasis K)) = 1 := by
   rw [fundamentalDomain_stdBasis, volume_eq_prod, prod_prod, volume_pi, volume_pi, pi_pi, pi_pi,
-    Complex.volume_preserving_equiv_pi.measure_preimage ?_, volume_pi, pi_pi, Real.volume_Ico,
+    Complex.volume_preserving_equiv_pi.measure_preimage _, volume_pi, pi_pi, Real.volume_Ico,
     sub_zero, ENNReal.ofReal_one, Finset.prod_const_one, Finset.prod_const_one,
     Finset.prod_const_one, one_mul]
   exact MeasurableSet.pi Set.countable_univ (fun _ _ => measurableSet_Ico)
@@ -362,8 +362,8 @@ theorem volume_fundamentalDomain_stdBasis :
 the unique corresponding embedding `w.embedding`, and the pair `⟨w, 0⟩` (resp. `⟨w, 1⟩`) for a
 complex infinite place `w` to `w.embedding` (resp. `conjugate w.embedding`). -/
 def indexEquiv : (index K) ≃ (K →+* ℂ) := by
-  refine Equiv.ofBijective (fun c => ?_)
-    ((Fintype.bijective_iff_surjective_and_card _).mpr ⟨?_, ?_⟩)
+  refine Equiv.ofBijective (fun c => _)
+    ((Fintype.bijective_iff_surjective_and_card _).mpr ⟨_, _⟩)
   · cases c with
     | inl w => exact w.val.embedding
     | inr wj => rcases wj with ⟨w, j⟩
@@ -408,7 +408,7 @@ theorem det_matrixToStdBasis :
       rw [matrixToStdBasis, det_fromBlocks_zero₂₁, det_diagonal, Finset.prod_const_one, one_mul,
           det_reindex_self, det_blockDiagonal]
   _ = ∏ _k : { w : InfinitePlace K // IsComplex w }, (2⁻¹ * Complex.I) := by
-      refine Finset.prod_congr (Eq.refl _) (fun _ _ => ?_)
+      refine Finset.prod_congr (Eq.refl _) (fun _ _ => _)
       field_simp; ring
   _ = (2⁻¹ * Complex.I) ^ Fintype.card {w : InfinitePlace K // IsComplex w} := by
       rw [Finset.prod_const, Fintype.card]
@@ -471,7 +471,7 @@ def latticeBasis :
       (canonicalEmbedding.latticeBasis K).linearIndependent)
       (disjoint_span_commMap_ker K)
     -- and it's a basis since it has the right cardinality
-    refine basisOfLinearIndependentOfCardEqFinrank this ?_
+    refine basisOfLinearIndependentOfCardEqFinrank this _
     rw [← finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank, finrank_prod, finrank_pi,
       finrank_pi_fintype, Complex.finrank_real_complex, Finset.sum_const, Finset.card_univ,
       ← NrRealPlaces, ← NrComplexPlaces, ← card_real_embeddings, Algebra.id.smul_eq_mul, mul_comm,
@@ -499,7 +499,7 @@ theorem mem_rat_span_latticeBasis (x : K) :
     mixedEmbedding K x ∈ Submodule.span ℚ (Set.range (latticeBasis K)) := by
   rw [← Basis.sum_repr (integralBasis K) x, map_sum]
   simp_rw [map_rat_smul]
-  refine Submodule.sum_smul_mem _ _ (fun i _ ↦ Submodule.subset_span ?_)
+  refine Submodule.sum_smul_mem _ _ (fun i _ ↦ Submodule.subset_span _)
   rw [← latticeBasis_apply]
   exact Set.mem_range_self i
 
@@ -511,7 +511,7 @@ theorem latticeBasis_repr_apply (x : K) (i : ChooseBasisIndex ℤ (𝓞 K)) :
     (fun x ↦ mem_rat_span_latticeBasis K x)
   suffices ((latticeBasis K).restrictScalars ℚ).repr.toLinearMap ∘ₗ f =
     (integralBasis K).repr.toLinearMap from DFunLike.congr_fun (LinearMap.congr_fun this x) i
-  refine Basis.ext (integralBasis K) (fun i ↦ ?_)
+  refine Basis.ext (integralBasis K) (fun i ↦ _)
   have : f (integralBasis K i) = ((latticeBasis K).restrictScalars ℚ) i := by
     apply Subtype.val_injective
     rw [LinearMap.codRestrict_apply, AlgHom.toLinearMap_apply, Basis.restrictScalars_apply,
@@ -546,10 +546,10 @@ ideal `I`. -/
 def fractionalIdealLatticeBasis :
     Basis (ChooseBasisIndex ℤ I) ℝ (E K) := by
   let e : (ChooseBasisIndex ℤ (𝓞 K)) ≃ (ChooseBasisIndex ℤ I) := by
-    refine Fintype.equivOfCardEq ?_
+    refine Fintype.equivOfCardEq _
     rw [← finrank_eq_card_chooseBasisIndex, ← finrank_eq_card_chooseBasisIndex,
       fractionalIdeal_rank]
-  refine Basis.reindex ?_ e
+  refine Basis.reindex _ e
   suffices IsUnit ((latticeBasis K).det ((mixedEmbedding K) ∘ (basisOfFractionalIdeal K I) ∘ e)) by
     rw [← is_basis_iff_det] at this
     exact Basis.mk this.1 (by rw [this.2])

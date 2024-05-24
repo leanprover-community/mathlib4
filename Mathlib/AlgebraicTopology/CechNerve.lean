@@ -204,7 +204,7 @@ def cechConerve : CosimplicialObject C where
   obj n := widePushout f.left (fun _ : Fin (n.len + 1) => f.right) fun _ => f.hom
   map {x y} g := by
     refine WidePushout.desc (WidePushout.head _)
-      (fun i => (@WidePushout.ι _ _ _ _ _ (fun _ => f.hom) ?_ (g.toOrderHom i))) (fun j => _)
+      (fun i => (@WidePushout.ι _ _ _ _ _ (fun _ => f.hom) _ (g.toOrderHom i))) (fun j => _)
     erw [← WidePushout.arrow_ι]
 #align category_theory.arrow.cech_conerve CategoryTheory.Arrow.cechConerve
 

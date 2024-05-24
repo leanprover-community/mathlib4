@@ -74,7 +74,7 @@ theorem equiv_punit_iff_unique :
     Nonempty (C ≌ Discrete PUnit.{w + 1}) ↔ Nonempty C ∧ ∀ x y : C, Nonempty <| Unique (x ⟶ y) := by
   constructor
   · rintro ⟨h⟩
-    refine ⟨⟨h.inverse.obj ⟨⟨⟩⟩⟩, fun x y => Nonempty.intro ?_⟩
+    refine ⟨⟨h.inverse.obj ⟨⟨⟩⟩⟩, fun x y => Nonempty.intro _⟩
     let f : x ⟶ y := by
       have hx : x ⟶ h.inverse.obj ⟨⟨⟩⟩ := by convert h.unit.app x
       have hy : h.inverse.obj ⟨⟨⟩⟩ ⟶ y := by convert h.unitInv.app y
@@ -95,7 +95,7 @@ theorem equiv_punit_iff_unique :
     refine
       Nonempty.intro
         (CategoryTheory.Equivalence.mk ((Functor.const _).obj ⟨⟨⟩⟩)
-          ((@Functor.const <| Discrete PUnit).obj p) ?_ (by apply Functor.punitExt))
+          ((@Functor.const <| Discrete PUnit).obj p) _ (by apply Functor.punitExt))
     exact
       NatIso.ofComponents fun _ =>
         { hom := default

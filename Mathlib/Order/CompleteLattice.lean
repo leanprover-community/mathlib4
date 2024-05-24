@@ -1605,7 +1605,7 @@ theorem sInf_image2 {f : β → γ → α} {s : Set β} {t : Set γ} :
 
 theorem iSup_ge_eq_iSup_nat_add (u : ℕ → α) (n : ℕ) : ⨆ i ≥ n, u i = ⨆ i, u (i + n) := by
   apply le_antisymm <;> simp only [iSup_le_iff]
-  · refine fun i hi => le_sSup ⟨i - n, ?_⟩
+  · refine fun i hi => le_sSup ⟨i - n, _⟩
     dsimp only
     rw [Nat.sub_add_cancel hi]
   · exact fun i => le_sSup ⟨i + n, iSup_pos (Nat.le_add_left _ _)⟩

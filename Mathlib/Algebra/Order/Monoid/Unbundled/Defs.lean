@@ -153,7 +153,7 @@ theorem act_rel_act_of_rel (m : M) {a b : N} (ab : r a b) : r (μ m a) (μ m b) 
 @[to_additive]
 theorem Group.covariant_iff_contravariant [Group N] :
     Covariant N N (· * ·) r ↔ Contravariant N N (· * ·) r := by
-  refine ⟨fun h a b c bc ↦ ?_, fun h a b c bc ↦ ?_⟩
+  refine ⟨fun h a b c bc ↦ _, fun h a b c bc ↦ _⟩
   · rw [← inv_mul_cancel_left a b, ← inv_mul_cancel_left a c]
     exact h a⁻¹ bc
   · rw [← inv_mul_cancel_left a b, ← inv_mul_cancel_left a c] at bc
@@ -169,7 +169,7 @@ instance (priority := 100) Group.covconv [Group N] [CovariantClass N N (· * ·)
 @[to_additive]
 theorem Group.covariant_swap_iff_contravariant_swap [Group N] :
     Covariant N N (swap (· * ·)) r ↔ Contravariant N N (swap (· * ·)) r := by
-  refine ⟨fun h a b c bc ↦ ?_, fun h a b c bc ↦ ?_⟩
+  refine ⟨fun h a b c bc ↦ _, fun h a b c bc ↦ _⟩
   · rw [← mul_inv_cancel_right b a, ← mul_inv_cancel_right c a]
     exact h a⁻¹ bc
   · rw [← mul_inv_cancel_right b a, ← mul_inv_cancel_right c a] at bc
@@ -291,7 +291,7 @@ theorem covariantClass_le_of_lt [PartialOrder N] [CovariantClass M N μ (· < ·
 
 theorem contravariant_le_iff_contravariant_lt_and_eq [PartialOrder N] :
     Contravariant M N μ (· ≤ ·) ↔ Contravariant M N μ (· < ·) ∧ Contravariant M N μ (· = ·) := by
-  refine ⟨fun h ↦ ⟨fun a b c bc ↦ ?_, fun a b c bc ↦ ?_⟩, fun h ↦ fun a b c bc ↦ ?_⟩
+  refine ⟨fun h ↦ ⟨fun a b c bc ↦ _, fun a b c bc ↦ _⟩, fun h ↦ fun a b c bc ↦ _⟩
   · exact (h a bc.le).lt_of_ne (by rintro rfl; exact lt_irrefl _ bc)
   · exact (h a bc.le).antisymm (h a bc.ge)
   · exact bc.lt_or_eq.elim (fun bc ↦ (h.1 a bc).le) (fun bc ↦ (h.2 a bc).le)

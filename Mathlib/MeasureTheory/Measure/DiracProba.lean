@@ -31,7 +31,7 @@ lemma CompletelyRegularSpace.exists_BCNN {X : Type*} [TopologicalSpace X] [Compl
   obtain ⟨g, g_cont, gx_zero, g_one_on_K⟩ :=
     CompletelyRegularSpace.completely_regular x K K_closed x_notin_K
   have g_bdd : ∀ x y, dist (Real.toNNReal (g x)) (Real.toNNReal (g y)) ≤ 1 := by
-    refine fun x y ↦ ((Real.lipschitzWith_toNNReal).dist_le_mul (g x) (g y)).trans ?_
+    refine fun x y ↦ ((Real.lipschitzWith_toNNReal).dist_le_mul (g x) (g y)).trans _
     simpa using Real.dist_le_of_mem_Icc_01 (g x).prop (g y).prop
   set g' := BoundedContinuousFunction.mkOfBound
       ⟨fun x ↦ Real.toNNReal (g x), continuous_real_toNNReal.comp g_cont.subtype_val⟩ 1 g_bdd
@@ -69,7 +69,7 @@ variable [TopologicalSpace X] [OpensMeasurableSpace X]
 /-- The assignment `x ↦ diracProba x` is continuous `X → ProbabilityMeasure X`. -/
 lemma continuous_diracProba : Continuous (fun (x : X) ↦ diracProba x) := by
   rw [continuous_iff_continuousAt]
-  apply fun x ↦ ProbabilityMeasure.tendsto_iff_forall_lintegral_tendsto.mpr fun f ↦ ?_
+  apply fun x ↦ ProbabilityMeasure.tendsto_iff_forall_lintegral_tendsto.mpr fun f ↦ _
   have f_mble : Measurable (fun X ↦ (f X : ℝ≥0∞)) :=
     measurable_coe_nnreal_ennreal_iff.mpr f.continuous.measurable
   simp only [diracProba, ProbabilityMeasure.coe_mk, lintegral_dirac' _ f_mble]
@@ -101,7 +101,7 @@ lemma not_tendsto_diracProba_of_not_tendsto [CompletelyRegularSpace X] {x : X} (
              lintegral_dirac' _ (measurable_coe_nnreal_ennreal_iff.mpr f.continuous.measurable)]
   apply not_tendsto_iff_exists_frequently_nmem.mpr
   refine ⟨Ioi 0, Ioi_mem_nhds (by simp only [ENNReal.coe_one, zero_lt_one]),
-          hU.mp (eventually_of_forall ?_)⟩
+          hU.mp (eventually_of_forall _)⟩
   intro x x_notin_U
   rw [f_vanishes_outside x
         (compl_subset_compl.mpr (show interior U ⊆ U from interior_subset) x_notin_U)]

@@ -220,8 +220,8 @@ theorem IsClosed.isGreatest_csSup {s : Set α} (hc : IsClosed s) (hs : s.Nonempt
 then it sends this supremum to the supremum of the image of `s`. -/
 theorem Monotone.map_csSup_of_continuousAt {f : α → β} {s : Set α} (Cf : ContinuousAt f (sSup s))
     (Mf : Monotone f) (ne : s.Nonempty) (H : BddAbove s) : f (sSup s) = sSup (f '' s) := by
-  refine ((isLUB_csSup (ne.image f) (Mf.map_bddAbove H)).unique ?_).symm
-  refine (isLUB_csSup ne H).isLUB_of_tendsto (fun x _ y _ xy => Mf xy) ne ?_
+  refine ((isLUB_csSup (ne.image f) (Mf.map_bddAbove H)).unique _).symm
+  refine (isLUB_csSup ne H).isLUB_of_tendsto (fun x _ y _ xy => Mf xy) ne _
   exact Cf.mono_left inf_le_left
 #align monotone.map_cSup_of_continuous_at Monotone.map_csSup_of_continuousAt
 
@@ -283,12 +283,12 @@ theorem Monotone.tendsto_nhdsWithin_Iio {α β : Type*} [LinearOrder α] [Topolo
     [OrderTopology α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
     {f : α → β} (Mf : Monotone f) (x : α) : Tendsto f (𝓝[<] x) (𝓝 (sSup (f '' Iio x))) := by
   rcases eq_empty_or_nonempty (Iio x) with (h | h); · simp [h]
-  refine tendsto_order.2 ⟨fun l hl => ?_, fun m hm => ?_⟩
+  refine tendsto_order.2 ⟨fun l hl => _, fun m hm => _⟩
   · obtain ⟨z, zx, lz⟩ : ∃ a : α, a < x ∧ l < f a := by
       simpa only [mem_image, exists_prop, exists_exists_and_eq_and] using
         exists_lt_of_lt_csSup (h.image _) hl
     exact mem_of_superset (Ioo_mem_nhdsWithin_Iio' zx) fun y hy => lz.trans_le (Mf hy.1.le)
-  · refine mem_of_superset self_mem_nhdsWithin fun _ hy => lt_of_le_of_lt ?_ hm
+  · refine mem_of_superset self_mem_nhdsWithin fun _ hy => lt_of_le_of_lt _ hm
     exact le_csSup (Mf.map_bddAbove bddAbove_Iio) (mem_image_of_mem _ hy)
 #align monotone.tendsto_nhds_within_Iio Monotone.tendsto_nhdsWithin_Iio
 

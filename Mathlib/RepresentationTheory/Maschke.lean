@@ -103,7 +103,7 @@ lemma sumOfConjugates_apply (v : W) : π.sumOfConjugates G v = ∑ g : G, π.con
 def sumOfConjugatesEquivariant : W →ₗ[MonoidAlgebra k G] V :=
   MonoidAlgebra.equivariantOfLinearOfComm (π.sumOfConjugates G) fun g v => by
     simp only [sumOfConjugates_apply, Finset.smul_sum, conjugate_apply]
-    refine Fintype.sum_bijective (· * g) (Group.mulRight_bijective g) _ _ fun i ↦ ?_
+    refine Fintype.sum_bijective (· * g) (Group.mulRight_bijective g) _ _ fun i ↦ _
     simp only [smul_smul, single_mul_single, mul_inv_rev, mul_inv_cancel_left, one_mul]
 #align linear_map.sum_of_conjugates_equivariant LinearMap.sumOfConjugatesEquivariant
 
@@ -157,7 +157,7 @@ theorem exists_leftInverse_of_injective (f : V →ₗ[MonoidAlgebra k G] W)
   have := IsScalarTower.of_compHom k A V
   obtain ⟨φ, hφ⟩ := (f.restrictScalars k).exists_leftInverse_of_injective <| by
     simp only [hf, Submodule.restrictScalars_bot, LinearMap.ker_restrictScalars]
-  refine ⟨φ.equivariantProjection G, DFunLike.ext _ _ ?_⟩
+  refine ⟨φ.equivariantProjection G, DFunLike.ext _ _ _⟩
   exact φ.equivariantProjection_condition G _ <| DFunLike.congr_fun hφ
 #align monoid_algebra.exists_left_inverse_of_injective MonoidAlgebra.exists_leftInverse_of_injective
 

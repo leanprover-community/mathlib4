@@ -62,7 +62,7 @@ protected lemma Connected.nonempty {H : G.Subgraph} (h : H.Connected) : H.verts.
   rw [H.connected_iff] at h; exact h.2
 
 theorem singletonSubgraph_connected {v : V} : (G.singletonSubgraph v).Connected := by
-  refine ⟨⟨?_⟩⟩
+  refine ⟨⟨_⟩⟩
   rintro ⟨a, ha⟩ ⟨b, hb⟩
   simp only [singletonSubgraph_verts, Set.mem_singleton_iff] at ha hb
   subst_vars
@@ -71,7 +71,7 @@ theorem singletonSubgraph_connected {v : V} : (G.singletonSubgraph v).Connected 
 
 @[simp]
 theorem subgraphOfAdj_connected {v w : V} (hvw : G.Adj v w) : (G.subgraphOfAdj hvw).Connected := by
-  refine ⟨⟨?_⟩⟩
+  refine ⟨⟨_⟩⟩
   rintro ⟨a, ha⟩ ⟨b, hb⟩
   simp only [subgraphOfAdj_verts, Set.mem_insert_iff, Set.mem_singleton_iff] at ha hb
   obtain rfl | rfl := ha <;> obtain rfl | rfl := hb <;>
@@ -87,7 +87,7 @@ lemma top_induce_pair_connected_of_adj {u v : V} (huv : G.Adj u v) :
 protected lemma Connected.mono {H H' : G.Subgraph} (hle : H ≤ H') (hv : H.verts = H'.verts)
     (h : H.Connected) : H'.Connected := by
   rw [← Subgraph.copy_eq H' H.verts hv H'.Adj rfl]
-  refine ⟨h.coe.mono ?_⟩
+  refine ⟨h.coe.mono _⟩
   rintro ⟨v, hv⟩ ⟨w, hw⟩ hvw
   exact hle.2 hvw
 
@@ -119,7 +119,7 @@ lemma induce_union_connected {H : G.Subgraph} {s t : Set V}
     (sconn : (H.induce s).Connected) (tconn : (H.induce t).Connected)
     (sintert : (s ⊓ t).Nonempty) :
     (H.induce (s ∪ t)).Connected := by
-  refine (sconn.sup tconn sintert).mono ?_ ?_
+  refine (sconn.sup tconn sintert).mono _ _
   · apply le_induce_union
   · simp
 
@@ -127,7 +127,7 @@ lemma Connected.adj_union {H K : G.Subgraph}
     (Hconn : H.Connected) (Kconn : K.Connected) {u v : V} (uH : u ∈ H.verts) (vK : v ∈ K.verts)
     (huv : G.Adj u v) :
     ((⊤ : G.Subgraph).induce {u, v} ⊔ H ⊔ K).Connected := by
-  refine ((top_induce_pair_connected_of_adj huv).sup Hconn ?_).sup Kconn ?_
+  refine ((top_induce_pair_connected_of_adj huv).sup Hconn _).sup Kconn _
   · exact ⟨u, by simp [uH]⟩
   · exact ⟨v, by simp [vK]⟩
 
@@ -135,7 +135,7 @@ lemma preconnected_iff_forall_exists_walk_subgraph (H : G.Subgraph) :
     H.Preconnected ↔ ∀ {u v}, u ∈ H.verts → v ∈ H.verts → ∃ p : G.Walk u v, p.toSubgraph ≤ H := by
   constructor
   · intro hc u v hu hv
-    refine (hc ⟨_, hu⟩ ⟨_, hv⟩).elim fun p => ?_
+    refine (hc ⟨_, hu⟩ ⟨_, hv⟩).elim fun p => _
     exists p.map (Subgraph.hom _)
     simp [coeSubgraph_le]
   · intro hw
@@ -199,7 +199,7 @@ lemma induce_connected_of_patches {s : Set V} (u : V) (hu : u ∈ s)
     (patches : ∀ {v}, v ∈ s → ∃ s' ⊆ s, ∃ (hu' : u ∈ s') (hv' : v ∈ s'),
                   (G.induce s').Reachable ⟨u, hu'⟩ ⟨v, hv'⟩) : (G.induce s).Connected := by
   rw [connected_iff_exists_forall_reachable]
-  refine ⟨⟨u, hu⟩, ?_⟩
+  refine ⟨⟨u, hu⟩, _⟩
   rintro ⟨v, hv⟩
   obtain ⟨sv, svs, hu', hv', uv⟩ := patches hv
   exact uv.map (induceHomOfLE _ svs).toHom
@@ -221,7 +221,7 @@ lemma extend_finset_to_connected (Gpc : G.Preconnected) {t : Finset V} (tn : t.N
     ∃ (t' : Finset V), t ⊆ t' ∧ (G.induce (t' : Set V)).Connected := by
   classical
   obtain ⟨u, ut⟩ := tn
-  refine ⟨t.biUnion (fun v => (Gpc u v).some.support.toFinset), fun v vt => ?_, ?_⟩
+  refine ⟨t.biUnion (fun v => (Gpc u v).some.support.toFinset), fun v vt => _, _⟩
   · simp only [Finset.mem_biUnion, List.mem_toFinset, exists_prop]
     exact ⟨v, vt, Walk.end_mem_support _⟩
   · apply G.induce_connected_of_patches u
@@ -231,7 +231,7 @@ lemma extend_finset_to_connected (Gpc : G.Preconnected) {t : Finset V} (tn : t.N
     intros v hv
     simp only [Finset.mem_coe, Finset.mem_biUnion, List.mem_toFinset, exists_prop] at hv
     obtain ⟨w, wt, hw⟩ := hv
-    refine ⟨{x | x ∈ (Gpc u w).some.support}, ?_, ?_⟩
+    refine ⟨{x | x ∈ (Gpc u w).some.support}, _, _⟩
     · simp only [Finset.coe_biUnion, Finset.mem_coe, List.coe_toFinset]
       exact fun x xw => Set.mem_iUnion₂.mpr ⟨w,wt,xw⟩
     · simp only [Set.mem_setOf_eq, Walk.start_mem_support, exists_true_left]

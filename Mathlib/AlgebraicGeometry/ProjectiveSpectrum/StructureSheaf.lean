@@ -121,7 +121,7 @@ theorem addMem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a b : ∀ x :
           (mul_mem_graded sa_mem rb_mem)⟩,
       ⟨sa * sb, mul_mem_graded sa_mem sb_mem⟩, fun y ↦
         y.1.asHomogeneousIdeal.toIdeal.primeCompl.mul_mem (hwa ⟨y.1, y.2.1⟩) (hwb ⟨y.1, y.2.2⟩),
-      fun y => ?_⟩
+      fun y => _⟩
   simp only at wa wb
   simp only [Pi.add_apply, wa ⟨y.1, y.2.1⟩, wb ⟨y.1, y.2.2⟩, ext_iff_val,
     add_val, val_mk'', add_mk, add_comm (sa * rb)]
@@ -131,7 +131,7 @@ theorem addMem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a b : ∀ x :
 theorem negMem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a : ∀ x : U.unop, at x.1)
     (ha : (isLocallyFraction 𝒜).pred a) : (isLocallyFraction 𝒜).pred (-a) := fun x => by
   rcases ha x with ⟨V, m, i, j, ⟨r, r_mem⟩, ⟨s, s_mem⟩, nin, hy⟩
-  refine ⟨V, m, i, j, ⟨-r, Submodule.neg_mem _ r_mem⟩, ⟨s, s_mem⟩, nin, fun y => ?_⟩
+  refine ⟨V, m, i, j, ⟨-r, Submodule.neg_mem _ r_mem⟩, ⟨s, s_mem⟩, nin, fun y => _⟩
   simp only [ext_iff_val, val_mk''] at hy
   simp only [Pi.neg_apply, ext_iff_val, neg_val, hy, val_mk'', neg_mk]
 #align algebraic_geometry.projective_spectrum.structure_sheaf.section_subring.neg_mem' AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.SectionSubring.negMem'
@@ -146,7 +146,7 @@ theorem mulMem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a b : ∀ x :
       ⟨ra * rb, SetLike.mul_mem_graded ra_mem rb_mem⟩,
       ⟨sa * sb, SetLike.mul_mem_graded sa_mem sb_mem⟩, fun y =>
       y.1.asHomogeneousIdeal.toIdeal.primeCompl.mul_mem (hwa ⟨y.1, y.2.1⟩) (hwb ⟨y.1, y.2.2⟩),
-      fun y ↦ ?_⟩
+      fun y ↦ _⟩
   simp only [Pi.mul_apply, wa ⟨y.1, y.2.1⟩, wb ⟨y.1, y.2.2⟩, ext_iff_val, mul_val, val_mk'', mk_mul]
   rfl
 #align algebraic_geometry.projective_spectrum.structure_sheaf.section_subring.mul_mem' AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.SectionSubring.mulMem'
@@ -344,7 +344,7 @@ lemma homogeneousLocalizationToStalk_stalkToFiberRingHom (x z) :
   obtain ⟨V, hxV, i, n, a, b, h, e⟩ := s.2 ⟨x, hxU⟩
   simp only at e
   rw [stalkToFiberRingHom_germ', homogeneousLocalizationToStalk, e ⟨x, hxV⟩, Quotient.liftOn'_mk'']
-  refine Presheaf.germ_ext _ V hxV (by exact homOfLE <| fun _ h' ↦ h ⟨_, h'⟩) i ?_
+  refine Presheaf.germ_ext _ V hxV (by exact homOfLE <| fun _ h' ↦ h ⟨_, h'⟩) i _
   apply Subtype.ext
   ext ⟨t, ht⟩
   apply HomogeneousLocalization.val_injective

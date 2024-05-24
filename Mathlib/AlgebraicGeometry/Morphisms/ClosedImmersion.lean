@@ -59,7 +59,7 @@ instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsClosedImmersion f where
 instance : MorphismProperty.IsMultiplicative @IsClosedImmersion where
   id_mem _ := inferInstance
   comp_mem {X Y Z} f g hf hg := by
-    refine ⟨hg.base_closed.comp hf.base_closed, fun x ↦ ?_⟩
+    refine ⟨hg.base_closed.comp hf.base_closed, fun x ↦ _⟩
     erw [PresheafedSpace.stalkMap.comp]
     exact (hf.surj_on_stalks x).comp (hg.surj_on_stalks (f.1.1 x))
 

@@ -38,7 +38,7 @@ theorem card_embedding_eq {α β : Type*} [Fintype α] [Fintype β] [emb : Finty
     ‖α ↪ β‖ = ‖β‖.descFactorial ‖α‖ := by
   rw [Subsingleton.elim emb Embedding.fintype]
   refine Fintype.induction_empty_option (P := fun t ↦ ‖t ↪ β‖ = ‖β‖.descFactorial ‖t‖)
-        (fun α₁ α₂ h₂ e ih ↦ ?_) (?_) (fun γ h ih ↦ ?_) α <;> dsimp only <;> clear! α
+        (fun α₁ α₂ h₂ e ih ↦ _) (_) (fun γ h ih ↦ _) α <;> dsimp only <;> clear! α
   · letI := Fintype.ofEquiv _ e.symm
     rw [← card_congr (Equiv.embeddingCongr e (Equiv.refl β)), ih, card_congr e]
   · rw [card_pempty, Nat.descFactorial_zero, card_eq_one_iff]

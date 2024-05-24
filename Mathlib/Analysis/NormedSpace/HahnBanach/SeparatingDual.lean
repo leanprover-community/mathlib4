@@ -40,7 +40,7 @@ instance {E : Type*} [TopologicalSpace E] [AddCommGroup E] [TopologicalAddGroup 
 instance {E 𝕜 : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] : SeparatingDual 𝕜 E :=
   ⟨fun x hx ↦ by
     rcases exists_dual_vector 𝕜 x hx with ⟨f, -, hf⟩
-    refine ⟨f, ?_⟩
+    refine ⟨f, _⟩
     simpa [hf] using hx⟩
 
 namespace SeparatingDual
@@ -60,12 +60,12 @@ theorem exists_separating_of_ne {x y : V} (h : x ≠ y) :
   exact ⟨f, by simpa [sub_ne_zero] using hf⟩
 
 protected theorem t1Space [T1Space R] : T1Space V := by
-  apply t1Space_iff_exists_open.2 (fun x y hxy ↦ ?_)
+  apply t1Space_iff_exists_open.2 (fun x y hxy ↦ _)
   rcases exists_separating_of_ne (R := R) hxy with ⟨f, hf⟩
   exact ⟨f ⁻¹' {f y}ᶜ, isOpen_compl_singleton.preimage f.continuous, hf, by simp⟩
 
 protected theorem t2Space [T2Space R] : T2Space V := by
-  apply (t2Space_iff _).2 (fun {x} {y} hxy ↦ ?_)
+  apply (t2Space_iff _).2 (fun {x} {y} hxy ↦ _)
   rcases exists_separating_of_ne (R := R) hxy with ⟨f, hf⟩
   exact separated_by_continuous f.continuous hf
 
@@ -80,7 +80,7 @@ variable {R V : Type*} [Field R] [AddCommGroup V] [TopologicalSpace R] [Topologi
 theorem _root_.separatingDual_iff_injective : SeparatingDual R V ↔
     Function.Injective (ContinuousLinearMap.coeLM (R := R) R (M := V) (N₃ := R)).flip := by
   simp_rw [separatingDual_def, Ne, injective_iff_map_eq_zero]
-  congrm ∀ v, ?_
+  congrm ∀ v, _
   rw [not_imp_comm, LinearMap.ext_iff]
   push_neg; rfl
 
@@ -154,13 +154,13 @@ variable (𝕜 E F : Type*) [NontriviallyNormedField 𝕜] [NormedAddCommGroup E
 complete. -/
 lemma completeSpace_of_completeSpace_continuousLinearMap [CompleteSpace (E →L[𝕜] F)] :
     CompleteSpace F := by
-  refine Metric.complete_of_cauchySeq_tendsto fun f hf => ?_
+  refine Metric.complete_of_cauchySeq_tendsto fun f hf => _
   obtain ⟨v, hv⟩ : ∃ (v : E), v ≠ 0 := exists_ne 0
   obtain ⟨φ, hφ⟩ : ∃ φ : E →L[𝕜] 𝕜, φ v = 1 := exists_eq_one hv
   let g : ℕ → (E →L[𝕜] F) := fun n ↦ ContinuousLinearMap.smulRightL 𝕜 E F φ (f n)
   have : CauchySeq g := (ContinuousLinearMap.smulRightL 𝕜 E F φ).lipschitz.cauchySeq_comp hf
   obtain ⟨a, ha⟩ : ∃ a, Tendsto g atTop (𝓝 a) := cauchy_iff_exists_le_nhds.mp this
-  refine ⟨a v, ?_⟩
+  refine ⟨a v, _⟩
   have : Tendsto (fun n ↦ g n v) atTop (𝓝 (a v)) := by
     have : Continuous (fun (i : E →L[𝕜] F) ↦ i v) := by continuity
     exact (this.tendsto _).comp ha
@@ -180,17 +180,17 @@ element, then `F` is complete. -/
 lemma completeSpace_of_completeSpace_continuousMultilinearMap
     [CompleteSpace (ContinuousMultilinearMap 𝕜 M F)]
     {m : ∀ i, M i} (hm : ∀ i, m i ≠ 0) : CompleteSpace F := by
-  refine Metric.complete_of_cauchySeq_tendsto fun f hf => ?_
+  refine Metric.complete_of_cauchySeq_tendsto fun f hf => _
   have : ∀ i, ∃ φ : M i →L[𝕜] 𝕜, φ (m i) = 1 := fun i ↦ exists_eq_one (hm i)
   choose φ hφ using this
   let g : ℕ → (ContinuousMultilinearMap 𝕜 M F) := fun n ↦
     compContinuousLinearMapL φ
     (ContinuousMultilinearMap.smulRightL 𝕜 _ F ((ContinuousMultilinearMap.mkPiAlgebra 𝕜 ι 𝕜)) (f n))
   have : CauchySeq g := by
-    refine (ContinuousLinearMap.lipschitz _).cauchySeq_comp ?_
+    refine (ContinuousLinearMap.lipschitz _).cauchySeq_comp _
     exact (ContinuousLinearMap.lipschitz _).cauchySeq_comp hf
   obtain ⟨a, ha⟩ : ∃ a, Tendsto g atTop (𝓝 a) := cauchy_iff_exists_le_nhds.mp this
-  refine ⟨a m, ?_⟩
+  refine ⟨a m, _⟩
   have : Tendsto (fun n ↦ g n m) atTop (𝓝 (a m)) := ((continuous_eval_const _).tendsto _).comp ha
   simpa [g, hφ]
 

@@ -95,7 +95,7 @@ set_option autoImplicit true
 
 theorem mem_maximals_iff : x ∈ maximals r s ↔ x ∈ s ∧ ∀ ⦃y⦄, y ∈ s → r x y → x = y := by
   simp only [maximals, Set.mem_sep_iff, and_congr_right_iff]
-  refine fun _ ↦ ⟨fun h y hys hxy ↦ antisymm hxy (h hys hxy), fun h y hys hxy ↦ ?_⟩
+  refine fun _ ↦ ⟨fun h y hys hxy ↦ antisymm hxy (h hys hxy), fun h y hys hxy ↦ _⟩
   convert hxy <;> rw [h hys hxy]
 
 theorem mem_maximals_setOf_iff : x ∈ maximals r (setOf P) ↔ P x ∧ ∀ ⦃y⦄, P y → r x y → x = y :=
@@ -120,8 +120,8 @@ theorem mem_maximals_iff_forall_lt_not_mem' (rlt : α → α → Prop) [IsNonstr
 
 theorem minimals_eq_minimals_of_subset_of_forall [IsTrans α r] (hts : t ⊆ s)
     (h : ∀ x ∈ s, ∃ y ∈ t, r y x) : minimals r s = minimals r t := by
-  refine Set.ext fun a ↦ ⟨fun ⟨has, hmin⟩ ↦ ⟨?_,fun b hbt ↦ hmin (hts hbt)⟩,
-    fun ⟨hat, hmin⟩ ↦ ⟨hts hat, fun b hbs hba ↦ ?_⟩⟩
+  refine Set.ext fun a ↦ ⟨fun ⟨has, hmin⟩ ↦ ⟨_,fun b hbt ↦ hmin (hts hbt)⟩,
+    fun ⟨hat, hmin⟩ ↦ ⟨hts hat, fun b hbs hba ↦ _⟩⟩
   · obtain ⟨a', ha', haa'⟩ := h _ has
     rwa [antisymm (hmin (hts ha') haa') haa']
   obtain ⟨b', hb't, hb'b⟩ := h b hbs
@@ -254,7 +254,7 @@ theorem minimals_idem : minimals r (minimals r s) = minimals r s :=
 equal to `t`. -/
 theorem IsAntichain.max_maximals (ht : IsAntichain r t) (h : maximals r s ⊆ t)
     (hs : ∀ ⦃a⦄, a ∈ t → ∃ b ∈ maximals r s, r b a) : maximals r s = t := by
-  refine h.antisymm fun a ha => ?_
+  refine h.antisymm fun a ha => _
   obtain ⟨b, hb, hr⟩ := hs ha
   rwa [of_not_not fun hab => ht (h hb) ha (Ne.symm hab) hr]
 #align is_antichain.max_maximals IsAntichain.max_maximals
@@ -263,7 +263,7 @@ theorem IsAntichain.max_maximals (ht : IsAntichain r t) (h : maximals r s ⊆ t)
 equal to `t`. -/
 theorem IsAntichain.max_minimals (ht : IsAntichain r t) (h : minimals r s ⊆ t)
     (hs : ∀ ⦃a⦄, a ∈ t → ∃ b ∈ minimals r s, r a b) : minimals r s = t := by
-  refine h.antisymm fun a ha => ?_
+  refine h.antisymm fun a ha => _
   obtain ⟨b, hb, hr⟩ := hs ha
   rwa [of_not_not fun hab => ht ha (h hb) hab hr]
 #align is_antichain.max_minimals IsAntichain.max_minimals
@@ -321,7 +321,7 @@ theorem map_mem_maximals_iff (ha : a ∈ x) : f a ∈ maximals s (f '' x) ↔ a 
   map_mem_minimals_iff (fun _ _ h₁ h₂ ↦ by exact hf h₂ h₁) ha
 
 theorem image_minimals_of_rel_iff_rel : f '' minimals r x = minimals s (f '' x) := by
-  ext b; refine ⟨?_, fun h ↦ ?_⟩
+  ext b; refine ⟨_, fun h ↦ _⟩
   · rintro ⟨a, ha, rfl⟩; exact map_mem_minimals hf ha
   · obtain ⟨a, ha, rfl⟩ := h.1; exact ⟨a, (map_mem_minimals_iff hf ha).mp h, rfl⟩
 

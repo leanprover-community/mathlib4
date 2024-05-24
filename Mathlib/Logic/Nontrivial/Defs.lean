@@ -112,7 +112,7 @@ protected theorem Function.Surjective.nontrivial [Nontrivial β] {f : α → β}
   rcases hf x with ⟨x', hx'⟩
   rcases hf y with ⟨y', hy'⟩
   have : x' ≠ y' := by
-    refine fun H ↦ h ?_
+    refine fun H ↦ h _
     rw [← hx', ← hy', H]
   exact ⟨⟨x', y', this⟩⟩
 #align function.surjective.nontrivial Function.Surjective.nontrivial

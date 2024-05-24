@@ -104,7 +104,7 @@ theorem LinearMap.hasBasis_weakBilin (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
   have h := @Metric.nhds_basis_ball 𝕜 _ 0
   have h' := Filter.hasBasis_pi fun _ : F => h
   have h'' := Filter.HasBasis.comap (fun x y => B x y) h'
-  refine h''.to_hasBasis ?_ ?_
+  refine h''.to_hasBasis _ _
   · rintro (U : Set F × (F → ℝ)) hU
     cases' hU with hU₁ hU₂
     simp only [_root_.id]
@@ -112,13 +112,13 @@ theorem LinearMap.hasBasis_weakBilin (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
     by_cases hU₃ : U.fst.Nonempty
     · have hU₃' : U'.Nonempty := hU₁.toFinset_nonempty.mpr hU₃
       refine ⟨(U'.sup p).ball 0 <| U'.inf' hU₃' U.snd, p.basisSets_mem _ <|
-        (Finset.lt_inf'_iff _).2 fun y hy => hU₂ y <| hU₁.mem_toFinset.mp hy, fun x hx y hy => ?_⟩
+        (Finset.lt_inf'_iff _).2 fun y hy => hU₂ y <| hU₁.mem_toFinset.mp hy, fun x hx y hy => _⟩
       simp only [Set.mem_preimage, Set.mem_pi, mem_ball_zero_iff]
       rw [Seminorm.mem_ball_zero] at hx
       rw [← LinearMap.toSeminormFamily_apply]
       have hyU' : y ∈ U' := (Set.Finite.mem_toFinset hU₁).mpr hy
       have hp : p y ≤ U'.sup p := Finset.le_sup hyU'
-      refine lt_of_le_of_lt (hp x) (lt_of_lt_of_le hx ?_)
+      refine lt_of_le_of_lt (hp x) (lt_of_lt_of_le hx _)
       exact Finset.inf'_le _ hyU'
     rw [Set.not_nonempty_iff_eq_empty.mp hU₃]
     simp only [Set.empty_pi, Set.preimage_univ, Set.subset_univ, and_true_iff]
@@ -127,10 +127,10 @@ theorem LinearMap.hasBasis_weakBilin (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
   rw [SeminormFamily.basisSets_iff] at hU
   rcases hU with ⟨s, r, hr, hU⟩
   rw [hU]
-  refine ⟨(s, fun _ => r), ⟨by simp only [s.finite_toSet], fun y _ => hr⟩, fun x hx => ?_⟩
+  refine ⟨(s, fun _ => r), ⟨by simp only [s.finite_toSet], fun y _ => hr⟩, fun x hx => _⟩
   simp only [Set.mem_preimage, Set.mem_pi, Finset.mem_coe, mem_ball_zero_iff] at hx
   simp only [_root_.id, Seminorm.mem_ball, sub_zero]
-  refine Seminorm.finset_sup_apply_lt hr fun y hy => ?_
+  refine Seminorm.finset_sup_apply_lt hr fun y hy => _
   rw [LinearMap.toSeminormFamily_apply]
   exact hx y hy
 #align linear_map.has_basis_weak_bilin LinearMap.hasBasis_weakBilin

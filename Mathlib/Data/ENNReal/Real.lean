@@ -113,7 +113,7 @@ theorem toNNReal_mono (hb : b ≠ ∞) (h : a ≤ b) : a.toNNReal ≤ b.toNNReal
 triangle-like inequalities from `ENNReal`s to `Real`s. -/
 theorem toReal_le_add' (hle : a ≤ b + c) (hb : b = ∞ → a = ∞) (hc : c = ∞ → a = ∞) :
     a.toReal ≤ b.toReal + c.toReal := by
-  refine le_trans (toReal_mono' hle ?_) toReal_add_le
+  refine le_trans (toReal_mono' hle _) toReal_add_le
   simpa only [add_eq_top, or_imp] using And.intro hb hc
 
 -- Porting note (#10756): new lemma
@@ -296,7 +296,7 @@ theorem ofReal_sub (p : ℝ) {q : ℝ} (hq : 0 ≤ q) :
     ENNReal.ofReal (p - q) = ENNReal.ofReal p - ENNReal.ofReal q := by
   obtain h | h := le_total p q
   · rw [ofReal_of_nonpos (sub_nonpos_of_le h), tsub_eq_zero_of_le (ofReal_le_ofReal h)]
-  refine ENNReal.eq_sub_of_add_eq ofReal_ne_top ?_
+  refine ENNReal.eq_sub_of_add_eq ofReal_ne_top _
   rw [← ofReal_add (sub_nonneg_of_le h) hq, sub_add_cancel]
 #align ennreal.of_real_sub ENNReal.ofReal_sub
 
@@ -580,7 +580,7 @@ theorem iSup_sub : (⨆ i, f i) - a = ⨆ i, f i - a :=
 #align ennreal.supr_sub ENNReal.iSup_sub
 
 theorem sub_iInf : (a - ⨅ i, f i) = ⨆ i, a - f i := by
-  refine eq_of_forall_ge_iff fun c => ?_
+  refine eq_of_forall_ge_iff fun c => _
   rw [tsub_le_iff_right, add_comm, iInf_add]
   simp [tsub_le_iff_right, sub_eq_add_neg, add_comm]
 #align ennreal.sub_infi ENNReal.sub_iInf
@@ -607,8 +607,8 @@ theorem iInf_sum {α : Type*} {f : ι → α → ℝ≥0∞} {s : Finset α} [No
   induction' s using Finset.cons_induction_on with a s ha ih
   · simp only [Finset.sum_empty, ciInf_const]
   · simp only [Finset.sum_cons, ← ih]
-    refine (iInf_add_iInf fun i j => ?_).symm
-    refine (h (Finset.cons a s ha) i j).imp fun k hk => ?_
+    refine (iInf_add_iInf fun i j => _).symm
+    refine (h (Finset.cons a s ha) i j).imp fun k hk => _
     rw [Finset.forall_mem_cons] at hk
     exact add_le_add hk.1.1 (Finset.sum_le_sum fun a ha => (hk.2 a ha).2)
 #align ennreal.infi_sum ENNReal.iInf_sum

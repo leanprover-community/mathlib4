@@ -187,7 +187,7 @@ lemma finrank_maxGenEigenspace (φ : Module.End K M) :
   use n
   apply Subtype.ext
   rw [ZeroMemClass.coe_zero]
-  refine .trans ?_ hx
+  refine .trans _ hx
   generalize_proofs h'
   clear hx
   induction n with

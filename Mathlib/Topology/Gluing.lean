@@ -210,7 +210,7 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
       show _ = Sigma.mk j y from ConcreteCategory.congr_hom (sigmaIsoSigma.{_, u} D.U).inv_hom_id _]
     change InvImage D.Rel (sigmaIsoSigma.{_, u} D.U).hom _ _
     rw [← (InvImage.equivalence _ _ D.rel_equiv).eqvGen_iff]
-    refine EqvGen.mono ?_ (D.eqvGen_of_π_eq h : _)
+    refine EqvGen.mono _ (D.eqvGen_of_π_eq h : _)
     rintro _ _ ⟨x⟩
     obtain ⟨⟨⟨i, j⟩, y⟩, rfl⟩ :=
       (ConcreteCategory.bijective_of_isIso (sigmaIsoSigma.{u, u} _).inv).2 x
@@ -297,7 +297,7 @@ theorem preimage_image_eq_image' (i j : D.J) (U : Set (𝖣.U i)) :
   show (fun x => ((forget TopCat).map _ ((forget TopCat).map _ x))) '' _ = _
   rw [← Set.image_image]
   -- Porting note: `congr 1` was here, instead of `congr_arg`, however, it did nothing.
-  refine congr_arg ?_ ?_
+  refine congr_arg _ _
   rw [← Set.eq_preimage_iff_image_eq, Set.preimage_preimage]
   · change _ = (D.t i j ≫ D.t j i ≫ _) ⁻¹' _
     rw [𝖣.t_inv_assoc]
@@ -354,7 +354,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.glue_data.mk_core TopCat.GlueData.MkCore
 
 theorem MkCore.t_inv (h : MkCore) (i j : h.J) (x : h.V j i) : h.t i j ((h.t j i) x) = x := by
-  have := h.cocycle j i j x ?_
+  have := h.cocycle j i j x _
   · rw [h.t_id] at this
     · convert Subtype.eq this
     rw [h.V_id]
@@ -371,7 +371,7 @@ def MkCore.t' (h : MkCore.{u}) (i j k : h.J) :
       pullback (h.V j k).inclusion (h.V j i).inclusion := by
   refine (pullbackIsoProdSubtype _ _).hom ≫ ⟨_, _⟩ ≫ (pullbackIsoProdSubtype _ _).inv
   · intro x
-    refine ⟨⟨⟨(h.t i j x.1.1).1, ?_⟩, h.t i j x.1.1⟩, rfl⟩
+    refine ⟨⟨⟨(h.t i j x.1.1).1, _⟩, h.t i j x.1.1⟩, rfl⟩
     rcases x with ⟨⟨⟨x, hx⟩, ⟨x', hx'⟩⟩, rfl : x = x'⟩
     exact h.t_inter _ ⟨x, hx⟩ hx'
   -- Porting note: was `continuity`, see https://github.com/leanprover-community/mathlib4/issues/5030
@@ -425,7 +425,7 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
     rw [Subtype.ext_iff]
     rw [and_self_iff]
     convert congr_arg Subtype.val (h.t_inv k i ⟨x, hx'⟩) using 3
-    refine Subtype.ext ?_
+    refine Subtype.ext _
     exact h.cocycle i j k ⟨x, hx⟩ hx'
   -- Porting note: was not necessary in mathlib3
   f_mono i j := (TopCat.mono_iff_injective _).mpr fun x y h => Subtype.ext h
@@ -443,8 +443,8 @@ def ofOpenSubsets : TopCat.GlueData.{u} :=
       V := fun i j => (Opens.map <| Opens.inclusion _).obj (U j)
       t := fun i j => ⟨fun x => ⟨⟨x.1.1, x.2⟩, x.1.2⟩, by
         -- Porting note: was `continuity`, see https://github.com/leanprover-community/mathlib4/issues/5030
-        refine Continuous.subtype_mk ?_ ?_
-        refine Continuous.subtype_mk ?_ ?_
+        refine Continuous.subtype_mk _ _
+        refine Continuous.subtype_mk _ _
         continuity⟩
       V_id := fun i => by
         ext
@@ -505,7 +505,7 @@ theorem fromOpenSubsetsGlue_isOpenMap : IsOpenMap (fromOpenSubsetsGlue U) := by
     --  porting note: `congr 1` did nothing, so I replaced it with `apply congr_arg`
     apply congr_arg
     exact Set.preimage_image_eq _ (fromOpenSubsetsGlue_injective U)
-  · refine ⟨Set.mem_image_of_mem _ hx, ?_⟩
+  · refine ⟨Set.mem_image_of_mem _ hx, _⟩
     -- Porting note: another `rw ↦ erw`
     -- See above.
     erw [ι_fromOpenSubsetsGlue_apply]

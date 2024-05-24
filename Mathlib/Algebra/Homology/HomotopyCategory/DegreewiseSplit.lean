@@ -219,7 +219,7 @@ lemma distinguished_iff_iso_trianglehOfDegreewiseSplit
       CochainComplex.mappingCone.trianglehRotateIsoTrianglehOfDegreewiseSplit φ⟩⟩
   · rintro ⟨S, σ, ⟨e⟩⟩
     rw [rotate_distinguished_triangle, rotate_distinguished_triangle]
-    refine isomorphic_distinguished _ ?_ _
+    refine isomorphic_distinguished _ _ _
       ((rotate _ ⋙ rotate _).mapIso e ≪≫
         CochainComplex.trianglehOfDegreewiseSplitRotateRotateIso S σ)
     exact ⟨_, _, _, ⟨Iso.refl _⟩⟩

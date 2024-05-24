@@ -75,24 +75,24 @@ def get? : Seq α → ℕ → Option α :=
 #align stream.seq.nth Stream'.Seq.get?
 
 @[simp]
-theorem get?_mk (f hf) : @get? α ⟨f, hf⟩ = f :=
+theorem get_mk (f hf) : @get? α ⟨f, hf⟩ = f :=
   rfl
-#align stream.seq.nth_mk Stream'.Seq.get?_mk
+#align stream.seq.nth_mk Stream'.Seq.get_mk
 
 @[simp]
-theorem get?_nil (n : ℕ) : (@nil α).get? n = none :=
+theorem get_nil (n : ℕ) : (@nil α).get? n = none :=
   rfl
-#align stream.seq.nth_nil Stream'.Seq.get?_nil
+#align stream.seq.nth_nil Stream'.Seq.get_nil
 
 @[simp]
-theorem get?_cons_zero (a : α) (s : Seq α) : (cons a s).get? 0 = some a :=
+theorem get_cons_zero (a : α) (s : Seq α) : (cons a s).get? 0 = some a :=
   rfl
-#align stream.seq.nth_cons_zero Stream'.Seq.get?_cons_zero
+#align stream.seq.nth_cons_zero Stream'.Seq.get_cons_zero
 
 @[simp]
-theorem get?_cons_succ (a : α) (s : Seq α) (n : ℕ) : (cons a s).get? (n + 1) = s.get? n :=
+theorem get_cons_succ (a : α) (s : Seq α) (n : ℕ) : (cons a s).get? (n + 1) = s.get? n :=
   rfl
-#align stream.seq.nth_cons_succ Stream'.Seq.get?_cons_succ
+#align stream.seq.nth_cons_succ Stream'.Seq.get_cons_succ
 
 @[ext]
 protected theorem ext {s t : Seq α} (h : ∀ n : ℕ, s.get? n = t.get? n) : s = t :=
@@ -100,8 +100,8 @@ protected theorem ext {s t : Seq α} (h : ∀ n : ℕ, s.get? n = t.get? n) : s 
 #align stream.seq.ext Stream'.Seq.ext
 
 theorem cons_injective2 : Function.Injective2 (cons : α → Seq α → Seq α) := fun x y s t h =>
-  ⟨by rw [← Option.some_inj, ← get?_cons_zero, h, get?_cons_zero],
-    Seq.ext fun n => by simp_rw [← get?_cons_succ x s n, h, get?_cons_succ]⟩
+  ⟨by rw [← Option.some_inj, ← get_cons_zero, h, get_cons_zero],
+    Seq.ext fun n => by simp_rw [← get_cons_succ x s n, h, get_cons_succ]⟩
 #align stream.seq.cons_injective2 Stream'.Seq.cons_injective2
 
 theorem cons_left_injective (s : Seq α) : Function.Injective fun x => cons x s :=
@@ -270,9 +270,9 @@ theorem tail_cons (a : α) (s) : tail (cons a s) = s := by
 #align stream.seq.tail_cons Stream'.Seq.tail_cons
 
 @[simp]
-theorem get?_tail (s : Seq α) (n) : get? (tail s) n = get? s (n + 1) :=
+theorem get_tail (s : Seq α) (n) : get? (tail s) n = get? s (n + 1) :=
   rfl
-#align stream.seq.nth_tail Stream'.Seq.get?_tail
+#align stream.seq.nth_tail Stream'.Seq.get_tail
 
 /-- Recursion principle for sequences, compare with `List.recOn`. -/
 def recOn {C : Seq α → Sort v} (s : Seq α) (h1 : C nil) (h2 : ∀ x s, C (cons x s)) :
@@ -318,7 +318,7 @@ set_option linter.uppercaseLean3 false in
 /-- Corecursor for `Seq α` as a coinductive type. Iterates `f` to produce new elements
   of the sequence until `none` is obtained. -/
 def corec (f : β → Option (α × β)) (b : β) : Seq α := by
-  refine ⟨Stream'.corec' (Corec.f f) (some b), fun {n} h => ?_⟩
+  refine ⟨Stream'.corec' (Corec.f f) (some b), fun {n} h => _⟩
   rw [Stream'.corec'_eq]
   change Stream'.corec' (Corec.f f) (Corec.f f (some b)).2 n = none
   revert h; generalize some b = o; revert o
@@ -422,7 +422,7 @@ theorem coinduction2 (s) (f g : Seq α → Seq β)
         BisimO (fun s1 s2 : Seq β => ∃ s : Seq α, s1 = f s ∧ s2 = g s) (destruct (f s))
           (destruct (g s))) :
     f s = g s := by
-  refine eq_of_bisim (fun s1 s2 => ∃ s, s1 = f s ∧ s2 = g s) ?_ ⟨s, rfl, rfl⟩
+  refine eq_of_bisim (fun s1 s2 => ∃ s, s1 = f s ∧ s2 = g s) _ ⟨s, rfl, rfl⟩
   intro s1 s2 h; rcases h with ⟨s, h1, h2⟩
   rw [h1, h2]; apply H
 #align stream.seq.coinduction2 Stream'.Seq.coinduction2
@@ -431,7 +431,7 @@ theorem coinduction2 (s) (f g : Seq α → Seq β)
 @[coe]
 def ofList (l : List α) : Seq α :=
   ⟨List.get? l, fun {n} h => by
-    rw [List.get?_eq_none] at h ⊢
+    rw [List.get_eq_none] at h ⊢
     exact h.trans (Nat.le_succ n)⟩
 #align stream.seq.of_list Stream'.Seq.ofList
 
@@ -581,10 +581,10 @@ def zipWith (f : α → β → γ) (s₁ : Seq α) (s₂ : Seq β) : Seq γ :=
 variable {s : Seq α} {s' : Seq β} {n : ℕ}
 
 @[simp]
-theorem get?_zipWith (f : α → β → γ) (s s' n) :
+theorem get_zipWith (f : α → β → γ) (s s' n) :
     (zipWith f s s').get? n = Option.map₂ f (s.get? n) (s'.get? n) :=
   rfl
-#align stream.seq.nth_zip_with Stream'.Seq.get?_zipWith
+#align stream.seq.nth_zip_with Stream'.Seq.get_zipWith
 
 end ZipWith
 
@@ -593,10 +593,10 @@ def zip : Seq α → Seq β → Seq (α × β) :=
   zipWith Prod.mk
 #align stream.seq.zip Stream'.Seq.zip
 
-theorem get?_zip (s : Seq α) (t : Seq β) (n : ℕ) :
+theorem get_zip (s : Seq α) (t : Seq β) (n : ℕ) :
     get? (zip s t) n = Option.map₂ Prod.mk (get? s n) (get? t n) :=
-  get?_zipWith _ _ _ _
-#align stream.seq.nth_zip Stream'.Seq.get?_zip
+  get_zipWith _ _ _ _
+#align stream.seq.nth_zip Stream'.Seq.get_zip
 
 /-- Separate a sequence of pairs into two sequences -/
 def unzip (s : Seq (α × β)) : Seq α × Seq β :=
@@ -609,9 +609,9 @@ def enum (s : Seq α) : Seq (ℕ × α) :=
 #align stream.seq.enum Stream'.Seq.enum
 
 @[simp]
-theorem get?_enum (s : Seq α) (n : ℕ) : get? (enum s) n = Option.map (Prod.mk n) (get? s n) :=
-  get?_zip _ _ _
-#align stream.seq.nth_enum Stream'.Seq.get?_enum
+theorem get_enum (s : Seq α) (n : ℕ) : get? (enum s) n = Option.map (Prod.mk n) (get? s n) :=
+  get_zip _ _ _
+#align stream.seq.nth_enum Stream'.Seq.get_enum
 
 @[simp]
 theorem enum_nil : enum (nil : Seq α) = nil :=
@@ -843,7 +843,7 @@ theorem dropn_tail (s : Seq α) (n) : drop (tail s) n = drop s (n + 1) := by
 @[simp]
 theorem head_dropn (s : Seq α) (n) : head (drop s n) = get? s n := by
   induction' n with n IH generalizing s; · rfl
-  rw [← get?_tail, ← dropn_tail]; apply IH
+  rw [← get_tail, ← dropn_tail]; apply IH
 #align stream.seq.head_dropn Stream'.Seq.head_dropn
 
 theorem mem_map (f : α → β) {a : α} : ∀ {s : Seq α}, a ∈ s → f a ∈ map f s
@@ -888,7 +888,7 @@ theorem enum_cons (s : Seq α) (x : α) :
     enum (cons x s) = cons (0, x) (map (Prod.map Nat.succ id) (enum s)) := by
   ext ⟨n⟩ : 1
   · simp
-  · simp only [get?_enum, get?_cons_succ, map_get?, Option.map_map]
+  · simp only [get_enum, get_cons_succ, map_get?, Option.map_map]
     congr
 #align stream.seq.enum_cons Stream'.Seq.enum_cons
 

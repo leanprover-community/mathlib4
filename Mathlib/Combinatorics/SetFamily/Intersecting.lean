@@ -80,7 +80,7 @@ theorem intersecting_insert :
 
 theorem intersecting_iff_pairwise_not_disjoint :
     s.Intersecting ↔ (s.Pairwise fun a b => ¬Disjoint a b) ∧ s ≠ {⊥} := by
-  refine ⟨fun h => ⟨fun a ha b hb _ => h ha hb, ?_⟩, fun h a ha b hb hab => ?_⟩
+  refine ⟨fun h => ⟨fun a ha b hb _ => h ha hb, _⟩, fun h a ha b hb hab => _⟩
   · rintro rfl
     exact intersecting_singleton.1 h rfl
   have := h.1.eq ha hb (Classical.not_not.2 hab)
@@ -100,7 +100,7 @@ theorem intersecting_iff_eq_empty_of_subsingleton [Subsingleton α] (s : Set α)
     s.Intersecting ↔ s = ∅ := by
   refine
     subsingleton_of_subsingleton.intersecting.trans
-      ⟨not_imp_comm.2 fun h => subsingleton_of_subsingleton.eq_singleton_of_mem ?_, ?_⟩
+      ⟨not_imp_comm.2 fun h => subsingleton_of_subsingleton.eq_singleton_of_mem _, _⟩
   · obtain ⟨a, ha⟩ := nonempty_iff_ne_empty.2 h
     rwa [Subsingleton.elim ⊥ a]
   · rintro rfl
@@ -163,7 +163,7 @@ theorem Intersecting.disjoint_map_compl {s : Finset α} (hs : (s : Set α).Inter
 theorem Intersecting.card_le [Fintype α] {s : Finset α} (hs : (s : Set α).Intersecting) :
     2 * s.card ≤ Fintype.card α := by
   classical
-    refine (s.disjUnion _ hs.disjoint_map_compl).card_le_univ.trans_eq' ?_
+    refine (s.disjUnion _ hs.disjoint_map_compl).card_le_univ.trans_eq' _
     rw [Nat.two_mul, card_disjUnion, card_map]
 #align set.intersecting.card_le Set.Intersecting.card_le
 
@@ -173,18 +173,18 @@ variable [Nontrivial α] [Fintype α] {s : Finset α}
 theorem Intersecting.is_max_iff_card_eq (hs : (s : Set α).Intersecting) :
     (∀ t : Finset α, (t : Set α).Intersecting → s ⊆ t → s = t) ↔ 2 * s.card = Fintype.card α := by
   classical
-    refine ⟨fun h ↦ ?_, fun h t ht hst ↦ Finset.eq_of_subset_of_card_le hst <|
+    refine ⟨fun h ↦ _, fun h t ht hst ↦ Finset.eq_of_subset_of_card_le hst <|
       Nat.le_of_mul_le_mul_left (ht.card_le.trans_eq h.symm) Nat.two_pos⟩
     suffices s.disjUnion (s.map ⟨compl, compl_injective⟩) hs.disjoint_map_compl = Finset.univ by
       rw [Fintype.card, ← this, Nat.two_mul, card_disjUnion, card_map]
     rw [← coe_eq_univ, disjUnion_eq_union, coe_union, coe_map, Function.Embedding.coeFn_mk,
       image_eq_preimage_of_inverse compl_compl compl_compl]
-    refine eq_univ_of_forall fun a => ?_
+    refine eq_univ_of_forall fun a => _
     simp_rw [mem_union, mem_preimage]
     by_contra! ha
-    refine s.ne_insert_of_not_mem _ ha.1 (h _ ?_ <| s.subset_insert _)
+    refine s.ne_insert_of_not_mem _ ha.1 (h _ _ <| s.subset_insert _)
     rw [coe_insert]
-    refine hs.insert ?_ fun b hb hab => ha.2 <| (hs.isUpperSet' h) hab.le_compl_left hb
+    refine hs.insert _ fun b hb hab => ha.2 <| (hs.isUpperSet' h) hab.le_compl_left hb
     rintro rfl
     have := h {⊤} (by rw [coe_singleton]; exact intersecting_singleton.2 top_ne_bot)
     rw [compl_bot] at ha
@@ -197,13 +197,13 @@ theorem Intersecting.exists_card_eq (hs : (s : Set α).Intersecting) :
   have := hs.card_le
   rw [mul_comm, ← Nat.le_div_iff_mul_le' Nat.two_pos] at this
   revert hs
-  refine s.strongDownwardInductionOn ?_ this
+  refine s.strongDownwardInductionOn _ this
   rintro s ih _hcard hs
   by_cases h : ∀ t : Finset α, (t : Set α).Intersecting → s ⊆ t → s = t
   · exact ⟨s, Subset.rfl, hs.is_max_iff_card_eq.1 h, hs⟩
   push_neg at h
   obtain ⟨t, ht, hst⟩ := h
-  refine (ih ?_ (_root_.ssubset_iff_subset_ne.2 hst) ht).imp fun u => And.imp_left hst.1.trans
+  refine (ih _ (_root_.ssubset_iff_subset_ne.2 hst) ht).imp fun u => And.imp_left hst.1.trans
   rw [Nat.le_div_iff_mul_le' Nat.two_pos, mul_comm]
   exact ht.card_le
 #align set.intersecting.exists_card_eq Set.Intersecting.exists_card_eq

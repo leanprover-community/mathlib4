@@ -103,7 +103,7 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [LocalRing R] [IsDomain R]
     · exact sInf_le ⟨hle, inferInstance⟩
     · refine
         le_sInf fun I hI =>
-          (eq_maximalIdeal <| hI.2.isMaximal (fun e => ha₂ ?_)).ge
+          (eq_maximalIdeal <| hI.2.isMaximal (fun e => ha₂ _)).ge
       rw [← Ideal.span_singleton_eq_bot, eq_bot_iff, ← e]; exact hI.1
   have : ∃ n, maximalIdeal R ^ n ≤ Ideal.span {a} := by
     rw [← this]; apply Ideal.exists_radical_pow_le_of_fg; exact IsNoetherian.noetherian _
@@ -122,12 +122,12 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [LocalRing R] [IsDomain R]
   let M := Submodule.map (Algebra.linearMap R K) (maximalIdeal R)
   have ha₃ : algebraMap R K a ≠ 0 := IsFractionRing.to_map_eq_zero_iff.not.mpr ha₂
   by_cases hx : ∀ y ∈ M, x * y ∈ M
-  · have := isIntegral_of_smul_mem_submodule M ?_ ?_ x hx
+  · have := isIntegral_of_smul_mem_submodule M _ _ x hx
     · obtain ⟨y, e⟩ := IsIntegrallyClosed.algebraMap_eq_of_integral this
-      refine (hb₂ (Ideal.mem_span_singleton'.mpr ⟨y, ?_⟩)).elim
+      refine (hb₂ (Ideal.mem_span_singleton'.mpr ⟨y, _⟩)).elim
       apply IsFractionRing.injective R K
       rw [map_mul, e, div_mul_cancel₀ _ ha₃]
-    · rw [Submodule.ne_bot_iff]; refine ⟨_, ⟨a, ha₁, rfl⟩, ?_⟩
+    · rw [Submodule.ne_bot_iff]; refine ⟨_, ⟨a, ha₁, rfl⟩, _⟩
       exact (IsFractionRing.to_map_eq_zero_iff (K := K)).not.mpr ha₂
     · apply Submodule.FG.map; exact IsNoetherian.noetherian _
   · have :
@@ -143,7 +143,7 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [LocalRing R] [IsDomain R]
       obtain ⟨_, ⟨y, hy, rfl⟩, hy' : x * algebraMap R K y = algebraMap R K 1⟩ := this
       rw [map_one, ← mul_div_right_comm, div_eq_one_iff_eq ha₃, ← map_mul] at hy'
       exact ⟨y, hy, IsFractionRing.injective R K hy'⟩
-    refine ⟨⟨y, ?_⟩⟩
+    refine ⟨⟨y, _⟩⟩
     apply le_antisymm
     · intro m hm; obtain ⟨k, hk⟩ := hb₃ m hm; rw [← hy₂, mul_comm, mul_assoc] at hk
       rw [← mul_left_cancel₀ hb₄ hk, mul_comm]; exact Ideal.mem_span_singleton'.mpr ⟨_, rfl⟩

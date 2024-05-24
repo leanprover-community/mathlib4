@@ -163,16 +163,16 @@ def vcomp (η : OplaxNatTrans F G) (θ : OplaxNatTrans G H) : OplaxNatTrans F H 
   naturality_comp {a b c} f g := by
     calc
       _ =
-          ?_ ≫
+          _ ≫
             F.mapComp f g ▷ η.app c ▷ θ.app c ≫
-              ?_ ≫
+              _ ≫
                 F.map f ◁ η.naturality g ▷ θ.app c ≫
-                  ?_ ≫
+                  _ ≫
                     (F.map f ≫ η.app b) ◁ θ.naturality g ≫
                       η.naturality f ▷ (θ.app b ≫ H.map g) ≫
-                        ?_ ≫ η.app a ◁ θ.naturality f ▷ H.map g ≫ ?_ :=
-        ?_
-      _ = _ := ?_
+                        _ ≫ η.app a ◁ θ.naturality f ▷ H.map g ≫ _ :=
+        _
+      _ = _ := _
     · exact (α_ _ _ _).inv
     · exact (α_ _ _ _).hom ▷ _ ≫ (α_ _ _ _).hom
     · exact _ ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv

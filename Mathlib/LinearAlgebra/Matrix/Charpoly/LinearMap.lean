@@ -105,7 +105,7 @@ theorem Matrix.represents_iff' {A : Matrix ι ι R} {f : Module.End R M} :
     rwa [PiToModule.fromEnd_apply_single_one, PiToModule.fromMatrix_apply_single_one] at this
   · intro h
     -- Porting note: was `ext`
-    refine LinearMap.pi_ext' (fun i => LinearMap.ext_ring ?_)
+    refine LinearMap.pi_ext' (fun i => LinearMap.ext_ring _)
     simp_rw [LinearMap.comp_apply, LinearMap.coe_single, PiToModule.fromEnd_apply_single_one,
       PiToModule.fromMatrix_apply_single_one]
     apply h
@@ -237,7 +237,7 @@ theorem LinearMap.exists_monic_and_coeff_mem_pow_and_aeval_eq_zero_of_range_le_s
       Matrix.isRepresentation.toEnd_exists_mem_ideal R ((↑) : s → M)
         (by rw [Subtype.range_coe_subtype, Finset.setOf_mem, hs]) f I hI
     rw [← H]
-    refine ⟨A.1.charpoly, A.1.charpoly_monic, ?_, ?_⟩
+    refine ⟨A.1.charpoly, A.1.charpoly_monic, _, _⟩
     · rw [A.1.charpoly_natDegree_eq_dim]
       exact coeff_charpoly_mem_ideal_pow h
     · rw [Polynomial.aeval_algHom_apply,

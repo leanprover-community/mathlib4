@@ -187,9 +187,9 @@ end Int
 
 /-- Maps an associate class of integers consisting of `-n, n` to `n : ℕ` -/
 def associatesIntEquivNat : Associates ℤ ≃ ℕ := by
-  refine ⟨(·.out.natAbs), (Associates.mk ·), ?_, fun n ↦ ?_⟩
-  · refine Associates.forall_associated.2 fun a ↦ ?_
-    refine Associates.mk_eq_mk_iff_associated.2 <| Associated.symm <| ⟨normUnit a, ?_⟩
+  refine ⟨(·.out.natAbs), (Associates.mk ·), _, fun n ↦ _⟩
+  · refine Associates.forall_associated.2 fun a ↦ _
+    refine Associates.mk_eq_mk_iff_associated.2 <| Associated.symm <| ⟨normUnit a, _⟩
     simp [Int.abs_eq_normalize]
   · dsimp only [Associates.out_mk]
     rw [← Int.abs_eq_normalize, Int.natAbs_abs, Int.natAbs_ofNat]

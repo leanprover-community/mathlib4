@@ -248,7 +248,7 @@ theorem gluedSection_isAmalgamation : x.IsAmalgamation (gluedSection ℱ hS hx) 
   -- Porting note: next line was `ext W`
   -- Now `ext` can't see that `ran` is defined as a limit.
   -- See https://github.com/leanprover-community/mathlib4/issues/5229
-  refine limit.hom_ext (fun (W : StructuredArrow (op V) G.op) ↦ ?_)
+  refine limit.hom_ext (fun (W : StructuredArrow (op V) G.op) ↦ _)
   simp only [Functor.comp_map, limit.lift_pre, coyoneda_obj_map, ran_obj_map, gluedSection]
   erw [limit.lift_π]
   symm
@@ -265,7 +265,7 @@ theorem gluedSection_is_unique (y) (hy : x.IsAmalgamation y) : y = gluedSection 
   -- Porting note: next line was `ext W`
   -- Now `ext` can't see that `ran` is defined as a limit.
   -- See https://github.com/leanprover-community/mathlib4/issues/5229
-  refine limit.hom_ext (fun (W : StructuredArrow (op U) G.op) ↦ ?_)
+  refine limit.hom_ext (fun (W : StructuredArrow (op U) G.op) ↦ _)
   erw [limit.lift_π]
   convert helper ℱ hS hx (𝟙 _) y W _
   · simp only [op_id, StructuredArrow.map_id]
@@ -347,11 +347,11 @@ noncomputable def Functor.sheafAdjunctionCocontinuous [G.IsCocontinuous J K]
         Sheaf.Hom.ext _ _ <| (Ran.adjunction A G.op).counit.naturality f.val }
   homEquiv_unit := by
     -- Porting note: next line was `ext1`
-    refine Sheaf.Hom.ext _ _ ?_
+    refine Sheaf.Hom.ext _ _ _
     apply (Ran.adjunction A G.op).homEquiv_unit
   homEquiv_counit := by
     -- Porting note: next line was `ext1`
-    refine Sheaf.Hom.ext _ _ ?_
+    refine Sheaf.Hom.ext _ _ _
     apply (Ran.adjunction A G.op).homEquiv_counit
 #align category_theory.sites.pullback_copullback_adjunction CategoryTheory.Functor.sheafAdjunctionCocontinuous
 

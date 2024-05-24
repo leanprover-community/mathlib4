@@ -43,7 +43,7 @@ def ComponentCompl.supp (C : G.ComponentCompl K) : Set V :=
 @[ext]
 theorem ComponentCompl.supp_injective :
     Function.Injective (ComponentCompl.supp : G.ComponentCompl K → Set V) := by
-  refine ConnectedComponent.ind₂ ?_
+  refine ConnectedComponent.ind₂ _
   rintro ⟨v, hv⟩ ⟨w, hw⟩ h
   simp only [Set.ext_iff, ConnectedComponent.eq, Set.mem_setOf_eq, ComponentCompl.supp] at h ⊢
   exact ((h v).mp ⟨hv, Reachable.refl _⟩).choose_spec
@@ -153,7 +153,7 @@ there exists a vertex `k ∈ K` adjacent to a vertex `v ∈ C`.
 -/
 theorem exists_adj_boundary_pair (Gc : G.Preconnected) (hK : K.Nonempty) :
     ∀ C : G.ComponentCompl K, ∃ ck : V × V, ck.1 ∈ C ∧ ck.2 ∈ K ∧ G.Adj ck.1 ck.2 := by
-  refine ComponentCompl.ind fun v vnK => ?_
+  refine ComponentCompl.ind fun v vnK => _
   let C : G.ComponentCompl K := G.componentComplMk vnK
   let dis := Set.disjoint_iff.mp C.disjoint_right
   by_contra! h
@@ -196,9 +196,9 @@ theorem hom_eq_iff_not_disjoint (C : G.ComponentCompl L) (h : K ⊆ L) (D : G.Co
   rw [Set.not_disjoint_iff]
   constructor
   · rintro rfl
-    refine C.ind fun x xnL => ?_
+    refine C.ind fun x xnL => _
     exact ⟨x, ⟨xnL, rfl⟩, ⟨fun xK => xnL (h xK), rfl⟩⟩
-  · refine C.ind fun x xnL => ?_
+  · refine C.ind fun x xnL => _
     rintro ⟨x, ⟨_, e₁⟩, _, rfl⟩
     rw [← e₁]
     rfl
@@ -267,7 +267,7 @@ instance componentCompl_finite [LocallyFinite G] [Gpc : Fact G.Preconnected] (K 
                                  h'.symm ▸ (D.exists_adj_boundary_pair Gpc.out h).choose_spec.1⟩)
     -- `touch` has finite range
     have : Finite (Set.range touch) := by
-      refine @Subtype.finite _ (Set.Finite.to_subtype ?_) _
+      refine @Subtype.finite _ (Set.Finite.to_subtype _) _
       apply Set.Finite.ofFinset (K.biUnion (fun v => G.neighborFinset v))
       simp only [Finset.mem_biUnion, mem_neighborFinset, Set.mem_setOf_eq, implies_true]
     -- hence `touch` has a finite domain

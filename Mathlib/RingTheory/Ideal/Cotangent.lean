@@ -88,7 +88,7 @@ theorem toCotangent_range : LinearMap.range I.toCotangent = ⊤ := Submodule.ran
 theorem cotangent_subsingleton_iff : Subsingleton I.Cotangent ↔ IsIdempotentElem I := by
   constructor
   · intro H
-    refine (pow_two I).symm.trans (le_antisymm (Ideal.pow_le_self two_ne_zero) ?_)
+    refine (pow_two I).symm.trans (le_antisymm (Ideal.pow_le_self two_ne_zero) _)
     exact fun x hx => (I.toCotangent_eq_zero ⟨x, hx⟩).mp (Subsingleton.elim _ _)
   · exact fun e =>
       ⟨fun x y =>
@@ -122,7 +122,7 @@ def cotangentIdeal (I : Ideal R) : Ideal (R ⧸ I ^ 2) :=
 theorem cotangentIdeal_square (I : Ideal R) : I.cotangentIdeal ^ 2 = ⊥ := by
   rw [eq_bot_iff, pow_two I.cotangentIdeal, ← smul_eq_mul]
   intro x hx
-  refine Submodule.smul_induction_on hx ?_ ?_
+  refine Submodule.smul_induction_on hx _ _
   · rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩; apply (Submodule.Quotient.eq _).mpr _
     rw [sub_zero, pow_two]; exact Ideal.mul_mem_mul hx hy
   · intro x y hx hy; exact add_mem hx hy
@@ -143,7 +143,7 @@ noncomputable def cotangentEquivIdeal : I.Cotangent ≃ₗ[R] I.cotangentIdeal :
   refine
   { LinearMap.codRestrict (I.cotangentIdeal.restrictScalars R) I.cotangentToQuotientSquare
       fun x => by { rw [← to_quotient_square_range]; exact LinearMap.mem_range_self _ _ },
-    Equiv.ofBijective _ ⟨?_, ?_⟩ with }
+    Equiv.ofBijective _ ⟨_, _⟩ with }
   · rintro x y e
     replace e := congr_arg Subtype.val e
     obtain ⟨x, rfl⟩ := I.toCotangent_surjective x
@@ -174,7 +174,7 @@ variable {A B : Type*} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
 
 /-- The lift of `f : A →ₐ[R] B` to `A ⧸ J ^ 2 →ₐ[R] B` with `J` being the kernel of `f`. -/
 def _root_.AlgHom.kerSquareLift (f : A →ₐ[R] B) : A ⧸ RingHom.ker f.toRingHom ^ 2 →ₐ[R] B := by
-  refine { Ideal.Quotient.lift (RingHom.ker f.toRingHom ^ 2) f.toRingHom ?_ with commutes' := ?_ }
+  refine { Ideal.Quotient.lift (RingHom.ker f.toRingHom ^ 2) f.toRingHom _ with commutes' := _ }
   · intro a ha; exact Ideal.pow_le_self two_ne_zero ha
   · intro r
     rw [IsScalarTower.algebraMap_apply R A, RingHom.toFun_eq_coe, Ideal.Quotient.algebraMap_eq,
@@ -191,8 +191,8 @@ theorem _root_.AlgHom.ker_kerSquareLift (f : A →ₐ[R] B) :
 
 /-- The quotient ring of `I ⧸ I ^ 2` is `R ⧸ I`. -/
 def quotCotangent : (R ⧸ I ^ 2) ⧸ I.cotangentIdeal ≃+* R ⧸ I := by
-  refine (Ideal.quotEquivOfEq (Ideal.map_eq_submodule_map _ _).symm).trans ?_
-  refine (DoubleQuot.quotQuotEquivQuotSup _ _).trans ?_
+  refine (Ideal.quotEquivOfEq (Ideal.map_eq_submodule_map _ _).symm).trans _
+  refine (DoubleQuot.quotQuotEquivQuotSup _ _).trans _
   exact Ideal.quotEquivOfEq (sup_eq_right.mpr <| Ideal.pow_le_self two_ne_zero)
 #align ideal.quot_cotangent Ideal.quotCotangent
 
@@ -218,14 +218,14 @@ variable {R}
 
 lemma subsingleton_cotangentSpace_iff [IsNoetherianRing R] :
     Subsingleton (CotangentSpace R) ↔ IsField R := by
-  refine (maximalIdeal R).cotangent_subsingleton_iff.trans ?_
+  refine (maximalIdeal R).cotangent_subsingleton_iff.trans _
   rw [LocalRing.isField_iff_maximalIdeal_eq, Ideal.isIdempotentElem_iff_eq_bot_or_top_of_localRing]
   simp [(maximalIdeal.isMaximal R).ne_top]
 
 lemma CotangentSpace.map_eq_top_iff [IsNoetherianRing R] {M : Submodule R (maximalIdeal R)} :
     M.map (maximalIdeal R).toCotangent = ⊤ ↔ M = ⊤ := by
-  refine ⟨fun H ↦ eq_top_iff.mpr ?_, by rintro rfl; simp [Ideal.toCotangent_range]⟩
-  refine (Submodule.map_le_map_iff_of_injective (Submodule.injective_subtype _) _ _).mp ?_
+  refine ⟨fun H ↦ eq_top_iff.mpr _, by rintro rfl; simp [Ideal.toCotangent_range]⟩
+  refine (Submodule.map_le_map_iff_of_injective (Submodule.injective_subtype _) _ _).mp _
   rw [Submodule.map_top, Submodule.range_subtype]
   apply Submodule.le_of_le_smul_of_le_jacobson_bot (IsNoetherian.noetherian _)
     (LocalRing.jacobson_eq_maximalIdeal _ bot_ne_top).ge

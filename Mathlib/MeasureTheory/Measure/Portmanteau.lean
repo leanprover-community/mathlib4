@@ -299,7 +299,7 @@ theorem FiniteMeasure.limsup_measure_closed_le_of_tendsto {Ω ι : Type*} {L : F
   have room₂ :
     (lintegral (μ : Measure Ω) fun a => fs M a) <
       (lintegral (μ : Measure Ω) fun a => fs M a) + ε / 2 := by
-    apply ENNReal.lt_add_right (ne_of_lt ?_)
+    apply ENNReal.lt_add_right (ne_of_lt _)
         (ENNReal.div_pos_iff.mpr ⟨(ENNReal.coe_pos.mpr ε_pos).ne.symm, ENNReal.two_ne_top⟩).ne.symm
     apply BoundedContinuousFunction.lintegral_lt_top_of_nnreal
   have ev_near := Eventually.mono (eventually_lt_of_tendsto_lt room₂ key₂) fun n => le_of_lt
@@ -406,7 +406,7 @@ theorem exists_null_frontier_thickening (μ : Measure Ω) [SigmaFinite μ] (s : 
   have len_pos : 0 < ENNReal.ofReal (b - a) := by simp only [hab, ENNReal.ofReal_pos, sub_pos]
   rw [← Real.volume_Ioo, ← aux] at len_pos
   rcases nonempty_of_measure_ne_zero len_pos.ne.symm with ⟨r, ⟨r_in_Ioo, hr⟩⟩
-  refine ⟨r, r_in_Ioo, ?_⟩
+  refine ⟨r, r_in_Ioo, _⟩
   simpa only [mem_setOf_eq, not_lt, le_zero_iff] using hr
 #align measure_theory.exists_null_frontier_thickening MeasureTheory.exists_null_frontier_thickening
 
@@ -415,7 +415,7 @@ theorem exists_null_frontiers_thickening (μ : Measure Ω) [SigmaFinite μ] (s :
       Tendsto rs atTop (𝓝 0) ∧ ∀ n, 0 < rs n ∧ μ (frontier (Metric.thickening (rs n) s)) = 0 := by
   rcases exists_seq_strictAnti_tendsto (0 : ℝ) with ⟨Rs, ⟨_, ⟨Rs_pos, Rs_lim⟩⟩⟩
   have obs := fun n : ℕ => exists_null_frontier_thickening μ s (Rs_pos n)
-  refine ⟨fun n : ℕ => (obs n).choose, ⟨?_, ?_⟩⟩
+  refine ⟨fun n : ℕ => (obs n).choose, ⟨_, _⟩⟩
   · exact tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds Rs_lim
       (fun n => (obs n).choose_spec.1.1.le) fun n => (obs n).choose_spec.1.2.le
   · exact fun n => ⟨(obs n).choose_spec.1.1, (obs n).choose_spec.2⟩
@@ -455,7 +455,7 @@ lemma limsup_measure_closed_le_of_forall_tendsto_measure
   have aux' := fun i ↦ measure_mono (μ := μs i) (Metric.self_subset_thickening (rs_pos m) F)
   have aux : (fun i ↦ (μs i F)) ≤ᶠ[L] (fun i ↦ μs i (Metric.thickening (rs m) F)) :=
     eventually_of_forall aux'
-  refine (limsup_le_limsup aux).trans ?_
+  refine (limsup_le_limsup aux).trans _
   rw [Tendsto.limsup_eq (key m)]
   apply (measure_mono (Metric.thickening_subset_cthickening (rs m) F)).trans (hm m rfl.le).le
 
@@ -499,8 +499,8 @@ lemma lintegral_le_liminf_lintegral_of_forall_isOpen_measure_le_liminf_measure
     ∫⁻ x, ENNReal.ofReal (f x) ∂μ ≤ atTop.liminf (fun i ↦ ∫⁻ x, ENNReal.ofReal (f x) ∂ (μs i)) := by
   simp_rw [lintegral_eq_lintegral_meas_lt _ (eventually_of_forall f_nn) f_cont.aemeasurable]
   calc  ∫⁻ (t : ℝ) in Set.Ioi 0, μ {a | t < f a}
-      ≤ ∫⁻ (t : ℝ) in Set.Ioi 0, atTop.liminf (fun i ↦ (μs i) {a | t < f a}) := ?_ -- (i)
-    _ ≤ atTop.liminf (fun i ↦ ∫⁻ (t : ℝ) in Set.Ioi 0, (μs i) {a | t < f a}) := ?_ -- (ii)
+      ≤ ∫⁻ (t : ℝ) in Set.Ioi 0, atTop.liminf (fun i ↦ (μs i) {a | t < f a}) := _ -- (i)
+    _ ≤ atTop.liminf (fun i ↦ ∫⁻ (t : ℝ) in Set.Ioi 0, (μs i) {a | t < f a}) := _ -- (ii)
   · -- (i)
     exact (lintegral_mono (fun t ↦ h_opens _ (continuous_def.mp f_cont _ isOpen_Ioi))).trans
             (le_refl _)
@@ -517,7 +517,7 @@ lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
                   f.continuous f_nn h_opens
   rw [@integral_eq_lintegral_of_nonneg_ae Ω _ μ f (eventually_of_forall f_nn)
         f.continuous.measurable.aestronglyMeasurable]
-  convert (ENNReal.toReal_le_toReal ?_ ?_).mpr same
+  convert (ENNReal.toReal_le_toReal _ _).mpr same
   · simp only [fun i ↦ @integral_eq_lintegral_of_nonneg_ae Ω _ (μs i) f (eventually_of_forall f_nn)
                         f.continuous.measurable.aestronglyMeasurable]
     let g := BoundedContinuousFunction.comp _ Real.lipschitzWith_toNNReal f
@@ -549,7 +549,7 @@ theorem tendsto_of_forall_isOpen_le_liminf {μ : ProbabilityMeasure Ω}
     {μs : ℕ → ProbabilityMeasure Ω}
     (h_opens : ∀ G, IsOpen G → μ G ≤ atTop.liminf (fun i ↦ μs i G)) :
     atTop.Tendsto (fun i ↦ μs i) (𝓝 μ) := by
-  refine ProbabilityMeasure.tendsto_iff_forall_integral_tendsto.mpr ?_
+  refine ProbabilityMeasure.tendsto_iff_forall_integral_tendsto.mpr _
   apply tendsto_integral_of_forall_integral_le_liminf_integral
   intro f f_nn
   apply integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure (f := f) f_nn
@@ -558,7 +558,7 @@ theorem tendsto_of_forall_isOpen_le_liminf {μ : ProbabilityMeasure Ω}
   simp only at h_opens
   have aux : ENNReal.ofNNReal (liminf (fun i ↦ ENNReal.toNNReal ((μs i : Measure Ω) G)) atTop) =
           liminf (ENNReal.ofNNReal ∘ fun i ↦ (ENNReal.toNNReal ((μs i : Measure Ω) G))) atTop := by
-    refine Monotone.map_liminf_of_continuousAt (F := atTop) ENNReal.coe_mono (μs · G) ?_ ?_ ?_
+    refine Monotone.map_liminf_of_continuousAt (F := atTop) ENNReal.coe_mono (μs · G) _ _ _
     · apply ENNReal.continuous_coe.continuousAt
     · use 1
       simp only [eventually_map, ProbabilityMeasure.apply_le_one, eventually_atTop, ge_iff_le,

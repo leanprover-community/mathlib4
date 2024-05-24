@@ -50,7 +50,7 @@ lemma quarters_mem_preCantorSet (n : ℕ) : 1/4 ∈ preCantorSet n ∧ 3/4 ∈ p
   induction n with
   | zero =>
     simp only [preCantorSet_zero, inv_nonneg]
-    refine ⟨⟨ ?_, ?_⟩, ?_, ?_⟩ <;> norm_num
+    refine ⟨⟨ _, _⟩, _, _⟩ <;> norm_num
   | succ n ih =>
     apply And.intro
     · -- goal: 1 / 4 ∈ preCantorSet (n + 1)
@@ -85,7 +85,7 @@ lemma isClosed_preCantorSet (n : ℕ): IsClosed (preCantorSet n) := by
   induction n with
   | zero => exact isClosed_Icc
   | succ n ih =>
-    refine IsClosed.union ?_ ?_
+    refine IsClosed.union _ _
     · simpa [f, div_eq_inv_mul] using f.closedEmbedding.closed_iff_image_closed.mp ih
     · simpa [g, f, div_eq_inv_mul] using g.closedEmbedding.closed_iff_image_closed.mp ih
 

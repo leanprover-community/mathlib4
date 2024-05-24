@@ -76,7 +76,7 @@ local notation "ℬ𝒜" => (fun i : ι × ι => ℬ (Prod.fst i) ⊗[R] 𝒜 (P
 
 This operates on direct sums of tensors instead of tensors of direct sums. -/
 def gradedCommAux : DirectSum _ 𝒜ℬ →ₗ[R] DirectSum _ ℬ𝒜 := by
-  refine DirectSum.toModule R _ _ fun i => ?_
+  refine DirectSum.toModule R _ _ fun i => _
   have o := DirectSum.lof R _ ℬ𝒜 i.swap
   have s : ℤˣ := ((-1 : ℤˣ)^(i.1* i.2 : ι) : ℤˣ)
   exact (s • o) ∘ₗ (TensorProduct.comm R _ _).toLinearMap
@@ -102,7 +102,7 @@ theorem gradedCommAux_comp_gradedCommAux :
 This sends $a ⊗ b$ to $(-1)^{\deg a' \deg b} (b ⊗ a)$. -/
 def gradedComm :
     (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i) ≃ₗ[R] (⨁ i, ℬ i) ⊗[R] (⨁ i, 𝒜 i) := by
-  refine TensorProduct.directSum R R 𝒜 ℬ ≪≫ₗ ?_ ≪≫ₗ (TensorProduct.directSum R R ℬ 𝒜).symm
+  refine TensorProduct.directSum R R 𝒜 ℬ ≪≫ₗ _ ≪≫ₗ (TensorProduct.directSum R R ℬ 𝒜).symm
   exact LinearEquiv.ofLinear (gradedCommAux _ _ _) (gradedCommAux _ _ _)
     (gradedCommAux_comp_gradedCommAux _ _ _) (gradedCommAux_comp_gradedCommAux _ _ _)
 
@@ -174,10 +174,10 @@ noncomputable irreducible_def gradedMul :
     letI AB := DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ
     letI : Module R AB := TensorProduct.leftModule
     AB →ₗ[R] AB →ₗ[R] AB := by
-  refine TensorProduct.curry ?_
-  refine map (LinearMap.mul' R (⨁ i, 𝒜 i)) (LinearMap.mul' R (⨁ i, ℬ i)) ∘ₗ ?_
-  refine (assoc R _ _ _).symm.toLinearMap ∘ₗ .lTensor _ ?_ ∘ₗ (assoc R _ _ _).toLinearMap
-  refine (assoc R _ _ _).toLinearMap ∘ₗ .rTensor _ ?_ ∘ₗ (assoc R _ _ _).symm.toLinearMap
+  refine TensorProduct.curry _
+  refine map (LinearMap.mul' R (⨁ i, 𝒜 i)) (LinearMap.mul' R (⨁ i, ℬ i)) ∘ₗ _
+  refine (assoc R _ _ _).symm.toLinearMap ∘ₗ .lTensor _ _ ∘ₗ (assoc R _ _ _).toLinearMap
+  refine (assoc R _ _ _).toLinearMap ∘ₗ .rTensor _ _ ∘ₗ (assoc R _ _ _).symm.toLinearMap
   exact (gradedComm _ _ _).toLinearMap
 
 theorem tmul_of_gradedMul_of_tmul (j₁ i₂ : ι)

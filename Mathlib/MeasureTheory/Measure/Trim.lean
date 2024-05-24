@@ -85,14 +85,14 @@ theorem ae_le_of_ae_le_trim {E} [LE E] {hm : m ≤ m0} {f₁ f₂ : α → E}
 
 theorem trim_trim {m₁ m₂ : MeasurableSpace α} {hm₁₂ : m₁ ≤ m₂} {hm₂ : m₂ ≤ m0} :
     (μ.trim hm₂).trim hm₁₂ = μ.trim (hm₁₂.trans hm₂) := by
-  refine @Measure.ext _ m₁ _ _ (fun t ht => ?_)
+  refine @Measure.ext _ m₁ _ _ (fun t ht => _)
   rw [trim_measurableSet_eq hm₁₂ ht, trim_measurableSet_eq (hm₁₂.trans hm₂) ht,
     trim_measurableSet_eq hm₂ (hm₁₂ t ht)]
 #align measure_theory.trim_trim MeasureTheory.trim_trim
 
 theorem restrict_trim (hm : m ≤ m0) (μ : Measure α) (hs : @MeasurableSet α m s) :
     @Measure.restrict α m (μ.trim hm) s = (μ.restrict s).trim hm := by
-  refine @Measure.ext _ m _ _ (fun t ht => ?_)
+  refine @Measure.ext _ m _ _ (fun t ht => _)
   rw [@Measure.restrict_apply α m _ _ _ ht, trim_measurableSet_eq hm ht,
     Measure.restrict_apply (hm t ht),
     trim_measurableSet_eq hm (@MeasurableSet.inter α m t s ht hs)]
@@ -106,11 +106,11 @@ instance isFiniteMeasure_trim (hm : m ≤ m0) [IsFiniteMeasure μ] : IsFiniteMea
 
 theorem sigmaFiniteTrim_mono {m m₂ m0 : MeasurableSpace α} {μ : Measure α} (hm : m ≤ m0)
     (hm₂ : m₂ ≤ m) [SigmaFinite (μ.trim (hm₂.trans hm))] : SigmaFinite (μ.trim hm) := by
-  refine ⟨⟨?_⟩⟩
+  refine ⟨⟨_⟩⟩
   refine
     { set := spanningSets (μ.trim (hm₂.trans hm))
       set_mem := fun _ => Set.mem_univ _
-      finite := fun i => ?_
+      finite := fun i => _
       spanning := iUnion_spanningSets _ }
   calc
     (μ.trim hm) (spanningSets (μ.trim (hm₂.trans hm)) i) =
@@ -123,14 +123,14 @@ theorem sigmaFiniteTrim_mono {m m₂ m0 : MeasurableSpace α} {μ : Measure α} 
 
 theorem sigmaFinite_trim_bot_iff : SigmaFinite (μ.trim bot_le) ↔ IsFiniteMeasure μ := by
   rw [sigmaFinite_bot_iff]
-  refine ⟨fun h => ⟨?_⟩, fun h => ⟨?_⟩⟩ <;> have h_univ := h.measure_univ_lt_top
+  refine ⟨fun h => ⟨_⟩, fun h => ⟨_⟩⟩ <;> have h_univ := h.measure_univ_lt_top
   · rwa [trim_measurableSet_eq bot_le MeasurableSet.univ] at h_univ
   · rwa [trim_measurableSet_eq bot_le MeasurableSet.univ]
 #align measure_theory.sigma_finite_trim_bot_iff MeasureTheory.sigmaFinite_trim_bot_iff
 
 lemma Measure.AbsolutelyContinuous.trim {ν : Measure α} (hμν : μ ≪ ν) (hm : m ≤ m0) :
     μ.trim hm ≪ ν.trim hm := by
-  refine Measure.AbsolutelyContinuous.mk (fun s hs hsν ↦ ?_)
+  refine Measure.AbsolutelyContinuous.mk (fun s hs hsν ↦ _)
   rw [trim_measurableSet_eq hm hs] at hsν ⊢
   exact hμν hsν
 

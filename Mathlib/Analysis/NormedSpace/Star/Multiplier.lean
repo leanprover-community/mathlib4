@@ -503,7 +503,7 @@ theorem coe_snd (a : A) : (a : 𝓜(𝕜, A)).snd = (ContinuousLinearMap.mul �
 theorem coe_eq_algebraMap : (DoubleCentralizer.coe 𝕜 : 𝕜 → 𝓜(𝕜, 𝕜)) = algebraMap 𝕜 𝓜(𝕜, 𝕜) := by
   ext x : 3
   · rfl -- `fst` is defeq
-  · refine ContinuousLinearMap.ext fun y => ?_
+  · refine ContinuousLinearMap.ext fun y => _
     exact mul_comm y x  -- `snd` multiplies on the wrong side
 #align double_centralizer.coe_eq_algebra_map DoubleCentralizer.coe_eq_algebraMap
 

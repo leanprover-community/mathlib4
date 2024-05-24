@@ -351,7 +351,7 @@ def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=
       ext
       simp_rw [Fin.sum_univ_succ, Fin.val_zero, Fin.val_succ, pow_zero, Nat.div_one,
         mul_one, pow_succ', ← Nat.div_div_eq_div_mul, mul_left_comm _ m, ← mul_sum]
-      rw [ih _ (Nat.div_lt_of_lt_mul ?_), Nat.mod_add_div]
+      rw [ih _ (Nat.div_lt_of_lt_mul _), Nat.mod_add_div]
       -- Porting note: replaces `a.is_lt` in the wildcard above. Caused by a refactor of the `npow`
       -- instance for `Fin`.
       exact a.is_lt.trans_eq (pow_succ' _ _)
@@ -421,7 +421,7 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
         simp_rw [← Nat.div_div_eq_div_mul, mul_left_comm (_ % _ : ℕ), ← mul_sum]
         convert Nat.mod_add_div _ _
         -- Porting note: new
-        refine (ih (a / x) (Nat.div_lt_of_lt_mul <| a.is_lt.trans_eq ?_))
+        refine (ih (a / x) (Nat.div_lt_of_lt_mul <| a.is_lt.trans_eq _))
         exact Fin.prod_univ_succ _
         -- Porting note: was:
         /-

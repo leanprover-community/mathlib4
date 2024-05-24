@@ -379,7 +379,7 @@ def vPullbackConeIsLimitOfMap (i j : D.J) [ReflectsLimit (cospan (D.ι i) (D.ι 
       (by rintro (_ | _) (_ | _) (_ | _ | _) <;> simp)
   apply IsLimit.postcomposeHomEquiv e _ _
   apply hc.ofIsoLimit
-  refine Cones.ext (Iso.refl _) ?_
+  refine Cones.ext (Iso.refl _) _
   rintro (_ | _ | _)
   on_goal 1 => change _ = _ ≫ (_ ≫ _) ≫ _
   all_goals change _ = 𝟙 _ ≫ _ ≫ _; aesop_cat

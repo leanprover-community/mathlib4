@@ -121,7 +121,7 @@ instance prod_properSpace {α : Type*} {β : Type*} [PseudoMetricSpace α] [Pseu
 /-- A finite product of proper spaces is proper. -/
 instance pi_properSpace {π : β → Type*} [Fintype β] [∀ b, PseudoMetricSpace (π b)]
     [h : ∀ b, ProperSpace (π b)] : ProperSpace (∀ b, π b) := by
-  refine .of_isCompact_closedBall_of_le 0 fun x r hr => ?_
+  refine .of_isCompact_closedBall_of_le 0 fun x r hr => _
   rw [closedBall_pi _ hr]
   exact isCompact_univ_pi fun _ => isCompact_closedBall _ _
 #align pi_proper_space pi_properSpace

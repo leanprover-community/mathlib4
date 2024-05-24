@@ -331,13 +331,13 @@ lemma UniformFun.continuousSMul_induced_of_range_bounded (φ : hom)
       continuous_smul.tendsto' _ _ (zero_smul _ _)
     rcases ((Filter.basis_sets _).prod_nhds (Filter.basis_sets _)).tendsto_left_iff.1 this U hU
       with ⟨⟨V, W⟩, ⟨hV, hW⟩, hVW⟩
-    refine ⟨V, hV, W, hW, Set.smul_subset_iff.2 fun a ha u hu x ↦ ?_⟩
+    refine ⟨V, hV, W, hW, Set.smul_subset_iff.2 fun a ha u hu x ↦ _⟩
     rw [map_smul]
     exact hVW (Set.mk_mem_prod ha (hu x))
   · intro c U hU
     have : Tendsto (c • · : E → E) (𝓝 0) (𝓝 0) :=
       (continuous_const_smul c).tendsto' _ _ (smul_zero _)
-    refine ⟨_, this hU, fun u hu x ↦ ?_⟩
+    refine ⟨_, this hU, fun u hu x ↦ _⟩
     simpa only [map_smul] using hu x
   · intro u U hU
     simp only [Set.mem_setOf_eq, map_smul, Pi.smul_apply]
@@ -356,14 +356,14 @@ theorem UniformOnFun.continuousSMul_induced_of_image_bounded (φ : hom) (hφ : I
     ContinuousSMul 𝕜 H := by
   obtain rfl := hφ.induced; clear hφ
   simp only [induced_iInf, UniformOnFun.topologicalSpace_eq, induced_compose]
-  refine continuousSMul_iInf fun s ↦ continuousSMul_iInf fun hs ↦ ?_
+  refine continuousSMul_iInf fun s ↦ continuousSMul_iInf fun hs ↦ _
   letI : TopologicalSpace H :=
     .induced (UniformFun.ofFun ∘ s.restrict ∘ φ) (UniformFun.topologicalSpace s E)
   set φ' : H →ₗ[𝕜] (s → E) :=
     { toFun := s.restrict ∘ φ,
       map_smul' := fun c x ↦ by exact congr_arg s.restrict (map_smul φ c x),
       map_add' := fun x y ↦ by exact congr_arg s.restrict (map_add φ x y) }
-  refine UniformFun.continuousSMul_induced_of_range_bounded 𝕜 s E H φ' ⟨rfl⟩ fun u ↦ ?_
+  refine UniformFun.continuousSMul_induced_of_range_bounded 𝕜 s E H φ' ⟨rfl⟩ fun u ↦ _
   simpa only [Set.image_eq_range] using h u s hs
 #align uniform_on_fun.has_continuous_smul_induced_of_image_bounded UniformOnFun.continuousSMul_induced_of_image_bounded
 

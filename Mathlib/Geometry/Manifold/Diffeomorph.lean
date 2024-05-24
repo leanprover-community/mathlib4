@@ -557,9 +557,9 @@ variable (e : E ≃ₘ[𝕜] F)
 
 instance smoothManifoldWithCorners_transDiffeomorph [SmoothManifoldWithCorners I M] :
     SmoothManifoldWithCorners (I.transDiffeomorph e) M := by
-  refine smoothManifoldWithCorners_of_contDiffOn (I.transDiffeomorph e) M fun e₁ e₂ h₁ h₂ => ?_
+  refine smoothManifoldWithCorners_of_contDiffOn (I.transDiffeomorph e) M fun e₁ e₂ h₁ h₂ => _
   refine e.contDiff.comp_contDiffOn
-      (((contDiffGroupoid ⊤ I).compatible h₁ h₂).1.comp e.symm.contDiff.contDiffOn ?_)
+      (((contDiffGroupoid ⊤ I).compatible h₁ h₂).1.comp e.symm.contDiff.contDiffOn _)
   mfld_set_tac
 #align diffeomorph.smooth_manifold_with_corners_trans_diffeomorph Diffeomorph.smoothManifoldWithCorners_transDiffeomorph
 
@@ -570,8 +570,8 @@ with model `I.trans_diffeomorph e`. -/
 def toTransDiffeomorph (e : E ≃ₘ[𝕜] F) : M ≃ₘ⟮I, I.transDiffeomorph e⟯ M where
   toEquiv := Equiv.refl M
   contMDiff_toFun x := by
-    refine contMDiffWithinAt_iff'.2 ⟨continuousWithinAt_id, ?_⟩
-    refine e.contDiff.contDiffWithinAt.congr' (fun y hy ↦ ?_) ?_
+    refine contMDiffWithinAt_iff'.2 ⟨continuousWithinAt_id, _⟩
+    refine e.contDiff.contDiffWithinAt.congr' (fun y hy ↦ _) _
     · simp only [Equiv.coe_refl, id, (· ∘ ·), I.coe_extChartAt_transDiffeomorph,
         (extChartAt I x).right_inv hy.1]
     · exact

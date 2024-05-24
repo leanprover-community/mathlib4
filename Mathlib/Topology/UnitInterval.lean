@@ -220,8 +220,8 @@ lemma _root_.Set.abs_projIcc_sub_projIcc : (|projIcc a b h c - projIcc a b h d| 
   · rw [abs_sub_comm, abs_sub_comm c]; exact this (le_of_not_le hdc)
   rw [abs_eq_self.2 (sub_nonneg.2 hdc), abs_eq_self.2 (sub_nonneg.2 <| monotone_projIcc h hdc)]
   rw [← sub_nonneg] at hdc
-  refine (max_sub_max_le_max _ _ _ _).trans (max_le (by rwa [sub_self]) ?_)
-  refine ((le_abs_self _).trans <| abs_min_sub_min_le_max _ _ _ _).trans (max_le ?_ ?_)
+  refine (max_sub_max_le_max _ _ _ _).trans (max_le (by rwa [sub_self]) _)
+  refine ((le_abs_self _).trans <| abs_min_sub_min_le_max _ _ _ _).trans (max_le _ _)
   · rwa [sub_self, abs_zero]
   · exact (abs_eq_self.mpr hdc).le
 
@@ -235,7 +235,7 @@ lemma addNSMul_zero : addNSMul h δ 0 = a := by
 lemma addNSMul_eq_right [Archimedean α] (hδ : 0 < δ) :
     ∃ m, ∀ n ≥ m, addNSMul h δ n = b := by
   obtain ⟨m, hm⟩ := Archimedean.arch (b - a) hδ
-  refine ⟨m, fun n hn ↦ ?_⟩
+  refine ⟨m, fun n hn ↦ _⟩
   rw [addNSMul, coe_projIcc, add_comm, min_eq_left_iff.mpr, max_eq_right h]
   exact sub_le_iff_le_add.mp (hm.trans <| nsmul_le_nsmul_left hδ.le hn)
 
@@ -262,7 +262,7 @@ lemma exists_monotone_Icc_subset_open_cover_Icc {ι} {a b : ℝ} (h : a ≤ b) {
   obtain ⟨δ, δ_pos, ball_subset⟩ := lebesgue_number_lemma_of_metric isCompact_univ hc₁ hc₂
   have hδ := half_pos δ_pos
   refine ⟨addNSMul h (δ/2), addNSMul_zero h,
-    monotone_addNSMul h hδ.le, addNSMul_eq_right h hδ, fun n ↦ ?_⟩
+    monotone_addNSMul h hδ.le, addNSMul_eq_right h hδ, fun n ↦ _⟩
   obtain ⟨i, hsub⟩ := ball_subset (addNSMul h (δ/2) n) trivial
   exact ⟨i, fun t ht ↦ hsub ((abs_sub_addNSMul_le h hδ.le n ht).trans_lt <| half_lt_self δ_pos)⟩
 
@@ -282,7 +282,7 @@ lemma exists_monotone_Icc_subset_open_cover_unitInterval_prod_self {ι} {c : ι 
   simp_rw [Subtype.ext_iff]
   have h : (0 : ℝ) ≤ 1 := zero_le_one
   refine ⟨addNSMul h (δ/2), addNSMul_zero h,
-    monotone_addNSMul h hδ.le, addNSMul_eq_right h hδ, fun n m ↦ ?_⟩
+    monotone_addNSMul h hδ.le, addNSMul_eq_right h hδ, fun n m ↦ _⟩
   obtain ⟨i, hsub⟩ := ball_subset (addNSMul h (δ/2) n, addNSMul h (δ/2) m) trivial
   exact ⟨i, fun t ht ↦ hsub (Metric.mem_ball.mpr <| (max_le (abs_sub_addNSMul_le h hδ.le n ht.1) <|
     abs_sub_addNSMul_le h hδ.le m ht.2).trans_lt <| half_lt_self δ_pos)⟩
@@ -332,7 +332,7 @@ set_option linter.uppercaseLean3 false in
 -/
 def iccHomeoI (a b : 𝕜) (h : a < b) : Set.Icc a b ≃ₜ Set.Icc (0 : 𝕜) (1 : 𝕜) := by
   let e := Homeomorph.image (affineHomeomorph (b - a) a (sub_pos.mpr h).ne.symm) (Set.Icc 0 1)
-  refine (e.trans ?_).symm
+  refine (e.trans _).symm
   apply Homeomorph.setCongr
   rw [affineHomeomorph_image_I _ _ (sub_pos.2 h)]
   simp

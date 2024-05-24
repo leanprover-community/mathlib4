@@ -153,7 +153,7 @@ theorem wittStructureRat_prop (Φ : MvPolynomial idx ℚ) (n : ℕ) :
 theorem wittStructureRat_existsUnique (Φ : MvPolynomial idx ℚ) :
     ∃! φ : ℕ → MvPolynomial (idx × ℕ) ℚ,
       ∀ n : ℕ, bind₁ φ (W_ ℚ n) = bind₁ (fun i => rename (Prod.mk i) (W_ ℚ n)) Φ := by
-  refine ⟨wittStructureRat p Φ, ?_, ?_⟩
+  refine ⟨wittStructureRat p Φ, _, _⟩
   · intro n; apply wittStructureRat_prop
   · intro φ H
     funext n
@@ -184,7 +184,7 @@ theorem wittStructureRat_rec (Φ : MvPolynomial idx ℚ) (n : ℕ) :
         (bind₁ (fun b => rename (fun i => (b, i)) (W_ ℚ n)) Φ -
           ∑ i in range n, C ((p : ℚ) ^ i) * wittStructureRat p Φ i ^ p ^ (n - i)) := by
   calc
-    wittStructureRat p Φ n = C (1 / (p : ℚ) ^ n) * (wittStructureRat p Φ n * C ((p : ℚ) ^ n)) := ?_
+    wittStructureRat p Φ n = C (1 / (p : ℚ) ^ n) * (wittStructureRat p Φ n * C ((p : ℚ) ^ n)) := _
     _ = _ := by rw [wittStructureRat_rec_aux]
   rw [mul_left_comm, ← C_mul, div_mul_cancel₀, C_1, mul_one]
   exact pow_ne_zero _ (Nat.cast_ne_zero.2 hp.1.ne_zero)
@@ -276,7 +276,7 @@ variable (p)
 theorem map_wittStructureInt (Φ : MvPolynomial idx ℤ) (n : ℕ) :
     map (Int.castRingHom ℚ) (wittStructureInt p Φ n) =
       wittStructureRat p (map (Int.castRingHom ℚ) Φ) n := by
-  induction n using Nat.strong_induction_on with | h n IH => ?_
+  induction n using Nat.strong_induction_on with | h n IH => _
   rw [wittStructureInt, map_mapRange_eq_iff, Int.coe_castRingHom]
   intro c
   rw [wittStructureRat_rec, coeff_C_mul, mul_comm, mul_div_assoc', mul_one]
@@ -317,7 +317,7 @@ theorem eq_wittStructureInt (Φ : MvPolynomial idx ℤ) (φ : ℕ → MvPolynomi
   rw [map_wittStructureInt]
   -- Porting note: was `refine congr_fun _ k`
   revert k
-  refine congr_fun ?_
+  refine congr_fun _
   apply ExistsUnique.unique (wittStructureRat_existsUnique p (map (Int.castRingHom ℚ) Φ))
   · intro n
     specialize h n

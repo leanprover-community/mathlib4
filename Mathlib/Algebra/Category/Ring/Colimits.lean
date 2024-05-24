@@ -315,7 +315,7 @@ def descMorphism (s : Cocone F) : colimit F ⟶ s.pt where
   map_one' := rfl
   map_zero' := rfl
   map_add' x y := by
-    refine Quot.induction_on₂ x y fun a b => ?_
+    refine Quot.induction_on₂ x y fun a b => _
     dsimp [descFun]
     rw [← quot_add]
     rfl
@@ -327,7 +327,7 @@ def colimitIsColimit : IsColimit (colimitCocone F) where
   desc s := descMorphism F s
   uniq s m w := RingHom.ext fun x => by
     change (colimitCocone F).pt →+* s.pt at m
-    refine Quot.inductionOn x ?_
+    refine Quot.inductionOn x _
     intro x
     induction x with
     | zero => erw [quot_zero, map_zero (f := m), (descMorphism F s).map_zero]

@@ -82,13 +82,13 @@ theorem finite_integral_rpow_sub_one_pow_aux {r : ℝ} (n : ℕ) (hnr : (n : ℝ
       ENNReal.ofReal ((x ^ (-r⁻¹) - 1) ^ n) ≤ ENNReal.ofReal (x ^ (-(r⁻¹ * n))) := fun x hx ↦ by
     apply ENNReal.ofReal_le_ofReal
     rw [← neg_mul, rpow_mul hx.1.le, rpow_natCast]
-    refine pow_le_pow_left ?_ (by simp only [sub_le_self_iff, zero_le_one]) n
+    refine pow_le_pow_left _ (by simp only [sub_le_self_iff, zero_le_one]) n
     rw [le_sub_iff_add_le', add_zero]
-    refine Real.one_le_rpow_of_pos_of_le_one_of_nonpos hx.1 hx.2 ?_
+    refine Real.one_le_rpow_of_pos_of_le_one_of_nonpos hx.1 hx.2 _
     rw [Right.neg_nonpos_iff, inv_nonneg]
     exact hr.le
-  refine lt_of_le_of_lt (set_lintegral_mono' measurableSet_Ioc h_int) ?_
-  refine IntegrableOn.set_lintegral_lt_top ?_
+  refine lt_of_le_of_lt (set_lintegral_mono' measurableSet_Ioc h_int) _
+  refine IntegrableOn.set_lintegral_lt_top _
   rw [← intervalIntegrable_iff_integrableOn_Ioc_of_le zero_le_one]
   apply intervalIntegral.intervalIntegrable_rpow'
   rwa [neg_lt_neg_iff, inv_mul_lt_iff' hr, one_mul]
@@ -118,11 +118,11 @@ theorem finite_integral_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r)
   calc
     ∫⁻ t in Ioi 0, f t ≤ ∫⁻ t in Ioc 0 1 ∪ Ioi 1, f t := lintegral_mono_set Ioi_subset_Ioc_union_Ioi
     _ ≤ (∫⁻ t in Ioc 0 1, f t) + ∫⁻ t in Ioi 1, f t := lintegral_union_le _ _ _
-    _ < ∞ := ENNReal.add_lt_top.2 ⟨?_, ?_⟩
+    _ < ∞ := ENNReal.add_lt_top.2 ⟨_, _⟩
   · -- We use estimates from auxiliary lemmas to deal with integral from `0` to `1`
     have h_int' : ∀ t ∈ Ioc (0 : ℝ) 1,
         f t = ENNReal.ofReal ((t ^ (-r⁻¹) - 1) ^ finrank ℝ E) * mB := fun t ht ↦ by
-      refine μ.addHaar_closedBall (0 : E) ?_
+      refine μ.addHaar_closedBall (0 : E) _
       rw [sub_nonneg]
       exact Real.one_le_rpow_of_pos_of_le_one_of_nonpos ht.1 ht.2 (by simp [hr.le])
     rw [set_lintegral_congr_fun measurableSet_Ioc (ae_of_all _ h_int'),
@@ -153,8 +153,8 @@ theorem integrable_rpow_neg_one_add_norm_sq {r : ℝ} (hnr : (finrank ℝ E : �
     Integrable (fun x ↦ ((1 : ℝ) + ‖x‖ ^ 2) ^ (-r / 2)) μ := by
   have hr : 0 < r := lt_of_le_of_lt (finrank ℝ E).cast_nonneg hnr
   refine ((integrable_one_add_norm hnr).const_mul <| (2 : ℝ) ^ (r / 2)).mono'
-    ?_ (eventually_of_forall fun x => ?_)
+    _ (eventually_of_forall fun x => _)
   · measurability
-  refine (abs_of_pos ?_).trans_le (rpow_neg_one_add_norm_sq_le x hr)
+  refine (abs_of_pos _).trans_le (rpow_neg_one_add_norm_sq_le x hr)
   positivity
 #align integrable_rpow_neg_one_add_norm_sq integrable_rpow_neg_one_add_norm_sq

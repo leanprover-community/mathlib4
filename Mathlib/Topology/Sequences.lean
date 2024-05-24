@@ -126,9 +126,9 @@ theorem tendsto_nhds_iff_seq_tendsto [FrechetUrysohnSpace X] {f : X → Y} {a : 
     Tendsto f (𝓝 a) (𝓝 b) ↔ ∀ u : ℕ → X, Tendsto u atTop (𝓝 a) → Tendsto (f ∘ u) atTop (𝓝 b) := by
   refine
     ⟨fun hf u hu => hf.comp hu, fun h =>
-      ((nhds_basis_closeds _).tendsto_iff (nhds_basis_closeds _)).2 ?_⟩
+      ((nhds_basis_closeds _).tendsto_iff (nhds_basis_closeds _)).2 _⟩
   rintro s ⟨hbs, hsc⟩
-  refine ⟨closure (f ⁻¹' s), ⟨mt ?_ hbs, isClosed_closure⟩, fun x => mt fun hx => subset_closure hx⟩
+  refine ⟨closure (f ⁻¹' s), ⟨mt _ hbs, isClosed_closure⟩, fun x => mt fun hx => subset_closure hx⟩
   rw [← seqClosure_eq_closure]
   rintro ⟨u, hus, hu⟩
   exact hsc.mem_of_tendsto (h u hu) (eventually_of_forall hus)
@@ -140,7 +140,7 @@ theorem FrechetUrysohnSpace.of_seq_tendsto_imp_tendsto
     (h : ∀ (f : X → Prop) (a : X),
       (∀ u : ℕ → X, Tendsto u atTop (𝓝 a) → Tendsto (f ∘ u) atTop (𝓝 (f a))) → ContinuousAt f a) :
     FrechetUrysohnSpace X := by
-  refine ⟨fun s x hcx => ?_⟩
+  refine ⟨fun s x hcx => _⟩
   by_cases hx : x ∈ s;
   · exact subset_seqClosure hx
   · obtain ⟨u, hux, hus⟩ : ∃ u : ℕ → X, Tendsto u atTop (𝓝 x) ∧ ∃ᶠ x in atTop, u x ∈ s
@@ -323,10 +323,10 @@ protected theorem IsSeqCompact.isComplete (hs : IsSeqCompact s) : IsComplete s :
   have huc : CauchySeq u := hV.toHasBasis.cauchySeq_iff.2 fun N _ =>
       ⟨N, fun m hm n hn => hWV' _ <| @htW N (_, _) ⟨ht_anti hm (hu _), ht_anti hn (hu _)⟩⟩
   rcases hs.exists_tendsto (fun n => hts n (hu n)) huc with ⟨x, hxs, hx⟩
-  refine ⟨x, hxs, (nhds_basis_uniformity' hV.toHasBasis).ge_iff.2 fun N _ => ?_⟩
+  refine ⟨x, hxs, (nhds_basis_uniformity' hV.toHasBasis).ge_iff.2 fun N _ => _⟩
   obtain ⟨n, hNn, hn⟩ : ∃ n, N ≤ n ∧ u n ∈ ball x (W N)
   · exact ((eventually_ge_atTop N).and (hx <| ball_mem_nhds x (hW N))).exists
-  refine mem_of_superset (htl n) fun y hy => hWV N ⟨u n, hn, htW N ?_⟩
+  refine mem_of_superset (htl n) fun y hy => hWV N ⟨u n, hn, htW N _⟩
   exact ⟨ht_anti hNn (hu n), ht_anti hNn hy⟩
 #align is_seq_compact.is_complete IsSeqCompact.isComplete
 

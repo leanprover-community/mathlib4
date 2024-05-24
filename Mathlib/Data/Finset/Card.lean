@@ -267,7 +267,7 @@ theorem injOn_of_card_image_eq [DecidableEq β] (H : (s.image f).card = s.card) 
   rw [card_def, card_def, image, toFinset] at H
   dsimp only at H
   have : (s.1.map f).dedup = s.1.map f := by
-    refine Multiset.eq_of_le_of_card_le (Multiset.dedup_le _) ?_
+    refine Multiset.eq_of_le_of_card_le (Multiset.dedup_le _) _
     simp only [H, Multiset.card_map, le_rfl]
   rw [Multiset.dedup_eq_self] at this
   exact inj_on_of_nodup_map this
@@ -347,7 +347,7 @@ theorem card_eq_of_bijective (f : ∀ i, i < n → α) (hf : ∀ a ∈ s, ∃ i,
     · rintro ⟨i, hi, rfl⟩; apply hf'
   calc
     s.card = ((range n).attach.image fun i => f i.1 (mem_range.1 i.2)).card := by rw [this]
-    _      = (range n).attach.card := ?_
+    _      = (range n).attach.card := _
     _      = (range n).card := card_attach
     _      = n := card_range n
   apply card_image_of_injective
@@ -361,8 +361,8 @@ theorem card_congr {t : Finset β} (f : ∀ a ∈ s, β) (h₁ : ∀ a ha, f a h
   classical
   calc
     s.card = s.attach.card := card_attach.symm
-    _      = (s.attach.image fun a : { a // a ∈ s } => f a.1 a.2).card := Eq.symm ?_
-    _      = t.card := ?_
+    _      = (s.attach.image fun a : { a // a ∈ s } => f a.1 a.2).card := Eq.symm _
+    _      = t.card := _
   · apply card_image_of_injective
     intro ⟨_, _⟩ ⟨_, _⟩ h
     simpa using h₂ _ _ _ _ h
@@ -387,7 +387,7 @@ theorem exists_ne_map_eq_of_card_lt_of_maps_to {t : Finset β} (hc : t.card < s.
     (hf : ∀ a ∈ s, f a ∈ t) : ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ f x = f y := by
   classical
   by_contra! hz
-  refine hc.not_le (card_le_card_of_inj_on f hf ?_)
+  refine hc.not_le (card_le_card_of_inj_on f hf _)
   intro x hx y hy
   contrapose
   exact hz x hx y hy
@@ -575,7 +575,7 @@ theorem exists_smaller_set (A : Finset α) (i : ℕ) (h₁ : i ≤ card A) :
 #align finset.exists_smaller_set Finset.exists_smaller_set
 
 theorem le_card_iff_exists_subset_card : n ≤ s.card ↔ ∃ t ⊆ s, t.card = n := by
-  refine ⟨fun h => ?_, fun ⟨t, hst, ht⟩ => ht ▸ card_le_card hst⟩
+  refine ⟨fun h => _, fun ⟨t, hst, ht⟩ => ht ▸ card_le_card hst⟩
   exact exists_smaller_set s n h
 
 theorem exists_subset_or_subset_of_two_mul_lt_card [DecidableEq α] {X Y : Finset α} {n : ℕ}
@@ -610,7 +610,7 @@ theorem exists_eq_insert_iff [DecidableEq α] {s t : Finset α} :
     obtain ⟨a, ha⟩ : ∃ a, t \ s = {a} :=
       card_eq_one.1 (by rw [card_sdiff hst, ← h, Nat.add_sub_cancel_left])
     refine
-      ⟨a, fun hs => (?_ : a ∉ {a}) <| mem_singleton_self _, by
+      ⟨a, fun hs => (_ : a ∉ {a}) <| mem_singleton_self _, by
         rw [insert_eq, ← ha, sdiff_union_of_subset hst]⟩
     rw [← ha]
     exact not_mem_sdiff_of_mem_right hs
@@ -619,7 +619,7 @@ theorem exists_eq_insert_iff [DecidableEq α] {s t : Finset α} :
 theorem card_le_one : s.card ≤ 1 ↔ ∀ a ∈ s, ∀ b ∈ s, a = b := by
   obtain rfl | ⟨x, hx⟩ := s.eq_empty_or_nonempty
   · simp
-  refine (Nat.succ_le_of_lt (card_pos.2 ⟨x, hx⟩)).le_iff_eq.trans (card_eq_one.trans ⟨?_, ?_⟩)
+  refine (Nat.succ_le_of_lt (card_pos.2 ⟨x, hx⟩)).le_iff_eq.trans (card_eq_one.trans ⟨_, _⟩)
   · rintro ⟨y, rfl⟩
     simp
   · exact fun h => ⟨x, eq_singleton_iff_unique_mem.2 ⟨hx, fun y hy => h _ hy _ hx⟩⟩
@@ -634,7 +634,7 @@ theorem card_le_one_iff_subsingleton_coe : s.card ≤ 1 ↔ Subsingleton (s : Ty
   card_le_one.trans (s : Set α).subsingleton_coe.symm
 
 theorem card_le_one_iff_subset_singleton [Nonempty α] : s.card ≤ 1 ↔ ∃ x : α, s ⊆ {x} := by
-  refine ⟨fun H => ?_, ?_⟩
+  refine ⟨fun H => _, _⟩
   · obtain rfl | ⟨x, hx⟩ := s.eq_empty_or_nonempty
     · exact ⟨Classical.arbitrary α, empty_subset _⟩
     · exact ⟨x, fun y hy => by rw [card_le_one.1 H y hy x hx, mem_singleton]⟩
@@ -686,7 +686,7 @@ lemma exists_of_one_lt_card_pi {ι : Type*} {α : ι → Type*} [∀ i, Decidabl
     ∃ i, 1 < (s.image (· i)).card ∧ ∀ ai, s.filter (· i = ai) ⊂ s := by
   simp_rw [one_lt_card_iff, Function.ne_iff] at h ⊢
   obtain ⟨a1, a2, h1, h2, i, hne⟩ := h
-  refine ⟨i, ⟨_, _, mem_image_of_mem _ h1, mem_image_of_mem _ h2, hne⟩, fun ai => ?_⟩
+  refine ⟨i, ⟨_, _, mem_image_of_mem _ h1, mem_image_of_mem _ h2, hne⟩, fun ai => _⟩
   rw [filter_ssubset]
   obtain rfl | hne := eq_or_ne (a2 i) ai
   exacts [⟨a1, h1, hne⟩, ⟨a2, h2, hne⟩]
@@ -799,7 +799,7 @@ protected lemma Nonempty.strong_induction {p : ∀ s, s.Nonempty → Prop}
   | s, hs => by
     obtain ⟨a, rfl⟩ | hs := hs.exists_eq_singleton_or_nontrivial
     · exact h₀ _
-    · refine h₁ hs fun t ht hts ↦ ?_
+    · refine h₁ hs fun t ht hts ↦ _
       have := card_lt_card hts
       exact ht.strong_induction h₀ h₁
 termination_by s => Finset.card s

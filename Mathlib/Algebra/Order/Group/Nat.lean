@@ -40,7 +40,7 @@ instance instLinearOrderedCancelAddCommMonoid : LinearOrderedCancelAddCommMonoid
   le_of_add_le_add_left := @Nat.le_of_add_le_add_left
 
 instance instOrderedSub : OrderedSub ℕ := by
-  refine ⟨fun m n k ↦ ?_⟩
+  refine ⟨fun m n k ↦ _⟩
   induction' n with n ih generalizing k
   · simp
   · simp only [sub_succ, pred_le_iff, ih, succ_add, add_succ]

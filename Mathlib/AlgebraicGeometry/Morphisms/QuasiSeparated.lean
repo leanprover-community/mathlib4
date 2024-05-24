@@ -285,14 +285,14 @@ theorem quasiSeparatedOfComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [H : Q
   -- give it a name works
   have h02 := (QuasiSeparated.affine_openCover_TFAE (f ≫ g)).out 0 2
   rw [h02] at H; clear h02
-  refine ⟨(Z.affineCover.pullbackCover g).bind fun x => Scheme.affineCover _, ?_, ?_⟩
+  refine ⟨(Z.affineCover.pullbackCover g).bind fun x => Scheme.affineCover _, _, _⟩
   -- constructor
   · intro i; dsimp; infer_instance
   rintro ⟨i, j⟩; dsimp at i j
   -- replace H := H (Scheme.OpenCover.pullbackCover (Scheme.affineCover Z) g) i
   specialize H _ i
   -- rw [← isQuasiSeparated_iff_quasiSeparatedSpace] at H
-  refine @quasiSeparatedSpace_of_quasiSeparated _ _ ?_ H ?_
+  refine @quasiSeparatedSpace_of_quasiSeparated _ _ _ H _
   · exact pullback.map _ _ _ _ (𝟙 _) _ _ (by simp) (Category.comp_id _) ≫
       (pullbackRightPullbackFstIso g (Z.affineCover.map i) f).hom
   · exact inferInstance
@@ -365,7 +365,7 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
   · intro _ f x
     use 0, f
     refine @Subsingleton.elim _
-      (CommRingCat.subsingleton_of_isTerminal (X.sheaf.isTerminalOfEqEmpty ?_)) _ _
+      (CommRingCat.subsingleton_of_isTerminal (X.sheaf.isTerminalOfEqEmpty _)) _ _
     erw [eq_bot_iff]
     exact X.basicOpen_le f
   · -- Given `f : 𝒪(S ∪ U), x : 𝒪(X_f)`, we need to show that `f ^ n * x` is the restriction of
@@ -418,7 +418,7 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
         X.presheaf.map (homOfLE <| inf_le_right).op
           (X.presheaf.map (homOfLE le_sup_right).op f ^ (Finset.univ.sup n + n₁) * y₂) := by
       fapply X.sheaf.eq_of_locally_eq' fun i : s => i.1.1
-      · refine fun i => homOfLE ?_; erw [hs];
+      · refine fun i => homOfLE _; erw [hs];
         -- Porting note: have to add argument explicitly
         exact @le_iSup (Opens X) s _ (fun (i : s) => (i : Opens X)) i
       · exact le_of_eq hs
@@ -433,7 +433,7 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
     -- the desired section on `S ∪ U`.
     use (X.sheaf.objSupIsoProdEqLocus S U.1).inv ⟨⟨_ * _, _ * _⟩, this⟩
     refine (X.sheaf.objSupIsoProdEqLocus_inv_eq_iff _ _ _ (X.basicOpen_res _
-      (homOfLE le_sup_left).op) (X.basicOpen_res _ (homOfLE le_sup_right).op)).mpr ⟨?_, ?_⟩
+      (homOfLE le_sup_left).op) (X.basicOpen_res _ (homOfLE le_sup_right).op)).mpr ⟨_, _⟩
     · delta Scheme.sheaf SheafedSpace.sheaf
       rw [add_assoc, add_comm n₁]
       simp only [pow_add, map_pow, map_mul]
@@ -458,7 +458,7 @@ theorem is_localization_basicOpen_of_qcqs {X : Scheme} {U : Opens X.carrier} (hU
     exact IsUnit.pow _ (RingedSpace.isUnit_res_basicOpen _ f)
   · intro z
     obtain ⟨n, y, e⟩ := exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated X U hU hU' f z
-    refine ⟨⟨y, _, n, rfl⟩, ?_⟩
+    refine ⟨⟨y, _, n, rfl⟩, _⟩
     simpa only [map_pow, Subtype.coe_mk, RingHom.algebraMap_toAlgebra, mul_comm z] using e.symm
   · intro x y
     rw [← sub_eq_zero, ← map_sub, RingHom.algebraMap_toAlgebra]
@@ -466,7 +466,7 @@ theorem is_localization_basicOpen_of_qcqs {X : Scheme} {U : Opens X.carrier} (hU
     generalize x - y = z
     intro H
     obtain ⟨n, e⟩ := exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact X hU _ _ H
-    refine ⟨⟨_, n, rfl⟩, ?_⟩
+    refine ⟨⟨_, n, rfl⟩, _⟩
     simpa [mul_comm z] using e
 #align algebraic_geometry.is_localization_basic_open_of_qcqs AlgebraicGeometry.is_localization_basicOpen_of_qcqs
 

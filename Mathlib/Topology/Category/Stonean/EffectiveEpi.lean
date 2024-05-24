@@ -103,7 +103,7 @@ theorem effectiveEpiFamily_tfae
     rw [epi_iff_surjective]
     intro b
     obtain ⟨t, x, h⟩ := e b
-    refine ⟨Sigma.ι X t x, ?_⟩
+    refine ⟨Sigma.ι X t x, _⟩
     change (Sigma.ι X t ≫ Sigma.desc π) x = _
     simpa using h
   tfae_have 2 → 3
@@ -113,7 +113,7 @@ theorem effectiveEpiFamily_tfae
     intro b
     obtain ⟨t, rfl⟩ := e b
     let q := i.hom t
-    refine ⟨q.1,q.2,?_⟩
+    refine ⟨q.1,q.2,_⟩
     have : t = i.inv (i.hom t) := show t = (i.hom ≫ i.inv) t by simp only [i.hom_inv_id]; rfl
     rw [this]
     show _ = (i.inv ≫ Sigma.desc π) (i.hom t)
@@ -140,7 +140,7 @@ theorem _root_.CategoryTheory.EffectiveEpiFamily.toCompHaus
     {α : Type} [Finite α] {B : Stonean.{u}}
     {X : α → Stonean.{u}} {π : (a : α) → (X a ⟶ B)} (H : EffectiveEpiFamily X π) :
     EffectiveEpiFamily (toCompHaus.obj <| X ·) (toCompHaus.map <| π ·) := by
-  refine ((CompHaus.effectiveEpiFamily_tfae _ _).out 0 2).2 (fun b => ?_)
+  refine ((CompHaus.effectiveEpiFamily_tfae _ _).out 0 2).2 (fun b => _)
   exact (((effectiveEpiFamily_tfae _ _).out 0 2).1 H : ∀ _, ∃ _, _) _
 
 end Stonean

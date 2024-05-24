@@ -61,7 +61,7 @@ theorem measure_pos_of_superset (h : s ⊆ t) (hs : μ s ≠ 0) : 0 < μ t :=
   hs.bot_lt.trans_le (measure_mono h)
 
 theorem measure_iUnion_le [Countable ι] (s : ι → Set α) : μ (⋃ i, s i) ≤ ∑' i, μ (s i) := by
-  refine rel_iSup_tsum μ measure_empty (· ≤ ·) (fun t ↦ ?_) _
+  refine rel_iSup_tsum μ measure_empty (· ≤ ·) (fun t ↦ _) _
   calc
     μ (⋃ i, t i) = μ (⋃ i, disjointed t i) := by rw [iUnion_disjointed]
     _ ≤ ∑' i, μ (disjointed t i) :=
@@ -102,7 +102,7 @@ theorem measure_diff_null (ht : μ t = 0) : μ (s \ t) = μ s :=
 
 theorem measure_biUnion_null_iff {I : Set ι} (hI : I.Countable) {s : ι → Set α} :
     μ (⋃ i ∈ I, s i) = 0 ↔ ∀ i ∈ I, μ (s i) = 0 := by
-  refine ⟨fun h i hi ↦ measure_mono_null (subset_biUnion_of_mem hi) h, fun h ↦ ?_⟩
+  refine ⟨fun h i hi ↦ measure_mono_null (subset_biUnion_of_mem hi) h, fun h ↦ _⟩
   have _ := hI.to_subtype
   simpa [h] using measure_iUnion_le (μ := μ) fun x : I ↦ s x
 #align measure_theory.measure_bUnion_null_iff MeasureTheory.measure_biUnion_null_iff
@@ -134,7 +134,7 @@ If `μ (S \ s n)` tends to zero along some nontrivial filter (usually `Filter.at
 then `μ S = ⨆ n, μ (s n)`. -/
 theorem measure_iUnion_of_tendsto_zero {ι} (μ : F) {s : ι → Set α} (l : Filter ι) [NeBot l]
     (h0 : Tendsto (fun k => μ ((⋃ n, s n) \ s k)) l (𝓝 0)) : μ (⋃ n, s n) = ⨆ n, μ (s n) := by
-  refine le_antisymm ?_ <| iSup_le fun n ↦ measure_mono <| subset_iUnion _ _
+  refine le_antisymm _ <| iSup_le fun n ↦ measure_mono <| subset_iUnion _ _
   set S := ⋃ n, s n
   set M := ⨆ n, μ (s n)
   have A : ∀ k, μ S ≤ M + μ (S \ s k) := fun k ↦ calc
@@ -260,9 +260,9 @@ then `m (⋃ n, s n) = ⨆ n, m (s n)`. -/
 theorem iUnion_nat_of_monotone_of_tsum_ne_top (m : OuterMeasure α) {s : ℕ → Set α}
     (h_mono : ∀ n, s n ⊆ s (n + 1)) (h0 : (∑' k, m (s (k + 1) \ s k)) ≠ ∞) :
     m (⋃ n, s n) = ⨆ n, m (s n) := by
-  refine measure_iUnion_of_tendsto_zero m atTop ?_
-  refine tendsto_nhds_bot_mono' (ENNReal.tendsto_sum_nat_add _ h0) fun n => ?_
-  refine (m.mono ?_).trans (measure_iUnion_le _)
+  refine measure_iUnion_of_tendsto_zero m atTop _
+  refine tendsto_nhds_bot_mono' (ENNReal.tendsto_sum_nat_add _ h0) fun n => _
+  refine (m.mono _).trans (measure_iUnion_le _)
   -- Current goal: `(⋃ k, s k) \ s n ⊆ ⋃ k, s (k + n + 1) \ s (k + n)`
   have h' : Monotone s := @monotone_nat_of_le_succ (Set α) _ _ h_mono
   simp only [diff_subset_iff, iUnion_subset_iff]
@@ -273,7 +273,7 @@ theorem iUnion_nat_of_monotone_of_tsum_ne_top (m : OuterMeasure α) {s : ℕ →
   rcases le_or_lt j n with hjn | hnj
   · exact Or.inl (h' hjn hj)
   have : j - (n + 1) + n + 1 = j := by omega
-  refine Or.inr (mem_iUnion.2 ⟨j - (n + 1), ?_, hlt _ ?_⟩)
+  refine Or.inr (mem_iUnion.2 ⟨j - (n + 1), _, hlt _ _⟩)
   · rwa [this]
   · rw [← Nat.succ_le_iff, Nat.succ_eq_add_one, this]
 #align measure_theory.outer_measure.Union_nat_of_monotone_of_tsum_ne_top MeasureTheory.OuterMeasure.iUnion_nat_of_monotone_of_tsum_ne_top

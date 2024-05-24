@@ -483,7 +483,7 @@ variable (R M N)
 /-- The simple (aka pure) elements span the tensor product. -/
 theorem span_tmul_eq_top : Submodule.span R { t : M ⊗[R] N | ∃ m n, m ⊗ₜ n = t } = ⊤ := by
   ext t; simp only [Submodule.mem_top, iff_true_iff]
-  refine t.induction_on ?_ ?_ ?_
+  refine t.induction_on _ _ _
   · exact Submodule.zero_mem _
   · intro m n
     apply Submodule.subset_span
@@ -775,8 +775,8 @@ protected def assoc : (M ⊗[R] N) ⊗[R] P ≃ₗ[R] M ⊗[R] N ⊗[R] P := by
   refine
       LinearEquiv.ofLinear (lift <| lift <| comp (lcurry R _ _ _) <| mk _ _ _)
         (lift <| comp (uncurry R _ _ _) <| curry <| mk _ _ _)
-        (ext <| LinearMap.ext fun m => ext' fun n p => ?_)
-        (ext <| flip_inj <| LinearMap.ext fun p => ext' fun m n => ?_) <;>
+        (ext <| LinearMap.ext fun m => ext' fun n p => _)
+        (ext <| flip_inj <| LinearMap.ext fun p => ext' fun m n => _) <;>
     repeat'
       first
         |rw [lift.tmul]|rw [compr₂_apply]|rw [comp_apply]|rw [mk_apply]|rw [flip_apply]
@@ -853,7 +853,7 @@ theorem map_range_eq_span_tmul (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     use m, n
     simp only [map_tmul]
   · rintro ⟨m, n, rfl⟩
-    refine ⟨_, ⟨⟨m, n, rfl⟩, ?_⟩⟩
+    refine ⟨_, ⟨⟨m, n, rfl⟩, _⟩⟩
     simp only [map_tmul]
 #align tensor_product.map_range_eq_span_tmul TensorProduct.map_range_eq_span_tmul
 

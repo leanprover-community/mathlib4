@@ -67,12 +67,12 @@ theorem lt_of_sum_four_squares_eq_mul {a b c d k m : ℕ}
     (ha : 2 * a < m) (hb : 2 * b < m) (hc : 2 * c < m) (hd : 2 * d < m) :
     k < m := by
   refine _root_.lt_of_mul_lt_mul_right
-    (_root_.lt_of_mul_lt_mul_left ?_ (zero_le (2 ^ 2))) (zero_le m)
+    (_root_.lt_of_mul_lt_mul_left _ (zero_le (2 ^ 2))) (zero_le m)
   calc
     2 ^ 2 * (k * ↑m) = ∑ i : Fin 4, (2 * ![a, b, c, d] i) ^ 2 := by
       simp [← h, Fin.sum_univ_succ, mul_add, mul_pow, add_assoc]
     _ < ∑ _i : Fin 4, m ^ 2 := Finset.sum_lt_sum_of_nonempty Finset.univ_nonempty fun i _ ↦ by
-      refine pow_lt_pow_left ?_ (zero_le _) two_ne_zero
+      refine pow_lt_pow_left _ (zero_le _) two_ne_zero
       fin_cases i <;> assumption
     _ = 2 ^ 2 * (m * m) := by simp; ring
 
@@ -85,13 +85,13 @@ theorem exists_sq_add_sq_add_one_eq_mul (p : ℕ) [hp : Fact p.Prime] :
   rcases Int.modEq_iff_dvd.1 hab.symm with ⟨k, hk⟩
   rw [sub_neg_eq_add, mul_comm] at hk
   have hk₀ : 0 < k := by
-    refine pos_of_mul_pos_left ?_ (Nat.cast_nonneg p)
+    refine pos_of_mul_pos_left _ (Nat.cast_nonneg p)
     rw [← hk]
     positivity
   lift k to ℕ using hk₀.le
-  refine ⟨a, b, k, Nat.cast_pos.1 hk₀, ?_, mod_cast hk⟩
+  refine ⟨a, b, k, Nat.cast_pos.1 hk₀, _, mod_cast hk⟩
   replace hk : a ^ 2 + b ^ 2 + 1 ^ 2 + 0 ^ 2 = k * p := mod_cast hk
-  refine lt_of_sum_four_squares_eq_mul hk ?_ ?_ ?_ ?_
+  refine lt_of_sum_four_squares_eq_mul hk _ _ _ _
   · exact (mul_le_mul' le_rfl ha).trans_lt (Nat.mul_div_lt_iff_not_dvd.2 hodd.not_two_dvd_nat)
   · exact (mul_le_mul' le_rfl hb).trans_lt (Nat.mul_div_lt_iff_not_dvd.2 hodd.not_two_dvd_nat)
   · exact lt_of_le_of_ne hp.1.two_le (hodd.ne_two_of_dvd_nat (dvd_refl _)).symm
@@ -131,7 +131,7 @@ private theorem sum_four_squares_of_two_mul_sum_four_squares {m a b c d : ℤ}
     (CharP.intCast_eq_zero_iff (ZMod 2) 2 _).1 <| by
       simpa only [Int.cast_pow, Int.cast_add, ZMod.pow_card] using hσ.2
   refine ⟨(f (σ 0) - f (σ 1)) / 2, (f (σ 0) + f (σ 1)) / 2, (f (σ 2) - f (σ 3)) / 2,
-    (f (σ 2) + f (σ 3)) / 2, ?_⟩
+    (f (σ 2) + f (σ 3)) / 2, _⟩
   rw [← Int.sq_add_sq_of_two_mul_sq_add_sq hx.symm, add_assoc,
     ← Int.sq_add_sq_of_two_mul_sq_add_sq hy.symm, ← mul_right_inj' two_ne_zero, ← h, mul_add]
   have : (∑ x, f (σ x) ^ 2) = ∑ x, f x ^ 2 := Equiv.sum_comp σ (f · ^ 2)
@@ -148,7 +148,7 @@ protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
     rw [← @Nat.cast_inj ℤ]; push_cast [sq_abs]; rfl
   have hm : ∃ m < p, 0 < m ∧ ∃ a b c d : ℕ, a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = m * p := by
     obtain ⟨a, b, k, hk₀, hkp, hk⟩ := exists_sq_add_sq_add_one_eq_mul p
-    refine ⟨k, hkp, hk₀, a, b, 1, 0, ?_⟩
+    refine ⟨k, hkp, hk₀, a, b, 1, 0, _⟩
     simpa
   -- Take the minimal possible `m`
   rcases Nat.findX hm with ⟨m, ⟨hmp, hm₀, a, b, c, d, habcd⟩, hmin⟩
@@ -171,7 +171,7 @@ protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
     -- absolute value
     obtain ⟨f, hf_lt, hf_mod⟩ :
         ∃ f : ℕ → ℤ, (∀ x, 2 * (f x).natAbs < m) ∧ ∀ x, (f x : ZMod m) = x := by
-      refine ⟨fun x ↦ (x : ZMod m).valMinAbs, fun x ↦ ?_, fun x ↦ (x : ZMod m).coe_valMinAbs⟩
+      refine ⟨fun x ↦ (x : ZMod m).valMinAbs, fun x ↦ _, fun x ↦ (x : ZMod m).coe_valMinAbs⟩
       exact (mul_le_mul' le_rfl (x : ZMod m).natAbs_valMinAbs_le).trans_lt
         (Nat.mul_div_lt_iff_not_dvd.2 hm)
     -- Since `|f x| ^ 2 = (f x) ^ 2 ≡ x ^ 2 [ZMOD m]`, we have
@@ -201,7 +201,7 @@ protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
     rsuffices ⟨w, x, y, z, hw, hx, hy, hz, h⟩ : ∃ w x y z : ℤ, ↑m ∣ w ∧ ↑m ∣ x ∧ ↑m ∣ y ∧ ↑m ∣ z ∧
       w ^ 2 + x ^ 2 + y ^ 2 + z ^ 2 = ↑(m * r) * ↑(m * p)
     · have : (w / m) ^ 2 + (x / m) ^ 2 + (y / m) ^ 2 + (z / m) ^ 2 = ↑(r * p) := by
-        refine mul_left_cancel₀ (pow_ne_zero 2 (Nat.cast_ne_zero.2 hm₀.ne')) ?_
+        refine mul_left_cancel₀ (pow_ne_zero 2 (Nat.cast_ne_zero.2 hm₀.ne')) _
         conv_rhs => rw [← Nat.cast_pow, ← Nat.cast_mul, sq m, mul_mul_mul_comm, Nat.cast_mul, ← h]
         simp only [mul_add, ← mul_pow, Int.mul_ediv_cancel', *]
       rw [← natAbs_iff] at this
@@ -212,7 +212,7 @@ protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
       ac_rfl
     have := congr_arg₂ (· * Nat.cast ·) hr habcd
     simp only [← _root_.euler_four_squares, Nat.cast_add, Nat.cast_pow] at this
-    refine ⟨_, _, _, _, ?_, ?_, ?_, ?_, this⟩
+    refine ⟨_, _, _, _, _, _, _, _, this⟩
     · simp [← ZMod.intCast_zmod_eq_zero_iff_dvd, hf_mod, mul_comm]
     · suffices ((a : ZMod m) ^ 2 + (b : ZMod m) ^ 2 + (c : ZMod m) ^ 2 + (d : ZMod m) ^ 2) = 0 by
         simpa [← ZMod.intCast_zmod_eq_zero_iff_dvd, hf_mod, sq, add_comm, add_assoc,

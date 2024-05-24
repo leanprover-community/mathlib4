@@ -66,7 +66,7 @@ private lemma LSeries.LSeriesSummable_logMul_and_hasDerivAt {f : ℕ → ℂ} {s
     norm_term_le_of_re_le_re f (by simpa using (hxy.trans hz).le) n
   have H := hasSum_deriv_of_summable_norm h₀ h₁ h₂ h₃ hys
   simp_rw [(hasDerivAt_term f _ _).deriv] at H
-  refine ⟨summable_neg_iff.mp H.summable, ?_⟩
+  refine ⟨summable_neg_iff.mp H.summable, _⟩
   have H' := differentiableOn_tsum_of_summable_norm h₀ h₁ h₂ h₃
   simpa only [← H.tsum_eq, tsum_neg]
     using (H'.differentiableAt <| IsOpen.mem_nhds h₂ hys).hasDerivAt
@@ -101,14 +101,14 @@ is the same as that of `f`. -/
 @[simp]
 lemma LSeries.abscissaOfAbsConv_logMul {f : ℕ → ℂ} :
     abscissaOfAbsConv (logMul f) = abscissaOfAbsConv f := by
-  apply le_antisymm <;> refine abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable' fun s hs ↦ ?_
+  apply le_antisymm <;> refine abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable' fun s hs ↦ _
   · exact LSeriesSummable_logMul_of_lt_re <| by simp [hs]
   · refine (LSeriesSummable_of_abscissaOfAbsConv_lt_re <| by simp only [ofReal_re, hs])
-      |>.norm.of_norm_bounded_eventually_nat (‖term (logMul f) s ·‖) ?_
+      |>.norm.of_norm_bounded_eventually_nat (‖term (logMul f) s ·‖) _
     filter_upwards [Filter.eventually_ge_atTop <| max 1 (Nat.ceil (Real.exp 1))] with n hn
     simp only [term_of_ne_zero (show n ≠ 0 by omega), logMul, norm_mul, mul_div_assoc,
       ← natCast_log, norm_real]
-    refine le_mul_of_one_le_left (norm_nonneg _) (.trans ?_ <| Real.le_norm_self _)
+    refine le_mul_of_one_le_left (norm_nonneg _) (.trans _ <| Real.le_norm_self _)
     rw [← Real.log_exp 1]
     exact Real.log_le_log (Real.exp_pos 1) <| Nat.ceil_le.mp <| (le_max_right _ _).trans hn
 

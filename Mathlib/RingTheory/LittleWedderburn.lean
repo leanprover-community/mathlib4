@@ -86,14 +86,14 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
   suffices Φₙ.eval ↑q ∣ ↑(∑ x in (ConjClasses.noncenter Dˣ).toFinset, x.carrier.toFinset.card) by
     have contra : Φₙ.eval _ ∣ _ := eval_dvd (cyclotomic.dvd_X_pow_sub_one n ℤ) (x := (q : ℤ))
     rw [eval_sub, eval_pow, eval_X, eval_one, ← key, Int.dvd_add_left this] at contra
-    refine (Nat.le_of_dvd ?_ ?_).not_lt (sub_one_lt_natAbs_cyclotomic_eval (n := n) ?_ hq.ne')
+    refine (Nat.le_of_dvd _ _).not_lt (sub_one_lt_natAbs_cyclotomic_eval (n := n) _ hq.ne')
     · exact tsub_pos_of_lt hq
     · convert Int.natAbs_dvd_natAbs.mpr contra
       clear_value q
       simp only [eq_comm, Int.natAbs_eq_iff, Nat.cast_sub hq.le, Nat.cast_one, neg_sub, true_or]
     · by_contra! h
       obtain ⟨x, hx⟩ := finrank_le_one_iff.mp h
-      refine not_le_of_lt hZ.lt_top (fun y _ ↦ Subring.mem_center_iff.mpr fun z ↦ ?_)
+      refine not_le_of_lt hZ.lt_top (fun y _ ↦ Subring.mem_center_iff.mpr fun z ↦ _)
       obtain ⟨r, rfl⟩ := hx y
       obtain ⟨s, rfl⟩ := hx z
       rw [smul_mul_smul, smul_mul_smul, mul_comm]
@@ -112,7 +112,7 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
         (show Zxˣ ≃* _ from unitsCentralizerEquiv _ x).toEquiv, card_units, card_D]
   have hZx : Zx ≠ ⊤ := by
     by_contra! hZx
-    refine (ConjClasses.mk_bijOn (Dˣ)).mapsTo (Set.subset_center_units ?_) hx
+    refine (ConjClasses.mk_bijOn (Dˣ)).mapsTo (Set.subset_center_units _) hx
     exact Subring.centralizer_eq_top_iff_subset.mp hZx <| Set.mem_singleton _
   letI : Field Zx := hD.field hZx.lt_top
   letI : Algebra Z Zx := (Subring.inclusion <| Subring.center_le_centralizer {(x : D)}).toAlgebra
@@ -126,11 +126,11 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
   have aux : ∀ {k : ℕ}, ((X : ℤ[X]) ^ k - 1).eval ↑q = (q : ℤ) ^ k - 1 := by
     simp only [eval_X, eval_one, eval_pow, eval_sub, eq_self_iff_true, forall_const]
   rw [← aux, ← aux, ← eval_mul]
-  refine (evalRingHom ↑q).map_dvd (X_pow_sub_one_mul_cyclotomic_dvd_X_pow_sub_one_of_dvd ℤ ?_)
-  refine Nat.mem_properDivisors.mpr ⟨⟨_, (finrank_mul_finrank Z Zx D).symm⟩, ?_⟩
+  refine (evalRingHom ↑q).map_dvd (X_pow_sub_one_mul_cyclotomic_dvd_X_pow_sub_one_of_dvd ℤ _)
+  refine Nat.mem_properDivisors.mpr ⟨⟨_, (finrank_mul_finrank Z Zx D).symm⟩, _⟩
   rw [← pow_lt_pow_iff_right hq, ← card_D, ← card_Zx]
   obtain ⟨b, -, hb⟩ := SetLike.exists_of_lt hZx.lt_top
-  refine card_lt_of_injective_of_not_mem _ Subtype.val_injective (?_ : b ∉ _)
+  refine card_lt_of_injective_of_not_mem _ Subtype.val_injective (_ : b ∉ _)
   rintro ⟨b, rfl⟩
   exact hb b.2
 
@@ -160,7 +160,7 @@ open LittleWedderburn
 may cause diamonds if used improperly. -/
 instance (priority := 100) littleWedderburn (D : Type*) [DivisionRing D] [Finite D] : Field D :=
   { ‹DivisionRing D› with
-    mul_comm := fun x y ↦ by simp [Subring.mem_center_iff.mp ?_ x, center_eq_top D] }
+    mul_comm := fun x y ↦ by simp [Subring.mem_center_iff.mp _ x, center_eq_top D] }
 
 alias Finite.divisionRing_to_field := littleWedderburn
 

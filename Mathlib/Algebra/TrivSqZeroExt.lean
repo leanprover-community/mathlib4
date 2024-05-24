@@ -626,7 +626,7 @@ theorem snd_pow_of_smul_comm [Monoid R] [AddMonoid M] [DistribMulAction R M]
   | 0 => rw [Nat.pred_zero, pow_zero, List.range_zero, zero_smul, List.map_nil, List.sum_nil]
   | (Nat.succ n) =>
     simp_rw [Nat.pred_succ]
-    refine (List.sum_eq_card_nsmul _ (x.fst ^ n • x.snd) ?_).trans ?_
+    refine (List.sum_eq_card_nsmul _ (x.fst ^ n • x.snd) _).trans _
     · rintro m hm
       simp_rw [List.mem_map, List.mem_range] at hm
       obtain ⟨i, hi, rfl⟩ := hm
@@ -1015,7 +1015,7 @@ def liftEquiv :
 @[simps! apply symm_apply_coe]
 def liftEquivOfComm :
     { f : M →ₗ[R'] A // ∀ x y, f x * f y = 0 } ≃ (tsze R' M →ₐ[R'] A) := by
-  refine Equiv.trans ?_ liftEquiv
+  refine Equiv.trans _ liftEquiv
   exact {
     toFun := fun f => ⟨(Algebra.ofId _ _, f.val), f.prop,
       fun r x => by simp [Algebra.smul_def, Algebra.ofId_apply],

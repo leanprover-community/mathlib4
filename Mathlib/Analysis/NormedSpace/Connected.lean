@@ -38,7 +38,7 @@ theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
   -- the set `sᶜ` is dense, therefore nonempty. Pick `a ∈ sᶜ`. We have to show that any
   -- `b ∈ sᶜ` can be joined to `a`.
   obtain ⟨a, ha⟩ : sᶜ.Nonempty := (hs.dense_compl ℝ).nonempty
-  refine ⟨a, ha, ?_⟩
+  refine ⟨a, ha, _⟩
   intro b hb
   rcases eq_or_ne a b with rfl|hab
   · exact JoinedIn.refl ha
@@ -137,7 +137,7 @@ theorem isPathConnected_sphere (h : 1 < Module.rank ℝ E) (x : E) {r : ℝ} (hr
   have A : ContinuousOn f {0}ᶜ := by
     intro y hy
     apply (continuousAt_const.add _).continuousWithinAt
-    apply (continuousAt_const.mul (ContinuousAt.inv₀ continuousAt_id.norm ?_)).smul continuousAt_id
+    apply (continuousAt_const.mul (ContinuousAt.inv₀ continuousAt_id.norm _)).smul continuousAt_id
     simpa using hy
   have B : IsPathConnected ({0}ᶜ : Set E) := isPathConnected_compl_singleton_of_one_lt_rank h 0
   have C : IsPathConnected (f '' {0}ᶜ) := B.image' A
@@ -147,7 +147,7 @@ theorem isPathConnected_sphere (h : 1 < Module.rank ℝ E) (x : E) {r : ℝ} (hr
       have : ‖y‖ ≠ 0 := by simpa using hy
       simp [f, norm_smul, abs_of_nonneg hr, mul_assoc, inv_mul_cancel this]
     · intro y hy
-      refine ⟨y - x, ?_, ?_⟩
+      refine ⟨y - x, _, _⟩
       · intro H
         simp only [mem_singleton_iff, sub_eq_zero] at H
         simp only [H, mem_sphere_iff_norm, sub_self, norm_zero] at hy
@@ -180,7 +180,7 @@ theorem isPathConnected_compl_of_one_lt_codim {E : Submodule ℝ F}
     (hcodim : 1 < Module.rank ℝ (F ⧸ E)) : IsPathConnected (Eᶜ : Set F) := by
   rcases E.exists_isCompl with ⟨E', hE'⟩
   refine isPathConnected_compl_of_isPathConnected_compl_zero hE'.symm
-    (isPathConnected_compl_singleton_of_one_lt_rank ?_ 0)
+    (isPathConnected_compl_singleton_of_one_lt_rank _ 0)
   rwa [← (E.quotientEquivOfIsCompl E' hE').rank_eq]
 
 /-- Let `E` be a linear subspace in a real vector space.

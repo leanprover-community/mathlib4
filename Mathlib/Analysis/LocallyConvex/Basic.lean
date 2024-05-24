@@ -212,7 +212,7 @@ theorem Balanced.smul_mem_mono [SMulCommClass 𝕝 𝕜 E] (hs : Balanced 𝕝 s
   · calc
       b • x = (a⁻¹ • b) • a • x := by rw [smul_comm, smul_assoc, smul_inv_smul₀ ha₀]
       _ ∈ s := by
-        refine hs.smul_mem ?_ ha
+        refine hs.smul_mem _ ha
         rw [norm_smul, norm_inv, ← div_eq_inv_mul]
         exact div_le_one_of_le hba (norm_nonneg _)
 
@@ -304,7 +304,7 @@ section Real
 variable [AddCommGroup E] [Module ℝ E] {s : Set E}
 
 theorem balanced_iff_neg_mem (hs : Convex ℝ s) : Balanced ℝ s ↔ ∀ ⦃x⦄, x ∈ s → -x ∈ s := by
-  refine ⟨fun h x => h.neg_mem_iff.2, fun h a ha => smul_set_subset_iff.2 fun x hx => ?_⟩
+  refine ⟨fun h x => h.neg_mem_iff.2, fun h a ha => smul_set_subset_iff.2 fun x hx => _⟩
   rw [Real.norm_eq_abs, abs_le] at ha
   rw [show a = -((1 - a) / 2) + (a - -1) / 2 by ring, add_smul, neg_smul, ← smul_neg]
   exact hs (h hx) hx (div_nonneg (sub_nonneg_of_le ha.2) zero_le_two)

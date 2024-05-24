@@ -32,23 +32,23 @@ instance [Precoherent C] [HasFiniteCoproducts C] : Preregular C where
     simp only [exists_const] at hp
     rw [← effectiveEpi_iff_effectiveEpiFamily g] at hp
     obtain ⟨β, _, X₂, π₂, h, ι, hι⟩ := hp inferInstance
-    refine ⟨∐ X₂, Sigma.desc π₂, inferInstance, Sigma.desc ι, ?_⟩
+    refine ⟨∐ X₂, Sigma.desc π₂, inferInstance, Sigma.desc ι, _⟩
     ext b
     simpa using hι b
 
 instance [FinitaryPreExtensive C] [Preregular C] : Precoherent C where
   pullback {B₁ B₂} f α _ X₁ π₁ h := by
-    refine ⟨α, inferInstance, ?_⟩
+    refine ⟨α, inferInstance, _⟩
     obtain ⟨Y, g, _, g', hg⟩ := Preregular.exists_fac f (Sigma.desc π₁)
     let X₂ := fun a ↦ pullback g' (Sigma.ι X₁ a)
     let π₂ := fun a ↦ pullback.fst (f := g') (g := Sigma.ι X₁ a) ≫ g
     let π' := fun a ↦ pullback.fst (f := g') (g := Sigma.ι X₁ a)
     have _ := FinitaryPreExtensive.sigma_desc_iso (fun a ↦ Sigma.ι X₁ a) g' inferInstance
-    refine ⟨X₂, π₂, ?_, ?_⟩
+    refine ⟨X₂, π₂, _, _⟩
     · have : (Sigma.desc π' ≫ g) = Sigma.desc π₂ := by ext; simp
       rw [← effectiveEpi_desc_iff_effectiveEpiFamily, ← this]
       infer_instance
-    · refine ⟨id, fun b ↦ pullback.snd, fun b ↦ ?_⟩
+    · refine ⟨id, fun b ↦ pullback.snd, fun b ↦ _⟩
       simp only [π₂, id_eq, Category.assoc, ← hg]
       rw [← Category.assoc, pullback.condition]
       simp
@@ -58,7 +58,7 @@ theorem extensive_regular_generate_coherent [Preregular C] [FinitaryPreExtensive
     ((extensiveCoverage C) ⊔ (regularCoverage C)).toGrothendieck =
     (coherentTopology C) := by
   ext B S
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  refine ⟨fun h ↦ _, fun h ↦ _⟩
   · induction h with
     | of Y T hT =>
       apply Coverage.saturate.of
@@ -87,7 +87,7 @@ theorem extensive_regular_generate_coherent [Preregular C] [FinitaryPreExtensive
           exact ⟨E, e, r ≫ (Sigma.desc f), by cases hq; simpa using Presieve.ofArrows.mk _, by simp⟩
         apply Coverage.saturate_of_superset _ this
         apply Coverage.saturate.of
-        refine Or.inl ⟨I, inferInstance, _, _, ⟨rfl, ?_⟩⟩
+        refine Or.inl ⟨I, inferInstance, _, _, ⟨rfl, _⟩⟩
         convert IsIso.id _
         aesop
     | top => apply Coverage.saturate.top

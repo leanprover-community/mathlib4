@@ -186,7 +186,7 @@ lemma ThreeGPFree.eq_right (hs : ThreeGPFree s) :
         ∀ ⦃b⦄, b ∈ s → ∀ ⦃c⦄, c ∈ s → b * c = a * a → b = a := by
   refine ⟨fun hs ↦ ⟨hs.mono (subset_insert _ _),
     fun b hb c hc ↦ hs (Or.inl rfl) (Or.inr hb) (Or.inr hc),
-    fun b hb c hc ↦ hs (Or.inr hb) (Or.inl rfl) (Or.inr hc)⟩, ?_⟩
+    fun b hb c hc ↦ hs (Or.inr hb) (Or.inl rfl) (Or.inr hc)⟩, _⟩
   rintro ⟨hs, ha, ha'⟩ b hb c hc d hd h
   rw [mem_insert_iff] at hb hc hd
   obtain rfl | hb := hb <;> obtain rfl | hc := hc
@@ -233,7 +233,7 @@ variable [OrderedCancelCommMonoid α] {s : Set α} {a : α}
 theorem threeGPFree_insert_of_lt (hs : ∀ i ∈ s, i < a) :
     ThreeGPFree (insert a s) ↔
       ThreeGPFree s ∧ ∀ ⦃b⦄, b ∈ s → ∀ ⦃c⦄, c ∈ s → a * c = b * b → a = b := by
-  refine threeGPFree_insert.trans ?_
+  refine threeGPFree_insert.trans _
   rw [← and_assoc]
   exact and_iff_left fun b hb c hc h => ((mul_lt_mul_of_lt_of_lt (hs _ hb) (hs _ hc)).ne h).elim
 #align mul_salem_spencer_insert_of_lt threeGPFree_insert_of_lt
@@ -268,7 +268,7 @@ section Nat
 
 theorem threeAPFree_iff_eq_right {s : Set ℕ} :
     ThreeAPFree s ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → ∀ ⦃c⦄, c ∈ s → a + c = b + b → a = c := by
-  refine forall₄_congr fun a _ha b hb => forall₃_congr fun c hc habc => ⟨?_, ?_⟩
+  refine forall₄_congr fun a _ha b hb => forall₃_congr fun c hc habc => ⟨_, _⟩
   · rintro rfl
     exact (add_left_cancel habc).symm
   · rintro rfl
@@ -340,7 +340,7 @@ theorem mulRothNumber_empty : mulRothNumber (∅ : Finset α) = 0 :=
 
 @[to_additive (attr := simp)]
 theorem mulRothNumber_singleton (a : α) : mulRothNumber ({a} : Finset α) = 1 := by
-  refine ThreeGPFree.mulRothNumber_eq ?_
+  refine ThreeGPFree.mulRothNumber_eq _
   rw [coe_singleton]
   exact threeGPFree_singleton a
 #align mul_roth_number_singleton mulRothNumber_singleton
@@ -366,7 +366,7 @@ theorem le_mulRothNumber_product (s : Finset α) (t : Finset β) :
   obtain ⟨u, hus, hucard, hu⟩ := mulRothNumber_spec s
   obtain ⟨v, hvt, hvcard, hv⟩ := mulRothNumber_spec t
   rw [← hucard, ← hvcard, ← card_product]
-  refine ThreeGPFree.le_mulRothNumber ?_ (product_subset_product hus hvt)
+  refine ThreeGPFree.le_mulRothNumber _ (product_subset_product hus hvt)
   rw [coe_product]
   exact hu.prod hv
 #align le_mul_roth_number_product le_mulRothNumber_product
@@ -398,7 +398,7 @@ lemma IsMulFreimanHom.mulRothNumber_mono (hf : IsMulFreimanHom 2 A B f) (hf' : S
     (hf'.surjOn.mapsTo_invFunOn.mono (coe_subset.2 hsB) Subset.rfl).image_subset
   have hfsA : Set.SurjOn f A s := hf'.surjOn.mono Subset.rfl (coe_subset.2 hsB)
   rw [← hcard, ← s.card_image_of_injOn ((invFunOn_injOn_image f _).mono hfsA)]
-  refine ThreeGPFree.le_mulRothNumber ?_ (mod_cast hsA)
+  refine ThreeGPFree.le_mulRothNumber _ (mod_cast hsA)
   rw [coe_image]
 
   simpa using (hf.subset hsA hfsA.bijOn_subset.mapsTo).threeGPFree (hf'.injOn.mono hsA) hs
@@ -407,14 +407,14 @@ lemma IsMulFreimanHom.mulRothNumber_mono (hf : IsMulFreimanHom 2 A B f) (hf' : S
 @[to_additive "Arithmetic progressions are preserved under 2-Freiman isos."]
 lemma IsMulFreimanIso.mulRothNumber_congr (hf : IsMulFreimanIso 2 A B f) :
     mulRothNumber A = mulRothNumber B := by
-  refine le_antisymm ?_ (hf.isMulFreimanHom.mulRothNumber_mono hf.bijOn)
+  refine le_antisymm _ (hf.isMulFreimanHom.mulRothNumber_mono hf.bijOn)
   obtain ⟨s, hsA, hcard, hs⟩ := mulRothNumber_spec A
   rw [← coe_subset] at hsA
   have hfs : Set.InjOn f s := hf.bijOn.injOn.mono hsA
   have := (hf.subset hsA hfs.bijOn_image).threeGPFree_congr.1 hs
   rw [← coe_image] at this
   rw [← hcard, ← Finset.card_image_of_injOn hfs]
-  refine this.le_mulRothNumber ?_
+  refine this.le_mulRothNumber _
   rw [← coe_subset, coe_image]
   exact (hf.bijOn.mapsTo.mono hsA Subset.rfl).image_subset
 
@@ -427,7 +427,7 @@ variable [CancelCommMonoid α] (s : Finset α) (a : α)
 @[to_additive (attr := simp)]
 theorem mulRothNumber_map_mul_left :
     mulRothNumber (s.map <| mulLeftEmbedding a) = mulRothNumber s := by
-  refine le_antisymm ?_ ?_
+  refine le_antisymm _ _
   · obtain ⟨u, hus, hcard, hu⟩ := mulRothNumber_spec (s.map <| mulLeftEmbedding a)
     rw [subset_map_iff] at hus
     obtain ⟨u, hus, rfl⟩ := hus

@@ -52,7 +52,7 @@ theorem hasFiniteIntegral_prod_mk_left (a : α) {s : Set (β × γ)} (h2s : (κ 
   calc
     ∫⁻ b, ENNReal.ofReal (η (a, b) (Prod.mk b ⁻¹' s)).toReal ∂κ a
     _ ≤ ∫⁻ b, η (a, b) (Prod.mk b ⁻¹' t) ∂κ a := by
-      refine lintegral_mono_ae ?_
+      refine lintegral_mono_ae _
       filter_upwards [ae_kernel_lt_top a h2s] with b hb
       rw [ofReal_toReal hb.ne]
       exact measure_mono (preimage_mono (subset_toMeasurable _ _))
@@ -101,7 +101,7 @@ theorem hasFiniteIntegral_compProd_iff ⦃f : β × γ → E⦄ (h1f : StronglyM
   · intro h2f; rw [lintegral_congr_ae]
     filter_upwards [h2f] with x hx
     rw [ofReal_toReal]; rw [← lt_top_iff_ne_top]; exact hx
-  · intro h2f; refine ae_lt_top ?_ h2f.ne; exact h1f.ennnorm.lintegral_kernel_prod_right''
+  · intro h2f; refine ae_lt_top _ h2f.ne; exact h1f.ennnorm.lintegral_kernel_prod_right''
 #align probability_theory.has_finite_integral_comp_prod_iff ProbabilityTheory.hasFiniteIntegral_compProd_iff
 
 theorem hasFiniteIntegral_compProd_iff' ⦃f : β × γ → E⦄
@@ -159,7 +159,7 @@ theorem kernel.integral_fn_integral_add ⦃f g : β × γ → E⦄ (F : E → E'
     (hf : Integrable f ((κ ⊗ₖ η) a)) (hg : Integrable g ((κ ⊗ₖ η) a)) :
     ∫ x, F (∫ y, f (x, y) + g (x, y) ∂η (a, x)) ∂κ a =
       ∫ x, F (∫ y, f (x, y) ∂η (a, x) + ∫ y, g (x, y) ∂η (a, x)) ∂κ a := by
-  refine integral_congr_ae ?_
+  refine integral_congr_ae _
   filter_upwards [hf.compProd_mk_left_ae, hg.compProd_mk_left_ae] with _ h2f h2g
   simp [integral_add h2f h2g]
 #align probability_theory.kernel.integral_fn_integral_add ProbabilityTheory.kernel.integral_fn_integral_add
@@ -168,7 +168,7 @@ theorem kernel.integral_fn_integral_sub ⦃f g : β × γ → E⦄ (F : E → E'
     (hf : Integrable f ((κ ⊗ₖ η) a)) (hg : Integrable g ((κ ⊗ₖ η) a)) :
     ∫ x, F (∫ y, f (x, y) - g (x, y) ∂η (a, x)) ∂κ a =
       ∫ x, F (∫ y, f (x, y) ∂η (a, x) - ∫ y, g (x, y) ∂η (a, x)) ∂κ a := by
-  refine integral_congr_ae ?_
+  refine integral_congr_ae _
   filter_upwards [hf.compProd_mk_left_ae, hg.compProd_mk_left_ae] with _ h2f h2g
   simp [integral_sub h2f h2g]
 #align probability_theory.kernel.integral_fn_integral_sub ProbabilityTheory.kernel.integral_fn_integral_sub
@@ -177,7 +177,7 @@ theorem kernel.lintegral_fn_integral_sub ⦃f g : β × γ → E⦄ (F : E → �
     (hf : Integrable f ((κ ⊗ₖ η) a)) (hg : Integrable g ((κ ⊗ₖ η) a)) :
     ∫⁻ x, F (∫ y, f (x, y) - g (x, y) ∂η (a, x)) ∂κ a =
       ∫⁻ x, F (∫ y, f (x, y) ∂η (a, x) - ∫ y, g (x, y) ∂η (a, x)) ∂κ a := by
-  refine lintegral_congr_ae ?_
+  refine lintegral_congr_ae _
   filter_upwards [hf.compProd_mk_left_ae, hg.compProd_mk_left_ae] with _ h2f h2g
   simp [integral_sub h2f h2g]
 #align probability_theory.kernel.lintegral_fn_integral_sub ProbabilityTheory.kernel.lintegral_fn_integral_sub
@@ -220,7 +220,7 @@ theorem kernel.continuous_integral_integral :
   rw [continuous_iff_continuousAt]; intro g
   refine
     tendsto_integral_of_L1 _ (L1.integrable_coeFn g).integral_compProd
-      (eventually_of_forall fun h => (L1.integrable_coeFn h).integral_compProd) ?_
+      (eventually_of_forall fun h => (L1.integrable_coeFn h).integral_compProd) _
   simp_rw [←
     kernel.lintegral_fn_integral_sub (fun x => (‖x‖₊ : ℝ≥0∞)) (L1.integrable_coeFn _)
       (L1.integrable_coeFn g)]
@@ -236,7 +236,7 @@ theorem kernel.continuous_integral_integral :
     ((Lp.stronglyMeasurable i).sub (Lp.stronglyMeasurable g)).ennnorm
   simp_rw [← kernel.lintegral_compProd _ _ _ (this _), ← L1.ofReal_norm_sub_eq_lintegral, ←
     ofReal_zero]
-  refine (continuous_ofReal.tendsto 0).comp ?_
+  refine (continuous_ofReal.tendsto 0).comp _
   rw [← tendsto_iff_norm_sub_tendsto_zero]
   exact tendsto_id
 #align probability_theory.kernel.continuous_integral_integral ProbabilityTheory.kernel.continuous_integral_integral

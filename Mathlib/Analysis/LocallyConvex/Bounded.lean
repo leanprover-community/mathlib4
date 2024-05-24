@@ -79,7 +79,7 @@ theorem isVonNBounded_iff (s : Set E) : IsVonNBounded 𝕜 s ↔ ∀ V ∈ 𝓝 
 
 theorem _root_.Filter.HasBasis.isVonNBounded_iff {q : ι → Prop} {s : ι → Set E} {A : Set E}
     (h : (𝓝 (0 : E)).HasBasis q s) : IsVonNBounded 𝕜 A ↔ ∀ i, q i → Absorbs 𝕜 (s i) A := by
-  refine ⟨fun hA i hi => hA (h.mem_of_mem hi), fun hA V hV => ?_⟩
+  refine ⟨fun hA i hi => hA (h.mem_of_mem hi), fun hA V hV => _⟩
   rcases h.mem_iff.mp hV with ⟨i, hi, hV⟩
   exact (hA i hi).mono_left hV
 #align filter.has_basis.is_vonN_bounded_basis_iff Filter.HasBasis.isVonNBounded_iff
@@ -152,7 +152,7 @@ lemma isVonNBounded_iff_tendsto_smallSets_nhds {𝕜 E : Type*} [NormedDivisionR
     [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] {S : Set E} :
     IsVonNBounded 𝕜 S ↔ Tendsto (· • S : 𝕜 → Set E) (𝓝 0) (𝓝 0).smallSets := by
   rw [tendsto_smallSets_iff]
-  refine forall₂_congr fun V hV ↦ ?_
+  refine forall₂_congr fun V hV ↦ _
   simp only [absorbs_iff_eventually_nhds_zero (mem_of_mem_nhds hV), mapsTo', image_smul]
 
 alias ⟨IsVonNBounded.tendsto_smallSets_nhds, _⟩ := isVonNBounded_iff_tendsto_smallSets_nhds
@@ -205,11 +205,11 @@ theorem isVonNBounded_of_smul_tendsto_zero {ε : ι → 𝕝} {l : Filter ι} [l
     push_neg at hVS
     rcases hVS ‖(ε n)⁻¹‖ with ⟨a, haε, haS⟩
     rcases Set.not_subset.mp haS with ⟨x, hxS, hx⟩
-    refine ⟨⟨x, hxS⟩, fun hnx => ?_⟩
+    refine ⟨⟨x, hxS⟩, fun hnx => _⟩
     rw [← Set.mem_inv_smul_set_iff₀ hn] at hnx
     exact hx (hVb.smul_mono haε hnx)
   rcases this.choice with ⟨x, hx⟩
-  refine Filter.frequently_false l (Filter.Eventually.frequently ?_)
+  refine Filter.frequently_false l (Filter.Eventually.frequently _)
   filter_upwards [hx,
     (H (_ ∘ x) fun n => (x n).2).eventually (eventually_mem_set.mpr hV)] using fun n => id
 #align bornology.is_vonN_bounded_of_smul_tendsto_zero Bornology.isVonNBounded_of_smul_tendsto_zero
@@ -344,11 +344,11 @@ theorem TotallyBounded.isVonNBounded {s : Set E} (hs : TotallyBounded s) :
   simp_rw [← nhds_prod_eq, id] at h'
   rcases h.basis_left h' U hU with ⟨x, hx, h''⟩
   rcases hs x.snd hx.2.1 with ⟨t, ht, hs⟩
-  refine Absorbs.mono_right ?_ hs
+  refine Absorbs.mono_right _ hs
   rw [ht.absorbs_biUnion]
   have hx_fstsnd : x.fst + x.snd ⊆ U := add_subset_iff.mpr fun z1 hz1 z2 hz2 ↦
     h'' <| mk_mem_prod hz1 hz2
-  refine fun y _ => Absorbs.mono_left ?_ hx_fstsnd
+  refine fun y _ => Absorbs.mono_left _ hx_fstsnd
   -- TODO: with dot notation, Lean timeouts on the next line. Why?
   exact Absorbent.vadd_absorbs (absorbent_nhds_zero hx.1.1) hx.2.2.absorbs_self
 #align totally_bounded.is_vonN_bounded TotallyBounded.isVonNBounded

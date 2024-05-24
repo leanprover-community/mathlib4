@@ -25,7 +25,7 @@ variable [OrderedCommGroup α] {m n : ℤ} {a b : α}
 @[to_additive zsmul_pos] lemma one_lt_zpow' (ha : 1 < a) (hn : 0 < n) : 1 < a ^ n := by
   obtain ⟨n, rfl⟩ := Int.eq_ofNat_of_zero_le hn.le
   rw [zpow_natCast]
-  refine one_lt_pow' ha ?_
+  refine one_lt_pow' ha _
   rintro rfl
   simp at hn
 #align one_lt_zpow' one_lt_zpow'
@@ -117,7 +117,7 @@ that here because importing that definition would create import cycles."]
 lemma zpow_left_injective (hn : n ≠ 0) : Injective ((· ^ n) : α → α) := by
   obtain hn | hn := hn.lt_or_lt
   · refine fun a b (hab : a ^ n = b ^ n) ↦
-      (zpow_strictMono_left _ $ Int.neg_pos_of_neg hn).injective ?_
+      (zpow_strictMono_left _ $ Int.neg_pos_of_neg hn).injective _
     rw [zpow_neg, zpow_neg, hab]
   · exact (zpow_strictMono_left _ hn).injective
 #align zpow_left_injective zpow_left_injective
@@ -394,7 +394,7 @@ lemma add_sq_le : (a + b) ^ 2 ≤ 2 * (a ^ 2 + b ^ 2) := by
   calc
     (a + b) ^ 2 = a ^ 2 + b ^ 2 + (a * b + b * a) := by
         simp_rw [pow_succ', pow_zero, mul_one, add_mul, mul_add, add_comm (b * a), add_add_add_comm]
-    _ ≤ a ^ 2 + b ^ 2 + (a * a + b * b) := add_le_add_left ?_ _
+    _ ≤ a ^ 2 + b ^ 2 + (a * a + b * b) := add_le_add_left _ _
     _ = _ := by simp_rw [pow_succ', pow_zero, mul_one, two_mul]
   cases le_total a b
   · exact mul_add_mul_le_mul_add_mul ‹_› ‹_›
@@ -413,7 +413,7 @@ lemma add_pow_le (ha : 0 ≤ a) (hb : 0 ≤ b) : ∀ n, (a + b) ^ n ≤ 2 ^ (n -
           rw [mul_assoc, mul_add, add_mul, add_mul, ← pow_succ, ← pow_succ, add_comm _ (b ^ _),
             add_add_add_comm, add_comm (_ * a)]
       _ ≤ 2 ^ n * (a ^ (n + 2) + b ^ (n + 2) + (a ^ (n + 1) * a + b ^ (n + 1) * b)) :=
-          mul_le_mul_of_nonneg_left (add_le_add_left ?_ _) $ pow_nonneg (zero_le_two (α := R)) _
+          mul_le_mul_of_nonneg_left (add_le_add_left _ _) $ pow_nonneg (zero_le_two (α := R)) _
       _ = _ := by simp only [← pow_succ, ← two_mul, ← mul_assoc]; rfl
     · obtain hab | hba := le_total a b
       · exact mul_add_mul_le_mul_add_mul (pow_le_pow_left ha hab _) hab
@@ -448,7 +448,7 @@ lemma Even.pow_pos_iff (hn : Even n) (h₀ : n ≠ 0) : 0 < a ^ n ↔ a ≠ 0 :=
 #align even.pow_pos_iff Even.pow_pos_iff
 
 lemma Odd.pow_neg_iff (hn : Odd n) : a ^ n < 0 ↔ a < 0 := by
-  refine ⟨lt_imp_lt_of_le_imp_le (pow_nonneg · _), fun ha ↦ ?_⟩
+  refine ⟨lt_imp_lt_of_le_imp_le (pow_nonneg · _), fun ha ↦ _⟩
   obtain ⟨k, rfl⟩ := hn
   rw [pow_succ]
   exact mul_neg_of_pos_of_neg ((even_two_mul _).pow_pos ha.ne) ha
@@ -481,14 +481,14 @@ lemma Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
   obtain ⟨c, hac⟩ := exists_add_of_le ha
   obtain ⟨d, hbd⟩ := exists_add_of_le hb
   have hd := nonneg_of_le_add_right (hb.trans_eq hbd)
-  refine lt_of_add_lt_add_right (a := c ^ n + d ^ n) ?_
+  refine lt_of_add_lt_add_right (a := c ^ n + d ^ n) _
   dsimp
   calc
     a ^ n + (c ^ n + d ^ n) = d ^ n := by
       rw [← add_assoc, hn.pow_add_pow_eq_zero hac.symm, zero_add]
-    _ < c ^ n := pow_lt_pow_left ?_ hd hn₀
+    _ < c ^ n := pow_lt_pow_left _ hd hn₀
     _ = b ^ n + (c ^ n + d ^ n) := by rw [add_left_comm, hn.pow_add_pow_eq_zero hbd.symm, add_zero]
-  refine lt_of_add_lt_add_right (a := a + b) ?_
+  refine lt_of_add_lt_add_right (a := a + b) _
   rwa [add_rotate', ← hbd, add_zero, add_left_comm, ← add_assoc, ← hac, zero_add]
 #align odd.strict_mono_pow Odd.strictMono_pow
 

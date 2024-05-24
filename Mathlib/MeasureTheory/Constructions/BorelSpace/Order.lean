@@ -52,19 +52,19 @@ variable (α)
 variable [TopologicalSpace α] [SecondCountableTopology α] [LinearOrder α] [OrderTopology α]
 
 theorem borel_eq_generateFrom_Iio : borel α = .generateFrom (range Iio) := by
-  refine le_antisymm ?_ (generateFrom_le ?_)
+  refine le_antisymm _ (generateFrom_le _)
   · rw [borel_eq_generateFrom_of_subbasis (@OrderTopology.topology_eq_generate_intervals α _ _ _)]
     letI : MeasurableSpace α := MeasurableSpace.generateFrom (range Iio)
     have H : ∀ a : α, MeasurableSet (Iio a) := fun a => GenerateMeasurable.basic _ ⟨_, rfl⟩
-    refine generateFrom_le ?_
+    refine generateFrom_le _
     rintro _ ⟨a, rfl | rfl⟩
     · rcases em (∃ b, a ⋖ b) with ⟨b, hb⟩ | hcovBy
       · rw [hb.Ioi_eq, ← compl_Iio]
         exact (H _).compl
       · rcases isOpen_biUnion_countable (Ioi a) Ioi fun _ _ ↦ isOpen_Ioi with ⟨t, hat, htc, htU⟩
         have : Ioi a = ⋃ b ∈ t, Ici b := by
-          refine Subset.antisymm ?_ <| iUnion₂_subset fun b hb ↦ Ici_subset_Ioi.2 (hat hb)
-          refine Subset.trans ?_ <| iUnion₂_mono fun _ _ ↦ Ioi_subset_Ici_self
+          refine Subset.antisymm _ <| iUnion₂_subset fun b hb ↦ Ici_subset_Ioi.2 (hat hb)
+          refine Subset.trans _ <| iUnion₂_mono fun _ _ ↦ Ioi_subset_Ici_self
           simpa [CovBy, htU, subset_def] using hcovBy
         simp only [this, ← compl_Iio]
         exact .biUnion htc <| fun _ _ ↦ (H _).compl
@@ -81,12 +81,12 @@ theorem borel_eq_generateFrom_Ioi : borel α = .generateFrom (range Ioi) :=
 theorem borel_eq_generateFrom_Iic :
     borel α = MeasurableSpace.generateFrom (range Iic) := by
   rw [borel_eq_generateFrom_Ioi]
-  refine le_antisymm ?_ ?_
-  · refine MeasurableSpace.generateFrom_le fun t ht => ?_
+  refine le_antisymm _ _
+  · refine MeasurableSpace.generateFrom_le fun t ht => _
     obtain ⟨u, rfl⟩ := ht
     rw [← compl_Iic]
     exact (MeasurableSpace.measurableSet_generateFrom (mem_range.mpr ⟨u, rfl⟩)).compl
-  · refine MeasurableSpace.generateFrom_le fun t ht => ?_
+  · refine MeasurableSpace.generateFrom_le fun t ht => _
     obtain ⟨u, rfl⟩ := ht
     rw [← compl_Ioi]
     exact (MeasurableSpace.measurableSet_generateFrom (mem_range.mpr ⟨u, rfl⟩)).compl
@@ -270,10 +270,10 @@ theorem Dense.borel_eq_generateFrom_Ico_mem_aux {α : Type*} [TopologicalSpace �
     (hbot : ∀ x, IsBot x → x ∈ s) (hIoo : ∀ x y : α, x < y → Ioo x y = ∅ → y ∈ s) :
     borel α = .generateFrom { S : Set α | ∃ l ∈ s, ∃ u ∈ s, l < u ∧ Ico l u = S } := by
   set S : Set (Set α) := { S | ∃ l ∈ s, ∃ u ∈ s, l < u ∧ Ico l u = S }
-  refine le_antisymm ?_ (generateFrom_Ico_mem_le_borel _ _)
+  refine le_antisymm _ (generateFrom_Ico_mem_le_borel _ _)
   letI : MeasurableSpace α := generateFrom S
   rw [borel_eq_generateFrom_Iio]
-  refine generateFrom_le (forall_mem_range.2 fun a => ?_)
+  refine generateFrom_le (forall_mem_range.2 fun a => _)
   rcases hd.exists_countable_dense_subset_bot_top with ⟨t, hts, hc, htd, htb, -⟩
   by_cases ha : ∀ b < a, (Ioo b a).Nonempty
   · convert_to MeasurableSet (⋃ (l ∈ t) (u ∈ t) (_ : l < u) (_ : u ≤ a), Ico l u)
@@ -286,8 +286,8 @@ theorem Dense.borel_eq_generateFrom_Ico_mem_aux {α : Type*} [TopologicalSpace �
         exact ⟨l, hlt, u, hut, hly.trans_lt hyu, hua.le, hly, hyu⟩
       · rintro ⟨l, -, u, -, -, hua, -, hyu⟩
         exact hyu.trans_le hua
-    · refine MeasurableSet.biUnion hc fun a ha => MeasurableSet.biUnion hc fun b hb => ?_
-      refine MeasurableSet.iUnion fun hab => MeasurableSet.iUnion fun _ => ?_
+    · refine MeasurableSet.biUnion hc fun a ha => MeasurableSet.biUnion hc fun b hb => _
+      refine MeasurableSet.iUnion fun hab => MeasurableSet.iUnion fun _ => _
       exact .basic _ ⟨a, hts ha, b, hts hb, hab, mem_singleton _⟩
   · simp only [not_forall, not_nonempty_iff_eq_empty] at ha
     replace ha : a ∈ s := hIoo ha.choose a ha.choose_spec.fst ha.choose_spec.snd
@@ -298,7 +298,7 @@ theorem Dense.borel_eq_generateFrom_Ico_mem_aux {α : Type*} [TopologicalSpace �
       intro x hx
       rcases htd.exists_le' (fun b hb => htb _ hb (hbot b hb)) x with ⟨z, hzt, hzx⟩
       exact ⟨z, hzt, hzx.trans_lt hx, hzx⟩
-    · refine .biUnion hc fun x hx => MeasurableSet.iUnion fun hlt => ?_
+    · refine .biUnion hc fun x hx => MeasurableSet.iUnion fun hlt => _
       exact .basic _ ⟨x, hts hx, a, ha, hlt, mem_singleton _⟩
 #align dense.borel_eq_generate_from_Ico_mem_aux Dense.borel_eq_generateFrom_Ico_mem_aux
 
@@ -359,7 +359,7 @@ theorem ext_of_Ico_finite {α : Type*} [TopologicalSpace α] {m : MeasurableSpac
     μ = ν := by
   refine
     ext_of_generate_finite _ (BorelSpace.measurable_eq.trans (borel_eq_generateFrom_Ico α))
-      (isPiSystem_Ico (id : α → α) id) ?_ hμν
+      (isPiSystem_Ico (id : α → α) id) _ hμν
   rintro - ⟨a, b, hlt, rfl⟩
   exact h hlt
 #align measure_theory.measure.ext_of_Ico_finite MeasureTheory.Measure.ext_of_Ico_finite
@@ -372,7 +372,7 @@ theorem ext_of_Ioc_finite {α : Type*} [TopologicalSpace α] {m : MeasurableSpac
     [SecondCountableTopology α] [LinearOrder α] [OrderTopology α] [BorelSpace α] (μ ν : Measure α)
     [IsFiniteMeasure μ] (hμν : μ univ = ν univ) (h : ∀ ⦃a b⦄, a < b → μ (Ioc a b) = ν (Ioc a b)) :
     μ = ν := by
-  refine @ext_of_Ico_finite αᵒᵈ _ _ _ _ _ ‹_› μ ν _ hμν fun a b hab => ?_
+  refine @ext_of_Ico_finite αᵒᵈ _ _ _ _ _ ‹_› μ ν _ hμν fun a b hab => _
   erw [dual_Ico (α := α)]
   exact h hab
 #align measure_theory.measure.ext_of_Ioc_finite MeasureTheory.Measure.ext_of_Ioc_finite
@@ -389,11 +389,11 @@ theorem ext_of_Ico' {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
   simp only [← setOf_eq_eq_singleton, ← setOf_exists] at this
   refine
     Measure.ext_of_generateFrom_of_cover_subset
-      (BorelSpace.measurable_eq.trans (borel_eq_generateFrom_Ico α)) (isPiSystem_Ico id id) ?_ this
-      ?_ ?_ ?_
+      (BorelSpace.measurable_eq.trans (borel_eq_generateFrom_Ico α)) (isPiSystem_Ico id id) _ this
+      _ _ _
   · rintro _ ⟨l, -, u, -, h, rfl⟩
     exact ⟨l, u, h, rfl⟩
-  · refine sUnion_eq_univ_iff.2 fun x => ?_
+  · refine sUnion_eq_univ_iff.2 fun x => _
     rcases hsd.exists_le' hsb x with ⟨l, hls, hlx⟩
     rcases hsd.exists_gt x with ⟨u, hus, hxu⟩
     exact ⟨_, ⟨l, hls, u, hus, hlx.trans_lt hxu, rfl⟩, hlx, hxu⟩
@@ -409,7 +409,7 @@ theorem ext_of_Ioc' {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
     [SecondCountableTopology α] [LinearOrder α] [OrderTopology α] [BorelSpace α] [NoMinOrder α]
     (μ ν : Measure α) (hμ : ∀ ⦃a b⦄, a < b → μ (Ioc a b) ≠ ∞)
     (h : ∀ ⦃a b⦄, a < b → μ (Ioc a b) = ν (Ioc a b)) : μ = ν := by
-  refine @ext_of_Ico' αᵒᵈ _ _ _ _ _ ‹_› _ μ ν ?_ ?_ <;> intro a b hab <;> erw [dual_Ico (α := α)]
+  refine @ext_of_Ico' αᵒᵈ _ _ _ _ _ ‹_› _ μ ν _ _ <;> intro a b hab <;> erw [dual_Ico (α := α)]
   exacts [hμ hab, h hab]
 #align measure_theory.measure.ext_of_Ioc' MeasureTheory.Measure.ext_of_Ioc'
 
@@ -436,7 +436,7 @@ intervals. -/
 theorem ext_of_Iic {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
     [SecondCountableTopology α] [LinearOrder α] [OrderTopology α] [BorelSpace α] (μ ν : Measure α)
     [IsFiniteMeasure μ] (h : ∀ a, μ (Iic a) = ν (Iic a)) : μ = ν := by
-  refine ext_of_Ioc_finite μ ν ?_ fun a b hlt => ?_
+  refine ext_of_Ioc_finite μ ν _ fun a b hlt => _
   · rcases exists_countable_dense_bot_top α with ⟨s, hsc, hsd, -, hst⟩
     have : DirectedOn (· ≤ ·) s := directedOn_iff_directed.2 (Subtype.mono_coe _).directed_le
     simp only [← biSup_measure_Iic hsc (hsd.exists_ge' hst) this, h]
@@ -705,11 +705,11 @@ theorem measurableSet_of_mem_nhdsWithin_Ioi_aux {s : Set α} (h : ∀ x ∈ s, s
   have B : Set.PairwiseDisjoint (s \ interior s) fun x => Ioo x (y x) := by
     intro x hx x' hx' hxx'
     rcases lt_or_gt_of_ne hxx' with (h' | h')
-    · refine disjoint_left.2 fun z hz h'z => ?_
+    · refine disjoint_left.2 fun z hz h'z => _
       have : x' ∈ interior s :=
         mem_interior.2 ⟨Ioo x (y x), h'y _ hx.1, isOpen_Ioo, ⟨h', h'z.1.trans hz.2⟩⟩
       exact False.elim (hx'.2 this)
-    · refine disjoint_left.2 fun z hz h'z => ?_
+    · refine disjoint_left.2 fun z hz h'z => _
       have : x ∈ interior s :=
         mem_interior.2 ⟨Ioo x' (y x'), h'y _ hx'.1, isOpen_Ioo, ⟨h', hz.1.trans h'z.2⟩⟩
       exact False.elim (hx.2 this)
@@ -723,12 +723,12 @@ theorem measurableSet_of_mem_nhdsWithin_Ioi {s : Set α} (h : ∀ x ∈ s, s ∈
   · rcases H with ⟨x₀, x₀s, h₀⟩
     have : s = {x₀} ∪ s \ {x₀} := by rw [union_diff_cancel (singleton_subset_iff.2 x₀s)]
     rw [this]
-    refine (measurableSet_singleton _).union ?_
+    refine (measurableSet_singleton _).union _
     have A : ∀ x ∈ s \ {x₀}, x < x₀ := fun x hx => lt_of_le_of_ne (h₀ _) (by simpa using hx.2)
-    refine measurableSet_of_mem_nhdsWithin_Ioi_aux (fun x hx => ?_) fun x hx => ⟨x₀, A x hx⟩
+    refine measurableSet_of_mem_nhdsWithin_Ioi_aux (fun x hx => _) fun x hx => ⟨x₀, A x hx⟩
     obtain ⟨u, hu, us⟩ : ∃ (u : α), u ∈ Ioi x ∧ Ioo x u ⊆ s :=
       (mem_nhdsWithin_Ioi_iff_exists_Ioo_subset' (A x hx)).1 (h x hx.1)
-    refine (mem_nhdsWithin_Ioi_iff_exists_Ioo_subset' (A x hx)).2 ⟨u, hu, fun y hy => ⟨us hy, ?_⟩⟩
+    refine (mem_nhdsWithin_Ioi_iff_exists_Ioo_subset' (A x hx)).2 ⟨u, hu, fun y hy => ⟨us hy, _⟩⟩
     exact ne_of_lt (hy.2.trans_le (h₀ _))
   · apply measurableSet_of_mem_nhdsWithin_Ioi_aux h
     simp only [IsTop] at H
@@ -755,7 +755,7 @@ lemma measurableSet_bddAbove_range {ι} [Countable ι] {f : ι → δ → α} (h
       obtain ⟨n, hn⟩ : ∃ n, c ≤ u n := (tendsto_atTop.1 hu c).exists
       exact ⟨n, fun i ↦ (hc ((mem_range_self i))).trans hn⟩
     · rintro x ⟨n, hn⟩
-      refine ⟨u n, ?_⟩
+      refine ⟨u n, _⟩
       rintro - ⟨i, rfl⟩
       exact hn i
   rw [this, setOf_exists]
@@ -804,7 +804,7 @@ theorem measurable_iSup {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, 
   apply Measurable.isLUB_of_mem hf A _ _ this
   · rintro b ⟨c, hc⟩
     apply isLUB_ciSup
-    refine ⟨c, ?_⟩
+    refine ⟨c, _⟩
     rintro d ⟨i, rfl⟩
     exact hc (mem_range_self i)
   · intro b hb
@@ -814,7 +814,7 @@ theorem measurable_iSup {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, 
 @[measurability]
 theorem aemeasurable_iSup {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α}
     (hf : ∀ i, AEMeasurable (f i) μ) : AEMeasurable (fun b => ⨆ i, f i b) μ := by
-  refine ⟨fun b ↦ ⨆ i, (hf i).mk (f i) b, measurable_iSup (fun i ↦ (hf i).measurable_mk), ?_⟩
+  refine ⟨fun b ↦ ⨆ i, (hf i).mk (f i) b, measurable_iSup (fun i ↦ (hf i).measurable_mk), _⟩
   filter_upwards [ae_all_iff.2 (fun i ↦ (hf i).ae_eq_mk)] with b hb using by simp [hb]
 #align ae_measurable_supr aemeasurable_iSup
 
@@ -867,7 +867,7 @@ theorem aemeasurable_biSup {ι} {μ : Measure δ} (s : Set ι) {f : ι → δ �
   have : ∀ i ∈ s, Measurable (g i) := by
     intro i hi
     simpa [g, hi] using (hf i hi).measurable_mk
-  refine ⟨fun b ↦ ⨆ (i) (_ : i ∈ s), g i b, measurable_biSup s hs this, ?_⟩
+  refine ⟨fun b ↦ ⨆ (i) (_ : i ∈ s), g i b, measurable_biSup s hs this, _⟩
   have : ∀ i ∈ s, ∀ᵐ b ∂μ, f i b = g i b :=
     fun i hi ↦ by simpa [g, hi] using (hf i hi).ae_eq_mk
   filter_upwards [(ae_ball_iff hs).2 this] with b hb
@@ -909,7 +909,7 @@ theorem measurable_liminf' {ι ι'} {f : ι → δ → α} {v : Filter ι} (hf :
     rw [setOf_forall]
     exact MeasurableSet.iInter (fun j ↦ (m_meas j).compl)
   apply Measurable.piecewise mc_meas measurable_const
-  apply measurable_iSup (fun j ↦ ?_)
+  apply measurable_iSup (fun j ↦ _)
   let reparam : δ → Subtype p → Subtype p := fun x ↦ liminf_reparam (fun i ↦ f i x) s p
   let F0 : Subtype p → δ → α := fun j x ↦ ⨅ (i : s j), f i x
   have F0_meas : ∀ j, Measurable (F0 j) := fun j ↦ measurable_iInf (fun (i : s j) ↦ hf i)
@@ -934,7 +934,7 @@ theorem measurable_liminf' {ι ι'} {f : ι → δ → α} {v : Filter ι} (hf :
       simp only [hF1, this]
   rw [this]
   apply Measurable.piecewise (m_meas j) (F0_meas j)
-  apply Measurable.find (fun n ↦ F0_meas (g n)) (fun n ↦ ?_)
+  apply Measurable.find (fun n ↦ F0_meas (g n)) (fun n ↦ _)
   exact (m_meas (g n)).union mc_meas
 #align measurable_liminf' measurable_liminf'
 
@@ -973,7 +973,7 @@ def Homemorph.toMeasurableEquiv (h : α ≃ₜ β) : α ≃ᵐ β where
 
 protected theorem IsFiniteMeasureOnCompacts.map (μ : Measure α) [IsFiniteMeasureOnCompacts μ]
     (f : α ≃ₜ β) : IsFiniteMeasureOnCompacts (Measure.map f μ) := by
-  refine ⟨fun K hK ↦ ?_⟩
+  refine ⟨fun K hK ↦ _⟩
   rw [← Homeomorph.toMeasurableEquiv_coe, MeasurableEquiv.map_apply]
   exact IsCompact.measure_lt_top (f.isCompact_preimage.2 hK)
 #align is_finite_measure_on_compacts.map IsFiniteMeasureOnCompacts.map
@@ -1007,7 +1007,7 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow {α : Type*} [Meas
       obtain (H | H) : f x = ∞ ∨ f x < ∞ := eq_or_lt_of_le le_top
       · simp only [H, eq_self_iff_true, or_false_iff, ENNReal.zero_lt_top, not_top_lt, and_false]
       · simp only [H, H.ne, and_true_iff, false_or_iff]
-    · refine disjoint_left.2 fun x hx h'x => ?_
+    · refine disjoint_left.2 fun x hx h'x => _
       have : f x < ∞ := h'x.2.2
       exact lt_irrefl _ (this.trans_le (le_of_eq hx.2.symm))
     · exact hs.inter (hf measurableSet_Ioo)
@@ -1019,7 +1019,7 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow {α : Type*} [Meas
     · intro i j hij
       wlog h : i < j generalizing i j
       · exact (this hij.symm (hij.lt_or_lt.resolve_left h)).symm
-      refine disjoint_left.2 fun x hx h'x => lt_irrefl (f x) ?_
+      refine disjoint_left.2 fun x hx h'x => lt_irrefl (f x) _
       calc
         f x < (t : ℝ≥0∞) ^ (i + 1) := hx.2.2
         _ ≤ (t : ℝ≥0∞) ^ j := ENNReal.zpow_le_of_le (ENNReal.one_le_coe_iff.2 ht.le) h

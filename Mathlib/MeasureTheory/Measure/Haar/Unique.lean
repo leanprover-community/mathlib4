@@ -83,14 +83,14 @@ lemma IsCompact.measure_eq_biInf_integral_hasCompactSupport
     apply (f_cont.integrable_of_hasCompactSupport f_comp).measure_le_integral
     · exact eventually_of_forall f_nonneg
     · exact fun x hx ↦ by simp [fk hx]
-  · apply le_of_forall_lt' (fun r hr ↦ ?_)
+  · apply le_of_forall_lt' (fun r hr ↦ _)
     simp only [iInf_lt_iff, exists_prop, exists_and_left]
     obtain ⟨U, kU, U_open, mu_U⟩ : ∃ U, k ⊆ U ∧ IsOpen U ∧ μ U < r :=
       hk.exists_isOpen_lt_of_lt r hr
     obtain ⟨⟨f, f_cont⟩, fk, fU, f_comp, f_range⟩ : ∃ (f : C(X, ℝ)), EqOn f 1 k ∧ EqOn f 0 Uᶜ
         ∧ HasCompactSupport f ∧ ∀ (x : X), f x ∈ Icc 0 1 := exists_continuous_one_zero_of_isCompact
       hk U_open.isClosed_compl (disjoint_compl_right_iff_subset.mpr kU)
-    refine ⟨f, f_cont, f_comp, fk, fun x ↦ (f_range x).1, ?_⟩
+    refine ⟨f, f_cont, f_comp, fk, fun x ↦ (f_range x).1, _⟩
     exact (integral_le_measure (fun x _hx ↦ (f_range x).2) (fun x hx ↦ (fU hx).le)).trans_lt mu_U
 
 namespace MeasureTheory
@@ -108,7 +108,7 @@ lemma continuous_integral_apply_inv_mul
     Continuous (fun (x : G) ↦ ∫ y, g (y⁻¹ * x) ∂μ) := by
   let k := tsupport g
   have k_comp : IsCompact k := h'g
-  apply continuous_iff_continuousAt.2 (fun x₀ ↦ ?_)
+  apply continuous_iff_continuousAt.2 (fun x₀ ↦ _)
   obtain ⟨t, t_comp, ht⟩ : ∃ t, IsCompact t ∧ t ∈ 𝓝 x₀ := exists_compact_mem_nhds x₀
   let k' : Set G := t • k⁻¹
   have k'_comp : IsCompact k' := t_comp.smul_set k_comp.inv
@@ -117,7 +117,7 @@ lemma continuous_integral_apply_inv_mul
     · exact (hg.comp (continuous_snd.inv.mul continuous_fst)).continuousOn
     · intro p x hp hx
       contrapose! hx
-      refine ⟨p, hp, p⁻¹ * x, ?_, by simp⟩
+      refine ⟨p, hp, p⁻¹ * x, _, by simp⟩
       simpa only [Set.mem_inv, mul_inv_rev, inv_inv] using subset_tsupport _ hx
   exact A.continuousAt ht
 
@@ -195,7 +195,7 @@ lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
             simp only [M, mem_image, mem_prod, Prod.exists]
             exact ⟨x, y⁻¹ * x, ⟨H, hxy⟩, by group⟩
           simp [this]
-        apply HasCompactSupport.intro' (K_comp.prod M'_comp) ?_ this
+        apply HasCompactSupport.intro' (K_comp.prod M'_comp) _ this
         exact (isClosed_tsupport f).prod isClosed_closure
   _ = ∫ y, (∫ x, f (y * x) * (D (y * x))⁻¹ * g x ∂μ) ∂ν := by
       congr with y
@@ -203,7 +203,7 @@ lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
       simp
   _ = ∫ x, (∫ y, f (y * x) * (D (y * x))⁻¹ * g x ∂ν) ∂μ := by
       apply (integral_integral_swap_of_hasCompactSupport _ _).symm
-      · apply Continuous.mul ?_ (hg.comp continuous_fst)
+      · apply Continuous.mul _ (hg.comp continuous_fst)
         exact (hf.comp (continuous_snd.mul continuous_fst)).mul
           ((D_cont.comp (continuous_snd.mul continuous_fst)).inv₀ (fun x ↦ (D_pos _).ne'))
       · let K := tsupport f
@@ -227,7 +227,7 @@ lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
             simp only [M, mem_image, mem_prod, Prod.exists]
             exact ⟨y * x, x, ⟨hxy, H⟩, by group⟩
           simp [this]
-        apply HasCompactSupport.intro' (L_comp.prod M'_comp) ?_ this
+        apply HasCompactSupport.intro' (L_comp.prod M'_comp) _ this
         exact (isClosed_tsupport g).prod isClosed_closure
   _ = ∫ x, (∫ y, f y * (D y)⁻¹ ∂ν) * g x ∂μ := by
       simp_rw [integral_mul_right]
@@ -245,7 +245,7 @@ lemma exists_integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport (μ' μ : 
       ∫ x, f x ∂μ' = ∫ x, f x ∂(c • μ) := by
   -- The group has to be locally compact, otherwise all integrals vanish and the result is trivial.
   by_cases H : LocallyCompactSpace G; swap
-  · refine ⟨0, fun f f_cont f_comp ↦ ?_⟩
+  · refine ⟨0, fun f f_cont f_comp ↦ _⟩
     rcases f_comp.eq_zero_or_locallyCompactSpace_of_group f_cont with hf|hf
     · simp [hf]
     · exact (H hf).elim
@@ -259,7 +259,7 @@ lemma exists_integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport (μ' μ : 
   let c : ℝ := (∫ x, g x ∂μ) ⁻¹ * (∫ x, g x ∂μ')
   have c_nonneg : 0 ≤ c :=
     mul_nonneg (inv_nonneg.2 (integral_nonneg g_nonneg)) (integral_nonneg g_nonneg)
-  refine ⟨⟨c, c_nonneg⟩, fun f f_cont f_comp ↦ ?_⟩
+  refine ⟨⟨c, c_nonneg⟩, fun f f_cont f_comp ↦ _⟩
   /- use the lemma `integral_mulLeftInvariant_mulRightInvariant_combo` for `μ` and then `μ'`
   to reexpress the integral of `f` as the integral of `g` times a factor which only depends
   on a right-invariant measure `ν`. We use `ν = μ.inv` for convenience. -/
@@ -457,7 +457,7 @@ lemma measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport
     ∧ Tendsto u atTop (𝓝 0) := exists_seq_strictAnti_tendsto' (zero_lt_one : (0 : ℝ) < 1)
   let v : ℕ → ℝ → ℝ := fun n x ↦ thickenedIndicator (u_mem n).1 ({1} : Set ℝ) x
   have vf_cont n : Continuous ((v n) ∘ f) := by
-    apply Continuous.comp (continuous_induced_dom.comp ?_) hf
+    apply Continuous.comp (continuous_induced_dom.comp _) hf
     exact BoundedContinuousFunction.continuous (thickenedIndicator (u_mem n).left {1})
   have I : ∀ (ν : Measure G), IsFiniteMeasureOnCompacts ν →
       Tendsto (fun n ↦ ∫ x, v n (f x) ∂ν) atTop
@@ -468,7 +468,7 @@ lemma measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport
     · exact fun n ↦ (vf_cont n).aestronglyMeasurable
     · apply IntegrableOn.integrable_indicator _ (isClosed_tsupport f).measurableSet
       simpa using IsCompact.measure_lt_top h'f
-    · refine fun n ↦ eventually_of_forall (fun x ↦ ?_)
+    · refine fun n ↦ eventually_of_forall (fun x ↦ _)
       by_cases hx : x ∈ tsupport f
       · simp only [v, Real.norm_eq_abs, NNReal.abs_eq, hx, indicator_of_mem]
         norm_cast
@@ -526,7 +526,7 @@ lemma smul_measure_isMulInvariant_le_of_isCompact_closure [LocallyCompactSpace G
     [InnerRegularCompactLTTop μ]
     {s : Set G} (hs : MeasurableSet s) (h's : IsCompact (closure s)) :
     haarScalarFactor μ' μ • μ s ≤ μ' s := by
-  apply le_of_forall_lt (fun r hr ↦ ?_)
+  apply le_of_forall_lt (fun r hr ↦ _)
   let ν := haarScalarFactor μ' μ • μ
   have : ν s ≠ ∞ := ((measure_mono subset_closure).trans_lt h's.measure_lt_top).ne
   obtain ⟨-, hf, ⟨f, f_cont, f_comp, rfl⟩, νf⟩ :
@@ -558,7 +558,7 @@ lemma measure_isMulInvariant_eq_smul_of_isCompact_closure_of_innerRegularCompact
     [InnerRegularCompactLTTop μ]
     {s : Set G} (hs : MeasurableSet s) (h's : IsCompact (closure s)) :
     μ' s = haarScalarFactor μ' μ • μ s := by
-  apply le_antisymm ?_ (smul_measure_isMulInvariant_le_of_isCompact_closure μ' μ hs h's)
+  apply le_antisymm _ (smul_measure_isMulInvariant_le_of_isCompact_closure μ' μ hs h's)
   let ν := haarScalarFactor μ' μ • μ
   change μ' s ≤ ν s
   obtain ⟨⟨f, f_cont⟩, hf, -, f_comp, -⟩ : ∃ f : C(G, ℝ), EqOn f 1 (closure s) ∧ EqOn f 0 ∅
@@ -710,7 +710,7 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
   obtain ⟨m, mA, m_max⟩ : ∃ m ∈ A, ∀ a ∈ A, m ⊆ a → a = m := by
     apply zorn_subset
     intro c cA hc
-    refine ⟨⋃ a ∈ c, a, ⟨?_, ?_⟩, ?_⟩
+    refine ⟨⋃ a ∈ c, a, ⟨_, _⟩, _⟩
     · simp only [iUnion_subset_iff]
       intro a ac x hx
       simp only [A, subset_def, mem_setOf_eq] at cA
@@ -747,7 +747,7 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
   by_cases h'm : Set.Countable m
   · rcases h'm.exists_eq_range hm with ⟨f, rfl⟩
     have M i : MeasurableSet (disjointed (fun n ↦ s ∩ f n • (k * k⁻¹)) i) := by
-      apply MeasurableSet.disjointed (fun j ↦ hs.inter ?_)
+      apply MeasurableSet.disjointed (fun j ↦ hs.inter _)
       have : IsClosed (k • k⁻¹) := IsClosed.smul_left_of_isCompact k_closed.inv k_comp
       exact (IsClosed.smul this (f j)).measurableSet
     simp only [mem_range, iUnion_exists, iUnion_iUnion_eq'] at sm
@@ -775,7 +775,7 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
       have C : Set.Countable (support fun (i : m) ↦ ρ (s ∩ (i : G) • k)) :=
         Summable.countable_support_ennreal this.ne
       have : support (fun (i : m) ↦ ρ (s ∩ (i : G) • k)) = univ := by
-        apply eq_univ_iff_forall.2 (fun i ↦ ?_)
+        apply eq_univ_iff_forall.2 (fun i ↦ _)
         apply ne_of_gt (hρ (i : G) (mA.1 i.2) _ _)
         exact inter_mem_nhdsWithin s (by simpa using smul_mem_nhds (i : G) k_mem)
       rw [this] at C
@@ -784,9 +784,9 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
     have Hν : IsEverywherePos ν s :=
       h's.smul_measure_nnreal (haarScalarFactor_pos_of_isHaarMeasure _ _).ne'
     have Hμ' : IsEverywherePos μ' s := by
-      apply Hν.of_forall_exists_nhds_eq (fun x _hx ↦ ?_)
+      apply Hν.of_forall_exists_nhds_eq (fun x _hx ↦ _)
       obtain ⟨t, t_comp, t_mem⟩ : ∃ t, IsCompact t ∧ t ∈ 𝓝 x := exists_compact_mem_nhds x
-      refine ⟨t, t_mem, fun u hu ↦ ?_⟩
+      refine ⟨t, t_mem, fun u hu ↦ _⟩
       apply measure_isMulInvariant_eq_smul_of_isCompact_closure
       exact t_comp.closure_of_subset hu
     rw [H ν Hν, H μ' Hμ']

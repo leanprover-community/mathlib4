@@ -39,12 +39,12 @@ theorem discr_zeta_eq_discr_zeta_sub_one (hζ : IsPrimitiveRoot ζ n) :
   haveI : NumberField K := @NumberField.mk _ _ _ (IsCyclotomicExtension.finiteDimensional {n} ℚ K)
   have H₁ : (aeval (hζ.powerBasis ℚ).gen) (X - 1 : ℤ[X]) = (hζ.subOnePowerBasis ℚ).gen := by simp
   have H₂ : (aeval (hζ.subOnePowerBasis ℚ).gen) (X + 1 : ℤ[X]) = (hζ.powerBasis ℚ).gen := by simp
-  refine discr_eq_discr_of_toMatrix_coeff_isIntegral _ (fun i j => toMatrix_isIntegral H₁ ?_ ?_ _ _)
-    fun i j => toMatrix_isIntegral H₂ ?_ ?_ _ _
+  refine discr_eq_discr_of_toMatrix_coeff_isIntegral _ (fun i j => toMatrix_isIntegral H₁ _ _ _ _)
+    fun i j => toMatrix_isIntegral H₂ _ _ _ _
   · exact hζ.isIntegral n.pos
   · refine minpoly.isIntegrallyClosed_eq_field_fractions' (K := ℚ) (hζ.isIntegral n.pos)
   · exact (hζ.isIntegral n.pos).sub isIntegral_one
-  · refine minpoly.isIntegrallyClosed_eq_field_fractions' (K := ℚ) ?_
+  · refine minpoly.isIntegrallyClosed_eq_field_fractions' (K := ℚ) _
     exact (hζ.isIntegral n.pos).sub isIntegral_one
 #align is_primitive_root.discr_zeta_eq_discr_zeta_sub_one IsPrimitiveRoot.discr_zeta_eq_discr_zeta_sub_one
 
@@ -114,7 +114,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
       mul_one, PNat.pow_coe, cast_pow, ← pow_mul, ← mul_assoc, mul_comm (k + 1), mul_assoc] at H
     have := mul_pos (succ_pos k) (tsub_pos_of_lt hp.out.one_lt)
     rw [← succ_pred_eq_of_pos this, mul_succ, pow_add _ _ ((p : ℕ) ^ k)] at H
-    replace H := (mul_left_inj' fun h => ?_).1 H
+    replace H := (mul_left_inj' fun h => _).1 H
     · simp only [H, mul_comm _ (k + 1)]; norm_cast
     · -- Porting note: was `replace h := pow_eq_zero h; rw [coe_coe] at h; simpa using hne.1`
       have := hne.1

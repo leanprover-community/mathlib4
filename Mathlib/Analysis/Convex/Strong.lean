@@ -69,7 +69,7 @@ lemma UniformConcaveOn.concaveOn (hf : UniformConcaveOn s φ f) (hφ : 0 ≤ φ)
 lemma UniformConvexOn.strictConvexOn (hf : UniformConvexOn s φ f) (hφ : ∀ r, r ≠ 0 → 0 < φ r) :
     StrictConvexOn ℝ s f := by
   refine ⟨hf.1, fun x hx y hy hxy a b ha hb hab ↦ (hf.2 hx hy ha.le hb.le hab).trans_lt <|
-    sub_lt_self _ ?_⟩
+    sub_lt_self _ _⟩
   rw [← sub_ne_zero, ← norm_pos_iff] at hxy
   have := hφ _ hxy.ne'
   positivity
@@ -77,28 +77,28 @@ lemma UniformConvexOn.strictConvexOn (hf : UniformConvexOn s φ f) (hφ : ∀ r,
 lemma UniformConcaveOn.strictConcaveOn (hf : UniformConcaveOn s φ f) (hφ : ∀ r, r ≠ 0 → 0 < φ r) :
     StrictConcaveOn ℝ s f := by
   refine ⟨hf.1, fun x hx y hy hxy a b ha hb hab ↦ (hf.2 hx hy ha.le hb.le hab).trans_lt' <|
-    lt_add_of_pos_right _ ?_⟩
+    lt_add_of_pos_right _ _⟩
   rw [← sub_ne_zero, ← norm_pos_iff] at hxy
   have := hφ _ hxy.ne'
   positivity
 
 lemma UniformConvexOn.add (hf : UniformConvexOn s φ f) (hg : UniformConvexOn s ψ g) :
     UniformConvexOn s (φ + ψ) (f + g) := by
-  refine ⟨hf.1, fun x hx y hy a b ha hb hab ↦ ?_⟩
+  refine ⟨hf.1, fun x hx y hy a b ha hb hab ↦ _⟩
   simpa [mul_add, add_add_add_comm, sub_add_sub_comm]
     using add_le_add (hf.2 hx hy ha hb hab) (hg.2 hx hy ha hb hab)
 
 lemma UniformConcaveOn.add (hf : UniformConcaveOn s φ f) (hg : UniformConcaveOn s ψ g) :
     UniformConcaveOn s (φ + ψ) (f + g) := by
-  refine ⟨hf.1, fun x hx y hy a b ha hb hab ↦ ?_⟩
+  refine ⟨hf.1, fun x hx y hy a b ha hb hab ↦ _⟩
   simpa [mul_add, add_add_add_comm] using add_le_add (hf.2 hx hy ha hb hab) (hg.2 hx hy ha hb hab)
 
 lemma UniformConvexOn.neg (hf : UniformConvexOn s φ f) : UniformConcaveOn s φ (-f) := by
-  refine ⟨hf.1, fun x hx y hy a b ha hb hab ↦ le_of_neg_le_neg ?_⟩
+  refine ⟨hf.1, fun x hx y hy a b ha hb hab ↦ le_of_neg_le_neg _⟩
   simpa [add_comm, -neg_le_neg_iff, le_sub_iff_add_le'] using hf.2 hx hy ha hb hab
 
 lemma UniformConcaveOn.neg (hf : UniformConcaveOn s φ f) : UniformConvexOn s φ (-f) := by
-  refine ⟨hf.1, fun x hx y hy a b ha hb hab ↦ le_of_neg_le_neg ?_⟩
+  refine ⟨hf.1, fun x hx y hy a b ha hb hab ↦ le_of_neg_le_neg _⟩
   simpa [add_comm, -neg_le_neg_iff, ← le_sub_iff_add_le', sub_eq_add_neg, neg_add]
     using hf.2 hx hy ha hb hab
 
@@ -164,12 +164,12 @@ private lemma aux_add (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1) :
 
 lemma strongConvexOn_iff_convex :
     StrongConvexOn s m f ↔ ConvexOn ℝ s fun x ↦ f x - m / (2 : ℝ) * ‖x‖ ^ 2 := by
-  refine and_congr_right fun _ ↦ forall₄_congr fun x _ y _ ↦ forall₅_congr fun a b ha hb hab ↦ ?_
+  refine and_congr_right fun _ ↦ forall₄_congr fun x _ y _ ↦ forall₅_congr fun a b ha hb hab ↦ _
   simp_rw [sub_le_iff_le_add, smul_eq_mul, aux_sub ha hb hab, mul_assoc, mul_left_comm]
 
 lemma strongConcaveOn_iff_convex :
     StrongConcaveOn s m f ↔ ConcaveOn ℝ s fun x ↦ f x + m / (2 : ℝ) * ‖x‖ ^ 2 := by
-  refine and_congr_right fun _ ↦ forall₄_congr fun x _ y _ ↦ forall₅_congr fun a b ha hb hab ↦ ?_
+  refine and_congr_right fun _ ↦ forall₄_congr fun x _ y _ ↦ forall₅_congr fun a b ha hb hab ↦ _
   simp_rw [← sub_le_iff_le_add, smul_eq_mul, aux_add ha hb hab, mul_assoc, mul_left_comm]
 
 end InnerProductSpace

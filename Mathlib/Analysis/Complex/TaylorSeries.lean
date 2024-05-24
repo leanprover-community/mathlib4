@@ -81,7 +81,7 @@ lemma hasSum_taylorSeries_on_emetric_ball :
   obtain ⟨r', hzr', hr'⟩ := exists_between (EMetric.mem_ball'.mp hz)
   lift r' to NNReal using ne_top_of_lt hr'
   rw [← EMetric.mem_ball', Metric.emetric_ball_nnreal] at hzr'
-  refine hasSum_taylorSeries_on_ball ?_ hzr'
+  refine hasSum_taylorSeries_on_ball _ hzr'
   rw [← Metric.emetric_ball_nnreal]
   exact hf.mono <| EMetric.ball_subset_ball hr'.le
 

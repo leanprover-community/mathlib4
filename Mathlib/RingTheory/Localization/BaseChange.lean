@@ -29,7 +29,7 @@ theorem IsLocalizedModule.isBaseChange [IsLocalizedModule S f] : IsBaseChange A 
   .of_lift_unique _ fun Q _ _ _ _ g ↦ by
     obtain ⟨ℓ, rfl, h₂⟩ := IsLocalizedModule.is_universal S f g fun s ↦ by
       rw [← (Algebra.lsmul R (A := A) R Q).commutes]; exact (IsLocalization.map_units A s).map _
-    refine ⟨ℓ.extendScalarsOfIsLocalization S A, by simp, fun g'' h ↦ ?_⟩
+    refine ⟨ℓ.extendScalarsOfIsLocalization S A, by simp, fun g'' h ↦ _⟩
     cases h₂ (LinearMap.restrictScalars R g'') h; rfl
 
 /-- The map `(f : M →ₗ[R] M')` is a localization of modules iff the map
@@ -39,7 +39,7 @@ In particular, there is an isomorphism between `LocalizedModule S M` and `(Local
 given by `m/s ↦ (1/s) ⊗ₜ m`.
 -/
 theorem isLocalizedModule_iff_isBaseChange : IsLocalizedModule S f ↔ IsBaseChange A f := by
-  refine ⟨fun _ ↦ IsLocalizedModule.isBaseChange S A f, fun h ↦ ?_⟩
+  refine ⟨fun _ ↦ IsLocalizedModule.isBaseChange S A f, fun h ↦ _⟩
   have : IsBaseChange A (LocalizedModule.mkLinearMap S M) := IsLocalizedModule.isBaseChange S A _
   let e := (this.equiv.symm.trans h.equiv).restrictScalars R
   convert IsLocalizedModule.of_linearEquiv S (LocalizedModule.mkLinearMap S M) e
