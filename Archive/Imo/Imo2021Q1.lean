@@ -71,7 +71,7 @@ theorem exists_triplet_summing_to_squares (n : ℕ) (hn : 100 ≤ n) :
   have h₁ : 4 * l ≤ 2 * l ^ 2 := by linarith
   have h₂ : 1 ≤ 2 * l := by linarith
   refine ⟨2 * l ^ 2 - 4 * l, 2 * l ^ 2 + 1, 2 * l ^ 2 + 4 * l, ?_, ?_, ?_,
-    ⟨?_, ⟨2 * l - 1, ?_⟩, ⟨2 * l, ?_⟩, 2 * l + ?1, _⟩⟩
+    ⟨?_, ⟨2 * l - 1, ?_⟩, ⟨2 * l, ?_⟩, 2 * l + 1, ?_⟩⟩
   all_goals zify [h₁, h₂]; linarith
 #align imo2021_q1.exists_triplet_summing_to_squares Imo2021Q1.exists_triplet_summing_to_squares
 
