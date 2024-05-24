@@ -77,8 +77,7 @@ theorem sup_eq_sup_smul_of_le_smul_of_le_jacobson {I J : Ideal R} {N N' : Submod
     (sup_le_sup_left (Submodule.smul_le.2 fun _ _ _ => Submodule.smul_mem _ _) _)
   have h_comap := Submodule.comap_injective_of_surjective (LinearMap.range_eq_top.1 N.range_mkQ)
   have : (I • N').map N.mkQ = N'.map N.mkQ := by
-    rw [← h_comap.eq_iff]
-    simpa [comap_map_eq, sup_comm, eq_comm] using hNN'
+    simpa only [← h_comap.eq_iff, comap_map_mkQ, sup_comm, eq_comm] using hNN'
   have :=
     @Submodule.eq_smul_of_le_smul_of_le_jacobson _ _ _ _ _ I J (N'.map N.mkQ) (hN'.map _)
       (by rw [← map_smul'', this]) hIJ
