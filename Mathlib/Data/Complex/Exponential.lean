@@ -73,6 +73,10 @@ def tan (z : ℂ) : ℂ :=
   sin z / cos z
 #align complex.tan Complex.tan
 
+/-- The complex cotangent function, defined as `cos z / sin z` -/
+def cot (z : ℂ) : ℂ :=
+  cos z / sin z
+
 /-- The complex hyperbolic sine function, defined via `exp` -/
 -- Porting note (#11180): removed `@[pp_nodot]`
 def sinh (z : ℂ) : ℂ :=
@@ -128,6 +132,10 @@ nonrec def tan (x : ℝ) : ℝ :=
   (tan x).re
 #align real.tan Real.tan
 
+/-- The real cotangent function, defined as the real part of the complex cotangent -/
+nonrec def cot (x : ℝ) : ℝ :=
+  (cot x).re
+
 /-- The real hypebolic sine function, defined as the real part of the complex hyperbolic sine -/
 -- Porting note (#11180): removed `@[pp_nodot]`
 nonrec def sinh (x : ℝ) : ℝ :=
@@ -168,7 +176,7 @@ theorem exp_zero : exp 0 = 1 := by
   · dsimp [exp']
     induction' j with j ih
     · dsimp [exp']; simp [show Nat.succ 0 = 1 from rfl]
-    · rw [← ih (by simp [show 1 = Nat.succ 0 from rfl, Nat.succ_le_succ])]
+    · rw [← ih (by simp [Nat.succ_le_succ])]
       simp only [sum_range_succ, pow_succ]
       simp
 #align complex.exp_zero Complex.exp_zero
@@ -1282,8 +1290,8 @@ theorem sum_div_factorial_le {α : Type*} [LinearOrderedField α] (n j : ℕ) (h
     _ ≤ ∑ m in range (j - n), ((n.factorial : α) * (n.succ : α) ^ m)⁻¹ := by
       simp_rw [one_div]
       gcongr
-      · rw [← Nat.cast_pow, ← Nat.cast_mul, Nat.cast_le, add_comm]
-        exact Nat.factorial_mul_pow_le_factorial
+      rw [← Nat.cast_pow, ← Nat.cast_mul, Nat.cast_le, add_comm]
+      exact Nat.factorial_mul_pow_le_factorial
     _ = (n.factorial : α)⁻¹ * ∑ m in range (j - n), (n.succ : α)⁻¹ ^ m := by
       simp [mul_inv, ← mul_sum, ← sum_mul, mul_comm, inv_pow]
     _ = ((n.succ : α) - n.succ * (n.succ : α)⁻¹ ^ (j - n)) / (n.factorial * n) := by
@@ -1321,8 +1329,8 @@ theorem exp_bound {x : ℂ} (hx : abs x ≤ 1) {n : ℕ} (hn : 0 < n) :
     _ ≤ ∑ m in filter (fun k => n ≤ k) (range j), abs x ^ n * (1 / m.factorial) := by
       simp_rw [map_mul, map_pow, map_div₀, abs_natCast]
       gcongr
-      · rw [abv_pow abs]
-        exact pow_le_one _ (abs.nonneg _) hx
+      rw [abv_pow abs]
+      exact pow_le_one _ (abs.nonneg _) hx
     _ = abs x ^ n * ∑ m in (range j).filter fun k => n ≤ k, (1 / m.factorial : ℝ) := by
       simp [abs_mul, abv_pow abs, abs_div, ← mul_sum]
     _ ≤ abs x ^ n * (n.succ * (n.factorial * n : ℝ)⁻¹) := by
@@ -1351,19 +1359,19 @@ theorem exp_bound' {x : ℂ} {n : ℕ} (hx : abs x / n.succ ≤ 1 / 2) :
     _ = ∑ i : ℕ in range k, abs x ^ n / n.factorial * (abs x ^ i / (n.succ : ℝ) ^ i) := ?_
     _ ≤ abs x ^ n / ↑n.factorial * 2 := ?_
   · gcongr
-    · exact mod_cast Nat.factorial_mul_pow_le_factorial
+    exact mod_cast Nat.factorial_mul_pow_le_factorial
   · refine' Finset.sum_congr rfl fun _ _ => _
     simp only [pow_add, div_eq_inv_mul, mul_inv, mul_left_comm, mul_assoc]
   · rw [← mul_sum]
     gcongr
-    · simp_rw [← div_pow]
-      rw [geom_sum_eq, div_le_iff_of_neg]
-      · trans (-1 : ℝ)
-        · linarith
-        · simp only [neg_le_sub_iff_le_add, div_pow, Nat.cast_succ, le_add_iff_nonneg_left]
-          positivity
+    simp_rw [← div_pow]
+    rw [geom_sum_eq, div_le_iff_of_neg]
+    · trans (-1 : ℝ)
       · linarith
-      · linarith
+      · simp only [neg_le_sub_iff_le_add, div_pow, Nat.cast_succ, le_add_iff_nonneg_left]
+        positivity
+    · linarith
+    · linarith
 #align complex.exp_bound' Complex.exp_bound'
 
 theorem abs_exp_sub_one_le {x : ℂ} (hx : abs x ≤ 1) : abs (exp x - 1) ≤ 2 * abs x :=
@@ -1459,8 +1467,8 @@ theorem exp_approx_end (n m : ℕ) (x : ℝ) (e₁ : n + 1 = m) (h : |x| ≤ 1) 
     |exp x - expNear m x 0| ≤ |x| ^ m / m.factorial * ((m + 1) / m) := by
   simp only [expNear, mul_zero, add_zero]
   convert exp_bound (n := m) h ?_ using 1
-  field_simp [mul_comm]
-  omega
+  · field_simp [mul_comm]
+  · omega
 #align real.exp_approx_end Real.exp_approx_end
 
 theorem exp_approx_succ {n} {x a₁ b₁ : ℝ} (m : ℕ) (e₁ : n + 1 = m) (a₂ b₂ : ℝ)
@@ -1714,7 +1722,10 @@ end Mathlib.Meta.Positivity
 
 namespace Complex
 
-@[simp]
+-- Adaptation note: nightly-2024-04-01
+-- The simpNF linter now times out on this lemma.
+-- See https://github.com/leanprover-community/mathlib4/issues/12230
+@[simp, nolint simpNF]
 theorem abs_cos_add_sin_mul_I (x : ℝ) : abs (cos x + sin x * I) = 1 := by
   have := Real.sin_sq_add_cos_sq x
   simp_all [add_comm, abs, normSq, sq, sin_ofReal_re, cos_ofReal_re, mul_re]

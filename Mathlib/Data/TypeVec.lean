@@ -327,7 +327,7 @@ protected theorem casesCons_append1 (n : ℕ) {β : TypeVec (n + 1) → Sort*}
 def typevecCasesNil₃ {β : ∀ v v' : TypeVec 0, v ⟹ v' → Sort*}
     (f : β Fin2.elim0 Fin2.elim0 nilFun) :
     ∀ v v' fs, β v v' fs := fun v v' fs => by
-  refine' cast _ f
+  refine cast ?_ f
   have eq₁ : v = Fin2.elim0 := by funext i; contradiction
   have eq₂ : v' = Fin2.elim0 := by funext i; contradiction
   have eq₃ : fs = nilFun := by funext i; contradiction
@@ -645,7 +645,7 @@ theorem subtypeVal_nil {α : TypeVec.{u} 0} (ps : α ⟹ «repeat» 0 Prop) :
 theorem diag_sub_val {n} {α : TypeVec.{u} n} : subtypeVal (repeatEq α) ⊚ diagSub = prod.diag := by
   ext i x
   induction' i with _ _ _ i_ih
-  · simp only [comp, subtypeVal, repeatEq._eq_2, diagSub, prod.diag]
+  · simp only [comp, subtypeVal, repeatEq.eq_2, diagSub, prod.diag]
   apply @i_ih (drop α)
 #align typevec.diag_sub_val TypeVec.diag_sub_val
 

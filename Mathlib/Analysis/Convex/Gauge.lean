@@ -274,7 +274,7 @@ theorem gauge_smul_of_nonneg [MulActionWithZero α E] [IsScalarTower α ℝ (Set
     rw [mem_Ioi] at hr ⊢
     rw [← mem_smul_set_iff_inv_smul_mem₀ hr.ne'] at hx
     have := smul_pos ha' hr
-    refine' ⟨this, _⟩
+    refine ⟨this, ?_⟩
     rw [← mem_smul_set_iff_inv_smul_mem₀ this.ne', smul_assoc]
     exact smul_mem_smul_set hx
 #align gauge_smul_of_nonneg gauge_smul_of_nonneg
@@ -609,7 +609,7 @@ theorem gauge_closedBall (hr : 0 ≤ r) (x : E) : gauge (closedBall (0 : E) r) x
       filter_upwards [self_mem_nhdsWithin] with R hR
       rw [← gauge_ball (hr.trans hR.out.le)]
       refine gauge_mono ?_ (closedBall_subset_ball hR) _
-      exact (absorbent_ball_zero hr').subset ball_subset_closedBall
+      exact (absorbent_ball_zero hr').mono ball_subset_closedBall
 
 theorem mul_gauge_le_norm (hs : Metric.ball (0 : E) r ⊆ s) : r * gauge s x ≤ ‖x‖ := by
   obtain hr | hr := le_or_lt r 0
@@ -624,7 +624,7 @@ theorem Convex.lipschitzWith_gauge {r : ℝ≥0} (hc : Convex ℝ s) (hr : 0 < r
   LipschitzWith.of_le_add_mul _ fun x y =>
     calc
       gauge s x = gauge s (y + (x - y)) := by simp
-      _ ≤ gauge s y + gauge s (x - y) := gauge_add_le hc (this.subset hs) _ _
+      _ ≤ gauge s y + gauge s (x - y) := gauge_add_le hc (this.mono hs) _ _
       _ ≤ gauge s y + ‖x - y‖ / r :=
         add_le_add_left ((gauge_mono this hs (x - y)).trans_eq (gauge_ball hr.le _)) _
       _ = gauge s y + r⁻¹ * dist x y := by rw [dist_eq_norm, div_eq_inv_mul, NNReal.coe_inv]

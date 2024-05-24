@@ -15,7 +15,7 @@ The `tauto` tactic.
 
 namespace Mathlib.Tactic.Tauto
 
-open Lean Elab.Tactic Parser.Tactic Lean.Meta MVarId Std.Tactic
+open Lean Elab.Tactic Parser.Tactic Lean.Meta MVarId Batteries.Tactic
 open Qq
 
 initialize registerTraceClass `tauto

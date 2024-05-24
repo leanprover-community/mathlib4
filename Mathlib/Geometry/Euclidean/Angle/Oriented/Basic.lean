@@ -428,7 +428,7 @@ theorem oangle_eq_pi_iff_sameRay_neg {x y : V} :
   · intro h
     by_cases hx : x = 0; · simp [hx, Real.Angle.pi_ne_zero.symm] at h
     by_cases hy : y = 0; · simp [hy, Real.Angle.pi_ne_zero.symm] at h
-    refine' ⟨hx, hy, _⟩
+    refine ⟨hx, hy, ?_⟩
     rw [o.oangle_neg_right hx hy, h, Real.Angle.coe_pi_add_coe_pi]
   · rintro ⟨hx, hy, h⟩
     rwa [o.oangle_neg_right hx hy, ← Real.Angle.sub_coe_pi_eq_add_coe_pi, sub_eq_zero] at h
@@ -454,7 +454,7 @@ theorem oangle_eq_zero_or_eq_pi_iff_right_eq_smul {x y : V} :
       exact Or.inr ⟨r, rfl⟩
     · by_cases hx : x = 0; · simp [hx]
       obtain ⟨r, -, hy⟩ := h.exists_nonneg_left hx
-      refine' Or.inr ⟨-r, _⟩
+      refine Or.inr ⟨-r, ?_⟩
       simp [hy]
   · rcases h with (rfl | ⟨r, rfl⟩); · simp
     by_cases hx : x = 0; · simp [hx]
@@ -510,11 +510,11 @@ theorem oangle_add {x y z : V} (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0) :
     o.oangle x y + o.oangle y z = o.oangle x z := by
   simp_rw [oangle]
   rw [← Complex.arg_mul_coe_angle, o.kahler_mul y x z]
-  congr 1
-  convert Complex.arg_real_mul _ (_ : 0 < ‖y‖ ^ 2) using 2
-  · norm_cast
-  · have : 0 < ‖y‖ := by simpa using hy
-    positivity
+  · congr 1
+    convert Complex.arg_real_mul _ (_ : 0 < ‖y‖ ^ 2) using 2
+    · norm_cast
+    · have : 0 < ‖y‖ := by simpa using hy
+      positivity
   · exact o.kahler_ne_zero hx hy
   · exact o.kahler_ne_zero hy hz
 #align orientation.oangle_add Orientation.oangle_add
@@ -871,7 +871,7 @@ theorem oangle_smul_add_right_eq_zero_or_eq_pi_iff {x y : V} (r : ℝ) :
   refine' ⟨fun h => _, fun h => _⟩
   · rcases h with ⟨m, h, hm⟩
     change m 0 • x + m 1 • (r • x + y) = 0 at h
-    refine' ⟨![m 0 + m 1 * r, m 1], _⟩
+    refine ⟨![m 0 + m 1 * r, m 1], ?_⟩
     change (m 0 + m 1 * r) • x + m 1 • y = 0 ∧ (m 0 + m 1 * r ≠ 0 ∨ m 1 ≠ 0)
     rw [smul_add, smul_smul, ← add_assoc, ← add_smul] at h
     refine' ⟨h, not_and_or.1 fun h0 => _⟩
@@ -881,7 +881,7 @@ theorem oangle_smul_add_right_eq_zero_or_eq_pi_iff {x y : V} (r : ℝ) :
     simp [h0] at hm
   · rcases h with ⟨m, h, hm⟩
     change m 0 • x + m 1 • y = 0 at h
-    refine' ⟨![m 0 - m 1 * r, m 1], _⟩
+    refine ⟨![m 0 - m 1 * r, m 1], ?_⟩
     change (m 0 - m 1 * r) • x + m 1 • (r • x + y) = 0 ∧ (m 0 - m 1 * r ≠ 0 ∨ m 1 ≠ 0)
     rw [sub_smul, smul_add, smul_smul, ← add_assoc, sub_add_cancel]
     refine' ⟨h, not_and_or.1 fun h0 => _⟩

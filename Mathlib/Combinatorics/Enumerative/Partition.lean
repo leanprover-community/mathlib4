@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.Combinatorics.Enumerative.Composition
-import Mathlib.Data.Nat.Parity
 import Mathlib.Tactic.ApplyFun
 
 #align_import combinatorics.partition from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
@@ -79,7 +78,7 @@ def ofComposition (n : ℕ) (c : Composition n) : Partition n where
 
 theorem ofComposition_surj {n : ℕ} : Function.Surjective (ofComposition n) := by
   rintro ⟨b, hb₁, hb₂⟩
-  rcases Quotient.exists_rep b with ⟨b, rfl⟩
+  induction b using Quotient.inductionOn with | _ b => ?_
   exact ⟨⟨b, hb₁, by simpa using hb₂⟩, Partition.ext _ _ rfl⟩
 #align nat.partition.of_composition_surj Nat.Partition.ofComposition_surj
 

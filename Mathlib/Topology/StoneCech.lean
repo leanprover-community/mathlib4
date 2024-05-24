@@ -228,8 +228,7 @@ section StoneCech
   point of γ. -/
 variable (α : Type u) [TopologicalSpace α]
 
-instance stoneCechSetoid : Setoid (Ultrafilter α)
-    where
+instance stoneCechSetoid : Setoid (Ultrafilter α) where
   r x y :=
     ∀ (γ : Type u) [TopologicalSpace γ],
       ∀ [T2Space γ] [CompactSpace γ] (f : α → γ) (_ : Continuous f),
@@ -295,7 +294,7 @@ end Extension
 
 theorem convergent_eqv_pure {u : Ultrafilter α} {x : α} (ux : ↑u ≤ 𝓝 x) : u ≈ pure x :=
   fun γ tγ h₁ h₂ f hf => by
-  trans f x; swap; symm
+  trans f x; swap; on_goal 1 => symm
   all_goals refine' ultrafilter_extend_eq_iff.mpr (le_trans (map_mono _) (hf.tendsto _))
   · apply pure_le_nhds
   · exact ux

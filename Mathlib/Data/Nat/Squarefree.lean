@@ -5,7 +5,6 @@ Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.Squarefree.Basic
 import Mathlib.Data.Nat.Factorization.PrimePow
-import Mathlib.RingTheory.Int.Basic
 
 #align_import data.nat.squarefree from "leanprover-community/mathlib"@"3c1368cac4abd5a5cbe44317ba7e87379d51ed88"
 
@@ -94,7 +93,7 @@ theorem Squarefree.ext_iff {n m : ℕ} (hn : Squarefree n) (hm : Squarefree m) :
 
 theorem squarefree_pow_iff {n k : ℕ} (hn : n ≠ 1) (hk : k ≠ 0) :
     Squarefree (n ^ k) ↔ Squarefree n ∧ k = 1 := by
-  refine' ⟨fun h => _, by rintro ⟨hn, rfl⟩; simpa⟩
+  refine ⟨fun h => ?_, by rintro ⟨hn, rfl⟩; simpa⟩
   rcases eq_or_ne n 0 with (rfl | -)
   · simp [zero_pow hk] at h
   refine' ⟨h.squarefree_of_dvd (dvd_pow_self _ hk), by_contradiction fun h₁ => _⟩
@@ -105,7 +104,7 @@ theorem squarefree_pow_iff {n k : ℕ} (hn : n ≠ 1) (hk : k ≠ 0) :
 #align nat.squarefree_pow_iff Nat.squarefree_pow_iff
 
 theorem squarefree_and_prime_pow_iff_prime {n : ℕ} : Squarefree n ∧ IsPrimePow n ↔ Prime n := by
-  refine' ⟨_, fun hn => ⟨hn.squarefree, hn.isPrimePow⟩⟩
+  refine ⟨?_, fun hn => ⟨hn.squarefree, hn.isPrimePow⟩⟩
   rw [isPrimePow_nat_iff]
   rintro ⟨h, p, k, hp, hk, rfl⟩
   rw [squarefree_pow_iff hp.ne_one hk.ne'] at h
@@ -256,7 +255,7 @@ instance : DecidablePred (Squarefree : ℕ → Prop) := fun _ =>
   decidable_of_iff' _ squarefree_iff_minSqFac
 
 theorem squarefree_two : Squarefree 2 := by
-  rw [squarefree_iff_nodup_factors] <;> decide
+  rw [squarefree_iff_nodup_factors] <;> simp
 #align nat.squarefree_two Nat.squarefree_two
 
 theorem divisors_filter_squarefree_of_squarefree {n : ℕ} (hn : Squarefree n) :
@@ -309,12 +308,12 @@ theorem divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) :
     apply UniqueFactorizationMonoid.factors_unique _ _ (associated_iff_eq.2 h)
     · intro z hz
       apply irreducible_of_normalized_factor z
-      rw [← Multiset.mem_toFinset]
-      apply hx hz
+      · rw [← Multiset.mem_toFinset]
+        apply hx hz
     · intro z hz
       apply irreducible_of_normalized_factor z
-      rw [← Multiset.mem_toFinset]
-      apply hy hz
+      · rw [← Multiset.mem_toFinset]
+        apply hy hz
 #align nat.divisors_filter_squarefree Nat.divisors_filter_squarefree
 
 open BigOperators

@@ -206,6 +206,7 @@ theorem fib_le_of_continuantsAux_b :
         set pconts := g.continuantsAux (n + 1) with pconts_eq
         set ppconts := g.continuantsAux n with ppconts_eq
         -- use the recurrence of `continuantsAux`
+        simp only [Nat.succ_eq_add_one, Nat.add_assoc, Nat.reduceAdd]
         suffices (fib n : K) + fib (n + 1) ≤ gp.a * ppconts.b + gp.b * pconts.b by
           simpa [fib_add_two, add_comm,
             continuantsAux_recurrence s_ppred_nth_eq ppconts_eq pconts_eq]

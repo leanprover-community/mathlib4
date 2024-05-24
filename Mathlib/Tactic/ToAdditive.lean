@@ -11,9 +11,9 @@ import Mathlib.Lean.EnvExtension
 import Mathlib.Lean.Meta.Simp
 import Lean.Elab.Tactic.Ext
 import Lean.Meta.Tactic.Symm
-import Std.Lean.NameMapAttribute
-import Std.Tactic.Lint -- useful to lint this file and for for DiscrTree.elements
-import Std.Tactic.Relation.Rfl -- just to copy the attribute
+import Lean.Meta.Tactic.Rfl
+import Batteries.Lean.NameMapAttribute
+import Batteries.Tactic.Lint -- useful to lint this file and for for DiscrTree.elements
 import Mathlib.Tactic.Relation.Trans -- just to copy the attribute
 import Mathlib.Tactic.Eqns -- just to copy the attribute
 import Mathlib.Tactic.Simps.Basic
@@ -491,7 +491,7 @@ open Lean.Expr.FindImpl in
   and we're not remembering the cache between these calls. -/
 unsafe def additiveTestUnsafe (findTranslation? : Name → Option Name)
   (ignore : Name → Option (List ℕ)) (e : Expr) : Option Name :=
-  let rec visit (e : Expr) (inApp := false) : OptionT FindM Name := do
+  let rec visit (e : Expr) (inApp := false) : OptionT (FindM Id) Name := do
     if e.isConst then
       if inApp || (findTranslation? e.constName).isSome then
         failure
@@ -1031,6 +1031,8 @@ def fixAbbreviation : List String → List String
                                       => "function" :: "_" :: "commute" :: fixAbbreviation s
   | "zero" :: "Le" :: "Part" :: s         => "posPart" :: fixAbbreviation s
   | "le" :: "Zero" :: "Part" :: s         => "negPart" :: fixAbbreviation s
+  | "three" :: "GPFree" :: s         => "three" :: "APFree" :: fixAbbreviation s
+  | "Three" :: "GPFree" :: s         => "Three" :: "APFree" :: fixAbbreviation s
   | x :: s                            => x :: fixAbbreviation s
   | []                                => []
 
@@ -1093,7 +1095,7 @@ def proceedFields (src tgt : Name) : CoreM Unit := do
       return #[]
   aux fun declName ↦ do match (← getEnv).find? declName with
     | some (ConstantInfo.inductInfo {ctors := ctors, ..}) =>
-        return ctors.toArray.map (.mkSimple ·.getString)
+        return ctors.toArray.map (.mkSimple ·.lastComponentAsString)
     | _ => pure #[]
 
 /-- Elaboration of the configuration options for `to_additive`. -/
@@ -1140,7 +1142,7 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
         {src} and the target declaration {tgt}."
     warnAttr stx Lean.Elab.Tactic.Ext.extExtension
       (fun b n => (b.tree.values.any fun t => t.declName = n)) thisAttr `ext src tgt
-    warnAttr stx Std.Tactic.reflExt (·.values.contains ·) thisAttr `refl src tgt
+    warnAttr stx Lean.Meta.Rfl.reflExt (·.values.contains ·) thisAttr `refl src tgt
     warnAttr stx Lean.Meta.Symm.symmExt (·.values.contains ·) thisAttr `symm src tgt
     warnAttr stx Mathlib.Tactic.transExt (·.values.contains ·) thisAttr `trans src tgt
     warnAttr stx Lean.Meta.coeExt (·.contains ·) thisAttr `coe src tgt
