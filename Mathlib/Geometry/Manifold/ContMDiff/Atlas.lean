@@ -237,7 +237,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : PartialHomeomorph M M') 
     let c' := chartAt H (f x)
     rintro (hx' : c x ∈ c.symm ⁻¹' f.source)
     -- propose `(c.symm.trans f).trans c'` as a candidate for a local structomorphism of `H`
-    refine ⟨(c.symm.trans f).trans c', ⟨?_, ?_⟩,? (_ : EqOn (c' ∘ f ∘ c.symm) _ _), ?_⟩
+    refine ⟨(c.symm.trans f).trans c', ⟨?_, ?_⟩, (?_ : EqOn (c' ∘ f ∘ c.symm) _ _), ?_⟩
     · -- smoothness of the candidate local structomorphism in the forward direction
       intro y hy
       simp only [mfld_simps] at hy
