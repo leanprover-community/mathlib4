@@ -292,7 +292,7 @@ three `rel₄`s with two fixed indices and two free indices that share one fixed
 (the larger one) and two free indices with the first `rel₄`.
 The coefficient before the first `rel₄` is `addMulSub` applied to the two fixed indices. -/
 lemma rel₆_eq₃ (c d m n r : ℤ) :
-    rel₆ W c d m n r c = rel₆ W r c m n c d - rel₆ W n c m r c d + rel₆ W m c n r c d := by
+    rel₆ W c d m n r c = rel₆ W m c n r c d - rel₆ W n c m r c d + rel₆ W r c m n c d := by
   simp_rw [rel₆, rel₄]; ring
 
 /-- A `rel₄` with a fixed index and three free indices can be expressed in terms of
@@ -300,7 +300,7 @@ three `rel₄`s with two fixed indices and two free indices that share one fixed
 (the smaller one) and two free indices with the first `rel₄`.
 The coefficient before the first `rel₄` is `addMulSub` applied to the two fixed indices. -/
 lemma rel₆_eq₃' (c d m n r : ℤ) :
-    rel₆ W c d m n r d = rel₆ W r d m n c d - rel₆ W n d m r c d + rel₆ W m d n r c d := by
+    rel₆ W c d m n r d = rel₆ W m d n r c d - rel₆ W n d m r c d + rel₆ W r d m n c d := by
   simp_rw [rel₆, rel₄]; ring
 
 /-- A `rel₄` with four free indices can be expressed in terms of ten `rel₄`s
