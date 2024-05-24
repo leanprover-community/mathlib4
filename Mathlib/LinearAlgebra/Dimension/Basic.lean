@@ -264,7 +264,7 @@ theorem lift_rank_range_le (f : M →ₗ[R] M') : Cardinal.lift.{v}
   rintro ⟨s, li⟩
   apply le_trans
   swap
-  · apply Cardinal.lift_le.?mpr
+  · apply Cardinal.lift_le.mpr
     refine le_ciSup (Cardinal.bddAbove_range.{v, v} _) ⟨rangeSplitting f '' s, ?_⟩
     apply LinearIndependent.of_comp f.rangeRestrict
     convert li.comp (Equiv.Set.rangeSplittingImageEquiv f s) (Equiv.injective _) using 1

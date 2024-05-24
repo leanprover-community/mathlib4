@@ -346,7 +346,7 @@ theorem StrictConvex.add_smul_mem (hs : StrictConvex 𝕜 s) (hx : x ∈ s) (hxy
   have h : x + t • y = (1 - t) • x + t • (x + y) := by
     rw [smul_add, ← add_assoc, ← _root_.add_smul, sub_add_cancel, one_smul]
   rw [h]
-  refine hs hx hxy (fun h => hy <| add_left_cancel ?_) (sub_pos_of_lt ht₁) ht₀ (sub_add_cancel _ _)
+  refine' hs hx hxy (fun h => hy <| add_left_cancel _) (sub_pos_of_lt ht₁) ht₀ (sub_add_cancel _ _)
   rw [← h, add_zero]
 #align strict_convex.add_smul_mem StrictConvex.add_smul_mem
 

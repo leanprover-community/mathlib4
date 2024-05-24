@@ -110,7 +110,7 @@ theorem LinearOrder.bot_topologicalSpace_eq_generateFrom [LinearOrder α] [PredO
 
 theorem discreteTopology_iff_orderTopology_of_pred_succ [LinearOrder α] [PredOrder α]
     [SuccOrder α] : DiscreteTopology α ↔ OrderTopology α := by
-  refine ⟨fun h => ⟨?_⟩, fun h => ?⟨_⟩⟩
+  refine ⟨fun h => ⟨?_⟩, fun h => ⟨?_⟩⟩
   · rw [h.eq_bot]
     exact LinearOrder.bot_topologicalSpace_eq_generateFrom
   · rw [h.topology_eq_generate_intervals]
