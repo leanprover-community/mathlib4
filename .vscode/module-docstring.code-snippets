@@ -1,8 +1,8 @@
 {
 	"Do notation": {
-			"scope": "lean4",
-			"prefix": "do",
-			"body": ["do"]
+		"scope": "lean4",
+		"prefix": "do",
+		"body": ["do"]
 	},
 	"Module docstring for mathlib": {
 		"scope": "lean4",
