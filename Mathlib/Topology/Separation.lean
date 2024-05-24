@@ -50,7 +50,7 @@ This file defines the predicate `SeparatedNhds`, and common separation axioms
 * `T5Space`: A T₅ space is a completely normal T₁ space. T₅ implies T₄.
 
 Note that `mathlib` adopts the modern convention that `m ≤ n` if and only if `T_m → T_n`, but
-occassionally the literature swaps definitions for e.g. T₃ and regular.
+occasionally the literature swaps definitions for e.g. T₃ and regular.
 
 ## Main results
 
