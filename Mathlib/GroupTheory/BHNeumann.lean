@@ -127,44 +127,22 @@ theorem Subgroup.exists_finiteIndex_of_leftCoset_cover_aux
     simpa [this] using hcover
   | succ n ih =>
     replace hH (i) : H i ∈ s := hH ▸ mem_image_univ_iff_mem_range.mpr (Set.mem_range_self i)
-    rw [← Set.biUnion_univ, ← Finset.coe_univ, Finset.set_biUnion_coe,
-      ← Finset.univ.filter_union_filter_neg_eq (H · = H j), Finset.set_biUnion_union] at hcover
-    -- Since `G ≠ ⋃ k ∈ {k : H k = H j}, g k • H j`,
-    -- there exists `x ∉ ⋃ k ∈ {k : H k = H j}, g k • H k`.
-    have ⟨x, hx⟩ : ∃ x, x ∉ ⋃ i ∈ Finset.univ.filter (H · = H j), g i • (H i : Set G) := by
-      rwa [ne_eq, Set.eq_univ_iff_forall, not_forall] at hj
-    -- Then `x • H j ∩ ⋃ k ∈ {k : H k = H j}, g k • H k = ∅`.
-    replace hx :
-        x • (H j : Set G) ∩ ⋃ k ∈ Finset.univ.filter (H · = H j), g k • (H k : Set G) = ∅ := by
-      rw [Set.eq_empty_iff_forall_not_mem]
-      suffices ∀ i ∈ x • (H j : Set G), ∀ (x : ι), H x = H j → i ∉ g x • (H x : Set G) by
-        simpa using this
-      replace hx : ∀ i, H i = H j → x ∉ g i • (H i : Set G) := by simpa using hx
-      intro y hy₁ i hi hy₂
-      apply hx i hi
-      rw [← hi] at hy₁
-      rw [mem_leftCoset_iff, SetLike.mem_coe, ← QuotientGroup.eq] at hy₁ hy₂ ⊢
-      exact hy₂.trans hy₁.symm
-    -- Therefore `x • H j ⊆ ⋃ k ∈ {k : H k ≠ H j}, g k • H k`.
-    replace hx :
-        x • (H j : Set G) ⊆ ⋃ k ∈ Finset.univ.filter (H · ≠ H j), g k • (H k : Set G) := by
-      rw [← Set.left_eq_inter, ← Set.empty_union (_ ∩ _), ← hx,
-        ← Set.inter_union_distrib_left, Set.left_eq_inter, hcover]
-      exact Set.subset_univ _
-    -- Thus `y • H j ⊆ ⋃ k ∈ {k : H k ≠ H j}, (y * x⁻¹ * g k) • H k` for all `y : G`, that is,
-    -- every left coset of `H j` is contained in a finite union of left cosets of the
-    -- subgroups `H k ≠ H j`.
-    replace hx (y : G) :
-        y • (H j : Set G) ⊆
-          ⋃ i ∈ Finset.univ.filter (H · ≠ H j), (y * x⁻¹ * g i) • (H i : Set G) := by
-      replace hx : ∀ w, x⁻¹ * w ∈ H j → ∃ i, H i ≠ H j ∧ (g i)⁻¹ * w ∈ H i := by
-        simpa [Set.subset_def, mem_leftCoset_iff] using hx
-      intro z hz
-      specialize hx (x * y⁻¹ * z)
-      rw [← mul_assoc, inv_mul_cancel_left] at hx
-      simpa [Set.subset_def, mem_leftCoset_iff, ← QuotientGroup.eq, mul_assoc]
-        using hx ((mem_leftCoset_iff _).mp hz)
-    -- Then `G` can also be covered by a finite union `U k, f k • K k` of left cosets
+    -- Every left coset of `H j` is contained in a finite union of
+    -- left cosets of the other subgroups `H k ≠ H j` of the covering.
+    have ⟨x, hx⟩ : ∃ (x : G), ∀ i, H i = H j → (g i : G ⧸ H i) ≠ ↑x := by
+      simpa [Set.eq_univ_iff_forall, mem_leftCoset_iff, ← QuotientGroup.eq] using hj
+    replace hx : ∀ (y : G), y • (H j : Set G) ⊆
+        ⋃ i ∈ Finset.univ.filter (H · ≠ H j), (y * x⁻¹ * g i) • (H i : Set G) := by
+      intro y z hz
+      suffices ∃ i, ¬H i = H j ∧ (g i : G ⧸ H i) = ↑(x * (y⁻¹ * z)) by
+        simpa [Set.subset_def, mem_leftCoset_iff, mul_assoc, ← QuotientGroup.eq] using this
+      replace hcover : ∀ (x : G), ∃ i, (g i : G ⧸ H i) = ↑x := by
+        simpa [Set.eq_univ_iff_forall, mem_leftCoset_iff, ← QuotientGroup.eq] using hcover
+      have ⟨i, hi⟩ := hcover (x * (y⁻¹ * z))
+      refine ⟨i, fun hij => hx i hij ?_, hi⟩
+      rwa [hi, QuotientGroup.eq, hij, mul_inv_rev, inv_mul_cancel_right,
+        Subgroup.inv_mem_iff, ← SetLike.mem_coe, ← mem_leftCoset_iff]
+    -- Thus `G` can also be covered by a finite union `U k, f k • K k` of left cosets
     -- of the subgroups `H k ≠ H j`.
     let κ := ↥(Finset.univ.filter (H · ≠ H j)) × Option ↥(Finset.univ.filter (H · = H j))
     let f : κ → G
@@ -175,6 +153,8 @@ theorem Subgroup.exists_finiteIndex_of_leftCoset_cover_aux
       Finset.mem_erase.mpr ⟨(Finset.mem_filter.mp k.1.property).right, hH k.1.val⟩
     have hK (k : κ) : K k ≠ H j := ((Finset.mem_erase.mp (hK' k)).left ·)
     replace hcover : ⋃ k, f k • (K k : Set G) = Set.univ := Set.iUnion_eq_univ_iff.mpr fun y => by
+      rw [← Set.biUnion_univ, ← Finset.coe_univ, Finset.set_biUnion_coe,
+        ← Finset.univ.filter_union_filter_neg_eq (H · = H j), Finset.set_biUnion_union] at hcover
       cases (Set.mem_union _ _ _).mp (hcover.symm.subset (Set.mem_univ y)) with
       | inl hy =>
         have ⟨k, hk, hy⟩ := Set.mem_iUnion₂.mp hy
