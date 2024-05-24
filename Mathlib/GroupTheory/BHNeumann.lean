@@ -134,14 +134,13 @@ theorem Subgroup.exists_finiteIndex_of_leftCoset_cover_aux
     replace hx : ∀ (y : G), y • (H j : Set G) ⊆
         ⋃ i ∈ Finset.univ.filter (H · ≠ H j), (y * x⁻¹ * g i) • (H i : Set G) := by
       intro y z hz
-      suffices ∃ i, ¬H i = H j ∧ (g i : G ⧸ H i) = ↑(x * (y⁻¹ * z)) by
-        simpa [Set.subset_def, mem_leftCoset_iff, mul_assoc, ← QuotientGroup.eq] using this
-      replace hcover : ∀ (x : G), ∃ i, (g i : G ⧸ H i) = ↑x := by
-        simpa [Set.eq_univ_iff_forall, mem_leftCoset_iff, ← QuotientGroup.eq] using hcover
-      have ⟨i, hi⟩ := hcover (x * (y⁻¹ * z))
-      refine ⟨i, fun hij => hx i hij ?_, hi⟩
-      rwa [hi, QuotientGroup.eq, hij, mul_inv_rev, inv_mul_cancel_right,
-        Subgroup.inv_mem_iff, ← SetLike.mem_coe, ← mem_leftCoset_iff]
+      suffices ∃ i, H i ≠ H j ∧ z ∈ (y * x⁻¹ * g i) • (H i : Set G) by simpa using this
+      obtain ⟨_, ⟨i, rfl⟩, hi⟩ := Set.eq_univ_iff_forall.mp hcover (x * (y⁻¹ * z))
+      rw [mem_leftCoset_iff, SetLike.mem_coe, ← QuotientGroup.eq] at hi
+      refine ⟨i, fun hij => hx i hij ?_, ?_⟩
+      . rwa [hi, QuotientGroup.eq, hij, mul_inv_rev, inv_mul_cancel_right,
+          Subgroup.inv_mem_iff, ← SetLike.mem_coe, ← mem_leftCoset_iff]
+      . simpa [mem_leftCoset_iff, SetLike.mem_coe, QuotientGroup.eq, mul_assoc] using hi
     -- Thus `G` can also be covered by a finite union `U k, f k • K k` of left cosets
     -- of the subgroups `H k ≠ H j`.
     let κ := ↥(Finset.univ.filter (H · ≠ H j)) × Option ↥(Finset.univ.filter (H · = H j))
