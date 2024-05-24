@@ -9,6 +9,7 @@ import Mathlib.Analysis.Convex.Normed
 import Mathlib.Analysis.Convex.Complex
 import Mathlib.Analysis.Complex.ReImTopology
 import Mathlib.Topology.Homotopy.Contractible
+import Mathlib.Topology.PartialHomeomorph
 
 #align_import analysis.complex.upper_half_plane.topology from "leanprover-community/mathlib"@"57f9349f2fe19d2de7207e99b0341808d977cdcf"
 
@@ -106,5 +107,24 @@ lemma subset_verticalStrip_of_isCompact {K : Set ℍ} (hK : IsCompact K) :
   exact ⟨|re u|, im v, v.im_pos, fun k hk ↦ ⟨isMaxOn_iff.mp hu _ hk, isMinOn_iff.mp hv _ hk⟩⟩
 
 end strips
+
+/-- A continuous section `ℂ → ℍ` of the natural inclusion map, bundled as a `PartialHomeomorph`. -/
+def ofComplex : PartialHomeomorph ℂ ℍ := (openEmbedding_coe.toPartialHomeomorph _).symm
+
+/-- Extend a function on `ℍ` arbitrarily to a function on all of `ℂ`. -/
+scoped[UpperHalfPlane] notation "↑ₕ" f => f ∘ ofComplex
+
+lemma extends_def (f : ℍ → ℂ) (z : ℍ) :
+    (↑ₕ f) z.1 = f z := by
+  have := PartialHomeomorph.left_inv (PartialHomeomorph.symm
+    (OpenEmbedding.toPartialHomeomorph UpperHalfPlane.coe openEmbedding_coe)) (x := z.1) ?_
+  · simp only [Function.comp_apply]
+    congr 1
+    ext
+    simpa only [PartialHomeomorph.symm_symm, OpenEmbedding.toPartialHomeomorph_apply,
+      UpperHalfPlane.coe] using this
+  · simp only [PartialHomeomorph.symm_toPartialEquiv, PartialEquiv.symm_source,
+       OpenEmbedding.toPartialHomeomorph_target, mem_range]
+    exists z
 
 end UpperHalfPlane

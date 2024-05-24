@@ -35,22 +35,4 @@ theorem mdifferentiable_coe : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) ((↑) : ℍ �
   smooth_coe.mdifferentiable
 #align upper_half_plane.mdifferentiable_coe UpperHalfPlane.mdifferentiable_coe
 
-
-/-- Extend a function on `ℍ` arbitrarily to a function on all of `ℂ`. -/
-scoped[UpperHalfPlane] notation "↑ₕ" f => f ∘ (PartialHomeomorph.symm
-          (OpenEmbedding.toPartialHomeomorph UpperHalfPlane.coe openEmbedding_coe))
-
-lemma extends_def (f : ℍ → ℂ) (z : ℍ) :
-    (↑ₕ f) z.1 = f z := by
-  have := PartialHomeomorph.left_inv (PartialHomeomorph.symm
-    (OpenEmbedding.toPartialHomeomorph UpperHalfPlane.coe openEmbedding_coe)) (x := z.1) ?_
-  · simp only [Function.comp_apply]
-    congr 1
-    ext
-    simpa only [PartialHomeomorph.symm_symm, OpenEmbedding.toPartialHomeomorph_apply,
-      UpperHalfPlane.coe] using this
-  · simp only [PartialHomeomorph.symm_toPartialEquiv, PartialEquiv.symm_source,
-       OpenEmbedding.toPartialHomeomorph_target, mem_range]
-    exists z
-
 end UpperHalfPlane
