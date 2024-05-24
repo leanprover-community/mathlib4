@@ -88,7 +88,7 @@ theorem trunc_one (n : σ →₀ ℕ) (hnn : n ≠ 0) : trunc R n 1 = 1 :=
       exact if_neg (Ne.symm H')
     · symm
       rw [MvPolynomial.coeff_one]
-      refine' if_neg _
+      refine if_neg ?_
       rintro rfl
       apply H
       exact Ne.bot_lt hnn
