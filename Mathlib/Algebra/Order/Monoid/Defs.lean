@@ -84,7 +84,7 @@ instance (priority := 200) OrderedCancelCommMonoid.toMulLeftReflectLE :
 @[to_additive]
 instance OrderedCancelCommMonoid.toMulLeftReflectLT :
     MulLeftReflectLT α where
-  elim := contravariant_lt_of_contravariant_le MulLeftReflectLE.elim
+  elim := contravariant_lt_of_contravariant_le α α _ ContravariantClass.elim
 #align ordered_cancel_comm_monoid.to_contravariant_class_left OrderedCancelCommMonoid.toMulLeftReflectLT
 #align ordered_cancel_add_comm_monoid.to_contravariant_class_left OrderedCancelAddCommMonoid.toAddLeftReflectLT
 
