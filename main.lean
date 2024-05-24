@@ -5,6 +5,7 @@ import Mathlib.Topology.Defs.Filter
 -- import Mathlib.KolmogorovExtension4.section_file
 import Mathlib.KolmogorovExtension4.DependsOn
 import Mathlib.MeasureTheory.Integral.Marginal
+import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 
 open Set MeasureTheory Filter Topology ENNReal Finset symmDiff
 
@@ -19,8 +20,8 @@ theorem preimage_proj {ι : Type*} {X : ι → Type*} (I J : Finset ι) [∀ i :
   · simp [i_mem, h i i_mem]
   · simp [i_mem]
 
-variable {X : ℕ → Type*} [∀ n, MeasurableSpace (X n)] [∀ n, Nonempty (X n)]
-variable (μ : (n : ℕ) → Measure (X n)) [∀ n, IsProbabilityMeasure (μ n)]
+variable {X : ℕ → Type*} [∀ n, MeasurableSpace (X n)]
+variable (μ : (n : ℕ) → Measure (X n)) [hμ : ∀ n, IsProbabilityMeasure (μ n)]
 
 theorem isProjectiveMeasureFamily_prod {ι : Type*} [∀ (S : Finset ι) i, Decidable (i ∈ S)]
     {α : ι → Type*} [∀ i, MeasurableSpace (α i)]
@@ -73,8 +74,12 @@ lemma useful (s : Set (∀ n, X n)) (s_mem : s ∈ cylinders X) :
   simpa [cylinders_nat] using s_mem
 
 theorem eq (s : Finset ℕ) (S : Set ((n : s) → X n)) (mS : MeasurableSet S) (x : ∀ n, X n) :
-    kolContent (isProjectiveMeasureFamily_prod μ) ((cylinder s S)) =
+    @kolContent _ _ _ _ (by have := fun n ↦ ProbabilityMeasure.nonempty ⟨μ n, hμ n⟩; infer_instance)
+    (isProjectiveMeasureFamily_prod μ) ((cylinder s S)) =
     (∫⋯∫⁻_s, (cylinder s S).indicator 1 ∂μ) x := by
+  have : ∀ n, Nonempty (X n) := by
+    have := fun n ↦ ProbabilityMeasure.nonempty ⟨μ n, hμ n⟩;
+    infer_instance
   rw [kolContent_congr (isProjectiveMeasureFamily_prod μ)
       (by rw [mem_cylinders]; exact ⟨s, S, mS, rfl⟩) rfl mS,
     ← lintegral_indicator_one₀ mS.nullMeasurableSet]
@@ -116,6 +121,9 @@ theorem auxiliaire (f : ℕ → (∀ n, X n) → ℝ≥0∞) (N : ℕ → ℕ)
     ε ≤ (∫⋯∫⁻_Finset.Icc k (N n), f n ∂μ) (Function.updateFinset x (Finset.Ico 0 k) y)) :
     ∃ z, ∀ x n, ε ≤ (∫⋯∫⁻_Finset.Icc (k + 1) (N n), f n ∂μ)
     (Function.update (Function.updateFinset x (Finset.Ico 0 k) y) k z) := by
+  have : ∀ n, Nonempty (X n) := by
+    have := fun n ↦ ProbabilityMeasure.nonempty ⟨μ n, hμ n⟩;
+    infer_instance
   let F : ℕ → (∀ n, X n) → ℝ≥0∞ := fun n ↦ (∫⋯∫⁻_Finset.Icc (k + 1) (N n), f n ∂μ)
   have tendstoF : ∀ x, Tendsto (F · x) atTop (𝓝 (l x)) := htendsto
   have f_eq : ∀ x, (fun n ↦ (∫⋯∫⁻_Finset.Icc k (N n), f n ∂μ) x) =
@@ -196,7 +204,12 @@ lemma not_mem_symmDiff {s t : Finset ℕ} {x : ℕ} :
 
 theorem firstLemma (A : ℕ → Set (∀ n, X n)) (A_mem : ∀ n, A n ∈ cylinders X) (A_anti : Antitone A)
     (A_inter : ⋂ n, A n = ∅) :
-    Tendsto (fun n ↦ kolContent (isProjectiveMeasureFamily_prod μ) (A n)) atTop (𝓝 0) := by
+    Tendsto (fun n ↦ @kolContent _ _ _ _
+    (by have := fun n ↦ ProbabilityMeasure.nonempty ⟨μ n, hμ n⟩; infer_instance)
+    (isProjectiveMeasureFamily_prod μ) (A n)) atTop (𝓝 0) := by
+  have : ∀ n, Nonempty (X n) := by
+    have := fun n ↦ ProbabilityMeasure.nonempty ⟨μ n, hμ n⟩;
+    infer_instance
   have A_cyl := fun n ↦ useful (A n) (A_mem n)
   choose N S mS A_eq using A_cyl
   set μ_proj := isProjectiveMeasureFamily_prod μ
@@ -347,8 +360,14 @@ theorem firstLemma (A : ℕ → Set (∀ n, X n)) (A_mem : ∀ n, A n ∈ cylind
 
 theorem kolContent_sigma_subadditive ⦃f : ℕ → Set (∀ n, X n)⦄
     (hf : ∀ i, f i ∈ cylinders X) (hf_Union : (⋃ i, f i) ∈ cylinders X) :
-    kolContent (isProjectiveMeasureFamily_prod μ) (⋃ i, f i) ≤
-    ∑' i, kolContent (isProjectiveMeasureFamily_prod μ) (f i) := by
+    @kolContent _ _ _ _ (by have := fun n ↦ ProbabilityMeasure.nonempty ⟨μ n, hμ n⟩; infer_instance)
+    (isProjectiveMeasureFamily_prod μ) (⋃ i, f i) ≤
+    ∑' i, @kolContent _ _ _ _
+    (by have := fun n ↦ ProbabilityMeasure.nonempty ⟨μ n, hμ n⟩; infer_instance)
+    (isProjectiveMeasureFamily_prod μ) (f i) := by
+  have : ∀ n, Nonempty (X n) := by
+    have := fun n ↦ ProbabilityMeasure.nonempty ⟨μ n, hμ n⟩;
+    infer_instance
   refine (kolContent (isProjectiveMeasureFamily_prod μ)).sigma_subadditive_of_sigma_additive
     setRing_cylinders (fun f hf hf_Union hf' ↦ ?_) f hf hf_Union
   refine sigma_additive_addContent_of_tendsto_zero setRing_cylinders
@@ -365,13 +384,19 @@ theorem kolContent_sigma_subadditive ⦃f : ℕ → Set (∀ n, X n)⦄
   · intro s hs anti_s inter_s
     exact firstLemma μ s hs anti_s inter_s
 
-noncomputable def measure_produit : Measure (∀ n, X n) :=
-  Measure.ofAddContent setSemiringCylinders generateFrom_cylinders
+noncomputable def measure_produit : Measure (∀ n, X n) := by
+  have : ∀ n, Nonempty (X n) := by
+    have := fun n ↦ ProbabilityMeasure.nonempty ⟨μ n, hμ n⟩;
+    infer_instance
+  exact Measure.ofAddContent setSemiringCylinders generateFrom_cylinders
     (kolContent (isProjectiveMeasureFamily_prod μ))
     (kolContent_sigma_subadditive μ)
 
 theorem isProjectiveLimit_measure_produit :
     IsProjectiveLimit (measure_produit μ) (fun S : Finset ℕ ↦ (Measure.pi (fun n : S ↦ μ n))) := by
+  have : ∀ n, Nonempty (X n) := by
+    have := fun n ↦ ProbabilityMeasure.nonempty ⟨μ n, hμ n⟩;
+    infer_instance
   intro S
   ext1 s hs
   rw [Measure.map_apply _ hs]
@@ -382,12 +407,17 @@ theorem isProjectiveLimit_measure_produit :
     kolContent_congr (isProjectiveMeasureFamily_prod μ) h_mem rfl hs]
 
 variable {ι : Type*} [∀ (I : Finset ι) i, Decidable (i ∈ I)]
-variable {α : ι → Type*} [∀ i, MeasurableSpace (α i)] [∀ i, Nonempty (α i)]
-variable (ν : (i : ι) → Measure (α i)) [∀ i, IsProbabilityMeasure (ν i)]
+variable {α : ι → Type*} [∀ i, MeasurableSpace (α i)]
+variable (ν : (i : ι) → Measure (α i)) [hν : ∀ i, IsProbabilityMeasure (ν i)]
 
 theorem secondLemma (A : ℕ → Set (∀ i, α i)) (A_mem : ∀ n, A n ∈ cylinders α) (A_anti : Antitone A)
     (A_inter : ⋂ n, A n = ∅) :
-    Tendsto (fun n ↦ kolContent (isProjectiveMeasureFamily_prod ν) (A n)) atTop (𝓝 0) := by
+    Tendsto (fun n ↦ @kolContent _ _ _ _
+    (by have := fun i ↦ ProbabilityMeasure.nonempty ⟨ν i, hν i⟩; infer_instance)
+    (isProjectiveMeasureFamily_prod ν) (A n)) atTop (𝓝 0) := by
+  have : ∀ i, Nonempty (α i) := by
+    have := fun i ↦ ProbabilityMeasure.nonempty ⟨ν i, hν i⟩;
+    infer_instance
   set ν_proj := isProjectiveMeasureFamily_prod ν
   choose s S mS A_eq using fun n ↦ (mem_cylinders (A n)).1 (A_mem n)
   let t := ⋃ n, (s n).toSet
