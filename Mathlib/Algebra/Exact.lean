@@ -57,12 +57,6 @@ section LinearMap
 
 open LinearMap
 
-variable {R : Type*} [Semiring R]
-
-section
-
-variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
-  [Module R M] [Module R N] [Module R P]
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M'] [AddCommMonoid N]
   [AddCommMonoid N'] [AddCommMonoid P] [AddCommMonoid P'] [Module R M]
   [Module R M'] [Module R N] [Module R N'] [Module R P] [Module R P']
