@@ -572,7 +572,7 @@ theorem fun_ae_imp_set_ae {f g : α → β} :
     f =ᵐ[μ] g ↔ ∀ (s : Set α), ∀ᵐ x ∂ μ, x ∈ s → f x = g x :=
   Iff.intro
   (fun h s ↦ by filter_upwards [h] with x hfg _ using hfg)
-  (fun h ↦ by filter_upwards [h Set.univ] with x hx using (hx (by simp)))
+  (fun h ↦ by filter_upwards [h univ] with x hx using (hx (by simp)))
 
 end ae
 
