@@ -2337,7 +2337,7 @@ instance normalClosure_normal : (normalClosure s).Normal :=
 /-- The normal closure of `s` is the smallest normal subgroup containing `s`. -/
 theorem normalClosure_le_normal {N : Subgroup G} [N.Normal] (h : s ⊆ N) : normalClosure s ≤ N := by
   intro a w
-  refine closure_induction w (fun x hx => ?_) ?_ (fun x y ihx ihy =?> _) fun x ihx =?> _
+  refine closure_induction w (fun x hx => ?_) ?_ (fun x y ihx ihy => ?_) fun x ihx => ?_
   · exact conjugatesOfSet_subset h hx
   · exact one_mem _
   · exact mul_mem ihx ihy

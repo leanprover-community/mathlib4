@@ -1206,7 +1206,7 @@ theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ 
       have := le_trans this (add_le_add_left mr₁ _)
       rw [← Nat.succ_mul] at this
       exact (mul_le_mul_left (by decide)).1 this
-    refine ⟨Or.inr ⟨?_,? _⟩, Or.inr ?⟨?_, _⟩, Or.inr ?⟨_,? _⟩⟩
+    refine ⟨Or.inr ⟨?_, ?_⟩, Or.inr ⟨?_, ?_⟩, Or.inr ⟨?_,? _⟩⟩
     · refine (mul_le_mul_left (by decide)).1 (le_trans this ?_)
       rw [two_mul, Nat.succ_le_iff]
       refine add_lt_add_of_lt_of_le ?_ mm₂
@@ -1269,7 +1269,7 @@ theorem Valid'.rotateL {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : V
       decide
     replace H3 := H3p l0
     rcases hr.3.1.resolve_left (hlp l0) with ⟨_, hb₂⟩
-    refine ⟨Or.inr ⟨?_,? _⟩, Or.inr? ⟨_, ?_⟩⟩
+    refine ⟨Or.inr ⟨?_, ?_⟩, Or.inr ⟨?_, ?_⟩⟩
     · exact Valid'.rotateL_lemma₁ H2 hb₂
     · exact Nat.le_of_lt_succ (Valid'.rotateL_lemma₂ H3 h)
     · exact Valid'.rotateL_lemma₃ H2 h
@@ -1427,7 +1427,7 @@ theorem Valid'.glue_aux {l r o₁ o₂} (hl : Valid' o₁ l o₂) (hr : Valid' o
   · rw [splitMax_eq]
     · cases' Valid'.eraseMax_aux hl with v e
       suffices H : _ by
-        refine ⟨Valid'.balanceR v (hr.of_gt ?_ ?_) H?, _⟩
+        refine ⟨Valid'.balanceR v (hr.of_gt ?_ ?_) H, ?_⟩
         · refine findMax'_all (P := fun a : α => Bounded nil (a : WithTop α) o₂)
             lx lr hl.1.2.to_nil (sep.2.2.imp ?_)
           exact fun x h => hr.1.2.to_nil.mono_left (le_of_lt h.2.1)
