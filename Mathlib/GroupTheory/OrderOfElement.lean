@@ -1268,7 +1268,8 @@ theorem orderOf_fst_dvd_orderOf : orderOf x.1 ∣ orderOf x :=
   minimalPeriod_fst_dvd
 #align order_of_fst_dvd_order_of orderOf_fst_dvd_orderOf
 #align add_order_of_fst_dvd_add_order_of addOrderOf_fst_dvd_addOrderOf
-@[deprecated (since := "2024-02-21")] alias add_orderOf_fst_dvd_add_orderOf := addOrderOf_fst_dvd_addOrderOf
+@[deprecated (since := "2024-02-21")]
+alias add_orderOf_fst_dvd_add_orderOf := addOrderOf_fst_dvd_addOrderOf
 
 @[to_additive]
 theorem orderOf_snd_dvd_orderOf : orderOf x.2 ∣ orderOf x :=
