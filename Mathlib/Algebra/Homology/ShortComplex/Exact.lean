@@ -7,7 +7,6 @@ import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
 import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
 import Mathlib.CategoryTheory.Abelian.Exact
-import Mathlib.CategoryTheory.MorphismProperty
 import Mathlib.CategoryTheory.Preadditive.Injective
 
 /-!
@@ -361,8 +360,8 @@ noncomputable def Exact.leftHomologyDataOfIsLimitKernelFork
     have := hS.hasHomology
     refine' ((MorphismProperty.RespectsIso.epimorphisms C).arrow_mk_iso_iff _).1
       hS.epi_toCycles
-    refine' Arrow.isoMk (Iso.refl _)
-      (IsLimit.conePointUniqueUpToIso S.cyclesIsKernel hkf) _
+    refine Arrow.isoMk (Iso.refl _)
+      (IsLimit.conePointUniqueUpToIso S.cyclesIsKernel hkf) ?_
     apply Fork.IsLimit.hom_ext hkf
     simp [IsLimit.conePointUniqueUpToIso]) (isZero_zero C)
 
@@ -856,7 +855,7 @@ lemma quasiIso_iff_of_zeros {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
     have : Mono φ.τ₂ := by
       rw [← S₂.liftCycles_i φ.τ₂ w]
       apply mono_comp
-    refine' ⟨_, this⟩
+    refine ⟨?_, this⟩
     apply exact_of_f_is_kernel
     exact IsLimit.ofIsoLimit S₂.cyclesIsKernel
       (Fork.ext (asIso (S₂.liftCycles φ.τ₂ w)).symm (by simp))

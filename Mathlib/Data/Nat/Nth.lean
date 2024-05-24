@@ -70,7 +70,7 @@ theorem nth_eq_getD_sort (h : (setOf p).Finite) (n : ℕ) :
 
 theorem nth_eq_orderEmbOfFin (hf : (setOf p).Finite) {n : ℕ} (hn : n < hf.toFinset.card) :
     nth p n = hf.toFinset.orderEmbOfFin rfl ⟨n, hn⟩ := by
-  rw [nth_eq_getD_sort hf, Finset.orderEmbOfFin_apply, List.getD_eq_get]; rfl
+  rw [nth_eq_getD_sort hf, Finset.orderEmbOfFin_apply, List.getD_eq_get]
 #align nat.nth_eq_order_emb_of_fin Nat.nth_eq_orderEmbOfFin
 
 theorem nth_strictMonoOn (hf : (setOf p).Finite) :

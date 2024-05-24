@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Lean.Meta.Eqns
-import Std.Lean.NameMapAttribute
+import Batteries.Lean.NameMapAttribute
 import Lean.Elab.Exception
 import Lean.Elab.InfoTree.Main
 
@@ -41,7 +41,7 @@ initialize eqnsAttribute : NameMapExtension (Array Name) ←
       if let some _ := Meta.eqnsExt.getState (← getEnv) |>.map.find? declName then
         throwError "There already exist stored eqns for '{declName}'; registering new equations \
           will not have the desired effect."
-      names.mapM resolveGlobalConstNoOverloadWithInfo
+      names.mapM realizeGlobalConstNoOverloadWithInfo
     | _, _ => Lean.Elab.throwUnsupportedSyntax }
 
 initialize Lean.Meta.registerGetEqnsFn (fun name => do

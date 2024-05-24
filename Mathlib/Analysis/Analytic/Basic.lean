@@ -679,7 +679,7 @@ theorem HasFPowerSeriesOnBall.uniform_geometric_approx' {r' : ℝ≥0}
   have ya : a * (‖y‖ / ↑r') ≤ a :=
     mul_le_of_le_one_right ha.1.le (div_le_one_of_le yr'.le r'.coe_nonneg)
   suffices ‖p.partialSum n y - f (x + y)‖ ≤ C * (a * (‖y‖ / r')) ^ n / (1 - a * (‖y‖ / r')) by
-    refine' this.trans _
+    refine this.trans ?_
     have : 0 < a := ha.1
     gcongr
     apply_rules [sub_pos.2, ha.2]
@@ -702,7 +702,7 @@ theorem HasFPowerSeriesOnBall.uniform_geometric_approx {r' : ℝ≥0}
   obtain ⟨a, ha, C, hC, hp⟩ : ∃ a ∈ Ioo (0 : ℝ) 1, ∃ C > 0, ∀ y ∈ Metric.ball (0 : E) r', ∀ n,
       ‖f (x + y) - p.partialSum n y‖ ≤ C * (a * (‖y‖ / r')) ^ n :=
     hf.uniform_geometric_approx' h
-  refine' ⟨a, ha, C, hC, fun y hy n => (hp y hy n).trans _⟩
+  refine ⟨a, ha, C, hC, fun y hy n => (hp y hy n).trans ?_⟩
   have yr' : ‖y‖ < r' := by rwa [ball_zero_eq] at hy
   have := ha.1.le -- needed to discharge a side goal on the next line
   gcongr
@@ -1084,7 +1084,7 @@ $$
 The corresponding power series has thus a `k`-th coefficient equal to
 $\sum_{n} \binom{n}{k} p_n y^{n-k}$. In the general case where `pₙ` is a multilinear map, this has
 to be interpreted suitably: instead of having a binomial coefficient, one should sum over all
-possible subsets `s` of `Fin n` of cardinal `k`, and attribute `z` to the indices in `s` and
+possible subsets `s` of `Fin n` of cardinality `k`, and attribute `z` to the indices in `s` and
 `y` to the indices outside of `s`.
 
 In this paragraph, we implement this. The new power series is called `p.changeOrigin y`. Then, we
@@ -1190,7 +1190,7 @@ def changeOriginIndexEquiv :
   invFun s :=
     ⟨s.1 - s.2.card, s.2.card,
       ⟨s.2.map
-        (Fin.castIso <| (tsub_add_cancel_of_le <| card_finset_fin_le s.2).symm).toEquiv.toEmbedding,
+        (finCongr <| (tsub_add_cancel_of_le <| card_finset_fin_le s.2).symm).toEmbedding,
         Finset.card_map _⟩⟩
   left_inv := by
     rintro ⟨k, l, ⟨s : Finset (Fin <| k + l), hs : s.card = l⟩⟩
@@ -1198,15 +1198,15 @@ def changeOriginIndexEquiv :
     -- Lean can't automatically generalize `k' = k + l - s.card`, `l' = s.card`, so we explicitly
     -- formulate the generalized goal
     suffices ∀ k' l', k' = k → l' = l → ∀ (hkl : k + l = k' + l') (hs'),
-        (⟨k', l', ⟨Finset.map (Fin.castIso hkl).toEquiv.toEmbedding s, hs'⟩⟩ :
+        (⟨k', l', ⟨s.map (finCongr hkl).toEmbedding, hs'⟩⟩ :
           Σk l : ℕ, { s : Finset (Fin (k + l)) // s.card = l }) = ⟨k, l, ⟨s, hs⟩⟩ by
       apply this <;> simp only [hs, add_tsub_cancel_right]
     rintro _ _ rfl rfl hkl hs'
-    simp only [Equiv.refl_toEmbedding, Fin.castIso_refl, Finset.map_refl, eq_self_iff_true,
+    simp only [Equiv.refl_toEmbedding, finCongr_refl, Finset.map_refl, eq_self_iff_true,
       OrderIso.refl_toEquiv, and_self_iff, heq_iff_eq]
   right_inv := by
     rintro ⟨n, s⟩
-    simp [tsub_add_cancel_of_le (card_finset_fin_le s), Fin.castIso_to_equiv]
+    simp [tsub_add_cancel_of_le (card_finset_fin_le s), finCongr_eq_equivCast]
 #align formal_multilinear_series.change_origin_index_equiv FormalMultilinearSeries.changeOriginIndexEquiv
 
 lemma changeOriginSeriesTerm_changeOriginIndexEquiv_symm (n t) :
@@ -1214,7 +1214,7 @@ lemma changeOriginSeriesTerm_changeOriginIndexEquiv_symm (n t) :
     p.changeOriginSeriesTerm s.1 s.2.1 s.2.2 s.2.2.2 (fun _ ↦ x) (fun _ ↦ y) =
     p n (t.piecewise (fun _ ↦ x) fun _ ↦ y) := by
   have : ∀ (m) (hm : n = m), p n (t.piecewise (fun _ ↦ x) fun _ ↦ y) =
-      p m ((t.map (Fin.castIso hm).toEmbedding).piecewise (fun _ ↦ x) fun _ ↦ y) := by
+      p m ((t.map (finCongr hm).toEmbedding).piecewise (fun _ ↦ x) fun _ ↦ y) := by
     rintro m rfl
     simp (config := { unfoldPartialApp := true }) [Finset.piecewise]
   simp_rw [changeOriginSeriesTerm_apply, eq_comm]; apply this
@@ -1266,7 +1266,7 @@ theorem nnnorm_changeOrigin_le (k : ℕ) (h : (‖x‖₊ : ℝ≥0∞) < p.radi
       ∑' s : Σl : ℕ, { s : Finset (Fin (k + l)) // s.card = l }, ‖p (k + s.1)‖₊ * ‖x‖₊ ^ s.1 := by
   refine' tsum_of_nnnorm_bounded _ fun l => p.nnnorm_changeOriginSeries_apply_le_tsum k l x
   have := p.changeOriginSeries_summable_aux₂ h k
-  refine' HasSum.sigma this.hasSum fun l => _
+  refine HasSum.sigma this.hasSum fun l => ?_
   exact ((NNReal.summable_sigma.1 this).1 l).hasSum
 #align formal_multilinear_series.nnnorm_change_origin_le FormalMultilinearSeries.nnnorm_changeOrigin_le
 

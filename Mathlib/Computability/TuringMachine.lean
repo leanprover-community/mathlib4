@@ -148,8 +148,8 @@ def BlankRel.above {Γ} [Inhabited Γ] {l₁ l₂ : List Γ} (h : BlankRel l₁ 
   refine'
     if hl : l₁.length ≤ l₂.length then ⟨l₂, Or.elim h id fun h' ↦ _, BlankExtends.refl _⟩
     else ⟨l₁, BlankExtends.refl _, Or.elim h (fun h' ↦ _) id⟩
-  exact (BlankExtends.refl _).above_of_le h' hl
-  exact (BlankExtends.refl _).above_of_le h' (le_of_not_ge hl)
+  · exact (BlankExtends.refl _).above_of_le h' hl
+  · exact (BlankExtends.refl _).above_of_le h' (le_of_not_ge hl)
 #align turing.blank_rel.above Turing.BlankRel.above
 
 /-- Given two `BlankRel` lists, there exists (constructively) a common meet. -/
@@ -158,8 +158,8 @@ def BlankRel.below {Γ} [Inhabited Γ] {l₁ l₂ : List Γ} (h : BlankRel l₁ 
   refine'
     if hl : l₁.length ≤ l₂.length then ⟨l₁, BlankExtends.refl _, Or.elim h id fun h' ↦ _⟩
     else ⟨l₂, Or.elim h (fun h' ↦ _) id, BlankExtends.refl _⟩
-  exact (BlankExtends.refl _).above_of_le h' hl
-  exact (BlankExtends.refl _).above_of_le h' (le_of_not_ge hl)
+  · exact (BlankExtends.refl _).above_of_le h' hl
+  · exact (BlankExtends.refl _).above_of_le h' (le_of_not_ge hl)
 #align turing.blank_rel.below Turing.BlankRel.below
 
 theorem BlankRel.equivalence (Γ) [Inhabited Γ] : Equivalence (@BlankRel Γ _) :=
@@ -188,8 +188,8 @@ instance ListBlank.hasEmptyc {Γ} [Inhabited Γ] : EmptyCollection (ListBlank Γ
 
 /-- A modified version of `Quotient.liftOn'` specialized for `ListBlank`, with the stronger
 precondition `BlankExtends` instead of `BlankRel`. -/
-@[reducible]  -- Porting note: Removed `@[elab_as_elim]`
-protected def ListBlank.liftOn {Γ} [Inhabited Γ] {α} (l : ListBlank Γ) (f : List Γ → α)
+-- Porting note: Removed `@[elab_as_elim]`
+protected abbrev ListBlank.liftOn {Γ} [Inhabited Γ] {α} (l : ListBlank Γ) (f : List Γ → α)
     (H : ∀ a b, BlankExtends a b → f a = f b) : α :=
   l.liftOn' f <| by rintro a b (h | h) <;> [exact H _ _ h; exact (H _ _ h).symm]
 #align turing.list_blank.lift_on Turing.ListBlank.liftOn
@@ -224,7 +224,7 @@ theorem ListBlank.head_mk {Γ} [Inhabited Γ] (l : List Γ) :
 def ListBlank.tail {Γ} [Inhabited Γ] (l : ListBlank Γ) : ListBlank Γ := by
   apply l.liftOn (fun l ↦ ListBlank.mk l.tail)
   rintro a _ ⟨i, rfl⟩
-  refine' Quotient.sound' (Or.inl _)
+  refine Quotient.sound' (Or.inl ?_)
   cases a
   · cases' i with i <;> [exact ⟨0, rfl⟩; exact ⟨i, rfl⟩]
   exact ⟨i, rfl⟩
@@ -264,7 +264,7 @@ this only holds for nonempty lists. -/
 @[simp]
 theorem ListBlank.cons_head_tail {Γ} [Inhabited Γ] : ∀ l : ListBlank Γ, l.tail.cons l.head = l := by
   apply Quotient.ind'
-  refine' fun l ↦ Quotient.sound' (Or.inr _)
+  refine fun l ↦ Quotient.sound' (Or.inr ?_)
   cases l
   · exact ⟨1, rfl⟩
   · rfl
@@ -316,7 +316,7 @@ theorem ListBlank.ext {Γ} [i : Inhabited Γ] {L₁ L₂ : ListBlank Γ} :
   · cases le_total l₁.length l₂.length <;> [skip; symm] <;> apply this <;> try assumption
     intro
     rw [H]
-  refine' Quotient.sound' (Or.inl ⟨l₂.length - l₁.length, _⟩)
+  refine Quotient.sound' (Or.inl ⟨l₂.length - l₁.length, ?_⟩)
   refine' List.ext_get _ fun i h h₂ ↦ Eq.symm _
   · simp only [add_tsub_cancel_of_le h, List.length_append, List.length_replicate]
   simp only [ListBlank.nth_mk] at H
@@ -348,6 +348,7 @@ theorem ListBlank.nth_modifyNth {Γ} [Inhabited Γ] (f : Γ → Γ) (n i) (L : L
 /-- A pointed map of `Inhabited` types is a map that sends one default value to the other. -/
 structure PointedMap.{u, v} (Γ : Type u) (Γ' : Type v) [Inhabited Γ] [Inhabited Γ'] :
     Type max u v where
+  /-- The map underlying this instance. -/
   f : Γ → Γ'
   map_pt' : f default = default
 #align turing.pointed_map Turing.PointedMap
@@ -415,7 +416,7 @@ theorem ListBlank.map_cons {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedM
 @[simp]
 theorem ListBlank.nth_map {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ')
     (l : ListBlank Γ) (n : ℕ) : (l.map f).nth n = f (l.nth n) := by
-  refine' l.inductionOn fun l ↦ _
+  refine l.inductionOn fun l ↦ ?_
   -- Porting note: Added `suffices` to get `simp` to work.
   suffices ((mk l).map f).nth n = f ((mk l).nth n) by exact this
   simp only [List.get?_map, ListBlank.map_mk, ListBlank.nth_mk, List.getI_eq_iget_get?]
@@ -458,7 +459,7 @@ theorem ListBlank.append_mk {Γ} [Inhabited Γ] (l₁ l₂ : List Γ) :
 
 theorem ListBlank.append_assoc {Γ} [Inhabited Γ] (l₁ l₂ : List Γ) (l₃ : ListBlank Γ) :
     ListBlank.append (l₁ ++ l₂) l₃ = ListBlank.append l₁ (ListBlank.append l₂ l₃) := by
-  refine' l₃.inductionOn fun l ↦ _
+  refine l₃.inductionOn fun l ↦ ?_
   -- Porting note: Added `suffices` to get `simp` to work.
   suffices append (l₁ ++ l₂) (mk l) = append l₁ (append l₂ (mk l)) by exact this
   simp only [ListBlank.append_mk, List.append_assoc]
@@ -471,7 +472,8 @@ def ListBlank.bind {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (l : ListBlank Γ) (f
   apply l.liftOn (fun l ↦ ListBlank.mk (List.bind l f))
   rintro l _ ⟨i, rfl⟩; cases' hf with n e; refine' Quotient.sound' (Or.inl ⟨i * n, _⟩)
   rw [List.append_bind, mul_comm]; congr
-  induction' i with i IH; rfl
+  induction' i with i IH
+  · rfl
   simp only [IH, e, List.replicate_add, Nat.mul_succ, add_comm, List.replicate_succ, List.cons_bind]
 #align turing.list_blank.bind Turing.ListBlank.bind
 
@@ -484,7 +486,7 @@ theorem ListBlank.bind_mk {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (l : List Γ) 
 @[simp]
 theorem ListBlank.cons_bind {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (a : Γ) (l : ListBlank Γ)
     (f : Γ → List Γ') (hf) : (l.cons a).bind f hf = (l.bind f hf).append (f a) := by
-  refine' l.inductionOn fun l ↦ _
+  refine l.inductionOn fun l ↦ ?_
   -- Porting note: Added `suffices` to get `simp` to work.
   suffices ((mk l).cons a).bind f hf = ((mk l).bind f hf).append (f a) by exact this
   simp only [ListBlank.append_mk, ListBlank.bind_mk, ListBlank.cons_mk, List.cons_bind]
@@ -493,10 +495,13 @@ theorem ListBlank.cons_bind {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (a : Γ) (l 
 /-- The tape of a Turing machine is composed of a head element (which we imagine to be the
 current position of the head), together with two `ListBlank`s denoting the portions of the tape
 going off to the left and right. When the Turing machine moves right, an element is pulled from the
-right side and becomes the new head, while the head element is consed onto the left side. -/
+right side and becomes the new head, while the head element is `cons`ed onto the left side. -/
 structure Tape (Γ : Type*) [Inhabited Γ] where
+  /-- The current position of the head. -/
   head : Γ
+  /-- The portion of the tape going off to the left. -/
   left : ListBlank Γ
+  /-- The portion of the tape going off to the right. -/
   right : ListBlank Γ
 #align turing.tape Turing.Tape
 
@@ -1010,8 +1015,7 @@ to remove the infinite tail of blanks.)
 
 namespace TM0
 
--- "TM0"
-set_option linter.uppercaseLean3 false
+set_option linter.uppercaseLean3 false -- for "TM0"
 
 section
 
@@ -1055,12 +1059,14 @@ instance Machine.inhabited : Inhabited Machine₀ := by
 #align turing.TM0.machine.inhabited Turing.TM0.Machine.inhabited
 
 /-- The configuration state of a Turing machine during operation
-  consists of a label (machine state), and a tape, represented in
-  the form `(a, L, R)` meaning the tape looks like `L.rev ++ [a] ++ R`
+  consists of a label (machine state), and a tape.
+  The tape is represented in the form `(a, L, R)`, meaning the tape looks like `L.rev ++ [a] ++ R`
   with the machine currently reading the `a`. The lists are
   automatically extended with blanks as the machine moves around. -/
 structure Cfg where
+  /-- The current machine state. -/
   q : Λ
+  /-- The current state of the tape: current symbol, left and right parts. -/
   Tape : Tape Γ
 #align turing.TM0.cfg Turing.TM0.Cfg
 
@@ -1215,8 +1221,7 @@ before the halt as the output, and `move` and `write` etc. take 0 steps in this 
 
 namespace TM1
 
--- "TM1"
-set_option linter.uppercaseLean3 false
+set_option linter.uppercaseLean3 false -- for "TM1"
 
 section
 
@@ -1261,8 +1266,11 @@ instance Stmt.inhabited : Inhabited Stmt₁ :=
 /-- The configuration of a TM1 machine is given by the currently
   evaluating statement, the variable store value, and the tape. -/
 structure Cfg where
+  /-- The statement (if any) which is currently evaluated -/
   l : Option Λ
+  /-- The current value of the variable store -/
   var : σ
+  /-- The current state of the tape -/
   Tape : Tape Γ
 #align turing.TM1.cfg Turing.TM1.Cfg
 
@@ -1429,8 +1437,7 @@ TM1 semantics.
 
 namespace TM1to0
 
--- "TM1to0"
-set_option linter.uppercaseLean3 false
+set_option linter.uppercaseLean3 false -- for "TM1to0"
 
 section
 
@@ -1602,8 +1609,7 @@ finitely long.
 
 namespace TM1to1
 
--- "TM1to1"
-set_option linter.uppercaseLean3 false
+set_option linter.uppercaseLean3 false -- for "TM1to1"
 
 open TM1
 
@@ -1846,7 +1852,7 @@ theorem tr_respects {enc₀} :
     · exact rfl
     suffices ∀ q R, Reaches (step (tr enc dec M)) (stepAux (trNormal dec q) v (trTape' enc0 L R))
         (trCfg enc enc0 (stepAux q v (Tape.mk' L R))) by
-      refine' TransGen.head' rfl _
+      refine TransGen.head' rfl ?_
       rw [trTape_mk']
       exact this _ R
     clear R l₁
@@ -1860,7 +1866,7 @@ theorem tr_respects {enc₀} :
         apply IH
     | write f q IH =>
       simp only [trNormal, stepAux_read dec enc0 encdec, stepAux]
-      refine' ReflTransGen.head rfl _
+      refine ReflTransGen.head rfl ?_
       obtain ⟨a, R, rfl⟩ := R.exists_cons
       rw [tr, Tape.mk'_head, stepAux_write, ListBlank.head_cons, stepAux_move,
         trTape'_move_left enc0, ListBlank.head_cons, ListBlank.tail_cons, Tape.write_mk']
@@ -1965,8 +1971,7 @@ unreachable branch).
 
 namespace TM0to1
 
--- "TM0to1"
-set_option linter.uppercaseLean3 false
+set_option linter.uppercaseLean3 false -- for "TM0to1"
 
 section
 
@@ -2070,8 +2075,7 @@ as the output stack.
 
 namespace TM2
 
--- "TM2"
-set_option linter.uppercaseLean3 false
+set_option linter.uppercaseLean3 false -- for "TM2"
 
 section
 
@@ -2115,8 +2119,11 @@ instance Stmt.inhabited : Inhabited Stmt₂ :=
 local variables, and the stacks. (Note that the stacks are not `ListBlank`s, they have a definite
 size.) -/
 structure Cfg where
+  /-- The current label to run (or `none` for the halting state) -/
   l : Option Λ
+  /-- The internal state -/
   var : σ
+  /-- The (finite) collection of internal stacks -/
   stk : ∀ k, List (Γ k)
 #align turing.TM2.cfg Turing.TM2.Cfg
 
@@ -2310,8 +2317,7 @@ steps to run when emulated in TM1, where `m` is the length of the input.
 
 namespace TM2to1
 
--- "TM2to1"
-set_option linter.uppercaseLean3 false
+set_option linter.uppercaseLean3 false -- for "TM2to1"
 
 -- A displaced lemma proved in unnecessary generality
 theorem stk_nth_val {K : Type*} {Γ : K → Type*} {L : ListBlank (∀ k, Option (Γ k))} {k S} (n)
@@ -2555,7 +2561,7 @@ theorem tr_respects_aux₂ {k : K} {q : Stmt₂₁} {v : σ} {S : ∀ k, List (�
         erw [Tape.move_right_n_head, List.length, Tape.mk'_nth_nat, this,
           addBottom_modifyNth fun a ↦ update a k (some (f v)), Nat.add_one, iterate_succ']
         rfl⟩
-    refine' ListBlank.ext fun i ↦ _
+    refine ListBlank.ext fun i ↦ ?_
     rw [ListBlank.nth_map, ListBlank.nth_modifyNth, proj, PointedMap.mk_val]
     by_cases h' : k' = k
     · subst k'
@@ -2599,7 +2605,7 @@ theorem tr_respects_aux₂ {k : K} {q : Stmt₂₁} {v : σ} {S : ∀ k, List (�
             show (List.cons hd tl).reverse.get? tl.length = some hd by
               rw [List.reverse_cons, ← List.length_reverse, List.get?_concat_length],
             List.head?, List.tail]⟩
-      refine' ListBlank.ext fun i ↦ _
+      refine ListBlank.ext fun i ↦ ?_
       rw [ListBlank.nth_map, ListBlank.nth_modifyNth, proj, PointedMap.mk_val]
       by_cases h' : k' = k
       · subst k'
@@ -2650,14 +2656,16 @@ theorem tr_respects_aux₁ {k} (o q v) {S : List (Γ k)} {L : ListBlank (∀ k, 
   rw [iterate_succ_apply'];
   simp only [TM1.step, TM1.stepAux, tr, Tape.mk'_nth_nat, Tape.move_right_n_head,
     addBottom_nth_snd, Option.mem_def]
-  rw [stk_nth_val _ hL, List.get?_eq_get]; rfl; rwa [List.length_reverse]
+  rw [stk_nth_val _ hL, List.get?_eq_get]
+  · rfl
+  · rwa [List.length_reverse]
 #align turing.TM2to1.tr_respects_aux₁ Turing.TM2to1.tr_respects_aux₁
 
 theorem tr_respects_aux₃ {q v} {L : ListBlank (∀ k, Option (Γ k))} (n) : Reaches₀ (TM1.step (tr M))
     ⟨some (ret q), v, (Tape.move Dir.right)^[n] (Tape.mk' ∅ (addBottom L))⟩
     ⟨some (ret q), v, Tape.mk' ∅ (addBottom L)⟩ := by
   induction' n with n IH; · rfl
-  refine' Reaches₀.head _ IH
+  refine Reaches₀.head ?_ IH
   simp only [Option.mem_def, TM1.step]
   rw [Option.some_inj, tr, TM1.stepAux, Tape.move_right_n_head, Tape.mk'_nth_nat,
     addBottom_nth_succ_fst, TM1.stepAux, iterate_succ', Function.comp_apply, Tape.move_right_left]
@@ -2711,7 +2719,7 @@ theorem tr_respects : Respects (TM2.step M) (TM1.step (tr M)) TrCfg := by
 theorem trCfg_init (k) (L : List (Γ k)) : TrCfg (TM2.init k L) (TM1.init (trInit k L) : Cfg₂₁) := by
   rw [(_ : TM1.init _ = _)]
   · refine' ⟨ListBlank.mk (L.reverse.map fun a ↦ update default k (some a)), fun k' ↦ _⟩
-    refine' ListBlank.ext fun i ↦ _
+    refine ListBlank.ext fun i ↦ ?_
     rw [ListBlank.map_mk, ListBlank.nth_mk, List.getI_eq_iget_get?, List.map_map]
     have : ((proj k').f ∘ fun a => update (β := fun k => Option (Γ k)) default k (some a))
       = fun a => (proj k').f (update (β := fun k => Option (Γ k)) default k (some a)) := rfl
@@ -2790,7 +2798,7 @@ theorem tr_supports {S} (ss : TM2.Supports M S) : TM1.Supports (tr M) (trSupp M 
       unfold TM2to1.trStmts₁ at sub
       cases' IH₁ ss'.1 fun x hx ↦ sub x <| Finset.mem_union_left _ hx with IH₁₁ IH₁₂
       cases' IH₂ ss'.2 fun x hx ↦ sub x <| Finset.mem_union_right _ hx with IH₂₁ IH₂₂
-      refine' ⟨⟨IH₁₁, IH₂₁⟩, fun l h ↦ _⟩
+      refine ⟨⟨IH₁₁, IH₂₁⟩, fun l h ↦ ?_⟩
       rw [trStmts₁] at h
       rcases Finset.mem_union.1 h with (h | h) <;> [exact IH₁₂ _ h; exact IH₂₂ _ h]
     · intro _ ss' _ -- goto

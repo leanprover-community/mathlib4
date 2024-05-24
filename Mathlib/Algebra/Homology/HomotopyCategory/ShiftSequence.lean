@@ -28,6 +28,7 @@ open HomologicalComplex
 
 attribute [local simp] XIsoOfEq_hom_naturality smul_smul
 
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 /-- The natural isomorphism `(K⟦n⟧).sc' i j k ≅ K.sc' i' j' k'` when `n + i = i'`,
 `n + j = j'` and `n + k = k'`. -/
 @[simps!]
@@ -134,8 +135,6 @@ noncomputable instance :
   Functor.ShiftSequence.induced (homologyFunctorFactors C (ComplexShape.up ℤ) 0) ℤ
     (homologyFunctor C (ComplexShape.up ℤ))
     (homologyFunctorFactors C (ComplexShape.up ℤ))
-    ⟨⟨Quotient.full_whiskeringLeft_functor _ _⟩,
-      Quotient.faithful_whiskeringLeft_functor _ _⟩
 
 variable {C}
 

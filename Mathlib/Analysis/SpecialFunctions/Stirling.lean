@@ -5,6 +5,7 @@ Authors: Moritz Firsching, Fabian Kruse, Nikolas Kuhn
 -/
 import Mathlib.Analysis.PSeries
 import Mathlib.Data.Real.Pi.Wallis
+import Mathlib.Tactic.AdaptationNote
 
 #align_import analysis.special_functions.stirling from "leanprover-community/mathlib"@"2c1d8ca2812b64f88992a5294ea3dba144755cd1"
 
@@ -119,9 +120,9 @@ theorem log_stirlingSeq_diff_le_geo_sum (n : ℕ) :
   exact hasSum_le hab (log_stirlingSeq_diff_hasSum n) g
 #align stirling.log_stirling_seq_diff_le_geo_sum Stirling.log_stirlingSeq_diff_le_geo_sum
 
--- Adaptation note: after v4.7.0-rc1, there is a performance problem in `field_simp`.
--- (Part of the code was ignoring the `maxDischargeDepth` setting: now that we have to increase it,
--- other paths becomes slow.)
+#adaptation_note /-- after v4.7.0-rc1, there is a performance problem in `field_simp`.
+(Part of the code was ignoring the `maxDischargeDepth` setting:
+ now that we have to increase it, other paths become slow.) -/
 set_option maxHeartbeats 400000 in
 /-- We have the bound `log (stirlingSeq n) - log (stirlingSeq (n+1))` ≤ 1/(4 n^2)
 -/
@@ -236,8 +237,8 @@ Then the Wallis sequence `W n` has limit `a^2 / 2`.
 -/
 theorem second_wallis_limit (a : ℝ) (hane : a ≠ 0) (ha : Tendsto stirlingSeq atTop (𝓝 a)) :
     Tendsto Wallis.W atTop (𝓝 (a ^ 2 / 2)) := by
-  refine' Tendsto.congr' (eventually_atTop.mpr ⟨1, fun n hn =>
-    stirlingSeq_pow_four_div_stirlingSeq_pow_two_eq n (one_le_iff_ne_zero.mp hn)⟩) _
+  refine Tendsto.congr' (eventually_atTop.mpr ⟨1, fun n hn =>
+    stirlingSeq_pow_four_div_stirlingSeq_pow_two_eq n (one_le_iff_ne_zero.mp hn)⟩) ?_
   have h : a ^ 2 / 2 = a ^ 4 / a ^ 2 * (1 / 2) := by
     rw [mul_one_div, ← mul_one_div (a ^ 4) (a ^ 2), one_div, ← pow_sub_of_lt a]
     norm_num

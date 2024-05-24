@@ -217,7 +217,7 @@ theorem hasDerivAt_exp_zero : HasDerivAt (exp 𝕂) (1 : 𝕂) 0 :=
 end DerivRCLike
 
 theorem Complex.exp_eq_exp_ℂ : Complex.exp = NormedSpace.exp ℂ := by
-  refine' funext fun x => _
+  refine funext fun x => ?_
   rw [Complex.exp, exp_eq_tsum_div]
   have : CauSeq.IsComplete ℂ norm := Complex.instIsComplete
   exact tendsto_nhds_unique x.exp'.tendsto_limit (expSeries_div_summable ℝ x).hasSum.tendsto_sum_nat
@@ -421,3 +421,14 @@ theorem hasDerivAt_exp_smul_const' (x : 𝔸) (t : 𝕂) :
 end RCLike
 
 end exp_smul
+
+section tsum_tprod
+
+variable {𝕂 𝔸 : Type*} [RCLike 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
+
+/-- If `f` has sum `a`, then `exp ∘ f` has product `exp a`. -/
+lemma HasSum.exp {ι : Type*} {f : ι → 𝔸} {a : 𝔸} (h : HasSum f a) :
+    HasProd (exp 𝕂 ∘ f) (exp 𝕂 a) :=
+  Tendsto.congr (fun s ↦ exp_sum s f) <| Tendsto.exp h
+
+end tsum_tprod

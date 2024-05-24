@@ -113,7 +113,7 @@ theorem MonoidHom.map_cyclic {G : Type*} [Group G] [h : IsCyclic G] (σ : G →*
     ∃ m : ℤ, ∀ g : G, σ g = g ^ m := by
   obtain ⟨h, hG⟩ := IsCyclic.exists_generator (α := G)
   obtain ⟨m, hm⟩ := hG (σ h)
-  refine' ⟨m, fun g => _⟩
+  refine ⟨m, fun g => ?_⟩
   obtain ⟨n, rfl⟩ := hG g
   rw [MonoidHom.map_zpow, ← hm, ← zpow_mul, ← zpow_mul']
 #align monoid_hom.map_cyclic MonoidHom.map_cyclic
@@ -203,7 +203,7 @@ theorem Infinite.orderOf_eq_zero_of_forall_mem_zpowers [Infinite α] {g : α}
     (h : ∀ x, x ∈ zpowers g) : orderOf g = 0 := by
   classical
     rw [orderOf_eq_zero_iff']
-    refine' fun n hn hgn => _
+    refine fun n hn hgn => ?_
     have ho := isOfFinOrder_iff_pow_eq_one.mpr ⟨n, hn, hgn⟩
     obtain ⟨x, hx⟩ :=
       Infinite.exists_not_mem_finset
@@ -216,7 +216,7 @@ theorem Infinite.orderOf_eq_zero_of_forall_mem_zpowers [Infinite α] {g : α}
     · exact ⟨k, mod_cast hk⟩
     rw [← zpow_mod_orderOf] at hk
     have : 0 ≤ (-k % orderOf g : ℤ) := Int.emod_nonneg (-k) (mod_cast ho.orderOf_pos.ne')
-    refine' ⟨(-k % orderOf g : ℤ).toNat, _⟩
+    refine ⟨(-k % orderOf g : ℤ).toNat, ?_⟩
     rwa [← zpow_natCast, Int.toNat_of_nonneg this]
 #align infinite.order_of_eq_zero_of_forall_mem_zpowers Infinite.orderOf_eq_zero_of_forall_mem_zpowers
 #align infinite.add_order_of_eq_zero_of_forall_mem_zmultiples Infinite.addOrderOf_eq_zero_of_forall_mem_zmultiples
@@ -482,7 +482,7 @@ theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
       · simp [h1]
       · simp [card_orderOf_eq_totient_aux₁ hn hmc h1]
     _ < ∑ m in c.divisors, φ m :=
-      (sum_erase_lt_of_pos (mem_divisors.2 ⟨hd, hc0.ne'⟩) (totient_pos (pos_of_dvd_of_pos hd hc0)))
+      sum_erase_lt_of_pos (mem_divisors.2 ⟨hd, hc0.ne'⟩) (totient_pos.2 (pos_of_dvd_of_pos hd hc0))
     _ = c := sum_totient _
 #align card_order_of_eq_totient_aux₂ card_orderOf_eq_totient_aux₂
 
@@ -490,8 +490,8 @@ theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
 theorem isCyclic_of_card_pow_eq_one_le : IsCyclic α :=
   have : (univ.filter fun a : α => orderOf a = Fintype.card α).Nonempty :=
     card_pos.1 <| by
-      rw [card_orderOf_eq_totient_aux₂ hn dvd_rfl];
-        exact totient_pos (Fintype.card_pos_iff.2 ⟨1⟩)
+      rw [card_orderOf_eq_totient_aux₂ hn dvd_rfl, totient_pos]
+      apply Fintype.card_pos
   let ⟨x, hx⟩ := this
   isCyclic_of_orderOf_eq_card x (Finset.mem_filter.1 hx).2
 #align is_cyclic_of_card_pow_eq_one_le isCyclic_of_card_pow_eq_one_le
@@ -588,7 +588,7 @@ instance (priority := 100) isCyclic : IsCyclic α := by
   cases' subsingleton_or_nontrivial α with hi hi <;> haveI := hi
   · apply isCyclic_of_subsingleton
   · obtain ⟨g, hg⟩ := exists_ne (1 : α)
-    refine' ⟨⟨g, fun x => _⟩⟩
+    refine ⟨⟨g, fun x => ?_⟩⟩
     cases' IsSimpleOrder.eq_bot_or_eq_top (Subgroup.zpowers g) with hb ht
     · exfalso
       apply hg
@@ -717,7 +717,7 @@ lemma not_isCyclic_iff_exponent_eq_prime [Group α] {p : ℕ} (hp : p.Prime)
   orders of `g` are `1`, `p`, or `p ^ 2`. It can't be the former because `g ≠ 1`, and it can't
   the latter because the group isn't cyclic. -/
   have := (Nat.mem_divisors (m := p ^ 2)).mpr ⟨hα' ▸ orderOf_dvd_card (x := g), by aesop⟩
-  simp? [Nat.divisors_prime_pow hp 2]  at this says
+  simp? [Nat.divisors_prime_pow hp 2] at this says
     simp only [Nat.divisors_prime_pow hp 2, Nat.reduceAdd, Finset.mem_map, Finset.mem_range,
       Function.Embedding.coeFn_mk] at this
   obtain ⟨a, ha, ha'⟩ := this

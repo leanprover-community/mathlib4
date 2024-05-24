@@ -358,7 +358,9 @@ theorem lowerSemicontinuous_iff_isClosed_epigraph {f : α → γ} :
     rw [nhds_prod_eq, le_prod] at h'
     calc f x ≤ liminf f (𝓝 x) := hf x
     _ ≤ liminf f (map Prod.fst F) := liminf_le_liminf_of_le h'.1
-    _ ≤ liminf Prod.snd F := liminf_le_liminf <| (eventually_principal.2 fun _ ↦ id).filter_mono h
+    _ = liminf (f ∘ Prod.fst) F := (Filter.liminf_comp _ _ _).symm
+    _ ≤ liminf Prod.snd F := liminf_le_liminf <| by
+          simpa using (eventually_principal.2 fun (_ : α × γ) ↦ id).filter_mono h
     _ = y := h'.2.liminf_eq
   · rw [lowerSemicontinuous_iff_isClosed_preimage]
     exact fun hf y ↦ hf.preimage (Continuous.Prod.mk_left y)
@@ -1215,7 +1217,7 @@ variable {γ : Type*} [LinearOrder γ] [TopologicalSpace γ] [OrderTopology γ]
 theorem continuousWithinAt_iff_lower_upperSemicontinuousWithinAt {f : α → γ} :
     ContinuousWithinAt f s x ↔
       LowerSemicontinuousWithinAt f s x ∧ UpperSemicontinuousWithinAt f s x := by
-  refine' ⟨fun h => ⟨h.lowerSemicontinuousWithinAt, h.upperSemicontinuousWithinAt⟩, _⟩
+  refine ⟨fun h => ⟨h.lowerSemicontinuousWithinAt, h.upperSemicontinuousWithinAt⟩, ?_⟩
   rintro ⟨h₁, h₂⟩
   intro v hv
   simp only [Filter.mem_map]

@@ -35,8 +35,7 @@ open scoped TensorProduct
 
 /-- Homogenous tensor powers $M^{\otimes n}$. `⨂[R]^n M` is a shorthand for
 `⨂[R] (i : Fin n), M`. -/
-@[reducible]
-def TensorPower (R : Type*) (n : ℕ) (M : Type*) [CommSemiring R] [AddCommMonoid M]
+abbrev TensorPower (R : Type*) (n : ℕ) (M : Type*) [CommSemiring R] [AddCommMonoid M]
     [Module R M] : Type _ :=
   ⨂[R] _ : Fin n, M
 #align tensor_power TensorPower
@@ -103,8 +102,7 @@ theorem gMul_eq_coe_linearMap {i j} (a : ⨂[R]^i M) (b : (⨂[R]^j) M) :
 variable (R M)
 
 /-- Cast between "equal" tensor powers. -/
-def cast {i j} (h : i = j) : ⨂[R]^i M ≃ₗ[R] (⨂[R]^j) M :=
-  reindex R (fun _ ↦ M) (Fin.castIso h).toEquiv
+def cast {i j} (h : i = j) : ⨂[R]^i M ≃ₗ[R] (⨂[R]^j) M := reindex R (fun _ ↦ M) (finCongr h)
 #align tensor_power.cast TensorPower.cast
 
 theorem cast_tprod {i j} (h : i = j) (a : Fin i → M) :
@@ -114,8 +112,7 @@ theorem cast_tprod {i j} (h : i = j) (a : Fin i → M) :
 
 @[simp]
 theorem cast_refl {i} (h : i = i) : cast R M h = LinearEquiv.refl _ _ :=
-  ((congr_arg fun f => reindex R (fun _ ↦ M) (RelIso.toEquiv f)) <| Fin.castIso_refl h).trans
-    reindex_refl
+  (congr_arg (reindex R fun _ ↦ M) <| finCongr_refl h).trans reindex_refl
 #align tensor_power.cast_refl TensorPower.cast_refl
 
 @[simp]
@@ -142,7 +139,7 @@ theorem gradedMonoid_eq_of_cast {a b : GradedMonoid fun n => ⨂[R] _ : Fin n, M
     (h2 : cast R M h a.snd = b.snd) : a = b := by
   refine' gradedMonoid_eq_of_reindex_cast h _
   rw [cast] at h2
-  rw [← Fin.castIso_to_equiv, ← h2]
+  rw [← finCongr_eq_equivCast, ← h2]
 #align tensor_power.graded_monoid_eq_of_cast TensorPower.gradedMonoid_eq_of_cast
 
 theorem cast_eq_cast {i j} (h : i = j) :

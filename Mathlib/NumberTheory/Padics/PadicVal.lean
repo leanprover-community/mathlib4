@@ -141,7 +141,7 @@ theorem padicValNat_eq_maxPowDiv : @padicValNat = @maxPowDiv := by
       interval_cases p
       · simp [Classical.em]
       · dsimp [padicValNat, maxPowDiv]
-        rw [go_eq, if_neg, dif_neg] <;> simp
+        rw [go, if_neg, dif_neg] <;> simp
     · intro h
       simp [h]
 
@@ -302,6 +302,19 @@ theorem dvd_iff_padicValNat_ne_zero {p n : ℕ} [Fact p.Prime] (hn0 : n ≠ 0) :
     Classical.not_not.1 (mt padicValNat.eq_zero_of_not_dvd h)⟩
 #align dvd_iff_padic_val_nat_ne_zero dvd_iff_padicValNat_ne_zero
 
+open List
+
+theorem le_multiplicity_iff_replicate_subperm_factors {a b : ℕ} {n : ℕ} (ha : a.Prime)
+    (hb : b ≠ 0) :
+    ↑n ≤ multiplicity a b ↔ replicate n a <+~ b.factors :=
+  (replicate_subperm_factors_iff ha hb).trans multiplicity.pow_dvd_iff_le_multiplicity |>.symm
+
+theorem le_padicValNat_iff_replicate_subperm_factors {a b : ℕ} {n : ℕ} (ha : a.Prime)
+    (hb : b ≠ 0) :
+    n ≤ padicValNat a b ↔ replicate n a <+~ b.factors := by
+  rw [← le_multiplicity_iff_replicate_subperm_factors ha hb,
+    ← padicValNat_def' ha.ne_one (Nat.pos_of_ne_zero hb), Nat.cast_le]
+
 end padicValNat
 
 namespace padicValRat
@@ -341,7 +354,7 @@ protected theorem defn (p : ℕ) [hp : Fact p.Prime] {q : ℚ} {n d : ℤ} (hqz 
 protected theorem mul {q r : ℚ} (hq : q ≠ 0) (hr : r ≠ 0) :
     padicValRat p (q * r) = padicValRat p q + padicValRat p r := by
   have : q * r = (q.num * r.num) /. (q.den * r.den) := by
-    rw [Rat.mul_def', Rat.mkRat_eq, Nat.cast_mul]
+    rw [Rat.mul_eq_mkRat, Rat.mkRat_eq_divInt, Nat.cast_mul]
   have hq' : q.num /. q.den ≠ 0 := by rwa [Rat.num_divInt_den]
   have hr' : r.num /. r.den ≠ 0 := by rwa [Rat.num_divInt_den]
   have hp' : Prime (p : ℤ) := Nat.prime_iff_prime_int.1 hp.1
@@ -674,7 +687,7 @@ theorem padicValNat_eq_zero_of_mem_Ioo {m k : ℕ}
 theorem padicValNat_factorial_mul_add {n : ℕ} (m : ℕ) [hp : Fact p.Prime] (h : n < p) :
     padicValNat p (p * m + n) ! = padicValNat p (p * m) ! := by
   induction' n with n hn
-  · rw [zero_eq, add_zero]
+  · rw [add_zero]
   · rw [add_succ, factorial_succ,
       padicValNat.mul (succ_ne_zero (p * m + n)) <| factorial_ne_zero (p * m + _),
       hn <| lt_of_succ_lt h, ← add_succ,
@@ -704,8 +717,10 @@ Taking (`p - 1`) times the `p`-adic valuation of `n!` equals `n` minus the sum o
 of `n`. -/
 theorem sub_one_mul_padicValNat_factorial [hp : Fact p.Prime] (n : ℕ):
     (p - 1) * padicValNat p (n !) = n - (p.digits n).sum := by
-  rw [padicValNat_factorial <| lt_succ_of_lt <| lt.base (log p n), ← Finset.sum_Ico_add' _ 0 _ 1,
-    Ico_zero_eq_range, ← sub_one_mul_sum_log_div_pow_eq_sub_sum_digits]
+  rw [padicValNat_factorial <| lt_succ_of_lt <| lt.base (log p n)]
+  nth_rw 2 [← zero_add 1]
+  rw [Nat.succ_eq_add_one, ← Finset.sum_Ico_add' _ 0 _ 1,
+    Ico_zero_eq_range, ← sub_one_mul_sum_log_div_pow_eq_sub_sum_digits, Nat.succ_eq_add_one]
 
 /-- **Kummer's Theorem**
 
@@ -753,8 +768,8 @@ digits of `k` plus the sum of the digits of `n - k` minus the sum of digits of `
 theorem sub_one_mul_padicValNat_choose_eq_sub_sum_digits {k n : ℕ} [hp : Fact p.Prime]
     (h : k ≤ n) : (p - 1) * padicValNat p (choose n k) =
     (p.digits k).sum + (p.digits (n - k)).sum - (p.digits n).sum := by
-  convert @sub_one_mul_padicValNat_choose_eq_sub_sum_digits' _ _ _ _
-  all_goals exact Nat.eq_add_of_sub_eq h rfl
+  convert @sub_one_mul_padicValNat_choose_eq_sub_sum_digits' _ _ _ ‹_›
+  all_goals omega
 
 end padicValNat
 

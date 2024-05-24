@@ -403,7 +403,7 @@ theorem exists_chain_of_relationReflTransGen (h : Relation.ReflTransGen r a b) :
   · exact ⟨[], Chain.nil, rfl⟩
   · intro c d e _ ih
     obtain ⟨l, hl₁, hl₂⟩ := ih
-    refine' ⟨d :: l, Chain.cons e hl₁, _⟩
+    refine ⟨d :: l, Chain.cons e hl₁, ?_⟩
     rwa [getLast_cons_cons]
 #align list.exists_chain_of_relation_refl_trans_gen List.exists_chain_of_relationReflTransGen
 
@@ -420,8 +420,8 @@ theorem Chain.induction (p : α → Prop) (l : List α) (h : Chain r a l)
   · rw [chain_cons] at h
     simp only [mem_cons]
     rintro _ (rfl | H)
-    apply carries h.1 (l_ih h.2 hb _ (mem_cons.2 (Or.inl rfl)))
-    apply l_ih h.2 hb _ (mem_cons.2 H)
+    · apply carries h.1 (l_ih h.2 hb _ (mem_cons.2 (Or.inl rfl)))
+    · apply l_ih h.2 hb _ (mem_cons.2 H)
 #align list.chain.induction List.Chain.induction
 
 /-- Given a chain from `a` to `b`, and a predicate true at `b`, if `r x y → p y → p x` then

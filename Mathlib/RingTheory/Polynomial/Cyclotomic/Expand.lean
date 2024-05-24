@@ -90,8 +90,8 @@ theorem cyclotomic_expand_eq_cyclotomic {p n : ℕ} (hp : Nat.Prime p) (hdiv : p
     refine' minpoly.isIntegrallyClosed_dvd (hprim.isIntegral hpos) _
     rw [aeval_def, ← eval_map, map_expand, map_cyclotomic, expand_eval, ← IsRoot.def,
       @isRoot_cyclotomic_iff]
-    · convert IsPrimitiveRoot.pow_of_dvd hprim hp.ne_zero (dvd_mul_left p n)
-      rw [Nat.mul_div_cancel _ hp.pos]
+    convert IsPrimitiveRoot.pow_of_dvd hprim hp.ne_zero (dvd_mul_left p n)
+    rw [Nat.mul_div_cancel _ hp.pos]
   · rw [natDegree_expand, natDegree_cyclotomic, natDegree_cyclotomic, mul_comm n,
       Nat.totient_mul_of_prime_of_dvd hp hdiv, mul_comm]
 #align polynomial.cyclotomic_expand_eq_cyclotomic Polynomial.cyclotomic_expand_eq_cyclotomic
@@ -156,9 +156,9 @@ theorem cyclotomic_mul_prime_pow_eq (R : Type*) {p m : ℕ} [Fact (Nat.Prime p)]
     have hdiv : p ∣ p ^ a.succ * m := ⟨p ^ a * m, by rw [← mul_assoc, pow_succ']⟩
     rw [pow_succ', mul_assoc, mul_comm, cyclotomic_mul_prime_dvd_eq_pow R hdiv,
       cyclotomic_mul_prime_pow_eq _ _ a.succ_pos, ← pow_mul]
-    congr 1
-    simp only [tsub_zero, Nat.succ_sub_succ_eq_sub]
-    rwa [Nat.mul_sub_right_distrib, mul_comm, pow_succ]
+    · simp only [tsub_zero, Nat.succ_sub_succ_eq_sub]
+      rw [Nat.mul_sub_right_distrib, mul_comm, pow_succ]
+    · assumption
 #align polynomial.cyclotomic_mul_prime_pow_eq Polynomial.cyclotomic_mul_prime_pow_eq
 
 /-- If `R` is of characteristic `p` and `¬p ∣ m`, then `ζ` is a root of `cyclotomic (p ^ k * m) R`

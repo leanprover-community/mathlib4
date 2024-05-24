@@ -868,6 +868,12 @@ lemma range_mapIncl (p : Submodule R P) (q : Submodule R Q) :
   rw [mapIncl, map_range_eq_span_tmul]
   congr; ext; simp
 
+theorem map₂_eq_range_lift_comp_mapIncl (f : P →ₗ[R] Q →ₗ[R] M)
+    (p : Submodule R P) (q : Submodule R Q) :
+    Submodule.map₂ f p q = LinearMap.range (lift f ∘ₗ mapIncl p q) := by
+  simp_rw [LinearMap.range_comp, range_mapIncl, Submodule.map_span,
+    Set.image_image2, Submodule.map₂_eq_span_image2, lift.tmul]
+
 section
 
 variable {P' Q' : Type*}
@@ -1325,6 +1331,18 @@ theorem rTensor_id_apply (x : N ⊗[R] M) : (LinearMap.id : N →ₗ[R] N).rTens
   rw [rTensor_id, id_coe, _root_.id]
 #align linear_map.rtensor_id_apply LinearMap.rTensor_id_apply
 
+@[simp]
+theorem lTensor_smul_action (r : R) :
+    (DistribMulAction.toLinearMap R N r).lTensor M =
+      DistribMulAction.toLinearMap R (M ⊗[R] N) r :=
+  (lTensor_smul M r LinearMap.id).trans (congrArg _ (lTensor_id M N))
+
+@[simp]
+theorem rTensor_smul_action (r : R) :
+    (DistribMulAction.toLinearMap R N r).rTensor M =
+      DistribMulAction.toLinearMap R (N ⊗[R] M) r :=
+  (rTensor_smul M r LinearMap.id).trans (congrArg _ (rTensor_id M N))
+
 variable {N}
 
 theorem lid_comp_rTensor (f : N →ₗ[R] R) :
@@ -1541,7 +1559,7 @@ instance addCommGroup : AddCommGroup (M ⊗[R] N) :=
     add_left_neg := fun x => TensorProduct.add_left_neg x
     zsmul := fun n v => n • v
     zsmul_zero' := by simp [TensorProduct.zero_smul]
-    zsmul_succ' := by simp [Nat.succ_eq_add_one, TensorProduct.one_smul, TensorProduct.add_smul]
+    zsmul_succ' := by simp [add_comm, TensorProduct.one_smul, TensorProduct.add_smul]
     zsmul_neg' := fun n x => by
       change (-n.succ : ℤ) • x = -(((n : ℤ) + 1) • x)
       rw [← zero_add (_ • x), ← TensorProduct.add_left_neg ((n.succ : ℤ) • x), add_assoc,

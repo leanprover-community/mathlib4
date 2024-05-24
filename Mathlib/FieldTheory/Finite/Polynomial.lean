@@ -96,10 +96,10 @@ theorem indicator_mem_restrictDegree (c : σ → K) :
   simp_rw [← Multiset.coe_countAddMonoidHom, map_sum,
     AddMonoidHom.map_nsmul, Multiset.coe_countAddMonoidHom, nsmul_eq_mul, Nat.cast_id]
   trans
-  refine' Finset.sum_eq_single n _ _
-  · intro b _ ne
-    simp [Multiset.count_singleton, ne, if_neg (Ne.symm _)]
-  · intro h; exact (h <| Finset.mem_univ _).elim
+  · refine' Finset.sum_eq_single n _ _
+    · intro b _ ne
+      simp [Multiset.count_singleton, ne, if_neg (Ne.symm _)]
+    · intro h; exact (h <| Finset.mem_univ _).elim
   · rw [Multiset.count_singleton_self, mul_one]
 #align mv_polynomial.indicator_mem_restrict_degree MvPolynomial.indicator_mem_restrictDegree
 
@@ -209,7 +209,7 @@ theorem rank_R [Fintype σ] : Module.rank K (R σ K) = Fintype.card (σ → K) :
         (Finsupp.supportedEquivFinsupp { s : σ →₀ ℕ | ∀ n : σ, s n ≤ Fintype.card K - 1 })
     _ = #{ s : σ →₀ ℕ | ∀ n : σ, s n ≤ Fintype.card K - 1 } := by rw [rank_finsupp_self']
     _ = #{ s : σ → ℕ | ∀ n : σ, s n < Fintype.card K } := by
-      refine' Quotient.sound ⟨Equiv.subtypeEquiv Finsupp.equivFunOnFinite fun f => _⟩
+      refine Quotient.sound ⟨Equiv.subtypeEquiv Finsupp.equivFunOnFinite fun f => ?_⟩
       refine' forall_congr' fun n => le_tsub_iff_right _
       exact Fintype.card_pos_iff.2 ⟨0⟩
     _ = #(σ → { n // n < Fintype.card K }) :=

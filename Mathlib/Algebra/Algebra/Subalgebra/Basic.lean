@@ -506,6 +506,35 @@ instance isDomain {R A : Type*} [CommRing R] [Ring A] [IsDomain A] [Algebra R A]
 
 end Subalgebra
 
+namespace SubalgebraClass
+
+variable {S R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+variable [SetLike S A] [SubsemiringClass S A] [hSR : SMulMemClass S R A] (s : S)
+
+instance (priority := 75) toAlgebra : Algebra R s where
+  toFun r := ⟨algebraMap R A r, algebraMap_mem s r⟩
+  map_one' := Subtype.ext <| by simp
+  map_mul' _ _ := Subtype.ext <| by simp
+  map_zero' := Subtype.ext <| by simp
+  map_add' _ _ := Subtype.ext <| by simp
+  commutes' r x := Subtype.ext <| Algebra.commutes r (x : A)
+  smul_def' r x := Subtype.ext <| (algebraMap_smul A r (x : A)).symm
+
+@[simp, norm_cast]
+lemma coe_algebraMap (r : R) : (algebraMap R s r : A) = algebraMap R A r := rfl
+
+/-- Embedding of a subalgebra into the algebra, as an algebra homomorphism. -/
+def val (s : S) : s →ₐ[R] A :=
+  { SubsemiringClass.subtype s, SMulMemClass.subtype s with
+    toFun := (↑)
+    commutes' := fun _ ↦ rfl }
+
+@[simp]
+theorem coe_val : (val s : s → A) = ((↑) : s → A) :=
+  rfl
+
+end SubalgebraClass
+
 namespace Submodule
 
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
@@ -616,8 +645,7 @@ theorem injective_codRestrict (f : A →ₐ[R] B) (S : Subalgebra R B) (hf : ∀
 /-- Restrict the codomain of an `AlgHom` `f` to `f.range`.
 
 This is the bundled version of `Set.rangeFactorization`. -/
-@[reducible]
-def rangeRestrict (f : A →ₐ[R] B) : A →ₐ[R] f.range :=
+abbrev rangeRestrict (f : A →ₐ[R] B) : A →ₐ[R] f.range :=
   f.codRestrict f.range f.mem_range_self
 #align alg_hom.range_restrict AlgHom.rangeRestrict
 
@@ -986,8 +1014,7 @@ instance : Unique (Subalgebra R R) :=
 /-- The map `S → T` when `S` is a subalgebra contained in the subalgebra `T`.
 
 This is the subalgebra version of `Submodule.inclusion`, or `Subring.inclusion`  -/
-def inclusion {S T : Subalgebra R A} (h : S ≤ T) : S →ₐ[R] T
-    where
+def inclusion {S T : Subalgebra R A} (h : S ≤ T) : S →ₐ[R] T where
   toFun := Set.inclusion h
   map_one' := rfl
   map_add' _ _ := rfl

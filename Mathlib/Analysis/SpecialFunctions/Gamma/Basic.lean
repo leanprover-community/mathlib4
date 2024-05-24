@@ -73,11 +73,11 @@ theorem GammaIntegral_convergent {s : ℝ} (h : 0 < s) :
   rw [← Ioc_union_Ioi_eq_Ioi (@zero_le_one ℝ _ _ _ _), integrableOn_union]
   constructor
   · rw [← integrableOn_Icc_iff_integrableOn_Ioc]
-    refine' IntegrableOn.continuousOn_mul continuousOn_id.neg.exp _ isCompact_Icc
+    refine' IntegrableOn.continuousOn_mul continuousOn_id.neg.rexp _ isCompact_Icc
     refine' (intervalIntegrable_iff_integrableOn_Icc_of_le zero_le_one).mp _
     exact intervalIntegrable_rpow' (by linarith)
   · refine' integrable_of_isBigO_exp_neg one_half_pos _ (Gamma_integrand_isLittleO _).isBigO
-    refine' continuousOn_id.neg.exp.mul (continuousOn_id.rpow_const _)
+    refine' continuousOn_id.neg.rexp.mul (continuousOn_id.rpow_const _)
     intro x hx
     exact Or.inl ((zero_lt_one : (0 : ℝ) < 1).trans_le hx).ne'
 #align real.Gamma_integral_convergent Real.GammaIntegral_convergent
@@ -96,7 +96,7 @@ theorem GammaIntegral_convergent {s : ℂ} (hs : 0 < s.re) :
     IntegrableOn (fun x => (-x).exp * x ^ (s - 1) : ℝ → ℂ) (Ioi 0) := by
   constructor
   · refine' ContinuousOn.aestronglyMeasurable _ measurableSet_Ioi
-    apply (continuous_ofReal.comp continuous_neg.exp).continuousOn.mul
+    apply (continuous_ofReal.comp continuous_neg.rexp).continuousOn.mul
     apply ContinuousAt.continuousOn
     intro x hx
     have : ContinuousAt (fun x : ℂ => x ^ (s - 1)) ↑x :=
@@ -184,7 +184,7 @@ private theorem Gamma_integrand_deriv_integrable_B {s : ℂ} (hs : 0 < s.re) {Y 
   rw [this, intervalIntegrable_iff_integrableOn_Ioc_of_le hY]
   constructor
   · refine' (continuousOn_const.mul _).aestronglyMeasurable measurableSet_Ioc
-    apply (continuous_ofReal.comp continuous_neg.exp).continuousOn.mul
+    apply (continuous_ofReal.comp continuous_neg.rexp).continuousOn.mul
     apply ContinuousAt.continuousOn
     intro x hx
     refine' (_ : ContinuousAt (fun x : ℂ => x ^ (s - 1)) _).comp continuous_ofReal.continuousAt
@@ -213,7 +213,7 @@ theorem partialGamma_add_one {s : ℂ} (hs : 0 < s.re) {X : ℝ} (hX : 0 ≤ X) 
       · simpa only [mul_one] using t.comp_ofReal
       · exact ofReal_mem_slitPlane.2 hx.1
     simpa only [ofReal_neg, neg_mul] using d1.ofReal_comp.mul d2
-  have cont := (continuous_ofReal.comp continuous_neg.exp).mul (continuous_ofReal_cpow_const hs)
+  have cont := (continuous_ofReal.comp continuous_neg.rexp).mul (continuous_ofReal_cpow_const hs)
   have der_ible :=
     (Gamma_integrand_deriv_integrable_A hs hX).add (Gamma_integrand_deriv_integrable_B hs hX)
   have int_eval := integral_eq_sub_of_hasDerivAt_of_le hX cont.continuousOn F_der_I der_ible
@@ -244,7 +244,7 @@ theorem GammaIntegral_add_one {s : ℂ} (hs : 0 < s.re) :
     intro X hX
     rw [partialGamma_add_one hs (mem_Ici.mp hX)]
     ring_nf
-  refine' Tendsto.congr' this _
+  refine Tendsto.congr' this ?_
   suffices Tendsto (fun X => -X ^ s * (-X).exp : ℝ → ℂ) atTop (𝓝 0) by
     simpa using Tendsto.add (Tendsto.const_mul s (tendsto_partialGamma hs)) this
   rw [tendsto_zero_iff_norm_tendsto_zero]
@@ -279,7 +279,7 @@ theorem GammaAux_recurrence1 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
     simp
   · dsimp only [GammaAux]
     have hh1 : -(s + 1).re < n := by
-      rw [Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one] at h1
+      rw [Nat.cast_add, Nat.cast_one] at h1
       rw [add_re, one_re]; linarith
     rw [← hn (s + 1) hh1]
 #align complex.Gamma_aux_recurrence1 Complex.GammaAux_recurrence1
@@ -296,7 +296,7 @@ theorem GammaAux_recurrence2 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
   · dsimp only [GammaAux]
     have : GammaAux n (s + 1 + 1) / (s + 1) = GammaAux n (s + 1) := by
       have hh1 : -(s + 1).re < n := by
-        rw [Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one] at h1
+        rw [Nat.cast_add, Nat.cast_one] at h1
         rw [add_re, one_re]; linarith
       rw [GammaAux_recurrence1 (s + 1) n hh1]
     rw [this]
@@ -312,7 +312,7 @@ theorem Gamma_eq_GammaAux (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) : Gamma s = Ga
   have u : ∀ k : ℕ, GammaAux (⌊1 - s.re⌋₊ + k) s = Gamma s := by
     intro k; induction' k with k hk
     · simp [Gamma]
-    · rw [← hk, Nat.succ_eq_add_one, ← add_assoc]
+    · rw [← hk, ← add_assoc]
       refine' (GammaAux_recurrence2 s (⌊1 - s.re⌋₊ + k) _).symm
       rw [Nat.cast_add]
       have i0 := Nat.sub_one_lt_floor (1 - s.re)
@@ -323,7 +323,9 @@ theorem Gamma_eq_GammaAux (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) : Gamma s = Ga
   by_cases h : 0 ≤ 1 - s.re
   · apply Nat.le_of_lt_succ
     exact_mod_cast lt_of_le_of_lt (Nat.floor_le h) (by linarith : 1 - s.re < n + 1)
-  · rw [Nat.floor_of_nonpos]; omega; linarith
+  · rw [Nat.floor_of_nonpos]
+    · omega
+    · linarith
 #align complex.Gamma_eq_Gamma_aux Complex.Gamma_eq_GammaAux
 
 /-- The recurrence relation for the `Γ` function. -/
@@ -332,7 +334,7 @@ theorem Gamma_add_one (s : ℂ) (h2 : s ≠ 0) : Gamma (s + 1) = s * Gamma s := 
   have t1 : -s.re < n := by simpa only [sub_sub_cancel_left] using Nat.sub_one_lt_floor (1 - s.re)
   have t2 : -(s + 1).re < n := by rw [add_re, one_re]; linarith
   rw [Gamma_eq_GammaAux s n t1, Gamma_eq_GammaAux (s + 1) n t2, GammaAux_recurrence1 s n t1]
-  field_simp; ring
+  field_simp
 #align complex.Gamma_add_one Complex.Gamma_add_one
 
 theorem Gamma_eq_integral {s : ℂ} (hs : 0 < s.re) : Gamma s = GammaIntegral s :=
@@ -469,7 +471,7 @@ theorem differentiableAt_Gamma (s : ℂ) (hs : ∀ m : ℕ, s ≠ -m) : Differen
   let S := {t : ℂ | 1 - t.re < n}
   have : S ∈ 𝓝 s := by
     rw [mem_nhds_iff]; use S
-    refine' ⟨Subset.rfl, _, hn⟩
+    refine ⟨Subset.rfl, ?_, hn⟩
     have : S = re ⁻¹' Ioi (1 - n : ℝ) := by
       ext; rw [preimage, Ioi, mem_setOf_eq, mem_setOf_eq, mem_setOf_eq]; exact sub_lt_comm
     rw [this]
@@ -611,7 +613,8 @@ is mathematically undefined and we set it to `0` by convention). -/
 theorem Gamma_ne_zero {s : ℝ} (hs : ∀ m : ℕ, s ≠ -m) : Gamma s ≠ 0 := by
   suffices ∀ {n : ℕ}, -(n : ℝ) < s → Gamma s ≠ 0 by
     apply this
-    swap; exact ⌊-s⌋₊ + 1
+    swap
+    · exact ⌊-s⌋₊ + 1
     rw [neg_lt, Nat.cast_add, Nat.cast_one]
     exact Nat.lt_floor_add_one _
   intro n
@@ -629,7 +632,7 @@ theorem Gamma_ne_zero {s : ℝ} (hs : ∀ m : ℕ, s ≠ -m) : Gamma s ≠ 0 := 
         rw [hs]
         push_cast
         ring
-      · rw [Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one, neg_add] at hs'
+      · rw [Nat.cast_add, Nat.cast_one, neg_add] at hs'
         linarith
     rw [Gamma_add_one, mul_ne_zero_iff] at this
     · exact this.2

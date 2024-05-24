@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.RingTheory.Subring.Pointwise
+import Mathlib.Algebra.Ring.Subring.Pointwise
 import Mathlib.RingTheory.Adjoin.Basic
 
 #align_import algebra.algebra.subalgebra.pointwise from "leanprover-community/mathlib"@"b2c707cd190a58ea0565c86695a19e99ccecc215"
@@ -70,8 +70,7 @@ variable {R' : Type*} [Semiring R'] [MulSemiringAction R' A] [SMulCommClass R' R
 /-- The action on a subalgebra corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale. -/
-protected def pointwiseMulAction : MulAction R' (Subalgebra R A)
-    where
+protected def pointwiseMulAction : MulAction R' (Subalgebra R A) where
   smul a S := S.map (MulSemiringAction.toAlgHom _ _ a)
   one_smul S := (congr_arg (fun f => S.map f) (AlgHom.ext <| one_smul R')).trans S.map_id
   mul_smul _a₁ _a₂ S :=

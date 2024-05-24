@@ -29,7 +29,7 @@ def colon (N P : Submodule R M) : Ideal R :=
 theorem mem_colon {r} : r ∈ N.colon P ↔ ∀ p ∈ P, r • p ∈ N :=
   mem_annihilator.trans
      ⟨fun H p hp => (Quotient.mk_eq_zero N).1 (H (Quotient.mk p) (mem_map_of_mem hp)),
-       fun H _ ⟨p, hp, hpm⟩ => hpm ▸ (N.mkQ.map_smul r p ▸ (Quotient.mk_eq_zero N).2 <| H p hp)⟩
+       fun H _ ⟨p, hp, hpm⟩ => hpm ▸ ((Quotient.mk_eq_zero N).2 <| H p hp)⟩
 #align submodule.mem_colon Submodule.mem_colon
 
 theorem mem_colon' {r} : r ∈ N.colon P ↔ P ≤ comap (r • (LinearMap.id : M →ₗ[R] M)) N :=

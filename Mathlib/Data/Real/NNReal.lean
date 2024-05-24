@@ -3,7 +3,7 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.Field.Canonical.Basic
 import Mathlib.Algebra.Order.Nonneg.Field
@@ -362,6 +362,11 @@ protected theorem coe_natCast (n : ℕ) : (↑(↑n : ℝ≥0) : ℝ) = n :=
 @[simp, norm_cast]
 protected theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
     (no_index (OfNat.ofNat n : ℝ≥0) : ℝ) = OfNat.ofNat n :=
+  rfl
+
+@[simp, norm_cast]
+protected theorem coe_ofScientific (m : ℕ) (s : Bool) (e : ℕ) :
+    ↑(OfScientific.ofScientific m s e : ℝ≥0) = (OfScientific.ofScientific m s e : ℝ) :=
   rfl
 
 noncomputable example : LinearOrder ℝ≥0 := by infer_instance
@@ -1192,6 +1197,41 @@ theorem cast_natAbs_eq_nnabs_cast (n : ℤ) : (n.natAbs : ℝ≥0) = nnabs n := 
 #align real.cast_nat_abs_eq_nnabs_cast Real.cast_natAbs_eq_nnabs_cast
 
 end Real
+
+section StrictMono
+
+open NNReal
+
+variable {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+
+/-- If `Γ₀ˣ` is nontrivial and `f : Γ₀ →*₀ ℝ≥0` is a strict monomorphism, then for any positive
+  `r : ℝ≥0`, there exists `d : Γ₀ˣ` with `f d < r`. -/
+theorem NNReal.exists_lt_of_strictMono [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*₀ ℝ≥0} (hf : StrictMono f)
+    {r : ℝ≥0} (hr : 0 < r) : ∃ d : Γ₀ˣ, f d < r := by
+  obtain ⟨g, hg1⟩ := (nontrivial_iff_exists_ne (1 : Γ₀ˣ)).mp h
+  set u : Γ₀ˣ := if g < 1 then g else g⁻¹ with hu
+  have hfu : f u < 1 := by
+    rw [hu]
+    split_ifs with hu1
+    · rw [← _root_.map_one f]; exact hf hu1
+    · have hfg0 : f g ≠ 0 :=
+        fun h0 ↦ (Units.ne_zero g) ((map_eq_zero f).mp h0)
+      have hg1' : 1 < g := lt_of_le_of_ne (not_lt.mp hu1) hg1.symm
+      rw [Units.val_inv_eq_inv_val, map_inv₀, inv_lt_one_iff hfg0, ← _root_.map_one f]
+      exact hf hg1'
+  obtain ⟨n, hn⟩ := exists_pow_lt_of_lt_one hr hfu
+  use u ^ n
+  rwa [Units.val_pow_eq_pow_val, _root_.map_pow]
+
+/-- If `Γ₀ˣ` is nontrivial and `f : Γ₀ →*₀ ℝ≥0` is a strict monomorphism, then for any positive
+  real `r`, there exists `d : Γ₀ˣ` with `f d < r`. -/
+theorem Real.exists_lt_of_strictMono [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*₀ ℝ≥0} (hf : StrictMono f)
+    {r : ℝ} (hr : 0 < r) : ∃ d : Γ₀ˣ, (f d : ℝ) < r := by
+  set s : NNReal := ⟨r, le_of_lt hr⟩
+  have hs : 0 < s := hr
+  exact NNReal.exists_lt_of_strictMono hf hs
+
+end StrictMono
 
 namespace Mathlib.Meta.Positivity
 

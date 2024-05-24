@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel, Felix Weilacher
 -/
 import Mathlib.Data.Real.Cardinality
 import Mathlib.Topology.MetricSpace.Perfect
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
 import Mathlib.Topology.CountableSeparatingOn
 
 #align_import measure_theory.constructions.polish from "leanprover-community/mathlib"@"9f55d0d4363ae59948c33864cbc52e0b12e0e8ce"
@@ -262,7 +262,7 @@ theorem AnalyticSet.iInter [hι : Nonempty ι] [Countable ι] [T2Space α] {s : 
       have xt : x ∈ t := by
         refine mem_iInter.2 fun n => ?_
         simp [hx]
-      refine' ⟨⟨x, xt⟩, _⟩
+      refine ⟨⟨x, xt⟩, ?_⟩
       exact hx i₀
   rw [← F_range]
   exact analyticSet_range_of_polishSpace F_cont
@@ -333,8 +333,8 @@ theorem _root_.Measurable.exists_continuous {α β : Type*} [t : TopologicalSpac
   choose T Tt Tpolish _ Topen using this
   obtain ⟨t', t'T, t't, t'_polish⟩ :
       ∃ t' : TopologicalSpace α, (∀ i, t' ≤ T i) ∧ t' ≤ t ∧ @PolishSpace α t' :=
-    exists_polishSpace_forall_le T Tt Tpolish
-  refine' ⟨t', t't, _, t'_polish⟩
+    exists_polishSpace_forall_le (t := t) T Tt Tpolish
+  refine ⟨t', t't, ?_, t'_polish⟩
   have : Continuous[t', _] (rangeFactorization f) :=
     hb.continuous_iff.2 fun s hs => t'T ⟨s, hs⟩ _ (Topen ⟨s, hs⟩)
   exact continuous_subtype_val.comp this
@@ -411,7 +411,7 @@ theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α]
     contrapose!
     intro H
     rw [← iUnion_cylinder_update x n, ← iUnion_cylinder_update y n, image_iUnion, image_iUnion]
-    refine' MeasurablySeparable.iUnion fun i j => _
+    refine MeasurablySeparable.iUnion fun i j => ?_
     exact H _ _ (update_mem_cylinder _ _ _) (update_mem_cylinder _ _ _)
   -- consider the set of pairs of cylinders of some length whose images are not Borel-separated
   let A :=
@@ -534,6 +534,8 @@ end MeasureTheory
 
 namespace Measurable
 
+open MeasurableSpace
+
 variable {X Y Z β : Type*} [MeasurableSpace X] [StandardBorelSpace X]
   [TopologicalSpace Y] [T0Space Y] [MeasurableSpace Y] [OpensMeasurableSpace Y] [MeasurableSpace β]
   [MeasurableSpace Z]
@@ -543,11 +545,11 @@ to a countably separated measurable space, then the preimage of a set `s`
 is measurable if and only if the set is measurable.
 One implication is the definition of measurability, the other one heavily relies on `X` being a
 standard Borel space. -/
-theorem measurableSet_preimage_iff_of_surjective [HasCountableSeparatingOn Z MeasurableSet univ]
+theorem measurableSet_preimage_iff_of_surjective [CountablySeparated Z]
     {f : X → Z} (hf : Measurable f) (hsurj : Surjective f) {s : Set Z} :
     MeasurableSet (f ⁻¹' s) ↔ MeasurableSet s := by
   refine ⟨fun h => ?_, fun h => hf h⟩
-  rcases exists_opensMeasurableSpace_of_hasCountableSeparatingOn Z with ⟨τ, _, _, _⟩
+  rcases exists_opensMeasurableSpace_of_countablySeparated Z with ⟨τ, _, _, _⟩
   apply AnalyticSet.measurableSet_of_compl
   · rw [← image_preimage_eq s hsurj]
     exact h.analyticSet_image hf
@@ -555,7 +557,7 @@ theorem measurableSet_preimage_iff_of_surjective [HasCountableSeparatingOn Z Mea
     exact h.compl.analyticSet_image hf
 #align measurable.measurable_set_preimage_iff_of_surjective Measurable.measurableSet_preimage_iff_of_surjective
 
-theorem map_measurableSpace_eq  [HasCountableSeparatingOn Z MeasurableSet univ]
+theorem map_measurableSpace_eq [CountablySeparated Z]
     {f : X → Z} (hf : Measurable f)
     (hsurj : Surjective f) : MeasurableSpace.map f ‹MeasurableSpace X› = ‹MeasurableSpace Z› :=
   MeasurableSpace.ext fun _ => hf.measurableSet_preimage_iff_of_surjective hsurj
@@ -576,8 +578,7 @@ theorem borelSpace_codomain [SecondCountableTopology Y] {f : X → Y} (hf : Meas
 /-- If `f : X → Z` is a Borel measurable map from a standard Borel space to a
 countably separated measurable space then the preimage of a set `s` is measurable
 if and only if the set is measurable in `Set.range f`. -/
-theorem measurableSet_preimage_iff_preimage_val {f : X → Z}
-    [HasCountableSeparatingOn (range f) MeasurableSet univ]
+theorem measurableSet_preimage_iff_preimage_val {f : X → Z} [CountablySeparated (range f)]
     (hf : Measurable f) {s : Set Z} :
     MeasurableSet (f ⁻¹' s) ↔ MeasurableSet ((↑) ⁻¹' s : Set (range f)) :=
   have hf' : Measurable (rangeFactorization f) := hf.subtype_mk
@@ -588,8 +589,7 @@ theorem measurableSet_preimage_iff_preimage_val {f : X → Z}
 countably separated measurable space and the range of `f` is measurable,
 then the preimage of a set `s` is measurable
 if and only if the intesection with `Set.range f` is measurable. -/
-theorem measurableSet_preimage_iff_inter_range {f : X → Z}
-    [HasCountableSeparatingOn (range f) MeasurableSet univ]
+theorem measurableSet_preimage_iff_inter_range {f : X → Z} [CountablySeparated (range f)]
     (hf : Measurable f) (hr : MeasurableSet (range f)) {s : Set Z} :
     MeasurableSet (f ⁻¹' s) ↔ MeasurableSet (s ∩ range f) := by
   rw [hf.measurableSet_preimage_iff_preimage_val, inter_comm,
@@ -601,7 +601,7 @@ to a countably separated measurable space,
 then for any measurable space `β` and `g : Z → β`, the composition `g ∘ f` is
 measurable if and only if the restriction of `g` to the range of `f` is measurable. -/
 theorem measurable_comp_iff_restrict {f : X → Z}
-    [HasCountableSeparatingOn (range f) MeasurableSet univ]
+    [CountablySeparated (range f)]
     (hf : Measurable f) {g : Z → β} : Measurable (g ∘ f) ↔ Measurable (restrict (range f) g) :=
   forall₂_congr fun s _ => measurableSet_preimage_iff_preimage_val hf (s := g ⁻¹' s)
 #align measurable.measurable_comp_iff_restrict Measurable.measurable_comp_iff_restrict
@@ -610,7 +610,7 @@ theorem measurable_comp_iff_restrict {f : X → Z}
 to a countably separated measurable space,
 then for any measurable space `α` and `g : Z → α`, the composition
 `g ∘ f` is measurable if and only if `g` is measurable. -/
-theorem measurable_comp_iff_of_surjective [HasCountableSeparatingOn Z MeasurableSet univ]
+theorem measurable_comp_iff_of_surjective [CountablySeparated Z]
     {f : X → Z} (hf : Measurable f) (hsurj : Surjective f)
     {g : Z → β} : Measurable (g ∘ f) ↔ Measurable g :=
   forall₂_congr fun s _ => measurableSet_preimage_iff_of_surjective hf hsurj (s := g ⁻¹' s)
@@ -718,11 +718,11 @@ theorem measurableSet_range_of_continuous_injective {β : Type*} [TopologicalSpa
     have E_meas : ∀ s : b, MeasurableSet (E s) := by
       intro b
       refine' isClosed_closure.measurableSet.inter _
-      refine' MeasurableSet.iInter fun s => _
+      refine MeasurableSet.iInter fun s => ?_
       exact MeasurableSet.iInter fun hs => (q_meas _).diff (q_meas _)
     have F_meas : ∀ n, MeasurableSet (F n) := by
       intro n
-      refine' MeasurableSet.iUnion fun s => _
+      refine MeasurableSet.iUnion fun s => ?_
       exact MeasurableSet.iUnion fun _ => E_meas _
     rw [this]
     exact MeasurableSet.iInter fun n => F_meas n
@@ -852,13 +852,13 @@ theorem _root_.MeasurableSet.image_of_continuousOn_injOn [OpensMeasurableSpace �
 then its image under a measurable injective map taking values in a
 countably separate measurable space is also Borel-measurable. -/
 theorem _root_.MeasurableSet.image_of_measurable_injOn {f : γ → α}
-    [HasCountableSeparatingOn α MeasurableSet univ]
+    [MeasurableSpace.CountablySeparated α]
     [MeasurableSpace γ] [StandardBorelSpace γ]
     (hs : MeasurableSet s) (f_meas : Measurable f) (f_inj : InjOn f s) :
     MeasurableSet (f '' s) := by
   letI := upgradeStandardBorel γ
   let tγ : TopologicalSpace γ := inferInstance
-  rcases exists_opensMeasurableSpace_of_hasCountableSeparatingOn α with ⟨τ, _, _, _⟩
+  rcases exists_opensMeasurableSpace_of_countablySeparated α with ⟨τ, _, _, _⟩
   -- for a finer Polish topology, `f` is continuous. Therefore, one may apply the corresponding
   -- result for continuous maps.
   obtain ⟨t', t't, f_cont, t'_polish⟩ :
@@ -906,7 +906,7 @@ theorem _root_.ContinuousOn.measurableEmbedding [BorelSpace β]
 /-- An injective measurable function from a standard Borel space to a
 countably separated measurable space is a measurable embedding. -/
 theorem _root_.Measurable.measurableEmbedding {f : γ → α}
-    [HasCountableSeparatingOn α MeasurableSet univ]
+    [MeasurableSpace.CountablySeparated α]
     [MeasurableSpace γ] [StandardBorelSpace γ]
     (f_meas : Measurable f) (f_inj : Injective f) : MeasurableEmbedding f :=
   { injective := f_inj
@@ -931,7 +931,7 @@ theorem isClopenable_iff_measurableSet
     [tγ : TopologicalSpace γ] [PolishSpace γ] [MeasurableSpace γ] [BorelSpace γ] :
     IsClopenable s ↔ MeasurableSet s := by
   -- we already know that a measurable set is clopenable. Conversely, assume that `s` is clopenable.
-  refine' ⟨fun hs => _, fun hs => hs.isClopenable⟩
+  refine ⟨fun hs => ?_, fun hs => hs.isClopenable⟩
   borelize γ
   -- consider a finer topology `t'` in which `s` is open and closed.
   obtain ⟨t', t't, t'_polish, _, s_open⟩ :
@@ -972,7 +972,7 @@ theorem measurableSet_exists_tendsto [TopologicalSpace γ] [PolishSpace γ] [Mea
     Set.setOf_forall]
   refine' MeasurableSet.biInter Set.countable_univ fun K _ => _
   simp_rw [Set.setOf_exists, true_and]
-  refine' MeasurableSet.iUnion fun N => _
+  refine MeasurableSet.iUnion fun N => ?_
   simp_rw [prod_image_image_eq, image_subset_iff, prod_subset_iff, Set.setOf_forall]
   exact
     MeasurableSet.biInter (to_countable (u N)) fun i _ =>
@@ -1030,7 +1030,7 @@ noncomputable def measurableEquivNatBoolOfNotCountable (h : ¬Countable α) : α
     isClosed_univ.exists_nat_bool_injection_of_not_countable
       (by rwa [← countable_coe_iff, (Equiv.Set.univ _).countable_iff])
   obtain ⟨g, gmeas, ginj⟩ :=
-    MeasurableSpace.measurable_injection_nat_bool_of_hasCountableSeparatingOn α
+    MeasurableSpace.measurable_injection_nat_bool_of_countablySeparated α
   exact ⟨borelSchroederBernstein gmeas ginj fcts.measurable finj⟩
 #align polish_space.measurable_equiv_nat_bool_of_not_countable PolishSpace.measurableEquivNatBoolOfNotCountable
 
@@ -1046,7 +1046,7 @@ noncomputable def Equiv.measurableEquiv (e : α ≃ β) : α ≃ᵐ β := by
   by_cases h : Countable α
   · letI := Countable.of_equiv α e
     refine ⟨e, ?_, ?_⟩ <;> apply measurable_of_countable
-  refine' measurableEquivOfNotCountable h _
+  refine measurableEquivOfNotCountable h ?_
   rwa [e.countable_iff] at h
 #align polish_space.equiv.measurable_equiv PolishSpace.Equiv.measurableEquiv
 
@@ -1068,7 +1068,7 @@ theorem measurableEquiv_range_coe_nat_of_infinite_of_countable [Infinite α] [Co
     Nonempty (α ≃ᵐ range ((↑) : ℕ → ℝ)) := by
   have : PolishSpace (range ((↑) : ℕ → ℝ)) :=
     Nat.closedEmbedding_coe_real.isClosedMap.isClosed_range.polishSpace
-  refine' ⟨PolishSpace.Equiv.measurableEquiv _⟩
+  refine ⟨PolishSpace.Equiv.measurableEquiv ?_⟩
   refine' (nonempty_equiv_of_countable.some : α ≃ ℕ).trans _
   exact Equiv.ofInjective ((↑) : ℕ → ℝ) Nat.cast_injective
 #align measure_theory.measurable_equiv_range_coe_nat_of_infinite_of_countable MeasureTheory.measurableEquiv_range_coe_nat_of_infinite_of_countable

@@ -136,11 +136,9 @@ theorem rfindOpt_dom {α} {f : ℕ → Option α} : (rfindOpt f).Dom ↔ ∃ n a
     have s := Nat.find_spec h'
     have fd : (rfind fun n => (f n).isSome).Dom :=
       ⟨Nat.find h', by simpa using s.symm, fun _ _ => trivial⟩
-    refine' ⟨fd, _⟩
+    refine ⟨fd, ?_⟩
     have := rfind_spec (get_mem fd)
-    simp? at this ⊢ says simp only [coe_some, mem_some_iff, ofOption_dom] at this ⊢
-    cases' Option.isSome_iff_exists.1 this.symm with a e
-    rw [e]; trivial⟩
+    simpa using this⟩
 #align nat.rfind_opt_dom Nat.rfindOpt_dom
 
 theorem rfindOpt_mono {α} {f : ℕ → Option α} (H : ∀ {a m n}, m ≤ n → a ∈ f m → a ∈ f n) {a} :
@@ -152,6 +150,7 @@ theorem rfindOpt_mono {α} {f : ℕ → Option α} (H : ∀ {a m n}, m ≤ n →
     simp at this; simp [this, get_mem]⟩
 #align nat.rfind_opt_mono Nat.rfindOpt_mono
 
+/-- `PartRec f` means that the partial function `f : ℕ → ℕ` is partially recursive. -/
 inductive Partrec : (ℕ →. ℕ) → Prop
   | zero : Partrec (pure 0)
   | succ : Partrec succ
@@ -234,18 +233,23 @@ end Partrec
 
 end Nat
 
+/-- Partially recursive partial functions `α → σ` between `Primcodable` types -/
 def Partrec {α σ} [Primcodable α] [Primcodable σ] (f : α →. σ) :=
   Nat.Partrec fun n => Part.bind (decode (α := α) n) fun a => (f a).map encode
 #align partrec Partrec
 
+/-- Partially recursive partial functions `α → β → σ` between `Primcodable` types -/
 def Partrec₂ {α β σ} [Primcodable α] [Primcodable β] [Primcodable σ] (f : α → β →. σ) :=
   Partrec fun p : α × β => f p.1 p.2
 #align partrec₂ Partrec₂
 
+/-- Computable functions `α → σ` between `Primcodable` types:
+  a function is computable if and only if it is partially recursive (as a partial function) -/
 def Computable {α σ} [Primcodable α] [Primcodable σ] (f : α → σ) :=
   Partrec (f : α →. σ)
 #align computable Computable
 
+/-- Computable functions `α → β → σ` between `Primcodable` types -/
 def Computable₂ {α β σ} [Primcodable α] [Primcodable β] [Primcodable σ] (f : α → β → σ) :=
   Computable fun p : α × β => f p.1 p.2
 #align computable₂ Computable₂
@@ -737,7 +741,9 @@ theorem nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ
 theorem list_ofFn :
     ∀ {n} {f : Fin n → α → σ},
       (∀ i, Computable (f i)) → Computable fun a => List.ofFn fun i => f i a
-  | 0, _, _ => const []
+  | 0, _, _ => by
+    simp only [List.ofFn_zero]
+    exact const []
   | n + 1, f, hf => by
     simp only [List.ofFn_succ]
     exact list_cons.comp (hf 0) (list_ofFn fun i => hf i.succ)
@@ -835,7 +841,7 @@ theorem fix_aux {α σ} (f : α →. Sum σ α) (a : α) (b : σ) :
         exact Or.inr ⟨_, hk, h₂⟩
       · rwa [le_antisymm (Nat.le_of_lt_succ mk) km]
     · rcases IH _ am₃ k.succ (by simp [F]; exact ⟨_, hk, am₃⟩) with ⟨n, hn₁, hn₂⟩
-      refine' ⟨n, hn₁, fun m mn km => _⟩
+      refine ⟨n, hn₁, fun m mn km => ?_⟩
       cases' km.lt_or_eq_dec with km km
       · exact hn₂ _ mn km
       · exact km ▸ ⟨_, hk⟩

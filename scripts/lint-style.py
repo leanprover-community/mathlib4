@@ -219,7 +219,7 @@ def nonterminal_simp_check(lines, path):
             num_spaces = len(line) - len(line.lstrip())
             # Calculate the number of spaces before the first non-space character in the next line
             stripped_next_line = next_line.lstrip()
-            if not (next_line == '\n' or next_line.startswith("#") or stripped_next_line.startswith("--") or "rfl" in next_line):
+            if not (next_line == '\n' or next_line.startswith("#") or stripped_next_line.startswith("--") or "rfl" in next_line or "aesop" in next_line):
                 num_next_spaces = len(next_line) - len(stripped_next_line)
                 # Check if the number of leading spaces is the same
                 if num_spaces == num_next_spaces:

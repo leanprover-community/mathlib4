@@ -8,9 +8,9 @@ import Mathlib.Algebra.Polynomial.BigOperators
 import Mathlib.Algebra.Polynomial.Lifts
 import Mathlib.Algebra.Polynomial.Splits
 import Mathlib.RingTheory.RootsOfUnity.Complex
-import Mathlib.FieldTheory.RatFunc
 import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.RingTheory.RootsOfUnity.Basic
+import Mathlib.FieldTheory.RatFunc.AsPolynomial
 
 #align_import ring_theory.polynomial.cyclotomic.basic from "leanprover-community/mathlib"@"7fdeecc0d03cd40f7a165e6cf00a4d2286db599f"
 
@@ -108,8 +108,8 @@ theorem natDegree_cyclotomic' {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
     (cyclotomic' n R).natDegree = Nat.totient n := by
   rw [cyclotomic']
   rw [natDegree_prod (primitiveRoots n R) fun z : R => X - C z]
-  simp only [IsPrimitiveRoot.card_primitiveRoots h, mul_one, natDegree_X_sub_C, Nat.cast_id,
-    Finset.sum_const, nsmul_eq_mul]
+  · simp only [IsPrimitiveRoot.card_primitiveRoots h, mul_one, natDegree_X_sub_C, Nat.cast_id,
+      Finset.sum_const, nsmul_eq_mul]
   intro z _
   exact X_sub_C_ne_zero z
 #align polynomial.nat_degree_cyclotomic' Polynomial.natDegree_cyclotomic'
@@ -238,7 +238,7 @@ theorem unique_int_coeff_of_cycl {K : Type*} [CommRing K] [IsDomain K] [CharZero
     {n : ℕ+} (h : IsPrimitiveRoot ζ n) :
     ∃! P : ℤ[X], map (Int.castRingHom K) P = cyclotomic' n K := by
   obtain ⟨P, hP⟩ := int_coeff_of_cyclotomic' h
-  refine' ⟨P, hP.1, fun Q hQ => _⟩
+  refine ⟨P, hP.1, fun Q hQ => ?_⟩
   apply map_injective (Int.castRingHom K) Int.cast_injective
   rw [hP.1, hQ]
 #align polynomial.unique_int_coeff_of_cycl Polynomial.unique_int_coeff_of_cycl
@@ -291,6 +291,7 @@ theorem int_cyclotomic_unique {n : ℕ} {P : ℤ[X]} (h : map (Int.castRingHom �
 theorem map_cyclotomic (n : ℕ) {R S : Type*} [Ring R] [Ring S] (f : R →+* S) :
     map f (cyclotomic n R) = cyclotomic n S := by
   rw [← map_cyclotomic_int n R, ← map_cyclotomic_int n S, map_map]
+  have : Subsingleton (ℤ →+* S) := inferInstance
   congr!
 #align polynomial.map_cyclotomic Polynomial.map_cyclotomic
 
@@ -353,7 +354,7 @@ theorem natDegree_cyclotomic (n : ℕ) (R : Type*) [Ring R] [Nontrivial R] :
 /-- The degree of `cyclotomic n R` is positive. -/
 theorem degree_cyclotomic_pos (n : ℕ) (R : Type*) (hpos : 0 < n) [Ring R] [Nontrivial R] :
     0 < (cyclotomic n R).degree := by
-  rw [degree_cyclotomic n R, Nat.cast_pos]; exact Nat.totient_pos hpos
+  rwa [degree_cyclotomic n R, Nat.cast_pos, Nat.totient_pos]
 #align polynomial.degree_cyclotomic_pos Polynomial.degree_cyclotomic_pos
 
 open Finset
@@ -567,10 +568,12 @@ theorem cyclotomic_prime_pow_eq_geom_sum {R : Type*} [CommRing R] {p n : ℕ} (h
     rw [this, Nat.prod_properDivisors_prime_pow hp]
   induction' n with n_n n_ih
   · haveI := Fact.mk hp; simp [cyclotomic_prime]
-  rw [((eq_cyclotomic_iff (pow_pos hp.pos (n_n.succ + 1)) _).mpr _).symm]
+  rw [((eq_cyclotomic_iff (pow_pos hp.pos (n_n + 1 + 1)) _).mpr _).symm]
   rw [Nat.prod_properDivisors_prime_pow hp, Finset.prod_range_succ, n_ih]
   rw [this] at n_ih
-  rw [mul_comm _ (∑ i in _, _), n_ih, geom_sum_mul, sub_left_inj, ← pow_mul, pow_add, pow_one]
+  rw [mul_comm _ (∑ i in _, _), n_ih, geom_sum_mul, sub_left_inj, ← pow_mul]
+  simp only [pow_add, pow_one]
+
 #align polynomial.cyclotomic_prime_pow_eq_geom_sum Polynomial.cyclotomic_prime_pow_eq_geom_sum
 
 theorem cyclotomic_prime_pow_mul_X_pow_sub_one (R : Type*) [CommRing R] (p k : ℕ)

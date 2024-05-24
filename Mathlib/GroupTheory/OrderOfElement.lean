@@ -883,7 +883,7 @@ theorem mem_powers_iff_mem_range_orderOf [DecidableEq G] :
   mapping `i • a` to `i • b`."]
 noncomputable def powersEquivPowers (h : orderOf x = orderOf y) : powers x ≃ powers y :=
   (finEquivPowers x <| isOfFinOrder_of_finite _).symm.trans <|
-    (Fin.castIso h).toEquiv.trans <| finEquivPowers y <| isOfFinOrder_of_finite _
+    (finCongr h).trans <| finEquivPowers y <| isOfFinOrder_of_finite _
 #align powers_equiv_powers powersEquivPowers
 #align multiples_equiv_multiples multiplesEquivMultiples
 
@@ -975,7 +975,7 @@ theorem injective_zpow_iff_not_isOfFinOrder : (Injective fun n : ℤ => x ^ n) �
   mapping `i • a` to `i • b`."]
 noncomputable def zpowersEquivZPowers (h : orderOf x = orderOf y) :
     (Subgroup.zpowers x : Set G) ≃ (Subgroup.zpowers y : Set G) :=
-  (finEquivZPowers x <| isOfFinOrder_of_finite _).symm.trans <| (Fin.castIso h).toEquiv.trans <|
+  (finEquivZPowers x <| isOfFinOrder_of_finite _).symm.trans <| (finCongr h).trans <|
     finEquivZPowers y <| isOfFinOrder_of_finite _
 #align zpowers_equiv_zpowers zpowersEquivZPowers
 #align zmultiples_equiv_zmultiples zmultiplesEquivZMultiples
@@ -1104,8 +1104,7 @@ lemma zpow_mod_natCard (a : G) (n : ℤ) : a ^ (n % Nat.card G : ℤ) = a ^ n :=
 
 /-- If `gcd(|G|,n)=1` then the `n`th power map is a bijection -/
 @[to_additive (attr := simps) "If `gcd(|G|,n)=1` then the smul by `n` is a bijection"]
-noncomputable def powCoprime {G : Type*} [Group G] (h : (Nat.card G).Coprime n) : G ≃ G
-    where
+noncomputable def powCoprime {G : Type*} [Group G] (h : (Nat.card G).Coprime n) : G ≃ G where
   toFun g := g ^ n
   invFun g := g ^ (Nat.card G).gcdB n
   left_inv g := by

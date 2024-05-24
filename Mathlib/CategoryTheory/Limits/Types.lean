@@ -84,6 +84,7 @@ theorem isLimitEquivSections_symm_apply {c : Cone F} (t : IsLimit c)
     (x : F.sections) (j : J) :
     c.π.app j ((isLimitEquivSections t).symm x) = (x : ∀ j, F.obj j) j := by
   conv_rhs => rw [← (isLimitEquivSections t).right_inv x]
+  rfl
 #align category_theory.limits.types.is_limit_equiv_sections_symm_apply CategoryTheory.Limits.Types.isLimitEquivSections_symm_apply
 
 end limit_characterization
@@ -616,6 +617,11 @@ theorem jointly_surjective' (x : colimit F) :
     ∃ j y, colimit.ι F j y = x :=
   jointly_surjective F (colimit.isColimit F) x
 #align category_theory.limits.types.jointly_surjective' CategoryTheory.Limits.Types.jointly_surjective'
+
+/-- If a colimit is nonempty, also its index category is nonempty. -/
+theorem nonempty_of_nonempty_colimit {F : J ⥤ Type u} [HasColimit F] :
+    Nonempty (colimit F) → Nonempty J :=
+  Nonempty.map <| Sigma.fst ∘ Quot.out ∘ (colimitEquivQuot F).toFun
 
 variable {α β : Type u} (f : α ⟶ β)
 
