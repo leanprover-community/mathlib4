@@ -16,6 +16,10 @@ instance (X : LightCompHausLike) : TotallyDisconnectedSpace X := X.prop.1
 
 instance (X : LightCompHausLike) : Countable (Clopens X) := X.prop.2
 
+instance (X : LightCompHausLike) : SecondCountableTopology X := by
+  rw [← Clopens.countable_iff_second_countable]
+  infer_instance
+
 namespace LightProfinite
 
 @[simps]
@@ -67,4 +71,8 @@ noncomputable def equivCompHausLike :
 
 theorem countable_clopens_of_injective {X : LightCompHausLike} {Y : Profinite}
     [Countable (Clopens Y)] (f : C(X, Y)) (hf : Function.Injective f) :
-  Countable (Clopens X) := sorry
+    Countable (Clopens X) := by
+  rw [Clopens.countable_iff_second_countable] at *
+  refine
+    (closedEmbedding_of_continuous_injective_closed f.2 hf ?_).embedding.secondCountableTopology
+  exact fun _ hC => (hC.isCompact.image f.continuous).isClosed

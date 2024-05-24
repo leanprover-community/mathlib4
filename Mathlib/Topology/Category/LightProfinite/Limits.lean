@@ -21,7 +21,7 @@ which may be useful due to their definitional properties.
 
 -/
 
-universe u w
+universe v u w
 
 open CategoryTheory Profinite TopologicalSpace Limits
 
@@ -52,12 +52,45 @@ instance : HasFiniteCoproducts LightCompHausLike := by
     · simp only [Clopens.coe_mk, Set.mem_iUnion]
       refine ⟨i, xi, (by simpa using hx), rfl⟩
 
-instance : HasPullbacks LightCompHausLike := by
-  apply hasPullbacks
-  intro X Y B f g
-  refine ⟨show TotallyDisconnectedSpace {xy : X × Y | _} from inferInstance, ?_⟩
-  sorry
-  -- let i : (CompHausLike.pullback f g _ : Profinite) ⟶ _ := sorry
+instance {J : Type v} [SmallCategory J] (F : J ⥤ LightCompHausLike.{max u v}) :
+    TotallyDisconnectedSpace
+      (CompHaus.limitCone.{v, u} (F ⋙ compHausLikeToCompHaus _)).pt.toTop := by
+  change TotallyDisconnectedSpace ({ u : ∀ j : J, F.obj j | _ } : Type _)
+  exact Subtype.totallyDisconnectedSpace
+
+/-- An explicit limit cone for a functor `F : J ⥤ LightCompHausLike`, for a countable category `J`
+  defined in terms of `CompHaus.limitCone`, which is defined in terms of `TopCat.limitCone`. -/
+def limitCone {J : Type v} [SmallCategory J] [CountableCategory J]
+    (F : J ⥤ LightCompHausLike.{max u v}) :
+    Limits.Cone F where
+  pt :=
+    { toTop := (CompHaus.limitCone.{v, u} (F ⋙ compHausLikeToCompHaus _)).pt.toTop
+      prop := by
+        constructor
+        · infer_instance
+        · rw [Clopens.countable_iff_second_countable]
+          change SecondCountableTopology ({ u : ∀ j : J, F.obj j | _ } : Type _)
+          apply inducing_subtype_val.secondCountableTopology }
+  π :=
+  { app := (CompHaus.limitCone.{v, u} (F ⋙ compHausLikeToCompHaus _)).π.app
+    naturality := by
+      intro j k f
+      ext ⟨g, p⟩
+      exact (p f).symm }
+
+/-- The limit cone `LightCompHausLike.limitCone F` is indeed a limit cone. -/
+def limitConeIsLimit {J : Type v} [SmallCategory J] [CountableCategory J]
+    (F : J ⥤ LightCompHausLike.{max u v}) :
+    Limits.IsLimit (limitCone F) where
+  lift S :=
+    (CompHaus.limitConeIsLimit.{v, u} (F ⋙ compHausLikeToCompHaus _)).lift
+      ((compHausLikeToCompHaus _).mapCone S)
+  uniq S m h := (CompHaus.limitConeIsLimit.{v, u} _).uniq ((compHausLikeToCompHaus _).mapCone S) _ h
+
+instance : HasCountableLimits LightCompHausLike where
+  out _ := { has_limit := fun F ↦ ⟨limitCone F, limitConeIsLimit F⟩ }
+
+instance : HasPullbacks LightCompHausLike := inferInstance
 
 
 end LightCompHausLike

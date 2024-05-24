@@ -31,7 +31,8 @@ open CategoryTheory Limits
 section Pullbacks
 
 variable {P : TopCat.{u} → Prop} {X Y B : CompHausLike P} (f : X ⟶ B) (g : Y ⟶ B)
-  (hP : P (TopCat.of { xy : X × Y | f xy.fst = g xy.snd }))
+
+variable (hP : P (TopCat.of { xy : X × Y | f xy.fst = g xy.snd }))
 
 /--
 The pullback of two morphisms `f,g` in `CompHaus`, constructed explicitly as the set of
