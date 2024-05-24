@@ -1,97 +1,81 @@
 import Mathlib.MeasureTheory.Integral.Marginal
 import Mathlib.Data.Finset.Update
 
-open MeasureTheory ENNReal Finset symmDiff
+open MeasureTheory ENNReal Set Finset symmDiff
 
-variable {ι : Type*} [DecidableEq ι] {X : ι → Type*} [∀ i, MeasurableSpace (X i)]
-variable {μ : (i : ι) → Measure (X i)}
-variable {f : (∀ i, X i) → ℝ≥0∞} {s : Finset ι}
+variable {ι : Type*} [DecidableEq ι] {X : ι → Type*} [∀ i, MeasurableSpace (X i)] {α : Type*}
+variable {f : (∀ i, X i) → α}
 
-def DependsOn (f : (∀ i, X i) → ℝ≥0∞) (s : Finset ι) : Prop :=
+def DependsOn (f : (∀ i, X i) → α) (s : Set ι) : Prop :=
   ∀ x y, (∀ i ∈ s, x i = y i) → f x = f y
 
-theorem const_dependsOn (c : ℝ≥0∞) : DependsOn (fun _ : ∀ i, X i ↦ c) ∅ := by
-  simp [DependsOn]
+theorem dependsOn_const (a : α) : DependsOn (fun _ : ∀ i, X i ↦ a) ∅ := by simp [DependsOn]
 
 theorem dependsOn_empty (hf : DependsOn f ∅) : ∀ x y, f x = f y := fun x y ↦ hf x y (by simp)
 
-variable (hf : DependsOn f s)
-
-theorem updateFinset_dependsOn (t : Finset ι) (y : (i : t) → X i) :
+theorem dependsOn_updateFinset {s : Set ι} (hf : DependsOn f s) (t : Finset ι) (y : (i : t) → X i) :
     DependsOn (fun x ↦ f (Function.updateFinset x t y)) (s \ t) := by
   intro x₁ x₂ h
-  apply hf
-  intro i hi
-  simp only [Function.updateFinset_def]
+  refine hf _ _ (fun i hi ↦ ?_)
+  simp only [Function.updateFinset]
   split_ifs with h'
   · rfl
-  · exact h i <| Finset.mem_sdiff.2 ⟨hi, h'⟩
+  · exact h i <| (mem_diff _).2 ⟨hi, h'⟩
 
-theorem update_dependsOn (i : ι) (y : X i) :
+theorem dependsOn_update {s : Finset ι} (hf : DependsOn f s) (i : ι) (y : X i) :
     DependsOn (fun x ↦ f (Function.update x i y)) (s.erase i) := by
-  simp_rw [Function.update_eq_updateFinset, erase_eq]
-  apply updateFinset_dependsOn hf
+  simp_rw [Function.update_eq_updateFinset, erase_eq, coe_sdiff]
+  exact dependsOn_updateFinset hf _ _
 
-theorem lmarginal_dependsOn (t : Finset ι) (hf : DependsOn f s) :
+variable {μ : (i : ι) → Measure (X i)} {f : ((i : ι) → X i) → ℝ≥0∞} {s : Set ι}
+
+theorem lmarginal_dependsOn (hf : DependsOn f s) (t : Finset ι) :
     DependsOn (∫⋯∫⁻_t, f ∂μ) (s \ t) := by
   intro x y hxy
-  have : ∀ z, f (Function.updateFinset x t z) = f (Function.updateFinset y t z) := by
-    intro z
-    apply hf
-    intro i hi
-    rw [Function.updateFinset_def, Function.updateFinset_def]
-    by_cases h : i ∈ t
-    · simp [h]
-    · simp only [h, ↓reduceDite]
-      exact hxy i (mem_sdiff.2 ⟨hi, h⟩)
-  exact lintegral_congr this
+  have aux z : f (Function.updateFinset x t z) = f (Function.updateFinset y t z) := by
+    refine hf _ _ (fun i hi ↦ ?_)
+    simp only [Function.updateFinset]
+    split_ifs with h
+    · rfl
+    · exact hxy i ((mem_diff _).2 ⟨hi, h⟩)
+  exact lintegral_congr aux
 
 variable [∀ i, IsProbabilityMeasure (μ i)]
 
-theorem lmarginal_eq {t : Finset ι} (hst : Disjoint s t) :
+theorem lmarginal_eq_of_disjoint (hf : DependsOn f s) {t : Finset ι} (hst : Disjoint s t) :
     ∫⋯∫⁻_t, f ∂μ = f := by
   ext x
-  have : ∀ y, f (Function.updateFinset x t y) = f x := by
-    intro y
-    apply hf
-    intro i hi
-    rw [Function.updateFinset_def]
-    by_cases h : i ∈ t
-    · exfalso
-      apply not_mem_empty i
-      rw [disjoint_iff_inter_eq_empty] at hst
-      rw [← hst]
-      simp [hi, h]
-    · simp [h]
-  rw [lmarginal, lintegral_congr this, lintegral_const]
-  simp
+  have aux y : f (Function.updateFinset x t y) = f x := by
+    refine hf _ _ (fun i hi ↦ ?_)
+    simp only [Function.updateFinset]
+    split_ifs with h
+    · exact (Set.not_disjoint_iff.2 ⟨i, hi, h⟩ hst).elim
+    · rfl
+  simp [lmarginal, lintegral_congr aux]
 
-theorem lmarginal_const (c : ℝ≥0∞) : ∀ x : ∀ i, X i, (∫⋯∫⁻_s, (fun _ ↦ c) ∂μ) x = c := by
-  intro x
-  rw [lmarginal_eq (const_dependsOn c) (Finset.disjoint_empty_left _)]
+theorem lmarginal_const {s : Finset ι} (c : ℝ≥0∞) (x : ∀ i, X i) :
+    (∫⋯∫⁻_s, (fun _ ↦ c) ∂μ) x = c := by
+  rw [lmarginal_eq_of_disjoint (dependsOn_const c) (empty_disjoint _)]
 
-variable (mf : Measurable f)
-
-theorem lmarginal_eq' (t u : Finset ι) (htu : t ⊆ u) (hsu : Disjoint s (u \ t)) :
+theorem lmarginal_eq_of_disjoint_diff (mf : Measurable f) (hf : DependsOn f s) {t u : Finset ι}
+(htu : t ⊆ u) (hsut : Disjoint s (u \ t)) :
     ∫⋯∫⁻_u, f ∂μ = ∫⋯∫⁻_t, f ∂μ := by
-  rw [← union_sdiff_of_subset htu, lmarginal_union]
+  rw [← coe_sdiff] at hsut
+  rw [← union_sdiff_of_subset htu, lmarginal_union _ _ mf disjoint_sdiff_self_right]
   congrm ∫⋯∫⁻_t, ?_ ∂μ
-  apply lmarginal_eq hf hsu
-  exact mf
-  exact disjoint_sdiff_self_right
+  exact lmarginal_eq_of_disjoint hf hsut
 
-theorem lmarginal_eq'' (t u : Finset ι) (hstu : Disjoint s (t ∆ u)) :
+theorem lmarginal_eq_of_disjoint_symmDiff (mf : Measurable f) (hf : DependsOn f s)
+    {t u : Finset ι} (hstu : Disjoint s (t ∆ u)) :
     ∫⋯∫⁻_t, f ∂μ = ∫⋯∫⁻_u, f ∂μ := by
   rw [symmDiff_def, disjoint_sup_right] at hstu
   rcases hstu with ⟨h1, h2⟩
+  rw [← coe_sdiff] at h1 h2
   have : ∫⋯∫⁻_u ∪ t, f ∂μ = ∫⋯∫⁻_u, f ∂μ := by
-    rw [← union_sdiff_self_eq_union, lmarginal_union]
+    rw [← union_sdiff_self_eq_union, lmarginal_union _ _ mf disjoint_sdiff_self_right]
     congrm ∫⋯∫⁻_u, ?_ ∂μ
-    apply lmarginal_eq hf h1
-    exact mf
-    exact disjoint_sdiff_self_right
-  rw [← this, union_comm, ← union_sdiff_self_eq_union, lmarginal_union]
+    exact lmarginal_eq_of_disjoint hf h1
+  rw [← this, Finset.union_comm, ← union_sdiff_self_eq_union,
+    lmarginal_union _ _ mf disjoint_sdiff_self_right]
   congrm ∫⋯∫⁻_t, ?_ ∂μ
-  rw [lmarginal_eq hf h2]
-  exact mf
-  exact disjoint_sdiff_self_right
+  exact (lmarginal_eq_of_disjoint hf h2).symm
