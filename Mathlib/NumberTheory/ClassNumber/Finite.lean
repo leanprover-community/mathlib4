@@ -182,7 +182,7 @@ theorem mem_finsetApprox {x : R} :
   simp only [finsetApprox, Finset.mem_erase, Finset.mem_image]
   constructor
   · rintro ⟨hx, ⟨i, j⟩, _, rfl⟩
-    refine' ⟨i, j, _, rfl⟩
+    refine ⟨i, j, ?_, rfl⟩
     rintro rfl
     simp at hx
   · rintro ⟨i, j, hij, rfl⟩
@@ -261,7 +261,7 @@ theorem exists_mem_finset_approx' [Algebra.IsAlgebraic R L] (a : S) {b : S} (hb 
     exact (IsIntegralClosure.algebraMap_injective S R L).comp bS.algebraMap_injective
   obtain ⟨a', b', hb', h⟩ := IsIntegralClosure.exists_smul_eq_mul inj a hb
   obtain ⟨q, r, hr, hqr⟩ := exists_mem_finsetApprox bS adm a' hb'
-  refine' ⟨q, r, hr, _⟩
+  refine ⟨q, r, hr, ?_⟩
   refine'
     lt_of_mul_lt_mul_left _ (show 0 ≤ abv (Algebra.norm R (algebraMap R S b')) from abv.nonneg _)
   refine'

@@ -161,8 +161,8 @@ theorem norm_cexp_neg_mul_sq (b : ℂ) (x : ℝ) :
 
 theorem integrable_cexp_neg_mul_sq {b : ℂ} (hb : 0 < b.re) :
     Integrable fun x : ℝ => cexp (-b * (x : ℂ) ^ 2) := by
-  refine' ⟨(Complex.continuous_exp.comp
-    (continuous_const.mul (continuous_ofReal.pow 2))).aestronglyMeasurable, _⟩
+  refine ⟨(Complex.continuous_exp.comp
+    (continuous_const.mul (continuous_ofReal.pow 2))).aestronglyMeasurable, ?_⟩
   rw [← hasFiniteIntegral_norm_iff]
   simp_rw [norm_cexp_neg_mul_sq]
   exact (integrable_exp_neg_mul_sq hb).2

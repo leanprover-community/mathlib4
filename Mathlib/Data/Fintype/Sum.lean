@@ -110,7 +110,7 @@ theorem Set.MapsTo.exists_equiv_extend_of_card_eq [Fintype α] {t : Finset β}
     have hfst' : s'.image f ⊆ t := by simpa [s', ← Finset.coe_subset] using hfst
     have hfs' : Set.InjOn f s' := by simpa [s'] using hfs
     obtain ⟨g, hg⟩ := Finset.exists_equiv_extend_of_card_eq hαt hfst' hfs'
-    refine' ⟨g, fun i hi => _⟩
+    refine ⟨g, fun i hi => ?_⟩
     apply hg
     simpa [s'] using hi
 #align set.maps_to.exists_equiv_extend_of_card_eq Set.MapsTo.exists_equiv_extend_of_card_eq

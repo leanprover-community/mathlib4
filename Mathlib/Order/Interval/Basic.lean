@@ -582,7 +582,7 @@ theorem coe_inf (s t : Interval α) : (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t :=
       rw [WithBot.none_eq_bot, inf_bot_eq]
       exact (inter_empty _).symm
     | some t =>
-      refine' (_ : setLike.coe (dite
+      refine (?_ : setLike.coe (dite
         -- Porting note: Needed to fill this first `_` explicitly.
         (s.toProd.fst ≤ t.toProd.snd ∧ t.toProd.fst ≤ s.toProd.snd)
         _ _) = _).trans Icc_inter_Icc.symm

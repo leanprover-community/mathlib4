@@ -249,7 +249,7 @@ theorem modByMonic_eq_sub_mul_div :
       dsimp
       rw [dif_pos hq, if_pos h]
       rw [modByMonic, dif_pos hq] at ih
-      refine' ih.trans _
+      refine ih.trans ?_
       unfold divByMonic
       rw [dif_pos hq, dif_pos hq, if_pos h, mul_add, sub_add_eq_sub_sub]
     else by
@@ -559,8 +559,8 @@ theorem rootMultiplicity_C (r a : R) : rootMultiplicity a (C r) = 0 := by
   split_ifs with hr
   · rfl
   have h : natDegree (C r) < natDegree (X - C a) := by simp
-  simp_rw [multiplicity.multiplicity_eq_zero.mpr ((monic_X_sub_C a).not_dvd_of_natDegree_lt hr h)]
-  rfl
+  simp_rw [multiplicity.multiplicity_eq_zero.mpr ((monic_X_sub_C a).not_dvd_of_natDegree_lt hr h),
+    PartENat.get_zero]
 set_option linter.uppercaseLean3 false in
 #align polynomial.root_multiplicity_C Polynomial.rootMultiplicity_C
 
@@ -614,12 +614,13 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.mod_by_monic_X_sub_C_eq_C_eval Polynomial.modByMonic_X_sub_C_eq_C_eval
 
 theorem mul_divByMonic_eq_iff_isRoot : (X - C a) * (p /ₘ (X - C a)) = p ↔ IsRoot p a :=
-  ⟨fun h => by
-    rw [← h, IsRoot.def, eval_mul, eval_sub, eval_X, eval_C, sub_self, zero_mul],
-    fun h : p.eval a = 0 => by
-    conv_rhs =>
+  .trans
+    ⟨fun h => by rw [← h, eval_mul, eval_sub, eval_X, eval_C, sub_self, zero_mul],
+    fun h => by
+      conv_rhs =>
         rw [← modByMonic_add_div p (monic_X_sub_C a)]
         rw [modByMonic_X_sub_C_eq_C_eval, h, C_0, zero_add]⟩
+    IsRoot.def.symm
 #align polynomial.mul_div_by_monic_eq_iff_is_root Polynomial.mul_divByMonic_eq_iff_isRoot
 
 theorem dvd_iff_isRoot : X - C a ∣ p ↔ IsRoot p a :=

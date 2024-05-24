@@ -765,7 +765,7 @@ lemma apply_extend {δ} {g : α → γ} (F : γ → δ) (f : α → β) (e' : β
 
 theorem extend_injective (hf : Injective f) (e' : β → γ) : Injective fun g ↦ extend f g e' := by
   intro g₁ g₂ hg
-  refine' funext fun x ↦ _
+  refine funext fun x ↦ ?_
   have H := congr_fun hg (f x)
   simp only [hf.extend_apply] at H
   exact H
