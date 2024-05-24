@@ -984,7 +984,7 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
           simp only [(hx i).right, sub_lt_sub_iff_right]
         · refine mul_pos ?_ npos
           simpa only [Rat.cast_lt, sub_pos] using H i⟩
-    refine ⟨f, fun i => ⟨?_,? _⟩⟩
+    refine ⟨f, fun i => ⟨?_, ?_⟩⟩
     · calc
         (a i : ℝ) + ⌊(x i - a i) * n⌋₊ / n ≤ (a i : ℝ) + (x i - a i) * n / n := by
           gcongr
@@ -1081,7 +1081,7 @@ theorem hausdorffMeasure_smul_right_image [NormedAddCommGroup E] [NormedSpace �
     · simp only [image_smul, LinearMap.toSpanSingleton_apply, Set.image_image]
       ext e
       simp only [mem_image]
-      refine ⟨fun ⟨x, h⟩ => ⟨x, ?_⟩, fun ⟨x, h⟩ => ⟨x,? _⟩⟩
+      refine ⟨fun ⟨x, h⟩ => ⟨x, ?_⟩, fun ⟨x, h⟩ => ⟨x, ?_⟩⟩
       · rw [smul_comm (norm _), smul_comm (norm _), inv_smul_smul₀ hn]
         exact h
       · rw [smul_comm (norm _), smul_comm (norm _), inv_smul_smul₀ hn] at h

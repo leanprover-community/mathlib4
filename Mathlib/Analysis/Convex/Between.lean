@@ -52,7 +52,7 @@ theorem affineSegment_comm (x y : P) : affineSegment R x y = affineSegment R y x
   refine Set.ext fun z => ?_
   constructor <;>
     · rintro ⟨t, ht, hxy⟩
-      refine ⟨1 - t, ?_,? _⟩
+      refine ⟨1 - t, ?_, ?_⟩
       · rwa [Set.sub_mem_Icc_iff_right, sub_self, sub_zero]
       · rwa [lineMap_apply_one_sub]
 #align affine_segment_comm affineSegment_comm

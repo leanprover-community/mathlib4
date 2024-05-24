@@ -796,14 +796,14 @@ theorem mem_span_finite_of_mem_span {S : Set M} {x : M} (hx : x ∈ span R S) :
     ∃ T : Finset M, ↑T ⊆ S ∧ x ∈ span R (T : Set M) := by
   classical
   refine span_induction hx (fun x hx => ?_)? ?_ _ ?_
-  · refine ⟨{x}, ?_,? _⟩
+  · refine ⟨{x}, ?_, ?_⟩
     · rwa [Finset.coe_singleton, Set.singleton_subset_iff]
     · rw [Finset.coe_singleton]
       exact Submodule.mem_span_singleton_self x
   · use ∅
     simp
   · rintro x y ⟨X, hX, hxX⟩ ⟨Y, hY, hyY⟩
-    refine ⟨X ∪ Y, ?_,? _⟩
+    refine ⟨X ∪ Y, ?_, ?_⟩
     · rw [Finset.coe_union]
       exact Set.union_subset hX hY
     rw [Finset.coe_union, span_union, mem_sup]

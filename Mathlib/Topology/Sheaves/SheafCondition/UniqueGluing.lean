@@ -200,7 +200,7 @@ theorem existsUnique_gluing' (V : Opens X) (iUV : ∀ i : ι, U i ⟶ V) (hcover
     ∃! s : F.1.obj (op V), ∀ i : ι, F.1.map (iUV i).op s = sf i := by
   have V_eq_supr_U : V = iSup U := le_antisymm hcover (iSup_le fun i => (iUV i).le)
   obtain ⟨gl, gl_spec, gl_uniq⟩ := F.existsUnique_gluing U sf h
-  refine ⟨F.1.map (eqToHom V_eq_supr_U).op gl, ?_,? _⟩
+  refine ⟨F.1.map (eqToHom V_eq_supr_U).op gl, ?_, ?_⟩
   · intro i
     rw [← comp_apply, ← F.1.map_comp]
     exact gl_spec i

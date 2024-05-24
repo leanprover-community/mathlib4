@@ -181,7 +181,7 @@ theorem exists_gt (v : PartialRefinement u s) (hs : IsClosed s) (i : ι) (hi : i
   have C : IsClosed (s ∩ ⋂ (j) (_ : j ≠ i), (v j)ᶜ) :=
     IsClosed.inter hs (isClosed_biInter fun _ _ => isClosed_compl_iff.2 <| v.isOpen _)
   rcases normal_exists_closure_subset C (v.isOpen i) I with ⟨vi, ovi, hvi, cvi⟩
-  refine ⟨⟨update v i vi, insert i v.carrier, ?_, ?_,? ?_, _⟩,? _, ?_⟩
+  refine ⟨⟨update v i vi, insert i v.carrier, ?_, ?_,? ?_, _⟩, ?_, ?_⟩
   · intro j
     rcases eq_or_ne j i with (rfl| hne) <;> simp [*, v.isOpen]
   · refine fun x hx => mem_iUnion.2 ?_

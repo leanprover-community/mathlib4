@@ -262,7 +262,7 @@ theorem encard_exchange' (ha : a ∉ s) (hb : b ∈ s) : (insert a s \ {b}).enca
 
 theorem encard_eq_add_one_iff {k : ℕ∞} :
     s.encard = k + 1 ↔ (∃ a t, ¬a ∈ t ∧ insert a t = s ∧ t.encard = k) := by
-  refine ⟨fun h ↦ ?_,? _⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · obtain ⟨a, ha⟩ := nonempty_of_encard_ne_zero (s := s) (by simp [h])
     refine ⟨a, s \ {a}, fun h ↦ h.2 rfl, by rwa [insert_diff_singleton, insert_eq_of_mem], ?_⟩
     rw [← WithTop.add_right_cancel_iff WithTop.one_ne_top, ← h,
@@ -329,7 +329,7 @@ theorem encard_eq_three {α : Type u_1} {s : Set α} :
       encard_insert_of_not_mem (fun h ↦ h.2 rfl), (by exact rfl : (3 : ℕ∞) = 2 + 1),
       WithTop.add_right_cancel_iff WithTop.one_ne_top, encard_eq_two] at h
     obtain ⟨y, z, hne, hs⟩ := h
-    refine ⟨x, y, z, ?_,? _, hne, ?_⟩
+    refine ⟨x, y, z, ?_, ?_, hne, ?_⟩
     · rintro rfl; exact (hs.symm.subset (Or.inl rfl)).2 rfl
     · rintro rfl; exact (hs.symm.subset (Or.inr rfl)).2 rfl
     rw [← hs, insert_diff_singleton, insert_eq_of_mem hx]
@@ -1093,7 +1093,7 @@ theorem eq_insert_of_ncard_eq_succ {n : ℕ} (h : s.ncard = n + 1) :
   rw [ncard_eq_toFinset_card _ hsf, Finset.card_eq_succ] at h
   obtain ⟨a, t, hat, hts, rfl⟩ := h
   simp only [Finset.ext_iff, Finset.mem_insert, Finite.mem_toFinset] at hts
-  refine ⟨a, t, hat, ?_,? _⟩
+  refine ⟨a, t, hat, ?_, ?_⟩
   · simp only [Finset.mem_coe, ext_iff, mem_insert_iff]
     tauto
   simp

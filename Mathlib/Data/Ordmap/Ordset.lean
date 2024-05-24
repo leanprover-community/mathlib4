@@ -1206,7 +1206,7 @@ theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ 
       have := le_trans this (add_le_add_left mr₁ _)
       rw [← Nat.succ_mul] at this
       exact (mul_le_mul_left (by decide)).1 this
-    refine ⟨Or.inr ⟨?_, ?_⟩, Or.inr ⟨?_, ?_⟩, Or.inr ⟨?_,? _⟩⟩
+    refine ⟨Or.inr ⟨?_, ?_⟩, Or.inr ⟨?_, ?_⟩, Or.inr ⟨?_, ?_⟩⟩
     · refine (mul_le_mul_left (by decide)).1 (le_trans this ?_)
       rw [two_mul, Nat.succ_le_iff]
       refine add_lt_add_of_lt_of_le ?_ mm₂
@@ -1470,7 +1470,7 @@ theorem Valid'.merge_aux₁ {o₁ o₂ ls ll lx lr rs rl rx rr t}
   rcases hr.3.1 with (H | ⟨hr₁, hr₂⟩); · omega
   suffices H₂ : _ by
     suffices H₁ : _ by
-      refine ⟨Valid'.balanceL_aux v hr.right H₁ H₂ ?_,? _⟩
+      refine ⟨Valid'.balanceL_aux v hr.right H₁ H₂ ?_, ?_⟩
       · rw [e]; exact Or.inl (Valid'.merge_lemma h hr₁)
       · rw [balanceL_eq_balance v.2 hr.2.2.2 H₁ H₂, balance_eq_balance' v.3 hr.3.2.2 v.2 hr.2.2.2,
           size_balance' v.2 hr.2.2.2, e, hl.2.1, hr.2.1]

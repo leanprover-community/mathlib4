@@ -106,7 +106,7 @@ theorem hall_hard_inductive_step_A {n : ℕ} (hn : Fintype.card ι = n + 1)
 
   rcases ih t' card_ι'.le (hall_cond_of_erase y ha) with ⟨f', hfinj, hfr⟩
   -- Extend the resulting function.
-  refine ⟨fun z => if h : z = x then y else f' ⟨z, h⟩, ?_,? _⟩
+  refine ⟨fun z => if h : z = x then y else f' ⟨z, h⟩, ?_, ?_⟩
   · rintro z₁ z₂
     have key : ∀ {x}, y ≠ f' x := by
       intro x h
@@ -206,7 +206,7 @@ theorem hall_hard_inductive_step_B {n : ℕ} (hn : Fintype.card ι = n + 1)
     apply f''_not_mem_biUnion x' hx''
     rw [← h]
     apply f'_mem_biUnion x
-  refine ⟨fun x => if h : x ∈ s then f' ⟨x, h⟩ else f'' ⟨x, h⟩, ?_,? _⟩
+  refine ⟨fun x => if h : x ∈ s then f' ⟨x, h⟩ else f'' ⟨x, h⟩, ?_, ?_⟩
   · refine' hf'.dite _ hf'' (@fun x x' => im_disj x x' _ _)
   · intro x
     simp only [of_eq_true]

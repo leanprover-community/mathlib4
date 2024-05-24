@@ -1076,7 +1076,7 @@ lemma isIso_homologyMap_of_isIso_cyclesMap_of_epi {φ : S₁ ⟶ S₂}
       IsIso.hom_inv_id_assoc, toCycles_comp_homologyπ, comp_zero]
   have ⟨z, hz⟩ := CokernelCofork.IsColimit.desc' S₂.homologyIsCokernel _ h
   dsimp at hz
-  refine ⟨⟨z, ?_,? _⟩⟩
+  refine ⟨⟨z, ?_, ?_⟩⟩
   · rw [← cancel_epi S₁.homologyπ, homologyπ_naturality_assoc, hz,
       IsIso.hom_inv_id_assoc, comp_id]
   · rw [← cancel_epi S₂.homologyπ, reassoc_of% hz, homologyπ_naturality,

@@ -174,7 +174,7 @@ theorem Sphere.wbtw_secondInter {s : Sphere P} {p p' : P} (hp : p ∈ s)
 the first point and the result of `secondInter`. -/
 theorem Sphere.sbtw_secondInter {s : Sphere P} {p p' : P} (hp : p ∈ s)
     (hp' : dist p' s.center < s.radius) : Sbtw ℝ p p' (s.secondInter p (p' -ᵥ p)) := by
-  refine ⟨Sphere.wbtw_secondInter hp hp'.le, ?_,? _⟩
+  refine ⟨Sphere.wbtw_secondInter hp hp'.le, ?_, ?_⟩
   · rintro rfl
     rw [mem_sphere] at hp
     simp [hp] at hp'

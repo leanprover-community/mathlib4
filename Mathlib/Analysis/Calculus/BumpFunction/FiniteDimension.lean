@@ -59,7 +59,7 @@ theorem exists_smooth_tsupport_subset {s : Set E} {x : E} (hs : s ∈ 𝓝 x) :
   have f_tsupp : tsupport f ⊆ Euclidean.closedBall x d := by
     rw [tsupport, ← Euclidean.closure_ball _ d_pos.ne']
     exact closure_mono f_supp
-  refine ⟨f, f_tsupp.trans hd, ?_,? _,? _, ?_⟩
+  refine ⟨f, f_tsupp.trans hd, ?_, ?_, ?_, ?_⟩
   · refine isCompact_of_isClosed_isBounded isClosed_closure ?_
     have : IsBounded (Euclidean.closedBall x d) := Euclidean.isCompact_closedBall.isBounded
     refine this.subset (Euclidean.isClosed_closedBall.closure_subset_iff.2 ?_)
@@ -161,7 +161,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
     refine .of_nnnorm_bounded _ δc.summable fun n => ?_
     rw [← NNReal.coe_le_coe, coe_nnnorm]
     simpa only [norm_iteratedFDeriv_zero] using hr n 0 (zero_le n) x
-  refine ⟨fun x => ∑' n, (r n • g n) x, ?_,? _, ?_⟩
+  refine ⟨fun x => ∑' n, (r n • g n) x, ?_, ?_, ?_⟩
   · apply Subset.antisymm
     · intro x hx
       simp only [Pi.smul_apply, Algebra.id.smul_eq_mul, mem_support, Ne] at hx
@@ -218,7 +218,7 @@ theorem u_exists :
       ∃ f : E → ℝ, f.support = ball (0 : E) 1 ∧ ContDiff ℝ ⊤ f ∧ Set.range f ⊆ Set.Icc 0 1 :=
     A.exists_smooth_support_eq
   have B : ∀ x, f x ∈ Icc (0 : ℝ) 1 := fun x => f_range (mem_range_self x)
-  refine ⟨fun x => (f x + f (-x)) / 2, ?_, ?_,? _, ?_⟩
+  refine ⟨fun x => (f x + f (-x)) / 2, ?_, ?_, ?_, ?_⟩
   · exact (f_smooth.add (f_smooth.comp contDiff_neg)).div_const _
   · intro x
     simp only [mem_Icc]

@@ -1848,7 +1848,7 @@ theorem bot_parallel_iff_eq_bot {s : AffineSubspace k P} : ⊥ ∥ s ↔ s = ⊥
 
 theorem parallel_iff_direction_eq_and_eq_bot_iff_eq_bot {s₁ s₂ : AffineSubspace k P} :
     s₁ ∥ s₂ ↔ s₁.direction = s₂.direction ∧ (s₁ = ⊥ ↔ s₂ = ⊥) := by
-  refine ⟨fun h => ⟨h.direction_eq, ?_,? _⟩, fun h =?> _⟩
+  refine ⟨fun h => ⟨h.direction_eq, ?_, ?_⟩, fun h =?> _⟩
   · rintro rfl
     exact bot_parallel_iff_eq_bot.1 h
   · rintro rfl

@@ -1113,7 +1113,7 @@ theorem fundamentalSequence_has_prop (o) : FundamentalSequenceProp o (fundamenta
       apply nat_lt_omega
     · have := opow_pos (repr a') omega_pos
       refine
-        ⟨add_isLimit _ (mul_isLimit this omega_isLimit), fun i => ⟨this, ?_,? _⟩,
+        ⟨add_isLimit _ (mul_isLimit this omega_isLimit), fun i => ⟨this, ?_, ?_⟩,
           exists_lt_add exists_lt_mul_omega'⟩
       · rw [← mul_succ, ← natCast_succ, Ordinal.mul_lt_mul_iff_left this]
         apply nat_lt_omega

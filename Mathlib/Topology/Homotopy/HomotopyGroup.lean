@@ -291,7 +291,7 @@ theorem homotopyTo_apply (i : N) {p q : Ω^ N X x} (H : p.1.HomotopyRel q.1 <| C
 
 theorem homotopicTo (i : N) {p q : Ω^ N X x} :
     Homotopic p q → (toLoop i p).Homotopic (toLoop i q) := by
-  refine Nonempty.map fun H => ⟨⟨⟨fun t => ⟨homotopyTo i H t, ?_⟩,? _⟩?, _,? _?⟩, _⟩
+  refine Nonempty.map fun H => ⟨⟨⟨fun t => ⟨homotopyTo i H t, ?_⟩, ?_⟩?, _, ?_?⟩, _⟩
   · rintro y ⟨i, iH⟩
     rw [homotopyTo_apply, H.eq_fst, p.2]
     all_goals apply Cube.insertAt_boundary; right; exact ⟨i, iH⟩
@@ -318,7 +318,7 @@ theorem homotopicTo (i : N) {p q : Ω^ N X x} :
 
 theorem homotopicFrom (i : N) {p q : Ω^ N X x} :
     (toLoop i p).Homotopic (toLoop i q) → Homotopic p q := by
-  refine Nonempty.map fun H => ⟨⟨homotopyFrom i H, ?_,? _⟩?, _⟩
+  refine Nonempty.map fun H => ⟨⟨homotopyFrom i H, ?_, ?_⟩?, _⟩
   pick_goal 3
   · rintro t y ⟨j, jH⟩
     erw [homotopyFrom_apply]

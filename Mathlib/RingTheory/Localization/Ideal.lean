@@ -111,7 +111,7 @@ theorem isPrime_iff_isPrime_disjoint (J : Ideal S) :
         Disjoint (M : Set R) ↑(Ideal.comap (algebraMap R S) J) := by
   constructor
   · refine fun h =>
-      ⟨⟨?_,? _⟩,
+      ⟨⟨?_, ?_⟩,
         Set.disjoint_left.mpr fun m hm1 hm2 =>
           h.ne_top (Ideal.eq_top_of_isUnit_mem _ hm2 (map_units S ⟨m, hm1⟩))⟩
     · refine fun hJ => h.ne_top ?_

@@ -189,7 +189,7 @@ theorem SurjectiveOnWith.mono {f : NormedAddGroupHom V₁ V₂} {K : AddSubgroup
 
 theorem SurjectiveOnWith.exists_pos {f : NormedAddGroupHom V₁ V₂} {K : AddSubgroup V₂} {C : ℝ}
     (h : f.SurjectiveOnWith K C) : ∃ C' > 0, f.SurjectiveOnWith K C' := by
-  refine ⟨|C| + 1, ?_,? _⟩
+  refine ⟨|C| + 1, ?_, ?_⟩
   · linarith [abs_nonneg C]
   · apply h.mono
     linarith [le_abs_self C]

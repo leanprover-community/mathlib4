@@ -164,7 +164,7 @@ variable (hp : Prime (p : R)) (hp1 : Odd p) (hxy : ↑p ∣ x - y) (hx : ¬↑p 
 
 theorem geom_sum₂_eq_one : multiplicity (↑p) (∑ i in range p, x ^ i * y ^ (p - 1 - i)) = 1 := by
   rw [← Nat.cast_one]
-  refine multiplicity.eq_coe_iff.2 ⟨?_,? _⟩
+  refine multiplicity.eq_coe_iff.2 ⟨?_, ?_⟩
   · rw [pow_one]
     exact dvd_geom_sum₂_self hxy
   rw [dvd_iff_dvd_of_dvd_sub hxy] at hx

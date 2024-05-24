@@ -613,7 +613,7 @@ theorem isLocalStructomorphWithinAt_localInvariantProp [ClosedUnderRestriction G
         exact ⟨e, heG, hef.mono this, hex⟩
       · rintro h hx
         rcases h ⟨hx, hux⟩ with ⟨e, heG, hef, hex⟩
-        refine ⟨e.restr (interior u), ?_, ?_,? _⟩
+        refine ⟨e.restr (interior u), ?_, ?_, ?_⟩
         · exact closedUnderRestriction' heG isOpen_interior
         · have : s ∩ u ∩ e.source = s ∩ (e.source ∩ u) := by mfld_set_tac
           simpa only [this, interior_interior, hu.interior_eq, mfld_simps] using hef
@@ -622,7 +622,7 @@ theorem isLocalStructomorphWithinAt_localInvariantProp [ClosedUnderRestriction G
       intro s x f e' he'G he'x h hx
       have hxs : x ∈ s := by simpa only [e'.left_inv he'x, mfld_simps] using hx
       rcases h hxs with ⟨e, heG, hef, hex⟩
-      refine ⟨e'.symm.trans e, G.trans (G.symm he'G) heG, ?_,? _⟩
+      refine ⟨e'.symm.trans e, G.trans (G.symm he'G) heG, ?_, ?_⟩
       · intro y hy
         simp only [mfld_simps] at hy
         simp only [hef ⟨hy.1, hy.2.2⟩, mfld_simps]
@@ -654,7 +654,7 @@ theorem _root_.PartialHomeomorph.isLocalStructomorphWithinAt_iff {G : StructureG
   constructor
   · intro hf h2x
     obtain ⟨e, he, hfe, hxe⟩ := hf h2x
-    refine ⟨e.restr f.source, closedUnderRestriction' he f.open_source, ?_, ?_, hxe,? _⟩
+    refine ⟨e.restr f.source, closedUnderRestriction' he f.open_source, ?_, ?_, hxe, ?_⟩
     · simp_rw [PartialHomeomorph.restr_source]
       exact (inter_subset_right _ _).trans interior_subset
     · intro x' hx'
@@ -714,7 +714,7 @@ theorem HasGroupoid.comp
       simp_rw [PartialHomeomorph.trans_symm_eq_symm_trans_symm, PartialHomeomorph.trans_assoc]
       have hs : IsOpen (f.symm ≫ₕ e.symm ≫ₕ e' ≫ₕ f').source :=
         (f.symm ≫ₕ e.symm ≫ₕ e' ≫ₕ f').open_source
-      refine ⟨_, hs.inter φ.open_source, ?_,? _⟩
+      refine ⟨_, hs.inter φ.open_source, ?_, ?_⟩
       · simp only [hx, hφ_dom, mfld_simps]
       · refine G₁.mem_of_eqOnSource (closedUnderRestriction' hφG₁ hs) ?_
         rw [PartialHomeomorph.restr_source_inter]

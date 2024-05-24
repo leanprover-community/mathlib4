@@ -1139,7 +1139,7 @@ theorem model_distinctConstantsTheory {M : Type w} [L[[α]].Structure M] (s : Se
     M ⊨ L.distinctConstantsTheory s ↔ Set.InjOn (fun i : α => (L.con i : M)) s := by
   simp only [distinctConstantsTheory, Theory.model_iff, Set.mem_image, Set.mem_inter,
     Set.mem_prod, Set.mem_compl, Prod.exists, forall_exists_index, and_imp]
-  refine ⟨fun h a as b bs ab => ?_,? _⟩
+  refine ⟨fun h a as b bs ab => ?_, ?_⟩
   · contrapose! ab
     have h' := h _ a b ⟨⟨as, bs⟩, ab⟩ rfl
     simp only [Sentence.Realize, Formula.realize_not, Formula.realize_equal,

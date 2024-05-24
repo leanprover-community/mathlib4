@@ -1207,7 +1207,7 @@ theorem productive_congr {s t : WSeq α} (h : s ~ʷ t) : Productive s ↔ Produc
 
 theorem Equiv.ext {s t : WSeq α} (h : ∀ n, get? s n ~ get? t n) : s ~ʷ t :=
   ⟨fun s t => ∀ n, get? s n ~ get? t n, h, fun {s t} h => by
-    refine liftRel_def.2 ⟨?_,? _⟩
+    refine liftRel_def.2 ⟨?_, ?_⟩
     · rw [← head_terminates_iff, ← head_terminates_iff]
       exact terminates_congr (h 0)
     · intro a b ma mb
@@ -1247,7 +1247,7 @@ theorem length_eq_map (s : WSeq α) : length s = Computation.map List.length (to
   intro s1 s2 h; rcases h with ⟨l, s, h⟩; rw [h.left, h.right]
   induction' s using WSeq.recOn with a s s <;> simp [toList, nil, cons, think, length]
   · refine ⟨a::l, s, ?_, ?_⟩ <;> simp
-  · refine ⟨l, s, ?_,? _⟩ <;> simp
+  · refine ⟨l, s, ?_, ?_⟩ <;> simp
 #align stream.wseq.length_eq_map Stream'.WSeq.length_eq_map
 
 @[simp]
@@ -1323,7 +1323,7 @@ theorem toList'_map (l : List α) (s : WSeq α) :
       ?_ ⟨[], s, rfl, rfl⟩
   intro s1 s2 h; rcases h with ⟨l', s, h⟩; rw [h.left, h.right]
   induction' s using WSeq.recOn with a s s <;> simp [toList, nil, cons, think, length]
-  · refine ⟨a::l', s, ?_,? _⟩ <;> simp
+  · refine ⟨a::l', s, ?_, ?_⟩ <;> simp
   · refine ⟨l', s, ?_, ?_⟩ <;> simp
 #align stream.wseq.to_list'_map Stream'.WSeq.toList'_map
 
@@ -1536,7 +1536,7 @@ theorem destruct_append (s t : WSeq α) :
   intro c1 c2 h; rcases h with ⟨s, t, h⟩; rw [h.left, h.right]
   induction' s using WSeq.recOn with a s s <;> simp
   · induction' t using WSeq.recOn with b t t <;> simp
-    · refine ⟨nil, t, ?_,? _⟩ <;> simp
+    · refine ⟨nil, t, ?_, ?_⟩ <;> simp
   · exact ⟨s, t, rfl, rfl⟩
 #align stream.wseq.destruct_append Stream'.WSeq.destruct_append
 

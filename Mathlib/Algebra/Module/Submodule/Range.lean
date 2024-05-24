@@ -412,7 +412,7 @@ theorem mem_submoduleImage {M' : Type*} [AddCommMonoid M'] [Module R M'] {O : Su
 theorem mem_submoduleImage_of_le {M' : Type*} [AddCommMonoid M'] [Module R M'] {O : Submodule R M}
     {ϕ : O →ₗ[R] M'} {N : Submodule R M} (hNO : N ≤ O) {x : M'} :
     x ∈ ϕ.submoduleImage N ↔ ∃ (y : _) (yN : y ∈ N), ϕ ⟨y, hNO yN⟩ = x := by
-  refine mem_submoduleImage.trans ⟨?_,? _⟩
+  refine mem_submoduleImage.trans ⟨?_, ?_⟩
   · rintro ⟨y, yO, yN, h⟩
     exact ⟨y, yN, h⟩
   · rintro ⟨y, yN, h⟩

@@ -770,7 +770,7 @@ theorem _root_.stronglyMeasurable_of_tendsto {ι : Type*} {m : MeasurableSpace �
     {f : ι → α → β} {g : α → β} (hf : ∀ i, StronglyMeasurable (f i)) (lim : Tendsto f u (𝓝 g)) :
     StronglyMeasurable g := by
   borelize β
-  refine stronglyMeasurable_iff_measurable_separable.2 ⟨?_,? _⟩
+  refine stronglyMeasurable_iff_measurable_separable.2 ⟨?_, ?_⟩
   · exact measurable_of_tendsto_metrizable' u (fun i => (hf i).measurable) lim
   · rcases u.exists_seq_tendsto with ⟨v, hv⟩
     have : IsSeparable (closure (⋃ i, range (f (v i)))) :=
@@ -2127,7 +2127,7 @@ theorem stronglyMeasurable_uncurry_of_continuous_of_stronglyMeasurable {α β ι
     exact fun p => ht_sf p.fst p.snd
   refine stronglyMeasurable_of_tendsto _ (fun n => ?_) h_tendsto
   have h_str_meas : StronglyMeasurable fun p : (t_sf n).range × α => u (↑p.fst) p.snd := by
-    refine stronglyMeasurable_iff_measurable_separable.2 ⟨?_,? _⟩
+    refine stronglyMeasurable_iff_measurable_separable.2 ⟨?_, ?_⟩
     · have :
         (fun p : ↥(t_sf n).range × α => u (↑p.fst) p.snd) =
           (fun p : α × (t_sf n).range => u (↑p.snd) p.fst) ∘ Prod.swap :=

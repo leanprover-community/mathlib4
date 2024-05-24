@@ -176,7 +176,7 @@ theorem exists_le_lowerSemicontinuous_lintegral_ge (f : α → ℝ≥0∞) (hf :
     SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge μ (SimpleFunc.eapproxDiff f n)
       (δpos n).ne'
   choose g f_le_g gcont hg using this
-  refine ⟨fun x => ∑' n, g n x, fun x => ?_,? _, ?_⟩
+  refine ⟨fun x => ∑' n, g n x, fun x => ?_, ?_, ?_⟩
   · rw [← SimpleFunc.tsum_eapproxDiff f hf]
     exact ENNReal.tsum_le_tsum fun n => ENNReal.coe_le_coe.2 (f_le_g n x)
   · refine lowerSemicontinuous_tsum fun n => ?_
@@ -210,7 +210,7 @@ theorem exists_lt_lowerSemicontinuous_lintegral_ge [SigmaFinite μ] (f : α → 
   rcases exists_le_lowerSemicontinuous_lintegral_ge μ f' (fmeas.add wmeas).coe_nnreal_ennreal
       this with
     ⟨g, le_g, gcont, gint⟩
-  refine ⟨g, fun x => ?_, gcont,? _⟩
+  refine ⟨g, fun x => ?_, gcont, ?_⟩
   · calc
       (f x : ℝ≥0∞) < f' x := by
         simpa only [← ENNReal.coe_lt_coe, add_zero] using add_lt_add_left (wpos x) (f x)
@@ -239,7 +239,7 @@ theorem exists_lt_lowerSemicontinuous_lintegral_ge_of_aemeasurable [SigmaFinite 
   rcases exists_le_lowerSemicontinuous_lintegral_ge μ (s.indicator fun _x => ∞)
       (measurable_const.indicator smeas) this with
     ⟨g1, le_g1, g1_cont, g1_int⟩
-  refine ⟨fun x => g0 x + g1 x, fun x => ?_, g0_cont.add g1_cont,? _⟩
+  refine ⟨fun x => g0 x + g1 x, fun x => ?_, g0_cont.add g1_cont, ?_⟩
   · by_cases h : x ∈ s
     · have := le_g1 x
       simp only [h, Set.indicator_of_mem, top_le_iff] at this
@@ -432,7 +432,7 @@ theorem exists_upperSemicontinuous_le_integral_le (f : α → ℝ≥0)
   have Ig : (∫⁻ x, g x ∂μ) < ∞ := by
     refine lt_of_le_of_lt (lintegral_mono fun x => ?_) If
     simpa using gf x
-  refine ⟨g, gf, gcont, ?_,? _⟩
+  refine ⟨g, gf, gcont, ?_, ?_⟩
   · refine
       Integrable.mono fint gcont.measurable.coe_nnreal_real.aemeasurable.aestronglyMeasurable ?_
     exact Filter.eventually_of_forall fun x => by simp [gf x]
@@ -542,7 +542,7 @@ theorem exists_upperSemicontinuous_lt_integral_gt [SigmaFinite μ] (f : α → �
       (∀ᵐ x ∂μ, ⊥ < g x) ∧ (∫ x, f x ∂μ) < (∫ x, EReal.toReal (g x) ∂μ) + ε := by
   rcases exists_lt_lowerSemicontinuous_integral_lt (fun x => -f x) hf.neg εpos with
     ⟨g, g_lt_f, gcont, g_integrable, g_lt_top, gint⟩
-  refine ⟨fun x => -g x, ?_,? _,? _, ?_, ?_⟩
+  refine ⟨fun x => -g x, ?_, ?_, ?_, ?_, ?_⟩
   · exact fun x => EReal.neg_lt_iff_neg_lt.1 (by simpa only [EReal.coe_neg] using g_lt_f x)
   · exact
       continuous_neg.comp_lowerSemicontinuous_antitone gcont fun x y hxy =>

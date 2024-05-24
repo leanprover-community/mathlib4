@@ -1142,7 +1142,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
       obtain ⟨ε, εpos, hε⟩ : ∃ ε : ℝ, 0 < ε ∧ thickening ε (({q₀.fst} : Set P) ×ˢ k) ⊆ t :=
         A.exists_thickening_subset_open t_open kt
       obtain ⟨δ, δpos, hδ⟩ : ∃ δ : ℝ, 0 < δ ∧ ball q₀.1 δ ⊆ s := Metric.isOpen_iff.1 hs _ hq₀
-      refine ⟨min ε δ, lt_min εpos δpos, ?_,? _⟩
+      refine ⟨min ε δ, lt_min εpos δpos, ?_, ?_⟩
       · exact Subset.trans (thickening_mono (min_le_left _ _) _) hε
       · exact Subset.trans (ball_subset_ball (min_le_right _ _)) hδ
     obtain ⟨C, Cpos, hC⟩ : ∃ C, 0 < C ∧ g' '' t ⊆ closedBall 0 C := ht.subset_closedBall_lt 0 0
@@ -1151,7 +1151,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
     by_cases hx : x ∈ k
     · have H : (p, x) ∈ t := by
         apply hε
-        refine mem_thickening_iff.2 ⟨(q₀.1, x), ?_,? _⟩
+        refine mem_thickening_iff.2 ⟨(q₀.1, x), ?_, ?_⟩
         · simp only [hx, singleton_prod, mem_image, Prod.mk.inj_iff, eq_self_iff_true, true_and_iff,
             exists_eq_right]
         · rw [← dist_eq_norm] at hp

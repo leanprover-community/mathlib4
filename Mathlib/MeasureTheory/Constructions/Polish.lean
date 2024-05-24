@@ -741,7 +741,7 @@ theorem measurableSet_range_of_continuous_injective {β : Type*} [TopologicalSpa
     refine mem_iUnion.2 ⟨⟨s, sb⟩, ?_⟩
     refine mem_iUnion.2 ⟨⟨isBounded_ball.subset hs, diam_s⟩, ?_⟩
     apply mem_inter (subset_closure (mem_image_of_mem _ ys))
-    refine mem_iInter.2 fun t => mem_iInter.2 fun ht => ⟨?_,? _⟩
+    refine mem_iInter.2 fun t => mem_iInter.2 fun ht => ⟨?_, ?_⟩
     · apply hq1
       exact mem_image_of_mem _ ys
     · apply disjoint_left.1 (hq2 ⟨(t, ⟨s, sb⟩), ht.symm⟩)

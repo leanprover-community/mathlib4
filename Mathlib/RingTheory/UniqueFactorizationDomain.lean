@@ -947,7 +947,7 @@ theorem exists_reduced_factors :
     by_cases h : p ∣ b
     · rcases h with ⟨b, rfl⟩
       obtain ⟨a', b', c', no_factor, ha', hb'⟩ := ih_a a_ne_zero b
-      refine ⟨a', b', p * c', @no_factor, ?_,? _⟩
+      refine ⟨a', b', p * c', @no_factor, ?_, ?_⟩
       · rw [mul_assoc, ha']
       · rw [mul_assoc, hb']
     · obtain ⟨a', b', c', coprime, rfl, rfl⟩ := ih_a a_ne_zero b

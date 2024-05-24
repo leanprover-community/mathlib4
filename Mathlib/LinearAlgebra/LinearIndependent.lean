@@ -761,7 +761,7 @@ theorem linearIndependent_sum {v : Sum ι ι' → M} :
             (Submodule.span R (range (v ∘ Sum.inr))) := by
   classical
   rw [range_comp v, range_comp v]
-  refine ⟨?_,? _⟩
+  refine ⟨?_, ?_⟩
   · intro h
     refine ⟨h.comp _ Sum.inl_injective, h.comp _ Sum.inr_injective, ?_⟩
     refine h.disjoint_span_image ?_
@@ -1406,7 +1406,7 @@ theorem exists_linearIndependent_extension (hs : LinearIndependent K ((↑) : s 
   -- Porting note: The placeholder should be solved before `rcases`.
   have := by
     refine zorn_subset_nonempty { b | b ⊆ t ∧ LinearIndependent K ((↑) : b → V) } ?_ _ ⟨hst, hs⟩
-    · refine fun c hc cc _c0 => ⟨⋃₀ c, ⟨?_,? _⟩, fun x =>? _⟩
+    · refine fun c hc cc _c0 => ⟨⋃₀ c, ⟨?_, ?_⟩, fun x =>? _⟩
       · exact sUnion_subset fun x xc => (hc xc).1
       · exact linearIndependent_sUnion_of_directed cc.directedOn fun x xc => (hc xc).2
       · exact subset_sUnion_of_mem

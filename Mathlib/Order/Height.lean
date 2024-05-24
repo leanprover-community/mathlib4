@@ -228,7 +228,7 @@ theorem chainHeight_image (f : α → β) (hf : ∀ {x y}, x < y ↔ f x < f y) 
       · simp
       · simpa [← hf] using h₂
   · intro l hl
-    refine ⟨l.map f, ⟨?_, ?_⟩,? _⟩
+    refine ⟨l.map f, ⟨?_, ?_⟩, ?_⟩
     · simp_rw [chain'_map, ← hf]
       exact hl.1
     · intro _ e
@@ -293,7 +293,7 @@ theorem chainHeight_insert_of_forall_gt (a : α) (hx : ∀ b ∈ s, a < b) :
       cases' h'.1 with h' h'
       exacts [(hy _ hi).ne h', not_le_of_gt (hy _ hi) (hx _ h').le]
   · intro l hl
-    refine ⟨a::l, ⟨?_,? _⟩, by simp⟩
+    refine ⟨a::l, ⟨?_, ?_⟩, by simp⟩
     · rw [chain'_cons']
       exact ⟨fun y hy ↦ hx _ (hl.2 _ (mem_of_mem_head? hy)), hl.1⟩
     · -- Porting note: originally this was

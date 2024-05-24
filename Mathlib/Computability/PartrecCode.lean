@@ -709,7 +709,7 @@ theorem evaln_sound : ∀ {k c n x}, x ∈ evaln k c n → x ∈ eval c n
       revert h
       induction' n.unpair.2 with m IH generalizing x <;> simp
       · apply hf
-      · refine fun y h₁ h₂ => ⟨y, IH _ ?_,? _⟩
+      · refine fun y h₁ h₂ => ⟨y, IH _ ?_, ?_⟩
         · have := evaln_mono k.le_succ h₁
           simp [evaln, Bind.bind] at this
           exact this.2

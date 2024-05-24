@@ -254,7 +254,7 @@ variable {c : Cube (n + 1)} (h : Correct cs) (v : Valley cs c)
 
 /-- The bottom of the unit cube is a valley -/
 theorem valley_unitCube [Nontrivial ι] (h : Correct cs) : Valley cs unitCube := by
-  refine ⟨?_, ?_,? _⟩
+  refine ⟨?_, ?_, ?_⟩
   · intro v
     simp only [bottom, and_imp, mem_iUnion, mem_setOf_eq]
     intro h0 hv
@@ -390,7 +390,7 @@ theorem smallest_onBoundary {j} (bi : OnBoundary (mi_mem_bcubes : mi h v ∈ _) 
         i' ≠ mi h v → (cs <| mi h v).b j.succ ∈ (cs i').side j.succ → x ∈ (cs i').side j.succ := by
   let i := mi h v; have hi : i ∈ bcubes cs c := mi_mem_bcubes
   cases' bi with bi bi
-  · refine ⟨(cs i).b j.succ + (cs i).w, ⟨?_,? _⟩,? _⟩
+  · refine ⟨(cs i).b j.succ + (cs i).w, ⟨?_, ?_⟩, ?_⟩
     · simp [side, bi, hw', w_lt_w h v hi]
     · intro h'; simpa [lt_irrefl] using h'.2
     intro i' hi' i'_i h2i'; constructor
@@ -408,7 +408,7 @@ theorem smallest_onBoundary {j} (bi : OnBoundary (mi_mem_bcubes : mi h v ∈ _) 
   have hx : x < (cs i).b j.succ := by
     dsimp only [x]; rw [← bi, add_sub_assoc, add_lt_iff_neg_left, sub_lt_zero]
     apply mi_strict_minimal (Ne.symm h2i') hi'
-  refine ⟨x, ⟨?_,? _⟩,? _⟩
+  refine ⟨x, ⟨?_, ?_⟩, ?_⟩
   · simp only [side, neg_lt_zero, hw, add_lt_iff_neg_left, and_true_iff, mem_Ico, sub_eq_add_neg, x]
     rw [add_assoc, le_add_iff_nonneg_right, ← sub_eq_add_neg, sub_nonneg]
     apply le_of_lt (w_lt_w h v hi')
@@ -469,7 +469,7 @@ theorem mi_not_onBoundary (j : Fin n) : ¬OnBoundary (mi_mem_bcubes : mi h v ∈
   refine ⟨⟨c.b 0, bottom_mem_side h2i', bottom_mem_side h2i''⟩, ?_⟩
   intro j₂
   by_cases hj₂ : j₂ = j
-  · cases hj₂; refine ⟨x, ?_,? _⟩
+  · cases hj₂; refine ⟨x, ?_, ?_⟩
     · convert hi'.2 j using 1; simp [p]
     apply h3x h2i'' i_i''.symm; convert hi''.2 j using 1; simp [p', hj'.symm]
   by_cases h2j₂ : j₂ = j'
@@ -512,7 +512,7 @@ theorem valley_mi : Valley cs (cs (mi h v)).shiftUp := by
           (le_trans (hp2 j).1 <| le_of_lt (h2p2 j).2) (le_trans (h2p2 j).1 <| le_of_lt (hp2 j).2)
           ⟨hj, hp1 j⟩ with
         ⟨w, hw, h2w, h3w⟩
-      refine ⟨fun j' => if j' = j then w else p2 j', ?_,? _, ?_⟩
+      refine ⟨fun j' => if j' = j then w else p2 j', ?_, ?_, ?_⟩
       · intro j'; by_cases h : j' = j
         · simp only [if_pos h]; exact h ▸ h3w
         · simp only [if_neg h]; exact hp2 j'

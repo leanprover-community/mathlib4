@@ -108,7 +108,7 @@ theorem Disjoint.map_injective (hA : CantorScheme.Disjoint A) : Injective (induc
   simp only [CantorScheme.Disjoint, _root_.Pairwise, Ne, not_forall, exists_prop]
   refine ⟨res x n, _, _, hA, ?_⟩
   rw [not_disjoint_iff]
-  refine ⟨(inducedMap A).2 ⟨x, hx⟩, ?_,? _⟩
+  refine ⟨(inducedMap A).2 ⟨x, hx⟩, ?_, ?_⟩
   · rw [← res_succ]
     apply map_mem
   rw [hxy, ih, ← res_succ]

@@ -139,13 +139,13 @@ theorem counted_succ_succ (p q : ℕ) :
       · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)
       · rw [← hlast, List.head_cons_tail]
   · rintro (⟨t, ⟨ht₀, ht₁, ht₂⟩, rfl⟩ | ⟨t, ⟨ht₀, ht₁, ht₂⟩, rfl⟩)
-    · refine ⟨?_,? _, ?_⟩
+    · refine ⟨?_, ?_, ?_⟩
       · rw [List.count_cons, if_pos rfl, ht₀]
       · rw [List.count_cons, if_neg, ht₁]
         norm_num
       · rintro x (_ | _)
         exacts [Or.inl rfl, ht₂ x (by tauto)]
-    · refine ⟨?_,? _, ?_⟩
+    · refine ⟨?_, ?_, ?_⟩
       · rw [List.count_cons, if_neg, ht₀]
         norm_num
       · rw [List.count_cons, if_pos rfl, ht₁]

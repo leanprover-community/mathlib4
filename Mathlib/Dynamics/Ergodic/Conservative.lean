@@ -101,7 +101,7 @@ theorem frequently_measure_inter_ne_zero (hf : Conservative f μ) (hs : Measurab
   have : μ ((s ∩ f^[n] ⁻¹' s) \ T) ≠ 0 := by rwa [measure_diff_null hμT]
   rcases hf.exists_mem_iterate_mem ((hs.inter (hf.measurable.iterate n hs)).diff hT) this with
     ⟨x, ⟨⟨hxs, _⟩, hxT⟩, m, hm0, ⟨_, hxm⟩, _⟩
-  refine hxT ⟨hxs, mem_iUnion₂.2 ⟨n + m, ?_,? _⟩⟩
+  refine hxT ⟨hxs, mem_iUnion₂.2 ⟨n + m, ?_, ?_⟩⟩
   · exact add_le_add hn (Nat.one_le_of_lt <| pos_iff_ne_zero.2 hm0)
   · rwa [Set.mem_preimage, ← iterate_add_apply] at hxm
 #align measure_theory.conservative.frequently_measure_inter_ne_zero MeasureTheory.Conservative.frequently_measure_inter_ne_zero
@@ -199,7 +199,7 @@ protected theorem iterate (hf : Conservative f μ) (n : ℕ) : Conservative f^[n
   have : (n + 1) * m = l - k := by
     apply Nat.mul_div_cancel'
     exact (Nat.modEq_iff_dvd' hkl.le).1 hn
-  refine ⟨f^[k] x, hk, m, ?_,? _⟩
+  refine ⟨f^[k] x, hk, m, ?_, ?_⟩
   · intro hm
     rw [hm, mul_zero, eq_comm, tsub_eq_zero_iff_le] at this
     exact this.not_lt hkl

@@ -342,8 +342,8 @@ theorem exists_pos_variant (h₀ : 0 < d) (a : Solution₁ d) :
     ∃ b : Solution₁ d, 0 < b.x ∧ 0 ≤ b.y ∧ a ∈ ({b, b⁻¹, -b, -b⁻¹} : Set (Solution₁ d)) := by
   refine
         (lt_or_gt_of_ne (a.x_ne_zero h₀.le)).elim
-          ((le_total 0 a.y).elim (fun hy hx => ⟨-a⁻¹, ?_, ?_,? _⟩) fun hy hx => ⟨-a,? _, ?_,? _⟩)
-          ((le_total 0 a.y).elim (fun hy hx => ⟨a, hx, hy, ?_⟩) fun hy hx => ⟨a⁻¹, hx,? _, ?_⟩) <;>
+          ((le_total 0 a.y).elim (fun hy hx => ⟨-a⁻¹, ?_, ?_, ?_⟩) fun hy hx => ⟨-a, ?_, ?_, ?_⟩)
+          ((le_total 0 a.y).elim (fun hy hx => ⟨a, hx, hy, ?_⟩) fun hy hx => ⟨a⁻¹, hx, ?_, ?_⟩) <;>
       simp only [neg_neg, inv_inv, neg_inv, Set.mem_insert_iff, Set.mem_singleton_iff, true_or_iff,
         eq_self_iff_true, x_neg, x_inv, y_neg, y_inv, neg_pos, neg_nonneg, or_true_iff] <;>
     assumption
@@ -418,7 +418,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     rw [hq1, hq2]
   replace hm₀ : (m : ℚ) ≠ 0 := Int.cast_ne_zero.mpr hm₀
   refine ⟨(q₁.num * q₂.num - d * (q₁.den * q₂.den)) / m, (q₁.num * q₂.den - q₂.num * q₁.den) / m,
-      ?_,? _⟩
+      ?_, ?_⟩
   · qify [hd₁, hd₂]
     field_simp [hm₀]
     norm_cast

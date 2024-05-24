@@ -279,7 +279,7 @@ theorem dvd_choose_pow (hp : Prime p) (hk : k ≠ 0) (hkp : k ≠ p ^ n) : p ∣
 #align nat.prime.dvd_choose_pow Nat.Prime.dvd_choose_pow
 
 theorem dvd_choose_pow_iff (hp : Prime p) : p ∣ (p ^ n).choose k ↔ k ≠ 0 ∧ k ≠ p ^ n := by
-  refine ⟨fun h => ⟨?_,? _⟩, fun h => dvd_choose_pow hp h.1 h.2⟩ <;> rintro rfl <;>
+  refine ⟨fun h => ⟨?_, ?_⟩, fun h => dvd_choose_pow hp h.1 h.2⟩ <;> rintro rfl <;>
     simp [hp.ne_one] at h
 #align nat.prime.dvd_choose_pow_iff Nat.Prime.dvd_choose_pow_iff
 

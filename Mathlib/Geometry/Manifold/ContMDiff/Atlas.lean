@@ -148,7 +148,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff_aux {f : PartialHomeomorph M 
     hxf (by simp only [hx, mfld_simps])
   -- We choose a convenient set `s` in `M`.
   let s : Set M := (f.trans c').source ∩ ((c.trans e).trans c'.symm).source
-  refine ⟨s, (f.trans c').open_source.inter ((c.trans e).trans c'.symm).open_source, ?_,? _⟩
+  refine ⟨s, (f.trans c').open_source.inter ((c.trans e).trans c'.symm).open_source, ?_, ?_⟩
   · simp only [s, mfld_simps]
     rw [← he'] <;> simp only [c, c', hx, hex, mfld_simps]
   -- We need to show `f` is `ContMDiffOn` the domain `s ∩ f.source`.  We show this in two
@@ -237,7 +237,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : PartialHomeomorph M M') 
     let c' := chartAt H (f x)
     rintro (hx' : c x ∈ c.symm ⁻¹' f.source)
     -- propose `(c.symm.trans f).trans c'` as a candidate for a local structomorphism of `H`
-    refine ⟨(c.symm.trans f).trans c', ⟨?_, ?_⟩,? (_ : EqOn (c' ∘ f ∘ c.symm) _ _),? _⟩
+    refine ⟨(c.symm.trans f).trans c', ⟨?_, ?_⟩,? (_ : EqOn (c' ∘ f ∘ c.symm) _ _), ?_⟩
     · -- smoothness of the candidate local structomorphism in the forward direction
       intro y hy
       simp only [mfld_simps] at hy

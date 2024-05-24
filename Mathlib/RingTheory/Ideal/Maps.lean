@@ -795,7 +795,7 @@ theorem map_radical_of_surjective {f : R →+* S} (hf : Function.Surjective f) {
   rw [radical_eq_sInf, radical_eq_sInf]
   have : ∀ J ∈ {J : Ideal R | I ≤ J ∧ J.IsPrime}, RingHom.ker f ≤ J := fun J hJ => h.trans hJ.left
   convert map_sInf hf this
-  refine funext fun j => propext ⟨?_,? _⟩
+  refine funext fun j => propext ⟨?_, ?_⟩
   · rintro ⟨hj, hj'⟩
     haveI : j.IsPrime := hj'
     exact

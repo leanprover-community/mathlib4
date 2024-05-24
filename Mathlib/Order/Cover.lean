@@ -589,7 +589,7 @@ theorem mk_covBy_mk_iff_right : (a, b₁) ⋖ (a, b₂) ↔ b₁ ⋖ b₂ := by
 #align prod.mk_covby_mk_iff_right Prod.mk_covBy_mk_iff_right
 
 theorem mk_wcovBy_mk_iff : (a₁, b₁) ⩿ (a₂, b₂) ↔ a₁ ⩿ a₂ ∧ b₁ = b₂ ∨ b₁ ⩿ b₂ ∧ a₁ = a₂ := by
-  refine ⟨fun h => ?_,? _⟩
+  refine ⟨fun h => ?_, ?_⟩
   · obtain rfl | rfl : a₁ = a₂ ∨ b₁ = b₂ := fst_eq_or_snd_eq_of_wcovBy h
     · exact Or.inr ⟨mk_wcovBy_mk_iff_right.1 h, rfl⟩
     · exact Or.inl ⟨mk_wcovBy_mk_iff_left.1 h, rfl⟩
@@ -599,7 +599,7 @@ theorem mk_wcovBy_mk_iff : (a₁, b₁) ⩿ (a₂, b₂) ↔ a₁ ⩿ a₂ ∧ b
 #align prod.mk_wcovby_mk_iff Prod.mk_wcovBy_mk_iff
 
 theorem mk_covBy_mk_iff : (a₁, b₁) ⋖ (a₂, b₂) ↔ a₁ ⋖ a₂ ∧ b₁ = b₂ ∨ b₁ ⋖ b₂ ∧ a₁ = a₂ := by
-  refine ⟨fun h => ?_,? _⟩
+  refine ⟨fun h => ?_, ?_⟩
   · obtain rfl | rfl : a₁ = a₂ ∨ b₁ = b₂ := fst_eq_or_snd_eq_of_wcovBy h.wcovBy
     · exact Or.inr ⟨mk_covBy_mk_iff_right.1 h, rfl⟩
     · exact Or.inl ⟨mk_covBy_mk_iff_left.1 h, rfl⟩

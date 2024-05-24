@@ -166,7 +166,7 @@ def toAlgHom (φ : characterSpace 𝕜 A) : A →ₐ[𝕜] 𝕜 :=
 theorem eq_set_map_one_map_mul [Nontrivial 𝕜] :
     characterSpace 𝕜 A = {φ : WeakDual 𝕜 A | φ 1 = 1 ∧ ∀ x y : A, φ (x * y) = φ x * φ y} := by
   ext φ
-  refine ⟨?_,? _⟩
+  refine ⟨?_, ?_⟩
   · rintro hφ
     lift φ to characterSpace 𝕜 A using hφ
     exact ⟨map_one φ, map_mul φ⟩

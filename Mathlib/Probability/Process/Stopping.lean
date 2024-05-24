@@ -734,7 +734,7 @@ theorem measurableSet_eq_stopping_time_of_countable [Countable ι] [TopologicalS
       {ω | min (τ ω) j = min (π ω) j} ∩ {ω | τ ω ≤ j} ∩ {ω | π ω ≤ j} := by
     ext1 ω
     simp only [Set.mem_inter_iff, Set.mem_setOf_eq]
-    refine ⟨fun h => ⟨⟨?_, h.2⟩,? _⟩, fun h =>? ⟨_, h.1.2⟩⟩
+    refine ⟨fun h => ⟨⟨?_, h.2⟩, ?_⟩, fun h =>? ⟨_, h.1.2⟩⟩
     · rw [h.1]
     · rw [← h.1]; exact h.2
     · cases' h with h' hπ_le

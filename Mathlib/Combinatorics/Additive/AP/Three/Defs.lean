@@ -268,7 +268,7 @@ section Nat
 
 theorem threeAPFree_iff_eq_right {s : Set ℕ} :
     ThreeAPFree s ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → ∀ ⦃c⦄, c ∈ s → a + c = b + b → a = c := by
-  refine forall₄_congr fun a _ha b hb => forall₃_congr fun c hc habc => ⟨?_,? _⟩
+  refine forall₄_congr fun a _ha b hb => forall₃_congr fun c hc habc => ⟨?_, ?_⟩
   · rintro rfl
     exact (add_left_cancel habc).symm
   · rintro rfl

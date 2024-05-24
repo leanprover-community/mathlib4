@@ -415,7 +415,7 @@ theorem exists_null_frontiers_thickening (μ : Measure Ω) [SigmaFinite μ] (s :
       Tendsto rs atTop (𝓝 0) ∧ ∀ n, 0 < rs n ∧ μ (frontier (Metric.thickening (rs n) s)) = 0 := by
   rcases exists_seq_strictAnti_tendsto (0 : ℝ) with ⟨Rs, ⟨_, ⟨Rs_pos, Rs_lim⟩⟩⟩
   have obs := fun n : ℕ => exists_null_frontier_thickening μ s (Rs_pos n)
-  refine ⟨fun n : ℕ => (obs n).choose, ⟨?_,? _⟩⟩
+  refine ⟨fun n : ℕ => (obs n).choose, ⟨?_, ?_⟩⟩
   · exact tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds Rs_lim
       (fun n => (obs n).choose_spec.1.1.le) fun n => (obs n).choose_spec.1.2.le
   · exact fun n => ⟨(obs n).choose_spec.1.1, (obs n).choose_spec.2⟩

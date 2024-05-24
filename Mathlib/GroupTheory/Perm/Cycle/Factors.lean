@@ -573,7 +573,7 @@ theorem Disjoint.disjoint_cycleFactorsFinset {f g : Perm α} (h : Disjoint f g) 
 theorem Disjoint.cycleFactorsFinset_mul_eq_union {f g : Perm α} (h : Disjoint f g) :
     cycleFactorsFinset (f * g) = cycleFactorsFinset f ∪ cycleFactorsFinset g := by
   rw [cycleFactorsFinset_eq_finset]
-  refine ⟨?_,? _,? _⟩
+  refine ⟨?_, ?_, ?_⟩
   · simp [or_imp, mem_cycleFactorsFinset_iff, forall_swap]
   · rw [coe_union, Set.pairwise_union_of_symmetric Disjoint.symmetric]
     exact

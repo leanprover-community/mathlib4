@@ -177,7 +177,7 @@ The proof of this is adapted from [MM92], Chapter III, Section 7, Lemma 1.
 theorem classifier_isSheaf : Presieve.IsSheaf J₁ (Functor.closedSieves J₁) := by
   intro X S hS
   rw [← Presieve.isSeparatedFor_and_exists_isAmalgamation_iff_isSheafFor]
-  refine ⟨?_,? _⟩
+  refine ⟨?_, ?_⟩
   · rintro x ⟨M, hM⟩ ⟨N, hN⟩ hM₂ hN₂
     simp only [Functor.closedSieves_obj]
     ext Y f

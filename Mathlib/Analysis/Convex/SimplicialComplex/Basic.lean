@@ -202,7 +202,7 @@ theorem facets_subset : K.facets ⊆ K.faces := fun _ hs => hs.1
 #align geometry.simplicial_complex.facets_subset Geometry.SimplicialComplex.facets_subset
 
 theorem not_facet_iff_subface (hs : s ∈ K.faces) : s ∉ K.facets ↔ ∃ t, t ∈ K.faces ∧ s ⊂ t := by
-  refine ⟨fun hs' : ¬(_ ∧ _) => ?_,? _⟩
+  refine ⟨fun hs' : ¬(_ ∧ _) => ?_, ?_⟩
   · push_neg at hs'
     obtain ⟨t, ht⟩ := hs' hs
     exact ⟨t, ht.1, ⟨ht.2.1, fun hts => ht.2.2 (Subset.antisymm ht.2.1 hts)⟩⟩

@@ -771,7 +771,7 @@ protected theorem mul_eq_one_iff : f * g = 1 ↔ ∃ a b, f = pure a ∧ g = pur
     have hfg : (f * g).NeBot := hfg.symm.subst one_neBot
     rw [(hfg.nonempty_of_mem <| mul_mem_mul h₁ h₂).subset_one_iff, Set.mul_eq_one_iff] at h
     obtain ⟨a, b, rfl, rfl, h⟩ := h
-    refine ⟨a, b, ?_,? _, h⟩
+    refine ⟨a, b, ?_, ?_, h⟩
     · rwa [← hfg.of_mul_left.le_pure_iff, le_pure_iff]
     · rwa [← hfg.of_mul_right.le_pure_iff, le_pure_iff]
   · rintro ⟨a, b, rfl, rfl, h⟩
@@ -876,7 +876,7 @@ variable [Group α] [DivisionMonoid β] [FunLike F α β] [MonoidHomClass F α �
 -- Porting note: increase priority to appease `simpNF` so left-hand side doesn't simplify
 @[to_additive (attr := simp 1100)]
 protected theorem one_le_div_iff : 1 ≤ f / g ↔ ¬Disjoint f g := by
-  refine ⟨fun h hfg => ?_,? _⟩
+  refine ⟨fun h hfg => ?_, ?_⟩
   · obtain ⟨s, hs, t, ht, hst⟩ := hfg.le_bot (mem_bot : ∅ ∈ ⊥)
     exact Set.one_mem_div_iff.1 (h <| div_mem_div hs ht) (disjoint_iff.2 hst.symm)
   · rintro h s ⟨t₁, h₁, t₂, h₂, hs⟩

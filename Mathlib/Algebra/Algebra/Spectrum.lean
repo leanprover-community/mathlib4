@@ -246,7 +246,7 @@ theorem unit_smul_eq_smul (a : A) (r : Rˣ) : σ (r • a) = r • σ a := by
 -- `r ∈ σ(a*b) ↔ r ∈ σ(b*a)` for any `r : Rˣ`
 theorem unit_mem_mul_iff_mem_swap_mul {a b : A} {r : Rˣ} : ↑r ∈ σ (a * b) ↔ ↑r ∈ σ (b * a) := by
   have h₁ : ∀ x y : A, IsUnit (1 - x * y) → IsUnit (1 - y * x) := by
-    refine fun x y h => ⟨⟨1 - y * x, 1 + y * h.unit.inv * x, ?_,? _⟩, rfl⟩
+    refine fun x y h => ⟨⟨1 - y * x, 1 + y * h.unit.inv * x, ?_, ?_⟩, rfl⟩
     · calc
         (1 - y * x) * (1 + y * (IsUnit.unit h).inv * x) =
             1 - y * x + y * ((1 - x * y) * h.unit.inv) * x := by noncomm_ring

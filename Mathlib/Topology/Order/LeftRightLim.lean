@@ -228,7 +228,7 @@ theorem continuousAt_iff_leftLim_eq_rightLim : ContinuousAt f x ↔ leftLim f x 
       apply le_antisymm (leftLim_le hf (le_refl _))
       rw [h]
       exact le_rightLim hf (le_refl _)
-    refine continuousAt_iff_continuous_left'_right'.2 ⟨?_,? _⟩
+    refine continuousAt_iff_continuous_left'_right'.2 ⟨?_, ?_⟩
     · exact hf.continuousWithinAt_Iio_iff_leftLim_eq.2 h'
     · rw [h] at h'
       exact hf.continuousWithinAt_Ioi_iff_rightLim_eq.2 h'

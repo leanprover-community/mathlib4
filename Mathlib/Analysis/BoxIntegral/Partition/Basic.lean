@@ -555,7 +555,7 @@ theorem biUnion_le_iff {πi : ∀ J, Prepartition J} {π' : Prepartition I} :
 
 theorem le_biUnion_iff {πi : ∀ J, Prepartition J} {π' : Prepartition I} :
     π' ≤ π.biUnion πi ↔ π' ≤ π ∧ ∀ J ∈ π, π'.restrict J ≤ πi J := by
-  refine ⟨fun H => ⟨H.trans (π.biUnion_le πi), fun J hJ => ?_⟩,? _⟩
+  refine ⟨fun H => ⟨H.trans (π.biUnion_le πi), fun J hJ => ?_⟩, ?_⟩
   · rw [← π.restrict_biUnion πi hJ]
     exact restrict_mono H
   · rintro ⟨H, Hi⟩ J' hJ'

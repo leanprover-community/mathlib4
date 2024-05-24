@@ -116,7 +116,7 @@ theorem cutExpand_fibration (r : α → α → Prop) :
   · refine ⟨(s₁.erase a + t, s₂), GameAdd.fst ⟨t, a, hr, ?_⟩, ?_⟩
     · rw [add_comm, ← add_assoc, singleton_add, cons_erase h]
     · rw [add_assoc s₁, erase_add_left_pos _ h, add_right_comm, add_assoc]
-  · refine ⟨(s₁, (s₂ + t).erase a), GameAdd.snd ⟨t, a, hr, ?_⟩,? _⟩
+  · refine ⟨(s₁, (s₂ + t).erase a), GameAdd.snd ⟨t, a, hr, ?_⟩, ?_⟩
     · rw [add_comm, singleton_add, cons_erase h]
     · rw [add_assoc, erase_add_right_pos _ h]
 #align relation.cut_expand_fibration Relation.cutExpand_fibration

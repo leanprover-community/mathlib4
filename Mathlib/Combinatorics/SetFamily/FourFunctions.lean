@@ -223,7 +223,7 @@ lemma sum_collapse (h𝒜 : 𝒜 ⊆ (insert a u).powerset) (hu : a ∉ u) :
     · exact (insert_erase_invOn.2.injOn).mono fun s hs ↦ not_mem_mono (mem_powerset.1 hs) hu
   · congr with s
     simp only [mem_image, mem_powerset, mem_sdiff, subset_insert_iff]
-    refine ⟨?_, fun h ↦ ⟨_, h.1,? _⟩⟩
+    refine ⟨?_, fun h ↦ ⟨_, h.1, ?_⟩⟩
     · rintro ⟨s, hs, rfl⟩
       exact ⟨subset_insert_iff.1 <| insert_subset_insert _ hs, fun h ↦
         hu <| h <| mem_insert_self _ _⟩

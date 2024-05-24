@@ -583,7 +583,7 @@ theorem eq_weightedVSubOfPoint_subset_iff_eq_weightedVSubOfPoint_subtype {v : V}
     · rintro ⟨fs, w, rfl, rfl⟩
       refine
           ⟨fs.map (Function.Embedding.subtype _), map_subtype_subset _, fun i =>
-            if h : i ∈ s then w ⟨i, h⟩ else 0, ?_,? _⟩ <;>
+            if h : i ∈ s then w ⟨i, h⟩ else 0, ?_, ?_⟩ <;>
         simp
 #align finset.eq_weighted_vsub_of_point_subset_iff_eq_weighted_vsub_of_point_subtype Finset.eq_weightedVSubOfPoint_subset_iff_eq_weightedVSubOfPoint_subtype
 

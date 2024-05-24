@@ -295,7 +295,7 @@ lemma comp₀_rel {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFraction
     rw [← reassoc_of% h₃, ← reassoc_of% h₃', fac]
   obtain ⟨Y, t, ht, fac'⟩ := HasLeftCalculusOfFractions.ext _ _ _ z₁.hs eq
   simp only [assoc] at fac'
-  refine ⟨Y, z₄.f ≫ t, z₄.s ≫ t, ?_,? _, ?_⟩
+  refine ⟨Y, z₄.f ≫ t, z₄.s ≫ t, ?_, ?_, ?_⟩
   · simp only [comp₀, assoc, reassoc_of% fac]
   · simp only [comp₀, assoc, fac']
   · simp only [comp₀, assoc, ← reassoc_of% fac]

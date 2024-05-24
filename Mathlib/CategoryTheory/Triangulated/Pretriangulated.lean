@@ -198,7 +198,7 @@ lemma complete_distinguished_triangle_morphism₁ (T₁ T₂ : Triangle C)
       T₁.mor₃ ≫ a⟦(1 : ℤ)⟧' = c ≫ T₂.mor₃ := by
   obtain ⟨a, ⟨ha₁, ha₂⟩⟩ := complete_distinguished_triangle_morphism _ _
     (rot_of_distTriang _ hT₁) (rot_of_distTriang _ hT₂) b c comm
-  refine ⟨(shiftFunctor C (1 : ℤ)).preimage a, ⟨?_,? _⟩⟩
+  refine ⟨(shiftFunctor C (1 : ℤ)).preimage a, ⟨?_, ?_⟩⟩
   · apply (shiftFunctor C (1 : ℤ)).map_injective
     dsimp at ha₂
     rw [neg_comp, comp_neg, neg_inj] at ha₂
@@ -586,7 +586,7 @@ lemma productTriangle_distinguished {J : Type*} (T : J → Triangle C)
       apply Triangle.isIso_of_isIsos
       all_goals infer_instance
     exact isomorphic_distinguished _ hT' _ (asIso φ').symm
-  refine isIso_of_yoneda_map_bijective _ (fun A => ⟨?_,? _⟩)
+  refine isIso_of_yoneda_map_bijective _ (fun A => ⟨?_, ?_⟩)
   /- the proofs by diagram chase start here -/
   · suffices Mono φ'.hom₃ by
       intro a₁ a₂ ha
