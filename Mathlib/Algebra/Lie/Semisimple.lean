@@ -33,12 +33,23 @@ lie algebra, radical, simple, semisimple
 
 universe u v w w₁ w₂
 
-/-- A Lie module is *irreducible* if its only Lie submodules are `⊥` and `⊤`
-(which may coincide). -/
-abbrev LieModule.IsIrreducible (R L M : Type*) [CommRing R] [LieRing L]
-    [AddCommGroup M] [Module R M] [LieRingModule L M] : Prop :=
+section Irreducible
+
+variable (R L M : Type*) [CommRing R] [LieRing L] [AddCommGroup M] [Module R M] [LieRingModule L M]
+
+/-- A nontrivial Lie module is *irreducible* if its only Lie submodules are `⊥` and `⊤`. -/
+abbrev LieModule.IsIrreducible : Prop :=
   IsSimpleOrder (LieSubmodule R L M)
 #align lie_module.is_irreducible LieModule.IsIrreducible
+
+lemma LieModule.nontrivial_of_isIrreducible [LieModule.IsIrreducible R L M] : Nontrivial M where
+  exists_pair_ne := by
+    have aux : (⊥ : LieSubmodule R L M) ≠ ⊤ := bot_ne_top
+    contrapose! aux
+    ext m
+    simpa using aux m 0
+
+end Irreducible
 
 namespace LieAlgebra
 
