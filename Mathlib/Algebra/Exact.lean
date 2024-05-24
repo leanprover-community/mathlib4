@@ -119,10 +119,11 @@ lemma Exact.iff_of_ladder_linearEquiv
         of_ladder_linearEquiv_of_exact h₂₁ h₃₂
   mpr := of_ladder_linearEquiv_of_exact h₁₂ h₂₃
 
-end
+end LinearMap
 
 section split
 
+variable [Semiring R]
 variable [AddCommGroup M] [AddCommGroup N] [AddCommGroup P] [Module R M] [Module R N] [Module R P]
 variable {f : M →ₗ[R] N} {g : N →ₗ[R] P}
 
@@ -237,8 +238,6 @@ theorem Exact.split_tfae
   tfae_finish
 
 end split
-
-end LinearMap
 
 section Ring
 
