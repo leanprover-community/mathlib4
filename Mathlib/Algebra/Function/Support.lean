@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Prod
+import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Order.Cover
 
 #align_import algebra.support from "leanprover-community/mathlib"@"29cb56a7b35f72758b05a30490e1f10bd62c35c1"
@@ -243,6 +244,16 @@ theorem mulSupport_along_fiber_subset (f : α × β → M) (a : α) :
   fun x hx => ⟨(a, x), by simpa using hx⟩
 #align function.mul_support_along_fiber_subset Function.mulSupport_along_fiber_subset
 #align function.support_along_fiber_subset Function.support_along_fiber_subset
+
+@[to_additive]
+theorem mulSupport_curry (f : α × β → M) :
+    (mulSupport f.curry) = (mulSupport f).image Prod.fst := by
+  simp [mulSupport, funext_iff, image]
+
+@[to_additive]
+theorem mulSupport_curry' (f : α × β → M) :
+    (mulSupport fun a b ↦ f (a, b)) = (mulSupport f).image Prod.fst :=
+  mulSupport_curry f
 
 end One
 

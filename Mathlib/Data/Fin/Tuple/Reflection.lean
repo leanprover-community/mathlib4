@@ -46,7 +46,7 @@ theorem seq_eq : ∀ {m} (f : Fin m → α → β) (v : Fin m → α), seq f v =
   | n + 1, f, v =>
     funext fun i => by
       simp_rw [seq, seq_eq]
-      refine' i.cases _ fun i => _
+      refine i.cases ?_ fun i => ?_
       · rfl
       · rw [Matrix.cons_val_succ]
         rfl

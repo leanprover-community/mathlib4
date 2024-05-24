@@ -75,9 +75,6 @@ attribute [nolint docBlame] CategoryTheory.OplaxNatTrans.app
   CategoryTheory.OplaxNatTrans.naturality_id
   CategoryTheory.OplaxNatTrans.naturality_comp
 
-/- Porting note: removed primes from field names and removed `restate_axiom` since that is no longer
-  needed in Lean 4 -/
-
 attribute [reassoc (attr := simp)] OplaxNatTrans.naturality_naturality OplaxNatTrans.naturality_id
   OplaxNatTrans.naturality_comp
 
@@ -216,8 +213,6 @@ structure Modification (η θ : F ⟶ G) where
 #align category_theory.oplax_nat_trans.modification.app CategoryTheory.OplaxNatTrans.Modification
 #align category_theory.oplax_nat_trans.modification.naturality' CategoryTheory.OplaxNatTrans.Modification.naturality
 #align category_theory.oplax_nat_trans.modification.naturality CategoryTheory.OplaxNatTrans.Modification.naturality
-
-attribute [pp_dot] Modification.app
 
 attribute [nolint docBlame] CategoryTheory.OplaxNatTrans.Modification.app
   CategoryTheory.OplaxNatTrans.Modification.naturality

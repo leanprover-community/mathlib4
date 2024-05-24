@@ -3,7 +3,7 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.GroupRingAction.Basic
+import Mathlib.Algebra.Ring.Action.Basic
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.GroupTheory.Congruence
@@ -408,8 +408,7 @@ instance [Monoid α] [Semiring R] [MulSemiringAction α R] [IsScalarTower α R R
 end Algebraic
 
 /-- The natural homomorphism from a ring to its quotient by a congruence relation. -/
-def mk' [NonAssocSemiring R] (c : RingCon R) : R →+* c.Quotient
-    where
+def mk' [NonAssocSemiring R] (c : RingCon R) : R →+* c.Quotient where
   toFun := toQuotient
   map_zero' := rfl
   map_one' := rfl
@@ -496,6 +495,9 @@ instance : CompleteLattice (RingCon R) where
 
 @[simp, norm_cast]
 theorem coe_top : ⇑(⊤ : RingCon R) = ⊤ := rfl
+
+@[simp, norm_cast]
+theorem coe_bot : ⇑(⊥ : RingCon R) = Eq := rfl
 
 /-- The infimum of two congruence relations equals the infimum of the underlying binary
 operations. -/

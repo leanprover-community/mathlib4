@@ -372,9 +372,9 @@ theorem toDual_ker : LinearMap.ker b.toDual = ⊥ :=
 
 -- Porting note (#11036): broken dot notation lean4#1910 LinearMap.range
 theorem toDual_range [Finite ι] : LinearMap.range b.toDual = ⊤ := by
-  refine' eq_top_iff'.2 fun f => _
+  refine eq_top_iff'.2 fun f => ?_
   let lin_comb : ι →₀ R := Finsupp.equivFunOnFinite.symm fun i => f (b i)
-  refine' ⟨Finsupp.total ι M R b lin_comb, b.ext fun i => _⟩
+  refine ⟨Finsupp.total ι M R b lin_comb, b.ext fun i => ?_⟩
   rw [b.toDual_eq_repr _ i, repr_total b]
   rfl
 #align basis.to_dual_range Basis.toDual_range
@@ -466,7 +466,7 @@ theorem coe_dualBasis : ⇑b.dualBasis = b.coord := by
 
 @[simp]
 theorem toDual_toDual : b.dualBasis.toDual.comp b.toDual = Dual.eval R M := by
-  refine' b.ext fun i => b.dualBasis.ext fun j => _
+  refine b.ext fun i => b.dualBasis.ext fun j => ?_
   rw [LinearMap.comp_apply, toDual_apply_left, coe_toDual_self, ← coe_dualBasis,
     Dual.eval_apply, Basis.repr_self, Finsupp.single_apply, dualBasis_apply_self]
 #align basis.to_dual_to_dual Basis.toDual_toDual
@@ -897,7 +897,7 @@ def dualAnnihilator {R : Type u} {M : Type v} [CommSemiring R] [AddCommMonoid M]
 
 @[simp]
 theorem mem_dualAnnihilator (φ : Module.Dual R M) : φ ∈ W.dualAnnihilator ↔ ∀ w ∈ W, φ w = 0 := by
-  refine' LinearMap.mem_ker.trans _
+  refine LinearMap.mem_ker.trans ?_
   simp_rw [LinearMap.ext_iff, dualRestrict_apply]
   exact ⟨fun h w hw => h ⟨w, hw⟩, fun h w => h w.1 w.2⟩
 #align submodule.mem_dual_annihilator Submodule.mem_dualAnnihilator
@@ -1548,7 +1548,7 @@ theorem dualCopairing_nondegenerate (W : Subspace K V₁) : W.dualCopairing.Nond
 -- Argument from https://math.stackexchange.com/a/2423263/172988
 theorem dualAnnihilator_inf_eq (W W' : Subspace K V₁) :
     (W ⊓ W').dualAnnihilator = W.dualAnnihilator ⊔ W'.dualAnnihilator := by
-  refine' le_antisymm _ (sup_dualAnnihilator_le_inf W W')
+  refine le_antisymm ?_ (sup_dualAnnihilator_le_inf W W')
   let F : V₁ →ₗ[K] (V₁ ⧸ W) × V₁ ⧸ W' := (Submodule.mkQ W).prod (Submodule.mkQ W')
   -- Porting note (#11036): broken dot notation lean4#1910 LinearMap.ker
   have : LinearMap.ker F = W ⊓ W' := by simp only [F, LinearMap.ker_prod, ker_mkQ]
@@ -1830,7 +1830,8 @@ theorem dualDistrib_dualDistribInvOfBasis_left_inverse (b : Basis ι R M) (c : B
     Basis.repr_self, ne_eq, _root_.map_sum, map_smul, homTensorHomMap_apply, compRight_apply,
     Basis.tensorProduct_apply, coeFn_sum, Finset.sum_apply, smul_apply, LinearEquiv.coe_coe,
     map_tmul, lid_tmul, smul_eq_mul, id_coe, id_eq]
-  rw [Finset.sum_eq_single i, Finset.sum_eq_single j]; simp
+  rw [Finset.sum_eq_single i, Finset.sum_eq_single j]
+  · simp
   all_goals { intros; simp [*] at * }
 
 -- Porting note: introduced to help with timeout in dualDistribEquivOfBasis
@@ -1841,7 +1842,8 @@ theorem dualDistrib_dualDistribInvOfBasis_right_inverse (b : Basis ι R M) (c : 
   simp only [Basis.tensorProduct_apply, Basis.coe_dualBasis, coe_comp, Function.comp_apply,
     dualDistribInvOfBasis_apply, dualDistrib_apply, Basis.coord_apply, Basis.repr_self,
     ne_eq, id_coe, id_eq]
-  rw [Finset.sum_eq_single i, Finset.sum_eq_single j]; simp
+  rw [Finset.sum_eq_single i, Finset.sum_eq_single j]
+  · simp
   all_goals { intros; simp [*] at * }
 
 /-- A linear equivalence between `Dual M ⊗ Dual N` and `Dual (M ⊗ N)` given bases for `M` and `N`.

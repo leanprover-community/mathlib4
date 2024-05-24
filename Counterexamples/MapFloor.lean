@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Hom.Ring
+import Mathlib.Algebra.Order.Group.PiLex
 import Mathlib.Algebra.Polynomial.Reverse
 
 #align_import map_floor from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
@@ -73,8 +73,8 @@ instance orderedAddCommGroup : OrderedAddCommGroup ℤ[ε] := by
 
 theorem pos_iff {p : ℤ[ε]} : 0 < p ↔ 0 < p.trailingCoeff := by
   rw [trailingCoeff]
-  refine'
-    ⟨_, fun h =>
+  refine
+    ⟨?_, fun h =>
       ⟨p.natTrailingDegree, fun m hm => (coeff_eq_zero_of_lt_natTrailingDegree hm).symm, h⟩⟩
   rintro ⟨n, hn⟩
   convert hn.2

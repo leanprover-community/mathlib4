@@ -85,7 +85,7 @@ theorem mul (k : ℤ) : PythagoreanTriple (k * x) (k * y) (k * z) :=
 `(x, y, z)` is also a triple. -/
 theorem mul_iff (k : ℤ) (hk : k ≠ 0) :
     PythagoreanTriple (k * x) (k * y) (k * z) ↔ PythagoreanTriple x y z := by
-  refine' ⟨_, fun h => h.mul k⟩
+  refine ⟨?_, fun h => h.mul k⟩
   simp only [PythagoreanTriple]
   intro h
   rw [← mul_left_inj' (mul_ne_zero hk hk)]
@@ -421,7 +421,7 @@ private theorem coprime_sq_sub_sq_sum_of_odd_odd {m n : ℤ} (h : Int.gcd m n = 
   have h3 : ((m0 * 2 + 1) ^ 2 - (n0 * 2 + 1) ^ 2) / 2 % 2 = 0 := by
     rw [h2, Int.mul_ediv_cancel_left, Int.mul_emod_right]
     decide
-  refine' ⟨⟨_, h1⟩, ⟨_, h2⟩, h3, _⟩
+  refine ⟨⟨_, h1⟩, ⟨_, h2⟩, h3, ?_⟩
   have h20 : (2 : ℤ) ≠ 0 := by decide
   rw [h1, h2, Int.mul_ediv_cancel_left _ h20, Int.mul_ediv_cancel_left _ h20]
   by_contra h4
@@ -454,7 +454,7 @@ theorem isPrimitiveClassified_aux (hc : x.gcd y = 1) (hzpos : 0 < z) {m n : ℤ}
   use m, n
   apply And.intro _ (And.intro co pp)
   right
-  refine' ⟨_, h2.left⟩
+  refine ⟨?_, h2.left⟩
   rw [← Rat.coe_int_inj _ _, ← div_left_inj' ((mt (Rat.coe_int_inj z 0).mp) hz), hv2, h2.right]
   norm_cast
 #align pythagorean_triple.is_primitive_classified_aux PythagoreanTriple.isPrimitiveClassified_aux
@@ -610,12 +610,12 @@ theorem coprime_classification :
     obtain ⟨m, n, H⟩ := h.left.isPrimitiveClassified_of_coprime h.right
     use m, n
     rcases H with ⟨⟨rfl, rfl⟩ | ⟨rfl, rfl⟩, co, pp⟩
-    · refine' ⟨Or.inl ⟨rfl, rfl⟩, _, co, pp⟩
+    · refine ⟨Or.inl ⟨rfl, rfl⟩, ?_, co, pp⟩
       have : z ^ 2 = (m ^ 2 + n ^ 2) ^ 2 := by
         rw [sq, ← h.left.eq]
         ring
       simpa using eq_or_eq_neg_of_sq_eq_sq _ _ this
-    · refine' ⟨Or.inr ⟨rfl, rfl⟩, _, co, pp⟩
+    · refine ⟨Or.inr ⟨rfl, rfl⟩, ?_, co, pp⟩
       have : z ^ 2 = (m ^ 2 + n ^ 2) ^ 2 := by
         rw [sq, ← h.left.eq]
         ring
@@ -693,12 +693,12 @@ theorem classification :
     obtain ⟨k, m, n, H⟩ := h.classified
     use k, m, n
     rcases H with (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)
-    · refine' ⟨Or.inl ⟨rfl, rfl⟩, _⟩
+    · refine ⟨Or.inl ⟨rfl, rfl⟩, ?_⟩
       have : z ^ 2 = (k * (m ^ 2 + n ^ 2)) ^ 2 := by
         rw [sq, ← h.eq]
         ring
       simpa using eq_or_eq_neg_of_sq_eq_sq _ _ this
-    · refine' ⟨Or.inr ⟨rfl, rfl⟩, _⟩
+    · refine ⟨Or.inr ⟨rfl, rfl⟩, ?_⟩
       have : z ^ 2 = (k * (m ^ 2 + n ^ 2)) ^ 2 := by
         rw [sq, ← h.eq]
         ring
