@@ -1015,6 +1015,8 @@ theorem isCycle_copy {u u'} (p : G.Walk u u) (hu : u = u') :
   rfl
 #align simple_graph.walk.is_cycle_copy SimpleGraph.Walk.isCycle_copy
 
+lemma IsCycle.not_nil {p : G.Walk v v} (hp : IsCycle p) : ¬ p.Nil := (hp.ne_nil ·.eq_nil)
+
 @[simp]
 theorem IsTrail.nil {u : V} : (nil : G.Walk u u).IsTrail :=
   ⟨by simp [edges]⟩

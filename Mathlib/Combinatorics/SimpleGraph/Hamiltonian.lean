@@ -74,7 +74,6 @@ lemma IsHamiltonianCycle.isCycle (hp : p.IsHamiltonianCycle) : p.IsCycle :=
 
 lemma IsHamiltonianCycle.map {H : SimpleGraph β} (f : G →g H) (hf : Bijective f)
     (hp : p.IsHamiltonianCycle) : (p.map f).IsHamiltonianCycle where
-    -- need to get it to a statement about every vertex, then I can apply surjectiveness and injectiveness
   toIsCycle := by
     rw [map_isCycle_iff_of_injective]
     exact isCycle hp
