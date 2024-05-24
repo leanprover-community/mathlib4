@@ -1038,7 +1038,7 @@ theorem lt_iff' : μ < ν ↔ μ ≤ ν ∧ ∃ s, μ s < ν s :=
 #align measure_theory.measure.lt_iff' MeasureTheory.Measure.lt_iff'
 
 instance covariantAddLE [MeasurableSpace α] :
-    CovariantClass (Measure α) (Measure α) (· + ·) (· ≤ ·) :=
+    AddLeftMono (Measure α) :=
   ⟨fun _ν _μ₁ _μ₂ hμ s => add_le_add_left (hμ s) _⟩
 #align measure_theory.measure.covariant_add_le MeasureTheory.Measure.covariantAddLE
 

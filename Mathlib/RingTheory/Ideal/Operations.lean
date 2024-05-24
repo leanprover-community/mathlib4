@@ -183,7 +183,7 @@ theorem smul_mono_left (h : I ≤ J) : I • N ≤ J • N :=
   map₂_le_map₂_left h
 #align submodule.smul_mono_left Submodule.smul_mono_left
 
-instance : CovariantClass (Ideal R) (Submodule R M) HSMul.hSMul LE.le :=
+instance : SMulLeftMono (Ideal R) (Submodule R M) :=
   ⟨fun _ _ => map₂_le_map₂_right⟩
 
 @[deprecated smul_mono_right] -- 2024-03-31

@@ -90,7 +90,7 @@ def abs.unexpander : Lean.PrettyPrinter.Unexpander
 @[to_additive] lemma mabs_div_comm (a b : α) : |a / b|ₘ = |b / a|ₘ := by rw [← mabs_inv, inv_div]
 #align abs_sub_comm abs_sub_comm
 
-variable [CovariantClass α α (· * ·) (· ≤ ·)]
+variable [MulLeftMono α]
 
 @[to_additive] lemma mabs_of_one_le (h : 1 ≤ a) : |a|ₘ = a :=
   sup_eq_left.2 <| (inv_le_one'.2 h).trans h
@@ -117,7 +117,7 @@ attribute [gcongr] abs_le_abs_of_nonneg
 @[to_additive (attr := simp)] lemma mabs_one : |(1 : α)|ₘ = 1 := mabs_of_one_le le_rfl
 #align abs_zero abs_zero
 
-variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
+variable [MulRightMono α]
 
 @[to_additive (attr := simp) abs_nonneg] lemma one_le_mabs (a : α) : 1 ≤ |a|ₘ := by
   apply pow_two_semiclosed _
@@ -134,7 +134,7 @@ variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
 end Group
 
 section CommGroup
-variable [CommGroup α] [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α}
+variable [CommGroup α] [MulLeftMono α] {a b : α}
 
 -- Banasiak Proposition 2.12, Zaanen 2nd lecture
 /-- The absolute value satisfies the triangle inequality. -/
@@ -262,7 +262,7 @@ variable [Group α] [LinearOrder α] {a b : α}
   mabs_by_cases (IsSquare · ↔ _) Iff.rfl isSquare_inv
 #align even_abs even_abs
 
-variable [CovariantClass α α (· * ·) (· ≤ ·)] {a b c : α}
+variable [MulLeftMono α] {a b c : α}
 
 @[to_additive (attr := simp) abs_pos] lemma one_lt_mabs : 1 < |a|ₘ ↔ a ≠ 1 := by
   obtain ha | rfl | ha := lt_trichotomy a 1
@@ -292,7 +292,7 @@ variable [CovariantClass α α (· * ·) (· ≤ ·)] {a b c : α}
 @[to_additive] lemma inv_mabs_le_inv (a : α) : |a|ₘ⁻¹ ≤ a⁻¹ := by simpa using inv_mabs_le a⁻¹
 #align neg_abs_le_neg neg_abs_le_neg
 
-variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
+variable [MulRightMono α]
 
 @[to_additive] lemma mabs_ne_one : |a|ₘ ≠ 1 ↔ a ≠ 1 :=
   (one_le_mabs a).gt_iff_ne.symm.trans one_lt_mabs
@@ -373,15 +373,10 @@ section LinearOrderedAddCommGroup
 
 variable [LinearOrderedAddCommGroup α] {a b c d : α}
 
--- Porting note:
--- Lean can perfectly well find this instance,
--- but in the rewrites below it is going looking for it without having fixed `α`.
-example : CovariantClass α α (swap fun x y ↦ x + y) fun x y ↦ x ≤ y := inferInstance
-
-theorem abs_le : |a| ≤ b ↔ -b ≤ a ∧ a ≤ b := by rw [abs_le', and_comm, @neg_le α]
+theorem abs_le : |a| ≤ b ↔ -b ≤ a ∧ a ≤ b := by rw [abs_le', and_comm, neg_le]
 #align abs_le abs_le
 
-theorem le_abs' : a ≤ |b| ↔ b ≤ -a ∨ a ≤ b := by rw [le_abs, or_comm, @le_neg α]
+theorem le_abs' : a ≤ |b| ↔ b ≤ -a ∨ a ≤ b := by rw [le_abs, or_comm, le_neg]
 #align le_abs' le_abs'
 
 theorem neg_le_of_abs_le (h : |a| ≤ b) : -b ≤ a :=
@@ -394,7 +389,7 @@ theorem le_of_abs_le (h : |a| ≤ b) : a ≤ b :=
 
 @[to_additive]
 theorem apply_abs_le_mul_of_one_le' {β : Type*} [MulOneClass β] [Preorder β]
-    [CovariantClass β β (· * ·) (· ≤ ·)] [CovariantClass β β (swap (· * ·)) (· ≤ ·)] {f : α → β}
+    [MulLeftMono β] [MulRightMono β] {f : α → β}
     {a : α} (h₁ : 1 ≤ f a) (h₂ : 1 ≤ f (-a)) : f |a| ≤ f a * f (-a) :=
   (le_total a 0).rec (fun ha => (abs_of_nonpos ha).symm ▸ le_mul_of_one_le_left' h₁) fun ha =>
     (abs_of_nonneg ha).symm ▸ le_mul_of_one_le_right' h₂
@@ -403,7 +398,7 @@ theorem apply_abs_le_mul_of_one_le' {β : Type*} [MulOneClass β] [Preorder β]
 
 @[to_additive]
 theorem apply_abs_le_mul_of_one_le {β : Type*} [MulOneClass β] [Preorder β]
-    [CovariantClass β β (· * ·) (· ≤ ·)] [CovariantClass β β (swap (· * ·)) (· ≤ ·)] {f : α → β}
+    [MulLeftMono β] [MulRightMono β] {f : α → β}
     (h : ∀ x, 1 ≤ f x) (a : α) : f |a| ≤ f a * f (-a) :=
   apply_abs_le_mul_of_one_le' (h _) (h _)
 #align apply_abs_le_mul_of_one_le apply_abs_le_mul_of_one_le

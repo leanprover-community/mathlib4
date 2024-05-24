@@ -97,9 +97,8 @@ end ExplicitDegrees
 
 section AddOnly
 
-variable [Add A] [Add B] [Add T] [CovariantClass B B (· + ·) (· ≤ ·)]
-  [CovariantClass B B (Function.swap (· + ·)) (· ≤ ·)] [CovariantClass T T (· + ·) (· ≤ ·)]
-  [CovariantClass T T (Function.swap (· + ·)) (· ≤ ·)]
+variable [Add A] [Add B] [Add T] [AddLeftMono B] [AddRightMono B]
+  [AddLeftMono T] [AddRightMono T]
 
 theorem sup_support_mul_le {degb : A → B} (degbm : ∀ {a b}, degb (a + b) ≤ degb a + degb b)
     (f g : R[A]) :
@@ -118,9 +117,8 @@ end AddOnly
 
 section AddMonoids
 
-variable [AddMonoid A] [AddMonoid B] [CovariantClass B B (· + ·) (· ≤ ·)]
-  [CovariantClass B B (Function.swap (· + ·)) (· ≤ ·)] [AddMonoid T]
-  [CovariantClass T T (· + ·) (· ≤ ·)] [CovariantClass T T (Function.swap (· + ·)) (· ≤ ·)]
+variable [AddMonoid A] [AddMonoid B] [AddLeftMono B] [AddRightMono B]
+  [AddMonoid T] [AddLeftMono T] [AddRightMono T]
   {degb : A → B} {degt : A → T}
 
 theorem sup_support_list_prod_le (degb0 : degb 0 ≤ 0)
@@ -168,9 +166,8 @@ end Semiring
 
 section CommutativeLemmas
 
-variable [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B] [CovariantClass B B (· + ·) (· ≤ ·)]
-  [CovariantClass B B (Function.swap (· + ·)) (· ≤ ·)] [AddCommMonoid T]
-  [CovariantClass T T (· + ·) (· ≤ ·)] [CovariantClass T T (Function.swap (· + ·)) (· ≤ ·)]
+variable [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B] [AddLeftMono B] [AddRightMono B]
+  [AddCommMonoid T] [AddLeftMono T] [AddRightMono T]
   {degb : A → B} {degt : A → T}
 
 theorem sup_support_multiset_prod_le (degb0 : degb 0 ≤ 0)
@@ -274,14 +271,13 @@ theorem apply_eq_zero_of_not_le_supDegree {a : A} (hlt : ¬ D a ≤ p.supDegree 
 
 variable (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
 
-theorem supDegree_mul_le [CovariantClass B B (· + ·) (· ≤ ·)]
-    [CovariantClass B B (Function.swap (· + ·)) (· ≤ ·)] :
+theorem supDegree_mul_le [AddLeftMono B] [AddRightMono B] :
     (p * q).supDegree D ≤ p.supDegree D + q.supDegree D :=
   sup_support_mul_le (fun {_ _} => (hadd _ _).le) p q
 
 theorem supDegree_prod_le {R A B : Type*} [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B]
     [SemilatticeSup B] [OrderBot B]
-    [CovariantClass B B (· + ·) (· ≤ ·)] [CovariantClass B B (Function.swap (· + ·)) (· ≤ ·)]
+    [AddLeftMono B] [AddRightMono B]
     {D : A → B} (hzero : D 0 = 0) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
     {ι} {s : Finset ι} {f : ι → R[A]} :
     (∏ i in s, f i).supDegree D ≤ ∑ i in s, (f i).supDegree D := by
@@ -292,7 +288,7 @@ theorem supDegree_prod_le {R A B : Type*} [CommSemiring R] [AddCommMonoid A] [Ad
     rw [Finset.prod_insert his, Finset.sum_insert his]
     exact (supDegree_mul_le hadd).trans (add_le_add_left ih _)
 
-variable [CovariantClass B B (· + ·) (· < ·)] [CovariantClass B B (Function.swap (· + ·)) (· < ·)]
+variable [AddLeftStrictMono B] [AddRightStrictMono B]
 
 theorem apply_add_of_supDegree_le (hD : D.Injective) {ap aq : A}
     (hp : p.supDegree D ≤ D ap) (hq : q.supDegree D ≤ D aq) :
@@ -306,7 +302,7 @@ theorem apply_add_of_supDegree_le (hD : D.Injective) {ap aq : A}
   · refine fun a ha hne => Finset.sum_eq_zero (fun a' ha' => if_neg <| fun he => ?_)
     apply_fun D at he
     simp_rw [hadd] at he
-    have := covariantClass_le_of_lt B B (· + ·)
+    have := addLeftMono_of_addLeftStrictMono B
     exact (add_lt_add_of_lt_of_le (((Finset.le_sup ha).trans hp).lt_of_ne <| hD.ne_iff.2 hne)
       <| (Finset.le_sup ha').trans hq).ne he
   · refine fun h => Finset.sum_eq_zero (fun a _ => ite_eq_right_iff.mpr <| fun _ => ?_)
@@ -337,7 +333,7 @@ theorem le_infDegree_add (f g : R[A]) :
     (f.infDegree D) ⊓ (g.infDegree D) ≤ (f + g).infDegree D :=
   le_inf_support_add D f g
 
-variable [CovariantClass T T (· + ·) (· ≤ ·)] [CovariantClass T T (Function.swap (· + ·)) (· ≤ ·)]
+variable [AddLeftMono T] [AddRightMono T]
   (D : AddHom A T) in
 theorem le_infDegree_mul (f g : R[A]) :
     f.infDegree D + g.infDegree D ≤ (f * g).infDegree D :=

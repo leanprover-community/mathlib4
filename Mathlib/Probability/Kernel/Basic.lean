@@ -71,7 +71,7 @@ instance {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
   coe_injective' := Subtype.val_injective
 
 instance kernel.instCovariantAddLE {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
-    CovariantClass (kernel α β) (kernel α β) (· + ·) (· ≤ ·) :=
+    AddLeftMono (kernel α β) :=
   ⟨fun _ _ _ hμ a ↦ add_le_add_left (hμ a) _⟩
 
 noncomputable

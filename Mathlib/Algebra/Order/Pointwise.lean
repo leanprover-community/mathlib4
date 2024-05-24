@@ -17,7 +17,7 @@ This file contains lemmas about the effect of pointwise operations on sets with 
 ## TODO
 
 `sSup (s • t) = sSup s • sSup t` and `sInf (s • t) = sInf s • sInf t` hold as well but
-`CovariantClass` is currently not polymorphic enough to state it.
+`Covariant` is currently not polymorphic enough to state it.
 -/
 
 
@@ -54,7 +54,7 @@ end One
 
 section Group
 
-variable [Group α] [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
+variable [Group α] [MulLeftMono α] [MulRightMono α]
   (s t : Set α)
 
 @[to_additive]
@@ -123,7 +123,7 @@ end One
 
 section Group
 
-variable [Group α] [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
+variable [Group α] [MulLeftMono α] [MulRightMono α]
   {s t : Set α}
 
 @[to_additive]

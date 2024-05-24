@@ -713,7 +713,7 @@ theorem div_ae_eq_one {β} [Group β] (f g : α → β) : f / g =ᵐ[μ] 1 ↔ f
 
 @[to_additive sub_nonneg_ae]
 lemma one_le_div_ae {β : Type*} [Group β] [LE β]
-    [CovariantClass β β (Function.swap (· * ·)) (· ≤ ·)] (f g : α → β) :
+    [MulRightMono β] (f g : α → β) :
     1 ≤ᵐ[μ] g / f ↔ f ≤ᵐ[μ] g := by
   refine ⟨fun h ↦ h.mono fun a ha ↦ ?_, fun h ↦ h.mono fun a ha ↦ ?_⟩
   · rwa [Pi.one_apply, Pi.div_apply, one_le_div'] at ha

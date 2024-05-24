@@ -665,13 +665,13 @@ private theorem add_le_add' : ∀ {a b c d : Cardinal}, a ≤ b → c ≤ d → 
   rintro ⟨α⟩ ⟨β⟩ ⟨γ⟩ ⟨δ⟩ ⟨e₁⟩ ⟨e₂⟩; exact ⟨e₁.sumMap e₂⟩
 -- #align cardinal.add_le_add' Cardinal.add_le_add'
 
-instance add_covariantClass : CovariantClass Cardinal Cardinal (· + ·) (· ≤ ·) :=
+instance addLeftMono : AddLeftMono Cardinal :=
   ⟨fun _ _ _ => add_le_add' le_rfl⟩
-#align cardinal.add_covariant_class Cardinal.add_covariantClass
+#align cardinal.add_covariant_class Cardinal.addLeftMono
 
-instance add_swap_covariantClass : CovariantClass Cardinal Cardinal (swap (· + ·)) (· ≤ ·) :=
+instance addRightMono : AddRightMono Cardinal :=
   ⟨fun _ _ _ h => add_le_add' h le_rfl⟩
-#align cardinal.add_swap_covariant_class Cardinal.add_swap_covariantClass
+#align cardinal.add_swap_covariant_class Cardinal.addRightMono
 
 instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring Cardinal.{u} :=
   { Cardinal.commSemiring,

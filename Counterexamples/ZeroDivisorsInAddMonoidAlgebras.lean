@@ -30,8 +30,8 @@ nontrivial ring `R` and the additive group `G` with a torsion element can be any
 Besides this example, we also address a comment in `Data.Finsupp.Lex` to the effect that the proof
 that addition is monotone on `α →₀ N` uses that it is *strictly* monotone on `N`.
 
-The specific statement is about `Finsupp.Lex.covariantClass_lt_left` and its analogue
-`Finsupp.Lex.covariantClass_le_right`.  We do not need two separate counterexamples, since the
+The specific statement is about `Finsupp.Lex.addLeftStrictMono` and its analogue
+`Finsupp.Lex.addRightStrictMono`.  We do not need two separate counterexamples, since the
 operation is commutative.
 
 The example is very simple.  Let `F = {0, 1}` with order determined by `0 < 1` and absorbing
@@ -150,9 +150,9 @@ elab "guard_decl" na:ident mod:ident : command => do
   let .some mdni := env.getModuleIdx? mdn | throwError "the module {mod} is not imported!"
   unless dcli = mdni do throwError "instance {na} is no longer in {mod}."
 
-guard_decl Finsupp.Lex.covariantClass_le_left Mathlib.Data.Finsupp.Lex
+guard_decl Finsupp.Lex.addLeftMono Mathlib.Data.Finsupp.Lex
 
-guard_decl Finsupp.Lex.covariantClass_le_right Mathlib.Data.Finsupp.Lex
+guard_decl Finsupp.Lex.addRightMono Mathlib.Data.Finsupp.Lex
 
 namespace F
 
@@ -192,21 +192,21 @@ instance : AddCommMonoid F where
   add_comm := by boom
   nsmul := nsmulRec
 
-/-- The `CovariantClass`es asserting monotonicity of addition hold for `F`. -/
-instance covariantClass_add_le : CovariantClass F F (· + ·) (· ≤ ·) :=
+/-- The `AddLeftMono`es asserting monotonicity of addition hold for `F`. -/
+instance addLeftMono : AddLeftMono F :=
   ⟨by boom⟩
-#align counterexample.F.covariant_class_add_le Counterexample.F.covariantClass_add_le
+#align counterexample.F.covariant_class_add_le Counterexample.F.addLeftMono
 
-example : CovariantClass F F (Function.swap (· + ·)) (· ≤ ·) := by infer_instance
+example : AddRightMono F := by infer_instance
 
 /-- The following examples show that `F` has all the typeclasses used by
-`Finsupp.Lex.covariantClass_le_left`... -/
+`Finsupp.Lex.addLeftStrictMono`... -/
 example : LinearOrder F := by infer_instance
 
 example : AddMonoid F := by infer_instance
 
 /-- ... except for the strict monotonicity of addition, the crux of the matter. -/
-example : ¬CovariantClass F F (· + ·) (· < ·) := fun h =>
+example : ¬AddLeftStrictMono F := fun h =>
   lt_irrefl 1 <| (h.elim : Covariant F F (· + ·) (· < ·)) 1 z01
 
 /-- A few `simp`-lemmas to take care of trivialities in the proof of the example below. -/
@@ -236,8 +236,8 @@ theorem f110 : ofLex (Finsupp.single (1 : F) (1 : F)) 0 = 0 :=
 
 /-- Here we see that (not-necessarily strict) monotonicity of addition on `Lex (F →₀ F)` is not
 a consequence of monotonicity of addition on `F`.  Strict monotonicity of addition on `F` is
-enough and is the content of `Finsupp.Lex.covariantClass_le_left`. -/
-example : ¬CovariantClass (Lex (F →₀ F)) (Lex (F →₀ F)) (· + ·) (· ≤ ·) := by
+enough and is the content of `Finsupp.Lex.addLeftStrictMono`. -/
+example : ¬AddLeftMono (Lex (F →₀ F)) := by
   rintro ⟨h⟩
   refine (not_lt (α := Lex (F →₀ F))).mpr (@h (Finsupp.single (0 : F) (1 : F))
     (Finsupp.single 1 1) (Finsupp.single 0 1) ?_) ⟨1, ?_⟩
