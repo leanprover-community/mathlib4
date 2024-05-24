@@ -369,6 +369,14 @@ theorem surjective_ofLocalizationSpan :
   exact ⟨n' + n, _, e''.symm⟩
 #align surjective_of_localization_span surjective_ofLocalizationSpan
 
+/-- A surjective ring homomorphism `R →+* S` induces a surjective homomorphism `R_{f⁻¹(P)} →+* S_P`
+for every prime ideal `P` of `S`. -/
+theorem surjective_localRingHom_of_surjective (h : Function.Surjective f) (P : Ideal S)
+    [P.IsPrime] : Function.Surjective (Localization.localRingHom (P.comap f) P f rfl) :=
+  have : IsLocalization (Submonoid.map f (Ideal.comap f P).primeCompl) (Localization.AtPrime P) :=
+    (Submonoid.map_comap_eq_of_surjective h P.primeCompl).symm ▸ Localization.isLocalization
+  localizationPreserves_surjective _ _ _ _ h
+
 end Surjective
 
 section Finite
