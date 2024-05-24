@@ -73,14 +73,12 @@ theorem piIsoPi_inv_π {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) :
     (piIsoPi α).inv ≫ Pi.π α i = piπ α i := by simp [piIsoPi]
 #align Top.pi_iso_pi_inv_π TopCat.piIsoPi_inv_π
 
-@[simp]
 theorem piIsoPi_inv_π_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) (x : ∀ i, α i) :
     (Pi.π α i : _) ((piIsoPi α).inv x) = x i :=
   ConcreteCategory.congr_hom (piIsoPi_inv_π α i) x
 #align Top.pi_iso_pi_inv_π_apply TopCat.piIsoPi_inv_π_apply
 
 -- Porting note: needing the type ascription on `∏ α : TopCat.{max v u}` is unfortunate.
-@[simp]
 theorem piIsoPi_hom_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι)
     (x : (∏ α : TopCat.{max v u})) : (piIsoPi α).hom x i = (Pi.π α i : _) x := by
   have := piIsoPi_inv_π α i
@@ -130,13 +128,11 @@ theorem sigmaIsoSigma_hom_ι {ι : Type v} (α : ι → TopCat.{max v u}) (i : �
     Sigma.ι α i ≫ (sigmaIsoSigma α).hom = sigmaι α i := by simp [sigmaIsoSigma]
 #align Top.sigma_iso_sigma_hom_ι TopCat.sigmaIsoSigma_hom_ι
 
-@[simp]
 theorem sigmaIsoSigma_hom_ι_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) (x : α i) :
     (sigmaIsoSigma α).hom ((Sigma.ι α i : _) x) = Sigma.mk i x :=
   ConcreteCategory.congr_hom (sigmaIsoSigma_hom_ι α i) x
 #align Top.sigma_iso_sigma_hom_ι_apply TopCat.sigmaIsoSigma_hom_ι_apply
 
-@[simp]
 theorem sigmaIsoSigma_inv_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) (x : α i) :
     (sigmaIsoSigma α).inv ⟨i, x⟩ = (Sigma.ι α i : _) x := by
   rw [← sigmaIsoSigma_hom_ι_apply, ← comp_app, ← comp_app, Iso.hom_inv_id,
@@ -220,7 +216,6 @@ theorem prodIsoProd_hom_snd (X Y : TopCat.{u}) :
 #align Top.prod_iso_prod_hom_snd TopCat.prodIsoProd_hom_snd
 
 -- Porting note: need to force Lean to coerce X × Y to a type
-@[simp]
 theorem prodIsoProd_hom_apply {X Y : TopCat.{u}} (x : ↑ (X ⨯ Y)) :
     (prodIsoProd X Y).hom x = ((Limits.prod.fst : X ⨯ Y ⟶ _) x,
     (Limits.prod.snd : X ⨯ Y ⟶ _) x) := by

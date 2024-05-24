@@ -38,7 +38,7 @@ abbrev pullbackFst (f : X ⟶ Z) (g : Y ⟶ Z) : TopCat.of { p : X × Y // f p.1
     apply Continuous.comp <;> set_option tactic.skipAssignedInstances false in continuity⟩
 #align Top.pullback_fst TopCat.pullbackFst
 
-@[simp] lemma pullbackFst_apply (f : X ⟶ Z) (g : Y ⟶ Z) (x) : pullbackFst f g x = x.1.1 := rfl
+lemma pullbackFst_apply (f : X ⟶ Z) (g : Y ⟶ Z) (x) : pullbackFst f g x = x.1.1 := rfl
 
 /-- The second projection from the pullback. -/
 abbrev pullbackSnd (f : X ⟶ Z) (g : Y ⟶ Z) : TopCat.of { p : X × Y // f p.1 = g p.2 } ⟶ Y :=
@@ -46,7 +46,7 @@ abbrev pullbackSnd (f : X ⟶ Z) (g : Y ⟶ Z) : TopCat.of { p : X × Y // f p.1
     apply Continuous.comp <;> set_option tactic.skipAssignedInstances false in continuity⟩
 #align Top.pullback_snd TopCat.pullbackSnd
 
-@[simp] lemma pullbackSnd_apply (f : X ⟶ Z) (g : Y ⟶ Z) (x) : pullbackSnd f g x = x.1.2 := rfl
+lemma pullbackSnd_apply (f : X ⟶ Z) (g : Y ⟶ Z) (x) : pullbackSnd f g x = x.1.2 := rfl
 
 /-- The explicit pullback cone of `X, Y` given by `{ p : X × Y // f p.1 = g p.2 }`. -/
 def pullbackCone (f : X ⟶ Z) (g : Y ⟶ Z) : PullbackCone f g :=
@@ -105,7 +105,6 @@ theorem pullbackIsoProdSubtype_inv_fst (f : X ⟶ Z) (g : Y ⟶ Z) :
   simp [pullbackCone, pullbackIsoProdSubtype]
 #align Top.pullback_iso_prod_subtype_inv_fst TopCat.pullbackIsoProdSubtype_inv_fst
 
-@[simp]
 theorem pullbackIsoProdSubtype_inv_fst_apply (f : X ⟶ Z) (g : Y ⟶ Z)
     (x : { p : X × Y // f p.1 = g p.2 }) :
     (pullback.fst : pullback f g ⟶ _) ((pullbackIsoProdSubtype f g).inv x) = (x : X × Y).fst :=
@@ -118,7 +117,6 @@ theorem pullbackIsoProdSubtype_inv_snd (f : X ⟶ Z) (g : Y ⟶ Z) :
   simp [pullbackCone, pullbackIsoProdSubtype]
 #align Top.pullback_iso_prod_subtype_inv_snd TopCat.pullbackIsoProdSubtype_inv_snd
 
-@[simp]
 theorem pullbackIsoProdSubtype_inv_snd_apply (f : X ⟶ Z) (g : Y ⟶ Z)
     (x : { p : X × Y // f p.1 = g p.2 }) :
     (pullback.snd : pullback f g ⟶ _) ((pullbackIsoProdSubtype f g).inv x) = (x : X × Y).snd :=
@@ -136,7 +134,6 @@ theorem pullbackIsoProdSubtype_hom_snd (f : X ⟶ Z) (g : Y ⟶ Z) :
 #align Top.pullback_iso_prod_subtype_hom_snd TopCat.pullbackIsoProdSubtype_hom_snd
 
 -- Porting note: why do I need to tell Lean to coerce pullback to a type
-@[simp]
 theorem pullbackIsoProdSubtype_hom_apply {f : X ⟶ Z} {g : Y ⟶ Z}
     (x : ConcreteCategory.forget.obj (pullback f g)) :
     (pullbackIsoProdSubtype f g).hom x =
