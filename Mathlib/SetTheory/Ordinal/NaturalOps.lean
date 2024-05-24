@@ -370,7 +370,6 @@ instance addLeftMono : AddLeftMono NatOrdinal.{u} :=
 instance addLeftReflectLE :
     AddLeftReflectLE NatOrdinal.{u} :=
   ⟨fun a b c h => by
-    dsimp
     by_contra! h'
     exact h.not_lt (add_lt_add_left h' a)⟩
 #align nat_ordinal.add_contravariant_class_le NatOrdinal.addLeftReflectLE

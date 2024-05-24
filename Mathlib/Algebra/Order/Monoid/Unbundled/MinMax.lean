@@ -42,7 +42,7 @@ lemma max_mul_min (a b : α) : max a b * min a b = a * b := fn_max_mul_fn_min id
 
 end CommSemigroup
 
-section CovariantMulLe
+section CovariantClassMulLe
 
 variable [LinearOrder α]
 
@@ -160,4 +160,4 @@ theorem max_le_mul_of_one_le [MulLeftMono α]
 #align max_le_mul_of_one_le max_le_mul_of_one_le
 #align max_le_add_of_nonneg max_le_add_of_nonneg
 
-end CovariantMulLe
+end CovariantClassMulLe

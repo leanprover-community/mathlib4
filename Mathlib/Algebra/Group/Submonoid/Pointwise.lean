@@ -5,7 +5,6 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.Order.BigOperators.Group.List
-import Mathlib.Algebra.Order.Group.Action
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Order.WellFoundedSet
 
@@ -241,7 +240,7 @@ theorem smul_mem_pointwise_smul (m : M) (a : α) (S : Submonoid M) : m ∈ S →
   (Set.smul_mem_smul_set : _ → _ ∈ a • (S : Set M))
 #align submonoid.smul_mem_pointwise_smul Submonoid.smul_mem_pointwise_smul
 
-instance : SMulLeftMono α (Submonoid M) :=
+instance : CovariantClass α (Submonoid M) HSMul.hSMul LE.le :=
   ⟨fun _ _ => image_subset _⟩
 
 theorem mem_smul_pointwise_iff_exists (m : M) (a : α) (S : Submonoid M) :

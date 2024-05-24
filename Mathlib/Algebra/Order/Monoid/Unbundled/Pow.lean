@@ -8,7 +8,7 @@ import Mathlib.Tactic.Lift
 import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
-# Lemmas about the interaction of power operations with order in terms of unbundled classes
+# Lemmas about the interaction of power operations with order in terms of `CovariantClass`
 -/
 
 open Function

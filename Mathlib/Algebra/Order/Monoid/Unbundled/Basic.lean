@@ -231,7 +231,7 @@ theorem mul_lt_of_mul_lt_left [MulLeftMono α] {a b c d : α} (h : a * b < c)
 theorem mul_le_of_mul_le_left [MulLeftMono α] {a b c d : α} (h : a * b ≤ c)
     (hle : d ≤ b) :
     a * d ≤ c :=
-  MulLeftMono.elim.act_rel_of_rel_of_act_rel a hle h
+  @act_rel_of_rel_of_act_rel _ _ _ (· ≤ ·) _ _ a _ _ _ hle h
 #align mul_le_of_mul_le_left mul_le_of_mul_le_left
 #align add_le_of_add_le_left add_le_of_add_le_left
 
@@ -263,7 +263,7 @@ theorem lt_mul_of_lt_mul_left [MulLeftMono α] {a b c d : α} (h : a < b * c)
 theorem le_mul_of_le_mul_left [MulLeftMono α] {a b c d : α} (h : a ≤ b * c)
     (hle : c ≤ d) :
     a ≤ b * d :=
-  MulLeftMono.elim.rel_act_of_rel_of_rel_act b hle h
+  @rel_act_of_rel_of_rel_act _ _ _ (· ≤ ·) _ _ b _ _ _ hle h
 #align le_mul_of_le_mul_left le_mul_of_le_mul_left
 #align le_add_of_le_add_left le_add_of_le_add_left
 
@@ -1260,7 +1260,7 @@ section PartialOrder
 variable [PartialOrder α]
 
 /- This is not instance, since we want to have an instance from `LeftCancelSemigroup`s
-to the appropriate covariant class. -/
+to the appropriate `CovariantClass`. -/
 /-- A semigroup with a partial order and satisfying `LeftCancelSemigroup`
 (i.e. `a * c < b * c → a < b`) is a `left_cancel Semigroup`. -/
 @[to_additive
@@ -1273,7 +1273,7 @@ def Contravariant.toLeftCancelSemigroup [MulLeftReflectLE α] :
 #align contravariant.to_left_cancel_add_semigroup Contravariant.toAddLeftCancelSemigroup
 
 /- This is not instance, since we want to have an instance from `RightCancelSemigroup`s
-to the appropriate covariant class. -/
+to the appropriate `CovariantClass`. -/
 /-- A semigroup with a partial order and satisfying `RightCancelSemigroup`
 (i.e. `a * c < b * c → a < b`) is a `right_cancel Semigroup`. -/
 @[to_additive

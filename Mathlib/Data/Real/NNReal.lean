@@ -557,14 +557,14 @@ theorem le_iInf_add_iInf {ι ι' : Sort*} [Nonempty ι] [Nonempty ι'] {f : ι �
 example : Archimedean ℝ≥0 := by infer_instance
 
 -- Porting note (#11215): TODO: remove?
-instance covariant_add : AddLeftMono ℝ≥0 := inferInstance
-#align nnreal.covariant_add NNReal.covariant_add
+instance addLeftMono : AddLeftMono ℝ≥0 := inferInstance
+#align nnreal.covariant_add NNReal.addLeftMono
 
-instance contravariant_add : AddLeftReflectLT ℝ≥0 := inferInstance
-#align nnreal.contravariant_add NNReal.contravariant_add
+instance addLeftReflectLT : AddLeftReflectLT ℝ≥0 := inferInstance
+#align nnreal.contravariant_add NNReal.addLeftReflectLT
 
-instance covariant_mul : MulLeftMono ℝ≥0 := inferInstance
-#align nnreal.covariant_mul NNReal.covariant_mul
+instance mulLeftMono : MulLeftMono ℝ≥0 := inferInstance
+#align nnreal.covariant_mul NNReal.mulLeftMono
 
 -- Porting note (#11215): TODO: delete?
 nonrec theorem le_of_forall_pos_le_add {a b : ℝ≥0} (h : ∀ ε, 0 < ε → a ≤ b + ε) : a ≤ b :=

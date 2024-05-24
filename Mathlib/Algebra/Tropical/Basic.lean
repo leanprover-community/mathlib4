@@ -504,37 +504,36 @@ end Monoid
 
 section Distrib
 
-instance covariant_mul [LE R] [Add R] [AddLeftMono R] :
+instance mulLeftMono [LE R] [Add R] [AddLeftMono R] :
     MulLeftMono (Tropical R) :=
   ⟨fun _ y z h => add_le_add_left (show untrop y ≤ untrop z from h) _⟩
-#align tropical.covariant_mul Tropical.covariant_mul
+#align tropical.covariant_mul Tropical.mulLeftMono
 
-instance covariant_swap_mul [LE R] [Add R] [AddRightMono R] :
+instance mulRightMono [LE R] [Add R] [AddRightMono R] :
     MulRightMono (Tropical R) :=
   ⟨fun _ y z h => add_le_add_right (show untrop y ≤ untrop z from h) _⟩
-#align tropical.covariant_swap_mul Tropical.covariant_swap_mul
+#align tropical.covariant_swap_mul Tropical.mulRightMono
 
-instance covariant_add [LinearOrder R] : AddLeftMono (Tropical R) :=
+instance addLeftMono [LinearOrder R] : AddLeftMono (Tropical R) :=
   ⟨fun x y z h => by
-    dsimp
     rcases le_total x y with hx | hy
     · rw [add_eq_left hx, add_eq_left (hx.trans h)]
     · rw [add_eq_right hy]
       rcases le_total x z with hx | hx
       · rwa [add_eq_left hx]
       · rwa [add_eq_right hx]⟩
-#align tropical.covariant_add Tropical.covariant_add
+#align tropical.covariant_add Tropical.addLeftMono
 
-instance covariant_mul_lt [LT R] [Add R] [AddLeftStrictMono R] :
+instance mulLeftStrictMono [LT R] [Add R] [AddLeftStrictMono R] :
     MulLeftStrictMono (Tropical R) :=
   ⟨fun _ _ _ h => add_lt_add_left (untrop_lt_iff.2 h) _⟩
-#align tropical.covariant_mul_lt Tropical.covariant_mul_lt
+#align tropical.covariant_mul_lt Tropical.mulLeftStrictMono
 
-instance covariant_swap_mul_lt [Preorder R] [Add R]
+instance mulRightStrictMono [Preorder R] [Add R]
     [AddRightStrictMono R] :
     MulRightStrictMono (Tropical R) :=
   ⟨fun _ y z h => add_lt_add_right (show untrop y < untrop z from h) _⟩
-#align tropical.covariant_swap_mul_lt Tropical.covariant_swap_mul_lt
+#align tropical.covariant_swap_mul_lt Tropical.mulRightStrictMono
 
 instance instDistribTropical [LinearOrder R] [Add R] [AddLeftMono R]
     [AddRightMono R] :

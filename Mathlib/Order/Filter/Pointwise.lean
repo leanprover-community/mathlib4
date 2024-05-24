@@ -390,16 +390,16 @@ theorem le_mul_iff : h ≤ f * g ↔ ∀ ⦃s⦄, s ∈ f → ∀ ⦃t⦄, t ∈
 #align filter.le_add_iff Filter.le_add_iff
 
 @[to_additive]
-instance covariant_mul : MulLeftMono (Filter α) :=
+instance mulLeftMono : MulLeftMono (Filter α) :=
   ⟨fun _ _ _ => map₂_mono_left⟩
-#align filter.covariant_mul Filter.covariant_mul
-#align filter.covariant_add Filter.covariant_add
+#align filter.covariant_mul Filter.mulLeftMono
+#align filter.covariant_add Filter.addLeftMono
 
 @[to_additive]
-instance covariant_swap_mul : MulRightMono (Filter α) :=
+instance mulRightMono : MulRightMono (Filter α) :=
   ⟨fun _ _ _ => map₂_mono_right⟩
-#align filter.covariant_swap_mul Filter.covariant_swap_mul
-#align filter.covariant_swap_add Filter.covariant_swap_add
+#align filter.covariant_swap_mul Filter.mulRightMono
+#align filter.covariant_swap_add Filter.addRightMono
 
 @[to_additive]
 protected theorem map_mul [FunLike F α β] [MulHomClass F α β] (m : F) :
@@ -555,14 +555,14 @@ protected theorem le_div_iff : h ≤ f / g ↔ ∀ ⦃s⦄, s ∈ f → ∀ ⦃t
 #align filter.le_sub_iff Filter.le_sub_iff
 
 @[to_additive]
-lemma covariant_div : Covariant (Filter α) (Filter α) (· / ·) (· ≤ ·) :=
-  fun _ _ _ => map₂_mono_left
+instance covariant_div : CovariantClass (Filter α) (Filter α) (· / ·) (· ≤ ·) :=
+  ⟨fun _ _ _ => map₂_mono_left⟩
 #align filter.covariant_div Filter.covariant_div
 #align filter.covariant_sub Filter.covariant_sub
 
 @[to_additive]
-lemma covariant_swap_div : Covariant (Filter α) (Filter α) (swap (· / ·)) (· ≤ ·) :=
-  fun _ _ _ => map₂_mono_right
+instance covariant_swap_div : CovariantClass (Filter α) (Filter α) (swap (· / ·)) (· ≤ ·) :=
+  ⟨fun _ _ _ => map₂_mono_right⟩
 #align filter.covariant_swap_div Filter.covariant_swap_div
 #align filter.covariant_swap_sub Filter.covariant_swap_sub
 
@@ -1086,8 +1086,8 @@ theorem le_smul_iff : h ≤ f • g ↔ ∀ ⦃s⦄, s ∈ f → ∀ ⦃t⦄, t 
 #align filter.le_vadd_iff Filter.le_vadd_iff
 
 @[to_additive]
-lemma covariant_smul : Covariant (Filter α) (Filter β) (· • ·) (· ≤ ·) :=
-  fun _ _ _ => map₂_mono_left
+instance covariant_smul : CovariantClass (Filter α) (Filter β) (· • ·) (· ≤ ·) :=
+  ⟨fun _ _ _ => map₂_mono_left⟩
 #align filter.covariant_smul Filter.covariant_smul
 #align filter.covariant_vadd Filter.covariant_vadd
 
@@ -1266,8 +1266,8 @@ theorem smul_filter_le_smul_filter (hf : f₁ ≤ f₂) : a • f₁ ≤ a • f
 #align filter.vadd_filter_le_vadd_filter Filter.vadd_filter_le_vadd_filter
 
 @[to_additive]
-lemma covariant_smul_filter : Covariant α (Filter β) (· • ·) (· ≤ ·) :=
-  fun _ => @map_mono β β _
+instance covariant_smul_filter : CovariantClass α (Filter β) (· • ·) (· ≤ ·) :=
+  ⟨fun _ => @map_mono β β _⟩
 #align filter.covariant_smul_filter Filter.covariant_smul_filter
 #align filter.covariant_vadd_filter Filter.covariant_vadd_filter
 
