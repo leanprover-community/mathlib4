@@ -259,7 +259,7 @@ theorem digits_ofDigits (b : ℕ) (h : 1 < b) (L : List ℕ) (w₁ : ∀ l ∈ L
         simpa using w₂
       · right
         contrapose! w₂
-        refine' digits_zero_of_eq_zero h.ne_bot w₂ _ _
+        refine digits_zero_of_eq_zero h.ne_bot w₂ _ ?_
         rw [List.getLast_cons h']
         exact List.getLast_mem h'
 #align nat.digits_of_digits Nat.digits_ofDigits
@@ -349,7 +349,7 @@ theorem digits_len (b n : ℕ) (hb : 1 < b) (hn : n ≠ 0) : (b.digits n).length
     simp [h, log_eq_zero_iff, ← Nat.div_eq_zero_iff hb0.bot_lt]
   · have : n / b < n := div_lt_self (Nat.pos_of_ne_zero hn) hb
     rw [IH _ this h, log_div_base, tsub_add_cancel_of_le]
-    refine' Nat.succ_le_of_lt (log_pos hb _)
+    refine Nat.succ_le_of_lt (log_pos hb ?_)
     contrapose! h
     exact div_eq_of_lt h
 #align nat.digits_len Nat.digits_len
@@ -371,7 +371,7 @@ theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
   by_cases hnb : n < b + 2
   · simpa only [digits_of_lt (b + 2) n hn hnb]
   · rw [digits_getLast n (le_add_left 2 b)]
-    refine' IH _ (Nat.div_lt_self hn.bot_lt (one_lt_succ_succ b)) _
+    refine IH _ (Nat.div_lt_self hn.bot_lt (one_lt_succ_succ b)) ?_
     rw [← pos_iff_ne_zero]
     exact Nat.div_pos (le_of_not_lt hnb) (zero_lt_succ (succ b))
 #align nat.last_digit_ne_zero Nat.getLast_digit_ne_zero
@@ -465,7 +465,7 @@ theorem digits_append_digits {b m n : ℕ} (hb : 0 < b) :
   rcases eq_or_lt_of_le (Nat.succ_le_of_lt hb) with (rfl | hb)
   · simp [List.replicate_add]
   rw [← ofDigits_digits_append_digits]
-  refine' (digits_ofDigits b hb _ (fun l hl => _) (fun h_append => _)).symm
+  refine (digits_ofDigits b hb _ (fun l hl => ?_) (fun h_append => ?_)).symm
   · rcases (List.mem_append.mp hl) with (h | h) <;> exact digits_lt_base hb h
   · by_cases h : digits b m = []
     · simp only [h, List.append_nil] at h_append ⊢
@@ -511,7 +511,7 @@ theorem pow_length_le_mul_ofDigits {b : ℕ} {l : List ℕ} (hl : l ≠ []) (hl2
   simp only [List.length_append, List.length, zero_add, List.length_dropLast, ofDigits_append,
     List.length_dropLast, ofDigits_singleton, add_comm (l.length - 1), pow_add, pow_one]
   apply Nat.mul_le_mul_left
-  refine' le_trans _ (Nat.le_add_left _ _)
+  refine le_trans ?_ (Nat.le_add_left _ _)
   have : 0 < l.getLast hl := by rwa [pos_iff_ne_zero]
   convert Nat.mul_le_mul_left ((b + 2) ^ (l.length - 1)) this using 1
   rw [Nat.mul_one]
@@ -543,7 +543,7 @@ lemma ofDigits_div_eq_ofDigits_tail {p : ℕ} (hpos : 0 < p) (digits : List ℕ)
     (w₁ : ∀ l ∈ digits, l < p) : ofDigits p digits / p = ofDigits p digits.tail := by
   induction' digits with hd tl
   · simp [ofDigits]
-  · refine' Eq.trans (add_mul_div_left hd _ hpos) _
+  · refine Eq.trans (add_mul_div_left hd _ hpos) ?_
     rw [Nat.div_eq_of_lt <| w₁ _ <| List.mem_cons_self _ _, zero_add]
     rfl
 
@@ -774,7 +774,7 @@ theorem eleven_dvd_of_palindrome (p : (digits 10 n).Palindrome) (h : Even (digit
     11 ∣ n := by
   let dig := (digits 10 n).map fun n : ℕ => (n : ℤ)
   replace h : Even dig.length := by rwa [List.length_map]
-  refine' eleven_dvd_iff.2 ⟨0, (_ : dig.alternatingSum = 0)⟩
+  refine eleven_dvd_iff.2 ⟨0, (?_ : dig.alternatingSum = 0)⟩
   have := dig.alternatingSum_reverse
   rw [(p.map _).reverse_eq, _root_.pow_succ', h.neg_one_pow, mul_one, neg_one_zsmul] at this
   exact eq_zero_of_neg_eq this.symm

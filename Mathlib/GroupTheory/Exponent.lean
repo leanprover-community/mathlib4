@@ -343,13 +343,13 @@ variable {G}
 @[to_additive]
 theorem exponent_ne_zero_iff_range_orderOf_finite (h : ∀ g : G, 0 < orderOf g) :
     exponent G ≠ 0 ↔ (Set.range (orderOf : G → ℕ)).Finite := by
-  refine' ⟨fun he => _, fun he => _⟩
+  refine ⟨fun he => ?_, fun he => ?_⟩
   · by_contra h
     obtain ⟨m, ⟨t, rfl⟩, het⟩ := Set.Infinite.exists_gt h (exponent G)
     exact pow_ne_one_of_lt_orderOf' he het (pow_exponent_eq_one t)
   · lift Set.range (orderOf (G := G)) to Finset ℕ using he with t ht
     have htpos : 0 < t.prod id := by
-      refine' Finset.prod_pos fun a ha => _
+      refine Finset.prod_pos fun a ha => ?_
       rw [← Finset.mem_coe, ht] at ha
       obtain ⟨k, rfl⟩ := ha
       exact h k
@@ -467,7 +467,7 @@ theorem exists_orderOf_eq_exponent (hG : ExponentExists G) : ∃ g : G, orderOf 
   obtain ⟨t, ht⟩ := hne.csSup_mem hfin
   use t
   apply Nat.dvd_antisymm (order_dvd_exponent _)
-  refine' Nat.dvd_of_factors_subperm he _
+  refine Nat.dvd_of_factors_subperm he ?_
   rw [List.subperm_ext_iff]
   by_contra! h
   obtain ⟨p, hp, hpe⟩ := h
@@ -594,7 +594,7 @@ theorem card_dvd_exponent_pow_rank : Nat.card G ∣ Monoid.exponent G ^ Group.ra
     exact fun g hg => ⟨Pi.mulSingle ⟨g, hg⟩ ⟨g, mem_zpowers g⟩, noncommPiCoprod_mulSingle _ _⟩
   replace hf := nat_card_dvd_of_surjective f hf
   rw [Nat.card_pi] at hf
-  refine' hf.trans (Finset.prod_dvd_prod_of_dvd _ _ fun g _ => _)
+  refine hf.trans (Finset.prod_dvd_prod_of_dvd _ _ fun g _ => ?_)
   rw [Nat.card_zpowers]
   exact Monoid.order_dvd_exponent (g : G)
 #align card_dvd_exponent_pow_rank card_dvd_exponent_pow_rank

@@ -198,10 +198,10 @@ theorem mul_edgeDensity_le_edgeDensity (hs : s₂ ⊆ s₁) (ht : t₂ ⊆ t₁)
 theorem edgeDensity_sub_edgeDensity_le_one_sub_mul (hs : s₂ ⊆ s₁) (ht : t₂ ⊆ t₁) (hs₂ : s₂.Nonempty)
     (ht₂ : t₂.Nonempty) :
     edgeDensity r s₂ t₂ - edgeDensity r s₁ t₁ ≤ 1 - s₂.card / s₁.card * (t₂.card / t₁.card) := by
-  refine' (sub_le_sub_left (mul_edgeDensity_le_edgeDensity r hs ht hs₂ ht₂) _).trans _
-  refine' le_trans _ (mul_le_of_le_one_right _ (edgeDensity_le_one r s₂ t₂))
+  refine (sub_le_sub_left (mul_edgeDensity_le_edgeDensity r hs ht hs₂ ht₂) _).trans ?_
+  refine le_trans ?_ (mul_le_of_le_one_right ?_ (edgeDensity_le_one r s₂ t₂))
   · rw [sub_mul, one_mul]
-  refine' sub_nonneg_of_le (mul_le_one _ _ _)
+  refine sub_nonneg_of_le (mul_le_one ?_ ?_ ?_)
   · exact div_le_one_of_le ((@Nat.cast_le ℚ).2 (card_le_card hs)) (Nat.cast_nonneg _)
   · apply div_nonneg <;> exact mod_cast Nat.zero_le _
   · exact div_le_one_of_le ((@Nat.cast_le ℚ).2 (card_le_card ht)) (Nat.cast_nonneg _)
@@ -210,7 +210,7 @@ theorem edgeDensity_sub_edgeDensity_le_one_sub_mul (hs : s₂ ⊆ s₁) (ht : t�
 theorem abs_edgeDensity_sub_edgeDensity_le_one_sub_mul (hs : s₂ ⊆ s₁) (ht : t₂ ⊆ t₁)
     (hs₂ : s₂.Nonempty) (ht₂ : t₂.Nonempty) :
     |edgeDensity r s₂ t₂ - edgeDensity r s₁ t₁| ≤ 1 - s₂.card / s₁.card * (t₂.card / t₁.card) := by
-  refine' abs_sub_le_iff.2 ⟨edgeDensity_sub_edgeDensity_le_one_sub_mul r hs ht hs₂ ht₂, _⟩
+  refine abs_sub_le_iff.2 ⟨edgeDensity_sub_edgeDensity_le_one_sub_mul r hs ht hs₂ ht₂, ?_⟩
   rw [← add_sub_cancel_right (edgeDensity r s₁ t₁) (edgeDensity (fun x y ↦ ¬r x y) s₁ t₁),
     ← add_sub_cancel_right (edgeDensity r s₂ t₂) (edgeDensity (fun x y ↦ ¬r x y) s₂ t₂),
     edgeDensity_add_edgeDensity_compl _ (hs₂.mono hs) (ht₂.mono ht),
@@ -236,15 +236,15 @@ theorem abs_edgeDensity_sub_edgeDensity_le_two_mul_sub_sq (hs : s₂ ⊆ s₁) (
   have hr : 2 * δ - δ ^ 2 = 1 - (1 - δ) * (1 - δ) := by ring
   rw [hr]
   norm_cast
-  refine'
-    (Rat.cast_le.2 <| abs_edgeDensity_sub_edgeDensity_le_one_sub_mul r hs ht hs₂' ht₂').trans _
+  refine
+    (Rat.cast_le.2 <| abs_edgeDensity_sub_edgeDensity_le_one_sub_mul r hs ht hs₂' ht₂').trans ?_
   push_cast
   have h₁ := hs₂'.mono hs
   have h₂ := ht₂'.mono ht
   gcongr
-  · refine' (le_div_iff _).2 hs₂
+  · refine (le_div_iff ?_).2 hs₂
     exact mod_cast h₁.card_pos
-  · refine' (le_div_iff _).2 ht₂
+  · refine (le_div_iff ?_).2 ht₂
     exact mod_cast h₂.card_pos
 #align rel.abs_edge_density_sub_edge_density_le_two_mul_sub_sq Rel.abs_edgeDensity_sub_edgeDensity_le_two_mul_sub_sq
 
@@ -257,7 +257,7 @@ theorem abs_edgeDensity_sub_edgeDensity_le_two_mul (hs : s₂ ⊆ s₁) (ht : t�
   · exact (abs_edgeDensity_sub_edgeDensity_le_two_mul_sub_sq r hs ht hδ h hscard htcard).trans
       ((sub_le_self_iff _).2 <| sq_nonneg δ)
   rw [two_mul]
-  refine' (abs_sub _ _).trans (add_le_add (le_trans _ h) (le_trans _ h)) <;>
+  refine (abs_sub _ _).trans (add_le_add (le_trans ?_ h) (le_trans ?_ h)) <;>
     · rw [abs_of_nonneg]
       · exact mod_cast edgeDensity_le_one r _ _
       · exact mod_cast edgeDensity_nonneg r _ _
@@ -379,7 +379,7 @@ theorem card_interedges_add_card_interedges_compl (h : Disjoint s t) :
     (G.interedges s t).card + (Gᶜ.interedges s t).card = s.card * t.card := by
   rw [← card_product, interedges_def, interedges_def]
   have : ((s ×ˢ t).filter fun e ↦ Gᶜ.Adj e.1 e.2) = (s ×ˢ t).filter fun e ↦ ¬G.Adj e.1 e.2 := by
-    refine' filter_congr fun x hx ↦ _
+    refine filter_congr fun x hx ↦ ?_
     rw [mem_product] at hx
     rw [compl_adj, and_iff_right (h.forall_ne_finset hx.1 hx.2)]
   rw [this, ← card_union_of_disjoint, filter_union_filter_neg_eq]
