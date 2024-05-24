@@ -392,7 +392,7 @@ instance prod.instIsOpenPosMeasure {X Y : Type*} [TopologicalSpace X] [Topologic
   constructor
   rintro U U_open ⟨⟨x, y⟩, hxy⟩
   rcases isOpen_prod_iff.1 U_open x y hxy with ⟨u, v, u_open, v_open, xu, yv, huv⟩
-  refine' ne_of_gt (lt_of_lt_of_le _ (measure_mono huv))
+  refine ne_of_gt (lt_of_lt_of_le _ (measure_mono huv))
   simp only [prod_prod, CanonicallyOrderedCommSemiring.mul_pos]
   constructor
   · exact u_open.measure_pos μ ⟨x, xu⟩
@@ -572,7 +572,7 @@ noncomputable def FiniteSpanningSetsIn.prod {ν : Measure β} {C : Set (Set α)}
     (hμ : μ.FiniteSpanningSetsIn C) (hν : ν.FiniteSpanningSetsIn D) :
     (μ.prod ν).FiniteSpanningSetsIn (image2 (· ×ˢ ·) C D) := by
   haveI := hν.sigmaFinite
-  refine'
+  refine
     ⟨fun n => hμ.set n.unpair.1 ×ˢ hν.set n.unpair.2, fun n =>
       mem_image2_of_mem (hμ.set_mem _) (hν.set_mem _), fun n => _, _⟩
   · rw [prod_prod]

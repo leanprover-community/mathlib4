@@ -217,7 +217,7 @@ theorem isocrystal_classification (k : Type*) [Field k] [IsAlgClosed k] [CharP k
     · rw [← LinearMap.range_eq_top]
       rw [← (finrank_eq_one_iff_of_nonzero x hx).mp h_dim]
       rw [LinearMap.span_singleton_eq_range]
-  -- Porting note: `refine'` below gets confused when this is inlined.
+  -- Porting note: `refine` below gets confused when this is inlined.
   let E := (LinearEquiv.smulOfNeZero K(p, k) _ _ hb).trans F
   refine ⟨⟨E, ?_⟩⟩
   simp only [E]

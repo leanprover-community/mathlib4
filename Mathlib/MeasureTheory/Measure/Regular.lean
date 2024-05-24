@@ -495,7 +495,7 @@ theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [IsFiniteMeasu
   have hfin : ∀ {s}, μ s ≠ ∞ := @(measure_ne_top μ)
   suffices ∀ s, MeasurableSet s → ∀ ε, ε ≠ 0 → ∃ F, F ⊆ s ∧ ∃ U, U ⊇ s ∧
       IsClosed F ∧ IsOpen U ∧ μ s ≤ μ F + ε ∧ μ U ≤ μ s + ε by
-    refine'
+    refine
       { outerRegular := fun s hs r hr => _
         innerRegular := H }
     rcases exists_between hr with ⟨r', hsr', hr'r⟩
@@ -503,7 +503,7 @@ theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [IsFiniteMeasu
     refine ⟨U, hsU, hUo, ?_⟩
     rw [add_tsub_cancel_of_le hsr'.le] at H
     exact H.trans_lt hr'r
-  refine' MeasurableSet.induction_on_open _ _ _
+  refine MeasurableSet.induction_on_open _ _ _
   /- The proof is by measurable induction: we should check that the property is true for the empty
     set, for open sets, and is stable by taking the complement and by taking countable disjoint
     unions. The point of the property we are proving is that it is stable by taking complements
@@ -515,7 +515,7 @@ theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [IsFiniteMeasu
   -- check for complements
   · rintro s hs H ε hε
     rcases H ε hε with ⟨F, hFs, U, hsU, hFc, hUo, hF, hU⟩
-    refine'
+    refine
       ⟨Uᶜ, compl_subset_compl.2 hsU, Fᶜ, compl_subset_compl.2 hFs, hUo.isClosed_compl,
         hFc.isOpen_compl, _⟩
     simp only [measure_compl_le_add_iff, *, hUo.measurableSet, hFc.measurableSet, true_and_iff]
@@ -533,7 +533,7 @@ theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [IsFiniteMeasu
     rcases (this.eventually <| lt_mem_nhds <| ENNReal.lt_add_right hfin ε0').exists with ⟨t, ht⟩
     -- the approximating open set is constructed by taking for each `s n` an approximating open set
     -- `U n` with measure at most `μ (s n) + δ n` for a summable `δ`, and taking the union of these.
-    refine'
+    refine
       ⟨⋃ k ∈ t, F k, iUnion_mono fun k => iUnion_subset fun _ => hFs _, ⋃ n, U n, iUnion_mono hsU,
         isClosed_biUnion_finset fun k _ => hFc k, isOpen_iUnion hUo, ht.le.trans _, _⟩
     · calc

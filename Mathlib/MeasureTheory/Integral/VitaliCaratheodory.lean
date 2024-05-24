@@ -142,7 +142,7 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
 
   · rcases h₁ (ENNReal.half_pos ε0).ne' with ⟨g₁, f₁_le_g₁, g₁cont, g₁int⟩
     rcases h₂ (ENNReal.half_pos ε0).ne' with ⟨g₂, f₂_le_g₂, g₂cont, g₂int⟩
-    refine'
+    refine
       ⟨fun x => g₁ x + g₂ x, fun x => add_le_add (f₁_le_g₁ x) (f₂_le_g₂ x), g₁cont.add g₂cont, _⟩
     simp only [SimpleFunc.coe_add, ENNReal.coe_add, Pi.add_apply]
     rw [lintegral_add_left f₁.measurable.coe_nnreal_ennreal,
@@ -475,7 +475,7 @@ theorem exists_lt_lowerSemicontinuous_integral_lt [SigmaFinite μ] (f : α → �
   have ae_g : ∀ᵐ x ∂μ, (g x).toReal = (gp x : EReal).toReal - (gm x : EReal).toReal := by
     filter_upwards [gp_lt_top] with _ hx
     rw [EReal.toReal_sub] <;> simp [hx.ne]
-  refine' ⟨g, ?lt, ?lsc, ?int, ?aelt, ?intlt⟩
+  refine ⟨g, ?lt, ?lsc, ?int, ?aelt, ?intlt⟩
   case int =>
     show Integrable (fun x => EReal.toReal (g x)) μ
     rw [integrable_congr ae_g]

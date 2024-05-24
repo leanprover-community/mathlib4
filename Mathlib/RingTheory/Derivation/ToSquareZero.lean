@@ -49,7 +49,7 @@ of the canonical map `A →ₐ[R] B ⧸ I` corresponds to an `R`-derivation from
 def derivationToSquareZeroOfLift (f : A →ₐ[R] B)
     (e : (Ideal.Quotient.mkₐ R I).comp f = IsScalarTower.toAlgHom R A (B ⧸ I)) :
     Derivation R A I := by
-  refine'
+  refine
     { diffToIdealOfQuotientCompEq I f (IsScalarTower.toAlgHom R A B) _ with
       map_one_eq_zero' := _
       leibniz' := _ }

@@ -117,7 +117,7 @@ theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (
         Action.tensorHom, Equiv.piFinSuccAbove_symm_apply, tensor_apply, types_id_apply,
         tensor_rho, MonoidHom.one_apply, End.one_def, hn fun j : Fin (n + 1) => f j.succ,
         Fin.insertNth_zero']
-      refine' Fin.cases (Fin.cons_zero _ _) (fun i => _) x
+      refine Fin.cases (Fin.cons_zero _ _) (fun i => _) x
       · simp only [Fin.cons_succ, mul_left_inj, inv_inj, Fin.castSucc_fin_succ] -/
     dsimp [actionDiagonalSucc]
     erw [hn (fun (j : Fin (n + 1)) => f j.succ)]
@@ -140,7 +140,7 @@ theorem actionDiagonalSucc_inv_apply {G : Type u} [Group G] {n : ℕ} (g : G) (f
     simp only [Iso.trans_inv, comp_hom, hn, diagonalSucc_inv_hom, types_comp_apply, tensorIso_inv,
       Iso.refl_inv, Action.tensorHom, id_hom, tensor_apply, types_id_apply,
       leftRegularTensorIso_inv_hom, tensor_rho, leftRegular_ρ_apply, Pi.smul_apply, smul_eq_mul]
-    refine' Fin.cases _ _ x
+    refine Fin.cases _ _ x
     · simp only [Fin.cons_zero, Fin.partialProd_zero, mul_one]
     · intro i
       simpa only [Fin.cons_succ, Pi.smul_apply, smul_eq_mul, Fin.partialProd_succ', mul_assoc] -/
@@ -280,7 +280,7 @@ def ofMulActionBasisAux :
       erw [RingHom.id_apply, LinearEquiv.toFun_eq_coe, ← LinearEquiv.map_smul]
       congr 1
 /- Porting note (#11039): broken proof was
-      refine' x.induction_on _ (fun x y => _) fun y z hy hz => _
+      refine x.induction_on _ (fun x y => _) fun y z hy hz => _
       · simp only [smul_zero]
       · simp only [TensorProduct.smul_tmul']
         show (r * x) ⊗ₜ y = _
@@ -288,7 +288,7 @@ def ofMulActionBasisAux :
       · rw [smul_add, hz, hy, smul_add] -/
       show _ = Representation.asAlgebraHom (tensorObj (Rep.leftRegular k G)
         (Rep.trivial k G ((Fin n → G) →₀ k))).ρ r _
-      refine' x.induction_on _ (fun x y => _) fun y z hy hz => _
+      refine x.induction_on _ (fun x y => _) fun y z hy hz => _
       · rw [smul_zero, map_zero]
       · rw [TensorProduct.smul_tmul', smul_eq_mul, ← ofMulAction_self_smul_eq_mul]
         exact (smul_tprod_one_asModule (Representation.ofMulAction k G G) r x y).symm
@@ -434,7 +434,7 @@ isomorphic to `EG`, the universal cover of the classifying space of `G` as a sim
 def cechNerveTerminalFromIso :
     cechNerveTerminalFrom (Action.ofMulAction G G) ≅ classifyingSpaceUniversalCover G :=
   NatIso.ofComponents (fun n => limit.isoLimitCone (Action.ofMulActionLimitCone _ _)) fun f => by
-    refine' IsLimit.hom_ext (Action.ofMulActionLimitCone.{u, 0} G fun _ => G).2 fun j => _
+    refine IsLimit.hom_ext (Action.ofMulActionLimitCone.{u, 0} G fun _ => G).2 fun j => _
     dsimp only [cechNerveTerminalFrom, Pi.lift]
     rw [Category.assoc, limit.isoLimitCone_hom_π, limit.lift_π, Category.assoc]
     exact (limit.isoLimitCone_hom_π _ _).symm
@@ -471,7 +471,7 @@ def extraDegeneracyAugmentedCechNerve :
 /-- The universal cover of the classifying space of `G` as a simplicial set, augmented by the map
 from `Fin 1 → G` to the terminal object in `Type u`, has an extra degeneracy. -/
 def extraDegeneracyCompForgetAugmented : ExtraDegeneracy (compForgetAugmented G) := by
-  refine'
+  refine
     ExtraDegeneracy.ofIso (_ : (Arrow.mk <| terminal.from G).augmentedCechNerve ≅ _)
       (extraDegeneracyAugmentedCechNerve G)
   exact

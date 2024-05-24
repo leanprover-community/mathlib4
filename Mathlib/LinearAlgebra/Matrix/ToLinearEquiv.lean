@@ -82,7 +82,7 @@ See `Matrix.toLinearEquiv'` for this result on `n → R`.
 @[simps apply]
 noncomputable def toLinearEquiv [DecidableEq n] (A : Matrix n n R) (hA : IsUnit A.det) :
     M ≃ₗ[R] M := by
-  refine'
+  refine
   { toLin b b A with
     toFun := toLin b b A
     invFun := toLin b b A⁻¹

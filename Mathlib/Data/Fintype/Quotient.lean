@@ -29,7 +29,7 @@ def Quotient.finChoiceAux {ι : Type*} [DecidableEq ι] {α : ι → Type*} [S :
     ∀ l : List ι, (∀ i ∈ l, Quotient (S i)) → @Quotient (∀ i ∈ l, α i) (by infer_instance)
   | [], _ => ⟦fun i h => nomatch List.not_mem_nil _ h⟧
   | i :: l, f => by
-    refine'
+    refine
       Quotient.liftOn₂ (f i (List.mem_cons_self _ _))
         (Quotient.finChoiceAux l fun j h => f j (List.mem_cons_of_mem _ h)) _ _
     · exact fun a l => ⟦fun j h =>

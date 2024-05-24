@@ -199,7 +199,7 @@ if h : IsSFiniteKernel κ ∧ IsSFiniteKernel η then
   property := by
     have : IsSFiniteKernel κ := h.1
     have : IsSFiniteKernel η := h.2
-    refine' Measure.measurable_of_measurable_coe _ fun s hs => _
+    refine Measure.measurable_of_measurable_coe _ fun s hs => _
     have :
       (fun a =>
           Measure.ofMeasurable (fun s _ => compProdFun κ η a s) (compProdFun_empty κ η a)
@@ -404,7 +404,7 @@ theorem lintegral_compProd' (κ : kernel α β) [IsSFiniteKernel κ] (η : kerne
         (fun ab => ∫⁻ c, f' (ab.2, c) ∂η ab) ∘ fun b => (a, b) :=
       by ext1 ab; rfl
     rw [this]
-    refine' Measurable.comp _ measurable_prod_mk_left
+    refine Measurable.comp _ measurable_prod_mk_left
     exact
       Measurable.lintegral_kernel_prod_right
         ((SimpleFunc.measurable _).comp (measurable_fst.snd.prod_mk measurable_snd))
@@ -659,7 +659,7 @@ instance IsMarkovKernel.map (κ : kernel α β) [IsMarkovKernel κ] (hf : Measur
 
 instance IsFiniteKernel.map (κ : kernel α β) [IsFiniteKernel κ] (hf : Measurable f) :
     IsFiniteKernel (map κ f hf) := by
-  refine' ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => _⟩⟩
+  refine ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => _⟩⟩
   rw [map_apply' κ hf a MeasurableSet.univ]
   exact measure_le_bound κ a _
 #align probability_theory.kernel.is_finite_kernel.map ProbabilityTheory.kernel.IsFiniteKernel.map
@@ -723,7 +723,7 @@ instance IsMarkovKernel.comap (κ : kernel α β) [IsMarkovKernel κ] (hg : Meas
 
 instance IsFiniteKernel.comap (κ : kernel α β) [IsFiniteKernel κ] (hg : Measurable g) :
     IsFiniteKernel (comap κ g hg) := by
-  refine' ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => _⟩⟩
+  refine ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => _⟩⟩
   rw [comap_apply' κ hg a Set.univ]
   exact measure_le_bound κ _ _
 #align probability_theory.kernel.is_finite_kernel.comap ProbabilityTheory.kernel.IsFiniteKernel.comap

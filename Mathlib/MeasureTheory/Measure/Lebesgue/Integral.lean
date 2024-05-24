@@ -55,7 +55,7 @@ for `n ∈ ℤ`, is summable, then `f` is integrable on `ℝ`. -/
 theorem Real.integrable_of_summable_norm_Icc {E : Type*} [NormedAddCommGroup E] {f : C(ℝ, E)}
     (hf : Summable fun n : ℤ => ‖(f.comp <| ContinuousMap.addRight n).restrict (Icc 0 1)‖) :
     Integrable f := by
-  refine'
+  refine
     @integrable_of_summable_norm_restrict ℝ E _ ℤ _ volume _ _ _ _ _ _ _
       (.of_nonneg_of_le
         (fun n : ℤ => mul_nonneg (norm_nonneg

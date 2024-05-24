@@ -580,10 +580,10 @@ theorem exists_lub_Iio (i : γ) : ∃ j, IsLUB (Iio i) j := by
   by_cases h_exists_lt : ∃ j, j ∈ upperBounds (Iio i) ∧ j < i
   · obtain ⟨j, hj_ub, hj_lt_i⟩ := h_exists_lt
     exact ⟨j, hj_ub, fun k hk_ub => hk_ub hj_lt_i⟩
-  · refine' ⟨i, fun j hj => le_of_lt hj, _⟩
+  · refine ⟨i, fun j hj => le_of_lt hj, _⟩
     rw [mem_lowerBounds]
     by_contra h
-    refine' h_exists_lt _
+    refine h_exists_lt _
     push_neg at h
     exact h
 #align exists_lub_Iio exists_lub_Iio
@@ -1590,7 +1590,7 @@ lemma bddBelow_range_prod {F : ι → α × β} :
 
 theorem isLUB_prod {s : Set (α × β)} (p : α × β) :
     IsLUB s p ↔ IsLUB (Prod.fst '' s) p.1 ∧ IsLUB (Prod.snd '' s) p.2 := by
-  refine'
+  refine
     ⟨fun H =>
       ⟨⟨monotone_fst.mem_upperBounds_image H.1, fun a ha => _⟩,
         ⟨monotone_snd.mem_upperBounds_image H.1, fun a ha => _⟩⟩,
@@ -1638,7 +1638,7 @@ lemma bddBelow_range_pi {F : ι → ∀ a, π a} :
 theorem isLUB_pi {s : Set (∀ a, π a)} {f : ∀ a, π a} :
     IsLUB s f ↔ ∀ a, IsLUB (Function.eval a '' s) (f a) := by
   classical
-    refine'
+    refine
       ⟨fun H a => ⟨(Function.monotone_eval a).mem_upperBounds_image H.1, fun b hb => _⟩, fun H =>
         ⟨_, _⟩⟩
     · suffices h : Function.update f a b ∈ upperBounds s from Function.update_same a b f ▸ H.2 h a
@@ -1707,7 +1707,7 @@ def ScottContinuous (f : α → β) : Prop :=
 #align scott_continuous ScottContinuous
 
 protected theorem ScottContinuous.monotone (h : ScottContinuous f) : Monotone f := by
-  refine' fun a b hab =>
+  refine fun a b hab =>
     (h (insert_nonempty _ _) (directedOn_pair le_refl hab) _).1
       (mem_image_of_mem _ <| mem_insert _ _)
   rw [IsLUB, upperBounds_insert, upperBounds_singleton,

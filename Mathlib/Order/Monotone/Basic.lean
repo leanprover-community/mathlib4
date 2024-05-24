@@ -943,7 +943,7 @@ lemma not_monotone_not_antitone_iff_exists_le_le :
     ¬ Monotone f ∧ ¬ Antitone f ↔ ∃ a b c, a ≤ b ∧ b ≤ c ∧
     (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) := by
   simp_rw [Monotone, Antitone, not_forall, not_le]
-  refine' Iff.symm ⟨_, _⟩
+  refine Iff.symm ⟨_, _⟩
   { rintro ⟨a, b, c, hab, hbc, ⟨hfab, hfcb⟩ | ⟨hfba, hfbc⟩⟩
     exacts [⟨⟨_, _, hbc, hfcb⟩, _, _, hab, hfab⟩, ⟨⟨_, _, hab, hfba⟩, _, _, hbc, hfbc⟩] }
   rintro ⟨⟨a, b, hab, hfba⟩, c, d, hcd, hfcd⟩
@@ -974,7 +974,7 @@ lemma not_monotone_not_antitone_iff_exists_lt_lt :
     ¬ Monotone f ∧ ¬ Antitone f ↔ ∃ a b c, a < b ∧ b < c ∧
     (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) := by
   simp_rw [not_monotone_not_antitone_iff_exists_le_le, ← and_assoc]
-  refine' exists₃_congr (fun a b c ↦ and_congr_left <|
+  refine exists₃_congr (fun a b c ↦ and_congr_left <|
     fun h ↦ (Ne.le_iff_lt _).and <| Ne.le_iff_lt _) <;>
   (rintro rfl; simp at h)
 #align not_monotone_not_antitone_iff_exists_lt_lt not_monotone_not_antitone_iff_exists_lt_lt
@@ -1125,7 +1125,7 @@ theorem exists_strictMono : ∃ f : ℤ → α, StrictMono f := by
   inhabit α
   rcases Nat.exists_strictMono' (default : α) with ⟨f, hf, hf₀⟩
   rcases Nat.exists_strictAnti' (default : α) with ⟨g, hg, hg₀⟩
-  refine' ⟨fun n ↦ Int.casesOn n f fun n ↦ g (n + 1), strictMono_int_of_lt_succ _⟩
+  refine ⟨fun n ↦ Int.casesOn n f fun n ↦ g (n + 1), strictMono_int_of_lt_succ _⟩
   rintro (n | _ | n)
   · exact hf n.lt_succ_self
   · show g 1 < f 0

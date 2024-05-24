@@ -502,7 +502,7 @@ noncomputable def IsNoetherian.equivPUnitOfProdInjective (f : M × N →ₗ[R] M
     IsNoetherian.disjoint_partialSups_eventually_bot (f.tailing i) (f.tailings_disjoint_tailing i)
   specialize w n (le_refl n)
   apply Nonempty.intro
-  -- Porting note: refine' makes this line time out at elaborator
+  -- Porting note: refine makes this line time out at elaborator
   refine (LinearMap.tailingLinearEquiv f i n).symm ≪≫ₗ ?_
   rw [w]
   apply Submodule.botEquivPUnit

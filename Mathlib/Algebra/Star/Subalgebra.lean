@@ -152,7 +152,7 @@ protected theorem smul_mem {x : A} (hx : x ∈ S) (r : R) : r • x ∈ S :=
 #align star_subalgebra.smul_mem StarSubalgebra.smul_mem
 
 /-- Embedding of a subalgebra into the algebra. -/
-def subtype : S →⋆ₐ[R] A := by refine' { toFun := ((↑) : S → A), .. } <;> intros <;> rfl
+def subtype : S →⋆ₐ[R] A := by refine { toFun := ((↑) : S → A), .. } <;> intros <;> rfl
 #align star_subalgebra.subtype StarSubalgebra.subtype
 
 @[simp]

@@ -245,7 +245,7 @@ theorem val_smul (r : R) (x : p) : (↑(r • x) : M) = r • (x : M) :=
 variable (p)
 
 /-- Embedding of a submodule `p` to the ambient space `M`. -/
-protected def subtype : p →[R] M := by refine' { toFun := Subtype.val.. }; simp [val_smul]
+protected def subtype : p →[R] M := by refine { toFun := Subtype.val.. }; simp [val_smul]
 #align sub_mul_action.subtype SubMulAction.subtype
 
 @[simp]

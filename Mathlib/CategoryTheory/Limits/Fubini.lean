@@ -194,7 +194,7 @@ def coneOfConeUncurryIsLimit {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j
     intro k
     simp
   uniq s m w := by
-    refine' P.uniq
+    refine P.uniq
       { pt := s.pt
         π := _ } m _
     rintro ⟨j, k⟩
@@ -233,7 +233,7 @@ def coconeOfCoconeUncurryIsColimit {D : DiagramOfCocones F} (Q : ∀ j, IsColimi
     intro k
     simp
   uniq s m w := by
-    refine' P.uniq
+    refine P.uniq
       { pt := s.pt
         ι := _ } m _
     rintro ⟨j, k⟩

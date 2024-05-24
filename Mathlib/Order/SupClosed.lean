@@ -266,7 +266,7 @@ def supClosure : ClosureOperator (Set α) := .ofPred
   (by
     classical
     rintro s _ ⟨t, ht, hts, rfl⟩ _ ⟨u, hu, hus, rfl⟩
-    refine' ⟨_, ht.mono <| subset_union_left _ _, _, sup'_union ht hu _⟩
+    refine ⟨_, ht.mono <| subset_union_left _ _, _, sup'_union ht hu _⟩
     rw [coe_union]
     exact Set.union_subset hts hus)
   (by rintro s₁ s₂ hs h₂ _ ⟨t, ht, hts, rfl⟩; exact h₂.finsetSup'_mem ht fun i hi ↦ hs <| hts hi)
@@ -308,7 +308,7 @@ lemma supClosure_min : s ⊆ t → SupClosed t → supClosure s ⊆ t := supClos
 protected lemma Set.Finite.supClosure (hs : s.Finite) : (supClosure s).Finite := by
   lift s to Finset α using hs
   classical
-  refine' ((s.powerset.filter Finset.Nonempty).attach.image
+  refine ((s.powerset.filter Finset.Nonempty).attach.image
     fun t ↦ t.1.sup' (mem_filter.1 t.2).2 id).finite_toSet.subset _
   rintro _ ⟨t, ht, hts, rfl⟩
   simp only [id_eq, coe_image, mem_image, mem_coe, mem_attach, true_and, Subtype.exists,
@@ -329,7 +329,7 @@ def infClosure : ClosureOperator (Set α) := ClosureOperator.ofPred
   (by
     classical
     rintro s _ ⟨t, ht, hts, rfl⟩ _ ⟨u, hu, hus, rfl⟩
-    refine' ⟨_, ht.mono <| subset_union_left _ _, _, inf'_union ht hu _⟩
+    refine ⟨_, ht.mono <| subset_union_left _ _, _, inf'_union ht hu _⟩
     rw [coe_union]
     exact Set.union_subset hts hus)
   (by rintro s₁ s₂ hs h₂ _ ⟨t, ht, hts, rfl⟩; exact h₂.finsetInf'_mem ht fun i hi ↦ hs <| hts hi)
@@ -371,7 +371,7 @@ lemma infClosure_min : s ⊆ t → InfClosed t → infClosure s ⊆ t := infClos
 protected lemma Set.Finite.infClosure (hs : s.Finite) : (infClosure s).Finite := by
   lift s to Finset α using hs
   classical
-  refine' ((s.powerset.filter Finset.Nonempty).attach.image
+  refine ((s.powerset.filter Finset.Nonempty).attach.image
     fun t ↦ t.1.inf' (mem_filter.1 t.2).2 id).finite_toSet.subset _
   rintro _ ⟨t, ht, hts, rfl⟩
   simp only [id_eq, coe_image, mem_image, mem_coe, mem_attach, true_and, Subtype.exists,

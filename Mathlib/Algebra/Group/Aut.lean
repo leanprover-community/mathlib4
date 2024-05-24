@@ -104,7 +104,7 @@ theorem inv_apply_self (e : MulAut M) (m : M) : e⁻¹ (e m) = m :=
 
 /-- Monoid hom from the group of multiplicative automorphisms to the group of permutations. -/
 def toPerm : MulAut M →* Equiv.Perm M := by
-  refine' { toFun := MulEquiv.toEquiv, ..} <;> intros <;> rfl
+  refine { toFun := MulEquiv.toEquiv, ..} <;> intros <;> rfl
 #align mul_aut.to_perm MulAut.toPerm
 
 /-- The tautological action by `MulAut M` on `M`.
@@ -227,7 +227,7 @@ theorem inv_apply_self (e : AddAut A) (a : A) : e (e⁻¹ a) = a :=
 
 /-- Monoid hom from the group of multiplicative automorphisms to the group of permutations. -/
 def toPerm : AddAut A →* Equiv.Perm A := by
-  refine' { toFun := AddEquiv.toEquiv, .. } <;> intros <;> rfl
+  refine { toFun := AddEquiv.toEquiv, .. } <;> intros <;> rfl
 #align add_aut.to_perm AddAut.toPerm
 
 /-- The tautological action by `AddAut A` on `A`.

@@ -1454,7 +1454,7 @@ theorem tendsto_finset_range : Tendsto Finset.range atTop atTop :=
 #align filter.tendsto_finset_range Filter.tendsto_finset_range
 
 theorem atTop_finset_eq_iInf : (atTop : Filter (Finset α)) = ⨅ x : α, 𝓟 (Ici {x}) := by
-  refine' le_antisymm (le_iInf fun i => le_principal_iff.2 <| mem_atTop {i}) _
+  refine le_antisymm (le_iInf fun i => le_principal_iff.2 <| mem_atTop {i}) _
   refine
     le_iInf fun s =>
       le_principal_iff.2 <| mem_iInf_of_iInter s.finite_toSet (fun i => mem_principal_self _) ?_
@@ -2054,7 +2054,7 @@ theorem Function.Injective.map_atTop_finset_prod_eq [CommMonoid α] {g : γ → 
     (hg : Function.Injective g) {f : β → α} (hf : ∀ x, x ∉ Set.range g → f x = 1) :
     map (fun s => ∏ i in s, f (g i)) atTop = map (fun s => ∏ i in s, f i) atTop := by
   haveI := Classical.decEq β
-  apply le_antisymm <;> refine' map_atTop_finset_prod_le_of_prod_eq fun s => _
+  apply le_antisymm <;> refine map_atTop_finset_prod_le_of_prod_eq fun s => _
   · refine ⟨s.preimage g (hg.injOn _), fun t ht => ?_⟩
     refine ⟨t.image g ∪ s, Finset.subset_union_right _ _, ?_⟩
     rw [← Finset.prod_image (hg.injOn _)]

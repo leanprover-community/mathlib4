@@ -306,7 +306,7 @@ theorem exists_mk0_eq_mk0 [IsDedekindDomain S] [Algebra.IsAlgebraic R L] (I : (I
     · rw [ClassGroup.mk0_eq_mk0_iff]
       exact ⟨algebraMap _ _ M, b, hM, b_ne_zero, hJ⟩
     rw [← SetLike.mem_coe, ← Set.singleton_subset_iff, ← Ideal.span_le, ← Ideal.dvd_iff_le]
-    refine' (mul_dvd_mul_iff_left _).mp _
+    refine (mul_dvd_mul_iff_left _).mp _
     swap; · exact mt Ideal.span_singleton_eq_bot.mp b_ne_zero
     rw [Subtype.coe_mk, Ideal.dvd_iff_le, ← hJ, mul_comm]
     apply Ideal.mul_mono le_rfl
@@ -381,7 +381,7 @@ noncomputable def fintypeOfAdmissibleOfFinite : Fintype (ClassGroup S) := by
 -- Porting note: `this` and `f` below where solved at the end rather than being defined at first.
   have : LinearIndependent R ((Algebra.traceForm K L).dualBasis
       (traceForm_nondegenerate K L) b) := by
-    refine' (Basis.linearIndependent _).restrict_scalars _
+    refine (Basis.linearIndependent _).restrict_scalars _
     simp only [Algebra.smul_def, mul_one]
     apply IsFractionRing.injective
   obtain ⟨n, b⟩ :=

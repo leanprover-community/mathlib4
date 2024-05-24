@@ -150,7 +150,7 @@ noncomputable def sheafificationIsoImagePresheaf :
     J.sheafify_hom_ext _ _ (J.sheafify_isSheaf _) (by simp [toImagePresheafSheafify])
   inv_hom_id := by
     rw [← cancel_mono (Subpresheaf.ι _), Category.id_comp, Category.assoc]
-    refine' Eq.trans _ (Category.comp_id _)
+    refine Eq.trans _ (Category.comp_id _)
     congr 1
     exact J.sheafify_hom_ext _ _ (J.sheafify_isSheaf _) (by simp [toImagePresheafSheafify])
 #align category_theory.sheafification_iso_image_presheaf CategoryTheory.sheafificationIsoImagePresheaf

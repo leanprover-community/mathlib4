@@ -192,7 +192,7 @@ lemma cauchy_ratCast (q : ℚ) : (q : ℝ).cauchy = q := rfl
 #align real.cauchy_rat_cast Real.cauchy_ratCast
 
 instance commRing : CommRing ℝ := by
-  refine' { natCast := fun n => ⟨n⟩
+  refine { natCast := fun n => ⟨n⟩
             intCast := fun z => ⟨z⟩
             zero := (0 : ℝ)
             one := (1 : ℝ)

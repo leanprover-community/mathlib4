@@ -2189,7 +2189,7 @@ instance (priority := 100) NormalSpace.of_regularSpace_secondCountableTopology
       exact ⟨u, hu, hxu, disjoint_left.2 hut⟩
     choose! U hu hxu hd using this
     set V : s → countableBasis X := MapsTo.restrict _ _ _ hu
-    refine' ⟨range V, _, forall_mem_range.2 <| Subtype.forall.2 hd, fun n => _⟩
+    refine ⟨range V, _, forall_mem_range.2 <| Subtype.forall.2 hd, fun n => _⟩
     · rw [biUnion_range]
       exact fun x hx => mem_iUnion.2 ⟨⟨x, hx⟩, hxu x hx⟩
     · simp only [← iSup_eq_iUnion, iSup_and']
@@ -2204,12 +2204,12 @@ instance (priority := 100) NormalSpace.of_regularSpace_secondCountableTopology
     isOpen_biUnion fun v _ => (isOpen_of_mem_countableBasis v.2).sdiff (hUc _),
     fun x hx => ?_, fun x hx => ?_, ?_⟩
   · rcases mem_iUnion₂.1 (hsU hx) with ⟨u, huU, hxu⟩
-    refine' mem_biUnion huU ⟨hxu, _⟩
+    refine mem_biUnion huU ⟨hxu, _⟩
     simp only [mem_iUnion]
     rintro ⟨v, hvV, -, hxv⟩
     exact (hVd v hvV).le_bot ⟨hxv, hx⟩
   · rcases mem_iUnion₂.1 (htV hx) with ⟨v, hvV, hxv⟩
-    refine' mem_biUnion hvV ⟨hxv, _⟩
+    refine mem_biUnion hvV ⟨hxv, _⟩
     simp only [mem_iUnion]
     rintro ⟨u, huU, -, hxu⟩
     exact (hUd u huU).le_bot ⟨hxu, hx⟩
@@ -2487,7 +2487,7 @@ theorem loc_compact_Haus_tot_disc_of_zero_dim [TotallyDisconnectedSpace H] :
       rw [this, image_comp, Subtype.image_preimage_coe, inter_eq_self_of_subset_right V_sub]
     rw [f3]
     apply f1.isOpenMap v f2
-  refine' ⟨(↑) '' V, VisClopen', by simp [Vx], Subset.trans _ sU⟩
+  refine ⟨(↑) '' V, VisClopen', by simp [Vx], Subset.trans _ sU⟩
   simp
 set_option linter.uppercaseLean3 false in
 #align loc_compact_Haus_tot_disc_of_zero_dim loc_compact_Haus_tot_disc_of_zero_dim
@@ -2526,6 +2526,6 @@ instance ConnectedComponents.t2 [T2Space X] [CompactSpace X] : T2Space (Connecte
     exact ⟨U, (↑) '' U, hU, ha, subset_iInter₂ fun s _ => s.2.1.connectedComponent_subset s.2.2,
       (connectedComponents_preimage_image U).symm ▸ hU.biUnion_connectedComponent_eq⟩
   rw [ConnectedComponents.quotientMap_coe.isClopen_preimage] at hU
-  refine' ⟨Vᶜ, V, hU.compl.isOpen, hU.isOpen, _, hb mem_connectedComponent, disjoint_compl_left⟩
+  refine ⟨Vᶜ, V, hU.compl.isOpen, hU.isOpen, _, hb mem_connectedComponent, disjoint_compl_left⟩
   exact fun h => flip Set.Nonempty.ne_empty ha ⟨a, mem_connectedComponent, h⟩
 #align connected_components.t2 ConnectedComponents.t2

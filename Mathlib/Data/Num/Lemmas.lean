@@ -409,7 +409,7 @@ instance addMonoidWithOne : AddMonoidWithOne Num :=
 #align num.add_monoid_with_one Num.addMonoidWithOne
 
 instance commSemiring : CommSemiring Num := by
-  refine'
+  refine
     { Num.addMonoid,
       Num.addMonoidWithOne with
       mul := (· * ·)
@@ -589,11 +589,11 @@ scoped macro (name := transfer) "transfer" : tactic => `(tactic|
     (intros; transfer_rw; try simp [add_comm, add_left_comm, mul_comm, mul_left_comm]))
 
 instance addCommSemigroup : AddCommSemigroup PosNum := by
-  refine' { add := (· + ·).. } <;> transfer
+  refine { add := (· + ·).. } <;> transfer
 #align pos_num.add_comm_semigroup PosNum.addCommSemigroup
 
 instance commMonoid : CommMonoid PosNum := by
-  refine'
+  refine
     { mul := (· * ·)
       one := (1 : PosNum)
       npow := @npowRec PosNum ⟨1⟩ ⟨(· * ·)⟩,.. } <;>
@@ -602,7 +602,7 @@ instance commMonoid : CommMonoid PosNum := by
 #align pos_num.comm_monoid PosNum.commMonoid
 
 instance distrib : Distrib PosNum := by
-  refine'
+  refine
     { add := (· + ·)
       mul := (· * ·).. } <;>
   (transfer

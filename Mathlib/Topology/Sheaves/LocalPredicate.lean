@@ -144,7 +144,7 @@ def PrelocalPredicate.sheafify {T : X → Type v} (P : PrelocalPredicate T) : Lo
   res {V U} i f w x := by
     specialize w (i x)
     rcases w with ⟨V', m', i', p⟩
-    refine' ⟨V ⊓ V', ⟨x.2, m'⟩, Opens.infLELeft _ _, _⟩
+    refine ⟨V ⊓ V', ⟨x.2, m'⟩, Opens.infLELeft _ _, _⟩
     convert P.res (Opens.infLERight V V') _ p
   locality {U} f w x := by
     specialize w x
@@ -232,7 +232,7 @@ set_option linter.uppercaseLean3 false in
 /-- There is a canonical map from the stalk to the original fiber, given by evaluating sections.
 -/
 def stalkToFiber (P : LocalPredicate T) (x : X) : (subsheafToTypes P).presheaf.stalk x ⟶ T x := by
-  refine'
+  refine
     colimit.desc _
       { pt := T x
         ι :=

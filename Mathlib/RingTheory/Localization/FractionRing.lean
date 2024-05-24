@@ -54,7 +54,7 @@ instance Rat.isFractionRing : IsFractionRing ℤ ℚ where
     simpa only [eq_intCast, isUnit_iff_ne_zero, Int.cast_eq_zero, Ne, Subtype.coe_mk] using hx
   surj' := by
     rintro ⟨n, d, hd, h⟩
-    refine' ⟨⟨n, ⟨d, _⟩⟩, Rat.mul_den_eq_num _⟩
+    refine ⟨⟨n, ⟨d, _⟩⟩, Rat.mul_den_eq_num _⟩
     rw [mem_nonZeroDivisors_iff_ne_zero, Int.natCast_ne_zero_iff_pos]
     exact Nat.zero_lt_of_ne_zero hd
   exists_of_eq {x y} := by
@@ -180,7 +180,7 @@ set_option backward.synthInstance.canonInstances false in -- See https://github.
 @[simp]
 theorem mk'_eq_zero_iff_eq_zero [Algebra R K] [IsFractionRing R K] {x : R} {y : nonZeroDivisors R} :
     mk' K x y = 0 ↔ x = 0 := by
-  refine' ⟨fun hxy => _, fun h => by rw [h, mk'_zero]⟩
+  refine ⟨fun hxy => _, fun h => by rw [h, mk'_zero]⟩
   simp_rw [mk'_eq_zero_iff, mul_left_coe_nonZeroDivisors_eq_zero_iff] at hxy
   exact (exists_const _).mp hxy
 #align is_fraction_ring.mk'_eq_zero_iff_eq_zero IsFractionRing.mk'_eq_zero_iff_eq_zero

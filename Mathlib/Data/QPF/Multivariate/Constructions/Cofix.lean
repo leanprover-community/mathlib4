@@ -431,7 +431,7 @@ variable {F: TypeVec (n + 1) → Type u} [MvFunctor F] [q : MvQPF F]
 
 theorem Cofix.abs_repr {α} (x : Cofix F α) : Quot.mk _ (Cofix.repr x) = x := by
   let R := fun x y : Cofix F α => abs (repr y) = x
-  refine' Cofix.bisim₂ R _ _ _ rfl
+  refine Cofix.bisim₂ R _ _ _ rfl
   clear x;
   rintro x y h;
   subst h
@@ -523,7 +523,7 @@ theorem corec_roll {α : TypeVec n} {X Y} {x₀ : X} (f : X → Y) (g : Y → F 
   rw [Ha, Hb, Cofix.dest_corec, Cofix.dest_corec, Function.comp_apply, Function.comp_apply]
   rw [MvFunctor.map_map, ← appendFun_comp_id]
   refine liftR_map_last _ _ _ _ ?_
-  intro a; refine' ⟨a, rfl, rfl⟩
+  intro a; refine ⟨a, rfl, rfl⟩
 #align mvqpf.corec_roll MvQPF.corec_roll
 
 theorem Cofix.dest_corec' {α : TypeVec.{u} n} {β : Type u}

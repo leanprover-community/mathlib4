@@ -124,7 +124,7 @@ theorem Nat.Coprime.isPrimePow_dvd_mul {n a b : ℕ} (hab : Nat.Coprime a b) (hn
   rcases eq_or_ne b 0 with (rfl | hb)
   · simp only [Nat.coprime_zero_right] at hab
     simp [hab, Finset.filter_singleton, not_isPrimePow_one]
-  refine'
+  refine
     ⟨_, fun h =>
       Or.elim h (fun i => i.trans ((@dvd_mul_right a b a hab).mpr (dvd_refl a)))
           fun i => i.trans ((@dvd_mul_left a b b hab.symm).mpr (dvd_refl b))⟩

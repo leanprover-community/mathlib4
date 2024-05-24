@@ -65,13 +65,13 @@ noncomputable def quotientEquivPiSpan (I : Ideal S) (b : Basis ι R S) (hI : I �
     · rintro ⟨y, hy, rfl⟩ i
       exact hy i
     · rintro hdvd
-      refine' ⟨∑ i, x i • b' i, fun i => _, _⟩ <;> rw [b'.repr_sum_self]
+      refine ⟨∑ i, x i • b' i, fun i => _, _⟩ <;> rw [b'.repr_sum_self]
       · exact hdvd i
-  refine' ((Submodule.Quotient.restrictScalarsEquiv R I).restrictScalars R).symm.trans
+  refine ((Submodule.Quotient.restrictScalarsEquiv R I).restrictScalars R).symm.trans
     (σ₁₂ := RingHom.id R) (σ₃₂ := RingHom.id R) _
   · infer_instance
   · infer_instance
-  refine' (Submodule.Quotient.equiv (I.restrictScalars R) I' b'.equivFun this).trans
+  refine (Submodule.Quotient.equiv (I.restrictScalars R) I' b'.equivFun this).trans
     (σ₁₂ := RingHom.id R) (σ₃₂ := RingHom.id R) _
   · infer_instance
   · infer_instance

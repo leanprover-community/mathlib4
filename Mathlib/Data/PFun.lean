@@ -366,7 +366,7 @@ theorem fixInduction'_stop {C : α → Sort*} {f : α →. Sum β α} {b : β} {
   unfold fixInduction'
   rw [fixInduction_spec]
   -- Porting note: the explicit motive required because `simp` behaves differently
-  refine' Eq.rec (motive := fun x e ↦
+  refine Eq.rec (motive := fun x e ↦
       Sum.casesOn x _ _ (Eq.trans (Part.get_eq_of_mem fa (dom_of_mem_fix h)) e) = hbase a fa) _
     (Part.get_eq_of_mem fa (dom_of_mem_fix h)).symm
   simp
@@ -380,7 +380,7 @@ theorem fixInduction'_fwd {C : α → Sort*} {f : α →. Sum β α} {b : β} {a
   unfold fixInduction'
   rw [fixInduction_spec]
   -- Porting note: the explicit motive required because `simp` behaves differently
-  refine' Eq.rec (motive := fun x e =>
+  refine Eq.rec (motive := fun x e =>
       Sum.casesOn (motive := fun y => (f a).get (dom_of_mem_fix h) = y → C a) x _ _
       (Eq.trans (Part.get_eq_of_mem fa (dom_of_mem_fix h)) e) = _) _
     (Part.get_eq_of_mem fa (dom_of_mem_fix h)).symm

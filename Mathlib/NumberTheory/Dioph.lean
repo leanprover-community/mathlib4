@@ -190,7 +190,7 @@ theorem mul_apply (f g : Poly α) (x : α → ℕ) : (f * g) x = f x * g x := rf
 instance (α : Type*) : Inhabited (Poly α) := ⟨0⟩
 
 instance : AddCommGroup (Poly α) := by
-  refine' { add := ((· + ·) : Poly α → Poly α → Poly α)
+  refine { add := ((· + ·) : Poly α → Poly α → Poly α)
             neg := (Neg.neg : Poly α → Poly α)
             sub := Sub.sub
             zero := 0
@@ -217,7 +217,7 @@ instance : AddGroupWithOne (Poly α) :=
       intCast := Poly.const }
 
 instance : CommRing (Poly α) := by
-  refine' { (inferInstance : AddCommGroup (Poly α)),
+  refine { (inferInstance : AddCommGroup (Poly α)),
             (inferInstance : AddGroupWithOne (Poly α)) with
               mul := (· * ·)
               npow := @npowRec _ ⟨(1 : Poly α)⟩ ⟨(· * ·)⟩

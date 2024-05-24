@@ -145,7 +145,7 @@ theorem BlankRel.trans {Γ} [Inhabited Γ] {l₁ l₂ l₃ : List Γ} :
 /-- Given two `BlankRel` lists, there exists (constructively) a common join. -/
 def BlankRel.above {Γ} [Inhabited Γ] {l₁ l₂ : List Γ} (h : BlankRel l₁ l₂) :
     { l // BlankExtends l₁ l ∧ BlankExtends l₂ l } := by
-  refine'
+  refine
     if hl : l₁.length ≤ l₂.length then ⟨l₂, Or.elim h id fun h' ↦ _, BlankExtends.refl _⟩
     else ⟨l₁, BlankExtends.refl _, Or.elim h (fun h' ↦ _) id⟩
   · exact (BlankExtends.refl _).above_of_le h' hl
@@ -155,7 +155,7 @@ def BlankRel.above {Γ} [Inhabited Γ] {l₁ l₂ : List Γ} (h : BlankRel l₁ 
 /-- Given two `BlankRel` lists, there exists (constructively) a common meet. -/
 def BlankRel.below {Γ} [Inhabited Γ] {l₁ l₂ : List Γ} (h : BlankRel l₁ l₂) :
     { l // BlankExtends l l₁ ∧ BlankExtends l l₂ } := by
-  refine'
+  refine
     if hl : l₁.length ≤ l₂.length then ⟨l₁, BlankExtends.refl _, Or.elim h id fun h' ↦ _⟩
     else ⟨l₂, Or.elim h (fun h' ↦ _) id, BlankExtends.refl _⟩
   · exact (BlankExtends.refl _).above_of_le h' hl
@@ -382,7 +382,7 @@ pointed. -/
 def ListBlank.map {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ') (l : ListBlank Γ) :
     ListBlank Γ' := by
   apply l.liftOn (fun l ↦ ListBlank.mk (List.map f l))
-  rintro l _ ⟨i, rfl⟩; refine' Quotient.sound' (Or.inl ⟨i, _⟩)
+  rintro l _ ⟨i, rfl⟩; refine Quotient.sound' (Or.inl ⟨i, _⟩)
   simp only [PointedMap.map_pt, List.map_append, List.map_replicate]
 #align turing.list_blank.map Turing.ListBlank.map
 
@@ -470,7 +470,7 @@ is sent to a sequence of default elements. -/
 def ListBlank.bind {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (l : ListBlank Γ) (f : Γ → List Γ')
     (hf : ∃ n, f default = List.replicate n default) : ListBlank Γ' := by
   apply l.liftOn (fun l ↦ ListBlank.mk (List.bind l f))
-  rintro l _ ⟨i, rfl⟩; cases' hf with n e; refine' Quotient.sound' (Or.inl ⟨i * n, _⟩)
+  rintro l _ ⟨i, rfl⟩; cases' hf with n e; refine Quotient.sound' (Or.inl ⟨i * n, _⟩)
   rw [List.append_bind, mul_comm]; congr
   induction' i with i IH
   · rfl
@@ -1730,7 +1730,7 @@ variable {enc}
 
 /-- The low level tape corresponding to the given tape over alphabet `Γ`. -/
 def trTape' (L R : ListBlank Γ) : Tape Bool := by
-  refine'
+  refine
       Tape.mk' (L.bind (fun x ↦ (enc x).toList.reverse) ⟨n, _⟩)
         (R.bind (fun x ↦ (enc x).toList) ⟨n, _⟩) <;>
     simp only [enc0, Vector.replicate, List.reverse_replicate, Bool.default_bool, Vector.toList_mk]
@@ -2703,7 +2703,7 @@ theorem tr_respects : Respects (TM2.step M) (TM1.step (tr M)) TrCfg := by
   rsuffices ⟨b, c, r⟩ : ∃ b, _ ∧ Reaches (TM1.step (tr M)) _ _
   · exact ⟨b, c, TransGen.head' rfl r⟩
   simp only [tr]
-  -- Porting note: `refine'` failed because of implicit lambda, so `induction` is used.
+  -- Porting note: `refine` failed because of implicit lambda, so `induction` is used.
   generalize M l = N
   induction N using stmtStRec generalizing v S L hT with
   | H₁ k s q IH => exact tr_respects_aux M hT s @IH

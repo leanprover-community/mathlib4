@@ -1502,7 +1502,7 @@ theorem IsBigO.const_mul_left {f : α → R} (h : f =O[l] g) (c' : R) : (fun x =
 
 theorem isBigOWith_self_const_mul' (u : Rˣ) (f : α → R) (l : Filter α) :
     IsBigOWith ‖(↑u⁻¹ : R)‖ l f fun x => ↑u * f x := by
-  refine' (isBigOWith_const_mul_self ↑u⁻¹ _ l).congr_left _
+  refine (isBigOWith_const_mul_self ↑u⁻¹ _ l).congr_left _
   exact fun x => u.inv_mul_cancel_left (f x)
   -- Porting note: Lean just had trouble elaborating correctly, but this fixes it.
 #align asymptotics.is_O_with_self_const_mul' Asymptotics.isBigOWith_self_const_mul'

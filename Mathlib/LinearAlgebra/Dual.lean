@@ -1218,8 +1218,8 @@ noncomputable def quotEquivAnnihilator (W : Subspace K V) : (V ⧸ W) ≃ₗ[K] 
   let ψ := LinearEquiv.quotEquivOfEquiv φ (Basis.ofVectorSpace K V).toDualEquiv
   ψ ≪≫ₗ W.quotDualEquivAnnihilator
   -- Porting note: this prevents the timeout; ML3 proof preserved below
-  -- refine' _ ≪≫ₗ W.quotDualEquivAnnihilator
-  -- refine' LinearEquiv.quot_equiv_of_equiv _ (Basis.ofVectorSpace K V).toDualEquiv
+  -- refine _ ≪≫ₗ W.quotDualEquivAnnihilator
+  -- refine LinearEquiv.quot_equiv_of_equiv _ (Basis.ofVectorSpace K V).toDualEquiv
   -- exact (Basis.ofVectorSpace K W).toDualEquiv.trans W.dual_equiv_dual
 #align subspace.quot_equiv_annihilator Subspace.quotEquivAnnihilator
 
@@ -1853,7 +1853,7 @@ isomorphism `R ⊗ R ≃ R`.
 @[simps!]
 noncomputable def dualDistribEquivOfBasis (b : Basis ι R M) (c : Basis κ R N) :
     Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (M ⊗[R] N) := by
-  refine' LinearEquiv.ofLinear (dualDistrib R M N) (dualDistribInvOfBasis b c) _ _
+  refine LinearEquiv.ofLinear (dualDistrib R M N) (dualDistribInvOfBasis b c) _ _
   · exact dualDistrib_dualDistribInvOfBasis_left_inverse _ _
   · exact dualDistrib_dualDistribInvOfBasis_right_inverse _ _
 #align tensor_product.dual_distrib_equiv_of_basis TensorProduct.dualDistribEquivOfBasis

@@ -143,7 +143,7 @@ theorem SmoothFiberwiseLinear.locality_aux₁ (e : PartialHomeomorph (B × F) (B
   refine ⟨Prod.fst '' e.source, he, ?_⟩
   rintro x ⟨p, hp, rfl⟩
   refine ⟨φ ⟨p, hp⟩, u ⟨p, hp⟩, hu ⟨p, hp⟩, ?_, hu' _, hφ ⟨p, hp⟩, h2φ ⟨p, hp⟩, ?_⟩
-  · intro y hy; refine' ⟨(y, 0), heu ⟨p, hp⟩ ⟨_, _⟩ hy, rfl⟩
+  · intro y hy; refine ⟨(y, 0), heu ⟨p, hp⟩ ⟨_, _⟩ hy, rfl⟩
   · rw [← hesu, e.restr_source_inter]; exact heφ ⟨p, hp⟩
 #align smooth_fiberwise_linear.locality_aux₁ SmoothFiberwiseLinear.locality_aux₁
 
@@ -244,7 +244,7 @@ def smoothFiberwiseLinear : StructureGroupoid (B × F) where
   trans' := by
     simp only [mem_iUnion]
     rintro e e' ⟨φ, U, hU, hφ, h2φ, heφ⟩ ⟨φ', U', hU', hφ', h2φ', heφ'⟩
-    refine' ⟨fun b => (φ b).trans (φ' b), _, hU.inter hU', _, _,
+    refine ⟨fun b => (φ b).trans (φ' b), _, hU.inter hU', _, _,
       Setoid.trans (PartialHomeomorph.EqOnSource.trans' heφ heφ') ⟨_, _⟩⟩
     · show
         SmoothOn IB 𝓘(𝕜, F →L[𝕜] F)

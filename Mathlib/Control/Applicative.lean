@@ -71,7 +71,7 @@ end Lemmas
 -- Porting note: we have a monad instance for `Id` but not `id`, mathport can't tell
 -- which one is intended
 
-instance : CommApplicative Id := by refine' { .. } <;> intros <;> rfl
+instance : CommApplicative Id := by refine { .. } <;> intros <;> rfl
 
 namespace Functor
 
@@ -130,7 +130,7 @@ open CommApplicative
 
 instance {f : Type u → Type w} {g : Type v → Type u} [Applicative f] [Applicative g]
     [CommApplicative f] [CommApplicative g] : CommApplicative (Comp f g) := by
-  refine' { @instLawfulApplicativeComp f g _ _ _ _ with .. }
+  refine { @instLawfulApplicativeComp f g _ _ _ _ with .. }
   intros
   simp! [map, Seq.seq, functor_norm]
   rw [commutative_map]
@@ -163,11 +163,11 @@ instance {α} [One α] [Mul α] : Applicative (Const α) where
 -- Also, `simp` didn't close `refl` goals.
 
 instance {α} [Monoid α] : LawfulApplicative (Const α) := by
-  refine' { .. } <;> intros <;> simp [mul_assoc, (· <$> ·), Seq.seq, pure] <;> rfl
+  refine { .. } <;> intros <;> simp [mul_assoc, (· <$> ·), Seq.seq, pure] <;> rfl
 
 instance {α} [Zero α] [Add α] : Applicative (AddConst α) where
   pure _ := (0 : α)
   seq f x := (show α from f) + (show α from x Unit.unit)
 
 instance {α} [AddMonoid α] : LawfulApplicative (AddConst α) := by
-  refine' { .. } <;> intros <;> simp [add_assoc, (· <$> ·), Seq.seq, pure] <;> rfl
+  refine { .. } <;> intros <;> simp [add_assoc, (· <$> ·), Seq.seq, pure] <;> rfl

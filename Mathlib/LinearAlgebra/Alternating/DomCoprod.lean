@@ -181,7 +181,7 @@ def domCoprod' :
     (Mᵢ [⋀^ιa]→ₗ[R'] N₁) ⊗[R'] (Mᵢ [⋀^ιb]→ₗ[R'] N₂) →ₗ[R']
       (Mᵢ [⋀^ιa ⊕ ιb]→ₗ[R'] (N₁ ⊗[R'] N₂)) :=
   TensorProduct.lift <| by
-    refine'
+    refine
       LinearMap.mk₂ R' domCoprod (fun m₁ m₂ n => _) (fun c m n => _) (fun m n₁ n₂ => _)
         fun c m n => _ <;>
     · ext

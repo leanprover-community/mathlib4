@@ -199,7 +199,7 @@ lemma collapse_modular (hu : a ∉ u) (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h
       exact mul_le_mul_of_nonneg_left (le_collapse_of_insert_mem ‹_› h₄
         (insert_union_distrib _ _ _).symm <| union_mem_sups ‹_› ‹_›) <| add_nonneg (h₃ _) <| h₃ _
     · rw [mul_zero, add_zero]
-      refine' (h ‹_› ‹_›).trans <| mul_le_mul (le_collapse_of_mem ‹_› h₃
+      refine (h ‹_› ‹_›).trans <| mul_le_mul (le_collapse_of_mem ‹_› h₃
         (insert_inter_of_not_mem ‹_›) <| inter_mem_infs ‹_› ‹_›) (le_collapse_of_insert_mem ‹_› h₄
         (insert_union _ _ _) <| union_mem_sups ‹_› ‹_›) (h₄ _) <| collapse_nonneg h₃ _
     · rw [mul_zero, zero_add]

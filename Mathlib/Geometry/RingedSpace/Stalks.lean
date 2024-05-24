@@ -204,7 +204,7 @@ instance isIso {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) [IsIso α] (x 
     -- type for an inverse.
     -- To get a proper inverse, we need to compose with the `eqToHom` arrow
     -- `X.stalk x ⟶ X.stalk ((α ≫ β).base x)`.
-    refine'
+    refine
       ⟨eqToHom (show X.stalk x = X.stalk ((α ≫ β).base x) by rw [h_eq]) ≫
           (stalkMap β (α.base x) : _),
         _, _⟩

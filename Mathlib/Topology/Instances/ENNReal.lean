@@ -296,7 +296,7 @@ protected theorem tendsto_atTop [Nonempty β] [SemilatticeSup β] {f : β → �
 #align ennreal.tendsto_at_top ENNReal.tendsto_atTop
 
 instance : ContinuousAdd ℝ≥0∞ := by
-  refine' ⟨continuous_iff_continuousAt.2 _⟩
+  refine ⟨continuous_iff_continuousAt.2 _⟩
   rintro ⟨_ | a, b⟩
   · exact tendsto_nhds_top_mono' continuousAt_fst fun p => le_add_right le_rfl
   rcases b with (_ | b)
@@ -1586,7 +1586,7 @@ theorem edist_le_tsum_of_edist_le_of_tendsto {f : ℕ → α} (d : ℕ → ℝ�
     (hf : ∀ n, edist (f n) (f n.succ) ≤ d n) {a : α} (ha : Tendsto f atTop (𝓝 a)) (n : ℕ) :
     edist (f n) a ≤ ∑' m, d (n + m) := by
   refine le_of_tendsto (tendsto_const_nhds.edist ha) (mem_atTop_sets.2 ⟨n, fun m hnm => ?_⟩)
-  refine' le_trans (edist_le_Ico_sum_of_edist_le hnm fun _ _ => hf _) _
+  refine le_trans (edist_le_Ico_sum_of_edist_le hnm fun _ _ => hf _) _
   rw [Finset.sum_Ico_eq_sum_range]
   exact sum_le_tsum _ (fun _ _ => zero_le _) ENNReal.summable
 #align edist_le_tsum_of_edist_le_of_tendsto edist_le_tsum_of_edist_le_of_tendsto

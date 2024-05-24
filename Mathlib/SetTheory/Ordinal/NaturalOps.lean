@@ -691,7 +691,7 @@ theorem lt_nmul_iff₃ :
       ∃ a' < a, ∃ b' < b, ∃ c' < c,
         d ♯ a' ⨳ b' ⨳ c ♯ a' ⨳ b ⨳ c' ♯ a ⨳ b' ⨳ c' ≤
           a' ⨳ b ⨳ c ♯ a ⨳ b' ⨳ c ♯ a ⨳ b ⨳ c' ♯ a' ⨳ b' ⨳ c' := by
-  -- Porting note: was `refine' ⟨fun h => _, _⟩`, but can't get that to work?
+  -- Porting note: was `refine ⟨fun h => _, _⟩`, but can't get that to work?
   constructor
   · intro h
     rcases lt_nmul_iff.1 h with ⟨e, he, c', hc, H₁⟩
