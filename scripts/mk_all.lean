@@ -28,7 +28,7 @@ The input `git` is a `Bool`ean flag:
 -/
 def getAll (git : Bool) (ml : String) : IO String := do
   let ml.lean := addExtension ⟨ml⟩ "lean"  -- `Mathlib.lean`
-  let stdout : Array System.FilePath ← (do
+  let allModules : Array System.FilePath ← (do
     if git then
       let mlDir := ml.push pathSeparator   -- `Mathlib/`
       let allLean ← IO.Process.run { cmd := "git", args := #["ls-files", mlDir ++ "*.lean"] }
@@ -36,8 +36,9 @@ def getAll (git : Bool) (ml : String) : IO String := do
     else do
       let all ← walkDir ml
       return all.filter (·.extension == some "lean"))
-  let files := (stdout.erase ml.lean).qsort (·.toString < ·.toString)
+  let files := (allModules.erase ml.lean).qsort (·.toString < ·.toString)
   let withImport ← files.mapM fun f => do
+    -- this check is helpful in case the `git` option is on and a local file has been removed
     if ← pathExists f then
       return "import " ++ (← moduleNameOfFileName f none).toString
     else return ""
@@ -46,8 +47,8 @@ def getAll (git : Bool) (ml : String) : IO String := do
 open Lake in
 /-- `getLeanLibs` returns the array of names (as an `Array` of `String`s) of all the libraries
 on which the current project depends.
-If the package is `mathlib`, then it excludes the libraries `Cache` and `LongestPole` and it
-includes `Mathlib/Tactic`. -/
+If the current project is `mathlib`, then it excludes the libraries `Cache` and `LongestPole` and
+it includes `Mathlib/Tactic`. -/
 def getLeanLibs : IO (Array String) := do
   let (elanInstall?, leanInstall?, lakeInstall?) ← findInstall?
   let config ← MonadError.runEIO <| mkLoadConfig { elanInstall?, leanInstall?, lakeInstall? }
