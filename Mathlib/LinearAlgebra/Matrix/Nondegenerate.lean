@@ -52,7 +52,7 @@ theorem nondegenerate_of_det_ne_zero [DecidableEq m] {M : Matrix m m A} (hM : M.
   intro v hv
   ext i
   specialize hv (M.cramer (Pi.single i 1))
-  refine' (mul_eq_zero.mp _).resolve_right hM
+  refine (mul_eq_zero.mp ?_).resolve_right hM
   convert hv
   simp only [mulVec_cramer M (Pi.single i 1), dotProduct, Pi.smul_apply, smul_eq_mul]
   rw [Finset.sum_eq_single i, Pi.single_eq_same, mul_one]

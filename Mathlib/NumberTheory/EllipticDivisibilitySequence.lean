@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
 import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Data.Nat.EvenOddRec
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
 
@@ -64,41 +65,42 @@ elliptic, divisibility, sequence
 
 universe u v w
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [CommRing R] (W : ℤ → R)
 
 /-- The proposition that a sequence indexed by integers is an elliptic sequence. -/
-def IsEllSequence (W : ℤ → R) : Prop :=
+def IsEllSequence : Prop :=
   ∀ m n r : ℤ, W (m + n) * W (m - n) * W r ^ 2 =
     W (m + r) * W (m - r) * W n ^ 2 - W (n + r) * W (n - r) * W m ^ 2
 
 /-- The proposition that a sequence indexed by integers is a divisibility sequence. -/
-def IsDivSequence (W : ℤ → R) : Prop :=
+def IsDivSequence : Prop :=
   ∀ m n : ℕ, m ∣ n → W m ∣ W n
 
 /-- The proposition that a sequence indexed by integers is an EDS. -/
-def IsEllDivSequence (W : ℤ → R) : Prop :=
+def IsEllDivSequence : Prop :=
   IsEllSequence W ∧ IsDivSequence W
 
-lemma IsEllSequence_id : IsEllSequence id :=
+lemma isEllSequence_id : IsEllSequence id :=
   fun _ _ _ => by simp only [id_eq]; ring1
 
-lemma IsDivSequence_id : IsDivSequence id :=
+lemma isDivSequence_id : IsDivSequence id :=
   fun _ _ => Int.ofNat_dvd.mpr
 
 /-- The identity sequence is an EDS. -/
-theorem IsEllDivSequence_id : IsEllDivSequence id :=
-  ⟨IsEllSequence_id, IsDivSequence_id⟩
+theorem isEllDivSequence_id : IsEllDivSequence id :=
+  ⟨isEllSequence_id, isDivSequence_id⟩
 
-lemma IsEllSequence_mul (x : R) {W : ℤ → R} (h : IsEllSequence W) : IsEllSequence (x • W) :=
+variable {W}
+
+lemma IsEllSequence.smul (h : IsEllSequence W) (x : R) : IsEllSequence (x • W) :=
   fun m n r => by
     linear_combination (norm := (simp only [Pi.smul_apply, smul_eq_mul]; ring1)) x ^ 4 * h m n r
 
-lemma IsDivSequence_mul (x : R) {W : ℤ → R} (h : IsDivSequence W) : IsDivSequence (x • W) :=
+lemma IsDivSequence.smul (h : IsDivSequence W) (x : R) : IsDivSequence (x • W) :=
   fun m n r => mul_dvd_mul_left x <| h m n r
 
-lemma IsEllDivSequence_mul (x : R) {W : ℤ → R} (h : IsEllDivSequence W) :
-    IsEllDivSequence (x • W) :=
-  ⟨IsEllSequence_mul x h.left, IsDivSequence_mul x h.right⟩
+lemma IsEllDivSequence.smul (h : IsEllDivSequence W) (x : R) : IsEllDivSequence (x • W) :=
+  ⟨h.left.smul x, h.right.smul x⟩
 
 /-- The auxiliary sequence for a normalised EDS `W : ℕ → R`,
 with initial values `W(0) = 0`, `W(1) = 1`, `W(2) = 1`, `W(3) = c`, and `W(4) = d`. -/
@@ -281,3 +283,33 @@ lemma normEDS_even (m : ℕ) : normEDS b c d (2 * (m + 3)) * b =
 @[simp]
 lemma normEDS_neg (n : ℕ) : normEDS b c d (-n) = -normEDS b c d n := by
   rw [normEDS, preNormEDS_neg, Int.natAbs_neg, neg_mul, normEDS]
+
+/-- Strong recursion principle for a normalised EDS: if we have
+ * `P 0`, `P 1`, `P 2`, `P 3`, and `P 4`,
+ * for all `m : ℕ` we can prove `P (2 * (m + 3))` from `P k` for all `k < 2 * (m + 3)`, and
+ * for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P k` for all `k < 2 * (m + 2) + 1`,
+then we have `P n` for all `n : ℕ`. -/
+@[elab_as_elim]
+noncomputable def normEDSRec' {P : ℕ → Sort u}
+    (base0 : P 0) (base1 : P 1) (base2 : P 2) (base3 : P 3) (base4 : P 4)
+    (even : ∀ m : ℕ, (∀ k < 2 * (m + 3), P k) → P (2 * (m + 3)))
+    (odd : ∀ m : ℕ, (∀ k < 2 * (m + 2) + 1, P k) → P (2 * (m + 2) + 1)) (n : ℕ) : P n :=
+  n.evenOddStrongRec (by rintro (_ | _ | _ | _) h; exacts [base0, base2, base4, even _ h])
+    (by rintro (_ | _ | _) h; exacts [base1, base3, odd _ h])
+
+/-- Recursion principle for a normalised EDS: if we have
+ * `P 0`, `P 1`, `P 2`, `P 3`, and `P 4`,
+ * for all `m : ℕ` we can prove `P (2 * (m + 3))` from `P (m + 1)`, `P (m + 2)`, `P (m + 3)`,
+    `P (m + 4)`, and `P (m + 5)`, and
+ * for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P (m + 1)`, `P (m + 2)`, `P (m + 3)`,
+    and `P (m + 4)`,
+then we have `P n` for all `n : ℕ`. -/
+@[elab_as_elim]
+noncomputable def normEDSRec {P : ℕ → Sort u}
+    (base0 : P 0) (base1 : P 1) (base2 : P 2) (base3 : P 3) (base4 : P 4)
+    (even : ∀ m : ℕ, P (m + 1) → P (m + 2) → P (m + 3) → P (m + 4) → P (m + 5) → P (2 * (m + 3)))
+    (odd : ∀ m : ℕ, P (m + 1) → P (m + 2) → P (m + 3) → P (m + 4) → P (2 * (m + 2) + 1)) (n : ℕ) :
+    P n :=
+  normEDSRec' base0 base1 base2 base3 base4
+    (fun _ ih => by apply even <;> exact ih _ <| by linarith only)
+    (fun _ ih => by apply odd <;> exact ih _ <| by linarith only) n

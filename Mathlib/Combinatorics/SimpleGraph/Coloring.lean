@@ -257,7 +257,7 @@ theorem colorable_iff_exists_bdd_nat_coloring (n : ℕ) :
     cases' C with color valid
     exact Fin.is_lt (color v)
   · rintro ⟨C, Cf⟩
-    refine' ⟨Coloring.mk _ _⟩
+    refine ⟨Coloring.mk ?_ ?_⟩
     · exact fun v => ⟨C v, Cf v⟩
     · rintro v w hvw
       simp only [Fin.mk_eq_mk, Ne]

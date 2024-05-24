@@ -86,7 +86,7 @@ theorem real_main_inequality {x : ℝ} (x_large : (512 : ℝ) ≤ x) :
   suffices ∃ x1 x2, 0.5 < x1 ∧ x1 < x2 ∧ x2 ≤ x ∧ 0 ≤ f x1 ∧ f x2 ≤ 0 by
     obtain ⟨x1, x2, h1, h2, h0, h3, h4⟩ := this
     exact (h.right_le_of_le_left'' h1 ((h1.trans h2).trans_le h0) h2 h0 (h4.trans h3)).trans h4
-  refine' ⟨18, 512, by norm_num1, by norm_num1, x_large, _, _⟩
+  refine ⟨18, 512, by norm_num1, by norm_num1, x_large, ?_, ?_⟩
   · have : √(2 * 18 : ℝ) = 6 := (sqrt_eq_iff_mul_self_eq_of_pos (by norm_num1)).mpr (by norm_num1)
     rw [hf _ (by norm_num1), log_nonneg_iff (by positivity), this, one_le_div (by norm_num1)]
     norm_num1
@@ -133,7 +133,7 @@ factorization of the central binomial coefficent only has factors at most `2 * n
 theorem centralBinom_factorization_small (n : ℕ) (n_large : 2 < n)
     (no_prime : ¬∃ p : ℕ, p.Prime ∧ n < p ∧ p ≤ 2 * n) :
     centralBinom n = ∏ p in Finset.range (2 * n / 3 + 1), p ^ (centralBinom n).factorization p := by
-  refine' (Eq.trans _ n.prod_pow_factorization_centralBinom).symm
+  refine (Eq.trans ?_ n.prod_pow_factorization_centralBinom).symm
   apply Finset.prod_subset
   · exact Finset.range_subset.2 (add_le_add_right (Nat.div_le_self _ _) _)
   intro x hx h2x
@@ -162,7 +162,7 @@ theorem centralBinom_le_of_no_bertrand_prime (n : ℕ) (n_large : 2 < n)
   let S := (Finset.range (2 * n / 3 + 1)).filter Nat.Prime
   let f x := x ^ n.centralBinom.factorization x
   have : ∏ x : ℕ in S, f x = ∏ x : ℕ in Finset.range (2 * n / 3 + 1), f x := by
-    refine' Finset.prod_filter_of_ne fun p _ h => _
+    refine Finset.prod_filter_of_ne fun p _ h => ?_
     contrapose! h; dsimp only [f]
     rw [factorization_eq_zero_of_non_prime n.centralBinom h, _root_.pow_zero]
   rw [centralBinom_factorization_small n n_large no_prime, ← this, ←
@@ -233,7 +233,7 @@ theorem exists_prime_lt_and_le_two_mul (n : ℕ) (hn0 : n ≠ 0) :
     for i in [317, 163, 83, 43, 23, 13, 7, 5, 3, 2] do
       let i : Term := quote i
       evalTactic <| ←
-        `(tactic| refine' exists_prime_lt_and_le_two_mul_succ $i (by norm_num1) (by norm_num1) _)
+        `(tactic| refine exists_prime_lt_and_le_two_mul_succ $i (by norm_num1) (by norm_num1) ?_)
   exact fun h2 => ⟨2, prime_two, h2, Nat.mul_le_mul_left 2 (Nat.pos_of_ne_zero hn0)⟩
 #align nat.exists_prime_lt_and_le_two_mul Nat.exists_prime_lt_and_le_two_mul
 
