@@ -516,7 +516,7 @@ theorem affineLocally_of_comp
     affineLocally (@P) f := by
   let 𝒰 : ∀ i, ((Z.affineCover.pullbackCover (f ≫ g)).obj i).OpenCover := by
     intro i
-    refine Scheme.OpenCover.bind ?_ fun i => Scheme.affineCover ?_
+    refine Scheme.OpenCover.bind ?_ fun i => Scheme.affineCover _
     apply Scheme.OpenCover.pushforwardIso _
       (pullbackRightPullbackFstIso g (Z.affineCover.map i) f).hom
     apply Scheme.Pullback.openCoverOfRight
@@ -542,7 +542,7 @@ theorem affineLocally_isStableUnderComposition : (affineLocally @P).IsStableUnde
   comp_mem {X Y S} f g hf hg := by
     let 𝒰 : ∀ i, ((S.affineCover.pullbackCover (f ≫ g)).obj i).OpenCover := by
       intro i
-      refine Scheme.OpenCover.bind ?_ fun i => Scheme.affineCover ?_
+      refine Scheme.OpenCover.bind ?_ fun i => Scheme.affineCover _
       apply Scheme.OpenCover.pushforwardIso _
         (pullbackRightPullbackFstIso g (S.affineCover.map i) f).hom
       apply Scheme.Pullback.openCoverOfRight

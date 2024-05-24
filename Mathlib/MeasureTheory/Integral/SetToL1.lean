@@ -1794,7 +1794,7 @@ theorem continuousOn_setToFun_of_dominated (hT : DominatedFinMeasAdditive μ T C
     (h_cont : ∀ᵐ a ∂μ, ContinuousOn (fun x => fs x a) s) :
     ContinuousOn (fun x => setToFun μ T hT (fs x)) s := by
   intro x hx
-  refine continuousWithinAt_setToFun_of_dominated hT ?_ ?_ bound_integrabl?e _
+  refine continuousWithinAt_setToFun_of_dominated hT ?_ ?_ bound_integrable ?_
   · filter_upwards [self_mem_nhdsWithin] with x hx using hfs_meas x hx
   · filter_upwards [self_mem_nhdsWithin] with x hx using h_bound x hx
   · filter_upwards [h_cont] with a ha using ha x hx
