@@ -34,10 +34,10 @@ set_option linter.uppercaseLean3 false in
 
 namespace TopCat
 
--- Porting note: had to add in the last two proofs
-instance bundledHom : BundledHom @ContinuousMap :=
-  ⟨@ContinuousMap.toFun, @ContinuousMap.id, @ContinuousMap.comp, @ContinuousMap.coe_injective,
-    fun _ => rfl, fun _ _ _ _ _ => rfl⟩
+instance bundledHom : BundledHom @ContinuousMap where
+  toFun := @ContinuousMap.toFun
+  id := @ContinuousMap.id
+  comp := @ContinuousMap.comp
 set_option linter.uppercaseLean3 false in
 #align Top.bundled_hom TopCat.bundledHom
 
@@ -45,16 +45,14 @@ deriving instance LargeCategory for TopCat
 
 -- Porting note: currently no derive handler for ConcreteCategory
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
-instance concreteCategory : ConcreteCategory TopCat := by
-  dsimp [TopCat]
-  infer_instance
+instance concreteCategory : ConcreteCategory TopCat :=
+  inferInstanceAs <| ConcreteCategory (Bundled TopologicalSpace)
 
-@[to_additive existing TopCat.instCoeSortTopCatType]
-instance instCoeSortTopCatType : CoeSort TopCat (Type*) :=
-  Bundled.coeSort
+instance : CoeSort TopCat (Type*) where
+  coe X := X.α
 
-instance topologicalSpaceUnbundled (x : TopCat) : TopologicalSpace x :=
-  x.str
+instance topologicalSpaceUnbundled (X : TopCat) : TopologicalSpace X :=
+  X.str
 set_option linter.uppercaseLean3 false in
 #align Top.topological_space_unbundled TopCat.topologicalSpaceUnbundled
 
