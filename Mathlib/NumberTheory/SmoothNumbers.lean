@@ -266,7 +266,7 @@ lemma mem_smoothNumbers' {n m : ℕ} : m ∈ smoothNumbers n ↔ ∀ p, p.Prime 
   simp only [smoothNumbers_eq_factoredNumbers, mem_factoredNumbers', Finset.mem_range]
 
 /-- The prime factors of an `n`-smooth number are contained in the set of primes below `n`
-  if `m` is a `n`-smooth number -/
+  if `m` is an `n`-smooth number -/
 lemma primeFactors_subset_of_mem_smoothNumbers {m n : ℕ} (hms : m ∈ n.smoothNumbers) :
     m.primeFactors ⊆ n.primesBelow :=
   have hxle {x : ℕ} (hpf : x ∈ m.primeFactors) (hms : m ∈ n.smoothNumbers) :
