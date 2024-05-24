@@ -3,7 +3,8 @@ Copyright (c) 2024 Martin Dvorak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Dvorak
 -/
-import Mathlib.Data.Pi.Interval -- TODO minimize imports
+import Mathlib.Order.Basic
+import Mathlib.Algebra.Group.Pi.Basic
 /-!
 # TODO
 
