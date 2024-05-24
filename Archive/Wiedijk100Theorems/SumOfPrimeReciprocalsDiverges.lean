@@ -191,8 +191,8 @@ theorem card_le_two_pow_mul_sqrt {x k : ℕ} : card (M x k) ≤ 2 ^ k * Nat.sqrt
     have hm' := m.zero_lt_succ
     obtain ⟨a, b, hab₁, hab₂⟩ := Nat.sq_mul_squarefree_of_pos' hm'
     obtain ⟨ham, hbm⟩ := Dvd.intro_left _ hab₁, Dvd.intro _ hab₁
-    refine
-      ⟨a, b, ⟨⟨⟨?_, fun p hp => ?_⟩, hab₂⟩,? ⟨_, fun p hp =>? _⟩⟩, by simp_rw [hab₁, m.add_one_sub_one]⟩
+    refine ⟨a, b, ⟨⟨⟨?_, fun p hp => ?_⟩, hab₂⟩,? ⟨_, fun p hp =>? _⟩⟩, by
+        simp_rw [hab₁, m.add_one_sub_one]⟩
     · exact (Nat.succ_le_succ_iff.mp (Nat.le_of_dvd hm' ham)).trans_lt hm.1
     · exact hm.2 p ⟨hp.1, hp.2.trans ham⟩
     · calc
