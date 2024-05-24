@@ -1029,7 +1029,9 @@ theorem set_lintegral_strict_mono {f g : α → ℝ≥0∞} {s : Set α} (hsm : 
   lintegral_strict_mono (by simp [hs]) hg.aemeasurable hfi ((ae_restrict_iff' hsm).mpr h)
 #align measure_theory.set_lintegral_strict_mono MeasureTheory.set_lintegral_strict_mono
 
-/-- If the integral of two measurable and finite functions `f` and `g` are finite on every subsets, then `f =ᵐ[μ] g ↔ ∀ ⦃s⦄, MeasurableSet s → ∫⁻ x in s, f x ∂μ = ∫⁻ x in s, g x ∂μ` -/
+/-- If the integral of two measurable and finite functions `f` and `g` are finite on
+every subsets, then
+`f =ᵐ[μ] g ↔ ∀ ⦃s⦄, MeasurableSet s → ∫⁻ x in s, f x ∂μ = ∫⁻ x in s, g x ∂μ` -/
 theorem set_lintegral_eq_iff_ae_eq {f g : α → ℝ≥0∞} (hf : Measurable f) (hg : Measurable g)
   (hf_fin : ∀ s, ∫⁻ x in s, f x ∂μ ≠ ∞) (hg_fin : ∀ s, ∫⁻ x in s, g x ∂μ ≠ ∞)
   (hf_neq_top : ∀ x, f x ≠ ⊤) (hg_neq_top : ∀ x, g x ≠ ⊤)
