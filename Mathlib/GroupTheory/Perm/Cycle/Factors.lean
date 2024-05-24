@@ -122,20 +122,6 @@ instance instDecidableRelSameCycle (f : Perm α) : DecidableRel (SameCycle f) :=
         exact ⟨0, Fintype.card_pos, hxy.eq_of_left hx⟩
 #align equiv.perm.same_cycle.decidable_rel Equiv.Perm.instDecidableRelSameCycle
 
-example (f : Perm α) : DecidableRel (SameCycle f) := fun x y =>
-  decidable_of_iff (∃ n ∈ List.range (Fintype.card α), (f ^ n) x = y)
-    ⟨fun ⟨n, _, hn⟩ => ⟨n, hn⟩, fun hxy => by
-      simp only [List.mem_range]
-      by_cases hx : x ∈ f.support
-      case pos =>
-        classical
-        rcases hxy.exists_lt_card_support_cycleOfGDR_pow_eq_of_mem_support hx with ⟨i, hixy, hi⟩
-        refine ⟨i, lt_of_lt_of_le hixy (card_le_univ _), hi⟩
-      case neg =>
-        haveI : Nonempty α := ⟨x⟩
-        rw [not_mem_support] at hx
-        exact ⟨0, Fintype.card_pos, hxy.eq_of_left hx⟩⟩
-
 /-- `f.cycleOf x` is the cycle of the permutation `f` to which `x` belongs. -/
 def cycleOf (f : Perm α) (x : α) : Perm α :=
   ofSubtype (subtypePerm f fun _ => sameCycle_apply_right.symm : Perm { y // SameCycle f x y })
