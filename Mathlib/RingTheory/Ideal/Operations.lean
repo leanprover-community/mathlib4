@@ -124,8 +124,6 @@ theorem annihilator_iSup (ι : Sort w) (f : ι → Submodule R M) :
         mem_annihilator'.1 this
 #align submodule.annihilator_supr Submodule.annihilator_iSup
 
--- this, `mem_set_smul_of_mem_mem`, and `smul_mem_pointwise_smul` should be
--- named in a more consistent & descriptive way
 theorem smul_mem_smul {r} {n} (hr : r ∈ I) (hn : n ∈ N) : r • n ∈ I • N :=
   apply_mem_map₂ _ hr hn
 #align submodule.smul_mem_smul Submodule.smul_mem_smul
