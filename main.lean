@@ -380,6 +380,34 @@ theorem isProjectiveLimit_measure_produit :
   rw [measure_produit, Measure.ofAddContent_eq _ _ _ _ h_mem,
     kolContent_congr (isProjectiveMeasureFamily_prod μ) h_mem rfl hs]
 
+variable {ι : Type*} {α : ι → Type*} [∀ i, MeasurableSpace (α i)] [∀ i, Nonempty (α i)]
+variable (ν : (i : ι) → Measure (α i)) [∀ i, IsProbabilityMeasure (ν i)]
+
+theorem secondLemma (A : ℕ → Set (∀ i, α i)) (A_mem : ∀ n, A n ∈ cylinders α) (A_anti : Antitone A)
+    (A_inter : ⋂ n, A n = ∅) :
+    Tendsto (fun n ↦ kolContent (isProjectiveMeasureFamily_prod ν) (A n)) atTop (𝓝 0) := by
+  set ν_proj := isProjectiveMeasureFamily_prod ν
+  choose s S mS A_eq using fun n ↦ (mem_cylinders (A n)).1 (A_mem n)
+  let t := ⋃ n, (s n).toSet
+  have count_t : t.Countable := Set.countable_iUnion (fun n ↦ (s n).countable_toSet)
+  rcases count_t.exists_injective_nat' with ⟨f, hf⟩
+  let u : ℕ → Finset t := fun n ↦ (s n).preimage Subtype.val (Subtype.val_injective.injOn _)
+  have u_eq : ∀ n, ((u n).toSet : Set ι) = s n := by
+    intro n
+    rw [(s n).coe_preimage (Subtype.val_injective.injOn _)]
+    ext i
+    simp
+    exact fun hi ↦ mem_iUnion.2 ⟨n, hi⟩
+  let aux : (n : ℕ) → s n → u n := by
+    intro n i
+    have hi : i.1 ∈ t := mem_iUnion.2 ⟨n, i.2⟩
+    have hi' : ⟨i.1, hi⟩ ∈ u n := by simp [u]
+    exact ⟨⟨i.1, hi⟩, hi'⟩
+  let T : (n : ℕ) → Set ((i : u n) → α i) :=
+    fun n ↦ {a | (fun i : (s n) ↦ a (aux n i)) ∈ S n}
+  let B : ℕ → Set (∀ i : t, α i) := fun n ↦ cylinder (u n) (T n)
+
+
 theorem prod_meas (S : Finset ℕ) (a : ℕ) (ha : a ∈ S) (μ : (n : S) → Measure (X n))
     [∀ n, IsProbabilityMeasure (μ n)]
     (s : (n : S) → Set (X n)) :
