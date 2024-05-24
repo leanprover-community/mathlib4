@@ -33,9 +33,10 @@ lie algebra, radical, simple, semisimple
 
 universe u v w w₁ w₂
 
-/-- A Lie module is *irreducible* if its only Lie submodules are `⊥` and `⊤` (which may coincide). -/
+/-- A Lie module is *irreducible* if its only Lie submodules are `⊥` and `⊤`
+(which may coincide). -/
 abbrev LieModule.IsIrreducible (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
-  [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M] : Prop :=
+  [AddCommGroup M] [Module R M] [LieRingModule L M] : Prop :=
   IsSimpleOrder (LieSubmodule R L M)
 #align lie_module.is_irreducible LieModule.IsIrreducible
 
@@ -69,6 +70,9 @@ class HasTrivialRadical : Prop where
   radical_eq_bot : radical R L = ⊥
 #align lie_algebra.is_semisimple LieAlgebra.HasTrivialRadical
 
+export HasTrivialRadical (radical_eq_bot)
+attribute [simp] radical_eq_bot
+
 /--
 A *semisimple* Lie algebra is one that is a direct sum of simple Lie algebras.
 
@@ -87,10 +91,9 @@ class IsSemisimple : Prop where
 -- TODO: show that the atomic ideals of a semisimple Lie algebra are simple
 
 variable {R L} in
-@[simp]
-theorem HasTrivialRadical.eq_bot_of_isSolvable [h : HasTrivialRadical R L]
+theorem HasTrivialRadical.eq_bot_of_isSolvable [HasTrivialRadical R L]
     (I : LieIdeal R L) [hI : IsSolvable R I] : I = ⊥ :=
-  sSup_eq_bot.mp h.radical_eq_bot _ hI
+  sSup_eq_bot.mp radical_eq_bot _ hI
 
 variable {R L} in
 theorem hasTrivialRadical_of_no_solvable_ideals (h : ∀ I : LieIdeal R L, IsSolvable R I → I = ⊥) :
