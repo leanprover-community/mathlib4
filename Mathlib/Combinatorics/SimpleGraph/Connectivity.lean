@@ -418,7 +418,7 @@ theorem eq_of_length_eq_zero {u v : V} : ∀ {p : G.Walk u v}, p.length = 0 → 
 #align simple_graph.walk.eq_of_length_eq_zero SimpleGraph.Walk.eq_of_length_eq_zero
 
 theorem adj_of_length_eq_one {u v : V} : ∀ {p : G.Walk u v}, p.length = 1 → G.Adj u v
-  | nil => by simp
+  | nil => by tauto
   | cons h nil => fun _ => h
   | cons h _ => fun l => (eq_of_length_eq_zero <| add_left_eq_self.mp <| length_cons _ _ ▸ l) ▸ h
 
