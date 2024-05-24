@@ -26,22 +26,31 @@ This file defines the predicate `SeparatedNhds`, and common separation axioms
 * `T1Space`: A T₁/Fréchet space is a space where every singleton set is closed.
   This is equivalent to, for every pair `x ≠ y`, there existing an open set containing `x`
   but not `y` (`t1Space_iff_exists_open` shows that these conditions are equivalent.)
+  T₁ implies T₀ and R₀.
 * `R1Space`: An R₁/preregular space is a space where any two topologically distinguishable points
-  have disjoint neighbourhoods;
+  have disjoint neighbourhoods. R₁ implies R₀.
 * `T2Space`: A T₂/Hausdorff space is a space where, for every two points `x ≠ y`,
-  there is two disjoint open sets, one containing `x`, and the other `y`.
+  there is two disjoint open sets, one containing `x`, and the other `y`. T₂ implies T₁ and R₁.
 * `T25Space`: A T₂.₅/Urysohn space is a space where, for every two points `x ≠ y`,
   there is two open sets, one containing `x`, and the other `y`, whose closures are disjoint.
+  T₂.₅ implies T₂.
 * `RegularSpace`: A regular space is one where, given any closed `C` and `x ∉ C`,
   there are disjoint open sets containing `x` and `C` respectively. Such a space is not necessarily
   Hausdorff.
-* `T3Space`: A T₃ space is a T0 regular space. In `mathlib`, T₃ implies T₂.₅.
+* `T3Space`: A T₃ space is a regular T₀ space. T₃ implies T₂.₅.
 * `NormalSpace`: A normal space, is one where given two disjoint closed sets,
-  we can find two open sets that separate them.
+  we can find two open sets that separate them. Such a space is not necessarily Hausdorff, even if
+  it is T₀.
 * `T4Space`: A T₄ space is a normal T₁ space. T₄ implies T₃.
-* `T5Space`: A T₅ space, also known as a *completely normal Hausdorff space*, is a space in which,
-  given two sets `s` and `t` such that the closure of `s` is disjoint from `t`, and conversely,
-  then `s` and `t` have disjoint neighborhoods.
+* `CompletelyNormalSpace`: A completely normal space is one in which for any two sets `s`, `t`
+  such that if both `closure s` is disjoint with `t`, and `s` is disjoint with `closure t`,
+  then there exist disjoint neighbourhoods of `s` and `t`. `Embedding.completelyNormalSpace` allows
+  us to conclude that this is equivalent to all subspaces being normal. Such a space is not
+  necessarily Hausdorff or regular, even if it is T₀.
+* `T5Space`: A T₅ space is a completely normal T₁ space. T₅ implies T₄.
+
+Note that `mathlib` adopts the modern convention that `m ≤ n` if and only if `T_m → T_n`, but
+occasionally the literature swaps definitions for e.g. T₃ and regular.
 
 ## Main results
 
@@ -386,7 +395,7 @@ theorem T0Space.of_open_cover (h : ∀ x, ∃ s : Set X, x ∈ s ∧ IsOpen s �
 /-- A topological space is called an R₀ space, if `Specializes` relation is symmetric.
 
 In other words, given two points `x y : X`,
-if every neighborhood of `y` contains `x`, then every neighborhood of `x` containx `y`. -/
+if every neighborhood of `y` contains `x`, then every neighborhood of `x` contains `y`. -/
 @[mk_iff]
 class R0Space (X : Type u) [TopologicalSpace X] : Prop where
   /-- In an R₀ space, the `Specializes` relation is symmetric. -/
@@ -692,6 +701,14 @@ instance ULift.instT1Space [T1Space X] : T1Space (ULift X) :=
   embedding_uLift_down.t1Space
 
 -- see Note [lower instance priority]
+instance (priority := 100) TotallyDisconnectedSpace.t1Space [h: TotallyDisconnectedSpace X] :
+    T1Space X := by
+  rw [((t1Space_TFAE X).out 0 1 :)]
+  intro x
+  rw [← totallyDisconnectedSpace_iff_connectedComponent_singleton.mp h x]
+  exact isClosed_connectedComponent
+
+-- see Note [lower instance priority]
 instance (priority := 100) T1Space.t0Space [T1Space X] : T0Space X :=
   ⟨fun _ _ h => h.specializes.eq⟩
 #align t1_space.t0_space T1Space.t0Space
@@ -908,6 +925,17 @@ instance (priority := 100) ConnectedSpace.neBot_nhdsWithin_compl_of_nontrivial_o
   replace contra := nonempty_inter isOpen_compl_singleton
     contra (compl_union_self _) (Set.nonempty_compl_of_nontrivial _) (singleton_nonempty _)
   simp [compl_inter_self {x}] at contra
+
+theorem SeparationQuotient.t1Space_iff : T1Space (SeparationQuotient X) ↔ R0Space X := by
+  rw [r0Space_iff, ((t1Space_TFAE (SeparationQuotient X)).out 0 9 :)]
+  constructor
+  · intro h x y xspecy
+    rw [← Inducing.specializes_iff inducing_mk, h xspecy] at *
+  · rintro h ⟨x⟩ ⟨y⟩ sxspecsy
+    have xspecy : x ⤳ y := (Inducing.specializes_iff inducing_mk).mp sxspecsy
+    have yspecx : y ⤳ x := h xspecy
+    erw [mk_eq_mk, inseparable_iff_specializes_and]
+    exact ⟨xspecy, yspecx⟩
 
 theorem singleton_mem_nhdsWithin_of_mem_discrete {s : Set X} [DiscreteTopology s] {x : X}
     (hx : x ∈ s) : {x} ∈ 𝓝[s] x := by
@@ -2267,58 +2295,76 @@ end Normality
 
 section CompletelyNormal
 
-/-- A topological space `X` is a *completely normal Hausdorff space* if each subspace `s : Set X` is
-a normal Hausdorff space. Equivalently, `X` is a `T₁` space and for any two sets `s`, `t` such that
-`closure s` is disjoint with `t` and `s` is disjoint with `closure t`, there exist disjoint
-neighbourhoods of `s` and `t`. -/
-class T5Space (X : Type u) [TopologicalSpace X] extends T1Space X : Prop where
-  /-- If `closure s` is disjoint with `t` and `s` is disjoint with `closure t`, then `s` and `t`
+/-- A topological space `X` is a *completely normal space* provided that for any two sets `s`, `t`
+such that if both `closure s` is disjoint with `t`, and `s` is disjoint with `closure t`,
+then there exist disjoint neighbourhoods of `s` and `t`. -/
+class CompletelyNormalSpace (X : Type u) [TopologicalSpace X] : Prop where
+  /-- If `closure s` is disjoint with `t`, and `s` is disjoint with `closure t`, then `s` and `t`
   admit disjoint neighbourhoods. -/
   completely_normal :
     ∀ ⦃s t : Set X⦄, Disjoint (closure s) t → Disjoint s (closure t) → Disjoint (𝓝ˢ s) (𝓝ˢ t)
-#align t5_space T5Space
 
-export T5Space (completely_normal)
+export CompletelyNormalSpace (completely_normal)
 
-theorem Embedding.t5Space [TopologicalSpace Y] [T5Space Y] {e : X → Y} (he : Embedding e) :
-    T5Space X := by
-  haveI := he.t1Space
-  refine ⟨fun s t hd₁ hd₂ => ?_⟩
+-- see Note [lower instance priority]
+/-- A completely normal space is a normal space. -/
+instance (priority := 100) CompletelyNormalSpace.toNormalSpace
+    [CompletelyNormalSpace X] : NormalSpace X where
+  normal s t hs ht hd := separatedNhds_iff_disjoint.2 <|
+    completely_normal (by rwa [hs.closure_eq]) (by rwa [ht.closure_eq])
+
+theorem Embedding.completelyNormalSpace [TopologicalSpace Y] [CompletelyNormalSpace Y] {e : X → Y}
+    (he : Embedding e) : CompletelyNormalSpace X := by
+  refine' ⟨fun s t hd₁ hd₂ => _⟩
   simp only [he.toInducing.nhdsSet_eq_comap]
   refine disjoint_comap (completely_normal ?_ ?_)
   · rwa [← subset_compl_iff_disjoint_left, image_subset_iff, preimage_compl,
       ← he.closure_eq_preimage_closure_image, subset_compl_iff_disjoint_left]
   · rwa [← subset_compl_iff_disjoint_right, image_subset_iff, preimage_compl,
       ← he.closure_eq_preimage_closure_image, subset_compl_iff_disjoint_right]
+
+/-- A subspace of a completely normal space is a completely normal space. -/
+instance [CompletelyNormalSpace X] {p : X → Prop} : CompletelyNormalSpace { x // p x } :=
+  embedding_subtype_val.completelyNormalSpace
+
+instance ULift.instCompletelyNormalSpace [CompletelyNormalSpace X] :
+    CompletelyNormalSpace (ULift X) :=
+  embedding_uLift_down.completelyNormalSpace
+
+/-- A T₅ space is a normal T₁ space. -/
+class T5Space (X : Type u) [TopologicalSpace X] extends T1Space X, CompletelyNormalSpace X : Prop
+#align t5_space T5Space
+
+theorem Embedding.t5Space [TopologicalSpace Y] [T5Space Y] {e : X → Y} (he : Embedding e) :
+    T5Space X where
+  __ := he.t1Space
+  completely_normal := by
+    have := Embedding.completelyNormalSpace he
+    exact completely_normal
 #align embedding.t5_space Embedding.t5Space
 
-/-- A subspace of a `T₅` space is a `T₅` space. -/
+-- see Note [lower instance priority]
+/-- A `T₅` space is a `T₄` space. -/
+instance (priority := 100) T5Space.toT4Space [T5Space X] : T4Space X where
+  -- follows from type-class inference
+#align t5_space.to_normal_space T5Space.toT4Space
+
+/-- A subspace of a T₅ space is a T₅ space. -/
 instance [T5Space X] {p : X → Prop} : T5Space { x // p x } :=
   embedding_subtype_val.t5Space
 
 instance ULift.instT5Space [T5Space X] : T5Space (ULift X) :=
   embedding_uLift_down.t5Space
 
--- see Note [lower instance priority]
-/-- A `T₅` space is a `T₄` space. -/
-instance (priority := 100) T5Space.toT4Space [T5Space X] : T4Space X where
-  normal s t hs ht hd := separatedNhds_iff_disjoint.2 <|
-    completely_normal (by rwa [hs.closure_eq]) (by rwa [ht.closure_eq])
-#align t5_space.to_normal_space T5Space.toT4Space
-
 open SeparationQuotient
 
-/-- The `SeparationQuotient` of a completely normal R₀ space is a T₅ space.
-We don't have typeclasses for completely normal spaces (without T₁ assumption) and R₀ spaces,
-so we use `T5Space` for assumption and for conclusion.
-
-One can prove this using a homeomorphism between `X` and `SeparationQuotient X`.
-We give an alternative proof of the `completely_normal` axiom
-that works without assuming that `X` is a T₁ space. -/
-instance [T5Space X] : T5Space (SeparationQuotient X) where
+/-- The `SeparationQuotient` of a completely normal R₀ space is a T₅ space. -/
+instance [CompletelyNormalSpace X] [R0Space X] : T5Space (SeparationQuotient X) where
+  t1 := by
+    rwa [((t1Space_TFAE (SeparationQuotient X)).out 1 0 :), SeparationQuotient.t1Space_iff]
   completely_normal s t hd₁ hd₂ := by
     rw [← disjoint_comap_iff surjective_mk, comap_mk_nhdsSet, comap_mk_nhdsSet]
-    apply T5Space.completely_normal <;> rw [← preimage_mk_closure]
+    apply completely_normal <;> rw [← preimage_mk_closure]
     exacts [hd₁.preimage mk, hd₂.preimage mk]
 
 end CompletelyNormal
