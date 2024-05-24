@@ -2252,8 +2252,8 @@ import Mathlib.Data.String.Lemmas
 import Mathlib.Data.Subtype
 import Mathlib.Data.Sum.Basic
 import Mathlib.Data.Sum.Interval
-import Mathlib.Data.Sum.Lattice
 import Mathlib.Data.Sum.LE
+import Mathlib.Data.Sum.Lattice
 import Mathlib.Data.Sum.Order
 import Mathlib.Data.Sym.Basic
 import Mathlib.Data.Sym.Card
