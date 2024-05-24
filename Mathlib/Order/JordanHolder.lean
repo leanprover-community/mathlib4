@@ -290,9 +290,9 @@ theorem isMaximal_eraseLast_last {s : CompositionSeries X} (h : 0 < s.length) :
     IsMaximal s.eraseLast.last s.last := by
   have : s.length - 1 + 1 = s.length := by
     conv_rhs => rw [← Nat.add_one_sub_one s.length]; rw [Nat.succ_sub h]
-  rw [last_eraseLast, last]
-  convert s.step ⟨s.length - 1, Nat.sub_lt h zero_lt_one⟩; ext; simp [this]
-#align composition_series.is_maximal_erase_top_top CompositionSeries.isMaximal_eraseLast_last
+  rw [top_eraseTop, top]
+  convert s.step ⟨s.length - 1, by omega⟩; ext; simp [this]
+#align composition_series.is_maximal_erase_top_top CompositionSeries.isMaximal_eraseTop_top
 
 section FinLemmas
 
