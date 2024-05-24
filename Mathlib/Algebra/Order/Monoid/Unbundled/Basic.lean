@@ -49,7 +49,7 @@ is taken by the analogous lemma for semiring, with an extra non-negativity assum
 @[to_additive (attr := gcongr) add_le_add_left]
 theorem mul_le_mul_left' [MulLeftMono α] {b c : α} (bc : b ≤ c) (a : α) :
     a * b ≤ a * c :=
-  MulLeftMono.elim _ bc
+  CovariantClass.elim _ bc
 #align mul_le_mul_left' mul_le_mul_left'
 #align add_le_add_left add_le_add_left
 
@@ -57,7 +57,7 @@ theorem mul_le_mul_left' [MulLeftMono α] {b c : α} (bc : b ≤ c) (a : α) :
 theorem le_of_mul_le_mul_left' [MulLeftReflectLE α] {a b c : α}
     (bc : a * b ≤ a * c) :
     b ≤ c :=
-  MulLeftReflectLE.elim _ bc
+  ContravariantClass.elim _ bc
 #align le_of_mul_le_mul_left' le_of_mul_le_mul_left'
 #align le_of_add_le_add_left le_of_add_le_add_left
 
@@ -83,7 +83,7 @@ theorem le_of_mul_le_mul_right' [i : MulRightReflectLE α] {a b c : α}
 theorem mul_le_mul_iff_left [MulLeftMono α]
     [MulLeftReflectLE α] (a : α) {b c : α} :
     a * b ≤ a * c ↔ b ≤ c :=
-  rel_iff_cov MulLeftMono.elim MulLeftReflectLE.elim a
+  rel_iff_cov α α (· * ·) (· ≤ ·) a
 #align mul_le_mul_iff_left mul_le_mul_iff_left
 #align add_le_add_iff_left add_le_add_iff_left
 
@@ -91,7 +91,7 @@ theorem mul_le_mul_iff_left [MulLeftMono α]
 theorem mul_le_mul_iff_right [MulRightMono α]
     [MulRightReflectLE α] (a : α) {b c : α} :
     b * a ≤ c * a ↔ b ≤ c :=
-  rel_iff_cov MulRightMono.elim MulRightReflectLE.elim a
+  rel_iff_cov α α (swap (· * ·)) (· ≤ ·) a
 #align mul_le_mul_iff_right mul_le_mul_iff_right
 #align add_le_add_iff_right add_le_add_iff_right
 
@@ -105,7 +105,7 @@ variable [LT α]
 theorem mul_lt_mul_iff_left [MulLeftStrictMono α]
     [MulLeftReflectLT α] (a : α) {b c : α} :
     a * b < a * c ↔ b < c :=
-  rel_iff_cov MulLeftStrictMono.elim MulLeftReflectLT.elim a
+  rel_iff_cov α α (· * ·) (· < ·) a
 #align mul_lt_mul_iff_left mul_lt_mul_iff_left
 #align add_lt_add_iff_left add_lt_add_iff_left
 
@@ -113,14 +113,14 @@ theorem mul_lt_mul_iff_left [MulLeftStrictMono α]
 theorem mul_lt_mul_iff_right [MulRightStrictMono α]
     [MulRightReflectLT α] (a : α) {b c : α} :
     b * a < c * a ↔ b < c :=
-  rel_iff_cov MulRightStrictMono.elim MulRightReflectLT.elim a
+  rel_iff_cov α α (swap (· * ·)) (· < ·) a
 #align mul_lt_mul_iff_right mul_lt_mul_iff_right
 #align add_lt_add_iff_right add_lt_add_iff_right
 
 @[to_additive (attr := gcongr) add_lt_add_left]
 theorem mul_lt_mul_left' [MulLeftStrictMono α] {b c : α} (bc : b < c) (a : α) :
     a * b < a * c :=
-  MulLeftStrictMono.elim _ bc
+  CovariantClass.elim _ bc
 #align mul_lt_mul_left' mul_lt_mul_left'
 #align add_lt_add_left add_lt_add_left
 
@@ -128,7 +128,7 @@ theorem mul_lt_mul_left' [MulLeftStrictMono α] {b c : α} (bc : b < c) (a : α)
 theorem lt_of_mul_lt_mul_left' [MulLeftReflectLT α] {a b c : α}
     (bc : a * b < a * c) :
     b < c :=
-  MulLeftReflectLT.elim _ bc
+  ContravariantClass.elim _ bc
 #align lt_of_mul_lt_mul_left' lt_of_mul_lt_mul_left'
 #align lt_of_add_lt_add_left lt_of_add_lt_add_left
 
