@@ -219,7 +219,7 @@ set_option linter.uppercaseLean3 false in
 theorem functorCategoryMonoidalEquivalence.μIso_inv_app (A B : Action V G) :
     ((functorCategoryMonoidalEquivalence V G).μIso A B).inv.app PUnit.unit = 𝟙 _ := by
   rw [← NatIso.app_inv, ← IsIso.Iso.inv_hom]
-  refine' IsIso.inv_eq_of_hom_inv_id _
+  refine IsIso.inv_eq_of_hom_inv_id ?_
   rw [Category.comp_id, NatIso.app_hom, MonoidalFunctor.μIso_hom,
     functorCategoryMonoidalEquivalence.μ_app]
 set_option linter.uppercaseLean3 false in
