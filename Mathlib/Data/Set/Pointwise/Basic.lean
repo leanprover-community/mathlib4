@@ -5,8 +5,8 @@ Authors: Johan Commelin, Floris van Doorn
 -/
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Units.Hom
-import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Opposites
+import Mathlib.Algebra.Order.GroupWithZero.Synonym
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Set.Lattice
 import Mathlib.Tactic.Common
