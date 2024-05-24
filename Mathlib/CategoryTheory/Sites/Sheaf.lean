@@ -599,7 +599,7 @@ The middle object of the fork diagram given in Equation (3) of [MM92], as well a
 of <https://stacks.math.columbia.edu/tag/00VM>.
 -/
 def firstObj : A :=
-  ∏ fun f : ΣV, { f : V ⟶ U // R f } => P.obj (op f.1)
+  ∏ᶜ fun f : ΣV, { f : V ⟶ U // R f } => P.obj (op f.1)
 #align category_theory.presheaf.first_obj CategoryTheory.Presheaf.firstObj
 
 /--
@@ -616,7 +616,7 @@ variable [HasPullbacks C]
 contains the data used to check a family of elements for a presieve is compatible.
 -/
 def secondObj : A :=
-  ∏ fun fg : (ΣV, { f : V ⟶ U // R f }) × ΣW, { g : W ⟶ U // R g } =>
+  ∏ᶜ fun fg : (ΣV, { f : V ⟶ U // R f }) × ΣW, { g : W ⟶ U // R g } =>
     P.obj (op (pullback fg.1.2.1 fg.2.2.1))
 #align category_theory.presheaf.second_obj CategoryTheory.Presheaf.secondObj
 
