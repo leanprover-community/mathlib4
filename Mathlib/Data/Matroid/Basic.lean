@@ -874,7 +874,7 @@ theorem Indep.basis_iff_forall_insert_dep (hI : M.Indep I) (hIX : I ⊆ X) :
     M.Basis I X ↔ ∀ e ∈ X \ I, M.Dep (insert e I) := by
   rw [basis_iff', and_iff_right hIX, and_iff_right hI]
   refine ⟨fun h e he ↦ ⟨fun hi ↦ he.2 ?_, insert_subset (h.2 he.1) hI.subset_ground⟩,
-    fun h ↦ ⟨fun J hJ hIJ hJX ↦ hIJ.antisymm (fun e heJ ↦ by_contra (fun heI ↦ ?_))?,_⟩⟩
+    fun h ↦ ⟨fun J hJ hIJ hJX ↦ hIJ.antisymm (fun e heJ ↦ by_contra (fun heI ↦ ?_)), ?_⟩⟩
   · exact (h.1 _ hi (subset_insert _ _) (insert_subset he.1 hIX)).symm.subset (mem_insert e I)
   · exact (h e ⟨hJX heJ, heI⟩).not_indep (hJ.subset (insert_subset heJ hIJ))
   rw [← diff_union_of_subset hIX, union_subset_iff, and_iff_left hI.subset_ground]

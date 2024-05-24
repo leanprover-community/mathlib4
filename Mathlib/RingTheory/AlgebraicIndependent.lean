@@ -344,7 +344,7 @@ theorem exists_maximal_algebraicIndependent (s t : Set A) (hst : s ⊆ t)
       (fun c hc chainc hcn =>
         ⟨⋃₀ c, by
           refine ⟨⟨algebraicIndependent_sUnion_of_directed hcn chainc.directedOn
-              fun a ha => (hc ha).1, ?_, ?_⟩?, _⟩
+              fun a ha => (hc ha).1, ?_, ?_⟩, ?_⟩
           · cases' hcn with x hx
             exact subset_sUnion_of_subset _ x (hc hx).2.1 hx
           · exact sUnion_subset fun x hx => (hc hx).2.2

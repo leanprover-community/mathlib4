@@ -927,7 +927,7 @@ we only require it to be well-founded on fibers of `f`. -/
 theorem WellFounded.prod_lex_of_wellFoundedOn_fiber (hα : WellFounded (rα on f))
     (hβ : ∀ a, (f ⁻¹' {a}).WellFoundedOn (rβ on g)) :
     WellFounded (Prod.Lex rα rβ on fun c => (f c, g c)) := by
-  refine (PSigma.lex_wf (wellFoundedOn_range.2 hα) fun a => hβ a).onFun.mono fun c c' h => ?_
+  refine' (PSigma.lex_wf (wellFoundedOn_range.2 hα) fun a => hβ a).onFun.mono fun c c' h => _
   · exact fun c => ⟨⟨_, c, rfl⟩, c, rfl⟩
   obtain h' | h' := Prod.lex_iff.1 h
   · exact PSigma.Lex.left _ _ h'
@@ -939,7 +939,7 @@ theorem WellFounded.prod_lex_of_wellFoundedOn_fiber (hα : WellFounded (rα on f
 theorem Set.WellFoundedOn.prod_lex_of_wellFoundedOn_fiber (hα : s.WellFoundedOn (rα on f))
     (hβ : ∀ a, (s ∩ f ⁻¹' {a}).WellFoundedOn (rβ on g)) :
     s.WellFoundedOn (Prod.Lex rα rβ on fun c => (f c, g c)) := by
-  refine WellFounded.prod_lex_of_wellFoundedOn_fiber hα fun a ↦ (hβ a).onFun.mono (fun b c h ↦ ?_)
+  refine' WellFounded.prod_lex_of_wellFoundedOn_fiber hα fun a ↦ (hβ a).onFun.mono (fun b c h ↦ _)
   swap
   · exact fun _ x => ⟨x, x.1.2, x.2⟩
   · assumption
@@ -956,7 +956,7 @@ require it to be well-founded on fibers of `f`. -/
 theorem WellFounded.sigma_lex_of_wellFoundedOn_fiber (hι : WellFounded (rι on f))
     (hπ : ∀ i, (f ⁻¹' {i}).WellFoundedOn (rπ i on g i)) :
     WellFounded (Sigma.Lex rι rπ on fun c => ⟨f c, g (f c) c⟩) := by
-  refine (PSigma.lex_wf (wellFoundedOn_range.2 hι) fun a => hπ a).onFun.mono fun c c' h => ?_
+  refine' (PSigma.lex_wf (wellFoundedOn_range.2 hι) fun a => hπ a).onFun.mono fun c c' h => _
   · exact fun c => ⟨⟨_, c, rfl⟩, c, rfl⟩
   obtain h' | ⟨h', h''⟩ := Sigma.lex_iff.1 h
   · exact PSigma.Lex.left _ _ h'
@@ -975,9 +975,9 @@ theorem Set.WellFoundedOn.sigma_lex_of_wellFoundedOn_fiber (hι : s.WellFoundedO
     (hπ : ∀ i, (s ∩ f ⁻¹' {i}).WellFoundedOn (rπ i on g i)) :
     s.WellFoundedOn (Sigma.Lex rι rπ on fun c => ⟨f c, g (f c) c⟩) := by
   show WellFounded (Sigma.Lex rι rπ on fun c : s => ⟨f c, g (f c) c⟩)
-  refine
+  refine'
     @WellFounded.sigma_lex_of_wellFoundedOn_fiber _ s _ _ rπ (fun c => f c) (fun i c => g _ c) hι
-      fun i => (hπ i).onFun.mono (fun b c h => ?_)
+      fun i => (hπ i).onFun.mono (fun b c h => _)
   swap
   · exact fun _ x => ⟨x, x.1.2, x.2⟩
   · assumption

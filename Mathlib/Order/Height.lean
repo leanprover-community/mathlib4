@@ -357,11 +357,11 @@ theorem wellFoundedGT_of_chainHeight_ne_top (s : Set α) (hs : s.chainHeight ≠
   obtain ⟨n, hn⟩ := WithTop.ne_top_iff_exists.1 hs
   refine ⟨RelEmbedding.wellFounded_iff_no_descending_seq.2 ⟨fun f ↦ ?_⟩⟩
   refine n.lt_succ_self.not_le (WithTop.coe_le_coe.1 <| hn.symm ▸ ?_)
-  refine
-    le_iSup₂_of_le ?_
+  refine'
+    le_iSup₂_of_le _
       ⟨chain'_map_of_chain' ((↑) : {x // x ∈ s} → α) (fun _ _ ↦ id)
-          (chain'_iff_pairwise.?2 <| pairwise_ofFn?.?2 fun i j ↦ f.map_rel_iff.2),
-        fun i h ↦ ?_⟩
+          (chain'_iff_pairwise.2 <| pairwise_ofFn.2 fun i j ↦ f.map_rel_iff.2),
+        fun i h ↦ _⟩
       ?_
   · exact n.succ
   · obtain ⟨a, -, rfl⟩ := mem_map.1 h

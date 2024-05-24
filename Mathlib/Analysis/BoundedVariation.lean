@@ -263,7 +263,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
       · have A : ¬i ≤ n := hi.not_le
         have B : ¬i + 1 ≤ n := fun h => A (i.le_succ.trans h)
         simp only [A, B, if_false, le_rfl]
-    refine ⟨v, n + 2, hv, vs, (mem_image _ _ _).2 ⟨n + 1, ?_, ?_⟩?, _⟩
+    refine ⟨v, n + 2, hv, vs, (mem_image _ _ _).2 ⟨n + 1, ?_, ?_⟩, ?_⟩
     · rw [mem_Iio]; exact Nat.lt_succ_self (n + 1)
     · have : ¬n + 1 ≤ n := Nat.not_succ_le_self n
       simp only [v, this, ite_eq_right_iff, IsEmpty.forall_iff]

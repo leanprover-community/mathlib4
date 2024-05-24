@@ -704,7 +704,7 @@ theorem code_is_ok (c) : Code.Ok c := by
     rw [reaches_eval]; swap
     · exact ReflTransGen.single rfl
     rw [stepRet, IHfs]; congr; funext v'
-    refine Eq.trans ?_ (Eq.symm ?_) <;> try exact reaches_eval (ReflTransGen.single rfl)
+    refine' Eq.trans _ (Eq.symm _) <;> try exact reaches_eval (ReflTransGen.single rfl)
   | comp f g IHf IHg =>
     rw [Code.eval, IHg]
     simp only [bind_assoc, Cont.eval, pure_bind]; congr; funext v
@@ -1635,7 +1635,7 @@ theorem tr_ret_respects (k v s) : ∃ b₂,
     refine (move₂_ok (by decide) ?_ (splitAtPred_false _)).trans ?_; · rfl
     simp only [TM2.step, Option.mem_def, Option.elim, id_eq, elim_update_main, elim_main, elim_aux,
       List.append_nil, elim_update_aux]
-    refine (move₂_ok (by decide) ?_ ?_).trans ?_
+    refine' (move₂_ok (by decide) _ _).trans _
     pick_goal 4
     · rfl
     pick_goal 4

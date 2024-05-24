@@ -195,7 +195,7 @@ lemma sumLexLift_eq_empty :
       (∀ a₁ b₁, a = inl a₁ → b = inl b₁ → f₁ a₁ b₁ = ∅) ∧
         (∀ a₁ b₂, a = inl a₁ → b = inr b₂ → g₁ a₁ b₂ = ∅ ∧ g₂ a₁ b₂ = ∅) ∧
           ∀ a₂ b₂, a = inr a₂ → b = inr b₂ → f₂ a₂ b₂ = ∅ := by
-  refine ⟨fun h ↦ ⟨?_, ?_, ?_⟩, fun h? ↦ _⟩
+  refine ⟨fun h ↦ ⟨?_, ?_, ?_⟩, fun h ↦ ?_⟩
   any_goals rintro a b rfl rfl; exact map_eq_empty.1 h
   · rintro a b rfl rfl; exact disjSum_eq_empty.1 h
   cases a <;> cases b

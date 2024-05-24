@@ -636,7 +636,7 @@ theorem Dense.exists_countable_dense_subset_bot_top {α : Type*} [TopologicalSpa
     ∃ t ⊆ s, t.Countable ∧ Dense t ∧ (∀ x, IsBot x → x ∈ s → x ∈ t) ∧
       ∀ x, IsTop x → x ∈ s → x ∈ t := by
   rcases hs.exists_countable_dense_subset with ⟨t, hts, htc, htd⟩
-  refine ⟨(t ∪ ({ x | IsBot x } ∪ { x | IsTop x })) ∩ s, ?_, ?_?, ?_, _, ?_⟩
+  refine ⟨(t ∪ ({ x | IsBot x } ∪ { x | IsTop x })) ∩ s, ?_, ?_, ?_, ?_, ?_⟩
   exacts [inter_subset_right _ _,
     (htc.union ((countable_isBot α).union (countable_isTop α))).mono (inter_subset_left _ _),
     htd.mono (subset_inter (subset_union_left _ _) hts), fun x hx hxs => ⟨Or.inr <| Or.inl hx, hxs⟩,

@@ -157,7 +157,7 @@ theorem isComplement_univ_left : IsComplement univ S ↔ ∃ g : G, S = {g} := b
 @[to_additive]
 theorem isComplement_univ_right : IsComplement S univ ↔ ∃ g : G, S = {g} := by
   refine
-    ⟨fun h => Set.exists_eq_singleton_iff_nonempty_subsingleton.mpr ⟨?_, fun a ha b hb => ?_⟩?, _⟩
+    ⟨fun h => Set.exists_eq_singleton_iff_nonempty_subsingleton.mpr ⟨?_, fun a ha b hb => ?_⟩, ?_⟩
   · obtain ⟨a, _⟩ := h.2 1
     exact ⟨a.1.1, a.1.2⟩
   · have : (⟨⟨a, ha⟩, ⟨_, mem_top a⁻¹⟩⟩ : S × (⊤ : Set G)) = ⟨⟨b, hb⟩, ⟨_, mem_top b⁻¹⟩⟩ :=

@@ -305,7 +305,7 @@ private theorem exists_mono_in_high_dimension' :
     -- If not, we get `r+1` color focused lines by taking the product of the `r` lines with `l'`
     -- and adding to this the vertical line obtained by the focus point and `l`.
     refine Or.inl ⟨⟨(s.lines.map ?_).cons ⟨(l'.map some).vertical s.focus, C' s.focus, fun x => ?_⟩,
-            Sum.elim s.focus (l'.map some none), ?_, ?_⟩?, _⟩
+            Sum.elim s.focus (l'.map some none), ?_, ?_⟩, ?_⟩
     -- Porting note: Needed to reorder the following two goals
     -- The product lines are almost monochromatic.
     · refine fun p => ⟨p.line.prod (l'.map some), p.color, fun x => ?_⟩

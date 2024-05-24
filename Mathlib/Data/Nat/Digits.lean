@@ -368,7 +368,7 @@ theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
   revert hm
   apply Nat.strongInductionOn m
   intro n IH hn
-  ?by_cases hnb : n < b + 2
+  by_cases hnb : n < b + 2
   · simpa only [digits_of_lt (b + 2) n hn hnb]
   · rw [digits_getLast n (le_add_left 2 b)]
     refine IH _ (Nat.div_lt_self hn.bot_lt (one_lt_succ_succ b)) ?_

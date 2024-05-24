@@ -302,7 +302,7 @@ variable (𝕜) [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [NormedAddCo
 theorem intrinsicClosure_eq_closure : intrinsicClosure 𝕜 s = closure s := by
   ext x
   simp only [mem_closure_iff, mem_intrinsicClosure]
-  refine ⟨?_, fun h => ⟨⟨x, ?_⟩?, _, Subtype.coe_mk _ ?_⟩⟩
+  refine ⟨?_, fun h => ⟨⟨x, ?_⟩, ?_, Subtype.coe_mk _ ?_⟩⟩
   · rintro ⟨x, h, rfl⟩ t ht hx
     obtain ⟨z, hz₁, hz₂⟩ := h _ (continuous_induced_dom.isOpen_preimage t ht) hx
     exact ⟨z, hz₁, hz₂⟩

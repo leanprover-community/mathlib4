@@ -215,7 +215,7 @@ theorem shiftUp_bottom_subset_bottoms (hc : (cs i).xm ≠ 1) :
   intro p hp; cases' hp with hp0 hps; rw [tail_shiftUp] at hps
   have : p ∈ (unitCube : Cube (n + 1)).toSet := by
     simp only [toSet, forall_fin_succ, hp0, side_unitCube, mem_setOf_eq, mem_Ico, head_shiftUp]
-    refine ⟨⟨?_, ?_⟩?, _⟩
+    refine ⟨⟨?_, ?_⟩, ?_⟩
     · rw [← zero_add (0 : ℝ)]; apply add_le_add
       · apply zero_le_b h
       · apply (cs i).hw'
