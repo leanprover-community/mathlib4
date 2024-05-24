@@ -1016,6 +1016,67 @@ theorem set_lintegral_strict_mono {f g : α → ℝ≥0∞} {s : Set α} (hsm : 
   lintegral_strict_mono (by simp [hs]) hg.aemeasurable hfi ((ae_restrict_iff' hsm).mpr h)
 #align measure_theory.set_lintegral_strict_mono MeasureTheory.set_lintegral_strict_mono
 
+/-- If the integral of two measurable and finite functions `f` and `g` are finite on every subsets, then `f =ᵐ[μ] g ↔ ∀ ⦃s⦄, MeasurableSet s → ∫⁻ x in s, f x ∂μ = ∫⁻ x in s, g x ∂μ` -/
+theorem set_lintegral_eq_iff_ae_eq {f g : α → ℝ≥0∞} (hf : Measurable f) (hg : Measurable g)
+  (hf_fin : ∀ s, ∫⁻ x in s, f x ∂μ ≠ ∞) (hg_fin : ∀ s, ∫⁻ x in s, g x ∂μ ≠ ∞)
+  (hf_neq_top : ∀ x, f x ≠ ⊤) (hg_neq_top : ∀ x, g x ≠ ⊤)
+  : (∀ ⦃s⦄, MeasurableSet s → ∫⁻ x in s, f x ∂μ = ∫⁻ x in s, g x ∂μ) ↔ f =ᵐ[μ] g := by
+  constructor
+  · intro h
+    let A := {x | f x < g x}
+    have hmA : MeasurableSet A := measurableSet_lt hf hg
+    let B := {x | g x < f x}
+    have hmB : MeasurableSet B := measurableSet_lt hg hf
+    have union_eq_neq : A ∪ B = {x | f x = g x}ᶜ := by {
+      ext x
+      constructor
+      · intro hx
+        cases hx with
+        | inl hx =>
+          have ineq_coe := (toReal_lt_toReal (hf_neq_top x) (hg_neq_top x)).mpr hx
+          have coe_neq : (f x).toReal ≠ (g x).toReal := ne_of_lt ineq_coe
+          exact λ neq ↦ coe_neq (congrArg ENNReal.toReal neq)
+        | inr hx =>
+          have ineq_coe := (toReal_lt_toReal (hg_neq_top x) (hf_neq_top x)).mpr hx
+          have coe_neq : (f x).toReal ≠ (g x).toReal := (ne_of_lt ineq_coe).symm
+          exact λ neq ↦ coe_neq (congrArg ENNReal.toReal neq)
+      intro hx
+      rw [show A ∪ B = {x | f x < g x ∨ g x < f x} by rfl]
+      rw [show x ∈ {x | f x < g x ∨ g x < f x} ↔ f x < g x ∨ g x < f x by rfl]
+      by_contra h; push_neg at h
+      rcases h with ⟨h1, h2⟩
+      have eq_coe : (f x).toReal = (g x).toReal := by {
+        have := (toReal_le_toReal (hg_neq_top x) (hf_neq_top x)).mpr h1
+        have := (toReal_le_toReal (hf_neq_top x) (hg_neq_top x)).mpr h2
+        linarith
+      }
+      have neq_coe : (f x).toReal ≠ (g x).toReal := by {
+        by_contra hc
+        exact hx ((toReal_eq_toReal_iff' (hf_neq_top x) (hg_neq_top x)).mp hc)
+      }
+      exact neq_coe eq_coe
+    }
+    have m_union_eq_0 : μ (A ∪ B) = 0 := by {
+      have mA_eq_0 : μ A = 0 := by {
+        by_contra m_pos; push_neg at m_pos
+        have lt_integral : ∫⁻ x in A, f x ∂μ < ∫⁻ x in A, g x ∂μ := set_lintegral_strict_mono hmA m_pos hg (hf_fin A) (ae_of_all μ (λ x hx ↦ hx))
+        rw [h hmA] at lt_integral
+        have := toReal_strict_mono (hg_fin A) lt_integral
+        linarith
+      }
+      have mB_eq_0 : μ B = 0 := by {
+        by_contra m_pos; push_neg at m_pos
+        have lt_integral : ∫⁻ x in B, g x ∂μ < ∫⁻ x in B, f x ∂μ := set_lintegral_strict_mono hmB m_pos hf (hg_fin B) (ae_of_all μ (λ x hx ↦ hx))
+        rw [h hmB] at lt_integral
+        have := toReal_strict_mono (hg_fin B) lt_integral
+        linarith
+      }
+      exact measure_union_null mA_eq_0 mB_eq_0
+    }
+    rwa [union_eq_neq] at m_union_eq_0
+
+  exact fun h s hs ↦ set_lintegral_congr_fun hs (fun_ae_imp_set_ae.mp h s)
+
 /-- Monotone convergence theorem for nonincreasing sequences of functions -/
 theorem lintegral_iInf_ae {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, Measurable (f n))
     (h_mono : ∀ n : ℕ, f n.succ ≤ᵐ[μ] f n) (h_fin : ∫⁻ a, f 0 a ∂μ ≠ ∞) :
