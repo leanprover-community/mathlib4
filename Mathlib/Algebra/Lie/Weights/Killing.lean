@@ -200,6 +200,18 @@ lemma span_weight_eq_top :
     ker_traceForm_eq_bot_of_isCartanSubalgebra, Submodule.dualAnnihilator_bot]
 
 @[simp]
+lemma span_weight_isNonZero_eq_top :
+    span K ({α : Weight K H L | α.IsNonZero}.image (Weight.toLinear K H L)) = ⊤ := by
+  rw [← span_weight_eq_top K L H]
+  refine le_antisymm (Submodule.span_mono <| by simp) ?_
+  suffices range (Weight.toLinear K H L) ⊆
+    insert 0 ({α : Weight K H L | α.IsNonZero}.image (Weight.toLinear K H L)) by
+    simpa only [Submodule.span_insert_zero] using Submodule.span_mono this
+  rintro - ⟨α, rfl⟩
+  simp only [mem_insert_iff, Weight.coe_toLinear_eq_zero_iff, mem_image, mem_setOf_eq]
+  tauto
+
+@[simp]
 lemma iInf_ker_weight_eq_bot :
     ⨅ α : Weight K H L, α.ker = ⊥ := by
   rw [← Subspace.dualAnnihilator_inj, Subspace.dualAnnihilator_iInf_eq,
