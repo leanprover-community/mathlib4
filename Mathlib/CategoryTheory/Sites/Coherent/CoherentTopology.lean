@@ -62,7 +62,8 @@ theorem EffectiveEpiFamily.transitive_of_finite {α : Type} [Finite α] {Y : α 
     rw [← hf, Sieve.pullback_comp]
     apply (coherentTopology C).pullback_stable'
     apply coherentTopology.mem_sieves_of_hasEffectiveEpiFamily
-    rcases hY with ⟨i⟩
+    -- Need to show that the pullback of the family `π_n` to a given `Y i` is effective epimorphic
+    obtain ⟨i⟩ := hY
     exact ⟨β i, inferInstance, Y_n i, π_n i, H i, fun b ↦
       ⟨Y_n i b, (𝟙 _), π_n i b ≫ π i, ⟨(⟨i, b⟩ : Σ (i : α), β i)⟩, by simp⟩⟩
 
@@ -85,12 +86,12 @@ theorem coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily (S : Sieve X) :
   constructor
   · intro h
     induction' h with Y T hS Y Y R S _ _ a b
-    · rcases hS with ⟨a, h, Y', π, h', _⟩
+    · obtain ⟨a, h, Y', π, h', _⟩ := hS
       refine ⟨a, h, Y', π, inferInstance, fun a' ↦ ?_⟩
-      rcases h' with ⟨rfl, _⟩
+      obtain ⟨rfl, _⟩ := h'
       exact ⟨Y' a', 𝟙 Y' a', π a', Presieve.ofArrows.mk a', by simp⟩
     · exact ⟨Unit, inferInstance, fun _ => Y, fun _ => (𝟙 Y), inferInstance, by simp⟩
-    · rcases a with ⟨α, w, Y₁, π, ⟨h₁,h₂⟩⟩
+    · obtain ⟨α, w, Y₁, π, ⟨h₁,h₂⟩⟩ := a
       choose β _ Y_n π_n H using fun a => b (h₂ a)
       exact ⟨(Σ a, β a), inferInstance, fun ⟨a,b⟩ => Y_n a b, fun ⟨a, b⟩ => (π_n a b) ≫ (π a),
         EffectiveEpiFamily.transitive_of_finite _ h₁ _ (fun a => (H a).1),
