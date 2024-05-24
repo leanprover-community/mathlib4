@@ -490,6 +490,7 @@ import Mathlib.Algebra.Order.Group.TypeTags
 import Mathlib.Algebra.Order.Group.Units
 import Mathlib.Algebra.Order.Group.WithTop
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
+import Mathlib.Algebra.Order.GroupWithZero.Synonym
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled
 import Mathlib.Algebra.Order.GroupWithZero.WithZero
 import Mathlib.Algebra.Order.Hom.Basic
