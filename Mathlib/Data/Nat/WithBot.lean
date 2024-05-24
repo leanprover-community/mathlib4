@@ -68,8 +68,8 @@ theorem lt_zero_iff {n : WithBot ℕ} : n < 0 ↔ n = ⊥ := WithBot.lt_coe_bot
 #align nat.with_bot.lt_zero_iff Nat.WithBot.lt_zero_iff
 
 theorem one_le_iff_zero_lt {x : WithBot ℕ} : 1 ≤ x ↔ 0 < x := by
-  refine' ⟨fun h => lt_of_lt_of_le (WithBot.coe_lt_coe.mpr zero_lt_one) h, fun h => _⟩
-  induction x using WithBot.recBotCoe
+  refine ⟨fun h => lt_of_lt_of_le (WithBot.coe_lt_coe.mpr zero_lt_one) h, fun h => ?_⟩
+  induction x
   · exact (not_lt_bot h).elim
   · exact WithBot.coe_le_coe.mpr (Nat.succ_le_iff.mpr (WithBot.coe_lt_coe.mp h))
 #align nat.with_bot.one_le_iff_zero_lt Nat.WithBot.one_le_iff_zero_lt

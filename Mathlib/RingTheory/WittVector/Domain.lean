@@ -94,7 +94,7 @@ theorem verschiebung_nonzero {x : 𝕎 R} (hx : x ≠ 0) :
     simp only [hall, zero_coeff]
   let n := Nat.find hex
   use n, x.shift n
-  refine' ⟨Nat.find_spec hex, eq_iterate_verschiebung fun i hi => not_not.mp _⟩
+  refine ⟨Nat.find_spec hex, eq_iterate_verschiebung fun i hi => not_not.mp ?_⟩
   exact Nat.find_min hex hi
 #align witt_vector.verschiebung_nonzero WittVector.verschiebung_nonzero
 

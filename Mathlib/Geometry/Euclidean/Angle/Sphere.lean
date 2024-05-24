@@ -370,9 +370,9 @@ theorem cospherical_of_two_zsmul_oangle_eq_of_not_collinear {p₁ p₂ p₃ p₄
   let t₁ : Affine.Triangle ℝ P := ⟨![p₁, p₂, p₄], affineIndependent_iff_not_collinear_set.2 hn⟩
   let t₂ : Affine.Triangle ℝ P := ⟨![p₁, p₃, p₄], affineIndependent_iff_not_collinear_set.2 hn'⟩
   rw [cospherical_iff_exists_sphere]
-  refine' ⟨t₂.circumsphere, _⟩
+  refine ⟨t₂.circumsphere, ?_⟩
   simp_rw [Set.insert_subset_iff, Set.singleton_subset_iff]
-  refine' ⟨t₂.mem_circumsphere 0, _, t₂.mem_circumsphere 1, t₂.mem_circumsphere 2⟩
+  refine ⟨t₂.mem_circumsphere 0, ?_, t₂.mem_circumsphere 1, t₂.mem_circumsphere 2⟩
   rw [Affine.Triangle.circumsphere_eq_circumsphere_of_eq_of_eq_of_two_zsmul_oangle_eq
     (by decide : (0 : Fin 3) ≠ 1) (by decide : (0 : Fin 3) ≠ 2) (by decide)
     (show t₂.points 0 = t₁.points 0 from rfl) rfl h.symm]
@@ -400,12 +400,12 @@ theorem cospherical_or_collinear_of_two_zsmul_oangle_eq {p₁ p₂ p₃ p₄ : P
       rw [or_iff_left hl]
       let t : Affine.Triangle ℝ P := ⟨![p₂, p₃, p₄], affineIndependent_iff_not_collinear_set.2 hl⟩
       rw [cospherical_iff_exists_sphere]
-      refine' ⟨t.circumsphere, _⟩
+      refine ⟨t.circumsphere, ?_⟩
       simp_rw [Set.insert_subset_iff, Set.singleton_subset_iff]
       exact ⟨t.mem_circumsphere 0, t.mem_circumsphere 1, t.mem_circumsphere 2⟩
     have hc' : Collinear ℝ ({p₁, p₃, p₄} : Set P) := by
       rwa [← collinear_iff_of_two_zsmul_oangle_eq h]
-    refine' Or.inr _
+    refine Or.inr ?_
     rw [Set.insert_comm p₁ p₂] at hc
     rwa [Set.insert_comm p₁ p₂, hc'.collinear_insert_iff_of_ne (Set.mem_insert _ _)
       (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _ (Set.mem_singleton _))) he]
