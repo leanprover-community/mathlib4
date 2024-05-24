@@ -82,21 +82,9 @@ jobs:
 
       - uses: actions/checkout@v4
 
-      - name: update Mathlib.lean
+      - name: update import-only files in {Mathlib Mathlib/Tactic Counterexamples Archive}.lean
         run: |
-          git ls-files 'Mathlib/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
-
-      - name: update Mathlib/Tactic.lean
-        run: |
-          git ls-files 'Mathlib/Tactic/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib/Tactic.lean
-
-      - name: update Counterexamples.lean
-        run: |
-          git ls-files 'Counterexamples/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Counterexamples.lean
-
-      - name: update Archive.lean
-        run: |
-          git ls-files 'Archive/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Archive.lean
+          ./scripts/mk_all.sh
 
       - name: check that all files are imported
         run: git diff --exit-code
@@ -171,7 +159,7 @@ jobs:
       # but verify that this didn't change anything in the `check_imported` job.
       - name: update Mathlib.lean
         run: |
-          find Mathlib -name "*.lean" | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
+          ./scripts/mk_all.sh Mathlib
 
       - name: If using a lean-pr-release toolchain, uninstall
         run: |
