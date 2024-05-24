@@ -520,7 +520,7 @@ theorem union_comm_of_disjoint {s₁ s₂ : AList β} (h : Disjoint s₁ s₂) :
       constructor <;> intro h'
       · cases' h' with h' h'
         · right
-          refine' ⟨_, h'⟩
+          refine ⟨?_, h'⟩
           apply h
           rw [keys, ← List.dlookup_isSome, h']
           exact rfl
@@ -528,7 +528,7 @@ theorem union_comm_of_disjoint {s₁ s₂ : AList β} (h : Disjoint s₁ s₂) :
           rw [h'.2]
       · cases' h' with h' h'
         · right
-          refine' ⟨_, h'⟩
+          refine ⟨?_, h'⟩
           intro h''
           apply h _ h''
           rw [keys, ← List.dlookup_isSome, h']

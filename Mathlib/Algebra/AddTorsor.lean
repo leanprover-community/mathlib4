@@ -62,8 +62,7 @@ attribute [instance 100] AddTorsor.nonempty
 /-- An `AddGroup G` is a torsor for itself. -/
 -- Porting note(#12096): linter not ported yet
 --@[nolint instance_priority]
-instance addGroupIsAddTorsor (G : Type*) [AddGroup G] : AddTorsor G G
-    where
+instance addGroupIsAddTorsor (G : Type*) [AddGroup G] : AddTorsor G G where
   vsub := Sub.sub
   vsub_vadd' := sub_add_cancel
   vadd_vsub' := add_sub_cancel_right
@@ -153,7 +152,7 @@ theorem vsub_add_vsub_cancel (p₁ p₂ p₃ : P) : p₁ -ᵥ p₂ + (p₂ -ᵥ 
 of subtracting them. -/
 @[simp]
 theorem neg_vsub_eq_vsub_rev (p₁ p₂ : P) : -(p₁ -ᵥ p₂) = p₂ -ᵥ p₁ := by
-  refine' neg_eq_of_add_eq_zero_right (vadd_right_cancel p₁ _)
+  refine neg_eq_of_add_eq_zero_right (vadd_right_cancel p₁ ?_)
   rw [vsub_add_vsub_cancel, vsub_self]
 #align neg_vsub_eq_vsub_rev neg_vsub_eq_vsub_rev
 
@@ -224,7 +223,7 @@ theorem vsub_left_injective (p : P) : Function.Injective ((· -ᵥ p) : P → G)
 /-- If subtracting two points from the same point produces equal
 results, those points are equal. -/
 theorem vsub_right_cancel {p₁ p₂ p : P} (h : p -ᵥ p₁ = p -ᵥ p₂) : p₁ = p₂ := by
-  refine' vadd_left_cancel (p -ᵥ p₂) _
+  refine vadd_left_cancel (p -ᵥ p₂) ?_
   rw [vsub_vadd, ← h, vsub_vadd]
 #align vsub_right_cancel vsub_right_cancel
 

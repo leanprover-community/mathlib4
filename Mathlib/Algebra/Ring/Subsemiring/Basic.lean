@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Algebra.GroupRingAction.Subobjects
 import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Ring.Action.Subobjects
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Data.Set.Finite
@@ -153,13 +153,11 @@ add_decl_doc Subsemiring.toAddSubmonoid
 
 namespace Subsemiring
 
-instance : SetLike (Subsemiring R) R
-    where
+instance : SetLike (Subsemiring R) R where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
-instance : SubsemiringClass (Subsemiring R) R
-    where
+instance : SubsemiringClass (Subsemiring R) R where
   zero_mem := zero_mem'
   add_mem {s} := AddSubsemigroup.add_mem' s.toAddSubmonoid.toAddSubsemigroup
   one_mem {s} := Submonoid.one_mem' s.toSubmonoid
@@ -805,9 +803,9 @@ theorem subsemiringClosure_toAddSubmonoid :
 `Subsemiring.closure` of the submonoid itself . -/
 theorem subsemiringClosure_eq_closure : M.subsemiringClosure = Subsemiring.closure (M : Set R) := by
   ext
-  refine'
-    ⟨fun hx => _, fun hx =>
-      (Subsemiring.mem_closure.mp hx) M.subsemiringClosure fun s sM => _⟩
+  refine
+    ⟨fun hx => ?_, fun hx =>
+      (Subsemiring.mem_closure.mp hx) M.subsemiringClosure fun s sM => ?_⟩
   <;> rintro - ⟨H1, rfl⟩
   <;> rintro - ⟨H2, rfl⟩
   · exact AddSubmonoid.mem_closure.mp hx H1.toAddSubmonoid H2
@@ -842,11 +840,11 @@ theorem mem_closure_iff {s : Set R} {x} :
 theorem closure_addSubmonoid_closure {s : Set R} :
     closure ↑(AddSubmonoid.closure s) = closure s := by
   ext x
-  refine' ⟨fun hx => _, fun hx => closure_mono AddSubmonoid.subset_closure hx⟩
+  refine ⟨fun hx => ?_, fun hx => closure_mono AddSubmonoid.subset_closure hx⟩
   rintro - ⟨H, rfl⟩
   rintro - ⟨J, rfl⟩
-  refine' (AddSubmonoid.mem_closure.mp (mem_closure_iff.mp hx)) H.toAddSubmonoid fun y hy => _
-  refine' (Submonoid.mem_closure.mp hy) H.toSubmonoid fun z hz => _
+  refine (AddSubmonoid.mem_closure.mp (mem_closure_iff.mp hx)) H.toAddSubmonoid fun y hy => ?_
+  refine (Submonoid.mem_closure.mp hy) H.toSubmonoid fun z hz => ?_
   exact (AddSubmonoid.mem_closure.mp hz) H.toAddSubmonoid fun w hw => J hw
 #align subsemiring.closure_add_submonoid_closure Subsemiring.closure_addSubmonoid_closure
 
@@ -867,7 +865,7 @@ theorem closure_induction' {s : Set R} {p : ∀ x, x ∈ closure s → Prop}
     (add : ∀ x hx y hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
     (mul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
     {a : R} (ha : a ∈ closure s) : p a ha := by
-  refine' Exists.elim _ fun (ha : a ∈ closure s) (hc : p a ha) => hc
+  refine Exists.elim ?_ fun (ha : a ∈ closure s) (hc : p a ha) => hc
   refine'
     closure_induction ha (fun m hm => ⟨subset_closure hm, mem m hm⟩) ⟨zero_mem _, zero⟩
       ⟨one_mem _, one⟩ ?_ ?_
@@ -922,8 +920,7 @@ theorem mem_closure_iff_exists_list {R} [Semiring R] {s : Set R} {x} :
 variable (R)
 
 /-- `closure` forms a Galois insertion with the coercion to set. -/
-protected def gi : GaloisInsertion (@closure R _) (↑)
-    where
+protected def gi : GaloisInsertion (@closure R _) (↑) where
   choice s _ := closure s
   gc _ _ := closure_le
   le_l_u _ := subset_closure

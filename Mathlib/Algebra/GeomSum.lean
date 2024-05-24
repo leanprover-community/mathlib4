@@ -3,13 +3,13 @@ Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland
 -/
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Data.Nat.Parity
-import Mathlib.Tactic.Abel
+import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Algebra.Ring.Opposite
+import Mathlib.Tactic.Abel
 
 #align_import algebra.geom_sum from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
@@ -89,7 +89,7 @@ theorem op_geom_sum (x : α) (n : ℕ) : op (∑ i in range n, x ^ i) = ∑ i in
 theorem op_geom_sum₂ (x y : α) (n : ℕ) : ∑ i in range n, op y ^ (n - 1 - i) * op x ^ i =
     ∑ i in range n, op y ^ i * op x ^ (n - 1 - i) := by
   rw [← sum_range_reflect]
-  refine' sum_congr rfl fun j j_in => _
+  refine sum_congr rfl fun j j_in => ?_
   rw [mem_range, Nat.lt_iff_add_one_le] at j_in
   congr
   apply tsub_tsub_cancel_of_le
@@ -425,7 +425,7 @@ theorem Nat.pred_mul_geom_sum_le (a b n : ℕ) :
       rw [tsub_mul, mul_comm, sum_mul, one_mul, sum_range_succ', sum_range_succ, pow_zero,
         Nat.div_one]
     _ ≤ (∑ i in range n, a / b ^ i) + a * b - ((∑ i in range n, a / b ^ i) + a / b ^ n) := by
-      refine' tsub_le_tsub_right (add_le_add_right (sum_le_sum fun i _ => _) _) _
+      refine tsub_le_tsub_right (add_le_add_right (sum_le_sum fun i _ => ?_) _) _
       rw [pow_succ', mul_comm b]
       rw [← Nat.div_div_eq_div_mul]
       exact Nat.div_mul_le_self _ _
@@ -434,7 +434,7 @@ theorem Nat.pred_mul_geom_sum_le (a b n : ℕ) :
 
 theorem Nat.geom_sum_le {b : ℕ} (hb : 2 ≤ b) (a n : ℕ) :
     ∑ i in range n, a / b ^ i ≤ a * b / (b - 1) := by
-  refine' (Nat.le_div_iff_mul_le <| tsub_pos_of_lt hb).2 _
+  refine (Nat.le_div_iff_mul_le <| tsub_pos_of_lt hb).2 ?_
   cases' n with n
   · rw [sum_range_zero, zero_mul]
     exact Nat.zero_le _
@@ -471,7 +471,7 @@ theorem geom_sum_pos [StrictOrderedSemiring α] (hx : 0 ≤ x) (hn : n ≠ 0) :
 
 theorem geom_sum_pos_and_lt_one [StrictOrderedRing α] (hx : x < 0) (hx' : 0 < x + 1) (hn : 1 < n) :
     (0 < ∑ i in range n, x ^ i) ∧ ∑ i in range n, x ^ i < 1 := by
-  refine' Nat.le_induction _ _ n (show 2 ≤ n from hn)
+  refine Nat.le_induction ?_ ?_ n (show 2 ≤ n from hn)
   · rw [geom_sum_two]
     exact ⟨hx', (add_lt_iff_neg_right _).2 hx⟩
   clear hn
@@ -492,14 +492,14 @@ theorem geom_sum_alternating_of_le_neg_one [StrictOrderedRing α] (hx : x + 1 �
   · rw [if_neg (not_not_intro h), le_add_iff_nonneg_left]
     exact mul_nonneg_of_nonpos_of_nonpos hx0 ih
   · rw [if_pos h]
-    refine' (add_le_add_right _ _).trans hx
+    refine (add_le_add_right ?_ _).trans hx
     simpa only [mul_one] using mul_le_mul_of_nonpos_left ih hx0
 #align geom_sum_alternating_of_le_neg_one geom_sum_alternating_of_le_neg_one
 
 theorem geom_sum_alternating_of_lt_neg_one [StrictOrderedRing α] (hx : x + 1 < 0) (hn : 1 < n) :
     if Even n then (∑ i in range n, x ^ i) < 0 else 1 < ∑ i in range n, x ^ i := by
   have hx0 : x < 0 := ((le_add_iff_nonneg_right _).2 zero_le_one).trans_lt hx
-  refine' Nat.le_induction _ _ n (show 2 ≤ n from hn)
+  refine Nat.le_induction ?_ ?_ n (show 2 ≤ n from hn)
   · simp only [geom_sum_two, lt_add_iff_pos_left, ite_true, gt_iff_lt, hx, even_two]
   clear hn
   intro n _ ihn
@@ -543,9 +543,9 @@ theorem Odd.geom_sum_pos [LinearOrderedRing α] (h : Odd n) : 0 < ∑ i in range
 
 theorem geom_sum_pos_iff [LinearOrderedRing α] (hn : n ≠ 0) :
     (0 < ∑ i in range n, x ^ i) ↔ Odd n ∨ 0 < x + 1 := by
-  refine' ⟨fun h => _, _⟩
+  refine ⟨fun h => ?_, ?_⟩
   · rw [or_iff_not_imp_left, ← not_le, ← Nat.even_iff_not_odd]
-    refine' fun hn hx => h.not_le _
+    refine fun hn hx => h.not_le ?_
     simpa [if_pos hn] using geom_sum_alternating_of_le_neg_one hx n
   · rintro (hn | hx')
     · exact hn.geom_sum_pos
@@ -568,7 +568,7 @@ theorem geom_sum_ne_zero [LinearOrderedRing α] (hx : x ≠ -1) (hn : n ≠ 0) :
 
 theorem geom_sum_eq_zero_iff_neg_one [LinearOrderedRing α] (hn : n ≠ 0) :
     ∑ i in range n, x ^ i = 0 ↔ x = -1 ∧ Even n := by
-  refine' ⟨fun h => _, @fun ⟨h, hn⟩ => by simp only [h, hn, neg_one_geom_sum, if_true]⟩
+  refine ⟨fun h => ?_, @fun ⟨h, hn⟩ => by simp only [h, hn, neg_one_geom_sum, if_true]⟩
   contrapose! h
   have hx := eq_or_ne x (-1)
   cases' hx with hx hx
@@ -589,8 +589,8 @@ end Order
 
 variable {m n : ℕ} {s : Finset ℕ}
 
-/-- If all the elements of a finset of naturals are less than `n`, then the sum of their powers of
-`m ≥ 2` is less than `m ^ n`. -/
+/-- Value of a geometric sum over the naturals. Note: see `geom_sum_mul_add` for a formulation
+that avoids division and subtraction. -/
 lemma Nat.geomSum_eq (hm : 2 ≤ m) (n : ℕ) :
     ∑ k in range n, m ^ k = (m ^ n - 1) / (m - 1) := by
   refine (Nat.div_eq_of_eq_mul_left (tsub_pos_iff_lt.2 hm) <| tsub_eq_of_eq_add ?_).symm
