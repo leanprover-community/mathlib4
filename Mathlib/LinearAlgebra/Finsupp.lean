@@ -3,7 +3,8 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Finsupp.Encodable
+import Mathlib.Data.DFinsupp.Encodable
+import Mathlib.Data.Finsupp.ToDFinsupp
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Span
 import Mathlib.Data.Set.Countable
@@ -55,14 +56,16 @@ section SMul
 
 variable {α : Type*} {β : Type*} {R : Type*} {M : Type*} {M₂ : Type*}
 
-theorem smul_sum [Zero β] [AddCommMonoid M] [DistribSMul R M] {v : α →₀ β} {c : R} {h : α → β → M} :
-    c • v.sum h = v.sum fun a b => c • h a b :=
+theorem smul_sum
+    [Zero β] [AddCommMonoid M] [DistribSMul R M] [DecidableEq α] [(x : β) → Decidable (x ≠ 0)]
+    {v : α →₀ β} {c : R} {h : α → β → M} : c • v.sum h = v.sum fun a b => c • h a b :=
   Finset.smul_sum
 #align finsupp.smul_sum Finsupp.smul_sum
 
 @[simp]
-theorem sum_smul_index_linearMap' [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M₂]
-    [Module R M₂] {v : α →₀ M} {c : R} {h : α → M →ₗ[R] M₂} :
+theorem sum_smul_index_linearMap'
+    [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M₂] [Module R M₂]
+    [DecidableEq α] [(x : M) → Decidable (x ≠ 0)] {v : α →₀ M} {c : R} {h : α → M →ₗ[R] M₂} :
     ((c • v).sum fun a => h a) = c • v.sum fun a => h a := by
   rw [Finsupp.sum_smul_index', Finsupp.smul_sum]
   · simp only [map_smul]
@@ -72,39 +75,39 @@ theorem sum_smul_index_linearMap' [Semiring R] [AddCommMonoid M] [Module R M] [A
 
 end SMul
 
-section LinearEquivFunOnFinite
+section LinearEquivFunOnFintype
 
 variable (R : Type*) {S : Type*} (M : Type*) (α : Type*)
-variable [Finite α] [AddCommMonoid M] [Semiring R] [Module R M]
+variable [Fintype α] [AddCommMonoid M] [Semiring R] [Module R M]
 
-/-- Given `Finite α`, `linearEquivFunOnFinite R` is the natural `R`-linear equivalence between
+/-- Given `Fintype α`, `linearEquivFunOnFintype R` is the natural `R`-linear equivalence between
 `α →₀ β` and `α → β`. -/
 @[simps apply]
-noncomputable def linearEquivFunOnFinite : (α →₀ M) ≃ₗ[R] α → M :=
-  { equivFunOnFinite with
-    toFun := (⇑)
+def linearEquivFunOnFintype : (α →₀ M) ≃ₗ[R] α → M :=
+  { equivFunOnFintype with
     map_add' := fun _ _ => rfl
     map_smul' := fun _ _ => rfl }
-#align finsupp.linear_equiv_fun_on_finite Finsupp.linearEquivFunOnFinite
+#align finsupp.linear_equiv_fun_on_finite Finsupp.linearEquivFunOnFintype
 
 @[simp]
-theorem linearEquivFunOnFinite_single [DecidableEq α] (x : α) (m : M) :
-    (linearEquivFunOnFinite R M α) (single x m) = Pi.single x m :=
-  equivFunOnFinite_single x m
-#align finsupp.linear_equiv_fun_on_finite_single Finsupp.linearEquivFunOnFinite_single
+theorem linearEquivFunOnFintype_single [DecidableEq α] (x : α) (m : M) :
+    (linearEquivFunOnFintype R M α) (single x m) = Pi.single x m :=
+  equivFunOnFintype_single x m
+#align finsupp.linear_equiv_fun_on_finite_single Finsupp.linearEquivFunOnFintype_single
 
 @[simp]
-theorem linearEquivFunOnFinite_symm_single [DecidableEq α] (x : α) (m : M) :
-    (linearEquivFunOnFinite R M α).symm (Pi.single x m) = single x m :=
-  equivFunOnFinite_symm_single x m
-#align finsupp.linear_equiv_fun_on_finite_symm_single Finsupp.linearEquivFunOnFinite_symm_single
+theorem linearEquivFunOnFintype_symm_single [DecidableEq α] (x : α) (m : M) :
+    (linearEquivFunOnFintype R M α).symm (Pi.single x m) = single x m :=
+  equivFunOnFintype_symm_single x m
+#align finsupp.linear_equiv_fun_on_finite_symm_single Finsupp.linearEquivFunOnFintype_symm_single
 
 @[simp]
-theorem linearEquivFunOnFinite_symm_coe (f : α →₀ M) : (linearEquivFunOnFinite R M α).symm f = f :=
-  (linearEquivFunOnFinite R M α).symm_apply_apply f
-#align finsupp.linear_equiv_fun_on_finite_symm_coe Finsupp.linearEquivFunOnFinite_symm_coe
+theorem linearEquivFunOnFintype_symm_coe (f : α →₀ M) :
+    (linearEquivFunOnFintype R M α).symm f = f :=
+  (linearEquivFunOnFintype R M α).symm_apply_apply f
+#align finsupp.linear_equiv_fun_on_finite_symm_coe Finsupp.linearEquivFunOnFintype_symm_coe
 
-end LinearEquivFunOnFinite
+end LinearEquivFunOnFintype
 
 section LinearEquiv.finsuppUnique
 
@@ -114,10 +117,9 @@ variable (α : Type*) [Unique α]
 
 /-- If `α` has a unique term, then the type of finitely supported functions `α →₀ M` is
 `R`-linearly equivalent to `M`. -/
-noncomputable def LinearEquiv.finsuppUnique : (α →₀ M) ≃ₗ[R] M :=
-  { Finsupp.equivFunOnFinite.trans (Equiv.funUnique α M) with
-    map_add' := fun _ _ => rfl
-    map_smul' := fun _ _ => rfl }
+def LinearEquiv.finsuppUnique : (α →₀ M) ≃ₗ[R] M where
+  __ := AddEquiv.finsuppUnique
+  map_smul'  _ _ := rfl
 #align finsupp.linear_equiv.finsupp_unique Finsupp.LinearEquiv.finsuppUnique
 
 variable {R M}
@@ -133,8 +135,8 @@ variable {α}
 @[simp]
 theorem LinearEquiv.finsuppUnique_symm_apply [Unique α] (m : M) :
     (LinearEquiv.finsuppUnique R M α).symm m = Finsupp.single default m := by
-  ext; simp [LinearEquiv.finsuppUnique, Equiv.funUnique, single, Pi.single,
-    equivFunOnFinite, Function.update]
+  ext a
+  simp [LinearEquiv.finsuppUnique, AddEquiv.finsuppUnique, single_apply, Unique.default_eq a]
 #align finsupp.linear_equiv.finsupp_unique_symm_apply Finsupp.LinearEquiv.finsuppUnique_symm_apply
 
 end LinearEquiv.finsuppUnique
@@ -143,10 +145,12 @@ variable {α : Type*} {M : Type*} {N : Type*} {P : Type*} {R : Type*} {S : Type*
 variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M]
 variable [AddCommMonoid N] [Module R N]
 variable [AddCommMonoid P] [Module R P]
+variable [DecidableEq α]
 
 /-- Interpret `Finsupp.single a` as a linear map. -/
-def lsingle (a : α) : M →ₗ[R] α →₀ M :=
-  { Finsupp.singleAddHom a with map_smul' := fun _ _ => (smul_single _ _ _).symm }
+def lsingle (a : α) : M →ₗ[R] α →₀ M where
+  __ := Finsupp.singleAddHom a
+  map_smul'  _ _ := (smul_single _ _ _).symm
 #align finsupp.lsingle Finsupp.lsingle
 
 /-- Two `R`-linear maps from `Finsupp X M` which agree on each `single x y` agree everywhere. -/
@@ -167,8 +171,9 @@ theorem lhom_ext' ⦃φ ψ : (α →₀ M) →ₗ[R] N⦄ (h : ∀ a, φ.comp (l
 #align finsupp.lhom_ext' Finsupp.lhom_ext'
 
 /-- Interpret `fun f : α →₀ M ↦ f a` as a linear map. -/
-def lapply (a : α) : (α →₀ M) →ₗ[R] M :=
-  { Finsupp.applyAddHom a with map_smul' := fun _ _ => rfl }
+def lapply (a : α) : (α →₀ M) →ₗ[R] M where
+  __ := Finsupp.applyAddHom a
+  map_smul' _ _ := rfl
 #align finsupp.lapply Finsupp.lapply
 
 section CompatibleSMul
@@ -179,8 +184,9 @@ variable [Semiring S] [AddCommMonoid M] [AddCommMonoid N] [Module S M] [Module S
 instance _root_.LinearMap.CompatibleSMul.finsupp_dom [SMulZeroClass R M] [DistribSMul R N]
     [LinearMap.CompatibleSMul M N R S] : LinearMap.CompatibleSMul (ι →₀ M) N R S where
   map_smul f r m := by
+    classical
     conv_rhs => rw [← sum_single m, map_finsupp_sum, smul_sum]
-    erw [← sum_single (r • m), sum_mapRange_index single_zero, map_finsupp_sum]
+    erw [← sum_single (r • m), sum_mapRange_index (hf := smul_zero r) single_zero, map_finsupp_sum]
     congr; ext i m; exact (f.comp <| lsingle i).map_smul_of_tower r m
 
 instance _root_.LinearMap.CompatibleSMul.finsupp_cod [SMul R M] [SMulZeroClass R N]
@@ -192,25 +198,19 @@ end CompatibleSMul
 /-- Forget that a function is finitely supported.
 
 This is the linear version of `Finsupp.toFun`. -/
-@[simps]
+@[simps!]
 def lcoeFun : (α →₀ M) →ₗ[R] α → M where
-  toFun := (⇑)
-  map_add' x y := by
-    ext
-    simp
-  map_smul' x y := by
-    ext
-    simp
+  __ := coeFnAddHom
+  map_smul' x y := by ext; simp
 #align finsupp.lcoe_fun Finsupp.lcoeFun
 
 section LSubtypeDomain
 
-variable (s : Set α)
+variable (s : Set α) [DecidablePred (· ∈ s)]
 
 /-- Interpret `Finsupp.subtypeDomain s` as a linear map. -/
 def lsubtypeDomain : (α →₀ M) →ₗ[R] s →₀ M where
-  toFun := subtypeDomain fun x => x ∈ s
-  map_add' _ _ := subtypeDomain_add
+  __ := subtypeDomainAddMonoidHom
   map_smul' _ _ := ext fun _ => rfl
 #align finsupp.lsubtype_domain Finsupp.lsubtypeDomain
 
@@ -259,6 +259,7 @@ theorem iInf_ker_lapply_le_bot : ⨅ a, ker (lapply a : (α →₀ M) →ₗ[R] 
 #align finsupp.infi_ker_lapply_le_bot Finsupp.iInf_ker_lapply_le_bot
 
 theorem iSup_lsingle_range : ⨆ a, LinearMap.range (lsingle a : M →ₗ[R] α →₀ M) = ⊤ := by
+  classical
   refine' eq_top_iff.2 <| SetLike.le_def.2 fun f _ => _
   rw [← sum_single f]
   exact sum_mem fun a _ => Submodule.mem_iSup_of_mem a ⟨_, rfl⟩
@@ -268,13 +269,12 @@ theorem disjoint_lsingle_lsingle (s t : Set α) (hs : Disjoint s t) :
     Disjoint (⨆ a ∈ s, LinearMap.range (lsingle a : M →ₗ[R] α →₀ M))
       (⨆ a ∈ t, LinearMap.range (lsingle a : M →ₗ[R] α →₀ M)) := by
   -- Porting note: 2 placeholders are added to prevent timeout.
-  refine'
+  refine
     (Disjoint.mono
-      (lsingle_range_le_ker_lapply s sᶜ _)
-      (lsingle_range_le_ker_lapply t tᶜ _))
-      _
-  · apply disjoint_compl_right
-  · apply disjoint_compl_right
+      (lsingle_range_le_ker_lapply s sᶜ ?dj₁)
+      (lsingle_range_le_ker_lapply t tᶜ ?dj₂))
+      ?_
+  case dj₁ | dj₂ => apply disjoint_compl_right
   rw [disjoint_iff_inf_le]
   refine' le_trans (le_iInf fun i => _) iInf_ker_lapply_le_bot
   classical
@@ -293,40 +293,41 @@ theorem span_single_image (s : Set M) (a : α) :
 variable (M R)
 
 /-- `Finsupp.supported M R s` is the `R`-submodule of all `p : α →₀ M` such that `p.support ⊆ s`. -/
-def supported (s : Set α) : Submodule R (α →₀ M) where
-  carrier := { p | ↑p.support ⊆ s }
-  add_mem' {p q} hp hq := by
-    classical
-    refine' Subset.trans (Subset.trans (Finset.coe_subset.2 support_add) _) (union_subset hp hq)
-    rw [Finset.coe_union]
-  zero_mem' := by
-    simp only [subset_def, Finset.mem_coe, Set.mem_setOf_eq, mem_support_iff, zero_apply]
-    intro h ha
-    exact (ha rfl).elim
-  smul_mem' a p hp := Subset.trans (Finset.coe_subset.2 support_smul) hp
+def supported [(x : M) → Decidable (x ≠ 0)] (s : Set α) : Submodule R (α →₀ M) :=
+  { carrier := { p | ↑p.support ⊆ s }
+    add_mem' := fun {p q} hp hq => by
+      refine' Subset.trans (Subset.trans (Finset.coe_subset.2 support_add) _) (union_subset hp hq)
+      rw [Finset.coe_union]
+    zero_mem' := by
+      simp only [subset_def, Finset.mem_coe, Set.mem_setOf_eq, mem_support_iff, zero_apply]
+      intro h ha
+      exact (ha rfl).elim
+    smul_mem' := fun a p hp => Subset.trans (Finset.coe_subset.2 support_smul) hp}
 #align finsupp.supported Finsupp.supported
 
 variable {M}
 
-theorem mem_supported {s : Set α} (p : α →₀ M) : p ∈ supported M R s ↔ ↑p.support ⊆ s :=
-  Iff.rfl
+theorem mem_supported [(x : M) → Decidable (x ≠ 0)] {s : Set α} (p : α →₀ M) :
+    p ∈ supported M R s ↔ ↑p.support ⊆ s := by
+  simp [supported]
 #align finsupp.mem_supported Finsupp.mem_supported
 
-theorem mem_supported' {s : Set α} (p : α →₀ M) :
+theorem mem_supported' [(x : M) → Decidable (x ≠ 0)] {s : Set α} (p : α →₀ M) :
     p ∈ supported M R s ↔ ∀ x ∉ s, p x = 0 := by
   haveI := Classical.decPred fun x : α => x ∈ s; simp [mem_supported, Set.subset_def, not_imp_comm]
 #align finsupp.mem_supported' Finsupp.mem_supported'
 
-theorem mem_supported_support (p : α →₀ M) : p ∈ Finsupp.supported M R (p.support : Set α) := by
+theorem mem_supported_support [(x : M) → Decidable (x ≠ 0)] (p : α →₀ M) :
+    p ∈ Finsupp.supported M R (p.support : Set α) := by
   rw [Finsupp.mem_supported]
 #align finsupp.mem_supported_support Finsupp.mem_supported_support
 
-theorem single_mem_supported {s : Set α} {a : α} (b : M) (h : a ∈ s) :
+theorem single_mem_supported [(x : M) → Decidable (x ≠ 0)] {s : Set α} {a : α} (b : M) (h : a ∈ s) :
     single a b ∈ supported M R s :=
   Set.Subset.trans support_single_subset (Finset.singleton_subset_set_iff.2 h)
 #align finsupp.single_mem_supported Finsupp.single_mem_supported
 
-theorem supported_eq_span_single (s : Set α) :
+theorem supported_eq_span_single [(x : R) → Decidable (x ≠ 0)] (s : Set α) :
     supported R R s = span R ((fun i => single i 1) '' s) := by
   refine' (span_eq_of_le _ _ (SetLike.le_def.2 fun l hl => _)).symm
   · rintro _ ⟨_, hp, rfl⟩
@@ -343,7 +344,8 @@ theorem supported_eq_span_single (s : Set α) :
 variable (M)
 
 /-- Interpret `Finsupp.filter s` as a linear map from `α →₀ M` to `supported M R s`. -/
-def restrictDom (s : Set α) [DecidablePred (· ∈ s)] : (α →₀ M) →ₗ[R] supported M R s :=
+def restrictDom [(x : M) → Decidable (x ≠ 0)] (s : Set α) [DecidablePred (· ∈ s)] :
+    (α →₀ M) →ₗ[R] supported M R s :=
   LinearMap.codRestrict _
     { toFun := filter (· ∈ s)
       map_add' := fun _ _ => filter_add
@@ -356,40 +358,42 @@ variable {M R}
 section
 
 @[simp]
-theorem restrictDom_apply (s : Set α) (l : α →₀ M) [DecidablePred (· ∈ s)]:
-    (restrictDom M R s l : α →₀ M) = Finsupp.filter (· ∈ s) l := rfl
+theorem restrictDom_apply [(x : M) → Decidable (x ≠ 0)] (s : Set α) (l : α →₀ M)
+    [DecidablePred (· ∈ s)] : (restrictDom M R s l : α →₀ M) = Finsupp.filter (· ∈ s) l :=
+  rfl
 #align finsupp.restrict_dom_apply Finsupp.restrictDom_apply
 
 end
 
-theorem restrictDom_comp_subtype (s : Set α) [DecidablePred (· ∈ s)] :
+theorem restrictDom_comp_subtype [(x : M) → Decidable (x ≠ 0)] (s : Set α) [DecidablePred (· ∈ s)] :
     (restrictDom M R s).comp (Submodule.subtype _) = LinearMap.id := by
   ext l a
   by_cases h : a ∈ s <;> simp [h]
   exact ((mem_supported' R l.1).1 l.2 a h).symm
 #align finsupp.restrict_dom_comp_subtype Finsupp.restrictDom_comp_subtype
 
-theorem range_restrictDom (s : Set α) [DecidablePred (· ∈ s)] :
+theorem range_restrictDom [(x : M) → Decidable (x ≠ 0)] (s : Set α) [DecidablePred (· ∈ s)] :
     LinearMap.range (restrictDom M R s) = ⊤ :=
   range_eq_top.2 <|
     Function.RightInverse.surjective <| LinearMap.congr_fun (restrictDom_comp_subtype s)
 #align finsupp.range_restrict_dom Finsupp.range_restrictDom
 
-theorem supported_mono {s t : Set α} (st : s ⊆ t) : supported M R s ≤ supported M R t := fun _ h =>
+theorem supported_mono [(x : M) → Decidable (x ≠ 0)] {s t : Set α} (st : s ⊆ t) :
+    supported M R s ≤ supported M R t := fun _ h =>
   Set.Subset.trans h st
 #align finsupp.supported_mono Finsupp.supported_mono
 
 @[simp]
-theorem supported_empty : supported M R (∅ : Set α) = ⊥ :=
+theorem supported_empty [(x : M) → Decidable (x ≠ 0)] : supported M R (∅ : Set α) = ⊥ :=
   eq_bot_iff.2 fun l h => (Submodule.mem_bot R).2 <| by ext; simp_all [mem_supported']
 #align finsupp.supported_empty Finsupp.supported_empty
 
 @[simp]
-theorem supported_univ : supported M R (Set.univ : Set α) = ⊤ :=
+theorem supported_univ [(x : M) → Decidable (x ≠ 0)] : supported M R (Set.univ : Set α) = ⊤ :=
   eq_top_iff.2 fun _ _ => Set.subset_univ _
 #align finsupp.supported_univ Finsupp.supported_univ
 
-theorem supported_iUnion {δ : Type*} (s : δ → Set α) :
+theorem supported_iUnion [(x : M) → Decidable (x ≠ 0)] {δ : Type*} (s : δ → Set α) :
     supported M R (⋃ i, s i) = ⨆ i, supported M R (s i) := by
   refine' le_antisymm _ (iSup_le fun i => supported_mono <| Set.subset_iUnion _ _)
   haveI := Classical.decPred fun x => x ∈ ⋃ i, s i
@@ -408,26 +412,28 @@ theorem supported_iUnion {δ : Type*} (s : δ → Set α) :
     exact le_iSup (fun i => supported M R (s i)) i (single_mem_supported R _ hi)
 #align finsupp.supported_Union Finsupp.supported_iUnion
 
-theorem supported_union (s t : Set α) : supported M R (s ∪ t) = supported M R s ⊔ supported M R t :=
+theorem supported_union [(x : M) → Decidable (x ≠ 0)] (s t : Set α) :
+    supported M R (s ∪ t) = supported M R s ⊔ supported M R t :=
   by erw [Set.union_eq_iUnion, supported_iUnion, iSup_bool_eq]; rfl
 #align finsupp.supported_union Finsupp.supported_union
 
-theorem supported_iInter {ι : Type*} (s : ι → Set α) :
+theorem supported_iInter [(x : M) → Decidable (x ≠ 0)] {ι : Type*} (s : ι → Set α) :
     supported M R (⋂ i, s i) = ⨅ i, supported M R (s i) :=
   Submodule.ext fun x => by simp [mem_supported, subset_iInter_iff]
 #align finsupp.supported_Inter Finsupp.supported_iInter
 
-theorem supported_inter (s t : Set α) : supported M R (s ∩ t) = supported M R s ⊓ supported M R t :=
-  by rw [Set.inter_eq_iInter, supported_iInter, iInf_bool_eq]; rfl
+theorem supported_inter [(x : M) → Decidable (x ≠ 0)] (s t : Set α) :
+    supported M R (s ∩ t) = supported M R s ⊓ supported M R t := by
+  rw [Set.inter_eq_iInter, supported_iInter, iInf_bool_eq]; rfl
 #align finsupp.supported_inter Finsupp.supported_inter
 
-theorem disjoint_supported_supported {s t : Set α} (h : Disjoint s t) :
-    Disjoint (supported M R s) (supported M R t) :=
+theorem disjoint_supported_supported [(x : M) → Decidable (x ≠ 0)] {s t : Set α}
+    (h : Disjoint s t) : Disjoint (supported M R s) (supported M R t) :=
   disjoint_iff.2 <| by rw [← supported_inter, disjoint_iff_inter_eq_empty.1 h, supported_empty]
 #align finsupp.disjoint_supported_supported Finsupp.disjoint_supported_supported
 
-theorem disjoint_supported_supported_iff [Nontrivial M] {s t : Set α} :
-    Disjoint (supported M R s) (supported M R t) ↔ Disjoint s t := by
+theorem disjoint_supported_supported_iff [(x : M) → Decidable (x ≠ 0)] [Nontrivial M]
+    {s t : Set α} : Disjoint (supported M R s) (supported M R t) ↔ Disjoint s t := by
   refine' ⟨fun h => Set.disjoint_left.mpr fun x hx1 hx2 => _, disjoint_supported_supported⟩
   rcases exists_ne (0 : M) with ⟨y, hy⟩
   have := h.le_bot ⟨single_mem_supported R y hx1, single_mem_supported R y hx2⟩
@@ -437,7 +443,8 @@ theorem disjoint_supported_supported_iff [Nontrivial M] {s t : Set α} :
 
 /-- Interpret `Finsupp.restrictSupportEquiv` as a linear equivalence between
 `supported M R s` and `s →₀ M`. -/
-def supportedEquivFinsupp (s : Set α) : supported M R s ≃ₗ[R] s →₀ M := by
+def supportedEquivFinsupp [(x : M) → Decidable (x ≠ 0)] (s : Set α) [DecidablePred (· ∈ s)] :
+    supported M R s ≃ₗ[R] s →₀ M := by
   let F : supported M R s ≃ (s →₀ M) := restrictSupportEquiv s M
   refine F.toLinearEquiv ?_
   have :
@@ -460,9 +467,8 @@ See note [bundled maps over different rings] for why separate `R` and `S` semiri
 -/
 def lsum : (α → M →ₗ[R] N) ≃ₗ[S] (α →₀ M) →ₗ[R] N where
   toFun F :=
-    { toFun := fun d => d.sum fun i => F i
-      map_add' := (liftAddHom (α := α) (M := M) (N := N) fun x => (F x).toAddMonoidHom).map_add
-      map_smul' := fun c f => by simp [sum_smul_index', smul_sum] }
+    { sumAddHom (fun a => ↑(F a)) with
+      map_smul' := fun c f => by classical simp [sum_smul_index', smul_sum] }
   invFun F x := F.comp (lsingle x)
   left_inv F := by
     ext x y
@@ -479,21 +485,23 @@ def lsum : (α → M →ₗ[R] N) ≃ₗ[S] (α →₀ M) →ₗ[R] N where
 #align finsupp.lsum Finsupp.lsum
 
 @[simp]
-theorem coe_lsum (f : α → M →ₗ[R] N) : (lsum S f : (α →₀ M) → N) = fun d => d.sum fun i => f i :=
-  rfl
+theorem coe_lsum [(x : M) → Decidable (x ≠ 0)] (f : α → M →ₗ[R] N) :
+    (lsum S f : (α →₀ M) → N) = fun d => d.sum fun i => f i := by
+  classical simp [lsum, sumAddHom_coe]
 #align finsupp.coe_lsum Finsupp.coe_lsum
 
-theorem lsum_apply (f : α → M →ₗ[R] N) (l : α →₀ M) : Finsupp.lsum S f l = l.sum fun b => f b :=
-  rfl
+theorem lsum_apply [(x : M) → Decidable (x ≠ 0)] (f : α → M →ₗ[R] N) (l : α →₀ M) :
+    Finsupp.lsum S f l = l.sum fun b => f b :=
+  _root_.congr_fun (coe_lsum S f) l
 #align finsupp.lsum_apply Finsupp.lsum_apply
 
 theorem lsum_single (f : α → M →ₗ[R] N) (i : α) (m : M) :
     Finsupp.lsum S f (Finsupp.single i m) = f i m :=
-  Finsupp.sum_single_index (f i).map_zero
+  sumAddHom_single (fun a => (↑(f a) : M →+ N)) i m
 #align finsupp.lsum_single Finsupp.lsum_single
 
 @[simp] theorem lsum_comp_lsingle (f : α → M →ₗ[R] N) (i : α) :
-    Finsupp.lsum S f ∘ₗ lsingle i = f i := by ext; simp
+    Finsupp.lsum S f ∘ₗ lsingle i = f i := by classical ext; simp
 
 theorem lsum_symm_apply (f : (α →₀ M) →ₗ[R] N) (x : α) : (lsum S).symm f x = f.comp (lsingle x) :=
   rfl
@@ -504,12 +512,12 @@ end LSum
 section
 
 variable (M) (R) (X : Type*) (S)
-variable [Module S M] [SMulCommClass R S M]
+variable [DecidableEq X] [Module S M] [SMulCommClass R S M]
 
 /-- A slight rearrangement from `lsum` gives us
 the bijection underlying the free-forgetful adjunction for R-modules.
 -/
-noncomputable def lift : (X → M) ≃+ ((X →₀ R) →ₗ[R] M) :=
+def lift : (X → M) ≃+ ((X →₀ R) →ₗ[R] M) :=
   (AddEquiv.arrowCongr (Equiv.refl X) (ringLmapEquivSelf R ℕ M).toAddEquiv.symm).trans
     (lsum _ : _ ≃ₗ[ℕ] _).toAddEquiv
 #align finsupp.lift Finsupp.lift
@@ -520,16 +528,18 @@ theorem lift_symm_apply (f) (x) : ((lift M R X).symm f) x = f (single x 1) :=
 #align finsupp.lift_symm_apply Finsupp.lift_symm_apply
 
 @[simp]
-theorem lift_apply (f) (g) : ((lift M R X) f) g = g.sum fun x r => r • f x :=
-  rfl
+theorem lift_apply [(x : R) → Decidable (x ≠ 0)] (f) (g) :
+    ((lift M R X) f) g = g.sum fun x r => r • f x := by
+  apply sumAddHom_apply
 #align finsupp.lift_apply Finsupp.lift_apply
 
 /-- Given compatible `S` and `R`-module structures on `M` and a type `X`, the set of functions
 `X → M` is `S`-linearly equivalent to the `R`-linear maps from the free `R`-module
 on `X` to `M`. -/
-noncomputable def llift : (X → M) ≃ₗ[S] (X →₀ R) →ₗ[R] M :=
+def llift : (X → M) ≃ₗ[S] (X →₀ R) →ₗ[R] M :=
   { lift M R X with
     map_smul' := by
+      classical
       intros
       dsimp
       ext
@@ -1192,7 +1202,7 @@ theorem Fintype.total_apply_single [DecidableEq α] (i : α) (r : R) :
 variable (S)
 
 theorem Finsupp.total_eq_fintype_total_apply (x : α → R) : Finsupp.total α M R v
-    ((Finsupp.linearEquivFunOnFinite R R α).symm x) = Fintype.total R S v x := by
+    ((Finsupp.linearEquivFunOnFintype R R α).symm x) = Fintype.total R S v x := by
   apply Finset.sum_subset
   · exact Finset.subset_univ _
   · intro x _ hx
@@ -1201,7 +1211,7 @@ theorem Finsupp.total_eq_fintype_total_apply (x : α → R) : Finsupp.total α M
 #align finsupp.total_eq_fintype_total_apply Finsupp.total_eq_fintype_total_apply
 
 theorem Finsupp.total_eq_fintype_total :
-    (Finsupp.total α M R v).comp (Finsupp.linearEquivFunOnFinite R R α).symm.toLinearMap =
+    (Finsupp.total α M R v).comp (Finsupp.linearEquivFunOnFintype R R α).symm.toLinearMap =
       Fintype.total R S v :=
   LinearMap.ext <| Finsupp.total_eq_fintype_total_apply R S v
 #align finsupp.total_eq_fintype_total Finsupp.total_eq_fintype_total
@@ -1223,9 +1233,9 @@ variable {v} {x : M}
 -/
 theorem mem_span_range_iff_exists_fun :
     x ∈ span R (range v) ↔ ∃ c : α → R, ∑ i, c i • v i = x := by
-  -- Porting note: `Finsupp.equivFunOnFinite.surjective.exists` should be come before `simp`.
-  rw [Finsupp.equivFunOnFinite.surjective.exists]
-  simp only [Finsupp.mem_span_range_iff_exists_finsupp, Finsupp.equivFunOnFinite_apply]
+  -- Porting note: `Finsupp.equivFunOnFintype.surjective.exists` should be come before `simp`.
+  rw [Finsupp.equivFunOnFintype.surjective.exists]
+  simp only [Finsupp.mem_span_range_iff_exists_finsupp, Finsupp.equivFunOnFintype_apply]
   exact exists_congr fun c => Eq.congr_left <| Finsupp.sum_fintype _ _ fun i => zero_smul _ _
 #align mem_span_range_iff_exists_fun mem_span_range_iff_exists_fun
 
@@ -1403,7 +1413,7 @@ theorem splittingOfFinsuppSurjective_injective (f : M →ₗ[R] α →₀ R) (s 
 def splittingOfFunOnFintypeSurjective [Finite α] (f : M →ₗ[R] α → R) (s : Surjective f) :
     (α → R) →ₗ[R] M :=
   (Finsupp.lift _ _ _ fun x : α => (s (Finsupp.single x 1)).choose).comp
-    (linearEquivFunOnFinite R R α).symm.toLinearMap
+    (linearEquivFunOnFintype R R α).symm.toLinearMap
 #align linear_map.splitting_of_fun_on_fintype_surjective LinearMap.splittingOfFunOnFintypeSurjective
 
 theorem splittingOfFunOnFintypeSurjective_splits [Finite α] (f : M →ₗ[R] α → R)
@@ -1412,7 +1422,7 @@ theorem splittingOfFunOnFintypeSurjective_splits [Finite α] (f : M →ₗ[R] α
   -- Porting note: `ext` can't find appropriate theorems.
   refine pi_ext' fun x => ext_ring <| funext fun y => ?_
   dsimp [splittingOfFunOnFintypeSurjective]
-  rw [linearEquivFunOnFinite_symm_single, Finsupp.sum_single_index, one_smul,
+  rw [linearEquivFunOnFintype_symm_single, Finsupp.sum_single_index, one_smul,
     (s (Finsupp.single x 1)).choose_spec, Finsupp.single_eq_pi_single]
   rw [zero_smul]
 #align linear_map.splitting_of_fun_on_fintype_surjective_splits LinearMap.splittingOfFunOnFintypeSurjective_splits

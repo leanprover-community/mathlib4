@@ -15,7 +15,7 @@ import Mathlib.GroupTheory.GroupAction.BigOperators
 /-!
 # Dependent functions with finite support
 
-For a non-dependent version see `data/finsupp.lean`.
+For a non-dependent version see `Mathlib/Data/Finsupp.lean`.
 
 ## Notation
 
@@ -38,11 +38,6 @@ there are two ways to sum a `DFinsupp`: with `DFinsupp.sum` which works over an 
 but requires recomputation of the support and therefore a `Decidable` argument; and with
 `DFinsupp.sumAddHom` which requires an additive morphism, using its properties to show that
 summing over a superset of the support is sufficient.
-
-`Finsupp` takes an altogether different approach here; it uses `Classical.Decidable` and declares
-the `Add` instance as noncomputable. This design difference is independent of the fact that
-`DFinsupp` is dependently-typed and `Finsupp` is not; in future, we may want to align these two
-definitions, or introduce two more definitions for the other combinations of decisions.
 -/
 
 
@@ -134,8 +129,8 @@ bundled:
 
 * `DFinsupp.mapRange.addMonoidHom`
 * `DFinsupp.mapRange.addEquiv`
-* `dfinsupp.mapRange.linearMap`
-* `dfinsupp.mapRange.linearEquiv`
+* `DFinsupp.mapRange.linearMap`
+* `DFinsupp.mapRange.linearEquiv`
 -/
 def mapRange (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0) (x : Π₀ i, β₁ i) : Π₀ i, β₂ i :=
   ⟨fun i => f i (x i),
@@ -296,25 +291,26 @@ theorem finset_sum_apply {α} [∀ i, AddCommMonoid (β i)] (s : Finset α) (g :
   map_sum (evalAddMonoidHom i) g s
 #align dfinsupp.finset_sum_apply DFinsupp.finset_sum_apply
 
-instance [∀ i, AddGroup (β i)] : Neg (Π₀ i, β i) :=
+instance [∀ i, NegZeroClass (β i)] : Neg (Π₀ i, β i) :=
   ⟨fun f => f.mapRange (fun _ => Neg.neg) fun _ => neg_zero⟩
 
-theorem neg_apply [∀ i, AddGroup (β i)] (g : Π₀ i, β i) (i : ι) : (-g) i = -g i :=
+theorem neg_apply [∀ i, NegZeroClass (β i)] (g : Π₀ i, β i) (i : ι) : (-g) i = -g i :=
   rfl
 #align dfinsupp.neg_apply DFinsupp.neg_apply
 
-@[simp, norm_cast] lemma coe_neg [∀ i, AddGroup (β i)] (g : Π₀ i, β i) : ⇑(-g) = -g := rfl
+@[simp, norm_cast] lemma coe_neg [∀ i, NegZeroClass (β i)] (g : Π₀ i, β i) : ⇑(-g) = -g := rfl
 #align dfinsupp.coe_neg DFinsupp.coe_neg
 
-instance [∀ i, AddGroup (β i)] : Sub (Π₀ i, β i) :=
+instance [∀ i, SubNegZeroMonoid (β i)] : Sub (Π₀ i, β i) :=
   ⟨zipWith (fun _ => Sub.sub) fun _ => sub_zero 0⟩
 
-theorem sub_apply [∀ i, AddGroup (β i)] (g₁ g₂ : Π₀ i, β i) (i : ι) : (g₁ - g₂) i = g₁ i - g₂ i :=
+theorem sub_apply [∀ i, SubNegZeroMonoid (β i)] (g₁ g₂ : Π₀ i, β i) (i : ι) :
+    (g₁ - g₂) i = g₁ i - g₂ i :=
   rfl
 #align dfinsupp.sub_apply DFinsupp.sub_apply
 
 @[simp, norm_cast]
-theorem coe_sub [∀ i, AddGroup (β i)] (g₁ g₂ : Π₀ i, β i) : ⇑(g₁ - g₂) = g₁ - g₂ :=
+theorem coe_sub [∀ i, SubNegZeroMonoid (β i)] (g₁ g₂ : Π₀ i, β i) : ⇑(g₁ - g₂) = g₁ - g₂ :=
   rfl
 #align dfinsupp.coe_sub DFinsupp.coe_sub
 
@@ -343,16 +339,19 @@ instance addCommGroup [∀ i, AddCommGroup (β i)] : AddCommGroup (Π₀ i, β i
 
 /-- Dependent functions with finite support inherit a semiring action from an action on each
 coordinate. -/
-instance [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)] : SMul γ (Π₀ i, β i) :=
-  ⟨fun c v => v.mapRange (fun _ => (c • ·)) fun _ => smul_zero _⟩
+instance [∀ i, Zero (β i)] [∀ i, SMulZeroClass γ (β i)] : SMulZeroClass γ (Π₀ i, β i) where
+  smul c v := v.mapRange (fun _ => (c • ·)) fun _ => smul_zero _
+  smul_zero a := by
+    ext
+    apply smul_zero
 
-theorem smul_apply [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)] (b : γ)
+theorem smul_apply [∀ i, Zero (β i)] [∀ i, SMulZeroClass γ (β i)] (b : γ)
     (v : Π₀ i, β i) (i : ι) : (b • v) i = b • v i :=
   rfl
 #align dfinsupp.smul_apply DFinsupp.smul_apply
 
 @[simp, norm_cast]
-theorem coe_smul [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)] (b : γ)
+theorem coe_smul [∀ i, Zero (β i)] [∀ i, SMulZeroClass γ (β i)] (b : γ)
     (v : Π₀ i, β i) : ⇑(b • v) = b • ⇑v :=
   rfl
 #align dfinsupp.coe_smul DFinsupp.coe_smul
@@ -393,10 +392,13 @@ end Algebra
 section FilterAndSubtypeDomain
 
 /-- `Filter p f` is the function which is `f i` if `p i` is true and 0 otherwise. -/
-def filter [∀ i, Zero (β i)] (p : ι → Prop) [DecidablePred p] (x : Π₀ i, β i) : Π₀ i, β i :=
-  ⟨fun i => if p i then x i else 0,
+def filter [∀ i, Zero (β i)] (p : ι → Prop) [DecidablePred p] (x : Π₀ i, β i) : Π₀ i, β i where
+  toFun i := if p i then x i else 0
+  support' :=
     x.support'.map fun xs =>
-      ⟨xs.1, fun i => (xs.prop i).imp_right fun H : x i = 0 => by simp only [H, ite_self]⟩⟩
+      ⟨xs.1.filter p, fun i => by
+        rw [Classical.or_iff_not_imp_right]; simp
+        exact fun hi hx => ⟨(xs.prop i).resolve_right hx, hi⟩⟩
 #align dfinsupp.filter DFinsupp.filter
 
 @[simp]
@@ -479,13 +481,14 @@ theorem filter_sub [∀ i, AddGroup (β i)] (p : ι → Prop) [DecidablePred p] 
 /-- `subtypeDomain p f` is the restriction of the finitely supported function
   `f` to the subtype `p`. -/
 def subtypeDomain [∀ i, Zero (β i)] (p : ι → Prop) [DecidablePred p] (x : Π₀ i, β i) :
-    Π₀ i : Subtype p, β i :=
-  ⟨fun i => x (i : ι),
+    Π₀ i : Subtype p, β i where
+  toFun i := x (i : ι)
+  support' :=
     x.support'.map fun xs =>
       ⟨(Multiset.filter p xs.1).attach.map fun j => ⟨j.1, (Multiset.mem_filter.1 j.2).2⟩, fun i =>
         (xs.prop i).imp_left fun H =>
           Multiset.mem_map.2
-            ⟨⟨i, Multiset.mem_filter.2 ⟨H, i.2⟩⟩, Multiset.mem_attach _ _, Subtype.eta _ _⟩⟩⟩
+            ⟨⟨i, Multiset.mem_filter.2 ⟨H, i.2⟩⟩, Multiset.mem_attach _ _, Subtype.eta _ _⟩⟩
 #align dfinsupp.subtype_domain DFinsupp.subtypeDomain
 
 @[simp]
@@ -1087,7 +1090,7 @@ section SupportBasic
 
 variable [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
 
-/-- Set `{i | f x ≠ 0}` as a `Finset`. -/
+/-- Set `{ i | f i ≠ 0 }` as a `Finset`. -/
 def support (f : Π₀ i, β i) : Finset ι :=
   (f.support'.lift fun xs => (Multiset.toFinset xs.1).filter fun i => f i ≠ 0) <| by
     rintro ⟨sx, hx⟩ ⟨sy, hy⟩
@@ -1168,8 +1171,8 @@ theorem support_eq_empty {f : Π₀ i, β i} : f.support = ∅ ↔ f = 0 :=
   ⟨fun H => ext <| by simpa [Finset.ext_iff] using H, by simp (config := { contextual := true })⟩
 #align dfinsupp.support_eq_empty DFinsupp.support_eq_empty
 
-instance decidableZero : DecidablePred (Eq (0 : Π₀ i, β i)) := fun _ =>
-  decidable_of_iff _ <| support_eq_empty.trans eq_comm
+instance decidableZero (x : Π₀ i, β i) : Decidable (x = 0) :=
+  decidable_of_iff _ <| support_eq_empty
 #align dfinsupp.decidable_zero DFinsupp.decidableZero
 
 theorem support_subset_iff {s : Set ι} {f : Π₀ i, β i} : ↑f.support ⊆ s ↔ ∀ i ∉ s, f i = 0 := by
@@ -1321,11 +1324,12 @@ open Finset
 
 variable {κ : Type*}
 
-/-- Reindexing (and possibly removing) terms of a dfinsupp. -/
+/-- Reindexing (and possibly removing) terms of a `DFinsupp`. -/
 noncomputable def comapDomain [∀ i, Zero (β i)] (h : κ → ι) (hh : Function.Injective h)
     (f : Π₀ i, β i) : Π₀ k, β (h k) where
   toFun x := f (h x)
   support' :=
+    haveI := Classical.decEq ι
     f.support'.map fun s =>
       ⟨((Multiset.toFinset s.1).preimage h (hh.injOn _)).val, fun x =>
         (s.prop (h x)).imp_left fun hx => mem_preimage.mpr <| Multiset.mem_toFinset.mpr hx⟩
@@ -1369,7 +1373,7 @@ theorem comapDomain_single [DecidableEq κ] [∀ i, Zero (β i)] (h : κ → ι)
   · rw [single_eq_of_ne hik.symm, single_eq_of_ne (hh.ne hik.symm)]
 #align dfinsupp.comap_domain_single DFinsupp.comapDomain_single
 
-/-- A computable version of comap_domain when an explicit left inverse is provided. -/
+/-- A computable version of `comapDomain` when an explicit left inverse is provided. -/
 def comapDomain' [∀ i, Zero (β i)] (h : κ → ι) {h' : ι → κ} (hh' : Function.LeftInverse h' h)
     (f : Π₀ i, β i) : Π₀ k, β (h k) where
   toFun x := f (h x)
@@ -1788,14 +1792,14 @@ theorem support_sum {ι₁ : Type u₁} [DecidableEq ι₁] {β₁ : ι₁ → T
 #align dfinsupp.support_sum DFinsupp.support_sum
 
 @[to_additive (attr := simp)]
-theorem prod_one [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ]
+theorem prod_one [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ]
     {f : Π₀ i, β i} : (f.prod fun _ _ => (1 : γ)) = 1 :=
   Finset.prod_const_one
 #align dfinsupp.prod_one DFinsupp.prod_one
 #align dfinsupp.sum_zero DFinsupp.sum_zero
 
 @[to_additive (attr := simp)]
-theorem prod_mul [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ]
+theorem prod_mul [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ]
     {f : Π₀ i, β i} {h₁ h₂ : ∀ i, β i → γ} :
     (f.prod fun i b => h₁ i b * h₂ i b) = f.prod h₁ * f.prod h₂ :=
   Finset.prod_mul_distrib
@@ -1803,7 +1807,7 @@ theorem prod_mul [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decidable (x
 #align dfinsupp.sum_add DFinsupp.sum_add
 
 @[to_additive (attr := simp)]
-theorem prod_inv [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommGroup γ]
+theorem prod_inv [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommGroup γ]
     {f : Π₀ i, β i} {h : ∀ i, β i → γ} : (f.prod fun i b => (h i b)⁻¹) = (f.prod h)⁻¹ :=
   (map_prod (invMonoidHom : γ →* γ) _ f.support).symm
 #align dfinsupp.prod_inv DFinsupp.prod_inv

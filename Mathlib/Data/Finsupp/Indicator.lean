@@ -18,26 +18,18 @@ This file defines `Finsupp.indicator` to help create finsupps from finsets.
 -/
 
 
-noncomputable section
-
 open Finset Function
 
 variable {ι α : Type*}
 
 namespace Finsupp
 
-variable [Zero α] {s : Finset ι} (f : ∀ i ∈ s, α) {i : ι}
+variable [Zero α] [DecidableEq ι] [(x : α) → Decidable (x ≠ 0)]
+variable {s : Finset ι} (f : ∀ i ∈ s, α) {i : ι}
 
 /-- Create an element of `ι →₀ α` from a finset `s` and a function `f` defined on this finset. -/
-def indicator (s : Finset ι) (f : ∀ i ∈ s, α) : ι →₀ α where
-  toFun i :=
-    haveI := Classical.decEq ι
-    if H : i ∈ s then f i H else 0
-  support :=
-    haveI := Classical.decEq α
-    (s.attach.filter fun i : s => f i.1 i.2 ≠ 0).map (Embedding.subtype _)
-  mem_support_toFun i := by
-    classical simp
+def indicator (s : Finset ι) (f : ∀ i ∈ s, α) : ι →₀ α :=
+  mk s (fun s => f s.1 s.2)
 #align finsupp.indicator Finsupp.indicator
 
 theorem indicator_of_mem (hi : i ∈ s) (f : ∀ i ∈ s, α) : indicator s f i = f i hi :=
@@ -52,7 +44,7 @@ variable (s i)
 
 @[simp]
 theorem indicator_apply [DecidableEq ι] : indicator s f i = if hi : i ∈ s then f i hi else 0 := by
-  simp only [indicator, ne_eq, coe_mk]
+  simp only [indicator, ne_eq, coe_mk']
   congr
 #align finsupp.indicator_apply Finsupp.indicator_apply
 
@@ -71,7 +63,6 @@ theorem support_indicator_subset : ((indicator s f).support : Set ι) ⊆ s := b
 #align finsupp.support_indicator_subset Finsupp.support_indicator_subset
 
 lemma single_eq_indicator (b : α) : single i b = indicator {i} (fun _ _ => b) := by
-  classical
   ext j
   simp [single_apply, indicator_apply, @eq_comm _ j]
 #align finsupp.single_eq_indicator Finsupp.single_eq_indicator

@@ -20,20 +20,18 @@ In this context, we prove some usual properties of `tail` and `cons`, analogous 
 -/
 
 
-noncomputable section
-
 namespace Finsupp
 
 variable {n : ℕ} (i : Fin n) {M : Type*} [Zero M] (y : M) (t : Fin (n + 1) →₀ M) (s : Fin n →₀ M)
 
 /-- `tail` for maps `Fin (n + 1) →₀ M`. See `Fin.tail` for more details. -/
 def tail (s : Fin (n + 1) →₀ M) : Fin n →₀ M :=
-  Finsupp.equivFunOnFinite.symm (Fin.tail s)
+  Finsupp.equivFunOnFintype.symm (Fin.tail s)
 #align finsupp.tail Finsupp.tail
 
 /-- `cons` for maps `Fin n →₀ M`. See `Fin.cons` for more details. -/
 def cons (y : M) (s : Fin n →₀ M) : Fin (n + 1) →₀ M :=
-  Finsupp.equivFunOnFinite.symm (Fin.cons y s : Fin (n + 1) → M)
+  Finsupp.equivFunOnFintype.symm (Fin.cons y s : Fin (n + 1) → M)
 #align finsupp.cons Finsupp.cons
 
 theorem tail_apply : tail t i = t i.succ :=
@@ -92,7 +90,8 @@ theorem cons_ne_zero_iff : cons y s ≠ 0 ↔ y ≠ 0 ∨ s ≠ 0 := by
   rw [h', c, Finsupp.cons_zero_zero]
 #align finsupp.cons_ne_zero_iff Finsupp.cons_ne_zero_iff
 
-lemma cons_support : (s.cons y).support ⊆ insert 0 (s.support.map (Fin.succEmb n)) := by
+lemma cons_support [(x : M) → Decidable (x ≠ 0)] :
+    (s.cons y).support ⊆ insert 0 (s.support.map (Fin.succEmb n).toEmbedding) := by
   intro i hi
   suffices i = 0 ∨ ∃ a, ¬s a = 0 ∧ a.succ = i by simpa
   apply (Fin.eq_zero_or_eq_succ i).imp id (Exists.imp _)
