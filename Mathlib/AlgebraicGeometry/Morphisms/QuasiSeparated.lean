@@ -261,12 +261,12 @@ instance quasiSeparatedSpace_of_isAffine (X : Scheme) [IsAffine X] :
   rw [e, e', Set.iUnion₂_inter]
   simp_rw [Set.inter_iUnion₂]
   apply hs.isCompact_biUnion
-  · intro i _
-    apply hs'.isCompact_biUnion
-    intro i' _
-    change IsCompact (X.basicOpen i ⊓ X.basicOpen i').1
-    rw [← Scheme.basicOpen_mul]
-    exact ((topIsAffineOpen _).basicOpenIsAffine _).isCompact
+  intro i _
+  apply hs'.isCompact_biUnion
+  intro i' _
+  change IsCompact (X.basicOpen i ⊓ X.basicOpen i').1
+  rw [← Scheme.basicOpen_mul]
+  exact ((topIsAffineOpen _).basicOpenIsAffine _).isCompact
 #align algebraic_geometry.quasi_separated_space_of_is_affine AlgebraicGeometry.quasiSeparatedSpace_of_isAffine
 
 theorem IsAffineOpen.isQuasiSeparated {X : Scheme} {U : Opens X.carrier} (hU : IsAffineOpen U) :
@@ -364,8 +364,8 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
   apply compact_open_induction_on (P := _) U hU
   · intro _ f x
     use 0, f
-    refine' @Subsingleton.elim _
-      (CommRingCat.subsingleton_of_isTerminal (X.sheaf.isTerminalOfEqEmpty _)) _ _
+    refine @Subsingleton.elim _
+      (CommRingCat.subsingleton_of_isTerminal (X.sheaf.isTerminalOfEqEmpty ?_)) _ _
     erw [eq_bot_iff]
     exact X.basicOpen_le f
   · -- Given `f : 𝒪(S ∪ U), x : 𝒪(X_f)`, we need to show that `f ^ n * x` is the restriction of

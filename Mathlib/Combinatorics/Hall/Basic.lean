@@ -65,9 +65,9 @@ def hallMatchingsOn {ι : Type u} {α : Type v} (t : ι → Finset α) (ι' : Fi
 /-- Given a matching on a finset, construct the restriction of that matching to a subset. -/
 def hallMatchingsOn.restrict {ι : Type u} {α : Type v} (t : ι → Finset α) {ι' ι'' : Finset ι}
     (h : ι' ⊆ ι'') (f : hallMatchingsOn t ι'') : hallMatchingsOn t ι' := by
-  refine' ⟨fun i => f.val ⟨i, h i.property⟩, _⟩
+  refine ⟨fun i => f.val ⟨i, h i.property⟩, ?_⟩
   cases' f.property with hinj hc
-  refine' ⟨_, fun i => hc ⟨i, h i.property⟩⟩
+  refine ⟨?_, fun i => hc ⟨i, h i.property⟩⟩
   rintro ⟨i, hi⟩ ⟨j, hj⟩ hh
   simpa only [Subtype.mk_eq_mk] using hinj hh
 #align hall_matchings_on.restrict hallMatchingsOn.restrict
@@ -88,8 +88,8 @@ theorem hallMatchingsOn.nonempty {ι : Type u} {α : Type v} [DecidableEq α] (t
 
 /-- This is the `hallMatchingsOn` sets assembled into a directed system.
 -/
-def hallMatchingsFunctor {ι : Type u} {α : Type v} (t : ι → Finset α) : (Finset ι)ᵒᵖ ⥤ Type max u v
-    where
+def hallMatchingsFunctor {ι : Type u} {α : Type v} (t : ι → Finset α) :
+    (Finset ι)ᵒᵖ ⥤ Type max u v where
   obj ι' := hallMatchingsOn t ι'.unop
   map {ι' ι''} g f := hallMatchingsOn.restrict t (CategoryTheory.leOfHom g.unop) f
 #align hall_matchings_functor hallMatchingsFunctor
@@ -100,7 +100,7 @@ instance hallMatchingsOn.finite {ι : Type u} {α : Type v} (t : ι → Finset �
     rw [hallMatchingsOn]
     let g : hallMatchingsOn t ι' → ι' → ι'.biUnion t := by
       rintro f i
-      refine' ⟨f.val i, _⟩
+      refine ⟨f.val i, ?_⟩
       rw [mem_biUnion]
       exact ⟨i, i.property, f.property.2 i⟩
     apply Finite.of_injective g

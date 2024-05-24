@@ -1206,7 +1206,7 @@ theorem affineSpan_induction' {s : Set P} {p : ∀ x, x ∈ affineSpan k s → P
         p u hu →
           p v hv → p w hw → p (c • (u -ᵥ v) +ᵥ w) (AffineSubspace.smul_vsub_vadd_mem _ _ hu hv hw))
     {x : P} (h : x ∈ affineSpan k s) : p x h := by
-  refine' Exists.elim _ fun (hx : x ∈ affineSpan k s) (hc : p x hx) => hc
+  refine Exists.elim ?_ fun (hx : x ∈ affineSpan k s) (hc : p x hx) => hc
   -- Porting note: Lean couldn't infer the motive
   refine' affineSpan_induction (p := fun y => ∃ z, p y z) h _ _
   · exact fun y hy => ⟨subset_affineSpan _ _ hy, mem y hy⟩
@@ -1805,7 +1805,7 @@ scoped[Affine] infixl:50 " ∥ " => AffineSubspace.Parallel
 @[symm]
 theorem Parallel.symm {s₁ s₂ : AffineSubspace k P} (h : s₁ ∥ s₂) : s₂ ∥ s₁ := by
   rcases h with ⟨v, rfl⟩
-  refine' ⟨-v, _⟩
+  refine ⟨-v, ?_⟩
   rw [map_map, ← coe_trans_to_affineMap, ← constVAdd_add, neg_add_self, constVAdd_zero,
     coe_refl_to_affineMap, map_id]
 #align affine_subspace.parallel.symm AffineSubspace.Parallel.symm
@@ -1824,7 +1824,7 @@ theorem Parallel.trans {s₁ s₂ s₃ : AffineSubspace k P} (h₁₂ : s₁ ∥
     s₁ ∥ s₃ := by
   rcases h₁₂ with ⟨v₁₂, rfl⟩
   rcases h₂₃ with ⟨v₂₃, rfl⟩
-  refine' ⟨v₂₃ + v₁₂, _⟩
+  refine ⟨v₂₃ + v₁₂, ?_⟩
   rw [map_map, ← coe_trans_to_affineMap, ← constVAdd_add]
 #align affine_subspace.parallel.trans AffineSubspace.Parallel.trans
 
@@ -1862,7 +1862,7 @@ theorem parallel_iff_direction_eq_and_eq_bot_iff_eq_bot {s₁ s₂ : AffineSubsp
       rcases (nonempty_iff_ne_bot s₂).2 hs₂ with ⟨p₂, hp₂⟩
       refine' ⟨p₂ -ᵥ p₁, (eq_iff_direction_eq_of_mem hp₂ _).2 _⟩
       · rw [mem_map]
-        refine' ⟨p₁, hp₁, _⟩
+        refine ⟨p₁, hp₁, ?_⟩
         simp
       · simpa using hd.symm
 #align affine_subspace.parallel_iff_direction_eq_and_eq_bot_iff_eq_bot AffineSubspace.parallel_iff_direction_eq_and_eq_bot_iff_eq_bot

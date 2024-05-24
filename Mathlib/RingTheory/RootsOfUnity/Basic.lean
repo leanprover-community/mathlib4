@@ -209,9 +209,9 @@ def rootsOfUnityEquivNthRoots : rootsOfUnity k R ≃ { x // x ∈ nthRoots k (1 
     rcases x with ⟨x, hx⟩; rw [mem_nthRoots k.pos] at hx
     simp only [Subtype.coe_mk, ← pow_succ, ← pow_succ', hx,
       tsub_add_cancel_of_le (show 1 ≤ (k : ℕ) from k.one_le)]
-  · show (_ : Rˣ) ^ (k : ℕ) = 1
-    simp only [Units.ext_iff, hx, Units.val_mk, Units.val_one, Subtype.coe_mk,
-      Units.val_pow_eq_pow_val]
+  show (_ : Rˣ) ^ (k : ℕ) = 1
+  simp only [Units.ext_iff, hx, Units.val_mk, Units.val_one, Subtype.coe_mk,
+    Units.val_pow_eq_pow_val]
 #align roots_of_unity_equiv_nth_roots rootsOfUnityEquivNthRoots
 
 variable {k R}
@@ -336,7 +336,7 @@ variable {k l : ℕ}
 
 theorem mk_of_lt (ζ : M) (hk : 0 < k) (h1 : ζ ^ k = 1) (h : ∀ l : ℕ, 0 < l → l < k → ζ ^ l ≠ 1) :
     IsPrimitiveRoot ζ k := by
-  refine' ⟨h1, fun l hl => _⟩
+  refine ⟨h1, fun l hl => ?_⟩
   suffices k.gcd l = k by exact this ▸ k.gcd_dvd_right l
   rw [eq_iff_le_not_lt]
   refine' ⟨Nat.le_of_dvd hk (k.gcd_dvd_left l), _⟩
@@ -670,8 +670,8 @@ theorem neZero' {n : ℕ+} (hζ : IsPrimitiveRoot ζ n) : NeZero ((n : ℕ) : R)
       rw [h] at H
       simp at H
     refine' hζ.pow_ne_one_of_pos_of_lt hpos _ (frobenius_inj R p this)
-    · rw [hm.1, hk, pow_succ', mul_assoc, mul_comm p]
-      exact lt_mul_of_one_lt_right hpos hpri.1.one_lt
+    rw [hm.1, hk, pow_succ', mul_assoc, mul_comm p]
+    exact lt_mul_of_one_lt_right hpos hpri.1.one_lt
   · exact NeZero.of_not_dvd R hp
 #align is_primitive_root.ne_zero' IsPrimitiveRoot.neZero'
 
@@ -735,7 +735,7 @@ def zmodEquivZPowers (h : IsPrimitiveRoot ζ k) : ZMod k ≃+ Additive (Subgroup
         rw [← (CharP.intCast_eq_zero_iff (ZMod k) k _).mpr this, eq_comm]
         exact ZMod.intCast_rightInverse i
       · rintro ⟨ξ, i, rfl⟩
-        refine' ⟨Int.castAddHom (ZMod k) i, _⟩
+        refine ⟨Int.castAddHom (ZMod k) i, ?_⟩
         rw [AddMonoidHom.liftOfRightInverse_comp_apply]
         rfl)
 #align is_primitive_root.zmod_equiv_zpowers IsPrimitiveRoot.zmodEquivZPowers

@@ -229,7 +229,7 @@ instance Measure.prod.instIsMulRightInvariant [IsMulRightInvariant μ] [SFinite 
 theorem isMulLeftInvariant_map {H : Type*} [MeasurableSpace H] [Mul H] [MeasurableMul H]
     [IsMulLeftInvariant μ] (f : G →ₙ* H) (hf : Measurable f) (h_surj : Surjective f) :
     IsMulLeftInvariant (Measure.map f μ) := by
-  refine' ⟨fun h => _⟩
+  refine ⟨fun h => ?_⟩
   rw [map_map (measurable_const_mul _) hf]
   obtain ⟨g, rfl⟩ := h_surj h
   conv_rhs => rw [← map_mul_left_eq_self μ g]
@@ -614,7 +614,7 @@ lemma eventually_nhds_one_measure_smul_diff_lt [LocallyCompactSpace G]
   filter_upwards [hV1] with g hg
   calc
     μ (g • k \ k) ≤ μ (U \ k) := by
-      refine measure_mono (diff_subset_diff_left ?_)
+      gcongr
       exact (smul_set_subset_smul hg).trans hVkU
     _ < ε := measure_diff_lt_of_lt_add h'k.measurableSet hUk hk.measure_lt_top.ne hμUk
 
@@ -638,7 +638,7 @@ any open set. -/
 any open set."]
 theorem isOpenPosMeasure_of_mulLeftInvariant_of_compact (K : Set G) (hK : IsCompact K)
     (h : μ K ≠ 0) : IsOpenPosMeasure μ := by
-  refine' ⟨fun U hU hne => _⟩
+  refine ⟨fun U hU hne => ?_⟩
   contrapose! h
   rw [← nonpos_iff_eq_zero]
   rw [← hU.interior_eq] at hne

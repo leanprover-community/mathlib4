@@ -3,9 +3,8 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Order.Monoid.Lemmas
+import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 import Mathlib.Order.Lattice
 
 #align_import algebra.order.sub.defs from "leanprover-community/mathlib"@"de29c328903507bb7aff506af9135f4bdaf1849c"
@@ -309,7 +308,7 @@ protected theorem add_tsub_cancel_left (ha : AddLECancellable a) : a + b - a = b
 
 protected theorem lt_add_of_tsub_lt_left (hb : AddLECancellable b) (h : a - b < c) : a < b + c := by
   rw [lt_iff_le_and_ne, ← tsub_le_iff_left]
-  refine' ⟨h.le, _⟩
+  refine ⟨h.le, ?_⟩
   rintro rfl
   simp [hb] at h
 #align add_le_cancellable.lt_add_of_tsub_lt_left AddLECancellable.lt_add_of_tsub_lt_left
@@ -317,7 +316,7 @@ protected theorem lt_add_of_tsub_lt_left (hb : AddLECancellable b) (h : a - b < 
 protected theorem lt_add_of_tsub_lt_right (hc : AddLECancellable c) (h : a - c < b) :
     a < b + c := by
   rw [lt_iff_le_and_ne, ← tsub_le_iff_right]
-  refine' ⟨h.le, _⟩
+  refine ⟨h.le, ?_⟩
   rintro rfl
   simp [hc] at h
 #align add_le_cancellable.lt_add_of_tsub_lt_right AddLECancellable.lt_add_of_tsub_lt_right

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
 -/
 
-import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.MvPowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Basic
@@ -367,6 +366,12 @@ instance : NormalizationMonoid k⟦X⟧ where
     have h₀ : IsUnit u₀ := ⟨u, hu.symm⟩
     rw [inv_inj, Units.ext_iff, ← hu, Unit_of_divided_by_X_pow_order_nonzero h₀.ne_zero]
     exact ((eq_divided_by_X_pow_order_Iff_Unit h₀.ne_zero).mpr h₀).symm
+
+theorem normUnit_X : normUnit (X : PowerSeries k) = 1 := by
+  simp [normUnit, ← Units.val_eq_one, Unit_of_divided_by_X_pow_order_nonzero]
+
+theorem X_eq_normalizeX : (X : PowerSeries k) = normalize X := by
+  simp only [normalize_apply, normUnit_X, Units.val_one, mul_one]
 
 open LocalRing
 

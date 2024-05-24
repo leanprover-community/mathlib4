@@ -334,8 +334,8 @@ theorem ιMulti_zero_apply (v : Fin 0 → M) : ιMulti R 0 v = 1 :=
 
 @[simp]
 theorem ιMulti_succ_apply {n : ℕ} (v : Fin n.succ → M) :
-    ιMulti R _ v = ι R (v 0) * ιMulti R _ (Matrix.vecTail v) :=
-  (congr_arg List.prod (List.ofFn_succ _)).trans List.prod_cons
+    ιMulti R _ v = ι R (v 0) * ιMulti R _ (Matrix.vecTail v) := by
+  simp [ιMulti, Matrix.vecTail]
 #align exterior_algebra.ι_multi_succ_apply ExteriorAlgebra.ιMulti_succ_apply
 
 theorem ιMulti_succ_curryLeft {n : ℕ} (m : M) :
