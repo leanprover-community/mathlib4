@@ -209,6 +209,8 @@ def head (x : RelSeries r) : α := x 0
 Since a relation series is assumed to be non-empty, this is well defined. -/
 def last (x : RelSeries r) : α := x <| Fin.last _
 
+lemma last_def (x : RelSeries r) : x (Fin.last _) = x.last := rfl
+
 lemma head_mem (x : RelSeries r) : x.head ∈ x := ⟨_, rfl⟩
 
 lemma last_mem (x : RelSeries r) : x.last ∈ x := ⟨_, rfl⟩
@@ -408,6 +410,10 @@ def snoc (p : RelSeries r) (newLast : α) (rel : r p.last newLast) : RelSeries r
 
 @[simp] lemma last_snoc (p : RelSeries r) (newLast : α) (rel : r p.last newLast) :
     (p.snoc newLast rel).last = newLast := last_append _ _ _
+
+
+@[simp] lemma last_snoc' (p : RelSeries r) (newLast : α) (rel : r p.last newLast) :
+    (p.snoc newLast rel).toFun (Fin.last (p.length + 1)) = newLast := last_append _ _ _
 
 @[simp] lemma snoc_castSucc (s : RelSeries r) (a : α) (connect : r s.last a)
     (i : Fin (s.length + 1)) : snoc s a connect (Fin.castSucc i) = s i :=

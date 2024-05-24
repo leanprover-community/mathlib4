@@ -290,9 +290,9 @@ theorem isMaximal_eraseLast_last {s : CompositionSeries X} (h : 0 < s.length) :
     IsMaximal s.eraseLast.last s.last := by
   have : s.length - 1 + 1 = s.length := by
     conv_rhs => rw [← Nat.add_one_sub_one s.length]; rw [Nat.succ_sub h]
-  rw [top_eraseTop, top]
+  rw [last_eraseLast, last]
   convert s.step ⟨s.length - 1, by omega⟩; ext; simp [this]
-#align composition_series.is_maximal_erase_top_top CompositionSeries.isMaximal_eraseTop_top
+#align composition_series.is_maximal_erase_top_top CompositionSeries.isMaximal_eraseLast_last
 
 section FinLemmas
 
@@ -387,9 +387,7 @@ protected theorem snoc {s₁ s₂ : CompositionSeries X} {x₁ x₂ : X} {hsat�
       _ ≃ Fin (s₂.length + 1) := finSuccEquivLast.symm
   ⟨e, fun i => by
     refine Fin.lastCases ?_ ?_ i
-    · simpa [e, show (snoc s₁ x₁ hsat₁).toFun (Fin.last (s₁.length + 1)) = _ from last_snoc _ _ _,
-        show (snoc s₂ x₂ hsat₂).toFun (Fin.last (s₂.length + 1)) = _ from last_snoc _ _ _]
-        using hlast
+    · simpa [e, last_def] using hlast
     · intro i
       simpa [e, Fin.succ_castSucc] using hequiv.choose_spec i⟩
 #align composition_series.equivalent.snoc CompositionSeries.Equivalent.snoc
@@ -423,10 +421,7 @@ theorem snoc_snoc_swap {s : CompositionSeries X} {x₁ x₂ y₁ y₂ : X} {hsat
       exact hr₂
     · refine Fin.lastCases ?_ (fun i => ?_) i
       · erw [Equiv.swap_apply_right, snoc_castSucc, snoc_castSucc, snoc_castSucc,
-          Fin.succ_castSucc, snoc_castSucc, Fin.succ_last,
-          show (snoc s x₁ hsat₁).toFun (Fin.last _) = x₁ from last_snoc _ _ _, Fin.succ_last,
-        show ((s.snoc x₂ hsat₂).snoc y₂ hsaty₂).toFun (Fin.last _) = y₂ from last_snoc _ _ _,
-          show (snoc s x₂ hsat₂).toFun (Fin.last _) = x₂ from last_snoc _ _ _]
+          Fin.succ_castSucc, snoc_castSucc, Fin.succ_last, last_snoc', last_snoc', last_snoc']
         exact hr₁
       · erw [Equiv.swap_apply_of_ne_of_ne h2 h1, snoc_castSucc, snoc_castSucc,
           snoc_castSucc, snoc_castSucc, Fin.succ_castSucc, snoc_castSucc,
@@ -441,9 +436,7 @@ theorem length_eq_zero_of_head_eq_head_of_last_eq_last_of_length_eq_zero
     (ht : s₁.last = s₂.last) (hs₁ : s₁.length = 0) : s₂.length = 0 := by
   have : Fin.last s₂.length = (0 : Fin s₂.length.succ) :=
     s₂.injective (hb.symm.trans ((congr_arg s₁ (Fin.ext (by simp [hs₁]))).trans ht)).symm
-  -- Porting note: Was `simpa [Fin.ext_iff]`.
-  rw [Fin.ext_iff] at this
-  simpa
+  simpa [Fin.ext_iff]
 #align composition_series.length_eq_zero_of_head_eq_head_of_last_eq_last_of_length_eq_zero CompositionSeries.length_eq_zero_of_head_eq_head_of_last_eq_last_of_length_eq_zero
 
 theorem length_pos_of_head_eq_head_of_last_eq_last_of_length_pos {s₁ s₂ : CompositionSeries X}
