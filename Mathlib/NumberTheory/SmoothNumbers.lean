@@ -283,8 +283,8 @@ lemma mem_smoothNumbers_of_primeFactors_subset {m n : ℕ} (hm : m ≠ 0)
 
 /-- `m` is an `n`-smooth number iff all of its prime factors are contained in the set of
   primes below `n` -/
-lemma mem_smoothNumbers_iff_primeFactors_subset {m n : ℕ} (hm : m ≠ 0)
-    : m.primeFactors ⊆ n.primesBelow ↔ m ∈ n.smoothNumbers :=
+lemma mem_smoothNumbers_iff_primeFactors_subset {m n : ℕ} (hm : m ≠ 0) :
+    m.primeFactors ⊆ n.primesBelow ↔ m ∈ n.smoothNumbers :=
   Iff.intro (mem_smoothNumbers_of_primeFactors_subset hm) primeFactors_subset_of_mem_smoothNumbers
 
 /-- Zero is never a smooth number -/
