@@ -3,12 +3,11 @@ Copyright (c) 2021 Yakov Peckersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Peckersky
 -/
-import Mathlib.Data.Fin.Basic
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.NeZero
 import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Data.Nat.Defs
-import Mathlib.Order.Hom.Set
+import Mathlib.Data.Fin.Basic
 
 #align_import data.fin.basic from "leanprover-community/mathlib"@"3a2b5524a138b5d0b818b858b516d4ac8a484b03"
 
@@ -21,7 +20,7 @@ See note [foundational algebra order theory].
 -/
 
 assert_not_exists OrderedCommMonoid
-assert_not_exists Ring
+assert_not_exists MonoidWithZero
 
 open Nat
 
@@ -34,9 +33,6 @@ instance addCommSemigroup (n : ℕ) : AddCommSemigroup (Fin n) where
   add_assoc := by simp [ext_iff, add_def, Nat.add_assoc]
   add_comm := by simp [ext_iff, add_def, Nat.add_comm]
 #align fin.add_comm_semigroup Fin.addCommSemigroup
-
-instance [NeZero n] {a : ℕ} : OfNat (Fin n) a where
-  ofNat := Fin.ofNat' a n.pos_of_neZero
 
 instance (n) : AddCommSemigroup (Fin n) where
   add_assoc := by simp [ext_iff, add_def, Nat.add_assoc]
@@ -117,13 +113,14 @@ lemma lt_sub_one_iff {k : Fin (n + 2)} : k < k - 1 ↔ k = 0 := by
 @[simp] lemma le_sub_one_iff {k : Fin (n + 1)} : k ≤ k - 1 ↔ k = 0 := by
   cases n
   · simp [fin_one_eq_zero k]
-  rw [← lt_sub_one_iff, le_iff_lt_or_eq, lt_sub_one_iff, or_iff_left_iff_imp, eq_comm,
-    sub_eq_iff_eq_add]
+  simp [-val_fin_le, le_def]
+  rw [← lt_sub_one_iff, le_iff_lt_or_eq, val_fin_lt, val_inj, lt_sub_one_iff, or_iff_left_iff_imp,
+    eq_comm, sub_eq_iff_eq_add]
   simp
 #align fin.le_sub_one_iff Fin.le_sub_one_iff
 
 lemma sub_one_lt_iff {k : Fin (n + 1)} : k - 1 < k ↔ 0 < k :=
-  not_iff_not.1 <| by simp only [not_lt, le_sub_one_iff, le_zero_iff]
+  not_iff_not.1 <| by simp only [lt_def, not_lt, val_fin_le, le_sub_one_iff, le_zero_iff]
 #align fin.sub_one_lt_iff Fin.sub_one_lt_iff
 
 @[simp] lemma neg_last (n : ℕ) : -Fin.last n = 1 := by simp [neg_eq_iff_add_eq_zero]
