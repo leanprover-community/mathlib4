@@ -282,8 +282,8 @@ theorem range_prod_map {W X Y Z : TopCat.{u}} (f : W ⟶ Y) (g : X ⟶ Z) :
 theorem inducing_prod_map {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (hf : Inducing f)
     (hg : Inducing g) : Inducing (Limits.prod.map f g) := by
   constructor
-  simp_rw [topologicalSpace_coe, prod_topology, induced_inf, induced_compose, ← coe_comp, prod.map_fst, prod.map_snd,
-    coe_comp, ← induced_compose (g := f), ← induced_compose (g := g)]
+  simp_rw [topologicalSpace_coe, prod_topology, induced_inf, induced_compose, ← coe_comp,
+    prod.map_fst, prod.map_snd, coe_comp, ← induced_compose (g := f), ← induced_compose (g := g)]
   erw [← hf.induced, ← hg.induced]
   rfl
 #align Top.inducing_prod_map TopCat.inducing_prod_map
