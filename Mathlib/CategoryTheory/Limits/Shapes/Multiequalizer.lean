@@ -234,7 +234,7 @@ theorem sndPiMap_π (b) : I.sndPiMap ≫ Pi.π I.right b = Pi.π I.left _ ≫ I.
 #align category_theory.limits.multicospan_index.snd_pi_map_π CategoryTheory.Limits.MulticospanIndex.sndPiMap_π
 
 /-- Taking the multiequalizer over the multicospan index is equivalent to taking the equalizer over
-the two morphsims `∏ᶜ I.left ⇉ ∏ᶜ I.right`. This is the diagram of the latter.
+the two morphisms `∏ᶜ I.left ⇉ ∏ᶜ I.right`. This is the diagram of the latter.
 -/
 @[simps!]
 protected noncomputable def parallelPairDiagram :=

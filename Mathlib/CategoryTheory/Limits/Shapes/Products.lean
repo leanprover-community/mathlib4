@@ -183,7 +183,7 @@ abbrev sigmaObj (f : β → C) [HasCoproduct f] :=
   colimit (Discrete.functor f)
 #align category_theory.limits.sigma_obj CategoryTheory.Limits.sigmaObj
 
-/-- notation for categorical products. We need `ᶜ` to avoid conflict between `Finset.prod`. -/
+/-- notation for categorical products. We need `ᶜ` to avoid conflict with `Finset.prod`. -/
 notation "∏ᶜ " f:60 => piObj f
 
 /-- notation for categorical coproducts -/
