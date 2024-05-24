@@ -31,14 +31,9 @@ theorem coherentTopology.mem_sieves_of_hasEffectiveEpiFamily (S : Sieve X) :
       EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) ) →
         (S ∈ GrothendieckTopology.sieves (coherentTopology C) X) := by
   intro ⟨α, _, Y, π, hπ⟩
-  refine Coverage.saturate_of_superset (coherentCoverage C) ?_
-    (Coverage.saturate.of X _ ⟨α, inferInstance, Y, π, rfl, hπ.1⟩)
-  rw [Sieve.sets_iff_generate]
-  apply Presieve.le_of_factorsThru_sieve (Presieve.ofArrows (fun i => Y i) π) S _
-  intro W g f
-  refine ⟨W, 𝟙 W, ?_⟩
-  rcases f with ⟨i⟩
-  exact ⟨π i, hπ.2 i, by simp⟩
+  apply (coherentCoverage C).mem_toGrothendieck_sieves_of_superset (R := Presieve.ofArrows Y π)
+  · exact fun _ _ h ↦ by cases h; exact hπ.2 _
+  · exact ⟨_, inferInstance, Y, π, rfl, hπ.1⟩
 
 /--
 Effective epi families in a precoherent category are transitive, in the sense that an
@@ -67,7 +62,6 @@ theorem EffectiveEpiFamily.transitive_of_finite {α : Type} [Finite α] {Y : α 
     rw [← hf, Sieve.pullback_comp]
     apply (coherentTopology C).pullback_stable'
     apply coherentTopology.mem_sieves_of_hasEffectiveEpiFamily
-    -- Need to show that the pullback of the family `π_n` to a given `Y i` is effective epimorphic
     rcases hY with ⟨i⟩
     exact ⟨β i, inferInstance, Y_n i, π_n i, H i, fun b ↦
       ⟨Y_n i b, (𝟙 _), π_n i b ≫ π i, ⟨(⟨i, b⟩ : Σ (i : α), β i)⟩, by simp⟩⟩
