@@ -9,6 +9,11 @@ import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Homology.HomotopyCategory
 import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
+import Mathlib.AlgebraicGeometry.Scheme
+import Mathlib.AlgebraicGeometry.Limits
+import Mathlib.AlgebraicGeometry.AffineScheme
+import Mathlib.Tactic.Recall
+import Mathlib
 
 noncomputable section -- Much of the category theory library is noncomputable,
                       -- so lets get this out of the way at the beginning!
@@ -25,11 +30,9 @@ noncomputable section -- Much of the category theory library is noncomputable,
   * Prove the equivalence between `PointedSpace` and `Under (TopCat.of Unit)`
 
 
-Further ideas:
-* Simplicial homology?
-* An `Ext` calculation??
-* Something about complexes and abelian categories?
-* Schemes? Group schemes??
+* Advanced topics:
+  * Schemes
+  * Setting up singular homology
 -/
 
 /-!
@@ -302,8 +305,23 @@ end PointedSpace
 
 /-- The forward direction. -/
 def PointedSpaceEquiv_functor : PointedSpace ⥤ Under (TopCat.of Unit) where
-  obj := fun X => Under.mk (Y := TopCat.of X.carrier) (ContinuousMap.mk fun _ => X.base)
-  map := fun f => Under.homMk f.map
+  obj := fun X =>
+    -- `Under.mk (f : P ⟶ Q) : Under P` builds an object of `Under P` for any morphism out of `P`.
+    -- We want to apply `Under.mk` to the (continuous) map from `Unit` to `X` hitting `X.base`.
+    -- First attempt:
+    -- `Under.mk fun _ => X.base` -- fails because this is a function, not a continuous function
+    -- Second attempt
+    -- `Under.mk (ContinuousMap.mk fun _ => X.base)`
+    -- fails with "`X.base` has type `X.carrier : Type` but is expected to have type `↑?m : Type`
+    -- This means that Lean can't see what the codomain is meant to be.
+    -- We can specify this using the "named argument" syntax:
+    Under.mk (Y := TopCat.of X.carrier) (ContinuousMap.mk fun _ => X.base)
+  map := fun f =>
+    -- `Under.homMk (f : U.right ⟶ V.right) (w : U.hom ≫ f = V.hom) : U ⟶ V` constructs a morphism
+    -- begining "under" objects, from a morphism in the ambient category and the fact that
+    -- it forms a triangle with the maps from the source object.
+    -- This fact, however, is filled in by `aesop_cat` if possible.
+    Under.homMk f.map
 
 /-- The reverse direction. -/
 def PointedSpaceEquiv_inverse : Under (TopCat.of Unit) ⥤ PointedSpace where
@@ -341,6 +359,54 @@ def equiv : PointedSpace ≌ Under (TopCat.of Unit) where
   -- 🎉 the triangle identity is checked by automation!
   -- Aside: categorical equivalences in Mathlib are "half-adjoint equivalences".
   -- Jump to definition on `≌` and read the doc-string for details.
+
+
+
+
+
+
+
+
+/-!
+## Advanced topic: schemes
+-/
+section Scheme
+open AlgebraicGeometry CategoryTheory.Limits
+
+-- We have the category of Schemes in Mathlib.
+-- Schemes are defined as locally ringed spaces with neighbourhoods isomorphism to
+-- `Spec : CommRingCatᵒᵖ ⥤ LocallyRingedSpace` of a commutative ring.
+variable (S T : Scheme) (f : S ⟶ T) -- "Let `f` be a morphism of schemes."
+
+-- `Spec ℤ` is the terminal object, and we have products, and indeed all finite limits:
+#check specZIsTerminal
+#synth HasFiniteLimits Scheme
+
+-- So we can define group schemes as group objects in `Scheme`,
+-- except that Mathlib doesn't have group objects yet! (Nice small project?)
+
+-- At present we don't have coproducts or pushouts along open immersions,
+-- but we do have some general machinery about gluing along open immersions that should give these.
+example (A S T : Scheme) (f : A ⟶ S) (g : A ⟶ T)
+    (hf : IsOpenImmersion f) (hg : IsOpenImmersion g) : HasPushout f g :=
+sorry -- Should be easily deducible from what we have: good introductory problem to learn the
+      -- algebraic geometry library.
+
+-- Affine schemes are defined as the essential image of `Spec`,
+-- and we know that `Spec` gives the equivalence between `CommRingCatᵒᵖ` and `AffineScheme`:
+recall AlgebraicGeometry.AffineScheme.equivCommRingCat : AffineScheme ≌ CommRingCatᵒᵖ
+
+end Scheme
+
+
+
+
+
+
+
+
+
+
 
 /-!
 ## Advanced topic: Setting up singular homology
@@ -420,22 +486,6 @@ instance : MonoidalCategory TopCat.{u} :=
 instance : SymmetricCategory TopCat := symmetricOfChosenFiniteProducts _ _
 end
 
-@[simp]
-theorem forget_of (X : Type _) [TopologicalSpace X] : (forget TopCat).obj (of X) = X := rfl
-
-@[simp] theorem coe_continuousMap {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y]
-    {f : C(X, Y)} :
-    @DFunLike.coe (@Quiver.Hom TopCat _ no_index (of X) no_index (of Y)) X (fun _ ↦ Y) _ f =
-    @DFunLike.coe C(X, Y) X (fun _ ↦ Y) _ f :=
-  rfl
-
--- This is really aggressive.
-@[simp] theorem continuousMap_comp {X : Type u} [TopologicalSpace X] {Y Z : TopCat} (f : C(X, Y)) (g : Y ⟶ Z) :
-  @CategoryStruct.comp TopCat _ (of X) Y Z f g = ContinuousMap.comp g f := rfl
-
-@[simp] theorem of_hom {X : Type u} [TopologicalSpace X] {Y : TopCat.{u}} : (of X ⟶ Y) = C(X, Y) := rfl
-@[simp] theorem hom_of {X : TopCat.{u}} {Y : Type u} [TopologicalSpace Y] : (X ⟶ of Y) = C(X, Y) := rfl
-
 attribute [local simp] toSSet in
 def toSSet_monoidal : MonoidalFunctor TopCat SSet :=
 { TopCat.toSSet with
@@ -484,7 +534,7 @@ variable {C : Type _} [Category C] [MonoidalCategory C]
   [Preadditive C] [HasFiniteBiproducts C] (X Y : SimplicialObject C)
 
 -- This one is a lot of work: Joël Riou has been working towards it.
--- He's detouring via bicomplexes.
+-- He's setting up bicomplexes first.
 instance : MonoidalCategory (ChainComplex C ℕ) := sorry
 
 -- Once you have this, we'd still need to describe how homology behaves:
