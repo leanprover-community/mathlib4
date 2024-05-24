@@ -51,7 +51,7 @@ theorem modByMonic_eq_of_dvd_sub (hq : q.Monic) {p₁ p₂ : R[X]} (h : q ∣ p�
     p₁ %ₘ q = p₂ %ₘ q := by
   nontriviality R
   obtain ⟨f, sub_eq⟩ := h
-  refine' (div_modByMonic_unique (p₂ /ₘ q + f) _ hq ⟨_, degree_modByMonic_lt _ hq⟩).2
+  refine (div_modByMonic_unique (p₂ /ₘ q + f) _ hq ⟨?_, degree_modByMonic_lt _ hq⟩).2
   rw [sub_eq_iff_eq_add.mp sub_eq, mul_add, ← add_assoc, modByMonic_add_div _ hq, add_comm]
 #align polynomial.mod_by_monic_eq_of_dvd_sub Polynomial.modByMonic_eq_of_dvd_sub
 
@@ -244,10 +244,11 @@ variable [CommSemiring R] [NoZeroDivisors R] {p q : R[X]}
 
 theorem irreducible_of_monic (hp : p.Monic) (hp1 : p ≠ 1) :
     Irreducible p ↔ ∀ f g : R[X], f.Monic → g.Monic → f * g = p → f = 1 ∨ g = 1 := by
-  refine'
+  refine
     ⟨fun h f g hf hg hp => (h.2 f g hp.symm).imp hf.eq_one_of_isUnit hg.eq_one_of_isUnit, fun h =>
       ⟨hp1 ∘ hp.eq_one_of_isUnit, fun f g hfg =>
-        (h (g * C f.leadingCoeff) (f * C g.leadingCoeff) _ _ _).symm.imp (isUnit_of_mul_eq_one f _)
+        (h (g * C f.leadingCoeff) (f * C g.leadingCoeff) ?_ ?_ ?_).symm.imp
+          (isUnit_of_mul_eq_one f _)
           (isUnit_of_mul_eq_one g _)⟩⟩
   · rwa [Monic, leadingCoeff_mul, leadingCoeff_C, ← leadingCoeff_mul, mul_comm, ← hfg, ← Monic]
   · rwa [Monic, leadingCoeff_mul, leadingCoeff_C, ← leadingCoeff_mul, ← hfg, ← Monic]
@@ -260,7 +261,7 @@ theorem Monic.irreducible_iff_natDegree (hp : p.Monic) :
       p ≠ 1 ∧ ∀ f g : R[X], f.Monic → g.Monic → f * g = p → f.natDegree = 0 ∨ g.natDegree = 0 := by
   by_cases hp1 : p = 1; · simp [hp1]
   rw [irreducible_of_monic hp hp1, and_iff_right hp1]
-  refine' forall₄_congr fun a b ha hb => _
+  refine forall₄_congr fun a b ha hb => ?_
   rw [ha.natDegree_eq_zero_iff_eq_one, hb.natDegree_eq_zero_iff_eq_one]
 #align polynomial.monic.irreducible_iff_nat_degree Polynomial.Monic.irreducible_iff_natDegree
 
@@ -363,6 +364,51 @@ theorem degree_pos_of_monic_of_not_isUnit {a : R[X]} (hu : ¬ IsUnit a) (ha : Mo
 theorem natDegree_pos_of_monic_of_not_isUnit {a : R[X]} (hu : ¬ IsUnit a) (ha : Monic a) :
     0 < natDegree a :=
   natDegree_pos_iff_degree_pos.mpr <| degree_pos_of_monic_of_not_isUnit hu ha
+
+theorem eq_zero_of_mul_eq_zero_of_smul (P : R[X]) (h : ∀ r : R, r • P = 0 → r = 0) :
+    ∀ (Q : R[X]), P * Q = 0 → Q = 0 := by
+  intro Q hQ
+  suffices ∀ i, P.coeff i • Q = 0 by
+    rw [← leadingCoeff_eq_zero]
+    apply h
+    simpa [ext_iff, mul_comm Q.leadingCoeff] using fun i ↦ congr_arg (·.coeff Q.natDegree) (this i)
+  apply Nat.strong_decreasing_induction
+  · use P.natDegree
+    intro i hi
+    rw [coeff_eq_zero_of_natDegree_lt hi, zero_smul]
+  intro l IH
+  obtain _|hl := (natDegree_smul_le (P.coeff l) Q).lt_or_eq
+  · apply eq_zero_of_mul_eq_zero_of_smul _ h (P.coeff l • Q)
+    rw [smul_eq_C_mul, mul_left_comm, hQ, mul_zero]
+  suffices P.coeff l * Q.leadingCoeff = 0 by
+    rwa [← leadingCoeff_eq_zero, ← coeff_natDegree, coeff_smul, hl, coeff_natDegree, smul_eq_mul]
+  let m := Q.natDegree
+  suffices (P * Q).coeff (l + m) = P.coeff l * Q.leadingCoeff by rw [← this, hQ, coeff_zero]
+  rw [coeff_mul]
+  apply Finset.sum_eq_single (l, m) _ (by simp)
+  simp only [Finset.mem_antidiagonal, ne_eq, Prod.forall, Prod.mk.injEq, not_and]
+  intro i j hij H
+  obtain hi|rfl|hi := lt_trichotomy i l
+  · have hj : m < j := by omega
+    rw [coeff_eq_zero_of_natDegree_lt hj, mul_zero]
+  · omega
+  · rw [← coeff_C_mul, ← smul_eq_C_mul, IH _ hi, coeff_zero]
+termination_by Q => Q.natDegree
+
+open nonZeroDivisors in
+/-- *McCoy theorem*: a polynomial `P : R[X]` is a zerodivisor if and only if there is `a : R`
+such that `a ≠ 0` and `a • P = 0`. -/
+theorem nmem_nonZeroDivisors_iff {P : R[X]} : P ∉ R[X]⁰ ↔ ∃ a : R, a ≠ 0 ∧ a • P = 0 := by
+  refine ⟨fun hP ↦ ?_, fun ⟨a, ha, h⟩ h1 ↦ ha <| C_eq_zero.1 <| (h1 _) <| smul_eq_C_mul a ▸ h⟩
+  by_contra! h
+  obtain ⟨Q, hQ⟩ := _root_.nmem_nonZeroDivisors_iff.1 hP
+  refine hQ.2 (eq_zero_of_mul_eq_zero_of_smul P (fun a ha ↦ ?_) Q (mul_comm P _ ▸ hQ.1))
+  contrapose! ha
+  exact h a ha
+
+open nonZeroDivisors in
+protected lemma mem_nonZeroDivisors_iff {P : R[X]} : P ∈ R[X]⁰ ↔ ∀ a : R, a • P = 0 → a = 0 := by
+  simpa [not_imp_not] using (nmem_nonZeroDivisors_iff (P := P)).not
 
 end CommSemiring
 
@@ -564,7 +610,7 @@ theorem leadingCoeff_divByMonic_X_sub_C (p : R[X]) (hp : degree p ≠ 0) (a : R)
   nontriviality
   cases' hp.lt_or_lt with hd hd
   · rw [degree_eq_bot.mp <| Nat.WithBot.lt_zero_iff.mp hd, zero_divByMonic]
-  refine' leadingCoeff_divByMonic_of_monic (monic_X_sub_C a) _
+  refine leadingCoeff_divByMonic_of_monic (monic_X_sub_C a) ?_
   rwa [degree_X_sub_C, Nat.WithBot.one_le_iff_zero_lt]
 set_option linter.uppercaseLean3 false in
 #align polynomial.leading_coeff_div_by_monic_X_sub_C Polynomial.leadingCoeff_divByMonic_X_sub_C
@@ -669,7 +715,7 @@ theorem Monic.comp (hp : p.Monic) (hq : q.Monic) (h : q.natDegree ≠ 0) : (p.co
 #align polynomial.monic.comp Polynomial.Monic.comp
 
 theorem Monic.comp_X_add_C (hp : p.Monic) (r : R) : (p.comp (X + C r)).Monic := by
-  refine' hp.comp (monic_X_add_C _) fun ha => _
+  refine hp.comp (monic_X_add_C _) fun ha => ?_
   rw [natDegree_X_add_C] at ha
   exact one_ne_zero ha
 set_option linter.uppercaseLean3 false in
@@ -812,12 +858,12 @@ A special case of this lemma is that a polynomial over `ℤ` is irreducible if
 -/
 theorem Monic.irreducible_of_irreducible_map (f : R[X]) (h_mon : Monic f)
     (h_irr : Irreducible (Polynomial.map φ f)) : Irreducible f := by
-  refine' ⟨h_irr.not_unit ∘ IsUnit.map (mapRingHom φ), fun a b h => _⟩
+  refine ⟨h_irr.not_unit ∘ IsUnit.map (mapRingHom φ), fun a b h => ?_⟩
   dsimp [Monic] at h_mon
   have q := (leadingCoeff_mul a b).symm
   rw [← h, h_mon] at q
-  refine' (h_irr.isUnit_or_isUnit <|
-    (congr_arg (Polynomial.map φ) h).trans (Polynomial.map_mul φ)).imp _ _ <;>
+  refine (h_irr.isUnit_or_isUnit <|
+    (congr_arg (Polynomial.map φ) h).trans (Polynomial.map_mul φ)).imp ?_ ?_ <;>
       apply isUnit_of_isUnit_leadingCoeff_of_isUnit_map <;>
     apply isUnit_of_mul_eq_one
   · exact q;

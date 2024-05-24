@@ -256,7 +256,7 @@ theorem trace_gen_eq_zero {x : L} (hx : ¬IsIntegral K x) :
   rw [trace_eq_zero_of_not_exists_basis, LinearMap.zero_apply]
   contrapose! hx
   obtain ⟨s, ⟨b⟩⟩ := hx
-  refine' .of_mem_of_fg K⟮x⟯.toSubalgebra _ x _
+  refine .of_mem_of_fg K⟮x⟯.toSubalgebra ?_ x ?_
   · exact (Submodule.fg_iff_finiteDimensional _).mpr (FiniteDimensional.of_fintype_basis b)
   · exact subset_adjoin K _ (Set.mem_singleton x)
 #align intermediate_field.adjoin_simple.trace_gen_eq_zero IntermediateField.AdjoinSimple.trace_gen_eq_zero
@@ -313,7 +313,7 @@ theorem Algebra.isIntegral_trace [FiniteDimensional L F] {x : F} (hx : IsIntegra
     IsIntegral R (Algebra.trace L F x) := by
   have hx' : IsIntegral L x := hx.tower_top
   rw [← isIntegral_algebraMap_iff (algebraMap L (AlgebraicClosure F)).injective, trace_eq_sum_roots]
-  · refine' (IsIntegral.multiset_sum _).nsmul _
+  · refine (IsIntegral.multiset_sum ?_).nsmul _
     intro y hy
     rw [mem_roots_map (minpoly.ne_zero hx')] at hy
     use minpoly R x, minpoly.monic hx
@@ -397,7 +397,7 @@ theorem sum_embeddings_eq_finrank_mul [FiniteDimensional K F] [IsSeparable K F]
   letI : ∀ f : L →ₐ[K] E, Fintype (haveI := f.toRingHom.toAlgebra; AlgHom L F E) := ?_
   · rw [Fintype.sum_equiv algHomEquivSigma (fun σ : F →ₐ[K] E => _) fun σ => σ.1 pb.gen, ←
       Finset.univ_sigma_univ, Finset.sum_sigma, ← Finset.sum_nsmul]
-    · refine' Finset.sum_congr rfl fun σ _ => _
+    · refine Finset.sum_congr rfl fun σ _ => ?_
       letI : Algebra L E := σ.toRingHom.toAlgebra
       -- Porting note: `Finset.card_univ` was inside `simp only`.
       simp only [Finset.sum_const]
@@ -608,9 +608,9 @@ theorem det_traceForm_ne_zero [IsSeparable K L] [DecidableEq ι] (b : Basis ι K
   rw [← BilinForm.toMatrix_mul_basis_toMatrix pb.basis b, ←
     det_comm' (pb.basis.toMatrix_mul_toMatrix_flip b) _, ← Matrix.mul_assoc, det_mul]
   swap; · apply Basis.toMatrix_mul_toMatrix_flip
-  refine'
+  refine
     mul_ne_zero
-      (isUnit_of_mul_eq_one _ ((b.toMatrix pb.basis)ᵀ * b.toMatrix pb.basis).det _).ne_zero _
+      (isUnit_of_mul_eq_one _ ((b.toMatrix pb.basis)ᵀ * b.toMatrix pb.basis).det ?_).ne_zero ?_
   · calc
       (pb.basis.toMatrix b * (pb.basis.toMatrix b)ᵀ).det *
             ((b.toMatrix pb.basis)ᵀ * b.toMatrix pb.basis).det =

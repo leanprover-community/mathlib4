@@ -84,7 +84,7 @@ theorem exists_lt_rieszContentAux_add_pos (K : Compacts X) {ε : ℝ≥0} (εpos
   obtain ⟨α, ⟨⟨f, f_hyp⟩, α_hyp⟩⟩ :=
     exists_lt_of_csInf_lt (rieszContentAux_image_nonempty Λ K)
       (lt_add_of_pos_right (rieszContentAux Λ K) εpos)
-  refine' ⟨f, f_hyp.left, _⟩
+  refine ⟨f, f_hyp.left, ?_⟩
   rw [f_hyp.right]
   exact α_hyp
 #align exists_lt_riesz_content_aux_add_pos exists_lt_rieszContentAux_add_pos
