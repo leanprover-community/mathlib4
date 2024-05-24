@@ -302,25 +302,47 @@ theorem tendsto_iff_tendstoUniformly :
 
 end CompactDomain
 
-theorem foo {δ : ι → Type*} [∀ i, TopologicalSpace (δ i)] (φ : Π i, C(δ i, α))
-    (hproper : ∀ i, IsProperMap (φ i))
-    (hlf : LocallyFinite fun i ↦ range (φ i)) (hcover : ⋃ i, range (φ i) = univ) :
+theorem uniformSpace_eq_inf_precomp_of_cover {δ₁ δ₂ : Type*} [TopologicalSpace δ₁]
+    [TopologicalSpace δ₂] (φ₁ : C(δ₁, α)) (φ₂ : C(δ₂, α)) (h_proper₁ : IsProperMap φ₁)
+    (h_proper₂ : IsProperMap φ₂) (h_cover : range φ₁ ∪ range φ₂ = univ) :
+    (inferInstanceAs <| UniformSpace C(α, β)) =
+      .comap (comp · φ₁) inferInstance ⊓
+      .comap (comp · φ₂) inferInstance := by
+  -- We check the analogous result for `UniformOnFun` using
+  -- `UniformOnFun.uniformSpace_eq_inf_precomp_of_cover`...
+  set 𝔖 : Set (Set α) := {K | IsCompact K}
+  set 𝔗₁ : Set (Set δ₁) := {K | IsCompact K}
+  set 𝔗₂ : Set (Set δ₂) := {K | IsCompact K}
+  have h_image₁ : MapsTo (φ₁ '' ·) 𝔗₁ 𝔖 := fun K hK ↦ hK.image φ₁.continuous
+  have h_image₂ : MapsTo (φ₂ '' ·) 𝔗₂ 𝔖 := fun K hK ↦ hK.image φ₂.continuous
+  have h_preimage₁ : MapsTo (φ₁ ⁻¹' ·) 𝔖 𝔗₁ := fun K ↦ h_proper₁.isCompact_preimage
+  have h_preimage₂ : MapsTo (φ₂ ⁻¹' ·) 𝔖 𝔗₂ := fun K ↦ h_proper₂.isCompact_preimage
+  have h_cover' : ∀ S ∈ 𝔖, S ⊆ range φ₁ ∪ range φ₂ := fun S _ ↦ h_cover ▸ subset_univ _
+  -- ... and we just pull it back.
+  simp_rw [compactConvergenceUniformSpace, replaceTopology_eq, inferInstanceAs, inferInstance,
+    UniformOnFun.uniformSpace_eq_inf_precomp_of_cover _ _ _ _ _
+      h_image₁ h_image₂ h_preimage₁ h_preimage₂ h_cover',
+    UniformSpace.comap_inf, ← UniformSpace.comap_comap]
+  rfl
+
+theorem uniformSpace_eq_iInf_precomp_of_cover {δ : ι → Type*} [∀ i, TopologicalSpace (δ i)]
+    (φ : Π i, C(δ i, α)) (h_proper : ∀ i, IsProperMap (φ i))
+    (h_lf : LocallyFinite fun i ↦ range (φ i)) (h_cover : ⋃ i, range (φ i) = univ) :
     (inferInstanceAs <| UniformSpace C(α, β)) = ⨅ i, .comap (comp · (φ i)) inferInstance := by
-  -- We check the analogous result for `UniformOnFun` using `UniformOnFun.foo`...
+  -- We check the analogous result for `UniformOnFun` using
+  -- `UniformOnFun.uniformSpace_eq_iInf_precomp_of_cover`...
   set 𝔖 : Set (Set α) := {K | IsCompact K}
   set 𝔗 : Π i, Set (Set (δ i)) := fun i ↦ {K | IsCompact K}
-  have H₁ : ∀ i, MapsTo (φ i '' ·) (𝔗 i) 𝔖 := fun i K hK ↦ hK.image (φ i).continuous
-  have H₂ : ∀ S ∈ 𝔖, ∃ I : Set ι, I.Finite ∧ S ⊆ ⋃ i ∈ I, range (φ i) ∧
-      ∀ i ∈ I, (φ i) ⁻¹' S ∈ 𝔗 i := fun S hS ↦ by
-    refine ⟨{i | (range (φ i) ∩ S).Nonempty}, hlf.finite_nonempty_inter_compact hS,
-      inter_eq_right.mp ?_, fun i _ ↦ (hproper i).isCompact_preimage hS⟩
-    simp_rw [iUnion₂_inter, mem_setOf, iUnion_nonempty_self, ← iUnion_inter, hcover, univ_inter]
+  have h_image : ∀ i, MapsTo (φ i '' ·) (𝔗 i) 𝔖 := fun i K hK ↦ hK.image (φ i).continuous
+  have h_preimage : ∀ i, MapsTo (φ i ⁻¹' ·) 𝔖 (𝔗 i) := fun i K ↦ (h_proper i).isCompact_preimage
+  have h_cover' : ∀ S ∈ 𝔖, ∃ I : Set ι, I.Finite ∧ S ⊆ ⋃ i ∈ I, range (φ i) := fun S hS ↦ by
+    refine ⟨{i | (range (φ i) ∩ S).Nonempty}, h_lf.finite_nonempty_inter_compact hS,
+      inter_eq_right.mp ?_⟩
+    simp_rw [iUnion₂_inter, mem_setOf, iUnion_nonempty_self, ← iUnion_inter, h_cover, univ_inter]
   -- ... and we just pull it back.
-  simp_rw [compactConvergenceUniformSpace, replaceTopology_eq, inferInstanceAs, inferInstance]
-  rw [UniformOnFun.foo _ (fun i ↦ φ i) (fun i ↦ {K : Set (δ i) | IsCompact K}) H₁ H₂]
-  rw [UniformSpace.comap_iInf]
-  congr
-  ext
-  rw [← UniformSpace.comap_comap, ← UniformSpace.comap_comap]
+  simp_rw [compactConvergenceUniformSpace, replaceTopology_eq, inferInstanceAs, inferInstance,
+    UniformOnFun.uniformSpace_eq_iInf_precomp_of_cover _ _ _ h_image h_preimage h_cover',
+    UniformSpace.comap_iInf, ← UniformSpace.comap_comap]
+  rfl
 
 end ContinuousMap
