@@ -62,7 +62,7 @@ instance (priority := 100) toOrderedAddCommMonoid [NonUnitalSemiring R] [Partial
     [StarRing R] [StarOrderedRing R] : OrderedAddCommMonoid R where
   add_le_add_left := fun x y hle z ↦ by
     rw [StarOrderedRing.le_iff] at hle ⊢
-    refine hle.imp fun s hs ↦ ?_
+    refine hle.imp fun s hs ↦ _
     rw [hs.2, add_assoc]
     exact ⟨hs.1, rfl⟩
 #align star_ordered_ring.to_ordered_add_comm_monoid StarOrderedRing.toOrderedAddCommMonoid
@@ -94,12 +94,12 @@ If you are working with a `NonUnitalRing` and not a `NonUnitalSemiring`, see
 lemma of_le_iff [NonUnitalSemiring R] [PartialOrder R] [StarRing R]
     (h_le_iff : ∀ x y : R, x ≤ y ↔ ∃ s, y = x + star s * s) : StarOrderedRing R where
   le_iff x y := by
-    refine' ⟨fun h => _, _⟩
+    refine ⟨fun h => _, _⟩
     · obtain ⟨p, hp⟩ := (h_le_iff x y).mp h
       exact ⟨star p * p, AddSubmonoid.subset_closure ⟨p, rfl⟩, hp⟩
     · rintro ⟨p, hp, hpxy⟩
       revert x y hpxy
-      refine' AddSubmonoid.closure_induction hp _ (fun x y h => add_zero x ▸ h.ge) _
+      refine AddSubmonoid.closure_induction hp _ (fun x y h => add_zero x ▸ h.ge) _
       · rintro _ ⟨s, rfl⟩ x y rfl
         exact (h_le_iff _ _).mpr ⟨s, rfl⟩
       · rintro a b ha hb x y rfl
@@ -155,7 +155,7 @@ theorem mul_star_self_nonneg (r : R) : 0 ≤ r * star r := by
 
 theorem conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ star c * a * c := by
   rw [StarOrderedRing.nonneg_iff] at ha
-  refine' AddSubmonoid.closure_induction ha (fun x hx => _)
+  refine AddSubmonoid.closure_induction ha (fun x hx => _)
     (by rw [mul_zero, zero_mul]) fun x y hx hy => _
   · obtain ⟨x, rfl⟩ := hx
     convert star_mul_self_nonneg (x * c) using 1
@@ -189,8 +189,8 @@ lemma star_le_star_iff {x y : R} : star x ≤ star y ↔ x ≤ y := by
   intro x y h
   rw [StarOrderedRing.le_iff] at h ⊢
   obtain ⟨d, hd, rfl⟩ := h
-  refine ⟨starAddEquiv d, ?_, star_add _ _⟩
-  refine AddMonoidHom.mclosure_preimage_le _ _ <| AddSubmonoid.closure_mono ?_ hd
+  refine ⟨starAddEquiv d, _, star_add _ _⟩
+  refine AddMonoidHom.mclosure_preimage_le _ _ <| AddSubmonoid.closure_mono _ hd
   rintro - ⟨s, rfl⟩
   exact ⟨s, by simp⟩
 
@@ -225,7 +225,7 @@ lemma IsSelfAdjoint.mono {x y : R} (h : x ≤ y) (hx : IsSelfAdjoint x) : IsSelf
   obtain ⟨d, hd, rfl⟩ := h
   rw [IsSelfAdjoint, star_add, hx.star_eq]
   congr
-  refine AddMonoidHom.eqOn_closureM (f := starAddEquiv (R := R)) (g := .id R) ?_ hd
+  refine AddMonoidHom.eqOn_closureM (f := starAddEquiv (R := R)) (g := .id R) _ hd
   rintro - ⟨s, rfl⟩
   simp
 
@@ -265,7 +265,7 @@ lemma NonUnitalRingHom.map_le_map_of_map_star (f : R →ₙ+* S) (hf : ∀ r, f 
     {x y : R} (hxy : x ≤ y) : f x ≤ f y := by
   rw [StarOrderedRing.le_iff] at hxy ⊢
   obtain ⟨p, hp, rfl⟩ := hxy
-  refine ⟨f p, ?_, map_add f _ _⟩
+  refine ⟨f p, _, map_add f _ _⟩
   induction hp using AddSubmonoid.closure_induction'
   all_goals aesop
 
@@ -278,7 +278,7 @@ instance (priority := 100) StarRingHomClass.instOrderHomClass [FunLike F R S] [S
 instance (priority := 100) StarRingHomClass.instOrderIsoClass [EquivLike F R S] [StarHomClass F R S]
     [RingEquivClass F R S] : OrderIsoClass F R S where
   map_le_map_iff f x y := by
-    refine ⟨fun h ↦ ?_, map_rel f⟩
+    refine ⟨fun h ↦ _, map_rel f⟩
     let f_inv : S →ₙ+* R :=
       { toFun := EquivLike.inv f
         map_mul' := fun _ _ ↦ EmbeddingLike.injective f <| by simp

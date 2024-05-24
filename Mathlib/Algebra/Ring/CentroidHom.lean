@@ -489,12 +489,12 @@ local notation "R" => AddMonoid.End.mulRight
 lemma centroid_eq_centralizer_mulLeftRight :
     RingHom.rangeS (toEndRingHom α) = Subsemiring.centralizer (Set.range L ∪ Set.range R) := by
   ext T
-  refine ⟨?_, fun h ↦ ?_⟩
+  refine ⟨_, fun h ↦ _⟩
   · rintro ⟨f, rfl⟩ S (⟨a, rfl⟩ | ⟨b, rfl⟩)
     · exact AddMonoidHom.ext fun b ↦ (map_mul_left f a b).symm
     · exact AddMonoidHom.ext fun a ↦ (map_mul_right f a b).symm
   · rw [Subsemiring.mem_centralizer_iff] at h
-    refine ⟨⟨T, fun a b ↦ ?_, fun a b ↦ ?_⟩, rfl⟩
+    refine ⟨⟨T, fun a b ↦ _, fun a b ↦ _⟩, rfl⟩
     · exact congr($(h (L a) (.inl ⟨a, rfl⟩)) b).symm
     · exact congr($(h (R b) (.inr ⟨b, rfl⟩)) a).symm
 
@@ -559,7 +559,7 @@ variable [NonAssocSemiring α]
 def centerIsoCentroid : Subsemiring.center α ≃+* CentroidHom α :=
   { centerToCentroid with
     invFun := fun T ↦
-      ⟨T 1, by refine ⟨?_, ?_, ?_, ?_⟩; all_goals simp [← map_mul_left, ← map_mul_right]⟩
+      ⟨T 1, by refine ⟨_, _, _, _⟩; all_goals simp [← map_mul_left, ← map_mul_right]⟩
     left_inv := fun z ↦ Subtype.ext <| by simp [centerToCentroid_apply]
     right_inv := fun T ↦ CentroidHom.ext <| by simp [centerToCentroid_apply, ← map_mul_right] }
 
@@ -663,7 +663,7 @@ abbrev commRing
   { CentroidHom.instRing with
     mul_comm := fun f g ↦ by
       ext
-      refine' sub_eq_zero.1 (or_self_iff.1 <| (h _ _) fun r ↦ _)
+      refine sub_eq_zero.1 (or_self_iff.1 <| (h _ _) fun r ↦ _)
       rw [mul_assoc, sub_mul, sub_eq_zero, ← map_mul_right, ← map_mul_right, coe_mul, coe_mul,
         comp_mul_comm] }
 #align centroid_hom.comm_ring CentroidHom.commRing

@@ -174,7 +174,7 @@ protected theorem isLawfulTraversable' [Traversable t']
     LawfulTraversable t' := by
   -- we can't use the same approach as for `lawful_functor'` because
   -- h₂ needs a `LawfulApplicative` assumption
-  refine' { toLawfulFunctor := Equiv.lawfulFunctor' eqv @h₀ @h₁.. } <;> intros
+  refine { toLawfulFunctor := Equiv.lawfulFunctor' eqv @h₀ @h₁.. } <;> intros
   · rw [h₂, Equiv.id_traverse]
   · rw [h₂, Equiv.comp_traverse, h₂]
     congr

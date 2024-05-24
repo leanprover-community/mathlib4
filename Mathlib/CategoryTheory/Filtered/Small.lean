@@ -92,7 +92,7 @@ end FilteredClosureSmall
 
 theorem small_fullSubcategory_filteredClosure :
     Small.{max v w} (FullSubcategory (FilteredClosure f)) := by
-  refine' small_of_injective_of_exists (FilteredClosureSmall.abstractFilteredClosureRealization f)
+  refine small_of_injective_of_exists (FilteredClosureSmall.abstractFilteredClosureRealization f)
     FullSubcategory.ext _
   rintro ⟨j, h⟩
   induction h with
@@ -100,13 +100,13 @@ theorem small_fullSubcategory_filteredClosure :
   | max hj₁ hj₂ ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩
     rcases ih' with ⟨⟨m, y⟩, rfl⟩
-    refine' ⟨⟨(Max.max n m).succ, FilteredClosureSmall.InductiveStep.max _ _ x y⟩, rfl⟩
+    refine ⟨⟨(Max.max n m).succ, FilteredClosureSmall.InductiveStep.max _ _ x y⟩, rfl⟩
     all_goals apply Nat.lt_succ_of_le
     exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
   | coeq hj₁ hj₂ g g' ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩
     rcases ih' with ⟨⟨m, y⟩, rfl⟩
-    refine' ⟨⟨(Max.max n m).succ, FilteredClosureSmall.InductiveStep.coeq _ _ x y g g'⟩, rfl⟩
+    refine ⟨⟨(Max.max n m).succ, FilteredClosureSmall.InductiveStep.coeq _ _ x y g g'⟩, rfl⟩
     all_goals apply Nat.lt_succ_of_le
     exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
 
@@ -223,7 +223,7 @@ end CofilteredClosureSmall
 
 theorem small_fullSubcategory_cofilteredClosure :
     Small.{max v w} (FullSubcategory (CofilteredClosure f)) := by
-  refine' small_of_injective_of_exists
+  refine small_of_injective_of_exists
     (CofilteredClosureSmall.abstractCofilteredClosureRealization f) FullSubcategory.ext _
   rintro ⟨j, h⟩
   induction h with
@@ -231,13 +231,13 @@ theorem small_fullSubcategory_cofilteredClosure :
   | min hj₁ hj₂ ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩
     rcases ih' with ⟨⟨m, y⟩, rfl⟩
-    refine' ⟨⟨(Max.max n m).succ, CofilteredClosureSmall.InductiveStep.min _ _ x y⟩, rfl⟩
+    refine ⟨⟨(Max.max n m).succ, CofilteredClosureSmall.InductiveStep.min _ _ x y⟩, rfl⟩
     all_goals apply Nat.lt_succ_of_le
     exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
   | eq hj₁ hj₂ g g' ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩
     rcases ih' with ⟨⟨m, y⟩, rfl⟩
-    refine' ⟨⟨(Max.max n m).succ, CofilteredClosureSmall.InductiveStep.eq _ _ x y g g'⟩, rfl⟩
+    refine ⟨⟨(Max.max n m).succ, CofilteredClosureSmall.InductiveStep.eq _ _ x y g g'⟩, rfl⟩
     all_goals apply Nat.lt_succ_of_le
     exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
 

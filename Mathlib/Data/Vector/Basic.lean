@@ -235,9 +235,9 @@ theorem nodup_iff_injective_get {v : Vector α n} : v.toList.Nodup ↔ Function.
   exact List.nodup_iff_injective_get
 #align vector.nodup_iff_nth_inj Vector.nodup_iff_injective_get
 
-theorem head?_toList : ∀ v : Vector α n.succ, (toList v).head? = some (head v)
+theorem head_toList : ∀ v : Vector α n.succ, (toList v).head? = some (head v)
   | ⟨_ :: _, _⟩ => rfl
-#align vector.head'_to_list Vector.head?_toList
+#align vector.head'_to_list Vector.head_toList
 
 /-- Reverse a vector. -/
 def reverse (v : Vector α n) : Vector α n :=
@@ -296,8 +296,8 @@ theorem last_def {v : Vector α (n + 1)} : v.last = v.get (Fin.last n) :=
 theorem reverse_get_zero {v : Vector α (n + 1)} : v.reverse.head = v.last := by
   rw [← get_zero, last_def, get_eq_get, get_eq_get]
   simp_rw [toList_reverse]
-  rw [← Option.some_inj, Fin.cast, Fin.cast, ← List.get?_eq_get, ← List.get?_eq_get,
-    List.get?_reverse]
+  rw [← Option.some_inj, Fin.cast, Fin.cast, ← List.get_eq_get, ← List.get_eq_get,
+    List.get_reverse]
   · congr
     simp
   · simp
@@ -389,7 +389,7 @@ theorem scanl_get (i : Fin n) :
   · have i0 : i = 0 := Fin.eq_zero _
     simp [scanl_singleton, i0, get_zero]; simp [get_eq_get, List.get]
   · rw [← cons_head_tail v, scanl_cons, get_cons_succ]
-    refine' Fin.cases _ _ i
+    refine Fin.cases _ _ i
     · simp only [get_zero, scanl_head, Fin.castSucc_zero, head_cons]
     · intro i'
       simp only [hn, Fin.castSucc_fin_succ, get_cons_succ]
@@ -596,7 +596,7 @@ theorem insertNth_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :
     ∀ v : Vector α n,
       (v.insertNth a i).insertNth b j.succ = (v.insertNth b j).insertNth a (Fin.castSucc i)
   | ⟨l, hl⟩ => by
-    refine Subtype.eq ?_
+    refine Subtype.eq _
     simp only [insertNth_val, Fin.val_succ, Fin.castSucc, Fin.coe_castAdd]
     apply List.insertNth_comm
     · assumption
@@ -641,14 +641,14 @@ theorem get_set_eq_if {v : Vector α n} {i j : Fin n} (a : α) :
 @[to_additive]
 theorem prod_set [Monoid α] (v : Vector α n) (i : Fin n) (a : α) :
     (v.set i a).toList.prod = (v.take i).toList.prod * a * (v.drop (i + 1)).toList.prod := by
-  refine' (List.prod_set v.toList i a).trans _
+  refine (List.prod_set v.toList i a).trans _
   simp_all
 #align vector.prod_update_nth Vector.prod_set
 
 @[to_additive]
 theorem prod_set' [CommGroup α] (v : Vector α n) (i : Fin n) (a : α) :
     (v.set i a).toList.prod = v.toList.prod * (v.get i)⁻¹ * a := by
-  refine' (List.prod_set' v.toList i a).trans _
+  refine (List.prod_set' v.toList i a).trans _
   simp [get_eq_get, mul_assoc]; rfl
 #align vector.prod_update_nth' Vector.prod_set'
 

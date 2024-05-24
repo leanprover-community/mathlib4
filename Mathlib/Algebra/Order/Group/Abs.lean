@@ -253,7 +253,7 @@ variable [Group α] [LinearOrder α] {a b : α}
 #align eq_or_eq_neg_of_abs_eq eq_or_eq_neg_of_abs_eq
 
 @[to_additive] lemma mabs_eq_mabs : |a|ₘ = |b|ₘ ↔ a = b ∨ a = b⁻¹ := by
-  refine ⟨fun h ↦ ?_, by rintro (h | h) <;> simp [h, abs_neg]⟩
+  refine ⟨fun h ↦ _, by rintro (h | h) <;> simp [h, abs_neg]⟩
   obtain rfl | rfl := eq_or_eq_inv_of_mabs_eq h <;>
     simpa only [inv_eq_iff_eq_inv (a := |b|ₘ), inv_inv, inv_inj, or_comm] using mabs_choice b
 #align abs_eq_abs abs_eq_abs
@@ -351,9 +351,9 @@ variable [LinearOrderedCommGroup α] {a b : α}
   have : (|a * b|ₘ = a⁻¹ * b ↔ b ≤ 1) ↔
     (|a * b|ₘ = |a|ₘ * |b|ₘ ↔ 1 ≤ a ∧ 1 ≤ b ∨ a ≤ 1 ∧ b ≤ 1) := by
     simp [ha.le, ha.not_le, hb, mabs_of_le_one, mabs_of_one_le]
-  refine this.mp ⟨fun h ↦ ?_, fun h ↦ by simp only [h.antisymm hb, mabs_of_lt_one ha, mul_one]⟩
+  refine this.mp ⟨fun h ↦ _, fun h ↦ by simp only [h.antisymm hb, mabs_of_lt_one ha, mul_one]⟩
   obtain ab | ab := le_or_lt (a * b) 1
-  · refine (eq_one_of_inv_eq' ?_).le
+  · refine (eq_one_of_inv_eq' _).le
     rwa [mabs_of_le_one ab, mul_inv_rev, mul_comm, mul_right_inj] at h
   · rw [mabs_of_one_lt ab, mul_left_inj] at h
     rw [eq_one_of_inv_eq' h.symm] at ha
@@ -474,7 +474,7 @@ theorem abs_sub_lt_of_nonneg_of_lt {a b n : α} (a_nonneg : 0 ≤ a) (a_lt_n : a
   exact ⟨lt_add_of_lt_of_nonneg a_lt_n b_nonneg, lt_add_of_lt_of_nonneg b_lt_n a_nonneg⟩
 
 theorem abs_eq (hb : 0 ≤ b) : |a| = b ↔ a = b ∨ a = -b := by
-  refine' ⟨eq_or_eq_neg_of_abs_eq, _⟩
+  refine ⟨eq_or_eq_neg_of_abs_eq, _⟩
   rintro (rfl | rfl) <;> simp only [abs_neg, abs_of_nonneg hb]
 #align abs_eq abs_eq
 

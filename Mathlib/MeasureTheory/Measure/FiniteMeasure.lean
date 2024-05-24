@@ -186,7 +186,7 @@ theorem zero_mass : (0 : FiniteMeasure Ω).mass = 0 :=
 
 @[simp]
 theorem mass_zero_iff (μ : FiniteMeasure Ω) : μ.mass = 0 ↔ μ = 0 := by
-  refine' ⟨fun μ_mass => _, fun hμ => by simp only [hμ, zero_mass]⟩
+  refine ⟨fun μ_mass => _, fun hμ => by simp only [hμ, zero_mass]⟩
   apply toMeasure_injective
   apply Measure.measure_univ_eq_zero.mp
   rwa [← ennreal_mass, ENNReal.coe_eq_zero]
@@ -474,7 +474,7 @@ depends continuously on the measure. -/
 theorem continuous_testAgainstNN_eval (f : Ω →ᵇ ℝ≥0) :
     Continuous fun μ : FiniteMeasure Ω => μ.testAgainstNN f := by
   show Continuous ((fun φ : WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0) => φ f) ∘ toWeakDualBCNN)
-  refine Continuous.comp ?_ (toWeakDualBCNN_continuous (Ω := Ω))
+  refine Continuous.comp _ (toWeakDualBCNN_continuous (Ω := Ω))
   exact WeakBilin.eval_continuous (𝕜 := ℝ≥0) (E := (Ω →ᵇ ℝ≥0) →L[ℝ≥0] ℝ≥0) _ _
   /- porting note: without explicitly providing `𝕜` and `E` TC synthesis times
   out trying to find `Module ℝ≥0 ((Ω →ᵇ ℝ≥0) →L[ℝ≥0] ℝ≥0)`, but it can find it with enough time:
@@ -524,9 +524,9 @@ theorem tendsto_zero_testAgainstNN_of_tendsto_zero_mass {γ : Type*} {F : Filter
   simp_rw [testAgainstNN_zero, zero_add] at obs
   simp_rw [show ∀ i, dist ((μs i).testAgainstNN f) 0 = (μs i).testAgainstNN f by
       simp only [dist_nndist, NNReal.nndist_zero_eq_val', eq_self_iff_true, imp_true_iff]]
-  refine' squeeze_zero (fun i => NNReal.coe_nonneg _) obs _
+  refine squeeze_zero (fun i => NNReal.coe_nonneg _) obs _
   have lim_pair : Tendsto (fun i => (⟨nndist f 0, (μs i).mass⟩ : ℝ × ℝ)) F (𝓝 ⟨nndist f 0, 0⟩) := by
-    refine' (Prod.tendsto_iff _ _).mpr ⟨tendsto_const_nhds, _⟩
+    refine (Prod.tendsto_iff _ _).mpr ⟨tendsto_const_nhds, _⟩
     exact (NNReal.continuous_coe.tendsto 0).comp mass_lim
   have key := tendsto_mul.comp lim_pair
   rwa [mul_zero] at key
@@ -570,7 +570,7 @@ lemma injective_toWeakDualBCNN :
   apply ext_of_forall_lintegral_eq
   intro f
   have key := congr_fun (congrArg DFunLike.coe hμν) f
-  apply (ENNReal.toNNReal_eq_toNNReal_iff' ?_ ?_).mp key
+  apply (ENNReal.toNNReal_eq_toNNReal_iff' _ _).mp key
   · exact (lintegral_lt_top_of_nnreal μ f).ne
   · exact (lintegral_lt_top_of_nnreal ν f).ne
 
@@ -710,7 +710,7 @@ theorem tendsto_iff_forall_integral_tendsto {γ : Type*} {F : Filter γ} {μs : 
     Tendsto μs F (𝓝 μ) ↔
       ∀ f : Ω →ᵇ ℝ,
         Tendsto (fun i => ∫ x, f x ∂(μs i : Measure Ω)) F (𝓝 (∫ x, f x ∂(μ : Measure Ω))) := by
-  refine' ⟨_, tendsto_of_forall_integral_tendsto⟩
+  refine ⟨_, tendsto_of_forall_integral_tendsto⟩
   rw [tendsto_iff_forall_lintegral_tendsto]
   intro h f
   simp_rw [BoundedContinuousFunction.integral_eq_integral_nnrealPart_sub]
@@ -794,7 +794,7 @@ lemma tendsto_map_of_tendsto_of_continuous {ι : Type*} {L : Filter ι}
   intro g
   convert lim (g.compContinuous ⟨f, f_cont⟩) <;>
   · simp only [map, compContinuous_apply, ContinuousMap.coe_mk]
-    refine lintegral_map ?_ f_cont.measurable
+    refine lintegral_map _ f_cont.measurable
     exact (ENNReal.continuous_coe.comp g.continuous).measurable
 
 /-- If `f : X → Y` is continuous and `Y` is equipped with the Borel sigma algebra, then

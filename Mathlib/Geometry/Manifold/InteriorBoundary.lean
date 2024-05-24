@@ -93,7 +93,7 @@ lemma disjoint_interior_boundary : Disjoint (I.interior M) (I.boundary M) := by
 
 /-- The boundary is the complement of the interior. -/
 lemma boundary_eq_complement_interior : I.boundary M = (I.interior M)ᶜ := by
-  apply (compl_unique ?_ I.interior_union_boundary_eq_univ).symm
+  apply (compl_unique _ I.interior_union_boundary_eq_univ).symm
   exact disjoint_iff_inter_eq_empty.mp (I.disjoint_interior_boundary)
 
 variable {I} in

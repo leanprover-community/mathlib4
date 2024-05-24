@@ -144,11 +144,11 @@ def generateEquivalenceOpensLe_inverse' :
       ⟨V.2.choose, rfl⟩, rfl⟩⟩
   map {_ _} g := Over.homMk g
   map_id _ := by
-    refine Over.OverMorphism.ext ?_
+    refine Over.OverMorphism.ext _
     simp only [Functor.id_obj, Sieve.generate_apply, Functor.const_obj_obj, Over.homMk_left,
       eq_iff_true_of_subsingleton]
   map_comp {_ _ _} f g := by
-    refine Over.OverMorphism.ext ?_
+    refine Over.OverMorphism.ext _
     simp only [Functor.id_obj, Sieve.generate_apply, Functor.const_obj_obj, Over.homMk_left,
       eq_iff_true_of_subsingleton]
 
@@ -166,9 +166,9 @@ def generateEquivalenceOpensLe :
   inverse := generateEquivalenceOpensLe_inverse' _ _
   unitIso := eqToIso <| CategoryTheory.Functor.ext
     (by rintro ⟨⟨_, _⟩, _⟩; dsimp; congr)
-    (by intros; refine Over.OverMorphism.ext ?_; aesop_cat)
+    (by intros; refine Over.OverMorphism.ext _; aesop_cat)
   counitIso := eqToIso <| CategoryTheory.Functor.hext
-    (by intro; refine FullSubcategory.ext _ _ ?_; rfl) (by intros; rfl)
+    (by intro; refine FullSubcategory.ext _ _ _; rfl) (by intros; rfl)
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.generate_equivalence_opens_le TopCat.Presheaf.generateEquivalenceOpensLe
 
@@ -234,7 +234,7 @@ set_option linter.uppercaseLean3 false in
     official definition of sheaves on spaces, but has the advantage that it does not
     require `has_products C`. -/
 theorem isSheaf_iff_isSheafOpensLeCover : F.IsSheaf ↔ F.IsSheafOpensLeCover := by
-  refine' (Presheaf.isSheaf_iff_isLimit _ _).trans _
+  refine (Presheaf.isSheaf_iff_isLimit _ _).trans _
   constructor
   · intro h ι U
     rw [(isLimitOpensLeEquivGenerate₁ F U rfl).nonempty_congr]

@@ -57,7 +57,7 @@ theorem imo2005_q3 (x y z : ℝ) (hx : x > 0) (hy : y > 0) (hz : z > 0) (h : x *
           (z ^ 5 - z ^ 2) / (z ^ 5 + x ^ 2 + y ^ 2) ≥
         (x ^ 2 - y * z) / (x ^ 2 + y ^ 2 + z ^ 2) + (y ^ 2 - z * x) / (y ^ 2 + z ^ 2 + x ^ 2) +
           (z ^ 2 - x * y) / (z ^ 2 + x ^ 2 + y ^ 2) := by
-      gcongr ?_ + ?_ + ?_ <;> apply key_insight <;> linarith
+      gcongr _ + _ + _ <;> apply key_insight <;> linarith
     _ = 1 / 2 * ((x - y) ^ 2 + (y - z) ^ 2 + (z - x) ^ 2) / (x ^ 2 + y ^ 2 + z ^ 2) := by ring
     _ ≥ 0 := by positivity
 #align imo2005_q3 imo2005_q3

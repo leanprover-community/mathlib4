@@ -125,7 +125,7 @@ lemma diffContOnCl_invInterpStrip {ε : ℝ} (hε : ε > 0) :
 lemma norm_le_sSupNormIm (f : ℂ → E) (z : ℂ) (hD : z ∈ verticalClosedStrip 0 1)
     (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1))) :
     ‖f z‖ ≤ sSupNormIm f (z.re) := by
-  refine le_csSup ?_ ?_
+  refine le_csSup _ _
   · apply BddAbove.mono (image_subset (norm ∘ f) _) hB
     exact preimage_mono (singleton_subset_iff.mpr hD)
   · apply mem_image_of_mem (norm ∘ f)
@@ -209,7 +209,7 @@ theorem norm_mul_invInterpStrip_le_one_of_mem_verticalClosedStrip (f : ℂ → E
     (fun x hx ↦ F_edge_le_one f ε hε x hB (Or.inr hx)) hz.1 hz.2
   use 0
   rw [sub_zero, div_one]
-  refine ⟨ Real.pi_pos, ?_⟩
+  refine ⟨ Real.pi_pos, _⟩
   obtain ⟨BF, hBF⟩ := F_BddAbove f ε hε hB
   simp only [comp_apply, mem_upperBounds, mem_image, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂] at hBF
@@ -285,10 +285,10 @@ lemma diffContOnCl_interpStrip :
     eta_expand
     simp_rw [interpStrip_eq_of_pos f _ (lt_of_le_of_ne (sSupNormIm_nonneg f 0) h0)
       (lt_of_le_of_ne (sSupNormIm_nonneg f 1) h1)]
-    refine DifferentiableAt.mul ?_ ?_
+    refine DifferentiableAt.mul _ _
     · apply DifferentiableAt.const_cpow (DifferentiableAt.const_sub (differentiableAt_id') 1) _
       left; simp only [Ne, ofReal_eq_zero]; rwa [eq_comm]
-    · refine DifferentiableAt.const_cpow ?_ ?_
+    · refine DifferentiableAt.const_cpow _ _
       · apply differentiableAt_id'
       · left; simp only [Ne, ofReal_eq_zero]; rwa [eq_comm]
 

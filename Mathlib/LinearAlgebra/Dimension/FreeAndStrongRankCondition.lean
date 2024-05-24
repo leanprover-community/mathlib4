@@ -94,7 +94,7 @@ theorem rank_le_one_iff [Module.Free K V] :
       ext
       simp [mem_span_singleton, hv₀]
     rw [← rank_top, ← h]
-    refine' (rank_span_le _).trans_eq _
+    refine (rank_span_le _).trans_eq _
     simp
 #align rank_le_one_iff rank_le_one_iff
 
@@ -103,9 +103,9 @@ single non-zero vector of which all vectors are multiples. -/
 theorem rank_eq_one_iff [Module.Free K V] :
     Module.rank K V = 1 ↔ ∃ v₀ : V, v₀ ≠ 0 ∧ ∀ v, ∃ r : K, r • v₀ = v := by
   haveI := nontrivial_of_invariantBasisNumber K
-  refine ⟨fun h ↦ ?_, fun ⟨v₀, h, hv⟩ ↦ (rank_le_one_iff.2 ⟨v₀, hv⟩).antisymm ?_⟩
+  refine ⟨fun h ↦ _, fun ⟨v₀, h, hv⟩ ↦ (rank_le_one_iff.2 ⟨v₀, hv⟩).antisymm _⟩
   · obtain ⟨v₀, hv⟩ := rank_le_one_iff.1 h.le
-    refine ⟨v₀, fun hzero ↦ ?_, hv⟩
+    refine ⟨v₀, fun hzero ↦ _, hv⟩
     simp_rw [hzero, smul_zero, exists_const] at hv
     haveI : Subsingleton V := .intro fun _ _ ↦ by simp_rw [← hv]
     exact one_ne_zero (h ▸ rank_subsingleton' K V)
@@ -143,8 +143,8 @@ its span. -/
 theorem rank_submodule_eq_one_iff (s : Submodule K V) [Module.Free K s] :
     Module.rank K s = 1 ↔ ∃ v₀ ∈ s, v₀ ≠ 0 ∧ s ≤ K ∙ v₀ := by
   simp_rw [rank_eq_one_iff, le_span_singleton_iff]
-  refine ⟨fun ⟨⟨v₀, hv₀⟩, H, h⟩ ↦ ⟨v₀, hv₀, fun h' ↦ by simp [h'] at H, fun v hv ↦ ?_⟩,
-    fun ⟨v₀, hv₀, H, h⟩ ↦ ⟨⟨v₀, hv₀⟩, fun h' ↦ H (by simpa using h'), fun ⟨v, hv⟩ ↦ ?_⟩⟩
+  refine ⟨fun ⟨⟨v₀, hv₀⟩, H, h⟩ ↦ ⟨v₀, hv₀, fun h' ↦ by simp [h'] at H, fun v hv ↦ _⟩,
+    fun ⟨v₀, hv₀, H, h⟩ ↦ ⟨⟨v₀, hv₀⟩, fun h' ↦ H (by simpa using h'), fun ⟨v, hv⟩ ↦ _⟩⟩
   · obtain ⟨r, hr⟩ := h ⟨v, hv⟩
     exact ⟨r, by rwa [Subtype.ext_iff, coe_smul] at hr⟩
   · obtain ⟨r, hr⟩ := h v hv

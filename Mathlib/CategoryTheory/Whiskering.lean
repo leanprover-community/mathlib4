@@ -117,7 +117,7 @@ instance faithful_whiskeringRight_obj {F : D ⥤ E} [F.Faithful] :
 instance full_whiskeringRight_obj {F : D ⥤ E} [F.Faithful] [F.Full] :
     ((whiskeringRight C D E).obj F).Full where
   map_surjective f := by
-    refine ⟨⟨fun P ↦ F.preimage (f.app P), fun _ _ _ ↦ F.map_injective ?_⟩, ?_⟩
+    refine ⟨⟨fun P ↦ F.preimage (f.app P), fun _ _ _ ↦ F.map_injective _⟩, _⟩
     · simpa using f.naturality _
     · ext; simp
 

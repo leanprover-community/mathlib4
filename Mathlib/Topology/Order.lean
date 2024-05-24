@@ -79,7 +79,7 @@ theorem nhds_generateFrom {g : Set (Set α)} {a : α} :
     @nhds α (generateFrom g) a = ⨅ s ∈ { s | a ∈ s ∧ s ∈ g }, 𝓟 s := by
   letI := generateFrom g
   rw [nhds_def]
-  refine le_antisymm (biInf_mono fun s ⟨as, sg⟩ => ⟨as, .basic _ sg⟩) <| le_iInf₂ ?_
+  refine le_antisymm (biInf_mono fun s ⟨as, sg⟩ => ⟨as, .basic _ sg⟩) <| le_iInf₂ _
   rintro s ⟨ha, hs⟩
   induction hs with
   | basic _ hs => exact iInf₂_le _ ⟨ha, hs⟩
@@ -115,7 +115,7 @@ theorem nhds_mkOfNhds_of_hasBasis {n : α → Filter α} {ι : α → Sort*} {p 
   apply le_antisymm
   · intro U hU
     replace hpure : pure ≤ n := fun x ↦ (hb x).ge_iff.2 (hpure x)
-    refine mem_nhds_iff.2 ⟨{x | U ∈ n x}, fun x hx ↦ hpure x hx, fun x hx ↦ ?_, hU⟩
+    refine mem_nhds_iff.2 ⟨{x | U ∈ n x}, fun x hx ↦ hpure x hx, fun x hx ↦ _, hU⟩
     rcases (hb x).mem_iff.1 hx with ⟨i, hpi, hi⟩
     exact (hopen x i hpi).mono fun y hy ↦ mem_of_superset hy hi
   · exact (nhds_basis_opens a).ge_iff.2 fun U ⟨haU, hUo⟩ ↦ hUo a haU
@@ -129,7 +129,7 @@ theorem nhds_mkOfNhds (n : α → Filter α) (a : α) (h₀ : pure ≤ n)
 theorem nhds_mkOfNhds_single [DecidableEq α] {a₀ : α} {l : Filter α} (h : pure a₀ ≤ l) (b : α) :
     @nhds α (TopologicalSpace.mkOfNhds (update pure a₀ l)) b =
       (update pure a₀ l : α → Filter α) b := by
-  refine' nhds_mkOfNhds _ _ (le_update_iff.mpr ⟨h, fun _ _ => le_rfl⟩) fun a s hs => _
+  refine nhds_mkOfNhds _ _ (le_update_iff.mpr ⟨h, fun _ _ => le_rfl⟩) fun a s hs => _
   rcases eq_or_ne a a₀ with (rfl | ha)
   · filter_upwards [hs] with b hb
     rcases eq_or_ne b a with (rfl | hb)

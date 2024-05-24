@@ -165,7 +165,7 @@ theorem primitive_element_inf_aux [IsSeparable F E] : ∃ γ : E, F⟮α, β⟯ 
     simp only [γ, Algebra.smul_def, RingHom.map_add, RingHom.map_mul, RingHom.comp_apply]
     ring
   rw [← eq_X_sub_C_of_separable_of_root_eq h_sep h_root h_splits h_roots]
-  trans EuclideanDomain.gcd (?_ : E[X]) (?_ : E[X])
+  trans EuclideanDomain.gcd (_ : E[X]) (_ : E[X])
   · dsimp only [γ]
     convert (gcd_map (algebraMap F⟮γ⟯ E)).symm
   · simp only [map_comp, Polynomial.map_map, ← IsScalarTower.algebraMap_eq, Polynomial.map_sub,
@@ -251,7 +251,7 @@ theorem isAlgebraic_of_adjoin_eq_adjoin {α : E} {m n : ℕ} (hneq : m ≠ n)
   · rw [hm] at heq hmn
     simp only [pow_zero, adjoin_one] at heq
     obtain ⟨y, h⟩ := mem_bot.1 (heq.symm ▸ mem_adjoin_simple_self F (α ^ n))
-    refine ⟨X ^ n - C y, X_pow_sub_C_ne_zero hmn y, ?_⟩
+    refine ⟨X ^ n - C y, X_pow_sub_C_ne_zero hmn y, _⟩
     simp only [map_sub, map_pow, aeval_X, aeval_C, h, sub_self]
   obtain ⟨r, s, h⟩ := (mem_adjoin_simple_iff F _).1 (heq ▸ mem_adjoin_simple_self F (α ^ m))
   by_cases hzero : aeval (α ^ n) s = 0
@@ -261,7 +261,7 @@ theorem isAlgebraic_of_adjoin_eq_adjoin {α : E} {m n : ℕ} (hneq : m ≠ n)
   rw [eq_div_iff hzero, ← sub_eq_zero] at h
   replace hzero : s ≠ 0 := by rintro rfl; simp only [map_zero, not_true_eq_false] at hzero
   let f : F[X] := X ^ m * expand F n s - expand F n r
-  refine ⟨f, ?_, ?_⟩
+  refine ⟨f, _, _⟩
   · have : f.coeff (n * s.natDegree + m) ≠ 0 := by
       have hn : 0 < n := by linarith only [hm, hmn]
       have hndvd : ¬ n ∣ n * s.natDegree + m := by
@@ -381,7 +381,7 @@ variable (F : Type*) {E : Type*} [Field F] [Field E] [Algebra F E] [FiniteDimens
 theorem primitive_element_iff_minpoly_natDegree_eq (α : E) :
     F⟮α⟯ = ⊤ ↔ (minpoly F α).natDegree = finrank F E := by
   rw [← adjoin.finrank (IsIntegral.of_finite F α), ← finrank_top F E]
-  refine ⟨fun h => ?_, fun h => eq_of_le_of_finrank_eq le_top h⟩
+  refine ⟨fun h => _, fun h => eq_of_le_of_finrank_eq le_top h⟩
   exact congr_arg (fun K : IntermediateField F E => finrank F K) h
 
 theorem primitive_element_iff_minpoly_degree_eq (α : E) :
@@ -404,7 +404,7 @@ theorem primitive_element_iff_algHom_eq_of_eval' (α : E) :
 theorem primitive_element_iff_algHom_eq_of_eval (α : E)
     (φ : E →ₐ[F] A) : F⟮α⟯ = ⊤ ↔ ∀ ψ : E →ₐ[F] A, φ α = ψ α → φ = ψ := by
   refine ⟨fun h ψ hψ ↦ (Field.primitive_element_iff_algHom_eq_of_eval' F A hA α).mp h hψ,
-    fun h ↦ eq_of_le_of_finrank_eq' le_top ?_⟩
+    fun h ↦ eq_of_le_of_finrank_eq' le_top _⟩
   letI : Algebra F⟮α⟯ A := (φ.comp F⟮α⟯.val).toAlgebra
   haveI := isSeparable_tower_top_of_isSeparable F F⟮α⟯ E
   rw [IntermediateField.finrank_top, ← AlgHom.card_of_splits _ _ A, Fintype.card_eq_one_iff]

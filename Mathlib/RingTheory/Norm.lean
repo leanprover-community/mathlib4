@@ -78,7 +78,7 @@ theorem norm_eq_one_of_not_exists_basis (h : ¬∃ s : Finset S, Nonempty (Basis
 variable {R}
 
 theorem norm_eq_one_of_not_module_finite (h : ¬Module.Finite R S) (x : S) : norm R x = 1 := by
-  refine norm_eq_one_of_not_exists_basis _ (mt ?_ h) _
+  refine norm_eq_one_of_not_exists_basis _ (mt _ h) _
   rintro ⟨s, ⟨b⟩⟩
   exact Module.Finite.of_basis b
 #align algebra.norm_eq_one_of_not_module_finite Algebra.norm_eq_one_of_not_module_finite
@@ -161,7 +161,7 @@ theorem norm_eq_zero_iff [IsDomain R] [IsDomain S] [Module.Free R S] [Module.Fin
     rintro ⟨v, v_ne, hv⟩
     rw [← b.equivFun.apply_symm_apply v, b.equivFun_symm_apply, b.equivFun_apply,
       leftMulMatrix_mulVec_repr] at hv
-    refine (mul_eq_zero.mp (b.ext_elem fun i => ?_)).resolve_right (show ∑ i, v i • b i ≠ 0 from ?_)
+    refine (mul_eq_zero.mp (b.ext_elem fun i => _)).resolve_right (show ∑ i, v i • b i ≠ 0 from _)
     · simpa only [LinearEquiv.map_zero, Pi.zero_apply] using congr_fun hv i
     · contrapose! v_ne with sum_eq
       apply b.equivFun.symm.injective
@@ -218,7 +218,7 @@ theorem _root_.IntermediateField.AdjoinSimple.norm_gen_eq_one {x : L} (hx : ¬Is
   rw [norm_eq_one_of_not_exists_basis]
   contrapose! hx
   obtain ⟨s, ⟨b⟩⟩ := hx
-  refine .of_mem_of_fg K⟮x⟯.toSubalgebra ?_ x ?_
+  refine .of_mem_of_fg K⟮x⟯.toSubalgebra _ x _
   · exact (Submodule.fg_iff_finiteDimensional _).mpr (of_fintype_basis b)
   · exact IntermediateField.subset_adjoin K _ (Set.mem_singleton x)
 #align intermediate_field.adjoin_simple.norm_gen_eq_one IntermediateField.AdjoinSimple.norm_gen_eq_one
@@ -251,7 +251,7 @@ theorem norm_eq_prod_embeddings_gen [Algebra R F] (pb : PowerBasis R S)
   letI := Classical.decEq F
   rw [PowerBasis.norm_gen_eq_prod_roots pb hE]
   rw [@Fintype.prod_equiv (S →ₐ[R] F) _ _ (PowerBasis.AlgHom.fintype pb) _ _ pb.liftEquiv'
-    (fun σ => σ pb.gen) (fun x => x) ?_]
+    (fun σ => σ pb.gen) (fun x => x) _]
   · rw [Finset.prod_mem_multiset, Finset.prod_eq_multiset_prod, Multiset.toFinset_val,
       Multiset.dedup_eq_self.mpr, Multiset.map_id]
     · exact nodup_roots hfx.map
@@ -276,7 +276,7 @@ theorem prod_embeddings_eq_finrank_pow [Algebra L F] [IsScalarTower K L F] [IsAl
   letI : Fintype (L →ₐ[K] E) := PowerBasis.AlgHom.fintype pb
   rw [Fintype.prod_equiv algHomEquivSigma (fun σ : F →ₐ[K] E => _) fun σ => σ.1 pb.gen,
     ← Finset.univ_sigma_univ, Finset.prod_sigma, ← Finset.prod_pow]
-  · refine Finset.prod_congr rfl fun σ _ => ?_
+  · refine Finset.prod_congr rfl fun σ _ => _
     letI : Algebra L E := σ.toRingHom.toAlgebra
     simp_rw [Finset.prod_const]
     congr
@@ -316,7 +316,7 @@ theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L] [IsSep
     [FiniteDimensional K L] {x : L} (hx : IsIntegral R x) : IsIntegral R (norm K x) := by
   have hx' : IsIntegral K x := hx.tower_top
   rw [← isIntegral_algebraMap_iff (algebraMap K (AlgebraicClosure L)).injective, norm_eq_prod_roots]
-  · refine' (IsIntegral.multiset_prod fun y hy => _).pow _
+  · refine (IsIntegral.multiset_prod fun y hy => _).pow _
     rw [mem_roots_map (minpoly.ne_zero hx')] at hy
     use minpoly R x, minpoly.monic hx
     rw [← aeval_def] at hy ⊢
@@ -351,7 +351,7 @@ lemma norm_eq_of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommRing A₁] [Ring
     [CommRing A₂] [Ring B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
     (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁)) (x) :
     Algebra.norm A₁ x = e₁.symm (Algebra.norm A₂ (e₂ x)) := by
-  letI := (RingHom.comp (e₂ : B₁ →+* B₂) (algebraMap A₁ B₁)).toAlgebra' ?_
+  letI := (RingHom.comp (e₂ : B₁ →+* B₂) (algebraMap A₁ B₁)).toAlgebra' _
   · let e' : B₁ ≃ₐ[A₁] B₂ := { e₂ with commutes' := fun _ ↦ rfl }
     rw [← Algebra.norm_eq_of_ringEquiv e₁ he, ← Algebra.norm_eq_of_algEquiv e',
       RingEquiv.symm_apply_apply]
@@ -390,7 +390,7 @@ theorem norm_norm [Algebra L F] [IsScalarTower K L F] [IsSeparable K F] (x : F) 
   · rw [norm_eq_one_of_not_module_finite hKF]
     by_cases hKL : FiniteDimensional K L
     · have hLF : ¬FiniteDimensional L F := by
-        refine (mt ?_) hKF
+        refine (mt _) hKF
         intro hKF
         exact FiniteDimensional.trans K L F
       rw [norm_eq_one_of_not_module_finite hLF, _root_.map_one]

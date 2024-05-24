@@ -604,7 +604,7 @@ protected theorem disjoint_iff [OrderBot α] [OrderBot β] {x y : α × β} :
     Disjoint x y ↔ Disjoint x.1 y.1 ∧ Disjoint x.2 y.2 := by
   constructor
   · intro h
-    refine' ⟨fun a hx hy ↦ (@h (a, ⊥) ⟨hx, _⟩ ⟨hy, _⟩).1,
+    refine ⟨fun a hx hy ↦ (@h (a, ⊥) ⟨hx, _⟩ ⟨hy, _⟩).1,
       fun b hx hy ↦ (@h (⊥, b) ⟨_, hx⟩ ⟨_, hy⟩).2⟩
     all_goals exact bot_le
   · rintro ⟨ha, hb⟩ z hza hzb
@@ -706,7 +706,7 @@ export ComplementedLattice (exists_isCompl)
 
 instance Subsingleton.instComplementedLattice
     [Lattice α] [BoundedOrder α] [Subsingleton α] : ComplementedLattice α := by
-  refine ⟨fun a ↦ ⟨⊥, disjoint_bot_right, ?_⟩⟩
+  refine ⟨fun a ↦ ⟨⊥, disjoint_bot_right, _⟩⟩
   rw [Subsingleton.elim ⊥ ⊤]
   exact codisjoint_top_right
 

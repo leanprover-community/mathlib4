@@ -147,7 +147,7 @@ theorem eventually_iInf_lowerCentralSeries_eq [IsArtinian R M] :
     LieSubmodule.wellFounded_of_isArtinian R L M
   obtain ⟨n, hn : ∀ m, n ≤ m → lowerCentralSeries R L M n = lowerCentralSeries R L M m⟩ :=
     WellFounded.monotone_chain_condition.mp h_wf ⟨_, antitone_lowerCentralSeries R L M⟩
-  refine Filter.eventually_atTop.mpr ⟨n, fun l hl ↦ le_antisymm (iInf_le _ _) (le_iInf fun m ↦ ?_)⟩
+  refine Filter.eventually_atTop.mpr ⟨n, fun l hl ↦ le_antisymm (iInf_le _ _) (le_iInf fun m ↦ _)⟩
   rcases le_or_lt l m with h | h
   · rw [← hn _ hl, ← hn _ (hl.trans h)]
   · exact antitone_lowerCentralSeries R L M (le_of_lt h)
@@ -180,7 +180,7 @@ theorem iterate_toEnd_mem_lowerCentralSeries₂ (x y : L) (m : M) (k : ℕ) :
   have hk : 2 * k.succ = (2 * k + 1) + 1 := rfl
   simp only [lowerCentralSeries_succ, Function.comp_apply, Function.iterate_succ', hk,
       toEnd_apply_apply, LinearMap.coe_comp, toEnd_apply_apply]
-  refine' LieSubmodule.lie_mem_lie _ _ (LieSubmodule.mem_top x) _
+  refine LieSubmodule.lie_mem_lie _ _ (LieSubmodule.mem_top x) _
   exact LieSubmodule.lie_mem_lie _ _ (LieSubmodule.mem_top y) ih
 
 variable {R L M}
@@ -241,7 +241,7 @@ variable {R L M}
 theorem _root_.LieSubmodule.isNilpotent_iff_exists_lcs_eq_bot (N : LieSubmodule R L M) :
     LieModule.IsNilpotent R L N ↔ ∃ k, N.lcs k = ⊥ := by
   rw [isNilpotent_iff]
-  refine' exists_congr fun k => _
+  refine exists_congr fun k => _
   rw [N.lowerCentralSeries_eq_lcs_comap k, LieSubmodule.comap_incl_eq_bot,
     inf_eq_right.mpr (N.lcs_le_self k)]
 #align lie_submodule.is_nilpotent_iff_exists_lcs_eq_bot LieSubmodule.isNilpotent_iff_exists_lcs_eq_bot
@@ -306,7 +306,7 @@ theorem nilpotentOfNilpotentQuotient {N : LieSubmodule R L M} (h₁ : N ≤ maxT
 theorem isNilpotent_quotient_iff :
     IsNilpotent R L (M ⧸ N) ↔ ∃ k, lowerCentralSeries R L M k ≤ N := by
   rw [LieModule.isNilpotent_iff]
-  refine exists_congr fun k ↦ ?_
+  refine exists_congr fun k ↦ _
   rw [← LieSubmodule.Quotient.map_mk'_eq_bot_le, map_lowerCentralSeries_eq k
     (LieSubmodule.Quotient.surjective_mk' N)]
 
@@ -333,7 +333,7 @@ theorem nilpotencyLength_eq_zero_iff [IsNilpotent R L M] :
   change sInf s = 0 ↔ _
   rw [← LieSubmodule.subsingleton_iff R L M, ← subsingleton_iff_bot_eq_top, ←
     lowerCentralSeries_zero, @eq_comm (LieSubmodule R L M)]
-  refine' ⟨fun h => h ▸ Nat.sInf_mem hs, fun h => _⟩
+  refine ⟨fun h => h ▸ Nat.sInf_mem hs, fun h => _⟩
   rw [Nat.sInf_eq_zero]
   exact Or.inl h
 #align lie_module.nilpotency_length_eq_zero_iff LieModule.nilpotencyLength_eq_zero_iff
@@ -411,7 +411,7 @@ Taking `M = L`, this provides a useful characterisation of Abelian-ness for nilp
 algebras. -/
 lemma disjoint_lowerCentralSeries_maxTrivSubmodule_iff [IsNilpotent R L M] :
     Disjoint (lowerCentralSeries R L M 1) (maxTrivSubmodule R L M) ↔ IsTrivial L M := by
-  refine ⟨fun h ↦ ?_, fun h ↦ by simp⟩
+  refine ⟨fun h ↦ _, fun h ↦ by simp⟩
   nontriviality M
   by_contra contra
   have : lowerCentralSeriesLast R L M ≤ lowerCentralSeries R L M 1 ⊓ maxTrivSubmodule R L M :=
@@ -598,7 +598,7 @@ theorem Equiv.lieModule_isNilpotent_iff (f : L ≃ₗ⁅R⁆ L₂) (g : M ≃ₗ
   · have hg : Surjective (g : M →ₗ[R] M₂) := g.surjective
     exact f.surjective.lieModuleIsNilpotent hg hfg
   · have hg : Surjective (g.symm : M₂ →ₗ[R] M) := g.symm.surjective
-    refine f.symm.surjective.lieModuleIsNilpotent hg fun x m => ?_
+    refine f.symm.surjective.lieModuleIsNilpotent hg fun x m => _
     rw [LinearEquiv.coe_coe, LieEquiv.coe_to_lieHom, ← g.symm_apply_apply ⁅f.symm x, g.symm m⁆, ←
       hfg, f.apply_symm_apply, g.apply_symm_apply]
 #align equiv.lie_module_is_nilpotent_iff Equiv.lieModule_isNilpotent_iff
@@ -755,7 +755,7 @@ theorem LieHom.isNilpotent_range [IsNilpotent R L] (f : L →ₗ⁅R⁆ L') : Is
 `(ad R L).range`. -/
 @[simp]
 theorem LieAlgebra.isNilpotent_range_ad_iff : IsNilpotent R (ad R L).range ↔ IsNilpotent R L := by
-  refine' ⟨fun h => _, _⟩
+  refine ⟨fun h => _, _⟩
   · have : (ad R L).ker = center R L := by simp
     exact
       LieAlgebra.nilpotent_of_nilpotent_quotient (le_of_eq this)

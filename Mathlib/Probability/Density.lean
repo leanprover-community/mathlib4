@@ -122,7 +122,7 @@ theorem HasPDF.congr' {X Y : Ω → E} {ℙ : Measure Ω} {μ : Measure E} (hXY 
 theorem hasPDF_of_map_eq_withDensity {X : Ω → E} {ℙ : Measure Ω} {μ : Measure E}
     (hX : AEMeasurable X ℙ) (f : E → ℝ≥0∞) (hf : AEMeasurable f μ) (h : map X ℙ = μ.withDensity f) :
     HasPDF X ℙ μ := by
-  refine ⟨hX, ?_, ?_⟩ <;> rw [h]
+  refine ⟨hX, _, _⟩ <;> rw [h]
   · rw [withDensity_congr_ae hf.ae_eq_mk]
     exact haveLebesgueDecomposition_withDensity μ hf.measurable_mk
   · exact withDensity_absolutelyContinuous μ f
@@ -157,7 +157,7 @@ theorem aemeasurable_of_pdf_ne_zero {m : MeasurableSpace Ω} {ℙ : Measure Ω} 
 
 theorem hasPDF_of_pdf_ne_zero {m : MeasurableSpace Ω} {ℙ : Measure Ω} {μ : Measure E} {X : Ω → E}
     (hac : map X ℙ ≪ μ) (hpdf : ¬pdf X ℙ μ =ᵐ[μ] 0) : HasPDF X ℙ μ := by
-  refine ⟨?_, ?_, hac⟩
+  refine ⟨_, _, hac⟩
   · exact aemeasurable_of_pdf_ne_zero X hpdf
   · contrapose! hpdf
     have := pdf_of_not_haveLebesgueDecomposition hpdf
@@ -280,9 +280,9 @@ theorem quasiMeasurePreserving_hasPDF {X : Ω → E} [HasPDF X ℙ μ] (hX : AEM
     apply (HasPDF.congr' hae).mpr
     exact this hX.measurable_mk.aemeasurable hg (map_congr hX.ae_eq_mk ▸ hmap) hX.measurable_mk
   rw [hasPDF_iff, ← map_map hg.measurable hmX]
-  refine ⟨(hg.measurable.comp hmX).aemeasurable, hmap, ?_⟩
+  refine ⟨(hg.measurable.comp hmX).aemeasurable, hmap, _⟩
   rw [map_eq_withDensity_pdf X ℙ μ]
-  refine AbsolutelyContinuous.mk fun s hsm hs => ?_
+  refine AbsolutelyContinuous.mk fun s hsm hs => _
   rw [map_apply hg.measurable hsm, withDensity_apply _ (hg.measurable hsm)]
   have := hg.absolutelyContinuous hs
   rw [map_apply hg.measurable hsm] at this
@@ -329,10 +329,10 @@ theorem hasFiniteIntegral_mul {f : ℝ → ℝ} {g : ℝ → ℝ≥0∞} (hg : p
     HasFiniteIntegral fun x => f x * (pdf X ℙ volume x).toReal := by
   rw [HasFiniteIntegral]
   have : (fun x => ↑‖f x‖₊ * g x) =ᵐ[volume] fun x => ‖f x * (pdf X ℙ volume x).toReal‖₊ := by
-    refine' ae_eq_trans (Filter.EventuallyEq.mul (ae_eq_refl fun x => (‖f x‖₊ : ℝ≥0∞))
+    refine ae_eq_trans (Filter.EventuallyEq.mul (ae_eq_refl fun x => (‖f x‖₊ : ℝ≥0∞))
       (ae_eq_trans hg.symm ofReal_toReal_ae_eq.symm)) _
     simp_rw [← smul_eq_mul, nnnorm_smul, ENNReal.coe_mul, smul_eq_mul]
-    refine' Filter.EventuallyEq.mul (ae_eq_refl _) _
+    refine Filter.EventuallyEq.mul (ae_eq_refl _) _
     simp only [Real.ennnorm_eq_ofReal ENNReal.toReal_nonneg, ae_eq_refl]
   rwa [lt_top_iff_ne_top, ← lintegral_congr_ae this]
 #align measure_theory.pdf.has_finite_integral_mul MeasureTheory.pdf.hasFiniteIntegral_mul

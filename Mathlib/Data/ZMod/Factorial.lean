@@ -33,7 +33,7 @@ theorem cast_descFactorial {n p : ℕ} (h : n ≤ p) :
   simp only [cast_prod]
   nth_rw 2 [← card_range n]
   rw [pow_card_mul_prod]
-  refine prod_congr rfl ?_
+  refine prod_congr rfl _
   intro x hx
   rw [← tsub_add_eq_tsub_tsub_swap,
     Nat.cast_sub <| Nat.le_trans (Nat.add_one_le_iff.mpr (List.mem_range.mp hx)) h,

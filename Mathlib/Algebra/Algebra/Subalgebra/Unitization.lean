@@ -101,7 +101,7 @@ variable [Module R A] [SMulCommClass R A A] [IsScalarTower R A A] [Semiring C] [
 
 theorem lift_range_le {f : A →ₙₐ[R] C} {S : Subalgebra R C} :
     (lift f).range ≤ S ↔ NonUnitalAlgHom.range f ≤ S.toNonUnitalSubalgebra := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  refine ⟨fun h ↦ _, fun h ↦ _⟩
   · rintro - ⟨x, rfl⟩
     exact @h (f x) ⟨x, by simp⟩
   · rintro - ⟨x, rfl⟩
@@ -147,7 +147,7 @@ theorem _root_.AlgHomClass.unitization_injective' {F R S A : Type*} [CommRing R]
     (s : S) (h : ∀ r, r ≠ 0 → algebraMap R A r ∉ s)
     [FunLike F (Unitization R s) A] [AlgHomClass F R (Unitization R s) A]
     (f : F) (hf : ∀ x : s, f x = x) : Function.Injective f := by
-  refine' (injective_iff_map_eq_zero f).mpr fun x hx => _
+  refine (injective_iff_map_eq_zero f).mpr fun x hx => _
   induction' x using Unitization.ind with r a
   simp_rw [map_add, hf, ← Unitization.algebraMap_eq_inl, AlgHomClass.commutes] at hx
   rw [add_eq_zero_iff_eq_neg] at hx ⊢
@@ -162,7 +162,7 @@ theorem _root_.AlgHomClass.unitization_injective {F R S A : Type*} [Field R] [Ri
     [Algebra R A] [SetLike S A] [hSA : NonUnitalSubringClass S A] [hSRA : SMulMemClass S R A]
     (s : S) (h1 : 1 ∉ s) [FunLike F (Unitization R s) A] [AlgHomClass F R (Unitization R s) A]
     (f : F) (hf : ∀ x : s, f x = x) : Function.Injective f := by
-  refine AlgHomClass.unitization_injective' s (fun r hr hr' ↦ ?_) f hf
+  refine AlgHomClass.unitization_injective' s (fun r hr hr' ↦ _) f hf
   rw [Algebra.algebraMap_eq_smul_one] at hr'
   exact h1 <| inv_smul_smul₀ hr (1 : A) ▸ SMulMemClass.smul_mem r⁻¹ hr'
 
@@ -183,7 +183,7 @@ noncomputable def unitizationAlgEquiv (h1 : (1 : A) ∉ s) :
     ((unitization s).codRestrict _
       fun x ↦ (unitization_range s).le <| AlgHom.mem_range_self _ x)
   AlgEquiv.ofBijective algHom <| by
-    refine ⟨?_, fun x ↦ ?_⟩
+    refine ⟨_, fun x ↦ _⟩
     · have := AlgHomClass.unitization_injective s h1
         ((Subalgebra.val _).comp algHom) fun _ ↦ by simp [algHom]
       rw [AlgHom.coe_comp] at this
@@ -356,7 +356,7 @@ variable [Semiring C] [StarRing C] [Algebra R C] [StarModule R C]
 theorem starLift_range_le
     {f : A →⋆ₙₐ[R] C} {S : StarSubalgebra R C} :
     (starLift f).range ≤ S ↔ NonUnitalStarAlgHom.range f ≤ S.toNonUnitalStarSubalgebra := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  refine ⟨fun h ↦ _, fun h ↦ _⟩
   · rintro - ⟨x, rfl⟩
     exact @h (f x) ⟨x, by simp⟩
   · rintro - ⟨x, rfl⟩
@@ -413,7 +413,7 @@ noncomputable def unitizationStarAlgEquiv (h1 : (1 : A) ∉ s) :
     ((unitization s).codRestrict _
       fun x ↦ (unitization_range s).le <| Set.mem_range_self x)
   StarAlgEquiv.ofBijective starAlgHom <| by
-    refine ⟨?_, fun x ↦ ?_⟩
+    refine ⟨_, fun x ↦ _⟩
     · have := AlgHomClass.unitization_injective s h1 ((StarSubalgebra.subtype _).comp starAlgHom)
         fun _ ↦ by simp [starAlgHom]
       rw [StarAlgHom.coe_comp] at this

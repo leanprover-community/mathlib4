@@ -245,7 +245,7 @@ theorem M.bisim {α : TypeVec n} (R : P.M α → P.M α → Prop)
   cases' y with a₂ f₂
   dsimp [mp] at *
   have : a₁ = a₂ := by
-    refine'
+    refine
       PFunctor.M.bisim (fun a₁ a₂ => ∃ x y, R x y ∧ x.1 = a₁ ∧ y.1 = a₂) _ _ _
         ⟨⟨a₁, f₁⟩, ⟨a₂, f₂⟩, r, rfl, rfl⟩
     rintro _ _ ⟨⟨a₁, f₁⟩, ⟨a₂, f₂⟩, r, rfl, rfl⟩
@@ -303,7 +303,7 @@ theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equ
 theorem M.bisim' {α : TypeVec n} (R : P.M α → P.M α → Prop)
     (h : ∀ x y, R x y → (id ::: Quot.mk R) <$$> M.dest _ x = (id ::: Quot.mk R) <$$> M.dest _ y)
     (x y) (r : R x y) : x = y := by
-  have := M.bisim₀ P (EqvGen R) ?_ ?_
+  have := M.bisim₀ P (EqvGen R) _ _
   · solve_by_elim [EqvGen.rel]
   · apply EqvGen.is_equivalence
   · clear r x y

@@ -110,7 +110,7 @@ namespace IndepMatroid
   Base := (· ∈ maximals (· ⊆ ·) {I | M.Indep I})
   Indep := M.Indep
   indep_iff' := by
-    refine fun I ↦ ⟨fun h ↦ ?_, fun ⟨B,⟨h,_⟩,hIB'⟩ ↦ M.indep_subset h hIB'⟩
+    refine fun I ↦ ⟨fun h ↦ _, fun ⟨B,⟨h,_⟩,hIB'⟩ ↦ M.indep_subset h hIB'⟩
     obtain ⟨B, hB⟩ := M.indep_maximal M.E Subset.rfl I h (M.subset_ground I h)
     simp only [mem_maximals_iff, mem_setOf_eq, and_imp] at hB ⊢
     exact ⟨B, ⟨hB.1.1,fun J hJ hBJ ↦ hB.2 hJ (hB.1.2.1.trans hBJ) (M.subset_ground J hJ) hBJ⟩,
@@ -131,7 +131,7 @@ namespace IndepMatroid
 
     have hfB' : f ∉ B := by (intro hfB; obtain rfl := hf.2 hfB; exact he.2 hf.1)
 
-    refine' ⟨f, ⟨hf.1, hfB'⟩, by_contra (fun hnot ↦ _)⟩
+    refine ⟨f, ⟨hf.1, hfB'⟩, by_contra (fun hnot ↦ _)⟩
     obtain ⟨x,hxB, hind⟩ := M.indep_aug hfB hnot ⟨hB, hBmax⟩
     simp only [mem_diff, mem_insert_iff, mem_singleton_iff, not_or, not_and, not_not] at hxB
     obtain rfl := hxB.2.2 hxB.1
@@ -158,7 +158,7 @@ namespace IndepMatroid
     ∃ I₀, I₀ ⊆ I ∧ I₀.Finite ∧ ¬ Indep (insert e I₀) := by
       by_contra h; push_neg at h
       obtain ⟨I, e, -, hIe, h⟩ := h
-      refine hIe <| indep_compact _ fun J hJss hJfin ↦ ?_
+      refine hIe <| indep_compact _ fun J hJss hJfin ↦ _
       exact indep_subset (h (J \ {e}) (by rwa [diff_subset_iff]) (hJfin.diff _)) (by simp)
   IndepMatroid.mk
   (E := E)
@@ -192,9 +192,9 @@ namespace IndepMatroid
       refine ⟨iUnion f ∪ (B₀ ∩ I),
         union_subset (iUnion_subset (fun i ↦ (hf i).1)) (inter_subset_right _ _),
         (finite_iUnion fun i ↦ (hf i).2.1).union (hB₀fin.subset (inter_subset_left _ _)),
-        fun x ⟨hxB₀, hxn⟩ hi ↦ ?_⟩
+        fun x ⟨hxB₀, hxn⟩ hi ↦ _⟩
       have hxI : x ∉ I := fun hxI ↦ hxn <| Or.inr ⟨hxB₀, hxI⟩
-      refine (hf ⟨x, ⟨hxB₀, hxI⟩⟩).2.2 (indep_subset hi <| insert_subset_insert ?_)
+      refine (hf ⟨x, ⟨hxB₀, hxI⟩⟩).2.2 (indep_subset hi <| insert_subset_insert _)
       apply subset_union_of_subset_left
       apply subset_iUnion
 
@@ -218,7 +218,7 @@ namespace IndepMatroid
 
     -- We have `|I₀ + e| ≤ |J|`, since otherwise we could extend the maximal set `J`
     have hcard : (insert e I₀).ncard ≤ J.ncard := by
-      refine not_lt.1 fun hlt ↦ ?_
+      refine not_lt.1 fun hlt ↦ _
       obtain ⟨f, hfI, hfJ, hfi⟩ := indep_aug hJ hJfin heI₀i (hI₀fin.insert e) hlt
       have hfE₀ : f ∈ E₀ := mem_of_mem_of_subset hfI (insert_subset_insert (subset_union_left _ _))
       refine hfJ (insert_eq_self.1 <| Eq.symm (hJmax _
@@ -231,17 +231,17 @@ namespace IndepMatroid
     exact hI₀ f ⟨Or.elim (hJss hfJ) (fun hfe ↦ (heJ <| hfe ▸ hfJ).elim) (by aesop), hfI₀⟩ hfi )
   (indep_maximal := by
       rintro X - I hI hIX
-      have hzorn := zorn_subset_nonempty {Y | Indep Y ∧ I ⊆ Y ∧ Y ⊆ X} ?_ I ⟨hI, Subset.rfl, hIX⟩
+      have hzorn := zorn_subset_nonempty {Y | Indep Y ∧ I ⊆ Y ∧ Y ⊆ X} _ I ⟨hI, Subset.rfl, hIX⟩
       · obtain ⟨J, hJ, -, hJmax⟩ := hzorn
         exact ⟨J, hJ, fun K hK hJK ↦ (hJmax K hK hJK).subset⟩
 
-      refine fun Is hIs hchain ⟨K, hK⟩ ↦ ⟨⋃₀ Is, ⟨?_,?_,?_⟩, fun _ ↦ subset_sUnion_of_mem⟩
-      · refine indep_compact _ fun J hJ hJfin ↦ ?_
+      refine fun Is hIs hchain ⟨K, hK⟩ ↦ ⟨⋃₀ Is, ⟨_,_,_⟩, fun _ ↦ subset_sUnion_of_mem⟩
+      · refine indep_compact _ fun J hJ hJfin ↦ _
         have hchoose : ∀ e, e ∈ J → ∃ I, I ∈ Is ∧ (e : α) ∈ I := fun _ he ↦ mem_sUnion.1 <| hJ he
         choose! f hf using hchoose
-        refine J.eq_empty_or_nonempty.elim (fun hJ ↦ hJ ▸ indep_empty) (fun hne ↦ ?_)
+        refine J.eq_empty_or_nonempty.elim (fun hJ ↦ hJ ▸ indep_empty) (fun hne ↦ _)
         obtain ⟨x, hxJ, hxmax⟩ := Finite.exists_maximal_wrt f _ hJfin hne
-        refine indep_subset (hIs (hf x hxJ).1).1 fun y hyJ ↦ ?_
+        refine indep_subset (hIs (hf x hxJ).1).1 fun y hyJ ↦ _
         obtain (hle | hle) := hchain.total (hf _ hxJ).1 (hf _ hyJ).1
         · rw [hxmax _ hyJ hle]; exact (hf _ hyJ).2
         exact hle (hf _ hyJ).2
@@ -275,9 +275,9 @@ theorem _root_.Matroid.existsMaximalSubsetProperty_of_bdd {P : Set α → Prop}
     rwa [ncard_def, heq, ENat.toNat_coe]
     -- have := (hP Y hY).2
   obtain ⟨Y, hY, hY'⟩ := Finite.exists_maximal_wrt' ncard _ hfin ⟨I, hI, rfl.subset, hIX⟩
-  refine ⟨Y, hY, fun J ⟨hJ, hIJ, hJX⟩ (hYJ : Y ⊆ J) ↦ (?_ : J ⊆ Y)⟩
+  refine ⟨Y, hY, fun J ⟨hJ, hIJ, hJX⟩ (hYJ : Y ⊆ J) ↦ (_ : J ⊆ Y)⟩
   have hJfin := finite_of_encard_le_coe (hP J hJ)
-  refine' (eq_of_subset_of_ncard_le hYJ _ hJfin).symm.subset
+  refine (eq_of_subset_of_ncard_le hYJ _ hJfin).symm.subset
   rw [hY' J ⟨hJ, hIJ, hJX⟩ (ncard_le_ncard hYJ hJfin)]
 
 /-- If there is an absolute upper bound on the size of an independent set, then the maximality axiom
@@ -306,7 +306,7 @@ instance (E : Set α) (Indep : Set α → Prop) indep_empty indep_subset indep_a
     FiniteRk (IndepMatroid.ofBdd
       E Indep indep_empty indep_subset indep_aug subset_ground h_bdd).matroid := by
   obtain ⟨B, hB⟩ := (IndepMatroid.ofBdd E Indep _ _ _ _ _).matroid.exists_base
-  refine hB.finiteRk_of_finite ?_
+  refine hB.finiteRk_of_finite _
   obtain ⟨n, hn⟩ := h_bdd
   exact finite_of_encard_le_coe <| hn B (by simpa using hB.indep)
 
@@ -333,7 +333,7 @@ protected def ofBddAugment (E : Set α) (Indep : Set α → Prop)
       have hlt : I.encard < J.encard :=
         (finite_of_encard_le_coe (h_bdd J hJ)).encard_lt_encard (hIJ.ssubset_of_ne hne)
       have hle : J.encard ≤ B.encard := by
-        refine le_of_not_lt (fun hlt' ↦ ?_)
+        refine le_of_not_lt (fun hlt' ↦ _)
         obtain ⟨e, he⟩ := indep_aug hB hJ hlt'
         rw [hBmax he.2.2 (subset_insert _ _)] at he
         exact he.2.1 (mem_insert _ _)
@@ -365,7 +365,7 @@ protected def ofFinite {E : Set α} (hE : E.Finite) (Indep : Set α → Prop)
   IndepMatroid.ofBddAugment (E := E) (Indep := Indep) (indep_empty := indep_empty)
     (indep_subset := indep_subset)
     (indep_aug := by
-      refine fun {I J} hI hJ hIJ ↦ indep_aug hI hJ ?_
+      refine fun {I J} hI hJ hIJ ↦ indep_aug hI hJ _
       rwa [← Nat.cast_lt (α := ℕ∞), (hE.subset (subset_ground hJ)).cast_ncard_eq,
         (hE.subset (subset_ground hI)).cast_ncard_eq] )
     (indep_bdd := ⟨E.ncard, fun I hI ↦ by
@@ -472,7 +472,7 @@ namespace Matroid
   (base_exchange := base_exchange)
   (maximality := by
     obtain ⟨B, hB, hfin⟩ := exists_finite_base
-    refine' fun X _ ↦ Matroid.existsMaximalSubsetProperty_of_bdd
+    refine fun X _ ↦ Matroid.existsMaximalSubsetProperty_of_bdd
       ⟨B.ncard, fun Y ⟨B', hB', hYB'⟩ ↦ _⟩ X
     rw [hfin.cast_ncard_eq, base_exchange.encard_base_eq hB hB']
     exact encard_mono hYB')

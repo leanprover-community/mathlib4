@@ -154,7 +154,7 @@ theorem differentiable_within_at_localInvariantProp :
       have := (mem_groupoid_of_pregroupoid.2 he).2.contDiffWithinAt this
       convert (h.comp' _ (this.differentiableWithinAt le_top)).mono_of_mem _ using 1
       · ext y; simp only [mfld_simps]
-      refine'
+      refine
         mem_nhdsWithin.mpr
           ⟨I.symm ⁻¹' e.target, e.open_target.preimage I.continuous_symm, by
             simp_rw [Set.mem_preimage, I.left_inv, e.mapsTo hx], _⟩
@@ -240,7 +240,7 @@ theorem mdifferentiableAt_iff (f : M → M') (x : M) :
     MDifferentiableAt I I' f x ↔ ContinuousAt f x ∧
     DifferentiableWithinAt 𝕜 (writtenInExtChartAt I I' x f) (range I) ((extChartAt I x) x) := by
   rw [MDifferentiableAt, liftPropAt_iff]
-  congrm _ ∧ ?_
+  congrm _ ∧ _
   simp [DifferentiableWithinAtProp, Set.univ_inter]
   -- Porting note: `rfl` wasn't needed
   rfl

@@ -42,14 +42,14 @@ subgroup that is less than `ε`. -/
 theorem dense_of_not_isolated_zero (S : AddSubgroup G) (hS : ∀ ε > 0, ∃ g ∈ S, g ∈ Ioo 0 ε) :
     Dense (S : Set G) := by
   cases subsingleton_or_nontrivial G
-  · refine fun x => _root_.subset_closure ?_
+  · refine fun x => _root_.subset_closure _
     rw [Subsingleton.elim x 0]
     exact zero_mem S
-  refine dense_of_exists_between fun a b hlt => ?_
+  refine dense_of_exists_between fun a b hlt => _
   rcases hS (b - a) (sub_pos.2 hlt) with ⟨g, hgS, hg0, hg⟩
   rcases (existsUnique_add_zsmul_mem_Ioc hg0 0 a).exists with ⟨m, hm⟩
   rw [zero_add] at hm
-  refine ⟨m • g, zsmul_mem hgS _, hm.1, hm.2.trans_lt ?_⟩
+  refine ⟨m • g, zsmul_mem hgS _, hm.1, hm.2.trans_lt _⟩
   rwa [lt_sub_iff_add_lt'] at hg
 
 /-- Let `S` be a nontrivial additive subgroup in an archimedean linear ordered additive commutative
@@ -57,7 +57,7 @@ group `G` with order topology. If the set of positive elements of `S` does not h
 element, then `S` is dense `G`. -/
 theorem dense_of_no_min (S : AddSubgroup G) (hbot : S ≠ ⊥)
     (H : ¬∃ a : G, IsLeast { g : G | g ∈ S ∧ 0 < g } a) : Dense (S : Set G) := by
-  refine S.dense_of_not_isolated_zero fun ε ε0 => ?_
+  refine S.dense_of_not_isolated_zero fun ε ε0 => _
   contrapose! H
   exact exists_isLeast_pos hbot ε0 (disjoint_left.2 H)
 #align real.subgroup_dense_of_no_min AddSubgroup.dense_of_no_minₓ
@@ -65,7 +65,7 @@ theorem dense_of_no_min (S : AddSubgroup G) (hbot : S ≠ ⊥)
 /-- An additive subgroup of an archimedean linear ordered additive commutative group `G` with order
 topology either is dense in `G` or is a cyclic subgroup. -/
 theorem dense_or_cyclic (S : AddSubgroup G) : Dense (S : Set G) ∨ ∃ a : G, S = closure {a} := by
-  refine (em _).imp (dense_of_not_isolated_zero S) fun h => ?_
+  refine (em _).imp (dense_of_not_isolated_zero S) fun h => _
   push_neg at h
   rcases h with ⟨ε, ε0, hε⟩
   exact cyclic_of_isolated_zero ε0 (disjoint_left.2 hε)

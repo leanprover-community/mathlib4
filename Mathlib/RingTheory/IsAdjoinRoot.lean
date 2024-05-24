@@ -420,13 +420,13 @@ def basis (h : IsAdjoinRootMonic S f) : Basis (Fin (natDegree f)) R S :=
         rw [Finsupp.mapDomain_comapDomain, Polynomial.eta, h.map_modByMonicHom x]
         · exact Fin.val_injective
         intro i hi
-        refine Set.mem_range.mpr ⟨⟨i, ?_⟩, rfl⟩
+        refine Set.mem_range.mpr ⟨⟨i, _⟩, rfl⟩
         contrapose! hi
         simp only [Polynomial.toFinsupp_apply, Classical.not_not, Finsupp.mem_support_iff, Ne,
           modByMonicHom, LinearMap.coe_mk, Finset.mem_coe]
         by_cases hx : h.toIsAdjoinRoot.repr x %ₘ f = 0
         · simp [hx]
-        refine coeff_eq_zero_of_natDegree_lt (lt_of_lt_of_le ?_ hi)
+        refine coeff_eq_zero_of_natDegree_lt (lt_of_lt_of_le _ hi)
         dsimp -- Porting note (#11227):added a `dsimp`
         rw [natDegree_lt_natDegree_iff hx]
         exact degree_modByMonic_lt _ h.Monic
@@ -558,7 +558,7 @@ theorem coeff_root_pow (h : IsAdjoinRootMonic S f) {n} (hn : n < natDegree f) :
         rw [h.basis.repr_self, ← Finsupp.single_eq_pi_single,
           Finsupp.single_apply_left Fin.val_injective]
       _ = Pi.single (f := fun _ => R) n 1 i := by rw [Fin.val_mk, Fin.val_mk]
-  · refine (Pi.single_eq_of_ne (f := fun _ => R) ?_ (1 : (fun _ => R) n)).symm
+  · refine (Pi.single_eq_of_ne (f := fun _ => R) _ (1 : (fun _ => R) n)).symm
     rintro rfl
     simp [hi] at hn
 #align is_adjoin_root_monic.coeff_root_pow IsAdjoinRootMonic.coeff_root_pow
@@ -575,7 +575,7 @@ theorem coeff_algebraMap [Nontrivial S] (h : IsAdjoinRootMonic S f) (x : R) :
     h.coeff (algebraMap R S x) = Pi.single 0 x := by
   ext i
   rw [Algebra.algebraMap_eq_smul_one, map_smul, coeff_one, Pi.smul_apply, smul_eq_mul]
-  refine' (Pi.apply_single (fun _ y => x * y) _ 0 1 i).trans (by simp)
+  refine (Pi.apply_single (fun _ y => x * y) _ 0 1 i).trans (by simp)
   intros
   simp
 #align is_adjoin_root_monic.coeff_algebra_map IsAdjoinRootMonic.coeff_algebraMap

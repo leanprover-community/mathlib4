@@ -55,7 +55,7 @@ theorem nodup_range' (s n : ℕ) (step := 1) (h : 0 < step := by simp) : Nodup (
 #align list.range'_append List.range'_append
 #align list.range'_sublist_right List.range'_sublist_right
 #align list.range'_subset_right List.range'_subset_right
-#align list.nth_range' List.get?_range'
+#align list.nth_range' List.get_range'
 
 set_option linter.deprecated false in
 @[simp]
@@ -92,7 +92,7 @@ theorem nodup_range (n : ℕ) : Nodup (range n) := by
 #align list.mem_range List.mem_range
 #align list.not_mem_range_self List.not_mem_range_self
 #align list.self_mem_range_succ List.self_mem_range_succ
-#align list.nth_range List.get?_range
+#align list.nth_range List.get_range
 #align list.range_succ List.range_succ
 #align list.range_zero List.range_zero
 

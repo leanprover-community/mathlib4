@@ -532,7 +532,7 @@ variable (R M)
 /-- If `M` is an `R`-module with one and `M` has characteristic zero, then `R` has characteristic
 zero as well. Usually `M` is an `R`-algebra. -/
 theorem CharZero.of_module (M) [AddCommMonoidWithOne M] [CharZero M] [Module R M] : CharZero R := by
-  refine' ⟨fun m n h => @Nat.cast_injective M _ _ _ _ _⟩
+  refine ⟨fun m n h => @Nat.cast_injective M _ _ _ _ _⟩
   rw [← nsmul_one, ← nsmul_one, nsmul_eq_smul_cast R m (1 : M), nsmul_eq_smul_cast R n (1 : M), h]
 #align char_zero.of_module CharZero.of_module
 
@@ -617,7 +617,7 @@ theorem NoZeroSMulDivisors.int_of_charZero [CharZero R] : NoZeroSMulDivisors ℤ
 /-- Only a ring of characteristic zero can can have a non-trivial module without additive or
 scalar torsion. -/
 theorem CharZero.of_noZeroSMulDivisors [Nontrivial M] [NoZeroSMulDivisors ℤ M] : CharZero R := by
-  refine ⟨fun {n m h} ↦ ?_⟩
+  refine ⟨fun {n m h} ↦ _⟩
   obtain ⟨x, hx⟩ := exists_ne (0 : M)
   replace h : (n : ℤ) • x = (m : ℤ) • x := by simp [zsmul_eq_smul_cast R, h]
   simpa using smul_left_injective ℤ hx h

@@ -209,7 +209,7 @@ def reparam (p : Path x₀ x₁) (f : I → I) (hf : Continuous f) (hf₀ : f 0 
       simp [hf₁]
   continuous_toFun := by
     -- Porting note: was `continuity` in auto-param
-    refine continuous_const.path_eval ?_
+    refine continuous_const.path_eval _
     apply Continuous.subtype_mk
     apply Continuous.add <;> apply Continuous.mul
     · exact continuous_induced_dom.comp (unitInterval.continuous_symm.comp continuous_fst)
@@ -359,7 +359,7 @@ joined by a path in the codomain. -/
 theorem ContinuousMap.homotopic_const_iff [Nonempty Y] :
     (ContinuousMap.const Y x₀).Homotopic (ContinuousMap.const Y x₁) ↔ Joined x₀ x₁ := by
   inhabit Y
-  refine ⟨fun ⟨H⟩ ↦ ⟨⟨(H.toContinuousMap.comp .prodSwap).curry default, ?_, ?_⟩⟩,
+  refine ⟨fun ⟨H⟩ ↦ ⟨⟨(H.toContinuousMap.comp .prodSwap).curry default, _, _⟩⟩,
     fun ⟨p⟩ ↦ ⟨p.toHomotopyConst⟩⟩ <;> simp
 
 namespace ContinuousMap.Homotopy

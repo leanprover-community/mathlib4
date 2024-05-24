@@ -58,7 +58,7 @@ theorem isUnit_iff_not_dvd_char (R : Type*) [CommRing R] (p : ℕ) [Fact p.Prime
 the prime divisors of its cardinality. -/
 theorem prime_dvd_char_iff_dvd_card {R : Type*} [CommRing R] [Fintype R] (p : ℕ) [Fact p.Prime] :
     p ∣ ringChar R ↔ p ∣ Fintype.card R := by
-  refine'
+  refine
     ⟨fun h =>
       h.trans <|
         Int.natCast_dvd_natCast.mp <|

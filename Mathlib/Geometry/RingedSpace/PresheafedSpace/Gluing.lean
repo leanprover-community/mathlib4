@@ -201,11 +201,11 @@ theorem snd_invApp_t_app' (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [this, Set.image_comp, Set.image_comp, Set.preimage_image_eq]
     swap
-    · refine Function.HasLeftInverse.injective ⟨(D.t i k).base, fun x => ?_⟩
+    · refine Function.HasLeftInverse.injective ⟨(D.t i k).base, fun x => _⟩
       rw [← comp_apply, ← comp_base, D.t_inv, id_base, id_apply]
-    refine congr_arg (_ '' ·) ?_
-    refine congr_fun ?_ _
-    refine Set.image_eq_preimage_of_inverse ?_ ?_
+    refine congr_arg (_ '' ·) _
+    refine congr_fun _ _
+    refine Set.image_eq_preimage_of_inverse _ _
     · intro x
       rw [← comp_apply, ← comp_base, IsIso.inv_hom_id, id_base, id_apply]
     · intro x
@@ -259,10 +259,10 @@ theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
   erw [coe_comp, coe_comp, coe_comp]
   rw [Set.image_comp, Set.preimage_comp]
   erw [Set.preimage_image_eq]
-  · refine' Eq.trans (D.toTopGlueData.preimage_image_eq_image' _ _ _) _
+  · refine Eq.trans (D.toTopGlueData.preimage_image_eq_image' _ _ _) _
     dsimp
     rw [coe_comp, Set.image_comp]
-    refine congr_arg (_ '' ·) ?_
+    refine congr_arg (_ '' ·) _
     rw [Set.eq_preimage_iff_image_eq, ← Set.image_comp]
     swap
     · apply CategoryTheory.ConcreteCategory.bijective_of_isIso
@@ -341,7 +341,7 @@ diagram. We will lift these maps into `ιInvApp`. -/
 def ιInvAppπApp {i : D.J} (U : Opens (D.U i).carrier) (j) :
     (𝖣.U i).presheaf.obj (op U) ⟶ (D.diagramOverOpen U).obj (op j) := by
   rcases j with (⟨j, k⟩ | j)
-  · refine'
+  · refine
       D.opensImagePreimageMap i j U ≫ (D.f j k).c.app _ ≫ (D.V (j, k)).presheaf.map (eqToHom _)
     rw [Functor.op_obj]
     congr 1; ext1
@@ -349,9 +349,9 @@ def ιInvAppπApp {i : D.J} (U : Opens (D.U i).carrier) (j) :
     rw [Set.preimage_preimage]
     change (D.f j k ≫ 𝖣.ι j).base ⁻¹' _ = _
     -- Porting note: used to be `congr 3`
-    refine congr_arg (· ⁻¹' _) ?_
-    convert congr_arg (ContinuousMap.toFun (α := D.V ⟨j, k⟩) (β := D.glued) ·) ?_
-    refine congr_arg (PresheafedSpace.Hom.base (C := C) ·) ?_
+    refine congr_arg (· ⁻¹' _) _
+    convert congr_arg (ContinuousMap.toFun (α := D.V ⟨j, k⟩) (β := D.glued) ·) _
+    refine congr_arg (PresheafedSpace.Hom.base (C := C) ·) _
     exact colimit.w 𝖣.diagram.multispan (WalkingMultispan.Hom.fst (j, k))
   · exact D.opensImagePreimageMap i j U
 #align algebraic_geometry.PresheafedSpace.glue_data.ι_inv_app_π_app AlgebraicGeometry.PresheafedSpace.GlueData.ιInvAppπApp
@@ -368,8 +368,8 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
       π :=
         { app := fun j => D.ιInvAppπApp U (unop j)
           naturality := fun {X Y} f' => by
-            induction X using Opposite.rec' with | h X => ?_
-            induction Y using Opposite.rec' with | h Y => ?_
+            induction X using Opposite.rec' with | h X => _
+            induction Y using Opposite.rec' with | h Y => _
             let f : Y ⟶ X := f'.unop; have : f' = f.op := rfl; clear_value f; subst this
             rcases f with (_ | ⟨j, k⟩ | ⟨j, k⟩)
             · erw [Category.id_comp, CategoryTheory.Functor.map_id]
@@ -420,7 +420,7 @@ theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
   -- Porting note: I don't know what the magic was in Lean3 proof, it just skipped the proof of `eq`
   · congr; ext1; change _ = _ ⁻¹' (_ '' _); ext1 x
     simp only [SetLike.mem_coe, diagram_l, diagram_r, unop_op, Set.mem_preimage, Set.mem_image]
-    refine ⟨fun h => ⟨_, h, rfl⟩, ?_⟩
+    refine ⟨fun h => ⟨_, h, rfl⟩, _⟩
     rintro ⟨y, h1, h2⟩
     convert h1 using 1
     delta ι Multicoequalizer.π at h2
@@ -429,7 +429,7 @@ theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
     · have := D.ι_gluedIso_inv (PresheafedSpace.forget _) i
       dsimp at this
       rw [← this, coe_comp]
-      refine Function.Injective.comp ?_ (TopCat.GlueData.ι_injective D.toTopGlueData i)
+      refine Function.Injective.comp _ (TopCat.GlueData.ι_injective D.toTopGlueData i)
       rw [← TopCat.mono_iff_injective]
       infer_instance
   delta ιInvApp
@@ -491,7 +491,7 @@ theorem π_ιInvApp_π (i j : D.J) (U : Opens (D.U i).carrier) :
 theorem π_ιInvApp_eq_id (i : D.J) (U : Opens (D.U i).carrier) :
     D.diagramOverOpenπ U i ≫ D.ιInvAppπEqMap U ≫ D.ιInvApp U = 𝟙 _ := by
   ext j
-  induction j using Opposite.rec' with | h j => ?_
+  induction j using Opposite.rec' with | h j => _
   rcases j with (⟨j, k⟩ | ⟨j⟩)
   · rw [← limit.w (componentwiseDiagram 𝖣.diagram.multispan _)
         (Quiver.Hom.op (WalkingMultispan.Hom.fst (j, k))),
@@ -527,8 +527,8 @@ Vᵢⱼ ⟶ Uᵢ
 -/
 def vPullbackConeIsLimit (i j : D.J) : IsLimit (𝖣.vPullbackCone i j) :=
   PullbackCone.isLimitAux' _ fun s => by
-    refine' ⟨_, _, _, _⟩
-    · refine' PresheafedSpace.IsOpenImmersion.lift (D.f i j) s.fst _
+    refine ⟨_, _, _, _⟩
+    · refine PresheafedSpace.IsOpenImmersion.lift (D.f i j) s.fst _
       erw [← D.toTopGlueData.preimage_range j i]
       have :
         s.fst.base ≫ D.toTopGlueData.ι i =
@@ -618,7 +618,7 @@ theorem ι_isoPresheafedSpace_inv (i : D.J) :
 instance ιIsOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := by
   rw [← D.ι_isoPresheafedSpace_inv]
   -- Porting note: was `inferInstance`
-  refine PresheafedSpace.IsOpenImmersion.comp (hf := ?_) (hg := inferInstance)
+  refine PresheafedSpace.IsOpenImmersion.comp (hf := _) (hg := inferInstance)
   apply PresheafedSpace.GlueData.ιIsOpenImmersion
 #align algebraic_geometry.SheafedSpace.glue_data.ι_IsOpenImmersion AlgebraicGeometry.SheafedSpaceₓ.GlueData.ιIsOpenImmersion
 

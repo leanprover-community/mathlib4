@@ -375,7 +375,7 @@ lemma smulRight_apply_eq_zero_iff {f : M₁ →ₗ[R] S} {x : M} [NoZeroSMulDivi
     f.smulRight x = 0 ↔ f = 0 ∨ x = 0 := by
   rcases eq_or_ne x 0 with rfl | hx
   · simp
-  refine ⟨fun h ↦ Or.inl ?_, fun h ↦ by simp [h.resolve_right hx]⟩
+  refine ⟨fun h ↦ Or.inl _, fun h ↦ by simp [h.resolve_right hx]⟩
   ext v
   replace h : f v • x = 0 := by simpa only [LinearMap.zero_apply] using LinearMap.congr_fun h v
   rw [smul_eq_zero] at h

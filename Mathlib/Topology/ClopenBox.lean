@@ -55,7 +55,7 @@ theorem TopologicalSpace.Clopens.exists_finset_eq_sup_prod (W : Clopens (X × Y)
   classical
   use I.image fun x ↦ (U x, V x)
   rw [Finset.sup_image]
-  refine le_antisymm (fun x hx ↦ ?_) (Finset.sup_le fun x hx ↦ ?_)
+  refine le_antisymm (fun x hx ↦ _) (Finset.sup_le fun x hx ↦ _)
   · rcases Set.mem_iUnion₂.1 (hWI hx) with ⟨i, hi, hxi⟩
     exact SetLike.le_def.1 (Finset.le_sup hi) hxi
   · exact hUV _ <| hIW _ hx

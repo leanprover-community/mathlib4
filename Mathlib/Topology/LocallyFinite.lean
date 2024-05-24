@@ -47,7 +47,7 @@ protected theorem subset (hf : LocallyFinite f) (hg : ∀ i, g i ⊆ f i) : Loca
 theorem comp_injOn {g : ι' → ι} (hf : LocallyFinite f) (hg : InjOn g { i | (f (g i)).Nonempty }) :
     LocallyFinite (f ∘ g) := fun x => by
   let ⟨t, htx, htf⟩ := hf x
-  refine ⟨t, htx, htf.preimage <| ?_⟩
+  refine ⟨t, htx, htf.preimage <| _⟩
   exact hg.mono fun i (hi : Set.Nonempty _) => hi.left
 #align locally_finite.comp_inj_on LocallyFinite.comp_injOn
 
@@ -77,7 +77,7 @@ theorem exists_mem_basis {ι' : Sort*} (hf : LocallyFinite f) {p : ι' → Prop}
 protected theorem nhdsWithin_iUnion (hf : LocallyFinite f) (a : X) :
     𝓝[⋃ i, f i] a = ⨆ i, 𝓝[f i] a := by
   rcases hf a with ⟨U, haU, hfin⟩
-  refine le_antisymm ?_ (Monotone.le_map_iSup fun _ _ ↦ nhdsWithin_mono _)
+  refine le_antisymm _ (Monotone.le_map_iSup fun _ _ ↦ nhdsWithin_mono _)
   calc
     𝓝[⋃ i, f i] a = 𝓝[⋃ i, f i ∩ U] a := by
       rw [← iUnion_inter, ← nhdsWithin_inter_of_mem' (nhdsWithin_le_nhds haU)]
@@ -121,7 +121,7 @@ protected theorem continuous {g : X → Y} (hf : LocallyFinite f) (h_cov : ⋃ i
 protected theorem closure (hf : LocallyFinite f) : LocallyFinite fun i => closure (f i) := by
   intro x
   rcases hf x with ⟨s, hsx, hsf⟩
-  refine' ⟨interior s, interior_mem_nhds.2 hsx, hsf.subset fun i hi => _⟩
+  refine ⟨interior s, interior_mem_nhds.2 hsx, hsf.subset fun i hi => _⟩
   exact (hi.mono isOpen_interior.closure_inter).of_closure.mono
     (inter_subset_inter_right _ interior_subset)
 #align locally_finite.closure LocallyFinite.closure
@@ -140,7 +140,7 @@ theorem isClosed_iUnion (hf : LocallyFinite f) (hc : ∀ i, IsClosed (f i)) :
 intersection of the complements to `f i`, `x ∉ f i`, is a neighbourhood of `x`. -/
 theorem iInter_compl_mem_nhds (hf : LocallyFinite f) (hc : ∀ i, IsClosed (f i)) (x : X) :
     (⋂ (i) (_ : x ∉ f i), (f i)ᶜ) ∈ 𝓝 x := by
-  refine' IsOpen.mem_nhds _ (mem_iInter₂.2 fun i => id)
+  refine IsOpen.mem_nhds _ (mem_iInter₂.2 fun i => id)
   suffices IsClosed (⋃ i : { i // x ∉ f i }, f i) by
     rwa [← isOpen_compl_iff, compl_iUnion, iInter_subtype] at this
   exact (hf.comp_injective Subtype.val_injective).isClosed_iUnion fun i => hc _
@@ -161,7 +161,7 @@ theorem exists_forall_eventually_eq_prod {π : X → Sort*} {f : ℕ → ∀ x :
     fun x n hn y hy => by_contra fun hne => hn.lt.not_le <| hN x ⟨y, hne, hy⟩
   replace hN : ∀ (x), ∀ n ≥ N x + 1, ∀ y ∈ U x, f n y = f (N x + 1) y :=
     fun x n hn y hy => Nat.le_induction rfl (fun k hle => (hN x _ hle _ hy).trans) n hn
-  refine ⟨fun x => f (N x + 1) x, fun x => ?_⟩
+  refine ⟨fun x => f (N x + 1) x, fun x => _⟩
   filter_upwards [Filter.prod_mem_prod (eventually_gt_atTop (N x)) (hUx x)]
   rintro ⟨n, y⟩ ⟨hn : N x < n, hy : y ∈ U x⟩
   calc

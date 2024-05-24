@@ -78,7 +78,7 @@ open scoped LSeries.notation in
 lemma tsum_dirichletSummand {N : ℕ} (χ : DirichletCharacter ℂ N) (hs : 1 < s.re) :
     ∑' (n : ℕ), dirichletSummandHom χ (ne_zero_of_one_lt_re hs) n = L ↗χ s := by
   simp only [LSeries, LSeries.term, dirichletSummandHom]
-  refine tsum_congr (fun n ↦ ?_)
+  refine tsum_congr (fun n ↦ _)
   rcases eq_or_ne n 0 with rfl | hn
   · simp only [map_zero, ↓reduceIte]
   · simp only [cpow_neg, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, hn, ↓reduceIte,

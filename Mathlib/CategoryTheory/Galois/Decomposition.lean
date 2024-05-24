@@ -58,14 +58,14 @@ non-trivial subobjects which have strictly smaller fiber and conclude by the ind
 private lemma has_decomp_connected_components_aux_conn (X : C) [IsConnected X] :
     ∃ (ι : Type) (f : ι → C) (g : (i : ι) → (f i) ⟶ X) (_ : IsColimit (Cofan.mk X g)),
     (∀ i, IsConnected (f i)) ∧ Finite ι := by
-  refine ⟨Unit, fun _ ↦ X, fun _ ↦ 𝟙 X, mkCofanColimit _ (fun s ↦ s.inj ()), ?_⟩
+  refine ⟨Unit, fun _ ↦ X, fun _ ↦ 𝟙 X, mkCofanColimit _ (fun s ↦ s.inj ()), _⟩
   exact ⟨fun _ ↦ inferInstance, inferInstance⟩
 
 /-- The trivial case if `X` is initial. -/
 private lemma has_decomp_connected_components_aux_initial (X : C) (h : IsInitial X) :
     ∃ (ι : Type) (f : ι → C) (g : (i : ι) → (f i) ⟶ X) (_ : IsColimit (Cofan.mk X g)),
     (∀ i, IsConnected (f i)) ∧ Finite ι := by
-  refine ⟨Empty, fun _ ↦ X, fun _ ↦ 𝟙 X, ?_⟩
+  refine ⟨Empty, fun _ ↦ X, fun _ ↦ 𝟙 X, _⟩
   use mkCofanColimit _ (fun s ↦ IsInitial.to h s.pt) (fun s ↦ by aesop)
     (fun s m _ ↦ IsInitial.hom_ext h m _)
   exact ⟨by simp only [IsEmpty.forall_iff], inferInstance⟩
@@ -97,9 +97,9 @@ private lemma has_decomp_connected_components_aux (F : C ⥤ FintypeCat.{w}) [Fi
     let ⟨ι₁, f₁, g₁, hc₁, hf₁, he₁⟩ := hi (Nat.card (F.obj Y)) hn1 Y rfl
     let ⟨ι₂, f₂, g₂, hc₂, hf₂, he₂⟩ := hi (Nat.card (F.obj Z)) hn2 Z rfl
     refine ⟨ι₁ ⊕ ι₂, Sum.elim f₁ f₂,
-      Cofan.combPairHoms (Cofan.mk Y g₁) (Cofan.mk Z g₂) (BinaryCofan.mk v u), ?_⟩
+      Cofan.combPairHoms (Cofan.mk Y g₁) (Cofan.mk Z g₂) (BinaryCofan.mk v u), _⟩
     use Cofan.combPairIsColimit hc₁ hc₂ c
-    refine ⟨fun i ↦ ?_, inferInstance⟩
+    refine ⟨fun i ↦ _, inferInstance⟩
     cases i
     · exact hf₁ _
     · exact hf₂ _
@@ -130,7 +130,7 @@ lemma fiber_in_connected_component (X : C) (x : F.obj X) : ∃ (Y : C) (i : Y �
   let s : Cocone (Discrete.functor f ⋙ F) := F.mapCocone (Cofan.mk X g)
   let s' : IsColimit s := isColimitOfPreserves F hl
   obtain ⟨⟨j⟩, z, h⟩ := Concrete.isColimit_exists_rep _ s' x
-  refine ⟨f j, g j, z, ⟨?_, hc j, MonoCoprod.mono_inj _ (Cofan.mk X g) hl j⟩⟩
+  refine ⟨f j, g j, z, ⟨_, hc j, MonoCoprod.mono_inj _ (Cofan.mk X g) hl j⟩⟩
   subst h
   rfl
 
@@ -270,7 +270,7 @@ lemma exists_galois_representative (X : C) : ∃ (A : C) (a : F.obj A),
   use A
   use a
   constructor
-  · refine (isGalois_iff_pretransitive F A).mpr ⟨fun x y ↦ ?_⟩
+  · refine (isGalois_iff_pretransitive F A).mpr ⟨fun x y ↦ _⟩
     obtain ⟨fi1, hfi1⟩ := subobj_selfProd_trans h1 x
     obtain ⟨fi2, hfi2⟩ := subobj_selfProd_trans h1 y
     use fi1 ≪≫ fi2.symm
@@ -278,7 +278,7 @@ lemma exists_galois_representative (X : C) : ∃ (A : C) (a : F.obj A),
     simp only [map_comp, FintypeCat.comp_apply]
     rw [hfi1, ← hfi2]
     exact congr_fun (F.mapIso fi2).hom_inv_id y
-  · refine ⟨evaluation_injective_of_isConnected F A X a, ?_⟩
+  · refine ⟨evaluation_injective_of_isConnected F A X a, _⟩
     intro x
     use u ≫ Pi.π _ x
     exact (selfProdProj_fiber h1) x

@@ -257,7 +257,7 @@ theorem colorable_iff_exists_bdd_nat_coloring (n : ℕ) :
     cases' C with color valid
     exact Fin.is_lt (color v)
   · rintro ⟨C, Cf⟩
-    refine' ⟨Coloring.mk _ _⟩
+    refine ⟨Coloring.mk _ _⟩
     · exact fun v => ⟨C v, Cf v⟩
     · rintro v w hvw
       simp only [Fin.mk_eq_mk, Ne]
@@ -288,7 +288,7 @@ theorem chromaticNumber_ne_top_iff_exists : G.chromaticNumber ≠ ⊤ ↔ ∃ n,
   simp
 
 theorem chromaticNumber_le_iff_colorable {n : ℕ} : G.chromaticNumber ≤ n ↔ G.Colorable n := by
-  refine ⟨fun h ↦ ?_, Colorable.chromaticNumber_le⟩
+  refine ⟨fun h ↦ _, Colorable.chromaticNumber_le⟩
   have : G.chromaticNumber ≠ ⊤ := (trans h (WithTop.coe_lt_top n)).ne
   rw [chromaticNumber_ne_top_iff_exists] at this
   obtain ⟨m, hm⟩ := this
@@ -319,7 +319,7 @@ theorem colorable_chromaticNumber_of_fintype (G : SimpleGraph V) [Finite V] :
 theorem chromaticNumber_le_one_of_subsingleton (G : SimpleGraph V) [Subsingleton V] :
     G.chromaticNumber ≤ 1 := by
   rw [← Nat.cast_one, chromaticNumber_le_iff_colorable]
-  refine ⟨Coloring.mk (fun _ => 0) ?_⟩
+  refine ⟨Coloring.mk (fun _ => 0) _⟩
   intros v w
   cases Subsingleton.elim v w
   simp
@@ -384,7 +384,7 @@ theorem chromaticNumber_mono_of_embedding {V' : Type*} {G' : SimpleGraph V'}
 
 lemma card_le_chromaticNumber_iff_forall_surjective [Fintype α] :
     card α ≤ G.chromaticNumber ↔ ∀ C : G.Coloring α, Surjective C := by
-  refine ⟨fun h C ↦ ?_, fun h ↦ ?_⟩
+  refine ⟨fun h C ↦ _, fun h ↦ _⟩
   · rw [C.colorable.chromaticNumber_eq_sInf, Nat.cast_le] at h
     intro i
     by_contra! hi
@@ -395,7 +395,7 @@ lemma card_le_chromaticNumber_iff_forall_surjective [Fintype α] :
   · simp only [chromaticNumber, Set.mem_setOf_eq, le_iInf_iff, Nat.cast_le, exists_prop]
     rintro i ⟨C⟩
     contrapose! h
-    refine ⟨G.recolorOfCardLE (by simpa using h.le) C, fun hC ↦ ?_⟩
+    refine ⟨G.recolorOfCardLE (by simpa using h.le) C, fun hC ↦ _⟩
     dsimp at hC
     simpa [h.not_le] using Fintype.card_le_of_surjective _ hC.of_comp
 
@@ -504,7 +504,7 @@ theorem cliqueFree_of_chromaticNumber_lt {n : ℕ} (hc : G.chromaticNumber < n) 
   have hne : G.chromaticNumber ≠ ⊤ := hc.ne_top
   obtain ⟨m, hc'⟩ := chromaticNumber_ne_top_iff_exists.mp hne
   have := colorable_chromaticNumber hc'
-  refine this.cliqueFree ?_
+  refine this.cliqueFree _
   rw [← ENat.coe_toNat_eq_self] at hne
   rw [← hne] at hc
   simpa using hc

@@ -183,7 +183,7 @@ theorem forallYonedaIsSheaf_iff_colimit (S : Sieve X) :
       Nonempty (IsColimit S.arrows.cocone) := by
   constructor
   · intro H
-    refine Nonempty.intro ?_
+    refine Nonempty.intro _
     exact
     { desc := fun s => H s.pt (yonedaFamilyOfElements_fromCocone S.arrows s)
         (yonedaFamily_fromCocone_compatible S s) |>.choose

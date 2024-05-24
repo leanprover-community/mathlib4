@@ -74,7 +74,7 @@ variable (R L)
 variable [LieAlgebra.IsKilling R L]
 
 @[simp] lemma ad_apply_eq_zero_iff (x : L) : ad R L x = 0 ↔ x = 0 := by
-  refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
+  refine ⟨fun h ↦ _, fun h ↦ by simp [h]⟩
   rwa [← LieHom.mem_ker, ad_ker_eq_center, LieAlgebra.center_eq_bot_of_semisimple,
     LieSubmodule.mem_bot] at h
 
@@ -92,7 +92,7 @@ lemma range_ad_eq_top : 𝕀 = ⊤ := by
   rw [← LieSubalgebra.coe_to_submodule_eq_iff]
   apply LinearMap.BilinForm.eq_top_of_restrict_nondegenerate_of_orthogonal_eq_bot
     (LieModule.traceForm_isSymm R 𝔻 𝔻).isRefl (killingForm_restrict_range_ad_nondegenerate R L)
-  refine (Submodule.eq_bot_iff _).mpr fun D hD ↦ ext fun x ↦ ?_
+  refine (Submodule.eq_bot_iff _).mpr fun D hD ↦ ext fun x ↦ _
   simpa using ad_mem_ker_killingForm_ad_range_of_mem_orthogonal hD x
 
 variable {R L} in

@@ -129,7 +129,7 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
   ⟨fun V =>
     isConnected_of_zigzag fun A B => by
       rcases A with ⟨⟨⟨⟩⟩, ⟨i⟩ | ⟨i, j⟩, a⟩ <;> rcases B with ⟨⟨⟨⟩⟩, ⟨i'⟩ | ⟨i', j'⟩, b⟩
-      · refine'
+      · refine
           ⟨[{   left := ⟨⟨⟩⟩
                 right := pair i i'
                 hom := (le_inf a.le b.le).hom }, _], _, rfl⟩
@@ -143,7 +143,7 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
                 ⟨{  left := 𝟙 _
                     right := right i i' }⟩)
               List.Chain.nil)
-      · refine'
+      · refine
           ⟨[{   left := ⟨⟨⟩⟩
                 right := pair i' i
                 hom := (le_inf (b.le.trans inf_le_left) a.le).hom },
@@ -164,7 +164,7 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
                   ⟨{  left := 𝟙 _
                       right := left i' j' }⟩)
                 List.Chain.nil))
-      · refine'
+      · refine
           ⟨[{   left := ⟨⟨⟩⟩
                 right := single i
                 hom := (a.le.trans inf_le_left).hom },
@@ -185,7 +185,7 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
                   ⟨{  left := 𝟙 _
                       right := right i i' }⟩)
                 List.Chain.nil))
-      · refine'
+      · refine
           ⟨[{   left := ⟨⟨⟩⟩
                 right := single i
                 hom := (a.le.trans inf_le_left).hom },
@@ -355,7 +355,7 @@ def interUnionPullbackConeLift : s.pt ⟶ F.1.obj (op (U ⊔ V)) := by
       exacts [⟨⟨WalkingPair.left⟩, h⟩, ⟨⟨WalkingPair.right⟩, h⟩]
     · rintro ⟨⟨_ | _⟩, h⟩
       exacts [Or.inl h, Or.inr h]
-  refine'
+  refine
     (F.presheaf.isSheaf_iff_isSheafPairwiseIntersections.mp F.2 ι).some.lift
         ⟨s.pt,
           { app := _
@@ -414,7 +414,7 @@ def isLimitPullbackCone : IsLimit (interUnionPullbackCone F U V) := by
   apply PullbackCone.isLimitAux'
   intro s
   use interUnionPullbackConeLift F U V s
-  refine' ⟨_, _, _⟩
+  refine ⟨_, _, _⟩
   · apply interUnionPullbackConeLift_left
   · apply interUnionPullbackConeLift_right
   · intro m h₁ h₂

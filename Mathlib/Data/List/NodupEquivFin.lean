@@ -113,12 +113,12 @@ section Sublist
 any element of `l` found at index `ix` can be found at index `f ix` in `l'`,
 then `Sublist l l'`.
 -/
-theorem sublist_of_orderEmbedding_get?_eq {l l' : List α} (f : ℕ ↪o ℕ)
+theorem sublist_of_orderEmbedding_get_eq {l l' : List α} (f : ℕ ↪o ℕ)
     (hf : ∀ ix : ℕ, l.get? ix = l'.get? (f ix)) : l <+ l' := by
   induction' l with hd tl IH generalizing l' f
   · simp
   have : some hd = _ := hf 0
-  rw [eq_comm, List.get?_eq_some] at this
+  rw [eq_comm, List.get_eq_some] at this
   obtain ⟨w, h⟩ := this
   let f' : ℕ ↪o ℕ :=
     OrderEmbedding.ofMapLEIff (fun i => f (i + 1) - (f 0 + 1)) fun a b => by
@@ -128,38 +128,38 @@ theorem sublist_of_orderEmbedding_get?_eq {l l' : List α} (f : ℕ ↪o ℕ)
       exact b.succ_pos
   have : ∀ ix, tl.get? ix = (l'.drop (f 0 + 1)).get? (f' ix) := by
     intro ix
-    rw [List.get?_drop, OrderEmbedding.coe_ofMapLEIff, Nat.add_sub_cancel', ← hf, List.get?]
+    rw [List.get_drop, OrderEmbedding.coe_ofMapLEIff, Nat.add_sub_cancel', ← hf, List.get?]
     rw [Nat.succ_le_iff, OrderEmbedding.lt_iff_lt]
     exact ix.succ_pos
   rw [← List.take_append_drop (f 0 + 1) l', ← List.singleton_append]
   apply List.Sublist.append _ (IH _ this)
   rw [List.singleton_sublist, ← h, l'.get_take _ (Nat.lt_succ_self _)]
   apply List.get_mem
-#align list.sublist_of_order_embedding_nth_eq List.sublist_of_orderEmbedding_get?_eq
+#align list.sublist_of_order_embedding_nth_eq List.sublist_of_orderEmbedding_get_eq
 
 /-- A `l : List α` is `Sublist l l'` for `l' : List α` iff
 there is `f`, an order-preserving embedding of `ℕ` into `ℕ` such that
 any element of `l` found at index `ix` can be found at index `f ix` in `l'`.
 -/
-theorem sublist_iff_exists_orderEmbedding_get?_eq {l l' : List α} :
+theorem sublist_iff_exists_orderEmbedding_get_eq {l l' : List α} :
     l <+ l' ↔ ∃ f : ℕ ↪o ℕ, ∀ ix : ℕ, l.get? ix = l'.get? (f ix) := by
   constructor
   · intro H
     induction' H with xs ys y _H IH xs ys x _H IH
     · simp
     · obtain ⟨f, hf⟩ := IH
-      refine' ⟨f.trans (OrderEmbedding.ofStrictMono (· + 1) fun _ => by simp), _⟩
+      refine ⟨f.trans (OrderEmbedding.ofStrictMono (· + 1) fun _ => by simp), _⟩
       simpa using hf
     · obtain ⟨f, hf⟩ := IH
-      refine'
+      refine
         ⟨OrderEmbedding.ofMapLEIff (fun ix : ℕ => if ix = 0 then 0 else (f ix.pred).succ) _, _⟩
       · rintro ⟨_ | a⟩ ⟨_ | b⟩ <;> simp [Nat.succ_le_succ_iff]
       · rintro ⟨_ | i⟩
         · simp
         · simpa using hf _
   · rintro ⟨f, hf⟩
-    exact sublist_of_orderEmbedding_get?_eq f hf
-#align list.sublist_iff_exists_order_embedding_nth_eq List.sublist_iff_exists_orderEmbedding_get?_eq
+    exact sublist_of_orderEmbedding_get_eq f hf
+#align list.sublist_iff_exists_order_embedding_nth_eq List.sublist_iff_exists_orderEmbedding_get_eq
 
 /-- A `l : List α` is `Sublist l l'` for `l' : List α` iff
 there is `f`, an order-preserving embedding of `Fin l.length` into `Fin l'.length` such that
@@ -169,22 +169,22 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
     l <+ l' ↔
       ∃ f : Fin l.length ↪o Fin l'.length,
         ∀ ix : Fin l.length, l.get ix = l'.get (f ix) := by
-  rw [sublist_iff_exists_orderEmbedding_get?_eq]
+  rw [sublist_iff_exists_orderEmbedding_get_eq]
   constructor
   · rintro ⟨f, hf⟩
     have h : ∀ {i : ℕ}, i < l.length → f i < l'.length := by
       intro i hi
       specialize hf i
-      rw [get?_eq_get hi, eq_comm, get?_eq_some] at hf
+      rw [get_eq_get hi, eq_comm, get_eq_some] at hf
       obtain ⟨h, -⟩ := hf
       exact h
-    refine' ⟨OrderEmbedding.ofMapLEIff (fun ix => ⟨f ix, h ix.is_lt⟩) _, _⟩
+    refine ⟨OrderEmbedding.ofMapLEIff (fun ix => ⟨f ix, h ix.is_lt⟩) _, _⟩
     · simp
     · intro i
       apply Option.some_injective
-      simpa [get?_eq_get i.2, get?_eq_get (h i.2)] using hf i
+      simpa [get_eq_get i.2, get_eq_get (h i.2)] using hf i
   · rintro ⟨f, hf⟩
-    refine'
+    refine
       ⟨OrderEmbedding.ofStrictMono (fun i => if hi : i < l.length then f ⟨i, hi⟩ else i + l'.length)
           _,
         _⟩
@@ -199,8 +199,8 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
     · intro i
       simp only [OrderEmbedding.coe_ofStrictMono]
       split_ifs with hi
-      · rw [get?_eq_get hi, get?_eq_get, ← hf]
-      · rw [get?_eq_none.mpr, get?_eq_none.mpr]
+      · rw [get_eq_get hi, get_eq_get, ← hf]
+      · rw [get_eq_none.mpr, get_eq_none.mpr]
         · simp
         · simpa using hi
 #align list.sublist_iff_exists_fin_order_embedding_nth_le_eq List.sublist_iff_exists_fin_orderEmbedding_get_eq
@@ -217,10 +217,10 @@ theorem duplicate_iff_exists_distinct_get {l : List α} {x : α} :
       sublist_iff_exists_fin_orderEmbedding_get_eq]
     constructor
     · rintro ⟨f, hf⟩
-      refine ⟨f ⟨0, by simp⟩, f ⟨1, by simp⟩, f.lt_iff_lt.2 (Nat.zero_lt_one), ?_⟩
+      refine ⟨f ⟨0, by simp⟩, f ⟨1, by simp⟩, f.lt_iff_lt.2 (Nat.zero_lt_one), _⟩
       rw [← hf, ← hf]; simp
     · rintro ⟨n, m, hnm, h, h'⟩
-      refine' ⟨OrderEmbedding.ofStrictMono (fun i => if (i : ℕ) = 0 then n else m) _, _⟩
+      refine ⟨OrderEmbedding.ofStrictMono (fun i => if (i : ℕ) = 0 then n else m) _, _⟩
       · rintro ⟨⟨_ | i⟩, hi⟩ ⟨⟨_ | j⟩, hj⟩
         · simp
         · simp [hnm]

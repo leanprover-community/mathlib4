@@ -103,7 +103,7 @@ theorem MeasureTheory.measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p
     · congr!
       simp_rw [Metric.ball, dist_zero_right]
       rfl
-    · refine @Continuous.measurable E F tE mE _ _ _ _ φ ?_
+    · refine @Continuous.measurable E F tE mE _ _ _ _ φ _
       exact @ContinuousLinearEquiv.continuous ℝ ℝ _ _ _ _ _ _ E tE _ F _ _ _ _ φ
   · -- The map between `E` and `F` as a measurable equivalence
     let ψ := @Homeomorph.toMeasurableEquiv E F tE mE _ _ _ _
@@ -146,13 +146,13 @@ theorem MeasureTheory.measure_le_eq_lt [Nontrivial E] (r : ℝ) :
     · congr!
       simp_rw [Metric.closedBall, dist_zero_right]
       rfl
-    · refine @Continuous.measurable E F tE mE _ _ _ _ φ ?_
+    · refine @Continuous.measurable E F tE mE _ _ _ _ φ _
       exact @ContinuousLinearEquiv.continuous ℝ ℝ _ _ _ _ _ _ E tE _ F _ _ _ _ φ
   · rw [@Measure.map_apply E F mE _ μ φ _ _ measurableSet_ball]
     · congr!
       simp_rw [Metric.ball, dist_zero_right]
       rfl
-    · refine @Continuous.measurable E F tE mE _ _ _ _ φ ?_
+    · refine @Continuous.measurable E F tE mE _ _ _ _ φ _
       exact @ContinuousLinearEquiv.continuous ℝ ℝ _ _ _ _ _ _ E tE _ F _ _ _ _ φ
 
 end general_case
@@ -168,7 +168,7 @@ theorem MeasureTheory.volume_sum_rpow_lt_one :
       .ofReal ((2 * Gamma (1 / p + 1)) ^ card ι / Gamma (card ι / p + 1)) := by
   have h₁ : 0 < p := by linarith
   have h₂ : ∀ x : ι → ℝ, 0 ≤ ∑ i, |x i| ^ p := by
-    refine fun _ => Finset.sum_nonneg' ?_
+    refine fun _ => Finset.sum_nonneg' _
     exact fun i => (fun _ => rpow_nonneg (abs_nonneg _) _) _
   -- We collect facts about `Lp` norms that will be used in `measure_lt_one_eq_integral_div_gamma`
   have eq_norm := fun x : ι → ℝ => (PiLp.norm_eq_sum (p := .ofReal p) (f := x)
@@ -199,13 +199,13 @@ theorem MeasureTheory.volume_sum_rpow_lt [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) 
     volume {x : ι → ℝ | (∑ i, |x i| ^ p) ^ (1 / p) < r} = (.ofReal r) ^ card ι *
       .ofReal ((2 * Gamma (1 / p + 1)) ^ card ι / Gamma (card ι / p + 1)) := by
   have h₁ : ∀ x : ι → ℝ, 0 ≤ ∑ i, |x i| ^ p := by
-      refine fun _ => Finset.sum_nonneg' ?_
+      refine fun _ => Finset.sum_nonneg' _
       exact fun i => (fun _ => rpow_nonneg (abs_nonneg _) _) _
   have h₂ : ∀ x : ι → ℝ, 0 ≤ (∑ i, |x i| ^ p) ^ (1 / p) := fun x => rpow_nonneg (h₁ x) _
   obtain hr | hr := le_or_lt r 0
   · have : {x : ι → ℝ | (∑ i, |x i| ^ p) ^ (1 / p) < r} = ∅ := by
       ext x
-      refine ⟨fun hx => ?_, fun hx => hx.elim⟩
+      refine ⟨fun hx => _, fun hx => hx.elim⟩
       exact not_le.mpr (lt_of_lt_of_le (Set.mem_setOf.mp hx) hr) (h₂ x)
     rw [this, measure_empty, ← zero_eq_ofReal.mpr hr, zero_pow Fin.size_pos'.ne', zero_mul]
   · rw [← volume_sum_rpow_lt_one _ hp, ← ofReal_pow (le_of_lt hr), ← finrank_pi ℝ]
@@ -242,7 +242,7 @@ theorem Complex.volume_sum_rpow_lt_one {p : ℝ} (hp : 1 ≤ p) :
       .ofReal ((π * Real.Gamma (2 / p + 1)) ^ card ι / Real.Gamma (2 * card ι / p + 1)) := by
   have h₁ : 0 < p := by linarith
   have h₂ : ∀ x : ι → ℂ, 0 ≤ ∑ i, ‖x i‖ ^ p := by
-    refine fun _ => Finset.sum_nonneg' ?_
+    refine fun _ => Finset.sum_nonneg' _
     exact fun i => (fun _ => rpow_nonneg (norm_nonneg _) _) _
   -- We collect facts about `Lp` norms that will be used in `measure_lt_one_eq_integral_div_gamma`
   have eq_norm := fun x : ι → ℂ => (PiLp.norm_eq_sum (p := .ofReal p) (f := x)
@@ -274,13 +274,13 @@ theorem Complex.volume_sum_rpow_lt [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) (r : �
     volume {x : ι → ℂ | (∑ i, ‖x i‖ ^ p) ^ (1 / p) < r} = (.ofReal r) ^ (2 * card ι) *
       .ofReal ((π * Real.Gamma (2 / p + 1)) ^ card ι / Real.Gamma (2 * card ι / p + 1)) := by
   have h₁ : ∀ x : ι → ℂ, 0 ≤ ∑ i, ‖x i‖ ^ p := by
-      refine fun _ => Finset.sum_nonneg' ?_
+      refine fun _ => Finset.sum_nonneg' _
       exact fun i => (fun _ => rpow_nonneg (norm_nonneg _) _) _
   have h₂ : ∀ x : ι → ℂ, 0 ≤ (∑ i, ‖x i‖ ^ p) ^ (1 / p) := fun x => rpow_nonneg (h₁ x) _
   obtain hr | hr := le_or_lt r 0
   · have : {x : ι → ℂ | (∑ i, ‖x i‖ ^ p) ^ (1 / p) < r} = ∅ := by
       ext x
-      refine ⟨fun hx => ?_, fun hx => hx.elim⟩
+      refine ⟨fun hx => _, fun hx => hx.elim⟩
       exact not_le.mpr (lt_of_lt_of_le (Set.mem_setOf.mp hx) hr) (h₂ x)
     rw [this, measure_empty, ← zero_eq_ofReal.mpr hr, zero_pow Fin.size_pos'.ne', zero_mul]
   · rw [← Complex.volume_sum_rpow_lt_one _ hp, ← ENNReal.ofReal_pow (le_of_lt hr)]

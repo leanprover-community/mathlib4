@@ -39,10 +39,10 @@ theorem cauchySeq_of_summable_dist (h : Summable fun n ↦ dist (f n) (f n.succ)
 theorem dist_le_tsum_of_dist_le_of_tendsto (d : ℕ → ℝ) (hf : ∀ n, dist (f n) (f n.succ) ≤ d n)
     (hd : Summable d) {a : α} (ha : Tendsto f atTop (𝓝 a)) (n : ℕ) :
     dist (f n) a ≤ ∑' m, d (n + m) := by
-  refine' le_of_tendsto (tendsto_const_nhds.dist ha) (eventually_atTop.2 ⟨n, fun m hnm ↦ _⟩)
-  refine' le_trans (dist_le_Ico_sum_of_dist_le hnm fun _ _ ↦ hf _) _
+  refine le_of_tendsto (tendsto_const_nhds.dist ha) (eventually_atTop.2 ⟨n, fun m hnm ↦ _⟩)
+  refine le_trans (dist_le_Ico_sum_of_dist_le hnm fun _ _ ↦ hf _) _
   rw [sum_Ico_eq_sum_range]
-  refine' sum_le_tsum (range _) (fun _ _ ↦ le_trans dist_nonneg (hf _)) _
+  refine sum_le_tsum (range _) (fun _ _ ↦ le_trans dist_nonneg (hf _)) _
   exact hd.comp_injective (add_right_injective n)
 #align dist_le_tsum_of_dist_le_of_tendsto dist_le_tsum_of_dist_le_of_tendsto
 
@@ -98,7 +98,7 @@ theorem summable_of_sum_le {ι : Type*} {f : ι → ℝ} {c : ℝ} (hf : 0 ≤ f
 
 theorem summable_of_sum_range_le {f : ℕ → ℝ} {c : ℝ} (hf : ∀ n, 0 ≤ f n)
     (h : ∀ n, ∑ i in Finset.range n, f i ≤ c) : Summable f := by
-  refine (summable_iff_not_tendsto_nat_atTop_of_nonneg hf).2 fun H => ?_
+  refine (summable_iff_not_tendsto_nat_atTop_of_nonneg hf).2 fun H => _
   rcases exists_lt_of_tendsto_atTop H 0 c with ⟨n, -, hn⟩
   exact lt_irrefl _ (hn.trans_le (h n))
 #align summable_of_sum_range_le summable_of_sum_range_le

@@ -707,7 +707,7 @@ lemma ltByCases_ne (h : x ≠ y) {h₁ : x < y → P} {h₂ : x = y → P} {h₃
 lemma ltByCases_comm {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P}
     (p : y = x → x = y := fun h' => h'.symm) :
     ltByCases x y h₁ h₂ h₃ = ltByCases y x h₃ (h₂ ∘ p) h₁ := by
-  refine ltByCases x y (fun h => ?_) (fun h => ?_) (fun h => ?_)
+  refine ltByCases x y (fun h => _) (fun h => _) (fun h => _)
   · rw [ltByCases_lt h, ltByCases_gt h]
   · rw [ltByCases_eq h, ltByCases_eq h.symm, comp_apply]
   · rw [ltByCases_lt h, ltByCases_gt h]
@@ -727,7 +727,7 @@ lemma ltByCases_rec {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → 
 
 lemma ltByCases_eq_iff {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P} {p : P} :
     ltByCases x y h₁ h₂ h₃ = p ↔ (∃ h, h₁ h = p) ∨ (∃ h, h₂ h = p) ∨ (∃ h, h₃ h = p) := by
-  refine ltByCases x y (fun h => ?_) (fun h => ?_) (fun h => ?_)
+  refine ltByCases x y (fun h => _) (fun h => _) (fun h => _)
   · simp only [ltByCases_lt, exists_prop_of_true, h, h.not_lt, not_false_eq_true,
     exists_prop_of_false, or_false, h.ne]
   · simp only [h, lt_self_iff_false, ltByCases_eq, not_false_eq_true,
@@ -741,7 +741,7 @@ lemma ltByCases_congr {x' y' : α} {h₁ : x < y → P} {h₂ : x = y → P} {h�
     (hh'₂ : ∀ (h : x' = y'), h₂ ((eq_iff_eq_of_lt_iff_lt_of_gt_iff_gt ltc gtc).mpr h) = h₂' h)
     (hh'₃ : ∀ (h : y' < x'), h₃ (gtc.mpr h) = h₃' h) :
     ltByCases x y h₁ h₂ h₃ = ltByCases x' y' h₁' h₂' h₃' := by
-  refine ltByCases_rec _ (fun h => ?_) (fun h => ?_) (fun h => ?_)
+  refine ltByCases_rec _ (fun h => _) (fun h => _) (fun h => _)
   · rw [ltByCases_lt (ltc.mp h), hh'₁]
   · rw [eq_iff_eq_of_lt_iff_lt_of_gt_iff_gt ltc gtc] at h
     rw [ltByCases_eq h, hh'₂]
@@ -778,7 +778,7 @@ lemma ltTrichotomy_self {p : P} : ltTrichotomy x y p p p = p :=
 
 lemma ltTrichotomy_eq_iff : ltTrichotomy x y p q r = s ↔
     (x < y ∧ p = s) ∨ (x = y ∧ q = s) ∨ (y < x ∧ r = s) := by
-  refine ltByCases x y (fun h => ?_) (fun h => ?_) (fun h => ?_)
+  refine ltByCases x y (fun h => _) (fun h => _) (fun h => _)
   · simp only [ltTrichotomy_lt, false_and, true_and, or_false, h, h.not_lt, h.ne]
   · simp only [ltTrichotomy_eq, false_and, true_and, or_false, false_or, h, lt_irrefl]
   · simp only [ltTrichotomy_gt, false_and, true_and, false_or, h, h.not_lt, h.ne']
@@ -1306,7 +1306,7 @@ theorem mk_lt_mk_iff_right : (a, b₁) < (a, b₂) ↔ b₁ < b₂ :=
 #align prod.mk_lt_mk_iff_right Prod.mk_lt_mk_iff_right
 
 theorem lt_iff : x < y ↔ x.1 < y.1 ∧ x.2 ≤ y.2 ∨ x.1 ≤ y.1 ∧ x.2 < y.2 := by
-  refine' ⟨fun h ↦ _, _⟩
+  refine ⟨fun h ↦ _, _⟩
   · by_cases h₁ : y.1 ≤ x.1
     · exact Or.inr ⟨h.1.1, LE.le.lt_of_not_le h.1.2 fun h₂ ↦ h.2 ⟨h₁, h₂⟩⟩
     · exact Or.inl ⟨LE.le.lt_of_not_le h.1.1 h₁, h.1.2⟩

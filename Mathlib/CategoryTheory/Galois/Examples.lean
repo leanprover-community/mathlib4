@@ -133,7 +133,7 @@ theorem Action.isConnected_of_transitive (X : FintypeCat) [MulAction G X]
     transitivity of the `G`-action. -/
     obtain ⟨(y : Y.V)⟩ := (not_initial_iff_fiber_nonempty (Action.forget _ _) Y).mp hni
     have : IsIso i.hom := by
-      refine (ConcreteCategory.isIso_iff_bijective i.hom).mpr ⟨?_, fun x' ↦ ?_⟩
+      refine (ConcreteCategory.isIso_iff_bijective i.hom).mpr ⟨_, fun x' ↦ _⟩
       · haveI : Mono i.hom := map_mono (forget₂ _ _) i
         exact ConcreteCategory.injective_of_mono_of_preservesPullback i.hom
       · letI x : X := i.hom y

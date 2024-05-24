@@ -122,9 +122,9 @@ def kernelFork : KernelFork (I.cocomplex.d 0 1) :=
 
 /-- `Z` is the kernel of `I.cocomplex.X 0 ⟶ I.cocomplex.X 1` when `I : InjectiveResolution Z`. -/
 def isLimitKernelFork : IsLimit (I.kernelFork) := by
-  refine IsLimit.ofIsoLimit (I.cocomplex.cyclesIsKernel 0 1 (by simp)) (Iso.symm ?_)
+  refine IsLimit.ofIsoLimit (I.cocomplex.cyclesIsKernel 0 1 (by simp)) (Iso.symm _)
   refine Fork.ext ((singleObjHomologySelfIso _ _ _).symm ≪≫
-    isoOfQuasiIsoAt I.ι 0 ≪≫ I.cocomplex.isoHomologyπ₀.symm) ?_
+    isoOfQuasiIsoAt I.ι 0 ≪≫ I.cocomplex.isoHomologyπ₀.symm) _
   rw [← cancel_epi (singleObjHomologySelfIso (ComplexShape.up ℕ) _ _).hom,
     ← cancel_epi (isoHomologyπ₀ _).hom,
     ← cancel_epi (singleObjCyclesSelfIso (ComplexShape.up ℕ) _ _).inv]

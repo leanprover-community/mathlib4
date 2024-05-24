@@ -31,7 +31,7 @@ theorem IsClosed.mk_lt_continuum [NormalSpace X] {s : Set X} (hs : IsClosed s)
   rcases exists_countable_dense X with ⟨t, htc, htd⟩
   haveI := htc.to_subtype
   -- To obtain a contradiction, we will prove `2 ^ 𝔠 ≤ 𝔠`.
-  refine (Cardinal.cantor 𝔠).not_le ?_
+  refine (Cardinal.cantor 𝔠).not_le _
   calc
     -- Any function `s → ℝ` is continuous, hence `2 ^ 𝔠 ≤ #C(s, ℝ)`
     2 ^ 𝔠 ≤ #C(s, ℝ) := by

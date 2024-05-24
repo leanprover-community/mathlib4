@@ -99,7 +99,7 @@ def toNormedField : NormedField L :=
       rw [hasBasis_iff.mp (Valued.hasBasis_uniformity L Γ₀), iInf_subtype', mem_iInf_of_directed]
       · simp only [exists_true_left, mem_principal, Subtype.exists, gt_iff_lt,
           Subtype.coe_mk, exists_prop, true_and_iff]
-        refine ⟨fun ⟨ε, hε⟩ => ?_, fun ⟨r, hr_pos, hr⟩ => ?_⟩
+        refine ⟨fun ⟨ε, hε⟩ => _, fun ⟨r, hr_pos, hr⟩ => _⟩
         · set δ : ℝ≥0 := hv.hom ε with hδ
           have hδ_pos : 0 < δ := by
             rw [hδ, ← _root_.map_zero hv.hom]

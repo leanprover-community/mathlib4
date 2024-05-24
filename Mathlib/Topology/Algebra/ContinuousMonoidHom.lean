@@ -285,7 +285,7 @@ theorem embedding_toContinuousMap :
 lemma range_toContinuousMap :
     Set.range (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) =
       {f : C(A, B) | f 1 = 1 ∧ ∀ x y, f (x * y) = f x * f y} := by
-  refine Set.Subset.antisymm (Set.range_subset_iff.2 fun f ↦ ⟨map_one f, map_mul f⟩) ?_
+  refine Set.Subset.antisymm (Set.range_subset_iff.2 fun f ↦ ⟨map_one f, map_mul f⟩) _
   rintro f ⟨h1, hmul⟩
   exact ⟨{ f with map_one' := h1, map_mul' := hmul }, rfl⟩
 
@@ -296,7 +296,7 @@ theorem closedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
   isClosed_range := by
     simp only [range_toContinuousMap, Set.setOf_and, Set.setOf_forall]
     refine .inter (isClosed_singleton.preimage (ContinuousMap.continuous_eval_const 1)) <|
-      isClosed_iInter fun x ↦ isClosed_iInter fun y ↦ ?_
+      isClosed_iInter fun x ↦ isClosed_iInter fun y ↦ _
     exact isClosed_eq (ContinuousMap.continuous_eval_const (x * y)) <|
       .mul (ContinuousMap.continuous_eval_const x) (ContinuousMap.continuous_eval_const y)
 #align continuous_monoid_hom.closed_embedding_to_continuous_map ContinuousMonoidHom.closedEmbedding_toContinuousMap

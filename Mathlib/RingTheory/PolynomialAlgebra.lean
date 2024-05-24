@@ -145,7 +145,7 @@ theorem invFun_monomial (n : ℕ) (a : A) :
 #align poly_equiv_tensor.inv_fun_monomial PolyEquivTensor.invFun_monomial
 
 theorem left_inv (x : A ⊗ R[X]) : invFun R A ((toFunAlgHom R A) x) = x := by
-  refine TensorProduct.induction_on x ?_ ?_ ?_
+  refine TensorProduct.induction_on x _ _ _
   · simp [invFun]
   · intro a p
     dsimp only [invFun]
@@ -161,7 +161,7 @@ theorem left_inv (x : A ⊗ R[X]) : invFun R A ((toFunAlgHom R A) x) = x := by
 #align poly_equiv_tensor.left_inv PolyEquivTensor.left_inv
 
 theorem right_inv (x : A[X]) : (toFunAlgHom R A) (invFun R A x) = x := by
-  refine Polynomial.induction_on' x ?_ ?_
+  refine Polynomial.induction_on' x _ _
   · intro p q hp hq
     simp only [invFun_add, AlgHom.map_add, hp, hq]
   · intro n a
@@ -255,7 +255,7 @@ theorem matPolyEquiv_coeff_apply_aux_1 (i j : n) (k : ℕ) (x : R) :
 
 theorem matPolyEquiv_coeff_apply_aux_2 (i j : n) (p : R[X]) (k : ℕ) :
     coeff (matPolyEquiv (stdBasisMatrix i j p)) k = stdBasisMatrix i j (coeff p k) := by
-  refine Polynomial.induction_on' p ?_ ?_
+  refine Polynomial.induction_on' p _ _
   · intro p q hp hq
     ext
     simp [hp, hq, coeff_add, DMatrix.add_apply, stdBasisMatrix_add]
@@ -269,7 +269,7 @@ theorem matPolyEquiv_coeff_apply_aux_2 (i j : n) (p : R[X]) (k : ℕ) :
 @[simp]
 theorem matPolyEquiv_coeff_apply (m : Matrix n n R[X]) (k : ℕ) (i j : n) :
     coeff (matPolyEquiv m) k i j = coeff (m i j) k := by
-  refine Matrix.induction_on' m ?_ ?_ ?_
+  refine Matrix.induction_on' m _ _ _
   · simp
   · intro p q hp hq
     simp [hp, hq]

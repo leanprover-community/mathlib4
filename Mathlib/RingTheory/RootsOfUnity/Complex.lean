@@ -62,7 +62,7 @@ theorem isPrimitiveRoot_iff (ζ : ℂ) (n : ℕ) (hn : n ≠ 0) :
   intro h
   obtain ⟨i, hi, rfl⟩ :=
     (isPrimitiveRoot_exp n hn).eq_pow_of_pow_eq_one h.pow_eq_one (Nat.pos_of_ne_zero hn)
-  refine' ⟨i, hi, ((isPrimitiveRoot_exp n hn).pow_iff_coprime (Nat.pos_of_ne_zero hn) i).mp h, _⟩
+  refine ⟨i, hi, ((isPrimitiveRoot_exp n hn).pow_iff_coprime (Nat.pos_of_ne_zero hn) i).mp h, _⟩
   rw [← exp_nat_mul]
   congr 1
   field_simp [hn0, mul_comm (i : ℂ)]
@@ -78,7 +78,7 @@ nonrec theorem mem_rootsOfUnity (n : ℕ+) (x : Units ℂ) :
   · intro h
     obtain ⟨i, hi, H⟩ : ∃ i < (n : ℕ), exp (2 * π * I / n) ^ i = x := by
       simpa only using (isPrimitiveRoot_exp n n.ne_zero).eq_pow_of_pow_eq_one h n.pos
-    refine ⟨i, hi, ?_⟩
+    refine ⟨i, hi, _⟩
     rw [← H, ← exp_nat_mul]
     congr 1
     field_simp [hn0, mul_comm (i : ℂ)]
@@ -135,7 +135,7 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
   rw [Complex.isPrimitiveRoot_iff _ _ hn] at h
   obtain ⟨i, h, hin, rfl⟩ := h
   rw [mul_comm, ← mul_assoc, Complex.exp_mul_I]
-  refine' ⟨if i * 2 ≤ n then i else i - n, _, _, _⟩
+  refine ⟨if i * 2 ≤ n then i else i - n, _, _, _⟩
   on_goal 2 =>
     replace hin := Nat.isCoprime_iff_coprime.mpr hin
     split_ifs
@@ -158,7 +158,7 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
     · push_cast; rfl
     · push_cast; rfl
     field_simp [hn]
-    refine' ⟨(neg_lt_neg Real.pi_pos).trans_le _, _⟩
+    refine ⟨(neg_lt_neg Real.pi_pos).trans_le _, _⟩
     · rw [neg_zero]
       exact mul_nonneg (mul_nonneg i.cast_nonneg <| by simp [Real.pi_pos.le])
         (by rw [inv_nonneg]; simp only [Nat.cast_nonneg])
@@ -175,7 +175,7 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
     rw [← sub_one_mul, sub_div, div_self]
     exact mod_cast hn
   field_simp [hn]
-  refine' ⟨_, le_trans _ Real.pi_pos.le⟩
+  refine ⟨_, le_trans _ Real.pi_pos.le⟩
   on_goal 2 =>
     rw [mul_div_assoc]
     exact mul_nonpos_of_nonpos_of_nonneg (sub_nonpos.mpr <| mod_cast h.le)

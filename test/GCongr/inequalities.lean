@@ -126,14 +126,14 @@ example {a b x c d : ℝ} (h1 : a + 1 ≤ b + 1) (h2 : c + 2 ≤ d + 2) :
 
 example {a b c d x : ℝ} (h : a + c + 1 ≤ b + d + 1) :
     x ^ 2 * (a + c) + 5 ≤ x ^ 2 * (b + d) + 5 := by
-  gcongr x ^ 2 * ?_ + 5
+  gcongr x ^ 2 * _ + 5
   linarith
 
 example {x y z : ℝ} (h : 2 ≤ z) : z * |x + y| ≤ z * (|x| + |y|) := by gcongr; apply abs_add
 
 example (A B C : ℝ) : |A + B| + C ≤ |A| + |B| + C := by gcongr; apply abs_add
-example (A B C : ℝ) : |A + B| + C ≤ |A| + |B| + C := by gcongr ?_ + _; apply abs_add
-example (A B C : ℝ) : |A + B| + C ≤ |A| + |B| + C := by gcongr ?_ + (A : ℝ); apply abs_add
+example (A B C : ℝ) : |A + B| + C ≤ |A| + |B| + C := by gcongr _ + _; apply abs_add
+example (A B C : ℝ) : |A + B| + C ≤ |A| + |B| + C := by gcongr _ + (A : ℝ); apply abs_add
 
 example {n i : ℕ} (hi : i ∈ range n) : 2 ^ i ≤ 2 ^ n := by
   gcongr
@@ -165,20 +165,20 @@ example {a : ℤ} {n : ℕ} (ha : ∀ i < n, 2 ^ i ≤ a) :
 -- this tests that the match goes only as deep as is indicated by the template
 example {a b c d e : ℝ} (_h1 : 0 ≤ b) (_h2 : 0 ≤ c) (hac : a * b + 1 ≤ c * d + 1) (_hbd : b ≤ d) :
     a * b + e ≤ c * d + e := by
-  gcongr ?_ + _
+  gcongr _ + _
   guard_target =ₛ a * b ≤ c * d
   linarith
 
 -- this tests templates with binders
 example (f g : ℕ → ℕ) (s : Finset ℕ) (h : ∀ i ∈ s, f i ^ 2 + 1 ≤ g i ^ 2 + 1) :
     ∑ i in s, f i ^ 2 ≤ ∑ i in s, g i ^ 2 := by
-  gcongr ∑ _i in s, ?_ with i hi
+  gcongr ∑ _i in s, _ with i hi
   linarith [h i hi]
 
 -- this tests templates with binders
 example (f g : ℕ → ℕ) (s : Finset ℕ) (h : ∀ i ∈ s, f i ^ 2 + 1 ≤ g i ^ 2 + 1) :
     ∑ i in s, (3 + f i ^ 2) ≤ ∑ i in s, (3 + g i ^ 2) := by
-  gcongr ∑ _i in s, (3 + ?_) with i hi
+  gcongr ∑ _i in s, (3 + _) with i hi
   linarith [h i hi]
 
 axiom f : ℕ → ℕ

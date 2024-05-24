@@ -54,7 +54,7 @@ theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
     let C := Set.range f
     have hC : IsClosed C := (isCompact_range f.continuous).isClosed
     have hyU : y ∈ Cᶜ := by
-      refine' Set.mem_compl _
+      refine Set.mem_compl _
       rintro ⟨y', hy'⟩
       exact hy y' hy'
     have hUy : Cᶜ ∈ nhds y := hC.compl_mem_nhds hyU
@@ -70,7 +70,7 @@ theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
         dsimp [g, LocallyConstant.ofIsClopen]
         erw [comp_apply, ContinuousMap.coe_mk, comp_apply, ContinuousMap.coe_mk,
           Function.comp_apply, if_neg]
-        refine mt (fun α => hVU α) ?_
+        refine mt (fun α => hVU α) _
         simp only [C, concreteCategory_forget_obj, Set.mem_compl_iff, Set.mem_range, not_exists,
           not_forall, not_not]
         exact ⟨x, rfl⟩
@@ -83,14 +83,14 @@ theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
 
 theorem effectiveEpi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
     EffectiveEpi f ↔ Function.Surjective f := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ⟨⟨EffectiveEpi.struct f h⟩⟩⟩
+  refine ⟨fun h ↦ _, fun h ↦ ⟨⟨EffectiveEpi.struct f h⟩⟩⟩
   rw [← epi_iff_surjective]
   infer_instance
 
 instance : Preregular LightProfinite where
   exists_fac := by
     intro X Y Z f π hπ
-    refine ⟨pullback f π, pullback.fst f π, ?_, pullback.snd f π, (pullback.condition _ _).symm⟩
+    refine ⟨pullback f π, pullback.fst f π, _, pullback.snd f π, (pullback.condition _ _).symm⟩
     rw [effectiveEpi_iff_surjective] at hπ ⊢
     intro y
     obtain ⟨z,hz⟩ := hπ (f y)

@@ -292,7 +292,7 @@ def ofSubsingleton [Subsingleton ι] (i : ι) :
       map_add' := fun x y ↦ by simpa [update_eq_const_of_subsingleton] using f.map_add 0 i x y
       map_smul' := fun c x ↦ by simpa [update_eq_const_of_subsingleton] using f.map_smul 0 i c x }
   left_inv f := rfl
-  right_inv f := by ext x; refine congr_arg f ?_; exact (eq_const_of_subsingleton _ _).symm
+  right_inv f := by ext x; refine congr_arg f _; exact (eq_const_of_subsingleton _ _).symm
 #align multilinear_map.of_subsingleton MultilinearMap.ofSubsingletonₓ
 #align multilinear_map.of_subsingleton_apply MultilinearMap.ofSubsingleton_apply_applyₓ
 
@@ -449,7 +449,7 @@ to be finite. -/
 theorem map_piecewise_add [DecidableEq ι] (m m' : ∀ i, M₁ i) (t : Finset ι) :
     f (t.piecewise (m + m') m') = ∑ s in t.powerset, f (s.piecewise m m') := by
   revert m'
-  refine' Finset.induction_on t (by simp) _
+  refine Finset.induction_on t (by simp) _
   intro i t hit Hrec m'
   have A : (insert i t).piecewise (m + m') m' = update (t.piecewise (m + m') m') i (m i + m' i) :=
     t.piecewise_insert _ _ _
@@ -468,7 +468,7 @@ theorem map_piecewise_add [DecidableEq ι] (m m' : ∀ i, M₁ i) (t : Finset ι
     · by_cases h' : j ∈ t <;> simp [m'', h, hit, h']
   rw [A, f.map_add, B, C, Finset.sum_powerset_insert hit, Hrec, Hrec, add_comm (_ : M₂)]
   congr 1
-  refine Finset.sum_congr rfl fun s hs => ?_
+  refine Finset.sum_congr rfl fun s hs => _
   have : (insert i s).piecewise m m' = s.piecewise m m'' := by
     ext j
     by_cases h : j = i
@@ -506,7 +506,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
     have : ∑ j in A i, g i j = 0 := by rw [hi, Finset.sum_empty]
     rw [f.map_coord_zero i this]
     have : piFinset A = ∅ := by
-      refine Finset.eq_empty_of_forall_not_mem fun r hr => ?_
+      refine Finset.eq_empty_of_forall_not_mem fun r hr => _
       have : r i ∈ A i := mem_piFinset.mp hr i
       simp [hi] at this
     rw [this, Finset.sum_empty]
@@ -566,7 +566,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
         symm
         simp only [hj₂, Finset.singleton_subset_iff, Finset.union_eq_left]
       rw [this]
-      refine Finset.sum_union <| Finset.disjoint_right.2 fun j hj => ?_
+      refine Finset.sum_union <| Finset.disjoint_right.2 fun j hj => _
       have : j = j₂ := by
         simpa [C] using hj
       rw [this]
@@ -592,7 +592,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
   -- Express the inductive assumption for `B`
   have Brec : (f fun i => ∑ j in B i, g i j) = ∑ r in piFinset B, f fun i => g i (r i) := by
     have : (∑ i, Finset.card (B i)) < ∑ i, Finset.card (A i) := by
-      refine'
+      refine
         Finset.sum_lt_sum (fun i _ => Finset.card_le_card (B_subset_A i))
           ⟨i₀, Finset.mem_univ _, _⟩
       have : {j₂} ⊆ A i₀ := by simp [hj₂]
@@ -615,13 +615,13 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
     · intro r hr
       by_cases hri₀ : r i₀ = j₂
       · apply Finset.mem_union_right
-        refine mem_piFinset.2 fun i => ?_
+        refine mem_piFinset.2 fun i => _
         by_cases hi : i = i₀
         · have : r i₀ ∈ C i₀ := by simp [C, hri₀]
           rwa [hi]
         · simp [C, hi, mem_piFinset.1 hr i]
       · apply Finset.mem_union_left
-        refine mem_piFinset.2 fun i => ?_
+        refine mem_piFinset.2 fun i => _
         by_cases hi : i = i₀
         · have : r i₀ ∈ B i₀ := by simp [B, hri₀, mem_piFinset.1 hr i₀]
           rwa [hi]
@@ -1131,7 +1131,7 @@ map is multiplied by `∏ i in s, c i`. This is mainly an auxiliary statement to
 require the index set `ι` to be finite. -/
 theorem map_piecewise_smul [DecidableEq ι] (c : ι → R) (m : ∀ i, M₁ i) (s : Finset ι) :
     f (s.piecewise (fun i => c i • m i) m) = (∏ i in s, c i) • f m := by
-  refine' s.induction_on (by simp) _
+  refine s.induction_on (by simp) _
   intro j s j_not_mem_s Hrec
   have A :
     Function.update (s.piecewise (fun i => c i • m i) m) j (m j) =
@@ -1351,7 +1351,7 @@ open Finset in
 lemma map_sub_map_piecewise [LinearOrder ι] (a b : (i : ι) → M₁ i) (s : Finset ι) :
     f a - f (s.piecewise b a) =
     ∑ i in s, f (fun j ↦ if j ∈ s → j < i then a j else if i = j then a j - b j else b j) := by
-  refine s.induction_on_min ?_ fun k s hk ih ↦ ?_
+  refine s.induction_on_min _ fun k s hk ih ↦ _
   · rw [Finset.piecewise_empty, sum_empty, sub_self]
   rw [Finset.piecewise_insert, map_update, ← sub_add, ih,
       add_comm, sum_insert (lt_irrefl _ <| hk k ·)]
@@ -1376,7 +1376,7 @@ lemma map_piecewise_sub_map_piecewise [LinearOrder ι] (a b v : (i : ι) → M�
     f (s.piecewise a v) - f (s.piecewise b v) = ∑ i in s, f
       fun j ↦ if j ∈ s then if j < i then a j else if j = i then a j - b j else b j else v j := by
   rw [← s.piecewise_idem_right b a, map_sub_map_piecewise]
-  refine Finset.sum_congr rfl fun i hi ↦ congr_arg f <| funext fun j ↦ ?_
+  refine Finset.sum_congr rfl fun i hi ↦ congr_arg f <| funext fun j ↦ _
   by_cases hjs : j ∈ s
   · rw [if_pos hjs]; by_cases hji : j < i
     · rw [if_pos fun _ ↦ hji, if_pos hji, s.piecewise_eq_of_mem _ _ hjs]
@@ -1848,7 +1848,7 @@ theorem curryFinFinset_apply_const {k l n : ℕ} {s : Finset (Fin n)} (hk : s.ca
     (hl : sᶜ.card = l) (f : MultilinearMap R (fun _ : Fin n => M') M₂) (x y : M') :
     (curryFinFinset R M₂ M' hk hl f (fun _ => x) fun _ => y) =
       f (s.piecewise (fun _ => x) fun _ => y) := by
-  refine' (curryFinFinset_symm_apply_piecewise_const hk hl _ _ _).symm.trans _
+  refine (curryFinFinset_symm_apply_piecewise_const hk hl _ _ _).symm.trans _
   -- `rw` fails
   rw [LinearEquiv.symm_apply_apply]
 #align multilinear_map.curry_fin_finset_apply_const MultilinearMap.curryFinFinset_apply_const
@@ -1881,7 +1881,7 @@ def map [Nonempty ι] (f : MultilinearMap R M₁ M₂) (p : ∀ i, Submodule R (
   smul_mem' := fun c _ ⟨x, hx, hf⟩ => by
     let ⟨i⟩ := ‹Nonempty ι›
     letI := Classical.decEq ι
-    refine' ⟨update x i (c • x i), fun j => if hij : j = i then _ else _, hf ▸ _⟩
+    refine ⟨update x i (c • x i), fun j => if hij : j = i then _ else _, hf ▸ _⟩
     · rw [hij, update_same]
       exact (p i).smul_mem _ (hx i)
     · rw [update_noteq hij]

@@ -422,7 +422,7 @@ def consRecOn {motive : Word M → Sort*} (w : Word M) (h_empty : motive empty)
   induction w with
   | nil => exact h_empty
   | cons m w ih =>
-    refine h_cons m.1 m.2 ⟨w, fun _ hl => h1 _ (List.mem_cons_of_mem _ hl), h2.tail⟩ ?_ ?_ (ih _ _)
+    refine h_cons m.1 m.2 ⟨w, fun _ hl => h1 _ (List.mem_cons_of_mem _ hl), h2.tail⟩ _ _ (ih _ _)
     · rw [List.chain'_cons'] at h2
       simp only [fstIdx, ne_eq, Option.map_eq_some',
         Sigma.exists, exists_and_right, exists_eq_right, not_exists]
@@ -564,7 +564,7 @@ theorem mem_smul_iff {i j : ι} {m₁ : M i} {m₂ : M j} {w : Word M} :
       intro hm1
       split_ifs with h
       · rcases h with ⟨hnil, rfl⟩
-        simp only [List.head?_eq_head _ hnil, Option.some.injEq, ne_eq]
+        simp only [List.head_eq_head _ hnil, Option.some.injEq, ne_eq]
         constructor
         · rintro rfl
           exact Or.inl ⟨_, rfl, rfl⟩
@@ -574,7 +574,7 @@ theorem mem_smul_iff {i j : ι} {m₁ : M i} {m₂ : M j} {w : Word M} :
             rfl
           · simp only [fstIdx, Option.map_eq_some', Sigma.exists,
               exists_and_right, exists_eq_right, not_exists, ne_eq] at hm'
-            exact (hm'.1 (w.toList.head hnil).2 (by rw [List.head?_eq_head])).elim
+            exact (hm'.1 (w.toList.head hnil).2 (by rw [List.head_eq_head])).elim
       · revert h
         rw [fstIdx]
         cases w.toList
@@ -705,7 +705,7 @@ theorem toList_head? {i j} (w : NeWord M i j) : w.toList.head? = Option.some ⟨
   induction w
   · rw [Option.mem_def]
     rfl
-  · exact List.head?_append (by assumption)
+  · exact List.head_append (by assumption)
 #align free_product.neword.to_list_head' Monoid.CoprodI.NeWord.toList_head?
 
 @[simp]
@@ -714,7 +714,7 @@ theorem toList_getLast? {i j} (w : NeWord M i j) : w.toList.getLast? = Option.so
   induction w
   · rw [Option.mem_def]
     rfl
-  · exact List.getLast?_append (by assumption)
+  · exact List.getLast_append (by assumption)
 #align free_product.neword.to_list_last' Monoid.CoprodI.NeWord.toList_getLast?
 
 /-- The `Word M` represented by a `NeWord M i j` -/
@@ -729,7 +729,7 @@ def toWord {i j} (w : NeWord M i j) : Word M where
   chain_ne := by
     induction w
     · exact List.chain'_singleton _
-    · refine List.Chain'.append (by assumption) (by assumption) ?_
+    · refine List.Chain'.append (by assumption) (by assumption) _
       intro x hx y hy
       rw [toList_getLast?, Option.mem_some_iff] at hx
       rw [toList_head?, Option.mem_some_iff] at hy
@@ -742,7 +742,7 @@ def toWord {i j} (w : NeWord M i j) : Word M where
 theorem of_word (w : Word M) (h : w ≠ empty) : ∃ (i j : _) (w' : NeWord M i j), w'.toWord = w := by
   suffices ∃ (i j : _) (w' : NeWord M i j), w'.toWord.toList = w.toList by
     rcases this with ⟨i, j, w, h⟩
-    refine ⟨i, j, w, ?_⟩
+    refine ⟨i, j, w, _⟩
     ext
     rw [h]
   cases' w with l hnot1 hchain
@@ -750,13 +750,13 @@ theorem of_word (w : Word M) (h : w ≠ empty) : ∃ (i j : _) (w' : NeWord M i 
   · contradiction
   · rw [List.forall_mem_cons] at hnot1
     cases' l with y l
-    · refine' ⟨x.1, x.1, singleton x.2 hnot1.1, _⟩
+    · refine ⟨x.1, x.1, singleton x.2 hnot1.1, _⟩
       simp [toWord]
     · rw [List.chain'_cons] at hchain
       specialize hi hnot1.2 hchain.2 (by rintro ⟨rfl⟩)
       obtain ⟨i, j, w', hw' : w'.toList = y::l⟩ := hi
       obtain rfl : y = ⟨i, w'.head⟩ := by simpa [hw'] using w'.toList_head?
-      refine ⟨x.1, j, append (singleton x.2 hnot1.1) hchain.1 w', ?_⟩
+      refine ⟨x.1, j, append (singleton x.2 hnot1.1) hchain.1 w', _⟩
       simpa [toWord] using hw'
 #align free_product.neword.of_word Monoid.CoprodI.NeWord.of_word
 
@@ -1015,7 +1015,7 @@ instance {ι : Type*} (G : ι → Type*) [∀ i, Group (G i)] [∀ i, IsFreeGrou
 @[simps!]
 def _root_.freeGroupEquivCoprodI {ι : Type u_1} :
     FreeGroup ι ≃* CoprodI fun _ : ι => FreeGroup Unit := by
-  refine' MonoidHom.toMulEquiv _ _ _ _
+  refine MonoidHom.toMulEquiv _ _ _ _
   · exact FreeGroup.lift fun i => @CoprodI.of ι _ _ i (FreeGroup.of Unit.unit)
   · exact CoprodI.lift fun i => FreeGroup.lift fun _ => FreeGroup.of i
   · ext; simp
@@ -1058,7 +1058,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
     simp
   rw [this, MonoidHom.coe_comp]
   clear this
-  refine Function.Injective.comp ?_ (MulEquiv.injective freeGroupEquivCoprodI)
+  refine Function.Injective.comp _ (MulEquiv.injective freeGroupEquivCoprodI)
   -- Step two: Invoke the ping-pong lemma for free products
   show Function.Injective (lift fun i : ι => FreeGroup.lift fun _ => a i)
   -- Prepare to instantiate lift_injective_of_ping_pong
@@ -1079,7 +1079,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
   · show Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X' j ⊆ X' i
     rintro i j hij
     -- use free_group unit ≃ ℤ
-    refine' FreeGroup.freeGroupUnitEquivInt.forall_congr_left'.mpr _
+    refine FreeGroup.freeGroupUnitEquivInt.forall_congr_left'.mpr _
     intro n hne1
     change FreeGroup.lift (fun _ => a i) (FreeGroup.of () ^ n) • X' j ⊆ X' i
     simp only [map_zpow, FreeGroup.lift.of]
@@ -1098,7 +1098,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
           smul_set_mono ((hXYdisj j i).union_left <| hYdisj hij.symm).subset_compl_right
         _ ⊆ X i := by
           clear hnne0 hlt
-          refine Int.le_induction (P := fun n => a i ^ n • (Y i)ᶜ ⊆ X i) ?_ ?_ n h1n
+          refine Int.le_induction (P := fun n => a i ^ n • (Y i)ᶜ ⊆ X i) _ _ n h1n
           · dsimp
             rw [zpow_one]
             exact hX i
@@ -1118,7 +1118,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
         a i ^ n • X' j ⊆ a i ^ n • (X i)ᶜ :=
           smul_set_mono ((hXdisj hij.symm).union_left (hXYdisj i j).symm).subset_compl_right
         _ ⊆ Y i := by
-          refine' Int.le_induction_down (P := fun n => a i ^ n • (X i)ᶜ ⊆ Y i) _ _ _ h1n
+          refine Int.le_induction_down (P := fun n => a i ^ n • (X i)ᶜ ⊆ Y i) _ _ _ h1n
           · dsimp
             rw [zpow_neg, zpow_one]
             exact hY i

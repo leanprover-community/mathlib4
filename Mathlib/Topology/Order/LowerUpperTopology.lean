@@ -268,7 +268,7 @@ protected theorem isTopologicalBasis : IsTopologicalBasis (lowerBasis α) := by
   ext s
   constructor
   · rintro ⟨F, hF, rfl⟩
-    refine' ⟨(fun a => (Ici a)ᶜ) '' F, ⟨hF.image _, image_subset_iff.2 fun _ _ => ⟨_, rfl⟩⟩, _⟩
+    refine ⟨(fun a => (Ici a)ᶜ) '' F, ⟨hF.image _, image_subset_iff.2 fun _ _ => ⟨_, rfl⟩⟩, _⟩
     simp only [sInter_image]
   · rintro ⟨F, ⟨hF, hs⟩, rfl⟩
     haveI := hF.to_subtype
@@ -393,7 +393,7 @@ instance instIsLowerProd [Preorder α] [TopologicalSpace α] [IsLower α]
     [OrderBot α] [Preorder β] [TopologicalSpace β] [IsLower β] [OrderBot β] :
     IsLower (α × β) where
   topology_eq_lowerTopology := by
-    refine' le_antisymm (le_generateFrom _) _
+    refine le_antisymm (le_generateFrom _) _
     · rintro _ ⟨x, rfl⟩
       exact (isClosed_Ici.prod isClosed_Ici).isOpen_compl
     rw [(IsLower.isTopologicalBasis.prod
@@ -404,7 +404,7 @@ instance instIsLowerProd [Preorder α] [TopologicalSpace α] [IsLower α]
     simp_rw [coe_upperClosure, compl_iUnion, prod_eq, preimage_iInter, preimage_compl]
     -- without `let`, `refine` tries to use the product topology and fails
     let _ : TopologicalSpace (α × β) := lower (α × β)
-    refine (hs.isOpen_biInter fun a _ => ?_).inter (ht.isOpen_biInter fun b _ => ?_)
+    refine (hs.isOpen_biInter fun a _ => _).inter (ht.isOpen_biInter fun b _ => _)
     · exact GenerateOpen.basic _ ⟨(a, ⊥), by simp [Ici_prod_eq, prod_univ]⟩
     · exact GenerateOpen.basic _ ⟨(⊥, b), by simp [Ici_prod_eq, univ_prod]⟩
 
@@ -421,11 +421,11 @@ variable [CompleteLattice α] [CompleteLattice β] [TopologicalSpace α] [IsLowe
   [TopologicalSpace β] [IsLower β]
 
 protected lemma _root_.sInfHom.continuous (f : sInfHom α β) : Continuous f := by
-  refine IsLower.continuous_iff_Ici.2 fun b => ?_
+  refine IsLower.continuous_iff_Ici.2 fun b => _
   convert isClosed_Ici (a := sInf <| f ⁻¹' Ici b)
-  refine' Subset.antisymm (fun a => sInf_le) fun a ha => le_trans _ <|
+  refine Subset.antisymm (fun a => sInf_le) fun a ha => le_trans _ <|
     OrderHomClass.mono (f : α →o β) ha
-  refine' LE.le.trans _ (map_sInf f _).ge
+  refine LE.le.trans _ (map_sInf f _).ge
   simp
 #align Inf_hom.continuous sInfHom.continuous
 

@@ -114,7 +114,7 @@ theorem Subpresheaf.homOfLe_ι {G G' : Subpresheaf F} (h : G ≤ G') :
 #align category_theory.grothendieck_topology.subpresheaf.hom_of_le_ι CategoryTheory.GrothendieckTopology.Subpresheaf.homOfLe_ι
 
 instance : IsIso (Subpresheaf.ι (⊤ : Subpresheaf F)) := by
-  refine @NatIso.isIso_of_isIso_app _ _ _ _ _ _ _ ?_
+  refine @NatIso.isIso_of_isIso_app _ _ _ _ _ _ _ _
   intro X
   rw [isIso_iff_bijective]
   exact ⟨Subtype.coe_injective, fun x => ⟨⟨x, _root_.trivial⟩, rfl⟩⟩
@@ -137,7 +137,7 @@ def Subpresheaf.lift (f : F' ⟶ F) (hf : ∀ U x, f.app U x ∈ G.obj U) : F' �
   naturality := by
     have := elementwise_of% f.naturality
     intros
-    refine funext fun x => Subtype.ext ?_
+    refine funext fun x => Subtype.ext _
     simp only [toPresheaf_obj, types_comp_apply]
     exact this _ _
 #align category_theory.grothendieck_topology.subpresheaf.lift CategoryTheory.GrothendieckTopology.Subpresheaf.lift
@@ -168,7 +168,7 @@ def Subpresheaf.familyOfElementsOfSection {U : Cᵒᵖ} (s : F.obj U) :
 theorem Subpresheaf.family_of_elements_compatible {U : Cᵒᵖ} (s : F.obj U) :
     (G.familyOfElementsOfSection s).Compatible := by
   intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ e
-  refine Subtype.ext ?_ -- Porting note: `ext1` does not work here
+  refine Subtype.ext _ -- Porting note: `ext1` does not work here
   change F.map g₁.op (F.map f₁.op s) = F.map g₂.op (F.map f₂.op s)
   rw [← FunctorToTypes.map_comp_apply, ← FunctorToTypes.map_comp_apply, ← op_comp, ← op_comp, e]
 #align category_theory.grothendieck_topology.subpresheaf.family_of_elements_compatible CategoryTheory.GrothendieckTopology.Subpresheaf.family_of_elements_compatible
@@ -184,7 +184,7 @@ def Subpresheaf.sheafify : Subpresheaf F where
   obj U := { s | G.sieveOfSection s ∈ J (unop U) }
   map := by
     rintro U V i s hs
-    refine' J.superset_covering _ (J.pullback_stable i.unop hs)
+    refine J.superset_covering _ (J.pullback_stable i.unop hs)
     intro _ _ h
     dsimp at h ⊢
     rwa [← FunctorToTypes.map_comp_apply]
@@ -232,7 +232,7 @@ theorem Subpresheaf.sheafify_isSheaf (hF : Presieve.IsSheaf J F) :
       rw [← H _ (hi₂ _ _ hi)]
       exact FunctorToTypes.map_comp_apply F (i₂ _ _ hi).op (i₁ _ _ hi).op _
     · intro H V i hi
-      refine Subtype.ext ?_
+      refine Subtype.ext _
       apply (hF _ (x i hi).2).isSeparatedFor.ext
       intro V' i' hi'
       have hi'' : S' (i' ≫ i) := ⟨_, _, _, hi, hi', rfl⟩
@@ -247,8 +247,8 @@ theorem Subpresheaf.sheafify_isSheaf (hF : Presieve.IsSheaf J F) :
         (hx (g₁ ≫ i₁ _ _ S₁) (g₂ ≫ i₁ _ _ S₂) (hi₂ _ _ S₁) (hi₂ _ _ S₂)
         (by simp only [Category.assoc, h₂, e]))
   obtain ⟨t, ht, ht'⟩ := hF _ (J.bind_covering hS fun V i hi => (x i hi).2) _ this
-  refine' ⟨⟨t, _⟩, (H ⟨t, _⟩).mpr ht, fun y hy => Subtype.ext (ht' _ ((H _).mp hy))⟩
-  refine' J.superset_covering _ (J.bind_covering hS fun V i hi => (x i hi).2)
+  refine ⟨⟨t, _⟩, (H ⟨t, _⟩).mpr ht, fun y hy => Subtype.ext (ht' _ ((H _).mp hy))⟩
+  refine J.superset_covering _ (J.bind_covering hS fun V i hi => (x i hi).2)
   intro V i hi
   dsimp
   rw [ht _ hi]
@@ -283,12 +283,12 @@ noncomputable def Subpresheaf.sheafifyLift (f : G.toPresheaf ⟶ F') (h : Presie
     ext s
     apply (h _ ((Subpresheaf.sheafify J G).toPresheaf.map i s).prop).isSeparatedFor.ext
     intro W j hj
-    refine' (Presieve.IsSheafFor.valid_glue (h _ ((G.sheafify J).toPresheaf.map i s).2)
+    refine (Presieve.IsSheafFor.valid_glue (h _ ((G.sheafify J).toPresheaf.map i s).2)
       ((G.family_of_elements_compatible _).compPresheafMap _) _ hj).trans _
     dsimp
     conv_rhs => rw [← FunctorToTypes.map_comp_apply]
     change _ = F'.map (j ≫ i.unop).op _
-    refine' Eq.trans _ (Presieve.IsSheafFor.valid_glue (h _ s.2)
+    refine Eq.trans _ (Presieve.IsSheafFor.valid_glue (h _ s.2)
       ((G.family_of_elements_compatible s.1).compPresheafMap f) (j ≫ i.unop) _).symm
     swap -- Porting note: need to swap two goals otherwise the first goal needs to be proven
     -- inside the second goal any way
@@ -434,7 +434,7 @@ instance {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Mono (imageSheafι f) :=
       infer_instance)
 
 instance {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Epi (toImageSheaf f) := by
-  refine ⟨@fun G' g₁ g₂ e => ?_⟩
+  refine ⟨@fun G' g₁ g₂ e => _⟩
   ext U ⟨s, hx⟩
   apply ((isSheaf_iff_isSheaf_of_type J _).mp G'.2 _ hx).isSeparatedFor.ext
   rintro V i ⟨y, e'⟩
@@ -462,7 +462,7 @@ noncomputable def imageFactorization {F F' : Sheaf J TypeMax.{v, u}} (f : F ⟶ 
         -- Porting note: need to specify the target category (TypeMax.{v, u}) for this to work.
         haveI M := (Sheaf.Hom.mono_iff_presheaf_mono J TypeMax.{v, u} _).mp I.m_mono
         haveI := isIso_toImagePresheaf I.m.1
-        refine ⟨Subpresheaf.homOfLe ?_ ≫ inv (toImagePresheaf I.m.1)⟩
+        refine ⟨Subpresheaf.homOfLe _ ≫ inv (toImagePresheaf I.m.1)⟩
         apply Subpresheaf.sheafify_le
         · conv_lhs => rw [← I.fac]
           apply imagePresheaf_comp_le

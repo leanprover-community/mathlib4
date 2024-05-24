@@ -95,7 +95,7 @@ theorem IsIntegral.map {B C F : Type*} [Ring B] [Ring C] [Algebra R B] [Algebra 
     [FunLike F B C] [AlgHomClass F A B C] (f : F)
     (hb : IsIntegral R b) : IsIntegral R (f b) := by
   obtain ⟨P, hP⟩ := hb
-  refine ⟨P, hP.1, ?_⟩
+  refine ⟨P, hP.1, _⟩
   rw [← aeval_def, ← aeval_map_algebraMap A,
     aeval_algHom_apply, aeval_map_algebraMap, aeval_def, hP.2, _root_.map_zero]
 #align map_is_integral IsIntegral.map
@@ -115,7 +115,7 @@ variable {A B : Type*} [Ring A] [Ring B] [Algebra R A] [Algebra R B]
 variable (f : A →ₐ[R] B) (hf : Function.Injective f)
 
 theorem isIntegral_algHom_iff {x : A} : IsIntegral R (f x) ↔ IsIntegral R x := by
-  refine ⟨fun ⟨p, hp, hx⟩ ↦ ⟨p, hp, ?_⟩, IsIntegral.map f⟩
+  refine ⟨fun ⟨p, hp, hx⟩ ↦ ⟨p, hp, _⟩, IsIntegral.map f⟩
   rwa [← f.comp_algebraMap, ← AlgHom.coe_toRingHom, ← hom_eval₂, AlgHom.coe_toRingHom,
     map_eq_zero_iff f hf] at hx
 #align is_integral_alg_hom_iff isIntegral_algHom_iff
@@ -167,7 +167,7 @@ theorem isIntegral_iff_isIntegral_closure_finite {r : B} :
     IsIntegral R r ↔ ∃ s : Set R, s.Finite ∧ IsIntegral (Subring.closure s) r := by
   constructor <;> intro hr
   · rcases hr with ⟨p, hmp, hpr⟩
-    refine' ⟨_, Finset.finite_toSet _, p.restriction, monic_restriction.2 hmp, _⟩
+    refine ⟨_, Finset.finite_toSet _, p.restriction, monic_restriction.2 hmp, _⟩
     rw [← aeval_def, ← aeval_map_algebraMap R r p.restriction, map_restriction, aeval_def, hpr]
   rcases hr with ⟨s, _, hsr⟩
   exact hsr.of_subring _
@@ -179,14 +179,14 @@ theorem Submodule.span_range_natDegree_eq_adjoin {R A} [CommRing R] [Semiring A]
       Subalgebra.toSubmodule (Algebra.adjoin R {x}) := by
   nontriviality A
   have hf1 : f ≠ 1 := by rintro rfl; simp [one_ne_zero' A] at hfx
-  refine (span_le.mpr fun s hs ↦ ?_).antisymm fun r hr ↦ ?_
+  refine (span_le.mpr fun s hs ↦ _).antisymm fun r hr ↦ _
   · rcases Finset.mem_image.1 hs with ⟨k, -, rfl⟩
     exact (Algebra.adjoin R {x}).pow_mem (Algebra.subset_adjoin rfl) k
   rw [Subalgebra.mem_toSubmodule, Algebra.adjoin_singleton_eq_range_aeval] at hr
   rcases (aeval x).mem_range.mp hr with ⟨p, rfl⟩
   rw [← modByMonic_add_div p hf, map_add, map_mul, hfx,
       zero_mul, add_zero, ← sum_C_mul_X_pow_eq (p %ₘ f), aeval_def, eval₂_sum, sum_def]
-  refine sum_mem fun k hkq ↦ ?_
+  refine sum_mem fun k hkq ↦ _
   rw [C_mul_X_pow_eq_monomial, eval₂_monomial, ← Algebra.smul_def]
   exact smul_mem _ _ (subset_span <| Finset.mem_image_of_mem _ <| Finset.mem_range.mpr <|
     (le_natDegree_of_mem_supp _ hkq).trans_lt <| natDegree_modByMonic_lt p hf hf1)
@@ -519,7 +519,7 @@ instance integralClosure.AlgebraIsIntegral : Algebra.IsIntegral R (integralClosu
 theorem IsIntegral.of_mul_unit {x y : B} {r : R} (hr : algebraMap R B r * y = 1)
     (hx : IsIntegral R (x * y)) : IsIntegral R x := by
   obtain ⟨p, p_monic, hp⟩ := hx
-  refine ⟨scaleRoots p r, (monic_scaleRoots_iff r).2 p_monic, ?_⟩
+  refine ⟨scaleRoots p r, (monic_scaleRoots_iff r).2 p_monic, _⟩
   convert scaleRoots_aeval_eq_zero hp
   rw [Algebra.commutes] at hr ⊢
   rw [mul_assoc, hr, mul_one]; rfl
@@ -747,7 +747,7 @@ theorem isIntegral_algebra [Algebra R A] [IsScalarTower R A B] : Algebra.IsInteg
 
 theorem noZeroSMulDivisors [Algebra R A] [IsScalarTower R A B] [NoZeroSMulDivisors R B] :
     NoZeroSMulDivisors R A := by
-  refine'
+  refine
     Function.Injective.noZeroSMulDivisors _ (IsIntegralClosure.algebraMap_injective A R B)
       (map_zero _) fun _ _ => _
   simp only [Algebra.algebraMap_eq_smul_one, IsScalarTower.smul_assoc]
@@ -872,7 +872,7 @@ theorem isIntegral_trans [Algebra.IsIntegral R A] (x : B) (hx : IsIntegral A x) 
   let Sx := Subalgebra.toSubmodule (adjoin S {x})
   let MSx : Module S Sx := SMulMemClass.toModule _ -- the next line times out without this
   have : Module.Finite S Sx := ⟨(Submodule.fg_top _).mpr hSx.fg_adjoin_singleton⟩
-  refine .of_mem_of_fg ((adjoin S {x}).restrictScalars R) ?_ _
+  refine .of_mem_of_fg ((adjoin S {x}).restrictScalars R) _ _
     ((Subalgebra.mem_restrictScalars R).mpr <| subset_adjoin rfl)
   rw [← Submodule.fg_top, ← Module.finite_def]
   letI : SMul S Sx := { MSx with } -- need this even though MSx is there
@@ -954,7 +954,7 @@ theorem RingHom.IsIntegral.quotient {I : Ideal S} (hf : f.IsIntegral) :
     (Ideal.quotientMap I f le_rfl).IsIntegral := by
   rintro ⟨x⟩
   obtain ⟨p, p_monic, hpx⟩ := hf x
-  refine ⟨p.map (Ideal.Quotient.mk _), p_monic.map _, ?_⟩
+  refine ⟨p.map (Ideal.Quotient.mk _), p_monic.map _, _⟩
   simpa only [hom_eval₂, eval₂_map] using congr_arg (Ideal.Quotient.mk I) hpx
 #align ring_hom.is_integral_quotient_of_is_integral RingHom.IsIntegral.quotient
 
@@ -970,8 +970,8 @@ theorem isIntegral_quotientMap_iff {I : Ideal S} :
   -- Porting note: added type ascription
   have : (Ideal.quotientMap I f le_rfl).comp g = (Ideal.Quotient.mk I).comp f :=
     Ideal.quotientMap_comp_mk le_rfl
-  refine' ⟨fun h => _, fun h => RingHom.IsIntegral.tower_top g _ (this ▸ h)⟩
-  refine' this ▸ RingHom.IsIntegral.trans g (Ideal.quotientMap I f le_rfl) _ h
+  refine ⟨fun h => _, fun h => RingHom.IsIntegral.tower_top g _ (this ▸ h)⟩
+  refine this ▸ RingHom.IsIntegral.trans g (Ideal.quotientMap I f le_rfl) _ h
   exact g.isIntegral_of_surjective Ideal.Quotient.mk_surjective
 #align is_integral_quotient_map_iff isIntegral_quotientMap_iff
 
@@ -980,7 +980,7 @@ theorem isField_of_isIntegral_of_isField {R S : Type*} [CommRing R] [CommRing S]
     [Algebra R S] [Algebra.IsIntegral R S]
     (hRS : Function.Injective (algebraMap R S)) (hS : IsField S) : IsField R := by
   have := hS.nontrivial; have := Module.nontrivial R S
-  refine ⟨⟨0, 1, zero_ne_one⟩, mul_comm, fun {a} ha ↦ ?_⟩
+  refine ⟨⟨0, 1, zero_ne_one⟩, mul_comm, fun {a} ha ↦ _⟩
   -- Let `a_inv` be the inverse of `algebraMap R S a`,
   -- then we need to show that `a_inv` is of the form `algebraMap R S b`.
   obtain ⟨a_inv, ha_inv⟩ := hS.mul_inv_cancel fun h ↦ ha (hRS (h.trans (RingHom.map_zero _).symm))
@@ -998,7 +998,7 @@ theorem isField_of_isIntegral_of_isField {R S : Type*} [CommRing R] [CommRing S]
 
 theorem isField_of_isIntegral_of_isField' {R S : Type*} [CommRing R] [CommRing S] [IsDomain S]
     [Algebra R S] [Algebra.IsIntegral R S] (hR : IsField R) : IsField S := by
-  refine ⟨⟨0, 1, zero_ne_one⟩, mul_comm, fun {x} hx ↦ ?_⟩
+  refine ⟨⟨0, 1, zero_ne_one⟩, mul_comm, fun {x} hx ↦ _⟩
   have : Module.Finite R (adjoin R {x}) := ⟨(Submodule.fg_top _).mpr
     (Algebra.IsIntegral.isIntegral x).fg_adjoin_singleton⟩
   letI := hR.toField

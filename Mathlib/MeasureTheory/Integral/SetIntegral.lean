@@ -250,14 +250,14 @@ theorem tendsto_setIntegral_of_monotone {ι : Type*} [Countable ι] [Semilattice
   have hsub : ∀ {i}, s i ⊆ S := @(subset_iUnion s)
   rw [← withDensity_apply _ hSm] at hfi'
   set ν := μ.withDensity fun x => ‖f x‖₊ with hν
-  refine' Metric.nhds_basis_closedBall.tendsto_right_iff.2 fun ε ε0 => _
+  refine Metric.nhds_basis_closedBall.tendsto_right_iff.2 fun ε ε0 => _
   lift ε to ℝ≥0 using ε0.le
   have : ∀ᶠ i in atTop, ν (s i) ∈ Icc (ν S - ε) (ν S + ε) :=
     tendsto_measure_iUnion h_mono (ENNReal.Icc_mem_nhds hfi'.ne (ENNReal.coe_pos.2 ε0).ne')
   filter_upwards [this] with i hi
   rw [mem_closedBall_iff_norm', ← integral_diff (hsm i) hfi hsub, ← coe_nnnorm, NNReal.coe_le_coe, ←
     ENNReal.coe_le_coe]
-  refine' (ennnorm_integral_le_lintegral_ennnorm _).trans _
+  refine (ennnorm_integral_le_lintegral_ennnorm _).trans _
   rw [← withDensity_apply _ (hSm.diff (hsm _)), ← hν, measure_diff hsub (hsm _)]
   exacts [tsub_le_iff_tsub_le.mp hi.1,
     (hi.2.trans_lt <| ENNReal.add_lt_top.2 ⟨hfi', ENNReal.coe_lt_top⟩).ne]
@@ -275,7 +275,7 @@ theorem tendsto_setIntegral_of_antitone {ι : Type*} [Countable ι] [Semilattice
   have hSm : MeasurableSet S := MeasurableSet.iInter hsm
   have hsub i : S ⊆ s i := iInter_subset _ _
   set ν := μ.withDensity fun x => ‖f x‖₊ with hν
-  refine' Metric.nhds_basis_closedBall.tendsto_right_iff.2 fun ε ε0 => _
+  refine Metric.nhds_basis_closedBall.tendsto_right_iff.2 fun ε ε0 => _
   lift ε to ℝ≥0 using ε0.le
   rcases hfi with ⟨i₀, hi₀⟩
   have νi₀ : ν (s i₀) ≠ ∞ := by
@@ -287,7 +287,7 @@ theorem tendsto_setIntegral_of_antitone {ι : Type*} [Countable ι] [Semilattice
   filter_upwards [this, Ici_mem_atTop i₀] with i hi h'i
   rw [mem_closedBall_iff_norm, ← integral_diff hSm (hi₀.mono_set (h_anti h'i)) (hsub i),
     ← coe_nnnorm, NNReal.coe_le_coe, ← ENNReal.coe_le_coe]
-  refine' (ennnorm_integral_le_lintegral_ennnorm _).trans _
+  refine (ennnorm_integral_le_lintegral_ennnorm _).trans _
   rw [← withDensity_apply _ ((hsm _).diff hSm), ← hν, measure_diff (hsub i) hSm νS]
   exact tsub_le_iff_left.2 hi.2
 
@@ -330,7 +330,7 @@ theorem setIntegral_eq_zero_of_ae_eq_zero (ht_eq : ∀ᵐ x ∂μ, x ∈ t → f
     contrapose! hf
     exact hf.1
   have : ∫ x in t, hf.mk f x ∂μ = 0 := by
-    refine' integral_eq_zero_of_ae _
+    refine integral_eq_zero_of_ae _
     rw [EventuallyEq,
       ae_restrict_iff (hf.stronglyMeasurable_mk.measurableSet_eq_fun stronglyMeasurable_zero)]
     filter_upwards [ae_imp_of_ae_restrict hf.ae_eq_mk, ht_eq] with x hx h'x h''x
@@ -408,7 +408,7 @@ theorem setIntegral_eq_of_subset_of_ae_diff_eq_zero_aux (hts : s ⊆ t)
     ∫ x in t, f x ∂μ = ∫ x in t ∩ k, f x ∂μ + ∫ x in t \ k, f x ∂μ := by
       rw [integral_inter_add_diff hk h'aux]
     _ = ∫ x in t \ k, f x ∂μ := by
-      rw [setIntegral_eq_zero_of_forall_eq_zero fun x hx => ?_, zero_add]; exact hx.2
+      rw [setIntegral_eq_zero_of_forall_eq_zero fun x hx => _, zero_add]; exact hx.2
     _ = ∫ x in s \ k, f x ∂μ := by
       apply setIntegral_congr_set_ae
       filter_upwards [h't] with x hx
@@ -502,7 +502,7 @@ theorem setIntegral_neg_eq_setIntegral_nonpos [LinearOrder E] {f : X → E}
   have B : NullMeasurableSet {x | f x = 0} μ :=
     hf.nullMeasurableSet_eq_fun aestronglyMeasurable_zero
   symm
-  refine' integral_union_eq_left_of_ae _
+  refine integral_union_eq_left_of_ae _
   filter_upwards [ae_restrict_mem₀ B] with x hx using hx
 #align measure_theory.set_integral_neg_eq_set_integral_nonpos MeasureTheory.setIntegral_neg_eq_setIntegral_nonpos
 
@@ -519,14 +519,14 @@ theorem integral_norm_eq_pos_sub_neg {f : X → ℝ} (hfi : Integrable f μ) :
       rw [← integral_add_compl₀ h_meas hfi.norm]
     _ = ∫ x in {x | 0 ≤ f x}, f x ∂μ + ∫ x in {x | 0 ≤ f x}ᶜ, ‖f x‖ ∂μ := by
       congr 1
-      refine' setIntegral_congr₀ h_meas fun x hx => _
+      refine setIntegral_congr₀ h_meas fun x hx => _
       dsimp only
       rw [Real.norm_eq_abs, abs_eq_self.mpr _]
       exact hx
     _ = ∫ x in {x | 0 ≤ f x}, f x ∂μ - ∫ x in {x | 0 ≤ f x}ᶜ, f x ∂μ := by
       congr 1
       rw [← integral_neg]
-      refine' setIntegral_congr₀ h_meas.compl fun x hx => _
+      refine setIntegral_congr₀ h_meas.compl fun x hx => _
       dsimp only
       rw [Real.norm_eq_abs, abs_eq_neg_self.mpr _]
       rw [Set.mem_compl_iff, Set.nmem_setOf_iff] at hx
@@ -722,8 +722,8 @@ theorem setIntegral_gt_gt {R : ℝ} {f : X → ℝ} (hR : 0 ≤ R) (hfm : Measur
     (hfint : IntegrableOn f {x | ↑R < f x} μ) (hμ : μ {x | ↑R < f x} ≠ 0) :
     (μ {x | ↑R < f x}).toReal * R < ∫ x in {x | ↑R < f x}, f x ∂μ := by
   have : IntegrableOn (fun _ => R) {x | ↑R < f x} μ := by
-    refine' ⟨aestronglyMeasurable_const, lt_of_le_of_lt _ hfint.2⟩
-    refine'
+    refine ⟨aestronglyMeasurable_const, lt_of_le_of_lt _ hfint.2⟩
+    refine
       set_lintegral_mono (Measurable.nnnorm _).coe_nnreal_ennreal hfm.nnnorm.coe_nnreal_ennreal
         fun x hx => _
     · exact measurable_const
@@ -869,7 +869,7 @@ alias set_integral_mono_on :=
 
 theorem setIntegral_mono_on_ae (hs : MeasurableSet s) (h : ∀ᵐ x ∂μ, x ∈ s → f x ≤ g x) :
     ∫ x in s, f x ∂μ ≤ ∫ x in s, g x ∂μ := by
-  refine' setIntegral_mono_ae_restrict hf hg _; rwa [EventuallyLE, ae_restrict_iff' hs]
+  refine setIntegral_mono_ae_restrict hf hg _; rwa [EventuallyLE, ae_restrict_iff' hs]
 #align measure_theory.set_integral_mono_on_ae MeasureTheory.setIntegral_mono_on_ae
 
 @[deprecated]
@@ -1053,7 +1053,7 @@ variable {ι : Type*} [Countable ι] {μ : Measure X} [NormedAddCommGroup E]
 theorem integrableOn_iUnion_of_summable_integral_norm {f : X → E} {s : ι → Set X}
     (hs : ∀ i : ι, MeasurableSet (s i)) (hi : ∀ i : ι, IntegrableOn f (s i) μ)
     (h : Summable fun i : ι => ∫ x : X in s i, ‖f x‖ ∂μ) : IntegrableOn f (iUnion s) μ := by
-  refine' ⟨AEStronglyMeasurable.iUnion fun i => (hi i).1, (lintegral_iUnion_le _ _).trans_lt _⟩
+  refine ⟨AEStronglyMeasurable.iUnion fun i => (hi i).1, (lintegral_iUnion_le _ _).trans_lt _⟩
   have B := fun i => lintegral_coe_eq_integral (fun x : X => ‖f x‖₊) (hi i).norm
   rw [tsum_congr B]
   have S' :
@@ -1073,7 +1073,7 @@ variable [TopologicalSpace X] [BorelSpace X] [MetrizableSpace X] [IsLocallyFinit
 theorem integrableOn_iUnion_of_summable_norm_restrict {f : C(X, E)} {s : ι → Compacts X}
     (hf : Summable fun i : ι => ‖f.restrict (s i)‖ * ENNReal.toReal (μ <| s i)) :
     IntegrableOn f (⋃ i : ι, s i) μ := by
-  refine'
+  refine
     integrableOn_iUnion_of_summable_integral_norm (fun i => (s i).isCompact.isClosed.measurableSet)
       (fun i => (map_continuous f).continuousOn.integrableOn_compact (s i).isCompact)
       (.of_nonneg_of_le (fun ι => integral_nonneg fun x => norm_nonneg _) (fun i => _) hf)
@@ -1111,13 +1111,13 @@ theorem Lp_toLp_restrict_add (f g : Lp E p μ) (s : Set X) :
     ((Lp.memℒp (f + g)).restrict s).toLp (⇑(f + g)) =
       ((Lp.memℒp f).restrict s).toLp f + ((Lp.memℒp g).restrict s).toLp g := by
   ext1
-  refine' (ae_restrict_of_ae (Lp.coeFn_add f g)).mp _
-  refine'
+  refine (ae_restrict_of_ae (Lp.coeFn_add f g)).mp _
+  refine
     (Lp.coeFn_add (Memℒp.toLp f ((Lp.memℒp f).restrict s))
           (Memℒp.toLp g ((Lp.memℒp g).restrict s))).mp _
-  refine' (Memℒp.coeFn_toLp ((Lp.memℒp f).restrict s)).mp _
-  refine' (Memℒp.coeFn_toLp ((Lp.memℒp g).restrict s)).mp _
-  refine' (Memℒp.coeFn_toLp ((Lp.memℒp (f + g)).restrict s)).mono fun x hx1 hx2 hx3 hx4 hx5 => _
+  refine (Memℒp.coeFn_toLp ((Lp.memℒp f).restrict s)).mp _
+  refine (Memℒp.coeFn_toLp ((Lp.memℒp g).restrict s)).mp _
+  refine (Memℒp.coeFn_toLp ((Lp.memℒp (f + g)).restrict s)).mono fun x hx1 hx2 hx3 hx4 hx5 => _
   rw [hx4, hx1, Pi.add_apply, hx2, hx3, hx5, Pi.add_apply]
 set_option linter.uppercaseLean3 false in
 #align measure_theory.Lp_to_Lp_restrict_add MeasureTheory.Lp_toLp_restrict_add
@@ -1127,10 +1127,10 @@ set_option linter.uppercaseLean3 false in
 theorem Lp_toLp_restrict_smul (c : 𝕜) (f : Lp F p μ) (s : Set X) :
     ((Lp.memℒp (c • f)).restrict s).toLp (⇑(c • f)) = c • ((Lp.memℒp f).restrict s).toLp f := by
   ext1
-  refine' (ae_restrict_of_ae (Lp.coeFn_smul c f)).mp _
-  refine' (Memℒp.coeFn_toLp ((Lp.memℒp f).restrict s)).mp _
-  refine' (Memℒp.coeFn_toLp ((Lp.memℒp (c • f)).restrict s)).mp _
-  refine'
+  refine (ae_restrict_of_ae (Lp.coeFn_smul c f)).mp _
+  refine (Memℒp.coeFn_toLp ((Lp.memℒp f).restrict s)).mp _
+  refine (Memℒp.coeFn_toLp ((Lp.memℒp (c • f)).restrict s)).mp _
+  refine
     (Lp.coeFn_smul c (Memℒp.toLp f ((Lp.memℒp f).restrict s))).mono fun x hx1 hx2 hx3 hx4 => _
   simp only [hx2, hx1, hx3, hx4, Pi.smul_apply]
 set_option linter.uppercaseLean3 false in
@@ -1141,7 +1141,7 @@ set_option linter.uppercaseLean3 false in
 theorem norm_Lp_toLp_restrict_le (s : Set X) (f : Lp E p μ) :
     ‖((Lp.memℒp f).restrict s).toLp f‖ ≤ ‖f‖ := by
   rw [Lp.norm_def, Lp.norm_def, ENNReal.toReal_le_toReal (Lp.snorm_ne_top _) (Lp.snorm_ne_top _)]
-  refine' (le_of_eq _).trans (snorm_mono_measure _ Measure.restrict_le_self)
+  refine (le_of_eq _).trans (snorm_mono_measure _ Measure.restrict_le_self)
   exact snorm_congr_ae (Memℒp.coeFn_toLp _)
 set_option linter.uppercaseLean3 false in
 #align measure_theory.norm_Lp_to_Lp_restrict_le MeasureTheory.norm_Lp_toLp_restrict_le
@@ -1228,7 +1228,7 @@ theorem Filter.Tendsto.integral_sub_linear_isLittleO_ae
       (fun s => (∫ x in s, f x ∂μ) - (μ s).toReal • b) =o[l.smallSets] fun s => (μ s).toReal from
     (this.comp_tendsto hs).congr'
       (hsμ.mono fun a ha => by dsimp only [Function.comp_apply] at ha ⊢; rw [ha]) hsμ
-  refine' isLittleO_iff.2 fun ε ε₀ => _
+  refine isLittleO_iff.2 fun ε ε₀ => _
   have : ∀ᶠ s in l.smallSets, ∀ᶠ x in μ.ae, x ∈ s → f x ∈ closedBall b ε :=
     eventually_smallSets_eventually.2 (h.eventually <| closedBall_mem_nhds _ ε₀)
   filter_upwards [hμ.eventually, (hμ.integrableAtFilter_of_tendsto_ae hfm h).eventually,
@@ -1521,7 +1521,7 @@ theorem integral_withDensity_eq_integral_smul {f : X → ℝ≥0} (f_meas : Meas
   by_cases hg : Integrable g (μ.withDensity fun x => f x); swap
   · rw [integral_undef hg, integral_undef]
     rwa [← integrable_withDensity_iff_integrable_smul f_meas]
-  refine' Integrable.induction
+  refine Integrable.induction
     (P := fun g => ∫ x, g x ∂μ.withDensity (fun x => f x) = ∫ x, f x • g x ∂μ) _ _ _ _ hg
   · intro c s s_meas hs
     rw [integral_indicator s_meas]
@@ -1530,7 +1530,7 @@ theorem integral_withDensity_eq_integral_smul {f : X → ℝ≥0} (f_meas : Meas
     rw [lintegral_coe_eq_integral, ENNReal.toReal_ofReal, ← integral_smul_const]
     · rfl
     · exact integral_nonneg fun x => NNReal.coe_nonneg _
-    · refine' ⟨f_meas.coe_nnreal_real.aemeasurable.aestronglyMeasurable, _⟩
+    · refine ⟨f_meas.coe_nnreal_real.aemeasurable.aestronglyMeasurable, _⟩
       rw [withDensity_apply _ s_meas] at hs
       rw [HasFiniteIntegral]
       convert hs with x
@@ -1641,7 +1641,7 @@ variable {f : X → ℝ} {m m0 : MeasurableSpace X} {μ : Measure X}
 
 theorem Integrable.simpleFunc_mul (g : SimpleFunc X ℝ) (hf : Integrable f μ) :
     Integrable (⇑g * f) μ := by
-  refine'
+  refine
     SimpleFunc.induction (fun c s hs => _)
       (fun g₁ g₂ _ h_int₁ h_int₂ =>
         (h_int₁.add h_int₂).congr (by rw [SimpleFunc.coe_add, add_mul]))
@@ -1706,10 +1706,10 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
     (hfs : ∀ p, ∀ x, p ∈ s → x ∉ k → f p x = 0) (hg : IntegrableOn g k μ) :
     ContinuousOn (fun x ↦ ∫ y, L (g y) (f x y) ∂μ) s := by
   have A : ∀ p ∈ s, Continuous (f p) := fun p hp ↦ by
-    refine hf.comp_continuous (continuous_const.prod_mk continuous_id') fun y => ?_
+    refine hf.comp_continuous (continuous_const.prod_mk continuous_id') fun y => _
     simpa only [prod_mk_mem_set_prod_eq, mem_univ, and_true] using hp
   intro q hq
-  apply Metric.continuousWithinAt_iff'.2 (fun ε εpos ↦ ?_)
+  apply Metric.continuousWithinAt_iff'.2 (fun ε εpos ↦ _)
   obtain ⟨δ, δpos, hδ⟩ : ∃ (δ : ℝ), 0 < δ ∧ ∫ x in k, ‖L‖ * ‖g x‖ * δ ∂μ < ε := by
     simpa [integral_mul_right] using exists_pos_mul_lt εpos _
   obtain ⟨v, v_mem, hv⟩ : ∃ v ∈ 𝓝[s] q, ∀ p ∈ v, ∀ x ∈ k, dist (f p x) (f q x) < δ :=
@@ -1723,19 +1723,19 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
         have : ContinuousOn (fun y ↦ (p, y)) k := by fun_prop
         exact hf.comp this (by simp [MapsTo, hp])
       rcases IsCompact.exists_bound_of_continuousOn hk this with ⟨C, hC⟩
-      refine ⟨max C 0, fun y ↦ ?_⟩
+      refine ⟨max C 0, fun y ↦ _⟩
       by_cases hx : y ∈ k
       · exact (hC y hx).trans (le_max_left _ _)
       · simp [hfs p y hp hx]
     have : IntegrableOn (fun y ↦ ‖L‖ * ‖g y‖ * C) k μ :=
       (hg.norm.const_mul _).mul_const _
-    apply Integrable.mono' this ?_ ?_
+    apply Integrable.mono' this _ _
     · borelize G
       apply L.aestronglyMeasurable_comp₂ hg.aestronglyMeasurable
       apply StronglyMeasurable.aestronglyMeasurable
       apply Continuous.stronglyMeasurable_of_support_subset_isCompact (A p hp) hk
       apply support_subset_iff'.2 (fun y hy ↦ hfs p y hp hy)
-    · apply eventually_of_forall (fun y ↦ (le_opNorm₂ L (g y) (f p y)).trans ?_)
+    · apply eventually_of_forall (fun y ↦ (le_opNorm₂ L (g y) (f p y)).trans _)
       gcongr
       apply hC
   filter_upwards [v_mem, self_mem_nhdsWithin] with p hp h'p
@@ -1743,9 +1743,9 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
   ‖∫ x, L (g x) (f p x) ∂μ - ∫ x, L (g x) (f q x) ∂μ‖
     = ‖∫ x in k, L (g x) (f p x) ∂μ - ∫ x in k, L (g x) (f q x) ∂μ‖ := by
       congr 2
-      · refine (setIntegral_eq_integral_of_forall_compl_eq_zero (fun y hy ↦ ?_)).symm
+      · refine (setIntegral_eq_integral_of_forall_compl_eq_zero (fun y hy ↦ _)).symm
         simp [hfs p y h'p hy]
-      · refine (setIntegral_eq_integral_of_forall_compl_eq_zero (fun y hy ↦ ?_)).symm
+      · refine (setIntegral_eq_integral_of_forall_compl_eq_zero (fun y hy ↦ _)).symm
         simp [hfs q y hq hy]
   _ = ‖∫ x in k, L (g x) (f p x) - L (g x) (f q x) ∂μ‖ := by rw [integral_sub (I p h'p) (I q hq)]
   _ ≤ ∫ x in k, ‖L (g x) (f p x) - L (g x) (f q x)‖ ∂μ := norm_integral_le_integral_norm _

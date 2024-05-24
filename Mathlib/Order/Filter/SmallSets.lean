@@ -82,7 +82,7 @@ theorem frequently_smallSets_mem (l : Filter α) : ∃ᶠ s in l.smallSets, s �
 lemma tendsto_image_smallSets {f : α → β} :
     Tendsto (f '' ·) la.smallSets lb.smallSets ↔ Tendsto f la lb := by
   rw [tendsto_smallSets_iff]
-  refine forall₂_congr fun u hu ↦ ?_
+  refine forall₂_congr fun u hu ↦ _
   rw [eventually_smallSets' fun s t hst ht ↦ (image_subset _ hst).trans ht]
   simp only [image_subset_iff, exists_mem_subset_iff, mem_map]
 
@@ -133,7 +133,7 @@ theorem smallSets_inf (l₁ l₂ : Filter α) : (l₁ ⊓ l₂).smallSets = l₁
 #align filter.small_sets_inf Filter.smallSets_inf
 
 instance smallSets_neBot (l : Filter α) : NeBot l.smallSets := by
-  refine' (lift'_neBot_iff _).2 fun _ _ => powerset_nonempty
+  refine (lift'_neBot_iff _).2 fun _ _ => powerset_nonempty
   exact monotone_powerset
 #align filter.small_sets_ne_bot Filter.smallSets_neBot
 

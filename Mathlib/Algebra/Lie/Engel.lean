@@ -91,7 +91,7 @@ theorem lie_top_eq_of_span_sup_eq_top (N : LieSubmodule R L M) :
       (N : Submodule R M).map (toEnd R L M x) ⊔ (↑⁅I, N⁆ : Submodule R M) := by
   simp only [lieIdeal_oper_eq_linear_span', Submodule.sup_span, mem_top, exists_prop,
     true_and, Submodule.map_coe, toEnd_apply_apply]
-  refine' le_antisymm (Submodule.span_le.mpr _) (Submodule.span_mono fun z hz => _)
+  refine le_antisymm (Submodule.span_le.mpr _) (Submodule.span_mono fun z hz => _)
   · rintro z ⟨y, n, hn : n ∈ N, rfl⟩
     obtain ⟨t, z, hz, rfl⟩ := exists_smul_add_of_span_sup_eq_top hxI y
     simp only [SetLike.mem_coe, Submodule.span_union, Submodule.mem_sup]
@@ -117,11 +117,11 @@ theorem lcs_le_lcs_of_is_nilpotent_span_sup_eq_top {n i j : ℕ}
       Submodule.map_id]
     exact le_sup_of_le_left hIM
   · simp only [LieIdeal.lcs_succ, i.add_succ l, lie_top_eq_of_span_sup_eq_top hxI, sup_le_iff]
-    refine' ⟨(Submodule.map_mono ih).trans _, le_sup_of_le_right _⟩
+    refine ⟨(Submodule.map_mono ih).trans _, le_sup_of_le_right _⟩
     · rw [Submodule.map_sup, ← Submodule.map_comp, ← LinearMap.mul_eq_comp, ← pow_succ', ←
         I.lcs_succ]
       exact sup_le_sup_left coe_map_toEnd_le _
-    · refine' le_trans (mono_lie_right _ _ I _) (mono_lie_right _ _ I hIM)
+    · refine le_trans (mono_lie_right _ _ I _) (mono_lie_right _ _ I hIM)
       exact antitone_lowerCentralSeries R L M le_self_add
 #align lie_submodule.lcs_le_lcs_of_is_nilpotent_span_sup_eq_top LieSubmodule.lcs_le_lcs_of_is_nilpotent_span_sup_eq_top
 
@@ -201,7 +201,7 @@ theorem LieAlgebra.exists_engelian_lieSubalgebra_of_lt_normalizer {K : LieSubalg
   have hK' : K' ≤ K.normalizer := by
     rw [← LieSubalgebra.coe_submodule_le_coe_submodule]
     exact sup_le ((Submodule.span_singleton_le_iff_mem _ _).mpr hx₁) hK₂.le
-  refine' ⟨K', _, lt_iff_le_and_ne.mpr ⟨hKK', fun contra => hx₂ (contra.symm ▸ hxK')⟩⟩
+  refine ⟨K', _, lt_iff_le_and_ne.mpr ⟨hKK', fun contra => hx₂ (contra.symm ▸ hxK')⟩⟩
   intro M _i1 _i2 _i3 _i4 h
   obtain ⟨I, hI₁ : (I : LieSubalgebra R K') = LieSubalgebra.ofLe hKK'⟩ :=
     LieSubalgebra.exists_nested_lieIdeal_ofLe_normalizer hKK' hK'
@@ -250,11 +250,11 @@ theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.Is
           K.coe_to_submodule_eq_iff]
       exact Submodule.Quotient.nontrivial_of_lt_top _ hK₂.lt_top
     have : LieModule.IsNilpotent R K (L' ⧸ K.toLieSubmodule) := by
-      -- Porting note: was refine' hK₁ _ fun x => _
+      -- Porting note: was refine hK₁ _ fun x => _
       apply hK₁
       intro x
       have hx := LieAlgebra.isNilpotent_ad_of_isNilpotent (h x)
-      apply Module.End.IsNilpotent.mapQ ?_ hx
+      apply Module.End.IsNilpotent.mapQ _ hx
       -- Porting note: mathlib3 solved this on its own with `submodule.mapq_linear._proof_5`
       intro X HX
       simp only [LieSubalgebra.coe_toLieSubmodule, LieSubalgebra.mem_coe_submodule] at HX
@@ -266,7 +266,7 @@ theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.Is
     -- Porting note: was
     -- isNoetherian_of_surjective L _ (LinearMap.range_rangeRestrict (toEnd R L M))
     -- abusing the relation between `LieHom.rangeRestrict` and `LinearMap.rangeRestrict`
-    refine isNoetherian_of_surjective L (LieHom.rangeRestrict (toEnd R L M)) ?_
+    refine isNoetherian_of_surjective L (LieHom.rangeRestrict (toEnd R L M)) _
     simp only [LieHom.range_coeSubmodule, LieHom.coe_toLinearMap, LinearMap.range_eq_top]
     exact LieHom.surjective_rangeRestrict (toEnd R L M)
   obtain ⟨K, hK₁, hK₂⟩ := (LieSubalgebra.wellFounded_of_noetherian R L').has_min s hs

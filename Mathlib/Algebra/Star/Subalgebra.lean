@@ -152,7 +152,7 @@ protected theorem smul_mem {x : A} (hx : x ∈ S) (r : R) : r • x ∈ S :=
 #align star_subalgebra.smul_mem StarSubalgebra.smul_mem
 
 /-- Embedding of a subalgebra into the algebra. -/
-def subtype : S →⋆ₐ[R] A := by refine' { toFun := ((↑) : S → A), .. } <;> intros <;> rfl
+def subtype : S →⋆ₐ[R] A := by refine { toFun := ((↑) : S → A), .. } <;> intros <;> rfl
 #align star_subalgebra.subtype StarSubalgebra.subtype
 
 @[simp]
@@ -520,7 +520,7 @@ theorem adjoin_induction₂ {s : Set A} {p : A → A → Prop} {a b : A} (ha : a
     (Hmul_right : ∀ x y₁ y₂ : A, p x y₁ → p x y₂ → p x (y₁ * y₂))
     (Hstar : ∀ x y : A, p x y → p (star x) (star y)) (Hstar_left : ∀ x y : A, p x y → p (star x) y)
     (Hstar_right : ∀ x y : A, p x y → p x (star y)) : p a b := by
-  refine'
+  refine
     Algebra.adjoin_induction₂ ha hb (fun x hx y hy => _) Halg (fun r x hx => _) (fun r x hx => _)
       Hadd_left Hadd_right Hmul_left Hmul_right
   · cases' hx with hx hx <;> cases' hy with hy hy
@@ -543,8 +543,8 @@ theorem adjoin_induction' {s : Set A} {p : adjoin R s → Prop} (a : adjoin R s)
     (add : ∀ x y, p x → p y → p (x + y)) (mul : ∀ x y, p x → p y → p (x * y))
     (star : ∀ x, p x → p (star x)) : p a :=
   Subtype.recOn a fun b hb => by
-    refine Exists.elim ?_ fun (hb : b ∈ adjoin R s) (hc : p ⟨b, hb⟩) => hc
-    refine adjoin_induction hb ?_ ?_ ?_ ?_ ?_
+    refine Exists.elim _ fun (hb : b ∈ adjoin R s) (hc : p ⟨b, hb⟩) => hc
+    refine adjoin_induction hb _ _ _ _ _
     exacts [fun x hx => ⟨subset_adjoin R s hx, mem x hx⟩, fun r =>
       ⟨StarSubalgebra.algebraMap_mem _ r, algebraMap r⟩, fun x y hx hy =>
       Exists.elim hx fun hx' hx => Exists.elim hy fun hy' hy => ⟨add_mem hx' hy', add _ _ hx hy⟩,
@@ -770,7 +770,7 @@ theorem map_adjoin (f : A →⋆ₐ[R] B) (s : Set A) :
 theorem ext_adjoin {s : Set A} [FunLike F (adjoin R s) B]
     [AlgHomClass F R (adjoin R s) B] [StarAlgHomClass F R (adjoin R s) B] {f g : F}
     (h : ∀ x : adjoin R s, (x : A) ∈ s → f x = g x) : f = g := by
-  refine' DFunLike.ext f g fun a =>
+  refine DFunLike.ext f g fun a =>
     adjoin_induction' (p := fun y => f y = g y) a (fun x hx => _) (fun r => _)
     (fun x y hx hy => _) (fun x y hx hy => _) fun x hx => _
   · exact h ⟨x, subset_adjoin R s hx⟩ hx

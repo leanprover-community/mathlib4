@@ -176,14 +176,14 @@ theorem gcd_eq_zero_iff (s : Multiset α) : s.gcd = 0 ↔ ∀ x : α, x ∈ s �
     apply eq_zero_of_zero_dvd
     rw [← h]
     apply gcd_dvd hx
-  · refine' s.induction_on _ _
+  · refine s.induction_on _ _
     · simp
     intro a s sgcd h
     simp [h a (mem_cons_self a s), sgcd fun x hx ↦ h x (mem_cons_of_mem hx)]
 #align multiset.gcd_eq_zero_iff Multiset.gcd_eq_zero_iff
 
 theorem gcd_map_mul (a : α) (s : Multiset α) : (s.map (a * ·)).gcd = normalize a * s.gcd := by
-  refine' s.induction_on _ fun b s ih ↦ _
+  refine s.induction_on _ fun b s ih ↦ _
   · simp_rw [map_zero, gcd_zero, mul_zero]
   · simp_rw [map_cons, gcd_cons, ← gcd_mul_left]
     rw [ih]
@@ -247,7 +247,7 @@ theorem extract_gcd (s : Multiset α) (hs : s ≠ 0) :
       exact ⟨⟨rfl, h⟩, normalize_one⟩
     · choose f hf using @gcd_dvd _ _ _ s
       push_neg at h
-      refine ⟨s.pmap @f fun _ ↦ id, ?_, extract_gcd' s _ h ?_⟩ <;>
+      refine ⟨s.pmap @f fun _ ↦ id, _, extract_gcd' s _ h _⟩ <;>
       · rw [map_pmap]
         conv_lhs => rw [← s.map_id, ← s.pmap_eq_map _ _ fun _ ↦ id]
         congr with (x hx)

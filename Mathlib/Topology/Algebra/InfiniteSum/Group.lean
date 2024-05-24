@@ -90,7 +90,7 @@ theorem Multipliable.update (hf : Multipliable f) (b : β) [DecidableEq β] (a :
 @[to_additive]
 theorem HasProd.hasProd_compl_iff {s : Set β} (hf : HasProd (f ∘ (↑) : s → α) a₁) :
     HasProd (f ∘ (↑) : ↑sᶜ → α) a₂ ↔ HasProd f (a₁ * a₂) := by
-  refine' ⟨fun h ↦ hf.mul_compl h, fun h ↦ _⟩
+  refine ⟨fun h ↦ hf.mul_compl h, fun h ↦ _⟩
   rw [hasProd_subtype_iff_mulIndicator] at hf ⊢
   rw [Set.mulIndicator_compl]
   simpa only [div_eq_mul_inv, mul_inv_cancel_comm] using h.div hf
@@ -227,13 +227,13 @@ theorem cauchySeq_finset_iff_tprod_vanishing :
     (CauchySeq fun s : Finset β ↦ ∏ b in s, f b) ↔
       ∀ e ∈ 𝓝 (1 : α), ∃ s : Finset β, ∀ t : Set β, Disjoint t s → (∏' b : t, f b) ∈ e := by
   simp_rw [cauchySeq_finset_iff_prod_vanishing, Set.disjoint_left, disjoint_left]
-  refine ⟨fun vanish e he ↦ ?_, fun vanish e he ↦ ?_⟩
+  refine ⟨fun vanish e he ↦ _, fun vanish e he ↦ _⟩
   · obtain ⟨o, ho, o_closed, oe⟩ := exists_mem_nhds_isClosed_subset he
     obtain ⟨s, hs⟩ := vanish o ho
-    refine ⟨s, fun t hts ↦ oe ?_⟩
+    refine ⟨s, fun t hts ↦ oe _⟩
     by_cases ht : Multipliable fun a : t ↦ f a
     · classical
-      refine o_closed.mem_of_tendsto ht.hasProd (eventually_of_forall fun t' ↦ ?_)
+      refine o_closed.mem_of_tendsto ht.hasProd (eventually_of_forall fun t' ↦ _)
       rw [← prod_subtype_map_embedding fun _ _ ↦ by rfl]
       apply hs
       simp_rw [Finset.mem_map]
@@ -270,7 +270,7 @@ theorem Multipliable.multipliable_of_eq_one_or_self (hf : Multipliable f)
           ∏ b in t.filter fun b ↦ g b = f b, f b = ∏ b in t.filter fun b ↦ g b = f b, g b :=
             Finset.prod_congr rfl fun b hb ↦ (Finset.mem_filter.1 hb).2.symm
           _ = ∏ b in t, g b := by
-           {refine Finset.prod_subset (Finset.filter_subset _ _) ?_
+           {refine Finset.prod_subset (Finset.filter_subset _ _) _
             intro b hbt hb
             simp only [Finset.mem_filter, and_iff_right hbt] at hb
             exact (h b).resolve_right hb}
@@ -352,7 +352,7 @@ theorem tendsto_tprod_compl_atTop_one (f : α → G) :
     obtain ⟨s, hs⟩ := H.tprod_vanishing he
     rw [Filter.mem_map, mem_atTop_sets]
     exact ⟨s, fun t hts ↦ hs _ <| Set.disjoint_left.mpr fun a ha has ↦ ha (hts has)⟩
-  · refine tendsto_const_nhds.congr fun _ ↦ (tprod_eq_one_of_not_multipliable ?_).symm
+  · refine tendsto_const_nhds.congr fun _ ↦ (tprod_eq_one_of_not_multipliable _).symm
     rwa [Finset.multipliable_compl_iff]
 #align tendsto_tsum_compl_at_top_zero tendsto_tsum_compl_atTop_zero
 
@@ -364,7 +364,7 @@ theorem Multipliable.tendsto_cofinite_one (hf : Multipliable f) : Tendsto f cofi
   intro e he
   rw [Filter.mem_map]
   rcases hf.vanishing he with ⟨s, hs⟩
-  refine' s.eventually_cofinite_nmem.mono fun x hx ↦ _
+  refine s.eventually_cofinite_nmem.mono fun x hx ↦ _
   · simpa using hs {x} (disjoint_singleton_left.2 hx)
 #align summable.tendsto_cofinite_zero Summable.tendsto_cofinite_zero
 
@@ -376,7 +376,7 @@ theorem Multipliable.countable_mulSupport [FirstCountableTopology G] [T1Space G]
 @[to_additive]
 theorem multipliable_const_iff [Infinite β] [T2Space G] (a : G) :
     Multipliable (fun _ : β ↦ a) ↔ a = 1 := by
-  refine ⟨fun h ↦ ?_, ?_⟩
+  refine ⟨fun h ↦ _, _⟩
   · by_contra ha
     have : {a}ᶜ ∈ 𝓝 1 := compl_singleton_mem_nhds (Ne.symm ha)
     have : Finite β := by

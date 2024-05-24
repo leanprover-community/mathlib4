@@ -71,11 +71,11 @@ def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g)
           { toFun := fun x =>
               ⟨⟨S.fst x, S.snd x⟩, by simpa using ConcreteCategory.congr_hom S.condition x⟩
             continuous_toFun := by
-              apply Continuous.subtype_mk <| Continuous.prod_mk ?_ ?_
+              apply Continuous.subtype_mk <| Continuous.prod_mk _ _
               · exact (PullbackCone.fst S)|>.continuous_toFun
               · exact (PullbackCone.snd S)|>.continuous_toFun
           }
-      refine' ⟨_, _, _⟩
+      refine ⟨_, _, _⟩
       · delta pullbackCone
         ext a
         -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
@@ -152,7 +152,7 @@ theorem pullback_topology {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
       induced (pullback.fst : pullback f g ⟶ _) X.str ⊓
         induced (pullback.snd : pullback f g ⟶ _) Y.str := by
   let homeo := homeoOfIso (pullbackIsoProdSubtype f g)
-  refine homeo.inducing.induced.trans ?_
+  refine homeo.inducing.induced.trans _
   change induced homeo (induced _ ( (induced Prod.fst X.str) ⊓ (induced Prod.snd Y.str))) = _
   simp only [induced_compose, induced_inf]
   congr
@@ -196,7 +196,7 @@ def pullbackHomeoPreimage
     exact continuous_fst.comp continuous_subtype_val
   continuous_invFun := by
     apply Continuous.subtype_mk
-    refine continuous_prod_mk.mpr ⟨continuous_subtype_val, hg.toInducing.continuous_iff.mpr ?_⟩
+    refine continuous_prod_mk.mpr ⟨continuous_subtype_val, hg.toInducing.continuous_iff.mpr _⟩
     convert hf.comp continuous_subtype_val
     ext x
     exact Exists.choose_spec x.2
@@ -278,7 +278,7 @@ theorem pullback_map_embedding_of_embeddings {W X Y Z S T : TopCat.{u}} (f₁ : 
     (g₁ : Y ⟶ T) (g₂ : Z ⟶ T) {i₁ : W ⟶ Y} {i₂ : X ⟶ Z} (H₁ : Embedding i₁) (H₂ : Embedding i₂)
     (i₃ : S ⟶ T) (eq₁ : f₁ ≫ i₃ = i₁ ≫ g₁) (eq₂ : f₂ ≫ i₃ = i₂ ≫ g₂) :
     Embedding (pullback.map f₁ f₂ g₁ g₂ i₁ i₂ i₃ eq₁ eq₂) := by
-  refine'
+  refine
     embedding_of_embedding_compose (ContinuousMap.continuous_toFun _)
       (show Continuous (prod.lift pullback.fst pullback.snd : pullback g₁ g₂ ⟶ Y ⨯ Z) from
         ContinuousMap.continuous_toFun _)
@@ -428,7 +428,7 @@ theorem coinduced_of_isColimit {F : J ⥤ TopCat.{max v u}} (c : Cocone F) (hc :
     c.pt.str = ⨆ j, (F.obj j).str.coinduced (c.ι.app j) := by
   let homeo := homeoOfIso (hc.coconePointUniqueUpToIso (colimitCoconeIsColimit F))
   ext
-  refine' homeo.symm.isOpen_preimage.symm.trans (Iff.trans _ isOpen_iSup_iff.symm)
+  refine homeo.symm.isOpen_preimage.symm.trans (Iff.trans _ isOpen_iSup_iff.symm)
   exact isOpen_iSup_iff
 #align Top.coinduced_of_is_colimit TopCat.coinduced_of_isColimit
 

@@ -71,9 +71,9 @@ theorem equalizerCondition_precomp_of_preservesPullback (P : Cᵒᵖ ⥤ D) (F :
     [F.PreservesEffectiveEpis] (hP : EqualizerCondition P) : EqualizerCondition (F.op ⋙ P) := by
   intro X B π _ c hc
   have h : P.map (F.map π).op = (F.op ⋙ P).map π.op := by simp
-  refine ⟨(IsLimit.equivIsoLimit (ForkOfι.ext ?_ _ h)) ?_⟩
+  refine ⟨(IsLimit.equivIsoLimit (ForkOfι.ext _ _ h)) _⟩
   · simp only [Functor.comp_map, op_map, Quiver.Hom.unop_op, ← map_comp, ← op_comp, c.condition]
-  · refine (hP (F.map π) (PullbackCone.mk (F.map c.fst) (F.map c.snd) ?_) ?_).some
+  · refine (hP (F.map π) (PullbackCone.mk (F.map c.fst) (F.map c.snd) _) _).some
     · simp only [← map_comp, c.condition]
     · exact (isLimitMapConePullbackConeEquiv F c.condition)
         (isLimitOfPreserves F (hc.ofIsoLimit (PullbackCone.ext (Iso.refl _) (by simp) (by simp))))
@@ -95,7 +95,7 @@ theorem EqualizerCondition.bijective_mapToEqualizer_pullback (P : Cᵒᵖ ⥤ Ty
   rw [Function.bijective_iff_existsUnique]
   intro ⟨b, hb⟩
   obtain ⟨a, ha₁, ha₂⟩ := hP b hb
-  refine ⟨a, ?_, ?_⟩
+  refine ⟨a, _, _⟩
   · simpa [MapToEqualizer] using ha₁
   · simpa [MapToEqualizer] using ha₂
 
@@ -115,7 +115,7 @@ theorem EqualizerCondition.mk (P : Cᵒᵖ ⥤ Type*)
     rw [← h₁, op_comp, FunctorToTypes.map_comp_apply, hb]
     simp [← FunctorToTypes.map_comp_apply, ← op_comp]
   obtain ⟨a, ha₁, ha₂⟩ := hP ⟨b, hb'⟩
-  refine ⟨a, ?_, ?_⟩
+  refine ⟨a, _, _⟩
   · simpa [MapToEqualizer] using ha₁
   · simpa [MapToEqualizer] using ha₂
 
@@ -173,7 +173,7 @@ theorem parallelPair_pullback_initial {X B : C} (π : X ⟶ B)
     exact ⟨(Over.homMk f').op⟩
   · intro ⟨Z⟩ ⟨i⟩ ⟨j⟩
     let ij := PullbackCone.IsLimit.lift hc i.left j.left (by erw [i.w, j.w]; rfl)
-    refine ⟨Quiver.Hom.op (Over.homMk ij (by simpa [ij] using i.w)), ?_, ?_⟩
+    refine ⟨Quiver.Hom.op (Over.homMk ij (by simpa [ij] using i.w)), _, _⟩
     all_goals congr
     all_goals exact Comma.hom_ext _ _ (by erw [Over.comp_left]; simp [ij]) rfl
 
@@ -195,8 +195,8 @@ noncomputable def isLimit_forkOfι_equiv (P : Cᵒᵖ ⥤ D) {X B : C} (π : X �
   let H := parallelPair fst.op snd.op
   have : H.Initial := parallelPair_pullback_initial π c hc
   let i : H ⋙ F ≅ G := parallelPair.ext (Iso.refl _) (Iso.refl _) (by aesop) (by aesop)
-  refine (IsLimit.equivOfNatIsoOfIso i.symm _ _ ?_).trans (Functor.Initial.isLimitWhiskerEquiv H _)
-  refine Cones.ext (Iso.refl _) ?_
+  refine (IsLimit.equivOfNatIsoOfIso i.symm _ _ _).trans (Functor.Initial.isLimitWhiskerEquiv H _)
+  refine Cones.ext (Iso.refl _) _
   rintro ⟨_ | _⟩
   all_goals aesop
 
@@ -225,7 +225,7 @@ lemma isSheafFor_regular_of_projective {X : C} (S : Presieve X) [S.regular] [Pro
     (F : Cᵒᵖ ⥤ Type*) : S.IsSheafFor F := by
   obtain ⟨Y, f, rfl, hf⟩ := Presieve.regular.single_epi (R := S)
   rw [isSheafFor_arrows_iff]
-  refine fun x hx ↦ ⟨F.map (Projective.factorThru (𝟙 _) f).op <| x (), fun _ ↦ ?_, fun y h ↦ ?_⟩
+  refine fun x hx ↦ ⟨F.map (Projective.factorThru (𝟙 _) f).op <| x (), fun _ ↦ _, fun y h ↦ _⟩
   · simpa using (hx () () Y (𝟙 Y) (f ≫ (Projective.factorThru (𝟙 _) f)) (by simp)).symm
   · simp only [← h (), ← FunctorToTypes.map_comp_apply, ← op_comp, Projective.factorThru_comp,
       op_id, FunctorToTypes.map_id_apply]
@@ -251,7 +251,7 @@ lemma isSheaf_yoneda_obj [Preregular C] (W : C)  :
   let S := Sieve.generate (Presieve.ofArrows (fun () ↦ Y) (fun () ↦ f))
   obtain ⟨t, t_amalg, t_uniq⟩ :=
     (Sieve.forallYonedaIsSheaf_iff_colimit S).mpr ⟨h_colim⟩ W x_ext hx_ext
-  refine ⟨t, ?_, ?_⟩
+  refine ⟨t, _, _⟩
   · convert Presieve.isAmalgamation_restrict (Sieve.le_generate
       (Presieve.ofArrows (fun () ↦ Y) (fun () ↦ f))) _ _ t_amalg
     exact (Presieve.restrict_extend hx).symm

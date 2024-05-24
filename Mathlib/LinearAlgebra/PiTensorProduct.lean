@@ -208,9 +208,9 @@ protected theorem induction_on' {motive : (⨂[R] i, s i) → Prop} (z : ⨂[R] 
   have C0 : motive 0 := by
     have h₁ := tprodCoeff 0 0
     rwa [zero_tprodCoeff] at h₁
-  refine' AddCon.induction_on z fun x ↦ FreeAddMonoid.recOn x C0 _
+  refine AddCon.induction_on z fun x ↦ FreeAddMonoid.recOn x C0 _
   simp_rw [AddCon.coe_add]
-  refine' fun f y ih ↦ add _ _ _ ih
+  refine fun f y ih ↦ add _ _ _ ih
   convert tprodCoeff f.1 f.2
 #align pi_tensor_product.induction_on' PiTensorProduct.induction_on'
 
@@ -390,8 +390,8 @@ protected theorem induction_on {motive : (⨂[R] i, s i) → Prop} (z : ⨂[R] i
 @[ext]
 theorem ext {φ₁ φ₂ : (⨂[R] i, s i) →ₗ[R] E}
     (H : φ₁.compMultilinearMap (tprod R) = φ₂.compMultilinearMap (tprod R)) : φ₁ = φ₂ := by
-  refine LinearMap.ext ?_
-  refine' fun z ↦
+  refine LinearMap.ext _
+  refine fun z ↦
     PiTensorProduct.induction_on' z _ fun {x y} hx hy ↦ by rw [φ₁.map_add, φ₂.map_add, hx, hy]
   · intro r f
     rw [tprodCoeff_eq_smul_tprod, φ₁.map_smul, φ₂.map_smul]
@@ -453,7 +453,7 @@ theorem liftAux_tprodCoeff (φ : MultilinearMap R s E) (z : R) (f : Π i, s i) :
 
 theorem liftAux.smul {φ : MultilinearMap R s E} (r : R) (x : ⨂[R] i, s i) :
     liftAux φ (r • x) = r • liftAux φ x := by
-  refine' PiTensorProduct.induction_on' x _ _
+  refine PiTensorProduct.induction_on' x _ _
   · intro z f
     rw [smul_tprodCoeff' r z f, liftAux_tprodCoeff, liftAux_tprodCoeff, smul_assoc]
   · intro z y ihz ihy
@@ -840,7 +840,7 @@ def isEmptyEquiv [IsEmpty ι] : (⨂[R] i : ι, s i) ≃ₗ[R] R where
   toFun := lift (constOfIsEmpty R _ 1)
   invFun r := r • tprod R (@isEmptyElim _ _ _)
   left_inv x := by
-    refine x.induction_on ?_ ?_
+    refine x.induction_on _ _
     · intro x y
       -- Note: #8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
       simp only [map_smulₛₗ _, RingHom.id_apply, lift.tprod, constOfIsEmpty_apply, const_apply,
@@ -877,7 +877,7 @@ def subsingletonEquiv [Subsingleton ι] (i₀ : ι) : (⨂[R] _ : ι, M) ≃ₗ[
     have : ∀ (f : ι → M) (z : M), (fun _ : ι ↦ z) = update f i₀ z := fun f z ↦ by
       ext i
       rw [Subsingleton.elim i i₀, Function.update_same]
-    refine x.induction_on ?_ ?_
+    refine x.induction_on _ _
     · intro r f
       simp only [LinearMap.map_smul, LinearMap.id_apply, lift.tprod, ofSubsingleton_apply_apply,
         this f, MultilinearMap.map_smul, update_eq_self]

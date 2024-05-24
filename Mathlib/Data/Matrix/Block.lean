@@ -859,7 +859,7 @@ theorem blockDiag'_diagonal [DecidableEq o] [∀ i, DecidableEq (m' i)] (d : (Σ
   ext fun i j => by
     obtain rfl | hij := Decidable.eq_or_ne i j
     · rw [blockDiag'_apply, diagonal_apply_eq, diagonal_apply_eq]
-    · rw [blockDiag'_apply, diagonal_apply_ne _ hij, diagonal_apply_ne _ (mt (fun h => ?_) hij)]
+    · rw [blockDiag'_apply, diagonal_apply_ne _ hij, diagonal_apply_ne _ (mt (fun h => _) hij)]
       cases h
       rfl
 #align matrix.block_diag'_diagonal Matrix.blockDiag'_diagonal

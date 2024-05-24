@@ -118,13 +118,13 @@ instance Prod.bifunctor : Bifunctor Prod where bimap := @Prod.map
 #align prod.bifunctor Prod.bifunctor
 
 instance Prod.lawfulBifunctor : LawfulBifunctor Prod := by
-  refine' { .. } <;> intros <;> rfl
+  refine { .. } <;> intros <;> rfl
 #align prod.is_lawful_bifunctor Prod.lawfulBifunctor
 
 instance Bifunctor.const : Bifunctor Const where bimap f _ := f
 #align bifunctor.const Bifunctor.const
 
-instance LawfulBifunctor.const : LawfulBifunctor Const := by refine' { .. } <;> intros <;> rfl
+instance LawfulBifunctor.const : LawfulBifunctor Const := by refine { .. } <;> intros <;> rfl
 #align is_lawful_bifunctor.const LawfulBifunctor.const
 
 instance Bifunctor.flip : Bifunctor (flip F) where
@@ -132,14 +132,14 @@ instance Bifunctor.flip : Bifunctor (flip F) where
 #align bifunctor.flip Bifunctor.flip
 
 instance LawfulBifunctor.flip [LawfulBifunctor F] : LawfulBifunctor (flip F) := by
-  refine' { .. } <;> intros <;> simp [bimap, functor_norm]
+  refine { .. } <;> intros <;> simp [bimap, functor_norm]
 #align is_lawful_bifunctor.flip LawfulBifunctor.flip
 
 instance Sum.bifunctor : Bifunctor Sum where bimap := @Sum.map
 #align sum.bifunctor Sum.bifunctor
 
 instance Sum.lawfulBifunctor : LawfulBifunctor Sum := by
-  refine' { .. } <;> aesop
+  refine { .. } <;> aesop
 #align sum.is_lawful_bifunctor Sum.lawfulBifunctor
 
 open Bifunctor Functor
@@ -149,7 +149,7 @@ instance (priority := 10) Bifunctor.functor {α} : Functor (F α) where map f x 
 
 instance (priority := 10) Bifunctor.lawfulFunctor [LawfulBifunctor F] {α} : LawfulFunctor (F α) :=
   -- Porting note: `mapConst` is required to prove new theorem
-  by refine' { .. } <;> intros <;> simp [mapConst, Functor.map, functor_norm]
+  by refine { .. } <;> intros <;> simp [mapConst, Functor.map, functor_norm]
 #align bifunctor.is_lawful_functor Bifunctor.lawfulFunctor
 
 section Bicompl

@@ -41,7 +41,7 @@ theorem IsFiltered.iff_nonempty_limit : IsFiltered C ↔
     ∀ {J : Type v} [SmallCategory J] [FinCategory J] (F : J ⥤ C),
       ∃ (X : C), Nonempty (limit (F.op ⋙ yoneda.obj X)) := by
   rw [IsFiltered.iff_cocone_nonempty.{v}]
-  refine ⟨fun h J _ _ F => ?_, fun h J _ _ F => ?_⟩
+  refine ⟨fun h J _ _ F => _, fun h J _ _ F => _⟩
   · obtain ⟨c⟩ := h F
     exact ⟨c.pt, ⟨(limitCompYonedaIsoCocone F c.pt).inv c.ι⟩⟩
   · obtain ⟨pt, ⟨ι⟩⟩ := h F
@@ -53,7 +53,7 @@ theorem IsCofiltered.iff_nonempty_limit : IsCofiltered C ↔
     ∀ {J : Type v} [SmallCategory J] [FinCategory J] (F : J ⥤ C),
       ∃ (X : C), Nonempty (limit (F ⋙ coyoneda.obj (op X))) := by
   rw [IsCofiltered.iff_cone_nonempty.{v}]
-  refine ⟨fun h J _ _ F => ?_, fun h J _ _ F => ?_⟩
+  refine ⟨fun h J _ _ F => _, fun h J _ _ F => _⟩
   · obtain ⟨c⟩ := h F
     exact ⟨c.pt, ⟨(limitCompCoyonedaIsoCone F c.pt).inv c.π⟩⟩
   · obtain ⟨pt, ⟨π⟩⟩ := h F

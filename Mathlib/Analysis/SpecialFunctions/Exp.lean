@@ -81,9 +81,9 @@ lemma exp_sub_sum_range_isBigO_pow (n : ℕ) :
     (fun x ↦ exp x - ∑ i in Finset.range n, x ^ i / i !) =O[𝓝 0] (· ^ n) := by
   rcases (zero_le n).eq_or_lt with rfl | hn
   · simpa using continuous_exp.continuousAt.norm.isBoundedUnder_le
-  · refine .of_bound (n.succ / (n ! * n)) ?_
+  · refine .of_bound (n.succ / (n ! * n)) _
     rw [NormedAddCommGroup.nhds_zero_basis_norm_lt.eventually_iff]
-    refine ⟨1, one_pos, fun x hx ↦ ?_⟩
+    refine ⟨1, one_pos, fun x hx ↦ _⟩
     convert exp_bound hx.out.le hn using 1
     field_simp [mul_comm]
 
@@ -249,7 +249,7 @@ theorem isBoundedUnder_le_exp_comp {f : α → ℝ} :
 
 /-- The function `exp(x)/x^n` tends to `+∞` at `+∞`, for any natural number `n` -/
 theorem tendsto_exp_div_pow_atTop (n : ℕ) : Tendsto (fun x => exp x / x ^ n) atTop atTop := by
-  refine' (atTop_basis_Ioi.tendsto_iff (atTop_basis' 1)).2 fun C hC₁ => _
+  refine (atTop_basis_Ioi.tendsto_iff (atTop_basis' 1)).2 fun C hC₁ => _
   have hC₀ : 0 < C := zero_lt_one.trans_le hC₁
   have : 0 < (exp 1 * C)⁻¹ := inv_pos.2 (mul_pos (exp_pos _) hC₀)
   obtain ⟨N, hN⟩ : ∃ N : ℕ, ∀ k ≥ N, (↑k : ℝ) ^ n / exp 1 ^ k < (exp 1 * C)⁻¹ :=
@@ -257,7 +257,7 @@ theorem tendsto_exp_div_pow_atTop (n : ℕ) : Tendsto (fun x => exp x / x ^ n) a
       ((tendsto_pow_const_div_const_pow_of_one_lt n (one_lt_exp_iff.2 zero_lt_one)).eventually
         (gt_mem_nhds this))
   simp only [← exp_nat_mul, mul_one, div_lt_iff, exp_pos, ← div_eq_inv_mul] at hN
-  refine ⟨N, trivial, fun x hx => ?_⟩
+  refine ⟨N, trivial, fun x hx => _⟩
   rw [Set.mem_Ioi] at hx
   have hx₀ : 0 < x := (Nat.cast_nonneg N).trans_lt hx
   rw [Set.mem_Ici, le_div_iff (pow_pos hx₀ _), ← le_div_iff' hC₀]

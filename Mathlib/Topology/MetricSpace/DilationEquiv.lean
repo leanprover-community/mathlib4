@@ -73,7 +73,7 @@ protected theorem ext {e e' : X ≃ᵈ Y} (h : ∀ x, e x = e' x) : e = e' :=
 def symm (e : X ≃ᵈ Y) : Y ≃ᵈ X where
   toEquiv := e.1.symm
   edist_eq' := by
-    refine ⟨(ratio e)⁻¹, inv_ne_zero <| ratio_ne_zero e, e.surjective.forall₂.2 fun x y ↦ ?_⟩
+    refine ⟨(ratio e)⁻¹, inv_ne_zero <| ratio_ne_zero e, e.surjective.forall₂.2 fun x y ↦ _⟩
     simp_rw [Equiv.toFun_as_coe, Equiv.symm_apply_apply, coe_toEquiv, edist_eq]
     rw [← mul_assoc, ← ENNReal.coe_mul, inv_mul_cancel (ratio_ne_zero e),
       ENNReal.coe_one, one_mul]
@@ -126,7 +126,7 @@ theorem ratio_trans (e : X ≃ᵈ Y) (e' : Y ≃ᵈ Z) : ratio (e.trans e') = ra
   -- If `X` is trivial, then so is `Y`, otherwise we apply `Dilation.ratio_comp'`
   by_cases hX : ∀ x y : X, edist x y = 0 ∨ edist x y = ∞
   · have hY : ∀ x y : Y, edist x y = 0 ∨ edist x y = ∞ := e.surjective.forall₂.2 fun x y ↦ by
-      refine (hX x y).imp (fun h ↦ ?_) fun h ↦ ?_ <;> simp [*, Dilation.ratio_ne_zero]
+      refine (hX x y).imp (fun h ↦ _) fun h ↦ _ <;> simp [*, Dilation.ratio_ne_zero]
     simp [Dilation.ratio_of_trivial, *]
   push_neg at hX
   exact (Dilation.ratio_comp' (g := e'.toDilation) (f := e.toDilation) hX).trans (mul_comm _ _)

@@ -34,14 +34,14 @@ theorem TopologicalRing.of_norm {R 𝕜 : Type*} [NonUnitalNonAssocRing R] [Line
     TopologicalRing R := by
   have h0 : ∀ f : R → R, ∀ c ≥ (0 : 𝕜), (∀ x, norm (f x) ≤ c * norm x) →
       Tendsto f (𝓝 0) (𝓝 0) := by
-    refine fun f c c0 hf ↦ (nhds_basis.tendsto_iff nhds_basis).2 fun ε ε0 ↦ ?_
+    refine fun f c c0 hf ↦ (nhds_basis.tendsto_iff nhds_basis).2 fun ε ε0 ↦ _
     rcases exists_pos_mul_lt ε0 c with ⟨δ, δ0, hδ⟩
-    refine ⟨δ, δ0, fun x hx ↦ (hf _).trans_lt ?_⟩
+    refine ⟨δ, δ0, fun x hx ↦ (hf _).trans_lt _⟩
     exact (mul_le_mul_of_nonneg_left (le_of_lt hx) c0).trans_lt hδ
   apply TopologicalRing.of_addGroup_of_nhds_zero
   case hmul =>
-    refine ((nhds_basis.prod nhds_basis).tendsto_iff nhds_basis).2 fun ε ε0 ↦ ?_
-    refine ⟨(1, ε), ⟨one_pos, ε0⟩, fun (x, y) ⟨hx, hy⟩ => ?_⟩
+    refine ((nhds_basis.prod nhds_basis).tendsto_iff nhds_basis).2 fun ε ε0 ↦ _
+    refine ⟨(1, ε), ⟨one_pos, ε0⟩, fun (x, y) ⟨hx, hy⟩ => _⟩
     simp only [sub_zero] at *
     calc norm (x * y) ≤ norm x * norm y := norm_mul_le _ _
     _ < ε := mul_lt_of_le_one_of_lt_of_nonneg hx.le hy (norm_nonneg _)
@@ -62,7 +62,7 @@ instance (priority := 100) LinearOrderedField.topologicalRing : TopologicalRing 
 tends to a positive constant `C` then `f * g` tends to `Filter.atTop`. -/
 theorem Filter.Tendsto.atTop_mul {C : 𝕜} (hC : 0 < C) (hf : Tendsto f l atTop)
     (hg : Tendsto g l (𝓝 C)) : Tendsto (fun x => f x * g x) l atTop := by
-  refine' tendsto_atTop_mono' _ _ (hf.atTop_mul_const (half_pos hC))
+  refine tendsto_atTop_mono' _ _ (hf.atTop_mul_const (half_pos hC))
   filter_upwards [hg.eventually (lt_mem_nhds (half_lt_self hC)), hf.eventually_ge_atTop 0]
     with x hg hf using mul_le_mul_of_nonneg_left hg.le hf
 #align filter.tendsto.at_top_mul Filter.Tendsto.atTop_mul
@@ -193,7 +193,7 @@ theorem tendsto_const_mul_pow_nhds_iff {n : ℕ} {c d : 𝕜} (hc : c ≠ 0) :
 
 theorem tendsto_const_mul_zpow_atTop_nhds_iff {n : ℤ} {c d : 𝕜} (hc : c ≠ 0) :
     Tendsto (fun x : 𝕜 => c * x ^ n) atTop (𝓝 d) ↔ n = 0 ∧ c = d ∨ n < 0 ∧ d = 0 := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => _, fun h => _⟩
   · cases n with -- Porting note: Lean 3 proof used `by_cases`, then `lift` but `lift` failed
     | ofNat n =>
       left
@@ -211,7 +211,7 @@ theorem tendsto_const_mul_zpow_atTop_nhds_iff {n : ℤ} {c d : 𝕜} (hc : c ≠
 instance (priority := 100) LinearOrderedSemifield.toHasContinuousInv₀ {𝕜}
     [LinearOrderedSemifield 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜] [ContinuousMul 𝕜] :
     HasContinuousInv₀ 𝕜 := .of_nhds_one <| tendsto_order.2 <| by
-  refine ⟨fun x hx => ?_, fun x hx => ?_⟩
+  refine ⟨fun x hx => _, fun x hx => _⟩
   · obtain ⟨x', h₀, hxx', h₁⟩ : ∃ x', 0 < x' ∧ x ≤ x' ∧ x' < 1 :=
       ⟨max x (1 / 2), one_half_pos.trans_le (le_max_right _ _), le_max_left _ _,
         max_lt hx one_half_lt_one⟩
@@ -229,7 +229,7 @@ theorem nhdsWithin_pos_comap_mul_left {x : 𝕜} (hx : 0 < x) :
     comap (x * ·) (𝓝[>] 0) = 𝓝[>] 0 := by
   rw [nhdsWithin, comap_inf, comap_principal, preimage_const_mul_Ioi _ hx, zero_div]
   congr 1
-  refine ((Homeomorph.mulLeft₀ x hx.ne').comap_nhds_eq _).trans ?_
+  refine ((Homeomorph.mulLeft₀ x hx.ne').comap_nhds_eq _).trans _
   simp
 #align nhds_within_pos_comap_mul_left nhdsWithin_pos_comap_mul_left
 

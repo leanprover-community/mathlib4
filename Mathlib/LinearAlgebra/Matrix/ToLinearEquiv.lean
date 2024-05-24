@@ -82,7 +82,7 @@ See `Matrix.toLinearEquiv'` for this result on `n → R`.
 @[simps apply]
 noncomputable def toLinearEquiv [DecidableEq n] (A : Matrix n n R) (hA : IsUnit A.det) :
     M ≃ₗ[R] M := by
-  refine'
+  refine
   { toLin b b A with
     toFun := toLin b b A
     invFun := toLin b b A⁻¹
@@ -127,7 +127,7 @@ theorem exists_mulVec_eq_zero_iff_aux {K : Type*} [DecidableEq n] [Field K] {M :
           LinearMap.toMatrix'
             ((LinearEquiv.ofInjectiveEndo (Matrix.toLin' M) this).symm : (n → K) →ₗ[K] n → K) =
         1 := by
-      refine Matrix.toLin'.injective (LinearMap.ext fun v => ?_)
+      refine Matrix.toLin'.injective (LinearMap.ext fun v => _)
       rw [Matrix.toLin'_mul, Matrix.toLin'_one, Matrix.toLin'_toMatrix', LinearMap.comp_apply]
       exact (LinearEquiv.ofInjectiveEndo (Matrix.toLin' M) this).apply_symm_apply v
     exact Matrix.det_ne_zero_of_right_inverse this
@@ -139,17 +139,17 @@ theorem exists_mulVec_eq_zero_iff' {A : Type*} (K : Type*) [DecidableEq n] [Comm
   have : (∃ v ≠ 0, (algebraMap A K).mapMatrix M *ᵥ v = 0) ↔ _ :=
     exists_mulVec_eq_zero_iff_aux
   rw [← RingHom.map_det, IsFractionRing.to_map_eq_zero_iff] at this
-  refine' Iff.trans _ this; constructor <;> rintro ⟨v, hv, mul_eq⟩
-  · refine' ⟨fun i => algebraMap _ _ (v i), mt (fun h => funext fun i => _) hv, _⟩
+  refine Iff.trans _ this; constructor <;> rintro ⟨v, hv, mul_eq⟩
+  · refine ⟨fun i => algebraMap _ _ (v i), mt (fun h => funext fun i => _) hv, _⟩
     · exact IsFractionRing.to_map_eq_zero_iff.mp (congr_fun h i)
     · ext i
-      refine' (RingHom.map_mulVec _ _ _ i).symm.trans _
+      refine (RingHom.map_mulVec _ _ _ i).symm.trans _
       rw [mul_eq, Pi.zero_apply, RingHom.map_zero, Pi.zero_apply]
   · letI := Classical.decEq K
     obtain ⟨⟨b, hb⟩, ba_eq⟩ :=
       IsLocalization.exist_integer_multiples_of_finset (nonZeroDivisors A) (Finset.univ.image v)
     choose f hf using ba_eq
-    refine'
+    refine
       ⟨fun i => f _ (Finset.mem_image.mpr ⟨i, Finset.mem_univ i, rfl⟩),
         mt (fun h => funext fun i => _) hv, _⟩
     · have := congr_arg (algebraMap A K) (congr_fun h i)
@@ -157,11 +157,11 @@ theorem exists_mulVec_eq_zero_iff' {A : Type*} (K : Type*) [DecidableEq n] [Comm
         IsFractionRing.to_map_eq_zero_iff] at this
       exact this.resolve_left (nonZeroDivisors.ne_zero hb)
     · ext i
-      refine IsFractionRing.injective A K ?_
+      refine IsFractionRing.injective A K _
       calc
         algebraMap A K ((M *ᵥ (fun i : n => f (v i) _)) i) =
-            ((algebraMap A K).mapMatrix M *ᵥ algebraMap _ K b • v) i := ?_
-        _ = 0 := ?_
+            ((algebraMap A K).mapMatrix M *ᵥ algebraMap _ K b • v) i := _
+        _ = 0 := _
         _ = algebraMap A K 0 := (RingHom.map_zero _).symm
       · simp_rw [RingHom.map_mulVec, mulVec, dotProduct, Function.comp_apply, hf,
           RingHom.mapMatrix_apply, Pi.smul_apply, smul_eq_mul, Algebra.smul_def]
@@ -187,7 +187,7 @@ theorem nondegenerate_iff_det_ne_zero {A : Type*} [DecidableEq n] [CommRing A] [
     obtain ⟨w, hwMv⟩ := hM.exists_not_ortho_of_ne_zero hv
     simp [dotProduct_mulVec, hMv, zero_dotProduct, ne_eq, not_true] at hwMv
   · intro h v hv
-    refine' not_imp_not.mp (h v) (funext fun i => _)
+    refine not_imp_not.mp (h v) (funext fun i => _)
     simpa only [dotProduct_mulVec, dotProduct_single, mul_one] using hv (Pi.single i 1)
 #align matrix.nondegenerate_iff_det_ne_zero Matrix.nondegenerate_iff_det_ne_zero
 
@@ -213,20 +213,20 @@ lemma det_ne_zero_of_sum_col_pos [DecidableEq n] {S : Type*} [LinearOrderedCommR
   · contrapose! h2
     obtain ⟨v, ⟨h_vnz, h_vA⟩⟩ := Matrix.exists_vecMul_eq_zero_iff.mpr h2
     wlog h_sup : 0 < Finset.sup' Finset.univ Finset.univ_nonempty v
-    · refine this h1 inferInstance h2 (-1 • v) ?_ ?_ ?_
+    · refine this h1 inferInstance h2 (-1 • v) _ _ _
       · exact smul_ne_zero (by norm_num) h_vnz
       · rw [Matrix.vecMul_smul, h_vA, smul_zero]
       · obtain ⟨i, hi⟩ := Function.ne_iff.mp h_vnz
         simp_rw [Finset.lt_sup'_iff, Finset.mem_univ, true_and] at h_sup ⊢
         simp_rw [not_exists, not_lt] at h_sup
-        refine ⟨i, ?_⟩
+        refine ⟨i, _⟩
         rw [Pi.smul_apply, neg_smul, one_smul, Left.neg_pos_iff]
         exact Ne.lt_of_le hi (h_sup i)
     · obtain ⟨j₀, -, h_j₀⟩ := Finset.exists_mem_eq_sup' Finset.univ_nonempty v
-      refine ⟨j₀, ?_⟩
+      refine ⟨j₀, _⟩
       rw [← mul_le_mul_left (h_j₀ ▸ h_sup), Finset.mul_sum, mul_zero]
       rw [show 0 = ∑ i, v i * A i j₀ from (congrFun h_vA j₀).symm]
-      refine Finset.sum_le_sum (fun i hi => ?_)
+      refine Finset.sum_le_sum (fun i hi => _)
       by_cases h : i = j₀
       · rw [h]
       · exact (mul_le_mul_right_of_neg (h1 h)).mpr (h_j₀ ▸ Finset.le_sup' v hi)
@@ -237,7 +237,7 @@ lemma det_ne_zero_of_sum_row_pos [DecidableEq n] {S : Type*} [LinearOrderedCommR
     {A : Matrix n n S} (h1 : Pairwise fun i j => A i j < 0) (h2 : ∀ i, 0 < ∑ j, A i j) :
     A.det ≠ 0 := by
   rw [← Matrix.det_transpose]
-  refine det_ne_zero_of_sum_col_pos ?_ ?_
+  refine det_ne_zero_of_sum_col_pos _ _
   · simp_rw [Matrix.transpose_apply]
     exact fun i j h => h1 h.symm
   · simp_rw [Matrix.transpose_apply]

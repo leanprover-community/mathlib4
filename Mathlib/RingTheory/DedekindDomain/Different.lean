@@ -145,7 +145,7 @@ lemma isIntegral_discr_mul_of_mem_traceDual
   apply IsIntegral.sum
   intro i _
   rw [smul_mul_assoc, b.equivFun.map_smul, discr_def, mul_comm, ← H, Algebra.smul_def]
-  refine RingHom.IsIntegralElem.mul _ ?_ (hb _)
+  refine RingHom.IsIntegralElem.mul _ _ (hb _)
   apply IsIntegral.algebraMap
   rw [cramer_apply]
   apply IsIntegral.det
@@ -175,7 +175,7 @@ lemma map_equiv_traceDual [NoZeroSMulDivisors A B] (I : Submodule B (FractionRin
   apply (FractionRing.algEquiv B L).forall_congr
   simp only [restrictScalars_mem, traceForm_apply, AlgEquiv.toEquiv_eq_coe,
     EquivLike.coe_coe, mem_comap, AlgEquiv.toLinearMap_apply, AlgEquiv.symm_apply_apply]
-  refine fun {y} ↦ (forall_congr' fun hy ↦ ?_)
+  refine fun {y} ↦ (forall_congr' fun hy ↦ _)
   rw [Algebra.trace_eq_of_equiv_equiv (FractionRing.algEquiv A K).toRingEquiv
     (FractionRing.algEquiv B L).toRingEquiv]
   swap
@@ -206,7 +206,7 @@ def dual (I : FractionalIdeal B⁰ L) :
     obtain ⟨x, hx, hx'⟩ := exists_ne_zero_mem_isInteger hI
     have ⟨y, hy⟩ := (IsIntegralClosure.isIntegral_iff (A := B)).mp
       (IsIntegral.algebraMap (B := L) (discr_isIntegral K hb))
-    refine ⟨y * x, mem_nonZeroDivisors_iff_ne_zero.mpr (mul_ne_zero ?_ hx), fun z hz ↦ ?_⟩
+    refine ⟨y * x, mem_nonZeroDivisors_iff_ne_zero.mpr (mul_ne_zero _ hx), fun z hz ↦ _⟩
     · rw [← (IsIntegralClosure.algebraMap_injective B A L).ne_iff, hy, RingHom.map_zero,
         ← (algebraMap K L).map_zero, (algebraMap K L).injective.ne_iff]
       exact discr_not_zero_of_basis K b
@@ -410,7 +410,7 @@ lemma coeSubmodule_differentIdeal [NoZeroSMulDivisors A B] :
   rw [← coeSubmodule, coeSubmodule_differentIdeal_fractionRing _ _,
     Submodule.map_div, ← AlgEquiv.toAlgHom_toLinearMap, Submodule.map_one]
   congr 1
-  refine (map_equiv_traceDual A K _).trans ?_
+  refine (map_equiv_traceDual A K _).trans _
   congr 1
   ext
   simp
@@ -433,7 +433,7 @@ lemma differentialIdeal_le_fractionalIdeal_iff
       ((Algebra.trace K L).restrictScalars A) ≤ 1 := by
   rw [coeIdeal_differentIdeal A K L B, FractionalIdeal.inv_le_comm (by simp) hI,
     ← FractionalIdeal.coe_le_coe, FractionalIdeal.coe_dual_one]
-  refine le_traceDual_iff_map_le_one.trans ?_
+  refine le_traceDual_iff_map_le_one.trans _
   simp
 
 lemma differentialIdeal_le_iff {I : Ideal B} (hI : I ≠ ⊥) [NoZeroSMulDivisors A B] :
@@ -532,6 +532,6 @@ open Polynomial Pointwise in
 lemma aeval_derivative_mem_differentIdeal [NoZeroSMulDivisors A B]
     (x : B) (hx : Algebra.adjoin K {algebraMap B L x} = ⊤) :
     aeval x (derivative (minpoly A x)) ∈ differentIdeal A B := by
-  refine SetLike.le_def.mp ?_ (Ideal.mem_span_singleton_self _)
+  refine SetLike.le_def.mp _ (Ideal.mem_span_singleton_self _)
   rw [← conductor_mul_differentIdeal A K L x hx]
   exact Ideal.mul_le_left

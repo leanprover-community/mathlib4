@@ -395,7 +395,7 @@ lemma set_smul_le_of_le_le {s t : Set S} {p q : Submodule R M}
 
 lemma set_smul_eq_iSup [SMulCommClass S R M] (s : Set S) (N : Submodule R M) :
     s • N = ⨆ (a ∈ s), a • N := by
-  refine Eq.trans (congrArg sInf ?_) csInf_Ici
+  refine Eq.trans (congrArg sInf _) csInf_Ici
   simp_rw [← Set.Ici_def, iSup_le_iff, @forall_comm M]
   exact Set.ext fun _ => forall₂_congr (fun _ _ => Iff.symm map_le_iff_le_comap)
 
@@ -455,7 +455,7 @@ lemma set_smul_eq_map [SMulCommClass R R N] :
     simp only [LinearMap.coe_comp, coeSubtype, Finsupp.coe_lsum, Finsupp.sum, LinearMap.coe_mk,
       AddHom.coe_mk, Function.comp_apply, AddSubmonoid.coe_finset_sum, coe_toAddSubmonoid,
       SetLike.val_smul]
-    refine Submodule.sum_mem (p := sR • N) (t := c.support) ?_ _ ⟨sR • N, ?_⟩
+    refine Submodule.sum_mem (p := sR • N) (t := c.support) _ _ ⟨sR • N, _⟩
     · rintro r hr
       rw [mem_set_smul_def, Submodule.mem_sInf]
       rintro p hp
@@ -463,7 +463,7 @@ lemma set_smul_eq_map [SMulCommClass R R N] :
     · ext x : 1
       simp only [Set.mem_iInter, SetLike.mem_coe]
       fconstructor
-      · refine fun h ↦ h fun r n hr hn ↦ ?_
+      · refine fun h ↦ h fun r n hr hn ↦ _
         rw [mem_set_smul_def, mem_sInf]
         exact fun p hp ↦ hp hr hn
       · aesop
@@ -576,7 +576,7 @@ lemma coe_span_smul {R' M' : Type*} [CommSemiring R'] [AddCommMonoid M'] [Module
         · rw [mem_span_set] at hr
           obtain ⟨c, hc, rfl⟩ := hr
           rw [Finsupp.sum, Finset.smul_sum, Finset.sum_smul]
-          refine Submodule.sum_mem _ fun i hi => ?_
+          refine Submodule.sum_mem _ fun i hi => _
           rw [← mul_smul, smul_eq_mul, mul_comm, mul_smul]
           exact mem_set_smul_of_mem_mem (hc hi) <| Submodule.smul_mem _ _ hn) <|
     set_smul_mono_left _ Submodule.subset_span

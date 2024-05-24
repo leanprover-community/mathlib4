@@ -67,7 +67,7 @@ containing `x₀`, and infinite mass to those that contain it. -/
 
 theorem withDensity_apply' [SFinite μ] (f : α → ℝ≥0∞) (s : Set α) :
     μ.withDensity f s = ∫⁻ a in s, f a ∂μ := by
-  apply le_antisymm ?_ (withDensity_apply_le f s)
+  apply le_antisymm _ (withDensity_apply_le f s)
   let t := toMeasurable μ s
   calc
   μ.withDensity f s ≤ μ.withDensity f t := measure_mono (subset_toMeasurable μ s)
@@ -82,21 +82,21 @@ lemma withDensity_zero_left (f : α → ℝ≥0∞) : (0 : Measure α).withDensi
 
 theorem withDensity_congr_ae {f g : α → ℝ≥0∞} (h : f =ᵐ[μ] g) :
     μ.withDensity f = μ.withDensity g := by
-  refine Measure.ext fun s hs => ?_
+  refine Measure.ext fun s hs => _
   rw [withDensity_apply _ hs, withDensity_apply _ hs]
   exact lintegral_congr_ae (ae_restrict_of_ae h)
 #align measure_theory.with_density_congr_ae MeasureTheory.withDensity_congr_ae
 
 lemma withDensity_mono {f g : α → ℝ≥0∞} (hfg : f ≤ᵐ[μ] g) :
     μ.withDensity f ≤ μ.withDensity g := by
-  refine le_iff.2 fun s hs ↦ ?_
+  refine le_iff.2 fun s hs ↦ _
   rw [withDensity_apply _ hs, withDensity_apply _ hs]
-  refine set_lintegral_mono_ae' hs ?_
+  refine set_lintegral_mono_ae' hs _
   filter_upwards [hfg] with x h_le using fun _ ↦ h_le
 
 theorem withDensity_add_left {f : α → ℝ≥0∞} (hf : Measurable f) (g : α → ℝ≥0∞) :
     μ.withDensity (f + g) = μ.withDensity f + μ.withDensity g := by
-  refine Measure.ext fun s hs => ?_
+  refine Measure.ext fun s hs => _
   rw [withDensity_apply _ hs, Measure.add_apply, withDensity_apply _ hs, withDensity_apply _ hs,
     ← lintegral_add_left hf]
   simp only [Pi.add_apply]
@@ -121,7 +121,7 @@ theorem withDensity_sum {ι : Type*} {m : MeasurableSpace α} (μ : ι → Measu
 
 theorem withDensity_smul (r : ℝ≥0∞) {f : α → ℝ≥0∞} (hf : Measurable f) :
     μ.withDensity (r • f) = r • μ.withDensity f := by
-  refine Measure.ext fun s hs => ?_
+  refine Measure.ext fun s hs => _
   rw [withDensity_apply _ hs, Measure.coe_smul, Pi.smul_apply, withDensity_apply _ hs,
     smul_eq_mul, ← lintegral_const_mul r hf]
   simp only [Pi.smul_apply, smul_eq_mul]
@@ -129,7 +129,7 @@ theorem withDensity_smul (r : ℝ≥0∞) {f : α → ℝ≥0∞} (hf : Measurab
 
 theorem withDensity_smul' (r : ℝ≥0∞) (f : α → ℝ≥0∞) (hr : r ≠ ∞) :
     μ.withDensity (r • f) = r • μ.withDensity f := by
-  refine Measure.ext fun s hs => ?_
+  refine Measure.ext fun s hs => _
   rw [withDensity_apply _ hs, Measure.coe_smul, Pi.smul_apply, withDensity_apply _ hs,
     smul_eq_mul, ← lintegral_const_mul' r f hr]
   simp only [Pi.smul_apply, smul_eq_mul]
@@ -149,7 +149,7 @@ theorem isFiniteMeasure_withDensity {f : α → ℝ≥0∞} (hf : ∫⁻ a, f a 
 
 theorem withDensity_absolutelyContinuous {m : MeasurableSpace α} (μ : Measure α) (f : α → ℝ≥0∞) :
     μ.withDensity f ≪ μ := by
-  refine AbsolutelyContinuous.mk fun s hs₁ hs₂ => ?_
+  refine AbsolutelyContinuous.mk fun s hs₁ hs₂ => _
   rw [withDensity_apply _ hs₁]
   exact set_lintegral_measure_zero _ _ hs₂
 #align measure_theory.with_density_absolutely_continuous MeasureTheory.withDensity_absolutelyContinuous
@@ -197,7 +197,7 @@ theorem withDensity_ofReal_mutuallySingular {f : α → ℝ} (hf : Measurable f)
       μ.withDensity fun x => ENNReal.ofReal <| -f x := by
   set S : Set α := { x | f x < 0 }
   have hS : MeasurableSet S := measurableSet_lt hf measurable_const
-  refine' ⟨S, hS, _, _⟩
+  refine ⟨S, hS, _, _⟩
   · rw [withDensity_apply _ hS, lintegral_eq_zero_iff hf.ennreal_ofReal, EventuallyEq]
     exact (ae_restrict_mem hS).mono fun x hx => ENNReal.ofReal_eq_zero.2 (le_of_lt hx)
   · rw [withDensity_apply _ hS.compl, lintegral_eq_zero_iff hf.neg.ennreal_ofReal, EventuallyEq]
@@ -222,7 +222,7 @@ theorem restrict_withDensity' [SFinite μ] (s : Set α) (f : α → ℝ≥0∞) 
 lemma trim_withDensity {m m0 : MeasurableSpace α} {μ : Measure α}
     (hm : m ≤ m0) {f : α → ℝ≥0∞} (hf : Measurable[m] f) :
     (μ.withDensity f).trim hm = (μ.trim hm).withDensity f := by
-  refine @Measure.ext _ m _ _ (fun s hs ↦ ?_)
+  refine @Measure.ext _ m _ _ (fun s hs ↦ _)
   rw [withDensity_apply _ hs, restrict_trim _ _ hs, lintegral_trim _ hf, trim_measurableSet_eq _ hs,
     withDensity_apply _ (hm s hs)]
 
@@ -296,7 +296,7 @@ theorem aemeasurable_withDensity_ennreal_iff {f : α → ℝ≥0} (hf : Measurab
   constructor
   · rintro ⟨g', g'meas, hg'⟩
     have A : MeasurableSet { x : α | f x ≠ 0 } := (hf (measurableSet_singleton 0)).compl
-    refine' ⟨fun x => f x * g' x, hf.coe_nnreal_ennreal.smul g'meas, _⟩
+    refine ⟨fun x => f x * g' x, hf.coe_nnreal_ennreal.smul g'meas, _⟩
     apply ae_of_ae_restrict_of_ae_restrict_compl { x | f x ≠ 0 }
     · rw [EventuallyEq, ae_withDensity_iff hf.coe_nnreal_ennreal] at hg'
       rw [ae_restrict_iff' A]
@@ -309,7 +309,7 @@ theorem aemeasurable_withDensity_ennreal_iff {f : α → ℝ≥0} (hf : Measurab
       simp only [Classical.not_not, mem_setOf_eq, mem_compl_iff] at hx
       simp [hx]
   · rintro ⟨g', g'meas, hg'⟩
-    refine' ⟨fun x => ((f x)⁻¹ : ℝ≥0∞) * g' x, hf.coe_nnreal_ennreal.inv.smul g'meas, _⟩
+    refine ⟨fun x => ((f x)⁻¹ : ℝ≥0∞) * g' x, hf.coe_nnreal_ennreal.inv.smul g'meas, _⟩
     rw [EventuallyEq, ae_withDensity_iff hf.coe_nnreal_ennreal]
     filter_upwards [hg']
     intro x hx h'x
@@ -406,25 +406,25 @@ lemma set_lintegral_withDensity_eq_lintegral_mul₀ {μ : Measure α} {f : α �
 theorem lintegral_withDensity_le_lintegral_mul (μ : Measure α) {f : α → ℝ≥0∞}
     (f_meas : Measurable f) (g : α → ℝ≥0∞) : (∫⁻ a, g a ∂μ.withDensity f) ≤ ∫⁻ a, (f * g) a ∂μ := by
   rw [← iSup_lintegral_measurable_le_eq_lintegral, ← iSup_lintegral_measurable_le_eq_lintegral]
-  refine' iSup₂_le fun i i_meas => iSup_le fun hi => _
+  refine iSup₂_le fun i i_meas => iSup_le fun hi => _
   have A : f * i ≤ f * g := fun x => mul_le_mul_left' (hi x) _
-  refine' le_iSup₂_of_le (f * i) (f_meas.mul i_meas) _
+  refine le_iSup₂_of_le (f * i) (f_meas.mul i_meas) _
   exact le_iSup_of_le A (le_of_eq (lintegral_withDensity_eq_lintegral_mul _ f_meas i_meas))
 #align measure_theory.lintegral_with_density_le_lintegral_mul MeasureTheory.lintegral_withDensity_le_lintegral_mul
 
 theorem lintegral_withDensity_eq_lintegral_mul_non_measurable (μ : Measure α) {f : α → ℝ≥0∞}
     (f_meas : Measurable f) (hf : ∀ᵐ x ∂μ, f x < ∞) (g : α → ℝ≥0∞) :
     ∫⁻ a, g a ∂μ.withDensity f = ∫⁻ a, (f * g) a ∂μ := by
-  refine' le_antisymm (lintegral_withDensity_le_lintegral_mul μ f_meas g) _
+  refine le_antisymm (lintegral_withDensity_le_lintegral_mul μ f_meas g) _
   rw [← iSup_lintegral_measurable_le_eq_lintegral, ← iSup_lintegral_measurable_le_eq_lintegral]
-  refine' iSup₂_le fun i i_meas => iSup_le fun hi => _
+  refine iSup₂_le fun i i_meas => iSup_le fun hi => _
   have A : (fun x => (f x)⁻¹ * i x) ≤ g := by
     intro x
     dsimp
     rw [mul_comm, ← div_eq_mul_inv]
     exact div_le_of_le_mul' (hi x)
-  refine' le_iSup_of_le (fun x => (f x)⁻¹ * i x) (le_iSup_of_le (f_meas.inv.mul i_meas) _)
-  refine' le_iSup_of_le A _
+  refine le_iSup_of_le (fun x => (f x)⁻¹ * i x) (le_iSup_of_le (f_meas.inv.mul i_meas) _)
+  refine le_iSup_of_le A _
   rw [lintegral_withDensity_eq_lintegral_mul _ f_meas (f_meas.inv.mul i_meas)]
   apply lintegral_mono_ae
   filter_upwards [hf]
@@ -494,7 +494,7 @@ lemma withDensity_inv_same_le {μ : Measure α} {f : α → ℝ≥0∞} (hf : AE
   change (μ.withDensity f).withDensity (fun x ↦ (f x)⁻¹) ≤ μ
   rw [← withDensity_mul₀ hf hf.inv]
   suffices (f * fun x ↦ (f x)⁻¹) ≤ᵐ[μ] 1 by
-    refine (withDensity_mono this).trans ?_
+    refine (withDensity_mono this).trans _
     rw [withDensity_one]
   filter_upwards with x
   simp only [Pi.mul_apply, Pi.one_apply]
@@ -534,7 +534,7 @@ theorem exists_absolutelyContinuous_isFiniteMeasure {m : MeasurableSpace α} (μ
   obtain ⟨g, gpos, gmeas, hg⟩ :
     ∃ g : α → ℝ≥0, (∀ x : α, 0 < g x) ∧ Measurable g ∧ ∫⁻ x : α, ↑(g x) ∂μ < 1 :=
     exists_pos_lintegral_lt_of_sigmaFinite μ one_ne_zero
-  refine' ⟨μ.withDensity fun x => g x, isFiniteMeasure_withDensity hg.ne_top, _⟩
+  refine ⟨μ.withDensity fun x => g x, isFiniteMeasure_withDensity hg.ne_top, _⟩
   have : μ = (μ.withDensity fun x => g x).withDensity fun x => (g x)⁻¹ := by
     have A : ((fun x : α => (g x : ℝ≥0∞)) * fun x : α => (g x : ℝ≥0∞)⁻¹) = 1 := by
       ext1 x
@@ -553,12 +553,12 @@ lemma SigmaFinite.withDensity [SigmaFinite μ] {f : α → ℝ≥0} (hf : AEMeas
   obtain ⟨s, hs, h⟩ := exists_spanning_measurableSet_le
     hf.measurable_mk μ
   constructor
-  refine ⟨s, by simp, fun i ↦ ?_, h⟩
+  refine ⟨s, by simp, fun i ↦ _, h⟩
   rw [withDensity_apply _ (hs i).1]
   calc ∫⁻ a in s i, ((hf.mk f a : ℝ≥0) : ℝ≥0∞) ∂μ
     ≤ ∫⁻ _ in s i, i ∂μ := by
         refine set_lintegral_mono hf.measurable_mk.coe_nnreal_ennreal
-          measurable_const (fun x hxs ↦ ?_)
+          measurable_const (fun x hxs ↦ _)
         norm_cast
         exact (hs i).2.2 x hxs
   _ = i * μ (s i) := by rw [set_lintegral_const]
@@ -607,12 +607,12 @@ lemma sFinite_withDensity_of_sigmaFinite_of_measurable (μ : Measure α) [SigmaF
     rw [h_eq_sum, withDensity_tsum (fun _ ↦ measurable_one.indicator hs)]
     have : SigmaFinite (μ.withDensity (s.indicator 1)) := by
       refine SigmaFinite.withDensity_of_ne_top' (measurable_one.indicator hs).aemeasurable
-        (fun x ↦ ?_)
+        (fun x ↦ _)
       simp only [Set.indicator_apply, Pi.one_apply, ne_eq]
       split_ifs with h <;> simp [h]
     infer_instance
   have h2 : SigmaFinite (μ.withDensity (sᶜ.indicator f)) := by
-    refine SigmaFinite.withDensity_of_ne_top' (hf.indicator hs.compl).aemeasurable (fun x ↦ ?_)
+    refine SigmaFinite.withDensity_of_ne_top' (hf.indicator hs.compl).aemeasurable (fun x ↦ _)
     simp only [Set.indicator_apply, Set.mem_compl_iff, Set.mem_setOf_eq, ite_not, ne_eq, s]
     split_ifs with h <;> simp [h]
   infer_instance
@@ -633,10 +633,10 @@ variable [TopologicalSpace α] [OpensMeasurableSpace α] [IsLocallyFiniteMeasure
 
 lemma IsLocallyFiniteMeasure.withDensity_coe {f : α → ℝ≥0} (hf : Continuous f) :
     IsLocallyFiniteMeasure (μ.withDensity fun x ↦ f x) := by
-  refine ⟨fun x ↦ ?_⟩
+  refine ⟨fun x ↦ _⟩
   rcases (μ.finiteAt_nhds x).exists_mem_basis ((nhds_basis_opens' x).restrict_subset
     (eventually_le_of_tendsto_lt (lt_add_one _) (hf.tendsto x))) with ⟨U, ⟨⟨hUx, hUo⟩, hUf⟩, hμU⟩
-  refine ⟨U, hUx, ?_⟩
+  refine ⟨U, hUx, _⟩
   rw [withDensity_apply _ hUo.measurableSet]
   exact set_lintegral_lt_top_of_bddAbove hμU.ne hf.measurable ⟨f x + 1, forall_mem_image.2 hUf⟩
 

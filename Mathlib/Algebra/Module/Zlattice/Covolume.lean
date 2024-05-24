@@ -58,7 +58,7 @@ theorem covolume_eq_measure_fundamentalDomain {F : Set E} (h : IsAddFundamentalD
 theorem covolume_ne_zero : covolume L μ ≠ 0 := by
   rw [covolume_eq_measure_fundamentalDomain L μ (isAddFundamentalDomain (Free.chooseBasis ℤ L) μ),
     ENNReal.toReal_ne_zero]
-  refine ⟨Zspan.measure_fundamentalDomain_ne_zero _, ne_of_lt ?_⟩
+  refine ⟨Zspan.measure_fundamentalDomain_ne_zero _, ne_of_lt _⟩
   exact Bornology.IsBounded.measure_lt_top (Zspan.fundamentalDomain_isBounded _)
 
 theorem covolume_pos : 0 < covolume L μ :=

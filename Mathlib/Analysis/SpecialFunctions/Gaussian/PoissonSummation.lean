@@ -36,7 +36,7 @@ variable {E : Type*} [NormedAddCommGroup E]
 lemma rexp_neg_quadratic_isLittleO_rpow_atTop {a : ℝ} (ha : a < 0) (b s : ℝ) :
     (fun x ↦ rexp (a * x ^ 2 + b * x)) =o[atTop] (· ^ s) := by
   suffices (fun x ↦ rexp (a * x ^ 2 + b * x)) =o[atTop] (fun x ↦ rexp (-x)) by
-    refine this.trans ?_
+    refine this.trans _
     simpa only [neg_one_mul] using isLittleO_exp_neg_mul_rpow_atTop zero_lt_one s
   rw [isLittleO_exp_comp_exp_comp]
   have : (fun x ↦ -x - (a * x ^ 2 + b * x)) = fun x ↦ x * (-a * x - (b + 1)) := by
@@ -57,12 +57,12 @@ lemma cexp_neg_quadratic_isLittleO_abs_rpow_cocompact {a : ℂ} (ha : a.re < 0) 
   rw [cocompact_eq_atBot_atTop, isLittleO_sup]
   constructor
   · refine ((cexp_neg_quadratic_isLittleO_rpow_atTop ha (-b) s).comp_tendsto
-      Filter.tendsto_neg_atBot_atTop).congr' (eventually_of_forall fun x ↦ ?_) ?_
+      Filter.tendsto_neg_atBot_atTop).congr' (eventually_of_forall fun x ↦ _) _
     · simp only [neg_mul, Function.comp_apply, ofReal_neg, neg_sq, mul_neg, neg_neg]
-    · refine (eventually_lt_atBot 0).mp (eventually_of_forall fun x hx ↦ ?_)
+    · refine (eventually_lt_atBot 0).mp (eventually_of_forall fun x hx ↦ _)
       simp only [Function.comp_apply, abs_of_neg hx]
-  · refine (cexp_neg_quadratic_isLittleO_rpow_atTop ha b s).congr' EventuallyEq.rfl ?_
-    refine (eventually_gt_atTop 0).mp (eventually_of_forall fun x hx ↦ ?_)
+  · refine (cexp_neg_quadratic_isLittleO_rpow_atTop ha b s).congr' EventuallyEq.rfl _
+    refine (eventually_gt_atTop 0).mp (eventually_of_forall fun x hx ↦ _)
     simp_rw [abs_of_pos hx]
 
 theorem tendsto_rpow_abs_mul_exp_neg_mul_sq_cocompact {a : ℝ} (ha : 0 < a) (s : ℝ) :
@@ -78,7 +78,7 @@ theorem tendsto_rpow_abs_mul_exp_neg_mul_sq_cocompact {a : ℝ} (ha : 0 < a) (s 
 
 theorem isLittleO_exp_neg_mul_sq_cocompact {a : ℂ} (ha : 0 < a.re) (s : ℝ) :
     (fun x : ℝ => Complex.exp (-a * x ^ 2)) =o[cocompact ℝ] fun x : ℝ => |x| ^ s := by
-  convert cexp_neg_quadratic_isLittleO_abs_rpow_cocompact (?_ : (-a).re < 0) 0 s using 1
+  convert cexp_neg_quadratic_isLittleO_abs_rpow_cocompact (_ : (-a).re < 0) 0 s using 1
   · simp_rw [zero_mul, add_zero]
   · rwa [neg_re, neg_lt_zero]
 #align is_o_exp_neg_mul_sq_cocompact isLittleO_exp_neg_mul_sq_cocompact
@@ -90,7 +90,7 @@ theorem Complex.tsum_exp_neg_quadratic {a : ℂ} (ha : 0 < a.re) (b : ℂ) :
       1 / a ^ (1 / 2 : ℂ) * ∑' n : ℤ, cexp (-π / a * (n + I * b) ^ 2) := by
   let f : ℝ → ℂ := fun x ↦ cexp (-π * a * x ^ 2 + 2 * π * b * x)
   have hCf : Continuous f := by
-    refine Complex.continuous_exp.comp (Continuous.add ?_ ?_)
+    refine Complex.continuous_exp.comp (Continuous.add _ _)
     · exact continuous_const.mul (Complex.continuous_ofReal.pow 2)
     · exact continuous_const.mul Complex.continuous_ofReal
   have hFf : 𝓕 f = fun x : ℝ ↦ 1 / a ^ (1 / 2 : ℂ) * cexp (-π / a * (x + I * b) ^ 2) :=
@@ -100,11 +100,11 @@ theorem Complex.tsum_exp_neg_quadratic {a : ℂ} (ha : 0 < a.re) (b : ℂ) :
     exact mul_pos pi_pos ha
   have h2 : 0 < (↑π / a).re := by
     rw [div_eq_mul_inv, re_ofReal_mul, inv_re]
-    refine' mul_pos pi_pos (div_pos ha <| normSq_pos.mpr _)
+    refine mul_pos pi_pos (div_pos ha <| normSq_pos.mpr _)
     contrapose! ha
     rw [ha, zero_re]
   have f_bd : f =O[cocompact ℝ] (fun x => |x| ^ (-2 : ℝ)) := by
-    convert (cexp_neg_quadratic_isLittleO_abs_rpow_cocompact ?_ _ (-2)).isBigO
+    convert (cexp_neg_quadratic_isLittleO_abs_rpow_cocompact _ _ (-2)).isBigO
     rwa [neg_mul, neg_re, neg_lt_zero]
   have Ff_bd : (𝓕 f) =O[cocompact ℝ] (fun x => |x| ^ (-2 : ℝ)) := by
     rw [hFf]
@@ -114,7 +114,7 @@ theorem Complex.tsum_exp_neg_quadratic {a : ℂ} (ha : 0 < a.re) (b : ℂ) :
     simp_rw [this]
     conv => enter [2, x]; rw [Complex.exp_add, ← mul_assoc _ _ (Complex.exp _), mul_comm]
     refine ((cexp_neg_quadratic_isLittleO_abs_rpow_cocompact
-      (?_) (-2 * ↑π * I * b / a) (-2)).isBigO.const_mul_left _).const_mul_left _
+      (_) (-2 * ↑π * I * b / a) (-2)).isBigO.const_mul_left _).const_mul_left _
     rwa [neg_div, neg_re, neg_lt_zero]
   convert Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay hCf one_lt_two f_bd Ff_bd 0 using 1
   · simp only [f, zero_add, ofReal_intCast]

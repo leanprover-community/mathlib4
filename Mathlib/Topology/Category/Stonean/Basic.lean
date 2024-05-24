@@ -62,7 +62,7 @@ instance (X : CompHaus.{u}) [Projective X] : ExtremallyDisconnected X := by
     rw [CompHaus.epi_iff_surjective]
     assumption
   obtain ⟨h, hh⟩ := Projective.factors f' g'
-  refine ⟨h, h.2, ?_⟩
+  refine ⟨h, h.2, _⟩
   ext t
   apply_fun (fun e => e t) at hh
   exact hh
@@ -182,7 +182,7 @@ and deduce this from general lemmas about concrete categories.
 -/
 lemma epi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
     Epi f ↔ Function.Surjective f := by
-  refine ⟨?_, ConcreteCategory.epi_of_surjective _⟩
+  refine ⟨_, ConcreteCategory.epi_of_surjective _⟩
   dsimp [Function.Surjective]
   intro h y
   by_contra! hy
@@ -202,7 +202,7 @@ lemma epi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
     apply ULift.ext -- why is `ext` not doing this automatically?
     change 1 = ite _ _ _ -- why is `dsimp` not getting me here?
     rw [if_neg]
-    refine mt (hVU ·) ?_ -- what would be an idiomatic tactic for this step?
+    refine mt (hVU ·) _ -- what would be an idiomatic tactic for this step?
     simpa only [U, Set.mem_compl_iff, Set.mem_range, not_exists, not_forall, not_not]
       using exists_apply_eq_apply f x
   apply_fun fun e => (e y).down at H
@@ -262,12 +262,12 @@ noncomputable
 def presentation (X : CompHaus) : Stonean where
   compHaus := (projectivePresentation X).p
   extrDisc := by
-    refine' CompactT2.Projective.extremallyDisconnected
+    refine CompactT2.Projective.extremallyDisconnected
       (@fun Y Z _ _ _ _ _ _ f g hfcont hgcont hgsurj => _)
     let g₁ : (CompHaus.of Y) ⟶ (CompHaus.of Z) := ⟨g, hgcont⟩
     let f₁ : (projectivePresentation X).p ⟶ (CompHaus.of Z) := ⟨f, hfcont⟩
     have hg₁ : Epi g₁ := (epi_iff_surjective _).2 hgsurj
-    refine' ⟨Projective.factorThru f₁ g₁, (Projective.factorThru f₁ g₁).2, funext (fun _ => _)⟩
+    refine ⟨Projective.factorThru f₁ g₁, (Projective.factorThru f₁ g₁).2, funext (fun _ => _)⟩
     change (Projective.factorThru f₁ g₁ ≫ g₁) _ = f _
     rw [Projective.factorThru_comp]
     rfl

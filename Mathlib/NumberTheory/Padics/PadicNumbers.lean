@@ -584,7 +584,7 @@ def padicNormE {p : ℕ} [hp : Fact p.Prime] : AbsoluteValue ℚ_[p] ℚ where
       max ((Quotient.lift PadicSeq.norm <| @PadicSeq.norm_equiv _ _) q)
         ((Quotient.lift PadicSeq.norm <| @PadicSeq.norm_equiv _ _) r)
     · exact Quotient.inductionOn₂ q r <| PadicSeq.norm_nonarchimedean
-    refine' max_le_add_of_nonneg (Quotient.inductionOn q <| PadicSeq.norm_nonneg) _
+    refine max_le_add_of_nonneg (Quotient.inductionOn q <| PadicSeq.norm_nonneg) _
     exact Quotient.inductionOn r <| PadicSeq.norm_nonneg
 #align padic_norm_e padicNormE
 
@@ -688,9 +688,9 @@ def limSeq : ℕ → ℚ :=
 
 theorem exi_rat_seq_conv {ε : ℚ} (hε : 0 < ε) :
     ∃ N, ∀ i ≥ N, padicNormE (f i - (limSeq f i : ℚ_[p]) : ℚ_[p]) < ε := by
-  refine' (exists_nat_gt (1 / ε)).imp fun N hN i hi ↦ _
+  refine (exists_nat_gt (1 / ε)).imp fun N hN i hi ↦ _
   have h := Classical.choose_spec (rat_dense' (f i) (div_nat_pos i))
-  refine' lt_of_lt_of_le h ((div_le_iff' <| mod_cast succ_pos _).mpr _)
+  refine lt_of_lt_of_le h ((div_le_iff' <| mod_cast succ_pos _).mpr _)
   rw [right_distrib]
   apply le_add_of_le_of_nonneg
   · exact (div_le_iff hε).mp (le_trans (le_of_lt hN) (mod_cast hi))
@@ -736,9 +736,9 @@ theorem complete' : ∃ q : ℚ_[p], ∀ ε > 0, ∃ N, ∀ i ≥ N, padicNormE 
   ⟨lim f, fun ε hε ↦ by
     obtain ⟨N, hN⟩ := exi_rat_seq_conv f (half_pos hε)
     obtain ⟨N2, hN2⟩ := padicNormE.defn (lim' f) (half_pos hε)
-    refine ⟨max N N2, fun i hi ↦ ?_⟩
+    refine ⟨max N N2, fun i hi ↦ _⟩
     rw [← sub_add_sub_cancel _ (lim' f i : ℚ_[p]) _]
-    refine' (padicNormE.add_le _ _).trans_lt _
+    refine (padicNormE.add_le _ _).trans_lt _
     rw [← add_halves ε]
     apply _root_.add_lt_add
     · apply hN2 _ (le_of_max_le_right hi)
@@ -748,9 +748,9 @@ theorem complete' : ∃ q : ℚ_[p], ∀ ε > 0, ∃ N, ∀ i ≥ N, padicNormE 
 
 theorem complete'' : ∃ q : ℚ_[p], ∀ ε > 0, ∃ N, ∀ i ≥ N, padicNormE (f i - q : ℚ_[p]) < ε := by
   obtain ⟨x, hx⟩ := complete' f
-  refine ⟨x, fun ε hε => ?_⟩
+  refine ⟨x, fun ε hε => _⟩
   obtain ⟨N, hN⟩ := hx ε hε
-  refine ⟨N, fun i hi => ?_⟩
+  refine ⟨N, fun i hi => _⟩
   rw [padicNormE.map_sub]
   exact hN i hi
 end Complete
@@ -983,7 +983,7 @@ instance complete : CauSeq.IsComplete ℚ_[p] norm where
     intro i hi
     have h := hN i hi
     change norm (f i - q) < ε
-    refine lt_trans ?_ hε'.2
+    refine lt_trans _ hε'.2
     dsimp [norm]
     exact mod_cast h
 #align padic.complete Padic.complete
@@ -994,7 +994,7 @@ theorem padicNormE_lim_le {f : CauSeq ℚ_[p] norm} {a : ℝ} (ha : 0 < a) (hf :
   -- now, I use a rewrite to swap it later
   obtain ⟨N, hN⟩ := (CauSeq.equiv_lim f) _ ha
   rw [← sub_add_cancel f.lim (f N)]
-  refine le_trans (padicNormE.nonarchimedean _ _) ?_
+  refine le_trans (padicNormE.nonarchimedean _ _) _
   rw [norm_sub_rev]
   exact max_le (le_of_lt (hN _ le_rfl)) (hf _)
   -- Porting note: the following nice `calc` block does not work
@@ -1011,7 +1011,7 @@ instance : CompleteSpace ℚ_[p] := by
   apply complete_of_cauchySeq_tendsto
   intro u hu
   let c : CauSeq ℚ_[p] norm := ⟨u, Metric.cauchySeq_iff'.mp hu⟩
-  refine ⟨c.lim, fun s h ↦ ?_⟩
+  refine ⟨c.lim, fun s h ↦ _⟩
   rcases Metric.mem_nhds_iff.1 h with ⟨ε, ε0, hε⟩
   have := c.equiv_lim ε ε0
   simp only [mem_map, mem_atTop_sets, mem_setOf_eq]
@@ -1048,7 +1048,7 @@ theorem valuation_one : valuation (1 : ℚ_[p]) = 0 := by
 #align padic.valuation_one Padic.valuation_one
 
 theorem norm_eq_pow_val {x : ℚ_[p]} : x ≠ 0 → ‖x‖ = (p : ℝ) ^ (-x.valuation) := by
-  refine Quotient.inductionOn' x fun f hf => ?_
+  refine Quotient.inductionOn' x fun f hf => _
   change (PadicSeq.norm _ : ℝ) = (p : ℝ) ^ (-PadicSeq.valuation _)
   rw [PadicSeq.norm_eq_pow_val]
   · change ↑((p : ℚ) ^ (-PadicSeq.valuation f)) = (p : ℝ) ^ (-PadicSeq.valuation f)
@@ -1064,7 +1064,7 @@ theorem norm_eq_pow_val {x : ℚ_[p]} : x ≠ 0 → ‖x‖ = (p : ℝ) ^ (-x.va
 @[simp]
 theorem valuation_p : valuation (p : ℚ_[p]) = 1 := by
   have h : (1 : ℝ) < p := mod_cast (Fact.out : p.Prime).one_lt
-  refine' neg_injective ((zpow_strictMono h).injective <| (norm_eq_pow_val _).symm.trans _)
+  refine neg_injective ((zpow_strictMono h).injective <| (norm_eq_pow_val _).symm.trans _)
   · exact mod_cast (Fact.out : p.Prime).ne_zero
   · simp
 #align padic.valuation_p Padic.valuation_p

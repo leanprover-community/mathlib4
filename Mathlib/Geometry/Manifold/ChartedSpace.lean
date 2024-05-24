@@ -197,12 +197,12 @@ instance : Inf (StructureGroupoid H) :=
     (locality' := by
       intro e hx
       apply (mem_inter_iff e G.members G'.members).mpr
-      refine And.intro (G.locality' e ?_) (G'.locality' e ?_)
+      refine And.intro (G.locality' e _) (G'.locality' e _)
       all_goals
         intro x hex
         rcases hx x hex with ⟨s, hs⟩
         use s
-        refine And.intro hs.left (And.intro hs.right.left ?_)
+        refine And.intro hs.left (And.intro hs.right.left _)
       · exact hs.right.right.left
       · exact hs.right.right.right)
     (mem_of_eqOnSource' := fun e e' he hee' =>
@@ -226,7 +226,7 @@ instance : InfSet (StructureGroupoid H) :=
     (locality' := by
       simp only [mem_iInter]
       intro e he i hi
-      refine i.locality' e ?_
+      refine i.locality' e _
       intro x hex
       rcases he x hex with ⟨s, hs⟩
       exact ⟨s, ⟨hs.left, ⟨hs.right.left, hs.right.right i hi⟩⟩⟩)
@@ -323,7 +323,7 @@ def idGroupoid (H : Type u) [TopologicalSpace H] : StructureGroupoid H where
     cases' he with he he
     · left
       have : e = e' := by
-        refine' eq_of_eqOnSource_univ (Setoid.symm he'e) _ _ <;>
+        refine eq_of_eqOnSource_univ (Setoid.symm he'e) _ _ <;>
           rw [Set.mem_singleton_iff.1 he] <;> rfl
       rwa [← this]
     · right
@@ -383,15 +383,15 @@ def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
   id_mem' := ⟨PG.id_mem, PG.id_mem⟩
   locality' e he := by
     constructor
-    · refine' PG.locality e.open_source fun x xu ↦ _
+    · refine PG.locality e.open_source fun x xu ↦ _
       rcases he x xu with ⟨s, s_open, xs, hs⟩
-      refine' ⟨s, s_open, xs, _⟩
+      refine ⟨s, s_open, xs, _⟩
       convert hs.1 using 1
       dsimp [PartialHomeomorph.restr]
       rw [s_open.interior_eq]
-    · refine' PG.locality e.open_target fun x xu ↦ _
+    · refine PG.locality e.open_target fun x xu ↦ _
       rcases he (e.symm x) (e.map_target xu) with ⟨s, s_open, xs, hs⟩
-      refine' ⟨e.target ∩ e.symm ⁻¹' s, _, ⟨xu, xs⟩, _⟩
+      refine ⟨e.target ∩ e.symm ⁻¹' s, _, ⟨xu, xs⟩, _⟩
       · exact ContinuousOn.isOpen_inter_preimage e.continuousOn_invFun e.open_target s_open
       · rw [← inter_assoc, inter_self]
         convert hs.2 using 1
@@ -418,7 +418,7 @@ theorem mem_groupoid_of_pregroupoid {PG : Pregroupoid H} {e : PartialHomeomorph 
 
 theorem groupoid_of_pregroupoid_le (PG₁ PG₂ : Pregroupoid H)
     (h : ∀ f s, PG₁.property f s → PG₂.property f s) : PG₁.groupoid ≤ PG₂.groupoid := by
-  refine' StructureGroupoid.le_iff.2 fun e he ↦ _
+  refine StructureGroupoid.le_iff.2 fun e he ↦ _
   rw [mem_groupoid_of_pregroupoid] at he ⊢
   exact ⟨h _ _ he.1, h _ _ he.2⟩
 #align groupoid_of_pregroupoid_le groupoid_of_pregroupoid_le
@@ -454,7 +454,7 @@ instance instStructureGroupoidOrderTop : OrderTop (StructureGroupoid H) where
 instance : CompleteLattice (StructureGroupoid H) :=
   { SetLike.instPartialOrder,
     completeLatticeOfInf _ (by
-      refine' fun s =>
+      refine fun s =>
       ⟨fun S Ss F hF => mem_iInter₂.mp hF S Ss,
       fun T Tl F fT => mem_iInter₂.mpr (fun i his => Tl his fT)⟩) with
     le := (· ≤ ·)
@@ -486,23 +486,23 @@ def idRestrGroupoid : StructureGroupoid H where
   members := { e | ∃ (s : Set H) (h : IsOpen s), e ≈ PartialHomeomorph.ofSet s h }
   trans' := by
     rintro e e' ⟨s, hs, hse⟩ ⟨s', hs', hse'⟩
-    refine ⟨s ∩ s', hs.inter hs', ?_⟩
+    refine ⟨s ∩ s', hs.inter hs', _⟩
     have := PartialHomeomorph.EqOnSource.trans' hse hse'
     rwa [PartialHomeomorph.ofSet_trans_ofSet] at this
   symm' := by
     rintro e ⟨s, hs, hse⟩
-    refine ⟨s, hs, ?_⟩
+    refine ⟨s, hs, _⟩
     rw [← ofSet_symm]
     exact PartialHomeomorph.EqOnSource.symm' hse
   id_mem' := ⟨univ, isOpen_univ, by simp only [mfld_simps, refl]⟩
   locality' := by
     intro e h
-    refine' ⟨e.source, e.open_source, by simp only [mfld_simps], _⟩
+    refine ⟨e.source, e.open_source, by simp only [mfld_simps], _⟩
     intro x hx
     rcases h x hx with ⟨s, hs, hxs, s', hs', hes'⟩
     have hes : x ∈ (e.restr s).source := by
       rw [e.restr_source]
-      refine ⟨hx, ?_⟩
+      refine ⟨hx, _⟩
       rw [hs.interior_eq]
       exact hxs
     simpa only [mfld_simps] using PartialHomeomorph.EqOnSource.eqOn hes' hes
@@ -520,7 +520,7 @@ instance closedUnderRestriction_idRestrGroupoid : ClosedUnderRestriction (@idRes
   ⟨by
     rintro e ⟨s', hs', he⟩ s hs
     use s' ∩ s, hs'.inter hs
-    refine Setoid.trans (PartialHomeomorph.EqOnSource.restr he s) ?_
+    refine Setoid.trans (PartialHomeomorph.EqOnSource.restr he s) _
     exact ⟨by simp only [hs.interior_eq, mfld_simps], by simp only [mfld_simps, eqOn_refl]⟩⟩
 #align closed_under_restriction_id_restr_groupoid closedUnderRestriction_idRestrGroupoid
 
@@ -532,7 +532,7 @@ theorem closedUnderRestriction_iff_id_le (G : StructureGroupoid H) :
   · intro _i
     rw [StructureGroupoid.le_iff]
     rintro e ⟨s, hs, hes⟩
-    refine' G.mem_of_eqOnSource _ hes
+    refine G.mem_of_eqOnSource _ hes
     convert closedUnderRestriction' G.id_mem hs
     -- Porting note: was
     -- change s = _ ∩ _
@@ -546,7 +546,7 @@ theorem closedUnderRestriction_iff_id_le (G : StructureGroupoid H) :
     constructor
     intro e he s hs
     rw [← ofSet_trans (e : PartialHomeomorph H H) hs]
-    refine G.trans ?_ he
+    refine G.trans _ he
     apply StructureGroupoid.le_iff.mp h
     exact idRestrGroupoid_mem hs
 #align closed_under_restriction_iff_id_le closedUnderRestriction_iff_id_le
@@ -704,7 +704,7 @@ theorem ChartedSpace.locallyCompactSpace [LocallyCompactSpace H] : LocallyCompac
     rw [← (chartAt H x).symm_map_nhds_eq (mem_chart_source H x)]
     exact ((compact_basis_nhds (chartAt H x x)).hasBasis_self_subset
       (chart_target_mem_nhds H x)).map _
-  refine .of_hasBasis this ?_
+  refine .of_hasBasis this _
   rintro x s ⟨_, h₂, h₃⟩
   exact h₂.image_of_continuousOn ((chartAt H x).continuousOn_symm.mono h₃)
 #align charted_space.locally_compact ChartedSpace.locallyCompactSpace
@@ -713,7 +713,7 @@ theorem ChartedSpace.locallyCompactSpace [LocallyCompactSpace H] : LocallyCompac
 locally connected. -/
 theorem ChartedSpace.locallyConnectedSpace [LocallyConnectedSpace H] : LocallyConnectedSpace M := by
   let e : M → PartialHomeomorph M H := chartAt H
-  refine' locallyConnectedSpace_of_connected_bases (fun x s ↦ (e x).symm '' s)
+  refine locallyConnectedSpace_of_connected_bases (fun x s ↦ (e x).symm '' s)
       (fun x s ↦ (IsOpen s ∧ e x x ∈ s ∧ IsConnected s) ∧ s ⊆ (e x).target) _ _
   · intro x
     simpa only [e, PartialHomeomorph.symm_map_nhds_eq, mem_chart_source] using
@@ -898,7 +898,7 @@ protected def toTopologicalSpace : TopologicalSpace M :=
 theorem open_source' (he : e ∈ c.atlas) : IsOpen[c.toTopologicalSpace] e.source := by
   apply TopologicalSpace.GenerateOpen.basic
   simp only [exists_prop, mem_iUnion, mem_singleton_iff]
-  refine' ⟨e, he, univ, isOpen_univ, _⟩
+  refine ⟨e, he, univ, isOpen_univ, _⟩
   simp only [Set.univ_inter, Set.preimage_univ]
 #align charted_space_core.open_source' ChartedSpaceCore.open_source'
 
@@ -1008,7 +1008,7 @@ instance hasGroupoid_model_space (H : Type*) [TopologicalSpace H] (G : Structure
 
 /-- Any charted space structure is compatible with the groupoid of all partial homeomorphisms. -/
 instance hasGroupoid_continuousGroupoid : HasGroupoid M (continuousGroupoid H) := by
-  refine' ⟨fun _ _ ↦ _⟩
+  refine ⟨fun _ _ ↦ _⟩
   rw [continuousGroupoid, mem_groupoid_of_pregroupoid]
   simp only [and_self_iff]
 #align has_groupoid_continuous_groupoid hasGroupoid_continuousGroupoid
@@ -1056,7 +1056,7 @@ theorem mem_maximalAtlas_iff {e : PartialHomeomorph M H} :
 of the structure groupoid. -/
 theorem StructureGroupoid.compatible_of_mem_maximalAtlas {e e' : PartialHomeomorph M H}
     (he : e ∈ G.maximalAtlas M) (he' : e' ∈ G.maximalAtlas M) : e.symm ≫ₕ e' ∈ G := by
-  refine G.locality fun x hx ↦ ?_
+  refine G.locality fun x hx ↦ _
   set f := chartAt (H := H) (e.symm x)
   let s := e.target ∩ e.symm ⁻¹' f.source
   have hs : IsOpen s := by
@@ -1064,7 +1064,7 @@ theorem StructureGroupoid.compatible_of_mem_maximalAtlas {e e' : PartialHomeomor
   have xs : x ∈ s := by
     simp only [s, f, mem_inter_iff, mem_preimage, mem_chart_source, and_true]
     exact ((mem_inter_iff _ _ _).1 hx).1
-  refine ⟨s, hs, xs, ?_⟩
+  refine ⟨s, hs, xs, _⟩
   have A : e.symm ≫ₕ f ∈ G := (mem_maximalAtlas_iff.1 he f (chart_mem_atlas _ _)).1
   have B : f.symm ≫ₕ e' ∈ G := (mem_maximalAtlas_iff.1 he' f (chart_mem_atlas _ _)).2
   have C : (e.symm ≫ₕ f) ≫ₕ f.symm ≫ₕ e' ∈ G := G.trans A B
@@ -1148,7 +1148,7 @@ theorem singleton_hasGroupoid (h : e.source = Set.univ) (G : StructureGroupoid H
       intro e' e'' he' he''
       rw [e.singletonChartedSpace_mem_atlas_eq h e' he',
         e.singletonChartedSpace_mem_atlas_eq h e'' he'']
-      refine' G.mem_of_eqOnSource _ e.symm_trans_self
+      refine G.mem_of_eqOnSource _ e.symm_trans_self
       have hle : idRestrGroupoid ≤ G := (closedUnderRestriction_iff_id_le G).mp (by assumption)
       exact StructureGroupoid.le_iff.mp hle _ (idRestrGroupoid_mem _) }
 #align local_homeomorph.singleton_has_groupoid PartialHomeomorph.singleton_hasGroupoid
@@ -1219,7 +1219,7 @@ protected instance instHasGroupoid [ClosedUnderRestriction G] : HasGroupoid s G 
     rw [hc.symm, mem_singleton_iff] at he
     rw [hc'.symm, mem_singleton_iff] at he'
     rw [he, he']
-    refine' G.mem_of_eqOnSource _
+    refine G.mem_of_eqOnSource _
       (subtypeRestr_symm_trans_subtypeRestr (s := s) _ (chartAt H x) (chartAt H x'))
     apply closedUnderRestriction'
     · exact G.compatible (chart_mem_atlas _ _) (chart_mem_atlas _ _)
@@ -1311,7 +1311,7 @@ def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
       Then g ∘ e ∘ c⁻¹ and c' ∘ e' ∘ g⁻¹ are both smooth as e and e' are structomorphisms, so
       their composition is smooth, and it coincides with c' ∘ e' ∘ e ∘ c⁻¹ around x. -/
       intro c c' hc hc'
-      refine G.locality fun x hx ↦ ?_
+      refine G.locality fun x hx ↦ _
       let f₁ := e.toHomeomorph.toPartialHomeomorph
       let f₂ := e'.toHomeomorph.toPartialHomeomorph
       let f := (e.toHomeomorph.trans e'.toHomeomorph).toPartialHomeomorph
@@ -1331,7 +1331,7 @@ def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
           rw [trans_source] at hx
           exact hx.1
         · exact hg₂
-      refine' ⟨s, open_s, this, _⟩
+      refine ⟨s, open_s, this, _⟩
       let F₁ := (c.symm ≫ₕ f₁ ≫ₕ g) ≫ₕ g.symm ≫ₕ f₂ ≫ₕ c'
       have A : F₁ ∈ G := G.trans (e.mem_groupoid c g hc hg₁) (e'.mem_groupoid g c' hg₁ hc')
       let F₂ := (c.symm ≫ₕ f ≫ₕ c').restr s

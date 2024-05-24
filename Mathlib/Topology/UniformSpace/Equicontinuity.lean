@@ -310,7 +310,7 @@ theorem equicontinuousWithinAt_iff_pair {F : ι → X → α} {S : Set X} {x₀ 
       ∀ U ∈ 𝓤 α, ∃ V ∈ 𝓝[S] x₀, ∀ x ∈ V, ∀ y ∈ V, ∀ i, (F i x, F i y) ∈ U := by
   constructor <;> intro H U hU
   · rcases comp_symm_mem_uniformity_sets hU with ⟨V, hV, hVsymm, hVU⟩
-    refine' ⟨_, H V hV, fun x hx y hy i => hVU (prod_mk_mem_compRel _ (hy i))⟩
+    refine ⟨_, H V hV, fun x hx y hy i => hVU (prod_mk_mem_compRel _ (hy i))⟩
     exact hVsymm.mk_mem_comm.mp (hx i)
   · rcases H U hU with ⟨V, hV, hVU⟩
     filter_upwards [hV] using fun x hx i => hVU x₀ (mem_of_mem_nhdsWithin hx₀ hV) x hx i
@@ -759,7 +759,7 @@ theorem UniformInducing.equicontinuousWithinAt_iff {F : ι → X → α} {S : Se
 family `𝓕'`, obtained by composing each function of `𝓕` by `u`, is equicontinuous. -/
 theorem UniformInducing.equicontinuous_iff {F : ι → X → α} {u : α → β} (hu : UniformInducing u) :
     Equicontinuous F ↔ Equicontinuous ((u ∘ ·) ∘ F) := by
-  congrm ∀ x, ?_
+  congrm ∀ x, _
   rw [hu.equicontinuousAt_iff]
 #align uniform_inducing.equicontinuous_iff UniformInducing.equicontinuous_iff
 
@@ -768,7 +768,7 @@ subset `S : Set X` iff the family `𝓕'`, obtained by composing each function o
 equicontinuous on `S`. -/
 theorem UniformInducing.equicontinuousOn_iff {F : ι → X → α} {S : Set X} {u : α → β}
     (hu : UniformInducing u) : EquicontinuousOn F S ↔ EquicontinuousOn ((u ∘ ·) ∘ F) S := by
-  congrm ∀ x ∈ S, ?_
+  congrm ∀ x ∈ S, _
   rw [hu.equicontinuousWithinAt_iff]
 
 /-- Given `u : α → γ` a uniform inducing map, a family `𝓕 : ι → β → α` is uniformly equicontinuous
@@ -810,7 +810,7 @@ theorem EquicontinuousWithinAt.closure' {A : Set Y} {u : Y → X → α} {S : Se
   filter_upwards [hA V hV, eventually_mem_nhdsWithin] with x hx hxS
   rw [SetCoe.forall] at *
   change A ⊆ (fun f => (u f x₀, u f x)) ⁻¹' V at hx
-  refine (closure_minimal hx <| hVclosed.preimage <| hu₂.prod_mk ?_).trans (preimage_mono hVU)
+  refine (closure_minimal hx <| hVclosed.preimage <| hu₂.prod_mk _).trans (preimage_mono hVU)
   exact (continuous_apply ⟨x, hxS⟩).comp hu₁
 
 /-- If a set of functions is equicontinuous at some `x₀`, the same is true for its closure in *any*
@@ -885,7 +885,7 @@ theorem UniformEquicontinuousOn.closure' {A : Set Y} {u : Y → β → α} {S : 
   rintro ⟨x, y⟩ hxy ⟨hxS, hyS⟩
   rw [SetCoe.forall] at *
   change A ⊆ (fun f => (u f x, u f y)) ⁻¹' V at hxy
-  refine (closure_minimal hxy <| hVclosed.preimage <| .prod_mk ?_ ?_).trans (preimage_mono hVU)
+  refine (closure_minimal hxy <| hVclosed.preimage <| .prod_mk _ _).trans (preimage_mono hVU)
   · exact (continuous_apply ⟨x, hxS⟩).comp hu
   · exact (continuous_apply ⟨y, hyS⟩).comp hu
 

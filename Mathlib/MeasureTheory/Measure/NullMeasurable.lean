@@ -227,7 +227,7 @@ protected theorem insert [MeasurableSingletonClass (NullMeasurableSpace α μ)]
 theorem exists_measurable_superset_ae_eq (h : NullMeasurableSet s μ) :
     ∃ t ⊇ s, MeasurableSet t ∧ t =ᵐ[μ] s := by
   rcases h with ⟨t, htm, hst⟩
-  refine' ⟨t ∪ toMeasurable μ (s \ t), _, htm.union (measurableSet_toMeasurable _ _), _⟩
+  refine ⟨t ∪ toMeasurable μ (s \ t), _, htm.union (measurableSet_toMeasurable _ _), _⟩
   · exact diff_subset_iff.1 (subset_toMeasurable _ _)
   · have : toMeasurable μ (s \ t) =ᵐ[μ] (∅ : Set α) := by simp [ae_le_set.1 hst.le]
     simpa only [union_empty] using hst.symm.union this
@@ -299,7 +299,7 @@ theorem measure_union₀_aux (hs : NullMeasurableSet s μ) (ht : NullMeasurableS
 `μ (s ∩ t) + μ (s \ t) = μ s`. -/
 theorem measure_inter_add_diff₀ (s : Set α) (ht : NullMeasurableSet t μ) :
     μ (s ∩ t) + μ (s \ t) = μ s := by
-  refine le_antisymm ?_ (measure_le_inter_add_diff _ _ _)
+  refine le_antisymm _ (measure_le_inter_add_diff _ _ _)
   rcases exists_measurable_superset μ s with ⟨s', hsub, hs'm, hs'⟩
   replace hs'm : NullMeasurableSet s' μ := hs'm.nullMeasurableSet
   calc

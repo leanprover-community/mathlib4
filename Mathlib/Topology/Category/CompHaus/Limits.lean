@@ -222,7 +222,7 @@ lemma finiteCoproduct.ι_desc_apply {B : CompHaus} {π : (a : α) → X a ⟶ B}
 -- `elementwise` should work here, but doesn't
 
 instance : PreservesFiniteCoproducts compHausToTop := by
-  refine ⟨fun J hJ ↦ ⟨fun {F} ↦ ?_⟩⟩
+  refine ⟨fun J hJ ↦ ⟨fun {F} ↦ _⟩⟩
   suffices PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) compHausToTop from
     preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
   apply preservesColimitOfPreservesColimitCocone (CompHaus.finiteCoproduct.isColimit _)

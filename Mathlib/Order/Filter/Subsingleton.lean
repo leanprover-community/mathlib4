@@ -51,12 +51,12 @@ theorem subsingleton_bot : Filter.Subsingleton (⊥ : Filter α) :=
 theorem Subsingleton.exists_eq_pure [l.NeBot] (hl : l.Subsingleton) : ∃ a, l = pure a := by
   rcases hl with ⟨s, hsl, hs⟩
   rcases exists_eq_singleton_iff_nonempty_subsingleton.2 ⟨nonempty_of_mem hsl, hs⟩ with ⟨a, rfl⟩
-  refine ⟨a, (NeBot.le_pure_iff ‹_›).1 ?_⟩
+  refine ⟨a, (NeBot.le_pure_iff ‹_›).1 _⟩
   rwa [le_pure_iff]
 
 /-- A filter is a subsingleton iff it is equal to `⊥` or to `pure a` for some `a`. -/
 theorem subsingleton_iff_bot_or_pure : l.Subsingleton ↔ l = ⊥ ∨ ∃ a, l = pure a := by
-  refine ⟨fun hl ↦ ?_, ?_⟩
+  refine ⟨fun hl ↦ _, _⟩
   · exact (eq_or_neBot l).imp_right (@Subsingleton.exists_eq_pure _ _ · hl)
   · rintro (rfl | ⟨a, rfl⟩) <;> simp
 

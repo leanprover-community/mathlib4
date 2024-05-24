@@ -80,7 +80,7 @@ theorem cardinal_lift_le_rank {ι : Type w} {v : ι → M}
     (hv : LinearIndependent R v) :
     Cardinal.lift.{v} #ι ≤ Cardinal.lift.{w} (Module.rank R M) := by
   rw [Module.rank]
-  refine le_trans ?_ (lift_le.mpr <| le_ciSup (bddAbove_range.{v, v} _) ⟨_, hv.coe_range⟩)
+  refine le_trans _ (lift_le.mpr <| le_ciSup (bddAbove_range.{v, v} _) ⟨_, hv.coe_range⟩)
   exact lift_mk_le'.mpr ⟨(Equiv.ofInjective _ hv.injective).toEmbedding⟩
 #align cardinal_lift_le_rank_of_linear_independent LinearIndependent.cardinal_lift_le_rank
 #align cardinal_lift_le_rank_of_linear_independent' LinearIndependent.cardinal_lift_le_rank
@@ -136,7 +136,7 @@ theorem lift_rank_le_of_surjective_injective (i : ZeroHom R R') (j : M →+ M')
     (hi : Surjective i) (hj : Injective j) (hc : ∀ (r : R) (m : M), j (r • m) = i r • j m) :
     lift.{v'} (Module.rank R M) ≤ lift.{v} (Module.rank R' M') := by
   obtain ⟨i', hi'⟩ := hi.hasRightInverse
-  refine lift_rank_le_of_injective_injective i' j (fun _ h ↦ ?_) hj fun r m ↦ ?_
+  refine lift_rank_le_of_injective_injective i' j (fun _ h ↦ _) hj fun r m ↦ _
   · apply_fun i at h
     rwa [hi', i.map_zero] at h
   rw [hc (i' r) m, hi']
@@ -187,7 +187,7 @@ theorem lift_rank_le_of_injective_injective
     (hc : (j.comp (algebraMap R S)).comp i = algebraMap R' S') :
     lift.{v'} (Module.rank R S) ≤ lift.{v} (Module.rank R' S') := by
   refine _root_.lift_rank_le_of_injective_injective i j
-    (fun _ _ ↦ hi <| by rwa [i.map_zero]) hj fun r _ ↦ ?_
+    (fun _ _ ↦ hi <| by rwa [i.map_zero]) hj fun r _ ↦ _
   have := congr($hc r)
   simp only [RingHom.coe_comp, comp_apply] at this
   simp_rw [smul_def, AddMonoidHom.coe_coe, map_mul, this]
@@ -199,7 +199,7 @@ theorem lift_rank_le_of_surjective_injective
     (i : R →+* R') (j : S →+* S') (hi : Surjective i) (hj : Injective j)
     (hc : (algebraMap R' S').comp i = j.comp (algebraMap R S)) :
     lift.{v'} (Module.rank R S) ≤ lift.{v} (Module.rank R' S') := by
-  refine _root_.lift_rank_le_of_surjective_injective i j hi hj fun r _ ↦ ?_
+  refine _root_.lift_rank_le_of_surjective_injective i j hi hj fun r _ ↦ _
   have := congr($hc r)
   simp only [RingHom.coe_comp, comp_apply] at this
   simp only [smul_def, AddMonoidHom.coe_coe, map_mul, ZeroHom.coe_coe, this]
@@ -210,7 +210,7 @@ then the rank of `S / R` is equal to the rank of `S' / R'`. -/
 theorem lift_rank_eq_of_equiv_equiv (i : R ≃+* R') (j : S ≃+* S')
     (hc : (algebraMap R' S').comp i.toRingHom = j.toRingHom.comp (algebraMap R S)) :
     lift.{v'} (Module.rank R S) = lift.{v} (Module.rank R' S') := by
-  refine _root_.lift_rank_eq_of_equiv_equiv i j i.bijective fun r _ ↦ ?_
+  refine _root_.lift_rank_eq_of_equiv_equiv i j i.bijective fun r _ ↦ _
   have := congr($hc r)
   simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, comp_apply] at this
   simp only [smul_def, RingEquiv.coe_toAddEquiv, map_mul, ZeroHom.coe_coe, this]
@@ -265,7 +265,7 @@ theorem lift_rank_range_le (f : M →ₗ[R] M') : Cardinal.lift.{v}
   apply le_trans
   swap
   · apply Cardinal.lift_le.mpr
-    refine' le_ciSup (Cardinal.bddAbove_range.{v, v} _) ⟨rangeSplitting f '' s, _⟩
+    refine le_ciSup (Cardinal.bddAbove_range.{v, v} _) ⟨rangeSplitting f '' s, _⟩
     apply LinearIndependent.of_comp f.rangeRestrict
     convert li.comp (Equiv.Set.rangeSplittingImageEquiv f s) (Equiv.injective _) using 1
   · exact (Cardinal.lift_mk_eq'.mpr ⟨Equiv.Set.rangeSplittingImageEquiv f s⟩).ge
@@ -364,7 +364,7 @@ theorem rank_subsingleton [Subsingleton R] : Module.rank R M = 1 := by
     rw [Cardinal.mk_le_one_iff_set_subsingleton]
     apply subsingleton_of_subsingleton
   intro w hw
-  refine' ⟨⟨{0}, _⟩, _⟩
+  refine ⟨⟨{0}, _⟩, _⟩
   · rw [linearIndependent_iff']
     intros
     exact Subsingleton.elim _ _

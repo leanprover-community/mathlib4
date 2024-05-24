@@ -34,13 +34,13 @@ instance (priority := 100) BaireSpace.of_t2Space_locallyCompactSpace {X : Type*}
     rcases U_open.exists_positiveCompacts_closure_subset U_nonempty with ⟨K₀, hK₀⟩
     have : ∀ (n) (K : PositiveCompacts X),
         ∃ K' : PositiveCompacts X, closure ↑K' ⊆ f n ∩ interior K := by
-      refine fun n K ↦ ((ho n).inter isOpen_interior).exists_positiveCompacts_closure_subset ?_
+      refine fun n K ↦ ((ho n).inter isOpen_interior).exists_positiveCompacts_closure_subset _
       rw [inter_comm]
       exact (hd n).inter_open_nonempty _ isOpen_interior K.interior_nonempty
     choose K_next hK_next using this
     -- The next two lines are faster than a single `refine`.
     use Nat.rec K₀ K_next
-    refine ⟨fun n ↦ ?_, fun n ↦ (hK_next n _).trans (inter_subset_left _ _), hK₀⟩
+    refine ⟨fun n ↦ _, fun n ↦ (hK_next n _).trans (inter_subset_left _ _), hK₀⟩
     exact subset_closure.trans <| (hK_next _ _).trans <|
       (inter_subset_right _ _).trans interior_subset
   -- Prove that ̀`⋂ n : ℕ, closure (K n)` is inside `U ∩ ⋂ n : ℕ, f n`.

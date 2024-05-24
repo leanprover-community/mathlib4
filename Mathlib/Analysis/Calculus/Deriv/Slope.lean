@@ -57,7 +57,7 @@ theorem hasDerivAtFilter_iff_tendsto_slope {x : 𝕜} {L : Filter 𝕜} :
   _ ↔ Tendsto (fun y ↦ slope f x y - (y - x)⁻¹ • (y - x) • f') (L ⊓ 𝓟 {x}ᶜ) (𝓝 0) :=
         .symm <| tendsto_inf_principal_nhds_iff_of_forall_eq <| by simp
   _ ↔ Tendsto (fun y ↦ slope f x y - f') (L ⊓ 𝓟 {x}ᶜ) (𝓝 0) := tendsto_congr' <| by
-        refine (EqOn.eventuallyEq fun y hy ↦ ?_).filter_mono inf_le_right
+        refine (EqOn.eventuallyEq fun y hy ↦ _).filter_mono inf_le_right
         rw [inv_smul_smul₀ (sub_ne_zero.2 hy) f']
   _ ↔ Tendsto (slope f x) (L ⊓ 𝓟 {x}ᶜ) (𝓝 f') :=
         by rw [← nhds_translation_sub f', tendsto_comap_iff]; rfl
@@ -121,7 +121,7 @@ theorem range_derivWithin_subset_closure_span_image
   apply mem_closure_of_tendsto this
   filter_upwards [self_mem_nhdsWithin] with y hy
   simp only [slope, vsub_eq_sub, SetLike.mem_coe]
-  refine Submodule.smul_mem _ _ (Submodule.sub_mem _ ?_ ?_)
+  refine Submodule.smul_mem _ _ (Submodule.sub_mem _ _ _)
   · apply Submodule.le_topologicalClosure
     apply Submodule.subset_span
     exact mem_image_of_mem _ hy.1.2
@@ -216,7 +216,7 @@ theorem HasDerivWithinAt.limsup_slope_norm_le (hf : HasDerivWithinAt f f' s x) (
     ∀ᶠ z in 𝓝[s] x, ‖z - x‖⁻¹ * (‖f z‖ - ‖f x‖) < r := by
   apply (hf.limsup_norm_slope_le hr).mono
   intro z hz
-  refine' lt_of_le_of_lt (mul_le_mul_of_nonneg_left (norm_sub_norm_le _ _) _) hz
+  refine lt_of_le_of_lt (mul_le_mul_of_nonneg_left (norm_sub_norm_le _ _) _) hz
   exact inv_nonneg.2 (norm_nonneg _)
 #align has_deriv_within_at.limsup_slope_norm_le HasDerivWithinAt.limsup_slope_norm_le
 
@@ -244,7 +244,7 @@ See also
 theorem HasDerivWithinAt.liminf_right_slope_norm_le (hf : HasDerivWithinAt f f' (Ici x) x)
     (hr : ‖f'‖ < r) : ∃ᶠ z in 𝓝[>] x, (z - x)⁻¹ * (‖f z‖ - ‖f x‖) < r := by
   have := (hf.Ioi_of_Ici.limsup_slope_norm_le hr).frequently
-  refine this.mp (Eventually.mono self_mem_nhdsWithin fun z hxz hz ↦ ?_)
+  refine this.mp (Eventually.mono self_mem_nhdsWithin fun z hxz hz ↦ _)
   rwa [Real.norm_eq_abs, abs_of_pos (sub_pos_of_lt hxz)] at hz
 #align has_deriv_within_at.liminf_right_slope_norm_le HasDerivWithinAt.liminf_right_slope_norm_le
 

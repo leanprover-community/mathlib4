@@ -133,11 +133,11 @@ variable {χ} in
 on the kernel of `ZMod.unitsMap`. -/
 lemma factorsThrough_iff_ker_unitsMap {d : ℕ} [NeZero n] (hd : d ∣ n) :
     FactorsThrough χ d ↔ (ZMod.unitsMap hd).ker ≤ χ.toUnitHom.ker := by
-  refine ⟨fun ⟨_, ⟨χ₀, hχ₀⟩⟩ x hx ↦ ?_, fun h ↦ ?_⟩
+  refine ⟨fun ⟨_, ⟨χ₀, hχ₀⟩⟩ x hx ↦ _, fun h ↦ _⟩
   · rw [MonoidHom.mem_ker, hχ₀, changeLevel_toUnitHom, MonoidHom.comp_apply, hx, map_one]
   · let E := MonoidHom.liftOfSurjective _ (ZMod.unitsMap_surjective hd) ⟨_, h⟩
     have hE : E.comp (ZMod.unitsMap hd) = χ.toUnitHom := MonoidHom.liftOfRightInverse_comp ..
-    refine ⟨hd, MulChar.ofUnitHom E, equivToUnitHom.injective (?_ : toUnitHom _ = toUnitHom _)⟩
+    refine ⟨hd, MulChar.ofUnitHom E, equivToUnitHom.injective (_ : toUnitHom _ = toUnitHom _)⟩
     simp_rw [changeLevel_toUnitHom, toUnitHom_eq, ofUnitHom_eq, Equiv.apply_symm_apply, hE,
       toUnitHom_eq]
 
@@ -154,7 +154,7 @@ lemma level_one' (hn : n = 1) : χ = 1 := by
   exact level_one _
 
 instance : Subsingleton (DirichletCharacter R 1) := by
-  refine subsingleton_iff.mpr (fun χ χ' ↦ ?_)
+  refine subsingleton_iff.mpr (fun χ χ' ↦ _)
   simp [level_one]
 
 noncomputable instance : Unique (DirichletCharacter R 1) := Unique.mk' (DirichletCharacter R 1)
@@ -164,7 +164,7 @@ lemma changeLevel_one {d : ℕ} (h : d ∣ n) :
   simp [changeLevel]
 
 lemma factorsThrough_one_iff : FactorsThrough χ 1 ↔ χ = 1 := by
-  refine ⟨fun ⟨_, χ₀, hχ₀⟩ ↦ ?_,
+  refine ⟨fun ⟨_, χ₀, hχ₀⟩ ↦ _,
           fun h ↦ ⟨one_dvd n, 1, by rw [h, changeLevel_one]⟩⟩
   rwa [level_one χ₀, changeLevel_one] at hχ₀
 
@@ -205,12 +205,12 @@ lemma conductor_one (hn : n ≠ 0) : conductor (1 : DirichletCharacter R n) = 1 
 variable {χ}
 
 lemma eq_one_iff_conductor_eq_one (hn : n ≠ 0) : χ = 1 ↔ conductor χ = 1 := by
-  refine ⟨fun h ↦ h ▸ conductor_one hn, fun hχ ↦ ?_⟩
+  refine ⟨fun h ↦ h ▸ conductor_one hn, fun hχ ↦ _⟩
   obtain ⟨h', χ₀, h⟩ := factorsThrough_conductor χ
   exact (level_one' χ₀ hχ ▸ h).trans <| changeLevel_one h'
 
 lemma conductor_eq_zero_iff_level_eq_zero : conductor χ = 0 ↔ n = 0 := by
-  refine ⟨(conductor_ne_zero χ).mtr, ?_⟩
+  refine ⟨(conductor_ne_zero χ).mtr, _⟩
   rintro rfl
   exact Nat.sInf_eq_zero.mpr <| Or.inl <| level_mem_conductorSet χ
 
@@ -218,7 +218,7 @@ lemma conductor_le_conductor_mem_conductorSet {d : ℕ} (hd : d ∈ conductorSet
     χ.conductor ≤ (Classical.choose hd.2).conductor := by
   refine Nat.sInf_le <| (mem_conductorSet_iff χ).mpr <|
     ⟨dvd_trans (conductor_dvd_level _) hd.1,
-     (factorsThrough_conductor (Classical.choose hd.2)).2.choose, ?_⟩
+     (factorsThrough_conductor (Classical.choose hd.2)).2.choose, _⟩
   rw [changeLevel_trans _ (conductor_dvd_level _) hd.dvd,
       ← (factorsThrough_conductor (Classical.choose hd.2)).2.choose_spec]
   exact hd.eq_changeLevel

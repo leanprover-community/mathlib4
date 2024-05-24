@@ -75,7 +75,7 @@ theorem approximates_deriv_on_nhds {f : E → F} {f' : E →L[𝕜] F} {a : E}
     (hf : HasStrictFDerivAt f f' a) {c : ℝ≥0} (hc : Subsingleton E ∨ 0 < c) :
     ∃ s ∈ 𝓝 a, ApproximatesLinearOn f f' s c := by
   cases' hc with hE hc
-  · refine' ⟨univ, IsOpen.mem_nhds isOpen_univ trivial, fun x _ y _ => _⟩
+  · refine ⟨univ, IsOpen.mem_nhds isOpen_univ trivial, fun x _ y _ => _⟩
     simp [@Subsingleton.elim E hE x y]
   have := hf.def hc
   rw [nhds_prod_eq, Filter.Eventually, mem_prod_same_iff] at this
@@ -102,7 +102,7 @@ theorem approximates_deriv_on_open_nhds (hf : HasStrictFDerivAt f (f' : E →L[�
     ∃ s : Set E, a ∈ s ∧ IsOpen s ∧
       ApproximatesLinearOn f (f' : E →L[𝕜] F) s (‖(f'.symm : F →L[𝕜] E)‖₊⁻¹ / 2) := by
   simp only [← and_assoc]
-  refine ((nhds_basis_opens a).exists_iff fun s t => ApproximatesLinearOn.mono_set).1 ?_
+  refine ((nhds_basis_opens a).exists_iff fun s t => ApproximatesLinearOn.mono_set).1 _
   exact
     hf.approximates_deriv_on_nhds <|
       f'.subsingleton_or_nnnorm_symm_pos.imp id fun hf' => half_pos <| inv_pos.2 hf'

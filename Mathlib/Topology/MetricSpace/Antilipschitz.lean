@@ -162,9 +162,9 @@ theorem to_rightInverse (hf : AntilipschitzWith K f) {g : β → α} (hg : Funct
 #align antilipschitz_with.to_right_inverse AntilipschitzWith.to_rightInverse
 
 theorem comap_uniformity_le (hf : AntilipschitzWith K f) : (𝓤 β).comap (Prod.map f f) ≤ 𝓤 α := by
-  refine ((uniformity_basis_edist.comap _).le_basis_iff uniformity_basis_edist).2 fun ε h₀ => ?_
-  refine ⟨(↑K)⁻¹ * ε, ENNReal.mul_pos (ENNReal.inv_ne_zero.2 ENNReal.coe_ne_top) h₀.ne', ?_⟩
-  refine' fun x hx => (hf x.1 x.2).trans_lt _
+  refine ((uniformity_basis_edist.comap _).le_basis_iff uniformity_basis_edist).2 fun ε h₀ => _
+  refine ⟨(↑K)⁻¹ * ε, ENNReal.mul_pos (ENNReal.inv_ne_zero.2 ENNReal.coe_ne_top) h₀.ne', _⟩
+  refine fun x hx => (hf x.1 x.2).trans_lt _
   rw [mul_comm, ← div_eq_mul_inv] at hx
   rw [mul_comm]
   exact ENNReal.mul_lt_of_lt_div hx
@@ -236,7 +236,7 @@ theorem tendsto_cobounded (hf : AntilipschitzWith K f) : Tendsto f (cobounded α
 protected theorem properSpace {α : Type*} [MetricSpace α] {K : ℝ≥0} {f : α → β} [ProperSpace α]
     (hK : AntilipschitzWith K f) (f_cont : Continuous f) (hf : Function.Surjective f) :
     ProperSpace β := by
-  refine ⟨fun x₀ r => ?_⟩
+  refine ⟨fun x₀ r => _⟩
   let K := f ⁻¹' closedBall x₀ r
   have A : IsClosed K := isClosed_ball.preimage f_cont
   have B : IsBounded K := hK.isBounded_preimage isBounded_closedBall

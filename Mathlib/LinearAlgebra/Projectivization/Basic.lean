@@ -113,7 +113,7 @@ theorem mk_eq_mk_iff' (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) :
   · rintro ⟨a, ha⟩
     exact ⟨a, ha⟩
   · rintro ⟨a, ha⟩
-    refine ⟨Units.mk0 a fun c => hv.symm ?_, ha⟩
+    refine ⟨Units.mk0 a fun c => hv.symm _, ha⟩
     rwa [c, zero_smul] at ha
 #align projectivization.mk_eq_mk_iff' Projectivization.mk_eq_mk_iff'
 
@@ -164,11 +164,11 @@ variable (K V)
 collection of subspaces of dimension 1. -/
 noncomputable def equivSubmodule : ℙ K V ≃ { H : Submodule K V // finrank K H = 1 } :=
   (Equiv.ofInjective _ submodule_injective).trans <| .subtypeEquiv (.refl _) fun H ↦ by
-    refine ⟨fun ⟨v, hv⟩ ↦ hv ▸ v.finrank_submodule, fun h ↦ ?_⟩
+    refine ⟨fun ⟨v, hv⟩ ↦ hv ▸ v.finrank_submodule, fun h ↦ _⟩
     rcases finrank_eq_one_iff'.1 h with ⟨v : H, hv₀, hv : ∀ w : H, _⟩
     use mk K (v : V) (Subtype.coe_injective.ne hv₀)
     rw [submodule_mk, SetLike.ext'_iff, Submodule.span_singleton_eq_range]
-    refine (Set.range_subset_iff.2 fun _ ↦ H.smul_mem _ v.2).antisymm fun x hx ↦ ?_
+    refine (Set.range_subset_iff.2 fun _ ↦ H.smul_mem _ v.2).antisymm fun x hx ↦ _
     rcases hv ⟨x, hx⟩ with ⟨c, hc⟩
     exact ⟨c, congr_arg Subtype.val hc⟩
 #align projectivization.equiv_submodule Projectivization.equivSubmodule
@@ -215,7 +215,7 @@ theorem map_injective {σ : K →+* L} {τ : L →+* K} [RingHomInvPair σ τ] (
   induction' u using ind with u hu; induction' v using ind with v hv
   simp only [map_mk, mk_eq_mk_iff'] at h ⊢
   rcases h with ⟨a, ha⟩
-  refine ⟨τ a, hf ?_⟩
+  refine ⟨τ a, hf _⟩
   rwa [f.map_smulₛₗ, RingHomInvPair.comp_apply_eq₂]
 #align projectivization.map_injective Projectivization.map_injective
 

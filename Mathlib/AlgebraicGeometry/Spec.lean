@@ -322,7 +322,7 @@ set_option linter.uppercaseLean3 false in
 theorem Spec_Γ_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
     f ≫ toSpecΓ S = toSpecΓ R ≫ Γ.map (Spec.toLocallyRingedSpace.map f.op).op := by
   -- Porting note: `ext` failed to pick up one of the three lemmas
-  refine RingHom.ext fun x => Subtype.ext <| funext fun x' => ?_; symm;
+  refine RingHom.ext fun x => Subtype.ext <| funext fun x' => _; symm;
   apply Localization.localRingHom_to_map
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec_Γ_naturality AlgebraicGeometry.Spec_Γ_naturality
@@ -353,8 +353,8 @@ theorem Spec_map_localization_isIso (R : CommRingCat.{u}) (M : Submonoid R)
   erw [← localRingHom_comp_stalkIso]
   -- Porting note: replaced `apply (config := { instances := false })`.
   -- See https://github.com/leanprover/lean4/issues/2273
-  refine @IsIso.comp_isIso _ _ _ _ _ _ _ _ (?_)
-  refine @IsIso.comp_isIso _ _ _ _ _ _ _ (?_) _
+  refine @IsIso.comp_isIso _ _ _ _ _ _ _ _ (_)
+  refine @IsIso.comp_isIso _ _ _ _ _ _ _ (_) _
   /- I do not know why this is defeq to the goal, but I'm happy to accept that it is. -/
   show
     IsIso (IsLocalization.localizationLocalizationAtPrimeIsoLocalization M
@@ -430,7 +430,7 @@ theorem isLocalizedModule_toPushforwardStalkAlgHom_aux (y) :
   obtain ⟨⟨s, ⟨_, n, rfl⟩⟩, hsn⟩ :=
     @IsLocalization.surj _ _ _ _ _ _
       (StructureSheaf.IsLocalization.to_basicOpen S <| algebraMap R S r) s'
-  refine ⟨⟨s, ⟨r, hpr⟩ ^ n⟩, ?_⟩
+  refine ⟨⟨s, ⟨r, hpr⟩ ^ n⟩, _⟩
   rw [Submonoid.smul_def, Algebra.smul_def, algebraMap_pushforward_stalk, toPushforwardStalk,
     comp_apply, comp_apply]
   iterate 2
@@ -472,13 +472,13 @@ instance isLocalizedModule_toPushforwardStalkAlgHom :
     simp only [TopCat.Presheaf.pushforwardObj_map, Functor.op_map, map_zero, ← comp_apply,
       toOpen_res] at e
     have : toOpen S (PrimeSpectrum.basicOpen <| algebraMap R S r) x = 0 := by
-      refine Eq.trans ?_ e; rfl
+      refine Eq.trans _ e; rfl
     have :=
       (@IsLocalization.mk'_one _ _ _ _ _ _
             (StructureSheaf.IsLocalization.to_basicOpen S <| algebraMap R S r) x).trans
         this
     obtain ⟨⟨_, n, rfl⟩, e⟩ := (IsLocalization.mk'_eq_zero_iff _ _).mp this
-    refine ⟨⟨r, hpr⟩ ^ n, ?_⟩
+    refine ⟨⟨r, hpr⟩ ^ n, _⟩
     rw [Submonoid.smul_def, Algebra.smul_def]
     -- Porting note: manually rewrite `Submonoid.coe_pow`
     change (algebraMap R S) (r ^ n) * x = 0

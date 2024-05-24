@@ -150,7 +150,7 @@ instance {A B : NonemptyFinLinOrd.{u}} : OrderHomClass (A ⟶ B) A B where
 
 theorem mono_iff_injective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
     Mono f ↔ Function.Injective f := by
-  refine' ⟨_, ConcreteCategory.mono_of_injective f⟩
+  refine ⟨_, ConcreteCategory.mono_of_injective f⟩
   intro
   intro a₁ a₂ h
   let X := NonemptyFinLinOrd.of (ULift (Fin 1))
@@ -219,7 +219,7 @@ instance : SplitEpiCategory NonemptyFinLinOrd.{u} :=
       exact Nonempty.intro ⟨(hf y).choose, (hf y).choose_spec⟩
     let φ : Y → X := fun y => (H y).some.1
     have hφ : ∀ y : Y, f (φ y) = y := fun y => (H y).some.2
-    refine' IsSplitEpi.mk' ⟨⟨φ, _⟩, _⟩
+    refine IsSplitEpi.mk' ⟨⟨φ, _⟩, _⟩
     swap
     · ext b
       apply hφ

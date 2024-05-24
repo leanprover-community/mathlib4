@@ -298,7 +298,7 @@ lemma ordConnected_inter_Icc_of_subset (h : Ioo x y ⊆ s) : OrdConnected (s ∩
 
 lemma ordConnected_inter_Icc_iff (hx : x ∈ s) (hy : y ∈ s) :
     OrdConnected (s ∩ Icc x y) ↔ Ioo x y ⊆ s := by
-  refine ⟨fun h ↦ Ioo_subset_Icc_self.trans fun z hz ↦ ?_, ordConnected_inter_Icc_of_subset⟩
+  refine ⟨fun h ↦ Ioo_subset_Icc_self.trans fun z hz ↦ _, ordConnected_inter_Icc_of_subset⟩
   have hxy : x ≤ y := hz.1.trans hz.2
   exact h.out ⟨hx, left_mem_Icc.2 hxy⟩ ⟨hy, right_mem_Icc.2 hxy⟩ hz |>.1
 

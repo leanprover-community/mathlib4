@@ -122,7 +122,7 @@ theorem irreducibleComponents_eq_maximals_closed (X : Type*) [TopologicalSpace X
   · intro H
     exact ⟨⟨isClosed_of_mem_irreducibleComponents _ H, H.1⟩, fun x h e => H.2 h.2 e⟩
   · intro H
-    refine ⟨H.1.2, fun x h e => ?_⟩
+    refine ⟨H.1.2, fun x h e => _⟩
     have : closure x ≤ s := H.2 ⟨isClosed_closure, h.closure⟩ (e.trans subset_closure)
     exact le_trans subset_closure this
 #align irreducible_components_eq_maximals_closed irreducibleComponents_eq_maximals_closed
@@ -210,7 +210,7 @@ theorem IsPreirreducible.image (H : IsPreirreducible s) (f : X → Y) (hf : Cont
   rw [inter_comm s u', ← u'_eq] at this
   rw [inter_comm s v', ← v'_eq] at this
   rcases this ⟨x, hxu, hx⟩ ⟨y, hyv, hy⟩ with ⟨x, hxs, hxu', hxv'⟩
-  refine' ⟨f x, mem_image_of_mem f hxs, _, _⟩
+  refine ⟨f x, mem_image_of_mem f hxs, _, _⟩
   all_goals
     rw [← mem_preimage]
     apply mem_of_mem_inter_left
@@ -253,7 +253,7 @@ theorem isIrreducible_iff_sInter :
     IsIrreducible s ↔
       ∀ (U : Finset (Set X)), (∀ u ∈ U, IsOpen u) → (∀ u ∈ U, (s ∩ u).Nonempty) →
         (s ∩ ⋂₀ ↑U).Nonempty := by
-  refine ⟨fun h U hu hU => ?_, fun h => ⟨?_, ?_⟩⟩
+  refine ⟨fun h U hu hU => _, fun h => ⟨_, _⟩⟩
   · induction U using Finset.induction_on with
     | empty => simpa using h.nonempty
     | @insert u U _ IH =>
@@ -271,9 +271,9 @@ theorem isPreirreducible_iff_closed_union_closed :
     IsPreirreducible s ↔
       ∀ z₁ z₂ : Set X, IsClosed z₁ → IsClosed z₂ → s ⊆ z₁ ∪ z₂ → s ⊆ z₁ ∨ s ⊆ z₂ := by
   refine compl_surjective.forall.trans <| forall_congr' fun z₁ => compl_surjective.forall.trans <|
-    forall_congr' fun z₂ => ?_
+    forall_congr' fun z₂ => _
   simp only [isOpen_compl_iff, ← compl_union, inter_compl_nonempty_iff]
-  refine forall₂_congr fun _ _ => ?_
+  refine forall₂_congr fun _ _ => _
   rw [← and_imp, ← not_or, not_imp_not]
 #align is_preirreducible_iff_closed_union_closed isPreirreducible_iff_closed_union_closed
 
@@ -283,11 +283,11 @@ theorem isIrreducible_iff_sUnion_closed :
     IsIrreducible s ↔
       ∀ t : Finset (Set X), (∀ z ∈ t, IsClosed z) → (s ⊆ ⋃₀ ↑t) → ∃ z ∈ t, s ⊆ z := by
   simp only [isIrreducible_iff_sInter]
-  refine ((@compl_involutive (Set X) _).toPerm _).finsetCongr.forall_congr fun {t} => ?_
+  refine ((@compl_involutive (Set X) _).toPerm _).finsetCongr.forall_congr fun {t} => _
   simp_rw [Equiv.finsetCongr_apply, Finset.forall_mem_map, Finset.mem_map, Finset.coe_map,
     sUnion_image, Equiv.coe_toEmbedding, Function.Involutive.coe_toPerm, isClosed_compl_iff,
     exists_exists_and_eq_and]
-  refine forall_congr' fun _ => Iff.trans ?_ not_imp_not
+  refine forall_congr' fun _ => Iff.trans _ not_imp_not
   simp only [not_exists, not_and, ← compl_iInter₂, ← sInter_eq_biInter,
     subset_compl_iff_disjoint_right, not_disjoint_iff_nonempty_inter]
 #align is_irreducible_iff_sUnion_closed isIrreducible_iff_sUnion_closed
@@ -306,10 +306,10 @@ theorem IsPreirreducible.subset_irreducible {S U : Set X} (ht : IsPreirreducible
     (hU : U.Nonempty) (hU' : IsOpen U) (h₁ : U ⊆ S) (h₂ : S ⊆ t) : IsIrreducible S := by
   obtain ⟨z, hz⟩ := hU
   replace ht : IsIrreducible t := ⟨⟨z, h₂ (h₁ hz)⟩, ht⟩
-  refine ⟨⟨z, h₁ hz⟩, ?_⟩
+  refine ⟨⟨z, h₁ hz⟩, _⟩
   rintro u v hu hv ⟨x, hx, hx'⟩ ⟨y, hy, hy'⟩
   obtain ⟨x, -, hx'⟩ : Set.Nonempty (t ∩ ⋂₀ ↑({U, u, v} : Finset (Set X)))
-  · refine isIrreducible_iff_sInter.mp ht {U, u, v} ?_ ?_
+  · refine isIrreducible_iff_sInter.mp ht {U, u, v} _ _
     · simp [*]
     · intro U H
       simp only [Finset.mem_insert, Finset.mem_singleton] at H

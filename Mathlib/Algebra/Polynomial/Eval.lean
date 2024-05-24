@@ -188,7 +188,7 @@ theorem eval₂_mul_noncomm (hf : ∀ k, Commute (f <| q.coeff k) x) :
 
 @[simp]
 theorem eval₂_mul_X : eval₂ f x (p * X) = eval₂ f x p * x := by
-  refine' _root_.trans (eval₂_mul_noncomm _ _ fun k => _) (by rw [eval₂_X])
+  refine _root_.trans (eval₂_mul_noncomm _ _ fun k => _) (by rw [eval₂_X])
   rcases em (k = 1) with (rfl | hk)
   · simp
   · simp [coeff_X_of_ne_one hk]
@@ -443,7 +443,7 @@ theorem eval_monomial_one_add_sub [CommRing S] (d : ℕ) (y : S) :
           rw [one_pow, mul_one, mul_comm]
   rw [sum_range_succ, mul_add, Nat.choose_self, Nat.cast_one, one_mul, add_sub_cancel_right,
     mul_sum, sum_range_succ', Nat.cast_zero, zero_mul, mul_zero, add_zero]
-  refine sum_congr rfl fun y _hy => ?_
+  refine sum_congr rfl fun y _hy => _
   rw [← mul_assoc, ← mul_assoc, ← Nat.cast_mul, Nat.succ_mul_choose_eq, Nat.cast_mul,
     Nat.add_sub_cancel]
 #align polynomial.eval_monomial_one_add_sub Polynomial.eval_monomial_one_add_sub
@@ -673,7 +673,7 @@ theorem smul_comp [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (s : S
 
 theorem comp_assoc {R : Type*} [CommSemiring R] (φ ψ χ : R[X]) :
     (φ.comp ψ).comp χ = φ.comp (ψ.comp χ) := by
-  refine Polynomial.induction_on φ ?_ ?_ ?_ <;>
+  refine Polynomial.induction_on φ _ _ _ <;>
     · intros
       simp_all only [add_comp, mul_comp, C_comp, X_comp, pow_succ, ← mul_assoc]
 #align polynomial.comp_assoc Polynomial.comp_assoc
@@ -688,9 +688,9 @@ theorem coeff_comp_degree_mul_degree (hqd0 : natDegree q ≠ 0) :
     simp only [coeff_natDegree, coeff_C_mul, coeff_pow_mul_natDegree]
   case h₀ =>
     intro b hbs hbp
-    refine' coeff_eq_zero_of_natDegree_lt (natDegree_mul_le.trans_lt _)
+    refine coeff_eq_zero_of_natDegree_lt (natDegree_mul_le.trans_lt _)
     rw [natDegree_C, zero_add]
-    refine' natDegree_pow_le.trans_lt ((mul_lt_mul_right (pos_iff_ne_zero.mpr hqd0)).mpr _)
+    refine natDegree_pow_le.trans_lt ((mul_lt_mul_right (pos_iff_ne_zero.mpr hqd0)).mpr _)
     exact lt_of_le_of_ne (le_natDegree_of_mem_supp _ hbs) hbp
   case h₁ =>
     simp (config := { contextual := true })
@@ -807,7 +807,7 @@ theorem map_dvd (f : R →+* S) {x y : R[X]} : x ∣ y → x.map f ∣ y.map f :
 theorem coeff_map (n : ℕ) : coeff (p.map f) n = f (coeff p n) := by
   rw [map, eval₂_def, coeff_sum, sum]
   conv_rhs => rw [← sum_C_mul_X_pow_eq p, coeff_sum, sum, map_sum]
-  refine' Finset.sum_congr rfl fun x _hx => _
+  refine Finset.sum_congr rfl fun x _hx => _
   simp only [RingHom.coe_comp, Function.comp, coeff_C_mul_X_pow]
   split_ifs <;> simp [f.map_zero]
 #align polynomial.coeff_map Polynomial.coeff_map
@@ -864,7 +864,7 @@ theorem map_surjective (hf : Function.Surjective f) : Function.Surjective (map f
 #align polynomial.map_surjective Polynomial.map_surjective
 
 theorem degree_map_le (p : R[X]) : degree (p.map f) ≤ degree p := by
-  refine (degree_le_iff_coeff_zero _ _).2 fun m hm => ?_
+  refine (degree_le_iff_coeff_zero _ _).2 fun m hm => _
   rw [degree_lt_iff_coeff_zero] at hm
   simp [hm m le_rfl]
 #align polynomial.degree_map_le Polynomial.degree_map_le
@@ -903,7 +903,7 @@ theorem degree_map_eq_of_leadingCoeff_ne_zero (f : R →+* S) (hf : f (leadingCo
     have hp0 : p ≠ 0 :=
       leadingCoeff_ne_zero.mp fun hp0 => hf (_root_.trans (congr_arg _ hp0) f.map_zero)
     rw [degree_eq_natDegree hp0]
-    refine' le_degree_of_ne_zero _
+    refine le_degree_of_ne_zero _
     rw [coeff_map]
     exact hf
 #align polynomial.degree_map_eq_of_leading_coeff_ne_zero Polynomial.degree_map_eq_of_leadingCoeff_ne_zero
@@ -948,7 +948,7 @@ theorem mem_map_rangeS {p : S[X]} : p ∈ (mapRingHom f).rangeS ↔ ∀ n, p.coe
     exact Set.mem_range_self _
   · intro h
     rw [p.as_sum_range_C_mul_X_pow]
-    refine' (mapRingHom f).rangeS.sum_mem _
+    refine (mapRingHom f).rangeS.sum_mem _
     intro i _hi
     rcases h i with ⟨c, hc⟩
     use C c * X ^ i

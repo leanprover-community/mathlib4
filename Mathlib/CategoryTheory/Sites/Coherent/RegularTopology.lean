@@ -34,7 +34,7 @@ theorem mem_sieves_of_hasEffectiveEpi (S : Sieve X) :
     rw [Sieve.sets_iff_generate (Presieve.ofArrows _ _) S]
     apply Presieve.le_of_factorsThru_sieve (Presieve.ofArrows _ _) S _
     intro W g f
-    refine ⟨W, 𝟙 W, ?_⟩
+    refine ⟨W, 𝟙 W, _⟩
     cases f
     exact ⟨π, ⟨h.2, Category.id_comp π⟩⟩
   apply Coverage.saturate_of_superset (regularCoverage C) h_le
@@ -68,7 +68,7 @@ theorem mem_sieves_iff_hasEffectiveEpi (S : Sieve X) :
   · intro h
     induction' h with Y T hS Y Y R S _ _ a b
     · rcases hS with ⟨Y', π, h'⟩
-      refine ⟨Y', π, h'.2, ?_⟩
+      refine ⟨Y', π, h'.2, _⟩
       rcases h' with ⟨rfl, _⟩
       exact ⟨Y', 𝟙 Y', π, Presieve.ofArrows.mk (), (by simp)⟩
     · exact ⟨Y, (𝟙 Y), inferInstance, by simp only [Sieve.top_apply, forall_const]⟩

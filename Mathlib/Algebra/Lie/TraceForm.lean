@@ -67,10 +67,10 @@ lemma traceForm_apply_lie_apply (x y z : L) :
     traceForm R L M ⁅x, y⁆ z = traceForm R L M x ⁅y, z⁆ := by
   calc traceForm R L M ⁅x, y⁆ z
       = trace R _ (φ ⁅x, y⁆ ∘ₗ φ z) := by simp only [traceForm_apply_apply]
-    _ = trace R _ ((φ x * φ y - φ y * φ x) * φ z) := ?_
-    _ = trace R _ (φ x * (φ y * φ z)) - trace R _ (φ y * (φ x * φ z)) := ?_
-    _ = trace R _ (φ x * (φ y * φ z)) - trace R _ (φ x * (φ z * φ y)) := ?_
-    _ = traceForm R L M x ⁅y, z⁆ := ?_
+    _ = trace R _ ((φ x * φ y - φ y * φ x) * φ z) := _
+    _ = trace R _ (φ x * (φ y * φ z)) - trace R _ (φ y * (φ x * φ z)) := _
+    _ = trace R _ (φ x * (φ y * φ z)) - trace R _ (φ x * (φ z * φ y)) := _
+    _ = traceForm R L M x ⁅y, z⁆ := _
   · simp only [LieHom.map_lie, Ring.lie_def, ← LinearMap.mul_eq_comp]
   · simp only [sub_mul, mul_sub, map_sub, mul_assoc]
   · simp only [LinearMap.trace_mul_cycle' R (φ x) (φ z) (φ y)]
@@ -128,7 +128,7 @@ lemma traceForm_eq_zero_if_mem_lcs_of_mem_ucs {x y : L} (k : ℕ)
   · rw [LieSubmodule.ucs_succ, LieSubmodule.mem_normalizer] at hy
     simp_rw [LieIdeal.lcs_succ, ← LieSubmodule.mem_coeSubmodule,
       LieSubmodule.lieIdeal_oper_eq_linear_span', LieSubmodule.mem_top, true_and] at hx
-    refine Submodule.span_induction hx ?_ ?_ (fun z w hz hw ↦ ?_) (fun t z hz ↦ ?_)
+    refine Submodule.span_induction hx _ _ (fun z w hz hw ↦ _) (fun t z hz ↦ _)
     · rintro - ⟨z, w, hw, rfl⟩
       rw [← lie_skew, map_neg, LinearMap.neg_apply, neg_eq_zero, traceForm_apply_lie_apply]
       exact ih hw (hy _)
@@ -186,7 +186,7 @@ lemma trace_toEnd_eq_zero_of_mem_lcs
       LieSubmodule.lieIdeal_oper_eq_linear_span'] at hx
     simpa using hx
   refine Submodule.span_induction (p := fun x ↦ trace R _ (toEnd R L M x) = 0) hx
-    (fun y ⟨u, v, huv⟩ ↦ ?_) ?_ (fun u v hu hv ↦ ?_) (fun t u hu ↦ ?_)
+    (fun y ⟨u, v, huv⟩ ↦ _) _ (fun u v hu hv ↦ _) (fun t u hu ↦ _)
   · simp [← huv]
   · simp
   · simp [hu, hv]
@@ -420,7 +420,7 @@ lemma range_traceForm_le_span_weight :
     LinearMap.range (traceForm K L M) ≤ span K (range (Weight.toLinear K L M)) := by
   rintro - ⟨x, rfl⟩
   rw [LieModule.traceForm_eq_sum_finrank_nsmul, LinearMap.coeFn_sum, Finset.sum_apply]
-  refine Submodule.sum_mem _ fun χ _ ↦ ?_
+  refine Submodule.sum_mem _ fun χ _ ↦ _
   simp_rw [LinearMap.smul_apply, LinearMap.coe_smulRight, Weight.toLinear_apply,
     nsmul_eq_smul_cast (R := K)]
   exact Submodule.smul_mem _ _ <| Submodule.smul_mem _ _ <| subset_span <| mem_range_self χ

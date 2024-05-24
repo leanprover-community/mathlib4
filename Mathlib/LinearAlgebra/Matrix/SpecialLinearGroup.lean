@@ -109,7 +109,7 @@ theorem ext (A B : SpecialLinearGroup n R) : (∀ i j, ↑ₘA i j = ↑ₘB i j
 #align matrix.special_linear_group.ext Matrix.SpecialLinearGroup.ext
 
 instance subsingleton_of_subsingleton [Subsingleton n] : Subsingleton (SpecialLinearGroup n R) := by
-  refine ⟨fun ⟨A, hA⟩ ⟨B, hB⟩ ↦ ?_⟩
+  refine ⟨fun ⟨A, hA⟩ ⟨B, hB⟩ ↦ _⟩
   ext i j
   rcases isEmpty_or_nonempty n with hn | hn; · exfalso; exact IsEmpty.false i
   rw [det_eq_elem_of_subsingleton _ i] at hA hB
@@ -285,7 +285,7 @@ the scalars are the `n`-th roots of unity. -/
 theorem mem_center_iff {A : SpecialLinearGroup n R} :
     A ∈ center (SpecialLinearGroup n R) ↔ ∃ (r : R), r ^ (Fintype.card n) = 1 ∧ scalar n r = A := by
   rcases isEmpty_or_nonempty n with hn | ⟨⟨i⟩⟩; · exact ⟨by aesop, by simp [Subsingleton.elim A 1]⟩
-  refine ⟨fun h ↦ ⟨A i i, ?_, ?_⟩, fun ⟨r, _, hr⟩ ↦ mem_center_iff.mpr fun B ↦ ?_⟩
+  refine ⟨fun h ↦ ⟨A i i, _, _⟩, fun ⟨r, _, hr⟩ ↦ mem_center_iff.mpr fun B ↦ _⟩
   · have : det ((scalar n) (A i i)) = 1 := (scalar_eq_self_of_mem_center h i).symm ▸ A.property
     simpa using this
   · exact scalar_eq_self_of_mem_center h i
@@ -304,7 +304,7 @@ def center_equiv_rootsOfUnity' (i : n) :
   invFun a := ⟨⟨a • (1 : Matrix n n R), by aesop⟩,
     Subgroup.mem_center_iff.mpr fun B ↦ Subtype.val_injective <| by simp [coe_mul]⟩
   left_inv A := by
-    refine SetCoe.ext <| SetCoe.ext ?_
+    refine SetCoe.ext <| SetCoe.ext _
     obtain ⟨r, _, hr⟩ := mem_center_iff.mp A.property
     simpa [← hr, Submonoid.smul_def, Units.smul_def] using smul_one_eq_diagonal r
   right_inv a := by
@@ -407,21 +407,21 @@ theorem fin_two_exists_eq_mk_of_apply_zero_one_eq_zero {R : Type*} [Field R] (g 
   induction' g using Matrix.SpecialLinearGroup.fin_two_induction with a b c d h_det
   replace hg : c = 0 := by simpa using hg
   have had : a * d = 1 := by rwa [hg, mul_zero, sub_zero] at h_det
-  refine' ⟨a, b, left_ne_zero_of_mul_eq_one had, _⟩
+  refine ⟨a, b, left_ne_zero_of_mul_eq_one had, _⟩
   simp_rw [eq_inv_of_mul_eq_one_right had, hg]
 #align matrix.special_linear_group.fin_two_exists_eq_mk_of_apply_zero_one_eq_zero Matrix.SpecialLinearGroup.fin_two_exists_eq_mk_of_apply_zero_one_eq_zero
 
 lemma isCoprime_row (A : SL(2, R)) (i : Fin 2): IsCoprime (A i 0) (A i 1) := by
   refine match i with
-  | 0 => ⟨A 1 1, -(A 1 0), ?_⟩
-  | 1 => ⟨-(A 0 1), A 0 0, ?_⟩ <;>
+  | 0 => ⟨A 1 1, -(A 1 0), _⟩
+  | 1 => ⟨-(A 0 1), A 0 0, _⟩ <;>
   · simp_rw [det_coe A ▸ det_fin_two A.1]
     ring
 
 lemma isCoprime_col (A : SL(2, R)) (j : Fin 2): IsCoprime (A 0 j) (A 1 j) := by
   refine match j with
-  | 0 => ⟨A 1 1, -(A 0 1), ?_⟩
-  | 1 => ⟨-(A 1 0), A 0 0, ?_⟩ <;>
+  | 0 => ⟨A 1 1, -(A 0 1), _⟩
+  | 1 => ⟨-(A 1 0), A 0 0, _⟩ <;>
   · simp_rw [det_coe A ▸ det_fin_two A.1]
     ring
 
@@ -443,8 +443,8 @@ lemma exists_SL2_col {a b : R} (hab : IsCoprime a b) (j : Fin 2):
     ∃ g : SL(2, R), g 0 j = a ∧ g 1 j = b := by
   obtain ⟨u, v, h⟩ := hab
   refine match j with
-  | 0 => ⟨⟨!![a, -v; b, u], ?_⟩, rfl, rfl⟩
-  | 1 => ⟨⟨!![v, a; -u, b], ?_⟩, rfl, rfl⟩ <;>
+  | 0 => ⟨⟨!![a, -v; b, u], _⟩, rfl, rfl⟩
+  | 1 => ⟨⟨!![v, a; -u, b], _⟩, rfl, rfl⟩ <;>
   · rw [Matrix.det_fin_two_of, ← h]
     ring
 
@@ -454,8 +454,8 @@ lemma exists_SL2_row {a b : R} (hab : IsCoprime a b) (i : Fin 2):
     ∃ g : SL(2, R), g i 0 = a ∧ g i 1 = b := by
   obtain ⟨u, v, h⟩ := hab
   refine match i with
-  | 0 => ⟨⟨!![a, b; -v, u], ?_⟩, rfl, rfl⟩
-  | 1 => ⟨⟨!![v, -u; a, b], ?_⟩, rfl, rfl⟩ <;>
+  | 0 => ⟨⟨!![a, b; -v, u], _⟩, rfl, rfl⟩
+  | 1 => ⟨⟨!![v, -u; a, b], _⟩, rfl, rfl⟩ <;>
   · rw [Matrix.det_fin_two_of, ← h]
     ring
 
@@ -515,10 +515,10 @@ theorem coe_T_zpow (n : ℤ) : ↑ₘ(T ^ n) = !![1, n; 0, 1] := by
   induction' n using Int.induction_on with n h n h
   · rw [zpow_zero, coe_one, Matrix.one_fin_two]
   · simp_rw [zpow_add, zpow_one, coe_mul, h, coe_T, Matrix.mul_fin_two]
-    congrm !![_, ?_; _, _]
+    congrm !![_, _; _, _]
     rw [mul_one, mul_one, add_comm]
   · simp_rw [zpow_sub, zpow_one, coe_mul, h, coe_T_inv, Matrix.mul_fin_two]
-    congrm !![?_, ?_; _, _] <;> ring
+    congrm !![_, _; _, _] <;> ring
 #align modular_group.coe_T_zpow ModularGroup.coe_T_zpow
 
 @[simp]

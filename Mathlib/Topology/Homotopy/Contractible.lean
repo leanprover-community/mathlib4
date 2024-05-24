@@ -75,8 +75,8 @@ theorem contractible_iff_id_nullhomotopic (Y : Type*) [TopologicalSpace Y] :
     { hequiv_unit' :=
         ⟨{  toFun := ContinuousMap.const _ ()
             invFun := ContinuousMap.const _ p
-            left_inv := ?_
-            right_inv := ?_ }⟩ }
+            left_inv := _
+            right_inv := _ }⟩ }
   · exact h.symm
   · convert Homotopic.refl (ContinuousMap.id Unit)
 #align contractible_iff_id_nullhomotopic contractible_iff_id_nullhomotopic

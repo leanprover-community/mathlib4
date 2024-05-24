@@ -195,7 +195,7 @@ lemma gc_exterior_interior : GaloisConnection (exterior : Set α → Set α) int
   rw [← nhdsSet_exterior, isOpen_exterior.nhdsSet_eq]
 
 @[simp] lemma exterior_subset_exterior : exterior s ⊆ exterior t ↔ 𝓝ˢ s ≤ 𝓝ˢ t := by
-  refine ⟨?_, fun h ↦ ker_mono h⟩
+  refine ⟨_, fun h ↦ ker_mono h⟩
   simp_rw [le_def, ← exterior_subset_iff_mem_nhdsSet]
   exact fun h u ↦ h.trans
 
@@ -203,22 +203,22 @@ lemma specializes_iff_exterior_subset : x ⤳ y ↔ exterior {x} ⊆ exterior {y
   simp [Specializes]
 
 lemma isOpen_iff_forall_specializes : IsOpen s ↔ ∀ x y, x ⤳ y → y ∈ s → x ∈ s := by
-  refine' ⟨fun hs x y hxy ↦ hxy.mem_open hs, fun hs ↦ _⟩
+  refine ⟨fun hs x y hxy ↦ hxy.mem_open hs, fun hs ↦ _⟩
   simp_rw [specializes_iff_exterior_subset] at hs
   simp_rw [isOpen_iff_mem_nhds, mem_nhds_iff]
   rintro a ha
-  refine ⟨_, fun b hb ↦ hs _ _ ?_ ha, isOpen_exterior, subset_exterior <| mem_singleton _⟩
+  refine ⟨_, fun b hb ↦ hs _ _ _ ha, isOpen_exterior, subset_exterior <| mem_singleton _⟩
   rwa [isOpen_exterior.exterior_subset, singleton_subset_iff]
 
 lemma Set.Finite.isCompact_exterior (hs : s.Finite) : IsCompact (exterior s) := by
   classical
-  refine isCompact_of_finite_subcover fun f hf hsf ↦ ?_
+  refine isCompact_of_finite_subcover fun f hf hsf ↦ _
   choose g hg using fun a (ha : a ∈ exterior s) ↦ mem_iUnion.1 (hsf ha)
   refine ⟨hs.toFinset.attach.image fun a ↦
     g a.1 <| subset_exterior <| (Finite.mem_toFinset _).1 a.2,
-    (isOpen_iUnion fun i ↦ isOpen_iUnion ?_).exterior_subset.2 ?_⟩
+    (isOpen_iUnion fun i ↦ isOpen_iUnion _).exterior_subset.2 _⟩
   · exact fun _ ↦ hf _
-  refine fun a ha ↦ mem_iUnion₂.2 ⟨_, ?_, hg _ <| subset_exterior ha⟩
+  refine fun a ha ↦ mem_iUnion₂.2 ⟨_, _, hg _ <| subset_exterior ha⟩
   simp only [Finset.mem_image, Finset.mem_attach, true_and, Subtype.exists, Finite.mem_toFinset]
   exact ⟨a, ha, rfl⟩
 
@@ -226,7 +226,7 @@ lemma Inducing.alexandrovDiscrete {f : β → α} (h : Inducing f) : AlexandrovD
   isOpen_sInter S hS := by
     simp_rw [h.isOpen_iff] at hS ⊢
     choose U hU htU using hS
-    refine ⟨_, isOpen_iInter₂ hU, ?_⟩
+    refine ⟨_, isOpen_iInter₂ hU, _⟩
     simp_rw [preimage_iInter, htU, sInter_eq_biInter]
 
 lemma alexandrovDiscrete_coinduced {β : Type*} {f : α → β} :

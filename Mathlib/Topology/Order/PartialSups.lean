@@ -25,7 +25,7 @@ variable {α : Type*} {l : Filter α} {f : ℕ → α → L} {g : ℕ → L} {n 
 protected lemma partialSups (hf : ∀ k ≤ n, Tendsto (f k) l (𝓝 (g k))) :
     Tendsto (partialSups f n) l (𝓝 (partialSups g n)) := by
   simp only [partialSups_eq_sup'_range]
-  refine finset_sup'_nhds _ ?_
+  refine finset_sup'_nhds _ _
   simpa [Nat.lt_succ_iff]
 
 protected lemma partialSups_apply (hf : ∀ k ≤ n, Tendsto (f k) l (𝓝 (g k))) :

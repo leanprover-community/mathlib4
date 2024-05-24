@@ -75,19 +75,19 @@ theorem mul_self_mem_kIdeal_of_X0_X1_X2_mul_mem {x : MvPolynomial (Fin 3) (ZMod 
       and_imp, forall_apply_eq_imp_iff₂, ← add_assoc, ←
       Fin.sum_univ_three fun i => Finsupp.single i 1, ← Finsupp.equivFunOnFinite_symm_eq_sum,
       Finsupp.add_apply, Finsupp.equivFunOnFinite_symm_apply_toFun] at h
-    refine (h _ hm).imp fun i hi => ⟨Set.mem_univ _, ?_⟩
+    refine (h _ hm).imp fun i hi => ⟨Set.mem_univ _, _⟩
     rintro hmi
     rw [hmi] at hi
     norm_num at hi
   rw [as_sum x, CharTwo.sum_mul_self]
-  refine sum_mem fun m hm => ?_
+  refine sum_mem fun m hm => _
   rw [mem_kIdeal_iff, monomial_mul]
   intro m' hm'
   obtain rfl := Finset.mem_singleton.1 (support_monomial_subset hm')
   rw [mem_ideal_span_X_image] at this
   obtain ⟨i, _, hi⟩ := this m hm
   simp_rw [← one_add_one_eq_two]
-  refine ⟨i, Nat.add_le_add ?_ ?_⟩ <;> rwa [Nat.one_le_iff_ne_zero]
+  refine ⟨i, Nat.add_le_add _ _⟩ <;> rwa [Nat.one_le_iff_ne_zero]
 
 /-- `𝔽₂[α, β, γ] / (α², β², γ²)` -/
 def K : Type _ := _ ⧸ kIdeal
@@ -95,10 +95,10 @@ def K : Type _ := _ ⧸ kIdeal
 instance : CommRing K := Ideal.Quotient.commRing _
 
 theorem comap_C_kIdeal : kIdeal.comap (C : ZMod 2 →+* MvPolynomial (Fin 3) (ZMod 2)) = ⊥ := by
-  refine bot_unique ?_
-  refine (Ideal.comap_le_map_of_inverse _ _ _ (constantCoeff_C _)).trans ?_
+  refine bot_unique _
+  refine (Ideal.comap_le_map_of_inverse _ _ _ (constantCoeff_C _)).trans _
   rw [kIdeal, Ideal.map_span]
-  refine (Ideal.span_le).2 ?_
+  refine (Ideal.span_le).2 _
   rintro x ⟨_, ⟨i, rfl⟩, rfl⟩
   rw [RingHom.map_mul, constantCoeff_X, mul_zero, Submodule.bot_coe,
     Set.mem_singleton_iff]
@@ -273,7 +273,7 @@ theorem Q_not_in_range_toQuadraticForm : Q ∉ Set.range BilinForm.toQuadraticFo
   apply algebraMap_not_injective
   eta_expand
   simp_rw [← changeForm_algebraMap hB, ← changeFormEquiv_apply]
-  refine (LinearEquiv.injective _).comp ?_
+  refine (LinearEquiv.injective _).comp _
   exact (ExteriorAlgebra.algebraMap_leftInverse _).injective
 
 end Q60596
@@ -288,7 +288,7 @@ theorem CliffordAlgebra.not_forall_algebraMap_injective.{v} :
     let uU := ULift.moduleEquiv (R := K) (M := L)
     let uQ := Q.comp uU.toLinearMap
     let f : Q →qᵢ uQ := { uU.symm with map_app' := fun _ => rfl }
-    refine h K (ULift L) (Q.comp uU.toLinearMap) ?_
+    refine h K (ULift L) (Q.comp uU.toLinearMap) _
     let uC := CliffordAlgebra.map f
     have := uC.congr_arg hxy
     rwa [AlgHom.commutes, AlgHom.commutes] at this
@@ -302,6 +302,6 @@ theorem QuadraticForm.not_forall_mem_range_toQuadraticForm.{v} :
   fun h => Q_not_in_range_toQuadraticForm <| by
     let uU := ULift.moduleEquiv (R := K) (M := L)
     obtain ⟨x, hx⟩ := h K (ULift L) (Q.comp uU)
-    refine ⟨x.compl₁₂ uU.symm uU.symm, ?_⟩
+    refine ⟨x.compl₁₂ uU.symm uU.symm, _⟩
     ext
     simp [BilinForm.toQuadraticForm_comp_same, hx]

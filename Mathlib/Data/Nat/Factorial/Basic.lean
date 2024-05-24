@@ -93,7 +93,7 @@ theorem factorial_mul_pow_le_factorial : ∀ {m n : ℕ}, m ! * (m + 1) ^ n ≤ 
 #align nat.factorial_mul_pow_le_factorial Nat.factorial_mul_pow_le_factorial
 
 theorem factorial_lt (hn : 0 < n) : n ! < m ! ↔ n < m := by
-  refine' ⟨fun h => not_le.mp fun hmn => Nat.not_le_of_lt h (factorial_le hmn), fun h => _⟩
+  refine ⟨fun h => not_le.mp fun hmn => Nat.not_le_of_lt h (factorial_le hmn), fun h => _⟩
   have : ∀ {n}, 0 < n → n ! < (n + 1)! := by
     intro k hk
     rw [factorial_succ, succ_mul, Nat.lt_add_left_iff_pos]
@@ -119,7 +119,7 @@ theorem factorial_eq_one : n ! = 1 ↔ n ≤ 1 := by
 #align nat.factorial_eq_one Nat.factorial_eq_one
 
 theorem factorial_inj (hn : 1 < n) : n ! = m ! ↔ n = m := by
-  refine' ⟨fun h => _, congr_arg _⟩
+  refine ⟨fun h => _, congr_arg _⟩
   obtain hnm | rfl | hnm := lt_trichotomy n m
   · rw [← factorial_lt <| lt_of_succ_lt hn, h] at hnm
     cases lt_irrefl _ hnm
@@ -151,8 +151,8 @@ theorem add_factorial_succ_lt_factorial_add_succ {i : ℕ} (n : ℕ) (hi : 2 ≤
     i + (n + 1)! < (i + n + 1)! := by
   rw [factorial_succ (i + _), Nat.add_mul, Nat.one_mul]
   have := (i + n).self_le_factorial
-  refine Nat.add_lt_add_of_lt_of_le (Nat.lt_of_le_of_lt ?_ ((Nat.lt_mul_iff_one_lt_right ?_).2 ?_))
-    (factorial_le ?_) <;> omega
+  refine Nat.add_lt_add_of_lt_of_le (Nat.lt_of_le_of_lt _ ((Nat.lt_mul_iff_one_lt_right _).2 _))
+    (factorial_le _) <;> omega
 #align nat.add_factorial_succ_lt_factorial_add_succ Nat.add_factorial_succ_lt_factorial_add_succ
 
 theorem add_factorial_lt_factorial_add {i n : ℕ} (hi : 2 ≤ i) (hn : 1 ≤ n) :
@@ -427,8 +427,8 @@ theorem pow_sub_lt_descFactorial' {n : ℕ} :
     exact Nat.mul_lt_mul_of_pos_left (by omega) (Nat.sub_pos_of_lt h)
   | k + 1, h => by
     rw [descFactorial_succ, Nat.pow_succ, Nat.mul_comm]
-    refine Nat.mul_lt_mul_of_pos_left ?_ (Nat.sub_pos_of_lt h)
-    refine Nat.lt_of_le_of_lt (Nat.pow_le_pow_left (Nat.sub_le_sub_right n.le_succ _) _) ?_
+    refine Nat.mul_lt_mul_of_pos_left _ (Nat.sub_pos_of_lt h)
+    refine Nat.lt_of_le_of_lt (Nat.pow_le_pow_left (Nat.sub_le_sub_right n.le_succ _) _) _
     rw [succ_sub_succ]
     exact pow_sub_lt_descFactorial' (Nat.le_trans (le_succ _) h)
 #align nat.pow_sub_lt_desc_factorial' Nat.pow_sub_lt_descFactorial'

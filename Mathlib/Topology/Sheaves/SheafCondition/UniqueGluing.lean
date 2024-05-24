@@ -101,7 +101,7 @@ def objPairwiseOfFamily (sf : ∀ i, F.obj (op (U i))) :
   section of the functor `(Pairwise.diagram U).op ⋙ F`. -/
 def IsCompatible.sectionPairwise {sf} (h : IsCompatible F U sf) :
     ((Pairwise.diagram U).op ⋙ F).sections := by
-  refine ⟨objPairwiseOfFamily sf, ?_⟩
+  refine ⟨objPairwiseOfFamily sf, _⟩
   let G := (Pairwise.diagram U).op ⋙ F
   rintro (i|⟨i,j⟩) (i'|⟨i',j'⟩) (_|_|_|_)
   · exact congr_fun (G.map_id <| op <| Pairwise.single i) _
@@ -111,7 +111,7 @@ def IsCompatible.sectionPairwise {sf} (h : IsCompatible F U sf) :
 
 theorem isGluing_iff_pairwise {sf s} : IsGluing F U sf s ↔
     ∀ i, (F.mapCone (Pairwise.cocone U).op).π.app i s = objPairwiseOfFamily sf i := by
-  refine ⟨fun h ↦ ?_, fun h i ↦ h (op <| Pairwise.single i)⟩
+  refine ⟨fun h ↦ _, fun h i ↦ h (op <| Pairwise.single i)⟩
   rintro (i|⟨i,j⟩)
   · exact h i
   · rw [← (F.mapCone (Pairwise.cocone U).op).w (op <| Pairwise.Hom.left i j)]
@@ -125,7 +125,7 @@ usual sheaf condition.
 theorem isSheaf_iff_isSheafUniqueGluing_types : F.IsSheaf ↔ F.IsSheafUniqueGluing := by
   simp_rw [isSheaf_iff_isSheafPairwiseIntersections, IsSheafPairwiseIntersections,
     Types.isLimit_iff, IsSheafUniqueGluing, isGluing_iff_pairwise]
-  refine forall₂_congr fun ι U ↦ ⟨fun h sf cpt ↦ ?_, fun h s hs ↦ ?_⟩
+  refine forall₂_congr fun ι U ↦ ⟨fun h sf cpt ↦ _, fun h s hs ↦ _⟩
   · exact h _ cpt.sectionPairwise.prop
   · specialize h (fun i ↦ s <| op <| Pairwise.single i) fun i j ↦
       (hs <| op <| Pairwise.Hom.left i j).trans (hs <| op <| Pairwise.Hom.right i j).symm
@@ -200,7 +200,7 @@ theorem existsUnique_gluing' (V : Opens X) (iUV : ∀ i : ι, U i ⟶ V) (hcover
     ∃! s : F.1.obj (op V), ∀ i : ι, F.1.map (iUV i).op s = sf i := by
   have V_eq_supr_U : V = iSup U := le_antisymm hcover (iSup_le fun i => (iUV i).le)
   obtain ⟨gl, gl_spec, gl_uniq⟩ := F.existsUnique_gluing U sf h
-  refine' ⟨F.1.map (eqToHom V_eq_supr_U).op gl, _, _⟩
+  refine ⟨F.1.map (eqToHom V_eq_supr_U).op gl, _, _⟩
   · intro i
     rw [← comp_apply, ← F.1.map_comp]
     exact gl_spec i
@@ -255,7 +255,7 @@ theorem eq_of_locally_eq₂ {U₁ U₂ V : Opens X} (i₁ : U₁ ⟶ V) (i₂ : 
   classical
     fapply F.eq_of_locally_eq' fun t : ULift Bool => if t.1 then U₁ else U₂
     · exact fun i => if h : i.1 then eqToHom (if_pos h) ≫ i₁ else eqToHom (if_neg h) ≫ i₂
-    · refine' le_trans hcover _
+    · refine le_trans hcover _
       rw [sup_le_iff]
       constructor
       · convert le_iSup (fun t : ULift Bool => if t.1 then U₁ else U₂) (ULift.up true)
@@ -284,7 +284,7 @@ theorem objSupIsoProdEqLocus_inv_eq_iff {X : TopCat.{u}} (F : X.Sheaf CommRingCa
     repeat rw [← comp_apply]
     simp only [← Functor.map_comp, ← op_comp, Category.assoc, homOfLE_comp, and_self]
   · rintro ⟨e₁, e₂⟩
-    refine' F.eq_of_locally_eq₂
+    refine F.eq_of_locally_eq₂
       (homOfLE (inf_le_right : U ⊓ W ≤ W)) (homOfLE (inf_le_right : V ⊓ W ≤ W)) _ _ _ _ _
     · rw [← inf_sup_right]
       exact le_inf e le_rfl

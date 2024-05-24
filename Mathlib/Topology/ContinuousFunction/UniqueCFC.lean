@@ -179,7 +179,7 @@ instance NNReal.instUniqueContinuousFunctionalCalculus [UniqueContinuousFunction
         Continuous ξ' ∧ ξ' (.restrict s' <| .id ℝ) = ξ (.restrict s <| .id ℝ≥0)) := by
       intro ξ'
       refine ⟨ξ.continuous_realContinuousMapOfNNReal hξ |>.comp <|
-        ContinuousMap.continuous_comp_left _, ?_⟩
+        ContinuousMap.continuous_comp_left _, _⟩
       exact ξ.realContinuousMapOfNNReal_apply_comp_toReal (.restrict s <| .id ℝ≥0)
     obtain ⟨hφ', hφ_id⟩ := this φ hφ
     obtain ⟨hψ', hψ_id⟩ := this ψ hψ

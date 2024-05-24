@@ -109,7 +109,7 @@ lemma IsMulFreimanHom.mul_eq_mul (hf : IsMulFreimanHom 2 A B f) {a b c d : α}
     (ha : a ∈ A) (hb : b ∈ A) (hc : c ∈ A) (hd : d ∈ A) (h : a * b = c * d) :
     f a * f b = f c * f d := by
   simp_rw [← prod_pair] at h ⊢
-  refine' hf.map_prod_eq_map_prod _ _ (card_pair _ _) (card_pair _ _) h <;> simp [ha, hb, hc, hd]
+  refine hf.map_prod_eq_map_prod _ _ (card_pair _ _) (card_pair _ _) h <;> simp [ha, hb, hc, hd]
 #align map_mul_map_eq_map_mul_map IsMulFreimanHom.mul_eq_mul
 #align map_add_map_eq_map_add_map IsAddFreimanHom.add_eq_add
 
@@ -118,7 +118,7 @@ lemma IsMulFreimanIso.mul_eq_mul (hf : IsMulFreimanIso 2 A B f) {a b c d : α}
     (ha : a ∈ A) (hb : b ∈ A) (hc : c ∈ A) (hd : d ∈ A) :
     f a * f b = f c * f d ↔ a * b = c * d := by
   simp_rw [← prod_pair]
-  refine' hf.map_prod_eq_map_prod _ _ (card_pair _ _) (card_pair _ _) <;> simp [ha, hb, hc, hd]
+  refine hf.map_prod_eq_map_prod _ _ (card_pair _ _) (card_pair _ _) <;> simp [ha, hb, hc, hd]
 
 /-- Characterisation of `2`-Freiman homs. -/
 @[to_additive "Characterisation of `2`-Freiman homs."]
@@ -141,7 +141,7 @@ lemma isMulFreimanHom_two :
   mapsTo := hg.mapsTo.comp hf.mapsTo
   map_prod_eq_map_prod s t hsA htA hs ht h := by
     rw [← map_map, ← map_map]
-    refine hg.map_prod_eq_map_prod ?_ ?_ (by rwa [card_map]) (by rwa [card_map])
+    refine hg.map_prod_eq_map_prod _ _ (by rwa [card_map]) (by rwa [card_map])
       (hf.map_prod_eq_map_prod hsA htA hs ht h)
     · simpa using fun a h ↦ hf.mapsTo (hsA h)
     · simpa using fun a h ↦ hf.mapsTo (htA h)
@@ -219,7 +219,7 @@ lemma IsMulFreimanHom.mono (hmn : m ≤ n) (hf : IsMulFreimanHom n A B f) :
       simp_rw [Multiset.map_add, prod_add] at this
       exact mul_right_cancel this
     replace ha := hsA ha
-    refine hf.map_prod_eq_map_prod (fun a ha ↦ ?_) (fun a ha ↦ ?_) ?_ ?_ ?_
+    refine hf.map_prod_eq_map_prod (fun a ha ↦ _) (fun a ha ↦ _) _ _ _
     · rw [Multiset.mem_add] at ha
       obtain ha | ha := ha
       · exact hsA ha
@@ -254,7 +254,7 @@ lemma IsMulFreimanIso.mono {hmn : m ≤ n} (hf : IsMulFreimanIso n A B f) :
       (s + replicate (n - m) a).prod = (t + replicate (n - m) a).prod by
       simpa only [Multiset.map_add, prod_add, mul_right_cancel_iff] using this
     replace ha := hsA ha
-    refine hf.map_prod_eq_map_prod (fun a ha ↦ ?_) (fun a ha ↦ ?_) ?_ ?_
+    refine hf.map_prod_eq_map_prod (fun a ha ↦ _) (fun a ha ↦ _) _ _
     · rw [Multiset.mem_add] at ha
       obtain ha | ha := ha
       · exact hsA ha

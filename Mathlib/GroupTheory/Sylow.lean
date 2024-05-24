@@ -156,7 +156,7 @@ theorem IsPGroup.exists_le_sylow {P : Subgroup G} (hP : IsPGroup p P) : ∃ Q : 
               (hc2.total R.2 S.2).elim (fun T => ⟨S, ⟨S, rfl⟩, S.1.mul_mem (T hg) hh⟩) fun T =>
                 ⟨R, ⟨R, rfl⟩, R.1.mul_mem hg (T hh)⟩ },
           fun ⟨g, _, ⟨S, rfl⟩, hg⟩ => by
-          refine Exists.imp (fun k hk => ?_) (hc1 S.2 ⟨g, hg⟩)
+          refine Exists.imp (fun k hk => _) (hc1 S.2 ⟨g, hg⟩)
           rwa [Subtype.ext_iff, coe_pow] at hk ⊢, fun M hM g hg => ⟨M, ⟨⟨M, hM⟩, rfl⟩, hg⟩⟩)
       P hP)
     fun {Q} ⟨hQ1, hQ2, hQ3⟩ => ⟨⟨Q, hQ1, hQ3 _⟩, hQ2⟩
@@ -308,13 +308,13 @@ instance [hp : Fact p.Prime] [Finite (Sylow p G)] : IsPretransitive G (Sylow p G
           rw [← Sylow.ext (H.mp hR)]
           exact R.2
       apply Q.2.nonempty_fixed_point_of_prime_not_dvd_card
-      refine' fun h => hp.out.not_dvd_one (Nat.modEq_zero_iff_dvd.mp _)
+      refine fun h => hp.out.not_dvd_one (Nat.modEq_zero_iff_dvd.mp _)
       calc
-        1 = card (fixedPoints P (orbit G P)) := ?_
+        1 = card (fixedPoints P (orbit G P)) := _
         _ ≡ card (orbit G P) [MOD p] := (P.2.card_modEq_card_fixedPoints (orbit G P)).symm
         _ ≡ 0 [MOD p] := Nat.modEq_zero_iff_dvd.mpr h
       rw [← Set.card_singleton (⟨P, mem_orbit_self P⟩ : orbit G P)]
-      refine' card_congr' (congr_arg _ (Eq.symm _))
+      refine card_congr' (congr_arg _ (Eq.symm _))
       rw [Set.eq_singleton_iff_unique_mem]
       exact ⟨H.mpr rfl, fun R h => Subtype.ext (Sylow.ext (H.mp h))⟩⟩
 
@@ -324,7 +324,7 @@ variable (p) (G)
   If the number of Sylow `p`-subgroups is finite, then it is congruent to `1` modulo `p`. -/
 theorem card_sylow_modEq_one [Fact p.Prime] [Fintype (Sylow p G)] :
     card (Sylow p G) ≡ 1 [MOD p] := by
-  refine Sylow.nonempty.elim fun P : Sylow p G => ?_
+  refine Sylow.nonempty.elim fun P : Sylow p G => _
   have : fixedPoints P.1 (Sylow p G) = {P} :=
     Set.ext fun Q : Sylow p G =>
       calc
@@ -384,7 +384,7 @@ theorem Sylow.conj_eq_normalizer_conj_of_mem_centralizer [Fact p.Prime] [Finite 
   obtain ⟨h, hh⟩ :=
     exists_smul_eq (centralizer (zpowers x : Set G)) ((g • P).subtype h2) (P.subtype h1)
   simp_rw [Sylow.smul_subtype, Subgroup.smul_def, smul_smul] at hh
-  refine' ⟨h * g, Sylow.smul_eq_iff_mem_normalizer.mp (Sylow.subtype_injective hh), _⟩
+  refine ⟨h * g, Sylow.smul_eq_iff_mem_normalizer.mp (Sylow.subtype_injective hh), _⟩
   rw [← mul_assoc, Commute.right_comm (h.prop x (mem_zpowers x)), mul_inv_rev, inv_mul_cancel_right]
 #align sylow.conj_eq_normalizer_conj_of_mem_centralizer Sylow.conj_eq_normalizer_conj_of_mem_centralizer
 
@@ -460,13 +460,13 @@ theorem not_dvd_index_sylow [hp : Fact p.Prime] [Finite (Sylow p G)] (P : Sylow 
 theorem Sylow.normalizer_sup_eq_top {p : ℕ} [Fact p.Prime] {N : Subgroup G} [N.Normal]
     [Finite (Sylow p N)] (P : Sylow p N) :
     ((↑P : Subgroup N).map N.subtype).normalizer ⊔ N = ⊤ := by
-  refine' top_le_iff.mp fun g _ => _
+  refine top_le_iff.mp fun g _ => _
   obtain ⟨n, hn⟩ := exists_smul_eq N ((MulAut.conjNormal g : MulAut N) • P) P
   rw [← inv_mul_cancel_left (↑n) g, sup_comm]
   apply mul_mem_sup (N.inv_mem n.2)
   rw [Sylow.smul_def, ← mul_smul, ← MulAut.conjNormal_val, ← MulAut.conjNormal.map_mul,
     Sylow.ext_iff, Sylow.pointwise_smul_def, Subgroup.pointwise_smul_def] at hn
-  refine' fun x =>
+  refine fun x =>
     (mem_map_iff_mem
             (show Function.Injective (MulAut.conj (↑n * g)).toMonoidHom from
               (MulAut.conj (↑n * g)).injective)).symm.trans
@@ -621,7 +621,7 @@ theorem exists_subgroup_card_pow_succ [Fintype G] {p : ℕ} {n : ℕ} [hp : Fact
       (preimageMkEquivSubgroupProdSet (H.subgroupOf H.normalizer) (zpowers x)), by
     intro y hy
     simp only [exists_prop, Subgroup.coeSubtype, mk'_apply, Subgroup.mem_map, Subgroup.mem_comap]
-    refine' ⟨⟨y, le_normalizer hy⟩, ⟨0, _⟩, rfl⟩
+    refine ⟨⟨y, le_normalizer hy⟩, ⟨0, _⟩, rfl⟩
     dsimp only
     rw [zpow_zero, eq_comm, QuotientGroup.eq_one_iff]
     simpa using hy⟩
@@ -665,7 +665,7 @@ lemma exists_subgroup_card_pow_prime_of_le_card {n p : ℕ} (hp : p.Prime) (h : 
   cases nonempty_fintype G
   obtain ⟨m, hm⟩ := h.exists_card_eq
   simp_rw [Nat.card_eq_fintype_card] at hm hn ⊢
-  refine exists_subgroup_card_pow_prime _ ?_
+  refine exists_subgroup_card_pow_prime _ _
   rw [hm] at hn ⊢
   exact pow_dvd_pow _ <| (pow_le_pow_iff_right hp.one_lt).1 hn
 
@@ -674,7 +674,7 @@ least `p ^ n` then there is a subgroup of `H` of cardinality `p ^ n`. -/
 lemma exists_subgroup_le_card_pow_prime_of_le_card {n p : ℕ} (hp : p.Prime) (h : IsPGroup p G)
     {H : Subgroup G} (hn : p ^ n ≤ Nat.card H) : ∃ H' ≤ H, Nat.card H' = p ^ n := by
   obtain ⟨H', H'card⟩ := exists_subgroup_card_pow_prime_of_le_card hp (h.to_subgroup H) hn
-  refine ⟨H'.map H.subtype, map_subtype_le _, ?_⟩
+  refine ⟨H'.map H.subtype, map_subtype_le _, _⟩
   rw [← H'card]
   let e : H' ≃* H'.map H.subtype := H'.equivMapOfInjective (Subgroup.subtype H) H.subtype_injective
   exact Nat.card_congr e.symm.toEquiv
@@ -686,7 +686,7 @@ lemma exists_subgroup_le_card_le {k p : ℕ} (hp : p.Prime) (h : IsPGroup p G) {
   obtain ⟨m, hmk, hkm⟩ : ∃ s, p ^ s ≤ k ∧ k < p ^ (s + 1) :=
     exists_nat_pow_near (Nat.one_le_iff_ne_zero.2 hk₀) hp.one_lt
   obtain ⟨H', H'H, H'card⟩ := exists_subgroup_le_card_pow_prime_of_le_card hp h (hmk.trans hk)
-  refine ⟨H', H'H, ?_⟩
+  refine ⟨H', H'H, _⟩
   simpa only [pow_succ', H'card] using And.intro hmk hkm
 
 theorem pow_dvd_card_of_pow_dvd_card [Fintype G] {p n : ℕ} [hp : Fact p.Prime] (P : Sylow p G)
@@ -712,7 +712,7 @@ theorem card_coprime_index [Fintype G] {p : ℕ} [hp : Fact p.Prime] (P : Sylow 
 
 theorem ne_bot_of_dvd_card [Fintype G] {p : ℕ} [hp : Fact p.Prime] (P : Sylow p G)
     (hdvd : p ∣ card G) : (P : Subgroup G) ≠ ⊥ := by
-  refine' fun h => hp.out.not_dvd_one _
+  refine fun h => hp.out.not_dvd_one _
   have key : p ∣ card (P : Subgroup G) := P.dvd_card_of_dvd_card hdvd
   rwa [h, card_bot] at key
 #align sylow.ne_bot_of_dvd_card Sylow.ne_bot_of_dvd_card
@@ -722,7 +722,7 @@ theorem ne_bot_of_dvd_card [Fintype G] {p : ℕ} [hp : Fact p.Prime] (P : Sylow 
 theorem card_eq_multiplicity [Fintype G] {p : ℕ} [hp : Fact p.Prime] (P : Sylow p G) :
     card P = p ^ Nat.factorization (card G) p := by
   obtain ⟨n, heq : card P = _⟩ := IsPGroup.iff_card.mp P.isPGroup'
-  refine' Nat.dvd_antisymm _ (P.pow_dvd_card_of_pow_dvd_card (Nat.ord_proj_dvd _ p))
+  refine Nat.dvd_antisymm _ (P.pow_dvd_card_of_pow_dvd_card (Nat.ord_proj_dvd _ p))
   rw [heq, ← hp.out.pow_dvd_iff_dvd_ord_proj (show card G ≠ 0 from card_ne_zero), ← heq]
   exact P.1.card_subgroup_dvd_card
 #align sylow.card_eq_multiplicity Sylow.card_eq_multiplicity
@@ -748,7 +748,7 @@ theorem coe_ofCard [Fintype G] {p : ℕ} [Fact p.Prime] (H : Subgroup G) [Fintyp
 /-- If `G` has a normal Sylow `p`-subgroup, then it is the only Sylow `p`-subgroup. -/
 noncomputable def unique_of_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
     (h : (P : Subgroup G).Normal) : Unique (Sylow p G) := by
-  refine { uniq := fun Q ↦ ?_ }
+  refine { uniq := fun Q ↦ _ }
   obtain ⟨x, h1⟩ := exists_smul_eq G P Q
   obtain ⟨x, h2⟩ := exists_smul_eq G P default
   rw [Sylow.smul_eq_of_normal] at h1 h2
@@ -796,7 +796,7 @@ theorem normal_of_all_max_subgroups_normal [Finite G]
       · exact heq
       · haveI := hnc _ hK
         have hPK : ↑P ≤ K := le_trans le_normalizer hNK
-        refine (hK.1 ?_).elim
+        refine (hK.1 _).elim
         rw [← sup_of_le_right hNK, P.normalizer_sup_eq_top' hPK])
 #align sylow.normal_of_all_max_subgroups_normal Sylow.normal_of_all_max_subgroups_normal
 
@@ -824,7 +824,7 @@ noncomputable def directProductOfNormal [Fintype G]
     have hne' : p₁ ≠ p₂ := by simpa using hne
     apply Subgroup.commute_of_normal_of_disjoint _ _ (hn (P p₁)) (hn (P p₂))
     apply IsPGroup.disjoint_of_ne p₁ p₂ hne' _ _ (P p₁).isPGroup' (P p₂).isPGroup'
-  refine' MulEquiv.trans (N := ∀ p : ps, P p) _ _
+  refine MulEquiv.trans (N := ∀ p : ps, P p) _ _
   -- There is only one Sylow subgroup for each p, so the inner product is trivial
   · show (∀ p : ps, ∀ P : Sylow p G, P) ≃* ∀ p : ps, P p
     -- here we need to help the elaborator with an explicit instantiation

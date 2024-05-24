@@ -59,14 +59,14 @@ lemma everywherePosSubset_subset (μ : Measure α) (s : Set α) : μ.everywhereP
 /-- The everywhere positive subset of a set is obtained by removing an open set. -/
 lemma exists_isOpen_everywherePosSubset_eq_diff (μ : Measure α) (s : Set α) :
     ∃ u, IsOpen u ∧ μ.everywherePosSubset s = s \ u := by
-  refine ⟨{x | ∃ n ∈ 𝓝[s] x, μ n = 0}, ?_, by ext x; simp [everywherePosSubset, zero_lt_iff]⟩
+  refine ⟨{x | ∃ n ∈ 𝓝[s] x, μ n = 0}, _, by ext x; simp [everywherePosSubset, zero_lt_iff]⟩
   rw [isOpen_iff_mem_nhds]
   intro x ⟨n, ns, hx⟩
   rcases mem_nhdsWithin_iff_exists_mem_nhds_inter.1 ns with ⟨v, vx, hv⟩
   rcases mem_nhds_iff.1 vx with ⟨w, wv, w_open, xw⟩
   have A : w ⊆ {x | ∃ n ∈ 𝓝[s] x, μ n = 0} := by
     intro y yw
-    refine ⟨s ∩ w, inter_mem_nhdsWithin _ (w_open.mem_nhds yw), measure_mono_null ?_ hx⟩
+    refine ⟨s ∩ w, inter_mem_nhdsWithin _ (w_open.mem_nhds yw), measure_mono_null _ hx⟩
     rw [inter_comm]
     exact (inter_subset_inter_left _ wv).trans hv
   have B : w ∈ 𝓝 x := w_open.mem_nhds xw
@@ -184,7 +184,7 @@ lemma IsEverywherePos.of_forall_exists_nhds_eq (hs : IsEverywherePos μ s)
 everywhere positive for the latter. -/
 lemma isEverywherePos_iff_of_forall_exists_nhds_eq (h : ∀ x ∈ s, ∃ t ∈ 𝓝 x, ∀ u ⊆ t, ν u = μ u) :
     IsEverywherePos ν s ↔ IsEverywherePos μ s := by
-  refine ⟨fun H ↦ H.of_forall_exists_nhds_eq ?_, fun H ↦ H.of_forall_exists_nhds_eq h⟩
+  refine ⟨fun H ↦ H.of_forall_exists_nhds_eq _, fun H ↦ H.of_forall_exists_nhds_eq h⟩
   intro x hx
   rcases h x hx with ⟨t, ht, h't⟩
   exact ⟨t, ht, fun u hu ↦ (h't u hu).symm⟩
@@ -231,20 +231,20 @@ lemma IsEverywherePos.IsGdelta_of_isMulLeftInvariant
   let V n := ⋂ i ∈ Finset.range n, W i
   suffices ⋂ n, V n * k ⊆ k by
     replace : k = ⋂ n, V n * k := by
-      apply Subset.antisymm (subset_iInter_iff.2 (fun n ↦ ?_)) this
+      apply Subset.antisymm (subset_iInter_iff.2 (fun n ↦ _)) this
       exact subset_mul_right k (by simp [V, mem_W])
     rw [this]
-    refine .iInter_of_isOpen fun n ↦ ?_
+    refine .iInter_of_isOpen fun n ↦ _
     exact .mul_right (isOpen_biInter_finset (fun i _hi ↦ W_open i))
   intro x hx
   choose v hv y hy hvy using mem_iInter.1 hx
   obtain ⟨z, zk, hz⟩ : ∃ z ∈ k, MapClusterPt z atTop y := hk.exists_mapClusterPt (by simp [hy])
   have A n : μ (((x * z ⁻¹) • k) \ k) ≤ u n := by
-    apply le_of_lt (hW _ _ ?_)
+    apply le_of_lt (hW _ _ _)
     have : W n * {z} ∈ 𝓝 z := (IsOpen.mul_right (W_open n)).mem_nhds (by simp [mem_W])
     obtain ⟨i, hi, ni⟩ : ∃ i, y i ∈ W n * {z} ∧ n < i :=
       (((mapClusterPt_iff _ _ _).1 hz _ this).and_eventually (eventually_gt_atTop n)).exists
-    refine ⟨x * (y i) ⁻¹, ?_, y i * z⁻¹, by simpa using hi, by group⟩
+    refine ⟨x * (y i) ⁻¹, _, y i * z⁻¹, by simpa using hi, by group⟩
     have I : V i ⊆ W n := iInter₂_subset n (by simp [ni])
     have J : x * (y i) ⁻¹ ∈ V i := by simpa [← hvy i] using hv i
     exact I J
@@ -280,7 +280,7 @@ theorem innerRegularWRT_preimage_one_hasCompactSupport_measure_ne_top_of_group :
   let L := μ.everywherePosSubset K
   have L_comp : IsCompact L := K_comp.everywherePosSubset
   have L_closed : IsClosed L := K_closed.everywherePosSubset
-  refine ⟨L, everywherePosSubset_subset μ K, ?_, ?_⟩
+  refine ⟨L, everywherePosSubset_subset μ K, _, _⟩
   · have : μ.IsEverywherePos L :=
       isEverywherePos_everywherePosSubset_of_measure_ne_top K_closed.measurableSet
       K_comp.measure_lt_top.ne

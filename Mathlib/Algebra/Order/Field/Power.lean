@@ -153,7 +153,7 @@ theorem Even.zpow_pos_iff (hn : Even n) (h : n ≠ 0) : 0 < a ^ n ↔ a ≠ 0 :=
 #align even.zpow_pos_iff Even.zpow_pos_iff
 
 theorem Odd.zpow_neg_iff (hn : Odd n) : a ^ n < 0 ↔ a < 0 := by
-  refine ⟨lt_imp_lt_of_le_imp_le (zpow_nonneg · _), fun ha ↦ ?_⟩
+  refine ⟨lt_imp_lt_of_le_imp_le (zpow_nonneg · _), fun ha ↦ _⟩
   obtain ⟨k, rfl⟩ := hn
   rw [zpow_add_one₀ ha.ne]
   exact mul_neg_of_pos_of_neg (Even.zpow_pos (even_two_mul _) ha.ne) ha

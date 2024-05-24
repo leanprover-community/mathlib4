@@ -38,7 +38,7 @@ theorem le_prod_nonempty_of_submultiplicative_on_pred (f : M → N) (p : M → P
     (h_mul : ∀ x y, p x → p y → f (x * y) ≤ f x * f y) (hp_mul : ∀ x y, p x → p y → p (x * y))
     (g : ι → M) (s : Finset ι) (hs_nonempty : s.Nonempty) (hs : ∀ i ∈ s, p (g i)) :
     f (∏ i in s, g i) ≤ ∏ i in s, f (g i) := by
-  refine' le_trans (Multiset.le_prod_nonempty_of_submultiplicative_on_pred f p h_mul hp_mul _ _ _) _
+  refine le_trans (Multiset.le_prod_nonempty_of_submultiplicative_on_pred f p h_mul hp_mul _ _ _) _
   · simp [hs_nonempty.ne_empty]
   · exact Multiset.forall_mem_map_iff.mpr hs
   rw [Multiset.map_map]
@@ -92,7 +92,7 @@ add_decl_doc le_sum_of_subadditive_on_pred
 theorem le_prod_of_submultiplicative (f : M → N) (h_one : f 1 = 1)
     (h_mul : ∀ x y, f (x * y) ≤ f x * f y) (s : Finset ι) (g : ι → M) :
     f (∏ i in s, g i) ≤ ∏ i in s, f (g i) := by
-  refine' le_trans (Multiset.le_prod_of_submultiplicative f h_one h_mul _) _
+  refine le_trans (Multiset.le_prod_of_submultiplicative f h_one h_mul _) _
   rw [Multiset.map_map]
   rfl
 #align finset.le_prod_of_submultiplicative Finset.le_prod_of_submultiplicative
@@ -182,7 +182,7 @@ theorem prod_eq_one_iff_of_one_le' :
     (∀ i ∈ s, 1 ≤ f i) → ((∏ i in s, f i) = 1 ↔ ∀ i ∈ s, f i = 1) := by
   classical
     refine Finset.induction_on s
-      (fun _ ↦ ⟨fun _ _ h ↦ False.elim (Finset.not_mem_empty _ h), fun _ ↦ rfl⟩) ?_
+      (fun _ ↦ ⟨fun _ _ h ↦ False.elim (Finset.not_mem_empty _ h), fun _ ↦ rfl⟩) _
     intro a s ha ih H
     have : ∀ i ∈ s, 1 ≤ f i := fun _ ↦ H _ ∘ mem_insert_of_mem
     rw [prod_insert ha, mul_eq_one_iff' (H _ <| mem_insert_self _ _) (one_le_prod' this),
@@ -211,13 +211,13 @@ lemma mul_le_prod {i j : ι} (hf : ∀ i ∈ s, 1 ≤ f i) (hi : i ∈ s) (hj : 
   calc
     f i * f j = ∏ k in .cons i {j} (by simpa), f k := by rw [prod_cons, prod_singleton]
     _ ≤ ∏ k in s, f k := by
-      refine prod_le_prod_of_subset_of_one_le' ?_ fun k hk _ ↦ hf k hk
+      refine prod_le_prod_of_subset_of_one_le' _ fun k hk _ ↦ hf k hk
       simp [cons_subset, *]
 
 @[to_additive sum_le_card_nsmul]
 theorem prod_le_pow_card (s : Finset ι) (f : ι → N) (n : N) (h : ∀ x ∈ s, f x ≤ n) :
     s.prod f ≤ n ^ s.card := by
-  refine' (Multiset.prod_le_pow_card (s.val.map f) n _).trans _
+  refine (Multiset.prod_le_pow_card (s.val.map f) n _).trans _
   · simpa using h
   · simp
 #align finset.prod_le_pow_card Finset.prod_le_pow_card
@@ -317,7 +317,7 @@ variable [DecidableEq α] {s : Finset α} {B : Finset (Finset α)} {n : ℕ}
 times how many they are. -/
 theorem sum_card_inter_le (h : ∀ a ∈ s, (B.filter (a ∈ ·)).card ≤ n) :
     (∑ t in B, (s ∩ t).card) ≤ s.card * n := by
-  refine' le_trans _ (s.sum_le_card_nsmul _ _ h)
+  refine le_trans _ (s.sum_le_card_nsmul _ _ h)
   simp_rw [← filter_mem_eq_inter, card_eq_sum_ones, sum_filter]
   exact sum_comm.le
 #align finset.sum_card_inter_le Finset.sum_card_inter_le
@@ -534,7 +534,7 @@ theorem prod_eq_prod_iff_of_le {f g : ι → M} (h : ∀ i ∈ s, f i ≤ g i) :
   classical
     revert h
     refine Finset.induction_on s (fun _ ↦ ⟨fun _ _ h ↦ False.elim (Finset.not_mem_empty _ h),
-      fun _ ↦ rfl⟩) fun a s ha ih H ↦ ?_
+      fun _ ↦ rfl⟩) fun a s ha ih H ↦ _
     specialize ih fun i ↦ H i ∘ Finset.mem_insert_of_mem
     rw [Finset.prod_insert ha, Finset.prod_insert ha, Finset.forall_mem_insert, ← ih]
     exact

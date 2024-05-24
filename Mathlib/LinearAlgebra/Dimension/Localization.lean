@@ -39,7 +39,7 @@ lemma IsLocalizedModule.linearIndependent_lift {ι} {v : ι → N} (hf : LinearI
   apply hp (sec (v i)).2.prop
   apply IsLocalization.injective S hp
   rw [map_zero]
-  refine hf t (fun i ↦ algebraMap R S (g i * (sec (v i)).2)) ?_ _ hit
+  refine hf t (fun i ↦ algebraMap R S (g i * (sec (v i)).2)) _ _ hit
   simp only [map_mul, mul_smul, algebraMap_smul, ← Submonoid.smul_def,
     hsec, ← map_smul, ← map_sum, hg, map_zero]
 
@@ -57,7 +57,7 @@ lemma IsLocalizedModule.lift_rank_eq :
     apply ciSup_le'
     intro ⟨s, hs⟩
     choose sec hsec using IsLocalization.surj p (S := S)
-    refine LinearIndependent.cardinal_lift_le_rank (ι := s) (v := fun i ↦ f i) ?_
+    refine LinearIndependent.cardinal_lift_le_rank (ι := s) (v := fun i ↦ f i) _
     rw [linearIndependent_iff'] at hs ⊢
     intro t g hg i hit
     apply (IsLocalization.map_units S (sec (g i)).2).mul_left_injective
@@ -87,7 +87,7 @@ theorem exists_set_linearIndependent_of_isDomain [IsDomain R] :
   obtain ⟨w, hw⟩ :=
     IsLocalizedModule.linearIndependent_lift R⁰ (LocalizedModule.mkLinearMap R⁰ M) le_rfl
       (Module.Free.chooseBasis (FractionRing R) (LocalizedModule R⁰ M)).linearIndependent
-  refine ⟨Set.range w, ?_, (linearIndependent_subtype_range hw.injective).mpr hw⟩
+  refine ⟨Set.range w, _, (linearIndependent_subtype_range hw.injective).mpr hw⟩
   apply Cardinal.lift_injective.{max u v}
   rw [Cardinal.mk_range_eq_of_injective hw.injective, ← Module.Free.rank_eq_card_chooseBasisIndex,
   IsLocalizedModule.lift_rank_eq (FractionRing R) R⁰ (LocalizedModule.mkLinearMap R⁰ M) le_rfl]
@@ -121,12 +121,12 @@ lemma aleph0_le_rank_of_isEmpty_oreSet (hS : IsEmpty (OreLocalization.OreSet R�
   rw [← not_nonempty_iff, OreLocalization.nonempty_oreSet_iff_of_noZeroDivisors] at hS
   push_neg at hS
   obtain ⟨r, s, h⟩ := hS
-  refine Cardinal.aleph0_le.mpr fun n ↦ ?_
+  refine Cardinal.aleph0_le.mpr fun n ↦ _
   suffices LinearIndependent Rᵐᵒᵖ (fun (i : Fin n) ↦ s ^ (i : ℕ) * r) by
     simpa using this.cardinal_lift_le_rank
   suffices ∀ (g : ℕ → Rᵐᵒᵖ) (x), (∑ i in Finset.range n, g i • (s ^ (i + x) * r)) = 0 →
       ∀ i < n, g i = 0 by
-    refine Fintype.linearIndependent_iff.mpr fun g hg i ↦ ?_
+    refine Fintype.linearIndependent_iff.mpr fun g hg i ↦ _
     simpa only [dif_pos i.prop] using this (fun i ↦ if h : i < n then g ⟨i, h⟩ else 0) 0
       (by simp [← Fin.sum_univ_eq_sum_range, ← hg]) i i.prop
   intro g x hg i hin

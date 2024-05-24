@@ -156,7 +156,7 @@ theorem mul_pdf_integrable (hcs : IsCompact s) (huX : IsUniform X s ℙ) :
   constructor
   · exact aestronglyMeasurable_id.mul
       (measurable_pdf X ℙ).aemeasurable.ennreal_toReal.aestronglyMeasurable
-  refine' hasFiniteIntegral_mul (pdf_eq hcs.measurableSet huX) _
+  refine hasFiniteIntegral_mul (pdf_eq hcs.measurableSet huX) _
   set ind := (volume s)⁻¹ • (1 : ℝ → ℝ≥0∞)
   have : ∀ x, ↑‖x‖₊ * s.indicator ind x = s.indicator (fun x => ‖x‖₊ * ind x) x := fun x =>
     (s.indicator_mul_right (fun x => ↑‖x‖₊) ind).symm
@@ -223,7 +223,7 @@ section UniformOfFinset
 
 /-- Uniform distribution taking the same non-zero probability on the nonempty finset `s` -/
 def uniformOfFinset (s : Finset α) (hs : s.Nonempty) : PMF α := by
-  refine' ofFinset (fun a => if a ∈ s then s.card⁻¹ else 0) s _ _
+  refine ofFinset (fun a => if a ∈ s then s.card⁻¹ else 0) s _ _
   · simp only [Finset.sum_ite_mem, Finset.inter_self, Finset.sum_const, nsmul_eq_mul]
     have : (s.card : ℝ≥0∞) ≠ 0 := by
       simpa only [Ne, Nat.cast_eq_zero, Finset.card_eq_zero] using
@@ -386,7 +386,7 @@ theorem toOuterMeasure_ofMultiset_apply :
     (ofMultiset s hs).toOuterMeasure t =
       (∑' x, (s.filter (· ∈ t)).count x : ℝ≥0∞) / (Multiset.card s) := by
   simp_rw [div_eq_mul_inv, ← ENNReal.tsum_mul_right, toOuterMeasure_apply]
-  refine' tsum_congr fun x => _
+  refine tsum_congr fun x => _
   by_cases hx : x ∈ t <;> simp [Set.indicator, hx, div_eq_mul_inv]
 #align pmf.to_outer_measure_of_multiset_apply PMF.toOuterMeasure_ofMultiset_apply
 

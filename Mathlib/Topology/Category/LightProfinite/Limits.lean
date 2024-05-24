@@ -114,17 +114,17 @@ instance {α : Type w} [Finite α] (X : α → Profinite.{max u w}) [∀ a, (X a
     (Profinite.finiteCoproduct X).IsLight where
   countable_clopens := by
     refine @Function.Surjective.countable ((a : α) → Clopens (X a)) _ inferInstance
-      (fun f ↦ ⟨⋃ (a : α), Sigma.mk a '' (f a).1, ?_⟩) ?_
+      (fun f ↦ ⟨⋃ (a : α), Sigma.mk a '' (f a).1, _⟩) _
     · apply isClopen_iUnion_of_finite
       intro i
       exact ⟨isClosedMap_sigmaMk _ (f i).2.1, isOpenMap_sigmaMk _ (f i).2.2⟩
     · intro ⟨s, ⟨hsc, hso⟩⟩
       rw [isOpen_sigma_iff] at hso
       rw [isClosed_sigma_iff] at hsc
-      refine ⟨fun i ↦ ⟨_, ⟨hsc i, hso i⟩⟩, ?_⟩
+      refine ⟨fun i ↦ ⟨_, ⟨hsc i, hso i⟩⟩, _⟩
       simp only [Subtype.mk.injEq]
       ext ⟨i, xi⟩
-      refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
+      refine ⟨fun hx ↦ _, fun hx ↦ _⟩
       · simp only [Clopens.coe_mk, Set.mem_iUnion] at hx
         obtain ⟨_, _, hj, hxj⟩ := hx
         simpa [hxj] using hj
@@ -200,7 +200,7 @@ instance : HasPullbacks LightProfinite where
 
 noncomputable
 instance : PreservesFiniteCoproducts lightToProfinite := by
-  refine ⟨fun J hJ ↦ ⟨fun {F} ↦ ?_⟩⟩
+  refine ⟨fun J hJ ↦ ⟨fun {F} ↦ _⟩⟩
   suffices PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) lightToProfinite by
     exact preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
   apply preservesColimitOfPreservesColimitCocone (finiteCoproduct.isColimit _)

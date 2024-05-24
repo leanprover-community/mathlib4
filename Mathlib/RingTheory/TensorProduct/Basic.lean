@@ -290,11 +290,11 @@ variable [NonAssocSemiring A] [Module R A] [SMulCommClass R A A] [IsScalarTower 
 variable [NonAssocSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
 
 protected theorem one_mul (x : A ⊗[R] B) : mul (1 ⊗ₜ 1) x = x := by
-  refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp (config := { contextual := true })
+  refine TensorProduct.induction_on x _ _ _ <;> simp (config := { contextual := true })
 #align algebra.tensor_product.one_mul Algebra.TensorProduct.one_mul
 
 protected theorem mul_one (x : A ⊗[R] B) : mul x (1 ⊗ₜ 1) = x := by
-  refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp (config := { contextual := true })
+  refine TensorProduct.induction_on x _ _ _ <;> simp (config := { contextual := true })
 #align algebra.tensor_product.mul_one Algebra.TensorProduct.mul_one
 
 instance instNonAssocSemiring : NonAssocSemiring (A ⊗[R] B) where
@@ -508,10 +508,10 @@ variable [CommSemiring B] [Algebra R B]
 instance instCommSemiring : CommSemiring (A ⊗[R] B) where
   toSemiring := inferInstance
   mul_comm x y := by
-    refine TensorProduct.induction_on x ?_ ?_ ?_
+    refine TensorProduct.induction_on x _ _ _
     · simp
     · intro a₁ b₁
-      refine TensorProduct.induction_on y ?_ ?_ ?_
+      refine TensorProduct.induction_on y _ _ _
       · simp
       · intro a₂ b₂
         simp [mul_comm]
@@ -1285,7 +1285,7 @@ protected def module : Module (A ⊗[R] B) M where
     simp only [(· • ·), Algebra.TensorProduct.one_def]
     simp only [moduleAux_apply, one_smul]
   mul_smul x y m := by
-    refine TensorProduct.induction_on x ?_ ?_ ?_ <;> refine TensorProduct.induction_on y ?_ ?_ ?_
+    refine TensorProduct.induction_on x _ _ _ <;> refine TensorProduct.induction_on y _ _ _
     · simp only [(· • ·), mul_zero, map_zero, LinearMap.zero_apply]
     · intro a b
       simp only [(· • ·), zero_mul, map_zero, LinearMap.zero_apply]

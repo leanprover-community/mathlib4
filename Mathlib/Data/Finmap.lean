@@ -102,7 +102,7 @@ lemma nodup_entries (f : Finmap β) : f.entries.Nodup := f.nodupKeys.nodup
 -- @[elab_as_elim] Porting note: we can't add `elab_as_elim` attr in this type
 def liftOn {γ} (s : Finmap β) (f : AList β → γ)
     (H : ∀ a b : AList β, a.entries ~ b.entries → f a = f b) : γ := by
-  refine'
+  refine
     (Quotient.liftOn s.entries
       (fun (l : List (Sigma β)) => (⟨_, fun nd => f ⟨l, nd⟩⟩ : Part γ))
       (fun l₁ l₂ p => Part.ext' (perm_nodupKeys p) _) : Part γ).get _
@@ -333,7 +333,7 @@ def keysLookupEquiv :
     Finmap β ≃ { f : Finset α × (∀ a, Option (β a)) // ∀ i, (f.2 i).isSome ↔ i ∈ f.1 } where
   toFun s := ⟨(s.keys, fun i => s.lookup i), fun _ => lookup_isSome⟩
   invFun f := mk (f.1.1.sigma fun i => (f.1.2 i).toFinset).val <| by
-    refine Multiset.nodup_keys.1 ((Finset.nodup _).map_on ?_)
+    refine Multiset.nodup_keys.1 ((Finset.nodup _).map_on _)
     simp only [Finset.mem_val, Finset.mem_sigma, Option.mem_toFinset, Option.mem_def]
     rintro ⟨i, x⟩ ⟨_, hx⟩ ⟨j, y⟩ ⟨_, hy⟩ (rfl : i = j)
     simpa using hx.symm.trans hy
@@ -530,7 +530,7 @@ theorem mem_list_toFinmap (a : α) (xs : List (Sigma β)) :
   cases' x with fst_i snd_i
   -- Porting note: `Sigma.mk.inj_iff` required because `simp` behaves differently
   simp only [toFinmap_cons, *, exists_or, mem_cons, mem_insert, exists_and_left, Sigma.mk.inj_iff]
-  refine (or_congr_left <| and_iff_left_of_imp ?_).symm
+  refine (or_congr_left <| and_iff_left_of_imp _).symm
   rintro rfl
   simp only [exists_eq, heq_iff_eq]
 #align finmap.mem_list_to_finmap Finmap.mem_list_toFinmap

@@ -57,13 +57,13 @@ theorem image_multilinear' [Nonempty ι] {s : Set (∀ i, E i)} (hs : IsVonNBoun
       have := (hs i).tendsto_smallSets_nhds.eventually (mem_lift' (ht₀ i))
       rcases NormedAddCommGroup.nhds_zero_basis_norm_lt.eventually_iff.1 this with ⟨r, hr₀, hr⟩
       rcases NormedField.exists_norm_lt 𝕜 hr₀ with ⟨c, hc₀, hc⟩
-      refine ⟨c, norm_pos_iff.1 hc₀, fun c' hle x hx ↦ ?_⟩
+      refine ⟨c, norm_pos_iff.1 hc₀, fun c' hle x hx ↦ _⟩
       exact hr (hle.trans_lt hc) ⟨_, ⟨x, hx, rfl⟩, rfl⟩
     choose c hc₀ hc using this
     rw [absorbs_iff_eventually_nhds_zero (mem_of_mem_nhds hV),
       NormedAddCommGroup.nhds_zero_basis_norm_lt.eventually_iff]
     have hc₀' : ∏ i in I, c i ≠ 0 := Finset.prod_ne_zero_iff.2 fun i _ ↦ hc₀ i
-    refine ⟨‖∏ i in I, c i‖, norm_pos_iff.2 hc₀', fun a ha ↦ mapsTo_image_iff.2 fun x hx ↦ ?_⟩
+    refine ⟨‖∏ i in I, c i‖, norm_pos_iff.2 hc₀', fun a ha ↦ mapsTo_image_iff.2 fun x hx ↦ _⟩
     let ⟨i₀⟩ := ‹Nonempty ι›
     set y := I.piecewise (fun i ↦ c i • x i) x
     calc
@@ -73,7 +73,7 @@ theorem image_multilinear' [Nonempty ι] {s : Set (∀ i, E i)} (hs : IsVonNBoun
       _ ∈ V := hft fun i hi ↦ by
         rcases eq_or_ne i i₀ with rfl | hne
         · simp_rw [update_same, y, I.piecewise_eq_of_mem _ _ hi, smul_smul]
-          refine hc _ _ ?_ _ hx
+          refine hc _ _ _ _ hx
           calc
             ‖(a / ∏ i in I, c i) * c i‖ ≤ (‖∏ i in I, c i‖ / ‖∏ i in I, c i‖) * ‖c i‖ := by
               rw [norm_mul, norm_div]; gcongr; exact ha.out.le

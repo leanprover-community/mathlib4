@@ -61,7 +61,7 @@ variable [ContinuousMul M]
 @[to_additive]
 theorem prod_range_mul {f : ℕ → M} {k : ℕ} (h : HasProd (fun n ↦ f (n + k)) m) :
     HasProd f ((∏ i in range k, f i) * m) := by
-  refine ((range k).hasProd f).mul_compl ?_
+  refine ((range k).hasProd f).mul_compl _
   rwa [← (notMemRangeEquiv k).symm.hasProd_iff]
 
 @[to_additive]
@@ -74,7 +74,7 @@ theorem even_mul_odd {f : ℕ → M} (he : HasProd (fun k ↦ f (2 * k)) m)
     (ho : HasProd (fun k ↦ f (2 * k + 1)) m') : HasProd f (m * m') := by
   have := mul_right_injective₀ (two_ne_zero' ℕ)
   replace ho := ((add_left_injective 1).comp this).hasProd_range_iff.2 ho
-  refine (this.hasProd_range_iff.2 he).mul_isCompl ?_ ho
+  refine (this.hasProd_range_iff.2 he).mul_isCompl _ ho
   simpa [(· ∘ ·)] using Nat.isCompl_even_odd
 #align has_sum.even_add_odd HasSum.even_add_odd
 
@@ -87,7 +87,7 @@ namespace Multipliable
 @[to_additive]
 theorem hasProd_iff_tendsto_nat [T2Space M] {f : ℕ → M} (hf : Multipliable f) :
     HasProd f m ↔ Tendsto (fun n : ℕ ↦ ∏ i in range n, f i) atTop (𝓝 m) := by
-  refine ⟨fun h ↦ h.tendsto_prod_nat, fun h ↦ ?_⟩
+  refine ⟨fun h ↦ h.tendsto_prod_nat, fun h ↦ _⟩
   rw [tendsto_nhds_unique h hf.hasProd.tendsto_prod_nat]
   exact hf.hasProd
 #align summable.has_sum_iff_tendsto_nat Summable.hasSum_iff_tendsto_nat
@@ -124,7 +124,7 @@ taking a supremum. -/
 theorem tprod_iSup_decode₂ [CompleteLattice α] (m : α → M) (m0 : m ⊥ = 1) (s : β → α) :
     ∏' i : ℕ, m (⨆ b ∈ decode₂ β i, s b) = ∏' b : β, m (s b) := by
   rw [← tprod_extend_one (@encode_injective β _)]
-  refine tprod_congr fun n ↦ ?_
+  refine tprod_congr fun n ↦ _
   rcases em (n ∈ Set.range (encode : β → ℕ)) with ⟨a, rfl⟩ | hn
   · simp [encode_injective.extend_apply]
   · rw [extend_apply' _ _ _ hn]
@@ -217,7 +217,7 @@ variable [TopologicalSpace G] [TopologicalGroup G]
 @[to_additive]
 theorem hasProd_nat_add_iff {f : ℕ → G} (k : ℕ) :
     HasProd (fun n ↦ f (n + k)) g ↔ HasProd f (g * ∏ i in range k, f i) := by
-  refine Iff.trans ?_ (range k).hasProd_compl_iff
+  refine Iff.trans _ (range k).hasProd_compl_iff
   rw [← (notMemRangeEquiv k).symm.hasProd_iff, Function.comp_def, coe_notMemRangeEquiv_symm]
 #align has_sum_nat_add_iff hasSum_nat_add_iff
 
@@ -259,7 +259,7 @@ theorem tendsto_prod_nat_add [T2Space G] (f : ℕ → G) :
       rw [div_eq_iff_eq_mul, mul_comm, prod_mul_tprod_nat_add i hf]
     have h₁ : Tendsto (fun _ : ℕ ↦ ∏' i, f i) atTop (𝓝 (∏' i, f i)) := tendsto_const_nhds
     simpa only [h₀, div_self'] using Tendsto.div' h₁ hf.hasProd.tendsto_prod_nat
-  · refine tendsto_const_nhds.congr fun n ↦ (tprod_eq_one_of_not_multipliable ?_).symm
+  · refine tendsto_const_nhds.congr fun n ↦ (tprod_eq_one_of_not_multipliable _).symm
     rwa [multipliable_nat_add_iff n]
 #align tendsto_sum_nat_add tendsto_sum_nat_add
 
@@ -273,10 +273,10 @@ variable [UniformSpace G] [UniformGroup G]
 theorem cauchySeq_finset_iff_nat_tprod_vanishing {f : ℕ → G} :
     (CauchySeq fun s : Finset ℕ ↦ ∏ n in s, f n) ↔
       ∀ e ∈ 𝓝 (1 : G), ∃ N : ℕ, ∀ t ⊆ {n | N ≤ n}, (∏' n : t, f n) ∈ e := by
-  refine cauchySeq_finset_iff_tprod_vanishing.trans ⟨fun vanish e he ↦ ?_, fun vanish e he ↦ ?_⟩
+  refine cauchySeq_finset_iff_tprod_vanishing.trans ⟨fun vanish e he ↦ _, fun vanish e he ↦ _⟩
   · obtain ⟨s, hs⟩ := vanish e he
     refine ⟨if h : s.Nonempty then s.max' h + 1 else 0,
-      fun t ht ↦ hs _ <| Set.disjoint_left.mpr ?_⟩
+      fun t ht ↦ hs _ <| Set.disjoint_left.mpr _⟩
     split_ifs at ht with h
     · exact fun m hmt hms ↦ (s.le_max' _ hms).not_lt (Nat.succ_le_iff.mp <| ht hmt)
     · exact fun _ _ hs ↦ h ⟨_, hs⟩
@@ -330,9 +330,9 @@ lemma HasProd.nat_mul_neg_add_one {f : ℤ → M} (hf : HasProd f m) :
     HasProd (fun n : ℕ ↦ f n * f (-(n + 1))) m := by
   change HasProd (fun n : ℕ ↦ f n * f (Int.negSucc n)) m
   have : Injective Int.negSucc := @Int.negSucc.inj
-  refine hf.hasProd_of_prod_eq fun u ↦ ?_
+  refine hf.hasProd_of_prod_eq fun u ↦ _
   refine ⟨u.preimage _ (Nat.cast_injective.injOn _) ∪ u.preimage _ (this.injOn _),
-      fun v' hv' ↦ ⟨v'.image Nat.cast ∪ v'.image Int.negSucc, fun x hx ↦ ?_, ?_⟩⟩
+      fun v' hv' ↦ ⟨v'.image Nat.cast ∪ v'.image Int.negSucc, fun x hx ↦ _, _⟩⟩
   · simp only [mem_union, mem_image]
     cases x
     · exact Or.inl ⟨_, hv' (by simpa using Or.inl hx), rfl⟩
@@ -420,24 +420,24 @@ theorem HasProd.nat_mul_neg {f : ℤ → M} (hf : HasProd f m) :
     HasProd (fun n : ℕ ↦ f n * f (-n)) (m * f 0) := by
   -- Note this is much easier to prove if you assume more about the target space, but we have to
   -- work hard to prove it under the very minimal assumptions here.
-  apply (hf.mul (hasProd_ite_eq (0 : ℤ) (f 0))).hasProd_of_prod_eq fun u ↦ ?_
-  refine ⟨u.image Int.natAbs, fun v' hv' ↦ ?_⟩
+  apply (hf.mul (hasProd_ite_eq (0 : ℤ) (f 0))).hasProd_of_prod_eq fun u ↦ _
+  refine ⟨u.image Int.natAbs, fun v' hv' ↦ _⟩
   let u1 := v'.image fun x : ℕ ↦ (x : ℤ)
   let u2 := v'.image fun x : ℕ ↦ -(x : ℤ)
   have A : u ⊆ u1 ∪ u2 := by
     intro x hx
     simp only [u1, u2, mem_union, mem_image, exists_prop]
     rcases le_total 0 x with (h'x | h'x)
-    · refine Or.inl ⟨_, hv' <| mem_image.mpr ⟨x, hx, rfl⟩, ?_⟩
+    · refine Or.inl ⟨_, hv' <| mem_image.mpr ⟨x, hx, rfl⟩, _⟩
       simp only [Int.natCast_natAbs, abs_eq_self, h'x]
-    · refine Or.inr ⟨_, hv' <| mem_image.mpr ⟨x, hx, rfl⟩, ?_⟩
+    · refine Or.inr ⟨_, hv' <| mem_image.mpr ⟨x, hx, rfl⟩, _⟩
       simp only [abs_of_nonpos h'x, Int.natCast_natAbs, neg_neg]
   exact ⟨_, A, calc
     (∏ x in u1 ∪ u2, (f x * if x = 0 then f 0 else 1)) =
         (∏ x in u1 ∪ u2, f x) * ∏ x in u1 ∩ u2, f x := by
       rw [prod_mul_distrib]
       congr 1
-      refine (prod_subset_one_on_sdiff inter_subset_union ?_ ?_).symm
+      refine (prod_subset_one_on_sdiff inter_subset_union _ _).symm
       · intro x hx
         suffices x ≠ 0 by simp only [this, if_false]
         rintro rfl
@@ -505,7 +505,7 @@ variable [TopologicalSpace G] [TopologicalGroup G]
 @[to_additive]
 lemma HasProd.of_nat_of_neg {f : ℤ → G} (hf₁ : HasProd (fun n : ℕ ↦ f n) g)
     (hf₂ : HasProd (fun n : ℕ ↦ f (-n)) g') : HasProd f (g * g' / f 0) := by
-  refine mul_div_assoc' g .. ▸ hf₁.of_nat_of_neg_add_one (m' := g' / f 0) ?_
+  refine mul_div_assoc' g .. ▸ hf₁.of_nat_of_neg_add_one (m' := g' / f 0) _
   rwa [← hasProd_nat_add_iff' 1, prod_range_one, Nat.cast_zero, neg_zero] at hf₂
 
 @[to_additive]
@@ -534,7 +534,7 @@ variable [UniformSpace G] [UniformGroup G] [CompleteSpace G]
 @[to_additive "\"iff\" version of `Summable.of_nat_of_neg_add_one`."]
 lemma multipliable_int_iff_multipliable_nat_and_neg_add_one {f : ℤ → G} : Multipliable f ↔
     (Multipliable fun n : ℕ ↦ f n) ∧ (Multipliable fun n : ℕ ↦ f (-(n + 1))) := by
-  refine ⟨fun p ↦ ⟨?_, ?_⟩, fun ⟨hf₁, hf₂⟩ ↦ Multipliable.of_nat_of_neg_add_one hf₁ hf₂⟩ <;>
+  refine ⟨fun p ↦ ⟨_, _⟩, fun ⟨hf₁, hf₂⟩ ↦ Multipliable.of_nat_of_neg_add_one hf₁ hf₂⟩ <;>
   apply p.comp_injective
   exacts [Nat.cast_injective, @Int.negSucc.inj]
 
@@ -542,7 +542,7 @@ lemma multipliable_int_iff_multipliable_nat_and_neg_add_one {f : ℤ → G} : Mu
 @[to_additive "\"iff\" version of `Summable.of_nat_of_neg`."]
 lemma multipliable_int_iff_multipliable_nat_and_neg {f : ℤ → G} :
     Multipliable f ↔ (Multipliable fun n : ℕ ↦ f n) ∧ (Multipliable fun n : ℕ ↦ f (-n)) := by
-  refine ⟨fun p ↦ ⟨?_, ?_⟩, fun ⟨hf₁, hf₂⟩ ↦ Multipliable.of_nat_of_neg hf₁ hf₂⟩ <;>
+  refine ⟨fun p ↦ ⟨_, _⟩, fun ⟨hf₁, hf₂⟩ ↦ Multipliable.of_nat_of_neg hf₁ hf₂⟩ <;>
   apply p.comp_injective
   exacts [Nat.cast_injective, neg_injective.comp Nat.cast_injective]
 

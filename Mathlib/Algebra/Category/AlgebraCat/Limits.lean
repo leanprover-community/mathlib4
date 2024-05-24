@@ -113,8 +113,8 @@ def limitConeIsLimit : IsLimit (limitCone.{v, w} F) := by
       -- Porting note: in mathlib3 the function term
       -- `fun v => ⟨fun j => ((forget (AlgebraCat R)).mapCone s).π.app j v`
       -- was provided by unification, and the last argument `(fun s => _)` was `(fun s => rfl)`.
-      (fun s => { toFun := _, map_one' := ?_, map_mul' := ?_, map_zero' := ?_, map_add' := ?_,
-                  commutes' := ?_ })
+      (fun s => { toFun := _, map_one' := _, map_mul' := _, map_zero' := _, map_add' := _,
+                  commutes' := _ })
       (fun s => rfl)
   · congr
     ext j

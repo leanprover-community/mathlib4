@@ -36,12 +36,12 @@ open Module
 attribute [local instance 2000] Submodule.module
 
 instance (I : FractionalIdeal (𝓞 K)⁰ K) : Module.Free ℤ I := by
-  refine Free.of_equiv (LinearEquiv.restrictScalars ℤ (I.equivNum ?_)).symm
+  refine Free.of_equiv (LinearEquiv.restrictScalars ℤ (I.equivNum _)).symm
   exact nonZeroDivisors.coe_ne_zero I.den
 
 instance (I : FractionalIdeal (𝓞 K)⁰ K) : Module.Finite ℤ I := by
   refine Module.Finite.of_surjective
-    (LinearEquiv.restrictScalars ℤ (I.equivNum ?_)).symm.toLinearMap (LinearEquiv.surjective _)
+    (LinearEquiv.restrictScalars ℤ (I.equivNum _)).symm.toLinearMap (LinearEquiv.surjective _)
   exact nonZeroDivisors.coe_ne_zero I.den
 
 instance (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
@@ -52,13 +52,13 @@ instance (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     exact nonZeroDivisors.coe_ne_zero x
   surj' x := by
     obtain ⟨⟨a, _, d, hd, rfl⟩, h⟩ := IsLocalization.surj (Algebra.algebraMapSubmonoid (𝓞 K) ℤ⁰) x
-    refine ⟨⟨⟨Ideal.absNorm I.1.num * (algebraMap _ K a), I.1.num_le ?_⟩, d * Ideal.absNorm I.1.num,
-      ?_⟩ , ?_⟩
+    refine ⟨⟨⟨Ideal.absNorm I.1.num * (algebraMap _ K a), I.1.num_le _⟩, d * Ideal.absNorm I.1.num,
+      _⟩ , _⟩
     · simp_rw [FractionalIdeal.val_eq_coe, FractionalIdeal.coe_coeIdeal]
-      refine (IsLocalization.mem_coeSubmodule _ _).mpr ⟨Ideal.absNorm I.1.num * a, ?_, ?_⟩
+      refine (IsLocalization.mem_coeSubmodule _ _).mpr ⟨Ideal.absNorm I.1.num * a, _, _⟩
       · exact Ideal.mul_mem_right _ _ I.1.num.absNorm_mem
       · rw [map_mul, map_natCast]
-    · refine Submonoid.mul_mem _ hd (mem_nonZeroDivisors_of_ne_zero ?_)
+    · refine Submonoid.mul_mem _ hd (mem_nonZeroDivisors_of_ne_zero _)
       rw [Nat.cast_ne_zero, ne_eq, Ideal.absNorm_eq_zero_iff]
       exact FractionalIdeal.num_eq_zero_iff.not.mpr <| Units.ne_zero I
     · simp_rw [LinearMap.coe_restrictScalars, Submodule.coeSubtype] at h ⊢

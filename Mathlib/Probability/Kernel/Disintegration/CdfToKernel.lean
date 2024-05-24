@@ -95,7 +95,7 @@ lemma setIntegral_stieltjesOfMeasurableRat_rat (hf : IsRatCondKernelCDF f κ ν)
     {s : Set β} (hs : MeasurableSet s) :
     ∫ b in s, stieltjesOfMeasurableRat f hf.measurable (a, b) q ∂(ν a)
       = (κ a (s ×ˢ Iic (q : ℝ))).toReal := by
-  rw [setIntegral_congr_ae hs (g := fun b ↦ f (a, b) q) ?_, hf.setIntegral a hs]
+  rw [setIntegral_congr_ae hs (g := fun b ↦ f (a, b) q) _, hf.setIntegral a hs]
   filter_upwards [stieltjesOfMeasurableRat_ae_eq hf a q] with b hb using fun _ ↦ hb
 
 @[deprecated]
@@ -109,7 +109,7 @@ lemma set_lintegral_stieltjesOfMeasurableRat_rat [IsFiniteKernel κ] (hf : IsRat
   rw [← ofReal_integral_eq_lintegral_ofReal]
   · rw [setIntegral_stieltjesOfMeasurableRat_rat hf a q hs, ENNReal.ofReal_toReal]
     exact measure_ne_top _ _
-  · refine Integrable.restrict ?_
+  · refine Integrable.restrict _
     rw [integrable_congr (stieltjesOfMeasurableRat_ae_eq hf a q)]
     exact hf.integrable a q
   · exact ae_of_all _ (fun x ↦ stieltjesOfMeasurableRat_nonneg _ _ _)
@@ -125,7 +125,7 @@ lemma set_lintegral_stieltjesOfMeasurableRat [IsFiniteKernel κ] (hf : IsRatCond
     have ⟨q, hq⟩ := exists_rat_gt x
     suffices κ a (s ×ˢ Iic (q : ℝ)) = 0 by
       symm
-      refine measure_mono_null (fun p ↦ ?_) this
+      refine measure_mono_null (fun p ↦ _) this
       simp only [mem_prod, mem_Iic, and_imp]
       exact fun h1 h2 ↦ ⟨h1, h2.trans hq.le⟩
     suffices (κ a (s ×ˢ Iic (q : ℝ))).toReal = 0 by
@@ -141,28 +141,28 @@ lemma set_lintegral_stieltjesOfMeasurableRat [IsFiniteKernel κ] (hf : IsRatCond
     rw [← measure_iInter_eq_iInf]
     · congr with y : 1
       simp only [mem_Iic, mem_iInter, Subtype.forall]
-      refine ⟨fun h a ha ↦ h.trans ?_, fun h ↦ ?_⟩
+      refine ⟨fun h a ha ↦ h.trans _, fun h ↦ _⟩
       · exact mod_cast ha.le
-      · refine le_of_forall_lt_rat_imp_le fun q hq ↦ h q ?_
+      · refine le_of_forall_lt_rat_imp_le fun q hq ↦ h q _
         exact mod_cast hq
     · exact fun _ ↦ measurableSet_Iic
-    · refine Monotone.directed_ge fun r r' hrr' ↦ Iic_subset_Iic.mpr ?_
+    · refine Monotone.directed_ge fun r r' hrr' ↦ Iic_subset_Iic.mpr _
       exact mod_cast hrr'
     · obtain ⟨q, hq⟩ := exists_rat_gt x
       exact ⟨⟨q, hq⟩, measure_ne_top _ _⟩
   have h_nonempty : Nonempty { r' : ℚ // x < ↑r' } := by
     obtain ⟨r, hrx⟩ := exists_rat_gt x
     exact ⟨⟨r, hrx⟩⟩
-  rw [h, lintegral_iInf_directed_of_measurable hρ_zero fun q : { r' : ℚ // x < ↑r' } ↦ ?_]
+  rw [h, lintegral_iInf_directed_of_measurable hρ_zero fun q : { r' : ℚ // x < ↑r' } ↦ _]
   rotate_left
   · intro b
     rw [set_lintegral_stieltjesOfMeasurableRat_rat hf a _ hs]
     exact measure_ne_top _ _
-  · refine Monotone.directed_ge fun i j hij b ↦ ?_
+  · refine Monotone.directed_ge fun i j hij b ↦ _
     simp_rw [← measure_stieltjesOfMeasurableRat_Iic]
-    refine measure_mono (Iic_subset_Iic.mpr ?_)
+    refine measure_mono (Iic_subset_Iic.mpr _)
     exact mod_cast hij
-  · refine Measurable.ennreal_ofReal ?_
+  · refine Measurable.ennreal_ofReal _
     exact (measurable_stieltjesOfMeasurableRat hf.measurable _).comp measurable_prod_mk_left
   simp_rw [set_lintegral_stieltjesOfMeasurableRat_rat hf _ _ hs]
   rw [← measure_iInter_eq_iInf]
@@ -171,8 +171,8 @@ lemma set_lintegral_stieltjesOfMeasurableRat [IsFiniteKernel κ] (hf : IsRatCond
     simp only [mem_iInter, mem_Iic, Subtype.forall, Subtype.coe_mk]
     exact ⟨le_of_forall_lt_rat_imp_le, fun hyx q hq ↦ hyx.trans hq.le⟩
   · exact fun i ↦ hs.prod measurableSet_Iic
-  · refine Monotone.directed_ge fun i j hij ↦ ?_
-    refine prod_subset_prod_iff.mpr (Or.inl ⟨subset_rfl, Iic_subset_Iic.mpr ?_⟩)
+  · refine Monotone.directed_ge fun i j hij ↦ _
+    refine prod_subset_prod_iff.mpr (Or.inl ⟨subset_rfl, Iic_subset_Iic.mpr _⟩)
     exact mod_cast hij
   · exact ⟨h_nonempty.some, measure_ne_top _ _⟩
 
@@ -191,8 +191,8 @@ lemma integrable_stieltjesOfMeasurableRat [IsFiniteKernel κ] (hf : IsRatCondKer
     rw [ENNReal.toReal_ofReal]
     exact stieltjesOfMeasurableRat_nonneg _ _ _
   rw [this]
-  refine integrable_toReal_of_lintegral_ne_top ?_ ?_
-  · refine (Measurable.ennreal_ofReal ?_).aemeasurable
+  refine integrable_toReal_of_lintegral_ne_top _ _
+  · refine (Measurable.ennreal_ofReal _).aemeasurable
     exact (measurable_stieltjesOfMeasurableRat hf.measurable x).comp measurable_prod_mk_left
   · rw [lintegral_stieltjesOfMeasurableRat hf]
     exact measure_ne_top _ _
@@ -273,7 +273,7 @@ lemma IsRatCondKernelCDFAux.tendsto_zero_of_antitone (hf : IsRatCondKernelCDFAux
     [IsFiniteKernel ν] (a : α) (seq : ℕ → ℚ) (hseq : Antitone seq)
     (hseq_tendsto : Tendsto seq atTop atBot) :
     ∀ᵐ c ∂(ν a), Tendsto (fun m ↦ f (a, c) (seq m)) atTop (𝓝 0) := by
-  refine tendsto_of_integral_tendsto_of_antitone ?_ (integrable_const _) ?_ ?_ ?_
+  refine tendsto_of_integral_tendsto_of_antitone _ (integrable_const _) _ _ _
   · exact fun n ↦ hf.integrable a (seq n)
   · rw [integral_zero]
     exact hf.tendsto_integral_of_antitone a seq hseq hseq_tendsto
@@ -284,7 +284,7 @@ lemma IsRatCondKernelCDFAux.tendsto_one_of_monotone (hf : IsRatCondKernelCDFAux 
     [IsFiniteKernel ν] (a : α) (seq : ℕ → ℚ) (hseq : Monotone seq)
     (hseq_tendsto : Tendsto seq atTop atTop) :
     ∀ᵐ c ∂(ν a), Tendsto (fun m ↦ f (a, c) (seq m)) atTop (𝓝 1) := by
-  refine tendsto_of_integral_tendsto_of_monotone ?_ (integrable_const _) ?_ ?_ ?_
+  refine tendsto_of_integral_tendsto_of_monotone _ (integrable_const _) _ _ _
   · exact fun n ↦ hf.integrable a (seq n)
   · rw [MeasureTheory.integral_const, smul_eq_mul, mul_one]
     exact hf.tendsto_integral_of_monotone a seq hseq hseq_tendsto
@@ -321,20 +321,20 @@ lemma IsRatCondKernelCDFAux.tendsto_atBot_zero (hf : IsRatCondKernelCDFAux f κ 
 lemma IsRatCondKernelCDFAux.bddBelow_range (hf : IsRatCondKernelCDFAux f κ ν) (a : α) :
     ∀ᵐ t ∂(ν a), ∀ q : ℚ, BddBelow (range fun (r : Ioi q) ↦ f (a, t) r) := by
   filter_upwards [hf.nonneg a] with c hc
-  refine fun q ↦ ⟨0, ?_⟩
+  refine fun q ↦ ⟨0, _⟩
   simp [mem_lowerBounds, hc]
 
 lemma IsRatCondKernelCDFAux.integrable_iInf_rat_gt (hf : IsRatCondKernelCDFAux f κ ν)
     [IsFiniteKernel ν] (a : α) (q : ℚ) :
     Integrable (fun t ↦ ⨅ r : Ioi q, f (a, t) r) (ν a) := by
   rw [← memℒp_one_iff_integrable]
-  refine ⟨(measurable_iInf fun i ↦ hf.measurable_right a _).aestronglyMeasurable, ?_⟩
-  refine (?_ : _ ≤ (ν a univ : ℝ≥0∞)).trans_lt (measure_lt_top _ _)
-  refine (snorm_le_of_ae_bound (C := 1) ?_).trans (by simp)
+  refine ⟨(measurable_iInf fun i ↦ hf.measurable_right a _).aestronglyMeasurable, _⟩
+  refine (_ : _ ≤ (ν a univ : ℝ≥0∞)).trans_lt (measure_lt_top _ _)
+  refine (snorm_le_of_ae_bound (C := 1) _).trans (by simp)
   filter_upwards [hf.bddBelow_range a, hf.nonneg a, hf.le_one a]
     with t hbdd_below h_nonneg h_le_one
   rw [Real.norm_eq_abs, abs_of_nonneg]
-  · refine ciInf_le_of_le ?_ ?_ ?_
+  · refine ciInf_le_of_le _ _ _
     · exact hbdd_below _
     · exact ⟨q + 1, by simp⟩
     · exact h_le_one _
@@ -347,25 +347,25 @@ lemma _root_.MeasureTheory.Measure.iInf_rat_gt_prod_Iic {ρ : Measure (α × ℝ
   · rw [← prod_iInter]
     congr with x : 1
     simp only [mem_iInter, mem_Iic, Subtype.forall, Subtype.coe_mk]
-    refine ⟨fun h ↦ ?_, fun h a hta ↦ h.trans ?_⟩
-    · refine le_of_forall_lt_rat_imp_le fun q htq ↦ h q ?_
+    refine ⟨fun h ↦ _, fun h a hta ↦ h.trans _⟩
+    · refine le_of_forall_lt_rat_imp_le fun q htq ↦ h q _
       exact mod_cast htq
     · exact mod_cast hta.le
   · exact fun _ => hs.prod measurableSet_Iic
-  · refine Monotone.directed_ge fun r r' hrr' ↦ prod_subset_prod_iff.mpr (Or.inl ⟨subset_rfl, ?_⟩)
-    refine Iic_subset_Iic.mpr ?_
+  · refine Monotone.directed_ge fun r r' hrr' ↦ prod_subset_prod_iff.mpr (Or.inl ⟨subset_rfl, _⟩)
+    refine Iic_subset_Iic.mpr _
     exact mod_cast hrr'
   · exact ⟨⟨t + 1, lt_add_one _⟩, measure_ne_top ρ _⟩
 
 lemma IsRatCondKernelCDFAux.setIntegral_iInf_rat_gt (hf : IsRatCondKernelCDFAux f κ ν)
     [IsFiniteKernel κ] [IsFiniteKernel ν] (a : α) (q : ℚ) {A : Set β} (hA : MeasurableSet A) :
     ∫ t in A, ⨅ r : Ioi q, f (a, t) r ∂(ν a) = (κ a (A ×ˢ Iic (q : ℝ))).toReal := by
-  refine le_antisymm ?_ ?_
+  refine le_antisymm _ _
   · have h : ∀ r : Ioi q, ∫ t in A, ⨅ r' : Ioi q, f (a, t) r' ∂(ν a)
         ≤ (κ a (A ×ˢ Iic (r : ℝ))).toReal := by
       intro r
       rw [← hf.setIntegral a hA]
-      refine setIntegral_mono_ae ?_ ?_ ?_
+      refine setIntegral_mono_ae _ _ _
       · exact (hf.integrable_iInf_rat_gt _ _).integrableOn
       · exact (hf.integrable _ _).integrableOn
       · filter_upwards [hf.bddBelow_range a] with t ht using ciInf_le (ht _) r
@@ -375,7 +375,7 @@ lemma IsRatCondKernelCDFAux.setIntegral_iInf_rat_gt (hf : IsRatCondKernelCDFAux 
         rw [← Measure.iInf_rat_gt_prod_Iic hA q]
         exact (ENNReal.toReal_iInf (fun r ↦ measure_ne_top _ _)).symm
   · rw [← hf.setIntegral a hA]
-    refine setIntegral_mono_ae ?_ ?_ ?_
+    refine setIntegral_mono_ae _ _ _
     · exact (hf.integrable _ _).integrableOn
     · exact (hf.integrable_iInf_rat_gt _ _).integrableOn
     · filter_upwards [hf.mono a] with c h_mono using le_ciInf (fun r ↦ h_mono (le_of_lt r.prop))
@@ -388,7 +388,7 @@ lemma IsRatCondKernelCDFAux.iInf_rat_gt_eq (hf : IsRatCondKernelCDFAux f κ ν) 
     [IsFiniteKernel ν] (a : α) :
     ∀ᵐ t ∂(ν a), ∀ q : ℚ, ⨅ r : Ioi q, f (a, t) r = f (a, t) q := by
   rw [ae_all_iff]
-  refine fun q ↦ ae_eq_of_forall_setIntegral_eq_of_sigmaFinite (μ := ν a) ?_ ?_ ?_
+  refine fun q ↦ ae_eq_of_forall_setIntegral_eq_of_sigmaFinite (μ := ν a) _ _ _
   · exact fun _ _ _ ↦ (hf.integrable_iInf_rat_gt _ _).integrableOn
   · exact fun _ _ _ ↦ (hf.integrable a _).integrableOn
   · intro s hs _
@@ -475,12 +475,12 @@ lemma StieltjesFunction.measurable_measure {f : α → StieltjesFunction}
     (hf_bot : ∀ a, Tendsto (f a) atBot (𝓝 0))
     (hf_top : ∀ a, Tendsto (f a) atTop (𝓝 1)) :
     Measurable fun a ↦ (f a).measure := by
-  refine Measure.measurable_measure.mpr fun s hs ↦ ?_
+  refine Measure.measurable_measure.mpr fun s hs ↦ _
   have : ∀ a, IsProbabilityMeasure (f a).measure :=
     fun a ↦ (f a).isProbabilityMeasure (hf_bot a) (hf_top a)
   refine MeasurableSpace.induction_on_inter
     (C := fun s ↦ Measurable fun b ↦ StieltjesFunction.measure (f b) s)
-    (borel_eq_generateFrom_Iic ℝ) isPiSystem_Iic ?_ ?_ ?_ ?_ hs
+    (borel_eq_generateFrom_Iic ℝ) isPiSystem_Iic _ _ _ _ hs
   · simp only [measure_empty, measurable_const]
   · rintro S ⟨u, rfl⟩
     simp_rw [StieltjesFunction.measure_Iic (f _) (hf_bot _), sub_zero]
@@ -534,18 +534,18 @@ lemma set_lintegral_toKernel_univ [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ
     ∫⁻ b in s, hf.toKernel f (a, b) univ ∂(ν a) = κ a (s ×ˢ univ) := by
   rw [← Real.iUnion_Iic_rat, prod_iUnion]
   have h_dir : Directed (fun x y ↦ x ⊆ y) fun q : ℚ ↦ Iic (q : ℝ) := by
-    refine Monotone.directed_le fun r r' hrr' ↦ Iic_subset_Iic.mpr ?_
+    refine Monotone.directed_le fun r r' hrr' ↦ Iic_subset_Iic.mpr _
     exact mod_cast hrr'
   have h_dir_prod : Directed (fun x y ↦ x ⊆ y) fun q : ℚ ↦ s ×ˢ Iic (q : ℝ) := by
-    refine Monotone.directed_le fun i j hij ↦ ?_
-    refine prod_subset_prod_iff.mpr (Or.inl ⟨subset_rfl, Iic_subset_Iic.mpr ?_⟩)
+    refine Monotone.directed_le fun i j hij ↦ _
+    refine prod_subset_prod_iff.mpr (Or.inl ⟨subset_rfl, Iic_subset_Iic.mpr _⟩)
     exact mod_cast hij
   simp_rw [measure_iUnion_eq_iSup h_dir, measure_iUnion_eq_iSup h_dir_prod]
   rw [lintegral_iSup_directed]
   · simp_rw [set_lintegral_toKernel_Iic hf _ _ hs]
-  · refine fun q ↦ Measurable.aemeasurable ?_
+  · refine fun q ↦ Measurable.aemeasurable _
     exact (kernel.measurable_coe _ measurableSet_Iic).comp measurable_prod_mk_left
-  · refine Monotone.directed_le fun i j hij t ↦ measure_mono (Iic_subset_Iic.mpr ?_)
+  · refine Monotone.directed_le fun i j hij t ↦ measure_mono (Iic_subset_Iic.mpr _)
     exact mod_cast hij
 
 lemma lintegral_toKernel_univ [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν) (a : α) :
@@ -609,7 +609,7 @@ lemma lintegral_toKernel_mem [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
     rw [← lintegral_add_compl _ ht₁]
     have h_eq1 : ∫⁻ x in t₁, hf.toKernel f (a, x) {y : ℝ | (x, y) ∈ t₁ ×ˢ t₂} ∂(ν a)
         = ∫⁻ x in t₁, hf.toKernel f (a, x) t₂ ∂(ν a) := by
-      refine set_lintegral_congr_fun ht₁ (eventually_of_forall fun a ha ↦ ?_)
+      refine set_lintegral_congr_fun ht₁ (eventually_of_forall fun a ha ↦ _)
       rw [h_prod_eq_snd a ha]
     have h_eq2 :
         ∫⁻ x in t₁ᶜ, hf.toKernel f (a, x) {y : ℝ | (x, y) ∈ t₁ ×ˢ t₂} ∂(ν a) = 0 := by
@@ -637,7 +637,7 @@ lemma lintegral_toKernel_mem [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
           eventually_of_forall fun _ ↦ measure_mono (subset_univ _)
         rw [lintegral_sub _ _ h_le]
         · exact kernel.measurable_kernel_prod_mk_left' ht a
-        refine ((lintegral_mono_ae h_le).trans_lt ?_).ne
+        refine ((lintegral_mono_ae h_le).trans_lt _).ne
         rw [lintegral_toKernel_univ hf]
         exact measure_lt_top _ univ
     _ = κ a univ - κ a t := by rw [ht_eq, lintegral_toKernel_univ hf]

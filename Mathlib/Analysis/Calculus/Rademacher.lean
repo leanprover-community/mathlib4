@@ -100,7 +100,7 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul
       (𝓝 (∫ x, lineDeriv ℝ f x v * g x ∂μ)) := by
   apply tendsto_integral_filter_of_dominated_convergence (fun x ↦ (C * ‖v‖) * ‖g x‖)
   · filter_upwards with t
-    apply AEStronglyMeasurable.mul ?_ hg.aestronglyMeasurable
+    apply AEStronglyMeasurable.mul _ hg.aestronglyMeasurable
     apply aestronglyMeasurable_const.smul
     apply AEStronglyMeasurable.sub _ hf.continuous.measurable.aestronglyMeasurable
     apply AEMeasurable.aestronglyMeasurable
@@ -125,7 +125,7 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul'
   apply tendsto_integral_filter_of_dominated_convergence
       (K.indicator (fun x ↦ (C * ‖v‖) * ‖g x‖))
   · filter_upwards with t
-    apply AEStronglyMeasurable.mul ?_ hg.aestronglyMeasurable
+    apply AEStronglyMeasurable.mul _ hg.aestronglyMeasurable
     apply aestronglyMeasurable_const.smul
     apply AEStronglyMeasurable.sub _ hf.continuous.measurable.aestronglyMeasurable
     apply AEMeasurable.aestronglyMeasurable
@@ -204,7 +204,7 @@ theorem ae_lineDeriv_sum_eq
   conclude that the initial integrals coincide. -/
   apply ae_eq_of_integral_contDiff_smul_eq (hf.locallyIntegrable_lineDeriv _)
     (locallyIntegrable_finset_sum _ (fun i hi ↦ (hf.locallyIntegrable_lineDeriv (v i)).smul (a i)))
-    (fun g g_smooth g_comp ↦ ?_)
+    (fun g g_smooth g_comp ↦ _)
   simp_rw [Finset.smul_sum]
   have A : ∀ i ∈ s, Integrable (fun x ↦ g x • (a i • fun x ↦ lineDeriv ℝ f x (v i)) x) μ :=
     fun i hi ↦ (g_smooth.continuous.integrable_of_hasCompactSupport g_comp).smul_of_top_left
@@ -228,7 +228,7 @@ theorem ae_lineDeriv_sum_eq
   intro i _hi
   let L : (E →L[ℝ] ℝ) → ℝ := fun f ↦ f (v i)
   change Integrable (fun x ↦ a i * ((L ∘ (fderiv ℝ g)) x * f x)) μ
-  refine (Continuous.integrable_of_hasCompactSupport ?_ ?_).const_mul _
+  refine (Continuous.integrable_of_hasCompactSupport _ _).const_mul _
   · exact ((g_smooth.continuous_fderiv le_top).clm_apply continuous_const).mul hf.continuous
   · exact ((g_comp.fderiv ℝ).comp_left rfl).mul_right
 
@@ -248,7 +248,7 @@ theorem ae_exists_fderiv_of_countable
   filter_upwards [I1, I2] with x hx h'x
   let L : E →L[ℝ] ℝ :=
     LinearMap.toContinuousLinearMap (B.constr ℝ (fun i ↦ lineDeriv ℝ f x (B i)))
-  refine ⟨L, fun v hv ↦ ?_⟩
+  refine ⟨L, fun v hv ↦ _⟩
   have J : L v = lineDeriv ℝ f x v := by convert (hx v hv).symm <;> simp [L, B.sum_repr v]
   simpa [J] using (h'x v hv).hasLineDerivAt
 
@@ -264,23 +264,23 @@ theorem hasFderivAt_of_hasLineDerivAt_of_closure {f : E → F}
     ⟨ε / (C + ‖L‖ + 1), by positivity, mul_div_cancel₀ ε (by positivity)⟩
   obtain ⟨q, hqs, q_fin, hq⟩ : ∃ q, q ⊆ s ∧ q.Finite ∧ sphere 0 1 ⊆ ⋃ y ∈ q, ball y δ := by
     have : sphere 0 1 ⊆ ⋃ y ∈ s, ball y δ := by
-      apply hs.trans (fun z hz ↦ ?_)
+      apply hs.trans (fun z hz ↦ _)
       obtain ⟨y, ys, hy⟩ : ∃ y ∈ s, dist z y < δ := Metric.mem_closure_iff.1 hz δ δpos
       exact mem_biUnion ys hy
     exact (isCompact_sphere 0 1).elim_finite_subcover_image (fun y _hy ↦ isOpen_ball) this
   have I : ∀ᶠ t in 𝓝 (0 : ℝ), ∀ v ∈ q, ‖f (x + t • v) - f x - t • L v‖ ≤ δ * ‖t‖ := by
-    apply (Finite.eventually_all q_fin).2 (fun v hv ↦ ?_)
-    apply Asymptotics.IsLittleO.def ?_ δpos
+    apply (Finite.eventually_all q_fin).2 (fun v hv ↦ _)
+    apply Asymptotics.IsLittleO.def _ δpos
     exact hasLineDerivAt_iff_isLittleO_nhds_zero.1 (hL v (hqs hv))
   obtain ⟨r, r_pos, hr⟩ : ∃ (r : ℝ), 0 < r ∧ ∀ (t : ℝ), ‖t‖ < r →
       ∀ v ∈ q, ‖f (x + t • v) - f x - t • L v‖ ≤ δ * ‖t‖ := by
     rcases Metric.mem_nhds_iff.1 I with ⟨r, r_pos, hr⟩
     exact ⟨r, r_pos, fun t ht v hv ↦ hr (mem_ball_zero_iff.2 ht) v hv⟩
-  apply Metric.mem_nhds_iff.2 ⟨r, r_pos, fun v hv ↦ ?_⟩
+  apply Metric.mem_nhds_iff.2 ⟨r, r_pos, fun v hv ↦ _⟩
   rcases eq_or_ne v 0 with rfl|v_ne
   · simp
   obtain ⟨w, ρ, w_mem, hvw, hρ⟩ : ∃ w ρ, w ∈ sphere 0 1 ∧ v = ρ • w ∧ ρ = ‖v‖ := by
-    refine ⟨‖v‖⁻¹ • v, ‖v‖, by simp [norm_smul, inv_mul_cancel (norm_ne_zero_iff.2 v_ne)], ?_, rfl⟩
+    refine ⟨‖v‖⁻¹ • v, ‖v‖, by simp [norm_smul, inv_mul_cancel (norm_ne_zero_iff.2 v_ne)], _, rfl⟩
     simp [smul_smul, mul_inv_cancel (norm_ne_zero_iff.2 v_ne)]
   have norm_rho : ‖ρ‖ = ρ := by rw [hρ, norm_norm]
   have rho_pos : 0 ≤ ρ := by simp [hρ]

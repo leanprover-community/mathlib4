@@ -68,7 +68,7 @@ protected theorem Inducing.comp (hg : Inducing g) (hf : Inducing f) :
 
 theorem Inducing.of_comp_iff (hg : Inducing g) :
     Inducing (g ∘ f) ↔ Inducing f := by
-  refine ⟨fun h ↦ ?_, hg.comp⟩
+  refine ⟨fun h ↦ _, hg.comp⟩
   rw [inducing_iff, hg.induced, induced_compose, h.induced]
 #align inducing.inducing_iff Inducing.of_comp_iff
 
@@ -685,9 +685,9 @@ theorem _root_.closedEmbedding_of_embedding_closed (h₁ : Embedding f) (h₂ : 
 
 theorem _root_.closedEmbedding_of_continuous_injective_closed (h₁ : Continuous f) (h₂ : Injective f)
     (h₃ : IsClosedMap f) : ClosedEmbedding f := by
-  refine closedEmbedding_of_embedding_closed ⟨⟨?_⟩, h₂⟩ h₃
-  refine h₁.le_induced.antisymm fun s hs => ?_
-  refine ⟨(f '' sᶜ)ᶜ, (h₃ _ hs.isClosed_compl).isOpen_compl, ?_⟩
+  refine closedEmbedding_of_embedding_closed ⟨⟨_⟩, h₂⟩ h₃
+  refine h₁.le_induced.antisymm fun s hs => _
+  refine ⟨(f '' sᶜ)ᶜ, (h₃ _ hs.isClosed_compl).isOpen_compl, _⟩
   rw [preimage_compl, preimage_image_eq _ h₂, compl_compl]
 #align closed_embedding_of_continuous_injective_closed closedEmbedding_of_continuous_injective_closed
 

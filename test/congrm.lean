@@ -25,7 +25,7 @@ example {a b c d : ℕ} :
     exact test_sorry
 
 example {a b : ℕ} (h : a = b) : (fun _y : ℕ => ∀ z, a + a = z) = (fun _x => ∀ z, b + a = z) := by
-  congrm fun x => ∀ w, ?_ + a = w
+  congrm fun x => ∀ w, _ + a = w
   guard_hyp x : ℕ
   guard_hyp w : ℕ
   exact h
@@ -33,8 +33,8 @@ example {a b : ℕ} (h : a = b) : (fun _y : ℕ => ∀ z, a + a = z) = (fun _x =
 end docs
 
 example (f : α → Prop) (h : ∀ a, f a ↔ True) : (∀ a : α, f a) ↔ (∀ _ : α, True) := by
-  fail_if_success congrm f ?_
-  congrm ∀ x, ?_
+  fail_if_success congrm f _
+  congrm ∀ x, _
   guard_hyp x : α
   exact h x
 
@@ -46,40 +46,40 @@ example (f : α → Prop) (h : ∀ a, f a ↔ True) : (∀ a : α, f a) ↔ (∀
 
 example (f : α → α → Prop) (h : ∀ a b, f a b ↔ True) :
     (∀ a b, f a b) ↔ (∀ _ _ : α, True) := by
-  congrm ∀ x y, ?_
+  congrm ∀ x y, _
   exact h x y
 
 example {a b : ℕ} (h : a = b) : (fun y : ℕ => y + a) = (fun x => x + b) := by
-  congrm fun x => ?_
+  congrm fun x => _
   guard_target = x + a = x + b
   rw [h]
 
 example {a b : ℕ} (h : a = b) : (fun y : ℕ => y + a) = (fun x => x + b) := by
-  congrm fun (x : ℕ) => x + ?_
+  congrm fun (x : ℕ) => x + _
   exact h
 
 example (a b : ℕ) (h : a = b) (f : ℕ → ℕ) : f a = f b := by
-  congrm f ?_
+  congrm f _
   exact h
 
 example (a b c d : ℕ) (h : a = b) (h' : c = d) (f : ℕ → ℕ → ℕ) : f a c = f b d := by
-  congrm f ?_ ?_ <;> assumption
+  congrm f _ _ <;> assumption
 
 example (a b : ℕ) (h : a = b) (f : ℕ → ℕ) : f (f a) = f (f b) := by
-  congrm f (f ?_)
+  congrm f (f _)
   exact h
 
 example (a b c : ℕ) (h : b = c) : a = b ↔ a = c := by
-  congrm _ = ?_
+  congrm _ = _
   exact h
 
 example (a b c : ℕ) (h : b = c) : a = b ↔ a = c := by
-  fail_if_success congrm b = ?_
-  congrm a = ?_
+  fail_if_success congrm b = _
+  congrm a = _
   exact h
 
 example {b d : ℕ} (h : b = d) : (∀ a, a = b) ↔ (∀ c, c = d) := by
-  congrm ∀ a, _ = ?_
+  congrm ∀ a, _ = _
   guard_target = b = d
   exact h
 
@@ -90,29 +90,29 @@ example {p q r s : Prop} (pr : p ↔ r) (qs : q ↔ s) : p ∧ q ↔ r ∧ s := 
 
 example {f : ℕ → Prop} :
     (∃ k, f (3 + 2 + k) ∨ f (8 + 1 + k)) ↔ ∃ k, f (1 + 4 + k) ∨ f (2 + 7 + k) := by
-  congrm (∃ k, f (?_ + k) ∨ f (?_ + k))
+  congrm (∃ k, f (_ + k) ∨ f (_ + k))
   · guard_target =ₛ 3 + 2 = 1 + 4; simp
   · guard_target =ₛ 8 + 1 = 2 + 7; simp
 
 example {a b : ℕ} (h : a = b) : (fun _ : ℕ => ∀ z, a + a = z) = (fun _ => ∀ z, b + a = z) := by
-  congrm fun x => ∀ w, ?_ + a = w
+  congrm fun x => ∀ w, _ + a = w
   exact h
 
 example (a b c : ℕ) (h : b = c) : a = b ↔ a = c := by
-  fail_if_success congrm Eq ?_ ?_ ?_
-  congrm _ = ?_
+  fail_if_success congrm Eq _ _ _
+  congrm _ = _
   exact h
 
 example (a b c : ℕ) (h : b = c) : a = b ↔ a = c := by
   congrm _ = $h
 
 example (f : α → Prop) (h : ∀ a, f a ↔ True) : (∀ a : α, f a) ↔ (∀ _ : α, True) := by
-  fail_if_success congrm f ?_
-  congrm ∀ _, ?_
+  fail_if_success congrm f _
+  congrm ∀ _, _
   exact h _
 
 example (α : Nat → Type) (f : (x : Nat) → α x) (h : i = j) : HEq (f i) (f j) := by
-  congrm f ?_
+  congrm f _
   exact h
 
 def foo (n : Nat) : Nat := 1 + n
@@ -121,21 +121,21 @@ def foo (n : Nat) : Nat := 1 + n
 
 -- Unfolding
 example (n m : Nat) (h : n = m) : foo (2 + n) = foo (2 + m) := by
-  congrm 1 + (2 + ?_)
+  congrm 1 + (2 + _)
   exact h
 
 -- Fails unfolding irreducible
 example (n m : Nat) (h : n = m) : foo' (2 + n) = foo' (2 + m) := by
-  fail_if_success congrm 1 + (2 + ?_)
+  fail_if_success congrm 1 + (2 + _)
   cases h
   rfl
 
 -- Reflexive relations
 example (a b : Nat) (h : a = b) : 1 + a ≤ 1 + b := by
-  congrm 1 + ?_
+  congrm 1 + _
   exact h
 
 -- Subsingleton instances
 example [Fintype α] [Fintype β] (h : α = β) : Fintype.card α = Fintype.card β := by
-  congrm Fintype.card ?_
+  congrm Fintype.card _
   exact h

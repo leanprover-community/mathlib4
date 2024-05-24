@@ -333,7 +333,7 @@ def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=
       cases m
       · exact isEmptyElim (f <| Fin.last _)
       simp_rw [Fin.sum_univ_castSucc, Fin.coe_castSucc, Fin.val_last]
-      refine' (add_lt_add_of_lt_of_le (ih _) <| mul_le_mul_right' (Fin.is_le _) _).trans_eq _
+      refine (add_lt_add_of_lt_of_le (ih _) <| mul_le_mul_right' (Fin.is_le _) _).trans_eq _
       rw [← one_add_mul (_ : ℕ), add_comm, pow_succ']⟩)
     (fun a b => ⟨a / m ^ (b : ℕ) % m, by
       cases' n with n
@@ -351,7 +351,7 @@ def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=
       ext
       simp_rw [Fin.sum_univ_succ, Fin.val_zero, Fin.val_succ, pow_zero, Nat.div_one,
         mul_one, pow_succ', ← Nat.div_div_eq_div_mul, mul_left_comm _ m, ← mul_sum]
-      rw [ih _ (Nat.div_lt_of_lt_mul ?_), Nat.mod_add_div]
+      rw [ih _ (Nat.div_lt_of_lt_mul _), Nat.mod_add_div]
       -- Porting note: replaces `a.is_lt` in the wildcard above. Caused by a refactor of the `npow`
       -- instance for `Fin`.
       exact a.is_lt.trans_eq (pow_succ' _ _)
@@ -388,7 +388,7 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
       intro n nn f fn
       cases nn
       · exact isEmptyElim fn
-      refine' (add_lt_add_of_lt_of_le (ih _) <| mul_le_mul_right' (Fin.is_le _) _).trans_eq _
+      refine (add_lt_add_of_lt_of_le (ih _) <| mul_le_mul_right' (Fin.is_le _) _).trans_eq _
       rw [← one_add_mul (_ : ℕ), mul_comm, add_comm]⟩)
     (fun a b => ⟨(a / ∏ j : Fin b, n (Fin.castLE b.is_lt.le j)) % n b, by
       cases m
@@ -399,7 +399,7 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
       exact Nat.mod_lt _ nb.succ_pos⟩)
     (by
       intro a; revert a; dsimp only [Fin.val_mk]
-      refine' Fin.consInduction _ _ n
+      refine Fin.consInduction _ _ n
       · intro a
         haveI : Subsingleton (Fin (∏ i : Fin 0, i.elim0)) :=
           (finCongr <| prod_empty).subsingleton
@@ -421,11 +421,11 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
         simp_rw [← Nat.div_div_eq_div_mul, mul_left_comm (_ % _ : ℕ), ← mul_sum]
         convert Nat.mod_add_div _ _
         -- Porting note: new
-        refine (ih (a / x) (Nat.div_lt_of_lt_mul <| a.is_lt.trans_eq ?_))
+        refine (ih (a / x) (Nat.div_lt_of_lt_mul <| a.is_lt.trans_eq _))
         exact Fin.prod_univ_succ _
         -- Porting note: was:
         /-
-        refine' Eq.trans _ (ih (a / x) (Nat.div_lt_of_lt_mul <| a.is_lt.trans_eq _))
+        refine Eq.trans _ (ih (a / x) (Nat.div_lt_of_lt_mul <| a.is_lt.trans_eq _))
         swap
         · convert Fin.prod_univ_succ (Fin.cons x xs : _ → ℕ)
           simp_rw [Fin.cons_succ]

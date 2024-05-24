@@ -424,7 +424,7 @@ theorem BinaryFan.isLimit_iff_isIso_fst {X Y : C} (h : IsTerminal Y) (c : Binary
 
 theorem BinaryFan.isLimit_iff_isIso_snd {X Y : C} (h : IsTerminal X) (c : BinaryFan X Y) :
     Nonempty (IsLimit c) ↔ IsIso c.snd := by
-  refine' Iff.trans _ (BinaryFan.isLimit_iff_isIso_fst h (BinaryFan.mk c.snd c.fst))
+  refine Iff.trans _ (BinaryFan.isLimit_iff_isIso_fst h (BinaryFan.mk c.snd c.fst))
   exact
     ⟨fun h => ⟨BinaryFan.isLimitFlip h.some⟩, fun h =>
       ⟨(BinaryFan.isLimitFlip h.some).ofIsoLimit (isoBinaryFanMk c).symm⟩⟩
@@ -469,7 +469,7 @@ theorem BinaryCofan.isColimit_iff_isIso_inl {X Y : C} (h : IsInitial Y) (c : Bin
   constructor
   · rintro ⟨H⟩
     obtain ⟨l, hl, -⟩ := BinaryCofan.IsColimit.desc' H (𝟙 X) (h.to X)
-    refine ⟨⟨l, hl, BinaryCofan.IsColimit.hom_ext H (?_) (h.hom_ext _ _)⟩⟩
+    refine ⟨⟨l, hl, BinaryCofan.IsColimit.hom_ext H (_) (h.hom_ext _ _)⟩⟩
     rw [Category.comp_id]
     have e : (inl c ≫ l) ≫ inl c = 𝟙 X ≫ inl c := congrArg (·≫inl c) hl
     rwa [Category.assoc,Category.id_comp] at e
@@ -482,7 +482,7 @@ theorem BinaryCofan.isColimit_iff_isIso_inl {X Y : C} (h : IsInitial Y) (c : Bin
 
 theorem BinaryCofan.isColimit_iff_isIso_inr {X Y : C} (h : IsInitial X) (c : BinaryCofan X Y) :
     Nonempty (IsColimit c) ↔ IsIso c.inr := by
-  refine' Iff.trans _ (BinaryCofan.isColimit_iff_isIso_inl h (BinaryCofan.mk c.inr c.inl))
+  refine Iff.trans _ (BinaryCofan.isColimit_iff_isIso_inl h (BinaryCofan.mk c.inr c.inl))
   exact
     ⟨fun h => ⟨BinaryCofan.isColimitFlip h.some⟩, fun h =>
       ⟨(BinaryCofan.isColimitFlip h.some).ofIsoColimit (isoBinaryCofanMk c).symm⟩⟩
@@ -1324,7 +1324,7 @@ isomorphism (as `B` changes).
 def prodComparisonNatIso [HasBinaryProducts C] [HasBinaryProducts D] (A : C)
     [∀ B, IsIso (prodComparison F A B)] :
     prod.functor.obj A ⋙ F ≅ F ⋙ prod.functor.obj (F.obj A) := by
-  refine { @asIso _ _ _ _ _ (?_) with hom := prodComparisonNatTrans F A }
+  refine { @asIso _ _ _ _ _ (_) with hom := prodComparisonNatTrans F A }
   apply NatIso.isIso_of_isIso_app
 #align category_theory.limits.prod_comparison_nat_iso CategoryTheory.Limits.prodComparisonNatIso
 
@@ -1411,7 +1411,7 @@ isomorphism (as `B` changes).
 def coprodComparisonNatIso [HasBinaryCoproducts C] [HasBinaryCoproducts D] (A : C)
     [∀ B, IsIso (coprodComparison F A B)] :
     F ⋙ coprod.functor.obj (F.obj A) ≅ coprod.functor.obj A ⋙ F := by
-  refine { @asIso _ _ _ _ _ (?_) with hom := coprodComparisonNatTrans F A }
+  refine { @asIso _ _ _ _ _ (_) with hom := coprodComparisonNatTrans F A }
   apply NatIso.isIso_of_isIso_app -- Porting note: this did not work inside { }
 #align category_theory.limits.coprod_comparison_nat_iso CategoryTheory.Limits.coprodComparisonNatIso
 

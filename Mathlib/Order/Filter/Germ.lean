@@ -287,7 +287,7 @@ and a function `g : γ → α` tends to `l` along `lc : Filter γ`,
 the germ of the composition `f ∘ g` is also constant. -/
 lemma isConstant_compTendsto {f : Germ l β} {lc : Filter γ} {g : γ → α}
     (hf : f.IsConstant) (hg : Tendsto g lc l) : (f.compTendsto g hg).IsConstant := by
-  induction f using Quotient.inductionOn with | _ f => ?_
+  induction f using Quotient.inductionOn with | _ f => _
   exact isConstant_comp_tendsto hf hg
 
 @[simp, norm_cast]
@@ -853,7 +853,7 @@ instance instExistsMulOfLE [Mul β] [LE β] [ExistsMulOfLE β] : ExistsMulOfLE (
   exists_mul_of_le {x y} := inductionOn₂ x y fun f g (h : f ≤ᶠ[l] g) ↦ by
     classical
     choose c hc using fun x (hx : f x ≤ g x) ↦ exists_mul_of_le hx
-    refine ⟨ofFun fun x ↦ if hx : f x ≤ g x then c x hx else f x, coe_eq.2 ?_⟩
+    refine ⟨ofFun fun x ↦ if hx : f x ≤ g x then c x hx else f x, coe_eq.2 _⟩
     filter_upwards [h] with x hx
     rw [dif_pos hx, hc]
 

@@ -67,7 +67,7 @@ theorem equalizerCondition_yonedaPresheaf
       EqualizerCondition (yonedaPresheaf G X) := by
   apply EqualizerCondition.mk
   intro Z B π _ _
-  refine ⟨fun a b h ↦ ?_, fun ⟨a, ha⟩ ↦ ?_⟩
+  refine ⟨fun a b h ↦ _, fun ⟨a, ha⟩ ↦ _⟩
   · simp only [yonedaPresheaf, unop_op, Quiver.Hom.unop_op, Set.coe_setOf, MapToEqualizer,
       Set.mem_setOf_eq, Subtype.mk.injEq, comp, ContinuousMap.mk.injEq] at h
     simp only [yonedaPresheaf, unop_op]
@@ -80,7 +80,7 @@ theorem equalizerCondition_yonedaPresheaf
     simp only [yonedaPresheaf, comp, unop_op, Quiver.Hom.unop_op, Set.coe_setOf,
       MapToEqualizer, Set.mem_setOf_eq, Subtype.mk.injEq]
     simp only [yonedaPresheaf, unop_op] at a
-    refine ⟨(hq Z B π).lift a (factorsThrough_of_pullbackCondition G X ha), ?_⟩
+    refine ⟨(hq Z B π).lift a (factorsThrough_of_pullbackCondition G X ha), _⟩
     congr
     exact DFunLike.ext'_iff.mp ((hq Z B π).lift_comp a (factorsThrough_of_pullbackCondition G X ha))
 

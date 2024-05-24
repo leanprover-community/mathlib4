@@ -211,8 +211,8 @@ set_option backward.synthInstance.canonInstances false in -- See https://github.
 theorem quotient_norm_add_le (S : AddSubgroup M) (x y : M ⧸ S) : ‖x + y‖ ≤ ‖x‖ + ‖y‖ := by
   rcases And.intro (mk_surjective x) (mk_surjective y) with ⟨⟨x, rfl⟩, ⟨y, rfl⟩⟩
   simp only [← mk'_apply, ← map_add, quotient_norm_mk_eq, sInf_image']
-  refine le_ciInf_add_ciInf fun a b ↦ ?_
-  refine ciInf_le_of_le ⟨0, forall_mem_range.2 fun _ ↦ norm_nonneg _⟩ (a + b) ?_
+  refine le_ciInf_add_ciInf fun a b ↦ _
+  refine ciInf_le_of_le ⟨0, forall_mem_range.2 fun _ ↦ norm_nonneg _⟩ (a + b) _
   exact (congr_arg norm (add_add_add_comm _ _ _ _)).trans_le (norm_add_le _ _)
 #align quotient_norm_add_le quotient_norm_add_le
 
@@ -231,7 +231,7 @@ theorem norm_mk_eq_zero (S : AddSubgroup M) (hS : IsClosed (S : Set M)) (m : M)
 theorem quotient_nhd_basis (S : AddSubgroup M) :
     (𝓝 (0 : M ⧸ S)).HasBasis (fun ε ↦ 0 < ε) fun ε ↦ { x | ‖x‖ < ε } := by
   have : ∀ ε : ℝ, mk '' ball (0 : M) ε = { x : M ⧸ S | ‖x‖ < ε } := by
-    refine fun ε ↦ Set.ext <| forall_mk.2 fun x ↦ ?_
+    refine fun ε ↦ Set.ext <| forall_mk.2 fun x ↦ _
     rw [ball_zero_eq, mem_setOf_eq, norm_lt_iff, mem_image]
     exact exists_congr fun _ ↦ and_comm
   rw [← mk_zero, nhds_eq, ← funext this]
@@ -245,7 +245,7 @@ noncomputable instance AddSubgroup.seminormedAddCommGroupQuotient (S : AddSubgro
   dist_self x := by simp only [norm_mk_zero, sub_self]
   dist_comm := quotient_norm_sub_rev
   dist_triangle x y z := by
-    refine le_trans ?_ (quotient_norm_add_le _ _ _)
+    refine le_trans _ (quotient_norm_add_le _ _ _)
     exact (congr_arg norm (sub_add_sub_cancel _ _ _).symm).le
   edist_dist x y := by exact ENNReal.coe_nnreal_eq _
   toUniformSpace := TopologicalAddGroup.toUniformSpace (M ⧸ S)
@@ -318,18 +318,18 @@ theorem _root_.QuotientAddGroup.norm_lift_apply_le {S : AddSubgroup M} (f : Norm
 /-- The operator norm of the projection is `1` if the subspace is not dense. -/
 theorem norm_normedMk (S : AddSubgroup M) (h : (S.topologicalClosure : Set M) ≠ univ) :
     ‖S.normedMk‖ = 1 := by
-  refine le_antisymm (norm_normedMk_le S) ?_
+  refine le_antisymm (norm_normedMk_le S) _
   obtain ⟨x, hx⟩ : ∃ x : M, 0 < ‖(x : M ⧸ S)‖ := by
-    refine (Set.nonempty_compl.2 h).imp fun x hx ↦ ?_
+    refine (Set.nonempty_compl.2 h).imp fun x hx ↦ _
     exact (norm_nonneg _).lt_of_ne' <| mt (quotient_norm_eq_zero_iff S x).1 hx
-  refine (le_mul_iff_one_le_left hx).1 ?_
+  refine (le_mul_iff_one_le_left hx).1 _
   exact norm_lift_apply_le S.normedMk (fun x ↦ (eq_zero_iff x).2) x
 #align add_subgroup.norm_normed_mk AddSubgroup.norm_normedMk
 
 /-- The operator norm of the projection is `0` if the subspace is dense. -/
 theorem norm_trivial_quotient_mk (S : AddSubgroup M)
     (h : (S.topologicalClosure : Set M) = Set.univ) : ‖S.normedMk‖ = 0 := by
-  refine' le_antisymm (opNorm_le_bound _ le_rfl fun x => _) (norm_nonneg _)
+  refine le_antisymm (opNorm_le_bound _ le_rfl fun x => _) (norm_nonneg _)
   have hker : x ∈ S.normedMk.ker.topologicalClosure := by
     rw [S.ker_normedMk, ← SetLike.mem_coe, h]
     trivial

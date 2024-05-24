@@ -96,7 +96,7 @@ theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList
         suffices ltb ⟨⟨c₁ :: cs₁⟩, (0 : Pos) + c₁⟩ ⟨⟨c₁ :: cs₂⟩, (0 : Pos) + c₁⟩ =
           ltb ⟨⟨cs₁⟩, 0⟩ ⟨⟨cs₂⟩, 0⟩ by rw [this]; exact (ih cs₂).trans List.Lex.cons_iff.symm
         apply ltb_cons_addChar
-      · refine ⟨List.Lex.rel, fun e ↦ ?_⟩
+      · refine ⟨List.Lex.rel, fun e ↦ _⟩
         cases e <;> rename_i h'
         · contradiction
         · assumption

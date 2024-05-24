@@ -132,7 +132,7 @@ theorem IsPrime.of_mem_or_mem [IsProper I] (hI : ∀ {x y : P}, x ⊓ y ∈ I �
     IsPrime I := by
   rw [isPrime_iff]
   use ‹_›
-  refine .of_def ?_ ?_ ?_
+  refine .of_def _ _ _
   · exact Set.nonempty_compl.2 (I.isProper_iff.1 ‹_›)
   · intro x hx y hy
     exact ⟨x ⊓ y, fun h => (hI h).elim hx hy, inf_le_left, inf_le_right⟩
@@ -162,7 +162,7 @@ instance (priority := 100) IsMaximal.isPrime [IsMaximal I] : IsPrime I := by
   rw [coe_sup_eq] at hyJ
   rcases hyJ with ⟨a, ha, b, hb, hy⟩
   rw [hy]
-  refine' sup_mem ha (I.lower (le_inf hb _) hxy)
+  refine sup_mem ha (I.lower (le_inf hb _) hxy)
   rw [hy]
   exact le_sup_right
 #align order.ideal.is_maximal.is_prime Order.Ideal.IsMaximal.isPrime

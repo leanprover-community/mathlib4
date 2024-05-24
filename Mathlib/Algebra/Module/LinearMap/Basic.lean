@@ -510,7 +510,7 @@ theorem ext_ring_op {σ : Rᵐᵒᵖ →+* S} {f g : R →ₛₗ[σ] M₃} (h : 
     -- Porting note: replaced the oneliner `rw` proof with a partially term-mode proof
     -- because `rw` was giving "motive is type incorrect" errors
     rw [← one_mul x, ← op_smul_eq_mul]
-    refine (f.map_smulₛₗ (MulOpposite.op x) 1).trans ?_
+    refine (f.map_smulₛₗ (MulOpposite.op x) 1).trans _
     rw [h]
     exact (g.map_smulₛₗ (MulOpposite.op x) 1).symm
 #align linear_map.ext_ring_op LinearMap.ext_ring_op
@@ -732,7 +732,7 @@ theorem mk'_apply {f : M → M₂} (H : IsLinearMap R f) (x : M) : mk' f H x = f
 
 theorem isLinearMap_smul {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] (c : R) :
     IsLinearMap R fun z : M ↦ c • z := by
-  refine' IsLinearMap.mk (smul_add c) _
+  refine IsLinearMap.mk (smul_add c) _
   intro _ _
   simp only [smul_smul, mul_comm]
 #align is_linear_map.is_linear_map_smul IsLinearMap.isLinearMap_smul

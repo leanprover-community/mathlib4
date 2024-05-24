@@ -49,10 +49,10 @@ instance KleisliCat.categoryStruct {m} [Monad.{u, v} m] :
 
 instance KleisliCat.category {m} [Monad.{u, v} m] [LawfulMonad m] : Category (KleisliCat m) := by
   -- Porting note: was
-  -- refine' { id_comp' := _, comp_id' := _, assoc' := _ } <;> intros <;> ext <;> unfold_projs <;>
+  -- refine { id_comp' := _, comp_id' := _, assoc' := _ } <;> intros <;> ext <;> unfold_projs <;>
   --  simp only [(· >=> ·), functor_norm]
-  refine { id_comp := ?_, comp_id := ?_, assoc := ?_ } <;> intros <;>
-  refine funext (fun x => ?_) <;>
+  refine { id_comp := _, comp_id := _, assoc := _ } <;> intros <;>
+  refine funext (fun x => _) <;>
   simp (config := { unfoldPartialApp := true }) [CategoryStruct.id, CategoryStruct.comp, (· >=> ·)]
 #align category_theory.Kleisli.category CategoryTheory.KleisliCat.category
 

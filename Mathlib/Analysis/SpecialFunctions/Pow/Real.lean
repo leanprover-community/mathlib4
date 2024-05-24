@@ -179,7 +179,7 @@ theorem abs_rpow_le_abs_rpow (x y : ℝ) : |x ^ y| ≤ |x| ^ y := by
 #align real.abs_rpow_le_abs_rpow Real.abs_rpow_le_abs_rpow
 
 theorem abs_rpow_le_exp_log_mul (x y : ℝ) : |x ^ y| ≤ exp (log x * y) := by
-  refine' (abs_rpow_le_abs_rpow x y).trans _
+  refine (abs_rpow_le_abs_rpow x y).trans _
   by_cases hx : x = 0
   · by_cases hy : y = 0 <;> simp [hx, hy, zero_le_one]
   · rw [rpow_def_of_pos (abs_pos.2 hx), log_abs]
@@ -549,13 +549,13 @@ theorem monotoneOn_rpow_Ici_of_exponent_nonneg {r : ℝ} (hr : 0 ≤ r) :
 lemma rpow_lt_rpow_of_neg (hx : 0 < x) (hxy : x < y) (hz : z < 0) : y ^ z < x ^ z := by
   have := hx.trans hxy
   rw [← inv_lt_inv, ← rpow_neg, ← rpow_neg]
-  on_goal 1 => refine rpow_lt_rpow ?_ hxy (neg_pos.2 hz)
+  on_goal 1 => refine rpow_lt_rpow _ hxy (neg_pos.2 hz)
   all_goals positivity
 
 lemma rpow_le_rpow_of_nonpos (hx : 0 < x) (hxy : x ≤ y) (hz : z ≤ 0) : y ^ z ≤ x ^ z := by
   have := hx.trans_le hxy
   rw [← inv_le_inv, ← rpow_neg, ← rpow_neg]
-  on_goal 1 => refine rpow_le_rpow ?_ hxy (neg_nonneg.2 hz)
+  on_goal 1 => refine rpow_le_rpow _ hxy (neg_nonneg.2 hz)
   all_goals positivity
 
 theorem rpow_lt_rpow_iff (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 < z) : x ^ z < y ^ z ↔ x < y :=
@@ -844,13 +844,13 @@ lemma norm_prime_cpow_le_one_half (p : Nat.Primes) {s : ℂ} (hs : 1 < s.re) :
     ‖(p : ℂ) ^ (-s)‖ ≤ 1 / 2 := by
   rw [norm_natCast_cpow_of_re_ne_zero p <| by rw [neg_re]; linarith only [hs]]
   refine (Real.rpow_le_rpow_of_nonpos zero_lt_two (Nat.cast_le.mpr p.prop.two_le) <|
-    by rw [neg_re]; linarith only [hs]).trans ?_
+    by rw [neg_re]; linarith only [hs]).trans _
   rw [one_div, ← Real.rpow_neg_one]
   exact Real.rpow_le_rpow_of_exponent_le one_le_two <| (neg_lt_neg hs).le
 
 lemma one_sub_prime_cpow_ne_zero {p : ℕ} (hp : p.Prime) {s : ℂ} (hs : 1 < s.re) :
     1 - (p : ℂ) ^ (-s) ≠ 0 := by
-  refine sub_ne_zero_of_ne fun H ↦ ?_
+  refine sub_ne_zero_of_ne fun H ↦ _
   have := norm_prime_cpow_le_one_half ⟨p, hp⟩ hs
   simp only at this
   rw [← H, norm_one] at this
@@ -934,7 +934,7 @@ theorem exists_rat_pow_btwn {α : Type*} [LinearOrderedField α] [Archimedean α
   have : (0 : α) < q₂ := (le_max_right _ _).trans_lt hx₂
   norm_cast at hq₁₂ this
   obtain ⟨q, hq, hq₁, hq₂⟩ := exists_rat_pow_btwn_rat hn hq₁₂ this
-  refine' ⟨q, hq, (le_max_left _ _).trans_lt <| hx₁.trans _, hy₂.trans' _⟩ <;> assumption_mod_cast
+  refine ⟨q, hq, (le_max_left _ _).trans_lt <| hx₁.trans _, hy₂.trans' _⟩ <;> assumption_mod_cast
 #align real.exists_rat_pow_btwn Real.exists_rat_pow_btwn
 
 end Real

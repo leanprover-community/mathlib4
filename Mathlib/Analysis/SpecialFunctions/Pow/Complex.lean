@@ -222,7 +222,7 @@ lemma natCast_mul_natCast_cpow (m n : ℕ) (s : ℂ) : (m * n : ℂ) ^ s = m ^ s
   ofReal_natCast m ▸ ofReal_natCast n ▸ mul_cpow_ofReal_nonneg m.cast_nonneg n.cast_nonneg s
 
 lemma natCast_cpow_natCast_mul (n m : ℕ) (z : ℂ) : (n : ℂ) ^ (m * z) = ((n : ℂ) ^ m) ^ z := by
-  refine cpow_nat_mul' (x := n) (n := m) ?_ ?_ z
+  refine cpow_nat_mul' (x := n) (n := m) _ _ z
   · simp only [natCast_arg, mul_zero, Left.neg_neg_iff, pi_pos]
   · simp only [natCast_arg, mul_zero, pi_pos.le]
 

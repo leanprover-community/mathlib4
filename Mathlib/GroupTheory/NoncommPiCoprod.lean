@@ -64,7 +64,7 @@ theorem eq_one_of_noncommProd_eq_one_of_independent {ι : Type*} (s : Finset ι)
     · have hcomm := comm.mono (Finset.coe_subset.2 <| Finset.subset_insert _ _)
       simp only [Finset.forall_mem_insert] at hmem
       have hmem_bsupr : s.noncommProd f hcomm ∈ ⨆ i ∈ (s : Set ι), K i := by
-        refine' Subgroup.noncommProd_mem _ _ _
+        refine Subgroup.noncommProd_mem _ _ _
         intro x hx
         have : K x ≤ ⨆ i ∈ (s : Set ι), K i := le_iSup₂ (f := fun i _ => K i) x hx
         exact this (hmem.2 x hx)
@@ -77,7 +77,7 @@ theorem eq_one_of_noncommProd_eq_one_of_independent {ι : Type*} (s : Finset ι)
       simp only [Finset.mem_insert] at h
       rcases h with (rfl | h)
       · exact heq1i
-      · refine' ih hcomm hmem.2 heq1S _ h
+      · refine ih hcomm hmem.2 heq1S _ h
 #align subgroup.eq_one_of_noncomm_prod_eq_one_of_independent Subgroup.eq_one_of_noncommProd_eq_one_of_independent
 #align add_subgroup.eq_zero_of_noncomm_sum_eq_zero_of_independent AddSubgroup.eq_zero_of_noncommSum_eq_zero_of_independent
 
@@ -163,11 +163,11 @@ theorem noncommPiCoprod_mrange :
   letI := Classical.decEq ι
   apply le_antisymm
   · rintro x ⟨f, rfl⟩
-    refine Submonoid.noncommProd_mem _ _ _ (fun _ _ _ _ h => hcomm h _ _) (fun i _ => ?_)
+    refine Submonoid.noncommProd_mem _ _ _ (fun _ _ _ _ h => hcomm h _ _) (fun i _ => _)
     apply Submonoid.mem_sSup_of_mem
     · use i
     simp
-  · refine' iSup_le _
+  · refine iSup_le _
     rintro i x ⟨y, rfl⟩
     exact ⟨Pi.mulSingle i y, noncommPiCoprod_mulSingle _ _ _⟩
 #align monoid_hom.noncomm_pi_coprod_mrange MonoidHom.noncommPiCoprod_mrange
@@ -196,12 +196,12 @@ theorem noncommPiCoprod_range : (noncommPiCoprod ϕ hcomm).range = ⨆ i : ι, (
   letI := Classical.decEq ι
   apply le_antisymm
   · rintro x ⟨f, rfl⟩
-    refine Subgroup.noncommProd_mem _ (fun _ _ _ _ h => hcomm h _ _) ?_
+    refine Subgroup.noncommProd_mem _ (fun _ _ _ _ h => hcomm h _ _) _
     intro i _hi
     apply Subgroup.mem_sSup_of_mem
     · use i
     simp
-  · refine' iSup_le _
+  · refine iSup_le _
     rintro i x ⟨y, rfl⟩
     exact ⟨Pi.mulSingle i y, noncommPiCoprod_mulSingle _ _ _⟩
 #align monoid_hom.noncomm_pi_coprod_range MonoidHom.noncommPiCoprod_range

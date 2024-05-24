@@ -141,7 +141,7 @@ protected theorem Inseparable.nhds_le_uniformity {x y : α} (h : Inseparable x y
 
 theorem inseparable_iff_clusterPt_uniformity {x y : α} :
     Inseparable x y ↔ ClusterPt (x, y) (𝓤 α) := by
-  refine ⟨fun h ↦ .of_nhds_le h.nhds_le_uniformity, fun h ↦ ?_⟩
+  refine ⟨fun h ↦ .of_nhds_le h.nhds_le_uniformity, fun h ↦ _⟩
   simp_rw [uniformity_hasBasis_closed.inseparable_iff_uniformity, isClosed_iff_clusterPt]
   exact fun U ⟨hU, hUc⟩ ↦ hUc _ <| h.mono <| le_principal_iff.2 hU
 
@@ -186,7 +186,7 @@ theorem eq_of_clusterPt_uniformity [T0Space α] {x y : α} (h : ClusterPt (x, y)
 theorem Filter.Tendsto.inseparable_iff_uniformity {l : Filter β} [NeBot l] {f g : β → α} {a b : α}
     (ha : Tendsto f l (𝓝 a)) (hb : Tendsto g l (𝓝 b)) :
     Inseparable a b ↔ Tendsto (fun x ↦ (f x, g x)) l (𝓤 α) := by
-  refine ⟨fun h ↦ (ha.prod_mk_nhds hb).mono_right h.nhds_le_uniformity, fun h ↦ ?_⟩
+  refine ⟨fun h ↦ (ha.prod_mk_nhds hb).mono_right h.nhds_le_uniformity, fun h ↦ _⟩
   rw [inseparable_iff_clusterPt_uniformity]
   exact (ClusterPt.of_le_nhds (ha.prod_mk_nhds hb)).mono h
 
@@ -232,9 +232,9 @@ theorem isClosed_range_of_spaced_out {ι} [T0Space α] {V₀ : Set (α × α)} (
 namespace SeparationQuotient
 
 theorem comap_map_mk_uniformity : comap (Prod.map mk mk) (map (Prod.map mk mk) (𝓤 α)) = 𝓤 α := by
-  refine le_antisymm ?_ le_comap_map
-  refine ((((𝓤 α).basis_sets.map _).comap _).le_basis_iff uniformity_hasBasis_open).2 fun U hU ↦ ?_
-  refine ⟨U, hU.1, fun (x₁, x₂) ⟨(y₁, y₂), hyU, hxy⟩ ↦ ?_⟩
+  refine le_antisymm _ le_comap_map
+  refine ((((𝓤 α).basis_sets.map _).comap _).le_basis_iff uniformity_hasBasis_open).2 fun U hU ↦ _
+  refine ⟨U, hU.1, fun (x₁, x₂) ⟨(y₁, y₂), hyU, hxy⟩ ↦ _⟩
   simp only [Prod.map, Prod.ext_iff, mk_eq_mk] at hxy
   exact ((hxy.1.prod hxy.2).mem_open_iff hU.2).1 hyU
 
@@ -243,7 +243,7 @@ instance instUniformSpace : UniformSpace (SeparationQuotient α) where
   symm := tendsto_map' <| tendsto_map.comp tendsto_swap_uniformity
   comp := fun t ht ↦ by
     rcases comp_open_symm_mem_uniformity_sets ht with ⟨U, hU, hUo, -, hUt⟩
-    refine mem_of_superset (mem_lift' <| image_mem_map hU) ?_
+    refine mem_of_superset (mem_lift' <| image_mem_map hU) _
     simp only [subset_def, Prod.forall, mem_compRel, mem_image, Prod.ext_iff]
     rintro _ _ ⟨_, ⟨⟨x, y⟩, hxyU, rfl, rfl⟩, ⟨⟨y', z⟩, hyzU, hy, rfl⟩⟩
     have : y' ⤳ y := (mk_eq_mk.1 hy).specializes

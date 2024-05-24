@@ -64,7 +64,7 @@ instance ΓRestrictAlgebra {X : Scheme.{u}} {Y : TopCat.{u}} {f : Y ⟶ X} (hf :
 lemma Scheme.map_basicOpen' (X : Scheme.{u}) (U : Opens X) (r : Scheme.Γ.obj (op <| X ∣_ᵤ U)) :
     U.openEmbedding.isOpenMap.functor.obj ((X ∣_ᵤ U).basicOpen r) = X.basicOpen
     (X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op r) := by
-  refine' (Scheme.image_basicOpen (X.ofRestrict U.openEmbedding) r).trans _
+  refine (Scheme.image_basicOpen (X.ofRestrict U.openEmbedding) r).trans _
   erw [← Scheme.basicOpen_res_eq _ _ (eqToHom U.openEmbedding_obj_top).op]
   rw [← comp_apply, ← CategoryTheory.Functor.map_comp, ← op_comp, eqToHom_trans, eqToHom_refl,
     op_id, CategoryTheory.Functor.map_id]
@@ -130,7 +130,7 @@ theorem Scheme.restrictFunctor_map_ofRestrict {U V : Opens X} (i : U ⟶ V) :
 
 theorem Scheme.restrictFunctor_map_base {U V : Opens X} (i : U ⟶ V) :
     (X.restrictFunctor.map i).1.1.base = (Opens.toTopCat _).map i := by
-  ext a; refine Subtype.ext ?_ -- Porting note: `ext` did not pick up `Subtype.ext`
+  ext a; refine Subtype.ext _ -- Porting note: `ext` did not pick up `Subtype.ext`
   exact (congr_arg (fun f : X.restrict U.openEmbedding ⟶ X => f.1.base a)
         (X.restrictFunctor_map_ofRestrict i))
 #align algebraic_geometry.Scheme.restrict_functor_map_base AlgebraicGeometry.Scheme.restrictFunctor_map_base
@@ -180,7 +180,7 @@ def Scheme.restrictFunctorΓ : X.restrictFunctor.op ⋙ (Over.forget X).op ⋙ S
 noncomputable
 def Scheme.restrictRestrictComm (X : Scheme.{u}) (U V : Opens X.carrier) :
     X ∣_ᵤ U ∣_ᵤ ιOpens U ⁻¹ᵁ V ≅ X ∣_ᵤ V ∣_ᵤ ιOpens V ⁻¹ᵁ U := by
-  refine IsOpenImmersion.isoOfRangeEq (ιOpens _ ≫ ιOpens U) (ιOpens _ ≫ ιOpens V) ?_
+  refine IsOpenImmersion.isoOfRangeEq (ιOpens _ ≫ ιOpens U) (ιOpens _ ≫ ιOpens V) _
   simp only [Scheme.restrict_carrier, Scheme.ofRestrict_val_base, Scheme.comp_coeBase,
     CategoryTheory.coe_comp, Opens.coe_inclusion, Set.range_comp, Opens.map]
   rw [Subtype.range_val, Subtype.range_val]
@@ -192,7 +192,7 @@ def Scheme.restrictRestrictComm (X : Scheme.{u}) (U V : Opens X.carrier) :
 noncomputable
 def Scheme.restrictRestrict (X : Scheme.{u}) (U : Opens X.carrier) (V : Opens (X ∣_ᵤ U).carrier) :
     X ∣_ᵤ U ∣_ᵤ V ≅ X ∣_ᵤ U.openEmbedding.isOpenMap.functor.obj V := by
-  refine IsOpenImmersion.isoOfRangeEq (ιOpens _ ≫ ιOpens U) (ιOpens _) ?_
+  refine IsOpenImmersion.isoOfRangeEq (ιOpens _ ≫ ιOpens U) (ιOpens _) _
   simp only [Scheme.restrict_carrier, Scheme.ofRestrict_val_base, Scheme.comp_coeBase,
     CategoryTheory.coe_comp, Opens.coe_inclusion, Set.range_comp, Opens.map]
   rw [Subtype.range_val, Subtype.range_val]
@@ -226,7 +226,7 @@ noncomputable abbrev Scheme.restrictMapIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsI
     (Y.ofRestrict _) _
   dsimp [restrict]
   rw [coe_comp, Set.range_comp, Opens.coe_inclusion, Subtype.range_val, Subtype.range_coe]
-  refine' @Set.image_preimage_eq _ _ f.1.base U.1 _
+  refine @Set.image_preimage_eq _ _ f.1.base U.1 _
   rw [← TopCat.epi_iff_surjective]
   infer_instance
 #align algebraic_geometry.Scheme.restrict_map_iso AlgebraicGeometry.Scheme.restrictMapIso
@@ -236,7 +236,7 @@ section MorphismRestrict
 /-- Given a morphism `f : X ⟶ Y` and an open set `U ⊆ Y`, we have `X ×[Y] U ≅ X |_{f ⁻¹ U}` -/
 def pullbackRestrictIsoRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) :
     pullback f (Scheme.ιOpens U) ≅ X ∣_ᵤ f ⁻¹ᵁ U := by
-  refine' IsOpenImmersion.isoOfRangeEq pullback.fst (X.ofRestrict _) _
+  refine IsOpenImmersion.isoOfRangeEq pullback.fst (X.ofRestrict _) _
   rw [IsOpenImmersion.range_pullback_fst_of_right]
   dsimp [Opens.coe_inclusion, Scheme.restrict]
   rw [Subtype.range_val, Subtype.range_coe]
@@ -280,7 +280,7 @@ theorem isPullback_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens 
     IsPullback (f ∣_ U) (Scheme.ιOpens (f ⁻¹ᵁ U)) (Scheme.ιOpens U) f := by
   delta morphismRestrict
   rw [← Category.id_comp f]
-  refine'
+  refine
     (IsPullback.of_horiz_isIso ⟨_⟩).paste_horiz
       (IsPullback.of_hasPullback f (Y.ofRestrict U.openEmbedding)).flip
   -- Porting note: changed `rw` to `erw`
@@ -321,18 +321,18 @@ theorem image_morphismRestrict_preimage {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Op
   ext x
   constructor
   · rintro ⟨⟨x, hx⟩, hx' : (f ∣_ U).1.base _ ∈ V, rfl⟩
-    refine' ⟨⟨_, hx⟩, _, rfl⟩
+    refine ⟨⟨_, hx⟩, _, rfl⟩
     -- Porting note: this rewrite was not necessary
     rw [SetLike.mem_coe]
     convert hx'
     -- Porting note: `ext1` is not compiling
-    refine Subtype.ext ?_
+    refine Subtype.ext _
     exact (morphismRestrict_base_coe f U ⟨x, hx⟩).symm
   · rintro ⟨⟨x, hx⟩, hx' : _ ∈ V.1, rfl : x = _⟩
-    refine' ⟨⟨_, hx⟩, (_ : (f ∣_ U).1.base ⟨x, hx⟩ ∈ V.1), rfl⟩
+    refine ⟨⟨_, hx⟩, (_ : (f ∣_ U).1.base ⟨x, hx⟩ ∈ V.1), rfl⟩
     convert hx'
     -- Porting note: `ext1` is compiling
-    refine Subtype.ext ?_
+    refine Subtype.ext _
     exact morphismRestrict_base_coe f U ⟨x, hx⟩
 #align algebraic_geometry.image_morphism_restrict_preimage AlgebraicGeometry.image_morphismRestrict_preimage
 
@@ -346,7 +346,7 @@ theorem morphismRestrict_c_app {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) (V
   have e : (Opens.map U.inclusion).obj (U.openEmbedding.isOpenMap.functor.obj V) = V := by
     ext1; exact Set.preimage_image_eq _ Subtype.coe_injective
   have : _ ≫ X.presheaf.map _ = _ :=
-    (((f ∣_ U).1.c.naturality (eqToHom e).op).symm.trans ?_).trans this
+    (((f ∣_ U).1.c.naturality (eqToHom e).op).symm.trans _).trans this
   · rw [← IsIso.eq_comp_inv, ← Functor.map_inv, Category.assoc] at this
     rw [this]
     congr 1
@@ -377,7 +377,7 @@ def morphismRestrictOpensRange
     pullback.map _ _ _ _ (𝟙 _) e.hom (𝟙 _) (by rw [Category.comp_id, Category.id_comp])
       (by rw [Category.comp_id, IsOpenImmersion.isoOfRangeEq_hom_fac])
   symm
-  refine Arrow.isoMk (asIso t ≪≫ pullbackRestrictIsoRestrict f V) e ?_
+  refine Arrow.isoMk (asIso t ≪≫ pullbackRestrictIsoRestrict f V) e _
   rw [Iso.trans_hom, asIso_hom, ← Iso.comp_inv_eq, ← cancel_mono g, Arrow.mk_hom, Arrow.mk_hom,
     Category.assoc, Category.assoc, Category.assoc, IsOpenImmersion.isoOfRangeEq_inv_fac,
     ← pullback.condition, morphismRestrict_ι,
@@ -394,8 +394,8 @@ def morphismRestrictEq {X Y : Scheme.{u}} (f : X ⟶ Y) {U V : Opens Y} (e : U =
 /-- Restricting a morphism twice is isomorphic to one restriction. -/
 def morphismRestrictRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) (V : Opens (Y ∣_ᵤ U)) :
     Arrow.mk (f ∣_ U ∣_ V) ≅ Arrow.mk (f ∣_ U.openEmbedding.isOpenMap.functor.obj V) := by
-  refine Arrow.isoMk' _ _ (Scheme.restrictRestrict _ _ _ ≪≫ Scheme.restrictIsoOfEq _ ?_)
-    (Scheme.restrictRestrict _ _ _) ?_
+  refine Arrow.isoMk' _ _ (Scheme.restrictRestrict _ _ _ ≪≫ Scheme.restrictIsoOfEq _ _)
+    (Scheme.restrictRestrict _ _ _) _
   · ext x
     simp only [IsOpenMap.functor_obj_coe, Opens.coe_inclusion,
       Opens.map_coe, Set.mem_image, Set.mem_preimage, SetLike.mem_coe, morphismRestrict_val_base]
@@ -419,7 +419,7 @@ def morphismRestrictRestrictBasicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Open
         (f ∣_ U ∣_
           (Y ∣_ᵤ U).basicOpen (Y.presheaf.map (eqToHom U.openEmbedding_obj_top).op r)) ≅
       Arrow.mk (f ∣_ Y.basicOpen r) := by
-  refine' morphismRestrictRestrict _ _ _ ≪≫ morphismRestrictEq _ _
+  refine morphismRestrictRestrict _ _ _ ≪≫ morphismRestrictEq _ _
   have e := Scheme.preimage_basicOpen (Y.ofRestrict U.openEmbedding) r
   erw [Scheme.ofRestrict_val_c_app, Opens.adjunction_counit_app_self, eqToHom_op] at e
   rw [← (Y.restrict U.openEmbedding).basicOpen_res_eq _ (eqToHom U.inclusion_map_eq_top).op]
@@ -439,7 +439,7 @@ def morphismRestrictStalkMap {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) (x) 
     Arrow.mk (PresheafedSpace.stalkMap (f ∣_ U).1 x) ≅
       Arrow.mk (PresheafedSpace.stalkMap f.1 x.1) := by
   fapply Arrow.isoMk'
-  · refine' Y.restrictStalkIso U.openEmbedding ((f ∣_ U).1.1 x) ≪≫ TopCat.Presheaf.stalkCongr _ _
+  · refine Y.restrictStalkIso U.openEmbedding ((f ∣_ U).1.1 x) ≪≫ TopCat.Presheaf.stalkCongr _ _
     apply Inseparable.of_eq
     exact morphismRestrict_base_coe f U x
   · exact X.restrictStalkIso (Opens.openEmbedding _) _

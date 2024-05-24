@@ -115,7 +115,7 @@ def mkFintypeEnum (declName : Name) : CommandElabM Unit := do
   let levels := indVal.levelParams.map Level.param
   let toCtorIdxName := declName.mkStr "toCtorIdx"
   let enumListName := declName.mkStr "enumList"
-  let toCtorThmName := declName.mkStr "enumList_get?_to_CtorIdx_eq"
+  let toCtorThmName := declName.mkStr "enumList_get_to_CtorIdx_eq"
   let enumListNodupName := declName.mkStr "enumList_nodup"
   liftTermElabM <| Term.withoutErrToSorry do
     do -- Define `enumList` enumerating all constructors

@@ -1094,7 +1094,7 @@ lemma transGen_wcovBy_of_le [Preorder α] [LocallyFiniteOrder α] {x y : α} (hx
       _              < (Icc x y).card := this
     have h₁ := transGen_wcovBy_of_le (mem_Ico.mp z_mem).1
     have h₂ : z ⩿ y := by
-      refine ⟨(mem_Ico.mp z_mem).2.le, fun c hzc hcy ↦ hz c ?_ hzc⟩
+      refine ⟨(mem_Ico.mp z_mem).2.le, fun c hzc hcy ↦ hz c _ hzc⟩
       exact mem_Ico.mpr <| ⟨(mem_Ico.mp z_mem).1.trans hzc.le, hcy⟩
     exact .tail h₁ h₂
 termination_by (Icc x y).card
@@ -1102,7 +1102,7 @@ termination_by (Icc x y).card
 /-- In a locally finite preorder, `≤` is the transitive closure of `⩿`. -/
 lemma le_iff_transGen_wcovBy [Preorder α] [LocallyFiniteOrder α] {x y : α} :
     x ≤ y ↔ TransGen (· ⩿ ·) x y := by
-  refine ⟨transGen_wcovBy_of_le, fun h ↦ ?_⟩
+  refine ⟨transGen_wcovBy_of_le, fun h ↦ _⟩
   induction h with
   | single h => exact h.le
   | tail _ h₁ h₂ => exact h₂.trans h₁.le
@@ -1125,7 +1125,7 @@ lemma transGen_covBy_of_lt [Preorder α] [LocallyFiniteOrder α] {x y : α} (hxy
     (Ico_subset_Ico le_rfl (mem_Ico.mp z_mem).2.le) |>.mpr ⟨z, z_mem, right_not_mem_Ico⟩
   /- Since `z` is maximal in `Ico x y`, `z ⋖ y`. -/
   have hzy : z ⋖ y := by
-    refine ⟨(mem_Ico.mp z_mem).2, fun c hc hcy ↦ ?_⟩
+    refine ⟨(mem_Ico.mp z_mem).2, fun c hc hcy ↦ _⟩
     exact hz _ (mem_Ico.mpr ⟨((mem_Ico.mp z_mem).1.trans_lt hc).le, hcy⟩) hc
   by_cases hxz : x < z
   /- when `x < z`, then we may use the induction hypothesis to get a chain
@@ -1140,7 +1140,7 @@ termination_by (Ico x y).card
 /-- In a locally finite preorder, `<` is the transitive closure of `⋖`. -/
 lemma lt_iff_transGen_covBy [Preorder α] [LocallyFiniteOrder α] {x y : α} :
     x < y ↔ TransGen (· ⋖ ·) x y := by
-  refine ⟨transGen_covBy_of_lt, fun h ↦ ?_⟩
+  refine ⟨transGen_covBy_of_lt, fun h ↦ _⟩
   induction h with
   | single hx => exact hx.1
   | tail _ hb ih => exact ih.trans hb.1
@@ -1151,7 +1151,7 @@ variable {β : Type*}
 restricted to pairs satisfying `a ⩿ b`. -/
 lemma monotone_iff_forall_wcovBy [Preorder α] [LocallyFiniteOrder α] [Preorder β]
     (f : α → β) : Monotone f ↔ ∀ a b : α, a ⩿ b → f a ≤ f b := by
-  refine ⟨fun hf _ _ h ↦ hf h.le, fun h a b hab ↦ ?_⟩
+  refine ⟨fun hf _ _ h ↦ hf h.le, fun h a b hab ↦ _⟩
   simpa [transGen_eq_self (r := ((· : β) ≤ ·)) transitive_le]
     using TransGen.lift f h <| le_iff_transGen_wcovBy.mp hab
 
@@ -1159,7 +1159,7 @@ lemma monotone_iff_forall_wcovBy [Preorder α] [LocallyFiniteOrder α] [Preorder
 restricted to pairs satisfying `a ⋖ b`. -/
 lemma monotone_iff_forall_covBy [PartialOrder α] [LocallyFiniteOrder α] [Preorder β]
     (f : α → β) : Monotone f ↔ ∀ a b : α, a ⋖ b → f a ≤ f b := by
-  refine ⟨fun hf _ _ h ↦ hf h.le, fun h a b hab ↦ ?_⟩
+  refine ⟨fun hf _ _ h ↦ hf h.le, fun h a b hab ↦ _⟩
   simpa [reflTransGen_eq_self (r := ((· : β) ≤ ·)) IsRefl.reflexive transitive_le]
     using ReflTransGen.lift f h <| le_iff_reflTransGen_covBy.mp hab
 
@@ -1167,7 +1167,7 @@ lemma monotone_iff_forall_covBy [PartialOrder α] [LocallyFiniteOrder α] [Preor
 monotone when restricted to pairs satisfying `a ⋖ b`. -/
 lemma strictMono_iff_forall_covBy [Preorder α] [LocallyFiniteOrder α] [Preorder β]
     (f : α → β) : StrictMono f ↔ ∀ a b : α, a ⋖ b → f a < f b := by
-  refine ⟨fun hf _ _ h ↦ hf h.lt, fun h a b hab ↦ ?_⟩
+  refine ⟨fun hf _ _ h ↦ hf h.lt, fun h a b hab ↦ _⟩
   have := Relation.TransGen.lift f h (a := a) (b := b)
   rw [← lt_iff_transGen_covBy, transGen_eq_self (@lt_trans β _)] at this
   exact this hab

@@ -487,7 +487,7 @@ instance : SupSet (LieSubmodule R L M) where
         · rw [Finset.iSup_insert] at hsm
           obtain ⟨m', hm', u, hu, rfl⟩ := Submodule.mem_sup.mp hsm
           rw [lie_add]
-          refine add_mem ?_ (ih (Subset.trans (by simp) hs) hu)
+          refine add_mem _ (ih (Subset.trans (by simp) hs) hu)
           obtain ⟨p, hp, rfl⟩ : ∃ p ∈ S, ↑p = q := hs (Finset.mem_insert_self q t)
           suffices p ≤ sSup {(p : Submodule R M) | p ∈ S} by exact this (p.lie_mem hm')
           exact le_sSup ⟨p, hp, rfl⟩ }
@@ -533,9 +533,9 @@ theorem iSup_induction' {ι} (N : ι → LieSubmodule R L M) {C : (x : M) → (x
     (hN : ∀ (i) (x) (hx : x ∈ N i), C x (mem_iSup_of_mem i hx)) (h0 : C 0 (zero_mem _))
     (hadd : ∀ x y hx hy, C x hx → C y hy → C (x + y) (add_mem ‹_› ‹_›)) {x : M}
     (hx : x ∈ ⨆ i, N i) : C x hx := by
-  refine Exists.elim ?_ fun (hx : x ∈ ⨆ i, N i) (hc : C x hx) => hc
+  refine Exists.elim _ fun (hx : x ∈ ⨆ i, N i) (hc : C x hx) => hc
   refine iSup_induction N (C := fun x : M ↦ ∃ (hx : x ∈ ⨆ i, N i), C x hx) hx
-    (fun i x hx => ?_) ?_ fun x y => ?_
+    (fun i x hx => _) _ fun x y => _
   · exact ⟨_, hN _ _ hx⟩
   · exact ⟨_, h0⟩
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
@@ -795,9 +795,9 @@ lemma isCompactElement_lieSpan_singleton (m : M) :
 
 @[simp]
 lemma sSup_image_lieSpan_singleton : sSup ((fun x ↦ lieSpan R L {x}) '' N) = N := by
-  refine le_antisymm (sSup_le <| by simp) ?_
+  refine le_antisymm (sSup_le <| by simp) _
   simp_rw [← coeSubmodule_le_coeSubmodule, sSup_coe_toSubmodule, Set.mem_image, SetLike.mem_coe]
-  refine fun m hm ↦ Submodule.mem_sSup.mpr fun N' hN' ↦ ?_
+  refine fun m hm ↦ Submodule.mem_sSup.mpr fun N' hN' ↦ _
   replace hN' : ∀ m ∈ N, lieSpan R L {m} ≤ N' := by simpa using hN'
   exact hN' _ hm (subset_lieSpan rfl)
 

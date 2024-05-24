@@ -569,7 +569,7 @@ theorem isUnit_iff_isUnit_val (f : HomogeneousLocalization.AtPrime 𝒜 𝔭) : 
       contrapose! mem1
       erw [Classical.not_not]
       exact Ideal.mul_mem_left _ _ (Ideal.mul_mem_left _ _ mem1)
-    refine' ⟨⟨f, Quotient.mk'' ⟨f.deg, ⟨f.den, f.den_mem_deg⟩, ⟨f.num, f.num_mem_deg⟩, mem2⟩, _, _⟩,
+    refine ⟨⟨f, Quotient.mk'' ⟨f.deg, ⟨f.den, f.den_mem_deg⟩, ⟨f.num, f.num_mem_deg⟩, mem2⟩, _, _⟩,
         rfl⟩
       <;> simp only [ext_iff_val, mul_val, val_mk'', f.eq_num_div_den, Localization.mk_mul, one_val]
       <;> convert Localization.mk_self (M := A) _
@@ -625,7 +625,7 @@ theorem Away.eventually_smul_mem {m} (hf : f ∈ 𝒜 m) (z : Away 𝒜 f) :
   rintro k' (hk' : k ≤ k')
   simp only [Set.mem_image, SetLike.mem_coe, Set.mem_setOf_eq]
   by_cases hfk : f ^ k = 0
-  · refine ⟨0, zero_mem _, ?_⟩
+  · refine ⟨0, zero_mem _, _⟩
     rw [← tsub_add_cancel_of_le hk', map_zero, pow_add, hfk, mul_zero, zero_smul]
   rw [← tsub_add_cancel_of_le hk', pow_add, mul_smul, hk, den_smul_val,
     Algebra.smul_def, ← _root_.map_mul]

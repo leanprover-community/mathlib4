@@ -146,7 +146,7 @@ def definedAtLeft [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty 
   mem_gt f := by
     cases' exists_across f a with b a_b
     refine
-      ⟨⟨insert (a, b) f.val, fun p hp q hq ↦ ?_⟩, ⟨b, Finset.mem_insert_self _ _⟩,
+      ⟨⟨insert (a, b) f.val, fun p hp q hq ↦ _⟩, ⟨b, Finset.mem_insert_self _ _⟩,
         Finset.subset_insert _ _⟩
     rw [Finset.mem_insert] at hp hq
     rcases hp with (rfl | pf) <;> rcases hq with (rfl | qf)
@@ -166,7 +166,7 @@ def definedAtRight [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α] [Nonempty
   carrier := {f | ∃ a, (a, b) ∈ f.val}
   mem_gt f := by
     rcases (definedAtLeft α b).mem_gt f.comm with ⟨f', ⟨a, ha⟩, hl⟩
-    refine' ⟨f'.comm, ⟨a, _⟩, _⟩
+    refine ⟨f'.comm, ⟨a, _⟩, _⟩
     · change (a, b) ∈ f'.val.image _
       rwa [← Finset.mem_coe, Finset.coe_image, Equiv.image_eq_preimage]
     · change _ ⊆ f'.val.image _
@@ -209,7 +209,7 @@ theorem embedding_from_countable_to_dense [Countable α] [DenselyOrdered β] [No
     idealOfCofinals default (definedAtLeft (Set.Ioo x y))
   let F a := funOfIdeal a our_ideal (cofinal_meets_idealOfCofinals _ _ a)
   refine
-    ⟨RelEmbedding.trans (OrderEmbedding.ofStrictMono (fun a ↦ (F a).val) fun a₁ a₂ ↦ ?_)
+    ⟨RelEmbedding.trans (OrderEmbedding.ofStrictMono (fun a ↦ (F a).val) fun a₁ a₂ ↦ _)
         (OrderEmbedding.subtype _)⟩
   rcases (F a₁).prop with ⟨f, hf, ha₁⟩
   rcases (F a₂).prop with ⟨g, hg, ha₂⟩

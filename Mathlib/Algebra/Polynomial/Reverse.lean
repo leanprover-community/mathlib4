@@ -220,7 +220,7 @@ variable {S : Type*} [CommSemiring S]
 
 theorem eval₂_reflect_mul_pow (i : R →+* S) (x : S) [Invertible x] (N : ℕ) (f : R[X])
     (hf : f.natDegree ≤ N) : eval₂ i (⅟ x) (reflect N f) * x ^ N = eval₂ i x f := by
-  refine'
+  refine
     induction_with_natDegree_le (fun f => eval₂ i (⅟ x) (reflect N f) * x ^ N = eval₂ i x f) _ _ _
       _ f hf
   · simp
@@ -282,7 +282,7 @@ theorem natDegree_eq_reverse_natDegree_add_natTrailingDegree (f : R[X]) :
   by_cases hf : f = 0
   · rw [hf, reverse_zero, natDegree_zero, natTrailingDegree_zero]
   apply le_antisymm
-  · refine' tsub_le_iff_right.mp _
+  · refine tsub_le_iff_right.mp _
     apply le_natDegree_of_ne_zero
     rw [reverse, coeff_reflect, ← revAt_le f.natTrailingDegree_le_natDegree, revAt_invol]
     exact trailingCoeff_nonzero_iff_nonzero.mpr hf

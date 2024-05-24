@@ -125,7 +125,7 @@ theorem one_lt_rootMultiplicity_iff_isRoot
     {p : R[X]} {t : R} (h : p ≠ 0) :
     1 < p.rootMultiplicity t ↔ p.IsRoot t ∧ (derivative p).IsRoot t := by
   rw [one_lt_rootMultiplicity_iff_isRoot_iterate_derivative h]
-  refine ⟨fun h ↦ ⟨h 0 (by norm_num), h 1 (by norm_num)⟩, fun ⟨h0, h1⟩ m hm ↦ ?_⟩
+  refine ⟨fun h ↦ ⟨h 0 (by norm_num), h 1 (by norm_num)⟩, fun ⟨h0, h1⟩ m hm ↦ _⟩
   obtain (_|_|m) := m
   exacts [h0, h1, by omega]
 
@@ -645,7 +645,7 @@ theorem isCoprime_of_is_root_of_eval_derivative_ne_zero {K : Type*} [Field K] (f
   classical
   refine Or.resolve_left
       (EuclideanDomain.dvd_or_coprime (X - C a) (f /ₘ (X - C a))
-        (irreducible_of_degree_eq_one (Polynomial.degree_X_sub_C a))) ?_
+        (irreducible_of_degree_eq_one (Polynomial.degree_X_sub_C a))) _
   contrapose! hf' with h
   have : X - C a ∣ derivative f := X_sub_C_dvd_derivative_of_X_sub_C_dvd_divByMonic f h
   rw [← modByMonic_eq_zero_iff_dvd (monic_X_sub_C _), modByMonic_X_sub_C_eq_C_eval] at this

@@ -72,7 +72,7 @@ instance applyMulSemiringAction : MulSemiringAction p.Gal p.SplittingField :=
 
 @[ext]
 theorem ext {σ τ : p.Gal} (h : ∀ x ∈ p.rootSet p.SplittingField, σ x = τ x) : σ = τ := by
-  refine'
+  refine
     AlgEquiv.ext fun x =>
       (AlgHom.mem_equalizer σ.toAlgHom τ.toAlgHom x).mp
         ((SetLike.ext_iff.mp _ x).mpr Algebra.mem_top)
@@ -197,7 +197,7 @@ instance galAction [Fact (p.Splits (algebraMap F E))] : MulAction p.Gal (rootSet
 
 lemma galAction_isPretransitive [Fact (p.Splits (algebraMap F E))] (hp : Irreducible p) :
     MulAction.IsPretransitive p.Gal (p.rootSet E) := by
-  refine ⟨fun x y ↦ ?_⟩
+  refine ⟨fun x y ↦ _⟩
   have hx := minpoly.eq_of_irreducible hp (mem_rootSet.mp ((rootsEquivRoots p E).symm x).2).2
   have hy := minpoly.eq_of_irreducible hp (mem_rootSet.mp ((rootsEquivRoots p E).symm y).2).2
   obtain ⟨g, hg⟩ := (Normal.minpoly_eq_iff_mem_orbit p.SplittingField).mp (hy.symm.trans hx)

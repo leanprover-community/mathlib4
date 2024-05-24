@@ -716,7 +716,7 @@ theorem linearIndependent_of_ne_zero_of_inner_eq_zero {ι : Type*} {v : ι → E
   have h' : g i * inner (v i) (v i) = inner (v i) (∑ j in s, g j • v j) := by
     rw [inner_sum]
     symm
-    convert Finset.sum_eq_single (β := 𝕜) i ?_ ?_
+    convert Finset.sum_eq_single (β := 𝕜) i _ _
     · rw [inner_smul_right]
     · intro j _hj hji
       rw [inner_smul_right, ho hji.symm, mul_zero]
@@ -835,7 +835,7 @@ a sum. -/
 theorem Orthonormal.inner_sum {v : ι → E} (hv : Orthonormal 𝕜 v) (l₁ l₂ : ι → 𝕜) (s : Finset ι) :
     ⟪∑ i in s, l₁ i • v i, ∑ i in s, l₂ i • v i⟫ = ∑ i in s, conj (l₁ i) * l₂ i := by
   simp_rw [sum_inner, inner_smul_left]
-  refine' Finset.sum_congr rfl fun i hi => _
+  refine Finset.sum_congr rfl fun i hi => _
   rw [hv.inner_right_sum l₂ hi]
 #align orthonormal.inner_sum Orthonormal.inner_sum
 
@@ -875,7 +875,7 @@ orthonormal. -/
 theorem orthonormal_subtype_range {v : ι → E} (hv : Function.Injective v) :
     Orthonormal 𝕜 (Subtype.val : Set.range v → E) ↔ Orthonormal 𝕜 v := by
   let f : ι ≃ Set.range v := Equiv.ofInjective v hv
-  refine ⟨fun h => h.comp f f.injective, fun h => ?_⟩
+  refine ⟨fun h => h.comp f f.injective, fun h => _⟩
   rw [← Equiv.self_comp_ofInjective_symm hv]
   exact h.comp f.symm f.symm.injective
 #align orthonormal_subtype_range orthonormal_subtype_range
@@ -944,11 +944,11 @@ containing it. -/
 theorem exists_maximal_orthonormal {s : Set E} (hs : Orthonormal 𝕜 (Subtype.val : s → E)) :
     ∃ w ⊇ s, Orthonormal 𝕜 (Subtype.val : w → E) ∧
       ∀ u ⊇ w, Orthonormal 𝕜 (Subtype.val : u → E) → u = w := by
-  have := zorn_subset_nonempty { b | Orthonormal 𝕜 (Subtype.val : b → E) } ?_ _ hs
+  have := zorn_subset_nonempty { b | Orthonormal 𝕜 (Subtype.val : b → E) } _ _ hs
   · obtain ⟨b, bi, sb, h⟩ := this
-    refine ⟨b, sb, bi, ?_⟩
+    refine ⟨b, sb, bi, _⟩
     exact fun u hus hu => h u hu hus
-  · refine' fun c hc cc _c0 => ⟨⋃₀ c, _, _⟩
+  · refine fun c hc cc _c0 => ⟨⋃₀ c, _, _⟩
     · exact orthonormal_sUnion_of_directed cc.directedOn fun x xc => hc xc
     · exact fun _ => Set.subset_sUnion_of_mem
 #align exists_maximal_orthonormal exists_maximal_orthonormal
@@ -1178,12 +1178,12 @@ theorem dist_div_norm_sq_smul {x y : F} (hx : x ≠ 0) (hy : y ≠ 0) (R : ℝ) 
 -- See note [lower instance priority]
 instance (priority := 100) InnerProductSpace.toUniformConvexSpace : UniformConvexSpace F :=
   ⟨fun ε hε => by
-    refine'
+    refine
       ⟨2 - √(4 - ε ^ 2), sub_pos_of_lt <| (sqrt_lt' zero_lt_two).2 _, fun x hx y hy hxy => _⟩
     · norm_num
       exact pow_pos hε _
     rw [sub_sub_cancel]
-    refine' le_sqrt_of_sq_le _
+    refine le_sqrt_of_sq_le _
     rw [sq, eq_sub_iff_add_eq.2 (parallelogram_law_with_norm ℝ x y), ← sq ‖x - y‖, hx, hy]
     ring_nf
     exact sub_le_sub_left (pow_le_pow_left hε.le hxy _) 4⟩
@@ -1238,7 +1238,7 @@ for all `x`.
 -/
 theorem ext_inner_map (S T : V →ₗ[ℂ] V) : (∀ x : V, ⟪S x, x⟫_ℂ = ⟪T x, x⟫_ℂ) ↔ S = T := by
   rw [← sub_eq_zero, ← inner_map_self_eq_zero]
-  refine' forall_congr' fun x => _
+  refine forall_congr' fun x => _
   rw [LinearMap.sub_apply, inner_sub_left, sub_eq_zero]
 #align ext_inner_map ext_inner_map
 
@@ -1580,7 +1580,7 @@ theorem norm_inner_eq_norm_tfae (x y : E) :
       x = 0 ∨ ∃ r : 𝕜, y = r • x,
       x = 0 ∨ y ∈ 𝕜 ∙ x] := by
   tfae_have 1 → 2
-  · refine' fun h => or_iff_not_imp_left.2 fun hx₀ => _
+  · refine fun h => or_iff_not_imp_left.2 fun hx₀ => _
     have : ‖x‖ ^ 2 ≠ 0 := pow_ne_zero _ (norm_ne_zero_iff.2 hx₀)
     rw [← sq_eq_sq, mul_pow, ← mul_right_inj' this, eq_comm, ← sub_eq_zero, ← mul_sub] at h <;>
       try positivity
@@ -1623,7 +1623,7 @@ theorem norm_inner_div_norm_mul_norm_eq_one_iff (x y : E) :
   · intro h
     have hx₀ : x ≠ 0 := fun h₀ => by simp [h₀] at h
     have hy₀ : y ≠ 0 := fun h₀ => by simp [h₀] at h
-    refine' ⟨hx₀, (norm_inner_eq_norm_iff hx₀ hy₀).1 <| eq_of_div_eq_one _⟩
+    refine ⟨hx₀, (norm_inner_eq_norm_iff hx₀ hy₀).1 <| eq_of_div_eq_one _⟩
     simpa using h
   · rintro ⟨hx, ⟨r, ⟨hr, rfl⟩⟩⟩
     simp only [norm_div, norm_mul, norm_ofReal, abs_norm]
@@ -1680,7 +1680,7 @@ theorem real_inner_div_norm_mul_norm_eq_one_iff (x y : F) :
   · intro h
     have hx₀ : x ≠ 0 := fun h₀ => by simp [h₀] at h
     have hy₀ : y ≠ 0 := fun h₀ => by simp [h₀] at h
-    refine' ⟨hx₀, ‖y‖ / ‖x‖, div_pos (norm_pos_iff.2 hy₀) (norm_pos_iff.2 hx₀), _⟩
+    refine ⟨hx₀, ‖y‖ / ‖x‖, div_pos (norm_pos_iff.2 hy₀) (norm_pos_iff.2 hx₀), _⟩
     exact ((inner_eq_norm_mul_iff_div hx₀).1 (eq_of_div_eq_one h)).symm
   · rintro ⟨hx, ⟨r, ⟨hr, rfl⟩⟩⟩
     exact real_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_pos_mul hx hr
@@ -1693,7 +1693,7 @@ theorem real_inner_div_norm_mul_norm_eq_neg_one_iff (x y : F) :
     ⟪x, y⟫_ℝ / (‖x‖ * ‖y‖) = -1 ↔ x ≠ 0 ∧ ∃ r : ℝ, r < 0 ∧ y = r • x := by
   rw [← neg_eq_iff_eq_neg, ← neg_div, ← inner_neg_right, ← norm_neg y,
     real_inner_div_norm_mul_norm_eq_one_iff, (@neg_surjective ℝ _).exists]
-  refine' Iff.rfl.and (exists_congr fun r => _)
+  refine Iff.rfl.and (exists_congr fun r => _)
   rw [neg_pos, neg_smul, neg_inj]
 #align real_inner_div_norm_mul_norm_eq_neg_one_iff real_inner_div_norm_mul_norm_eq_neg_one_iff
 
@@ -1794,11 +1794,11 @@ set_option linter.uppercaseLean3 false in
 `InnerProductSpace.Dual` as `toDualMap`.  -/
 @[simp]
 theorem innerSL_apply_norm (x : E) : ‖innerSL 𝕜 x‖ = ‖x‖ := by
-  refine'
+  refine
     le_antisymm ((innerSL 𝕜 x).opNorm_le_bound (norm_nonneg _) fun y => norm_inner_le_norm _ _) _
   rcases eq_or_ne x 0 with (rfl | h)
   · simp
-  · refine' (mul_le_mul_right (norm_pos_iff.2 h)).mp _
+  · refine (mul_le_mul_right (norm_pos_iff.2 h)).mp _
     calc
       ‖x‖ * ‖x‖ = ‖(⟪x, x⟫ : 𝕜)‖ := by
         rw [← sq, inner_self_eq_norm_sq_to_K, norm_pow, norm_ofReal, abs_norm]
@@ -1847,7 +1847,7 @@ theorem toSesqForm_apply_coe (f : E →L[𝕜] E') (x : E') : toSesqForm f x = (
 #align continuous_linear_map.to_sesq_form_apply_coe ContinuousLinearMap.toSesqForm_apply_coe
 
 theorem toSesqForm_apply_norm_le {f : E →L[𝕜] E'} {v : E'} : ‖toSesqForm f v‖ ≤ ‖f‖ * ‖v‖ := by
-  refine opNorm_le_bound _ (by positivity) fun x ↦ ?_
+  refine opNorm_le_bound _ (by positivity) fun x ↦ _
   have h₁ : ‖f x‖ ≤ ‖f‖ * ‖x‖ := le_opNorm _ _
   have h₂ := @norm_inner_le_norm 𝕜 E' _ _ _ v (f x)
   calc
@@ -1911,7 +1911,7 @@ theorem Orthonormal.sum_inner_products_le {s : Finset ι} (hv : Orthonormal 𝕜
 /-- Bessel's inequality. -/
 theorem Orthonormal.tsum_inner_products_le (hv : Orthonormal 𝕜 v) :
     ∑' i, ‖⟪v i, x⟫‖ ^ 2 ≤ ‖x‖ ^ 2 := by
-  refine' tsum_le_of_sum_le' _ fun s => hv.sum_inner_products_le x
+  refine tsum_le_of_sum_le' _ fun s => hv.sum_inner_products_le x
   simp only [norm_nonneg, pow_nonneg]
 #align orthonormal.tsum_inner_products_le Orthonormal.tsum_inner_products_le
 
@@ -1922,7 +1922,7 @@ theorem Orthonormal.inner_products_summable (hv : Orthonormal 𝕜 v) :
   apply hasSum_of_isLUB_of_nonneg
   · intro b
     simp only [norm_nonneg, pow_nonneg]
-  · refine' isLUB_ciSup _
+  · refine isLUB_ciSup _
     use ‖x‖ ^ 2
     rintro y ⟨s, rfl⟩
     exact hv.sum_inner_products_le x
@@ -2106,9 +2106,9 @@ theorem OrthogonalFamily.norm_sq_diff_sum [DecidableEq ι] (f : ∀ i, G i) (s�
     have hs : Disjoint (s₁ \ s₂) (s₂ \ s₁) := disjoint_sdiff_sdiff
     simpa only [Finset.sum_union hs] using hV.norm_sum F (s₁ \ s₂ ∪ s₂ \ s₁)
   convert this using 4
-  · refine' Finset.sum_congr rfl fun i hi => _
+  · refine Finset.sum_congr rfl fun i hi => _
     simp only [hF₁ i hi]
-  · refine' Finset.sum_congr rfl fun i hi => _
+  · refine Finset.sum_congr rfl fun i hi => _
     simp only [hF₂ i hi, LinearIsometry.map_neg]
   · simp only [hF]
   · simp only [hF]
@@ -2126,7 +2126,7 @@ theorem OrthogonalFamily.summable_iff_norm_sq_summable [CompleteSpace E] (f : �
       use a
       intro s₁ hs₁ s₂ hs₂
       rw [← Finset.sum_sdiff_sub_sum_sdiff]
-      refine' (abs_sub _ _).trans_lt _
+      refine (abs_sub _ _).trans_lt _
       have : ∀ i, 0 ≤ ‖f i‖ ^ 2 := fun i : ι => sq_nonneg _
       simp only [Finset.abs_sum_of_nonneg' this]
       have : ((∑ i in s₁ \ s₂, ‖f i‖ ^ 2) + ∑ i in s₂ \ s₁, ‖f i‖ ^ 2) < √ε ^ 2 := by
@@ -2140,7 +2140,7 @@ theorem OrthogonalFamily.summable_iff_norm_sq_summable [CompleteSpace E] (f : �
       obtain ⟨a, H⟩ := hf _ hε'
       use a
       intro s₁ hs₁ s₂ hs₂
-      refine' (abs_lt_of_sq_lt_sq' _ (le_of_lt hε)).2
+      refine (abs_lt_of_sq_lt_sq' _ (le_of_lt hε)).2
       have has : a ≤ s₁ ⊓ s₂ := le_inf hs₁ hs₂
       rw [hV.norm_sq_diff_sum]
       have Hs₁ : ∑ x : ι in s₁ \ s₂, ‖f x‖ ^ 2 < ε ^ 2 / 2 := by
@@ -2166,7 +2166,7 @@ theorem OrthogonalFamily.independent {V : ι → Submodule 𝕜 E}
     CompleteLattice.Independent V := by
   classical
   apply CompleteLattice.independent_of_dfinsupp_lsum_injective
-  refine LinearMap.ker_eq_bot.mp ?_
+  refine LinearMap.ker_eq_bot.mp _
   rw [Submodule.eq_bot_iff]
   intro v hv
   rw [LinearMap.mem_ker] at hv

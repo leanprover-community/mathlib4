@@ -38,7 +38,7 @@ theorem imo2011_q5 (f : ℤ → ℤ) (hpos : ∀ n : ℤ, 0 < f n) (hdvd : ∀ m
       calc
         -d = f (m - n) - f m := neg_sub _ _
         _ < f (m - n) := sub_lt_self _ (hpos m)
-        _ ≤ f n - f m := le_of_dvd (sub_pos.mpr h_fm_lt_fn) ?_
+        _ ≤ f n - f m := le_of_dvd (sub_pos.mpr h_fm_lt_fn) _
         _ < f n := sub_lt_self _ (hpos m)
       -- ⊢ f (m - n) ∣ f n - f m
       rw [← Int.dvd_neg, neg_sub]

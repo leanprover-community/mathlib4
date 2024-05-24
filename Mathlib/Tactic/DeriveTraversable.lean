@@ -156,7 +156,7 @@ def deriveFunctor (m : MVarId) : TermElabM Unit := do
   let .app (.const ``Functor _) F ← m.getType >>= instantiateMVars | failure
   let some n := F.getAppFn.constName? | failure
   let d ← getConstInfo n
-  let [m] ← run m <| evalTactic (← `(tactic| refine { map := @(?_) })) | failure
+  let [m] ← run m <| evalTactic (← `(tactic| refine { map := @(_) })) | failure
   let t ← m.getType >>= instantiateMVars
   let n' := .mkStr n "map"
   withDeclName n' <| withAuxDecl (.mkSimple "map") t n' fun ad => do
@@ -397,7 +397,7 @@ def deriveTraversable (m : MVarId) : TermElabM Unit := do
   let .app (.const ``Traversable _) F ← m.getType >>= instantiateMVars | failure
   let some n := F.getAppFn.constName? | failure
   let d ← getConstInfo n
-  let [m] ← run m <| evalTactic (← `(tactic| refine { traverse := @(?_) })) | failure
+  let [m] ← run m <| evalTactic (← `(tactic| refine { traverse := @(_) })) | failure
   let t ← m.getType >>= instantiateMVars
   let n' := .mkStr n "traverse"
   withDeclName n' <| withAuxDecl (.mkSimple "traverse") t n' fun ad => do

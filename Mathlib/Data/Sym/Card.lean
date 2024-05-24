@@ -86,7 +86,7 @@ protected def e2 {n k : ℕ} : { s : Sym (Fin n.succ.succ) k // ↑0 ∉ s } ≃
   left_inv s := by
     ext1
     simp only [map_map]
-    refine (Sym.map_congr fun v hv ↦ ?_).trans (map_id' _)
+    refine (Sym.map_congr fun v hv ↦ _).trans (map_id' _)
     exact Fin.succAbove_predAbove (ne_of_mem_of_not_mem hv s.2)
   right_inv s := by
     simp only [map_map, comp_apply, ← Fin.castSucc_zero, Fin.predAbove_succAbove, map_id']
@@ -101,7 +101,7 @@ theorem card_sym_fin_eq_multichoose : ∀ n k : ℕ, card (Sym (Fin n) k) = mult
   | n + 2, k + 1 => by
     rw [multichoose_succ_succ, ← card_sym_fin_eq_multichoose (n + 1) (k + 1),
       ← card_sym_fin_eq_multichoose (n + 2) k, add_comm (Fintype.card _), ← card_sum]
-    refine Fintype.card_congr (Equiv.symm ?_)
+    refine Fintype.card_congr (Equiv.symm _)
     apply (Sym.e1.symm.sumCongr Sym.e2.symm).trans
     apply Equiv.sumCompl
 #align sym.card_sym_fin_eq_multichoose Sym.card_sym_fin_eq_multichoose
@@ -146,7 +146,7 @@ theorem two_mul_card_image_offDiag (s : Finset α) :
   obtain ⟨a, ⟨ha₁, ha₂, ha⟩, h⟩ := hxy
   replace h := Sym2.eq.1 h
   obtain ⟨hx, hy, hxy⟩ : x ∈ s ∧ y ∈ s ∧ x ≠ y := by
-    cases h <;> refine' ⟨‹_›, ‹_›, _⟩ <;> [exact ha; exact ha.symm]
+    cases h <;> refine ⟨‹_›, ‹_›, _⟩ <;> [exact ha; exact ha.symm]
   have hxy' : y ≠ x := hxy.symm
   have : (s.offDiag.filter fun z => Sym2.mk z = s(x, y)) = ({(x, y), (y, x)} : Finset _) := by
     ext ⟨x₁, y₁⟩

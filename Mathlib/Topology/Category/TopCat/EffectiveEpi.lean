@@ -53,7 +53,7 @@ def effectiveEpiStructOfQuotientMap {B X : TopCat.{u}} (π : X ⟶ B) (hπ : Quo
 theorem effectiveEpi_iff_quotientMap {B X : TopCat.{u}} (π : X ⟶ B) :
     EffectiveEpi π ↔ QuotientMap π := by
   /- The backward direction is given by `effectiveEpiStructOfQuotientMap` above. -/
-  refine ⟨fun _ ↦ ?_, fun hπ ↦ ⟨⟨effectiveEpiStructOfQuotientMap π hπ⟩⟩⟩
+  refine ⟨fun _ ↦ _, fun hπ ↦ ⟨⟨effectiveEpiStructOfQuotientMap π hπ⟩⟩⟩
   /- Since `TopCat` has pullbacks, `π` is in fact a `RegularEpi`. This means that it exhibits `B` as
     a coequalizer of two maps into `X`. It suffices to prove that `π` followed by the isomorphism to
     an arbitrary coequalizer is a quotient map. -/

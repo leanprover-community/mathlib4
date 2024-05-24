@@ -49,7 +49,7 @@ lemma nontrivial : ∃ r : R, v r ≠ 0 ∧ v r ≠ 1 := nontrivial'
 /-- If `v` is a rank one valuation and `x : Γ₀` has image `0` under `RankOne.hom v`, then
   `x = 0`. -/
 theorem zero_of_hom_zero {x : Γ₀} (hx : hom v x = 0) : x = 0 := by
-  refine (eq_of_le_of_not_lt (zero_le' (a := x)) fun h_lt ↦ ?_).symm
+  refine (eq_of_le_of_not_lt (zero_le' (a := x)) fun h_lt ↦ _).symm
   have hs := strictMono v h_lt
   rw [_root_.map_zero, hx] at hs
   exact hs.false

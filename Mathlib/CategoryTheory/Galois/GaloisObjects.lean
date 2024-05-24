@@ -126,7 +126,7 @@ lemma exists_autMap {A B : C} (f : A ⟶ B) [IsConnected A] [IsGalois B] (σ : A
     ∃! (τ : Aut B), f ≫ τ.hom = σ.hom ≫ f := by
   let F := GaloisCategory.getFiberFunctor C
   obtain ⟨a⟩ := nonempty_fiber_of_isConnected F A
-  refine ⟨?_, ?_, ?_⟩
+  refine ⟨_, _, _⟩
   · exact (evaluationEquivOfIsGalois F B (F.map f a)).symm (F.map (σ.hom ≫ f) a)
   · apply evaluation_injective_of_isConnected F A B a
     simp
@@ -164,7 +164,7 @@ lemma autMap_id {A : C} [IsGalois A] : autMap (𝟙 A) = id :=
 @[simp]
 lemma autMap_comp {X Y Z : C} [IsConnected X] [IsGalois Y] [IsGalois Z] (f : X ⟶ Y)
     (g : Y ⟶ Z) : autMap (f ≫ g) = autMap g ∘ autMap f := by
-  refine funext fun σ ↦ autMap_unique _ σ _ ?_
+  refine funext fun σ ↦ autMap_unique _ σ _ _
   rw [Function.comp_apply, Category.assoc, comp_autMap, ← Category.assoc]
   simp
 

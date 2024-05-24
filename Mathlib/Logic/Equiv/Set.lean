@@ -410,7 +410,7 @@ protected def unionSumInter {α : Type u} (s t : Set α) [DecidablePred (· ∈ 
     _ ≃ Sum s (t \ s ∪ s ∩ t : Set α) :=
       sumCongr (Equiv.refl _)
         (by
-          refine' (Set.union' (· ∉ s) _ _).symm
+          refine (Set.union' (· ∉ s) _ _).symm
           exacts [fun x hx => hx.2, fun x hx => not_not_intro hx.1])
     _ ≃ Sum s t := by
       { rw [(_ : t \ s ∪ s ∩ t = t)]
@@ -665,7 +665,7 @@ theorem preimage_piEquivPiSubtypeProd_symm_pi {α : Type*} {β : α → Type*} (
       (pi univ fun i : { i // p i } => s i) ×ˢ pi univ fun i : { i // ¬p i } => s i := by
   ext ⟨f, g⟩
   simp only [mem_preimage, mem_univ_pi, prod_mk_mem_set_prod_eq, Subtype.forall, ← forall_and]
-  refine' forall_congr' fun i => _
+  refine forall_congr' fun i => _
   dsimp only [Subtype.coe_mk]
   by_cases hi : p i <;> simp [hi]
 #align equiv.preimage_pi_equiv_pi_subtype_prod_symm_pi Equiv.preimage_piEquivPiSubtypeProd_symm_pi
@@ -733,7 +733,7 @@ section Swap
 variable {α : Type*} [DecidableEq α] {a b : α} {s : Set α}
 
 theorem Equiv.swap_bijOn_self (hs : a ∈ s ↔ b ∈ s) : BijOn (Equiv.swap a b) s s := by
-  refine ⟨fun x hx ↦ ?_, (Equiv.injective _).injOn _, fun x hx ↦ ?_⟩
+  refine ⟨fun x hx ↦ _, (Equiv.injective _).injOn _, fun x hx ↦ _⟩
   · obtain (rfl | hxa) := eq_or_ne x a; rwa [swap_apply_left, ← hs]
     obtain (rfl | hxb) := eq_or_ne x b; rwa [swap_apply_right, hs]
     rwa [swap_apply_of_ne_of_ne hxa hxb]
@@ -743,7 +743,7 @@ theorem Equiv.swap_bijOn_self (hs : a ∈ s ↔ b ∈ s) : BijOn (Equiv.swap a b
 
 theorem Equiv.swap_bijOn_exchange (ha : a ∈ s) (hb : b ∉ s) :
     BijOn (Equiv.swap a b) s (insert b (s \ {a})) := by
-  refine ⟨fun x hx ↦ ?_, (Equiv.injective _).injOn _, fun x hx ↦ ?_⟩
+  refine ⟨fun x hx ↦ _, (Equiv.injective _).injOn _, fun x hx ↦ _⟩
   · obtain (rfl | hxa) := eq_or_ne x a; simp [swap_apply_left]
     rw [swap_apply_of_ne_of_ne hxa (by rintro rfl; contradiction)]
     exact .inr ⟨hx, hxa⟩

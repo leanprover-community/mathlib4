@@ -66,8 +66,8 @@ theorem GradedAlgebra.liftι_eq (i : ℕ) (x : ⋀[R]^i M) :
   cases' x with x hx
   dsimp only [Subtype.coe_mk, DirectSum.lof_eq_of]
   -- Porting note: original statement was
-  --  refine Submodule.pow_induction_on_left' _ (fun r => ?_) (fun x y i hx hy ihx ihy => ?_)
-  --    (fun m hm i x hx ih => ?_) hx
+  --  refine Submodule.pow_induction_on_left' _ (fun r => _) (fun x y i hx hy ihx ihy => _)
+  --    (fun m hm i x hx ih => _) hx
   -- but it created invalid goals
   induction hx using Submodule.pow_induction_on_left' with
   | algebraMap => simp_rw [AlgHom.commutes, DirectSum.algebraMap_apply]; rfl
@@ -107,7 +107,7 @@ lemma ιMulti_span :
     let ⟨m, hm⟩ := hm
     apply Set.mem_of_mem_of_subset hm
     rw [← ιMulti_span_fixedDegree]
-    refine Submodule.span_mono fun _ hx ↦ ?_
+    refine Submodule.span_mono fun _ hx ↦ _
     obtain ⟨y, rfl⟩ := hx
     exact ⟨⟨_, y⟩, rfl⟩
 

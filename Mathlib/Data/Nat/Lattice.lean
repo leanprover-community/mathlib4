@@ -174,7 +174,7 @@ theorem sInf_add' {n : ℕ} {p : ℕ → Prop} (h : 0 < sInf { m | p m }) :
     convert sInf_add h₁
     simp_rw [add_tsub_cancel_right]
   obtain ⟨m, hm⟩ := nonempty_of_pos_sInf h
-  refine'
+  refine
     le_csInf ⟨m + n, _⟩ fun b hb ↦
       le_of_not_lt fun hbn ↦
         ne_of_mem_of_not_mem _ (not_mem_of_lt_sInf h) (tsub_eq_zero_of_le hbn.le)

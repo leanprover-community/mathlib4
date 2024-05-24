@@ -107,7 +107,7 @@ of `∀ {p q a : K[X]} (hq : q ≠ 0) (ha : a ≠ 0), f (a * p) (a * q) = f p q)
 protected irreducible_def liftOn {P : Sort v} (x : RatFunc K) (f : K[X] → K[X] → P)
     (H : ∀ {p q p' q'} (_hq : q ∈ K[X]⁰) (_hq' : q' ∈ K[X]⁰), q' * p = q * p' → f p q = f p' q') :
     P := by
-  refine Localization.liftOn (toFractionRing x) (fun p q => f p q) ?_
+  refine Localization.liftOn (toFractionRing x) (fun p q => f p q) _
   intros p p' q q' h
   exact H q.2 q'.2 (let ⟨⟨c, hc⟩, mul_eq⟩ := Localization.r_iff_exists.mp h
     mul_cancel_left_coe_nonZeroDivisors.mp mul_eq)

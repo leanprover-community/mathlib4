@@ -285,7 +285,7 @@ def includeRight : B →ₐ[R] (𝒜 ᵍ⊗[R] ℬ) :=
     (map_one := rfl)
     (map_mul := by
       rw [LinearMap.map_mul_iff]
-      refine DirectSum.decompose_lhom_ext ℬ fun i₁ => ?_
+      refine DirectSum.decompose_lhom_ext ℬ fun i₁ => _
       ext b₁ b₂ : 2
       dsimp
       rw [tmul_coe_mul_one_tmul])
@@ -316,9 +316,9 @@ def lift (f : A →ₐ[R] C) (g : B →ₐ[R] C)
     (by
       rw [LinearMap.map_mul_iff]
       ext a₁ : 3
-      refine DirectSum.decompose_lhom_ext ℬ fun j₁ => ?_
+      refine DirectSum.decompose_lhom_ext ℬ fun j₁ => _
       ext b₁ : 3
-      refine DirectSum.decompose_lhom_ext 𝒜 fun i₂ => ?_
+      refine DirectSum.decompose_lhom_ext 𝒜 fun i₂ => _
       ext a₂ b₂ : 2
       dsimp
       rw [tmul_coe_mul_coe_tmul]

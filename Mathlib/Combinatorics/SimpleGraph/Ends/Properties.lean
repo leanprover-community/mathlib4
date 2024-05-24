@@ -31,7 +31,7 @@ instance [Finite V] : IsEmpty G.end where
 /-- The `componentCompl`s chosen by an end are all infinite. -/
 lemma end_componentCompl_infinite (e : G.end) (K : (Finset V)ᵒᵖ) :
     ((e : (j : (Finset V)ᵒᵖ) → G.componentComplFunctor.obj j) K).supp.Infinite := by
-  refine (e.val K).infinite_iff_in_all_ranges.mpr (fun L h => ?_)
+  refine (e.val K).infinite_iff_in_all_ranges.mpr (fun L h => _)
   change Opposite.unop K ⊆ Opposite.unop (Opposite.op L) at h
   exact ⟨e.val (Opposite.op L), (e.prop (CategoryTheory.opHomOfLE h))⟩
 

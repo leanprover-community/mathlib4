@@ -126,7 +126,7 @@ lemma le_egauge_smul_left (c : 𝕜) (s : Set E) (x : E) :
 
 lemma egauge_smul_left (hc : c ≠ 0) (s : Set E) (x : E) :
     egauge 𝕜 (c • s) x = egauge 𝕜 s x / ‖c‖₊ := by
-  refine le_antisymm ?_ (le_egauge_smul_left _ _ _)
+  refine le_antisymm _ (le_egauge_smul_left _ _ _)
   rw [ENNReal.le_div_iff_mul_le (by simp [*]) (by simp)]
   calc
     egauge 𝕜 (c • s) x * ‖c‖₊ = egauge 𝕜 (c • s) x / ‖c⁻¹‖₊ := by
@@ -140,19 +140,19 @@ lemma le_egauge_smul_right (c : 𝕜) (s : Set E) (x : E) :
   rintro a ⟨y, hy, hxy⟩
   rcases eq_or_ne c 0 with rfl | hc
   · simp
-  · refine ENNReal.mul_le_of_le_div' <| le_trans ?_ ENNReal.coe_div_le
+  · refine ENNReal.mul_le_of_le_div' <| le_trans _ ENNReal.coe_div_le
     rw [div_eq_inv_mul, ← nnnorm_inv, ← nnnorm_mul]
-    refine egauge_le_of_mem_smul ⟨y, hy, ?_⟩
+    refine egauge_le_of_mem_smul ⟨y, hy, _⟩
     simp only [mul_smul, hxy, inv_smul_smul₀ hc]
 
 lemma egauge_smul_right (h : c = 0 → s.Nonempty) (x : E) :
     egauge 𝕜 s (c • x) = ‖c‖₊ * egauge 𝕜 s x := by
-  refine le_antisymm ?_ (le_egauge_smul_right c s x)
+  refine le_antisymm _ (le_egauge_smul_right c s x)
   rcases eq_or_ne c 0 with rfl | hc
   · simp [egauge_zero_right _ (h rfl)]
   · rw [mul_comm, ← ENNReal.div_le_iff_le_mul (.inl <| by simpa) (.inl ENNReal.coe_ne_top),
       ENNReal.div_eq_inv_mul, ← ENNReal.coe_inv (by simpa), ← nnnorm_inv]
-    refine (le_egauge_smul_right _ _ _).trans_eq ?_
+    refine (le_egauge_smul_right _ _ _).trans_eq _
     rw [inv_smul_smul₀ hc]
 
 end Module

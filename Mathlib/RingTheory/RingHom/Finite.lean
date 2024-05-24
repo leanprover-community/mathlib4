@@ -32,7 +32,7 @@ theorem finite_respectsIso : RespectsIso @Finite := by
 #align ring_hom.finite_respects_iso RingHom.finite_respectsIso
 
 theorem finite_stableUnderBaseChange : StableUnderBaseChange @Finite := by
-  refine StableUnderBaseChange.mk _ finite_respectsIso ?_
+  refine StableUnderBaseChange.mk _ finite_respectsIso _
   classical
   introv h
   replace h : Module.Finite R T := by

@@ -87,20 +87,20 @@ section analyticity
 
 lemma differentiable_Gammaℝ_inv : Differentiable ℂ (fun s ↦ (Gammaℝ s)⁻¹) := by
   conv => enter [2, s]; rw [Gammaℝ, mul_inv]
-  refine Differentiable.mul (fun s ↦ .inv ?_ (by simp [pi_ne_zero])) ?_
-  · refine ((differentiableAt_id.neg.div_const (2 : ℂ)).const_cpow ?_)
+  refine Differentiable.mul (fun s ↦ .inv _ (by simp [pi_ne_zero])) _
+  · refine ((differentiableAt_id.neg.div_const (2 : ℂ)).const_cpow _)
     exact Or.inl (ofReal_ne_zero.mpr pi_ne_zero)
   · exact differentiable_one_div_Gamma.comp (differentiable_id.div_const _)
 
 lemma Gammaℝ_residue_zero : Tendsto (fun s ↦ s * Gammaℝ s) (𝓝[≠] 0) (𝓝 2) := by
   have h : Tendsto (fun z : ℂ ↦ z / 2 * Gamma (z / 2)) (𝓝[≠] 0) (𝓝 1) := by
-    refine tendsto_self_mul_Gamma_nhds_zero.comp ?_
+    refine tendsto_self_mul_Gamma_nhds_zero.comp _
     rw [tendsto_nhdsWithin_iff, (by simp : 𝓝 (0 : ℂ) = 𝓝 (0 / 2))]
     exact ⟨(tendsto_id.div_const _).mono_left nhdsWithin_le_nhds,
       eventually_of_mem self_mem_nhdsWithin fun x hx ↦ div_ne_zero hx two_ne_zero⟩
   have h' : Tendsto (fun s : ℂ ↦ 2 * (π : ℂ) ^ (-s / 2)) (𝓝[≠] 0) (𝓝 2) := by
     rw [(by simp : 𝓝 2 = 𝓝 (2 * (π : ℂ) ^ (-(0 : ℂ) / 2)))]
-    refine Tendsto.mono_left (ContinuousAt.tendsto ?_) nhdsWithin_le_nhds
+    refine Tendsto.mono_left (ContinuousAt.tendsto _) nhdsWithin_le_nhds
     exact continuousAt_const.mul ((continuousAt_const_cpow (ofReal_ne_zero.mpr pi_ne_zero)).comp
       (continuousAt_id.neg.div_const _))
   convert mul_one (2 : ℂ) ▸ (h'.mul h) using 2 with z

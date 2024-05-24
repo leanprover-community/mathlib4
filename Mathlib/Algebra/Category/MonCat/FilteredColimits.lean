@@ -94,7 +94,7 @@ object `j`.
       a custom chosen object `j`."]
 theorem colimit_one_eq (j : J) : (1 : M.{v, u} F) = M.mk F ⟨j, 1⟩ := by
   apply M.mk_eq
-  refine' ⟨max' _ j, IsFiltered.leftToMax _ j, IsFiltered.rightToMax _ j, _⟩
+  refine ⟨max' _ j, IsFiltered.leftToMax _ j, IsFiltered.rightToMax _ j, _⟩
   simp
 #align Mon.filtered_colimits.colimit_one_eq MonCat.FilteredColimits.colimit_one_eq
 #align AddMon.filtered_colimits.colimit_zero_eq AddMonCat.FilteredColimits.colimit_zero_eq
@@ -167,7 +167,7 @@ theorem colimitMulAux_eq_of_rel_right {x y y' : Σ j, F.obj j}
 @[to_additive "Addition in the colimit. See also `colimitAddAux`."]
 noncomputable instance colimitMul : Mul (M.{v, u} F) :=
 { mul := fun x y => by
-    refine' Quot.lift₂ (colimitMulAux F) _ _ x y
+    refine Quot.lift₂ (colimitMulAux F) _ _ x y
     · intro x y y' h
       apply colimitMulAux_eq_of_rel_right
       apply Types.FilteredColimit.rel_of_quot_rel
@@ -192,7 +192,7 @@ theorem colimit_mul_mk_eq (x y : Σ j, F.obj j) (k : J) (f : x.1 ⟶ k) (g : y.1
   cases' x with j₁ x; cases' y with j₂ y
   obtain ⟨s, α, β, h₁, h₂⟩ := IsFiltered.bowtie (IsFiltered.leftToMax j₁ j₂) f
     (IsFiltered.rightToMax j₁ j₂) g
-  refine M.mk_eq F _ _ ?_
+  refine M.mk_eq F _ _ _
   use s, α, β
   dsimp
   simp_rw [MonoidHom.map_mul]
@@ -208,7 +208,7 @@ noncomputable instance colimitMulOneClass : MulOneClass (M.{v, u} F) :=
   { colimitOne F,
     colimitMul F with
     one_mul := fun x => by
-      refine Quot.inductionOn x ?_
+      refine Quot.inductionOn x _
       intro x
       cases' x with j x
       rw [colimit_one_eq F j, colimit_mul_mk_eq F ⟨j, 1⟩ ⟨j, x⟩ j (𝟙 j) (𝟙 j), MonoidHom.map_one,
@@ -216,7 +216,7 @@ noncomputable instance colimitMulOneClass : MulOneClass (M.{v, u} F) :=
       -- Porting note: `id_apply` does not work here, but the two sides are def-eq
       rfl
     mul_one := fun x => by
-      refine Quot.inductionOn x ?_
+      refine Quot.inductionOn x _
       intro x
       cases' x with j x
       rw [colimit_one_eq F j, colimit_mul_mk_eq F ⟨j, x⟩ ⟨j, 1⟩ j (𝟙 j) (𝟙 j), MonoidHom.map_one,
@@ -228,7 +228,7 @@ noncomputable instance colimitMulOneClass : MulOneClass (M.{v, u} F) :=
 noncomputable instance colimitMonoid : Monoid (M.{v, u} F) :=
   { colimitMulOneClass F with
     mul_assoc := fun x y z => by
-      refine Quot.induction_on₃ x y z ?_
+      refine Quot.induction_on₃ x y z _
       clear x y z
       intro x y z
       cases' x with j₁ x
@@ -306,7 +306,7 @@ def colimitDesc (t : Cocone F) : colimit.{v, u} F ⟶ t.pt where
     rw [colimit_one_eq F IsFiltered.nonempty.some]
     exact MonoidHom.map_one _
   map_mul' x y := by
-    refine Quot.induction_on₂ x y ?_
+    refine Quot.induction_on₂ x y _
     clear x y
     intro x y
     cases' x with i x
@@ -371,7 +371,7 @@ noncomputable abbrev M : MonCat.{max v u} :=
 noncomputable instance colimitCommMonoid : CommMonoid.{max v u} (M.{v, u} F) :=
   { (M.{v, u} F) with
     mul_comm := fun x y => by
-      refine Quot.induction_on₂ x y ?_
+      refine Quot.induction_on₂ x y _
       clear x y
       intro x y
       let k := max' x.1 y.1

@@ -57,7 +57,7 @@ lemma IsNilpotent.smul [MonoidWithZero R] [MonoidWithZero S] [MulActionWithZero 
 
 theorem IsNilpotent.isUnit_sub_one [Ring R] {r : R} (hnil : IsNilpotent r) : IsUnit (r - 1) := by
   obtain ⟨n, hn⟩ := hnil
-  refine ⟨⟨r - 1, -∑ i in Finset.range n, r ^ i, ?_, ?_⟩, rfl⟩
+  refine ⟨⟨r - 1, -∑ i in Finset.range n, r ^ i, _, _⟩, rfl⟩
   · simp [mul_geom_sum, hn]
   · simp [geom_sum_mul, hn]
 
@@ -77,7 +77,7 @@ theorem IsNilpotent.isUnit_add_left_of_commute [Ring R] {r u : R}
     IsUnit (u + r) := by
   rw [← Units.isUnit_mul_units _ hu.unit⁻¹, add_mul, IsUnit.mul_val_inv]
   replace h_comm : Commute r (↑hu.unit⁻¹) := Commute.units_inv_right h_comm
-  refine IsNilpotent.isUnit_one_add ?_
+  refine IsNilpotent.isUnit_one_add _
   exact (hu.unit⁻¹.isUnit.isNilpotent_mul_unit_of_commute_iff h_comm).mpr hnil
 
 theorem IsNilpotent.isUnit_add_right_of_commute [Ring R] {r u : R}
@@ -105,7 +105,7 @@ theorem isReduced_iff_pow_one_lt [MonoidWithZero R] (k : ℕ) (hk : 1 < k) :
 theorem IsRadical.of_dvd [CancelCommMonoidWithZero R] {x y : R} (hy : IsRadical y) (h0 : y ≠ 0)
     (hxy : x ∣ y) : IsRadical x := (isRadical_iff_pow_one_lt 2 one_lt_two).2 <| by
   obtain ⟨z, rfl⟩ := hxy
-  refine fun w dvd ↦ ((mul_dvd_mul_iff_right <| right_ne_zero_of_mul h0).mp <| hy 2 _ ?_)
+  refine fun w dvd ↦ ((mul_dvd_mul_iff_right <| right_ne_zero_of_mul h0).mp <| hy 2 _ _)
   rw [mul_pow, sq z]; exact mul_dvd_mul dvd (dvd_mul_left z z)
 
 namespace Commute
@@ -123,7 +123,7 @@ theorem add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero {m n k : ℕ}
   suffices x ^ i * y ^ j = 0 by simp only [this, nsmul_eq_mul, mul_zero]
   by_cases hi : m ≤ i
   · rw [pow_eq_zero_of_le hi hx, zero_mul]
-  rw [pow_eq_zero_of_le ?_ hy, mul_zero]
+  rw [pow_eq_zero_of_le _ hy, mul_zero]
   linarith [Finset.mem_antidiagonal.mp hij]
 
 theorem add_pow_add_eq_zero_of_pow_eq_zero {m n : ℕ}
@@ -143,7 +143,7 @@ protected lemma isNilpotent_sum {ι : Type*} {s : Finset ι} {f : ι → R}
   classical
   induction s using Finset.induction with
   | empty => simp
-  | @insert j s hj ih => ?_
+  | @insert j s hj ih => _
   rw [Finset.sum_insert hj]
   apply Commute.isNilpotent_add
   · exact Commute.sum_right _ _ _ (fun i hi ↦ h_comm _ _ (by simp) (by simp [hi]))
@@ -153,14 +153,14 @@ protected lemma isNilpotent_sum {ι : Type*} {s : Finset ι} {f : ι → R}
 
 protected lemma isNilpotent_mul_left_iff (hy : y ∈ nonZeroDivisorsLeft R) :
     IsNilpotent (x * y) ↔ IsNilpotent x := by
-  refine' ⟨_, h_comm.isNilpotent_mul_left⟩
+  refine ⟨_, h_comm.isNilpotent_mul_left⟩
   rintro ⟨k, hk⟩
   rw [mul_pow h_comm] at hk
   exact ⟨k, (nonZeroDivisorsLeft R).pow_mem hy k _ hk⟩
 
 protected lemma isNilpotent_mul_right_iff (hx : x ∈ nonZeroDivisorsRight R) :
     IsNilpotent (x * y) ↔ IsNilpotent y := by
-  refine' ⟨_, h_comm.isNilpotent_mul_right⟩
+  refine ⟨_, h_comm.isNilpotent_mul_right⟩
   rintro ⟨k, hk⟩
   rw [mul_pow h_comm] at hk
   exact ⟨k, (nonZeroDivisorsRight R).pow_mem hx k _ hk⟩
@@ -196,7 +196,7 @@ end CommSemiring
 lemma NoZeroSMulDivisors.isReduced (R M : Type*)
     [MonoidWithZero R] [Zero M] [MulActionWithZero R M] [Nontrivial M] [NoZeroSMulDivisors R M] :
     IsReduced R := by
-  refine ⟨fun x ⟨k, hk⟩ ↦ ?_⟩
+  refine ⟨fun x ⟨k, hk⟩ ↦ _⟩
   induction' k with k ih
   · rw [pow_zero] at hk
     exact eq_zero_of_zero_eq_one hk.symm x

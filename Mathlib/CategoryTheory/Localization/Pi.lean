@@ -39,10 +39,10 @@ instance pi {J : Type w} [Finite J] {C : J → Type u₁} {D : J → Type u₂}
       (CatCommSq.hInvEquiv E (Functor.pi L₁) (Functor.pi L₂) E').symm ⟨Iso.refl _⟩
     refine IsLocalization.of_equivalences (Functor.pi L₁)
       (MorphismProperty.pi (fun j => (W₂ (e j)))) (Functor.pi L₂)
-      (MorphismProperty.pi W₂) E E' ?_
+      (MorphismProperty.pi W₂) E E' _
       (MorphismProperty.IsInvertedBy.pi _ _ (fun _ => Localization.inverts _ _))
     intro _ _ f hf
-    refine ⟨_, _, E.functor.map f, fun i => ?_, ⟨Iso.refl _⟩⟩
+    refine ⟨_, _, E.functor.map f, fun i => _, ⟨Iso.refl _⟩⟩
     have H : ∀ {j j' : J₂} (h : j = j') {X Y : C₂ j} (g : X ⟶ Y) (_ : W₂ j g),
         W₂ j' ((Pi.eqToEquivalence C₂ h).functor.map g) := by
       rintro j _ rfl _ _ g hg
@@ -50,7 +50,7 @@ instance pi {J : Type w} [Finite J] {C : J → Type u₁} {D : J → Type u₂}
     exact H (e.apply_symm_apply i) _ (hf (e.symm i))
   · intro C D _ _ L W _ _
     haveI : ∀ j, IsEquivalence (L j) := by rintro ⟨⟩
-    refine IsLocalization.of_isEquivalence _ _ (fun _ _ _ _ => ?_)
+    refine IsLocalization.of_isEquivalence _ _ (fun _ _ _ _ => _)
     rw [MorphismProperty.isomorphisms.iff, isIso_pi_iff]
     rintro ⟨⟩
   · intro J _ hJ C D _ _ L W _ _
@@ -60,9 +60,9 @@ instance pi {J : Type w} [Finite J] {C : J → Type u₁} {D : J → Type u₂}
         ⟨NatIso.pi' (by rintro (_|i) <;> apply Iso.refl)⟩
     refine IsLocalization.of_equivalences L₁
       ((W none).prod (MorphismProperty.pi (fun j => W (some j)))) (Functor.pi L) _
-      (Pi.optionEquivalence C).symm (Pi.optionEquivalence D).symm ?_ ?_
+      (Pi.optionEquivalence C).symm (Pi.optionEquivalence D).symm _ _
     · intro ⟨X₁, X₂⟩ ⟨Y₁, Y₂⟩ f ⟨hf₁, hf₂⟩
-      refine ⟨_, _, (Pi.optionEquivalence C).inverse.map f, ?_, ⟨Iso.refl _⟩⟩
+      refine ⟨_, _, (Pi.optionEquivalence C).inverse.map f, _, ⟨Iso.refl _⟩⟩
       rintro (_|i)
       · exact hf₁
       · apply hf₂
@@ -87,7 +87,7 @@ instance {J : Type} [Finite J] {C : Type u₁} {D : Type u₂} [Category.{v₁} 
       isoWhiskerRight ((Functor.associator _ _ _).symm ≪≫
       isoWhiskerRight E.unitIso.symm L₁) _ ≪≫ isoWhiskerRight L₁.leftUnitor _⟩
   refine Functor.IsLocalization.of_equivalences L₁
-    (MorphismProperty.pi (fun _ => W)) L₂ _ E E' ?_ ?_
+    (MorphismProperty.pi (fun _ => W)) L₂ _ E E' _ _
   · intro X Y f hf
     exact MorphismProperty.le_isoClosure _ _ (fun ⟨j⟩ => hf j)
   · intro X Y f hf

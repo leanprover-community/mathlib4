@@ -150,7 +150,7 @@ instance : IsFractionRing A K where
     by_cases h : z = 0; · use (0, 1); simp [h]
     cases' A.mem_or_inv_mem z with hh hh
     · use (⟨z, hh⟩, 1); simp
-    · refine ⟨⟨1, ⟨⟨_, hh⟩, ?_⟩⟩, mul_inv_cancel h⟩
+    · refine ⟨⟨1, ⟨⟨_, hh⟩, _⟩⟩, mul_inv_cancel h⟩
       exact mem_nonZeroDivisors_iff_ne_zero.2 fun c => h (inv_eq_zero.mp (congr_arg Subtype.val c))
   exists_of_eq {a b} h := ⟨1, by ext; simpa using h⟩
 
@@ -333,7 +333,7 @@ theorem ofPrime_valuation_eq_one_iff_mem_primeCompl (A : ValuationSubring K) (P 
 @[simp]
 theorem idealOfLE_ofPrime (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
     idealOfLE A (ofPrime A P) (le_ofPrime A P) = P := by
-  refine Ideal.ext (fun x => ?_)
+  refine Ideal.ext (fun x => _)
   apply IsLocalization.AtPrime.to_map_mem_maximal_iff
   exact localRing (ofPrime A P)
 #align valuation_subring.ideal_of_le_of_prime ValuationSubring.idealOfLE_ofPrime
@@ -389,7 +389,7 @@ def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
     map_rel_iff' :=
       ⟨fun h => by
         dsimp at h
-        have := idealOfLE_le_of_le A _ _ ?_ ?_ h
+        have := idealOfLE_le_of_le A _ _ _ _ h
         iterate 2 erw [idealOfLE_ofPrime] at this
         · exact this
         all_goals exact le_ofPrime A (PrimeSpectrum.asIdeal _),
@@ -627,7 +627,7 @@ def principalUnitGroup : Subgroup Kˣ where
     intro a b ha hb
     -- Porting note: added
     rw [Set.mem_setOf] at ha hb
-    refine' lt_of_le_of_lt _ (max_lt hb ha)
+    refine lt_of_le_of_lt _ (max_lt hb ha)
     -- Porting note: `sub_add_sub_cancel` needed some help
     rw [← one_mul (A.valuation (b - 1)), ← A.valuation.map_one_add_of_lt ha, add_sub_cancel,
       ← Valuation.map_mul, mul_sub_one, ← sub_add_sub_cancel (↑(a * b) : K) _ 1]

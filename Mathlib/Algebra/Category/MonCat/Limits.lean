@@ -113,7 +113,7 @@ noncomputable def limitCone : Cone F :=
 @[to_additive "(Internal use only; use the limits API.)"]
 noncomputable def limitConeIsLimit : IsLimit (limitCone F) := by
   refine IsLimit.ofFaithful (forget MonCat) (Types.Small.limitConeIsLimit.{v,u} _)
-    (fun s => { toFun := _, map_one' := ?_, map_mul' := ?_ }) (fun s => rfl)
+    (fun s => { toFun := _, map_one' := _, map_mul' := _ }) (fun s => rfl)
   · simp only [Functor.mapCone_π_app, forget_map, map_one]
     rfl
   · intro x y

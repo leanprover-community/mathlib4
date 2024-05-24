@@ -322,7 +322,7 @@ theorem Cofix.bisim' {α : TypeVec n} {β : Type*} (Q : β → Prop) (u v : β �
     (fun x y ⟨x', Qx', xeq, yeq⟩ => by
       rcases h x' Qx' with ⟨a, f', f₀, f₁, ux'eq, vx'eq, h'⟩
       rw [liftR_iff]
-      refine'
+      refine
         ⟨a, q.P.appendContents f' f₀, q.P.appendContents f' f₁, xeq.symm ▸ ux'eq,
           yeq.symm ▸ vx'eq, _⟩
       intro i; cases i
@@ -431,7 +431,7 @@ variable {F: TypeVec (n + 1) → Type u} [MvFunctor F] [q : MvQPF F]
 
 theorem Cofix.abs_repr {α} (x : Cofix F α) : Quot.mk _ (Cofix.repr x) = x := by
   let R := fun x y : Cofix F α => abs (repr y) = x
-  refine' Cofix.bisim₂ R _ _ _ rfl
+  refine Cofix.bisim₂ R _ _ _ rfl
   clear x;
   rintro x y h;
   subst h
@@ -500,7 +500,7 @@ elab_rules : tactic
           ids[0]?.forM fun s => addLocalVarInfoForBinderIdent R s
           let sR ← exprToSyntax R
           evalTactic <| ← `(tactic|
-            refine MvQPF.Cofix.bisim₂ $sR ?_ _ _ ⟨_, rfl, rfl⟩;
+            refine MvQPF.Cofix.bisim₂ $sR _ _ _ ⟨_, rfl, rfl⟩;
             rintro $(← idss 1) $(← idss 2) ⟨$(← idss 3), $(← idss 4), $(← idss 5)⟩)
           liftMetaTactic fun g => return [← g.clear f.fvarId!]
     for n in [6 : ids.size] do
@@ -522,8 +522,8 @@ theorem corec_roll {α : TypeVec n} {X Y} {x₀ : X} (f : X → Y) (g : Y → F 
   mv_bisim x₀ with R a b x Ha Hb
   rw [Ha, Hb, Cofix.dest_corec, Cofix.dest_corec, Function.comp_apply, Function.comp_apply]
   rw [MvFunctor.map_map, ← appendFun_comp_id]
-  refine' liftR_map_last _ _ _ _ _
-  intro a; refine' ⟨a, rfl, rfl⟩
+  refine liftR_map_last _ _ _ _ _
+  intro a; refine ⟨a, rfl, rfl⟩
 #align mvqpf.corec_roll MvQPF.corec_roll
 
 theorem Cofix.dest_corec' {α : TypeVec.{u} n} {β : Type u}

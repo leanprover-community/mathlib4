@@ -285,7 +285,7 @@ theorem not_differentiableAt_abs_zero : ¬ DifferentiableAt ℝ (abs : ℝ → �
 
 lemma differentiableAt_comp_neg_iff {a : 𝕜} :
     DifferentiableAt 𝕜 f (-a) ↔ DifferentiableAt 𝕜 (fun x ↦ f (-x)) a := by
-  refine ⟨fun H ↦ H.comp a differentiable_neg.differentiableAt, fun H ↦ ?_⟩
+  refine ⟨fun H ↦ H.comp a differentiable_neg.differentiableAt, fun H ↦ _⟩
   convert ((neg_neg a).symm ▸ H).comp (-a) differentiable_neg.differentiableAt
   ext
   simp only [Function.comp_apply, neg_neg]

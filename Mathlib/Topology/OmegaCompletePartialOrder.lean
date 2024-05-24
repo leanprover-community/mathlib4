@@ -96,7 +96,7 @@ def notBelow :=
 
 theorem notBelow_isOpen : IsOpen (notBelow y) := by
   have h : Monotone (notBelow y) := fun x z hle ↦ mt hle.trans
-  refine ⟨h, fun c ↦ eq_of_forall_ge_iff fun z ↦ ?_⟩
+  refine ⟨h, fun c ↦ eq_of_forall_ge_iff fun z ↦ _⟩
   simp only [ωSup_le_iff, notBelow, mem_setOf_eq, le_Prop_eq, OrderHom.coe_mk, Chain.map_coe,
     Function.comp_apply, exists_imp, not_forall]
 #align not_below_is_open notBelow_isOpen
@@ -119,7 +119,7 @@ theorem scottContinuous_of_continuous {α β} [OmegaCompletePartialOrder α]
   have h : Monotone f := fun x y h ↦ by
     have hf : IsUpperSet {x | ¬f x ≤ f y} := ((notBelow_isOpen (f y)).preimage hf).isUpperSet
     simpa only [mem_setOf_eq, le_refl, not_true, imp_false, not_not] using hf h
-  refine ⟨h, fun c ↦ eq_of_forall_ge_iff fun z ↦ ?_⟩
+  refine ⟨h, fun c ↦ eq_of_forall_ge_iff fun z ↦ _⟩
   rcases (notBelow_isOpen z).preimage hf with ⟨hf, hf'⟩
   specialize hf' c
   simp only [OrderHom.coe_mk, mem_preimage, notBelow, mem_setOf_eq] at hf'

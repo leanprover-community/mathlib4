@@ -216,7 +216,7 @@ theorem IsOpen.lowerSemicontinuous_indicator (hs : IsOpen s) (hy : 0 ≤ y) :
   by_cases h : x ∈ s <;> simp [h] at hz
   · filter_upwards [hs.mem_nhds h]
     simp (config := { contextual := true }) [hz]
-  · refine Filter.eventually_of_forall fun x' => ?_
+  · refine Filter.eventually_of_forall fun x' => _
     by_cases h' : x' ∈ s <;> simp [h', hz.trans_le hy, hz]
 #align is_open.lower_semicontinuous_indicator IsOpen.lowerSemicontinuous_indicator
 
@@ -239,7 +239,7 @@ theorem IsClosed.lowerSemicontinuous_indicator (hs : IsClosed s) (hy : y ≤ 0) 
     LowerSemicontinuous (indicator s fun _x => y) := by
   intro x z hz
   by_cases h : x ∈ s <;> simp [h] at hz
-  · refine Filter.eventually_of_forall fun x' => ?_
+  · refine Filter.eventually_of_forall fun x' => _
     by_cases h' : x' ∈ s <;> simp [h', hz, hz.trans_le hy]
   · filter_upwards [hs.isOpen_compl.mem_nhds h]
     simp (config := { contextual := true }) [hz]
@@ -728,7 +728,7 @@ theorem lowerSemicontinuousWithinAt_tsum {f : ι → α → ℝ≥0∞}
     (h : ∀ i, LowerSemicontinuousWithinAt (f i) s x) :
     LowerSemicontinuousWithinAt (fun x' => ∑' i, f i x') s x := by
   simp_rw [ENNReal.tsum_eq_iSup_sum]
-  refine lowerSemicontinuousWithinAt_iSup fun b => ?_
+  refine lowerSemicontinuousWithinAt_iSup fun b => _
   exact lowerSemicontinuousWithinAt_sum fun i _hi => h i
 #align lower_semicontinuous_within_at_tsum lowerSemicontinuousWithinAt_tsum
 
@@ -1217,7 +1217,7 @@ variable {γ : Type*} [LinearOrder γ] [TopologicalSpace γ] [OrderTopology γ]
 theorem continuousWithinAt_iff_lower_upperSemicontinuousWithinAt {f : α → γ} :
     ContinuousWithinAt f s x ↔
       LowerSemicontinuousWithinAt f s x ∧ UpperSemicontinuousWithinAt f s x := by
-  refine ⟨fun h => ⟨h.lowerSemicontinuousWithinAt, h.upperSemicontinuousWithinAt⟩, ?_⟩
+  refine ⟨fun h => ⟨h.lowerSemicontinuousWithinAt, h.upperSemicontinuousWithinAt⟩, _⟩
   rintro ⟨h₁, h₂⟩
   intro v hv
   simp only [Filter.mem_map]

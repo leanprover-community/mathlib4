@@ -57,7 +57,7 @@ lemma one_half_le_sum_primes_ge_one_div (k : ℕ) :
         exact_mod_cast ((2 * N₀).smoothNumbersUpTo_card_add_roughNumbersUpTo_card k).symm
     _ ≤ m * (2 * N₀).sqrt + ((2 * N₀).roughNumbersUpTo k).card := by
         exact_mod_cast Nat.add_le_add_right ((2 * N₀).smoothNumbersUpTo_card_le k) _
-    _ ≤ m * (2 * N₀).sqrt + 2 * N₀ * S := add_le_add_left ?_ _
+    _ ≤ m * (2 * N₀).sqrt + 2 * N₀ * S := add_le_add_left _ _
   exact_mod_cast roughNumbersUpTo_card_le' (2 * N₀) k
 
 /-- The sum over the reciprocals of the primes diverges. -/
@@ -70,12 +70,12 @@ theorem not_summable_one_div_on_primes :
   have h' : Summable (indicator ({p | Nat.Prime p} ∩ {p | k ≤ p}) fun n ↦ (1 : ℝ) / n) := by
     convert h.indicator {n : ℕ | k ≤ n} using 1
     simp only [indicator_indicator, inter_comm]
-  refine ((one_half_le_sum_primes_ge_one_div k).trans_lt <| LE.le.trans_lt ?_ hk).false
+  refine ((one_half_le_sum_primes_ge_one_div k).trans_lt <| LE.le.trans_lt _ hk).false
   convert sum_le_tsum (primesBelow ((4 ^ (k.primesBelow.card + 1)).succ) \ primesBelow k)
     (fun n _ ↦ indicator_nonneg (fun p _ ↦ by positivity) _) h' using 2 with p hp
   obtain ⟨hp₁, hp₂⟩ := mem_setOf_eq ▸ Finset.mem_sdiff.mp hp
   have hpp := prime_of_mem_primesBelow hp₁
-  refine (indicator_of_mem (mem_def.mpr ⟨hpp, ?_⟩) fun n : ℕ ↦ (1 / n : ℝ)).symm
+  refine (indicator_of_mem (mem_def.mpr ⟨hpp, _⟩) fun n : ℕ ↦ (1 / n : ℝ)).symm
   exact not_lt.mp <| (not_and_or.mp <| (not_congr mem_primesBelow).mp hp₂).neg_resolve_right hpp
 
 /-- The sum over the reciprocals of the primes diverges. -/
@@ -91,7 +91,7 @@ theorem Nat.Primes.summable_rpow {r : ℝ} :
     exact (Real.summable_nat_rpow.mpr h).subtype _
   · -- case `-1 ≤ r`
     simp only [h, iff_false]
-    refine fun H ↦ Nat.Primes.not_summable_one_div <| H.of_nonneg_of_le (fun _ ↦ by positivity) ?_
+    refine fun H ↦ Nat.Primes.not_summable_one_div <| H.of_nonneg_of_le (fun _ ↦ by positivity) _
     intro p
     rw [one_div, ← Real.rpow_neg_one]
     exact Real.rpow_le_rpow_of_exponent_le (by exact_mod_cast p.prop.one_lt.le) <| not_lt.mp h

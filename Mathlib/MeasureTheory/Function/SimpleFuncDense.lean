@@ -115,7 +115,7 @@ theorem edist_nearestPt_le (e : ℕ → α) (x : α) {k N : ℕ} (hk : k ≤ N) 
 
 theorem tendsto_nearestPt {e : ℕ → α} {x : α} (hx : x ∈ closure (range e)) :
     Tendsto (fun N => nearestPt e N x) atTop (𝓝 x) := by
-  refine' (atTop_basis.tendsto_iff nhds_basis_eball).2 fun ε hε => _
+  refine (atTop_basis.tendsto_iff nhds_basis_eball).2 fun ε hε => _
   rcases EMetric.mem_closure_iff.1 hx ε hε with ⟨_, ⟨N, rfl⟩, hN⟩
   rw [edist_comm] at hN
   exact ⟨N, trivial, fun n hn => (edist_nearestPt_le e x hn).trans_lt hN⟩
@@ -158,7 +158,7 @@ theorem tendsto_approxOn {f : β → α} (hf : Measurable f) {s : Set α} {y₀ 
   haveI : Nonempty s := ⟨⟨y₀, h₀⟩⟩
   rw [← @Subtype.range_coe _ s, ← image_univ, ← (denseRange_denseSeq s).closure_eq] at hx
   simp (config := { iota := false }) only [approxOn, coe_comp]
-  refine' tendsto_nearestPt (closure_minimal _ isClosed_closure hx)
+  refine tendsto_nearestPt (closure_minimal _ isClosed_closure hx)
   simp (config := { iota := false }) only [Nat.range_casesOn, closure_union, range_comp]
   exact
     Subset.trans (image_closure_subset_closure_image continuous_subtype_val)
@@ -218,7 +218,7 @@ lemma HasCompactSupport.exists_simpleFunc_approx_of_prod [PseudoMetricSpace α]
       exact ⟨g, s, s_meas, htt'.trans ts, hg⟩
     · intro t t' ⟨g, s, s_meas, ts, hg⟩ ⟨g', s', s'_meas, t's', hg'⟩
       refine ⟨g.piecewise s s_meas g', s ∪ s', s_meas.union s'_meas,
-        union_subset_union ts t's', fun p hp ↦ ?_⟩
+        union_subset_union ts t's', fun p hp ↦ _⟩
       by_cases H : p ∈ s
       · simpa [H, SimpleFunc.piecewise_apply] using hg p H
       · simp only [SimpleFunc.piecewise_apply, H, ite_false]
@@ -228,12 +228,12 @@ lemma HasCompactSupport.exists_simpleFunc_approx_of_prod [PseudoMetricSpace α]
       obtain ⟨u, v, hu, xu, hv, yv, huv⟩ : ∃ u v, IsOpen u ∧ x ∈ u ∧ IsOpen v ∧ y ∈ v ∧
         u ×ˢ v ⊆ {z | dist (f z) (f (x, y)) < ε} :=
           mem_nhds_prod_iff'.1 <| Metric.continuousAt_iff'.1 hf.continuousAt ε hε
-      refine ⟨u ×ˢ v, nhdsWithin_le_nhds <| (hu.prod hv).mem_nhds (mk_mem_prod xu yv), ?_⟩
+      refine ⟨u ×ˢ v, nhdsWithin_le_nhds <| (hu.prod hv).mem_nhds (mk_mem_prod xu yv), _⟩
       exact ⟨SimpleFunc.const _ (f (x, y)), u ×ˢ v, hu.measurableSet.prod hv.measurableSet,
         Subset.rfl, fun z hz ↦ huv hz⟩
   obtain ⟨g, s, s_meas, fs, hg⟩ : ∃ g s, MeasurableSet s ∧ tsupport f ⊆ s ∧
     ∀ (x : X × Y), x ∈ s → dist (f x) (g x) < ε := M _ h'f
-  refine ⟨g.piecewise s s_meas 0, fun p ↦ ?_⟩
+  refine ⟨g.piecewise s s_meas 0, fun p ↦ _⟩
   by_cases H : p ∈ s
   · simpa [H, SimpleFunc.piecewise_apply] using hg p H
   · have : f p = 0 := by
@@ -259,7 +259,7 @@ lemma HasCompactSupport.measurable_of_prod
   have A : ∀ x, Tendsto (fun n ↦ g n x) atTop (𝓝 (f x)) := by
     intro x
     rw [tendsto_iff_dist_tendsto_zero]
-    apply squeeze_zero (fun n ↦ dist_nonneg) (fun n ↦ ?_) u_lim
+    apply squeeze_zero (fun n ↦ dist_nonneg) (fun n ↦ _) u_lim
     rw [dist_comm]
     exact (hg n x).le
   apply measurable_of_tendsto_metrizable (fun n ↦ (g n).measurable) (tendsto_pi_nhds.2 A)

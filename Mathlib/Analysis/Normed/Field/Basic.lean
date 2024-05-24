@@ -361,7 +361,7 @@ theorem List.norm_prod_le' : ∀ {l : List α}, l ≠ [] → ‖l.prod‖ ≤ (l
   | [a], _ => by simp
   | a::b::l, _ => by
     rw [List.map_cons, List.prod_cons, @List.prod_cons _ _ _ ‖a‖]
-    refine' le_trans (norm_mul_le _ _) (mul_le_mul_of_nonneg_left _ (norm_nonneg _))
+    refine le_trans (norm_mul_le _ _) (mul_le_mul_of_nonneg_left _ (norm_nonneg _))
     exact List.norm_prod_le' (List.cons_ne_nil b l)
 #align list.norm_prod_le' List.norm_prod_le'
 
@@ -656,7 +656,7 @@ instance (priority := 100) semi_normed_ring_top_monoid [NonUnitalSeminormedRing 
             -- Porting note: `ENNReal.{mul_sub, sub_mul}` should be protected
             _ ≤ ‖e.1‖ * ‖e.2 - x.2‖ + ‖e.1 - x.1‖ * ‖x.2‖ :=
               norm_add_le_of_le (norm_mul_le _ _) (norm_mul_le _ _)
-        refine squeeze_zero (fun e => norm_nonneg _) this ?_
+        refine squeeze_zero (fun e => norm_nonneg _) this _
         convert
           ((continuous_fst.tendsto x).norm.mul
                 ((continuous_snd.tendsto x).sub tendsto_const_nhds).norm).add
@@ -858,7 +858,7 @@ end Filter
 
 -- see Note [lower instance priority]
 instance (priority := 100) NormedDivisionRing.to_hasContinuousInv₀ : HasContinuousInv₀ α := by
-  refine' ⟨fun r r0 => tendsto_iff_norm_sub_tendsto_zero.2 _⟩
+  refine ⟨fun r r0 => tendsto_iff_norm_sub_tendsto_zero.2 _⟩
   have r0' : 0 < ‖r‖ := norm_pos_iff.2 r0
   rcases exists_between r0' with ⟨ε, ε0, εr⟩
   have : ∀ᶠ e in 𝓝 r, ‖e⁻¹ - r⁻¹‖ ≤ ‖r - e‖ / ‖r‖ / ε := by
@@ -871,8 +871,8 @@ instance (priority := 100) NormedDivisionRing.to_hasContinuousInv₀ : HasContin
       -- Porting note: `ENNReal.{mul_sub, sub_mul}` should be `protected`
       _ = ‖r - e‖ / ‖r‖ / ‖e‖ := by field_simp [mul_comm]
       _ ≤ ‖r - e‖ / ‖r‖ / ε := by gcongr
-  refine' squeeze_zero' (eventually_of_forall fun _ => norm_nonneg _) this _
-  refine' (((continuous_const.sub continuous_id).norm.div_const _).div_const _).tendsto' _ _ _
+  refine squeeze_zero' (eventually_of_forall fun _ => norm_nonneg _) this _
+  refine (((continuous_const.sub continuous_id).norm.div_const _).div_const _).tendsto' _ _ _
   simp
 #align normed_division_ring.to_has_continuous_inv₀ NormedDivisionRing.to_hasContinuousInv₀
 
@@ -983,7 +983,7 @@ theorem punctured_nhds_neBot (x : α) : NeBot (𝓝[≠] x) := by
   rw [← mem_closure_iff_nhdsWithin_neBot, Metric.mem_closure_iff]
   rintro ε ε0
   rcases exists_norm_lt α ε0 with ⟨b, hb0, hbε⟩
-  refine' ⟨x + b, mt (Set.mem_singleton_iff.trans add_right_eq_self).1 <| norm_pos_iff.1 hb0, _⟩
+  refine ⟨x + b, mt (Set.mem_singleton_iff.trans add_right_eq_self).1 <| norm_pos_iff.1 hb0, _⟩
   rwa [dist_comm, dist_eq_norm, add_sub_cancel_left]
 #align normed_field.punctured_nhds_ne_bot NormedField.punctured_nhds_neBot
 

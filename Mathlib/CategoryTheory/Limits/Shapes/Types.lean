@@ -246,8 +246,8 @@ def binaryProductFunctor : Type u ⥤ Type u ⥤ Type u where
 explicit binary product functor given by the product type.
 -/
 noncomputable def binaryProductIsoProd : binaryProductFunctor ≅ (prod.functor : Type u ⥤ _) := by
-  refine' NatIso.ofComponents (fun X => _) (fun _ => _)
-  · refine' NatIso.ofComponents (fun Y => _) (fun _ => _)
+  refine NatIso.ofComponents (fun X => _) (fun _ => _)
+  · refine NatIso.ofComponents (fun Y => _) (fun _ => _)
     · exact ((limit.isLimit _).conePointUniqueUpToIso (binaryProductLimit X Y)).symm
     · apply Limits.prod.hom_ext <;> simp <;> rfl
   · ext : 2
@@ -319,7 +319,7 @@ theorem binaryCofan_isColimit_iff {X Y : Type u} (c : BinaryCofan X Y) :
         ← show _ = c.inr from
           h.comp_coconePointUniqueUpToIso_inv (binaryCoproductColimit X Y) ⟨WalkingPair.right⟩]
       dsimp [binaryCoproductCocone]
-      refine'
+      refine
         ⟨(h.coconePointUniqueUpToIso (binaryCoproductColimit X Y)).symm.toEquiv.injective.comp
             Sum.inl_injective,
           (h.coconePointUniqueUpToIso (binaryCoproductColimit X Y)).symm.toEquiv.injective.comp
@@ -332,7 +332,7 @@ theorem binaryCofan_isColimit_iff {X Y : Type u} (c : BinaryCofan X Y) :
       have : ∀ x, x ∈ Set.range c.inl ∨ x ∈ Set.range c.inr := by
         rw [eq_compl_iff_isCompl.mpr h₃.symm]
         exact fun _ => or_not
-      refine' ⟨BinaryCofan.IsColimit.mk _ _ _ _ _⟩
+      refine ⟨BinaryCofan.IsColimit.mk _ _ _ _ _⟩
       · intro T f g x
         exact
           if h : x ∈ Set.range c.inl then f ((Equiv.ofInjective _ h₁).symm ⟨x, h⟩)
@@ -361,7 +361,7 @@ noncomputable def isCoprodOfMono {X Y : Type u} (f : X ⟶ Y) [Mono f] :
     IsColimit (BinaryCofan.mk f (Subtype.val : ↑(Set.range f)ᶜ → Y)) := by
   apply Nonempty.some
   rw [binaryCofan_isColimit_iff]
-  refine' ⟨(mono_iff_injective f).mp inferInstance, Subtype.val_injective, _⟩
+  refine ⟨(mono_iff_injective f).mp inferInstance, Subtype.val_injective, _⟩
   symm
   rw [← eq_compl_iff_isCompl]
   exact Subtype.range_val
@@ -492,7 +492,7 @@ The converse of `unique_of_type_equalizer`.
 noncomputable def typeEqualizerOfUnique (t : ∀ y : Y, g y = h y → ∃! x : X, f x = y) :
     IsLimit (Fork.ofι _ w) :=
   Fork.IsLimit.mk' _ fun s => by
-    refine' ⟨fun i => _, _, _⟩
+    refine ⟨fun i => _, _, _⟩
     · apply Classical.choose (t (s.ι i) _)
       apply congr_fun s.condition i
     · funext i
@@ -507,7 +507,7 @@ theorem unique_of_type_equalizer (t : IsLimit (Fork.ofι _ w)) (y : Y) (hy : g y
     ∃! x : X, f x = y := by
   let y' : PUnit ⟶ Y := fun _ => y
   have hy' : y' ≫ g = y' ≫ h := funext fun _ => hy
-  refine' ⟨(Fork.IsLimit.lift' t _ hy').1 ⟨⟩, congr_fun (Fork.IsLimit.lift' t y' _).2 ⟨⟩, _⟩
+  refine ⟨(Fork.IsLimit.lift' t _ hy').1 ⟨⟩, congr_fun (Fork.IsLimit.lift' t y' _).2 ⟨⟩, _⟩
   intro x' hx'
   suffices (fun _ : PUnit => x') = (Fork.IsLimit.lift' t y' hy').1 by
     rw [← this]
@@ -893,7 +893,7 @@ lemma quot_mk_eq_iff [Mono f] (a b : X₁ ⊕ X₂) :
 lemma inl_eq_inr_iff [Mono f] (x₁ : X₁) (x₂ : X₂) :
     (inl f g x₁ = inr f g x₂) ↔
       ∃ (s : S), f s = x₁ ∧ g s = x₂ := by
-  refine' (Pushout.quot_mk_eq_iff f g (Sum.inl x₁) (Sum.inr x₂)).trans _
+  refine (Pushout.quot_mk_eq_iff f g (Sum.inl x₁) (Sum.inr x₂)).trans _
   constructor
   · rintro ⟨⟩
     exact ⟨_, rfl, rfl⟩

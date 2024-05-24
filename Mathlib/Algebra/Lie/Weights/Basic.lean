@@ -76,7 +76,7 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
   -- Set up some notation.
   let F : Module.End R M₃ := toEnd R L M₃ x - (χ₁ + χ₂) • ↑1
   -- The goal is linear in `t` so use induction to reduce to the case that `t` is a pure tensor.
-  refine t.induction_on ?_ ?_ ?_
+  refine t.induction_on _ _ _
   · use 0; simp only [LinearMap.map_zero, LieModuleHom.map_zero]
   swap
   · rintro t₁ t₂ ⟨k₁, hk₁⟩ ⟨k₂, hk₂⟩; use max k₁ k₂
@@ -325,7 +325,7 @@ variable (R L)
 @[simp]
 lemma weightSpace_zero_normalizer_eq_self :
     (weightSpace M (0 : L → R)).normalizer = weightSpace M 0 := by
-  refine' le_antisymm _ (LieSubmodule.le_normalizer _)
+  refine le_antisymm _ (LieSubmodule.le_normalizer _)
   intro m hm
   rw [LieSubmodule.mem_normalizer] at hm
   simp only [mem_weightSpace, Pi.zero_apply, zero_smul, sub_zero] at hm ⊢
@@ -343,7 +343,7 @@ lemma iSup_ucs_eq_weightSpace_zero [IsNoetherian R M] :
     ⨆ k, (⊥ : LieSubmodule R L M).ucs k = weightSpace M (0 : L → R) := by
   obtain ⟨k, hk⟩ := (LieSubmodule.isNilpotent_iff_exists_self_le_ucs
     <| weightSpace M (0 : L → R)).mp inferInstance
-  refine le_antisymm (iSup_ucs_le_weightSpace_zero R L M) (le_trans hk ?_)
+  refine le_antisymm (iSup_ucs_le_weightSpace_zero R L M) (le_trans hk _)
   exact le_iSup (fun k ↦ (⊥ : LieSubmodule R L M).ucs k) k
 
 variable {L}
@@ -427,7 +427,7 @@ lemma posFittingComp_le_iInf_lowerCentralSeries :
 @[simp] lemma iInf_lowerCentralSeries_eq_posFittingComp
     [IsNoetherian R M] [IsArtinian R M] :
     ⨅ k, lowerCentralSeries R L M k = posFittingComp R L M := by
-  refine le_antisymm ?_ (posFittingComp_le_iInf_lowerCentralSeries R L M)
+  refine le_antisymm _ (posFittingComp_le_iInf_lowerCentralSeries R L M)
   apply iInf_lcs_le_of_isNilpotent_quot
   rw [LieModule.isNilpotent_iff_forall']
   intro x
@@ -460,7 +460,7 @@ variable
 lemma map_posFittingComp_le :
     (posFittingComp R L M).map f ≤ posFittingComp R L M₂ := by
   rw [posFittingComp, posFittingComp, LieSubmodule.map_iSup]
-  refine iSup_mono fun y ↦ LieSubmodule.map_le_iff_le_comap.mpr fun m hm ↦ ?_
+  refine iSup_mono fun y ↦ LieSubmodule.map_le_iff_le_comap.mpr fun m hm ↦ _
   simp only [mem_posFittingCompOf] at hm
   simp only [LieSubmodule.mem_comap, mem_posFittingCompOf]
   intro k
@@ -483,7 +483,7 @@ variable {f}
 
 lemma comap_weightSpace_eq_of_injective (hf : Injective f) :
     (weightSpace M₂ χ).comap f = weightSpace M χ := by
-  refine le_antisymm (fun m hm ↦ ?_) ?_
+  refine le_antisymm (fun m hm ↦ _) _
   · simp only [LieSubmodule.mem_comap, mem_weightSpace] at hm
     simp only [mem_weightSpace]
     intro x
@@ -499,7 +499,7 @@ lemma comap_weightSpace_eq_of_injective (hf : Injective f) :
 
 lemma map_weightSpace_eq_of_injective (hf : Injective f) :
     (weightSpace M χ).map f = weightSpace M₂ χ ⊓ f.range := by
-  refine le_antisymm (le_inf_iff.mpr ⟨map_weightSpace_le f, LieSubmodule.map_le_range f⟩) ?_
+  refine le_antisymm (le_inf_iff.mpr ⟨map_weightSpace_le f, LieSubmodule.map_le_range f⟩) _
   rintro - ⟨hm, ⟨m, rfl⟩⟩
   simp only [← comap_weightSpace_eq_of_injective hf, LieSubmodule.mem_map, LieSubmodule.mem_comap]
   exact ⟨m, hm, rfl⟩
@@ -510,7 +510,7 @@ lemma map_weightSpace_eq (e : M ≃ₗ⁅R,L⁆ M₂) :
 
 lemma map_posFittingComp_eq (e : M ≃ₗ⁅R,L⁆ M₂) :
     (posFittingComp R L M).map e = posFittingComp R L M₂ := by
-  refine le_antisymm (map_posFittingComp_le _) ?_
+  refine le_antisymm (map_posFittingComp_le _) _
   suffices posFittingComp R L M₂ = ((posFittingComp R L M₂).map (e.symm : M₂ →ₗ⁅R,L⁆ M)).map e by
     rw [this]
     exact LieSubmodule.map_mono (map_posFittingComp_le _)
@@ -592,8 +592,8 @@ lemma isCompl_weightSpace_zero_posFittingComp :
     let e := LieModuleEquiv.ofTop R L M
     rw [← map_weightSpace_eq e, ← map_posFittingComp_eq e]
     exact (LieSubmodule.orderIsoMapComap e).isCompl_iff.mp this
-  refine (LieSubmodule.wellFounded_of_isArtinian R L M).induction (C := P) _ fun N hN ↦ ?_
-  refine isCompl_weightSpace_zero_posFittingComp_aux R L N fun N' hN' ↦ ?_
+  refine (LieSubmodule.wellFounded_of_isArtinian R L M).induction (C := P) _ fun N hN ↦ _
+  refine isCompl_weightSpace_zero_posFittingComp_aux R L N fun N' hN' ↦ _
   suffices IsCompl (weightSpace (N'.map N.incl) 0) (posFittingComp R L (N'.map N.incl)) by
     let e := LieSubmodule.equivMapOfInjective N' N.injective_incl
     rw [← map_weightSpace_eq e, ← map_posFittingComp_eq e] at this
@@ -649,18 +649,18 @@ lemma independent_weightSpace [NoZeroSMulDivisors R M] :
   intro l
   let g : Module.End R M := toEnd R L M l - algebraMap R (Module.End R M) (χ₂ l)
   obtain ⟨k, hk : (g ^ k) y = 0⟩ := (mem_weightSpace _ _ _).mp hy l
-  refine ⟨k, (LieSubmodule.mem_inf _ _ _).mp ⟨?_, ?_⟩⟩
+  refine ⟨k, (LieSubmodule.mem_inf _ _ _).mp ⟨_, _⟩⟩
   · exact LieSubmodule.mapsTo_pow_toEnd_sub_algebraMap _ hx
   · rw [map_add, hk, zero_add]
     suffices (s.sup fun χ ↦ weightSpace M χ : Submodule R M).map (g ^ k) ≤
         s.sup fun χ ↦ weightSpace M χ by
-      refine this (Submodule.mem_map_of_mem ?_)
+      refine this (Submodule.mem_map_of_mem _)
       simp_rw [← LieSubmodule.mem_coeSubmodule, Finset.sup_eq_iSup,
         LieSubmodule.iSup_coe_toSubmodule, ← Finset.sup_eq_iSup] at hz
       exact hz
     simp_rw [Finset.sup_eq_iSup, Submodule.map_iSup (ι := L → R), Submodule.map_iSup (ι := _ ∈ s),
       LieSubmodule.iSup_coe_toSubmodule]
-    refine iSup₂_mono fun χ _ ↦ ?_
+    refine iSup₂_mono fun χ _ ↦ _
     rintro - ⟨u, hu, rfl⟩
     exact LieSubmodule.mapsTo_pow_toEnd_sub_algebraMap _ hu
 
@@ -729,7 +729,7 @@ instance instIsTriangularizableOfIsAlgClosed [IsAlgClosed K] : IsTriangularizabl
   ⟨fun _ ↦ Module.End.iSup_genEigenspace_eq_top _⟩
 
 instance (N : LieSubmodule K L M) [IsTriangularizable K L M] : IsTriangularizable K L N := by
-  refine ⟨fun y ↦ ?_⟩
+  refine ⟨fun y ↦ _⟩
   rw [← N.toEnd_restrict_eq_toEnd y]
   exact Module.End.iSup_genEigenspace_restrict_eq_top _ (IsTriangularizable.iSup_eq_top y)
 

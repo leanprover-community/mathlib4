@@ -114,9 +114,9 @@ theorem derivative_succ_aux (n ν : ℕ) :
       bernsteinPolynomial, map_add, map_natCast, Nat.cast_one]
   conv_rhs => rw [mul_sub]
   -- We'll prove the two terms match up separately.
-  refine' congr (congr_arg Sub.sub _) _
+  refine congr (congr_arg Sub.sub _) _
   · simp only [← mul_assoc]
-    refine' congr (congr_arg (· * ·) (congr (congr_arg (· * ·) _) rfl)) rfl
+    refine congr (congr_arg (· * ·) (congr (congr_arg (· * ·) _) rfl)) rfl
     -- Now it's just about binomial coefficients
     exact mod_cast congr_arg (fun m : ℕ => (m : R[X])) (Nat.succ_mul_choose_eq n ν).symm
   · rw [← tsub_add_eq_tsub_tsub, ← mul_assoc, ← mul_assoc]; congr 1
@@ -265,7 +265,7 @@ theorem linearIndependent_aux (n k : ℕ) (h : k ≤ n + 1) :
       suffices (Polynomial.derivative^[n - k] p).eval 1 = 0 by
         rw [this]
         exact (iterate_derivative_at_1_ne_zero ℚ n k h).symm
-      refine span_induction m ?_ ?_ ?_ ?_
+      refine span_induction m _ _ _ _
       · simp
         rintro ⟨a, w⟩; simp only [Fin.val_mk]
         rw [iterate_derivative_at_1_eq_zero_of_lt ℚ n ((tsub_lt_tsub_iff_left_of_le h).mpr w)]
@@ -324,7 +324,7 @@ theorem sum_smul (n : ℕ) :
         ring
     rw [add_pow, map_sum (pderiv true), map_sum (MvPolynomial.aeval e), Finset.sum_mul]
     -- Step inside the sum:
-    refine' Finset.sum_congr rfl fun k _ => (w k).trans _
+    refine Finset.sum_congr rfl fun k _ => (w k).trans _
     simp only [x, y, e, pderiv_true_x, pderiv_true_y, Algebra.id.smul_eq_mul, nsmul_eq_mul,
       Bool.cond_true, Bool.cond_false, add_zero, mul_one, mul_zero, smul_zero, MvPolynomial.aeval_X,
       MvPolynomial.pderiv_mul, Derivation.leibniz_pow, Derivation.map_natCast, map_natCast, map_pow,
@@ -364,7 +364,7 @@ theorem sum_mul_smul (n : ℕ) :
     rw [add_pow, map_sum (pderiv true), map_sum (pderiv true), map_sum (MvPolynomial.aeval e),
       Finset.sum_mul]
     -- Step inside the sum:
-    refine' Finset.sum_congr rfl fun k _ => (w k).trans _
+    refine Finset.sum_congr rfl fun k _ => (w k).trans _
     simp only [x, y, e, pderiv_true_x, pderiv_true_y, Algebra.id.smul_eq_mul, nsmul_eq_mul,
       Bool.cond_true, Bool.cond_false, add_zero, zero_add, mul_zero, smul_zero, mul_one,
       MvPolynomial.aeval_X, MvPolynomial.pderiv_X_self, MvPolynomial.pderiv_X_of_ne,
@@ -399,9 +399,9 @@ theorem variance (n : ℕ) :
     rhs
     rw [sum, sum_smul, sum_mul_smul, ← natCast_mul]
   calc
-    _ = _ := Finset.sum_congr rfl fun k m => ?_
+    _ = _ := Finset.sum_congr rfl fun k m => _
     _ = _ := p
-    _ = _ := ?_
+    _ = _ := _
   · congr 1; simp only [← natCast_mul, push_cast]
     cases k <;> · simp; ring
   · simp only [← natCast_mul, push_cast]

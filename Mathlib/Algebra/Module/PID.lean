@@ -90,7 +90,7 @@ theorem Submodule.exists_isInternal_prime_power_torsion_of_pid [Module.Finite R 
     (hM : Module.IsTorsion R M) :
     ∃ (ι : Type u) (_ : Fintype ι) (_ : DecidableEq ι) (p : ι → R) (_ : ∀ i, Irreducible <| p i)
         (e : ι → ℕ), DirectSum.IsInternal fun i => torsionBy R M <| p i ^ e i := by
-  refine' ⟨_, _, _, _, _, _, Submodule.isInternal_prime_power_torsion_of_pid hM⟩
+  refine ⟨_, _, _, _, _, _, Submodule.isInternal_prime_power_torsion_of_pid hM⟩
   · exact Finset.fintypeCoeSort _
   · rintro ⟨p, hp⟩
     have hP := prime_of_factor p (Multiset.mem_toFinset.mp hp)
@@ -127,7 +127,7 @@ theorem p_pow_smul_lift {x y : M} {k : ℕ} (hM' : Module.IsTorsionBy R M (p ^ p
   letI : MulAction R M := MulActionWithZero.toMulAction
   by_cases hk : k ≤ pOrder hM y
   · let f :=
-      ((R ∙ p ^ (pOrder hM y - k) * p ^ k).quotEquivOfEq _ ?_).trans
+      ((R ∙ p ^ (pOrder hM y - k) * p ^ k).quotEquivOfEq _ _).trans
         (quotTorsionOfEquivSpanSingleton R M y)
     · have : f.symm ⟨p ^ k • x, h⟩ ∈
           R ∙ Ideal.Quotient.mk (R ∙ p ^ (pOrder hM y - k) * p ^ k) (p ^ k) := by
@@ -160,7 +160,7 @@ theorem exists_smul_eq_zero_and_mk_eq {z : M} (hz : Module.IsTorsionBy R M (p ^ 
     rw [← mk_smul, Quotient.mk_eq_zero, Algebra.id.smul_eq_mul, mul_one]
     exact Submodule.mem_span_singleton_self _
   obtain ⟨a, ha⟩ := p_pow_smul_lift hp hM hz this
-  refine' ⟨f1.choose - a • z, by rw [smul_sub, sub_eq_zero, ha], _⟩
+  refine ⟨f1.choose - a • z, by rw [smul_sub, sub_eq_zero, ha], _⟩
   rw [mk_sub, mk_smul, (Quotient.mk_eq_zero _).mpr <| Submodule.mem_span_singleton_self _,
     smul_zero, sub_zero, f1.choose_spec]
 #align module.exists_smul_eq_zero_and_mk_eq Module.exists_smul_eq_zero_and_mk_eq
@@ -186,23 +186,23 @@ theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoi
     let s' : Fin d → N ⧸ R ∙ s j := Submodule.Quotient.mk ∘ s ∘ j.succAbove
     -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5732):
     -- `obtain` doesn't work with placeholders.
-    have := IH ?_ s' ?_
+    have := IH _ s' _
     · obtain ⟨k, ⟨f⟩⟩ := this
       clear IH
       have : ∀ i : Fin d,
           ∃ x : N, p ^ k i • x = 0 ∧ f (Submodule.Quotient.mk x) = DirectSum.lof R _ _ i 1 := by
         intro i
         let fi := f.symm.toLinearMap.comp (DirectSum.lof _ _ _ i)
-        obtain ⟨x, h0, h1⟩ := exists_smul_eq_zero_and_mk_eq hp hN hj fi; refine' ⟨x, h0, _⟩; rw [h1]
+        obtain ⟨x, h0, h1⟩ := exists_smul_eq_zero_and_mk_eq hp hN hj fi; refine ⟨x, h0, _⟩; rw [h1]
         simp only [fi, LinearMap.coe_comp, f.symm.coe_toLinearMap, f.apply_symm_apply,
           Function.comp_apply]
-      refine ⟨?_, ⟨?_⟩⟩
+      refine ⟨_, ⟨_⟩⟩
       · exact fun a => (fun i => (Option.rec (pOrder hN (s j)) k i : ℕ)) (finSuccEquiv d a)
       · refine (((lequivProdOfRightSplitExact
           (g := (f.trans ULift.moduleEquiv.{u, u, v}.symm).toLinearMap.comp <| mkQ _)
           (f := (DirectSum.toModule _ _ _ fun i => (liftQSpanSingleton (p ^ k i)
               (LinearMap.toSpanSingleton _ _ _) (this i).choose_spec.left : R ⧸ _ →ₗ[R] _)).comp
-            ULift.moduleEquiv.toLinearMap) (R ∙ s j).injective_subtype ?_ ?_).symm.trans
+            ULift.moduleEquiv.toLinearMap) (R ∙ s j).injective_subtype _ _).symm.trans
           (((quotTorsionOfEquivSpanSingleton R N (s j)).symm.trans
           (quotEquivOfEq (torsionOf R N (s j)) _
           (Ideal.torsionOf_eq_span_pow_pOrder hp hN (s j)))).prod
@@ -255,7 +255,7 @@ theorem equiv_directSum_of_isTorsion [h' : Module.Finite R N] (hN : Module.IsTor
       ⟨(LinearEquiv.ofBijective (DirectSum.coeLinearMap _) h).symm.trans <|
           (DFinsupp.mapRange.linearEquiv fun i => (this i).choose_spec.choose_spec.some).trans <|
             (DirectSum.sigmaLcurryEquiv R).symm.trans
-              (DFinsupp.mapRange.linearEquiv fun i => quotEquivOfEq _ _ ?_)⟩⟩
+              (DFinsupp.mapRange.linearEquiv fun i => quotEquivOfEq _ _ _)⟩⟩
   cases' i with i j
   simp only
 #align module.equiv_direct_sum_of_is_torsion Module.equiv_directSum_of_isTorsion
@@ -275,7 +275,7 @@ theorem equiv_free_prod_directSum [h' : Module.Finite R N] :
   obtain ⟨f, hf⟩ := Module.projective_lifting_property _ LinearMap.id (torsion R N).mkQ_surjective
   refine
     ⟨n, I, fI, p, hp, e,
-      ⟨(lequivProdOfRightSplitExact (torsion R N).injective_subtype ?_ hf).symm.trans <|
+      ⟨(lequivProdOfRightSplitExact (torsion R N).injective_subtype _ hf).symm.trans <|
           (h.prod g).trans <| LinearEquiv.prodComm.{u, u} R _ (Fin n →₀ R) ⟩⟩
   rw [range_subtype, ker_mkQ]
 #align module.equiv_free_prod_direct_sum Module.equiv_free_prod_directSum

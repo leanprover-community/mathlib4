@@ -146,7 +146,7 @@ theorem map_frobeniusPoly (n : ℕ) :
     MvPolynomial.map (Int.castRingHom ℚ) (frobeniusPoly p n) = frobeniusPolyRat p n := by
   rw [frobeniusPoly, RingHom.map_add, RingHom.map_mul, RingHom.map_pow, map_C, map_X, eq_intCast,
     Int.cast_natCast, frobeniusPolyRat]
-  refine Nat.strong_induction_on n ?_; clear n
+  refine Nat.strong_induction_on n _; clear n
   intro n IH
   rw [xInTermsOfW_eq]
   simp only [AlgHom.map_sum, AlgHom.map_sub, AlgHom.map_mul, AlgHom.map_pow, bind₁_C_right]
@@ -254,14 +254,14 @@ def frobenius : 𝕎 R →+* 𝕎 R where
     -- Porting note: removing the placeholders give an error
     refine IsPoly.ext (@IsPoly.comp p _ _ (frobeniusFun_isPoly p) WittVector.zeroIsPoly)
       (@IsPoly.comp p _ _ WittVector.zeroIsPoly
-      (frobeniusFun_isPoly p)) ?_ _ 0
+      (frobeniusFun_isPoly p)) _ _ 0
     simp only [Function.comp_apply, map_zero, forall_const]
     ghost_simp
   map_one' := by
     refine
       -- Porting note: removing the placeholders give an error
       IsPoly.ext (@IsPoly.comp p _ _ (frobeniusFun_isPoly p) WittVector.oneIsPoly)
-        (@IsPoly.comp p _ _ WittVector.oneIsPoly (frobeniusFun_isPoly p)) ?_ _ 0
+        (@IsPoly.comp p _ _ WittVector.oneIsPoly (frobeniusFun_isPoly p)) _ _ 0
     simp only [Function.comp_apply, map_one, forall_const]
     ghost_simp
   map_add' := by ghost_calc _ _; ghost_simp
@@ -299,9 +299,9 @@ theorem coeff_frobenius_charP (x : 𝕎 R) (n : ℕ) : coeff (frobenius x) n = x
   calc
     aeval (fun k => x.coeff k) (frobeniusPoly p n) =
         aeval (fun k => x.coeff k)
-          (MvPolynomial.map (Int.castRingHom (ZMod p)) (frobeniusPoly p n)) := ?_
-    _ = aeval (fun k => x.coeff k) (X n ^ p : MvPolynomial ℕ (ZMod p)) := ?_
-    _ = x.coeff n ^ p := ?_
+          (MvPolynomial.map (Int.castRingHom (ZMod p)) (frobeniusPoly p n)) := _
+    _ = aeval (fun k => x.coeff k) (X n ^ p : MvPolynomial ℕ (ZMod p)) := _
+    _ = x.coeff n ^ p := _
   · conv_rhs => rw [aeval_eq_eval₂Hom, eval₂Hom_map_hom]
     apply eval₂Hom_congr (RingHom.ext_int _ _) rfl rfl
   · rw [frobeniusPoly_zmod]

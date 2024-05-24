@@ -91,11 +91,11 @@ induction, then deduce smoothness of $f$ by setting $p=1$.
 theorem tendsto_polynomial_inv_mul_zero (p : ℝ[X]) :
     Tendsto (fun x ↦ p.eval x⁻¹ * expNegInvGlue x) (𝓝 0) (𝓝 0) := by
   simp only [expNegInvGlue, mul_ite, mul_zero]
-  refine tendsto_const_nhds.if ?_
+  refine tendsto_const_nhds.if _
   simp only [not_le]
   have : Tendsto (fun x ↦ p.eval x⁻¹ / exp x⁻¹) (𝓝[>] 0) (𝓝 0) :=
     p.tendsto_div_exp_atTop.comp tendsto_inv_zero_atTop
-  refine this.congr' <| mem_of_superset self_mem_nhdsWithin fun x hx ↦ ?_
+  refine this.congr' <| mem_of_superset self_mem_nhdsWithin fun x hx ↦ _
   simp [expNegInvGlue, hx.out.not_le, exp_neg, div_eq_mul_inv]
 
 theorem hasDerivAt_polynomial_eval_inv_mul (p : ℝ[X]) (x : ℝ) :
@@ -103,11 +103,11 @@ theorem hasDerivAt_polynomial_eval_inv_mul (p : ℝ[X]) (x : ℝ) :
       ((X ^ 2 * (p - derivative (R := ℝ) p)).eval x⁻¹ * expNegInvGlue x) x := by
   rcases lt_trichotomy x 0 with hx | rfl | hx
   · rw [zero_of_nonpos hx.le, mul_zero]
-    refine (hasDerivAt_const _ 0).congr_of_eventuallyEq ?_
+    refine (hasDerivAt_const _ 0).congr_of_eventuallyEq _
     filter_upwards [gt_mem_nhds hx] with y hy
     rw [zero_of_nonpos hy.le, mul_zero]
   · rw [expNegInvGlue.zero, mul_zero, hasDerivAt_iff_tendsto_slope]
-    refine ((tendsto_polynomial_inv_mul_zero (p * X)).mono_left inf_le_left).congr fun x ↦ ?_
+    refine ((tendsto_polynomial_inv_mul_zero (p * X)).mono_left inf_le_left).congr fun x ↦ _
     simp [slope_def_field, div_eq_mul_inv, mul_right_comm]
   · have := ((p.hasDerivAt x⁻¹).mul (hasDerivAt_neg _).exp).comp x (hasDerivAt_inv hx.ne')
     convert this.congr_of_eventuallyEq _ using 1
@@ -126,11 +126,11 @@ theorem continuous_polynomial_eval_inv_mul (p : ℝ[X]) :
 
 theorem contDiff_polynomial_eval_inv_mul {n : ℕ∞} (p : ℝ[X]) :
     ContDiff ℝ n (fun x ↦ p.eval x⁻¹ * expNegInvGlue x) := by
-  apply contDiff_all_iff_nat.2 (fun m => ?_) n
+  apply contDiff_all_iff_nat.2 (fun m => _) n
   induction m generalizing p with
   | zero => exact contDiff_zero.2 <| continuous_polynomial_eval_inv_mul _
   | succ m ihm =>
-    refine contDiff_succ_iff_deriv.2 ⟨differentiable_polynomial_eval_inv_mul _, ?_⟩
+    refine contDiff_succ_iff_deriv.2 ⟨differentiable_polynomial_eval_inv_mul _, _⟩
     convert ihm (X ^ 2 * (p - derivative (R := ℝ) p)) using 2
     exact (hasDerivAt_polynomial_eval_inv_mul p _).deriv
 
@@ -186,7 +186,7 @@ projection of `x : ℝ` to $[0, 1]$ gives the same result as applying it to `x`.
 @[simp]
 protected theorem projIcc :
     smoothTransition (projIcc (0 : ℝ) 1 zero_le_one x) = smoothTransition x := by
-  refine' congr_fun (IccExtend_eq_self zero_le_one smoothTransition (fun x hx => _) fun x hx => _) x
+  refine congr_fun (IccExtend_eq_self zero_le_one smoothTransition (fun x hx => _) fun x hx => _) x
   · rw [smoothTransition.zero, zero_of_nonpos hx.le]
   · rw [smoothTransition.one, one_of_one_le hx.le]
 #align real.smooth_transition.proj_Icc Real.smoothTransition.projIcc

@@ -235,7 +235,7 @@ instance IsPoly₂.comp {h f g} [hh : IsPoly₂ p h] [hf : IsPoly p f] [hg : IsP
   obtain ⟨φ, hf⟩ := hf
   obtain ⟨ψ, hg⟩ := hg
   obtain ⟨χ, hh⟩ := hh
-  refine' ⟨⟨fun n ↦ bind₁ (uncurry <|
+  refine ⟨⟨fun n ↦ bind₁ (uncurry <|
     ![fun k ↦ rename (Prod.mk (0 : Fin 2)) (φ k),
       fun k ↦ rename (Prod.mk (1 : Fin 2)) (ψ k)]) (χ n), _⟩⟩
   intros
@@ -270,7 +270,7 @@ instance IsPoly.comp₂ {g f} [hg : IsPoly p g] [hf : IsPoly₂ p f] :
 -- Porting note (#10754): made this an instance
 instance IsPoly₂.diag {f} [hf : IsPoly₂ p f] : IsPoly p fun R _Rcr x => f x x := by
   obtain ⟨φ, hf⟩ := hf
-  refine ⟨⟨fun n => bind₁ (uncurry ![X, X]) (φ n), ?_⟩⟩
+  refine ⟨⟨fun n => bind₁ (uncurry ![X, X]) (φ n), _⟩⟩
   intros; funext n
   simp (config := { unfoldPartialApp := true }) only [hf, peval, uncurry, aeval_bind₁]
   apply eval₂Hom_congr rfl _ rfl
@@ -523,8 +523,8 @@ elab_rules : tactic | `(tactic| ghost_calc $[$ids']*) => do
   let fS ← Elab.Term.exprToSyntax f
   let gS ← Elab.Term.exprToSyntax g
   match idsS with
-    | #[x] => evalTactic (← `(tactic| refine IsPoly.ext (f := $fS) (g := $gS) ?_ ?_ ?_ _ $x))
-    | #[x, y] => evalTactic (← `(tactic| refine IsPoly₂.ext (f := $fS) (g := $gS) ?_ ?_ ?_ _ $x $y))
+    | #[x] => evalTactic (← `(tactic| refine IsPoly.ext (f := $fS) (g := $gS) _ _ _ _ $x))
+    | #[x, y] => evalTactic (← `(tactic| refine IsPoly₂.ext (f := $fS) (g := $gS) _ _ _ _ $x $y))
     | _ => throwError "ghost_calc takes either one or two arguments"
   let nm ← withMainContext <|
     if let .fvar fvarId := (R : Expr) then

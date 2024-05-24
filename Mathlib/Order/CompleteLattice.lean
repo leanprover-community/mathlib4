@@ -1576,7 +1576,7 @@ dropped, without changing the result. -/
 theorem iSup_ne_bot_subtype (f : ι → α) : ⨆ i : { i // f i ≠ ⊥ }, f i = ⨆ i, f i := by
   by_cases htriv : ∀ i, f i = ⊥
   · simp only [iSup_bot, (funext htriv : f = _)]
-  refine' (iSup_comp_le f _).antisymm (iSup_mono' fun i => _)
+  refine (iSup_comp_le f _).antisymm (iSup_mono' fun i => _)
   by_cases hi : f i = ⊥
   · rw [hi]
     obtain ⟨i₀, hi₀⟩ := not_forall.mp htriv
@@ -1605,7 +1605,7 @@ theorem sInf_image2 {f : β → γ → α} {s : Set β} {t : Set γ} :
 
 theorem iSup_ge_eq_iSup_nat_add (u : ℕ → α) (n : ℕ) : ⨆ i ≥ n, u i = ⨆ i, u (i + n) := by
   apply le_antisymm <;> simp only [iSup_le_iff]
-  · refine fun i hi => le_sSup ⟨i - n, ?_⟩
+  · refine fun i hi => le_sSup ⟨i - n, _⟩
     dsimp only
     rw [Nat.sub_add_cancel hi]
   · exact fun i => le_sSup ⟨i + n, iSup_pos (Nat.le_add_left _ _)⟩

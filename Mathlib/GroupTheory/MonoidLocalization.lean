@@ -164,8 +164,8 @@ def r' : Con (M × S) := by
   -- note we multiply by `c` on the left so that we can later generalize to `•`
   refine
     { r := fun a b : M × S ↦ ∃ c : S, ↑c * (↑b.2 * a.1) = c * (a.2 * b.1)
-      iseqv := ⟨fun a ↦ ⟨1, rfl⟩, fun ⟨c, hc⟩ ↦ ⟨c, hc.symm⟩, ?_⟩
-      mul' := ?_ }
+      iseqv := ⟨fun a ↦ ⟨1, rfl⟩, fun ⟨c, hc⟩ ↦ ⟨c, hc.symm⟩, _⟩
+      mul' := _ }
   · rintro a b c ⟨t₁, ht₁⟩ ⟨t₂, ht₂⟩
     use t₂ * t₁ * b.2
     simp only [Submonoid.coe_mul]
@@ -192,7 +192,7 @@ theorem r_eq_r' : r S = r' S :=
   le_antisymm (sInf_le fun _ ↦ ⟨1, by simp⟩) <|
     le_sInf fun b H ⟨p, q⟩ ⟨x, y⟩ ⟨t, ht⟩ ↦ by
       rw [← one_mul (p, q), ← one_mul (x, y)]
-      refine b.trans (b.mul (H (t * y)) (b.refl _)) ?_
+      refine b.trans (b.mul (H (t * y)) (b.refl _)) _
       convert b.symm (b.mul (H (t * q)) (b.refl (x, y))) using 1
       dsimp only [Prod.mk_mul_mk, Submonoid.coe_mul] at ht ⊢
       simp_rw [mul_assoc, ht, mul_comm y q]
@@ -594,7 +594,7 @@ theorem surj₂ (f : LocalizationMap S N) (z w : N) : ∃ z' w' : M, ∃ d : S,
     (z * f.toMap d = f.toMap z') ∧  (w * f.toMap d = f.toMap w') := by
   let ⟨a, ha⟩ := surj f z
   let ⟨b, hb⟩ := surj f w
-  refine ⟨a.1 * b.2, a.2 * b.1, a.2 * b.2, ?_, ?_⟩
+  refine ⟨a.1 * b.2, a.2 * b.1, a.2 * b.2, _, _⟩
   · simp_rw [mul_def, map_mul, ← ha]
     exact (mul_assoc z _ _).symm
   · simp_rw [mul_def, map_mul, ← hb]
@@ -1869,7 +1869,7 @@ variable {S N} in
 /-- If `S` contains `0` then the localization at `S` is trivial. -/
 theorem LocalizationMap.subsingleton  (f : Submonoid.LocalizationMap S N) (h : 0 ∈ S) :
     Subsingleton N := by
-  refine ⟨fun a b ↦ ?_⟩
+  refine ⟨fun a b ↦ _⟩
   rw [← LocalizationMap.mk'_sec f a, ← LocalizationMap.mk'_sec f b, LocalizationMap.eq]
   exact ⟨⟨0, h⟩, by simp only [zero_mul]⟩
 
@@ -1947,7 +1947,7 @@ noncomputable def lift (f : LocalizationWithZeroMap S N) (g : M →*₀ P)
     map_zero' := by
       erw [LocalizationMap.lift_spec f.toLocalizationMap hg 0 0]
       rw [mul_zero, ← map_zero g, ← g.toMonoidHom_coe]
-      refine f.toLocalizationMap.eq_of_eq hg ?_
+      refine f.toLocalizationMap.eq_of_eq hg _
       rw [LocalizationMap.sec_zero_fst]
       exact f.toMonoidWithZeroHom.map_zero.symm }
 #align submonoid.localization_with_zero_map.lift Submonoid.LocalizationWithZeroMap.lift
@@ -2094,10 +2094,10 @@ instance partialOrder : PartialOrder (Localization s) where
   le_trans a b c :=
     Localization.induction_on₃ a b c fun a b c hab hbc => by
       simp only [mk_le_mk] at hab hbc ⊢
-      refine' le_of_mul_le_mul_left' _
+      refine le_of_mul_le_mul_left' _
       · exact ↑b.2
       rw [mul_left_comm]
-      refine' (mul_le_mul_left' hab _).trans _
+      refine (mul_le_mul_left' hab _).trans _
       rwa [mul_left_comm, mul_left_comm (b.2 : α), mul_le_mul_iff_left]
   le_antisymm a b := by
     induction' a using Localization.rec with a₁ a₂

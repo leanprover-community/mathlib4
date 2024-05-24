@@ -119,7 +119,7 @@ variable [CommMonoid R] [DecidableRel (Dvd.dvd : R → R → Prop)]
 
 theorem squarefree_iff_multiplicity_le_one (r : R) :
     Squarefree r ↔ ∀ x : R, multiplicity x r ≤ 1 ∨ IsUnit x := by
-  refine' forall_congr' fun a => _
+  refine forall_congr' fun a => _
   rw [← sq, pow_dvd_iff_le_multiplicity, or_iff_not_imp_left, not_le, imp_congr _ Iff.rfl]
   norm_cast
   rw [← one_add_one_eq_two]
@@ -146,14 +146,14 @@ variable [CommMonoidWithZero R] [WfDvdMonoid R]
 
 theorem squarefree_iff_no_irreducibles {x : R} (hx₀ : x ≠ 0) :
     Squarefree x ↔ ∀ p, Irreducible p → ¬ (p * p ∣ x) := by
-  refine ⟨fun h p hp hp' ↦ hp.not_unit (h p hp'), fun h d hd ↦ by_contra fun hdu ↦ ?_⟩
+  refine ⟨fun h p hp hp' ↦ hp.not_unit (h p hp'), fun h d hd ↦ by_contra fun hdu ↦ _⟩
   have hd₀ : d ≠ 0 := ne_zero_of_dvd_ne_zero (ne_zero_of_dvd_ne_zero hx₀ hd) (dvd_mul_left d d)
   obtain ⟨p, irr, dvd⟩ := WfDvdMonoid.exists_irreducible_factor hdu hd₀
   exact h p irr ((mul_dvd_mul dvd dvd).trans hd)
 
 theorem irreducible_sq_not_dvd_iff_eq_zero_and_no_irreducibles_or_squarefree (r : R) :
     (∀ x : R, Irreducible x → ¬x * x ∣ r) ↔ (r = 0 ∧ ∀ x : R, ¬Irreducible x) ∨ Squarefree r := by
-  refine ⟨fun h ↦ ?_, ?_⟩
+  refine ⟨fun h ↦ _, _⟩
   · rcases eq_or_ne r 0 with (rfl | hr)
     · exact .inl (by simpa using h)
     · exact .inr ((squarefree_iff_no_irreducibles hr).mpr h)

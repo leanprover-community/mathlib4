@@ -114,7 +114,7 @@ theorem sum_schlomilch_le {C : ℕ} (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f
   gcongr
   suffices ∑ k in range n, (u (k + 2) - u (k + 1)) • f (u (k + 1)) ≤
   C • ∑ k in range n, ((u (k + 1) - u k) • f (u (k + 1))) by
-    refine this.trans (nsmul_le_nsmul_right ?_ _)
+    refine this.trans (nsmul_le_nsmul_right _ _)
     exact sum_schlomilch_le' hf h_pos hu n
   have : ∀ k ∈ range n, (u (k + 2) - u (k + 1)) • f (u (k + 1)) ≤
     C • ((u (k + 1) - u k) • f (u (k + 1))) := by
@@ -146,7 +146,7 @@ theorem le_tsum_schlomilch (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f 
     ∑' k , f k ≤ ∑ k in range (u 0), f k + ∑' k : ℕ, (u (k + 1) - u k) * f (u k) := by
   rw [ENNReal.tsum_eq_iSup_nat' hu.tendsto_atTop]
   refine iSup_le fun n =>
-    (Finset.le_sum_schlomilch hf h_pos hu.monotone n).trans (add_le_add_left ?_ _)
+    (Finset.le_sum_schlomilch hf h_pos hu.monotone n).trans (add_le_add_left _ _)
   have (k : ℕ) : (u (k + 1) - u k : ℝ≥0∞) = (u (k + 1) - (u k : ℕ) : ℕ) := by
     simp [NNReal.coe_sub (Nat.cast_le (α := ℝ≥0).mpr <| (hu k.lt_succ_self).le)]
   simp only [nsmul_eq_mul, this]
@@ -155,7 +155,7 @@ theorem le_tsum_schlomilch (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f 
 theorem le_tsum_condensed (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) :
     ∑' k, f k ≤ f 0 + ∑' k : ℕ, 2 ^ k * f (2 ^ k) := by
   rw [ENNReal.tsum_eq_iSup_nat' (Nat.tendsto_pow_atTop_atTop_of_one_lt _root_.one_lt_two)]
-  refine' iSup_le fun n => (Finset.le_sum_condensed hf n).trans (add_le_add_left _ _)
+  refine iSup_le fun n => (Finset.le_sum_condensed hf n).trans (add_le_add_left _ _)
   simp only [nsmul_eq_mul, Nat.cast_pow, Nat.cast_two]
   apply ENNReal.sum_le_tsum
 #align ennreal.le_tsum_condensed ENNReal.le_tsum_condensed
@@ -166,9 +166,9 @@ theorem tsum_schlomilch_le {C : ℕ} (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → 
   rw [ENNReal.tsum_eq_iSup_nat' (tendsto_atTop_mono Nat.le_succ tendsto_id)]
   refine
     iSup_le fun n =>
-      le_trans ?_
+      le_trans _
         (add_le_add_left
-          (mul_le_mul_of_nonneg_left (ENNReal.sum_le_tsum <| Finset.Ico (u 0 + 1) (u n + 1)) ?_) _)
+          (mul_le_mul_of_nonneg_left (ENNReal.sum_le_tsum <| Finset.Ico (u 0 + 1) (u n + 1)) _) _)
   simpa using Finset.sum_schlomilch_le hf h_pos h_nonneg hu h_succ_diff n
   exact zero_le _
 
@@ -177,7 +177,7 @@ theorem tsum_condensed_le (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m
   rw [ENNReal.tsum_eq_iSup_nat' (tendsto_atTop_mono Nat.le_succ tendsto_id), two_mul, ← two_nsmul]
   refine
     iSup_le fun n =>
-      le_trans ?_
+      le_trans _
         (add_le_add_left
           (nsmul_le_nsmul_right (ENNReal.sum_le_tsum <| Finset.Ico 2 (2 ^ n + 1)) _) _)
   simpa using Finset.sum_condensed_le hf n
@@ -330,7 +330,7 @@ theorem summable_one_div_int_pow {p : ℕ} :
     (Summable fun n : ℤ ↦ 1 / (n : ℝ) ^ p) ↔ 1 < p := by
   refine ⟨fun h ↦ summable_one_div_nat_pow.mp (h.comp_injective Nat.cast_injective),
     fun h ↦ .of_nat_of_neg (summable_one_div_nat_pow.mpr h)
-      (((summable_one_div_nat_pow.mpr h).mul_left <| 1 / (-1 : ℝ) ^ p).congr fun n ↦ ?_)⟩
+      (((summable_one_div_nat_pow.mpr h).mul_left <| 1 / (-1 : ℝ) ^ p).congr fun n ↦ _)⟩
   rw [Int.cast_neg, Int.cast_natCast, neg_eq_neg_one_mul (n : ℝ), mul_pow, mul_one_div, div_div]
 #align real.summable_one_div_int_pow Real.summable_one_div_int_pow
 
@@ -396,7 +396,7 @@ variable {α : Type*} [LinearOrderedField α]
 set_option tactic.skipAssignedInstances false in
 theorem sum_Ioc_inv_sq_le_sub {k n : ℕ} (hk : k ≠ 0) (h : k ≤ n) :
     (∑ i in Ioc k n, ((i : α) ^ 2)⁻¹) ≤ (k : α)⁻¹ - (n : α)⁻¹ := by
-  refine' Nat.le_induction _ _ n h
+  refine Nat.le_induction _ _ n h
   · simp only [Ioc_self, sum_empty, sub_self, le_refl]
   intro n hn IH
   rw [sum_Ioc_succ_top hn]
@@ -428,7 +428,7 @@ theorem sum_Ioo_inv_sq_le (k n : ℕ) : (∑ i in Ioo k n, (i ^ 2 : α)⁻¹) �
       swap; · exact Nat.succ_lt_succ ((Nat.lt_succ_self k).trans_le (le_max_left _ _))
       rw [Nat.Ico_succ_right, Nat.Icc_succ_left, Nat.cast_succ]
     _ ≤ ((k + 1 : α) ^ 2)⁻¹ + (k + 1 : α)⁻¹ := by
-      refine' add_le_add le_rfl ((sum_Ioc_inv_sq_le_sub _ (le_max_left _ _)).trans _)
+      refine add_le_add le_rfl ((sum_Ioc_inv_sq_le_sub _ (le_max_left _ _)).trans _)
       · simp only [Ne, Nat.succ_ne_zero, not_false_iff]
       · simp only [Nat.cast_succ, one_div, sub_le_self_iff, inv_nonneg, Nat.cast_nonneg]
     _ ≤ 1 / (k + 1) + 1 / (k + 1) := by
@@ -466,19 +466,19 @@ lemma Real.summable_one_div_nat_add_rpow (a : ℝ) (s : ℝ) :
   suffices ∀ (b c : ℝ), Summable (fun n : ℕ ↦ 1 / |n + b| ^ s) →
       Summable (fun n : ℕ ↦ 1 / |n + c| ^ s) by
     simp_rw [← summable_one_div_nat_rpow, Iff.intro (this a 0) (this 0 a), add_zero, Nat.abs_cast]
-  refine fun b c h ↦ summable_of_isBigO_nat h (isBigO_of_div_tendsto_nhds ?_ 1 ?_)
+  refine fun b c h ↦ summable_of_isBigO_nat h (isBigO_of_div_tendsto_nhds _ 1 _)
   · filter_upwards [eventually_gt_atTop (Nat.ceil |b|)] with n hn hx
     have hna : 0 < n + b := by linarith [lt_of_abs_lt ((abs_neg b).symm ▸ Nat.lt_of_ceil_lt hn)]
     exfalso
     revert hx
     positivity
   · simp_rw [Pi.div_def, div_div, mul_one_div, one_div_div]
-    refine (?_ : Tendsto (fun x : ℝ ↦ |x + b| ^ s / |x + c| ^ s) atTop (𝓝 1)).comp
+    refine (_ : Tendsto (fun x : ℝ ↦ |x + b| ^ s / |x + c| ^ s) atTop (𝓝 1)).comp
       tendsto_natCast_atTop_atTop
     have : Tendsto (fun x : ℝ ↦ 1 + (b - c) / x) atTop (𝓝 1) := by
       simpa using tendsto_const_nhds.add ((tendsto_const_nhds (X := ℝ)).div_atTop tendsto_id)
     have : Tendsto (fun x ↦ (x + b) / (x + c)) atTop (𝓝 1) := by
-      refine (this.comp (tendsto_id.atTop_add (tendsto_const_nhds (x := c)))).congr' ?_
+      refine (this.comp (tendsto_id.atTop_add (tendsto_const_nhds (x := c)))).congr' _
       filter_upwards [eventually_gt_atTop (-c)] with x hx
       field_simp [(by linarith : 0 < x + c).ne']
     apply (one_rpow s ▸ (continuousAt_rpow_const _ s (by simp)).tendsto.comp this).congr'

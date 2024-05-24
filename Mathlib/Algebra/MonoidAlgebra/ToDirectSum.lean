@@ -140,8 +140,8 @@ theorem toDirectSum_mul [DecidableEq ι] [AddMonoid ι] [Semiring M] (f g : AddM
   revert f g
   rw [AddMonoidHom.map_mul_iff]
   -- Porting note: does not find `addHom_ext'`, was `ext (xi xv yi yv) : 4`
-  refine Finsupp.addHom_ext' fun xi => AddMonoidHom.ext fun xv => ?_
-  refine Finsupp.addHom_ext' fun yi => AddMonoidHom.ext fun yv => ?_
+  refine Finsupp.addHom_ext' fun xi => AddMonoidHom.ext fun xv => _
+  refine Finsupp.addHom_ext' fun yi => AddMonoidHom.ext fun yv => _
   dsimp only [AddMonoidHom.comp_apply, AddMonoidHom.compl₂_apply, AddMonoidHom.compr₂_apply,
     AddMonoidHom.mul_apply, Finsupp.singleAddHom_apply]
   -- This was not needed before leanprover/lean4#2644

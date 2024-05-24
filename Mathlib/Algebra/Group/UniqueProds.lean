@@ -121,7 +121,7 @@ open Finset in
 theorem iff_card_le_one [DecidableEq G] (ha0 : a0 ∈ A) (hb0 : b0 ∈ B) :
     UniqueMul A B a0 b0 ↔ ((A ×ˢ B).filter (fun p ↦ p.1 * p.2 = a0 * b0)).card ≤ 1 := by
   simp_rw [card_le_one_iff, mem_filter, mem_product]
-  refine ⟨fun h p1 p2 ⟨⟨ha1, hb1⟩, he1⟩ ⟨⟨ha2, hb2⟩, he2⟩ ↦ ?_, fun h a b ha hb he ↦ ?_⟩
+  refine ⟨fun h p1 p2 ⟨⟨ha1, hb1⟩, he1⟩ ⟨⟨ha2, hb2⟩, he2⟩ ↦ _, fun h a b ha hb he ↦ _⟩
   · have h1 := h ha1 hb1 he1; have h2 := h ha2 hb2 he2
     ext
     · rw [h1.1, h2.1]
@@ -221,7 +221,7 @@ theorem of_image_filter [DecidableEq H]
     UniqueMul A B aG bG := fun a b ha hb he ↦ by
   specialize huH (mem_image_of_mem _ ha) (mem_image_of_mem _ hb)
   rw [← map_mul, he, map_mul, hae, hbe] at huH
-  refine huG ?_ ?_ he <;> rw [mem_filter]
+  refine huG _ _ he <;> rw [mem_filter]
   exacts [⟨ha, (huH rfl).1⟩, ⟨hb, (huH rfl).2⟩]
 
 end UniqueMul
@@ -384,7 +384,7 @@ open MulOpposite in
     obtain ⟨g1, h1, g2, h2, hu⟩ := h (hB.mul hA)
     obtain ⟨b1, hb1, a1, ha1, rfl⟩ := mem_mul.mp h1
     obtain ⟨b2, hb2, a2, ha2, rfl⟩ := mem_mul.mp h2
-    refine ⟨a1, ha1, b2, hb2, fun a b ha hb he => ?_⟩
+    refine ⟨a1, ha1, b2, hb2, fun a b ha hb he => _⟩
     specialize hu (mul_mem_mul hb1 ha) (mul_mem_mul hb ha2) _
     · rw [mul_assoc b1, ← mul_assoc a, he, mul_assoc a1, ← mul_assoc b1]
     exact ⟨mul_left_cancel hu.1, mul_right_cancel hu.2⟩
@@ -408,7 +408,7 @@ open MulOpposite in
       obtain ⟨c, hc, d, hd, hne, hu'⟩ := this
       obtain ⟨a0, ha0, rfl⟩ := mem_map.mp hc
       obtain ⟨b0, hb0, rfl⟩ := mem_map.mp hd
-      refine ⟨(_, _), ⟨ha0, hb0⟩, (a, b), ⟨ha, hb⟩, ?_, fun a' b' ha' hb' he => ?_, hu⟩
+      refine ⟨(_, _), ⟨ha0, hb0⟩, (a, b), ⟨ha, hb⟩, _, fun a' b' ha' hb' he => _, hu⟩
       · simp_rw [Function.Embedding.coeFn_mk, Ne, inv_mul_eq_one, mul_inv_eq_one] at hne
         rwa [Ne, Prod.mk.inj_iff, not_and_or, eq_comm]
       specialize hu' (mem_map_of_mem _ ha') (mem_map_of_mem _ hb')
@@ -417,29 +417,29 @@ open MulOpposite in
       exact hu' rfl
     classical
     let _ := Finset.mul (α := G)              -- E = D⁻¹C, F = DC⁻¹
-    have := uniqueMul_of_nonempty (A := D.image (·⁻¹) * C) (B := D * C.image (·⁻¹)) ?_ ?_
+    have := uniqueMul_of_nonempty (A := D.image (·⁻¹) * C) (B := D * C.image (·⁻¹)) _ _
     · obtain ⟨e, he, f, hf, hu⟩ := this
       clear_value C D
       simp only [UniqueMul, mem_mul, mem_image] at he hf hu
       obtain ⟨_, ⟨d1, hd1, rfl⟩, c1, hc1, rfl⟩ := he
       obtain ⟨d2, hd2, _, ⟨c2, hc2, rfl⟩, rfl⟩ := hf
       by_cases h12 : c1 ≠ 1 ∨ d2 ≠ 1
-      · refine ⟨c1, hc1, d2, hd2, h12, fun c3 d3 hc3 hd3 he => ?_⟩
+      · refine ⟨c1, hc1, d2, hd2, h12, fun c3 d3 hc3 hd3 he => _⟩
         specialize hu ⟨_, ⟨_, hd1, rfl⟩, _, hc3, rfl⟩ ⟨_, hd3, _, ⟨_, hc2, rfl⟩, rfl⟩
         rw [mul_left_cancel_iff, mul_right_cancel_iff,
             mul_assoc, ← mul_assoc c3, he, mul_assoc, mul_assoc] at hu; exact hu rfl
       push_neg at h12; obtain ⟨rfl, rfl⟩ := h12
       by_cases h21 : c2 ≠ 1 ∨ d1 ≠ 1
-      · refine ⟨c2, hc2, d1, hd1, h21, fun c4 d4 hc4 hd4 he => ?_⟩
+      · refine ⟨c2, hc2, d1, hd1, h21, fun c4 d4 hc4 hd4 he => _⟩
         specialize hu ⟨_, ⟨_, hd4, rfl⟩, _, hC, rfl⟩ ⟨_, hD, _, ⟨_, hc4, rfl⟩, rfl⟩
         simpa only [mul_one, one_mul, ← mul_inv_rev, he, true_imp_iff, inv_inj, and_comm] using hu
       push_neg at h21; obtain ⟨rfl, rfl⟩ := h21
       rcases hcard with hC | hD
       · obtain ⟨c, hc, hc1⟩ := exists_ne_of_one_lt_card hC 1
-        refine (hc1 ?_).elim
+        refine (hc1 _).elim
         simpa using hu ⟨_, ⟨_, hD, rfl⟩, _, hc, rfl⟩ ⟨_, hD, _, ⟨_, hc, rfl⟩, rfl⟩
       · obtain ⟨d, hd, hd1⟩ := exists_ne_of_one_lt_card hD 1
-        refine (hd1 ?_).elim
+        refine (hd1 _).elim
         simpa using hu ⟨_, ⟨_, hd, rfl⟩, _, hC, rfl⟩ ⟨_, hd, _, ⟨_, hC, rfl⟩, rfl⟩
     all_goals apply_rules [Nonempty.mul, Nonempty.image, Finset.Nonempty.map, hc.1, hc.2.1]
 
@@ -469,9 +469,9 @@ open UniqueMul in
 
 open ULift in
 @[to_additive] instance [UniqueProds G] [UniqueProds H] : UniqueProds (G × H) := by
-  have : ∀ b, UniqueProds (I G H b) := Bool.rec ?_ ?_
+  have : ∀ b, UniqueProds (I G H b) := Bool.rec _ _
   · exact of_injective_mulHom (downMulHom H) down_injective ‹_›
-  · refine of_injective_mulHom (Prod.upMulHom G H) (fun x y he => Prod.ext ?_ ?_)
+  · refine of_injective_mulHom (Prod.upMulHom G H) (fun x y he => Prod.ext _ _)
       (UniqueProds.instForall <| I G H) <;> apply up_injective
     exacts [congr_fun he false, congr_fun he true]
   · exact of_injective_mulHom (downMulHom G) down_injective ‹_›
@@ -505,10 +505,10 @@ open Finset
         UniqueMul.of_mulHom_image f hf hu1, UniqueMul.of_mulHom_image f hf hu2⟩
     rw [← card_product] at hc hc'
     obtain ⟨p1, h1, p2, h2, hne⟩ := one_lt_card_iff_nontrivial.mp hc
-    refine ⟨p1, h1, p2, h2, hne, ?_⟩
+    refine ⟨p1, h1, p2, h2, hne, _⟩
     cases mem_product.mp h1; cases mem_product.mp h2
     constructor <;> refine UniqueMul.of_mulHom_image f hf
-      ((UniqueMul.iff_card_le_one ?_ ?_).mpr <| (card_filter_le _ _).trans hc') <;>
+      ((UniqueMul.iff_card_le_one _ _).mpr <| (card_filter_le _ _).trans hc') <;>
     apply mem_image_of_mem <;> assumption
 
 @[to_additive]
@@ -535,14 +535,14 @@ instance instForall {ι} (G : ι → Type*) [∀ i, Mul (G i)] [∀ i, TwoUnique
     obtain ⟨p1, h1, p2, h2, hne, hi1, hi2⟩ := uniqueMul_of_one_lt_card (Nat.one_lt_mul_iff.mpr
       ⟨card_pos.2 (hA.image _), card_pos.2 (hB.image _), hc.imp And.left And.left⟩)
     simp_rw [mem_product, mem_image, ← filter_nonempty_iff] at h1 h2
-    replace h1 := uniqueMul_of_twoUniqueMul ?_ h1.1 h1.2
-    on_goal 1 => replace h2 := uniqueMul_of_twoUniqueMul ?_ h2.1 h2.2
+    replace h1 := uniqueMul_of_twoUniqueMul _ h1.1 h1.2
+    on_goal 1 => replace h2 := uniqueMul_of_twoUniqueMul _ h2.1 h2.2
 
     · obtain ⟨a1, ha1, b1, hb1, hu1⟩ := h1
       obtain ⟨a2, ha2, b2, hb2, hu2⟩ := h2
       rw [mem_filter] at ha1 hb1 ha2 hb2
       simp_rw [mem_product]
-      refine ⟨(a1, b1), ⟨ha1.1, hb1.1⟩, (a2, b2), ⟨ha2.1, hb2.1⟩, ?_,
+      refine ⟨(a1, b1), ⟨ha1.1, hb1.1⟩, (a2, b2), ⟨ha2.1, hb2.1⟩, _,
         UniqueMul.of_image_filter (Pi.evalMulHom G i) ha1.2 hb1.2 hi1 hu1,
         UniqueMul.of_image_filter (Pi.evalMulHom G i) ha2.2 hb2.2 hi2 hu2⟩
       contrapose! hne; rw [Prod.mk.inj_iff] at hne ⊢
@@ -559,9 +559,9 @@ instance instForall {ι} (G : ι → Type*) [∀ i, Mul (G i)] [∀ i, TwoUnique
 
 open ULift in
 @[to_additive] instance [TwoUniqueProds G] [TwoUniqueProds H] : TwoUniqueProds (G × H) := by
-  have : ∀ b, TwoUniqueProds (I G H b) := Bool.rec ?_ ?_
+  have : ∀ b, TwoUniqueProds (I G H b) := Bool.rec _ _
   · exact of_injective_mulHom (downMulHom H) down_injective ‹_›
-  · refine of_injective_mulHom (Prod.upMulHom G H) (fun x y he ↦ Prod.ext ?_ ?_)
+  · refine of_injective_mulHom (Prod.upMulHom G H) (fun x y he ↦ Prod.ext _ _)
       (TwoUniqueProds.instForall <| I G H) <;> apply up_injective
     exacts [congr_fun he false, congr_fun he true]
   · exact of_injective_mulHom (downMulHom G) down_injective ‹_›
@@ -574,7 +574,7 @@ theorem of_mulOpposite (h : TwoUniqueProds Gᵐᵒᵖ) : TwoUniqueProds G where
     rw [← card_map f, ← card_map f, mul_comm] at hc
     obtain ⟨p1, h1, p2, h2, hne, hu1, hu2⟩ := h.uniqueMul_of_one_lt_card hc
     simp_rw [mem_product] at h1 h2 ⊢
-    refine ⟨(_, _), ⟨?_, ?_⟩, (_, _), ⟨?_, ?_⟩, ?_, hu1.of_mulOpposite, hu2.of_mulOpposite⟩
+    refine ⟨(_, _), ⟨_, _⟩, (_, _), ⟨_, _⟩, _, hu1.of_mulOpposite, hu2.of_mulOpposite⟩
     pick_goal 5
     · contrapose! hne; rw [Prod.ext_iff] at hne ⊢
       exact ⟨unop_injective hne.2, unop_injective hne.1⟩
@@ -605,11 +605,11 @@ instance (priority := 100) of_covariant_right [IsRightCancelMul G]
       · exact ((he0 ▸ he ▸ mul_lt_mul_left' hl a).not_le <| le_max' _ _ <| mul_mem_mul ha hb0).elim
       · exact ⟨mul_right_cancel he, rfl⟩
       · exact ((he0 ▸ mul_lt_mul_left' hl a0).not_le <| le_max' _ _ <| mul_mem_mul ha0 hb).elim
-    refine ⟨_, mk_mem_product ha0 hb0, _, mk_mem_product ha1 hb1, fun he ↦ ?_, this, ?_⟩
+    refine ⟨_, mk_mem_product ha0 hb0, _, mk_mem_product ha1 hb1, fun he ↦ _, this, _⟩
     · rw [Prod.mk.inj_iff] at he; rw [he.1, he.2, he1] at he0
       obtain ⟨⟨a2, b2⟩, h2, hne⟩ := exists_ne_of_one_lt_card hc (a0, b0)
       rw [mem_product] at h2
-      refine (min'_lt_max' _ (mul_mem_mul ha0 hb0) (mul_mem_mul h2.1 h2.2) fun he ↦ hne ?_).ne he0
+      refine (min'_lt_max' _ (mul_mem_mul ha0 hb0) (mul_mem_mul h2.1 h2.2) fun he ↦ hne _).ne he0
       exact Prod.ext_iff.mpr (this h2.1 h2.2 he.symm)
     · intro a b ha hb he
       obtain hl | rfl | hl := lt_trichotomy b b1

@@ -282,23 +282,23 @@ open Opposite
 
 -- Porting note: simp wasn't firing but rw was, annoying
 instance : MonoidalPreadditive (ModuleCat.{u} R) := by
-  refine' ⟨_, _, _, _⟩
+  refine ⟨_, _, _, _⟩
   · dsimp only [autoParam]; intros
-    refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
+    refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => _)
     simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply]
     rw [LinearMap.zero_apply]
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [MonoidalCategory.whiskerLeft_apply]
     rw [LinearMap.zero_apply, TensorProduct.tmul_zero]
   · dsimp only [autoParam]; intros
-    refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
+    refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => _)
     simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply]
     rw [LinearMap.zero_apply]
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [MonoidalCategory.whiskerRight_apply]
     rw [LinearMap.zero_apply, TensorProduct.zero_tmul]
   · dsimp only [autoParam]; intros
-    refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
+    refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => _)
     simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply]
     rw [LinearMap.add_apply]
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
@@ -306,7 +306,7 @@ instance : MonoidalPreadditive (ModuleCat.{u} R) := by
     erw [MonoidalCategory.whiskerLeft_apply]
     rw [LinearMap.add_apply, TensorProduct.tmul_add]
   · dsimp only [autoParam]; intros
-    refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
+    refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => _)
     simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply]
     rw [LinearMap.add_apply]
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
@@ -316,16 +316,16 @@ instance : MonoidalPreadditive (ModuleCat.{u} R) := by
 
 -- Porting note: simp wasn't firing but rw was, annoying
 instance : MonoidalLinear R (ModuleCat.{u} R) := by
-  refine' ⟨_, _⟩
+  refine ⟨_, _⟩
   · dsimp only [autoParam]; intros
-    refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
+    refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => _)
     simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply]
     rw [LinearMap.smul_apply]
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [MonoidalCategory.whiskerLeft_apply, MonoidalCategory.whiskerLeft_apply]
     rw [LinearMap.smul_apply, TensorProduct.tmul_smul]
   · dsimp only [autoParam]; intros
-    refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
+    refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => _)
     simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply]
     rw [LinearMap.smul_apply]
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644

@@ -245,7 +245,7 @@ lemma nonsingular_some (X Y : R) : W.Nonsingular ![X, Y, 1] ↔ W.toAffine.Nonsi
 lemma nonsingular_smul_iff (P : Fin 3 → R) (u : Rˣ) : W.Nonsingular (u • P) ↔ W.Nonsingular P :=
   have (u : Rˣ) {P : Fin 3 → R} (h : W.Nonsingular <| u • P) : W.Nonsingular P := by
     rcases (W.nonsingular_iff _).mp h with ⟨h, h'⟩
-    refine (W.nonsingular_iff P).mpr ⟨(W.equation_smul_iff P u).mp h, ?_⟩
+    refine (W.nonsingular_iff P).mpr ⟨(W.equation_smul_iff P u).mp h, _⟩
     contrapose! h'
     simp only [smul_fin3_ext]
     exact ⟨by linear_combination (norm := ring1) (u : R) ^ 4 * h'.left,

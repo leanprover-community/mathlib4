@@ -48,8 +48,8 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
       PartENat.coe_lt_coe, ← mem_range]
   rw [← not_le]; intro hn
   apply _root_.ne_of_gt _ h
-  calc ∏ i in range n, ((2:ℤ) ^ n - (2:ℤ) ^ i) ≤ ∏ __ in range n, (2:ℤ) ^ n := ?_
-    _ < ↑ k ! := ?_
+  calc ∏ i in range n, ((2:ℤ) ^ n - (2:ℤ) ^ i) ≤ ∏ __ in range n, (2:ℤ) ^ n := _
+    _ < ↑ k ! := _
   · gcongr
     · intro i hi
       simp only [mem_range] at hi
@@ -59,7 +59,7 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
       positivity
   norm_cast
   calc ∏ __ in range n, 2 ^ n = 2 ^ (n * n) := by rw [prod_const, card_range, ← pow_mul]
-    _ < (∑ i in range n, i)! := ?_
+    _ < (∑ i in range n, i)! := _
     _ ≤ k ! := by gcongr
   clear h h2
   induction' n, hn using Nat.le_induction with n' hn' IH
@@ -97,9 +97,9 @@ theorem imo2019_q4 {k n : ℕ} (hk : k > 0) (hn : n > 0) :
     norm_num
   all_goals exfalso; norm_num [prod_range_succ] at h; norm_cast at h
   -- n = 3
-  · refine' monotone_factorial.ne_of_lt_of_lt_nat 5 _ _ _ h <;> decide
+  · refine monotone_factorial.ne_of_lt_of_lt_nat 5 _ _ _ h <;> decide
   -- n = 4
-  · refine' monotone_factorial.ne_of_lt_of_lt_nat 7 _ _ _ h <;> decide
+  · refine monotone_factorial.ne_of_lt_of_lt_nat 7 _ _ _ h <;> decide
   -- n = 5
-  · refine' monotone_factorial.ne_of_lt_of_lt_nat 10 _ _ _ h <;> decide
+  · refine monotone_factorial.ne_of_lt_of_lt_nat 10 _ _ _ h <;> decide
 #align imo2019_q4 imo2019_q4

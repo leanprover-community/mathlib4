@@ -96,7 +96,7 @@ theorem IsLUB.mem_upperBounds_of_tendsto [Preorder γ] [TopologicalSpace γ] [Or
   rintro _ ⟨x, hx, rfl⟩
   replace ha := ha.inter_Ici_of_mem hx
   haveI := ha.nhdsWithin_neBot ⟨x, hx, le_rfl⟩
-  refine' ge_of_tendsto (hb.mono_left (nhdsWithin_mono _ (inter_subset_left s (Ici x)))) _
+  refine ge_of_tendsto (hb.mono_left (nhdsWithin_mono _ (inter_subset_left s (Ici x)))) _
   exact mem_of_superset self_mem_nhdsWithin fun y hy => hf hx hy.1 hy.2
 #align is_lub.mem_upper_bounds_of_tendsto IsLUB.mem_upperBounds_of_tendsto
 
@@ -177,8 +177,8 @@ theorem IsLUB.exists_seq_strictMono_tendsto_of_not_mem {t : Set α} {x : α}
   have hvx' : ∀ {n}, v n < x := (htx.1 (hvt _)).lt_of_ne (ne_of_mem_of_not_mem (hvt _) not_mem)
   have : ∀ k, ∀ᶠ l in atTop, v k < v l := fun k => hvx.eventually (lt_mem_nhds hvx')
   choose N hN hvN using fun k => ((eventually_gt_atTop k).and (this k)).exists
-  refine ⟨fun k => v (N^[k] 0), strictMono_nat_of_lt_succ fun _ => ?_, fun _ => hvx',
-    hvx.comp (strictMono_nat_of_lt_succ fun _ => ?_).tendsto_atTop, fun _ => hvt _⟩
+  refine ⟨fun k => v (N^[k] 0), strictMono_nat_of_lt_succ fun _ => _, fun _ => hvx',
+    hvx.comp (strictMono_nat_of_lt_succ fun _ => _).tendsto_atTop, fun _ => hvt _⟩
   · rw [iterate_succ_apply']; exact hvN _
   · rw [iterate_succ_apply']; exact hN _
 #align is_lub.exists_seq_strict_mono_tendsto_of_not_mem IsLUB.exists_seq_strictMono_tendsto_of_not_mem

@@ -25,11 +25,11 @@ theorem isCompactElement {a : α} {b : Iic a} (h : CompleteLattice.IsCompactElem
 
 instance instIsCompactlyGenerated [IsCompactlyGenerated α] {a : α} :
     IsCompactlyGenerated (Iic a) := by
-  refine ⟨fun ⟨x, (hx : x ≤ a)⟩ ↦ ?_⟩
+  refine ⟨fun ⟨x, (hx : x ≤ a)⟩ ↦ _⟩
   obtain ⟨s, hs, rfl⟩ := IsCompactlyGenerated.exists_sSup_eq x
   rw [sSup_le_iff] at hx
   let f : s → Iic a := fun y ↦ ⟨y, hx _ y.property⟩
-  refine ⟨range f, ?_, ?_⟩
+  refine ⟨range f, _, _⟩
   · rintro - ⟨⟨y, hy⟩, hy', rfl⟩
     exact isCompactElement (hs _ hy)
   · rw [Subtype.ext_iff]
@@ -52,7 +52,7 @@ theorem complementedLattice_of_complementedLattice_Iic
   have : ∀ i ∈ s, ∃ t : Set α, f i = sSup t ∧ ∀ a ∈ t, IsAtom a := fun i hi ↦ by
     replace h := complementedLattice_iff_isAtomistic.mp (h i hi)
     obtain ⟨u, hu, hu'⟩ := eq_sSup_atoms (⊤ : Iic (f i))
-    refine ⟨(↑) '' u, ?_, ?_⟩
+    refine ⟨(↑) '' u, _, _⟩
     · replace hu : f i = ↑(sSup u) := Subtype.ext_iff.mp hu
       simp_rw [hu, Iic.coe_sSup]
     · rintro b ⟨⟨a, ha'⟩, ha, rfl⟩

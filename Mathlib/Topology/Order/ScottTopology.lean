@@ -222,7 +222,7 @@ lemma isOpen_iff_isUpperSet_and_dirSupInacc : IsOpen s ↔ IsUpperSet s ∧ DirS
   rw [isOpen_iff_isUpperSet_and_scottHausdorff_open]
   refine and_congr_right fun h ↦
     ⟨@IsScottHausdorff.dirSupInacc_of_isOpen _ _ (scottHausdorff α) _ _,
-      fun h' d d₁ d₂ _ d₃ ha ↦ ?_⟩
+      fun h' d d₁ d₂ _ d₃ ha ↦ _⟩
   obtain ⟨b, hbd, hbu⟩ := h' d₁ d₂ d₃ ha
   exact ⟨b, hbd, Subset.trans (inter_subset_left (Ici b) d) (h.Ici_subset hbu)⟩
 
@@ -238,7 +238,7 @@ lemma isLowerSet_of_isClosed : IsClosed s → IsLowerSet s := fun h ↦
 
 lemma lowerClosure_subset_closure : ↑(lowerClosure s) ⊆ closure s := by
   convert closure.mono (@upperSet_le_scott α _)
-  · rw [@IsUpperSet.closure_eq_lowerClosure α _ (upperSet α) ?_ s]
+  · rw [@IsUpperSet.closure_eq_lowerClosure α _ (upperSet α) _ s]
     infer_instance
   · exact topology_eq α
 
@@ -262,13 +262,13 @@ lemma monotone_of_continuous (hf : Continuous f) : Monotone f := fun _ b hab ↦
     using isUpperSet_of_isOpen ((isOpen_compl_iff.2 isClosed_Iic).preimage hf) hab h
 
 @[simp] lemma scottContinuous_iff_continuous : ScottContinuous f ↔ Continuous f := by
-  refine ⟨fun h ↦ continuous_def.2 fun u hu ↦ ?_, ?_⟩
+  refine ⟨fun h ↦ continuous_def.2 fun u hu ↦ _, _⟩
   · rw [isOpen_iff_isUpperSet_and_dirSupInacc]
     exact ⟨(isUpperSet_of_isOpen hu).preimage h.monotone, fun _ hd₁ hd₂ _ hd₃ ha ↦
       image_inter_nonempty_iff.mp <| (isOpen_iff_isUpperSet_and_dirSupInacc.mp hu).2 (hd₁.image f)
         (directedOn_image.mpr (hd₂.mono @(h.monotone))) (h hd₁ hd₂ hd₃) ha⟩
   · refine fun hf _ d₁ d₂ _ d₃ ↦ ⟨(monotone_of_continuous hf).mem_upperBounds_image d₃.1,
-      fun b hb ↦ ?_⟩
+      fun b hb ↦ _⟩
     by_contra h
     let u := (Iic b)ᶜ
     have hu : IsOpen (f ⁻¹' u) := (isOpen_compl_iff.2 isClosed_Iic).preimage hf

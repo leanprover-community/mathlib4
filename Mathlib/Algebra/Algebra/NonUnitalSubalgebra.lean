@@ -517,8 +517,8 @@ def adjoin (s : Set A) : NonUnitalSubalgebra R A :=
       @fun a b (ha : a ∈ Submodule.span R (NonUnitalSubsemiring.closure s : Set A))
         (hb : b ∈ Submodule.span R (NonUnitalSubsemiring.closure s : Set A)) =>
       show a * b ∈ Submodule.span R (NonUnitalSubsemiring.closure s : Set A) by
-        refine' Submodule.span_induction ha _ _ _ _
-        · refine' Submodule.span_induction hb _ _ _ _
+        refine Submodule.span_induction ha _ _ _ _
+        · refine Submodule.span_induction hb _ _ _ _
           · exact fun x (hx : x ∈ NonUnitalSubsemiring.closure s) y
               (hy : y ∈ NonUnitalSubsemiring.closure s) => Submodule.subset_span (mul_mem hy hx)
           · exact fun x _hx => (mul_zero x).symm ▸ Submodule.zero_mem _
@@ -572,8 +572,8 @@ lemma adjoin_induction_subtype {s : Set A} {p : adjoin R s → Prop} (a : adjoin
     (add : ∀ x y, p x → p y → p (x + y)) (zero : p 0)
     (mul : ∀ x y, p x → p y → p (x * y)) (smul : ∀ (r : R) x, p x → p (r • x)) : p a :=
   Subtype.recOn a fun b hb => by
-    refine Exists.elim ?_ (fun (hb : b ∈ adjoin R s) (hc : p ⟨b, hb⟩) => hc)
-    refine adjoin_induction hb ?_ ?_ ?_ ?_ ?_
+    refine Exists.elim _ (fun (hb : b ∈ adjoin R s) (hc : p ⟨b, hb⟩) => hc)
+    refine adjoin_induction hb _ _ _ _ _
     · exact fun x hx => ⟨subset_adjoin R hx, mem x hx⟩
     · exact fun x y hx hy => Exists.elim hx fun hx' hx => Exists.elim hy fun hy' hy =>
         ⟨add_mem hx' hy', add _ _ hx hy⟩

@@ -90,7 +90,7 @@ lemma addContent_union' (hs : s ∈ C) (ht : t ∈ C) (hst : s ∪ t ∈ C) (h_d
   by_cases hs_empty : s = ∅
   · simp only [hs_empty, Set.empty_union, addContent_empty, zero_add]
   classical
-  have h := addContent_sUnion (m := m) (I := {s, t}) ?_ ?_ ?_
+  have h := addContent_sUnion (m := m) (I := {s, t}) _ _ _
   rotate_left
   · simp only [coe_pair, Set.insert_subset_iff, hs, ht, Set.singleton_subset_iff, and_self_iff]
   · simp only [coe_pair, Set.pairwiseDisjoint_insert, pairwiseDisjoint_singleton,
@@ -102,7 +102,7 @@ lemma addContent_union' (hs : s ∈ C) (ht : t ∈ C) (hst : s ∪ t ∈ C) (h_d
   · simp only [coe_pair, sUnion_insert, sUnion_singleton]
   · rw [sum_insert, sum_singleton]
     simp only [Finset.mem_singleton]
-    refine fun hs_eq_t => hs_empty ?_
+    refine fun hs_eq_t => hs_empty _
     rw [← hs_eq_t] at h_dis
     exact Disjoint.eq_bot_of_self h_dis
 
@@ -134,7 +134,7 @@ lemma sum_addContent_le_of_subset (hC : IsSetSemiring C)
 lemma addContent_mono (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C)
     (hst : s ⊆ t) :
     m s ≤ m t := by
-  have h := sum_addContent_le_of_subset (m := m) hC (I := {s}) ?_ ?_ ht ?_
+  have h := sum_addContent_le_of_subset (m := m) hC (I := {s}) _ _ ht _
   · simpa only [sum_singleton] using h
   · rwa [singleton_subset_set_iff]
   · simp only [coe_singleton, pairwiseDisjoint_singleton]
@@ -165,14 +165,14 @@ lemma addContent_biUnion_le {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
   · rw [Finset.sum_insert hiS]
     simp_rw [← Finset.mem_coe, Finset.coe_insert, Set.biUnion_insert]
     simp only [Finset.mem_insert, forall_eq_or_imp] at hs
-    refine (addContent_union_le hC hs.1 (hC.biUnion_mem S hs.2)).trans ?_
+    refine (addContent_union_le hC hs.1 (hC.biUnion_mem S hs.2)).trans _
     exact add_le_add le_rfl (h hs.2)
 
 lemma le_addContent_diff (m : AddContent C) (hC : IsSetRing C) (hs : s ∈ C) (ht : t ∈ C) :
     m s - m t ≤ m (s \ t) := by
   conv_lhs => rw [← inter_union_diff s t]
   rw [addContent_union hC (hC.inter_mem hs ht) (hC.diff_mem hs ht) disjoint_inf_sdiff, add_comm]
-  refine add_tsub_le_assoc.trans_eq ?_
+  refine add_tsub_le_assoc.trans_eq _
   rw [tsub_eq_zero_of_le
     (addContent_mono hC.isSetSemiring (hC.inter_mem hs ht) ht (inter_subset_right _ _)), add_zero]
 

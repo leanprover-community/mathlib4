@@ -130,8 +130,8 @@ def ofIterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries Γ (HahnSeries Γ
     HahnSeries (Γ ×ₗ Γ') R where
   coeff := fun g => coeff (coeff x g.1) g.2
   isPWO_support' := by
-    refine Set.PartiallyWellOrderedOn.subsetProdLex ?_ ?_
-    · refine Set.IsPWO.mono x.isPWO_support' ?_
+    refine Set.PartiallyWellOrderedOn.subsetProdLex _ _
+    · refine Set.IsPWO.mono x.isPWO_support' _
       simp_rw [Set.image_subset_iff, support_subset_iff, Set.mem_preimage, Function.mem_support]
       exact fun _ ↦ ne_zero_of_coeff_ne_zero
     · exact fun a => by simpa [Function.mem_support, ne_eq] using (x.coeff a).isPWO_support'
@@ -224,7 +224,7 @@ instance [Nonempty Γ] [Nontrivial R] : Nontrivial (HahnSeries Γ R) :=
   ⟨by
     obtain ⟨r, s, rs⟩ := exists_pair_ne R
     inhabit Γ
-    refine ⟨single default r, single default s, fun con => rs ?_⟩
+    refine ⟨single default r, single default s, fun con => rs _⟩
     rw [← single_coeff_same (default : Γ) r, con, single_coeff_same]⟩
 
 section Order

@@ -66,7 +66,7 @@ instance DivisionRing.hasRankNullity : HasRankNullity.{u₀} K where
   rank_quotient_add_rank := rank_quotient_add_rank_of_divisionRing
   exists_set_linearIndependent V _ _ := by
     let b := Module.Free.chooseBasis K V
-    refine ⟨range b, ?_, b.linearIndependent.to_subtype_range⟩
+    refine ⟨range b, _, b.linearIndependent.to_subtype_range⟩
     rw [← lift_injective.eq_iff, mk_range_eq_of_injective b.injective,
       Module.Free.rank_eq_card_chooseBasisIndex]
 
@@ -89,12 +89,12 @@ theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd 
   congr 1
   apply LinearEquiv.rank_eq
   let L : V₁ →ₗ[K] ker (coprod db eb) := by -- Porting note: this is needed to avoid a timeout
-    refine' LinearMap.codRestrict _ (prod cd (-ce)) _
+    refine LinearMap.codRestrict _ (prod cd (-ce)) _
     · intro c
       simp only [add_eq_zero_iff_eq_neg, LinearMap.prod_apply, mem_ker, Pi.prod, coprod_apply,
         neg_neg, map_neg, neg_apply]
       exact LinearMap.ext_iff.1 eq c
-  refine' LinearEquiv.ofBijective L ⟨_, _⟩
+  refine LinearEquiv.ofBijective L ⟨_, _⟩
   · rw [← ker_eq_bot, ker_codRestrict, ker_prod, hgd, bot_inf_eq]
   · rw [← range_eq_top, eq_top_iff, range_codRestrict, ← map_le_iff_le_comap, Submodule.map_top,
       range_subtype]
@@ -104,7 +104,7 @@ theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd 
       Prod.mk.inj_iff, coprod_apply, map_neg, neg_apply, LinearMap.mem_range, Pi.prod] at h ⊢
     intro hde
     rcases h hde with ⟨c, h₁, h₂⟩
-    refine ⟨c, h₁, ?_⟩
+    refine ⟨c, h₁, _⟩
     rw [h₂, _root_.neg_neg]
 #align rank_add_rank_split rank_add_rank_split
 
@@ -128,7 +128,7 @@ theorem linearIndependent_of_top_le_span_of_card_eq_finrank {ι : Type*} [Fintyp
     by_contra gx_ne_zero
     -- We'll derive a contradiction by showing `b '' (univ \ {i})` of cardinality `n - 1`
     -- spans a vector space of dimension `n`.
-    refine' not_le_of_gt (span_lt_top_of_card_lt_finrank
+    refine not_le_of_gt (span_lt_top_of_card_lt_finrank
       (show (b '' (Set.univ \ {i})).toFinset.card < finrank K V from _)) _
     · calc
         (b '' (Set.univ \ {i})).toFinset.card = ((Set.univ \ {i}).toFinset.image b).card := by
@@ -139,19 +139,19 @@ theorem linearIndependent_of_top_le_span_of_card_eq_finrank {ι : Type*} [Fintyp
         _ = finrank K V := card_eq
     -- We already have that `b '' univ` spans the whole space,
     -- so we only need to show that the span of `b '' (univ \ {i})` contains each `b j`.
-    refine' spans.trans (span_le.mpr _)
+    refine spans.trans (span_le.mpr _)
     rintro _ ⟨j, rfl, rfl⟩
     -- The case that `j ≠ i` is easy because `b j ∈ b '' (univ \ {i})`.
     by_cases j_eq : j = i
     swap
-    · refine' subset_span ⟨j, (Set.mem_diff _).mpr ⟨Set.mem_univ _, _⟩, rfl⟩
+    · refine subset_span ⟨j, (Set.mem_diff _).mpr ⟨Set.mem_univ _, _⟩, rfl⟩
       exact mt Set.mem_singleton_iff.mp j_eq
     -- To show `b i ∈ span (b '' (univ \ {i}))`, we use that it's a weighted sum
     -- of the other `b j`s.
     rw [j_eq, SetLike.mem_coe, show b i = -((g i)⁻¹ • (s.erase i).sum fun j => g j • b j) from _]
-    · refine' neg_mem (smul_mem _ _ (sum_mem fun k hk => _))
+    · refine neg_mem (smul_mem _ _ (sum_mem fun k hk => _))
       obtain ⟨k_ne_i, _⟩ := Finset.mem_erase.mp hk
-      refine' smul_mem _ _ (subset_span ⟨k, _, rfl⟩)
+      refine smul_mem _ _ (subset_span ⟨k, _, rfl⟩)
       simp_all only [Set.mem_univ, Set.mem_diff, Set.mem_singleton_iff, and_self, not_false_eq_true]
     -- To show `b i` is a weighted sum of the other `b j`s, we'll rewrite this sum
     -- to have the form of the assumption `dependent`.
@@ -160,7 +160,7 @@ theorem linearIndependent_of_top_le_span_of_card_eq_finrank {ι : Type*} [Fintyp
       (b i + (g i)⁻¹ • (s.erase i).sum fun j => g j • b j) =
           (g i)⁻¹ • (g i • b i + (s.erase i).sum fun j => g j • b j) :=
         by rw [smul_add, ← mul_smul, inv_mul_cancel gx_ne_zero, one_smul]
-      _ = (g i)⁻¹ • (0 : V) := congr_arg _ ?_
+      _ = (g i)⁻¹ • (0 : V) := congr_arg _ _
       _ = 0 := smul_zero _
     -- And then it's just a bit of manipulation with finite sums.
     rwa [← Finset.insert_erase i_mem_s, Finset.sum_insert (Finset.not_mem_erase _ _)] at dependent
@@ -239,7 +239,7 @@ variable [DivisionRing K]
 theorem max_aleph0_card_le_rank_fun_nat : max ℵ₀ #K ≤ Module.rank K (ℕ → K) := by
   have aleph0_le : ℵ₀ ≤ Module.rank K (ℕ → K) := (rank_finsupp_self K ℕ).symm.trans_le
     (Finsupp.lcoeFun.rank_le_of_injective <| by exact DFunLike.coe_injective)
-  refine max_le aleph0_le ?_
+  refine max_le aleph0_le _
   obtain card_K | card_K := le_or_lt #K ℵ₀
   · exact card_K.trans aleph0_le
   by_contra!
@@ -247,7 +247,7 @@ theorem max_aleph0_card_le_rank_fun_nat : max ℵ₀ #K ≤ Module.rank K (ℕ �
   let L := Subfield.closure (Set.range (fun i : ιK × ℕ ↦ bK i.1 i.2))
   have hLK : #L < #K := by
     refine (Subfield.cardinal_mk_closure_le_max _).trans_lt
-      (max_lt_iff.mpr ⟨mk_range_le.trans_lt ?_, card_K⟩)
+      (max_lt_iff.mpr ⟨mk_range_le.trans_lt _, card_K⟩)
     rwa [mk_prod, ← aleph0, lift_uzero, bK.mk_eq_rank'', mul_aleph0_eq aleph0_le]
   letI := Module.compHom K (RingHom.op L.subtype)
   obtain ⟨⟨ιL, bL⟩⟩ := Module.Free.exists_basis (R := Lᵐᵒᵖ) (M := K)
@@ -271,11 +271,11 @@ theorem max_aleph0_card_le_rank_fun_nat : max ℵ₀ #K ≤ Module.rank K (ℕ �
         rank_fun'] at this
     exact (nat_lt_aleph0 _).not_le this
   obtain ⟨t, g, eq0, i, hi, hgi⟩ := not_linearIndependent_iff.mp this
-  refine hgi (linearIndependent_iff'.mp (bL.linearIndependent.comp e e.injective) t g ?_ i hi)
+  refine hgi (linearIndependent_iff'.mp (bL.linearIndependent.comp e e.injective) t g _ i hi)
   clear_value c s
   simp_rw [← rep_e, Finset.sum_apply, Pi.smul_apply, Finset.smul_sum]
   rw [Finset.sum_comm]
-  refine Finset.sum_eq_zero fun i hi ↦ ?_
+  refine Finset.sum_eq_zero fun i hi ↦ _
   replace eq0 := congr_arg L.subtype (congr_fun eq0 ⟨i, hi⟩)
   rw [Finset.sum_apply, map_sum] at eq0
   have : SMulCommClass Lᵐᵒᵖ K K := ⟨fun _ _ _ ↦ mul_assoc _ _ _⟩

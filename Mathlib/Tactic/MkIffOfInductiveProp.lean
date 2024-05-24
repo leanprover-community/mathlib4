@@ -164,7 +164,7 @@ def constrToProp (univs : List Level) (params : List Expr) (idxs : List Expr) (c
       pure (some eqs.length, subst r)
     pure (⟨bs.map Option.isSome, n⟩, r)
 
-/-- Splits the goal `n` times via `refine ⟨?_,?_⟩`, and then applies `constructor` to
+/-- Splits the goal `n` times via `refine ⟨_,_⟩`, and then applies `constructor` to
 close the resulting subgoals.
 -/
 def splitThenConstructor (mvar : MVarId) (n : Nat) : MetaM Unit :=
@@ -176,7 +176,7 @@ match n with
   pure ()
 | n + 1 => do
   let (subgoals,_) ← Term.TermElabM.run <| Tactic.run mvar do
-    Tactic.evalTactic (← `(tactic| refine ⟨?_,?_⟩))
+    Tactic.evalTactic (← `(tactic| refine ⟨_,_⟩))
   let [sg1, sg2] := subgoals | throwError "expected two subgoals"
   let (subgoals',_) ← Term.TermElabM.run <| Tactic.run sg1 do
     Tactic.evalTactic (← `(tactic| constructor))

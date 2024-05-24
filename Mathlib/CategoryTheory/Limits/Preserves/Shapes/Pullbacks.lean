@@ -88,7 +88,7 @@ def preservesPullbackSymmetry : PreservesLimit (cospan g f) G where
     apply IsLimit.ofIsoLimit _ (PullbackCone.isoMk _).symm
     apply PullbackCone.isLimitOfFlip
     apply (isLimitMapConePullbackConeEquiv _ _).toFun
-    · refine @PreservesLimit.preserves _ _ _ _ _ _ _ _ ?_ _ ?_
+    · refine @PreservesLimit.preserves _ _ _ _ _ _ _ _ _ _ _
       · dsimp
         infer_instance
       apply PullbackCone.isLimitOfFlip
@@ -192,7 +192,7 @@ def preservesPushoutSymmetry : PreservesColimit (span g f) G where
     apply IsColimit.ofIsoColimit _ (PushoutCocone.isoMk _).symm
     apply PushoutCocone.isColimitOfFlip
     apply (isColimitMapCoconePushoutCoconeEquiv _ _).toFun
-    · refine @PreservesColimit.preserves _ _ _ _ _ _ _ _ ?_ _ ?_ -- Porting note: more TC coddling
+    · refine @PreservesColimit.preserves _ _ _ _ _ _ _ _ _ _ _ -- Porting note: more TC coddling
       · dsimp
         infer_instance
       · exact PushoutCocone.flipIsColimit hc
@@ -256,7 +256,7 @@ def PreservesPullback.ofIsoComparison [i : IsIso (pullbackComparison G f g)] :
     PreservesLimit (cospan f g) G := by
   apply preservesLimitOfPreservesLimitCone (pullbackIsPullback f g)
   apply (isLimitMapConePullbackConeEquiv _ _).symm _
-  refine @IsLimit.ofPointIso _ _ _ _ _ _ _ (limit.isLimit (cospan (G.map f) (G.map g))) ?_
+  refine @IsLimit.ofPointIso _ _ _ _ _ _ _ (limit.isLimit (cospan (G.map f) (G.map g))) _
   apply i
 #align category_theory.limits.preserves_pullback.of_iso_comparison CategoryTheory.Limits.PreservesPullback.ofIsoComparison
 
@@ -285,7 +285,7 @@ def PreservesPushout.ofIsoComparison [i : IsIso (pushoutComparison G f g)] :
   apply preservesColimitOfPreservesColimitCocone (pushoutIsPushout f g)
   apply (isColimitMapCoconePushoutCoconeEquiv _ _).symm _
   -- Porting note: apply no longer creates goals for instances
-  refine @IsColimit.ofPointIso _ _ _ _ _ _ _ (colimit.isColimit (span (G.map f) (G.map g))) ?_
+  refine @IsColimit.ofPointIso _ _ _ _ _ _ _ (colimit.isColimit (span (G.map f) (G.map g))) _
   apply i
 #align category_theory.limits.preserves_pushout.of_iso_comparison CategoryTheory.Limits.PreservesPushout.ofIsoComparison
 

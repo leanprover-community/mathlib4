@@ -97,14 +97,14 @@ lemma Module.finitePresentation_of_free_of_surjective [Module.Free R M] [Module.
   have hσ₁ : π ∘ σ = id := by ext i; exact congr_arg Subtype.val (hσ i)
   have hσ₂ : l ∘ b ∘ σ = Subtype.val := by ext i; exact congr_arg Subtype.val (hσ i)
   refine ⟨(Set.finite_range (l ∘ b)).toFinset,
-    by simpa [Set.range_comp, LinearMap.range_eq_top], ?_⟩
+    by simpa [Set.range_comp, LinearMap.range_eq_top], _⟩
   let f : M →ₗ[R] (Set.finite_range (l ∘ b)).toFinset →₀ R :=
     Finsupp.lmapDomain _ _ π ∘ₗ b.repr.toLinearMap
   convert hl'.map f
   ext x; simp only [LinearMap.mem_ker, Submodule.mem_map]
   constructor
   · intro hx
-    refine ⟨b.repr.symm (x.mapDomain σ), ?_, ?_⟩
+    refine ⟨b.repr.symm (x.mapDomain σ), _, _⟩
     · simp [Finsupp.apply_total, hσ₂, hx]
     · simp only [f, LinearMap.comp_apply, b.repr.apply_symm_apply,
         LinearEquiv.coe_toLinearMap, Finsupp.lmapDomain_apply]
@@ -177,7 +177,7 @@ lemma Module.finitePresentation_of_ker [Module.FinitePresentation R N]
     apply Submodule.fg_of_fg_map_of_fg_inf_ker l
     · rw [Submodule.map_top, LinearMap.range_eq_top.mpr hl]; exact Module.Finite.out
     · rw [top_inf_eq, ← Submodule.fg_top]; exact Module.Finite.out
-  refine ⟨s, hs, ?_⟩
+  refine ⟨s, hs, _⟩
   let π := Finsupp.total s M R Subtype.val
   have H : Function.Surjective π :=
     LinearMap.range_eq_top.mp (by rw [Finsupp.range_total, Subtype.range_val, ← hs]; rfl)
@@ -247,7 +247,7 @@ lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
     convert smul_zero _
     exact hs' ⟨x, hxσ⟩
   refine ⟨Submodule.liftQ _ _ this ∘ₗ
-    (LinearMap.quotKerEquivOfSurjective _ hπ).symm.toLinearMap, s₁ * s₀, ?_⟩
+    (LinearMap.quotKerEquivOfSurjective _ hπ).symm.toLinearMap, s₁ * s₀, _⟩
   ext x
   obtain ⟨x, rfl⟩ := hπ x
   rw [← LinearMap.comp_apply, ← LinearMap.comp_apply, mul_smul, LinearMap.smul_comp, ← hi,
@@ -290,7 +290,7 @@ lemma Module.FinitePresentation.isLocalizedModule_map
         (IsLocalizedModule.map_units (S := S) (f := g) s) (h x)
   · intro h
     obtain ⟨h', s, e⟩ := Module.FinitePresentation.exists_lift_of_isLocalizedModule S g (h ∘ₗ f)
-    refine ⟨⟨h', s⟩, ?_⟩
+    refine ⟨⟨h', s⟩, _⟩
     apply IsLocalizedModule.ringHom_ext S f (IsLocalizedModule.map_units g)
     refine e.symm.trans (by ext; simp)
   · intro h₁ h₂ e

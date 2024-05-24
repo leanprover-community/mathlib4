@@ -97,10 +97,10 @@ theorem mem_pNilradical {R : Type*} [CommSemiring R] {p : ℕ} {x : R} :
     x ∈ pNilradical R p ↔ ∃ n : ℕ, x ^ p ^ n = 0 := by
   by_cases hp : 1 < p
   · rw [pNilradical_eq_nilradical hp]
-    refine ⟨fun ⟨n, h⟩ ↦ ⟨n, ?_⟩, fun ⟨n, h⟩ ↦ ⟨p ^ n, h⟩⟩
+    refine ⟨fun ⟨n, h⟩ ↦ ⟨n, _⟩, fun ⟨n, h⟩ ↦ ⟨p ^ n, h⟩⟩
     rw [← Nat.sub_add_cancel ((Nat.lt_pow_self hp n).le), pow_add, h, mul_zero]
   rw [pNilradical_eq_bot hp, Ideal.mem_bot]
-  refine ⟨fun h ↦ ⟨0, by rw [pow_zero, pow_one, h]⟩, fun ⟨n, h⟩ ↦ ?_⟩
+  refine ⟨fun h ↦ ⟨0, by rw [pow_zero, pow_one, h]⟩, fun ⟨n, h⟩ ↦ _⟩
   rcases Nat.le_one_iff_eq_zero_or_eq_one.1 (not_lt.1 hp) with hp | hp
   · by_cases hn : n = 0
     · rwa [hn, pow_zero, pow_one] at h
@@ -156,7 +156,7 @@ theorem IsPRadical.ker_le [IsPRadical i p] :
 
 theorem IsPRadical.comap_pNilradical [IsPRadical i p] :
     (pNilradical L p).comap i = pNilradical K p := by
-  refine le_antisymm (fun x h ↦ mem_pNilradical.2 ?_) (fun x h ↦ ?_)
+  refine le_antisymm (fun x h ↦ mem_pNilradical.2 _) (fun x h ↦ _)
   · obtain ⟨n, h⟩ := mem_pNilradical.1 <| Ideal.mem_comap.1 h
     obtain ⟨m, h⟩ := mem_pNilradical.1 <| ker_le i p ((map_pow i x _).symm ▸ h)
     exact ⟨n + m, by rwa [pow_add, pow_mul]⟩
@@ -295,7 +295,7 @@ theorem liftAux_apply (x : L) (n : ℕ) (y : K) (h : i y = x ^ p ^ n) :
   rw [← pow_mul, mul_comm, pow_mul, ← h', ← map_pow, ← map_pow, ← sub_eq_zero, ← map_sub,
     ← RingHom.mem_ker] at h
   obtain ⟨m, h⟩ := mem_pNilradical.1 (IsPRadical.ker_le i p h)
-  refine (iterateFrobeniusEquiv M p (m + n + n')).injective ?_
+  refine (iterateFrobeniusEquiv M p (m + n + n')).injective _
   conv_lhs => rw [iterateFrobeniusEquiv_add_apply, RingEquiv.apply_symm_apply]
   rw [add_assoc, add_comm n n', ← add_assoc,
     iterateFrobeniusEquiv_add_apply (m := m + n'), RingEquiv.apply_symm_apply,
@@ -411,7 +411,7 @@ variable [IsPRadical g p] [IsPRadical (g.comp i) p]
 
 @[simp]
 theorem lift_lift : lift g (lift i j p) p = lift (g.comp i) j p := by
-  refine IsPRadical.injective_comp_of_perfect _ (g.comp i) p ?_
+  refine IsPRadical.injective_comp_of_perfect _ (g.comp i) p _
   simp_rw [← RingHom.comp_assoc _ _ (lift g _ p), lift_comp]
 
 theorem lift_lift_apply (x : N) : lift g (lift i j p) p x = lift (g.comp i) j p x :=

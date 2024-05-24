@@ -418,14 +418,14 @@ theorem adjoin_adjoin_left (T : Set E) :
   · exact subset_adjoin_of_subset_right _ _ (Set.subset_union_right _ _)
 -- Porting note: orginal proof times out
   · rintro x ⟨f, rfl⟩
-    refine' Subfield.subset_closure _
+    refine Subfield.subset_closure _
     left
     exact ⟨f, rfl⟩
 -- Porting note: orginal proof times out
-  · refine' Set.union_subset (fun x hx => Subfield.subset_closure _)
+  · refine Set.union_subset (fun x hx => Subfield.subset_closure _)
       (fun x hx => Subfield.subset_closure _)
     · left
-      refine' ⟨⟨x, Subfield.subset_closure _⟩, rfl⟩
+      refine ⟨⟨x, Subfield.subset_closure _⟩, rfl⟩
       right
       exact hx
     · right
@@ -528,7 +528,7 @@ theorem eq_adjoin_of_eq_algebra_adjoin (K : IntermediateField F E)
     (h : K.toSubalgebra = Algebra.adjoin F S) : K = adjoin F S := by
   apply toSubalgebra_injective
   rw [h]
-  refine' (adjoin_eq_algebra_adjoin F _ _).symm
+  refine (adjoin_eq_algebra_adjoin F _ _).symm
   intro x
   convert K.inv_mem (x := x) <;> rw [← h] <;> rfl
 #align intermediate_field.eq_adjoin_of_eq_algebra_adjoin IntermediateField.eq_adjoin_of_eq_algebra_adjoin
@@ -656,7 +656,7 @@ theorem isSplittingField_iff {p : F[X]} {K : IntermediateField F E} :
     exact ⟨fun h ↦ ⟨h.1, (this h.1).mp h.2⟩, fun h ↦ ⟨h.1, (this h.1).mpr h.2⟩⟩
   rw [← toSubalgebra_injective.eq_iff,
       adjoin_algebraic_toSubalgebra fun x ↦ isAlgebraic_of_mem_rootSet]
-  refine fun hp ↦ (adjoin_rootSet_eq_range hp K.val).symm.trans ?_
+  refine fun hp ↦ (adjoin_rootSet_eq_range hp K.val).symm.trans _
   rw [← K.range_val, eq_comm]
 #align intermediate_field.is_splitting_field_iff IntermediateField.isSplittingField_iff
 
@@ -776,7 +776,7 @@ theorem isSplittingField_iSup {p : ι → K[X]}
   let F : IntermediateField K L := ⨆ i ∈ s, t i
   have hF : ∀ i ∈ s, t i ≤ F := fun i hi ↦ le_iSup_of_le i (le_iSup (fun _ ↦ t i) hi)
   simp only [isSplittingField_iff] at h ⊢
-  refine'
+  refine
     ⟨splits_prod (algebraMap K F) fun i hi ↦
         splits_comp_of_splits (algebraMap K (t i)) (inclusion (hF i hi)).toRingHom
           (h i hi).1,
@@ -893,7 +893,7 @@ theorem exists_finset_of_mem_iSup {ι : Type*} {f : ι → IntermediateField F E
 theorem exists_finset_of_mem_supr' {ι : Type*} {f : ι → IntermediateField F E} {x : E}
     (hx : x ∈ ⨆ i, f i) : ∃ s : Finset (Σ i, f i), x ∈ ⨆ i ∈ s, F⟮(i.2 : E)⟯ := by
 -- Porting note: writing `fun i x h => ...` does not work.
-  refine exists_finset_of_mem_iSup (SetLike.le_def.mp (iSup_le fun i ↦ ?_) hx)
+  refine exists_finset_of_mem_iSup (SetLike.le_def.mp (iSup_le fun i ↦ _) hx)
   exact fun x h ↦ SetLike.le_def.mp (le_iSup_of_le ⟨i, x, h⟩ (by simp)) (mem_adjoin_simple_self F x)
 #align intermediate_field.exists_finset_of_mem_supr' IntermediateField.exists_finset_of_mem_supr'
 
@@ -901,9 +901,9 @@ theorem exists_finset_of_mem_supr'' {ι : Type*} {f : ι → IntermediateField F
     (h : ∀ i, Algebra.IsAlgebraic F (f i)) {x : E} (hx : x ∈ ⨆ i, f i) :
     ∃ s : Finset (Σ i, f i), x ∈ ⨆ i ∈ s, adjoin F ((minpoly F (i.2 : _)).rootSet E) := by
 -- Porting note: writing `fun i x1 hx1 => ...` does not work.
-  refine' exists_finset_of_mem_iSup (SetLike.le_def.mp (iSup_le (fun i => _)) hx)
+  refine exists_finset_of_mem_iSup (SetLike.le_def.mp (iSup_le (fun i => _)) hx)
   intro x1 hx1
-  refine' SetLike.le_def.mp (le_iSup_of_le ⟨i, x1, hx1⟩ _)
+  refine SetLike.le_def.mp (le_iSup_of_le ⟨i, x1, hx1⟩ _)
     (subset_adjoin F (rootSet (minpoly F x1) E) _)
   · rw [IntermediateField.minpoly_eq, Subtype.coe_mk]
   · rw [mem_rootSet_of_ne, minpoly.aeval]
@@ -914,7 +914,7 @@ theorem exists_finset_of_mem_adjoin {S : Set E} {x : E} (hx : x ∈ adjoin F S) 
     ∃ T : Finset E, (T : Set E) ⊆ S ∧ x ∈ adjoin F (T : Set E) := by
   simp_rw [← biSup_adjoin_simple S, ← iSup_subtype''] at hx
   obtain ⟨s, hx'⟩ := exists_finset_of_mem_iSup hx
-  refine ⟨s.image Subtype.val, by simp, SetLike.le_def.mp ?_ hx'⟩
+  refine ⟨s.image Subtype.val, by simp, SetLike.le_def.mp _ hx'⟩
   simp_rw [Finset.coe_image, iSup_le_iff, adjoin_le_iff]
   rintro _ h _ rfl
   exact subset_adjoin F _ ⟨_, h, rfl⟩
@@ -1096,13 +1096,13 @@ noncomputable def adjoinRootEquivAdjoin (h : IsIntegral F α) :
           intro x
           obtain ⟨y, hy⟩ := this (Subtype.mem x)
           exact ⟨y, Subtype.ext hy⟩
-        refine' Subfield.closure_le.mpr (Set.union_subset (fun x hx => _) _)
+        refine Subfield.closure_le.mpr (Set.union_subset (fun x hx => _) _)
         · obtain ⟨y, hy⟩ := hx
-          refine ⟨y, ?_⟩
+          refine ⟨y, _⟩
           -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
           erw [RingHom.comp_apply, AdjoinRoot.lift_of (aeval_gen_minpoly F α)]
           exact hy
-        · refine' Set.singleton_subset_iff.mpr ⟨AdjoinRoot.root (minpoly F α), _⟩
+        · refine Set.singleton_subset_iff.mpr ⟨AdjoinRoot.root (minpoly F α), _⟩
           -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
           erw [RingHom.comp_apply, AdjoinRoot.lift_root (aeval_gen_minpoly F α)]
           rfl)
@@ -1169,7 +1169,7 @@ theorem adjoin_minpoly_coeff_of_exists_primitive_element
   set g := (minpoly K α).map (algebraMap K E)
   set K' : IntermediateField F E := adjoin F g.coeffs
   have hsub : K' ≤ K := by
-    refine adjoin_le_iff.mpr fun x ↦ ?_
+    refine adjoin_le_iff.mpr fun x ↦ _
     rw [Finset.mem_coe, mem_coeffs_iff]
     rintro ⟨n, -, rfl⟩
     rw [coeff_map]
@@ -1183,7 +1183,7 @@ theorem adjoin_minpoly_coeff_of_exists_primitive_element
     have := adjoin.finrank (.of_finite K α)
     erw [adjoin_eq_top_of_adjoin_eq_top F hprim, finrank_top K E] at this
     exact this
-  refine eq_of_le_of_finrank_le' hsub ?_
+  refine eq_of_le_of_finrank_le' hsub _
   simp_rw [finrank_eq]
   convert natDegree_le_of_dvd dvd_g
     ((g.monic_toSubring _ _).mpr <| (minpoly.monic <| .of_finite K α).map _).ne_zero using 1
@@ -1204,7 +1204,7 @@ theorem exists_lt_finrank_of_infinite_dimensional
     exact topEquiv.toLinearEquiv.finiteDimensional
   let L' := L ⊔ F⟮x⟯
   haveI := adjoin.finiteDimensional (Algebra.IsIntegral.isIntegral (R := F) x)
-  refine ⟨L', inferInstance, by_contra fun h ↦ ?_⟩
+  refine ⟨L', inferInstance, by_contra fun h ↦ _⟩
   have h1 : L = L' := eq_of_le_of_finrank_le le_sup_left ((not_lt.1 h).trans hn)
   have h2 : F⟮x⟯ ≤ L' := le_sup_right
   exact hx <| (h1.symm ▸ h2) <| mem_adjoin_simple_self F x
@@ -1306,7 +1306,7 @@ theorem _root_.Polynomial.irreducible_comp {f g : K[X]} (hfm : f.Monic) (hgm : g
   let Kx := AdjoinRoot p
   letI := (AdjoinRoot.powerBasis hp₁.ne_zero).finite
   have key₁ : f = minpoly K (aeval (root p) g) := by
-    refine minpoly.eq_of_irreducible_of_monic hf ?_ hfm
+    refine minpoly.eq_of_irreducible_of_monic hf _ hfm
     rw [← aeval_comp]
     exact aeval_eq_zero_of_dvd_aeval_eq_zero hp₂ (AdjoinRoot.eval₂_root p)
   have key₁' : finrank K K⟮aeval (root p) g⟯ = natDegree f := by
@@ -1366,7 +1366,7 @@ theorem fg_of_noetherian (S : IntermediateField F E) [IsNoetherian F E] : S.FG :
 theorem induction_on_adjoin_finset (S : Finset E) (P : IntermediateField F E → Prop) (base : P ⊥)
     (ih : ∀ (K : IntermediateField F E), ∀ x ∈ S, P K → P (K⟮x⟯.restrictScalars F)) :
     P (adjoin F S) := by
-  refine' Finset.induction_on' S _ (fun ha _ _ h => _)
+  refine Finset.induction_on' S _ (fun ha _ _ h => _)
   · simp [base]
   · rw [Finset.coe_insert, Set.insert_eq, Set.union_comm, ← adjoin_adjoin_left]
     exact ih (adjoin F _) _ ha h

@@ -102,17 +102,17 @@ theorem mem_torsion {x : (𝓞 K)ˣ} [NumberField K] :
     x ∈ torsion K ↔ ∀ w : InfinitePlace K, w x = 1 := by
   rw [eq_iff_eq (x : K) 1, torsion, CommGroup.mem_torsion]
   refine ⟨fun hx φ ↦ (((φ.comp $ algebraMap (𝓞 K) K).toMonoidHom.comp $
-    Units.coeHom _).isOfFinOrder hx).norm_eq_one, fun h ↦ isOfFinOrder_iff_pow_eq_one.2 ?_⟩
+    Units.coeHom _).isOfFinOrder hx).norm_eq_one, fun h ↦ isOfFinOrder_iff_pow_eq_one.2 _⟩
   obtain ⟨n, hn, hx⟩ := Embeddings.pow_eq_one_of_norm_eq_one K ℂ x.val.isIntegral_coe h
   exact ⟨n, hn, by ext; rw [NumberField.RingOfIntegers.coe_eq_algebraMap, coe_pow, hx,
     NumberField.RingOfIntegers.coe_eq_algebraMap, coe_one]⟩
 
 /-- The torsion subgroup is finite. -/
 instance [NumberField K] : Fintype (torsion K) := by
-  refine @Fintype.ofFinite _ (Set.finite_coe_iff.mpr ?_)
-  refine Set.Finite.of_finite_image ?_ ((coe_injective K).injOn _)
+  refine @Fintype.ofFinite _ (Set.finite_coe_iff.mpr _)
+  refine Set.Finite.of_finite_image _ ((coe_injective K).injOn _)
   refine (Embeddings.finite_of_norm_le K ℂ 1).subset
-    (fun a ⟨u, ⟨h_tors, h_ua⟩⟩ => ⟨?_, fun φ => ?_⟩)
+    (fun a ⟨u, ⟨h_tors, h_ua⟩⟩ => ⟨_, fun φ => _⟩)
   · rw [← h_ua]
     exact u.val.prop
   · rw [← h_ua]
@@ -131,8 +131,8 @@ def torsionOrder [NumberField K] : ℕ+ := ⟨Fintype.card (torsion K), Fintype.
 theorem rootsOfUnity_eq_one [NumberField K] {k : ℕ+} (hc : Nat.Coprime k (torsionOrder K))
     {ζ : (𝓞 K)ˣ} : ζ ∈ rootsOfUnity k (𝓞 K) ↔ ζ = 1 := by
   rw [mem_rootsOfUnity]
-  refine ⟨fun h => ?_, fun h => by rw [h, one_pow]⟩
-  refine orderOf_eq_one_iff.mp (Nat.eq_one_of_dvd_coprimes hc ?_ ?_)
+  refine ⟨fun h => _, fun h => by rw [h, one_pow]⟩
+  refine orderOf_eq_one_iff.mp (Nat.eq_one_of_dvd_coprimes hc _ _)
   · exact orderOf_dvd_of_pow_eq_one h
   · have hζ : ζ ∈ torsion K := by
       rw [torsion, CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one]
@@ -146,7 +146,7 @@ theorem rootsOfUnity_eq_torsion [NumberField K] :
     rootsOfUnity (torsionOrder K) (𝓞 K) = torsion K := by
   ext ζ
   rw [torsion, mem_rootsOfUnity]
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h => _, fun h => _⟩
   · rw [CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one]
     exact ⟨↑(torsionOrder K), (torsionOrder K).prop, h⟩
   · exact Subtype.ext_iff.mp (@pow_card_eq_one (torsion K) _ _ ⟨ζ, h⟩)

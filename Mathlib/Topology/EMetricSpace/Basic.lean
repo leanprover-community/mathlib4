@@ -206,7 +206,7 @@ For specific bases see `uniformity_basis_edist`, `uniformity_basis_edist'`,
 protected theorem EMetric.mk_uniformity_basis {β : Type*} {p : β → Prop} {f : β → ℝ≥0∞}
     (hf₀ : ∀ x, p x → 0 < f x) (hf : ∀ ε, 0 < ε → ∃ x, p x ∧ f x ≤ ε) :
     (𝓤 α).HasBasis p fun x => { p : α × α | edist p.1 p.2 < f x } := by
-  refine' ⟨fun s => uniformity_basis_edist.mem_iff.trans _⟩
+  refine ⟨fun s => uniformity_basis_edist.mem_iff.trans _⟩
   constructor
   · rintro ⟨ε, ε₀, hε⟩
     rcases hf ε ε₀ with ⟨i, hi, H⟩
@@ -221,7 +221,7 @@ For specific bases see `uniformity_basis_edist_le` and `uniformity_basis_edist_l
 protected theorem EMetric.mk_uniformity_basis_le {β : Type*} {p : β → Prop} {f : β → ℝ≥0∞}
     (hf₀ : ∀ x, p x → 0 < f x) (hf : ∀ ε, 0 < ε → ∃ x, p x ∧ f x ≤ ε) :
     (𝓤 α).HasBasis p fun x => { p : α × α | edist p.1 p.2 ≤ f x } := by
-  refine' ⟨fun s => uniformity_basis_edist.mem_iff.trans _⟩
+  refine ⟨fun s => uniformity_basis_edist.mem_iff.trans _⟩
   constructor
   · rintro ⟨ε, ε₀, hε⟩
     rcases exists_between ε₀ with ⟨ε', hε'⟩
@@ -358,7 +358,7 @@ theorem tendstoLocallyUniformlyOn_iff {ι : Type*} [TopologicalSpace β] {F : ι
     {p : Filter ι} {s : Set β} :
     TendstoLocallyUniformlyOn F f p s ↔
       ∀ ε > 0, ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, ∀ᶠ n in p, ∀ y ∈ t, edist (f y) (F n y) < ε := by
-  refine' ⟨fun H ε hε => H _ (edist_mem_uniformity hε), fun H u hu x hx => _⟩
+  refine ⟨fun H ε hε => H _ (edist_mem_uniformity hε), fun H u hu x hx => _⟩
   rcases mem_uniformity_edist.1 hu with ⟨ε, εpos, hε⟩
   rcases H ε εpos x hx with ⟨t, ht, Ht⟩
   exact ⟨t, ht, Ht.mono fun n hs x hx => hε (hs x hx)⟩
@@ -367,7 +367,7 @@ theorem tendstoLocallyUniformlyOn_iff {ι : Type*} [TopologicalSpace β] {F : ι
 /-- Expressing uniform convergence on a set using `edist`. -/
 theorem tendstoUniformlyOn_iff {ι : Type*} {F : ι → β → α} {f : β → α} {p : Filter ι} {s : Set β} :
     TendstoUniformlyOn F f p s ↔ ∀ ε > 0, ∀ᶠ n in p, ∀ x ∈ s, edist (f x) (F n x) < ε := by
-  refine' ⟨fun H ε hε => H _ (edist_mem_uniformity hε), fun H u hu => _⟩
+  refine ⟨fun H ε hε => H _ (edist_mem_uniformity hε), fun H u hu => _⟩
   rcases mem_uniformity_edist.1 hu with ⟨ε, εpos, hε⟩
   exact (H ε εpos).mono fun n hs x hx => hε (hs x hx)
 #align emetric.tendsto_uniformly_on_iff EMetric.tendstoUniformlyOn_iff
@@ -613,7 +613,7 @@ theorem ball_subset (h : edist x y + ε₁ ≤ ε₂) (h' : edist x y ≠ ∞) :
 
 theorem exists_ball_subset_ball (h : y ∈ ball x ε) : ∃ ε' > 0, ball y ε' ⊆ ball x ε := by
   have : 0 < ε - edist y x := by simpa using h
-  refine' ⟨ε - edist y x, this, ball_subset _ (ne_top_of_lt h)⟩
+  refine ⟨ε - edist y x, this, ball_subset _ (ne_top_of_lt h)⟩
   exact (add_tsub_cancel_of_le (mem_ball.mp h).le).le
 #align emetric.exists_ball_subset_ball EMetric.exists_ball_subset_ball
 
@@ -802,22 +802,22 @@ theorem subset_countable_closure_of_almost_dense_set (s : Set α)
   choose! T hTc hsT using fun n : ℕ => hs n⁻¹ (by simp)
   have : ∀ r x, ∃ y ∈ s, closedBall x r ∩ s ⊆ closedBall y (r * 2) := fun r x => by
     rcases (closedBall x r ∩ s).eq_empty_or_nonempty with (he | ⟨y, hxy, hys⟩)
-    · refine' ⟨x₀, hx₀, _⟩
+    · refine ⟨x₀, hx₀, _⟩
       rw [he]
       exact empty_subset _
-    · refine' ⟨y, hys, fun z hz => _⟩
+    · refine ⟨y, hys, fun z hz => _⟩
       calc
         edist z y ≤ edist z x + edist y x := edist_triangle_right _ _ _
         _ ≤ r + r := add_le_add hz.1 hxy
         _ = r * 2 := (mul_two r).symm
   choose f hfs hf using this
-  refine'
+  refine
     ⟨⋃ n : ℕ, f n⁻¹ '' T n, iUnion_subset fun n => image_subset_iff.2 fun z _ => hfs _ _,
       countable_iUnion fun n => (hTc n).image _, _⟩
-  refine' fun x hx => mem_closure_iff.2 fun ε ε0 => _
+  refine fun x hx => mem_closure_iff.2 fun ε ε0 => _
   rcases ENNReal.exists_inv_nat_lt (ENNReal.half_pos ε0.lt.ne').ne' with ⟨n, hn⟩
   rcases mem_iUnion₂.1 (hsT n hx) with ⟨y, hyn, hyx⟩
-  refine' ⟨f n⁻¹ y, mem_iUnion.2 ⟨n, mem_image_of_mem _ hyn⟩, _⟩
+  refine ⟨f n⁻¹ y, mem_iUnion.2 ⟨n, mem_image_of_mem _ hyn⟩, _⟩
   calc
     edist x (f n⁻¹ y) ≤ (n : ℝ≥0∞)⁻¹ * 2 := hf _ _ ⟨hyx, hx⟩
     _ < ε := ENNReal.mul_lt_of_lt_div hn
@@ -831,7 +831,7 @@ theorem _root_.TopologicalSpace.IsSeparable.exists_countable_dense_subset
     {s : Set α} (hs : IsSeparable s) : ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t := by
   have : ∀ ε > 0, ∃ t : Set α, t.Countable ∧ s ⊆ ⋃ x ∈ t, closedBall x ε := fun ε ε0 => by
     rcases hs with ⟨t, htc, hst⟩
-    refine ⟨t, htc, hst.trans fun x hx => ?_⟩
+    refine ⟨t, htc, hst.trans fun x hx => _⟩
     rcases mem_closure_iff.1 hx ε ε0 with ⟨y, hyt, hxy⟩
     exact mem_iUnion₂.2 ⟨y, hyt, mem_closedBall.2 hxy.le⟩
   exact subset_countable_closure_of_almost_dense_set _ this
@@ -844,7 +844,7 @@ theorem _root_.TopologicalSpace.IsSeparable.separableSpace {s : Set α} (hs : Is
     SeparableSpace s := by
   rcases hs.exists_countable_dense_subset with ⟨t, hts, htc, hst⟩
   lift t to Set s using hts
-  refine ⟨⟨t, countable_of_injective_of_countable_image (Subtype.coe_injective.injOn _) htc, ?_⟩⟩
+  refine ⟨⟨t, countable_of_injective_of_countable_image (Subtype.coe_injective.injOn _) htc, _⟩⟩
   rwa [inducing_subtype_val.dense_iff, Subtype.forall]
 #align topological_space.is_separable.separable_space TopologicalSpace.IsSeparable.separableSpace
 
@@ -853,7 +853,7 @@ theorem _root_.TopologicalSpace.IsSeparable.separableSpace {s : Set α} (hs : Is
 countable set.  -/
 theorem subset_countable_closure_of_compact {s : Set α} (hs : IsCompact s) :
     ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t := by
-  refine' subset_countable_closure_of_almost_dense_set s fun ε hε => _
+  refine subset_countable_closure_of_almost_dense_set s fun ε hε => _
   rcases totallyBounded_iff'.1 hs.totallyBounded ε hε with ⟨t, -, htf, hst⟩
   exact ⟨t, htf.countable, hst.trans <| iUnion₂_mono fun _ _ => ball_subset_closedBall⟩
 #align emetric.subset_countable_closure_of_compact EMetric.subset_countable_closure_of_compact
@@ -872,7 +872,7 @@ instance (priority := 90) secondCountable_of_sigmaCompact [SigmaCompactSpace α]
   suffices SeparableSpace α by exact UniformSpace.secondCountable_of_separable α
   choose T _ hTc hsubT using fun n =>
     subset_countable_closure_of_compact (isCompact_compactCovering α n)
-  refine' ⟨⟨⋃ n, T n, countable_iUnion hTc, fun x => _⟩⟩
+  refine ⟨⟨⋃ n, T n, countable_iUnion hTc, fun x => _⟩⟩
   rcases iUnion_eq_univ_iff.1 (iUnion_compactCovering α) x with ⟨n, hn⟩
   exact closure_mono (subset_iUnion _ n) (hsubT _ hn)
 #align emetric.second_countable_of_sigma_compact EMetric.secondCountable_of_sigmaCompact
@@ -981,7 +981,7 @@ theorem diam_union {t : Set α} (xs : x ∈ s) (yt : y ∈ t) :
       edist a b ≤ edist a x + edist x y + edist y b := edist_triangle4 _ _ _ _
       _ ≤ diam s + edist x y + diam t :=
         add_le_add (add_le_add (edist_le_diam_of_mem ha xs) le_rfl) (edist_le_diam_of_mem yt hb)
-  refine' diam_le fun a ha b hb => _
+  refine diam_le fun a ha b hb => _
   cases' (mem_union _ _ _).1 ha with h'a h'a <;> cases' (mem_union _ _ _).1 hb with h'b h'b
   · calc
       edist a b ≤ diam s := edist_le_diam_of_mem h'a h'b
@@ -1014,7 +1014,7 @@ theorem diam_ball {r : ℝ≥0∞} : diam (ball x r) ≤ 2 * r :=
 
 theorem diam_pi_le_of_le {π : β → Type*} [Fintype β] [∀ b, PseudoEMetricSpace (π b)]
     {s : ∀ b : β, Set (π b)} {c : ℝ≥0∞} (h : ∀ b, diam (s b) ≤ c) : diam (Set.pi univ s) ≤ c := by
-  refine diam_le fun x hx y hy => edist_pi_le_iff.mpr ?_
+  refine diam_le fun x hx y hy => edist_pi_le_iff.mpr _
   rw [mem_univ_pi] at hx hy
   exact fun b => diam_le_iff.1 (h b) (x b) (hx b) (y b) (hy b)
 #align emetric.diam_pi_le_of_le EMetric.diam_pi_le_of_le

@@ -172,7 +172,7 @@ theorem ContinuousLinearEquiv.tsum_eq_iff [T2Space M] [T2Space M₂] {f : ι →
         (e.hasSum.mpr (hf.hasSum_iff.mpr h)).tsum_eq⟩
   · have hf' : ¬Summable fun z ↦ e (f z) := fun h ↦ hf (e.summable.mp h)
     rw [tsum_eq_zero_of_not_summable hf, tsum_eq_zero_of_not_summable hf']
-    refine ⟨?_, fun H ↦ ?_⟩
+    refine ⟨_, fun H ↦ _⟩
     · rintro rfl
       simp
     · simpa using congr_arg (fun z ↦ e z) H
@@ -180,7 +180,7 @@ theorem ContinuousLinearEquiv.tsum_eq_iff [T2Space M] [T2Space M₂] {f : ι →
 
 protected theorem ContinuousLinearEquiv.map_tsum [T2Space M] [T2Space M₂] {f : ι → M}
     (e : M ≃SL[σ] M₂) : e (∑' z, f z) = ∑' z, e (f z) := by
-  refine' symm (e.tsum_eq_iff.mpr _)
+  refine symm (e.tsum_eq_iff.mpr _)
   rw [e.symm_apply_apply _]
 #align continuous_linear_equiv.map_tsum ContinuousLinearEquiv.map_tsum
 
@@ -200,7 +200,7 @@ variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [T2Space M] {R : Typ
   `b ↦ ∑' (a : α), f(a • b)`."]
 noncomputable def MulAction.automorphize [Group α] [MulAction α β] (f : β → M) :
     Quotient (MulAction.orbitRel α β) → M := by
-  refine @Quotient.lift _ _ (_) (fun b ↦ ∑' (a : α), f (a • b)) ?_
+  refine @Quotient.lift _ _ (_) (fun b ↦ ∑' (a : α), f (a • b)) _
   intro b₁ b₂ ⟨a, (ha : a • b₂ = b₁)⟩
   simp only
   rw [← ha]

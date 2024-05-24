@@ -59,7 +59,7 @@ theorem limsup_const_mul [CountableInterFilter f] {u : α → ℝ≥0∞} {a : �
     simp
   · have hu_mul : ∃ᶠ x : α in f, ⊤ ≤ ite (u x = 0) (0 : ℝ≥0∞) ⊤ := by
       rw [EventuallyEq, not_eventually] at hu
-      refine hu.mono fun x hx => ?_
+      refine hu.mono fun x hx => _
       rw [Pi.zero_apply] at hx
       simp [hx]
     have h_top_le : (f.limsup fun x : α => ite (u x = 0) (0 : ℝ≥0∞) ⊤) = ⊤ :=
@@ -72,7 +72,7 @@ theorem limsup_mul_le [CountableInterFilter f] (u v : α → ℝ≥0∞) :
     f.limsup (u * v) ≤ f.limsup u * f.limsup v :=
   calc
     f.limsup (u * v) ≤ f.limsup fun x => f.limsup u * v x := by
-      refine limsup_le_limsup ?_
+      refine limsup_le_limsup _
       filter_upwards [@eventually_le_limsup _ f _ u] with x hx using mul_le_mul' hx le_rfl
     _ = f.limsup u * f.limsup v := limsup_const_mul
 #align ennreal.limsup_mul_le ENNReal.limsup_mul_le

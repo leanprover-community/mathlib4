@@ -66,7 +66,7 @@ products.
 theorem Presieve.isSheaf_iff_preservesFiniteProducts [FinitaryExtensive C] (F : Cᵒᵖ ⥤ Type w) :
     Presieve.IsSheaf (extensiveTopology C) F ↔
     Nonempty (PreservesFiniteProducts F) := by
-  refine ⟨fun hF ↦ ⟨⟨fun α _ ↦ ⟨fun {K} ↦ ?_⟩⟩⟩, fun hF ↦ ?_⟩
+  refine ⟨fun hF ↦ ⟨⟨fun α _ ↦ ⟨fun {K} ↦ _⟩⟩⟩, fun hF ↦ _⟩
   · erw [Presieve.isSheaf_coverage] at hF
     let Z : α → C := fun i ↦ unop (K.obj ⟨i⟩)
     have : (Presieve.ofArrows Z (Cofan.mk (∐ Z) (Sigma.ι Z)).inj).hasPullbacks :=
@@ -75,16 +75,16 @@ theorem Presieve.isSheaf_iff_preservesFiniteProducts [FinitaryExtensive C] (F : 
       (inferInstance : ∀ (i : α), Mono (Sigma.ι Z i))
     let i : K ≅ Discrete.functor (fun i ↦ op (Z i)) := Discrete.natIsoFunctor
     let _ : PreservesLimit (Discrete.functor (fun i ↦ op (Z i))) F :=
-        Presieve.preservesProductOfIsSheafFor F ?_ initialIsInitial _ (coproductIsCoproduct Z)
+        Presieve.preservesProductOfIsSheafFor F _ initialIsInitial _ (coproductIsCoproduct Z)
         (FinitaryExtensive.isPullback_initial_to_sigma_ι Z)
-        (hF (Presieve.ofArrows Z (fun i ↦ Sigma.ι Z i)) ?_)
+        (hF (Presieve.ofArrows Z (fun i ↦ Sigma.ι Z i)) _)
     · exact preservesLimitOfIsoDiagram F i.symm
     · apply hF
-      refine ⟨Empty, inferInstance, Empty.elim, IsEmpty.elim inferInstance, rfl, ⟨default,?_, ?_⟩⟩
+      refine ⟨Empty, inferInstance, Empty.elim, IsEmpty.elim inferInstance, rfl, ⟨default,_, _⟩⟩
       · ext b
         cases b
       · simp only [eq_iff_true_of_subsingleton]
-    · refine ⟨α, inferInstance, Z, (fun i ↦ Sigma.ι Z i), rfl, ?_⟩
+    · refine ⟨α, inferInstance, Z, (fun i ↦ Sigma.ι Z i), rfl, _⟩
       suffices Sigma.desc (fun i ↦ Sigma.ι Z i) = 𝟙 _ by rw [this]; infer_instance
       ext
       simp
@@ -104,7 +104,7 @@ theorem Presheaf.isSheaf_iff_preservesFiniteProducts {D : Type*} [Category D]
   constructor
   · intro h
     rw [IsSheaf] at h
-    refine ⟨⟨fun J _ ↦ ⟨fun {K} ↦ ⟨fun {c} hc ↦ ?_⟩⟩⟩⟩
+    refine ⟨⟨fun J _ ↦ ⟨fun {K} ↦ ⟨fun {c} hc ↦ _⟩⟩⟩⟩
     apply coyonedaJointlyReflectsLimits
     intro ⟨E⟩
     specialize h E

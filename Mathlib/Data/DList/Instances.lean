@@ -26,7 +26,7 @@ variable (α : Type*)
 /-- The natural equivalence between lists and difference lists, using
 `DList.ofList` and `DList.toList`. -/
 def DList.listEquivDList : List α ≃ DList α := by
-  refine'
+  refine
       { toFun := DList.ofList
         invFun := DList.toList.. } <;>
     simp [Function.RightInverse, Function.LeftInverse, DList.toList_ofList, DList.ofList_toList]

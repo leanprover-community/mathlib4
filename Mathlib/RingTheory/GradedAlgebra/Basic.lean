@@ -186,7 +186,7 @@ abbrev GradedAlgebra.ofAlgHom [SetLike.GradedMonoid 𝒜] (decompose : A →ₐ[
   right_inv := by
     suffices decompose.comp (DirectSum.coeAlgHom 𝒜) = AlgHom.id _ _ from AlgHom.congr_fun this
     -- Porting note: was ext i x : 2
-    refine DirectSum.algHom_ext' _ _ fun i => ?_
+    refine DirectSum.algHom_ext' _ _ fun i => _
     ext x
     exact (decompose.congr_arg <| DirectSum.coeAlgHom_of _ _ _).trans (left_inv i x)
 #align graded_algebra.of_alg_hom GradedAlgebra.ofAlgHom
@@ -276,10 +276,10 @@ def GradedRing.projZeroRingHom : A →+* A where
     rw [decompose_add]
     rfl
   map_mul' := by
-    refine' DirectSum.Decomposition.inductionOn 𝒜 (fun x => _) _ _
+    refine DirectSum.Decomposition.inductionOn 𝒜 (fun x => _) _ _
     · simp only [zero_mul, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
     · rintro i ⟨c, hc⟩
-      refine' DirectSum.Decomposition.inductionOn 𝒜 _ _ _
+      refine DirectSum.Decomposition.inductionOn 𝒜 _ _ _
       · simp only [mul_zero, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
       · rintro j ⟨c', hc'⟩
         simp only [Subtype.coe_mk]

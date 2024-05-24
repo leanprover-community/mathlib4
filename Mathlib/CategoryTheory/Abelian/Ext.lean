@@ -90,9 +90,9 @@ end CategoryTheory
 /-- If `X : C` is projective and `n : ℕ`, then `Ext^(n + 1) X Y ≅ 0` for any `Y`. -/
 lemma isZero_Ext_succ_of_projective (X Y : C) [Projective X] (n : ℕ) :
     IsZero (((Ext R C (n + 1)).obj (Opposite.op X)).obj Y) := by
-  refine IsZero.of_iso ?_ ((ProjectiveResolution.self X).isoExt (n + 1) Y)
+  refine IsZero.of_iso _ ((ProjectiveResolution.self X).isoExt (n + 1) Y)
   rw [← HomologicalComplex.exactAt_iff_isZero_homology, HomologicalComplex.exactAt_iff]
-  refine ShortComplex.exact_of_isZero_X₂ _ ?_
+  refine ShortComplex.exact_of_isZero_X₂ _ _
   dsimp
   rw [IsZero.iff_id_eq_zero]
   ext (x : _ ⟶ _)

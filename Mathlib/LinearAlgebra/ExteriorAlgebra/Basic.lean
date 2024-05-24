@@ -239,7 +239,7 @@ theorem ι_eq_zero_iff (x : M) : ι R x = 0 ↔ x = 0 := by rw [← ι_inj R x 0
 
 @[simp]
 theorem ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x = 0 ∧ r = 0 := by
-  refine' ⟨fun h => _, _⟩
+  refine ⟨fun h => _, _⟩
   · letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
     haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
     have hf0 : toTrivSqZeroExt (ι R x) = (0, x) := toTrivSqZeroExt_ι _
@@ -282,7 +282,7 @@ theorem ι_mul_prod_list {n : ℕ} (f : Fin n → M) (i : Fin n) :
         congr_arg (ι R (f 0) * ·) <| hn (fun i => f <| Fin.succ i) (i.pred h)
       simp only at hn
       rw [Fin.succ_pred, ← mul_assoc, mul_zero] at hn
-      refine' (eq_zero_iff_eq_zero_of_add_eq_zero _).mp hn
+      refine (eq_zero_iff_eq_zero_of_add_eq_zero _).mp hn
       rw [← add_mul, ι_add_mul_swap, zero_mul]
 #align exterior_algebra.ι_mul_prod_list ExteriorAlgebra.ι_mul_prod_list
 
@@ -311,7 +311,7 @@ def ιMulti (n : ℕ) : M [⋀^Fin n]→ₗ[R] ExteriorAlgebra R M :=
           exact ι_mul_prod_list (f ∘ Fin.succ) _
         -- ignore the left-most term and induct on the remaining ones, decrementing indices
         · convert mul_zero (ι R (f 0))
-          refine'
+          refine
             hn
               (fun i => f <| Fin.succ i) (x.pred hx)
               (y.pred (ne_of_lt <| lt_of_le_of_lt x.zero_le h).symm) _
@@ -362,11 +362,11 @@ lemma ιMulti_range (n : ℕ) :
 of the exterior algebra. -/
 lemma ιMulti_span_fixedDegree (n : ℕ) :
     Submodule.span R (Set.range (ιMulti R n)) = ⋀[R]^n M := by
-  refine le_antisymm (Submodule.span_le.2 (ιMulti_range R n)) ?_
+  refine le_antisymm (Submodule.span_le.2 (ιMulti_range R n)) _
   rw [exteriorPower, Submodule.pow_eq_span_pow_set, Submodule.span_le]
-  refine fun u hu ↦ Submodule.subset_span ?_
+  refine fun u hu ↦ Submodule.subset_span _
   obtain ⟨f, rfl⟩ := Set.mem_pow.mp hu
-  refine ⟨fun i => ιInv (f i).1, ?_⟩
+  refine ⟨fun i => ιInv (f i).1, _⟩
   rw [ιMulti_apply]
   congr with i
   obtain ⟨v, hv⟩ := (f i).prop
@@ -455,7 +455,7 @@ open Function in
 @[simp]
 lemma leftInverse_map_iff {f : M →ₗ[R] N} {g : N →ₗ[R] M} :
     LeftInverse (map g) (map f) ↔ LeftInverse g f := by
-  refine ⟨fun h x => ?_, fun h => CliffordAlgebra.leftInverse_map_of_leftInverse _ _ h⟩
+  refine ⟨fun h x => _, fun h => CliffordAlgebra.leftInverse_map_of_leftInverse _ _ h⟩
   simpa using h (ι _ x)
 
 /-- A morphism of modules that admits a linear retraction induces an injective morphism of
@@ -469,7 +469,7 @@ induces is surjective. -/
 @[simp]
 lemma map_surjective_iff {f : M →ₗ[R] N} :
     Function.Surjective (map f) ↔ Function.Surjective f := by
-  refine ⟨fun h y ↦ ?_, fun h ↦ CliffordAlgebra.map_surjective _ h⟩
+  refine ⟨fun h y ↦ _, fun h ↦ CliffordAlgebra.map_surjective _ h⟩
   obtain ⟨x, hx⟩ := h (ι R y)
   existsi ιInv x
   rw [← LinearMap.comp_apply, ← ιInv_comp_map, LinearMap.comp_apply]

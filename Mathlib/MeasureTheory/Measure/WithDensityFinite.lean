@@ -78,7 +78,7 @@ lemma toFinite_zero : Measure.toFinite (0 : Measure α) = 0 := by
   simp [Measure.toFinite, toFiniteAux_zero]
 
 lemma toFiniteAux_eq_zero_iff [SFinite μ] : μ.toFiniteAux = 0 ↔ μ = 0 := by
-  refine ⟨fun h ↦ ?_, fun h ↦ by simp [h, toFiniteAux_zero]⟩
+  refine ⟨fun h ↦ _, fun h ↦ by simp [h, toFiniteAux_zero]⟩
   ext s hs
   rw [Measure.ext_iff] at h
   specialize h s hs
@@ -101,7 +101,7 @@ lemma toFiniteAux_univ_le_one (μ : Measure α) [SFinite μ] : μ.toFiniteAux Se
         ENNReal.inv_mul_cancel]
       · simp [h_zero]
       · exact ENNReal.mul_ne_top (by simp) (measure_ne_top _ _)
-  refine (tsum_le_tsum h_le_pow ENNReal.summable ENNReal.summable).trans ?_
+  refine (tsum_le_tsum h_le_pow ENNReal.summable ENNReal.summable).trans _
   simp [ENNReal.inv_pow, ENNReal.tsum_geometric_add_one, ENNReal.inv_mul_cancel]
 
 instance [SFinite μ] : IsFiniteMeasure μ.toFiniteAux :=
@@ -116,12 +116,12 @@ instance [SFinite μ] : IsFiniteMeasure μ.toFinite := by
   infer_instance
 
 instance [SFinite μ] [h_zero : NeZero μ] : IsProbabilityMeasure μ.toFinite := by
-  refine ProbabilityTheory.cond_isProbabilityMeasure μ.toFiniteAux ?_
+  refine ProbabilityTheory.cond_isProbabilityMeasure μ.toFiniteAux _
   simp [toFiniteAux_eq_zero_iff, h_zero.out]
 
 lemma sFiniteSeq_absolutelyContinuous_toFiniteAux (μ : Measure α) [SFinite μ] (n : ℕ) :
     sFiniteSeq μ n ≪ μ.toFiniteAux := by
-  refine Measure.absolutelyContinuous_sum_right n (Measure.absolutelyContinuous_smul ?_)
+  refine Measure.absolutelyContinuous_sum_right n (Measure.absolutelyContinuous_smul _)
   simp only [ne_eq, ENNReal.inv_eq_zero]
   exact ENNReal.mul_ne_top (by simp) (measure_ne_top _ _)
 
@@ -139,7 +139,7 @@ lemma absolutelyContinuous_toFinite (μ : Measure α) [SFinite μ] : μ ≪ μ.t
 
 lemma toFinite_absolutelyContinuous (μ : Measure α) [SFinite μ] : μ.toFinite ≪ μ := by
   conv_rhs => rw [← sum_sFiniteSeq μ]
-  refine Measure.AbsolutelyContinuous.mk (fun s hs hs0 ↦ ?_)
+  refine Measure.AbsolutelyContinuous.mk (fun s hs hs0 ↦ _)
   simp only [Measure.sum_apply _ hs, ENNReal.tsum_eq_zero] at hs0
   simp [toFinite_apply, toFiniteAux_apply, hs0]
 
@@ -169,10 +169,10 @@ theorem withDensity_densitytoFinite (μ : Measure α) [SFinite μ] :
 
 lemma densityToFinite_ae_lt_top (μ : Measure α) [SigmaFinite μ] :
     ∀ᵐ x ∂μ, μ.densityToFinite x < ∞ := by
-  refine ae_of_forall_measure_lt_top_ae_restrict _ (fun s _ hμs ↦ ?_)
+  refine ae_of_forall_measure_lt_top_ae_restrict _ (fun s _ hμs ↦ _)
   suffices ∀ᵐ x ∂μ.toFinite.restrict s, μ.densityToFinite x < ∞ from
     (absolutelyContinuous_toFinite μ).restrict _ this
-  refine ae_lt_top (measurable_densityToFinite μ) ?_
+  refine ae_lt_top (measurable_densityToFinite μ) _
   rw [← withDensity_apply', withDensity_densitytoFinite]
   exact hμs.ne
 
@@ -205,7 +205,7 @@ lemma restrict_compl_sigmaFiniteSet [SFinite μ] :
   calc ∫⁻ a in t ∩ μ.sigmaFiniteSetᶜ, μ.densityToFinite a ∂μ.toFinite
   _ = ∫⁻ _ in t ∩ μ.sigmaFiniteSetᶜ, ∞ ∂μ.toFinite := by
         refine set_lintegral_congr_fun (ht.inter (measurableSet_sigmaFiniteSet μ).compl)
-          (ae_of_all _ (fun x hx ↦ ?_))
+          (ae_of_all _ (fun x hx ↦ _))
         simpa [Measure.sigmaFiniteSet] using ((Set.inter_subset_right _ _) hx)
   _ = ∞ * μ.toFinite (t ∩ μ.sigmaFiniteSetᶜ) := by simp
 
@@ -243,7 +243,7 @@ lemma toFinite_withDensity_restrict_sigmaFiniteSet (μ : Measure α) [SFinite μ
     withDensity_apply _ (hs.inter (measurableSet_sigmaFiniteSet μ)),
     withDensity_apply _ (hs.inter (measurableSet_sigmaFiniteSet μ))]
   refine set_lintegral_congr_fun (hs.inter (measurableSet_sigmaFiniteSet μ))
-    (ae_of_all _ (fun x hx ↦ Eq.symm ?_))
+    (ae_of_all _ (fun x hx ↦ Eq.symm _))
   simp only [Measure.sigmaFiniteSet, Set.mem_inter_iff, Set.mem_compl_iff, Set.mem_setOf_eq,
     ne_eq] at hx
   rw [if_pos hx.2]
@@ -253,10 +253,10 @@ instance (μ : Measure α) [SFinite μ] : SigmaFinite (μ.restrict μ.sigmaFinit
   rw [← toFinite_withDensity_restrict_sigmaFiniteSet]
   have : SigmaFinite (μ.toFinite.withDensity
       (fun x ↦ if μ.densityToFinite x ≠ ∞ then μ.densityToFinite x else 1)) := by
-    refine SigmaFinite.withDensity_of_ne_top ?_ ?_
+    refine SigmaFinite.withDensity_of_ne_top _ _
     · exact (Measurable.ite (measurable_densityToFinite μ (measurableSet_singleton _)).compl
         (measurable_densityToFinite μ) measurable_const).aemeasurable
-    · refine ae_of_all _ (fun x ↦ ?_)
+    · refine ae_of_all _ (fun x ↦ _)
       split_ifs with h <;> simp [h]
   exact Restrict.sigmaFinite _ _
 

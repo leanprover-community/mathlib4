@@ -88,7 +88,7 @@ instance instSMul {M : Type*} [SMulZeroClass M R] [ContinuousConstSMul M R] :
 
 lemma toContinuousMap_injective :
     Function.Injective (toContinuousMap (X := X) (R := R)) :=
-  fun f g h ↦ by refine congr(.mk $(h) ?_); exacts [f.map_zero', g.map_zero']
+  fun f g h ↦ by refine congr(.mk $(h) _); exacts [f.map_zero', g.map_zero']
 
 instance instNonUnitalCommSemiring : NonUnitalCommSemiring C(X, R)₀ :=
   (toContinuousMap_injective (X := X) (R := R)).nonUnitalCommSemiring

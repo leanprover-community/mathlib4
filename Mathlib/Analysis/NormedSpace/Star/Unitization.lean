@@ -31,9 +31,9 @@ variable [NormedSpace 𝕜 E] [IsScalarTower 𝕜 E E] [SMulCommClass 𝕜 E E] 
 
 lemma opNorm_mul_flip_apply (a : E) : ‖(mul 𝕜 E).flip a‖ = ‖a‖ := by
   refine le_antisymm
-    (opNorm_le_bound _ (norm_nonneg _) fun b => by simpa only [mul_comm] using norm_mul_le b a) ?_
+    (opNorm_le_bound _ (norm_nonneg _) fun b => by simpa only [mul_comm] using norm_mul_le b a) _
   suffices ‖mul 𝕜 E (star a)‖ ≤ ‖(mul 𝕜 E).flip a‖ by simpa using this
-  refine opNorm_le_bound _ (norm_nonneg _) fun b => ?_
+  refine opNorm_le_bound _ (norm_nonneg _) fun b => _
   calc ‖mul 𝕜 E (star a) b‖ = ‖(mul 𝕜 E).flip a (star b)‖ := by simpa using norm_star (star b * a)
     _ ≤ ‖(mul 𝕜 E).flip a‖ * ‖b‖ := by simpa using le_opNorm ((mul 𝕜 E).flip a) (star b)
 
@@ -60,7 +60,7 @@ instance CstarRing.instRegularNormedAlgebra : RegularNormedAlgebra 𝕜 E where
   isometry_mul' := AddMonoidHomClass.isometry_of_norm (mul 𝕜 E) fun a => NNReal.eq_iff.mpr <|
     show ‖mul 𝕜 E a‖₊ = ‖a‖₊ by
     rw [← sSup_closed_unit_ball_eq_nnnorm]
-    refine' csSup_eq_of_forall_le_of_forall_lt_exists_gt _ _ fun r hr => _
+    refine csSup_eq_of_forall_le_of_forall_lt_exists_gt _ _ fun r hr => _
     · exact (Metric.nonempty_closedBall.mpr zero_le_one).image _
     · rintro - ⟨x, hx, rfl⟩
       exact
@@ -70,7 +70,7 @@ instance CstarRing.instRegularNormedAlgebra : RegularNormedAlgebra 𝕜 E where
       rw [← inv_inv ‖a‖₊, NNReal.lt_inv_iff_mul_lt (inv_ne_zero ha.ne')] at hr
       obtain ⟨k, hk₁, hk₂⟩ :=
         NormedField.exists_lt_nnnorm_lt 𝕜 (mul_lt_mul_of_pos_right hr <| inv_pos.2 ha)
-      refine' ⟨_, ⟨k • star a, _, rfl⟩, _⟩
+      refine ⟨_, ⟨k • star a, _, rfl⟩, _⟩
       · simpa only [mem_closedBall_zero_iff, norm_smul, one_mul, norm_star] using
           (NNReal.le_inv_iff_mul_le ha.ne').1 (one_mul ‖a‖₊⁻¹ ▸ hk₂.le : ‖k‖₊ ≤ ‖a‖₊⁻¹)
       · simp only [map_smul, nnnorm_smul, mul_apply', mul_smul_comm, CstarRing.nnnorm_self_mul_star]
@@ -89,10 +89,10 @@ theorem Unitization.norm_splitMul_snd_sq (x : Unitization 𝕜 E) :
   /- The key idea is that we can use `sSup_closed_unit_ball_eq_norm` to make this about
   applying this linear map to elements of norm at most one. There is a bit of `sqrt` and `sq`
   shuffling that needs to occur, which is primarily just an annoyance. -/
-  refine (Real.le_sqrt (norm_nonneg _) (norm_nonneg _)).mp ?_
+  refine (Real.le_sqrt (norm_nonneg _) (norm_nonneg _)).mp _
   simp only [Unitization.splitMul_apply]
   rw [← sSup_closed_unit_ball_eq_norm]
-  refine csSup_le ((Metric.nonempty_closedBall.2 zero_le_one).image _) ?_
+  refine csSup_le ((Metric.nonempty_closedBall.2 zero_le_one).image _) _
   rintro - ⟨b, hb, rfl⟩
   simp only
   -- rewrite to a more convenient form; this is where we use the C⋆-property
@@ -101,20 +101,20 @@ theorem Unitization.norm_splitMul_snd_sq (x : Unitization 𝕜 E) :
     Algebra.algebraMap_eq_smul_one, ContinuousLinearMap.smul_apply,
     ContinuousLinearMap.one_apply, star_mul, star_smul, add_mul, smul_mul_assoc, ← mul_smul_comm,
     mul_assoc, ← mul_add, ← sSup_closed_unit_ball_eq_norm]
-  refine (norm_mul_le _ _).trans ?_
+  refine (norm_mul_le _ _).trans _
   calc
     _ ≤ ‖star x.fst • (x.fst • b + x.snd * b) + star x.snd * (x.fst • b + x.snd * b)‖ := by
       nth_rewrite 2 [← one_mul ‖_ + _‖]
       gcongr
       exact (norm_star b).symm ▸ mem_closedBall_zero_iff.1 hb
-    _ ≤ sSup (_ '' Metric.closedBall 0 1) := le_csSup ?_ ⟨b, hb, ?_⟩
+    _ ≤ sSup (_ '' Metric.closedBall 0 1) := le_csSup _ ⟨b, hb, _⟩
   -- now we just check the side conditions for `le_csSup`. There is nothing of interest here.
-  · refine ⟨‖(star x * x).fst‖ + ‖(star x * x).snd‖, ?_⟩
+  · refine ⟨‖(star x * x).fst‖ + ‖(star x * x).snd‖, _⟩
     rintro _ ⟨y, hy, rfl⟩
-    refine (norm_add_le _ _).trans ?_
+    refine (norm_add_le _ _).trans _
     gcongr
     · rw [Algebra.algebraMap_eq_smul_one]
-      refine (norm_smul _ _).trans_le ?_
+      refine (norm_smul _ _).trans_le _
       simpa only [mul_one] using
         mul_le_mul_of_nonneg_left (mem_closedBall_zero_iff.1 hy) (norm_nonneg (star x * x).fst)
     · exact (unit_le_opNorm _ y <| mem_closedBall_zero_iff.1 hy).trans (opNorm_mul_apply_le _ _ _)
@@ -153,7 +153,7 @@ instance Unitization.instCstarRing : CstarRing (Unitization 𝕜 E) where
     -- in this step we make use of the key lemma `norm_splitMul_snd_sq`
     have h₂ : ‖(Unitization.splitMul 𝕜 E (star x * x)).snd‖
         = ‖(Unitization.splitMul 𝕜 E x).snd‖ ^ 2 := by
-      refine le_antisymm ?_ (norm_splitMul_snd_sq 𝕜 x)
+      refine le_antisymm _ (norm_splitMul_snd_sq 𝕜 x)
       rw [map_mul, Prod.snd_mul]
       exact (norm_mul_le _ _).trans <| by
         rw [sq]

@@ -103,7 +103,7 @@ theorem exists_eq_mul_self [IsAlgClosed k] (x : k) : ∃ z, x = z * z := by
 
 theorem roots_eq_zero_iff [IsAlgClosed k] {p : k[X]} :
     p.roots = 0 ↔ p = Polynomial.C (p.coeff 0) := by
-  refine' ⟨fun h => _, fun hp => by rw [hp, roots_C]⟩
+  refine ⟨fun h => _, fun hp => by rw [hp, roots_C]⟩
   rcases le_or_lt (degree p) 0 with hd | hd
   · exact eq_C_of_degree_le_zero hd
   · obtain ⟨z, hz⟩ := IsAlgClosed.exists_root p hd.ne'
@@ -137,7 +137,7 @@ theorem exists_aeval_eq_zero {R : Type*} [Field R] [IsAlgClosed k] [Algebra R k]
 
 theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → ∃ x, p.eval x = 0) :
     IsAlgClosed k := by
-  refine ⟨fun p ↦ Or.inr ?_⟩
+  refine ⟨fun p ↦ Or.inr _⟩
   intro q hq _
   have : Irreducible (q * C (leadingCoeff q)⁻¹) := by
     rw [← coe_normUnit_of_ne_zero hq.ne_zero]
@@ -169,7 +169,7 @@ theorem degree_eq_one_of_irreducible [IsAlgClosed k] {p : k[X]} (hp : Irreducibl
 theorem algebraMap_surjective_of_isIntegral {k K : Type*} [Field k] [Ring K] [IsDomain K]
     [hk : IsAlgClosed k] [Algebra k K] [Algebra.IsIntegral k K] :
     Function.Surjective (algebraMap k K) := by
-  refine fun x => ⟨-(minpoly k x).coeff 0, ?_⟩
+  refine fun x => ⟨-(minpoly k x).coeff 0, _⟩
   have hq : (minpoly k x).leadingCoeff = 1 := minpoly.monic (Algebra.IsIntegral.isIntegral x)
   have h : (minpoly k x).degree = 1 := degree_eq_one_of_irreducible k (minpoly.irreducible
     (Algebra.IsIntegral.isIntegral x))
@@ -393,7 +393,7 @@ noncomputable def equivOfEquivAux (hSR : S ≃+* R) :
   have : Algebra.IsAlgebraic R L := (IsAlgClosure.algebraic.tower_top_of_injective
     (show Function.Injective (algebraMap S R) from hSR.injective))
   refine
-    ⟨equivOfAlgebraic' R S L M, ?_⟩
+    ⟨equivOfAlgebraic' R S L M, _⟩
   ext x
   simp only [RingEquiv.toRingHom_eq_coe, Function.comp_apply, RingHom.coe_comp,
     AlgEquiv.coe_ringEquiv, RingEquiv.coe_toRingHom]

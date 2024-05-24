@@ -78,7 +78,7 @@ theorem tendsto_birkhoffAverage_apply_sub_birkhoffAverage {f : α → α} {g : �
   rcases Metric.isBounded_range_iff.1 h with ⟨C, hC⟩
   have : Tendsto (fun n : ℕ ↦ C / n) atTop (𝓝 0) :=
     tendsto_const_nhds.div_atTop tendsto_natCast_atTop_atTop
-  refine squeeze_zero_norm (fun n ↦ ?_) this
+  refine squeeze_zero_norm (fun n ↦ _) this
   rw [← dist_eq_norm, dist_birkhoffAverage_apply_birkhoffAverage]
   gcongr
   exact hC n 0
@@ -105,17 +105,17 @@ and `g` is a uniformly continuous, then the Birkhoff averages of `g` along orbit
 is a uniformly equicontinuous family of functions. -/
 theorem uniformEquicontinuous_birkhoffAverage (hf : LipschitzWith 1 f) (hg : UniformContinuous g) :
     UniformEquicontinuous (birkhoffAverage 𝕜 f g) := by
-  refine Metric.uniformity_basis_dist_le.uniformEquicontinuous_iff_right.2 fun ε hε ↦ ?_
+  refine Metric.uniformity_basis_dist_le.uniformEquicontinuous_iff_right.2 fun ε hε ↦ _
   rcases (uniformity_basis_edist_le.uniformContinuous_iff Metric.uniformity_basis_dist_le).1 hg ε hε
     with ⟨δ, hδ₀, hδε⟩
-  refine mem_uniformity_edist.2 ⟨δ, hδ₀, fun {x y} h n ↦ ?_⟩
+  refine mem_uniformity_edist.2 ⟨δ, hδ₀, fun {x y} h n ↦ _⟩
   calc
     dist (birkhoffAverage 𝕜 f g n x) (birkhoffAverage 𝕜 f g n y)
       ≤ (∑ k in Finset.range n, dist (g (f^[k] x)) (g (f^[k] y))) / n :=
       dist_birkhoffAverage_birkhoffAverage_le ..
     _ ≤ (∑ _k in Finset.range n, ε) / n := by
       gcongr
-      refine hδε _ _ ?_
+      refine hδε _ _ _
       simpa using (hf.iterate _).edist_le_mul_of_le h.le
     _ = n * ε / n := by simp
     _ ≤ ε := by

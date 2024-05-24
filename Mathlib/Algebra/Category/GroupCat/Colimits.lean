@@ -303,7 +303,7 @@ noncomputable def cokernelIsoQuotient {G H : AddCommGroupCat.{u}} (f : G ⟶ H) 
       rintro _ ⟨x, rfl⟩
       exact cokernel.condition_apply f x
   hom_inv_id := by
-    refine coequalizer.hom_ext ?_
+    refine coequalizer.hom_ext _
     simp only [coequalizer_as_cokernel, cokernel.π_desc_assoc, Category.comp_id]
     rfl
   inv_hom_id := by

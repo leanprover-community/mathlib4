@@ -181,7 +181,7 @@ end Hausdorffification
 namespace IsPrecomplete
 
 instance bot : IsPrecomplete (⊥ : Ideal R) M := by
-  refine ⟨fun f hf => ⟨f 1, fun n => ?_⟩⟩
+  refine ⟨fun f hf => ⟨f 1, fun n => _⟩⟩
   cases' n with n
   · rw [pow_zero, Ideal.one_eq_top, top_smul]
     exact SModEq.top
@@ -297,7 +297,7 @@ variable (I M)
 
 instance : IsHausdorff I (AdicCompletion I M) where
   haus' x h := ext fun n ↦ by
-    refine smul_induction_on (SModEq.zero.1 <| h n) (fun r hr x _ ↦ ?_) (fun x y hx hy ↦ ?_)
+    refine smul_induction_on (SModEq.zero.1 <| h n) (fun r hr x _ ↦ _) (fun x y hx hy ↦ _)
     · simp only [val_smul, val_zero]
       exact Quotient.inductionOn' (x.val n)
         (fun a ↦ SModEq.zero.2 <| smul_mem_smul hr mem_top)
@@ -439,7 +439,7 @@ def mk : AdicCauchySequence I M →ₗ[R] AdicCompletion I M where
 theorem mk_surjective : Function.Surjective (mk I M) := by
   intro x
   choose a ha using fun n ↦ Submodule.Quotient.mk_surjective _ (x.val n)
-  refine ⟨⟨a, ?_⟩, ?_⟩
+  refine ⟨⟨a, _⟩, _⟩
   · intro m n hmn
     rw [SModEq.def, ha m, ← transitionMap_mk I M hmn, ha n, x.property hmn]
   · ext n

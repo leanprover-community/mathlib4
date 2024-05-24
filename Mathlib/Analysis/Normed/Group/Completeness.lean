@@ -40,8 +40,8 @@ lemma Metric.exists_subseq_summable_dist_of_cauchySeq (u : ℕ → α) (hu : Cau
     ∃ f : ℕ → ℕ, StrictMono f ∧ Summable fun i => dist (u (f (i+1))) (u (f i)) := by
   obtain ⟨f, hf₁, hf₂⟩ :=
     Metric.exists_subseq_bounded_of_cauchySeq u hu (fun n => (1 / (2:ℝ))^n) (fun n => by positivity)
-  refine ⟨f, hf₁, ?_⟩
-  refine Summable.of_nonneg_of_le (fun n => by positivity) ?_ summable_geometric_two
+  refine ⟨f, hf₁, _⟩
+  refine Summable.of_nonneg_of_le (fun n => by positivity) _ summable_geometric_two
   exact fun n => le_of_lt <| hf₂ n (f (n+1)) <| hf₁.monotone (Nat.le_add_right n 1)
 
 end Metric
@@ -65,8 +65,8 @@ lemma NormedAddCommGroup.completeSpace_of_summable_imp_tendsto
     ext n
     exact sum_range_sub (u ∘ f) n
   obtain ⟨a, ha⟩ := h v hf₂
-  refine ⟨a + u (f 0), ?_⟩
-  refine tendsto_nhds_of_cauchySeq_of_subseq hu hf₁.tendsto_atTop ?_
+  refine ⟨a + u (f 0), _⟩
+  refine tendsto_nhds_of_cauchySeq_of_subseq hu hf₁.tendsto_atTop _
   rw [hv_sum] at ha
   have h₁ : Tendsto (fun n => u (f n) - u (f 0) + u (f 0)) atTop (𝓝 (a + u (f 0))) :=
     Tendsto.add_const _ ha
@@ -76,7 +76,7 @@ lemma NormedAddCommGroup.completeSpace_of_summable_imp_tendsto
 space.  -/
 lemma NormedAddCommGroup.summable_imp_tendsto_of_complete [CompleteSpace E] (u : ℕ → E)
     (hu : Summable (‖u ·‖)) : ∃ a, Tendsto (fun n => ∑ i in range n, u i) atTop (𝓝 a) := by
-  refine cauchySeq_tendsto_of_complete <| cauchySeq_of_summable_dist ?_
+  refine cauchySeq_tendsto_of_complete <| cauchySeq_of_summable_dist _
   simp [dist_eq_norm, sum_range_succ, hu]
 
 /-- In a normed additive group, every absolutely convergent series converges in the

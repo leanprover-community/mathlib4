@@ -124,7 +124,7 @@ instance : InfSet (I.Filtration M) :=
         exact ⟨_, ⟨⟨_, F, hF, rfl⟩, rfl⟩, F.mono i⟩
       smul_le := fun i => by
         rw [sInf_eq_iInf', iInf_apply, iInf_apply]
-        refine' smul_iInf_le.trans _
+        refine smul_iInf_le.trans _
         apply iInf_mono _
         rintro ⟨_, F, hF, rfl⟩
         exact F.smul_le i }⟩
@@ -233,7 +233,7 @@ theorem Stable.exists_pow_smul_eq_of_ge : ∃ n₀, ∀ n ≥ n₀, F.N n = I ^ 
 
 theorem stable_iff_exists_pow_smul_eq_of_ge :
     F.Stable ↔ ∃ n₀, ∀ n ≥ n₀, F.N n = I ^ (n - n₀) • F.N n₀ := by
-  refine' ⟨Stable.exists_pow_smul_eq_of_ge, fun h => ⟨h.choose, fun n hn => _⟩⟩
+  refine ⟨Stable.exists_pow_smul_eq_of_ge, fun h => ⟨h.choose, fun n hn => _⟩⟩
   rw [h.choose_spec n hn, h.choose_spec (n + 1) (by omega), smul_smul, ← pow_succ',
     tsub_add_eq_add_tsub hn]
 #align ideal.filtration.stable_iff_exists_pow_smul_eq_of_ge Ideal.Filtration.stable_iff_exists_pow_smul_eq_of_ge
@@ -244,7 +244,7 @@ theorem Stable.exists_forall_le (h : F.Stable) (e : F.N 0 ≤ F'.N 0) :
   use n₀
   intro n
   induction' n with n hn
-  · refine' (F.antitone _).trans e; simp
+  · refine (F.antitone _).trans e; simp
   · rw [add_right_comm, ← hF]
     · exact (smul_mono_right _ hn).trans (F'.smul_le _)
     simp
@@ -256,7 +256,7 @@ theorem Stable.bounded_difference (h : F.Stable) (h' : F'.Stable) (e : F.N 0 = F
   obtain ⟨n₂, h₂⟩ := h'.exists_forall_le (le_of_eq e.symm)
   use max n₁ n₂
   intro n
-  refine' ⟨(F.antitone _).trans (h₁ n), (F'.antitone _).trans (h₂ n)⟩ <;> simp
+  refine ⟨(F.antitone _).trans (h₁ n), (F'.antitone _).trans (h₂ n)⟩ <;> simp
 #align ideal.filtration.stable.bounded_difference Ideal.Filtration.Stable.bounded_difference
 
 open PolynomialModule
@@ -327,7 +327,7 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
   swap; · exact Submodule.span_mono (Set.iUnion₂_subset_iUnion _ _)
   constructor
   · intro H n hn
-    refine' (F.smul_le n).antisymm _
+    refine (F.smul_le n).antisymm _
     intro x hx
     obtain ⟨l, hl⟩ := (Finsupp.mem_span_iff_total _ _ _).mp (H _ ⟨x, hx, rfl⟩)
     replace hl := congr_arg (fun f : ℕ →₀ M => f (n + 1)) hl
@@ -348,8 +348,8 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
       -- Porting note: Original proof was
       -- `fun i hi => Set.Subset.trans (Set.subset_iUnion₂ i hi) Submodule.subset_span`
       intro i hi
-      refine Set.Subset.trans ?_ Submodule.subset_span
-      refine @Set.subset_iUnion₂ _ _ _ (fun i => fun _ => ↑((single R i) '' ((N F i) : Set M))) i ?_
+      refine Set.Subset.trans _ Submodule.subset_span
+      refine @Set.subset_iUnion₂ _ _ _ (fun i => fun _ => ↑((single R i) '' ((N F i) : Set M))) i _
       exact hi
     induction' i with j hj
     · exact this _ (zero_le _)
@@ -358,7 +358,7 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
     simp only [not_le, Nat.lt_succ_iff] at hj'
     rw [← hF _ hj']
     rintro _ ⟨m, hm, rfl⟩
-    refine' Submodule.smul_induction_on hm (fun r hr m' hm' => _) (fun x y hx hy => _)
+    refine Submodule.smul_induction_on hm (fun r hr m' hm' => _) (fun x y hx hy => _)
     · rw [add_comm, ← monomial_smul_single]
       exact F'.smul_mem
         ⟨_, reesAlgebra.monomial_mem.mpr (by rwa [pow_one])⟩ (hj <| Set.mem_image_of_mem _ hm')
@@ -375,12 +375,12 @@ theorem submodule_fg_iff_stable (hF' : ∀ i, (F.N i).FG) : F.submodule.FG ↔ F
   constructor
   · rintro H
     refine H.stabilizes_of_iSup_eq
-        ⟨fun n₀ => Submodule.span _ (⋃ (i : ℕ) (_ : i ≤ n₀), single R i '' ↑(F.N i)), ?_⟩ ?_
+        ⟨fun n₀ => Submodule.span _ (⋃ (i : ℕ) (_ : i ≤ n₀), single R i '' ↑(F.N i)), _⟩ _
     · intro n m e
       rw [Submodule.span_le, Set.iUnion₂_subset_iff]
       intro i hi
-      refine Set.Subset.trans ?_ Submodule.subset_span
-      refine @Set.subset_iUnion₂ _ _ _ (fun i => fun _ => ↑((single R i) '' ((N F i) : Set M))) i ?_
+      refine Set.Subset.trans _ Submodule.subset_span
+      refine @Set.subset_iUnion₂ _ _ _ (fun i => fun _ => ↑((single R i) '' ((N F i) : Set M))) i _
       exact hi.trans e
     · dsimp
       rw [← Submodule.span_iUnion, ← submodule_span_single]
@@ -482,7 +482,7 @@ theorem Ideal.isIdempotentElem_iff_eq_bot_or_top_of_localRing {R} [CommRing R]
   constructor
   · intro H
     by_cases I = ⊤; · exact Or.inr ‹_›
-    refine Or.inl (eq_bot_iff.mpr ?_)
+    refine Or.inl (eq_bot_iff.mpr _)
     rw [← Ideal.iInf_pow_eq_bot_of_localRing I ‹_›]
     apply le_iInf
     rintro (_|n) <;> simp [H.pow_succ_eq]

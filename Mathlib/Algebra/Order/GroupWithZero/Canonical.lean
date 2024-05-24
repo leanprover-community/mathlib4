@@ -342,7 +342,7 @@ theorem coe_le_iff {x : WithZero α} : (a : WithZero α) ≤ x ↔ ∃ b : α, x
 
 instance covariantClass_mul_le [Mul α] [CovariantClass α α (· * ·) (· ≤ ·)] :
     CovariantClass (WithZero α) (WithZero α) (· * ·) (· ≤ ·) := by
-  refine ⟨fun a b c hbc => ?_⟩
+  refine ⟨fun a b c hbc => _⟩
   induction a; · exact zero_le _
   induction b; · exact zero_le _
   rcases WithZero.coe_le_iff.1 hbc with ⟨c, rfl, hbc'⟩
@@ -353,7 +353,7 @@ instance covariantClass_mul_le [Mul α] [CovariantClass α α (· * ·) (· ≤ 
 -- Porting note: same issue as `covariantClass_mul_le`
 protected lemma covariantClass_add_le [AddZeroClass α] [CovariantClass α α (· + ·) (· ≤ ·)]
     (h : ∀ a : α, 0 ≤ a) : CovariantClass (WithZero α) (WithZero α) (· + ·) (· ≤ ·) := by
-  refine ⟨fun a b c hbc => ?_⟩
+  refine ⟨fun a b c hbc => _⟩
   induction a
   · rwa [zero_add, zero_add]
   induction b
@@ -363,7 +363,7 @@ protected lemma covariantClass_add_le [AddZeroClass α] [CovariantClass α α (�
     · rw [← coe_add, coe_le_coe]
       exact le_add_of_nonneg_right (h _)
   · rcases WithBot.coe_le_iff.1 hbc with ⟨c, rfl, hbc'⟩
-    refine le_trans ?_ (le_of_eq <| coe_add _ _)
+    refine le_trans _ (le_of_eq <| coe_add _ _)
     rw [← coe_add, coe_le_coe]
     exact add_le_add_left hbc' _
 #align with_zero.covariant_class_add_le WithZero.covariantClass_add_le
@@ -388,7 +388,7 @@ instance partialOrder : PartialOrder (WithZero α) := WithBot.partialOrder
 
 instance contravariantClass_mul_lt [Mul α] [ContravariantClass α α (· * ·) (· < ·)] :
     ContravariantClass (WithZero α) (WithZero α) (· * ·) (· < ·) := by
-  refine ⟨fun a b c h => ?_⟩
+  refine ⟨fun a b c h => _⟩
   have := ((zero_le _).trans_lt h).ne'
   induction a
   · simp at this

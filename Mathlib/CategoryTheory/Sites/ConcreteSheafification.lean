@@ -419,7 +419,7 @@ theorem isSheaf_of_sep (P : Cᵒᵖ ⥤ D)
     Presheaf.IsSheaf J (J.plusObj P) := by
   rw [Presheaf.isSheaf_iff_multiequalizer]
   intro X S
-  apply @isIso_of_reflects_iso _ _ _ _ _ _ _ (forget D) ?_
+  apply @isIso_of_reflects_iso _ _ _ _ _ _ _ (forget D) _
   rw [isIso_iff_bijective]
   constructor
   · intro x y h
@@ -618,7 +618,7 @@ instance plusPlusSheaf_preservesZeroMorphisms [Preadditive D] :
     (plusPlusSheaf J D).PreservesZeroMorphisms where
   map_zero F G := by
     ext : 3
-    refine' colimit.hom_ext (fun j => _)
+    refine colimit.hom_ext (fun j => _)
     erw [colimit.ι_map, comp_zero, J.plusMap_zero, J.diagramNatTrans_zero, zero_comp]
 set_option linter.uppercaseLean3 false in
 #align category_theory.presheaf_to_Sheaf_preserves_zero_morphisms CategoryTheory.plusPlusSheaf_preservesZeroMorphisms

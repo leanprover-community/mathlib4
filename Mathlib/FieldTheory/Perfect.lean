@@ -187,7 +187,7 @@ lemma PerfectRing.toPerfectField (K : Type*) (p : ℕ)
     [Field K] [ExpChar K p] [PerfectRing K p] : PerfectField K := by
   obtain hp | ⟨hp⟩ := ‹ExpChar K p›
   · exact ⟨Irreducible.separable⟩
-  refine PerfectField.mk fun hf ↦ ?_
+  refine PerfectField.mk fun hf ↦ _
   rcases separable_or p hf with h | ⟨-, g, -, rfl⟩
   · assumption
   · exfalso; revert hf; haveI := Fact.mk hp; simp
@@ -207,7 +207,7 @@ variable [PerfectField K]
 
 /-- A perfect field of characteristic `p` (prime) is a perfect ring. -/
 instance toPerfectRing (p : ℕ) [ExpChar K p] : PerfectRing K p := by
-  refine' PerfectRing.ofSurjective _ _ fun y ↦ _
+  refine PerfectRing.ofSurjective _ _ fun y ↦ _
   let f : K[X] := X ^ p - C y
   let L := f.SplittingField
   let ι := algebraMap K L
@@ -220,7 +220,7 @@ instance toPerfectRing (p : ℕ) [ExpChar K p] : PerfectRing K p := by
   suffices (g.map ι).natDegree = 1 by
     rw [g.natDegree_map, ← degree_eq_iff_natDegree_eq_of_pos Nat.one_pos] at this
     obtain ⟨a' : K, ha' : ι a' = a⟩ := minpoly.mem_range_of_degree_eq_one K a this
-    refine' ⟨a', NoZeroSMulDivisors.algebraMap_injective K L _⟩
+    refine ⟨a', NoZeroSMulDivisors.algebraMap_injective K L _⟩
     rw [RingHom.map_frobenius, ha', frobenius_def, ha_pow]
   have hg_dvd : g.map ι ∣ (X - C a) ^ p := by
     convert Polynomial.map_dvd ι (minpoly.dvd K a hfa)
@@ -232,12 +232,12 @@ instance toPerfectRing (p : ℕ) [ExpChar K p] : PerfectRing K p := by
       natDegree_pow, natDegree_X_sub_C, mul_one]
   have hg_sep : (g.map ι).Separable := (separable_of_irreducible <| minpoly.irreducible ha).map
   rw [hg_pow] at hg_sep
-  refine' (Separable.of_pow (not_isUnit_X_sub_C a) _ hg_sep).2
+  refine (Separable.of_pow (not_isUnit_X_sub_C a) _ hg_sep).2
   rw [g.natDegree_map ι, ← Nat.pos_iff_ne_zero, natDegree_pos_iff_degree_pos]
   exact minpoly.degree_pos ha
 
 theorem separable_iff_squarefree {g : K[X]} : g.Separable ↔ Squarefree g := by
-  refine ⟨Separable.squarefree, fun sqf ↦ isCoprime_of_irreducible_dvd (sqf.ne_zero ·.1) ?_⟩
+  refine ⟨Separable.squarefree, fun sqf ↦ isCoprime_of_irreducible_dvd (sqf.ne_zero ·.1) _⟩
   rintro p (h : Irreducible p) ⟨q, rfl⟩ (dvd : p ∣ derivative (p * q))
   replace dvd : p ∣ q := by
     rw [derivative_mul, dvd_add_left (dvd_mul_right p _)] at dvd
@@ -267,7 +267,7 @@ open Multiset
 theorem roots_expand_pow_map_iterateFrobenius_le :
     (expand R (p ^ n) f).roots.map (iterateFrobenius R p n) ≤ p ^ n • f.roots := by
   classical
-  refine le_iff_count.2 fun r ↦ ?_
+  refine le_iff_count.2 fun r ↦ _
   by_cases h : ∃ s, r = s ^ p ^ n
   · obtain ⟨s, rfl⟩ := h
     simp_rw [count_nsmul, count_roots, ← rootMultiplicity_expand_pow, ← count_roots, count_map,
@@ -300,7 +300,7 @@ variable [PerfectRing R p]
 theorem roots_expand_pow :
     (expand R (p ^ n) f).roots = p ^ n • f.roots.map (iterateFrobeniusEquiv R p n).symm := by
   classical
-  refine ext' fun r ↦ ?_
+  refine ext' fun r ↦ _
   rw [count_roots, rootMultiplicity_expand_pow, ← count_roots, count_nsmul, count_map,
     count_eq_card_filter_eq]; congr; ext
   exact (iterateFrobeniusEquiv R p n).eq_symm_apply.symm

@@ -133,7 +133,7 @@ theorem isLittleO_log_abs_re (hl : IsExpCmpFilter l) : (fun z => Real.log (abs z
           have hz' : 1 ≤ abs z := hz.trans (re_le_abs z)
           have hm₀ : 0 < max z.re |z.im| := lt_max_iff.2 (Or.inl <| one_pos.trans_le hz)
           rw [one_mul, Real.norm_eq_abs, _root_.abs_of_nonneg (Real.log_nonneg hz')]
-          refine' le_trans _ (le_abs_self _)
+          refine le_trans _ (le_abs_self _)
           rw [← Real.log_mul, Real.log_le_log_iff, ← _root_.abs_of_nonneg (le_trans zero_le_one hz)]
           exacts [abs_le_sqrt_two_mul_max z, one_pos.trans_le hz', mul_pos h2 hm₀, h2.ne', hm₀.ne']
     _ =o[l] re :=
@@ -173,7 +173,7 @@ theorem isLittleO_cpow_exp (hl : IsExpCmpFilter l) (a : ℂ) {b : ℝ} (hb : 0 <
     _ =o[l] fun z => exp (b * z) :=
       IsLittleO.of_norm_right <| by
         simp only [norm_eq_abs, abs_exp, re_ofReal_mul, Real.isLittleO_exp_comp_exp_comp]
-        refine (IsEquivalent.refl.sub_isLittleO ?_).symm.tendsto_atTop
+        refine (IsEquivalent.refl.sub_isLittleO _).symm.tendsto_atTop
           (hl.tendsto_re.const_mul_atTop hb)
         exact (hl.isLittleO_log_abs_re.const_mul_left _).const_mul_right hb.ne'
 #align complex.is_exp_cmp_filter.is_o_cpow_exp Complex.IsExpCmpFilter.isLittleO_cpow_exp

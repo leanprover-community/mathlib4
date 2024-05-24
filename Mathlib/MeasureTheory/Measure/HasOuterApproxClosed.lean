@@ -59,8 +59,8 @@ theorem tendsto_lintegral_nn_filter_of_le_const {ι : Type*} {L : Filter ι} [L.
     (fs_lim : ∀ᵐ ω : Ω ∂μ, Tendsto (fun i ↦ fs i ω) L (𝓝 (f ω))) :
     Tendsto (fun i ↦ ∫⁻ ω, fs i ω ∂μ) L (𝓝 (∫⁻ ω, f ω ∂μ)) := by
   refine tendsto_lintegral_filter_of_dominated_convergence (fun _ ↦ c)
-    (eventually_of_forall fun i ↦ (ENNReal.continuous_coe.comp (fs i).continuous).measurable) ?_
-    (@lintegral_const_lt_top _ _ μ _ _ (@ENNReal.coe_ne_top c)).ne ?_
+    (eventually_of_forall fun i ↦ (ENNReal.continuous_coe.comp (fs i).continuous).measurable) _
+    (@lintegral_const_lt_top _ _ μ _ _ (@ENNReal.coe_ne_top c)).ne _
   · simpa only [Function.comp_apply, ENNReal.coe_le_coe] using fs_le_const
   · simpa only [Function.comp_apply, ENNReal.tendsto_coe] using fs_lim
 #align measure_theory.finite_measure.tendsto_lintegral_nn_filter_of_le_const MeasureTheory.tendsto_lintegral_nn_filter_of_le_const
@@ -187,9 +187,9 @@ end HasOuterApproxClosed --namespace
 noncomputable instance (X : Type*) [TopologicalSpace X]
     [TopologicalSpace.PseudoMetrizableSpace X] : HasOuterApproxClosed X := by
   letI : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X
-  refine ⟨fun F hF ↦ ?_⟩
+  refine ⟨fun F hF ↦ _⟩
   use fun n ↦ thickenedIndicator (δ := (1 : ℝ) / (n + 1)) Nat.one_div_pos_of_nat F
-  refine ⟨?_, ⟨?_, ?_⟩⟩
+  refine ⟨_, ⟨_, _⟩⟩
   · exact fun n x ↦ thickenedIndicator_le_one Nat.one_div_pos_of_nat F x
   · exact fun n x hxF ↦ one_le_thickenedIndicator_apply X Nat.one_div_pos_of_nat hxF
   · have key := thickenedIndicator_tendsto_indicator_closure
@@ -228,7 +228,7 @@ theorem ext_of_forall_lintegral_eq_of_IsFiniteMeasure {Ω : Type*}
     (h : ∀ (f : Ω →ᵇ ℝ≥0), ∫⁻ x, f x ∂μ = ∫⁻ x, f x ∂ν) :
     μ = ν := by
   have key := @measure_isClosed_eq_of_forall_lintegral_eq_of_isFiniteMeasure Ω _ _ _ _ μ ν _ h
-  apply ext_of_generate_finite _ ?_ isPiSystem_isClosed
+  apply ext_of_generate_finite _ _ isPiSystem_isClosed
   · exact fun F F_closed ↦ key F_closed
   · exact key isClosed_univ
   · rw [BorelSpace.measurable_eq (α := Ω), borel_eq_generateFrom_isClosed]

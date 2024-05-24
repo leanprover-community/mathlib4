@@ -48,8 +48,8 @@ section get
 
 variable {x y : Sum α β}
 
-#align sum.get_left_eq_none_iff Sum.getLeft?_eq_none_iff
-#align sum.get_right_eq_none_iff Sum.getRight?_eq_none_iff
+#align sum.get_left_eq_none_iff Sum.getLeft_eq_none_iff
+#align sum.get_right_eq_none_iff Sum.getRight_eq_none_iff
 
 theorem eq_left_iff_getLeft_eq {a : α} : x = inl a ↔ ∃ h, x.getLeft h = a := by
   cases x <;> simp
@@ -57,14 +57,14 @@ theorem eq_left_iff_getLeft_eq {a : α} : x = inl a ↔ ∃ h, x.getLeft h = a :
 theorem eq_right_iff_getRight_eq {b : β} : x = inr b ↔ ∃ h, x.getRight h = b := by
   cases x <;> simp
 
-#align sum.get_left_eq_some_iff Sum.getLeft?_eq_some_iff
-#align sum.get_right_eq_some_iff Sum.getRight?_eq_some_iff
+#align sum.get_left_eq_some_iff Sum.getLeft_eq_some_iff
+#align sum.get_right_eq_some_iff Sum.getRight_eq_some_iff
 
 theorem getLeft_eq_getLeft? (h₁ : x.isLeft) (h₂ : x.getLeft?.isSome) :
-    x.getLeft h₁ = x.getLeft?.get h₂ := by simp [← getLeft?_eq_some_iff]
+    x.getLeft h₁ = x.getLeft?.get h₂ := by simp [← getLeft_eq_some_iff]
 
 theorem getRight_eq_getRight? (h₁ : x.isRight) (h₂ : x.getRight?.isSome) :
-    x.getRight h₁ = x.getRight?.get h₂ := by simp [← getRight?_eq_some_iff]
+    x.getRight h₁ = x.getRight?.get h₂ := by simp [← getRight_eq_some_iff]
 
 #align sum.bnot_is_left Sum.bnot_isLeft
 #align sum.is_left_eq_ff Sum.isLeft_eq_false
@@ -75,10 +75,10 @@ theorem getRight_eq_getRight? (h₁ : x.isRight) (h₂ : x.getRight?.isSome) :
 #align sum.is_left_iff Sum.isLeft_iff
 #align sum.is_right_iff Sum.isRight_iff
 
-@[simp] theorem isSome_getLeft?_iff_isLeft : x.getLeft?.isSome ↔ x.isLeft := by
+@[simp] theorem isSome_getLeft_iff_isLeft : x.getLeft?.isSome ↔ x.isLeft := by
   rw [isLeft_iff, Option.isSome_iff_exists]; simp
 
-@[simp] theorem isSome_getRight?_iff_isRight : x.getRight?.isSome ↔ x.isRight := by
+@[simp] theorem isSome_getRight_iff_isRight : x.getRight?.isSome ↔ x.isRight := by
   rw [isRight_iff, Option.isSome_iff_exists]; simp
 
 end get
@@ -105,8 +105,8 @@ end get
 #align sum.elim_comp_map Sum.elim_comp_map
 #align sum.is_left_map Sum.isLeft_map
 #align sum.is_right_map Sum.isRight_map
-#align sum.get_left_map Sum.getLeft?_map
-#align sum.get_right_map Sum.getRight?_map
+#align sum.get_left_map Sum.getLeft_map
+#align sum.get_right_map Sum.getRight_map
 
 open Function (update update_eq_iff update_comp_eq_of_injective update_comp_eq_of_forall_ne)
 
@@ -186,8 +186,8 @@ theorem swap_rightInverse : Function.RightInverse (@swap α β) swap :=
 
 #align sum.is_left_swap Sum.isLeft_swap
 #align sum.is_right_swap Sum.isRight_swap
-#align sum.get_left_swap Sum.getLeft?_swap
-#align sum.get_right_swap Sum.getRight?_swap
+#align sum.get_left_swap Sum.getLeft_swap
+#align sum.get_right_swap Sum.getRight_swap
 
 mk_iff_of_inductive_prop Sum.LiftRel Sum.liftRel_iff
 

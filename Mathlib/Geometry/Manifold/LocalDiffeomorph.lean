@@ -264,7 +264,7 @@ noncomputable def IslocalDiffeomorph.diffeomorph_of_bijective
       intro y
       let x := g y
       obtain ⟨hx, hfx⟩ := hyp x
-      apply ((Φ x).symm.contMDiffOn.congr (aux x)).contMDiffAt (((Φ x).open_target).mem_nhds ?_)
+      apply ((Φ x).symm.contMDiffOn.congr (aux x)).contMDiffAt (((Φ x).open_target).mem_nhds _)
       have : y = (Φ x) x := ((hgInverse.2 y).congr (hfx hx)).mp rfl
       exact this ▸ (Φ x).map_source hx }
 

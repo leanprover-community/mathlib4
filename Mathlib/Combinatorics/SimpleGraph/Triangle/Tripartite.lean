@@ -148,7 +148,7 @@ instance graph.instDecidableRelAdj : DecidableRel (graph t).Adj
       (graph t).Adj (in₀ a) (in₂ c) ∧ (graph t).Adj (in₁ b) (in₂ c) := by
   rintro (_ | _ | _) (_ | _ | _) (_ | _ | _) <;>
     refine ⟨_, _, _, by ext; simp only [Finset.mem_insert, Finset.mem_singleton]; try tauto,
-      ?_, ?_, ?_⟩ <;> constructor <;> assumption
+      _, _, _⟩ <;> constructor <;> assumption
 
 /-- The map that turns a triangle index into an explicit triangle. -/
 @[simps] def toTriangle : α × β × γ ↪ Finset (α ⊕ β ⊕ γ) where
@@ -166,11 +166,11 @@ lemma exists_mem_toTriangle {x y : α ⊕ β ⊕ γ} (hxy : (graph t).Adj x y) :
 
 nonrec lemma is3Clique_iff [NoAccidental t] {s : Finset (α ⊕ β ⊕ γ)} :
     (graph t).IsNClique 3 s ↔ ∃ x, x ∈ t ∧ toTriangle x = s := by
-  refine ⟨fun h ↦ ?_, ?_⟩
+  refine ⟨fun h ↦ _, _⟩
   · rw [is3Clique_iff] at h
     obtain ⟨x, y, z, hxy, hxz, hyz, rfl⟩ := h
     obtain ⟨a, b, c, habc, hab, hac, hbc⟩ := graph_triple hxy hxz hyz
-    refine ⟨(a, b, c), ?_, habc⟩
+    refine ⟨(a, b, c), _, habc⟩
     obtain ⟨c', hc'⟩ := in₀₁_iff.1 hab
     obtain ⟨b', hb'⟩ := in₀₂_iff.1 hac
     obtain ⟨a', ha'⟩ := in₁₂_iff.1 hbc
@@ -197,7 +197,7 @@ lemma map_toTriangle_disjoint [ExplicitDisjoint t] :
     mem_coe, and_imp, Sum.forall, or_false, forall_eq, false_or, eq_self_iff_true, imp_true_iff,
     true_and, and_true, Set.Subsingleton]
   suffices ¬ (a = x ∧ b = y) ∧ ¬ (a = x ∧ c = z) ∧ ¬ (b = y ∧ c = z) by aesop
-  refine ⟨?_, ?_, ?_⟩
+  refine ⟨_, _, _⟩
   · rintro ⟨rfl, rfl⟩
     exact this rfl rfl (ExplicitDisjoint.inj₂ habc hxyz)
   · rintro ⟨rfl, rfl⟩
@@ -234,7 +234,7 @@ variable (t)
 
 lemma locallyLinear [ExplicitDisjoint t] [NoAccidental t] : (graph t).LocallyLinear := by
   classical
-  refine ⟨?_, fun x y hxy ↦ ?_⟩
+  refine ⟨_, fun x y hxy ↦ _⟩
   · unfold EdgeDisjointTriangles
     convert map_toTriangle_disjoint t
     rw [cliqueSet_eq_image, coe_map]

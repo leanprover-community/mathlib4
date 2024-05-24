@@ -78,7 +78,7 @@ def PreservesLimitPair.ofIsoProdComparison [i : IsIso (prodComparison G X Y)] :
     PreservesLimit (pair X Y) G := by
   apply preservesLimitOfPreservesLimitCone (prodIsProd X Y)
   apply (isLimitMapConeBinaryFanEquiv _ _ _).symm _
-  refine @IsLimit.ofPointIso _ _ _ _ _ _ _ (limit.isLimit (pair (G.obj X) (G.obj Y))) ?_
+  refine @IsLimit.ofPointIso _ _ _ _ _ _ _ (limit.isLimit (pair (G.obj X) (G.obj Y))) _
   apply i
 #align category_theory.limits.preserves_limit_pair.of_iso_prod_comparison CategoryTheory.Limits.PreservesLimitPair.ofIsoProdComparison
 
@@ -163,7 +163,7 @@ def PreservesColimitPair.ofIsoCoprodComparison [i : IsIso (coprodComparison G X 
     PreservesColimit (pair X Y) G := by
   apply preservesColimitOfPreservesColimitCocone (coprodIsCoprod X Y)
   apply (isColimitMapCoconeBinaryCofanEquiv _ _ _).symm _
-  refine @IsColimit.ofPointIso _ _ _ _ _ _ _ (colimit.isColimit (pair (G.obj X) (G.obj Y))) ?_
+  refine @IsColimit.ofPointIso _ _ _ _ _ _ _ (colimit.isColimit (pair (G.obj X) (G.obj Y))) _
   apply i
 #align category_theory.limits.preserves_colimit_pair.of_iso_coprod_comparison CategoryTheory.Limits.PreservesColimitPair.ofIsoCoprodComparison
 

@@ -126,7 +126,7 @@ theorem UniqueMDiffWithinAt.smooth_bundle_preimage {p : TotalSpace F Z}
     rw [← Prod.mk.eta (p := e p), FiberBundle.trivializationAt_proj_fst]
     exact hs.prod (uniqueMDiffWithinAt_univ _)
   rw [← e.left_inv hp]
-  refine (this.preimage_partialHomeomorph e.mdifferentiable.symm (e.map_source hp)).mono ?_
+  refine (this.preimage_partialHomeomorph e.mdifferentiable.symm (e.map_source hp)).mono _
   rintro y ⟨hy, hys, -⟩
   rwa [PartialHomeomorph.symm_symm, e.coe_coe, e.coe_fst hy] at hys
 

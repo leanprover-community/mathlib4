@@ -343,7 +343,7 @@ def kernel.mapIso {X' Y' : C} (f' : X' ⟶ Y') [HasKernel f'] (p : X ≅ X') (q 
   inv :=
     kernel.map f' f p.inv q.inv
       (by
-        refine' (cancel_mono q.hom).1 _
+        refine (cancel_mono q.hom).1 _
         simp [w])
 #align category_theory.limits.kernel.map_iso CategoryTheory.Limits.kernel.mapIso
 
@@ -485,7 +485,7 @@ def kernel.isLimitConeZeroCone [Mono f] : IsLimit (kernel.zeroKernelFork f) :=
   Fork.IsLimit.mk _ (fun s => 0)
     (fun s => by
       erw [zero_comp]
-      refine (zero_of_comp_mono f ?_).symm
+      refine (zero_of_comp_mono f _).symm
       exact KernelFork.condition _)
     fun _ _ _ => zero_of_to_zero _
 #align category_theory.limits.kernel.is_limit_cone_zero_cone CategoryTheory.Limits.kernel.isLimitConeZeroCone
@@ -845,7 +845,7 @@ def cokernel.mapIso {X' Y' : C} (f' : X' ⟶ Y') [HasCokernel f'] (p : X ≅ X')
     (w : f ≫ q.hom = p.hom ≫ f') : cokernel f ≅ cokernel f' where
   hom := cokernel.map f f' p.hom q.hom w
   inv := cokernel.map f' f p.inv q.inv (by
-          refine' (cancel_mono q.hom).1 _
+          refine (cancel_mono q.hom).1 _
           simp [w])
 #align category_theory.limits.cokernel.map_iso CategoryTheory.Limits.cokernel.mapIso
 
@@ -991,7 +991,7 @@ def cokernel.isColimitCoconeZeroCocone [Epi f] : IsColimit (cokernel.zeroCokerne
   Cofork.IsColimit.mk _ (fun s => 0)
     (fun s => by
       erw [zero_comp]
-      refine (zero_of_epi_comp f ?_).symm
+      refine (zero_of_epi_comp f _).symm
       exact CokernelCofork.condition _)
     fun _ _ _ => zero_of_from_zero _
 #align category_theory.limits.cokernel.is_colimit_cocone_zero_cocone CategoryTheory.Limits.cokernel.isColimitCoconeZeroCocone

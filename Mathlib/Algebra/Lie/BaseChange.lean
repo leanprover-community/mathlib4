@@ -62,7 +62,7 @@ theorem bracket_tmul (s t : A) (x : L) (y : M) : ⁅s ⊗ₜ[R] x, t ⊗ₜ[R] y
 
 private theorem bracket_lie_self (x : A ⊗[R] L) : ⁅x, x⁆ = 0 := by
   simp only [bracket_def]
-  refine' x.induction_on _ _ _
+  refine x.induction_on _ _ _
   · simp only [LinearMap.map_zero, eq_self_iff_true, LinearMap.zero_apply]
   · intro a l
     simp only [bracket'_tmul, TensorProduct.tmul_zero, eq_self_iff_true, lie_self]
@@ -70,9 +70,9 @@ private theorem bracket_lie_self (x : A ⊗[R] L) : ⁅x, x⁆ = 0 := by
     suffices bracket' R A L L z₁ z₂ + bracket' R A L L z₂ z₁ = 0 by
       rw [LinearMap.map_add, LinearMap.map_add, LinearMap.add_apply, LinearMap.add_apply, h₁, h₂,
         zero_add, add_zero, add_comm, this]
-    refine' z₁.induction_on _ _ _
+    refine z₁.induction_on _ _ _
     · simp only [LinearMap.map_zero, add_zero, LinearMap.zero_apply]
-    · intro a₁ l₁; refine' z₂.induction_on _ _ _
+    · intro a₁ l₁; refine z₂.induction_on _ _ _
       · simp only [LinearMap.map_zero, add_zero, LinearMap.zero_apply]
       · intro a₂ l₂
         simp only [← lie_skew l₂ l₁, mul_comm a₁ a₂, TensorProduct.tmul_neg, bracket'_tmul,
@@ -86,13 +86,13 @@ private theorem bracket_leibniz_lie (x y : A ⊗[R] L) (z : A ⊗[R] M) :
     ⁅x, ⁅y, z⁆⁆ = ⁅⁅x, y⁆, z⁆ + ⁅y, ⁅x, z⁆⁆ := by
   -- Porting note: replaced some `simp`s by `rw`s to avoid raising heartbeats
   simp only [bracket_def]
-  refine' x.induction_on _ _ _
+  refine x.induction_on _ _ _
   · simp only [LinearMap.map_zero, add_zero, LinearMap.zero_apply]
   · intro a₁ l₁
-    refine' y.induction_on _ _ _
+    refine y.induction_on _ _ _
     · simp only [LinearMap.map_zero, add_zero, LinearMap.zero_apply]
     · intro a₂ l₂
-      refine' z.induction_on _ _ _
+      refine z.induction_on _ _ _
       · rw [LinearMap.map_zero, LinearMap.map_zero, LinearMap.map_zero, LinearMap.map_zero,
           add_zero]
       · intro a₃ l₃; simp only [bracket'_tmul]
@@ -175,7 +175,7 @@ def baseChange : LieSubmodule A (A ⊗[R] L) (A ⊗[R] M) :=
       simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
         Submodule.mem_toAddSubmonoid] at hm ⊢
       obtain ⟨c, rfl⟩ := (Finsupp.mem_span_iff_total _ _ _).mp hm
-      refine x.induction_on (by simp) (fun a y ↦ ?_) (fun y z hy hz ↦ ?_)
+      refine x.induction_on (by simp) (fun a y ↦ _) (fun y z hy hz ↦ _)
       · change toEnd A (A ⊗[R] L) (A ⊗[R] M) _ _ ∈ _
         simp_rw [Finsupp.total_apply, Finsupp.sum, map_sum, map_smul, toEnd_apply_apply]
         suffices ∀ n : (N : Submodule R M).map (TensorProduct.mk R A M 1),
@@ -221,7 +221,7 @@ lemma lie_baseChange {I : LieIdeal R L} {N : LieSubmodule R L M} :
   have : (TensorProduct.mk R A M 1) '' {m | ∃ x ∈ I, ∃ n ∈ N, ⁅x, n⁆ = m} = s := by ext; simp [s]
   rw [← coe_toSubmodule_eq_iff, coe_baseChange, lieIdeal_oper_eq_linear_span',
     Submodule.baseChange_span, this, lieIdeal_oper_eq_linear_span']
-  refine le_antisymm (Submodule.span_mono ?_) (Submodule.span_le.mpr ?_)
+  refine le_antisymm (Submodule.span_mono _) (Submodule.span_le.mpr _)
   · rintro - ⟨x, hx, m, hm, rfl⟩
     exact ⟨1 ⊗ₜ x, tmul_mem_baseChange_of_mem 1 hx,
            1 ⊗ₜ m, tmul_mem_baseChange_of_mem 1 hm, by simp⟩

@@ -51,16 +51,16 @@ protected def directSum :
     ((⨁ i₁, M₁ i₁) ⊗[R] ⨁ i₂, M₂ i₂) ≃ₗ[S] ⨁ i : ι₁ × ι₂, M₁ i.1 ⊗[R] M₂ i.2 := by
   -- Porting note: entirely rewritten to allow unification to happen one step at a time
   refine LinearEquiv.ofLinear (R := S) (R₂ := S) ?toFun ?invFun ?left ?right
-  · refine AlgebraTensorModule.lift ?_
-    refine DirectSum.toModule S _ _ fun i₁ => ?_
-    refine LinearMap.flip ?_
-    refine DirectSum.toModule R _ _ fun i₂ => LinearMap.flip <| ?_
-    refine AlgebraTensorModule.curry ?_
+  · refine AlgebraTensorModule.lift _
+    refine DirectSum.toModule S _ _ fun i₁ => _
+    refine LinearMap.flip _
+    refine DirectSum.toModule R _ _ fun i₂ => LinearMap.flip <| _
+    refine AlgebraTensorModule.curry _
     exact DirectSum.lof S (ι₁ × ι₂) (fun i => M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂)
-  · refine DirectSum.toModule S _ _ fun i => ?_
+  · refine DirectSum.toModule S _ _ fun i => _
     exact AlgebraTensorModule.map (DirectSum.lof S _ M₁ i.1) (DirectSum.lof R _ M₂ i.2)
-  · refine DirectSum.linearMap_ext S fun ⟨i₁, i₂⟩ => ?_
-    refine TensorProduct.AlgebraTensorModule.ext fun m₁ m₂ => ?_
+  · refine DirectSum.linearMap_ext S fun ⟨i₁, i₂⟩ => _
+    refine TensorProduct.AlgebraTensorModule.ext fun m₁ m₂ => _
     -- Porting note: seems much nicer than the `repeat` lean 3 proof.
     simp only [coe_comp, Function.comp_apply, toModule_lof, AlgebraTensorModule.map_tmul,
       AlgebraTensorModule.lift_apply, lift.tmul, coe_restrictScalars, flip_apply,
@@ -68,17 +68,17 @@ protected def directSum :
   · -- `(_)` prevents typeclass search timing out on problems that can be solved immediately by
     -- unification
     apply TensorProduct.AlgebraTensorModule.curry_injective
-    refine DirectSum.linearMap_ext _ fun i₁ => ?_
-    refine LinearMap.ext fun x₁ => ?_
-    refine DirectSum.linearMap_ext _ fun i₂ => ?_
-    refine LinearMap.ext fun x₂ => ?_
+    refine DirectSum.linearMap_ext _ fun i₁ => _
+    refine LinearMap.ext fun x₁ => _
+    refine DirectSum.linearMap_ext _ fun i₂ => _
+    refine LinearMap.ext fun x₂ => _
     -- Porting note: seems much nicer than the `repeat` lean 3 proof.
     simp only [coe_comp, Function.comp_apply, AlgebraTensorModule.curry_apply, curry_apply,
       coe_restrictScalars, AlgebraTensorModule.lift_apply, lift.tmul, toModule_lof, flip_apply,
       AlgebraTensorModule.map_tmul, id_coe, id_eq]
   /- was:
 
-    refine'
+    refine
       LinearEquiv.ofLinear
         (lift <|
           DirectSum.toModule R _ _ fun i₁ => LinearMap.flip <| DirectSum.toModule R _ _ fun i₂ =>
@@ -94,7 +94,7 @@ protected def directSum :
   -/
 
 /- alternative with explicit types:
-  refine'
+  refine
       LinearEquiv.ofLinear
         (lift <|
           DirectSum.toModule

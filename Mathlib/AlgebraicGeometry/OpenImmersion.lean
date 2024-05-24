@@ -55,9 +55,9 @@ protected def scheme (X : LocallyRingedSpace.{u})
   local_affine := by
     intro x
     obtain ⟨R, f, h₁, h₂⟩ := h x
-    refine' ⟨⟨⟨_, h₂.base_open.isOpen_range⟩, h₁⟩, R, ⟨_⟩⟩
+    refine ⟨⟨⟨_, h₂.base_open.isOpen_range⟩, h₁⟩, R, ⟨_⟩⟩
     apply LocallyRingedSpace.isoOfSheafedSpaceIso
-    refine SheafedSpace.forgetToPresheafedSpace.preimageIso ?_
+    refine SheafedSpace.forgetToPresheafedSpace.preimageIso _
     apply PresheafedSpace.IsOpenImmersion.isoOfRangeEq (PresheafedSpace.ofRestrict _ _) f.1
     · exact Subtype.range_coe_subtype
     · exact Opens.openEmbedding _ -- Porting note (#11187): was `infer_instance`
@@ -217,7 +217,7 @@ instance val_base_isIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] : IsIso f.1.b
 instance basic_open_isOpenImmersion {R : CommRingCat.{u}} (f : R) :
     AlgebraicGeometry.IsOpenImmersion
       (Scheme.Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away f))).op) := by
-  apply SheafedSpace.IsOpenImmersion.of_stalk_iso (H := ?_)
+  apply SheafedSpace.IsOpenImmersion.of_stalk_iso (H := _)
   · exact (PrimeSpectrum.localization_away_openEmbedding (Localization.Away f) f : _)
   · intro x
     exact Spec_map_localization_isIso R (Submonoid.powers f) x
@@ -261,7 +261,7 @@ theorem affineBasisCover_map_range (X : Scheme.{u}) (x : X)
       (X.affineCover.map x).1.base '' (PrimeSpectrum.basicOpen r).1 := by
   erw [coe_comp, Set.range_comp]
   -- Porting note: `congr` fails to see the goal is comparing image of the same function
-  refine congr_arg (_ '' ·) ?_
+  refine congr_arg (_ '' ·) _
   exact (PrimeSpectrum.localization_away_comap_range (Localization.Away r) r : _)
 #align algebraic_geometry.Scheme.affine_basis_cover_map_range AlgebraicGeometry.Scheme.affineBasisCover_map_range
 
@@ -280,7 +280,7 @@ theorem affineBasisCover_is_basis (X : Scheme.{u}) :
         ((X.affineCover.map (X.affineCover.f a)).1.base.continuous_toFun.isOpen_preimage _
           hU) with
       ⟨_, ⟨_, ⟨s, rfl⟩, rfl⟩, hxV, hVU⟩
-    refine' ⟨_, ⟨⟨_, s⟩, rfl⟩, _, _⟩ <;> erw [affineBasisCover_map_range]
+    refine ⟨_, ⟨⟨_, s⟩, rfl⟩, _, _⟩ <;> erw [affineBasisCover_map_range]
     · exact ⟨x, hxV, e⟩
     · rw [Set.image_subset_iff]; exact hVU
 #align algebraic_geometry.Scheme.affine_basis_cover_is_basis AlgebraicGeometry.Scheme.affineBasisCover_is_basis
@@ -432,7 +432,7 @@ theorem _root_.AlgebraicGeometry.isIso_iff_isOpenImmersion {X Y : Scheme.{u}} (f
 theorem _root_.AlgebraicGeometry.isIso_iff_stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) :
     IsIso f ↔ IsIso f.1.base ∧ ∀ x, IsIso (PresheafedSpace.stalkMap f.1 x) := by
   rw [isIso_iff_isOpenImmersion, IsOpenImmersion.iff_stalk_iso, and_comm, ← and_assoc]
-  refine' and_congr ⟨_, _⟩ Iff.rfl
+  refine and_congr ⟨_, _⟩ Iff.rfl
   · rintro ⟨h₁, h₂⟩
     convert_to
       IsIso
@@ -464,7 +464,7 @@ instance forget_map_isOpenImmersion : LocallyRingedSpace.IsOpenImmersion ((forge
 
 instance hasLimit_cospan_forget_of_left :
     HasLimit (cospan f g ⋙ Scheme.forgetToLocallyRingedSpace) := by
-  apply @hasLimitOfIso _ _ _ _ _ _ ?_ (diagramIsoCospan.{u} _).symm
+  apply @hasLimitOfIso _ _ _ _ _ _ _ (diagramIsoCospan.{u} _).symm
   change HasLimit (cospan ((forget).map f) ((forget).map g))
   infer_instance
 #align algebraic_geometry.IsOpenImmersion.has_limit_cospan_forget_of_left AlgebraicGeometry.IsOpenImmersion.hasLimit_cospan_forget_of_left
@@ -477,7 +477,7 @@ instance hasLimit_cospan_forget_of_left' :
 #align algebraic_geometry.IsOpenImmersion.has_limit_cospan_forget_of_left' AlgebraicGeometry.IsOpenImmersion.hasLimit_cospan_forget_of_left'
 
 instance hasLimit_cospan_forget_of_right : HasLimit (cospan g f ⋙ forget) := by
-  apply @hasLimitOfIso _ _ _ _ _ _ ?_ (diagramIsoCospan.{u} _).symm
+  apply @hasLimitOfIso _ _ _ _ _ _ _ (diagramIsoCospan.{u} _).symm
   change HasLimit (cospan ((forget).map g) ((forget).map f))
   infer_instance
 #align algebraic_geometry.IsOpenImmersion.has_limit_cospan_forget_of_right AlgebraicGeometry.IsOpenImmersion.hasLimit_cospan_forget_of_right
@@ -542,9 +542,9 @@ instance pullback_to_base [IsOpenImmersion g] :
 instance forgetToTopPreservesOfLeft : PreservesLimit (cospan f g) Scheme.forgetToTop := by
   delta Scheme.forgetToTop
   apply @Limits.compPreservesLimit (K := cospan f g) (F := forget)
-    (G := LocallyRingedSpace.forgetToTop) ?_ ?_
+    (G := LocallyRingedSpace.forgetToTop) _ _
   · infer_instance
-  apply @preservesLimitOfIsoDiagram (F := _) _ _ _ _ _ _ (diagramIsoCospan.{u} _).symm ?_
+  apply @preservesLimitOfIsoDiagram (F := _) _ _ _ _ _ _ (diagramIsoCospan.{u} _).symm _
   dsimp [LocallyRingedSpace.forgetToTop]
   infer_instance
 #align algebraic_geometry.IsOpenImmersion.forget_to_Top_preserves_of_left AlgebraicGeometry.IsOpenImmersion.forgetToTopPreservesOfLeft
@@ -709,10 +709,10 @@ theorem image_basicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) [H : IsOpenImmersion f]
     ext1
     -- Porting note: this `dsimp` was not necessary
     dsimp [Opens.map]
-    refine' Set.image_preimage_eq_inter_range.trans _
+    refine Set.image_preimage_eq_inter_range.trans _
     erw [Set.inter_eq_left]
-    refine' Set.Subset.trans (Scheme.basicOpen_le _ _) (Set.image_subset_range _ _)
-  refine' le_trans (Scheme.basicOpen_le _ _) (le_of_eq _)
+    refine Set.Subset.trans (Scheme.basicOpen_le _ _) (Set.image_subset_range _ _)
+  refine le_trans (Scheme.basicOpen_le _ _) (le_of_eq _)
   ext1
   exact (Set.preimage_image_eq _ H.base_open.inj).symm
 #align algebraic_geometry.Scheme.image_basic_open AlgebraicGeometry.Scheme.image_basicOpen

@@ -270,7 +270,7 @@ theorem sup_exists :
     exact ⟨S, fun mX => (f mX).some, by rintro - - - - - ⟨⟩⟩
   · obtain ⟨X, Y, mX, mY, f⟩ := h'
     obtain ⟨S', T', w'⟩ := h''
-    refine ⟨coeq (f ≫ T' mY) (T' mX), fun mZ => T' mZ ≫ coeqHom (f ≫ T' mY) (T' mX), ?_⟩
+    refine ⟨coeq (f ≫ T' mY) (T' mX), fun mZ => T' mZ ≫ coeqHom (f ≫ T' mY) (T' mX), _⟩
     intro X' Y' mX' mY' f' mf'
     rw [← Category.assoc]
     by_cases h : X = X' ∧ Y = Y'
@@ -326,7 +326,7 @@ theorem cocone_nonempty (F : J ⥤ C) : Nonempty (Cocone F) := by
       Finset.univ.biUnion fun Y : J =>
         Finset.univ.image fun f : X ⟶ Y => ⟨F.obj X, F.obj Y, by simp [O], by simp [O], F.map f⟩
   obtain ⟨Z, f, w⟩ := sup_exists O H
-  refine ⟨⟨Z, ⟨fun X => f (by simp [O]), ?_⟩⟩⟩
+  refine ⟨⟨Z, ⟨fun X => f (by simp [O]), _⟩⟩⟩
   intro j j' g
   dsimp
   simp only [Category.comp_id]
@@ -375,13 +375,13 @@ theorem of_cocone_nonempty (h : ∀ {J : Type w} [SmallCategory J] [FinCategory 
     obtain ⟨c⟩ := h (Functor.empty _)
     exact ⟨c.pt⟩
   have : IsFilteredOrEmpty C := by
-    refine ⟨?_, ?_⟩
+    refine ⟨_, _⟩
     · intros X Y
       obtain ⟨c⟩ := h (ULiftHom.down ⋙ ULift.downFunctor ⋙ pair X Y)
       exact ⟨c.pt, c.ι.app ⟨⟨WalkingPair.left⟩⟩, c.ι.app ⟨⟨WalkingPair.right⟩⟩, trivial⟩
     · intros X Y f g
       obtain ⟨c⟩ := h (ULiftHom.down ⋙ ULift.downFunctor ⋙ parallelPair f g)
-      refine ⟨c.pt, c.ι.app ⟨WalkingParallelPair.one⟩, ?_⟩
+      refine ⟨c.pt, c.ι.app ⟨WalkingParallelPair.one⟩, _⟩
       have h₁ := c.ι.naturality ⟨WalkingParallelPairHom.left⟩
       have h₂ := c.ι.naturality ⟨WalkingParallelPairHom.right⟩
       simp_all
@@ -528,7 +528,7 @@ theorem tulip {j₁ j₂ j₃ k₁ k₂ l : C} (f₁ : j₁ ⟶ k₁) (f₂ : j�
       f₁ ≫ α = g₁ ≫ β ∧ f₂ ≫ α = f₃ ≫ γ ∧ f₄ ≫ γ = g₂ ≫ β := by
   obtain ⟨l', k₁l, k₂l, hl⟩ := span f₂ f₃
   obtain ⟨s, ls, l's, hs₁, hs₂⟩ := bowtie g₁ (f₁ ≫ k₁l) g₂ (f₄ ≫ k₂l)
-  refine' ⟨s, k₁l ≫ l's, ls, k₂l ≫ l's, _, by simp only [← Category.assoc, hl], _⟩ <;>
+  refine ⟨s, k₁l ≫ l's, ls, k₂l ≫ l's, _, by simp only [← Category.assoc, hl], _⟩ <;>
     simp only [hs₁, hs₂, Category.assoc]
 #align category_theory.is_filtered.tulip CategoryTheory.IsFiltered.tulip
 
@@ -677,7 +677,7 @@ theorem cospan {i j j' : C} (f : j ⟶ i) (f' : j' ⟶ i) :
 theorem _root_.CategoryTheory.Functor.ranges_directed (F : C ⥤ Type*) (j : C) :
     Directed (· ⊇ ·) fun f : Σ'i, i ⟶ j => Set.range (F.map f.2) := fun ⟨i, ij⟩ ⟨k, kj⟩ => by
   let ⟨l, li, lk, e⟩ := cospan ij kj
-  refine' ⟨⟨l, lk ≫ kj⟩, e ▸ _, _⟩ <;> simp_rw [F.map_comp] <;> apply Set.range_comp_subset_range
+  refine ⟨⟨l, lk ≫ kj⟩, e ▸ _, _⟩ <;> simp_rw [F.map_comp] <;> apply Set.range_comp_subset_range
 #align category_theory.functor.ranges_directed CategoryTheory.Functor.ranges_directed
 
 end AllowEmpty
@@ -754,7 +754,7 @@ theorem inf_exists :
     exact ⟨S, fun mX => (f mX).some, by rintro - - - - - ⟨⟩⟩
   · obtain ⟨X, Y, mX, mY, f⟩ := h'
     obtain ⟨S', T', w'⟩ := h''
-    refine ⟨eq (T' mX ≫ f) (T' mY), fun mZ => eqHom (T' mX ≫ f) (T' mY) ≫ T' mZ, ?_⟩
+    refine ⟨eq (T' mX ≫ f) (T' mY), fun mZ => eqHom (T' mX ≫ f) (T' mY) ≫ T' mZ, _⟩
     intro X' Y' mX' mY' f' mf'
     rw [Category.assoc]
     by_cases h : X = X' ∧ Y = Y'
@@ -810,7 +810,7 @@ theorem cone_nonempty (F : J ⥤ C) : Nonempty (Cone F) := by
       Finset.univ.biUnion fun Y : J =>
         Finset.univ.image fun f : X ⟶ Y => ⟨F.obj X, F.obj Y, by simp [O], by simp [O], F.map f⟩
   obtain ⟨Z, f, w⟩ := inf_exists O H
-  refine ⟨⟨Z, ⟨fun X => f (by simp [O]), ?_⟩⟩⟩
+  refine ⟨⟨Z, ⟨fun X => f (by simp [O]), _⟩⟩⟩
   intro j j' g
   dsimp
   simp only [Category.id_comp]
@@ -862,13 +862,13 @@ theorem of_cone_nonempty (h : ∀ {J : Type w} [SmallCategory J] [FinCategory J]
     obtain ⟨c⟩ := h (Functor.empty _)
     exact ⟨c.pt⟩
   have : IsCofilteredOrEmpty C := by
-    refine ⟨?_, ?_⟩
+    refine ⟨_, _⟩
     · intros X Y
       obtain ⟨c⟩ := h (ULiftHom.down ⋙ ULift.downFunctor ⋙ pair X Y)
       exact ⟨c.pt, c.π.app ⟨⟨WalkingPair.left⟩⟩, c.π.app ⟨⟨WalkingPair.right⟩⟩, trivial⟩
     · intros X Y f g
       obtain ⟨c⟩ := h (ULiftHom.down ⋙ ULift.downFunctor ⋙ parallelPair f g)
-      refine ⟨c.pt, c.π.app ⟨WalkingParallelPair.zero⟩, ?_⟩
+      refine ⟨c.pt, c.π.app ⟨WalkingParallelPair.zero⟩, _⟩
       have h₁ := c.π.naturality ⟨WalkingParallelPairHom.left⟩
       have h₂ := c.π.naturality ⟨WalkingParallelPairHom.right⟩
       simp_all

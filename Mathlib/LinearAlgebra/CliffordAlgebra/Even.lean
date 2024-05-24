@@ -185,7 +185,7 @@ private theorem fFold_fFold (m : M) (x : A × S f) : fFold f m (fFold f m x) = Q
     rw [Algebra.smul_def, f.contract]
   · ext m₁
     change f.bilin _ _ * g m = Q m • g m₁
-    refine Submodule.span_induction' ?_ ?_ ?_ ?_ hg
+    refine Submodule.span_induction' _ _ _ _ hg
     · rintro _ ⟨b, m₃, rfl⟩
       change f.bilin _ _ * (f.bilin _ _ * b) = Q m • (f.bilin _ _ * b)
       rw [← smul_mul_assoc, ← mul_assoc, f.contract_mid]
@@ -202,7 +202,7 @@ private theorem fFold_fFold (m : M) (x : A × S f) : fFold f m (fFold f m x) = Q
 direction of that equivalence, but not in the fully-bundled form. -/
 @[simps! (config := .lemmasOnly) apply]
 def aux (f : EvenHom Q A) : CliffordAlgebra.even Q →ₗ[R] A := by
-  refine ?_ ∘ₗ (even Q).val.toLinearMap
+  refine _ ∘ₗ (even Q).val.toLinearMap
   -- Porting note: added, can't be found otherwise
   letI : AddCommGroup (S f) := AddSubgroupClass.toAddCommGroup _
   exact LinearMap.fst R _ _ ∘ₗ foldr Q (fFold f) (fFold_fFold f) (1, 0)
@@ -230,7 +230,7 @@ theorem aux_algebraMap (r) (hr) : aux f ⟨algebraMap R _ r, hr⟩ = algebraMap 
 theorem aux_mul (x y : even Q) : aux f (x * y) = aux f x * aux f y := by
   cases' x with x x_property
   cases y
-  refine' (congr_arg Prod.fst (foldr_mul _ _ _ _ _ _)).trans _
+  refine (congr_arg Prod.fst (foldr_mul _ _ _ _ _ _)).trans _
   dsimp only
   induction x, x_property using even_induction Q with
   | algebraMap r =>

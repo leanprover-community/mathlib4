@@ -125,7 +125,7 @@ instance [DecidableEq R] : One (RingSeminorm R) :=
   ⟨{ (1 : AddGroupSeminorm R) with
       mul_le' := fun x y => by
         by_cases h : x * y = 0
-        · refine' (if_pos h).trans_le (mul_nonneg _ _) <;>
+        · refine (if_pos h).trans_le (mul_nonneg _ _) <;>
             · change _ ≤ ite _ _ _
               split_ifs
               exacts [le_rfl, zero_le_one]
@@ -145,18 +145,18 @@ section Ring
 variable [Ring R] (p : RingSeminorm R)
 
 theorem seminorm_one_eq_one_iff_ne_zero (hp : p 1 ≤ 1) : p 1 = 1 ↔ p ≠ 0 := by
-  refine'
+  refine
     ⟨fun h =>
       ne_zero_iff.mpr
         ⟨1, by
           rw [h]
           exact one_ne_zero⟩,
-      fun h => ?_⟩
+      fun h => _⟩
   obtain hp0 | hp0 := (apply_nonneg p (1 : R)).eq_or_gt
   · exfalso
-    refine h (ext fun x => (apply_nonneg _ _).antisymm' ?_)
+    refine h (ext fun x => (apply_nonneg _ _).antisymm' _)
     simpa only [hp0, mul_one, mul_zero] using map_mul_le_mul p x 1
-  · refine' hp.antisymm ((le_mul_iff_one_le_left hp0).1 _)
+  · refine hp.antisymm ((le_mul_iff_one_le_left hp0).1 _)
     simpa only [one_mul] using map_mul_le_mul p (1 : R) _
 #align ring_seminorm.seminorm_one_eq_one_iff_ne_zero RingSeminorm.seminorm_one_eq_one_iff_ne_zero
 
@@ -347,7 +347,7 @@ lemma equiv_trans {f g k : MulRingNorm R} (hfg : equiv f g) (hgk : equiv g k) :
     equiv f k := by
   rcases hfg with ⟨c, hcPos, hfg⟩
   rcases hgk with ⟨d, hdPos, hgk⟩
-  refine ⟨c*d, (mul_pos_iff_of_pos_left hcPos).mpr hdPos, ?_⟩
+  refine ⟨c*d, (mul_pos_iff_of_pos_left hcPos).mpr hdPos, _⟩
   ext x
   rw [Real.rpow_mul (apply_nonneg f x), congr_fun hfg x, congr_fun hgk x]
 

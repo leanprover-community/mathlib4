@@ -81,7 +81,7 @@ theorem effectiveEpi_tfae
 instance : Preregular CompHaus where
   exists_fac := by
     intro X Y Z f π hπ
-    refine ⟨pullback f π, pullback.fst f π, ?_, pullback.snd f π, (pullback.condition _ _).symm⟩
+    refine ⟨pullback f π, pullback.fst f π, _, pullback.snd f π, (pullback.condition _ _).symm⟩
     have := fun X Y (f : X ⟶ Y) ↦ (effectiveEpi_tfae f).out 0 2
     rw [this] at hπ ⊢
     intro y
@@ -111,7 +111,7 @@ theorem effectiveEpiFamily_tfae
     rw [epi_iff_surjective]
     intro b
     obtain ⟨t, x, h⟩ := e b
-    refine ⟨Sigma.ι X t x, ?_⟩
+    refine ⟨Sigma.ι X t x, _⟩
     change (Sigma.ι X t ≫ Sigma.desc π) x = _
     simpa using h
   tfae_have 2 → 3
@@ -121,7 +121,7 @@ theorem effectiveEpiFamily_tfae
     intro b
     obtain ⟨t, rfl⟩ := e b
     let q := i.hom t
-    refine ⟨q.1,q.2,?_⟩
+    refine ⟨q.1,q.2,_⟩
     have : t = i.inv (i.hom t) := show t = (i.hom ≫ i.inv) t by simp only [i.hom_inv_id]; rfl
     rw [this]
     show _ = (i.inv ≫ Sigma.desc π) (i.hom t)

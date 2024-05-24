@@ -271,7 +271,7 @@ instance SeparationQuotient.instT0Space : T0Space (SeparationQuotient X) :=
 theorem minimal_nonempty_closed_subsingleton [T0Space X] {s : Set X} (hs : IsClosed s)
     (hmin : ∀ t, t ⊆ s → t.Nonempty → IsClosed t → t = s) : s.Subsingleton := by
   clear Y -- Porting note: added
-  refine' fun x hx y hy => of_not_not fun hxy => _
+  refine fun x hx y hy => of_not_not fun hxy => _
   rcases exists_isOpen_xor'_mem hxy with ⟨U, hUo, hU⟩
   wlog h : x ∈ U ∧ y ∉ U
   · refine this hs hmin y hy x hx (Ne.symm hxy) U hUo hU.symm (hU.resolve_left h)
@@ -298,7 +298,7 @@ theorem IsClosed.exists_closed_singleton [T0Space X] [CompactSpace X] {S : Set X
 theorem minimal_nonempty_open_subsingleton [T0Space X] {s : Set X} (hs : IsOpen s)
     (hmin : ∀ t, t ⊆ s → t.Nonempty → IsOpen t → t = s) : s.Subsingleton := by
   clear Y -- Porting note: added
-  refine' fun x hx y hy => of_not_not fun hxy => _
+  refine fun x hx y hy => of_not_not fun hxy => _
   rcases exists_isOpen_xor'_mem hxy with ⟨U, hUo, hU⟩
   wlog h : x ∈ U ∧ y ∉ U
   · exact this hs hmin y hy x hx (Ne.symm hxy) U hUo hU.symm (hU.resolve_left h)
@@ -324,8 +324,8 @@ theorem exists_isOpen_singleton_of_isOpen_finite [T0Space X] {s : Set X} (hfin :
     --               https://github.com/leanprover/std4/issues/116
     rsuffices ⟨x, hx⟩ : ∃ x, s.toSet = {x}
     · exact ⟨x, hx.symm ▸ rfl, hx ▸ ho⟩
-    refine minimal_nonempty_open_eq_singleton ho hne ?_
-    refine' fun t hts htne hto => of_not_not fun hts' => ht _
+    refine minimal_nonempty_open_eq_singleton ho hne _
+    refine fun t hts htne hto => of_not_not fun hts' => ht _
     lift t to Finset X using s.finite_toSet.subset hts
     exact ⟨t, ssubset_iff_subset_ne.2 ⟨hts, mt Finset.coe_inj.2 hts'⟩, htne, hto⟩
 #align exists_open_singleton_of_open_finite exists_isOpen_singleton_of_isOpen_finite
@@ -370,7 +370,7 @@ instance ULift.instT0Space [T0Space X] : T0Space (ULift X) :=
 
 theorem T0Space.of_cover (h : ∀ x y, Inseparable x y → ∃ s : Set X, x ∈ s ∧ y ∈ s ∧ T0Space s) :
     T0Space X := by
-  refine ⟨fun x y hxy => ?_⟩
+  refine ⟨fun x y hxy => _⟩
   rcases h x y hxy with ⟨s, hxs, hys, hs⟩
   lift x to s using hxs; lift y to s using hys
   rw [← subtype_inseparable_iff] at hxy
@@ -429,9 +429,9 @@ instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i,
 
 /-- In an R₀ space, the closure of a singleton is a compact set. -/
 theorem isCompact_closure_singleton : IsCompact (closure {x}) := by
-  refine isCompact_of_finite_subcover fun U hUo hxU ↦ ?_
+  refine isCompact_of_finite_subcover fun U hUo hxU ↦ _
   obtain ⟨i, hi⟩ : ∃ i, x ∈ U i := mem_iUnion.1 <| hxU <| subset_closure rfl
-  refine ⟨{i}, fun y hy ↦ ?_⟩
+  refine ⟨{i}, fun y hy ↦ _⟩
   rw [← specializes_iff_mem_closure, specializes_comm] at hy
   simpa using hy.mem_open (hUo i) hi
 
@@ -509,7 +509,7 @@ lemma nhdsWithin_compl_singleton_le [T1Space X] (x y : X) : 𝓝[{x}ᶜ] x ≤ �
 
 theorem isOpen_setOf_eventually_nhdsWithin [T1Space X] {p : X → Prop} :
     IsOpen { x | ∀ᶠ y in 𝓝[≠] x, p y } := by
-  refine' isOpen_iff_mem_nhds.mpr fun a ha => _
+  refine isOpen_iff_mem_nhds.mpr fun a ha => _
   filter_upwards [eventually_nhds_nhdsWithin.mpr ha] with b hb
   rcases eq_or_ne a b with rfl | h
   · exact hb
@@ -548,7 +548,7 @@ theorem t1Space_TFAE (X : Type u) [TopologicalSpace X] :
   tfae_have 2 ↔ 3
   · simp only [isOpen_compl_iff]
   tfae_have 5 ↔ 3
-  · refine' forall_swap.trans _
+  · refine forall_swap.trans _
     simp only [isOpen_iff_mem_nhds, mem_compl_iff, mem_singleton_iff]
   tfae_have 5 ↔ 6
   · simp only [← subset_compl_singleton_iff, exists_mem_subset_iff]
@@ -656,12 +656,12 @@ theorem continuousOn_update_iff [T1Space X] [DecidableEq X] [TopologicalSpace Y]
     ContinuousOn (Function.update f x y) s ↔
       ContinuousOn f (s \ {x}) ∧ (x ∈ s → Tendsto f (𝓝[s \ {x}] x) (𝓝 y)) := by
   rw [ContinuousOn, ← and_forall_ne x, and_comm]
-  refine' and_congr ⟨fun H z hz => _, fun H z hzx hzs => _⟩ (forall_congr' fun _ => _)
+  refine and_congr ⟨fun H z hz => _, fun H z hzx hzs => _⟩ (forall_congr' fun _ => _)
   · specialize H z hz.2 hz.1
     rw [continuousWithinAt_update_of_ne hz.2] at H
     exact H.mono (diff_subset _ _)
   · rw [continuousWithinAt_update_of_ne hzx]
-    refine' (H z ⟨hzs, hzx⟩).mono_of_mem (inter_mem_nhdsWithin _ _)
+    refine (H z ⟨hzs, hzx⟩).mono_of_mem (inter_mem_nhdsWithin _ _)
     exact isOpen_ne.mem_nhds hzx
   · exact continuousWithinAt_update_same
 #align continuous_on_update_iff continuousOn_update_iff
@@ -728,9 +728,9 @@ theorem isClosedMap_const {X Y} [TopologicalSpace X] [TopologicalSpace Y] [T1Spa
 
 theorem nhdsWithin_insert_of_ne [T1Space X] {x y : X} {s : Set X} (hxy : x ≠ y) :
     𝓝[insert y s] x = 𝓝[s] x := by
-  refine' le_antisymm (Filter.le_def.2 fun t ht => _) (nhdsWithin_mono x <| subset_insert y s)
+  refine le_antisymm (Filter.le_def.2 fun t ht => _) (nhdsWithin_mono x <| subset_insert y s)
   obtain ⟨o, ho, hxo, host⟩ := mem_nhdsWithin.mp ht
-  refine' mem_nhdsWithin.mpr ⟨o \ {y}, ho.sdiff isClosed_singleton, ⟨hxo, hxy⟩, _⟩
+  refine mem_nhdsWithin.mpr ⟨o \ {y}, ho.sdiff isClosed_singleton, ⟨hxo, hxy⟩, _⟩
   rw [inter_insert_of_not_mem <| not_mem_diff_of_mem (mem_singleton y)]
   exact (inter_subset_inter (diff_subset _ _) Subset.rfl).trans host
 #align nhds_within_insert_of_ne nhdsWithin_insert_of_ne
@@ -741,7 +741,7 @@ theorem insert_mem_nhdsWithin_of_subset_insert [T1Space X] {x y : X} {s t : Set 
     (hu : t ⊆ insert y s) : insert x s ∈ 𝓝[t] x := by
   rcases eq_or_ne x y with (rfl | h)
   · exact mem_of_superset self_mem_nhdsWithin hu
-  refine' nhdsWithin_mono x hu _
+  refine nhdsWithin_mono x hu _
   rw [nhdsWithin_insert_of_ne h]
   exact mem_of_superset self_mem_nhdsWithin (subset_insert x s)
 #align insert_mem_nhds_within_of_subset_insert insert_mem_nhdsWithin_of_subset_insert
@@ -762,7 +762,7 @@ theorem compl_singleton_mem_nhdsSet_iff [T1Space X] {x : X} {s : Set X} : {x}ᶜ
 
 @[simp]
 theorem nhdsSet_le_iff [T1Space X] {s t : Set X} : 𝓝ˢ s ≤ 𝓝ˢ t ↔ s ⊆ t := by
-  refine' ⟨_, fun h => monotone_nhdsSet h⟩
+  refine ⟨_, fun h => monotone_nhdsSet h⟩
   simp_rw [Filter.le_def]; intro h x hx
   specialize h {x}ᶜ
   simp_rw [compl_singleton_mem_nhdsSet_iff] at h
@@ -867,7 +867,7 @@ theorem isOpen_singleton_of_finite_mem_nhds [T1Space X] (x : X)
 infinite. -/
 theorem infinite_of_mem_nhds {X} [TopologicalSpace X] [T1Space X] (x : X) [hx : NeBot (𝓝[≠] x)]
     {s : Set X} (hs : s ∈ 𝓝 x) : Set.Infinite s := by
-  refine fun hsf => hx.1 ?_
+  refine fun hsf => hx.1 _
   rw [← isOpen_singleton_iff_punctured_nhds]
   exact isOpen_singleton_of_finite_mem_nhds x hs hsf
 #align infinite_of_mem_nhds infinite_of_mem_nhds
@@ -890,7 +890,7 @@ theorem PreconnectedSpace.trivial_of_discrete [PreconnectedSpace X] [DiscreteTop
 
 theorem IsPreconnected.infinite_of_nontrivial [T1Space X] {s : Set X} (h : IsPreconnected s)
     (hs : s.Nontrivial) : s.Infinite := by
-  refine' mt (fun hf => (subsingleton_coe s).mp _) (not_subsingleton_iff.mpr hs)
+  refine mt (fun hf => (subsingleton_coe s).mp _) (not_subsingleton_iff.mpr hs)
   haveI := @discrete_of_t1_of_finite s _ _ hf.to_subtype
   exact @PreconnectedSpace.trivial_of_discrete _ _ (Subtype.preconnectedSpace h) _
 #align is_preconnected.infinite_of_nontrivial IsPreconnected.infinite_of_nontrivial
@@ -944,7 +944,7 @@ theorem isOpen_inter_eq_singleton_of_mem_discrete {s : Set X} [DiscreteTopology 
     (hx : x ∈ s) : ∃ U : Set X, IsOpen U ∧ U ∩ s = {x} := by
   obtain ⟨U, hU_nhds, hU_inter⟩ := nhds_inter_eq_singleton_of_mem_discrete hx
   obtain ⟨t, ht_sub, ht_open, ht_x⟩ := mem_nhds_iff.mp hU_nhds
-  refine ⟨t, ht_open, Set.Subset.antisymm ?_ ?_⟩
+  refine ⟨t, ht_open, Set.Subset.antisymm _ _⟩
   · exact hU_inter ▸ Set.inter_subset_inter_left s ht_sub
   · rw [Set.subset_inter_iff, Set.singleton_subset_iff, Set.singleton_subset_iff]
     exact ⟨ht_x, hx⟩
@@ -1017,7 +1017,7 @@ theorem isClosed_setOf_inseparable : IsClosed { p : X × X | Inseparable p.1 p.2
 if and only if it is topologically inseparable from some point of `K`. -/
 theorem IsCompact.mem_closure_iff_exists_inseparable {K : Set X} (hK : IsCompact K) :
     y ∈ closure K ↔ ∃ x ∈ K, Inseparable x y := by
-  refine ⟨fun hy ↦ ?_, fun ⟨x, hxK, hxy⟩ ↦
+  refine ⟨fun hy ↦ _, fun ⟨x, hxK, hxy⟩ ↦
     (hxy.mem_closed_iff isClosed_closure).1 <| subset_closure hxK⟩
   contrapose! hy
   have : Disjoint (𝓝 y) (𝓝ˢ K) := hK.disjoint_nhdsSet_right.2 fun x hx ↦
@@ -1044,7 +1044,7 @@ theorem IsCompact.closure_subset_of_isOpen {K : Set X} (hK : IsCompact K)
 
 /-- The closure of a compact set in an R₁ space is a compact set. -/
 protected theorem IsCompact.closure {K : Set X} (hK : IsCompact K) : IsCompact (closure K) := by
-  refine isCompact_of_finite_subcover fun U hUo hKU ↦ ?_
+  refine isCompact_of_finite_subcover fun U hUo hKU ↦ _
   rcases hK.elim_finite_subcover U hUo (subset_closure.trans hKU) with ⟨t, ht⟩
   exact ⟨t, hK.closure_subset_of_isOpen (isOpen_biUnion fun _ _ ↦ hUo _) ht⟩
 
@@ -1099,7 +1099,7 @@ theorem IsCompact.finite_compact_cover {s : Set X} (hs : IsCompact s) {ι : Type
     (t : Finset ι) (U : ι → Set X) (hU : ∀ i ∈ t, IsOpen (U i)) (hsC : s ⊆ ⋃ i ∈ t, U i) :
     ∃ K : ι → Set X, (∀ i, IsCompact (K i)) ∧ (∀ i, K i ⊆ U i) ∧ s = ⋃ i ∈ t, K i := by
   induction' t using Finset.induction with x t hx ih generalizing U s
-  · refine' ⟨fun _ => ∅, fun _ => isCompact_empty, fun i => empty_subset _, _⟩
+  · refine ⟨fun _ => ∅, fun _ => isCompact_empty, fun i => empty_subset _, _⟩
     simpa only [subset_empty_iff, Finset.not_mem_empty, iUnion_false, iUnion_empty] using hsC
   simp only [Finset.set_biUnion_insert] at hsC
   simp only [Finset.forall_mem_insert] at hU
@@ -1107,7 +1107,7 @@ theorem IsCompact.finite_compact_cover {s : Set X} (hs : IsCompact s) {ι : Type
   rcases hs.binary_compact_cover hU.1 (isOpen_biUnion hU') hsC with
     ⟨K₁, K₂, h1K₁, h1K₂, h2K₁, h2K₂, hK⟩
   rcases ih h1K₂ U hU' h2K₂ with ⟨K, h1K, h2K, h3K⟩
-  refine' ⟨update K x K₁, _, _, _⟩
+  refine ⟨update K x K₁, _, _, _⟩
   · intro i
     rcases eq_or_ne i x with rfl | hi
     · simp only [update_same, h1K₁]
@@ -1135,7 +1135,7 @@ instance (p : X → Prop) : R1Space (Subtype p) := .induced _
 protected theorem R1Space.sInf {X : Type*} {T : Set (TopologicalSpace X)}
     (hT : ∀ t ∈ T, @R1Space X t) : @R1Space X (sInf T) := by
   let _ := sInf T
-  refine ⟨fun x y ↦ ?_⟩
+  refine ⟨fun x y ↦ _⟩
   simp only [Specializes, nhds_sInf]
   rcases em (∃ t ∈ T, Disjoint (@nhds X t x) (@nhds X t y)) with ⟨t, htT, htd⟩ | hTd
   · exact .inr <| htd.mono (iInf₂_le t htT) (iInf₂_le t htT)
@@ -1168,9 +1168,9 @@ theorem exists_mem_nhds_isCompact_mapsTo_of_isCompact_mem_nhds
     simp_rw [separatedNhds_iff_disjoint, nhdsSet_singleton, hc.disjoint_nhdsSet_right,
       disjoint_nhds_nhds_iff_not_inseparable]
     rintro y ⟨-, hys⟩ hxy
-    refine hys <| (hxy.mem_open_iff isOpen_interior).1 ?_
+    refine hys <| (hxy.mem_open_iff isOpen_interior).1 _
     rwa [mem_interior_iff_mem_nhds]
-  refine ⟨K \ f ⁻¹' V, diff_mem hKx ?_, hKc.diff <| Vo.preimage hf, fun y hy ↦ ?_⟩
+  refine ⟨K \ f ⁻¹' V, diff_mem hKx _, hKc.diff <| Vo.preimage hf, fun y hy ↦ _⟩
   · filter_upwards [hf.continuousAt <| Uo.mem_nhds (hxU rfl)] with x hx
       using Set.disjoint_left.1 hd hx
   · by_contra hys
@@ -1195,7 +1195,7 @@ theorem IsCompact.isCompact_isClosed_basis_nhds {x : X} {L : Set X} (hLc : IsCom
 /-- In an R₁ space, the filters `coclosedCompact` and `cocompact` are equal. -/
 @[simp]
 theorem Filter.coclosedCompact_eq_cocompact : coclosedCompact X = cocompact X := by
-  refine le_antisymm ?_ cocompact_le_coclosedCompact
+  refine le_antisymm _ cocompact_le_coclosedCompact
   rw [hasBasis_coclosedCompact.le_basis_iff hasBasis_cocompact]
   exact fun K hK ↦ ⟨closure K, ⟨isClosed_closure, hK.closure⟩, compl_subset_compl.2 subset_closure⟩
 #align filter.coclosed_compact_eq_cocompact Filter.coclosedCompact_eq_cocompact
@@ -1274,7 +1274,7 @@ theorem t2_separation [T2Space X] {x y : X} (h : x ≠ y) :
 
 -- todo: use this as a definition?
 theorem t2Space_iff_disjoint_nhds : T2Space X ↔ Pairwise fun x y : X => Disjoint (𝓝 x) (𝓝 y) := by
-  refine (t2Space_iff X).trans (forall₃_congr fun x y _ => ?_)
+  refine (t2Space_iff X).trans (forall₃_congr fun x y _ => _)
   simp only [(nhds_basis_opens x).disjoint_iff (nhds_basis_opens y), exists_prop, ← exists_and_left,
     and_assoc, and_comm, and_left_comm]
 #align t2_space_iff_disjoint_nhds t2Space_iff_disjoint_nhds
@@ -1392,9 +1392,9 @@ is the infimum of set neighborhoods filters for `s` and `t`.
 For general sets, only the `≤` inequality holds, see `nhdsSet_inter_le`. -/
 theorem IsCompact.nhdsSet_inter_eq [T2Space X] {s t : Set X} (hs : IsCompact s) (ht : IsCompact t) :
     𝓝ˢ (s ∩ t) = 𝓝ˢ s ⊓ 𝓝ˢ t := by
-  refine le_antisymm (nhdsSet_inter_le _ _) ?_
+  refine le_antisymm (nhdsSet_inter_le _ _) _
   simp_rw [hs.nhdsSet_inf_eq_biSup, ht.inf_nhdsSet_eq_biSup, nhdsSet, sSup_image]
-  refine iSup₂_le fun x hxs ↦ iSup₂_le fun y hyt ↦ ?_
+  refine iSup₂_le fun x hxs ↦ iSup₂_le fun y hyt ↦ _
   rcases eq_or_ne x y with (rfl|hne)
   · exact le_iSup₂_of_le x ⟨hxs, hyt⟩ (inf_idem _).le
   · exact (disjoint_nhds_nhds.mpr hne).eq_bot ▸ bot_le
@@ -1415,7 +1415,7 @@ theorem Set.InjOn.exists_mem_nhdsSet {X Y : Type*} [TopologicalSpace X] [Topolog
     · rcases loc x hx with ⟨u, hu, hf⟩
       exact Filter.mem_of_superset (prod_mem_nhds hu hu) <| forall_prod_set.2 hf
     · suffices ∀ᶠ z in 𝓝 (x, y), f z.1 ≠ f z.2 from this.mono fun _ hne h ↦ absurd h hne
-      refine (fc x hx).prod_map' (fc y hy) <| isClosed_diagonal.isOpen_compl.mem_nhds ?_
+      refine (fc x hx).prod_map' (fc y hy) <| isClosed_diagonal.isOpen_compl.mem_nhds _
       exact inj.ne hx hy hne
   rw [← eventually_nhdsSet_iff_forall, sc.nhdsSet_prod_eq sc] at this
   exact eventually_prod_self_iff.1 this
@@ -1509,7 +1509,7 @@ set_option linter.uppercaseLean3 false in
 theorem isOpen_iff_ultrafilter' [CompactSpace X] (U : Set X) :
     IsOpen U ↔ ∀ F : Ultrafilter X, F.lim ∈ U → U ∈ F.1 := by
   rw [isOpen_iff_ultrafilter]
-  refine' ⟨fun h F hF => h F.lim hF F F.le_nhds_lim, _⟩
+  refine ⟨fun h F hF => h F.lim hF F F.le_nhds_lim, _⟩
   intro cond x hx f h
   rw [← Ultrafilter.lim_eq_iff_le_nhds.2 h] at hx
   exact cond _ hx
@@ -1803,7 +1803,7 @@ theorem QuotientMap.of_surjective_continuous [CompactSpace X] [T2Space Y] {f : X
 
 theorem isPreirreducible_iff_subsingleton [T2Space X] {S : Set X} :
     IsPreirreducible S ↔ S.Subsingleton := by
-  refine ⟨fun h x hx y hy => ?_, Set.Subsingleton.isPreirreducible⟩
+  refine ⟨fun h x hx y hy => _, Set.Subsingleton.isPreirreducible⟩
   by_contra e
   obtain ⟨U, V, hU, hV, hxU, hyV, h'⟩ := t2_separation e
   exact ((h U V hU hV ⟨x, hx, hxU⟩ ⟨y, hy, hyV⟩).mono <| inter_subset_right _ _).not_disjoint h'
@@ -1864,10 +1864,10 @@ theorem regularSpace_TFAE (X : Type u) [TopologicalSpace X] :
   · intro H s a ha
     have ha' : sᶜ ∈ 𝓝 a := by rwa [← mem_interior_iff_mem_nhds, interior_compl]
     rcases H _ _ ha' with ⟨U, hU, hUc, hUs⟩
-    refine' disjoint_of_disjoint_of_mem disjoint_compl_left _ hU
+    refine disjoint_of_disjoint_of_mem disjoint_compl_left _ hU
     rwa [← subset_interior_iff_mem_nhdsSet, hUc.isOpen_compl.interior_eq, subset_compl_comm]
   tfae_have 2 → 3
-  · refine' fun H a s => ⟨fun hd has => mem_closure_iff_nhds_ne_bot.mp has _, H s a⟩
+  · refine fun H a s => ⟨fun hd has => mem_closure_iff_nhds_ne_bot.mp has _, H s a⟩
     exact (hd.symm.mono_right <| @principal_le_nhdsSet _ _ s).eq_bot
   tfae_have 3 → 1
   · exact fun H => ⟨fun hs ha => (H _ _).mpr <| hs.closure_eq.symm ▸ ha⟩
@@ -1956,12 +1956,12 @@ theorem IsCompact.exists_isOpen_closure_subset {K U : Set X} (hK : IsCompact K) 
       ← subset_interior_iff_mem_nhdsSet] using hU
   rcases ((hasBasis_nhdsSet _).disjoint_iff (hasBasis_nhdsSet _)).1 hd
     with ⟨V, ⟨hVo, hKV⟩, W, ⟨hW, hUW⟩, hVW⟩
-  refine ⟨V, hVo, hKV, Subset.trans ?_ (compl_subset_comm.1 hUW)⟩
+  refine ⟨V, hVo, hKV, Subset.trans _ (compl_subset_comm.1 hUW)⟩
   exact closure_minimal hVW.subset_compl_right hW.isClosed_compl
 
 theorem IsCompact.lift'_closure_nhdsSet {K : Set X} (hK : IsCompact K) :
     (𝓝ˢ K).lift' closure = 𝓝ˢ K := by
-  refine le_antisymm (fun U hU ↦ ?_) (le_lift'_closure _)
+  refine le_antisymm (fun U hU ↦ _) (le_lift'_closure _)
   rcases hK.exists_isOpen_closure_subset hU with ⟨V, hVo, hKV, hVU⟩
   exact mem_of_superset (mem_lift' <| hVo.mem_nhdsSet.2 hKV) hVU
 
@@ -1998,7 +1998,7 @@ theorem regularSpace_sInf {X} {T : Set (TopologicalSpace X)} (h : ∀ t ∈ T, @
       fun If => ⋂ i : If.1, If.snd i := fun a ↦ by
     rw [nhds_sInf, ← iInf_subtype'']
     exact hasBasis_iInf fun t : T => @closed_nhds_basis X t (h t t.2) a
-  refine .of_hasBasis this fun a If hIf => isClosed_iInter fun i => ?_
+  refine .of_hasBasis this fun a If hIf => isClosed_iInter fun i => _
   exact (hIf.2 i).2.mono (sInf_le (i : T).2)
 #align regular_space_Inf regularSpace_sInf
 
@@ -2057,7 +2057,7 @@ theorem exists_open_between_and_isCompact_closure [LocallyCompactSpace X] [Regul
   rcases exists_compact_closed_between hK hU hKU with ⟨L, L_compact, L_closed, KL, LU⟩
   have A : closure (interior L) ⊆ L := by
     apply (closure_mono interior_subset).trans (le_of_eq L_closed.closure_eq)
-  refine ⟨interior L, isOpen_interior, KL, A.trans LU, ?_⟩
+  refine ⟨interior L, isOpen_interior, KL, A.trans LU, _⟩
   exact L_compact.closure_of_subset interior_subset
 #align exists_open_between_and_is_compact_closure exists_open_between_and_isCompact_closure
 
@@ -2083,7 +2083,7 @@ theorem RegularSpace.t3Space_iff_t0Space [RegularSpace X] : T3Space X ↔ T0Spac
 
 -- see Note [lower instance priority]
 instance (priority := 100) T3Space.t25Space [T3Space X] : T25Space X := by
-  refine ⟨fun x y hne => ?_⟩
+  refine ⟨fun x y hne => _⟩
   rw [lift'_nhds_closure, lift'_nhds_closure]
   have : x ∉ closure {y} ∨ y ∉ closure {x} :=
     (t0Space_iff_or_not_mem_closure X).mp inferInstance hne
@@ -2154,7 +2154,7 @@ theorem normal_exists_closure_subset [NormalSpace X] {s t : Set X} (hs : IsClose
   have : Disjoint s tᶜ := Set.disjoint_left.mpr fun x hxs hxt => hxt (hst hxs)
   rcases normal_separation hs (isClosed_compl_iff.2 ht) this with
     ⟨s', t', hs', ht', hss', htt', hs't'⟩
-  refine ⟨s', hs', hss', Subset.trans (closure_minimal ?_ (isClosed_compl_iff.2 ht'))
+  refine ⟨s', hs', hss', Subset.trans (closure_minimal _ (isClosed_compl_iff.2 ht'))
     (compl_subset_comm.1 htt')⟩
   exact fun x hxs hxt => hs't'.le_bot ⟨hxs, hxt⟩
 #align normal_exists_closure_subset normal_exists_closure_subset
@@ -2189,27 +2189,27 @@ instance (priority := 100) NormalSpace.of_regularSpace_secondCountableTopology
       exact ⟨u, hu, hxu, disjoint_left.2 hut⟩
     choose! U hu hxu hd using this
     set V : s → countableBasis X := MapsTo.restrict _ _ _ hu
-    refine' ⟨range V, _, forall_mem_range.2 <| Subtype.forall.2 hd, fun n => _⟩
+    refine ⟨range V, _, forall_mem_range.2 <| Subtype.forall.2 hd, fun n => _⟩
     · rw [biUnion_range]
       exact fun x hx => mem_iUnion.2 ⟨⟨x, hx⟩, hxu x hx⟩
     · simp only [← iSup_eq_iUnion, iSup_and']
       exact (((finite_le_nat n).preimage_embedding (Encodable.encode' _)).subset <|
         inter_subset_right _ _).isClosed_biUnion fun u _ => isClosed_closure
-  refine { normal := fun s t hs ht hd => ?_ }
+  refine { normal := fun s t hs ht hd => _ }
   rcases key ht hd with ⟨U, hsU, hUd, hUc⟩
   rcases key hs hd.symm with ⟨V, htV, hVd, hVc⟩
   refine ⟨⋃ u ∈ U, ↑u \ ⋃ (v ∈ V) (_ : Encodable.encode v ≤ Encodable.encode u), closure ↑v,
     ⋃ v ∈ V, ↑v \ ⋃ (u ∈ U) (_ : Encodable.encode u ≤ Encodable.encode v), closure ↑u,
     isOpen_biUnion fun u _ => (isOpen_of_mem_countableBasis u.2).sdiff (hVc _),
     isOpen_biUnion fun v _ => (isOpen_of_mem_countableBasis v.2).sdiff (hUc _),
-    fun x hx => ?_, fun x hx => ?_, ?_⟩
+    fun x hx => _, fun x hx => _, _⟩
   · rcases mem_iUnion₂.1 (hsU hx) with ⟨u, huU, hxu⟩
-    refine' mem_biUnion huU ⟨hxu, _⟩
+    refine mem_biUnion huU ⟨hxu, _⟩
     simp only [mem_iUnion]
     rintro ⟨v, hvV, -, hxv⟩
     exact (hVd v hvV).le_bot ⟨hxv, hx⟩
   · rcases mem_iUnion₂.1 (htV hx) with ⟨v, hvV, hxv⟩
-    refine' mem_biUnion hvV ⟨hxv, _⟩
+    refine mem_biUnion hvV ⟨hxv, _⟩
     simp only [mem_iUnion]
     rintro ⟨u, huU, -, hxu⟩
     exact (hUd u huU).le_bot ⟨hxu, hx⟩
@@ -2283,9 +2283,9 @@ export T5Space (completely_normal)
 theorem Embedding.t5Space [TopologicalSpace Y] [T5Space Y] {e : X → Y} (he : Embedding e) :
     T5Space X := by
   haveI := he.t1Space
-  refine ⟨fun s t hd₁ hd₂ => ?_⟩
+  refine ⟨fun s t hd₁ hd₂ => _⟩
   simp only [he.toInducing.nhdsSet_eq_comap]
-  refine disjoint_comap (completely_normal ?_ ?_)
+  refine disjoint_comap (completely_normal _ _)
   · rwa [← subset_compl_iff_disjoint_left, image_subset_iff, preimage_compl,
       ← he.closure_eq_preimage_closure_image, subset_compl_iff_disjoint_left]
   · rwa [← subset_compl_iff_disjoint_right, image_subset_iff, preimage_compl,
@@ -2329,7 +2329,7 @@ theorem connectedComponent_eq_iInter_isClopen [T2Space X] [CompactSpace X] (x : 
     connectedComponent x = ⋂ s : { s : Set X // IsClopen s ∧ x ∈ s }, s := by
   apply Subset.antisymm connectedComponent_subset_iInter_isClopen
   -- Reduce to showing that the clopen intersection is connected.
-  refine' IsPreconnected.subset_connectedComponent _ (mem_iInter.2 fun s => s.2.2)
+  refine IsPreconnected.subset_connectedComponent _ (mem_iInter.2 fun s => s.2.2)
   -- We do this by showing that any disjoint cover by two closed sets implies
   -- that one of these closed sets must contain our whole thing.
   -- To reduce to the case where the cover is disjoint on all of `X` we need that `s` is closed
@@ -2351,7 +2351,7 @@ theorem connectedComponent_eq_iInter_isClopen [T2Space X] [CompactSpace X] (x : 
     rw [← not_disjoint_iff_nonempty_inter, imp_not_comm, not_forall] at H1
     cases' H1 (disjoint_compl_left_iff_subset.2 <| hab.trans <| union_subset_union hau hbv)
       with si H2
-    refine' ⟨⋂ U ∈ si, Subtype.val U, _, _, _⟩
+    refine ⟨⋂ U ∈ si, Subtype.val U, _, _, _⟩
     · exact isClopen_biInter_finset fun s _ => s.2.1
     · exact mem_iInter₂.2 fun s _ => s.2.2
     · rwa [← disjoint_compl_left_iff_subset, disjoint_iff_inter_eq_empty,
@@ -2374,7 +2374,7 @@ theorem connectedComponent_eq_iInter_isClopen [T2Space X] [CompactSpace X] (x : 
         (hab.trans (union_subset_union hau hbv) (mem_iInter.2 fun i => i.2.2)).resolve_left hxu
       suffices ⋂ s : { s : Set X // IsClopen s ∧ x ∈ s }, ↑s ⊆ v
         from (huv.symm.mono this hau).left_le_of_le_sup_left hab
-      · refine Subset.trans ?_ (inter_subset_right s v)
+      · refine Subset.trans _ (inter_subset_right s v)
         exact iInter_subset (fun s : { s : Set X // IsClopen s ∧ x ∈ s } => s.1)
           ⟨s ∩ v, H2, mem_inter H.2.1 h1⟩
 #align connected_component_eq_Inter_clopen connectedComponent_eq_iInter_isClopen
@@ -2396,7 +2396,7 @@ variable [T2Space X] [CompactSpace X]
 /-- A compact Hausdorff space is totally disconnected if and only if it is totally separated, this
   is also true for locally compact spaces. -/
 theorem compact_t2_tot_disc_iff_tot_sep : TotallyDisconnectedSpace X ↔ TotallySeparatedSpace X := by
-  refine ⟨fun h => ⟨fun x _ y _ => ?_⟩, @TotallySeparatedSpace.totallyDisconnectedSpace _ _⟩
+  refine ⟨fun h => ⟨fun x _ y _ => _⟩, @TotallySeparatedSpace.totallyDisconnectedSpace _ _⟩
   contrapose!
   intro hyp
   suffices x ∈ connectedComponent y by
@@ -2463,7 +2463,7 @@ variable {H : Type*} [TopologicalSpace H] [LocallyCompactSpace H] [T2Space H]
 /-- A locally compact Hausdorff totally disconnected space has a basis with clopen elements. -/
 theorem loc_compact_Haus_tot_disc_of_zero_dim [TotallyDisconnectedSpace H] :
     IsTopologicalBasis { s : Set H | IsClopen s } := by
-  refine isTopologicalBasis_of_isOpen_of_nhds (fun u hu => hu.2) fun x U memU hU => ?_
+  refine isTopologicalBasis_of_isOpen_of_nhds (fun u hu => hu.2) fun x U memU hU => _
   obtain ⟨s, comp, xs, sU⟩ := exists_compact_subset hU memU
   let u : Set s := ((↑) : s → H) ⁻¹' interior s
   have u_open_in_s : IsOpen u := isOpen_interior.preimage continuous_subtype_val
@@ -2471,12 +2471,12 @@ theorem loc_compact_Haus_tot_disc_of_zero_dim [TotallyDisconnectedSpace H] :
   haveI : CompactSpace s := isCompact_iff_compactSpace.1 comp
   obtain ⟨V : Set s, VisClopen, Vx, V_sub⟩ := compact_exists_isClopen_in_isOpen u_open_in_s xs
   have VisClopen' : IsClopen (((↑) : s → H) '' V) := by
-    refine' ⟨comp.isClosed.closedEmbedding_subtype_val.closed_iff_image_closed.1 VisClopen.1, _⟩
+    refine ⟨comp.isClosed.closedEmbedding_subtype_val.closed_iff_image_closed.1 VisClopen.1, _⟩
     let v : Set u := ((↑) : u → s) ⁻¹' V
     have : ((↑) : u → H) = ((↑) : s → H) ∘ ((↑) : u → s) := rfl
     have f0 : Embedding ((↑) : u → H) := embedding_subtype_val.comp embedding_subtype_val
     have f1 : OpenEmbedding ((↑) : u → H) := by
-      refine ⟨f0, ?_⟩
+      refine ⟨f0, _⟩
       · have : Set.range ((↑) : u → H) = interior s := by
           rw [this, Set.range_comp, Subtype.range_coe, Subtype.image_preimage_coe]
           apply Set.inter_eq_self_of_subset_right interior_subset
@@ -2487,7 +2487,7 @@ theorem loc_compact_Haus_tot_disc_of_zero_dim [TotallyDisconnectedSpace H] :
       rw [this, image_comp, Subtype.image_preimage_coe, inter_eq_self_of_subset_right V_sub]
     rw [f3]
     apply f1.isOpenMap v f2
-  refine' ⟨(↑) '' V, VisClopen', by simp [Vx], Subset.trans _ sU⟩
+  refine ⟨(↑) '' V, VisClopen', by simp [Vx], Subset.trans _ sU⟩
   simp
 set_option linter.uppercaseLean3 false in
 #align loc_compact_Haus_tot_disc_of_zero_dim loc_compact_Haus_tot_disc_of_zero_dim
@@ -2508,7 +2508,7 @@ end LocallyCompact
 instance ConnectedComponents.t2 [T2Space X] [CompactSpace X] : T2Space (ConnectedComponents X) := by
   -- Proof follows that of: https://stacks.math.columbia.edu/tag/0900
   -- Fix 2 distinct connected components, with points a and b
-  refine ⟨ConnectedComponents.surjective_coe.forall₂.2 fun a b ne => ?_⟩
+  refine ⟨ConnectedComponents.surjective_coe.forall₂.2 fun a b ne => _⟩
   rw [ConnectedComponents.coe_ne_coe] at ne
   have h := connectedComponent_disjoint ne
   -- write ↑b as the intersection of all clopen subsets containing it
@@ -2526,6 +2526,6 @@ instance ConnectedComponents.t2 [T2Space X] [CompactSpace X] : T2Space (Connecte
     exact ⟨U, (↑) '' U, hU, ha, subset_iInter₂ fun s _ => s.2.1.connectedComponent_subset s.2.2,
       (connectedComponents_preimage_image U).symm ▸ hU.biUnion_connectedComponent_eq⟩
   rw [ConnectedComponents.quotientMap_coe.isClopen_preimage] at hU
-  refine' ⟨Vᶜ, V, hU.compl.isOpen, hU.isOpen, _, hb mem_connectedComponent, disjoint_compl_left⟩
+  refine ⟨Vᶜ, V, hU.compl.isOpen, hU.isOpen, _, hb mem_connectedComponent, disjoint_compl_left⟩
   exact fun h => flip Set.Nonempty.ne_empty ha ⟨a, mem_connectedComponent, h⟩
 #align connected_components.t2 ConnectedComponents.t2

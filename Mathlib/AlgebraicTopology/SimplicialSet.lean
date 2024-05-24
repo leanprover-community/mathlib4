@@ -125,7 +125,7 @@ lemma const_down_toOrderHom (n : ℕ) (k : Fin (n+1)) (m : SimplexCategoryᵒᵖ
 
 /-- The edge of the standard simplex with endpoints `a` and `b`. -/
 def edge (n : ℕ) (a b : Fin (n+1)) (hab : a ≤ b) : Δ[n] _[1] := by
-  refine objMk ⟨![a, b], ?_⟩
+  refine objMk ⟨![a, b], _⟩
   rw [Fin.monotone_iff_le_succ]
   simp only [unop_op, len_mk, Fin.forall_fin_one]
   apply Fin.mk_le_mk.mpr hab
@@ -136,7 +136,7 @@ lemma coe_edge_down_toOrderHom (n : ℕ) (a b : Fin (n+1)) (hab : a ≤ b) :
 
 /-- The triangle in the standard simplex with vertices `a`, `b`, and `c`. -/
 def triangle {n : ℕ} (a b c : Fin (n+1)) (hab : a ≤ b) (hbc : b ≤ c) : Δ[n] _[2] := by
-  refine objMk ⟨![a, b, c], ?_⟩
+  refine objMk ⟨![a, b, c], _⟩
   rw [Fin.monotone_iff_le_succ]
   simp only [unop_op, len_mk, Fin.forall_fin_two]
   dsimp
@@ -212,7 +212,7 @@ open SimplexCategory Finset Opposite
 /-- The (degenerate) subsimplex of `Λ[n+2, i]` concentrated in vertex `k`. -/
 @[simps]
 def const (n : ℕ) (i k : Fin (n+3)) (m : SimplexCategoryᵒᵖ) : Λ[n+2, i].obj m := by
-  refine ⟨standardSimplex.const _ k _, ?_⟩
+  refine ⟨standardSimplex.const _ k _, _⟩
   suffices ¬ Finset.univ ⊆ {i, k} by
     simpa [← Set.univ_subset_iff, Set.subset_def, asOrderHom, not_or, Fin.forall_fin_one,
       subset_iff, mem_univ, @eq_comm _ _ k]
@@ -255,7 +255,7 @@ which is the type of horn that occurs in the horn-filling condition of quasicate
 def primitiveEdge {n : ℕ} {i : Fin (n+1)}
     (h₀ : 0 < i) (hₙ : i < Fin.last n) (j : Fin n) :
     Λ[n, i] _[1] := by
-  refine horn.edge n i j.castSucc j.succ ?_ ?_
+  refine horn.edge n i j.castSucc j.succ _ _
   · simp only [← Fin.val_fin_le, Fin.coe_castSucc, Fin.val_succ, le_add_iff_nonneg_right, zero_le]
   simp only [← Fin.val_fin_lt, Fin.val_zero, Fin.val_last] at h₀ hₙ
   obtain rfl|hn : n = 2 ∨ 2 < n := by
@@ -272,7 +272,7 @@ def primitiveTriangle {n : ℕ} (i : Fin (n+4))
     (h₀ : 0 < i) (hₙ : i < Fin.last (n+3))
     (k : ℕ) (h : k < n+2) : Λ[n+3, i] _[2] := by
   refine ⟨standardSimplex.triangle
-    (n := n+3) ⟨k, by omega⟩ ⟨k+1, by omega⟩ ⟨k+2, by omega⟩ ?_ ?_, ?_⟩
+    (n := n+3) ⟨k, by omega⟩ ⟨k+1, by omega⟩ ⟨k+2, by omega⟩ _ _, _⟩
   · simp only [Fin.mk_le_mk, le_add_iff_nonneg_right, zero_le]
   · simp only [Fin.mk_le_mk, add_le_add_iff_left, one_le_two]
   simp only [unop_op, SimplexCategory.len_mk, asOrderHom, SimplexCategory.Hom.toOrderHom_mk,

@@ -103,7 +103,7 @@ lemma inj_L : Injective (L ι) :=
     refine fun x ↦ AnalyticOn.eval_linearMap (EuclideanSpace.equiv ι ℝ).toLinearMap p
       |>.eqOn_zero_of_preconnected_of_eventuallyEq_zero
       (preconnectedSpace_iff_univ.mp inferInstance) (z₀ := 0) trivial
-      (Filter.mem_of_superset (Metric.ball_mem_nhds 0 zero_lt_one) ?_) trivial
+      (Filter.mem_of_superset (Metric.ball_mem_nhds 0 zero_lt_one) _) trivial
     rw [← ae_restrict_iff'₀ measurableSet_ball.nullMeasurableSet] at H
     apply Measure.eqOn_of_ae_eq H p.continuous_eval.continuousOn continuousOn_const
     rw [isOpen_ball.interior_eq]

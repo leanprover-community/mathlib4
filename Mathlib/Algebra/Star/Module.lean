@@ -180,7 +180,7 @@ as a linear equivalence. -/
 def StarModule.decomposeProdAdjoint : A ≃ₗ[R] selfAdjoint A × skewAdjoint A := by
   refine LinearEquiv.ofLinear ((selfAdjointPart R).prod (skewAdjointPart R))
     (LinearMap.coprod ((selfAdjoint.submodule R A).subtype) (skewAdjoint.submodule R A).subtype)
-    ?_ (LinearMap.ext <| StarModule.selfAdjointPart_add_skewAdjointPart R)
+    _ (LinearMap.ext <| StarModule.selfAdjointPart_add_skewAdjointPart R)
   -- Note: with #6965 `Submodule.coeSubtype` doesn't fire in `dsimp` or `simp`
   ext x <;> dsimp <;> erw [Submodule.coeSubtype, Submodule.coeSubtype] <;> simp
 #align star_module.decompose_prod_adjoint StarModule.decomposeProdAdjoint

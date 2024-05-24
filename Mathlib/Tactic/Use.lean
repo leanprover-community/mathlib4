@@ -157,7 +157,7 @@ def mkUseDischarger (discharger? : Option (TSyntax ``Parser.Tactic.discharger)) 
 
 /--
 `use e₁, e₂, ⋯` is similar to `exists`, but unlike `exists` it is equivalent to applying the tactic
-`refine ⟨e₁, e₂, ⋯, ?_, ⋯, ?_⟩` with any number of placeholders (rather than just one) and
+`refine ⟨e₁, e₂, ⋯, _, ⋯, _⟩` with any number of placeholders (rather than just one) and
 then trying to close goals associated to the placeholders with a configurable discharger (rather
 than just `try trivial`).
 

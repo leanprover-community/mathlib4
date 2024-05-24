@@ -114,7 +114,7 @@ private lemma trans_aux (hst : toColex s ≤ toColex t) (htu : toColex t ≤ toC
   · exact ⟨c, hcu, hcs, hb.2.2.trans hbc⟩
   have ⟨d, hdu, hdt, hcd⟩ := htu hct hcu
   have had : a ≤ d := hb.2.2.trans <| hbc.trans hcd
-  refine ⟨d, hdu, fun hds ↦ ?_, had⟩
+  refine ⟨d, hdu, fun hds ↦ _, had⟩
   exact hbmax d hds hdt had <| hbc.trans_lt <| hcd.lt_of_ne <| ne_of_mem_of_not_mem hct hdt
 
 private lemma antisymm_aux (hst : toColex s ≤ toColex t) (hts : toColex t ≤ toColex s) : s ⊆ t := by
@@ -191,13 +191,13 @@ lemma forall_lt_mono (hst : toColex s ≤ toColex t) (ht : ∀ b ∈ t, b < a) :
 which case `s = {a}`. -/
 lemma toColex_le_singleton : toColex s ≤ toColex {a} ↔ ∀ b ∈ s, b ≤ a ∧ (a ∈ s → b = a) := by
   simp only [toColex_le_toColex, mem_singleton, and_assoc, exists_eq_left]
-  refine forall₂_congr fun b _ ↦ ?_; obtain rfl | hba := eq_or_ne b a <;> aesop
+  refine forall₂_congr fun b _ ↦ _; obtain rfl | hba := eq_or_ne b a <;> aesop
 
 /-- `s < {a}` in colex iff all elements of `s` are strictly less than `a`. -/
 lemma toColex_lt_singleton : toColex s < toColex {a} ↔ ∀ b ∈ s, b < a := by
   rw [lt_iff_le_and_ne, toColex_le_singleton, toColex_ne_toColex]
-  refine ⟨fun h b hb ↦ (h.1 _ hb).1.lt_of_ne ?_,
-    fun h ↦ ⟨fun b hb ↦ ⟨(h _ hb).le, fun ha ↦ (lt_irrefl _ <| h _ ha).elim⟩, ?_⟩⟩ <;> rintro rfl
+  refine ⟨fun h b hb ↦ (h.1 _ hb).1.lt_of_ne _,
+    fun h ↦ ⟨fun b hb ↦ ⟨(h _ hb).le, fun ha ↦ (lt_irrefl _ <| h _ ha).elim⟩, _⟩⟩ <;> rintro rfl
   · refine h.2 <| eq_singleton_iff_unique_mem.2 ⟨hb, fun c hc ↦ (h.1 _ hc).2 hb⟩
   · simp at h
 
@@ -282,7 +282,7 @@ lemma lt_iff_exists_forall_lt {s t : Colex α} :
 
 lemma toColex_le_toColex_iff_max'_mem :
     toColex s ≤ toColex t ↔ ∀ hst : s ≠ t, (s ∆ t).max' (symmDiff_nonempty.2 hst) ∈ t := by
-  refine ⟨fun h hst ↦ ?_, fun h a has hat ↦ ?_⟩
+  refine ⟨fun h hst ↦ _, fun h a has hat ↦ _⟩
   · set m := (s ∆ t).max' (symmDiff_nonempty.2 hst)
     by_contra hmt
     have hms : m ∈ s := by simpa [mem_symmDiff, hmt] using max'_mem _ <| symmDiff_nonempty.2 hst
@@ -290,7 +290,7 @@ lemma toColex_le_toColex_iff_max'_mem :
     exact lt_irrefl _ <| (max'_lt_iff _ _).1 (hmb.lt_of_ne <| ne_of_mem_of_not_mem hms hbs) _ <|
       mem_symmDiff.2 <| Or.inr ⟨hbt, hbs⟩
   · have hst : s ≠ t := ne_of_mem_of_not_mem' has hat
-    refine ⟨_, h hst, ?_, le_max' _ _ <| mem_symmDiff.2 <| Or.inl ⟨has, hat⟩⟩
+    refine ⟨_, h hst, _, le_max' _ _ <| mem_symmDiff.2 <| Or.inl ⟨has, hat⟩⟩
     simpa [mem_symmDiff, h hst] using max'_mem _ <| symmDiff_nonempty.2 hst
 
 lemma le_iff_max'_mem {s t : Colex α} :
@@ -359,7 +359,7 @@ lemma mem_initSeg_self : s ∈ initSeg s := by simp
 @[simp] lemma initSeg_nonempty : (initSeg s).Nonempty := ⟨s, mem_initSeg_self⟩
 
 lemma isInitSeg_initSeg : IsInitSeg (initSeg s) s.card := by
-  refine ⟨fun t ht => (mem_initSeg.1 ht).1.symm, fun t₁ t₂ ht₁ ht₂ ↦ mem_initSeg.2 ⟨ht₂.2.symm, ?_⟩⟩
+  refine ⟨fun t ht => (mem_initSeg.1 ht).1.symm, fun t₁ t₂ ht₁ ht₂ ↦ mem_initSeg.2 ⟨ht₂.2.symm, _⟩⟩
   rw [mem_initSeg] at ht₁
   exact ht₂.1.le.trans ht₁.2
 
@@ -367,10 +367,10 @@ lemma IsInitSeg.exists_initSeg (h𝒜 : IsInitSeg 𝒜 r) (h𝒜₀ : 𝒜.Nonem
     ∃ s : Finset α, s.card = r ∧ 𝒜 = initSeg s := by
   have hs := sup'_mem (ofColex ⁻¹' 𝒜) (LinearOrder.supClosed _) 𝒜 h𝒜₀ toColex
     (fun a ha ↦ by simpa using ha)
-  refine' ⟨_, h𝒜.1 hs, _⟩
+  refine ⟨_, h𝒜.1 hs, _⟩
   ext t
   rw [mem_initSeg]
-  refine' ⟨fun p ↦ _, _⟩
+  refine ⟨fun p ↦ _, _⟩
   · rw [h𝒜.1 p, h𝒜.1 hs]
     exact ⟨rfl, le_sup' _ p⟩
   rintro ⟨cards, le⟩
@@ -381,7 +381,7 @@ lemma IsInitSeg.exists_initSeg (h𝒜 : IsInitSeg 𝒜 r) (h𝒜₀ : 𝒜.Nonem
 /-- Being a nonempty initial segment of colex is equivalent to being an `initSeg`. -/
 lemma isInitSeg_iff_exists_initSeg :
     IsInitSeg 𝒜 r ∧ 𝒜.Nonempty ↔ ∃ s : Finset α, s.card = r ∧ 𝒜 = initSeg s := by
-  refine ⟨fun h𝒜 ↦ h𝒜.1.exists_initSeg h𝒜.2, ?_⟩
+  refine ⟨fun h𝒜 ↦ h𝒜.1.exists_initSeg h𝒜.2, _⟩
   rintro ⟨s, rfl, rfl⟩
   exact ⟨isInitSeg_initSeg, initSeg_nonempty⟩
 

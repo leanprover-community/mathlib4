@@ -237,13 +237,13 @@ lemma XYIdeal_neg_mul {x y : F} (h : W.Nonsingular x y) :
   rcases ((W.nonsingular_iff' _ _).mp h).right with hx | hy
   · let W_X := W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄)
     refine
-      ⟨C <| C W_X⁻¹ * -(X + C (2 * x + W.a₂)), C <| C <| W_X⁻¹ * W.a₁, 0, C <| C <| W_X⁻¹ * -1, ?_⟩
+      ⟨C <| C W_X⁻¹ * -(X + C (2 * x + W.a₂)), C <| C <| W_X⁻¹ * W.a₁, 0, C <| C <| W_X⁻¹ * -1, _⟩
     rw [← mul_right_inj' <| C_ne_zero.mpr <| C_ne_zero.mpr hx]
     simp only [mul_add, ← mul_assoc, ← C_mul, mul_inv_cancel hx]
     C_simp
     ring1
   · let W_Y := 2 * y + W.a₁ * x + W.a₃
-    refine ⟨0, C <| C W_Y⁻¹, C <| C <| W_Y⁻¹ * -1, 0, ?_⟩
+    refine ⟨0, C <| C W_Y⁻¹, C <| C <| W_Y⁻¹ * -1, 0, _⟩
     rw [negY, ← mul_right_inj' <| C_ne_zero.mpr <| C_ne_zero.mpr hy]
     simp only [mul_add, ← mul_assoc, ← C_mul, mul_inv_cancel hy]
     C_simp
@@ -286,14 +286,14 @@ lemma XYIdeal_mul_XYIdeal {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁
     replace hxy := pow_ne_zero 2 <| sub_ne_zero_of_ne <| hxy rfl
     refine ⟨1 + C (C <| y⁻¹ * 4) * W.polynomial,
       ⟨C <| C y⁻¹ * (C 4 * X ^ 2 + C (4 * x₁ + W.b₂) * X + C (4 * x₁ ^ 2 + W.b₂ * x₁ + 2 * W.b₄)),
-        0, C (C y⁻¹) * (Y - W.negPolynomial), ?_⟩, by
+        0, C (C y⁻¹) * (Y - W.negPolynomial), _⟩, by
       rw [map_add, map_one, _root_.map_mul <| mk W, AdjoinRoot.mk_self, mul_zero, add_zero]⟩
     rw [polynomial, negPolynomial, ← mul_right_inj' <| C_ne_zero.mpr <| C_ne_zero.mpr hxy]
     simp only [mul_add, ← mul_assoc, ← C_mul, mul_inv_cancel hxy]
     linear_combination (norm := (rw [b₂, b₄, negY]; C_simp; ring1))
       -4 * congr_arg C (congr_arg C <| (W.equation_iff _ _).mp h₁)
   · replace hx := sub_ne_zero_of_ne hx
-    refine ⟨_, ⟨⟨C <| C (x₁ - x₂)⁻¹, C <| C <| (x₁ - x₂)⁻¹ * -1, 0, ?_⟩, map_one _⟩⟩
+    refine ⟨_, ⟨⟨C <| C (x₁ - x₂)⁻¹, C <| C <| (x₁ - x₂)⁻¹ * -1, 0, _⟩, map_one _⟩⟩
     rw [← mul_right_inj' <| C_ne_zero.mpr <| C_ne_zero.mpr hx]
     simp only [← mul_assoc, mul_add, ← C_mul, mul_inv_cancel hx]
     C_simp

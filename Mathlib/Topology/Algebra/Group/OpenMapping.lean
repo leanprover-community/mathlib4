@@ -46,7 +46,7 @@ theorem smul_singleton_mem_nhds_of_sigmaCompact
   obtain ⟨V, V_mem, V_closed, V_symm, VU⟩ : ∃ V ∈ 𝓝 (1 : G), IsClosed V ∧ V⁻¹ = V ∧ V * V ⊆ U :=
     exists_closed_nhds_one_inv_eq_mul_subset hU
   obtain ⟨s, s_count, hs⟩ : ∃ (s : Set G), s.Countable ∧ ⋃ g ∈ s, g • V = univ := by
-    apply countable_cover_nhds_of_sigma_compact (fun g ↦ ?_)
+    apply countable_cover_nhds_of_sigma_compact (fun g ↦ _)
     convert smul_mem_nhds g V_mem
     simp only [smul_eq_mul, mul_one]
   let K : ℕ → Set G := compactCovering G
@@ -62,7 +62,7 @@ theorem smul_singleton_mem_nhds_of_sigmaCompact
       apply IsCompact.image
       · exact (isCompact_compactCovering G n).inter_right (V_closed.smul g)
       · exact continuous_id.smul continuous_const
-    · apply eq_univ_iff_forall.2 (fun y ↦ ?_)
+    · apply eq_univ_iff_forall.2 (fun y ↦ _)
       obtain ⟨h, rfl⟩ : ∃ h, h • x = y := exists_smul_eq G x y
       obtain ⟨n, hn⟩ : ∃ n, h ∈ K n := exists_mem_compactCovering h
       obtain ⟨g, gs, hg⟩ : ∃ g ∈ s, h ∈ g • V := exists_set_mem_of_union_eq_top s _ hs _
@@ -82,7 +82,7 @@ theorem smul_singleton_mem_nhds_of_sigmaCompact
     rwa [smul_assoc, interior_smul, mem_inv_smul_set_iff]
   have : (g'⁻¹ • V) • {x} ⊆ U • ({x} : Set X) := by
     apply smul_subset_smul_right
-    apply Subset.trans (smul_set_subset_smul (inv_mem_inv.2 hg')) ?_
+    apply Subset.trans (smul_set_subset_smul (inv_mem_inv.2 hg')) _
     rw [V_symm]
     exact VU
   exact Filter.mem_of_superset J this

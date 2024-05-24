@@ -135,10 +135,10 @@ lemma StrictConvexOn.map_sum_lt (hf : StrictConvexOn 𝕜 s f) (h₀ : ∀ i ∈
         hf.convexOn.map_add_sum_le (fun i hi ↦ (h₀ _ <| by simp [hi]).le)
           (by simpa [-cons_eq_insert, ← add_assoc] using h₁)
           (forall_of_forall_cons <| forall_of_forall_cons hmem) (by positivity) <| by
-           refine hf.1 (hmem _ <| by simp) (hmem _ <| by simp) ?_ ?_ hc <;> positivity
+           refine hf.1 (hmem _ <| by simp) (hmem _ <| by simp) _ _ hc <;> positivity
     _ < c • ((w j / c) • f (p j) + (w k / c) • f (p k)) + ∑ x in u, w x • f (p x) := by
       -- then apply the definition of strict convexity for the two distinguished points
-      gcongr; refine hf.2 (hmem _ <| by simp) (hmem _ <| by simp) hjk ?_ ?_ hc <;> positivity
+      gcongr; refine hf.2 (hmem _ <| by simp) (hmem _ <| by simp) hjk _ _ hc <;> positivity
     _ = (w j • f (p j) + w k • f (p k)) + ∑ x in u, w x • f (p x) := by
       rw [smul_add, ← mul_smul, ← mul_smul, hcj, hck]
     _ = w j • f (p j) + (w k • f (p k) + ∑ x in u, w x • f (p x)) := by abel_nf
@@ -278,7 +278,7 @@ theorem ConvexOn.exists_ge_of_centerMass (h : ConvexOn 𝕜 s f) (hw₀ : ∀ i 
   · rw [mem_filter] at hi
     exact ⟨i, hi.1, (smul_le_smul_iff_of_pos_left <| (hw₀ i hi.1).lt_of_ne hi.2.symm).1 hfi⟩
   have hw' : (0 : 𝕜) < ∑ i in filter (fun i => w i ≠ 0) t, w i := by rwa [sum_filter_ne_zero]
-  refine' exists_le_of_sum_le (nonempty_of_sum_ne_zero hw'.ne') _
+  refine exists_le_of_sum_le (nonempty_of_sum_ne_zero hw'.ne') _
   rw [← sum_smul, ← smul_le_smul_iff_of_pos_left (inv_pos.2 hw'), inv_smul_smul₀ hw'.ne', ←
     centerMass, centerMass_filter_ne_zero]
   exact h.map_centerMass_le hw₀ hw₁ hp

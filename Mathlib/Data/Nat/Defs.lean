@@ -115,7 +115,7 @@ lemma succ_le_iff : succ m ≤ n ↔ m < n := ⟨lt_of_succ_le, succ_le_of_lt⟩
 #align nat.succ_le_iff Nat.succ_le_iff
 
 lemma le_succ_iff : m ≤ n.succ ↔ m ≤ n ∨ m = n.succ := by
-  refine ⟨fun hmn ↦ (Nat.lt_or_eq_of_le hmn).imp_left le_of_lt_succ, ?_⟩
+  refine ⟨fun hmn ↦ (Nat.lt_or_eq_of_le hmn).imp_left le_of_lt_succ, _⟩
   rintro (hmn | rfl)
   · exact le_succ_of_le hmn
   · exact Nat.le_refl _
@@ -576,7 +576,7 @@ lemma lt_div_mul_add (hb : 0 < b) : a < a / b * b + b := by
 
 @[simp]
 protected lemma div_left_inj (hda : d ∣ a) (hdb : d ∣ b) : a / d = b / d ↔ a = b := by
-  refine ⟨fun h ↦ ?_, congrArg fun b ↦ b / d⟩
+  refine ⟨fun h ↦ _, congrArg fun b ↦ b / d⟩
   rw [← Nat.mul_div_cancel' hda, ← Nat.mul_div_cancel' hdb, h]
 #align nat.div_left_inj Nat.div_left_inj
 
@@ -625,7 +625,7 @@ lemma half_le_of_sub_le_half (h : a - b ≤ a / 2) : a / 2 ≤ b := by
 protected lemma div_le_of_le_mul' (h : m ≤ k * n) : m / k ≤ n := by
   obtain rfl | hk := k.eq_zero_or_pos
   · simp
-  · refine Nat.le_of_mul_le_mul_left ?_ hk
+  · refine Nat.le_of_mul_le_mul_left _ hk
     calc
       k * (m / k) ≤ m % k + k * (m / k) := Nat.le_add_left _ _
       _ = m := mod_add_div _ _
@@ -635,7 +635,7 @@ protected lemma div_le_of_le_mul' (h : m ≤ k * n) : m / k ≤ n := by
 protected lemma div_le_self' (m n : ℕ) : m / n ≤ m := by
   obtain rfl | hn := n.eq_zero_or_pos
   · simp
-  · refine Nat.div_le_of_le_mul' ?_
+  · refine Nat.div_le_of_le_mul' _
     calc
       m = 1 * m := by rw [Nat.one_mul]
       _ ≤ n * m := Nat.mul_le_mul_right _ hn
@@ -659,7 +659,7 @@ lemma div_eq_self : m / n = m ↔ m = 0 ∨ n = 1 := by
     | n+2 =>
       left
       have : m / (n + 2) ≤ m / 2 := div_le_div_left (by simp) (by decide)
-      refine eq_zero_of_le_half ?_
+      refine eq_zero_of_le_half _
       simp_all
   · rintro (rfl | rfl) <;> simp
 #align nat.div_eq_self Nat.div_eq_self
@@ -803,7 +803,7 @@ protected lemma div_pow (h : a ∣ b) : (b / a) ^ c = b ^ c / a ^ c := by
   · simp
   obtain rfl | ha := a.eq_zero_or_pos
   · simp [Nat.zero_pow hc]
-  refine (Nat.div_eq_of_eq_mul_right (pos_pow_of_pos c ha) ?_).symm
+  refine (Nat.div_eq_of_eq_mul_right (pos_pow_of_pos c ha) _).symm
   rw [← Nat.mul_pow, Nat.mul_div_cancel_left' h]
 
 /-!
@@ -893,13 +893,13 @@ lemma leRecOn_surjective {C : ℕ → Sort*} {n m} (hnm : n ≤ m) (next : ∀ {
   induction hnm with
   | refl =>
     intro x
-    refine ⟨x, ?_⟩
+    refine ⟨x, _⟩
     rw [leRecOn_self]
   | step hnm ih =>
     intro x
     obtain ⟨w, rfl⟩ := Hnext _ x
     obtain ⟨x, rfl⟩ := ih w
-    refine ⟨x, ?_⟩
+    refine ⟨x, _⟩
     rw [leRecOn_succ]
 #align nat.le_rec_on_surjective Nat.leRecOn_surjective
 
@@ -1008,7 +1008,7 @@ Also works for functions to `Sort*`. Weakens the assumptions of `decreasing_indu
 def decreasingInduction' {P : ℕ → Sort*} (h : ∀ k < n, m ≤ k → P (k + 1) → P k)
     (mn : m ≤ n) (hP : P n) : P m := by
   revert h hP
-  refine' leRecOn' mn _ _
+  refine leRecOn' mn _ _
   · intro n mn ih h hP
     apply ih
     · exact fun k hk ↦ h k (Nat.lt.step hk)
@@ -1440,7 +1440,7 @@ lemma le_of_lt_add_of_dvd (h : a < b + n) : n ∣ a → n ∣ b → a ≤ b := b
 /-- `n` is not divisible by `a` iff it is between `a * k` and `a * (k + 1)` for some `k`. -/
 lemma not_dvd_iff_between_consec_multiples (n : ℕ) {a : ℕ} (ha : 0 < a) :
     (∃ k : ℕ, a * k < n ∧ n < a * (k + 1)) ↔ ¬a ∣ n := by
-  refine'
+  refine
     ⟨fun ⟨k, hk1, hk2⟩ => not_dvd_of_between_consec_multiples hk1 hk2, fun han =>
       ⟨n / a, ⟨lt_of_le_of_ne (mul_div_le n a) _, lt_mul_div_succ _ ha⟩⟩⟩
   exact mt (⟨n / a, Eq.symm ·⟩) han
@@ -1517,15 +1517,15 @@ lemma sqrt.lt_iter_succ_sq (n guess : ℕ) (hn : n < (guess + 1) * (guess + 1)) 
   split_ifs with h
   · suffices n < (m + 1) * (m + 1) by
       simpa only [dif_pos h] using sqrt.lt_iter_succ_sq n m this
-    refine Nat.lt_of_mul_lt_mul_left ?_ (a := 4 * (guess * guess))
+    refine Nat.lt_of_mul_lt_mul_left _ (a := 4 * (guess * guess))
     apply Nat.lt_of_le_of_lt AM_GM
     rw [show (4 : ℕ) = 2 * 2 from rfl]
     rw [Nat.mul_mul_mul_comm 2, Nat.mul_mul_mul_comm (2 * guess)]
-    refine Nat.mul_self_lt_mul_self (?_ : _ < _ * succ (_ / 2))
+    refine Nat.mul_self_lt_mul_self (_ : _ < _ * succ (_ / 2))
     rw [← add_div_right _ (by decide), Nat.mul_comm 2, Nat.mul_assoc,
       show guess + n / guess + 2 = (guess + n / guess + 1) + 1 from rfl]
     have aux_lemma {a : ℕ} : a ≤ 2 * ((a + 1) / 2) := by omega
-    refine lt_of_lt_of_le ?_ (Nat.mul_le_mul_left _ aux_lemma)
+    refine lt_of_lt_of_le _ (Nat.mul_le_mul_left _ aux_lemma)
     rw [Nat.add_assoc, Nat.mul_add]
     exact Nat.add_lt_add_left (lt_mul_div_succ _ (lt_of_le_of_lt (Nat.zero_le m) h)) _
   · simpa only [dif_neg h] using hn
@@ -1557,13 +1557,13 @@ private lemma sqrt_isSqrt (n : ℕ) : IsSqrt n (sqrt n) := by
   | n + 2 =>
     have h : ¬ (n + 2) ≤ 1 := by simp
     simp only [IsSqrt, sqrt, h, ite_false]
-    refine ⟨sqrt.iter_sq_le _ _, sqrt.lt_iter_succ_sq _ _ ?_⟩
+    refine ⟨sqrt.iter_sq_le _ _, sqrt.lt_iter_succ_sq _ _ _⟩
     simp only [Nat.mul_add, Nat.add_mul, Nat.one_mul, Nat.mul_one, ← Nat.add_assoc]
     rw [lt_add_one_iff, Nat.add_assoc, ← Nat.mul_two]
-    refine le_trans (Nat.le_of_eq (div_add_mod' (n + 2) 2).symm) ?_
+    refine le_trans (Nat.le_of_eq (div_add_mod' (n + 2) 2).symm) _
     rw [Nat.add_comm, Nat.add_le_add_iff_right, add_mod_right]
     simp only [Nat.zero_lt_two, add_div_right, succ_mul_succ]
-    refine le_trans (b := 1) ?_ ?_
+    refine le_trans (b := 1) _ _
     · exact (lt_succ.1 <| mod_lt n Nat.zero_lt_two)
     · exact Nat.le_add_left _ _
 
@@ -1658,7 +1658,7 @@ lemma sqrt_eq' (n : ℕ) : sqrt (n ^ 2) = n := sqrt_add_eq' n (zero_le _)
 lemma sqrt_succ_le_succ_sqrt (n : ℕ) : sqrt n.succ ≤ n.sqrt.succ :=
   le_of_lt_succ <| sqrt_lt.2 <| lt_succ_of_le <|
   succ_le_succ <| le_trans (sqrt_le_add n) <| Nat.add_le_add_right
-    (by refine' add_le_add (Nat.mul_le_mul_right _ _) _ <;> exact Nat.le_add_right _ 2) _
+    (by refine add_le_add (Nat.mul_le_mul_right _ _) _ <;> exact Nat.le_add_right _ 2) _
 #align nat.sqrt_succ_le_succ_sqrt Nat.sqrt_succ_le_succ_sqrt
 
 lemma exists_mul_self (x : ℕ) : (∃ n, n * n = x) ↔ sqrt x * sqrt x = x :=
@@ -1740,7 +1740,7 @@ lemma find_le {h : ∃ n, p n} (hn : p n) : Nat.find h ≤ n :=
 
 lemma find_comp_succ (h₁ : ∃ n, p n) (h₂ : ∃ n, p (n + 1)) (h0 : ¬ p 0) :
     Nat.find h₁ = Nat.find h₂ + 1 := by
-  refine' (find_eq_iff _).2 ⟨Nat.find_spec h₂, fun n hn ↦ _⟩
+  refine (find_eq_iff _).2 ⟨Nat.find_spec h₂, fun n hn ↦ _⟩
   cases n
   exacts [h0, @Nat.find_min (fun n ↦ p (n + 1)) _ h₂ _ (succ_lt_succ_iff.1 hn)]
 #align nat.find_comp_succ Nat.find_comp_succ
@@ -1752,12 +1752,12 @@ lemma find_pos (h : ∃ n : ℕ, p n) : 0 < Nat.find h ↔ ¬p 0 :=
 
 lemma find_add {hₘ : ∃ m, p (m + n)} {hₙ : ∃ n, p n} (hn : n ≤ Nat.find hₙ) :
     Nat.find hₘ + n = Nat.find hₙ := by
-  refine le_antisymm ((le_find_iff _ _).2 fun m hm hpm => Nat.not_le.2 hm ?_) ?_
+  refine le_antisymm ((le_find_iff _ _).2 fun m hm hpm => Nat.not_le.2 hm _) _
   · have hnm : n ≤ m := le_trans hn (find_le hpm)
-    refine Nat.add_le_of_le_sub hnm (find_le ?_)
+    refine Nat.add_le_of_le_sub hnm (find_le _)
     rwa [Nat.sub_add_cancel hnm]
   · rw [← Nat.sub_le_iff_le_add]
-    refine (le_find_iff _ _).2 fun m hm hpm => Nat.not_le.2 hm ?_
+    refine (le_find_iff _ _).2 fun m hm hpm => Nat.not_le.2 hm _
     rw [Nat.sub_le_iff_le_add]
     exact find_le hpm
 #align nat.find_add Nat.find_add
@@ -1812,11 +1812,11 @@ lemma findGreatest_eq_iff :
     · rw [findGreatest_of_not hk, ihk]
       constructor
       · rintro ⟨hle, hP, hm⟩
-        refine ⟨le_trans hle k.le_succ, hP, fun n hlt hle ↦ ?_⟩
+        refine ⟨le_trans hle k.le_succ, hP, fun n hlt hle ↦ _⟩
         rcases Decidable.eq_or_lt_of_le hle with (rfl | hlt')
         exacts [hk, hm hlt <| Nat.lt_succ_iff.1 hlt']
       · rintro ⟨hle, hP, hm⟩
-        refine ⟨Nat.lt_succ_iff.1 (lt_of_le_of_ne hle ?_), hP,
+        refine ⟨Nat.lt_succ_iff.1 (lt_of_le_of_ne hle _), hP,
           fun n hlt hle ↦ hm hlt (le_trans hle k.le_succ)⟩
         rintro rfl
         exact hk (hP k.succ_ne_zero)
@@ -1891,7 +1891,7 @@ end FindGreatest
 instance decidableLoHi (lo hi : ℕ) (P : ℕ → Prop) [H : DecidablePred P] :
     Decidable (∀ x, lo ≤ x → x < hi → P x) :=
   decidable_of_iff (∀ x < hi - lo, P (lo + x)) $ by
-    refine ⟨fun al x hl hh ↦ ?_,
+    refine ⟨fun al x hl hh ↦ _,
       fun al x h ↦ al _ (Nat.le_add_right _ _) (Nat.lt_sub_iff_add_lt'.1 h)⟩
     have := al (x - lo) ((Nat.sub_lt_sub_iff_right hl).2 hh)
     rwa [Nat.add_sub_cancel' hl] at this

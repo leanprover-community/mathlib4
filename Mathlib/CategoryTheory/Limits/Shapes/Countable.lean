@@ -101,7 +101,7 @@ noncomputable def sequentialFunctor : ℕᵒᵖ ⥤ J where
 
 theorem sequentialFunctor_initial_aux (j : J) : ∃ (n : ℕ), sequentialFunctor_obj J n ≤ j := by
   obtain ⟨m, h⟩ := (exists_surjective_nat _).choose_spec j
-  refine ⟨m + 1, ?_⟩
+  refine ⟨m + 1, _⟩
   simpa [h] using leOfHom (IsCofilteredOrEmpty.cone_objs ((exists_surjective_nat _).choose m)
     (sequentialFunctor_obj J m)).choose_spec.choose
 
@@ -111,7 +111,7 @@ instance sequentialFunctor_initial : (sequentialFunctor J).Initial  where
     have : Nonempty (CostructuredArrow (sequentialFunctor J) d) :=
       ⟨CostructuredArrow.mk (homOfLE g)⟩
     apply isConnected_of_zigzag
-    refine fun i j ↦ ⟨[j], ?_⟩
+    refine fun i j ↦ ⟨[j], _⟩
     simp only [List.chain_cons, Zag, List.Chain.nil, and_true, ne_eq, not_false_eq_true,
       List.getLast_cons, not_true_eq_false, List.getLast_singleton']
     wlog h : (unop i.left) ≤ (unop j.left)

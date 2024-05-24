@@ -891,10 +891,10 @@ theorem closure_induction' {s : Set R} {p : ∀ x, x ∈ closure s → Prop}
     (neg : ∀ x hx, p x hx → p (-x) (neg_mem hx))
     (mul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
     {a : R} (ha : a ∈ closure s) : p a ha := by
-  refine Exists.elim ?_ fun (ha : a ∈ closure s) (hc : p a ha) => hc
+  refine Exists.elim _ fun (ha : a ∈ closure s) (hc : p a ha) => hc
   refine
     closure_induction ha (fun m hm => ⟨subset_closure hm, mem m hm⟩) ⟨zero_mem _, zero⟩
-      ⟨one_mem _, one⟩ ?_ (fun x hx => hx.elim fun hx' hx => ⟨neg_mem hx', neg _ _ hx⟩) ?_
+      ⟨one_mem _, one⟩ _ (fun x hx => hx.elim fun hx' hx => ⟨neg_mem hx', neg _ _ hx⟩) _
   · exact (fun x y hx hy => hx.elim fun hx' hx => hy.elim fun hy' hy =>
       ⟨add_mem hx' hy', add _ _ _ _ hx hy⟩)
   · exact (fun x y hx hy => hx.elim fun hx' hx => hy.elim fun hy' hy =>
@@ -910,9 +910,9 @@ theorem closure_induction₂ {s : Set R} {p : R → R → Prop} {a b : R} (ha : 
     (Hadd_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ + y₂))
     (Hmul_left : ∀ x₁ x₂ y, p x₁ y → p x₂ y → p (x₁ * x₂) y)
     (Hmul_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ * y₂)) : p a b := by
-  refine'
+  refine
     closure_induction hb _ (H0_right _) (H1_right _) (Hadd_right a) (Hneg_right a) (Hmul_right a)
-  refine' closure_induction ha Hs (fun x _ => H0_left x) (fun x _ => H1_left x) _ _ _
+  refine closure_induction ha Hs (fun x _ => H0_left x) (fun x _ => H1_left x) _ _ _
   · exact fun x y H₁ H₂ z zs => Hadd_left x y z (H₁ z zs) (H₂ z zs)
   · exact fun x hx z zs => Hneg_left x z (hx z zs)
   · exact fun x y H₁ H₂ z zs => Hmul_left x y z (H₁ z zs) (H₂ z zs)
@@ -955,7 +955,7 @@ def closureCommRingOfComm {s : Set R} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b =
     mul_comm := fun x y => by
       ext
       simp only [Subring.coe_mul]
-      refine'
+      refine
         closure_induction₂ x.prop y.prop hcomm (fun x => by simp only [mul_zero, zero_mul])
           (fun x => by simp only [mul_zero, zero_mul]) (fun x => by simp only [mul_one, one_mul])
           (fun x => by simp only [mul_one, one_mul])
@@ -1108,7 +1108,7 @@ def prodEquiv (s : Subring R) (t : Subring S) : s.prod t ≃+* s × t :=
   typically not a subring) -/
 theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subring R} (hS : Directed (· ≤ ·) S)
     {x : R} : (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
-  refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup S i hi⟩
+  refine ⟨_, fun ⟨i, hi⟩ ↦ le_iSup S i hi⟩
   let U : Subring R :=
     Subring.mk' (⋃ i, (S i : Set R)) (⨆ i, (S i).toSubmonoid) (⨆ i, (S i).toAddSubgroup)
       (Submonoid.coe_iSup_of_directed hS) (AddSubgroup.coe_iSup_of_directed hS)

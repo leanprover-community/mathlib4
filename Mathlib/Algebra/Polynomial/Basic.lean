@@ -362,7 +362,7 @@ instance unique [Subsingleton R] : Unique R[X] :=
   { Polynomial.inhabited with
     uniq := by
       rintro ⟨x⟩
-      refine' congr_arg ofFinsupp _
+      refine congr_arg ofFinsupp _
       simp [eq_iff_true_of_subsingleton] }
 #align polynomial.unique Polynomial.unique
 
@@ -590,7 +590,7 @@ theorem X_mul : X * p = p * X := by
   -- Porting note: `ofFinsupp.injEq` is required.
   simp only [X, ← ofFinsupp_single, ← ofFinsupp_mul, LinearMap.coe_mk, ofFinsupp.injEq]
   -- Porting note: Was `ext`.
-  refine Finsupp.ext fun _ => ?_
+  refine Finsupp.ext fun _ => _
   simp [AddMonoidAlgebra.mul_apply, AddMonoidAlgebra.sum_single_index, add_comm]
 #align polynomial.X_mul Polynomial.X_mul
 
@@ -839,7 +839,7 @@ theorem addSubmonoid_closure_setOf_eq_monomial :
   apply top_unique
   rw [← AddSubmonoid.map_equiv_top (toFinsuppIso R).symm.toAddEquiv, ←
     Finsupp.add_closure_setOf_eq_single, AddMonoidHom.map_mclosure]
-  refine' AddSubmonoid.closure_mono (Set.image_subset_iff.2 _)
+  refine AddSubmonoid.closure_mono (Set.image_subset_iff.2 _)
   rintro _ ⟨n, a, rfl⟩
   exact ⟨n, a, Polynomial.ofFinsupp_single _ _⟩
 #align polynomial.add_submonoid_closure_set_of_eq_monomial Polynomial.addSubmonoid_closure_setOf_eq_monomial
@@ -1246,7 +1246,7 @@ variable [Semiring R] [Nontrivial R]
 instance nontrivial : Nontrivial R[X] := by
   have h : Nontrivial R[ℕ] := by infer_instance
   rcases h.exists_pair_ne with ⟨x, y, hxy⟩
-  refine ⟨⟨⟨x⟩, ⟨y⟩, ?_⟩⟩
+  refine ⟨⟨⟨x⟩, ⟨y⟩, _⟩⟩
   simp [hxy]
 #align polynomial.nontrivial Polynomial.nontrivial
 

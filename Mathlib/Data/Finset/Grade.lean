@@ -120,7 +120,7 @@ lemma covBy_iff_card_sdiff_eq_one : t ⋖ s ↔ t ⊆ s ∧ (s \ t).card = 1 := 
     simp [*]
   · simp_rw [card_eq_one]
     rintro ⟨hts, a, ha⟩
-    refine ⟨a, (mem_sdiff.1 <| superset_of_eq ha <| mem_singleton_self _).2, ?_⟩
+    refine ⟨a, (mem_sdiff.1 <| superset_of_eq ha <| mem_singleton_self _).2, _⟩
     rw [insert_eq, ← ha, sdiff_union_of_subset hts]
 
 lemma covBy_iff_exists_erase : s ⋖ t ↔ ∃ a ∈ t, t.erase a = s := by

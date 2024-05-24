@@ -104,7 +104,7 @@ theorem continuous_gaugeRescale {s t : Set E} (hs : Convex ℝ s) (hs₀ : s ∈
     (ht : Convex ℝ t) (ht₀ : t ∈ 𝓝 0) (htb : IsVonNBounded ℝ t) :
     Continuous (gaugeRescale s t) := by
   have hta : Absorbent ℝ t := absorbent_nhds_zero ht₀
-  refine continuous_iff_continuousAt.2 fun x ↦ ?_
+  refine continuous_iff_continuousAt.2 fun x ↦ _
   rcases eq_or_ne x 0 with rfl | hx
   · rw [ContinuousAt, gaugeRescale_zero]
     nth_rewrite 2 [← comap_gauge_nhds_zero htb ht₀]
@@ -134,7 +134,7 @@ theorem image_gaugeRescaleHomeomorph_closure {s t : Set E}
     (htc : Convex ℝ t) (ht₀ : t ∈ 𝓝 0) (htb : IsVonNBounded ℝ t) :
     gaugeRescaleHomeomorph s t hsc hs₀ hsb htc ht₀ htb '' closure s = closure t := by
   refine Subset.antisymm (mapsTo_gaugeRescale_closure hsc hs₀ htc
-    (mem_of_mem_nhds ht₀) (absorbent_nhds_zero ht₀)).image_subset ?_
+    (mem_of_mem_nhds ht₀) (absorbent_nhds_zero ht₀)).image_subset _
   rw [← Homeomorph.preimage_symm, ← image_subset_iff]
   exact (mapsTo_gaugeRescale_closure htc ht₀ hsc
     (mem_of_mem_nhds hs₀) (absorbent_nhds_zero hs₀)).image_subset
@@ -152,14 +152,14 @@ theorem exists_homeomorph_image_eq {s t : Set E}
     ∃ e : E ≃ₜ E, e '' interior s = interior t ∧ e '' closure s = closure t ∧
       e '' frontier s = frontier t := by
   rsuffices ⟨e, h₁, h₂⟩ : ∃ e : E ≃ₜ E, e '' interior s = interior t ∧ e '' closure s = closure t
-  · refine ⟨e, h₁, h₂, ?_⟩
+  · refine ⟨e, h₁, h₂, _⟩
     simp_rw [← closure_diff_interior, image_diff e.injective, h₁, h₂]
   rcases hsne with ⟨x, hx⟩
   rcases htne with ⟨y, hy⟩
   set h : E ≃ₜ E := by
     apply gaugeRescaleHomeomorph (-x +ᵥ s) (-y +ᵥ t) <;>
       simp [← mem_interior_iff_mem_nhds, interior_vadd, mem_vadd_set_iff_neg_vadd_mem, *]
-  refine ⟨.trans (.addLeft (-x)) <| h.trans <| .addLeft y, ?_, ?_⟩
+  refine ⟨.trans (.addLeft (-x)) <| h.trans <| .addLeft y, _, _⟩
   · calc
       (fun a ↦ y + h (-x + a)) '' interior s = y +ᵥ h '' interior (-x +ᵥ s) := by
         simp_rw [interior_vadd, ← image_vadd, image_image, vadd_eq_add]

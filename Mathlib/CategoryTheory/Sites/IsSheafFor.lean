@@ -456,7 +456,7 @@ the proof of C2.1.4 of [Elephant], and the discussion in [MM92], Chapter III, Se
 def natTransEquivCompatibleFamily {P : Cᵒᵖ ⥤ Type v₁} :
     (S.functor ⟶ P) ≃ { x : FamilyOfElements P (S : Presieve X) // x.Compatible } where
   toFun α := by
-    refine' ⟨fun Y f hf => _, _⟩
+    refine ⟨fun Y f hf => _, _⟩
     · apply α.app (op Y) ⟨_, hf⟩
     · rw [compatible_iff_sieveCompatible]
       intro Y Z f g hf
@@ -569,7 +569,7 @@ theorem isSeparatedFor_and_exists_isAmalgamation_iff_isSheafFor :
   · intro z hx
     exact exists_unique_of_exists_of_unique (z.2 hx) z.1
   · intro h
-    refine ⟨?_, ExistsUnique.exists ∘ h⟩
+    refine ⟨_, ExistsUnique.exists ∘ h⟩
     intro t₁ t₂ ht₁ ht₂
     apply (h _).unique ht₁ ht₂
     exact is_compatible_of_exists_amalgamation x ⟨_, ht₂⟩
@@ -629,7 +629,7 @@ theorem isSheafFor_iff_generate (R : Presieve X) :
 -/
 theorem isSheafFor_singleton_iso (P : Cᵒᵖ ⥤ Type w) : IsSheafFor P (Presieve.singleton (𝟙 X)) := by
   intro x _
-  refine' ⟨x _ (Presieve.singleton_self _), _, _⟩
+  refine ⟨x _ (Presieve.singleton_self _), _, _⟩
   · rintro _ _ ⟨rfl, rfl⟩
     simp
   · intro t ht
@@ -752,9 +752,9 @@ end Arrows.Compatible
 theorem isSheafFor_arrows_iff : (ofArrows X π).IsSheafFor P ↔
     (∀ (x : (i : I) → P.obj (op (X i))), Arrows.Compatible P π x →
     ∃! t, ∀ i, P.map (π i).op t = x i) := by
-  refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ ?_⟩
+  refine ⟨fun h x hx ↦ _, fun h x hx ↦ _⟩
   · obtain ⟨t, ht₁, ht₂⟩ := h _ hx.familyOfElements_compatible
-    refine ⟨t, fun i ↦ ?_, fun t' ht' ↦ ht₂ _ fun _ _ ⟨i⟩ ↦ ?_⟩
+    refine ⟨t, fun i ↦ _, fun t' ht' ↦ ht₂ _ fun _ _ ⟨i⟩ ↦ _⟩
     · rw [ht₁ _ (ofArrows.mk i), hx.familyOfElements_ofArrows_mk]
     · rw [ht', hx.familyOfElements_ofArrows_mk]
   · obtain ⟨t, hA, ht⟩ := h (fun i ↦ x (π i) (ofArrows.mk _))
@@ -772,7 +772,7 @@ def Arrows.PullbackCompatible (x : (i : I) → P.obj (op (X i))) : Prop :=
 
 theorem Arrows.pullbackCompatible_iff (x : (i : I) → P.obj (op (X i))) :
     Compatible P π x ↔ PullbackCompatible P π x := by
-  refine ⟨fun t i j ↦ ?_, fun t i j Z gi gj comm ↦ ?_⟩
+  refine ⟨fun t i j ↦ _, fun t i j Z gi gj comm ↦ _⟩
   · apply t
     exact pullback.condition
   · rw [← pullback.lift_fst _ _ comm, op_comp, FunctorToTypes.map_comp_apply, t i j,

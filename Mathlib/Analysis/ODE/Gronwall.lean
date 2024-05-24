@@ -172,7 +172,7 @@ theorem dist_le_of_approx_trajectories_ODE_of_mem
   have := dist_triangle4_right (f' t) (g' t) (v t (f t)) (v t (g t))
   have hv := (hv t).dist_le_mul _ (hfs t ht) _ (hgs t ht)
   rw [← dist_eq_norm, ← dist_eq_norm]
-  refine this.trans ((add_le_add (add_le_add (f_bound t ht) (g_bound t ht)) hv).trans ?_)
+  refine this.trans ((add_le_add (add_le_add (f_bound t ht) (g_bound t ht)) hv).trans _)
   rw [add_comm]
 set_option linter.uppercaseLean3 false in
 #align dist_le_of_approx_trajectories_ODE_of_mem_set dist_le_of_approx_trajectories_ODE_of_mem
@@ -358,7 +358,7 @@ theorem ODE_solution_unique_of_eventually
     (heq : f t₀ = g t₀) : f =ᶠ[𝓝 t₀] g := by
   obtain ⟨ε, hε, h⟩ := eventually_nhds_iff_ball.mp (hf.and hg)
   rw [Filter.eventuallyEq_iff_exists_mem]
-  refine ⟨ball t₀ ε, ball_mem_nhds _ hε, ?_⟩
+  refine ⟨ball t₀ ε, ball_mem_nhds _ hε, _⟩
   simp_rw [Real.ball_eq_Ioo] at *
   apply ODE_solution_unique_of_mem_Ioo hv (Real.ball_eq_Ioo t₀ ε ▸ mem_ball_self hε)
     (fun _ ht ↦ (h _ ht).1) (fun _ ht ↦ (h _ ht).2) heq

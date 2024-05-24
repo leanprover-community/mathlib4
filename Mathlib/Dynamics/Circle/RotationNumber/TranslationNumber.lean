@@ -691,7 +691,7 @@ theorem dist_map_zero_translationNumber_le : dist (f 0) (τ f) ≤ 1 :=
 theorem tendsto_translationNumber_of_dist_bounded_aux (x : ℕ → ℝ) (C : ℝ)
     (H : ∀ n : ℕ, dist ((f ^ n) 0) (x n) ≤ C) :
     Tendsto (fun n : ℕ => x (2 ^ n) / 2 ^ n) atTop (𝓝 <| τ f) := by
-  refine' f.tendsto_translationNumber_aux.congr_dist (squeeze_zero (fun _ => dist_nonneg) _ _)
+  refine f.tendsto_translationNumber_aux.congr_dist (squeeze_zero (fun _ => dist_nonneg) _ _)
   · exact fun n => C / 2 ^ n
   · intro n
     have : 0 < (2 ^ n : ℝ) := pow_pos zero_lt_two _
@@ -725,11 +725,11 @@ theorem translationNumber_eq_of_semiconj {f g₁ g₂ : CircleDeg1Lift}
 
 theorem translationNumber_mul_of_commute {f g : CircleDeg1Lift} (h : Commute f g) :
     τ (f * g) = τ f + τ g := by
-  refine tendsto_nhds_unique ?_
+  refine tendsto_nhds_unique _
     (f.tendsto_translationNumber_aux.add g.tendsto_translationNumber_aux)
   simp only [transnumAuxSeq, ← add_div]
   refine (f * g).tendsto_translationNumber_of_dist_bounded_aux
-    (fun n ↦ (f ^ n) 0 + (g ^ n) 0) 1 fun n ↦ ?_
+    (fun n ↦ (f ^ n) 0 + (g ^ n) 0) 1 fun n ↦ _
   rw [h.mul_pow, dist_comm]
   exact le_of_lt ((f ^ n).dist_map_map_zero_lt (g ^ n))
 #align circle_deg1_lift.translation_number_mul_of_commute CircleDeg1Lift.translationNumber_mul_of_commute
@@ -773,7 +773,7 @@ theorem dist_pow_map_zero_mul_translationNumber_le (n : ℕ) :
 
 theorem tendsto_translation_number₀' :
     Tendsto (fun n : ℕ => (f ^ (n + 1) : CircleDeg1Lift) 0 / ((n : ℝ) + 1)) atTop (𝓝 <| τ f) := by
-  refine'
+  refine
     tendsto_iff_dist_tendsto_zero.2 <|
       squeeze_zero (fun _ => dist_nonneg) (fun n => _)
         ((tendsto_const_div_atTop_nhds_zero_nat 1).comp (tendsto_add_atTop_nat 1))
@@ -793,7 +793,7 @@ In particular, this limit does not depend on `x`. -/
 theorem tendsto_translationNumber (x : ℝ) :
     Tendsto (fun n : ℕ => ((f ^ n) x - x) / n) atTop (𝓝 <| τ f) := by
   rw [← translationNumber_conj_eq' (translate <| Multiplicative.ofAdd x)]
-  refine (tendsto_translation_number₀ _).congr fun n ↦ ?_
+  refine (tendsto_translation_number₀ _).congr fun n ↦ _
   simp [sub_eq_neg_add, Units.conj_pow']
 #align circle_deg1_lift.tendsto_translation_number CircleDeg1Lift.tendsto_translationNumber
 
@@ -867,7 +867,7 @@ theorem map_lt_of_translationNumber_lt_nat {n : ℕ} (h : τ f < n) (x : ℝ) : 
 theorem map_lt_add_floor_translationNumber_add_one (x : ℝ) : f x < x + ⌊τ f⌋ + 1 := by
   rw [add_assoc]
   norm_cast
-  refine' map_lt_of_translationNumber_lt_int _ _ _
+  refine map_lt_of_translationNumber_lt_int _ _ _
   push_cast
   exact lt_floor_add_one _
 #align circle_deg1_lift.map_lt_add_floor_translation_number_add_one CircleDeg1Lift.map_lt_add_floor_translationNumber_add_one
@@ -908,7 +908,7 @@ theorem translationNumber_lt_of_forall_lt_add (hf : Continuous f) {z : ℝ} (hz 
   obtain ⟨x, -, hx⟩ : ∃ x ∈ Icc (0 : ℝ) 1, ∀ y ∈ Icc (0 : ℝ) 1, f y - y ≤ f x - x :=
     isCompact_Icc.exists_isMaxOn (nonempty_Icc.2 zero_le_one)
       (hf.sub continuous_id).continuousOn
-  refine' lt_of_le_of_lt _ (sub_lt_iff_lt_add'.2 <| hz x)
+  refine lt_of_le_of_lt _ (sub_lt_iff_lt_add'.2 <| hz x)
   apply translationNumber_le_of_le_add
   simp only [← sub_le_iff_le_add']
   exact f.forall_map_sub_of_Icc (fun a => a ≤ f x - x) hx
@@ -919,7 +919,7 @@ theorem lt_translationNumber_of_forall_add_lt (hf : Continuous f) {z : ℝ} (hz 
   obtain ⟨x, -, hx⟩ : ∃ x ∈ Icc (0 : ℝ) 1, ∀ y ∈ Icc (0 : ℝ) 1, f x - x ≤ f y - y
   · exact isCompact_Icc.exists_isMinOn (nonempty_Icc.2 zero_le_one)
       (hf.sub continuous_id).continuousOn
-  refine' lt_of_lt_of_le (lt_sub_iff_add_lt'.2 <| hz x) _
+  refine lt_of_lt_of_le (lt_sub_iff_add_lt'.2 <| hz x) _
   apply le_translationNumber_of_add_le
   simp only [← le_sub_iff_add_le']
   exact f.forall_map_sub_of_Icc _ hx
@@ -971,7 +971,7 @@ theorem semiconj_of_group_action_of_forall_translationNumber_eq {G : Type*} [Gro
   -- Equality of translation number guarantees that for each `x`
   -- the set `{f₂ g⁻¹ (f₁ g x) | g : G}` is bounded above.
   have : ∀ x, BddAbove (range fun g => f₂ g⁻¹ (f₁ g x)) := by
-    refine fun x => ⟨x + 2, ?_⟩
+    refine fun x => ⟨x + 2, _⟩
     rintro _ ⟨g, rfl⟩
     have : τ (f₂ g⁻¹) = -τ (f₂ g) := by
       rw [← MonoidHom.coe_toHomUnits, MonoidHom.map_inv, translationNumber_units_inv,
@@ -990,7 +990,7 @@ theorem semiconj_of_group_action_of_forall_translationNumber_eq {G : Type*} [Gro
   have hF₁ : ∀ g, ⇑(F₁ g) = f₁ g := fun _ => rfl
   have hF₂ : ∀ g, ⇑(F₂ g) = f₂ g := fun _ => rfl
   -- Now we apply `csSup_div_semiconj` and go back to `f₁` and `f₂`.
-  refine' ⟨⟨⟨_, fun x y hxy => _⟩, fun x => _⟩, csSup_div_semiconj F₂ F₁ fun x => _⟩ <;>
+  refine ⟨⟨⟨_, fun x y hxy => _⟩, fun x => _⟩, csSup_div_semiconj F₂ F₁ fun x => _⟩ <;>
     simp only [hF₁, hF₂, ← map_inv, coe_mk]
   · exact ciSup_mono (this y) fun g => mono _ (mono _ hxy)
   · simp only [map_add_one]

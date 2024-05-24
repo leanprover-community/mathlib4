@@ -36,13 +36,13 @@ theorem eigenvalue_mem_ball {μ : K} (hμ : Module.End.HasEigenvalue (Matrix.toL
       contrapose! h_nz
       ext j
       rw [Pi.zero_apply, ← norm_le_zero_iff]
-      refine (h_i ▸ Finset.le_sup' (fun i => ‖v i‖) (Finset.mem_univ j)).trans ?_
+      refine (h_i ▸ Finset.le_sup' (fun i => ‖v i‖) (Finset.mem_univ j)).trans _
       exact norm_le_zero_iff.mpr h_nz
     have h_le : ∀ j, ‖v j * (v i)⁻¹‖ ≤ 1 := fun j => by
       rw [norm_mul, norm_inv, mul_inv_le_iff' (norm_pos_iff.mpr h_nz), one_mul]
       exact h_i ▸ Finset.le_sup' (fun i => ‖v i‖) (Finset.mem_univ j)
     simp_rw [mem_closedBall_iff_norm']
-    refine ⟨i, ?_⟩
+    refine ⟨i, _⟩
     calc
       _ = ‖(A i i * v i - μ * v i) * (v i)⁻¹‖ := by congr; field_simp [h_nz]; ring
       _ = ‖(A i i * v i - ∑ j, A i j * v j) * (v i)⁻¹‖ := by
@@ -63,7 +63,7 @@ theorem det_ne_zero_of_sum_row_lt_diag (h : ∀ k, ∑ j in Finset.univ.erase k,
   contrapose! h
   suffices ∃ k, 0 ∈ Metric.closedBall (A k k) (∑ j in Finset.univ.erase k, ‖A k j‖) by
     exact this.imp (fun a h ↦ by rwa [mem_closedBall_iff_norm', sub_zero] at h)
-  refine eigenvalue_mem_ball ?_
+  refine eigenvalue_mem_ball _
   rw [Module.End.HasEigenvalue,  Module.End.eigenspace_zero, ne_comm]
   exact ne_of_lt (LinearMap.bot_lt_ker_of_det_eq_zero (by rwa [LinearMap.det_toLin']))
 

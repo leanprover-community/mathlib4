@@ -39,7 +39,7 @@ section gammaSet_def
 def gammaSet := {v : Fin 2 → ℤ | (↑) ∘ v = a ∧ IsCoprime (v 0) (v 1)}
 
 lemma pairwise_disjoint_gammaSet : Pairwise (Disjoint on gammaSet N) := by
-  refine fun u v huv ↦ ?_
+  refine fun u v huv ↦ _
   contrapose! huv
   obtain ⟨f, hf⟩ := Set.not_disjoint_iff.mp huv
   exact hf.1.1.symm.trans hf.2.1
@@ -61,7 +61,7 @@ section gamma_action
 /-- Right-multiplying by `γ ∈ SL(2, ℤ)` sends `gammaSet N a` to `gammaSet N (a ᵥ* γ)`. -/
 lemma vecMul_SL2_mem_gammaSet {v : Fin 2 → ℤ} (hv : v ∈ gammaSet N a) (γ : SL(2, ℤ)) :
     v ᵥ* γ ∈ gammaSet N (a ᵥ* γ) := by
-  refine ⟨?_, hv.2.vecMulSL γ⟩
+  refine ⟨_, hv.2.vecMulSL γ⟩
   have := RingHom.map_vecMul (m := Fin 2) (n := Fin 2) (Int.castRingHom (ZMod N)) γ v
   simp only [eq_intCast, Int.coe_castRingHom] at this
   simp_rw [Function.comp, this, hv.1]

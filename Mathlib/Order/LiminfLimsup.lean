@@ -846,7 +846,7 @@ theorem blimsup_congr' {f : Filter β} {p q : β → Prop} {u : β → α}
     (h : ∀ᶠ x in f, u x ≠ ⊥ → (p x ↔ q x)) : blimsup u f p = blimsup u f q := by
   simp only [blimsup_eq]
   congr with a
-  refine' eventually_congr (h.mono fun b hb => _)
+  refine eventually_congr (h.mono fun b hb => _)
   rcases eq_or_ne (u b) ⊥ with hu | hu; · simp [hu]
   rw [hb hu]
 #align filter.blimsup_congr' Filter.blimsup_congr'
@@ -905,11 +905,11 @@ theorem limsup_eq_sInf_sSup {ι R : Type*} (F : Filter ι) [CompleteLattice R] (
     limsup a F = sInf ((fun I => sSup (a '' I)) '' F.sets) := by
   apply le_antisymm
   · rw [limsup_eq]
-    refine' sInf_le_sInf fun x hx => _
+    refine sInf_le_sInf fun x hx => _
     rcases (mem_image _ F.sets x).mp hx with ⟨I, ⟨I_mem_F, hI⟩⟩
     filter_upwards [I_mem_F] with i hi
     exact hI ▸ le_sSup (mem_image_of_mem _ hi)
-  · refine le_sInf fun b hb => sInf_le_of_le (mem_image_of_mem _ hb) <| sSup_le ?_
+  · refine le_sInf fun b hb => sInf_le_of_le (mem_image_of_mem _ hb) <| sSup_le _
     rintro _ ⟨_, h, rfl⟩
     exact h
 set_option linter.uppercaseLean3 false in
@@ -924,7 +924,7 @@ set_option linter.uppercaseLean3 false in
 theorem liminf_le_of_frequently_le' {α β} [CompleteLattice β] {f : Filter α} {u : α → β} {x : β}
     (h : ∃ᶠ a in f, u a ≤ x) : liminf u f ≤ x := by
   rw [liminf_eq]
-  refine' sSup_le fun b hb => _
+  refine sSup_le fun b hb => _
   have hbx : ∃ᶠ _ in f, b ≤ x := by
     revert h
     rw [← not_imp_not, not_frequently, not_frequently]
@@ -947,7 +947,7 @@ theorem CompleteLatticeHom.apply_limsup_iterate (f : CompleteLatticeHom α α) (
     ← Nat.add_succ]
   conv_rhs => rw [iInf_split _ (0 < ·)]
   simp only [not_lt, Nat.le_zero, iInf_iInf_eq_left, add_zero, iInf_nat_gt_zero_eq, left_eq_inf]
-  refine' (iInf_le (fun i => ⨆ j, f^[j + (i + 1)] a) 0).trans _
+  refine (iInf_le (fun i => ⨆ j, f^[j + (i + 1)] a) 0).trans _
   simp only [zero_add, Function.comp_apply, iSup_le_iff]
   exact fun i => le_iSup (fun i => f^[i] a) (i + 1)
 #align filter.complete_lattice_hom.apply_limsup_iterate Filter.CompleteLatticeHom.apply_limsup_iterate
@@ -1068,7 +1068,7 @@ theorem OrderIso.apply_bliminf [CompleteLattice γ] (e : α ≃o γ) :
 theorem SupHom.apply_blimsup_le [CompleteLattice γ] (g : sSupHom α γ) :
     g (blimsup u f p) ≤ blimsup (g ∘ u) f p := by
   simp only [blimsup_eq_iInf_biSup, Function.comp]
-  refine' ((OrderHomClass.mono g).map_iInf₂_le _).trans _
+  refine ((OrderHomClass.mono g).map_iInf₂_le _).trans _
   simp only [_root_.map_iSup, le_refl]
 #align filter.Sup_hom.apply_blimsup_le Filter.SupHom.apply_blimsup_le
 
@@ -1084,7 +1084,7 @@ section CompleteDistribLattice
 variable [CompleteDistribLattice α] {f : Filter β} {p q : β → Prop} {u : β → α}
 
 lemma limsup_sup_filter {g} : limsup u (f ⊔ g) = limsup u f ⊔ limsup u g := by
-  refine le_antisymm ?_
+  refine le_antisymm _
     (sup_le (limsup_le_limsup_of_le le_sup_left) (limsup_le_limsup_of_le le_sup_right))
   simp_rw [limsup_eq, sInf_sup_eq, sup_sInf_eq, mem_setOf_eq, le_iInf₂_iff]
   intro a ha b hb
@@ -1122,7 +1122,7 @@ lemma bliminf_not_inf : bliminf u f (¬p ·) ⊓ bliminf u f p = liminf u f :=
 lemma limsup_piecewise {s : Set β} [DecidablePred (· ∈ s)] {v} :
     limsup (s.piecewise u v) f = blimsup u f (· ∈ s) ⊔ blimsup v f (· ∉ s) := by
   rw [← blimsup_sup_not (p := (· ∈ s))]
-  refine congr_arg₂ _ (blimsup_congr ?_) (blimsup_congr ?_) <;>
+  refine congr_arg₂ _ (blimsup_congr _) (blimsup_congr _) <;>
     filter_upwards with _ h using by simp [h]
 
 lemma liminf_piecewise {s : Set β} [DecidablePred (· ∈ s)] {v} :
@@ -1201,7 +1201,7 @@ theorem cofinite.blimsup_set_eq :
     blimsup s cofinite p = { x | { n | p n ∧ x ∈ s n }.Infinite } := by
   simp only [blimsup_eq, le_eq_subset, eventually_cofinite, not_forall, sInf_eq_sInter, exists_prop]
   ext x
-  refine' ⟨fun h => _, fun hx t h => _⟩ <;> contrapose! h
+  refine ⟨fun h => _, fun hx t h => _⟩ <;> contrapose! h
   · simp only [mem_sInter, mem_setOf_eq, not_forall, exists_prop]
     exact ⟨{x}ᶜ, by simpa using h, by simp⟩
   · exact hx.mono fun i hi => ⟨hi.1, fun hit => h (hit hi.2)⟩
@@ -1232,7 +1232,7 @@ theorem exists_forall_mem_of_hasBasis_mem_blimsup {l : Filter β} {b : ι → Se
   rw [blimsup_eq_iInf_biSup] at hx
   simp only [iSup_eq_iUnion, iInf_eq_iInter, mem_iInter, mem_iUnion, exists_prop] at hx
   choose g hg hg' using hx
-  refine' ⟨fun i : { i | q i } => g (b i) (hl.mem_of_mem i.2), fun i => ⟨_, _⟩⟩
+  refine ⟨fun i : { i | q i } => g (b i) (hl.mem_of_mem i.2), fun i => ⟨_, _⟩⟩
   · exact hg' (b i) (hl.mem_of_mem i.2)
   · exact hg (b i) (hl.mem_of_mem i.2)
 #align filter.exists_forall_mem_of_has_basis_mem_blimsup Filter.exists_forall_mem_of_hasBasis_mem_blimsup
@@ -1368,14 +1368,14 @@ theorem HasBasis.liminf_eq_ciSup_ciInf {v : Filter ι}
   have A : ⋃ (j : Subtype p), ⋂ (i : s j), Iic (f i) =
          ⋃ (j : Subtype p), ⋂ (i : s (liminf_reparam f s p j)), Iic (f i) := by
     apply Subset.antisymm
-    · apply iUnion_subset (fun j ↦ ?_)
+    · apply iUnion_subset (fun j ↦ _)
       by_cases hj : j ∈ m
       · have : j = liminf_reparam f s p j := by simp only [liminf_reparam, hj, ite_true]
         conv_lhs => rw [this]
         apply subset_iUnion _ j
       · simp only [m, mem_setOf_eq, ← nonempty_iInter_Iic_iff, not_nonempty_iff_eq_empty] at hj
         simp only [hj, empty_subset]
-    · apply iUnion_subset (fun j ↦ ?_)
+    · apply iUnion_subset (fun j ↦ _)
       exact subset_iUnion (fun (k : Subtype p) ↦ (⋂ (i : s k), Iic (f i))) (liminf_reparam f s p j)
   have B : ∀ (j : Subtype p), ⋂ (i : s (liminf_reparam f s p j)), Iic (f i) =
                                 Iic (⨅ (i : s (liminf_reparam f s p j)), f i) := by
@@ -1461,7 +1461,7 @@ open Filter
 theorem Monotone.isBoundedUnder_le_comp_iff [Nonempty β] [LinearOrder β] [Preorder γ] [NoMaxOrder γ]
     {g : β → γ} {f : α → β} {l : Filter α} (hg : Monotone g) (hg' : Tendsto g atTop atTop) :
     IsBoundedUnder (· ≤ ·) l (g ∘ f) ↔ IsBoundedUnder (· ≤ ·) l f := by
-  refine ⟨?_, fun h => h.isBoundedUnder (α := β) hg⟩
+  refine ⟨_, fun h => h.isBoundedUnder (α := β) hg⟩
   rintro ⟨c, hc⟩; rw [eventually_map] at hc
   obtain ⟨b, hb⟩ : ∃ b, ∀ a ≥ b, c < g a := eventually_atTop.1 (hg'.eventually_gt_atTop c)
   exact ⟨b, hc.mono fun x hx => not_lt.1 fun h => (hb _ h.le).not_le hx⟩
@@ -1491,7 +1491,7 @@ theorem GaloisConnection.l_limsup_le [ConditionallyCompleteLattice β]
     (hlv : f.IsBoundedUnder (· ≤ ·) fun x => l (v x) := by isBoundedDefault)
     (hv_co : f.IsCoboundedUnder (· ≤ ·) v := by isBoundedDefault) :
     l (limsup v f) ≤ limsup (fun x => l (v x)) f := by
-  refine' le_limsSup_of_le hlv fun c hc => _
+  refine le_limsSup_of_le hlv fun c hc => _
   rw [Filter.eventually_map] at hc
   simp_rw [gc _ _] at hc ⊢
   exact limsSup_le_of_le hv_co hc
@@ -1504,13 +1504,13 @@ theorem OrderIso.limsup_apply {γ} [ConditionallyCompleteLattice β] [Conditiona
     (hgu : f.IsBoundedUnder (· ≤ ·) fun x => g (u x) := by isBoundedDefault)
     (hgu_co : f.IsCoboundedUnder (· ≤ ·) fun x => g (u x) := by isBoundedDefault) :
     g (limsup u f) = limsup (fun x => g (u x)) f := by
-  refine' le_antisymm ((OrderIso.to_galoisConnection g).l_limsup_le hgu hu_co) _
+  refine le_antisymm ((OrderIso.to_galoisConnection g).l_limsup_le hgu hu_co) _
   rw [← g.symm.symm_apply_apply <| limsup (fun x => g (u x)) f, g.symm_symm]
-  refine g.monotone ?_
+  refine g.monotone _
   have hf : u = fun i => g.symm (g (u i)) := funext fun i => (g.symm_apply_apply (u i)).symm
   -- Porting note: nth_rw 1 to nth_rw 2
   nth_rw 2 [hf]
-  refine' (OrderIso.to_galoisConnection g.symm).l_limsup_le _ hgu_co
+  refine (OrderIso.to_galoisConnection g.symm).l_limsup_le _ hgu_co
   simp_rw [g.symm_apply_apply]
   exact hu
 #align order_iso.limsup_apply OrderIso.limsup_apply

@@ -91,7 +91,7 @@ theorem coeff_bdd_of_norm_le {B : ℝ} {x : K} (h : ∀ φ : K →+* A, ‖φ x�
   have hx := IsSeparable.isIntegral ℚ x
   rw [← norm_algebraMap' A, ← coeff_map (algebraMap ℚ A)]
   refine coeff_bdd_of_roots_le _ (minpoly.monic hx)
-      (IsAlgClosed.splits_codomain _) (minpoly.natDegree_le x) (fun z hz => ?_) i
+      (IsAlgClosed.splits_codomain _) (minpoly.natDegree_le x) (fun z hz => _) i
   classical
   rw [← Multiset.mem_toFinset] at hz
   obtain ⟨φ, rfl⟩ := (range_eval_eq_rootSet_minpoly K A x).symm.subset hz
@@ -105,13 +105,13 @@ smaller in norm than `B` is finite. -/
 theorem finite_of_norm_le (B : ℝ) : {x : K | IsIntegral ℤ x ∧ ∀ φ : K →+* A, ‖φ x‖ ≤ B}.Finite := by
   let C := Nat.ceil (max B 1 ^ finrank ℚ K * (finrank ℚ K).choose (finrank ℚ K / 2))
   have := bUnion_roots_finite (algebraMap ℤ K) (finrank ℚ K) (finite_Icc (-C : ℤ) C)
-  refine this.subset fun x hx => ?_; simp_rw [mem_iUnion]
+  refine this.subset fun x hx => _; simp_rw [mem_iUnion]
   have h_map_ℚ_minpoly := minpoly.isIntegrallyClosed_eq_field_fractions' ℚ hx.1
-  refine ⟨_, ⟨?_, fun i => ?_⟩, mem_rootSet.2 ⟨minpoly.ne_zero hx.1, minpoly.aeval ℤ x⟩⟩
+  refine ⟨_, ⟨_, fun i => _⟩, mem_rootSet.2 ⟨minpoly.ne_zero hx.1, minpoly.aeval ℤ x⟩⟩
   · rw [← (minpoly.monic hx.1).natDegree_map (algebraMap ℤ ℚ), ← h_map_ℚ_minpoly]
     exact minpoly.natDegree_le x
   rw [mem_Icc, ← abs_le, ← @Int.cast_le ℝ]
-  refine (Eq.trans_le ?_ <| coeff_bdd_of_norm_le hx.2 i).trans (Nat.le_ceil _)
+  refine (Eq.trans_le _ <| coeff_bdd_of_norm_le hx.2 i).trans (Nat.le_ceil _)
   rw [h_map_ℚ_minpoly, coeff_map, eq_intCast, Int.norm_cast_rat, Int.norm_eq_abs, Int.cast_abs]
 #align number_field.embeddings.finite_of_norm_le NumberField.Embeddings.finite_of_norm_le
 
@@ -123,9 +123,9 @@ theorem pow_eq_one_of_norm_eq_one {x : K} (hxi : IsIntegral ℤ x) (hx : ∀ φ 
       (by exact fun a _ => ⟨hxi.pow a, fun φ => by simp [hx φ]⟩) (finite_of_norm_le K A (1 : ℝ))
   wlog hlt : b < a
   · exact this K A hxi hx b a habne.symm h.symm (habne.lt_or_lt.resolve_right hlt)
-  refine ⟨a - b, tsub_pos_of_lt hlt, ?_⟩
+  refine ⟨a - b, tsub_pos_of_lt hlt, _⟩
   rw [← Nat.sub_add_cancel hlt.le, pow_add, mul_left_eq_self₀] at h
-  refine h.resolve_right fun hp => ?_
+  refine h.resolve_right fun hp => _
   specialize hx (IsAlgClosed.lift (R := ℚ)).toRingHom
   rw [pow_eq_zero hp, map_zero, norm_zero] at hx; norm_num at hx
 #align number_field.embeddings.pow_eq_one_of_norm_eq_one NumberField.Embeddings.pow_eq_one_of_norm_eq_one
@@ -301,7 +301,7 @@ theorem mk_embedding (w : InfinitePlace K) : mk (embedding w) = w := Subtype.ext
 
 @[simp]
 theorem mk_conjugate_eq (φ : K →+* ℂ) : mk (ComplexEmbedding.conjugate φ) = mk φ := by
-  refine DFunLike.ext _ _ (fun x => ?_)
+  refine DFunLike.ext _ _ (fun x => _)
   rw [apply, apply, ComplexEmbedding.conjugate_coe_eq, Complex.abs_conj]
 #align number_field.infinite_place.mk_conjugate_eq NumberField.InfinitePlace.mk_conjugate_eq
 
@@ -377,14 +377,14 @@ theorem embedding_mk_eq_of_isReal {φ : K →+* ℂ} (h : ComplexEmbedding.IsRea
 
 theorem isReal_iff {w : InfinitePlace K} :
     IsReal w ↔ ComplexEmbedding.IsReal (embedding w) := by
-  refine ⟨?_, fun h => ⟨embedding w, h, mk_embedding w⟩⟩
+  refine ⟨_, fun h => ⟨embedding w, h, mk_embedding w⟩⟩
   rintro ⟨φ, ⟨hφ, rfl⟩⟩
   rwa [embedding_mk_eq_of_isReal hφ]
 #align number_field.infinite_place.is_real_iff NumberField.InfinitePlace.isReal_iff
 
 theorem isComplex_iff {w : InfinitePlace K} :
     IsComplex w ↔ ¬ComplexEmbedding.IsReal (embedding w) := by
-  refine ⟨?_, fun h => ⟨embedding w, h, mk_embedding w⟩⟩
+  refine ⟨_, fun h => ⟨embedding w, h, mk_embedding w⟩⟩
   rintro ⟨φ, ⟨hφ, rfl⟩⟩
   contrapose! hφ
   cases mk_eq_iff.mp (mk_embedding (mk φ)) with
@@ -466,7 +466,7 @@ theorem card_filter_mk_eq [NumberField K] (w : InfinitePlace K) :
   split_ifs with hw
   · rw [ComplexEmbedding.isReal_iff.mp (isReal_iff.mp hw), Finset.union_idempotent,
       Finset.card_singleton]
-  · refine Finset.card_pair ?_
+  · refine Finset.card_pair _
     rwa [Ne, eq_comm, ← ComplexEmbedding.isReal_iff, ← isReal_iff]
 
 open scoped BigOperators
@@ -485,7 +485,7 @@ theorem sum_mult_eq [NumberField K] :
 /-- The map from real embeddings to real infinite places as an equiv -/
 noncomputable def mkReal :
     { φ : K →+* ℂ // ComplexEmbedding.IsReal φ } ≃ { w : InfinitePlace K // IsReal w } := by
-  refine (Equiv.ofBijective (fun φ => ⟨mk φ, ?_⟩) ⟨fun φ ψ h => ?_, fun w => ?_⟩)
+  refine (Equiv.ofBijective (fun φ => ⟨mk φ, _⟩) ⟨fun φ ψ h => _, fun w => _⟩)
   · exact ⟨φ, φ.prop, rfl⟩
   · rwa [Subtype.mk.injEq, mk_eq_iff, ComplexEmbedding.isReal_iff.mp φ.prop, or_self,
       ← Subtype.ext_iff] at h
@@ -533,9 +533,9 @@ theorem one_le_of_lt_one {w : InfinitePlace K} {a : (𝓞 K)} (ha : a ≠ 0)
   suffices (1:ℝ) ≤ |Algebra.norm ℚ (a : K)| by
     contrapose! this
     rw [← InfinitePlace.prod_eq_abs_norm, ← Finset.prod_const_one]
-    refine Finset.prod_lt_prod_of_nonempty (fun _ _ ↦ ?_) (fun z _ ↦ ?_) Finset.univ_nonempty
+    refine Finset.prod_lt_prod_of_nonempty (fun _ _ ↦ _) (fun z _ ↦ _) Finset.univ_nonempty
     · exact pow_pos (pos_iff.mpr ((Subalgebra.coe_eq_zero _).not.mpr ha)) _
-    · refine pow_lt_one (apply_nonneg _ _) ?_ (by rw [mult]; split_ifs <;> norm_num)
+    · refine pow_lt_one (apply_nonneg _ _) _ (by rw [mult]; split_ifs <;> norm_num)
       by_cases hz : z = w
       · rwa [hz]
       · exact h hz
@@ -546,7 +546,7 @@ open scoped IntermediateField in
 theorem _root_.NumberField.is_primitive_element_of_infinitePlace_lt {x : 𝓞 K}
     {w : InfinitePlace K} (h₁ : x ≠ 0) (h₂ : ∀ ⦃w'⦄, w' ≠ w → w' x < 1)
     (h₃ : IsReal w ∨ |(w.embedding x).re| < 1) : ℚ⟮(x : K)⟯ = ⊤ := by
-  rw [Field.primitive_element_iff_algHom_eq_of_eval ℚ ℂ ?_ _ w.embedding.toRatAlgHom]
+  rw [Field.primitive_element_iff_algHom_eq_of_eval ℚ ℂ _ _ w.embedding.toRatAlgHom]
   · intro ψ hψ
     have h : 1 ≤ w x := one_le_of_lt_one h₁ h₂
     have main : w = InfinitePlace.mk ψ.toRingHom := by
@@ -559,7 +559,7 @@ theorem _root_.NumberField.is_primitive_element_of_infinitePlace_lt {x : 𝓞 K}
       rw [conjugate_embedding_eq_of_isReal hw, or_self] at main
       exact congr_arg RingHom.toRatAlgHom main
     | inr hw =>
-      refine congr_arg RingHom.toRatAlgHom (main.resolve_right fun h' ↦ hw.not_le ?_)
+      refine congr_arg RingHom.toRatAlgHom (main.resolve_right fun h' ↦ hw.not_le _)
       have : (embedding w x).im = 0 := by
         erw [← Complex.conj_eq_iff_im, RingHom.congr_fun h' x]
         exact hψ.symm
@@ -604,10 +604,10 @@ theorem card_complex_embeddings :
   rintro ⟨w, hw⟩
   convert card_filter_mk_eq w
   · rw [← Fintype.card_subtype, ← Fintype.card_subtype]
-    refine Fintype.card_congr (Equiv.ofBijective ?_ ⟨fun _ _ h => ?_, fun ⟨φ, hφ⟩ => ?_⟩)
+    refine Fintype.card_congr (Equiv.ofBijective _ ⟨fun _ _ h => _, fun ⟨φ, hφ⟩ => _⟩)
     · exact fun ⟨φ, hφ⟩ => ⟨φ.val, by rwa [Subtype.ext_iff] at hφ⟩
     · rwa [Subtype.mk_eq_mk, ← Subtype.ext_iff, ← Subtype.ext_iff] at h
-    · refine ⟨⟨⟨φ, not_isReal_of_mk_isComplex (hφ.symm ▸ hw)⟩, ?_⟩, rfl⟩
+    · refine ⟨⟨⟨φ, not_isReal_of_mk_isComplex (hφ.symm ▸ hw)⟩, _⟩, rfl⟩
       rwa [Subtype.ext_iff, mkComplex_coe]
   · simp_rw [mult, not_isReal_iff_isComplex.mpr hw, ite_false]
 #align number_field.infinite_place.card_complex_embeddings NumberField.InfinitePlace.card_complex_embeddings
@@ -725,7 +725,7 @@ lemma exists_smul_eq_of_comap_eq [Algebra k K] [IsGalois k K] {w w' : InfinitePl
 
 lemma mem_orbit_iff [IsGalois k K] {w w' : InfinitePlace K} :
     w' ∈ MulAction.orbit (K ≃ₐ[k] K) w ↔ w.comap (algebraMap k K) = w'.comap (algebraMap k K) := by
-  refine ⟨?_, exists_smul_eq_of_comap_eq⟩
+  refine ⟨_, exists_smul_eq_of_comap_eq⟩
   rintro ⟨σ, rfl : σ • w = w'⟩
   rw [← mk_embedding w, comap_mk, smul_mk, comap_mk]
   congr 1; ext1; simp
@@ -736,7 +736,7 @@ noncomputable
 def orbitRelEquiv [IsGalois k K] :
     Quotient (MulAction.orbitRel (K ≃ₐ[k] K) (InfinitePlace K)) ≃ InfinitePlace k := by
   refine Equiv.ofBijective (Quotient.lift (comap · (algebraMap k K))
-    fun _ _ e ↦ (mem_orbit_iff.mp e).symm) ⟨?_, ?_⟩
+    fun _ _ e ↦ (mem_orbit_iff.mp e).symm) ⟨_, _⟩
   · rintro ⟨w⟩ ⟨w'⟩ e
     exact Quotient.sound (mem_orbit_iff.mpr e.symm)
   · intro w
@@ -814,7 +814,7 @@ lemma _root_.NumberField.ComplexEmbedding.IsConj.isUnramified_mk_iff
 lemma isUnramified_mk_iff_forall_isConj [IsGalois k K] {φ : K →+* ℂ} :
     IsUnramified k (mk φ) ↔ ∀ σ : K ≃ₐ[k] K, ComplexEmbedding.IsConj φ σ → σ = 1 := by
   refine ⟨fun H σ hσ ↦ hσ.isUnramified_mk_iff.mp H,
-    fun H ↦ ?_⟩
+    fun H ↦ _⟩
   by_contra hφ
   rw [not_isUnramified_iff] at hφ
   rw [comap_mk, isReal_mk_iff, ← not_isReal_iff_isComplex, isReal_mk_iff,
@@ -833,7 +833,7 @@ lemma mem_stabilizer_mk_iff (φ : K →+* ℂ) (σ : K ≃ₐ[k] K) :
     σ ∈ Stab (mk φ) ↔ σ = 1 ∨ ComplexEmbedding.IsConj φ σ := by
   simp only [MulAction.mem_stabilizer_iff, smul_mk, mk_eq_iff]
   rw [← ComplexEmbedding.isConj_symm, ComplexEmbedding.conjugate, star_eq_iff_star_eq]
-  refine or_congr ⟨fun H ↦ ?_, fun H ↦ H ▸ rfl⟩ Iff.rfl
+  refine or_congr ⟨fun H ↦ _, fun H ↦ H ▸ rfl⟩ Iff.rfl
   exact congr_arg AlgEquiv.symm
     (AlgEquiv.ext (g := AlgEquiv.refl) fun x ↦ φ.injective (RingHom.congr_fun H x))
 
@@ -928,7 +928,7 @@ variable {K}
 
 lemma isUnramifiedIn_comap [IsGalois k K] {w : InfinitePlace K} :
     (w.comap (algebraMap k K)).IsUnramifiedIn K ↔ w.IsUnramified k := by
-  refine ⟨fun H ↦ H _ rfl, fun H v hv ↦ ?_⟩
+  refine ⟨fun H ↦ H _ rfl, fun H v hv ↦ _⟩
   obtain ⟨σ, rfl⟩ := exists_smul_eq_of_comap_eq hv
   rwa [isUnramified_smul_iff] at H
 
@@ -956,7 +956,7 @@ lemma card_isUnramified [NumberField k] [IsGalois k K] :
   rw [← IsGalois.card_aut_eq_finrank,
     Finset.card_eq_sum_card_fiberwise (f := (comap · (algebraMap k K)))
     (t := (univ.filter <| IsUnramifiedIn K (k := k))), ← smul_eq_mul, ← sum_const]
-  · refine sum_congr rfl (fun w hw ↦ ?_)
+  · refine sum_congr rfl (fun w hw ↦ _)
     obtain ⟨w, rfl⟩ := comap_surjective (K := K) w
     simp only [mem_univ, forall_true_left, mem_filter, true_and] at hw
     trans Finset.card (MulAction.orbit (K ≃ₐ[k] K) w).toFinset
@@ -978,7 +978,7 @@ lemma card_isUnramified_compl [NumberField k] [IsGalois k K] :
   rw [← IsGalois.card_aut_eq_finrank,
     Finset.card_eq_sum_card_fiberwise (f := (comap · (algebraMap k K)))
     (t := (univ.filter <| IsUnramifiedIn K (k := k))ᶜ), ← smul_eq_mul, ← sum_const]
-  · refine sum_congr rfl (fun w hw ↦ ?_)
+  · refine sum_congr rfl (fun w hw ↦ _)
     obtain ⟨w, rfl⟩ := comap_surjective (K := K) w
     simp only [mem_univ, forall_true_left, compl_filter, not_not, mem_filter, true_and] at hw
     trans Finset.card (MulAction.orbit (K ≃ₐ[k] K) w).toFinset
@@ -1067,7 +1067,7 @@ variable {K : Type*} [Field K] [NumberField K] {ζ : K} {k : ℕ}
 
 theorem nrRealPlaces_eq_zero_of_two_lt (hk : 2 < k) (hζ : IsPrimitiveRoot ζ k) :
     NumberField.InfinitePlace.NrRealPlaces K = 0 := by
-  refine (@Fintype.card_eq_zero_iff _ (_)).2 ⟨fun ⟨w, hwreal⟩ ↦ ?_⟩
+  refine (@Fintype.card_eq_zero_iff _ (_)).2 ⟨fun ⟨w, hwreal⟩ ↦ _⟩
   rw [NumberField.InfinitePlace.isReal_iff] at hwreal
   let f := w.embedding
   have hζ' : IsPrimitiveRoot (f ζ) k := hζ.map_of_injective f.injective

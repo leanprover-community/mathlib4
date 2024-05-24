@@ -199,7 +199,7 @@ def fourierSubalgebra : StarSubalgebra ℂ C(AddCircle T, ℂ) where
   star_mem' := by
     show Algebra.adjoin ℂ (range (fourier (T := T))) ≤
       star (Algebra.adjoin ℂ (range (fourier (T := T))))
-    refine adjoin_le ?_
+    refine adjoin_le _
     rintro - ⟨n, rfl⟩
     exact subset_adjoin ⟨-n, ext fun _ => fourier_neg⟩
 
@@ -210,12 +210,12 @@ linear span of these functions. -/
 theorem fourierSubalgebra_coe :
     Subalgebra.toSubmodule (@fourierSubalgebra T).toSubalgebra = span ℂ (range (@fourier T)) := by
   apply adjoin_eq_span_of_subset
-  refine' Subset.trans _ Submodule.subset_span
+  refine Subset.trans _ Submodule.subset_span
   intro x hx
-  refine Submonoid.closure_induction hx (fun _ => id) ⟨0, ?_⟩ ?_
+  refine Submonoid.closure_induction hx (fun _ => id) ⟨0, _⟩ _
   · ext1 z; exact fourier_zero
   · rintro _ _ ⟨m, rfl⟩ ⟨n, rfl⟩
-    refine ⟨m + n, ?_⟩
+    refine ⟨m + n, _⟩
     ext1 z
     exact fourier_add
 #align fourier_subalgebra_coe fourierSubalgebra_coe
@@ -230,7 +230,7 @@ variable [hT : Fact (0 < T)]
 separates points. -/
 theorem fourierSubalgebra_separatesPoints : (@fourierSubalgebra T).SeparatesPoints := by
   intro x y hxy
-  refine' ⟨_, ⟨fourier 1, subset_adjoin ⟨1, rfl⟩, rfl⟩, _⟩
+  refine ⟨_, ⟨fourier 1, subset_adjoin ⟨1, rfl⟩, rfl⟩, _⟩
   dsimp only; rw [fourier_one, fourier_one]
   contrapose! hxy
   rw [Subtype.coe_inj] at hxy
@@ -348,7 +348,7 @@ theorem fourierCoeffOn_eq_integral {a b : ℝ} (f : ℝ → E) (n : ℤ) (hab : 
   rw [fourierCoeffOn, fourierCoeff_eq_intervalIntegral _ _ a, add_sub, add_sub_cancel_left]
   congr 1
   simp_rw [intervalIntegral.integral_of_le hab.le]
-  refine' setIntegral_congr measurableSet_Ioc fun x hx => _
+  refine setIntegral_congr measurableSet_Ioc fun x hx => _
   rw [liftIoc_coe_apply]
   rwa [add_sub, add_sub_cancel_left]
 #align fourier_coeff_on_eq_integral fourierCoeffOn_eq_integral
@@ -369,7 +369,7 @@ theorem fourierCoeff_liftIoc_eq {a : ℝ} (f : ℝ → ℂ) (n : ℤ) :
     fourierCoeffOn (lt_add_of_pos_right a hT.out) f n := by
   rw [fourierCoeffOn_eq_integral, fourierCoeff_eq_intervalIntegral, add_sub_cancel_left a T]
   · congr 1
-    refine' intervalIntegral.integral_congr_ae (ae_of_all _ fun x hx => _)
+    refine intervalIntegral.integral_congr_ae (ae_of_all _ fun x hx => _)
     rw [liftIoc_coe_apply]
     rwa [uIoc_of_le (lt_add_of_pos_right a hT.out).le] at hx
 #align fourier_coeff_lift_Ioc_eq fourierCoeff_liftIoc_eq
@@ -381,7 +381,7 @@ theorem fourierCoeff_liftIco_eq {a : ℝ} (f : ℝ → ℂ) (n : ℤ) :
   congr 1
   simp_rw [intervalIntegral.integral_of_le (lt_add_of_pos_right a hT.out).le]
   iterate 2 rw [integral_Ioc_eq_integral_Ioo]
-  refine' setIntegral_congr measurableSet_Ioo fun x hx => _
+  refine setIntegral_congr measurableSet_Ioo fun x hx => _
   rw [liftIco_coe_apply (Ioo_subset_Ico_self hx)]
 #align fourier_coeff_lift_Ico_eq fourierCoeff_liftIco_eq
 
@@ -429,7 +429,7 @@ theorem tsum_sq_fourierCoeff (f : Lp ℂ 2 <| @haarAddCircle T hT) :
     ∑' i : ℤ, ‖fourierCoeff f i‖ ^ 2 = ∫ t : AddCircle T, ‖f t‖ ^ 2 ∂haarAddCircle := by
   simp_rw [← fourierBasis_repr]
   have H₁ : ‖fourierBasis.repr f‖ ^ 2 = ∑' i, ‖fourierBasis.repr f i‖ ^ 2 := by
-    apply_mod_cast lp.norm_rpow_eq_tsum ?_ (fourierBasis.repr f)
+    apply_mod_cast lp.norm_rpow_eq_tsum _ (fourierBasis.repr f)
     norm_num
   have H₂ : ‖fourierBasis.repr f‖ ^ 2 = ‖f‖ ^ 2 := by simp
   have H₃ := congr_arg RCLike.re (@L2.inner_def (AddCircle T) ℂ ℂ _ _ _ _ _ f f)
@@ -460,7 +460,7 @@ theorem hasSum_fourier_series_of_summable (h : Summable (fourierCoeff f)) :
     HasSum (fun i => fourierCoeff f i • fourier i) f := by
   have sum_L2 := hasSum_fourier_series_L2 (toLp (E := ℂ) 2 haarAddCircle ℂ f)
   simp_rw [fourierCoeff_toLp] at sum_L2
-  refine ContinuousMap.hasSum_of_hasSum_Lp (.of_norm ?_) sum_L2
+  refine ContinuousMap.hasSum_of_hasSum_Lp (.of_norm _) sum_L2
   simp_rw [norm_smul, fourier_norm, mul_one]
   exact h.norm
 #align has_sum_fourier_series_of_summable hasSum_fourier_series_of_summable
@@ -488,9 +488,9 @@ theorem hasDerivAt_fourier (n : ℤ) (x : ℝ) :
     HasDerivAt (fun y : ℝ => fourier n (y : AddCircle T))
       (2 * π * I * n / T * fourier n (x : AddCircle T)) x := by
   simp_rw [fourier_coe_apply]
-  refine' (_ : HasDerivAt (fun y => exp (2 * π * I * n * y / T)) _ _).comp_ofReal
+  refine (_ : HasDerivAt (fun y => exp (2 * π * I * n * y / T)) _ _).comp_ofReal
   rw [(fun α β => by ring : ∀ α β : ℂ, α * exp β = exp β * α)]
-  refine' (hasDerivAt_exp _).comp ↑x _
+  refine (hasDerivAt_exp _).comp ↑x _
   convert hasDerivAt_mul_const (2 * ↑π * I * ↑n / T) using 1
   ext1 y; ring
 #align has_deriv_at_fourier hasDerivAt_fourier

@@ -504,22 +504,22 @@ def kernelIsoKer {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
   hom :=
     { toFun := fun g => ⟨kernel.ι f g, DFunLike.congr_fun (kernel.condition f) g⟩
       map_zero' := by
-        refine Subtype.ext ?_
+        refine Subtype.ext _
         simp [(AddSubgroup.coe_zero _).symm]
       map_add' := fun g g' => by
-        refine Subtype.ext ?_
+        refine Subtype.ext _
         change _ = _ + _
         dsimp
         simp }
   inv := kernel.lift f (AddSubgroup.subtype f.ker) <| by
     -- Porting note (#10936): used to be `tidy`, but `aesop` can't do it
-    refine DFunLike.ext _ _ ?_
+    refine DFunLike.ext _ _ _
     rintro ⟨x, (hx : f _ = 0)⟩
     exact hx
   hom_inv_id := by
     -- Porting note: it would be nice to do the next two steps by a single `ext`,
     -- but this will require thinking carefully about the relative priorities of `@[ext]` lemmas.
-    refine equalizer.hom_ext ?_
+    refine equalizer.hom_ext _
     ext x
     dsimp
     apply DFunLike.congr_fun (kernel.lift_ι f _ _)
@@ -527,7 +527,7 @@ def kernelIsoKer {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
     apply AddCommGroupCat.ext
     simp only [AddMonoidHom.coe_mk, coe_id, coe_comp]
     rintro ⟨x, mem⟩
-    refine Subtype.ext ?_
+    refine Subtype.ext _
     simp only [ZeroHom.coe_mk, Function.comp_apply, id_eq]
     apply DFunLike.congr_fun (kernel.lift_ι f _ _)
 set_option linter.uppercaseLean3 false in

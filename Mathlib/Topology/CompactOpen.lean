@@ -214,7 +214,7 @@ lemma isClopen_setOf_mapsTo (hK : IsCompact K) (hU : IsClopen U) :
 
 @[norm_cast]
 lemma specializes_coe {f g : C(X, Y)} : ⇑f ⤳ ⇑g ↔ f ⤳ g := by
-  refine ⟨fun h ↦ ?_, fun h ↦ h.map continuous_coe⟩
+  refine ⟨fun h ↦ _, fun h ↦ h.map continuous_coe⟩
   suffices ∀ K, IsCompact K → ∀ U, IsOpen U → MapsTo g K U → MapsTo f K U by
     simpa [specializes_iff_pure, nhds_compactOpen]
   exact fun K _ U hU hg x hx ↦ (h.map (continuous_apply x)).mem_open hU (hg hx)
@@ -246,7 +246,7 @@ instance [RegularSpace Y] : RegularSpace C(X, Y) :=
     rcases (hK.image f.continuous).exists_isOpen_closure_subset (hU.mem_nhdsSet.2 hf.image_subset)
       with ⟨V, hVo, hKV, hVU⟩
     filter_upwards [mem_lift' (eventually_mapsTo hK hVo (mapsTo'.2 hKV))] with g hg
-    refine ((isClosed_setOf_mapsTo isClosed_closure K).closure_subset ?_).mono_right hVU
+    refine ((isClosed_setOf_mapsTo isClosed_closure K).closure_subset _).mono_right hVU
     exact closure_mono (fun _ h ↦ h.mono_right subset_closure) hg
 
 instance [T3Space Y] : T3Space C(X, Y) := inferInstance
@@ -274,9 +274,9 @@ the universal set `Set.univ : Set K` is a compact set as well. -/
 theorem compactOpen_eq_iInf_induced :
     (ContinuousMap.compactOpen : TopologicalSpace C(X, Y)) =
       ⨅ (K : Set X) (_ : IsCompact K), .induced (.restrict K) ContinuousMap.compactOpen := by
-  refine le_antisymm (le_iInf₂ fun s _ ↦ compactOpen_le_induced s) ?_
-  refine le_generateFrom <| forall_image2_iff.2 fun K (hK : IsCompact K) U hU ↦ ?_
-  refine TopologicalSpace.le_def.1 (iInf₂_le K hK) _ ?_
+  refine le_antisymm (le_iInf₂ fun s _ ↦ compactOpen_le_induced s) _
+  refine le_generateFrom <| forall_image2_iff.2 fun K (hK : IsCompact K) U hU ↦ _
+  refine TopologicalSpace.le_def.1 (iInf₂_le K hK) _ _
   convert isOpen_induced (isOpen_setOf_mapsTo (isCompact_iff_isCompact_univ.1 hK) hU)
   simp only [mapsTo_univ_iff, Subtype.forall]
   rfl
@@ -329,7 +329,7 @@ theorem exists_tendsto_compactOpen_iff_forall [WeaklyLocallyCompactSpace X] [T2S
       exact tendsto_nhds_unique h₁ h₂
     -- So glue the `f s hs` together and prove that this glued function `f₀` is a limit on each
     -- compact set `s`
-    refine ⟨liftCover' _ _ h exists_compact_mem_nhds, ?_⟩
+    refine ⟨liftCover' _ _ h exists_compact_mem_nhds, _⟩
     rw [tendsto_compactOpen_iff_forall]
     intro s hs
     rw [liftCover_restrict']

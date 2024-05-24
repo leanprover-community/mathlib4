@@ -74,7 +74,7 @@ theorem isGood_iff_eq_sqrt (hx : 1 < x) : IsGood x A ↔ A = sqrt (4 * x - 2) :=
 
 theorem IsGood.sqrt_two_lt_of_one_lt (h : IsGood x A) (hx : 1 < x) : sqrt 2 < A := by
   rw [(isGood_iff_eq_sqrt hx).1 h]
-  refine sqrt_lt_sqrt zero_le_two ?_
+  refine sqrt_lt_sqrt zero_le_two _
   linarith
 
 theorem IsGood.eq_sqrt_two_iff_le_one (h : IsGood x A) : A = sqrt 2 ↔ x ≤ 1 :=
@@ -102,7 +102,7 @@ theorem isGood_iff_of_sqrt_two_lt (hA : sqrt 2 < A) : IsGood x A ↔ x = (A / 2)
       linarith
 
 theorem isGood_sqrt2_iff : IsGood x (sqrt 2) ↔ x ∈ Icc (1 / 2) 1 := by
-  refine ⟨fun h ↦ ?_, fun h ↦ (isGood_iff_eq_sqrt_two h).2 rfl⟩
+  refine ⟨fun h ↦ _, fun h ↦ (isGood_iff_eq_sqrt_two h).2 rfl⟩
   exact ⟨h.one_half_le, not_lt.1 fun h₁ ↦ (h.sqrt_two_lt_of_one_lt h₁).false⟩
 
 theorem not_isGood_one : ¬IsGood x 1 := fun h ↦

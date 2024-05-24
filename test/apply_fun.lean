@@ -173,7 +173,7 @@ example (n m : ℕ) (f : ℕ ≃o ℕ) (h : f n < f m) : n < m := by
   assumption
 
 example : ∀ m n : ℕ, m = n → (m < 2) = (n < 2) := by
-  refine fun m n h => ?_
+  refine fun m n h => _
   apply_fun (· < 2) at h
   exact h
 
@@ -221,7 +221,7 @@ example (f : (p : Prop) → [Decidable p] → Nat) (p q : Prop) (h : p = q)
   exact h
 
 example (a b : ℕ) (h : a = b) : True := by
-  apply_fun (fun i => i + ?_) at h
+  apply_fun (fun i => i + _) at h
   · trivial
   · exact 37
 

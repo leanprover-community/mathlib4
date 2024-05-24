@@ -49,7 +49,7 @@ object, then `F` takes that object to the terminal object.
 -/
 noncomputable
 def isTerminal_of_isSheafFor_empty_presieve : IsTerminal (F.obj (op I)) := by
-  refine @IsTerminal.ofUnique _ _ _ fun Y ↦ ?_
+  refine @IsTerminal.ofUnique _ _ _ fun Y ↦ _
   choose t h using hF (by tauto) (by tauto)
   exact ⟨⟨fun _ ↦ t⟩, fun a ↦ by ext; exact h.2 _ (by tauto)⟩
 
@@ -116,9 +116,9 @@ noncomputable
 def preservesProductOfIsSheafFor (hF' : (ofArrows X c.inj).IsSheafFor F) :
     PreservesLimit (Discrete.functor (fun x ↦ op (X x))) F := by
   have : HasCoproduct X := ⟨⟨c, hc⟩⟩
-  refine @PreservesProduct.ofIsoComparison _ _ _ _ F _ (fun x ↦ op (X x)) _ _ ?_
+  refine @PreservesProduct.ofIsoComparison _ _ _ _ F _ (fun x ↦ op (X x)) _ _ _
   rw [piComparison_fac (hc := hc)]
-  refine @IsIso.comp_isIso _ _ _ _ _ _ _ inferInstance ?_
+  refine @IsIso.comp_isIso _ _ _ _ _ _ _ inferInstance _
   rw [isIso_iff_bijective, Function.bijective_iff_existsUnique]
   rw [Equalizer.Presieve.Arrows.sheaf_condition, Limits.Types.type_equalizer_iff_unique] at hF'
   exact fun b ↦ hF' b (congr_fun (firstMap_eq_secondMap F hF hI c hd) b)
@@ -134,19 +134,19 @@ theorem isSheafFor_of_preservesProduct [PreservesLimit (Discrete.functor (fun x 
   rw [piComparison_fac (hc := hc), isIso_iff_bijective, Function.bijective_iff_existsUnique] at hi
   intro b _
   obtain ⟨t, ht₁, ht₂⟩ := hi b
-  refine ⟨F.map ((opCoproductIsoProduct' hc (productIsProduct _)).inv) t, ht₁, fun y hy ↦ ?_⟩
+  refine ⟨F.map ((opCoproductIsoProduct' hc (productIsProduct _)).inv) t, ht₁, fun y hy ↦ _⟩
   apply_fun F.map ((opCoproductIsoProduct' hc (productIsProduct _)).hom) using injective_of_mono _
   simp only [← FunctorToTypes.map_comp_apply, Iso.op, Category.assoc]
   rw [ht₂ (F.map ((opCoproductIsoProduct' hc (productIsProduct _)).hom) y) (by simp [← hy])]
   change (𝟙 (F.obj (∏ fun x ↦ op (X x)))) t = _
   rw [← Functor.map_id]
-  refine congrFun ?_ t
+  refine congrFun _ t
   congr
   simp [Iso.eq_inv_comp, ← Category.assoc, ← op_comp, eq_comm, ← Iso.eq_comp_inv]
 
 theorem isSheafFor_iff_preservesProduct : (ofArrows X c.inj).IsSheafFor F ↔
     Nonempty (PreservesLimit (Discrete.functor (fun x ↦ op (X x))) F) := by
-  refine ⟨fun hF' ↦ ⟨preservesProductOfIsSheafFor _ hF hI c hc hd hF'⟩, fun hF' ↦ ?_⟩
+  refine ⟨fun hF' ↦ ⟨preservesProductOfIsSheafFor _ hF hI c hc hd hF'⟩, fun hF' ↦ _⟩
   let _ := hF'.some
   exact isSheafFor_of_preservesProduct F c hc
 

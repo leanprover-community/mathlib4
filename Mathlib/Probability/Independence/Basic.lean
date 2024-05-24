@@ -641,7 +641,7 @@ theorem indepFun_iff_map_prod_eq_prod_map_map {mβ : MeasurableSpace β} {mβ' :
     ⟨by rw [Measure.map_apply_of_aemeasurable hf hs, Measure.map_apply_of_aemeasurable hg ht],
       (Measure.map_apply_of_aemeasurable (hf.prod_mk hg) (hs.prod ht)).symm⟩
   constructor
-  · refine fun h ↦ (Measure.prod_eq fun s t hs ht ↦ ?_).symm
+  · refine fun h ↦ (Measure.prod_eq fun s t hs ht ↦ _).symm
     rw [← (h₀ hs ht).1, ← (h₀ hs ht).2, h s t hs ht]
   · intro h s t hs ht
     rw [(h₀ hs ht).1, (h₀ hs ht).2, h, Measure.prod_prod]
@@ -654,7 +654,7 @@ nonrec theorem IndepFun.symm {_ : MeasurableSpace β} {_ : MeasurableSpace β'}
 theorem IndepFun.ae_eq {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     {f' : Ω → β} {g' : Ω → β'} (hfg : IndepFun f g μ)
     (hf : f =ᵐ[μ] f') (hg : g =ᵐ[μ] g') : IndepFun f' g' μ := by
-  refine kernel.IndepFun.ae_eq hfg ?_ ?_ <;>
+  refine kernel.IndepFun.ae_eq hfg _ _ <;>
     simp only [ae_dirac_eq, Filter.eventually_pure, kernel.const_apply]
   exacts [hf, hg]
 #align probability_theory.indep_fun.ae_eq ProbabilityTheory.IndepFun.ae_eq

@@ -367,7 +367,7 @@ theorem LineDifferentiableAt.congr_of_eventuallyEq
 
 theorem Filter.EventuallyEq.lineDerivWithin_eq (hs : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) :
     lineDerivWithin 𝕜 f₁ s x v = lineDerivWithin 𝕜 f s x v := by
-  apply derivWithin_eq ?_ (by simpa using hx)
+  apply derivWithin_eq _ (by simpa using hx)
   have A : Continuous (fun (t : 𝕜) ↦ x + t • v) := by continuity
   exact A.continuousWithinAt.preimage_mem_nhdsWithin'' hs (by simp)
 
@@ -401,7 +401,7 @@ theorem HasLineDerivAt.le_of_lipschitzOn
     {f : E → F} {f' : F} {x₀ : E} (hf : HasLineDerivAt 𝕜 f f' x₀ v)
     {s : Set E} (hs : s ∈ 𝓝 x₀) {C : ℝ≥0} (hlip : LipschitzOnWith C f s) :
     ‖f'‖ ≤ C * ‖v‖ := by
-  refine hf.le_of_lip' C.coe_nonneg ?_
+  refine hf.le_of_lip' C.coe_nonneg _
   filter_upwards [hs] with x hx using hlip.norm_sub_le hx (mem_of_mem_nhds hs)
 
 /-- Converse to the mean value inequality: if `f` is line differentiable at `x₀` and `C`-lipschitz
@@ -433,7 +433,7 @@ then its line derivative at `x₀` in the direction `v` has norm bounded by `C *
 Version using `lineDeriv`. -/
 theorem norm_lineDeriv_le_of_lipschitzOn {f : E → F} {x₀ : E} {s : Set E} (hs : s ∈ 𝓝 x₀)
     {C : ℝ≥0} (hlip : LipschitzOnWith C f s) : ‖lineDeriv 𝕜 f x₀ v‖ ≤ C * ‖v‖ := by
-  refine' norm_lineDeriv_le_of_lip' 𝕜 C.coe_nonneg _
+  refine norm_lineDeriv_le_of_lip' 𝕜 C.coe_nonneg _
   filter_upwards [hs] with x hx using hlip.norm_sub_le hx (mem_of_mem_nhds hs)
 
 /-- Converse to the mean value inequality: if `f` is `C`-lipschitz then

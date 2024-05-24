@@ -148,7 +148,7 @@ lemma triangle_removal (hG : (G.cliqueFinset 3).card < triangleRemovalBound ε *
     ∃ G' ≤ G, ∃ _ : DecidableRel G'.Adj,
       (G.edgeFinset.card - G'.edgeFinset.card : ℝ) < ε * (card α^2 : ℕ) ∧ G'.CliqueFree 3 := by
   by_contra! h
-  refine hG.not_le (farFromTriangleFree_iff.2 ?_).le_card_cliqueFinset
+  refine hG.not_le (farFromTriangleFree_iff.2 _).le_card_cliqueFinset
   intros G' _ hG hG'
   exact le_of_not_lt fun i ↦ h G' hG _ i hG'
 

@@ -48,7 +48,7 @@ noncomputable def withDensity (κ : kernel α β) [IsSFiniteKernel κ] (f : α �
   @dite _ (Measurable (Function.uncurry f)) (Classical.dec _) (fun hf =>
     (⟨fun a => (κ a).withDensity (f a),
       by
-        refine' Measure.measurable_of_measurable_coe _ fun s hs => _
+        refine Measure.measurable_of_measurable_coe _ fun s hs => _
         simp_rw [withDensity_apply _ hs]
         exact hf.set_lintegral_kernel_prod_right hs⟩ : kernel α β)) fun _ => 0
 #align probability_theory.kernel.with_density ProbabilityTheory.kernel.withDensity
@@ -159,7 +159,7 @@ lemma withDensity_sub_add_cancel [IsSFiniteKernel κ] {f g : α → β → ℝ�
     withDensity κ (fun a x ↦ f a x - g a x) + withDensity κ g = withDensity κ f := by
   rw [← withDensity_add_right _ hg]
   swap; · exact hf.sub hg
-  refine withDensity_congr_ae κ ((hf.sub hg).add hg) hf (fun a ↦ ?_)
+  refine withDensity_congr_ae κ ((hf.sub hg).add hg) hf (fun a ↦ _)
   filter_upwards [hfg a] with x hx
   rwa [Pi.add_apply, Pi.add_apply, tsub_add_cancel_iff_le]
 
@@ -218,7 +218,7 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : kernel α β) [IsFin
     intro a b n hn
     have : (f a b).toReal ≤ n := Nat.le_of_ceil_le hn
     rw [← ENNReal.le_ofReal_iff_toReal_le (hf_ne_top a b) _] at this
-    · refine' this.trans (le_of_eq _)
+    · refine this.trans (le_of_eq _)
       rw [ENNReal.ofReal_natCast]
     · norm_cast
       exact zero_le _
@@ -230,7 +230,7 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : kernel α β) [IsFin
       min_eq_left (h_le a b n hn)⟩
   have hf_eq_tsum : f = ∑' n, fs n := by
     have h_sum_a : ∀ a, Summable fun n => fs n a := by
-      refine fun a => Pi.summable.mpr fun b => ?_
+      refine fun a => Pi.summable.mpr fun b => _
       suffices ∀ n, n ∉ Finset.range ⌈(f a b).toReal⌉₊ → fs n a b = 0 from
         summable_of_ne_finset_zero this
       intro n hn_not_mem
@@ -246,15 +246,15 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : kernel α β) [IsFin
       rw [Finset.sum_range_succ, hn]
       simp [fs]
     simp_rw [h_finset_sum]
-    refine' (Filter.Tendsto.liminf_eq _).symm
-    refine' Filter.Tendsto.congr' _ tendsto_const_nhds
+    refine (Filter.Tendsto.liminf_eq _).symm
+    refine Filter.Tendsto.congr' _ tendsto_const_nhds
     rw [Filter.EventuallyEq, Filter.eventually_atTop]
     exact ⟨⌈(f a b).toReal⌉₊, fun n hn => (min_eq_left (h_le a b n hn)).symm⟩
   rw [hf_eq_tsum, withDensity_tsum _ fun n : ℕ => _]
   swap; · exact fun _ => (hf.min measurable_const).sub (hf.min measurable_const)
-  refine' isSFiniteKernel_sum fun n => _
+  refine isSFiniteKernel_sum fun n => _
   suffices IsFiniteKernel (withDensity κ (fs n)) by haveI := this; infer_instance
-  refine' isFiniteKernel_withDensity_of_bounded _ (ENNReal.coe_ne_top : ↑n + 1 ≠ ∞) fun a b => _
+  refine isFiniteKernel_withDensity_of_bounded _ (ENNReal.coe_ne_top : ↑n + 1 ≠ ∞) fun a b => _
   -- After leanprover/lean4#2734, we need to do beta reduction before `norm_cast`
   beta_reduce
   norm_cast

@@ -32,7 +32,7 @@ variable [DecidableEq ι] [∀ i, Zero (α i)] {s : Finset ι} {f : Π₀ i, α 
 def dfinsupp (s : Finset ι) (t : ∀ i, Finset (α i)) : Finset (Π₀ i, α i) :=
   (s.pi t).map
     ⟨fun f => DFinsupp.mk s fun i => f i i.2, by
-      refine' (mk_injective _).comp fun f g h => _
+      refine (mk_injective _).comp fun f g h => _
       ext i hi
       convert congr_fun h ⟨i, hi⟩⟩
 #align finset.dfinsupp Finset.dfinsupp
@@ -46,13 +46,13 @@ theorem card_dfinsupp (s : Finset ι) (t : ∀ i, Finset (α i)) :
 variable [∀ i, DecidableEq (α i)]
 
 theorem mem_dfinsupp_iff : f ∈ s.dfinsupp t ↔ f.support ⊆ s ∧ ∀ i ∈ s, f i ∈ t i := by
-  refine' mem_map.trans ⟨_, _⟩
+  refine mem_map.trans ⟨_, _⟩
   · rintro ⟨f, hf, rfl⟩
     rw [Function.Embedding.coeFn_mk] -- Porting note: added to avoid heartbeat timeout
-    refine' ⟨support_mk_subset, fun i hi => _⟩
+    refine ⟨support_mk_subset, fun i hi => _⟩
     convert mem_pi.1 hf i hi
     exact mk_of_mem hi
-  · refine' fun h => ⟨fun i _ => f i, mem_pi.2 h.2, _⟩
+  · refine fun h => ⟨fun i _ => f i, mem_pi.2 h.2, _⟩
     ext i
     dsimp
     exact ite_eq_left_iff.2 fun hi => (not_mem_support_iff.1 fun H => hi <| h.1 H).symm
@@ -63,7 +63,7 @@ theorem mem_dfinsupp_iff : f ∈ s.dfinsupp t ↔ f.support ⊆ s ∧ ∀ i ∈ 
 @[simp]
 theorem mem_dfinsupp_iff_of_support_subset {t : Π₀ i, Finset (α i)} (ht : t.support ⊆ s) :
     f ∈ s.dfinsupp t ↔ ∀ i, f i ∈ t i := by
-  refine' mem_dfinsupp_iff.trans (forall_and.symm.trans <| forall_congr' fun i =>
+  refine mem_dfinsupp_iff.trans (forall_and.symm.trans <| forall_congr' fun i =>
       ⟨ fun h => _,
         fun h => ⟨fun hi => ht <| mem_support_iff.2 fun H => mem_support_iff.1 hi _, fun _ => h⟩⟩)
   · by_cases hi : i ∈ s
@@ -124,9 +124,9 @@ theorem mem_rangeIcc_apply_iff : a ∈ f.rangeIcc g i ↔ f i ≤ a ∧ a ≤ g 
 
 theorem support_rangeIcc_subset [DecidableEq ι] [∀ i, DecidableEq (α i)] :
     (f.rangeIcc g).support ⊆ f.support ∪ g.support := by
-  refine fun x hx => ?_
+  refine fun x hx => _
   by_contra h
-  refine' not_mem_support_iff.2 _ hx
+  refine not_mem_support_iff.2 _ hx
   rw [rangeIcc_apply, not_mem_support_iff.1 (not_mem_mono (subset_union_left _ _) h),
     not_mem_support_iff.1 (not_mem_mono (subset_union_right _ _) h)]
   exact Icc_self _
@@ -165,7 +165,7 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder (Π₀ i, α i) :=
   LocallyFiniteOrder.ofIcc (Π₀ i, α i)
     (fun f g => (f.support ∪ g.support).dfinsupp <| f.rangeIcc g)
     (fun f g x => by
-      refine' (mem_dfinsupp_iff_of_support_subset <| support_rangeIcc_subset).trans _
+      refine (mem_dfinsupp_iff_of_support_subset <| support_rangeIcc_subset).trans _
       simp_rw [mem_rangeIcc_apply_iff, forall_and]
       rfl)
 

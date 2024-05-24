@@ -98,7 +98,7 @@ theorem subset_range_enumerate {s : Set α} (h : s.Countable) (default : α) :
 
 lemma range_enumerateCountable_subset {s : Set α} (h : s.Countable) (default : α) :
     range (enumerateCountable h default) ⊆ insert default s := by
-  refine range_subset_iff.mpr (fun n ↦ ?_)
+  refine range_subset_iff.mpr (fun n ↦ _)
   rw [enumerateCountable]
   match @decode s (Countable.toEncodable h) n with
   | none => exact mem_insert _ _
@@ -157,7 +157,7 @@ theorem countable_univ_iff : (univ : Set α).Countable ↔ Countable α :=
 theorem Countable.exists_eq_range {s : Set α} (hc : s.Countable) (hs : s.Nonempty) :
     ∃ f : ℕ → α, s = range f := by
   rcases hc.exists_surjective hs with ⟨f, hf⟩
-  refine ⟨(↑) ∘ f, ?_⟩
+  refine ⟨(↑) ∘ f, _⟩
   rw [hf.range_comp, Subtype.range_coe]
 #align set.countable.exists_eq_range Set.Countable.exists_eq_range
 
@@ -195,7 +195,7 @@ theorem exists_seq_iSup_eq_top_iff_countable [CompleteLattice α] {p : α → Pr
       ∃ S : Set α, S.Countable ∧ (∀ s ∈ S, p s) ∧ sSup S = ⊤ := by
   constructor
   · rintro ⟨s, hps, hs⟩
-    refine' ⟨range s, countable_range s, forall_mem_range.2 hps, _⟩
+    refine ⟨range s, countable_range s, forall_mem_range.2 hps, _⟩
     rwa [sSup_range]
   · rintro ⟨S, hSc, hps, hS⟩
     rcases eq_empty_or_nonempty S with (rfl | hne)
@@ -204,7 +204,7 @@ theorem exists_seq_iSup_eq_top_iff_countable [CompleteLattice α] {p : α → Pr
       rcases h with ⟨x, hx⟩
       exact ⟨fun _ => x, fun _ => hx, Subsingleton.elim _ _⟩
     · rcases (Set.countable_iff_exists_surjective hne).1 hSc with ⟨s, hs⟩
-      refine' ⟨fun n => s n, fun n => hps _ (s n).coe_prop, _⟩
+      refine ⟨fun n => s n, fun n => hps _ (s n).coe_prop, _⟩
       rwa [hs.iSup_comp, ← sSup_eq_iSup']
 #align set.exists_seq_supr_eq_top_iff_countable Set.exists_seq_iSup_eq_top_iff_countable
 
@@ -294,7 +294,7 @@ theorem countable_isBot (α : Type*) [PartialOrder α] : { x : α | IsBot x }.Co
 theorem countable_setOf_finite_subset {s : Set α} (hs : s.Countable) :
     { t | Set.Finite t ∧ t ⊆ s }.Countable := by
   have := hs.to_subtype
-  refine (countable_range fun t : Finset s => Subtype.val '' (t : Set s)).mono ?_
+  refine (countable_range fun t : Finset s => Subtype.val '' (t : Set s)).mono _
   rintro t ⟨ht, hts⟩
   lift t to Set s using hts
   lift t to Finset s using ht.of_finite_image (Subtype.val_injective.injOn _)
@@ -335,7 +335,7 @@ theorem countable_setOf_nonempty_of_disjoint {f : β → Set α}
   have A : Injective F := by
     rintro ⟨t, ht⟩ ⟨t', ht'⟩ htt'
     have A : (f t ∩ f t').Nonempty := by
-      refine ⟨F ⟨t, ht⟩, hF _, ?_⟩
+      refine ⟨F ⟨t, ht⟩, hF _, _⟩
       rw [htt']
       exact hF _
     simp only [Subtype.mk.injEq]

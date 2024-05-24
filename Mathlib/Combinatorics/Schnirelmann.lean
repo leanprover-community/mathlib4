@@ -120,7 +120,7 @@ lemma schnirelmannDensity_eq_one_iff : schnirelmannDensity A = 1 ↔ {0}ᶜ ⊆ 
     apply (schnirelmannDensity_le_of_not_mem hx').trans_lt
     simpa only [one_div, sub_lt_self_iff, inv_pos, Nat.cast_pos, pos_iff_ne_zero] using hx
   · intro h
-    refine le_ciInf fun ⟨n, hn⟩ => ?_
+    refine le_ciInf fun ⟨n, hn⟩ => _
     rw [one_le_div (Nat.cast_pos.2 hn), Nat.cast_le, filter_true_of_mem, Nat.card_Ioc, Nat.sub_zero]
     rintro x hx
     exact h (mem_Ioc.1 hx).1.ne'
@@ -130,7 +130,7 @@ lemma schnirelmannDensity_eq_one_iff_of_zero_mem (hA : 0 ∈ A) :
     schnirelmannDensity A = 1 ↔ A = Set.univ := by
   rw [schnirelmannDensity_eq_one_iff]
   constructor
-  · refine fun h => Set.eq_univ_of_forall fun x => ?_
+  · refine fun h => Set.eq_univ_of_forall fun x => _
     rcases eq_or_ne x 0 with rfl | hx
     · exact hA
     · exact h hx
@@ -187,7 +187,7 @@ end
 
 /-- The Schnirelmann density of any finset is `0`. -/
 lemma schnirelmannDensity_finset (A : Finset ℕ) : schnirelmannDensity A = 0 := by
-  refine le_antisymm ?_ schnirelmannDensity_nonneg
+  refine le_antisymm _ schnirelmannDensity_nonneg
   simp only [schnirelmannDensity_le_iff_forall, zero_add]
   intro ε hε
   wlog hε₁ : ε ≤ 1 generalizing ε
@@ -221,7 +221,7 @@ lemma schnirelmannDensity_setOf_mod_eq_one {m : ℕ} (hm : m ≠ 1) :
     schnirelmannDensity {n | n % m = 1} = (m⁻¹ : ℝ) := by
   rcases m.eq_zero_or_pos with rfl | hm'
   · simp only [Nat.cast_zero, inv_zero]
-    refine schnirelmannDensity_finite ?_
+    refine schnirelmannDensity_finite _
     simp
   apply le_antisymm (schnirelmannDensity_le_of_le m hm'.ne' _) _
   · rw [← one_div, ← @Nat.cast_one ℝ]

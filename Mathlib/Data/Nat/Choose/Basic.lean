@@ -295,7 +295,7 @@ def fast_choose n k := Nat.descFactorial n k / Nat.factorial k
 /-- Show that `Nat.choose` is increasing for small values of the right argument. -/
 theorem choose_le_succ_of_lt_half_left {r n : ℕ} (h : r < n / 2) :
     choose n r ≤ choose n (r + 1) := by
-  refine Nat.le_of_mul_le_mul_right ?_ (Nat.sub_pos_of_lt (h.trans_le (n.div_le_self 2)))
+  refine Nat.le_of_mul_le_mul_right _ (Nat.sub_pos_of_lt (h.trans_le (n.div_le_self 2)))
   rw [← choose_succ_right_eq]
   apply Nat.mul_le_mul_left
   rw [← Nat.lt_iff_add_one_le, Nat.lt_sub_iff_add_lt, ← Nat.mul_two]

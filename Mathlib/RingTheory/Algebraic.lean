@@ -68,7 +68,7 @@ theorem Subalgebra.isAlgebraic_iff (S : Subalgebra R A) :
     S.IsAlgebraic ↔ @Algebra.IsAlgebraic R S _ _ S.algebra := by
   delta Subalgebra.IsAlgebraic
   rw [Subtype.forall', Algebra.isAlgebraic_def]
-  refine forall_congr' fun x => exists_congr fun p => and_congr Iff.rfl ?_
+  refine forall_congr' fun x => exists_congr fun p => and_congr Iff.rfl _
   have h : Function.Injective S.val := Subtype.val_injective
   conv_rhs => rw [← h.eq_iff, AlgHom.map_zero]
   rw [← aeval_algHom_apply, S.val_apply]
@@ -185,7 +185,7 @@ theorem isAlgebraic_algebraMap_iff {a : S} (h : Function.Injective (algebraMap S
 theorem IsAlgebraic.of_pow {r : A} {n : ℕ} (hn : 0 < n) (ht : IsAlgebraic R (r ^ n)) :
     IsAlgebraic R r := by
   obtain ⟨p, p_nonzero, hp⟩ := ht
-  refine ⟨Polynomial.expand _ n p, ?_, ?_⟩
+  refine ⟨Polynomial.expand _ n p, _, _⟩
   · rwa [Polynomial.expand_ne_zero hn]
   · rwa [Polynomial.expand_aeval n p r]
 #align is_algebraic_of_pow IsAlgebraic.of_pow
@@ -196,7 +196,7 @@ theorem Transcendental.pow {r : A} (ht : Transcendental R r) {n : ℕ} (hn : 0 <
 
 lemma IsAlgebraic.invOf {x : S} [Invertible x] (h : IsAlgebraic R x) : IsAlgebraic R (⅟ x) := by
   obtain ⟨p, hp, hp'⟩ := h
-  refine ⟨p.reverse, by simpa using hp, ?_⟩
+  refine ⟨p.reverse, by simpa using hp, _⟩
   rwa [Polynomial.aeval_def, Polynomial.eval₂_reverse_eq_zero_iff, ← Polynomial.aeval_def]
 
 lemma IsAlgebraic.invOf_iff {x : S} [Invertible x] :
@@ -220,9 +220,9 @@ variable {K : Type u} {A : Type v} [Field K] [Ring A] [Algebra K A]
 
 /-- An element of an algebra over a field is algebraic if and only if it is integral. -/
 theorem isAlgebraic_iff_isIntegral {x : A} : IsAlgebraic K x ↔ IsIntegral K x := by
-  refine ⟨?_, IsIntegral.isAlgebraic⟩
+  refine ⟨_, IsIntegral.isAlgebraic⟩
   rintro ⟨p, hp, hpx⟩
-  refine' ⟨_, monic_mul_leadingCoeff_inv hp, _⟩
+  refine ⟨_, monic_mul_leadingCoeff_inv hp, _⟩
   rw [← aeval_def, AlgHom.map_mul, hpx, zero_mul]
 #align is_algebraic_iff_is_integral isAlgebraic_iff_isIntegral
 
@@ -329,7 +329,7 @@ variable [Algebra K L] [NoZeroSMulDivisors K L]
 
 theorem algHom_bijective [Algebra.IsAlgebraic K L] (f : L →ₐ[K] L) :
     Function.Bijective f := by
-  refine ⟨f.injective, fun b ↦ ?_⟩
+  refine ⟨f.injective, fun b ↦ _⟩
   obtain ⟨p, hp, he⟩ := Algebra.IsAlgebraic.isAlgebraic (R := K) b
   let f' : p.rootSet L → p.rootSet L := (rootSet_maps_to' (fun x ↦ x) f).restrict f _ _
   have : f'.Surjective := Finite.injective_iff_surjective.1
@@ -415,7 +415,7 @@ theorem IsIntegralClosure.exists_smul_eq_mul {L : Type*} [Field L] [Algebra R S]
   obtain ⟨c, d, d_ne, hx⟩ :=
     exists_integral_multiple (Algebra.IsAlgebraic.isAlgebraic (algebraMap _ L a / algebraMap _ L b))
       ((injective_iff_map_eq_zero _).mp inj)
-  refine'
+  refine
     ⟨IsIntegralClosure.mk' S (c : L) c.2, d, d_ne, IsIntegralClosure.algebraMap_injective S R L _⟩
   simp only [Algebra.smul_def, RingHom.map_mul, IsIntegralClosure.algebraMap_mk', ← hx, ←
     IsScalarTower.algebraMap_apply]
@@ -439,7 +439,7 @@ set_option linter.uppercaseLean3 false in
 theorem inv_eq_of_root_of_coeff_zero_ne_zero {x : L} {p : K[X]} (aeval_eq : aeval x p = 0)
     (coeff_zero_ne : p.coeff 0 ≠ 0) : x⁻¹ = -(aeval x (divX p) / algebraMap _ _ (p.coeff 0)) := by
   convert inv_eq_of_aeval_divX_ne_zero (p := p) (L := L)
-    (mt (fun h => (algebraMap K L).injective ?_) coeff_zero_ne) using 1
+    (mt (fun h => (algebraMap K L).injective _) coeff_zero_ne) using 1
   · rw [aeval_eq, zero_sub, div_neg]
   rw [RingHom.map_zero]
   convert aeval_eq
@@ -465,11 +465,11 @@ theorem Subalgebra.inv_mem_of_algebraic {x : A} (hx : _root_.IsAlgebraic K (x : 
   obtain ⟨p, ne_zero, aeval_eq⟩ := hx
   rw [Subalgebra.aeval_coe, Subalgebra.coe_eq_zero] at aeval_eq
   revert ne_zero aeval_eq
-  refine' p.recOnHorner _ _ _
+  refine p.recOnHorner _ _ _
   · intro h
     contradiction
   · intro p a hp ha _ih _ne_zero aeval_eq
-    refine' A.inv_mem_of_root_of_coeff_zero_ne_zero aeval_eq _
+    refine A.inv_mem_of_root_of_coeff_zero_ne_zero aeval_eq _
     rwa [coeff_add, hp, zero_add, coeff_C, if_pos rfl]
   · intro p hp ih _ne_zero aeval_eq
     rw [AlgHom.map_mul, aeval_X, mul_eq_zero] at aeval_eq

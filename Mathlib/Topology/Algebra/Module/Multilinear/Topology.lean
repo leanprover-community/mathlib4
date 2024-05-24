@@ -104,7 +104,7 @@ theorem hasBasis_nhds_zero_of_basis {ι : Type*} {p : ι → Prop} {b : ι → S
   letI : UniformSpace F := TopologicalAddGroup.toUniformSpace F
   haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
   rw [nhds_induced]
-  refine (UniformOnFun.hasBasis_nhds_zero_of_basis _ ?_ ?_ h).comap DFunLike.coe
+  refine (UniformOnFun.hasBasis_nhds_zero_of_basis _ _ _ h).comap DFunLike.coe
   · exact ⟨∅, isVonNBounded_empty _ _⟩
   · exact directedOn_of_sup_mem fun _ _ => Bornology.IsVonNBounded.union
 

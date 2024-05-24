@@ -78,7 +78,7 @@ theorem glueDist_glued_points [Nonempty Z] (Φ : Z → X) (Ψ : Z → Y) (ε : �
   have : ⨅ q, dist (Φ p) (Φ q) + dist (Ψ p) (Ψ q) = 0 := by
     have A : ∀ q, 0 ≤ dist (Φ p) (Φ q) + dist (Ψ p) (Ψ q) := fun _ =>
       add_nonneg dist_nonneg dist_nonneg
-    refine' le_antisymm _ (le_ciInf A)
+    refine le_antisymm _ (le_ciInf A)
     have : 0 = dist (Φ p) (Φ p) + dist (Ψ p) (Ψ p) := by simp
     rw [this]
     exact ciInf_le ⟨0, forall_mem_range.2 A⟩ p
@@ -114,7 +114,7 @@ private theorem glueDist_triangle_inl_inr_inr (Φ : Z → X) (Ψ : Z → Y) (ε 
       glueDist Φ Ψ ε (.inl x) (.inr y) + glueDist Φ Ψ ε (.inr y) (.inr z) := by
   simp only [glueDist]
   rw [add_right_comm, add_le_add_iff_right]
-  refine le_ciInf_add fun p => ciInf_le_of_le ⟨0, ?_⟩ p ?_
+  refine le_ciInf_add fun p => ciInf_le_of_le ⟨0, _⟩ p _
   · exact forall_mem_range.2 fun _ => add_nonneg dist_nonneg dist_nonneg
   · linarith [dist_triangle_left z (Ψ p) y]
 
@@ -123,9 +123,9 @@ private theorem glueDist_triangle_inl_inr_inl (Φ : Z → X) (Ψ : Z → Y) (ε 
     glueDist Φ Ψ ε (.inl x) (.inl z) ≤
       glueDist Φ Ψ ε (.inl x) (.inr y) + glueDist Φ Ψ ε (.inr y) (.inl z) := by
   simp_rw [glueDist, add_add_add_comm _ ε, add_assoc]
-  refine le_ciInf_add fun p => ?_
+  refine le_ciInf_add fun p => _
   rw [add_left_comm, add_assoc, ← two_mul]
-  refine le_ciInf_add fun q => ?_
+  refine le_ciInf_add fun q => _
   rw [dist_comm z]
   linarith [dist_triangle4 x (Φ p) (Φ q) z, dist_triangle_left (Ψ p) (Ψ q) y, (abs_le.1 (H p q)).2]
 
@@ -161,7 +161,7 @@ theorem Sum.mem_uniformity_iff_glueDist (hε : 0 < ε) (s : Set ((X ⊕ Y) × (X
   simp only [Sum.uniformity, Filter.mem_sup, Filter.mem_map, mem_uniformity_dist, mem_preimage]
   constructor
   · rintro ⟨⟨δX, δX0, hX⟩, δY, δY0, hY⟩
-    refine ⟨min (min δX δY) ε, lt_min (lt_min δX0 δY0) hε, ?_⟩
+    refine ⟨min (min δX δY) ε, lt_min (lt_min δX0 δY0) hε, _⟩
     rintro (a | a) (b | b) h <;> simp only [lt_min_iff] at h
     · exact hX h.1.1
     · exact absurd h.2 (le_glueDist_inl_inr _ _ _ _ _).not_lt
@@ -243,7 +243,7 @@ private theorem Sum.mem_uniformity (s : Set (Sum X Y × Sum X Y)) :
   · rintro ⟨hsX, hsY⟩
     rcases mem_uniformity_dist.1 hsX with ⟨εX, εX0, hX⟩
     rcases mem_uniformity_dist.1 hsY with ⟨εY, εY0, hY⟩
-    refine' ⟨min (min εX εY) 1, lt_min (lt_min εX0 εY0) zero_lt_one, _⟩
+    refine ⟨min (min εX εY) 1, lt_min (lt_min εX0 εY0) zero_lt_one, _⟩
     rintro (a | a) (b | b) h
     · exact hX (lt_of_lt_of_le h (le_trans (min_le_left _ _) (min_le_left _ _)))
     · cases not_le_of_lt (lt_of_lt_of_le h (min_le_right _ _)) Sum.one_le_dist_inl_inr
@@ -399,7 +399,7 @@ protected theorem isOpen_iff (s : Set (Σi, E i)) :
   · rintro hs ⟨i, x⟩ hx
     obtain ⟨ε, εpos, hε⟩ : ∃ ε > 0, ball x ε ⊆ Sigma.mk i ⁻¹' s :=
       Metric.isOpen_iff.1 (isOpen_sigma_iff.1 hs i) x hx
-    refine' ⟨min ε 1, lt_min εpos zero_lt_one, _⟩
+    refine ⟨min ε 1, lt_min εpos zero_lt_one, _⟩
     rintro ⟨j, y⟩ hy
     rcases eq_or_ne i j with (rfl | hij)
     · simp only [Sigma.dist_same, lt_min_iff] at hy
@@ -408,10 +408,10 @@ protected theorem isOpen_iff (s : Set (Σi, E i)) :
       calc
         1 ≤ Sigma.dist ⟨i, x⟩ ⟨j, y⟩ := Sigma.one_le_dist_of_ne hij _ _
         _ < 1 := hy.trans_le (min_le_right _ _)
-  · refine fun H => isOpen_sigma_iff.2 fun i => Metric.isOpen_iff.2 fun x hx => ?_
+  · refine fun H => isOpen_sigma_iff.2 fun i => Metric.isOpen_iff.2 fun x hx => _
     obtain ⟨ε, εpos, hε⟩ : ∃ ε > 0, ∀ y, dist (⟨i, x⟩ : Σj, E j) y < ε → y ∈ s :=
       H ⟨i, x⟩ hx
-    refine ⟨ε, εpos, fun y hy => ?_⟩
+    refine ⟨ε, εpos, fun y hy => _⟩
     apply hε ⟨i, y⟩
     rw [Sigma.dist_same]
     exact mem_ball'.1 hy
@@ -423,7 +423,7 @@ and say that the distance from `a` to `b` is the sum of the distances of `a` and
 their respective basepoints, plus the distance 1 between the basepoints.
 Since there is an arbitrary choice in this construction, it is not an instance by default. -/
 protected def metricSpace : MetricSpace (Σi, E i) := by
-  refine' MetricSpace.ofDistTopology Sigma.dist _ _ Sigma.dist_triangle Sigma.isOpen_iff _
+  refine MetricSpace.ofDistTopology Sigma.dist _ _ Sigma.dist_triangle Sigma.isOpen_iff _
   · rintro ⟨i, x⟩
     simp [Sigma.dist]
   · rintro ⟨i, x⟩ ⟨j, y⟩
@@ -461,7 +461,7 @@ protected theorem completeSpace [∀ i, CompleteSpace (E i)] : CompleteSpace (Σ
     exact (isometry_mk i).uniformInducing.isComplete_range
   have hd : ∀ (i j), ∀ x ∈ s i, ∀ y ∈ s j, (x, y) ∈ U → i = j := fun i j x hx y hy hxy =>
     (Eq.symm hx).trans ((fst_eq_of_dist_lt_one _ _ hxy).trans hy)
-  refine' completeSpace_of_isComplete_univ _
+  refine completeSpace_of_isComplete_univ _
   convert isComplete_iUnion_separated hc (dist_mem_uniformity zero_lt_one) hd
   simp only [s, ← preimage_iUnion, iUnion_of_singleton, preimage_univ]
 #align metric.sigma.complete_space Metric.Sigma.completeSpace
@@ -521,7 +521,7 @@ theorem toGlue_commute (hΦ : Isometry Φ) (hΨ : Isometry Ψ) :
   let _ := i.toUniformSpace.toTopologicalSpace
   funext
   simp only [comp, toGlueL, toGlueR]
-  refine' SeparationQuotient.mk_eq_mk.2 (Metric.inseparable_iff.2 _)
+  refine SeparationQuotient.mk_eq_mk.2 (Metric.inseparable_iff.2 _)
   exact glueDist_glued_points Φ Ψ 0 _
 #align metric.to_glue_commute Metric.toGlue_commute
 
@@ -651,7 +651,7 @@ theorem toInductiveLimit_commute (I : ∀ n, Isometry (f n)) (n : ℕ) :
   let _ := h.toUniformSpace.toTopologicalSpace
   funext x
   simp only [comp, toInductiveLimit]
-  refine' SeparationQuotient.mk_eq_mk.2 (Metric.inseparable_iff.2 _)
+  refine SeparationQuotient.mk_eq_mk.2 (Metric.inseparable_iff.2 _)
   show inductiveLimitDist f ⟨n.succ, f n x⟩ ⟨n, x⟩ = 0
   rw [inductiveLimitDist_eq_dist I ⟨n.succ, f n x⟩ ⟨n, x⟩ n.succ, leRecOn_self,
     leRecOn_succ, leRecOn_self, dist_self]

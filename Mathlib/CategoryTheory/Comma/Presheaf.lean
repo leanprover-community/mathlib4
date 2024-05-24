@@ -443,7 +443,7 @@ lemma unitForward_unitBackward {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) (X : C) :
 
 lemma unitBackward_unitForward {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) (X : C) :
     unitBackward η X ∘ unitForward η X = id := by
-  refine funext fun p => YonedaCollection.ext ?_ (OverArrows.ext ?_)
+  refine funext fun p => YonedaCollection.ext _ (OverArrows.ext _)
   · simpa [unitForward, unitBackward] using congrArg yonedaEquiv.symm p.snd.app_val
   · simp [unitForward, unitBackward]
 
@@ -508,7 +508,7 @@ lemma counitForward_naturality₁ {G : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Ty
 lemma counitForward_naturality₂ (s t : (CostructuredArrow yoneda A)ᵒᵖ) (f : t ⟶ s) (x : F.obj t) :
     counitForward F s.unop (F.map f x) =
       OverArrows.map₂ (counitForward F t.unop x) f.unop.left (by simp) := by
-  refine OverArrows.ext <| YonedaCollection.ext (by simp) ?_
+  refine OverArrows.ext <| YonedaCollection.ext (by simp) _
   have : (CostructuredArrow.mkPrecomp t.unop.hom f.unop.left).op =
       f ≫ eqToHom (by simp [← CostructuredArrow.eq_mk]) := by
     apply Quiver.Hom.unop_inj

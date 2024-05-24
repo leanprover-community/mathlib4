@@ -101,28 +101,28 @@ lemma isRatCondKernelCDFAux_density_Iic (κ : kernel α (γ × ℝ)) [IsFiniteKe
   le_one' a q := ae_of_all _ fun c ↦ density_le_one le_rfl _ _ _
   tendsto_integral_of_antitone a s hs_anti hs_tendsto := by
     let s' : ℕ → Set ℝ := fun n ↦ Iic (s n)
-    refine tendsto_integral_density_of_antitone le_rfl a s' ?_ ?_ (fun _ ↦ measurableSet_Iic)
-    · refine fun i j hij ↦ Iic_subset_Iic.mpr ?_
+    refine tendsto_integral_density_of_antitone le_rfl a s' _ _ (fun _ ↦ measurableSet_Iic)
+    · refine fun i j hij ↦ Iic_subset_Iic.mpr _
       exact mod_cast hs_anti hij
     · ext x
       simp only [mem_iInter, mem_Iic, mem_empty_iff_false, iff_false, not_forall, not_le, s']
       rw [tendsto_atTop_atBot] at hs_tendsto
       have ⟨q, hq⟩ := exists_rat_lt x
       obtain ⟨i, hi⟩ := hs_tendsto q
-      refine ⟨i, lt_of_le_of_lt ?_ hq⟩
+      refine ⟨i, lt_of_le_of_lt _ hq⟩
       exact mod_cast hi i le_rfl
   tendsto_integral_of_monotone a s hs_mono hs_tendsto := by
     rw [fst_apply' _ _ MeasurableSet.univ]
     let s' : ℕ → Set ℝ := fun n ↦ Iic (s n)
     refine tendsto_integral_density_of_monotone (le_rfl : fst κ ≤ fst κ)
-      a s' ?_ ?_ (fun _ ↦ measurableSet_Iic)
+      a s' _ _ (fun _ ↦ measurableSet_Iic)
     · exact fun i j hij ↦ Iic_subset_Iic.mpr (by exact mod_cast hs_mono hij)
     · ext x
       simp only [mem_iUnion, mem_Iic, mem_univ, iff_true]
       rw [tendsto_atTop_atTop] at hs_tendsto
       have ⟨q, hq⟩ := exists_rat_gt x
       obtain ⟨i, hi⟩ := hs_tendsto q
-      refine ⟨i, hq.le.trans ?_⟩
+      refine ⟨i, hq.le.trans _⟩
       exact mod_cast hi i le_rfl
   integrable a q := integrable_density le_rfl a measurableSet_Iic
   setIntegral a A hA q := setIntegral_density le_rfl a measurableSet_Iic hA
@@ -240,7 +240,7 @@ instance instIsFiniteKernelBorelMarkovFromReal (η : kernel α ℝ) [IsFiniteKer
 /-- When `η` is a Markov kernel, `borelMarkovFromReal Ω η` is a Markov kernel. -/
 instance instIsMarkovKernelBorelMarkovFromReal (η : kernel α ℝ) [IsMarkovKernel η] :
     IsMarkovKernel (borelMarkovFromReal Ω η) := by
-  refine IsMarkovKernel.comapRight _ (measurableEmbedding_embeddingReal Ω) (fun a ↦ ?_)
+  refine IsMarkovKernel.comapRight _ (measurableEmbedding_embeddingReal Ω) (fun a ↦ _)
   classical
   rw [piecewise_apply]
   split_ifs with h
@@ -277,7 +277,7 @@ lemma compProd_fst_borelMarkovFromReal_eq_comapRight_compProd
   rw [h_fst]
   ext a t ht : 2
   simp_rw [compProd_apply _ _ _ ht]
-  refine lintegral_congr_ae ?_
+  refine lintegral_congr_ae _
   have h_ae : ∀ᵐ t ∂(fst κ a), (a, t) ∈ {p : α × β | η p (range e)ᶜ = 0} := by
     rw [← h_fst]
     have h_compProd : κ' a (univ ×ˢ range e)ᶜ = 0 := by
@@ -460,7 +460,7 @@ def condKernelCountable (κ : kernel α (β × Ω)) [IsFiniteKernel κ] : kernel
   val p := (κ p.1).condKernel p.2
   property := by
     change Measurable ((fun q : β × α ↦ (κ q.2).condKernel q.1) ∘ Prod.swap)
-    refine (measurable_from_prod_countable' (fun a ↦ ?_) ?_).comp measurable_swap
+    refine (measurable_from_prod_countable' (fun a ↦ _) _).comp measurable_swap
     · exact kernel.measurable (κ a).condKernel
     · intro y y' x hy'
       have : κ y' = κ y := by

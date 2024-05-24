@@ -79,7 +79,7 @@ theorem pow_sum_div_card_le_sum_pow {f : ι → ℝ} (n : ℕ) (hf : ∀ a ∈ s
         div_le_iff hs0, div_mul, div_self hs0.ne', div_one] at this
     have :=
       @ConvexOn.map_sum_le ℝ ℝ ℝ ι _ _ _ _ _ _ (Set.Ici 0) (fun x => x ^ (n + 1)) s
-        (fun _ => 1 / s.card) ((↑) ∘ f) (convexOn_pow (n + 1)) ?_ ?_ fun i hi =>
+        (fun _ => 1 / s.card) ((↑) ∘ f) (convexOn_pow (n + 1)) _ _ fun i hi =>
         Set.mem_Ici.2 (hf i hi)
     · simpa only [inv_mul_eq_div, one_div, Algebra.id.smul_eq_mul] using this
     · simp only [one_div, inv_nonneg, Nat.cast_nonneg, imp_true_iff]
@@ -141,7 +141,7 @@ theorem rpow_arith_mean_le_arith_mean_rpow (w z : ι → ℝ≥0) (hw' : ∑ i i
 /-- Weighted generalized mean inequality, version for two elements of `ℝ≥0` and real exponents. -/
 theorem rpow_arith_mean_le_arith_mean2_rpow (w₁ w₂ z₁ z₂ : ℝ≥0) (hw' : w₁ + w₂ = 1) {p : ℝ}
     (hp : 1 ≤ p) : (w₁ * z₁ + w₂ * z₂) ^ p ≤ w₁ * z₁ ^ p + w₂ * z₂ ^ p := by
-  have h := rpow_arith_mean_le_arith_mean_rpow univ ![w₁, w₂] ![z₁, z₂] ?_ hp
+  have h := rpow_arith_mean_le_arith_mean_rpow univ ![w₁, w₂] ![z₁, z₂] _ hp
   · simpa [Fin.sum_univ_succ] using h
   · simp [hw', Fin.sum_univ_succ]
 #align nnreal.rpow_arith_mean_le_arith_mean2_rpow NNReal.rpow_arith_mean_le_arith_mean2_rpow
@@ -207,7 +207,7 @@ theorem rpow_add_rpow_le {p q : ℝ} (a b : ℝ≥0) (hp_pos : 0 < p) (hpq : p �
       one_mul]
   have h_rpow_add_rpow_le_add :
     ((a ^ p) ^ (q / p) + (b ^ p) ^ (q / p)) ^ (1 / (q / p)) ≤ a ^ p + b ^ p := by
-    refine' rpow_add_rpow_le_add (a ^ p) (b ^ p) _
+    refine rpow_add_rpow_le_add (a ^ p) (b ^ p) _
     rwa [one_le_div hp_pos]
   rw [h_rpow a, h_rpow b, NNReal.le_rpow_one_div_iff hp_pos, ← NNReal.rpow_mul, mul_comm,
     mul_one_div]
@@ -237,7 +237,7 @@ theorem rpow_arith_mean_le_arith_mean_rpow (w z : ι → ℝ≥0∞) (hw' : ∑ 
   have hp_not_neg : ¬p < 0 := by simp [hp_nonneg]
   have h_top_iff_rpow_top : ∀ (i : ι), i ∈ s → (w i * z i = ⊤ ↔ w i * z i ^ p = ⊤) := by
     simp [ENNReal.mul_eq_top, hp_pos, hp_nonneg, hp_not_neg]
-  refine' le_of_top_imp_top_of_toNNReal_le _ _
+  refine le_of_top_imp_top_of_toNNReal_le _ _
   · -- first, prove `(∑ i in s, w i * z i) ^ p = ⊤ → ∑ i in s, (w i * z i ^ p) = ⊤`
     rw [rpow_eq_top_iff, sum_eq_top_iff, sum_eq_top_iff]
     intro h
@@ -264,14 +264,14 @@ theorem rpow_arith_mean_le_arith_mean_rpow (w z : ι → ℝ≥0∞) (hw' : ∑ 
     simp_rw [toNNReal_sum h_top_rpow, ← toNNReal_rpow, toNNReal_sum h_top, toNNReal_mul, ←
       toNNReal_rpow]
     -- use corresponding nnreal result
-    refine'
+    refine
       NNReal.rpow_arith_mean_le_arith_mean_rpow s (fun i => (w i).toNNReal)
         (fun i => (z i).toNNReal) _ hp
     -- verify the hypothesis `∑ i in s, (w i).toNNReal = 1`, using `∑ i in s, w i = 1` .
     have h_sum_nnreal : ∑ i in s, w i = ↑(∑ i in s, (w i).toNNReal) := by
       rw [coe_finset_sum]
-      refine' sum_congr rfl fun i hi => (coe_toNNReal _).symm
-      refine' (lt_top_of_sum_ne_top _ hi).ne
+      refine sum_congr rfl fun i hi => (coe_toNNReal _).symm
+      refine (lt_top_of_sum_ne_top _ hi).ne
       exact hw'.symm ▸ ENNReal.one_ne_top
     rwa [← coe_inj, ← h_sum_nnreal]
 #align ennreal.rpow_arith_mean_le_arith_mean_rpow ENNReal.rpow_arith_mean_le_arith_mean_rpow
@@ -280,7 +280,7 @@ theorem rpow_arith_mean_le_arith_mean_rpow (w z : ι → ℝ≥0∞) (hw' : ∑ 
 exponents. -/
 theorem rpow_arith_mean_le_arith_mean2_rpow (w₁ w₂ z₁ z₂ : ℝ≥0∞) (hw' : w₁ + w₂ = 1) {p : ℝ}
     (hp : 1 ≤ p) : (w₁ * z₁ + w₂ * z₂) ^ p ≤ w₁ * z₁ ^ p + w₂ * z₂ ^ p := by
-  have h := rpow_arith_mean_le_arith_mean_rpow univ ![w₁, w₂] ![z₁, z₂] ?_ hp
+  have h := rpow_arith_mean_le_arith_mean_rpow univ ![w₁, w₂] ![z₁, z₂] _ hp
   · simpa [Fin.sum_univ_succ] using h
   · simp [hw', Fin.sum_univ_succ]
 #align ennreal.rpow_arith_mean_le_arith_mean2_rpow ENNReal.rpow_arith_mean_le_arith_mean2_rpow
@@ -322,7 +322,7 @@ theorem rpow_add_rpow_le {p q : ℝ} (a b : ℝ≥0∞) (hp_pos : 0 < p) (hpq : 
     rw [← ENNReal.rpow_mul, mul_div_cancel₀ _ hp_pos.ne']
   have h_rpow_add_rpow_le_add :
     ((a ^ p) ^ (q / p) + (b ^ p) ^ (q / p)) ^ (1 / (q / p)) ≤ a ^ p + b ^ p := by
-    refine' rpow_add_rpow_le_add (a ^ p) (b ^ p) _
+    refine rpow_add_rpow_le_add (a ^ p) (b ^ p) _
     rwa [one_le_div hp_pos]
   rw [h_rpow a, h_rpow b, ENNReal.le_rpow_one_div_iff hp_pos, ← ENNReal.rpow_mul, mul_comm,
     mul_one_div]

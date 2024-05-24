@@ -120,17 +120,17 @@ theorem Nodup.nthLe_inj_iff {l : List α} (h : Nodup l) {i j : ℕ} (hi : i < l.
   ⟨nodup_iff_nthLe_inj.mp h _ _ _ _, by simp (config := { contextual := true })⟩
 #align list.nodup.nth_le_inj_iff List.Nodup.nthLe_inj_iff
 
-theorem nodup_iff_get?_ne_get? {l : List α} :
+theorem nodup_iff_get_ne_get? {l : List α} :
     l.Nodup ↔ ∀ i j : ℕ, i < j → j < l.length → l.get? i ≠ l.get? j := by
   rw [Nodup, pairwise_iff_get]
   constructor
   · intro h i j hij hj
-    rw [get?_eq_get (lt_trans hij hj), get?_eq_get hj, Ne, Option.some_inj]
+    rw [get_eq_get (lt_trans hij hj), get_eq_get hj, Ne, Option.some_inj]
     exact h _ _ hij
   · intro h i j hij
-    rw [Ne, ← Option.some_inj, ← get?_eq_get, ← get?_eq_get]
+    rw [Ne, ← Option.some_inj, ← get_eq_get, ← get_eq_get]
     exact h i j hij j.2
-#align list.nodup_iff_nth_ne_nth List.nodup_iff_get?_ne_get?
+#align list.nodup_iff_nth_ne_nth List.nodup_iff_get_ne_get?
 
 theorem Nodup.ne_singleton_iff {l : List α} (h : Nodup l) (x : α) :
     l ≠ [x] ↔ l = [] ∨ ∃ y ∈ l, y ≠ x := by
@@ -462,7 +462,7 @@ theorem Nodup.take_eq_filter_mem [DecidableEq α] :
   | b::l, n+1, hl => by
     rw [take_cons, Nodup.take_eq_filter_mem (Nodup.of_cons hl), List.filter_cons_of_pos _ (by simp)]
     congr 1
-    refine' List.filter_congr' _
+    refine List.filter_congr' _
     intro x hx
     have : x ≠ b := fun h => (nodup_cons.1 hl).1 (h ▸ hx)
     simp (config := {contextual := true}) [List.mem_filter, this, hx]

@@ -111,7 +111,7 @@ protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.Chain' r} wh
   invFun x := fromListChain' _ x.2.1 x.2.2
   left_inv x := ext (by simp [toList]) <| by ext; apply List.get_ofFn
   right_inv x := by
-    refine Subtype.ext (List.ext_get ?_ fun n hn1 _ => List.get_ofFn _ _)
+    refine Subtype.ext (List.ext_get _ fun n hn1 _ => List.get_ofFn _ _)
     have := Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x.2.1
     simp_all [toList]
 
@@ -182,7 +182,7 @@ theorem length_pos_of_nontrivial (h : {x | x ∈ s}.Nontrivial) : 0 < s.length :
   Nat.pos_iff_ne_zero.mpr <| length_ne_zero_of_nontrivial h
 
 theorem length_ne_zero (irrefl : Irreflexive r) : s.length ≠ 0 ↔ {x | x ∈ s}.Nontrivial := by
-  refine ⟨fun h ↦ ⟨s 0, by simp [mem_def], s 1, by simp [mem_def], fun rid ↦ irrefl (s 0) ?_⟩,
+  refine ⟨fun h ↦ ⟨s 0, by simp [mem_def], s 1, by simp [mem_def], fun rid ↦ irrefl (s 0) _⟩,
     length_ne_zero_of_nontrivial⟩
   nth_rw 2 [rid]
   convert s.step ⟨0, by omega⟩
@@ -494,7 +494,7 @@ def smash (p q : RelSeries r) (connect : p.last = q.head) : RelSeries r where
           change (i.1 + 1) - _ = _
           rw [Nat.sub_add_comm]
           rwa [not_lt] at h₁
-        · refine Nat.sub_lt_left_of_lt_add ?_ i.2
+        · refine Nat.sub_lt_left_of_lt_add _ i.2
           rwa [not_lt] at h₁
 
 lemma smash_castAdd {p q : RelSeries r} (connect : p.last = q.head) (i : Fin p.length) :

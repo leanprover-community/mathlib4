@@ -257,7 +257,7 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
   · rw [rmatch]; simp only [matchEpsilon]
     constructor
     · intro h
-      refine ⟨[], [], rfl, ?_⟩
+      refine ⟨[], [], rfl, _⟩
       rw [rmatch, rmatch]
       rwa [Bool.coe_and_iff] at h
     · rintro ⟨t, u, h₁, h₂⟩
@@ -281,7 +281,7 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
           exact hQ
         · left
           rw [List.cons_append, List.cons_eq_cons] at h
-          refine ⟨t, u, h.2, ?_, hQ⟩
+          refine ⟨t, u, h.2, _, hQ⟩
           rw [rmatch] at hP
           convert hP
           exact h.1
@@ -291,7 +291,7 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
       · cases' t with b t
         · contradiction
         · rw [List.cons_append, List.cons_eq_cons] at h
-          refine ⟨t, u, h.2, ?_, hQ⟩
+          refine ⟨t, u, h.2, _, hQ⟩
           rw [rmatch] at hP
           convert hP
           exact h.1
@@ -333,7 +333,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
           · simp only [forall_eq_or_imp, List.mem_cons] at helem
             simp only [eq_self_iff_true, not_true, Ne, false_and_iff] at helem
           simp only [List.join, List.cons_append, List.cons_eq_cons] at hsum
-          refine' ⟨t, U.join, hsum.2, _, _⟩
+          refine ⟨t, U.join, hsum.2, _, _⟩
           · specialize helem (b :: t) (by simp)
             rw [rmatch] at helem
             convert helem.2
@@ -343,7 +343,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
               simp only [List.length_append, List.length_join, List.length]
               omega
             rw [IH _ hwf]
-            refine ⟨U, rfl, fun t h => helem t ?_⟩
+            refine ⟨U, rfl, fun t h => helem t _⟩
             right
             assumption
   termination_by t => (P, t.length)

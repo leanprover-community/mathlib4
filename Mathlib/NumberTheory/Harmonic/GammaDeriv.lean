@@ -40,7 +40,7 @@ lemma deriv_Gamma_nat (n : ℕ) :
   have h_rec (x : ℝ) (hx : 0 < x) : f (x + 1) = f x + log x := by simp only [f, Function.comp_apply,
       Gamma_add_one hx.ne', log_mul hx.ne' (Gamma_pos_of_pos hx).ne', add_comm]
   have hder {x : ℝ} (hx : 0 < x) : DifferentiableAt ℝ f x := by
-    refine ((differentiableAt_Gamma ?_).log (Gamma_ne_zero ?_)) <;>
+    refine ((differentiableAt_Gamma _).log (Gamma_ne_zero _)) <;>
     exact fun m ↦ ne_of_gt (by linarith)
   -- Express derivative at general `n` in terms of value at `1` using recurrence relation
   have hder_rec (x : ℝ) (hx : 0 < x) : deriv f (x + 1) = deriv f x + 1 / x := by
@@ -57,13 +57,13 @@ lemma deriv_Gamma_nat (n : ℕ) :
   suffices -deriv f 1 = eulerMascheroniConstant by rw [hder_nat n, ← this, neg_neg]
   -- Use convexity to show derivative of `f` at `n + 1` is between `log n` and `log (n + 1)`
   have derivLB (n : ℕ) (hn : 0 < n) : log n ≤ deriv f (n + 1) := by
-    refine (le_of_eq ?_).trans <| hc.slope_le_deriv (mem_Ioi.mpr <| Nat.cast_pos.mpr hn)
+    refine (le_of_eq _).trans <| hc.slope_le_deriv (mem_Ioi.mpr <| Nat.cast_pos.mpr hn)
       (by positivity : _ < (_ : ℝ)) (by linarith) (hder <| by positivity)
     rw [slope_def_field, show n + 1 - n = (1 : ℝ) by ring, div_one, h_rec n (by positivity),
       add_sub_cancel_left]
   have derivUB (n : ℕ) : deriv f (n + 1) ≤ log (n + 1) := by
     refine (hc.deriv_le_slope (by positivity : (0 : ℝ) < n + 1) (by positivity : (0 : ℝ) < n + 2)
-        (by linarith) (hder <| by positivity)).trans (le_of_eq ?_)
+        (by linarith) (hder <| by positivity)).trans (le_of_eq _)
     rw [slope_def_field, show n + 2 - (n + 1) = (1 : ℝ) by ring, div_one,
       show n + 2 = (n + 1) + (1 : ℝ) by ring, h_rec (n + 1) (by positivity), add_sub_cancel_left]
   -- deduce `-deriv f 1` is bounded above + below by sequences which both tend to `γ`
@@ -97,7 +97,7 @@ namespace Complex
 
 lemma differentiable_at_Gamma_nat_add_one (n : ℕ) :
     DifferentiableAt ℂ Gamma (n + 1) := by
-  refine differentiableAt_Gamma _ (fun m ↦ ?_)
+  refine differentiableAt_Gamma _ (fun m ↦ _)
   simp only [Ne, ← ofReal_natCast, ← ofReal_one, ← ofReal_add, ← ofReal_neg, ofReal_inj,
     eq_neg_iff_add_eq_zero]
   positivity

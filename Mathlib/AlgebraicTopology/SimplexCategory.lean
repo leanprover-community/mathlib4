@@ -479,7 +479,7 @@ instance : skeletalFunctor.EssSurj where
           (Nat.succ_pred_eq_of_pos <| Fintype.card_pos_iff.mpr ⟨⊥⟩).symm
         let f := monoEquivOfFin X aux
         have hf := (Finset.univ.orderEmbOfFin aux).strictMono
-        refine'
+        refine
           { hom := ⟨f, hf.monotone⟩
             inv := ⟨f.symm, _⟩
             hom_inv_id := by ext1; apply f.symm_apply_apply
@@ -696,7 +696,7 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
     rw [Fin.predAbove_of_castSucc_lt i y.succ h', Fin.pred_succ]
     by_cases h'' : y = i
     · rw [h'']
-      refine hi.symm.trans ?_
+      refine hi.symm.trans _
       congr 1
       dsimp [δ]
       erw [Fin.succAbove_of_castSucc_lt i.succ]
@@ -725,7 +725,7 @@ theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : mk (
     rcases hθ with ⟨x, y, ⟨h₁, h₂⟩⟩
     by_cases h : x < y
     · exact ⟨x, y, ⟨h₁, h⟩⟩
-    · refine' ⟨y, x, ⟨h₁.symm, _⟩⟩
+    · refine ⟨y, x, ⟨h₁.symm, _⟩⟩
       rcases lt_or_eq_of_le (not_lt.mp h) with h' | h'
       · exact h'
       · exfalso

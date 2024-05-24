@@ -424,7 +424,7 @@ protected theorem symm {m n : ℕ} (hm : Odd m) (hn : Odd n) : qrSign m n = qrSi
 /-- We can move `qrSign m n` from one side of an equality to the other when `m` and `n` are odd. -/
 theorem eq_iff_eq {m n : ℕ} (hm : Odd m) (hn : Odd n) (x y : ℤ) :
     qrSign m n * x = y ↔ x = qrSign m n * y := by
-  refine'
+  refine
       ⟨fun h' =>
         let h := h'.symm
         _,
@@ -448,11 +448,11 @@ theorem quadratic_reciprocity' {a b : ℕ} (ha : Odd a) (hb : Odd b) :
         -- applied under the binder `fun ↦ ...`
         simp_rw [qrSign.mul_left x y a, Nat.cast_mul, mul_left, mul_mul_mul_comm] }
   have rhs_apply : ∀ a b : ℕ, rhs a b = qrSign b a * J(b | a) := fun a b => rfl
-  refine' value_at a (rhs a) (fun p pp hp => Eq.symm _) hb
+  refine value_at a (rhs a) (fun p pp hp => Eq.symm _) hb
   have hpo := pp.eq_two_or_odd'.resolve_left hp
   rw [@legendreSym.to_jacobiSym p ⟨pp⟩, rhs_apply, Nat.cast_id, qrSign.eq_iff_eq hpo ha,
     qrSign.symm hpo ha]
-  refine' value_at p (rhs p) (fun q pq hq => _) ha
+  refine value_at p (rhs p) (fun q pq hq => _) ha
   have hqo := pq.eq_two_or_odd'.resolve_left hq
   rw [rhs_apply, Nat.cast_id, ← @legendreSym.to_jacobiSym p ⟨pp⟩, qrSign.symm hqo hpo,
     qrSign.neg_one_pow hpo hqo, @legendreSym.quadratic_reciprocity' p q ⟨pp⟩ ⟨pq⟩ hp hq]
@@ -583,7 +583,7 @@ private theorem fastJacobiSymAux.eq_jacobiSym {a b : ℕ} {flip : Bool} {ha0 : a
   · subst ha1; simp
   split <;> rename_i hba
   · suffices J(a | b) = 0 by simp [this]
-    refine eq_zero_iff.mpr ⟨fun h ↦ absurd (h ▸ hb1) (by decide), ?_⟩
+    refine eq_zero_iff.mpr ⟨fun h ↦ absurd (h ▸ hb1) (by decide), _⟩
     rwa [Int.coe_nat_gcd, Nat.gcd_eq_left (Nat.dvd_of_mod_eq_zero hba)]
   rw [IH (b % a) (b.mod_lt ha0) (Nat.mod_two_ne_zero.mp ha2) (lt_of_le_of_ne ha0 (Ne.symm ha1))]
   simp only [Int.natCast_mod, ← mod_left]
@@ -614,9 +614,9 @@ private def fastJacobiSym (a : ℤ) (b : ℕ) : ℤ :=
   unfold fastJacobiSym
   split_ifs with hb0 hb2 ha2 hb1 hab
   · rw [hb0, zero_right]
-  · refine eq_zero_iff.mpr ⟨hb0, ne_of_gt ?_⟩
-    refine Nat.le_of_dvd (Int.gcd_pos_iff.mpr (mod_cast .inr hb0)) ?_
-    refine Nat.dvd_gcd (Int.ofNat_dvd_left.mp (Int.dvd_of_emod_eq_zero ha2)) ?_
+  · refine eq_zero_iff.mpr ⟨hb0, ne_of_gt _⟩
+    refine Nat.le_of_dvd (Int.gcd_pos_iff.mpr (mod_cast .inr hb0)) _
+    refine Nat.dvd_gcd (Int.ofNat_dvd_left.mp (Int.dvd_of_emod_eq_zero ha2)) _
     exact Int.ofNat_dvd_left.mp (Int.dvd_of_emod_eq_zero (mod_cast hb2))
   · rw [← IH (b / 2) (b.div_lt_self (Nat.pos_of_ne_zero hb0) one_lt_two)]
     obtain ⟨b, rfl⟩ := Nat.dvd_of_mod_eq_zero hb2

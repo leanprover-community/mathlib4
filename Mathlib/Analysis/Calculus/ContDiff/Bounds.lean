@@ -74,7 +74,7 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
             mul_le_mul_of_nonneg_right (B.norm_precompR_le Du) (by positivity)
         _ = _ := by
           congr 1
-          apply Finset.sum_congr rfl fun i hi => ?_
+          apply Finset.sum_congr rfl fun i hi => _
           rw [Nat.succ_sub (Nat.lt_succ_iff.1 (Finset.mem_range.1 hi)),
             ← norm_iteratedFDerivWithin_fderivWithin hs hx]
     -- Porting note: the next line is a hack allowing Lean to find the operator norm instance.
@@ -96,13 +96,13 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
             mul_le_mul_of_nonneg_right (B.norm_precompL_le Du) (by positivity)
         _ = _ := by
           congr 1
-          apply Finset.sum_congr rfl fun i _ => ?_
+          apply Finset.sum_congr rfl fun i _ => _
           rw [← norm_iteratedFDerivWithin_fderivWithin hs hx]
     have J : iteratedFDerivWithin 𝕜 n
         (fun y : Du => fderivWithin 𝕜 (fun y : Du => B (f y) (g y)) s y) s x =
           iteratedFDerivWithin 𝕜 n (fun y => B.precompR Du (f y)
             (fderivWithin 𝕜 g s y) + B.precompL Du (fderivWithin 𝕜 f s y) (g y)) s x := by
-      apply iteratedFDerivWithin_congr (fun y hy => ?_) hx
+      apply iteratedFDerivWithin_congr (fun y hy => _) hx
       have L : (1 : ℕ∞) ≤ n.succ := by
         simpa only [ENat.coe_one, Nat.one_le_cast] using Nat.succ_pos n
       exact B.fderivWithin_of_bilinear (hf.differentiableOn L y hy) (hg.differentiableOn L y hy)
@@ -115,7 +115,7 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
       (B.precompL Du).isBoundedBilinearMap.contDiff.comp_contDiff_on₂ (hf.fderivWithin hs In)
         (hg.of_le (Nat.cast_le.2 (Nat.le_succ n)))
     rw [iteratedFDerivWithin_add_apply' A A' hs hx]
-    apply (norm_add_le _ _).trans ((add_le_add I1 I2).trans (le_of_eq ?_))
+    apply (norm_add_le _ _).trans ((add_le_add I1 I2).trans (le_of_eq _))
     simp_rw [← mul_add, mul_assoc]
     congr 1
     exact (Finset.sum_choose_succ_mul
@@ -158,8 +158,8 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear (B : E →L
     simp [hBu, hBu₀, hfu, hgu]
   -- All norms are preserved by the lifting process.
   have Bu_le : ‖Bu‖ ≤ ‖B‖ := by
-    refine' ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg _) fun y => _
-    refine' ContinuousLinearMap.opNorm_le_bound _ (by positivity) fun x => _
+    refine ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg _) fun y => _
+    refine ContinuousLinearMap.opNorm_le_bound _ (by positivity) fun x => _
     simp only [hBu, hBu₀, compL_apply, coe_comp', Function.comp_apply,
       ContinuousLinearEquiv.coe_coe, LinearIsometryEquiv.coe_coe, flip_apply,
       LinearIsometryEquiv.norm_map]
@@ -309,7 +309,7 @@ theorem norm_iteratedFDerivWithin_prod_le [DecidableEq ι] [NormOneClass A'] {u 
   | @insert i u hi IH =>
     conv => lhs; simp only [Finset.prod_insert hi]
     simp only [Finset.mem_insert, forall_eq_or_imp] at hf
-    refine le_trans (norm_iteratedFDerivWithin_mul_le hf.1 (contDiffOn_prod hf.2) hs hx hn) ?_
+    refine le_trans (norm_iteratedFDerivWithin_mul_le hf.1 (contDiffOn_prod hf.2) hs hx hn) _
     rw [← Finset.sum_coe_sort (Finset.sym _ _)]
     rw [Finset.sum_equiv (Finset.symInsertEquiv hi) (t := Finset.univ)
       (g := (fun v ↦ v.multinomial *
@@ -318,15 +318,15 @@ theorem norm_iteratedFDerivWithin_prod_le [DecidableEq ι] [NormOneClass A'] {u 
       (by simp) (by simp only [← comp_apply (g := Finset.symInsertEquiv hi), comp.assoc]; simp)]
     rw [← Finset.univ_sigma_univ, Finset.sum_sigma, Finset.sum_range]
     simp only [comp_apply, Finset.symInsertEquiv_symm_apply_coe]
-    refine Finset.sum_le_sum ?_
+    refine Finset.sum_le_sum _
     intro m _
     specialize IH hf.2 (n := n - m) (le_trans (WithTop.coe_le_coe.mpr (n.sub_le m)) hn)
-    refine le_trans (mul_le_mul_of_nonneg_left IH (by simp [mul_nonneg])) ?_
+    refine le_trans (mul_le_mul_of_nonneg_left IH (by simp [mul_nonneg])) _
     rw [Finset.mul_sum, ← Finset.sum_coe_sort]
-    refine Finset.sum_le_sum ?_
+    refine Finset.sum_le_sum _
     simp only [Finset.mem_univ, forall_true_left, Subtype.forall, Finset.mem_sym_iff]
     intro p hp
-    refine le_of_eq ?_
+    refine le_of_eq _
     rw [Finset.prod_insert hi]
     have hip : i ∉ p := mt (hp i) hi
     rw [Sym.count_coe_fill_self_of_not_mem hip, Sym.multinomial_coe_fill_of_not_mem hip]
@@ -334,7 +334,7 @@ theorem norm_iteratedFDerivWithin_prod_le [DecidableEq ι] [NormOneClass A'] {u 
         ∏ j in u, ‖iteratedFDerivWithin 𝕜 (Multiset.count j (Sym.fill i m p)) (f j) s x‖ by
       rw [this, Nat.cast_mul]
       ring
-    refine Finset.prod_congr rfl ?_
+    refine Finset.prod_congr rfl _
     intro j hj
     have hji : j ≠ i := mt (· ▸ hj) hi
     rw [Sym.count_coe_fill_of_ne hji]
@@ -417,7 +417,7 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
         (fderivWithin 𝕜 g t (f y)) (fderivWithin 𝕜 f s y)) s x‖ := by
       have L : (1 : ℕ∞) ≤ n.succ := by simpa only [ENat.coe_one, Nat.one_le_cast] using n.succ_pos
       congr 1
-      refine' iteratedFDerivWithin_congr (fun y hy => _) hx _
+      refine iteratedFDerivWithin_congr (fun y hy => _) hx _
       apply fderivWithin.comp _ _ _ hst (hs y hy)
       · exact hg.differentiableOn L _ (hst hy)
       · exact hf.differentiableOn L _ hy
@@ -543,7 +543,7 @@ theorem norm_iteratedFDerivWithin_clm_apply {f : E → F →L[𝕜] G} {g : E �
   let B : (F →L[𝕜] G) →L[𝕜] F →L[𝕜] G := ContinuousLinearMap.flip (ContinuousLinearMap.apply 𝕜 G)
   have hB : ‖B‖ ≤ 1 := by
     simp only [B, ContinuousLinearMap.opNorm_flip, ContinuousLinearMap.apply]
-    refine' ContinuousLinearMap.opNorm_le_bound _ zero_le_one fun f => _
+    refine ContinuousLinearMap.opNorm_le_bound _ zero_le_one fun f => _
     simp only [ContinuousLinearMap.coe_id', id, one_mul]
     rfl
   exact B.norm_iteratedFDerivWithin_le_of_bilinear_of_le_one hf hg hs hx hn hB
@@ -565,8 +565,8 @@ theorem norm_iteratedFDerivWithin_clm_apply_const {f : E → F →L[𝕜] G} {c 
   let g : (F →L[𝕜] G) →L[𝕜] G := ContinuousLinearMap.apply 𝕜 G c
   have h := g.norm_compContinuousMultilinearMap_le (iteratedFDerivWithin 𝕜 n f s x)
   rw [← g.iteratedFDerivWithin_comp_left hf hs hx hn] at h
-  refine' h.trans (mul_le_mul_of_nonneg_right _ (norm_nonneg _))
-  refine' g.opNorm_le_bound (norm_nonneg _) fun f => _
+  refine h.trans (mul_le_mul_of_nonneg_right _ (norm_nonneg _))
+  refine g.opNorm_le_bound (norm_nonneg _) fun f => _
   rw [ContinuousLinearMap.apply_apply, mul_comm]
   exact f.le_opNorm c
 #align norm_iterated_fderiv_within_clm_apply_const norm_iteratedFDerivWithin_clm_apply_const

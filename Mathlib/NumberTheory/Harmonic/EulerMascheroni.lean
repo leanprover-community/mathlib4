@@ -48,13 +48,13 @@ lemma eulerMascheroniSeq_zero : eulerMascheroniSeq 0 = 0 := by
   simp [eulerMascheroniSeq, harmonic_zero]
 
 lemma strictMono_eulerMascheroniSeq : StrictMono eulerMascheroniSeq := by
-  refine strictMono_nat_of_lt_succ (fun n ↦ ?_)
+  refine strictMono_nat_of_lt_succ (fun n ↦ _)
   rw [eulerMascheroniSeq, eulerMascheroniSeq, ← sub_pos, sub_sub_sub_comm,
     harmonic_succ, add_comm, Rat.cast_add, add_sub_cancel_right,
     ← log_div (by positivity) (by positivity), add_div, Nat.cast_add_one,
     Nat.cast_add_one, div_self (by positivity), sub_pos, one_div, Rat.cast_inv, Rat.cast_add,
     Rat.cast_one, Rat.cast_natCast]
-  refine (log_lt_sub_one_of_pos ?_ (ne_of_gt <| lt_add_of_pos_right _ ?_)).trans_le (le_of_eq ?_)
+  refine (log_lt_sub_one_of_pos _ (ne_of_gt <| lt_add_of_pos_right _ _)).trans_le (le_of_eq _)
   · positivity
   · positivity
   · simp only [add_sub_cancel_left]
@@ -64,7 +64,7 @@ lemma one_half_lt_eulerMascheroniSeq_six : 1 / 2 < eulerMascheroniSeq 6 := by
     rw [eulerMascheroniSeq]
     norm_num
   rw [this, lt_sub_iff_add_lt, ← lt_sub_iff_add_lt', log_lt_iff_lt_exp (by positivity)]
-  refine lt_of_lt_of_le ?_ (Real.sum_le_exp_of_nonneg (by norm_num) 7)
+  refine lt_of_lt_of_le _ (Real.sum_le_exp_of_nonneg (by norm_num) 7)
   simp_rw [Finset.sum_range_succ, Nat.factorial_succ]
   norm_num
 
@@ -81,7 +81,7 @@ lemma eulerMascheroniSeq'_one : eulerMascheroniSeq' 1 = 1 := by
   simp [eulerMascheroniSeq']
 
 lemma strictAnti_eulerMascheroniSeq' : StrictAnti eulerMascheroniSeq' := by
-  refine strictAnti_nat_of_succ_lt (fun n ↦ ?_)
+  refine strictAnti_nat_of_succ_lt (fun n ↦ _)
   rcases Nat.eq_zero_or_pos n with rfl | hn
   · simp [eulerMascheroniSeq']
   simp_rw [eulerMascheroniSeq', eq_false_intro hn.ne', if_false]
@@ -89,7 +89,7 @@ lemma strictAnti_eulerMascheroniSeq' : StrictAnti eulerMascheroniSeq' := by
     harmonic_succ, Rat.cast_add, ← sub_sub, sub_self, zero_sub, sub_eq_add_neg, neg_sub,
     ← sub_eq_neg_add, sub_pos, ← log_div (by positivity) (by positivity), ← neg_lt_neg_iff,
     ← log_inv]
-  refine (log_lt_sub_one_of_pos ?_ ?_).trans_le (le_of_eq ?_)
+  refine (log_lt_sub_one_of_pos _ _).trans_le (le_of_eq _)
   · positivity
   · field_simp
   · field_simp
@@ -102,7 +102,7 @@ lemma eulerMascheroniSeq'_six_lt_two_thirds : eulerMascheroniSeq' 6 < 2 / 3 := b
   norm_num
   have := rpow_lt_rpow (exp_pos _).le exp_one_lt_d9 (by norm_num : (0 : ℝ) < 107 / 60)
   rw [exp_one_rpow] at this
-  refine lt_trans this ?_
+  refine lt_trans this _
   rw [← rpow_lt_rpow_iff (z := 60), ← rpow_mul, div_mul_cancel₀, ← Nat.cast_ofNat,
     ← Nat.cast_ofNat, rpow_natCast, Nat.cast_ofNat, ← Nat.cast_ofNat (n := 60), rpow_natCast]
   · norm_num
@@ -126,7 +126,7 @@ noncomputable def eulerMascheroniConstant : ℝ := limUnder atTop eulerMascheron
 
 lemma tendsto_eulerMascheroniSeq :
     Tendsto eulerMascheroniSeq atTop (𝓝 eulerMascheroniConstant) := by
-  have := tendsto_atTop_ciSup strictMono_eulerMascheroniSeq.monotone ?_
+  have := tendsto_atTop_ciSup strictMono_eulerMascheroniSeq.monotone _
   · rwa [eulerMascheroniConstant, this.limUnder_eq]
   · exact ⟨_, fun _ ⟨_, hn⟩ ↦ hn ▸ (eulerMascheroniSeq_lt_eulerMascheroniSeq' _ 1).le⟩
 
@@ -157,12 +157,12 @@ lemma tendsto_harmonic_sub_log :
 
 lemma eulerMascheroniSeq_lt_eulerMascheroniConstant (n : ℕ) :
     eulerMascheroniSeq n < eulerMascheroniConstant := by
-  refine (strictMono_eulerMascheroniSeq (Nat.lt_succ_self n)).trans_le ?_
+  refine (strictMono_eulerMascheroniSeq (Nat.lt_succ_self n)).trans_le _
   apply strictMono_eulerMascheroniSeq.monotone.ge_of_tendsto tendsto_eulerMascheroniSeq
 
 lemma eulerMascheroniConstant_lt_eulerMascheroniSeq' (n : ℕ) :
     eulerMascheroniConstant < eulerMascheroniSeq' n := by
-  refine lt_of_le_of_lt ?_ (strictAnti_eulerMascheroniSeq' (Nat.lt_succ_self n))
+  refine lt_of_le_of_lt _ (strictAnti_eulerMascheroniSeq' (Nat.lt_succ_self n))
   apply strictAnti_eulerMascheroniSeq'.antitone.le_of_tendsto tendsto_eulerMascheroniSeq'
 
 /-- Lower bound for `γ`. (The true value is about 0.57.) -/

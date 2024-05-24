@@ -172,7 +172,7 @@ lemma initial_iff_fiber_empty (X : C) : Nonempty (IsInitial X) ↔ IsEmpty (F.ob
 /-- An object is not initial if and only if its fiber is nonempty. -/
 lemma not_initial_iff_fiber_nonempty (X : C) : (IsInitial X → False) ↔ Nonempty (F.obj X) := by
   rw [← not_isEmpty_iff]
-  refine ⟨fun h he ↦ ?_, fun h hin ↦ h <| (initial_iff_fiber_empty F X).mp ⟨hin⟩⟩
+  refine ⟨fun h he ↦ _, fun h hin ↦ h <| (initial_iff_fiber_empty F X).mp ⟨hin⟩⟩
   exact Nonempty.elim ((initial_iff_fiber_empty F X).mpr he) h
 
 /-- An object whose fiber is inhabited is not initial. -/
@@ -296,7 +296,7 @@ lemma isIso_of_mono_of_eq_card_fiber {X Y : C} (f : X ⟶ Y) [Mono f]
   have : IsIso (F.map f) := by
     apply (ConcreteCategory.isIso_iff_bijective (F.map f)).mpr
     apply (Fintype.bijective_iff_injective_and_card (F.map f)).mpr
-    refine ⟨injective_of_mono_of_preservesPullback (F.map f), ?_⟩
+    refine ⟨injective_of_mono_of_preservesPullback (F.map f), _⟩
     simp only [← Nat.card_eq_fintype_card, h]
   exact isIso_of_reflects_iso f F
 
@@ -314,7 +314,7 @@ lemma lt_card_fiber_of_mono_of_notIso {X Y : C} (f : X ⟶ Y) [Mono f]
 lemma non_zero_card_fiber_of_not_initial (X : C) (h : IsInitial X → False) :
     Nat.card (F.obj X) ≠ 0 := by
   intro hzero
-  refine Nonempty.elim ?_ h
+  refine Nonempty.elim _ h
   rw [initial_iff_fiber_empty F]
   exact Finite.card_eq_zero_iff.mp hzero
 

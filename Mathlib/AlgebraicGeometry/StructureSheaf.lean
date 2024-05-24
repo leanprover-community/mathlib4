@@ -114,7 +114,7 @@ theorem IsFraction.eq_mk' {U : Opens (PrimeSpectrum.Top R)} {f : ∀ x : U, Loca
             IsLocalization.mk' (Localization.AtPrime _) r
               (⟨s, hs⟩ : (x : PrimeSpectrum.Top R).asIdeal.primeCompl) := by
   rcases hf with ⟨r, s, h⟩
-  refine' ⟨r, s, fun x => ⟨(h x).1, (IsLocalization.mk'_eq_iff_eq_mul.mpr _).symm⟩⟩
+  refine ⟨r, s, fun x => ⟨(h x).1, (IsLocalization.mk'_eq_iff_eq_mul.mpr _).symm⟩⟩
   exact (h x).2.symm
 #align algebraic_geometry.structure_sheaf.is_fraction.eq_mk' AlgebraicGeometry.StructureSheaf.IsFraction.eq_mk'
 
@@ -166,18 +166,18 @@ def sectionsSubring (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     Subring (∀ x : U.unop, Localizations R x) where
   carrier := { f | (isLocallyFraction R).pred f }
   zero_mem' := by
-    refine' fun x => ⟨unop U, x.2, 𝟙 _, 0, 1, fun y => ⟨_, _⟩⟩
+    refine fun x => ⟨unop U, x.2, 𝟙 _, 0, 1, fun y => ⟨_, _⟩⟩
     · rw [← Ideal.ne_top_iff_one]; exact y.1.IsPrime.1
     · simp
   one_mem' := by
-    refine' fun x => ⟨unop U, x.2, 𝟙 _, 1, 1, fun y => ⟨_, _⟩⟩
+    refine fun x => ⟨unop U, x.2, 𝟙 _, 1, 1, fun y => ⟨_, _⟩⟩
     · rw [← Ideal.ne_top_iff_one]; exact y.1.IsPrime.1
     · simp
   add_mem' := by
     intro a b ha hb x
     rcases ha x with ⟨Va, ma, ia, ra, sa, wa⟩
     rcases hb x with ⟨Vb, mb, ib, rb, sb, wb⟩
-    refine' ⟨Va ⊓ Vb, ⟨ma, mb⟩, Opens.infLELeft _ _ ≫ ia, ra * sb + rb * sa, sa * sb, _⟩
+    refine ⟨Va ⊓ Vb, ⟨ma, mb⟩, Opens.infLELeft _ _ ≫ ia, ra * sb + rb * sa, sa * sb, _⟩
     intro y
     rcases wa (Opens.infLELeft _ _ y) with ⟨nma, wa⟩
     rcases wb (Opens.infLERight _ _ y) with ⟨nmb, wb⟩
@@ -191,7 +191,7 @@ def sectionsSubring (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
   neg_mem' := by
     intro a ha x
     rcases ha x with ⟨V, m, i, r, s, w⟩
-    refine ⟨V, m, i, -r, s, ?_⟩
+    refine ⟨V, m, i, -r, s, _⟩
     intro y
     rcases w y with ⟨nm, w⟩
     fconstructor
@@ -203,7 +203,7 @@ def sectionsSubring (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     intro a b ha hb x
     rcases ha x with ⟨Va, ma, ia, ra, sa, wa⟩
     rcases hb x with ⟨Vb, mb, ib, rb, sb, wb⟩
-    refine' ⟨Va ⊓ Vb, ⟨ma, mb⟩, Opens.infLELeft _ _ ≫ ia, ra * rb, sa * sb, _⟩
+    refine ⟨Va ⊓ Vb, ⟨ma, mb⟩, Opens.infLELeft _ _ ≫ ia, ra * rb, sa * sb, _⟩
     intro y
     rcases wa (Opens.infLELeft _ _ y) with ⟨nma, wa⟩
     rcases wb (Opens.infLERight _ _ y) with ⟨nmb, wb⟩
@@ -585,7 +585,7 @@ def stalkIso (x : PrimeSpectrum.Top R) :
     obtain ⟨V, hxV, iVU, f, g, (hg : V ≤ PrimeSpectrum.basicOpen _), hs⟩ :=
       exists_const _ _ s x hxU
     erw [← res_apply R U V iVU s ⟨x, hxV⟩, ← hs, const_apply, localizationToStalk_mk']
-    refine' (structureSheaf R).presheaf.germ_ext V hxV (homOfLE hg) iVU _
+    refine (structureSheaf R).presheaf.germ_ext V hxV (homOfLE hg) iVU _
     dsimp
     erw [← hs, res_const']
   inv_hom_id :=
@@ -787,7 +787,7 @@ theorem normalize_finite_fraction_representation (U : Opens (PrimeSpectrum.Top R
   have basic_opens_eq : ∀ i : ι, PrimeSpectrum.basicOpen (h i ^ (N + 1)) =
     PrimeSpectrum.basicOpen (h i) := fun i => PrimeSpectrum.basicOpen_pow _ _ (by omega)
   -- Expanding the fraction `a i / h i` by the power `(h i) ^ n` gives the desired normalization
-  refine'
+  refine
     ⟨fun i => a i * h i ^ N, fun i => h i ^ (N + 1), fun i => eqToHom (basic_opens_eq i) ≫ iDh i,
       _, _, _⟩
   · simpa only [basic_opens_eq] using h_cover
@@ -1089,10 +1089,10 @@ theorem comapFunIsLocallyFraction (f : R →+* S) (U : Opens (PrimeSpectrum.Top 
   rcases hs ⟨PrimeSpectrum.comap f p, hUV hpV⟩ with ⟨W, m, iWU, a, b, h_frac⟩
   -- We claim that we can write our new section as the fraction `f a / f b` on the neighborhood
   -- `(comap f) ⁻¹ W ⊓ V` of `p`.
-  refine' ⟨Opens.comap (PrimeSpectrum.comap f) W ⊓ V, ⟨m, hpV⟩, Opens.infLERight _ _, f a, f b, _⟩
+  refine ⟨Opens.comap (PrimeSpectrum.comap f) W ⊓ V, ⟨m, hpV⟩, Opens.infLERight _ _, f a, f b, _⟩
   rintro ⟨q, ⟨hqW, hqV⟩⟩
   specialize h_frac ⟨PrimeSpectrum.comap f q, hqW⟩
-  refine' ⟨h_frac.1, _⟩
+  refine ⟨h_frac.1, _⟩
   dsimp only [comapFun]
   erw [← Localization.localRingHom_to_map (PrimeSpectrum.comap f q).asIdeal, ← RingHom.map_mul,
     h_frac.2, Localization.localRingHom_to_map]

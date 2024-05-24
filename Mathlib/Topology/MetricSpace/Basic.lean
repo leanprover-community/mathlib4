@@ -348,10 +348,10 @@ theorem secondCountable_of_countable_discretization {α : Type u} [MetricSpace �
     (H : ∀ ε > (0 : ℝ), ∃ (β : Type*) (_ : Encodable β) (F : α → β),
       ∀ x y, F x = F y → dist x y ≤ ε) :
     SecondCountableTopology α := by
-  refine secondCountable_of_almost_dense_set fun ε ε0 => ?_
+  refine secondCountable_of_almost_dense_set fun ε ε0 => _
   rcases H ε ε0 with ⟨β, fβ, F, hF⟩
   let Finv := rangeSplitting F
-  refine ⟨range Finv, ⟨countable_range _, fun x => ?_⟩⟩
+  refine ⟨range Finv, ⟨countable_range _, fun x => _⟩⟩
   let x' := Finv ⟨F x, mem_range_self _⟩
   have : F x' = F x := apply_rangeSplitting F _
   exact ⟨x', mem_range_self _, hF _ _ this.symm⟩

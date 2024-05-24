@@ -246,13 +246,13 @@ theorem MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient [Loc
     rw [← le_zero_iff,
       ← fund_dom_s.measure_zero_of_invariant _ (fun g ↦ QuotientGroup.sound _ _ g) h]
     apply measure_mono
-    refine interior_subset.trans ?_
+    refine interior_subset.trans _
     rw [QuotientGroup.coe_mk']
     show (K : Set G) ⊆ π ⁻¹' (π '' K)
     exact subset_preimage_image π K
   · show ν (π ⁻¹' (π '' K) ∩ s) ≠ ⊤
     apply ne_of_lt
-    refine lt_of_le_of_lt ?_ finiteCovol.lt_top
+    refine lt_of_le_of_lt _ finiteCovol.lt_top
     apply measure_mono
     exact inter_subset_right _ s
 
@@ -341,7 +341,7 @@ lemma essSup_comp_quotientGroup_mk [μ.IsMulRightInvariant] {g : G ⧸ Γ → �
     (g_ae_measurable : AEMeasurable g μ_𝓕) : essSup g μ_𝓕 = essSup (fun (x : G) ↦ g x) μ := by
   have hπ : Measurable (QuotientGroup.mk : G → G ⧸ Γ) := continuous_quotient_mk'.measurable
   rw [essSup_map_measure g_ae_measurable hπ.aemeasurable]
-  refine h𝓕.essSup_measure_restrict ?_
+  refine h𝓕.essSup_measure_restrict _
   intro ⟨γ, hγ⟩ x
   dsimp
   congr 1
@@ -388,7 +388,7 @@ lemma QuotientGroup.integral_eq_integral_automorphize {E : Type*} [NormedAddComm
     ∫ x : G, f x ∂μ = ∫ x : G ⧸ Γ, automorphize f x ∂μ_𝓕 := by
   calc ∫ x : G, f x ∂μ = ∑' γ : Γ.op, ∫ x in 𝓕, f (γ • x) ∂μ :=
     h𝓕.integral_eq_tsum'' f hf₁
-    _ = ∫ x in 𝓕, ∑' γ : Γ.op, f (γ • x) ∂μ := ?_
+    _ = ∫ x in 𝓕, ∑' γ : Γ.op, f (γ • x) ∂μ := _
     _ = ∫ x : G ⧸ Γ, automorphize f x ∂μ_𝓕 :=
       (integral_map continuous_quotient_mk'.aemeasurable hf₂).symm
   rw [integral_tsum]
@@ -413,12 +413,12 @@ lemma QuotientGroup.integral_mul_eq_integral_automorphize_mul {K : Type*} [Norme
   have H₀ : QuotientGroup.automorphize ((g ∘ π) * f) = g * (QuotientGroup.automorphize f) := by
     exact QuotientGroup.automorphize_smul_left f g
   calc ∫ (x : G), g (π x) * (f x) ∂μ =
-        ∫ (x : G ⧸ Γ), QuotientGroup.automorphize ((g ∘ π) * f) x ∂μ_𝓕 := ?_
+        ∫ (x : G ⧸ Γ), QuotientGroup.automorphize ((g ∘ π) * f) x ∂μ_𝓕 := _
     _ = ∫ (x : G ⧸ Γ), g x * (QuotientGroup.automorphize f x) ∂μ_𝓕 := by simp [H₀]
   have H₁ : Integrable ((g ∘ π) * f) μ := by
     have : AEStronglyMeasurable (fun (x : G) ↦ g (x : (G ⧸ Γ))) μ :=
       (hg.mono_ac h𝓕.absolutelyContinuous_map).comp_measurable meas_π
-    refine Integrable.essSup_smul f_ℒ_1 this ?_
+    refine Integrable.essSup_smul f_ℒ_1 this _
     have hg' : AEStronglyMeasurable (fun x ↦ (‖g x‖₊ : ℝ≥0∞)) μ_𝓕 :=
       (ENNReal.continuous_coe.comp continuous_nnnorm).comp_aestronglyMeasurable hg
     rw [← essSup_comp_quotientGroup_mk h𝓕 hg'.aemeasurable]
@@ -458,12 +458,12 @@ lemma QuotientAddGroup.integral_mul_eq_integral_automorphize_mul {K : Type*} [No
   have H₀ : QuotientAddGroup.automorphize ((g ∘ π) * f) = g * (QuotientAddGroup.automorphize f) :=
     by exact QuotientAddGroup.automorphize_smul_left f g
   calc ∫ (x : G'), g (π x) * f x ∂μ' =
-    ∫ (x : G' ⧸ Γ'), QuotientAddGroup.automorphize ((g ∘ π) * f) x ∂μ_𝓕 := ?_
+    ∫ (x : G' ⧸ Γ'), QuotientAddGroup.automorphize ((g ∘ π) * f) x ∂μ_𝓕 := _
     _ = ∫ (x : G' ⧸ Γ'), g x * (QuotientAddGroup.automorphize f x) ∂μ_𝓕 := by simp [H₀]
   have H₁ : Integrable ((g ∘ π) * f) μ' := by
     have : AEStronglyMeasurable (fun (x : G') ↦ g (x : (G' ⧸ Γ'))) μ' :=
       (hg.mono_ac h𝓕.absolutelyContinuous_map).comp_measurable meas_π
-    refine Integrable.essSup_smul f_ℒ_1 this ?_
+    refine Integrable.essSup_smul f_ℒ_1 this _
     have hg' : AEStronglyMeasurable (fun x ↦ (‖g x‖₊ : ℝ≥0∞)) μ_𝓕 :=
       (ENNReal.continuous_coe.comp continuous_nnnorm).comp_aestronglyMeasurable hg
     rw [← essSup_comp_quotientAddGroup_mk h𝓕 hg'.aemeasurable]

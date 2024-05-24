@@ -51,7 +51,7 @@ theorem span_eq_top_of_isLocalizedModule {v : Set M} (hv : span R v = ⊤) :
   obtain ⟨⟨m, s⟩, h⟩ := IsLocalizedModule.surj S f x
   rw [Submonoid.smul_def, ← algebraMap_smul Rₛ, ← Units.smul_isUnit (IsLocalization.map_units Rₛ s),
     eq_comm, ← inv_smul_eq_iff] at h
-  refine h ▸ smul_mem _ _  (span_subset_span R Rₛ _ ?_)
+  refine h ▸ smul_mem _ _  (span_subset_span R Rₛ _ _)
   rw [← LinearMap.coe_restrictScalars R, ← LinearMap.map_span, hv]
   exact mem_map_of_mem mem_top
 
@@ -64,7 +64,7 @@ theorem LinearIndependent.of_isLocalizedModule {ι : Type*} {v : ι → M}
     apply_fun ((a : R) • ·) at hg
     rw [smul_zero, Finset.smul_sum] at hg
     rw [map_sum, ← hg]
-    refine Finset.sum_congr rfl fun i hi => ?_
+    refine Finset.sum_congr rfl fun i hi => _
     rw [← smul_assoc, ← hg' i hi, map_smul, Function.comp_apply, algebraMap_smul]
   obtain ⟨s, hs⟩ := (IsLocalizedModule.eq_zero_iff S f).mp h0
   simp_rw [Finset.smul_sum, Submonoid.smul_def, smul_smul] at hs
@@ -105,7 +105,7 @@ theorem Basis.ofIsLocalizedModule_repr_apply (m : M) (i : ι) :
   suffices ((b.ofIsLocalizedModule Rₛ S f).repr.toLinearMap.restrictScalars R) ∘ₗ f =
       Finsupp.mapRange.linearMap (Algebra.linearMap R Rₛ) ∘ₗ b.repr.toLinearMap by
     exact DFunLike.congr_fun (LinearMap.congr_fun this m) i
-  refine Basis.ext b fun i ↦ ?_
+  refine Basis.ext b fun i ↦ _
   rw [LinearMap.coe_comp, Function.comp_apply, LinearMap.coe_restrictScalars,
     LinearEquiv.coe_coe, ← b.ofIsLocalizedModule_apply Rₛ S f, repr_self, LinearMap.coe_comp,
     Function.comp_apply, LinearEquiv.coe_coe, repr_self, Finsupp.mapRange.linearMap_apply,

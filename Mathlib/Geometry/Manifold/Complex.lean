@@ -88,7 +88,7 @@ theorem norm_eqOn_of_isPreconnected_of_isMaxOn {f : M → F} {U : Set M} {c : M}
   set V := {z ∈ U | ‖f z‖ = ‖f c‖}
   suffices U ⊆ V from fun x hx ↦ (this hx).2
   have hVo : IsOpen V := by
-    refine isOpen_iff_mem_nhds.2 fun x hx ↦ inter_mem (ho.mem_nhds hx.1) ?_
+    refine isOpen_iff_mem_nhds.2 fun x hx ↦ inter_mem (ho.mem_nhds hx.1) _
     replace hm : IsLocalMax (‖f ·‖) x :=
       mem_of_superset (ho.mem_nhds hx.1) fun z hz ↦ (hm hz).out.trans_eq hx.2.symm
     replace hd : ∀ᶠ y in 𝓝 x, MDifferentiableAt I 𝓘(ℂ, F) f y :=
@@ -123,7 +123,7 @@ theorem eqOn_of_isPreconnected_of_isMaxOn_norm [StrictConvexSpace ℝ F] {f : M 
 theorem apply_eq_of_isPreconnected_isCompact_isOpen {f : M → F} {U : Set M} {a b : M}
     (hd : MDifferentiableOn I 𝓘(ℂ, F) f U) (hpc : IsPreconnected U) (hc : IsCompact U)
     (ho : IsOpen U) (ha : a ∈ U) (hb : b ∈ U) : f a = f b := by
-  refine ?_
+  refine _
   -- Subtract `f b` to avoid the assumption `[StrictConvexSpace ℝ F]`
   wlog hb₀ : f b = 0 generalizing f
   · have hd' : MDifferentiableOn I 𝓘(ℂ, F) (f · - f b) U := fun x hx ↦

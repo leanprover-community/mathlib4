@@ -202,7 +202,7 @@ instance forget_reflects_iso : (forget X).ReflectsIsomorphisms where
     let g : Z ⟶ Y := Over.homMk (inv ((forget X).map f))
       ((asIso ((forget X).map f)).inv_comp_eq.2 (Over.w f).symm)
     dsimp [forget] at t
-    refine ⟨⟨g, ⟨?_,?_⟩⟩⟩
+    refine ⟨⟨g, ⟨_,_⟩⟩⟩
     repeat (ext; simp [g])
 #align category_theory.over.forget_reflects_iso CategoryTheory.Over.forget_reflects_iso
 
@@ -241,7 +241,7 @@ monomorphisms.
 The converse of `CategoryTheory.Over.mono_of_mono_left`.
 -/
 instance mono_left_of_mono {f g : Over X} (k : f ⟶ g) [Mono k] : Mono k.left := by
-  refine ⟨fun { Y : T } l m a => ?_⟩
+  refine ⟨fun { Y : T } l m a => _⟩
   let l' : mk (m ≫ f.hom) ⟶ f := homMk l (by
         dsimp; rw [← Over.w k, ← Category.assoc, congrArg (· ≫ g.hom) a, Category.assoc])
   suffices l' = (homMk m : mk (m ≫ f.hom) ⟶ f) by apply congrArg CommaMorphism.left this
@@ -481,7 +481,7 @@ instance forget_reflects_iso : (forget X).ReflectsIsomorphisms where
     let g : Z ⟶ Y := Under.homMk (inv ((Under.forget X).map f))
       ((IsIso.comp_inv_eq _).2 (Under.w f).symm)
     dsimp [forget] at t
-    refine ⟨⟨g, ⟨?_,?_⟩⟩⟩
+    refine ⟨⟨g, ⟨_,_⟩⟩⟩
     repeat (ext; simp [g])
 #align category_theory.under.forget_reflects_iso CategoryTheory.Under.forget_reflects_iso
 
@@ -519,7 +519,7 @@ preserves epimorphisms.
 The converse of `CategoryTheory.under.epi_of_epi_right`.
 -/
 instance epi_right_of_epi {f g : Under X} (k : f ⟶ g) [Epi k] : Epi k.right := by
-  refine ⟨fun { Y : T } l m a => ?_⟩
+  refine ⟨fun { Y : T } l m a => _⟩
   let l' : g ⟶ mk (g.hom ≫ m) := homMk l (by
     dsimp; rw [← Under.w k, Category.assoc, a, Category.assoc])
   -- Porting note: add type ascription here to `homMk m`

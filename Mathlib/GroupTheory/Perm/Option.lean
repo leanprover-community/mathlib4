@@ -37,7 +37,7 @@ theorem Equiv.optionCongr_swap {α : Type*} [DecidableEq α] (x y : α) :
 @[simp]
 theorem Equiv.optionCongr_sign {α : Type*} [DecidableEq α] [Fintype α] (e : Perm α) :
     Perm.sign e.optionCongr = Perm.sign e := by
-  refine Perm.swap_induction_on e ?_ ?_
+  refine Perm.swap_induction_on e _ _
   · simp [Perm.one_def]
   · intro f x y hne h
     simp [h, hne, Perm.mul_def, ← Equiv.optionCongr_trans]

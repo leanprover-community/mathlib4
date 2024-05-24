@@ -224,7 +224,7 @@ theorem one_mem_properDivisors_iff_one_lt : 1 ∈ n.properDivisors ↔ 1 < n := 
 
 @[simp]
 lemma sup_divisors_id (n : ℕ) : n.divisors.sup id = n := by
-  refine le_antisymm (Finset.sup_le fun _ ↦ divisor_le) ?_
+  refine le_antisymm (Finset.sup_le fun _ ↦ divisor_le) _
   rcases Decidable.eq_or_ne n 0 with rfl | hn
   · apply zero_le
   · exact Finset.le_sup (f := id) <| mem_divisors_self n hn
@@ -240,7 +240,7 @@ lemma one_lt_div_of_mem_properDivisors {m n : ℕ} (h : m ∈ n.properDivisors) 
 /-- See also `Nat.mem_properDivisors`. -/
 lemma mem_properDivisors_iff_exists {m n : ℕ} (hn : n ≠ 0) :
     m ∈ n.properDivisors ↔ ∃ k > 1, n = m * k := by
-  refine ⟨fun h ↦ ⟨n / m, one_lt_div_of_mem_properDivisors h, ?_⟩, ?_⟩
+  refine ⟨fun h ↦ ⟨n / m, one_lt_div_of_mem_properDivisors h, _⟩, _⟩
   · exact (Nat.mul_div_cancel' (mem_properDivisors.mp h).1).symm
   · rintro ⟨k, hk, rfl⟩
     rw [mul_ne_zero_iff] at hn
@@ -445,15 +445,15 @@ theorem Prime.prod_divisors {α : Type*} [CommMonoid α] {p : ℕ} {f : ℕ → 
 #align nat.prime.sum_divisors Nat.Prime.sum_divisors
 
 theorem properDivisors_eq_singleton_one_iff_prime : n.properDivisors = {1} ↔ n.Prime := by
-  refine ⟨?_, ?_⟩
+  refine ⟨_, _⟩
   · intro h
-    refine' Nat.prime_def_lt''.mpr ⟨_, fun m hdvd => _⟩
+    refine Nat.prime_def_lt''.mpr ⟨_, fun m hdvd => _⟩
     · match n with
       | 0 => contradiction
       | 1 => contradiction
       | Nat.succ (Nat.succ n) => simp [succ_le_succ]
     · rw [← mem_singleton, ← h, mem_properDivisors]
-      have := Nat.le_of_dvd ?_ hdvd
+      have := Nat.le_of_dvd _ hdvd
       · simp [hdvd, this]
         exact (le_iff_eq_or_lt.mp this).symm
       · by_contra!
@@ -468,7 +468,7 @@ theorem sum_properDivisors_eq_one_iff_prime : ∑ x in n.properDivisors, x = 1 �
   · cases n
     · simp [Nat.not_prime_one]
     · rw [← properDivisors_eq_singleton_one_iff_prime]
-      refine' ⟨fun h => _, fun h => h.symm ▸ sum_singleton _ _⟩
+      refine ⟨fun h => _, fun h => h.symm ▸ sum_singleton _ _⟩
       rw [@eq_comm (Finset ℕ) _ _]
       apply
         eq_properDivisors_of_subset_of_sum_eq_sum
@@ -500,7 +500,7 @@ theorem properDivisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) :
   have := mem_properDivisors_prime_pow pp k (x := a)
   rw [mem_properDivisors] at this
   rw [this]
-  refine ⟨?_, ?_⟩
+  refine ⟨_, _⟩
   · intro h; rcases h with ⟨j, hj, hap⟩; use j; tauto
   · tauto
 #align nat.proper_divisors_prime_pow Nat.properDivisors_prime_pow
@@ -559,7 +559,7 @@ theorem image_div_divisors_eq_divisors (n : ℕ) :
   · rw [mem_image]
     rintro ⟨x, hx1, hx2⟩
     rw [mem_divisors] at *
-    refine ⟨?_, hn⟩
+    refine ⟨_, hn⟩
     rw [← hx2]
     exact div_dvd_of_dvd hx1.1
   · rw [mem_divisors, mem_image]

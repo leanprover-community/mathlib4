@@ -187,7 +187,7 @@ theorem prod_insert : s ×ˢ insert b t = (fun a => (a, b)) '' s ∪ s ×ˢ t :=
   -- porting note (#10745):
   -- was `simp (config := { contextual := true }) [image, iff_def, or_imp, Imp.swap]`
   simp only [mem_prod, mem_insert_iff, image, mem_union, mem_setOf_eq, Prod.mk.injEq]
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h => _, fun h => _⟩
   · obtain ⟨hx, rfl|hy⟩ := h
     · exact Or.inl ⟨x, hx, rfl, rfl⟩
     · exact Or.inr ⟨hx, hy⟩
@@ -386,7 +386,7 @@ theorem prod_subset_prod_iff : s ×ˢ t ⊆ s₁ ×ˢ t₁ ↔ s ⊆ s₁ ∧ t 
   rcases (s ×ˢ t).eq_empty_or_nonempty with h | h
   · simp [h, prod_eq_empty_iff.1 h]
   have st : s.Nonempty ∧ t.Nonempty := by rwa [prod_nonempty_iff] at h
-  refine' ⟨fun H => Or.inl ⟨_, _⟩, _⟩
+  refine ⟨fun H => Or.inl ⟨_, _⟩, _⟩
   · have := image_subset (Prod.fst : α × β → α) H
     rwa [fst_image_prod _ st.2, fst_image_prod _ (h.mono H).snd] at this
   · have := image_subset (Prod.snd : α × β → β) H
@@ -524,7 +524,7 @@ end Diagonal
 /-- A function is `Function.const α a` for some `a` if and only if `∀ x y, f x = f y`. -/
 theorem range_const_eq_diagonal {α β : Type*} [hβ : Nonempty β] :
     range (const α) = {f : α → β | ∀ x y, f x = f y} := by
-  refine (range_eq_iff _ _).mpr ⟨fun _ _ _ ↦ rfl, fun f hf ↦ ?_⟩
+  refine (range_eq_iff _ _).mpr ⟨fun _ _ _ ↦ rfl, fun f hf ↦ _⟩
   rcases isEmpty_or_nonempty α with h|⟨⟨a⟩⟩
   · exact hβ.elim fun b ↦ ⟨b, Subsingleton.elim _ _⟩
   · exact ⟨f a, funext fun x ↦ hf _ _⟩
@@ -759,7 +759,7 @@ theorem univ_pi_nonempty_iff : (pi univ t).Nonempty ↔ ∀ i, (t i).Nonempty :=
 theorem pi_eq_empty_iff : s.pi t = ∅ ↔ ∃ i, IsEmpty (α i) ∨ i ∈ s ∧ t i = ∅ := by
   rw [← not_nonempty_iff_eq_empty, pi_nonempty_iff]
   push_neg
-  refine' exists_congr fun i => _
+  refine exists_congr fun i => _
   cases isEmpty_or_nonempty (α i) <;> simp [*, forall_and, eq_empty_iff_forall_not_mem]
 #align set.pi_eq_empty_iff Set.pi_eq_empty_iff
 
@@ -802,7 +802,7 @@ end Nonempty
 -- Porting note: Removing `simp` - LHS does not simplify
 theorem range_dcomp (f : ∀ i, α i → β i) :
     (range fun g : ∀ i, α i => fun i => f i (g i)) = pi univ fun i => range (f i) := by
-  refine Subset.antisymm ?_ fun x hx => ?_
+  refine Subset.antisymm _ fun x hx => _
   · rintro _ ⟨x, rfl⟩ i -
     exact ⟨x i, rfl⟩
   · choose y hy using hx
@@ -839,7 +839,7 @@ theorem pi_if {p : ι → Prop} [h : DecidablePred p] (s : Set ι) (t₁ t₂ : 
     (pi s fun i => if p i then t₁ i else t₂ i) =
       pi ({ i ∈ s | p i }) t₁ ∩ pi ({ i ∈ s | ¬p i }) t₂ := by
   ext f
-  refine' ⟨fun h => _, _⟩
+  refine ⟨fun h => _, _⟩
   · constructor <;>
       · rintro i ⟨his, hpi⟩
         simpa [*] using h i
@@ -857,16 +857,16 @@ theorem union_pi_inter
   ext x
   simp only [mem_pi, mem_union, mem_inter_iff]
   refine ⟨fun h ↦ ⟨fun i his₁ ↦ (h i (Or.inl his₁)).1, fun i his₂ ↦ (h i (Or.inr his₂)).2⟩,
-    fun h i hi ↦ ?_⟩
+    fun h i hi ↦ _⟩
   cases' hi with hi hi
   · by_cases hi2 : i ∈ s₂
     · exact ⟨h.1 i hi, h.2 i hi2⟩
-    · refine ⟨h.1 i hi, ?_⟩
+    · refine ⟨h.1 i hi, _⟩
       rw [ht₂ i hi2]
       exact mem_univ _
   · by_cases hi1 : i ∈ s₁
     · exact ⟨h.1 i hi1, h.2 i hi⟩
-    · refine ⟨?_, h.2 i hi⟩
+    · refine ⟨_, h.2 i hi⟩
       rw [ht₁ i hi1]
       exact mem_univ _
 
@@ -914,7 +914,7 @@ theorem eval_image_univ_pi_subset : eval i '' pi univ t ⊆ t i :=
 theorem subset_eval_image_pi (ht : (s.pi t).Nonempty) (i : ι) : t i ⊆ eval i '' s.pi t := by
   classical
   obtain ⟨f, hf⟩ := ht
-  refine' fun y hy => ⟨update f i y, fun j hj => _, update_same _ _ _⟩
+  refine fun y hy => ⟨update f i y, fun j hj => _, update_same _ _ _⟩
   obtain rfl | hji := eq_or_ne j i <;> simp [*, hf _ hj]
 #align set.subset_eval_image_pi Set.subset_eval_image_pi
 
@@ -929,7 +929,7 @@ theorem eval_image_univ_pi (ht : (pi univ t).Nonempty) :
 #align set.eval_image_univ_pi Set.eval_image_univ_pi
 
 theorem pi_subset_pi_iff : pi s t₁ ⊆ pi s t₂ ↔ (∀ i ∈ s, t₁ i ⊆ t₂ i) ∨ pi s t₁ = ∅ := by
-  refine'
+  refine
     ⟨fun h => or_iff_not_imp_right.2 _, fun h => h.elim pi_mono fun h' => h'.symm ▸ empty_subset _⟩
   rw [← Ne, ← nonempty_iff_ne_empty]
   intro hne i hi
@@ -956,7 +956,7 @@ theorem eval_preimage' [DecidableEq ι] {s : Set (α i)} :
 theorem update_preimage_pi [DecidableEq ι] {f : ∀ i, α i} (hi : i ∈ s)
     (hf : ∀ j ∈ s, j ≠ i → f j ∈ t j) : update f i ⁻¹' s.pi t = t i := by
   ext x
-  refine' ⟨fun h => _, fun hx j hj => _⟩
+  refine ⟨fun h => _, fun hx j hj => _⟩
   · convert h i hi
     simp
   · obtain rfl | h := eq_or_ne j i
@@ -978,7 +978,7 @@ theorem univ_pi_ite (s : Set ι) [DecidablePred (· ∈ s)] (t : ∀ i, Set (α 
     (pi univ fun i => if i ∈ s then t i else univ) = s.pi t := by
   ext
   simp_rw [mem_univ_pi]
-  refine' forall_congr' fun i => _
+  refine forall_congr' fun i => _
   split_ifs with h <;> simp [h]
 #align set.univ_pi_ite Set.univ_pi_ite
 

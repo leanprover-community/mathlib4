@@ -49,7 +49,7 @@ def _root_.FirstOrder.Language.Theory.fieldOfChar (p : ℕ) : Language.ring.Theo
 
 instance model_hasChar_of_charP [Field K] [CompatibleRing K] [CharP K p] :
     (Theory.fieldOfChar p).Model K := by
-  refine Language.Theory.model_union_iff.2 ⟨inferInstance, ?_⟩
+  refine Language.Theory.model_union_iff.2 ⟨inferInstance, _⟩
   cases CharP.char_is_prime_or_zero K p with
   | inl hp =>
     simp [hp.ne_zero, hp, Sentence.Realize]

@@ -44,7 +44,7 @@ theorem dirac_apply' (a : α) (hs : MeasurableSet s) : dirac a s = s.indicator 1
 @[simp]
 theorem dirac_apply_of_mem {a : α} (h : a ∈ s) : dirac a s = 1 := by
   have : ∀ t : Set α, a ∈ t → t.indicator (1 : α → ℝ≥0∞) a = 1 := fun t ht => indicator_of_mem ht 1
-  refine' le_antisymm (this univ trivial ▸ _) (this s h ▸ le_dirac_apply)
+  refine le_antisymm (this univ trivial ▸ _) (this s h ▸ le_dirac_apply)
   rw [← dirac_apply' a MeasurableSet.univ]
   exact measure_mono (subset_univ s)
 #align measure_theory.measure.dirac_apply_of_mem MeasureTheory.Measure.dirac_apply_of_mem
@@ -197,7 +197,7 @@ lemma dirac_ne_dirac_iff_exists_measurableSet {x y : α} :
     Measure.dirac x ≠ Measure.dirac y ↔ ∃ A, MeasurableSet A ∧ x ∈ A ∧ y ∉ A := by
   apply not_iff_not.mp
   simp only [ne_eq, not_not, not_exists, not_and, dirac_eq_dirac_iff_forall_mem_iff_mem]
-  refine ⟨fun h A A_mble ↦ by simp only [h A A_mble, imp_self], fun h A A_mble ↦ ?_⟩
+  refine ⟨fun h A A_mble ↦ by simp only [h A A_mble, imp_self], fun h A A_mble ↦ _⟩
   by_cases x_in_A : x ∈ A
   · simp only [x_in_A, h A A_mble x_in_A]
   · simpa only [x_in_A, false_iff] using h Aᶜ (MeasurableSet.compl_iff.mpr A_mble) x_in_A

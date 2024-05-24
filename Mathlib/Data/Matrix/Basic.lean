@@ -985,7 +985,7 @@ theorem two_mul_expl {R : Type*} [CommRing R] (A B : Matrix (Fin 2) (Fin 2) R) :
     (A * B) 0 1 = A 0 0 * B 0 1 + A 0 1 * B 1 1 ∧
     (A * B) 1 0 = A 1 0 * B 0 0 + A 1 1 * B 1 0 ∧
     (A * B) 1 1 = A 1 0 * B 0 1 + A 1 1 * B 1 1 := by
-  refine ⟨?_, ?_, ?_, ?_⟩ <;>
+  refine ⟨_, _, _, _⟩ <;>
   · rw [Matrix.mul_apply, Finset.sum_fin_eq_sum_range, Finset.sum_range_succ, Finset.sum_range_succ]
     simp
 #align matrix.two_mul_expl Matrix.two_mul_expl

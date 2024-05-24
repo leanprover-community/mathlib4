@@ -116,7 +116,7 @@ See also `Finset.mem_shadow_iff_exists_sdiff`. -/
 lemma mem_shadow_iff_exists_mem_card_add_one :
     t ∈ ∂ 𝒜 ↔ ∃ s ∈ 𝒜, t ⊆ s ∧ s.card = t.card + 1 := by
   refine mem_shadow_iff_exists_sdiff.trans <| exists_congr fun t ↦ and_congr_right fun _ ↦
-    and_congr_right fun hst ↦ ?_
+    and_congr_right fun hst ↦ _
   rw [card_sdiff hst, tsub_eq_iff_eq_add_of_le, add_comm]
   exact card_mono hst
 #align finset.mem_shadow_iff_exists_mem_card_add_one Finset.mem_shadow_iff_exists_mem_card_add_one
@@ -138,7 +138,7 @@ lemma mem_shadow_iterate_iff_exists_sdiff : t ∈ ∂^[k] 𝒜 ↔ ∃ s ∈ �
   · rintro ⟨u, rfl, htu, hsuA⟩
     exact ⟨_, hsuA, subset_union_left _ _, by rw [union_sdiff_cancel_left htu]⟩
   · rintro ⟨s, hs, hts, rfl⟩
-    refine ⟨s \ t, rfl, disjoint_sdiff, ?_⟩
+    refine ⟨s \ t, rfl, disjoint_sdiff, _⟩
     rwa [union_sdiff_self_eq_union, union_eq_right.2 hts]
 
 /-- `t ∈ ∂^k 𝒜` iff `t` is exactly `k` elements less than something in `𝒜`.
@@ -147,7 +147,7 @@ See also `Finset.mem_shadow_iterate_iff_exists_sdiff`. -/
 lemma mem_shadow_iterate_iff_exists_mem_card_add :
     t ∈ ∂^[k] 𝒜 ↔ ∃ s ∈ 𝒜, t ⊆ s ∧ s.card = t.card + k := by
   refine mem_shadow_iterate_iff_exists_sdiff.trans <| exists_congr fun t ↦ and_congr_right fun _ ↦
-    and_congr_right fun hst ↦ ?_
+    and_congr_right fun hst ↦ _
   rw [card_sdiff hst, tsub_eq_iff_eq_add_of_le, add_comm]
   exact card_mono hst
 #align finset.mem_shadow_iff_exists_mem_card_add Finset.mem_shadow_iterate_iff_exists_mem_card_add
@@ -169,7 +169,7 @@ lemma _root_.Set.Sized.shadow_iterate (h𝒜 : (𝒜 : Set (Finset α)).Sized r)
 
 theorem sized_shadow_iff (h : ∅ ∉ 𝒜) :
     (∂ 𝒜 : Set (Finset α)).Sized r ↔ (𝒜 : Set (Finset α)).Sized (r + 1) := by
-  refine ⟨fun h𝒜 s hs => ?_, Set.Sized.shadow⟩
+  refine ⟨fun h𝒜 s hs => _, Set.Sized.shadow⟩
   obtain ⟨a, ha⟩ := nonempty_iff_ne_empty.2 (ne_of_mem_of_not_mem hs h)
   rw [← h𝒜 (erase_mem_shadow hs ha), card_erase_add_one ha]
 #align finset.sized_shadow_iff Finset.sized_shadow_iff
@@ -239,7 +239,7 @@ See also `Finset.mem_upShadow_iff_exists_sdiff`. -/
 lemma mem_upShadow_iff_exists_mem_card_add_one :
     t ∈ ∂⁺ 𝒜 ↔ ∃ s ∈ 𝒜, s ⊆ t ∧ t.card = s.card + 1 := by
   refine mem_upShadow_iff_exists_sdiff.trans <| exists_congr fun t ↦ and_congr_right fun _ ↦
-    and_congr_right fun hst ↦ ?_
+    and_congr_right fun hst ↦ _
   rw [card_sdiff hst, tsub_eq_iff_eq_add_of_le, add_comm]
   exact card_mono hst
 #align finset.mem_up_shadow_iff_exists_mem_card_add_one Finset.mem_upShadow_iff_exists_mem_card_add_one
@@ -275,7 +275,7 @@ See also `Finset.mem_upShadow_iterate_iff_exists_sdiff`. -/
 lemma mem_upShadow_iterate_iff_exists_mem_card_add :
     t ∈ ∂⁺^[k] 𝒜 ↔ ∃ s ∈ 𝒜, s ⊆ t ∧ t.card = s.card + k := by
   refine mem_upShadow_iterate_iff_exists_sdiff.trans <| exists_congr fun t ↦ and_congr_right fun _ ↦
-    and_congr_right fun hst ↦ ?_
+    and_congr_right fun hst ↦ _
   rw [card_sdiff hst, tsub_eq_iff_eq_add_of_le, add_comm]
   exact card_mono hst
 
@@ -297,16 +297,16 @@ theorem exists_subset_of_mem_upShadow (hs : s ∈ ∂⁺ 𝒜) : ∃ t ∈ 𝒜,
 theorem mem_upShadow_iff_exists_mem_card_add :
     s ∈ ∂⁺ ^[k] 𝒜 ↔ ∃ t ∈ 𝒜, t ⊆ s ∧ t.card + k = s.card := by
   induction' k with k ih generalizing 𝒜 s
-  · refine' ⟨fun hs => ⟨s, hs, Subset.refl _, rfl⟩, _⟩
+  · refine ⟨fun hs => ⟨s, hs, Subset.refl _, rfl⟩, _⟩
     rintro ⟨t, ht, hst, hcard⟩
     rwa [← eq_of_subset_of_card_le hst hcard.ge]
   simp only [exists_prop, Function.comp_apply, Function.iterate_succ]
-  refine ih.trans ?_
+  refine ih.trans _
   clear ih
   constructor
   · rintro ⟨t, ht, hts, hcardst⟩
     obtain ⟨u, hu, hut, hcardtu⟩ := mem_upShadow_iff_exists_mem_card_add_one.1 ht
-    refine ⟨u, hu, hut.trans hts, ?_⟩
+    refine ⟨u, hu, hut.trans hts, _⟩
     rw [← hcardst, hcardtu, add_right_comm]
     rfl
   · rintro ⟨t, ht, hts, hcard⟩
@@ -317,7 +317,7 @@ theorem mem_upShadow_iff_exists_mem_card_add :
           exact add_le_add_left (succ_le_of_lt (zero_lt_succ _)) _)
         hts
     rw [add_comm] at hu
-    refine' ⟨u, mem_upShadow_iff_exists_mem_card_add_one.2 ⟨t, ht, htu, hu⟩, hus, _⟩
+    refine ⟨u, mem_upShadow_iff_exists_mem_card_add_one.2 ⟨t, ht, htu, hu⟩, hus, _⟩
     rw [hu, ← hcard, add_right_comm]
     rfl
 #align finset.mem_up_shadow_iff_exists_mem_card_add Finset.mem_upShadow_iff_exists_mem_card_add
@@ -325,14 +325,14 @@ theorem mem_upShadow_iff_exists_mem_card_add :
 @[simp] lemma shadow_compls : ∂ 𝒜ᶜˢ = (∂⁺ 𝒜)ᶜˢ := by
   ext s
   simp only [mem_image, exists_prop, mem_shadow_iff, mem_upShadow_iff, mem_compls]
-  refine (compl_involutive.toPerm _).exists_congr_left.trans ?_
+  refine (compl_involutive.toPerm _).exists_congr_left.trans _
   simp [← compl_involutive.eq_iff]
 #align finset.up_shadow_image_compl Finset.shadow_compls
 
 @[simp] lemma upShadow_compls : ∂⁺ 𝒜ᶜˢ = (∂ 𝒜)ᶜˢ := by
   ext s
   simp only [mem_image, exists_prop, mem_shadow_iff, mem_upShadow_iff, mem_compls]
-  refine (compl_involutive.toPerm _).exists_congr_left.trans ?_
+  refine (compl_involutive.toPerm _).exists_congr_left.trans _
   simp [← compl_involutive.eq_iff]
 #align finset.shadow_image_compl Finset.upShadow_compls
 

@@ -61,7 +61,7 @@ theorem Fintype.card_finset_len [Fintype α] (k : ℕ) :
 instance Set.fintype [Fintype α] : Fintype (Set α) :=
   ⟨(@Finset.univ (Finset α) _).map coeEmb.1, fun s => by
     classical
-    refine mem_map.2 ⟨Finset.univ.filter (· ∈ s), Finset.mem_univ _, (coe_filter _ _).trans ?_⟩
+    refine mem_map.2 ⟨Finset.univ.filter (· ∈ s), Finset.mem_univ _, (coe_filter _ _).trans _⟩
     simp⟩
 #align set.fintype Set.fintype
 

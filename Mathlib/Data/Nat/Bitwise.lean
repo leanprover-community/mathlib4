@@ -237,11 +237,11 @@ theorem exists_most_significant_bit {n : ℕ} (h : n ≠ 0) :
     rw [show b = true by
         revert h
         cases b <;> simp]
-    refine' ⟨0, ⟨by rw [testBit_bit_zero], fun j hj => _⟩⟩
+    refine ⟨0, ⟨by rw [testBit_bit_zero], fun j hj => _⟩⟩
     obtain ⟨j', rfl⟩ := exists_eq_succ_of_ne_zero (ne_of_gt hj)
     rw [testBit_bit_succ, zero_testBit]
   · obtain ⟨k, ⟨hk, hk'⟩⟩ := hn h'
-    refine' ⟨k + 1, ⟨by rw [testBit_bit_succ, hk], fun j hj => _⟩⟩
+    refine ⟨k + 1, ⟨by rw [testBit_bit_succ, hk], fun j hj => _⟩⟩
     obtain ⟨j', rfl⟩ := exists_eq_succ_of_ne_zero (show j ≠ 0 by intro x; subst x; simp at hj)
     exact (testBit_bit_succ _ _ _).trans (hk' _ (lt_of_succ_lt_succ hj))
 #align nat.exists_most_significant_bit Nat.exists_most_significant_bit
@@ -338,7 +338,7 @@ protected lemma xor_comm (n m : ℕ) : n ^^^ m = m ^^^ n :=
 #align nat.lxor_comm Nat.xor_comm
 
 lemma and_two_pow (n i : ℕ) : n &&& 2 ^ i = (n.testBit i).toNat * 2 ^ i := by
-  refine eq_of_testBit_eq fun j => ?_
+  refine eq_of_testBit_eq fun j => _
   obtain rfl | hij := Decidable.eq_or_ne i j <;> cases' h : n.testBit i
   · simp [h]
   · simp [h]

@@ -78,7 +78,7 @@ lemma mem_factoredNumbers_of_dvd {s : Finset ℕ} {m k : ℕ} (h : m ∈ factore
     k ∈ factoredNumbers s := by
   obtain ⟨h₁, h₂⟩ := h
   have hk := ne_zero_of_dvd_ne_zero h₁ h'
-  refine ⟨hk, fun p hp ↦ h₂ p ?_⟩
+  refine ⟨hk, fun p hp ↦ h₂ p _⟩
   rw [mem_factors <| by assumption] at hp ⊢
   exact ⟨hp.1, hp.2.trans h'⟩
 
@@ -97,7 +97,7 @@ lemma mem_factoredNumbers' {s : Finset ℕ} {m : ℕ} :
   obtain ⟨p, hp₁, hp₂⟩ := exists_infinite_primes (1 + Finset.sup s id)
   rw [mem_factoredNumbers_iff_forall_le]
   refine ⟨fun ⟨H₀, H₁⟩ ↦ fun p hp₁ hp₂ ↦ H₁ p (le_of_dvd (Nat.pos_of_ne_zero H₀) hp₂) hp₁ hp₂,
-         fun H ↦ ⟨fun h ↦ lt_irrefl p ?_, fun p _ ↦ H p⟩⟩
+         fun H ↦ ⟨fun h ↦ lt_irrefl p _, fun p _ ↦ H p⟩⟩
   calc
     p ≤ s.sup id := Finset.le_sup (f := @id ℕ) <| H p hp₂ <| h.symm ▸ dvd_zero p
     _ < 1 + s.sup id := lt_one_add _
@@ -118,7 +118,7 @@ lemma prod_mem_factoredNumbers (s : Finset ℕ) (n : ℕ) :
     (n.factors.filter (· ∈ s)).prod ∈ factoredNumbers s := by
   have h₀ : (n.factors.filter (· ∈ s)).prod ≠ 0 :=
     List.prod_ne_zero fun h ↦ (pos_of_mem_factors (List.mem_of_mem_filter h)).false
-  refine ⟨h₀, fun p hp ↦ ?_⟩
+  refine ⟨h₀, fun p hp ↦ _⟩
   obtain ⟨H₁, H₂⟩ := (mem_factors h₀).mp hp
   simpa only [decide_eq_true_eq] using List.of_mem_filter <| mem_list_primes_of_dvd_prod H₁.prime
     (fun _ hq ↦ (prime_of_mem_factors (List.mem_of_mem_filter hq)).prime) H₂
@@ -128,7 +128,7 @@ See `Nat.equivProdNatFactoredNumbers` for when `N` is prime. -/
 lemma factoredNumbers_insert (s : Finset ℕ) {N : ℕ} (hN : ¬ N.Prime) :
     factoredNumbers (insert N s) = factoredNumbers s := by
   ext m
-  refine ⟨fun hm ↦ ⟨hm.1, fun p hp ↦ ?_⟩,
+  refine ⟨fun hm ↦ ⟨hm.1, fun p hp ↦ _⟩,
           fun hm ↦ ⟨hm.1, fun p hp ↦ Finset.mem_insert_of_mem <| hm.2 p hp⟩⟩
   exact Finset.mem_of_mem_insert_of_ne (hm.2 p hp) fun h ↦ hN <| h ▸ prime_of_mem_factors hp
 
@@ -155,7 +155,7 @@ lemma pow_mul_mem_factoredNumbers {s : Finset ℕ} {p n : ℕ} (hp : p.Prime) (e
     (hn : n ∈ factoredNumbers s) :
     p ^ e * n ∈ factoredNumbers (insert p s) := by
   have hp' := pow_ne_zero e hp.ne_zero
-  refine ⟨mul_ne_zero hp' hn.1, fun q hq ↦ ?_⟩
+  refine ⟨mul_ne_zero hp' hn.1, fun q hq ↦ _⟩
   rcases (mem_factors_mul hp' hn.1).mp hq with H | H
   · rw [mem_factors hp'] at H
     rw [(prime_dvd_prime_iff_eq H.1 hp).mp <| H.1.dvd_of_dvd_pow H.2]
@@ -198,7 +198,7 @@ def equivProdNatFactoredNumbers {s : Finset ℕ} {p : ℕ} (hp: p.Prime) (hs : p
       rw [← factors_count_eq, count_eq_zero]
       exact fun H ↦ hs (hm p H)
     · nth_rewrite 2 [← prod_factors hm₀]
-      refine prod_eq <| (filter _ <| perm_factors_mul (pow_ne_zero e hp.ne_zero) hm₀).trans ?_
+      refine prod_eq <| (filter _ <| perm_factors_mul (pow_ne_zero e hp.ne_zero) hm₀).trans _
       rw [filter_append, hp.factors_pow,
           filter_eq_nil.mpr fun q hq ↦ by rw [mem_replicate] at hq; simp [hq.2, hs],
           nil_append, filter_eq_self.mpr fun q hq ↦ by simp only [hm q hq, decide_True]]
@@ -208,13 +208,13 @@ def equivProdNatFactoredNumbers {s : Finset ℕ} {p : ℕ} (hp: p.Prime) (hs : p
     rw [← factors_count_eq, ← prod_replicate, ← prod_append]
     nth_rewrite 3 [← prod_factors hm₀]
     have : m.factors.filter (· = p) = m.factors.filter (¬ · ∈ s) := by
-      refine (filter_congr' fun q hq ↦ ?_).symm
+      refine (filter_congr' fun q hq ↦ _).symm
       simp only [decide_not, Bool.not_eq_true', decide_eq_false_iff_not, decide_eq_true_eq]
       rcases Finset.mem_insert.mp <| hm _ hq with h | h
       · simp only [h, hs, not_false_eq_true]
       · simp only [h, not_true_eq_false, false_iff]
         exact fun H ↦ hs <| H ▸ h
-    refine prod_eq <| (filter_eq m.factors p).symm ▸ this ▸ perm_append_comm.trans ?_
+    refine prod_eq <| (filter_eq m.factors p).symm ▸ this ▸ perm_append_comm.trans _
     simp only [decide_not]
     exact filter_append_perm (· ∈ s) (factors m)
 
@@ -303,7 +303,7 @@ lemma pow_mul_mem_smoothNumbers {p n : ℕ} (hp : p ≠ 0) (e : ℕ) (hn : n ∈
   -- This cannot be easily reduced to `pow_mul_mem_factoredNumbers`, as there `p.Prime` is needed.
   have : NoZeroDivisors ℕ := inferInstance -- this is needed twice --> speed-up
   have hp' := pow_ne_zero e hp
-  refine ⟨mul_ne_zero hp' hn.1, fun q hq ↦ ?_⟩
+  refine ⟨mul_ne_zero hp' hn.1, fun q hq ↦ _⟩
   rcases (mem_factors_mul hp' hn.1).mp hq with H | H
   · rw [mem_factors hp'] at H
     exact lt_succ.mpr <| le_of_dvd hp.bot_lt <| H.1.dvd_of_dvd_pow H.2
@@ -369,7 +369,7 @@ lemma smoothNumbersUpTo_card_add_roughNumbersUpTo_card (N k : ℕ) :
   suffices Finset.card (Finset.filter (fun x ↦ x ≠ 0) (Finset.range (succ N))) = N by
     have hn' (n) : n ∈ smoothNumbers k ∨ n ≠ 0 ∧ n ∉ smoothNumbers k ↔ n ≠ 0 := by
       have : n ∈ smoothNumbers k → n ≠ 0 := ne_zero_of_mem_smoothNumbers
-      refine ⟨fun H ↦ Or.elim H this fun H ↦ H.1, fun H ↦ ?_⟩
+      refine ⟨fun H ↦ Or.elim H this fun H ↦ H.1, fun H ↦ _⟩
       simp only [ne_eq, H, not_false_eq_true, true_and, or_not]
     rwa [Finset.filter_congr (s := Finset.range (succ N)) fun n _ ↦ hn' n]
   rw [Finset.filter_ne', Finset.card_erase_of_mem <| Finset.mem_range_succ_iff.mpr <| zero_le N]
@@ -380,9 +380,9 @@ lemma eq_prod_primes_mul_sq_of_mem_smoothNumbers {n k : ℕ} (h : n ∈ smoothNu
     ∃ s ∈ k.primesBelow.powerset, ∃ m, n = m ^ 2 * (s.prod id) := by
   obtain ⟨l, m, H₁, H₂⟩ := sq_mul_squarefree n
   have hl : l ∈ smoothNumbers k := mem_smoothNumbers_of_dvd h (Dvd.intro_left (m ^ 2) H₁)
-  refine ⟨l.factors.toFinset, ?_,  m, ?_⟩
+  refine ⟨l.factors.toFinset, _,  m, _⟩
   · simp only [toFinset_factors, Finset.mem_powerset]
-    refine fun p hp ↦ mem_primesBelow.mpr ⟨?_, (mem_primeFactors.mp hp).1⟩
+    refine fun p hp ↦ mem_primesBelow.mpr ⟨_, (mem_primeFactors.mp hp).1⟩
     rw [mem_primeFactors] at hp
     exact mem_smoothNumbers'.mp hl p hp.1 hp.2.1
   rw [← H₁]
@@ -400,12 +400,12 @@ lemma smoothNumbersUpTo_subset_image (N k : ℕ) :
   obtain ⟨s, hs, m, hm⟩ := eq_prod_primes_mul_sq_of_mem_smoothNumbers hn₂
   simp only [id_eq, Finset.mem_range, zero_lt_succ, not_true_eq_false, Finset.mem_image,
     Finset.mem_product, Finset.mem_powerset, Finset.mem_erase, Prod.exists]
-  refine ⟨s, m, ⟨Finset.mem_powerset.mp hs, ?_, ?_⟩, hm.symm⟩
+  refine ⟨s, m, ⟨Finset.mem_powerset.mp hs, _, _⟩, hm.symm⟩
   · have := hm ▸ ne_zero_of_mem_smoothNumbers hn₂
     simp only [ne_eq, _root_.mul_eq_zero, sq_eq_zero_iff, not_or] at this
     exact this.1
   · rw [lt_succ, le_sqrt']
-    refine LE.le.trans ?_ (hm ▸ hn₁)
+    refine LE.le.trans _ (hm ▸ hn₁)
     nth_rw 1 [← mul_one (m ^ 2)]
     exact mul_le_mul_left' (Finset.one_le_prod' fun p hp ↦
       (prime_of_mem_primesBelow <| Finset.mem_powerset.mp hs hp).one_lt.le) _
@@ -430,7 +430,7 @@ lemma roughNumbersUpTo_eq_biUnion (N k) :
     Finset.filter_congr_decidable, Finset.mem_biUnion, Finset.mem_sdiff, mem_primesBelow,
     show ∀ P Q : Prop, P ∧ (P → Q) ↔ P ∧ Q by tauto]
   simp_rw [← exists_and_left, ← not_lt]
-  refine exists_congr fun p ↦ ?_
+  refine exists_congr fun p ↦ _
   have H₁ : m ≠ 0 → p ∣ m → m < N.succ → p < N.succ :=
     fun h₁ h₂ h₃ ↦ (le_of_dvd (Nat.pos_of_ne_zero h₁) h₂).trans_lt h₃
   have H₂ : m ≠ 0 → p ∣ m → ¬ m < p :=

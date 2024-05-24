@@ -58,7 +58,7 @@ lemma poissonPMFReal_nonneg {r : ℝ≥0} {n : ℕ} : 0 ≤ poissonPMFReal r n :
 /-- The pmf of the Poisson distribution depending on its rate, as a PMF. -/
 noncomputable
 def poissonPMF (r : ℝ≥0) : PMF ℕ := by
-  refine ⟨fun n ↦ ENNReal.ofReal (poissonPMFReal r n), ?_⟩
+  refine ⟨fun n ↦ ENNReal.ofReal (poissonPMFReal r n), _⟩
   apply ENNReal.hasSum_coe.mpr
   rw [← toNNReal_one]
   exact (poissonPMFRealSum r).toNNReal (fun n ↦ poissonPMFReal_nonneg)

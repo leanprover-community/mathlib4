@@ -34,7 +34,7 @@ family of measurable null sets `t i` such that `s i \ t i` are pairwise disjoint
 theorem exists_null_pairwise_disjoint_diff [Countable ι] {s : ι → Set α}
     (hd : Pairwise (AEDisjoint μ on s)) : ∃ t : ι → Set α, (∀ i, MeasurableSet (t i)) ∧
     (∀ i, μ (t i) = 0) ∧ Pairwise (Disjoint on fun i => s i \ t i) := by
-  refine' ⟨fun i => toMeasurable μ (s i ∩ ⋃ j ∈ ({i}ᶜ : Set ι), s j), fun i =>
+  refine ⟨fun i => toMeasurable μ (s i ∩ ⋃ j ∈ ({i}ᶜ : Set ι), s j), fun i =>
     measurableSet_toMeasurable _ _, fun i => _, _⟩
   · simp only [measure_toMeasurable, inter_iUnion]
     exact (measure_biUnion_null_iff <| to_countable _).2 fun j hj => hd (Ne.symm hj)

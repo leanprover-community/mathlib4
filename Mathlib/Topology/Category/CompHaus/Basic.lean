@@ -124,7 +124,7 @@ theorem isIso_of_bijective {X Y : CompHaus.{u}} (f : X ⟶ Y) (bij : Function.Bi
     intro S hS
     rw [← E.image_eq_preimage]
     exact isClosedMap f S hS
-  refine' ⟨⟨⟨E.symm, hE⟩, _, _⟩⟩
+  refine ⟨⟨⟨E.symm, hE⟩, _, _⟩⟩
   · ext x
     apply E.symm_apply_apply
   · ext x
@@ -229,7 +229,7 @@ noncomputable def stoneCechEquivalence (X : TopCat.{u}) (Y : CompHaus.{u}) :
     -- Porting note: `ext` fails.
     apply ContinuousMap.ext
     intro (x : StoneCech X)
-    refine' congr_fun _ x
+    refine congr_fun _ x
     apply Continuous.ext_on denseRange_stoneCechUnit (continuous_stoneCechExtend _) hf
     · rintro _ ⟨y, rfl⟩
       apply congr_fun (stoneCechExtend_extends (hf.comp _)) y

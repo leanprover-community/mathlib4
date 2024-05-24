@@ -81,9 +81,9 @@ lemma norm_jacobiTheta₂_term_le {S T : ℝ} (hT : 0 < T) {z τ : ℂ}
   simp_rw [norm_jacobiTheta₂_term, Real.exp_le_exp, sub_eq_add_neg, neg_mul, ← neg_add,
     neg_le_neg_iff, mul_comm (2 : ℝ), mul_assoc π, ← mul_add, mul_le_mul_left pi_pos,
     mul_comm T, mul_comm S]
-  refine add_le_add (mul_le_mul le_rfl hτ hT.le (sq_nonneg _)) ?_
+  refine add_le_add (mul_le_mul le_rfl hτ hT.le (sq_nonneg _)) _
   rw [← mul_neg, mul_assoc, mul_assoc, mul_le_mul_left two_pos, mul_comm, neg_mul, ← mul_neg]
-  refine le_trans ?_ (neg_abs_le _)
+  refine le_trans _ (neg_abs_le _)
   rw [mul_neg, neg_le_neg_iff, abs_mul, Int.cast_abs]
   exact mul_le_mul_of_nonneg_left hz (abs_nonneg _)
 
@@ -92,7 +92,7 @@ lemma norm_jacobiTheta₂'_term_le {S T : ℝ} (hT : 0 < T) {z τ : ℂ}
     (hz : |im z| ≤ S) (hτ : T ≤ im τ) (n : ℤ) :
     ‖jacobiTheta₂'_term n z τ‖ ≤ 2 * π * |n| * rexp (-π * (T * n ^ 2 - 2 * S * |n|)) := by
   rw [jacobiTheta₂'_term, norm_mul]
-  refine mul_le_mul (le_of_eq ?_) (norm_jacobiTheta₂_term_le hT hz hτ n)
+  refine mul_le_mul (le_of_eq _) (norm_jacobiTheta₂_term_le hT hz hτ n)
     (norm_nonneg _) (by positivity)
   simp only [norm_mul, Complex.norm_eq_abs, Complex.abs_two, abs_I,
     Complex.abs_of_nonneg pi_pos.le, abs_intCast, mul_one, Int.cast_abs]
@@ -106,20 +106,20 @@ lemma summable_pow_mul_jacobiTheta₂_term_bound (S : ℝ) {T : ℝ} (hT : 0 < T
     simpa only [Int.cast_neg, neg_sq, abs_neg, Int.cast_natCast, Nat.abs_cast]
   apply summable_of_isBigO_nat (summable_pow_mul_exp_neg_nat_mul k zero_lt_one)
   apply IsBigO.mul (isBigO_refl _ _)
-  refine Real.isBigO_exp_comp_exp_comp.mpr (Tendsto.isBoundedUnder_le_atBot ?_)
+  refine Real.isBigO_exp_comp_exp_comp.mpr (Tendsto.isBoundedUnder_le_atBot _)
   simp_rw [← tendsto_neg_atTop_iff, Pi.sub_apply]
   conv =>
     enter [1, n]
     rw [show -(-π * (T * n ^ 2 - 2 * S * n) - -1 * n) = n * (π * T * n - (2 * π * S + 1)) by ring]
-  refine tendsto_natCast_atTop_atTop.atTop_mul_atTop (tendsto_atTop_add_const_right _ _ ?_)
+  refine tendsto_natCast_atTop_atTop.atTop_mul_atTop (tendsto_atTop_add_const_right _ _ _)
   exact tendsto_natCast_atTop_atTop.const_mul_atTop (mul_pos pi_pos hT)
 
 /-- The series defining the theta function is summable if and only if `0 < im τ`. -/
 lemma summable_jacobiTheta₂_term_iff (z τ : ℂ) : Summable (jacobiTheta₂_term · z τ) ↔ 0 < im τ := by
   -- NB. This is a statement of no great mathematical interest; it is included largely to avoid
   -- having to impose `0 < im τ` as a hypothesis on many later lemmas.
-  refine Iff.symm ⟨fun hτ ↦ ?_, fun h ↦ ?_⟩ -- do quicker implication first!
-  · refine (summable_pow_mul_jacobiTheta₂_term_bound |im z| hτ 0).of_norm_bounded _ ?_
+  refine Iff.symm ⟨fun hτ ↦ _, fun h ↦ _⟩ -- do quicker implication first!
+  · refine (summable_pow_mul_jacobiTheta₂_term_bound |im z| hτ 0).of_norm_bounded _ _
     simpa only [pow_zero, one_mul] using norm_jacobiTheta₂_term_le hτ le_rfl le_rfl
   · by_contra! hτ
     rcases lt_or_eq_of_le hτ with hτ | hτ
@@ -132,7 +132,7 @@ lemma summable_jacobiTheta₂_term_iff (z τ : ℂ) : Summable (jacobiTheta₂_t
         enter [1, n]
         rw [show -π * n ^ 2 * τ.im - 2 * π * n * z.im =
               n * (n * (-π * τ.im) - 2 * π * z.im) by ring]
-      refine tendsto_exp_atTop.comp (tendsto_natCast_atTop_atTop.atTop_mul_atTop ?_)
+      refine tendsto_exp_atTop.comp (tendsto_natCast_atTop_atTop.atTop_mul_atTop _)
       exact tendsto_atTop_add_const_right _ _ (tendsto_natCast_atTop_atTop.atTop_mul_const
         (mul_pos_of_neg_of_neg (neg_lt_zero.mpr pi_pos) hτ))
     · -- case im τ = 0: 3-way split according to `im z`
@@ -140,8 +140,8 @@ lemma summable_jacobiTheta₂_term_iff (z τ : ℂ) : Summable (jacobiTheta₂_t
       rcases lt_trichotomy (im z) 0 with hz | hz | hz
       · replace h := (h.comp_injective (fun a b ↦ Int.ofNat_inj.mp)).tendsto_atTop_zero
         simp_rw [Function.comp_def, Int.cast_natCast] at h
-        refine atTop_neBot.ne (disjoint_self.mp <| h.disjoint (disjoint_nhds_atTop 0) ?_)
-        refine tendsto_exp_atTop.comp ?_
+        refine atTop_neBot.ne (disjoint_self.mp <| h.disjoint (disjoint_nhds_atTop 0) _)
+        refine tendsto_exp_atTop.comp _
         simp only [tendsto_neg_atTop_iff, mul_assoc]
         apply Filter.Tendsto.const_mul_atBot two_pos
         exact (tendsto_natCast_atTop_atTop.atTop_mul_neg_const hz).const_mul_atBot pi_pos
@@ -150,7 +150,7 @@ lemma summable_jacobiTheta₂_term_iff (z τ : ℂ) : Summable (jacobiTheta₂_t
       · have : ((-↑·) : ℕ → ℤ).Injective := fun _ _ ↦ by simp only [neg_inj, Nat.cast_inj, imp_self]
         replace h := (h.comp_injective this).tendsto_atTop_zero
         simp_rw [Function.comp_def, Int.cast_neg, Int.cast_natCast, mul_neg, neg_mul, neg_neg] at h
-        refine atTop_neBot.ne (disjoint_self.mp <| h.disjoint (disjoint_nhds_atTop 0) ?_)
+        refine atTop_neBot.ne (disjoint_self.mp <| h.disjoint (disjoint_nhds_atTop 0) _)
         exact tendsto_exp_atTop.comp ((tendsto_natCast_atTop_atTop.const_mul_atTop
           (mul_pos two_pos pi_pos)).atTop_mul_const hz)
 
@@ -160,12 +160,12 @@ lemma norm_jacobiTheta₂_term_fderiv_le (n : ℤ) (z τ : ℂ) :
   have hns (a : ℂ) (f : (ℂ × ℂ) →L[ℂ] ℂ) : ‖a • f‖ = ‖a‖ * ‖f‖ := norm_smul a f
   rw [jacobiTheta₂_term_fderiv, jacobiTheta₂_term, hns,
     mul_comm _ ‖cexp _‖, (by norm_num : (3 : ℝ) = 2 + 1), add_mul, add_mul]
-  refine mul_le_mul_of_nonneg_left ((norm_add_le _ _).trans (add_le_add ?_ ?_)) (norm_nonneg _)
+  refine mul_le_mul_of_nonneg_left ((norm_add_le _ _).trans (add_le_add _ _)) (norm_nonneg _)
   · simp_rw [hns, norm_mul, ← ofReal_ofNat, ← ofReal_intCast,
       norm_real, norm_of_nonneg zero_le_two, Real.norm_of_nonneg pi_pos.le, norm_I, mul_one,
       Real.norm_eq_abs, Int.cast_abs, mul_assoc]
-    refine mul_le_mul_of_nonneg_left (mul_le_mul_of_nonneg_left ?_ pi_pos.le) two_pos.le
-    refine le_trans ?_ (?_ : |(n : ℝ)| ≤ |(n : ℝ)| ^ 2)
+    refine mul_le_mul_of_nonneg_left (mul_le_mul_of_nonneg_left _ pi_pos.le) two_pos.le
+    refine le_trans _ (_ : |(n : ℝ)| ≤ |(n : ℝ)| ^ 2)
     · exact mul_le_of_le_one_right (abs_nonneg _) (ContinuousLinearMap.norm_fst_le ..)
     · exact_mod_cast Int.le_self_sq |n|
   · simp_rw [hns, norm_mul, one_mul, norm_I, mul_one,
@@ -177,14 +177,14 @@ lemma norm_jacobiTheta₂_term_fderiv_le (n : ℤ) (z τ : ℂ) :
 lemma norm_jacobiTheta₂_term_fderiv_ge (n : ℤ) (z τ : ℂ) :
     π * |n| ^ 2 * ‖jacobiTheta₂_term n z τ‖ ≤ ‖jacobiTheta₂_term_fderiv n z τ‖ := by
   have : ‖(jacobiTheta₂_term_fderiv n z τ) (0, 1)‖ ≤ ‖jacobiTheta₂_term_fderiv n z τ‖ := by
-    refine (ContinuousLinearMap.le_opNorm _ _).trans ?_
+    refine (ContinuousLinearMap.le_opNorm _ _).trans _
     simp_rw [Prod.norm_def, norm_one, norm_zero, max_eq_right zero_le_one, mul_one, le_refl]
-  refine le_trans ?_ this
+  refine le_trans _ this
   simp_rw [jacobiTheta₂_term_fderiv, jacobiTheta₂_term, ContinuousLinearMap.coe_smul',
     Pi.smul_apply, ContinuousLinearMap.add_apply, ContinuousLinearMap.coe_smul',
     ContinuousLinearMap.coe_fst', ContinuousLinearMap.coe_snd', Pi.smul_apply, smul_zero, zero_add,
     smul_eq_mul, mul_one, mul_comm _ ‖cexp _‖, norm_mul]
-  refine mul_le_mul_of_nonneg_left (le_of_eq ?_) (norm_nonneg _)
+  refine mul_le_mul_of_nonneg_left (le_of_eq _) (norm_nonneg _)
   simp_rw [norm_real, norm_of_nonneg pi_pos.le, norm_I, mul_one,
     Int.cast_abs, ← abs_intCast, Complex.norm_eq_abs, Complex.abs_pow]
 
@@ -194,36 +194,36 @@ lemma summable_jacobiTheta₂_term_fderiv_iff (z τ : ℂ) :
   · rw [← summable_jacobiTheta₂_term_iff (z := z)]
     intro h
     have := h.norm
-    refine this.of_norm_bounded_eventually _ ?_
+    refine this.of_norm_bounded_eventually _ _
     have : ∀ᶠ (n : ℤ) in cofinite, n ≠ 0 :=
       Int.cofinite_eq ▸ (mem_sup.mpr ⟨eventually_ne_atBot 0, eventually_ne_atTop 0⟩)
     filter_upwards [this] with n hn
-    refine le_trans ?_ (norm_jacobiTheta₂_term_fderiv_ge n z τ)
+    refine le_trans _ (norm_jacobiTheta₂_term_fderiv_ge n z τ)
     apply le_mul_of_one_le_left (norm_nonneg _)
-    refine one_le_pi_div_two.trans (mul_le_mul_of_nonneg_left ?_ pi_pos.le)
-    refine (by norm_num : 2⁻¹ ≤ (1 : ℝ)).trans ?_
+    refine one_le_pi_div_two.trans (mul_le_mul_of_nonneg_left _ pi_pos.le)
+    refine (by norm_num : 2⁻¹ ≤ (1 : ℝ)).trans _
     rw [one_le_sq_iff_one_le_abs, ← Int.cast_abs, _root_.abs_abs, ← Int.cast_one, Int.cast_le]
     exact Int.one_le_abs hn
   · intro hτ
     refine ((summable_pow_mul_jacobiTheta₂_term_bound
-      |z.im| hτ 2).mul_left (3 * π)).of_norm_bounded _ (fun n ↦ ?_)
+      |z.im| hτ 2).mul_left (3 * π)).of_norm_bounded _ (fun n ↦ _)
     refine (norm_jacobiTheta₂_term_fderiv_le n z τ).trans
-      (?_ : 3 * π * |n| ^ 2 * ‖jacobiTheta₂_term n z τ‖ ≤ _)
+      (_ : 3 * π * |n| ^ 2 * ‖jacobiTheta₂_term n z τ‖ ≤ _)
     simp_rw [mul_assoc (3 * π)]
-    refine mul_le_mul_of_nonneg_left ?_ (mul_pos (by norm_num : 0 < (3 : ℝ)) pi_pos).le
-    refine mul_le_mul_of_nonneg_left ?_ (pow_nonneg (Int.cast_nonneg.mpr (abs_nonneg _)) _)
+    refine mul_le_mul_of_nonneg_left _ (mul_pos (by norm_num : 0 < (3 : ℝ)) pi_pos).le
+    refine mul_le_mul_of_nonneg_left _ (pow_nonneg (Int.cast_nonneg.mpr (abs_nonneg _)) _)
     exact norm_jacobiTheta₂_term_le hτ le_rfl le_rfl n
 
 lemma summable_jacobiTheta₂'_term_iff (z τ : ℂ) :
     Summable (jacobiTheta₂'_term · z τ) ↔ 0 < im τ := by
   constructor
   · rw [← summable_jacobiTheta₂_term_iff (z := z)]
-    refine fun h ↦ (h.norm.mul_left (2 * π)⁻¹).of_norm_bounded_eventually _  ?_
+    refine fun h ↦ (h.norm.mul_left (2 * π)⁻¹).of_norm_bounded_eventually _  _
     have : ∀ᶠ (n : ℤ) in cofinite, n ≠ 0 :=
       Int.cofinite_eq ▸ (mem_sup.mpr ⟨eventually_ne_atBot 0, eventually_ne_atTop 0⟩)
     filter_upwards [this] with n hn
     rw [jacobiTheta₂'_term, norm_mul, ← mul_assoc]
-    refine le_mul_of_one_le_left (norm_nonneg _) ?_
+    refine le_mul_of_one_le_left (norm_nonneg _) _
     simp_rw [norm_mul, norm_I, norm_real, mul_one, norm_of_nonneg pi_pos.le,
       ← ofReal_ofNat, norm_real, norm_of_nonneg two_pos.le, ← ofReal_intCast, norm_real,
       Real.norm_eq_abs, ← Int.cast_abs, ← mul_assoc _ (2 * π),
@@ -231,9 +231,9 @@ lemma summable_jacobiTheta₂'_term_iff (z τ : ℂ) :
     rw [← Int.cast_one, Int.cast_le]
     exact Int.one_le_abs hn
   · refine fun hτ ↦ ((summable_pow_mul_jacobiTheta₂_term_bound
-      |z.im| hτ 1).mul_left (2 * π)).of_norm_bounded _ (fun n ↦ ?_)
+      |z.im| hτ 1).mul_left (2 * π)).of_norm_bounded _ (fun n ↦ _)
     rw [jacobiTheta₂'_term, norm_mul, ← mul_assoc, pow_one]
-    refine mul_le_mul (le_of_eq ?_) (norm_jacobiTheta₂_term_le hτ le_rfl le_rfl n)
+    refine mul_le_mul (le_of_eq _) (norm_jacobiTheta₂_term_le hτ le_rfl le_rfl n)
       (norm_nonneg _) (by positivity)
     simp_rw [norm_mul, Complex.norm_eq_abs, Complex.abs_two, abs_I,
       Complex.abs_of_nonneg pi_pos.le, abs_intCast, mul_one, Int.cast_abs]
@@ -294,11 +294,11 @@ lemma hasFDerivAt_jacobiTheta₂ (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
   obtain ⟨S, hz⟩ := exists_gt |im z|
   let V := {u | |im u| < S} ×ˢ {v | T < im v}
   have hVo : IsOpen V := by
-    refine ((_root_.continuous_abs.comp continuous_im).isOpen_preimage _ isOpen_Iio).prod ?_
+    refine ((_root_.continuous_abs.comp continuous_im).isOpen_preimage _ isOpen_Iio).prod _
     exact continuous_im.isOpen_preimage _ isOpen_Ioi
   have hVmem : (z, τ) ∈ V := ⟨hz, hτ'⟩
   have hVp : IsPreconnected V := by
-    refine (Convex.isPreconnected ?_).prod (convex_halfspace_im_gt T).isPreconnected
+    refine (Convex.isPreconnected _).prod (convex_halfspace_im_gt T).isPreconnected
     simpa only [abs_lt] using (convex_halfspace_im_gt _).inter (convex_halfspace_im_lt _)
   let f : ℤ → ℂ × ℂ → ℂ := fun n p ↦ jacobiTheta₂_term n p.1 p.2
   let f' : ℤ → ℂ × ℂ → ℂ × ℂ →L[ℂ] ℂ := fun n p ↦ jacobiTheta₂_term_fderiv n p.1 p.2
@@ -306,14 +306,14 @@ lemma hasFDerivAt_jacobiTheta₂ (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
     fun p _ ↦ hasFDerivAt_jacobiTheta₂_term n p.1 p.2
   let u : ℤ → ℝ := fun n ↦ 3 * π * |n| ^ 2 * Real.exp (-π * (T * n ^ 2 - 2 * S * |n|))
   have hu : ∀ (n : ℤ), ∀ x ∈ V, ‖f' n x‖ ≤ u n := by
-    refine fun n p hp ↦ (norm_jacobiTheta₂_term_fderiv_le n p.1 p.2).trans ?_
-    refine mul_le_mul_of_nonneg_left ?_ (by positivity)
+    refine fun n p hp ↦ (norm_jacobiTheta₂_term_fderiv_le n p.1 p.2).trans _
+    refine mul_le_mul_of_nonneg_left _ (by positivity)
     exact norm_jacobiTheta₂_term_le hT (le_of_lt hp.1) (le_of_lt hp.2) n
   have hu_sum : Summable u := by
     simp_rw [u, mul_assoc (3 * π)]
     exact (summable_pow_mul_jacobiTheta₂_term_bound S hT 2).mul_left _
   have hf_sum : Summable fun n : ℤ ↦ f n (z, τ) := by
-    refine (summable_pow_mul_jacobiTheta₂_term_bound S hT 0).of_norm_bounded _ ?_
+    refine (summable_pow_mul_jacobiTheta₂_term_bound S hT 0).of_norm_bounded _ _
     simpa only [pow_zero, one_mul] using norm_jacobiTheta₂_term_le hT hz.le hτ'.le
   simpa only [jacobiTheta₂, jacobiTheta₂_fderiv, f, f'] using
     hasFDerivAt_tsum_of_isPreconnected hu_sum hVo hVp hf hu hVmem hf_sum hVmem
@@ -362,11 +362,11 @@ lemma continuousAt_jacobiTheta₂' (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
   let V := {u | |im u| < S} ×ˢ {v | T < im v}
   have hVo : IsOpen V := ((_root_.continuous_abs.comp continuous_im).isOpen_preimage _
     isOpen_Iio).prod (continuous_im.isOpen_preimage _ isOpen_Ioi)
-  refine ContinuousOn.continuousAt ?_ (hVo.mem_nhds ⟨hz, hτ'⟩)
+  refine ContinuousOn.continuousAt _ (hVo.mem_nhds ⟨hz, hτ'⟩)
   let u (n : ℤ) : ℝ := 2 * π * |n| * rexp (-π * (T * n ^ 2 - 2 * S * |n|))
   have hu : Summable u  := by simpa only [u, mul_assoc, pow_one]
       using (summable_pow_mul_jacobiTheta₂_term_bound S hT 1).mul_left (2 * π)
-  refine continuousOn_tsum (fun n ↦ ?_) hu (fun n ⟨z', τ'⟩ ⟨hz', hτ'⟩ ↦ ?_)
+  refine continuousOn_tsum (fun n ↦ _) hu (fun n ⟨z', τ'⟩ ⟨hz', hτ'⟩ ↦ _)
   · apply Continuous.continuousOn
     unfold jacobiTheta₂'_term jacobiTheta₂_term
     fun_prop
@@ -378,7 +378,7 @@ lemma continuousAt_jacobiTheta₂' (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
 
 /-- The two-variable Jacobi theta function is periodic in `τ` with period 2. -/
 lemma jacobiTheta₂_add_right (z τ : ℂ) : jacobiTheta₂ z (τ + 2) = jacobiTheta₂ z τ := by
-  refine tsum_congr (fun n ↦ ?_)
+  refine tsum_congr (fun n ↦ _)
   simp_rw [jacobiTheta₂_term, Complex.exp_add]
   suffices cexp (π * I * n ^ 2 * 2 : ℂ) = 1 by rw [mul_add, Complex.exp_add, this, mul_one]
   rw [(by push_cast; ring : (π * I * n ^ 2 * 2 : ℂ) = (n ^ 2 :) * (2 * π * I)), exp_int_mul,
@@ -386,7 +386,7 @@ lemma jacobiTheta₂_add_right (z τ : ℂ) : jacobiTheta₂ z (τ + 2) = jacobi
 
 /-- The two-variable Jacobi theta function is periodic in `z` with period 1. -/
 lemma jacobiTheta₂_add_left (z τ : ℂ) : jacobiTheta₂ (z + 1) τ = jacobiTheta₂ z τ := by
-  refine tsum_congr (fun n ↦ ?_)
+  refine tsum_congr (fun n ↦ _)
   simp_rw [jacobiTheta₂_term, mul_add, Complex.exp_add, mul_one, mul_comm _ (n : ℂ),
     exp_int_mul_two_pi_mul_I, mul_one]
 
@@ -394,14 +394,14 @@ lemma jacobiTheta₂_add_left (z τ : ℂ) : jacobiTheta₂ (z + 1) τ = jacobiT
 lemma jacobiTheta₂_add_left' (z τ : ℂ) :
     jacobiTheta₂ (z + τ) τ = cexp (-π * I * (τ + 2 * z)) * jacobiTheta₂ z τ := by
   conv_rhs => erw [← tsum_mul_left, ← (Equiv.addRight 1).tsum_eq]
-  refine tsum_congr (fun n ↦ ?_)
+  refine tsum_congr (fun n ↦ _)
   simp_rw [jacobiTheta₂_term, ← Complex.exp_add, Equiv.coe_addRight, Int.cast_add]
   ring_nf
 
 /-- The two-variable Jacobi theta function is even in `z`. -/
 lemma jacobiTheta₂_neg_left (z τ : ℂ) : jacobiTheta₂ (-z) τ = jacobiTheta₂ z τ := by
   conv_lhs => rw [jacobiTheta₂, ← Equiv.tsum_eq (Equiv.neg ℤ)]
-  refine tsum_congr (fun n ↦ ?_)
+  refine tsum_congr (fun n ↦ _)
   simp_rw [jacobiTheta₂_term, Equiv.neg_apply, Int.cast_neg, neg_sq, mul_assoc, neg_mul_neg]
 
 lemma jacobiTheta₂_conj (z τ : ℂ) :
@@ -412,7 +412,7 @@ lemma jacobiTheta₂_conj (z τ : ℂ) :
     conj_ofReal, conj_I, map_intCast, neg_mul, neg_neg, map_pow]
 
 lemma jacobiTheta₂'_add_right (z τ : ℂ) : jacobiTheta₂' z (τ + 2) = jacobiTheta₂' z τ := by
-  refine tsum_congr (fun n ↦ ?_)
+  refine tsum_congr (fun n ↦ _)
   simp_rw [jacobiTheta₂'_term, jacobiTheta₂_term, Complex.exp_add]
   suffices cexp (π * I * n ^ 2 * 2 : ℂ) = 1 by rw [mul_add, Complex.exp_add, this, mul_one]
   rw [(by push_cast; ring : (π * I * n ^ 2 * 2 : ℂ) = (n ^ 2 :) * (2 * π * I)), exp_int_mul,
@@ -420,7 +420,7 @@ lemma jacobiTheta₂'_add_right (z τ : ℂ) : jacobiTheta₂' z (τ + 2) = jaco
 
 lemma jacobiTheta₂'_add_left (z τ : ℂ) : jacobiTheta₂' (z + 1) τ = jacobiTheta₂' z τ := by
   unfold jacobiTheta₂' jacobiTheta₂'_term jacobiTheta₂_term
-  refine tsum_congr (fun n ↦ ?_)
+  refine tsum_congr (fun n ↦ _)
   simp only [mul_add, Complex.exp_add, mul_one, mul_comm _ (n : ℂ), exp_int_mul_two_pi_mul_I,
     mul_one]
 

@@ -126,7 +126,7 @@ theorem tendsto_iff_forall_compact_tendstoUniformlyOn
     have hmaps : MapsTo f s (ball (f x) V) := fun x hx ↦ hWU hx.2
     use s, hnhds
     -- Continuous maps `F i` in a neighbourhood of `f` map `s` to `ball (f x) V` as well.
-    refine (h s hcomp _ (isOpen_ball _ hVo) hmaps).mono fun g hg y hy ↦ ?_
+    refine (h s hcomp _ (isOpen_ball _ hVo) hmaps).mono fun g hg y hy ↦ _
     -- Then for `y ∈ s` we have `(f y, f x) ∈ V` and `(f x, F i y) ∈ V`, thus `(f y, F i y) ∈ U`
     exact hVU ⟨f x, hVsymm.mk_mem_comm.2 <| hmaps hy, hg hy⟩
   · -- Now we prove that uniform convergence on compacts
@@ -163,7 +163,7 @@ and replace the topology with `compactOpen` to avoid non-defeq diamonds,
 see Note [forgetful inheritance].  -/
 instance compactConvergenceUniformSpace : UniformSpace C(α, β) :=
   .replaceTopology (.comap toUniformOnFunIsCompact inferInstance) <| by
-    refine TopologicalSpace.ext_nhds fun f ↦ eq_of_forall_le_iff fun l ↦ ?_
+    refine TopologicalSpace.ext_nhds fun f ↦ eq_of_forall_le_iff fun l ↦ _
     simp_rw [← tendsto_id', tendsto_iff_forall_compact_tendstoUniformlyOn,
       nhds_induced, tendsto_comap_iff, UniformOnFun.tendsto_iff_tendstoUniformlyOn]
     rfl
@@ -266,7 +266,7 @@ The right-to-left implication holds in any topological space,
 see `ContinuousMap.tendsto_of_tendstoLocallyUniformly`. -/
 theorem tendsto_iff_tendstoLocallyUniformly [WeaklyLocallyCompactSpace α] :
     Tendsto F p (𝓝 f) ↔ TendstoLocallyUniformly (fun i a => F i a) f p := by
-  refine ⟨fun h V hV x ↦ ?_, tendsto_of_tendstoLocallyUniformly⟩
+  refine ⟨fun h V hV x ↦ _, tendsto_of_tendstoLocallyUniformly⟩
   rw [tendsto_iff_forall_compact_tendstoUniformlyOn] at h
   obtain ⟨n, hn₁, hn₂⟩ := exists_compact_mem_nhds x
   exact ⟨n, hn₂, h n hn₁ V hV⟩

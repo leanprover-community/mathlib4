@@ -637,7 +637,7 @@ lemma isIso_of_coyoneda_map_bijective {X Y : C} (f : X ⟶ Y)
     (hf : ∀ (T : C), Function.Bijective (fun (x : Y ⟶ T) => f ≫ x)) :
     IsIso f := by
   obtain ⟨g, hg : f ≫ g = 𝟙 X⟩ := (hf X).2 (𝟙 X)
-  refine ⟨g, hg, (hf _).1 ?_⟩
+  refine ⟨g, hg, (hf _).1 _⟩
   simp only [Category.comp_id, ← Category.assoc, hg, Category.id_comp]
 
 end CoyonedaLemma

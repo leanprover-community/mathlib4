@@ -299,11 +299,11 @@ instance instCommRing : CommRing (PerfectClosure K p) :=
     (inferInstance : CommMonoid (PerfectClosure K p)) with
     -- Porting note: added `zero_mul`, `mul_zero`
     zero_mul := fun a => by
-      refine Quot.inductionOn a fun ⟨m, x⟩ => ?_
+      refine Quot.inductionOn a fun ⟨m, x⟩ => _
       rw [zero_def, quot_mk_eq_mk, mk_mul_mk]
       simp only [zero_add, iterate_zero, id_eq, iterate_map_zero, zero_mul, mk_zero]
     mul_zero := fun a => by
-      refine Quot.inductionOn a fun ⟨m, x⟩ => ?_
+      refine Quot.inductionOn a fun ⟨m, x⟩ => _
       rw [zero_def, quot_mk_eq_mk, mk_mul_mk]
       simp only [zero_add, iterate_zero, id_eq, iterate_map_zero, mul_zero, mk_zero]
     left_distrib := fun e f g =>
@@ -426,8 +426,8 @@ instance instPerfectRing : PerfectRing (PerfectClosure K p) p where
       liftOn e (fun x => mk K p (x.1 + 1, x.2)) fun x y H =>
       match x, y, H with
       | _, _, R.intro n x => Quot.sound (R.intro _ _)
-    refine bijective_iff_has_inverse.mpr ⟨f, fun e ↦ induction_on e fun ⟨n, x⟩ ↦ ?_,
-      fun e ↦ induction_on e fun ⟨n, x⟩ ↦ ?_⟩ <;>
+    refine bijective_iff_has_inverse.mpr ⟨f, fun e ↦ induction_on e fun ⟨n, x⟩ ↦ _,
+      fun e ↦ induction_on e fun ⟨n, x⟩ ↦ _⟩ <;>
       simp only [f, liftOn_mk, frobenius_mk, mk_succ_pow]
 
 @[simp]
@@ -443,7 +443,7 @@ noncomputable def lift (L : Type v) [CommSemiring L] [CharP L p] [PerfectRing L 
     (K →+* L) ≃ (PerfectClosure K p →+* L) where
   toFun f :=
     { toFun := by
-        refine fun e => liftOn e (fun x => (frobeniusEquiv L p).symm^[x.1] (f x.2)) ?_
+        refine fun e => liftOn e (fun x => (frobeniusEquiv L p).symm^[x.1] (f x.2)) _
         rintro - - ⟨n, x⟩
         simp [f.map_frobenius]
       map_one' := f.map_one
@@ -504,7 +504,7 @@ instance instDivisionRing : DivisionRing (PerfectClosure K p) where
   mul_inv_cancel e := induction_on e fun ⟨m, x⟩ H ↦ by
     have := mt (eq_iff _ _ _ _).2 H
     rw [mk_inv, mk_mul_mk]
-    refine (eq_iff K p _ _).2 ?_
+    refine (eq_iff K p _ _).2 _
     simp only [iterate_map_one, iterate_map_zero, iterate_zero_apply, ← iterate_map_mul] at this ⊢
     rw [mul_inv_cancel this, iterate_map_one]
   inv_zero := congr_arg (Quot.mk (R K p)) (by rw [inv_zero])

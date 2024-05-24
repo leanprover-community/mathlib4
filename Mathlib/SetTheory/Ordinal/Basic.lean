@@ -548,7 +548,7 @@ theorem enum_lt_enum {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : Or
 theorem relIso_enum' {α β : Type u} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r]
     [IsWellOrder β s] (f : r ≃r s) (o : Ordinal) :
     ∀ (hr : o < type r) (hs : o < type s), f (enum r o hr) = enum s o hs := by
-  refine inductionOn o ?_; rintro γ t wo ⟨g⟩ ⟨h⟩
+  refine inductionOn o _; rintro γ t wo ⟨g⟩ ⟨h⟩
   rw [enum_type g, enum_type (PrincipalSeg.ltEquiv g f)]; rfl
 #align ordinal.rel_iso_enum' Ordinal.relIso_enum'
 
@@ -585,7 +585,7 @@ instance wellFoundedRelation : WellFoundedRelation Ordinal :=
   ⟨(· < ·), lt_wf⟩
 
 /-- Reformulation of well founded induction on ordinals as a lemma that works with the
-`induction` tactic, as in `induction i using Ordinal.induction with | h i IH => ?_`. -/
+`induction` tactic, as in `induction i using Ordinal.induction with | h i IH => _`. -/
 theorem induction {p : Ordinal.{u} → Prop} (i : Ordinal.{u}) (h : ∀ j, (∀ k, k < j → p k) → p j) :
     p i :=
   lt_wf.induction i h
@@ -916,11 +916,11 @@ theorem card_ofNat (n : ℕ) [n.AtLeastTwo] :
 instance add_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· ≤ ·) where
   elim := fun c a b h => by
     revert h c
-    refine inductionOn a (fun α₁ r₁ _ ↦ ?_)
-    refine inductionOn b (fun α₂ r₂ _ ↦ ?_)
+    refine inductionOn a (fun α₁ r₁ _ ↦ _)
+    refine inductionOn b (fun α₂ r₂ _ ↦ _)
     rintro c ⟨⟨⟨f, fo⟩, fi⟩⟩
-    refine inductionOn c (fun β s _ ↦ ?_)
-    refine ⟨⟨⟨(Embedding.refl.{u+1} _).sumMap f, ?_⟩, ?_⟩⟩
+    refine inductionOn c (fun β s _ ↦ _)
+    refine ⟨⟨⟨(Embedding.refl.{u+1} _).sumMap f, _⟩, _⟩⟩
     · intros a b
       match a, b with
       | Sum.inl a, Sum.inl b => exact Sum.lex_inl_inl.trans Sum.lex_inl_inl.symm
@@ -941,10 +941,10 @@ instance add_swap_covariantClass_le :
     CovariantClass Ordinal.{u} Ordinal.{u} (swap (· + ·)) (· ≤ ·) where
   elim := fun c a b h => by
     revert h c
-    refine inductionOn a (fun α₁ r₁ _ ↦ ?_)
-    refine inductionOn b (fun α₂ r₂ _ ↦ ?_)
+    refine inductionOn a (fun α₁ r₁ _ ↦ _)
+    refine inductionOn b (fun α₂ r₂ _ ↦ _)
     rintro c ⟨⟨⟨f, fo⟩, fi⟩⟩
-    refine inductionOn c (fun β s _ ↦ ?_)
+    refine inductionOn c (fun β s _ ↦ _)
     exact @RelEmbedding.ordinal_type_le _ _ (Sum.Lex r₁ s) (Sum.Lex r₂ s) _ _
               ⟨f.sumMap (Embedding.refl _), by
                 intro a b
@@ -970,9 +970,9 @@ instance linearOrder : LinearOrder Ordinal :=
       | _, Or.inr h => by rw [h]; exact Or.inr (le_add_left _ _)
       | Or.inl h₁, Or.inl h₂ => by
         revert h₁ h₂
-        refine inductionOn a ?_
+        refine inductionOn a _
         intro α₁ r₁ _
-        refine inductionOn b ?_
+        refine inductionOn b _
         intro α₂ r₂ _ ⟨f⟩ ⟨g⟩
         rw [← typein_top f, ← typein_top g, le_iff_lt_or_eq, le_iff_lt_or_eq,
                  typein_lt_typein, typein_lt_typein]
@@ -1018,7 +1018,7 @@ private theorem succ_le_iff' {a b : Ordinal} : a + 1 ≤ b ↔ a < b :=
     inductionOn a fun α r hr =>
       inductionOn b fun β s hs ⟨⟨f, t, hf⟩⟩ => by
         haveI := hs
-        refine' ⟨⟨RelEmbedding.ofMonotone (Sum.rec f fun _ => t) (fun a b ↦ _), fun a b ↦ _⟩⟩
+        refine ⟨⟨RelEmbedding.ofMonotone (Sum.rec f fun _ => t) (fun a b ↦ _), fun a b ↦ _⟩⟩
         · rcases a with (a | _) <;> rcases b with (b | _)
           · simpa only [Sum.lex_inl_inl] using f.map_rel_iff.2
           · intro
@@ -1239,7 +1239,7 @@ theorem univ_umax : univ.{u, max (u + 1) v} = univ.{u, v} :=
   `ordinal.{v}` as a principal segment when `u < v`. -/
 def lift.principalSeg : @PrincipalSeg Ordinal.{u} Ordinal.{max (u + 1) v} (· < ·) (· < ·) :=
   ⟨↑lift.initialSeg.{u, max (u + 1) v}, univ.{u, v}, by
-    refine' fun b => inductionOn b _; intro β s _
+    refine fun b => inductionOn b _; intro β s _
     rw [univ, ← lift_umax]; constructor <;> intro h
     · rw [← lift_id (type s)] at h ⊢
       cases' lift_type_lt.{_,_,v}.1 h with f
@@ -1247,13 +1247,13 @@ def lift.principalSeg : @PrincipalSeg Ordinal.{u} Ordinal.{max (u + 1) v} (· < 
       exists a
       revert hf
       -- Porting note: apply inductionOn does not work, refine does
-      refine inductionOn a ?_
+      refine inductionOn a _
       intro α r _ hf
-      refine'
+      refine
         lift_type_eq.{u, max (u + 1) v, max (u + 1) v}.2
           ⟨(RelIso.ofSurjective (RelEmbedding.ofMonotone _ _) _).symm⟩
       · exact fun b => enum r (f b) ((hf _).2 ⟨_, rfl⟩)
-      · refine' fun a b h => (typein_lt_typein r).1 _
+      · refine fun a b h => (typein_lt_typein r).1 _
         rw [typein_enum, typein_enum]
         exact f.map_rel_iff.2 h
       · intro a'
@@ -1263,7 +1263,7 @@ def lift.principalSeg : @PrincipalSeg Ordinal.{u} Ordinal.{max (u + 1) v} (· < 
         simp [e]
     · cases' h with a e
       rw [← e]
-      refine inductionOn a ?_
+      refine inductionOn a _
       intro α r _
       exact lift_type_lt.{u, u + 1, max (u + 1) v}.2 ⟨typein.principalSeg r⟩⟩
 #align ordinal.lift.principal_seg Ordinal.lift.principalSeg
@@ -1307,7 +1307,7 @@ def ord (c : Cardinal) : Ordinal :=
       suffices ∀ {α β}, α ≈ β → F α ≤ F β from
         fun α β h => (this h).antisymm (this (Setoid.symm h))
       rintro α β ⟨f⟩
-      refine' le_ciInf_iff'.2 fun i => _
+      refine le_ciInf_iff'.2 fun i => _
       haveI := @RelEmbedding.isWellOrder _ _ (f ⁻¹'o i.1) _ (↑(RelIso.preimage f i.1)) i.2
       exact
         (ciInf_le' _
@@ -1430,7 +1430,7 @@ theorem ord_ofNat (n : ℕ) [n.AtLeastTwo] : ord (no_index (OfNat.ofNat n)) = Of
 
 @[simp]
 theorem lift_ord (c) : Ordinal.lift.{u,v} (ord c) = ord (lift.{u,v} c) := by
-  refine' le_antisymm (le_of_forall_lt fun a ha => _) _
+  refine le_antisymm (le_of_forall_lt fun a ha => _) _
   · rcases Ordinal.lt_lift_iff.1 ha with ⟨a, rfl, _⟩
     rwa [lt_ord, ← lift_card, lift_lt, ← lt_ord, ← Ordinal.lift_lt]
   · rw [ord_le, ← lift_card, card_ord]
@@ -1506,7 +1506,7 @@ theorem lift_lt_univ' (c : Cardinal) : lift.{max (u + 1) v, u} c < univ.{u, v} :
 
 @[simp]
 theorem ord_univ : ord univ.{u, v} = Ordinal.univ.{u, v} := by
-  refine le_antisymm (ord_card_le _) <| le_of_forall_lt fun o h => lt_ord.2 ?_
+  refine le_antisymm (ord_card_le _) <| le_of_forall_lt fun o h => lt_ord.2 _
   have := lift.principalSeg.{u, v}.down.1 (by simpa only [lift.principalSeg_coe] using h)
   rcases this with ⟨o, h'⟩
   rw [← h', lift.principalSeg_coe, ← lift_card]
@@ -1654,7 +1654,7 @@ theorem List.Sorted.lt_ord_of_lt [LinearOrder α] [IsWellOrder α (· < ·)] {l 
     | nil => intro i hi; simp at hi
     | cons b bs =>
       intro i hi
-      suffices h : i ≤ a by refine lt_of_le_of_lt ?_ (hlt a (mem_cons_self a as)); simpa
+      suffices h : i ≤ a by refine lt_of_le_of_lt _ (hlt a (mem_cons_self a as)); simpa
       cases hi with
       | head as => exact List.head_le_of_lt hmltl
       | tail b hi => exact le_of_lt (lt_of_lt_of_le (List.rel_of_sorted_cons hm _ hi)

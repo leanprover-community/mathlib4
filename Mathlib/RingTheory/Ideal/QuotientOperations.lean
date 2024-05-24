@@ -229,7 +229,7 @@ lemma quotientInfToPiQuotient_surj [Finite ι] {I : ι → Ideal R}
       exact hI (by simpa [ne_comm, isCoprime_iff_add] using hj)
     rcases isCoprime_iff_exists.mp (isCoprime_biInf hI') with ⟨u, hu, e, he, hue⟩
     replace he : ∀ j, j ≠ i → e ∈ I j := by simpa using he
-    refine ⟨e, ?_, ?_⟩
+    refine ⟨e, _, _⟩
     · simp [eq_sub_of_add_eq' hue, map_sub, eq_zero_iff_mem.mpr hu]
     · exact fun j hj ↦ eq_zero_iff_mem.mpr (he j hj)
   choose e he using key
@@ -523,7 +523,7 @@ theorem quotientEquiv_symm_mk (I : Ideal R) (J : Ideal S) (f : R ≃+* S)
 /-- `H` and `h` are kept as separate hypothesis since H is used in constructing the quotient map. -/
 theorem quotientMap_injective' {J : Ideal R} {I : Ideal S} {f : R →+* S} {H : J ≤ I.comap f}
     (h : I.comap f ≤ J) : Function.Injective (quotientMap I f H) := by
-  refine' (injective_iff_map_eq_zero (quotientMap I f H)).2 fun a ha => _
+  refine (injective_iff_map_eq_zero (quotientMap I f H)).2 fun a ha => _
   obtain ⟨r, rfl⟩ := Quotient.mk_surjective a
   rw [quotientMap_mk, Quotient.eq_zero_iff_mem] at ha
   exact Quotient.eq_zero_iff_mem.mpr (h ha)
@@ -549,7 +549,7 @@ theorem comp_quotientMap_eq_of_comp_eq {R' S' : Type*} [CommRing R'] [CommRing S
     let leq := le_of_eq (_root_.trans (comap_comap (I := I) f g') (hfg ▸ comap_comap (I := I) g f'))
     (quotientMap I g' le_rfl).comp (quotientMap (I.comap g') f le_rfl) =
     (quotientMap I f' le_rfl).comp (quotientMap (I.comap f') g leq) := by
-  refine RingHom.ext fun a => ?_
+  refine RingHom.ext fun a => _
   obtain ⟨r, rfl⟩ := Quotient.mk_surjective a
   simp only [RingHom.comp_apply, quotientMap_mk]
   exact (Ideal.Quotient.mk I).congr_arg (_root_.trans (g'.comp_apply f r).symm

@@ -291,7 +291,7 @@ theorem toModule_totalize_of_le [∀ i (k : G i), Decidable (k ≠ 0)] {x : Dire
   rw [← @DFinsupp.sum_single ι G _ _ _ x]
   unfold DFinsupp.sum
   simp only [map_sum]
-  refine' Finset.sum_congr rfl fun k hk => _
+  refine Finset.sum_congr rfl fun k hk => _
   rw [DirectSum.single_eq_lof R k (x k), DirectSum.toModule_lof, DirectSum.toModule_lof,
     totalize_of_le (hx k hk), totalize_of_le (le_trans (hx k hk) hij), DirectedSystem.map_map]
 #align module.direct_limit.to_module_totalize_of_le Module.DirectLimit.toModule_totalize_of_le
@@ -666,7 +666,7 @@ theorem of.zero_exact_aux2 {x : FreeCommRing (Σi, G i)} {s t} [DecidablePred (�
     (hk : ∀ z : Σi, G i, z ∈ t → z.1 ≤ k) (hjk : j ≤ k) (hst : s ⊆ t) :
     f' j k hjk (lift (fun ix : s => f' ix.1.1 j (hj ix ix.2) ix.1.2) (restriction s x)) =
       lift (fun ix : t => f' ix.1.1 k (hk ix ix.2) ix.1.2) (restriction t x) := by
-  refine' Subring.InClosure.recOn hxs _ _ _ _
+  refine Subring.InClosure.recOn hxs _ _ _ _
   · rw [(restriction _).map_one, (FreeCommRing.lift _).map_one, (f' j k hjk).map_one,
       (restriction _).map_one, (FreeCommRing.lift _).map_one]
   · -- Porting note: Lean 3 had `(FreeCommRing.lift _).map_neg` but I needed to replace it with
@@ -699,9 +699,9 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
           ∀ [DecidablePred (· ∈ s)],
             lift (fun ix : s => f' ix.1.1 j (H ix ix.2) ix.1.2) (restriction s x) = (0 : G j) := by
   have := Classical.decEq
-  refine' span_induction (Ideal.Quotient.eq_zero_iff_mem.1 H) _ _ _ _
+  refine span_induction (Ideal.Quotient.eq_zero_iff_mem.1 H) _ _ _ _
   · rintro x (⟨i, j, hij, x, rfl⟩ | ⟨i, rfl⟩ | ⟨i, x, y, rfl⟩ | ⟨i, x, y, rfl⟩)
-    · refine'
+    · refine
         ⟨j, {⟨i, x⟩, ⟨j, f' i j hij x⟩}, _,
           isSupported_sub (isSupported_of.2 <| Or.inr rfl) (isSupported_of.2 <| Or.inl rfl),
             fun [_] => _⟩
@@ -716,14 +716,14 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
           rw [this]
           · exact sub_self _
         exacts [Or.inl rfl, Or.inr rfl]
-    · refine' ⟨i, {⟨i, 1⟩}, _, isSupported_sub (isSupported_of.2 rfl) isSupported_one, fun [_] => _⟩
+    · refine ⟨i, {⟨i, 1⟩}, _, isSupported_sub (isSupported_of.2 rfl) isSupported_one, fun [_] => _⟩
       · rintro k (rfl | h)
         rfl
         -- Porting note: the Lean3 proof contained `rw [restriction_of]`, but this
         -- lemma does not seem to work here
       · rw [RingHom.map_sub, RingHom.map_sub]
         erw [lift_of, dif_pos rfl, RingHom.map_one, lift_of, RingHom.map_one, sub_self]
-    · refine'
+    · refine
         ⟨i, {⟨i, x + y⟩, ⟨i, x⟩, ⟨i, y⟩}, _,
           isSupported_sub (isSupported_of.2 <| Or.inl rfl)
             (isSupported_add (isSupported_of.2 <| Or.inr <| Or.inl rfl)
@@ -738,7 +738,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
           rw [(f' i i _).map_add]
           · exact sub_self _
         all_goals tauto
-    · refine'
+    · refine
         ⟨i, {⟨i, x * y⟩, ⟨i, x⟩, ⟨i, y⟩}, _,
           isSupported_sub (isSupported_of.2 <| Or.inl rfl)
             (isSupported_mul (isSupported_of.2 <| Or.inr <| Or.inl rfl)
@@ -754,8 +754,8 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
         all_goals tauto
         -- Porting note: was
         --exacts [sub_self _, Or.inl rfl, Or.inr (Or.inr rfl), Or.inr (Or.inl rfl)]
-  · refine' Nonempty.elim (by infer_instance) fun ind : ι => _
-    refine' ⟨ind, ∅, fun _ => False.elim, isSupported_zero, fun [_] => _⟩
+  · refine Nonempty.elim (by infer_instance) fun ind : ι => _
+    refine ⟨ind, ∅, fun _ => False.elim, isSupported_zero, fun [_] => _⟩
     -- Porting note: `RingHom.map_zero` was `(restriction _).map_zero`
     rw [RingHom.map_zero, (FreeCommRing.lift _).map_zero]
   · intro x y ⟨i, s, hi, hxs, ihs⟩ ⟨j, t, hj, hyt, iht⟩
@@ -764,7 +764,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
       rintro z (hz | hz)
       · exact le_trans (hi z hz) hik
       · exact le_trans (hj z hz) hjk
-    refine'
+    refine
       ⟨k, s ∪ t, this,
         isSupported_add (isSupported_upwards hxs <| Set.subset_union_left s t)
           (isSupported_upwards hyt <| Set.subset_union_right s t), fun [_] => _⟩
@@ -781,7 +781,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
     have : ∀ z : Σi, G i, z ∈ ↑s ∪ t → z.1 ≤ k := by
       rintro z (hz | hz)
       exacts [(hi z.1 <| Finset.mem_image.2 ⟨z, hz, rfl⟩).trans hik, (hj z hz).trans hjk]
-    refine'
+    refine
       ⟨k, ↑s ∪ t, this,
         isSupported_mul (isSupported_upwards hxs <| Set.subset_union_left (↑s) t)
           (isSupported_upwards hyt <| Set.subset_union_right (↑s) t), fun [_] => _⟩
@@ -862,7 +862,7 @@ theorem lift_unique [IsDirected ι (· ≤ ·)] (F : DirectLimit G f →+* P) (x
   cases isEmpty_or_nonempty ι
   · apply DFunLike.congr_fun
     apply Ideal.Quotient.ringHom_ext
-    refine FreeCommRing.hom_ext fun ⟨i, _⟩ ↦ ?_
+    refine FreeCommRing.hom_ext fun ⟨i, _⟩ ↦ _
     exact IsEmpty.elim' inferInstance i
   · exact DirectLimit.induction_on x fun i x => by simp [lift_of]
 #align ring.direct_limit.lift_unique Ring.DirectLimit.lift_unique

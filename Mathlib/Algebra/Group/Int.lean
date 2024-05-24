@@ -120,7 +120,7 @@ lemma isUnit_eq_or_eq_neg (hu : IsUnit u) (hv : IsUnit v) : u = v ∨ u = -v :=
 #align int.is_unit_eq_or_eq_neg Int.isUnit_eq_or_eq_neg
 
 lemma isUnit_iff : IsUnit u ↔ u = 1 ∨ u = -1 := by
-  refine ⟨fun h ↦ isUnit_eq_one_or h, fun h ↦ ?_⟩
+  refine ⟨fun h ↦ isUnit_eq_one_or h, fun h ↦ _⟩
   rcases h with (rfl | rfl)
   · exact isUnit_one
   · exact ⟨⟨-1, -1, by decide, by decide⟩, rfl⟩
@@ -142,7 +142,7 @@ lemma eq_of_mul_eq_one (h : u * v = 1) : u = v :=
 #align int.eq_of_mul_eq_one Int.eq_of_mul_eq_one
 
 lemma mul_eq_one_iff_eq_one_or_neg_one : u * v = 1 ↔ u = 1 ∧ v = 1 ∨ u = -1 ∧ v = -1 := by
-  refine ⟨eq_one_or_neg_one_of_mul_eq_one', fun h ↦ Or.elim h (fun H ↦ ?_) fun H ↦ ?_⟩ <;>
+  refine ⟨eq_one_or_neg_one_of_mul_eq_one', fun h ↦ Or.elim h (fun H ↦ _) fun H ↦ _⟩ <;>
     obtain ⟨rfl, rfl⟩ := H <;> rfl
 #align int.mul_eq_one_iff_eq_one_or_neg_one Int.mul_eq_one_iff_eq_one_or_neg_one
 
@@ -153,7 +153,7 @@ lemma eq_one_or_neg_one_of_mul_eq_neg_one' (h : u * v = -1) : u = 1 ∧ v = -1 �
 #align int.eq_one_or_neg_one_of_mul_eq_neg_one' Int.eq_one_or_neg_one_of_mul_eq_neg_one'
 
 lemma mul_eq_neg_one_iff_eq_one_or_neg_one : u * v = -1 ↔ u = 1 ∧ v = -1 ∨ u = -1 ∧ v = 1 := by
-  refine ⟨eq_one_or_neg_one_of_mul_eq_neg_one', fun h ↦ Or.elim h (fun H ↦ ?_) fun H ↦ ?_⟩ <;>
+  refine ⟨eq_one_or_neg_one_of_mul_eq_neg_one', fun h ↦ Or.elim h (fun H ↦ _) fun H ↦ _⟩ <;>
     obtain ⟨rfl, rfl⟩ := H <;> rfl
 #align int.mul_eq_neg_one_iff_eq_one_or_neg_one Int.mul_eq_neg_one_iff_eq_one_or_neg_one
 

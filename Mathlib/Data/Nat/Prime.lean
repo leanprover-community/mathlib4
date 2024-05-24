@@ -98,10 +98,10 @@ theorem Prime.eq_one_or_self_of_dvd {p : ℕ} (pp : p.Prime) (m : ℕ) (hm : m �
 #align nat.prime.eq_one_or_self_of_dvd Nat.Prime.eq_one_or_self_of_dvd
 
 theorem prime_def_lt'' {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, m ∣ p → m = 1 ∨ m = p := by
-  refine' ⟨fun h => ⟨h.two_le, h.eq_one_or_self_of_dvd⟩, fun h => _⟩
+  refine ⟨fun h => ⟨h.two_le, h.eq_one_or_self_of_dvd⟩, fun h => _⟩
   -- Porting note: needed to make ℕ explicit
   have h1 := (@one_lt_two ℕ ..).trans_le h.1
-  refine' ⟨mt Nat.isUnit_iff.mp h1.ne', fun a b hab => _⟩
+  refine ⟨mt Nat.isUnit_iff.mp h1.ne', fun a b hab => _⟩
   simp only [Nat.isUnit_iff]
   apply Or.imp_right _ (h.2 a _)
   · rintro rfl
@@ -141,12 +141,12 @@ theorem prime_def_le_sqrt {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, 2 ≤ m →
         rcases le_total m k with mk | km
         · exact this mk m2 e
         · rw [mul_comm] at e
-          refine' this km (lt_of_mul_lt_mul_right _ (zero_le m)) e
+          refine this km (lt_of_mul_lt_mul_right _ (zero_le m)) e
           rwa [one_mul, ← e]⟩
 #align nat.prime_def_le_sqrt Nat.prime_def_le_sqrt
 
 theorem prime_of_coprime (n : ℕ) (h1 : 1 < n) (h : ∀ m < n, m ≠ 0 → n.Coprime m) : Prime n := by
-  refine' prime_def_lt.mpr ⟨h1, fun m mlt mdvd => _⟩
+  refine prime_def_lt.mpr ⟨h1, fun m mlt mdvd => _⟩
   have hm : m ≠ 0 := by
     rintro rfl
     rw [zero_dvd_iff] at mdvd
@@ -230,7 +230,7 @@ theorem not_prime_mul' {a b n : ℕ} (h : a * b = n) (h₁ : a ≠ 1) (h₂ : b 
 #align nat.not_prime_mul' Nat.not_prime_mul'
 
 theorem Prime.dvd_iff_eq {p a : ℕ} (hp : p.Prime) (a1 : a ≠ 1) : a ∣ p ↔ p = a := by
-  refine ⟨?_, by rintro rfl; rfl⟩
+  refine ⟨_, by rintro rfl; rfl⟩
   rintro ⟨j, rfl⟩
   rcases prime_mul_iff.mp hp with (⟨_, rfl⟩ | ⟨_, rfl⟩)
   · exact mul_one _
@@ -296,7 +296,7 @@ theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
       apply Nat.le_add_left
     by_cases dk : k ∣ n <;> simp [dk]
     · exact ⟨k2, dk, a⟩
-    · refine'
+    · refine
         have := minFac_lemma n k h
         minFacAux_has_prop n2 (k + 2) (i + 1) (by simp [k, e, left_distrib, add_right_comm])
           fun m m2 d => _
@@ -322,7 +322,7 @@ theorem minFac_has_prop {n : ℕ} (n1 : n ≠ 1) : minFacProp n (minFac n) := by
   simp only [minFac_eq, Nat.isUnit_iff]
   by_cases d2 : 2 ∣ n <;> simp [d2]
   · exact ⟨le_rfl, d2, fun k k2 _ => k2⟩
-  · refine'
+  · refine
       minFacAux_has_prop n2 3 0 rfl fun m m2 d => (Nat.eq_or_lt_of_le m2).resolve_left (mt _ d2)
     exact fun e => e.symm ▸ d
 #align nat.min_fac_has_prop Nat.minFac_has_prop
@@ -439,7 +439,7 @@ theorem minFac_eq_two_iff (n : ℕ) : minFac n = 2 ↔ 2 ∣ n := by
   · intro h
     have ub := minFac_le_of_dvd (le_refl 2) h
     have lb := minFac_pos n
-    refine ub.eq_or_lt.resolve_right fun h' => ?_
+    refine ub.eq_or_lt.resolve_right fun h' => _
     have := le_antisymm (Nat.succ_le_of_lt lb) (Nat.lt_succ_iff.mp h')
     rw [eq_comm, Nat.minFac_eq_one_iff] at this
     subst this
@@ -528,7 +528,7 @@ theorem Prime.even_sub_one {p : ℕ} (hp : p.Prime) (h2 : p ≠ 2) : Even (p - 1
 
 /-- A prime `p` satisfies `p % 2 = 1` if and only if `p ≠ 2`. -/
 theorem Prime.mod_two_eq_one_iff_ne_two {p : ℕ} [Fact p.Prime] : p % 2 = 1 ↔ p ≠ 2 := by
-  refine' ⟨fun h hf => _, (Nat.Prime.eq_two_or_odd <| @Fact.out p.Prime _).resolve_left⟩
+  refine ⟨fun h hf => _, (Nat.Prime.eq_two_or_odd <| @Fact.out p.Prime _).resolve_left⟩
   rw [hf] at h
   simp at h
 #align nat.prime.mod_two_eq_one_iff_ne_two Nat.Prime.mod_two_eq_one_iff_ne_two
@@ -622,7 +622,7 @@ theorem Prime.eq_one_of_pow {x n : ℕ} (h : (x ^ n).Prime) : n = 1 :=
 #align nat.prime.eq_one_of_pow Nat.Prime.eq_one_of_pow
 
 theorem Prime.pow_eq_iff {p a k : ℕ} (hp : p.Prime) : a ^ k = p ↔ a = p ∧ k = 1 := by
-  refine' ⟨fun h => _, fun h => by rw [h.1, h.2, pow_one]⟩
+  refine ⟨fun h => _, fun h => by rw [h.1, h.2, pow_one]⟩
   rw [← h] at hp
   rw [← h, hp.eq_one_of_pow, eq_self_iff_true, and_true_iff, pow_one]
 #align nat.prime.pow_eq_iff Nat.Prime.pow_eq_iff
@@ -643,7 +643,7 @@ theorem Prime.pow_minFac {p k : ℕ} (hp : p.Prime) (hk : k ≠ 0) : (p ^ k).min
 
 theorem Prime.mul_eq_prime_sq_iff {x y p : ℕ} (hp : p.Prime) (hx : x ≠ 1) (hy : y ≠ 1) :
     x * y = p ^ 2 ↔ x = p ∧ y = p := by
-  refine' ⟨fun h => _, fun ⟨h₁, h₂⟩ => h₁.symm ▸ h₂.symm ▸ (sq _).symm⟩
+  refine ⟨fun h => _, fun ⟨h₁, h₂⟩ => h₁.symm ▸ h₂.symm ▸ (sq _).symm⟩
   have pdvdxy : p ∣ x * y := by rw [h]; simp [sq]
   -- Could be `wlog := hp.dvd_mul.1 pdvdxy using x y`, but that imports more than we want.
   suffices ∀ x' y' : ℕ, x' ≠ 1 → y' ≠ 1 → x' * y' = p ^ 2 → p ∣ x' → x' = p ∧ y' = p by
@@ -661,7 +661,7 @@ theorem Prime.mul_eq_prime_sq_iff {x y p : ℕ} (hp : p.Prime) (hx : x ≠ 1) (h
     simp only [sq, mul_right_inj' hp.ne_zero] at h
     subst h
     exact ⟨rfl, rfl⟩
-  · refine (hy ?_).elim
+  · refine (hy _).elim
     subst hap
     subst ha
     rw [sq, Nat.mul_right_eq_self_iff (Nat.mul_pos hp.pos hp.pos : 0 < a * a)] at h
@@ -774,29 +774,29 @@ lemma Prime.pow_inj {p q m n : ℕ} (hp : p.Prime) (hq : q.Prime)
   exact ⟨H, succ_inj'.mp <| Nat.pow_right_injective hq.two_le (H ▸ h)⟩
 
 theorem exists_pow_lt_factorial (c : ℕ) : ∃ n0 > 1, ∀ n ≥ n0, c ^ n < (n - 1)! := by
-  refine ⟨2 * (c ^ 2 + 1), ?_, ?_⟩
+  refine ⟨2 * (c ^ 2 + 1), _, _⟩
   · omega
   intro n hn
   obtain ⟨d, rfl⟩ := Nat.exists_eq_add_of_le hn
   obtain (rfl | c0) := c.eq_zero_or_pos
   · simp [Nat.factorial_pos]
-  refine (Nat.le_mul_of_pos_right _ (pow_pos c0 d)).trans_lt ?_
+  refine (Nat.le_mul_of_pos_right _ (pow_pos c0 d)).trans_lt _
   convert_to (c ^ 2) ^ (c ^ 2 + d + 1) < (c ^ 2 + (c ^ 2 + d + 1))!
   · rw [← pow_mul, ← pow_add]
     congr 1
     omega
   · congr
     omega
-  refine lt_of_lt_of_le ?_ Nat.factorial_mul_pow_le_factorial
+  refine lt_of_lt_of_le _ Nat.factorial_mul_pow_le_factorial
   rw [← one_mul (_ ^ _ : ℕ)]
   exact Nat.mul_lt_mul_of_le_of_lt (Nat.one_le_of_lt (Nat.factorial_pos _))
     (Nat.pow_lt_pow_left (Nat.lt_succ_self _) (Nat.succ_ne_zero _)) (Nat.factorial_pos _)
 
 theorem exists_mul_pow_lt_factorial (a : ℕ) (c : ℕ) : ∃ n0, ∀ n ≥ n0, a * c ^ n < (n - 1)! := by
   obtain ⟨n0, hn, h⟩ := Nat.exists_pow_lt_factorial (a * c)
-  refine ⟨n0, fun n hn => lt_of_le_of_lt ?_ (h n hn)⟩
+  refine ⟨n0, fun n hn => lt_of_le_of_lt _ (h n hn)⟩
   rw [mul_pow]
-  refine Nat.mul_le_mul_right _ (Nat.le_self_pow ?_ _)
+  refine Nat.mul_le_mul_right _ (Nat.le_self_pow _ _)
   omega
 
 theorem exists_prime_mul_pow_lt_factorial (n a c : ℕ) : ∃ p > n, p.Prime ∧ a * c ^ p < (p - 1)! :=

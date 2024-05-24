@@ -104,7 +104,7 @@ variable (R : Type*) [Semiring R] (p q : R[X]) {S : Type*} [AddCommMonoid S] [Po
 @[simp]
 theorem smeval_add : (p + q).smeval x = p.smeval x + q.smeval x := by
   simp only [smeval_eq_sum, smul_pow]
-  refine sum_add_index p q (smul_pow x) (fun _ ↦ ?_) (fun _ _ _ ↦ ?_)
+  refine sum_add_index p q (smul_pow x) (fun _ ↦ _) (fun _ _ _ ↦ _)
   · rw [smul_pow, zero_smul]
   · rw [smul_pow, smul_pow, smul_pow, add_smul]
 
@@ -139,7 +139,7 @@ theorem leval_coe_eq_smeval {R : Type*} [Semiring R] (r : R) :
 
 theorem leval_eq_smeval.linearMap {R : Type*} [Semiring R] (r : R) :
     leval r = smeval.linearMap R r := by
-  refine LinearMap.ext ?_
+  refine LinearMap.ext _
   intro
   rw [leval_apply, smeval.linearMap_apply, eval_eq_smeval]
 

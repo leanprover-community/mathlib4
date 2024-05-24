@@ -44,7 +44,7 @@ theorem absNorm_div_norm_eq_absNorm_div_norm {I : FractionalIdeal R⁰ K} (a : R
     rw [smul_comm] at h
     rw [h, Submonoid.smul_def, Submonoid.smul_def, ← Submodule.ideal_span_singleton_smul,
       ← Submodule.ideal_span_singleton_smul, ← Submodule.map_smul'', ← Submodule.map_smul'',
-      (LinearMap.map_injective ?_).eq_iff, smul_eq_mul, smul_eq_mul] at h'
+      (LinearMap.map_injective _).eq_iff, smul_eq_mul, smul_eq_mul] at h'
     · simp_rw [← Int.cast_natAbs, ← Nat.cast_mul, ← Ideal.absNorm_span_singleton]
       rw [← _root_.map_mul, ← _root_.map_mul, mul_comm, ← h', mul_comm]
     · exact LinearMap.ker_eq_bot.mpr (IsFractionRing.injective R K)
@@ -89,9 +89,9 @@ theorem absNorm_one : absNorm (1 : FractionalIdeal R⁰ K) = 1 := by convert abs
 
 theorem absNorm_eq_zero_iff [NoZeroDivisors K] {I : FractionalIdeal R⁰ K} :
     absNorm I = 0 ↔ I = 0 := by
-  refine ⟨fun h ↦ zero_of_num_eq_bot zero_not_mem_nonZeroDivisors ?_, fun h ↦ h ▸ absNorm_bot⟩
+  refine ⟨fun h ↦ zero_of_num_eq_bot zero_not_mem_nonZeroDivisors _, fun h ↦ h ▸ absNorm_bot⟩
   rw [absNorm_eq, div_eq_zero_iff] at h
-  refine Ideal.absNorm_eq_zero_iff.mp <| Nat.cast_eq_zero.mp <| h.resolve_right ?_
+  refine Ideal.absNorm_eq_zero_iff.mp <| Nat.cast_eq_zero.mp <| h.resolve_right _
   simpa [Algebra.norm_eq_zero_iff] using nonZeroDivisors.coe_ne_zero _
 
 theorem coeIdeal_absNorm (I₀ : Ideal R) :

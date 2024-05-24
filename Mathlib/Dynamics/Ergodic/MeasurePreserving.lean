@@ -115,14 +115,14 @@ protected theorem trans {e : α ≃ᵐ β} {e' : β ≃ᵐ γ}
 
 protected theorem comp_left_iff {g : α → β} {e : β ≃ᵐ γ} (h : MeasurePreserving e μb μc) :
     MeasurePreserving (e ∘ g) μa μc ↔ MeasurePreserving g μa μb := by
-  refine ⟨fun hg => ?_, fun hg => h.comp hg⟩
+  refine ⟨fun hg => _, fun hg => h.comp hg⟩
   convert (MeasurePreserving.symm e h).comp hg
   simp [← Function.comp.assoc e.symm e g]
 #align measure_theory.measure_preserving.comp_left_iff MeasureTheory.MeasurePreserving.comp_left_iff
 
 protected theorem comp_right_iff {g : α → β} {e : γ ≃ᵐ α} (h : MeasurePreserving e μc μa) :
     MeasurePreserving (g ∘ e) μc μb ↔ MeasurePreserving g μa μb := by
-  refine ⟨fun hg => ?_, fun hg => hg.comp h⟩
+  refine ⟨fun hg => _, fun hg => hg.comp h⟩
   convert hg.comp (MeasurePreserving.symm e h)
   simp [Function.comp.assoc g e e.symm]
 #align measure_theory.measure_preserving.comp_right_iff MeasureTheory.MeasurePreserving.comp_right_iff
@@ -155,7 +155,7 @@ lemma measure_symmDiff_preimage_iterate_le
     μ (s ∆ (f^[n] ⁻¹' s)) ≤ n • μ (s ∆ (f ⁻¹' s)) := by
   induction' n with n ih; · simp
   simp only [add_smul, one_smul, ← n.add_one]
-  refine' le_trans (measure_symmDiff_le s (f^[n] ⁻¹' s) (f^[n+1] ⁻¹' s)) (add_le_add ih _)
+  refine le_trans (measure_symmDiff_le s (f^[n] ⁻¹' s) (f^[n+1] ⁻¹' s)) (add_le_add ih _)
   replace hs : MeasurableSet (s ∆ (f ⁻¹' s)) := hs.symmDiff <| hf.measurable hs
   rw [iterate_succ', preimage_comp, ← preimage_symmDiff, (hf.iterate n).measure_preimage hs]
 
@@ -172,7 +172,7 @@ theorem exists_mem_iterate_mem_of_volume_lt_mul_volume (hf : MeasurePreserving f
     simpa using exists_nonempty_inter_of_measure_univ_lt_sum_measure μ (fun m _ ↦ A m) this
   wlog hlt : i < j generalizing i j
   · exact this j hj i hi hij.symm hxj hxi (hij.lt_or_lt.resolve_left hlt)
-  refine ⟨f^[i] x, hxi, j - i, ⟨tsub_pos_of_lt hlt, lt_of_le_of_lt (j.sub_le i) hj⟩, ?_⟩
+  refine ⟨f^[i] x, hxi, j - i, ⟨tsub_pos_of_lt hlt, lt_of_le_of_lt (j.sub_le i) hj⟩, _⟩
   rwa [← iterate_add_apply, tsub_add_cancel_of_le hlt.le]
 #align measure_theory.measure_preserving.exists_mem_image_mem_of_volume_lt_mul_volume MeasureTheory.MeasurePreserving.exists_mem_iterate_mem_of_volume_lt_mul_volume
 

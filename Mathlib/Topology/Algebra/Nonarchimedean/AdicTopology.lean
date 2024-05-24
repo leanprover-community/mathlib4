@@ -137,7 +137,7 @@ def adicModuleTopology : TopologicalSpace M :=
 on an `R`-module `M`, seen as open additive subgroups of `M`. -/
 def openAddSubgroup (n : ℕ) : @OpenAddSubgroup R _ I.adicTopology := by
   letI := I.adicTopology
-  refine ⟨(I ^ n).toAddSubgroup, ?_⟩
+  refine ⟨(I ^ n).toAddSubgroup, _⟩
   convert (I.adic_basis.toRing_subgroups_basis.openAddSubgroup n).isOpen
   change (↑(I ^ n) : Set R) = ↑(I ^ n • (⊤ : Ideal R))
   simp [smul_top_eq_map, Algebra.id.map_eq_id, map_id, restrictScalars_self]
@@ -195,7 +195,7 @@ theorem is_ideal_adic_pow {J : Ideal R} (h : IsAdic J) {n : ℕ} (hn : 0 < n) : 
   · intro V hV
     cases' h.right V hV with m hm
     use m
-    refine Set.Subset.trans ?_ hm
+    refine Set.Subset.trans _ hm
     cases n
     · exfalso
       exact Nat.not_succ_le_zero 0 hn

@@ -409,7 +409,7 @@ instance addMonoidWithOne : AddMonoidWithOne Num :=
 #align num.add_monoid_with_one Num.addMonoidWithOne
 
 instance commSemiring : CommSemiring Num := by
-  refine'
+  refine
     { Num.addMonoid,
       Num.addMonoidWithOne with
       mul := (· * ·)
@@ -589,11 +589,11 @@ scoped macro (name := transfer) "transfer" : tactic => `(tactic|
     (intros; transfer_rw; try simp [add_comm, add_left_comm, mul_comm, mul_left_comm]))
 
 instance addCommSemigroup : AddCommSemigroup PosNum := by
-  refine' { add := (· + ·).. } <;> transfer
+  refine { add := (· + ·).. } <;> transfer
 #align pos_num.add_comm_semigroup PosNum.addCommSemigroup
 
 instance commMonoid : CommMonoid PosNum := by
-  refine'
+  refine
     { mul := (· * ·)
       one := (1 : PosNum)
       npow := @npowRec PosNum ⟨1⟩ ⟨(· * ·)⟩,.. } <;>
@@ -602,7 +602,7 @@ instance commMonoid : CommMonoid PosNum := by
 #align pos_num.comm_monoid PosNum.commMonoid
 
 instance distrib : Distrib PosNum := by
-  refine'
+  refine
     { add := (· + ·)
       mul := (· * ·).. } <;>
   (transfer
@@ -1558,7 +1558,7 @@ theorem divMod_to_nat_aux {n d : PosNum} {q r : Num} (h₁ : (r : ℕ) + d * _ro
     rw [← ZNum.to_int_inj, Num.cast_toZNum, Num.cast_sub', sub_eq_iff_eq_add, ← Int.natCast_inj]
     simp
   cases' e : Num.ofZNum' (Num.sub' r (Num.pos d)) with r₂ <;> simp [divModAux]
-  · refine' ⟨h₁, lt_of_not_ge fun h => _⟩
+  · refine ⟨h₁, lt_of_not_ge fun h => _⟩
     cases' Nat.le.dest h with r₂ e'
     rw [← Num.to_of_nat r₂, add_comm] at e'
     cases e.symm.trans (this.2 e'.symm)
@@ -1655,9 +1655,9 @@ theorem gcd_to_nat_aux :
     rw [natSize_to_nat, mul_to_nat, Nat.size_le] at h ⊢
     rw [mod_to_nat, mul_comm]
     rw [pow_succ, ← Nat.mod_add_div b (pos a)] at h
-    refine' lt_of_mul_lt_mul_right (lt_of_le_of_lt _ h) (Nat.zero_le 2)
+    refine lt_of_mul_lt_mul_right (lt_of_le_of_lt _ h) (Nat.zero_le 2)
     rw [mul_two, mul_add]
-    refine'
+    refine
       add_le_add_left
         (Nat.mul_le_mul_left _ (le_trans (le_of_lt (Nat.mod_lt _ (PosNum.cast_pos _))) _)) _
     suffices 1 ≤ _ by simpa using Nat.mul_le_mul_left (pos a) this

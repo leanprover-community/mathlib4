@@ -215,7 +215,7 @@ theorem prod_isUnit : ∀ {L : List M}, (∀ m ∈ L, IsUnit m) → IsUnit L.pro
 @[to_additive]
 theorem prod_isUnit_iff {α : Type*} [CommMonoid α] {L : List α} :
     IsUnit L.prod ↔ ∀ m ∈ L, IsUnit m := by
-  refine' ⟨fun h => _, prod_isUnit⟩
+  refine ⟨fun h => _, prod_isUnit⟩
   induction' L with m L ih
   · exact fun m' h' => False.elim (not_mem_nil m' h')
   rw [prod_cons, IsUnit.mul_iff] at h
@@ -286,14 +286,14 @@ Instead, we write the statement in terms of `(L.get? 0).getD 1`.
 @[to_additive "We'd like to state this as `L.headI + L.tail.sum = L.sum`, but because `L.headI`
   relies on an inhabited instance to return a garbage value on the empty list, this is not possible.
   Instead, we write the statement in terms of `(L.get? 0).getD 0`."]
-theorem get?_zero_mul_tail_prod (l : List M) : (l.get? 0).getD 1 * l.tail.prod = l.prod := by
+theorem get_zero_mul_tail_prod (l : List M) : (l.get? 0).getD 1 * l.tail.prod = l.prod := by
   cases l <;> simp
-#align list.nth_zero_mul_tail_prod List.get?_zero_mul_tail_prod
-#align list.nth_zero_add_tail_sum List.get?_zero_add_tail_sum
+#align list.nth_zero_mul_tail_prod List.get_zero_mul_tail_prod
+#align list.nth_zero_add_tail_sum List.get_zero_add_tail_sum
 
-/-- Same as `get?_zero_mul_tail_prod`, but avoiding the `List.headI` garbage complication by
+/-- Same as `get_zero_mul_tail_prod`, but avoiding the `List.headI` garbage complication by
   requiring the list to be nonempty. -/
-@[to_additive "Same as `get?_zero_add_tail_sum`, but avoiding the `List.headI` garbage complication
+@[to_additive "Same as `get_zero_add_tail_sum`, but avoiding the `List.headI` garbage complication
   by requiring the list to be nonempty."]
 theorem headI_mul_tail_prod_of_ne_nil [Inhabited M] (l : List M) (h : l ≠ []) :
     l.headI * l.tail.prod = l.prod := by cases l <;> [contradiction; simp]
@@ -383,7 +383,7 @@ depend on the order of elements. -/
 @[to_additive "If elements of a list additively commute with each other, then their sum does not
 depend on the order of elements."]
 lemma Perm.prod_eq' (h : l₁ ~ l₂) (hc : l₁.Pairwise Commute) : l₁.prod = l₂.prod := by
-  refine h.foldl_eq' ?_ _
+  refine h.foldl_eq' _ _
   apply Pairwise.forall_of_forall
   · intro x y h z
     exact (h z).symm
@@ -453,7 +453,7 @@ end CommMonoid
 @[to_additive]
 lemma eq_of_prod_take_eq [LeftCancelMonoid M] {L L' : List M} (h : L.length = L'.length)
     (h' : ∀ i ≤ L.length, (L.take i).prod = (L'.take i).prod) : L = L' := by
-  refine ext_get h fun i h₁ h₂ => ?_
+  refine ext_get h fun i h₁ h₂ => _
   have : (L.take (i + 1)).prod = (L'.take (i + 1)).prod := h' _ (Nat.succ_le_of_lt h₁)
   rw [prod_take_succ L i h₁, prod_take_succ L' i h₂, h' i (le_of_lt h₁)] at this
   convert mul_left_cancel this
@@ -533,7 +533,7 @@ theorem prod_range_div (n : ℕ) (f : ℕ → G) :
 @[to_additive "Alternative version of `List.sum_set` when the list is over a group"]
 theorem prod_set' (L : List G) (n : ℕ) (a : G) :
     (L.set n a).prod = L.prod * if hn : n < L.length then (L.get ⟨n, hn⟩)⁻¹ * a else 1 := by
-  refine (prod_set L n a).trans ?_
+  refine (prod_set L n a).trans _
   split_ifs with hn
   · rw [mul_comm _ a, mul_assoc a, prod_drop_succ L n hn, mul_comm _ (drop n L).prod, ←
       mul_assoc (take n L).prod, prod_take_mul_prod_drop, mul_comm a, mul_assoc]
@@ -652,7 +652,7 @@ theorem sum_map_count_dedup_filter_eq_countP (p : α → Bool) (l : List α) :
   · simp
   · simp_rw [List.countP_cons, List.count_cons, List.sum_map_add]
     congr 1
-    · refine' _root_.trans _ h
+    · refine _root_.trans _ h
       by_cases ha : a ∈ as
       · simp [dedup_cons_of_mem ha]
       · simp only [dedup_cons_of_not_mem ha, List.filter]
@@ -660,9 +660,9 @@ theorem sum_map_count_dedup_filter_eq_countP (p : α → Bool) (l : List α) :
         | true => simp only [List.map_cons, List.sum_cons, List.count_eq_zero.2 ha, zero_add]
         | false => simp only
     · by_cases hp : p a
-      · refine' _root_.trans (sum_map_eq_nsmul_single a _ fun _ h _ => by simp [h]) _
+      · refine _root_.trans (sum_map_eq_nsmul_single a _ fun _ h _ => by simp [h]) _
         simp [hp, count_dedup]
-      · refine' _root_.trans (List.sum_eq_zero fun n hn => _) (by simp [hp])
+      · refine _root_.trans (List.sum_eq_zero fun n hn => _) (by simp [hp])
         obtain ⟨a', ha'⟩ := List.mem_map.1 hn
         split_ifs at ha' with ha
         · simp only [ha, mem_filter, mem_dedup, find?, mem_cons, true_or, hp,

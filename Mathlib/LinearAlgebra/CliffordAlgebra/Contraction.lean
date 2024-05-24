@@ -130,7 +130,7 @@ instance : SMul R (CliffordAlgebra Q) := inferInstance
 theorem contractLeft_ι_mul (a : M) (b : CliffordAlgebra Q) :
     d⌋(ι Q a * b) = d a • b - ι Q a * (d⌋b) := by
 -- Porting note: Lean cannot figure out anymore the third argument
-  refine foldr'_ι_mul _ _ ?_ _ _ _
+  refine foldr'_ι_mul _ _ _ _ _ _
   exact fun m x fx ↦ contractLeftAux_contractLeftAux Q d m x fx
 #align clifford_algebra.contract_left_ι_mul CliffordAlgebra.contractLeft_ι_mul
 
@@ -166,7 +166,7 @@ variable (Q)
 @[simp]
 theorem contractLeft_ι (x : M) : d⌋ι Q x = algebraMap R _ (d x) := by
 -- Porting note: Lean cannot figure out anymore the third argument
-  refine (foldr'_ι _ _ ?_ _ _).trans <| by
+  refine (foldr'_ι _ _ _ _ _).trans <| by
     simp_rw [contractLeftAux_apply_apply, mul_zero, sub_zero,
       Algebra.algebraMap_eq_smul_one]
   exact fun m x fx ↦ contractLeftAux_contractLeftAux Q d m x fx
@@ -180,7 +180,7 @@ theorem contractRight_ι (x : M) : ι Q x⌊d = algebraMap R _ (d x) := by
 @[simp]
 theorem contractLeft_algebraMap (r : R) : d⌋algebraMap R (CliffordAlgebra Q) r = 0 := by
 -- Porting note: Lean cannot figure out anymore the third argument
-  refine (foldr'_algebraMap _ _ ?_ _ _).trans <| smul_zero _
+  refine (foldr'_algebraMap _ _ _ _ _).trans <| smul_zero _
   exact fun m x fx ↦ contractLeftAux_contractLeftAux Q d m x fx
 #align clifford_algebra.contract_left_algebra_map CliffordAlgebra.contractLeft_algebraMap
 

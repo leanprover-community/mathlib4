@@ -119,7 +119,7 @@ theorem toFun_spec'' (g : L ≃+* L) {n : ℕ+} {t : L} (ht : IsPrimitiveRoot t 
 /-- If g(t)=t^c for all roots of unity, then c=χ(g). -/
 theorem toFun_unique (g : L ≃+* L) (c : ZMod (Fintype.card (rootsOfUnity n L)))
     (hc : ∀ t : rootsOfUnity n L, g (t : Lˣ) = (t ^ c.val : Lˣ)) : c = χ₀ n g := by
-  apply IsCyclic.ext rfl (fun ζ ↦ ?_)
+  apply IsCyclic.ext rfl (fun ζ ↦ _)
   specialize hc ζ
   suffices ((ζ ^ c.val : Lˣ) : L) = (ζ ^ (χ₀ n g).val : Lˣ) by exact_mod_cast this
   rw [← toFun_spec g ζ, hc]
@@ -130,7 +130,7 @@ theorem toFun_unique' (g : L ≃+* L) (c : ZMod (Fintype.card (rootsOfUnity n L)
 
 set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 lemma id : χ₀ n (RingEquiv.refl L) = 1 := by
-  refine (toFun_unique n (RingEquiv.refl L) 1 <| fun t ↦ ?_).symm
+  refine (toFun_unique n (RingEquiv.refl L) 1 <| fun t ↦ _).symm
   have : 1 ≤ Fintype.card { x // x ∈ rootsOfUnity n L } := Fin.size_positive'
   obtain (h | h) := this.lt_or_eq
   · have := Fact.mk h
@@ -142,7 +142,7 @@ lemma id : χ₀ n (RingEquiv.refl L) = 1 := by
 set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 lemma comp (g h : L ≃+* L) : χ₀ n (g * h) =
     χ₀ n g * χ₀ n h := by
-  refine (toFun_unique n (g * h) _ <| fun ζ ↦ ?_).symm
+  refine (toFun_unique n (g * h) _ <| fun ζ ↦ _).symm
   change g (h (ζ : Lˣ)) = _
   rw [toFun_spec, ← Subgroup.coe_pow, toFun_spec, mul_comm, Subgroup.coe_pow, ← pow_mul,
     ← Subgroup.coe_pow]

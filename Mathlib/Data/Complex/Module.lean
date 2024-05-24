@@ -323,9 +323,9 @@ theorem toMatrix_conjAe :
 
 /-- The identity and the complex conjugation are the only two `ℝ`-algebra homomorphisms of `ℂ`. -/
 theorem real_algHom_eq_id_or_conj (f : ℂ →ₐ[ℝ] ℂ) : f = AlgHom.id ℝ ℂ ∨ f = conjAe := by
-  refine'
+  refine
       (eq_or_eq_neg_of_sq_eq_sq (f I) I <| by rw [← map_pow, I_sq, map_neg, map_one]).imp _ _ <;>
-    refine fun h => algHom_ext ?_
+    refine fun h => algHom_ext _
   exacts [h, conj_I.symm ▸ h]
 #align complex.real_alg_hom_eq_id_or_conj Complex.real_algHom_eq_id_or_conj
 
@@ -569,7 +569,7 @@ lemma imaginaryPart_surjective : Function.Surjective (imaginaryPart (A := A)) :=
 open Submodule
 
 lemma span_selfAdjoint : span ℂ (selfAdjoint A : Set A) = ⊤ := by
-  refine eq_top_iff'.mpr fun x ↦ ?_
+  refine eq_top_iff'.mpr fun x ↦ _
   rw [← realPart_add_I_smul_imaginaryPart x]
   exact add_mem (subset_span (ℜ x).property) <|
     SMulMemClass.smul_mem _ <| subset_span (ℑ x).property
@@ -624,12 +624,12 @@ open Cardinal Module
 
 @[simp]
 lemma Real.rank_rat_real : Module.rank ℚ ℝ = continuum := by
-  refine (Free.rank_eq_mk_of_infinite_lt ℚ ℝ ?_).trans mk_real
+  refine (Free.rank_eq_mk_of_infinite_lt ℚ ℝ _).trans mk_real
   simpa [mk_real] using aleph0_lt_continuum
 
 @[simp]
 lemma Complex.rank_rat_complex : Module.rank ℚ ℂ = continuum := by
-  refine (Free.rank_eq_mk_of_infinite_lt ℚ ℂ ?_).trans mk_complex
+  refine (Free.rank_eq_mk_of_infinite_lt ℚ ℂ _).trans mk_complex
   simpa using aleph0_lt_continuum
 
 /-- `ℂ` and `ℝ` are isomorphic as vector spaces over `ℚ`, or equivalently,

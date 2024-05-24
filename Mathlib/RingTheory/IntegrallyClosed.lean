@@ -80,7 +80,7 @@ variable {A B : Type*} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
 theorem AlgHom.isIntegrallyClosedIn (f : A →ₐ[R] B) (hf : Function.Injective f) :
     IsIntegrallyClosedIn R B → IsIntegrallyClosedIn R A := by
   rintro ⟨inj, cl⟩
-  refine ⟨Function.Injective.of_comp (f := f) ?_, fun hx => ?_, ?_⟩
+  refine ⟨Function.Injective.of_comp (f := f) _, fun hx => _, _⟩
   · convert inj
     aesop
   · obtain ⟨y, fx_eq⟩ := cl.mp ((isIntegral_algHom_iff f hf).mpr hx)
@@ -115,7 +115,7 @@ theorem isIntegrallyClosedIn_iff {R A : Type*} [CommRing R] [CommRing A] [Algebr
   · rintro ⟨_, cl⟩
     aesop
   · rintro ⟨inj, cl⟩
-    refine ⟨inj, by aesop, ?_⟩
+    refine ⟨inj, by aesop, _⟩
     rintro ⟨y, rfl⟩
     apply isIntegral_algebraMap
 
@@ -152,10 +152,10 @@ variable (A)
 
 theorem integralClosure_eq_bot_iff (hRA : Function.Injective (algebraMap R A)) :
     integralClosure R A = ⊥ ↔ IsIntegrallyClosedIn R A := by
-  refine eq_bot_iff.trans ?_
+  refine eq_bot_iff.trans _
   constructor
   · intro h
-    refine ⟨ hRA, fun hx => Set.mem_range.mp (Algebra.mem_bot.mp (h hx)), ?_⟩
+    refine ⟨ hRA, fun hx => Set.mem_range.mp (Algebra.mem_bot.mp (h hx)), _⟩
     rintro ⟨y, rfl⟩
     apply isIntegral_algebraMap
   · intro h x hx
@@ -184,7 +184,7 @@ lemma _root_.IsIntegralClosure.of_isIntegrallyClosedIn
     [IsIntegrallyClosedIn A B] [Algebra.IsIntegral R A] :
     IsIntegralClosure A R B := by
   refine ⟨IsIntegralClosure.algebraMap_injective _ A _, fun {x} ↦
-    ⟨fun hx ↦ IsIntegralClosure.isIntegral_iff.mp (IsIntegral.tower_top (A := A) hx), ?_⟩⟩
+    ⟨fun hx ↦ IsIntegralClosure.isIntegral_iff.mp (IsIntegral.tower_top (A := A) hx), _⟩⟩
   rintro ⟨y, rfl⟩
   exact IsIntegral.map (IsScalarTower.toAlgHom A A B) (Algebra.IsIntegral.isIntegral y)
 
@@ -234,7 +234,7 @@ theorem integralClosure_eq_bot_iff : integralClosure R K = ⊥ ↔ IsIntegrallyC
 
 @[simp]
 theorem pow_dvd_pow_iff {n : ℕ} (hn : n ≠ 0) {a b : R} : a ^ n ∣ b ^ n ↔ a ∣ b  := by
-  refine ⟨fun ⟨x, hx⟩ ↦ ?_, fun h ↦ pow_dvd_pow_of_dvd h n⟩
+  refine ⟨fun ⟨x, hx⟩ ↦ _, fun h ↦ pow_dvd_pow_of_dvd h n⟩
   by_cases ha : a = 0
   · simpa [ha, hn] using hx
   let K := FractionRing R
@@ -242,13 +242,13 @@ theorem pow_dvd_pow_iff {n : ℕ} (hn : n ≠ 0) {a b : R} : a ^ n ∣ b ^ n ↔
     ha <| (injective_iff_map_eq_zero _).1 (IsFractionRing.injective R K) _ h
   let y := (algebraMap R K b) / (algebraMap R K a)
   have hy : IsIntegral R y := by
-    refine ⟨X ^ n - C x, monic_X_pow_sub_C _ hn, ?_⟩
+    refine ⟨X ^ n - C x, monic_X_pow_sub_C _ hn, _⟩
     simp only [y, map_pow, eval₂_sub, eval₂_X_pow, div_pow, eval₂_pow', eval₂_C]
     replace hx := congr_arg (algebraMap R K) hx
     rw [map_pow] at hx
     field_simp [hx, ha]
   obtain ⟨k, hk⟩ := algebraMap_eq_of_integral hy
-  refine ⟨k, IsFractionRing.injective R K ?_⟩
+  refine ⟨k, IsFractionRing.injective R K _⟩
   rw [map_mul, hk, mul_div_cancel₀ _ ha]
 
 variable (R)

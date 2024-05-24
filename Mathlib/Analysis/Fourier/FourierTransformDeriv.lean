@@ -154,8 +154,8 @@ theorem hasFDerivAt_fourierIntegral
   have h1 : ∀ᶠ w' in 𝓝 w, AEStronglyMeasurable (F w') μ :=
     eventually_of_forall (fun w' ↦ (h0 w').aestronglyMeasurable)
   have h3 : AEStronglyMeasurable (F' w) μ := by
-    refine .smul ?_ hf.1.fourierSMulRight
-    refine (continuous_fourierChar.comp ?_).aestronglyMeasurable
+    refine .smul _ hf.1.fourierSMulRight
+    refine (continuous_fourierChar.comp _).aestronglyMeasurable
     exact (L.continuous₂.comp (Continuous.Prod.mk_left w)).neg
   have h4 : (∀ᵐ v ∂μ, ∀ (w' : W), w' ∈ Metric.ball w 1 → ‖F' w' v‖ ≤ B v) := by
     filter_upwards with v w' _
@@ -224,7 +224,7 @@ lemma _root_.ContDiff.fourierPowSMulRight {f : V → E} {k : ℕ∞} (hf : ContD
 
 lemma norm_fourierPowSMulRight_le (f : V → E) (v : V) (n : ℕ) :
     ‖fourierPowSMulRight L f v n‖ ≤ (2 * π * ‖L‖) ^ n * ‖v‖ ^ n * ‖f v‖ := by
-  apply ContinuousMultilinearMap.opNorm_le_bound _ (by positivity) (fun m ↦ ?_)
+  apply ContinuousMultilinearMap.opNorm_le_bound _ (by positivity) (fun m ↦ _)
   calc
   ‖fourierPowSMulRight L f v n m‖
     = (2 * π) ^ n * ((∏ x : Fin n, |(L v) (m x)|) * ‖f v‖) := by
@@ -249,7 +249,7 @@ lemma _root_.MeasureTheory.AEStronglyMeasurable.fourierPowSMulRight
 
 lemma integrable_fourierPowSMulRight {n : ℕ} (hf : Integrable (fun v ↦ ‖v‖ ^ n * ‖f v‖) μ)
     (h'f : AEStronglyMeasurable f μ) : Integrable (fun v ↦ fourierPowSMulRight L f v n) μ := by
-  refine (hf.const_mul ((2 * π * ‖L‖) ^ n)).mono' (h'f.fourierPowSMulRight L n) ?_
+  refine (hf.const_mul ((2 * π * ‖L‖) ^ n)).mono' (h'f.fourierPowSMulRight L n) _
   filter_upwards with v
   exact (norm_fourierPowSMulRight_le L f v n).trans (le_of_eq (by ring))
 

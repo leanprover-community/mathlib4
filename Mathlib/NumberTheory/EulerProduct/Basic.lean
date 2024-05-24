@@ -47,7 +47,7 @@ have norm strictly less than `1`. -/
 lemma Summable.norm_lt_one {F : Type*} [NormedField F] [CompleteSpace F] {f : ℕ →* F}
     (hsum : Summable f) {p : ℕ} (hp : 1 < p) :
     ‖f p‖ < 1 := by
-  refine summable_geometric_iff_norm_lt_one.mp ?_
+  refine summable_geometric_iff_norm_lt_one.mp _
   simp_rw [← map_pow]
   exact hsum.comp_injective <| Nat.pow_right_injective hp
 
@@ -87,7 +87,7 @@ lemma summable_and_hasSum_factoredNumbers_prod_filter_prime_tsum
     · constructor
       · simp only [← (equivProdNatFactoredNumbers hpp hp).summable_iff, Function.comp_def,
           equivProdNatFactoredNumbers_apply', factoredNumbers.map_prime_pow_mul hmul hpp hp]
-        refine Summable.of_nonneg_of_le (fun _ ↦ norm_nonneg _) (fun _ ↦ norm_mul_le ..) ?_
+        refine Summable.of_nonneg_of_le (fun _ ↦ norm_nonneg _) (fun _ ↦ norm_mul_le ..) _
         apply Summable.mul_of_nonneg (hsum hpp) ih.1 <;> exact fun n ↦ norm_nonneg _
       · have hp' : p ∉ s.filter Nat.Prime := mt (mem_of_mem_filter p) hp
         rw [prod_insert hp', ← (equivProdNatFactoredNumbers hpp hp).hasSum_iff, Function.comp_def]
@@ -118,7 +118,7 @@ lemma norm_tsum_factoredNumbers_sub_tsum_lt (hsum : Summable f) (hf₀ : f 0 = 0
   obtain ⟨N, hN⟩ :=
     summable_iff_nat_tsum_vanishing.mp hsum (Metric.ball 0 ε) <| Metric.ball_mem_nhds 0 εpos
   simp_rw [mem_ball_zero_iff] at hN
-  refine ⟨N, fun s hs ↦ ?_⟩
+  refine ⟨N, fun s hs ↦ _⟩
   have := hN _ <| factoredNumbers_compl hs
   rwa [← tsum_subtype_add_tsum_subtype_compl hsum (factoredNumbers s),
     add_sub_cancel_left, tsum_eq_tsum_diff_singleton (factoredNumbers s)ᶜ hf₀]
@@ -148,7 +148,7 @@ lemma norm_tsum_smoothNumbers_sub_tsum_lt (hsum : Summable f) (hf₀ : f 0 = 0)
     ∃ N₀ : ℕ, ∀ N ≥ N₀, ‖(∑' m : ℕ, f m) - ∑' m : N.smoothNumbers, f m‖ < ε := by
   conv => enter [1, N₀, N]; rw [smoothNumbers_eq_factoredNumbers]
   obtain ⟨N₀, hN₀⟩ := norm_tsum_factoredNumbers_sub_tsum_lt hsum hf₀ εpos
-  refine ⟨N₀, fun N hN ↦ hN₀ (range N) fun p hp ↦ ?_⟩
+  refine ⟨N₀, fun N hN ↦ hN₀ (range N) fun p hp ↦ _⟩
   exact mem_range.mpr <| (lt_of_mem_primesBelow hp).trans_le hN
 
 
@@ -166,7 +166,7 @@ theorem eulerProduct_hasProd (hsum : Summable (‖f ·‖)) (hf₀ : f 0 = 0) :
     HasProd, Metric.tendsto_atTop]
   intro ε hε
   obtain ⟨N₀, hN₀⟩ := norm_tsum_factoredNumbers_sub_tsum_lt hsum.of_norm hf₀ hε
-  refine ⟨range N₀, fun s hs ↦ ?_⟩
+  refine ⟨range N₀, fun s hs ↦ _⟩
   have : ∏ p in s, {p | Nat.Prime p}.mulIndicator F p = ∏ p in s.filter Nat.Prime, F p :=
     prod_mulIndicator_eq_prod_filter s (fun _ ↦ F) _ id
   rw [this, dist_eq_norm, prod_filter_prime_tsum_eq_tsum_factoredNumbers hf₁ hmul hsum,
@@ -269,8 +269,8 @@ lemma one_sub_inv_eq_geometric_of_summable_norm {f : ℕ →*₀ F} {p : ℕ} (h
     (hsum : Summable fun x ↦ ‖f x‖) :
     (1 - f p)⁻¹ = ∑' (e : ℕ), f (p ^ e) := by
   simp only [map_pow]
-  refine (tsum_geometric_of_norm_lt_one <| summable_geometric_iff_norm_lt_one.mp ?_).symm
-  refine Summable.of_norm ?_
+  refine (tsum_geometric_of_norm_lt_one <| summable_geometric_iff_norm_lt_one.mp _).symm
+  refine Summable.of_norm _
   simpa only [Function.comp_def, map_pow]
     using hsum.comp_injective <| Nat.pow_right_injective hp.one_lt
 
@@ -285,13 +285,13 @@ lemma summable_and_hasSum_factoredNumbers_prod_filter_prime_geometric {f : ℕ �
   have hmul {m n} (_ : Nat.Coprime m n) := f.map_mul m n
   have H₁ :
       ∏ p in s.filter Nat.Prime, ∑' n : ℕ, f (p ^ n) = ∏ p in s.filter Nat.Prime, (1 - f p)⁻¹ := by
-    refine prod_congr rfl fun p hp ↦ ?_
+    refine prod_congr rfl fun p hp ↦ _
     simp only [map_pow]
     exact tsum_geometric_of_norm_lt_one <| h (mem_filter.mp hp).2
   have H₂ : ∀ {p : ℕ}, p.Prime → Summable fun n ↦ ‖f (p ^ n)‖ := by
     intro p hp
     simp only [map_pow]
-    refine Summable.of_nonneg_of_le (fun _ ↦ norm_nonneg _) (fun _ ↦ norm_pow_le ..) ?_
+    refine Summable.of_nonneg_of_le (fun _ ↦ norm_nonneg _) (fun _ ↦ norm_pow_le ..) _
     exact summable_geometric_iff_norm_lt_one.mpr <| (norm_norm (f p)).symm ▸ h hp
   exact H₁ ▸ summable_and_hasSum_factoredNumbers_prod_filter_prime_tsum f.map_one hmul H₂ s
 
@@ -300,7 +300,7 @@ in terms of the value of the series. -/
 lemma prod_filter_prime_geometric_eq_tsum_factoredNumbers {f : ℕ →* F} (hsum : Summable f)
     (s : Finset ℕ) :
     ∏ p in s.filter Nat.Prime, (1 - f p)⁻¹ = ∑' m : factoredNumbers s, f m := by
-  refine (summable_and_hasSum_factoredNumbers_prod_filter_prime_geometric ?_ s).2.tsum_eq.symm
+  refine (summable_and_hasSum_factoredNumbers_prod_filter_prime_geometric _ s).2.tsum_eq.symm
   exact fun {_} hp ↦ hsum.norm_lt_one hp.one_lt
 
 /-- Given a (completely) multiplicative function `f : ℕ → F`, where `F` is a normed field,

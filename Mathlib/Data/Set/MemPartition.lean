@@ -63,11 +63,11 @@ lemma disjoint_memPartition (f : ℕ → Set α) (n : ℕ) {u v : Set α}
     obtain ⟨u', hu', hu'_eq⟩ := hu
     obtain ⟨v', hv', hv'_eq⟩ := hv
     rcases hu'_eq with rfl | rfl <;> rcases hv'_eq with rfl | rfl
-    · refine Disjoint.mono (inter_subset_left _ _) (inter_subset_left _ _) (ih hu' hv' ?_)
+    · refine Disjoint.mono (inter_subset_left _ _) (inter_subset_left _ _) (ih hu' hv' _)
       exact fun huv' ↦ huv (huv' ▸ rfl)
     · exact Disjoint.mono_left (inter_subset_right _ _) Set.disjoint_sdiff_right
     · exact Disjoint.mono_right (inter_subset_right _ _) Set.disjoint_sdiff_left
-    · refine Disjoint.mono (diff_subset _ _) (diff_subset _ _) (ih hu' hv' ?_)
+    · refine Disjoint.mono (diff_subset _ _) (diff_subset _ _) (ih hu' hv' _)
       exact fun huv' ↦ huv (huv' ▸ rfl)
 
 @[simp]
@@ -93,7 +93,7 @@ lemma finite_memPartition (f : ℕ → Set α) (n : ℕ) : Set.Finite (memPartit
     have : Finite (memPartition f n) := Set.finite_coe_iff.mp ih
     rw [← Set.finite_coe_iff]
     simp_rw [setOf_exists, ← exists_prop, setOf_exists, setOf_or]
-    refine Finite.Set.finite_biUnion (memPartition f n) _ (fun u _ ↦ ?_)
+    refine Finite.Set.finite_biUnion (memPartition f n) _ (fun u _ ↦ _)
     rw [Set.finite_coe_iff]
     simp
 
@@ -127,7 +127,7 @@ lemma memPartitionSet_mem (f : ℕ → Set α) (n : ℕ) (a : α) :
   | succ n ih =>
     classical
     rw [memPartitionSet_succ, memPartition_succ]
-    refine ⟨memPartitionSet f n a, ?_⟩
+    refine ⟨memPartitionSet f n a, _⟩
     split_ifs <;> simp [ih]
 
 lemma mem_memPartitionSet (f : ℕ → Set α) (n : ℕ) (a : α) : a ∈ memPartitionSet f n a := by
@@ -141,11 +141,11 @@ lemma mem_memPartitionSet (f : ℕ → Set α) (n : ℕ) (a : α) : a ∈ memPar
 lemma memPartitionSet_eq_iff {f : ℕ → Set α} {n : ℕ} (a : α) {s : Set α}
     (hs : s ∈ memPartition f n) :
     memPartitionSet f n a = s ↔ a ∈ s := by
-  refine ⟨fun h ↦ h ▸ mem_memPartitionSet f n a, fun h ↦ ?_⟩
+  refine ⟨fun h ↦ h ▸ mem_memPartitionSet f n a, fun h ↦ _⟩
   by_contra h_ne
   have h_disj : Disjoint s (memPartitionSet f n a) :=
     disjoint_memPartition f n hs (memPartitionSet_mem f n a) (Ne.symm h_ne)
-  refine absurd h_disj ?_
+  refine absurd h_disj _
   rw [not_disjoint_iff_nonempty_inter]
   exact ⟨a, h, mem_memPartitionSet f n a⟩
 

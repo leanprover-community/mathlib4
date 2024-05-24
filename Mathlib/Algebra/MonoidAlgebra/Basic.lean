@@ -184,12 +184,12 @@ instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (MonoidAlgebra k 
     left_distrib := fun f g h => by
       haveI := Classical.decEq G
       simp only [mul_def]
-      refine Eq.trans (congr_arg (sum f) (funext₂ fun a₁ b₁ => sum_add_index ?_ ?_)) ?_ <;>
+      refine Eq.trans (congr_arg (sum f) (funext₂ fun a₁ b₁ => sum_add_index _ _)) _ <;>
         simp only [mul_add, mul_zero, single_zero, single_add, forall_true_iff, sum_add]
     right_distrib := fun f g h => by
       haveI := Classical.decEq G
       simp only [mul_def]
-      refine Eq.trans (sum_add_index ?_ ?_) ?_ <;>
+      refine Eq.trans (sum_add_index _ _) _ <;>
         simp only [add_mul, zero_mul, single_zero, single_add, forall_true_iff, sum_zero, sum_add]
     zero_mul := fun f => by
       simp only [mul_def]
@@ -208,7 +208,7 @@ theorem liftNC_mul {g_hom : Type*} [FunLike g_hom G R] [MulHomClass g_hom G R]
   conv_rhs => rw [← sum_single a, ← sum_single b]
   -- Porting note: `(liftNC _ g).map_finsupp_sum` → `map_finsupp_sum`
   simp_rw [mul_def, map_finsupp_sum, liftNC_single, Finsupp.sum_mul, Finsupp.mul_sum]
-  refine Finset.sum_congr rfl fun y hy => Finset.sum_congr rfl fun x _hx => ?_
+  refine Finset.sum_congr rfl fun y hy => Finset.sum_congr rfl fun x _hx => _
   simp [mul_assoc, (h_comm hy).left_comm]
 #align monoid_algebra.lift_nc_mul MonoidAlgebra.liftNC_mul
 
@@ -621,7 +621,7 @@ theorem liftNC_smul [MulOneClass G] {R : Type*} [Semiring R] (f : k →+* R) (g 
       (AddMonoidHom.mulLeft (f c)).comp (liftNC (↑f) g) from
     DFunLike.congr_fun this φ
   -- Porting note: `ext` couldn't a find appropriate theorem.
-  refine addHom_ext' fun a => AddMonoidHom.ext fun b => ?_
+  refine addHom_ext' fun a => AddMonoidHom.ext fun b => _
   -- Porting note: `reducible` cannot be `local` so the proof gets more complex.
   unfold MonoidAlgebra
   simp only [AddMonoidHom.coe_comp, Function.comp_apply, singleAddHom_apply, smulAddHom_apply,
@@ -642,13 +642,13 @@ variable (k) [Semiring k] [DistribSMul R k] [Mul G]
 instance isScalarTower_self [IsScalarTower R k k] :
     IsScalarTower R (MonoidAlgebra k G) (MonoidAlgebra k G) :=
   ⟨fun t a b => by
-    -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
-    refine Finsupp.ext fun m => ?_
+    -- Porting note: `ext` → `refine Finsupp.ext fun _ => _`
+    refine Finsupp.ext fun m => _
     -- Porting note: `refine` & `rw` are required because `simp` behaves differently.
     classical
       simp only [smul_eq_mul, mul_apply]
       rw [coe_smul]
-      refine Eq.trans (sum_smul_index' (g := a) (b := t) ?_) ?_ <;>
+      refine Eq.trans (sum_smul_index' (g := a) (b := t) _) _ <;>
         simp only [mul_apply, Finsupp.smul_sum, smul_ite, smul_mul_assoc,
           zero_mul, ite_self, imp_true_iff, sum_zero, Pi.smul_apply, smul_zero]⟩
 #align monoid_algebra.is_scalar_tower_self MonoidAlgebra.isScalarTower_self
@@ -659,14 +659,14 @@ also commute with the algebra multiplication. -/
 instance smulCommClass_self [SMulCommClass R k k] :
     SMulCommClass R (MonoidAlgebra k G) (MonoidAlgebra k G) :=
   ⟨fun t a b => by
-    -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
-    refine Finsupp.ext fun m => ?_
+    -- Porting note: `ext` → `refine Finsupp.ext fun _ => _`
+    refine Finsupp.ext fun m => _
     -- Porting note: `refine` & `rw` are required because `simp` behaves differently.
     classical
       simp only [smul_eq_mul, mul_apply]
       rw [coe_smul]
       refine Eq.symm (Eq.trans (congr_arg (sum a)
-        (funext₂ fun a₁ b₁ => sum_smul_index' (g := b) (b := t) ?_)) ?_) <;>
+        (funext₂ fun a₁ b₁ => sum_smul_index' (g := b) (b := t) _)) _) <;>
       simp only [mul_apply, Finsupp.sum, Finset.smul_sum, smul_ite, mul_smul_comm,
         imp_true_iff, ite_eq_right_iff, Pi.smul_apply, mul_zero, smul_zero]⟩
 #align monoid_algebra.smul_comm_class_self MonoidAlgebra.smulCommClass_self
@@ -731,8 +731,8 @@ def liftMagma [Module k A] [IsScalarTower k A A] [SMulCommClass k A A] :
       sum_single_index, Function.comp_apply, one_smul, zero_smul, MulHom.coe_comp,
       NonUnitalAlgHom.coe_to_mulHom]
   right_inv F := by
-    -- Porting note: `ext` → `refine nonUnitalAlgHom_ext' k (MulHom.ext fun m => ?_)`
-    refine nonUnitalAlgHom_ext' k (MulHom.ext fun m => ?_)
+    -- Porting note: `ext` → `refine nonUnitalAlgHom_ext' k (MulHom.ext fun m => _)`
+    refine nonUnitalAlgHom_ext' k (MulHom.ext fun m => _)
     simp only [NonUnitalAlgHom.coe_mk, ofMagma_apply, NonUnitalAlgHom.toMulHom_eq_coe,
       sum_single_index, Function.comp_apply, one_smul, zero_smul, MulHom.coe_comp,
       NonUnitalAlgHom.coe_to_mulHom]
@@ -809,14 +809,14 @@ In particular this provides the instance `Algebra k (MonoidAlgebra k G)`.
 instance algebra {A : Type*} [CommSemiring k] [Semiring A] [Algebra k A] [Monoid G] :
     Algebra k (MonoidAlgebra A G) :=
   { singleOneRingHom.comp (algebraMap k A) with
-    -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
+    -- Porting note: `ext` → `refine Finsupp.ext fun _ => _`
     smul_def' := fun r a => by
-      refine Finsupp.ext fun _ => ?_
+      refine Finsupp.ext fun _ => _
       -- Porting note: Newly required.
       rw [Finsupp.coe_smul]
       simp [single_one_mul_apply, Algebra.smul_def, Pi.smul_apply]
     commutes' := fun r f => by
-      refine Finsupp.ext fun _ => ?_
+      refine Finsupp.ext fun _ => _
       simp [single_one_mul_apply, mul_single_one_apply, Algebra.commutes] }
 
 /-- `Finsupp.single 1` as an `AlgHom` -/
@@ -825,8 +825,8 @@ def singleOneAlgHom {A : Type*} [CommSemiring k] [Semiring A] [Algebra k A] [Mon
     A →ₐ[k] MonoidAlgebra A G :=
   { singleOneRingHom with
     commutes' := fun r => by
-      -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
-      refine Finsupp.ext fun _ => ?_
+      -- Porting note: `ext` → `refine Finsupp.ext fun _ => _`
+      refine Finsupp.ext fun _ => _
       simp
       rfl }
 #align monoid_algebra.single_one_alg_hom MonoidAlgebra.singleOneAlgHom
@@ -850,7 +850,7 @@ theorem single_algebraMap_eq_algebraMap_mul_of {A : Type*} [CommSemiring k] [Sem
 theorem induction_on [Semiring k] [Monoid G] {p : MonoidAlgebra k G → Prop} (f : MonoidAlgebra k G)
     (hM : ∀ g, p (of k G g)) (hadd : ∀ f g : MonoidAlgebra k G, p f → p g → p (f + g))
     (hsmul : ∀ (r : k) (f), p f → p (r • f)) : p f := by
-  refine' Finsupp.induction_linear f _ (fun f g hf hg => hadd f g hf hg) fun g r => _
+  refine Finsupp.induction_linear f _ (fun f g hf hg => hadd f g hf hg) fun g r => _
   · simpa using hsmul 0 (of k G 1) (hM 1)
   · convert hsmul r (of k G g) (hM g)
     -- Porting note: Was `simp only`.
@@ -1054,7 +1054,7 @@ def equivariantOfLinearOfComm : V →ₗ[MonoidAlgebra k G] W where
   map_add' v v' := by simp
   map_smul' c v := by
     -- Porting note: Was `apply`.
-    refine Finsupp.induction c ?_ ?_
+    refine Finsupp.induction c _ _
     · simp
     · intro g r c' _nm _nz w
       dsimp at *
@@ -1144,10 +1144,10 @@ protected noncomputable def opRingEquiv [Monoid G] :
       rw [Equiv.toFun_as_coe, AddEquiv.toEquiv_eq_coe]; erw [AddEquiv.coe_toEquiv]
       rw [← AddEquiv.coe_toAddMonoidHom]
       refine Iff.mpr (AddMonoidHom.map_mul_iff (R := (MonoidAlgebra k G)ᵐᵒᵖ)
-        (S := MonoidAlgebra kᵐᵒᵖ Gᵐᵒᵖ) _) ?_
+        (S := MonoidAlgebra kᵐᵒᵖ Gᵐᵒᵖ) _) _
       -- Porting note: Was `ext`.
       refine AddMonoidHom.mul_op_ext _ _ <| addHom_ext' fun i₁ => AddMonoidHom.ext fun r₁ =>
-        AddMonoidHom.mul_op_ext _ _ <| addHom_ext' fun i₂ => AddMonoidHom.ext fun r₂ => ?_
+        AddMonoidHom.mul_op_ext _ _ <| addHom_ext' fun i₂ => AddMonoidHom.ext fun r₂ => _
       -- Porting note: `reducible` cannot be `local` so proof gets long.
       simp only [AddMonoidHom.coe_comp, AddEquiv.coe_toAddMonoidHom, opAddEquiv_apply,
         Function.comp_apply, singleAddHom_apply, AddMonoidHom.compr₂_apply, AddMonoidHom.coe_mul,
@@ -1327,12 +1327,12 @@ instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring k[G] :=
     left_distrib := fun f g h => by
       haveI := Classical.decEq G
       simp only [mul_def]
-      refine Eq.trans (congr_arg (sum f) (funext₂ fun a₁ b₁ => sum_add_index ?_ ?_)) ?_ <;>
+      refine Eq.trans (congr_arg (sum f) (funext₂ fun a₁ b₁ => sum_add_index _ _)) _ <;>
         simp only [mul_add, mul_zero, single_zero, single_add, forall_true_iff, sum_add]
     right_distrib := fun f g h => by
       haveI := Classical.decEq G
       simp only [mul_def]
-      refine Eq.trans (sum_add_index ?_ ?_) ?_ <;>
+      refine Eq.trans (sum_add_index _ _) _ <;>
         simp only [add_mul, zero_mul, single_zero, single_add, forall_true_iff, sum_zero, sum_add]
     zero_mul := fun f => by
       simp only [mul_def]
@@ -1341,14 +1341,14 @@ instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring k[G] :=
       simp only [mul_def]
       exact Eq.trans (congr_arg (sum f) (funext₂ fun a₁ b₁ => sum_zero_index)) sum_zero
     nsmul := fun n f => n • f
-    -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
+    -- Porting note: `ext` → `refine Finsupp.ext fun _ => _`
     nsmul_zero := by
       intros
-      refine Finsupp.ext fun _ => ?_
+      refine Finsupp.ext fun _ => _
       simp [-nsmul_eq_mul, add_smul]
     nsmul_succ := by
       intros
-      refine Finsupp.ext fun _ => ?_
+      refine Finsupp.ext fun _ => _
       simp [-nsmul_eq_mul, add_smul] }
 #align add_monoid_algebra.non_unital_non_assoc_semiring AddMonoidAlgebra.nonUnitalNonAssocSemiring
 
@@ -1730,7 +1730,7 @@ theorem induction_on [AddMonoid G] {p : k[G] → Prop} (f : k[G])
     (hM : ∀ g, p (of k G (Multiplicative.ofAdd g)))
     (hadd : ∀ f g : k[G], p f → p g → p (f + g))
     (hsmul : ∀ (r : k) (f), p f → p (r • f)) : p f := by
-  refine' Finsupp.induction_linear f _ (fun f g hf hg => hadd f g hf hg) fun g r => _
+  refine Finsupp.induction_linear f _ (fun f g hf hg => hadd f g hf hg) fun g r => _
   · simpa using hsmul 0 (of k G (Multiplicative.ofAdd 0)) (hM 0)
   · convert hsmul r (of k G (Multiplicative.ofAdd g)) (hM g)
     -- Porting note: Was `simp only`.
@@ -1907,10 +1907,10 @@ protected noncomputable def opRingEquiv [AddCommMonoid G] :
       -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
       rw [Equiv.toFun_as_coe, AddEquiv.toEquiv_eq_coe]; erw [AddEquiv.coe_toEquiv]
       rw [← AddEquiv.coe_toAddMonoidHom]
-      refine Iff.mpr (AddMonoidHom.map_mul_iff (R := k[G]ᵐᵒᵖ) (S := kᵐᵒᵖ[G]) _) ?_
+      refine Iff.mpr (AddMonoidHom.map_mul_iff (R := k[G]ᵐᵒᵖ) (S := kᵐᵒᵖ[G]) _) _
       -- Porting note: Was `ext`.
       refine AddMonoidHom.mul_op_ext _ _ <| addHom_ext' fun i₁ => AddMonoidHom.ext fun r₁ =>
-        AddMonoidHom.mul_op_ext _ _ <| addHom_ext' fun i₂ => AddMonoidHom.ext fun r₂ => ?_
+        AddMonoidHom.mul_op_ext _ _ <| addHom_ext' fun i₂ => AddMonoidHom.ext fun r₂ => _
       -- Porting note: `reducible` cannot be `local` so proof gets long.
       dsimp
       -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
@@ -1943,14 +1943,14 @@ In particular this provides the instance `Algebra k k[G]`.
 instance algebra [CommSemiring R] [Semiring k] [Algebra R k] [AddMonoid G] :
     Algebra R k[G] :=
   { singleZeroRingHom.comp (algebraMap R k) with
-    -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
+    -- Porting note: `ext` → `refine Finsupp.ext fun _ => _`
     smul_def' := fun r a => by
-      refine Finsupp.ext fun _ => ?_
+      refine Finsupp.ext fun _ => _
       -- Porting note: Newly required.
       rw [Finsupp.coe_smul]
       simp [single_zero_mul_apply, Algebra.smul_def, Pi.smul_apply]
     commutes' := fun r f => by
-      refine Finsupp.ext fun _ => ?_
+      refine Finsupp.ext fun _ => _
       simp [single_zero_mul_apply, mul_single_zero_apply, Algebra.commutes] }
 #align add_monoid_algebra.algebra AddMonoidAlgebra.algebra
 
@@ -1959,8 +1959,8 @@ instance algebra [CommSemiring R] [Semiring k] [Algebra R k] [AddMonoid G] :
 def singleZeroAlgHom [CommSemiring R] [Semiring k] [Algebra R k] [AddMonoid G] : k →ₐ[R] k[G] :=
   { singleZeroRingHom with
     commutes' := fun r => by
-      -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
-      refine Finsupp.ext fun _ => ?_
+      -- Porting note: `ext` → `refine Finsupp.ext fun _ => _`
+      refine Finsupp.ext fun _ => _
       simp
       rfl }
 #align add_monoid_algebra.single_zero_alg_hom AddMonoidAlgebra.singleZeroAlgHom

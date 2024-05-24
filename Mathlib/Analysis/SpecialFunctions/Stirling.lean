@@ -107,14 +107,14 @@ theorem log_stirlingSeq_diff_le_geo_sum (n : ℕ) :
   have h_nonneg : (0 : ℝ) ≤ ((1 : ℝ) / (2 * ↑(n + 1) + 1)) ^ 2 := sq_nonneg _
   have g : HasSum (fun k : ℕ => (((1 : ℝ) / (2 * ↑(n + 1) + 1)) ^ 2) ^ ↑(k + 1))
       (((1 : ℝ) / (2 * ↑(n + 1) + 1)) ^ 2 / (1 - ((1 : ℝ) / (2 * ↑(n + 1) + 1)) ^ 2)) := by
-    have := (hasSum_geometric_of_lt_one h_nonneg ?_).mul_left (((1 : ℝ) / (2 * ↑(n + 1) + 1)) ^ 2)
+    have := (hasSum_geometric_of_lt_one h_nonneg _).mul_left (((1 : ℝ) / (2 * ↑(n + 1) + 1)) ^ 2)
     · simp_rw [← _root_.pow_succ'] at this
       exact this
     rw [one_div, inv_pow]
     exact inv_lt_one (one_lt_pow ((lt_add_iff_pos_left 1).mpr <| by positivity) two_ne_zero)
   have hab (k : ℕ) : (1 : ℝ) / (2 * ↑(k + 1) + 1) * ((1 / (2 * ↑(n + 1) + 1)) ^ 2) ^ ↑(k + 1) ≤
       (((1 : ℝ) / (2 * ↑(n + 1) + 1)) ^ 2) ^ ↑(k + 1) := by
-    refine' mul_le_of_le_one_left (pow_nonneg h_nonneg ↑(k + 1)) _
+    refine mul_le_of_le_one_left (pow_nonneg h_nonneg ↑(k + 1)) _
     rw [one_div]
     exact inv_le_one (le_add_of_nonneg_left <| by positivity)
   exact hasSum_le hab (log_stirlingSeq_diff_hasSum n) g
@@ -134,7 +134,7 @@ theorem log_stirlingSeq_sub_log_stirlingSeq_succ (n : ℕ) :
     rw [← mul_lt_mul_right h₃]
     have H : 0 < (2 * ((n : ℝ) + 1) + 1) ^ 2 - 1 := by nlinarith [@cast_nonneg ℝ _ n]
     convert H using 1 <;> field_simp [h₃.ne']
-  refine' (log_stirlingSeq_diff_le_geo_sum n).trans _
+  refine (log_stirlingSeq_diff_le_geo_sum n).trans _
   push_cast
   rw [div_le_div_iff h₂ h₁]
   field_simp [h₃.ne']
@@ -180,7 +180,7 @@ theorem stirlingSeq'_pos (n : ℕ) : 0 < stirlingSeq (n + 1) := by unfold stirli
 -/
 theorem stirlingSeq'_bounded_by_pos_constant : ∃ a, 0 < a ∧ ∀ n : ℕ, a ≤ stirlingSeq (n + 1) := by
   cases' log_stirlingSeq_bounded_by_constant with c h
-  refine' ⟨exp c, exp_pos _, fun n => _⟩
+  refine ⟨exp c, exp_pos _, fun n => _⟩
   rw [← le_log_iff_exp_le (stirlingSeq'_pos n)]
   exact h n
 #align stirling.stirling_seq'_bounded_by_pos_constant Stirling.stirlingSeq'_bounded_by_pos_constant
@@ -194,7 +194,7 @@ theorem stirlingSeq'_antitone : Antitone (stirlingSeq ∘ succ) := fun n m h =>
 theorem stirlingSeq_has_pos_limit_a : ∃ a : ℝ, 0 < a ∧ Tendsto stirlingSeq atTop (𝓝 a) := by
   obtain ⟨x, x_pos, hx⟩ := stirlingSeq'_bounded_by_pos_constant
   have hx' : x ∈ lowerBounds (Set.range (stirlingSeq ∘ succ)) := by simpa [lowerBounds] using hx
-  refine' ⟨_, lt_of_lt_of_le x_pos (le_csInf (Set.range_nonempty _) hx'), _⟩
+  refine ⟨_, lt_of_lt_of_le x_pos (le_csInf (Set.range_nonempty _) hx'), _⟩
   rw [← Filter.tendsto_add_atTop_iff_nat 1]
   exact tendsto_atTop_ciInf stirlingSeq'_antitone ⟨x, hx'⟩
 #align stirling.stirling_seq_has_pos_limit_a Stirling.stirlingSeq_has_pos_limit_a
@@ -213,7 +213,7 @@ theorem tendsto_self_div_two_mul_self_add_one :
     · skip
     · skip
     rw [one_div, ← add_zero (2 : ℝ)]
-  refine' (((tendsto_const_div_atTop_nhds_zero_nat 1).const_add (2 : ℝ)).inv₀
+  refine (((tendsto_const_div_atTop_nhds_zero_nat 1).const_add (2 : ℝ)).inv₀
     ((add_zero (2 : ℝ)).symm ▸ two_ne_zero)).congr' (eventually_atTop.mpr ⟨1, fun n hn => _⟩)
   rw [add_div' (1 : ℝ) 2 n (cast_ne_zero.mpr (one_le_iff_ne_zero.mp hn)), inv_div]
 #align stirling.tendsto_self_div_two_mul_self_add_one Stirling.tendsto_self_div_two_mul_self_add_one
@@ -238,7 +238,7 @@ Then the Wallis sequence `W n` has limit `a^2 / 2`.
 theorem second_wallis_limit (a : ℝ) (hane : a ≠ 0) (ha : Tendsto stirlingSeq atTop (𝓝 a)) :
     Tendsto Wallis.W atTop (𝓝 (a ^ 2 / 2)) := by
   refine Tendsto.congr' (eventually_atTop.mpr ⟨1, fun n hn =>
-    stirlingSeq_pow_four_div_stirlingSeq_pow_two_eq n (one_le_iff_ne_zero.mp hn)⟩) ?_
+    stirlingSeq_pow_four_div_stirlingSeq_pow_two_eq n (one_le_iff_ne_zero.mp hn)⟩) _
   have h : a ^ 2 / 2 = a ^ 4 / a ^ 2 * (1 / 2) := by
     rw [mul_one_div, ← mul_one_div (a ^ 4) (a ^ 2), one_div, ← pow_sub_of_lt a]
     norm_num
@@ -258,7 +258,7 @@ theorem tendsto_stirlingSeq_sqrt_pi : Tendsto stirlingSeq atTop (𝓝 (√π)) :
 /-- **Stirling's Formula**, formulated in terms of `Asymptotics.IsEquivalent`. -/
 lemma factorial_isEquivalent_stirling :
     (fun n ↦ n ! : ℕ → ℝ) ~[atTop] fun n ↦ Real.sqrt (2 * n * π) * (n / exp 1) ^ n := by
-  refine Asymptotics.isEquivalent_of_tendsto_one ?_ ?_
+  refine Asymptotics.isEquivalent_of_tendsto_one _ _
   · filter_upwards [eventually_ne_atTop 0] with n hn h
     exact absurd h (by positivity)
   · have : sqrt π ≠ 0 := by positivity

@@ -579,7 +579,7 @@ example (q : Prop) (p : ∀ (x : ℤ), q → 1 = 2) : 1 = 2 := by
 
 /--
 error: Argument passed to linarith has metavariables:
-  p ?_
+  p _
 -/
 #guard_msgs in
 example (q : Prop) (p : ∀ (x : ℤ), 1 = 2) : 1 = 2 := by
@@ -587,7 +587,7 @@ example (q : Prop) (p : ∀ (x : ℤ), 1 = 2) : 1 = 2 := by
 
 /--
 error: Argument passed to nlinarith has metavariables:
-  p ?_
+  p _
 -/
 #guard_msgs in
 example (q : Prop) (p : ∀ (x : ℤ), 1 = 2) : 1 = 2 := by

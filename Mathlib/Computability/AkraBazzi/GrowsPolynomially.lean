@@ -46,7 +46,7 @@ lemma congr_of_eventuallyEq {f g : ℝ → ℝ} (hfg : f =ᶠ[atTop] g) (hg : Gr
   intro b hb
   have hg' := hg b hb
   obtain ⟨c₁, hc₁_mem, c₂, hc₂_mem, hg'⟩ := hg'
-  refine ⟨c₁, hc₁_mem, c₂, hc₂_mem, ?_⟩
+  refine ⟨c₁, hc₁_mem, c₂, hc₂_mem, _⟩
   filter_upwards [hg', (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hfg, hfg]
     with x hx₁ hx₂ hx₃
   intro u hu
@@ -62,7 +62,7 @@ variable {f : ℝ → ℝ}
 lemma eventually_atTop_le {b : ℝ} (hb : b ∈ Set.Ioo 0 1) (hf : GrowsPolynomially f) :
     ∃ c > 0, ∀ᶠ x in atTop, ∀ u ∈ Set.Icc (b * x) x, f u ≤ c * f x := by
   obtain ⟨c₁, _, c₂, hc₂, h⟩ := hf b hb
-  refine ⟨c₂, hc₂, ?_⟩
+  refine ⟨c₂, hc₂, _⟩
   filter_upwards [h]
   exact fun _ H u hu => (H u hu).2
 
@@ -74,7 +74,7 @@ lemma eventually_atTop_le_nat {b : ℝ} (hb : b ∈ Set.Ioo 0 1) (hf : GrowsPoly
 lemma eventually_atTop_ge {b : ℝ} (hb : b ∈ Set.Ioo 0 1) (hf : GrowsPolynomially f) :
     ∃ c > 0, ∀ᶠ x in atTop, ∀ u ∈ Set.Icc (b * x) x, c * f x ≤ f u := by
   obtain ⟨c₁, hc₁, c₂, _, h⟩ := hf b hb
-  refine ⟨c₁, hc₁, ?_⟩
+  refine ⟨c₁, hc₁, _⟩
   filter_upwards [h]
   exact fun _ H u hu => (H u hu).1
 
@@ -100,7 +100,7 @@ lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃�
       simp only [Nat.zero_eq, CharP.cast_eq_zero, neg_zero, zero_sub, zpow_zero, one_mul] at *
       specialize hx x₀ (le_of_max_le_left hx₀_ge)
       simp only [hx₀, mul_zero, Set.Icc_self, Set.mem_singleton_iff] at hx
-      refine fun z _ hz => hx _ ?_
+      refine fun z _ hz => hx _ _
       simp only [zpow_neg, zpow_one] at hz
       simp only [one_div, hz]
     | succ k ih =>
@@ -133,7 +133,7 @@ lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃�
   case lb =>
     rw [← le_div_iff x₀_pos]
     refine (logb_le_logb (b := 2) (by norm_num) (zpow_pos_of_pos (by norm_num) _)
-      (by positivity)).mp ?_
+      (by positivity)).mp _
     rw [← rpow_intCast, logb_rpow (by norm_num) (by norm_num), ← neg_le_neg_iff]
     simp only [Int.cast_sub, Int.cast_neg, Int.cast_natCast, Int.cast_one, neg_sub, sub_neg_eq_add]
     calc -logb 2 (x/x₀) ≤ ⌈-logb 2 (x/x₀)⌉₊ := Nat.le_ceil (-logb 2 (x / x₀))
@@ -141,12 +141,12 @@ lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃�
   case ub =>
     rw [← div_le_iff x₀_pos]
     refine (logb_le_logb (b := 2) (by norm_num) (by positivity)
-      (zpow_pos_of_pos (by norm_num) _)).mp ?_
+      (zpow_pos_of_pos (by norm_num) _)).mp _
     rw [← rpow_intCast, logb_rpow (by norm_num) (by norm_num), ← neg_le_neg_iff]
     simp only [Int.cast_neg, Int.cast_natCast, neg_neg]
     have : 0 ≤ -logb 2 (x / x₀) := by
       rw [neg_nonneg]
-      refine logb_nonpos (by norm_num) (by positivity) ?_
+      refine logb_nonpos (by norm_num) (by positivity) _
       rw [div_le_one x₀_pos]
       exact le_of_max_le_left hx₀_ge
     exact_mod_cast Nat.floor_le this
@@ -160,7 +160,7 @@ lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
     filter_upwards [h, eventually_ge_atTop 0] with x hx hx_nonneg
     have h' : 3 / 4 * x ∈ Set.Icc (1 / 2 * x) x := by
       rw [Set.mem_Icc]
-      exact ⟨by gcongr ?_ * x; norm_num, by linarith⟩
+      exact ⟨by gcongr _ * x; norm_num, by linarith⟩
     have hu := hx (3/4 * x) h'
     have hu := Set.nonempty_of_mem hu
     rw [Set.nonempty_Icc] at hu
@@ -171,7 +171,7 @@ lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
     filter_upwards [h, eventually_ge_atTop 0] with x hx hx_nonneg
     have h' : 3 / 4 * x ∈ Set.Icc (1 / 2 * x) x := by
       rw [Set.mem_Icc]
-      exact ⟨by gcongr ?_ * x; norm_num, by linarith⟩
+      exact ⟨by gcongr _ * x; norm_num, by linarith⟩
     have hu := hx (3/4 * x) h'
     have hu := Set.nonempty_of_mem hu
     rw [Set.nonempty_Icc] at hu
@@ -182,9 +182,9 @@ lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
       simp only [heq, Set.Icc_self, Set.mem_singleton_iff, one_mul] at h
       rw [eventually_atTop] at h
       obtain ⟨n₀, hn₀⟩ := h
-      refine ⟨f (max n₀ 2), ?_⟩
+      refine ⟨f (max n₀ 2), _⟩
       rw [eventually_atTop]
-      refine ⟨max n₀ 2, ?_⟩
+      refine ⟨max n₀ 2, _⟩
       refine Real.induction_Ico_mul _ 2 (by norm_num) (by positivity) ?base ?step
       case base =>
         intro x ⟨hxlb, hxub⟩
@@ -243,12 +243,12 @@ lemma eventually_atTop_zero_or_pos_or_neg (hf : GrowsPolynomially f) :
     push_neg at h
     cases eventually_atTop_nonneg_or_nonpos hf with
     | inl h' =>
-      refine Or.inr (Or.inl ?_)
+      refine Or.inr (Or.inl _)
       simp only [lt_iff_le_and_ne]
       rw [eventually_and]
       exact ⟨h', by filter_upwards [h] with x hx; exact hx.symm⟩
     | inr h' =>
-      refine Or.inr (Or.inr ?_)
+      refine Or.inr (Or.inr _)
       simp only [lt_iff_le_and_ne]
       rw [eventually_and]
       exact ⟨h', h⟩
@@ -256,7 +256,7 @@ lemma eventually_atTop_zero_or_pos_or_neg (hf : GrowsPolynomially f) :
 protected lemma neg {f : ℝ → ℝ} (hf : GrowsPolynomially f) : GrowsPolynomially (-f) := by
   intro b hb
   obtain ⟨c₁, hc₁_mem, c₂, hc₂_mem, hf⟩ := hf b hb
-  refine ⟨c₂, hc₂_mem, c₁, hc₁_mem, ?_⟩
+  refine ⟨c₂, hc₂_mem, c₁, hc₁_mem, _⟩
   filter_upwards [hf] with x hx
   intro u hu
   simp only [Pi.neg_apply, Set.neg_mem_Icc_iff, neg_mul_eq_mul_neg, neg_neg]
@@ -290,14 +290,14 @@ end GrowsPolynomially
 variable {f : ℝ → ℝ}
 
 lemma growsPolynomially_const {c : ℝ} : GrowsPolynomially (fun _ => c) := by
-  refine fun _ _ => ⟨1, by norm_num, 1, by norm_num, ?_⟩
+  refine fun _ _ => ⟨1, by norm_num, 1, by norm_num, _⟩
   filter_upwards [] with x
   simp
 
 lemma growsPolynomially_id : GrowsPolynomially (fun x => x) := by
   intro b hb
-  refine ⟨b, hb.1, ?_⟩
-  refine ⟨1, by norm_num, ?_⟩
+  refine ⟨b, hb.1, _⟩
+  refine ⟨1, by norm_num, _⟩
   filter_upwards with x u hu
   simp only [one_mul, ge_iff_le, gt_iff_lt, not_le, Set.mem_Icc]
   exact ⟨hu.1, hu.2⟩
@@ -338,8 +338,8 @@ protected lemma GrowsPolynomially.mul {f g : ℝ → ℝ} (hf : GrowsPolynomiall
   have hg := hg.abs b hb
   obtain ⟨c₁, hc₁_mem, c₂, hc₂_mem, hf⟩ := hf
   obtain ⟨c₃, hc₃_mem, c₄, hc₄_mem, hg⟩ := hg
-  refine ⟨c₁ * c₃, by show 0 < c₁ * c₃; positivity, ?_⟩
-  refine ⟨c₂ * c₄, by show 0 < c₂ * c₄; positivity, ?_⟩
+  refine ⟨c₁ * c₃, by show 0 < c₁ * c₃; positivity, _⟩
+  refine ⟨c₂ * c₄, by show 0 < c₂ * c₄; positivity, _⟩
   filter_upwards [hf, hg] with x hf hg
   intro u hu
   refine ⟨?lb, ?ub⟩
@@ -368,8 +368,8 @@ protected lemma GrowsPolynomially.add {f g : ℝ → ℝ} (hf : GrowsPolynomiall
   have hg := hg b hb
   obtain ⟨c₁, hc₁_mem, c₂, hc₂_mem, hf⟩ := hf
   obtain ⟨c₃, hc₃_mem, c₄, _, hg⟩ := hg
-  refine ⟨min c₁ c₃, by show 0 < min c₁ c₃; positivity, ?_⟩
-  refine ⟨max c₂ c₄, by show 0 < max c₂ c₄; positivity, ?_⟩
+  refine ⟨min c₁ c₃, by show 0 < min c₁ c₃; positivity, _⟩
+  refine ⟨max c₂ c₄, by show 0 < max c₂ c₄; positivity, _⟩
   filter_upwards [hf, hg,
                   (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hf',
                   (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hg',
@@ -410,7 +410,7 @@ lemma GrowsPolynomially.add_isLittleO {f g : ℝ → ℝ} (hf : GrowsPolynomiall
     have hf := hf b hb
     obtain ⟨c₁, hc₁_mem : 0 < c₁, c₂, hc₂_mem : 0 < c₂, hf⟩ := hf
     specialize hfg (c := 1/2) (by norm_num)
-    refine ⟨c₁ / 3, by positivity, 3*c₂, by positivity, ?_⟩
+    refine ⟨c₁ / 3, by positivity, 3*c₂, by positivity, _⟩
     filter_upwards [hf,
                     (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hfg,
                     (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hf',
@@ -453,7 +453,7 @@ lemma GrowsPolynomially.add_isLittleO {f g : ℝ → ℝ} (hf : GrowsPolynomiall
     have hf := hf b hb
     obtain ⟨c₁, hc₁_mem : 0 < c₁, c₂, hc₂_mem : 0 < c₂, hf⟩ := hf
     specialize hfg (c := 1/2) (by norm_num)
-    refine ⟨3*c₁, by positivity, c₂/3, by positivity, ?_⟩
+    refine ⟨3*c₁, by positivity, c₂/3, by positivity, _⟩
     filter_upwards [hf,
                     (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hfg,
                     (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hf',
@@ -489,7 +489,7 @@ lemma GrowsPolynomially.add_isLittleO {f g : ℝ → ℝ} (hf : GrowsPolynomiall
            _ ≥ f u + 1/2 * f u := by
                   rw [sub_eq_add_neg]
                   gcongr
-                  refine le_of_neg_le_neg ?_
+                  refine le_of_neg_le_neg _
                   rwa [neg_neg, ← neg_mul, ← neg_div]
            _ = 3/2 * f u := by ring
            _ ≥ 3/2 * (c₁ * f x) := by gcongr; exact (hf₁ u ⟨hu_lb, hu_ub⟩).1
@@ -510,7 +510,7 @@ protected lemma GrowsPolynomially.inv {f : ℝ → ℝ} (hf : GrowsPolynomially 
     GrowsPolynomially fun x => (f x)⁻¹ := by
   cases hf.eventually_atTop_zero_or_pos_or_neg with
   | inl hf' =>
-    refine fun b hb => ⟨1, by simp, 1, by simp, ?_⟩
+    refine fun b hb => ⟨1, by simp, 1, by simp, _⟩
     have hb_pos := hb.1
     filter_upwards [hf', (tendsto_id.const_mul_atTop hb_pos).eventually_forall_ge_atTop hf']
       with x hx hx'
@@ -539,8 +539,8 @@ protected lemma GrowsPolynomially.inv {f : ℝ → ℝ} (hf : GrowsPolynomially 
     intro b hb
     have hb_pos := hb.1
     obtain ⟨c₁, hc₁_mem, c₂, hc₂_mem, hf⟩ := hf b hb
-    refine ⟨c₂⁻¹, by show 0 < c₂⁻¹; positivity, ?_⟩
-    refine ⟨c₁⁻¹, by show 0 < c₁⁻¹; positivity, ?_⟩
+    refine ⟨c₂⁻¹, by show 0 < c₂⁻¹; positivity, _⟩
+    refine ⟨c₁⁻¹, by show 0 < c₁⁻¹; positivity, _⟩
     filter_upwards [hf, hf', (tendsto_id.const_mul_atTop hb_pos).eventually_forall_ge_atTop hf']
       with x hx hx' hx''
     intro u hu
@@ -569,8 +569,8 @@ protected lemma GrowsPolynomially.rpow (p : ℝ) (hf : GrowsPolynomially f)
   have hc₂p : 0 < c₂ ^ p := Real.rpow_pos_of_pos hc₂_mem _
   cases le_or_lt 0 p with
   | inl => -- 0 ≤ p
-    refine ⟨c₁^p, hc₁p, ?_⟩
-    refine ⟨c₂^p, hc₂p, ?_⟩
+    refine ⟨c₁^p, hc₁p, _⟩
+    refine ⟨c₂^p, hc₂p, _⟩
     filter_upwards [eventually_gt_atTop 0, hfnew, hf_nonneg,
         (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hf_nonneg]
         with x _ hf₁ hf_nonneg hf_nonneg₂
@@ -586,7 +586,7 @@ protected lemma GrowsPolynomially.rpow (p : ℝ) (hf : GrowsPolynomially f)
   | inr hp => -- p < 0
     match hf.eventually_atTop_zero_or_pos_or_neg with
     | .inl hzero => -- eventually zero
-      refine ⟨1, by norm_num, 1, by norm_num, ?_⟩
+      refine ⟨1, by norm_num, 1, by norm_num, _⟩
       filter_upwards [hzero, hfnew] with x hx hx'
       intro u hu
       simp only [hx, ne_eq, zero_rpow (ne_of_lt hp), mul_zero, le_refl, not_true, lt_self_iff_false,
@@ -594,8 +594,8 @@ protected lemma GrowsPolynomially.rpow (p : ℝ) (hf : GrowsPolynomially f)
       simp only [hx, mul_zero, Set.Icc_self, Set.mem_singleton_iff] at hx'
       rw [hx' u hu, zero_rpow (ne_of_lt hp)]
     | .inr (.inl hpos) => -- eventually positive
-      refine ⟨c₂^p, hc₂p, ?_⟩
-      refine ⟨c₁^p, hc₁p, ?_⟩
+      refine ⟨c₂^p, hc₂p, _⟩
+      refine ⟨c₁^p, hc₁p, _⟩
       filter_upwards [eventually_gt_atTop 0, hfnew, hpos,
           (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hpos]
           with x _ hf₁ hf_pos hf_pos₂
@@ -635,8 +635,8 @@ lemma growsPolynomially_zpow (p : ℤ) : GrowsPolynomially fun x => x ^ p :=
 lemma growsPolynomially_log : GrowsPolynomially Real.log := by
   intro b hb
   have hb₀ : 0 < b := hb.1
-  refine ⟨1 / 2, by norm_num, ?_⟩
-  refine ⟨1, by norm_num, ?_⟩
+  refine ⟨1 / 2, by norm_num, _⟩
+  refine ⟨1, by norm_num, _⟩
   have h_tendsto : Tendsto (fun x => 1 / 2 * Real.log x) atTop atTop :=
     Tendsto.const_mul_atTop (by norm_num) Real.tendsto_log_atTop
   filter_upwards [eventually_gt_atTop 1,
@@ -649,7 +649,7 @@ lemma growsPolynomially_log : GrowsPolynomially Real.log := by
       _ ≤ Real.log x + Real.log b := by
               gcongr
               rw [neg_div, neg_mul, ← neg_le]
-              refine le_of_lt (hx x ?_)
+              refine le_of_lt (hx x _)
               calc b * x ≤ 1 * x := by gcongr; exact le_of_lt hb.2
                        _ = x := by rw [one_mul]
       _ = Real.log (b * x) := by rw [← Real.log_mul (by positivity) (by positivity), mul_comm]
@@ -674,8 +674,8 @@ lemma GrowsPolynomially.of_isTheta {f g : ℝ → ℝ} (hg : GrowsPolynomially g
   obtain ⟨c₄, hc₄_pos : 0 < c₄, hg⟩ := hg
   have h_lb_pos : 0 < c₁ * c₂⁻¹ * c₃ := by positivity
   have h_ub_pos : 0 < c₂ * c₄ * c₁⁻¹ := by positivity
-  refine ⟨c₁ * c₂⁻¹ * c₃, h_lb_pos, ?_⟩
-  refine ⟨c₂ * c₄ * c₁⁻¹, h_ub_pos, ?_⟩
+  refine ⟨c₁ * c₂⁻¹ * c₃, h_lb_pos, _⟩
+  refine ⟨c₂ * c₄ * c₁⁻¹, h_ub_pos, _⟩
   have c₂_cancel : c₂⁻¹ * c₂ = 1 := inv_mul_cancel (by positivity)
   have c₁_cancel : c₁⁻¹ * c₁ = 1 := inv_mul_cancel (by positivity)
   filter_upwards [(tendsto_id.const_mul_atTop hb_pos).eventually_forall_ge_atTop hf',

@@ -82,7 +82,7 @@ theorem charpoly_coeff_eq_prod_coeff_of_le {k : ℕ} (h : Fintype.card n - 1 ≤
     M.charpoly.coeff k = (∏ i : n, (X - C (M i i))).coeff k := by
   apply eq_of_sub_eq_zero; rw [← coeff_sub]
   apply Polynomial.coeff_eq_zero_of_degree_lt
-  apply lt_of_lt_of_le (charpoly_sub_diagonal_degree_lt M) ?_
+  apply lt_of_lt_of_le (charpoly_sub_diagonal_degree_lt M) _
   rw [Nat.cast_le]; apply h
 #align matrix.charpoly_coeff_eq_prod_coeff_of_le Matrix.charpoly_coeff_eq_prod_coeff_of_le
 

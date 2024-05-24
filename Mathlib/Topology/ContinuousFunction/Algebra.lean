@@ -332,7 +332,7 @@ instance [CommMonoidWithZero β] [ContinuousMul β] : CommMonoidWithZero C(α, �
 @[to_additive]
 instance [LocallyCompactSpace α] [Mul β] [ContinuousMul β] : ContinuousMul C(α, β) :=
   ⟨by
-    refine' continuous_of_continuous_uncurry _ _
+    refine continuous_of_continuous_uncurry _ _
     have h1 : Continuous fun x : (C(α, β) × C(α, β)) × α => x.fst.fst x.snd :=
       continuous_eval.comp (continuous_fst.prod_map continuous_id)
     have h2 : Continuous fun x : (C(α, β) × C(α, β)) × α => x.fst.snd x.snd :=
@@ -603,7 +603,7 @@ instance [LocallyCompactSpace α] [SMul R M] [ContinuousConstSMul R M] :
 instance [LocallyCompactSpace α] [TopologicalSpace R] [SMul R M] [ContinuousSMul R M] :
     ContinuousSMul R C(α, M) :=
   ⟨by
-    refine' continuous_of_continuous_uncurry _ _
+    refine continuous_of_continuous_uncurry _ _
     have h : Continuous fun x : (R × C(α, M)) × α => x.fst.snd x.snd :=
       continuous_eval.comp (continuous_snd.prod_map continuous_id)
     exact (continuous_fst.comp continuous_fst).smul h⟩
@@ -824,7 +824,7 @@ theorem Subalgebra.SeparatesPoints.strongly {s : Subalgebra 𝕜 C(α, 𝕜)} (h
   let b := v y
   let f' : s :=
     ((b - a) * (f x - f y)⁻¹) • (algebraMap _ s (f x) - (⟨f, hf⟩ : s)) + algebraMap _ s a
-  refine' ⟨f', f'.prop, _, _⟩
+  refine ⟨f', f'.prop, _, _⟩
   · simp [f']
   · simp [f', inv_mul_cancel_right₀ hxy]
 #align subalgebra.separates_points.strongly Subalgebra.SeparatesPoints.strongly

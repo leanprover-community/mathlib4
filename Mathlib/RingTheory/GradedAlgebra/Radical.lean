@@ -101,14 +101,14 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
                   ∑ ij in antidiag.erase (max₁, max₂), proj 𝒜 ij.1 x * proj 𝒜 ij.2 y :=
               (add_sum_erase _ _ mem_antidiag).symm
         rw [eq_sub_of_add_eq eq_add_sum.symm]
-        refine' Ideal.sub_mem _ hxy (Ideal.sum_mem _ fun z H => _)
+        refine Ideal.sub_mem _ hxy (Ideal.sum_mem _ fun z H => _)
         rcases z with ⟨i, j⟩
         simp only [antidiag, mem_erase, Prod.mk.inj_iff, Ne, mem_filter, mem_product] at H
         rcases H with ⟨H₁, ⟨H₂, H₃⟩, H₄⟩
         have max_lt : max₁ < i ∨ max₂ < j := by
           rcases lt_trichotomy max₁ i with (h | rfl | h)
           · exact Or.inl h
-          · refine' False.elim (H₁ ⟨rfl, add_left_cancel H₄⟩)
+          · refine False.elim (H₁ ⟨rfl, add_left_cancel H₄⟩)
           · apply Or.inr
             have := add_lt_add_right h j
             rw [H₄] at this
@@ -154,7 +154,7 @@ theorem Ideal.IsPrime.homogeneousCore {I : Ideal A} (h : I.IsPrime) :
   · exact ne_top_of_le_ne_top h.ne_top (Ideal.toIdeal_homogeneousCore_le 𝒜 I)
   rintro x y hx hy hxy
   have H := h.mem_or_mem (Ideal.toIdeal_homogeneousCore_le 𝒜 I hxy)
-  refine' H.imp _ _
+  refine H.imp _ _
   · exact Ideal.mem_homogeneousCore_of_homogeneous_of_mem hx
   · exact Ideal.mem_homogeneousCore_of_homogeneous_of_mem hy
 #align ideal.is_prime.homogeneous_core Ideal.IsPrime.homogeneousCore
@@ -164,10 +164,10 @@ theorem Ideal.IsHomogeneous.radical_eq {I : Ideal A} (hI : I.IsHomogeneous 𝒜)
   rw [Ideal.radical_eq_sInf]
   apply le_antisymm
   · exact sInf_le_sInf fun J => And.right
-  · refine sInf_le_sInf_of_forall_exists_le ?_
+  · refine sInf_le_sInf_of_forall_exists_le _
     rintro J ⟨HJ₁, HJ₂⟩
-    refine ⟨(J.homogeneousCore 𝒜).toIdeal, ?_, J.toIdeal_homogeneousCore_le _⟩
-    refine ⟨HomogeneousIdeal.isHomogeneous _, ?_, HJ₂.homogeneousCore⟩
+    refine ⟨(J.homogeneousCore 𝒜).toIdeal, _, J.toIdeal_homogeneousCore_le _⟩
+    refine ⟨HomogeneousIdeal.isHomogeneous _, _, HJ₂.homogeneousCore⟩
     exact hI.toIdeal_homogeneousCore_eq_self.symm.trans_le (Ideal.homogeneousCore_mono _ HJ₁)
 #align ideal.is_homogeneous.radical_eq Ideal.IsHomogeneous.radical_eq
 

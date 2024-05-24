@@ -257,7 +257,7 @@ theorem bernsteinApproximation_uniform (f : C(I, ℝ)) :
       (S.sum_add_sum_compl _).symm
     -- We'll now deal with the terms in `S` and the terms in `Sᶜ` in separate calc blocks.
     _ < ε / 2 + ε / 2 :=
-      (add_lt_add_of_le_of_lt ?_ ?_)
+      (add_lt_add_of_le_of_lt _ _)
     _ = ε := add_halves ε
   · -- We now work on the terms in `S`: uniform continuity and `bernstein.probability`
     -- quickly give us a bound.
@@ -288,7 +288,7 @@ theorem bernsteinApproximation_uniform (f : C(I, ℝ)) :
       -- Again enlarging the sum from `Sᶜ` to all of `Fin (n+1)`
       _ ≤ 2 * ‖f‖ * ∑ k : Fin (n + 1), δ ^ (-2 : ℤ) * ((x : ℝ) - k/ₙ) ^ 2 * bernstein n k x := by
         gcongr
-        refine Finset.sum_le_univ_sum_of_nonneg fun k => ?_
+        refine Finset.sum_le_univ_sum_of_nonneg fun k => _
         positivity
       _ = 2 * ‖f‖ * δ ^ (-2 : ℤ) * ∑ k : Fin (n + 1), ((x : ℝ) - k/ₙ) ^ 2 * bernstein n k x := by
         conv_rhs =>

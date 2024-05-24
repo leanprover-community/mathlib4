@@ -461,7 +461,7 @@ noncomputable def equivMonoidAlgebraFreeMonoid :
     ((MonoidAlgebra.lift R (FreeMonoid X) (FreeAlgebra R X)) (FreeMonoid.lift (ι R)))
     (by
       apply MonoidAlgebra.algHom_ext; intro x
-      refine FreeMonoid.recOn x ?_ ?_
+      refine FreeMonoid.recOn x _ _
       · simp
         rfl
       · intro x y ih
@@ -590,7 +590,7 @@ theorem induction {C : FreeAlgebra R X → Prop}
 @[simp]
 theorem adjoin_range_ι : Algebra.adjoin R (Set.range (ι R : X → FreeAlgebra R X)) = ⊤ := by
   set S := Algebra.adjoin R (Set.range (ι R : X → FreeAlgebra R X))
-  refine top_unique fun x hx => ?_; clear hx
+  refine top_unique fun x hx => _; clear hx
   induction x using FreeAlgebra.induction with
   | h_grade0 => exact S.algebraMap_mem _
   | h_add x y hx hy => exact S.add_mem hx hy

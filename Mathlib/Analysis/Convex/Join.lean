@@ -134,12 +134,12 @@ theorem convexJoin_assoc_aux (s t u : Set E) :
   simp_rw [subset_def, mem_convexJoin]
   rintro _ ⟨z, ⟨x, hx, y, hy, a₁, b₁, ha₁, hb₁, hab₁, rfl⟩, z, hz, a₂, b₂, ha₂, hb₂, hab₂, rfl⟩
   obtain rfl | hb₂ := hb₂.eq_or_lt
-  · refine' ⟨x, hx, y, ⟨y, hy, z, hz, left_mem_segment 𝕜 _ _⟩, a₁, b₁, ha₁, hb₁, hab₁, _⟩
+  · refine ⟨x, hx, y, ⟨y, hy, z, hz, left_mem_segment 𝕜 _ _⟩, a₁, b₁, ha₁, hb₁, hab₁, _⟩
     rw [add_zero] at hab₂
     rw [hab₂, one_smul, zero_smul, add_zero]
   have ha₂b₁ : 0 ≤ a₂ * b₁ := mul_nonneg ha₂ hb₁
   have hab : 0 < a₂ * b₁ + b₂ := add_pos_of_nonneg_of_pos ha₂b₁ hb₂
-  refine'
+  refine
     ⟨x, hx, (a₂ * b₁ / (a₂ * b₁ + b₂)) • y + (b₂ / (a₂ * b₁ + b₂)) • z,
       ⟨y, hy, z, hz, _, _, _, _, _, rfl⟩, a₂ * a₁, a₂ * b₁ + b₂, mul_nonneg ha₂ ha₁, hab.le, _, _⟩
   · exact div_nonneg ha₂b₁ hab.le
@@ -151,7 +151,7 @@ theorem convexJoin_assoc_aux (s t u : Set E) :
 
 theorem convexJoin_assoc (s t u : Set E) :
     convexJoin 𝕜 (convexJoin 𝕜 s t) u = convexJoin 𝕜 s (convexJoin 𝕜 t u) := by
-  refine' (convexJoin_assoc_aux _ _ _).antisymm _
+  refine (convexJoin_assoc_aux _ _ _).antisymm _
   simp_rw [convexJoin_comm s, convexJoin_comm _ u]
   exact convexJoin_assoc_aux _ _ _
 #align convex_join_assoc convexJoin_assoc
@@ -180,7 +180,7 @@ protected theorem Convex.convexJoin (hs : Convex 𝕜 s) (ht : Convex 𝕜 t) :
     _ ⟨x₂, hx₂, y₂, hy₂, a₂, b₂, ha₂, hb₂, hab₂, rfl⟩ p q hp hq hpq
   rcases hs.exists_mem_add_smul_eq hx₁ hx₂ (mul_nonneg hp ha₁) (mul_nonneg hq ha₂) with ⟨x, hxs, hx⟩
   rcases ht.exists_mem_add_smul_eq hy₁ hy₂ (mul_nonneg hp hb₁) (mul_nonneg hq hb₂) with ⟨y, hyt, hy⟩
-  refine ⟨_, hxs, _, hyt, p * a₁ + q * a₂, p * b₁ + q * b₂, ?_, ?_, ?_, ?_⟩ <;> try positivity
+  refine ⟨_, hxs, _, hyt, p * a₁ + q * a₂, p * b₁ + q * b₂, _, _, _, _⟩ <;> try positivity
   · rwa [add_add_add_comm, ← mul_add, ← mul_add, hab₁, hab₂, mul_one, mul_one]
   · rw [hx, hy, add_add_add_comm]
     simp only [smul_add, smul_smul]

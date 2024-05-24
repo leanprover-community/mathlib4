@@ -781,8 +781,8 @@ lemma map_equation {φ : R →+* A} (hφ : Function.Injective φ) (x y : R) :
 lemma map_nonsingular {φ : R →+* A} (hφ : Function.Injective φ) (x y : R) :
     (W.map φ).toAffine.Nonsingular (φ x) (φ y) ↔ W.Nonsingular x y := by
   rw [nonsingular_iff, nonsingular_iff, and_congr <| W.map_equation hφ x y]
-  refine ⟨Or.imp (not_imp_not.mpr fun h => ?_) (not_imp_not.mpr fun h => ?_),
-    Or.imp (not_imp_not.mpr fun h => ?_) (not_imp_not.mpr fun h => ?_)⟩
+  refine ⟨Or.imp (not_imp_not.mpr fun h => _) (not_imp_not.mpr fun h => _),
+    Or.imp (not_imp_not.mpr fun h => _) (not_imp_not.mpr fun h => _)⟩
   any_goals apply hφ; map_simp; exact h
   any_goals convert congr_arg φ h <;> map_simp
 #align weierstrass_curve.nonsingular_iff_base_change WeierstrassCurve.Affine.map_nonsingular

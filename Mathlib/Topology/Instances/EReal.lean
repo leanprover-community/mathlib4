@@ -133,7 +133,7 @@ theorem nhds_top : 𝓝 (⊤ : EReal) = ⨅ (a) (_ : a ≠ ⊤), 𝓟 (Ioi a) :=
 #align ereal.nhds_top EReal.nhds_top
 
 nonrec theorem nhds_top_basis : (𝓝 (⊤ : EReal)).HasBasis (fun _ : ℝ ↦ True) (Ioi ·) := by
-  refine nhds_top_basis.to_hasBasis (fun x hx => ?_) fun _ _ ↦ ⟨_, coe_lt_top _, Subset.rfl⟩
+  refine nhds_top_basis.to_hasBasis (fun x hx => _) fun _ _ ↦ ⟨_, coe_lt_top _, Subset.rfl⟩
   rcases exists_rat_btwn_of_lt hx with ⟨y, hxy, -⟩
   exact ⟨_, trivial, Ioi_subset_Ioi hxy.le⟩
 
@@ -154,7 +154,7 @@ theorem nhds_bot : 𝓝 (⊥ : EReal) = ⨅ (a) (_ : a ≠ ⊥), 𝓟 (Iio a) :=
 #align ereal.nhds_bot EReal.nhds_bot
 
 theorem nhds_bot_basis : (𝓝 (⊥ : EReal)).HasBasis (fun _ : ℝ ↦ True) (Iio ·) := by
-  refine nhds_bot_basis.to_hasBasis (fun x hx => ?_) fun _ _ ↦ ⟨_, bot_lt_coe _, Subset.rfl⟩
+  refine nhds_bot_basis.to_hasBasis (fun x hx => _) fun _ _ ↦ ⟨_, bot_lt_coe _, Subset.rfl⟩
   rcases exists_rat_btwn_of_lt hx with ⟨y, -, hxy⟩
   exact ⟨_, trivial, Iio_subset_Iio hxy.le⟩
 
@@ -183,7 +183,7 @@ theorem continuousAt_add_top_coe (a : ℝ) :
     ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (⊤, a) := by
   simp only [ContinuousAt, tendsto_nhds_top_iff_real, top_add_coe]
   refine fun r ↦ ((lt_mem_nhds (coe_lt_top (r - (a - 1)))).prod_nhds
-    (lt_mem_nhds <| EReal.coe_lt_coe_iff.2 <| sub_one_lt _)).mono fun _ h ↦ ?_
+    (lt_mem_nhds <| EReal.coe_lt_coe_iff.2 <| sub_one_lt _)).mono fun _ h ↦ _
   simpa only [← coe_add, sub_add_cancel] using add_lt_add h.1 h.2
 #align ereal.continuous_at_add_top_coe EReal.continuousAt_add_top_coe
 
@@ -196,7 +196,7 @@ theorem continuousAt_add_coe_top (a : ℝ) :
 theorem continuousAt_add_top_top : ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (⊤, ⊤) := by
   simp only [ContinuousAt, tendsto_nhds_top_iff_real, top_add_top]
   refine fun r ↦ ((lt_mem_nhds (coe_lt_top 0)).prod_nhds
-    (lt_mem_nhds <| coe_lt_top r)).mono fun _ h ↦ ?_
+    (lt_mem_nhds <| coe_lt_top r)).mono fun _ h ↦ _
   simpa only [coe_zero, zero_add] using add_lt_add h.1 h.2
 #align ereal.continuous_at_add_top_top EReal.continuousAt_add_top_top
 
@@ -204,7 +204,7 @@ theorem continuousAt_add_bot_coe (a : ℝ) :
     ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (⊥, a) := by
   simp only [ContinuousAt, tendsto_nhds_bot_iff_real, bot_add]
   refine fun r ↦ ((gt_mem_nhds (bot_lt_coe (r - (a + 1)))).prod_nhds
-    (gt_mem_nhds <| EReal.coe_lt_coe_iff.2 <| lt_add_one _)).mono fun _ h ↦ ?_
+    (gt_mem_nhds <| EReal.coe_lt_coe_iff.2 <| lt_add_one _)).mono fun _ h ↦ _
   simpa only [← coe_add, sub_add_cancel] using add_lt_add h.1 h.2
 #align ereal.continuous_at_add_bot_coe EReal.continuousAt_add_bot_coe
 
@@ -217,7 +217,7 @@ theorem continuousAt_add_coe_bot (a : ℝ) :
 theorem continuousAt_add_bot_bot : ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (⊥, ⊥) := by
   simp only [ContinuousAt, tendsto_nhds_bot_iff_real, bot_add]
   refine fun r ↦ ((gt_mem_nhds (bot_lt_coe 0)).prod_nhds
-    (gt_mem_nhds <| bot_lt_coe r)).mono fun _ h ↦ ?_
+    (gt_mem_nhds <| bot_lt_coe r)).mono fun _ h ↦ _
   simpa only [coe_zero, zero_add] using add_lt_add h.1 h.2
 #align ereal.continuous_at_add_bot_bot EReal.continuousAt_add_bot_bot
 

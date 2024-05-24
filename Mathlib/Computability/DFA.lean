@@ -110,7 +110,7 @@ theorem evalFrom_split [Fintype σ] {x : List α} {s t : σ} (hlen : Fintype.car
   wlog hle : (n : ℕ) ≤ m
   · exact this _ hlen hx _ _ hneq.symm heq.symm (le_of_not_le hle)
   have hm : (m : ℕ) ≤ Fintype.card σ := Fin.is_le m
-  refine'
+  refine
     ⟨M.evalFrom s ((x.take m).take n), (x.take m).take n, (x.take m).drop n, x.drop m, _, _, _, by
       rfl, _⟩
   · rw [List.take_append_drop, List.take_append_drop]

@@ -190,7 +190,7 @@ theorem prod {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : �
     (h : ∀ i ∈ s, IsHomogeneous (φ i) (n i)) : IsHomogeneous (∏ i in s, φ i) (∑ i in s, n i) := by
   classical
   revert h
-  refine' Finset.induction_on s _ _
+  refine Finset.induction_on s _ _
   · intro
     simp only [isHomogeneous_one, Finset.sum_empty, Finset.prod_empty]
   · intro i s his IH h
@@ -291,7 +291,7 @@ theorem rename_isHomogeneous {f : σ → τ} (h : φ.IsHomogeneous n):
 
 theorem rename_isHomogeneous_iff {f : σ → τ} (hf : f.Injective) :
     (rename f φ).IsHomogeneous n ↔ φ.IsHomogeneous n := by
-  refine ⟨fun h d hd ↦ ?_, rename_isHomogeneous⟩
+  refine ⟨fun h d hd ↦ _, rename_isHomogeneous⟩
   convert ← @h (d.mapDomain f) _
   · simp only [weightedDegree_apply, Pi.one_apply, smul_eq_mul, mul_one]
     exact Finsupp.sum_mapDomain_index_inj (h := fun _ ↦ id) hf
@@ -396,12 +396,12 @@ lemma exists_eval_ne_zero_of_totalDegree_le_card_aux {N : ℕ} {F : MvPolynomial
     have hφ₀ : φ ≠ 0 := fun hφ₀ ↦ hr <| by
       rw [← coeff_eval_eq_eval_coeff, ← hφ, hφ₀, Polynomial.coeff_zero]
     have hφR : φ.natDegree < #R := by
-      refine lt_of_lt_of_le ?_ hnR
+      refine lt_of_lt_of_le _ hnR
       norm_cast
-      refine lt_of_le_of_lt (natDegree_map_le _ _) ?_
+      refine lt_of_le_of_lt (natDegree_map_le _ _) _
       suffices (finSuccEquiv _ _ F).natDegree ≠ n by omega
       rintro rfl
-      refine leadingCoeff_ne_zero.mpr ?_ hFn
+      refine leadingCoeff_ne_zero.mpr _ hFn
       simpa using (finSuccEquiv R N).injective.ne hF₀
     obtain ⟨r₀, hr₀⟩ : ∃ r₀, Polynomial.eval r₀ φ ≠ 0 :=
       φ.exists_eval_ne_zero_of_natDegree_lt_card hφ₀ hφR

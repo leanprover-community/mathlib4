@@ -57,7 +57,7 @@ protected theorem tfae (f : X → Y) :
     exact ⟨U, hU, hx, eq⟩
   tfae_have 5 → 1
   · intro h s
-    refine' isOpen_iff_forall_mem_open.2 fun x hx => _
+    refine isOpen_iff_forall_mem_open.2 fun x hx => _
     rcases h x with ⟨U, hU, hxU, eq⟩
     exact ⟨U, fun x' hx' => mem_preimage.2 <| (eq x' hx').symm ▸ hx, hU, hxU⟩
   tfae_finish
@@ -341,7 +341,7 @@ def ofIsClopen {X : Type*} [TopologicalSpace X] {U : Set X} [∀ x, Decidable (x
     (hU : IsClopen U) : LocallyConstant X (Fin 2) where
   toFun x := if x ∈ U then 0 else 1
   isLocallyConstant := by
-    refine IsLocallyConstant.iff_isOpen_fiber.2 <| Fin.forall_fin_two.2 ⟨?_, ?_⟩
+    refine IsLocallyConstant.iff_isOpen_fiber.2 <| Fin.forall_fin_two.2 ⟨_, _⟩
     · convert hU.2 using 1
       ext
       simp only [mem_singleton_iff, Fin.one_eq_zero_iff, mem_preimage, ite_eq_left_iff,
@@ -605,7 +605,7 @@ def piecewise {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂) 
     rw [IsLocallyConstant.iff_continuous] at hf hg ⊢
     dsimp only [coe_mk]
     rw [Set.union_eq_iUnion] at h
-    refine' (locallyFinite_of_finite _).continuous h (fun i ↦ _) (fun i ↦ _)
+    refine (locallyFinite_of_finite _).continuous h (fun i ↦ _) (fun i ↦ _)
     · cases i <;> [exact h₂; exact h₁]
     · cases i <;> rw [continuousOn_iff_continuous_restrict]
       · convert hg

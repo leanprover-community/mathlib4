@@ -179,7 +179,7 @@ theorem approx_nonneg (c : CU P) (n : ℕ) (x : X) : 0 ≤ c.approx n x := by
   induction' n with n ihn generalizing c
   · exact indicator_nonneg (fun _ _ => zero_le_one) _
   · simp only [approx, midpoint_eq_smul_add, invOf_eq_inv]
-    refine' mul_nonneg (inv_nonneg.2 zero_le_two) (add_nonneg _ _) <;> apply ihn
+    refine mul_nonneg (inv_nonneg.2 zero_le_two) (add_nonneg _ _) <;> apply ihn
 #align urysohns.CU.approx_nonneg Urysohns.CU.approx_nonneg
 
 theorem approx_le_one (c : CU P) (n : ℕ) (x : X) : c.approx n x ≤ 1 := by
@@ -213,7 +213,7 @@ theorem approx_mem_Icc_right_left (c : CU P) (n : ℕ) (x : X) :
   · exact ⟨le_rfl, indicator_le_indicator_of_subset (compl_subset_compl.2 c.left_U_subset)
       (fun _ => zero_le_one) _⟩
   · simp only [approx, mem_Icc]
-    refine' ⟨midpoint_le_midpoint _ (ihn _).1, midpoint_le_midpoint (ihn _).2 _⟩ <;>
+    refine ⟨midpoint_le_midpoint _ (ihn _).1, midpoint_le_midpoint (ihn _).2 _⟩ <;>
       apply approx_le_approx_of_U_sub_C
     exacts [subset_closure, subset_closure]
 #align urysohns.CU.approx_mem_Icc_right_left Urysohns.CU.approx_mem_Icc_right_left
@@ -254,7 +254,7 @@ theorem lim_of_nmem_U (c : CU P) (x : X) (h : x ∉ c.U) : c.lim x = 1 := by
 
 theorem lim_eq_midpoint (c : CU P) (x : X) :
     c.lim x = midpoint ℝ (c.left.lim x) (c.right.lim x) := by
-  refine' tendsto_nhds_unique (c.tendsto_approx_atTop x) ((tendsto_add_atTop_iff_nat 1).1 _)
+  refine tendsto_nhds_unique (c.tendsto_approx_atTop x) ((tendsto_add_atTop_iff_nat 1).1 _)
   simp only [approx]
   exact (c.left.tendsto_approx_atTop x).midpoint (c.right.tendsto_approx_atTop x)
 #align urysohns.CU.lim_eq_midpoint Urysohns.CU.lim_eq_midpoint
@@ -278,7 +278,7 @@ theorem lim_mem_Icc (c : CU P) (x : X) : c.lim x ∈ Icc (0 : ℝ) 1 :=
 /-- Continuity of `Urysohns.CU.lim`. See module docstring for a sketch of the proofs. -/
 theorem continuous_lim (c : CU P) : Continuous c.lim := by
   obtain ⟨h0, h1234, h1⟩ : 0 < (2⁻¹ : ℝ) ∧ (2⁻¹ : ℝ) < 3 / 4 ∧ (3 / 4 : ℝ) < 1 := by norm_num
-  refine'
+  refine
     continuous_iff_continuousAt.2 fun x =>
       (Metric.nhds_basis_closedBall_pow (h0.trans h1234) h1).tendsto_right_iff.2 fun n _ => _
   simp only [Metric.mem_closedBall]
@@ -291,7 +291,7 @@ theorem continuous_lim (c : CU P) : Continuous c.lim := by
       rw [pow_succ', c.lim_eq_midpoint, c.lim_eq_midpoint,
         c.right.lim_of_mem_C _ (c.left_U_subset_right_C hyl),
         c.right.lim_of_mem_C _ (c.left_U_subset_right_C hxl)]
-      refine' (dist_midpoint_midpoint_le _ _ _ _).trans _
+      refine (dist_midpoint_midpoint_le _ _ _ _).trans _
       rw [dist_self, add_zero, div_eq_inv_mul]
       gcongr
     · replace hxl : x ∈ c.left.right.Cᶜ :=
@@ -304,8 +304,8 @@ theorem continuous_lim (c : CU P) : Continuous c.lim := by
         compl_subset_compl.2 c.left.left_U_subset_right_C hyl
       simp only [pow_succ, c.lim_eq_midpoint, c.left.lim_eq_midpoint,
         c.left.left.lim_of_nmem_U _ hxl, c.left.left.lim_of_nmem_U _ hyl]
-      refine' (dist_midpoint_midpoint_le _ _ _ _).trans _
-      refine' (div_le_div_of_nonneg_right (add_le_add_right (dist_midpoint_midpoint_le _ _ _ _) _)
+      refine (dist_midpoint_midpoint_le _ _ _ _).trans _
+      refine (div_le_div_of_nonneg_right (add_le_add_right (dist_midpoint_midpoint_le _ _ _ _) _)
         zero_le_two).trans _
       rw [dist_self, zero_add]
       set r := (3 / 4 : ℝ) ^ n
@@ -392,8 +392,8 @@ theorem exists_continuous_one_zero_of_isCompact [RegularSpace X] [LocallyCompact
     (disjoint_compl_right_iff_subset.mpr sk) with ⟨⟨f, hf⟩, hfs, hft, h'f⟩
   have A : t ⊆ (interior k)ᶜ := subset_compl_comm.mpr (interior_subset.trans kt)
   refine ⟨⟨fun x ↦ 1 - f x, continuous_const.sub hf⟩, fun x hx ↦ by simpa using hfs hx,
-    fun x hx ↦ by simpa [sub_eq_zero] using (hft (A hx)).symm, ?_, fun x ↦ ?_⟩
-  · apply HasCompactSupport.intro' k_comp k_closed (fun x hx ↦ ?_)
+    fun x hx ↦ by simpa [sub_eq_zero] using (hft (A hx)).symm, _, fun x ↦ _⟩
+  · apply HasCompactSupport.intro' k_comp k_closed (fun x hx ↦ _)
     simp only [ContinuousMap.coe_mk, sub_eq_zero]
     apply (hft _).symm
     contrapose! hx
@@ -439,16 +439,16 @@ theorem exists_continuous_one_zero_of_isCompact_of_isGδ [RegularSpace X] [Local
   have I n x : u n * f n x ≤ u n := mul_le_of_le_one_right (u_pos n).le (f_range n x).2
   have S x : Summable (fun n ↦ u n * f n x) := Summable.of_nonneg_of_le
       (fun n ↦ mul_nonneg (u_pos n).le (f_range n x).1) (fun n ↦ I n x) u_sum
-  refine ⟨⟨g, ?_⟩, ?_, hgmc.mono (subset_compl_comm.mp mt), ?_, fun x ↦ ⟨?_, ?_⟩⟩
-  · apply continuous_tsum (fun n ↦ continuous_const.mul (f n).continuous) u_sum (fun n x ↦ ?_)
+  refine ⟨⟨g, _⟩, _, hgmc.mono (subset_compl_comm.mp mt), _, fun x ↦ ⟨_, _⟩⟩
+  · apply continuous_tsum (fun n ↦ continuous_const.mul (f n).continuous) u_sum (fun n x ↦ _)
     simpa [abs_of_nonneg, (u_pos n).le, (f_range n x).1] using I n x
-  · apply Subset.antisymm (fun x hx ↦ by simp [g, fs _ hx, hu]) ?_
+  · apply Subset.antisymm (fun x hx ↦ by simp [g, fs _ hx, hu]) _
     apply compl_subset_compl.1
     intro x hx
     obtain ⟨n, hn⟩ : ∃ n, x ∉ U n := by simpa [hU] using hx
     have fnx : f n x = 0 := fm _ (by simp [hn])
     have : g x < 1 := by
-      apply lt_of_lt_of_le ?_ hu.le
+      apply lt_of_lt_of_le _ hu.le
       exact tsum_lt_tsum (i := n) (fun i ↦ I i x) (by simp [fnx, u_pos n]) (S x) u_sum
     simpa using this.ne
   · exact HasCompactSupport.of_support_subset_isCompact m_comp
@@ -462,7 +462,7 @@ theorem exists_continuous_nonneg_pos [RegularSpace X] [LocallyCompactSpace X] (x
   rcases exists_compact_mem_nhds x with ⟨k, hk, k_mem⟩
   rcases exists_continuous_one_zero_of_isCompact hk isClosed_empty (disjoint_empty k)
     with ⟨f, fk, -, f_comp, hf⟩
-  refine ⟨f, f_comp, fun x ↦ (hf x).1, ?_⟩
+  refine ⟨f, f_comp, fun x ↦ (hf x).1, _⟩
   have := fk (mem_of_mem_nhds k_mem)
   simp only [ContinuousMap.coe_mk, Pi.one_apply] at this
   simp [this]

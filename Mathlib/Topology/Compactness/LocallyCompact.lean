@@ -41,7 +41,7 @@ theorem exists_compact_superset [WeaklyLocallyCompactSpace X] {K : Set X} (hK : 
     ∃ K', IsCompact K' ∧ K ⊆ interior K' := by
   choose s hc hmem using fun x : X ↦ exists_compact_mem_nhds x
   rcases hK.elim_nhds_subcover _ fun x _ ↦ interior_mem_nhds.2 (hmem x) with ⟨I, -, hIK⟩
-  refine ⟨⋃ x ∈ I, s x, I.isCompact_biUnion fun _ _ ↦ hc _, hIK.trans ?_⟩
+  refine ⟨⋃ x ∈ I, s x, I.isCompact_biUnion fun _ _ ↦ hc _, hIK.trans _⟩
   exact iUnion₂_subset fun x hx ↦ interior_mono <| subset_iUnion₂ (s := fun x _ ↦ s x) x hx
 #align exists_compact_superset exists_compact_superset
 
@@ -92,7 +92,7 @@ instance Pi.locallyCompactSpace_of_finite [Finite ι] : LocallyCompactSpace (∀
     obtain ⟨s, -, n', hn', hsub⟩ := hn
     choose n'' hn'' hsub' hc using fun i =>
       LocallyCompactSpace.local_compact_nhds (t i) (n' i) (hn' i)
-    refine' ⟨(Set.univ : Set ι).pi n'', _, subset_trans (fun _ h => _) hsub, isCompact_univ_pi hc⟩
+    refine ⟨(Set.univ : Set ι).pi n'', _, subset_trans (fun _ h => _) hsub, isCompact_univ_pi hc⟩
     · exact (set_pi_mem_nhds_iff (@Set.finite_univ ι _) _).mpr fun i _ => hn'' i
     · exact fun i _ => hsub' i (h i trivial)⟩
 #align pi.locally_compact_space_of_finite Pi.locallyCompactSpace_of_finite
@@ -104,11 +104,11 @@ instance Pi.locallyCompactSpace [∀ i, CompactSpace (X i)] : LocallyCompactSpac
     obtain ⟨s, hs, n', hn', hsub⟩ := hn
     choose n'' hn'' hsub' hc using fun i =>
       LocallyCompactSpace.local_compact_nhds (t i) (n' i) (hn' i)
-    refine' ⟨s.pi n'', _, subset_trans (fun _ => _) hsub, _⟩
+    refine ⟨s.pi n'', _, subset_trans (fun _ => _) hsub, _⟩
     · exact (set_pi_mem_nhds_iff hs _).mpr fun i _ => hn'' i
     · exact forall₂_imp fun i _ hi' => hsub' i hi'
     · rw [← Set.univ_pi_ite]
-      refine' isCompact_univ_pi fun i => _
+      refine isCompact_univ_pi fun i => _
       by_cases h : i ∈ s
       · rw [if_pos h]
         exact hc i
@@ -189,7 +189,7 @@ protected theorem OpenEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f :
     rw [hf.nhds_eq_comap]
     exact ((compact_basis_nhds _).restrict_subset <| hf.isOpen_range.mem_nhds <|
       mem_range_self _).comap _
-  refine .of_hasBasis this fun x s hs => ?_
+  refine .of_hasBasis this fun x s hs => _
   rw [hf.toInducing.isCompact_iff, image_preimage_eq_of_subset hs.2]
   exact hs.1.2
 #align open_embedding.locally_compact_space OpenEmbedding.locallyCompactSpace

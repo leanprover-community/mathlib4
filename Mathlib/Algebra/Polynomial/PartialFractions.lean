@@ -63,7 +63,7 @@ theorem div_eq_quo_add_rem_div_add_rem_div (f : R[X]) {g₁ g₂ : R[X]} (hg₁ 
       r₁.degree < g₁.degree ∧
         r₂.degree < g₂.degree ∧ (f : K) / (↑g₁ * ↑g₂) = ↑q + ↑r₁ / ↑g₁ + ↑r₂ / ↑g₂ := by
   rcases hcoprime with ⟨c, d, hcd⟩
-  refine'
+  refine
     ⟨f * d /ₘ g₁ + f * c /ₘ g₂, f * d %ₘ g₁, f * c %ₘ g₂, degree_modByMonic_lt _ hg₁,
       degree_modByMonic_lt _ hg₂, _⟩
   have hg₁' : (↑g₁ : K) ≠ 0 := by
@@ -99,7 +99,7 @@ theorem div_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type*} {g : ι → R[X]} {s 
         ((↑f : K) / ∏ i in s, ↑(g i)) = ↑q + ∑ i in s, (r i : K) / (g i : K) := by
   classical
   induction' s using Finset.induction_on with a b hab Hind f generalizing f
-  · refine' ⟨f, fun _ : ι => (0 : R[X]), fun i => _, by simp⟩
+  · refine ⟨f, fun _ : ι => (0 : R[X]), fun i => _, by simp⟩
     rintro ⟨⟩
   obtain ⟨q₀, r₁, r₂, hdeg₁, _, hf : (↑f : K) / _ = _⟩ :=
     div_eq_quo_add_rem_div_add_rem_div R K f
@@ -112,7 +112,7 @@ theorem div_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type*} {g : ι → R[X]} {s 
   obtain ⟨q, r, hrdeg, IH⟩ :=
     Hind _ (fun i hi => hg i (Finset.mem_insert_of_mem hi))
       (Set.Pairwise.mono (Finset.coe_subset.2 fun i hi => Finset.mem_insert_of_mem hi) hcop)
-  refine ⟨q₀ + q, fun i => if i = a then r₁ else r i, ?_, ?_⟩
+  refine ⟨q₀ + q, fun i => if i = a then r₁ else r i, _, _⟩
   · intro i
     dsimp only
     split_ifs with h1
@@ -127,7 +127,7 @@ theorem div_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type*} {g : ι → R[X]} {s 
   · push_cast
     ring
   congr 2
-  refine' Finset.sum_congr rfl fun x hxb => _
+  refine Finset.sum_congr rfl fun x hxb => _
   rw [if_neg]
   rintro rfl
   exact hab hxb

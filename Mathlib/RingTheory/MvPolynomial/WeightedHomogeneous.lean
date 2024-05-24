@@ -289,7 +289,7 @@ theorem prod {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : �
     (∀ i ∈ s, IsWeightedHomogeneous w (φ i) (n i)) →
       IsWeightedHomogeneous w (∏ i in s, φ i) (∑ i in s, n i) := by
   classical
-  refine Finset.induction_on s ?_ ?_
+  refine Finset.induction_on s _ _
   · intro
     simp only [isWeightedHomogeneous_one, Finset.sum_empty, Finset.prod_empty]
   · intro i s his IH h

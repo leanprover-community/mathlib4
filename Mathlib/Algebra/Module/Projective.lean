@@ -128,10 +128,10 @@ theorem Projective.of_lifting_property'' {R : Type u} [Semiring R] {P : Type v} 
 variable {Q : Type*} [AddCommMonoid Q] [Module R Q]
 
 instance [Projective R P] [Projective R Q] : Projective R (P × Q) := by
-  refine .of_lifting_property'' fun f hf ↦ ?_
+  refine .of_lifting_property'' fun f hf ↦ _
   rcases projective_lifting_property f (.inl _ _ _) hf with ⟨g₁, hg₁⟩
   rcases projective_lifting_property f (.inr _ _ _) hf with ⟨g₂, hg₂⟩
-  refine ⟨coprod g₁ g₂, ?_⟩
+  refine ⟨coprod g₁ g₂, _⟩
   rw [LinearMap.comp_coprod, hg₁, hg₂, LinearMap.coprod_inl_inr]
 
 variable {ι : Type*} (A : ι → Type*) [∀ i : ι, AddCommMonoid (A i)] [∀ i : ι, Module R (A i)]
@@ -141,7 +141,7 @@ instance [h : ∀ i : ι, Projective R (A i)] : Projective R (Π₀ i, A i) :=
     classical
       choose g hg using fun i ↦ projective_lifting_property f (DFinsupp.lsingle i) hf
       replace hg : ∀ i x, f (g i x) = DFinsupp.single i x := fun i ↦ DFunLike.congr_fun (hg i)
-      refine ⟨DFinsupp.coprodMap g, ?_⟩
+      refine ⟨DFinsupp.coprodMap g, _⟩
       ext i x j
       simp only [comp_apply, id_apply, DFinsupp.lsingle_apply, DFinsupp.coprodMap_apply_single, hg]
 

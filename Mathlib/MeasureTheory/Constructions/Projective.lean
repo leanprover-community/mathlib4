@@ -145,7 +145,7 @@ theorem unique [∀ i, IsFiniteMeasure (P i)]
     μ = ν := by
   haveI : IsFiniteMeasure μ := hμ.isFiniteMeasure
   refine ext_of_generate_finite (measurableCylinders α) generateFrom_measurableCylinders.symm
-    isPiSystem_measurableCylinders (fun s hs ↦ ?_) (hμ.measure_univ_unique hν)
+    isPiSystem_measurableCylinders (fun s hs ↦ _) (hμ.measure_univ_unique hν)
   obtain ⟨I, S, hS, rfl⟩ := (mem_measurableCylinders _).mp hs
   rw [hμ.measure_cylinder _ hS, hν.measure_cylinder _ hS]
 

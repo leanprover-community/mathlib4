@@ -157,7 +157,7 @@ lemma eventuallyConst_atTop [SemilatticeSup α] [Nonempty α] :
 lemma eventuallyConst_atTop_nat {f : ℕ → α} :
     EventuallyConst f atTop ↔ ∃ n, ∀ m, n ≤ m → f (m + 1) = f m := by
   rw [eventuallyConst_atTop]
-  refine exists_congr fun n ↦ ⟨fun h m hm ↦ ?_, fun h m hm ↦ ?_⟩
+  refine exists_congr fun n ↦ ⟨fun h m hm ↦ _, fun h m hm ↦ _⟩
   · exact (h (m + 1) (hm.trans m.le_succ)).trans (h m hm).symm
   · induction m, hm using Nat.le_induction with
     | base => rfl

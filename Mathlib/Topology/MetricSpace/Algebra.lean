@@ -108,7 +108,7 @@ instance Real.hasLipschitzAdd : LipschitzAdd ℝ where
   lipschitz_add := ⟨2, LipschitzWith.of_dist_le_mul fun p q => by
     simp only [Real.dist_eq, Prod.dist_eq, Prod.fst_sub, Prod.snd_sub, NNReal.coe_ofNat,
       add_sub_add_comm, two_mul]
-    refine le_trans (abs_add (p.1 - q.1) (p.2 - q.2)) ?_
+    refine le_trans (abs_add (p.1 - q.1) (p.2 - q.2)) _
     exact add_le_add (le_max_left _ _) (le_max_right _ _)⟩
 #align real.has_lipschitz_add Real.hasLipschitzAdd
 
@@ -154,9 +154,9 @@ instance (priority := 100) BoundedSMul.continuousSMul : ContinuousSMul α β whe
     rintro ⟨a, b⟩ ε ε0
     obtain ⟨δ, δ0, hδε⟩ : ∃ δ > 0, δ * (δ + dist b 0) + dist a 0 * δ < ε
     · have : Continuous fun δ ↦ δ * (δ + dist b 0) + dist a 0 * δ := by continuity
-      refine ((this.tendsto' _ _ ?_).eventually (gt_mem_nhds ε0)).exists_gt
+      refine ((this.tendsto' _ _ _).eventually (gt_mem_nhds ε0)).exists_gt
       simp
-    refine ⟨δ, δ0, fun (a', b') hab' => ?_⟩
+    refine ⟨δ, δ0, fun (a', b') hab' => _⟩
     obtain ⟨ha, hb⟩ := max_lt_iff.1 hab'
     calc dist (a' • b') (a • b)
         ≤ dist (a' • b') (a • b') + dist (a • b') (a • b) := dist_triangle ..

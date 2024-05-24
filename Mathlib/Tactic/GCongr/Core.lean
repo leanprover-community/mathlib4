@@ -24,7 +24,7 @@ example {a b x c d : ℝ} (h1 : a + 1 ≤ b + 1) (h2 : c + 2 ≤ d + 2) :
 ```
 This example has the goal of proving the relation `≤` between a LHS and RHS both of the pattern
 ```
-x ^ 2 * ?_ + ?_
+x ^ 2 * _ + _
 ```
 (with inputs `a`, `c` on the left and `b`, `d` on the right); after the use of
 `gcongr`, we have the simpler goals `a ≤ b` and `c ≤ d`.
@@ -33,7 +33,7 @@ A pattern can be provided explicitly; this is useful if a non-maximal match is d
 ```
 example {a b c d x : ℝ} (h : a + c + 1 ≤ b + d + 1) :
     x ^ 2 * (a + c) + 5 ≤ x ^ 2 * (b + d) + 5 := by
-  gcongr x ^ 2 * ?_ + 5
+  gcongr x ^ 2 * _ + 5
   linarith
 ```
 
@@ -292,14 +292,14 @@ partial def _root_.Lean.MVarId.gcongr
     catch _ => pure ()
   | some tpl =>
     -- B. If there is a template:
-    -- (i) if the template is `?_` (or `?_ x1 x2`, created by entering binders)
+    -- (i) if the template is `_` (or `_ x1 x2`, created by entering binders)
     -- then try to resolve the goal by the provided tactic `mainGoalDischarger`;
     -- if this fails, stop and report the existing goal.
     if let .mvar mvarId := tpl.getAppFn then
       if let .syntheticOpaque ← mvarId.getKind then
         try mainGoalDischarger g; return (true, names, #[])
         catch _ => return (false, names, #[g])
-    -- (ii) if the template is *not* `?_` then continue on.
+    -- (ii) if the template is *not* `_` then continue on.
   -- Check that the goal is of the form `rel (lhsHead _ ... _) (rhsHead _ ... _)`
   let .app (.app rel lhs) rhs ← withReducible g.getType'
     | throwError "gcongr failed, not a relation"
@@ -322,7 +322,7 @@ partial def _root_.Lean.MVarId.gcongr
       throwError "expected {tplHead}, got {rhsHead}\n{rhs}"
     -- and also build an array of `Expr` corresponding to the arguments `_ ... _` to `tplHead` in
     -- the template (these will be used in recursive calls later), and an array of booleans
-    -- according to which of these contain `?_`
+    -- according to which of these contain `_`
     tplArgs.mapM fun tpl => do
       let mctx ← getMCtx
       let hasMVar := tpl.findMVar? fun mvarId =>
@@ -425,7 +425,7 @@ example {a b x c d : ℝ} (h1 : a + 1 ≤ b + 1) (h2 : c + 2 ≤ d + 2) :
 ```
 This example has the goal of proving the relation `≤` between a LHS and RHS both of the pattern
 ```
-x ^ 2 * ?_ + ?_
+x ^ 2 * _ + _
 ```
 (with inputs `a`, `c` on the left and `b`, `d` on the right); after the use of
 `gcongr`, we have the simpler goals `a ≤ b` and `c ≤ d`.
@@ -434,7 +434,7 @@ A pattern can be provided explicitly; this is useful if a non-maximal match is d
 ```
 example {a b c d x : ℝ} (h : a + c + 1 ≤ b + d + 1) :
     x ^ 2 * (a + c) + 5 ≤ x ^ 2 * (b + d) + 5 := by
-  gcongr x ^ 2 * ?_ + 5
+  gcongr x ^ 2 * _ + 5
   linarith
 ```
 
@@ -455,7 +455,7 @@ elab "gcongr" template:(colGt term)?
   g.withContext do
   let .app (.app _rel lhs) _rhs ← withReducible g.getType'
     | throwError "gcongr failed, not a relation"
-  -- Elaborate the template (e.g. `x * ?_ + _`), if the user gave one
+  -- Elaborate the template (e.g. `x * _ + _`), if the user gave one
   let template ← template.mapM fun e => do
     Term.elabTerm e (← inferType lhs)
   -- Get the names from the `with x y z` list

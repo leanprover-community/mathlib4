@@ -137,7 +137,7 @@ theorem isTree_iff_existsUnique_path :
   rw [isTree_iff, isAcyclic_iff_path_unique]
   constructor
   · rintro ⟨hc, hu⟩
-    refine ⟨hc.nonempty, ?_⟩
+    refine ⟨hc.nonempty, _⟩
     intro v w
     let q := (hc v w).some.toPath
     use q
@@ -146,7 +146,7 @@ theorem isTree_iff_existsUnique_path :
     specialize hu ⟨p, hp⟩ q
     exact Subtype.ext_iff.mp hu
   · rintro ⟨hV, h⟩
-    refine ⟨Connected.mk ?_, ?_⟩
+    refine ⟨Connected.mk _, _⟩
     · intro v w
       obtain ⟨p, _⟩ := h v w
       exact p.reachable
@@ -180,7 +180,7 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
     · exact (congrArg (·.fst) h)
     · have h1 : ((f a).firstDart <| not_nil_of_ne (by simpa using ha)).snd = b :=
         congrArg (·.snd) h
-      have h3 := congrArg length (hf' _ (((f _).tail _).copy h1 rfl) ?_)
+      have h3 := congrArg length (hf' _ (((f _).tail _).copy h1 rfl) _)
       · rw [length_copy, ← add_left_inj 1, length_tail_add_one] at h3
         omega
       · simp only [ne_eq, eq_mp_eq_cast, id_eq, isPath_copy]
@@ -191,7 +191,7 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
     wlog h' : (f x).length ≤ (f y).length generalizing x y
     · rw [Sym2.eq_swap]
       exact this y x h.symm (le_of_not_le h')
-    refine ⟨y, ?_, dart_edge_eq_mk'_iff.2 <| Or.inr ?_⟩
+    refine ⟨y, _, dart_edge_eq_mk'_iff.2 <| Or.inr _⟩
     · rintro rfl
       rw [← hf' _ nil IsPath.nil, length_nil,
           ← hf' _ (.cons h .nil) (IsPath.nil.cons <| by simpa using h.ne),
@@ -203,7 +203,7 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
       suffices (f x).takeUntil y hy = .cons h .nil by
         rw [← take_spec _ hy] at h'
         simp [this, hf' _ _ ((hf _).dropUntil hy)] at h'
-      refine (hG.existsUnique_path _ _).unique ((hf _).takeUntil _) ?_
+      refine (hG.existsUnique_path _ _).unique ((hf _).takeUntil _) _
       simp [h.ne]
 
 end SimpleGraph

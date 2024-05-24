@@ -114,10 +114,10 @@ theorem cancel_right {f₁ : X ⟶ Y} {f₂ : Y ⟶ Z} (comm : a ≫ f₁ = b �
       ⟨PullbackCone.isLimitAux' _ fun s => by
         let s' : PullbackCone (f₁ ≫ f₂) (f₁ ≫ f₂) :=
           PullbackCone.mk s.fst s.snd (s.condition_assoc _)
-        refine' ⟨big_k.isLimit.lift s', big_k.isLimit.fac _ WalkingCospan.left,
+        refine ⟨big_k.isLimit.lift s', big_k.isLimit.fac _ WalkingCospan.left,
           big_k.isLimit.fac _ WalkingCospan.right, fun m₁ m₂ => _⟩
         apply big_k.isLimit.hom_ext
-        refine' (PullbackCone.mk a b _ : PullbackCone (f₁ ≫ f₂) _).equalizer_ext _ _
+        refine (PullbackCone.mk a b _ : PullbackCone (f₁ ≫ f₂) _).equalizer_ext _ _
         · apply reassoc_of% comm
         · apply m₁.trans (big_k.isLimit.fac s' WalkingCospan.left).symm
         · apply m₂.trans (big_k.isLimit.fac s' WalkingCospan.right).symm⟩ }
@@ -142,7 +142,7 @@ theorem comp_of_mono {f₁ : X ⟶ Y} {f₂ : Y ⟶ Z} [Mono f₂] (small_k : Is
     isLimit' := ⟨by
       refine PullbackCone.isLimitAux _
         (fun s => small_k.lift s.fst s.snd (by rw [← cancel_mono f₂, assoc, s.condition, assoc]))
-        (by simp) (by simp) ?_
+        (by simp) (by simp) _
       intro s m hm
       apply small_k.isLimit.hom_ext
       apply PullbackCone.equalizer_ext small_k.cone _ _
@@ -161,7 +161,7 @@ def toCoequalizer (k : IsKernelPair f a b) [r : RegularEpi f] : IsColimit (Cofor
   refine Cofork.IsColimit.mk _
     (fun s => Cofork.IsColimit.desc r.isColimit s.π
       (by rw [← ht, assoc, s.condition, reassoc_of% kt]))
-    (fun s => ?_) (fun s m w => ?_)
+    (fun s => _) (fun s m w => _)
   · apply Cofork.IsColimit.π_desc' r.isColimit
   · apply Cofork.IsColimit.hom_ext r.isColimit
     exact w.trans (Cofork.IsColimit.π_desc' r.isColimit _ _).symm
@@ -174,7 +174,7 @@ protected theorem pullback {X Y Z A : C} {g : Y ⟶ Z} {a₁ a₂ : A ⟶ Y} (h 
     IsKernelPair (pullback.fst : pullback f g ⟶ X)
       (pullback.map f _ f _ (𝟙 X) a₁ (𝟙 Z) (by simp) <| Category.comp_id _)
       (pullback.map _ _ _ _ (𝟙 X) a₂ (𝟙 Z) (by simp) <| (Category.comp_id _).trans h.1.1) := by
-  refine' ⟨⟨by rw [pullback.lift_fst, pullback.lift_fst]⟩, ⟨PullbackCone.isLimitAux _
+  refine ⟨⟨by rw [pullback.lift_fst, pullback.lift_fst]⟩, ⟨PullbackCone.isLimitAux _
     (fun s => pullback.lift (s.fst ≫ pullback.fst)
       (h.lift (s.fst ≫ pullback.snd) (s.snd ≫ pullback.snd) _ ) _) (fun s => _) (fun s => _)
         (fun s m hm => _)⟩⟩

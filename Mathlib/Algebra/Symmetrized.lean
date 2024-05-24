@@ -351,11 +351,11 @@ instance [Ring α] [Invertible (2 : α)] : IsCommJordan αˢʸᵐ where
       _ = sym (⅟2 * ⅟2 * (unsym a * unsym b * unsym (a * a) +
           unsym b * unsym a * unsym (a * a) +
           unsym (a * a) * unsym a * unsym b +
-          unsym (a * a) * unsym b * unsym a)) := ?_
+          unsym (a * a) * unsym b * unsym a)) := _
       _ = sym (⅟ 2 * (unsym a *
           unsym (sym (⅟ 2 * (unsym b * unsym (a * a) + unsym (a * a) * unsym b))) +
-          unsym (sym (⅟ 2 * (unsym b * unsym (a * a) + unsym (a * a) * unsym b))) * unsym a)) := ?_
-      _ = a * (b * (a * a)) := ?_
+          unsym (sym (⅟ 2 * (unsym b * unsym (a * a) + unsym (a * a) * unsym b))) * unsym a)) := _
+      _ = a * (b * (a * a)) := _
 
     -- Rearrange LHS
     · rw [mul_def, mul_def a b, unsym_sym, ← mul_assoc, ← commute_half_left (unsym (a * a)),

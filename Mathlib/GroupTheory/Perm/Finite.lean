@@ -41,7 +41,7 @@ theorem isConj_of_support_equiv
     (hf : ∀ (x : α) (hx : x ∈ (σ.support : Set α)),
       (f ⟨σ x, apply_mem_support.2 hx⟩ : α) = τ ↑(f ⟨x, hx⟩)) :
     IsConj σ τ := by
-  refine' isConj_iff.2 ⟨Equiv.extendSubtype f, _⟩
+  refine isConj_iff.2 ⟨Equiv.extendSubtype f, _⟩
   rw [mul_inv_eq_iff_eq_mul]
   ext x
   simp only [Perm.mul_apply]
@@ -179,7 +179,7 @@ theorem Disjoint.extendDomain {p : β → Prop} [DecidablePred p] (f : α ≃ Su
     {σ τ : Perm α} (h : Disjoint σ τ) : Disjoint (σ.extendDomain f) (τ.extendDomain f) := by
   intro b
   by_cases pb : p b
-  · refine' (h (f.symm ⟨b, pb⟩)).imp _ _ <;>
+  · refine (h (f.symm ⟨b, pb⟩)).imp _ _ <;>
       · intro h
         rw [extendDomain_apply_subtype _ _ pb, h, apply_symm_apply, Subtype.coe_mk]
   · left
@@ -197,8 +197,8 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
     rw [coe_union] at *
     have hd1'' := disjoint_coe.2 (disjoint_iff_disjoint_support.1 hd1)
     have hd2'' := disjoint_coe.2 (disjoint_iff_disjoint_support.1 hd2)
-    refine' isConj_of_support_equiv _ _
-    · refine'
+    refine isConj_of_support_equiv _ _
+    · refine
           ((Equiv.Set.ofEq hd1').trans (Equiv.Set.union hd1''.le_bot)).trans
             ((Equiv.sumCongr (subtypeEquiv f fun a => _) (subtypeEquiv g fun a => _)).trans
               ((Equiv.Set.ofEq hd2').trans (Equiv.Set.union hd2''.le_bot)).symm) <;>
@@ -213,7 +213,7 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
         rw [Set.union_apply_left hd1''.le_bot _, Set.union_apply_left hd1''.le_bot _]
         · simp only [subtypeEquiv_apply, Perm.coe_mul, Sum.map_inl, comp_apply,
             Set.union_symm_apply_left, Subtype.coe_mk, apply_eq_iff_eq]
-          have h := (hd2 (f x)).resolve_left ?_
+          have h := (hd2 (f x)).resolve_left _
           · rw [mul_apply, mul_apply] at h
             rw [h, inv_apply_self, (hd1 x).resolve_left hxσ]
           · rwa [mul_apply, mul_apply, inv_apply_self, apply_eq_iff_eq]
@@ -224,7 +224,7 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
         rw [Set.union_apply_right hd1''.le_bot _, Set.union_apply_right hd1''.le_bot _]
         · simp only [subtypeEquiv_apply, Perm.coe_mul, Sum.map_inr, comp_apply,
             Set.union_symm_apply_right, Subtype.coe_mk, apply_eq_iff_eq]
-          have h := (hd2 (g (τ x))).resolve_right ?_
+          have h := (hd2 (g (τ x))).resolve_right _
           · rw [mul_apply, mul_apply] at h
             rw [inv_apply_self, h, (hd1 (τ x)).resolve_right hxτ]
           · rwa [mul_apply, mul_apply, inv_apply_self, apply_eq_iff_eq]

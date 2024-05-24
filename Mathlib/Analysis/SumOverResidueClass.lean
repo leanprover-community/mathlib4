@@ -90,7 +90,7 @@ lemma summable_indicator_mod_iff_summable_indicator_mod {m : ℕ} [NeZero m] {f 
 if and only if it is summable. -/
 lemma summable_indicator_mod_iff {m : ℕ} [NeZero m] {f : ℕ → ℝ} (hf : Antitone f) (k : ZMod m) :
     Summable ({n : ℕ | (n : ZMod m) = k}.indicator f) ↔ Summable f := by
-  refine ⟨fun H ↦ ?_, fun H ↦ Summable.indicator H _⟩
+  refine ⟨fun H ↦ _, fun H ↦ Summable.indicator H _⟩
   rw [Finset.sum_indicator_mod m f]
   convert summable_sum (s := Finset.univ)
     fun a _ ↦ summable_indicator_mod_iff_summable_indicator_mod hf a H

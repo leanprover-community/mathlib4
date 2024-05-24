@@ -150,7 +150,7 @@ theorem _root_.StarAlgHom.ext_topologicalClosure [T2Space B] {S : StarSubalgebra
     φ = ψ := by
   rw [DFunLike.ext'_iff]
   have : Dense (Set.range <| inclusion (le_topologicalClosure S)) := by
-    refine' embedding_subtype_val.toInducing.dense_iff.2 fun x => _
+    refine embedding_subtype_val.toInducing.dense_iff.2 fun x => _
     convert show ↑x ∈ closure (S : Set A) from x.prop
     rw [← Set.range_comp]
     exact
@@ -158,7 +158,7 @@ theorem _root_.StarAlgHom.ext_topologicalClosure [T2Space B] {S : StarSubalgebra
         ⟨by
           rintro ⟨y, rfl⟩
           exact y.prop, fun hy => ⟨⟨y, hy⟩, rfl⟩⟩
-  refine' Continuous.ext_on this hφ hψ _
+  refine Continuous.ext_on this hφ hψ _
   rintro _ ⟨x, rfl⟩
   simpa only using DFunLike.congr_fun h x
 #align star_alg_hom.ext_topological_closure StarAlgHom.ext_topologicalClosure
@@ -171,7 +171,7 @@ theorem _root_.StarAlgHomClass.ext_topologicalClosure [T2Space B] {F : Type*}
     φ = ψ := by
   -- Porting note: an intervening coercion seems to have appeared since ML3
   have : (φ : S.topologicalClosure →⋆ₐ[R] B) = (ψ : S.topologicalClosure →⋆ₐ[R] B) := by
-    refine StarAlgHom.ext_topologicalClosure (R := R) (A := A) (B := B) hφ hψ (StarAlgHom.ext ?_)
+    refine StarAlgHom.ext_topologicalClosure (R := R) (A := A) (B := B) hφ hψ (StarAlgHom.ext _)
     simpa only [StarAlgHom.coe_comp, StarAlgHom.coe_coe] using h
   rw [DFunLike.ext'_iff, ← StarAlgHom.coe_coe]
   apply congrArg _ this
@@ -253,7 +253,7 @@ theorem induction_on {x y : A}
     (closure : ∀ s : Set A, (hs : s ⊆ elementalStarAlgebra R x) → (∀ u, (hu : u ∈ s) →
       P u (hs hu)) → ∀ v, (hv : v ∈ closure s) → P v (closure_minimal hs (isClosed R x) hv)) :
     P y hy := by
-  apply closure (adjoin R {x} : Set A) subset_closure (fun y hy ↦ ?_) y hy
+  apply closure (adjoin R {x} : Set A) subset_closure (fun y hy ↦ _) y hy
   rw [SetLike.mem_coe, ← mem_toSubalgebra, adjoin_toSubalgebra] at hy
   induction hy using Algebra.adjoin_induction'' with
   | mem u hu =>
@@ -274,8 +274,8 @@ theorem starAlgHomClass_ext [T2Space B] {F : Type*} {a : A}
   -- Note: help with unfolding `elementalStarAlgebra`
   have : StarAlgHomClass F R (↥(topologicalClosure (adjoin R {a}))) B :=
     inferInstanceAs (StarAlgHomClass F R (elementalStarAlgebra R a) B)
-  refine StarAlgHomClass.ext_topologicalClosure hφ hψ fun x => ?_
-  refine adjoin_induction' x ?_ ?_ ?_ ?_ ?_
+  refine StarAlgHomClass.ext_topologicalClosure hφ hψ fun x => _
+  refine adjoin_induction' x _ _ _ _ _
   exacts [fun y hy => by simpa only [Set.mem_singleton_iff.mp hy] using h, fun r => by
     simp only [AlgHomClass.commutes], fun x y hx hy => by simp only [map_add, hx, hy],
     fun x y hx hy => by simp only [map_mul, hx, hy], fun x hx => by simp only [map_star, hx]]

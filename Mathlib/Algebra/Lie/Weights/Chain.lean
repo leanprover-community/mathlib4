@@ -78,7 +78,7 @@ lemma exists₂_weightSpace_smul_add_eq_bot :
       weightSpace M (q • χ₁ + χ₂) = ⊥ := by
   obtain ⟨q, hq₀, hq⟩ := exists_weightSpace_smul_add_eq_bot M χ₁ χ₂ hχ₁
   obtain ⟨p, hp₀, hp⟩ := exists_weightSpace_smul_add_eq_bot M (-χ₁) χ₂ (neg_ne_zero.mpr hχ₁)
-  refine ⟨-(p : ℤ), by simpa, q, by simpa, ?_, ?_⟩
+  refine ⟨-(p : ℤ), by simpa, q, by simpa, _, _⟩
   · rw [neg_smul, ← smul_neg, natCast_zsmul]
     exact hp
   · rw [natCast_zsmul]
@@ -194,14 +194,14 @@ lemma exists_forall_mem_corootSpace_smul_add_eq_zero
   let b := ∑ i in Finset.Ioo p q, finrank R (weightSpace M (i • α + χ))
   have hb : 0 < b := by
     replace hχ : Nontrivial (weightSpace M χ) := by rwa [LieSubmodule.nontrivial_iff_ne_bot]
-    refine Finset.sum_pos' (fun _ _ ↦ zero_le _) ⟨0, Finset.mem_Ioo.mpr ⟨hp₀, hq₀⟩, ?_⟩
+    refine Finset.sum_pos' (fun _ _ ↦ zero_le _) ⟨0, Finset.mem_Ioo.mpr ⟨hp₀, hq₀⟩, _⟩
     rw [zero_smul, zero_add]
     exact finrank_pos
-  refine ⟨a, b, Int.ofNat_pos.mpr hb, fun x hx ↦ ?_⟩
+  refine ⟨a, b, Int.ofNat_pos.mpr hb, fun x hx ↦ _⟩
   let N : ℤ → Submodule R M := fun k ↦ weightSpace M (k • α + χ)
   have h₁ : CompleteLattice.Independent fun (i : Finset.Ioo p q) ↦ N i := by
     rw [← LieSubmodule.independent_iff_coe_toSubmodule]
-    refine (independent_weightSpace R H M).comp fun i j hij ↦ ?_
+    refine (independent_weightSpace R H M).comp fun i j hij ↦ _
     exact SetCoe.ext <| smul_left_injective ℤ hα <| by rwa [add_left_inj] at hij
   have h₂ : ∀ i, MapsTo (toEnd R H M x) ↑(N i) ↑(N i) := fun _ _ ↦ LieSubmodule.lie_mem _
   have h₃ : weightSpaceChain M α χ p q = ⨆ i ∈ Finset.Ioo p q, N i := by

@@ -781,8 +781,8 @@ theorem dom_fintype [Finite α] (f : α → σ) : Primrec f :=
   let ⟨l, _, m⟩ := Finite.exists_univ_list α
   option_some_iff.1 <| by
     haveI := decidableEqOfEncodable α
-    refine ((list_get?₁ (l.map f)).comp (list_indexOf₁ l)).of_eq fun a => ?_
-    rw [List.get?_map, List.indexOf_get? (m a), Option.map_some']
+    refine ((list_get?₁ (l.map f)).comp (list_indexOf₁ l)).of_eq fun a => _
+    rw [List.get_map, List.indexOf_get? (m a), Option.map_some']
 #align primrec.dom_fintype Primrec.dom_fintype
 
 -- Porting note: These are new lemmas
@@ -804,12 +804,12 @@ theorem nat_findGreatest {f : α → ℕ} {p : α → ℕ → Prop} [∀ x n, De
 theorem of_graph {f : α → ℕ} (h₁ : PrimrecBounded f)
     (h₂ : PrimrecRel fun a b => f a = b) : Primrec f := by
   rcases h₁ with ⟨g, pg, hg : ∀ x, f x ≤ g x⟩
-  refine (nat_findGreatest pg h₂).of_eq fun n => ?_
+  refine (nat_findGreatest pg h₂).of_eq fun n => _
   exact (Nat.findGreatest_spec (P := fun b => f n = b) (hg n) rfl).symm
 
 -- We show that division is primitive recursive by showing that the graph is
 theorem nat_div : Primrec₂ ((· / ·) : ℕ → ℕ → ℕ) := by
-  refine of_graph ⟨_, fst, fun p => Nat.div_le_self _ _⟩ ?_
+  refine of_graph ⟨_, fst, fun p => Nat.div_le_self _ _⟩ _
   have : PrimrecRel fun (a : ℕ × ℕ) (b : ℕ) => (a.2 = 0 ∧ b = 0) ∨
       (0 < a.2 ∧ b * a.2 ≤ a.1 ∧ a.1 < (b + 1) * a.2) :=
     PrimrecPred.or
@@ -817,7 +817,7 @@ theorem nat_div : Primrec₂ ((· / ·) : ℕ → ℕ → ℕ) := by
       (.and (nat_lt.comp (const 0) (fst |> snd.comp)) <|
           .and (nat_le.comp (nat_mul.comp snd (fst |> snd.comp)) (fst |> fst.comp))
           (nat_lt.comp (fst.comp fst) (nat_mul.comp (Primrec.succ.comp snd) (snd.comp fst))))
-  refine this.of_eq ?_
+  refine this.of_eq _
   rintro ⟨a, k⟩ q
   if H : k = 0 then simp [H, eq_comm]
   else
@@ -900,7 +900,7 @@ private theorem list_foldl' {f : α → List β} {g : α → σ} {h : α → σ 
       nat_iterate (encode_iff.2 hf) (pair hg hf) <|
       hG)
   suffices ∀ a n, F a n = (((f a).take n).foldl (fun s b => h a (s, b)) (g a), (f a).drop n) by
-    refine hF.of_eq fun a => ?_
+    refine hF.of_eq fun a => _
     rw [this, List.take_all_of_le (length_le_encode _)]
   introv
   dsimp only [F]
@@ -1135,7 +1135,7 @@ theorem nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ
   suffices Primrec₂ fun a n => (List.range n).map (f a) from
     Primrec₂.option_some_iff.1 <|
       (list_get?.comp (this.comp fst (succ.comp snd)) snd).to₂.of_eq fun a n => by
-        simp [List.get?_range (Nat.lt_succ_self n)]
+        simp [List.get_range (Nat.lt_succ_self n)]
   Primrec₂.option_some_iff.1 <|
     (nat_rec (const (some []))
           (to₂ <|
@@ -1216,7 +1216,7 @@ theorem subtype_val {p : α → Prop} [DecidablePred p] {hp : PrimrecPred p} :
     haveI := Primcodable.subtype hp
     Primrec (@Subtype.val α p) := by
   letI := Primcodable.subtype hp
-  refine' (@Primcodable.prim (Subtype p)).of_eq fun n => _
+  refine (@Primcodable.prim (Subtype p)).of_eq fun n => _
   rcases @decode (Subtype p) _ n with (_ | ⟨a, h⟩) <;> rfl
 #align primrec.subtype_val Primrec.subtype_val
 
@@ -1224,8 +1224,8 @@ theorem subtype_val_iff {p : β → Prop} [DecidablePred p] {hp : PrimrecPred p}
     haveI := Primcodable.subtype hp
     (Primrec fun a => (f a).1) ↔ Primrec f := by
   letI := Primcodable.subtype hp
-  refine' ⟨fun h => _, fun hf => subtype_val.comp hf⟩
-  refine' Nat.Primrec.of_eq h fun n => _
+  refine ⟨fun h => _, fun hf => subtype_val.comp hf⟩
+  refine Nat.Primrec.of_eq h fun n => _
   cases' @decode α _ n with a; · rfl
   simp; rfl
 #align primrec.subtype_val_iff Primrec.subtype_val_iff
@@ -1240,7 +1240,7 @@ theorem subtype_mk {p : β → Prop} [DecidablePred p] {hp : PrimrecPred p} {f :
 theorem option_get {f : α → Option β} {h : ∀ a, (f a).isSome} :
     Primrec f → Primrec fun a => (f a).get (h a) := by
   intro hf
-  refine' (Nat.Primrec.pred.comp hf).of_eq fun n => _
+  refine (Nat.Primrec.pred.comp hf).of_eq fun n => _
   generalize hx : @decode α _ n = x
   cases x <;> simp
 #align primrec.option_get Primrec.option_get
@@ -1297,7 +1297,7 @@ theorem vector_tail {n} : Primrec (@Vector.tail α n) :=
 theorem vector_get {n} : Primrec₂ (@Vector.get α n) :=
   option_some_iff.1 <|
     (list_get?.comp (vector_toList.comp fst) (fin_val.comp snd)).of_eq fun a => by
-      rw [Vector.get_eq_get, ← List.get?_eq_get]
+      rw [Vector.get_eq_get, ← List.get_eq_get]
       rfl
 
 #align primrec.vector_nth Primrec.vector_get
@@ -1447,7 +1447,7 @@ theorem add : @Primrec' 2 fun v => v.head + v.tail.head :=
 
 theorem sub : @Primrec' 2 fun v => v.head - v.tail.head := by
   have : @Primrec' 2 fun v ↦ (fun a b ↦ b - a) v.head v.tail.head := by
-    refine' (prec head (pred.comp₁ _ (tail head))).of_eq fun v => _
+    refine (prec head (pred.comp₁ _ (tail head))).of_eq fun v => _
     simp; induction v.head <;> simp [*, Nat.sub_add_eq]
   simpa using comp₂ (fun a b => b - a) this (tail head) head
 #align nat.primrec'.sub Nat.Primrec'.sub
@@ -1485,7 +1485,7 @@ theorem sqrt : @Primrec' 1 fun v => v.head.sqrt := by
         (fun v => by
           have x := v.head; have y := v.tail.head;
             exact if x.succ < y.succ * y.succ then y else y.succ)
-        head (const 0) ?_
+        head (const 0) _
     · exact this
     have x1 : @Primrec' 3 fun v => v.head.succ := succ.comp₁ _ head
     have y1 : @Primrec' 3 fun v => v.tail.head.succ := succ.comp₁ _ (tail head)
@@ -1501,14 +1501,14 @@ theorem sqrt : @Primrec' 1 fun v => v.head.sqrt := by
 theorem unpair₁ {n f} (hf : @Primrec' n f) : @Primrec' n fun v => (f v).unpair.1 := by
   have s := sqrt.comp₁ _ hf
   have fss := sub.comp₂ _ hf (mul.comp₂ _ s s)
-  refine' (if_lt fss s fss s).of_eq fun v => _
+  refine (if_lt fss s fss s).of_eq fun v => _
   simp [Nat.unpair]; split_ifs <;> rfl
 #align nat.primrec'.unpair₁ Nat.Primrec'.unpair₁
 
 theorem unpair₂ {n f} (hf : @Primrec' n f) : @Primrec' n fun v => (f v).unpair.2 := by
   have s := sqrt.comp₁ _ hf
   have fss := sub.comp₂ _ hf (mul.comp₂ _ s s)
-  refine' (if_lt fss s s (sub.comp₂ _ fss s)).of_eq fun v => _
+  refine (if_lt fss s s (sub.comp₂ _ fss s)).of_eq fun v => _
   simp [Nat.unpair]; split_ifs <;> rfl
 #align nat.primrec'.unpair₂ Nat.Primrec'.unpair₂
 

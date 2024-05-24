@@ -101,8 +101,8 @@ theorem getD_append_right (l l' : List α) (d : α) (n : ℕ) (h : l.length ≤ 
 
 theorem getD_eq_getD_get? (n : ℕ) : l.getD n d = (l.get? n).getD d := by
   cases Nat.lt_or_ge n l.length with
-  | inl h => rw [getD_eq_get _ _ h, get?_eq_get h, Option.getD_some]
-  | inr h => rw [getD_eq_default _ _ h, get?_eq_none.mpr h, Option.getD_none]
+  | inl h => rw [getD_eq_get _ _ h, get_eq_get h, Option.getD_some]
+  | inr h => rw [getD_eq_default _ _ h, get_eq_none.mpr h, Option.getD_none]
 #align list.nthd_eq_get_or_else_nth List.getD_eq_getD_get?ₓ -- argument order
 
 end getD

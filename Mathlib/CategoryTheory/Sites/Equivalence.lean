@@ -54,7 +54,7 @@ theorem locallyCoverDense : LocallyCoverDense J e.inverse := by
   · rintro ⟨_, _, g', hg, rfl⟩
     exact T.val.downward_closed hg g'
   · intro hf
-    refine ⟨e.functor.obj Z, (Adjunction.homEquiv e.toAdjunction _ _).symm f, e.unit.app Z, ?_, ?_⟩
+    refine ⟨e.functor.obj Z, (Adjunction.homEquiv e.toAdjunction _ _).symm f, e.unit.app Z, _, _⟩
     · simp only [Adjunction.homEquiv_counit, Functor.id_obj, Equivalence.toAdjunction_counit,
         Sieve.functorPullback_apply, Presieve.functorPullback_mem, Functor.map_comp,
         Equivalence.inv_fun_map, Functor.comp_obj, Category.assoc, Equivalence.unit_inverse_comp,

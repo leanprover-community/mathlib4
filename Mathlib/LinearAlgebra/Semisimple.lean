@@ -87,7 +87,7 @@ lemma isSemisimple_sub_algebraMap_iff {μ : R} :
     (f - algebraMap R (End R M) μ).IsSemisimple ↔ f.IsSemisimple := by
   suffices ∀ p : Submodule R M, p ≤ p.comap (f - algebraMap R (Module.End R M) μ) ↔ p ≤ p.comap f by
     simp [isSemisimple_iff, this]
-  refine fun p ↦ ⟨fun h x hx ↦ ?_, fun h x hx ↦ p.sub_mem (h hx) (p.smul_mem μ hx)⟩
+  refine fun p ↦ ⟨fun h x hx ↦ _, fun h x hx ↦ p.sub_mem (h hx) (p.smul_mem μ hx)⟩
   simpa using p.add_mem (h hx) (p.smul_mem μ hx)
 
 lemma IsSemisimple.restrict {p : Submodule R M} {hp : MapsTo f p p} (hf : f.IsSemisimple) :
@@ -97,7 +97,7 @@ lemma IsSemisimple.restrict {p : Submodule R M} {hp : MapsTo f p p} (hf : f.IsSe
   replace hq : MapsTo f (q.map p.subtype) (q.map p.subtype) := by
     rintro - ⟨⟨x, hx⟩, hx', rfl⟩; exact ⟨⟨f x, hp hx⟩, by simpa using hq hx', rfl⟩
   obtain ⟨r, hr₁, hr₂⟩ := hf _ hq
-  refine ⟨r.comap p.subtype, fun x hx ↦ hr₁ hx, ?_⟩
+  refine ⟨r.comap p.subtype, fun x hx ↦ hr₁ hx, _⟩
   rw [← q.comap_map_eq_of_injective p.injective_subtype]
   exact p.isCompl_comap_subtype_of_isCompl_of_le hr₂ <| p.map_subtype_le q
 
@@ -185,7 +185,7 @@ theorem IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ Algebra.adjoin
     simp_rw [S, AdjoinRoot, ← Ideal.isRadical_iff_quotient_reduced, ← isRadical_iff_span_singleton]
     exact (PerfectField.separable_iff_squarefree.mpr hg.minpoly_squarefree).map.squarefree.isRadical
   let φ : S →ₐ[K] End K M := Ideal.Quotient.liftₐ _ (eval₂AlgHom' (Ideal.Quotient.liftₐ _ (aeval f)
-    fun a ↦ ?_) g ?_) ((Ideal.span_singleton_le_iff_mem _).mpr ?_ : _ ≤ RingHom.ker _)
+    fun a ↦ _) g _) ((Ideal.span_singleton_le_iff_mem _).mpr _ : _ ≤ RingHom.ker _)
   rotate_left 1
   · rw [Ideal.span, ← minpoly.ker_aeval_eq_span_minpoly]; exact id
   · rintro ⟨p⟩; exact p.induction_on (fun k ↦ by simp [R, Algebra.commute_algebraMap_left])
@@ -199,7 +199,7 @@ theorem IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ Algebra.adjoin
     · exact ⟨AdjoinRoot.root _, eval₂_X _ _⟩
   obtain ⟨p, rfl⟩ := (AlgHom.mem_range _).mp (this ha)
   refine isSemisimple_of_squarefree_aeval_eq_zero
-    ((minpoly.isRadical K p).squarefree <| minpoly.ne_zero <| .of_finite K p) ?_
+    ((minpoly.isRadical K p).squarefree <| minpoly.ne_zero <| .of_finite K p) _
   rw [aeval_algHom, φ.comp_apply, minpoly.aeval, φ.map_zero]
 
 theorem IsSemisimple.add_of_commute : (f + g).IsSemisimple := .of_mem_adjoin_pair

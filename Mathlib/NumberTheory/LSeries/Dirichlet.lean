@@ -53,9 +53,9 @@ open LSeries Nat Complex
 
 lemma not_LSeriesSummable_moebius_at_one : ¬ LSeriesSummable ↗μ 1 := by
   intro h
-  refine not_summable_one_div_on_primes <| summable_ofReal.mp <| Summable.of_neg ?_
+  refine not_summable_one_div_on_primes <| summable_ofReal.mp <| Summable.of_neg _
   simp only [← Pi.neg_def, Set.indicator_comp_of_zero ofReal_zero, ofReal_inv, ofReal_natCast]
-  refine (h.indicator {n | n.Prime}).congr (fun n ↦ ?_)
+  refine (h.indicator {n | n.Prime}).congr (fun n ↦ _)
   by_cases hn : n ∈ {p | p.Prime}
   · simp only [Pi.neg_apply, Set.indicator_of_mem hn, term_of_ne_zero hn.ne_zero,
       moebius_apply_prime hn, cpow_one, push_cast, neg_div]
@@ -63,7 +63,7 @@ lemma not_LSeriesSummable_moebius_at_one : ¬ LSeriesSummable ↗μ 1 := by
 
 /-- The L-series of the Möbius function converges absolutely at `s` if and only if `re s > 1`. -/
 lemma LSeriesSummable_moebius_iff {s : ℂ} : LSeriesSummable ↗μ s ↔ 1 < s.re := by
-  refine ⟨fun H ↦ ?_, LSeriesSummable_of_bounded_of_one_lt_re (m := 1) fun n _ ↦ ?_⟩
+  refine ⟨fun H ↦ _, LSeriesSummable_of_bounded_of_one_lt_re (m := 1) fun n _ ↦ _⟩
   · by_contra! h
     have h' : s.re ≤ (1 : ℂ).re := by simp only [one_re, h]
     exact not_LSeriesSummable_moebius_at_one <| LSeriesSummable.of_re_le_re h' H
@@ -113,7 +113,7 @@ lemma mul_convolution_distrib {R : Type*} [CommSemiring R] {n : ℕ} (χ : Diric
     (((χ ·) : ℕ → R) * f) ⍟ (((χ ·) : ℕ → R) * g) = ((χ ·) : ℕ → R) * (f ⍟ g) := by
   ext n
   simp only [Pi.mul_apply, LSeries.convolution_def, Finset.mul_sum]
-  refine Finset.sum_congr rfl fun p hp ↦ ?_
+  refine Finset.sum_congr rfl fun p hp ↦ _
   rw [(mem_divisorsAntidiagonal.mp hp).1.symm, cast_mul, map_mul]
   exact mul_mul_mul_comm ..
 
@@ -155,9 +155,9 @@ lemma LSeries_modOne_eq : L ↗χ₁ = L 1 :=
 /-- The L-series of a Dirichlet character mod `N > 0` does not converge absolutely at `s = 1`. -/
 lemma not_LSeriesSummable_at_one {N : ℕ} (hN : N ≠ 0) (χ : DirichletCharacter ℂ N) :
     ¬ LSeriesSummable ↗χ 1 := by
-  refine fun h ↦ (Real.not_summable_indicator_one_div_natCast hN 1) ?_
+  refine fun h ↦ (Real.not_summable_indicator_one_div_natCast hN 1) _
   refine h.norm.of_nonneg_of_le (fun m ↦ Set.indicator_apply_nonneg (fun _ ↦ by positivity))
-    (fun n ↦ ?_)
+    (fun n ↦ _)
   rw [norm_term_eq, one_re, Real.rpow_one, Set.indicator]
   split_ifs with h₁ h₂
   · rw [h₂, cast_zero, div_zero]
@@ -173,7 +173,7 @@ lemma LSeriesSummable_of_one_lt_re {N : ℕ} (χ : DirichletCharacter ℂ N) {s 
 `re s > 1`. -/
 lemma LSeriesSummable_iff {N : ℕ} (hN : N ≠ 0) (χ : DirichletCharacter ℂ N) {s : ℂ} :
     LSeriesSummable ↗χ s ↔ 1 < s.re := by
-  refine ⟨fun H ↦ ?_, LSeriesSummable_of_one_lt_re χ⟩
+  refine ⟨fun H ↦ _, LSeriesSummable_of_one_lt_re χ⟩
   by_contra! h
   exact not_LSeriesSummable_at_one hN χ <| LSeriesSummable.of_re_le_re (by simp only [one_re, h]) H
 
@@ -189,7 +189,7 @@ of `f` does. -/
 lemma LSeriesSummable_mul {N : ℕ} (χ : DirichletCharacter ℂ N) {f : ℕ → ℂ} {s : ℂ}
     (h : LSeriesSummable f s) :
     LSeriesSummable (↗χ * f) s := by
-  refine .of_norm <| h.norm.of_nonneg_of_le (fun _ ↦ norm_nonneg _) fun n ↦ norm_term_le s ?_
+  refine .of_norm <| h.norm.of_nonneg_of_le (fun _ ↦ norm_nonneg _) fun n ↦ norm_term_le s _
   rw [Pi.mul_apply, norm_mul]
   exact mul_le_of_le_one_left (norm_nonneg _) <| norm_le_one ..
 
@@ -261,7 +261,7 @@ domain of convergence `1 < re s`. -/
 lemma LSeries_zeta_eq_riemannZeta {s : ℂ} (hs : 1 < s.re) : L ↗ζ s = riemannZeta s := by
   simp only [LSeries, natCoe_apply, zeta_apply, cast_ite, cast_zero, cast_one,
     zeta_eq_tsum_one_div_nat_cpow hs]
-  refine tsum_congr fun n ↦ ?_
+  refine tsum_congr fun n ↦ _
   rcases eq_or_ne n 0 with rfl | hn
   · simp only [term_zero, cast_zero, zero_cpow (ne_zero_of_one_lt_re hs), div_zero]
   · simp only [term_of_ne_zero hn, hn, ↓reduceIte, one_div]
@@ -339,7 +339,7 @@ lemma LSeriesSummable_vonMangoldt {s : ℂ} (hs : 1 < s.re) : LSeriesSummable �
   have hf := LSeriesSummable_logMul_of_lt_re
     (show abscissaOfAbsConv 1 < s.re by rw [abscissaOfAbsConv_one]; exact_mod_cast hs)
   rw [LSeriesSummable, ← summable_norm_iff] at hf ⊢
-  refine Summable.of_nonneg_of_le (fun _ ↦ norm_nonneg _) (fun n ↦ norm_term_le s ?_) hf
+  refine Summable.of_nonneg_of_le (fun _ ↦ norm_nonneg _) (fun n ↦ norm_term_le s _) hf
   have hΛ : ‖↗Λ n‖ ≤ ‖Complex.log n‖ := by
     simp only [norm_eq_abs, abs_ofReal, _root_.abs_of_nonneg vonMangoldt_nonneg,
       ← Complex.natCast_log, _root_.abs_of_nonneg <| Real.log_natCast_nonneg n]
@@ -387,7 +387,7 @@ open DirichletCharacter in
 /-- The L-series of the von Mangoldt function `Λ` equals the negative logarithmic derivative
 of the L-series of the constant sequence `1` on its domain of convergence `re s > 1`. -/
 lemma LSeries_vonMangoldt_eq {s : ℂ} (hs : 1 < s.re) : L ↗Λ s = - deriv (L 1) s / L 1 s := by
-  refine (LSeries_congr s fun {n} _ ↦ ?_).trans <|
+  refine (LSeries_congr s fun {n} _ ↦ _).trans <|
     LSeries_modOne_eq ▸ LSeries_twist_vonMangoldt_eq χ₁ hs
   simp only [Subsingleton.eq_one (n : ZMod 1), map_one, Pi.mul_apply, one_mul]
 
@@ -397,6 +397,6 @@ lemma LSeries_vonMangoldt_eq_deriv_riemannZeta_div {s : ℂ} (hs : 1 < s.re) :
     L ↗Λ s = - deriv riemannZeta s / riemannZeta s := by
   suffices deriv (L 1) s = deriv riemannZeta s by
     rw [LSeries_vonMangoldt_eq hs, ← LSeries_one_eq_riemannZeta hs, this]
-  refine Filter.EventuallyEq.deriv_eq <| Filter.eventuallyEq_iff_exists_mem.mpr ?_
+  refine Filter.EventuallyEq.deriv_eq <| Filter.eventuallyEq_iff_exists_mem.mpr _
   exact ⟨{z | 1 < z.re}, (isOpen_lt continuous_const continuous_re).mem_nhds hs,
     fun _ ↦ LSeries_one_eq_riemannZeta⟩

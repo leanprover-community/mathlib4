@@ -649,7 +649,7 @@ theorem sup_le_inf : a ⊔ b ≤ a ⊓ b ↔ a = b := by simp [le_antisymm_iff, 
 #align inf_lt_sup inf_lt_sup
 
 lemma inf_eq_and_sup_eq_iff : a ⊓ b = c ∧ a ⊔ b = c ↔ a = c ∧ b = c := by
-  refine ⟨fun h ↦ ?_, ?_⟩
+  refine ⟨fun h ↦ _, _⟩
   · obtain rfl := sup_eq_inf.1 (h.2.trans h.1.symm)
     simpa using h
   · rintro ⟨rfl, rfl⟩
@@ -1127,7 +1127,7 @@ variable [LinearOrder α]
 
 theorem map_sup [SemilatticeSup β] (hf : MonotoneOn f s) (hx : x ∈ s) (hy : y ∈ s) :
     f (x ⊔ y) = f x ⊔ f y := by
-  cases le_total x y <;> have := hf ?_ ?_ ‹_› <;>
+  cases le_total x y <;> have := hf _ _ ‹_› <;>
     first
     | assumption
     | simp only [*, sup_of_le_left, sup_of_le_right]
@@ -1233,7 +1233,7 @@ variable [LinearOrder α]
 
 theorem map_sup [SemilatticeInf β] (hf : AntitoneOn f s) (hx : x ∈ s) (hy : y ∈ s) :
     f (x ⊔ y) = f x ⊓ f y := by
-  cases le_total x y <;> have := hf ?_ ?_ ‹_› <;>
+  cases le_total x y <;> have := hf _ _ ‹_› <;>
     first
     | assumption
     | simp only [*, sup_of_le_left, sup_of_le_right, inf_of_le_left, inf_of_le_right]

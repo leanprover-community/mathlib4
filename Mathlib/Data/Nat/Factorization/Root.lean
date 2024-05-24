@@ -75,7 +75,7 @@ lemma floorRoot_ne_zero : floorRoot n a ≠ 0 ↔ n ≠ 0 ∧ a ≠ 0 := by
   rw [floorRoot_def]
   split_ifs with h
   · obtain rfl | rfl := h <;> simp
-  refine prod_pow_factorization_eq_self fun p hp ↦ ?_
+  refine prod_pow_factorization_eq_self fun p hp ↦ _
   have : p.Prime ∧ _ := by simpa using support_floorDiv_subset hp
   exact this.1
 
@@ -137,7 +137,7 @@ lemma ceilRoot_ne_zero : ceilRoot n a ≠ 0 ↔ n ≠ 0 ∧ a ≠ 0 := by
   rw [ceilRoot_def]
   split_ifs with h
   · obtain rfl | rfl := h <;> simp
-  refine prod_pow_factorization_eq_self fun p hp ↦ ?_
+  refine prod_pow_factorization_eq_self fun p hp ↦ _
   have : p.Prime ∧ _ := by simpa using support_ceilDiv_subset hp
   exact this.1
 

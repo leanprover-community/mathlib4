@@ -263,7 +263,7 @@ protected theorem unique_diff : UniqueDiffOn 𝕜 (range I) :=
 #align model_with_corners.unique_diff ModelWithCorners.unique_diff
 
 @[simp, mfld_simps]
-protected theorem left_inv (x : H) : I.symm (I x) = x := by refine' I.left_inv' _; simp
+protected theorem left_inv (x : H) : I.symm (I x) = x := by refine I.left_inv' _; simp
 #align model_with_corners.left_inv ModelWithCorners.left_inv
 
 protected theorem leftInverse : LeftInverse I.symm I :=
@@ -293,7 +293,7 @@ theorem preimage_image (s : Set H) : I ⁻¹' (I '' s) = s :=
 #align model_with_corners.preimage_image ModelWithCorners.preimage_image
 
 protected theorem image_eq (s : Set H) : I '' s = I.symm ⁻¹' s ∩ range I := by
-  refine' (I.toPartialEquiv.image_eq_target_inter_inv_preimage _).trans _
+  refine (I.toPartialEquiv.image_eq_target_inter_inv_preimage _).trans _
   · rw [I.source_eq]; exact subset_univ _
   · rw [inter_comm, I.target_eq, I.toPartialEquiv_coe_symm]
 #align model_with_corners.image_eq ModelWithCorners.image_eq
@@ -346,7 +346,7 @@ theorem unique_diff_at_image {x : H} : UniqueDiffWithinAt 𝕜 (range I) (I x) :
 theorem symm_continuousWithinAt_comp_right_iff {X} [TopologicalSpace X] {f : H → X} {s : Set H}
     {x : H} :
     ContinuousWithinAt (f ∘ I.symm) (I.symm ⁻¹' s ∩ range I) (I x) ↔ ContinuousWithinAt f s x := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => _, fun h => _⟩
   · have := h.comp I.continuousWithinAt (mapsTo_preimage _ _)
     simp_rw [preimage_inter, preimage_preimage, I.left_inv, preimage_id', preimage_range,
       inter_univ] at this
@@ -360,7 +360,7 @@ protected theorem locallyCompactSpace [LocallyCompactSpace E] (I : ModelWithCorn
       fun s => I.symm '' (s ∩ range I) := fun x ↦ by
     rw [← I.symm_map_nhdsWithin_range]
     exact ((compact_basis_nhds (I x)).inf_principal _).map _
-  refine' .of_hasBasis this _
+  refine .of_hasBasis this _
   rintro x s ⟨-, hsc⟩
   exact (hsc.inter_right I.isClosed_range).image I.continuous_symm
 #align model_with_corners.locally_compact ModelWithCorners.locallyCompactSpace
@@ -541,7 +541,7 @@ def contDiffPregroupoid : Pregroupoid H where
   comp {f g u v} hf hg _ _ _ := by
     have : I ∘ (g ∘ f) ∘ I.symm = (I ∘ g ∘ I.symm) ∘ I ∘ f ∘ I.symm := by ext x; simp
     simp only [this]
-    refine hg.comp (hf.mono fun x ⟨hx1, hx2⟩ ↦ ⟨hx1.1, hx2⟩) ?_
+    refine hg.comp (hf.mono fun x ⟨hx1, hx2⟩ ↦ ⟨hx1.1, hx2⟩) _
     rintro x ⟨hx1, _⟩
     simp only [mfld_simps] at hx1 ⊢
     exact hx1.2
@@ -600,9 +600,9 @@ theorem contDiffGroupoid_zero_eq : contDiffGroupoid 0 I = continuousGroupoid H :
   rw [contDiffGroupoid, mem_groupoid_of_pregroupoid, contDiffPregroupoid]
   simp only [contDiffOn_zero]
   constructor
-  · refine' I.continuous.comp_continuousOn (u.continuousOn.comp I.continuousOn_symm _)
+  · refine I.continuous.comp_continuousOn (u.continuousOn.comp I.continuousOn_symm _)
     exact (mapsTo_preimage _ _).mono_left (inter_subset_left _ _)
-  · refine' I.continuous.comp_continuousOn (u.symm.continuousOn.comp I.continuousOn_symm _)
+  · refine I.continuous.comp_continuousOn (u.symm.continuousOn.comp I.continuousOn_symm _)
     exact (mapsTo_preimage _ _).mono_left (inter_subset_left _ _)
 #align cont_diff_groupoid_zero_eq contDiffGroupoid_zero_eq
 
@@ -678,7 +678,7 @@ def analyticGroupoid : StructureGroupoid H :=
         have comp : I ∘ (g ∘ f) ∘ I.symm = (I ∘ g ∘ I.symm) ∘ I ∘ f ∘ I.symm := by ext x; simp
         apply And.intro
         · simp only [comp, preimage_inter]
-          refine hg.left.comp (hf.left.mono ?_) ?_
+          refine hg.left.comp (hf.left.mono _) _
           · simp only [subset_inter_iff, inter_subset_right]
             rw [inter_assoc]
             simp
@@ -694,12 +694,12 @@ def analyticGroupoid : StructureGroupoid H :=
           intro x hx
           rw [mem_image] at hx
           rcases hx with ⟨x', hx'⟩
-          refine hg.right ⟨x', And.intro ?_ hx'.right⟩
+          refine hg.right ⟨x', And.intro _ hx'.right⟩
           apply And.intro
           · have hx'1 : x' ∈ ((v.preimage f).preimage (I.symm)).image (I ∘ f ∘ I.symm) := by
-              refine image_subset (I ∘ f ∘ I.symm) ?_ hx'.left
+              refine image_subset (I ∘ f ∘ I.symm) _ hx'.left
               rw [preimage_inter]
-              refine Subset.trans ?_ (inter_subset_right (u.preimage I.symm)
+              refine Subset.trans _ (inter_subset_right (u.preimage I.symm)
                 ((v.preimage f).preimage I.symm))
               apply inter_subset_left
             rcases hx'1 with ⟨x'', hx''⟩
@@ -740,7 +740,7 @@ def analyticGroupoid : StructureGroupoid H :=
         simp only [] at hf ⊢
         apply And.intro
         · refine AnalyticOn.congr (IsOpen.inter (hu.preimage I.continuous_symm) isOpen_interior)
-            hf.left ?_
+            hf.left _
           intro z hz
           simp only [comp_apply]
           rw [fg (I.symm z) hz.left]
@@ -748,7 +748,7 @@ def analyticGroupoid : StructureGroupoid H :=
           apply hf.right
           rw [mem_image] at hx ⊢
           rcases hx with ⟨y, hy⟩
-          refine ⟨y, ⟨hy.left, ?_⟩⟩
+          refine ⟨y, ⟨hy.left, _⟩⟩
           rw [comp_apply, comp_apply, fg (I.symm y) hy.left.left] at hy
           exact hy.right }
 
@@ -756,7 +756,7 @@ def analyticGroupoid : StructureGroupoid H :=
 theorem ofSet_mem_analyticGroupoid {s : Set H} (hs : IsOpen s) :
     PartialHomeomorph.ofSet s hs ∈ analyticGroupoid I := by
   rw [analyticGroupoid]
-  refine And.intro (ofSet_mem_contDiffGroupoid ∞ I hs) ?_
+  refine And.intro (ofSet_mem_contDiffGroupoid ∞ I hs) _
   apply mem_groupoid_of_pregroupoid.mpr
   suffices h : AnalyticOn 𝕜 (I ∘ I.symm) (I.symm ⁻¹' s ∩ interior (range I)) ∧
       (I.symm ⁻¹' s ∩ interior (range I)).image (I ∘ I.symm) ⊆ interior (range I) by
@@ -764,7 +764,7 @@ theorem ofSet_mem_analyticGroupoid {s : Set H} (hs : IsOpen s) :
       PartialEquiv.ofSet_source, h, comp_apply, mem_range, image_subset_iff, true_and,
       PartialHomeomorph.ofSet_symm, PartialEquiv.ofSet_target, and_self]
     intro x hx
-    refine mem_preimage.mpr ?_
+    refine mem_preimage.mpr _
     rw [← I.right_inv (interior_subset hx.right)] at hx
     exact hx.right
   apply And.intro
@@ -1015,7 +1015,7 @@ theorem extend_source_mem_nhdsWithin {x : M} (h : x ∈ f.source) : (f.extend I)
 #align local_homeomorph.extend_source_mem_nhds_within PartialHomeomorph.extend_source_mem_nhdsWithin
 
 theorem continuousOn_extend : ContinuousOn (f.extend I) (f.extend I).source := by
-  refine' I.continuous.comp_continuousOn _
+  refine I.continuous.comp_continuousOn _
   rw [extend_source]
   exact f.continuousOn
 #align local_homeomorph.continuous_on_extend PartialHomeomorph.continuousOn_extend
@@ -1135,7 +1135,7 @@ theorem map_extend_symm_nhdsWithin_range {y : M} (hy : y ∈ f.source) :
 theorem tendsto_extend_comp_iff {α : Type*} {l : Filter α} {g : α → M}
     (hg : ∀ᶠ z in l, g z ∈ f.source) {y : M} (hy : y ∈ f.source) :
     Tendsto (f.extend I ∘ g) l (𝓝 (f.extend I y)) ↔ Tendsto g l (𝓝 y) := by
-  refine ⟨fun h u hu ↦ mem_map.2 ?_, (continuousAt_extend _ _ hy).tendsto.comp⟩
+  refine ⟨fun h u hu ↦ mem_map.2 _, (continuousAt_extend _ _ hy).tendsto.comp⟩
   have := (f.continuousAt_extend_symm I hy).tendsto.comp h
   rw [extend_left_inv _ _ hy] at this
   filter_upwards [hg, mem_map.1 (this hu)] with z hz hzu
@@ -1162,8 +1162,8 @@ only if `g` written in charts `f.extend I` and `f'.extend I'` is continuous on `
 theorem continuousOn_writtenInExtend_iff {f' : PartialHomeomorph M' H'} {g : M → M'}
     (hs : s ⊆ f.source) (hmaps : MapsTo g s f'.source) :
     ContinuousOn (f'.extend I' ∘ g ∘ (f.extend I).symm) (f.extend I '' s) ↔ ContinuousOn g s := by
-  refine forall_mem_image.trans <| forall₂_congr fun x hx ↦ ?_
-  refine (continuousWithinAt_congr_nhds ?_).trans
+  refine forall_mem_image.trans <| forall₂_congr fun x hx ↦ _
+  refine (continuousWithinAt_congr_nhds _).trans
     (continuousWithinAt_writtenInExtend_iff _ _ _ (hs hx) (hmaps hx) hmaps)
   rw [← map_extend_nhdsWithin_eq_image_of_subset, ← map_extend_nhdsWithin]
   exacts [hs hx, hs hx, hs]
@@ -1199,8 +1199,8 @@ theorem extend_symm_preimage_inter_range_eventuallyEq_aux {s : Set M} {x : M} (h
     congr
     · skip
     rw [← univ_inter (_ ∩ range I)]
-  refine' (eventuallyEq_univ.mpr _).symm.inter EventuallyEq.rfl
-  refine' I.continuousAt_symm.preimage_mem_nhds (f.open_target.mem_nhds _)
+  refine (eventuallyEq_univ.mpr _).symm.inter EventuallyEq.rfl
+  refine I.continuousAt_symm.preimage_mem_nhds (f.open_target.mem_nhds _)
   simp_rw [f.extend_coe, Function.comp_apply, I.left_inv, f.mapsTo hx]
 #align local_homeomorph.extend_symm_preimage_inter_range_eventually_eq_aux PartialHomeomorph.extend_symm_preimage_inter_range_eventuallyEq_aux
 
@@ -1231,7 +1231,7 @@ theorem extend_coord_change_source_mem_nhdsWithin {x : E}
     ((f.extend I).symm ≫ f'.extend I).source ∈ 𝓝[range I] x := by
   rw [f.extend_coord_change_source] at hx ⊢
   obtain ⟨x, hx, rfl⟩ := hx
-  refine' I.image_mem_nhdsWithin _
+  refine I.image_mem_nhdsWithin _
   exact (PartialHomeomorph.open_source _).mem_nhds hx
 #align local_homeomorph.extend_coord_change_source_mem_nhds_within PartialHomeomorph.extend_coord_change_source_mem_nhdsWithin
 
@@ -1266,7 +1266,7 @@ theorem contDiffWithinAt_extend_coord_change [ChartedSpace H M] (hf : f ∈ maxi
 theorem contDiffWithinAt_extend_coord_change' [ChartedSpace H M] (hf : f ∈ maximalAtlas I M)
     (hf' : f' ∈ maximalAtlas I M) {x : M} (hxf : x ∈ f.source) (hxf' : x ∈ f'.source) :
     ContDiffWithinAt 𝕜 ⊤ (f.extend I ∘ (f'.extend I).symm) (range I) (f'.extend I x) := by
-  refine' contDiffWithinAt_extend_coord_change I hf hf' _
+  refine contDiffWithinAt_extend_coord_change I hf hf' _
   rw [← extend_image_source_inter]
   exact mem_image_of_mem _ ⟨hxf', hxf⟩
 #align local_homeomorph.cont_diff_within_at_extend_coord_change' PartialHomeomorph.contDiffWithinAt_extend_coord_change'

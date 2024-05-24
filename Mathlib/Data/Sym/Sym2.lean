@@ -282,7 +282,7 @@ theorem map_pair_eq (f : α → β) (x y : α) : map f s(x, y) = s(f x, f y) :=
 
 theorem map.injective {f : α → β} (hinj : Injective f) : Injective (map f) := by
   intro z z'
-  refine Sym2.inductionOn₂ z z' (fun x y x' y' => ?_)
+  refine Sym2.inductionOn₂ z z' (fun x y x' y' => _)
   simp [hinj.eq_iff]
 #align sym2.map.injective Sym2.map.injective
 
@@ -359,7 +359,7 @@ theorem out_snd_mem (e : Sym2 α) : e.out.2 ∈ e :=
 #align sym2.out_snd_mem Sym2.out_snd_mem
 
 theorem ball {p : α → Prop} {a b : α} : (∀ c ∈ s(a, b), p c) ↔ p a ∧ p b := by
-  refine' ⟨fun h => ⟨h _ <| mem_mk_left _ _, h _ <| mem_mk_right _ _⟩, fun h c hc => _⟩
+  refine ⟨fun h => ⟨h _ <| mem_mk_left _ _, h _ <| mem_mk_right _ _⟩, fun h c hc => _⟩
   obtain rfl | rfl := Sym2.mem_iff.1 hc
   · exact h.1
   · exact h.2
@@ -612,7 +612,7 @@ def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2) where
         apply Sym2.Rel.swap)
   left_inv := by apply Sym2.ind; aesop (add norm unfold [Sym2.fromVector])
   right_inv x := by
-    refine x.recOnSubsingleton fun x => ?_
+    refine x.recOnSubsingleton fun x => _
     cases' x with x hx
     cases' x with _ x
     · simp at hx

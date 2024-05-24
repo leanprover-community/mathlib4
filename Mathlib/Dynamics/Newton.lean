@@ -64,7 +64,7 @@ theorem isNilpotent_iterate_newtonMap_sub_of_isNilpotent (h : IsNilpotent <| aev
   | zero => simp
   | succ n ih =>
     rw [iterate_succ', comp_apply, newtonMap_apply, sub_right_comm]
-    refine (Commute.all _ _).isNilpotent_sub ih <| (Commute.all _ _).isNilpotent_mul_right ?_
+    refine (Commute.all _ _).isNilpotent_sub ih <| (Commute.all _ _).isNilpotent_mul_right _
     simpa using Commute.isNilpotent_add (Commute.all _ _)
       (isNilpotent_aeval_sub_of_isNilpotent_sub P ih) h
 
@@ -88,7 +88,7 @@ theorem aeval_pow_two_pow_dvd_aeval_iterate_newtonMap
       (-Ring.inverse (aeval (P.newtonMap^[n] x) <| derivative P) * aeval (P.newtonMap^[n] x) P)
     rw [eval_map_algebraMap, eval_map_algebraMap] at hd
     rw [iterate_succ', comp_apply, newtonMap_apply, sub_eq_add_neg, neg_mul_eq_neg_mul, hd]
-    refine dvd_add ?_ (dvd_mul_of_dvd_right ?_ _)
+    refine dvd_add _ (dvd_mul_of_dvd_right _ _)
     · convert dvd_zero _
       have : IsUnit (aeval (P.newtonMap^[n] x) <| derivative P) :=
         isUnit_aeval_of_isUnit_aeval_of_isNilpotent_sub h' <|
@@ -107,10 +107,10 @@ theorem exists_unique_nilpotent_sub_and_aeval_eq_zero
     (h : IsNilpotent (aeval x P)) (h' : IsUnit (aeval x <| derivative P)) :
     ∃! r, IsNilpotent (x - r) ∧ aeval r P = 0 := by
   simp_rw [(neg_sub _ x).symm, isNilpotent_neg_iff]
-  refine exists_unique_of_exists_of_unique ?_ fun r₁ r₂ ⟨hr₁, hr₁'⟩ ⟨hr₂, hr₂'⟩ ↦ ?_
+  refine exists_unique_of_exists_of_unique _ fun r₁ r₂ ⟨hr₁, hr₁'⟩ ⟨hr₂, hr₂'⟩ ↦ _
   · -- Existence
     obtain ⟨n, hn⟩ := id h
-    refine ⟨P.newtonMap^[n] x, isNilpotent_iterate_newtonMap_sub_of_isNilpotent h n, ?_⟩
+    refine ⟨P.newtonMap^[n] x, isNilpotent_iterate_newtonMap_sub_of_isNilpotent h n, _⟩
     rw [← zero_dvd_iff, ← pow_eq_zero_of_le n.lt_two_pow.le hn]
     exact aeval_pow_two_pow_dvd_aeval_iterate_newtonMap h h' n
   · -- Uniqueness
@@ -122,7 +122,7 @@ theorem exists_unique_nilpotent_sub_and_aeval_eq_zero
     have : IsUnit (aeval r₁ (derivative P)) :=
       isUnit_aeval_of_isUnit_aeval_of_isNilpotent_sub h' hr₁
     rw [← sub_sub_sub_cancel_right r₂ r₁ x]
-    refine IsNilpotent.isUnit_add_left_of_commute ?_ this (Commute.all _ _)
+    refine IsNilpotent.isUnit_add_left_of_commute _ this (Commute.all _ _)
     exact (Commute.all _ _).isNilpotent_mul_right <| (Commute.all _ _).isNilpotent_sub hr₂ hr₁
 
 end Polynomial

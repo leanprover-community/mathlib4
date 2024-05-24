@@ -185,9 +185,9 @@ theorem orderOf_cycleOf_dvd_orderOf (f : Perm α) (x : α) : orderOf (cycleOf f 
   by_cases hx : f x = x
   · rw [← cycleOf_eq_one_iff] at hx
     simp [hx]
-  · refine dvd_of_mem_cycleType ?_
+  · refine dvd_of_mem_cycleType _
     rw [cycleType, Multiset.mem_map]
-    refine' ⟨f.cycleOf x, _, _⟩
+    refine ⟨f.cycleOf x, _, _⟩
     · rwa [← Finset.mem_def, cycleOf_mem_cycleFactorsFinset_iff, mem_support]
     · simp [(isCycle_cycleOf _ hx).orderOf]
 #align equiv.perm.order_of_cycle_of_dvd_order_of Equiv.Perm.orderOf_cycleOf_dvd_orderOf
@@ -203,7 +203,7 @@ theorem two_dvd_card_support {σ : Perm α} (hσ : σ ^ 2 = 1) : 2 ∣ σ.suppor
 
 theorem cycleType_prime_order {σ : Perm α} (hσ : (orderOf σ).Prime) :
     ∃ n : ℕ, σ.cycleType = Multiset.replicate (n + 1) (orderOf σ) := by
-  refine ⟨Multiset.card σ.cycleType - 1, eq_replicate.2 ⟨?_, fun n hn ↦ ?_⟩⟩
+  refine ⟨Multiset.card σ.cycleType - 1, eq_replicate.2 ⟨_, fun n hn ↦ _⟩⟩
   · rw [tsub_add_cancel_of_le]
     rw [Nat.succ_le_iff, card_cycleType_pos, Ne, ← orderOf_eq_one_iff]
     exact hσ.ne_one
@@ -223,7 +223,7 @@ theorem cycleType_le_of_mem_cycleFactorsFinset {f g : Perm α} (hf : f ∈ g.cyc
     f.cycleType ≤ g.cycleType := by
   have hf' := mem_cycleFactorsFinset_iff.1 hf
   rw [cycleType_def, cycleType_def, hf'.left.cycleFactorsFinset_eq_singleton]
-  refine map_le_map ?_
+  refine map_le_map _
   simpa only [Finset.singleton_val, singleton_le, Finset.mem_val] using hf
 #align equiv.perm.cycle_type_le_of_mem_cycle_factors_finset Equiv.Perm.cycleType_le_of_mem_cycleFactorsFinset
 
@@ -252,12 +252,12 @@ theorem isConj_of_cycleType_eq {σ τ : Perm α} (h : cycleType σ = cycleType �
       simp [← h, hc.cycleType]
     obtain ⟨σ', hσ'l, hσ'⟩ := Multiset.mem_map.mp h'
     have key : IsConj (σ' * τ * σ'⁻¹) τ := (isConj_iff.2 ⟨σ', rfl⟩).symm
-    refine IsConj.trans ?_ key
+    refine IsConj.trans _ key
     rw [mul_assoc]
     have hs : σ.cycleType = σ'.cycleType := by
       rw [← Finset.mem_def, mem_cycleFactorsFinset_iff] at hσ'l
       rw [hc.cycleType, ← hσ', hσ'l.left.cycleType]; rfl
-    refine' hd.isConj_mul (hσ hs) (hπ _) _
+    refine hd.isConj_mul (hσ hs) (hπ _) _
     · rw [cycleType_mul_inv_mem_cycleFactorsFinset_eq_sub, ← h, add_comm, hs,
         add_tsub_cancel_right]
       rwa [Finset.mem_def]
@@ -295,7 +295,7 @@ theorem mem_cycleType_iff {n : ℕ} {σ : Perm α} :
     rw [cycleType_eq _ rfl hlc hld, Multiset.mem_coe, List.mem_map] at h
     obtain ⟨c, cl, rfl⟩ := h
     rw [(List.perm_cons_erase cl).pairwise_iff @(Disjoint.symmetric)] at hld
-    refine' ⟨c, (l.erase c).prod, _, _, hlc _ cl, rfl⟩
+    refine ⟨c, (l.erase c).prod, _, _, hlc _ cl, rfl⟩
     · rw [← List.prod_cons, (List.perm_cons_erase cl).symm.prod_eq' (hld.imp Disjoint.commute)]
     · exact disjoint_prod_right _ fun g => List.rel_of_pairwise_cons hld
   · rintro ⟨c, t, rfl, hd, hc, rfl⟩
@@ -323,7 +323,7 @@ end CycleType
 theorem card_compl_support_modEq [DecidableEq α] {p n : ℕ} [hp : Fact p.Prime] {σ : Perm α}
     (hσ : σ ^ p ^ n = 1) : σ.supportᶜ.card ≡ Fintype.card α [MOD p] := by
   rw [Nat.modEq_iff_dvd', ← Finset.card_compl, compl_compl, ← sum_cycleType]
-  · refine Multiset.dvd_sum fun k hk => ?_
+  · refine Multiset.dvd_sum fun k hk => _
     obtain ⟨m, -, hm⟩ := (Nat.dvd_prime_pow hp.out).mp (orderOf_dvd_of_pow_eq_one hσ)
     obtain ⟨l, -, rfl⟩ := (Nat.dvd_prime_pow hp.out).mp
       ((congr_arg _ hm).mp (dvd_of_mem_cycleType hk))
@@ -496,7 +496,7 @@ theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (
     ⟨Vector.replicate p 1, (List.prod_replicate p 1).trans (one_pow p)⟩
   have hv₀ : σ v₀ = v₀ := Subtype.ext (Subtype.ext (List.rotate_replicate (1 : G) p 1))
   obtain ⟨v, hv1, hv2⟩ := exists_fixed_point_of_prime' Scard hσ hv₀
-  refine'
+  refine
     Exists.imp (fun g hg => orderOf_eq_prime _ fun hg' => hv2 _)
       (List.rotate_one_eq_self_iff_eq_replicate.mp (Subtype.ext_iff.mp (Subtype.ext_iff.mp hv1)))
   · rw [← List.prod_replicate, ← v.1.2, ← hg, show v.val.val.prod = 1 from v.2]
@@ -553,14 +553,14 @@ theorem parts_partition {σ : Perm α} :
 theorem filter_parts_partition_eq_cycleType {σ : Perm α} :
     ((partition σ).parts.filter fun n => 2 ≤ n) = σ.cycleType := by
   rw [parts_partition, filter_add, Multiset.filter_eq_self.2 fun _ => two_le_of_mem_cycleType,
-    Multiset.filter_eq_nil.2 fun a h => ?_, add_zero]
+    Multiset.filter_eq_nil.2 fun a h => _, add_zero]
   rw [Multiset.eq_of_mem_replicate h]
   decide
 #align equiv.perm.filter_parts_partition_eq_cycle_type Equiv.Perm.filter_parts_partition_eq_cycleType
 
 theorem partition_eq_of_isConj {σ τ : Perm α} : IsConj σ τ ↔ σ.partition = τ.partition := by
   rw [isConj_iff_cycleType_eq]
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => _, fun h => _⟩
   · rw [Nat.Partition.ext_iff, parts_partition, parts_partition, ← sum_cycleType, ← sum_cycleType,
       h]
   · rw [← filter_parts_partition_eq_cycleType, ← filter_parts_partition_eq_cycleType, h]
@@ -591,7 +591,7 @@ theorem card_support (h : IsThreeCycle σ) : σ.support.card = 3 := by
 #align equiv.perm.is_three_cycle.card_support Equiv.Perm.IsThreeCycle.card_support
 
 theorem _root_.card_support_eq_three_iff : σ.support.card = 3 ↔ σ.IsThreeCycle := by
-  refine' ⟨fun h => _, IsThreeCycle.card_support⟩
+  refine ⟨fun h => _, IsThreeCycle.card_support⟩
   by_cases h0 : σ.cycleType = 0
   · rw [← sum_cycleType, h0, sum_zero] at h
     exact (ne_of_lt zero_lt_three h).elim
@@ -646,7 +646,7 @@ theorem isThreeCycle_swap_mul_swap_same {a b c : α} (ab : a ≠ b) (ac : a ≠ 
   suffices h : support (swap a b * swap a c) = {a, b, c} by
     rw [← card_support_eq_three_iff, h]
     simp [ab, ac, bc]
-  apply le_antisymm ((support_mul_le _ _).trans fun x => _) fun x hx => ?_
+  apply le_antisymm ((support_mul_le _ _).trans fun x => _) fun x hx => _
   · simp [ab, ac, bc]
   · simp only [Finset.mem_insert, Finset.mem_singleton] at hx
     rw [mem_support]

@@ -145,7 +145,7 @@ theorem sMod_mod (p i : ℕ) : sMod p i % (2 ^ p - 1) = sMod p i := by cases i <
 
 theorem sMod_lt (p : ℕ) (hp : p ≠ 0) (i : ℕ) : sMod p i < 2 ^ p - 1 := by
   rw [← sMod_mod]
-  refine (Int.emod_lt _ (mersenne_int_ne_zero p hp)).trans_eq ?_
+  refine (Int.emod_lt _ (mersenne_int_ne_zero p hp)).trans_eq _
   exact abs_of_nonneg (mersenne_int_pos hp).le
 #align lucas_lehmer.s_mod_lt LucasLehmer.sMod_lt
 
@@ -447,7 +447,7 @@ Here and below, we introduce `p' = p - 2`, in order to avoid using subtraction i
 
 /-- If `1 < p`, then `q p`, the smallest prime factor of `mersenne p`, is more than 2. -/
 theorem two_lt_q (p' : ℕ) : 2 < q (p' + 2) := by
-  refine (minFac_prime (one_lt_mersenne.2 ?_).ne').two_le.lt_of_ne' ?_
+  refine (minFac_prime (one_lt_mersenne.2 _).ne').two_le.lt_of_ne' _
   · exact le_add_left _ _
   · rw [Ne, minFac_eq_two_iff, mersenne, Nat.pow_succ']
     exact Nat.two_not_dvd_two_mul_sub_one Nat.one_le_two_pow

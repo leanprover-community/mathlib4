@@ -125,7 +125,7 @@ theorem is_greatest' {a b : α} {m : ℕ} (h : Finite a b) (hm : get (multiplici
 
 theorem pos_of_dvd {a b : α} (hfin : Finite a b) (hdiv : a ∣ b) :
     0 < (multiplicity a b).get hfin := by
-  refine' zero_lt_iff.2 fun h => _
+  refine zero_lt_iff.2 fun h => _
   simpa [hdiv] using is_greatest' hfin (lt_one_iff.mpr h)
 #align multiplicity.pos_of_dvd multiplicity.pos_of_dvd
 
@@ -226,7 +226,7 @@ theorem lt_top_iff_finite {a b : α} : multiplicity a b < ⊤ ↔ Finite a b := 
 theorem exists_eq_pow_mul_and_not_dvd {a b : α} (hfin : Finite a b) :
     ∃ c : α, b = a ^ (multiplicity a b).get hfin * c ∧ ¬a ∣ c := by
   obtain ⟨c, hc⟩ := multiplicity.pow_multiplicity_dvd hfin
-  refine ⟨c, hc, ?_⟩
+  refine ⟨c, hc, _⟩
   rintro ⟨k, hk⟩
   rw [hk, ← mul_assoc, ← _root_.pow_succ] at hc
   have h₁ : a ^ ((multiplicity a b).get hfin + 1) ∣ b := ⟨k, hc⟩
@@ -386,7 +386,7 @@ theorem multiplicity_mk_eq_multiplicity
     multiplicity (Associates.mk a) (Associates.mk b) = multiplicity a b := by
   by_cases h : Finite a b
   · rw [← PartENat.natCast_get (finite_iff_dom.mp h)]
-    refine'
+    refine
         (multiplicity.unique
             (show Associates.mk a ^ (multiplicity a b).get h ∣ Associates.mk b from _) _).symm <;>
       rw [← Associates.mk_pow, Associates.mk_dvd_mk]
@@ -396,7 +396,7 @@ theorem multiplicity_mk_eq_multiplicity
   · suffices ¬Finite (Associates.mk a) (Associates.mk b) by
       rw [finite_iff_dom, PartENat.not_dom_iff_eq_top] at h this
       rw [h, this]
-    refine'
+    refine
       not_finite_iff_forall.mpr fun n => by
         rw [← Associates.mk_pow, Associates.mk_dvd_mk]
         exact not_finite_iff_forall.mp h n

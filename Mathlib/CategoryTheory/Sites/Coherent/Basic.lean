@@ -71,7 +71,7 @@ def coherentCoverage [Precoherent C] : Coverage C where
   pullback := by
     rintro B₁ B₂ f S ⟨α, _, X₁, π₁, rfl, hS⟩
     obtain ⟨β,_,X₂,π₂,h,i,ι,hh⟩ := Precoherent.pullback f α X₁ π₁ hS
-    refine ⟨Presieve.ofArrows X₂ π₂, ⟨β, inferInstance, X₂, π₂, rfl, h⟩, ?_⟩
+    refine ⟨Presieve.ofArrows X₂ π₂, ⟨β, inferInstance, X₂, π₂, rfl, h⟩, _⟩
     rintro _ _ ⟨b⟩
     exact ⟨(X₁ (i b)), ι _, π₁ _, ⟨_⟩, hh _⟩
 
@@ -113,11 +113,11 @@ def regularCoverage [Preregular C] : Coverage C where
     intro X Y f S ⟨Z, π, hπ, h_epi⟩
     have := Preregular.exists_fac f π
     obtain ⟨W, h, _, i, this⟩ := this
-    refine ⟨Presieve.singleton h, ⟨?_, ?_⟩⟩
+    refine ⟨Presieve.singleton h, ⟨_, _⟩⟩
     · exact ⟨W, h, by {rw [Presieve.ofArrows_pUnit h]}, inferInstance⟩
     · intro W g hg
       cases hg
-      refine ⟨Z, i, π, ⟨?_, this⟩⟩
+      refine ⟨Z, i, π, ⟨_, this⟩⟩
       cases hπ
       rw [Presieve.ofArrows_pUnit]
       exact Presieve.singleton.mk
@@ -140,12 +140,12 @@ def extensiveCoverage [FinitaryPreExtensive C] : Coverage C where
     intro X Y f S ⟨α, hα, Z, π, hS, h_iso⟩
     let Z' : α → C := fun a ↦ pullback f (π a)
     let π' : (a : α) → Z' a ⟶ Y := fun a ↦ pullback.fst
-    refine ⟨@Presieve.ofArrows C _ _ α Z' π', ⟨?_, ?_⟩⟩
+    refine ⟨@Presieve.ofArrows C _ _ α Z' π', ⟨_, _⟩⟩
     · constructor
       exact ⟨hα, Z', π', ⟨by simp only, FinitaryPreExtensive.sigma_desc_iso (fun x => π x) f h_iso⟩⟩
     · intro W g hg
       rcases hg with ⟨a⟩
-      refine ⟨Z a, pullback.snd, π a, ?_, by rw [CategoryTheory.Limits.pullback.condition]⟩
+      refine ⟨Z a, pullback.snd, π a, _, by rw [CategoryTheory.Limits.pullback.condition]⟩
       rw [hS]
       exact Presieve.ofArrows.mk a
 

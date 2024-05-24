@@ -97,7 +97,7 @@ instance NormedSpace.discreteTopology_zmultiples
   · rw [AddSubgroup.zmultiples_zero_eq_bot]
     exact Subsingleton.discreteTopology (α := ↑(⊥ : Subspace ℚ E))
   · rw [discreteTopology_iff_isOpen_singleton_zero, isOpen_induced_iff]
-    refine' ⟨Metric.ball 0 ‖e‖, Metric.isOpen_ball, _⟩
+    refine ⟨Metric.ball 0 ‖e‖, Metric.isOpen_ball, _⟩
     ext ⟨x, hx⟩
     obtain ⟨k, rfl⟩ := AddSubgroup.mem_zmultiples_iff.mp hx
     rw [mem_preimage, mem_ball_zero_iff, AddSubgroup.coe_mk, mem_singleton_iff, Subtype.ext_iff,
@@ -232,7 +232,7 @@ protected theorem NormedSpace.noncompactSpace : NoncompactSpace E := by
   · push_neg at H
     rcases exists_ne (0 : E) with ⟨x, hx⟩
     suffices ClosedEmbedding (Infinite.natEmbedding 𝕜 · • x) from this.noncompactSpace
-    refine closedEmbedding_of_pairwise_le_dist (norm_pos_iff.2 hx) fun k n hne ↦ ?_
+    refine closedEmbedding_of_pairwise_le_dist (norm_pos_iff.2 hx) fun k n hne ↦ _
     simp only [dist_eq_norm, ← sub_smul, norm_smul]
     rw [H, one_mul]
     rwa [sub_ne_zero, (Embedding.injective _).ne_iff]
@@ -330,7 +330,7 @@ variable (𝕜)
 
 /-- In a normed algebra, the inclusion of the base field in the extended field is an isometry. -/
 theorem algebraMap_isometry [NormOneClass 𝕜'] : Isometry (algebraMap 𝕜 𝕜') := by
-  refine' Isometry.of_dist_eq fun x y => _
+  refine Isometry.of_dist_eq fun x y => _
   rw [dist_eq_norm, dist_eq_norm, ← RingHom.map_sub, norm_algebraMap']
 #align algebra_map_isometry algebraMap_isometry
 

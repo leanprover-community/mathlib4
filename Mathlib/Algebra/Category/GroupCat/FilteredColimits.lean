@@ -96,7 +96,7 @@ theorem colimitInvAux_eq_of_rel (x y : Σ j, F.obj j)
 @[to_additive "Negation in the colimit. See also `colimitNegAux`."]
 instance colimitInv : Inv (G.{v, u} F) where
   inv x := by
-    refine Quot.lift (colimitInvAux.{v, u} F) ?_ x
+    refine Quot.lift (colimitInvAux.{v, u} F) _ x
     intro x y h
     apply colimitInvAux_eq_of_rel
     apply Types.FilteredColimit.rel_of_quot_rel
@@ -114,7 +114,7 @@ theorem colimit_inv_mk_eq (x : Σ j, F.obj j) : (G.mk.{v, u} F x)⁻¹ = G.mk F 
 noncomputable instance colimitGroup : Group (G.{v, u} F) :=
   { colimitInv.{v, u} F, (G.{v, u} F).str with
     mul_left_inv := fun x => by
-      refine Quot.inductionOn x ?_; clear x; intro x
+      refine Quot.inductionOn x _; clear x; intro x
       cases' x with j x
       erw [colimit_inv_mk_eq,
         colimit_mul_mk_eq (F ⋙ forget₂ GroupCat MonCat.{max v u}) ⟨j, _⟩ ⟨j, _⟩ j (𝟙 j) (𝟙 j),

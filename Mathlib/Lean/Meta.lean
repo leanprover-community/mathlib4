@@ -23,12 +23,12 @@ def «let» (g : MVarId) (h : Name) (v : Expr) (t : Option Expr := .none) :
     MetaM (FVarId × MVarId) := do
   (← g.define h (← t.getDM (inferType v)) v).intro1P
 
-/-- Has the effect of `refine ⟨e₁,e₂,⋯, ?_⟩`.
+/-- Has the effect of `refine ⟨e₁,e₂,⋯, _⟩`.
 -/
 def existsi (mvar : MVarId) (es : List Expr) : MetaM MVarId := do
   es.foldlM (fun mv e ↦ do
       let (subgoals,_) ← Elab.Term.TermElabM.run <| Elab.Tactic.run mv do
-        Elab.Tactic.evalTactic (← `(tactic| refine ⟨?_,?_⟩))
+        Elab.Tactic.evalTactic (← `(tactic| refine ⟨_,_⟩))
       let [sg1, sg2] := subgoals | throwError "expected two subgoals"
       sg1.assign e
       pure sg2)

@@ -37,7 +37,7 @@ private lemma card_interedges_badVertices_le :
       (badVertices G ε s t).card * t.card * (G.edgeDensity s t - ε) := by
   classical
   refine (Nat.cast_le.2 $ (card_le_card $ subset_of_eq (Rel.interedges_eq_biUnion _)).trans
-    card_biUnion_le).trans ?_
+    card_biUnion_le).trans _
   simp_rw [Nat.cast_sum, card_map, ← nsmul_eq_mul, smul_mul_assoc, mul_comm (t.card : ℝ)]
   exact sum_le_card_nsmul _ _ _ fun x hx ↦ (mem_filter.1 hx).2.le
 
@@ -45,7 +45,7 @@ private lemma edgeDensity_badVertices_le (hε : 0 ≤ ε) (dst : 2 * ε ≤ G.ed
     G.edgeDensity (badVertices G ε s t) t ≤ G.edgeDensity s t - ε := by
   rw [edgeDensity_def]
   push_cast
-  refine div_le_of_nonneg_of_le_mul (by positivity) (sub_nonneg_of_le $ by linarith) ?_
+  refine div_le_of_nonneg_of_le_mul (by positivity) (sub_nonneg_of_le $ by linarith) _
   rw [mul_comm]
   exact G.card_interedges_badVertices_le
 
@@ -90,8 +90,8 @@ private lemma good_vertices_triangle_card [DecidableEq α] (dst : 2 * ε ≤ G.e
   rw [edgeDensity_def] at this
   push_cast at this
   have hε := utu.pos.le
-  refine le_trans ?_ (mul_le_of_nonneg_of_le_div (Nat.cast_nonneg _) (by positivity) this)
-  refine Eq.trans_le ?_
+  refine le_trans _ (mul_le_of_nonneg_of_le_div (Nat.cast_nonneg _) (by positivity) this)
+  refine Eq.trans_le _
     (mul_le_mul_of_nonneg_left (mul_le_mul hY hZ (by positivity) (by positivity)) hε)
   ring
 
@@ -110,7 +110,7 @@ lemma triangle_counting'
   let X' := s \ (badVertices G ε s t ∪ badVertices G ε s u)
   have : X'.biUnion _ ⊆ (s ×ˢ t ×ˢ u).filter fun (a, b, c) ↦ G.Adj a b ∧ G.Adj a c ∧ G.Adj b c := by
     apply triangle_split_helper
-  refine le_trans ?_ (Nat.cast_le.2 $ card_le_card this)
+  refine le_trans _ (Nat.cast_le.2 $ card_le_card this)
   rw [card_biUnion, Nat.cast_sum]
   · apply le_trans _ (card_nsmul_le_sum X' _ _ $ G.good_vertices_triangle_card dst dsu dtu utu)
     rw [nsmul_eq_mul]
@@ -121,7 +121,7 @@ lemma triangle_counting'
       union_subset (filter_subset _ _) (filter_subset _ _)
     rw [sub_mul, one_mul, card_sdiff i, Nat.cast_sub (card_le_card i), sub_le_sub_iff_left,
       mul_assoc, mul_comm ε, two_mul]
-    refine (Nat.cast_le.2 $ card_union_le _ _).trans ?_
+    refine (Nat.cast_le.2 $ card_union_le _ _).trans _
     rw [Nat.cast_add]
     exact add_le_add h₁ h₂
   rintro a ha b hy t
@@ -142,8 +142,8 @@ private lemma triple_eq_triple_of_mem (hst : Disjoint s t) (hsu : Disjoint s u) 
   rw [Prod.mk.inj_iff, Prod.mk.inj_iff]
   simp only [and_assoc, @or_left_comm _ (y₁ = y₂), @or_comm _ (z₁ = z₂),
     @or_left_comm _ (z₁ = z₂)] at h
-  refine ⟨h.1.resolve_right (not_or_intro ?_ ?_), h.2.1.resolve_right (not_or_intro ?_ ?_),
-    h.2.2.1.resolve_right (not_or_intro ?_ ?_)⟩ <;>
+  refine ⟨h.1.resolve_right (not_or_intro _ _), h.2.1.resolve_right (not_or_intro _ _),
+    h.2.2.1.resolve_right (not_or_intro _ _)⟩ <;>
   · rintro rfl
     solve_by_elim
 
@@ -159,7 +159,7 @@ lemma triangle_counting
     (1 - 2 * ε) * ε ^ 3 * s.card * t.card * u.card ≤ (G.cliqueFinset 3).card := by
   apply (G.triangle_counting' dst ust dsu usu dtu utu).trans _
   rw [Nat.cast_le]
-  refine card_le_card_of_inj_on (fun (x, y, z) ↦ {x, y, z}) ?_ ?_
+  refine card_le_card_of_inj_on (fun (x, y, z) ↦ {x, y, z}) _ _
   · rintro ⟨x, y, z⟩
     simp only [and_imp, mem_filter, mem_product, mem_cliqueFinset_iff, is3Clique_triple_iff]
     exact fun _ _ _ hxy hxz hyz ↦ ⟨hxy, hxz, hyz⟩

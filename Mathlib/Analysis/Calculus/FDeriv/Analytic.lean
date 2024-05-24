@@ -38,9 +38,9 @@ variable {f : E → F} {x : E} {s : Set E}
 
 theorem HasFPowerSeriesAt.hasStrictFDerivAt (h : HasFPowerSeriesAt f p x) :
     HasStrictFDerivAt f (continuousMultilinearCurryFin1 𝕜 E F (p 1)) x := by
-  refine' h.isBigO_image_sub_norm_mul_norm_sub.trans_isLittleO (IsLittleO.of_norm_right _)
-  refine' isLittleO_iff_exists_eq_mul.2 ⟨fun y => ‖y - (x, x)‖, _, EventuallyEq.rfl⟩
-  refine' (continuous_id.sub continuous_const).norm.tendsto' _ _ _
+  refine h.isBigO_image_sub_norm_mul_norm_sub.trans_isLittleO (IsLittleO.of_norm_right _)
+  refine isLittleO_iff_exists_eq_mul.2 ⟨fun y => ‖y - (x, x)‖, _, EventuallyEq.rfl⟩
+  refine (continuous_id.sub continuous_const).norm.tendsto' _ _ _
   rw [_root_.id, sub_self, norm_zero]
 #align has_fpower_series_at.has_strict_fderiv_at HasFPowerSeriesAt.hasStrictFDerivAt
 
@@ -90,10 +90,10 @@ theorem HasFPowerSeriesOnBall.fderiv_eq [CompleteSpace F] (h : HasFPowerSeriesOn
 /-- If a function has a power series on a ball, then so does its derivative. -/
 theorem HasFPowerSeriesOnBall.fderiv [CompleteSpace F] (h : HasFPowerSeriesOnBall f p x r) :
     HasFPowerSeriesOnBall (fderiv 𝕜 f) p.derivSeries x r := by
-  refine .congr (f := fun z ↦ continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin (z - x) 1)) ?_
-    fun z hz ↦ ?_
+  refine .congr (f := fun z ↦ continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin (z - x) 1)) _
+    fun z hz ↦ _
   · refine continuousMultilinearCurryFin1 𝕜 E F
-      |>.toContinuousLinearEquiv.toContinuousLinearMap.comp_hasFPowerSeriesOnBall ?_
+      |>.toContinuousLinearEquiv.toContinuousLinearMap.comp_hasFPowerSeriesOnBall _
     simpa using ((p.hasFPowerSeriesOnBall_changeOrigin 1
       (h.r_pos.trans_le h.r_le)).mono h.r_pos h.r_le).comp_sub x
   dsimp only
@@ -203,10 +203,10 @@ theorem HasFiniteFPowerSeriesOnBall.fderiv_eq (h : HasFiniteFPowerSeriesOnBall f
 protected theorem HasFiniteFPowerSeriesOnBall.fderiv
     (h : HasFiniteFPowerSeriesOnBall f p x (n + 1) r) :
     HasFiniteFPowerSeriesOnBall (fderiv 𝕜 f) p.derivSeries x n r := by
-  refine .congr (f := fun z ↦ continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin (z - x) 1)) ?_
-    fun z hz ↦ ?_
+  refine .congr (f := fun z ↦ continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin (z - x) 1)) _
+    fun z hz ↦ _
   · refine continuousMultilinearCurryFin1 𝕜 E F
-      |>.toContinuousLinearEquiv.toContinuousLinearMap.comp_hasFiniteFPowerSeriesOnBall ?_
+      |>.toContinuousLinearEquiv.toContinuousLinearMap.comp_hasFiniteFPowerSeriesOnBall _
     simpa using
       ((p.hasFiniteFPowerSeriesOnBall_changeOrigin 1 h.finite).mono h.r_pos le_top).comp_sub x
   dsimp only
@@ -220,7 +220,7 @@ theorem HasFiniteFPowerSeriesOnBall.fderiv' (h : HasFiniteFPowerSeriesOnBall f p
     HasFiniteFPowerSeriesOnBall (fderiv 𝕜 f) p.derivSeries x (n - 1) r := by
   obtain rfl | hn := eq_or_ne n 0
   · rw [zero_tsub]
-    refine HasFiniteFPowerSeriesOnBall.bound_zero_of_eq_zero (fun y hy ↦ ?_) h.r_pos fun n ↦ ?_
+    refine HasFiniteFPowerSeriesOnBall.bound_zero_of_eq_zero (fun y hy ↦ _) h.r_pos fun n ↦ _
     · rw [Filter.EventuallyEq.fderiv_eq (f := fun _ ↦ 0)]
       · rw [fderiv_const, Pi.zero_apply]
       · exact Filter.eventuallyEq_iff_exists_mem.mpr ⟨EMetric.ball x r,
@@ -327,8 +327,8 @@ theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] :
     rw [f.changeOriginSeries_support hm, zero_apply]
   rw [sum_apply, ContinuousMultilinearMap.sum_apply, Fin.snoc_zero]
   simp_rw [changeOriginSeriesTerm_apply]
-  refine (Fintype.sum_bijective (?_ ∘ Fintype.equivFinOfCardEq (Nat.add_sub_of_le
-    Fintype.card_pos).symm) (.comp ?_ <| Equiv.bijective _) _ _ fun i ↦ ?_).symm
+  refine (Fintype.sum_bijective (_ ∘ Fintype.equivFinOfCardEq (Nat.add_sub_of_le
+    Fintype.card_pos).symm) (.comp _ <| Equiv.bijective _) _ _ fun i ↦ _).symm
   · exact (⟨{·}ᶜ, by
       rw [card_compl, Fintype.card_fin, card_singleton, Nat.add_sub_cancel_left]⟩)
   · use fun _ _ ↦ (singleton_injective <| compl_injective <| Subtype.ext_iff.mp ·)
@@ -380,7 +380,7 @@ theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
       have A : HasFDerivAt (f.iteratedFDeriv n) (∑ e : Fin n ↪ ι,
           ((iteratedFDerivComponent f e.toEquivRange).linearDeriv (Pi.compRightL 𝕜 _ Subtype.val x))
             ∘L (Pi.compRightL 𝕜 _ Subtype.val)) x := by
-        apply HasFDerivAt.sum (fun s _hs ↦ ?_)
+        apply HasFDerivAt.sum (fun s _hs ↦ _)
         exact (ContinuousMultilinearMap.hasFDerivAt _ _).comp x (ContinuousLinearMap.hasFDerivAt _)
       rwa [← H] at A
     ext v m
@@ -416,7 +416,7 @@ theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
       rw [show k = _ from Subtype.ext_iff_val.1 hke, Equiv.embeddingFinSucc_snd e]
       exact Set.mem_range_self _
   · rintro n -
-    apply continuous_finset_sum _ (fun e _ ↦ ?_)
+    apply continuous_finset_sum _ (fun e _ ↦ _)
     exact (ContinuousMultilinearMap.coe_continuous _).comp (ContinuousLinearMap.continuous _)
 
 theorem iteratedFDeriv_eq (n : ℕ) :

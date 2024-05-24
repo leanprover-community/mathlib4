@@ -262,7 +262,7 @@ theorem _root_.Nat.Prime.exists_orderOf_eq_pow_factorization_exponent {p : ℕ} 
     ∃ g : G, orderOf g = p ^ (exponent G).factorization p := by
   haveI := Fact.mk hp
   rcases eq_or_ne ((exponent G).factorization p) 0 with (h | h)
-  · refine' ⟨1, by rw [h, pow_zero, orderOf_one]⟩
+  · refine ⟨1, by rw [h, pow_zero, orderOf_one]⟩
   have he : 0 < exponent G :=
     Ne.bot_lt fun ht => by
       rw [ht] at h
@@ -278,7 +278,7 @@ theorem _root_.Nat.Prime.exists_orderOf_eq_pow_factorization_exponent {p : ℕ} 
           Nat.le_of_dvd he <| Nat.mul_dvd_of_dvd_div (Nat.dvd_of_mem_primeFactors h) hd)
   obtain ⟨k, hk : exponent G = p ^ _ * k⟩ := Nat.ord_proj_dvd _ _
   obtain ⟨t, ht⟩ := Nat.exists_eq_succ_of_ne_zero (Finsupp.mem_support_iff.mp h)
-  refine ⟨g ^ k, ?_⟩
+  refine ⟨g ^ k, _⟩
   rw [ht]
   apply orderOf_eq_prime_pow
   · rwa [hk, mul_comm, ht, pow_succ, ← mul_assoc, Nat.mul_div_cancel _ hp.pos, pow_mul] at hg
@@ -327,7 +327,7 @@ order `p`. -/
 @[to_additive]
 lemma exponent_eq_prime_iff {G : Type*} [Monoid G] [Nontrivial G] {p : ℕ} (hp : p.Prime) :
     Monoid.exponent G = p ↔ ∀ g : G, g ≠ 1 → orderOf g = p := by
-  refine ⟨fun hG g hg ↦ ?_, fun h ↦ dvd_antisymm ?_ ?_⟩
+  refine ⟨fun hG g hg ↦ _, fun h ↦ dvd_antisymm _ _⟩
   · rw [Ne, ← orderOf_eq_one_iff] at hg
     exact Eq.symm <| (hp.dvd_iff_eq hg).mp <| hG ▸ Monoid.order_dvd_exponent g
   · rw [exponent_dvd]
@@ -343,13 +343,13 @@ variable {G}
 @[to_additive]
 theorem exponent_ne_zero_iff_range_orderOf_finite (h : ∀ g : G, 0 < orderOf g) :
     exponent G ≠ 0 ↔ (Set.range (orderOf : G → ℕ)).Finite := by
-  refine' ⟨fun he => _, fun he => _⟩
+  refine ⟨fun he => _, fun he => _⟩
   · by_contra h
     obtain ⟨m, ⟨t, rfl⟩, het⟩ := Set.Infinite.exists_gt h (exponent G)
     exact pow_ne_one_of_lt_orderOf' he het (pow_exponent_eq_one t)
   · lift Set.range (orderOf (G := G)) to Finset ℕ using he with t ht
     have htpos : 0 < t.prod id := by
-      refine' Finset.prod_pos fun a ha => _
+      refine Finset.prod_pos fun a ha => _
       rw [← Finset.mem_coe, ht] at ha
       obtain ⟨k, rfl⟩ := ha
       exact h k
@@ -359,7 +359,7 @@ theorem exponent_ne_zero_iff_range_orderOf_finite (h : ∀ g : G, 0 < orderOf g)
       exact htpos.ne' this
     rw [exponent_dvd]
     intro g
-    apply Finset.dvd_prod_of_mem id (?_ : orderOf g ∈ _)
+    apply Finset.dvd_prod_of_mem id (_ : orderOf g ∈ _)
     rw [← Finset.mem_coe, ht]
     exact Set.mem_range_self g
 #align monoid.exponent_ne_zero_iff_range_order_of_finite Monoid.exponent_ne_zero_iff_range_orderOf_finite
@@ -436,7 +436,7 @@ variable [LeftCancelMonoid G] [Finite G]
 theorem ExponentExists.of_finite : ExponentExists G := by
   let _inst := Fintype.ofFinite G
   simp only [Monoid.ExponentExists]
-  refine ⟨(Finset.univ : Finset G).lcm orderOf, ?_, fun g => ?_⟩
+  refine ⟨(Finset.univ : Finset G).lcm orderOf, _, fun g => _⟩
   · simpa [pos_iff_ne_zero, Finset.lcm_eq_zero_iff] using fun x => (_root_.orderOf_pos x).ne'
   · rw [← orderOf_dvd_iff_pow_eq_one, lcm_orderOf_eq_exponent]
     exact order_dvd_exponent g
@@ -467,7 +467,7 @@ theorem exists_orderOf_eq_exponent (hG : ExponentExists G) : ∃ g : G, orderOf 
   obtain ⟨t, ht⟩ := hne.csSup_mem hfin
   use t
   apply Nat.dvd_antisymm (order_dvd_exponent _)
-  refine' Nat.dvd_of_factors_subperm he _
+  refine Nat.dvd_of_factors_subperm he _
   rw [List.subperm_ext_iff]
   by_contra! h
   obtain ⟨p, hp, hpe⟩ := h
@@ -594,7 +594,7 @@ theorem card_dvd_exponent_pow_rank : Nat.card G ∣ Monoid.exponent G ^ Group.ra
     exact fun g hg => ⟨Pi.mulSingle ⟨g, hg⟩ ⟨g, mem_zpowers g⟩, noncommPiCoprod_mulSingle _ _⟩
   replace hf := nat_card_dvd_of_surjective f hf
   rw [Nat.card_pi] at hf
-  refine' hf.trans (Finset.prod_dvd_prod_of_dvd _ _ fun g _ => _)
+  refine hf.trans (Finset.prod_dvd_prod_of_dvd _ _ fun g _ => _)
   rw [Nat.card_zpowers]
   exact Monoid.order_dvd_exponent (g : G)
 #align card_dvd_exponent_pow_rank card_dvd_exponent_pow_rank
@@ -621,7 +621,7 @@ theorem Monoid.exponent_pi_eq_zero {ι : Type*} {M : ι → Type*} [∀ i, Monoi
   push_neg at hj ⊢
   peel hj with n hn _
   obtain ⟨m, hm⟩ := this
-  refine ⟨Pi.mulSingle j m, fun h ↦ hm ?_⟩
+  refine ⟨Pi.mulSingle j m, fun h ↦ hm _⟩
   simpa using congr_fun h j
 
 /-- If `f : M₁ →⋆ M₂` is surjective, then the exponent of `M₂` divides the exponent of `M₁`. -/
@@ -629,7 +629,7 @@ theorem Monoid.exponent_pi_eq_zero {ι : Type*} {M : ι → Type*} [∀ i, Monoi
 theorem MonoidHom.exponent_dvd {F M₁ M₂ : Type*} [Monoid M₁] [Monoid M₂]
     [FunLike F M₁ M₂] [MonoidHomClass F M₁ M₂]
     {f : F} (hf : Function.Surjective f) : exponent M₂ ∣ exponent M₁ := by
-  refine Monoid.exponent_dvd_of_forall_pow_eq_one fun m₂ ↦ ?_
+  refine Monoid.exponent_dvd_of_forall_pow_eq_one fun m₂ ↦ _
   obtain ⟨m₁, rfl⟩ := hf m₂
   rw [← map_pow, pow_exponent_eq_one, map_one]
 
@@ -639,13 +639,13 @@ constituent monoids. -/
 exponents of the constituent additive monoids."]
 theorem Monoid.exponent_pi {ι : Type*} [Fintype ι] {M : ι → Type*} [∀ i, Monoid (M i)] :
     exponent ((i : ι) → M i) = lcm univ (exponent <| M ·) := by
-  refine dvd_antisymm ?_ ?_
-  · refine exponent_dvd_of_forall_pow_eq_one fun m ↦ ?_
+  refine dvd_antisymm _ _
+  · refine exponent_dvd_of_forall_pow_eq_one fun m ↦ _
     ext i
     rw [Pi.pow_apply, Pi.one_apply, ← orderOf_dvd_iff_pow_eq_one]
     apply dvd_trans (Monoid.order_dvd_exponent (m i))
     exact Finset.dvd_lcm (mem_univ i)
-  · apply Finset.lcm_dvd fun i _ ↦ ?_
+  · apply Finset.lcm_dvd fun i _ ↦ _
     exact MonoidHom.exponent_dvd (f := Pi.evalMonoidHom (M ·) i) (Function.surjective_eval i)
 
 /-- The exponent of product of two monoids is the `lcm` of the exponents of the
@@ -654,8 +654,8 @@ individuaul monoids. -/
 of the exponents of the individuaul additive monoids."]
 theorem Monoid.exponent_prod {M₁ M₂ : Type*} [Monoid M₁] [Monoid M₂] :
     exponent (M₁ × M₂) = lcm (exponent M₁) (exponent M₂) := by
-  refine dvd_antisymm ?_ (lcm_dvd ?_ ?_)
-  · refine exponent_dvd_of_forall_pow_eq_one fun g ↦ ?_
+  refine dvd_antisymm _ (lcm_dvd _ _)
+  · refine exponent_dvd_of_forall_pow_eq_one fun g ↦ _
     ext1
     · rw [Prod.pow_fst, Prod.fst_one, ← orderOf_dvd_iff_pow_eq_one]
       exact dvd_trans (Monoid.order_dvd_exponent (g.1)) <| dvd_lcm_left _ _

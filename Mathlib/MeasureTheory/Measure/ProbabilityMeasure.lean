@@ -350,7 +350,7 @@ def normalize : ProbabilityMeasure Ω :=
   else
     { val := ↑(μ.mass⁻¹ • μ)
       property := by
-        refine ⟨?_⟩
+        refine ⟨_⟩
         -- Porting note: paying the price that this isn't `simp` lemma now.
         rw [FiniteMeasure.toMeasure_smul]
         simp only [Measure.coe_smul, Pi.smul_apply, Measure.nnreal_smul_coe_apply, ne_eq,
@@ -471,7 +471,7 @@ theorem tendsto_normalize_testAgainstNN_of_tendsto {γ : Type*} {F : Filter γ}
   have lim_pair :
     Tendsto (fun i => (⟨(μs i).mass⁻¹, (μs i).testAgainstNN f⟩ : ℝ≥0 × ℝ≥0)) F
       (𝓝 ⟨μ.mass⁻¹, μ.testAgainstNN f⟩) := by
-    refine' (Prod.tendsto_iff _ _).mpr ⟨_, _⟩
+    refine (Prod.tendsto_iff _ _).mpr ⟨_, _⟩
     · exact (continuousOn_inv₀.continuousAt aux).tendsto.comp lim_mass
     · exact tendsto_iff_forall_testAgainstNN_tendsto.mp μs_lim f
   exact tendsto_mul.comp lim_pair
@@ -564,7 +564,7 @@ lemma tendsto_map_of_tendsto_of_continuous {ι : Type*} {L : Filter ι}
   intro g
   convert lim (g.compContinuous ⟨f, f_cont⟩) <;>
   · simp only [map, compContinuous_apply, ContinuousMap.coe_mk]
-    refine lintegral_map ?_ f_cont.measurable
+    refine lintegral_map _ f_cont.measurable
     exact (ENNReal.continuous_coe.comp g.continuous).measurable
 
 /-- If `f : X → Y` is continuous and `Y` is equipped with the Borel sigma algebra, then

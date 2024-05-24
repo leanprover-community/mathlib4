@@ -680,10 +680,10 @@ Given `R`-module X and `S`-module Y and a map `X ⟶ (restrictScalars f).obj Y`,
 def HomEquiv.fromExtendScalars {X Y} (g : X ⟶ (restrictScalars f).obj Y) :
     (extendScalars f).obj X ⟶ Y := by
   letI m1 : Module R S := Module.compHom S f; letI m2 : Module R Y := Module.compHom Y f
-  refine {toFun := fun z => TensorProduct.lift ?_ z, map_add' := ?_, map_smul' := ?_}
+  refine {toFun := fun z => TensorProduct.lift _ z, map_add' := _, map_smul' := _}
   · refine
-    {toFun := fun s => HomEquiv.evalAt f s g, map_add' := fun (s₁ s₂ : S) => ?_,
-      map_smul' := fun (r : R) (s : S) => ?_}
+    {toFun := fun s => HomEquiv.evalAt f s g, map_add' := fun (s₁ s₂ : S) => _,
+      map_smul' := fun (r : R) (s : S) => _}
     · ext
       dsimp only [evalAt_apply, LinearMap.add_apply]
       rw [← add_smul]
@@ -762,7 +762,7 @@ def unit : 𝟭 (ModuleCat R) ⟶ extendScalars f ⋙ restrictScalars.{max v u�
 def Counit.map {Y} : (restrictScalars f ⋙ extendScalars f).obj Y ⟶ Y := by
   letI m1 : Module R S := Module.compHom S f
   letI m2 : Module R Y := Module.compHom Y f
-  refine'
+  refine
     {toFun := TensorProduct.lift
       {toFun := fun s : S => {toFun := fun y : Y => s • y, map_add' := smul_add _, map_smul' := _},
         map_add' := _, map_smul' := _}, map_add' := _, map_smul' := _}

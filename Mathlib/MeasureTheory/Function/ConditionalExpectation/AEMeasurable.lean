@@ -77,7 +77,7 @@ theorem add [Add β] [ContinuousAdd β] (hf : AEStronglyMeasurable' m f μ)
 theorem neg [AddGroup β] [TopologicalAddGroup β] {f : α → β} (hfm : AEStronglyMeasurable' m f μ) :
     AEStronglyMeasurable' m (-f) μ := by
   rcases hfm with ⟨f', hf'_meas, hf_ae⟩
-  refine' ⟨-f', hf'_meas.neg, hf_ae.mono fun x hx => _⟩
+  refine ⟨-f', hf'_meas.neg, hf_ae.mono fun x hx => _⟩
   simp_rw [Pi.neg_apply]
   rw [hx]
 #align measure_theory.ae_strongly_measurable'.neg MeasureTheory.AEStronglyMeasurable'.neg
@@ -86,7 +86,7 @@ theorem sub [AddGroup β] [TopologicalAddGroup β] {f g : α → β} (hfm : AESt
     (hgm : AEStronglyMeasurable' m g μ) : AEStronglyMeasurable' m (f - g) μ := by
   rcases hfm with ⟨f', hf'_meas, hf_ae⟩
   rcases hgm with ⟨g', hg'_meas, hg_ae⟩
-  refine' ⟨f' - g', hf'_meas.sub hg'_meas, hf_ae.mp (hg_ae.mono fun x hx1 hx2 => _)⟩
+  refine ⟨f' - g', hf'_meas.sub hg'_meas, hf_ae.mp (hg_ae.mono fun x hx1 hx2 => _)⟩
   simp_rw [Pi.sub_apply]
   rw [hx1, hx2]
 #align measure_theory.ae_strongly_measurable'.sub MeasureTheory.AEStronglyMeasurable'.sub
@@ -94,7 +94,7 @@ theorem sub [AddGroup β] [TopologicalAddGroup β] {f g : α → β} (hfm : AESt
 theorem const_smul [SMul 𝕜 β] [ContinuousConstSMul 𝕜 β] (c : 𝕜) (hf : AEStronglyMeasurable' m f μ) :
     AEStronglyMeasurable' m (c • f) μ := by
   rcases hf with ⟨f', h_f'_meas, hff'⟩
-  refine' ⟨c • f', h_f'_meas.const_smul c, _⟩
+  refine ⟨c • f', h_f'_meas.const_smul c, _⟩
   exact EventuallyEq.fun_comp hff' fun x => c • x
 #align measure_theory.ae_strongly_measurable'.const_smul MeasureTheory.AEStronglyMeasurable'.const_smul
 
@@ -102,7 +102,7 @@ theorem const_inner {𝕜 β} [RCLike 𝕜] [NormedAddCommGroup β] [InnerProduc
     (hfm : AEStronglyMeasurable' m f μ) (c : β) :
     AEStronglyMeasurable' m (fun x => (inner c (f x) : 𝕜)) μ := by
   rcases hfm with ⟨f', hf'_meas, hf_ae⟩
-  refine'
+  refine
     ⟨fun x => (inner c (f' x) : 𝕜), (@stronglyMeasurable_const _ _ m _ c).inner hf'_meas,
       hf_ae.mono fun x hx => _⟩
   dsimp only
@@ -172,7 +172,7 @@ theorem AEStronglyMeasurable'.aeStronglyMeasurable'_of_measurableSpace_le_on {α
     (hf : AEStronglyMeasurable' m f μ) (hf_zero : f =ᵐ[μ.restrict sᶜ] 0) :
     AEStronglyMeasurable' m₂ f μ := by
   have h_ind_eq : s.indicator (hf.mk f) =ᵐ[μ] f := by
-    refine'
+    refine
       Filter.EventuallyEq.trans _ (indicator_ae_eq_of_restrict_compl_ae_eq_zero (hm _ hs_m) hf_zero)
     filter_upwards [hf.ae_eq_mk] with x hx
     by_cases hxs : x ∈ s
@@ -290,7 +290,7 @@ theorem memℒp_trim_of_mem_lpMeasSubgroup (hm : m ≤ m0) (f : Lp F p μ)
   let g := hf.choose
   obtain ⟨hg, hfg⟩ := hf.choose_spec
   change Memℒp g p (μ.trim hm)
-  refine ⟨hg.aestronglyMeasurable, ?_⟩
+  refine ⟨hg.aestronglyMeasurable, _⟩
   have h_snorm_fg : snorm g p (μ.trim hm) = snorm f p μ := by
     rw [snorm_trim hm hg]
     exact snorm_congr_ae hfg.symm
@@ -304,8 +304,8 @@ theorem mem_lpMeasSubgroup_toLp_of_trim (hm : m ≤ m0) (f : Lp F p (μ.trim hm)
     (memℒp_of_memℒp_trim hm (Lp.memℒp f)).toLp f ∈ lpMeasSubgroup F m p μ := by
   let hf_mem_ℒp := memℒp_of_memℒp_trim hm (Lp.memℒp f)
   rw [mem_lpMeasSubgroup_iff_aeStronglyMeasurable']
-  refine' AEStronglyMeasurable'.congr _ (Memℒp.coeFn_toLp hf_mem_ℒp).symm
-  refine' aeStronglyMeasurable'_of_aeStronglyMeasurable'_trim hm _
+  refine AEStronglyMeasurable'.congr _ (Memℒp.coeFn_toLp hf_mem_ℒp).symm
+  refine aeStronglyMeasurable'_of_aeStronglyMeasurable'_trim hm _
   exact Lp.aestronglyMeasurable f
 #align measure_theory.mem_Lp_meas_subgroup_to_Lp_of_trim MeasureTheory.mem_lpMeasSubgroup_toLp_of_trim
 
@@ -377,7 +377,7 @@ theorem lpMeasSubgroupToLpTrim_right_inv (hm : m ≤ m0) :
     Function.RightInverse (lpTrimToLpMeasSubgroup F p μ hm) (lpMeasSubgroupToLpTrim F p μ hm) := by
   intro f
   ext1
-  refine'
+  refine
     ae_eq_trim_of_stronglyMeasurable hm (Lp.stronglyMeasurable _) (Lp.stronglyMeasurable _) _
   exact (lpMeasSubgroupToLpTrim_ae_eq hm _).trans (lpTrimToLpMeasSubgroup_ae_eq hm _)
 #align measure_theory.Lp_meas_subgroup_to_Lp_trim_right_inv MeasureTheory.lpMeasSubgroupToLpTrim_right_inv
@@ -396,15 +396,15 @@ theorem lpMeasSubgroupToLpTrim_add (hm : m ≤ m0) (f g : lpMeasSubgroup F m p �
     lpMeasSubgroupToLpTrim F p μ hm (f + g) =
       lpMeasSubgroupToLpTrim F p μ hm f + lpMeasSubgroupToLpTrim F p μ hm g := by
   ext1
-  refine' EventuallyEq.trans _ (Lp.coeFn_add _ _).symm
-  refine' ae_eq_trim_of_stronglyMeasurable hm (Lp.stronglyMeasurable _) _ _
+  refine EventuallyEq.trans _ (Lp.coeFn_add _ _).symm
+  refine ae_eq_trim_of_stronglyMeasurable hm (Lp.stronglyMeasurable _) _ _
   · exact (Lp.stronglyMeasurable _).add (Lp.stronglyMeasurable _)
-  refine' (lpMeasSubgroupToLpTrim_ae_eq hm _).trans _
-  refine'
+  refine (lpMeasSubgroupToLpTrim_ae_eq hm _).trans _
+  refine
     EventuallyEq.trans _
       (EventuallyEq.add (lpMeasSubgroupToLpTrim_ae_eq hm f).symm
         (lpMeasSubgroupToLpTrim_ae_eq hm g).symm)
-  refine' (Lp.coeFn_add _ _).trans _
+  refine (Lp.coeFn_add _ _).trans _
   simp_rw [lpMeasSubgroup_coe]
   filter_upwards with x using rfl
 #align measure_theory.Lp_meas_subgroup_to_Lp_trim_add MeasureTheory.lpMeasSubgroupToLpTrim_add
@@ -412,12 +412,12 @@ theorem lpMeasSubgroupToLpTrim_add (hm : m ≤ m0) (f g : lpMeasSubgroup F m p �
 theorem lpMeasSubgroupToLpTrim_neg (hm : m ≤ m0) (f : lpMeasSubgroup F m p μ) :
     lpMeasSubgroupToLpTrim F p μ hm (-f) = -lpMeasSubgroupToLpTrim F p μ hm f := by
   ext1
-  refine' EventuallyEq.trans _ (Lp.coeFn_neg _).symm
-  refine' ae_eq_trim_of_stronglyMeasurable hm (Lp.stronglyMeasurable _) _ _
+  refine EventuallyEq.trans _ (Lp.coeFn_neg _).symm
+  refine ae_eq_trim_of_stronglyMeasurable hm (Lp.stronglyMeasurable _) _ _
   · exact @StronglyMeasurable.neg _ _ _ m _ _ _ (Lp.stronglyMeasurable _)
-  refine' (lpMeasSubgroupToLpTrim_ae_eq hm _).trans _
-  refine' EventuallyEq.trans _ (EventuallyEq.neg (lpMeasSubgroupToLpTrim_ae_eq hm f).symm)
-  refine' (Lp.coeFn_neg _).trans _
+  refine (lpMeasSubgroupToLpTrim_ae_eq hm _).trans _
+  refine EventuallyEq.trans _ (EventuallyEq.neg (lpMeasSubgroupToLpTrim_ae_eq hm f).symm)
+  refine (Lp.coeFn_neg _).trans _
   simp_rw [lpMeasSubgroup_coe]
   exact eventually_of_forall fun x => by rfl
 #align measure_theory.Lp_meas_subgroup_to_Lp_trim_neg MeasureTheory.lpMeasSubgroupToLpTrim_neg
@@ -432,12 +432,12 @@ theorem lpMeasSubgroupToLpTrim_sub (hm : m ≤ m0) (f g : lpMeasSubgroup F m p �
 theorem lpMeasToLpTrim_smul (hm : m ≤ m0) (c : 𝕜) (f : lpMeas F 𝕜 m p μ) :
     lpMeasToLpTrim F 𝕜 p μ hm (c • f) = c • lpMeasToLpTrim F 𝕜 p μ hm f := by
   ext1
-  refine' EventuallyEq.trans _ (Lp.coeFn_smul _ _).symm
-  refine' ae_eq_trim_of_stronglyMeasurable hm (Lp.stronglyMeasurable _) _ _
+  refine EventuallyEq.trans _ (Lp.coeFn_smul _ _).symm
+  refine ae_eq_trim_of_stronglyMeasurable hm (Lp.stronglyMeasurable _) _ _
   · exact (Lp.stronglyMeasurable _).const_smul c
-  refine' (lpMeasToLpTrim_ae_eq hm _).trans _
-  refine' (Lp.coeFn_smul _ _).trans _
-  refine' (lpMeasToLpTrim_ae_eq hm f).mono fun x hx => _
+  refine (lpMeasToLpTrim_ae_eq hm _).trans _
+  refine (Lp.coeFn_smul _ _).trans _
+  refine (lpMeasToLpTrim_ae_eq hm f).mono fun x hx => _
   simp only [Pi.smul_apply, hx]
 #align measure_theory.Lp_meas_to_Lp_trim_smul MeasureTheory.lpMeasToLpTrim_smul
 
@@ -544,7 +544,7 @@ theorem lpMeasToLpTrimLie_symm_indicator [one_le_p : Fact (1 ≤ p)] [NormedSpac
   change
     lpTrimToLpMeas F ℝ p μ hm (indicatorConstLp p hs hμs c) =ᵐ[μ]
       (indicatorConstLp p _ _ c : α → F)
-  refine' (lpTrimToLpMeas_ae_eq hm _).trans _
+  refine (lpTrimToLpMeas_ae_eq hm _).trans _
   exact (ae_eq_of_ae_eq_trim indicatorConstLp_coeFn).trans indicatorConstLp_coeFn.symm
 #align measure_theory.Lp_meas_to_Lp_trim_lie_symm_indicator MeasureTheory.lpMeasToLpTrimLie_symm_indicator
 
@@ -554,7 +554,7 @@ theorem lpMeasToLpTrimLie_symm_toLp [one_le_p : Fact (1 ≤ p)] [NormedSpace ℝ
       (memℒp_of_memℒp_trim hm hf).toLp f := by
   ext1
   rw [← lpMeas_coe]
-  refine' (lpTrimToLpMeas_ae_eq hm _).trans _
+  refine (lpTrimToLpMeas_ae_eq hm _).trans _
   exact (ae_eq_of_ae_eq_trim (Memℒp.coeFn_toLp hf)).trans (Memℒp.coeFn_toLp _).symm
 #align measure_theory.Lp_meas_to_Lp_trim_lie_symm_to_Lp MeasureTheory.lpMeasToLpTrimLie_symm_toLp
 
@@ -583,7 +583,7 @@ theorem Lp.induction_stronglyMeasurable_aux (hm : m ≤ m0) (hp_ne_top : p ≠ �
     simp only [f', g, LinearIsometryEquiv.symm_apply_apply]
   change P ↑f'
   rw [hfg]
-  refine'
+  refine
     @Lp.induction α F m _ p (μ.trim hm) _ hp_ne_top
       (fun g => P ((lpMeasToLpTrimLie F ℝ p μ hm).symm g)) _ _ _ g
   · intro b t ht hμt
@@ -645,16 +645,16 @@ theorem Lp.induction_stronglyMeasurable (hm : m ≤ m0) (hp_ne_top : p ≠ ∞) 
   have hs_g : MeasurableSet[m] s_g := hgm.stronglyMeasurable_mk.measurableSet_support
   have hs_g_eq : s_g =ᵐ[μ] Function.support g := hgm.ae_eq_mk.symm.support
   have h_inter_empty : (s_f ∩ s_g : Set α) =ᵐ[μ] (∅ : Set α) := by
-    refine' (hs_f_eq.inter hs_g_eq).trans _
+    refine (hs_f_eq.inter hs_g_eq).trans _
     suffices Function.support f ∩ Function.support g = ∅ by rw [this]
     exact Set.disjoint_iff_inter_eq_empty.mp h_disj
   let f' := (s_f \ s_g).indicator (hfm.mk f)
   have hff' : f =ᵐ[μ] f' := by
     have : s_f \ s_g =ᵐ[μ] s_f := by
       rw [← Set.diff_inter_self_eq_diff, Set.inter_comm]
-      refine' ((ae_eq_refl s_f).diff h_inter_empty).trans _
+      refine ((ae_eq_refl s_f).diff h_inter_empty).trans _
       rw [Set.diff_empty]
-    refine' ((indicator_ae_eq_of_ae_eq_set this).trans _).symm
+    refine ((indicator_ae_eq_of_ae_eq_set this).trans _).symm
     rw [Set.indicator_support]
     exact hfm.ae_eq_mk.symm
   have hf'_meas : StronglyMeasurable[m] f' := hfm.stronglyMeasurable_mk.indicator (hs_f.diff hs_g)
@@ -663,9 +663,9 @@ theorem Lp.induction_stronglyMeasurable (hm : m ≤ m0) (hp_ne_top : p ≠ ∞) 
   have hgg' : g =ᵐ[μ] g' := by
     have : s_g \ s_f =ᵐ[μ] s_g := by
       rw [← Set.diff_inter_self_eq_diff]
-      refine' ((ae_eq_refl s_g).diff h_inter_empty).trans _
+      refine ((ae_eq_refl s_g).diff h_inter_empty).trans _
       rw [Set.diff_empty]
-    refine' ((indicator_ae_eq_of_ae_eq_set this).trans _).symm
+    refine ((indicator_ae_eq_of_ae_eq_set this).trans _).symm
     rw [Set.indicator_support]
     exact hgm.ae_eq_mk.symm
   have hg'_meas : StronglyMeasurable[m] g' := hgm.stronglyMeasurable_mk.indicator (hs_g.diff hs_f)
@@ -698,20 +698,20 @@ theorem Memℒp.induction_stronglyMeasurable (hm : m ≤ m0) (hp_ne_top : p ≠ 
   intro f hf hfm
   let f_Lp := hf.toLp f
   have hfm_Lp : AEStronglyMeasurable' m f_Lp μ := hfm.congr hf.coeFn_toLp.symm
-  refine' h_ae hf.coeFn_toLp (Lp.memℒp _) _
+  refine h_ae hf.coeFn_toLp (Lp.memℒp _) _
   change P f_Lp
   -- Porting note: `P` should be an explicit argument to `Lp.induction_stronglyMeasurable`, but
   -- it isn't?
-  refine' Lp.induction_stronglyMeasurable hm hp_ne_top (P := fun f => P f) _ _ h_closed f_Lp hfm_Lp
+  refine Lp.induction_stronglyMeasurable hm hp_ne_top (P := fun f => P f) _ _ h_closed f_Lp hfm_Lp
   · intro c s hs hμs
     rw [Lp.simpleFunc.coe_indicatorConst]
-    refine' h_ae indicatorConstLp_coeFn.symm _ (h_ind c hs hμs)
+    refine h_ae indicatorConstLp_coeFn.symm _ (h_ind c hs hμs)
     exact memℒp_indicator_const p (hm s hs) c (Or.inr hμs.ne)
   · intro f g hf_mem hg_mem hfm hgm h_disj hfP hgP
     have hfP' : P f := h_ae hf_mem.coeFn_toLp (Lp.memℒp _) hfP
     have hgP' : P g := h_ae hg_mem.coeFn_toLp (Lp.memℒp _) hgP
     specialize h_add h_disj hf_mem hg_mem hfm hgm hfP' hgP'
-    refine' h_ae _ (hf_mem.add hg_mem) h_add
+    refine h_ae _ (hf_mem.add hg_mem) h_add
     exact (hf_mem.coeFn_toLp.symm.add hg_mem.coeFn_toLp.symm).trans (Lp.coeFn_add _ _).symm
 #align measure_theory.mem_ℒp.induction_strongly_measurable MeasureTheory.Memℒp.induction_stronglyMeasurable
 

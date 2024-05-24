@@ -155,7 +155,7 @@ theorem of_finite_basis {ι : Type w} {s : Set ι} (h : Basis s K V) (hs : Set.F
 /-- A subspace of a finite-dimensional space is also finite-dimensional. -/
 instance finiteDimensional_submodule [FiniteDimensional K V] (S : Submodule K V) :
     FiniteDimensional K S := by
-  letI : IsNoetherian K V := iff_fg.2 ?_
+  letI : IsNoetherian K V := iff_fg.2 _
   · exact
       iff_fg.1
         (IsNoetherian.iff_rank_lt_aleph0.2
@@ -447,7 +447,7 @@ Note that strictly this only needs `∀ i ∈ s, FiniteDimensional K (S i)`, but
 work well with typeclass search. -/
 instance finiteDimensional_finset_sup {ι : Type*} (s : Finset ι) (S : ι → Submodule K V)
     [∀ i, FiniteDimensional K (S i)] : FiniteDimensional K (s.sup S : Submodule K V) := by
-  refine'
+  refine
     @Finset.sup_induction _ _ _ _ s S (fun i => FiniteDimensional K ↑i) (finiteDimensional_bot K V)
       _ fun i _ => by infer_instance
   intro S₁ hS₁ S₂ hS₂
@@ -709,7 +709,7 @@ lemma ker_ne_bot_of_finrank_lt [FiniteDimensional K V] [FiniteDimensional K V₂
 theorem comap_eq_sup_ker_of_disjoint {p : Submodule K V} [FiniteDimensional K p] {f : V →ₗ[K] V}
     (h : ∀ x ∈ p, f x ∈ p) (h' : Disjoint p (ker f)) :
     p.comap f = p ⊔ ker f := by
-  refine le_antisymm (fun x hx ↦ ?_) (sup_le_iff.mpr ⟨h, ker_le_comap _⟩)
+  refine le_antisymm (fun x hx ↦ _) (sup_le_iff.mpr ⟨h, ker_le_comap _⟩)
   obtain ⟨⟨y, hy⟩, hxy⟩ :=
     surjective_of_injective ((injective_restrict_iff_disjoint h).mpr h') ⟨f x, hx⟩
   replace hxy : f y = f x := by simpa [Subtype.ext_iff] using hxy
@@ -826,7 +826,7 @@ theorem injective_iff_surjective_of_finrank_eq_finrank [FiniteDimensional K V]
     [FiniteDimensional K V₂] (H : finrank K V = finrank K V₂) {f : V →ₗ[K] V₂} :
     Function.Injective f ↔ Function.Surjective f := by
   have := finrank_range_add_finrank_ker f
-  rw [← ker_eq_bot, ← range_eq_top]; refine' ⟨fun h => _, fun h => _⟩
+  rw [← ker_eq_bot, ← range_eq_top]; refine ⟨fun h => _, fun h => _⟩
   · rw [h, finrank_bot, add_zero, H] at this
     exact eq_top_of_finrank_eq this
   · rw [h, finrank_top, H] at this
@@ -1070,10 +1070,10 @@ theorem surjective_of_nonzero_of_finrank_eq_one {W A : Type*} [Semiring A] [Modu
 theorem is_simple_module_of_finrank_eq_one {A} [Semiring A] [Module A V] [SMul K A]
     [IsScalarTower K A V] (h : finrank K V = 1) : IsSimpleOrder (Submodule A V) := by
   haveI := nontrivial_of_finrank_eq_succ h
-  refine' ⟨fun S => or_iff_not_imp_left.2 fun hn => _⟩
+  refine ⟨fun S => or_iff_not_imp_left.2 fun hn => _⟩
   rw [← restrictScalars_inj K] at hn ⊢
   haveI : FiniteDimensional _ _ := .of_finrank_eq_succ h
-  refine' eq_top_of_finrank_eq ((Submodule.finrank_le _).antisymm _)
+  refine eq_top_of_finrank_eq ((Submodule.finrank_le _).antisymm _)
   simpa only [h, finrank_bot] using Submodule.finrank_strictMono (Ne.bot_lt hn)
 #align is_simple_module_of_finrank_eq_one is_simple_module_of_finrank_eq_one
 
@@ -1129,7 +1129,7 @@ theorem Subalgebra.eq_bot_of_rank_le_one {S : Subalgebra F E} (h : Module.rank F
   -- Porting note: fails without explicit type
   haveI : FiniteDimensional F (Subalgebra.toSubmodule S) :=
     S.toSubmoduleEquiv.symm.finiteDimensional
-  refine fun hl => (Submodule.finrank_lt_finrank_of_lt hl).not_le (natCast_le.1 ?_)
+  refine fun hl => (Submodule.finrank_lt_finrank_of_lt hl).not_le (natCast_le.1 _)
   iterate 2 rw [Subalgebra.finrank_toSubmodule, finrank_eq_rank]
   exact h.trans_eq Subalgebra.rank_bot.symm
 #align subalgebra.eq_bot_of_rank_le_one Subalgebra.eq_bot_of_rank_le_one
@@ -1213,7 +1213,7 @@ theorem exists_ker_pow_eq_ker_pow_succ [FiniteDimensional K V] (f : End K V) :
       induction' n with n ih
       · exact zero_le (finrank _ _)
       · have h_ker_lt_ker : LinearMap.ker (f ^ n) < LinearMap.ker (f ^ n.succ) := by
-          refine' lt_of_le_of_ne _ (h_contra n (Nat.le_of_succ_le_succ hn))
+          refine lt_of_le_of_ne _ (h_contra n (Nat.le_of_succ_le_succ hn))
           rw [pow_succ']
           apply LinearMap.ker_le_ker_comp
         have h_finrank_lt_finrank :

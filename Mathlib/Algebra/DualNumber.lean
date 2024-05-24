@@ -131,7 +131,7 @@ Note that when `f : R →ₐ[R] B := Algebra.ofId R B`, the commutativity assump
 we are free to choose any element `e : B`. -/
 def lift :
     {fe : (A →ₐ[R] B) × B // fe.2 * fe.2 = 0 ∧ ∀ a, Commute fe.2 (fe.1 a)} ≃ (A[ε] →ₐ[R] B) := by
-  refine Equiv.trans ?_ TrivSqZeroExt.liftEquiv
+  refine Equiv.trans _ TrivSqZeroExt.liftEquiv
   exact {
     toFun := fun fe => ⟨
       (fe.val.1, MulOpposite.op fe.val.2 • fe.val.1.toLinearMap),

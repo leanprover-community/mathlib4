@@ -75,7 +75,7 @@ theorem X_pow_sub_X_sub_one_irreducible_rat (hn1 : n ≠ 1) : Irreducible (X ^ n
   have hp : (X ^ n - X - 1 : ℤ[X]) = trinomial 0 1 n (-1) (-1) 1 := by
     simp only [trinomial, C_neg, C_1]; ring
   have hn : 1 < n := Nat.one_lt_iff_ne_zero_and_ne_one.mpr ⟨hn0, hn1⟩
-  have h := (IsPrimitive.Int.irreducible_iff_irreducible_map_cast ?_).mp
+  have h := (IsPrimitive.Int.irreducible_iff_irreducible_map_cast _).mp
     (X_pow_sub_X_sub_one_irreducible hn1)
   · rwa [Polynomial.map_sub, Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_one,
       Polynomial.map_X] at h

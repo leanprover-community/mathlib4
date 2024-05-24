@@ -60,7 +60,7 @@ theorem exact_iff : Exact f g ↔ f.range = g.ker := by
 instance {J : Type u} [SmallCategory J] [IsFiltered J] :
     PreservesFiniteLimits <| colim (J := J) (C := AddCommGroupCat.{u}) := by
   refine Functor.preservesFiniteLimitsOfMapExact _
-    fun F G H η γ h => (exact_iff _ _).mpr (le_antisymm ?_ ?_)
+    fun F G H η γ h => (exact_iff _ _).mpr (le_antisymm _ _)
   all_goals replace h : ∀ j : J, Exact (η.app j) (γ.app j) :=
     fun j => Functor.map_exact ((evaluation _ _).obj j) η γ h
   · rw [AddMonoidHom.range_le_ker_iff, ← comp_def]

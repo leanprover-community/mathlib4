@@ -251,7 +251,7 @@ theorem forall_mul_self_eq_iff {A : Type*} [Ring A] [Algebra R A] (h2 : IsUnit (
       (LinearMap.mul R A).compl₂ f ∘ₗ f + (LinearMap.mul R A).flip.compl₂ f ∘ₗ f =
         Q.polarBilin.compr₂ (Algebra.linearMap R A) := by
   simp_rw [DFunLike.ext_iff]
-  refine ⟨mul_add_swap_eq_polar_of_forall_mul_self_eq _, fun h x => ?_⟩
+  refine ⟨mul_add_swap_eq_polar_of_forall_mul_self_eq _, fun h x => _⟩
   change ∀ x y : M, f x * f y + f y * f x = algebraMap R A (QuadraticForm.polar Q x y) at h
   apply h2.mul_left_cancel
   rw [two_mul, two_mul, h x x, QuadraticForm.polar_self, two_mul, map_add]
@@ -354,7 +354,7 @@ a linear retraction `g` that also preserves the quadratic forms, then `CliffordA
 is a retraction of `CliffordAlgebra.map f`. -/
 lemma leftInverse_map_of_leftInverse {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
     (f : Q₁ →qᵢ Q₂) (g : Q₂ →qᵢ Q₁) (h : LeftInverse g f) : LeftInverse (map g) (map f) := by
-  refine fun x => ?_
+  refine fun x => _
   replace h : g.comp f = QuadraticForm.Isometry.id Q₁ := DFunLike.ext _ _ h
   rw [← AlgHom.comp_apply, map_comp_map, h, map_id, AlgHom.coe_id, id_eq]
 

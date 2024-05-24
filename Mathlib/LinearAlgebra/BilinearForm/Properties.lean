@@ -407,7 +407,7 @@ theorem nondegenerate_iff_ker_eq_bot {B : BilinForm R M} :
     B.Nondegenerate ↔ LinearMap.ker B = ⊥ := by
   rw [LinearMap.ker_eq_bot']
   constructor <;> intro h
-  · refine' fun m hm => h _ fun x => _
+  · refine fun m hm => h _ fun x => _
     rw [hm]
     rfl
   · intro m hm
@@ -424,7 +424,7 @@ theorem Nondegenerate.ker_eq_bot {B : BilinForm R M} (h : B.Nondegenerate) :
 theorem compLeft_injective (B : BilinForm R₁ M₁) (b : B.Nondegenerate) :
     Function.Injective B.compLeft := fun φ ψ h => by
   ext w
-  refine' eq_of_sub_eq_zero (b _ _)
+  refine eq_of_sub_eq_zero (b _ _)
   intro v
   rw [sub_left, ← compLeft_apply, ← compLeft_apply, ← h, sub_self]
 #align bilin_form.comp_left_injective LinearMap.BilinForm.compLeft_injective
@@ -506,7 +506,7 @@ lemma dualBasis_dualBasis_flip (B : BilinForm K V) (hB : B.Nondegenerate) {ι}
     [Finite ι] [DecidableEq ι] (b : Basis ι K V) :
     B.dualBasis hB (B.flip.dualBasis hB.flip b) = b := by
   ext i
-  refine LinearMap.ker_eq_bot.mp hB.ker_eq_bot ((B.flip.dualBasis hB.flip b).ext (fun j ↦ ?_))
+  refine LinearMap.ker_eq_bot.mp hB.ker_eq_bot ((B.flip.dualBasis hB.flip b).ext (fun j ↦ _))
   simp_rw [apply_dualBasis_left, ← B.flip_apply, apply_dualBasis_left, @eq_comm _ i j]
 
 @[simp]

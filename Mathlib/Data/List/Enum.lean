@@ -17,21 +17,21 @@ variable {α β : Type*}
 #align list.length_enum List.enum_length
 
 @[simp]
-theorem get?_enumFrom :
+theorem get_enumFrom :
     ∀ n (l : List α) m, get? (enumFrom n l) m = (get? l m).map fun a => (n + m, a)
   | n, [], m => rfl
   | n, a :: l, 0 => rfl
-  | n, a :: l, m + 1 => (get?_enumFrom (n + 1) l m).trans <| by rw [Nat.add_right_comm]; rfl
-#align list.enum_from_nth List.get?_enumFrom
+  | n, a :: l, m + 1 => (get_enumFrom (n + 1) l m).trans <| by rw [Nat.add_right_comm]; rfl
+#align list.enum_from_nth List.get_enumFrom
 
-@[deprecated] alias enumFrom_get? := get?_enumFrom -- 2024-04-06
+@[deprecated] alias enumFrom_get? := get_enumFrom -- 2024-04-06
 
 @[simp]
-theorem get?_enum (l : List α) (n) : get? (enum l) n = (get? l n).map fun a => (n, a) := by
-  rw [enum, get?_enumFrom, Nat.zero_add]
-#align list.enum_nth List.get?_enum
+theorem get_enum (l : List α) (n) : get? (enum l) n = (get? l n).map fun a => (n, a) := by
+  rw [enum, get_enumFrom, Nat.zero_add]
+#align list.enum_nth List.get_enum
 
-@[deprecated] alias enum_get? := get?_enum -- 2024-04-06
+@[deprecated] alias enum_get? := get_enum -- 2024-04-06
 
 @[simp]
 theorem enumFrom_map_snd : ∀ (n) (l : List α), map Prod.snd (enumFrom n l) = l
@@ -60,7 +60,7 @@ theorem mk_add_mem_enumFrom_iff_get? {n i : ℕ} {x : α} {l : List α} :
     (n + i, x) ∈ enumFrom n l ↔ l.get? i = x := by
   simp [mem_iff_get?]
 
-theorem mk_mem_enumFrom_iff_le_and_get?_sub {n i : ℕ} {x : α} {l : List α} :
+theorem mk_mem_enumFrom_iff_le_and_get_sub {n i : ℕ} {x : α} {l : List α} :
     (i, x) ∈ enumFrom n l ↔ n ≤ i ∧ l.get? (i - n) = x := by
   if h : n ≤ i then
     rcases Nat.exists_eq_add_of_le h with ⟨i, rfl⟩
@@ -70,14 +70,14 @@ theorem mk_mem_enumFrom_iff_le_and_get?_sub {n i : ℕ} {x : α} {l : List α} :
     simp [h, mem_iff_get?, this]
 
 theorem mk_mem_enum_iff_get? {i : ℕ} {x : α} {l : List α} : (i, x) ∈ enum l ↔ l.get? i = x := by
-  simp [enum, mk_mem_enumFrom_iff_le_and_get?_sub]
+  simp [enum, mk_mem_enumFrom_iff_le_and_get_sub]
 
 theorem mem_enum_iff_get? {x : ℕ × α} {l : List α} : x ∈ enum l ↔ l.get? x.1 = x.2 :=
   mk_mem_enum_iff_get?
 
 theorem le_fst_of_mem_enumFrom {x : ℕ × α} {n : ℕ} {l : List α} (h : x ∈ enumFrom n l) :
     n ≤ x.1 :=
-  (mk_mem_enumFrom_iff_le_and_get?_sub.1 h).1
+  (mk_mem_enumFrom_iff_le_and_get_sub.1 h).1
 
 theorem fst_lt_add_of_mem_enumFrom {x : ℕ × α} {n : ℕ} {l : List α} (h : x ∈ enumFrom n l) :
     x.1 < n + length l := by

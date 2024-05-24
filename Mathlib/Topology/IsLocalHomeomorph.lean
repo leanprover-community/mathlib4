@@ -44,12 +44,12 @@ def IsLocalHomeomorphOn :=
 
 theorem isLocalHomeomorphOn_iff_openEmbedding_restrict {f : X → Y} :
     IsLocalHomeomorphOn f s ↔ ∀ x ∈ s, ∃ U ∈ 𝓝 x, OpenEmbedding (U.restrict f) := by
-  refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ ?_⟩
+  refine ⟨fun h x hx ↦ _, fun h x hx ↦ _⟩
   · obtain ⟨e, hxe, rfl⟩ := h x hx
     exact ⟨e.source, e.open_source.mem_nhds hxe, e.openEmbedding_restrict⟩
   · obtain ⟨U, hU, emb⟩ := h x hx
     have : OpenEmbedding ((interior U).restrict f) := by
-      refine emb.comp ⟨embedding_inclusion interior_subset, ?_⟩
+      refine emb.comp ⟨embedding_inclusion interior_subset, _⟩
       rw [Set.range_inclusion]; exact isOpen_induced isOpen_interior
     obtain ⟨cont, inj, openMap⟩ := openEmbedding_iff_continuous_injective_open.mp this
     haveI : Nonempty X := ⟨x⟩
@@ -93,7 +93,7 @@ theorem of_comp_left (hgf : IsLocalHomeomorphOn (g ∘ f) s) (hg : IsLocalHomeom
   obtain ⟨gf, hgf, he⟩ := hgf x hx
   refine ⟨(gf.restr <| f ⁻¹' g.source).trans g.symm, ⟨⟨hgf, mem_interior_iff_mem_nhds.mpr
     ((cont x hx).preimage_mem_nhds <| g.open_source.mem_nhds hxg)⟩, he ▸ g.map_source hxg⟩,
-    fun y hy ↦ ?_⟩
+    fun y hy ↦ _⟩
   change f y = g.symm (gf y)
   have : f y ∈ g.source := by apply interior_subset hy.1.2
   rw [← he, g.eq_symm_apply this (by apply g.map_source this), Function.comp_apply]
@@ -103,7 +103,7 @@ theorem of_comp_right (hgf : IsLocalHomeomorphOn (g ∘ f) s) (hf : IsLocalHomeo
   rintro _ ⟨x, hx, rfl⟩
   obtain ⟨f, hxf, rfl⟩ := hf x hx
   obtain ⟨gf, hgf, he⟩ := hgf x hx
-  refine ⟨f.symm.trans gf, ⟨f.map_source hxf, ?_⟩, fun y hy ↦ ?_⟩
+  refine ⟨f.symm.trans gf, ⟨f.map_source hxf, _⟩, fun y hy ↦ _⟩
   · apply (f.left_inv hxf).symm ▸ hgf
   · change g y = gf (f.symm y)
     rw [← he, Function.comp_apply, f.right_inv hy.1]
@@ -235,14 +235,14 @@ open TopologicalSpace in
 form a basis of the source space. -/
 theorem isTopologicalBasis (hf : IsLocalHomeomorph f) : IsTopologicalBasis
     {U : Set X | ∃ V : Set Y, IsOpen V ∧ ∃ s : C(V,X), f ∘ s = (↑) ∧ Set.range s = U} := by
-  refine isTopologicalBasis_of_isOpen_of_nhds ?_ fun x U hx hU ↦ ?_
+  refine isTopologicalBasis_of_isOpen_of_nhds _ fun x U hx hU ↦ _
   · rintro _ ⟨U, hU, s, hs, rfl⟩
-    refine (openEmbedding_of_comp hf (hs ▸ ⟨embedding_subtype_val, ?_⟩) s.continuous).isOpen_range
+    refine (openEmbedding_of_comp hf (hs ▸ ⟨embedding_subtype_val, _⟩) s.continuous).isOpen_range
     rwa [Subtype.range_val]
   · obtain ⟨f, hxf, rfl⟩ := hf x
     refine ⟨f.source ∩ U, ⟨f.target ∩ f.symm ⁻¹' U, f.symm.isOpen_inter_preimage hU,
       ⟨_, continuousOn_iff_continuous_restrict.mp (f.continuousOn_invFun.mono fun _ h ↦ h.1)⟩,
-      ?_, (Set.range_restrict _ _).trans ?_⟩, ⟨hxf, hx⟩, fun _ h ↦ h.2⟩
+      _, (Set.range_restrict _ _).trans _⟩, ⟨hxf, hx⟩, fun _ h ↦ h.2⟩
     · ext y; exact f.right_inv y.2.1
     · apply (f.symm_image_target_inter_eq _).trans
       rw [Set.preimage_inter, ← Set.inter_assoc, Set.inter_eq_self_of_subset_left

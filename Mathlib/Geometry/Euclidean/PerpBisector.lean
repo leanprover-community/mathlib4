@@ -110,7 +110,7 @@ theorem perpBisector_comm (p₁ p₂ : P) : perpBisector p₁ p₂ = perpBisecto
   top_unique fun _ ↦ by simp [mem_perpBisector_iff_inner_eq_inner]
 
 @[simp] theorem perpBisector_eq_top : perpBisector p₁ p₂ = ⊤ ↔ p₁ = p₂ := by
-  refine ⟨fun h ↦ ?_, fun h ↦ h ▸ perpBisector_self _⟩
+  refine ⟨fun h ↦ _, fun h ↦ h ▸ perpBisector_self _⟩
   rw [← left_mem_perpBisector, h]
   trivial
 

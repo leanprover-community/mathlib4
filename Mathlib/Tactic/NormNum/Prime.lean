@@ -58,8 +58,8 @@ theorem MinFacHelper.one_lt {n k : ℕ} (h : MinFacHelper n k) : 1 < n := by
 theorem minFacHelper_0 (n : ℕ)
     (h1 : Nat.ble (nat_lit 2) n = true) (h2 : nat_lit 1 = n % (nat_lit 2)) :
     MinFacHelper n (nat_lit 3) := by
-  refine ⟨by norm_num, by norm_num, ?_⟩
-  refine (le_minFac'.mpr λ p hp hpn ↦ ?_).resolve_left (Nat.ne_of_gt (Nat.le_of_ble_eq_true h1))
+  refine ⟨by norm_num, by norm_num, _⟩
+  refine (le_minFac'.mpr λ p hp hpn ↦ _).resolve_left (Nat.ne_of_gt (Nat.le_of_ble_eq_true h1))
   rcases hp.eq_or_lt with rfl|h
   · simp [(Nat.dvd_iff_mod_eq_zero ..).1 hpn] at h2
   · exact h
@@ -67,13 +67,13 @@ theorem minFacHelper_0 (n : ℕ)
 theorem minFacHelper_1 {n k k' : ℕ} (e : k + 2 = k') (h : MinFacHelper n k)
     (np : minFac n ≠ k) : MinFacHelper n k' := by
   rw [← e]
-  refine ⟨Nat.lt_add_right _ h.1, ?_, ?_⟩
+  refine ⟨Nat.lt_add_right _ h.1, _, _⟩
   · rw [add_mod, mod_self, add_zero, mod_mod]
     exact h.2.1
   rcases h.2.2.eq_or_lt with rfl|h2
   · exact (np rfl).elim
   rcases (succ_le_of_lt h2).eq_or_lt with h2|h2
-  · refine ((h.1.trans_le h.2.2).ne ?_).elim
+  · refine ((h.1.trans_le h.2.2).ne _).elim
     have h3 : 2 ∣ minFac n := by
       rw [Nat.dvd_iff_mod_eq_zero, ← h2, succ_eq_add_one, add_mod, h.2.1]
     rw [dvd_prime <| minFac_prime h.one_lt.ne'] at h3
@@ -83,13 +83,13 @@ theorem minFacHelper_1 {n k k' : ℕ} (e : k + 2 = k') (h : MinFacHelper n k)
 
 theorem minFacHelper_2 {n k k' : ℕ} (e : k + 2 = k') (nk : ¬ Nat.Prime k)
     (h : MinFacHelper n k) : MinFacHelper n k' := by
-  refine minFacHelper_1 e h λ h2 ↦ ?_
+  refine minFacHelper_1 e h λ h2 ↦ _
   rw [← h2] at nk
   exact nk <| minFac_prime h.one_lt.ne'
 
 theorem minFacHelper_3 {n k k' : ℕ} (e : k + 2 = k') (nk : (n % k).beq 0 = false)
     (h : MinFacHelper n k) : MinFacHelper n k' := by
-  refine minFacHelper_1 e h λ h2 ↦ ?_
+  refine minFacHelper_1 e h λ h2 ↦ _
   have nk := Nat.ne_of_beq_eq_false nk
   rw [← Nat.dvd_iff_mod_eq_zero, ← h2] at nk
   exact nk <| minFac_dvd n
@@ -109,9 +109,9 @@ theorem isNat_minFac_3 : {n n' : ℕ} → (k : ℕ) →
 theorem isNat_minFac_4 : {n n' k : ℕ} →
     IsNat n n' → MinFacHelper n' k → (k * k).ble n' = false → IsNat (minFac n) n'
   | n, _, k, ⟨rfl⟩, h1, h2 => by
-    refine ⟨(Nat.prime_def_minFac.mp ?_).2⟩
+    refine ⟨(Nat.prime_def_minFac.mp _).2⟩
     rw [Nat.prime_def_le_sqrt]
-    refine ⟨h1.one_lt, λ m hm hmn h2mn ↦ ?_⟩
+    refine ⟨h1.one_lt, λ m hm hmn h2mn ↦ _⟩
     exact lt_irrefl m <| calc
       m ≤ sqrt n   := hmn
       _ < k        := sqrt_lt.mpr (ble_eq_false.mp h2)

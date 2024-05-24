@@ -80,7 +80,7 @@ def presheafHomSectionsEquiv : (presheafHom F G).sections ≃ (F ⟶ G) where
       naturality := by
         rintro ⟨X₁⟩ ⟨X₂⟩ ⟨f : X₂ ⟶ X₁⟩
         dsimp
-        refine Eq.trans ?_ ((s.1 ⟨X₁⟩).naturality
+        refine Eq.trans _ ((s.1 ⟨X₁⟩).naturality
           (Over.homMk f : Over.mk f ⟶ Over.mk (𝟙 X₁)).op)
         erw [← s.2 f.op, presheafHom_map_app_op_mk_id]
         rfl }
@@ -107,7 +107,7 @@ lemma PresheafHom.isAmalgamation_iff {X : C} (S : Sieve X)
   · intro h Y g hg
     dsimp
     ext ⟨W : Over Y⟩
-    refine (h W.left (W.hom ≫ g) (S.downward_closed hg _)).trans ?_
+    refine (h W.left (W.hom ≫ g) (S.downward_closed hg _)).trans _
     have H := hx (𝟙 _) W.hom (S.downward_closed hg W.hom) hg (by simp)
     dsimp at H
     simp only [Functor.map_id, FunctorToTypes.map_id_apply] at H
@@ -164,7 +164,7 @@ lemma presheafHom_isSheafFor  :
     Presieve.IsSheafFor (presheafHom F G) S.arrows := by
   intro x hx
   apply exists_unique_of_exists_of_unique
-  · refine' ⟨
+  · refine ⟨
       { app := fun Y => app hG x hx Y.unop.hom
         naturality := by
           rintro ⟨Y₁ : Over X⟩ ⟨Y₂ : Over X⟩ ⟨φ : Y₂ ⟶ Y₁⟩
@@ -190,7 +190,7 @@ lemma presheafHom_isSheafFor  :
     rintro ⟨Z : Over Y.left, hZ⟩
     dsimp
     let φ : Over.mk (Z.hom ≫ Y.hom) ⟶ Y := Over.homMk Z.hom
-    refine (y₁.naturality φ.op).symm.trans (Eq.trans ?_ (y₂.naturality φ.op))
+    refine (y₁.naturality φ.op).symm.trans (Eq.trans _ (y₂.naturality φ.op))
     rw [(hy₁ _ _ hZ), ← ((hy₂ _ _ hZ))]
 
 end

@@ -332,7 +332,7 @@ theorem List.applyId_zip_eq [DecidableEq α] {xs ys : List α} (h₀ : List.Nodu
         simp only [List.get?, List.zip_cons_cons, List.applyId_cons] at h₂ ⊢
         rw [if_neg]
         · apply xs_ih <;> solve_by_elim [Nat.succ.inj]
-        · apply h₀; apply List.get?_mem h₂
+        · apply h₀; apply List.get_mem h₂
 #align slim_check.injective_function.list.apply_id_zip_eq SlimCheck.InjectiveFunction.List.applyId_zip_eq
 
 theorem applyId_mem_iff [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup xs) (h₁ : xs ~ ys)
@@ -392,11 +392,11 @@ theorem applyId_injective [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup 
     have h₂ := h₁.length_eq
     rw [List.applyId_zip_eq h₀ h₂ _ _ _ hx] at h
     rw [← hx, ← hy]; congr
-    apply List.get?_inj _ (h₁.nodup_iff.1 h₀)
+    apply List.get_inj _ (h₁.nodup_iff.1 h₀)
     · symm; rw [h]
       rw [← List.applyId_zip_eq] <;> assumption
     · rw [← h₁.length_eq]
-      rw [List.get?_eq_some] at hx
+      rw [List.get_eq_some] at hx
       cases' hx with hx hx'
       exact hx
   · rw [← applyId_mem_iff h₀ h₁] at hx hy

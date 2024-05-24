@@ -59,8 +59,8 @@ def hasLeftDualOfEquivalence (X : C) [HasLeftDual (F.obj X)] :
   exact := by
     -- Porting note: in Lean3, `apply exactPairingOfFullyFaithful F _ _` automatically
     -- created the goals for `ExactPairing` type class
-    refine @exactPairingOfFullyFaithful _ _ _ _ _ _ F _ _ _ _ ?_
-    refine @exactPairingCongrLeft _ _ _ _ _ _ ?_ (adj.toEquivalence.counitIso.app _)
+    refine @exactPairingOfFullyFaithful _ _ _ _ _ _ F _ _ _ _ _
+    refine @exactPairingCongrLeft _ _ _ _ _ _ _ (adj.toEquivalence.counitIso.app _)
     dsimp
     infer_instance
 #align category_theory.has_left_dual_of_equivalence CategoryTheory.hasLeftDualOfEquivalence
@@ -70,8 +70,8 @@ def hasRightDualOfEquivalence (X : C) [HasRightDual (F.obj X)] :
     HasRightDual X where
   rightDual := G.obj ((F.obj X)ᘁ)
   exact := by
-    refine @exactPairingOfFullyFaithful _ _ _ _ _ _ F _ _ _ _ ?_
-    refine @exactPairingCongrRight _ _ _ _ _ _ ?_ (adj.toEquivalence.counitIso.app _)
+    refine @exactPairingOfFullyFaithful _ _ _ _ _ _ F _ _ _ _ _
+    refine @exactPairingCongrRight _ _ _ _ _ _ _ (adj.toEquivalence.counitIso.app _)
     dsimp
     infer_instance
 #align category_theory.has_right_dual_of_equivalence CategoryTheory.hasRightDualOfEquivalence

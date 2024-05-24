@@ -50,7 +50,7 @@ variable (R : Type*) [Monoid R] (S : Submonoid R) [OreSet S]
 def oreEqv : Setoid (R × S) where
   r rs rs' := ∃ (u : S) (v : R), rs'.1 * u = rs.1 * v ∧ (rs'.2 : R) * u = rs.2 * v
   iseqv := by
-    refine ⟨fun _ => ⟨1, 1, by simp⟩, ?_, ?_⟩
+    refine ⟨fun _ => ⟨1, 1, by simp⟩, _, _⟩
     · rintro ⟨r, s⟩ ⟨r', s'⟩ ⟨u, v, hru, hsu⟩; dsimp only at *
       rcases oreCondition (s : R) s' with ⟨r₂, s₂, h₁⟩
       rcases oreCondition r₂ u with ⟨r₃, s₃, h₂⟩
@@ -58,12 +58,12 @@ def oreEqv : Setoid (R × S) where
         -- Porting note: the proof used `assoc_rw`
         rw [← mul_assoc _ (s₂ : R), h₁, mul_assoc, h₂, ← mul_assoc, ← hsu, mul_assoc]
       rcases ore_left_cancel (v * r₃) (s₂ * s₃) s this with ⟨w, hw⟩
-      refine ⟨s₂ * s₃ * w, u * r₃ * w, ?_, ?_⟩ <;> simp only [Submonoid.coe_mul, ← hw]
+      refine ⟨s₂ * s₃ * w, u * r₃ * w, _, _⟩ <;> simp only [Submonoid.coe_mul, ← hw]
       · simp only [← mul_assoc, hru]
       · simp only [← mul_assoc, hsu]
     · rintro ⟨r₁, s₁⟩ ⟨r₂, s₂⟩ ⟨r₃, s₃⟩ ⟨u, v, hur₁, hs₁u⟩ ⟨u', v', hur₂, hs₂u⟩
       rcases oreCondition v' u with ⟨r', s', h⟩; dsimp only at *
-      refine ⟨u' * s', v * r', ?_, ?_⟩ <;> simp only [Submonoid.coe_mul, ← mul_assoc]
+      refine ⟨u' * s', v * r', _, _⟩ <;> simp only [Submonoid.coe_mul, ← mul_assoc]
       · rw [hur₂, mul_assoc, h, ← mul_assoc, hur₁]
       · rw [hs₂u, mul_assoc, h, ← mul_assoc, hs₁u]
 #align ore_localization.ore_eqv OreLocalization.oreEqv
@@ -114,7 +114,7 @@ theorem oreDiv_eq_iff {r₁ r₂ : R} {s₁ s₂ : S} :
 protected theorem expand (r : R) (s : S) (t : R) (hst : (s : R) * t ∈ S) :
     r /ₒ s = r * t /ₒ ⟨s * t, hst⟩ := by
   apply Quotient.sound
-  refine' ⟨s, t * s, _, _⟩ <;> dsimp <;> rw [mul_assoc]
+  refine ⟨s, t * s, _, _⟩ <;> dsimp <;> rw [mul_assoc]
 #align ore_localization.expand OreLocalization.expand
 
 /-- A fraction is equal to its expansion by a factor from s. -/

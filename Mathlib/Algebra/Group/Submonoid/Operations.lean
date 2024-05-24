@@ -748,7 +748,7 @@ theorem coe_equivMapOfInjective_apply (f : M →* N) (hf : Function.Injective f)
 theorem closure_closure_coe_preimage {s : Set M} : closure (((↑) : closure s → M) ⁻¹' s) = ⊤ :=
   eq_top_iff.2 fun x =>
     Subtype.recOn x fun x hx _ => by
-      refine' closure_induction' _ (fun g hg => subset_closure hg) _ (fun g₁ g₂ hg₁ hg₂ => _) hx
+      refine closure_induction' _ (fun g hg => subset_closure hg) _ (fun g₁ g₂ hg₁ hg₂ => _) hx
       · exact Submonoid.one_mem _
       · exact Submonoid.mul_mem _
 #align submonoid.closure_closure_coe_preimage Submonoid.closure_closure_coe_preimage
@@ -1518,7 +1518,7 @@ open AddSubmonoid Set
 namespace Nat
 
 @[simp] lemma addSubmonoid_closure_one : closure ({1} : Set ℕ) = ⊤ := by
-  refine (eq_top_iff' _).2 <| Nat.rec (zero_mem _) ?_
+  refine (eq_top_iff' _).2 <| Nat.rec (zero_mem _) _
   simp_rw [Nat.succ_eq_add_one]
   exact fun n hn ↦ AddSubmonoid.add_mem _ hn <| subset_closure <| Set.mem_singleton _
 

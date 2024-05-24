@@ -102,7 +102,7 @@ theorem isOpen_iff_coe_preimage_of_iSup_eq_top (s : Set β) :
     IsOpen s ↔ ∀ i, IsOpen ((↑) ⁻¹' s : Set (U i)) := by
   -- Porting note: rewrote to avoid ´simp´ issues
   rw [isOpen_iff_inter_of_iSup_eq_top hU s]
-  refine forall_congr' fun i => ?_
+  refine forall_congr' fun i => _
   rw [(U _).2.openEmbedding_subtype_val.open_iff_image_open]
   erw [Set.image_preimage_eq_inter_range]
   rw [Subtype.range_coe, Opens.carrier_eq_coe]
@@ -115,7 +115,7 @@ theorem isClosed_iff_coe_preimage_of_iSup_eq_top (s : Set β) :
 
 theorem isClosedMap_iff_isClosedMap_of_iSup_eq_top :
     IsClosedMap f ↔ ∀ i, IsClosedMap ((U i).1.restrictPreimage f) := by
-  refine' ⟨fun h i => h.restrictPreimage _, _⟩
+  refine ⟨fun h i => h.restrictPreimage _, _⟩
   rintro H s hs
   rw [isClosed_iff_coe_preimage_of_iSup_eq_top hU]
   intro i

@@ -70,7 +70,7 @@ theorem StrictMonoOn.exists_slope_lt_deriv_aux {x y : ℝ} {f : ℝ → ℝ} (hf
   obtain ⟨a, ⟨hxa, hay⟩, ha⟩ : ∃ a ∈ Ioo x y, deriv f a = (f y - f x) / (y - x) :=
     exists_deriv_eq_slope f hxy hf A
   rcases nonempty_Ioo.2 hay with ⟨b, ⟨hab, hby⟩⟩
-  refine ⟨b, ⟨hxa.trans hab, hby⟩, ?_⟩
+  refine ⟨b, ⟨hxa.trans hab, hby⟩, _⟩
   rw [← ha]
   exact hf'_mono ⟨hxa, hay⟩ ⟨hxa.trans hab, hby⟩ hab
 #align strict_mono_on.exists_slope_lt_deriv_aux StrictMonoOn.exists_slope_lt_deriv_aux
@@ -92,13 +92,13 @@ theorem StrictMonoOn.exists_slope_lt_deriv {x y : ℝ} {f : ℝ → ℝ} (hf : C
         exact hf'_mono ⟨hz.1, hz.2.trans hwy⟩ ⟨hxw, hwy⟩ hz.2
     obtain ⟨b, ⟨hwb, hby⟩, hb⟩ : ∃ b ∈ Ioo w y, (f y - f w) / (y - w) < deriv f b := by
       apply StrictMonoOn.exists_slope_lt_deriv_aux _ hwy _ _
-      · refine' hf.mono (Icc_subset_Icc hxw.le le_rfl)
+      · refine hf.mono (Icc_subset_Icc hxw.le le_rfl)
       · exact hf'_mono.mono (Ioo_subset_Ioo hxw.le le_rfl)
       · intro z hz
         rw [← hw]
         apply ne_of_gt
         exact hf'_mono ⟨hxw, hwy⟩ ⟨hxw.trans hz.1, hz.2⟩ hz.1
-    refine ⟨b, ⟨hxw.trans hwb, hby⟩, ?_⟩
+    refine ⟨b, ⟨hxw.trans hwb, hby⟩, _⟩
     simp only [div_lt_iff, hxy, hxw, hwy, sub_pos] at ha hb ⊢
     have : deriv f a * (w - x) < deriv f b * (w - x) := by
       apply mul_lt_mul _ le_rfl (sub_pos.2 hxw) _
@@ -116,7 +116,7 @@ theorem StrictMonoOn.exists_deriv_lt_slope_aux {x y : ℝ} {f : ℝ → ℝ} (hf
   obtain ⟨a, ⟨hxa, hay⟩, ha⟩ : ∃ a ∈ Ioo x y, deriv f a = (f y - f x) / (y - x) :=
     exists_deriv_eq_slope f hxy hf A
   rcases nonempty_Ioo.2 hxa with ⟨b, ⟨hxb, hba⟩⟩
-  refine ⟨b, ⟨hxb, hba.trans hay⟩, ?_⟩
+  refine ⟨b, ⟨hxb, hba.trans hay⟩, _⟩
   rw [← ha]
   exact hf'_mono ⟨hxb, hba.trans hay⟩ ⟨hxa, hay⟩ hba
 #align strict_mono_on.exists_deriv_lt_slope_aux StrictMonoOn.exists_deriv_lt_slope_aux
@@ -138,13 +138,13 @@ theorem StrictMonoOn.exists_deriv_lt_slope {x y : ℝ} {f : ℝ → ℝ} (hf : C
         exact hf'_mono ⟨hz.1, hz.2.trans hwy⟩ ⟨hxw, hwy⟩ hz.2
     obtain ⟨b, ⟨hwb, hby⟩, hb⟩ : ∃ b ∈ Ioo w y, deriv f b < (f y - f w) / (y - w) := by
       apply StrictMonoOn.exists_deriv_lt_slope_aux _ hwy _ _
-      · refine' hf.mono (Icc_subset_Icc hxw.le le_rfl)
+      · refine hf.mono (Icc_subset_Icc hxw.le le_rfl)
       · exact hf'_mono.mono (Ioo_subset_Ioo hxw.le le_rfl)
       · intro z hz
         rw [← hw]
         apply ne_of_gt
         exact hf'_mono ⟨hxw, hwy⟩ ⟨hxw.trans hz.1, hz.2⟩ hz.1
-    refine ⟨a, ⟨hxa, haw.trans hwy⟩, ?_⟩
+    refine ⟨a, ⟨hxa, haw.trans hwy⟩, _⟩
     simp only [lt_div_iff, hxy, hxw, hwy, sub_pos] at ha hb ⊢
     have : deriv f a * (y - w) < deriv f b * (y - w) := by
       apply mul_lt_mul _ le_rfl (sub_pos.2 hwy) _
@@ -247,13 +247,13 @@ lemma convexOn_of_hasDerivWithinAt2_nonneg {D : Set ℝ} (hD : Convex ℝ D) {f 
     (hf'' : ∀ x ∈ interior D, HasDerivWithinAt f' (f'' x) (interior D) x)
     (hf''₀ : ∀ x ∈ interior D, 0 ≤ f'' x) : ConvexOn ℝ D f := by
   have : (interior D).EqOn (deriv f) f' := deriv_eqOn isOpen_interior hf'
-  refine convexOn_of_deriv2_nonneg hD hf (fun x hx ↦ (hf' _ hx).differentiableWithinAt) ?_ ?_
+  refine convexOn_of_deriv2_nonneg hD hf (fun x hx ↦ (hf' _ hx).differentiableWithinAt) _ _
   · rw [differentiableOn_congr this]
     exact fun x hx ↦ (hf'' _ hx).differentiableWithinAt
   · rintro x hx
     convert hf''₀ _ hx using 1
     dsimp
-    rw [deriv_eqOn isOpen_interior (fun y hy ↦ ?_) hx]
+    rw [deriv_eqOn isOpen_interior (fun y hy ↦ _) hx]
     exact (hf'' _ hy).congr this $ by rw [this hy]
 
 /-- If a function `f` is continuous on a convex set `D ⊆ ℝ`, is twice differentiable on its
@@ -263,13 +263,13 @@ lemma concaveOn_of_hasDerivWithinAt2_nonpos {D : Set ℝ} (hD : Convex ℝ D) {f
     (hf'' : ∀ x ∈ interior D, HasDerivWithinAt f' (f'' x) (interior D) x)
     (hf''₀ : ∀ x ∈ interior D, f'' x ≤ 0) : ConcaveOn ℝ D f := by
   have : (interior D).EqOn (deriv f) f' := deriv_eqOn isOpen_interior hf'
-  refine concaveOn_of_deriv2_nonpos hD hf (fun x hx ↦ (hf' _ hx).differentiableWithinAt) ?_ ?_
+  refine concaveOn_of_deriv2_nonpos hD hf (fun x hx ↦ (hf' _ hx).differentiableWithinAt) _ _
   · rw [differentiableOn_congr this]
     exact fun x hx ↦ (hf'' _ hx).differentiableWithinAt
   · rintro x hx
     convert hf''₀ _ hx using 1
     dsimp
-    rw [deriv_eqOn isOpen_interior (fun y hy ↦ ?_) hx]
+    rw [deriv_eqOn isOpen_interior (fun y hy ↦ _) hx]
     exact (hf'' _ hy).congr this $ by rw [this hy]
 
 /-- If a function `f` is continuous on a convex set `D ⊆ ℝ` and `f''` is strictly positive on the
@@ -397,7 +397,7 @@ lemma le_slope_of_hasDerivWithinAt_Ioi (hfc : ConvexOn ℝ S f)
   apply le_of_tendsto <| (hasDerivWithinAt_iff_tendsto_slope' not_mem_Ioi_self).mp hf'
   simp_rw [eventually_nhdsWithin_iff, slope_def_field]
   filter_upwards [eventually_lt_nhds hxy] with t ht (ht' : x < t)
-  refine hfc.secant_mono hx (?_ : t ∈ S) hy ht'.ne' hxy.ne' ht.le
+  refine hfc.secant_mono hx (_ : t ∈ S) hy ht'.ne' hxy.ne' ht.le
   exact hfc.1.ordConnected.out hx hy ⟨ht'.le, ht.le⟩
 
 /-- Reformulation of `ConvexOn.le_slope_of_hasDerivWithinAt_Ioi` using `derivWithin`. -/
@@ -414,7 +414,7 @@ under a `DifferentiableOn S` hypothesis. -/
 lemma le_slope_of_hasDerivWithinAt (hfc : ConvexOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y)
     (hf' : HasDerivWithinAt f f' S x) :
     f' ≤ slope f x y := by
-  refine hfc.le_slope_of_hasDerivWithinAt_Ioi hx hy hxy (hf'.mono_of_mem ?_)
+  refine hfc.le_slope_of_hasDerivWithinAt_Ioi hx hy hxy (hf'.mono_of_mem _)
   rw [mem_nhdsWithin_Ioi_iff_exists_Ioc_subset]
   exact ⟨y, hxy, Ioc_subset_Icc_self.trans (hfc.1.ordConnected.out hx hy)⟩
 
@@ -452,7 +452,7 @@ lemma slope_le_of_hasDerivWithinAt_Iio (hfc : ConvexOn ℝ S f)
   apply ge_of_tendsto <| (hasDerivWithinAt_iff_tendsto_slope' not_mem_Iio_self).mp hf'
   simp_rw [eventually_nhdsWithin_iff, slope_comm f x y, slope_def_field]
   filter_upwards [eventually_gt_nhds hxy] with t ht (ht' : t < y)
-  refine hfc.secant_mono hy hx (?_ : t ∈ S) hxy.ne ht'.ne ht.le
+  refine hfc.secant_mono hy hx (_ : t ∈ S) hxy.ne ht'.ne ht.le
   exact hfc.1.ordConnected.out hx hy ⟨ht.le, ht'.le⟩
 
 /-- Reformulation of `ConvexOn.slope_le_of_hasDerivWithinAt_Iio` using `derivWithin`. -/
@@ -469,7 +469,7 @@ under a `DifferentiableOn S` hypothesis. -/
 lemma slope_le_of_hasDerivWithinAt (hfc : ConvexOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y)
     (hf' : HasDerivWithinAt f f' S y) :
     slope f x y ≤ f' := by
-  refine hfc.slope_le_of_hasDerivWithinAt_Iio hx hy hxy (hf'.mono_of_mem ?_)
+  refine hfc.slope_le_of_hasDerivWithinAt_Iio hx hy hxy (hf'.mono_of_mem _)
   rw [mem_nhdsWithin_Iio_iff_exists_Ico_subset]
   exact ⟨x, hxy, Ico_subset_Icc_self.trans (hfc.1.ordConnected.out hx hy)⟩
 
@@ -553,7 +553,7 @@ apply under a `DifferentiableOn S` hypothesis. -/
 lemma lt_slope_of_hasDerivWithinAt (hfc : StrictConvexOn ℝ S f)
     (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) (hf' : HasDerivWithinAt f f' S x) :
     f' < slope f x y := by
-  refine hfc.lt_slope_of_hasDerivWithinAt_Ioi hx hy hxy (hf'.mono_of_mem ?_)
+  refine hfc.lt_slope_of_hasDerivWithinAt_Ioi hx hy hxy (hf'.mono_of_mem _)
   rw [mem_nhdsWithin_Ioi_iff_exists_Ioc_subset]
   exact ⟨y, hxy, Ioc_subset_Icc_self.trans (hfc.1.ordConnected.out hx hy)⟩
 
@@ -606,7 +606,7 @@ apply under a `DifferentiableOn S` hypothesis.-/
 lemma slope_lt_of_hasDerivWithinAt (hfc : StrictConvexOn ℝ S f)
     (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) (hf' : HasDerivWithinAt f f' S y) :
     slope f x y < f' := by
-  refine hfc.slope_lt_of_hasDerivWithinAt_Iio hx hy hxy (hf'.mono_of_mem ?_)
+  refine hfc.slope_lt_of_hasDerivWithinAt_Iio hx hy hxy (hf'.mono_of_mem _)
   rw [mem_nhdsWithin_Iio_iff_exists_Ico_subset]
   exact ⟨x, hxy, Ico_subset_Icc_self.trans (hfc.1.ordConnected.out hx hy)⟩
 
@@ -675,7 +675,7 @@ lemma slope_le_right_deriv (hfc : ConcaveOn ℝ S f) (hx : x ∈ S) (hy : y ∈ 
 lemma slope_le_of_hasDerivWithinAt (hfc : ConcaveOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y)
     (hfd : HasDerivWithinAt f f' S x) :
     slope f x y ≤ f' := by
-  refine hfc.slope_le_of_hasDerivWithinAt_Ioi hx hy hxy (hfd.mono_of_mem ?_)
+  refine hfc.slope_le_of_hasDerivWithinAt_Ioi hx hy hxy (hfd.mono_of_mem _)
   rw [mem_nhdsWithin_Ioi_iff_exists_Ioc_subset]
   exact ⟨y, hxy, Ioc_subset_Icc_self.trans (hfc.1.ordConnected.out hx hy)⟩
 
@@ -715,7 +715,7 @@ lemma left_deriv_le_slope (hfc : ConcaveOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S
 lemma le_slope_of_hasDerivWithinAt (hfc : ConcaveOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y)
     (hf' : HasDerivWithinAt f f' S y) :
     f' ≤ slope f x y := by
-  refine hfc.le_slope_of_hasDerivWithinAt_Iio hx hy hxy (hf'.mono_of_mem ?_)
+  refine hfc.le_slope_of_hasDerivWithinAt_Iio hx hy hxy (hf'.mono_of_mem _)
   rw [mem_nhdsWithin_Iio_iff_exists_Ico_subset]
   exact ⟨x, hxy, Ico_subset_Icc_self.trans (hfc.1.ordConnected.out hx hy)⟩
 

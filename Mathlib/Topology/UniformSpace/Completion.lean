@@ -148,7 +148,7 @@ theorem basis_uniformity {ι : Sort*} {p : ι → Prop} {s : ι → Set (α × �
 
 theorem mem_uniformity' {s : Set (CauchyFilter α × CauchyFilter α)} :
     s ∈ 𝓤 (CauchyFilter α) ↔ ∃ t ∈ 𝓤 α, ∀ f g : CauchyFilter α, t ∈ f.1 ×ˢ g.1 → (f, g) ∈ s := by
-  refine mem_uniformity.trans (exists_congr (fun t => and_congr_right_iff.mpr (fun _h => ?_)))
+  refine mem_uniformity.trans (exists_congr (fun t => and_congr_right_iff.mpr (fun _h => _)))
   exact ⟨fun h _f _g ht => h ht, fun h _p hp => h _ _ hp⟩
 set_option linter.uppercaseLean3 false in
 #align Cauchy.mem_uniformity' CauchyFilter.mem_uniformity'
@@ -193,8 +193,8 @@ theorem denseRange_pureCauchy : DenseRange (pureCauchy : α → CauchyFilter α)
     ⟨x, ht''₂ <| by dsimp [gen]; exact this⟩
   simp only [closure_eq_cluster_pts, ClusterPt, nhds_eq_uniformity, lift'_inf_principal_eq,
     Set.inter_comm _ (range pureCauchy), mem_setOf_eq]
-  refine (lift'_neBot_iff ?_).mpr (fun s hs => ?_)
-  · refine monotone_const.inter ?_
+  refine (lift'_neBot_iff _).mpr (fun s hs => _)
+  · refine monotone_const.inter _
     simp_rw [UniformSpace.ball]
     exact monotone_preimage
   · let ⟨y, hy⟩ := h_ex s hs
@@ -592,13 +592,13 @@ quotient. -/
 def completionSeparationQuotientEquiv (α : Type u) [UniformSpace α] :
     Completion (SeparationQuotient α) ≃ Completion α := by
   refine ⟨Completion.extension (lift' ((↑) : α → Completion α)),
-    Completion.map SeparationQuotient.mk, fun a ↦ ?_, fun a ↦ ?_⟩
-  · refine induction_on a (isClosed_eq (continuous_map.comp continuous_extension) continuous_id) ?_
-    refine SeparationQuotient.surjective_mk.forall.2 fun a ↦ ?_
+    Completion.map SeparationQuotient.mk, fun a ↦ _, fun a ↦ _⟩
+  · refine induction_on a (isClosed_eq (continuous_map.comp continuous_extension) continuous_id) _
+    refine SeparationQuotient.surjective_mk.forall.2 fun a ↦ _
     rw [extension_coe (uniformContinuous_lift' _), lift'_mk (uniformContinuous_coe α),
       map_coe uniformContinuous_mk]
   · refine induction_on a
-      (isClosed_eq (continuous_extension.comp continuous_map) continuous_id) fun a ↦ ?_
+      (isClosed_eq (continuous_extension.comp continuous_map) continuous_id) fun a ↦ _
     rw [map_coe uniformContinuous_mk, extension_coe (uniformContinuous_lift' _),
       lift'_mk (uniformContinuous_coe _)]
 #align uniform_space.completion.completion_separation_quotient_equiv UniformSpace.Completion.completionSeparationQuotientEquiv

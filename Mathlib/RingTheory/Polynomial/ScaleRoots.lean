@@ -79,7 +79,7 @@ theorem degree_scaleRoots (p : R[X]) {s : R} : degree (scaleRoots p s) = degree 
   haveI := Classical.propDecidable
   by_cases hp : p = 0
   · rw [hp, zero_scaleRoots]
-  refine' le_antisymm (Finset.sup_mono (support_scaleRoots_le p s)) (degree_le_degree _)
+  refine le_antisymm (Finset.sup_mono (support_scaleRoots_le p s)) (degree_le_degree _)
   rw [coeff_scaleRoots_natDegree]
   intro h
   have := leadingCoeff_eq_zero.mp h
@@ -256,7 +256,7 @@ alias _root_.Dvd.dvd.scaleRoots := scaleRoots_dvd
 
 lemma scaleRoots_dvd_iff (p q : R[X]) {r : R} (hr : IsUnit r) :
     p.scaleRoots r ∣ q.scaleRoots r ↔ p ∣ q := by
-  refine ⟨?_ ∘ scaleRoots_dvd' _ _ (hr.unit⁻¹).isUnit, scaleRoots_dvd' p q hr⟩
+  refine ⟨_ ∘ scaleRoots_dvd' _ _ (hr.unit⁻¹).isUnit, scaleRoots_dvd' p q hr⟩
   simp [← scaleRoots_mul, scaleRoots_one]
 alias _root_.IsUnit.scaleRoots_dvd_iff := scaleRoots_dvd_iff
 

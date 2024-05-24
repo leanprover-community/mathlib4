@@ -22,7 +22,7 @@ initialize registerTraceClass `Tactic.congrm
 /--
 `congrm e` is a tactic for proving goals of the form `lhs = rhs`, `lhs ↔ rhs`, `HEq lhs rhs`,
 or `R lhs rhs` when `R` is a reflexive relation.
-The expression `e` is a pattern containing placeholders `?_`,
+The expression `e` is a pattern containing placeholders `_`,
 and this pattern is matched against `lhs` and `rhs` simultaneously.
 These placeholders generate new goals that state that corresponding subexpressions
 in `lhs` and `rhs` are equal.
@@ -43,7 +43,7 @@ example {a b c d : ℕ} :
   sorry
 
 example {a b : ℕ} (h : a = b) : (fun y : ℕ => ∀ z, a + a = z) = (fun x => ∀ z, b + a = z) := by
-  congrm fun x => ∀ w, ?_ + a = w
+  congrm fun x => ∀ w, _ + a = w
   -- ⊢ a = b
   exact h
 ```

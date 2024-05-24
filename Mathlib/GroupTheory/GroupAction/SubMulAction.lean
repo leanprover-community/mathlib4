@@ -245,7 +245,7 @@ theorem val_smul (r : R) (x : p) : (↑(r • x) : M) = r • (x : M) :=
 variable (p)
 
 /-- Embedding of a submodule `p` to the ambient space `M`. -/
-protected def subtype : p →[R] M := by refine' { toFun := Subtype.val.. }; simp [val_smul]
+protected def subtype : p →[R] M := by refine { toFun := Subtype.val.. }; simp [val_smul]
 #align sub_mul_action.subtype SubMulAction.subtype
 
 @[simp]
@@ -378,7 +378,7 @@ variable [Group R] [MulAction R M]
 
 lemma orbitRel_of_subMul (p : SubMulAction R M) :
     MulAction.orbitRel R p = (MulAction.orbitRel R M).comap Subtype.val := by
-  refine Setoid.ext_iff.2 (fun x y ↦ ?_)
+  refine Setoid.ext_iff.2 (fun x y ↦ _)
   rw [Setoid.comap_rel]
   exact mem_orbit_subMul_iff
 

@@ -68,7 +68,7 @@ theorem specializes_TFAE (x y : X) :
   tfae_have 5 ↔ 7
   · rw [mem_closure_iff_clusterPt, principal_singleton]
   tfae_have 5 → 1
-  · refine' fun h => (nhds_basis_opens _).ge_iff.2 _
+  · refine fun h => (nhds_basis_opens _).ge_iff.2 _
     rintro s ⟨hy, ho⟩
     rcases mem_closure_iff.1 h s ho hy with ⟨z, hxs, rfl : z = x⟩
     exact ho.mem_nhds hxs
@@ -416,7 +416,7 @@ instance [Subsingleton X] : Subsingleton (SeparationQuotient X) :=
   surjective_mk.subsingleton
 
 theorem preimage_image_mk_open (hs : IsOpen s) : mk ⁻¹' (mk '' s) = s := by
-  refine' Subset.antisymm _ (subset_preimage_image _ _)
+  refine Subset.antisymm _ (subset_preimage_image _ _)
   rintro x ⟨y, hys, hxy⟩
   exact ((mk_eq_mk.1 hxy).mem_open_iff hs).1 hys
 #align separation_quotient.preimage_image_mk_open SeparationQuotient.preimage_image_mk_open
@@ -426,7 +426,7 @@ theorem isOpenMap_mk : IsOpenMap (mk : X → SeparationQuotient X) := fun s hs =
 #align separation_quotient.is_open_map_mk SeparationQuotient.isOpenMap_mk
 
 theorem preimage_image_mk_closed (hs : IsClosed s) : mk ⁻¹' (mk '' s) = s := by
-  refine' Subset.antisymm _ (subset_preimage_image _ _)
+  refine Subset.antisymm _ (subset_preimage_image _ _)
   rintro x ⟨y, hys, hxy⟩
   exact ((mk_eq_mk.1 hxy).mem_closed_iff hs).1 hys
 #align separation_quotient.preimage_image_mk_closed SeparationQuotient.preimage_image_mk_closed
@@ -492,9 +492,9 @@ theorem map_mk_nhdsWithin_preimage (s : Set (SeparationQuotient X)) (x : X) :
 /-- The map `(x, y) ↦ (mk x, mk y)` is a quotient map. -/
 theorem quotientMap_prodMap_mk : QuotientMap (Prod.map mk mk : X × Y → _) := by
   have hsurj : Surjective (Prod.map mk mk : X × Y → _) := surjective_mk.Prod_map surjective_mk
-  refine quotientMap_iff.2 ⟨hsurj, fun s ↦ ?_⟩
-  refine ⟨fun hs ↦ hs.preimage (continuous_mk.prod_map continuous_mk), fun hs ↦ ?_⟩
-  refine isOpen_iff_mem_nhds.2 <| hsurj.forall.2 fun (x, y) h ↦ ?_
+  refine quotientMap_iff.2 ⟨hsurj, fun s ↦ _⟩
+  refine ⟨fun hs ↦ hs.preimage (continuous_mk.prod_map continuous_mk), fun hs ↦ _⟩
+  refine isOpen_iff_mem_nhds.2 <| hsurj.forall.2 fun (x, y) h ↦ _
   rw [Prod.map_mk, nhds_prod_eq, ← map_mk_nhds, ← map_mk_nhds, Filter.prod_map_map_eq',
     ← nhds_prod_eq, Filter.mem_map]
   exact hs.mem_nhds h

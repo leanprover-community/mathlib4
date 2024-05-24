@@ -48,7 +48,7 @@ theorem eq_condKernel_of_measure_eq_compProd' (κ : kernel α Ω) [IsSFiniteKern
     (hκ : ρ = ρ.fst ⊗ₘ κ) {s : Set Ω} (hs : MeasurableSet s) :
     ∀ᵐ x ∂ρ.fst, κ x s = ρ.condKernel x s := by
   refine ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite
-    (kernel.measurable_coe κ hs) (kernel.measurable_coe ρ.condKernel hs) (fun t ht _ ↦ ?_)
+    (kernel.measurable_coe κ hs) (kernel.measurable_coe ρ.condKernel hs) (fun t ht _ ↦ _)
   conv_rhs => rw [Measure.set_lintegral_condKernel_eq_measure_prod ht hs, hκ]
   simp only [Measure.compProd_apply (ht.prod hs), Set.mem_prod, ← lintegral_indicator _ ht]
   congr with x
@@ -72,7 +72,7 @@ lemma eq_condKernel_of_measure_eq_compProd_real {ρ : Measure (α × ℝ)} [IsFi
     exact ae_all_iff.2 fun q ↦ eq_condKernel_of_measure_eq_compProd' κ hκ measurableSet_Iic
   · filter_upwards [huniv] with x hxuniv t ht heq
     rw [measure_compl ht <| measure_ne_top _ _, heq, hxuniv, measure_compl ht <| measure_ne_top _ _]
-  · refine ae_of_all _ (fun x f hdisj hf heq ↦ ?_)
+  · refine ae_of_all _ (fun x f hdisj hf heq ↦ _)
     rw [measure_iUnion hdisj hf, measure_iUnion hdisj hf]
     exact tsum_congr heq
 
@@ -93,7 +93,7 @@ theorem eq_condKernel_of_measure_eq_compProd (κ : kernel α Ω) [IsFiniteKernel
       measurable_fst hs, hs, hs]
   have hρ'' : ∀ᵐ x ∂ρ.fst, kernel.map κ f hf.measurable x = ρ'.condKernel x := by
     rw [← hρ']
-    refine eq_condKernel_of_measure_eq_compProd_real (kernel.map κ f hf.measurable) ?_
+    refine eq_condKernel_of_measure_eq_compProd_real (kernel.map κ f hf.measurable) _
     ext s hs
     conv_lhs => rw [hρ'def, hκ]
     rw [Measure.map_apply (measurable_id.prod_map hf.measurable) hs, hρ',

@@ -43,7 +43,7 @@ lemma prod_le_prod (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ g i)
     have := posMulMono_iff_mulPosMono.1 ‹PosMulMono R›
     apply mul_le_mul
     · exact h1 a (mem_cons_self a s)
-    · refine ih (fun x H ↦ h0 _ ?_) (fun x H ↦ h1 _ ?_) <;> exact subset_cons _ H
+    · refine ih (fun x H ↦ h0 _ _) (fun x H ↦ h1 _ _) <;> exact subset_cons _ H
     · apply prod_nonneg fun x H ↦ h0 x (subset_cons _ H)
     · apply le_trans (h0 a (mem_cons_self a s)) (h1 a (mem_cons_self a s))
 #align finset.prod_le_prod Finset.prod_le_prod
@@ -81,7 +81,7 @@ lemma prod_lt_prod (hf : ∀ i ∈ s, 0 < f i) (hfg : ∀ i ∈ s, f i ≤ g i)
   obtain ⟨i, hi, hilt⟩ := hlt
   rw [← insert_erase hi, prod_insert (not_mem_erase _ _), prod_insert (not_mem_erase _ _)]
   have := posMulStrictMono_iff_mulPosStrictMono.1 ‹PosMulStrictMono R›
-  refine mul_lt_mul_of_le_of_lt' hilt ?_ ?_ ?_
+  refine mul_lt_mul_of_le_of_lt' hilt _ _ _
   · exact prod_le_prod (fun j hj => le_of_lt (hf j (mem_of_mem_erase hj)))
       (fun _ hj ↦ hfg _ <| mem_of_mem_erase hj)
   · exact (hf i hi).le.trans hilt.le
@@ -107,11 +107,11 @@ lemma prod_add_prod_le {i : ι} {f g h : ι → R} (hi : i ∈ s) (h2i : g i + h
     (hh : ∀ i ∈ s, 0 ≤ h i) : ((∏ i in s, g i) + ∏ i in s, h i) ≤ ∏ i in s, f i := by
   classical
   simp_rw [prod_eq_mul_prod_diff_singleton hi]
-  refine le_trans ?_ (mul_le_mul_of_nonneg_right h2i ?_)
+  refine le_trans _ (mul_le_mul_of_nonneg_right h2i _)
   · rw [right_distrib]
-    refine add_le_add ?_ ?_ <;>
-    · refine mul_le_mul_of_nonneg_left ?_ ?_
-      · refine prod_le_prod ?_ ?_ <;> simp (config := { contextual := true }) [*]
+    refine add_le_add _ _ <;>
+    · refine mul_le_mul_of_nonneg_left _ _
+      · refine prod_le_prod _ _ <;> simp (config := { contextual := true }) [*]
       · try apply_assumption
         try assumption
   · apply prod_nonneg
@@ -134,7 +134,7 @@ lemma sum_mul_sq_le_sq_mul_sq (s : Finset ι) (f g : ι → R) :
     rw [← h', sum_congr rfl (show ∀ i ∈ s, f i * g i = 0 from fun i hi ↦ by simp [h'' i hi])]
     simp
   refine le_of_mul_le_mul_of_pos_left
-    (le_of_add_le_add_left (a := (∑ i in s, g i ^ 2) * (∑ j in s, f j * g j) ^ 2) ?_) h'
+    (le_of_add_le_add_left (a := (∑ i in s, g i ^ 2) * (∑ j in s, f j * g j) ^ 2) _) h'
   calc
     _ = ∑ i in s, 2 * (f i * ∑ j in s, g j ^ 2) * (g i * ∑ j in s, f j * g j) := by
         simp_rw [mul_assoc (2 : R), mul_mul_mul_comm, ← mul_sum, ← sum_mul]; ring
@@ -165,7 +165,7 @@ lemma prod_add_prod_le' (hi : i ∈ s) (h2i : g i + h i ≤ f i) (hgf : ∀ j �
     (hhf : ∀ j ∈ s, j ≠ i → h j ≤ f j) : ((∏ i in s, g i) + ∏ i in s, h i) ≤ ∏ i in s, f i := by
   classical
     simp_rw [prod_eq_mul_prod_diff_singleton hi]
-    refine' le_trans _ (mul_le_mul_right' h2i _)
+    refine le_trans _ (mul_le_mul_right' h2i _)
     rw [right_distrib]
     apply add_le_add <;> apply mul_le_mul_left' <;> apply prod_le_prod' <;>
             simp only [and_imp, mem_sdiff, mem_singleton] <;>

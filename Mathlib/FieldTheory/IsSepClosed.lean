@@ -121,7 +121,7 @@ theorem exists_eq_mul_self [IsSepClosed k] (x : k) [h2 : NeZero (2 : k)] : ∃ z
 
 theorem roots_eq_zero_iff [IsSepClosed k] {p : k[X]} (hsep : p.Separable) :
     p.roots = 0 ↔ p = Polynomial.C (p.coeff 0) := by
-  refine' ⟨fun h => _, fun hp => by rw [hp, roots_C]⟩
+  refine ⟨fun h => _, fun hp => by rw [hp, roots_C]⟩
   rcases le_or_lt (degree p) 0 with hd | hd
   · exact eq_C_of_degree_le_zero hd
   · obtain ⟨z, hz⟩ := IsSepClosed.exists_root p hd.ne' hsep
@@ -145,7 +145,7 @@ variable (k) {K}
 
 theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → Separable p → ∃ x, p.eval x = 0) :
     IsSepClosed k := by
-  refine ⟨fun p hsep ↦ Or.inr ?_⟩
+  refine ⟨fun p hsep ↦ Or.inr _⟩
   intro q hq hdvd
   simp only [map_id] at hdvd
   have hlc : IsUnit (leadingCoeff q)⁻¹ := IsUnit.inv <| Ne.isUnit <|
@@ -168,7 +168,7 @@ variable (K)
 theorem algebraMap_surjective
     [IsSepClosed k] [Algebra k K] [IsSeparable k K] :
     Function.Surjective (algebraMap k K) := by
-  refine fun x => ⟨-(minpoly k x).coeff 0, ?_⟩
+  refine fun x => ⟨-(minpoly k x).coeff 0, _⟩
   have hq : (minpoly k x).leadingCoeff = 1 := minpoly.monic (IsSeparable.isIntegral k x)
   have hsep : (minpoly k x).Separable := IsSeparable.separable k x
   have h : (minpoly k x).degree = 1 :=

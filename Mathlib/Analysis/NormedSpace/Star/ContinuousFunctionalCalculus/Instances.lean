@@ -71,14 +71,14 @@ attribute [aesop safe apply] IsSelfAdjoint.isStarNormal
 contained in `ℝ`. -/
 lemma isSelfAdjoint_iff_isStarNormal_and_spectrumRestricts {a : A} :
     IsSelfAdjoint a ↔ IsStarNormal a ∧ SpectrumRestricts a Complex.reCLM := by
-  refine ⟨fun ha ↦ ⟨ha.isStarNormal, .of_rightInvOn Complex.ofReal_re fun x hx ↦ ?_⟩, ?_⟩
+  refine ⟨fun ha ↦ ⟨ha.isStarNormal, .of_rightInvOn Complex.ofReal_re fun x hx ↦ _⟩, _⟩
   · have := eqOn_of_cfc_eq_cfc <| (cfc_star (id : ℂ → ℂ) a).symm ▸ (cfc_id ℂ a).symm ▸ ha.star_eq
     exact Complex.conj_eq_iff_re.mp (by simpa using this hx)
   · rintro ⟨ha₁, ha₂⟩
     rw [isSelfAdjoint_iff]
     nth_rw 2 [← cfc_id ℂ a]
     rw [← cfc_star_id a (R := ℂ)]
-    refine cfc_congr fun x hx ↦ ?_
+    refine cfc_congr fun x hx ↦ _
     obtain ⟨x, -, rfl⟩ := ha₂.algebraMap_image.symm ▸ hx
     exact Complex.conj_ofReal _
 
@@ -99,9 +99,9 @@ instance IsSelfAdjoint.instContinuousFunctionalCalculus [∀ x : A, CompactSpace
 
 lemma unitary_iff_isStarNormal_and_spectrum_subset_circle {u : A} :
     u ∈ unitary A ↔ IsStarNormal u ∧ spectrum ℂ u ⊆ circle := by
-  refine ⟨fun hu ↦ ?_, ?_⟩
+  refine ⟨fun hu ↦ _, _⟩
   · have h_normal := isStarNormal_of_mem_unitary hu
-    refine ⟨h_normal, ?_⟩
+    refine ⟨h_normal, _⟩
     have h := unitary.star_mul_self_of_mem hu
     rw [← cfc_id ℂ u, ← cfc_star id u, ← cfc_mul .., ← cfc_one ℂ u] at h
     have := eqOn_of_cfc_eq_cfc h
@@ -113,7 +113,7 @@ lemma unitary_iff_isStarNormal_and_spectrum_subset_circle {u : A} :
     simp only [id_eq]
     constructor
     all_goals
-      apply cfc_congr (fun x hx ↦ ?_)
+      apply cfc_congr (fun x hx ↦ _)
       simp only [RCLike.star_def, mul_comm x]
       apply hu at hx
       rwa [SetLike.mem_coe, mem_circle_iff_normSq, ← Complex.ofReal_injective.eq_iff,
@@ -141,7 +141,7 @@ lemma CFC.exists_sqrt_of_isSelfAdjoint_of_spectrumRestricts {A : Type*} [Ring A]
       forall_exists_index, and_imp, forall_apply_eq_imp_iff₂] using fun x _ ↦ Real.sqrt_nonneg x
   · rw [← cfc_pow ..]
     nth_rw 2 [← cfc_id ℝ a]
-    apply cfc_congr fun x hx ↦ ?_
+    apply cfc_congr fun x hx ↦ _
     rw [SpectrumRestricts.nnreal_iff] at ha₂
     apply ha₂ x at hx
     simp [Real.sq_sqrt hx]
@@ -152,7 +152,7 @@ variable [NonnegSpectrumClass ℝ A] [UniqueContinuousFunctionalCalculus ℝ A]
 
 lemma nonneg_iff_isSelfAdjoint_and_spectrumRestricts {a : A} :
     0 ≤ a ↔ IsSelfAdjoint a ∧ SpectrumRestricts a ContinuousMap.realToNNReal := by
-  refine ⟨fun ha ↦ ⟨.of_nonneg ha, .nnreal_of_nonneg ha⟩, ?_⟩
+  refine ⟨fun ha ↦ ⟨.of_nonneg ha, .nnreal_of_nonneg ha⟩, _⟩
   rintro ⟨ha₁, ha₂⟩
   obtain ⟨x, hx, -, rfl⟩ := CFC.exists_sqrt_of_isSelfAdjoint_of_spectrumRestricts ha₁ ha₂
   simpa [sq, hx.star_eq] using star_mul_self_nonneg x
@@ -188,7 +188,7 @@ lemma SpectrumRestricts.nnreal_add {a b : A} (ha₁ : IsSelfAdjoint a)
     SpectrumRestricts (a + b) ContinuousMap.realToNNReal := by
   rw [SpectrumRestricts.nnreal_iff_nnnorm (ha₁.add hb₁) (nnnorm_add_le a b), NNReal.coe_add,
     map_add, add_sub_add_comm]
-  refine nnnorm_add_le _ _ |>.trans ?_
+  refine nnnorm_add_le _ _ |>.trans _
   gcongr
   all_goals rw [← SpectrumRestricts.nnreal_iff_nnnorm] <;> first | rfl | assumption
 
@@ -224,7 +224,7 @@ lemma SpectrumRestricts.smul_of_nonneg {A : Type*} [Ring A] [Algebra ℝ A] {a :
     exact hx.symm.le
   · lift r to ℝˣ using IsUnit.mk0 r hr'
     rw [← Units.smul_def, spectrum.unit_smul_eq_smul, Set.mem_smul_set_iff_inv_smul_mem] at hx
-    refine le_of_smul_le_smul_left ?_ (inv_pos.mpr <| lt_of_le_of_ne hr <| ne_comm.mpr hr')
+    refine le_of_smul_le_smul_left _ (inv_pos.mpr <| lt_of_le_of_ne hr <| ne_comm.mpr hr')
     simpa [Units.smul_def] using ha _ hx
 
 set_option backward.isDefEq.lazyProjDelta false in -- See https://github.com/leanprover-community/mathlib4/issues/12535
@@ -257,7 +257,7 @@ lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b
   rw [← eq_sub_iff_add_eq', sub_eq_add_neg, ← sq, ← sq] at c_eq
   have h_c_spec₁ : SpectrumRestricts (c * star c) ContinuousMap.realToNNReal := by
     rw [c_eq]
-    refine SpectrumRestricts.nnreal_add ?_ ?_ ?_ h_c_spec₀
+    refine SpectrumRestricts.nnreal_add _ _ _ h_c_spec₀
     · exact IsSelfAdjoint.smul (by rfl) <| ((ℜ c).prop.pow 2).add ((ℑ c).prop.pow 2)
     · exact (IsSelfAdjoint.star_mul_self c).neg
     · rw [nsmul_eq_smul_cast ℝ]

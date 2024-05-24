@@ -243,7 +243,7 @@ def toΓSpec : X ⟶ Spec.locallyRingedSpaceObj (Γ.obj (op X)) where
     change t * t' = _ at he
     apply isUnit_of_mul_isUnit_left (y := t')
     rw [he]
-    refine' IsLocalization.map_units S (⟨r, _⟩ : p.asIdeal.primeCompl)
+    refine IsLocalization.map_units S (⟨r, _⟩ : p.asIdeal.primeCompl)
     apply (not_mem_prime_iff_unit_in_stalk _ _ _).mpr
     rw [← toStalk_stalkMap_toΓSpec]
     erw [comp_apply, ← he]
@@ -265,7 +265,7 @@ theorem comp_ring_hom_ext {X : LocallyRingedSpace.{u}} {R : CommRingCat.{u}} {f 
     X.toΓSpec ≫ Spec.locallyRingedSpaceMap f = β := by
   ext1
   -- Porting note: was `apply Spec.basicOpen_hom_ext`
-  refine Spec.basicOpen_hom_ext w ?_
+  refine Spec.basicOpen_hom_ext w _
   intro r U
   rw [LocallyRingedSpace.comp_val_c_app]
   erw [toOpen_comp_comap_assoc]

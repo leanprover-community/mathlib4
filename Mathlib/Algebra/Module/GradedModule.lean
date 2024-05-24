@@ -223,17 +223,17 @@ def linearEquiv [DecidableEq ιA] [DecidableEq ιM] [GradedRing 𝓐] [DirectSum
     @LinearEquiv A A _ _ (RingHom.id A) (RingHom.id A) _ _ M (⨁ i, 𝓜 i) _
     _ _ (by letI := isModule 𝓐 𝓜; infer_instance) := by
   letI h := isModule 𝓐 𝓜
-  refine ⟨⟨(DirectSum.decomposeAddEquiv 𝓜).toAddHom, ?_⟩,
+  refine ⟨⟨(DirectSum.decomposeAddEquiv 𝓜).toAddHom, _⟩,
     (DirectSum.decomposeAddEquiv 𝓜).symm.toFun, (DirectSum.decomposeAddEquiv 𝓜).left_inv,
     (DirectSum.decomposeAddEquiv 𝓜).right_inv⟩
   intro x y
   classical
   rw [AddHom.toFun_eq_coe, ← DirectSum.sum_support_decompose 𝓐 x, map_sum, Finset.sum_smul,
     AddEquiv.coe_toAddHom, map_sum, Finset.sum_smul]
-  refine Finset.sum_congr rfl (fun i _hi => ?_)
+  refine Finset.sum_congr rfl (fun i _hi => _)
   rw [RingHom.id_apply, ← DirectSum.sum_support_decompose 𝓜 y, map_sum, Finset.smul_sum, map_sum,
     Finset.smul_sum]
-  refine Finset.sum_congr rfl (fun j _hj => ?_)
+  refine Finset.sum_congr rfl (fun j _hj => _)
   rw [show (decompose 𝓐 x i : A) • (decomposeAddEquiv 𝓜 ↑(decompose 𝓜 y j) : (⨁ i, 𝓜 i)) =
     DirectSum.Gmodule.smulAddMonoidHom _ _ (decompose 𝓐 ↑(decompose 𝓐 x i))
     (decomposeAddEquiv 𝓜 ↑(decompose 𝓜 y j)) from DirectSum.Gmodule.smul_def _ _ _ _]

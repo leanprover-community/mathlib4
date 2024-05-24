@@ -77,7 +77,7 @@ theorem preimage_smul_setₛₗ'
   · intro m
     obtain ⟨m', rfl⟩ := hc m
     rintro ⟨n, hn, hn'⟩
-    refine ⟨m', ?_, rfl⟩
+    refine ⟨m', _, rfl⟩
     rw [map_smulₛₗ] at hn'
     rw [mem_preimage, ← hc' hn']
     exact hn

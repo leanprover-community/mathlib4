@@ -116,12 +116,12 @@ lemma coeff_minpolyDiv_mem_adjoin (x : S) (i) :
     | succ j IH =>
       intro H; apply IH
       rw [coeff_minpolyDiv]
-      refine add_mem ?_ (mul_mem H (Algebra.self_mem_adjoin_singleton R x))
+      refine add_mem _ (mul_mem H (Algebra.self_mem_adjoin_singleton R x))
       exact Subalgebra.algebraMap_mem _ _
   apply this (natDegree (minpolyDiv R x) + 1)
   rw [coeff_eq_zero_of_natDegree_lt]
   · exact zero_mem _
-  · refine (Nat.le_add_left _ i).trans_lt ?_
+  · refine (Nat.le_add_left _ i).trans_lt _
     rw [← add_assoc]
     exact Nat.lt_succ_self _
 
@@ -139,12 +139,12 @@ lemma coeff_minpolyDiv_sub_pow_mem_span {i} (hi : i ≤ natDegree (minpolyDiv R 
   | zero => simp [(minpolyDiv_monic hx).leadingCoeff]
   | succ i IH =>
     rw [coeff_minpolyDiv, add_sub_assoc, pow_succ, ← sub_mul, Algebra.algebraMap_eq_smul_one]
-    refine add_mem ?_ ?_
+    refine add_mem _ _
     · apply Submodule.smul_mem
       apply Submodule.subset_span
       exact ⟨0, Nat.zero_lt_succ _, pow_zero _⟩
     · rw [← tsub_tsub, tsub_add_cancel_of_le (le_tsub_of_add_le_left (b := 1) hi)]
-      apply SetLike.le_def.mp ?_
+      apply SetLike.le_def.mp _
         (Submodule.mul_mem_mul (IH ((Nat.le_succ _).trans hi))
           (Submodule.mem_span_singleton_self x))
       rw [Submodule.span_mul_span, Set.mul_singleton, Set.image_image]
@@ -172,7 +172,7 @@ lemma span_coeff_minpolyDiv :
         Submodule.span R (Set.range (coeff (minpolyDiv R x))) :=
       Submodule.subset_span (Set.mem_range_self _)
     rw [Set.mem_preimage, SetLike.mem_coe, ← Submodule.sub_mem_iff_right _ this]
-    refine SetLike.le_def.mp ?_ (coeff_minpolyDiv_sub_pow_mem_span hx ?_)
+    refine SetLike.le_def.mp _ (coeff_minpolyDiv_sub_pow_mem_span hx _)
     · rw [Submodule.span_le, Set.image_subset_iff]
       intro j (hj : j < i)
       exact hi j hj (lt_trans hj hi')
@@ -200,11 +200,11 @@ lemma sum_smul_minpolyDiv_eq_X_pow (E) [Field E] [Algebra K E] [IsAlgClosed E]
     rw [ne_eq, map_eq_zero_iff σ σ.toRingHom.injective]
     exact (IsSeparable.separable _ _).aeval_derivative_ne_zero (minpoly.aeval _ _)
   · refine (Polynomial.natDegree_sub_le _ _).trans_lt
-      (max_lt ((Polynomial.natDegree_sum_le _ _).trans_lt ?_) ?_)
+      (max_lt ((Polynomial.natDegree_sum_le _ _).trans_lt _) _)
     · simp only [AlgEquiv.toAlgHom_eq_coe, Polynomial.map_smul,
         map_div₀, map_pow, RingHom.coe_coe, AlgHom.coe_coe, Function.comp_apply,
         Finset.mem_univ, forall_true_left, true_and, Finset.fold_max_lt, AlgHom.card]
-      refine ⟨finrank_pos, ?_⟩
+      refine ⟨finrank_pos, _⟩
       intro σ
       exact ((Polynomial.natDegree_smul_le _ _).trans (natDegree_map_le _ _)).trans_lt
         ((natDegree_minpolyDiv_lt (Algebra.IsIntegral.isIntegral x)).trans_le

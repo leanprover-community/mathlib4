@@ -140,7 +140,7 @@ open IsSimpleModule in
 (not necessarily unique if the ring is not commutative). -/
 theorem isSimpleModule_iff_quot_maximal :
     IsSimpleModule R M ↔ ∃ I : Ideal R, I.IsMaximal ∧ Nonempty (M ≃ₗ[R] R ⧸ I) := by
-  refine ⟨fun h ↦ ?_, fun ⟨I, ⟨coatom⟩, ⟨equiv⟩⟩ ↦ ?_⟩
+  refine ⟨fun h ↦ _, fun ⟨I, ⟨coatom⟩, ⟨equiv⟩⟩ ↦ _⟩
   · have := IsSimpleModule.nontrivial R M
     have ⟨m, hm⟩ := exists_ne (0 : M)
     exact ⟨_, ker_toSpanSingleton_isMaximal R hm,
@@ -166,7 +166,7 @@ theorem isSimpleModule_iff_toSpanSingleton_surjective : IsSimpleModule R M ↔
 theorem isSimpleModule_self_iff_isUnit :
     IsSimpleModule R R ↔ Nontrivial R ∧ ∀ x : R, x ≠ 0 → IsUnit x :=
   isSimpleModule_iff_toSpanSingleton_surjective.trans <| and_congr_right fun _ ↦ by
-    refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ (h x hx).unit.mulRight_bijective.surjective⟩
+    refine ⟨fun h x hx ↦ _, fun h x hx ↦ (h x hx).unit.mulRight_bijective.surjective⟩
     obtain ⟨y, hyx : y * x = 1⟩ := h x hx 1
     have hy : y ≠ 0 := left_ne_zero_of_mul (hyx.symm ▸ one_ne_zero)
     obtain ⟨z, hzy : z * y = 1⟩ := h y hy 1
@@ -249,7 +249,7 @@ alias is_semisimple_iff_top_eq_sSup_simples := sSup_simples_eq_top_iff_isSemisim
 lemma isSemisimpleModule_of_isSemisimpleModule_submodule {s : Set ι} {p : ι → Submodule R M}
     (hp : ∀ i ∈ s, IsSemisimpleModule R (p i)) (hp' : ⨆ i ∈ s, p i = ⊤) :
     IsSemisimpleModule R M := by
-  refine complementedLattice_of_complementedLattice_Iic (fun i hi ↦ ?_) hp'
+  refine complementedLattice_of_complementedLattice_Iic (fun i hi ↦ _) hp'
   simpa only [← (p i).mapIic.complementedLattice_iff] using hp i hi
 
 lemma isSemisimpleModule_biSup_of_isSemisimpleModule_submodule {s : Set ι} {p : ι → Submodule R M}

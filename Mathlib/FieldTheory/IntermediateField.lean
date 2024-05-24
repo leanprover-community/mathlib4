@@ -542,7 +542,7 @@ instance AlgHom.inhabited : Inhabited (S →ₐ[K] L) :=
 
 theorem aeval_coe {R : Type*} [CommRing R] [Algebra R K] [Algebra R L] [IsScalarTower R K L]
     (x : S) (P : R[X]) : aeval (x : L) P = aeval x P := by
-  refine' Polynomial.induction_on' P (fun f g hf hg => _) fun n r => _
+  refine Polynomial.induction_on' P (fun f g hf hg => _) fun n r => _
   · rw [aeval_add, aeval_add, AddMemClass.coe_add, hf, hg]
   · simp only [MulMemClass.coe_mul, aeval_monomial, SubmonoidClass.coe_pow, mul_eq_mul_right_iff]
     left
@@ -551,15 +551,15 @@ theorem aeval_coe {R : Type*} [CommRing R] [Algebra R K] [Algebra R L] [IsScalar
 
 theorem coe_isIntegral_iff {R : Type*} [CommRing R] [Algebra R K] [Algebra R L]
     [IsScalarTower R K L] {x : S} : IsIntegral R (x : L) ↔ IsIntegral R x := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => _, fun h => _⟩
   · obtain ⟨P, hPmo, hProot⟩ := h
-    refine' ⟨P, hPmo, (injective_iff_map_eq_zero _).1 (algebraMap (↥S) L).injective _ _⟩
+    refine ⟨P, hPmo, (injective_iff_map_eq_zero _).1 (algebraMap (↥S) L).injective _ _⟩
     letI : IsScalarTower R S L := IsScalarTower.of_algebraMap_eq (congr_fun rfl)
     rw [eval₂_eq_eval_map, ← eval₂_at_apply, eval₂_eq_eval_map, Polynomial.map_map, ←
       IsScalarTower.algebraMap_eq, ← eval₂_eq_eval_map]
     exact hProot
   · obtain ⟨P, hPmo, hProot⟩ := h
-    refine ⟨P, hPmo, ?_⟩
+    refine ⟨P, hPmo, _⟩
     rw [← aeval_def, aeval_coe, aeval_def, hProot, ZeroMemClass.coe_zero]
 #align intermediate_field.coe_is_integral_iff IntermediateField.coe_isIntegral_iff
 
@@ -805,7 +805,7 @@ private theorem eq_of_le_of_finrank_le'' [FiniteDimensional K L] (h_le : F ≤ E
 then `F = E`. -/
 theorem eq_of_le_of_finrank_le' [FiniteDimensional F L] (h_le : F ≤ E)
     (h_finrank : finrank F L ≤ finrank E L) : F = E := by
-  refine le_antisymm h_le (fun l hl ↦ ?_)
+  refine le_antisymm h_le (fun l hl ↦ _)
   rwa [← mem_extendScalars (le_refl F), eq_of_le_of_finrank_le''
     ((extendScalars_le_extendScalars_iff (le_refl F) h_le).2 h_le) h_finrank, mem_extendScalars]
 #align intermediate_field.eq_of_le_of_finrank_le' IntermediateField.eq_of_le_of_finrank_le'

@@ -166,7 +166,7 @@ theorem Step.cons_left_iff {a : α} {b : Bool} :
       simp [*]
     · simp at hL
       rcases hL with ⟨rfl, rfl⟩
-      refine Or.inl ⟨s' ++ e, Step.not, ?_⟩
+      refine Or.inl ⟨s' ++ e, Step.not, _⟩
       simp
   · rintro (⟨L, h, rfl⟩ | rfl)
     · exact Step.cons h
@@ -1180,7 +1180,7 @@ theorem reduce.not {p : Prop} :
       rcases L2 with (_ | ⟨a, L2⟩)
       · injections; subst_vars
         simp at h
-      · refine' @reduce.not _ L1 L2 L3 x' b' _
+      · refine @reduce.not _ L1 L2 L3 x' b' _
         injection H with _ H
         rw [r, H]; rfl
 #align free_group.reduce.not FreeGroup.reduce.not

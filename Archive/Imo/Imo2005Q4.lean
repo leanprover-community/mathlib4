@@ -36,7 +36,7 @@ theorem find_specified_factor {p : ℕ} (hp : Nat.Prime p) (hp2 : p ≠ 2) (hp3 
   have hp' : p - 1 = p - 2 + 1 := Eq.symm <| Nat.succ_pred <| (tsub_pos_of_lt hp.one_lt).ne'
   -- Thus it suffices to show that `6 * a (p - 2) ≡ 0 [ZMOD p]`
   rw [← Int.modEq_zero_iff_dvd, ← Int.ediv_one p, ← Nat.cast_one, ← this]
-  refine Int.ModEq.cancel_left_div_gcd (Nat.cast_pos.2 hp.pos) ?_
+  refine Int.ModEq.cancel_left_div_gcd (Nat.cast_pos.2 hp.pos) _
   calc
     6 * a (p - 2) = 3 * 2 ^ (p - 1) + 2 * 3 ^ (p - 1) + (2 * 3) ^ (p - 1) - 6 := by
       simp only [a, hp', pow_succ']; ring
@@ -76,7 +76,7 @@ theorem imo2005_q4 {k : ℕ} (hk : 0 < k) : (∀ n : ℕ, 1 ≤ n → IsCoprime 
   · rw [hp3] at h
     apply h 2 <;> decide
   -- Otherwise, take `n = p - 2`
-  refine h (p - 2) ?_ (find_specified_factor hp hp2 hp3)
+  refine h (p - 2) _ (find_specified_factor hp hp2 hp3)
   calc
     1 = 3 - 2 := by norm_num
     _ ≤ p - 2 := tsub_le_tsub_right (Nat.succ_le_of_lt <| hp.two_le.lt_of_ne' hp2) _

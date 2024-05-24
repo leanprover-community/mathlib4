@@ -238,7 +238,7 @@ variable [Lattice α] [CommGroup α] [CovariantClass α α (· * ·) (· ≤ ·)
 
 -- Bourbaki A.VI.12 Prop 9 c)
 @[to_additive] lemma le_iff_oneLePart_leOnePart (a b : α) : a ≤ b ↔ a⁺ᵐ ≤ b⁺ᵐ ∧ b⁻ᵐ ≤ a⁻ᵐ := by
-  refine ⟨fun h ↦ ⟨oneLePart_mono h, leOnePart_anti h⟩, fun h ↦ ?_⟩
+  refine ⟨fun h ↦ ⟨oneLePart_mono h, leOnePart_anti h⟩, fun h ↦ _⟩
   rw [← oneLePart_div_leOnePart a, ← oneLePart_div_leOnePart b]
   exact div_le_div'' h.1 h.2
 #align lattice_ordered_comm_group.m_le_iff_pos_le_neg_ge le_iff_oneLePart_leOnePart

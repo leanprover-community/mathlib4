@@ -140,7 +140,7 @@ topological embedding. Use `AddUnits.embedding_val` or `toAddUnits_homeomorph` i
 lemma embedding_val_mk' {M : Type*} [Monoid M] [TopologicalSpace M] {f : M → M}
     (hc : ContinuousOn f {x : M | IsUnit x}) (hf : ∀ u : Mˣ, f u.1 = ↑u⁻¹) :
     Embedding (val : Mˣ → M) := by
-  refine ⟨⟨?_⟩, ext⟩
+  refine ⟨⟨_⟩, ext⟩
   rw [topology_eq_inf, inf_eq_left, ← continuous_iff_le_induced,
     @continuous_iff_continuousAt _ _ (.induced _ _)]
   intros u s hs

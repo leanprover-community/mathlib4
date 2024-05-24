@@ -125,7 +125,7 @@ theorem ae_convolution_tendsto_right_of_locallyIntegrable
   apply tendsto_integral_smul_of_tendsto_average_norm_sub (K ^ (FiniteDimensional.finrank ℝ G)) this
   · filter_upwards with i using
       hg.integrableOn_isCompact (isCompact_closedBall _ _)
-  · apply tendsto_const_nhds.congr (fun i ↦ ?_)
+  · apply tendsto_const_nhds.congr (fun i ↦ _)
     rw [← integral_neg_eq_self]
     simp only [sub_neg_eq_add, integral_add_left_eq_self, integral_normed]
   · filter_upwards with i

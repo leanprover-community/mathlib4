@@ -101,7 +101,7 @@ lemma smul_fin3 {R : Type u} [CommRing R] (P : Fin 3 → R) (u : Rˣ) :
 
 lemma smul_fin3_ext {R : Type u} [CommRing R] (P : Fin 3 → R) (u : Rˣ) :
     (u • P) x = u * P x ∧ (u • P) y = u * P y ∧ (u • P) z = u * P z := by
-  refine ⟨?_, ?_, ?_⟩ <;> simp only [Units.smul_def, Pi.smul_apply, smul_eq_mul]
+  refine ⟨_, _, _⟩ <;> simp only [Units.smul_def, Pi.smul_apply, smul_eq_mul]
 
 /-- The equivalence setoid for a point representative. -/
 scoped instance instSetoidPoint : Setoid <| Fin 3 → R :=
@@ -240,7 +240,7 @@ lemma nonsingular_some (X Y : R) : W.Nonsingular ![X, Y, 1] ↔ W.toAffine.Nonsi
 lemma nonsingular_smul_iff (P : Fin 3 → R) (u : Rˣ) : W.Nonsingular (u • P) ↔ W.Nonsingular P :=
   have (u : Rˣ) {P : Fin 3 → R} (h : W.Nonsingular <| u • P) : W.Nonsingular P := by
     rcases (W.nonsingular_iff _).mp h with ⟨h, h'⟩
-    refine (W.nonsingular_iff P).mpr ⟨(W.equation_smul_iff P u).mp h, ?_⟩
+    refine (W.nonsingular_iff P).mpr ⟨(W.equation_smul_iff P u).mp h, _⟩
     contrapose! h'
     simp only [smul_fin3_ext]
     exact ⟨by linear_combination (norm := ring1) (u : R) ^ 2 * h'.left,

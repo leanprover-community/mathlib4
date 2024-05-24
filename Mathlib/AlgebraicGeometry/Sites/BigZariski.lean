@@ -66,7 +66,7 @@ lemma zariskiTopology_openCover {Y : Scheme.{u}} (U : OpenCover.{v} Y) :
       f := id
       Covers := U.Covers
       IsOpen := fun _ => U.IsOpen _ }
-  refine' ⟨_, zariskiPretopology_openCover V, _⟩
+  refine ⟨_, zariskiPretopology_openCover V, _⟩
   rintro _ _ ⟨y⟩
   exact ⟨_, 𝟙 _, U.map (U.f y), ⟨_⟩, by simp⟩
 
@@ -79,7 +79,7 @@ lemma subcanonical_zariskiTopology : Sheaf.Subcanonical zariskiTopology := by
     intro i j
     apply hx
     exact Limits.pullback.condition
-  refine ⟨e, ?_, ?_⟩
+  refine ⟨e, _, _⟩
   · rintro Z e ⟨j⟩
     dsimp [e]
     rw [𝓤.ι_glueMorphisms]

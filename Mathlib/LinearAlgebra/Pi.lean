@@ -191,7 +191,7 @@ theorem pi_ext_iff : f = g ↔ ∀ i x, f (Pi.single i x) = g (Pi.single i x) :=
 note [partially-applied ext lemmas]. -/
 @[ext]
 theorem pi_ext' (h : ∀ i, f.comp (single i) = g.comp (single i)) : f = g := by
-  refine' pi_ext fun i x => _
+  refine pi_ext fun i x => _
   convert LinearMap.congr_fun (h i) x
 #align linear_map.pi_ext' LinearMap.pi_ext'
 
@@ -211,7 +211,7 @@ def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjo
     (hu : Set.univ ⊆ I ∪ J) :
     (⨅ i ∈ J, ker (proj i : ((i : ι) → φ i) →ₗ[R] φ i) :
     Submodule R ((i : ι) → φ i)) ≃ₗ[R] (i : I) → φ i := by
-  refine'
+  refine
     LinearEquiv.ofLinear (pi fun i => (proj (i : ι)).comp (Submodule.subtype _))
       (codRestrict _ (pi fun i => if h : i ∈ I then proj (⟨i, h⟩ : I) else 0) _) _ _
   · intro b
@@ -261,7 +261,7 @@ of the canonical basis. -/
 theorem pi_apply_eq_sum_univ [Fintype ι] [DecidableEq ι] (f : (ι → R) →ₗ[R] M₂) (x : ι → R) :
     f x = ∑ i, x i • f fun j => if i = j then 1 else 0 := by
   conv_lhs => rw [pi_eq_sum_univ x, map_sum]
-  refine Finset.sum_congr rfl (fun _ _ => ?_)
+  refine Finset.sum_congr rfl (fun _ _ => _)
   rw [map_smul]
 #align linear_map.pi_apply_eq_sum_univ LinearMap.pi_apply_eq_sum_univ
 
@@ -324,7 +324,7 @@ theorem iInf_comap_proj :
 theorem iSup_map_single [DecidableEq ι] [Finite ι] :
     ⨆ i, map (LinearMap.single i : φ i →ₗ[R] (i : ι) → φ i) (p i) = pi Set.univ p := by
   cases nonempty_fintype ι
-  refine' (iSup_le fun i => _).antisymm _
+  refine (iSup_le fun i => _).antisymm _
   · rintro _ ⟨x, hx : x ∈ p i, rfl⟩ j -
     rcases em (j = i) with (rfl | hj) <;> simp [*]
   · intro x hx

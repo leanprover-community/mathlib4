@@ -348,7 +348,7 @@ variable [ExistsAddOfLE α] [ContravariantClass α α (swap (· + ·)) (· ≤ �
 
 theorem mul_le_mul_of_nonpos_left (h : b ≤ a) (hc : c ≤ 0) : c * a ≤ c * b := by
   obtain ⟨d, hcd⟩ := exists_add_of_le hc
-  refine le_of_add_le_add_right (a := d * b + d * a) ?_
+  refine le_of_add_le_add_right (a := d * b + d * a) _
   calc
     _ = d * b := by rw [add_left_comm, ← add_mul, ← hcd, zero_mul, add_zero]
     _ ≤ d * a := mul_le_mul_of_nonneg_left h <| hcd.trans_le <| add_le_of_nonpos_left hc
@@ -357,7 +357,7 @@ theorem mul_le_mul_of_nonpos_left (h : b ≤ a) (hc : c ≤ 0) : c * a ≤ c * b
 
 theorem mul_le_mul_of_nonpos_right (h : b ≤ a) (hc : c ≤ 0) : a * c ≤ b * c := by
   obtain ⟨d, hcd⟩ := exists_add_of_le hc
-  refine le_of_add_le_add_right (a := b * d + a * d) ?_
+  refine le_of_add_le_add_right (a := b * d + a * d) _
   calc
     _ = b * d := by rw [add_left_comm, ← mul_add, ← hcd, mul_zero, add_zero]
     _ ≤ a * d := mul_le_mul_of_nonneg_right h <| hcd.trans_le <| add_le_of_nonpos_left hc
@@ -465,7 +465,7 @@ end Monotone
 variable [ContravariantClass α α (· + ·) (· ≤ ·)]
 
 lemma le_iff_exists_nonneg_add (a b : α) : a ≤ b ↔ ∃ c ≥ 0, b = a + c := by
-  refine ⟨fun h ↦ ?_, ?_⟩
+  refine ⟨fun h ↦ _, _⟩
   · obtain ⟨c, rfl⟩ := exists_add_of_le h
     exact ⟨c, nonneg_of_le_add_right h, rfl⟩
   · rintro ⟨c, hc, rfl⟩
@@ -659,7 +659,7 @@ variable [ExistsAddOfLE α]
 
 theorem mul_lt_mul_of_neg_left (h : b < a) (hc : c < 0) : c * a < c * b := by
   obtain ⟨d, hcd⟩ := exists_add_of_le hc.le
-  refine (add_lt_add_iff_right (d * b + d * a)).1 ?_
+  refine (add_lt_add_iff_right (d * b + d * a)).1 _
   calc
     _ = d * b := by rw [add_left_comm, ← add_mul, ← hcd, zero_mul, add_zero]
     _ < d * a := mul_lt_mul_of_pos_left h <| hcd.trans_lt <| add_lt_of_neg_left _ hc
@@ -668,7 +668,7 @@ theorem mul_lt_mul_of_neg_left (h : b < a) (hc : c < 0) : c * a < c * b := by
 
 theorem mul_lt_mul_of_neg_right (h : b < a) (hc : c < 0) : a * c < b * c := by
   obtain ⟨d, hcd⟩ := exists_add_of_le hc.le
-  refine (add_lt_add_iff_right (b * d + a * d)).1 ?_
+  refine (add_lt_add_iff_right (b * d + a * d)).1 _
   calc
     _ = b * d := by rw [add_left_comm, ← mul_add, ← hcd, mul_zero, add_zero]
     _ < a * d := mul_lt_mul_of_pos_right h <| hcd.trans_lt <| add_lt_of_neg_left _ hc
@@ -857,7 +857,7 @@ attribute [local instance] LinearOrderedSemiring.decidableLE LinearOrderedSemiri
 
 theorem nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nonneg (hab : 0 ≤ a * b) :
     0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
-  refine' Decidable.or_iff_not_and_not.2 _
+  refine Decidable.or_iff_not_and_not.2 _
   simp only [not_and, not_le]; intro ab nab; apply not_lt_of_le hab _
   rcases lt_trichotomy 0 a with (ha | rfl | ha)
   · exact mul_neg_of_pos_of_neg ha (ab ha.le)
@@ -1056,7 +1056,7 @@ theorem mul_self_inj {a b : α} (h1 : 0 ≤ a) (h2 : 0 ≤ b) : a * a = b * b �
 
 lemma sign_cases_of_C_mul_pow_nonneg  (h : ∀ n, 0 ≤ a * b ^ n) : a = 0 ∨ 0 < a ∧ 0 ≤ b := by
   have : 0 ≤ a := by simpa only [pow_zero, mul_one] using h 0
-  refine this.eq_or_gt.imp_right fun ha ↦ ⟨ha, nonneg_of_mul_nonneg_right ?_ ha⟩
+  refine this.eq_or_gt.imp_right fun ha ↦ ⟨ha, nonneg_of_mul_nonneg_right _ ha⟩
   simpa only [pow_one] using h 1
 set_option linter.uppercaseLean3 false in
 #align sign_cases_of_C_mul_pow_nonneg sign_cases_of_C_mul_pow_nonneg
@@ -1120,7 +1120,7 @@ theorem mul_nonneg_of_three (a b c : α) : 0 ≤ a * b ∨ 0 ≤ b * c ∨ 0 ≤
 #align mul_nonneg_of_three mul_nonneg_of_three
 
 lemma mul_nonneg_iff_pos_imp_nonneg : 0 ≤ a * b ↔ (0 < a → 0 ≤ b) ∧ (0 < b → 0 ≤ a) := by
-  refine mul_nonneg_iff.trans ?_
+  refine mul_nonneg_iff.trans _
   simp_rw [← not_le, ← or_iff_not_imp_left]
   have := le_total a 0
   have := le_total b 0
@@ -1203,7 +1203,7 @@ lemma sq_nonneg (a : α) : 0 ≤ a ^ 2 := by
   obtain ⟨b, hab⟩ := exists_add_of_le ha
   calc
     0 ≤ b ^ 2 := pow_nonneg (not_lt.1 fun hb ↦ hab.not_gt <| add_neg_of_nonpos_of_neg ha hb) _
-    _ = a ^ 2 := add_left_injective (a * b) ?_
+    _ = a ^ 2 := add_left_injective (a * b) _
   calc
     b ^ 2 + a * b = (a + b) * b := by rw [add_comm, sq, add_mul]
     _ = a * (a + b) := by simp [← hab]

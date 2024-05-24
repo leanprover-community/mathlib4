@@ -146,7 +146,7 @@ set_option linter.uppercaseLean3 false in
 theorem splits_prod {ι : Type u} {s : ι → K[X]} {t : Finset ι} :
     (∀ j ∈ t, (s j).Splits i) → (∏ x in t, s x).Splits i := by
   classical
-  refine' Finset.induction_on t (fun _ => splits_one i) fun a t hat ih ht => _
+  refine Finset.induction_on t (fun _ => splits_one i) fun a t hat ih ht => _
   rw [Finset.forall_mem_insert] at ht; rw [Finset.prod_insert hat]
   exact splits_mul i ht.1 (ih ht.2)
 #align polynomial.splits_prod Polynomial.splits_prod
@@ -209,7 +209,7 @@ theorem natDegree_eq_card_roots' {p : K[X]} {i : K →+* L} (hsplit : Splits i p
   rw [← hd, add_right_eq_self]
   by_contra h
   have h' : (map (RingHom.id L) q).natDegree ≠ 0 := by simp [h]
-  have := roots_ne_zero_of_splits' (RingHom.id L) (splits_of_splits_mul' _ ?_ hsplit).2 h'
+  have := roots_ne_zero_of_splits' (RingHom.id L) (splits_of_splits_mul' _ _ hsplit).2 h'
   · rw [map_id] at this
     exact this hr
   · rw [map_id]
@@ -267,7 +267,7 @@ theorem splits_mul_iff {f g : K[X]} (hf : f ≠ 0) (hg : g ≠ 0) :
 theorem splits_prod_iff {ι : Type u} {s : ι → K[X]} {t : Finset ι} :
     (∀ j ∈ t, s j ≠ 0) → ((∏ x in t, s x).Splits i ↔ ∀ j ∈ t, (s j).Splits i) := by
   classical
-  refine'
+  refine
     Finset.induction_on t (fun _ =>
         ⟨fun _ _ h => by simp only [Finset.not_mem_empty] at h, fun _ => splits_one i⟩)
       fun a t hat ih ht => _
@@ -373,7 +373,7 @@ theorem mem_lift_of_splits_of_roots_mem_range [Algebra R K] {f : K[X]}
     (hs : f.Splits (RingHom.id K)) (hm : f.Monic) (hr : ∀ a ∈ f.roots, a ∈ (algebraMap R K).range) :
     f ∈ Polynomial.lifts (algebraMap R K) := by
   rw [eq_prod_roots_of_monic_of_splits_id hm hs, lifts_iff_liftsRing]
-  refine' Subring.multiset_prod_mem _ _ fun P hP => _
+  refine Subring.multiset_prod_mem _ _ fun P hP => _
   obtain ⟨b, hb, rfl⟩ := Multiset.mem_map.1 hP
   exact Subring.sub_mem _ (X_mem_lifts _) (C'_mem_lifts (hr _ hb))
 #align polynomial.mem_lift_of_splits_of_roots_mem_range Polynomial.mem_lift_of_splits_of_roots_mem_range
@@ -395,7 +395,7 @@ theorem splits_of_exists_multiset {f : K[X]} {s : Multiset L}
       rw [irreducible_iff_prime] at hp
       rw [hs, ← Multiset.prod_toList] at hdp
       obtain hd | hd := hp.2.2 _ _ hdp
-      · refine' (hp.2.1 <| isUnit_of_dvd_unit hd _).elim
+      · refine (hp.2.1 <| isUnit_of_dvd_unit hd _).elim
         exact isUnit_C.2 ((leadingCoeff_ne_zero.2 hf0).isUnit.map i)
       · obtain ⟨q, hq, hd⟩ := hp.dvd_prod_iff.1 hd
         obtain ⟨a, _, rfl⟩ := Multiset.mem_map.1 (Multiset.mem_toList.1 hq)
@@ -427,7 +427,7 @@ theorem splits_of_comp (j : L →+* F) {f : K[X]} (h : Splits (j.comp i) f)
     (roots_mem_range : ∀ a ∈ (f.map (j.comp i)).roots, a ∈ j.range) : Splits i f := by
   choose lift lift_eq using roots_mem_range
   rw [splits_iff_exists_multiset]
-  refine ⟨(f.map (j.comp i)).roots.pmap lift fun _ ↦ id, map_injective _ j.injective ?_⟩
+  refine ⟨(f.map (j.comp i)).roots.pmap lift fun _ ↦ id, map_injective _ j.injective _⟩
   conv_lhs => rw [Polynomial.map_map, eq_prod_roots_of_splits h]
   simp_rw [Polynomial.map_mul, Polynomial.map_multiset_prod, Multiset.map_pmap, Polynomial.map_sub,
     map_C, map_X, lift_eq, Multiset.pmap_eq_map]

@@ -140,7 +140,7 @@ instance : Zero (LocalizedModule S M) :=
 
 /-- If `S` contains `0` then the localization at `S` is trivial. -/
 theorem subsingleton (h : 0 ∈ S) : Subsingleton (LocalizedModule S M) := by
-  refine ⟨fun a b ↦ ?_⟩
+  refine ⟨fun a b ↦ _⟩
   induction a,b using LocalizedModule.induction_on₂
   exact mk_eq.mpr ⟨⟨0, h⟩, by simp only [Submonoid.mk_smul, zero_smul]⟩
 
@@ -174,7 +174,7 @@ private theorem add_assoc' (x y z : LocalizedModule S M) : x + y + z = x + (y + 
   induction' y using LocalizedModule.induction_on with my sy
   induction' z using LocalizedModule.induction_on with mz sz
   simp only [mk_add_mk, smul_add]
-  refine' mk_eq.mpr ⟨1, _⟩
+  refine mk_eq.mpr ⟨1, _⟩
   rw [one_smul, one_smul]
   congr 1
   · rw [mul_assoc]
@@ -325,7 +325,7 @@ noncomputable instance : SMul T (LocalizedModule S M) where
     liftOn p (fun p ↦ mk (a.1 • p.1) (a.2 * p.2))
       (by
         rintro p p' ⟨s, h⟩
-        refine mk_eq.mpr ⟨s, ?_⟩
+        refine mk_eq.mpr ⟨s, _⟩
         calc
           _ = a.2 • a.1 • s • p'.2 • p.1 := by
             simp_rw [Submonoid.smul_def, Submonoid.coe_mul, ← mul_smul]; ring_nf
@@ -503,12 +503,12 @@ def divBy (s : S) : LocalizedModule S M →ₗ[R] LocalizedModule S M where
       mk_eq.mpr ⟨c, by rw [mul_smul, mul_smul, smul_comm _ s, smul_comm _ s, eq1, smul_comm _ s,
         smul_comm _ s]⟩
   map_add' x y := by
-    refine x.induction_on₂ ?_ y
+    refine x.induction_on₂ _ y
     intro m₁ m₂ t₁ t₂
     simp_rw [mk_add_mk, LocalizedModule.liftOn_mk, mk_add_mk, mul_smul, mul_comm _ s, mul_assoc,
       smul_comm _ s, ← smul_add, mul_left_comm s t₁ t₂, mk_cancel_common_left s]
   map_smul' r x := by
-    refine x.induction_on (fun _ _ ↦ ?_)
+    refine x.induction_on (fun _ _ ↦ _)
     dsimp only
     change liftOn (mk _ _) _ _ = r • (liftOn (mk _ _) _ _)
     simp_rw [liftOn_mk, mul_assoc, ← smul_def]
@@ -601,7 +601,7 @@ theorem isLocalizedModule_iff_isLocalization {A Aₛ} [CommSemiring A] [Algebra 
     IsLocalizedModule S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap ↔
       IsLocalization (Algebra.algebraMapSubmonoid A S) Aₛ := by
   rw [isLocalizedModule_iff, isLocalization_iff]
-  refine and_congr ?_ (and_congr (forall_congr' fun _ ↦ ?_) (forall₂_congr fun _ _ ↦ ?_))
+  refine and_congr _ (and_congr (forall_congr' fun _ ↦ _) (forall₂_congr fun _ _ ↦ _))
   · simp_rw [← (Algebra.lmul R Aₛ).commutes, Algebra.lmul_isUnit_iff, Subtype.forall,
       Algebra.algebraMapSubmonoid, ← SetLike.mem_coe, Submonoid.coe_map,
       Set.forall_mem_image, ← IsScalarTower.algebraMap_apply]
@@ -638,7 +638,7 @@ noncomputable def lift' (g : M →ₗ[R] M'')
       simp only [Submonoid.smul_def, ← g.map_smul, eq1]
     have : Function.Injective (h c).unit.inv := by
       rw [Function.injective_iff_hasLeftInverse]
-      refine ⟨(h c).unit, ?_⟩
+      refine ⟨(h c).unit, _⟩
       intro x
       change ((h c).unit.1 * (h c).unit.inv) x = x
       simp only [Units.inv_eq_val_inv, IsUnit.mul_val_inv, LinearMap.one_apply]
@@ -729,7 +729,7 @@ theorem lift_unique (g : M →ₗ[R] M'') (h : ∀ x : S, IsUnit ((algebraMap R 
   rw [Module.End_algebraMap_isUnit_inv_apply_eq_iff, ← hl, LinearMap.coe_comp,
     Function.comp_apply, LocalizedModule.mkLinearMap_apply, ← l.map_smul, LocalizedModule.smul'_mk]
   congr 1; rw [LocalizedModule.mk_eq]
-  refine' ⟨1, _⟩; simp only [one_smul, Submonoid.smul_def]
+  refine ⟨1, _⟩; simp only [one_smul, Submonoid.smul_def]
 #align localized_module.lift_unique LocalizedModule.lift_unique
 
 end LocalizedModule
@@ -746,7 +746,7 @@ instance localizedModuleIsLocalizedModule :
           rfl⟩
   surj' p :=
     p.induction_on fun m t => by
-      refine ⟨⟨m, t⟩, ?_⟩
+      refine ⟨⟨m, t⟩, _⟩
       erw [LocalizedModule.smul'_mk, LocalizedModule.mkLinearMap_apply, Submonoid.coe_subtype,
         LocalizedModule.mk_cancel t]
   exists_of_eq eq1 := by simpa only [eq_comm, one_smul] using LocalizedModule.mk_eq.mp eq1
@@ -1146,7 +1146,7 @@ theorem mkOfAlgebra {R S S' : Type*} [CommRing R] [CommRing S] [CommRing S'] [Al
       simp_rw [Submonoid.smul_def, Algebra.smul_def] at e
       exact (h₁ x x.2).mul_left_cancel e
     · intro a
-      refine' ⟨((h₁ x x.2).unit⁻¹ : _) * a, _⟩
+      refine ⟨((h₁ x x.2).unit⁻¹ : _) * a, _⟩
       rw [Module.algebraMap_end_apply, Algebra.smul_def, ← mul_assoc, IsUnit.mul_val_inv, one_mul]
   · exact h₂
   · intros x y

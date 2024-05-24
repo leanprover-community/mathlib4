@@ -62,7 +62,7 @@ theorem hammingDist_triangle (x y z : ∀ i, β i) :
     hammingDist x z ≤ hammingDist x y + hammingDist y z := by
   classical
     unfold hammingDist
-    refine le_trans (card_mono ?_) (card_union_le _ _)
+    refine le_trans (card_mono _) (card_union_le _ _)
     rw [← filter_or]
     exact monotone_filter_right _ fun i h ↦ (h.ne_or_ne _).imp_right Ne.symm
 #align hamming_dist_triangle hammingDist_triangle
@@ -429,20 +429,20 @@ instance : PseudoMetricSpace (Hamming β) where
   uniformity_dist := uniformity_dist_of_mem_uniformity _ _ fun s => by
     push_cast
     constructor
-    · refine' fun hs => ⟨1, zero_lt_one, fun hab => _⟩
+    · refine fun hs => ⟨1, zero_lt_one, fun hab => _⟩
       rw_mod_cast [hammingDist_lt_one] at hab
       rw [ofHamming_inj, ← mem_idRel] at hab
       exact hs hab
     · rintro ⟨_, hε, hs⟩ ⟨_, _⟩ hab
       rw [mem_idRel] at hab
       rw [hab]
-      refine' hs (lt_of_eq_of_lt _ hε)
+      refine hs (lt_of_eq_of_lt _ hε)
       exact mod_cast hammingDist_self _
   toBornology := ⟨⊥, bot_le⟩
   cobounded_sets := by
     ext
     push_cast
-    refine' iff_of_true (Filter.mem_sets.mpr Filter.mem_bot) ⟨Fintype.card ι, fun _ _ _ _ => _⟩
+    refine iff_of_true (Filter.mem_sets.mpr Filter.mem_bot) ⟨Fintype.card ι, fun _ _ _ _ => _⟩
     exact mod_cast hammingDist_le_card_fintype
 
 @[simp, push_cast]

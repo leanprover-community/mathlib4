@@ -54,7 +54,7 @@ theorem ofScientific_nonneg (m : ℕ) (s : Bool) (e : ℕ) :
   rw [Rat.ofScientific]
   cases s
   · rw [if_neg (by decide)]
-    refine num_nonneg.mp ?_
+    refine num_nonneg.mp _
     rw [num_natCast]
     exact Nat.cast_nonneg _
   · rw [if_pos rfl, normalize_eq_mkRat]
@@ -125,8 +125,8 @@ protected theorem le_iff_sub_nonneg (a b : ℚ) : a ≤ b ↔ 0 ≤ b - a :=
       · simp only [divInt_ofNat, ← zero_iff_num_zero, mkRat_eq_zero hb] at h'
         simp [h']
       · simp only [Rat.sub_def, normalize_eq]
-        refine ⟨fun H => ?_, fun H _ => ?_⟩
-        · refine Int.ediv_nonneg ?_ (Nat.cast_nonneg _)
+        refine ⟨fun H => _, fun H _ => _⟩
+        · refine Int.ediv_nonneg _ (Nat.cast_nonneg _)
           rw [sub_nonneg]
           push_neg at h
           obtain hb|hb := Ne.lt_or_lt h'

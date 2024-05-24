@@ -71,8 +71,8 @@ lemma IsWellOrderLimitElement.wellOrderSucc_lt {b : α} (hb : b < a) :
 
 lemma eq_bot_or_eq_succ_or_isWellOrderLimitElement [OrderBot α] (a : α) :
     a = ⊥ ∨ (∃ b, a = wellOrderSucc b ∧ b < a) ∨ IsWellOrderLimitElement a := by
-  refine or_iff_not_imp_left.2 <| fun h₁ ↦ or_iff_not_imp_left.2 <| fun h₂ ↦ ?_
-  refine (IsWellOrderLimitElement.mk ⟨⊥, Ne.bot_lt h₁⟩ fun b hb ↦ ?_)
+  refine or_iff_not_imp_left.2 <| fun h₁ ↦ or_iff_not_imp_left.2 <| fun h₂ ↦ _
+  refine (IsWellOrderLimitElement.mk ⟨⊥, Ne.bot_lt h₁⟩ fun b hb ↦ _)
   obtain rfl | h₃ := eq_or_lt_of_le (wellOrderSucc_le hb)
   · exact (h₂ ⟨b, rfl, hb⟩).elim
   · exact ⟨wellOrderSucc b, self_lt_wellOrderSucc hb, h₃⟩

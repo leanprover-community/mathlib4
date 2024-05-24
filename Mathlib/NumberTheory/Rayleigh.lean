@@ -89,10 +89,10 @@ private theorem hit_or_miss (h : r > 0) :
     j ∈ {beattySeq r k | k} ∨ ∃ k : ℤ, k < j / r ∧ (j + 1) / r ≤ k + 1 := by
   -- for both cases, the candidate is `k = ⌈(j + 1) / r⌉ - 1`
   cases lt_or_ge ((⌈(j + 1) / r⌉ - 1) * r) j
-  · refine Or.inr ⟨⌈(j + 1) / r⌉ - 1, ?_⟩
+  · refine Or.inr ⟨⌈(j + 1) / r⌉ - 1, _⟩
     rw [Int.cast_sub, Int.cast_one, lt_div_iff h, sub_add_cancel]
     exact ⟨‹_›, Int.le_ceil _⟩
-  · refine Or.inl ⟨⌈(j + 1) / r⌉ - 1, ?_⟩
+  · refine Or.inl ⟨⌈(j + 1) / r⌉ - 1, _⟩
     rw [beattySeq, Int.floor_eq_iff, Int.cast_sub, Int.cast_one, ← lt_div_iff h, sub_lt_iff_lt_add]
     exact ⟨‹_›, Int.ceil_lt_add_one _⟩
 
@@ -102,7 +102,7 @@ private theorem hit_or_miss' (h : r > 0) :
   -- for both cases, the candidate is `k = ⌊(j + 1) / r⌋`
   cases le_or_gt (⌊(j + 1) / r⌋ * r) j
   · exact Or.inr ⟨⌊(j + 1) / r⌋, (le_div_iff h).2 ‹_›, Int.lt_floor_add_one _⟩
-  · refine Or.inl ⟨⌊(j + 1) / r⌋, ?_⟩
+  · refine Or.inl ⟨⌊(j + 1) / r⌋, _⟩
     rw [beattySeq', sub_eq_iff_eq_add, Int.ceil_eq_iff, Int.cast_add, Int.cast_one]
     constructor
     · rwa [add_sub_cancel_right]
@@ -142,12 +142,12 @@ theorem beattySeq_symmDiff_beattySeq'_pos {r s : ℝ} (hrs : r.IsConjExponent s)
   intro j (hj : 0 < j)
   have hb₁ : ∀ s ≥ 0, j ∈ {beattySeq s k | k > 0} ↔ j ∈ {beattySeq s k | k} := by
     intro _ hs
-    refine ⟨fun ⟨k, _, hk⟩ ↦ ⟨k, hk⟩, fun ⟨k, hk⟩ ↦ ⟨k, ?_, hk⟩⟩
+    refine ⟨fun ⟨k, _, hk⟩ ↦ ⟨k, hk⟩, fun ⟨k, hk⟩ ↦ ⟨k, _, hk⟩⟩
     rw [← hk, beattySeq, Int.floor_pos] at hj
     exact_mod_cast pos_of_mul_pos_left (zero_lt_one.trans_le hj) hs
   have hb₂ : ∀ s ≥ 0, j ∈ {beattySeq' s k | k > 0} ↔ j ∈ {beattySeq' s k | k} := by
     intro _ hs
-    refine ⟨fun ⟨k, _, hk⟩ ↦ ⟨k, hk⟩, fun ⟨k, hk⟩ ↦ ⟨k, ?_, hk⟩⟩
+    refine ⟨fun ⟨k, _, hk⟩ ↦ ⟨k, hk⟩, fun ⟨k, hk⟩ ↦ ⟨k, _, hk⟩⟩
     rw [← hk, beattySeq', sub_pos, Int.lt_ceil, Int.cast_one] at hj
     exact_mod_cast pos_of_mul_pos_left (zero_lt_one.trans hj) hs
   rw [Set.mem_symmDiff, hb₁ _ hrs.nonneg, hb₂ _ hrs.symm.nonneg, ← compl_beattySeq hrs,
@@ -164,7 +164,7 @@ theorem Irrational.beattySeq'_pos_eq {r : ℝ} (hr : Irrational r) :
   dsimp only [beattySeq, beattySeq']
   congr! 4; rename_i k; rw [and_congr_right_iff]; intro hk; congr!
   rw [sub_eq_iff_eq_add, Int.ceil_eq_iff, Int.cast_add, Int.cast_one, add_sub_cancel_right]
-  refine ⟨(Int.floor_le _).lt_of_ne fun h ↦ ?_, (Int.lt_floor_add_one _).le⟩
+  refine ⟨(Int.floor_le _).lt_of_ne fun h ↦ _, (Int.lt_floor_add_one _).le⟩
   exact (hr.int_mul hk.ne').ne_int ⌊k * r⌋ h.symm
 
 /-- **Rayleigh's theorem** on Beatty sequences. Let `r` be an irrational number greater than 1, and

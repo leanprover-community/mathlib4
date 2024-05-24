@@ -21,7 +21,7 @@ variable [OrderedCommSemiring R] {s : Multiset R}
 
 lemma prod_nonneg (h : ∀ a ∈ s, 0 ≤ a) : 0 ≤ s.prod := by
   revert h
-  refine s.induction_on ?_ fun a s hs ih ↦ ?_
+  refine s.induction_on _ fun a s hs ih ↦ _
   · simp
   · rw [prod_cons]
     exact mul_nonneg (ih _ <| mem_cons_self _ _) (hs fun a ha ↦ ih _ <| mem_cons_of_mem ha)

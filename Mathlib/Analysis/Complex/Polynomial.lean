@@ -76,9 +76,9 @@ theorem card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
   have inj : Function.Injective (IsScalarTower.toAlgHom ℚ ℝ ℂ) := (algebraMap ℝ ℂ).injective
   rw [← Finset.card_image_of_injective _ Subtype.coe_injective, ←
     Finset.card_image_of_injective _ inj]
-  let a : Finset ℂ := ?_
-  on_goal 1 => let b : Finset ℂ := ?_
-  on_goal 1 => let c : Finset ℂ := ?_
+  let a : Finset ℂ := _
+  on_goal 1 => let b : Finset ℂ := _
+  on_goal 1 => let c : Finset ℂ := _
   -- Porting note: was
   --   change a.card = b.card + c.card
   suffices a.card = b.card + c.card by exact this
@@ -132,7 +132,7 @@ theorem galActionHom_bijective_of_prime_degree {p : ℚ[X]} (p_irr : Irreducible
     · exact IsAlgClosed.splits_codomain p
     · exact nodup_roots ((separable_map (algebraMap ℚ ℂ)).mpr p_irr.separable)
   let conj' := restrict p ℂ (Complex.conjAe.restrictScalars ℚ)
-  refine'
+  refine
     ⟨galActionHom_injective p ℂ, fun x =>
       (congr_arg (Membership.mem x) (show (galActionHom p ℂ).range = ⊤ from _)).mpr
         (Subgroup.mem_top x)⟩
@@ -215,10 +215,10 @@ lemma Irreducible.degree_le_two {p : ℝ[X]} (hp : Irreducible p) : degree p ≤
     have hd : degree (X ^ 2 - C (2 * z.re) * X + C (‖z‖ ^ 2)) = 2 := by
       compute_degree!
     have hq : IsUnit q := by
-      refine (of_irreducible_mul hp).resolve_left (mt isUnit_iff_degree_eq_zero.1 ?_)
+      refine (of_irreducible_mul hp).resolve_left (mt isUnit_iff_degree_eq_zero.1 _)
       rw [hd]
       exact two_ne_zero
-    refine (degree_mul_le _ _).trans_eq ?_
+    refine (degree_mul_le _ _).trans_eq _
     rwa [isUnit_iff_degree_eq_zero.1 hq, add_zero]
 
 /-- An irreducible real polynomial has natural degree at most two. -/

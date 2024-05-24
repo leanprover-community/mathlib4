@@ -43,7 +43,7 @@ theorem Polynomial.Monic.irreducible_of_irreducible_map_of_isPrime_nilradical
   let ι := algebraMap R R'
   rw [show φ = ψ.comp ι from rfl, ← map_map] at hi
   replace hi := hm.map ι |>.irreducible_of_irreducible_map _ _ hi
-  refine ⟨fun h ↦ hi.1 <| (mapRingHom ι).isUnit_map h, fun a b h ↦ ?_⟩
+  refine ⟨fun h ↦ hi.1 <| (mapRingHom ι).isUnit_map h, fun a b h ↦ _⟩
   wlog hb : IsUnit (b.map ι) generalizing a b
   · exact (this b a (mul_comm a b ▸ h)
       (hi.2 _ _ (by rw [h, Polynomial.map_mul]) |>.resolve_right hb)).symm
@@ -52,7 +52,7 @@ theorem Polynomial.Monic.irreducible_of_irreducible_map_of_isPrime_nilradical
     simpa only [coeff_map, coeff_C, hi, ite_false, ← RingHom.mem_ker,
       show RingHom.ker ι = nilradical R from Ideal.mk_ker] using congr(coeff $(h.symm) i)
   refine .inr <| isUnit_of_coeff_isUnit_isNilpotent (isUnit_of_mul_isUnit_right
-    (x := a.coeff f.natDegree) <| (IsUnit.neg_iff _).1 ?_) hn
+    (x := a.coeff f.natDegree) <| (IsUnit.neg_iff _).1 _) hn
   have hc : f.leadingCoeff = _ := congr(coeff $h f.natDegree)
   rw [hm, coeff_mul, Finset.Nat.sum_antidiagonal_eq_sum_range_succ fun i j ↦ a.coeff i * b.coeff j,
     Finset.sum_range_succ, ← sub_eq_iff_eq_add, Nat.sub_self] at hc

@@ -174,7 +174,7 @@ set_option linter.uppercaseLean3 false in
 theorem dimH_subsingleton {s : Set X} (h : s.Subsingleton) : dimH s = 0 := by
   borelize X
   apply le_antisymm _ (zero_le _)
-  refine dimH_le_of_hausdorffMeasure_ne_top ?_
+  refine dimH_le_of_hausdorffMeasure_ne_top _
   exact ((hausdorffMeasure_le_one_of_subsingleton h le_rfl).trans_lt ENNReal.one_lt_top).ne
 set_option linter.uppercaseLean3 false in
 #align dimH_subsingleton dimH_subsingleton
@@ -199,7 +199,7 @@ set_option linter.uppercaseLean3 false in
 theorem dimH_iUnion {ι : Sort*} [Countable ι] (s : ι → Set X) :
     dimH (⋃ i, s i) = ⨆ i, dimH (s i) := by
   borelize X
-  refine le_antisymm (dimH_le fun d hd => ?_) (iSup_le fun i => dimH_mono <| subset_iUnion _ _)
+  refine le_antisymm (dimH_le fun d hd => _) (iSup_le fun i => dimH_mono <| subset_iUnion _ _)
   contrapose! hd
   have : ∀ i, μH[d] (s i) = 0 := fun i =>
     hausdorffMeasure_of_dimH_lt ((le_iSup (fun i => dimH (s i)) i).trans_lt hd)
@@ -283,12 +283,12 @@ set_option linter.uppercaseLean3 false in
 of a set `s` is the supremum over `x ∈ s` of the limit superiors of `dimH t` along
 `(𝓝[s] x).smallSets`. -/
 theorem bsupr_limsup_dimH (s : Set X) : ⨆ x ∈ s, limsup dimH (𝓝[s] x).smallSets = dimH s := by
-  refine le_antisymm (iSup₂_le fun x _ => ?_) ?_
-  · refine limsup_le_of_le isCobounded_le_of_bot ?_
+  refine le_antisymm (iSup₂_le fun x _ => _) _
+  · refine limsup_le_of_le isCobounded_le_of_bot _
     exact eventually_smallSets.2 ⟨s, self_mem_nhdsWithin, fun t => dimH_mono⟩
-  · refine le_of_forall_ge_of_dense fun r hr => ?_
+  · refine le_of_forall_ge_of_dense fun r hr => _
     rcases exists_mem_nhdsWithin_lt_dimH_of_lt_dimH hr with ⟨x, hxs, hxr⟩
-    refine le_iSup₂_of_le x hxs ?_; rw [limsup_eq]; refine le_sInf fun b hb => ?_
+    refine le_iSup₂_of_le x hxs _; rw [limsup_eq]; refine le_sInf fun b hb => _
     rcases eventually_smallSets.1 hb with ⟨t, htx, ht⟩
     exact (hxr t htx).le.trans (ht t Subset.rfl)
 set_option linter.uppercaseLean3 false in
@@ -298,8 +298,8 @@ set_option linter.uppercaseLean3 false in
 of a set `s` is the supremum over all `x` of the limit superiors of `dimH t` along
 `(𝓝[s] x).smallSets`. -/
 theorem iSup_limsup_dimH (s : Set X) : ⨆ x, limsup dimH (𝓝[s] x).smallSets = dimH s := by
-  refine le_antisymm (iSup_le fun x => ?_) ?_
-  · refine limsup_le_of_le isCobounded_le_of_bot ?_
+  refine le_antisymm (iSup_le fun x => _) _
+  · refine limsup_le_of_le isCobounded_le_of_bot _
     exact eventually_smallSets.2 ⟨s, self_mem_nhdsWithin, fun t => dimH_mono⟩
   · rw [← bsupr_limsup_dimH]; exact iSup₂_le_iSup _ _
 set_option linter.uppercaseLean3 false in
@@ -318,7 +318,7 @@ variable {C K r : ℝ≥0} {f : X → Y} {s t : Set X}
 theorem HolderOnWith.dimH_image_le (h : HolderOnWith C r f s) (hr : 0 < r) :
     dimH (f '' s) ≤ dimH s / r := by
   borelize X Y
-  refine dimH_le fun d hd => ?_
+  refine dimH_le fun d hd => _
   have := h.hausdorffMeasure_image_le hr d.coe_nonneg
   rw [hd, ENNReal.coe_rpow_of_nonneg _ d.coe_nonneg, top_le_iff] at this
   have Hrd : μH[(r * d : ℝ≥0)] s = ⊤ := by
@@ -372,7 +372,7 @@ theorem dimH_range_le_of_locally_holder_on [SecondCountableTopology X] {r : ℝ�
     (hr : 0 < r) (hf : ∀ x : X, ∃ C : ℝ≥0, ∃ s ∈ 𝓝 x, HolderOnWith C r f s) :
     dimH (range f) ≤ dimH (univ : Set X) / r := by
   rw [← image_univ]
-  refine dimH_image_le_of_locally_holder_on hr fun x _ => ?_
+  refine dimH_image_le_of_locally_holder_on hr fun x _ => _
   simpa only [exists_prop, nhdsWithin_univ] using hf x
 set_option linter.uppercaseLean3 false in
 #align dimH_range_le_of_locally_holder_on dimH_range_le_of_locally_holder_on
@@ -422,7 +422,7 @@ theorem dimH_range_le_of_locally_lipschitzOn [SecondCountableTopology X] {f : X 
     (hf : ∀ x : X, ∃ C : ℝ≥0, ∃ s ∈ 𝓝 x, LipschitzOnWith C f s) :
     dimH (range f) ≤ dimH (univ : Set X) := by
   rw [← image_univ]
-  refine dimH_image_le_of_locally_lipschitzOn fun x _ => ?_
+  refine dimH_image_le_of_locally_lipschitzOn fun x _ => _
   simpa only [exists_prop, nhdsWithin_univ] using hf x
 set_option linter.uppercaseLean3 false in
 #align dimH_range_le_of_locally_lipschitz_on dimH_range_le_of_locally_lipschitzOn
@@ -431,7 +431,7 @@ namespace AntilipschitzWith
 
 theorem dimH_preimage_le (hf : AntilipschitzWith K f) (s : Set Y) : dimH (f ⁻¹' s) ≤ dimH s := by
   borelize X Y
-  refine dimH_le fun d hd => le_dimH_of_hausdorffMeasure_eq_top ?_
+  refine dimH_le fun d hd => le_dimH_of_hausdorffMeasure_eq_top _
   have := hf.hausdorffMeasure_preimage_le d.coe_nonneg s
   rw [hd, top_le_iff] at this
   contrapose! this
@@ -521,7 +521,7 @@ theorem dimH_ball_pi (x : ι → ℝ) {r : ℝ} (hr : 0 < r) :
   · rw [← ENNReal.coe_natCast]
     have : μH[Fintype.card ι] (Metric.ball x r) = ENNReal.ofReal ((2 * r) ^ Fintype.card ι) := by
       rw [hausdorffMeasure_pi_real, Real.volume_pi_ball _ hr]
-    refine dimH_of_hausdorffMeasure_ne_zero_ne_top ?_ ?_ <;> rw [NNReal.coe_natCast, this]
+    refine dimH_of_hausdorffMeasure_ne_zero_ne_top _ _ <;> rw [NNReal.coe_natCast, this]
     · simp [pow_pos (mul_pos (zero_lt_two' ℝ) hr)]
     · exact ENNReal.ofReal_ne_top
 set_option linter.uppercaseLean3 false in
@@ -547,7 +547,7 @@ theorem dimH_of_mem_nhds {x : E} {s : Set E} (h : s ∈ 𝓝 x) : dimH s = finra
   have e : E ≃L[ℝ] Fin (finrank ℝ E) → ℝ :=
     ContinuousLinearEquiv.ofFinrankEq (FiniteDimensional.finrank_fin_fun ℝ).symm
   rw [← e.dimH_image]
-  refine le_antisymm ?_ ?_
+  refine le_antisymm _ _
   · exact (dimH_mono (subset_univ _)).trans_eq (dimH_univ_pi_fin _)
   · have : e '' s ∈ 𝓝 (e x) := by rw [← e.map_nhds_eq]; exact image_mem_map h
     rcases Metric.nhds_basis_ball.mem_iff.1 this with ⟨r, hr0, hr⟩
@@ -589,7 +589,7 @@ variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensi
   [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 theorem dense_compl_of_dimH_lt_finrank {s : Set E} (hs : dimH s < finrank ℝ E) : Dense sᶜ := by
-  refine fun x => mem_closure_iff_nhds.2 fun t ht => nonempty_iff_ne_empty.2 fun he => hs.not_le ?_
+  refine fun x => mem_closure_iff_nhds.2 fun t ht => nonempty_iff_ne_empty.2 fun he => hs.not_le _
   rw [← diff_eq, diff_eq_empty] at he
   rw [← Real.dimH_of_mem_nhds ht]
   exact dimH_mono he

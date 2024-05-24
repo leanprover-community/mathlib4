@@ -192,7 +192,7 @@ lemma cauchy_ratCast (q : ℚ) : (q : ℝ).cauchy = q := rfl
 #align real.cauchy_rat_cast Real.cauchy_ratCast
 
 instance commRing : CommRing ℝ := by
-  refine' { natCast := fun n => ⟨n⟩
+  refine { natCast := fun n => ⟨n⟩
             intCast := fun z => ⟨z⟩
             zero := (0 : ℝ)
             one := (1 : ℝ)
@@ -616,7 +616,7 @@ theorem le_mk_of_forall_le {f : CauSeq ℚ abs} : (∃ i, ∀ j ≥ i, x ≤ f j
   obtain ⟨i, H⟩ := exists_forall_ge_and h (exists_forall_ge_and hK (f.cauchy₃ <| half_pos K0))
   apply not_lt_of_le (H _ le_rfl).1
   erw [mk_lt]
-  refine' ⟨_, half_pos K0, i, fun j ij => _⟩
+  refine ⟨_, half_pos K0, i, fun j ij => _⟩
   have := add_le_add (H _ ij).2.1 (le_of_lt (abs_lt.1 <| (H _ le_rfl).2.2 _ ij).1)
   rwa [← sub_eq_add_neg, sub_self_div_two, sub_apply, sub_add_sub_cancel] at this
 #align real.le_mk_of_forall_le Real.le_mk_of_forall_le

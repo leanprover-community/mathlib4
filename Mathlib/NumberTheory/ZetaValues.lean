@@ -134,7 +134,7 @@ theorem bernoulliFourierCoeff_eq {k : ℕ} (hk : k ≠ 0) (n : ℤ) :
   rcases eq_or_ne n 0 with (rfl | hn)
   · rw [bernoulliFourierCoeff_zero hk, Int.cast_zero, mul_zero, zero_pow hk,
       div_zero]
-  refine' Nat.le_induction _ (fun k hk h'k => _) k (Nat.one_le_iff_ne_zero.mpr hk)
+  refine Nat.le_induction _ (fun k hk h'k => _) k (Nat.one_le_iff_ne_zero.mpr hk)
   · rw [bernoulliFourierCoeff_recurrence 1 hn]
     simp only [Nat.cast_one, tsub_self, neg_mul, one_mul, eq_self_iff_true, if_true,
       Nat.factorial_one, pow_one, inv_I, mul_neg]
@@ -182,7 +182,7 @@ theorem summable_bernoulli_fourier {k : ℕ} (hk : 2 ≤ k) :
       ∀ n : ℤ, -(k ! : ℂ) / (2 * π * I * n) ^ k = -k ! / (2 * π * I) ^ k * (1 / (n : ℂ) ^ k) := by
     intro n; rw [mul_one_div, div_div, ← mul_pow]
   simp_rw [this]
-  refine Summable.mul_left _ <| .of_norm ?_
+  refine Summable.mul_left _ <| .of_norm _
   have : (fun x : ℤ => ‖1 / (x : ℂ) ^ k‖) = fun x : ℤ => |1 / (x : ℝ) ^ k| := by
     ext1 x
     rw [norm_eq_abs, ← Complex.abs_ofReal]
@@ -382,8 +382,8 @@ theorem hasSum_L_function_mod_four_eval_three :
     HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 3 * Real.sin (π * n / 2)) (π ^ 3 / 32) := by
   -- Porting note: times out with
   -- convert hasSum_one_div_nat_pow_mul_sin one_ne_zero (_ : 1 / 4 ∈ Icc (0 : ℝ) 1)
-  apply (congr_arg₂ HasSum ?_ ?_).to_iff.mp <|
-    hasSum_one_div_nat_pow_mul_sin one_ne_zero (?_ : 1 / 4 ∈ Icc (0 : ℝ) 1)
+  apply (congr_arg₂ HasSum _ _).to_iff.mp <|
+    hasSum_one_div_nat_pow_mul_sin one_ne_zero (_ : 1 / 4 ∈ Icc (0 : ℝ) 1)
   · ext1 n
     norm_num
     left

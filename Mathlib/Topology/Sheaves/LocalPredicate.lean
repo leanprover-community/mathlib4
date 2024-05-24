@@ -144,7 +144,7 @@ def PrelocalPredicate.sheafify {T : X → Type v} (P : PrelocalPredicate T) : Lo
   res {V U} i f w x := by
     specialize w (i x)
     rcases w with ⟨V', m', i', p⟩
-    refine' ⟨V ⊓ V', ⟨x.2, m'⟩, Opens.infLELeft _ _, _⟩
+    refine ⟨V ⊓ V', ⟨x.2, m'⟩, Opens.infLELeft _ _, _⟩
     convert P.res (Opens.infLERight V V') _ p
   locality {U} f w x := by
     specialize w x
@@ -196,7 +196,7 @@ theorem isSheaf (P : LocalPredicate T) : (subpresheafToTypes P.toPrelocalPredica
       congr_arg Subtype.val (sf_comp i j)
     -- So, we can obtain a unique gluing
     obtain ⟨gl, gl_spec, gl_uniq⟩ := (sheafToTypes X T).existsUnique_gluing U sf' sf'_comp
-    refine' ⟨⟨gl, _⟩, _, _⟩
+    refine ⟨⟨gl, _⟩, _, _⟩
     · -- Our first goal is to show that this chosen gluing satisfies the
       -- predicate. Of course, we use locality of the predicate.
       apply P.locality
@@ -214,7 +214,7 @@ theorem isSheaf (P : LocalPredicate T) : (subpresheafToTypes P.toPrelocalPredica
     -- in the sheaf of functions without the local predicate.
     · exact fun i => Subtype.ext (gl_spec i)
     · intro gl' hgl'
-      refine Subtype.ext ?_
+      refine Subtype.ext _
       exact gl_uniq gl'.1 fun i => congr_arg Subtype.val (hgl' i)
 set_option linter.uppercaseLean3 false in
 #align Top.subpresheaf_to_Types.is_sheaf TopCat.subpresheafToTypes.isSheaf
@@ -232,7 +232,7 @@ set_option linter.uppercaseLean3 false in
 /-- There is a canonical map from the stalk to the original fiber, given by evaluating sections.
 -/
 def stalkToFiber (P : LocalPredicate T) (x : X) : (subsheafToTypes P).presheaf.stalk x ⟶ T x := by
-  refine'
+  refine
     colimit.desc _
       { pt := T x
         ι :=
@@ -281,7 +281,7 @@ theorem stalkToFiber_injective (P : LocalPredicate T) (x : X)
     ∃ (W : (OpenNhds x)ᵒᵖ) (s : ∀ w : (unop W).1, T w) (hW : P.pred s),
       tU = (subsheafToTypes P).presheaf.germ ⟨x, (unop W).2⟩ ⟨s, hW⟩ ∧
         tV = (subsheafToTypes P).presheaf.germ ⟨x, (unop W).2⟩ ⟨s, hW⟩ :=
-    ?_
+    _
   · choose W s hW e using Q
     exact e.1.trans e.2.symm
   -- Then use induction to pick particular representatives of `tU tV : stalk x`
@@ -293,7 +293,7 @@ theorem stalkToFiber_injective (P : LocalPredicate T) (x : X)
   specialize w (unop U) (unop V) fU hU fV hV h
   rcases w with ⟨W, iU, iV, w⟩
   -- and put it back together again in the correct order.
-  refine' ⟨op W, fun w => fU (iU w : (unop U).1), P.res _ _ hU, _⟩
+  refine ⟨op W, fun w => fU (iU w : (unop U).1), P.res _ _ hU, _⟩
   · rcases W with ⟨W, m⟩
     exact iU
   · exact ⟨colimit_sound iU.op (Subtype.eq rfl), colimit_sound iV.op (Subtype.eq (funext w).symm)⟩

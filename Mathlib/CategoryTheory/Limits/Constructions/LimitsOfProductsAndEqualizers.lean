@@ -74,8 +74,8 @@ its construction are.
 def buildIsLimit (t₁ : IsLimit c₁) (t₂ : IsLimit c₂) (hi : IsLimit i) :
     IsLimit (buildLimit s t hs ht i) where
   lift q := by
-    refine' hi.lift (Fork.ofι _ _)
-    · refine' t₁.lift (Fan.mk _ fun j => _)
+    refine hi.lift (Fork.ofι _ _)
+    · refine t₁.lift (Fan.mk _ fun j => _)
       apply q.π.app j
     · apply t₂.hom_ext
       intro ⟨j⟩
@@ -177,7 +177,7 @@ noncomputable def preservesLimitOfPreservesEqualizersAndProduct : PreservesLimit
       preservesLimitOfPreservesLimitCone
         (buildIsLimit s t (by simp [s]) (by simp [t]) (limit.isLimit _) (limit.isLimit _)
           (limit.isLimit _))
-    refine' IsLimit.ofIsoLimit (buildIsLimit _ _ _ _ _ _ _) _
+    refine IsLimit.ofIsoLimit (buildIsLimit _ _ _ _ _ _ _) _
     · exact Fan.mk _ fun j => G.map (Pi.π _ j)
     · exact Fan.mk (G.obj Q) fun f => G.map (Pi.π _ f)
     · apply G.map s
@@ -199,7 +199,7 @@ noncomputable def preservesLimitOfPreservesEqualizersAndProduct : PreservesLimit
     · apply isLimitOfHasProductOfPreservesLimit
     · apply isLimitForkMapOfIsLimit
       apply equalizerIsEqualizer
-    · refine Cones.ext (Iso.refl _) ?_
+    · refine Cones.ext (Iso.refl _) _
       intro j; dsimp; simp
 -- See note [dsimp, simp].
 #align category_theory.limits.preserves_limit_of_preserves_equalizers_and_product CategoryTheory.Limits.preservesLimitOfPreservesEqualizersAndProduct
@@ -219,7 +219,7 @@ noncomputable def preservesFiniteLimitsOfPreservesEqualizersAndFiniteProducts [H
     intro J sJ fJ
     haveI : Fintype J := inferInstance
     haveI : Fintype ((p : J × J) × (p.fst ⟶ p.snd)) := inferInstance
-    apply @preservesLimitOfPreservesEqualizersAndProduct _ _ _ sJ _ _ ?_ ?_ _ G _ ?_ ?_
+    apply @preservesLimitOfPreservesEqualizersAndProduct _ _ _ sJ _ _ _ _ _ G _ _ _
     · apply hasLimitsOfShape_discrete _ _
     · apply hasLimitsOfShape_discrete _
     · apply PreservesFiniteProducts.preserves _
@@ -252,7 +252,7 @@ noncomputable def preservesFiniteLimitsOfPreservesTerminalAndPullbacks [HasTermi
   haveI : PreservesLimitsOfShape WalkingParallelPair G :=
       preservesEqualizersOfPreservesPullbacksAndBinaryProducts G
   apply
-    @preservesFiniteLimitsOfPreservesEqualizersAndFiniteProducts _ _ _ _ _ _ G _ ?_
+    @preservesFiniteLimitsOfPreservesEqualizersAndFiniteProducts _ _ _ _ _ _ G _ _
   apply PreservesFiniteProducts.mk
   apply preservesFiniteProductsOfPreservesBinaryAndTerminal G
 #align category_theory.limits.preserves_finite_limits_of_preserves_terminal_and_pullbacks CategoryTheory.Limits.preservesFiniteLimitsOfPreservesTerminalAndPullbacks
@@ -294,8 +294,8 @@ provided the cocones used in its construction are.
 def buildIsColimit (t₁ : IsColimit c₁) (t₂ : IsColimit c₂) (hi : IsColimit i) :
     IsColimit (buildColimit s t hs ht i) where
   desc q := by
-    refine' hi.desc (Cofork.ofπ _ _)
-    · refine' t₂.desc (Cofan.mk _ fun j => _)
+    refine hi.desc (Cofork.ofπ _ _)
+    · refine t₂.desc (Cofan.mk _ fun j => _)
       apply q.ι.app j
     · apply t₁.hom_ext
       intro j
@@ -403,8 +403,8 @@ noncomputable def preservesColimitOfPreservesCoequalizersAndCoproduct :
       preservesColimitOfPreservesColimitCocone
         (buildIsColimit s t (by simp [s]) (by simp [t]) (colimit.isColimit _) (colimit.isColimit _)
           (colimit.isColimit _))
-    refine' IsColimit.ofIsoColimit (buildIsColimit _ _ _ _ _ _ _) _
-    · refine Cofan.mk (G.obj Q) fun j => G.map ?_
+    refine IsColimit.ofIsoColimit (buildIsColimit _ _ _ _ _ _ _) _
+    · refine Cofan.mk (G.obj Q) fun j => G.map _
       apply Sigma.ι _ j
     -- fun j => G.map (Sigma.ι _ j)
     · exact Cofan.mk _ fun f => G.map (Sigma.ι _ f)
@@ -418,7 +418,7 @@ noncomputable def preservesColimitOfPreservesCoequalizersAndCoproduct :
       dsimp [t, Cofan.mk]
       simp only [← G.map_comp, colimit.ι_desc]
       dsimp
-    · refine Cofork.ofπ (G.map i) ?_
+    · refine Cofork.ofπ (G.map i) _
       rw [← G.map_comp, ← G.map_comp]
       apply congrArg G.map
       apply coequalizer.condition
@@ -426,7 +426,7 @@ noncomputable def preservesColimitOfPreservesCoequalizersAndCoproduct :
     · apply isColimitOfHasCoproductOfPreservesColimit
     · apply isColimitCoforkMapOfIsColimit
       apply coequalizerIsCoequalizer
-    refine' Cocones.ext (Iso.refl _) _
+    refine Cocones.ext (Iso.refl _) _
     intro j
     dsimp
     simp
@@ -449,7 +449,7 @@ noncomputable def preservesFiniteColimitsOfPreservesCoequalizersAndFiniteCoprodu
     intro J sJ fJ
     haveI : Fintype J := inferInstance
     haveI : Fintype ((p : J × J) × (p.fst ⟶ p.snd)) := inferInstance
-    apply @preservesColimitOfPreservesCoequalizersAndCoproduct _ _ _ sJ _ _ ?_ ?_ _ G _ ?_ ?_
+    apply @preservesColimitOfPreservesCoequalizersAndCoproduct _ _ _ sJ _ _ _ _ _ G _ _ _
     · apply hasColimitsOfShape_discrete _ _
     · apply hasColimitsOfShape_discrete _
     · apply PreservesFiniteCoproducts.preserves _
@@ -482,7 +482,7 @@ noncomputable def preservesFiniteColimitsOfPreservesInitialAndPushouts [HasIniti
   haveI : PreservesColimitsOfShape (WalkingParallelPair) G :=
       (preservesCoequalizersOfPreservesPushoutsAndBinaryCoproducts G)
   refine
-    @preservesFiniteColimitsOfPreservesCoequalizersAndFiniteCoproducts _ _ _ _ _ _ G _ ?_
+    @preservesFiniteColimitsOfPreservesCoequalizersAndFiniteCoproducts _ _ _ _ _ _ G _ _
   apply PreservesFiniteCoproducts.mk
   apply preservesFiniteCoproductsOfPreservesBinaryAndInitial G
 #align category_theory.limits.preserves_finite_colimits_of_preserves_initial_and_pushouts CategoryTheory.Limits.preservesFiniteColimitsOfPreservesInitialAndPushouts

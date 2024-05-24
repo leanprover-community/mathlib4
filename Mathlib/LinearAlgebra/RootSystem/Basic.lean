@@ -138,14 +138,14 @@ lemma reflection_mul (x : M) :
 lemma isCrystallographic_iff :
     P.IsCrystallographic ↔ ∀ i j, ∃ z : ℤ, z = P.pairing i j := by
   rw [IsCrystallographic]
-  refine ⟨fun h i j ↦ ?_, fun h i _ ⟨j, hj⟩ ↦ ?_⟩
+  refine ⟨fun h i j ↦ _, fun h i _ ⟨j, hj⟩ ↦ _⟩
   · simpa [AddSubgroup.mem_zmultiples_iff] using h i (mem_range_self j)
   · simpa [← hj, AddSubgroup.mem_zmultiples_iff] using h i j
 
 lemma isReduced_iff : P.IsReduced ↔ ∀ (i j : ι), i ≠ j →
     ¬ LinearIndependent R ![P.root i, P.root j] → P.root i = - P.root j := by
   rw [IsReduced]
-  refine ⟨fun h i j hij hLin ↦ ?_, fun h i j hLin  ↦ ?_⟩
+  refine ⟨fun h i j hij hLin ↦ _, fun h i j hLin  ↦ _⟩
   · specialize h i j hLin
     simp_all only [ne_eq, EmbeddingLike.apply_eq_iff_eq, false_or]
   · by_cases h' : i = j

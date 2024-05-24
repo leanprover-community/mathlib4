@@ -115,7 +115,7 @@ theorem Matrix.vecMul_injective_iff {R : Type*} [CommRing R] {M : Matrix m n R} 
   rw [← coe_vecMulLinear]
   simp only [← LinearMap.ker_eq_bot, Fintype.linearIndependent_iff, Submodule.eq_bot_iff,
     LinearMap.mem_ker, vecMulLinear_apply]
-  refine ⟨fun h c h0 ↦ congr_fun <| h c ?_, fun h c h0 ↦ funext <| h c ?_⟩
+  refine ⟨fun h c h0 ↦ congr_fun <| h c _, fun h c h0 ↦ funext <| h c _⟩
   · rw [← h0]
     ext i
     simp [vecMul, dotProduct]
@@ -360,7 +360,7 @@ theorem Matrix.toLin'_toMatrix' (f : (n → R) →ₗ[R] m → R) :
 theorem LinearMap.toMatrix'_apply (f : (n → R) →ₗ[R] m → R) (i j) :
     LinearMap.toMatrix' f i j = f (fun j' ↦ if j' = j then 1 else 0) i := by
   simp only [LinearMap.toMatrix', LinearEquiv.coe_mk, of_apply]
-  refine congr_fun ?_ _  -- Porting note: `congr` didn't do this
+  refine congr_fun _ _  -- Porting note: `congr` didn't do this
   congr
   ext j'
   split_ifs with h
@@ -680,7 +680,7 @@ theorem Matrix.toLin_apply (M : Matrix m n R) (v : M₁) :
 @[simp]
 theorem Matrix.toLin_self (M : Matrix m n R) (i : n) :
     Matrix.toLin v₁ v₂ M (v₁ i) = ∑ j, M j i • v₂ j := by
-  rw [Matrix.toLin_apply, Finset.sum_congr rfl fun j _hj ↦ ?_]
+  rw [Matrix.toLin_apply, Finset.sum_congr rfl fun j _hj ↦ _]
   rw [Basis.repr_self, Matrix.mulVec, dotProduct, Finset.sum_eq_single i, Finsupp.single_eq_same,
     mul_one]
   · intro i' _ i'_ne

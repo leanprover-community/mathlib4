@@ -63,7 +63,7 @@ lemma discrim_eq_sq_of_quadratic_eq_zero {x : R} (h : a * x * x + b * x + c = 0)
 theorem quadratic_eq_zero_iff_discrim_eq_sq [NeZero (2 : R)] [NoZeroDivisors R]
     (ha : a ≠ 0) (x : R) :
     a * x * x + b * x + c = 0 ↔ discrim a b c = (2 * a * x + b) ^ 2 := by
-  refine ⟨discrim_eq_sq_of_quadratic_eq_zero, fun h ↦ ?_⟩
+  refine ⟨discrim_eq_sq_of_quadratic_eq_zero, fun h ↦ _⟩
   rw [discrim] at h
   have ha : 2 * 2 * a ≠ 0 := mul_ne_zero (mul_ne_zero (NeZero.ne _) (NeZero.ne _)) ha
   apply mul_left_cancel₀ ha
@@ -148,7 +148,7 @@ at least when the coefficient of the quadratic term is nonzero.
 theorem discrim_lt_zero (ha : a ≠ 0) (h : ∀ x : K, 0 < a * x * x + b * x + c) :
     discrim a b c < 0 := by
   have : ∀ x : K, 0 ≤ a * x * x + b * x + c := fun x => le_of_lt (h x)
-  refine lt_of_le_of_ne (discrim_le_zero this) fun h' ↦ ?_
+  refine lt_of_le_of_ne (discrim_le_zero this) fun h' ↦ _
   have := h (-b / (2 * a))
   have : a * (-b / (2 * a)) * (-b / (2 * a)) + b * (-b / (2 * a)) + c = 0 := by
     rw [quadratic_eq_zero_iff_of_discrim_eq_zero ha h' (-b / (2 * a))]
