@@ -5,6 +5,10 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
 import Mathlib.Algebra.Algebra.Operations
 
+/-!
+# Principal Ideals
+-/
+
 namespace Ideal
 
 variable {R : Type*}
