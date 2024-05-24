@@ -326,7 +326,7 @@ private theorem sum_density_div_card_le_density_add_eps [Nonempty α]
     apply mul_pos <;> rw [Finset.card_pos, sup_eq_biUnion, biUnion_nonempty]
     · exact ⟨_, hx, nonempty_of_mem_parts _ (hA hx)⟩
     · exact ⟨_, hy, nonempty_of_mem_parts _ (hB hy)⟩
-  refine mul_pos (mul_pos ?_ ?_) (mul_po?s ?_ _) <;> rw [cast_pos, Finset.card_pos]
+  refine mul_pos (mul_pos ?_ ?_) (mul_pos ?_ ?_) <;> rw [cast_pos, Finset.card_pos]
   exacts [⟨_, hx⟩, nonempty_of_mem_parts _ (hA hx), ⟨_, hy⟩, nonempty_of_mem_parts _ (hB hy)]
 
 private theorem average_density_near_total_density [Nonempty α]
@@ -353,7 +353,7 @@ private theorem edgeDensity_chunk_aux [Nonempty α]
     ((∑ ab in (chunk hP G ε hU).parts.product (chunk hP G ε hV).parts,
       (G.edgeDensity ab.1 ab.2 : ℝ)) / ↑16 ^ P.parts.card) ^ 2 := by
   obtain hGε | hGε := le_total (G.edgeDensity U V : ℝ) (ε ^ 5 / 50)
-  · refine (sub_nonpos_of_le <| (sq_le ?_ ?_).trans <| hGε.tran?s _).trans (sq_nonneg _)
+  · refine (sub_nonpos_of_le <| (sq_le ?_ ?_).trans <| hGε.trans ?_).trans (sq_nonneg _)
     · exact mod_cast G.edgeDensity_nonneg _ _
     · exact mod_cast G.edgeDensity_le_one _ _
     · exact div_le_div_of_nonneg_left (by sz_positivity) (by norm_num) (by norm_num)

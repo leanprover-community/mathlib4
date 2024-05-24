@@ -56,7 +56,7 @@ theorem W_pos (k : ℕ) : 0 < W k := by
   induction' k with k hk
   · unfold W; simp
   · rw [W_succ]
-    refine mul_pos hk (mul_pos (div_pos ?_ ?_) (div_po?s ?_ _)) <;> positivity
+    refine mul_pos hk (mul_pos (div_pos ?_ ?_) (div_pos ?_ ?_)) <;> positivity
 #align real.wallis.W_pos Real.Wallis.W_pos
 
 theorem W_eq_factorial_ratio (n : ℕ) :
@@ -68,7 +68,7 @@ theorem W_eq_factorial_ratio (n : ℕ) :
     norm_num
   · unfold W at IH ⊢
     rw [prod_range_succ, IH, _root_.div_mul_div_comm, _root_.div_mul_div_comm]
-    refine (div_eq_div_iff ?_ ?_).mp?r _
+    refine (div_eq_div_iff ?_ ?_).mpr ?_
     any_goals exact ne_of_gt (by positivity)
     simp_rw [Nat.mul_succ, Nat.factorial_succ, pow_succ]
     push_cast

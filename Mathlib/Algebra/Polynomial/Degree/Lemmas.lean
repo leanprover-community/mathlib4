@@ -215,7 +215,7 @@ theorem degree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
       have hy0 : f y ≠ 0 := by
         contrapose! H
         simpa [H, degree_eq_bot] using hx0
-      refine absurd H (h ?_ ?_ fun H => h?x _)
+      refine absurd H (h ?_ ?_ fun H => hx ?_)
       · simp [hx0]
       · simp [hy, hy0]
       · exact H.symm ▸ hy
