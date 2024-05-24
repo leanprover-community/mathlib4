@@ -30,7 +30,7 @@ We provide basic definitions and results to support `α`-chain techniques in thi
    trivial.
  * `LieModule.weightSpaceChain`: given weights `χ₁`, `χ₂` together with integers `p` and `q`, this
    is the sum of the weight spaces `k • χ₁ + χ₂` for `p < k < q`.
- * `LieModule.trace_toEndomorphism_weightSpaceChain_eq_zero`: given a root `α` relative to a Cartan
+ * `LieModule.trace_toEnd_weightSpaceChain_eq_zero`: given a root `α` relative to a Cartan
    subalgebra `H`, there is a natural ideal `corootSpace α` in `H`. This lemma
    states that this ideal acts by trace-zero endomorphisms on the sum of root spaces of any
    `α`-chain, provided the weight spaces at the endpoints are both trivial.
@@ -153,11 +153,11 @@ section IsCartanSubalgebra
 
 variable [H.IsCartanSubalgebra] [IsNoetherian R L]
 
-lemma trace_toEndomorphism_weightSpaceChain_eq_zero
+lemma trace_toEnd_weightSpaceChain_eq_zero
     (hp : weightSpace M (p • α + χ) = ⊥)
     (hq : weightSpace M (q • α + χ) = ⊥)
     {x : H} (hx : x ∈ corootSpace α) :
-    LinearMap.trace R _ (toEndomorphism R H (weightSpaceChain M α χ p q) x) = 0 := by
+    LinearMap.trace R _ (toEnd R H (weightSpaceChain M α χ p q) x) = 0 := by
   rw [LieAlgebra.mem_corootSpace'] at hx
   induction hx using Submodule.span_induction'
   · next u hu =>
@@ -172,7 +172,7 @@ lemma trace_toEndomorphism_weightSpaceChain_eq_zero
           lie_mem_weightSpaceChain_of_weightSpace_eq_bot_left M α χ p q hp hz hm⟩
         map_add' := fun _ _ ↦ by simp
         map_smul' := fun t m ↦ by simp }
-    have hfg : toEndomorphism R H _ u = ⁅f, g⁆ := by ext; simp [f, g, ← hyz]
+    have hfg : toEnd R H _ u = ⁅f, g⁆ := by ext; simp [f, g, ← hyz]
     simp [hfg]
   · simp
   · simp_all
@@ -203,14 +203,14 @@ lemma exists_forall_mem_corootSpace_smul_add_eq_zero
     rw [← LieSubmodule.independent_iff_coe_toSubmodule]
     refine (independent_weightSpace R H M).comp fun i j hij ↦ ?_
     exact SetCoe.ext <| smul_left_injective ℤ hα <| by rwa [add_left_inj] at hij
-  have h₂ : ∀ i, MapsTo (toEndomorphism R H M x) ↑(N i) ↑(N i) := fun _ _ ↦ LieSubmodule.lie_mem _
+  have h₂ : ∀ i, MapsTo (toEnd R H M x) ↑(N i) ↑(N i) := fun _ _ ↦ LieSubmodule.lie_mem _
   have h₃ : weightSpaceChain M α χ p q = ⨆ i ∈ Finset.Ioo p q, N i := by
     simp_rw [weightSpaceChain_def', LieSubmodule.iSup_coe_toSubmodule]
-  rw [← trace_toEndomorphism_weightSpaceChain_eq_zero M α χ p q hp hq hx,
-    ← LieSubmodule.toEndomorphism_restrict_eq_toEndomorphism,
+  rw [← trace_toEnd_weightSpaceChain_eq_zero M α χ p q hp hq hx,
+    ← LieSubmodule.toEnd_restrict_eq_toEnd,
     LinearMap.trace_eq_sum_trace_restrict_of_eq_biSup _ h₁ h₂ (weightSpaceChain M α χ p q) h₃]
-  simp_rw [LieSubmodule.toEndomorphism_restrict_eq_toEndomorphism,
-    trace_toEndomorphism_weightSpace, Pi.add_apply, Pi.smul_apply, smul_add, ← smul_assoc,
+  simp_rw [LieSubmodule.toEnd_restrict_eq_toEnd,
+    trace_toEnd_weightSpace, Pi.add_apply, Pi.smul_apply, smul_add, ← smul_assoc,
     Finset.sum_add_distrib, ← Finset.sum_smul, natCast_zsmul]
 
 end IsCartanSubalgebra
