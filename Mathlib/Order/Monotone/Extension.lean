@@ -44,7 +44,7 @@ theorem MonotoneOn.exists_monotone_extension (h : MonotoneOn f s) (hl : BddBelow
       exact le_csSup_of_le (hu' _) (mem_image_of_mem _ hz) (ha <| mem_image_of_mem _ hz.2)
     · exact (hx <| hy.mono_left <| Iic_subset_Iic.2 hxy).elim
     · rw [not_disjoint_iff_nonempty_inter] at hx hy
-      refine' csSup_le_csSup (hu' _) (hx.image _) (image_subset _ _)
+      refine csSup_le_csSup (hu' _) (hx.image _) (image_subset _ ?_)
       exact inter_subset_inter_left _ (Iic_subset_Iic.2 hxy)
 #align monotone_on.exists_monotone_extension MonotoneOn.exists_monotone_extension
 

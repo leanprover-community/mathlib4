@@ -284,11 +284,11 @@ theorem filtrationOfSet_eq_natural [MulZeroOneClass β] [Nontrivial β] {s : ι 
       stronglyMeasurable_one.indicator (hsm i) := by
   simp only [filtrationOfSet, natural, measurableSpace_iSup_eq, exists_prop, mk.injEq]
   ext1 i
-  refine' le_antisymm (generateFrom_le _) (generateFrom_le _)
+  refine le_antisymm (generateFrom_le ?_) (generateFrom_le ?_)
   · rintro _ ⟨j, hij, rfl⟩
-    refine' measurableSet_generateFrom ⟨j, measurableSet_generateFrom ⟨hij, _⟩⟩
+    refine measurableSet_generateFrom ⟨j, measurableSet_generateFrom ⟨hij, ?_⟩⟩
     rw [comap_eq_generateFrom]
-    refine' measurableSet_generateFrom ⟨{1}, measurableSet_singleton 1, _⟩
+    refine measurableSet_generateFrom ⟨{1}, measurableSet_singleton 1, ?_⟩
     ext x
     simp [Set.indicator_const_preimage_eq_union]
   · rintro t ⟨n, ht⟩
@@ -296,7 +296,7 @@ theorem filtrationOfSet_eq_natural [MulZeroOneClass β] [Nontrivial β] {s : ι 
       MeasurableSet[MeasurableSpace.comap ((s n).indicator (fun _ => 1 : Ω → β)) mβ] t} ≤
         MeasurableSpace.generateFrom {t | ∃ (j : ι), j ≤ i ∧ s j = t} by
       exact this _ ht
-    refine' generateFrom_le _
+    refine generateFrom_le ?_
     rintro t ⟨hn, u, _, hu'⟩
     obtain heq | heq | heq | heq := Set.indicator_const_preimage (s n) u (1 : β)
     on_goal 4 => rw [Set.mem_singleton_iff] at heq
@@ -340,10 +340,10 @@ theorem memℒp_limitProcess_of_snorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : Ty
     (hbdd : ∀ n, snorm (f n) p μ ≤ R) : Memℒp (limitProcess f ℱ μ) p μ := by
   rw [limitProcess]
   split_ifs with h
-  · refine' ⟨StronglyMeasurable.aestronglyMeasurable
+  · refine ⟨StronglyMeasurable.aestronglyMeasurable
       ((Classical.choose_spec h).1.mono (sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _)),
       lt_of_le_of_lt (Lp.snorm_lim_le_liminf_snorm hfm _ (Classical.choose_spec h).2)
-        (lt_of_le_of_lt _ (ENNReal.coe_lt_top : ↑R < ∞))⟩
+        (lt_of_le_of_lt ?_ (ENNReal.coe_lt_top : ↑R < ∞))⟩
     simp_rw [liminf_eq, eventually_atTop]
     exact sSup_le fun b ⟨a, ha⟩ => (ha a le_rfl).trans (hbdd _)
   · exact zero_memℒp

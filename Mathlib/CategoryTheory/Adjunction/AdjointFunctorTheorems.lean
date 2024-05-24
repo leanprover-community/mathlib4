@@ -68,10 +68,10 @@ variable (G : D ⥤ C)
 /-- If `G : D ⥤ C` is a right adjoint it satisfies the solution set condition.  -/
 theorem solutionSetCondition_of_isRightAdjoint [G.IsRightAdjoint] : SolutionSetCondition G := by
   intro A
-  refine'
-    ⟨PUnit, fun _ => G.leftAdjoint.obj A, fun _ => (Adjunction.ofIsRightAdjoint G).unit.app A, _⟩
+  refine
+    ⟨PUnit, fun _ => G.leftAdjoint.obj A, fun _ => (Adjunction.ofIsRightAdjoint G).unit.app A, ?_⟩
   intro B h
-  refine' ⟨PUnit.unit, ((Adjunction.ofIsRightAdjoint G).homEquiv _ _).symm h, _⟩
+  refine ⟨PUnit.unit, ((Adjunction.ofIsRightAdjoint G).homEquiv _ _).symm h, ?_⟩
   rw [← Adjunction.homEquiv_unit, Equiv.apply_symm_apply]
 #align category_theory.solution_set_condition_of_is_right_adjoint CategoryTheory.solutionSetCondition_of_isRightAdjoint
 

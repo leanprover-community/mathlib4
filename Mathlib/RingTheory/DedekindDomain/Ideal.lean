@@ -284,7 +284,7 @@ protected theorem isUnit {I : FractionalIdeal A⁰ K} (hI : I ≠ 0) : IsUnit I 
 #align is_dedekind_domain_inv.is_unit IsDedekindDomainInv.isUnit
 
 theorem isNoetherianRing : IsNoetherianRing A := by
-  refine' isNoetherianRing_iff.mpr ⟨fun I : Ideal A => _⟩
+  refine isNoetherianRing_iff.mpr ⟨fun I : Ideal A => ?_⟩
   by_cases hI : I = ⊥
   · rw [hI]; apply Submodule.fg_bot
   have hI : (I : FractionalIdeal A⁰ (FractionRing A)) ≠ 0 := coeIdeal_ne_zero.mpr hI
@@ -436,7 +436,7 @@ lemma not_inv_le_one_of_ne_bot [IsDedekindDomain A] {I : Ideal A}
     rcases h_yb with ⟨c, hc⟩
     rw [← hc, RingHom.map_mul, mul_assoc, mul_inv_cancel hnz_fa, mul_one]
     apply coe_mem_one
-  · refine' mt (mem_one_iff _).mp _
+  · refine mt (mem_one_iff _).mp ?_
     rintro ⟨x', h₂_abs⟩
     rw [← div_eq_mul_inv, eq_div_iff_mul_eq hnz_fa, ← RingHom.map_mul] at h₂_abs
     have := Ideal.mem_span_singleton'.mpr ⟨x', IsFractionRing.injective A K h₂_abs⟩
@@ -555,7 +555,7 @@ protected theorem div_eq_mul_inv [IsDedekindDomain A] (I J : FractionalIdeal A�
     I / J = I * J⁻¹ := by
   by_cases hJ : J = 0
   · rw [hJ, div_zero, inv_zero', mul_zero]
-  refine' le_antisymm ((mul_right_le_iff hJ).mp _) ((le_div_iff_mul_le hJ).mpr _)
+  refine le_antisymm ((mul_right_le_iff hJ).mp ?_) ((le_div_iff_mul_le hJ).mpr ?_)
   · rw [mul_assoc, mul_comm J⁻¹, FractionalIdeal.mul_inv_cancel hJ, mul_one, mul_le]
     intro x hx y hy
     rw [mem_div_iff_of_nonzero hJ] at hx
@@ -802,14 +802,14 @@ theorem Ideal.exist_integer_multiples_not_mem {J : Ideal A} (hJ : J ≠ ⊤) {ι
   suffices ↑J / I < I⁻¹ by
     obtain ⟨_, a, hI, hpI⟩ := SetLike.lt_iff_le_and_exists.mp this
     rw [mem_inv_iff hI0] at hI
-    refine' ⟨a, fun i hi => _, _⟩
+    refine ⟨a, fun i hi => ?_, ?_⟩
     -- By definition, `a ∈ I⁻¹` multiplies elements of `I` into elements of `1`,
     -- in other words, `a * f i` is an integer.
     · exact (mem_one_iff _).mp (hI (f i) (Submodule.subset_span (Set.mem_image_of_mem f hi)))
     · contrapose! hpI
       -- And if all `a`-multiples of `I` are an element of `J`,
       -- then `a` is actually an element of `J / I`, contradiction.
-      refine' (mem_div_iff_of_nonzero hI0).mpr fun y hy => Submodule.span_induction hy _ _ _ _
+      refine (mem_div_iff_of_nonzero hI0).mpr fun y hy => Submodule.span_induction hy ?_ ?_ ?_ ?_
       · rintro _ ⟨i, hi, rfl⟩; exact hpI i hi
       · rw [mul_zero]; exact Submodule.zero_mem _
       · intro x y hx hy; rw [mul_add]; exact Submodule.add_mem _ hx hy
@@ -1307,7 +1307,7 @@ theorem IsDedekindDomain.inf_prime_pow_eq_prod {ι : Type*} (s : Finset ι) (f :
     ih (fun i hi => prime i (Finset.mem_insert_of_mem hi)) fun i hi j hj =>
       coprime i (Finset.mem_insert_of_mem hi) j (Finset.mem_insert_of_mem hj)
   rw [Finset.inf_insert, Finset.prod_insert ha, ih]
-  refine' le_antisymm (Ideal.le_mul_of_no_prime_factors _ inf_le_left inf_le_right) Ideal.mul_le_inf
+  refine le_antisymm (Ideal.le_mul_of_no_prime_factors ?_ inf_le_left inf_le_right) Ideal.mul_le_inf
   intro P hPa hPs hPp
   obtain ⟨b, hb, hPb⟩ := Ideal.prod_le_prime.mp hPs
   haveI := Ideal.isPrime_of_prime (prime a (Finset.mem_insert_self a s))

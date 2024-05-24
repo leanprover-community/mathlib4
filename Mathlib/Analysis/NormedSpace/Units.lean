@@ -78,7 +78,7 @@ protected theorem isOpen : IsOpen { x : R | IsUnit x } := by
   nontriviality R
   rw [Metric.isOpen_iff]
   rintro _ ⟨x, rfl⟩
-  refine' ⟨‖(↑x⁻¹ : R)‖⁻¹, _root_.inv_pos.mpr (Units.norm_pos x⁻¹), fun y hy ↦ _⟩
+  refine ⟨‖(↑x⁻¹ : R)‖⁻¹, _root_.inv_pos.mpr (Units.norm_pos x⁻¹), fun y hy ↦ ?_⟩
   rw [mem_ball_iff_norm] at hy
   exact (x.ofNearby y hy).isUnit
 #align units.is_open Units.isOpen
@@ -169,7 +169,7 @@ theorem inverse_one_sub_norm : (fun t : R => inverse (1 - t)) =O[𝓝 0] (fun _t
   have := NormedRing.tsum_geometric_of_norm_lt_one t ht'
   have : (1 - ‖t‖)⁻¹ ≤ 2 := by
     rw [← inv_inv (2 : ℝ)]
-    refine' inv_le_inv_of_le (by norm_num) _
+    refine inv_le_inv_of_le (by norm_num) ?_
     have : (2 : ℝ)⁻¹ + (2 : ℝ)⁻¹ = 1 := by ring
     linarith
   linarith
@@ -216,7 +216,7 @@ theorem inverse_continuousAt (x : Rˣ) : ContinuousAt inverse (x : R) := by
   have h_is_o : (fun t : R => inverse (↑x + t) - ↑x⁻¹) =o[𝓝 0] (fun _ => 1 : R → ℝ) :=
     (inverse_add_norm_diff_first_order x).trans_isLittleO (isLittleO_id_const one_ne_zero).norm_left
   have h_lim : Tendsto (fun y : R => y - x) (𝓝 x) (𝓝 0) := by
-    refine' tendsto_zero_iff_norm_tendsto_zero.mpr _
+    refine tendsto_zero_iff_norm_tendsto_zero.mpr ?_
     exact tendsto_iff_norm_sub_tendsto_zero.mp tendsto_id
   rw [ContinuousAt, tendsto_iff_norm_sub_tendsto_zero, inverse_unit]
   simpa [(· ∘ ·)] using h_is_o.norm_left.tendsto_div_nhds_zero.comp h_lim
