@@ -291,17 +291,17 @@ That is, a oplax monoidal functor `F : C ⥤ D` induces a functor `Comon_ C ⥤ 
 def mapComon (F : OplaxMonoidalFunctor C D) : Comon_ C ⥤ Comon_ D where
   obj A :=
     { X := F.obj A.X
-      counit := F.map A.counit ≫ F.ε
-      comul := F.map A.comul ≫ F.μ _ _
+      counit := F.map A.counit ≫ F.η
+      comul := F.map A.comul ≫ F.δ _ _
       counit_comul := by
-        simp_rw [comp_whiskerRight, Category.assoc, F.μ_natural_left_assoc, F.left_unitality,
+        simp_rw [comp_whiskerRight, Category.assoc, F.δ_natural_left_assoc, F.left_unitality,
           ← F.map_comp_assoc, A.counit_comul]
       comul_counit := by
-        simp_rw [MonoidalCategory.whiskerLeft_comp, Category.assoc, F.μ_natural_right_assoc,
+        simp_rw [MonoidalCategory.whiskerLeft_comp, Category.assoc, F.δ_natural_right_assoc,
           F.right_unitality, ← F.map_comp_assoc, A.comul_counit]
       comul_assoc := by
-        simp_rw [comp_whiskerRight, Category.assoc, F.μ_natural_left_assoc,
-          MonoidalCategory.whiskerLeft_comp, Category.assoc, F.μ_natural_right_assoc,
+        simp_rw [comp_whiskerRight, Category.assoc, F.δ_natural_left_assoc,
+          MonoidalCategory.whiskerLeft_comp, Category.assoc, F.δ_natural_right_assoc,
           ← F.map_comp_assoc, ← A.comul_assoc_flip, F.map_comp, F.associativity_inv]
         slice_lhs 3 4 =>
           rw [← F.map_comp, Iso.hom_inv_id, F.map_id]
@@ -311,7 +311,7 @@ def mapComon (F : OplaxMonoidalFunctor C D) : Comon_ C ⥤ Comon_ D where
       hom_counit := by dsimp; rw [← F.map_comp_assoc, f.hom_counit]
       hom_comul := by
         dsimp
-        rw [Category.assoc, F.μ_natural, ← F.map_comp_assoc, ← F.map_comp_assoc, f.hom_comul] }
+        rw [Category.assoc, F.δ_natural, ← F.map_comp_assoc, ← F.map_comp_assoc, f.hom_comul] }
   map_id A := by ext; simp
   map_comp f g := by ext; simp
 
