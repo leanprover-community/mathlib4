@@ -103,12 +103,12 @@ theorem tendsto_natCast_div_add_atTop {𝕜 : Type*} [DivisionRing 𝕜] [Topolo
   · have : 𝓝 (1 : 𝕜) = 𝓝 (1 / (1 + x * (0 : 𝕜))) := by
       rw [mul_zero, add_zero, div_one]
     rw [this]
-    refine' tendsto_const_nhds.div (tendsto_const_nhds.add _) (by simp)
+    refine tendsto_const_nhds.div (tendsto_const_nhds.add ?_) (by simp)
     simp_rw [div_eq_mul_inv]
-    refine' tendsto_const_nhds.mul _
+    refine tendsto_const_nhds.mul ?_
     have := ((continuous_algebraMap ℝ 𝕜).tendsto _).comp tendsto_inverse_atTop_nhds_zero_nat
     rw [map_zero, Filter.tendsto_atTop'] at this
-    refine' Iff.mpr tendsto_atTop' _
+    refine Iff.mpr tendsto_atTop' ?_
     intros
     simp_all only [comp_apply, map_inv₀, map_natCast]
 #align tendsto_coe_nat_div_add_at_top tendsto_natCast_div_add_atTop
@@ -394,9 +394,9 @@ variable [PseudoEMetricSpace α] (r C : ℝ≥0∞) (hr : r < 1) (hC : C ≠ ⊤
 /-- If `edist (f n) (f (n+1))` is bounded by `C * r^n`, `C ≠ ∞`, `r < 1`,
 then `f` is a Cauchy sequence. -/
 theorem cauchySeq_of_edist_le_geometric : CauchySeq f := by
-  refine' cauchySeq_of_edist_le_of_tsum_ne_top _ hu _
+  refine cauchySeq_of_edist_le_of_tsum_ne_top _ hu ?_
   rw [ENNReal.tsum_mul_left, ENNReal.tsum_geometric]
-  refine' ENNReal.mul_ne_top hC (ENNReal.inv_ne_top.2 _)
+  refine ENNReal.mul_ne_top hC (ENNReal.inv_ne_top.2 ?_)
   exact (tsub_pos_iff_lt.2 hr).ne'
 #align cauchy_seq_of_edist_le_geometric cauchySeq_of_edist_le_geometric
 
@@ -425,7 +425,7 @@ variable [PseudoEMetricSpace α] (C : ℝ≥0∞) (hC : C ≠ ⊤) {f : ℕ → 
 /-- If `edist (f n) (f (n+1))` is bounded by `C * 2^-n`, then `f` is a Cauchy sequence. -/
 theorem cauchySeq_of_edist_le_geometric_two : CauchySeq f := by
   simp only [div_eq_mul_inv, ENNReal.inv_pow] at hu
-  refine' cauchySeq_of_edist_le_geometric 2⁻¹ C _ hC hu
+  refine cauchySeq_of_edist_le_geometric 2⁻¹ C ?_ hC hu
   simp [ENNReal.one_lt_two]
 #align cauchy_seq_of_edist_le_geometric_two cauchySeq_of_edist_le_geometric_two
 
@@ -455,7 +455,7 @@ variable [PseudoMetricSpace α] {r C : ℝ} (hr : r < 1) {f : ℕ → α}
 theorem aux_hasSum_of_le_geometric : HasSum (fun n : ℕ ↦ C * r ^ n) (C / (1 - r)) := by
   rcases sign_cases_of_C_mul_pow_nonneg fun n ↦ dist_nonneg.trans (hu n) with (rfl | ⟨_, r₀⟩)
   · simp [hasSum_zero]
-  · refine' HasSum.mul_left C _
+  · refine HasSum.mul_left C ?_
     simpa using hasSum_geometric_of_lt_one r₀ hr
 #align aux_has_sum_of_le_geometric aux_hasSum_of_le_geometric
 
@@ -522,7 +522,7 @@ theorem summable_one_div_pow_of_le {m : ℝ} {f : ℕ → ℕ} (hm : 1 < m) (fi 
       (summable_geometric_of_lt_one (one_div_nonneg.mpr (zero_le_one.trans hm.le))
         ((one_div_lt (zero_lt_one.trans hm) zero_lt_one).mpr (one_div_one.le.trans_lt hm)))
   rw [div_pow, one_pow]
-  refine' (one_div_le_one_div _ _).mpr (pow_le_pow_right hm.le (fi a)) <;>
+  refine (one_div_le_one_div ?_ ?_).mpr (pow_le_pow_right hm.le (fi a)) <;>
     exact pow_pos (zero_lt_one.trans hm) _
 #align summable_one_div_pow_of_le summable_one_div_pow_of_le
 
@@ -548,7 +548,7 @@ theorem Set.Countable.exists_pos_hasSum_le {ι : Type*} {s : Set ι} (hs : s.Cou
     (hε : 0 < ε) : ∃ ε' : ι → ℝ, (∀ i, 0 < ε' i) ∧ ∃ c, HasSum (fun i : s ↦ ε' i) c ∧ c ≤ ε := by
   haveI := hs.toEncodable
   rcases posSumOfEncodable hε s with ⟨f, hf0, ⟨c, hfc, hcε⟩⟩
-  refine' ⟨fun i ↦ if h : i ∈ s then f ⟨i, h⟩ else 1, fun i ↦ _, ⟨c, _, hcε⟩⟩
+  refine ⟨fun i ↦ if h : i ∈ s then f ⟨i, h⟩ else 1, fun i ↦ ?_, ⟨c, ?_, hcε⟩⟩
   · conv_rhs => simp
     split_ifs
     exacts [hf0 _, zero_lt_one]
@@ -561,7 +561,7 @@ theorem Set.Countable.exists_pos_forall_sum_le {ι : Type*} {s : Set ι} (hs : s
   rcases hs.exists_pos_hasSum_le hε with ⟨ε', hpos, c, hε'c, hcε⟩
   refine ⟨ε', hpos, fun t ht ↦ ?_⟩
   rw [← sum_subtype_of_mem _ ht]
-  refine' (sum_le_hasSum _ _ hε'c).trans hcε
+  refine (sum_le_hasSum _ ?_ hε'c).trans hcε
   exact fun _ _ ↦ (hpos _).le
 #align set.countable.exists_pos_forall_sum_le Set.Countable.exists_pos_forall_sum_le
 
@@ -601,10 +601,10 @@ theorem exists_pos_tsum_mul_lt_of_countable {ε : ℝ≥0∞} (hε : ε ≠ 0) {
   lift w to ι → ℝ≥0 using hw
   rcases exists_pos_sum_of_countable hε ι with ⟨δ', Hpos, Hsum⟩
   have : ∀ i, 0 < max 1 (w i) := fun i ↦ zero_lt_one.trans_le (le_max_left _ _)
-  refine' ⟨fun i ↦ δ' i / max 1 (w i), fun i ↦ div_pos (Hpos _) (this i), _⟩
-  refine' lt_of_le_of_lt (ENNReal.tsum_le_tsum fun i ↦ _) Hsum
+  refine ⟨fun i ↦ δ' i / max 1 (w i), fun i ↦ div_pos (Hpos _) (this i), ?_⟩
+  refine lt_of_le_of_lt (ENNReal.tsum_le_tsum fun i ↦ ?_) Hsum
   rw [coe_div (this i).ne']
-  refine' mul_le_of_le_div' (mul_le_mul_left' (ENNReal.inv_le_inv.2 _) _)
+  refine mul_le_of_le_div' (mul_le_mul_left' (ENNReal.inv_le_inv.2 ?_) _)
   exact coe_le_coe.2 (le_max_right _ _)
 #align ennreal.exists_pos_tsum_mul_lt_of_countable ENNReal.exists_pos_tsum_mul_lt_of_countable
 
@@ -627,18 +627,18 @@ theorem tendsto_factorial_div_pow_self_atTop :
       div_nonneg (mod_cast n.factorial_pos.le)
         (pow_nonneg (mod_cast n.zero_le) _))
     (by
-      refine' (eventually_gt_atTop 0).mono fun n hn ↦ _
+      refine (eventually_gt_atTop 0).mono fun n hn ↦ ?_
       rcases Nat.exists_eq_succ_of_ne_zero hn.ne.symm with ⟨k, rfl⟩
       rw [← prod_range_add_one_eq_factorial, pow_eq_prod_const, div_eq_mul_inv, ← inv_eq_one_div,
         prod_natCast, Nat.cast_succ, ← prod_inv_distrib, ← prod_mul_distrib,
         Finset.prod_range_succ']
       simp only [prod_range_succ', one_mul, Nat.cast_add, zero_add, Nat.cast_one]
-      refine'
-            mul_le_of_le_one_left (inv_nonneg.mpr <| mod_cast hn.le) (prod_le_one _ _) <;>
+      refine
+            mul_le_of_le_one_left (inv_nonneg.mpr <| mod_cast hn.le) (prod_le_one ?_ ?_) <;>
           intro x hx <;>
         rw [Finset.mem_range] at hx
       · positivity
-      · refine' (div_le_one <| mod_cast hn).mpr _
+      · refine (div_le_one <| mod_cast hn).mpr ?_
         norm_cast
         omega)
 #align tendsto_factorial_div_pow_self_at_top tendsto_factorial_div_pow_self_atTop
@@ -673,12 +673,12 @@ theorem tendsto_nat_floor_mul_div_atTop {a : R} (ha : 0 ≤ a) :
     tendsto_const_nhds.sub tendsto_inv_atTop_zero
   rw [sub_zero] at A
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le' A tendsto_const_nhds
-  · refine' eventually_atTop.2 ⟨1, fun x hx ↦ _⟩
+  · refine eventually_atTop.2 ⟨1, fun x hx ↦ ?_⟩
     simp only [le_div_iff (zero_lt_one.trans_le hx), _root_.sub_mul,
       inv_mul_cancel (zero_lt_one.trans_le hx).ne']
     have := Nat.lt_floor_add_one (a * x)
     linarith
-  · refine' eventually_atTop.2 ⟨1, fun x hx ↦ _⟩
+  · refine eventually_atTop.2 ⟨1, fun x hx ↦ ?_⟩
     rw [div_le_iff (zero_lt_one.trans_le hx)]
     simp [Nat.floor_le (mul_nonneg ha (zero_le_one.trans hx))]
 #align tendsto_nat_floor_mul_div_at_top tendsto_nat_floor_mul_div_atTop
@@ -693,10 +693,10 @@ theorem tendsto_nat_ceil_mul_div_atTop {a : R} (ha : 0 ≤ a) :
     tendsto_const_nhds.add tendsto_inv_atTop_zero
   rw [add_zero] at A
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds A
-  · refine' eventually_atTop.2 ⟨1, fun x hx ↦ _⟩
+  · refine eventually_atTop.2 ⟨1, fun x hx ↦ ?_⟩
     rw [le_div_iff (zero_lt_one.trans_le hx)]
     exact Nat.le_ceil _
-  · refine' eventually_atTop.2 ⟨1, fun x hx ↦ _⟩
+  · refine eventually_atTop.2 ⟨1, fun x hx ↦ ?_⟩
     simp [div_le_iff (zero_lt_one.trans_le hx), inv_mul_cancel (zero_lt_one.trans_le hx).ne',
       (Nat.ceil_lt_add_one (mul_nonneg ha (zero_le_one.trans hx))).le, add_mul]
 #align tendsto_nat_ceil_mul_div_at_top tendsto_nat_ceil_mul_div_atTop
