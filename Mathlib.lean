@@ -3530,6 +3530,7 @@ import Mathlib.RingTheory.Norm
 import Mathlib.RingTheory.NormTrace
 import Mathlib.RingTheory.Nullstellensatz
 import Mathlib.RingTheory.OreLocalization.Basic
+import Mathlib.RingTheory.OreLocalization.Module
 import Mathlib.RingTheory.OreLocalization.OreSet
 import Mathlib.RingTheory.Perfection
 import Mathlib.RingTheory.PiTensorProduct

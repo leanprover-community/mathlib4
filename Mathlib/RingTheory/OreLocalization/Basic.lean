@@ -5,7 +5,7 @@ Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 -/
 import Mathlib.GroupTheory.MonoidLocalization
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.RingTheory.OreLocalization.OreSet
 
 #align_import ring_theory.ore_localization.basic from "leanprover-community/mathlib"@"861a26926586cd46ff80264d121cdb6fa0e35cc1"
@@ -880,6 +880,17 @@ instance instModuleOreLocalization : Module R[S⁻¹] (OreLocalization S X) :=
   { instDistribMulActionOreLocalization with
     add_smul := OreLocalization.add_smul
     zero_smul := OreLocalization.zero_smul }
+
+instance instModuleOreLocalization' : Module R (OreLocalization S X) :=
+  { instDistribMulActionOreLocalization' with
+    add_smul := fun _ _ _ ↦ by simp_rw [← oreDiv_one_smul,← add_oreDiv, add_smul]
+    zero_smul := fun _ ↦ by rw [← oreDiv_one_smul, zero_oreDiv, zero_smul] }
+
+/-- The linear map from `X` to `X[S⁻¹]` sending `x` to `x /ₒ 1`. -/
+def mkLinearMap : X →ₗ[R] OreLocalization S X where
+  toFun x := x /ₒ 1
+  map_add' x y := by simp only [add_oreDiv]
+  map_smul' r x := by simp only [RingHom.id_apply, ← oreDiv_one_smul, smul_div_one]
 
 section UMP
 
