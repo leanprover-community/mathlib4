@@ -198,8 +198,6 @@ theorem mul_lt_right₀ (c : α) (h : a < b) (hc : c ≠ 0) : a * c < b * c := b
 
 theorem inv_lt_inv₀ (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ < b⁻¹ ↔ b < a :=
   show (Units.mk0 a ha)⁻¹ < (Units.mk0 b hb)⁻¹ ↔ Units.mk0 b hb < Units.mk0 a ha from
-    haveI : MulLeftStrictMono αˣ :=
-      IsLeftCancelMul.mulLeftStrictMono_of_mulLeftMono
     inv_lt_inv_iff
 #align inv_lt_inv₀ inv_lt_inv₀
 
