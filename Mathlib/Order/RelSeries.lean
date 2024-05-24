@@ -89,6 +89,10 @@ lemma coe_ofLE (x : RelSeries r) {s : Rel α α} (h : r ≤ s) :
 /-- Every relation series gives a list -/
 def toList (x : RelSeries r) : List α := List.ofFn x
 
+@[simp]
+lemma length_toList (x : RelSeries r) : x.toList.length = x.length + 1 :=
+  List.length_ofFn _
+
 lemma toList_chain' (x : RelSeries r) : x.toList.Chain' r := by
   rw [List.chain'_iff_get]
   intros i h

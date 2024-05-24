@@ -63,6 +63,11 @@ However an instance of `JordanHolderLattice` for a modular lattice will not be a
 the correct notion of isomorphism for modules, so a separate instance for modules will still be
 required and this will clash with the instance for modular lattices, and so at least one of these
 instances should not be a global instance.
+
+> [!NOTE]
+> The previous paragraph indicates that the instance of `JordanHolderLattice` for submodules should
+> be obtained via `ModularLattice`. This is not the case in `mathlib4`.
+> See `JordanHolderModule.instJordanHolderLattice`.
 -/
 
 
@@ -175,7 +180,7 @@ theorem total {s : CompositionSeries X} {x y : X} (hx : x ∈ s) (hy : y ∈ s) 
 
 #align composition_series.to_list RelSeries.toList
 #align composition_series.ext_fun RelSeries.ext
-#noalign composition_series.length_to_list
+#align composition_series.length_to_list RelSeries.length_toList
 #align composition_series.to_list_ne_nil RelSeries.toList_ne_empty
 
 theorem toList_injective : Function.Injective (RelSeries.toList (r := IsMaximal (X := X))) :=
@@ -186,7 +191,7 @@ theorem toList_injective : Function.Injective (RelSeries.toList (r := IsMaximal 
 
 theorem toList_sorted (s : CompositionSeries X) : s.toList.Sorted (· < ·) :=
   List.pairwise_iff_get.2 fun i j h => by
-    dsimp [RelSeries.toList]
+    dsimp only [RelSeries.toList]
     rw [List.get_ofFn, List.get_ofFn]
     exact s.strictMono h
 #align composition_series.to_list_sorted CompositionSeries.toList_sorted
