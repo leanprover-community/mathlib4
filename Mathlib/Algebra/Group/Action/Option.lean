@@ -15,12 +15,12 @@ multiplication is defined by `a • some b = some (a • b)` and `a • none = n
 
 ## See also
 
-* `GroupTheory.GroupAction.Pi`
-* `GroupTheory.GroupAction.Prod`
-* `GroupTheory.GroupAction.Sigma`
-* `GroupTheory.GroupAction.Sum`
+* `Mathlib.Algebra.Group.Action.Pi`
+* `Mathlib.Algebra.Group.Action.Sigma`
+* `Mathlib.Algebra.Group.Action.Sum`
 -/
 
+assert_not_exists MonoidWithZero
 
 variable {M N α : Type*}
 

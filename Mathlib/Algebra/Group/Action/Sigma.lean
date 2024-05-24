@@ -14,10 +14,13 @@ This file defines instances for arbitrary sum of additive and multiplicative act
 
 ## See also
 
-* `GroupTheory.GroupAction.Pi`
-* `GroupTheory.GroupAction.Prod`
-* `GroupTheory.GroupAction.Sum`
+* `Mathlib.Algebra.Group.Action.Option`
+* `Mathlib.Algebra.Group.Action.Pi`
+* `Mathlib.Algebra.Group.Action.Prod`
+* `Mathlib.Algebra.Group.Action.Sum`
 -/
+
+assert_not_exists MonoidWithZero
 
 
 variable {ι : Type*} {M N : Type*} {α : ι → Type*}

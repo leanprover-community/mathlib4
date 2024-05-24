@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.Ring.Pi
-import Mathlib.GroupTheory.GroupAction.Pi
 
 #align_import algebra.big_operators.pi from "leanprover-community/mathlib"@"fa2309577c7009ea243cffdf990cd6c84f0ad497"
 
