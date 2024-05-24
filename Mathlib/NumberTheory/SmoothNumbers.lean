@@ -277,7 +277,7 @@ lemma primeFactors_subset_of_mem_smoothNumbers {m n : ℕ} (hms : m ∈ n.smooth
 
 /-- `m > 1` is a `n`-smooth number if all of its prime factors are contained in the set of
   primes below `n` -/
-lemma mem_smoothNumbers_of_primeFactors_subset (m n : ℕ) (hm : m ≠ 0)
+lemma mem_smoothNumbers_of_primeFactors_subset {m n : ℕ} (hm : m ≠ 0)
     (hp : m.primeFactors ⊆ n.primesBelow) : m ∈ n.smoothNumbers :=
   ⟨hm, fun _ h => lt_of_mem_primesBelow <| hp <| mem_primeFactors_iff_mem_factors.mpr h⟩
 
