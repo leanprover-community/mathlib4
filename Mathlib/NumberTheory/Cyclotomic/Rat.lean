@@ -429,6 +429,7 @@ theorem not_exists_int_prime_dvd_sub_of_prime_pow_ne_two
     (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1))) (htwo : p ^ (k + 1) ≠ 2) :
     ¬(∃ n : ℤ, (p : 𝓞 K) ∣ (hζ.toInteger - n : 𝓞 K)) := by
   intro ⟨n, x, h⟩
+  -- Let `pB` be the power basis of `𝓞 K` given by powers of `ζ`.
   let pB := hζ.integralPowerBasis
   have hdim : pB.dim = ↑p ^ k * (↑p - 1) := by
     simp [integralPowerBasis_dim, pB, Nat.totient_prime_pow hp.1 (Nat.zero_lt_succ k)]
@@ -444,6 +445,8 @@ theorem not_exists_int_prime_dvd_sub_of_prime_pow_ne_two
       exact one_lt_mul_of_lt_of_le (one_lt_pow hp.1.one_lt hk)
         (have := Nat.Prime.two_le hp.1; by omega)
   rw [sub_eq_iff_eq_add] at h
+  -- We are assuming that `ζ = n + p * x` for some integer `n` and `x : 𝓞 K`. Looking at the
+  -- coordinates in the base `pB`, we obtain that `1` is a multiple of `p`, contradiction.
   replace h := pB.basis.ext_elem_iff.1 h ⟨1, hdim⟩
   have := pB.basis_eq_pow ⟨1, hdim⟩
   rw [hζ.integralPowerBasis_gen] at this
