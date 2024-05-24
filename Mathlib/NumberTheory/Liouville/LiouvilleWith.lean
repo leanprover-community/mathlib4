@@ -358,7 +358,7 @@ theorem frequently_exists_num (hx : Liouville x) (n : ℕ) :
   rcases hx m with ⟨a, b, hb, hne, hlt⟩
   lift b to ℕ using zero_le_one.trans hb.le; norm_cast at hb; push_cast at hne hlt
   rcases le_or_lt N b with h | h
-  · refine' (hN b h a hne).not_lt (hlt.trans_le _)
+  · refine (hN b h a hne).not_lt (hlt.trans_le ?_)
     gcongr
     exact_mod_cast hb.le
   · exact (hm b h hb _).not_lt hlt

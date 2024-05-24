@@ -305,7 +305,7 @@ theorem isBasis_iff_nbhd {B : Set (Opens α)} :
     dsimp at H₂
     subst H₂
     exact hsV
-  · refine' isTopologicalBasis_of_isOpen_of_nhds _ _
+  · refine isTopologicalBasis_of_isOpen_of_nhds ?_ ?_
     · rintro sU ⟨U, -, rfl⟩
       exact U.2
     · intro x sU hx hsU
@@ -345,7 +345,7 @@ theorem IsBasis.isCompact_open_iff_eq_finite_iUnion {ι : Type*} (b : ι → Ope
 theorem isCompactElement_iff (s : Opens α) :
     CompleteLattice.IsCompactElement s ↔ IsCompact (s : Set α) := by
   rw [isCompact_iff_finite_subcover, CompleteLattice.isCompactElement_iff]
-  refine' ⟨_, fun H ι U hU => _⟩
+  refine ⟨?_, fun H ι U hU => ?_⟩
   · introv H hU hU'
     obtain ⟨t, ht⟩ := H ι (fun i => ⟨U i, hU i⟩) (by simpa)
     refine ⟨t, Set.Subset.trans ht ?_⟩
