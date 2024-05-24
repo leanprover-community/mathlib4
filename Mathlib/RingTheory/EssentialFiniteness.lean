@@ -30,7 +30,7 @@ class EssFiniteType : Prop where
     IsLocalization ((IsUnit.submonoid S).comap (algebraMap (Algebra.adjoin R (s : Set S)) S)) S
 
 lemma essFiniteType_cond_iff (σ : Finset S) :
- IsLocalization ((IsUnit.submonoid S).comap (algebraMap (Algebra.adjoin R (σ : Set S)) S)) S ↔
+   IsLocalization ((IsUnit.submonoid S).comap (algebraMap (Algebra.adjoin R (σ : Set S)) S)) S ↔
     (∀ s : S, ∃ t ∈ Algebra.adjoin R (σ : Set S),
       IsUnit t ∧ s * t ∈ Algebra.adjoin R (σ : Set S)) := by
   constructor <;> intro hσ
@@ -49,9 +49,9 @@ lemma essFiniteType_cond_iff (σ : Finset S) :
       exact e
 
 lemma essFiniteType_iff :
-  EssFiniteType R S ↔ ∃ (σ : Finset S),
-    (∀ s : S, ∃ t ∈ Algebra.adjoin R (σ : Set S),
-      IsUnit t ∧ s * t ∈ Algebra.adjoin R (σ : Set S)) := by
+    EssFiniteType R S ↔ ∃ (σ : Finset S),
+      (∀ s : S, ∃ t ∈ Algebra.adjoin R (σ : Set S),
+        IsUnit t ∧ s * t ∈ Algebra.adjoin R (σ : Set S)) := by
   simp_rw [← essFiniteType_cond_iff]
   constructor <;> exact fun ⟨a, b⟩ ↦ ⟨a, b⟩
 
