@@ -70,7 +70,7 @@ theorem IsIntegralClosure.isLocalization [Algebra.IsAlgebraic K L] :
     (IsIntegralClosure.equiv A C L (integralClosure A L)).toMulEquiv.isDomain (integralClosure A L)
   haveI : NoZeroSMulDivisors A L := NoZeroSMulDivisors.trans A K L
   haveI : NoZeroSMulDivisors A C := IsIntegralClosure.noZeroSMulDivisors A L
-  refine ⟨?_, fun z => ?_, fun {x y} h => ⟨1?, _⟩⟩
+  refine ⟨?_, fun z => ?_, fun {x y} h => ⟨1, ?_⟩⟩
   · rintro ⟨_, x, hx, rfl⟩
     rw [isUnit_iff_ne_zero, map_ne_zero_iff _ (IsIntegralClosure.algebraMap_injective C A L),
       Subtype.coe_mk, map_ne_zero_iff _ (NoZeroSMulDivisors.algebraMap_injective A C)]

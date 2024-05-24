@@ -1087,7 +1087,7 @@ theorem exists_subset_real_measurableEquiv : ∃ s : Set ℝ, MeasurableSet s �
           continuous_of_discreteTopology.measurableEmbedding
             (Nat.cast_injective.comp Fin.val_injective)
     · refine ⟨_, ?_, measurableEquiv_range_coe_nat_of_infinite_of_countable α⟩
-      refine MeasurableEmbedding.measurableSet_range ?_
+      refine' MeasurableEmbedding.measurableSet_range _
       · infer_instance
       · exact continuous_of_discreteTopology.measurableEmbedding Nat.cast_injective
   · refine
