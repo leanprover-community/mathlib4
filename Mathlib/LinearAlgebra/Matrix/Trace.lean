@@ -3,12 +3,8 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
-import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Block
-import Mathlib.Data.Matrix.PEquiv
 import Mathlib.Data.Matrix.RowCol
-import Mathlib.Data.Set.Card
-import Mathlib.Dynamics.FixedPoints.Basic
 
 #align_import linear_algebra.matrix.trace from "leanprover-community/mathlib"@"32b08ef840dd25ca2e47e035c5da03ce16d2dc3c"
 
@@ -198,11 +194,6 @@ lemma trace_submatrix_succ {n : ℕ} [NonUnitalNonAssocSemiring R]
   delta trace
   rw [← (finSuccEquiv n).symm.sum_comp]
   simp
-
-theorem trace_permutation [DecidableEq n] [AddCommMonoidWithOne R] (σ : Equiv.Perm n) :
-    Matrix.trace (σ.toPEquiv.toMatrix : Matrix n n R) = (Function.fixedPoints σ).ncard := by
-  delta trace
-  simp [Equiv.toPEquiv_apply, ← Set.ncard_coe_Finset, Function.fixedPoints, Function.IsFixedPt]
 
 section Fin
 
