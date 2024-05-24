@@ -42,7 +42,9 @@ variable [∀ x : M, TopologicalSpace (V x)] [FiberBundle F V] [VectorBundle �
 
 /-- Bundled `n` times continuously differentiable sections of a vector bundle. -/
 structure ContMDiffSection where
+  /-- the underlying function of this section -/
   protected toFun : ∀ x, V x
+  /-- proof that this section is `C^n` -/
   protected contMDiff_toFun : ContMDiff I (I.prod 𝓘(𝕜, F)) n fun x ↦
     TotalSpace.mk' F x (toFun x)
 #align cont_mdiff_section ContMDiffSection
@@ -109,7 +111,7 @@ theorem ext (h : ∀ x, s x = t x) : s = t := DFunLike.ext _ _ h
 #align cont_mdiff_section.ext ContMDiffSection.ext
 
 instance instAdd : Add Cₛ^n⟮I; F, V⟯ := by
-  refine' ⟨fun s t => ⟨s + t, _⟩⟩
+  refine ⟨fun s t => ⟨s + t, ?_⟩⟩
   intro x₀
   have hs := s.contMDiff x₀
   have ht := t.contMDiff x₀
@@ -127,7 +129,7 @@ theorem coe_add (s t : Cₛ^n⟮I; F, V⟯) : ⇑(s + t) = ⇑s + t :=
 #align cont_mdiff_section.coe_add ContMDiffSection.coe_add
 
 instance instSub : Sub Cₛ^n⟮I; F, V⟯ := by
-  refine' ⟨fun s t => ⟨s - t, _⟩⟩
+  refine ⟨fun s t => ⟨s - t, ?_⟩⟩
   intro x₀
   have hs := s.contMDiff x₀
   have ht := t.contMDiff x₀
@@ -158,7 +160,7 @@ theorem coe_zero : ⇑(0 : Cₛ^n⟮I; F, V⟯) = 0 :=
 #align cont_mdiff_section.coe_zero ContMDiffSection.coe_zero
 
 instance instSMul : SMul 𝕜 Cₛ^n⟮I; F, V⟯ := by
-  refine' ⟨fun c s => ⟨c • ⇑s, _⟩⟩
+  refine ⟨fun c s => ⟨c • ⇑s, ?_⟩⟩
   intro x₀
   have hs := s.contMDiff x₀
   rw [contMDiffAt_section] at hs ⊢
@@ -176,7 +178,7 @@ theorem coe_smul (r : 𝕜) (s : Cₛ^n⟮I; F, V⟯) : ⇑(r • s : Cₛ^n⟮I
 #align cont_mdiff_section.coe_smul ContMDiffSection.coe_smul
 
 instance instNeg : Neg Cₛ^n⟮I; F, V⟯ := by
-  refine' ⟨fun s => ⟨-s, _⟩⟩
+  refine ⟨fun s => ⟨-s, ?_⟩⟩
   intro x₀
   have hs := s.contMDiff x₀
   rw [contMDiffAt_section] at hs ⊢
@@ -210,9 +212,9 @@ instance instZSMul : SMul ℤ Cₛ^n⟮I; F, V⟯ :=
 @[simp]
 theorem coe_zsmul (s : Cₛ^n⟮I; F, V⟯) (z : ℤ) : ⇑(z • s : Cₛ^n⟮I; F, V⟯) = z • ⇑s := by
   cases' z with n n
-  · refine' (coe_nsmul s n).trans _
+  · refine (coe_nsmul s n).trans ?_
     simp only [Int.ofNat_eq_coe, natCast_zsmul]
-  · refine' (congr_arg Neg.neg (coe_nsmul s (n + 1))).trans _
+  · refine (congr_arg Neg.neg (coe_nsmul s (n + 1))).trans ?_
     simp only [negSucc_zsmul, neg_inj]
 #align cont_mdiff_section.coe_zsmul ContMDiffSection.coe_zsmul
 

@@ -218,8 +218,7 @@ theorem toStalk_stalkMap_toΓSpec (x : X) :
       ⟨X.toΓSpecFun x, by rw [basicOpen_one]; trivial⟩]
   rw [← Category.assoc, Category.assoc (toOpen _ _)]
   erw [stalkFunctor_map_germ]
-  -- Porting note: was `rw [← assoc, toΓSpecSheafedSpace_app_spec]`, but Lean did not like it.
-  rw [toΓSpecSheafedSpace_app_spec_assoc]
+  rw [← Category.assoc, toΓSpecSheafedSpace_app_spec]
   unfold ΓToStalk
   rw [← stalkPushforward_germ _ X.toΓSpecBase X.presheaf ⊤]
   congr 1
@@ -294,9 +293,9 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
     symm
     apply LocallyRingedSpace.comp_ring_hom_ext
     · ext1 x
-      dsimp [Spec.topMap, LocallyRingedSpace.toΓSpecFun]
+      dsimp only [Spec.topMap, LocallyRingedSpace.toΓSpecFun]
       -- Porting note: Had to add the next four lines
-      rw [comp_apply, comp_apply]
+      rw [comp_apply]
       dsimp [toΓSpecBase]
       -- The next six lines were `rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk]` before
       -- leanprover/lean4#2644
@@ -333,7 +332,7 @@ theorem right_triangle (R : CommRingCat) :
       𝟙 _ := by
   apply LocallyRingedSpace.comp_ring_hom_ext
   · ext (p : PrimeSpectrum R)
-    change _ = p -- Porting note: Had to add this line to make `ext x` work.
+    dsimp
     ext x
     erw [← IsLocalization.AtPrime.to_map_mem_maximal_iff ((structureSheaf R).presheaf.stalk p)
         p.asIdeal x]

@@ -367,7 +367,7 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
     have hC : IsClosed C := (isCompact_range f.continuous).isClosed
     let U := Cᶜ
     have hyU : y ∈ U := by
-      refine' Set.mem_compl _
+      refine Set.mem_compl ?_
       rintro ⟨y', hy'⟩
       exact hy y' hy'
     have hUy : U ∈ 𝓝 y := hC.compl_mem_nhds hyU
@@ -384,7 +384,7 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
         -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
         erw [comp_apply, ContinuousMap.coe_mk, comp_apply, ContinuousMap.coe_mk,
           Function.comp_apply, if_neg]
-        refine' mt (fun α => hVU α) _
+        refine mt (fun α => hVU α) ?_
         simp only [U, C, Set.mem_range_self, not_true, not_false_iff, Set.mem_compl_iff]
       apply_fun fun e => (e y).down at H
       dsimp [g, LocallyConstant.ofIsClopen] at H

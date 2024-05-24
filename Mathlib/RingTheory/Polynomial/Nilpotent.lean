@@ -32,9 +32,9 @@ variable [Semiring R] {P : R[X]}
 
 lemma isNilpotent_C_mul_pow_X_of_isNilpotent (n : ℕ) (hnil : IsNilpotent r) :
     IsNilpotent ((C r) * X ^ n) := by
-  refine' Commute.isNilpotent_mul_left (commute_X_pow _ _).symm _
+  refine Commute.isNilpotent_mul_left (commute_X_pow _ _).symm ?_
   obtain ⟨m, hm⟩ := hnil
-  refine' ⟨m, _⟩
+  refine ⟨m, ?_⟩
   rw [← C_pow, hm, C_0]
 
 lemma isNilpotent_pow_X_mul_C_of_isNilpotent (n : ℕ) (hnil : IsNilpotent r) :
@@ -52,7 +52,7 @@ lemma isNilpotent_pow_X_mul_C_of_isNilpotent (n : ℕ) (hnil : IsNilpotent r) :
 
 @[simp] lemma isNilpotent_X_mul_iff :
     IsNilpotent (X * P) ↔ IsNilpotent P := by
-  refine' ⟨fun h ↦ _, _⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · rwa [Commute.isNilpotent_mul_right_iff (commute_X P) (by simp)] at h
   · rintro ⟨k, hk⟩
     exact ⟨k, by simp [(commute_X P).mul_pow, hk]⟩
@@ -70,13 +70,14 @@ variable [CommRing R] {P : R[X]}
 
 protected lemma isNilpotent_iff :
     IsNilpotent P ↔ ∀ i, IsNilpotent (coeff P i) := by
-  refine' ⟨P.recOnHorner (by simp) (fun p r hp₀ _ hp hpr i ↦ _) (fun p _ hnp hpX i ↦ _), fun h ↦ _⟩
+  refine
+    ⟨P.recOnHorner (by simp) (fun p r hp₀ _ hp hpr i ↦ ?_) (fun p _ hnp hpX i ↦ ?_), fun h ↦ ?_⟩
   · rw [← sum_monomial_eq P]
     exact isNilpotent_sum (fun i _ ↦ by simpa only [isNilpotent_monomial_iff] using h i)
   · have hr : IsNilpotent (C r) := by
       obtain ⟨k, hk⟩ := hpr
       replace hp : eval 0 p = 0 := by rwa [coeff_zero_eq_aeval_zero] at hp₀
-      refine' isNilpotent_C_iff.mpr ⟨k, _⟩
+      refine isNilpotent_C_iff.mpr ⟨k, ?_⟩
       simpa [coeff_zero_eq_aeval_zero, hp] using congr_arg (fun q ↦ coeff q 0) hk
     cases' i with i
     · simpa [hp₀] using hr
@@ -90,7 +91,7 @@ protected lemma isNilpotent_iff :
 @[simp] lemma isNilpotent_reflect_iff {P : R[X]} {N : ℕ} (hN : P.natDegree ≤ N):
     IsNilpotent (reflect N P) ↔ IsNilpotent P := by
   simp only [Polynomial.isNilpotent_iff, coeff_reverse]
-  refine' ⟨fun h i ↦ _, fun h i ↦ _⟩ <;> rcases le_or_lt i N with hi | hi
+  refine ⟨fun h i ↦ ?_, fun h i ↦ ?_⟩ <;> rcases le_or_lt i N with hi | hi
   · simpa [tsub_tsub_cancel_of_le hi] using h (N - i)
   · simp [coeff_eq_zero_of_natDegree_lt <| lt_of_le_of_lt hN hi]
   · simpa [hi, revAt_le] using h (N - i)
@@ -117,7 +118,7 @@ theorem isUnit_of_coeff_isUnit_isNilpotent (hunit : IsUnit (P.coeff 0))
     exact isNilpotent_C_mul_pow_X_of_isNilpotent _ (hnil _ hdeg)
   have hdeg₂ := lt_of_le_of_lt P.eraseLead_natDegree_le (Nat.sub_lt
     (Nat.pos_of_ne_zero hdeg) zero_lt_one)
-  refine' hind P₁.natDegree _ _ (fun i hi => _) rfl
+  refine hind P₁.natDegree ?_ ?_ (fun i hi => ?_) rfl
   · simp_rw [← h, hdeg₂]
   · simp_rw [eraseLead_coeff_of_ne _ (Ne.symm hdeg), hunit]
   · by_cases H : i ≤ P₁.natDegree
@@ -132,7 +133,7 @@ theorem coeff_isUnit_isNilpotent_of_isUnit (hunit : IsUnit P) :
     IsUnit (P.coeff 0) ∧ (∀ i, i ≠ 0 → IsNilpotent (P.coeff i)) := by
   obtain ⟨Q, hQ⟩ := IsUnit.exists_right_inv hunit
   constructor
-  · refine' isUnit_of_mul_eq_one _ (Q.coeff 0) _
+  · refine isUnit_of_mul_eq_one _ (Q.coeff 0) ?_
     have h := (mul_coeff_zero P Q).symm
     rwa [hQ, coeff_one_zero] at h
   · intros n hn
@@ -142,7 +143,7 @@ theorem coeff_isUnit_isNilpotent_of_isUnit (hunit : IsUnit P) :
     have hPQ : degree (f P) = 0 ∧ degree (f Q) = 0 := by
       rw [← Nat.WithBot.add_eq_zero_iff, ← degree_mul, ← _root_.map_mul, hQ, map_one, degree_one]
     have hcoeff : (f P).coeff n = 0 := by
-      refine' coeff_eq_zero_of_degree_lt _
+      refine coeff_eq_zero_of_degree_lt ?_
       rw [hPQ.1]
       exact WithBot.coe_pos.2 hn.bot_lt
     rw [coe_mapRingHom, coeff_map, ← RingHom.mem_ker, Ideal.mk_ker] at hcoeff

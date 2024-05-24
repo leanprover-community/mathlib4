@@ -687,9 +687,9 @@ theorem encode_decode [DecidableEq α] (s : Sum (Sym (Option α) n) (Sym α n.su
     split_ifs with h
     · obtain ⟨a, _, ha⟩ := Multiset.mem_map.mp h
       exact Option.some_ne_none _ ha
-    · refine' congr_arg Sum.inr _
-      refine' map_injective (Option.some_injective _) _ _
-      refine' Eq.trans _ (.trans (SymOptionSuccEquiv.decode (Sum.inr s)).attach_map_coe _) <;> simp
+    · refine congr_arg Sum.inr ?_
+      refine map_injective (Option.some_injective _) _ ?_
+      refine Eq.trans ?_ (.trans (SymOptionSuccEquiv.decode (Sum.inr s)).attach_map_coe ?_) <;> simp
 #align sym_option_succ_equiv.encode_decode SymOptionSuccEquiv.encode_decode
 
 end SymOptionSuccEquiv

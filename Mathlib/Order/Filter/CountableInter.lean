@@ -198,14 +198,14 @@ instance countableInterFilter_top : CountableInterFilter (⊤ : Filter α) := by
 
 instance (l : Filter β) [CountableInterFilter l] (f : α → β) :
     CountableInterFilter (comap f l) := by
-  refine' ⟨fun S hSc hS => _⟩
+  refine ⟨fun S hSc hS => ?_⟩
   choose! t htl ht using hS
   have : (⋂ s ∈ S, t s) ∈ l := (countable_bInter_mem hSc).2 htl
   refine' ⟨_, this, _⟩
   simpa [preimage_iInter] using iInter₂_mono ht
 
 instance (l : Filter α) [CountableInterFilter l] (f : α → β) : CountableInterFilter (map f l) := by
-  refine' ⟨fun S hSc hS => _⟩
+  refine ⟨fun S hSc hS => ?_⟩
   simp only [mem_map, sInter_eq_biInter, preimage_iInter₂] at hS ⊢
   exact (countable_bInter_mem hSc).2 hS
 
@@ -213,7 +213,7 @@ instance (l : Filter α) [CountableInterFilter l] (f : α → β) : CountableInt
 to automatically get an instance for `residual α ⊓ 𝓟 s`. -/
 instance countableInterFilter_inf (l₁ l₂ : Filter α) [CountableInterFilter l₁]
     [CountableInterFilter l₂] : CountableInterFilter (l₁ ⊓ l₂) := by
-  refine' ⟨fun S hSc hS => _⟩
+  refine ⟨fun S hSc hS => ?_⟩
   choose s hs t ht hst using hS
   replace hs : (⋂ i ∈ S, s i ‹_›) ∈ l₁ := (countable_bInter_mem hSc).2 hs
   replace ht : (⋂ i ∈ S, t i ‹_›) ∈ l₂ := (countable_bInter_mem hSc).2 ht
@@ -264,15 +264,15 @@ theorem mem_countableGenerate_iff {s : Set α} :
   · induction' h with s hs s t _ st ih S Sct _ ih
     · exact ⟨{s}, by simp [hs, subset_refl]⟩
     · exact ⟨∅, by simp⟩
-    · refine' Exists.imp (fun S => _) ih
+    · refine Exists.imp (fun S => ?_) ih
       tauto
     choose T Tg Tct hT using ih
-    refine' ⟨⋃ (s) (H : s ∈ S), T s H, by simpa, Sct.biUnion Tct, _⟩
+    refine ⟨⋃ (s) (H : s ∈ S), T s H, by simpa, Sct.biUnion Tct, ?_⟩
     apply subset_sInter
     intro s H
     exact subset_trans (sInter_subset_sInter (subset_iUnion₂ s H)) (hT s H)
   rcases h with ⟨S, Sg, Sct, hS⟩
-  refine' mem_of_superset ((countable_sInter_mem Sct).mpr _) hS
+  refine mem_of_superset ((countable_sInter_mem Sct).mpr ?_) hS
   intro s H
   exact CountableGenerateSets.basic (Sg H)
 #align filter.mem_countable_generate_iff Filter.mem_countableGenerate_iff
@@ -294,7 +294,7 @@ variable (g)
 /-- `countableGenerate g` is the greatest `countableInterFilter` containing `g`. -/
 theorem countableGenerate_isGreatest :
     IsGreatest { f : Filter α | CountableInterFilter f ∧ g ⊆ f.sets } (countableGenerate g) := by
-  refine' ⟨⟨inferInstance, fun s => CountableGenerateSets.basic⟩, _⟩
+  refine ⟨⟨inferInstance, fun s => CountableGenerateSets.basic⟩, ?_⟩
   rintro f ⟨fct, hf⟩
   rwa [@le_countableGenerate_iff_of_countableInterFilter _ _ _ fct]
 #align filter.countable_generate_is_greatest Filter.countableGenerate_isGreatest
