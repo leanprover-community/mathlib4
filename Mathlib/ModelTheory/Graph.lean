@@ -125,7 +125,7 @@ theorem structure_simpleGraphOfStructure [S : Language.graph.Structure V] [V ⊨
       · cases' n with n
         · cases r
           change RelMap adj ![xs 0, xs 1] = _
-          refine' congr rfl (funext _)
+          refine congr rfl (funext ?_)
           simp [Fin.forall_fin_two]
         · exact r.elim
 #align first_order.language.Structure_simple_graph_of_structure FirstOrder.Language.structure_simpleGraphOfStructure

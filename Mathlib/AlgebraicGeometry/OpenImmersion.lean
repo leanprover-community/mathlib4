@@ -57,7 +57,7 @@ protected def scheme (X : LocallyRingedSpace.{u})
     obtain ⟨R, f, h₁, h₂⟩ := h x
     refine' ⟨⟨⟨_, h₂.base_open.isOpen_range⟩, h₁⟩, R, ⟨_⟩⟩
     apply LocallyRingedSpace.isoOfSheafedSpaceIso
-    refine' SheafedSpace.forgetToPresheafedSpace.preimageIso _
+    refine SheafedSpace.forgetToPresheafedSpace.preimageIso ?_
     apply PresheafedSpace.IsOpenImmersion.isoOfRangeEq (PresheafedSpace.ofRestrict _ _) f.1
     · exact Subtype.range_coe_subtype
     · exact Opens.openEmbedding _ -- Porting note (#11187): was `infer_instance`
@@ -280,7 +280,7 @@ theorem affineBasisCover_is_basis (X : Scheme.{u}) :
         ((X.affineCover.map (X.affineCover.f a)).1.base.continuous_toFun.isOpen_preimage _
           hU) with
       ⟨_, ⟨_, ⟨s, rfl⟩, rfl⟩, hxV, hVU⟩
-    refine' ⟨_, ⟨⟨_, s⟩, rfl⟩, _, _⟩ <;> erw [affineBasisCover_map_range]
+    refine ⟨_, ⟨⟨_, s⟩, rfl⟩, ?_, ?_⟩ <;> erw [affineBasisCover_map_range]
     · exact ⟨x, hxV, e⟩
     · rw [Set.image_subset_iff]; exact hVU
 #align algebraic_geometry.Scheme.affine_basis_cover_is_basis AlgebraicGeometry.Scheme.affineBasisCover_is_basis
@@ -432,7 +432,7 @@ theorem _root_.AlgebraicGeometry.isIso_iff_isOpenImmersion {X Y : Scheme.{u}} (f
 theorem _root_.AlgebraicGeometry.isIso_iff_stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) :
     IsIso f ↔ IsIso f.1.base ∧ ∀ x, IsIso (PresheafedSpace.stalkMap f.1 x) := by
   rw [isIso_iff_isOpenImmersion, IsOpenImmersion.iff_stalk_iso, and_comm, ← and_assoc]
-  refine' and_congr ⟨_, _⟩ Iff.rfl
+  refine and_congr ⟨?_, ?_⟩ Iff.rfl
   · rintro ⟨h₁, h₂⟩
     convert_to
       IsIso
@@ -709,10 +709,10 @@ theorem image_basicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) [H : IsOpenImmersion f]
     ext1
     -- Porting note: this `dsimp` was not necessary
     dsimp [Opens.map]
-    refine' Set.image_preimage_eq_inter_range.trans _
+    refine Set.image_preimage_eq_inter_range.trans ?_
     erw [Set.inter_eq_left]
     refine' Set.Subset.trans (Scheme.basicOpen_le _ _) (Set.image_subset_range _ _)
-  refine' le_trans (Scheme.basicOpen_le _ _) (le_of_eq _)
+  refine le_trans (Scheme.basicOpen_le _ _) (le_of_eq ?_)
   ext1
   exact (Set.preimage_image_eq _ H.base_open.inj).symm
 #align algebraic_geometry.Scheme.image_basic_open AlgebraicGeometry.Scheme.image_basicOpen
