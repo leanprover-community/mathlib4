@@ -16,7 +16,7 @@ In this file we introduce hamiltonian paths, cycles and graphs.
 ## Main definitions
 
 - `SimpleGraph.Walk.IsHamiltonian`: Predicate for a walk to be hamiltonian.
-- `SimpleGraph.Walk.IsHamiltonianCycle`: Predicate for a walk to be an hamiltonian cycle.
+- `SimpleGraph.Walk.IsHamiltonianCycle`: Predicate for a walk to be a hamiltonian cycle.
 - `SimpleGraph.IsHamiltonian`: Predicate for a graph to be hamiltonian.
 -/
 
@@ -29,7 +29,7 @@ variable {α β : Type*} [Fintype α] [Fintype β] [DecidableEq α] [DecidableEq
 
 namespace Walk
 
-/-- An hamiltonian path is a walk `p` that visits every vertex exactly once. Note that while
+/-- A hamiltonian path is a walk `p` that visits every vertex exactly once. Note that while
 this definition doesn't contain that `p` is a path, `p.isPath` gives that. -/
 def IsHamiltonian (p : G.Walk a b) : Prop := ∀ a, p.support.count a = 1
 
@@ -37,15 +37,15 @@ lemma IsHamiltonian.map {H : SimpleGraph β} (f : G →g H) (hf : Bijective f) (
     (p.map f).IsHamiltonian := by
   simp [IsHamiltonian, hf.surjective.forall, hf.injective, hp _]
 
-/-- An hamiltonian path visits every vertex. -/
+/-- A hamiltonian path visits every vertex. -/
 @[simp] lemma IsHamiltonian.mem_support (hp : p.IsHamiltonian) (c : α) : c ∈ p.support := by
   simp only [← List.count_pos_iff_mem, hp _, zero_lt_one]
 
-/-- The support of an hamiltonian walk is the entire vertex set. -/
+/-- The support of a hamiltonian walk is the entire vertex set. -/
 lemma IsHamiltonian.support_toFinset (hp : p.IsHamiltonian) : p.support.toFinset = Finset.univ := by
   simp [eq_univ_iff_forall, hp]
 
-/-- The length of an hamiltonian path is one less than the number of vertices of the graph. -/
+/-- The length of a hamiltonian path is one less than the number of vertices of the graph. -/
 lemma IsHamiltonian.length_eq (hp : p.IsHamiltonian) : p.length = Fintype.card α - 1 :=
   eq_tsub_of_add_eq $ by
     rw [← length_support, ← List.toFinset_sum_count_eq, Finset.sum_congr rfl fun _ _ ↦ hp _,
@@ -63,7 +63,7 @@ lemma IsPath.isHamiltonian_of_mem (hp : p.IsPath) (hp' : ∀ w, w ∈ p.support)
 lemma IsPath.isHamiltonian_iff (hp : p.IsPath) : p.IsHamiltonian ↔ ∀ w, w ∈ p.support :=
   ⟨(·.mem_support), hp.isHamiltonian_of_mem⟩
 
-/-- An hamiltonian cycle is a cycle that visits every vertex once. -/
+/-- A hamiltonian cycle is a cycle that visits every vertex once. -/
 structure IsHamiltonianCycle (p : G.Walk a a) extends p.IsCycle : Prop :=
   isHamiltonian_tail : (p.tail toIsCycle.not_Nil).IsHamiltonian
 
@@ -81,6 +81,8 @@ lemma IsHamiltonianCycle.map {H : SimpleGraph β} (f : G →g H) (hf : Bijective
     exact Bijective.injective hf
   isHamiltonian_tail := by
     have := hp.isHamiltonian_tail.map _ hf
+    simp [IsHamiltonian, support_tail]
+    simp [hf.surjective.forall]
     sorry
 
 lemma IsHamiltonianCycle_def {p : G.Walk a a} :
@@ -91,11 +93,11 @@ lemma IsHamiltonianCycle_iff {p : G.Walk a a} :
     p.IsHamiltonianCycle ↔ p.IsCycle ∧ ∀ a, (support p).tail.count a = 1 := by
   simp only [IsHamiltonianCycle_def, IsHamiltonian, support_tail, exists_prop]
 
-/-- An hamiltonian cycle visits every vertex. -/
+/-- A hamiltonian cycle visits every vertex. -/
 lemma IsHamiltonianCycle.mem_support (p : G.Walk a a) (hp : p.IsHamiltonianCycle) (b : α) :
     b ∈ p.support := List.mem_of_mem_tail <| support_tail _ ▸ hp.isHamiltonian_tail.mem_support _
 
-/-- The length of an hamiltonian cycle is the number of vertices. -/
+/-- The length of a hamiltonian cycle is the number of vertices. -/
 lemma IsHamiltonianCycle.length_eq {p : G.Walk a a} (hp : p.IsHamiltonianCycle) :
     p.length = Fintype.card α := by
   rw [← length_tail_add_one hp.not_Nil, hp.isHamiltonian_tail.length_eq, Nat.sub_add_cancel]
@@ -112,7 +114,7 @@ lemma IsHamiltonianCycle.support_count_of_ne {p : G.Walk a a} (hp : p.IsHamilton
 
 end Walk
 
-/-- An hamiltonian graph is a graph that contains an hamiltonian cycle.
+/-- A hamiltonian graph is a graph that contains a hamiltonian cycle.
 
 By convention, the singleton graph is considered to be hamiltonian. -/
 def IsHamiltonian (G : SimpleGraph α) : Prop :=
