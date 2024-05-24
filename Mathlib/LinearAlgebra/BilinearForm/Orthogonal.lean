@@ -336,7 +336,7 @@ theorem finrank_add_finrank_orthogonal (b₁ : B.IsRefl) :
 
 /-- A subspace is complement to its orthogonal complement with respect to some
 reflexive bilinear form if that bilinear form restricted on to the subspace is nondegenerate. -/
-theorem restrict_nondegenerate_of_isCompl_orthogonal
+theorem isCompl_orthogonal_of_restrict_nondegenerate
     (b₁ : B.IsRefl) (b₂ : (B.restrict W).Nondegenerate) : IsCompl W (B.orthogonal W) := by
   have : W ⊓ B.orthogonal W = ⊥ := by
     rw [eq_bot_iff]
@@ -351,26 +351,29 @@ theorem restrict_nondegenerate_of_isCompl_orthogonal
   rw [← finrank_bot K V, ← this, finrank_sup_add_finrank_inf_eq,
     finrank_add_finrank_orthogonal b₁]
   exact le_self_add
-#align bilin_form.restrict_nondegenerate_of_is_compl_orthogonal LinearMap.BilinForm.restrict_nondegenerate_of_isCompl_orthogonal
+#align bilin_form.restrict_nondegenerate_of_is_compl_orthogonal LinearMap.BilinForm.isCompl_orthogonal_of_restrict_nondegenerate
+
+@[deprecated (since := "2024-05-24")]
+alias restrict_nondegenerate_of_isCompl_orthogonal := isCompl_orthogonal_of_restrict_nondegenerate
 
 /-- A subspace is complement to its orthogonal complement with respect to some reflexive bilinear
 form if and only if that bilinear form restricted on to the subspace is nondegenerate. -/
 theorem restrict_nondegenerate_iff_isCompl_orthogonal
     (b₁ : B.IsRefl) : (B.restrict W).Nondegenerate ↔ IsCompl W (B.orthogonal W) :=
-  ⟨fun b₂ => restrict_nondegenerate_of_isCompl_orthogonal b₁ b₂, fun h =>
+  ⟨fun b₂ => isCompl_orthogonal_of_restrict_nondegenerate b₁ b₂, fun h =>
     B.nondegenerateRestrictOfDisjointOrthogonal b₁ h.1⟩
 #align bilin_form.restrict_nondegenerate_iff_is_compl_orthogonal LinearMap.BilinForm.restrict_nondegenerate_iff_isCompl_orthogonal
 
 lemma orthogonal_eq_top_iff (b₁ : B.IsRefl) (b₂ : (B.restrict W).Nondegenerate) :
     B.orthogonal W = ⊤ ↔ W = ⊥ := by
   refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
-  have := (B.restrict_nondegenerate_of_isCompl_orthogonal b₁ b₂).inf_eq_bot
+  have := (B.isCompl_orthogonal_of_restrict_nondegenerate b₁ b₂).inf_eq_bot
   rwa [h, inf_top_eq] at this
 
 lemma eq_top_of_restrict_nondegenerate_of_orthogonal_eq_bot
     (b₁ : B.IsRefl) (b₂ : (B.restrict W).Nondegenerate) (b₃ : B.orthogonal W = ⊥) :
     W = ⊤ := by
-  have := (B.restrict_nondegenerate_of_isCompl_orthogonal b₁ b₂).sup_eq_top
+  have := (B.isCompl_orthogonal_of_restrict_nondegenerate b₁ b₂).sup_eq_top
   rwa [b₃, sup_bot_eq] at this
 
 lemma orthogonal_eq_bot_iff
