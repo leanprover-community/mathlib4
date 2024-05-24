@@ -24,6 +24,8 @@ So far, we have the following:
 
 namespace CompHaus
 
+attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike -- TODO remove this?
+
 universe u w
 
 open CategoryTheory Limits

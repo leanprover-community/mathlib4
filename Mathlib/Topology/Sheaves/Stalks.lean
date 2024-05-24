@@ -53,6 +53,8 @@ noncomputable section
 
 universe v u v' u'
 
+attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike -- TODO remove this?
+
 open CategoryTheory
 
 open TopCat
