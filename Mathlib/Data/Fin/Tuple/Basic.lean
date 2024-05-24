@@ -174,15 +174,15 @@ def consInduction {α : Type*} {P : ∀ {n : ℕ}, (Fin n → α) → Sort v} (h
 
 theorem cons_injective_of_injective {α} {x₀ : α} {x : Fin n → α} (hx₀ : x₀ ∉ Set.range x)
     (hx : Function.Injective x) : Function.Injective (cons x₀ x : Fin n.succ → α) := by
-  refine' Fin.cases _ _
-  · refine' Fin.cases _ _
+  refine Fin.cases ?_ ?_
+  · refine Fin.cases ?_ ?_
     · intro
       rfl
     · intro j h
       rw [cons_zero, cons_succ] at h
       exact hx₀.elim ⟨_, h.symm⟩
   · intro i
-    refine' Fin.cases _ _
+    refine Fin.cases ?_ ?_
     · intro h
       rw [cons_zero, cons_succ] at h
       exact hx₀.elim ⟨_, h⟩
@@ -193,7 +193,7 @@ theorem cons_injective_of_injective {α} {x₀ : α} {x : Fin n → α} (hx₀ :
 
 theorem cons_injective_iff {α} {x₀ : α} {x : Fin n → α} :
     Function.Injective (cons x₀ x : Fin n.succ → α) ↔ x₀ ∉ Set.range x ∧ Function.Injective x := by
-  refine' ⟨fun h ↦ ⟨_, _⟩, fun h ↦ cons_injective_of_injective h.1 h.2⟩
+  refine ⟨fun h ↦ ⟨?_, ?_⟩, fun h ↦ cons_injective_of_injective h.1 h.2⟩
   · rintro ⟨i, hi⟩
     replace h := @h i.succ 0
     simp [hi, succ_ne_zero] at h
@@ -310,9 +310,9 @@ theorem append_right {α : Type*} (u : Fin m → α) (v : Fin n → α) (i : Fin
 
 theorem append_right_nil {α : Type*} (u : Fin m → α) (v : Fin n → α) (hv : n = 0) :
     append u v = u ∘ Fin.cast (by rw [hv, Nat.add_zero]) := by
-  refine' funext (Fin.addCases (fun l => _) fun r => _)
+  refine funext (Fin.addCases (fun l => ?_) fun r => ?_)
   · rw [append_left, Function.comp_apply]
-    refine' congr_arg u (Fin.ext _)
+    refine congr_arg u (Fin.ext ?_)
     simp
   · exact (Fin.cast hv r).elim0
 #align fin.append_right_nil Fin.append_right_nil
@@ -325,10 +325,10 @@ theorem append_elim0 {α : Type*} (u : Fin m → α) :
 
 theorem append_left_nil {α : Type*} (u : Fin m → α) (v : Fin n → α) (hu : m = 0) :
     append u v = v ∘ Fin.cast (by rw [hu, Nat.zero_add]) := by
-  refine' funext (Fin.addCases (fun l => _) fun r => _)
+  refine funext (Fin.addCases (fun l => ?_) fun r => ?_)
   · exact (Fin.cast hu l).elim0
   · rw [append_right, Function.comp_apply]
-    refine' congr_arg v (Fin.ext _)
+    refine congr_arg v (Fin.ext ?_)
     simp [hu]
 #align fin.append_left_nil Fin.append_left_nil
 
@@ -342,9 +342,9 @@ theorem append_assoc {p : ℕ} {α : Type*} (a : Fin m → α) (b : Fin n → α
     append (append a b) c = append a (append b c) ∘ Fin.cast (Nat.add_assoc ..) := by
   ext i
   rw [Function.comp_apply]
-  refine' Fin.addCases (fun l => _) (fun r => _) i
+  refine Fin.addCases (fun l => ?_) (fun r => ?_) i
   · rw [append_left]
-    refine' Fin.addCases (fun ll => _) (fun lr => _) l
+    refine Fin.addCases (fun ll => ?_) (fun lr => ?_) l
     · rw [append_left]
       simp [castAdd_castAdd]
     · rw [append_right]
@@ -357,7 +357,7 @@ theorem append_assoc {p : ℕ} {α : Type*} (a : Fin m → α) (b : Fin n → α
 theorem append_left_eq_cons {α : Type*} {n : ℕ} (x₀ : Fin 1 → α) (x : Fin n → α) :
     Fin.append x₀ x = Fin.cons (x₀ 0) x ∘ Fin.cast (Nat.add_comm ..) := by
   ext i
-  refine' Fin.addCases _ _ i <;> clear i
+  refine Fin.addCases ?_ ?_ i <;> clear i
   · intro i
     rw [Subsingleton.elim i 0, Fin.append_left, Function.comp_apply, eq_comm]
     exact Fin.cons_zero _ _
@@ -430,7 +430,7 @@ theorem repeat_succ {α : Type*} (a : Fin n → α) (m : ℕ) :
   generalize_proofs h
   apply funext
   rw [(Fin.rightInverse_cast h.symm).surjective.forall]
-  refine' Fin.addCases (fun l => _) fun r => _
+  refine Fin.addCases (fun l => ?_) fun r => ?_
   · simp [modNat, Nat.mod_eq_of_lt l.is_lt]
   · simp [modNat]
 #align fin.repeat_succ Fin.repeat_succ
@@ -441,7 +441,7 @@ theorem repeat_add {α : Type*} (a : Fin n → α) (m₁ m₂ : ℕ) : Fin.repea
   generalize_proofs h
   apply funext
   rw [(Fin.rightInverse_cast h.symm).surjective.forall]
-  refine' Fin.addCases (fun l => _) fun r => _
+  refine Fin.addCases (fun l => ?_) fun r => ?_
   · simp [modNat, Nat.mod_eq_of_lt l.is_lt]
   · simp [modNat, Nat.add_mod]
 #align fin.repeat_add Fin.repeat_add
@@ -522,7 +522,7 @@ theorem snoc_comp_nat_add {n m : ℕ} {α : Sort _} (f : Fin (m + n) → α) (a 
     (snoc f a : Fin _ → α) ∘ (natAdd m : Fin (n + 1) → Fin (m + n + 1)) =
       snoc (f ∘ natAdd m) a := by
   ext i
-  refine' Fin.lastCases _ (fun i ↦ _) i
+  refine Fin.lastCases ?_ (fun i ↦ ?_) i
   · simp only [Function.comp_apply]
     rw [snoc_last, natAdd_last, snoc_last]
   · simp only [comp_apply, snoc_castSucc]
@@ -654,7 +654,7 @@ theorem comp_snoc {α : Type*} {β : Type*} (g : α → β) (q : Fin n → α) (
 theorem append_right_eq_snoc {α : Type*} {n : ℕ} (x : Fin n → α) (x₀ : Fin 1 → α) :
     Fin.append x x₀ = Fin.snoc x (x₀ 0) := by
   ext i
-  refine' Fin.addCases _ _ i <;> clear i
+  refine Fin.addCases ?_ ?_ i <;> clear i
   · intro i
     rw [Fin.append_left]
     exact (@snoc_castSucc _ (fun _ => α) _ _ i).symm
@@ -833,7 +833,7 @@ theorem insertNth_apply_above {i j : Fin (n + 1)} (h : i < j) (x : α i)
 theorem insertNth_zero (x : α 0) (p : ∀ j : Fin n, α (succAbove 0 j)) :
     insertNth 0 x p =
       cons x fun j ↦ _root_.cast (congr_arg α (congr_fun succAbove_zero j)) (p j) := by
-  refine' insertNth_eq_iff.2 ⟨by simp, _⟩
+  refine insertNth_eq_iff.2 ⟨by simp, ?_⟩
   ext j
   convert (cons_succ x p j).symm
 #align fin.insert_nth_zero Fin.insertNth_zero
@@ -846,7 +846,7 @@ theorem insertNth_zero' (x : β) (p : Fin n → β) : @insertNth _ (fun _ ↦ β
 theorem insertNth_last (x : α (last n)) (p : ∀ j : Fin n, α ((last n).succAbove j)) :
     insertNth (last n) x p =
       snoc (fun j ↦ _root_.cast (congr_arg α (succAbove_last_apply j)) (p j)) x := by
-  refine' insertNth_eq_iff.2 ⟨by simp, _⟩
+  refine insertNth_eq_iff.2 ⟨by simp, ?_⟩
   ext j
   apply eq_of_heq
   trans snoc (fun j ↦ _root_.cast (congr_arg α (succAbove_last_apply j)) (p j)) x (castSucc j)
@@ -1077,7 +1077,7 @@ theorem nat_find_mem_find {p : Fin n → Prop} [DecidablePred p]
   cases' hf : find p with f
   · rw [find_eq_none_iff] at hf
     exact (hf ⟨i, hin⟩ hi).elim
-  · refine' Option.some_inj.2 (le_antisymm _ _)
+  · refine Option.some_inj.2 (le_antisymm ?_ ?_)
     · exact find_min' hf (Nat.find_spec h).snd
     · exact Nat.find_min' _ ⟨f.2, by convert find_spec p hf⟩
 #align fin.nat_find_mem_find Fin.nat_find_mem_find

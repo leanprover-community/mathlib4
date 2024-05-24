@@ -61,7 +61,7 @@ theorem borel_eq_top_of_discrete [TopologicalSpace α] [DiscreteTopology α] : b
 #align borel_eq_top_of_discrete borel_eq_top_of_discrete
 
 theorem borel_eq_top_of_countable [TopologicalSpace α] [T1Space α] [Countable α] : borel α = ⊤ := by
-  refine' top_le_iff.1 fun s _ => biUnion_of_singleton s ▸ _
+  refine top_le_iff.1 fun s _ => biUnion_of_singleton s ▸ ?_
   apply MeasurableSet.biUnion s.to_countable
   intro x _
   apply MeasurableSet.of_compl
@@ -520,7 +520,7 @@ respective pieces, then it is measurable. -/
 theorem ContinuousOn.measurable_piecewise {f g : α → γ} {s : Set α} [∀ j : α, Decidable (j ∈ s)]
     (hf : ContinuousOn f s) (hg : ContinuousOn g sᶜ) (hs : MeasurableSet s) :
     Measurable (s.piecewise f g) := by
-  refine' measurable_of_isOpen fun t ht => _
+  refine measurable_of_isOpen fun t ht => ?_
   rw [piecewise_preimage, Set.ite]
   apply MeasurableSet.union
   · rcases _root_.continuousOn_iff'.1 hf t ht with ⟨u, u_open, hu⟩
@@ -656,7 +656,7 @@ theorem pi_le_borel_pi {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace
 
 theorem prod_le_borel_prod : Prod.instMeasurableSpace ≤ borel (α × β) := by
   rw [‹BorelSpace α›.measurable_eq, ‹BorelSpace β›.measurable_eq]
-  refine' sup_le _ _
+  refine sup_le ?_ ?_
   · exact comap_le_iff_le_map.mpr continuous_fst.borel_measurable
   · exact comap_le_iff_le_map.mpr continuous_snd.borel_measurable
 #align prod_le_borel_prod prod_le_borel_prod

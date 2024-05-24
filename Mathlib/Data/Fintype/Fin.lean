@@ -43,7 +43,7 @@ theorem Ioi_succ (i : Fin n) : Ioi i.succ = (Ioi i).map (Fin.succEmb _) := by
   simp only [mem_filter, mem_Ioi, mem_map, mem_univ, true_and_iff, Function.Embedding.coeFn_mk,
     exists_true_left]
   constructor
-  · refine' cases _ _ i
+  · refine cases ?_ ?_ i
     · rintro ⟨⟨⟩⟩
     · intro i hi
       exact ⟨i, succ_lt_succ_iff.mp hi, rfl⟩
