@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Sum.Order
-import Mathlib.Order.LocallyFinite
+import Mathlib.Order.Interval.Finset.Defs
 
 #align_import data.sum.interval from "leanprover-community/mathlib"@"48a058d7e39a80ed56858505719a0b2197900999"
 
@@ -212,7 +212,7 @@ lemma sumLexLift_nonempty :
           ∃ a₂ b₂, a = inr a₂ ∧ b = inr b₂ ∧ (f₂ a₂ b₂).Nonempty := by
   -- porting note (#10745): was `simp [nonempty_iff_ne_empty, sumLexLift_eq_empty, not_and_or]`.
   -- Could add `-exists_and_left, -not_and, -exists_and_right` but easier to squeeze.
-  simp only [nonempty_iff_ne_empty, Ne.def, sumLexLift_eq_empty, not_and_or, exists_prop,
+  simp only [nonempty_iff_ne_empty, Ne, sumLexLift_eq_empty, not_and_or, exists_prop,
     not_forall]
 #align finset.sum_lex_lift_nonempty Finset.sumLexLift_nonempty
 

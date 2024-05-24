@@ -3,14 +3,12 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Data.Nat.Totient
-import Mathlib.Algebra.Ring.AddAut
-import Mathlib.GroupTheory.Divisible
-import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.Order.ToIntervalMod
-import Mathlib.Topology.Instances.Real
+import Mathlib.Algebra.Ring.AddAut
+import Mathlib.Data.Nat.Totient
+import Mathlib.GroupTheory.Divisible
 import Mathlib.Topology.Connected.PathConnected
+import Mathlib.Topology.IsLocalHomeomorph
 
 #align_import topology.instances.add_circle from "leanprover-community/mathlib"@"213b0cff7bc5ab6696ee07cceec80829ce42efec"
 
@@ -239,6 +237,17 @@ theorem liftIoc_coe_apply {f : 𝕜 → B} {x : 𝕜} (hx : x ∈ Ioc a (a + p))
   rfl
 #align add_circle.lift_Ioc_coe_apply AddCircle.liftIoc_coe_apply
 
+lemma eq_coe_Ico (a : AddCircle p) : ∃ b, b ∈ Ico 0 p ∧ ↑b = a := by
+  let b := QuotientAddGroup.equivIcoMod hp.out 0 a
+  exact ⟨b.1, by simpa only [zero_add] using b.2,
+    (QuotientAddGroup.equivIcoMod hp.out 0).symm_apply_apply a⟩
+
+lemma coe_eq_zero_iff_of_mem_Ico (ha : a ∈ Ico 0 p) :
+    (a : AddCircle p) = 0 ↔ a = 0 := by
+  have h0 : 0 ∈ Ico 0 (0 + p) := by simpa [zero_add, left_mem_Ico] using hp.out
+  have ha' : a ∈ Ico 0 (0 + p) := by rwa [zero_add]
+  rw [← AddCircle.coe_eq_coe_iff_of_mem_Ico ha' h0, QuotientAddGroup.mk_zero]
+
 variable (p a)
 
 section Continuity
@@ -266,6 +275,37 @@ theorem continuousAt_equivIoc : ContinuousAt (equivIoc p a) x := by
   rw [ContinuousAt, Filter.Tendsto, QuotientAddGroup.nhds_eq, Filter.map_map]
   exact (continuousAt_toIocMod hp.out a hx).codRestrict _
 #align add_circle.continuous_at_equiv_Ioc AddCircle.continuousAt_equivIoc
+
+/-- The quotient map `𝕜 → AddCircle p` as a partial homeomorphism. -/
+@[simps] def partialHomeomorphCoe [DiscreteTopology (zmultiples p)] :
+    PartialHomeomorph 𝕜 (AddCircle p) where
+  toFun := (↑)
+  invFun := fun x ↦ equivIco p a x
+  source := Ioo a (a + p)
+  target := {↑a}ᶜ
+  map_source' := by
+    intro x hx hx'
+    exact hx.1.ne' ((coe_eq_coe_iff_of_mem_Ico (Ioo_subset_Ico_self hx)
+      (left_mem_Ico.mpr (lt_add_of_pos_right a hp.out))).mp hx')
+  map_target' := by
+    intro x hx
+    exact (eq_left_or_mem_Ioo_of_mem_Ico (equivIco p a x).2).resolve_left
+      (hx ∘ ((equivIco p a).symm_apply_apply x).symm.trans ∘ congrArg _)
+  left_inv' :=
+    fun x hx ↦ congrArg _ ((equivIco p a).apply_symm_apply ⟨x, Ioo_subset_Ico_self hx⟩)
+  right_inv' := fun x _ ↦ (equivIco p a).symm_apply_apply x
+  open_source := isOpen_Ioo
+  open_target := isOpen_compl_singleton
+  continuousOn_toFun := (AddCircle.continuous_mk' p).continuousOn
+  continuousOn_invFun := by
+    exact ContinuousAt.continuousOn
+      (fun _ ↦ continuousAt_subtype_val.comp ∘ continuousAt_equivIco p a)
+
+lemma isLocalHomeomorph_coe [DiscreteTopology (zmultiples p)] [DenselyOrdered 𝕜] :
+    IsLocalHomeomorph ((↑) : 𝕜 → AddCircle p) := by
+  intro a
+  obtain ⟨b, hb1, hb2⟩ := exists_between (sub_lt_self a hp.out)
+  exact ⟨partialHomeomorphCoe p b, ⟨hb2, lt_add_of_sub_right_lt hb1⟩, rfl⟩
 
 end Continuity
 
@@ -316,6 +356,22 @@ theorem equivAddCircle_symm_apply_mk (hp : p ≠ 0) (hq : q ≠ 0) (x : 𝕜) :
     (equivAddCircle p q hp hq).symm (x : 𝕜) = (x * (q⁻¹ * p) : 𝕜) :=
   rfl
 #align add_circle.equiv_add_circle_symm_apply_mk AddCircle.equivAddCircle_symm_apply_mk
+
+/-- The rescaling homeomorphism between additive circles with different periods. -/
+def homeomorphAddCircle (hp : p ≠ 0) (hq : q ≠ 0) : AddCircle p ≃ₜ AddCircle q :=
+  ⟨equivAddCircle p q hp hq,
+    (continuous_quotient_mk'.comp (continuous_mul_right (p⁻¹ * q))).quotient_lift _,
+    (continuous_quotient_mk'.comp (continuous_mul_right (q⁻¹ * p))).quotient_lift _⟩
+
+@[simp]
+theorem homeomorphAddCircle_apply_mk (hp : p ≠ 0) (hq : q ≠ 0) (x : 𝕜) :
+    homeomorphAddCircle p q hp hq (x : 𝕜) = (x * (p⁻¹ * q) : 𝕜) :=
+  rfl
+
+@[simp]
+theorem homeomorphAddCircle_symm_apply_mk (hp : p ≠ 0) (hq : q ≠ 0) (x : 𝕜) :
+    (homeomorphAddCircle p q hp hq).symm (x : 𝕜) = (x * (q⁻¹ * p) : 𝕜) :=
+  rfl
 
 variable [hp : Fact (0 < p)]
 
@@ -378,7 +434,7 @@ theorem addOrderOf_div_of_gcd_eq_one {m n : ℕ} (hn : 0 < n) (h : m.gcd n = 1) 
 theorem addOrderOf_div_of_gcd_eq_one' {m : ℤ} {n : ℕ} (hn : 0 < n) (h : m.natAbs.gcd n = 1) :
     addOrderOf (↑(↑m / ↑n * p) : AddCircle p) = n := by
   induction m
-  · simp only [Int.ofNat_eq_coe, Int.cast_ofNat, Int.natAbs_ofNat] at h ⊢
+  · simp only [Int.ofNat_eq_coe, Int.cast_natCast, Int.natAbs_ofNat] at h ⊢
     exact addOrderOf_div_of_gcd_eq_one hn h
   · simp only [Int.cast_negSucc, neg_div, neg_mul, coe_neg, addOrderOf_neg]
     exact addOrderOf_div_of_gcd_eq_one hn h
@@ -388,7 +444,7 @@ theorem addOrderOf_coe_rat {q : ℚ} : addOrderOf (↑(↑q * p) : AddCircle p) 
   have : (↑(q.den : ℤ) : 𝕜) ≠ 0 := by
     norm_cast
     exact q.pos.ne.symm
-  rw [← @Rat.num_den q, Rat.cast_mk_of_ne_zero _ _ this, Int.cast_ofNat, Rat.num_den,
+  rw [← q.num_divInt_den, Rat.cast_divInt_of_ne_zero _ this, Int.cast_natCast, Rat.num_divInt_den,
     addOrderOf_div_of_gcd_eq_one' q.pos q.reduced]
 #align add_circle.add_order_of_coe_rat AddCircle.addOrderOf_coe_rat
 
@@ -402,13 +458,13 @@ theorem addOrderOf_eq_pos_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
   obtain ⟨a, ha⟩ := h0
   have h0 : (_ : 𝕜) ≠ 0 := Nat.cast_ne_zero.2 h.ne'
   rw [nsmul_eq_mul, mul_comm, ← div_eq_iff h0, ← a.ediv_add_emod' n, add_smul, add_div,
-    zsmul_eq_mul, Int.cast_mul, Int.cast_ofNat, mul_assoc, ← mul_div, mul_comm _ p,
+    zsmul_eq_mul, Int.cast_mul, Int.cast_natCast, mul_assoc, ← mul_div, mul_comm _ p,
     mul_div_cancel_right₀ p h0] at ha
   have han : _ = a % n := Int.toNat_of_nonneg (Int.emod_nonneg _ <| mod_cast h.ne')
   have he : (↑(↑((a % n).toNat) / ↑n * p) : AddCircle p) = k := by
     convert congr_arg (QuotientAddGroup.mk : 𝕜 → (AddCircle p)) ha using 1
-    rw [coe_add, ← Int.cast_ofNat, han, zsmul_eq_mul, mul_div_right_comm, eq_comm, add_left_eq_self,
-      ← zsmul_eq_mul, coe_zsmul, coe_period, smul_zero]
+    rw [coe_add, ← Int.cast_natCast, han, zsmul_eq_mul, mul_div_right_comm, eq_comm,
+      add_left_eq_self, ← zsmul_eq_mul, coe_zsmul, coe_period, smul_zero]
   refine' ⟨(a % n).toNat, _, _, he⟩
   · rw [← Int.ofNat_lt, han]
     exact Int.emod_lt_of_pos _ (Int.ofNat_lt.2 h)
@@ -437,8 +493,8 @@ def setAddOrderOfEquiv {n : ℕ} (hn : 0 < n) :
       (by
         refine' ⟨fun m₁ m₂ h => Subtype.ext _, fun u => _⟩
         · simp_rw [Subtype.ext_iff] at h
-          rw [← sub_eq_zero, ← coe_sub, ← sub_mul, ← sub_div, ← Int.cast_ofNat m₁,
-            ← Int.cast_ofNat m₂, ← Int.cast_sub, coe_eq_zero_iff] at h
+          rw [← sub_eq_zero, ← coe_sub, ← sub_mul, ← sub_div, ← Int.cast_natCast m₁,
+            ← Int.cast_natCast m₂, ← Int.cast_sub, coe_eq_zero_iff] at h
           obtain ⟨m, hm⟩ := h
           rw [← mul_div_right_comm, eq_div_iff, mul_comm, ← zsmul_eq_mul, mul_smul_comm, ←
             nsmul_eq_mul, ← natCast_zsmul, smul_smul,
@@ -500,13 +556,17 @@ instance : ProperlyDiscontinuousVAdd (zmultiples p).op ℝ :=
 
 end AddCircle
 
-attribute [local instance] Real.fact_zero_lt_one
+section UnitAddCircle
+
+instance instZeroLTOne [StrictOrderedSemiring 𝕜] : Fact ((0 : 𝕜) < 1) := ⟨zero_lt_one⟩
 
 /- ./././Mathport/Syntax/Translate/Command.lean:328:31: unsupported: @[derive] abbrev -/
 /-- The unit circle `ℝ ⧸ ℤ`. -/
 abbrev UnitAddCircle :=
   AddCircle (1 : ℝ)
 #align unit_add_circle UnitAddCircle
+
+end UnitAddCircle
 
 section IdentifyIccEnds
 

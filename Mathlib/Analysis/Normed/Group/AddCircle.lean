@@ -103,9 +103,9 @@ theorem norm_eq {x : ℝ} : ‖(x : AddCircle p)‖ = |x - round (p⁻¹ * x) * 
       ⟨mem_lowerBounds.1 h _ ⟨fract x, _, abs_fract⟩,
         mem_lowerBounds.1 h _ ⟨fract x - 1, _, by rw [abs_sub_comm, abs_one_sub_fract]⟩⟩
     · simp only [mem_setOf, fract, sub_eq_self, QuotientAddGroup.mk_sub,
-        QuotientAddGroup.eq_zero_iff, int_cast_mem_zmultiples_one]
+        QuotientAddGroup.eq_zero_iff, intCast_mem_zmultiples_one]
     · simp only [mem_setOf, fract, sub_eq_self, QuotientAddGroup.mk_sub,
-        QuotientAddGroup.eq_zero_iff, int_cast_mem_zmultiples_one, sub_sub,
+        QuotientAddGroup.eq_zero_iff, intCast_mem_zmultiples_one, sub_sub,
         (by norm_cast : (⌊x⌋ : ℝ) + 1 = (↑(⌊x⌋ + 1) : ℝ))]
   · simp only [QuotientAddGroup.mk'_apply, Real.norm_eq_abs, le_csInf_iff h₁ h₂]
     rintro b' ⟨b, hb, rfl⟩
@@ -238,11 +238,11 @@ section FiniteOrderPoints
 
 variable {p} [hp : Fact (0 < p)]
 
-theorem norm_div_nat_cast {m n : ℕ} :
+theorem norm_div_natCast {m n : ℕ} :
     ‖(↑(↑m / ↑n * p) : AddCircle p)‖ = p * (↑(min (m % n) (n - m % n)) / n) := by
   have : p⁻¹ * (↑m / ↑n * p) = ↑m / ↑n := by rw [mul_comm _ p, inv_mul_cancel_left₀ hp.out.ne.symm]
   rw [norm_eq' p hp.out, this, abs_sub_round_div_natCast_eq]
-#align add_circle.norm_div_nat_cast AddCircle.norm_div_nat_cast
+#align add_circle.norm_div_nat_cast AddCircle.norm_div_natCast
 
 theorem exists_norm_eq_of_isOfFinAddOrder {u : AddCircle p} (hu : IsOfFinAddOrder u) :
     ∃ k : ℕ, ‖u‖ = p * (k / addOrderOf u) := by
@@ -250,7 +250,7 @@ theorem exists_norm_eq_of_isOfFinAddOrder {u : AddCircle p} (hu : IsOfFinAddOrde
   change ∃ k : ℕ, ‖u‖ = p * (k / n)
   obtain ⟨m, -, -, hm⟩ := exists_gcd_eq_one_of_isOfFinAddOrder hu
   refine' ⟨min (m % n) (n - m % n), _⟩
-  rw [← hm, norm_div_nat_cast]
+  rw [← hm, norm_div_natCast]
 #align add_circle.exists_norm_eq_of_fin_add_order AddCircle.exists_norm_eq_of_isOfFinAddOrder
 
 theorem le_add_order_smul_norm_of_isOfFinAddOrder {u : AddCircle p} (hu : IsOfFinAddOrder u)

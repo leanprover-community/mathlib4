@@ -143,6 +143,10 @@ theorem Monotone.functor_obj {f : X → Y} (h : Monotone f) : h.functor.obj = f 
   rfl
 #align monotone.functor_obj Monotone.functor_obj
 
+-- Faithfulness is automatic because preorder categories are thin
+instance (f : X ↪o Y) : f.monotone.functor.Full where
+  preimage {x y} h := homOfLE (f.map_rel_iff.1 h.le)
+
 end
 
 namespace CategoryTheory

@@ -97,8 +97,8 @@ def orderEmbedding : Ideal S ↪o Ideal R where
   map_rel_iff' := by
     rintro J₁ J₂
     constructor
-    exact (fun hJ => (map_comap M S) J₁ ▸ (map_comap M S) J₂ ▸ Ideal.map_mono hJ)
-    exact (fun hJ => Ideal.comap_mono hJ)
+    exact fun hJ => (map_comap M S) J₁ ▸ (map_comap M S) J₂ ▸ Ideal.map_mono hJ
+    exact fun hJ => Ideal.comap_mono hJ
 #align is_localization.order_embedding IsLocalization.orderEmbedding
 
 /-- If `R` is a ring, then prime ideals in the localization at `M`
@@ -155,7 +155,7 @@ def orderIsoOfPrime :
     constructor
     exact (fun h => show I.val ≤ I'.val from map_comap M S I.val ▸
       map_comap M S I'.val ▸ Ideal.map_mono h)
-    exact (fun h x hx => h hx)
+    exact fun h x hx => h hx
 #align is_localization.order_iso_of_prime IsLocalization.orderIsoOfPrime
 
 end CommSemiring

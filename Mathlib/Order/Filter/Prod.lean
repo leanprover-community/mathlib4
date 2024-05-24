@@ -114,6 +114,10 @@ theorem prod_top : f ×ˢ (⊤ : Filter β) = f.comap Prod.fst := by
   rw [Filter.prod, comap_top, inf_top_eq]
 #align filter.prod_top Filter.prod_top
 
+theorem top_prod : (⊤ : Filter α) ×ˢ g = g.comap Prod.snd := by
+  dsimp only [SProd.sprod]
+  rw [Filter.prod, comap_top, top_inf_eq]
+
 theorem sup_prod (f₁ f₂ : Filter α) (g : Filter β) : (f₁ ⊔ f₂) ×ˢ g = (f₁ ×ˢ g) ⊔ (f₂ ×ˢ g) := by
   dsimp only [SProd.sprod]
   rw [Filter.prod, comap_sup, inf_sup_right, ← Filter.prod, ← Filter.prod]
@@ -138,6 +142,20 @@ theorem tendsto_fst : Tendsto Prod.fst (f ×ˢ g) f :=
 theorem tendsto_snd : Tendsto Prod.snd (f ×ˢ g) g :=
   tendsto_inf_right tendsto_comap
 #align filter.tendsto_snd Filter.tendsto_snd
+
+/-- If a function tends to a product `g ×ˢ h` of filters, then its first component tends to
+`g`. See also `Filter.Tendsto.fst_nhds` for the special case of converging to a point in a
+product of two topological spaces. -/
+theorem Tendsto.fst {h : Filter γ} {m : α → β × γ} (H : Tendsto m f (g ×ˢ h)) :
+    Tendsto (fun a ↦ (m a).1) f g :=
+  tendsto_fst.comp H
+
+/-- If a function tends to a product `g ×ˢ h` of filters, then its second component tends to
+`h`. See also `Filter.Tendsto.snd_nhds` for the special case of converging to a point in a
+product of two topological spaces. -/
+theorem Tendsto.snd {h : Filter γ} {m : α → β × γ} (H : Tendsto m f (g ×ˢ h)) :
+    Tendsto (fun a ↦ (m a).2) f h :=
+  tendsto_snd.comp H
 
 theorem Tendsto.prod_mk {h : Filter γ} {m₁ : α → β} {m₂ : α → γ}
     (h₁ : Tendsto m₁ f g) (h₂ : Tendsto m₂ f h) : Tendsto (fun x => (m₁ x, m₂ x)) f (g ×ˢ h) :=
@@ -479,6 +497,11 @@ variable {f : Filter α} {g : Filter β}
 protected def coprod (f : Filter α) (g : Filter β) : Filter (α × β) :=
   f.comap Prod.fst ⊔ g.comap Prod.snd
 #align filter.coprod Filter.coprod
+
+theorem coprod_eq_prod_top_sup_top_prod (f : Filter α) (g : Filter β) :
+    Filter.coprod f g = f ×ˢ ⊤ ⊔ ⊤ ×ˢ g := by
+  rw [prod_top, top_prod]
+  rfl
 
 theorem mem_coprod_iff {s : Set (α × β)} {f : Filter α} {g : Filter β} :
     s ∈ f.coprod g ↔ (∃ t₁ ∈ f, Prod.fst ⁻¹' t₁ ⊆ s) ∧ ∃ t₂ ∈ g, Prod.snd ⁻¹' t₂ ⊆ s := by

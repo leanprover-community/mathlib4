@@ -94,11 +94,11 @@ def of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
   ⟨⟨⟨X, inferInstance⟩⟩⟩
 
 /-- The forgetful functor `Stonean ⥤ CompHaus` is full. -/
-instance : Full toCompHaus where
+instance : toCompHaus.Full where
   preimage := fun f => f
 
 /-- The forgetful functor `Stonean ⥤ CompHaus` is faithful. -/
-instance : Faithful toCompHaus := {}
+instance : toCompHaus.Faithful := {}
 
 /-- Stonean spaces are a concrete category. -/
 instance : ConcreteCategory Stonean where
@@ -131,11 +131,11 @@ def toProfinite : Stonean.{u} ⥤ Profinite.{u} where
   map f := f
 
 /-- The functor from Stonean spaces to profinite spaces is full. -/
-instance : Full toProfinite where
+instance : toProfinite.Full where
   preimage f := f
 
 /-- The functor from Stonean spaces to profinite spaces is faithful. -/
-instance : Faithful toProfinite := {}
+instance : toProfinite.Faithful := {}
 
 /-- The functor from Stonean spaces to compact Hausdorff spaces
     factors through profinite spaces. -/

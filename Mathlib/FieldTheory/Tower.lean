@@ -48,10 +48,6 @@ namespace FiniteDimensional
 
 open IsNoetherian
 
-theorem trans [FiniteDimensional F K] [FiniteDimensional K A] : FiniteDimensional F A :=
-  Module.Finite.trans K A
-#align finite_dimensional.trans FiniteDimensional.trans
-
 /-- In a tower of field extensions `A / K / F`, if `A / F` is finite, so is `K / F`.
 
 (In fact, it suffices that `A` is a nontrivial ring.)

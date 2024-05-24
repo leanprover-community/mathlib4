@@ -5,6 +5,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.RingTheory.Localization.Basic
+import Mathlib.Algebra.Field.Equiv
 
 #align_import ring_theory.localization.fraction_ring from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
 
@@ -50,11 +51,11 @@ instance Rat.isFractionRing : IsFractionRing ℤ ℚ where
   map_units' := by
     rintro ⟨x, hx⟩
     rw [mem_nonZeroDivisors_iff_ne_zero] at hx
-    simpa only [eq_intCast, isUnit_iff_ne_zero, Int.cast_eq_zero, Ne.def, Subtype.coe_mk] using hx
+    simpa only [eq_intCast, isUnit_iff_ne_zero, Int.cast_eq_zero, Ne, Subtype.coe_mk] using hx
   surj' := by
     rintro ⟨n, d, hd, h⟩
     refine' ⟨⟨n, ⟨d, _⟩⟩, Rat.mul_den_eq_num⟩
-    rw [mem_nonZeroDivisors_iff_ne_zero, Int.coe_nat_ne_zero_iff_pos]
+    rw [mem_nonZeroDivisors_iff_ne_zero, Int.natCast_ne_zero_iff_pos]
     exact Nat.zero_lt_of_ne_zero hd
   exists_of_eq {x y} := by
     rw [eq_intCast, eq_intCast, Int.cast_inj]
@@ -131,15 +132,12 @@ protected theorem mul_inv_cancel (x : K) (hx : x ≠ 0) : x * IsFractionRing.inv
 /-- A `CommRing` `K` which is the localization of an integral domain `R` at `R - {0}` is a field.
 See note [reducible non-instances]. -/
 @[reducible]
-noncomputable def toField : Field K :=
-  { IsFractionRing.isDomain A, inferInstanceAs (CommRing K) with
-    inv := IsFractionRing.inv A
-    mul_inv_cancel := IsFractionRing.mul_inv_cancel A
-    inv_zero := by
-      change IsFractionRing.inv A (0 : K) = 0
-      rw [IsFractionRing.inv]
-      exact dif_pos rfl
-    qsmul := qsmulRec _ }
+noncomputable def toField : Field K where
+  __ := IsFractionRing.isDomain A
+  mul_inv_cancel := IsFractionRing.mul_inv_cancel A
+  inv_zero := show IsFractionRing.inv A (0 : K) = 0 by rw [IsFractionRing.inv]; exact dif_pos rfl
+  nnqsmul := _
+  qsmul := _
 #align is_fraction_ring.to_field IsFractionRing.toField
 
 lemma surjective_iff_isField [IsDomain R] : Function.Surjective (algebraMap R K) ↔ IsField R where

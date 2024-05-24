@@ -28,6 +28,7 @@ cannot be a measure on `m`, hence the definition of `μ.trim hm`.
 
 This notion is related to `OuterMeasure.trim`, see the lemma
 `toOuterMeasure_trim_eq_trim_toOuterMeasure`. -/
+@[pp_dot]
 noncomputable
 def Measure.trim {m m0 : MeasurableSpace α} (μ : @Measure α m0) (hm : m ≤ m0) : @Measure α m :=
   @OuterMeasure.toMeasure α m μ.toOuterMeasure (hm.trans (le_toOuterMeasure_caratheodory μ))
@@ -127,5 +128,11 @@ theorem sigmaFinite_trim_bot_iff : SigmaFinite (μ.trim bot_le) ↔ IsFiniteMeas
   · rwa [trim_measurableSet_eq bot_le MeasurableSet.univ] at h_univ
   · rwa [trim_measurableSet_eq bot_le MeasurableSet.univ]
 #align measure_theory.sigma_finite_trim_bot_iff MeasureTheory.sigmaFinite_trim_bot_iff
+
+lemma Measure.AbsolutelyContinuous.trim {ν : Measure α} (hμν : μ ≪ ν) (hm : m ≤ m0) :
+    μ.trim hm ≪ ν.trim hm := by
+  refine Measure.AbsolutelyContinuous.mk (fun s hs hsν ↦ ?_)
+  rw [trim_measurableSet_eq hm hs] at hsν ⊢
+  exact hμν hsν
 
 end MeasureTheory

@@ -179,7 +179,7 @@ such that every nonzero element is invertible.
 The type is required to come with an “inverse” function, and the inverse of `0` must be `0`.
 
 Examples include division rings and the ordered monoids that are the
-target of valuations in general valuation theory.-/
+target of valuations in general valuation theory. -/
 class GroupWithZero (G₀ : Type u) extends MonoidWithZero G₀, DivInvMonoid G₀, Nontrivial G₀ where
   /-- The inverse of `0` in a group with zero is `0`. -/
   inv_zero : (0 : G₀)⁻¹ = 0

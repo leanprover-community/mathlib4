@@ -365,7 +365,7 @@ theorem gauge_eq_zero (hs : Absorbent ℝ s) (hb : Bornology.IsVonNBounded ℝ s
 
 theorem gauge_pos (hs : Absorbent ℝ s) (hb : Bornology.IsVonNBounded ℝ s) :
     0 < gauge s x ↔ x ≠ 0 := by
-  simp only [(gauge_nonneg _).gt_iff_ne, Ne.def, gauge_eq_zero hs hb]
+  simp only [(gauge_nonneg _).gt_iff_ne, Ne, gauge_eq_zero hs hb]
 
 end TopologicalSpace
 
@@ -581,7 +581,7 @@ theorem gauge_ball (hr : 0 ≤ r) (x : E) : gauge (ball (0 : E) r) x = ‖x‖ /
     simp_rw [mem_ball_zero_iff, norm_neg]
     exact fun _ => id
 
-@[deprecated gauge_ball]
+@[deprecated gauge_ball] -- 2023-07-24
 theorem gauge_ball' (hr : 0 < r) (x : E) : gauge (ball (0 : E) r) x = ‖x‖ / r :=
   gauge_ball hr.le x
 #align gauge_ball gauge_ball'

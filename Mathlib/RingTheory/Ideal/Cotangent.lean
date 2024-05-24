@@ -56,7 +56,7 @@ instance [IsNoetherian R I] : IsNoetherian R I.Cotangent :=
   Submodule.Quotient.isNoetherian _
 
 /-- The quotient map from `I` to `I ⧸ I ^ 2`. -/
-@[simps!] --  (config := lemmasOnly) apply -- Porting note: this option does not exist anymore
+@[simps! (config := .lemmasOnly) apply]
 def toCotangent : I →ₗ[R] I.Cotangent := Submodule.mkQ _
 #align ideal.to_cotangent Ideal.toCotangent
 
@@ -109,7 +109,7 @@ theorem to_quotient_square_comp_toCotangent :
   LinearMap.ext fun _ => rfl
 #align ideal.to_quotient_square_comp_to_cotangent Ideal.to_quotient_square_comp_toCotangent
 
--- @[simp] -- Porting note: not in simpNF
+@[simp]
 theorem toCotangent_to_quotient_square (x : I) :
     I.cotangentToQuotientSquare (I.toCotangent x) = (I ^ 2).mkQ x := rfl
 #align ideal.to_cotangent_to_quotient_square Ideal.toCotangent_to_quotient_square

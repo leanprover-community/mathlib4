@@ -252,7 +252,7 @@ protected instance _root_.PiFin.toExpr [ToLevel.{u}] [ToExpr α] (n : ℕ) : ToE
 
 -- Porting note: the next decl is commented out. TODO(eric-wieser)
 
--- /-- Convert a vector of pexprs to the pexpr constructing that vector.-/
+-- /-- Convert a vector of pexprs to the pexpr constructing that vector. -/
 -- unsafe def _root_.pi_fin.to_pexpr : ∀ {n}, (Fin n → pexpr) → pexpr
 --   | 0, v => ``(![])
 --   | n + 1, v => ``(vecCons $(v 0) $(_root_.pi_fin.to_pexpr <| vecTail v))

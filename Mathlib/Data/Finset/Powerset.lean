@@ -127,18 +127,16 @@ instance decidableForallOfDecidableSubsets {s : Finset α} {p : ∀ t ⊆ s, Pro
     ⟨fun h t hs => h t (mem_powerset.2 hs), fun h _ _ => h _ _⟩
 #align finset.decidable_forall_of_decidable_subsets Finset.decidableForallOfDecidableSubsets
 
-/-- A version of `Finset.decidableExistsOfDecidableSubsets` with a non-dependent `p`.
-Typeclass inference cannot find `hu` here, so this is not an instance. -/
-def decidableExistsOfDecidableSubsets' {s : Finset α} {p : Finset α → Prop}
-    (hu : ∀ t ⊆ s, Decidable (p t)) : Decidable (∃ (t : _) (_h : t ⊆ s), p t) :=
-  @Finset.decidableExistsOfDecidableSubsets _ _ _ hu
+/-- For predicate `p` decidable on subsets, it is decidable whether `p` holds for any subset. -/
+instance decidableExistsOfDecidableSubsets' {s : Finset α} {p : Finset α → Prop}
+    [∀ t, Decidable (p t)] : Decidable (∃ t ⊆ s, p t) :=
+  decidable_of_iff (∃ (t : _) (_h : t ⊆ s), p t) $ by simp
 #align finset.decidable_exists_of_decidable_subsets' Finset.decidableExistsOfDecidableSubsets'
 
-/-- A version of `Finset.decidableForallOfDecidableSubsets` with a non-dependent `p`.
-Typeclass inference cannot find `hu` here, so this is not an instance. -/
-def decidableForallOfDecidableSubsets' {s : Finset α} {p : Finset α → Prop}
-    (hu : ∀ t ⊆ s, Decidable (p t)) : Decidable (∀ t ⊆ s, p t) :=
-  @Finset.decidableForallOfDecidableSubsets _ _ _ hu
+/-- For predicate `p` decidable on subsets, it is decidable whether `p` holds for every subset. -/
+instance decidableForallOfDecidableSubsets' {s : Finset α} {p : Finset α → Prop}
+    [∀ t, Decidable (p t)] : Decidable (∀ t ⊆ s, p t) :=
+  decidable_of_iff (∀ (t : _) (_h : t ⊆ s), p t) $ by simp
 #align finset.decidable_forall_of_decidable_subsets' Finset.decidableForallOfDecidableSubsets'
 
 end Powerset
@@ -319,7 +317,7 @@ theorem powersetCard_sup [DecidableEq α] (u : Finset α) (n : ℕ) (hn : n < u.
     exact h
   · rw [sup_eq_biUnion, le_iff_subset, subset_iff]
     intro x hx
-    simp only [mem_biUnion, exists_prop, id.def]
+    simp only [mem_biUnion, exists_prop, id]
     obtain ⟨t, ht⟩ : ∃ t, t ∈ powersetCard n (u.erase x) := powersetCard_nonempty.2
       (le_trans (Nat.le_sub_one_of_lt hn) pred_card_le_card_erase)
     · refine' ⟨insert x t, _, mem_insert_self _ _⟩

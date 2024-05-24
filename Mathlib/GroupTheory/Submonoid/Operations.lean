@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov
 -/
-import Mathlib.Data.Nat.Basic
+import Mathlib.Algebra.Group.Nat
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.Submonoid.Basic
 import Mathlib.GroupTheory.Subsemigroup.Operations
@@ -231,9 +231,7 @@ theorem coe_map (f : F) (S : Submonoid M) : (S.map f : Set N) = f '' S :=
 #align add_submonoid.coe_map AddSubmonoid.coe_map
 
 @[to_additive (attr := simp)]
-theorem mem_map {f : F} {S : Submonoid M} {y : N} : y ∈ S.map f ↔ ∃ x ∈ S, f x = y := by
-  rw [← bex_def]
-  exact mem_image_iff_bex
+theorem mem_map {f : F} {S : Submonoid M} {y : N} : y ∈ S.map f ↔ ∃ x ∈ S, f x = y := Iff.rfl
 #align submonoid.mem_map Submonoid.mem_map
 #align add_submonoid.mem_map AddSubmonoid.mem_map
 
@@ -981,6 +979,10 @@ theorem mrange_eq_map (f : F) : mrange f = (⊤ : Submonoid M).map f :=
 #align monoid_hom.mrange_eq_map MonoidHom.mrange_eq_map
 #align add_monoid_hom.mrange_eq_map AddMonoidHom.mrange_eq_map
 
+@[to_additive (attr := simp)]
+theorem mrange_id : mrange (MonoidHom.id M) = ⊤ := by
+  simp [mrange_eq_map]
+
 @[to_additive]
 theorem map_mrange (g : N →* P) (f : M →* N) : f.mrange.map g = mrange (comp g f) := by
   simpa only [mrange_eq_map] using (⊤ : Submonoid M).map_map g f
@@ -1020,6 +1022,10 @@ theorem map_mclosure (f : F) (s : Set M) : (closure s).map f = closure (f '' s) 
     (closure_le.2 <| Set.image_subset _ subset_closure)
 #align monoid_hom.map_mclosure MonoidHom.map_mclosure
 #align add_monoid_hom.map_mclosure AddMonoidHom.map_mclosure
+
+@[to_additive (attr := simp)]
+theorem mclosure_range (f : F) : closure (Set.range f) = mrange f := by
+  rw [← Set.image_univ, ← map_mclosure, mrange_eq_map, closure_univ]
 
 /-- Restriction of a monoid hom to a submonoid of the domain. -/
 @[to_additive "Restriction of an `AddMonoid` hom to an `AddSubmonoid` of the domain."]
@@ -1305,7 +1311,7 @@ theorem nontrivial_iff_exists_ne_one (S : Submonoid M) : Nontrivial S ↔ ∃ x 
   calc
     Nontrivial S ↔ ∃ x : S, x ≠ 1 := nontrivial_iff_exists_ne 1
     _ ↔ ∃ (x : _) (hx : x ∈ S), (⟨x, hx⟩ : S) ≠ ⟨1, S.one_mem⟩ := Subtype.exists
-    _ ↔ ∃ x ∈ S, x ≠ (1 : M) := by simp [Ne.def]
+    _ ↔ ∃ x ∈ S, x ≠ (1 : M) := by simp [Ne]
 #align submonoid.nontrivial_iff_exists_ne_one Submonoid.nontrivial_iff_exists_ne_one
 #align add_submonoid.nontrivial_iff_exists_ne_zero AddSubmonoid.nontrivial_iff_exists_ne_zero
 
@@ -1495,8 +1501,7 @@ namespace Submonoid
 elements of `M`. -/
 @[to_additive (attr := simps!) " The additive equivalence between the type of additive units of `M`
   and the additive submonoid whose elements are the additive units of `M`. "]
-noncomputable def unitsTypeEquivIsUnitSubmonoid [Monoid M] :
-  Mˣ ≃* IsUnit.submonoid M where
+noncomputable def unitsTypeEquivIsUnitSubmonoid [Monoid M] : Mˣ ≃* IsUnit.submonoid M where
   toFun x := ⟨x, Units.isUnit x⟩
   invFun x := x.prop.unit
   left_inv x := IsUnit.unit_of_val_units _

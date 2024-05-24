@@ -3,11 +3,11 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.Data.Polynomial.AlgebraMap
-import Mathlib.Data.Polynomial.Inductions
-import Mathlib.Data.Polynomial.Splits
-import Mathlib.RingTheory.Polynomial.Vieta
+import Mathlib.Algebra.Polynomial.AlgebraMap
+import Mathlib.Algebra.Polynomial.Inductions
+import Mathlib.Algebra.Polynomial.Splits
 import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.RingTheory.Polynomial.Vieta
 
 #align_import topology.algebra.polynomial from "leanprover-community/mathlib"@"565eb991e264d0db702722b4bde52ee5173c9950"
 
@@ -124,7 +124,7 @@ theorem tendsto_abv_atTop {R k α : Type*} [Ring R] [LinearOrderedField k] (abv 
     [IsAbsoluteValue abv] (p : R[X]) (h : 0 < degree p) {l : Filter α} {z : α → R}
     (hz : Tendsto (abv ∘ z) l atTop) : Tendsto (fun x => abv (p.eval (z x))) l atTop := by
   apply tendsto_abv_eval₂_atTop _ _ _ h _ hz
-  exact (mt leadingCoeff_eq_zero.1 (ne_zero_of_degree_gt h))
+  exact mt leadingCoeff_eq_zero.1 (ne_zero_of_degree_gt h)
 #align polynomial.tendsto_abv_at_top Polynomial.tendsto_abv_atTop
 
 theorem tendsto_abv_aeval_atTop {R A k α : Type*} [CommSemiring R] [Ring A] [Algebra R A]

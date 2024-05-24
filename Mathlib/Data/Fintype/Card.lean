@@ -773,7 +773,7 @@ theorem Finset.card_eq_of_equiv_fintype {s : Finset α} [Fintype β] (i : s ≃ 
     s.card = Fintype.card β := card_eq_of_equiv_fin <| i.trans <| Fintype.equivFin β
 
 /-- Noncomputable equivalence between two finsets `s` and `t` as fintypes when there is a proof
-that `s.card = t.card`.-/
+that `s.card = t.card`. -/
 noncomputable def Finset.equivOfCardEq {s : Finset α} {t : Finset β} (h : s.card = t.card) :
     s ≃ t := Fintype.equivOfCardEq ((Fintype.card_coe _).trans (h.trans (Fintype.card_coe _).symm))
 #align finset.equiv_of_card_eq Finset.equivOfCardEq

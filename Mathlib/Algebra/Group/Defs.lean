@@ -774,16 +774,16 @@ end CancelMonoid
 
 /-- The fundamental power operation in a group. `zpowRec n a = a*a*...*a` n times, for integer `n`.
 Use instead `a ^ n`, which has better definitional behavior. -/
-def zpowRec {M : Type*} [One M] [Mul M] [Inv M] : ℤ → M → M
-  | Int.ofNat n, a => npowRec n a
-  | Int.negSucc n, a => (npowRec n.succ a)⁻¹
+def zpowRec [One G] [Mul G] [Inv G] (npow : ℕ → G → G := npowRec) : ℤ → G → G
+  | Int.ofNat n, a => npow n a
+  | Int.negSucc n, a => (npow n.succ a)⁻¹
 #align zpow_rec zpowRec
 
 /-- The fundamental scalar multiplication in an additive group. `zpowRec n a = a+a+...+a` n
 times, for integer `n`. Use instead `n • a`, which has better definitional behavior. -/
-def zsmulRec {M : Type*} [Zero M] [Add M] [Neg M] : ℤ → M → M
-  | Int.ofNat n, a => nsmulRec n a
-  | Int.negSucc n, a => -nsmulRec n.succ a
+def zsmulRec [Zero G] [Add G] [Neg G] (nsmul : ℕ → G → G := nsmulRec) : ℤ → G → G
+  | Int.ofNat n, a => nsmul n a
+  | Int.negSucc n, a => -nsmul n.succ a
 #align zsmul_rec zsmulRec
 
 attribute [to_additive existing] zpowRec
@@ -877,7 +877,7 @@ class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G where
   /-- `a / b := a * b⁻¹` -/
   protected div_eq_mul_inv : ∀ a b : G, a / b = a * b⁻¹ := by intros; rfl
   /-- The power operation: `a ^ n = a * ··· * a`; `a ^ (-n) = a⁻¹ * ··· a⁻¹` (`n` times) -/
-  protected zpow : ℤ → G → G := zpowRec
+  protected zpow : ℤ → G → G := zpowRec npowRec
   /-- `a ^ 0 = 1` -/
   protected zpow_zero' : ∀ a : G, zpow 0 a = 1 := by intros; rfl
   /-- `a ^ (n + 1) = a ^ n * a` -/
@@ -1045,7 +1045,7 @@ end InvOneClass
 `-(a + b) = -b + -a` and `a + b = 0 → -a = b`. -/
 class SubtractionMonoid (G : Type u) extends SubNegMonoid G, InvolutiveNeg G where
   protected neg_add_rev (a b : G) : -(a + b) = -b + -a
-  /- Despite the asymmetry of `neg_eq_of_add`, the symmetric version is true thanks to the
+  /-- Despite the asymmetry of `neg_eq_of_add`, the symmetric version is true thanks to the
   involutivity of negation. -/
   protected neg_eq_of_add (a b : G) : a + b = 0 → -a = b
 #align subtraction_monoid SubtractionMonoid
@@ -1057,7 +1057,7 @@ This is the immediate common ancestor of `Group` and `GroupWithZero`. -/
 @[to_additive SubtractionMonoid]
 class DivisionMonoid (G : Type u) extends DivInvMonoid G, InvolutiveInv G where
   protected mul_inv_rev (a b : G) : (a * b)⁻¹ = b⁻¹ * a⁻¹
-  /- Despite the asymmetry of `inv_eq_of_mul`, the symmetric version is true thanks to the
+  /-- Despite the asymmetry of `inv_eq_of_mul`, the symmetric version is true thanks to the
   involutivity of inversion. -/
   protected inv_eq_of_mul (a b : G) : a * b = 1 → a⁻¹ = b
 #align division_monoid DivisionMonoid

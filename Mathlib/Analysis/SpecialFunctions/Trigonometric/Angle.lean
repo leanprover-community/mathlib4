@@ -293,7 +293,7 @@ theorem cos_sin_inj {θ ψ : ℝ} (Hcos : cos θ = cos ψ) (Hsin : sin θ = sin 
   obtain ⟨n, hn⟩ : ∃ n, n • _ = _ := QuotientAddGroup.leftRel_apply.mp (Quotient.exact' hc)
   rw [← neg_one_mul, add_zero, ← sub_eq_zero, zsmul_eq_mul, ← mul_assoc, ← sub_mul, mul_eq_zero,
     eq_false (ne_of_gt pi_pos), or_false_iff, sub_neg_eq_add, ← Int.cast_zero, ← Int.cast_one,
-    ← Int.int_cast_ofNat, ← Int.cast_mul, ← Int.cast_add, Int.cast_inj] at hn
+    ← Int.cast_ofNat, ← Int.cast_mul, ← Int.cast_add, Int.cast_inj] at hn
   have : (n * 2 + 1) % (2 : ℤ) = 0 % (2 : ℤ) := congr_arg (· % (2 : ℤ)) hn
   rw [add_comm, Int.add_mul_emod_self] at this
   exact absurd this one_ne_zero
@@ -750,7 +750,7 @@ theorem cos_pos_iff_abs_toReal_lt_pi_div_two {θ : Angle} : 0 < cos θ ↔ |θ.t
   rw [lt_iff_le_and_ne, lt_iff_le_and_ne, cos_nonneg_iff_abs_toReal_le_pi_div_two, ←
     and_congr_right]
   rintro -
-  rw [Ne.def, Ne.def, not_iff_not, @eq_comm ℝ 0, abs_toReal_eq_pi_div_two_iff, cos_eq_zero_iff]
+  rw [Ne, Ne, not_iff_not, @eq_comm ℝ 0, abs_toReal_eq_pi_div_two_iff, cos_eq_zero_iff]
 #align real.angle.cos_pos_iff_abs_to_real_lt_pi_div_two Real.Angle.cos_pos_iff_abs_toReal_lt_pi_div_two
 
 theorem cos_neg_iff_pi_div_two_lt_abs_toReal {θ : Angle} : cos θ < 0 ↔ π / 2 < |θ.toReal| := by
@@ -1016,7 +1016,7 @@ theorem sign_two_nsmul_eq_sign_iff {θ : Angle} :
       · simp at h
       · linarith [neg_pi_lt_toReal θ]
   · have hpi' : (2 : ℕ) • θ ≠ π := by
-      rw [Ne.def, two_nsmul_eq_pi_iff, not_or]
+      rw [Ne, two_nsmul_eq_pi_iff, not_or]
       constructor
       · rintro rfl
         simp [pi_pos, div_pos, abs_of_pos] at h

@@ -70,8 +70,7 @@ instance module (α) {r : Semiring α} {m : ∀ i, AddCommMonoid <| f i} [∀ i,
 /- Extra instance to short-circuit type class resolution.
 For unknown reasons, this is necessary for certain inference problems. E.g., for this to succeed:
 ```lean
-example (β X : Type*) [NormedAddCommGroup β] [NormedSpace ℝ β] : Module ℝ (X → β) :=
-inferInstance
+example (β X : Type*) [NormedAddCommGroup β] [NormedSpace ℝ β] : Module ℝ (X → β) := inferInstance
 ```
 See: https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Typeclass.20resolution.20under.20binders/near/281296989
 -/

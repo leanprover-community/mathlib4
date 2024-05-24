@@ -89,7 +89,7 @@ The functor `F` must preserve all the data parts of the monoidal structure betwe
 categories.
 
 -/
-abbrev induced [MonoidalCategoryStruct D] (F : D ⥤ C) [Faithful F]
+abbrev induced [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
     (fData : InducingFunctorData F) :
     MonoidalCategory.{v₂} D where
   tensorHom_def {X₁ Y₁ X₂ Y₂} f g := F.map_injective <| by
@@ -121,7 +121,7 @@ abbrev induced [MonoidalCategoryStruct D] (F : D ⥤ C) [Faithful F]
 We can upgrade `F` to a monoidal functor from `D` to `E` with the induced structure.
 -/
 @[simps]
-def fromInduced [MonoidalCategoryStruct D] (F : D ⥤ C) [Faithful F]
+def fromInduced [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
     (fData : InducingFunctorData F) :
     letI := induced F fData
     MonoidalFunctor D C :=
@@ -191,7 +191,7 @@ def fromTransported (e : C ≌ D) : MonoidalFunctor (Transported e) C := by
 #align category_theory.monoidal.from_transported CategoryTheory.Monoidal.fromTransported
 
 instance instIsEquivalence_fromTransported (e : C ≌ D) :
-    IsEquivalence (fromTransported e).toFunctor := by
+    (fromTransported e).IsEquivalence := by
   dsimp [fromTransported]
   infer_instance
 
@@ -204,8 +204,8 @@ def toTransported (e : C ≌ D) : MonoidalFunctor C (Transported e) :=
   monoidalInverse (fromTransported e)
 #align category_theory.monoidal.to_transported CategoryTheory.Monoidal.toTransported
 
-instance (e : C ≌ D) : IsEquivalence (toTransported e).toFunctor :=
-  inferInstanceAs (IsEquivalence e.functor)
+instance (e : C ≌ D) : (toTransported e).IsEquivalence :=
+  inferInstanceAs (e.functor.IsEquivalence)
 
 /-- The unit isomorphism upgrades to a monoidal isomorphism. -/
 @[simps! hom inv]

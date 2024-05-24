@@ -115,12 +115,12 @@ theorem exists_finset_card_le_mul [FiniteIndex H] {S : Finset G} (hS : closure (
   calc
     _ ≤ (R * S).card := Finset.card_image_le
     _ ≤ (R ×ˢ S).card := Finset.card_image_le
-    _ = R.card * S.card := (R.card_product S)
+    _ = R.card * S.card := R.card_product S
     _ = H.index * S.card := congr_arg (· * S.card) ?_
   calc
     R.card = Fintype.card R := (Fintype.card_coe R).symm
     _ = _ := (Fintype.card_congr (toEquiv hR)).symm
-    _ = Fintype.card (G ⧸ H) := (QuotientGroup.card_quotient_rightRel H)
+    _ = Fintype.card (G ⧸ H) := QuotientGroup.card_quotient_rightRel H
     _ = H.index := H.index_eq_card.symm
 #align subgroup.exists_finset_card_le_mul Subgroup.exists_finset_card_le_mul
 

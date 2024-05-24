@@ -204,7 +204,7 @@ variable (R)
 
 @[simp]
 theorem star_one [MulOneClass R] [StarMul R] : star (1 : R) = 1 :=
-  op_injective <| (starMulEquiv : R ≃* Rᵐᵒᵖ).map_one.trans (op_one _).symm
+  op_injective <| (starMulEquiv : R ≃* Rᵐᵒᵖ).map_one.trans op_one.symm
 #align star_one star_one
 
 variable {R}
@@ -350,6 +350,10 @@ section
 theorem star_intCast [Ring R] [StarRing R] (z : ℤ) : star (z : R) = z :=
   (congr_arg unop <| map_intCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) z).trans (unop_intCast _)
 #align star_int_cast star_intCast
+
+@[simp, norm_cast]
+lemma star_nnratCast [DivisionSemiring R] [StarRing R] (q : ℚ≥0) : star (q : R) = q :=
+  (congr_arg unop <| map_nnratCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) q).trans (unop_nnratCast _)
 
 @[simp, norm_cast]
 theorem star_ratCast [DivisionRing R] [StarRing R] (r : ℚ) : star (r : R) = r :=

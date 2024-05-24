@@ -34,7 +34,7 @@ variable (C : Type*) [Category C]
 
 namespace Idempotents
 
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- In a preadditive category `C`, when an object `X` decomposes as `X ≅ P ⨿ Q`, one may
 consider `P` as a direct factor of `X` and up to unique isomorphism, it is determined by the
 obvious idempotent `X ⟶ P ⟶ X` which is the projection onto `P` with kernel `Q`. More generally,
@@ -157,9 +157,9 @@ def toKaroubi : C ⥤ Karoubi C where
   map f := ⟨f, by simp only [comp_id, id_comp]⟩
 #align category_theory.idempotents.to_karoubi CategoryTheory.Idempotents.toKaroubi
 
-instance : Full (toKaroubi C) where preimage f := f.f
+instance : (toKaroubi C).Full where preimage f := f.f
 
-instance : Faithful (toKaroubi C) where
+instance : (toKaroubi C).Faithful where
   map_injective := fun h => congr_arg Karoubi.Hom.f h
 
 variable {C}
@@ -236,7 +236,7 @@ instance : IsIdempotentComplete (Karoubi C) := by
   use ⟨p.f, by rw [hp, p_comp p]⟩
   simp [hp]
 
-instance [IsIdempotentComplete C] : EssSurj (toKaroubi C) :=
+instance [IsIdempotentComplete C] : (toKaroubi C).EssSurj :=
   ⟨fun P => by
     rcases IsIdempotentComplete.idempotents_split P.X P.p P.idem with ⟨Y, i, e, ⟨h₁, h₂⟩⟩
     use Y
@@ -246,8 +246,8 @@ instance [IsIdempotentComplete C] : EssSurj (toKaroubi C) :=
           inv := ⟨e, by erw [comp_id, ← h₂, assoc, h₁, comp_id]⟩ }⟩
 
 /-- If `C` is idempotent complete, the functor `toKaroubi : C ⥤ Karoubi C` is an equivalence. -/
-def toKaroubiIsEquivalence [IsIdempotentComplete C] : IsEquivalence (toKaroubi C) :=
-  Equivalence.ofFullyFaithfullyEssSurj (toKaroubi C)
+def toKaroubiIsEquivalence [IsIdempotentComplete C] : (toKaroubi C).IsEquivalence :=
+  Functor.IsEquivalence.ofFullyFaithfullyEssSurj (toKaroubi C)
 #align category_theory.idempotents.to_karoubi_is_equivalence CategoryTheory.Idempotents.toKaroubiIsEquivalence
 
 /-- The equivalence `C ≅ Karoubi C` when `C` is idempotent complete. -/

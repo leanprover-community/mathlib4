@@ -98,10 +98,9 @@ theorem card_derangements_fin_eq_numDerangements {n : ℕ} :
     card (derangements (Fin n)) = numDerangements n := by
   induction' n using Nat.strong_induction_on with n hyp
   rcases n with _ | _ | n
-  -- Porting note: the two `convert_to` weren't necessary before.
-  · convert_to card ↑{ f : Perm (Fin 0) | ∀ (x : Fin 0), f x ≠ x } = _ using 2; rfl
-  · convert_to card ↑{ f : Perm (Fin 1) | ∀ (x : Fin 1), f x ≠ x } = _ using 2; rfl
   -- knock out cases 0 and 1
+  · rfl
+  · rfl
   -- now we have n ≥ 2. rewrite everything in terms of card_derangements, so that we can use
   -- `card_derangements_fin_add_two`
   rw [numDerangements_add_two, card_derangements_fin_add_two, mul_add,

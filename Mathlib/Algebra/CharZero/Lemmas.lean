@@ -63,13 +63,13 @@ instance CharZero.NeZero.two : NeZero (2 : M) :=
 
 namespace Function
 
-lemma support_nat_cast (hn : n ≠ 0) : support (n : α → M) = univ :=
+lemma support_natCast (hn : n ≠ 0) : support (n : α → M) = univ :=
   support_const <| Nat.cast_ne_zero.2 hn
-#align function.support_nat_cast Function.support_nat_cast
+#align function.support_nat_cast Function.support_natCast
 
-lemma mulSupport_nat_cast (hn : n ≠ 1) : mulSupport (n : α → M) = univ :=
+lemma mulSupport_natCast (hn : n ≠ 1) : mulSupport (n : α → M) = univ :=
   mulSupport_const <| Nat.cast_ne_one.2 hn
-#align function.mul_support_nat_cast Function.mulSupport_nat_cast
+#align function.mul_support_nat_cast Function.mulSupport_natCast
 
 end Function
 end AddMonoidWithOne
@@ -189,7 +189,7 @@ namespace WithTop
 instance {R : Type*} [AddMonoidWithOne R] [CharZero R] :
     CharZero (WithTop R) where
   cast_injective m n h := by
-    rwa [← coe_nat, ← coe_nat n, coe_eq_coe, Nat.cast_inj] at h
+    rwa [← coe_natCast, ← coe_natCast n, coe_eq_coe, Nat.cast_inj] at h
 
 end WithTop
 
@@ -198,7 +198,7 @@ namespace WithBot
 instance {R : Type*} [AddMonoidWithOne R] [CharZero R] :
     CharZero (WithBot R) where
   cast_injective m n h := by
-    rwa [← coe_nat, ← coe_nat n, coe_eq_coe, Nat.cast_inj] at h
+    rwa [← coe_natCast, ← coe_natCast n, coe_eq_coe, Nat.cast_inj] at h
 
 end WithBot
 

@@ -4,7 +4,7 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Data.Polynomial.AlgebraMap
+import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 import Mathlib.RingTheory.PowerBasis
 
@@ -83,7 +83,8 @@ and `AdjoinRoot` which constructs a new type.
 
 This is not a typeclass because the choice of root given `S` and `f` is not unique.
 -/
--- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
+-- Porting note(#5171): this linter isn't ported yet.
+-- @[nolint has_nonempty_instance]
 structure IsAdjoinRoot {R : Type u} (S : Type v) [CommSemiring R] [Semiring S] [Algebra R S]
     (f : R[X]) : Type max u v where
   map : R[X] →+* S
@@ -222,7 +223,7 @@ def lift (h : IsAdjoinRoot S f) : S →+* T where
     rw [h.eval₂_repr_eq_eval₂_of_map_eq hx _ (h.repr z + h.repr w), eval₂_add]
     · rw [map_add, map_repr, map_repr]
   map_one' := by
-    dsimp only -- Porting note (#10752): added `dsimp only`
+    beta_reduce -- Porting note (#12129): additional beta reduction needed
     rw [h.eval₂_repr_eq_eval₂_of_map_eq hx _ _ (map_one _), eval₂_one]
   map_mul' z w := by
     dsimp only -- Porting note (#10752): added `dsimp only`
@@ -370,7 +371,7 @@ def modByMonicHom (h : IsAdjoinRootMonic S f) : S →ₗ[R] R[X] where
   map_add' x y := by
     conv_lhs =>
       rw [← h.map_repr x, ← h.map_repr y, ← map_add]
-      dsimp only -- Porting note (#10752): added `dsimp only`
+      beta_reduce -- Porting note (#12129): additional beta reduction needed
       rw [h.modByMonic_repr_map, add_modByMonic]
   map_smul' c x := by
     rw [RingHom.id_apply, ← h.map_repr x, Algebra.smul_def, h.algebraMap_apply, ← map_mul]
@@ -421,7 +422,7 @@ def basis (h : IsAdjoinRootMonic S f) : Basis (Fin (natDegree f)) R S :=
         intro i hi
         refine Set.mem_range.mpr ⟨⟨i, ?_⟩, rfl⟩
         contrapose! hi
-        simp only [Polynomial.toFinsupp_apply, Classical.not_not, Finsupp.mem_support_iff, Ne.def,
+        simp only [Polynomial.toFinsupp_apply, Classical.not_not, Finsupp.mem_support_iff, Ne,
           modByMonicHom, LinearMap.coe_mk, Finset.mem_coe]
         by_cases hx : h.toIsAdjoinRoot.repr x %ₘ f = 0
         · simp [hx]
@@ -445,7 +446,7 @@ def basis (h : IsAdjoinRootMonic S f) : Basis (Fin (natDegree f)) R S :=
         rintro i rfl
         exact i.prop.not_le hm
       map_add' := fun x y => by
-        dsimp only -- Porting note (#10752): added `dsimp only`
+        beta_reduce -- Porting note (#12129): additional beta reduction needed
         rw [map_add, toFinsupp_add, Finsupp.comapDomain_add_of_injective Fin.val_injective]
       -- Porting note: the original simp proof with the same lemmas does not work
       -- See https://github.com/leanprover-community/mathlib4/issues/5026

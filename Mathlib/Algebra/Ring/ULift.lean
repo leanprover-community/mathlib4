@@ -67,7 +67,7 @@ instance semiring [Semiring α] : Semiring (ULift α) :=
       npow_succ := fun _ _ => Monoid.npow_succ _ _ }
 #align ulift.semiring ULift.semiring
 
-/-- The ring equivalence between `ULift α` and `α`.-/
+/-- The ring equivalence between `ULift α` and `α`. -/
 def ringEquiv [NonUnitalNonAssocSemiring α] : ULift α ≃+* α where
   toFun := ULift.down
   invFun := ULift.up

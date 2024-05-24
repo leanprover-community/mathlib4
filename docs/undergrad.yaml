@@ -126,7 +126,7 @@ Ring Theory:
     ring: 'Ring'
     subrings: 'Subring'
     ring morphisms: 'RingHom'
-    ring structure $\Z$: 'Int.instCommRingInt'
+    ring structure $\Z$: 'Int.instCommRing'
     product of rings: 'Pi.ring'
   Ideals and Quotients:
     ideal of a commutative ring: 'Ideal'
@@ -174,7 +174,7 @@ Ring Theory:
     characteristic p: 'CharP'
     Subfields: 'field_theory/subfield.html'
     Frobenius morphisms: 'frobenius'
-    field $\Q$ of rational numbers: 'Rat.field'
+    field $\Q$ of rational numbers: 'Rat.instField'
     field $\R$ of real numbers: 'Real.field'
     field $\C$ of complex numbers: 'Complex.instField'
     $\C$ is algebraically closed: 'Complex.exists_root'
@@ -193,10 +193,10 @@ Ring Theory:
 # 4.
 Bilinear and Quadratic Forms Over a Vector Space:
   Bilinear forms:
-    bilinear forms: 'BilinForm'
-    alternating bilinear forms: 'BilinForm.IsAlt'
-    symmetric bilinear forms: 'BilinForm.IsSymm'
-    nondegenerate forms: 'BilinForm.Nondegenerate'
+    bilinear forms: 'LinearMap.BilinForm'
+    alternating bilinear forms: 'LinearMap.BilinForm.IsAlt'
+    symmetric bilinear forms: 'LinearMap.BilinForm.IsSymm'
+    nondegenerate forms: 'LinearMap.BilinForm.Nondegenerate'
     matrix representation: 'BilinForm.toMatrix'
     change of coordinates: 'BilinForm.toMatrix_comp'
     rank of a bilinear form: ''
@@ -204,8 +204,8 @@ Bilinear and Quadratic Forms Over a Vector Space:
     quadratic form: 'QuadraticForm'
     polar form of a quadratic: 'QuadraticForm.polar'
   Orthogonality:
-    orthogonal elements: 'BilinForm.IsOrtho'
-    adjoint endomorphism: 'BilinForm.leftAdjointOfNondegenerate'
+    orthogonal elements: 'LinearMap.BilinForm.IsOrtho'
+    adjoint endomorphism: 'LinearMap.BilinForm.leftAdjointOfNondegenerate'
     Sylvester's law of inertia: 'https://en.wikipedia.org/wiki/Sylvester%27s_law_of_inertia'
     real classification: 'https://en.wikipedia.org/wiki/Sylvester%27s_law_of_inertia'
     complex classification: ''

@@ -351,9 +351,9 @@ theorem integral_cpow {r : ℂ} (h : -1 < r.re ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[
   have hr : r + 1 ≠ 0 := by
     cases' h with h h
     · apply_fun Complex.re
-      rw [Complex.add_re, Complex.one_re, Complex.zero_re, Ne.def, add_eq_zero_iff_eq_neg]
+      rw [Complex.add_re, Complex.one_re, Complex.zero_re, Ne, add_eq_zero_iff_eq_neg]
       exact h.ne'
-    · rw [Ne.def, ← add_eq_zero_iff_eq_neg] at h; exact h.1
+    · rw [Ne, ← add_eq_zero_iff_eq_neg] at h; exact h.1
   by_cases hab : (0 : ℝ) ∉ [[a, b]]
   · apply integral_eq_sub_of_hasDerivAt (fun x hx => ?_)
       (intervalIntegrable_cpow (r := r) <| Or.inr hab)
@@ -382,7 +382,7 @@ theorem integral_rpow {r : ℝ} (h : -1 < r ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[a, 
   have h' : -1 < (r : ℂ).re ∨ (r : ℂ) ≠ -1 ∧ (0 : ℝ) ∉ [[a, b]] := by
     cases h
     · left; rwa [Complex.ofReal_re]
-    · right; rwa [← Complex.ofReal_one, ← Complex.ofReal_neg, Ne.def, Complex.ofReal_inj]
+    · right; rwa [← Complex.ofReal_one, ← Complex.ofReal_neg, Ne, Complex.ofReal_inj]
   have :
     (∫ x in a..b, (x : ℂ) ^ (r : ℂ)) = ((b : ℂ) ^ (r + 1 : ℂ) - (a : ℂ) ^ (r + 1 : ℂ)) / (r + 1) :=
     integral_cpow h'
@@ -408,7 +408,7 @@ theorem integral_zpow {n : ℤ} (h : 0 ≤ n ∨ n ≠ -1 ∧ (0 : ℝ) ∉ [[a,
 
 @[simp]
 theorem integral_pow : ∫ x in a..b, x ^ n = (b ^ (n + 1) - a ^ (n + 1)) / (n + 1) := by
-  simpa only [← Int.ofNat_succ, zpow_natCast] using integral_zpow (Or.inl (Int.coe_nat_nonneg n))
+  simpa only [← Int.ofNat_succ, zpow_natCast] using integral_zpow (Or.inl n.cast_nonneg)
 #align integral_pow integral_pow
 
 /-- Integral of `|x - a| ^ n` over `Ι a b`. This integral appears in the proof of the
@@ -629,7 +629,7 @@ theorem integral_mul_rpow_one_add_sq {t : ℝ} (ht : t ≠ -1) :
     rw [ofReal_mul, this x t]
   · simp_rw [ofReal_sub, ofReal_div, this a (t + 1), this b (t + 1)]
     push_cast; rfl
-  · rw [← ofReal_one, ← ofReal_neg, Ne.def, ofReal_inj]
+  · rw [← ofReal_one, ← ofReal_neg, Ne, ofReal_inj]
     exact ht
 #align integral_mul_rpow_one_add_sq integral_mul_rpow_one_add_sq
 
@@ -659,15 +659,9 @@ theorem integral_sin_pow_aux :
     _ = C + (↑n + 1) * ∫ x in a..b, sin x ^ n - sin x ^ (n + 2) := by
       simp [cos_sq', sub_mul, ← pow_add, add_comm]
     _ = (C + (↑n + 1) * ∫ x in a..b, sin x ^ n) - (↑n + 1) * ∫ x in a..b, sin x ^ (n + 2) := by
-      rw [integral_sub, mul_sub, add_sub_assoc] <;> apply Continuous.intervalIntegrable
-      -- Porting note: was `... <;> continuity`
-      · exact continuous_sin_pow n
-      · exact continuous_sin_pow (n + 2)
-  all_goals apply Continuous.intervalIntegrable
-  -- Porting note: was `... <;> continuity`
-  · have : Continuous fun x ↦ ↑(n + 1) * cos x := by continuity
-    exact this.mul (continuous_sin_pow n)
-  · exact continuous_sin
+        rw [integral_sub, mul_sub, add_sub_assoc] <;>
+          apply Continuous.intervalIntegrable <;> continuity
+  all_goals apply Continuous.intervalIntegrable; continuity
 #align integral_sin_pow_aux integral_sin_pow_aux
 
 /-- The reduction formula for the integral of `sin x ^ n` for any natural `n ≥ 2`. -/
@@ -772,8 +766,7 @@ theorem integral_cos_sq : ∫ x in a..b, cos x ^ 2 = (cos b * sin b - cos a * si
 /-- Simplification of the integral of `sin x ^ m * cos x ^ n`, case `n` is odd. -/
 theorem integral_sin_pow_mul_cos_pow_odd (m n : ℕ) :
     (∫ x in a..b, sin x ^ m * cos x ^ (2 * n + 1)) = ∫ u in sin a..sin b, u^m * (↑1 - u ^ 2) ^ n :=
-  have hc : Continuous fun u : ℝ => u ^ m * (↑1 - u ^ 2) ^ n := -- Porting note: was `by continuity`
-    (continuous_pow m).mul ((continuous_const.sub (continuous_pow 2)).pow n)
+  have hc : Continuous fun u : ℝ => u ^ m * (↑1 - u ^ 2) ^ n := by continuity
   calc
     (∫ x in a..b, sin x ^ m * cos x ^ (2 * n + 1)) =
         ∫ x in a..b, sin x ^ m * (↑1 - sin x ^ 2) ^ n * cos x := by
@@ -809,8 +802,7 @@ theorem integral_cos_pow_three :
 /-- Simplification of the integral of `sin x ^ m * cos x ^ n`, case `m` is odd. -/
 theorem integral_sin_pow_odd_mul_cos_pow (m n : ℕ) :
     (∫ x in a..b, sin x ^ (2 * m + 1) * cos x ^ n) = ∫ u in cos b..cos a, u^n * (↑1 - u ^ 2) ^ m :=
-  have hc : Continuous fun u : ℝ => u ^ n * (↑1 - u ^ 2) ^ m := -- Porting note: was `by continuity`
-    (continuous_pow n).mul ((continuous_const.sub (continuous_pow 2)).pow m)
+  have hc : Continuous fun u : ℝ => u ^ n * (↑1 - u ^ 2) ^ m := by continuity
   calc
     (∫ x in a..b, sin x ^ (2 * m + 1) * cos x ^ n) =
         -∫ x in b..a, sin x ^ (2 * m + 1) * cos x ^ n :=
@@ -873,10 +865,10 @@ theorem integral_sin_sq_mul_cos_sq :
 /-! ### Integral of misc. functions -/
 
 
-theorem integral_sqrt_one_sub_sq : ∫ x in (-1 : ℝ)..1, sqrt (1 - x ^ 2 : ℝ) = π / 2 :=
+theorem integral_sqrt_one_sub_sq : ∫ x in (-1 : ℝ)..1, √(1 - x ^ 2 : ℝ) = π / 2 :=
   calc
-    _ = ∫ x in sin (-(π / 2)).. sin (π / 2), sqrt (1 - x ^ 2 : ℝ) := by rw [sin_neg, sin_pi_div_two]
-    _ = ∫ x in (-(π / 2))..(π / 2), sqrt (1 - sin x ^ 2 : ℝ) * cos x :=
+    _ = ∫ x in sin (-(π / 2)).. sin (π / 2), √(1 - x ^ 2 : ℝ) := by rw [sin_neg, sin_pi_div_two]
+    _ = ∫ x in (-(π / 2))..(π / 2), √(1 - sin x ^ 2 : ℝ) * cos x :=
           (integral_comp_mul_deriv (fun x _ => hasDerivAt_sin x) continuousOn_cos
             (by continuity)).symm
     _ = ∫ x in (-(π / 2))..(π / 2), cos x ^ 2 := by

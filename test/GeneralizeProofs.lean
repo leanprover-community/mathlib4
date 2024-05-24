@@ -1,4 +1,4 @@
-import Mathlib.Data.Nat.Basic
+import Mathlib.Algebra.Ring.Nat
 import Mathlib.Tactic.GeneralizeProofs
 
 private axiom test_sorry : ∀ {α}, α

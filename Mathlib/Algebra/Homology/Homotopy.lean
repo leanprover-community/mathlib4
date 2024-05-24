@@ -130,7 +130,7 @@ theorem prevD_nat (C D : CochainComplex V ℕ) (i : ℕ) (f : ∀ i j, C.X i ⟶
   · congr <;> simp
 #align prev_d_nat prevD_nat
 
--- Porting note: removed @[has_nonempty_instance]
+-- Porting note(#5171): removed @[has_nonempty_instance]
 /-- A homotopy `h` between chain maps `f` and `g` consists of components `h i j : C.X i ⟶ D.X j`
 which are zero unless `c.Rel j i`, satisfying the homotopy condition.
 -/

@@ -48,15 +48,14 @@ noncomputable instance [IrreducibleSpace X.carrier] (U : Opens X.carrier) [Nonem
   (X.germToFunctionField U).toAlgebra
 
 noncomputable instance [IsIntegral X] : Field X.functionField := by
-  apply fieldOfIsUnitOrEqZero
-  intro a
+  refine .ofIsUnitOrEqZero fun a ↦ ?_
   obtain ⟨U, m, s, rfl⟩ := TopCat.Presheaf.germ_exist _ _ a
   rw [or_iff_not_imp_right, ← (X.presheaf.germ ⟨_, m⟩).map_zero]
   intro ha
   replace ha := ne_of_apply_ne _ ha
   have hs : genericPoint X.carrier ∈ RingedSpace.basicOpen _ s := by
     rw [← SetLike.mem_coe, (genericPoint_spec X.carrier).mem_open_set_iff, Set.top_eq_univ,
-      Set.univ_inter, Set.nonempty_iff_ne_empty, Ne.def, ← Opens.coe_bot, ← SetLike.ext'_iff]
+      Set.univ_inter, Set.nonempty_iff_ne_empty, Ne, ← Opens.coe_bot, ← SetLike.ext'_iff]
     erw [basicOpen_eq_bot_iff]
     exacts [ha, (RingedSpace.basicOpen _ _).isOpen]
   have := (X.presheaf.germ ⟨_, hs⟩).isUnit_map (RingedSpace.isUnit_res_basicOpen _ s)

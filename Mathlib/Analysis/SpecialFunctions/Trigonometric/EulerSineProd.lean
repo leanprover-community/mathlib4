@@ -272,7 +272,7 @@ The main theorem `Complex.tendsto_euler_sin_prod`, and its real variant
 `Real.tendsto_euler_sin_prod`, now follow by combining `sin_pi_mul_eq` with a lemma
 stating that the sequence of measures on `[0, π/2]` given by integration against `cos x ^ n`
 (suitably normalised) tends to the Dirac measure at 0, as a special case of the general result
-`tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_continuousOn`. -/
+`tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_continuousOn`. -/
 
 
 theorem tendsto_integral_cos_pow_mul_div {f : ℝ → ℂ} (hf : ContinuousOn f (Icc 0 (π / 2))) :
@@ -291,7 +291,7 @@ theorem tendsto_integral_cos_pow_mul_div {f : ℝ → ℂ} (hf : ContinuousOn f 
     rw [interior_Icc, closure_Ioo pi_div_two_pos.ne, left_mem_Icc]
     exact pi_div_two_pos.le
   exact
-    tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_continuousOn isCompact_Icc
+    tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_continuousOn isCompact_Icc
       continuousOn_cos c_lt c_nonneg c_zero_pos zero_mem hf
 #align euler_sine.tendsto_integral_cos_pow_mul_div EulerSine.tendsto_integral_cos_pow_mul_div
 

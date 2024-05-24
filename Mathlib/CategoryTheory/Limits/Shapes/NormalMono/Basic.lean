@@ -58,9 +58,9 @@ attribute [local instance] Equivalence.essSurj_of_equivalence
 
 /-- If `F` is an equivalence and `F.map f` is a normal mono, then `f` is a normal mono. -/
 def equivalenceReflectsNormalMono {D : Type u₂} [Category.{v₁} D] [HasZeroMorphisms D] (F : C ⥤ D)
-    [IsEquivalence F] {X Y : C} {f : X ⟶ Y} (hf : NormalMono (F.map f)) : NormalMono f where
+    [F.IsEquivalence] {X Y : C} {f : X ⟶ Y} (hf : NormalMono (F.map f)) : NormalMono f where
   Z := F.objPreimage hf.Z
-  g := Full.preimage (hf.g ≫ (F.objObjPreimageIso hf.Z).inv)
+  g := F.preimage (hf.g ≫ (F.objObjPreimageIso hf.Z).inv)
   w := F.map_injective <| by
     have reassoc' {W : D} (h : hf.Z ⟶ W) : F.map f ≫ hf.g ≫ h = 0 ≫ h := by
       rw [← Category.assoc, eq_whisker hf.w]
@@ -71,7 +71,7 @@ def equivalenceReflectsNormalMono {D : Type u₂} [Category.{v₁} D] [HasZeroMo
         IsLimit.ofIsoLimit
           (IsLimit.ofIsoLimit
             (IsKernel.ofCompIso _ _ (F.objObjPreimageIso hf.Z) (by
-              simp only [Full.witness, Category.assoc, Iso.inv_hom_id, Category.comp_id])
+              simp only [Functor.image_preimage, Category.assoc, Iso.inv_hom_id, Category.comp_id])
             hf.isLimit)
             (ofιCongr (Category.comp_id _).symm))
         <| by apply Iso.symm; apply isoOfι  -- Porting note: very fiddly unification here
@@ -175,9 +175,9 @@ attribute [local instance] Equivalence.essSurj_of_equivalence
 
 /-- If `F` is an equivalence and `F.map f` is a normal epi, then `f` is a normal epi. -/
 def equivalenceReflectsNormalEpi {D : Type u₂} [Category.{v₁} D] [HasZeroMorphisms D] (F : C ⥤ D)
-    [IsEquivalence F] {X Y : C} {f : X ⟶ Y} (hf : NormalEpi (F.map f)) : NormalEpi f where
+    [F.IsEquivalence] {X Y : C} {f : X ⟶ Y} (hf : NormalEpi (F.map f)) : NormalEpi f where
   W := F.objPreimage hf.W
-  g := Full.preimage ((F.objObjPreimageIso hf.W).hom ≫ hf.g)
+  g := F.preimage ((F.objObjPreimageIso hf.W).hom ≫ hf.g)
   w := F.map_injective <| by simp [hf.w]
   isColimit :=
     ReflectsColimit.reflects <|

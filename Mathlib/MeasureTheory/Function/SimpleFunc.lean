@@ -91,8 +91,7 @@ def ofFinite [Finite α] [MeasurableSingletonClass α] (f : α → β) : α →�
   measurableSet_fiber' x := (toFinite (f ⁻¹' {x})).measurableSet
   finite_range' := Set.finite_range f
 
-@[deprecated] -- Since 2024/02/05
-alias ofFintype := ofFinite
+@[deprecated] alias ofFintype := ofFinite -- Since 2024-02-05
 
 /-- Simple function defined on the empty type. -/
 def ofIsEmpty [IsEmpty α] : α →ₛ β := ofFinite isEmptyElim
@@ -1218,7 +1217,7 @@ protected theorem pair {g : α →ₛ γ} (hf : f.FinMeasSupp μ) (hg : g.FinMea
     (pair f g).FinMeasSupp μ :=
   calc
     μ (support <| pair f g) = μ (support f ∪ support g) := congr_arg μ <| support_prod_mk f g
-    _ ≤ μ (support f) + μ (support g) := (measure_union_le _ _)
+    _ ≤ μ (support f) + μ (support g) := measure_union_le _ _
     _ < _ := add_lt_top.2 ⟨hf, hg⟩
 #align measure_theory.simple_func.fin_meas_supp.pair MeasureTheory.SimpleFunc.FinMeasSupp.pair
 
@@ -1243,7 +1242,7 @@ theorem lintegral_lt_top {f : α →ₛ ℝ≥0∞} (hm : f.FinMeasSupp μ) (hf 
     f.lintegral μ < ∞ := by
   refine' sum_lt_top fun a ha => _
   rcases eq_or_ne a ∞ with (rfl | ha)
-  · simp only [ae_iff, Ne.def, Classical.not_not] at hf
+  · simp only [ae_iff, Ne, Classical.not_not] at hf
     simp [Set.preimage, hf]
   · by_cases ha0 : a = 0
     · subst a

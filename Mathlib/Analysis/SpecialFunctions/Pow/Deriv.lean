@@ -224,7 +224,7 @@ theorem HasDerivWithinAt.cpow_const (hf : HasDerivWithinAt f f' s x)
 line, it is still real-differentiable, and the derivative is what one would formally expect. -/
 theorem hasDerivAt_ofReal_cpow {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -1) :
     HasDerivAt (fun y : ℝ => (y : ℂ) ^ (r + 1) / (r + 1)) (x ^ r) x := by
-  rw [Ne.def, ← add_eq_zero_iff_eq_neg, ← Ne.def] at hr
+  rw [Ne, ← add_eq_zero_iff_eq_neg, ← Ne] at hr
   rcases lt_or_gt_of_ne hx.symm with (hx | hx)
   · -- easy case : `0 < x`
     -- Porting note: proof used to be
@@ -659,7 +659,7 @@ theorem tendsto_one_plus_div_rpow_exp (t : ℝ) :
 /-- The function `(1 + t/x) ^ x` tends to `exp t` at `+∞` for naturals `x`. -/
 theorem tendsto_one_plus_div_pow_exp (t : ℝ) :
     Tendsto (fun x : ℕ => (1 + t / (x : ℝ)) ^ x) atTop (𝓝 (Real.exp t)) :=
-  ((tendsto_one_plus_div_rpow_exp t).comp tendsto_nat_cast_atTop_atTop).congr (by simp)
+  ((tendsto_one_plus_div_rpow_exp t).comp tendsto_natCast_atTop_atTop).congr (by simp)
 #align tendsto_one_plus_div_pow_exp tendsto_one_plus_div_pow_exp
 
 end Limits

@@ -326,9 +326,7 @@ def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=
         exact isEmptyElim (f <| Fin.last _)
       simp_rw [Fin.sum_univ_castSucc, Fin.coe_castSucc, Fin.val_last]
       refine' (add_lt_add_of_lt_of_le (ih _) <| mul_le_mul_right' (Fin.is_le _) _).trans_eq _
-      rw [← one_add_mul (_ : ℕ), add_comm, pow_succ']
-      -- Porting note: added, wrong `succ`
-      rfl⟩)
+      rw [← one_add_mul (_ : ℕ), add_comm, pow_succ', Nat.succ_eq_add_one]⟩)
     (fun a b => ⟨a / m ^ (b : ℕ) % m, by
       cases' n with n
       · exact b.elim0
@@ -494,7 +492,6 @@ theorem prod_ofFn {n : ℕ} {f : Fin n → α} : (ofFn f).prod = ∏ i, f i := b
 
 end CommMonoid
 
--- Porting note: Statement had deprecated `L.nthLe i i.is_lt` instead of `L.get i`.
 @[to_additive]
 theorem alternatingProd_eq_finset_prod {G : Type*} [CommGroup G] :
     ∀ (L : List G), alternatingProd L = ∏ i : Fin L.length, L.get i ^ (-1 : ℤ) ^ (i : ℕ)

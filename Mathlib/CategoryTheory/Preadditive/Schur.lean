@@ -58,25 +58,20 @@ theorem isIso_iff_nonzero [HasKernels C] {X Y : C} [Simple X] [Simple Y] (f : X 
    fun w => isIso_of_hom_simple w⟩
 #align category_theory.is_iso_iff_nonzero CategoryTheory.isIso_iff_nonzero
 
+open scoped Classical in
 /-- In any preadditive category with kernels,
-the endomorphisms of a simple object form a division ring.
--/
-noncomputable instance [HasKernels C] {X : C} [Simple X] : DivisionRing (End X) := by
-  classical exact
-    { (inferInstance : Ring (End X)) with
-      inv := fun f =>
-        if h : f = 0 then 0
-        else
-          haveI := isIso_of_hom_simple h
-          inv f
-      exists_pair_ne := ⟨𝟙 X, 0, id_nonzero _⟩
-      inv_zero := dif_pos rfl
-      mul_inv_cancel := fun f h => by
-        dsimp
-        rw [dif_neg h]
-        haveI := isIso_of_hom_simple h
-        exact IsIso.inv_hom_id f
-      qsmul := qsmulRec _ }
+the endomorphisms of a simple object form a division ring. -/
+noncomputable instance [HasKernels C] {X : C} [Simple X] : DivisionRing (End X) where
+  inv f := if h : f = 0 then 0 else haveI := isIso_of_hom_simple h; inv f
+  exists_pair_ne := ⟨𝟙 X, 0, id_nonzero _⟩
+  inv_zero := dif_pos rfl
+  mul_inv_cancel f hf := by
+    dsimp
+    rw [dif_neg hf]
+    haveI := isIso_of_hom_simple hf
+    exact IsIso.inv_hom_id f
+  nnqsmul := _
+  qsmul := _
 
 open FiniteDimensional
 
@@ -92,7 +87,7 @@ theorem finrank_hom_simple_simple_eq_zero_of_not_iso [HasKernels C] [Linear 𝕜
   haveI :=
     subsingleton_of_forall_eq (0 : X ⟶ Y) fun f => by
       have p := not_congr (isIso_iff_nonzero f)
-      simp only [Classical.not_not, Ne.def] at p
+      simp only [Classical.not_not, Ne] at p
       exact p.mp fun _ => h (asIso f)
   finrank_zero_of_subsingleton
 #align category_theory.finrank_hom_simple_simple_eq_zero_of_not_iso CategoryTheory.finrank_hom_simple_simple_eq_zero_of_not_iso
@@ -125,7 +120,7 @@ theorem finrank_endomorphism_eq_one {X : C} (isIso_iff_nonzero : ∀ f : X ⟶ X
   have : FiniteDimensional 𝕜 (End X) := I
   obtain ⟨c, nu⟩ := spectrum.nonempty_of_isAlgClosed_of_finiteDimensional 𝕜 (End.of f)
   use c
-  rw [spectrum.mem_iff, IsUnit.sub_iff, isUnit_iff_isIso, isIso_iff_nonzero, Ne.def,
+  rw [spectrum.mem_iff, IsUnit.sub_iff, isUnit_iff_isIso, isIso_iff_nonzero, Ne,
     Classical.not_not, sub_eq_zero, Algebra.algebraMap_eq_smul_one] at nu
   exact nu.symm
 #align category_theory.finrank_endomorphism_eq_one CategoryTheory.finrank_endomorphism_eq_one

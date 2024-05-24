@@ -70,7 +70,7 @@ variable {D : Type uD} [Category.{uD'} D] [HasZeroMorphisms D]
 * morphisms `π j : pt ⟶ F j` and `ι j : F j ⟶ pt` for each `j`,
 * such that `ι j ≫ π j'` is the identity when `j = j'` and zero otherwise.
 -/
--- @[nolint has_nonempty_instance] Porting note (#10927): removed
+-- @[nolint has_nonempty_instance] Porting note (#5171): removed
 structure Bicone (F : J → C) where
   pt : C
   π : ∀ j, pt ⟶ F j
@@ -159,15 +159,15 @@ def functoriality (G : C ⥤ D) [Functor.PreservesZeroMorphisms G] :
 
 variable (G : C ⥤ D)
 
-instance functorialityFull [Functor.PreservesZeroMorphisms G] [Full G] [Faithful G] :
-    Full (functoriality F G) where
+instance functorialityFull [G.PreservesZeroMorphisms] [G.Full] [G.Faithful] :
+    (functoriality F G).Full where
   preimage t :=
     { hom := G.preimage t.hom
       wι := fun j => G.map_injective (by simpa using t.wι j)
       wπ := fun j => G.map_injective (by simpa using t.wπ j) }
 
-instance functoriality_faithful [Functor.PreservesZeroMorphisms G] [Faithful G] :
-    Faithful (functoriality F G) where
+instance functoriality_faithful [G.PreservesZeroMorphisms] [G.Faithful] :
+    (functoriality F G).Faithful where
   map_injective {_X} {_Y} f g h :=
     BiconeMorphism.ext f g <| G.map_injective <| congr_arg BiconeMorphism.hom h
 
@@ -264,7 +264,7 @@ theorem π_of_isColimit {f : J → C} {t : Bicone f} (ht : IsColimit t.toCocone)
 #align category_theory.limits.bicone.π_of_is_colimit CategoryTheory.Limits.Bicone.π_of_isColimit
 
 /-- Structure witnessing that a bicone is both a limit cone and a colimit cocone. -/
--- @[nolint has_nonempty_instance] Porting note (#10927): removed
+-- @[nolint has_nonempty_instance] Porting note (#5171): removed
 structure IsBilimit {F : J → C} (B : Bicone F) where
   isLimit : IsLimit B.toCone
   isColimit : IsColimit B.toCocone
@@ -341,7 +341,7 @@ end Bicone
 
 /-- A bicone over `F : J → C`, which is both a limit cone and a colimit cocone.
 -/
--- @[nolint has_nonempty_instance] -- Porting note: removed
+-- @[nolint has_nonempty_instance] -- Porting note(#5171): removed; linter not ported yet
 structure LimitBicone (F : J → C) where
   bicone : Bicone F
   isBilimit : bicone.IsBilimit
@@ -1149,7 +1149,7 @@ variable {C}
 maps from `X` to both `P` and `Q`, and maps from both `P` and `Q` to `X`,
 so that `inl ≫ fst = 𝟙 P`, `inl ≫ snd = 0`, `inr ≫ fst = 0`, and `inr ≫ snd = 𝟙 Q`
 -/
--- @[nolint has_nonempty_instance] Porting note (#10927): removed
+-- @[nolint has_nonempty_instance] Porting note (#5171): removed
 structure BinaryBicone (P Q : C) where
   pt : C
   fst : pt ⟶ P
@@ -1252,7 +1252,7 @@ def functoriality : BinaryBicone P Q ⥤ BinaryBicone (F.obj P) (F.obj Q) where
       winl := by simp [-BinaryBiconeMorphism.winl, ← f.winl]
       winr := by simp [-BinaryBiconeMorphism.winr, ← f.winr] }
 
-instance functorialityFull [Full F] [Faithful F] : Full (functoriality P Q F) where
+instance functorialityFull [F.Full] [F.Faithful] : (functoriality P Q F).Full where
   preimage t :=
     { hom := F.preimage t.hom
       winl := F.map_injective (by simpa using t.winl)
@@ -1260,7 +1260,7 @@ instance functorialityFull [Full F] [Faithful F] : Full (functoriality P Q F) wh
       wfst := F.map_injective (by simpa using t.wfst)
       wsnd := F.map_injective (by simpa using t.wsnd) }
 
-instance functoriality_faithful [Faithful F] : Faithful (functoriality P Q F) where
+instance functoriality_faithful [F.Faithful] : (functoriality P Q F).Faithful where
   map_injective {_X} {_Y} f g h :=
     BinaryBiconeMorphism.ext f g <| F.map_injective <| congr_arg BinaryBiconeMorphism.hom h
 
@@ -1425,7 +1425,7 @@ def toBinaryBiconeIsColimit {X Y : C} (b : Bicone (pairFunction X Y)) :
 end Bicone
 
 /-- Structure witnessing that a binary bicone is a limit cone and a limit cocone. -/
--- @[nolint has_nonempty_instance] Porting note (#10927): removed
+-- @[nolint has_nonempty_instance] Porting note (#5171): removed
 structure BinaryBicone.IsBilimit {P Q : C} (b : BinaryBicone P Q) where
   isLimit : IsLimit b.toCone
   isColimit : IsColimit b.toCocone
@@ -1458,7 +1458,7 @@ def Bicone.toBinaryBiconeIsBilimit {X Y : C} (b : Bicone (pairFunction X Y)) :
 
 /-- A bicone over `P Q : C`, which is both a limit cone and a colimit cocone.
 -/
--- @[nolint has_nonempty_instance] Porting note (#10927): removed
+-- @[nolint has_nonempty_instance] Porting note (#5171): removed
 structure BinaryBiproductData (P Q : C) where
   bicone : BinaryBicone P Q
   isBilimit : bicone.IsBilimit

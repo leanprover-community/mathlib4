@@ -234,7 +234,7 @@ apply fine to an assumption `SmoothFoo` using dot notation or normal notation.
 If the consequence `bar` of the lemma involves `ContDiff`, it is still better to restate
 the lemma replacing `ContDiff` with `Smooth` both in the assumption and in the conclusion,
 to make it possible to use `Smooth` consistently.
-This also applies to `SmoothAt`, `SmoothOn` and `SmoothWithinAt`.-/
+This also applies to `SmoothAt`, `SmoothOn` and `SmoothWithinAt`. -/
 @[reducible]
 def Smooth (f : M → M') :=
   ContMDiff I I' ⊤ f

@@ -450,10 +450,10 @@ theorem eq_bot_iff_forall_lt (x : EReal) : x = ⊥ ↔ ∀ y : ℝ, x < (y : ERe
 
 lemma exists_between_coe_real {x z : EReal} (h : x < z) : ∃ y : ℝ, x < y ∧ y < z := by
   obtain ⟨a, ha₁, ha₂⟩ := exists_between h
-  induction' a using EReal.rec with a₀
-  · exact (not_lt_bot ha₁).elim
-  · exact ⟨a₀, by exact_mod_cast ha₁, by exact_mod_cast ha₂⟩
-  · exact (not_top_lt ha₂).elim
+  induction a using EReal.rec with
+  | h_bot => exact (not_lt_bot ha₁).elim
+  | h_real a₀ => exact ⟨a₀, ha₁, ha₂⟩
+  | h_top => exact (not_top_lt ha₂).elim
 
 @[simp]
 lemma image_coe_Icc (x y : ℝ) : Real.toEReal '' Icc x y = Icc ↑x ↑y := by
@@ -1248,7 +1248,7 @@ theorem abs_mul (x y : EReal) : (x * y).abs = x.abs * y.abs := by
   | coe_coe => simp only [← coe_mul, abs_def, _root_.abs_mul, ENNReal.ofReal_mul (abs_nonneg _)]
   | top_pos _ h =>
     rw [top_mul_coe_of_pos h, abs_top, ENNReal.top_mul]
-    rw [Ne.def, abs_eq_zero_iff, coe_eq_zero]
+    rw [Ne, abs_eq_zero_iff, coe_eq_zero]
     exact h.ne'
   | neg_left h => rwa [neg_mul, EReal.abs_neg, EReal.abs_neg]
 #align ereal.abs_mul EReal.abs_mul

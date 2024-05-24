@@ -125,7 +125,7 @@ theorem StrictConvexSpace.of_norm_add_ne_two
   refine'
     StrictConvexSpace.of_norm_combo_ne_one fun x y hx hy hne =>
       ⟨1 / 2, 1 / 2, one_half_pos.le, one_half_pos.le, add_halves _, _⟩
-  rw [← smul_add, norm_smul, Real.norm_of_nonneg one_half_pos.le, one_div, ← div_eq_inv_mul, Ne.def,
+  rw [← smul_add, norm_smul, Real.norm_of_nonneg one_half_pos.le, one_div, ← div_eq_inv_mul, Ne,
     div_eq_one_iff_eq (two_ne_zero' ℝ)]
   exact h hx hy hne
 #align strict_convex_space.of_norm_add_ne_two StrictConvexSpace.of_norm_add_ne_two

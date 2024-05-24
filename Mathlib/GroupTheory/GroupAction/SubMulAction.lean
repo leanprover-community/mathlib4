@@ -162,7 +162,7 @@ theorem ext {p q : SubMulAction R M} (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
 #align sub_mul_action.ext SubMulAction.ext
 
 /-- Copy of a sub_mul_action with a new `carrier` equal to the old one. Useful to fix definitional
-equalities.-/
+equalities. -/
 protected def copy (p : SubMulAction R M) (s : Set M) (hs : s = ↑p) : SubMulAction R M
     where
   carrier := s

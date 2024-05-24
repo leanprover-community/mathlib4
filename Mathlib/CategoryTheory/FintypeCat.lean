@@ -61,8 +61,8 @@ def incl : FintypeCat ⥤ Type* :=
 set_option linter.uppercaseLean3 false in
 #align Fintype.incl FintypeCat.incl
 
-instance : Full incl := InducedCategory.full _
-instance : Faithful incl := InducedCategory.faithful _
+instance : incl.Full := InducedCategory.full _
+instance : incl.Faithful := InducedCategory.faithful _
 
 instance concreteCategoryFintype : ConcreteCategory FintypeCat :=
   ⟨incl⟩
@@ -70,7 +70,7 @@ set_option linter.uppercaseLean3 false in
 #align Fintype.concrete_category_Fintype FintypeCat.concreteCategoryFintype
 
 /- Help typeclass inference infer fullness of forgetful functor. -/
-instance : Full (forget FintypeCat) := inferInstanceAs <| Full FintypeCat.incl
+instance : (forget FintypeCat).Full := inferInstanceAs <| FintypeCat.incl.Full
 
 @[simp]
 theorem id_apply (X : FintypeCat) (x : X) : (𝟙 X : X → X) x = x :=
@@ -187,20 +187,20 @@ def incl : Skeleton.{u} ⥤ FintypeCat.{u} where
 set_option linter.uppercaseLean3 false in
 #align Fintype.skeleton.incl FintypeCat.Skeleton.incl
 
-instance : Full incl where preimage f := f
+instance : incl.Full where preimage f := f
 
-instance : Faithful incl where
+instance : incl.Faithful where
 
-instance : EssSurj incl :=
-  EssSurj.mk fun X =>
+instance : incl.EssSurj :=
+  Functor.EssSurj.mk fun X =>
     let F := Fintype.equivFin X
     ⟨mk (Fintype.card X),
       Nonempty.intro
         { hom := F.symm ∘ ULift.down
           inv := ULift.up ∘ F }⟩
 
-noncomputable instance : IsEquivalence incl :=
-  Equivalence.ofFullyFaithfullyEssSurj _
+noncomputable instance : incl.IsEquivalence :=
+  Functor.IsEquivalence.ofFullyFaithfullyEssSurj _
 
 /-- The equivalence between `Fintype.Skeleton` and `Fintype`. -/
 noncomputable def equivalence : Skeleton ≌ FintypeCat :=

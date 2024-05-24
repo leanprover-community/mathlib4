@@ -3,7 +3,7 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Data.MvPolynomial.Expand
+import Mathlib.Algebra.MvPolynomial.Expand
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.RingTheory.MvPolynomial.Basic
 
@@ -22,7 +22,7 @@ variable {σ : Type*}
 if and only if it is zero over `ZMod n`. -/
 theorem C_dvd_iff_zmod (n : ℕ) (φ : MvPolynomial σ ℤ) :
     C (n : ℤ) ∣ φ ↔ map (Int.castRingHom (ZMod n)) φ = 0 :=
-  C_dvd_iff_map_hom_eq_zero _ _ (CharP.int_cast_eq_zero_iff (ZMod n) n) _
+  C_dvd_iff_map_hom_eq_zero _ _ (CharP.intCast_eq_zero_iff (ZMod n) n) _
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.C_dvd_iff_zmod MvPolynomial.C_dvd_iff_zmod
 
@@ -133,7 +133,7 @@ def evalₗ [CommSemiring K] : MvPolynomial σ K →ₗ[K] (σ → K) → K wher
 variable [Field K] [Fintype K] [Finite σ]
 
 -- Porting note: `K` and `σ` were implicit in mathlib3, even if they were declared via
--- `variables (K σ)` (I don't understand why). They are now explicit, as expected.
+-- `variable (K σ)` (I don't understand why). They are now explicit, as expected.
 theorem map_restrict_dom_evalₗ : (restrictDegree σ K (Fintype.card K - 1)).map (evalₗ K σ) = ⊤ := by
   cases nonempty_fintype σ
   refine' top_unique (SetLike.le_def.2 fun e _ => mem_map.2 _)

@@ -29,16 +29,15 @@ continuous surjection), the presheaf `F` exhibits `F(B)` as the equalizer of th
 
 universe v u
 
-open CategoryTheory Limits Opposite Functor Presieve regularCoverage
+open CategoryTheory Limits Opposite Functor Presheaf regularTopology
 
 namespace CategoryTheory
 
-variable {C : Type u} [Category.{v} C] (F : Cᵒᵖ ⥤ Type (max u v)) [Preregular C]
+variable {C D : Type*} [Category C] [Category D] (F : Cᵒᵖ ⥤ D) [Preregular C]
   [FinitaryPreExtensive C]
 
 theorem isSheaf_coherent_iff_regular_and_extensive : IsSheaf (coherentTopology C) F ↔
-    IsSheaf (extensiveCoverage C).toGrothendieck F ∧
-    IsSheaf (regularCoverage C).toGrothendieck F := by
+    IsSheaf (extensiveTopology C) F ∧ IsSheaf (regularTopology C) F := by
   rw [← extensive_regular_generate_coherent]
   exact isSheaf_sup (extensiveCoverage C) (regularCoverage C) F
 
@@ -52,22 +51,16 @@ theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
     Nonempty (PreservesFiniteProducts F) ∧ EqualizerCondition F := by
   rw [isSheaf_coherent_iff_regular_and_extensive]
   apply and_congr
-  · exact isSheaf_iff_preservesFiniteProducts F
-  · exact EqualizerCondition.isSheaf_iff F
+  · rw [isSheaf_iff_isSheaf_of_type, extensiveTopology, isSheaf_iff_preservesFiniteProducts]
+  · rw [equalizerCondition_iff_isSheaf, isSheaf_iff_isSheaf_of_type]
 
 theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition'
     {A : Type (u+2)} [Category.{u+1} A] (G : A ⥤ Type (u+1))
-    [HasLimits A] [PreservesLimits G] [ReflectsIsomorphisms G] (F : CompHaus.{u}ᵒᵖ ⥤ A) :
+    [HasLimits A] [PreservesLimits G] [G.ReflectsIsomorphisms] (F : CompHaus.{u}ᵒᵖ ⥤ A) :
     Presheaf.IsSheaf (coherentTopology CompHaus) F ↔
     Nonempty (PreservesFiniteProducts (F ⋙ G)) ∧ EqualizerCondition (F ⋙ G) := by
   rw [Presheaf.isSheaf_iff_isSheaf_forget (coherentTopology CompHaus) F G,
-    isSheaf_iff_isSheaf_of_type, isSheaf_iff_preservesFiniteProducts_and_equalizerCondition]
-
-noncomputable
-instance {A B : Type*} [Category A] [Category B] (F : B ⥤ A) (E : A)  [PreservesFiniteProducts F] :
-    PreservesFiniteProducts (F ⋙ coyoneda.obj (op E)) :=
-  ⟨fun J _ ↦ @compPreservesLimitsOfShape _ _ _ _ _ _ _ _ F (coyoneda.obj (op E))
-    (PreservesFiniteProducts.preserves J) ((preservesLimitsOfSizeShrink _).preservesLimitsOfShape)⟩
+    isSheaf_iff_preservesFiniteProducts_and_equalizerCondition]
 
 end CompHaus
 
@@ -79,16 +72,16 @@ theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
     Nonempty (PreservesFiniteProducts F) ∧ EqualizerCondition F := by
   rw [isSheaf_coherent_iff_regular_and_extensive]
   apply and_congr
-  · exact isSheaf_iff_preservesFiniteProducts F
-  · exact EqualizerCondition.isSheaf_iff F
+  · rw [isSheaf_iff_isSheaf_of_type, extensiveTopology, isSheaf_iff_preservesFiniteProducts]
+  · rw [equalizerCondition_iff_isSheaf, isSheaf_iff_isSheaf_of_type]
 
 theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition'
     {A : Type (u+2)} [Category.{u+1} A] (G : A ⥤ Type (u+1))
-    [HasLimits A] [PreservesLimits G] [ReflectsIsomorphisms G] (F : Profinite.{u}ᵒᵖ ⥤ A) :
+    [HasLimits A] [PreservesLimits G] [G.ReflectsIsomorphisms] (F : Profinite.{u}ᵒᵖ ⥤ A) :
     Presheaf.IsSheaf (coherentTopology Profinite) F ↔
     Nonempty (PreservesFiniteProducts (F ⋙ G)) ∧ EqualizerCondition (F ⋙ G) := by
   rw [Presheaf.isSheaf_iff_isSheaf_forget (coherentTopology Profinite) F G,
-    isSheaf_iff_isSheaf_of_type, isSheaf_iff_preservesFiniteProducts_and_equalizerCondition]
+    isSheaf_iff_preservesFiniteProducts_and_equalizerCondition]
 
 end Profinite
 
@@ -98,26 +91,27 @@ theorem isSheaf_iff_preservesFiniteProducts
     (F : Stonean.{u}ᵒᵖ ⥤ Type (u+1)) :
     IsSheaf (coherentTopology Stonean) F ↔ Nonempty (PreservesFiniteProducts F) := by
   rw [isSheaf_coherent_iff_regular_and_extensive, and_iff_left ?_]
-  · exact CategoryTheory.isSheaf_iff_preservesFiniteProducts F
-  · rw [Presieve.isSheaf_coverage]
+  · rw [isSheaf_iff_isSheaf_of_type, extensiveTopology,
+      CategoryTheory.isSheaf_iff_preservesFiniteProducts]
+  · rw [regularTopology, isSheaf_iff_isSheaf_of_type, Presieve.isSheaf_coverage]
     intro X R ⟨Y, hR⟩
     have _ : R.regular := ⟨Y, hR⟩
     exact isSheafFor_regular_of_projective R F
 
 theorem isSheaf_iff_preservesFiniteProducts'
     {A : Type (u+2)} [Category.{u+1} A] (G : A ⥤ Type (u+1))
-    [HasLimits A] [PreservesLimits G] [ReflectsIsomorphisms G] (F : Stonean.{u}ᵒᵖ ⥤ A) :
+    [HasLimits A] [PreservesLimits G] [G.ReflectsIsomorphisms] (F : Stonean.{u}ᵒᵖ ⥤ A) :
     Presheaf.IsSheaf (coherentTopology Stonean) F ↔
     Nonempty (PreservesFiniteProducts (F ⋙ G)) := by
   rw [Presheaf.isSheaf_iff_isSheaf_forget (coherentTopology Stonean) F G,
-    isSheaf_iff_isSheaf_of_type, isSheaf_iff_preservesFiniteProducts]
+    isSheaf_iff_preservesFiniteProducts]
 
 end Stonean
 
 namespace Condensed
 
 variable {A : Type (u+2)} [Category.{u+1} A] (G : A ⥤ Type (u+1)) [HasLimits A] [PreservesLimits G]
-    [ReflectsIsomorphisms G]
+    [G.ReflectsIsomorphisms]
 
 /-- The condensed set associated to a finite-product-preserving presheaf on `Stonean`. -/
 noncomputable def ofSheafStonean (F : Stonean.{u}ᵒᵖ ⥤ A) [PreservesFiniteProducts F] :
@@ -178,6 +172,17 @@ theorem equalizerCondition (X : CondensedSet) : EqualizerCondition X.val :=
 noncomputable instance (X : CondensedSet) : PreservesFiniteProducts X.val :=
   CompHaus.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition' (𝟭 _) X.val |>.mp
     X.cond |>.1.some
+
+/-- A condensed set regarded as a sheaf on `Profinite` preserves finite products. -/
+noncomputable instance (Y : Sheaf (coherentTopology Profinite.{u}) (Type (u+1))) :
+    PreservesFiniteProducts Y.val :=
+  Profinite.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition' (𝟭 _) Y.val |>.mp
+    Y.cond |>.1.some
+
+/-- A condensed set regarded as a sheaf on `Stonean` preserves finite products. -/
+noncomputable instance (Y : Sheaf (coherentTopology Stonean.{u}) (Type (u+1))) :
+    PreservesFiniteProducts Y.val :=
+  Stonean.isSheaf_iff_preservesFiniteProducts Y.val |>.mp Y.cond |>.some
 
 end CondensedSet
 

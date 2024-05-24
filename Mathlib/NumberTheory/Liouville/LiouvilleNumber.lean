@@ -141,7 +141,7 @@ theorem aux_calc (n : ℕ) {m : ℝ} (hm : 2 ≤ m) :
       -- the second factors coincide (and are non-negative),
       -- the first factors satisfy the inequality `sub_one_div_inv_le_two`
       mul_le_mul_of_nonneg_right (sub_one_div_inv_le_two hm) (by positivity)
-    _ = 2 / m ^ (n + 1)! := (mul_one_div 2 _)
+    _ = 2 / m ^ (n + 1)! := mul_one_div 2 _
     _ = 2 / m ^ (n ! * (n + 1)) := (congr_arg (2 / ·) (congr_arg (Pow.pow m) (mul_comm _ _)))
     _ ≤ 1 / m ^ (n ! * n) := by
       -- [NB: in this block, I do not follow the brace convention for subgoals -- I wait until

@@ -21,12 +21,12 @@ variable {α β : Type*}
 @[simp]
 theorem reduceOption_cons_of_some (x : α) (l : List (Option α)) :
     reduceOption (some x :: l) = x :: l.reduceOption := by
-  simp only [reduceOption, filterMap, id.def, eq_self_iff_true, and_self_iff]
+  simp only [reduceOption, filterMap, id, eq_self_iff_true, and_self_iff]
 #align list.reduce_option_cons_of_some List.reduceOption_cons_of_some
 
 @[simp]
 theorem reduceOption_cons_of_none (l : List (Option α)) :
-    reduceOption (none :: l) = l.reduceOption := by simp only [reduceOption, filterMap, id.def]
+    reduceOption (none :: l) = l.reduceOption := by simp only [reduceOption, filterMap, id]
 #align list.reduce_option_cons_of_none List.reduceOption_cons_of_none
 
 @[simp]
@@ -98,11 +98,10 @@ theorem reduceOption_concat_of_some (l : List (Option α)) (x : α) :
 #align list.reduce_option_concat_of_some List.reduceOption_concat_of_some
 
 theorem reduceOption_mem_iff {l : List (Option α)} {x : α} : x ∈ l.reduceOption ↔ some x ∈ l := by
-  simp only [reduceOption, id.def, mem_filterMap, exists_eq_right]
+  simp only [reduceOption, id, mem_filterMap, exists_eq_right]
 #align list.reduce_option_mem_iff List.reduceOption_mem_iff
 
 theorem reduceOption_get?_iff {l : List (Option α)} {x : α} :
     (∃ i, l.get? i = some (some x)) ↔ ∃ i, l.reduceOption.get? i = some x := by
   rw [← mem_iff_get?, ← mem_iff_get?, reduceOption_mem_iff]
 #align list.reduce_option_nth_iff List.reduceOption_get?_iff
-

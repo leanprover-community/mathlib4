@@ -175,7 +175,7 @@ theorem monotone_lift [Preorder γ] {f : γ → Filter α} {g : γ → Set α �
 #align filter.monotone_lift Filter.monotone_lift
 
 theorem lift_neBot_iff (hm : Monotone g) : (NeBot (f.lift g)) ↔ ∀ s ∈ f, NeBot (g s) := by
-  simp only [neBot_iff, Ne.def, ← empty_mem_iff_bot, mem_lift_sets hm, not_exists, not_and]
+  simp only [neBot_iff, Ne, ← empty_mem_iff_bot, mem_lift_sets hm, not_exists, not_and]
 #align filter.lift_ne_bot_iff Filter.lift_neBot_iff
 
 @[simp]

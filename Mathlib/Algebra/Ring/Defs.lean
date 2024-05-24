@@ -260,6 +260,7 @@ multiplication by zero law (`MulZeroClass`). -/
 class NonUnitalCommSemiring (α : Type u) extends NonUnitalSemiring α, CommSemigroup α
 #align non_unital_comm_semiring NonUnitalCommSemiring
 
+/-- A commutative semiring is a semiring with commutative multiplication. -/
 class CommSemiring (R : Type u) extends Semiring R, CommMonoid R
 #align comm_semiring CommSemiring
 
@@ -428,7 +429,7 @@ instance (priority := 100) Ring.toNonAssocRing : NonAssocRing α :=
   { ‹Ring α› with }
 #align ring.to_non_assoc_ring Ring.toNonAssocRing
 
-/- The instance from `Ring` to `Semiring` happens often in linear algebra, for which all the basic
+/-- The instance from `Ring` to `Semiring` happens often in linear algebra, for which all the basic
 definitions are given in terms of semirings, but many applications use rings or fields. We increase
 a little bit its priority above 100 to try it quickly, but remaining below the default 1000 so that
 more specific instances are tried first. -/
@@ -453,6 +454,7 @@ instance (priority := 100) NonUnitalCommRing.toNonUnitalCommSemiring [s : NonUni
   { s with }
 #align non_unital_comm_ring.to_non_unital_comm_semiring NonUnitalCommRing.toNonUnitalCommSemiring
 
+/-- A commutative ring is a ring with commutative multiplication. -/
 class CommRing (α : Type u) extends Ring α, CommMonoid α
 #align comm_ring CommRing
 
@@ -470,13 +472,13 @@ instance (priority := 100) CommRing.toAddCommGroupWithOne [s : CommRing α] :
     AddCommGroupWithOne α :=
   { s with }
 
-/-- A domain is a nontrivial semiring such multiplication by a non zero element is cancellative,
-  on both sides. In other words, a nontrivial semiring `R` satisfying
-  `∀ {a b c : R}, a ≠ 0 → a * b = a * c → b = c` and
-  `∀ {a b c : R}, b ≠ 0 → a * b = c * b → a = c`.
+/-- A domain is a nontrivial semiring such that multiplication by a non zero element
+is cancellative on both sides. In other words, a nontrivial semiring `R` satisfying
+`∀ {a b c : R}, a ≠ 0 → a * b = a * c → b = c` and
+`∀ {a b c : R}, b ≠ 0 → a * b = c * b → a = c`.
 
-  This is implemented as a mixin for `Semiring α`.
-  To obtain an integral domain use `[CommRing α] [IsDomain α]`. -/
+This is implemented as a mixin for `Semiring α`.
+To obtain an integral domain use `[CommRing α] [IsDomain α]`. -/
 class IsDomain (α : Type u) [Semiring α] extends IsCancelMulZero α, Nontrivial α : Prop
 #align is_domain IsDomain
 

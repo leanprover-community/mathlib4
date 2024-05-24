@@ -163,7 +163,7 @@ theorem m_n_bounds {m n : ℕ} (h1 : NatPredicate N m n) : m ≤ fib K ∧ n ≤
       rw [← fib_add_two] at HK
       calc
         N < fib (K + 2) := HK
-        _ ≤ fib (k + 1) := (fib_mono h8)
+        _ ≤ fib (k + 1) := fib_mono h8
         _ = n := hn.symm
     have h9 : n ≤ N := h1.n_le_N
     exact absurd h7 h9.not_lt

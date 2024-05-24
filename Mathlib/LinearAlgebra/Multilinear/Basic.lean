@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Sort
 import Mathlib.Data.List.FinRange
@@ -444,7 +444,7 @@ end
 the image under a multilinear map `f` is the sum of `f (s.piecewise m m')` along all subsets `s` of
 `t`. This is mainly an auxiliary statement to prove the result when `t = univ`, given in
 `map_add_univ`, although it can be useful in its own right as it does not require the index set `ι`
-to be finite.-/
+to be finite. -/
 theorem map_piecewise_add [DecidableEq ι] (m m' : ∀ i, M₁ i) (t : Finset ι) :
     f (t.piecewise (m + m') m') = ∑ s in t.powerset, f (s.piecewise m m') := by
   revert m'
@@ -545,13 +545,13 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
     by_cases hi : i = i₀
     · rw [hi]
       simp only [B, sdiff_subset, update_same]
-    · simp only [B, hi, update_noteq, Ne.def, not_false_iff, Finset.Subset.refl]
+    · simp only [B, hi, update_noteq, Ne, not_false_iff, Finset.Subset.refl]
   have C_subset_A : ∀ i, C i ⊆ A i := by
     intro i
     by_cases hi : i = i₀
     · rw [hi]
       simp only [C, hj₂, Finset.singleton_subset_iff, update_same]
-    · simp only [C, hi, update_noteq, Ne.def, not_false_iff, Finset.Subset.refl]
+    · simp only [C, hi, update_noteq, Ne, not_false_iff, Finset.Subset.refl]
   -- split the sum at `i₀` as the sum over `B i₀` plus the sum over `C i₀`, to use additivity.
   have A_eq_BC :
     (fun i => ∑ j in A i, g i j) =
@@ -579,7 +579,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
     by_cases hi : i = i₀
     · rw [hi]
       simp only [update_same]
-    · simp only [B, hi, update_noteq, Ne.def, not_false_iff]
+    · simp only [B, hi, update_noteq, Ne, not_false_iff]
   have Ceq :
     Function.update (fun i => ∑ j in A i, g i j) i₀ (∑ j in C i₀, g i₀ j) = fun i =>
       ∑ j in C i, g i j := by
@@ -587,7 +587,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
     by_cases hi : i = i₀
     · rw [hi]
       simp only [update_same]
-    · simp only [C, hi, update_noteq, Ne.def, not_false_iff]
+    · simp only [C, hi, update_noteq, Ne, not_false_iff]
   -- Express the inductive assumption for `B`
   have Brec : (f fun i => ∑ j in B i, g i j) = ∑ r in piFinset B, f fun i => g i (r i) := by
     have : (∑ i, Finset.card (B i)) < ∑ i, Finset.card (A i) := by
@@ -761,7 +761,7 @@ end
 
 /-! If `{a // P a}` is a subtype of `ι` and if we fix an element `z` of `(i : {a // ¬ P a}) → M₁ i`,
 then a multilinear map on `M₁` defines a multilinear map on the restriction of `M₁` to
-`{a // P a}`, by fixing the arguments out of `{a // P a}` equal to the values of `z`.-/
+`{a // P a}`, by fixing the arguments out of `{a // P a}` equal to the values of `z`. -/
 
 lemma domDomRestrict_aux [DecidableEq ι] (P : ι → Prop) [DecidablePred P]
     [DecidableEq {a // P a}]
@@ -810,7 +810,7 @@ lemma domDomRestrict_apply (f : MultilinearMap R M₁ M₂) (P : ι → Prop)
 
 -- TODO: Should add a ref here when available.
 /-- The "derivative" of a multilinear map, as a linear map from `(i : ι) → M₁ i` to `M₂`.
-For continuous multilinear maps, this will indeed be the derivative.-/
+For continuous multilinear maps, this will indeed be the derivative. -/
 def linearDeriv [DecidableEq ι] [Fintype ι] (f : MultilinearMap R M₁ M₂)
     (x : (i : ι) → M₁ i) : ((i : ι) → M₁ i) →ₗ[R] M₂ :=
   ∑ i : ι, (f.toLinearMap x i).comp (LinearMap.proj i)
@@ -1299,7 +1299,7 @@ lemma map_sub_map_piecewise [LinearOrder ι] (a b : (i : ι) → M₁ i) (s : Fi
 
 /-- This calculates the differences between the values of a multilinear map at
 two arguments that differ on a finset `s` of `ι`. It requires a
-linear order on `ι` in order to express the result.-/
+linear order on `ι` in order to express the result. -/
 lemma map_piecewise_sub_map_piecewise [LinearOrder ι] (a b v : (i : ι) → M₁ i) (s : Finset ι) :
     f (s.piecewise a v) - f (s.piecewise b v) = ∑ i in s, f
       fun j ↦ if j ∈ s then if j < i then a j else if j = i then a j - b j else b j else v j := by
@@ -1328,7 +1328,7 @@ lemma map_add_eq_map_add_linearDeriv_add [DecidableEq ι] [Fintype ι] (x h : (i
 open Finset in
 /-- This expresses the difference between the values of a multilinear map
 at two points "close to `x`" in terms of the "derivative" of the multilinear map at `x`
-and of "second-order" terms.-/
+and of "second-order" terms. -/
 lemma map_add_sub_map_add_sub_linearDeriv [DecidableEq ι] [Fintype ι] (x h h' : (i : ι) → M₁ i) :
     f (x + h) - f (x + h') - f.linearDeriv x (h - h') =
     ∑ s in univ.powerset.filter (2 ≤ ·.card), (f (s.piecewise h x) - f (s.piecewise h' x)) := by

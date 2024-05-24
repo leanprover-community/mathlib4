@@ -186,13 +186,11 @@ theorem le_map_comap : m ≤ (m.comap g).map g :=
 end Functors
 
 @[simp] theorem map_const {m} (b : β) : MeasurableSpace.map (fun _a : α ↦ b) m = ⊤ :=
-  eq_top_iff.2 <| fun s _ ↦ by
-    by_cases b ∈ s <;> simp [*, map_def] <;> rw [Set.preimage_id'] <;> simp
+  eq_top_iff.2 <| fun s _ ↦ by rw [map_def]; by_cases h : b ∈ s <;> simp [h]
 #align measurable_space.map_const MeasurableSpace.map_const
 
-set_option tactic.skipAssignedInstances false in
 @[simp] theorem comap_const {m} (b : β) : MeasurableSpace.comap (fun _a : α => b) m = ⊥ :=
-  eq_bot_iff.2 <| by rintro _ ⟨s, -, rfl⟩; by_cases b ∈ s <;> simp [*]; exact measurableSet_empty _
+  eq_bot_iff.2 <| by rintro _ ⟨s, -, rfl⟩; by_cases b ∈ s <;> simp [*]
 #align measurable_space.comap_const MeasurableSpace.comap_const
 
 theorem comap_generateFrom {f : α → β} {s : Set (Set β)} :
@@ -691,6 +689,53 @@ theorem measurable_of_measurable_on_compl_singleton [MeasurableSingletonClass α
 
 end Subtype
 
+section Atoms
+
+variable [MeasurableSpace β]
+
+/-- The *measurable atom* of `x` is the intersection of all the measurable sets countaining `x`.
+It is measurable when the space is countable (or more generally when the measurable space is
+countably generated). -/
+def measurableAtom (x : β) : Set β :=
+  ⋂ (s : Set β) (_h's : x ∈ s) (_hs : MeasurableSet s), s
+
+@[simp] lemma mem_measurableAtom_self (x : β) : x ∈ measurableAtom x := by
+  simp (config := {contextual := true}) [measurableAtom]
+
+lemma mem_of_mem_measurableAtom {x y : β} (h : y ∈ measurableAtom x) {s : Set β}
+    (hs : MeasurableSet s) (hxs : x ∈ s) : y ∈ s := by
+  simp only [measurableAtom, mem_iInter] at h
+  exact h s hxs hs
+
+lemma measurableAtom_subset {s : Set β} {x : β} (hs : MeasurableSet s) (hx : x ∈ s) :
+    measurableAtom x ⊆ s :=
+  iInter₂_subset_of_subset s hx fun ⦃a⦄ ↦ (by simp [hs])
+
+@[simp] lemma measurableAtom_of_measurableSingletonClass [MeasurableSingletonClass β] (x : β) :
+    measurableAtom x = {x} :=
+  Subset.antisymm (measurableAtom_subset (measurableSet_singleton x) rfl) (by simp)
+
+lemma MeasurableSet.measurableAtom_of_countable [Countable β] (x : β) :
+    MeasurableSet (measurableAtom x) := by
+  have : ∀ (y : β), y ∉ measurableAtom x → ∃ s, MeasurableSet s ∧ x ∈ s ∧ y ∉ s :=
+    fun y hy ↦ by simpa [measurableAtom] using hy
+  choose! s hs using this
+  have : measurableAtom x = ⋂ (y ∈ (measurableAtom x)ᶜ), s y := by
+    apply Subset.antisymm
+    · intro z hz
+      simp only [mem_iInter, mem_compl_iff]
+      intro i hi
+      show z ∈ s i
+      exact mem_of_mem_measurableAtom hz (hs i hi).1 (hs i hi).2.1
+    · apply compl_subset_compl.1
+      intro z hz
+      simp only [compl_iInter, mem_iUnion, mem_compl_iff, exists_prop]
+      exact ⟨z, hz, (hs z hz).2.2⟩
+  rw [this]
+  exact MeasurableSet.biInter (to_countable (measurableAtom x)ᶜ) (fun i hi ↦ (hs i hi).1)
+
+end Atoms
+
 section Prod
 
 /-- A `MeasurableSpace` structure on the product of two measurable spaces. -/
@@ -815,14 +860,23 @@ instance Prod.instMeasurableSingletonClass
   ⟨fun ⟨a, b⟩ => @singleton_prod_singleton _ _ a b ▸ .prod (.singleton a) (.singleton b)⟩
 #align prod.measurable_singleton_class Prod.instMeasurableSingletonClass
 
+theorem measurable_from_prod_countable' [Countable β]
+    {_ : MeasurableSpace γ} {f : α × β → γ} (hf : ∀ y, Measurable fun x => f (x, y))
+    (h'f : ∀ y y' x, y' ∈ measurableAtom y → f (x, y') = f (x, y)) :
+    Measurable f := fun s hs => by
+  have : f ⁻¹' s = ⋃ y, ((fun x => f (x, y)) ⁻¹' s) ×ˢ (measurableAtom y : Set β) := by
+    ext1 ⟨x, y⟩
+    simp only [mem_preimage, mem_iUnion, mem_prod]
+    refine ⟨fun h ↦ ⟨y, h, mem_measurableAtom_self y⟩, ?_⟩
+    rintro ⟨y', hy's, hy'⟩
+    rwa [h'f y' y x hy']
+  rw [this]
+  exact .iUnion (fun y ↦ (hf y hs).prod (.measurableAtom_of_countable y))
+
 theorem measurable_from_prod_countable [Countable β] [MeasurableSingletonClass β]
     {_ : MeasurableSpace γ} {f : α × β → γ} (hf : ∀ y, Measurable fun x => f (x, y)) :
-    Measurable f := fun s hs => by
-  have : f ⁻¹' s = ⋃ y, ((fun x => f (x, y)) ⁻¹' s) ×ˢ ({y} : Set β) := by
-    ext1 ⟨x, y⟩
-    simp [and_assoc, and_left_comm]
-  rw [this]
-  exact .iUnion fun y => (hf y hs).prod (.singleton y)
+    Measurable f :=
+  measurable_from_prod_countable' hf (by simp (config := {contextual := true}))
 #align measurable_from_prod_countable measurable_from_prod_countable
 
 /-- A piecewise function on countably many pieces is measurable if all the data is measurable. -/
@@ -1799,7 +1853,7 @@ def piFinsetUnion [DecidableEq δ'] {s t : Finset δ'} (h : Disjoint s t) :
     .piCongrLeft (fun i : ↥(s ∪ t) ↦ π i) e
 
 /-- If `s` is a measurable set in a measurable space, that space is equivalent
-to the sum of `s` and `sᶜ`.-/
+to the sum of `s` and `sᶜ`. -/
 def sumCompl {s : Set α} [DecidablePred (· ∈ s)] (hs : MeasurableSet s) :
     s ⊕ (sᶜ : Set α) ≃ᵐ α where
   toEquiv := .sumCompl (· ∈ s)
@@ -1881,7 +1935,7 @@ theorem of_measurable_inverse (hf₁ : Measurable f) (hf₂ : MeasurableSet (ran
 open scoped Classical
 
 /-- The **measurable Schröder-Bernstein Theorem**: given measurable embeddings
-`α → β` and `β → α`, we can find a measurable equivalence `α ≃ᵐ β`.-/
+`α → β` and `β → α`, we can find a measurable equivalence `α ≃ᵐ β`. -/
 noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : MeasurableEmbedding f)
     (hg : MeasurableEmbedding g) : α ≃ᵐ β := by
   let F : Set α → Set α := fun A => (g '' (f '' A)ᶜ)ᶜ

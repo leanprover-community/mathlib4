@@ -123,7 +123,7 @@ theorem variance {n : ℕ} (h : 0 < (n : ℝ)) (x : I) :
   conv_rhs => rw [div_mul_cancel₀ _ h']
   have := bernsteinPolynomial.variance ℝ n
   apply_fun fun p => Polynomial.aeval (x : ℝ) p at this
-  simp? [AlgHom.map_sum, Finset.sum_range, ← Polynomial.nat_cast_mul] at this says
+  simp? [AlgHom.map_sum, Finset.sum_range, ← Polynomial.natCast_mul] at this says
     simp only [nsmul_eq_mul, Finset.sum_range, map_sum, map_mul, map_pow, map_sub, map_natCast,
       Polynomial.aeval_X, Polynomial.coe_aeval_eq_eval, map_one] at this
   convert this using 1
@@ -202,7 +202,7 @@ This particular formulation will be helpful later.
 theorem le_of_mem_S_compl {f : C(I, ℝ)} {ε : ℝ} {h : 0 < ε} {n : ℕ} {x : I} {k : Fin (n + 1)}
     (m : k ∈ (S f ε h n x)ᶜ) : (1 : ℝ) ≤ δ f ε h ^ (-2 : ℤ) * ((x : ℝ) - k/ₙ) ^ 2 := by
   -- Porting note: added parentheses to help `simp`
-  simp only [Finset.mem_compl, not_lt, (Set.mem_toFinset), Set.mem_setOf_eq, S] at m
+  simp only [Finset.mem_compl, not_lt, Set.mem_toFinset, Set.mem_setOf_eq, S] at m
   rw [zpow_neg, ← div_eq_inv_mul, zpow_two, ← pow_two, one_le_div (pow_pos δ_pos 2), sq_le_sq,
     abs_of_pos δ_pos]
   rwa [dist_comm] at m
@@ -249,7 +249,7 @@ theorem bernsteinApproximation_uniform (f : C(I, ℝ)) :
       rw [bernstein.probability]
     _ = |∑ k : Fin (n + 1), (f k/ₙ - f x) * bernstein n k x| := by
       simp [bernsteinApproximation, Finset.mul_sum, sub_mul]
-    _ ≤ ∑ k : Fin (n + 1), |(f k/ₙ - f x) * bernstein n k x| := (Finset.abs_sum_le_sum_abs _ _)
+    _ ≤ ∑ k : Fin (n + 1), |(f k/ₙ - f x) * bernstein n k x| := Finset.abs_sum_le_sum_abs _ _
     _ = ∑ k : Fin (n + 1), |f k/ₙ - f x| * bernstein n k x := by
       simp_rw [abs_mul, abs_eq_self.mpr bernstein_nonneg]
     _ = (∑ k in S, |f k/ₙ - f x| * bernstein n k x) + ∑ k in Sᶜ, |f k/ₙ - f x| * bernstein n k x :=

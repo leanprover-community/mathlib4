@@ -262,7 +262,7 @@ theorem krullTopology_totallyDisconnected {K L : Type*} [Field K] [Field L] [Alg
     (h_int : Algebra.IsIntegral K L) : IsTotallyDisconnected (Set.univ : Set (L ≃ₐ[K] L)) := by
   apply isTotallyDisconnected_of_isClopen_set
   intro σ τ h_diff
-  have hστ : σ⁻¹ * τ ≠ 1 := by rwa [Ne.def, inv_mul_eq_one]
+  have hστ : σ⁻¹ * τ ≠ 1 := by rwa [Ne, inv_mul_eq_one]
   rcases DFunLike.exists_ne hστ with ⟨x, hx : (σ⁻¹ * τ) x ≠ x⟩
   let E := IntermediateField.adjoin K ({x} : Set L)
   haveI := IntermediateField.adjoin.finiteDimensional (h_int x)

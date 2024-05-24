@@ -5,9 +5,9 @@ Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Lean.Linter.Deprecated
 import Mathlib.Mathport.Rename
-import Mathlib.Init.Data.Nat.Bitwise
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Init.ZeroOne
+import Mathlib.Data.Nat.Bits
 
 #align_import data.num.basic from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 /-!
@@ -18,9 +18,6 @@ the reliance on kernel reduction, in Lean this representation is discouraged
 in favor of the "Peano" natural numbers `Nat`, and the purpose of this
 collection of theorems is to show the equivalence of the different approaches.
 -/
-
-set_option autoImplicit true
-
 
 /-- The type of positive binary numbers.
 
@@ -158,7 +155,7 @@ def ofNat (n : ℕ) : PosNum :=
   ofNatSucc (Nat.pred n)
 #align pos_num.of_nat PosNum.ofNat
 
-instance : OfNat PosNum (n + 1) where
+instance {n : ℕ} : OfNat PosNum (n + 1) where
   ofNat := ofNat (n + 1)
 
 open Ordering

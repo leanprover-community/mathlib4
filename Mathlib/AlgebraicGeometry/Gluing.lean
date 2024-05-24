@@ -82,7 +82,7 @@ such that
 We can then glue the schemes `U i` together by identifying `V i j` with `V j i`, such
 that the `U i`'s are open subschemes of the glued space.
 -/
--- Porting note: @[nolint has_nonempty_instance]
+-- Porting note(#5171): @[nolint has_nonempty_instance]; linter not ported yet
 structure GlueData extends CategoryTheory.GlueData Scheme where
   f_open : ∀ i j, IsOpenImmersion (f i j)
 #align algebraic_geometry.Scheme.glue_data AlgebraicGeometry.Scheme.GlueData
@@ -379,12 +379,8 @@ theorem fromGlued_injective : Function.Injective 𝒰.fromGlued.1.base := by
   right
   use e.hom ⟨⟨x, y⟩, h⟩
   constructor
-  -- Porting note: in the two subproofs below, added the `change` lines
-  · change (e.hom ≫ _) ⟨(x, y), h⟩ = x
-    erw [IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.left]; rfl
-  · change (e.hom ≫ ((gluedCover 𝒰).toGlueData.t i j ≫
-      (gluedCover 𝒰).toGlueData.f j i).val.base) ⟨(x, y), h⟩ = y
-    erw [pullbackSymmetry_hom_comp_fst,
+  · erw [← comp_apply e.hom, IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.left]; rfl
+  · erw [← comp_apply e.hom, pullbackSymmetry_hom_comp_fst,
       IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.right]
     rfl
 #align algebraic_geometry.Scheme.open_cover.from_glued_injective AlgebraicGeometry.Scheme.OpenCover.fromGlued_injective

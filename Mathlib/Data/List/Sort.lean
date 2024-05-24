@@ -5,14 +5,16 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Nodup
+import Mathlib.Data.List.Infix
 
 #align_import data.list.sort from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
 /-!
 # Sorting algorithms on lists
 
-In this file we define `List.Sorted r l` to be an alias for `Pairwise r l`. This alias is preferred
-in the case that `r` is a `<` or `≤`-like relation. Then we define two sorting algorithms:
+In this file we define `List.Sorted r l` to be an alias for `List.Pairwise r l`.
+This alias is preferred in the case that `r` is a `<` or `≤`-like relation.
+Then we define two sorting algorithms:
 `List.insertionSort` and `List.mergeSort`, and prove their correctness.
 -/
 
@@ -32,7 +34,7 @@ section Sorted
 
 variable {α : Type uu} {r : α → α → Prop} {a : α} {l : List α}
 
-/-- `Sorted r l` is the same as `Pairwise r l`, preferred in the case that `r`
+/-- `Sorted r l` is the same as `List.Pairwise r l`, preferred in the case that `r`
   is a `<` or `≤`-like relation (transitive and antisymmetric or asymmetric) -/
 def Sorted :=
   @Pairwise
@@ -176,7 +178,7 @@ strictly monotone. -/
   sorted_ofFn_iff.trans monotone_iff_forall_lt.symm
 
 /-- A tuple is monotone if and only if the list obtained from it is sorted. -/
-@[deprecated sorted_le_ofFn_iff]
+@[deprecated sorted_le_ofFn_iff] -- 2023-01-10
 theorem monotone_iff_ofFn_sorted : Monotone f ↔ (ofFn f).Sorted (· ≤ ·) := sorted_le_ofFn_iff.symm
 #align list.monotone_iff_of_fn_sorted List.monotone_iff_ofFn_sorted
 

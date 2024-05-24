@@ -188,6 +188,7 @@ def Fix {n : ℕ} (F : TypeVec (n + 1) → Type*) [MvFunctor F] [q : MvQPF F] (�
   Quotient (wSetoid α : Setoid (q.P.W α))
 #align mvqpf.fix MvQPF.Fix
 
+-- Porting note(#5171): this linter isn't ported yet.
 --attribute [nolint has_nonempty_instance] Fix
 
 /-- `Fix F` is a functor -/

@@ -144,7 +144,7 @@ theorem perm_nodupKeys {l₁ l₂ : List (Sigma β)} (h : l₁ ~ l₂) : NodupKe
 theorem nodupKeys_join {L : List (List (Sigma β))} :
     NodupKeys (join L) ↔ (∀ l ∈ L, NodupKeys l) ∧ Pairwise Disjoint (L.map keys) := by
   rw [nodupKeys_iff_pairwise, pairwise_join, pairwise_map]
-  refine' and_congr (ball_congr fun l _ => by simp [nodupKeys_iff_pairwise]) _
+  refine' and_congr (forall₂_congr fun l _ => by simp [nodupKeys_iff_pairwise]) _
   apply iff_of_eq; congr with (l₁ l₂)
   simp [keys, disjoint_iff_ne]
 #align list.nodupkeys_join List.nodupKeys_join
@@ -669,7 +669,7 @@ theorem sizeOf_dedupKeys {α} {β : α → Type*} [DecidableEq α] [SizeOf (Sigm
   simp only [SizeOf.sizeOf, _sizeOf_1]
   induction' xs with x xs
   · simp [dedupKeys]
-  · simp only [dedupKeys_cons, kinsert_def, add_le_add_iff_left, Sigma.eta]
+  · simp only [dedupKeys_cons, kinsert_def, Nat.add_le_add_iff_left, Sigma.eta]
     trans
     apply sizeOf_kerase
     assumption

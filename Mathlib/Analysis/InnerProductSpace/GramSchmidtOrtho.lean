@@ -56,7 +56,7 @@ termination_by n
 decreasing_by exact mem_Iio.1 i.2
 #align gram_schmidt gramSchmidt
 
-/-- This lemma uses `∑ i in` instead of `∑ i :`.-/
+/-- This lemma uses `∑ i in` instead of `∑ i :`. -/
 theorem gramSchmidt_def (f : ι → E) (n : ι) :
     gramSchmidt 𝕜 f n = f n - ∑ i in Iio n, orthogonalProjection (𝕜 ∙ gramSchmidt 𝕜 f i) (f n) := by
   rw [← sum_attach, attach_eq_univ, gramSchmidt]
@@ -110,7 +110,7 @@ theorem gramSchmidt_orthogonal (f : ι → E) {a b : ι} (h₀ : a ≠ b) :
   · exact ih i (mem_Iio.1 hi) a hia₂
 #align gram_schmidt_orthogonal gramSchmidt_orthogonal
 
-/-- This is another version of `gramSchmidt_orthogonal` using `pairwise` instead. -/
+/-- This is another version of `gramSchmidt_orthogonal` using `Pairwise` instead. -/
 theorem gramSchmidt_pairwise_orthogonal (f : ι → E) :
     Pairwise fun a b => ⟪gramSchmidt 𝕜 f a, gramSchmidt 𝕜 f b⟫ = 0 := fun _ _ =>
   gramSchmidt_orthogonal 𝕜 f
@@ -265,7 +265,7 @@ variable {𝕜}
 
 theorem gramSchmidtNormed_unit_length_coe {f : ι → E} (n : ι)
     (h₀ : LinearIndependent 𝕜 (f ∘ ((↑) : Set.Iic n → ι))) : ‖gramSchmidtNormed 𝕜 f n‖ = 1 := by
-  simp only [gramSchmidt_ne_zero_coe n h₀, gramSchmidtNormed, norm_smul_inv_norm, Ne.def,
+  simp only [gramSchmidt_ne_zero_coe n h₀, gramSchmidtNormed, norm_smul_inv_norm, Ne,
     not_false_iff]
 #align gram_schmidt_normed_unit_length_coe gramSchmidtNormed_unit_length_coe
 

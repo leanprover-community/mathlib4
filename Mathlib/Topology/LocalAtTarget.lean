@@ -63,17 +63,29 @@ theorem Set.restrictPreimage_closedEmbedding (s : Set β) (h : ClosedEmbedding f
 alias ClosedEmbedding.restrictPreimage := Set.restrictPreimage_closedEmbedding
 #align closed_embedding.restrict_preimage ClosedEmbedding.restrictPreimage
 
-theorem Set.restrictPreimage_isClosedMap (s : Set β) (H : IsClosedMap f) :
+theorem IsClosedMap.restrictPreimage (H : IsClosedMap f) (s : Set β) :
     IsClosedMap (s.restrictPreimage f) := by
-  rintro t ⟨u, hu, e⟩
-  refine' ⟨⟨_, (H _ (IsOpen.isClosed_compl hu)).1, _⟩⟩
-  rw [← (congr_arg HasCompl.compl e).trans (compl_compl t)]
-  simp only [Set.preimage_compl, compl_inj_iff]
-  ext ⟨x, hx⟩
-  suffices (∃ y, y ∉ u ∧ f y = x) ↔ ∃ y, y ∉ u ∧ f y ∈ s ∧ f y = x by
-    simpa [Set.restrictPreimage, ← Subtype.coe_inj]
-  exact ⟨fun ⟨a, b, c⟩ => ⟨a, b, c.symm ▸ hx, c⟩, fun ⟨a, b, _, c⟩ => ⟨a, b, c⟩⟩
-#align set.restrict_preimage_is_closed_map Set.restrictPreimage_isClosedMap
+  intro t
+  suffices ∀ u, IsClosed u → Subtype.val ⁻¹' u = t →
+    ∃ v, IsClosed v ∧ Subtype.val ⁻¹' v = s.restrictPreimage f '' t by
+      simpa [isClosed_induced_iff]
+  exact fun u hu e => ⟨f '' u, H u hu, by simp [← e, image_restrictPreimage]⟩
+
+@[deprecated] -- since 2024-04-02
+theorem Set.restrictPreimage_isClosedMap (s : Set β) (H : IsClosedMap f) :
+    IsClosedMap (s.restrictPreimage f) := H.restrictPreimage s
+
+theorem IsOpenMap.restrictPreimage (H : IsOpenMap f) (s : Set β) :
+    IsOpenMap (s.restrictPreimage f) := by
+  intro t
+  suffices ∀ u, IsOpen u → Subtype.val ⁻¹' u = t →
+    ∃ v, IsOpen v ∧ Subtype.val ⁻¹' v = s.restrictPreimage f '' t by
+      simpa [isOpen_induced_iff]
+  exact fun u hu e => ⟨f '' u, H u hu, by simp [← e, image_restrictPreimage]⟩
+
+@[deprecated] -- since 2024-04-02
+theorem Set.restrictPreimage_isOpenMap (s : Set β) (H : IsOpenMap f) :
+    IsOpenMap (s.restrictPreimage f) := H.restrictPreimage s
 
 theorem isOpen_iff_inter_of_iSup_eq_top (s : Set β) : IsOpen s ↔ ∀ i, IsOpen (s ∩ U i) := by
   constructor
@@ -103,7 +115,7 @@ theorem isClosed_iff_coe_preimage_of_iSup_eq_top (s : Set β) :
 
 theorem isClosedMap_iff_isClosedMap_of_iSup_eq_top :
     IsClosedMap f ↔ ∀ i, IsClosedMap ((U i).1.restrictPreimage f) := by
-  refine' ⟨fun h i => Set.restrictPreimage_isClosedMap _ h, _⟩
+  refine' ⟨fun h i => h.restrictPreimage _, _⟩
   rintro H s hs
   rw [isClosed_iff_coe_preimage_of_iSup_eq_top hU]
   intro i

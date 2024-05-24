@@ -5,6 +5,7 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Star.Pointwise
 import Mathlib.Algebra.Star.Subalgebra
+import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Tactic.NoncommRing
 
 #align_import algebra.algebra.spectrum from "leanprover-community/mathlib"@"58a272265b5e05f258161260dd2c5d247213cbd3"

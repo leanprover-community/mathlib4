@@ -175,9 +175,7 @@ def conjTranspose [Star α] (M : Matrix m n α) : Matrix n m α :=
 scoped postfix:1024 "ᴴ" => Matrix.conjTranspose
 
 instance inhabited [Inhabited α] : Inhabited (Matrix m n α) :=
-  -- Porting note: this instance was called `Pi.inhabited` in lean3-core, which is much
-  -- nicer than the name `instInhabitedForAll_1` it got in lean4-core...
-  instInhabitedForAll_1 _
+  inferInstanceAs <| Inhabited <| m → n → α
 
 -- Porting note: new, Lean3 found this automatically
 instance decidableEq [DecidableEq α] [Fintype m] [Fintype n] : DecidableEq (Matrix m n α) :=
@@ -226,8 +224,7 @@ instance unique [Unique α] : Unique (Matrix m n α) :=
   Pi.unique
 
 instance subsingleton [Subsingleton α] : Subsingleton (Matrix m n α) :=
-  instSubsingletonForAll
--- Porting note: this instance was `Pi.subsingleton` in lean3-core
+  inferInstanceAs <| Subsingleton <| m → n → α
 
 instance nonempty [Nonempty m] [Nonempty n] [Nontrivial α] : Nontrivial (Matrix m n α) :=
   Function.nontrivial
@@ -580,7 +577,7 @@ instance instAddMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (Matrix n
 
 instance instAddGroupWithOne [AddGroupWithOne α] : AddGroupWithOne (Matrix n n α) where
   intCast_ofNat n := show diagonal _ = diagonal _ by
-    rw [Int.cast_ofNat]
+    rw [Int.cast_natCast]
   intCast_negSucc n := show diagonal _ = -(diagonal _) by
     rw [Int.cast_negSucc, diagonal_neg]
   __ := addGroup

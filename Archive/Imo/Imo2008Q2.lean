@@ -114,7 +114,7 @@ theorem imo2008_q2b : Set.Infinite rationalSolutions := by
       have h₂ : q < t * (t + 1) := by
         calc
           q < q + 1 := by linarith
-          _ ≤ t := (le_max_left (q + 1) 1)
+          _ ≤ t := le_max_left (q + 1) 1
           _ ≤ t + t ^ 2 := by linarith [sq_nonneg t]
           _ = t * (t + 1) := by ring
       exact ⟨h₁, h₂⟩

@@ -41,6 +41,10 @@ variable {S R : Type*} [AddMonoidWithOne R] [SetLike S R] (s : S)
 theorem natCast_mem [AddSubmonoidWithOneClass S R] (n : ℕ) : (n : R) ∈ s := by
   induction n <;> simp [zero_mem, add_mem, one_mem, *]
 #align nat_cast_mem natCast_mem
+#align coe_nat_mem natCast_mem
+
+-- 2024-04-05
+@[deprecated] alias coe_nat_mem := natCast_mem
 
 @[aesop safe apply (rule_sets := [SetLike])]
 lemma ofNat_mem [AddSubmonoidWithOneClass S R] (s : S) (n : ℕ) [n.AtLeastTwo] :
@@ -76,11 +80,6 @@ instance (priority := 100) SubsemiringClass.addSubmonoidWithOneClass (S : Type*)
 #align subsemiring_class.add_submonoid_with_one_class SubsemiringClass.addSubmonoidWithOneClass
 
 variable [SetLike S R] [hSR : SubsemiringClass S R] (s : S)
-
-theorem coe_nat_mem (n : ℕ) : (n : R) ∈ s := by
-  rw [← nsmul_one]
-  exact nsmul_mem (one_mem _) _
-#align coe_nat_mem coe_nat_mem
 
 namespace SubsemiringClass
 
@@ -183,7 +182,7 @@ theorem ext {S T : Subsemiring R} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
 #align subsemiring.ext Subsemiring.ext
 
 /-- Copy of a subsemiring with a new `carrier` equal to the old one. Useful to fix definitional
-equalities.-/
+equalities. -/
 protected def copy (S : Subsemiring R) (s : Set R) (hs : s = ↑S) : Subsemiring R :=
   { S.toAddSubmonoid.copy s hs, S.toSubmonoid.copy s hs with carrier := s }
 #align subsemiring.copy Subsemiring.copy
@@ -543,7 +542,7 @@ theorem map_rangeS : f.rangeS.map g = (g.comp f).rangeS := by
 
 /-- The range of a morphism of semirings is a fintype, if the domain is a fintype.
 Note: this instance can form a diamond with `Subtype.fintype` in the
-  presence of `Fintype S`.-/
+  presence of `Fintype S`. -/
 instance fintypeRangeS [Fintype R] [DecidableEq S] (f : R →+* S) : Fintype (rangeS f) :=
   Set.fintypeRange f
 #align ring_hom.fintype_srange RingHom.fintypeRangeS
@@ -617,7 +616,7 @@ instance : CompleteLattice (Subsemiring R) :=
     bot := ⊥
     bot_le := fun s _ hx =>
       let ⟨n, hn⟩ := mem_bot.1 hx
-      hn ▸ coe_nat_mem s n
+      hn ▸ natCast_mem s n
     top := ⊤
     le_top := fun _ _ _ => trivial
     inf := (· ⊓ ·)

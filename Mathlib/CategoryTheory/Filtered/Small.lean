@@ -142,11 +142,11 @@ noncomputable def factoring : D ⥤ SmallFilteredIntermediate F :=
 noncomputable def inclusion : SmallFilteredIntermediate F ⥤ C :=
   (equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _
 
-instance : Faithful (inclusion F) :=
-  show Faithful ((equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _) from Faithful.comp _ _
+instance : (inclusion F).Faithful :=
+  show ((equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _).Faithful from inferInstance
 
-noncomputable instance : Full (inclusion F) :=
-  show Full ((equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _) from Full.comp _ _
+noncomputable instance : (inclusion F).Full :=
+  show ((equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _).Full from inferInstance
 
 /-- The factorization through a small filtered category is in fact a factorization, up to natural
     isomorphism. -/
@@ -275,11 +275,11 @@ noncomputable def factoring : D ⥤ SmallCofilteredIntermediate F :=
 noncomputable def inclusion : SmallCofilteredIntermediate F ⥤ C :=
   (equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _
 
-instance : Faithful (inclusion F) :=
-  show Faithful ((equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _) from Faithful.comp _ _
+instance : (inclusion F).Faithful :=
+  show ((equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _).Faithful from inferInstance
 
-noncomputable instance : Full (inclusion F) :=
-  show Full ((equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _) from Full.comp _ _
+noncomputable instance : (inclusion F).Full :=
+  show ((equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _).Full from inferInstance
 
 /-- The factorization through a small filtered category is in fact a factorization, up to natural
     isomorphism. -/

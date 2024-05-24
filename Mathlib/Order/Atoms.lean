@@ -79,7 +79,7 @@ theorem IsAtom.of_isAtom_coe_Iic {a : Set.Iic x} (ha : IsAtom a) : IsAtom (a : �
 
 theorem isAtom_iff_le_of_ge : IsAtom a ↔ a ≠ ⊥ ∧ ∀ b ≠ ⊥, b ≤ a → a ≤ b :=
   and_congr Iff.rfl <|
-    forall_congr' fun b => by simp only [Ne.def, @not_imp_comm (b = ⊥), not_imp, lt_iff_le_not_le]
+    forall_congr' fun b => by simp only [Ne, @not_imp_comm (b = ⊥), not_imp, lt_iff_le_not_le]
 #align is_atom_iff isAtom_iff_le_of_ge
 
 end Preorder
@@ -263,7 +263,7 @@ variable [PartialOrder α] (α)
 /-- A lattice is atomic iff every element other than `⊥` has an atom below it. -/
 @[mk_iff]
 class IsAtomic [OrderBot α] : Prop where
-  /--Every element other than `⊥` has an atom below it. -/
+  /-- Every element other than `⊥` has an atom below it. -/
   eq_bot_or_exists_atom_le : ∀ b : α, b = ⊥ ∨ ∃ a : α, IsAtom a ∧ a ≤ b
 #align is_atomic IsAtomic
 #align is_atomic_iff isAtomic_iff
@@ -271,7 +271,7 @@ class IsAtomic [OrderBot α] : Prop where
 /-- A lattice is coatomic iff every element other than `⊤` has a coatom above it. -/
 @[mk_iff]
 class IsCoatomic [OrderTop α] : Prop where
-  /--Every element other than `⊤` has an atom above it. -/
+  /-- Every element other than `⊤` has an atom above it. -/
   eq_top_or_exists_le_coatom : ∀ b : α, b = ⊤ ∨ ∃ a : α, IsCoatom a ∧ b ≤ a
 #align is_coatomic IsCoatomic
 #align is_coatomic_iff isCoatomic_iff
@@ -399,14 +399,14 @@ variable (α) [CompleteLattice α]
 
 /-- A lattice is atomistic iff every element is a `sSup` of a set of atoms. -/
 class IsAtomistic : Prop where
-  /--Every element is a `sSup` of a set of atoms. -/
+  /-- Every element is a `sSup` of a set of atoms. -/
   eq_sSup_atoms : ∀ b : α, ∃ s : Set α, b = sSup s ∧ ∀ a, a ∈ s → IsAtom a
 #align is_atomistic IsAtomistic
 #align is_atomistic.eq_Sup_atoms IsAtomistic.eq_sSup_atoms
 
 /-- A lattice is coatomistic iff every element is an `sInf` of a set of coatoms. -/
 class IsCoatomistic : Prop where
-  /--Every element is a `sInf` of a set of coatoms. -/
+  /-- Every element is a `sInf` of a set of coatoms. -/
   eq_sInf_coatoms : ∀ b : α, ∃ s : Set α, b = sInf s ∧ ∀ a, a ∈ s → IsCoatom a
 #align is_coatomistic IsCoatomistic
 #align is_coatomistic.eq_Inf_coatoms IsCoatomistic.eq_sInf_coatoms

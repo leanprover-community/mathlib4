@@ -95,8 +95,8 @@ def forget : Compactum ⥤ Type* :=
   -- Porting note: deriving fails, adding manually. Note `CreatesLimits` now noncomputable
 #align Compactum.forget Compactum.forget
 
-instance : Faithful forget :=
-  show Faithful <| Monad.forget _ from inferInstance
+instance : forget.Faithful :=
+  show (Monad.forget _).Faithful from inferInstance
 
 noncomputable instance : CreatesLimits forget :=
   show CreatesLimits <| Monad.forget _ from inferInstance
@@ -441,11 +441,11 @@ def compactumToCompHaus : Compactum ⥤ CompHaus where
 namespace compactumToCompHaus
 
 /-- The functor `compactumToCompHaus` is full. -/
-def full : Full compactumToCompHaus.{u} where preimage X Y {f} := Compactum.homOfContinuous f.1 f.2
+def full : compactumToCompHaus.{u}.Full where preimage X Y {f} := Compactum.homOfContinuous f.1 f.2
 #align Compactum_to_CompHaus.full compactumToCompHaus.full
 
 /-- The functor `compactumToCompHaus` is faithful. -/
-theorem faithful : Faithful compactumToCompHaus where
+theorem faithful : compactumToCompHaus.Faithful where
   -- Porting note: this used to be obviously (though it consumed a bit of memory)
   map_injective := by
     intro _ _ _ _ h
@@ -473,16 +473,16 @@ def isoOfTopologicalSpace {D : CompHaus} :
 #align Compactum_to_CompHaus.iso_of_topological_space compactumToCompHaus.isoOfTopologicalSpace
 
 /-- The functor `compactumToCompHaus` is essentially surjective. -/
-theorem essSurj : EssSurj compactumToCompHaus :=
+theorem essSurj : compactumToCompHaus.EssSurj :=
   { mem_essImage := fun X => ⟨Compactum.ofTopologicalSpace X, ⟨isoOfTopologicalSpace⟩⟩ }
 #align Compactum_to_CompHaus.ess_surj compactumToCompHaus.essSurj
 
 /-- The functor `compactumToCompHaus` is an equivalence of categories. -/
-noncomputable instance isEquivalence : IsEquivalence compactumToCompHaus := by
+noncomputable instance isEquivalence : compactumToCompHaus.IsEquivalence := by
   have := compactumToCompHaus.full
   have := compactumToCompHaus.faithful
   have := compactumToCompHaus.essSurj
-  apply Equivalence.ofFullyFaithfullyEssSurj _
+  apply Functor.IsEquivalence.ofFullyFaithfullyEssSurj _
 #align Compactum_to_CompHaus.is_equivalence compactumToCompHaus.isEquivalence
 
 end compactumToCompHaus

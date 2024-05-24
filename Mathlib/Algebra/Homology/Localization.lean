@@ -46,9 +46,9 @@ variable (C c)
 
 lemma HomologicalComplex.homologyFunctor_inverts_quasiIso (i : ι) :
     (quasiIso C c).IsInvertedBy (homologyFunctor C c i) := fun _ _ _ hf => by
-      rw [mem_quasiIso_iff] at hf
-      dsimp
-      infer_instance
+  rw [mem_quasiIso_iff] at hf
+  dsimp
+  infer_instance
 
 namespace HomologicalComplexUpToQuasiIso
 

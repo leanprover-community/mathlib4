@@ -29,6 +29,7 @@ Basic definitions and properties of the above ideas are provided in this file.
 
   * `LieModule.weightSpaceOf`
   * `LieModule.weightSpace`
+  * `LieModule.Weight`
   * `LieModule.posFittingCompOf`
   * `LieModule.posFittingComp`
   * `LieModule.iSup_ucs_eq_weightSpace_zero`
@@ -54,7 +55,7 @@ namespace LieModule
 open Set Function LieAlgebra TensorProduct TensorProduct.LieModule
 open scoped BigOperators TensorProduct
 
-section notation_weight_space_of
+section notation_weightSpaceOf
 
 /-- Until we define `LieModule.weightSpaceOf`, it is useful to have some notation as follows: -/
 local notation3 "𝕎("M", " χ", " x")" => (toEndomorphism R L M x).maximalGeneralizedEigenspace χ
@@ -156,7 +157,7 @@ def weightSpaceOf (χ : R) (x : L) : LieSubmodule R L M :=
       rw [← zero_add χ]
       exact lie_mem_maxGenEigenspace_toEndomorphism (by simp) hm }
 
-end notation_weight_space_of
+end notation_weightSpaceOf
 
 variable (M)
 
@@ -183,6 +184,49 @@ theorem mem_weightSpace (χ : L → R) (m : M) :
 lemma weightSpace_le_weightSpaceOf (x : L) (χ : L → R) :
     weightSpace M χ ≤ weightSpaceOf M (χ x) x :=
   iInf_le _ x
+
+variable (R L) in
+/-- A weight of a Lie module is a map `L → R` such that the corresponding weight space is
+non-trivial. -/
+structure Weight where
+  /-- The family of eigenvalues corresponding to a weight. -/
+  toFun : L → R
+  weightSpace_ne_bot : weightSpace M toFun ≠ ⊥
+
+namespace Weight
+
+instance instFunLike : FunLike (Weight R L M) L R where
+  coe χ := χ.1
+  coe_injective' χ₁ χ₂ h := by cases χ₁; cases χ₂; simp_all
+
+@[simp] lemma coe_weight_mk (χ : L → R) (h) :
+    (↑(⟨χ, h⟩ : Weight R L M) : L → R) = χ :=
+  rfl
+
+variable {M}
+
+/-- The proposition that a weight of a Lie module is zero.
+
+We make this definition because we cannot define a `Zero (Weight R L M)` instance since the weight
+space of the zero function can be trivial. -/
+def IsZero (χ : Weight R L M) := (χ : L → R) = 0
+
+@[simp] lemma IsZero.eq {χ : Weight R L M} (hχ : χ.IsZero) : (χ : L → R) = 0 := hχ
+
+@[simp] lemma coe_eq_zero_iff (χ : Weight R L M) : (χ : L → R) = 0 ↔ χ.IsZero := Iff.rfl
+
+/-- The proposition that a weight of a Lie module is non-zero. -/
+abbrev IsNonZero (χ : Weight R L M) := ¬ IsZero (χ : Weight R L M)
+
+variable (R L M) in
+/-- The set of weights is equivalent to a subtype. -/
+def equivSetOf : Weight R L M ≃ {χ : L → R | weightSpace M χ ≠ ⊥} where
+  toFun w := ⟨w.1, w.2⟩
+  invFun w := ⟨w.1, w.2⟩
+  left_inv w := by simp
+  right_inv w := by simp
+
+end Weight
 
 /-- See also the more useful form `LieModule.zero_weightSpace_eq_top_of_nilpotent`. -/
 @[simp]
@@ -547,6 +591,9 @@ lemma injOn_weightSpace [NoZeroSMulDivisors R M] :
   contrapose! hχ₂
   simpa [hχ₁₂] using disjoint_weightSpace R L M hχ₂
 
+/-- Lie module weight spaces are independent.
+
+See also `LieModule.independent_weightSpace'`. -/
 lemma independent_weightSpace [NoZeroSMulDivisors R M] :
     CompleteLattice.Independent fun (χ : L → R) ↦ weightSpace M χ := by
   classical
@@ -588,6 +635,11 @@ lemma independent_weightSpace [NoZeroSMulDivisors R M] :
     rintro - ⟨u, hu, rfl⟩
     exact LieSubmodule.mapsTo_pow_toEndomorphism_sub_algebraMap _ hu
 
+lemma independent_weightSpace' [NoZeroSMulDivisors R M] :
+    CompleteLattice.Independent fun χ : Weight R L M ↦ weightSpace M χ :=
+  (independent_weightSpace R L M).comp <|
+    Subtype.val_injective.comp (Weight.equivSetOf R L M).injective
+
 lemma independent_weightSpaceOf [NoZeroSMulDivisors R M] (x : L) :
     CompleteLattice.Independent fun (χ : R) ↦ weightSpaceOf M χ x := by
   rw [LieSubmodule.independent_iff_coe_toSubmodule]
@@ -603,9 +655,14 @@ lemma finite_weightSpace_ne_bot [NoZeroSMulDivisors R M] [IsNoetherian R M] :
   CompleteLattice.WellFounded.finite_ne_bot_of_independent
     (LieSubmodule.wellFounded_of_noetherian R L M) (independent_weightSpace R L M)
 
-/-- The collection of weights of a Noetherian Lie module, bundled as a `Finset`. -/
-noncomputable abbrev weight [NoZeroSMulDivisors R M] [IsNoetherian R M] :=
-  (finite_weightSpace_ne_bot R L M).toFinset
+instance Weight.instFinite [NoZeroSMulDivisors R M] [IsNoetherian R M] :
+    Finite (Weight R L M) := by
+  have : Finite {χ : L → R | weightSpace M χ ≠ ⊥} := finite_weightSpace_ne_bot R L M
+  exact Finite.of_injective (equivSetOf R L M) (equivSetOf R L M).injective
+
+noncomputable instance Weight.instFintype [NoZeroSMulDivisors R M] [IsNoetherian R M] :
+    Fintype (Weight R L M) :=
+  Fintype.ofFinite _
 
 /-- A Lie module `M` of a Lie algebra `L` is triangularizable if the endomorhpism of `M` defined by
 any `x : L` is triangularizable. -/
@@ -647,6 +704,9 @@ instance (N : LieSubmodule K L M) [IsTriangularizable K L M] : IsTriangularizabl
   rw [← N.toEndomorphism_restrict_eq_toEndomorphism y]
   exact Module.End.iSup_generalizedEigenspace_restrict_eq_top _ (IsTriangularizable.iSup_eq_top y)
 
+/-- For a triangularizable Lie module in finite dimensions, the weight spaces span the entire space.
+
+See also `LieModule.iSup_weightSpace_eq_top'`. -/
 lemma iSup_weightSpace_eq_top [IsTriangularizable K L M] :
     ⨆ χ : L → K, weightSpace M χ = ⊤ := by
   clear! R -- cf https://github.com/leanprover/lean4/issues/2452
@@ -678,6 +738,12 @@ lemma iSup_weightSpace_eq_top [IsTriangularizable K L M] :
         LieSubmodule.range_incl]
     simpa only [← ih, iSup_comm (ι := K), iSup_iSup_eq_right] using
       iSup_weightSpaceOf_eq_top K L M y
+
+lemma iSup_weightSpace_eq_top' [IsTriangularizable K L M] :
+    ⨆ χ : Weight K L M, weightSpace M χ = ⊤ := by
+  have := iSup_weightSpace_eq_top K L M
+  erw [← iSup_ne_bot_subtype, ← (Weight.equivSetOf K L M).iSup_comp] at this
+  exact this
 
 end field
 

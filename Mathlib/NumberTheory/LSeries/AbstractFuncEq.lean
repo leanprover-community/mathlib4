@@ -226,8 +226,8 @@ theorem functional_equation (s : ℂ) :
   have step3 := mellin_const_smul (fun t ↦ (t : ℂ) ^ (-P.k : ℂ) • P.g (1 / t)) (P.k - s) P.ε
   rw [step2] at step3
   rw [← step3]
-  -- now the integrand matches `P.h_feq'` on `Ioi 0`, so we can apply `set_integral_congr`
-  refine set_integral_congr measurableSet_Ioi (fun t ht ↦ ?_)
+  -- now the integrand matches `P.h_feq'` on `Ioi 0`, so we can apply `setIntegral_congr`
+  refine setIntegral_congr measurableSet_Ioi (fun t ht ↦ ?_)
   simp_rw [P.h_feq' t ht, ← mul_smul]
   -- some simple `cpow` arithmetic to finish
   rw [cpow_neg, ofReal_cpow (le_of_lt ht)]
@@ -343,17 +343,17 @@ lemma f_modif_aux2 {s : ℂ} (hs : P.k < re s) :
   _ = ∫ (x : ℝ) in Ioi 0, (x : ℂ) ^ (s - 1) •
       ((Ioo 0 1).indicator (fun t : ℝ ↦ P.f₀ - (P.ε * ↑(t ^ (-P.k))) • P.g₀) x
       + ({1} : Set ℝ).indicator (fun _ ↦ P.f₀ - P.f 1) x) :=
-    set_integral_congr measurableSet_Ioi (fun x hx ↦ by simp [f_modif_aux1 P hx])
+    setIntegral_congr measurableSet_Ioi (fun x hx ↦ by simp [f_modif_aux1 P hx])
   _ = ∫ (x : ℝ) in Ioi 0, (x : ℂ) ^ (s - 1) • ((Ioo 0 1).indicator
       (fun t : ℝ ↦ P.f₀ - (P.ε * ↑(t ^ (-P.k))) • P.g₀) x) := by
-    refine set_integral_congr_ae measurableSet_Ioi (eventually_of_mem (U := {1}ᶜ)
+    refine setIntegral_congr_ae measurableSet_Ioi (eventually_of_mem (U := {1}ᶜ)
         (compl_mem_ae_iff.mpr (subsingleton_singleton.measure_zero _)) (fun x hx _ ↦ ?_))
     rw [indicator_of_not_mem hx, add_zero]
   _ = ∫ (x : ℝ) in Ioc 0 1, (x : ℂ) ^ (s - 1) • (P.f₀ - (P.ε * ↑(x ^ (-P.k))) • P.g₀) := by
-    simp_rw [← indicator_smul, set_integral_indicator measurableSet_Ioo,
+    simp_rw [← indicator_smul, setIntegral_indicator measurableSet_Ioo,
       inter_eq_right.mpr Ioo_subset_Ioi_self, integral_Ioc_eq_integral_Ioo]
   _ = ∫ x : ℝ in Ioc 0 1, ((x : ℂ) ^ (s - 1) • P.f₀ - P.ε • (x : ℂ) ^ (s - P.k - 1) • P.g₀) := by
-    refine set_integral_congr measurableSet_Ioc (fun x ⟨hx, _⟩ ↦ ?_)
+    refine setIntegral_congr measurableSet_Ioc (fun x ⟨hx, _⟩ ↦ ?_)
     rw [ofReal_cpow hx.le, ofReal_neg, smul_sub, ← mul_smul, mul_comm, mul_assoc, mul_smul,
       mul_comm, ← cpow_add _ _ (ofReal_ne_zero.mpr hx.ne'), ← sub_eq_add_neg, sub_right_comm]
   _ = (∫ (x : ℝ) in Ioc 0 1, (x : ℂ) ^ (s - 1)) • P.f₀

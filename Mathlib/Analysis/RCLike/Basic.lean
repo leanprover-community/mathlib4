@@ -40,9 +40,6 @@ their counterparts in `Mathlib/Analysis/Complex/Basic.lean` (which causes linter
 A few lemmas requiring heavier imports are in `Mathlib/Data/RCLike/Lemmas.lean`.
 -/
 
-set_option autoImplicit true
-
-
 open BigOperators
 
 section
@@ -74,7 +71,7 @@ class RCLike (K : semiOutParam (Type*)) extends DenselyNormedField K, StarRing K
   mul_im_I_ax : ∀ z : K, im z * im I = im z
   /-- only an instance in the `ComplexOrder` locale -/
   [toPartialOrder : PartialOrder K]
-  le_iff_re_im : z ≤ w ↔ re z ≤ re w ∧ im z = im w
+  le_iff_re_im {z w : K} : z ≤ w ↔ re z ≤ re w ∧ im z = im w
   -- note we cannot put this in the `extends` clause
   [toDecidableEq : DecidableEq K]
 #align is_R_or_C RCLike
@@ -180,28 +177,12 @@ theorem ofReal_inj {z w : ℝ} : (z : K) = (w : K) ↔ z = w :=
   algebraMap.coe_inj
 #align is_R_or_C.of_real_inj RCLike.ofReal_inj
 
-set_option linter.deprecated false in
-@[deprecated, rclike_simps] -- Porting note (#10618): was `simp` but `simp` can prove it
-theorem bit0_re (z : K) : re (bit0 z) = bit0 (re z) :=
-  map_bit0 _ _
-#align is_R_or_C.bit0_re RCLike.bit0_re
-
-set_option linter.deprecated false in
-@[deprecated, simp, rclike_simps]
-theorem bit1_re (z : K) : re (bit1 z) = bit1 (re z) := by simp only [bit1, map_add, bit0_re, one_re]
-#align is_R_or_C.bit1_re RCLike.bit1_re
-
-set_option linter.deprecated false in
-@[deprecated, rclike_simps] -- Porting note (#10618): was `simp` but `simp` can prove it
-theorem bit0_im (z : K) : im (bit0 z) = bit0 (im z) :=
-  map_bit0 _ _
-#align is_R_or_C.bit0_im RCLike.bit0_im
-
-set_option linter.deprecated false in
-@[deprecated, simp, rclike_simps]
-theorem bit1_im (z : K) : im (bit1 z) = bit0 (im z) := by
-  simp only [bit1, map_add, bit0_im, one_im, add_zero]
-#align is_R_or_C.bit1_im RCLike.bit1_im
+-- replaced by `RCLike.ofNat_re`
+#noalign is_R_or_C.bit0_re
+#noalign is_R_or_C.bit1_re
+-- replaced by `RCLike.ofNat_im`
+#noalign is_R_or_C.bit0_im
+#noalign is_R_or_C.bit1_im
 
 theorem ofReal_eq_zero {x : ℝ} : (x : K) = 0 ↔ x = 0 :=
   algebraMap.lift_map_eq_zero_iff x
@@ -216,17 +197,9 @@ theorem ofReal_add (r s : ℝ) : ((r + s : ℝ) : K) = r + s :=
   algebraMap.coe_add _ _
 #align is_R_or_C.of_real_add RCLike.ofReal_add
 
-set_option linter.deprecated false in
-@[deprecated, simp, rclike_simps, norm_cast]
-theorem ofReal_bit0 (r : ℝ) : ((bit0 r : ℝ) : K) = bit0 (r : K) :=
-  ofReal_add _ _
-#align is_R_or_C.of_real_bit0 RCLike.ofReal_bit0
-
-set_option linter.deprecated false in
-@[deprecated, simp, rclike_simps, norm_cast]
-theorem ofReal_bit1 (r : ℝ) : ((bit1 r : ℝ) : K) = bit1 (r : K) :=
-  map_bit1 (algebraMap ℝ K) r
-#align is_R_or_C.of_real_bit1 RCLike.ofReal_bit1
+-- replaced by `RCLike.ofReal_ofNat`
+#noalign is_R_or_C.of_real_bit0
+#noalign is_R_or_C.of_real_bit1
 
 @[simp, norm_cast, rclike_simps]
 theorem ofReal_neg (r : ℝ) : ((-r : ℝ) : K) = -r :=
@@ -368,17 +341,15 @@ theorem conj_ofReal (r : ℝ) : conj (r : K) = (r : K) := by
   simp only [ofReal_im, conj_im, eq_self_iff_true, conj_re, and_self_iff, neg_zero]
 #align is_R_or_C.conj_of_real RCLike.conj_ofReal
 
-set_option linter.deprecated false in
-@[deprecated, rclike_simps] -- Porting note (#10618): was `simp` but `simp` can prove it
-theorem conj_bit0 (z : K) : conj (bit0 z) = bit0 (conj z) :=
-  map_bit0 _ _
-#align is_R_or_C.conj_bit0 RCLike.conj_bit0
+-- replaced by `RCLike.conj_ofNat`
+#noalign is_R_or_C.conj_bit0
+#noalign is_R_or_C.conj_bit1
 
-set_option linter.deprecated false in
-@[deprecated, rclike_simps] -- Porting note (#10618): was `simp` but `simp` can prove it
-theorem conj_bit1 (z : K) : conj (bit1 z) = bit1 (conj z) :=
-  map_bit1 _ _
-#align is_R_or_C.conj_bit1 RCLike.conj_bit1
+theorem conj_nat_cast (n : ℕ) : conj (n : K) = n := map_natCast _ _
+
+-- See note [no_index around OfNat.ofNat]
+theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (no_index (OfNat.ofNat n : K)) = OfNat.ofNat n :=
+  map_ofNat _ _
 
 @[rclike_simps] -- Porting note (#10618): was a `simp` but `simp` can prove it
 theorem conj_neg_I : conj (-I) = (I : K) := by rw [map_neg, conj_I, neg_neg]
@@ -547,7 +518,7 @@ theorem normSq_sub (z w : K) : normSq (z - w) = normSq z + normSq w - 2 * re (z 
   simp only [normSq_add, sub_eq_add_neg, map_neg, mul_neg, normSq_neg, map_neg]
 #align is_R_or_C.norm_sq_sub RCLike.normSq_sub
 
-theorem sqrt_normSq_eq_norm {z : K} : Real.sqrt (normSq z) = ‖z‖ := by
+theorem sqrt_normSq_eq_norm {z : K} : √(normSq z) = ‖z‖ := by
   rw [normSq_eq_def', Real.sqrt_sq (norm_nonneg _)]
 #align is_R_or_C.sqrt_norm_sq_eq_norm RCLike.sqrt_normSq_eq_norm
 
@@ -905,18 +876,31 @@ lemma nonpos_iff_exists_ofReal : z ≤ 0 ↔ ∃ x ≤ (0 : ℝ), x = z := by
 lemma neg_iff_exists_ofReal : z < 0 ↔ ∃ x < (0 : ℝ), x = z := by
   simp_rw [neg_iff (K := K), ext_iff (K := K)]; aesop
 
+@[simp]
+lemma ofReal_le_ofReal {x y : ℝ} : (x : K) ≤ (y : K) ↔ x ≤ y := by
+  rw [le_iff_re_im]
+  simp
+
+@[simp]
+lemma ofReal_nonneg {x : ℝ} : 0 ≤ (x : K) ↔ 0 ≤ x := by
+  rw [← ofReal_zero, ofReal_le_ofReal]
+
+@[simp]
+lemma ofReal_nonpos {x : ℝ} : (x : K) ≤ 0 ↔ x ≤ 0 := by
+  rw [← ofReal_zero, ofReal_le_ofReal]
+
 /-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℝ` and `ℂ` are star ordered rings.
 (That is, a star ring in which the nonnegative elements are those of the form `star z * z`.)
 
 Note this is only an instance with `open scoped ComplexOrder`. -/
-def toStarOrderedRing : StarOrderedRing K :=
-  StarOrderedRing.ofNonnegIff'
+lemma toStarOrderedRing : StarOrderedRing K :=
+  StarOrderedRing.of_nonneg_iff'
     (h_add := fun {x y} hxy z => by
       rw [RCLike.le_iff_re_im] at *
       simpa [map_add, add_le_add_iff_left, add_right_inj] using hxy)
     (h_nonneg_iff := fun x => by
       rw [nonneg_iff]
-      refine ⟨fun h ↦ ⟨(re x).sqrt, by simp [ext_iff (K := K), h.1, h.2]⟩, ?_⟩
+      refine ⟨fun h ↦ ⟨√(re x), by simp [ext_iff (K := K), h.1, h.2]⟩, ?_⟩
       rintro ⟨s, rfl⟩
       simp [mul_comm, mul_self_nonneg, add_nonneg])
 
@@ -1016,7 +1000,7 @@ theorem reCLM_apply : ((reCLM : K →L[ℝ] ℝ) : K → ℝ) = re :=
   rfl
 #align is_R_or_C.re_clm_apply RCLike.reCLM_apply
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_re : Continuous (re : K → ℝ) :=
   reCLM.continuous
 #align is_R_or_C.continuous_re RCLike.continuous_re
@@ -1048,7 +1032,7 @@ theorem imCLM_apply : ((imCLM : K →L[ℝ] ℝ) : K → ℝ) = im :=
   rfl
 #align is_R_or_C.im_clm_apply RCLike.imCLM_apply
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_im : Continuous (im : K → ℝ) :=
   imCLM.continuous
 #align is_R_or_C.continuous_im RCLike.continuous_im

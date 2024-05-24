@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Computability.PartrecCode
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import computability.halting from "leanprover-community/mathlib"@"a50170a88a47570ed186b809ca754110590f9476"
 
@@ -336,7 +336,7 @@ protected theorem map {n f} {g : Vector ℕ (n + 1) → ℕ} (hf : @Partrec' n f
 #align nat.partrec'.map Nat.Partrec'.map
 
 /-- Analogous to `Nat.Partrec'` for `ℕ`-valued functions, a predicate for partial recursive
-  vector-valued functions.-/
+  vector-valued functions. -/
 def Vec {n m} (f : Vector ℕ n → Vector ℕ m) :=
   ∀ i, Partrec' fun v => (f v).get i
 #align nat.partrec'.vec Nat.Partrec'.Vec
@@ -416,7 +416,7 @@ theorem part_iff₁ {f : ℕ →. ℕ} : (@Partrec' 1 fun v => f v.head) ↔ _ro
   part_iff.trans
     ⟨fun h =>
       (h.comp <| (Primrec.vector_ofFn fun _ => _root_.Primrec.id).to_comp).of_eq fun v => by
-        simp only [id.def, head_ofFn],
+        simp only [id, head_ofFn],
       fun h => h.comp vector_head⟩
 #align nat.partrec'.part_iff₁ Nat.Partrec'.part_iff₁
 

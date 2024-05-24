@@ -109,7 +109,7 @@ lemma ne_zero_of_irreducible_X_pow_sub_C' {n : ℕ} (hn : n ≠ 1) {a : K}
 
 lemma root_X_pow_sub_C_eq_zero_iff {n : ℕ} {a : K} (H : Irreducible (X ^ n - C a)) :
     (AdjoinRoot.root (X ^ n - C a)) = 0 ↔ a = 0 := by
-  have hn := (Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H))
+  have hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)
   refine ⟨not_imp_not.mp (root_X_pow_sub_C_ne_zero' hn), ?_⟩
   rintro rfl
   have := not_imp_not.mp (fun hn ↦ ne_zero_of_irreducible_X_pow_sub_C' hn H) rfl
@@ -196,7 +196,7 @@ theorem X_pow_sub_C_irreducible_of_odd
     intro E _ _ x hx
     have : IsIntegral K x := not_not.mp fun h ↦ by
       simpa only [degree_zero, degree_X_pow_sub_C hp.pos,
-        WithBot.nat_ne_bot] using congr_arg degree (hx.symm.trans (dif_neg h))
+        WithBot.natCast_ne_bot] using congr_arg degree (hx.symm.trans (dif_neg h))
     apply IH (Nat.odd_mul.mp hn).2
     intros q hq hqn b hb
     apply ha q hq (dvd_mul_of_dvd_right hqn p) (Algebra.norm _ b)
@@ -307,7 +307,7 @@ def AdjoinRootXPowSubCEquivToRootsOfUnity (σ : K[n√a] ≃ₐ[K] K[n√a]) :
     rw [div_pow, ← map_pow]
     simp only [PNat.mk_coe, root_X_pow_sub_C_pow, ← algebraMap_eq, AlgEquiv.commutes]
     rw [div_self]
-    rwa [Ne.def, map_eq_zero_iff _ (algebraMap K _).injective]))
+    rwa [Ne, map_eq_zero_iff _ (algebraMap K _).injective]))
 
 /-- The equivalence between the roots of unity of `K` and `Gal(K[ⁿ√a]/K)`. -/
 noncomputable
@@ -497,7 +497,7 @@ lemma autEquivZmod_symm_apply_intCast {ζ : K} (hζ : IsPrimitiveRoot ζ n) (m :
 
 lemma autEquivZmod_symm_apply_natCast {ζ : K} (hζ : IsPrimitiveRoot ζ n) (m : ℕ) :
     (autEquivZmod H L hζ).symm (Multiplicative.ofAdd (m : ZMod n)) α = ζ ^ m • α := by
-  simpa only [Int.cast_ofNat, zpow_natCast] using autEquivZmod_symm_apply_intCast H L hα hζ m
+  simpa only [Int.cast_natCast, zpow_natCast] using autEquivZmod_symm_apply_intCast H L hα hζ m
 
 lemma isCyclic_of_isSplittingField_X_pow_sub_C : IsCyclic (L ≃ₐ[K] L) :=
   have hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)

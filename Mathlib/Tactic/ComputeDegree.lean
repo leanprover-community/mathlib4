@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
-import Mathlib.Data.Polynomial.Degree.Lemmas
+import Mathlib.Algebra.Polynomial.Degree.Lemmas
 
 /-!
 
@@ -91,7 +91,7 @@ variable [Semiring R]
 
 theorem natDegree_C_le (a : R) : natDegree (C a) ≤ 0 := (natDegree_C a).le
 
-theorem natDegree_nat_cast_le (n : ℕ) : natDegree (n : R[X]) ≤ 0 := (natDegree_nat_cast _).le
+theorem natDegree_natCast_le (n : ℕ) : natDegree (n : R[X]) ≤ 0 := (natDegree_natCast _).le
 theorem natDegree_zero_le : natDegree (0 : R[X]) ≤ 0 := natDegree_zero.le
 theorem natDegree_one_le : natDegree (1 : R[X]) ≤ 0 := natDegree_one.le
 
@@ -173,13 +173,13 @@ end semiring
 section ring
 variable [Ring R]
 
-theorem natDegree_int_cast_le (n : ℤ) : natDegree (n : R[X]) ≤ 0 := (natDegree_int_cast _).le
+theorem natDegree_intCast_le (n : ℤ) : natDegree (n : R[X]) ≤ 0 := (natDegree_intCast _).le
 
 theorem coeff_sub_of_eq {n : ℕ} {a b : R} {f g : R[X]} (hf : f.coeff n = a) (hg : g.coeff n = b) :
     (f - g).coeff n = a - b := by subst hf hg; apply coeff_sub
 
-theorem coeff_int_cast_ite {n : ℕ} {a : ℤ} : (Int.cast a : R[X]).coeff n = ite (n = 0) a 0 := by
-  simp only [← C_eq_int_cast, coeff_C, Int.cast_ite, Int.cast_zero]
+theorem coeff_intCast_ite {n : ℕ} {a : ℤ} : (Int.cast a : R[X]).coeff n = ite (n = 0) a 0 := by
+  simp only [← C_eq_intCast, coeff_C, Int.cast_ite, Int.cast_zero]
 
 end ring
 
@@ -310,7 +310,7 @@ def dispatchLemma
       match head with
         | .inl `zero => π ``natDegree_zero_le ``degree_zero_le ``coeff_zero
         | .inl `one  => π ``natDegree_one_le ``degree_one_le ``coeff_one
-        | .inl `many => π ``natDegree_nat_cast_le ``degree_nat_cast_le ``coeff_nat_cast_ite
+        | .inl `many => π ``natDegree_natCast_le ``degree_natCast_le ``coeff_natCast_ite
         | .inl .anonymous => π ``le_rfl ``le_rfl ``rfl
         | .inr ``HAdd.hAdd =>
           π ``natDegree_add_le_of_le ``degree_add_le_of_le ``coeff_add_of_eq
@@ -325,13 +325,13 @@ def dispatchLemma
         | .inr ``Polynomial.X =>
           π ``natDegree_X_le ``degree_X_le ``coeff_X
         | .inr ``Nat.cast =>
-          π ``natDegree_nat_cast_le ``degree_nat_cast_le ``coeff_nat_cast_ite
+          π ``natDegree_natCast_le ``degree_natCast_le ``coeff_natCast_ite
         | .inr ``NatCast.natCast =>
-          π ``natDegree_nat_cast_le ``degree_nat_cast_le ``coeff_nat_cast_ite
+          π ``natDegree_natCast_le ``degree_natCast_le ``coeff_natCast_ite
         | .inr ``Int.cast =>
-          π ``natDegree_int_cast_le ``degree_int_cast_le ``coeff_int_cast_ite
+          π ``natDegree_intCast_le ``degree_intCast_le ``coeff_intCast_ite
         | .inr ``IntCast.intCast =>
-          π ``natDegree_int_cast_le ``degree_int_cast_le ``coeff_int_cast_ite
+          π ``natDegree_intCast_le ``degree_intCast_le ``coeff_intCast_ite
         | .inr ``Polynomial.monomial =>
           π ``natDegree_monomial_le ``degree_monomial_le ``coeff_monomial
         | .inr ``Polynomial.C =>

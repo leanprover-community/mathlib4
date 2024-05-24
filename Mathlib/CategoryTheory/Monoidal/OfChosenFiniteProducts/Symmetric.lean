@@ -22,7 +22,7 @@ variable {C : Type u} [Category.{v} C] {X Y : C}
 
 open CategoryTheory.Limits
 
-variable (𝒯 : LimitCone (Functor.empty.{v} C))
+variable (𝒯 : LimitCone (Functor.empty.{0} C))
 variable (ℬ : ∀ X Y : C, LimitCone (pair X Y))
 
 open MonoidalOfChosenFiniteProducts

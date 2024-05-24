@@ -3,11 +3,11 @@ Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Yury Kudryashov
 -/
-import Mathlib.Data.Nat.ModEq
-import Mathlib.Data.Set.Finite
-import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.BigOperators
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Data.Nat.ModEq
+import Mathlib.Data.Set.Finite
 
 #align_import combinatorics.pigeonhole from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
