@@ -303,7 +303,7 @@ theorem firstLemma (A : ℕ → Set (∀ n, X n)) (A_mem : ∀ n, A n ∈ cylind
 
 #check Measure.map_apply
 variable {ι : Type*} [DecidableEq ι] [∀ (I : Finset ι) i, Decidable (i ∈ I)]
-variable {α : ι → Type*} [∀ i, MeasurableSpace (α i)]
+variable {α : ι → Type*} [hα : ∀ i, MeasurableSpace (α i)]
 variable (ν : (i : ι) → Measure (α i)) [hν : ∀ i, IsProbabilityMeasure (ν i)]
 
 theorem secondLemma (A : ℕ → Set (∀ i, α i)) (A_mem : ∀ n, A n ∈ cylinders α) (A_anti : Antitone A)
@@ -319,20 +319,20 @@ theorem secondLemma (A : ℕ → Set (∀ i, α i)) (A_mem : ∀ n, A n ∈ cyli
   -- by_cases hι : Finite ι
   -- · have obv : (fun _ ↦ 1 : ((i : ι) → α i) → ℝ≥0∞) = 1 := rfl
   --   have := Fintype.ofFinite ι
-  --   have concl n : kolContent ν_proj (A n) =
-  --       (Measure.pi ν) (cylinder (s n) (S n)) := by
-  --     simp_rw [A_eq, fun n ↦ eq ν (s n) (mS n) Classical.ofNonempty]
-  --     rw [← lmarginal_eq_of_disjoint_diff (μ := ν) _ (dependsOn_cylinder_indicator (s n) (S n))
-  --       (s n).subset_univ, lmarginal_univ, ← obv,
-  --       lintegral_indicator_const (measurableSet_cylinder (s n) (S n) (mS n)) 1]
-  --     simp
-  --     · rw [Finset.coe_univ, ← compl_eq_univ_diff]
-  --       exact disjoint_compl_right
-  --     · rw [← obv, measurable_indicator_const_iff 1]
-  --       exact measurableSet_cylinder (s n) (S n) (mS n)
-  --   simp_rw [concl, ← A_eq, ← measure_empty (μ := Measure.pi ν), ← A_inter]
-  --   exact tendsto_measure_iInter (fun n ↦ A_eq n ▸ measurableSet_cylinder (s n) (S n) (mS n))
-  --     A_anti ⟨0, measure_ne_top _ _⟩
+    -- have concl n : kolContent ν_proj (A n) =
+    --     (Measure.pi ν) (cylinder (s n) (S n)) := by
+    --   simp_rw [A_eq, fun n ↦ eq ν (s n) (mS n) Classical.ofNonempty]
+    --   rw [← lmarginal_eq_of_disjoint_diff (μ := ν) _ (dependsOn_cylinder_indicator (s n) (S n))
+    --     (s n).subset_univ, lmarginal_univ, ← obv,
+    --     lintegral_indicator_const (measurableSet_cylinder (s n) (S n) (mS n)) 1]
+    --   simp
+    --   · rw [Finset.coe_univ, ← compl_eq_univ_diff]
+    --     exact disjoint_compl_right
+    --   · rw [← obv, measurable_indicator_const_iff 1]
+    --     exact measurableSet_cylinder (s n) (S n) (mS n)
+    -- simp_rw [concl, ← A_eq, ← measure_empty (μ := Measure.pi ν), ← A_inter]
+    -- exact tendsto_measure_iInter (fun n ↦ A_eq n ▸ measurableSet_cylinder (s n) (S n) (mS n))
+    --   A_anti ⟨0, measure_ne_top _ _⟩
 
   let t := ⋃ n, (s n).toSet
   -- have count_t : t.Countable := Set.countable_iUnion (fun n ↦ (s n).countable_toSet)
@@ -356,11 +356,16 @@ theorem secondLemma (A : ℕ → Set (∀ i, α i)) (A_mem : ∀ n, A n ∈ cyli
         rw [← Finset.mem_coe, ← u_eq n]
         exact ⟨i.1, i.2, rfl⟩
       exact ⟨i.1.1, this⟩
-    left_inv := by simp [Function.LeftInverse]
-    right_inv := by simp [Function.RightInverse, Function.LeftInverse]
+    left_inv := by simp only [Function.LeftInverse, Subtype.coe_eta, implies_true]
+    right_inv := by simp only [Function.RightInverse, Function.LeftInverse, Subtype.coe_eta,
+      implies_true]
   }
-  have imp n (x : (i : u n) → Set (α i)) :
-      Set.univ.pi x = (fun x i ↦ x (aux n i)) ⁻¹' Set.univ.pi (fun i : s n ↦ x (aux n i)) := by
+  -- have this n i : (aux n i).1.1 = i.1 := rfl
+  have et n (i : s n) : α (aux n i) = α i.1 := rfl
+  have imp n (x : (i : s n) → Set (α i)) :
+      Set.univ.pi (fun i : u n ↦ x ((aux n).invFun i)) =
+      (fun x i ↦ cast (et n i) (x (aux n i))) ⁻¹' Set.univ.pi x
+       := by
     ext y
     simp only [Set.mem_pi, Set.mem_univ, true_implies, Subtype.forall, Set.mem_preimage]
     constructor
@@ -369,23 +374,59 @@ theorem secondLemma (A : ℕ → Set (∀ i, α i)) (A_mem : ∀ n, A n ∈ cyli
     · intro h i hi1 hi2
       have : i ∈ s n := by simpa [u] using hi2
       convert h i this
-  have crucial n : Measure.pi (fun i : s n ↦ ν i) = Measure.map (fun x i ↦ x (aux n i))
-      (Measure.pi (fun i : u n ↦ ν i)) := by
-    apply Measure.pi_eq
-    intro x mx
+  have crucial n : Measure.pi (fun i : s n ↦ ν i) =
+      (Measure.pi (fun i : u n ↦ ν i)).map
+      (fun x i ↦ cast (et n i) (x (aux n i)))
+       := by
+    refine Measure.pi_eq (fun x mx ↦ ?_)
+    rw [Measure.map_apply, ← imp n x, Measure.pi_pi, Fintype.prod_equiv (aux n)]
+    · intro i
+      rfl
+    · simp only [cast_eq]
+      sorry
+      -- measurability
+    · apply MeasurableSet.pi
+      · exact countable_univ
+      · simp only [Set.mem_univ, mx, imp_self, implies_true]
   let T : (n : ℕ) → Set ((i : u n) → α i) :=
-    fun n ↦ (fun S : (i : (u n)) → α i ↦ (fun i ↦ S (aux n i))) ⁻¹' (S n)
+    fun n ↦ (fun x i ↦ cast (et n i) (x (aux n i))) ⁻¹' (S n)
   have mT n : MeasurableSet (T n) := by
     apply (mS n).preimage
-    measurability
-  letI B : ℕ → Set (∀ i : t, α i) := fun n ↦ cylinder (u n) (T n)
+    sorry
+    -- measurability
+  let B : ℕ → Set (∀ i : t, α i) := fun n ↦ cylinder (u n) (T n)
   let ν_proj' := isProjectiveMeasureFamily_prod (fun i : t ↦ ν i)
   have this n : kolContent ν_proj (A n) = kolContent ν_proj' (B n) := by
     simp_rw [fun n ↦ kolContent_congr ν_proj
       (by rw [mem_cylinders]; exact ⟨s n, S n, mS n, A_eq n⟩) (A_eq n) (mS n),
       fun n ↦ kolContent_congr ν_proj'
-      (by rw [mem_cylinders]; exact ⟨u n, T n, mT n, rfl⟩) rfl (mT n), T]
-
+      (by rw [mem_cylinders]; exact ⟨u n, T n, mT n, rfl⟩) rfl (mT n), T, crucial n]
+    rw [Measure.map_apply]
+    · simp only [cast_eq]
+      sorry
+      -- measurability
+    · exact mS n
+  simp_rw [this]
+  -- have : ∀ i : t, MeasurableSpace (α i) := inferInstance
+  by_cases Finite t
+  · have obv : (fun _ ↦ 1 : ((i : t) → α i) → ℝ≥0∞) = 1 := rfl
+    have := Fintype.ofFinite t
+    have concl n : kolContent ν_proj' (B n) =
+        (Measure.pi (fun i : t ↦ ν i)) (cylinder (u n) (T n)) := by
+      simp_rw [B, fun n ↦ eq (fun i : t ↦ ν i) (u n) (mT n) Classical.ofNonempty]
+      rw [← lmarginal_eq_of_disjoint_diff (μ := (fun i : t ↦ ν i)) _
+        (dependsOn_cylinder_indicator (u n) (T n))
+        (u n).subset_univ, lmarginal_univ, ← obv,
+        lintegral_indicator_const]
+      simp
+      · exact @measurableSet_cylinder t (fun i : t ↦ α i) _ (u n) (T n) (mT n)
+      · rw [Finset.coe_univ, ← compl_eq_univ_diff]
+        exact disjoint_compl_right
+      · rw [← obv, measurable_indicator_const_iff 1]
+        exact @measurableSet_cylinder t (fun i : t ↦ α i) _ (u n) (T n) (mT n)
+    simp_rw [concl, ← measure_empty (μ := Measure.pi (fun i : t ↦ ν i)), ← A_inter]
+    exact tendsto_measure_iInter (fun n ↦ A_eq n ▸ measurableSet_cylinder (s n) (S n) (mS n))
+      A_anti ⟨0, measure_ne_top _ _⟩
 
 -- theorem kolContent_sigma_subadditive ⦃f : ℕ → Set (∀ n, X n)⦄
 --     (hf : ∀ i, f i ∈ cylinders X) (hf_Union : (⋃ i, f i) ∈ cylinders X) :
