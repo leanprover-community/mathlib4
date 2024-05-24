@@ -73,7 +73,7 @@ structure Auction where
    hI: Inhabited I
    hP : ∃ i j : I , i ≠ j
    hP' :  ∀ i : I , ∃ j, i ≠  j := two_different_elements hP
-   v : I → ℝ 
+   v : I → ℝ
 
 namespace Auction
 
