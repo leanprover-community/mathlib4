@@ -225,8 +225,8 @@ theorem isBounded_insert : IsBounded (insert x s) ↔ IsBounded s :=
 
 theorem comap_cobounded_le_iff [Bornology β] {f : α → β} :
     (cobounded β).comap f ≤ cobounded α ↔ ∀ ⦃s⦄, IsBounded s → IsBounded (f '' s) := by
-  refine'
-    ⟨fun h s hs => _, fun h t ht =>
+  refine
+    ⟨fun h s hs => ?_, fun h t ht =>
       ⟨(f '' tᶜ)ᶜ, h <| IsCobounded.compl ht, compl_subset_comm.1 <| subset_preimage_image _ _⟩⟩
   obtain ⟨t, ht, hts⟩ := h hs.compl
   rw [subset_compl_comm, ← preimage_compl] at hts
