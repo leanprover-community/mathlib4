@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Analysis.NormedSpace.Dual
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
 import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
+import Mathlib.Topology.Algebra.Module.Dual
 
 #align_import measure_theory.function.ae_eq_of_integral from "leanprover-community/mathlib"@"915591b2bb3ea303648db07284a161a7f2a9e3d4"
 
@@ -44,7 +45,7 @@ Generally useful lemmas which are not related to integrals:
 -/
 
 
-open MeasureTheory TopologicalSpace NormedSpace Filter
+open MeasureTheory ContinuousLinearMap TopologicalSpace NormedSpace Filter
 
 open scoped ENNReal NNReal MeasureTheory Topology
 
