@@ -7,7 +7,7 @@ import Mathlib.Algebra.Homology.ShortComplex.ULift
 import Mathlib.Algebra.Homology.ShortComplex.ShortComplexFour
 import Mathlib.CategoryTheory.ArrowTwo
 
-universe v v'
+universe u v v'
 
 open CategoryTheory Category Limits Pretriangulated Preadditive ZeroObject
 
@@ -17,7 +17,7 @@ namespace Limits
 
 namespace CokernelCofork
 
-variable {C : Type*} [Category C] [Preadditive C]
+variable {C : Type u} [Category.{v, u} C] [Preadditive C]
 
 def nonempty_isColimit_iff_preadditiveYoneda {X Y : C} {f : X ⟶ Y} (c : CokernelCofork f) :
     Nonempty (IsColimit c) ↔ ∀ (A : C), ((ShortComplex.mk _ _ c.condition).op.map (preadditiveYoneda.obj A)).Exact ∧
@@ -41,7 +41,7 @@ end CokernelCofork
 
 namespace KernelFork
 
-variable {C : Type*} [Category C] [Preadditive C]
+variable {C : Type u} [Category.{v,u} C] [Preadditive C]
 
 def nonempty_isLimit_iff_preadditiveCoyoneda {X Y : C} {f : X ⟶ Y} (c : KernelFork f) :
     Nonempty (IsLimit c) ↔ ∀ (A : C), ((ShortComplex.mk _ _ c.condition).map (preadditiveCoyoneda.obj (Opposite.op A))).Exact ∧
@@ -66,7 +66,7 @@ end Limits
 
 namespace ShortComplex
 
-variable {C : Type*} [Category C]
+variable {C : Type u} [Category.{v, u} C]
 
 variable [Preadditive C]
 
@@ -107,7 +107,7 @@ end ShortComplex
 
 namespace Pretriangulated
 
-variable {C : Type*} [Category C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
+variable {C : Type u} [Category.{v,u} C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
 
 lemma preadditiveYoneda_map_distinguished (A : C) (T : Triangle C) (hT : T ∈ distTriang C) :
@@ -176,7 +176,7 @@ noncomputable def isEquivalenceFullSubcategoryLift (S : Set D) (hi : i.essImage 
 
 end Functor
 
-variable {C : Type*} [Category.{v} C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
+variable {C : Type u} [Category.{v, u} C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
 
 namespace Triangulated
@@ -308,6 +308,14 @@ instance : HasBinaryProducts (FullSubcategory t.heart) := by
 
 instance : HasFiniteProducts (FullSubcategory t.heart) := hasFiniteProducts_of_has_binary_and_terminal
 
+noncomputable def inclusionCreatesProducts : CreatesLimitsOfShape (Discrete WalkingPair)
+    (fullSubcategoryInclusion t.heart) := by
+  refine Limits.createsLimitsOfShapeFullSubcategoryInclusion ?_
+  intro F c hc H
+  exact mem_of_iso t.heart
+    (limit.isoLimitCone ⟨_, (IsLimit.postcomposeHomEquiv (diagramIsoPair F) _).symm hc⟩)
+    (prod_mem_heart t _ _ (H _) (H _))
+
 variable [t.HasHeart]
 
 noncomputable def heartEquivalenceFullsubcategory :
@@ -318,9 +326,21 @@ noncomputable def heartEquivalenceFullsubcategory :
     rfl)
   @Functor.asEquivalence _ _ _ _ _ this
 
+lemma ιHeartFactorization : t.ιHeart = t.heartEquivalenceFullsubcategory.functor ⋙
+    (fullSubcategoryInclusion t.heart) := by
+  simp only [heartEquivalenceFullsubcategory, Functor.asEquivalence_functor,
+    FullSubcategory.lift_comp_inclusion_eq]
+
 instance : HasFiniteProducts t.Heart where
   out _ := Adjunction.hasLimitsOfShape_of_equivalence
       t.heartEquivalenceFullsubcategory.functor
+
+noncomputable instance : CreatesLimitsOfShape (Discrete WalkingPair) t.ιHeart := by
+  rw [ιHeartFactorization]
+  letI := t.inclusionCreatesProducts
+  letI : CreatesLimitsOfSize.{v, u, v, v, u, u} t.heartEquivalenceFullsubcategory.functor
+    (C := t.Heart) (D := FullSubcategory t.heart) := inferInstance
+  exact inferInstance
 
 instance (X : C) (n : ℤ) [t.IsGE X 0] : t.IsGE (X⟦n⟧) (-n) :=
   t.isGE_shift X 0 n (-n) (by linarith)
