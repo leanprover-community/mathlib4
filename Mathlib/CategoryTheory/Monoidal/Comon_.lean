@@ -17,12 +17,9 @@ and show that they are equivalently monoid objects in the opposite category.
 
 We construct the monoidal structure on `Comon_ C`, when `C` is braided.
 
-<<<<<<< HEAD
 An oplax monoidal functor takes comonoid objects to comonoid objects.
 That is, a oplax monoidal functor `F : C ⥤ D` induces a functor `Comon_ C ⥤ Comon_ D`.
 
-=======
->>>>>>> origin/master
 ## TODO
 * Comonoid objects in `C` are "just"
   oplax monoidal functors from the trivial monoidal category to `C`.
