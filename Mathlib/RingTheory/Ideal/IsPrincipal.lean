@@ -183,7 +183,7 @@ end IsDomain
 
 end Ideal
 
-section
+section misc
 
 open Ring Set
 
@@ -296,4 +296,4 @@ theorem exists_max_ideal_of_mem_nonunits {a : R} [CommSemiring R] (h : a ∈ non
   exact Set.mem_singleton a
 #align exists_max_ideal_of_mem_nonunits exists_max_ideal_of_mem_nonunits
 
-end
+end misc
