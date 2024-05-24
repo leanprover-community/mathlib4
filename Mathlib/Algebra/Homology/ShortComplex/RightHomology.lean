@@ -978,7 +978,8 @@ lemma leftHomologyMap_op (φ : S₁ ⟶ S₂) [S₁.HasLeftHomology] [S₂.HasLe
       S₁.rightHomologyOpIso.hom := by
   dsimp [rightHomologyOpIso, RightHomologyData.rightHomologyIso, rightHomologyMap,
     leftHomologyMap]
-  simp only [← rightHomologyMap'_comp, comp_id, id_comp, leftHomologyMap'_op]
+  simp only [← rightHomologyMap'_comp, comp_id, id_comp]
+  rw [leftHomologyMap'_op]
 
 @[simp]
 lemma rightHomologyMap'_op
@@ -993,7 +994,8 @@ lemma rightHomologyMap_op (φ : S₁ ⟶ S₂) [S₁.HasRightHomology] [S₂.Has
       S₁.leftHomologyOpIso.hom := by
   dsimp [leftHomologyOpIso, LeftHomologyData.leftHomologyIso, leftHomologyMap,
     rightHomologyMap]
-  simp only [← leftHomologyMap'_comp, comp_id, id_comp, rightHomologyMap'_op]
+  simp only [← leftHomologyMap'_comp, comp_id, id_comp]
+  rw [rightHomologyMap'_op]
 
 namespace RightHomologyData
 

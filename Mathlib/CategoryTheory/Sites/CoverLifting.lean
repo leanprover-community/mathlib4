@@ -238,7 +238,7 @@ theorem helper {V} (f : V ⟶ U) (y : X ⟶ ((ran G.op).obj ℱ.val).obj (op V))
   convert limit.w (Ran.diagram G.op ℱ.val (op V)) (StructuredArrow.homMk' W fV'.op)
   rw [StructuredArrow.map_mk]
   erw [Category.comp_id]
-  simp only [Quiver.Hom.unop_op, Functor.op_map, Quiver.Hom.op_unop]
+  simp
 set_option linter.uppercaseLean3 false in
 #align category_theory.Ran_is_sheaf_of_cover_lifting.helper CategoryTheory.RanIsSheafOfIsCocontinuous.helper
 

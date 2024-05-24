@@ -1041,8 +1041,11 @@ lemma homologyMap_op [HasHomology S₁] [HasHomology S₂] :
   dsimp only [Iso.symm, Iso.trans, Iso.op, Iso.refl, rightHomologyIso, leftHomologyIso,
     leftHomologyOpIso, leftHomologyMapIso', rightHomologyMapIso',
     LeftHomologyData.leftHomologyIso, homologyMap']
-  simp only [assoc, rightHomologyMap'_op, op_comp, ← leftHomologyMap'_comp_assoc, id_comp,
-    opMap_id, comp_id, HomologyData.op_left]
+  rw [assoc, op_comp, rightHomologyMap'_op]
+  simp only [HomologyData.op_left, RightHomologyData.op_H, opMap_id, assoc, op_comp, ←
+    leftHomologyMap'_comp_assoc, comp_id, id_comp]
+  rw [rightHomologyMap'_op]
+  simp only [opMap_id, ← leftHomologyMap'_comp_assoc, RightHomologyData.op_H, comp_id]
 
 variable (C)
 

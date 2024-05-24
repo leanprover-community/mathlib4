@@ -44,7 +44,7 @@ theorem Quiver.Hom.unop_inj {X Y : Cᵒᵖ} :
   fun _ _ H => congr_arg Quiver.Hom.op H
 #align quiver.hom.unop_inj Quiver.Hom.unop_inj
 
-@[simp]
+@[simp, nolint simpVarHead]
 theorem Quiver.Hom.unop_op {X Y : C} (f : X ⟶ Y) : f.op.unop = f :=
   rfl
 #align quiver.hom.unop_op Quiver.Hom.unop_op
