@@ -939,15 +939,14 @@ theorem lintegral_pos_iff_support {f : α → ℝ≥0∞} (hf : Measurable f) :
 #align measure_theory.lintegral_pos_iff_support MeasureTheory.lintegral_pos_iff_support
 
 theorem lintegral_positive {C : Set α} (hmC : MeasurableSet C)
-  (h_nonneg : 0 < μ C) {h : α → ℝ≥0∞} (h_neq : ∀ x ∈ C, h x ≠ 0) (hm : Measurable h)
-    : 0 < ∫⁻ x in C, h x ∂μ := by
+    (h_nonneg : 0 < μ C) {h : α → ℝ≥0∞} (h_neq : ∀ x ∈ C, h x ≠ 0) (hm : Measurable h) :
+    0 < ∫⁻ x in C, h x ∂μ := by
   rw [show ∫⁻ x in C, h x ∂μ = ∫⁻ x, h x ∂μ.restrict C by rfl]
-  have restrict_measure_support :
-    μ.restrict C (Function.support h) = μ (Function.support h ∩ C) :=
-      Measure.restrict_apply' hmC
+  have restrict_measure_support : μ.restrict C (Function.support h) = μ (Function.support h ∩ C) :=
+    Measure.restrict_apply' hmC
   have inter_eq_C : Function.support h ∩ C = C := Set.inter_eq_self_of_subset_right h_neq
   rw [congrArg (↑↑μ) inter_eq_C] at restrict_measure_support
-  rw [←restrict_measure_support] at h_nonneg
+  rw [← restrict_measure_support] at h_nonneg
   rw [lintegral_pos_iff_support hm]
   exact h_nonneg
 
@@ -1033,9 +1032,9 @@ theorem set_lintegral_strict_mono {f g : α → ℝ≥0∞} {s : Set α} (hsm : 
 every subsets, then
 `f =ᵐ[μ] g ↔ ∀ ⦃s⦄, MeasurableSet s → ∫⁻ x in s, f x ∂μ = ∫⁻ x in s, g x ∂μ` -/
 theorem set_lintegral_eq_iff_ae_eq {f g : α → ℝ≥0∞} (hf : Measurable f) (hg : Measurable g)
-  (hf_fin : ∀ s, ∫⁻ x in s, f x ∂μ ≠ ∞) (hg_fin : ∀ s, ∫⁻ x in s, g x ∂μ ≠ ∞)
-  (hf_neq_top : ∀ x, f x ≠ ⊤) (hg_neq_top : ∀ x, g x ≠ ⊤)
-  : (∀ ⦃s⦄, MeasurableSet s → ∫⁻ x in s, f x ∂μ = ∫⁻ x in s, g x ∂μ) ↔ f =ᵐ[μ] g := by
+    (hf_fin : ∀ s, ∫⁻ x in s, f x ∂μ ≠ ∞) (hg_fin : ∀ s, ∫⁻ x in s, g x ∂μ ≠ ∞)
+    (hf_neq_top : ∀ x, f x ≠ ⊤) (hg_neq_top : ∀ x, g x ≠ ⊤) :
+    (∀ ⦃s⦄, MeasurableSet s → ∫⁻ x in s, f x ∂μ = ∫⁻ x in s, g x ∂μ) ↔ f =ᵐ[μ] g := by
   constructor
   · intro h
     let A := {x | f x < g x}
@@ -1074,14 +1073,16 @@ theorem set_lintegral_eq_iff_ae_eq {f g : α → ℝ≥0∞} (hf : Measurable f)
     have m_union_eq_0 : μ (A ∪ B) = 0 := by {
       have mA_eq_0 : μ A = 0 := by {
         by_contra m_pos; push_neg at m_pos
-        have lt_integral : ∫⁻ x in A, f x ∂μ < ∫⁻ x in A, g x ∂μ := set_lintegral_strict_mono hmA m_pos hg (hf_fin A) (ae_of_all μ (λ x hx ↦ hx))
+        have lt_integral : ∫⁻ x in A, f x ∂μ < ∫⁻ x in A, g x ∂μ :=
+          set_lintegral_strict_mono hmA m_pos hg (hf_fin A) (ae_of_all μ (λ x hx ↦ hx))
         rw [h hmA] at lt_integral
         have := toReal_strict_mono (hg_fin A) lt_integral
         linarith
       }
       have mB_eq_0 : μ B = 0 := by {
         by_contra m_pos; push_neg at m_pos
-        have lt_integral : ∫⁻ x in B, g x ∂μ < ∫⁻ x in B, f x ∂μ := set_lintegral_strict_mono hmB m_pos hf (hg_fin B) (ae_of_all μ (λ x hx ↦ hx))
+        have lt_integral : ∫⁻ x in B, g x ∂μ < ∫⁻ x in B, f x ∂μ :=
+          set_lintegral_strict_mono hmB m_pos hf (hg_fin B) (ae_of_all μ (λ x hx ↦ hx))
         rw [h hmB] at lt_integral
         have := toReal_strict_mono (hg_fin B) lt_integral
         linarith

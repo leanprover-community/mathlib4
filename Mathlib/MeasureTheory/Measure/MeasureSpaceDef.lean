@@ -569,7 +569,7 @@ theorem measure_mono_null_ae (H : s ≤ᵐ[μ] t) (ht : μ t = 0) : μ s = 0 :=
 /-- Two functions are almost everywhere equal on their entire domain iff they are
 a.e equal on every subsets of their domain. -/
 theorem fun_ae_imp_set_ae {f g : α → β} :
-  f =ᵐ[μ] g ↔ ∀ (s : Set α), ∀ᵐ x ∂ μ, x ∈ s → f x = g x :=
+    f =ᵐ[μ] g ↔ ∀ (s : Set α), ∀ᵐ x ∂ μ, x ∈ s → f x = g x :=
   Iff.intro
     (fun h s ↦ Eventually.mono h fun x a _ ↦ a)
     (fun h ↦ by
