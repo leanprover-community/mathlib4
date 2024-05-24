@@ -223,7 +223,7 @@ protected lemma abs : HaveSameParity₄ |a| |b| |c| |d| := by
 lemma perm (σ : Perm (Fin 4)) :
     ∀ t : Fin 4 → ℤ, HaveSameParity₄ (t 0) (t 1) (t 2) (t 3) →
       HaveSameParity₄ (t (σ 0)) (t (σ 1)) (t (σ 2)) (t (σ 3)) := by
-  have := (Perm.mclosure_isSwap_castSucc_succ 3).symm ▸ Submonoid.mem_top σ
+  have := (Perm.mclosure_swap_castSucc_succ 3).symm ▸ Submonoid.mem_top σ
   refine Submonoid.closure_induction this ?_ (fun _ ↦ id) fun σ τ hσ hτ t same ↦ ?_
   on_goal 2 => simp_rw [Perm.mul_apply]; exact hτ (t ∘ σ) (hσ _ same)
   rintro _ ⟨i, rfl⟩ t ⟨h₀₁, h₁₂, h₂₃⟩; fin_cases i
@@ -485,7 +485,7 @@ def relFin4 (t : Fin 4 → ℤ) : R := rel₄ W (t 0) (t 1) (t 2) (t 3)
 
 /-- `rel₄` is invariant (up to sign) under permutation of the four indices. -/
 theorem relFin4_perm (σ : Perm (Fin 4)) : ∀ t, relFin4 W (t ∘ σ) = Perm.sign σ • relFin4 W t := by
-  have := (Perm.mclosure_isSwap_castSucc_succ 3).symm ▸ Submonoid.mem_top σ
+  have := (Perm.mclosure_swap_castSucc_succ 3).symm ▸ Submonoid.mem_top σ
   refine Submonoid.closure_induction this ?_ (by simp) fun σ τ hσ hτ t ↦ ?_
   · rintro _ ⟨i, rfl⟩ t; fin_cases i <;>
       rw [Perm.sign_swap (Fin.castSucc_lt_succ _).ne, Units.neg_smul, one_smul]
