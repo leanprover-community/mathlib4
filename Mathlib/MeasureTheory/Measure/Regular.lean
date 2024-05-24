@@ -3,7 +3,8 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris Van Doorn, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+import Mathlib.Topology.MetricSpace.HausdorffDistance
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 
 #align_import measure_theory.measure.regular from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
 
@@ -376,7 +377,7 @@ theorem _root_.MeasurableSet.exists_isOpen_diff_lt [OuterRegular μ] {A : Set α
 protected theorem map [OpensMeasurableSpace α] [MeasurableSpace β] [TopologicalSpace β]
     [BorelSpace β] (f : α ≃ₜ β) (μ : Measure α) [OuterRegular μ] :
     (Measure.map f μ).OuterRegular := by
-  refine' ⟨fun A hA r hr => _⟩
+  refine ⟨fun A hA r hr => ?_⟩
   rw [map_apply f.measurable hA, ← f.image_symm] at hr
   rcases Set.exists_isOpen_lt_of_lt _ r hr with ⟨U, hAU, hUo, hU⟩
   have : IsOpen (f.symm ⁻¹' U) := hUo.preimage f.symm.continuous
@@ -403,7 +404,7 @@ outer regular, then the measure itself is outer regular. -/
 lemma of_restrict [OpensMeasurableSpace α] {μ : Measure α} {s : ℕ → Set α}
     (h : ∀ n, OuterRegular (μ.restrict (s n))) (h' : ∀ n, IsOpen (s n)) (h'' : univ ⊆ ⋃ n, s n) :
     OuterRegular μ := by
-  refine' ⟨fun A hA r hr => _⟩
+  refine ⟨fun A hA r hr => ?_⟩
   have HA : μ A < ∞ := lt_of_lt_of_le hr le_top
   have hm : ∀ n, MeasurableSet (s n) := fun n => (h' n).measurableSet
   -- Note that `A = ⋃ n, A ∩ disjointed s n`. We replace `A` with this sequence.
@@ -499,7 +500,7 @@ theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [IsFiniteMeasu
         innerRegular := H }
     rcases exists_between hr with ⟨r', hsr', hr'r⟩
     rcases this s hs _ (tsub_pos_iff_lt.2 hsr').ne' with ⟨-, -, U, hsU, -, hUo, -, H⟩
-    refine' ⟨U, hsU, hUo, _⟩
+    refine ⟨U, hsU, hUo, ?_⟩
     rw [add_tsub_cancel_of_le hsr'.le] at H
     exact H.trans_lt hr'r
   refine' MeasurableSet.induction_on_open _ _ _
@@ -731,10 +732,8 @@ theorem _root_.MeasurableSet.exists_isCompact_diff_lt [OpensMeasurableSpace α] 
     {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ K, K ⊆ A ∧ IsCompact K ∧ μ (A \ K) < ε := by
   rcases hA.exists_isCompact_lt_add h'A hε with ⟨K, hKA, hKc, hK⟩
-  exact
-    ⟨K, hKA, hKc,
-      measure_diff_lt_of_lt_add hKc.measurableSet hKA (ne_top_of_le_ne_top h'A <| measure_mono hKA)
-        hK⟩
+  exact ⟨K, hKA, hKc, measure_diff_lt_of_lt_add hKc.measurableSet hKA
+    (ne_top_of_le_ne_top h'A <| measure_mono hKA) hK⟩
 #align measurable_set.exists_is_compact_diff_lt MeasurableSet.exists_isCompact_diff_lt
 
 /-- If `μ` is inner regular for finite measure sets with respect to compact sets,
@@ -879,10 +878,8 @@ theorem _root_.MeasurableSet.exists_isClosed_diff_lt [OpensMeasurableSpace α] [
     ⦃A : Set α⦄ (hA : MeasurableSet A) (h'A : μ A ≠ ∞) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ F, F ⊆ A ∧ IsClosed F ∧ μ (A \ F) < ε := by
   rcases hA.exists_isClosed_lt_add h'A hε with ⟨F, hFA, hFc, hF⟩
-  exact
-    ⟨F, hFA, hFc,
-      measure_diff_lt_of_lt_add hFc.measurableSet hFA (ne_top_of_le_ne_top h'A <| measure_mono hFA)
-        hF⟩
+  exact ⟨F, hFA, hFc, measure_diff_lt_of_lt_add hFc.measurableSet hFA
+    (ne_top_of_le_ne_top h'A <| measure_mono hFA) hF⟩
 #align measurable_set.exists_is_closed_diff_lt MeasurableSet.exists_isClosed_diff_lt
 
 /-- Given a weakly regular measure, any measurable set of finite mass can be approximated from
@@ -928,7 +925,7 @@ instance (priority := 100) of_pseudoMetrizableSpace_secondCountable_of_locallyFi
     [TopologicalSpace X] [PseudoMetrizableSpace X] [SecondCountableTopology X] [MeasurableSpace X]
     [BorelSpace X] (μ : Measure X) [IsLocallyFiniteMeasure μ] : WeaklyRegular μ :=
   have : OuterRegular μ := by
-    refine' (μ.finiteSpanningSetsInOpen'.mono' fun U hU => _).outerRegular
+    refine (μ.finiteSpanningSetsInOpen'.mono' fun U hU => ?_).outerRegular
     have : Fact (μ U < ∞) := ⟨hU.2⟩
     exact ⟨hU.1, inferInstance⟩
   ⟨InnerRegularWRT.of_pseudoMetrizableSpace μ⟩

@@ -328,7 +328,7 @@ theorem shadow_compression_subset_compression_shadow (u v : Finset α)
     swap
     · obtain ⟨hus, hvs, h, _⟩ := H _ hs' hs
       exact Or.inr ⟨hs, _, h, compress_of_disjoint_of_le' hvs hus⟩
-    refine' Or.inl ⟨hs, _⟩
+    refine Or.inl ⟨hs, ?_⟩
     rw [compress]
     split_ifs with huvs
     swap

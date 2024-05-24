@@ -206,14 +206,10 @@ initialize_simps_projections OplaxFunctor (+toPrelaxFunctor, -obj, -map, -map₂
 
 namespace OplaxFunctor
 
-/- Porting note: removed primes from field names and remove `restate_axiom` since
-that is no longer needed in Lean 4 -/
-
 -- Porting note: more stuff was tagged `simp` here in lean 3 but `reassoc (attr := simp)`
 -- is doing this job a couple of lines below this.
 attribute [simp] map₂_id
 
--- Porting note: was auto-ported as `attribute [reassoc.1]` for some reason
 attribute [reassoc (attr := simp)]
   mapComp_naturality_left mapComp_naturality_right map₂_associator
 
@@ -257,8 +253,7 @@ variable (F : OplaxFunctor B C)
 
 /-- Function between 1-morphisms as a functor. -/
 @[simps]
-def mapFunctor (a b : B) : (a ⟶ b) ⥤ (F.obj a ⟶ F.obj b)
-    where
+def mapFunctor (a b : B) : (a ⟶ b) ⥤ (F.obj a ⟶ F.obj b) where
   obj f := F.map f
   map η := F.map₂ η
 #align category_theory.oplax_functor.map_functor CategoryTheory.OplaxFunctor.mapFunctor
@@ -396,7 +391,6 @@ initialize_simps_projections Pseudofunctor (+toPrelaxFunctor, -obj, -map, -map�
 
 namespace Pseudofunctor
 
--- Porting note: was `[reassoc.1]` for some reason?
 attribute [reassoc]
   map₂_comp map₂_whisker_left map₂_whisker_right map₂_associator map₂_left_unitor map₂_right_unitor
 

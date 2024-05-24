@@ -166,11 +166,19 @@ theorem toMeasure_comp_toFiniteMeasure_eq_toMeasure (ν : ProbabilityMeasure Ω)
   rfl
 #align measure_theory.probability_measure.coe_comp_to_finite_measure_eq_coe MeasureTheory.ProbabilityMeasure.toMeasure_comp_toFiniteMeasure_eq_toMeasure
 
-@[simp]
+-- This theorem should not be a simp lemma for performance reasons:
+-- this elaborates as `(fun s ↦ (↑ν.toFiniteMeasure s).toNNReal) = fun s ↦ (↑ν s).toNNReal`,
+-- in which both sides are lambdas. This means that they are not indexed by a symbol in the `simp`
+-- discrimination tree, and this lemma would be tried on every single goal,
+-- causing a serious performance hit.
 theorem coeFn_comp_toFiniteMeasure_eq_coeFn (ν : ProbabilityMeasure Ω) :
     (ν.toFiniteMeasure : Set Ω → ℝ≥0) = (ν : Set Ω → ℝ≥0) :=
   rfl
 #align measure_theory.probability_measure.coe_fn_comp_to_finite_measure_eq_coe_fn MeasureTheory.ProbabilityMeasure.coeFn_comp_toFiniteMeasure_eq_coeFn
+
+@[simp]
+theorem toFiniteMeasure_apply_eq_apply (ν : ProbabilityMeasure Ω) (s : Set Ω) :
+    ν.toFiniteMeasure s = ν s := rfl
 
 @[simp]
 theorem ennreal_coeFn_eq_coeFn_toMeasure (ν : ProbabilityMeasure Ω) (s : Set Ω) :
@@ -350,7 +358,7 @@ def normalize : ProbabilityMeasure Ω :=
   else
     { val := ↑(μ.mass⁻¹ • μ)
       property := by
-        refine' ⟨_⟩
+        refine ⟨?_⟩
         -- Porting note: paying the price that this isn't `simp` lemma now.
         rw [FiniteMeasure.toMeasure_smul]
         simp only [Measure.coe_smul, Pi.smul_apply, Measure.nnreal_smul_coe_apply, ne_eq,
