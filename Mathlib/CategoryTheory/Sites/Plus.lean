@@ -178,7 +178,7 @@ theorem plusMap_zero [Preadditive D] (P Q : Cᵒᵖ ⥤ D) : J.plusMap (0 : P �
   erw [comp_zero, colimit.ι_map, J.diagramNatTrans_zero, zero_comp]
 #align category_theory.grothendieck_topology.plus_map_zero CategoryTheory.GrothendieckTopology.plusMap_zero
 
-@[simp]
+@[simp, reassoc]
 theorem plusMap_comp {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q ⟶ R) :
     J.plusMap (η ≫ γ) = J.plusMap η ≫ J.plusMap γ := by
   ext : 2
