@@ -31,9 +31,6 @@ See `CategoryTheory.Monoidal.NaturalTransformation` for monoidal natural transfo
 We show in `CategoryTheory.Monoidal.Mon_` that lax monoidal functors take monoid objects
 to monoid objects.
 
-## Future work
-* Oplax monoidal functors.
-
 ## References
 
 See <https://stacks.math.columbia.edu/tag/0FFL>.
@@ -193,37 +190,37 @@ theorem LaxMonoidalFunctor.associativity_inv (F : LaxMonoidalFunctor C D) (X Y Z
 end
 
 /-- A oplax monoidal functor is a functor `F : C ⥤ D` between monoidal categories,
-equipped with morphisms `ε : F.obj (𝟙_ C) ⟶ 𝟙 _D` and `μ X Y : F.obj (X ⊗ Y) ⟶ F.obj X ⊗ F.obj Y`,
+equipped with morphisms `η : F.obj (𝟙_ C) ⟶ 𝟙 _D` and `δ X Y : F.obj (X ⊗ Y) ⟶ F.obj X ⊗ F.obj Y`,
 satisfying the appropriate coherences. -/
 structure OplaxMonoidalFunctor extends C ⥤ D where
-  /-- unit morphism -/
-  ε : obj (𝟙_ C) ⟶ 𝟙_ D
-  /-- tensorator -/
-  μ : ∀ X Y : C, obj (X ⊗ Y) ⟶ obj X ⊗ obj Y
-  μ_natural_left :
+  /-- counit morphism -/
+  η : obj (𝟙_ C) ⟶ 𝟙_ D
+  /-- cotensorator -/
+  δ : ∀ X Y : C, obj (X ⊗ Y) ⟶ obj X ⊗ obj Y
+  δ_natural_left :
     ∀ {X Y : C} (f : X ⟶ Y) (X' : C),
-      μ X X' ≫ map f ▷ obj X' = map (f ▷ X') ≫ μ Y X' := by
+      δ X X' ≫ map f ▷ obj X' = map (f ▷ X') ≫ δ Y X' := by
     aesop_cat
-  μ_natural_right :
+  δ_natural_right :
     ∀ {X Y : C} (X' : C) (f : X ⟶ Y) ,
-      μ X' X ≫ obj X' ◁ map f = map (X' ◁ f) ≫ μ X' Y := by
+      δ X' X ≫ obj X' ◁ map f = map (X' ◁ f) ≫ δ X' Y := by
     aesop_cat
   /-- associativity of the tensorator -/
   associativity :
     ∀ X Y Z : C,
-      μ (X ⊗ Y) Z ≫ μ X Y ▷ obj Z ≫ (α_ (obj X) (obj Y) (obj Z)).hom =
-        map (α_ X Y Z).hom ≫ μ X (Y ⊗ Z) ≫ obj X ◁ μ Y Z := by
+      δ (X ⊗ Y) Z ≫ δ X Y ▷ obj Z ≫ (α_ (obj X) (obj Y) (obj Z)).hom =
+        map (α_ X Y Z).hom ≫ δ X (Y ⊗ Z) ≫ obj X ◁ δ Y Z := by
     aesop_cat
   -- unitality
-  left_unitality : ∀ X : C, (λ_ (obj X)).inv = map (λ_ X).inv ≫ μ (𝟙_ C) X ≫ ε ▷ obj X :=
+  left_unitality : ∀ X : C, (λ_ (obj X)).inv = map (λ_ X).inv ≫ δ (𝟙_ C) X ≫ η ▷ obj X :=
     by aesop_cat
-  right_unitality : ∀ X : C, (ρ_ (obj X)).inv = map (ρ_ X).inv ≫ μ X (𝟙_ C) ≫ obj X ◁ ε :=
+  right_unitality : ∀ X : C, (ρ_ (obj X)).inv = map (ρ_ X).inv ≫ δ X (𝟙_ C) ≫ obj X ◁ η :=
     by aesop_cat
 
 initialize_simps_projections OplaxMonoidalFunctor (+toFunctor, -obj, -map)
 
-attribute [reassoc (attr := simp)] OplaxMonoidalFunctor.μ_natural_left
-attribute [reassoc (attr := simp)] OplaxMonoidalFunctor.μ_natural_right
+attribute [reassoc (attr := simp)] OplaxMonoidalFunctor.δ_natural_left
+attribute [reassoc (attr := simp)] OplaxMonoidalFunctor.δ_natural_right
 
 attribute [simp] OplaxMonoidalFunctor.left_unitality
 
@@ -236,27 +233,27 @@ section
 variable {C D}
 
 @[reassoc (attr := simp)]
-theorem OplaxMonoidalFunctor.μ_natural (F : OplaxMonoidalFunctor C D) {X Y X' Y' : C}
+theorem OplaxMonoidalFunctor.δ_natural (F : OplaxMonoidalFunctor C D) {X Y X' Y' : C}
     (f : X ⟶ Y) (g : X' ⟶ Y') :
-      F.μ X X' ≫ (F.map f ⊗ F.map g) = F.map (f ⊗ g) ≫ F.μ Y Y' := by
+      F.δ X X' ≫ (F.map f ⊗ F.map g) = F.map (f ⊗ g) ≫ F.δ Y Y' := by
   simp [tensorHom_def]
 
 @[reassoc (attr := simp)]
 theorem OplaxMonoidalFunctor.left_unitality_hom (F : OplaxMonoidalFunctor C D) (X : C) :
-    F.μ (𝟙_ C) X ≫ F.ε ▷ F.obj X ≫ (λ_ (F.obj X)).hom = F.map (λ_ X).hom := by
+    F.δ (𝟙_ C) X ≫ F.η ▷ F.obj X ≫ (λ_ (F.obj X)).hom = F.map (λ_ X).hom := by
   rw [← Category.assoc, ← Iso.eq_comp_inv, F.left_unitality, ← Category.assoc,
     ← F.toFunctor.map_comp, Iso.hom_inv_id, F.toFunctor.map_id, id_comp]
 
 @[reassoc (attr := simp)]
 theorem OplaxMonoidalFunctor.right_unitality_hom (F : OplaxMonoidalFunctor C D) (X : C) :
-    F.μ X (𝟙_ C) ≫ F.obj X ◁ F.ε ≫ (ρ_ (F.obj X)).hom = F.map (ρ_ X).hom := by
+    F.δ X (𝟙_ C) ≫ F.obj X ◁ F.η ≫ (ρ_ (F.obj X)).hom = F.map (ρ_ X).hom := by
   rw [← Category.assoc, ← Iso.eq_comp_inv, F.right_unitality, ← Category.assoc,
     ← F.toFunctor.map_comp, Iso.hom_inv_id, F.toFunctor.map_id, id_comp]
 
 @[reassoc (attr := simp)]
 theorem OplaxMonoidalFunctor.associativity_inv (F : OplaxMonoidalFunctor C D) (X Y Z : C) :
-    F.μ X (Y ⊗ Z) ≫ F.obj X ◁ F.μ Y Z ≫ (α_ (F.obj X) (F.obj Y) (F.obj Z)).inv =
-      F.map (α_ X Y Z).inv ≫ F.μ (X ⊗ Y) Z ≫ F.μ X Y ▷ F.obj Z := by
+    F.δ X (Y ⊗ Z) ≫ F.obj X ◁ F.δ Y Z ≫ (α_ (F.obj X) (F.obj Y) (F.obj Z)).inv =
+      F.map (α_ X Y Z).inv ≫ F.δ (X ⊗ Y) Z ≫ F.δ X Y ▷ F.obj Z := by
   rw [← Category.assoc, Iso.comp_inv_eq, Category.assoc, Category.assoc, F.associativity,
     ← Category.assoc, ← F.toFunctor.map_comp, Iso.inv_hom_id, F.toFunctor.map_id, id_comp]
 
@@ -297,10 +294,10 @@ noncomputable def MonoidalFunctor.μIso (F : MonoidalFunctor.{v₁, v₂} C D) (
 noncomputable def MonoidalFunctor.toOplaxMonoidalFunctor (F : MonoidalFunctor C D) :
     OplaxMonoidalFunctor C D :=
   { F with
-    ε := inv F.ε,
-    μ := fun X Y => inv (F.μ X Y),
-    μ_natural_left := by aesop_cat
-    μ_natural_right := by aesop_cat
+    η := inv F.ε,
+    δ := fun X Y => inv (F.μ X Y),
+    δ_natural_left := by aesop_cat
+    δ_natural_right := by aesop_cat
     associativity := by
       intros X Y Z
       dsimp
@@ -354,8 +351,8 @@ variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 @[simps]
 def id : OplaxMonoidalFunctor.{v₁, v₁} C C :=
   { 𝟭 C with
-    ε := 𝟙 _
-    μ := fun X Y => 𝟙 _ }
+    η := 𝟙 _
+    δ := fun X Y => 𝟙 _ }
 
 instance : Inhabited (OplaxMonoidalFunctor C C) :=
   ⟨id C⟩
@@ -523,20 +520,20 @@ variable (F : OplaxMonoidalFunctor.{v₁, v₂} C D) (G : OplaxMonoidalFunctor.{
 @[simps]
 def comp : OplaxMonoidalFunctor.{v₁, v₃} C E :=
   { F.toFunctor ⋙ G.toFunctor with
-    ε := G.map F.ε ≫ G.ε
-    μ := fun X Y => G.map (F.μ X Y) ≫ G.μ (F.obj X) (F.obj Y)
-    μ_natural_left := by
+    η := G.map F.η ≫ G.η
+    δ := fun X Y => G.map (F.δ X Y) ≫ G.δ (F.obj X) (F.obj Y)
+    δ_natural_left := by
       intro X Y f X'
-      simp_rw [comp_obj, Functor.comp_map, ← G.map_comp_assoc, ← F.μ_natural_left, assoc,
-        G.μ_natural_left, ← G.map_comp_assoc]
-    μ_natural_right := by
+      simp_rw [comp_obj, Functor.comp_map, ← G.map_comp_assoc, ← F.δ_natural_left, assoc,
+        G.δ_natural_left, ← G.map_comp_assoc]
+    δ_natural_right := by
       intro X Y f X'
-      simp_rw [comp_obj, Functor.comp_map, ← G.map_comp_assoc, ← F.μ_natural_right, assoc,
-        G.μ_natural_right, ← G.map_comp_assoc]
+      simp_rw [comp_obj, Functor.comp_map, ← G.map_comp_assoc, ← F.δ_natural_right, assoc,
+        G.δ_natural_right, ← G.map_comp_assoc]
     associativity := fun X Y Z => by
       dsimp
-      simp_rw [comp_whiskerRight, assoc, μ_natural_left_assoc, MonoidalCategory.whiskerLeft_comp,
-        μ_natural_right_assoc]
+      simp_rw [comp_whiskerRight, assoc, δ_natural_left_assoc, MonoidalCategory.whiskerLeft_comp,
+        δ_natural_right_assoc]
       slice_rhs 1 3 =>
         simp only [← G.toFunctor.map_comp]
         rw [← F.associativity]
