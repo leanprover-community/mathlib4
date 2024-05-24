@@ -938,6 +938,19 @@ theorem lintegral_pos_iff_support {f : α → ℝ≥0∞} (hf : Measurable f) :
   simp [pos_iff_ne_zero, hf, Filter.EventuallyEq, ae_iff, Function.support]
 #align measure_theory.lintegral_pos_iff_support MeasureTheory.lintegral_pos_iff_support
 
+theorem positive_lintegral {C : Set α} (hmC : MeasurableSet C)
+  (h_nonneg : 0 < μ C) {h : α → ℝ≥0∞} (h_neq : ∀ x ∈ C, h x ≠ 0) (hm : Measurable h)
+    : 0 < ∫⁻ x in C, h x ∂μ := by
+  rw [show ∫⁻ x in C, h x ∂μ = ∫⁻ x, h x ∂μ.restrict C by rfl]
+  have restrict_measure_support :
+    μ.restrict C (Function.support h) = μ (Function.support h ∩ C) :=
+      Measure.restrict_apply' hmC
+  have inter_eq_C : Function.support h ∩ C = C := Set.inter_eq_self_of_subset_right h_neq
+  rw [congrArg (↑↑μ) inter_eq_C] at restrict_measure_support
+  rw [←restrict_measure_support] at h_nonneg
+  rw [lintegral_pos_iff_support hm]
+  exact h_nonneg
+
 /-- Weaker version of the monotone convergence theorem-/
 theorem lintegral_iSup_ae {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (f n))
     (h_mono : ∀ n, ∀ᵐ a ∂μ, f n a ≤ f n.succ a) : ∫⁻ a, ⨆ n, f n a ∂μ = ⨆ n, ∫⁻ a, f n a ∂μ := by
