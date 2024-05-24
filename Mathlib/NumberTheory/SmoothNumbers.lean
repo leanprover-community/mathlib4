@@ -265,7 +265,7 @@ lemma mem_smoothNumbers_iff_forall_le {n m : ℕ} :
 lemma mem_smoothNumbers' {n m : ℕ} : m ∈ smoothNumbers n ↔ ∀ p, p.Prime → p ∣ m → p < n := by
   simp only [smoothNumbers_eq_factoredNumbers, mem_factoredNumbers', Finset.mem_range]
 
-/-- The prime factors of `m > 1` are contained in the set of primes below `n`
+/-- The prime factors of an `n'-smooth number are contained in the set of primes below `n`
   if `m` is a `n`-smooth number -/
 lemma primeFactors_subset_of_mem_smoothNumbers {m n : ℕ} (hms : m ∈ n.smoothNumbers) :
     m.primeFactors ⊆ n.primesBelow :=
