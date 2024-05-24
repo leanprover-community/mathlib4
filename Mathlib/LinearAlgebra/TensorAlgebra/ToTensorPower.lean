@@ -127,8 +127,8 @@ theorem mk_reindex_cast {n m : ℕ} (h : n = m) (x : ⨂[R]^n M) :
 @[simp]
 theorem mk_reindex_fin_cast {n m : ℕ} (h : n = m) (x : ⨂[R]^n M) :
     GradedMonoid.mk (A := fun i => (⨂[R]^i) M) m
-    (PiTensorProduct.reindex R (fun _ ↦ M) (Fin.castIso h).toEquiv x) = GradedMonoid.mk n x := by
-  rw [Fin.castIso_to_equiv, mk_reindex_cast h]
+    (PiTensorProduct.reindex R (fun _ ↦ M) (finCongr h) x) = GradedMonoid.mk n x := by
+  rw [finCongr_eq_equivCast, mk_reindex_cast h]
 #align tensor_algebra.mk_reindex_fin_cast TensorAlgebra.mk_reindex_fin_cast
 
 /-- The product of tensor products made of a single vector is the same as a single product of

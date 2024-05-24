@@ -173,7 +173,7 @@ theorem mem_def : x ∈ s ↔ x ∈ Set.range s := Iff.rfl
 theorem subsingleton_of_length_eq_zero (hs : s.length = 0) : {x | x ∈ s}.Subsingleton := by
   rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩
   congr!
-  exact Fin.castIso (by rw [hs, zero_add]) |>.injective <| Subsingleton.elim (α := Fin 1) _ _
+  exact finCongr (by rw [hs, zero_add]) |>.injective <| Subsingleton.elim (α := Fin 1) _ _
 
 theorem length_ne_zero_of_nontrivial (h : {x | x ∈ s}.Nontrivial) : s.length ≠ 0 :=
   fun hs ↦ h.not_subsingleton $ subsingleton_of_length_eq_zero hs

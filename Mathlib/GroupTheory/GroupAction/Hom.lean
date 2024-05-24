@@ -5,8 +5,8 @@ Authors: Kenny Lau, Antoine Chambert-Loir
 
 -/
 
-import Mathlib.Algebra.GroupRingAction.Basic
 import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Ring.Action.Basic
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Group.Hom.CompTypeclasses
 
