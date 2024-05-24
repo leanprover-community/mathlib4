@@ -639,7 +639,7 @@ theorem exists_fundamental_sequence (a : Ordinal.{u}) :
       rw [bfamilyOfFamily'_typein]
     · push_neg at h
       cases' wo.wf.min_mem _ h with hji hij
-      refine ⟨typein r' ⟨_, fun k hkj => lt_of_lt_of_le ?_ hij⟩, typein_lt_type _ ?_, ?_⟩
+      refine ⟨typein r' ⟨_, fun k hkj => lt_of_lt_of_le ?_ hij⟩, typein_lt_type _ _, ?_⟩
       · by_contra! H
         exact (wo.wf.not_lt_min _ h ⟨IsTrans.trans _ _ _ hkj hji, H⟩) hkj
       · rwa [bfamilyOfFamily'_typein]

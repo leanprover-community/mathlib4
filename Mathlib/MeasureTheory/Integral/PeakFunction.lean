@@ -137,7 +137,7 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
       ‖∫ x in s ∩ u, φ i x • g x ∂μ‖ ≤ ∫ x in s ∩ u, ‖φ i x • g x‖ ∂μ :=
         norm_integral_le_integral_norm _
       _ ≤ ∫ x in s ∩ u, ‖φ i x‖ * δ ∂μ := by
-        refine setIntegral_mono_on ?_ ?_ (hs.inter u_open.measurableSet) fun x hx =?> _
+        refine setIntegral_mono_on ?_ ?_ (hs.inter u_open.measurableSet) fun x hx => ?_
         · exact IntegrableOn.mono_set h''i.norm (inter_subset_left _ _)
         · exact IntegrableOn.mono_set (I.norm.mul_const _) ut
         rw [norm_smul]
