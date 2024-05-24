@@ -29,6 +29,8 @@ open BigOperators Matrix Equiv
 
 variable {n R : Type*} [DecidableEq n] [Fintype n] (σ : Perm n)
 
+variable (R) in
+/-- the permutation matrix associated with an `Equiv.Perm` -/
 abbrev Equiv.Perm.permMatrix [Zero R] [One R] : Matrix n n R :=
   σ.toPEquiv.toMatrix
 
@@ -36,14 +38,14 @@ namespace Matrix
 
 /-- The determinant of a permutation matrix equals its sign. -/
 @[simp]
-theorem det_permutation [CommRing R] : det (σ.permMatrix (R := R)) = Perm.sign σ := by
-  rw [← Matrix.mul_one σ.permMatrix, PEquiv.toPEquiv_mul_matrix,
+theorem det_permutation [CommRing R] : det (σ.permMatrix R) = Perm.sign σ := by
+  rw [← Matrix.mul_one (σ.permMatrix R), PEquiv.toPEquiv_mul_matrix,
     det_permute, det_one, mul_one]
 #align matrix.det_permutation Matrix.det_permutation
 
 /-- The trace of a permutation matrix equals the number of fixed points. -/
-theorem trace_permutation [AddCommMonoid R] :
-    trace σ.permMatrix = (Function.fixedPoints σ).ncard := by
+theorem trace_permutation [AddCommMonoidWithOne R] :
+    trace (σ.permMatrix R) = (Function.fixedPoints σ).ncard := by
   delta trace
   simp [toPEquiv_apply, ← Set.ncard_coe_Finset, Function.fixedPoints, Function.IsFixedPt]
 
