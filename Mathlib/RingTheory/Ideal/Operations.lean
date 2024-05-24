@@ -153,7 +153,7 @@ theorem smul_induction_on {p : M → Prop} {x} (H : x ∈ I • N) (smul : ∀ r
 theorem smul_induction_on' {x : M} (hx : x ∈ I • N) {p : ∀ x, x ∈ I • N → Prop}
     (smul : ∀ (r : R) (hr : r ∈ I) (n : M) (hn : n ∈ N), p (r • n) (smul_mem_smul hr hn))
     (add : ∀ x hx y hy, p x hx → p y hy → p (x + y) (Submodule.add_mem _ ‹_› ‹_›)) : p x hx := by
-  refine' Exists.elim _ fun (h : x ∈ I • N) (H : p x h) => H
+  refine Exists.elim ?_ fun (h : x ∈ I • N) (H : p x h) => H
   exact
     smul_induction_on hx (fun a ha x hx => ⟨_, smul _ ha _ hx⟩) fun x y ⟨_, hx⟩ ⟨_, hy⟩ =>
       ⟨_, add _ _ _ _ hx hy⟩
@@ -307,6 +307,7 @@ theorem mem_of_span_eq_top_of_smul_pow_mem (M' : Submodule R M) (s : Set R) (hs 
 
 variable {M' : Type w} [AddCommMonoid M'] [Module R M']
 
+@[simp]
 theorem map_smul'' (f : M →ₗ[R] M') : (I • N).map f = I • N.map f :=
   le_antisymm
       (map_le_iff_le_comap.2 <|
@@ -317,6 +318,12 @@ theorem map_smul'' (f : M →ₗ[R] M') : (I • N).map f = I • N.map f :=
       let ⟨p, hp, hfp⟩ := mem_map.1 hn
       hfp ▸ f.map_smul r p ▸ mem_map_of_mem (smul_mem_smul hr hp)
 #align submodule.map_smul'' Submodule.map_smul''
+
+open Pointwise in
+@[simp]
+theorem map_pointwise_smul (r : R) (N : Submodule R M) (f : M →ₗ[R] M') :
+    (r • N).map f = r • N.map f :=
+  by simp_rw [← ideal_span_singleton_smul, map_smul'']
 
 variable {I}
 
@@ -830,7 +837,7 @@ theorem isCoprime_iff_codisjoint : IsCoprime I J ↔ Codisjoint I J := by
     rw [hxy]
     simp only [one_eq_top, Submodule.mem_top]
   · intro h
-    refine' ⟨1, 1, _⟩
+    refine ⟨1, 1, ?_⟩
     simpa only [one_eq_top, top_mul, Submodule.add_eq_sup]
 
 theorem isCoprime_iff_add : IsCoprime I J ↔ I + J = 1 := by
@@ -1171,7 +1178,7 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
         erw [Set.union_eq_self_of_subset_right hfji] at h
         exact h
       specialize ih hp' hn' h'
-      refine' ih.imp id (Or.imp id (Exists.imp fun k => _))
+      refine ih.imp id (Or.imp id (Exists.imp fun k => ?_))
       exact And.imp (fun hk => Finset.insert_subset_insert i (Finset.subset_insert j u) hk) id
     by_cases Ha : f a ≤ f i
     · have h' : (I : Set R) ⊆ f i ∪ f b ∪ ⋃ j ∈ (↑t : Set ι), f j := by
@@ -1347,10 +1354,10 @@ theorem range_finsuppTotal :
     LinearMap.range (finsuppTotal ι M I v) = I • Submodule.span R (Set.range v) := by
   ext
   rw [Submodule.mem_ideal_smul_span_iff_exists_sum]
-  refine' ⟨fun ⟨f, h⟩ => ⟨Finsupp.mapRange.linearMap I.subtype f, fun i => (f i).2, h⟩, _⟩
+  refine ⟨fun ⟨f, h⟩ => ⟨Finsupp.mapRange.linearMap I.subtype f, fun i => (f i).2, h⟩, ?_⟩
   rintro ⟨a, ha, rfl⟩
   classical
-    refine' ⟨a.mapRange (fun r => if h : r ∈ I then ⟨r, h⟩ else 0) (by simp), _⟩
+    refine ⟨a.mapRange (fun r => if h : r ∈ I then ⟨r, h⟩ else 0) (by simp), ?_⟩
     rw [finsuppTotal_apply, Finsupp.sum_mapRange_index]
     · apply Finsupp.sum_congr
       intro i _
@@ -1401,5 +1408,11 @@ lemma span_smul_eq
     (s : Set R) (N : Submodule R M) :
     Ideal.span s • N = s • N := by
   rw [← coe_set_smul, coe_span_smul]
+
+@[simp]
+theorem set_smul_top_eq_span (s : Set R) :
+    s • ⊤ = Ideal.span s :=
+  Eq.trans (span_smul_eq s ⊤).symm <|
+    Eq.trans (smul_eq_mul (Ideal R)) (Ideal.mul_top (.span s))
 
 end Submodule

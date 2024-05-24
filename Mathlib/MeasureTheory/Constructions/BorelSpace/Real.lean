@@ -115,7 +115,7 @@ def finiteSpanningSetsInIooRat (μ : Measure ℝ) [IsLocallyFiniteMeasure μ] :
   set n := Ioo (-(n + 1)) (n + 1)
   set_mem n := by
     simp only [mem_iUnion, mem_singleton_iff]
-    refine' ⟨-(n + 1 : ℕ), n + 1, _, by simp⟩
+    refine ⟨-(n + 1 : ℕ), n + 1, ?_, by simp⟩
     -- TODO: norm_cast fails here?
     push_cast
     exact neg_lt_self n.cast_add_one_pos
@@ -546,6 +546,6 @@ theorem exists_spanning_measurableSet_le {m : MeasurableSpace α} {f : α → �
       ⋃ i, sigma_finite_sets i ∩ norm_sets i = (⋃ i, sigma_finite_sets i) ∩ ⋃ i, norm_sets i := by
       refine' Set.iUnion_inter_of_monotone (monotone_spanningSets μ) fun i j hij x => _
       simp only [norm_sets, Set.mem_setOf_eq]
-      refine' fun hif => hif.trans _
+      refine fun hif => hif.trans ?_
       exact mod_cast hij
     rw [this, norm_sets_spanning, iUnion_spanningSets μ, Set.inter_univ]

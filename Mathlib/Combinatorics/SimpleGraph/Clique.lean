@@ -196,7 +196,7 @@ theorem is3Clique_iff :
     G.IsNClique 3 s ↔ ∃ a b c, G.Adj a b ∧ G.Adj a c ∧ G.Adj b c ∧ s = {a, b, c} := by
   refine' ⟨fun h ↦ _, _⟩
   · obtain ⟨a, b, c, -, -, -, hs⟩ := card_eq_three.1 h.card_eq
-    refine' ⟨a, b, c, _⟩
+    refine ⟨a, b, c, ?_⟩
     rwa [hs, eq_self_iff_true, and_true, is3Clique_triple_iff.symm, ← hs]
   · rintro ⟨a, b, c, hab, hbc, hca, rfl⟩
     exact is3Clique_triple_iff.2 ⟨hab, hbc, hca⟩
@@ -368,7 +368,7 @@ protected theorem CliqueFree.sup_edge (h : G.CliqueFree n) (v w : α) :
     rw [sup_adj, edge_adj] at hs
     simp only [ia.symm, ib.symm, and_false, false_and, or_false] at hs
     rw [hs, Fin.succAbove_right_inj]
-  · use ⟨f ∘ Fin.succEmb n, (f.2.of_comp_iff _).mpr (RelEmbedding.injective _)⟩
+  · use ⟨f ∘ Fin.succEmb n, (f.2.of_comp_iff _).mpr (Fin.succ_injective _)⟩
     intro a b
     simp only [Fin.val_succEmb, Embedding.coeFn_mk, comp_apply, top_adj]
     have hs := @ha a.succ b.succ
@@ -442,7 +442,7 @@ theorem cliqueFreeOn_two : G.CliqueFreeOn s 2 ↔ s.Pairwise (G.Adjᶜ) := by
 theorem CliqueFreeOn.of_succ (hs : G.CliqueFreeOn s (n + 1)) (ha : a ∈ s) :
     G.CliqueFreeOn (s ∩ G.neighborSet a) n := by
   classical
-  refine' fun t hts ht => hs _ (ht.insert fun b hb => (hts hb).2)
+  refine fun t hts ht => hs ?_ (ht.insert fun b hb => (hts hb).2)
   push_cast
   exact Set.insert_subset_iff.2 ⟨ha, hts.trans <| Set.inter_subset_left _ _⟩
 #align simple_graph.clique_free_on.of_succ SimpleGraph.CliqueFreeOn.of_succ
