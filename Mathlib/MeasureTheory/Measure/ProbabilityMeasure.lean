@@ -166,8 +166,43 @@ theorem toMeasure_comp_toFiniteMeasure_eq_toMeasure (ν : ProbabilityMeasure Ω)
   rfl
 #align measure_theory.probability_measure.coe_comp_to_finite_measure_eq_coe MeasureTheory.ProbabilityMeasure.toMeasure_comp_toFiniteMeasure_eq_toMeasure
 
-theorem coeFn_comp_toFiniteMeasure_eq_coeFn (ν : ProbabilityMeasure Ω) :
-    (ν.toFiniteMeasure : Set Ω → ℝ≥0) = (ν : Set Ω → ℝ≥0) :=
+open Lean Meta
+
+def discrKey (e : Expr) : MetaM (Array DiscrTree.Key) := do
+  let (_, _, type) ← withReducible <| forallMetaTelescopeReducing e
+  let type ← whnfR type
+  match type.eq? with
+  | some (_, lhs, _) => DiscrTree.mkPath lhs simpDtConfig
+  | none => throwError "unexpected kind of 'simp' theorem{indentExpr type}"
+
+open Elab Term
+elab "#discr_tree_key" t:term : command => do
+  Command.liftTermElabM <| do
+    let e ← elabTerm t none
+    IO.println ((← discrKey e).map fun key => key.format)
+
+open Elab Term
+elab "#discr_tree_key" id:ident : command => do
+  Command.liftTermElabM <| do
+    let info ← getConstInfo id.getId
+    IO.println ((← discrKey info.type).map fun key => key.format)
+
+open Tactic in
+elab "discr_tree_key" : tactic => do
+  let e ← getMainGoal
+  let keys ← discrKey (← e.getType)
+  logInfo s!"{keys.map fun key => key.format}"
+
+-- Originally this statement was `(ν.toFiniteMeasure : Set Ω → ℝ≥0) = (ν : Set Ω → ℝ≥0)`,
+-- but this elaborates as `(fun s ↦ (↑ν.toFiniteMeasure s).toNNReal) = fun s ↦ (↑ν s).toNNReal`,
+-- in which both sides are lambdas. This means that they are not indexed by a symbol in the `simp`
+-- discrimination tree, and this lemma would be tried on every single goal,
+-- causing a serious performance hit.
+-- I have not yet renamed the lemma to reflect the modified statement;
+-- this can be done in a follow-up PR.
+@[simp]
+theorem coeFn_comp_toFiniteMeasure_eq_coeFn (ν : ProbabilityMeasure Ω) (s) :
+    (ν.toFiniteMeasure s : ℝ≥0) = (ν s : ℝ≥0) :=
   rfl
 #align measure_theory.probability_measure.coe_fn_comp_to_finite_measure_eq_coe_fn MeasureTheory.ProbabilityMeasure.coeFn_comp_toFiniteMeasure_eq_coeFn
 
