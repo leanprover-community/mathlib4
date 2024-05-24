@@ -245,7 +245,7 @@ theorem exists_succAbove_eq {x y : Fin (n + 1)} (h : x ≠ y) : ∃ z, y.succAbo
 
 @[simp]
 theorem exists_succAbove_eq_iff {x y : Fin (n + 1)} : (∃ z, x.succAbove z = y) ↔ y ≠ x := by
-  refine' ⟨_, exists_succAbove_eq⟩
+  refine ⟨?_, exists_succAbove_eq⟩
   rintro ⟨y, rfl⟩
   exact succAbove_ne _ _
 #align fin.exists_succ_above_eq_iff Fin.exists_succAbove_eq_iff

@@ -199,7 +199,7 @@ variable [CanonicallyOrderedCommMonoid M] {l : List M}
 #align list.sum_eq_zero_iff List.sum_eq_zero_iff
 
 @[to_additive] lemma monotone_prod_take (L : List M) : Monotone fun i => (L.take i).prod := by
-  refine' monotone_nat_of_le_succ fun n => _
+  refine monotone_nat_of_le_succ fun n => ?_
   cases' lt_or_le n L.length with h h
   · rw [prod_take_succ _ _ h]
     exact le_self_mul
