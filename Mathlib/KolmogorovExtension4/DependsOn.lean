@@ -29,7 +29,7 @@ theorem dependsOn_update {s : Finset ι} (hf : DependsOn f s) (i : ι) (y : X i)
 
 variable {μ : (i : ι) → Measure (X i)} {f : ((i : ι) → X i) → ℝ≥0∞} {s : Set ι}
 
-theorem lmarginal_dependsOn (hf : DependsOn f s) (t : Finset ι) :
+theorem dependsOn_lmarginal (hf : DependsOn f s) (t : Finset ι) :
     DependsOn (∫⋯∫⁻_t, f ∂μ) (s \ t) := by
   intro x y hxy
   have aux z : f (Function.updateFinset x t z) = f (Function.updateFinset y t z) := by
