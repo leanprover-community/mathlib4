@@ -260,9 +260,9 @@ theorem aeval_mul : aeval x (p * q) = aeval x p * aeval x q :=
 
 theorem comp_eq_aeval : p.comp q = aeval q p := rfl
 
-theorem aeval_comp {A : Type*} [CommSemiring A] [Algebra R A] (x : A) :
+theorem aeval_comp {A : Type*} [Semiring A] [Algebra R A] (x : A) :
     aeval x (p.comp q) = aeval (aeval x q) p :=
-  eval₂_comp (algebraMap R A)
+  eval₂_comp' x p q
 #align polynomial.aeval_comp Polynomial.aeval_comp
 
 /-- Two polynomials `p` and `q` such that `p(q(X))=X` and `q(p(X))=X`
