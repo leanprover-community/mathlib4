@@ -164,14 +164,14 @@ theorem range_pullback_to_prod {X Y Z : TopCat} (f : X ⟶ Z) (g : Y ⟶ Z) :
   ext x
   constructor
   · rintro ⟨y, rfl⟩
-    simp only [← comp_apply, Set.mem_setOf_eq]
-    congr 1
+    change (_ ≫ _ ≫ f) _ = (_ ≫ _ ≫ g) _
     simp [pullback.condition]
   · rintro (h : f (_, _).1 = g (_, _).2)
     use (pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, h⟩
+    change (forget TopCat).map _ _ = _
     apply Concrete.limit_ext
     rintro ⟨⟨⟩⟩ <;>
-    rw [← comp_apply, ← comp_apply, limit.lift_π] <;>
+    erw [← comp_apply, ← comp_apply, limit.lift_π] <;>
     -- This used to be `simp` before leanprover/lean4#2644
     aesop_cat
 #align Top.range_pullback_to_prod TopCat.range_pullback_to_prod
@@ -203,7 +203,7 @@ def pullbackHomeoPreimage
 
 theorem inducing_pullback_to_prod {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
     Inducing <| ⇑(prod.lift pullback.fst pullback.snd : pullback f g ⟶ X ⨯ Y) :=
-  ⟨by simp [prod_topology, pullback_topology, induced_compose, ← coe_comp]⟩
+  ⟨by simp [topologicalSpace_coe, prod_topology, pullback_topology, induced_compose, ← coe_comp]⟩
 #align Top.inducing_pullback_to_prod TopCat.inducing_pullback_to_prod
 
 theorem embedding_pullback_to_prod {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
@@ -221,48 +221,58 @@ theorem range_pullback_map {W X Y Z S T : TopCat} (f₁ : W ⟶ S) (f₂ : X ⟶
   ext
   constructor
   · rintro ⟨y, rfl⟩
-    simp only [Set.mem_inter_iff, Set.mem_preimage, Set.mem_range, ← comp_apply, limit.lift_π,
-      PullbackCone.mk_pt, PullbackCone.mk_π_app]
-    simp only [comp_apply, exists_apply_eq_apply, and_self]
+    simp only [Set.mem_inter_iff, Set.mem_preimage, Set.mem_range]
+    erw [← comp_apply, ← comp_apply]
+    simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, comp_apply]
+    exact ⟨exists_apply_eq_apply _ _, exists_apply_eq_apply _ _⟩
   rintro ⟨⟨x₁, hx₁⟩, ⟨x₂, hx₂⟩⟩
   have : f₁ x₁ = f₂ x₂ := by
     apply (TopCat.mono_iff_injective _).mp H₃
-    simp only [← comp_apply, eq₁, eq₂]
-    simp only [comp_apply, hx₁, hx₂]
-    simp only [← comp_apply, pullback.condition]
+    erw [← comp_apply, eq₁, ← comp_apply, eq₂,
+      comp_apply, comp_apply, hx₁, hx₂, ← comp_apply, pullback.condition]
+    rfl
   use (pullbackIsoProdSubtype f₁ f₂).inv ⟨⟨x₁, x₂⟩, this⟩
+  change (forget TopCat).map _ _ = _
   apply Concrete.limit_ext
   rintro (_ | _ | _) <;>
-  simp only [← comp_apply, Category.assoc, limit.lift_π, PullbackCone.mk_π_app_one]
-  · simp only [cospan_one, pullbackIsoProdSubtype_inv_fst_assoc, comp_apply,
-      pullbackFst_apply, hx₁]
+  erw [← comp_apply, ← comp_apply]
+  simp only [Category.assoc, limit.lift_π, PullbackCone.mk_π_app_one]
+  · simp only [cospan_one, pullbackIsoProdSubtype_inv_fst_assoc, comp_apply]
+    erw [pullbackFst_apply, hx₁]
     rw [← limit.w _ WalkingCospan.Hom.inl, cospan_map_inl, comp_apply (g := g₁)]
-  · simp [hx₁]
-  · simp [hx₂]
+    rfl
+  · simp only [cospan_left, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
+      pullbackIsoProdSubtype_inv_fst_assoc, comp_apply]
+    erw [hx₁]
+    rfl
+  · simp only [cospan_right, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
+      pullbackIsoProdSubtype_inv_snd_assoc, comp_apply]
+    erw [hx₂]
+    rfl
 #align Top.range_pullback_map TopCat.range_pullback_map
 
 theorem pullback_fst_range {X Y S : TopCat} (f : X ⟶ S) (g : Y ⟶ S) :
     Set.range (pullback.fst : pullback f g ⟶ _) = { x : X | ∃ y : Y, f x = g y } := by
   ext x
   constructor
-  · rintro ⟨y, rfl⟩
+  · rintro ⟨(y : (forget TopCat).obj _), rfl⟩
     use (pullback.snd : pullback f g ⟶ _) y
     exact ConcreteCategory.congr_hom pullback.condition y
   · rintro ⟨y, eq⟩
     use (TopCat.pullbackIsoProdSubtype f g).inv ⟨⟨x, y⟩, eq⟩
-    simp
+    rw [pullbackIsoProdSubtype_inv_fst_apply]
 #align Top.pullback_fst_range TopCat.pullback_fst_range
 
 theorem pullback_snd_range {X Y S : TopCat} (f : X ⟶ S) (g : Y ⟶ S) :
     Set.range (pullback.snd : pullback f g ⟶ _) = { y : Y | ∃ x : X, f x = g y } := by
   ext y
   constructor
-  · rintro ⟨x, rfl⟩
+  · rintro ⟨(x : (forget TopCat).obj _), rfl⟩
     use (pullback.fst : pullback f g ⟶ _) x
     exact ConcreteCategory.congr_hom pullback.condition x
   · rintro ⟨x, eq⟩
     use (TopCat.pullbackIsoProdSubtype f g).inv ⟨⟨x, y⟩, eq⟩
-    simp
+    rw [pullbackIsoProdSubtype_inv_snd_apply]
 #align Top.pullback_snd_range TopCat.pullback_snd_range
 
 /-- If there is a diagram where the morphisms `W ⟶ Y` and `X ⟶ Z` are embeddings,
@@ -401,11 +411,15 @@ theorem pullback_snd_image_fst_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set X) 
       g ⁻¹' (f '' U) := by
   ext x
   constructor
-  · rintro ⟨y, hy, rfl⟩
+  · rintro ⟨(y : (forget TopCat).obj _), hy, rfl⟩
     exact
       ⟨(pullback.fst : pullback f g ⟶ _) y, hy, ConcreteCategory.congr_hom pullback.condition y⟩
   · rintro ⟨y, hy, eq⟩
-    exact ⟨(TopCat.pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, eq⟩, by simpa, by simp⟩
+    refine ⟨(TopCat.pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, eq⟩, ?_, ?_⟩
+    · simp only [coe_of, Set.mem_preimage]
+      convert hy
+      erw [pullbackIsoProdSubtype_inv_fst_apply]
+    · rw [pullbackIsoProdSubtype_inv_snd_apply]
 #align Top.pullback_snd_image_fst_preimage TopCat.pullback_snd_image_fst_preimage
 
 theorem pullback_fst_image_snd_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set Y) :
@@ -413,12 +427,16 @@ theorem pullback_fst_image_snd_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set Y) 
       f ⁻¹' (g '' U) := by
   ext x
   constructor
-  · rintro ⟨y, hy, rfl⟩
+  · rintro ⟨(y : (forget TopCat).obj _), hy, rfl⟩
     exact
       ⟨(pullback.snd : pullback f g ⟶ _) y, hy,
         (ConcreteCategory.congr_hom pullback.condition y).symm⟩
   · rintro ⟨y, hy, eq⟩
-    exact ⟨(TopCat.pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, eq.symm⟩, by simpa, by simp⟩
+    refine ⟨(TopCat.pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, eq.symm⟩, ?_, ?_⟩
+    · simp only [coe_of, Set.mem_preimage]
+      convert hy
+      erw [pullbackIsoProdSubtype_inv_snd_apply]
+    · rw [pullbackIsoProdSubtype_inv_fst_apply]
 #align Top.pullback_fst_image_snd_preimage TopCat.pullback_fst_image_snd_preimage
 
 end Pullback
