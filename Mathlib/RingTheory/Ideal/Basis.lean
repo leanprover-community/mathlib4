@@ -5,7 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.LinearAlgebra.Basis
-import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.RingTheory.Ideal.IsPrincipal
 
 #align_import ring_theory.ideal.operations from "leanprover-community/mathlib"@"e7f0ddbf65bd7181a85edb74b64bdc35ba4bdc74"
 

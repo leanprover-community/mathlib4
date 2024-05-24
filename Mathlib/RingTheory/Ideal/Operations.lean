@@ -3,9 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Data.Fintype.Lattice
 import Mathlib.RingTheory.Coprime.Lemmas
+import Mathlib.RingTheory.Ideal.IsPrincipal
 
 #align_import ring_theory.ideal.operations from "leanprover-community/mathlib"@"e7f0ddbf65bd7181a85edb74b64bdc35ba4bdc74"
 
@@ -402,11 +402,6 @@ theorem add_eq_sup {I J : Ideal R} : I + J = I ⊔ J :=
 #align ideal.add_eq_sup Ideal.add_eq_sup
 
 @[simp]
-theorem zero_eq_bot : (0 : Ideal R) = ⊥ :=
-  rfl
-#align ideal.zero_eq_bot Ideal.zero_eq_bot
-
-@[simp]
 theorem sum_eq_sup {ι : Type*} (s : Finset ι) (f : ι → Ideal R) : s.sum f = s.sup f :=
   rfl
 #align ideal.sum_eq_sup Ideal.sum_eq_sup
@@ -420,10 +415,6 @@ variable {I J K L : Ideal R}
 
 instance : Mul (Ideal R) :=
   ⟨(· • ·)⟩
-
-@[simp]
-theorem one_eq_top : (1 : Ideal R) = ⊤ := by erw [Submodule.one_eq_range, LinearMap.range_id]
-#align ideal.one_eq_top Ideal.one_eq_top
 
 theorem add_eq_one_iff : I + J = 1 ↔ ∃ i ∈ I, ∃ j ∈ J, i + j = 1 := by
   rw [one_eq_top, eq_top_iff_one, add_eq_sup, Submodule.mem_sup]
@@ -507,17 +498,6 @@ theorem span_mul_span' (S T : Set R) : span S * span T = span (S * T) := by
   unfold span
   rw [Submodule.span_mul_span]
 #align ideal.span_mul_span' Ideal.span_mul_span'
-
-theorem span_singleton_mul_span_singleton (r s : R) :
-    span {r} * span {s} = (span {r * s} : Ideal R) := by
-  unfold span
-  rw [Submodule.span_mul_span, Set.singleton_mul_singleton]
-#align ideal.span_singleton_mul_span_singleton Ideal.span_singleton_mul_span_singleton
-
-theorem span_singleton_pow (s : R) (n : ℕ) : span {s} ^ n = (span {s ^ n} : Ideal R) := by
-  induction' n with n ih; · simp [Set.singleton_one]
-  simp only [pow_succ, ih, span_singleton_mul_span_singleton]
-#align ideal.span_singleton_pow Ideal.span_singleton_pow
 
 theorem mem_mul_span_singleton {x y : R} {I : Ideal R} : x ∈ I * span {y} ↔ ∃ z ∈ I, z * y = x :=
   Submodule.mem_smul_span_singleton
@@ -1319,8 +1299,6 @@ instance uniqueUnits : Unique (Ideal R)ˣ where
 end Dvd
 
 end MulAndRadical
-
-
 
 section Total
 

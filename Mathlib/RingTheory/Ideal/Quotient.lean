@@ -5,7 +5,7 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro, Anne Baanen
 -/
 import Mathlib.LinearAlgebra.Quotient
 import Mathlib.RingTheory.Congruence
-import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.RingTheory.Ideal.IsPrincipal
 import Mathlib.Tactic.FinCases
 
 #align_import ring_theory.ideal.quotient from "leanprover-community/mathlib"@"949dc57e616a621462062668c9f39e4e17b64b69"
