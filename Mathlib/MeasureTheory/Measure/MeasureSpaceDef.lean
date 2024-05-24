@@ -571,18 +571,8 @@ a.e equal on every subsets of their domain. -/
 theorem fun_ae_imp_set_ae {f g : α → β} :
     f =ᵐ[μ] g ↔ ∀ (s : Set α), ∀ᵐ x ∂ μ, x ∈ s → f x = g x :=
   Iff.intro
-    (fun h s ↦ Eventually.mono h fun x a _ ↦ a)
-    (fun h ↦ by
-      let A := {x | f x = g x}
-      let B := {x | x ∈ Set.univ → f x = g x}
-      have B_eq_A : B = A := by {
-        ext e
-        exact Iff.intro (fun hb ↦ hb (by simp)) (fun ha _ ↦ ha)
-      }
-      specialize h Set.univ
-      unfold Filter.Eventually at *
-      rwa [show {x | (fun x ↦ x ∈ univ → f x = g x) x} = B by rfl, B_eq_A] at h
-    )
+  (fun h s ↦ by filter_upwards [h] with x hfg _ using hfg)
+  (fun h ↦ by filter_upwards [h Set.univ] with x hx using (hx (by simp)))
 
 end ae
 
