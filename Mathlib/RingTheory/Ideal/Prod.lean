@@ -87,8 +87,7 @@ theorem map_prodComm_prod :
 
 /-- Ideals of `R × S` are in one-to-one correspondence with pairs of ideals of `R` and ideals of
     `S`. -/
-def idealProdEquiv : Ideal (R × S) ≃ Ideal R × Ideal S
-    where
+def idealProdEquiv : Ideal (R × S) ≃ Ideal R × Ideal S where
   toFun I := ⟨map (RingHom.fst R S) I, map (RingHom.snd R S) I⟩
   invFun I := prod I.1 I.2
   left_inv I := (ideal_prod_eq I).symm

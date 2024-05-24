@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wrenna Robson, Robert Y. Lewis, Keeley Hoek
 -/
 import Mathlib.Algebra.Group.Fin
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Order.Hom.Basic
+import Mathlib.Order.Fin
 
 /-!
 # Finite order homomorphisms.
@@ -16,6 +15,8 @@ The fundamental order homomorphisms between `Fin (n + 1)` and `Fin n`.
 * `Fin.succAboveEmb p` : `Fin.succAbove p` as an `OrderEmbedding`.
 * `Fin.predAbove p i` : surjects `i : Fin (n+1)` into `Fin n` by subtracting one if `p < i`.
 -/
+
+assert_not_exists MonoidWithZero
 
 open Nat Function
 

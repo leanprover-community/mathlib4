@@ -224,6 +224,8 @@ def evaluation (X : Cᵒᵖ) : PresheafOfModules.{v} R ⥤ ModuleCat (R.obj X) w
   obj M := M.obj X
   map f := f.app X
 
+instance (X : Cᵒᵖ) : (evaluation R X).Additive where
+
 variable {R}
 
 /-- Given a presheaf of modules `M` on a category `C` and `f : X ⟶ Y` in `Cᵒᵖ`, this

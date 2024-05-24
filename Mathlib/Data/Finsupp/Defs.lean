@@ -281,8 +281,7 @@ section Single
 variable [Zero M] {a a' : α} {b : M}
 
 /-- `single a b` is the finitely supported function with value `b` at `a` and zero otherwise. -/
-def single (a : α) (b : M) : α →₀ M
-    where
+def single (a : α) (b : M) : α →₀ M where
   support :=
     haveI := Classical.decEq M
     if b = 0 then ∅ else {a}
