@@ -11,7 +11,8 @@ def DependsOn (f : (∀ i, X i) → α) (s : Set ι) : Prop :=
 
 theorem dependsOn_const (a : α) : DependsOn (fun _ : ∀ i, X i ↦ a) ∅ := by simp [DependsOn]
 
-theorem dependsOn_empty (hf : DependsOn f ∅) : ∀ x y, f x = f y := fun x y ↦ hf x y (by simp)
+theorem dependsOn_empty (hf : DependsOn f ∅) (x y : (i : ι) → X i) :
+    f x = f y := hf x y (by simp)
 
 theorem dependsOn_updateFinset {s : Set ι} (hf : DependsOn f s) (t : Finset ι) (y : (i : t) → X i) :
     DependsOn (fun x ↦ f (Function.updateFinset x t y)) (s \ t) := by
