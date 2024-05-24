@@ -90,7 +90,7 @@ theorem Multipliable.update (hf : Multipliable f) (b : β) [DecidableEq β] (a :
 @[to_additive]
 theorem HasProd.hasProd_compl_iff {s : Set β} (hf : HasProd (f ∘ (↑) : s → α) a₁) :
     HasProd (f ∘ (↑) : ↑sᶜ → α) a₂ ↔ HasProd f (a₁ * a₂) := by
-  refine' ⟨fun h ↦ hf.mul_compl h, fun h ↦ _⟩
+  refine ⟨fun h ↦ hf.mul_compl h, fun h ↦ ?_⟩
   rw [hasProd_subtype_iff_mulIndicator] at hf ⊢
   rw [Set.mulIndicator_compl]
   simpa only [div_eq_mul_inv, mul_inv_cancel_comm] using h.div hf
@@ -364,7 +364,7 @@ theorem Multipliable.tendsto_cofinite_one (hf : Multipliable f) : Tendsto f cofi
   intro e he
   rw [Filter.mem_map]
   rcases hf.vanishing he with ⟨s, hs⟩
-  refine' s.eventually_cofinite_nmem.mono fun x hx ↦ _
+  refine s.eventually_cofinite_nmem.mono fun x hx ↦ ?_
   · simpa using hs {x} (disjoint_singleton_left.2 hx)
 #align summable.tendsto_cofinite_zero Summable.tendsto_cofinite_zero
 
