@@ -196,7 +196,7 @@ theorem contDiff_arsinh {n : ℕ∞} : ContDiff ℝ n arsinh :=
   sinhHomeomorph.contDiff_symm_deriv (fun x => (cosh_pos x).ne') hasDerivAt_sinh contDiff_sinh
 #align real.cont_diff_arsinh Real.contDiff_arsinh
 
-@[continuity]
+@[fun_prop]
 theorem continuous_arsinh : Continuous arsinh :=
   sinhHomeomorph.symm.continuous
 #align real.continuous_arsinh Real.continuous_arsinh

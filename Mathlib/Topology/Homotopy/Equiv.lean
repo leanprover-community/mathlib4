@@ -62,7 +62,7 @@ theorem toFun_eq_coe (h : HomotopyEquiv X Y) : (h.toFun : X → Y) = h :=
   rfl
 #align continuous_map.homotopy_equiv.to_fun_eq_coe ContinuousMap.HomotopyEquiv.toFun_eq_coe
 
-@[continuity]
+@[fun_prop]
 theorem continuous (h : HomotopyEquiv X Y) : Continuous h :=
   h.toFun.continuous
 #align continuous_map.homotopy_equiv.continuous ContinuousMap.HomotopyEquiv.continuous

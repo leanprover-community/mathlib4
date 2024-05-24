@@ -40,9 +40,9 @@ variable {X : Type*} {Y : Type*} {Z : Type*}
 structure Homeomorph (X : Type*) (Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]
     extends X ≃ Y where
   /-- The forward map of a homeomorphism is a continuous function. -/
-  continuous_toFun : Continuous toFun := by continuity
+  continuous_toFun : Continuous toFun := by fun_prop
   /-- The inverse map of a homeomorphism is a continuous function. -/
-  continuous_invFun : Continuous invFun := by continuity
+  continuous_invFun : Continuous invFun := by fun_prop
 #align homeomorph Homeomorph
 
 @[inherit_doc]
@@ -146,13 +146,13 @@ theorem refl_symm : (Homeomorph.refl X).symm = Homeomorph.refl X :=
   rfl
 #align homeomorph.refl_symm Homeomorph.refl_symm
 
-@[continuity]
+@[fun_prop]
 protected theorem continuous (h : X ≃ₜ Y) : Continuous h :=
   h.continuous_toFun
 #align homeomorph.continuous Homeomorph.continuous
 
--- otherwise `by continuity` can't prove continuity of `h.to_equiv.symm`
-@[continuity]
+-- otherwise `by fun_prop` can't prove continuity of `h.to_equiv.symm`
+@[fun_prop]
 protected theorem continuous_symm (h : X ≃ₜ Y) : Continuous h.symm :=
   h.continuous_invFun
 #align homeomorph.continuous_symm Homeomorph.continuous_symm
@@ -736,7 +736,7 @@ def finTwoArrow : (Fin 2 → X) ≃ₜ X × X :=
 -/
 @[simps!]
 def image (e : X ≃ₜ Y) (s : Set X) : s ≃ₜ e '' s where
-  -- Porting note (#11215): TODO: by continuity!
+  -- Porting note (#11215): TODO: by fun_prop!
   continuous_toFun := e.continuous.continuousOn.restrict_mapsTo (mapsTo_image _ _)
   continuous_invFun := (e.symm.continuous.comp continuous_subtype_val).codRestrict _
   toEquiv := e.toEquiv.image s

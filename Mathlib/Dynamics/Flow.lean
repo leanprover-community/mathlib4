@@ -112,7 +112,7 @@ theorem ext : ∀ {ϕ₁ ϕ₂ : Flow τ α}, (∀ t x, ϕ₁ t x = ϕ₂ t x) �
     exact h _ _
 #align flow.ext Flow.ext
 
-@[continuity]
+@[fun_prop]
 protected theorem continuous {β : Type*} [TopologicalSpace β] {t : β → τ} (ht : Continuous t)
     {f : β → α} (hf : Continuous f) : Continuous fun x => ϕ (t x) (f x) :=
   ϕ.cont'.comp (ht.prod_mk hf)
@@ -172,9 +172,9 @@ def reverse : Flow τ α where
 #align flow.reverse Flow.reverse
 
 -- Porting note: add @continuity to Flow.toFun so that these works:
--- Porting note: Homeomorphism.continuous_toFun  : Continuous toFun  := by continuity
--- Porting note: Homeomorphism.continuous_invFun : Continuous invFun := by continuity
-@[continuity]
+-- Porting note: Homeomorphism.continuous_toFun  : Continuous toFun  := by fun_prop
+-- Porting note: Homeomorphism.continuous_invFun : Continuous invFun := by fun_prop
+@[fun_prop]
 theorem continuous_toFun (t : τ) : Continuous (ϕ.toFun t) := by
   rw [← curry_uncurry ϕ.toFun]
   apply continuous_curry

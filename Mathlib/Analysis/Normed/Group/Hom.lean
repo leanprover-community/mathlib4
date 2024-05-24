@@ -264,7 +264,7 @@ protected theorem uniformContinuous (f : NormedAddGroupHom V₁ V₂) : UniformC
   f.lipschitz.uniformContinuous
 #align normed_add_group_hom.uniform_continuous NormedAddGroupHom.uniformContinuous
 
-@[continuity]
+@[fun_prop]
 protected theorem continuous (f : NormedAddGroupHom V₁ V₂) : Continuous f :=
   f.uniformContinuous.continuous
 #align normed_add_group_hom.continuous NormedAddGroupHom.continuous

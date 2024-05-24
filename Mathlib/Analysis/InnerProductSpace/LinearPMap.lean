@@ -172,7 +172,7 @@ theorem mem_adjoint_domain_of_exists (y : F) (h : ∃ w : E, ∀ x : T.domain, �
     y ∈ T†.domain := by
   cases' h with w hw
   rw [T.mem_adjoint_domain_iff]
-  -- Porting note: was `by continuity`
+  -- Porting note: was `by fun_prop`
   have : Continuous ((innerSL 𝕜 w).comp T.domain.subtypeL) := ContinuousLinearMap.continuous _
   convert this using 1
   exact funext fun x => (hw x).symm

@@ -61,7 +61,7 @@ theorem coe_toTopMap {x y : SimplexCategory} (f : x ⟶ y) (g : x.toTopObj) (i :
   rfl
 #align simplex_category.coe_to_Top_map SimplexCategory.coe_toTopMap
 
-@[continuity]
+@[fun_prop]
 theorem continuous_toTopMap {x y : SimplexCategory} (f : x ⟶ y) : Continuous (toTopMap f) := by
   refine' Continuous.subtype_mk (continuous_pi fun i => _) _
   dsimp only [coe_toTopMap]
@@ -72,7 +72,7 @@ theorem continuous_toTopMap {x y : SimplexCategory} (f : x ⟶ y) : Continuous (
 @[simps obj map]
 def toTop : SimplexCategory ⥤ TopCat where
   obj x := TopCat.of x.toTopObj
-  map f := ⟨toTopMap f, by continuity⟩
+  map f := ⟨toTopMap f, by fun_prop⟩
   map_id := by
     intro Δ
     ext f

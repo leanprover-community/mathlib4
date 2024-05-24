@@ -56,7 +56,7 @@ protected theorem dist_eq (x y : α) : dist (x : Completion α) y = dist x y :=
 #align uniform_space.completion.dist_eq UniformSpace.Completion.dist_eq
 
 /- Let us check that the new distance satisfies the axioms of a distance, by starting from the
-properties on α and extending them to `Completion α` by continuity. -/
+properties on α and extending them to `Completion α` by fun_prop. -/
 protected theorem dist_self (x : Completion α) : dist x x = 0 := by
   refine' induction_on x _ _
   · refine' isClosed_eq _ continuous_const
@@ -191,7 +191,7 @@ open UniformSpace Completion NNReal
 theorem LipschitzWith.completion_extension [MetricSpace β] [CompleteSpace β] {f : α → β}
     {K : ℝ≥0} (h : LipschitzWith K f) : LipschitzWith K (Completion.extension f) :=
   LipschitzWith.of_dist_le_mul fun x y => induction_on₂ x y
-    (isClosed_le (by continuity) (by continuity)) <| by
+    (isClosed_le (by fun_prop) (by fun_prop)) <| by
       simpa only [extension_coe h.uniformContinuous, Completion.dist_eq] using h.dist_le_mul
 
 theorem LipschitzWith.completion_map [PseudoMetricSpace β] {f : α → β} {K : ℝ≥0}
@@ -201,7 +201,7 @@ theorem LipschitzWith.completion_map [PseudoMetricSpace β] {f : α → β} {K :
 theorem Isometry.completion_extension [MetricSpace β] [CompleteSpace β] {f : α → β}
     (h : Isometry f) : Isometry (Completion.extension f) :=
   Isometry.of_dist_eq fun x y => induction_on₂ x y
-    (isClosed_eq (by continuity) (by continuity)) fun _ _ ↦ by
+    (isClosed_eq (by fun_prop) (by fun_prop)) fun _ _ ↦ by
       simp only [extension_coe h.uniformContinuous, Completion.dist_eq, h.dist_eq]
 
 theorem Isometry.completion_map [PseudoMetricSpace β] {f : α → β}

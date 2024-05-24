@@ -88,7 +88,7 @@ instance Path.funLike : FunLike (Path x y) I X where
 -- Porting note (#10754): added this instance so that we can use `FunLike.coe` for `CoeFun`
 -- this also fixed very strange `simp` timeout issues
 instance Path.continuousMapClass : ContinuousMapClass (Path x y) I X where
-  map_continuous := fun γ => show Continuous γ.toContinuousMap by continuity
+  map_continuous := fun γ => show Continuous γ.toContinuousMap by fun_prop
 
 -- Porting note: not necessary in light of the instance above
 /-
@@ -113,7 +113,7 @@ theorem coe_mk_mk (f : I → X) (h₁) (h₂ : f 0 = x) (h₃ : f 1 = y) :
 
 variable (γ : Path x y)
 
-@[continuity]
+@[fun_prop]
 protected theorem continuous : Continuous γ :=
   γ.continuous_toFun
 #align path.continuous Path.continuous
@@ -169,7 +169,7 @@ theorem refl_range {a : X} : range (Path.refl a) = {a} := by simp [Path.refl, Co
 @[symm, simps]
 def symm (γ : Path x y) : Path y x where
   toFun := γ ∘ σ
-  continuous_toFun := by continuity
+  continuous_toFun := by fun_prop
   source' := by simpa [-Path.target] using γ.target
   target' := by simpa [-Path.source] using γ.source
 #align path.symm Path.symm
@@ -221,7 +221,7 @@ theorem continuous_eval : Continuous fun p : Path x y × I => p.1 p.2 :=
   continuous_eval.comp <| (continuous_induced_dom (α := Path x y)).prod_map continuous_id
 #align path.continuous_eval Path.continuous_eval
 
-@[continuity]
+@[fun_prop]
 theorem _root_.Continuous.path_eval {Y} [TopologicalSpace Y] {f : Y → Path x y} {g : Y → I}
     (hf : Continuous f) (hg : Continuous g) : Continuous fun y => f y (g y) :=
   Continuous.comp continuous_eval (hf.prod_mk hg)
@@ -246,7 +246,7 @@ theorem _root_.Continuous.path_extend {γ : Y → Path x y} {f : Y → ℝ} (hγ
 #align continuous.path_extend Continuous.path_extend
 
 /-- A useful special case of `Continuous.path_extend`. -/
-@[continuity]
+@[fun_prop]
 theorem continuous_extend : Continuous γ.extend :=
   γ.continuous.Icc_extend'
 #align path.continuous_extend Path.continuous_extend
@@ -472,19 +472,19 @@ theorem cast_coe (γ : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) : (γ.cast 
   rfl
 #align path.cast_coe Path.cast_coe
 
-@[continuity]
+@[fun_prop]
 theorem symm_continuous_family {ι : Type*} [TopologicalSpace ι]
     {a b : ι → X} (γ : ∀ t : ι, Path (a t) (b t)) (h : Continuous ↿γ) :
     Continuous ↿fun t => (γ t).symm :=
   h.comp (continuous_id.prod_map continuous_symm)
 #align path.symm_continuous_family Path.symm_continuous_family
 
-@[continuity]
+@[fun_prop]
 theorem continuous_symm : Continuous (symm : Path x y → Path y x) :=
   continuous_uncurry_iff.mp <| symm_continuous_family _ (continuous_fst.path_eval continuous_snd)
 #align path.continuous_symm Path.continuous_symm
 
-@[continuity]
+@[fun_prop]
 theorem continuous_uncurry_extend_of_continuous_family {ι : Type*} [TopologicalSpace ι]
     {a b : ι → X} (γ : ∀ t : ι, Path (a t) (b t)) (h : Continuous ↿γ) :
     Continuous ↿fun t => (γ t).extend := by
@@ -492,7 +492,7 @@ theorem continuous_uncurry_extend_of_continuous_family {ι : Type*} [Topological
   exact zero_le_one
 #align path.continuous_uncurry_extend_of_continuous_family Path.continuous_uncurry_extend_of_continuous_family
 
-@[continuity]
+@[fun_prop]
 theorem trans_continuous_family {ι : Type*} [TopologicalSpace ι]
     {a b c : ι → X} (γ₁ : ∀ t : ι, Path (a t) (b t)) (h₁ : Continuous ↿γ₁)
     (γ₂ : ∀ t : ι, Path (b t) (c t)) (h₂ : Continuous ↿γ₂) :
@@ -514,7 +514,7 @@ theorem trans_continuous_family {ι : Type*} [TopologicalSpace ι]
     simp [hst, mul_inv_cancel (two_ne_zero' ℝ)]
 #align path.trans_continuous_family Path.trans_continuous_family
 
-@[continuity]
+@[fun_prop]
 theorem _root_.Continuous.path_trans {f : Y → Path x y} {g : Y → Path y z} :
     Continuous f → Continuous g → Continuous fun t => (f t).trans (g t) := by
   intro hf hg
@@ -522,7 +522,7 @@ theorem _root_.Continuous.path_trans {f : Y → Path x y} {g : Y → Path y z} :
   exact trans_continuous_family _ (continuous_uncurry_iff.mpr hf) _ (continuous_uncurry_iff.mpr hg)
 #align continuous.path_trans Continuous.path_trans
 
-@[continuity]
+@[fun_prop]
 theorem continuous_trans {x y z : X} : Continuous fun ρ : Path x y × Path y z => ρ.1.trans ρ.2 :=
   continuous_fst.path_trans continuous_snd
 #align path.continuous_trans Path.continuous_trans
@@ -655,7 +655,7 @@ theorem truncate_range {a b : X} (γ : Path a b) {t₀ t₁ : ℝ} :
 
 /-- For a path `γ`, `γ.truncate` gives a "continuous family of paths", by which we
   mean the uncurried function which maps `(t₀, t₁, s)` to `γ.truncate t₀ t₁ s` is continuous. -/
-@[continuity]
+@[fun_prop]
 theorem truncate_continuous_family {a b : X} (γ : Path a b) :
     Continuous (fun x => γ.truncate x.1 x.2.1 x.2.2 : ℝ × ℝ × I → X) :=
   γ.continuous_extend.comp
@@ -663,10 +663,10 @@ theorem truncate_continuous_family {a b : X} (γ : Path a b) :
       (continuous_fst.comp continuous_snd))
 #align path.truncate_continuous_family Path.truncate_continuous_family
 
-@[continuity]
+@[fun_prop]
 theorem truncate_const_continuous_family {a b : X} (γ : Path a b)
     (t : ℝ) : Continuous ↿(γ.truncate t) := by
-  have key : Continuous (fun x => (t, x) : ℝ × I → ℝ × ℝ × I) := by continuity
+  have key : Continuous (fun x => (t, x) : ℝ × I → ℝ × ℝ × I) := by fun_prop
   exact γ.truncate_continuous_family.comp key
 #align path.truncate_const_continuous_family Path.truncate_const_continuous_family
 
@@ -709,7 +709,7 @@ path defined by `γ ∘ f`.
 def reparam (γ : Path x y) (f : I → I) (hfcont : Continuous f) (hf₀ : f 0 = 0) (hf₁ : f 1 = 1) :
     Path x y where
   toFun := γ ∘ f
-  continuous_toFun := by continuity
+  continuous_toFun := by fun_prop
   source' := by simp [hf₀]
   target' := by simp [hf₁]
 #align path.reparam Path.reparam
@@ -733,7 +733,7 @@ theorem range_reparam (γ : Path x y) {f : I → I} (hfcont : Continuous f) (hf�
   have : range f = univ := by
     rw [range_iff_surjective]
     intro t
-    have h₁ : Continuous (Set.IccExtend (zero_le_one' ℝ) f) := by continuity
+    have h₁ : Continuous (Set.IccExtend (zero_le_one' ℝ) f) := by fun_prop
     have := intermediate_value_Icc (zero_le_one' ℝ) h₁.continuousOn
     · rw [IccExtend_left, IccExtend_right, Icc.mk_zero, Icc.mk_one, hf₀, hf₁] at this
       rcases this t.2 with ⟨w, hw₁, hw₂⟩
@@ -834,7 +834,7 @@ theorem JoinedIn.somePath_mem (h : JoinedIn F x y) (t : I) : h.somePath t ∈ F 
 theorem JoinedIn.joined_subtype (h : JoinedIn F x y) :
     Joined (⟨x, h.source_mem⟩ : F) (⟨y, h.target_mem⟩ : F) :=
   ⟨{  toFun := fun t => ⟨h.somePath t, h.somePath_mem t⟩
-      continuous_toFun := by continuity
+      continuous_toFun := by fun_prop
       source' := by simp
       target' := by simp }⟩
 #align joined_in.joined_subtype JoinedIn.joined_subtype
@@ -1202,7 +1202,7 @@ instance Quotient.instPathConnectedSpace {s : Setoid X} [PathConnectedSpace X] :
 /-- This is a special case of `NormedSpace.instPathConnectedSpace` (and
 `TopologicalAddGroup.pathConnectedSpace`). It exists only to simplify dependencies. -/
 instance Real.instPathConnectedSpace : PathConnectedSpace ℝ where
-  joined x y := ⟨⟨⟨fun (t : I) ↦ (1 - t) * x + t * y, by continuity⟩, by simp, by simp⟩⟩
+  joined x y := ⟨⟨⟨fun (t : I) ↦ (1 - t) * x + t * y, by fun_prop⟩, by simp, by simp⟩⟩
   nonempty := inferInstance
 
 theorem pathConnectedSpace_iff_eq : PathConnectedSpace X ↔ ∃ x : X, pathComponent x = univ := by

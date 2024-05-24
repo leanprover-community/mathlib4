@@ -1493,7 +1493,7 @@ theorem setToFun_mono {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : Dominate
 
 end Order
 
-@[continuity]
+@[fun_prop]
 theorem continuous_setToFun (hT : DominatedFinMeasAdditive μ T C) :
     Continuous fun f : α →₁[μ] E => setToFun μ T hT f := by
   simp_rw [L1.setToFun_eq_setToL1 hT]; exact ContinuousLinearMap.continuous _

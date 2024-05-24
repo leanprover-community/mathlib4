@@ -144,8 +144,8 @@ structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Ty
     PartialEquiv H E where
   source_eq : source = univ
   unique_diff' : UniqueDiffOn 𝕜 toPartialEquiv.target
-  continuous_toFun : Continuous toFun := by continuity
-  continuous_invFun : Continuous invFun := by continuity
+  continuous_toFun : Continuous toFun := by fun_prop
+  continuous_invFun : Continuous invFun := by fun_prop
 #align model_with_corners ModelWithCorners
 
 attribute [simp, mfld_simps] ModelWithCorners.source_eq
@@ -222,7 +222,7 @@ theorem mk_symm (e : PartialEquiv H E) (a b c d) :
   rfl
 #align model_with_corners.mk_symm ModelWithCorners.mk_symm
 
-@[continuity]
+@[fun_prop]
 protected theorem continuous : Continuous I :=
   I.continuous_toFun
 #align model_with_corners.continuous ModelWithCorners.continuous
@@ -235,7 +235,7 @@ protected theorem continuousWithinAt {s x} : ContinuousWithinAt I s x :=
   I.continuousAt.continuousWithinAt
 #align model_with_corners.continuous_within_at ModelWithCorners.continuousWithinAt
 
-@[continuity]
+@[fun_prop]
 theorem continuous_symm : Continuous I.symm :=
   I.continuous_invFun
 #align model_with_corners.continuous_symm ModelWithCorners.continuous_symm

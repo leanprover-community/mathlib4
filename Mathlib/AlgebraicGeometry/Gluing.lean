@@ -417,7 +417,7 @@ theorem fromGlued_open_map : IsOpenMap 𝒰.fromGlued.1.base := by
 #align algebraic_geometry.Scheme.open_cover.from_glued_open_map AlgebraicGeometry.Scheme.OpenCover.fromGlued_open_map
 
 theorem fromGlued_openEmbedding : OpenEmbedding 𝒰.fromGlued.1.base :=
-  -- Porting note: the continuity argument used to be `by continuity`
+  -- Porting note: the continuity argument used to be `by fun_prop`
   openEmbedding_of_continuous_injective_open
     (ContinuousMap.continuous_toFun _) 𝒰.fromGlued_injective 𝒰.fromGlued_open_map
 #align algebraic_geometry.Scheme.open_cover.from_glued_open_embedding AlgebraicGeometry.Scheme.OpenCover.fromGlued_openEmbedding

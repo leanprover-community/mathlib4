@@ -8,24 +8,24 @@ section basic
 variable [TopologicalSpace W] [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 variable {I : Type _} {X' : I → Type _} [∀ i, TopologicalSpace (X' i)]
 
-example : Continuous (id : X → X) := by continuity
+example : Continuous (id : X → X) := by fun_prop
 
 example {f : X → Y} {g : Y → X} (hf : Continuous f) (hg : Continuous g) :
-  Continuous (fun x => f (g x)) := by continuity
+  Continuous (fun x => f (g x)) := by fun_prop
 
 example {f : X → Y} {g : Y → X} (hf : Continuous f) (hg : Continuous g) :
-  Continuous (f ∘ g ∘ f) := by continuity
+  Continuous (f ∘ g ∘ f) := by fun_prop
 
 example {f : X → Y} {g : Y → X} (hf : Continuous f) (hg : Continuous g) :
-  Continuous (f ∘ g) := by continuity
+  Continuous (f ∘ g) := by fun_prop
 
-example (y : Y) : Continuous (fun (_ : X) ↦ y) := by continuity
+example (y : Y) : Continuous (fun (_ : X) ↦ y) := by fun_prop
 
-example {f : Y → Y} (y : Y) : Continuous (f ∘ (fun (_ : X) => y)) := by continuity
+example {f : Y → Y} (y : Y) : Continuous (f ∘ (fun (_ : X) => y)) := by fun_prop
 
-example {g : X → X} (y : Y) : Continuous ((fun _ ↦ y) ∘ g) := by continuity
+example {g : X → X} (y : Y) : Continuous ((fun _ ↦ y) ∘ g) := by fun_prop
 
-example {f : X → Y} (x : X) : Continuous (fun (_ : X) ↦ f x) := by continuity
+example {f : X → Y} (x : X) : Continuous (fun (_ : X) ↦ f x) := by fun_prop
 
 example (f₁ f₂ : X → Y) (hf₁ : Continuous f₁) (hf₂ : Continuous f₂)
     (g : Y → ℝ) (hg : Continuous g) : Continuous (fun x => (max (g (f₁ x)) (g (f₂ x))) + 1) := by
@@ -47,27 +47,27 @@ example : Continuous (fun x : ℝ => exp ((max x (-x)) + sin (cos x))^2) := by
 
 -- Examples taken from `Topology.ContinuousFunction.Basic`:
 
-example (b : Y) : Continuous (fun _ : X => b) := by continuity
+example (b : Y) : Continuous (fun _ : X => b) := by fun_prop
 
-example (f : C(X, Y)) (g : C(Y, Z)) : Continuous (g ∘ f) := by continuity
+example (f : C(X, Y)) (g : C(Y, Z)) : Continuous (g ∘ f) := by fun_prop
 
-example (f : C(X, Y)) (g : C(X, Z)) : Continuous (fun x => (f x, g x)) := by continuity
+example (f : C(X, Y)) (g : C(X, Z)) : Continuous (fun x => (f x, g x)) := by fun_prop
 
-example (f : C(X, Y)) (g : C(W, Z)) : Continuous (Prod.map f g) := --by continuity
+example (f : C(X, Y)) (g : C(W, Z)) : Continuous (Prod.map f g) := --by fun_prop
   f.continuous.prod_map g.continuous
 
-example (f : ∀ i, C(X, X' i)) : Continuous (fun a i => f i a) := by continuity
+example (f : ∀ i, C(X, X' i)) : Continuous (fun a i => f i a) := by fun_prop
 
-example (s : Set X) (f : C(X, Y)) : Continuous (f ∘ ((↑) : s → X)) := by continuity
+example (s : Set X) (f : C(X, Y)) : Continuous (f ∘ ((↑) : s → X)) := by fun_prop
 
 -- Examples taken from `Topology.CompactOpen`:
 
-example (b : Y) : Continuous (Function.const X b) := --by continuity
+example (b : Y) : Continuous (Function.const X b) := --by fun_prop
   continuous_const
 
-example (b : Y) : Continuous (@Prod.mk Y X b) := by continuity
+example (b : Y) : Continuous (@Prod.mk Y X b) := by fun_prop
 
-example (f : C(X × Y, Z)) (a : X) : Continuous (Function.curry f a) := --by continuity
+example (f : C(X × Y, Z)) (a : X) : Continuous (Function.curry f a) := --by fun_prop
   f.continuous.comp (continuous_const.prod_mk continuous_id)
 
 end basic

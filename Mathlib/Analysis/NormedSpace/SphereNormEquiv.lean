@@ -39,4 +39,4 @@ noncomputable def homeomorphUnitSphereProd :
     ext <;> simp [hx, norm_smul, hr.le, abs_of_pos hr, hr.ne']
   continuous_toFun := by
     refine .prod_mk (.codRestrict (.smul (.inv₀ ?_ ?_) ?_) _) ?_ <;> continuity
-  continuous_invFun := by continuity
+  continuous_invFun := by fun_prop

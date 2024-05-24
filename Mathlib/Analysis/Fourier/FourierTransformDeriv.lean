@@ -206,7 +206,7 @@ lemma fourierPowSMulRight_eq_comp {f : V → E} {v : V} {n : ℕ} :
       (compContinuousLinearMapLRight
         (ContinuousMultilinearMap.mkPiAlgebra ℝ (Fin n) ℝ) (fun _ ↦ L v)) (f v) := rfl
 
-@[continuity, fun_prop]
+@[fun_prop]
 lemma _root_.Continuous.fourierPowSMulRight {f : V → E} (hf : Continuous f) (n : ℕ) :
     Continuous (fun v ↦ fourierPowSMulRight L f v n) := by
   simp_rw [fourierPowSMulRight_eq_comp]

@@ -30,6 +30,9 @@ example {n} (y : ℝ) (hy : y≠0) :
     ContDiffAt ℝ n foo y :=
   by unfold foo; fun_prop (disch:=aesop)
 
+example : Continuous fun ((x, _, _) : ℝ × ℝ × ℝ) ↦ x := by fun_prop
+example : Continuous fun ((_, y, _) : ℝ × ℝ × ℝ) ↦ y := by fun_prop
+example : Continuous fun ((_, _, z) : ℝ × ℝ × ℝ) ↦ z := by fun_prop
 
 -- This theorem is meant to work together with `measurable_of_continuousOn_compl_singleton`
 -- Unification of `(hf : ContinuousOn f {a}ᶜ)` with this theorem determines the point `a` to be `0`
@@ -79,3 +82,6 @@ private theorem t1 : (5: ℕ) + (1 : ℕ∞) ≤ (12 : ℕ∞) := by norm_cast
 example {f : ℝ → ℝ} (hf : ContDiff ℝ 12 f) :
     Differentiable ℝ (iteratedDeriv 5 (fun x => f (2*(f (x + x))) + x)) :=
   by fun_prop (disch:=(exact t1))
+
+
+

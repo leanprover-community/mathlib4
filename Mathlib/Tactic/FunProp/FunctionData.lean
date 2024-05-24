@@ -77,6 +77,17 @@ def getFunctionData (f : Expr) : MetaM FunctionData := do
 
     Mor.withApp b fun fn args => do
 
+      let mut fn := fn
+      let mut args := args
+
+      -- revert projection in fn
+      if let .proj n i x := fn then
+        let .some info := getStructureInfo? (← getEnv) n | unreachable!
+        let .some projName := info.getProjFn? i | unreachable!
+        let p ← mkAppM projName #[x]
+        fn := p.getAppFn
+        args := p.getAppArgs.map (fun a => {expr:=a}) ++ args
+
       let mainArgs := args
         |>.mapIdx (fun i ⟨arg,_⟩ => if arg.containsFVar xId then some i.1 else none)
         |>.filterMap id

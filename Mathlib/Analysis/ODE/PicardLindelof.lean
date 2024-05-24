@@ -147,7 +147,7 @@ theorem proj_of_mem {t : ℝ} (ht : t ∈ Icc v.tMin v.tMax) : ↑(v.proj t) = t
   simp only [proj, projIcc_of_mem v.tMin_le_tMax ht]
 #align picard_lindelof.proj_of_mem PicardLindelof.proj_of_mem
 
-@[continuity]
+@[fun_prop]
 theorem continuous_proj : Continuous v.proj :=
   continuous_projIcc
 #align picard_lindelof.continuous_proj PicardLindelof.continuous_proj

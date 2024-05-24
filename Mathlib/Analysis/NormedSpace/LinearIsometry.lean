@@ -90,7 +90,7 @@ protected theorem isometry [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : �
   AddMonoidHomClass.isometry_of_norm _ (norm_map _)
 #align semilinear_isometry_class.isometry SemilinearIsometryClass.isometry
 
-@[continuity]
+@[fun_prop]
 protected theorem continuous [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) : Continuous f :=
   (SemilinearIsometryClass.isometry f).continuous
 #align semilinear_isometry_class.continuous SemilinearIsometryClass.continuous
@@ -305,7 +305,7 @@ protected theorem antilipschitz : AntilipschitzWith 1 f :=
   f.isometry.antilipschitz
 #align linear_isometry.antilipschitz LinearIsometry.antilipschitz
 
-@[continuity]
+@[fun_prop]
 protected theorem continuous : Continuous f :=
   f.isometry.continuous
 #align linear_isometry.continuous LinearIsometry.continuous

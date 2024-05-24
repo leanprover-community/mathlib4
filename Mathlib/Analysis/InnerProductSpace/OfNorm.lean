@@ -34,7 +34,7 @@ to prove it is an inner product, i.e., that it is conjugate-symmetric (`inner_.c
 linear in the first argument. `add_left` is proved by judicious application of the parallelogram
 identity followed by tedious arithmetic. `smul_left` is proved step by step, first noting that
 $\langle λ x, y \rangle = λ \langle x, y \rangle$ for $λ ∈ ℕ$, $λ = -1$, hence $λ ∈ ℤ$ and $λ ∈ ℚ$
-by arithmetic. Then by continuity and the fact that ℚ is dense in ℝ, the same is true for ℝ.
+by arithmetic. Then by fun_prop and the fact that ℚ is dense in ℝ, the same is true for ℝ.
 The case of ℂ then follows by applying the result for ℝ and more arithmetic.
 
 ## TODO

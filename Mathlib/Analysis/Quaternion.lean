@@ -189,38 +189,38 @@ noncomputable def linearIsometryEquivTuple : ℍ ≃ₗᵢ[ℝ] EuclideanSpace �
     norm_map' := norm_piLp_equiv_symm_equivTuple }
 #align quaternion.linear_isometry_equiv_tuple Quaternion.linearIsometryEquivTuple
 
-@[continuity]
+@[fun_prop]
 theorem continuous_coe : Continuous (coe : ℝ → ℍ) :=
   continuous_algebraMap ℝ ℍ
 #align quaternion.continuous_coe Quaternion.continuous_coe
 
-@[continuity]
+@[fun_prop]
 theorem continuous_normSq : Continuous (normSq : ℍ → ℝ) := by
   simpa [← normSq_eq_norm_mul_self] using
     (continuous_norm.mul continuous_norm : Continuous fun q : ℍ => ‖q‖ * ‖q‖)
 #align quaternion.continuous_norm_sq Quaternion.continuous_normSq
 
-@[continuity]
+@[fun_prop]
 theorem continuous_re : Continuous fun q : ℍ => q.re :=
   (continuous_apply 0).comp linearIsometryEquivTuple.continuous
 #align quaternion.continuous_re Quaternion.continuous_re
 
-@[continuity]
+@[fun_prop]
 theorem continuous_imI : Continuous fun q : ℍ => q.imI :=
   (continuous_apply 1).comp linearIsometryEquivTuple.continuous
 #align quaternion.continuous_im_i Quaternion.continuous_imI
 
-@[continuity]
+@[fun_prop]
 theorem continuous_imJ : Continuous fun q : ℍ => q.imJ :=
   (continuous_apply 2).comp linearIsometryEquivTuple.continuous
 #align quaternion.continuous_im_j Quaternion.continuous_imJ
 
-@[continuity]
+@[fun_prop]
 theorem continuous_imK : Continuous fun q : ℍ => q.imK :=
   (continuous_apply 3).comp linearIsometryEquivTuple.continuous
 #align quaternion.continuous_im_k Quaternion.continuous_imK
 
-@[continuity]
+@[fun_prop]
 theorem continuous_im : Continuous fun q : ℍ => q.im := by
   simpa only [← sub_self_re] using continuous_id.sub (continuous_coe.comp continuous_re)
 #align quaternion.continuous_im Quaternion.continuous_im

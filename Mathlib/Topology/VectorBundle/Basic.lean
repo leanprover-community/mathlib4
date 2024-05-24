@@ -776,7 +776,7 @@ instance vectorBundle : VectorBundle R F Z.Fiber where
 #align vector_bundle_core.vector_bundle VectorBundleCore.vectorBundle
 
 /-- The projection on the base of a vector bundle created from core is continuous -/
-@[continuity]
+@[fun_prop]
 theorem continuous_proj : Continuous Z.proj :=
   Z.toFiberBundleCore.continuous_proj
 #align vector_bundle_core.continuous_proj VectorBundleCore.continuous_proj
@@ -951,7 +951,7 @@ theorem totalSpaceMk_preimage_source (b : B) :
   a.toFiberPrebundle.totalSpaceMk_preimage_source b
 #align vector_prebundle.total_space_mk_preimage_source VectorPrebundle.totalSpaceMk_preimage_source
 
-@[continuity]
+@[fun_prop]
 theorem continuous_totalSpaceMk (b : B) :
     Continuous[_, a.totalSpaceTopology] (.mk b) :=
   a.toFiberPrebundle.continuous_totalSpaceMk b

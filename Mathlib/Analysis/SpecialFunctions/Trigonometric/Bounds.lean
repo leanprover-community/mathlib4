@@ -64,7 +64,7 @@ lemma one_sub_sq_div_two_le_cos : 1 - x ^ 2 / 2 ≤ cos x := by
     simpa using this left_mem_Ici hx₀ hx₀
   refine monotoneOn_of_hasDerivWithinAt_nonneg
     (convex_Ici _)
-    (Continuous.continuousOn <| by continuity)
+    (Continuous.continuousOn <| by fun_prop)
     (fun x _ ↦ ((hasDerivAt_cos ..).add <| (hasDerivAt_pow ..).div_const _).hasDerivWithinAt)
     fun x hx ↦ ?_
   simpa [mul_div_cancel_left₀] using sin_le <| interior_subset hx
@@ -75,7 +75,7 @@ lemma two_div_pi_mul_le_sin (hx₀ : 0 ≤ x) (hx : x ≤ π / 2) : 2 / π * x �
   suffices ConcaveOn ℝ (Icc 0 (π / 2)) (fun x ↦ sin x - 2 / π * x) by
     refine (le_min ?_ ?_).trans $ this.min_le_of_mem_Icc ⟨hx₀, hx⟩ <;> field_simp
   exact concaveOn_of_hasDerivWithinAt2_nonpos (convex_Icc ..)
-    (Continuous.continuousOn $ by continuity)
+    (Continuous.continuousOn $ by fun_prop)
     (fun x _ ↦ ((hasDerivAt_sin ..).sub $ (hasDerivAt_id ..).const_mul (2 / π)).hasDerivWithinAt)
     (fun x _ ↦ (hasDerivAt_cos ..).hasDerivWithinAt.sub_const _)
     fun x hx ↦ neg_nonpos.2 $ sin_nonneg_of_mem_Icc $ Icc_subset_Icc_right (by linarith) $
@@ -102,7 +102,7 @@ lemma cos_quadratic_upper_bound (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x
   have hmono : MonotoneOn (fun x ↦ 1 - 2 / π ^ 2 * x ^ 2 - cos x) (Icc 0 (π / 2)) := by
     refine monotoneOn_of_hasDerivWithinAt_nonneg
       (convex_Icc ..)
-      (Continuous.continuousOn $ by continuity)
+      (Continuous.continuousOn $ by fun_prop)
       (fun x _ ↦ (hderiv _).hasDerivWithinAt)
       fun x hx ↦ sub_nonneg.2 ?_
     have ⟨hx₀, hx⟩ := interior_subset hx
@@ -114,7 +114,7 @@ lemma cos_quadratic_upper_bound (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x
   have hconc : ConcaveOn ℝ (Icc (π / 2) π) (fun x ↦ 1 - 2 / π ^ 2 * x ^ 2 - cos x) := by
     set_option tactic.skipAssignedInstances false in
     refine concaveOn_of_hasDerivWithinAt2_nonpos (convex_Icc ..)
-      (Continuous.continuousOn $ by continuity) (fun x _ ↦ (hderiv _).hasDerivWithinAt)
+      (Continuous.continuousOn $ by fun_prop) (fun x _ ↦ (hderiv _).hasDerivWithinAt)
       (fun x _ ↦ ((hasDerivAt_sin ..).sub $ (hasDerivAt_id ..).const_mul _).hasDerivWithinAt)
       fun x hx ↦ ?_
     have ⟨hx, hx'⟩ := interior_subset hx

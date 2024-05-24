@@ -191,7 +191,7 @@ theorem uniformContinuous_map : UniformContinuous (map f) :=
   pkg.uniformContinuous_extend
 #align abstract_completion.uniform_continuous_map AbstractCompletion.uniformContinuous_map
 
-@[continuity]
+@[fun_prop]
 theorem continuous_map : Continuous (map f) :=
   pkg.continuous_extend
 #align abstract_completion.continuous_map AbstractCompletion.continuous_map

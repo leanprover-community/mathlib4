@@ -153,7 +153,7 @@ instance (priority := 100) BoundedSMul.continuousSMul : ContinuousSMul α β whe
     rw [Metric.continuous_iff]
     rintro ⟨a, b⟩ ε ε0
     obtain ⟨δ, δ0, hδε⟩ : ∃ δ > 0, δ * (δ + dist b 0) + dist a 0 * δ < ε
-    · have : Continuous fun δ ↦ δ * (δ + dist b 0) + dist a 0 * δ := by continuity
+    · have : Continuous fun δ ↦ δ * (δ + dist b 0) + dist a 0 * δ := by fun_prop
       refine ((this.tendsto' _ _ ?_).eventually (gt_mem_nhds ε0)).exists_gt
       simp
     refine ⟨δ, δ0, fun (a', b') hab' => ?_⟩

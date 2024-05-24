@@ -35,7 +35,7 @@ theorem Filter.Tendsto.IccExtend' (f : γ → Icc a b → β) {z : γ} {l : Filt
 
 variable [TopologicalSpace α] [OrderTopology α] [TopologicalSpace β]
 
-@[continuity]
+@[fun_prop]
 theorem continuous_projIcc : Continuous (projIcc a b h) :=
   (continuous_const.max <| continuous_const.min continuous_id).subtype_mk _
 #align continuous_proj_Icc continuous_projIcc
@@ -58,7 +58,7 @@ protected theorem Continuous.IccExtend {f : γ → Icc a b → β} {g : γ → �
 #align continuous.Icc_extend Continuous.IccExtend
 
 /-- A useful special case of `Continuous.IccExtend`. -/
-@[continuity]
+@[fun_prop]
 protected theorem Continuous.Icc_extend' {f : Icc a b → β} (hf : Continuous f) :
     Continuous (IccExtend h f) :=
   hf.comp continuous_projIcc

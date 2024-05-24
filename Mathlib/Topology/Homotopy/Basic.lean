@@ -237,8 +237,8 @@ def trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁
   continuous_toFun := by
     refine'
       continuous_if_le (continuous_induced_dom.comp continuous_fst) continuous_const
-        (F.continuous.comp (by continuity)).continuousOn
-        (G.continuous.comp (by continuity)).continuousOn _
+        (F.continuous.comp (by fun_prop)).continuousOn
+        (G.continuous.comp (by fun_prop)).continuousOn _
     rintro x hx
     norm_num [hx]
   map_zero_left x := by set_option tactic.skipAssignedInstances false in norm_num
@@ -441,7 +441,7 @@ def Simps.apply (F : HomotopyWith f₀ f₁ P) : I × X → Y := F
 initialize_simps_projections HomotopyWith (toHomotopy_toContinuousMap_toFun → apply,
   -toHomotopy_toContinuousMap)
 
-@[continuity]
+@[fun_prop]
 protected theorem continuous (F : HomotopyWith f₀ f₁ P) : Continuous F :=
   F.continuous_toFun
 #align continuous_map.homotopy_with.continuous ContinuousMap.HomotopyWith.continuous

@@ -70,7 +70,7 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
     have : f ∘ s = fun n => ∑ k in range (n + 1), v k := by
       ext n
       simp [s, map_sum, hu]
-    /- In the above equality, the left-hand-side converges to `f g` by continuity of `f` and
+    /- In the above equality, the left-hand-side converges to `f g` by fun_prop of `f` and
       definition of `g` while the right-hand-side converges to `h` by construction of `v` so
       `g` is indeed a preimage of `h`. -/
     rw [← this] at lim_v
