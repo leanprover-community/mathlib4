@@ -341,15 +341,13 @@ lemma map_prime_pow_mul {F : Type*} [CommSemiring F] {f : ℕ → F}
   hmul <| Coprime.pow_left _ <| hp.smoothNumbers_coprime <| Subtype.mem m
 
 /-- The product of two `n`-smooth numbers is a `n`-smooth number -/
-theorem mul_mem_smoothNumbers (m₁ m₂ n : ℕ)
+theorem mul_mem_smoothNumbers {m₁ m₂ n : ℕ}
     (hm1 : m₁ ∈ n.smoothNumbers) (hm2 : m₂ ∈ n.smoothNumbers) :
-      (m₁ * m₂) ∈ n.smoothNumbers := by
-  have hm1z : m₁ ≠ 0 := ne_zero_of_mem_smoothNumbers hm1
-  have hm2z : m₂ ≠ 0 := ne_zero_of_mem_smoothNumbers hm2
-  apply primeFactors_subset_of_mem_smoothNumbers at hm1
-  apply primeFactors_subset_of_mem_smoothNumbers at hm2
-  exact mem_smoothNumbers_of_primeFactors_subset (m₁ * m₂) n (mul_ne_zero hm1z hm2z)
-    <| (primeFactors_mul hm1z hm2z) ▸ Finset.union_subset hm1 hm2
+      (m₁ * m₂) ∈ n.smoothNumbers :=
+  have hm1' := primeFactors_subset_of_mem_smoothNumbers hm1
+  have hm2' := primeFactors_subset_of_mem_smoothNumbers hm2
+  mem_smoothNumbers_of_primeFactors_subset (mul_ne_zero hm1.1 hm2.1)
+    <| primeFactors_mul hm1.1 hm2.1 ▸ Finset.union_subset hm1' hm2'
 
 open List Perm Equiv in
 /-- We establish the bijection from `ℕ × smoothNumbers p` to `smoothNumbers (p+1)`
