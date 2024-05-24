@@ -114,7 +114,7 @@ theorem derivative_succ_aux (n ν : ℕ) :
       bernsteinPolynomial, map_add, map_natCast, Nat.cast_one]
   conv_rhs => rw [mul_sub]
   -- We'll prove the two terms match up separately.
-  refine' congr (congr_arg Sub.sub _) _
+  refine congr (congr_arg Sub.sub ?_) ?_
   · simp only [← mul_assoc]
     refine' congr (congr_arg (· * ·) (congr (congr_arg (· * ·) _) rfl)) rfl
     -- Now it's just about binomial coefficients
@@ -243,8 +243,7 @@ open Submodule
 theorem linearIndependent_aux (n k : ℕ) (h : k ≤ n + 1) :
     LinearIndependent ℚ fun ν : Fin k => bernsteinPolynomial ℚ n ν := by
   induction' k with k ih
-  · simp [Nat.zero_eq]
-    apply linearIndependent_empty_type
+  · apply linearIndependent_empty_type
   · apply linearIndependent_fin_succ'.mpr
     fconstructor
     · exact ih (le_of_lt h)
@@ -325,7 +324,7 @@ theorem sum_smul (n : ℕ) :
         ring
     rw [add_pow, map_sum (pderiv true), map_sum (MvPolynomial.aeval e), Finset.sum_mul]
     -- Step inside the sum:
-    refine' Finset.sum_congr rfl fun k _ => (w k).trans _
+    refine Finset.sum_congr rfl fun k _ => (w k).trans ?_
     simp only [x, y, e, pderiv_true_x, pderiv_true_y, Algebra.id.smul_eq_mul, nsmul_eq_mul,
       Bool.cond_true, Bool.cond_false, add_zero, mul_one, mul_zero, smul_zero, MvPolynomial.aeval_X,
       MvPolynomial.pderiv_mul, Derivation.leibniz_pow, Derivation.map_natCast, map_natCast, map_pow,
@@ -365,7 +364,7 @@ theorem sum_mul_smul (n : ℕ) :
     rw [add_pow, map_sum (pderiv true), map_sum (pderiv true), map_sum (MvPolynomial.aeval e),
       Finset.sum_mul]
     -- Step inside the sum:
-    refine' Finset.sum_congr rfl fun k _ => (w k).trans _
+    refine Finset.sum_congr rfl fun k _ => (w k).trans ?_
     simp only [x, y, e, pderiv_true_x, pderiv_true_y, Algebra.id.smul_eq_mul, nsmul_eq_mul,
       Bool.cond_true, Bool.cond_false, add_zero, zero_add, mul_zero, smul_zero, mul_one,
       MvPolynomial.aeval_X, MvPolynomial.pderiv_X_self, MvPolynomial.pderiv_X_of_ne,

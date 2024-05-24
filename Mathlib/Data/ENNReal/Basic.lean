@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Data.Real.NNReal
-import Mathlib.Data.Set.Intervals.WithBotTop
+import Mathlib.Order.Interval.Set.WithBotTop
 
 #align_import data.real.ennreal from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
 
@@ -187,11 +187,11 @@ theorem range_coe' : range ofNNReal = Iio ∞ := WithTop.range_coe
 theorem range_coe : range ofNNReal = {∞}ᶜ := (isCompl_range_some_none ℝ≥0).symm.compl_eq.symm
 
 /-- `toNNReal x` returns `x` if it is real, otherwise 0. -/
-@[pp_dot] protected def toNNReal : ℝ≥0∞ → ℝ≥0 := WithTop.untop' 0
+protected def toNNReal : ℝ≥0∞ → ℝ≥0 := WithTop.untop' 0
 #align ennreal.to_nnreal ENNReal.toNNReal
 
 /-- `toReal x` returns `x` if it is real, `0` otherwise. -/
-@[pp_dot] protected def toReal (a : ℝ≥0∞) : Real := a.toNNReal
+protected def toReal (a : ℝ≥0∞) : Real := a.toNNReal
 #align ennreal.to_real ENNReal.toReal
 
 /-- `ofReal x` returns `x` if it is nonnegative, `0` otherwise. -/
@@ -653,7 +653,7 @@ theorem lt_iff_exists_nnreal_btwn : a < b ↔ ∃ r : ℝ≥0, a < r ∧ (r : �
 #align ennreal.lt_iff_exists_nnreal_btwn ENNReal.lt_iff_exists_nnreal_btwn
 
 theorem lt_iff_exists_add_pos_lt : a < b ↔ ∃ r : ℝ≥0, 0 < r ∧ a + r < b := by
-  refine' ⟨fun hab => _, fun ⟨r, _, hr⟩ => lt_of_le_of_lt le_self_add hr⟩
+  refine ⟨fun hab => ?_, fun ⟨r, _, hr⟩ => lt_of_le_of_lt le_self_add hr⟩
   rcases lt_iff_exists_nnreal_btwn.1 hab with ⟨c, ac, cb⟩
   lift a to ℝ≥0 using ac.ne_top
   rw [coe_lt_coe] at ac
@@ -826,7 +826,7 @@ theorem preimage_coe_nnreal_ennreal (h : u.OrdConnected) : ((↑) ⁻¹' u : Set
 
 -- Porting note (#11215): TODO: generalize to `WithTop`
 theorem image_coe_nnreal_ennreal (h : t.OrdConnected) : ((↑) '' t : Set ℝ≥0∞).OrdConnected := by
-  refine' ⟨forall_mem_image.2 fun x hx => forall_mem_image.2 fun y hy z hz => _⟩
+  refine ⟨forall_mem_image.2 fun x hx => forall_mem_image.2 fun y hy z hz => ?_⟩
   rcases ENNReal.le_coe_iff.1 hz.2 with ⟨z, rfl, -⟩
   exact mem_image_of_mem _ (h.out hx hy ⟨ENNReal.coe_le_coe.1 hz.1, ENNReal.coe_le_coe.1 hz.2⟩)
 #align set.ord_connected.image_coe_nnreal_ennreal Set.OrdConnected.image_coe_nnreal_ennreal
@@ -870,11 +870,6 @@ def evalENNRealOfNNReal : PositivityExt where eval {u α} _zα _pα e := do
 
 end Mathlib.Meta.Positivity
 
-/-!
-### Deprecated lemmas
-
-Those lemmas have been deprecated on the 2023/12/23.
--/
-
+-- 2023-12-23
 @[deprecated] protected alias ENNReal.le_inv_smul_iff_of_pos := le_inv_smul_iff_of_pos
 @[deprecated] protected alias ENNReal.inv_smul_le_iff_of_pos := inv_smul_le_iff_of_pos

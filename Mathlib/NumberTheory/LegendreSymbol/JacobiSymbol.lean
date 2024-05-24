@@ -374,7 +374,8 @@ theorem even_odd {a : ℤ} {b : ℕ} (ha2 : a % 2 = 0) (hb2 : b % 2 = 1) :
     if_neg (Nat.mod_two_ne_zero.mpr hb2)]
   have := Nat.mod_lt b (by decide : 0 < 8)
   interval_cases h : b % 8 <;> simp_all <;>
-    exact absurd (hb2 ▸ h ▸ Nat.mod_mod_of_dvd b (by decide : 2 ∣ 8)) zero_ne_one
+  · have := hb2 ▸ h ▸ Nat.mod_mod_of_dvd b (by decide : 2 ∣ 8)
+    simp_all
 
 end jacobiSym
 
@@ -423,11 +424,11 @@ protected theorem symm {m n : ℕ} (hm : Odd m) (hn : Odd n) : qrSign m n = qrSi
 /-- We can move `qrSign m n` from one side of an equality to the other when `m` and `n` are odd. -/
 theorem eq_iff_eq {m n : ℕ} (hm : Odd m) (hn : Odd n) (x y : ℤ) :
     qrSign m n * x = y ↔ x = qrSign m n * y := by
-  refine'
+  refine
       ⟨fun h' =>
         let h := h'.symm
-        _,
-        fun h => _⟩ <;>
+        ?_,
+        fun h => ?_⟩ <;>
     rw [h, ← mul_assoc, ← pow_two, sq_eq_one hm hn, one_mul]
 #align qr_sign.eq_iff_eq qrSign.eq_iff_eq
 
@@ -441,17 +442,17 @@ theorem quadratic_reciprocity' {a b : ℕ} (ha : Odd a) (hb : Odd b) :
   -- define the right hand side for fixed `a` as a `ℕ →* ℤ`
   let rhs : ℕ → ℕ →* ℤ := fun a =>
     { toFun := fun x => qrSign x a * J(x | a)
-      map_one' := by convert ← mul_one (M := ℤ) _; symm; all_goals apply one_left
+      map_one' := by convert ← mul_one (M := ℤ) _; (on_goal 1 => symm); all_goals apply one_left
       map_mul' := fun x y => by
         -- Porting note: `simp_rw` on line 423 replaces `rw` to allow the rewrite rules to be
         -- applied under the binder `fun ↦ ...`
         simp_rw [qrSign.mul_left x y a, Nat.cast_mul, mul_left, mul_mul_mul_comm] }
   have rhs_apply : ∀ a b : ℕ, rhs a b = qrSign b a * J(b | a) := fun a b => rfl
-  refine' value_at a (rhs a) (fun p pp hp => Eq.symm _) hb
+  refine value_at a (rhs a) (fun p pp hp => Eq.symm ?_) hb
   have hpo := pp.eq_two_or_odd'.resolve_left hp
   rw [@legendreSym.to_jacobiSym p ⟨pp⟩, rhs_apply, Nat.cast_id, qrSign.eq_iff_eq hpo ha,
     qrSign.symm hpo ha]
-  refine' value_at p (rhs p) (fun q pq hq => _) ha
+  refine value_at p (rhs p) (fun q pq hq => ?_) ha
   have hqo := pq.eq_two_or_odd'.resolve_left hq
   rw [rhs_apply, Nat.cast_id, ← @legendreSym.to_jacobiSym p ⟨pp⟩, qrSign.symm hqo hpo,
     qrSign.neg_one_pow hpo hqo, @legendreSym.quadratic_reciprocity' p q ⟨pp⟩ ⟨pq⟩ hp hq]
@@ -506,12 +507,13 @@ theorem mod_right' (a : ℕ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * 
   rw [Nat.cast_mul, mul_left, mul_left, quadratic_reciprocity' ha₁ hb,
     quadratic_reciprocity' ha₁ hb', Nat.cast_pow, pow_left, pow_left, Nat.cast_two, at_two hb,
     at_two hb']
-  congr 1; swap; congr 1
-  · simp_rw [qrSign]
-    rw [χ₄_nat_mod_four, χ₄_nat_mod_four (b % (4 * a)), mod_mod_of_dvd b (dvd_mul_right 4 a)]
-  · rw [mod_left ↑(b % _), mod_left b, Int.natCast_mod, Int.emod_emod_of_dvd b]
-    simp only [ha₂, Nat.cast_mul, ← mul_assoc]
-    apply dvd_mul_left
+  congr 1; swap;
+  · congr 1
+    · simp_rw [qrSign]
+      rw [χ₄_nat_mod_four, χ₄_nat_mod_four (b % (4 * a)), mod_mod_of_dvd b (dvd_mul_right 4 a)]
+    · rw [mod_left ↑(b % _), mod_left b, Int.natCast_mod, Int.emod_emod_of_dvd b]
+      simp only [ha₂, Nat.cast_mul, ← mul_assoc]
+      apply dvd_mul_left
   -- Porting note: In mathlib3, it was written `cases' e`. In Lean 4, this resulted in the choice
   -- of a name other than e (for the case distinction of line 482) so we indicate the name
   -- to use explicitly.

@@ -54,8 +54,6 @@ attribute [inherit_doc NormalMono] NormalMono.Z NormalMono.g NormalMono.w Normal
 
 section
 
-attribute [local instance] Equivalence.essSurj_of_equivalence
-
 /-- If `F` is an equivalence and `F.map f` is a normal mono, then `f` is a normal mono. -/
 def equivalenceReflectsNormalMono {D : Type u₂} [Category.{v₁} D] [HasZeroMorphisms D] (F : C ⥤ D)
     [F.IsEquivalence] {X Y : C} {f : X ⟶ Y} (hf : NormalMono (F.map f)) : NormalMono f where
@@ -71,7 +69,7 @@ def equivalenceReflectsNormalMono {D : Type u₂} [Category.{v₁} D] [HasZeroMo
         IsLimit.ofIsoLimit
           (IsLimit.ofIsoLimit
             (IsKernel.ofCompIso _ _ (F.objObjPreimageIso hf.Z) (by
-              simp only [Functor.image_preimage, Category.assoc, Iso.inv_hom_id, Category.comp_id])
+              simp only [Functor.map_preimage, Category.assoc, Iso.inv_hom_id, Category.comp_id])
             hf.isLimit)
             (ofιCongr (Category.comp_id _).symm))
         <| by apply Iso.symm; apply isoOfι  -- Porting note: very fiddly unification here
@@ -171,8 +169,6 @@ attribute [inherit_doc NormalEpi] NormalEpi.W NormalEpi.g NormalEpi.w NormalEpi.
 
 section
 
-attribute [local instance] Equivalence.essSurj_of_equivalence
-
 /-- If `F` is an equivalence and `F.map f` is a normal epi, then `f` is a normal epi. -/
 def equivalenceReflectsNormalEpi {D : Type u₂} [Category.{v₁} D] [HasZeroMorphisms D] (F : C ⥤ D)
     [F.IsEquivalence] {X Y : C} {f : X ⟶ Y} (hf : NormalEpi (F.map f)) : NormalEpi f where
@@ -244,8 +240,7 @@ open Opposite
 variable [HasZeroMorphisms C]
 
 /-- A normal mono becomes a normal epi in the opposite category. -/
-def normalEpiOfNormalMonoUnop {X Y : Cᵒᵖ} (f : X ⟶ Y) (m : NormalMono f.unop) : NormalEpi f
-    where
+def normalEpiOfNormalMonoUnop {X Y : Cᵒᵖ} (f : X ⟶ Y) (m : NormalMono f.unop) : NormalEpi f where
   W := op m.Z
   g := m.g.op
   w := congrArg Quiver.Hom.op m.w
@@ -264,8 +259,7 @@ def normalEpiOfNormalMonoUnop {X Y : Cᵒᵖ} (f : X ⟶ Y) (m : NormalMono f.un
 #align category_theory.normal_epi_of_normal_mono_unop CategoryTheory.normalEpiOfNormalMonoUnop
 
 /-- A normal epi becomes a normal mono in the opposite category. -/
-def normalMonoOfNormalEpiUnop {X Y : Cᵒᵖ} (f : X ⟶ Y) (m : NormalEpi f.unop) : NormalMono f
-    where
+def normalMonoOfNormalEpiUnop {X Y : Cᵒᵖ} (f : X ⟶ Y) (m : NormalEpi f.unop) : NormalMono f where
   Z := op m.W
   g := m.g.op
   w := congrArg Quiver.Hom.op m.w

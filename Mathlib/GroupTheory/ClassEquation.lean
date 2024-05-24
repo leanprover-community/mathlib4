@@ -5,9 +5,9 @@ Authors: Johan Commelin, Eric Rodriguez
 -/
 
 import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Data.Set.Card
 import Mathlib.Algebra.Group.ConjFinite
-import Mathlib.GroupTheory.Subgroup.Finite
+import Mathlib.Algebra.Group.Subgroup.Finite
+import Mathlib.Data.Set.Card
 import Mathlib.GroupTheory.Subgroup.Center
 
 /-!

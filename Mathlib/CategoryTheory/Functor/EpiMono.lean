@@ -184,7 +184,7 @@ theorem preservesEpimorphsisms_of_adjunction {F : C ⥤ D} {G : D ⥤ C} (adj : 
 
 instance (priority := 100) preservesEpimorphisms_of_isLeftAdjoint (F : C ⥤ D) [IsLeftAdjoint F] :
     PreservesEpimorphisms F :=
-  preservesEpimorphsisms_of_adjunction (Adjunction.ofLeftAdjoint F)
+  preservesEpimorphsisms_of_adjunction (Adjunction.ofIsLeftAdjoint F)
 #align category_theory.functor.preserves_epimorphisms_of_is_left_adjoint CategoryTheory.Functor.preservesEpimorphisms_of_isLeftAdjoint
 
 theorem preservesMonomorphisms_of_adjunction {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) :
@@ -199,7 +199,7 @@ theorem preservesMonomorphisms_of_adjunction {F : C ⥤ D} {G : D ⥤ C} (adj : 
 
 instance (priority := 100) preservesMonomorphisms_of_isRightAdjoint (F : C ⥤ D) [IsRightAdjoint F] :
     PreservesMonomorphisms F :=
-  preservesMonomorphisms_of_adjunction (Adjunction.ofRightAdjoint F)
+  preservesMonomorphisms_of_adjunction (Adjunction.ofIsRightAdjoint F)
 #align category_theory.functor.preserves_monomorphisms_of_is_right_adjoint CategoryTheory.Functor.preservesMonomorphisms_of_isRightAdjoint
 
 instance (priority := 100) reflectsMonomorphisms_of_faithful (F : C ⥤ D) [Faithful F] :
@@ -221,20 +221,14 @@ section
 variable (F : C ⥤ D) {X Y : C} (f : X ⟶ Y)
 
 /-- If `F` is a fully faithful functor, split epimorphisms are preserved and reflected by `F`. -/
-def splitEpiEquiv [Full F] [Faithful F] : SplitEpi f ≃ SplitEpi (F.map f)
-    where
+noncomputable def splitEpiEquiv [Full F] [Faithful F] : SplitEpi f ≃ SplitEpi (F.map f) where
   toFun f := f.map F
-  invFun s := by
-    refine' ⟨F.preimage s.section_, _⟩
+  invFun s := ⟨F.preimage s.section_, by
     apply F.map_injective
-    simp only [map_comp, image_preimage, map_id]
-    apply SplitEpi.id
+    simp only [map_comp, map_preimage, map_id]
+    apply SplitEpi.id⟩
   left_inv := by aesop_cat
-  right_inv := by
-      simp only [Function.RightInverse,Function.LeftInverse]
-      intro x
-      simp only [SplitEpi.map, preimage]
-      aesop_cat
+  right_inv x := by aesop_cat
 #align category_theory.functor.split_epi_equiv CategoryTheory.Functor.splitEpiEquiv
 
 @[simp]
@@ -247,20 +241,14 @@ theorem isSplitEpi_iff [Full F] [Faithful F] : IsSplitEpi (F.map f) ↔ IsSplitE
 #align category_theory.functor.is_split_epi_iff CategoryTheory.Functor.isSplitEpi_iff
 
 /-- If `F` is a fully faithful functor, split monomorphisms are preserved and reflected by `F`. -/
-def splitMonoEquiv [Full F] [Faithful F] : SplitMono f ≃ SplitMono (F.map f)
-    where
+noncomputable def splitMonoEquiv [Full F] [Faithful F] : SplitMono f ≃ SplitMono (F.map f) where
   toFun f := f.map F
-  invFun s := by
-    refine' ⟨F.preimage s.retraction, _⟩
+  invFun s := ⟨F.preimage s.retraction, by
     apply F.map_injective
-    simp only [map_comp, image_preimage, map_id]
-    apply SplitMono.id
+    simp only [map_comp, map_preimage, map_id]
+    apply SplitMono.id⟩
   left_inv := by aesop_cat
-  right_inv := by
-    simp only [Function.RightInverse, Function.LeftInverse]
-    intro x
-    simp only [SplitMono.map,preimage]
-    aesop_cat
+  right_inv x := by aesop_cat
 #align category_theory.functor.split_mono_equiv CategoryTheory.Functor.splitMonoEquiv
 
 @[simp]

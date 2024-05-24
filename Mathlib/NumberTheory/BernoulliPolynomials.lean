@@ -103,7 +103,7 @@ theorem derivative_bernoulli_add_one (k : ℕ) :
   rw [range_add_one, sum_insert not_mem_range_self, tsub_self, cast_zero, mul_zero,
     map_zero, zero_add, mul_sum]
   -- the rest of the sum is termwise equal:
-  refine' sum_congr (by rfl) fun m _ => _
+  refine sum_congr (by rfl) fun m _ => ?_
   conv_rhs => rw [← Nat.cast_one, ← Nat.cast_add, ← C_eq_natCast, C_mul_monomial, mul_comm]
   rw [mul_assoc, mul_assoc, ← Nat.cast_mul, ← Nat.cast_mul]
   congr 3
@@ -178,7 +178,6 @@ theorem sum_range_pow_eq_bernoulli_sub (n p : ℕ) :
     · rw [Nat.sub_sub_self (mem_range_le hx)]
     · rw [← choose_symm (mem_range_le hx)]
   · norm_cast
-    apply succ_ne_zero _
 #align polynomial.sum_range_pow_eq_bernoulli_sub Polynomial.sum_range_pow_eq_bernoulli_sub
 
 /-- Rearrangement of `Polynomial.sum_range_pow_eq_bernoulli_sub`. -/
@@ -190,7 +189,7 @@ theorem bernoulli_succ_eval (n p : ℕ) : (bernoulli p.succ).eval (n : ℚ) =
 
 theorem bernoulli_eval_one_add (n : ℕ) (x : ℚ) :
     (bernoulli n).eval (1 + x) = (bernoulli n).eval x + n * x ^ (n - 1) := by
-  refine' Nat.strong_induction_on n fun d hd => _
+  refine Nat.strong_induction_on n fun d hd => ?_
   have nz : ((d.succ : ℕ) : ℚ) ≠ 0 := by
     norm_cast
   apply (mul_right_inj' nz).1

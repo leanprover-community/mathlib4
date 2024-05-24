@@ -193,14 +193,14 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
         hasBiproduct_of_total
           { pt := ⟨Σ j, (f j).ι, fun p => (f p.1).X p.2⟩
             π := fun j x y => by
-              refine' if h : x.1 = j then _ else 0
+              refine if h : x.1 = j then ?_ else 0
               refine' if h' : @Eq.ndrec (Fin n) x.1 (fun j => (f j).ι) x.2 _ h = y then _ else 0
               apply eqToHom
               substs h h'
               rfl
             -- Notice we were careful not to use `subst` until we had a goal in `Prop`.
             ι := fun j x y => by
-              refine' if h : y.1 = j then _ else 0
+              refine if h : y.1 = j then ?_ else 0
               refine' if h' : @Eq.ndrec _ y.1 (fun j => (f j).ι) y.2 _ h = x then _ else 0
               apply eqToHom
               substs h h'
@@ -316,7 +316,7 @@ namespace Embedding
 instance : (embedding C).Faithful where
   map_injective h := congr_fun (congr_fun h PUnit.unit) PUnit.unit
 
-instance : (embedding C).Full where preimage f := f PUnit.unit PUnit.unit
+instance : (embedding C).Full where map_surjective f := ⟨f PUnit.unit PUnit.unit, rfl⟩
 
 instance : Functor.Additive (embedding C) where
 
@@ -342,7 +342,7 @@ def isoBiproductEmbedding (M : Mat_ C) : M ≅ ⨁ fun i => (embedding C).obj (M
     rw [Finset.sum_apply, Finset.sum_apply, Finset.sum_eq_single i]; rotate_left
     · intro b _ hb
       dsimp
-      simp only [Finset.sum_const, Finset.card_singleton, one_smul]
+      simp only [Finset.sum_singleton]
       rw [dif_neg hb.symm, zero_comp]
     · intro h
       simp at h
@@ -644,17 +644,18 @@ instance : (equivalenceSingleObjInverse R).Faithful where
     exact congr_fun (congr_fun w _) _
 
 instance : (equivalenceSingleObjInverse R).Full where
-  preimage f i j := MulOpposite.op (f i j)
+  map_surjective f := ⟨fun i j => MulOpposite.op (f i j), rfl⟩
 
 instance : (equivalenceSingleObjInverse R).EssSurj where
   mem_essImage X :=
     ⟨{  ι := X
         X := fun _ => PUnit.unit }, ⟨eqToIso (by dsimp; cases X; congr)⟩⟩
 
+instance : (equivalenceSingleObjInverse R).IsEquivalence where
+
 /-- The categorical equivalence between the category of matrices over a ring,
 and the category of matrices over that ring considered as a single-object category. -/
 def equivalenceSingleObj : Mat R ≌ Mat_ (SingleObj Rᵐᵒᵖ) :=
-  haveI := Functor.IsEquivalence.ofFullyFaithfullyEssSurj (equivalenceSingleObjInverse R)
   (equivalenceSingleObjInverse R).asEquivalence.symm
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat.equivalence_single_obj CategoryTheory.Mat.equivalenceSingleObj

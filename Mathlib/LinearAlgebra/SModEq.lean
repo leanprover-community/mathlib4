@@ -18,10 +18,12 @@ open Submodule
 open Polynomial
 
 variable {R : Type*} [Ring R]
+variable {A : Type*} [CommRing A]
 variable {M : Type*} [AddCommGroup M] [Module R M] (U U₁ U₂ : Submodule R M)
 variable {x x₁ x₂ y y₁ y₂ z z₁ z₂ : M}
 variable {N : Type*} [AddCommGroup N] [Module R N] (V V₁ V₂ : Submodule R N)
 
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 /-- A predicate saying two elements of a module are equivalent modulo a submodule. -/
 def SModEq (x y : M) : Prop :=
   (Submodule.Quotient.mk x : M ⧸ U) = Submodule.Quotient.mk y
@@ -31,6 +33,7 @@ notation:50 x " ≡ " y " [SMOD " N "]" => SModEq N x y
 
 variable {U U₁ U₂}
 
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 protected theorem SModEq.def :
     x ≡ y [SMOD U] ↔ (Submodule.Quotient.mk x : M ⧸ U) = Submodule.Quotient.mk y :=
   Iff.rfl
@@ -90,6 +93,11 @@ theorem smul (hxy : x ≡ y [SMOD U]) (c : R) : c • x ≡ c • y [SMOD U] := 
   rw [SModEq.def] at hxy ⊢
   simp_rw [Quotient.mk_smul, hxy]
 #align smodeq.smul SModEq.smul
+
+theorem mul {I : Ideal A} {x₁ x₂ y₁ y₂ : A} (hxy₁ : x₁ ≡ y₁ [SMOD I])
+    (hxy₂ : x₂ ≡ y₂ [SMOD I]) : x₁ * x₂ ≡ y₁ * y₂ [SMOD I] := by
+  simp only [SModEq.def, Ideal.Quotient.mk_eq_mk, map_mul] at hxy₁ hxy₂ ⊢
+  rw [hxy₁, hxy₂]
 
 theorem zero : x ≡ 0 [SMOD U] ↔ x ∈ U := by rw [SModEq.def, Submodule.Quotient.eq, sub_zero]
 #align smodeq.zero SModEq.zero

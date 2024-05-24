@@ -556,8 +556,7 @@ section RightAlgebra
 
 /-- `S ⊗[R] T` has a `T`-algebra structure. This is not a global instance or else the action of
 `S` on `S ⊗[R] S` would be ambiguous. -/
-@[reducible]
-def rightAlgebra : Algebra B (A ⊗[R] B) :=
+abbrev rightAlgebra : Algebra B (A ⊗[R] B) :=
   (Algebra.TensorProduct.includeRight.toRingHom : B →+* A ⊗[R] B).toAlgebra
 #align algebra.tensor_product.right_algebra Algebra.TensorProduct.rightAlgebra
 
@@ -761,8 +760,8 @@ Note that if `A` is commutative this can be instantiated with `S = A`.
 -/
 protected nonrec def rid : A ⊗[R] R ≃ₐ[S] A :=
   algEquivOfLinearEquivTensorProduct (AlgebraTensorModule.rid R S A)
-    (fun _a₁ _a₂ _r₁ _r₂ => smul_mul_smul _ _ _ _ |>.symm)
-    (one_smul _ _)
+    (fun a₁ a₂ r₁ r₂ => smul_mul_smul r₁ r₂ a₁ a₂ |>.symm)
+    (one_smul R _)
 #align algebra.tensor_product.rid Algebra.TensorProduct.rid
 
 @[simp] theorem rid_toLinearEquiv :
@@ -1054,7 +1053,7 @@ variable (A)
 `A ⊗[R] M ≃ (ι →₀ A)` (which is in fact `A`-linear). -/
 noncomputable def basisAux : A ⊗[R] M ≃ₗ[R] ι →₀ A :=
   _root_.TensorProduct.congr (Finsupp.LinearEquiv.finsuppUnique R A PUnit.{uι+1}).symm b.repr ≪≫ₗ
-    (finsuppTensorFinsupp R A R PUnit ι).trans
+    (finsuppTensorFinsupp R R A R PUnit ι).trans
       (Finsupp.lcongr (Equiv.uniqueProd ι PUnit) (_root_.TensorProduct.rid R A))
 #align algebra.tensor_product.basis_aux Algebra.TensorProduct.basisAux
 
@@ -1222,7 +1221,7 @@ theorem endTensorEndAlgHom_apply (f : End A M) (g : End R N) :
 
 end Module
 
-theorem Subalgebra.finite_sup {K L : Type*} [CommRing K] [CommRing L] [Algebra K L]
+theorem Subalgebra.finite_sup {K L : Type*} [CommSemiring K] [CommSemiring L] [Algebra K L]
     (E1 E2 : Subalgebra K L) [Module.Finite K E1] [Module.Finite K E2] :
     Module.Finite K ↥(E1 ⊔ E2) := by
   rw [← E1.range_val, ← E2.range_val, ← Algebra.TensorProduct.productMap_range]

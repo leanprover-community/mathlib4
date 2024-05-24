@@ -3,7 +3,7 @@ Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov, Patrick Massot, Sébastien Gouëzel
 -/
-import Mathlib.Data.Set.Intervals.Disjoint
+import Mathlib.Order.Interval.Set.Disjoint
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 
@@ -172,7 +172,7 @@ theorem trans_iterate_Ico {a : ℕ → ℝ} {m n : ℕ} (hmn : m ≤ n)
     (hint : ∀ k ∈ Ico m n, IntervalIntegrable f μ (a k) (a <| k + 1)) :
     IntervalIntegrable f μ (a m) (a n) := by
   revert hint
-  refine' Nat.le_induction _ _ n hmn
+  refine Nat.le_induction ?_ ?_ n hmn
   · simp
   · intro p hp IH h
     exact (IH fun k hk => h k (Ico_subset_Ico_right p.le_succ hk)).trans (h p (by simp [hp]))
@@ -315,7 +315,7 @@ theorem comp_mul_left (hf : IntervalIntegrable f volume a b) (c : ℝ) :
     integrable_smul_measure (by simpa : ENNReal.ofReal |c⁻¹| ≠ 0) ENNReal.ofReal_ne_top,
     ← IntegrableOn, MeasurableEmbedding.integrableOn_map_iff A]
   convert hf using 1
-  · ext; simp only [comp_apply]; congr 1; field_simp; ring
+  · ext; simp only [comp_apply]; congr 1; field_simp
   · rw [preimage_mul_const_uIcc (inv_ne_zero hc)]; field_simp [hc]
 #align interval_integrable.comp_mul_left IntervalIntegrable.comp_mul_left
 
@@ -935,7 +935,7 @@ theorem sum_integral_adjacent_intervals_Ico {a : ℕ → ℝ} {m n : ℕ} (hmn :
     (hint : ∀ k ∈ Ico m n, IntervalIntegrable f μ (a k) (a <| k + 1)) :
     ∑ k : ℕ in Finset.Ico m n, ∫ x in a k..a <| k + 1, f x ∂μ = ∫ x in a m..a n, f x ∂μ := by
   revert hint
-  refine' Nat.le_induction _ _ n hmn
+  refine Nat.le_induction ?_ ?_ n hmn
   · simp
   · intro p hmp IH h
     rw [Finset.sum_Ico_succ_top hmp, IH, integral_add_adjacent_intervals]
@@ -1009,7 +1009,7 @@ theorem integral_Iio_add_Ici (h_left : IntegrableOn f (Iio b) μ)
 theorem integral_const_of_cdf [IsFiniteMeasure μ] (c : E) :
     ∫ _ in a..b, c ∂μ = ((μ (Iic b)).toReal - (μ (Iic a)).toReal) • c := by
   simp only [sub_smul, ← setIntegral_const]
-  refine' (integral_Iic_sub_Iic _ _).symm <;>
+  refine (integral_Iic_sub_Iic ?_ ?_).symm <;>
     simp only [integrableOn_const, measure_lt_top, or_true_iff]
 #align interval_integral.integral_const_of_cdf intervalIntegral.integral_const_of_cdf
 
@@ -1043,7 +1043,7 @@ nonrec theorem integral_indicator {a₁ a₂ a₃ : ℝ} (h : a₂ ∈ Icc a₁ 
   have : {x | x ≤ a₂} ∩ Ioc a₁ a₃ = Ioc a₁ a₂ := Iic_inter_Ioc_of_le h.2
   rw [integral_of_le h.1, integral_of_le (h.1.trans h.2), integral_indicator,
     Measure.restrict_restrict, this]
-  exact measurableSet_Iic
+  · exact measurableSet_Iic
   all_goals apply measurableSet_Iic
 #align interval_integral.integral_indicator intervalIntegral.integral_indicator
 
@@ -1099,7 +1099,7 @@ theorem intervalIntegral_pos_of_pos_on {f : ℝ → ℝ} {a b : ℝ} (hfi : Inte
     ⟨mem_support.mpr (hpos x hx).ne', Ioo_subset_Ioc_self hx⟩
   have h₀ : 0 ≤ᵐ[volume.restrict (uIoc a b)] f := by
     rw [EventuallyLE, uIoc_of_le hab.le]
-    refine' ae_restrict_of_ae_eq_of_ae_restrict Ioo_ae_eq_Ioc _
+    refine ae_restrict_of_ae_eq_of_ae_restrict Ioo_ae_eq_Ioc ?_
     rw [ae_restrict_iff' measurableSet_Ioo]
     filter_upwards with x hx using (hpos x hx).le
   rw [integral_pos_iff_support_of_nonneg_ae' h₀ hfi]
@@ -1124,7 +1124,7 @@ theorem integral_lt_integral_of_ae_le_of_measure_setOf_lt_ne_zero (hab : a ≤ b
     (∫ x in a..b, f x ∂μ) < ∫ x in a..b, g x ∂μ := by
   rw [← sub_pos, ← integral_sub hgi hfi, integral_of_le hab,
     MeasureTheory.integral_pos_iff_support_of_nonneg_ae]
-  · refine' pos_iff_ne_zero.2 (mt (measure_mono_null _) hlt)
+  · refine pos_iff_ne_zero.2 (mt (measure_mono_null ?_) hlt)
     exact fun x hx => (sub_pos.2 hx.out).ne'
   exacts [hle.mono fun x => sub_nonneg.2, hgi.1.sub hfi.1]
 #align interval_integral.integral_lt_integral_of_ae_le_of_measure_set_of_lt_ne_zero intervalIntegral.integral_lt_integral_of_ae_le_of_measure_setOf_lt_ne_zero

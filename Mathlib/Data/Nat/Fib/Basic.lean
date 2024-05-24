@@ -115,13 +115,13 @@ theorem fib_add_two_sub_fib_add_one {n : ℕ} : fib (n + 2) - fib (n + 1) = fib 
 
 theorem fib_lt_fib_succ {n : ℕ} (hn : 2 ≤ n) : fib n < fib (n + 1) := by
   rcases exists_add_of_le hn with ⟨n, rfl⟩
-  rw [← tsub_pos_iff_lt, add_comm 2, fib_add_two_sub_fib_add_one, fib_pos]
+  rw [← tsub_pos_iff_lt, add_comm 2, add_right_comm, fib_add_two, add_tsub_cancel_right, fib_pos]
   exact succ_pos n
 #align nat.fib_lt_fib_succ Nat.fib_lt_fib_succ
 
 /-- `fib (n + 2)` is strictly monotone. -/
 theorem fib_add_two_strictMono : StrictMono fun n => fib (n + 2) := by
-  refine' strictMono_nat_of_lt_succ fun n => _
+  refine strictMono_nat_of_lt_succ fun n => ?_
   rw [add_right_comm]
   exact fib_lt_fib_succ (self_le_add_left _ _)
 #align nat.fib_add_two_strict_mono Nat.fib_add_two_strictMono
@@ -169,14 +169,14 @@ theorem fib_add (m n : ℕ) : fib (m + n + 1) = fib m * fib n + fib (m + 1) * fi
   · simp
   · specialize ih (m + 1)
     rw [add_assoc m 1 n, add_comm 1 n] at ih
-    simp only [fib_add_two, ih]
+    simp only [fib_add_two, succ_eq_add_one, ih]
     ring
 #align nat.fib_add Nat.fib_add
 
 theorem fib_two_mul (n : ℕ) : fib (2 * n) = fib n * (2 * fib (n + 1) - fib n) := by
   cases n
   · simp
-  · rw [Nat.succ_eq_add_one, two_mul, ← add_assoc, fib_add, fib_add_two, two_mul]
+  · rw [two_mul, ← add_assoc, fib_add, fib_add_two, two_mul]
     simp only [← add_assoc, add_tsub_cancel_right]
     ring
 #align nat.fib_two_mul Nat.fib_two_mul

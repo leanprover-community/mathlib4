@@ -228,11 +228,6 @@ def toRelHom (f : r ↪r s) : r →r s where
 instance : Coe (r ↪r s) (r →r s) :=
   ⟨toRelHom⟩
 
--- Porting note: removed
--- see Note [function coercion]
--- instance : CoeFun (r ↪r s) fun _ => α → β :=
---   ⟨fun o => o.toEmbedding⟩
-
 -- TODO: define and instantiate a `RelEmbeddingClass` when `EmbeddingLike` is defined
 instance : FunLike (r ↪r s) α β where
   coe := fun x => x.toFun
@@ -426,7 +421,7 @@ def Quotient.mkRelHom [Setoid α] {r : α → α → Prop}
 noncomputable def Quotient.outRelEmbedding [Setoid α] {r : α → α → Prop}
     (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) : Quotient.lift₂ r H ↪r r :=
   ⟨Embedding.quotientOut α, by
-    refine' @fun x y => Quotient.inductionOn₂ x y fun a b => _
+    refine @fun x y => Quotient.inductionOn₂ x y fun a b => ?_
     apply iff_iff_eq.2 (H _ _ _ _ _ _) <;> apply Quotient.mk_out⟩
 #align quotient.out_rel_embedding Quotient.outRelEmbedding
 #align quotient.out_rel_embedding_apply Quotient.outRelEmbedding_apply
@@ -636,10 +631,6 @@ theorem toEquiv_injective : Injective (toEquiv : r ≃r s → α ≃ β)
 instance : CoeOut (r ≃r s) (r ↪r s) :=
   ⟨toRelEmbedding⟩
 
--- Porting note: moved to after `RelHomClass` instance and redefined as `DFunLike.coe`
--- instance : CoeFun (r ≃r s) fun _ => α → β :=
---   ⟨fun f => f⟩
-
 -- TODO: define and instantiate a `RelIsoClass` when `EquivLike` is defined
 instance : FunLike (r ≃r s) α β where
   coe := fun x => x
@@ -655,11 +646,6 @@ instance : EquivLike (r ≃r s) α β where
   left_inv f := f.left_inv
   right_inv f := f.right_inv
   coe_injective' _ _ hf _ := DFunLike.ext' hf
-
--- Porting note: helper instance
--- see Note [function coercion]
-instance : CoeFun (r ≃r s) fun _ => α → β :=
-  ⟨DFunLike.coe⟩
 
 @[simp]
 theorem coe_toRelEmbedding (f : r ≃r s) : (f.toRelEmbedding : α → β) = f :=

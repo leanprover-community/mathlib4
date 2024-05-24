@@ -93,10 +93,10 @@ theorem MvPolynomial.sum_eval_eq_zero (f : MvPolynomial σ K)
     _ = a ^ d i * ∏ j, x₀ j ^ d j := congr_arg _ (Fintype.prod_congr _ _ ?_)
     -- see below
     _ = (∏ j, x₀ j ^ d j) * a ^ d i := mul_comm _ _
-  · -- the remaining step of the calculation above
-    rintro ⟨j, hj⟩
-    show (e a : σ → K) j ^ d j = x₀ ⟨j, hj⟩ ^ d j
-    rw [Equiv.subtypeEquivCodomain_symm_apply_ne]
+  -- the remaining step of the calculation above
+  rintro ⟨j, hj⟩
+  show (e a : σ → K) j ^ d j = x₀ ⟨j, hj⟩ ^ d j
+  rw [Equiv.subtypeEquivCodomain_symm_apply_ne]
 #align mv_polynomial.sum_eval_eq_zero MvPolynomial.sum_eval_eq_zero
 
 variable [DecidableEq K] (p : ℕ) [CharP K p]
@@ -131,8 +131,8 @@ theorem char_dvd_card_solutions_of_sum_lt {s : Finset ι} {f : ι → MvPolynomi
       intro i hi
       rw [hS] at hx
       rw [hx i hi, zero_pow hq.ne', sub_zero]
-    · obtain ⟨i, hi, hx⟩ : ∃ i : ι, i ∈ s ∧ eval x (f i) ≠ 0 := by
-        simpa only [hS, not_forall, not_imp] using hx
+    · obtain ⟨i, hi, hx⟩ : ∃ i ∈ s, eval x (f i) ≠ 0 := by
+        simpa [hS, not_forall, Classical.not_imp] using hx
       apply Finset.prod_eq_zero hi
       rw [pow_card_sub_one_eq_one (eval x (f i)) hx, sub_self]
   -- In particular, we can now show:

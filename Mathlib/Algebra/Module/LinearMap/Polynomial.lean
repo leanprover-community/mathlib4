@@ -381,7 +381,7 @@ lemma polyCharpoly_baseChange (A : Type*) [CommRing A] [Algebra R A] :
   apply polyCharpolyAux_basisIndep
 
 @[simp]
-lemma polyCharpoly_coeff_map (x : L) :
+lemma polyCharpoly_map_eq_charpoly (x : L) :
     (polyCharpoly φ b).map (MvPolynomial.eval (b.repr x)) = (φ x).charpoly := by
   rw [polyCharpoly, polyCharpolyAux_map_eq_charpoly]
 
@@ -427,7 +427,7 @@ lemma polyCharpoly_coeff_nilRankAux_ne_zero [Nontrivial R] :
 lemma nilRankAux_le [Nontrivial R] (b : Basis ι R L) (b' : Basis ι' R L) :
     nilRankAux φ b ≤ nilRankAux φ b' := by
   apply Polynomial.natTrailingDegree_le_of_ne_zero
-  rw [Ne.def, (polyCharpoly_coeff_eq_zero_iff_of_basis φ b b' _).not]
+  rw [Ne, (polyCharpoly_coeff_eq_zero_iff_of_basis φ b b' _).not]
   apply polyCharpoly_coeff_nilRankAux_ne_zero
 
 lemma nilRankAux_basis_indep [Nontrivial R] (b : Basis ι R L) (b' : Basis ι' R L) :

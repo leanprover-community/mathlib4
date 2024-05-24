@@ -5,6 +5,7 @@ Authors: Michael Stoll
 -/
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.GroupTheory.Perm.Cycle.Type
+import Mathlib.RingTheory.Coprime.Lemmas
 
 #align_import algebra.char_p.char_and_card from "leanprover-community/mathlib"@"2fae5fd7f90711febdadf19c44dc60fae8834d1b"
 
@@ -57,13 +58,13 @@ theorem isUnit_iff_not_dvd_char (R : Type*) [CommRing R] (p : ℕ) [Fact p.Prime
 the prime divisors of its cardinality. -/
 theorem prime_dvd_char_iff_dvd_card {R : Type*} [CommRing R] [Fintype R] (p : ℕ) [Fact p.Prime] :
     p ∣ ringChar R ↔ p ∣ Fintype.card R := by
-  refine'
+  refine
     ⟨fun h =>
       h.trans <|
         Int.natCast_dvd_natCast.mp <|
           (CharP.intCast_eq_zero_iff R (ringChar R) (Fintype.card R)).mp <|
             mod_cast CharP.cast_card_eq_zero R,
-      fun h => _⟩
+      fun h => ?_⟩
   by_contra h₀
   rcases exists_prime_addOrderOf_dvd_card p h with ⟨r, hr⟩
   have hr₁ := addOrderOf_nsmul_eq_zero r

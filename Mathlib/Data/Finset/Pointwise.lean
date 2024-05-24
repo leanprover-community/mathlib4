@@ -8,6 +8,7 @@ import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Set.Pointwise.Finite
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Set.Pointwise.ListOfFn
+import Mathlib.GroupTheory.GroupAction.Pi
 import Mathlib.SetTheory.Cardinal.Finite
 
 #align_import data.finset.pointwise from "leanprover-community/mathlib"@"eba7871095e834365616b5e43c8c7bb0b37058d0"
@@ -1107,7 +1108,7 @@ variable [DivisionMonoid α] {s t : Finset α}
 theorem coe_zpow (s : Finset α) : ∀ n : ℤ, ↑(s ^ n) = (s : Set α) ^ n
   | Int.ofNat n => coe_pow _ _
   | Int.negSucc n => by
-    refine' (coe_inv _).trans _
+    refine (coe_inv _).trans ?_
     exact congr_arg Inv.inv (coe_pow _ _)
 #align finset.coe_zpow Finset.coe_zpow
 #align finset.coe_zsmul Finset.coe_zsmul
@@ -1133,7 +1134,7 @@ theorem isUnit_iff : IsUnit s ↔ ∃ a, s = {a} ∧ IsUnit a := by
   constructor
   · rintro ⟨u, rfl⟩
     obtain ⟨a, b, ha, hb, h⟩ := Finset.mul_eq_one_iff.1 u.mul_inv
-    refine' ⟨a, ha, ⟨a, b, h, singleton_injective _⟩, rfl⟩
+    refine ⟨a, ha, ⟨a, b, h, singleton_injective ?_⟩, rfl⟩
     rw [← singleton_mul_singleton, ← ha, ← hb]
     exact u.inv_mul
   · rintro ⟨a, rfl, ha⟩
@@ -1870,8 +1871,8 @@ instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α 
 @[to_additive
       "An additive action of an additive monoid `α` on a type `β` gives an additive action
       of `Finset α` on `Finset β`"]
-protected def mulAction [DecidableEq α] [Monoid α] [MulAction α β] : MulAction (Finset α) (Finset β)
-    where
+protected def mulAction [DecidableEq α] [Monoid α] [MulAction α β] :
+    MulAction (Finset α) (Finset β) where
   mul_smul _ _ _ := image₂_assoc mul_smul
   one_smul s := image₂_singleton_left.trans <| by simp_rw [one_smul, image_id']
 #align finset.mul_action Finset.mulAction
