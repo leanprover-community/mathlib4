@@ -242,10 +242,10 @@ private def smul'' (r : R) (s : S) : OreLocalization S X → OreLocalization S X
     rw [mul_assoc (s₄' : R), h₃, ← mul_assoc]
 
 /-- The multiplication on the Ore localization of monoids. -/
-protected def smul : R[S⁻¹] → OreLocalization S X → OreLocalization S X :=
-  liftExpand smul'' fun r₁ r₂ s hs => by
-    ext x
+protected def smul (y : R[S⁻¹]) (x : OreLocalization S X) : OreLocalization S X :=
+  liftExpand (fun r s ↦ smul'' r s x) (fun r₁ r₂ s hs => by
     induction' x using OreLocalization.ind with x s₂
+    simp only
     show OreLocalization.smul' r₁ s x s₂ = OreLocalization.smul' (r₂ * r₁) ⟨_, hs⟩ x s₂
     rcases oreCondition r₁ s₂ with ⟨r₁', s₁', h₁⟩
     rw [smul'_char _ _ _ _ _ _ h₁]
@@ -262,7 +262,7 @@ protected def smul : R[S⁻¹] → OreLocalization S X → OreLocalization S X :
     simp only [Submonoid.smul_def, Submonoid.coe_mul, smul_smul, mul_assoc, h₄]
     congr 1
     ext; simp only [Submonoid.coe_mul, ← mul_assoc]
-    rw [mul_assoc _ r₃', ← h₃, ← mul_assoc, ← mul_assoc]
+    rw [mul_assoc _ r₃', ← h₃, ← mul_assoc, ← mul_assoc]) y
 #align ore_localization.mul OreLocalization.smul
 
 instance instSMulOreLocalization : SMul R[S⁻¹] (OreLocalization S X) :=
