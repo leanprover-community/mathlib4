@@ -184,13 +184,11 @@ theorem auxiliaire (f : ℕ → (∀ n, X n) → ℝ≥0∞) (N : ℕ → ℕ)
   rw [aux] at this
   exact this
 
-def key (init : X 0) (ind : (k : ℕ) → ((i : Finset.Ico 0 (k + 1)) → X i) → X (k + 1)) :
-    (k : ℕ) → X k
-  | 0 => init
-  | m + 1 => by
-    use ind m (fun i ↦ key init ind i)
-    decreasing_by
-    exact (Finset.mem_Ico.1 i.2).2
+def key (ind : (k : ℕ) → ((i : Finset.Ico 0 k) → X i) → X k) :
+    (k : ℕ) → X k := fun k ↦ by
+  use ind k (fun i ↦ key ind i)
+  decreasing_by
+  exact (Finset.mem_Ico.1 i.2).2
 
 lemma not_mem_symmDiff {s t : Finset ℕ} {x : ℕ} :
     (x ∈ s ∧ x ∈ t) ∨ (x ∉ s ∧ x ∉ t) → x ∉ s ∆ t := by
@@ -264,59 +262,52 @@ theorem firstLemma (A : ℕ → Set (∀ n, X n)) (A_mem : ∀ n, A n ∈ cylind
     Classical.ofNonempty hpos with ⟨init, hinit⟩
   simp [Function.updateFinset_def] at hinit
   choose! ind hind using
-    fun k y h ↦ auxiliaire μ χ N χ_dep mχ 1 (by norm_num) χ_le (k + 1) (anti_lma (k + 2))
-      (l (k + 2)) (hl (k + 2)) ε y h
-  let z := key init ind
+    fun k y h ↦ auxiliaire μ χ N χ_dep mχ 1 (by norm_num) χ_le k (anti_lma (k + 1))
+      (l (k + 1)) (hl (k + 1)) ε y h
+  -- let z := key ind
   have crucial : ∀ k x n, ε ≤ (∫⋯∫⁻_Finset.Icc k (N n), χ n ∂μ)
-      (Function.updateFinset x (Finset.Ico 0 k) (fun i ↦ z i)) := by
+      (Function.updateFinset x (Finset.Ico 0 k) (fun i ↦ key ind i)) := by
     intro k
     induction k with
-    | zero => simp [hpos]
+    | zero =>
+      intro x n
+      rw [Finset.Ico_self 0, Function.updateFinset_empty]
+      exact hpos x n
     | succ m hm =>
+      intro x n
+      have : Function.updateFinset x (Finset.Ico 0 (m + 1)) (fun i ↦ key ind i) =
+          Function.update (Function.updateFinset x (Finset.Ico 0 m) (fun i ↦ key ind i))
+          m (key ind m) := by
+        ext i
+        simp [Function.updateFinset, Function.update]
+        split_ifs with h1 h2 h3 h4 h5
+        · aesop
+        · rfl
+        · rw [Nat.lt_succ] at h1
+          exact (not_or.2 ⟨h2, h3⟩ <| le_iff_eq_or_lt.1 h1).elim
+        · rw [h4] at h1
+          exfalso
+          linarith [h1]
+        · exact (h1 <| lt_trans h5 m.lt_succ_self).elim
+        · rfl
+      rw [this]
+      convert hind m (fun i ↦ key ind i) hm x n
       induction m with
-      | zero =>
-        intro x n
-        have : Function.updateFinset x (Finset.Ico 0 1) (fun i ↦ z i) =
-            Function.update x 0 (z 0) := by
-          ext i
-          simp [Function.updateFinset, Function.update]
-          split_ifs with h
-          · aesop
-          · rfl
-        rw [this]
-        exact hinit x n
-      | succ p _ =>
-        intro x n
-        have : Function.updateFinset x (Finset.Ico 0 (p + 2)) (fun i ↦ z i) =
-            Function.update (Function.updateFinset x (Finset.Ico 0 (p + 1)) (fun i ↦ z i))
-            (p + 1) (z (p + 1)) := by
-          ext i
-          simp [Function.updateFinset, Function.update]
-          split_ifs with h1 h2 h3 h4 h5
-          · aesop
-          · rfl
-          · rw [Nat.lt_succ] at h1
-            exact (not_or.2 ⟨h2, h3⟩ <| le_iff_eq_or_lt.1 h1).elim
-          · rw [h4] at h1
-            exfalso
-            linarith [h1]
-          · exact (h1 <| lt_trans h5 (p + 1).lt_succ_self).elim
-          · rfl
-        rw [this]
-        exact hind p (fun i ↦ z i) hm x n
+      | zero => aesop
+      | succ _ _ => rfl
   by_cases ε_eq : 0 < ε
-  · have incr : ∀ n, z ∈ A n := by
+  · have incr : ∀ n, key ind ∈ A n := by
       intro n
-      have : χ n z = (∫⋯∫⁻_Finset.Icc (N n + 1) (N n), χ n ∂μ)
-          (Function.updateFinset z (Finset.Ico 0 (N n + 1)) (fun i ↦ z i)) := by
+      have : χ n (key ind) = (∫⋯∫⁻_Finset.Icc (N n + 1) (N n), χ n ∂μ)
+          (Function.updateFinset (key ind) (Finset.Ico 0 (N n + 1)) (fun i ↦ key ind i)) := by
         rw [Finset.Icc_eq_empty, lmarginal_empty]
         · congr
           ext i
           by_cases h : i ∈ Finset.Ico 0 (N n + 1) <;> simp [Function.updateFinset, h]
         · simp
-      have : 0 < χ n z := by
+      have : 0 < χ n (key ind) := by
         rw [this]
-        exact lt_of_lt_of_le ε_eq (crucial (N n + 1) z n)
+        exact lt_of_lt_of_le ε_eq (crucial (N n + 1) (key ind) n)
       exact mem_of_indicator_ne_zero (ne_of_lt this).symm
     exact (A_inter ▸ mem_iInter.2 incr).elim
   · have : ε = 0 := nonpos_iff_eq_zero.1 <| not_lt.1 ε_eq
