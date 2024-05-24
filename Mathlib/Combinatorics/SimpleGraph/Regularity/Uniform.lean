@@ -69,7 +69,7 @@ instance IsUniform.instDecidableRel : DecidableRel (G.IsUniform ε) := by
 
 theorem IsUniform.mono {ε' : 𝕜} (h : ε ≤ ε') (hε : IsUniform G ε s t) : IsUniform G ε' s t :=
   fun s' hs' t' ht' hs ht => by
-  refine' (hε hs' ht' (le_trans _ hs) (le_trans _ ht)).trans_le h <;> gcongr
+  refine (hε hs' ht' (le_trans ?_ hs) (le_trans ?_ ht)).trans_le h <;> gcongr
 #align simple_graph.is_uniform.mono SimpleGraph.IsUniform.mono
 
 theorem IsUniform.symm : Symmetric (IsUniform G ε) := fun s t h t' ht' s' hs' ht hs => by
@@ -260,8 +260,8 @@ lemma bot_isUniform (hε : 0 < ε) : (⊥ : Finpartition A).IsUniform G ε := by
 
 lemma isUniform_one : P.IsUniform G (1 : 𝕜) := by
   rw [IsUniform, mul_one, Nat.cast_le]
-  refine' (card_filter_le _
-    (fun uv => ¬SimpleGraph.IsUniform G 1 (Prod.fst uv) (Prod.snd uv))).trans _
+  refine (card_filter_le _
+    (fun uv => ¬SimpleGraph.IsUniform G 1 (Prod.fst uv) (Prod.snd uv))).trans ?_
   rw [offDiag_card, Nat.mul_sub_left_distrib, mul_one]
 #align finpartition.is_uniform_one Finpartition.isUniform_one
 

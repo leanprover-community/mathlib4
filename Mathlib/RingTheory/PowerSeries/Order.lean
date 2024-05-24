@@ -45,7 +45,7 @@ open multiplicity
 variable [Semiring R] {φ : R⟦X⟧}
 
 theorem exists_coeff_ne_zero_iff_ne_zero : (∃ n : ℕ, coeff R n φ ≠ 0) ↔ φ ≠ 0 := by
-  refine' not_iff_not.mp _
+  refine not_iff_not.mp ?_
   push_neg
   -- FIXME: the `FunLike.coe` doesn't seem to be picked up in the expression after #8386?
   simp [PowerSeries.ext_iff, (coeff R _).map_zero]
@@ -160,7 +160,7 @@ theorem order_eq {φ : R⟦X⟧} {n : PartENat} :
 /-- The order of the sum of two formal power series
  is at least the minimum of their orders. -/
 theorem le_order_add (φ ψ : R⟦X⟧) : min (order φ) (order ψ) ≤ order (φ + ψ) := by
-  refine' le_order _ _ _
+  refine le_order _ _ ?_
   simp (config := { contextual := true }) [coeff_of_lt_order]
 #align power_series.le_order_add PowerSeries.le_order_add
 
@@ -184,7 +184,7 @@ private theorem order_add_of_order_eq.aux (φ ψ : R⟦X⟧) (_h : order φ ≠ 
  is the minimum of their orders if their orders differ. -/
 theorem order_add_of_order_eq (φ ψ : R⟦X⟧) (h : order φ ≠ order ψ) :
     order (φ + ψ) = order φ ⊓ order ψ := by
-  refine' le_antisymm _ (le_order_add _ _)
+  refine le_antisymm ?_ (le_order_add _ _)
   by_cases H₁ : order φ < order ψ
   · apply order_add_of_order_eq.aux _ _ h H₁
   by_cases H₂ : order ψ < order φ
@@ -236,7 +236,7 @@ theorem coeff_mul_of_lt_order {φ ψ : R⟦X⟧} {n : ℕ} (h : ↑n < ψ.order)
   rw [coeff_mul]
   apply Finset.sum_congr rfl
   intro x hx
-  refine' mul_eq_zero_of_right (coeff R x.fst φ) (coeff_of_lt_order x.snd (lt_of_le_of_lt _ h))
+  refine mul_eq_zero_of_right (coeff R x.fst φ) (coeff_of_lt_order x.snd (lt_of_le_of_lt ?_ h))
   rw [mem_antidiagonal] at hx
   norm_cast
   omega
@@ -269,7 +269,7 @@ theorem X_pow_order_dvd (h : (order φ).Dom) : X ^ (order φ).get h ∣ φ := by
   split_ifs with hn
   · simp [tsub_add_cancel_of_le hn]
   · simp only [Finset.sum_empty]
-    refine' coeff_of_lt_order _ _
+    refine coeff_of_lt_order _ ?_
     simpa [PartENat.coe_lt_iff] using fun _ => hn
 set_option linter.uppercaseLean3 false in
 #align power_series.X_pow_order_dvd PowerSeries.X_pow_order_dvd
@@ -383,7 +383,7 @@ theorem divided_by_X_pow_orderMul {f g : R⟦X⟧} (hf : f ≠ 0) (hg : g ≠ 0)
       _ = X ^ dfg * divided_by_X_pow_order hf * divided_by_X_pow_order hg := by rw [H_add_d]
       _ = X ^ dfg * (divided_by_X_pow_order hf * divided_by_X_pow_order hg) := by rw [mul_assoc]
   simp [← hdfg, this] at H
-  refine' (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero (pow_ne_zero dfg X_ne_zero) _).symm
+  refine (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero (pow_ne_zero dfg X_ne_zero) ?_).symm
   convert H
 
 end OrderIsDomain

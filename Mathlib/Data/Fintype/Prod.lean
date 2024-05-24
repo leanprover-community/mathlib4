@@ -67,8 +67,8 @@ open scoped Classical
 
 @[simp]
 theorem infinite_prod : Infinite (α × β) ↔ Infinite α ∧ Nonempty β ∨ Nonempty α ∧ Infinite β := by
-  refine'
-    ⟨fun H => _, fun H =>
+  refine
+    ⟨fun H => ?_, fun H =>
       H.elim (and_imp.2 <| @Prod.infinite_of_left α β) (and_imp.2 <| @Prod.infinite_of_right α β)⟩
   rw [and_comm]; contrapose! H; intro H'
   rcases Infinite.nonempty (α × β) with ⟨a, b⟩

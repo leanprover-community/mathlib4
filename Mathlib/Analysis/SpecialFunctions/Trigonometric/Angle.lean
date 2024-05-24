@@ -504,14 +504,14 @@ theorem abs_cos_eq_of_two_zsmul_eq {θ ψ : Angle} (h : (2 : ℤ) • θ = (2 : 
 @[simp]
 theorem coe_toIcoMod (θ ψ : ℝ) : ↑(toIcoMod two_pi_pos ψ θ) = (θ : Angle) := by
   rw [angle_eq_iff_two_pi_dvd_sub]
-  refine' ⟨-toIcoDiv two_pi_pos ψ θ, _⟩
+  refine ⟨-toIcoDiv two_pi_pos ψ θ, ?_⟩
   rw [toIcoMod_sub_self, zsmul_eq_mul, mul_comm]
 #align real.angle.coe_to_Ico_mod Real.Angle.coe_toIcoMod
 
 @[simp]
 theorem coe_toIocMod (θ ψ : ℝ) : ↑(toIocMod two_pi_pos ψ θ) = (θ : Angle) := by
   rw [angle_eq_iff_two_pi_dvd_sub]
-  refine' ⟨-toIocDiv two_pi_pos ψ θ, _⟩
+  refine ⟨-toIocDiv two_pi_pos ψ θ, ?_⟩
   rw [toIocMod_sub_self, zsmul_eq_mul, mul_comm]
 #align real.angle.coe_to_Ioc_mod Real.Angle.coe_toIocMod
 
@@ -643,7 +643,7 @@ theorem abs_toReal_coe_eq_self_iff {θ : ℝ} : |(θ : Angle).toReal| = θ ↔ 0
 #align real.angle.abs_to_real_coe_eq_self_iff Real.Angle.abs_toReal_coe_eq_self_iff
 
 theorem abs_toReal_neg_coe_eq_self_iff {θ : ℝ} : |(-θ : Angle).toReal| = θ ↔ 0 ≤ θ ∧ θ ≤ π := by
-  refine' ⟨fun h => h ▸ ⟨abs_nonneg _, abs_toReal_le_pi _⟩, fun h => _⟩
+  refine ⟨fun h => h ▸ ⟨abs_nonneg _, abs_toReal_le_pi _⟩, fun h => ?_⟩
   by_cases hnegpi : θ = π; · simp [hnegpi, Real.pi_pos.le]
   rw [← coe_neg,
     toReal_coe_eq_self_iff.2
@@ -734,15 +734,15 @@ theorem cos_toReal (θ : Angle) : Real.cos θ.toReal = cos θ := by
 theorem cos_nonneg_iff_abs_toReal_le_pi_div_two {θ : Angle} : 0 ≤ cos θ ↔ |θ.toReal| ≤ π / 2 := by
   nth_rw 1 [← coe_toReal θ]
   rw [abs_le, cos_coe]
-  refine' ⟨fun h => _, cos_nonneg_of_mem_Icc⟩
+  refine ⟨fun h => ?_, cos_nonneg_of_mem_Icc⟩
   by_contra hn
   rw [not_and_or, not_le, not_le] at hn
-  refine' (not_lt.2 h) _
+  refine (not_lt.2 h) ?_
   rcases hn with (hn | hn)
   · rw [← Real.cos_neg]
-    refine' cos_neg_of_pi_div_two_lt_of_lt (by linarith) _
+    refine cos_neg_of_pi_div_two_lt_of_lt (by linarith) ?_
     linarith [neg_pi_lt_toReal θ]
-  · refine' cos_neg_of_pi_div_two_lt_of_lt hn _
+  · refine cos_neg_of_pi_div_two_lt_of_lt hn ?_
     linarith [toReal_le_pi θ]
 #align real.angle.cos_nonneg_iff_abs_to_real_le_pi_div_two Real.Angle.cos_nonneg_iff_abs_toReal_le_pi_div_two
 
@@ -908,11 +908,11 @@ theorem toReal_neg_iff_sign_neg {θ : Angle} : θ.toReal < 0 ↔ θ.sign = -1 :=
 
 theorem toReal_nonneg_iff_sign_nonneg {θ : Angle} : 0 ≤ θ.toReal ↔ 0 ≤ θ.sign := by
   rcases lt_trichotomy θ.toReal 0 with (h | h | h)
-  · refine' ⟨fun hn => False.elim (h.not_le hn), fun hn => _⟩
+  · refine ⟨fun hn => False.elim (h.not_le hn), fun hn => ?_⟩
     rw [toReal_neg_iff_sign_neg.1 h] at hn
     exact False.elim (hn.not_lt (by decide))
   · simp [h, sign, ← sin_toReal]
-  · refine' ⟨fun _ => _, fun _ => h.le⟩
+  · refine ⟨fun _ => ?_, fun _ => h.le⟩
     rw [sign, ← sin_toReal, sign_nonneg_iff]
     exact sin_nonneg_of_nonneg_of_le_pi h.le (toReal_le_pi θ)
 #align real.angle.to_real_nonneg_iff_sign_nonneg Real.Angle.toReal_nonneg_iff_sign_nonneg
@@ -941,7 +941,7 @@ theorem neg_coe_abs_toReal_of_sign_nonpos {θ : Angle} (h : θ.sign ≤ 0) : -�
 
 theorem eq_iff_sign_eq_and_abs_toReal_eq {θ ψ : Angle} :
     θ = ψ ↔ θ.sign = ψ.sign ∧ |θ.toReal| = |ψ.toReal| := by
-  refine' ⟨_, fun h => _⟩;
+  refine ⟨?_, fun h => ?_⟩;
   · rintro rfl
     exact ⟨rfl, rfl⟩
   rcases h with ⟨hs, hr⟩
@@ -990,7 +990,7 @@ theorem sign_two_nsmul_eq_sign_iff {θ : Angle} :
     ((2 : ℕ) • θ).sign = θ.sign ↔ θ = π ∨ |θ.toReal| < π / 2 := by
   by_cases hpi : θ = π; · simp [hpi]
   rw [or_iff_right hpi]
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · by_contra hle
     rw [not_lt, le_abs, le_neg] at hle
     have hpi' : θ.toReal ≠ π := by simpa using hpi
@@ -1040,7 +1040,7 @@ theorem continuousAt_sign {θ : Angle} (h0 : θ ≠ 0) (hpi : θ ≠ π) : Conti
 theorem _root_.ContinuousOn.angle_sign_comp {α : Type*} [TopologicalSpace α] {f : α → Angle}
     {s : Set α} (hf : ContinuousOn f s) (hs : ∀ z ∈ s, f z ≠ 0 ∧ f z ≠ π) :
     ContinuousOn (sign ∘ f) s := by
-  refine' (ContinuousAt.continuousOn fun θ hθ => _).comp hf (Set.mapsTo_image f s)
+  refine (ContinuousAt.continuousOn fun θ hθ => ?_).comp hf (Set.mapsTo_image f s)
   obtain ⟨z, hz, rfl⟩ := hθ
   exact continuousAt_sign (hs _ hz).1 (hs _ hz).2
 #align continuous_on.angle_sign_comp ContinuousOn.angle_sign_comp

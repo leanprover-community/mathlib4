@@ -50,21 +50,21 @@ theorem Ideal.eq_span_singleton_of_mem_of_not_mem_sq_of_not_mem_prime_ne {P : Id
     rwa [eq_comm, span_singleton_eq_bot, ← mem_bot]
   have hspan0 : span ({x} : Set R) ≠ ⊥ := mt Ideal.span_singleton_eq_bot.mp hx0
   have span_le := (Ideal.span_singleton_le_iff_mem _).mpr x_mem
-  refine'
+  refine
     associated_iff_eq.mp
       ((associated_iff_normalizedFactors_eq_normalizedFactors hP0 hspan0).mpr
-        (le_antisymm ((dvd_iff_normalizedFactors_le_normalizedFactors hP0 hspan0).mp _) _))
+        (le_antisymm ((dvd_iff_normalizedFactors_le_normalizedFactors hP0 hspan0).mp ?_) ?_))
   · rwa [Ideal.dvd_iff_le, Ideal.span_singleton_le_iff_mem]
   simp only [normalizedFactors_irreducible (Ideal.prime_of_isPrime hP0 hP).irreducible,
     normalize_eq, Multiset.le_iff_count, Multiset.count_singleton]
   intro Q
   split_ifs with hQ
   · subst hQ
-    refine' (Ideal.count_normalizedFactors_eq _ _).le <;>
+    refine (Ideal.count_normalizedFactors_eq ?_ ?_).le <;>
         simp only [Ideal.span_singleton_le_iff_mem, pow_one] <;>
       assumption
   by_cases hQp : IsPrime Q
-  · refine' (Ideal.count_normalizedFactors_eq _ _).le <;>
+  · refine (Ideal.count_normalizedFactors_eq ?_ ?_).le <;>
       -- Porting note: included `zero_add` in the simp arguments
       simp only [Ideal.span_singleton_le_iff_mem, zero_add, pow_one, pow_zero, one_eq_top,
                  Submodule.mem_top]
@@ -251,12 +251,12 @@ theorem IsDedekindDomain.isPrincipalIdealRing_localization_over_prime [IsDomain 
     IsPrincipalIdealRing Sₚ := by
   letI := Classical.decEq (Ideal Sₚ)
   letI := Classical.decPred fun P : Ideal Sₚ => P.IsPrime
-  refine'
+  refine
     IsPrincipalIdealRing.of_finite_primes
       (Set.Finite.ofFinset
         (Finset.filter (fun P => P.IsPrime)
           ({⊥} ∪ (normalizedFactors (Ideal.map (algebraMap R Sₚ) p)).toFinset))
-        fun P => _)
+        fun P => ?_)
   rw [Finset.mem_filter, Finset.mem_union, Finset.mem_singleton, Set.mem_setOf,
     Multiset.mem_toFinset]
   exact

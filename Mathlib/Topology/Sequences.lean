@@ -124,11 +124,11 @@ This property is equivalent to the definition of `FrechetUrysohnSpace`, see
 `FrechetUrysohnSpace.of_seq_tendsto_imp_tendsto`. -/
 theorem tendsto_nhds_iff_seq_tendsto [FrechetUrysohnSpace X] {f : X → Y} {a : X} {b : Y} :
     Tendsto f (𝓝 a) (𝓝 b) ↔ ∀ u : ℕ → X, Tendsto u atTop (𝓝 a) → Tendsto (f ∘ u) atTop (𝓝 b) := by
-  refine'
+  refine
     ⟨fun hf u hu => hf.comp hu, fun h =>
-      ((nhds_basis_closeds _).tendsto_iff (nhds_basis_closeds _)).2 _⟩
+      ((nhds_basis_closeds _).tendsto_iff (nhds_basis_closeds _)).2 ?_⟩
   rintro s ⟨hbs, hsc⟩
-  refine' ⟨closure (f ⁻¹' s), ⟨mt _ hbs, isClosed_closure⟩, fun x => mt fun hx => subset_closure hx⟩
+  refine ⟨closure (f ⁻¹' s), ⟨mt ?_ hbs, isClosed_closure⟩, fun x => mt fun hx => subset_closure hx⟩
   rw [← seqClosure_eq_closure]
   rintro ⟨u, hus, hu⟩
   exact hsc.mem_of_tendsto (h u hu) (eventually_of_forall hus)

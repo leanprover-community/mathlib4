@@ -837,7 +837,7 @@ theorem biproduct.ι_fromSubtype (j : Subtype p) :
 @[reassoc (attr := simp)]
 theorem biproduct.fromSubtype_toSubtype :
     biproduct.fromSubtype f p ≫ biproduct.toSubtype f p = 𝟙 (⨁ Subtype.restrict p f) := by
-  refine' biproduct.hom_ext _ _ fun j => _
+  refine biproduct.hom_ext _ _ fun j => ?_
   rw [Category.assoc, biproduct.toSubtype_π, biproduct.fromSubtype_π_subtype, Category.id_comp]
 #align category_theory.limits.biproduct.from_subtype_to_subtype CategoryTheory.Limits.biproduct.fromSubtype_toSubtype
 
@@ -1081,7 +1081,7 @@ theorem biproduct.conePointUniqueUpToIso_hom (f : J → C) [HasBiproduct f] {b :
 theorem biproduct.conePointUniqueUpToIso_inv (f : J → C) [HasBiproduct f] {b : Bicone f}
     (hb : b.IsBilimit) :
     (hb.isLimit.conePointUniqueUpToIso (biproduct.isLimit _)).inv = biproduct.desc b.ι := by
-  refine' biproduct.hom_ext' _ _ fun j => hb.isLimit.hom_ext fun j' => _
+  refine biproduct.hom_ext' _ _ fun j => hb.isLimit.hom_ext fun j' => ?_
   rw [Category.assoc, IsLimit.conePointUniqueUpToIso_inv_comp, Bicone.toCone_π_app,
     biproduct.bicone_π, biproduct.ι_desc, biproduct.ι_π, b.toCone_π_app, b.ι_π]
 #align category_theory.limits.biproduct.cone_point_unique_up_to_iso_inv CategoryTheory.Limits.biproduct.conePointUniqueUpToIso_inv
@@ -1849,7 +1849,7 @@ theorem biprod.conePointUniqueUpToIso_inv (X Y : C) [HasBinaryBiproduct X Y] {b 
     (hb : b.IsBilimit) :
     (hb.isLimit.conePointUniqueUpToIso (BinaryBiproduct.isLimit _ _)).inv =
       biprod.desc b.inl b.inr := by
-  refine' biprod.hom_ext' _ _ (hb.isLimit.hom_ext fun j => _) (hb.isLimit.hom_ext fun j => _)
+  refine biprod.hom_ext' _ _ (hb.isLimit.hom_ext fun j => ?_) (hb.isLimit.hom_ext fun j => ?_)
   all_goals
     simp only [Category.assoc, IsLimit.conePointUniqueUpToIso_inv_comp]
     rcases j with ⟨⟨⟩⟩

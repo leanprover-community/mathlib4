@@ -117,14 +117,14 @@ theorem lintegral_mul_le_Lp_mul_Lq_of_ne_zero_of_ne_top {p q : ℝ} (hpq : p.IsC
   calc
     (∫⁻ a : α, (f * g) a ∂μ) =
         ∫⁻ a : α, (funMulInvSnorm f p μ * funMulInvSnorm g q μ) a * (npf * nqg) ∂μ := by
-      refine' lintegral_congr fun a => _
+      refine lintegral_congr fun a => ?_
       rw [Pi.mul_apply, fun_eq_funMulInvSnorm_mul_snorm f hf_nonzero hf_nontop,
         fun_eq_funMulInvSnorm_mul_snorm g hg_nonzero hg_nontop, Pi.mul_apply]
       ring
     _ ≤ npf * nqg := by
       rw [lintegral_mul_const' (npf * nqg) _
           (by simp [npf, nqg, hf_nontop, hg_nontop, hf_nonzero, hg_nonzero, ENNReal.mul_eq_top])]
-      refine' mul_le_of_le_one_left' _
+      refine mul_le_of_le_one_left' ?_
       have hf1 := lintegral_rpow_funMulInvSnorm_eq_one hpq.pos hf_nonzero hf_nontop
       have hg1 := lintegral_rpow_funMulInvSnorm_eq_one hpq.symm.pos hg_nonzero hg_nontop
       exact lintegral_mul_le_one_of_lintegral_rpow_eq_one hpq (hf.mul_const _) hf1 hg1
@@ -141,7 +141,7 @@ theorem ae_eq_zero_of_lintegral_rpow_eq_zero {p : ℝ} (hp0 : 0 ≤ p) {f : α �
 theorem lintegral_mul_eq_zero_of_lintegral_rpow_eq_zero {p : ℝ} (hp0 : 0 ≤ p) {f g : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hf_zero : ∫⁻ a, f a ^ p ∂μ = 0) : (∫⁻ a, (f * g) a ∂μ) = 0 := by
   rw [← @lintegral_zero_fun α _ μ]
-  refine' lintegral_congr_ae _
+  refine lintegral_congr_ae ?_
   suffices h_mul_zero : f * g =ᵐ[μ] 0 * g by rwa [zero_mul] at h_mul_zero
   have hf_eq_zero : f =ᵐ[μ] 0 := ae_eq_zero_of_lintegral_rpow_eq_zero hp0 hf hf_zero
   exact hf_eq_zero.mul (ae_eq_refl g)
@@ -150,7 +150,7 @@ theorem lintegral_mul_eq_zero_of_lintegral_rpow_eq_zero {p : ℝ} (hp0 : 0 ≤ p
 theorem lintegral_mul_le_Lp_mul_Lq_of_ne_zero_of_eq_top {p q : ℝ} (hp0_lt : 0 < p) (hq0 : 0 ≤ q)
     {f g : α → ℝ≥0∞} (hf_top : ∫⁻ a, f a ^ p ∂μ = ⊤) (hg_nonzero : (∫⁻ a, g a ^ q ∂μ) ≠ 0) :
     (∫⁻ a, (f * g) a ∂μ) ≤ (∫⁻ a, f a ^ p ∂μ) ^ (1 / p) * (∫⁻ a, g a ^ q ∂μ) ^ (1 / q) := by
-  refine' le_trans le_top (le_of_eq _)
+  refine le_trans le_top (le_of_eq ?_)
   have hp0_inv_lt : 0 < 1 / p := by simp [hp0_lt]
   rw [hf_top, ENNReal.top_rpow_of_pos hp0_inv_lt]
   simp [hq0, hg_nonzero]
@@ -163,10 +163,10 @@ theorem lintegral_mul_le_Lp_mul_Lq (μ : Measure α) {p q : ℝ} (hpq : p.IsConj
     {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     (∫⁻ a, (f * g) a ∂μ) ≤ (∫⁻ a, f a ^ p ∂μ) ^ (1 / p) * (∫⁻ a, g a ^ q ∂μ) ^ (1 / q) := by
   by_cases hf_zero : ∫⁻ a, f a ^ p ∂μ = 0
-  · refine' Eq.trans_le _ (zero_le _)
+  · refine Eq.trans_le ?_ (zero_le _)
     exact lintegral_mul_eq_zero_of_lintegral_rpow_eq_zero hpq.nonneg hf hf_zero
   by_cases hg_zero : ∫⁻ a, g a ^ q ∂μ = 0
-  · refine' Eq.trans_le _ (zero_le _)
+  · refine Eq.trans_le ?_ (zero_le _)
     rw [mul_comm]
     exact lintegral_mul_eq_zero_of_lintegral_rpow_eq_zero hpq.symm.nonneg hg hg_zero
   by_cases hf_top : ∫⁻ a, f a ^ p ∂μ = ⊤
@@ -280,7 +280,7 @@ theorem lintegral_rpow_add_lt_top_of_lintegral_rpow_lt_top {p : ℝ} {f g : α �
   calc
     (∫⁻ a : α, (f a + g a) ^ p ∂μ) ≤
         ∫⁻ a, (2 : ℝ≥0∞) ^ (p - 1) * f a ^ p + (2 : ℝ≥0∞) ^ (p - 1) * g a ^ p ∂μ := by
-      refine' lintegral_mono fun a => _
+      refine lintegral_mono fun a => ?_
       dsimp only
       have h_zero_lt_half_rpow : (0 : ℝ≥0∞) < (1 / 2 : ℝ≥0∞) ^ p := by
         rw [← ENNReal.zero_rpow_of_pos hp0_lt]
@@ -292,13 +292,13 @@ theorem lintegral_rpow_add_lt_top_of_lintegral_rpow_lt_top {p : ℝ} {f g : α �
           ENNReal.rpow_neg_one]
       rw [← ENNReal.mul_le_mul_left (ne_of_lt h_zero_lt_half_rpow).symm _]
       · rw [mul_add, ← mul_assoc, ← mul_assoc, h_rw, ← ENNReal.mul_rpow_of_nonneg _ _ hp0, mul_add]
-        refine'
-          ENNReal.rpow_arith_mean_le_arith_mean2_rpow (1 / 2 : ℝ≥0∞) (1 / 2 : ℝ≥0∞) (f a) (g a) _
+        refine
+          ENNReal.rpow_arith_mean_le_arith_mean2_rpow (1 / 2 : ℝ≥0∞) (1 / 2 : ℝ≥0∞) (f a) (g a) ?_
             hp1
         rw [ENNReal.div_add_div_same, one_add_one_eq_two,
           ENNReal.div_self two_ne_zero ENNReal.coe_ne_top]
       · rw [← lt_top_iff_ne_top]
-        refine' ENNReal.rpow_lt_top_of_nonneg hp0 _
+        refine ENNReal.rpow_lt_top_of_nonneg hp0 ?_
         rw [one_div, ENNReal.inv_ne_top]
         exact two_ne_zero
     _ < ⊤ := by
@@ -349,16 +349,16 @@ theorem lintegral_mul_rpow_le_lintegral_rpow_mul_lintegral_rpow {p q : ℝ}
     (hf_top : (∫⁻ a, f a ^ p ∂μ) ≠ ⊤) :
     (∫⁻ a, f a * g a ^ (p - 1) ∂μ) ≤
       (∫⁻ a, f a ^ p ∂μ) ^ (1 / p) * (∫⁻ a, g a ^ p ∂μ) ^ (1 / q) := by
-  refine' le_trans (ENNReal.lintegral_mul_le_Lp_mul_Lq μ hpq hf (hg.pow_const _)) _
+  refine le_trans (ENNReal.lintegral_mul_le_Lp_mul_Lq μ hpq hf (hg.pow_const _)) ?_
   by_cases hf_zero_rpow : (∫⁻ a : α, f a ^ p ∂μ) ^ (1 / p) = 0
   · rw [hf_zero_rpow, zero_mul]
     exact zero_le _
   have hf_top_rpow : (∫⁻ a : α, f a ^ p ∂μ) ^ (1 / p) ≠ ⊤ := by
     by_contra h
-    refine' hf_top _
+    refine hf_top ?_
     have hp_not_neg : ¬p < 0 := by simp [hpq.nonneg]
     simpa [hpq.pos, hp_not_neg] using h
-  refine' (ENNReal.mul_le_mul_left hf_zero_rpow hf_top_rpow).mpr (le_of_eq _)
+  refine (ENNReal.mul_le_mul_left hf_zero_rpow hf_top_rpow).mpr (le_of_eq ?_)
   congr
   ext1 a
   rw [← ENNReal.rpow_mul, hpq.sub_one_mul_conj]
@@ -379,7 +379,7 @@ theorem lintegral_rpow_add_le_add_snorm_mul_lintegral_rpow_add {p q : ℝ}
       by_cases h_top : (f + g) a = ⊤
       · rw [h_top, ENNReal.top_rpow_of_pos hpq.sub_one_pos, ENNReal.top_mul_top]
         exact le_top
-      refine' le_of_eq _
+      refine le_of_eq ?_
       nth_rw 2 [← ENNReal.rpow_one ((f + g) a)]
       rw [← ENNReal.rpow_add _ _ h_zero h_top, add_sub_cancel]
     _ = (∫⁻ a : α, f a * (f + g) a ^ (p - 1) ∂μ) + ∫⁻ a : α, g a * (f + g) a ^ (p - 1) ∂μ := by
@@ -444,11 +444,11 @@ theorem lintegral_Lp_add_le {p : ℝ} {f g : α → ℝ≥0∞} (hf : AEMeasurab
   by_cases hg_top : ∫⁻ a, g a ^ p ∂μ = ⊤
   · simp [hg_top, hp_pos]
   by_cases h1 : p = 1
-  · refine' le_of_eq _
+  · refine le_of_eq ?_
     simp_rw [h1, one_div_one, ENNReal.rpow_one]
     exact lintegral_add_left' hf _
   have hp1_lt : 1 < p := by
-    refine' lt_of_le_of_ne hp1 _
+    refine lt_of_le_of_ne hp1 ?_
     symm
     exact h1
   have hpq := Real.IsConjExponent.conjExponent hp1_lt

@@ -311,7 +311,7 @@ theorem smul_cancel_of_non_zero_divisor {M R : Type*} [Monoid M] [NonUnitalNonAs
     [DistribMulAction M R] (k : M) (h : ∀ x : R, k • x = 0 → x = 0) {a b : R} (h' : k • a = k • b) :
     a = b := by
   rw [← sub_eq_zero]
-  refine' h _ _
+  refine h _ ?_
   rw [smul_sub, h', sub_self]
 #align smul_cancel_of_non_zero_divisor smul_cancel_of_non_zero_divisor
 
@@ -448,9 +448,9 @@ theorem disjoint_image_image_iff {U V : Set α} :
     Disjoint (Quotient.mk' '' U) (Quotient.mk' '' V) ↔ ∀ x ∈ U, ∀ g : G, g • x ∉ V := by
   letI := orbitRel G α
   set f : α → Quotient (MulAction.orbitRel G α) := Quotient.mk'
-  refine'
+  refine
     ⟨fun h a a_in_U g g_in_V =>
-      h.le_bot ⟨⟨a, a_in_U, Quotient.sound ⟨g⁻¹, _⟩⟩, ⟨g • a, g_in_V, rfl⟩⟩, _⟩
+      h.le_bot ⟨⟨a, a_in_U, Quotient.sound ⟨g⁻¹, ?_⟩⟩, ⟨g • a, g_in_V, rfl⟩⟩, ?_⟩
   · simp
   · intro h
     rw [Set.disjoint_left]
@@ -609,7 +609,7 @@ lemma le_stabilizer_smul_right [SMul α β] [SMulCommClass G α β] (a : α) (b 
 @[to_additive (attr := simp)]
 lemma stabilizer_smul_eq_left [SMul α β] [IsScalarTower G α β] (a : α) (b : β)
     (h : Injective (· • b : α → β)) : stabilizer G (a • b) = stabilizer G a := by
-  refine' (le_stabilizer_smul_left _ _).antisymm' fun a ha ↦ _
+  refine (le_stabilizer_smul_left _ _).antisymm' fun a ha ↦ ?_
   simpa only [mem_stabilizer_iff, ← smul_assoc, h.eq_iff] using ha
 
 @[to_additive (attr := simp)]

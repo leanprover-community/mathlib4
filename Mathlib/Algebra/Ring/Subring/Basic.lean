@@ -910,9 +910,9 @@ theorem closure_induction₂ {s : Set R} {p : R → R → Prop} {a b : R} (ha : 
     (Hadd_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ + y₂))
     (Hmul_left : ∀ x₁ x₂ y, p x₁ y → p x₂ y → p (x₁ * x₂) y)
     (Hmul_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ * y₂)) : p a b := by
-  refine'
-    closure_induction hb _ (H0_right _) (H1_right _) (Hadd_right a) (Hneg_right a) (Hmul_right a)
-  refine' closure_induction ha Hs (fun x _ => H0_left x) (fun x _ => H1_left x) _ _ _
+  refine
+    closure_induction hb ?_ (H0_right _) (H1_right _) (Hadd_right a) (Hneg_right a) (Hmul_right a)
+  refine closure_induction ha Hs (fun x _ => H0_left x) (fun x _ => H1_left x) ?_ ?_ ?_
   · exact fun x y H₁ H₂ z zs => Hadd_left x y z (H₁ z zs) (H₂ z zs)
   · exact fun x hx z zs => Hneg_left x z (hx z zs)
   · exact fun x y H₁ H₂ z zs => Hmul_left x y z (H₁ z zs) (H₂ z zs)

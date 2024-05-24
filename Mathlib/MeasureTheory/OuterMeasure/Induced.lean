@@ -127,7 +127,7 @@ end Subadditive
 section Mono
 
 theorem extend_mono' ⦃s₁ s₂ : Set α⦄ (h₁ : P s₁) (hs : s₁ ⊆ s₂) : extend m s₁ ≤ extend m s₂ := by
-  refine' le_iInf _
+  refine le_iInf ?_
   intro h₂
   rw [extend_eq m h₁]
   exact m_mono h₁ h₂ hs
@@ -198,14 +198,14 @@ theorem inducedOuterMeasure_eq_iInf (s : Set α) :
   apply le_antisymm
   · simp only [le_iInf_iff]
     intro t ht hs
-    refine' le_trans (measure_mono hs) _
+    refine le_trans (measure_mono hs) ?_
     exact le_of_eq (inducedOuterMeasure_eq' _ msU m_mono _)
-  · refine' le_iInf _
+  · refine le_iInf ?_
     intro f
-    refine' le_iInf _
+    refine le_iInf ?_
     intro hf
-    refine' le_trans _ (extend_iUnion_le_tsum_nat' _ msU _)
-    refine' le_iInf _
+    refine le_trans ?_ (extend_iUnion_le_tsum_nat' _ msU _)
+    refine le_iInf ?_
     intro h2f
     exact iInf_le_of_le _ (iInf_le_of_le h2f <| iInf_le _ hf)
 #align measure_theory.induced_outer_measure_eq_infi MeasureTheory.inducedOuterMeasure_eq_iInf
@@ -214,9 +214,9 @@ theorem inducedOuterMeasure_preimage (f : α ≃ α) (Pm : ∀ s : Set α, P (f 
     (mm : ∀ (s : Set α) (hs : P s), m (f ⁻¹' s) ((Pm _).mpr hs) = m s hs) {A : Set α} :
     inducedOuterMeasure m P0 m0 (f ⁻¹' A) = inducedOuterMeasure m P0 m0 A := by
     rw [inducedOuterMeasure_eq_iInf _ msU m_mono, inducedOuterMeasure_eq_iInf _ msU m_mono]; symm
-    refine' f.injective.preimage_surjective.iInf_congr (preimage f) fun s => _
-    refine' iInf_congr_Prop (Pm s) _; intro hs
-    refine' iInf_congr_Prop f.surjective.preimage_subset_preimage_iff _
+    refine f.injective.preimage_surjective.iInf_congr (preimage f) fun s => ?_
+    refine iInf_congr_Prop (Pm s) ?_; intro hs
+    refine iInf_congr_Prop f.surjective.preimage_subset_preimage_iff ?_
     intro _; exact mm s hs
 #align measure_theory.induced_outer_measure_preimage MeasureTheory.inducedOuterMeasure_preimage
 
@@ -250,11 +250,11 @@ theorem inducedOuterMeasure_caratheodory (s : Set α) :
     exact h t
   · intro h u
     conv_rhs => rw [inducedOuterMeasure_eq_iInf _ msU m_mono]
-    refine' le_iInf _
+    refine le_iInf ?_
     intro t
-    refine' le_iInf _
+    refine le_iInf ?_
     intro ht
-    refine' le_iInf _
+    refine le_iInf ?_
     intro h2t
     refine le_trans ?_ ((h t ht).trans_eq <| inducedOuterMeasure_eq' _ msU m_mono ht)
     gcongr
@@ -278,7 +278,7 @@ variable
 
 theorem extend_mono {s₁ s₂ : Set α} (h₁ : MeasurableSet s₁) (hs : s₁ ⊆ s₂) :
     extend m s₁ ≤ extend m s₂ := by
-  refine' le_iInf _; intro h₂
+  refine le_iInf ?_; intro h₂
   have :=
     extend_union MeasurableSet.empty m0 MeasurableSet.iUnion mU disjoint_sdiff_self_right h₁
       (h₂.diff h₁)
@@ -289,10 +289,10 @@ theorem extend_mono {s₁ s₂ : Set α} (h₁ : MeasurableSet s₁) (hs : s₁ 
 
 theorem extend_iUnion_le_tsum_nat : ∀ s : ℕ → Set α,
     extend m (⋃ i, s i) ≤ ∑' i, extend m (s i) := by
-  refine' extend_iUnion_le_tsum_nat' MeasurableSet.iUnion _; intro f h
+  refine extend_iUnion_le_tsum_nat' MeasurableSet.iUnion ?_; intro f h
   simp (config := { singlePass := true }) only [iUnion_disjointed.symm]
   rw [mU (MeasurableSet.disjointed h) (disjoint_disjointed _)]
-  refine' ENNReal.tsum_le_tsum fun i => _
+  refine ENNReal.tsum_le_tsum fun i => ?_
   rw [← extend_eq m, ← extend_eq m]
   exact extend_mono m0 mU (MeasurableSet.disjointed h _) (disjointed_le f _)
 #align measure_theory.extend_Union_le_tsum_nat MeasureTheory.extend_iUnion_le_tsum_nat
@@ -409,17 +409,17 @@ theorem exists_measurable_superset_eq_trim (m : OuterMeasure α) (s : Set α) :
       exists t
     have : ∀ n : ℕ, ∃ t, s ⊆ t ∧ MeasurableSet t ∧ m t < ms + (n : ℝ≥0∞)⁻¹ := by
       intro n
-      refine' this _ (ENNReal.lt_add_right hs _)
+      refine this _ (ENNReal.lt_add_right hs ?_)
       simp
     choose t hsub hm hm' using this
-    refine' ⟨⋂ n, t n, subset_iInter hsub, MeasurableSet.iInter hm, _⟩
+    refine ⟨⋂ n, t n, subset_iInter hsub, MeasurableSet.iInter hm, ?_⟩
     have : Tendsto (fun n : ℕ => ms + (n : ℝ≥0∞)⁻¹) atTop (𝓝 (ms + 0)) :=
       tendsto_const_nhds.add ENNReal.tendsto_inv_nat_nhds_zero
     rw [add_zero] at this
-    refine' le_antisymm (ge_of_tendsto' this fun n => _) _
+    refine le_antisymm (ge_of_tendsto' this fun n => ?_) ?_
     · exact le_trans (measure_mono <| iInter_subset t n) (hm' n).le
-    · refine' iInf_le_of_le (⋂ n, t n) _
-      refine' iInf_le_of_le (subset_iInter hsub) _
+    · refine iInf_le_of_le (⋂ n, t n) ?_
+      refine iInf_le_of_le (subset_iInter hsub) ?_
       exact iInf_le _ (MeasurableSet.iInter hm)
 #align measure_theory.outer_measure.exists_measurable_superset_eq_trim MeasureTheory.OuterMeasure.exists_measurable_superset_eq_trim
 
@@ -436,7 +436,7 @@ theorem exists_measurable_superset_forall_eq_trim {ι} [Countable ι] (μ : ι �
   choose t hst ht hμt using fun i => (μ i).exists_measurable_superset_eq_trim s
   replace hst := subset_iInter hst
   replace ht := MeasurableSet.iInter ht
-  refine' ⟨⋂ i, t i, hst, ht, fun i => le_antisymm _ _⟩
+  refine ⟨⋂ i, t i, hst, ht, fun i => le_antisymm ?_ ?_⟩
   exacts [hμt i ▸ (μ i).mono (iInter_subset _ _), (measure_mono hst).trans_eq ((μ i).trim_eq ht)]
 #align measure_theory.outer_measure.exists_measurable_superset_forall_eq_trim MeasureTheory.OuterMeasure.exists_measurable_superset_forall_eq_trim
 
@@ -489,12 +489,12 @@ theorem trim_iSup {ι} [Countable ι] (μ : ι → OuterMeasure α) :
 This theorem shows that a restricted trimmed outer measure is a trimmed outer measure. -/
 theorem restrict_trim {μ : OuterMeasure α} {s : Set α} (hs : MeasurableSet s) :
     (restrict s μ).trim = restrict s μ.trim := by
-  refine' le_antisymm (fun t => _) (le_trim_iff.2 fun t ht => _)
+  refine le_antisymm (fun t => ?_) (le_trim_iff.2 fun t ht => ?_)
   · rw [restrict_apply]
     rcases μ.exists_measurable_superset_eq_trim (t ∩ s) with ⟨t', htt', ht', hμt'⟩
     rw [← hμt']
     rw [inter_subset] at htt'
-    refine' (measure_mono htt').trans _
+    refine (measure_mono htt').trans ?_
     rw [trim_eq _ (hs.compl.union ht'), restrict_apply, union_inter_distrib_right, compl_inter_self,
       Set.empty_union]
     exact measure_mono (inter_subset_left _ _)

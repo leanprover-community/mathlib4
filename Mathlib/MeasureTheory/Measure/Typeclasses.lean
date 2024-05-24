@@ -39,7 +39,7 @@ class IsFiniteMeasure (μ : Measure α) : Prop where
 #align measure_theory.is_finite_measure.measure_univ_lt_top MeasureTheory.IsFiniteMeasure.measure_univ_lt_top
 
 theorem not_isFiniteMeasure_iff : ¬IsFiniteMeasure μ ↔ μ Set.univ = ∞ := by
-  refine' ⟨fun h => _, fun h => fun h' => h'.measure_univ_lt_top.ne h⟩
+  refine ⟨fun h => ?_, fun h => fun h' => h'.measure_univ_lt_top.ne h⟩
   by_contra h'
   exact h ⟨lt_top_iff_ne_top.mpr h'⟩
 #align measure_theory.not_is_finite_measure_iff MeasureTheory.not_isFiniteMeasure_iff
@@ -166,7 +166,7 @@ theorem summable_measure_toReal [hμ : IsFiniteMeasure μ] {f : ℕ → Set α}
 
 theorem ae_eq_univ_iff_measure_eq [IsFiniteMeasure μ] (hs : NullMeasurableSet s μ) :
     s =ᵐ[μ] univ ↔ μ s = μ univ := by
-  refine' ⟨measure_congr, fun h => _⟩
+  refine ⟨measure_congr, fun h => ?_⟩
   obtain ⟨t, -, ht₁, ht₂⟩ := hs.exists_measurable_subset_ae_eq
   exact
     ht₂.symm.trans
@@ -462,7 +462,7 @@ theorem ite_ae_eq_of_measure_zero {γ} (f : α → γ) (g : α → γ) (s : Set 
     (fun x => ite (x ∈ s) (f x) (g x)) =ᵐ[μ] g := by
   have h_ss : sᶜ ⊆ { a : α | ite (a ∈ s) (f a) (g a) = g a } := fun x hx => by
     simp [(Set.mem_compl_iff _ _).mp hx]
-  refine' measure_mono_null _ hs_zero
+  refine measure_mono_null ?_ hs_zero
   conv_rhs => rw [← compl_compl s]
   rwa [Set.compl_subset_compl]
 #align measure_theory.ite_ae_eq_of_measure_zero MeasureTheory.ite_ae_eq_of_measure_zero
@@ -758,7 +758,7 @@ theorem countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top₀ {ι : Type*} {_ 
     simpa only [fairmeas_eq, posmeas_def, ← preimage_iUnion,
       iUnion_Ici_eq_Ioi_of_lt_of_tendsto (0 : ℝ≥0∞) (fun n => (as_mem n).1) as_lim]
   rw [countable_union]
-  refine' countable_iUnion fun n => Finite.countable _
+  refine countable_iUnion fun n => Finite.countable ?_
   exact finite_const_le_meas_of_disjoint_iUnion₀ μ (as_mem n).1 As_mble As_disj Union_As_finite
 
 /-- If the union of disjoint measurable sets has finite measure, then there are only
@@ -872,12 +872,12 @@ theorem measure_toMeasurable_inter_of_cover {s : Set α} (hs : MeasurableSet s) 
           rw [← inter_iUnion, iUnion_disjointed, inter_iUnion]
           intro x hx
           rcases mem_iUnion.1 (hv hx) with ⟨n, hn⟩
-          refine' mem_iUnion.2 ⟨n, _⟩
+          refine mem_iUnion.2 ⟨n, ?_⟩
           have : x ∈ t ∩ v n := ⟨hx, hn⟩
           exact ⟨hx, subset_toMeasurable μ _ this⟩
         _ ⊆ ⋃ n, toMeasurable μ (t ∩ disjointed w n) :=
           iUnion_mono fun n => subset_toMeasurable _ _
-    refine' ⟨t', tt', MeasurableSet.iUnion fun n => measurableSet_toMeasurable μ _, fun u hu => _⟩
+    refine ⟨t', tt', MeasurableSet.iUnion fun n => measurableSet_toMeasurable μ _, fun u hu => ?_⟩
     apply le_antisymm _ (by gcongr)
     calc
       μ (t' ∩ u) ≤ ∑' n, μ (toMeasurable μ (t ∩ disjointed w n) ∩ u) := by
@@ -965,8 +965,8 @@ theorem exists_subset_measure_lt_top [SigmaFinite μ] {r : ℝ≥0∞} (hs : Mea
     @lt_iSup_iff _ _ _ r fun i : ℕ => μ.restrict (spanningSets μ i) s] at h's
   rcases h's with ⟨n, hn⟩
   simp only [restrict_apply hs] at hn
-  refine'
-    ⟨s ∩ spanningSets μ n, hs.inter (measurable_spanningSets _ _), inter_subset_left _ _, hn, _⟩
+  refine
+    ⟨s ∩ spanningSets μ n, hs.inter (measurable_spanningSets _ _), inter_subset_left _ _, hn, ?_⟩
   exact (measure_mono (inter_subset_right _ _)).trans_lt (measure_spanningSets_lt_top _ _)
 #align measure_theory.measure.exists_subset_measure_lt_top MeasureTheory.Measure.exists_subset_measure_lt_top
 
@@ -1049,8 +1049,8 @@ instance (priority := 100) IsFiniteMeasure.toSigmaFinite {_m0 : MeasurableSpace 
 #align measure_theory.is_finite_measure.to_sigma_finite MeasureTheory.IsFiniteMeasure.toSigmaFinite
 
 theorem sigmaFinite_bot_iff (μ : @Measure α ⊥) : SigmaFinite μ ↔ IsFiniteMeasure μ := by
-  refine'
-    ⟨fun h => ⟨_⟩, fun h => by
+  refine
+    ⟨fun h => ⟨?_⟩, fun h => by
       haveI := h
       infer_instance⟩
   haveI : SigmaFinite μ := h
@@ -1118,7 +1118,7 @@ theorem SigmaFinite.of_map (μ : Measure α) {f : α → β} (hf : AEMeasurable 
 
 theorem _root_.MeasurableEquiv.sigmaFinite_map {μ : Measure α} (f : α ≃ᵐ β) (h : SigmaFinite μ) :
     SigmaFinite (μ.map f) := by
-  refine' SigmaFinite.of_map _ f.symm.measurable.aemeasurable _
+  refine SigmaFinite.of_map _ f.symm.measurable.aemeasurable ?_
   rwa [map_map f.symm.measurable f.measurable, f.symm_comp_self, Measure.map_id]
 #align measurable_equiv.sigma_finite_map MeasurableEquiv.sigmaFinite_map
 
@@ -1184,10 +1184,10 @@ instance isLocallyFiniteMeasureSMulNNReal [TopologicalSpace α] (μ : Measure α
 protected theorem Measure.isTopologicalBasis_isOpen_lt_top [TopologicalSpace α]
     (μ : Measure α) [IsLocallyFiniteMeasure μ] :
     TopologicalSpace.IsTopologicalBasis { s | IsOpen s ∧ μ s < ∞ } := by
-  refine' TopologicalSpace.isTopologicalBasis_of_isOpen_of_nhds (fun s hs => hs.1) _
+  refine TopologicalSpace.isTopologicalBasis_of_isOpen_of_nhds (fun s hs => hs.1) ?_
   intro x s xs hs
   rcases μ.exists_isOpen_measure_lt_top x with ⟨v, xv, hv, μv⟩
-  refine' ⟨v ∩ s, ⟨hv.inter hs, lt_of_le_of_lt _ μv⟩, ⟨xv, xs⟩, inter_subset_right _ _⟩
+  refine ⟨v ∩ s, ⟨hv.inter hs, lt_of_le_of_lt ?_ μv⟩, ⟨xv, xs⟩, inter_subset_right _ _⟩
   exact measure_mono (inter_subset_left _ _)
 #align measure_theory.measure.is_topological_basis_is_open_lt_top MeasureTheory.Measure.isTopologicalBasis_isOpen_lt_top
 
@@ -1317,7 +1317,7 @@ theorem ext_on_measurableSpace_of_generate_finite {α} (m₀ : MeasurableSpace �
     constructor
     rw [← h_univ]
     apply IsFiniteMeasure.measure_univ_lt_top
-  refine' induction_on_inter hA hC (by simp) hμν _ _ hs
+  refine induction_on_inter hA hC (by simp) hμν ?_ ?_ hs
   · intro t h1t h2t
     have h1t_ : @MeasurableSet α m₀ t := h _ h1t
     rw [@measure_compl α m₀ μ t h1t_ (@measure_ne_top α m₀ μ _ t),
@@ -1384,7 +1384,7 @@ theorem inf_of_right (h : μ.FiniteAtFilter g) : μ.FiniteAtFilter (f ⊓ g) :=
 
 @[simp]
 theorem inf_ae_iff : μ.FiniteAtFilter (f ⊓ μ.ae) ↔ μ.FiniteAtFilter f := by
-  refine' ⟨_, fun h => h.filter_mono inf_le_left⟩
+  refine ⟨?_, fun h => h.filter_mono inf_le_left⟩
   rintro ⟨s, ⟨t, ht, u, hu, rfl⟩, hμ⟩
   suffices μ t ≤ μ (t ∩ u) from ⟨t, ht, this.trans_lt hμ⟩
   exact measure_mono_ae (mem_of_superset hu fun x hu ht => ⟨ht, hu⟩)
@@ -1445,7 +1445,7 @@ variable [TopologicalSpace α] [MeasurableSpace α] {μ : Measure α} {s : Set �
 superset of finite measure. -/
 theorem exists_open_superset_measure_lt_top' (h : IsCompact s)
     (hμ : ∀ x ∈ s, μ.FiniteAtFilter (𝓝 x)) : ∃ U ⊇ s, IsOpen U ∧ μ U < ∞ := by
-  refine' IsCompact.induction_on h _ _ _ _
+  refine IsCompact.induction_on h ?_ ?_ ?_ ?_
   · use ∅
     simp [Superset]
   · rintro s t hst ⟨U, htU, hUo, hU⟩

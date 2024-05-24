@@ -70,7 +70,7 @@ theorem continuous_right_toIcoMod : ContinuousWithinAt (toIcoMod hp a) (Ici x) x
   let d := toIcoDiv hp a x • p
   have hd := toIcoMod_mem_Ico hp a x
   simp_rw [subset_def, mem_inter_iff]
-  refine' ⟨_, ⟨l + d, min (a + p) u + d, _, fun x => id⟩, fun y => _⟩ <;>
+  refine ⟨_, ⟨l + d, min (a + p) u + d, ?_, fun x => id⟩, fun y => ?_⟩ <;>
     simp_rw [← sub_mem_Ioo_iff_left, mem_Ioo, lt_min_iff]
   · exact ⟨hxI.1, hd.2, hxI.2⟩
   · rintro ⟨h, h'⟩
@@ -405,7 +405,7 @@ variable {p}
 theorem addOrderOf_period_div {n : ℕ} (h : 0 < n) : addOrderOf ((p / n : 𝕜) : AddCircle p) = n := by
   rw [addOrderOf_eq_iff h]
   replace h : 0 < (n : 𝕜) := Nat.cast_pos.2 h
-  refine' ⟨_, fun m hn h0 => _⟩ <;> simp only [Ne, ← coe_nsmul, nsmul_eq_mul]
+  refine ⟨?_, fun m hn h0 => ?_⟩ <;> simp only [Ne, ← coe_nsmul, nsmul_eq_mul]
   · rw [mul_div_cancel₀ _ h.ne', coe_period]
   rw [coe_eq_zero_of_pos_iff p hp.out (mul_pos (Nat.cast_pos.2 h0) <| div_pos hp.out h)]
   rintro ⟨k, hk⟩
@@ -451,7 +451,7 @@ theorem addOrderOf_coe_rat {q : ℚ} : addOrderOf (↑(↑q * p) : AddCircle p) 
 
 theorem addOrderOf_eq_pos_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
     addOrderOf u = n ↔ ∃ m < n, m.gcd n = 1 ∧ ↑(↑m / ↑n * p) = u := by
-  refine' ⟨QuotientAddGroup.induction_on' u fun k hk => _, _⟩
+  refine ⟨QuotientAddGroup.induction_on' u fun k hk => ?_, ?_⟩
   · rintro ⟨m, _, h₁, rfl⟩
     exact addOrderOf_div_of_gcd_eq_one h h₁
   have h0 := addOrderOf_nsmul_eq_zero (k : AddCircle p)
@@ -466,7 +466,7 @@ theorem addOrderOf_eq_pos_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
     convert congr_arg (QuotientAddGroup.mk : 𝕜 → (AddCircle p)) ha using 1
     rw [coe_add, ← Int.cast_natCast, han, zsmul_eq_mul, mul_div_right_comm, eq_comm,
       add_left_eq_self, ← zsmul_eq_mul, coe_zsmul, coe_period, smul_zero]
-  refine' ⟨(a % n).toNat, _, _, he⟩
+  refine ⟨(a % n).toNat, ?_, ?_, he⟩
   · rw [← Int.ofNat_lt, han]
     exact Int.emod_lt_of_pos _ (Int.ofNat_lt.2 h)
   · have := (gcd_mul_addOrderOf_div_eq p (Int.toNat (a % ↑n)) h).trans
@@ -674,7 +674,7 @@ theorem liftIco_eq_lift_Icc {f : 𝕜 → B} (h : f a = f (a + p)) :
 theorem liftIco_continuous [TopologicalSpace B] {f : 𝕜 → B} (hf : f a = f (a + p))
     (hc : ContinuousOn f <| Icc a (a + p)) : Continuous (liftIco p a f) := by
   rw [liftIco_eq_lift_Icc hf]
-  refine' Continuous.comp _ (homeoIccQuot p a).continuous_toFun
+  refine Continuous.comp ?_ (homeoIccQuot p a).continuous_toFun
   exact continuous_coinduced_dom.mpr (continuousOn_iff_continuous_restrict.mp hc)
 #align add_circle.lift_Ico_continuous AddCircle.liftIco_continuous
 

@@ -79,7 +79,7 @@ theorem degree_scaleRoots (p : R[X]) {s : R} : degree (scaleRoots p s) = degree 
   haveI := Classical.propDecidable
   by_cases hp : p = 0
   · rw [hp, zero_scaleRoots]
-  refine' le_antisymm (Finset.sup_mono (support_scaleRoots_le p s)) (degree_le_degree _)
+  refine le_antisymm (Finset.sup_mono (support_scaleRoots_le p s)) (degree_le_degree ?_)
   rw [coeff_scaleRoots_natDegree]
   intro h
   have := leadingCoeff_eq_zero.mp h

@@ -28,7 +28,7 @@ section NormedField
 theorem Filter.IsBoundedUnder.isLittleO_sub_self_inv {𝕜 E : Type*} [NormedField 𝕜] [Norm E] {a : 𝕜}
     {f : 𝕜 → E} (h : IsBoundedUnder (· ≤ ·) (𝓝[≠] a) (norm ∘ f)) :
     f =o[𝓝[≠] a] fun x => (x - a)⁻¹ := by
-  refine' (h.isBigO_const (one_ne_zero' ℝ)).trans_isLittleO (isLittleO_const_left.2 <| Or.inr _)
+  refine (h.isBigO_const (one_ne_zero' ℝ)).trans_isLittleO (isLittleO_const_left.2 <| Or.inr ?_)
   simp only [(· ∘ ·), norm_inv]
   exact (tendsto_norm_sub_self_punctured_nhds a).inv_tendsto_zero
 #align filter.is_bounded_under.is_o_sub_self_inv Filter.IsBoundedUnder.isLittleO_sub_self_inv
@@ -75,7 +75,7 @@ variable {𝕜 : Type*} [NormedLinearOrderedField 𝕜]
 
 theorem Asymptotics.isLittleO_pow_pow_atTop_of_lt [OrderTopology 𝕜] {p q : ℕ} (hpq : p < q) :
     (fun x : 𝕜 => x ^ p) =o[atTop] fun x => x ^ q := by
-  refine' (isLittleO_iff_tendsto' _).mpr (tendsto_pow_div_pow_atTop_zero hpq)
+  refine (isLittleO_iff_tendsto' ?_).mpr (tendsto_pow_div_pow_atTop_zero hpq)
   exact (eventually_gt_atTop 0).mono fun x hx hxq => (pow_ne_zero q hx.ne' hxq).elim
 #align asymptotics.is_o_pow_pow_at_top_of_lt Asymptotics.isLittleO_pow_pow_atTop_of_lt
 

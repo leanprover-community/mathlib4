@@ -124,7 +124,7 @@ theorem isIso_of_bijective {X Y : CompHaus.{u}} (f : X ⟶ Y) (bij : Function.Bi
     intro S hS
     rw [← E.image_eq_preimage]
     exact isClosedMap f S hS
-  refine' ⟨⟨⟨E.symm, hE⟩, _, _⟩⟩
+  refine ⟨⟨⟨E.symm, hE⟩, ?_, ?_⟩⟩
   · ext x
     apply E.symm_apply_apply
   · ext x

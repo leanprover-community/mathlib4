@@ -688,9 +688,9 @@ def limSeq : ℕ → ℚ :=
 
 theorem exi_rat_seq_conv {ε : ℚ} (hε : 0 < ε) :
     ∃ N, ∀ i ≥ N, padicNormE (f i - (limSeq f i : ℚ_[p]) : ℚ_[p]) < ε := by
-  refine' (exists_nat_gt (1 / ε)).imp fun N hN i hi ↦ _
+  refine (exists_nat_gt (1 / ε)).imp fun N hN i hi ↦ ?_
   have h := Classical.choose_spec (rat_dense' (f i) (div_nat_pos i))
-  refine' lt_of_lt_of_le h ((div_le_iff' <| mod_cast succ_pos _).mpr _)
+  refine lt_of_lt_of_le h ((div_le_iff' <| mod_cast succ_pos _).mpr ?_)
   rw [right_distrib]
   apply le_add_of_le_of_nonneg
   · exact (div_le_iff hε).mp (le_trans (le_of_lt hN) (mod_cast hi))
@@ -738,7 +738,7 @@ theorem complete' : ∃ q : ℚ_[p], ∀ ε > 0, ∃ N, ∀ i ≥ N, padicNormE 
     obtain ⟨N2, hN2⟩ := padicNormE.defn (lim' f) (half_pos hε)
     refine ⟨max N N2, fun i hi ↦ ?_⟩
     rw [← sub_add_sub_cancel _ (lim' f i : ℚ_[p]) _]
-    refine' (padicNormE.add_le _ _).trans_lt _
+    refine (padicNormE.add_le _ _).trans_lt ?_
     rw [← add_halves ε]
     apply _root_.add_lt_add
     · apply hN2 _ (le_of_max_le_right hi)
@@ -1064,7 +1064,7 @@ theorem norm_eq_pow_val {x : ℚ_[p]} : x ≠ 0 → ‖x‖ = (p : ℝ) ^ (-x.va
 @[simp]
 theorem valuation_p : valuation (p : ℚ_[p]) = 1 := by
   have h : (1 : ℝ) < p := mod_cast (Fact.out : p.Prime).one_lt
-  refine' neg_injective ((zpow_strictMono h).injective <| (norm_eq_pow_val _).symm.trans _)
+  refine neg_injective ((zpow_strictMono h).injective <| (norm_eq_pow_val ?_).symm.trans ?_)
   · exact mod_cast (Fact.out : p.Prime).ne_zero
   · simp
 #align padic.valuation_p Padic.valuation_p

@@ -101,12 +101,12 @@ theorem Finset.prod_dvd_of_coprime :
       intro a r har ih Hs Hs1
       rw [Finset.prod_insert har]
       have aux1 : a ∈ (↑(insert a r) : Set I) := Finset.mem_insert_self a r
-      refine'
+      refine
         (IsCoprime.prod_right fun i hir ↦
               Hs aux1 (Finset.mem_insert_of_mem hir) <| by
                 rintro rfl
                 exact har hir).mul_dvd
-          (Hs1 a aux1) (ih (Hs.mono _) fun i hi ↦ Hs1 i <| Finset.mem_insert_of_mem hi)
+          (Hs1 a aux1) (ih (Hs.mono ?_) fun i hi ↦ Hs1 i <| Finset.mem_insert_of_mem hi)
       simp only [Finset.coe_insert, Set.subset_insert])
 #align finset.prod_dvd_of_coprime Finset.prod_dvd_of_coprime
 
@@ -122,7 +122,7 @@ open Finset
 theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) :
     (∃ μ : I → R, (∑ i in t, μ i * ∏ j in t \ {i}, s j) = 1) ↔
       Pairwise (IsCoprime on fun i : t ↦ s i) := by
-  refine' h.cons_induction _ _
+  refine h.cons_induction ?_ ?_
   · simp only [sum_singleton, Finset.sdiff_self, prod_empty, mul_one, exists_apply_eq,
                Pairwise, Ne, true_iff_iff]
     rintro a ⟨i, hi⟩ ⟨j, hj⟩ h
@@ -216,7 +216,7 @@ theorem IsCoprime.pow (H : IsCoprime x y) : IsCoprime (x ^ m) (y ^ n) :=
 #align is_coprime.pow IsCoprime.pow
 
 theorem IsCoprime.pow_left_iff (hm : 0 < m) : IsCoprime (x ^ m) y ↔ IsCoprime x y := by
-  refine' ⟨fun h ↦ _, IsCoprime.pow_left⟩
+  refine ⟨fun h ↦ ?_, IsCoprime.pow_left⟩
   rw [← Finset.card_range m, ← Finset.prod_const] at h
   exact h.of_prod_left 0 (Finset.mem_range.mpr hm)
   -- Porting note: I'm not sure why `finset` didn't get corrected automatically to `Finset`
@@ -271,12 +271,12 @@ theorem Finset.prod_dvd_of_isRelPrime :
       intro a r har ih Hs Hs1
       rw [Finset.prod_insert har]
       have aux1 : a ∈ (↑(insert a r) : Set I) := Finset.mem_insert_self a r
-      refine'
+      refine
         (IsRelPrime.prod_right fun i hir ↦
               Hs aux1 (Finset.mem_insert_of_mem hir) <| by
                 rintro rfl
                 exact har hir).mul_dvd
-          (Hs1 a aux1) (ih (Hs.mono _) fun i hi ↦ Hs1 i <| Finset.mem_insert_of_mem hi)
+          (Hs1 a aux1) (ih (Hs.mono ?_) fun i hi ↦ Hs1 i <| Finset.mem_insert_of_mem hi)
       simp only [Finset.coe_insert, Set.subset_insert])
 
 theorem Fintype.prod_dvd_of_isRelPrime [Fintype I] (Hs : Pairwise (IsRelPrime on s))
@@ -309,7 +309,7 @@ theorem pow (H : IsRelPrime x y) : IsRelPrime (x ^ m) (y ^ n) :=
   H.pow_left.pow_right
 
 theorem pow_left_iff (hm : 0 < m) : IsRelPrime (x ^ m) y ↔ IsRelPrime x y := by
-  refine' ⟨fun h ↦ _, IsRelPrime.pow_left⟩
+  refine ⟨fun h ↦ ?_, IsRelPrime.pow_left⟩
   rw [← Finset.card_range m, ← Finset.prod_const] at h
   exact h.of_prod_left 0 (Finset.mem_range.mpr hm)
 

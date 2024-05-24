@@ -120,7 +120,7 @@ theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
   · intro i j
     simp_rw [of_apply]
     rw [Matrix.cons_val_zero]
-    refine' Fin.cases _ (fun i => _) i
+    refine Fin.cases ?_ (fun i => ?_) i
     · simp
     rw [Matrix.cons_val_succ, Matrix.cons_val_succ, Pi.one_apply]
     ring
@@ -134,7 +134,7 @@ theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
       simp only [smul_eq_mul, Pi.add_apply, Fin.val_succ, Fin.coe_castSucc, Pi.smul_apply]
       rw [Finset.sum_range_succ, add_comm, tsub_self, pow_zero, mul_one, Finset.mul_sum]
       congr 1
-      refine' Finset.sum_congr rfl fun i' hi' => _
+      refine Finset.sum_congr rfl fun i' hi' => ?_
       rw [mul_left_comm (v 0), Nat.succ_sub, pow_succ']
       exact Nat.lt_succ_iff.mp (Finset.mem_range.mp hi')
 #align matrix.det_vandermonde Matrix.det_vandermonde
@@ -146,7 +146,7 @@ theorem det_vandermonde_eq_zero_iff [IsDomain R] {n : ℕ} {v : Fin n → R} :
     rintro i ⟨_, j, h₁, h₂⟩
     exact ⟨j, i, h₂, (mem_Ioi.mp h₁).ne'⟩
   · simp only [Ne, forall_exists_index, and_imp]
-    refine' fun i j h₁ h₂ => Matrix.det_zero_of_row_eq h₂ (funext fun k => _)
+    refine fun i j h₁ h₂ => Matrix.det_zero_of_row_eq h₂ (funext fun k => ?_)
     rw [vandermonde_apply, vandermonde_apply, h₁]
 #align matrix.det_vandermonde_eq_zero_iff Matrix.det_vandermonde_eq_zero_iff
 

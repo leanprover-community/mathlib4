@@ -41,10 +41,10 @@ theorem closedBall_ae_eq_ball {x : AddCircle T} {ε : ℝ} : closedBall x ε =�
         (measure_ne_top _ _)).symm
     have : Tendsto (fun δ => volume (closedBall x δ)) (𝓝[<] ε) (𝓝 <| volume (closedBall x ε)) := by
       simp_rw [volume_closedBall]
-      refine' ENNReal.tendsto_ofReal (Tendsto.min tendsto_const_nhds <| Tendsto.const_mul _ _)
+      refine ENNReal.tendsto_ofReal (Tendsto.min tendsto_const_nhds <| Tendsto.const_mul _ ?_)
       convert (@monotone_id ℝ _).tendsto_nhdsWithin_Iio ε
       simp
-    refine' le_of_tendsto this (mem_nhdsWithin_Iio_iff_exists_Ioo_subset.mpr ⟨0, hε, fun r hr => _⟩)
+    refine le_of_tendsto this (mem_nhdsWithin_Iio_iff_exists_Ioo_subset.mpr ⟨0, hε, fun r hr => ?_⟩)
     exact measure_mono (closedBall_subset_ball hr.2)
 #align add_circle.closed_ball_ae_eq_ball AddCircle.closedBall_ae_eq_ball
 
@@ -58,7 +58,7 @@ theorem isAddFundamentalDomain_of_ae_ball (I : Set <| AddCircle T) (u x : AddCir
   set n := addOrderOf u
   set B := ball x (T / (2 * n))
   have hn : 1 ≤ (n : ℝ) := by norm_cast; linarith [hu.addOrderOf_pos]
-  refine' IsAddFundamentalDomain.mk_of_measure_univ_le _ _ _ _
+  refine IsAddFundamentalDomain.mk_of_measure_univ_le ?_ ?_ ?_ ?_
   · -- `NullMeasurableSet I volume`
     exact measurableSet_ball.nullMeasurableSet.congr hI.symm
   · -- `∀ (g : G), g ≠ 0 → AEDisjoint volume (g +ᵥ I) I`
@@ -73,8 +73,8 @@ theorem isAddFundamentalDomain_of_ae_ball (I : Set <| AddCircle T) (u x : AddCir
     apply ball_disjoint_ball
     rw [dist_eq_norm, add_sub_cancel_right, div_mul_eq_div_div, ← add_div, ← add_div,
       add_self_div_two, div_le_iff' (by positivity : 0 < (n : ℝ)), ← nsmul_eq_mul]
-    refine' (le_add_order_smul_norm_of_isOfFinAddOrder (hu.of_mem_zmultiples hg) hg').trans
-      (nsmul_le_nsmul_left (norm_nonneg g) _)
+    refine (le_add_order_smul_norm_of_isOfFinAddOrder (hu.of_mem_zmultiples hg) hg').trans
+      (nsmul_le_nsmul_left (norm_nonneg g) ?_)
     exact Nat.le_of_dvd (addOrderOf_pos_iff.mpr hu) (addOrderOf_dvd_of_mem_zmultiples hg)
   · -- `∀ (g : G), QuasiMeasurePreserving (VAdd.vadd g) volume volume`
     exact fun g => quasiMeasurePreserving_add_left (G := AddCircle T) volume g

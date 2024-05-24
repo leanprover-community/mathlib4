@@ -128,7 +128,7 @@ variable [CommRing C]
 
 theorem integerNormalization_eq_zero_iff {p : K[X]} :
     integerNormalization (nonZeroDivisors A) p = 0 ↔ p = 0 := by
-  refine' Polynomial.ext_iff.trans (Polynomial.ext_iff.trans _).symm
+  refine Polynomial.ext_iff.trans (Polynomial.ext_iff.trans ?_).symm
   obtain ⟨⟨b, nonzero⟩, hb⟩ := integerNormalization_spec (nonZeroDivisors A) p
   constructor <;> intro h i
   · -- Porting note: avoided some defeq abuse
@@ -149,7 +149,7 @@ over the field of fractions of `A`.
 theorem isAlgebraic_iff [Algebra A C] [Algebra K C] [IsScalarTower A K C] {x : C} :
     IsAlgebraic A x ↔ IsAlgebraic K x := by
   constructor <;> rintro ⟨p, hp, px⟩
-  · refine' ⟨p.map (algebraMap A K), fun h => hp (Polynomial.ext fun i => _), _⟩
+  · refine ⟨p.map (algebraMap A K), fun h => hp (Polynomial.ext fun i => ?_), ?_⟩
     · have : algebraMap A K (p.coeff i) = 0 :=
         _root_.trans (Polynomial.coeff_map _ _).symm (by simp [h])
       exact to_map_eq_zero_iff.mp this
@@ -191,12 +191,12 @@ theorem RingHom.isIntegralElem_localization_at_leadingCoeff {R S : Type*} [CommR
   · exact ⟨0, ⟨_root_.trans leadingCoeff_zero triv.symm, eval₂_zero _ _⟩⟩
   haveI : Nontrivial Rₘ := nontrivial_of_ne 1 0 triv
   obtain ⟨b, hb⟩ := isUnit_iff_exists_inv.mp (map_units Rₘ ⟨p.leadingCoeff, hM⟩)
-  refine' ⟨p.map (algebraMap R Rₘ) * C b, ⟨_, _⟩⟩
-  · refine' monic_mul_C_of_leadingCoeff_mul_eq_one _
+  refine ⟨p.map (algebraMap R Rₘ) * C b, ⟨?_, ?_⟩⟩
+  · refine monic_mul_C_of_leadingCoeff_mul_eq_one ?_
     rwa [leadingCoeff_map_of_leadingCoeff_ne_zero (algebraMap R Rₘ)]
     refine' fun hfp => zero_ne_one
       (_root_.trans (zero_mul b).symm (hfp ▸ hb) : (0 : Rₘ) = 1)
-  · refine' eval₂_mul_eq_zero_of_left _ _ _ _
+  · refine eval₂_mul_eq_zero_of_left _ _ _ ?_
     erw [eval₂_map, IsLocalization.map_comp, ← hom_eval₂ _ f (algebraMap S Sₘ) x]
     exact _root_.trans (congr_arg (algebraMap S Sₘ) hf) (RingHom.map_zero _)
 #align ring_hom.is_integral_elem_localization_at_leading_coeff RingHom.isIntegralElem_localization_at_leadingCoeff
@@ -438,8 +438,8 @@ theorem ideal_span_singleton_map_subset {L : Type*} [IsDomain R] [IsDomain S] [F
   obtain ⟨y, z, hz0, yz_eq⟩ :=
     IsIntegralClosure.exists_smul_eq_mul inj y' (nonZeroDivisors.coe_ne_zero z')
   have injRS : Function.Injective (algebraMap R S) := by
-    refine'
-      Function.Injective.of_comp (show Function.Injective (algebraMap S L ∘ algebraMap R S) from _)
+    refine
+      Function.Injective.of_comp (show Function.Injective (algebraMap S L ∘ algebraMap R S) from ?_)
     rwa [← RingHom.coe_comp, ← IsScalarTower.algebraMap_eq]
   have hz0' : algebraMap R S z ∈ S⁰ :=
     map_mem_nonZeroDivisors (algebraMap R S) injRS (mem_nonZeroDivisors_of_ne_zero hz0)
@@ -451,7 +451,7 @@ theorem ideal_span_singleton_map_subset {L : Type*} [IsDomain R] [IsDomain S] [F
       IsScalarTower.algebraMap_apply R K L, div_eq_mul_inv, ← mul_assoc, mul_comm, ← map_inv₀, ←
       Algebra.smul_def, ← _root_.map_mul]
     exact (Submodule.span K _).smul_mem _ hy
-  refine' Submodule.span_subset_span R K _ _
+  refine Submodule.span_subset_span R K _ ?_
   rw [Submodule.span_algebraMap_image_of_tower]
   -- Note: #8386 had to specify the value of `f` here:
   exact Submodule.mem_map_of_mem (f := LinearMap.restrictScalars _ _)

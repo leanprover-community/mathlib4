@@ -207,7 +207,7 @@ theorem imageBasicOpen_image_preimage :
       SheafedSpace.congr_app (coequalizer.condition f.1 g.1), comp_apply,
       X.toRingedSpace.basicOpen_res]
     apply inf_eq_right.mpr
-    refine' (RingedSpace.basicOpen_le _ _).trans _
+    refine (RingedSpace.basicOpen_le _ _).trans ?_
     rw [coequalizer.condition f.1 g.1]
 #align algebraic_geometry.LocallyRingedSpace.has_coequalizer.image_basic_open_image_preimage AlgebraicGeometry.LocallyRingedSpace.HasCoequalizer.imageBasicOpen_image_preimage
 

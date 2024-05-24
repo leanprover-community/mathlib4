@@ -526,7 +526,7 @@ theorem oangle_add_left_smul_rotation_pi_div_two {x : V} (h : x ≠ 0) (r : ℝ)
     neg_neg ((π / 2 : ℝ) : Real.Angle), ← rotation_neg_orientation_eq_neg, add_comm]
   have hx : x = r⁻¹ • (-o).rotation (π / 2 : ℝ) (r • (-o).rotation (-(π / 2 : ℝ)) x) := by simp [hr]
   nth_rw 3 [hx]
-  refine' (-o).oangle_add_right_smul_rotation_pi_div_two _ _
+  refine (-o).oangle_add_right_smul_rotation_pi_div_two ?_ _
   simp [hr, h]
 #align orientation.oangle_add_left_smul_rotation_pi_div_two Orientation.oangle_add_left_smul_rotation_pi_div_two
 

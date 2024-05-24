@@ -252,7 +252,7 @@ theorem coeff_add_mul_monomial (a : R) :
 @[simp]
 theorem commute_monomial {a : R} {n} :
     Commute φ (monomial R n a) ↔ ∀ m, Commute (coeff R m φ) a := by
-  refine' ext_iff.trans ⟨fun h m => _, fun h m => _⟩
+  refine ext_iff.trans ⟨fun h m => ?_, fun h m => ?_⟩
   · have := h (m + n)
     rwa [coeff_add_mul_monomial, add_comm, coeff_add_monomial_mul] at this
   · rw [coeff_mul_monomial, coeff_monomial_mul]

@@ -138,7 +138,7 @@ positive. -/
 theorem exists_bound_of_continuous (hf : Continuous f) :
     ∃ C : ℝ, 0 < C ∧ ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖ := by
   cases isEmpty_or_nonempty ι
-  · refine' ⟨‖f 0‖ + 1, add_pos_of_nonneg_of_pos (norm_nonneg _) zero_lt_one, fun m => _⟩
+  · refine ⟨‖f 0‖ + 1, add_pos_of_nonneg_of_pos (norm_nonneg _) zero_lt_one, fun m => ?_⟩
     obtain rfl : m = 0 := funext (IsEmpty.elim ‹_›)
     simp [univ_eq_empty, zero_le_one]
   obtain ⟨ε : ℝ, ε0 : 0 < ε, hε : ∀ m : ∀ i, E i, ‖m - 0‖ < ε → ‖f m - f 0‖ < 1⟩ :=
@@ -146,9 +146,9 @@ theorem exists_bound_of_continuous (hf : Continuous f) :
   simp only [sub_zero, f.map_zero] at hε
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
   have : 0 < (‖c‖ / ε) ^ Fintype.card ι := pow_pos (div_pos (zero_lt_one.trans hc) ε0) _
-  refine' ⟨_, this, _⟩
-  refine' f.bound_of_shell_of_continuous hf (fun _ => ε0) (fun _ => hc) fun m hcm hm => _
-  refine' (hε m ((pi_norm_lt_iff ε0).2 hm)).le.trans _
+  refine ⟨_, this, ?_⟩
+  refine f.bound_of_shell_of_continuous hf (fun _ => ε0) (fun _ => hc) fun m hcm hm => ?_
+  refine (hε m ((pi_norm_lt_iff ε0).2 hm)).le.trans ?_
   rw [← div_le_iff' this, one_div, ← inv_pow, inv_div, Fintype.card, ← prod_const]
   exact prod_le_prod (fun _ _ => div_nonneg ε0.le (norm_nonneg _)) fun i _ => hcm i
 #align multilinear_map.exists_bound_of_continuous MultilinearMap.exists_bound_of_continuous
@@ -243,10 +243,10 @@ theorem continuous_of_bound (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m 
   have D_pos : 0 ≤ D := le_trans zero_le_one (le_max_right _ _)
   replace H (m) : ‖f m‖ ≤ D * ∏ i, ‖m i‖ :=
     (H m).trans (mul_le_mul_of_nonneg_right (le_max_left _ _) <| by positivity)
-  refine' continuous_iff_continuousAt.2 fun m => _
-  refine'
+  refine continuous_iff_continuousAt.2 fun m => ?_
+  refine
     continuousAt_of_locally_lipschitz zero_lt_one
-      (D * Fintype.card ι * (‖m‖ + 1) ^ (Fintype.card ι - 1)) fun m' h' => _
+      (D * Fintype.card ι * (‖m‖ + 1) ^ (Fintype.card ι - 1)) fun m' h' => ?_
   rw [dist_eq_norm, dist_eq_norm]
   have : max ‖m'‖ ‖m‖ ≤ ‖m‖ + 1 := by
     simp [zero_le_one, norm_le_of_mem_closedBall (le_of_lt h')]
@@ -620,7 +620,7 @@ variable {G} (E)
 @[simp]
 theorem norm_constOfIsEmpty [IsEmpty ι] (x : G) : ‖constOfIsEmpty 𝕜 E x‖ = ‖x‖ := by
   apply le_antisymm
-  · refine' opNorm_le_bound _ (norm_nonneg _) fun x => _
+  · refine opNorm_le_bound _ (norm_nonneg _) fun x => ?_
     rw [Fintype.prod_empty, mul_one, constOfIsEmpty_apply]
   · simpa using (constOfIsEmpty 𝕜 E x).le_opNorm 0
 #align continuous_multilinear_map.norm_const_of_is_empty ContinuousMultilinearMap.norm_constOfIsEmpty
@@ -812,7 +812,7 @@ theorem norm_mkPiAlgebra_of_empty [IsEmpty ι] :
 theorem norm_mkPiAlgebra [NormOneClass A] : ‖ContinuousMultilinearMap.mkPiAlgebra 𝕜 ι A‖ = 1 := by
   cases isEmpty_or_nonempty ι
   · simp [norm_mkPiAlgebra_of_empty]
-  · refine' le_antisymm norm_mkPiAlgebra_le _
+  · refine le_antisymm norm_mkPiAlgebra_le ?_
     convert ratio_le_opNorm (ContinuousMultilinearMap.mkPiAlgebra 𝕜 ι A) fun _ => 1
     simp
 #align continuous_multilinear_map.norm_mk_pi_algebra ContinuousMultilinearMap.norm_mkPiAlgebra
@@ -827,7 +827,7 @@ theorem norm_mkPiAlgebraFin_succ_le : ‖ContinuousMultilinearMap.mkPiAlgebraFin
   refine opNorm_le_bound _ zero_le_one fun m => ?_
   simp only [ContinuousMultilinearMap.mkPiAlgebraFin_apply, one_mul, List.ofFn_eq_map,
     Fin.prod_univ_def, Multiset.map_coe, Multiset.prod_coe]
-  refine' (List.norm_prod_le' _).trans_eq _
+  refine (List.norm_prod_le' ?_).trans_eq ?_
   · rw [Ne, List.map_eq_nil, List.finRange_eq_nil]
     exact Nat.succ_ne_zero _
   rw [List.map_map, Function.comp_def]
@@ -840,7 +840,7 @@ theorem norm_mkPiAlgebraFin_le_of_pos (hn : 0 < n) :
 #align continuous_multilinear_map.norm_mk_pi_algebra_fin_le_of_pos ContinuousMultilinearMap.norm_mkPiAlgebraFin_le_of_pos
 
 theorem norm_mkPiAlgebraFin_zero : ‖ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 0 A‖ = ‖(1 : A)‖ := by
-  refine' le_antisymm _ _
+  refine le_antisymm ?_ ?_
   · refine opNorm_le_bound _ (norm_nonneg (1 : A)) ?_
     simp
   · convert ratio_le_opNorm (ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 0 A) fun _ => (1 : A)
@@ -853,7 +853,7 @@ theorem norm_mkPiAlgebraFin [NormOneClass A] :
   cases n
   · rw [norm_mkPiAlgebraFin_zero]
     simp
-  · refine' le_antisymm norm_mkPiAlgebraFin_succ_le _
+  · refine le_antisymm norm_mkPiAlgebraFin_succ_le ?_
     refine le_of_eq_of_le ?_ <|
       ratio_le_opNorm (ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 (Nat.succ _) A) fun _ => 1
     simp

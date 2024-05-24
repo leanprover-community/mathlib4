@@ -241,7 +241,7 @@ theorem sInf_coe (P : Set (Submodule R M)) : (↑(sInf P) : Set M) = ⋂ p ∈ P
 theorem finset_inf_coe {ι} (s : Finset ι) (p : ι → Submodule R M) :
     (↑(s.inf p) : Set M) = ⋂ i ∈ s, ↑(p i) := by
   letI := Classical.decEq ι
-  refine' s.induction_on _ fun i s _ ih ↦ _
+  refine s.induction_on ?_ fun i s _ ih ↦ ?_
   · simp
   · rw [Finset.inf_insert, inf_coe, ih]
     simp

@@ -204,7 +204,7 @@ theorem finitaryExtensive_iff_of_isTerminal (C : Type u) [Category.{v} C] [HasFi
     [HasPullbacksOfInclusions C]
     (T : C) (HT : IsTerminal T) (c₀ : BinaryCofan T T) (hc₀ : IsColimit c₀) :
     FinitaryExtensive C ↔ IsVanKampenColimit c₀ := by
-  refine' ⟨fun H => H.van_kampen' c₀ hc₀, fun H => _⟩
+  refine ⟨fun H => H.van_kampen' c₀ hc₀, fun H => ?_⟩
   constructor
   simp_rw [BinaryCofan.isVanKampen_iff] at H ⊢
   intro X Y c hc X' Y' c' αX αY f hX hY

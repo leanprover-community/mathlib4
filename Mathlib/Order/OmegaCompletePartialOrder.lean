@@ -564,7 +564,7 @@ variable {α β : Type*} [OmegaCompletePartialOrder α] [CompleteLinearOrder β]
 
 theorem inf_continuous (f g : α →o β) (hf : Continuous f) (hg : Continuous g) :
     Continuous (f ⊓ g) := by
-  refine' fun c => eq_of_forall_ge_iff fun z => _
+  refine fun c => eq_of_forall_ge_iff fun z => ?_
   simp only [inf_le_iff, hf c, hg c, ωSup_le_iff, ← forall_or_left, ← forall_or_right,
              Chain.map_coe, OrderHom.coe_inf, ge_iff_le, Pi.inf_apply, Function.comp]
   exact ⟨fun h _ ↦ h _ _, fun h i j ↦

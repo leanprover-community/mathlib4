@@ -99,7 +99,7 @@ lemma comp [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
     (by simpa only [W₃.map_map]
       using le_of_eq (W₃.map_eq_of_iso (compUniqFunctor L₁ W₁.Q W₁)))
   have : (W₁.Q ⋙ W₂'.Q).IsLocalization W₃ := by
-    refine' IsLocalization.mk' _ _ _ _
+    refine IsLocalization.mk' _ _ ?_ ?_
     all_goals
       exact (StrictUniversalPropertyFixedTarget.comp
         (strictUniversalPropertyFixedTargetQ W₁ _)

@@ -367,7 +367,7 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
     have hC : IsClosed C := (isCompact_range f.continuous).isClosed
     let U := Cᶜ
     have hyU : y ∈ U := by
-      refine' Set.mem_compl _
+      refine Set.mem_compl ?_
       rintro ⟨y', hy'⟩
       exact hy y' hy'
     have hUy : U ∈ 𝓝 y := hC.compl_mem_nhds hyU

@@ -71,7 +71,7 @@ theorem mul_subset_closure (hs : s ⊆ u) (ht : t ⊆ u) : s * t ⊆ Submonoid.c
 @[to_additive]
 theorem coe_mul_self_eq (s : Submonoid M) : (s : Set M) * s = s := by
   ext x
-  refine' ⟨_, fun h => ⟨x, h, 1, s.one_mem, mul_one x⟩⟩
+  refine ⟨?_, fun h => ⟨x, h, 1, s.one_mem, mul_one x⟩⟩
   rintro ⟨a, ha, b, hb, rfl⟩
   exact s.mul_mem ha hb
 #align submonoid.coe_mul_self_eq Submonoid.coe_mul_self_eq
@@ -97,7 +97,7 @@ theorem sup_eq_closure_mul (H K : Submonoid M) : H ⊔ K = closure ((H : Set M) 
 @[to_additive]
 theorem pow_smul_mem_closure_smul {N : Type*} [CommMonoid N] [MulAction M N] [IsScalarTower M N N]
     (r : M) (s : Set N) {x : N} (hx : x ∈ closure s) : ∃ n : ℕ, r ^ n • x ∈ closure (r • s) := by
-  refine' @closure_induction N _ s (fun x : N => ∃ n : ℕ, r ^ n • x ∈ closure (r • s)) _ hx _ _ _
+  refine @closure_induction N _ s (fun x : N => ∃ n : ℕ, r ^ n • x ∈ closure (r • s)) _ hx ?_ ?_ ?_
   · intro x hx
     exact ⟨1, subset_closure ⟨_, hx, by rw [pow_one]⟩⟩
   · exact ⟨0, by simpa using one_mem _⟩
@@ -700,7 +700,7 @@ variable [OrderedCancelCommMonoid α] {s : Set α}
 theorem submonoid_closure (hpos : ∀ x : α, x ∈ s → 1 ≤ x) (h : s.IsPWO) :
     IsPWO (Submonoid.closure s : Set α) := by
   rw [Submonoid.closure_eq_image_prod]
-  refine' (h.partiallyWellOrderedOn_sublistForall₂ (· ≤ ·)).image_of_monotone_on _
+  refine (h.partiallyWellOrderedOn_sublistForall₂ (· ≤ ·)).image_of_monotone_on ?_
   exact fun l1 _ l2 hl2 h12 => h12.prod_le_prod' fun x hx => hpos x <| hl2 x hx
 #align set.is_pwo.submonoid_closure Set.IsPWO.submonoid_closure
 #align set.is_pwo.add_submonoid_closure Set.IsPWO.addSubmonoid_closure

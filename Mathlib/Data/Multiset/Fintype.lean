@@ -133,7 +133,7 @@ theorem Multiset.toEnumFinset_mono {m₁ m₂ : Multiset α} (h : m₁ ≤ m₂)
 @[simp]
 theorem Multiset.toEnumFinset_subset_iff {m₁ m₂ : Multiset α} :
     m₁.toEnumFinset ⊆ m₂.toEnumFinset ↔ m₁ ≤ m₂ := by
-  refine' ⟨fun h ↦ _, Multiset.toEnumFinset_mono⟩
+  refine ⟨fun h ↦ ?_, Multiset.toEnumFinset_mono⟩
   rw [Multiset.le_iff_count]
   intro x
   by_cases hx : x ∈ m₁

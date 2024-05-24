@@ -210,7 +210,7 @@ theorem IsPreirreducible.image (H : IsPreirreducible s) (f : X → Y) (hf : Cont
   rw [inter_comm s u', ← u'_eq] at this
   rw [inter_comm s v', ← v'_eq] at this
   rcases this ⟨x, hxu, hx⟩ ⟨y, hyv, hy⟩ with ⟨x, hxs, hxu', hxv'⟩
-  refine' ⟨f x, mem_image_of_mem f hxs, _, _⟩
+  refine ⟨f x, mem_image_of_mem f hxs, ?_, ?_⟩
   all_goals
     rw [← mem_preimage]
     apply mem_of_mem_inter_left

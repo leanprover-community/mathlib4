@@ -142,7 +142,7 @@ theorem single_order_mul_powerSeriesPart (x : LaurentSeries R) :
 
 theorem ofPowerSeries_powerSeriesPart (x : LaurentSeries R) :
     ofPowerSeries ℤ R x.powerSeriesPart = single (-x.order) 1 * x := by
-  refine' Eq.trans _ (congr rfl x.single_order_mul_powerSeriesPart)
+  refine Eq.trans ?_ (congr rfl x.single_order_mul_powerSeriesPart)
   rw [← mul_assoc, single_mul_single, neg_add_self, mul_one, ← C_apply, C_one, one_mul]
 #align laurent_series.of_power_series_power_series_part LaurentSeries.ofPowerSeries_powerSeriesPart
 

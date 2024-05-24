@@ -109,7 +109,7 @@ lemma IsMulFreimanHom.mul_eq_mul (hf : IsMulFreimanHom 2 A B f) {a b c d : α}
     (ha : a ∈ A) (hb : b ∈ A) (hc : c ∈ A) (hd : d ∈ A) (h : a * b = c * d) :
     f a * f b = f c * f d := by
   simp_rw [← prod_pair] at h ⊢
-  refine' hf.map_prod_eq_map_prod _ _ (card_pair _ _) (card_pair _ _) h <;> simp [ha, hb, hc, hd]
+  refine hf.map_prod_eq_map_prod ?_ ?_ (card_pair _ _) (card_pair _ _) h <;> simp [ha, hb, hc, hd]
 #align map_mul_map_eq_map_mul_map IsMulFreimanHom.mul_eq_mul
 #align map_add_map_eq_map_add_map IsAddFreimanHom.add_eq_add
 
@@ -118,7 +118,7 @@ lemma IsMulFreimanIso.mul_eq_mul (hf : IsMulFreimanIso 2 A B f) {a b c d : α}
     (ha : a ∈ A) (hb : b ∈ A) (hc : c ∈ A) (hd : d ∈ A) :
     f a * f b = f c * f d ↔ a * b = c * d := by
   simp_rw [← prod_pair]
-  refine' hf.map_prod_eq_map_prod _ _ (card_pair _ _) (card_pair _ _) <;> simp [ha, hb, hc, hd]
+  refine hf.map_prod_eq_map_prod ?_ ?_ (card_pair _ _) (card_pair _ _) <;> simp [ha, hb, hc, hd]
 
 /-- Characterisation of `2`-Freiman homs. -/
 @[to_additive "Characterisation of `2`-Freiman homs."]

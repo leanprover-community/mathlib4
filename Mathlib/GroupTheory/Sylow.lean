@@ -384,7 +384,7 @@ theorem Sylow.conj_eq_normalizer_conj_of_mem_centralizer [Fact p.Prime] [Finite 
   obtain ⟨h, hh⟩ :=
     exists_smul_eq (centralizer (zpowers x : Set G)) ((g • P).subtype h2) (P.subtype h1)
   simp_rw [Sylow.smul_subtype, Subgroup.smul_def, smul_smul] at hh
-  refine' ⟨h * g, Sylow.smul_eq_iff_mem_normalizer.mp (Sylow.subtype_injective hh), _⟩
+  refine ⟨h * g, Sylow.smul_eq_iff_mem_normalizer.mp (Sylow.subtype_injective hh), ?_⟩
   rw [← mul_assoc, Commute.right_comm (h.prop x (mem_zpowers x)), mul_inv_rev, inv_mul_cancel_right]
 #align sylow.conj_eq_normalizer_conj_of_mem_centralizer Sylow.conj_eq_normalizer_conj_of_mem_centralizer
 
@@ -460,7 +460,7 @@ theorem not_dvd_index_sylow [hp : Fact p.Prime] [Finite (Sylow p G)] (P : Sylow 
 theorem Sylow.normalizer_sup_eq_top {p : ℕ} [Fact p.Prime] {N : Subgroup G} [N.Normal]
     [Finite (Sylow p N)] (P : Sylow p N) :
     ((↑P : Subgroup N).map N.subtype).normalizer ⊔ N = ⊤ := by
-  refine' top_le_iff.mp fun g _ => _
+  refine top_le_iff.mp fun g _ => ?_
   obtain ⟨n, hn⟩ := exists_smul_eq N ((MulAut.conjNormal g : MulAut N) • P) P
   rw [← inv_mul_cancel_left (↑n) g, sup_comm]
   apply mul_mem_sup (N.inv_mem n.2)
@@ -712,7 +712,7 @@ theorem card_coprime_index [Fintype G] {p : ℕ} [hp : Fact p.Prime] (P : Sylow 
 
 theorem ne_bot_of_dvd_card [Fintype G] {p : ℕ} [hp : Fact p.Prime] (P : Sylow p G)
     (hdvd : p ∣ card G) : (P : Subgroup G) ≠ ⊥ := by
-  refine' fun h => hp.out.not_dvd_one _
+  refine fun h => hp.out.not_dvd_one ?_
   have key : p ∣ card (P : Subgroup G) := P.dvd_card_of_dvd_card hdvd
   rwa [h, card_bot] at key
 #align sylow.ne_bot_of_dvd_card Sylow.ne_bot_of_dvd_card
@@ -722,7 +722,7 @@ theorem ne_bot_of_dvd_card [Fintype G] {p : ℕ} [hp : Fact p.Prime] (P : Sylow 
 theorem card_eq_multiplicity [Fintype G] {p : ℕ} [hp : Fact p.Prime] (P : Sylow p G) :
     card P = p ^ Nat.factorization (card G) p := by
   obtain ⟨n, heq : card P = _⟩ := IsPGroup.iff_card.mp P.isPGroup'
-  refine' Nat.dvd_antisymm _ (P.pow_dvd_card_of_pow_dvd_card (Nat.ord_proj_dvd _ p))
+  refine Nat.dvd_antisymm ?_ (P.pow_dvd_card_of_pow_dvd_card (Nat.ord_proj_dvd _ p))
   rw [heq, ← hp.out.pow_dvd_iff_dvd_ord_proj (show card G ≠ 0 from card_ne_zero), ← heq]
   exact P.1.card_subgroup_dvd_card
 #align sylow.card_eq_multiplicity Sylow.card_eq_multiplicity

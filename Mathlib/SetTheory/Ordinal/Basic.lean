@@ -1018,7 +1018,7 @@ private theorem succ_le_iff' {a b : Ordinal} : a + 1 ≤ b ↔ a < b :=
     inductionOn a fun α r hr =>
       inductionOn b fun β s hs ⟨⟨f, t, hf⟩⟩ => by
         haveI := hs
-        refine' ⟨⟨RelEmbedding.ofMonotone (Sum.rec f fun _ => t) (fun a b ↦ _), fun a b ↦ _⟩⟩
+        refine ⟨⟨RelEmbedding.ofMonotone (Sum.rec f fun _ => t) (fun a b ↦ ?_), fun a b ↦ ?_⟩⟩
         · rcases a with (a | _) <;> rcases b with (b | _)
           · simpa only [Sum.lex_inl_inl] using f.map_rel_iff.2
           · intro
@@ -1430,7 +1430,7 @@ theorem ord_ofNat (n : ℕ) [n.AtLeastTwo] : ord (no_index (OfNat.ofNat n)) = Of
 
 @[simp]
 theorem lift_ord (c) : Ordinal.lift.{u,v} (ord c) = ord (lift.{u,v} c) := by
-  refine' le_antisymm (le_of_forall_lt fun a ha => _) _
+  refine le_antisymm (le_of_forall_lt fun a ha => ?_) ?_
   · rcases Ordinal.lt_lift_iff.1 ha with ⟨a, rfl, _⟩
     rwa [lt_ord, ← lift_card, lift_lt, ← lt_ord, ← Ordinal.lift_lt]
   · rw [ord_le, ← lift_card, card_ord]

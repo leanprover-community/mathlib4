@@ -703,7 +703,7 @@ theorem smoothVectorBundle : @SmoothVectorBundle
   letI := a.totalSpaceTopology; letI := a.toFiberBundle; letI := a.toVectorBundle
   { smoothOn_coordChangeL := by
       rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩
-      refine' (a.smoothOn_smoothCoordChange he he').congr _
+      refine (a.smoothOn_smoothCoordChange he he').congr ?_
       intro b hb
       ext v
       rw [a.smoothCoordChange_apply he he' hb v, ContinuousLinearEquiv.coe_coe,

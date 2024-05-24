@@ -62,7 +62,7 @@ theorem sign_apply_eq_of_ne_zero (r : ℝ) (h : r ≠ 0) : sign r = -1 ∨ sign 
 
 @[simp]
 theorem sign_eq_zero_iff {r : ℝ} : sign r = 0 ↔ r = 0 := by
-  refine' ⟨fun h => _, fun h => h.symm ▸ sign_zero⟩
+  refine ⟨fun h => ?_, fun h => h.symm ▸ sign_zero⟩
   obtain hn | rfl | hp := lt_trichotomy r (0 : ℝ)
   · rw [sign_of_neg hn, neg_eq_zero] at h
     exact (one_ne_zero h).elim
@@ -96,7 +96,7 @@ theorem sign_mul_nonneg (r : ℝ) : 0 ≤ sign r * r := by
 #align real.sign_mul_nonneg Real.sign_mul_nonneg
 
 theorem sign_mul_pos_of_ne_zero (r : ℝ) (hr : r ≠ 0) : 0 < sign r * r := by
-  refine' lt_of_le_of_ne (sign_mul_nonneg r) fun h => hr _
+  refine lt_of_le_of_ne (sign_mul_nonneg r) fun h => hr ?_
   have hs0 := (zero_eq_mul.mp h).resolve_right hr
   exact sign_eq_zero_iff.mp hs0
 #align real.sign_mul_pos_of_ne_zero Real.sign_mul_pos_of_ne_zero

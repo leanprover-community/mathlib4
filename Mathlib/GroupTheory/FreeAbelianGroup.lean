@@ -165,7 +165,7 @@ protected theorem induction_on {C : FreeAbelianGroup α → Prop} (z : FreeAbeli
 
 theorem lift.add' {α β} [AddCommGroup β] (a : FreeAbelianGroup α) (f g : α → β) :
     lift (f + g) a = lift f a + lift g a := by
-  refine' FreeAbelianGroup.induction_on a _ _ _ _
+  refine FreeAbelianGroup.induction_on a ?_ ?_ ?_ ?_
   · simp only [(lift _).map_zero, zero_add]
   · intro x
     simp only [lift.of, Pi.add_apply]

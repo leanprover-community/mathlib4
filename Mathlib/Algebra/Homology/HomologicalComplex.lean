@@ -176,7 +176,7 @@ theorem next (α : Type*) [AddGroup α] [One α] (i : α) : (ComplexShape.down �
 @[simp]
 theorem next_nat_zero : (ComplexShape.down ℕ).next 0 = 0 := by
   classical
-    refine' dif_neg _
+    refine dif_neg ?_
     push_neg
     intro
     apply Nat.noConfusion
@@ -205,7 +205,7 @@ theorem next (α : Type*) [AddRightCancelSemigroup α] [One α] (i : α) :
 @[simp]
 theorem prev_nat_zero : (ComplexShape.up ℕ).prev 0 = 0 := by
   classical
-    refine' dif_neg _
+    refine dif_neg ?_
     push_neg
     intro
     apply Nat.noConfusion
@@ -314,7 +314,7 @@ noncomputable def zero [HasZeroObject V] : HomologicalComplex V c where
 #align homological_complex.zero HomologicalComplex.zero
 
 theorem isZero_zero [HasZeroObject V] : IsZero (zero : HomologicalComplex V c) := by
-  refine' ⟨fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩⟩
+  refine ⟨fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩⟩
   all_goals
     ext
     dsimp [zero]

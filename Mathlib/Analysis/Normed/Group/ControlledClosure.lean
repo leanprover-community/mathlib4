@@ -65,7 +65,7 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
         _ = ε * ‖h‖ / 2 * (1 / 2) ^ n := mul_comm _ _
   -- We now show that the limit `g` of `s` is the desired preimage.
   obtain ⟨g : G, hg⟩ := cauchySeq_tendsto_of_complete this
-  refine' ⟨g, _, _⟩
+  refine ⟨g, ?_, ?_⟩
   · -- We indeed get a preimage. First note:
     have : f ∘ s = fun n => ∑ k in range (n + 1), v k := by
       ext n

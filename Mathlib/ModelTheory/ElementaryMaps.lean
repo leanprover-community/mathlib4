@@ -279,7 +279,7 @@ theorem isElementary_of_exists (f : M ↪[L] N)
       φ.Realize (f ∘ default) (f ∘ xs) ↔ φ.Realize default xs by
     intro n φ x
     exact φ.realize_relabel_sum_inr.symm.trans (_root_.trans (h n _ _) φ.realize_relabel_sum_inr)
-  refine' fun n φ => φ.recOn _ _ _ _ _
+  refine fun n φ => φ.recOn ?_ ?_ ?_ ?_ ?_
   · exact fun {_} _ => Iff.rfl
   · intros
     simp [BoundedFormula.Realize, ← Sum.comp_elim, Embedding.realize_term]
@@ -290,7 +290,7 @@ theorem isElementary_of_exists (f : M ↪[L] N)
     simp [ih1, ih2]
   · intro n φ ih xs
     simp only [BoundedFormula.realize_all]
-    refine' ⟨fun h a => _, _⟩
+    refine ⟨fun h a => ?_, ?_⟩
     · rw [← ih, Fin.comp_snoc]
       exact h (f a)
     · contrapose!
@@ -298,7 +298,7 @@ theorem isElementary_of_exists (f : M ↪[L] N)
       obtain ⟨b, hb⟩ := htv n φ.not xs a (by
           rw [BoundedFormula.realize_not, ← Unique.eq_default (f ∘ default)]
           exact ha)
-      refine' ⟨b, fun h => hb (Eq.mp _ ((ih _).2 h))⟩
+      refine ⟨b, fun h => hb (Eq.mp ?_ ((ih _).2 h))⟩
       rw [Unique.eq_default (f ∘ default), Fin.comp_snoc]
 #align first_order.language.embedding.is_elementary_of_exists FirstOrder.Language.Embedding.isElementary_of_exists
 

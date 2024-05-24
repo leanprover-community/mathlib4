@@ -575,7 +575,7 @@ theorem exists_smaller_set (A : Finset α) (i : ℕ) (h₁ : i ≤ card A) :
 #align finset.exists_smaller_set Finset.exists_smaller_set
 
 theorem le_card_iff_exists_subset_card : n ≤ s.card ↔ ∃ t ⊆ s, t.card = n := by
-  refine' ⟨fun h => _, fun ⟨t, hst, ht⟩ => ht ▸ card_le_card hst⟩
+  refine ⟨fun h => ?_, fun ⟨t, hst, ht⟩ => ht ▸ card_le_card hst⟩
   exact exists_smaller_set s n h
 
 theorem exists_subset_or_subset_of_two_mul_lt_card [DecidableEq α] {X Y : Finset α} {n : ℕ}
@@ -609,8 +609,8 @@ theorem exists_eq_insert_iff [DecidableEq α] {s t : Finset α} :
   · rintro ⟨hst, h⟩
     obtain ⟨a, ha⟩ : ∃ a, t \ s = {a} :=
       card_eq_one.1 (by rw [card_sdiff hst, ← h, Nat.add_sub_cancel_left])
-    refine'
-      ⟨a, fun hs => (_ : a ∉ {a}) <| mem_singleton_self _, by
+    refine
+      ⟨a, fun hs => (?_ : a ∉ {a}) <| mem_singleton_self _, by
         rw [insert_eq, ← ha, sdiff_union_of_subset hst]⟩
     rw [← ha]
     exact not_mem_sdiff_of_mem_right hs
@@ -619,7 +619,7 @@ theorem exists_eq_insert_iff [DecidableEq α] {s t : Finset α} :
 theorem card_le_one : s.card ≤ 1 ↔ ∀ a ∈ s, ∀ b ∈ s, a = b := by
   obtain rfl | ⟨x, hx⟩ := s.eq_empty_or_nonempty
   · simp
-  refine' (Nat.succ_le_of_lt (card_pos.2 ⟨x, hx⟩)).le_iff_eq.trans (card_eq_one.trans ⟨_, _⟩)
+  refine (Nat.succ_le_of_lt (card_pos.2 ⟨x, hx⟩)).le_iff_eq.trans (card_eq_one.trans ⟨?_, ?_⟩)
   · rintro ⟨y, rfl⟩
     simp
   · exact fun h => ⟨x, eq_singleton_iff_unique_mem.2 ⟨hx, fun y hy => h _ hy _ hx⟩⟩
@@ -634,7 +634,7 @@ theorem card_le_one_iff_subsingleton_coe : s.card ≤ 1 ↔ Subsingleton (s : Ty
   card_le_one.trans (s : Set α).subsingleton_coe.symm
 
 theorem card_le_one_iff_subset_singleton [Nonempty α] : s.card ≤ 1 ↔ ∃ x : α, s ⊆ {x} := by
-  refine' ⟨fun H => _, _⟩
+  refine ⟨fun H => ?_, ?_⟩
   · obtain rfl | ⟨x, hx⟩ := s.eq_empty_or_nonempty
     · exact ⟨Classical.arbitrary α, empty_subset _⟩
     · exact ⟨x, fun y hy => by rw [card_le_one.1 H y hy x hx, mem_singleton]⟩

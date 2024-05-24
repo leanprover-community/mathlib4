@@ -285,7 +285,7 @@ lemma cancel_left_div_gcd (hm : 0 < m) (h : c * a ≡ c * b [MOD m]) :  a ≡ b 
   have hmd := gcd_dvd_left m c
   have hcd := gcd_dvd_right m c
   rw [modEq_iff_dvd]
-  refine' @Int.dvd_of_dvd_mul_right_of_gcd_one (m / d) (c / d) (b - a) _ _
+  refine @Int.dvd_of_dvd_mul_right_of_gcd_one (m / d) (c / d) (b - a) ?_ ?_
   · show (m / d : ℤ) ∣ c / d * (b - a)
     rw [mul_comm, ← Int.mul_ediv_assoc (b - a) (Int.natCast_dvd_natCast.mpr hcd), mul_comm]
     apply Int.ediv_dvd_ediv (Int.natCast_dvd_natCast.mpr hmd)

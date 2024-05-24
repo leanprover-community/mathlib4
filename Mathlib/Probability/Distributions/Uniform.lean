@@ -156,7 +156,7 @@ theorem mul_pdf_integrable (hcs : IsCompact s) (huX : IsUniform X s ℙ) :
   constructor
   · exact aestronglyMeasurable_id.mul
       (measurable_pdf X ℙ).aemeasurable.ennreal_toReal.aestronglyMeasurable
-  refine' hasFiniteIntegral_mul (pdf_eq hcs.measurableSet huX) _
+  refine hasFiniteIntegral_mul (pdf_eq hcs.measurableSet huX) ?_
   set ind := (volume s)⁻¹ • (1 : ℝ → ℝ≥0∞)
   have : ∀ x, ↑‖x‖₊ * s.indicator ind x = s.indicator (fun x => ‖x‖₊ * ind x) x := fun x =>
     (s.indicator_mul_right (fun x => ↑‖x‖₊) ind).symm
@@ -386,7 +386,7 @@ theorem toOuterMeasure_ofMultiset_apply :
     (ofMultiset s hs).toOuterMeasure t =
       (∑' x, (s.filter (· ∈ t)).count x : ℝ≥0∞) / (Multiset.card s) := by
   simp_rw [div_eq_mul_inv, ← ENNReal.tsum_mul_right, toOuterMeasure_apply]
-  refine' tsum_congr fun x => _
+  refine tsum_congr fun x => ?_
   by_cases hx : x ∈ t <;> simp [Set.indicator, hx, div_eq_mul_inv]
 #align pmf.to_outer_measure_of_multiset_apply PMF.toOuterMeasure_ofMultiset_apply
 

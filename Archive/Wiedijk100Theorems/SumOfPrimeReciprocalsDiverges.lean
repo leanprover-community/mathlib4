@@ -95,7 +95,7 @@ theorem sum_lt_half_of_not_tendsto
   use k
   intro x
   rw [P, ← filter_filter, sum_filter]
-  refine' (h _ _).2
+  refine (h _ ?_).2
   rw [disjoint_iff_ne]
   simp only [mem_filter]
   intro a ha b hb
@@ -115,7 +115,7 @@ theorem range_sdiff_eq_biUnion {x k : ℕ} : range x \ M x k = U x k := by
   constructor
   · rintro ⟨hex, hexh⟩
     obtain ⟨p, ⟨hpp, hpe1⟩, hpk⟩ := hexh hex
-    refine' ⟨p, _, ⟨hex, hpe1⟩⟩
+    refine ⟨p, ?_, ⟨hex, hpe1⟩⟩
     exact ⟨(Nat.le_of_dvd e.succ_pos hpe1).trans_lt (Nat.succ_lt_succ hex), hpk, hpp⟩
   · rintro ⟨p, hpfilter, ⟨hex, hpe1⟩⟩
     rw [imp_iff_right hex]
@@ -154,7 +154,7 @@ theorem card_le_two_pow {x k : ℕ} :
     obtain ⟨⟨-, hmp⟩, hms⟩ := hm
     use! (m + 1).factors
     · rwa [Multiset.coe_nodup, ← Nat.squarefree_iff_nodup_factors m.succ_ne_zero]
-    refine' ⟨fun p => _, _⟩
+    refine ⟨fun p => ?_, ?_⟩
     · suffices p ∈ (m + 1).factors → ∃ a : ℕ, a < k ∧ a.succ = p by simpa
       simp only [Nat.mem_factors m.succ_ne_zero]
       intro hp
@@ -191,8 +191,8 @@ theorem card_le_two_pow_mul_sqrt {x k : ℕ} : card (M x k) ≤ 2 ^ k * Nat.sqrt
     have hm' := m.zero_lt_succ
     obtain ⟨a, b, hab₁, hab₂⟩ := Nat.sq_mul_squarefree_of_pos' hm'
     obtain ⟨ham, hbm⟩ := Dvd.intro_left _ hab₁, Dvd.intro _ hab₁
-    refine'
-      ⟨a, b, ⟨⟨⟨_, fun p hp => _⟩, hab₂⟩, ⟨_, fun p hp => _⟩⟩, by simp_rw [hab₁, m.add_one_sub_one]⟩
+    refine ⟨a, b, ⟨⟨⟨?_, fun p hp => ?_⟩, hab₂⟩, ⟨?_, fun p hp => ?_⟩⟩, by
+        simp_rw [hab₁, m.add_one_sub_one]⟩
     · exact (Nat.succ_le_succ_iff.mp (Nat.le_of_dvd hm' ham)).trans_lt hm.1
     · exact hm.2 p ⟨hp.1, hp.2.trans ham⟩
     · calc
@@ -243,7 +243,7 @@ theorem Real.tendsto_sum_one_div_prime_atTop :
       (card M' : ℝ) ≤ 2 ^ k * x.sqrt := by exact mod_cast card_le_two_pow_mul_sqrt
       _ = 2 ^ k * (2 ^ (k + 1) : ℕ) := by rw [Nat.sqrt_eq]
       _ = x / 2 := by field_simp [x, mul_right_comm, ← pow_succ]
-  refine' lt_irrefl (x : ℝ) _
+  refine lt_irrefl (x : ℝ) ?_
   calc
     (x : ℝ) = (card U' : ℝ) + (card M' : ℝ) := by assumption_mod_cast
     _ < x / 2 + x / 2 := add_lt_add_of_lt_of_le h3 h4

@@ -96,7 +96,7 @@ theorem rank_le_one_iff [Module.Free K V] :
       ext
       simp [mem_span_singleton, hv₀]
     rw [← rank_top, ← h]
-    refine' (rank_span_le _).trans_eq _
+    refine (rank_span_le _).trans_eq ?_
     simp
 #align rank_le_one_iff rank_le_one_iff
 

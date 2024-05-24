@@ -98,7 +98,7 @@ theorem continuousOn_continuousLinearMapCoordChange [VectorBundle 𝕜₁ F₁ E
   have h₂ := (ContinuousLinearMap.flip (compSL F₁ F₁ F₂ (RingHom.id 𝕜₁) σ)).continuous
   have h₃ := continuousOn_coordChange 𝕜₁ e₁' e₁
   have h₄ := continuousOn_coordChange 𝕜₂ e₂ e₂'
-  refine' ((h₁.comp_continuousOn (h₄.mono _)).clm_comp (h₂.comp_continuousOn (h₃.mono _))).congr _
+  refine ((h₁.comp_continuousOn (h₄.mono ?_)).clm_comp (h₂.comp_continuousOn (h₃.mono ?_))).congr ?_
   · mfld_set_tac
   · mfld_set_tac
   · intro b _; ext L v

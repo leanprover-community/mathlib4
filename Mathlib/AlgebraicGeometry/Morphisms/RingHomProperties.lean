@@ -57,7 +57,7 @@ theorem RespectsIso.basicOpen_iff (hP : RespectsIso @P) {X Y : Scheme.{u}} [IsAf
       (X.presheaf.map (eqToHom (Scheme.preimage_basicOpen f r).symm).op), ← eq_iff_iff]
   congr
   delta IsLocalization.Away.map
-  refine' IsLocalization.ringHom_ext (Submonoid.powers r) _
+  refine IsLocalization.ringHom_ext (Submonoid.powers r) ?_
   generalize_proofs
   haveI i1 := @isLocalization_away_of_isAffine X _ (Scheme.Γ.map f.op r)
   -- Porting note: needs to be very explicit here
@@ -175,7 +175,7 @@ theorem affineLocally_iff_affineOpens_le
     let U' := (Opens.map f.val.base).obj U.1
     have e'' : (Scheme.Hom.opensFunctor (X.ofRestrict U'.openEmbedding)).obj
         (X.ofRestrict U'.openEmbedding⁻¹ᵁ V) = V := by
-      ext1; refine' Set.image_preimage_eq_inter_range.trans (Set.inter_eq_left.mpr _)
+      ext1; refine Set.image_preimage_eq_inter_range.trans (Set.inter_eq_left.mpr ?_)
       erw [Subtype.range_val]
       exact e
     have h : X.ofRestrict U'.openEmbedding ⁻¹ᵁ ↑V ∈ Scheme.affineOpens (X.restrict _) := by
@@ -306,16 +306,16 @@ theorem sourceAffineLocally_of_source_openCover {X Y : Scheme.{u}} (f : X ⟶ Y)
       (T := Scheme.Γ.obj (Opposite.op (X.restrict <| Opens.openEmbedding (X.basicOpen r))))
       ?_ ?_ H ?_ using 1
     swap
-    · refine' X.presheaf.map
-          (@homOfLE _ _ ((IsOpenMap.functor _).obj _) ((IsOpenMap.functor _).obj _) _).op
+    · refine X.presheaf.map
+          (@homOfLE _ _ ((IsOpenMap.functor _).obj _) ((IsOpenMap.functor _).obj _) ?_).op
       dsimp
       rw [Opens.openEmbedding_obj_top, Opens.openEmbedding_obj_top]
       exact X.basicOpen_le _
     · rw [op_comp, op_comp, Functor.map_comp, Functor.map_comp]
-      refine' (Eq.trans _ (Category.assoc (obj := CommRingCat) _ _ _).symm : _)
+      refine (Eq.trans ?_ (Category.assoc (obj := CommRingCat) _ _ _).symm : _)
       congr 1
       dsimp
-      refine' Eq.trans _ (X.presheaf.map_comp _ _)
+      refine Eq.trans ?_ (X.presheaf.map_comp _ _)
       change X.presheaf.map _ = _
       congr!
     -- Porting note: need to pass Algebra through explicitly
@@ -402,7 +402,7 @@ theorem openCover_TFAE {X Y : Scheme.{u}} [IsAffine Y] (f : X ⟶ Y) :
     -- Porting note: this has metavariable if I put it directly into rw
     have := (hP.affine_openCover_TFAE f).out 0 1
     rw [this]
-    refine' ⟨𝒰.bind fun _ => Scheme.affineCover _, _, _⟩
+    refine ⟨𝒰.bind fun _ => Scheme.affineCover _, ?_, ?_⟩
     · intro i; dsimp; infer_instance
     · intro i
       specialize h𝒰 i.1
@@ -516,7 +516,7 @@ theorem affineLocally_of_comp
     affineLocally (@P) f := by
   let 𝒰 : ∀ i, ((Z.affineCover.pullbackCover (f ≫ g)).obj i).OpenCover := by
     intro i
-    refine' Scheme.OpenCover.bind _ fun i => Scheme.affineCover _
+    refine Scheme.OpenCover.bind ?_ fun i => Scheme.affineCover _
     apply Scheme.OpenCover.pushforwardIso _
       (pullbackRightPullbackFstIso g (Z.affineCover.map i) f).hom
     apply Scheme.Pullback.openCoverOfRight
@@ -542,7 +542,7 @@ theorem affineLocally_isStableUnderComposition : (affineLocally @P).IsStableUnde
   comp_mem {X Y S} f g hf hg := by
     let 𝒰 : ∀ i, ((S.affineCover.pullbackCover (f ≫ g)).obj i).OpenCover := by
       intro i
-      refine' Scheme.OpenCover.bind _ fun i => Scheme.affineCover _
+      refine Scheme.OpenCover.bind ?_ fun i => Scheme.affineCover _
       apply Scheme.OpenCover.pushforwardIso _
         (pullbackRightPullbackFstIso g (S.affineCover.map i) f).hom
       apply Scheme.Pullback.openCoverOfRight

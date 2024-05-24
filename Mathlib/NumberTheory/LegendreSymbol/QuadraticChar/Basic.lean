@@ -175,7 +175,7 @@ theorem quadraticChar_dichotomy {a : F} (ha : a ≠ 0) :
 /-- The quadratic character is `1` or `-1` on nonzero arguments. -/
 theorem quadraticChar_eq_neg_one_iff_not_one {a : F} (ha : a ≠ 0) :
     quadraticChar F a = -1 ↔ ¬quadraticChar F a = 1 := by
-  refine' ⟨fun h => _, fun h₂ => (or_iff_right h₂).mp (quadraticChar_dichotomy ha)⟩
+  refine ⟨fun h => ?_, fun h₂ => (or_iff_right h₂).mp (quadraticChar_dichotomy ha)⟩
   rw [h]
   norm_num
 #align quadratic_char_eq_neg_one_iff_not_one quadraticChar_eq_neg_one_iff_not_one

@@ -134,7 +134,7 @@ theorem toLex_strictMono : StrictMono (@toLex (∀ i, β i)) := fun a b h =>
 
 @[simp]
 theorem lt_toLex_update_self_iff : toLex x < toLex (update x i a) ↔ x i < a := by
-  refine' ⟨_, fun h => toLex_strictMono <| lt_update_self_iff.2 h⟩
+  refine ⟨?_, fun h => toLex_strictMono <| lt_update_self_iff.2 h⟩
   rintro ⟨j, hj, h⟩
   dsimp at h
   obtain rfl : j = i := by
@@ -146,7 +146,7 @@ theorem lt_toLex_update_self_iff : toLex x < toLex (update x i a) ↔ x i < a :=
 
 @[simp]
 theorem toLex_update_lt_self_iff : toLex (update x i a) < toLex x ↔ a < x i := by
-  refine' ⟨_, fun h => toLex_strictMono <| update_lt_self_iff.2 h⟩
+  refine ⟨?_, fun h => toLex_strictMono <| update_lt_self_iff.2 h⟩
   rintro ⟨j, hj, h⟩
   dsimp at h
   obtain rfl : j = i := by

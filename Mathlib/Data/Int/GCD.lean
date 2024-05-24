@@ -126,7 +126,7 @@ theorem xgcdAux_P {r r'} :
   | H0 => simp
   | H1 a b h IH =>
     intro s t s' t' p p'
-    rw [xgcdAux_rec h]; refine' IH _ p; dsimp [P] at *
+    rw [xgcdAux_rec h]; refine IH ?_ p; dsimp [P] at *
     rw [Int.emod_def]; generalize (b / a : ℤ) = k
     rw [p, p', Int.mul_sub, sub_add_eq_add_sub, Int.mul_sub, Int.add_mul, mul_comm k t,
       mul_comm k s, ← mul_assoc, ← mul_assoc, add_comm (x * s * k), ← add_sub_assoc, sub_sub]
@@ -341,7 +341,7 @@ theorem exists_gcd_one' {m n : ℤ} (H : 0 < gcd m n) :
 #align int.exists_gcd_one' Int.exists_gcd_one'
 
 theorem pow_dvd_pow_iff {m n : ℤ} {k : ℕ} (k0 : k ≠ 0) : m ^ k ∣ n ^ k ↔ m ∣ n := by
-  refine' ⟨fun h => _, fun h => pow_dvd_pow_of_dvd h _⟩
+  refine ⟨fun h => ?_, fun h => pow_dvd_pow_of_dvd h _⟩
   rwa [← natAbs_dvd_natAbs, ← Nat.pow_dvd_pow_iff k0, ← Int.natAbs_pow, ← Int.natAbs_pow,
     natAbs_dvd_natAbs]
 #align int.pow_dvd_pow_iff Int.pow_dvd_pow_iff

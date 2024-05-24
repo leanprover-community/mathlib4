@@ -143,7 +143,7 @@ theorem ideal_oper_maxTrivSubmodule_eq_bot (I : LieIdeal R L) :
 
 theorem le_max_triv_iff_bracket_eq_bot {N : LieSubmodule R L M} :
     N ≤ maxTrivSubmodule R L M ↔ ⁅(⊤ : LieIdeal R L), N⁆ = ⊥ := by
-  refine' ⟨fun h => _, fun h m hm => _⟩
+  refine ⟨fun h => ?_, fun h m hm => ?_⟩
   · rw [← le_bot_iff, ← ideal_oper_maxTrivSubmodule_eq_bot R L M ⊤]
     exact LieSubmodule.mono_lie_right _ _ ⊤ h
   · rw [mem_maxTrivSubmodule]

@@ -158,8 +158,8 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear (B : E →L
     simp [hBu, hBu₀, hfu, hgu]
   -- All norms are preserved by the lifting process.
   have Bu_le : ‖Bu‖ ≤ ‖B‖ := by
-    refine' ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg _) fun y => _
-    refine' ContinuousLinearMap.opNorm_le_bound _ (by positivity) fun x => _
+    refine ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg _) fun y => ?_
+    refine ContinuousLinearMap.opNorm_le_bound _ (by positivity) fun x => ?_
     simp only [hBu, hBu₀, compL_apply, coe_comp', Function.comp_apply,
       ContinuousLinearEquiv.coe_coe, LinearIsometryEquiv.coe_coe, flip_apply,
       LinearIsometryEquiv.norm_map]
@@ -417,7 +417,7 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
         (fderivWithin 𝕜 g t (f y)) (fderivWithin 𝕜 f s y)) s x‖ := by
       have L : (1 : ℕ∞) ≤ n.succ := by simpa only [ENat.coe_one, Nat.one_le_cast] using n.succ_pos
       congr 1
-      refine' iteratedFDerivWithin_congr (fun y hy => _) hx _
+      refine iteratedFDerivWithin_congr (fun y hy => ?_) hx _
       apply fderivWithin.comp _ _ _ hst (hs y hy)
       · exact hg.differentiableOn L _ (hst hy)
       · exact hf.differentiableOn L _ hy
@@ -543,7 +543,7 @@ theorem norm_iteratedFDerivWithin_clm_apply {f : E → F →L[𝕜] G} {g : E �
   let B : (F →L[𝕜] G) →L[𝕜] F →L[𝕜] G := ContinuousLinearMap.flip (ContinuousLinearMap.apply 𝕜 G)
   have hB : ‖B‖ ≤ 1 := by
     simp only [B, ContinuousLinearMap.opNorm_flip, ContinuousLinearMap.apply]
-    refine' ContinuousLinearMap.opNorm_le_bound _ zero_le_one fun f => _
+    refine ContinuousLinearMap.opNorm_le_bound _ zero_le_one fun f => ?_
     simp only [ContinuousLinearMap.coe_id', id, one_mul]
     rfl
   exact B.norm_iteratedFDerivWithin_le_of_bilinear_of_le_one hf hg hs hx hn hB
@@ -565,8 +565,8 @@ theorem norm_iteratedFDerivWithin_clm_apply_const {f : E → F →L[𝕜] G} {c 
   let g : (F →L[𝕜] G) →L[𝕜] G := ContinuousLinearMap.apply 𝕜 G c
   have h := g.norm_compContinuousMultilinearMap_le (iteratedFDerivWithin 𝕜 n f s x)
   rw [← g.iteratedFDerivWithin_comp_left hf hs hx hn] at h
-  refine' h.trans (mul_le_mul_of_nonneg_right _ (norm_nonneg _))
-  refine' g.opNorm_le_bound (norm_nonneg _) fun f => _
+  refine h.trans (mul_le_mul_of_nonneg_right ?_ (norm_nonneg _))
+  refine g.opNorm_le_bound (norm_nonneg _) fun f => ?_
   rw [ContinuousLinearMap.apply_apply, mul_comm]
   exact f.le_opNorm c
 #align norm_iterated_fderiv_within_clm_apply_const norm_iteratedFDerivWithin_clm_apply_const

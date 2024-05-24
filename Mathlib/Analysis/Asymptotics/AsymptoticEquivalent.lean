@@ -254,7 +254,7 @@ theorem IsEquivalent.smul {α E 𝕜 : Type*} [NormedField 𝕜] [NormedAddCommG
       (EventuallyEq.refl _ fun x ↦ b x • v x) using 1
     ext
     rw [Pi.mul_apply, mul_comm, mul_smul, ← smul_sub]
-  refine' (isLittleO_congr this.symm <| EventuallyEq.rfl).mp ((isBigO_refl b l).smul_isLittleO _)
+  refine (isLittleO_congr this.symm <| EventuallyEq.rfl).mp ((isBigO_refl b l).smul_isLittleO ?_)
   rcases huv.isBigO.exists_pos with ⟨C, hC, hCuv⟩
   rw [IsEquivalent] at *
   rw [isLittleO_iff] at *
@@ -295,7 +295,7 @@ theorem IsEquivalent.inv (huv : u ~[l] v) : (fun x ↦ (u x)⁻¹) ~[l] fun x �
   rw [isEquivalent_iff_exists_eq_mul] at *
   rcases huv with ⟨φ, hφ, h⟩
   rw [← inv_one]
-  refine' ⟨fun x ↦ (φ x)⁻¹, Tendsto.inv₀ hφ (by norm_num), _⟩
+  refine ⟨fun x ↦ (φ x)⁻¹, Tendsto.inv₀ hφ (by norm_num), ?_⟩
   convert h.inv
   simp [mul_comm]
 #align asymptotics.is_equivalent.inv Asymptotics.IsEquivalent.inv

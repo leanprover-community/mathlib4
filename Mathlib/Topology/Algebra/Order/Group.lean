@@ -66,7 +66,7 @@ protected theorem Filter.Tendsto.abs {a : G} (h : Tendsto f l (𝓝 a)) :
 
 theorem tendsto_zero_iff_abs_tendsto_zero (f : α → G) :
     Tendsto f l (𝓝 0) ↔ Tendsto (abs ∘ f) l (𝓝 0) := by
-  refine' ⟨fun h => (abs_zero : |(0 : G)| = 0) ▸ h.abs, fun h => _⟩
+  refine ⟨fun h => (abs_zero : |(0 : G)| = 0) ▸ h.abs, fun h => ?_⟩
   have : Tendsto (fun a => -|f a|) l (𝓝 0) := (neg_zero : -(0 : G) = 0) ▸ h.neg
   exact
     tendsto_of_tendsto_of_tendsto_of_le_of_le this h (fun x => neg_abs_le <| f x) fun x =>

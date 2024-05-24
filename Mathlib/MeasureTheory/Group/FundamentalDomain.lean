@@ -132,7 +132,7 @@ theorem mk_of_measure_univ_le [IsFiniteMeasure μ] [Countable G] (h_meas : NullM
       have h_meas' : NullMeasurableSet {a | ∃ g : G, g • a ∈ s} μ := by
         rw [← iUnion_smul_eq_setOf_exists]; exact .iUnion h_meas
       rw [ae_iff_measure_eq h_meas', ← iUnion_smul_eq_setOf_exists]
-      refine' le_antisymm (measure_mono <| subset_univ _) _
+      refine le_antisymm (measure_mono <| subset_univ _) ?_
       rw [measure_iUnion₀ aedisjoint h_meas]
       exact h_measure_univ_le }
 #align measure_theory.is_fundamental_domain.mk_of_measure_univ_le MeasureTheory.IsFundamentalDomain.mk_of_measure_univ_le
@@ -183,7 +183,7 @@ theorem image_of_equiv {ν : Measure β} (h : IsFundamentalDomain G s μ) (f : �
     (hf : QuasiMeasurePreserving f.symm ν μ) (e : H ≃ G)
     (hef : ∀ g, Semiconj f (e g • ·) (g • ·)) : IsFundamentalDomain H (f '' s) ν := by
   rw [f.image_eq_preimage]
-  refine' h.preimage_of_equiv hf e.symm.bijective fun g x => _
+  refine h.preimage_of_equiv hf e.symm.bijective fun g x => ?_
   rcases f.surjective x with ⟨x, rfl⟩
   rw [← hef _ _, f.symm_apply_apply, f.symm_apply_apply, e.apply_symm_apply]
 #align measure_theory.is_fundamental_domain.image_of_equiv MeasureTheory.IsFundamentalDomain.image_of_equiv
@@ -392,7 +392,7 @@ protected theorem aEStronglyMeasurable_on_iff {β : Type*} [TopologicalSpace β]
       inv_surjective.forall
     _ ↔ ∀ g : G, AEStronglyMeasurable f (μ.restrict (g⁻¹ • (g • s ∩ t))) := by simp only [inv_inv]
     _ ↔ ∀ g : G, AEStronglyMeasurable f (μ.restrict (g • s ∩ t)) := by
-      refine' forall_congr' fun g => _
+      refine forall_congr' fun g => ?_
       have he : MeasurableEmbedding (g⁻¹ • · : α → α) := measurableEmbedding_const_smul _
       rw [← image_smul, ← ((measurePreserving_smul g⁻¹ μ).restrict_image_emb he
         _).aestronglyMeasurable_comp_iff he]
@@ -529,12 +529,12 @@ points `x y` such that `g • x = y` for some `g ≠ 1`. -/
 theorem exists_ne_one_smul_eq (hs : IsFundamentalDomain G s μ) (htm : NullMeasurableSet t μ)
     (ht : μ s < μ t) : ∃ x ∈ t, ∃ y ∈ t, ∃ g, g ≠ (1 : G) ∧ g • x = y := by
   contrapose! ht
-  refine' hs.measure_le_of_pairwise_disjoint htm (Pairwise.aedisjoint fun g₁ g₂ hne => _)
+  refine hs.measure_le_of_pairwise_disjoint htm (Pairwise.aedisjoint fun g₁ g₂ hne => ?_)
   dsimp [Function.onFun]
-  refine' (Disjoint.inf_left _ _).inf_right _
+  refine (Disjoint.inf_left _ ?_).inf_right _
   rw [Set.disjoint_left]
   rintro _ ⟨x, hx, rfl⟩ ⟨y, hy, hxy : g₂ • y = g₁ • x⟩
-  refine' ht x hx y hy (g₂⁻¹ * g₁) (mt inv_mul_eq_one.1 hne.symm) _
+  refine ht x hx y hy (g₂⁻¹ * g₁) (mt inv_mul_eq_one.1 hne.symm) ?_
   rw [mul_smul, ← hxy, inv_smul_smul]
 #align measure_theory.is_fundamental_domain.exists_ne_one_smul_eq MeasureTheory.IsFundamentalDomain.exists_ne_one_smul_eq
 #align measure_theory.is_add_fundamental_domain.exists_ne_zero_vadd_eq MeasureTheory.IsAddFundamentalDomain.exists_ne_zero_vadd_eq
@@ -547,12 +547,12 @@ theorem exists_ne_one_smul_eq (hs : IsFundamentalDomain G s μ) (htm : NullMeasu
   is the same as that of `f` on all of its domain."]
 theorem essSup_measure_restrict (hs : IsFundamentalDomain G s μ) {f : α → ℝ≥0∞}
     (hf : ∀ γ : G, ∀ x : α, f (γ • x) = f x) : essSup f (μ.restrict s) = essSup f μ := by
-  refine' le_antisymm (essSup_mono_measure' Measure.restrict_le_self) _
+  refine le_antisymm (essSup_mono_measure' Measure.restrict_le_self) ?_
   rw [essSup_eq_sInf (μ.restrict s) f, essSup_eq_sInf μ f]
-  refine' sInf_le_sInf _
+  refine sInf_le_sInf ?_
   rintro a (ha : (μ.restrict s) {x : α | a < f x} = 0)
   rw [Measure.restrict_apply₀' hs.nullMeasurableSet] at ha
-  refine' measure_zero_of_invariant hs _ _ ha
+  refine measure_zero_of_invariant hs _ ?_ ha
   intro γ
   ext x
   rw [mem_smul_set_iff_inv_smul_mem]
@@ -665,10 +665,10 @@ theorem fundamentalInterior_smul [Group H] [MulAction H α] [SMulCommClass H G �
 @[to_additive MeasureTheory.pairwise_disjoint_addFundamentalInterior]
 theorem pairwise_disjoint_fundamentalInterior :
     Pairwise (Disjoint on fun g : G => g • fundamentalInterior G s) := by
-  refine' fun a b hab => disjoint_left.2 _
+  refine fun a b hab => disjoint_left.2 ?_
   rintro _ ⟨x, hx, rfl⟩ ⟨y, hy, hxy⟩
   rw [mem_fundamentalInterior] at hx hy
-  refine' hx.2 (a⁻¹ * b) _ _
+  refine hx.2 (a⁻¹ * b) ?_ ?_
   · rwa [Ne, inv_mul_eq_iff_eq_mul, mul_one, eq_comm]
   · simpa [mul_smul, ← hxy, mem_inv_smul_set_iff] using hy.1
 #align measure_theory.pairwise_disjoint_fundamental_interior MeasureTheory.pairwise_disjoint_fundamentalInterior
@@ -729,7 +729,7 @@ protected theorem fundamentalInterior : IsFundamentalDomain G (fundamentalInteri
         ⋃ g : G, g⁻¹ • fundamentalInterior G s := by
       simp_rw [diff_subset_iff, ← iUnion_union_distrib, ← smul_set_union (α := G) (β := α),
         fundamentalFrontier_union_fundamentalInterior]; rfl
-    refine' eq_bot_mono (μ.mono <| compl_subset_compl.2 this) _
+    refine eq_bot_mono (μ.mono <| compl_subset_compl.2 this) ?_
     simp only [iUnion_inv_smul, compl_sdiff, ENNReal.bot_eq_zero, himp_eq, sup_eq_union,
       @iUnion_smul_eq_setOf_exists _ _ _ _ s]
     exact measure_union_null

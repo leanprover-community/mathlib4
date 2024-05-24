@@ -270,7 +270,7 @@ theorem coeff_mul_X_pow' (p : R[X]) (n d : ℕ) :
     (p * X ^ n).coeff d = ite (n ≤ d) (p.coeff (d - n)) 0 := by
   split_ifs with h
   · rw [← tsub_add_cancel_of_le h, coeff_mul_X_pow, add_tsub_cancel_right]
-  · refine' (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => _)
+  · refine (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => ?_)
     rw [coeff_X_pow, if_neg, mul_zero]
     exact ((le_of_add_le_right (mem_antidiagonal.mp hx).le).trans_lt <| not_le.mp h).ne
 #align polynomial.coeff_mul_X_pow' Polynomial.coeff_mul_X_pow'

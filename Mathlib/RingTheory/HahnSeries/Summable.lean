@@ -98,7 +98,7 @@ theorem isPWO_iUnion_support_powers [LinearOrderedCancelAddCommMonoid Γ] [Ring 
     {x : HahnSeries Γ R} (hx : 0 < addVal Γ R x) : (⋃ n : ℕ, (x ^ n).support).IsPWO := by
   apply (x.isWF_support.isPWO.addSubmonoid_closure _).mono _
   · exact fun g hg => WithTop.coe_le_coe.1 (le_trans (le_of_lt hx) (addVal_le_of_coeff_ne_zero hg))
-  refine' Set.iUnion_subset fun n => _
+  refine Set.iUnion_subset fun n => ?_
   induction' n with n ih <;> intro g hn
   · simp only [Nat.zero_eq, pow_zero, support_one, Set.mem_singleton_iff] at hn
     rw [hn, SetLike.mem_coe]
@@ -325,22 +325,22 @@ instance : Module (HahnSeries Γ R) (SummableFamily Γ R α) where
 theorem hsum_smul {x : HahnSeries Γ R} {s : SummableFamily Γ R α} : (x • s).hsum = x * s.hsum := by
   ext g
   simp only [mul_coeff, hsum_coeff, smul_apply]
-  refine'
-    (Eq.trans (finsum_congr fun a => _)
+  refine
+    (Eq.trans (finsum_congr fun a => ?_)
           (finsum_sum_comm (addAntidiagonal x.isPWO_support s.isPWO_iUnion_support g)
-            (fun i ij => x.coeff (Prod.fst ij) * (s i).coeff ij.snd) _)).trans
-      _
-  · refine' sum_subset (addAntidiagonal_mono_right
-      (Set.subset_iUnion (fun j => support (toFun s j)) a)) _
+            (fun i ij => x.coeff (Prod.fst ij) * (s i).coeff ij.snd) ?_)).trans
+      ?_
+  · refine sum_subset (addAntidiagonal_mono_right
+      (Set.subset_iUnion (fun j => support (toFun s j)) a)) ?_
     rintro ⟨i, j⟩ hU ha
     rw [mem_addAntidiagonal] at *
     rw [Classical.not_not.1 fun con => ha ⟨hU.1, con, hU.2.2⟩, mul_zero]
   · rintro ⟨i, j⟩ _
-    refine' (s.finite_co_support j).subset _
+    refine (s.finite_co_support j).subset ?_
     simp_rw [Function.support_subset_iff', Function.mem_support, Classical.not_not]
     intro a ha
     rw [ha, mul_zero]
-  · refine' (sum_congr rfl _).trans (sum_subset (addAntidiagonal_mono_right _) _).symm
+  · refine (sum_congr rfl ?_).trans (sum_subset (addAntidiagonal_mono_right ?_) ?_).symm
     · rintro ⟨i, j⟩ _
       rw [mul_finsum]
       apply s.finite_co_support
@@ -513,7 +513,7 @@ theorem embDomain_succ_smul_powers :
       Finsupp.single_eq_same, sub_self]
     rw [Set.mem_range, not_exists]
     exact Nat.succ_ne_zero
-  · refine' Eq.trans (embDomain_image _ ⟨Nat.succ, Nat.succ_injective⟩) _
+  · refine Eq.trans (embDomain_image _ ⟨Nat.succ, Nat.succ_injective⟩) ?_
     simp only [pow_succ', coe_powers, coe_sub, smul_apply, coe_ofFinsupp, Pi.sub_apply]
     rw [Finsupp.single_eq_of_ne n.succ_ne_zero.symm, sub_zero]
 #align hahn_series.summable_family.emb_domain_succ_smul_powers HahnSeries.SummableFamily.embDomain_succ_smul_powers
@@ -540,7 +540,7 @@ theorem unit_aux (x : HahnSeries Γ R) {r : R} (hr : r * x.coeff x.order = 1) :
     0 < addVal Γ R (1 - C r * single (-x.order) 1 * x) := by
   have h10 : (1 : R) ≠ 0 := one_ne_zero
   have x0 : x ≠ 0 := ne_zero_of_coeff_ne_zero (right_ne_zero_of_mul_eq_one hr)
-  refine' lt_of_le_of_ne ((addVal Γ R).map_le_sub (ge_of_eq (addVal Γ R).map_one) _) _
+  refine lt_of_le_of_ne ((addVal Γ R).map_le_sub (ge_of_eq (addVal Γ R).map_one) ?_) ?_
   · simp only [AddValuation.map_mul]
     rw [addVal_apply_of_ne x0, addVal_apply_of_ne (single_ne_zero h10), addVal_apply_of_ne _,
       order_C, order_single h10, WithTop.coe_zero, zero_add, ← WithTop.coe_add, neg_add_self,
@@ -559,9 +559,9 @@ theorem unit_aux (x : HahnSeries Γ R) {r : R} (hr : r * x.coeff x.order = 1) :
 theorem isUnit_iff {x : HahnSeries Γ R} : IsUnit x ↔ IsUnit (x.coeff x.order) := by
   constructor
   · rintro ⟨⟨u, i, ui, iu⟩, rfl⟩
-    refine'
+    refine
       isUnit_of_mul_eq_one (u.coeff u.order) (i.coeff i.order)
-        ((mul_coeff_order_add_order u i).symm.trans _)
+        ((mul_coeff_order_add_order u i).symm.trans ?_)
     rw [ui, one_coeff, if_pos]
     rw [← order_mul (left_ne_zero_of_mul_eq_one ui) (right_ne_zero_of_mul_eq_one ui), ui, order_one]
   · rintro ⟨⟨u, i, ui, iu⟩, h⟩

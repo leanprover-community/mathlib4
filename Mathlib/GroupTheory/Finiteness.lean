@@ -248,10 +248,10 @@ theorem Subgroup.fg_iff_submonoid_fg (P : Subgroup G) : P.FG ↔ P.toSubmonoid.F
   constructor
   · rintro ⟨S, rfl⟩
     rw [Submonoid.fg_iff]
-    refine' ⟨S ∪ S⁻¹, _, S.finite_toSet.union S.finite_toSet.inv⟩
+    refine ⟨S ∪ S⁻¹, ?_, S.finite_toSet.union S.finite_toSet.inv⟩
     exact (Subgroup.closure_toSubmonoid _).symm
   · rintro ⟨S, hS⟩
-    refine' ⟨S, le_antisymm _ _⟩
+    refine ⟨S, le_antisymm ?_ ?_⟩
     · rw [Subgroup.closure_le, ← Subgroup.coe_toSubmonoid, ← hS]
       exact Submonoid.subset_closure
     · rw [← Subgroup.toSubmonoid_le, ← hS, Submonoid.closure_le]

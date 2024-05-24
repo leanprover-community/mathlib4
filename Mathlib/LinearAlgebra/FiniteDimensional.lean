@@ -827,7 +827,7 @@ theorem injective_iff_surjective_of_finrank_eq_finrank [FiniteDimensional K V]
     [FiniteDimensional K V₂] (H : finrank K V = finrank K V₂) {f : V →ₗ[K] V₂} :
     Function.Injective f ↔ Function.Surjective f := by
   have := finrank_range_add_finrank_ker f
-  rw [← ker_eq_bot, ← range_eq_top]; refine' ⟨fun h => _, fun h => _⟩
+  rw [← ker_eq_bot, ← range_eq_top]; refine ⟨fun h => ?_, fun h => ?_⟩
   · rw [h, finrank_bot, add_zero, H] at this
     exact eq_top_of_finrank_eq this
   · rw [h, finrank_top, H] at this
@@ -1071,10 +1071,10 @@ theorem surjective_of_nonzero_of_finrank_eq_one {W A : Type*} [Semiring A] [Modu
 theorem is_simple_module_of_finrank_eq_one {A} [Semiring A] [Module A V] [SMul K A]
     [IsScalarTower K A V] (h : finrank K V = 1) : IsSimpleOrder (Submodule A V) := by
   haveI := nontrivial_of_finrank_eq_succ h
-  refine' ⟨fun S => or_iff_not_imp_left.2 fun hn => _⟩
+  refine ⟨fun S => or_iff_not_imp_left.2 fun hn => ?_⟩
   rw [← restrictScalars_inj K] at hn ⊢
   haveI : FiniteDimensional _ _ := .of_finrank_eq_succ h
-  refine' eq_top_of_finrank_eq ((Submodule.finrank_le _).antisymm _)
+  refine eq_top_of_finrank_eq ((Submodule.finrank_le _).antisymm ?_)
   simpa only [h, finrank_bot] using Submodule.finrank_strictMono (Ne.bot_lt hn)
 #align is_simple_module_of_finrank_eq_one is_simple_module_of_finrank_eq_one
 
@@ -1160,7 +1160,7 @@ theorem exists_ker_pow_eq_ker_pow_succ [FiniteDimensional K V] (f : End K V) :
       induction' n with n ih
       · exact zero_le (finrank _ _)
       · have h_ker_lt_ker : LinearMap.ker (f ^ n) < LinearMap.ker (f ^ n.succ) := by
-          refine' lt_of_le_of_ne _ (h_contra n (Nat.le_of_succ_le_succ hn))
+          refine lt_of_le_of_ne ?_ (h_contra n (Nat.le_of_succ_le_succ hn))
           rw [pow_succ']
           apply LinearMap.ker_le_ker_comp
         have h_finrank_lt_finrank :

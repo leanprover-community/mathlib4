@@ -86,7 +86,7 @@ theorem contDiff_zero_fun : ContDiff 𝕜 n fun _ : E => (0 : F) :=
 theorem contDiff_const {c : F} : ContDiff 𝕜 n fun _ : E => c := by
   suffices h : ContDiff 𝕜 ∞ fun _ : E => c from h.of_le le_top
   rw [contDiff_top_iff_fderiv]
-  refine' ⟨differentiable_const c, _⟩
+  refine ⟨differentiable_const c, ?_⟩
   rw [fderiv_const]
   exact contDiff_zero_fun
 #align cont_diff_const contDiff_const
@@ -605,7 +605,7 @@ private theorem ContDiffOn.comp_same_univ {Eu : Type u} [NormedAddCommGroup Eu] 
     have wv : w ⊆ f ⁻¹' v := fun y hy => hy.2.2
     have wu : w ⊆ u := fun y hy => hy.2.1
     have ws : w ⊆ s := fun y hy => hy.1
-    refine' ⟨w, _, fun y => (g' (f y)).comp (f' y), _, _⟩
+    refine ⟨w, ?_, fun y => (g' (f y)).comp (f' y), ?_, ?_⟩
     · show w ∈ 𝓝[s] x
       apply Filter.inter_mem self_mem_nhdsWithin
       apply Filter.inter_mem hu
@@ -991,22 +991,22 @@ theorem ContDiffWithinAt.hasFDerivWithinAt_nhds {f : E → F → G} {g : E → F
       (∀ x ∈ v, HasFDerivWithinAt (f x) (f' x) t (g x)) ∧
         ContDiffWithinAt 𝕜 n (fun x => f' x) s x₀ := by
   have hst : insert x₀ s ×ˢ t ∈ 𝓝[(fun x => (x, g x)) '' s] (x₀, g x₀) := by
-    refine' nhdsWithin_mono _ _ (nhdsWithin_prod self_mem_nhdsWithin hgt)
+    refine nhdsWithin_mono _ ?_ (nhdsWithin_prod self_mem_nhdsWithin hgt)
     simp_rw [image_subset_iff, mk_preimage_prod, preimage_id', subset_inter_iff, subset_insert,
       true_and_iff, subset_preimage_image]
   obtain ⟨v, hv, hvs, f', hvf', hf'⟩ := contDiffWithinAt_succ_iff_hasFDerivWithinAt'.mp hf
-  refine'
-    ⟨(fun z => (z, g z)) ⁻¹' v ∩ insert x₀ s, _, inter_subset_right _ _, fun z =>
-      (f' (z, g z)).comp (ContinuousLinearMap.inr 𝕜 E F), _, _⟩
-  · refine' inter_mem _ self_mem_nhdsWithin
+  refine
+    ⟨(fun z => (z, g z)) ⁻¹' v ∩ insert x₀ s, ?_, inter_subset_right _ _, fun z =>
+      (f' (z, g z)).comp (ContinuousLinearMap.inr 𝕜 E F), ?_, ?_⟩
+  · refine inter_mem ?_ self_mem_nhdsWithin
     have := mem_of_mem_nhdsWithin (mem_insert _ _) hv
-    refine' mem_nhdsWithin_insert.mpr ⟨this, _⟩
-    refine' (continuousWithinAt_id.prod hg.continuousWithinAt).preimage_mem_nhdsWithin' _
+    refine mem_nhdsWithin_insert.mpr ⟨this, ?_⟩
+    refine (continuousWithinAt_id.prod hg.continuousWithinAt).preimage_mem_nhdsWithin' ?_
     rw [← nhdsWithin_le_iff] at hst hv ⊢
     exact (hst.trans <| nhdsWithin_mono _ <| subset_insert _ _).trans hv
   · intro z hz
     have := hvf' (z, g z) hz.1
-    refine' this.comp _ (hasFDerivAt_prod_mk_right _ _).hasFDerivWithinAt _
+    refine this.comp _ (hasFDerivAt_prod_mk_right _ _).hasFDerivWithinAt ?_
     exact mapsTo'.mpr (image_prod_mk_subset_prod_right hz.2)
   · exact (hf'.continuousLinearMap_comp <| (ContinuousLinearMap.compL 𝕜 F (E × F) G).flip
       (ContinuousLinearMap.inr 𝕜 E F)).comp_of_mem x₀ (contDiffWithinAt_id.prod hg) hst
@@ -1185,7 +1185,7 @@ theorem hasFTaylorSeriesUpToOn_pi :
   letI : ∀ (m : ℕ) (i : ι), NormedSpace 𝕜 (E[×m]→L[𝕜] F' i) := fun m i => inferInstance
   set L : ∀ m : ℕ, (∀ i, E[×m]→L[𝕜] F' i) ≃ₗᵢ[𝕜] E[×m]→L[𝕜] ∀ i, F' i := fun m =>
     ContinuousMultilinearMap.piₗᵢ _ _
-  refine' ⟨fun h i => _, fun h => ⟨fun x hx => _, _, _⟩⟩
+  refine ⟨fun h i => ?_, fun h => ⟨fun x hx => ?_, ?_, ?_⟩⟩
   · convert h.continuousLinearMap_comp (pr i)
   · ext1 i
     exact (h i).zero_eq x hx
@@ -1209,7 +1209,7 @@ theorem hasFTaylorSeriesUpToOn_pi' :
 theorem contDiffWithinAt_pi :
     ContDiffWithinAt 𝕜 n Φ s x ↔ ∀ i, ContDiffWithinAt 𝕜 n (fun x => Φ x i) s x := by
   set pr := @ContinuousLinearMap.proj 𝕜 _ ι F' _ _ _
-  refine' ⟨fun h i => h.continuousLinearMap_comp (pr i), fun h m hm => _⟩
+  refine ⟨fun h i => h.continuousLinearMap_comp (pr i), fun h m hm => ?_⟩
   choose u hux p hp using fun i => h i m hm
   exact ⟨⋂ i, u i, Filter.iInter_mem.2 hux, _,
     hasFTaylorSeriesUpToOn_pi.2 fun i => (hp i).mono <| iInter_subset _ _⟩
@@ -1759,7 +1759,7 @@ theorem contDiffAt_ring_inverse [CompleteSpace R] (x : Rˣ) :
     ContDiffAt 𝕜 n Ring.inverse (x : R) := by
   induction' n using ENat.nat_induction with n IH Itop
   · intro m hm
-    refine' ⟨{ y : R | IsUnit y }, _, _⟩
+    refine ⟨{ y : R | IsUnit y }, ?_, ?_⟩
     · simp [nhdsWithin_univ]
       exact x.nhds
     · use ftaylorSeriesWithin 𝕜 inverse univ
@@ -1769,8 +1769,8 @@ theorem contDiffAt_ring_inverse [CompleteSpace R] (x : Rˣ) :
         exact (inverse_continuousAt x').continuousWithinAt
       · simp [ftaylorSeriesWithin]
   · rw [contDiffAt_succ_iff_hasFDerivAt]
-    refine' ⟨fun x : R => -mulLeftRight 𝕜 R (inverse x) (inverse x), _, _⟩
-    · refine' ⟨{ y : R | IsUnit y }, x.nhds, _⟩
+    refine ⟨fun x : R => -mulLeftRight 𝕜 R (inverse x) (inverse x), ?_, ?_⟩
+    · refine ⟨{ y : R | IsUnit y }, x.nhds, ?_⟩
       rintro _ ⟨y, rfl⟩
       simp_rw [inverse_unit]
       exact hasFDerivAt_ring_inverse y
@@ -1859,7 +1859,7 @@ theorem contDiffAt_map_inverse [CompleteSpace E] (e : E ≃L[𝕜] F) :
   -- so we reduce to proving that `Ring.inverse` is `ContDiff`
   have h₁ : ContDiff 𝕜 n O₁ := contDiff_id.clm_comp contDiff_const
   have h₂ : ContDiff 𝕜 n O₂ := contDiff_const.clm_comp contDiff_id
-  refine' h₁.contDiffAt.comp _ (ContDiffAt.comp _ _ h₂.contDiffAt)
+  refine h₁.contDiffAt.comp _ (ContDiffAt.comp _ ?_ h₂.contDiffAt)
   convert contDiffAt_ring_inverse 𝕜 (1 : (E →L[𝕜] E)ˣ)
   simp [O₂, one_def]
 #align cont_diff_at_map_inverse contDiffAt_map_inverse
@@ -1891,7 +1891,7 @@ theorem PartialHomeomorph.contDiffAt_symm [CompleteSpace E] (f : PartialHomeomor
     -- suffices to produce the derivative and show that it is `n` times continuously differentiable
     have eq_f₀' : f' (f.symm a) = f₀' := (hff' (f.symm a) (mem_of_mem_nhds hu)).unique hf₀'
     -- This follows by a bootstrapping formula expressing the derivative as a function of `f` itself
-    refine' ⟨inverse ∘ f' ∘ f.symm, _, _⟩
+    refine ⟨inverse ∘ f' ∘ f.symm, ?_, ?_⟩
     · -- We first check that the derivative of `f` is that formula
       have h_nhds : { y : E | ∃ e : E ≃L[𝕜] F, ↑e = f' y } ∈ 𝓝 (f.symm a) := by
         have hf₀' := f₀'.nhds
@@ -1899,7 +1899,7 @@ theorem PartialHomeomorph.contDiffAt_symm [CompleteSpace E] (f : PartialHomeomor
         exact hf'.continuousAt.preimage_mem_nhds hf₀'
       obtain ⟨t, htu, ht, htf⟩ := mem_nhds_iff.mp (Filter.inter_mem hu h_nhds)
       use f.target ∩ f.symm ⁻¹' t
-      refine' ⟨IsOpen.mem_nhds _ _, _⟩
+      refine ⟨IsOpen.mem_nhds ?_ ?_, ?_⟩
       · exact f.isOpen_inter_preimage_symm ht
       · exact mem_inter ha (mem_preimage.mpr htf)
       intro x hx
@@ -1915,11 +1915,11 @@ theorem PartialHomeomorph.contDiffAt_symm [CompleteSpace E] (f : PartialHomeomor
         rw [eq_f₀']
         exact contDiffAt_map_inverse _
       have h_deriv₂ : ContDiffAt 𝕜 n f.symm a := by
-        refine' IH (hf.of_le _)
+        refine IH (hf.of_le ?_)
         norm_cast
         exact Nat.le_succ n
       exact (h_deriv₁.comp _ hf').comp _ h_deriv₂
-  · refine' contDiffAt_top.mpr _
+  · refine contDiffAt_top.mpr ?_
     intro n
     exact Itop n (contDiffAt_top.mp hf n)
 #align local_homeomorph.cont_diff_at_symm PartialHomeomorph.contDiffAt_symm
@@ -2043,11 +2043,11 @@ theorem contDiffOn_top_iff_derivWithin (hs : UniqueDiffOn 𝕜 s₂) :
     ContDiffOn 𝕜 ∞ f₂ s₂ ↔ DifferentiableOn 𝕜 f₂ s₂ ∧ ContDiffOn 𝕜 ∞ (derivWithin f₂ s₂) s₂ := by
   constructor
   · intro h
-    refine' ⟨h.differentiableOn le_top, _⟩
+    refine ⟨h.differentiableOn le_top, ?_⟩
     refine contDiffOn_top.2 fun n => ((contDiffOn_succ_iff_derivWithin hs).1 ?_).2
     exact h.of_le le_top
   · intro h
-    refine' contDiffOn_top.2 fun n => _
+    refine contDiffOn_top.2 fun n => ?_
     have A : (n : ℕ∞) ≤ ∞ := le_top
     apply ((contDiffOn_succ_iff_derivWithin hs).2 ⟨h.1, h.2.of_le A⟩).of_le
     exact WithTop.coe_le_coe.2 (Nat.le_succ n)

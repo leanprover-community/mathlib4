@@ -268,7 +268,7 @@ theorem isFractionRing_of_isLocalization (S T : Type*) [CommRing S] [CommRing T]
     obtain ⟨⟨y, s⟩, e⟩ := IsLocalization.surj M x
     use algebraMap R S s
     rw [mul_comm, Subtype.coe_mk, e]
-    refine' Set.mem_image_of_mem (algebraMap R S) _
+    refine Set.mem_image_of_mem (algebraMap R S) ?_
     intro z hz
     apply IsLocalization.injective S hM
     rw [map_zero]

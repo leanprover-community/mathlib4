@@ -156,8 +156,8 @@ other via this equivalence, then `Φ` is a localized equivalence. -/
 lemma IsLocalizedEquivalence.of_equivalence [Φ.functor.IsEquivalence]
     (h : W₂ ≤ W₁.map Φ.functor) : IsLocalizedEquivalence Φ := by
   haveI : Functor.IsLocalization (Φ.functor ⋙ MorphismProperty.Q W₂) W₁ := by
-    refine' Functor.IsLocalization.of_equivalence_source W₂.Q W₂ (Φ.functor ⋙ W₂.Q) W₁
-      (Functor.asEquivalence Φ.functor).symm _ (Φ.inverts W₂.Q)
+    refine Functor.IsLocalization.of_equivalence_source W₂.Q W₂ (Φ.functor ⋙ W₂.Q) W₁
+      (Functor.asEquivalence Φ.functor).symm ?_ (Φ.inverts W₂.Q)
       ((Functor.associator _ _ _).symm ≪≫ isoWhiskerRight ((Equivalence.unitIso _).symm) _ ≪≫
         Functor.leftUnitor _)
     erw [W₁.isoClosure.inverseImage_equivalence_functor_eq_map_inverse

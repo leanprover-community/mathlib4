@@ -131,9 +131,9 @@ theorem isCaratheodory_iUnion_nat {s : ℕ → Set α} (h : ∀ i, IsCaratheodor
 
 theorem f_iUnion {s : ℕ → Set α} (h : ∀ i, IsCaratheodory m (s i)) (hd : Pairwise (Disjoint on s)) :
     m (⋃ i, s i) = ∑' i, m (s i) := by
-  refine' le_antisymm (measure_iUnion_le s) _
+  refine le_antisymm (measure_iUnion_le s) ?_
   rw [ENNReal.tsum_eq_iSup_nat]
-  refine' iSup_le fun n => _
+  refine iSup_le fun n => ?_
   have := @isCaratheodory_sum _ m _ h hd univ n
   simp only [inter_comm, inter_univ, univ_inter] at this; simp only [this, ge_iff_le]
   exact m.mono (iUnion₂_subset fun i _ => subset_iUnion _ i)
@@ -179,12 +179,12 @@ theorem ofFunction_caratheodory {m : Set α → ℝ≥0∞} {s : Set α} {h₀ :
     (hs : ∀ t, m (t ∩ s) + m (t \ s) ≤ m t) :
     MeasurableSet[(OuterMeasure.ofFunction m h₀).caratheodory] s := by
   apply (isCaratheodory_iff_le _).mpr
-  refine' fun t => le_iInf fun f => le_iInf fun hf => _
-  refine'
+  refine fun t => le_iInf fun f => le_iInf fun hf => ?_
+  refine
     le_trans
-      (add_le_add ((iInf_le_of_le fun i => f i ∩ s) <| iInf_le _ _)
-        ((iInf_le_of_le fun i => f i \ s) <| iInf_le _ _))
-      _
+      (add_le_add ((iInf_le_of_le fun i => f i ∩ s) <| iInf_le _ ?_)
+        ((iInf_le_of_le fun i => f i \ s) <| iInf_le _ ?_))
+      ?_
   · rw [← iUnion_inter]
     exact inter_subset_inter_left _ hf
   · rw [← iUnion_diff]

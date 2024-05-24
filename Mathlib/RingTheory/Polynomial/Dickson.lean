@@ -206,7 +206,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
     haveI : Infinite K :=
       Infinite.of_injective (algebraMap (Polynomial (ZMod p)) (FractionRing (Polynomial (ZMod p))))
         (IsFractionRing.injective _ _)
-    refine' ⟨K, _, _, _⟩ <;> infer_instance
+    refine ⟨K, ?_, ?_, ?_⟩ <;> infer_instance
   apply map_injective (ZMod.castHom (dvd_refl p) K) (RingHom.injective _)
   rw [map_dickson, Polynomial.map_pow, map_X]
   apply eq_of_infinite_eval_eq
@@ -229,7 +229,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
         ⋃ x ∈ { x : K | ∃ y : K, x = y + y⁻¹ ∧ y ≠ 0 }, { y | x = y + y⁻¹ ∨ y = 0 }  by
       rw [this]
       clear this
-      refine' h.biUnion fun x _ => _
+      refine h.biUnion fun x _ => ?_
       -- The following quadratic polynomial has as solutions the `y` for which `x = y + y⁻¹`.
       let φ : K[X] := X ^ 2 - C x * X + 1
       have hφ : φ ≠ 0 := by

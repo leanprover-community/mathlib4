@@ -72,11 +72,11 @@ variable (s : Set α)
 
 @[simp]
 theorem toOuterMeasure_pure_apply : (pure a).toOuterMeasure s = if a ∈ s then 1 else 0 := by
-  refine' (toOuterMeasure_apply (pure a) s).trans _
+  refine (toOuterMeasure_apply (pure a) s).trans ?_
   split_ifs with ha
-  · refine' (tsum_congr fun b => _).trans (tsum_ite_eq a 1)
+  · refine (tsum_congr fun b => ?_).trans (tsum_ite_eq a 1)
     exact ite_eq_left_iff.2 fun hb => symm (ite_eq_right_iff.2 fun h => (hb <| h.symm ▸ ha).elim)
-  · refine' (tsum_congr fun b => _).trans tsum_zero
+  · refine (tsum_congr fun b => ?_).trans tsum_zero
     exact ite_eq_right_iff.2 fun hb => ite_eq_right_iff.2 fun h => (ha <| h ▸ hb).elim
 #align pmf.to_outer_measure_pure_apply PMF.toOuterMeasure_pure_apply
 
@@ -264,7 +264,7 @@ theorem pure_bindOnSupport (a : α) (f : ∀ (a' : α) (_ : a' ∈ (pure a).supp
     (pure a).bindOnSupport f = f a ((mem_support_pure_iff a a).mpr rfl) := by
   refine PMF.ext fun b => ?_
   simp only [bindOnSupport_apply, pure_apply]
-  refine' _root_.trans (tsum_congr fun a' => _) (tsum_ite_eq a _)
+  refine _root_.trans (tsum_congr fun a' => ?_) (tsum_ite_eq a _)
   by_cases h : a' = a <;> simp [h]
 #align pmf.pure_bind_on_support PMF.pure_bindOnSupport
 
@@ -283,7 +283,7 @@ theorem bindOnSupport_bindOnSupport (p : PMF α) (f : ∀ a ∈ p.support, PMF �
   dsimp only [bindOnSupport_apply]
   simp only [← tsum_dite_right, ENNReal.tsum_mul_left.symm, ENNReal.tsum_mul_right.symm]
   simp only [ENNReal.tsum_eq_zero, dite_eq_left_iff]
-  refine' ENNReal.tsum_comm.trans (tsum_congr fun a' => tsum_congr fun b => _)
+  refine ENNReal.tsum_comm.trans (tsum_congr fun a' => tsum_congr fun b => ?_)
   split_ifs with h _ h_1 _ h_2
   any_goals ring1
   · have := h_1 a'
@@ -298,7 +298,7 @@ theorem bindOnSupport_comm (p : PMF α) (q : PMF β) (f : ∀ a ∈ p.support, �
   apply PMF.ext; rintro c
   simp only [ENNReal.coe_inj.symm, bindOnSupport_apply, ← tsum_dite_right,
     ENNReal.tsum_mul_left.symm, ENNReal.tsum_mul_right.symm]
-  refine' _root_.trans ENNReal.tsum_comm (tsum_congr fun b => tsum_congr fun a => _)
+  refine _root_.trans ENNReal.tsum_comm (tsum_congr fun b => tsum_congr fun a => ?_)
   split_ifs with h1 h2 h2 <;> ring
 #align pmf.bind_on_support_comm PMF.bindOnSupport_comm
 

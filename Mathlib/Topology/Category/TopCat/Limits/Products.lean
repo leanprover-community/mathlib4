@@ -323,10 +323,10 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
         ← show _ = c.inr from
           h.comp_coconePointUniqueUpToIso_inv (binaryCofanIsColimit X Y) ⟨WalkingPair.right⟩]
       dsimp
-      refine' ⟨(homeoOfIso <| h.coconePointUniqueUpToIso
+      refine ⟨(homeoOfIso <| h.coconePointUniqueUpToIso
         (binaryCofanIsColimit X Y)).symm.openEmbedding.comp openEmbedding_inl,
           (homeoOfIso <| h.coconePointUniqueUpToIso
-            (binaryCofanIsColimit X Y)).symm.openEmbedding.comp openEmbedding_inr, _⟩
+            (binaryCofanIsColimit X Y)).symm.openEmbedding.comp openEmbedding_inr, ?_⟩
       erw [Set.range_comp, ← eq_compl_iff_isCompl, coe_comp, coe_comp, Set.range_comp _ Sum.inr,
         ← Set.image_compl_eq (homeoOfIso <| h.coconePointUniqueUpToIso
             (binaryCofanIsColimit X Y)).symm.bijective, Set.compl_range_inr, Set.image_comp]
@@ -335,9 +335,9 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
       have : ∀ x, x ∈ Set.range c.inl ∨ x ∈ Set.range c.inr := by
         rw [eq_compl_iff_isCompl.mpr h₃.symm]
         exact fun _ => or_not
-      refine' ⟨BinaryCofan.IsColimit.mk _ _ _ _ _⟩
+      refine ⟨BinaryCofan.IsColimit.mk _ ?_ ?_ ?_ ?_⟩
       · intro T f g
-        refine' ContinuousMap.mk _ _
+        refine ContinuousMap.mk ?_ ?_
         · exact fun x =>
             if h : x ∈ Set.range c.inl then f ((Equiv.ofInjective _ h₁.inj).symm ⟨x, h⟩)
             else g ((Equiv.ofInjective _ h₂.inj).symm ⟨x, (this x).resolve_left h⟩)
@@ -375,12 +375,12 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
             exact h₂.isOpen_range
       · intro T f g
         ext x
-        refine' (dif_pos _).trans _
+        refine (dif_pos ?_).trans ?_
         · exact ⟨x, rfl⟩
         · dsimp; conv_lhs => erw [Equiv.ofInjective_symm_apply]
       · intro T f g
         ext x
-        refine' (dif_neg _).trans _
+        refine (dif_neg ?_).trans ?_
         · rintro ⟨y, e⟩
           have : c.inr x ∈ Set.range c.inl ⊓ Set.range c.inr := ⟨⟨_, e⟩, ⟨_, rfl⟩⟩
           rwa [disjoint_iff.mp h₃.1] at this

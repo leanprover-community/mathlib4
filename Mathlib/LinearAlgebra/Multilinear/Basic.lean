@@ -449,7 +449,7 @@ to be finite. -/
 theorem map_piecewise_add [DecidableEq ι] (m m' : ∀ i, M₁ i) (t : Finset ι) :
     f (t.piecewise (m + m') m') = ∑ s in t.powerset, f (s.piecewise m m') := by
   revert m'
-  refine' Finset.induction_on t (by simp) _
+  refine Finset.induction_on t (by simp) ?_
   intro i t hit Hrec m'
   have A : (insert i t).piecewise (m + m') m' = update (t.piecewise (m + m') m') i (m i + m' i) :=
     t.piecewise_insert _ _ _
@@ -592,9 +592,9 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
   -- Express the inductive assumption for `B`
   have Brec : (f fun i => ∑ j in B i, g i j) = ∑ r in piFinset B, f fun i => g i (r i) := by
     have : (∑ i, Finset.card (B i)) < ∑ i, Finset.card (A i) := by
-      refine'
+      refine
         Finset.sum_lt_sum (fun i _ => Finset.card_le_card (B_subset_A i))
-          ⟨i₀, Finset.mem_univ _, _⟩
+          ⟨i₀, Finset.mem_univ _, ?_⟩
       have : {j₂} ⊆ A i₀ := by simp [hj₂]
       simp only [B, Finset.card_sdiff this, Function.update_same, Finset.card_singleton]
       exact Nat.pred_lt (ne_of_gt (lt_trans Nat.zero_lt_one hi₀))
@@ -1131,7 +1131,7 @@ map is multiplied by `∏ i in s, c i`. This is mainly an auxiliary statement to
 require the index set `ι` to be finite. -/
 theorem map_piecewise_smul [DecidableEq ι] (c : ι → R) (m : ∀ i, M₁ i) (s : Finset ι) :
     f (s.piecewise (fun i => c i • m i) m) = (∏ i in s, c i) • f m := by
-  refine' s.induction_on (by simp) _
+  refine s.induction_on (by simp) ?_
   intro j s j_not_mem_s Hrec
   have A :
     Function.update (s.piecewise (fun i => c i • m i) m) j (m j) =
@@ -1848,7 +1848,7 @@ theorem curryFinFinset_apply_const {k l n : ℕ} {s : Finset (Fin n)} (hk : s.ca
     (hl : sᶜ.card = l) (f : MultilinearMap R (fun _ : Fin n => M') M₂) (x y : M') :
     (curryFinFinset R M₂ M' hk hl f (fun _ => x) fun _ => y) =
       f (s.piecewise (fun _ => x) fun _ => y) := by
-  refine' (curryFinFinset_symm_apply_piecewise_const hk hl _ _ _).symm.trans _
+  refine (curryFinFinset_symm_apply_piecewise_const hk hl _ _ _).symm.trans ?_
   -- `rw` fails
   rw [LinearEquiv.symm_apply_apply]
 #align multilinear_map.curry_fin_finset_apply_const MultilinearMap.curryFinFinset_apply_const

@@ -351,11 +351,11 @@ lemma uIoc_injective_right (a : α) : Injective fun b => Ι b a := by
   · have hb := (h b).not
     simp only [ha, left_mem_uIoc, not_lt, true_iff_iff, not_mem_uIoc, ← not_le,
       and_true_iff, not_true, false_and_iff, not_false_iff, true_iff_iff, or_false_iff] at hb
-    refine' hb.eq_of_not_lt fun hc => _
+    refine hb.eq_of_not_lt fun hc => ?_
     simpa [ha, and_iff_right hc, ← @not_le _ _ _ a, iff_not_self, -not_le] using h c
-  · refine'
+  · refine
       eq_of_mem_uIoc_of_mem_uIoc ((h _).1 <| left_mem_uIoc.2 ha)
-        ((h _).2 <| left_mem_uIoc.2 <| ha.trans_le _)
+        ((h _).2 <| left_mem_uIoc.2 <| ha.trans_le ?_)
     simpa [ha, ha.not_le, mem_uIoc] using h b
 #align set.uIoc_injective_right Set.uIoc_injective_right
 

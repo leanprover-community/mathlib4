@@ -641,7 +641,7 @@ theorem sInf_toSubring (s : Set (Subfield K)) :
 
 theorem isGLB_sInf (S : Set (Subfield K)) : IsGLB S (sInf S) := by
   have : ∀ {s t : Subfield K}, (s : Set K) ≤ t ↔ s ≤ t := by simp [SetLike.coe_subset_coe]
-  refine' IsGLB.of_image this _
+  refine IsGLB.of_image this ?_
   convert isGLB_biInf (s := S) (f := SetLike.coe)
   exact coe_sInf _
 #align subfield.is_glb_Inf Subfield.isGLB_sInf

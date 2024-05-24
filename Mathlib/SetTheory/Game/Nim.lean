@@ -233,11 +233,11 @@ theorem nim_fuzzy_zero_of_ne_zero {o : Ordinal} (ho : o ≠ 0) : nim o ‖ 0 := 
 @[simp]
 theorem nim_add_equiv_zero_iff (o₁ o₂ : Ordinal) : (nim o₁ + nim o₂ ≈ 0) ↔ o₁ = o₂ := by
   constructor
-  · refine' not_imp_not.1 fun hne : _ ≠ _ => (Impartial.not_equiv_zero_iff (nim o₁ + nim o₂)).2 _
+  · refine not_imp_not.1 fun hne : _ ≠ _ => (Impartial.not_equiv_zero_iff (nim o₁ + nim o₂)).2 ?_
     wlog h : o₁ < o₂
     · exact (fuzzy_congr_left add_comm_equiv).1 (this _ _ hne.symm (hne.lt_or_lt.resolve_left h))
     rw [Impartial.fuzzy_zero_iff_gf, zero_lf_le, nim_def o₂]
-    refine' ⟨toLeftMovesAdd (Sum.inr _), _⟩
+    refine ⟨toLeftMovesAdd (Sum.inr ?_), ?_⟩
     · exact (Ordinal.principalSegOut h).top
     · -- Porting note: squeezed simp
       simpa only [Ordinal.typein_top, Ordinal.type_lt, PGame.add_moveLeft_inr, PGame.moveLeft_mk]
@@ -390,10 +390,10 @@ theorem grundyValue_nim_add_nim (n m : ℕ) :
     replace hu := Ordinal.natCast_lt.1 hu
     cases' Nat.lt_xor_cases hu with h h
     -- In the first case, reducing the `m` pile to `u ^^^ n` gives the desired Grundy value.
-    · refine' ⟨toLeftMovesAdd (Sum.inl <| toLeftMovesNim ⟨_, Ordinal.natCast_lt.2 h⟩), _⟩
+    · refine ⟨toLeftMovesAdd (Sum.inl <| toLeftMovesNim ⟨_, Ordinal.natCast_lt.2 h⟩), ?_⟩
       simp [Nat.xor_cancel_right, hn _ h]
     -- In the second case, reducing the `n` pile to `u ^^^ m` gives the desired Grundy value.
-    · refine' ⟨toLeftMovesAdd (Sum.inr <| toLeftMovesNim ⟨_, Ordinal.natCast_lt.2 h⟩), _⟩
+    · refine ⟨toLeftMovesAdd (Sum.inr <| toLeftMovesNim ⟨_, Ordinal.natCast_lt.2 h⟩), ?_⟩
       have : n ^^^ (u ^^^ n) = u := by rw [Nat.xor_comm u, Nat.xor_cancel_left]
       simpa [hm _ h] using this
 #align pgame.grundy_value_nim_add_nim SetTheory.PGame.grundyValue_nim_add_nim
@@ -405,7 +405,7 @@ theorem nim_add_nim_equiv {n m : ℕ} : nim n + nim m ≈ nim (n ^^^ m) := by
 theorem grundyValue_add (G H : PGame) [G.Impartial] [H.Impartial] {n m : ℕ} (hG : grundyValue G = n)
     (hH : grundyValue H = m) : grundyValue (G + H) = n ^^^ m := by
   rw [← nim_grundyValue (n ^^^ m), grundyValue_eq_iff_equiv]
-  refine' Equiv.trans _ nim_add_nim_equiv
+  refine Equiv.trans ?_ nim_add_nim_equiv
   convert add_congr (equiv_nim_grundyValue G) (equiv_nim_grundyValue H) <;> simp only [hG, hH]
 #align pgame.grundy_value_add SetTheory.PGame.grundyValue_add
 

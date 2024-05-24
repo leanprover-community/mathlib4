@@ -367,10 +367,10 @@ lemma IsInitSeg.exists_initSeg (h𝒜 : IsInitSeg 𝒜 r) (h𝒜₀ : 𝒜.Nonem
     ∃ s : Finset α, s.card = r ∧ 𝒜 = initSeg s := by
   have hs := sup'_mem (ofColex ⁻¹' 𝒜) (LinearOrder.supClosed _) 𝒜 h𝒜₀ toColex
     (fun a ha ↦ by simpa using ha)
-  refine' ⟨_, h𝒜.1 hs, _⟩
+  refine ⟨_, h𝒜.1 hs, ?_⟩
   ext t
   rw [mem_initSeg]
-  refine' ⟨fun p ↦ _, _⟩
+  refine ⟨fun p ↦ ?_, ?_⟩
   · rw [h𝒜.1 p, h𝒜.1 hs]
     exact ⟨rfl, le_sup' _ p⟩
   rintro ⟨cards, le⟩

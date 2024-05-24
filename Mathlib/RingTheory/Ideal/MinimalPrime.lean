@@ -64,9 +64,9 @@ theorem Ideal.exists_minimalPrimes_le [J.IsPrime] (e : I ≤ J) : ∃ p ∈ I.mi
   swap
   · refine' ⟨show J.IsPrime by infer_instance, e⟩
   rintro (c : Set (Ideal R)) hc hc' J' hJ'
-  refine'
+  refine
     ⟨OrderDual.toDual (sInf c),
-      ⟨Ideal.sInf_isPrime_of_isChain ⟨J', hJ'⟩ hc'.symm fun x hx => (hc hx).1, _⟩, _⟩
+      ⟨Ideal.sInf_isPrime_of_isChain ⟨J', hJ'⟩ hc'.symm fun x hx => (hc hx).1, ?_⟩, ?_⟩
   · rw [OrderDual.ofDual_toDual, le_sInf_iff]
     exact fun _ hx => (hc hx).2
   · rintro z hz
@@ -78,11 +78,11 @@ theorem Ideal.exists_minimalPrimes_le [J.IsPrime] (e : I ≤ J) : ∃ p ∈ I.mi
 theorem Ideal.radical_minimalPrimes : I.radical.minimalPrimes = I.minimalPrimes := by
   rw [Ideal.minimalPrimes, Ideal.minimalPrimes]
   ext p
-  refine' ⟨_, _⟩ <;> rintro ⟨⟨a, ha⟩, b⟩
-  · refine' ⟨⟨a, a.radical_le_iff.1 ha⟩, _⟩
+  refine ⟨?_, ?_⟩ <;> rintro ⟨⟨a, ha⟩, b⟩
+  · refine ⟨⟨a, a.radical_le_iff.1 ha⟩, ?_⟩
     simp only [Set.mem_setOf_eq, and_imp] at *
     exact fun _ h2 h3 h4 => b h2 (h2.radical_le_iff.2 h3) h4
-  · refine' ⟨⟨a, a.radical_le_iff.2 ha⟩, _⟩
+  · refine ⟨⟨a, a.radical_le_iff.2 ha⟩, ?_⟩
     simp only [Set.mem_setOf_eq, and_imp] at *
     exact fun _ h2 h3 h4 => b h2 (h2.radical_le_iff.1 h3) h4
 #align ideal.radical_minimal_primes Ideal.radical_minimalPrimes
@@ -144,12 +144,12 @@ theorem Ideal.exists_comap_eq_of_mem_minimalPrimes {I : Ideal S} (f : R →+* S)
   suffices _ by
     have ⟨p', hp₁, hp₂⟩ := Ideal.exists_comap_eq_of_mem_minimalPrimes_of_injective
       (RingHom.kerLift_injective f') (p.map <| Ideal.Quotient.mk <| RingHom.ker f') this
-    refine' ⟨p'.comap <| Ideal.Quotient.mk I, Ideal.IsPrime.comap _, _, _⟩
+    refine ⟨p'.comap <| Ideal.Quotient.mk I, Ideal.IsPrime.comap _, ?_, ?_⟩
     · exact Ideal.mk_ker.symm.trans_le (Ideal.comap_mono bot_le)
     · convert congr_arg (Ideal.comap <| Ideal.Quotient.mk <| RingHom.ker f') hp₂
       rwa [Ideal.comap_map_of_surjective (Ideal.Quotient.mk <| RingHom.ker f')
         Ideal.Quotient.mk_surjective, eq_comm, sup_eq_left]
-  refine' ⟨⟨_, bot_le⟩, _⟩
+  refine ⟨⟨?_, bot_le⟩, ?_⟩
   · apply Ideal.map_isPrime_of_surjective _ this
     exact Ideal.Quotient.mk_surjective
   · rintro q ⟨hq, -⟩ hq'
@@ -159,7 +159,7 @@ theorem Ideal.exists_comap_eq_of_mem_minimalPrimes {I : Ideal S} (f : R →+* S)
     apply Ideal.map_mono
     apply H.2
     · refine' ⟨inferInstance, (Ideal.mk_ker.trans e).symm.trans_le (Ideal.comap_mono bot_le)⟩
-    · refine' (Ideal.comap_mono hq').trans _
+    · refine (Ideal.comap_mono hq').trans ?_
       rw [Ideal.comap_map_of_surjective]
       exacts [sup_le rfl.le this, Ideal.Quotient.mk_surjective]
 #align ideal.exists_comap_eq_of_mem_minimal_primes Ideal.exists_comap_eq_of_mem_minimalPrimes
@@ -177,7 +177,7 @@ theorem Ideal.exists_minimalPrimes_comap_eq {I : Ideal S} (f : R →+* S) (p)
 theorem Ideal.minimal_primes_comap_of_surjective {f : R →+* S} (hf : Function.Surjective f)
     {I J : Ideal S} (h : J ∈ I.minimalPrimes) : J.comap f ∈ (I.comap f).minimalPrimes := by
   have := h.1.1
-  refine' ⟨⟨inferInstance, Ideal.comap_mono h.1.2⟩, _⟩
+  refine ⟨⟨inferInstance, Ideal.comap_mono h.1.2⟩, ?_⟩
   rintro K ⟨hK, e₁⟩ e₂
   have : RingHom.ker f ≤ K := (Ideal.comap_mono bot_le).trans e₁
   rw [← sup_eq_left.mpr this, RingHom.ker_eq_comap_bot, ← Ideal.comap_map_of_surjective f hf]

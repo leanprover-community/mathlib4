@@ -149,7 +149,7 @@ theorem Nondegenerate.exists_injective_of_card_le [Nondegenerate P L] [Fintype P
         add_le_add_iff_right] at this
     have hs₂ : (s.biUnion t)ᶜ.card ≤ 1 := by
       -- At most one line through two points of `s`
-      refine' Finset.card_le_one_iff.mpr @fun p₁ p₂ hp₁ hp₂ => _
+      refine Finset.card_le_one_iff.mpr @fun p₁ p₂ hp₁ hp₂ => ?_
       simp_rw [t, Finset.mem_compl, Finset.mem_biUnion, not_exists, not_and,
         Set.mem_toFinset, Set.mem_setOf_eq, Classical.not_not] at hp₁ hp₂
       obtain ⟨l₁, l₂, hl₁, hl₂, hl₃⟩ :=
@@ -389,9 +389,9 @@ theorem lineCount_eq_lineCount [Finite P] [Finite L] (p q : P) : lineCount L p =
   have hp₁ : lineCount L p₁ = n := (HasLines.lineCount_eq_pointCount h h₁₃).trans hl₃
   have hl₂ : pointCount P l₂ = n := (HasLines.lineCount_eq_pointCount h h₁₂).symm.trans hp₁
   suffices ∀ p : P, lineCount L p = n by exact (this p).trans (this q).symm
-  refine' fun p =>
-    or_not.elim (fun h₂ => _) fun h₂ => (HasLines.lineCount_eq_pointCount h h₂).trans hl₂
-  refine' or_not.elim (fun h₃ => _) fun h₃ => (HasLines.lineCount_eq_pointCount h h₃).trans hl₃
+  refine fun p =>
+    or_not.elim (fun h₂ => ?_) fun h₂ => (HasLines.lineCount_eq_pointCount h h₂).trans hl₂
+  refine or_not.elim (fun h₃ => ?_) fun h₃ => (HasLines.lineCount_eq_pointCount h h₃).trans hl₃
   rw [(eq_or_eq h₂ h₂₂ h₃ h₂₃).resolve_right fun h =>
       h₃₃ ((congr_arg (Membership.mem p₃) h).mp h₃₂)]
 #align configuration.projective_plane.line_count_eq_line_count Configuration.ProjectivePlane.lineCount_eq_lineCount
@@ -487,7 +487,7 @@ theorem card_points [Fintype P] [Finite L] : Fintype.card P = order P L ^ 2 + or
       rw [← Fintype.card_congr (Equiv.subtypeSubtypeEquivSubtypeInter (· ∈ l.val) (· ≠ p)),
         Fintype.card_subtype_compl fun x : Subtype (· ∈ l.val) => x.val = p, ←
         Nat.card_eq_fintype_card]
-      refine' tsub_eq_of_eq_add ((pointCount_eq P l.1).trans _)
+      refine tsub_eq_of_eq_add ((pointCount_eq P l.1).trans ?_)
       rw [← Fintype.card_subtype_eq (⟨p, l.2⟩ : { q : P // q ∈ l.1 })]
       simp_rw [Subtype.ext_iff_val]
     simp_rw [← h1, Fintype.card_congr ϕ, Fintype.card_sigma, h2, Finset.sum_const, Finset.card_univ]

@@ -688,7 +688,7 @@ theorem le_one_iff_exists_coeIdeal {J : FractionalIdeal S P} :
     J ≤ (1 : FractionalIdeal S P) ↔ ∃ I : Ideal R, ↑I = J := by
   constructor
   · intro hJ
-    refine' ⟨⟨⟨⟨{ x : R | algebraMap R P x ∈ J }, _⟩, _⟩, _⟩, _⟩
+    refine ⟨⟨⟨⟨{ x : R | algebraMap R P x ∈ J }, ?_⟩, ?_⟩, ?_⟩, ?_⟩
     · intro a b ha hb
       rw [mem_setOf, RingHom.map_add]
       exact J.val.add_mem ha hb

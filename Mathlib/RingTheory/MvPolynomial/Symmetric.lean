@@ -243,7 +243,7 @@ theorem support_esymm'' (n : ℕ) [DecidableEq σ] [Nontrivial R] :
         (Finsupp.single (∑ i : σ in t, Finsupp.single i 1) (1 : R)).support := by
   rw [esymm_eq_sum_monomial]
   simp only [← single_eq_monomial]
-  refine' Finsupp.support_sum_eq_biUnion (powersetCard n (univ : Finset σ)) _
+  refine Finsupp.support_sum_eq_biUnion (powersetCard n (univ : Finset σ)) ?_
   intro s t hst
   rw [disjoint_left, Finsupp.support_single_ne_zero _ one_ne_zero]
   rw [Finsupp.support_single_ne_zero _ one_ne_zero]
@@ -288,7 +288,7 @@ theorem degrees_esymm [Nontrivial R] (n : ℕ) (hpos : 0 < n) (hn : n ≤ Fintyp
     rw [degrees_def, support_esymm, sup_image, this]
     have : ((powersetCard n univ).sup (fun (x : Finset σ) => x)).val
         = sup (powersetCard n univ) val := by
-      refine' comp_sup_eq_sup_comp _ _ _
+      refine comp_sup_eq_sup_comp _ ?_ ?_
       · intros
         simp only [union_val, sup_eq_union]
         congr

@@ -100,7 +100,7 @@ theorem isSheafFor_bind (P : Cᵒᵖ ⥤ Type v) (U : Sieve X) (B : ∀ ⦃Y⦄ 
       conv_lhs at h => congr; rw [assoc, assoc]
       rw [h]
       simp only [op_comp, assoc, FunctorToTypes.map_comp_apply]
-  refine' ⟨hU.amalgamate t hT, _, _⟩
+  refine ⟨hU.amalgamate t hT, ?_, ?_⟩
   · rintro Z _ ⟨Y, f, g, hg, hf, rfl⟩
     rw [op_comp, FunctorToTypes.map_comp_apply, Presieve.IsSheafFor.valid_glue _ _ _ hg]
     apply ht hg _ hf
@@ -144,7 +144,7 @@ theorem isSheafFor_trans (P : Cᵒᵖ ⥤ Type v) (R S : Sieve X)
         rw [pullback_apply, ← comm]
         simp [hl]
       · intro a
-        refine' ⟨Z, 𝟙 Z, _, a, _⟩
+        refine ⟨Z, 𝟙 Z, _, a, ?_⟩
         simp [hf]
     rw [this]
     apply hR' hf

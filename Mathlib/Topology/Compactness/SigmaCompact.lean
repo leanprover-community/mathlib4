@@ -293,9 +293,9 @@ theorem countable_cover_nhdsWithin_of_sigma_compact {f : X → Set X} {s : Set X
   simp only [nhdsWithin, mem_inf_principal] at hf
   choose t ht hsub using fun n =>
     ((isCompact_compactCovering X n).inter_right hs).elim_nhds_subcover _ fun x hx => hf x hx.right
-  refine'
+  refine
     ⟨⋃ n, (t n : Set X), iUnion_subset fun n x hx => (ht n x hx).2,
-      countable_iUnion fun n => (t n).countable_toSet, fun x hx => mem_iUnion₂.2 _⟩
+      countable_iUnion fun n => (t n).countable_toSet, fun x hx => mem_iUnion₂.2 ?_⟩
   rcases exists_mem_compactCovering x with ⟨n, hn⟩
   rcases mem_iUnion₂.1 (hsub n ⟨hn, hx⟩) with ⟨y, hyt : y ∈ t n, hyf : x ∈ s → x ∈ f y⟩
   exact ⟨y, mem_iUnion.2 ⟨n, hyt⟩, hyf hx⟩

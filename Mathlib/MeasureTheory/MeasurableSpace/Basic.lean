@@ -485,7 +485,7 @@ theorem measurable_to_bool {f : α → Bool} (h : MeasurableSet (f ⁻¹' {true}
 #align measurable_to_bool measurable_to_bool
 
 theorem measurable_to_prop {f : α → Prop} (h : MeasurableSet (f ⁻¹' {True})) : Measurable f := by
-  refine' measurable_to_countable' fun x => _
+  refine measurable_to_countable' fun x => ?_
   by_cases hx : x
   · simpa [hx] using h
   · simpa only [hx, ← preimage_compl, Prop.compl_singleton, not_true, preimage_singleton_false]
@@ -500,7 +500,7 @@ theorem measurable_findGreatest' {p : α → ℕ → Prop} [∀ x, DecidablePred
 
 theorem measurable_findGreatest {p : α → ℕ → Prop} [∀ x, DecidablePred (p x)] {N}
     (hN : ∀ k ≤ N, MeasurableSet { x | p x k }) : Measurable fun x => Nat.findGreatest (p x) N := by
-  refine' measurable_findGreatest' fun k hk => _
+  refine measurable_findGreatest' fun k hk => ?_
   simp only [Nat.findGreatest_eq_iff, setOf_and, setOf_forall, ← compl_setOf]
   repeat' apply_rules [MeasurableSet.inter, MeasurableSet.const, MeasurableSet.iInter,
     MeasurableSet.compl, hN] <;> try intros
@@ -508,7 +508,7 @@ theorem measurable_findGreatest {p : α → ℕ → Prop} [∀ x, DecidablePred 
 
 theorem measurable_find {p : α → ℕ → Prop} [∀ x, DecidablePred (p x)] (hp : ∀ x, ∃ N, p x N)
     (hm : ∀ k, MeasurableSet { x | p x k }) : Measurable fun x => Nat.find (hp x) := by
-  refine' measurable_to_nat fun x => _
+  refine measurable_to_nat fun x => ?_
   rw [preimage_find_eq_disjointed (fun k => {x | p x k})]
   exact MeasurableSet.disjointed hm _
 #align measurable_find measurable_find
@@ -1070,7 +1070,7 @@ variable (π)
 @[measurability]
 theorem measurable_piEquivPiSubtypeProd_symm (p : δ → Prop) [DecidablePred p] :
     Measurable (Equiv.piEquivPiSubtypeProd p π).symm := by
-  refine' measurable_pi_iff.2 fun j => _
+  refine measurable_pi_iff.2 fun j => ?_
   by_cases hj : p j
   · simp only [hj, dif_pos, Equiv.piEquivPiSubtypeProd_symm_apply]
     have : Measurable fun (f : ∀ i : { x // p x }, π i.1) => f ⟨j, hj⟩ :=
@@ -1292,7 +1292,7 @@ namespace MeasurableSpace
     generateFrom {s} = MeasurableSpace.comap (· ∈ s) ⊤ := by
   classical
   letI : MeasurableSpace α := generateFrom {s}
-  refine' le_antisymm (generateFrom_le fun t ht => ⟨{True}, trivial, by simp [ht.symm]⟩) _
+  refine le_antisymm (generateFrom_le fun t ht => ⟨{True}, trivial, by simp [ht.symm]⟩) ?_
   rintro _ ⟨u, -, rfl⟩
   exact (show MeasurableSet s from GenerateMeasurable.basic _ <| mem_singleton s).mem trivial
 #align measurable_space.generate_from_singleton MeasurableSpace.generateFrom_singleton
@@ -1365,7 +1365,7 @@ theorem measurable_rangeSplitting (hf : MeasurableEmbedding f) :
 
 theorem measurable_extend (hf : MeasurableEmbedding f) {g : α → γ} {g' : β → γ} (hg : Measurable g)
     (hg' : Measurable g') : Measurable (extend f g g') := by
-  refine' measurable_of_restrict_of_restrict_compl hf.measurableSet_range _ _
+  refine measurable_of_restrict_of_restrict_compl hf.measurableSet_range ?_ ?_
   · rw [restrict_extend_range]
     simpa only [rangeSplitting] using hg.comp hf.measurable_rangeSplitting
   · rw [restrict_extend_compl_range]
@@ -2058,7 +2058,7 @@ instance inf_isMeasurablyGenerated (f g : Filter α) [IsMeasurablyGenerated f]
 
 theorem principal_isMeasurablyGenerated_iff {s : Set α} :
     IsMeasurablyGenerated (𝓟 s) ↔ MeasurableSet s := by
-  refine' ⟨_, fun hs => ⟨fun t ht => ⟨s, mem_principal_self s, hs, ht⟩⟩⟩
+  refine ⟨?_, fun hs => ⟨fun t ht => ⟨s, mem_principal_self s, hs, ht⟩⟩⟩
   rintro ⟨hs⟩
   rcases hs (mem_principal_self s) with ⟨t, ht, htm, hts⟩
   have : t = s := hts.antisymm ht

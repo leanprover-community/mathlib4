@@ -93,11 +93,11 @@ theorem exists_integer_multiple (a : S) : ∃ b : M, IsInteger R ((b : R) • a)
 theorem exist_integer_multiples {ι : Type*} (s : Finset ι) (f : ι → S) :
     ∃ b : M, ∀ i ∈ s, IsLocalization.IsInteger R ((b : R) • f i) := by
   haveI := Classical.propDecidable
-  refine' ⟨∏ i in s, (sec M (f i)).2, fun i hi => ⟨_, _⟩⟩
+  refine ⟨∏ i in s, (sec M (f i)).2, fun i hi => ⟨?_, ?_⟩⟩
   · exact (∏ j in s.erase i, (sec M (f j)).2) * (sec M (f i)).1
   rw [RingHom.map_mul, sec_spec', ← mul_assoc, ← (algebraMap R S).map_mul, ← Algebra.smul_def]
   congr 2
-  refine' _root_.trans _ (map_prod (Submonoid.subtype M) _ _).symm
+  refine _root_.trans ?_ (map_prod (Submonoid.subtype M) _ _).symm
   rw [mul_comm,Submonoid.coe_finset_prod,
     -- Porting note: explicitly supplied `f`
     ← Finset.prod_insert (f := fun i => ((sec M (f i)).snd : R)) (s.not_mem_erase i),

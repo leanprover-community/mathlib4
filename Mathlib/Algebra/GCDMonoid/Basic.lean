@@ -173,7 +173,7 @@ theorem normalize_eq_normalize {a b : α} (hab : a ∣ b) (hba : b ∣ a) :
     normalize a = normalize b := by
   nontriviality α
   rcases associated_of_dvd_dvd hab hba with ⟨u, rfl⟩
-  refine' by_cases (by rintro rfl; simp only [zero_mul]) fun ha : a ≠ 0 => _
+  refine by_cases (by rintro rfl; simp only [zero_mul]) fun ha : a ≠ 0 => ?_
   suffices a * ↑(normUnit a) = a * ↑u * ↑(normUnit a) * ↑u⁻¹ by
     simpa only [normalize_apply, mul_assoc, normUnit_mul ha u.ne_zero, normUnit_coe_units]
   calc
@@ -692,7 +692,7 @@ theorem isUnit_gcd_of_eq_mul_gcd {α : Type*} [CancelCommMonoidWithZero α] [GCD
     {x y x' y' : α} (ex : x = gcd x y * x') (ey : y = gcd x y * y') (h : gcd x y ≠ 0) :
     IsUnit (gcd x' y') := by
   rw [← associated_one_iff_isUnit]
-  refine' Associated.of_mul_left _ (Associated.refl <| gcd x y) h
+  refine Associated.of_mul_left ?_ (Associated.refl <| gcd x y) h
   convert (gcd_mul_left' (gcd x y) x' y').symm using 1
   rw [← ex, ← ey, mul_one]
 #align is_unit_gcd_of_eq_mul_gcd isUnit_gcd_of_eq_mul_gcd

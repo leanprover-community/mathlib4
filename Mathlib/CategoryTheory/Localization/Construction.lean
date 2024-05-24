@@ -190,12 +190,12 @@ theorem fac : W.Q ⋙ lift G hG = G :=
 
 theorem uniq (G₁ G₂ : W.Localization ⥤ D) (h : W.Q ⋙ G₁ = W.Q ⋙ G₂) : G₁ = G₂ := by
   suffices h' : Quotient.functor _ ⋙ G₁ = Quotient.functor _ ⋙ G₂ by
-    refine' Functor.ext _ _
+    refine Functor.ext ?_ ?_
     · rintro ⟨⟨X⟩⟩
       apply Functor.congr_obj h
     · rintro ⟨⟨X⟩⟩ ⟨⟨Y⟩⟩ ⟨f⟩
       apply Functor.congr_hom h'
-  refine' Paths.ext_functor _ _
+  refine Paths.ext_functor ?_ ?_
   · ext X
     cases X
     apply Functor.congr_obj h
@@ -204,7 +204,7 @@ theorem uniq (G₁ G₂ : W.Localization ⥤ D) (h : W.Q ⋙ G₁ = W.Q ⋙ G₂
     · have hw : W.Q.map w = (wIso w hw).hom := rfl
       have hw' := Functor.congr_hom h w
       simp only [Functor.comp_map, hw] at hw'
-      refine' Functor.congr_inv_of_congr_hom _ _ _ _ _ hw'
+      refine Functor.congr_inv_of_congr_hom _ _ _ ?_ ?_ hw'
       all_goals apply Functor.congr_obj h
 #align category_theory.localization.construction.uniq CategoryTheory.Localization.Construction.uniq
 
@@ -249,7 +249,7 @@ theorem morphismProperty_is_top (P : MorphismProperty W.Localization)
     · simpa only [Functor.map_id] using hP₁ (𝟙 X₁.obj)
     · let p' : X₁ ⟶X₂ := p
       rw [show p'.cons g = p' ≫ Quiver.Hom.toPath g by rfl, G.map_comp]
-      refine' P.comp_mem _ _ hp _
+      refine P.comp_mem _ _ hp ?_
       rcases g with (g | ⟨g, hg⟩)
       · apply hP₁
       · apply hP₂

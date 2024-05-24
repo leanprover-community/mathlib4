@@ -188,9 +188,9 @@ theorem lift_projectQuotient [HasColimits C] [PreservesColimits S] {A : Costruct
     (by
       intro P f hf q hq
       fapply Subobject.mk_eq_mk_of_comm
-      · refine' (Iso.op (isoMk _ _) : _ ≅ op (unop P))
+      · refine (Iso.op (isoMk ?_ ?_) : _ ≅ op (unop P))
         · exact (Subobject.underlyingIso f.unop.left.op).unop
-        · refine' (cancel_epi (S.map f.unop.left)).1 _
+        · refine (cancel_epi (S.map f.unop.left)).1 ?_
           simpa [← Category.assoc, ← S.map_comp] using hq
       · exact Quiver.Hom.unop_inj (by aesop_cat))
 #align category_theory.costructured_arrow.lift_project_quotient CategoryTheory.CostructuredArrow.lift_projectQuotient

@@ -104,7 +104,7 @@ theorem eq_toGHSpace_iff {X : Type u} [MetricSpace X] [CompactSpace X] [Nonempty
     {p : NonemptyCompacts ℓ_infty_ℝ} :
     ⟦p⟧ = toGHSpace X ↔ ∃ Ψ : X → ℓ_infty_ℝ, Isometry Ψ ∧ range Ψ = p := by
   simp only [toGHSpace, Quotient.eq]
-  refine' ⟨fun h => _, _⟩
+  refine ⟨fun h => ?_, ?_⟩
   · rcases Setoid.symm h with ⟨e⟩
     have f := (kuratowskiEmbedding.isometry X).isometryEquivOnRange.trans e
     use fun x => f x, isometry_subtype_coe.comp f.isometry
@@ -238,7 +238,7 @@ theorem ghDist_le_hausdorffDist {X : Type u} [MetricSpace X] [CompactSpace X] [N
   have BY : ⟦B⟧ = toGHSpace Y := by
     rw [eq_toGHSpace_iff]
     exact ⟨fun x => F (Ψ' x), (kuratowskiEmbedding.isometry _).comp IΨ', range_comp _ _⟩
-  refine' csInf_le ⟨0, _⟩ _
+  refine csInf_le ⟨0, ?_⟩ ?_
   · simp only [lowerBounds, mem_image, mem_prod, mem_setOf_eq, Prod.exists, and_imp,
       forall_exists_index]
     intro t _ _ _ _ ht
@@ -404,7 +404,7 @@ theorem ghDist_eq_hausdorffDist (X : Type u) [MetricSpace X] [CompactSpace X] [N
   let F := kuratowskiEmbedding (OptimalGHCoupling X Y)
   let Φ := F ∘ optimalGHInjl X Y
   let Ψ := F ∘ optimalGHInjr X Y
-  refine' ⟨Φ, Ψ, _, _, _⟩
+  refine ⟨Φ, Ψ, ?_, ?_, ?_⟩
   · exact (kuratowskiEmbedding.isometry _).comp (isometry_optimalGHInjl X Y)
   · exact (kuratowskiEmbedding.isometry _).comp (isometry_optimalGHInjr X Y)
   · rw [← image_univ, ← image_univ, image_comp F, image_univ, image_comp F (optimalGHInjr X Y),
@@ -577,7 +577,7 @@ isometric up to `ε₂`, then the Gromov-Hausdorff distance between the spaces i
 theorem ghDist_le_of_approx_subsets {s : Set X} (Φ : s → Y) {ε₁ ε₂ ε₃ : ℝ}
     (hs : ∀ x : X, ∃ y ∈ s, dist x y ≤ ε₁) (hs' : ∀ x : Y, ∃ y : s, dist x (Φ y) ≤ ε₃)
     (H : ∀ x y : s, |dist x y - dist (Φ x) (Φ y)| ≤ ε₂) : ghDist X Y ≤ ε₁ + ε₂ / 2 + ε₃ := by
-  refine' le_of_forall_pos_le_add fun δ δ0 => _
+  refine le_of_forall_pos_le_add fun δ δ0 => ?_
   rcases exists_mem_of_nonempty X with ⟨xX, _⟩
   rcases hs xX with ⟨xs, hxs, Dxs⟩
   have sne : s.Nonempty := ⟨xs, hxs⟩
@@ -624,7 +624,7 @@ theorem ghDist_le_of_approx_subsets {s : Set X} (Φ : s → Y) {ε₁ ε₂ ε�
     refine' hausdorffDist_le_of_mem_dist this (fun x _ => hs x) fun x _ =>
       ⟨x, mem_univ _, by simpa only [dist_self]⟩
   have : hausdorffDist (Fl '' s) (Fr '' range Φ) ≤ ε₂ / 2 + δ := by
-    refine' hausdorffDist_le_of_mem_dist (by linarith) _ _
+    refine hausdorffDist_le_of_mem_dist (by linarith) ?_ ?_
     · intro x' hx'
       rcases (Set.mem_image _ _ _).1 hx' with ⟨x, ⟨x_in_s, xx'⟩⟩
       rw [← xx']
@@ -797,7 +797,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
     is `ε`-dense and has cardinality at most `K n`. Encoding the mutual distances of points
     in `s p`, up to `ε`, we will get a map `F` associating to `p` finitely many data, and making
     it possible to reconstruct `p` up to `ε`. This is enough to prove total boundedness. -/
-  refine' Metric.totallyBounded_of_finite_discretization fun δ δpos => _
+  refine Metric.totallyBounded_of_finite_discretization fun δ δpos => ?_
   let ε := 1 / 5 * δ
   have εpos : 0 < ε := mul_pos (by norm_num) δpos
   -- choose `n` for which `u n < ε`
@@ -833,7 +833,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
     ⟨⟨N p, lt_of_le_of_lt (hN p) (Nat.lt_succ_self _)⟩, fun a b =>
       ⟨min M ⌊ε⁻¹ * dist ((E p).symm a) ((E p).symm b)⌋₊,
         (min_le_left _ _).trans_lt (Nat.lt_succ_self _)⟩⟩
-  refine' ⟨_, _, fun p => F p, _⟩;
+  refine ⟨_, ?_, fun p => F p, ?_⟩;
   · infer_instance
   -- It remains to show that if `F p = F q`, then `p` and `q` are `ε`-close
   rintro ⟨p, pt⟩ ⟨q, qt⟩ hpq
@@ -844,7 +844,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
     -- to prove the main inequality, argue that `s p` is `ε`-dense in `p`, and `s q` is `ε`-dense
     -- in `q`, and `s p` and `s q` are almost isometric. Then closeness follows
     -- from `ghDist_le_of_approx_subsets`
-    refine' ghDist_le_of_approx_subsets Φ _ _ _
+    refine ghDist_le_of_approx_subsets Φ ?_ ?_ ?_
     · show ∀ x : p.Rep, ∃ y ∈ s p, dist x y ≤ ε
       -- by construction, `s p` is `ε`-dense
       intro x
@@ -894,10 +894,10 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
             congr
           _ = min M ⌊ε⁻¹ * dist x y⌋₊ := by simp only [(E p).symm_apply_apply]
           _ = ⌊ε⁻¹ * dist x y⌋₊ := by
-            refine' min_eq_right (Nat.floor_mono _)
-            refine' mul_le_mul_of_nonneg_left (le_trans _ (le_max_left _ _)) (inv_pos.2 εpos).le
+            refine min_eq_right (Nat.floor_mono ?_)
+            refine mul_le_mul_of_nonneg_left (le_trans ?_ (le_max_left _ _)) (inv_pos.2 εpos).le
             change dist (x : p.Rep) y ≤ C
-            refine' (dist_le_diam_of_mem isCompact_univ.isBounded (mem_univ _) (mem_univ _)).trans _
+            refine (dist_le_diam_of_mem isCompact_univ.isBounded (mem_univ _) (mem_univ _)).trans ?_
             exact hdiam p pt
       -- Express `dist (Φ x) (Φ y)` in terms of `F q`
       have Aq : ((F q).2 ⟨i, hiq⟩ ⟨j, hjq⟩).1 = ⌊ε⁻¹ * dist (Ψ x) (Ψ y)⌋₊ :=
@@ -907,8 +907,8 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
             exact congr_arg₂ (Fin.val <| (F q).2 · ·) (Fin.ext i') (Fin.ext j')
           _ = min M ⌊ε⁻¹ * dist (Ψ x) (Ψ y)⌋₊ := by simp only [(E q).symm_apply_apply]
           _ = ⌊ε⁻¹ * dist (Ψ x) (Ψ y)⌋₊ := by
-            refine' min_eq_right (Nat.floor_mono _)
-            refine' mul_le_mul_of_nonneg_left (le_trans _ (le_max_left _ _)) (inv_pos.2 εpos).le
+            refine min_eq_right (Nat.floor_mono ?_)
+            refine mul_le_mul_of_nonneg_left (le_trans ?_ (le_max_left _ _)) (inv_pos.2 εpos).le
             change dist (Ψ x : q.Rep) (Ψ y) ≤ C
             refine (dist_le_diam_of_mem isCompact_univ.isBounded (mem_univ _) (mem_univ _)).trans ?_
             exact hdiam q qt

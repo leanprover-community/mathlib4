@@ -55,7 +55,7 @@ theorem of_bot : IsPGroup p (⊥ : Subgroup G) :=
 
 theorem iff_card [Fact p.Prime] [Fintype G] : IsPGroup p G ↔ ∃ n : ℕ, card G = p ^ n := by
   have hG : card G ≠ 0 := card_ne_zero
-  refine' ⟨fun h => _, fun ⟨n, hn⟩ => of_card hn⟩
+  refine ⟨fun h => ?_, fun ⟨n, hn⟩ => of_card hn⟩
   suffices ∀ q ∈ Nat.factors (card G), q = p by
     use (card G).factors.length
     rw [← List.prod_replicate, ← List.eq_replicate_of_mem this, Nat.prod_factors hG]
@@ -195,12 +195,12 @@ theorem card_modEq_card_fixedPoints [Fintype (fixedPoints G α)] :
         card { y // (Quotient.mk'' y : Quotient (orbitRel G α)) = Quotient.mk'' x } =
           card (orbit G x) :=
       fun x => by simp only [Quotient.eq'']; congr
-    refine'
+    refine
       Eq.symm
         (Finset.sum_bij_ne_zero (fun a _ _ => Quotient.mk'' a.1) (fun _ _ _ => Finset.mem_univ _)
           (fun a₁ _ _ a₂ _ _ h =>
             Subtype.eq (mem_fixedPoints'.mp a₂.2 a₁.1 (Quotient.exact' h)))
-          (fun b => Quotient.inductionOn' b fun b _ hb => _) fun a ha _ => by
+          (fun b => Quotient.inductionOn' b fun b _ hb => ?_) fun a ha _ => by
           rw [key, mem_fixedPoints_iff_card_orbit_eq_one.mp a.2])
     obtain ⟨k, hk⟩ := hG.card_orbit b
     have : k = 0 :=

@@ -168,7 +168,7 @@ theorem age.jointEmbedding : JointEmbedding (L.age M) := fun _ hN _ hP =>
 classes). -/
 theorem age.countable_quotient [h : Countable M] : (Quotient.mk' '' L.age M).Countable := by
   classical
-  refine' (congr_arg _ (Set.ext <| Quotient.forall.2 fun N => _)).mp
+  refine (congr_arg _ (Set.ext <| Quotient.forall.2 fun N => ?_)).mp
     (countable_range fun s : Finset M => ⟦⟨closure L (s : Set M), inferInstance⟩⟧)
   constructor
   · rintro ⟨s, hs⟩
@@ -199,7 +199,7 @@ theorem age_directLimit {ι : Type w} [Preorder ι] [IsDirected ι (· ≤ ·)] 
     refine ⟨i, Mfg, ⟨e'.comp ((Substructure.inclusion ?_).comp e.equivRange.toEmbedding)⟩⟩
     rw [← hs, closure_le]
     intro x hx
-    refine' ⟨f (out x).1 i (hi (out x).1 (Finset.mem_image_of_mem _ hx)) (out x).2, _⟩
+    refine ⟨f (out x).1 i (hi (out x).1 (Finset.mem_image_of_mem _ hx)) (out x).2, ?_⟩
     rw [Embedding.coe_toHom, DirectLimit.of_apply, @Quotient.mk_eq_iff_out _ (_),
       DirectLimit.equiv_iff G f _ (hi (out x).1 (Finset.mem_image_of_mem _ hx)),
       DirectedSystem.map_self]
@@ -286,11 +286,11 @@ theorem IsUltrahomogeneous.amalgamation_age (h : L.IsUltrahomogeneous M) :
   obtain ⟨g, hg⟩ := h (PM.comp NP).toHom.range (Nfg.range _)
     ((QM.comp NQ).comp (PM.comp NP).equivRange.symm.toEmbedding)
   let s := (g.toHom.comp PM.toHom).range ⊔ QM.toHom.range
-  refine' ⟨Bundled.of s,
+  refine ⟨Bundled.of s,
     Embedding.comp (Substructure.inclusion le_sup_left)
       (g.toEmbedding.comp PM).equivRange.toEmbedding,
     Embedding.comp (Substructure.inclusion le_sup_right) QM.equivRange.toEmbedding,
-    ⟨(fg_iff_structure_fg _).1 (FG.sup (Pfg.range _) (Qfg.range _)), ⟨Substructure.subtype _⟩⟩, _⟩
+    ⟨(fg_iff_structure_fg _).1 (FG.sup (Pfg.range _) (Qfg.range _)), ⟨Substructure.subtype _⟩⟩, ?_⟩
   ext n
   apply Subtype.ext
   have hgn := (Embedding.ext_iff.1 hg) ((PM.comp NP).equivRange n)

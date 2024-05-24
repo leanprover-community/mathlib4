@@ -1108,7 +1108,7 @@ variable [DivisionMonoid α] {s t : Finset α}
 theorem coe_zpow (s : Finset α) : ∀ n : ℤ, ↑(s ^ n) = (s : Set α) ^ n
   | Int.ofNat n => coe_pow _ _
   | Int.negSucc n => by
-    refine' (coe_inv _).trans _
+    refine (coe_inv _).trans ?_
     exact congr_arg Inv.inv (coe_pow _ _)
 #align finset.coe_zpow Finset.coe_zpow
 #align finset.coe_zsmul Finset.coe_zsmul
@@ -1134,7 +1134,7 @@ theorem isUnit_iff : IsUnit s ↔ ∃ a, s = {a} ∧ IsUnit a := by
   constructor
   · rintro ⟨u, rfl⟩
     obtain ⟨a, b, ha, hb, h⟩ := Finset.mul_eq_one_iff.1 u.mul_inv
-    refine' ⟨a, ha, ⟨a, b, h, singleton_injective _⟩, rfl⟩
+    refine ⟨a, ha, ⟨a, b, h, singleton_injective ?_⟩, rfl⟩
     rw [← singleton_mul_singleton, ← ha, ← hb]
     exact u.inv_mul
   · rintro ⟨a, rfl, ha⟩

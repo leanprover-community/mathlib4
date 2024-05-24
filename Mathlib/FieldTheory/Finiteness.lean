@@ -36,10 +36,10 @@ theorem iff_rank_lt_aleph0 : IsNoetherian K V ↔ Module.rank K V < ℵ₀ := by
   · intro
     exact (Basis.ofVectorSpaceIndex.linearIndependent K V).set_finite_of_isNoetherian
   · intro hbfinite
-    refine'
+    refine
       @isNoetherian_of_linearEquiv K (⊤ : Submodule K V) V _ _ _ _ _ (LinearEquiv.ofTop _ rfl)
-        (id _)
-    refine' isNoetherian_of_fg_of_noetherian _ ⟨Set.Finite.toFinset hbfinite, _⟩
+        (id ?_)
+    refine isNoetherian_of_fg_of_noetherian _ ⟨Set.Finite.toFinset hbfinite, ?_⟩
     rw [Set.Finite.coe_toFinset, ← b.span_eq, Basis.coe_ofVectorSpace, Subtype.range_coe]
 #align is_noetherian.iff_rank_lt_aleph_0 IsNoetherian.iff_rank_lt_aleph0
 

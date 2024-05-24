@@ -75,7 +75,7 @@ theorem irrational_nrt_of_n_not_dvd_multiplicity {x : ℝ} (n : ℕ) {m : ℤ} (
   · rw [eq_comm, pow_zero, ← Int.cast_one, Int.cast_inj] at hxr
     simp [hxr, multiplicity.one_right (mt isUnit_iff_dvd_one.1
       (mt Int.natCast_dvd_natCast.1 hp.1.not_dvd_one)), Nat.zero_mod] at hv
-  refine' irrational_nrt_of_notint_nrt _ _ hxr _ hnpos
+  refine irrational_nrt_of_notint_nrt _ _ hxr ?_ hnpos
   rintro ⟨y, rfl⟩
   rw [← Int.cast_pow, Int.cast_inj] at hxr
   subst m
@@ -355,7 +355,7 @@ theorem of_int_mul (m : ℤ) (h : Irrational (m * x)) : Irrational x :=
 
 theorem mul_int (h : Irrational x) {m : ℤ} (hm : m ≠ 0) : Irrational (x * m) := by
   rw [← cast_intCast]
-  refine' h.mul_rat _
+  refine h.mul_rat ?_
   rwa [Int.cast_ne_zero]
 #align irrational.mul_int Irrational.mul_int
 
@@ -431,7 +431,7 @@ theorem int_div (h : Irrational x) {m : ℤ} (hm : m ≠ 0) : Irrational (m / x)
 
 theorem div_int (h : Irrational x) {m : ℤ} (hm : m ≠ 0) : Irrational (x / m) := by
   rw [← cast_intCast]
-  refine' h.div_rat _
+  refine h.div_rat ?_
   rwa [Int.cast_ne_zero]
 #align irrational.div_int Irrational.div_int
 
@@ -503,7 +503,7 @@ theorem one_lt_natDegree_of_irrational_root (hx : Irrational x) (p_nonzero : p �
   · obtain rfl : b = 0 := by simpa
     simp at p_nonzero
   · rw [mul_comm, ← eq_div_iff_mul_eq, eq_comm] at this
-    · refine' hx ⟨-b / a, _⟩
+    · refine hx ⟨-b / a, ?_⟩
       assumption_mod_cast
     · assumption_mod_cast
 #align one_lt_nat_degree_of_irrational_root one_lt_natDegree_of_irrational_root

@@ -34,7 +34,7 @@ theorem surjective_respectsIso : RespectsIso surjective := by
 #align ring_hom.surjective_respects_iso RingHom.surjective_respectsIso
 
 theorem surjective_stableUnderBaseChange : StableUnderBaseChange surjective := by
-  refine' StableUnderBaseChange.mk _ surjective_respectsIso _
+  refine StableUnderBaseChange.mk _ surjective_respectsIso ?_
   classical
   introv h x
   induction x using TensorProduct.induction_on with

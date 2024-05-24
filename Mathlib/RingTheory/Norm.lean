@@ -316,7 +316,7 @@ theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L] [IsSep
     [FiniteDimensional K L] {x : L} (hx : IsIntegral R x) : IsIntegral R (norm K x) := by
   have hx' : IsIntegral K x := hx.tower_top
   rw [← isIntegral_algebraMap_iff (algebraMap K (AlgebraicClosure L)).injective, norm_eq_prod_roots]
-  · refine' (IsIntegral.multiset_prod fun y hy => _).pow _
+  · refine (IsIntegral.multiset_prod fun y hy => ?_).pow _
     rw [mem_roots_map (minpoly.ne_zero hx')] at hy
     use minpoly R x, minpoly.monic hx
     rw [← aeval_def] at hy ⊢

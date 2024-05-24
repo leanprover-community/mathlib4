@@ -497,10 +497,10 @@ theorem iIndepSet.indep_generateFrom_of_disjoint [IsMarkovKernel κ] {s : ι →
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s κ μ) (S T : Set ι) (hST : Disjoint S T) :
     Indep (generateFrom { t | ∃ n ∈ S, s n = t }) (generateFrom { t | ∃ k ∈ T, s k = t }) κ μ := by
   rw [← generateFrom_piiUnionInter_singleton_left, ← generateFrom_piiUnionInter_singleton_left]
-  refine'
+  refine
     IndepSets.indep'
-      (fun t ht => generateFrom_piiUnionInter_le _ _ _ _ (measurableSet_generateFrom ht))
-      (fun t ht => generateFrom_piiUnionInter_le _ _ _ _ (measurableSet_generateFrom ht)) _ _ _
+      (fun t ht => generateFrom_piiUnionInter_le _ ?_ _ _ (measurableSet_generateFrom ht))
+      (fun t ht => generateFrom_piiUnionInter_le _ ?_ _ _ (measurableSet_generateFrom ht)) ?_ ?_ ?_
   · exact fun k => generateFrom_le fun t ht => (Set.mem_singleton_iff.1 ht).symm ▸ hsm k
   · exact fun k => generateFrom_le fun t ht => (Set.mem_singleton_iff.1 ht).symm ▸ hsm k
   · exact isPiSystem_piiUnionInter _ (fun k => IsPiSystem.singleton _) _
@@ -510,10 +510,10 @@ theorem iIndepSet.indep_generateFrom_of_disjoint [IsMarkovKernel κ] {s : ι →
 theorem indep_iSup_of_disjoint [IsMarkovKernel κ] {m : ι → MeasurableSpace Ω}
     (h_le : ∀ i, m i ≤ _mΩ) (h_indep : iIndep m κ μ) {S T : Set ι} (hST : Disjoint S T) :
     Indep (⨆ i ∈ S, m i) (⨆ i ∈ T, m i) κ μ := by
-  refine'
-    IndepSets.indep (iSup₂_le fun i _ => h_le i) (iSup₂_le fun i _ => h_le i) _ _
+  refine
+    IndepSets.indep (iSup₂_le fun i _ => h_le i) (iSup₂_le fun i _ => h_le i) ?_ ?_
       (generateFrom_piiUnionInter_measurableSet m S).symm
-      (generateFrom_piiUnionInter_measurableSet m T).symm _
+      (generateFrom_piiUnionInter_measurableSet m T).symm ?_
   · exact isPiSystem_piiUnionInter _ (fun n => @isPiSystem_measurableSet Ω (m n)) _
   · exact isPiSystem_piiUnionInter _ (fun n => @isPiSystem_measurableSet Ω (m n)) _
   · classical exact indepSets_piiUnionInter_of_disjoint h_indep hST
@@ -538,7 +538,7 @@ theorem indep_iSup_of_directed_le {Ω} {m : ι → MeasurableSpace Ω} {m' m0 : 
       rw [h_gen_n i, h_gen']
     exact fun n => (h_indep n).indepSets
   -- now go from π-systems to σ-algebras
-  refine' IndepSets.indep (iSup_le h_le) h_le' hp_supr_pi hp'_pi _ h_gen' h_pi_system_indep
+  refine IndepSets.indep (iSup_le h_le) h_le' hp_supr_pi hp'_pi ?_ h_gen' h_pi_system_indep
   exact (generateFrom_iUnion_measurableSet _).symm
 
 theorem iIndepSet.indep_generateFrom_lt [Preorder ι] [IsMarkovKernel κ] {s : ι → Set Ω}
@@ -751,7 +751,7 @@ theorem iIndepFun_iff_measure_inter_preimage_eq_mul {ι : Type*} {β : ι → Ty
     iIndepFun m f κ μ ↔
       ∀ (S : Finset ι) {sets : ∀ i : ι, Set (β i)} (_H : ∀ i, i ∈ S → MeasurableSet[m i] (sets i)),
         ∀ᵐ a ∂μ, κ a (⋂ i ∈ S, (f i) ⁻¹' (sets i)) = ∏ i in S, κ a ((f i) ⁻¹' (sets i)) := by
-  refine' ⟨fun h S sets h_meas => h _ fun i hi_mem => ⟨sets i, h_meas i hi_mem, rfl⟩, _⟩
+  refine ⟨fun h S sets h_meas => h _ fun i hi_mem => ⟨sets i, h_meas i hi_mem, rfl⟩, ?_⟩
   intro h S setsΩ h_meas
   classical
   let setsβ : ∀ i : ι, Set (β i) := fun i =>
@@ -772,7 +772,7 @@ theorem iIndepFun_iff_measure_inter_preimage_eq_mul {ι : Type*} {β : ι → Ty
     · rwa [h_preim i hi_mem] at h
     · rwa [h_preim i hi_mem]
   have h_right_eq : ∀ a, (∏ i in S, κ a (setsΩ i)) = ∏ i in S, κ a ((f i) ⁻¹' (setsβ i)) := by
-    refine' fun a ↦ Finset.prod_congr rfl fun i hi_mem => _
+    refine fun a ↦ Finset.prod_congr rfl fun i hi_mem => ?_
     rw [h_preim i hi_mem]
   filter_upwards [h S h_measβ] with a ha
   rw [h_left_eq a, h_right_eq a, ha]
@@ -781,7 +781,7 @@ theorem indepFun_iff_indepSet_preimage {mβ : MeasurableSpace β} {mβ' : Measur
     [IsMarkovKernel κ] (hf : Measurable f) (hg : Measurable g) :
     IndepFun f g κ μ ↔
       ∀ s t, MeasurableSet s → MeasurableSet t → IndepSet (f ⁻¹' s) (g ⁻¹' t) κ μ := by
-  refine' indepFun_iff_measure_inter_preimage_eq_mul.trans _
+  refine indepFun_iff_measure_inter_preimage_eq_mul.trans ?_
   constructor <;> intro h s t hs ht <;> specialize h s t hs ht
   · rwa [indepSet_iff_measure_inter_eq_mul (hf hs) (hg ht) κ μ]
   · rwa [← indepSet_iff_measure_inter_eq_mul (hf hs) (hg ht) κ μ]
@@ -920,11 +920,11 @@ theorem iIndepFun.indepFun_finset [IsMarkovKernel κ] (S T : Finset ι) (hST : D
   rw [h_eq_inter_S, h_eq_inter_T, h_indepS, h_indepT, h_Inter_inter, h_indepST,
     Finset.prod_union hST]
   congr 1
-  · refine' Finset.prod_congr rfl fun i hi => _
+  · refine Finset.prod_congr rfl fun i hi => ?_
     -- todo : show is necessary because of todo above
     show κ a (f i ⁻¹' (sets_s' i ∩ sets_t' i)) = κ a (f i ⁻¹' (sets_s' i))
     rw [h_sets_t'_univ hi, Set.inter_univ]
-  · refine' Finset.prod_congr rfl fun i hi => _
+  · refine Finset.prod_congr rfl fun i hi => ?_
     -- todo : show is necessary because of todo above
     show κ a (f i ⁻¹' (sets_s' i ∩ sets_t' i)) = κ a (f i ⁻¹' (sets_t' i))
     rw [h_sets_s'_univ hi, Set.univ_inter]
@@ -950,7 +950,7 @@ theorem iIndepFun.indepFun_prod_mk [IsMarkovKernel κ] (hf_Indep : iIndepFun m f
     p ⟨j, Finset.mem_insert_of_mem (Finset.mem_singleton_self _)⟩) :=
       Measurable.prod (measurable_pi_apply _) (measurable_pi_apply _)
   rw [h_left, h_right]
-  refine' (hf_Indep.indepFun_finset s {k} _ hf_meas).comp h_meas_left h_meas_right
+  refine (hf_Indep.indepFun_finset s {k} ?_ hf_meas).comp h_meas_left h_meas_right
   rw [Finset.disjoint_singleton_right]
   simp only [s, Finset.mem_insert, Finset.mem_singleton, not_or]
   exact ⟨hik.symm, hjk.symm⟩
@@ -1065,12 +1065,12 @@ theorem iIndepSet.iIndepFun_indicator [Zero β] [One β] {m : MeasurableSpace β
   rw [iIndepFun_iff_measure_inter_preimage_eq_mul]
   rintro S π _hπ
   simp_rw [Set.indicator_const_preimage_eq_union]
-  refine' @hs S (fun i => ite (1 ∈ π i) (s i) ∅ ∪ ite ((0 : β) ∈ π i) (s i)ᶜ ∅) fun i _hi => _
+  refine @hs S (fun i => ite (1 ∈ π i) (s i) ∅ ∪ ite ((0 : β) ∈ π i) (s i)ᶜ ∅) fun i _hi => ?_
   have hsi : MeasurableSet[generateFrom {s i}] (s i) :=
     measurableSet_generateFrom (Set.mem_singleton _)
-  refine'
-    MeasurableSet.union (MeasurableSet.ite' (fun _ => hsi) fun _ => _)
-      (MeasurableSet.ite' (fun _ => hsi.compl) fun _ => _)
+  refine
+    MeasurableSet.union (MeasurableSet.ite' (fun _ => hsi) fun _ => ?_)
+      (MeasurableSet.ite' (fun _ => hsi.compl) fun _ => ?_)
   · exact @MeasurableSet.empty _ (generateFrom {s i})
   · exact @MeasurableSet.empty _ (generateFrom {s i})
 

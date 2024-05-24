@@ -76,7 +76,7 @@ theorem mem_convexHull_erase [DecidableEq E] {t : Finset E} (h : ¬AffineIndepen
         conv_rhs => rw [← insert_erase hi₀, sum_insert (not_mem_erase i₀ t), hk, zero_add]
       _ = ∑ e in t, (f e - f i₀ / g i₀ * g e) := rfl
       _ = 1 := by rw [sum_sub_distrib, fsum, ← mul_sum, gsum, mul_zero, sub_zero]
-  refine' ⟨⟨i₀, hi₀⟩, k, _, by convert ksum, _⟩
+  refine ⟨⟨i₀, hi₀⟩, k, ?_, by convert ksum, ?_⟩
   · simp only [k, and_imp, sub_nonneg, mem_erase, Ne, Subtype.coe_mk]
     intro e _ het
     by_cases hes : e ∈ s
@@ -174,7 +174,7 @@ theorem eq_pos_convex_span_of_mem_convexHull {x : E} (hx : x ∈ convexHull 𝕜
   simp only [t.convexHull_eq, exists_prop, Set.mem_setOf_eq] at ht₃
   obtain ⟨w, hw₁, hw₂, hw₃⟩ := ht₃
   let t' := t.filter fun i => w i ≠ 0
-  refine' ⟨t', t'.fintypeCoeSort, ((↑) : t' → E), w ∘ ((↑) : t' → E), _, _, _, _, _⟩
+  refine ⟨t', t'.fintypeCoeSort, ((↑) : t' → E), w ∘ ((↑) : t' → E), ?_, ?_, ?_, ?_, ?_⟩
   · rw [Subtype.range_coe_subtype]
     exact Subset.trans (Finset.filter_subset _ t) ht₁
   · exact ht₂.comp_embedding ⟨_, inclusion_injective (Finset.filter_subset (fun i => w i ≠ 0) t)⟩

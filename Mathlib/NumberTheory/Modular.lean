@@ -100,7 +100,7 @@ theorem bottom_row_surj {R : Type*} [CommRing R] :
     convert gcd_eqn
     rw [det_fin_two]
     simp [A, (by ring : a * cd 1 + b₀ * cd 0 = b₀ * cd 0 + a * cd 1)]
-  refine' ⟨⟨A, det_A_1⟩, Set.mem_univ _, _⟩
+  refine ⟨⟨A, det_A_1⟩, Set.mem_univ _, ?_⟩
   ext; simp [A]
 #align modular_group.bottom_row_surj ModularGroup.bottom_row_surj
 
@@ -201,10 +201,10 @@ theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
       (cocompact ℝ) := by
   let mB : ℝ → Matrix (Fin 2) (Fin 2) ℝ := fun t => of ![![t, (-(1 : ℤ) : ℝ)], (↑) ∘ cd]
   have hmB : Continuous mB := by
-    refine' continuous_matrix _
+    refine continuous_matrix ?_
     simp only [mB, Fin.forall_fin_two, continuous_const, continuous_id', of_apply, cons_val_zero,
       cons_val_one, and_self_iff]
-  refine' Filter.Tendsto.of_tendsto_comp _ (comap_cocompact_le hmB)
+  refine Filter.Tendsto.of_tendsto_comp ?_ (comap_cocompact_le hmB)
   let f₁ : SL(2, ℤ) → Matrix (Fin 2) (Fin 2) ℝ := fun g =>
     Matrix.map (↑g : Matrix _ _ ℤ) ((↑) : ℤ → ℝ)
   have cocompact_ℝ_to_cofinite_ℤ_matrix :
@@ -463,11 +463,11 @@ theorem exists_smul_mem_fd (z : ℍ) : ∃ g : SL(2, ℤ), g • z ∈ 𝒟 := b
     rw [abs_le]
     constructor
     · contrapose! hg'
-      refine' ⟨T * g, (T_mul_apply_one _).symm, _⟩
+      refine ⟨T * g, (T_mul_apply_one _).symm, ?_⟩
       rw [mul_smul, re_T_smul]
       cases abs_cases ((g • z).re + 1) <;> cases abs_cases (g • z).re <;> linarith
     · contrapose! hg'
-      refine' ⟨T⁻¹ * g, (T_inv_mul_apply_one _).symm, _⟩
+      refine ⟨T⁻¹ * g, (T_inv_mul_apply_one _).symm, ?_⟩
       rw [mul_smul, re_T_inv_smul]
       cases abs_cases ((g • z).re - 1) <;> cases abs_cases (g • z).re <;> linarith
 #align modular_group.exists_smul_mem_fd ModularGroup.exists_smul_mem_fd
@@ -485,7 +485,7 @@ theorem abs_c_le_one (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : |(↑ₘg
   suffices c ≠ 0 → 9 * c ^ 4 < 16 by
     rcases eq_or_ne c 0 with (hc | hc)
     · rw [hc]; norm_num
-    · refine' (abs_lt_of_sq_lt_sq' _ (by norm_num)).2
+    · refine (abs_lt_of_sq_lt_sq' ?_ (by norm_num)).2
       specialize this hc
       linarith
   intro hc

@@ -116,7 +116,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
     `d xₖ₊₁ xₖ₊₂ + ... + d xₙ₋₁ xₙ` are less than or equal to `L / 2`.
     Then `d x₀ xₖ ≤ L`, `d xₖ xₖ₊₁ ≤ L`, and `d xₖ₊₁ xₙ ≤ L`, thus `d x₀ xₙ ≤ 2 * L`. -/
   rw [dist_ofPreNNDist, ← NNReal.coe_two, ← NNReal.coe_mul, NNReal.mul_iInf, NNReal.coe_le_coe]
-  refine' le_ciInf fun l => _
+  refine le_ciInf fun l => ?_
   have hd₀_trans : Transitive fun x y => d x y = 0 := by
     intro a b c hab hbc
     rw [← nonpos_iff_eq_zero]
@@ -150,7 +150,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
   have hM_lt : M < length L := by rwa [hL_len, Nat.lt_succ_iff]
   have hM_ltx : M < length (x::l) := lt_length_left_of_zipWith hM_lt
   have hM_lty : M < length (l ++ [y]) := lt_length_right_of_zipWith hM_lt
-  refine' ⟨(x::l).get ⟨M, hM_ltx⟩, (l ++ [y]).get ⟨M, hM_lty⟩, _, _, _⟩
+  refine ⟨(x::l).get ⟨M, hM_ltx⟩, (l ++ [y]).get ⟨M, hM_lty⟩, ?_, ?_, ?_⟩
   · cases M with
     | zero =>
       simp [dist_self, List.get]
@@ -158,7 +158,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
       rw [Nat.succ_le_iff] at hMl
       have hMl' : length (take M l) = M := (length_take _ _).trans (min_eq_left hMl.le)
       simp only [List.get]
-      refine' (ihn _ hMl _ _ _ hMl').trans _
+      refine (ihn _ hMl _ _ _ hMl').trans ?_
       convert hMs.1.out
       rw [zipWith_distrib_take, take, take_succ, get?_append hMl, get?_eq_get hMl, ← Option.coe_def,
         Option.toList_some, take_append_of_le_length hMl.le]
@@ -168,7 +168,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
     rw [get_append _ hMl]
     have hlen : length (drop (M + 1) l) = length l - (M + 1) := length_drop _ _
     have hlen_lt : length l - (M + 1) < length l := Nat.sub_lt_of_pos_le M.succ_pos hMl
-    refine' (ihn _ hlen_lt _ y _ hlen).trans _
+    refine (ihn _ hlen_lt _ y _ hlen).trans ?_
     rw [cons_get_drop_succ]
     have hMs' : L.sum ≤ 2 * (L.take (M + 1)).sum :=
       not_lt.1 fun h => (hMs.2 h.le).not_lt M.lt_succ_self

@@ -612,7 +612,7 @@ variable {𝕜}
 
 theorem hasSum_iff (f : α → 𝕜) (c : 𝕜) :
     HasSum f c ↔ HasSum (fun x => re (f x)) (re c) ∧ HasSum (fun x => im (f x)) (im c) := by
-  refine' ⟨fun h => ⟨hasSum_re _ h, hasSum_im _ h⟩, _⟩
+  refine ⟨fun h => ⟨hasSum_re _ h, hasSum_im _ h⟩, ?_⟩
   rintro ⟨h₁, h₂⟩
   simpa only [re_add_im] using
     ((hasSum_ofReal 𝕜).mpr h₁).add (((hasSum_ofReal 𝕜).mpr h₂).mul_right I)

@@ -41,7 +41,7 @@ theorem card_roots_toFinset_le_card_roots_derivative_diff_roots_succ (p : ℝ[X]
   · rw [eq_C_of_derivative_eq_zero hp', roots_C, Multiset.toFinset_zero, Finset.card_empty]
     exact zero_le _
   have hp : p ≠ 0 := ne_of_apply_ne derivative (by rwa [derivative_zero])
-  refine' Finset.card_le_diff_of_interleaved fun x hx y hy hxy hxy' => _
+  refine Finset.card_le_diff_of_interleaved fun x hx y hy hxy hxy' => ?_
   rw [Multiset.mem_toFinset, mem_roots hp] at hx hy
   obtain ⟨z, hz1, hz2⟩ := exists_deriv_eq_zero hxy p.continuousOn (hx.trans hy.symm)
   refine ⟨z, ?_, hz1⟩
@@ -77,8 +77,8 @@ theorem card_roots_le_derivative (p : ℝ[X]) :
           ((∑ x in p.derivative.roots.toFinset \ p.roots.toFinset,
             p.derivative.roots.count x) + 1) := by
       simp only [← count_roots]
-      refine' add_le_add_left (add_le_add_right ((Finset.card_eq_sum_ones _).trans_le _) _) _
-      refine' Finset.sum_le_sum fun x hx => Nat.succ_le_iff.2 <| _
+      refine add_le_add_left (add_le_add_right ((Finset.card_eq_sum_ones _).trans_le ?_) _) _
+      refine Finset.sum_le_sum fun x hx => Nat.succ_le_iff.2 <| ?_
       rw [Multiset.count_pos, ← Multiset.mem_toFinset]
       exact (Finset.mem_sdiff.1 hx).1
     _ = Multiset.card (derivative p).roots + 1 := by

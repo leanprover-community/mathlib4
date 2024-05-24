@@ -294,7 +294,7 @@ theorem exp_add_of_commute_of_mem_ball [CharZero 𝕂] {x y : 𝔸} (hxy : Commu
     congr
     ext
     rw [hxy.add_pow' _, Finset.smul_sum]
-  refine' tsum_congr fun n => Finset.sum_congr rfl fun kl hkl => _
+  refine tsum_congr fun n => Finset.sum_congr rfl fun kl hkl => ?_
   rw [nsmul_eq_smul_cast 𝕂, smul_smul, smul_mul_smul, ← Finset.mem_antidiagonal.mp hkl,
     Nat.cast_add_choose, Finset.mem_antidiagonal.mp hkl]
   congr 1
@@ -336,7 +336,7 @@ theorem map_exp_of_mem_ball {F} [FunLike F 𝔸 𝔹] [RingHomClass F 𝔸 𝔹]
     (x : 𝔸) (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
     f (exp 𝕂 x) = exp 𝕂 (f x) := by
   rw [exp_eq_tsum, exp_eq_tsum]
-  refine' ((expSeries_summable_of_mem_ball' _ hx).hasSum.map f hf).tsum_eq.symm.trans _
+  refine ((expSeries_summable_of_mem_ball' _ hx).hasSum.map f hf).tsum_eq.symm.trans ?_
   dsimp only [Function.comp_def]
   simp_rw [map_inv_natCast_smul f 𝕂 𝕂, map_pow]
 #align map_exp_of_mem_ball NormedSpace.map_exp_of_mem_ball
@@ -411,8 +411,8 @@ variable [NormedRing 𝔹] [NormedAlgebra 𝕂 𝔹]
 /-- In a normed algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ`, the series defining the exponential map
 has an infinite radius of convergence. -/
 theorem expSeries_radius_eq_top : (expSeries 𝕂 𝔸).radius = ∞ := by
-  refine' (expSeries 𝕂 𝔸).radius_eq_top_of_summable_norm fun r => _
-  refine' .of_norm_bounded_eventually _ (Real.summable_pow_div_factorial r) _
+  refine (expSeries 𝕂 𝔸).radius_eq_top_of_summable_norm fun r => ?_
+  refine .of_norm_bounded_eventually _ (Real.summable_pow_div_factorial r) ?_
   filter_upwards [eventually_cofinite_ne 0] with n hn
   rw [norm_mul, norm_norm (expSeries 𝕂 𝔸 n), expSeries]
   rw [norm_smul (n ! : 𝕂)⁻¹ (ContinuousMultilinearMap.mkPiAlgebraFin 𝕂 n 𝔸)]
@@ -532,7 +532,7 @@ theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → 𝔸)
     · simp
     rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ ha, Finset.sum_insert ha, exp_add_of_commute,
       ih (h.mono <| Finset.subset_insert _ _)]
-    refine' Commute.sum_right _ _ _ fun i hi => _
+    refine Commute.sum_right _ _ _ fun i hi => ?_
     exact h.of_refl (Finset.mem_insert_self _ _) (Finset.mem_insert_of_mem hi)
 #align exp_sum_of_commute NormedSpace.exp_sum_of_commute
 
@@ -686,7 +686,7 @@ exponential function on `𝔸`. -/
 theorem exp_eq_exp : (exp 𝕂 : 𝔸 → 𝔸) = exp 𝕂' := by
   ext x
   rw [exp, exp]
-  refine' tsum_congr fun n => _
+  refine tsum_congr fun n => ?_
   rw [expSeries_eq_expSeries 𝕂 𝕂' 𝔸 n x]
 #align exp_eq_exp NormedSpace.exp_eq_exp
 

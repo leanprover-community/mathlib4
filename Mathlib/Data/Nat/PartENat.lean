@@ -862,7 +862,7 @@ theorem lt_find (n : ℕ) (h : ∀ m ≤ n, ¬P m) : (n : PartENat) < find P := 
 #align part_enat.lt_find PartENat.lt_find
 
 theorem lt_find_iff (n : ℕ) : (n : PartENat) < find P ↔ ∀ m ≤ n, ¬P m := by
-  refine' ⟨_, lt_find P n⟩
+  refine ⟨?_, lt_find P n⟩
   intro h m hm
   by_cases H : (find P).Dom
   · apply Nat.find_min H

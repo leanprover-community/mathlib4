@@ -156,7 +156,7 @@ theorem Prod.continuous_to_fun : ContinuousOn (Prod.toFun' e₁ e₂)
     e₁.toPartialHomeomorph.continuousOn.prod_map e₂.toPartialHomeomorph.continuousOn
   have hf₃ : Continuous f₃ :=
     (continuous_fst.comp continuous_fst).prod_mk (continuous_snd.prod_map continuous_snd)
-  refine' ((hf₃.comp_continuousOn hf₂).comp hf₁.continuousOn _).congr _
+  refine ((hf₃.comp_continuousOn hf₂).comp hf₁.continuousOn ?_).congr ?_
   · rw [e₁.source_eq, e₂.source_eq]
     exact mapsTo_preimage _ _
   rintro ⟨b, v₁, v₂⟩ ⟨hb₁, _⟩
@@ -198,7 +198,7 @@ theorem Prod.continuous_inv_fun :
   rw [(Prod.inducing_diag F₁ E₁ F₂ E₂).continuousOn_iff]
   have H₁ : Continuous fun p : B × F₁ × F₂ ↦ ((p.1, p.2.1), (p.1, p.2.2)) :=
     (continuous_id.prod_map continuous_fst).prod_mk (continuous_id.prod_map continuous_snd)
-  refine' (e₁.continuousOn_symm.prod_map e₂.continuousOn_symm).comp H₁.continuousOn _
+  refine (e₁.continuousOn_symm.prod_map e₂.continuousOn_symm).comp H₁.continuousOn ?_
   exact fun x h ↦ ⟨⟨h.1.1, mem_univ _⟩, ⟨h.1.2, mem_univ _⟩⟩
 #align trivialization.prod.continuous_inv_fun Trivialization.Prod.continuous_inv_fun
 

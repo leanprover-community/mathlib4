@@ -85,7 +85,7 @@ theorem unit_mem_leftInv (x : Mˣ) (hx : (x : M) ∈ S) : ((x⁻¹ : _) : M) ∈
 
 @[to_additive]
 theorem leftInv_leftInv_eq (hS : S ≤ IsUnit.submonoid M) : S.leftInv.leftInv = S := by
-  refine' le_antisymm S.leftInv_leftInv_le _
+  refine le_antisymm S.leftInv_leftInv_le ?_
   intro x hx
   have : x = ((hS hx).unit⁻¹⁻¹ : Mˣ) := by
     rw [inv_inv (hS hx).unit]

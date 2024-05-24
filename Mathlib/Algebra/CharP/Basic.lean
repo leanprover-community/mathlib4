@@ -37,7 +37,7 @@ protected theorem add_pow_prime_pow_eq (hp : p.Prime) (h : Commute x y) (n : ℕ
       pow_zero, Nat.choose_zero_right, Nat.choose_self, Nat.cast_one, mul_one, one_mul, ← add_assoc]
   · congr 1
     simp_rw [Finset.mul_sum, Nat.cast_comm, mul_assoc _ _ (p : R), ← Nat.cast_mul]
-    refine' Finset.sum_congr rfl fun i hi => _
+    refine Finset.sum_congr rfl fun i hi => ?_
     rw [mem_Ioo] at hi
     rw [Nat.div_mul_cancel (hp.dvd_choose_pow hi.1.ne' hi.2.ne)]
 #align commute.add_pow_prime_pow_eq Commute.add_pow_prime_pow_eq

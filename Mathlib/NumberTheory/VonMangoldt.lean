@@ -111,7 +111,7 @@ theorem vonMangoldt_eq_zero_iff {n : ℕ} : Λ n = 0 ↔ ¬IsPrimePow n :=
 open scoped BigOperators
 
 theorem vonMangoldt_sum {n : ℕ} : ∑ i in n.divisors, Λ i = Real.log n := by
-  refine' recOnPrimeCoprime _ _ _ n
+  refine recOnPrimeCoprime ?_ ?_ ?_ n
   · simp
   · intro p k hp
     rw [sum_divisors_prime_pow hp, cast_pow, Real.log_pow, Finset.sum_range_succ', Nat.pow_zero,

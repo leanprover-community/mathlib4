@@ -124,7 +124,7 @@ theorem monad_seq_eq_seq {α β : Type u} (q : PMF (α → β)) (p : PMF α) : q
 @[simp]
 theorem seq_apply : (seq q p) b = ∑' (f : α → β) (a : α), if b = f a then q f * p a else 0 := by
   simp only [seq, mul_boole, bind_apply, pure_apply]
-  refine' tsum_congr fun f => ENNReal.tsum_mul_left.symm.trans (tsum_congr fun a => _)
+  refine tsum_congr fun f => ENNReal.tsum_mul_left.symm.trans (tsum_congr fun a => ?_)
   simpa only [mul_zero] using mul_ite (b = f a) (q f) (p a) 0
 #align pmf.seq_apply PMF.seq_apply
 

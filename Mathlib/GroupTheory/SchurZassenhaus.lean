@@ -84,7 +84,7 @@ theorem smul_diff' (h : H) :
     diff (MonoidHom.id H) α (op (h : G) • β) = diff (MonoidHom.id H) α β * h ^ H.index := by
   letI := H.fintypeQuotientOfFiniteIndex
   rw [diff, diff, index_eq_card, ← Finset.card_univ, ← Finset.prod_const, ← Finset.prod_mul_distrib]
-  refine' Finset.prod_congr rfl fun q _ => _
+  refine Finset.prod_congr rfl fun q _ => ?_
   simp_rw [Subtype.ext_iff, MonoidHom.id_apply, coe_mul, mul_assoc, mul_right_inj]
   rw [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul_unop, MulOpposite.unop_op, mul_left_inj,
     ← Subtype.ext_iff, Equiv.apply_eq_iff_eq, inv_smul_eq_iff]
@@ -203,13 +203,13 @@ private theorem step2 (K : Subgroup G) [K.Normal] (hK : K ≤ N) : K = ⊥ ∨ K
     have index_map := N.index_map_eq this (by rwa [QuotientGroup.ker_mk'])
     have index_pos : 0 < N.index := Nat.pos_of_ne_zero index_ne_zero_of_finite
     rw [index_map]
-    refine' h1.coprime_dvd_left _
+    refine h1.coprime_dvd_left ?_
     rw [← Nat.mul_dvd_mul_iff_left index_pos, index_mul_card, ← index_map, index_mul_card]
     exact K.card_quotient_dvd_card
   obtain ⟨H, hH⟩ := h2 (G ⧸ K) h5 h6
-  refine' ⟨H.comap (QuotientGroup.mk' K), _, _⟩
+  refine ⟨H.comap (QuotientGroup.mk' K), ?_, ?_⟩
   · have key : (N.map (QuotientGroup.mk' K)).comap (QuotientGroup.mk' K) = N := by
-      refine' comap_map_eq_self _
+      refine comap_map_eq_self ?_
       rwa [QuotientGroup.ker_mk']
     rwa [← key, comap_sup_eq, hH.symm.sup_eq_top, comap_top]
   · rw [← comap_top (QuotientGroup.mk' K)]
@@ -241,7 +241,7 @@ private theorem step5 {P : Sylow (Fintype.card N).minFac N} : P.1 ≠ ⊥ :=
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step6 : IsPGroup (Fintype.card N).minFac N := by
   haveI : Fact (Fintype.card N).minFac.Prime := ⟨step4 h1 h3⟩
-  refine' Sylow.nonempty.elim fun P => P.2.of_surjective P.1.subtype _
+  refine Sylow.nonempty.elim fun P => P.2.of_surjective P.1.subtype ?_
   rw [← MonoidHom.range_top_iff_surjective, subtype_range]
   haveI : (P.1.map N.subtype).Normal :=
     normalizer_eq_top.mp (step1 h1 h2 h3 (P.1.map N.subtype).normalizer P.normalizer_sup_eq_top)
@@ -267,7 +267,7 @@ private theorem exists_right_complement'_of_coprime_aux' [Fintype G] (hG : Finty
   revert G
   apply Nat.strongInductionOn n
   rintro n ih G _ _ rfl N _ hN
-  refine' not_forall_not.mp fun h3 => _
+  refine not_forall_not.mp fun h3 => ?_
   haveI := SchurZassenhausInduction.step7 hN (fun G' _ _ hG' => by apply ih _ hG'; rfl) h3
   rw [← Nat.card_eq_fintype_card] at hN
   exact not_exists_of_forall_not h3 (exists_right_complement'_of_coprime_aux hN)

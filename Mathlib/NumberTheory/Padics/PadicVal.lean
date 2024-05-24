@@ -457,7 +457,7 @@ lemma add_eq_min {q r : ℚ} (hqr : q + r ≠ 0) (hq : q ≠ 0) (hr : r ≠ 0)
   have h3 := min_le_padicValRat_add (p := p) (ne_of_eq_of_ne (add_neg_cancel_right r q) hr)
   rw [add_neg_cancel_right, padicValRat.neg] at h2 h3
   rw [add_comm] at h3
-  refine' le_antisymm (le_min _ _) h1
+  refine le_antisymm (le_min ?_ ?_) h1
   · contrapose! h2
     rw [min_eq_right h2.le] at h3
     exact lt_min h2 (lt_of_le_of_ne h3 hval)
@@ -492,8 +492,8 @@ theorem sum_pos_of_pos {n : ℕ} {F : ℕ → ℚ} (hF : ∀ i, i < n → 0 < pa
     by_cases h : ∑ x : ℕ in Finset.range d, F x = 0
     · rw [h, zero_add]
       exact hF d (lt_add_one _)
-    · refine' lt_of_lt_of_le _ (min_le_padicValRat_add hn0)
-      refine' lt_min (hd (fun i hi => _) h) (hF d (lt_add_one _))
+    · refine lt_of_lt_of_le ?_ (min_le_padicValRat_add hn0)
+      refine lt_min (hd (fun i hi => ?_) h) (hF d (lt_add_one _))
       exact hF _ (lt_trans hi (lt_add_one _))
 #align padic_val_rat.sum_pos_of_pos padicValRat.sum_pos_of_pos
 
@@ -633,7 +633,7 @@ lemma Nat.log_ne_padicValNat_succ {n : ℕ} (hn : n ≠ 0) : log 2 n ≠ padicVa
   rintro ⟨h1, h2⟩
   rw [← lt_add_one_iff, ← mul_one (2 ^ _)] at h1
   rw [← add_one_le_iff, Nat.pow_succ] at h2
-  refine' not_dvd_of_between_consec_multiples h1 (lt_of_le_of_ne' h2 _) pow_padicValNat_dvd
+  refine not_dvd_of_between_consec_multiples h1 (lt_of_le_of_ne' h2 ?_) pow_padicValNat_dvd
   -- TODO(kmill): Why is this `p := 2` necessary?
   exact pow_succ_padicValNat_not_dvd (p := 2) n.succ_ne_zero ∘ dvd_of_eq
 
@@ -666,14 +666,14 @@ theorem range_pow_padicValNat_subset_divisors' {n : ℕ} [hp : Fact p.Prime] :
   simp only [exists_prop, Finset.mem_image, Finset.mem_range] at ht
   obtain ⟨k, hk, rfl⟩ := ht
   rw [Finset.mem_erase, Nat.mem_divisors]
-  refine' ⟨_, (pow_dvd_pow p <| succ_le_iff.2 hk).trans pow_padicValNat_dvd, hn⟩
+  refine ⟨?_, (pow_dvd_pow p <| succ_le_iff.2 hk).trans pow_padicValNat_dvd, hn⟩
   exact (Nat.one_lt_pow k.succ_ne_zero hp.out.one_lt).ne'
 #align range_pow_padic_val_nat_subset_divisors' range_pow_padicValNat_subset_divisors'
 
 /-- The `p`-adic valuation of `(p * n)!` is `n` more than that of `n!`. -/
 theorem padicValNat_factorial_mul (n : ℕ) [hp : Fact p.Prime] :
     padicValNat p (p * n) ! = padicValNat p n ! + n := by
-  refine' PartENat.natCast_inj.mp _
+  refine PartENat.natCast_inj.mp ?_
   rw [padicValNat_def' (Nat.Prime.ne_one hp.out) <| factorial_pos (p * n), Nat.cast_add,
       padicValNat_def' (Nat.Prime.ne_one hp.out) <| factorial_pos n]
   exact Prime.multiplicity_factorial_mul hp.out

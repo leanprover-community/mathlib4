@@ -839,7 +839,7 @@ theorem addSubmonoid_closure_setOf_eq_monomial :
   apply top_unique
   rw [← AddSubmonoid.map_equiv_top (toFinsuppIso R).symm.toAddEquiv, ←
     Finsupp.add_closure_setOf_eq_single, AddMonoidHom.map_mclosure]
-  refine' AddSubmonoid.closure_mono (Set.image_subset_iff.2 _)
+  refine AddSubmonoid.closure_mono (Set.image_subset_iff.2 ?_)
   rintro _ ⟨n, a, rfl⟩
   exact ⟨n, a, Polynomial.ofFinsupp_single _ _⟩
 #align polynomial.add_submonoid_closure_set_of_eq_monomial Polynomial.addSubmonoid_closure_setOf_eq_monomial

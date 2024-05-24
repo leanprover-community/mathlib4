@@ -54,7 +54,7 @@ theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
     let C := Set.range f
     have hC : IsClosed C := (isCompact_range f.continuous).isClosed
     have hyU : y ∈ Cᶜ := by
-      refine' Set.mem_compl _
+      refine Set.mem_compl ?_
       rintro ⟨y', hy'⟩
       exact hy y' hy'
     have hUy : Cᶜ ∈ nhds y := hC.compl_mem_nhds hyU
