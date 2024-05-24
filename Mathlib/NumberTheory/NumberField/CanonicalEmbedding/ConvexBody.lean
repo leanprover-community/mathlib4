@@ -109,7 +109,7 @@ theorem convexBodyLT_volume :
     volume (convexBodyLT K f) = (convexBodyLTFactor K) * ∏ w, (f w) ^ (mult w) := by
   calc
     _ = (∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (2 * (f x.val))) *
-          ∏ x : {w // InfinitePlace.IsComplex w}, ENNReal.ofReal (f x.val) ^ 2 * pi := by
+          ∏ x : {w // InfinitePlace.IsComplex w}, ENNReal.ofReal (f x.val) ^ 2 * NNReal.pi := by
       simp_rw [volume_eq_prod, prod_prod, volume_pi, pi_pi, Real.volume_ball, Complex.volume_ball]
     _ = ((2:ℝ≥0) ^ NrRealPlaces K * (∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (f x.val)))
           * ((∏ x : {w // IsComplex w}, ENNReal.ofReal (f x.val) ^ 2) *
@@ -297,7 +297,7 @@ theorem convexBodySumFun_apply' (x : E K) :
 
 theorem convexBodySumFun_nonneg (x : E K) :
     0 ≤ convexBodySumFun x :=
-  Finset.sum_nonneg (fun _ _ => mul_nonneg mult_pos.le (normAtPlace_nonneg _ _))
+  Finset.sum_nonneg (fun _ _ => mul_nonneg (Nat.cast_pos.mpr mult_pos).le (normAtPlace_nonneg _ _))
 
 theorem convexBodySumFun_neg (x : E K) :
     convexBodySumFun (- x) = convexBodySumFun x := by
@@ -307,7 +307,7 @@ theorem convexBodySumFun_add_le (x y : E K) :
     convexBodySumFun (x + y) ≤ convexBodySumFun x + convexBodySumFun y := by
   simp_rw [convexBodySumFun, ← Finset.sum_add_distrib, ← mul_add]
   exact Finset.sum_le_sum
-    fun _ _ ↦ mul_le_mul_of_nonneg_left (normAtPlace_add_le _ x y) mult_pos.le
+    fun _ _ ↦ mul_le_mul_of_nonneg_left (normAtPlace_add_le _ x y) (Nat.cast_pos.mpr mult_pos).le
 
 theorem convexBodySumFun_smul (c : ℝ) (x : E K) :
     convexBodySumFun (c • x) = |c| * convexBodySumFun x := by
@@ -316,7 +316,7 @@ theorem convexBodySumFun_smul (c : ℝ) (x : E K) :
 theorem convexBodySumFun_eq_zero_iff (x : E K) :
     convexBodySumFun x = 0 ↔ x = 0 := by
   rw [← normAtPlace_eq_zero, convexBodySumFun, Finset.sum_eq_zero_iff_of_nonneg fun _ _ =>
-    mul_nonneg mult_pos.le (normAtPlace_nonneg _ _)]
+    mul_nonneg (Nat.cast_pos.mpr mult_pos).le (normAtPlace_nonneg _ _)]
   conv =>
     enter [1, w, hw]
     rw [mul_left_mem_nonZeroDivisors_eq_zero_iff
@@ -329,7 +329,8 @@ theorem norm_le_convexBodySumFun (x : E K) : ‖x‖ ≤ convexBodySumFun x := b
   rw [convexBodySumFun_apply, ← Finset.univ.add_sum_erase _ (Finset.mem_univ w)]
   refine le_add_of_le_of_nonneg  ?_ ?_
   · exact le_mul_of_one_le_left (normAtPlace_nonneg w x) one_le_mult
-  · exact Finset.sum_nonneg (fun _ _ => mul_nonneg mult_pos.le (normAtPlace_nonneg _ _))
+  · exact Finset.sum_nonneg (fun _ _ => mul_nonneg (Nat.cast_pos.mpr mult_pos).le
+      (normAtPlace_nonneg _ _))
 
 variable (K)
 
