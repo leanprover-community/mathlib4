@@ -69,7 +69,7 @@ theorem isBigO_sub_exp_exp {a : ℝ} {f g : ℂ → E} {l : Filter ℂ} {u : ℂ
     simp only [Real.norm_eq_abs, Real.abs_exp]; gcongr
   rcases hBf with ⟨cf, hcf, Bf, hOf⟩; rcases hBg with ⟨cg, hcg, Bg, hOg⟩
   refine ⟨max cf cg, max_lt hcf hcg, max 0 (max Bf Bg), ?_⟩
-  refine (hOf.trans_le <| this ?_ ?_ ?_).sub (hOg.trans_le <| th?i?s ?_ _ _)
+  refine (hOf.trans_le <| this ?_ ?_ ?_).sub (hOg.trans_le <| this ?_ ?_ ?_)
   exacts [le_max_left _ _, le_max_left _ _, (le_max_left _ _).trans (le_max_right _ _),
     le_max_right _ _, le_max_left _ _, (le_max_right _ _).trans (le_max_right _ _)]
 set_option linter.uppercaseLean3 false in
@@ -89,7 +89,7 @@ theorem isBigO_sub_exp_rpow {a : ℝ} {f g : ℂ → E} {l : Filter ℂ}
     gcongr; assumption
   rcases hBf with ⟨cf, hcf, Bf, hOf⟩; rcases hBg with ⟨cg, hcg, Bg, hOg⟩
   refine ⟨max cf cg, max_lt hcf hcg, max 0 (max Bf Bg), ?_⟩
-  refine (hOf.trans <| this ?_ ?_ ?_).sub (hOg.trans <| this? ?_ ?_ _)
+  refine (hOf.trans <| this ?_ ?_ ?_).sub (hOg.trans <| this ?_ ?_ ?_)
   exacts [le_max_left _ _, le_max_left _ _, (le_max_left _ _).trans (le_max_right _ _),
     le_max_right _ _, le_max_left _ _, (le_max_right _ _).trans (le_max_right _ _)]
 set_option linter.uppercaseLean3 false in
