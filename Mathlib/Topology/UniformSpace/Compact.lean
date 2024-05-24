@@ -76,8 +76,7 @@ theorem unique_uniformity_of_compact [t : TopologicalSpace γ] [CompactSpace γ]
 #align unique_uniformity_of_compact unique_uniformity_of_compact
 
 /-- The unique uniform structure inducing a given compact topological structure. -/
-def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ] : UniformSpace γ
-    where
+def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ] : UniformSpace γ where
   uniformity := 𝓝ˢ (diagonal γ)
   symm := continuous_swap.tendsto_nhdsSet fun x => Eq.symm
   comp := by
@@ -218,7 +217,7 @@ theorem HasCompactMulSupport.is_one_at_infty {f : α → γ} [TopologicalSpace �
   -- Porting note: move to src/topology/support.lean once the port is over
   intro N hN
   rw [mem_map, mem_cocompact']
-  refine' ⟨mulTSupport f, h.isCompact, _⟩
+  refine ⟨mulTSupport f, h.isCompact, ?_⟩
   rw [compl_subset_comm]
   intro v hv
   rw [mem_preimage, image_eq_one_of_nmem_mulTSupport hv]

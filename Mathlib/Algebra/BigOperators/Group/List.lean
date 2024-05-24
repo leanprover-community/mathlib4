@@ -3,13 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
-import Mathlib.Algebra.Ring.Commute
-import Mathlib.Algebra.Ring.Int
-import Mathlib.Algebra.Ring.Nat
-import Mathlib.Data.List.Dedup
-import Mathlib.Data.List.ProdSigma
-import Mathlib.Data.List.Join
+import Mathlib.Algebra.Divisibility.Basic
+import Mathlib.Algebra.Group.Int
+import Mathlib.Algebra.Group.Nat
+import Mathlib.Algebra.Group.Opposite
+import Mathlib.Algebra.Group.Units
 import Mathlib.Data.List.Perm
+import Mathlib.Data.List.ProdSigma
 import Mathlib.Data.List.Range
 import Mathlib.Data.List.Rotate
 
@@ -25,11 +25,9 @@ counterparts.
 
 -- Make sure we haven't imported `Data.Nat.Order.Basic`
 assert_not_exists OrderedSub
+assert_not_exists Ring
 
--- TODO
--- assert_not_exists Ring
-
-variable {ι α β γ M N P M₀ G R : Type*}
+variable {ι α β M N P G : Type*}
 
 namespace List
 section Defs
@@ -198,12 +196,6 @@ theorem prod_map_mul {α : Type*} [CommMonoid α] {l : List ι} {f g : ι → α
 #align list.prod_map_mul List.prod_map_mul
 #align list.sum_map_add List.sum_map_add
 
-@[simp]
-theorem prod_map_neg [HasDistribNeg M] (l : List M) :
-    (l.map Neg.neg).prod = (-1) ^ l.length * l.prod := by
-  induction l <;> simp [*, pow_succ, ((Commute.neg_one_left _).pow_left _).left_comm]
-#align list.prod_map_neg List.prod_map_neg
-
 @[to_additive]
 theorem prod_map_hom (L : List ι) (f : ι → M) {G : Type*} [FunLike G M N] [MonoidHomClass G M N]
     (g : G) :
@@ -360,7 +352,7 @@ lemma prod_erase_of_comm [DecidableEq M] (ha : a ∈ l) (comm : ∀ x ∈ l, ∀
     a * (l.erase a).prod = l.prod := by
   induction' l with b l ih
   · simp only [not_mem_nil] at ha
-  obtain rfl | ⟨ne, h⟩ := Decidable.List.eq_or_ne_mem_of_mem ha
+  obtain rfl | ⟨ne, h⟩ := List.eq_or_ne_mem_of_mem ha
   · simp only [erase_cons_head, prod_cons]
   rw [List.erase, beq_false_of_ne ne.symm, List.prod_cons, List.prod_cons, ← mul_assoc,
     comm a ha b (l.mem_cons_self b), mul_assoc,
@@ -417,7 +409,7 @@ lemma prod_erase [DecidableEq M] (ha : a ∈ l) : a * (l.erase a).prod = l.prod 
 lemma prod_map_erase [DecidableEq α] (f : α → M) {a} :
     ∀ {l : List α}, a ∈ l → f a * ((l.erase a).map f).prod = (l.map f).prod
   | b :: l, h => by
-    obtain rfl | ⟨ne, h⟩ := Decidable.List.eq_or_ne_mem_of_mem h
+    obtain rfl | ⟨ne, h⟩ := List.eq_or_ne_mem_of_mem h
     · simp only [map, erase_cons_head, prod_cons]
     · simp only [map, erase_cons_tail _ (not_beq_of_ne ne.symm), prod_cons, prod_map_erase _ h,
         mul_left_comm (f a) (f b)]
@@ -551,16 +543,6 @@ theorem prod_set' (L : List G) (n : ℕ) (a : G) :
 #align list.sum_update_nth' List.sum_set'
 
 end CommGroup
-
-@[simp]
-theorem sum_zipWith_distrib_left [Semiring γ] (f : α → β → γ) (n : γ) (l : List α) (l' : List β) :
-    (l.zipWith (fun x y => n * f x y) l').sum = n * (l.zipWith f l').sum := by
-  induction' l with hd tl hl generalizing f n l'
-  · simp
-  · cases' l' with hd' tl'
-    · simp
-    · simp [hl, mul_add]
-#align list.sum_zip_with_distrib_left List.sum_zipWith_distrib_left
 
 theorem sum_const_nat (m n : ℕ) : sum (replicate m n) = m * n :=
   sum_replicate m n
@@ -780,3 +762,106 @@ lemma drop_take_succ_join_eq_get (L : List (List α)) (i : Fin L.length) :
   simpa using drop_take_succ_join_eq_get' _ _
 
 end List
+
+
+namespace List
+
+/-- If a product of integers is `-1`, then at least one factor must be `-1`. -/
+theorem neg_one_mem_of_prod_eq_neg_one {l : List ℤ} (h : l.prod = -1) : (-1 : ℤ) ∈ l := by
+  obtain ⟨x, h₁, h₂⟩ := exists_mem_ne_one_of_prod_ne_one (ne_of_eq_of_ne h (by decide))
+  exact Or.resolve_left
+    (Int.isUnit_iff.mp (prod_isUnit_iff.mp
+      (h.symm ▸ ⟨⟨-1, -1, by decide, by decide⟩, rfl⟩ : IsUnit l.prod) x h₁)) h₂ ▸ h₁
+#align list.neg_one_mem_of_prod_eq_neg_one List.neg_one_mem_of_prod_eq_neg_one
+
+/-- If all elements in a list are bounded below by `1`, then the length of the list is bounded
+by the sum of the elements. -/
+theorem length_le_sum_of_one_le (L : List ℕ) (h : ∀ i ∈ L, 1 ≤ i) : L.length ≤ L.sum := by
+  induction' L with j L IH h; · simp
+  rw [sum_cons, length, add_comm]
+  exact Nat.add_le_add (h _ (mem_cons_self _ _)) (IH fun i hi => h i (mem_cons.2 (Or.inr hi)))
+#align list.length_le_sum_of_one_le List.length_le_sum_of_one_le
+
+theorem dvd_prod [CommMonoid M] {a} {l : List M} (ha : a ∈ l) : a ∣ l.prod := by
+  let ⟨s, t, h⟩ := append_of_mem ha
+  rw [h, prod_append, prod_cons, mul_left_comm]
+  exact dvd_mul_right _ _
+#align list.dvd_prod List.dvd_prod
+
+theorem Sublist.prod_dvd_prod [CommMonoid M] {l₁ l₂ : List M} (h : l₁ <+ l₂) :
+    l₁.prod ∣ l₂.prod := by
+  obtain ⟨l, hl⟩ := h.exists_perm_append
+  rw [hl.prod_eq, prod_append]
+  exact dvd_mul_right _ _
+
+section Alternating
+
+variable [CommGroup α]
+
+@[to_additive]
+theorem alternatingProd_append :
+    ∀ l₁ l₂ : List α,
+      alternatingProd (l₁ ++ l₂) = alternatingProd l₁ * alternatingProd l₂ ^ (-1 : ℤ) ^ length l₁
+  | [], l₂ => by simp
+  | a :: l₁, l₂ => by
+    simp_rw [cons_append, alternatingProd_cons, alternatingProd_append, length_cons, pow_succ',
+      Int.neg_mul, one_mul, zpow_neg, ← div_eq_mul_inv, div_div]
+#align list.alternating_prod_append List.alternatingProd_append
+#align list.alternating_sum_append List.alternatingSum_append
+
+@[to_additive]
+theorem alternatingProd_reverse :
+    ∀ l : List α, alternatingProd (reverse l) = alternatingProd l ^ (-1 : ℤ) ^ (length l + 1)
+  | [] => by simp only [alternatingProd_nil, one_zpow, reverse_nil]
+  | a :: l => by
+    simp_rw [reverse_cons, alternatingProd_append, alternatingProd_reverse,
+      alternatingProd_singleton, alternatingProd_cons, length_reverse, length, pow_succ',
+      Int.neg_mul, one_mul, zpow_neg, inv_inv]
+    rw [mul_comm, ← div_eq_mul_inv, div_zpow]
+#align list.alternating_prod_reverse List.alternatingProd_reverse
+#align list.alternating_sum_reverse List.alternatingSum_reverse
+
+end Alternating
+
+end List
+
+open List
+
+namespace MulOpposite
+variable [Monoid M]
+
+lemma op_list_prod : ∀ l : List M, op l.prod = (l.map op).reverse.prod := by
+  intro l; induction l with
+  | nil => rfl
+  | cons x xs ih =>
+    rw [List.prod_cons, List.map_cons, List.reverse_cons', List.prod_concat, op_mul, ih]
+#align mul_opposite.op_list_prod MulOpposite.op_list_prod
+
+lemma unop_list_prod (l : List Mᵐᵒᵖ) : l.prod.unop = (l.map unop).reverse.prod := by
+  rw [← op_inj, op_unop, MulOpposite.op_list_prod, map_reverse, map_map, reverse_reverse,
+    op_comp_unop, map_id]
+#align mul_opposite.unop_list_prod MulOpposite.unop_list_prod
+
+end MulOpposite
+
+section MonoidHom
+variable [Monoid M] [Monoid N]
+
+/-- A morphism into the opposite monoid acts on the product by acting on the reversed elements. -/
+lemma unop_map_list_prod {F : Type*} [FunLike F M Nᵐᵒᵖ] [MonoidHomClass F M Nᵐᵒᵖ]
+    (f : F) (l : List M) :
+    (f l.prod).unop = (l.map (MulOpposite.unop ∘ f)).reverse.prod := by
+  rw [map_list_prod f l, MulOpposite.unop_list_prod, List.map_map]
+#align unop_map_list_prod unop_map_list_prod
+
+namespace MonoidHom
+
+/-- A morphism into the opposite monoid acts on the product by acting on the reversed elements. -/
+@[deprecated _root_.unop_map_list_prod]
+protected theorem unop_map_list_prod (f : M →* Nᵐᵒᵖ) (l : List M) :
+    (f l.prod).unop = (l.map (MulOpposite.unop ∘ f)).reverse.prod :=
+  unop_map_list_prod f l
+#align monoid_hom.unop_map_list_prod MonoidHom.unop_map_list_prod
+
+end MonoidHom
+end MonoidHom

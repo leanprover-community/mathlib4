@@ -1040,7 +1040,7 @@ theorem mk_le_mk_of_dvd {a b : α} : a ∣ b → Associates.mk a ≤ Associates.
 theorem mk_le_mk_iff_dvd {a b : α} : Associates.mk a ≤ Associates.mk b ↔ a ∣ b := mk_dvd_mk
 #align associates.mk_le_mk_iff_dvd_iff Associates.mk_le_mk_iff_dvd
 
-@[deprecated] alias mk_le_mk_iff_dvd_iff := mk_le_mk_iff_dvd
+@[deprecated (since := "2024-03-16")] alias mk_le_mk_iff_dvd_iff := mk_le_mk_iff_dvd
 
 @[simp]
 theorem isPrimal_mk {a : α} : IsPrimal (Associates.mk a) ↔ IsPrimal a := by
@@ -1050,7 +1050,7 @@ theorem isPrimal_mk {a : α} : IsPrimal (Associates.mk a) ↔ IsPrimal a := by
     exact ⟨a₁, a₂ * u, h₁, Units.mul_right_dvd.mpr h₂, mul_assoc _ _ _⟩
   · exact ⟨a₁, a₂, h₁, h₂, congr_arg _ eq⟩
 
-@[deprecated] alias isPrimal_iff := isPrimal_mk -- 2024-03-16
+@[deprecated (since := "2024-03-16")] alias isPrimal_iff := isPrimal_mk
 
 @[simp]
 theorem decompositionMonoid_iff : DecompositionMonoid (Associates α) ↔ DecompositionMonoid α := by
@@ -1162,7 +1162,7 @@ theorem dvdNotUnit_of_lt {a b : Associates α} (hlt : a < b) : DvdNotUnit a b :=
     apply not_lt_of_le _ hlt
     apply dvd_zero
   rcases hlt with ⟨⟨x, rfl⟩, ndvd⟩
-  refine' ⟨x, _, rfl⟩
+  refine ⟨x, ?_, rfl⟩
   contrapose! ndvd
   rcases ndvd with ⟨u, rfl⟩
   simp
