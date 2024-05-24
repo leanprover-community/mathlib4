@@ -525,7 +525,7 @@ theorem measure_le_setAverage_pos (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞) (hf
     exact AEStronglyMeasurable.nullMeasurableSet_le hf.1 aestronglyMeasurable_const
   haveI := Fact.mk hμ₁.lt_top
   refine (integral_sub_average (μ.restrict s) f).not_gt ?_
-  refine (setIntegral_pos_iff_support_of_nonneg_ae ?_ ?_).?2 _
+  refine (setIntegral_pos_iff_support_of_nonneg_ae ?_ ?_).2 ?_
   · refine measure_mono_null (fun x hx ↦ ?_) H
     simp only [Pi.zero_apply, sub_nonneg, mem_compl_iff, mem_setOf_eq, not_le] at hx
     exact hx.le
