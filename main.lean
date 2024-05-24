@@ -8,9 +8,7 @@ import Mathlib.MeasureTheory.Integral.Marginal
 
 open Set MeasureTheory Filter Topology ENNReal Finset symmDiff
 
-open scoped Classical
-
-theorem preimage_proj {ι : Type*} {X : ι → Type*} (I J : Finset ι)
+theorem preimage_proj {ι : Type*} {X : ι → Type*} (I J : Finset ι) [∀ i : ι, Decidable (i ∈ I)]
     (hIJ : I ⊆ J) (s : ∀ i : I, Set (X i)) :
     (fun t : (∀ j : J, X j) ↦ fun i : I ↦ t ⟨i, hIJ i.2⟩) ⁻¹' (univ.pi s) =
     (@Set.univ J).pi (fun j ↦ if h : j.1 ∈ I then s ⟨j.1, h⟩ else univ) := by
@@ -24,7 +22,8 @@ theorem preimage_proj {ι : Type*} {X : ι → Type*} (I J : Finset ι)
 variable {X : ℕ → Type*} [∀ n, MeasurableSpace (X n)] [∀ n, Nonempty (X n)]
 variable (μ : (n : ℕ) → Measure (X n)) [∀ n, IsProbabilityMeasure (μ n)]
 
-theorem isProjectiveMeasureFamily_prod {ι : Type*} {α : ι → Type*} [∀ i, MeasurableSpace (α i)]
+theorem isProjectiveMeasureFamily_prod {ι : Type*} [∀ (S : Finset ι) i, Decidable (i ∈ S)]
+    {α : ι → Type*} [∀ i, MeasurableSpace (α i)]
     (m : (i : ι) → Measure (α i)) [∀ i, IsProbabilityMeasure (m i)] :
     IsProjectiveMeasureFamily (fun S : Finset ι ↦ (Measure.pi (fun n : S ↦ m n))) := by
   intro T S hST
@@ -82,6 +81,7 @@ theorem eq (s : Finset ℕ) (S : Set ((n : s) → X n)) (mS : MeasurableSet S) (
   refine lintegral_congr <| fun a ↦ ?_
   by_cases ha : a ∈ S <;> simp [ha, Function.updateFinset]
 
+-- exists_lintegral_le
 theorem ge_of_int {α : Type*} [MeasurableSpace α] {m : Measure α} [IsProbabilityMeasure m]
     {ε : ℝ≥0∞} {f : α → ℝ≥0∞} (hf : ε ≤ ∫⁻ a, f a ∂m) (fin_lint : ∫⁻ a, f a ∂m ≠ ∞) :
     ∃ a, ε ≤ f a := by
@@ -237,7 +237,8 @@ theorem firstLemma (A : ℕ → Set (∀ n, X n)) (A_mem : ∀ n, A n ∈ cylind
     · exact lmarginal_mono (anti hmn) x
     · rw [Finset.disjoint_iff_inter_eq_empty]
       ext i
-      simp
+      simp only [Finset.mem_inter, Finset.mem_Icc, zero_le, true_and, Finset.not_mem_empty,
+        iff_false, not_and]
       by_cases h : k ≤ i
       · exact fun h' ↦ not_mem_symmDiff <| Or.inl ⟨(Finset.mem_Icc.2 ⟨h, h'⟩),
           (Finset.mem_union_right _ (Finset.mem_Icc.2 ⟨h, h'⟩))⟩
@@ -380,7 +381,8 @@ theorem isProjectiveLimit_measure_produit :
   rw [measure_produit, Measure.ofAddContent_eq _ _ _ _ h_mem,
     kolContent_congr (isProjectiveMeasureFamily_prod μ) h_mem rfl hs]
 
-variable {ι : Type*} {α : ι → Type*} [∀ i, MeasurableSpace (α i)] [∀ i, Nonempty (α i)]
+variable {ι : Type*} [∀ (I : Finset ι) i, Decidable (i ∈ I)]
+variable {α : ι → Type*} [∀ i, MeasurableSpace (α i)] [∀ i, Nonempty (α i)]
 variable (ν : (i : ι) → Measure (α i)) [∀ i, IsProbabilityMeasure (ν i)]
 
 theorem secondLemma (A : ℕ → Set (∀ i, α i)) (A_mem : ∀ n, A n ∈ cylinders α) (A_anti : Antitone A)
