@@ -34,19 +34,21 @@ open scoped Pointwise
 
 section Mathlib.GroupTheory.Index
 
-theorem Fintype.finiteIndex_iInf {G ι : Type*} [Fintype ι] [Group G]
+variable {G : Type*} [Group G]
+
+theorem Fintype.finiteIndex_iInf {ι : Type*} [Fintype ι]
     (a : ι → Subgroup G) (ha : ∀ i, (a i).FiniteIndex) :
     (⨅ i, a i).FiniteIndex :=
   ⟨Subgroup.index_iInf_ne_zero fun i => (ha i).finiteIndex⟩
 
-theorem Finset.finiteIndex_iInf {G ι : Type*} [Group G]
+theorem Finset.finiteIndex_iInf {ι : Type*}
     {s : Finset ι} (f : ι → Subgroup G) (hs : ∀ i ∈ s, (f i).FiniteIndex) :
       (⨅ i ∈ s, f i).FiniteIndex := by
   rw [iInf_subtype']
   exact Fintype.finiteIndex_iInf _ fun ⟨i, hi⟩ => hs i hi
 
-instance Subgroup.instFiniteIndex_subgroupOf (G : Type*) [Group G]
-    (H K : Subgroup G) [H.FiniteIndex] : (H.subgroupOf K).FiniteIndex :=
+instance Subgroup.instFiniteIndex_subgroupOf (H K : Subgroup G) [H.FiniteIndex] :
+    (H.subgroupOf K).FiniteIndex :=
   ⟨fun h => H.index_ne_zero_of_finite <| H.index_eq_zero_of_relindex_eq_zero h⟩
 
 end Mathlib.GroupTheory.Index
@@ -55,7 +57,7 @@ open scoped Pointwise
 
 section leftCoset_cover_const
 
-variable {G ι : Type*} [Group G] (H : ι → Subgroup G) (f : ι → G)
+variable {G : Type*} [Group G]
 
 theorem Subgroup.leftCoset_cover_const_iff_FiniteIndex {H : Subgroup G} :
     (∃ (s : Finset G), ⋃ g ∈ s, (g : G) • (H : Set G) = Set.univ) ↔ H.FiniteIndex := by
@@ -76,12 +78,11 @@ theorem Subgroup.leftCoset_cover_const_iff_FiniteIndex {H : Subgroup G} :
     rw [mem_leftCoset_iff, SetLike.mem_coe, ← QuotientGroup.eq]
     exact QuotientGroup.out_eq' _
 
-theorem Subgroup.leftCoset_cover_const_of_FiniteIndex
-    (H : Subgroup G) [H.FiniteIndex] :
+theorem Subgroup.leftCoset_cover_const_of_FiniteIndex (H : Subgroup G) [H.FiniteIndex] :
     ∃ (s : Finset G), ⋃ g ∈ s, (g : G) • (H : Set G) = Set.univ :=
   Subgroup.leftCoset_cover_const_iff_FiniteIndex.mpr ‹_›
 
-theorem Subgroup.leftCoset_cover_const_of_le_of_FiniteIndex {G : Type*} [Group G]
+theorem Subgroup.leftCoset_cover_const_of_le_of_FiniteIndex
     {H K : Subgroup G} [H.FiniteIndex] (hle : H ≤ K) :
     ∃ s : Finset G, ⋃ g ∈ s, g • (H : Set G) = K := by
   classical
@@ -96,19 +97,20 @@ theorem Subgroup.leftCoset_cover_const_of_le_of_FiniteIndex {G : Type*} [Group G
 
 /-- If `H` is a subgroup of `G` and `G` is the union of a finite family of left cosets of `H`
 then `H` has finite index. -/
-theorem Subgroup.finiteIndex_of_leftCoset_cover_const
-    {G ι : Type*} [Group G] [Fintype ι] {H : Subgroup G}
-    {f : ι → G} (h : ⋃ i, f i • (H : Set G) = Set.univ) :
+theorem Subgroup.finiteIndex_of_leftCoset_cover_const {ι : Type*} [Fintype ι]
+    {H : Subgroup G} {g : ι → G} (h : ⋃ i, g i • (H : Set G) = Set.univ) :
     H.FiniteIndex := by
   classical
-  refine Subgroup.leftCoset_cover_const_iff_FiniteIndex.mp ⟨Finset.univ.image f, ?_⟩
+  refine Subgroup.leftCoset_cover_const_iff_FiniteIndex.mp ⟨Finset.univ.image g, ?_⟩
   simpa [Set.iUnion_subtype] using h
 
 end leftCoset_cover_const
 
+variable {G : Type*} [Group G]
+
 -- Inductive inner part of `Subgroup.exists_finiteIndex_of_leftCoset_cover`
 theorem Subgroup.exists_finiteIndex_of_leftCoset_cover_aux
-    {G : Type*} (ι : Type*) [Fintype ι] [Group G] [DecidableEq (Subgroup G)]
+    (ι : Type*) [Fintype ι] [DecidableEq (Subgroup G)]
     (H : ι → Subgroup G) (g : ι → G) (hcover : ⋃ i, g i • (H i : Set G) = Set.univ)
     (j : ι) (hj : ⋃ i ∈ Finset.univ.filter (H · = H j), g i • (H i : Set G) ≠ Set.univ) :
     ∃ i, H i ≠ H j ∧ (H i).FiniteIndex := by
@@ -202,7 +204,7 @@ theorem Subgroup.exists_finiteIndex_of_leftCoset_cover_aux
 
 /-- Let the group `G` be the union of finitely many left cosets `g i • H i`.
 Then at least one subgroup `H i` has finite index in `G`. -/
-theorem Subgroup.exists_finiteIndex_of_leftCoset_cover {G ι : Type*} [Group G] [Fintype ι]
+theorem Subgroup.exists_finiteIndex_of_leftCoset_cover {ι : Type*} [Fintype ι]
     {H : ι → Subgroup G} {g : ι → G} (hcover : ⋃ k, g k • (H k : Set G) = Set.univ) :
     ∃ k, (H k).FiniteIndex := by
   classical
@@ -218,7 +220,7 @@ theorem Subgroup.exists_finiteIndex_of_leftCoset_cover {G ι : Type*} [Group G] 
 
 /-- Let the group `G` be the union of finitely many left cosets `g i • H i`.
 Then the cosets of subgroups of infinite index may be omitted from the covering. -/
-theorem Subgroup.leftCoset_cover_filter_FiniteIndex {G ι : Type*} [Group G] [Fintype ι]
+theorem Subgroup.leftCoset_cover_filter_FiniteIndex {ι : Type*} [Fintype ι]
     [DecidablePred fun (H : Subgroup G) => H.FiniteIndex]
     (H : ι → Subgroup G) (g : ι → G) (hcover : ⋃ k, g k • (H k : Set G) = Set.univ) :
     ⋃ k ∈ Finset.univ.filter (fun i => (H i).FiniteIndex), g k • (H k : Set G) = Set.univ := by
