@@ -165,8 +165,7 @@ namespace LiftStruct
 /-- A `LiftStruct` for a commutative square gives a `LiftStruct` for the
 corresponding square in the opposite category. -/
 @[simps]
-def op {sq : CommSq f i p g} (l : LiftStruct sq) : LiftStruct sq.op
-    where
+def op {sq : CommSq f i p g} (l : LiftStruct sq) : LiftStruct sq.op where
   l := l.l.op
   fac_left := by rw [← op_comp, l.fac_right]
   fac_right := by rw [← op_comp, l.fac_left]
@@ -176,8 +175,7 @@ def op {sq : CommSq f i p g} (l : LiftStruct sq) : LiftStruct sq.op
 gives a `LiftStruct` for the corresponding square in the original category. -/
 @[simps]
 def unop {A B X Y : Cᵒᵖ} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g : B ⟶ Y} {sq : CommSq f i p g}
-    (l : LiftStruct sq) : LiftStruct sq.unop
-    where
+    (l : LiftStruct sq) : LiftStruct sq.unop where
   l := l.l.unop
   fac_left := by rw [← unop_comp, l.fac_right]
   fac_right := by rw [← unop_comp, l.fac_left]
@@ -186,8 +184,7 @@ def unop {A B X Y : Cᵒᵖ} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g : B �
 /-- Equivalences of `LiftStruct` for a square and the corresponding square
 in the opposite category. -/
 @[simps]
-def opEquiv (sq : CommSq f i p g) : LiftStruct sq ≃ LiftStruct sq.op
-    where
+def opEquiv (sq : CommSq f i p g) : LiftStruct sq ≃ LiftStruct sq.op where
   toFun := op
   invFun := unop
   left_inv := by aesop_cat
@@ -197,8 +194,7 @@ def opEquiv (sq : CommSq f i p g) : LiftStruct sq ≃ LiftStruct sq.op
 /-- Equivalences of `LiftStruct` for a square in the oppositive category and
 the corresponding square in the original category. -/
 def unopEquiv {A B X Y : Cᵒᵖ} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g : B ⟶ Y}
-    (sq : CommSq f i p g) : LiftStruct sq ≃ LiftStruct sq.unop
-    where
+    (sq : CommSq f i p g) : LiftStruct sq ≃ LiftStruct sq.unop where
   toFun := unop
   invFun := op
   left_inv := by aesop_cat

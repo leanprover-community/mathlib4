@@ -939,7 +939,7 @@ theorem orthogonalProjection_tendsto_closure_iSup [CompleteSpace E] {ι : Type*}
     exact y_mem ε hε
   rw [dist_eq_norm] at hay
   obtain ⟨I, hI⟩ : ∃ I, a ∈ U I := by rwa [Submodule.mem_iSup_of_directed _ hU.directed_le] at ha
-  refine' ⟨I, fun i (hi : I ≤ i) => _⟩
+  refine ⟨I, fun i (hi : I ≤ i) => ?_⟩
   rw [norm_sub_rev, orthogonalProjection_minimal]
   refine' lt_of_le_of_lt _ hay
   change _ ≤ ‖y - (⟨a, hU hi hI⟩ : U i)‖
@@ -1170,7 +1170,7 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
   -- fixed subspace of the endomorphism `φ`
   induction' n with n IH generalizing φ
   · -- Base case: `n = 0`, the fixed subspace is the whole space, so `φ = id`
-    refine' ⟨[], rfl.le, show φ = 1 from _⟩
+    refine ⟨[], rfl.le, show φ = 1 from ?_⟩
     have : ker (ContinuousLinearMap.id ℝ F - φ) = ⊤ := by
       rwa [le_zero_iff, Submodule.finrank_eq_zero, Submodule.orthogonal_eq_bot_iff] at hn
     symm
@@ -1338,8 +1338,7 @@ The projection function is `decompose V x i = orthogonalProjection (V i) x`.
 See note [reducible non-instances]. -/
 abbrev OrthogonalFamily.decomposition [DecidableEq ι] [Fintype ι] {V : ι → Submodule 𝕜 E}
     [∀ i, CompleteSpace (V i)] (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ)
-    (h : iSup V = ⊤) : DirectSum.Decomposition V
-    where
+    (h : iSup V = ⊤) : DirectSum.Decomposition V where
   decompose' x := DFinsupp.equivFunOnFintype.symm fun i => orthogonalProjection (V i) x
   left_inv x := by
     dsimp only
@@ -1416,7 +1415,7 @@ theorem maximal_orthonormal_iff_orthogonalComplement_eq_bot (hv : Orthonormal �
   · -- ** direction 2: empty orthogonal complement implies maximal
     simp only [Subset.antisymm_iff]
     rintro h u (huv : v ⊆ u) hu
-    refine' ⟨_, huv⟩
+    refine ⟨?_, huv⟩
     intro x hxu
     refine' ((mt (h x)) (hu.ne_zero ⟨x, hxu⟩)).imp_symm _
     intro hxv y hy

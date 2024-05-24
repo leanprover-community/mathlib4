@@ -3,11 +3,7 @@ import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Basic
 
 set_option linter.multiGoal false in
-/--
-warning: 'exact .intro' leaves 1 goal 'Lean.Parser.Tactic.exact'
-note: this linter can be disabled with `set_option linter.multiGoal false`
--/
-#guard_msgs in
+#guard_msgs(drop warning) in
 set_option linter.multiGoal true in
 /--
 warning: 'exact .intro' leaves 1 goal 'Lean.Parser.Tactic.exact'
@@ -20,12 +16,7 @@ example : True := by
   exact .intro
 
 set_option linter.multiGoal false in
-/--
-warning: 'assumption' leaves 1 goal 'Lean.Parser.Tactic.assumption'
-note: this linter can be disabled with `set_option linter.multiGoal false`
--/
--- the linter keeps linting after ignoring a `conv`, `conv_lhs`, `conv_rhs`
-#guard_msgs in
+#guard_msgs(drop warning) in
 set_option linter.multiGoal true in
 /--
 warning: 'assumption' leaves 1 goal 'Lean.Parser.Tactic.assumption'
@@ -51,12 +42,7 @@ example {n : Nat} (hn : n = 0) : n + 0 = 0 := by
   assumption
 
 set_option linter.multiGoal false in
-/--
-warning: 'rfl' leaves 1 goal 'Lean.Parser.Tactic.tacticRfl'
-note: this linter can be disabled with `set_option linter.multiGoal false`
--/
--- the linter allows `iterate` and `repeat'`, but continues to lint.
-#guard_msgs in
+#guard_msgs(drop warning) in
 set_option linter.multiGoal true in
 /--
 warning: 'rfl' leaves 1 goal 'Lean.Parser.Tactic.tacticRfl'
