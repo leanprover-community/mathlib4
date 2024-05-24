@@ -185,6 +185,7 @@ import Mathlib.Algebra.GCDMonoid.Nat
 import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.GradedMonoid
 import Mathlib.Algebra.GradedMulAction
+import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Group.AddChar
 import Mathlib.Algebra.Group.Aut
 import Mathlib.Algebra.Group.Basic
@@ -211,6 +212,8 @@ import Mathlib.Algebra.Group.Hom.End
 import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Algebra.Group.Int
+import Mathlib.Algebra.Group.Invertible.Basic
+import Mathlib.Algebra.Group.Invertible.Defs
 import Mathlib.Algebra.Group.MinimalAxioms
 import Mathlib.Algebra.Group.Nat
 import Mathlib.Algebra.Group.NatPowAssoc
@@ -249,9 +252,6 @@ import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.GroupPower.Ring
-import Mathlib.Algebra.GroupRingAction.Basic
-import Mathlib.Algebra.GroupRingAction.Invariant
-import Mathlib.Algebra.GroupRingAction.Subobjects
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Conj
@@ -259,6 +259,7 @@ import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.GroupWithZero.InjSurj
+import Mathlib.Algebra.GroupWithZero.Invertible
 import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.GroupWithZero.Pi
@@ -332,10 +333,6 @@ import Mathlib.Algebra.Homology.SingleHomology
 import Mathlib.Algebra.Homology.TotalComplex
 import Mathlib.Algebra.Homology.TotalComplexShift
 import Mathlib.Algebra.Homology.TotalComplexSymmetry
-import Mathlib.Algebra.Invertible.Basic
-import Mathlib.Algebra.Invertible.Defs
-import Mathlib.Algebra.Invertible.GroupWithZero
-import Mathlib.Algebra.Invertible.Ring
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.Algebra.Jordan.Basic
 import Mathlib.Algebra.Lie.Abelian
@@ -492,6 +489,7 @@ import Mathlib.Algebra.Order.Group.Units
 import Mathlib.Algebra.Order.Group.WithTop
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled
+import Mathlib.Algebra.Order.GroupWithZero.WithZero
 import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Algebra.Order.Hom.Ring
@@ -605,6 +603,9 @@ import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Regular.Basic
 import Mathlib.Algebra.Regular.Pow
 import Mathlib.Algebra.Regular.SMul
+import Mathlib.Algebra.Ring.Action.Basic
+import Mathlib.Algebra.Ring.Action.Invariant
+import Mathlib.Algebra.Ring.Action.Subobjects
 import Mathlib.Algebra.Ring.AddAut
 import Mathlib.Algebra.Ring.Aut
 import Mathlib.Algebra.Ring.Basic
@@ -627,6 +628,7 @@ import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.Algebra.Ring.Identities
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Ring.Invertible
 import Mathlib.Algebra.Ring.MinimalAxioms
 import Mathlib.Algebra.Ring.Nat
 import Mathlib.Algebra.Ring.NegOnePow
@@ -1353,6 +1355,7 @@ import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Limits.FunctorToTypes
 import Mathlib.CategoryTheory.Limits.HasLimits
+import Mathlib.CategoryTheory.Limits.IndYoneda
 import Mathlib.CategoryTheory.Limits.Indization.IndObject
 import Mathlib.CategoryTheory.Limits.IsConnected
 import Mathlib.CategoryTheory.Limits.IsLimit
@@ -1452,6 +1455,7 @@ import Mathlib.CategoryTheory.Monad.Types
 import Mathlib.CategoryTheory.Monoidal.Bimod
 import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
+import Mathlib.CategoryTheory.Monoidal.Cartesian.Comon_
 import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.Monoidal.Center
 import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
@@ -3227,6 +3231,7 @@ import Mathlib.Order.Filter.SmallSets
 import Mathlib.Order.Filter.Subsingleton
 import Mathlib.Order.Filter.Ultrafilter
 import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
+import Mathlib.Order.Fin
 import Mathlib.Order.FixedPoints
 import Mathlib.Order.GaloisConnection
 import Mathlib.Order.GameAdd
@@ -3769,6 +3774,7 @@ import Mathlib.Tactic.Linarith.SimplexAlgorithm.SimplexAlgorithm
 import Mathlib.Tactic.Linarith.Verification
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Linter
+import Mathlib.Tactic.Linter.HashCommandLinter
 import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.Measurability
 import Mathlib.Tactic.Measurability.Init
