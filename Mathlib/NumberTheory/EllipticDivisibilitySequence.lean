@@ -431,7 +431,7 @@ theorem rel₄_of_anti_oddRec_evenRec (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
     (oddRec : ∀ m ≥ 2, OddRec W m) (evenRec : ∀ m ≥ 3, EvenRec W m) :
     ∀ ⦃a b c d : ℤ⦄, Rel₄OfValid W a b c d :=
   -- apply induction on `a`
-  strong_induction 6 -- if `a < 6` the conclusion holds vacuously
+  strongRec 6 -- if `a < 6` the conclusion holds vacuously
     (fun a ha b c d same anti ↦ ((same.six_le_of_strictAnti₄ anti).not_lt ha).elim)
     -- otherwise, it suffices to deal with the "minimal" case `c = cMin a` and `d = dMin a`
     fun a h6 ih ↦ rel₄_of_min₂ one two fun {a' b} haa same anti ↦ by
