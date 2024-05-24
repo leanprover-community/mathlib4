@@ -336,10 +336,10 @@ variable {k l : ℕ}
 
 theorem mk_of_lt (ζ : M) (hk : 0 < k) (h1 : ζ ^ k = 1) (h : ∀ l : ℕ, 0 < l → l < k → ζ ^ l ≠ 1) :
     IsPrimitiveRoot ζ k := by
-  refine' ⟨h1, fun l hl => _⟩
+  refine ⟨h1, fun l hl => ?_⟩
   suffices k.gcd l = k by exact this ▸ k.gcd_dvd_right l
   rw [eq_iff_le_not_lt]
-  refine' ⟨Nat.le_of_dvd hk (k.gcd_dvd_left l), _⟩
+  refine ⟨Nat.le_of_dvd hk (k.gcd_dvd_left l), ?_⟩
   intro h'; apply h _ (Nat.gcd_pos_of_pos_left _ hk) h'
   exact pow_gcd_eq_one _ h1 hl
 #align is_primitive_root.mk_of_lt IsPrimitiveRoot.mk_of_lt
@@ -421,9 +421,9 @@ theorem pow_of_coprime (i : ℕ) (hi : i.Coprime k) : IsPrimitiveRoot (ζ ^ i) k
   rcases h.isUnit (Nat.pos_of_ne_zero h0) with ⟨ζ, rfl⟩
   rw [← Units.val_pow_eq_pow_val]
   rw [coe_units_iff] at h ⊢
-  refine'
+  refine
     { pow_eq_one := by rw [← pow_mul', pow_mul, h.pow_eq_one, one_pow]
-      dvd_of_pow_eq_one := _ }
+      dvd_of_pow_eq_one := ?_ }
   intro l hl
   apply h.dvd_of_pow_eq_one
   rw [← pow_one ζ, ← zpow_natCast ζ, ← hi.gcd_eq_one, Nat.gcd_eq_gcd_ab, zpow_add, mul_pow,
@@ -438,7 +438,7 @@ theorem pow_of_prime (h : IsPrimitiveRoot ζ k) {p : ℕ} (hprime : Nat.Prime p)
 
 theorem pow_iff_coprime (h : IsPrimitiveRoot ζ k) (h0 : 0 < k) (i : ℕ) :
     IsPrimitiveRoot (ζ ^ i) k ↔ i.Coprime k := by
-  refine' ⟨_, h.pow_of_coprime i⟩
+  refine ⟨?_, h.pow_of_coprime i⟩
   intro hi
   obtain ⟨a, ha⟩ := i.gcd_dvd_left k
   obtain ⟨b, hb⟩ := i.gcd_dvd_right k
@@ -466,7 +466,7 @@ theorem eq_orderOf : k = orderOf ζ :=
 
 protected theorem iff (hk : 0 < k) :
     IsPrimitiveRoot ζ k ↔ ζ ^ k = 1 ∧ ∀ l : ℕ, 0 < l → l < k → ζ ^ l ≠ 1 := by
-  refine' ⟨fun h => ⟨h.pow_eq_one, fun l hl' hl => _⟩,
+  refine ⟨fun h => ⟨h.pow_eq_one, fun l hl' hl => ?_⟩,
     fun ⟨hζ, hl⟩ => IsPrimitiveRoot.mk_of_lt ζ hk hζ hl⟩
   rw [h.eq_orderOf] at hl
   exact pow_ne_one_of_lt_orderOf' hl'.ne' hl
@@ -611,7 +611,7 @@ theorem inv (h : IsPrimitiveRoot ζ k) : IsPrimitiveRoot ζ⁻¹ k :=
 
 @[simp]
 theorem inv_iff : IsPrimitiveRoot ζ⁻¹ k ↔ IsPrimitiveRoot ζ k := by
-  refine' ⟨_, fun h => inv h⟩; intro h; rw [← inv_inv ζ]; exact inv h
+  refine ⟨?_, fun h => inv h⟩; intro h; rw [← inv_inv ζ]; exact inv h
 #align is_primitive_root.inv_iff IsPrimitiveRoot.inv_iff
 
 theorem zpow_of_gcd_eq_one (h : IsPrimitiveRoot ζ k) (i : ℤ) (hi : i.gcd k = 1) :
@@ -665,11 +665,11 @@ theorem neZero' {n : ℕ+} (hζ : IsPrimitiveRoot ζ n) : NeZero ((n : ℕ) : R)
     rw [hm.1, hk, pow_succ', mul_assoc, pow_mul', ← frobenius_def, ← frobenius_one p] at this
     exfalso
     have hpos : 0 < p ^ k * m := by
-      refine' mul_pos (pow_pos hpri.1.pos _) (Nat.pos_of_ne_zero fun h => _)
+      refine mul_pos (pow_pos hpri.1.pos _) (Nat.pos_of_ne_zero fun h => ?_)
       have H := hm.1
       rw [h] at H
       simp at H
-    refine' hζ.pow_ne_one_of_pos_of_lt hpos _ (frobenius_inj R p this)
+    refine hζ.pow_ne_one_of_pos_of_lt hpos ?_ (frobenius_inj R p this)
     rw [hm.1, hk, pow_succ', mul_assoc, mul_comm p]
     exact lt_mul_of_one_lt_right hpos hpri.1.one_lt
   · exact NeZero.of_not_dvd R hp
@@ -703,7 +703,7 @@ theorem neg_one (p : ℕ) [Nontrivial R] [h : CharP R p] (hp : p ≠ 2) :
 /-- If `1 < k` then `(∑ i in range k, ζ ^ i) = 0`. -/
 theorem geom_sum_eq_zero [IsDomain R] {ζ : R} (hζ : IsPrimitiveRoot ζ k) (hk : 1 < k) :
     ∑ i in range k, ζ ^ i = 0 := by
-  refine' eq_zero_of_ne_zero_of_mul_left_eq_zero (sub_ne_zero_of_ne (hζ.ne_one hk).symm) _
+  refine eq_zero_of_ne_zero_of_mul_left_eq_zero (sub_ne_zero_of_ne (hζ.ne_one hk).symm) ?_
   rw [mul_neg_geom_sum, hζ.pow_eq_one, sub_self]
 #align is_primitive_root.geom_sum_eq_zero IsPrimitiveRoot.geom_sum_eq_zero
 
@@ -735,7 +735,7 @@ def zmodEquivZPowers (h : IsPrimitiveRoot ζ k) : ZMod k ≃+ Additive (Subgroup
         rw [← (CharP.intCast_eq_zero_iff (ZMod k) k _).mpr this, eq_comm]
         exact ZMod.intCast_rightInverse i
       · rintro ⟨ξ, i, rfl⟩
-        refine' ⟨Int.castAddHom (ZMod k) i, _⟩
+        refine ⟨Int.castAddHom (ZMod k) i, ?_⟩
         rw [AddMonoidHom.liftOfRightInverse_comp_apply]
         rfl)
 #align is_primitive_root.zmod_equiv_zpowers IsPrimitiveRoot.zmodEquivZPowers
@@ -782,10 +782,10 @@ theorem zpowers_eq {k : ℕ+} {ζ : Rˣ} (h : IsPrimitiveRoot ζ k) :
     Subgroup.zpowers ζ = rootsOfUnity k R := by
   apply SetLike.coe_injective
   haveI F : Fintype (Subgroup.zpowers ζ) := Fintype.ofEquiv _ h.zmodEquivZPowers.toEquiv
-  refine'
+  refine
     @Set.eq_of_subset_of_card_le Rˣ (Subgroup.zpowers ζ) (rootsOfUnity k R) F
       (rootsOfUnity.fintype R k)
-      (Subgroup.zpowers_le_of_mem <| show ζ ∈ rootsOfUnity k R from h.pow_eq_one) _
+      (Subgroup.zpowers_le_of_mem <| show ζ ∈ rootsOfUnity k R from h.pow_eq_one) ?_
   calc
     Fintype.card (rootsOfUnity k R) ≤ k := card_rootsOfUnity R k
     _ = Fintype.card (ZMod k) := (ZMod.card k).symm
@@ -828,7 +828,7 @@ theorem eq_pow_of_mem_rootsOfUnity {k : ℕ+} {ζ ξ : Rˣ} (h : IsPrimitiveRoot
   let i := n % k
   have hi0 : 0 ≤ i := Int.emod_nonneg _ (ne_of_gt hk0)
   lift i to ℕ using hi0 with i₀ hi₀
-  refine' ⟨i₀, _, _⟩
+  refine ⟨i₀, ?_, ?_⟩
   · zify; rw [hi₀]; exact Int.emod_lt_of_pos _ hk0
   · rw [← zpow_natCast, hi₀, ← Int.emod_add_ediv n k, zpow_add, zpow_mul, h.zpow_eq_one, one_zpow,
       mul_one]
@@ -952,7 +952,7 @@ theorem card_primitiveRoots {ζ : R} {k : ℕ} (h : IsPrimitiveRoot ζ k) :
   by_cases h0 : k = 0
   · simp [h0]
   symm
-  refine' Finset.card_congr (fun i _ => ζ ^ i) _ _ _
+  refine Finset.card_congr (fun i _ => ζ ^ i) ?_ ?_ ?_
   · simp only [true_and_iff, and_imp, mem_filter, mem_range, mem_univ]
     rintro i - hi
     rw [mem_primitiveRoots (Nat.pos_of_ne_zero h0)]
@@ -996,7 +996,7 @@ theorem nthRoots_one_eq_biUnion_primitiveRoots' {ζ : R} {n : ℕ+} (h : IsPrimi
   · apply le_of_eq
     rw [h.card_nthRootsFinset, Finset.card_biUnion]
     · nth_rw 1 [← Nat.sum_totient n]
-      refine' sum_congr rfl _
+      refine sum_congr rfl ?_
       simp only [Nat.mem_divisors]
       rintro k ⟨⟨d, hd⟩, -⟩
       rw [mul_comm] at hd
@@ -1069,7 +1069,7 @@ theorem autToPow_spec (f : S ≃ₐ[R] S) : μ ^ (hμ.autToPow R f : ZMod n).val
   rw [IsPrimitiveRoot.coe_autToPow_apply]
   generalize_proofs h
   have := h.choose_spec
-  refine' (_ : ((hμ.toRootsOfUnity : Sˣ) : S) ^ _ = _).trans this.symm
+  refine (?_ : ((hμ.toRootsOfUnity : Sˣ) : S) ^ _ = _).trans this.symm
   rw [← rootsOfUnity.coe_pow, ← rootsOfUnity.coe_pow]
   congr 2
   rw [pow_eq_pow_iff_modEq, ZMod.val_natCast, hμ.eq_orderOf, ← Subgroup.orderOf_coe,

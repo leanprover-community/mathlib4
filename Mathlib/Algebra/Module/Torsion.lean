@@ -90,7 +90,7 @@ variable (R)
 
 @[simp]
 theorem torsionOf_eq_top_iff (m : M) : torsionOf R M m = ⊤ ↔ m = 0 := by
-  refine' ⟨fun h => _, fun h => by simp [h]⟩
+  refine ⟨fun h => ?_, fun h => by simp [h]⟩
   rw [← one_smul R m, ← mem_torsionOf_iff m (1 : R), h]
   exact Submodule.mem_top
 #align ideal.torsion_of_eq_top_iff Ideal.torsionOf_eq_top_iff
@@ -98,7 +98,7 @@ theorem torsionOf_eq_top_iff (m : M) : torsionOf R M m = ⊤ ↔ m = 0 := by
 @[simp]
 theorem torsionOf_eq_bot_iff_of_noZeroSMulDivisors [Nontrivial R] [NoZeroSMulDivisors R M] (m : M) :
     torsionOf R M m = ⊥ ↔ m ≠ 0 := by
-  refine' ⟨fun h contra => _, fun h => (Submodule.eq_bot_iff _).mpr fun r hr => _⟩
+  refine ⟨fun h contra => ?_, fun h => (Submodule.eq_bot_iff _).mpr fun r hr => ?_⟩
   · rw [contra, torsionOf_zero] at h
     exact bot_ne_top.symm h
   · rw [mem_torsionOf_iff, smul_eq_zero] at hr
@@ -110,12 +110,12 @@ but requires the stronger hypothesis `NoZeroSMulDivisors R M`. -/
 theorem CompleteLattice.Independent.linear_independent' {ι R M : Type*} {v : ι → M} [Ring R]
     [AddCommGroup M] [Module R M] (hv : CompleteLattice.Independent fun i => R ∙ v i)
     (h_ne_zero : ∀ i, Ideal.torsionOf R M (v i) = ⊥) : LinearIndependent R v := by
-  refine' linearIndependent_iff_not_smul_mem_span.mpr fun i r hi => _
+  refine linearIndependent_iff_not_smul_mem_span.mpr fun i r hi => ?_
   replace hv := CompleteLattice.independent_def.mp hv i
   simp only [iSup_subtype', ← Submodule.span_range_eq_iSup (ι := Subtype _), disjoint_iff] at hv
   have : r • v i ∈ ⊥ := by
     rw [← hv, Submodule.mem_inf]
-    refine' ⟨Submodule.mem_span_singleton.mpr ⟨r, rfl⟩, _⟩
+    refine ⟨Submodule.mem_span_singleton.mpr ⟨r, rfl⟩, ?_⟩
     convert hi
     ext
     simp
@@ -231,7 +231,7 @@ end Module
 
 end Defs
 
-lemma IsSMulRegular.isSMulRegular_iff_torsionBy_top_eq_bot {R} (M : Type*)
+lemma isSMulRegular_iff_torsionBy_eq_bot {R} (M : Type*)
     [CommRing R] [AddCommGroup M] [Module R M] (r : R) :
     IsSMulRegular M r ↔ Submodule.torsionBy R M r = ⊥ :=
   Iff.symm (DistribMulAction.toLinearMap R M r).ker_eq_bot
@@ -261,7 +261,7 @@ theorem mem_torsionBy_iff (x : M) : x ∈ torsionBy R M a ↔ a • x = 0 :=
 
 @[simp]
 theorem mem_torsionBySet_iff (x : M) : x ∈ torsionBySet R M s ↔ ∀ a : s, (a : R) • x = 0 := by
-  refine' ⟨fun h ⟨a, ha⟩ => mem_sInf.mp h _ (Set.mem_image_of_mem _ ha), fun h => mem_sInf.mpr _⟩
+  refine ⟨fun h ⟨a, ha⟩ => mem_sInf.mp h _ (Set.mem_image_of_mem _ ha), fun h => mem_sInf.mpr ?_⟩
   rintro _ ⟨a, ha, rfl⟩; exact h ⟨a, ha⟩
 #align submodule.mem_torsion_by_set_iff Submodule.mem_torsionBySet_iff
 
@@ -321,7 +321,7 @@ namespace Module
 
 @[simp]
 theorem isTorsionBySet_singleton_iff : IsTorsionBySet R M {a} ↔ IsTorsionBy R M a := by
-  refine' ⟨fun h x => @h _ ⟨_, Set.mem_singleton _⟩, fun h x => _⟩
+  refine ⟨fun h x => @h _ ⟨_, Set.mem_singleton _⟩, fun h x => ?_⟩
   rintro ⟨b, rfl : b = a⟩; exact @h _
 #align module.is_torsion_by_singleton_iff Module.isTorsionBySet_singleton_iff
 
@@ -363,12 +363,12 @@ namespace Submodule
 
 open Module
 
-theorem torsionBySet_isTorsionBySet : IsTorsionBySet R (torsionBySet R M s) s := fun ⟨_, hx⟩ a =>
-  Subtype.ext <| (mem_torsionBySet_iff _ _).mp hx a
+theorem torsionBySet_isTorsionBySet : IsTorsionBySet R (torsionBySet R M s) s :=
+  fun ⟨_, hx⟩ a => Subtype.ext <| (mem_torsionBySet_iff _ _).mp hx a
 #align submodule.torsion_by_set_is_torsion_by_set Submodule.torsionBySet_isTorsionBySet
 
 /-- The `a`-torsion submodule is an `a`-torsion module. -/
-theorem torsionBy_isTorsionBy : IsTorsionBy R (torsionBy R M a) a := fun _ => smul_torsionBy _ _
+theorem torsionBy_isTorsionBy : IsTorsionBy R (torsionBy R M a) a := smul_torsionBy a
 #align submodule.torsion_by_is_torsion_by Submodule.torsionBy_isTorsionBy
 
 @[simp]
@@ -419,7 +419,7 @@ theorem iSup_torsionBySet_ideal_eq_torsionBySet_iInf :
     obtain ⟨μ, hμ⟩ :=
       (mem_iSup_finset_iff_exists_sum _ _).mp
         ((Ideal.eq_top_iff_one _).mp <| (Ideal.iSup_iInf_eq_top_iff_pairwise h _).mpr hp)
-    refine' ⟨fun i => ⟨(μ i : R) • x, _⟩, _⟩
+    refine ⟨fun i => ⟨(μ i : R) • x, ?_⟩, ?_⟩
     · rw [mem_torsionBySet_iff] at hx ⊢
       rintro ⟨a, ha⟩
       rw [smul_smul]
@@ -519,19 +519,15 @@ namespace Module
 
 variable {I : Ideal R} {r : R}
 
-/-- can't be an instance because hM can't be inferred -/
+/-- can't be an instance because `hM` can't be inferred -/
 def IsTorsionBySet.hasSMul (hM : IsTorsionBySet R M I) : SMul (R ⧸ I) M where
   smul b x := I.liftQ (LinearMap.lsmul R M)
                 ((isTorsionBySet_iff_subseteq_ker_lsmul _).mp hM) b x
 #align module.is_torsion_by_set.has_smul Module.IsTorsionBySet.hasSMul
 
-open Pointwise in
-/-- See above -/
-def IsTorsionBy.hasSMul (hM : IsTorsionBy R M r) : SMul (R ⧸ Ideal.span {r}) M where
-  smul b x :=
-    (Ideal.span {r}).liftQ (LinearMap.lsmul R M)
-      ((Ideal.span_singleton_le_iff_mem _).mpr
-        ((isTorsionBy_iff_mem_ker_lsmul r).mp hM)) b x
+/-- can't be an instance because `hM` can't be inferred -/
+abbrev IsTorsionBy.hasSMul (hM : IsTorsionBy R M r) : SMul (R ⧸ Ideal.span {r}) M :=
+  ((isTorsionBySet_span_singleton_iff r).mpr hM).hasSMul
 
 @[simp]
 theorem IsTorsionBySet.mk_smul (hM : IsTorsionBySet R M I) (b : R) (x : M) :
@@ -548,8 +544,7 @@ theorem IsTorsionBy.mk_smul (hM : IsTorsionBy R M r) (b : R) (x : M) :
 
 /-- An `(R ⧸ I)`-module is an `R`-module which `IsTorsionBySet R M I`. -/
 def IsTorsionBySet.module (hM : IsTorsionBySet R M I) : Module (R ⧸ I) M :=
-  @Function.Surjective.moduleLeft _ _ _ _ _ _ _ hM.hasSMul _
-    Ideal.Quotient.mk_surjective (IsTorsionBySet.mk_smul hM)
+  letI := hM.hasSMul; I.mkQ_surjective.moduleLeft _ (IsTorsionBySet.mk_smul hM)
 #align module.is_torsion_by_set.module Module.IsTorsionBySet.module
 
 instance IsTorsionBySet.isScalarTower (hM : IsTorsionBySet R M I)
@@ -561,15 +556,8 @@ instance IsTorsionBySet.isScalarTower (hM : IsTorsionBySet R M I)
 #align module.is_torsion_by_set.is_scalar_tower Module.IsTorsionBySet.isScalarTower
 
 /-- An `(R ⧸ Ideal.span {r})`-module is an `R`-module for which `IsTorsionBy R M r`. -/
-def IsTorsionBy.module (hM : IsTorsionBy R M r) : Module (R ⧸ Ideal.span {r}) M :=
-  @Function.Surjective.moduleLeft _ _ _ _ _ _ _ hM.hasSMul _
-    Ideal.Quotient.mk_surjective (IsTorsionBy.mk_smul hM)
-
-instance IsTorsionBy.isScalarTower (hM : IsTorsionBy R M r)
-    {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M] [IsScalarTower S R R] :
-    @IsScalarTower S (R ⧸ Ideal.span {r}) M _ (IsTorsionBy.module hM).toSMul _ :=
-  @IsScalarTower.mk S (R ⧸ Ideal.span {r}) M _ (IsTorsionBy.module hM).toSMul _
-    (fun b d x => Quotient.inductionOn' d fun c => (smul_assoc b c x : _))
+abbrev IsTorsionBy.module (hM : IsTorsionBy R M r) : Module (R ⧸ Ideal.span {r}) M :=
+  ((isTorsionBySet_span_singleton_iff r).mpr hM).module
 
 /-- Any module is also a module over the quotient of the ring by the annihilator.
 Not an instance because it causes synthesis failures / timeouts. -/
@@ -581,7 +569,7 @@ theorem isTorsionBy_quotient_iff (N : Submodule R M) (r : R) :
   Iff.trans N.mkQ_surjective.forall <| forall_congr' fun _ =>
     Submodule.Quotient.mk_eq_zero N
 
-theorem isTorsionBy_quotient_of_isTorsionBy (N : Submodule R M) (r : R)
+theorem IsTorsionBy.quotient (N : Submodule R M) {r : R}
     (h : IsTorsionBy R M r) : IsTorsionBy R (M⧸N) r :=
   (isTorsionBy_quotient_iff N r).mpr fun x => @h x ▸ N.zero_mem
 
@@ -591,7 +579,7 @@ theorem isTorsionBySet_quotient_iff (N : Submodule R M) (s : Set R) :
     Iff.trans Subtype.forall <| forall₂_congr fun _ _ =>
       Submodule.Quotient.mk_eq_zero N
 
-theorem isTorsionBySet_quotient_of_isTorsionBySet (N : Submodule R M) {s}
+theorem IsTorsionBySet.quotient (N : Submodule R M) {s}
     (h : IsTorsionBySet R M s) : IsTorsionBySet R (M⧸N) s :=
   (isTorsionBySet_quotient_iff N s).mpr fun x r h' => @h x ⟨r, h'⟩ ▸ N.zero_mem
 
@@ -616,20 +604,17 @@ instance : Module (R ⧸ Ideal.span s) (M ⧸ s • (⊤ : Submodule R M)) :=
   ((isTorsionBySet_iff_is_torsion_by_span s).mp
     (isTorsionBySet_quotient_set_smul M s)).module
 
-instance : IsScalarTower R (R ⧸ Ideal.span s) (M ⧸ s • (⊤ : Submodule R M)) :=
-  IsTorsionBySet.isScalarTower _
-
 instance : Module (R ⧸ I) (M ⧸ I • (⊤ : Submodule R M)) :=
   (isTorsionBySet_quotient_ideal_smul M I).module
-
-instance : IsScalarTower R (R ⧸ I) (M ⧸ I • (⊤ : Submodule R M)) :=
-  IsTorsionBySet.isScalarTower _
 
 instance : Module (R ⧸ Ideal.span {r}) (M ⧸ r • (⊤ : Submodule R M)) :=
   (isTorsionBy_quotient_element_smul M r).module
 
-instance : IsScalarTower R (R ⧸ Ideal.span {r}) (M ⧸ r • (⊤ : Submodule R M)) :=
-  IsTorsionBy.isScalarTower _
+lemma Quotient.mk_smul_mk (r : R) (m : M) :
+    Ideal.Quotient.mk I r •
+      Submodule.Quotient.mk (p := (I • ⊤ : Submodule R M)) m =
+      Submodule.Quotient.mk (p := (I • ⊤ : Submodule R M)) (r • m) :=
+  rfl
 
 end Module
 
@@ -773,7 +758,7 @@ variable {R M}
 theorem _root_.Submodule.annihilator_top_inter_nonZeroDivisors [Module.Finite R M]
     (hM : Module.IsTorsion R M) : ((⊤ : Submodule R M).annihilator : Set R) ∩ R⁰ ≠ ∅ := by
   obtain ⟨S, hS⟩ := ‹Module.Finite R M›.out
-  refine' Set.Nonempty.ne_empty ⟨_, _, (∏ x in S, (@hM x).choose : R⁰).prop⟩
+  refine Set.Nonempty.ne_empty ⟨_, ?_, (∏ x in S, (@hM x).choose : R⁰).prop⟩
   rw [Submonoid.coe_finset_prod, SetLike.mem_coe, ← hS, mem_annihilator_span]
   intro n
   letI := Classical.decEq M
@@ -929,7 +914,7 @@ namespace AddMonoid
 
 theorem isTorsion_iff_isTorsion_nat [AddCommMonoid M] :
     AddMonoid.IsTorsion M ↔ Module.IsTorsion ℕ M := by
-  refine' ⟨fun h x => _, fun h x => _⟩
+  refine ⟨fun h x => ?_, fun h x => ?_⟩
   · obtain ⟨n, h0, hn⟩ := (h x).exists_nsmul_eq_zero
     exact ⟨⟨n, mem_nonZeroDivisors_of_ne_zero <| ne_of_gt h0⟩, hn⟩
   · rw [isOfFinAddOrder_iff_nsmul_eq_zero]
@@ -939,7 +924,7 @@ theorem isTorsion_iff_isTorsion_nat [AddCommMonoid M] :
 
 theorem isTorsion_iff_isTorsion_int [AddCommGroup M] :
     AddMonoid.IsTorsion M ↔ Module.IsTorsion ℤ M := by
-  refine' ⟨fun h x => _, fun h x => _⟩
+  refine ⟨fun h x => ?_, fun h x => ?_⟩
   · obtain ⟨n, h0, hn⟩ := (h x).exists_nsmul_eq_zero
     exact
       ⟨⟨n, mem_nonZeroDivisors_of_ne_zero <| ne_of_gt <| Int.natCast_pos.mpr h0⟩,

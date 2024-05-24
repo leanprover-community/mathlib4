@@ -125,8 +125,8 @@ theorem mul_and_mul_iff [Mul R] [IsScalarTower R R M] :
 lemma isSMulRegular_of_injective_of_isSMulRegular {N F} [SMul R N]
     [FunLike F M N] [MulActionHomClass F R M N] (f : F) {r : R}
     (h1 : Function.Injective f) (h2 : IsSMulRegular N r) : IsSMulRegular M r :=
-    fun x y h' => h1 <| h2 <| Eq.trans (map_smulₛₗ f r x).symm <|
-      Eq.trans (congrArg f h') (map_smulₛₗ f r y)
+    fun x y h3 => h1 <| h2 <| (map_smulₛₗ f r x).symm.trans <|
+      (congrArg f h3).trans <| map_smulₛₗ f r y
 
 end SMul
 
@@ -163,7 +163,7 @@ theorem pow (n : ℕ) (ra : IsSMulRegular M a) : IsSMulRegular M (a ^ n) := by
 
 /-- An element `a` is `M`-regular if and only if a positive power of `a` is `M`-regular. -/
 theorem pow_iff {n : ℕ} (n0 : 0 < n) : IsSMulRegular M (a ^ n) ↔ IsSMulRegular M a := by
-  refine' ⟨_, pow n⟩
+  refine ⟨?_, pow n⟩
   rw [← Nat.succ_pred_eq_of_pos n0, pow_succ, ← smul_eq_mul]
   exact of_smul _
 #align is_smul_regular.pow_iff IsSMulRegular.pow_iff
@@ -269,12 +269,12 @@ variable {M}
 protected
 lemma IsSMulRegular.eq_zero_of_smul_eq_zero [Zero M] [SMulZeroClass R M]
     {r : R} {x : M} (h1 : IsSMulRegular M r) (h2 : r • x = 0) : x = 0 :=
-  h1 <| Eq.trans h2 <| Eq.symm <| smul_zero r
+  h1 (h2.trans (smul_zero r).symm)
 
 end SMulZeroClass
 
 lemma Equiv.isSMulRegular_congr {R S M M'} [SMul R M] [SMul S M'] {e : M ≃ M'}
     {r : R} {s : S} (h : ∀ x, e (r • x) = s • e x) :
     IsSMulRegular M r ↔ IsSMulRegular M' s :=
-  Iff.trans (e.comp_injective _).symm <|
-    Iff.trans (iff_of_eq <| congrArg _ <| funext h) <| e.injective_comp _
+  (e.comp_injective _).symm.trans  <|
+    (iff_of_eq <| congrArg _ <| funext h).trans <| e.injective_comp _
