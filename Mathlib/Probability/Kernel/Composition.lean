@@ -404,7 +404,7 @@ theorem lintegral_compProd' (κ : kernel α β) [IsSFiniteKernel κ] (η : kerne
         (fun ab => ∫⁻ c, f' (ab.2, c) ∂η ab) ∘ fun b => (a, b) :=
       by ext1 ab; rfl
     rw [this]
-    refine Measurable.comp ?_ measurable_prod_mk_left
+    refine' Measurable.comp _ measurable_prod_mk_left
     exact
       Measurable.lintegral_kernel_prod_right
         ((SimpleFunc.measurable _).comp (measurable_fst.snd.prod_mk measurable_snd))
