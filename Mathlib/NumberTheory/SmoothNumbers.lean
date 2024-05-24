@@ -340,7 +340,7 @@ lemma map_prime_pow_mul {F : Type*} [CommSemiring F] {f : ℕ → F}
     f (p ^ e * m) = f (p ^ e) * f m :=
   hmul <| Coprime.pow_left _ <| hp.smoothNumbers_coprime <| Subtype.mem m
 
-/-- The product of two `n`-smooth numbers is a `n`-smooth number -/
+/-- The product of two `n`-smooth numbers is an `n`-smooth number -/
 theorem mul_mem_smoothNumbers {m₁ m₂ n : ℕ}
     (hm1 : m₁ ∈ n.smoothNumbers) (hm2 : m₂ ∈ n.smoothNumbers) :
       (m₁ * m₂) ∈ n.smoothNumbers :=
