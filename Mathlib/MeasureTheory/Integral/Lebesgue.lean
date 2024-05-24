@@ -938,7 +938,7 @@ theorem lintegral_pos_iff_support {f : α → ℝ≥0∞} (hf : Measurable f) :
   simp [pos_iff_ne_zero, hf, Filter.EventuallyEq, ae_iff, Function.support]
 #align measure_theory.lintegral_pos_iff_support MeasureTheory.lintegral_pos_iff_support
 
-theorem positive_lintegral {C : Set α} (hmC : MeasurableSet C)
+theorem lintegral_positive {C : Set α} (hmC : MeasurableSet C)
   (h_nonneg : 0 < μ C) {h : α → ℝ≥0∞} (h_neq : ∀ x ∈ C, h x ≠ 0) (hm : Measurable h)
     : 0 < ∫⁻ x in C, h x ∂μ := by
   rw [show ∫⁻ x in C, h x ∂μ = ∫⁻ x, h x ∂μ.restrict C by rfl]
