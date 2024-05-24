@@ -10,8 +10,9 @@ import Lean.Linter.Util
 /-!
 # Linter for `attribute instance in` declarations
 
-The syntax `attribute [instance] instName in` can be used to accidentally create a global
-instance. This is **not** obvious from reading the code, and in fact happened twice during the port --- hence, we lint against it.
+The syntax `attribute [instance] instName in` can be used to accidentally create a global instance.
+This is **not** obvious from reading the code, and in fact happened twice during the port,
+hence, we lint against it.
 
 *Example*: before this was discovered, `Mathlib/Topology/Category/TopCat/Basic.lean`
 contained the following code:
@@ -73,7 +74,7 @@ def attributeInstanceIn : Linter where run := withSetOptionIn fun stx => do
       please remove the `in` or make this a `local instance` instead"
       -- This is e.g. a scoped instance, which we don't care about.
       | some (_next, _n) => return
-      -- This is an instance attribute without "in": fully legitimate and not surprising. Continue.
+      -- This is an instance attribute without "in": fully legitimate and not surprising.
       | none => return
   | _ => return
 
