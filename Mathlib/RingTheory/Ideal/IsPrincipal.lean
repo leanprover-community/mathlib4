@@ -151,21 +151,6 @@ theorem span_singleton_neg (x : R) : (span {-x} : Ideal R) = span {x} := by
 
 end Ring
 
-section CommRing
-
-variable (R) [CommRing R]
-
-open Submodule
-
-def isPrincipalSubmonoid : Submonoid (Ideal R) where
-  carrier := { I | IsPrincipal I}
-  mul_mem' := by
-    rintro _ _ ⟨x, rfl⟩ ⟨y, rfl⟩
-    exact ⟨x * y, Ideal.span_singleton_mul_span_singleton x y⟩
-  one_mem' := ⟨1, one_eq_span⟩
-
-end CommRing
-
 section IsDomain
 
 variable [CommRing R] [IsDomain R]
@@ -189,30 +174,6 @@ theorem associatesEquivIsPrincipal_apply (x : R) :
     associatesEquivIsPrincipal R ⟦x⟧ = Ideal.span {x} := by
   rw [associatesEquivIsPrincipal, Equiv.ofBijective_apply, span_singleton_eq_span_singleton]
   exact Associates.mk_quot_out x
-
-theorem associatesEquivIsPrincipal_mul (x y : Associates R) :
-    (associatesEquivIsPrincipal R (x * y) : Ideal R) =
-      (associatesEquivIsPrincipal R x) * (associatesEquivIsPrincipal R y) := by
-  rw [← Associates.quot_out x, ← Associates.quot_out y]
-  simp_rw [Associates.mk_mul_mk, ← Associates.quotient_mk_eq_mk, associatesEquivIsPrincipal_apply,
-    Ideal.span_singleton_mul_span_singleton]
-
-theorem associatesEquivIsPrincipal_map_zero :
-    (associatesEquivIsPrincipal R 0 : Ideal R) = 0 := by
-  rw [← Associates.mk_zero, ← Associates.quotient_mk_eq_mk, associatesEquivIsPrincipal_apply,
-    Set.singleton_zero, span_zero, zero_eq_bot]
-
-theorem associatesEquivIsPrincipal_map_one :
-    (associatesEquivIsPrincipal R 1 : Ideal R) = 1 := by
-  rw [Associates.one_eq_mk_one, ← Associates.quotient_mk_eq_mk, associatesEquivIsPrincipal_apply,
-    span_singleton_one, one_eq_top]
-
-noncomputable def associatesMulEquivIsPrincipal (R : Type*) [CommRing R] [IsDomain R] :
-    Associates R ≃* (isPrincipalSubmonoid R) where
-  __ := Ideal.associatesEquivIsPrincipal R
-  map_mul' _ _ := by
-    erw [Subtype.ext_iff, associatesEquivIsPrincipal_mul]
-    rfl
 
 end IsDomain
 
