@@ -27,27 +27,28 @@ The input `git` is a `Bool`ean flag:
 * `false` means that the command recursively scans all dirs searching for `.lean` files.
 -/
 def getAll (git : Bool) (ml : String) : IO String := do
-  let ml.lean := addExtension ⟨ml⟩ "lean"  -- `Mathlib.lean`
-  let stdout : Array System.FilePath ← (do
+  let ml.lean := addExtension ⟨ml⟩ "lean"  -- for example, `Mathlib.lean`
+  let allModules : Array System.FilePath ← (do
     if git then
-      let mlDir := ml.push pathSeparator   -- `Mathlib/`
+      let mlDir := ml.push pathSeparator   -- for example, `Mathlib/`
       let allLean ← IO.Process.run { cmd := "git", args := #["ls-files", mlDir ++ "*.lean"] }
       return (((allLean.dropRightWhile (· == '\n')).splitOn "\n").map (⟨·⟩)).toArray
     else do
       let all ← walkDir ml
       return all.filter (·.extension == some "lean"))
-  let files := (stdout.erase ml.lean).qsort (·.toString < ·.toString)
+  let files := (allModules.erase ml.lean).qsort (·.toString < ·.toString)
   let withImport ← files.mapM fun f => do
+    -- this check is helpful in case the `git` option is on and a local file has been removed
     if ← pathExists f then
       return "import " ++ (← moduleNameOfFileName f none).toString
     else return ""
   return ("\n".intercalate (withImport.filter (· != "")).toList).push '\n'
 
 open Lake in
-/-- `getLeanLibs` returns the array of names (as an `Array` of `String`s) of all the libraries
+/-- `getLeanLibs` returns the names (as an `Array` of `String`s) of all the libraries
 on which the current project depends.
-If the package is `mathlib`, then it excludes the libraries `Cache` and `LongestPole` and it
-includes `Mathlib/Tactic`. -/
+If the current project is `mathlib`, then it excludes the libraries `Cache` and `LongestPole` and
+it includes `Mathlib/Tactic`. -/
 def getLeanLibs : IO (Array String) := do
   let (elanInstall?, leanInstall?, lakeInstall?) ← findInstall?
   let config ← MonadError.runEIO <| mkLoadConfig { elanInstall?, leanInstall?, lakeInstall? }
@@ -96,7 +97,7 @@ def mkAll : Cmd := `[Cli|
    By default, it generates the files for the Lean libraries of the package.\
    In the case of `Mathlib`, it removes the libraries `Cache` and `LongestPole`\
    and it adds `Mathlib/Tactic`. \
-   If you are working in a downstream project, use `lake exe mk_all --lib MyProject`."
+   If you are working in a project downstream of mathlib, use `lake exe mk_all --lib MyProject`."
 
   FLAGS:
     lib : String; "Create a folder importing all Lean files from the specified library/subfolder."
