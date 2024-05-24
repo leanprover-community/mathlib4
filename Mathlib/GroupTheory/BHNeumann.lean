@@ -35,29 +35,20 @@ open scoped Pointwise
 
 section Mathlib.GroupTheory.Index
 
+theorem Fintype.finiteIndex_iInf {G ι : Type*} [Fintype ι] [Group G]
+    (a : ι → Subgroup G) (ha : ∀ i, (a i).FiniteIndex) :
+    (⨅ i, a i).FiniteIndex :=
+  ⟨Subgroup.index_iInf_ne_zero fun i => (ha i).finiteIndex⟩
+
 theorem Finset.finiteIndex_iInf {G ι : Type*} [Group G]
     {s : Finset ι} (f : ι → Subgroup G) (hs : ∀ i ∈ s, (f i).FiniteIndex) :
       (⨅ i ∈ s, f i).FiniteIndex := by
-  constructor
   rw [iInf_subtype']
-  apply Subgroup.index_iInf_ne_zero
-  rintro ⟨i, hi⟩
-  exact (hs i hi).finiteIndex
-
-theorem Fintype.finiteIndex_iInf {G ι : Type*} [Fintype ι] [Group G] [DecidableEq (Subgroup G)]
-    (a : ι → Subgroup G) (ha : ∀ i, (a i).FiniteIndex) :
-    (⨅ i, a i).FiniteIndex := by
-  suffices (⨅ x ∈ Finset.univ.image a, x).FiniteIndex by
-    rwa [Finset.iInf_finset_image, ← Finset.iInf_coe, Finset.coe_univ, iInf_univ] at this
-  exact Finset.finiteIndex_iInf id fun x h =>
-    have ⟨i, _, hi⟩ := Finset.mem_image.mp h
-    hi ▸ ha i
+  exact Fintype.finiteIndex_iInf _ fun ⟨i, hi⟩ => hs i hi
 
 instance Subgroup.instFiniteIndex_subgroupOf (G : Type*) [Group G]
-    (H K : Subgroup G) [H.FiniteIndex] : (H.subgroupOf K).FiniteIndex := by
-  apply Subgroup.FiniteIndex.mk
-  show H.relindex K ≠ 0
-  exact fun h => H.index_ne_zero_of_finite <| H.index_eq_zero_of_relindex_eq_zero h
+    (H K : Subgroup G) [H.FiniteIndex] : (H.subgroupOf K).FiniteIndex :=
+  ⟨fun h => H.index_ne_zero_of_finite <| H.index_eq_zero_of_relindex_eq_zero h⟩
 
 end Mathlib.GroupTheory.Index
 
