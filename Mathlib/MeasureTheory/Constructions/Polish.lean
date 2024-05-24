@@ -1081,7 +1081,7 @@ theorem exists_subset_real_measurableEquiv : ∃ s : Set ℝ, MeasurableSet s �
       refine ⟨_, ?_, h_nonempty_equiv⟩
       letI : MeasurableSpace (Fin n) := borel (Fin n)
       haveI : BorelSpace (Fin n) := ⟨rfl⟩
-      refine MeasurableEmbedding.measurableSet_range ?_
+      refine' MeasurableEmbedding.measurableSet_range _
       · infer_instance
       · exact
           continuous_of_discreteTopology.measurableEmbedding

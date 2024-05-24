@@ -62,7 +62,7 @@ theorem wilsons_lemma : ((p - 1)! : ZMod p) = -1 := by
   · intro _ _ _ _ h; rw [Units.ext_iff]; exact val_injective p h
   · intro b hb
     rw [mem_Ico, Nat.succ_le_iff, ← succ_sub hp, Nat.add_one_sub_one, pos_iff_ne_zero] at hb
-    refine ⟨Units.mk0 b ?_, Finset.mem_univ ?_, ?_⟩
+    refine ⟨Units.mk0 b ?_, Finset.mem_univ _, ?_⟩
     · intro h; apply hb.1; apply_fun val at h
       simpa only [val_cast_of_lt hb.right, val_zero] using h
     · simp only [val_cast_of_lt hb.right, Units.val_mk0]

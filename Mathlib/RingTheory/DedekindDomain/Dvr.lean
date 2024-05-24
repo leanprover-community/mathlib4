@@ -96,7 +96,7 @@ theorem IsLocalization.isDedekindDomain [IsDedekindDomain A] {M : Submonoid A} (
     IsScalarTower.of_algebraMap_eq fun x => (IsLocalization.lift_eq h x).symm
   haveI : IsFractionRing Aₘ (FractionRing A) :=
     IsFractionRing.isFractionRing_of_isDomain_of_isLocalization M _ _
-  refine (isDedekindDomain_iff _ (FractionRing A)).mpr ⟨?_, ?_,? ?_, _⟩
+  refine (isDedekindDomain_iff _ (FractionRing A)).mpr ⟨?_, ?_, ?_, ?_⟩
   · infer_instance
   · exact IsLocalization.isNoetherianRing M _ (by infer_instance)
   · exact Ring.DimensionLEOne.localization Aₘ hM
