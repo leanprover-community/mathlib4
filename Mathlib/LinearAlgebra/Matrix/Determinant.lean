@@ -620,7 +620,7 @@ theorem det_blockDiagonal {o : Type*} [Fintype o] [DecidableEq o] (M : o → Mat
         ext
         · simp only [apply_inv_self]
         · simp only [hσ']
-      refine ⟨fun k _ => ⟨fun x => (σ (x, k)).fst, fun x => (σ⁻¹ (x, k)).fst, ?_, ?_⟩,? ?_, _⟩
+      refine ⟨fun k _ => ⟨fun x => (σ (x, k)).fst, fun x => (σ⁻¹ (x, k)).fst, ?_, ?_⟩, ?_, ?_⟩
       · intro x
         simp only [mk_apply_eq, inv_apply_self]
       · intro x

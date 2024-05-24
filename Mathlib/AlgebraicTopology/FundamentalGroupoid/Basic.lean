@@ -44,7 +44,7 @@ def reflTransSymmAux (x : I × I) : ℝ :=
 
 @[continuity]
 theorem continuous_reflTransSymmAux : Continuous reflTransSymmAux := by
-  refine continuous_if_le ?_ ?_ (Continuous.continuousOn ?_) (Continuous.continuous?On _) ?_
+  refine continuous_if_le ?_ ?_ (Continuous.continuousOn ?_) (Continuous.continuousOn ?_) ?_
   · continuity
   · continuity
   · continuity

@@ -75,7 +75,7 @@ protected theorem dist_comm (x y : Completion α) : dist x y = dist y x := by
 
 protected theorem dist_triangle (x y z : Completion α) : dist x z ≤ dist x y + dist y z := by
   refine induction_on₃ x y z ?_ ?_
-  · refine isClosed_le ?_ (Continuous.add? ?_ _) <;>
+  · refine isClosed_le ?_ (Continuous.add ?_ ?_) <;>
       apply_rules [Completion.continuous_dist, Continuous.fst, Continuous.snd, continuous_id]
   · intro a b c
     rw [Completion.dist_eq, Completion.dist_eq, Completion.dist_eq]

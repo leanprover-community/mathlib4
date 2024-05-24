@@ -83,7 +83,7 @@ theorem lhopital_zero_right_on_Ioo (hff' : ∀ x ∈ Ioo a b, HasDerivAt f (f' x
   apply hdiv.comp
   refine tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
     (tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds
-      (tendsto_nhdsWithin_of_tendsto_nhds tendsto_id) ?_ ?_?) _
+      (tendsto_nhdsWithin_of_tendsto_nhds tendsto_id) ?_ ?_) ?_
   all_goals
     apply eventually_nhdsWithin_of_forall
     intro x hx

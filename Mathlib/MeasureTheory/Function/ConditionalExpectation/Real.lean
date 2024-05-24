@@ -161,7 +161,7 @@ theorem ae_bdd_condexp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x
   simp only [← zero_lt_iff, Set.compl_def, Set.mem_setOf_eq, not_le] at h
   suffices (μ {x | ↑R < |(μ[f|m]) x|}).toReal * ↑R < (μ {x | ↑R < |(μ[f|m]) x|}).toReal * ↑R by
     exact this.ne rfl
-  refine lt_of_lt_of_le (setIntegral_gt_gt R.coe_nonneg ?_ ?_ h.ne.symm?) _
+  refine lt_of_lt_of_le (setIntegral_gt_gt R.coe_nonneg ?_ ?_ h.ne.symm) ?_
   · simp_rw [← Real.norm_eq_abs]
     exact (stronglyMeasurable_condexp.mono hnm).measurable.norm
   · exact integrable_condexp.abs.integrableOn

@@ -181,7 +181,7 @@ theorem Convex.centerMass_mem (hs : Convex R s) :
     rw [← mul_smul, inv_mul_cancel (ne_of_gt hpos), one_smul]
     exact zi
   · rw [Finset.centerMass_insert _ _ _ hi hsum_t]
-    refine convex_iff_div.1 hs zi (ht hs₀ ?_ ?_?) _ (sum_nonneg hs₀) hpos
+    refine convex_iff_div.1 hs zi (ht hs₀ ?_ ?_) ?_ (sum_nonneg hs₀) hpos
     · exact lt_of_le_of_ne (sum_nonneg hs₀) (Ne.symm hsum_t)
     · intro j hj
       exact hmem j (mem_insert_of_mem hj)
@@ -293,7 +293,7 @@ theorem Finset.centroid_mem_convexHull (s : Finset E) (hs : s.Nonempty) :
 theorem convexHull_range_eq_exists_affineCombination (v : ι → E) : convexHull R (range v) =
     { x | ∃ (s : Finset ι) (w : ι → R), (∀ i ∈ s, 0 ≤ w i) ∧ s.sum w = 1 ∧
       s.affineCombination R v w = x } := by
-  refine Subset.antisymm (convexHull_min ?_ ?_?) _
+  refine Subset.antisymm (convexHull_min ?_ ?_) ?_
   · intro x hx
     obtain ⟨i, hi⟩ := Set.mem_range.mp hx
     exact ⟨{i}, Function.const ι (1 : R), by simp, by simp, by simp [hi]⟩
