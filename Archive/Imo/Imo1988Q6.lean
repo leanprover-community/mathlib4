@@ -282,7 +282,7 @@ example {a b : ℕ} (h : a * b ∣ a ^ 2 + b ^ 2 + 1) : 3 * a * b = a ^ 2 + b ^ 
   · -- Show the descent step.
     intro x y _ hx h_base _ z _ _ hV₀
     constructor
-    · have zy_pos : z * y ≥ 0 := by rw [hV₀]; exact mod_cast Nat.zero_le _
+    · have zy_pos : 0 ≤ z * y := by rw [hV₀]; exact mod_cast Nat.zero_le _
       apply nonneg_of_mul_nonneg_left zy_pos
       linarith
     · contrapose! hV₀ with x_lt_z

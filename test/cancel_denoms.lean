@@ -22,7 +22,7 @@ example (h : a + b = c) : a/5 + d*(b/4) = c - 4*a/5 + b*2*d/8 - b := by
   rw [← h]
   ring
 
-example (h : 0 < a) : a / (3/2) > 0 := by
+example (h : 0 < a) : 0 < a / (3/2) := by
   cancel_denoms
   exact h
 
@@ -72,7 +72,7 @@ section
 variable (a b c d : ℚ)
 
 -- inspired by automated testing
-example : (1 : ℚ) > 0 := by
+example : 0 < (1 : ℚ) := by
   have := 0
   cancel_denoms
 
@@ -80,7 +80,7 @@ example (h : a / 5 + b / 4 < c) : 4*a + 5*b < 20*c := by
   cancel_denoms at h
   exact h
 
-example (h : a > 0) : a / 5 > 0 := by
+example (h : 0 < a) : 0 < a / 5 := by
   cancel_denoms
   exact h
 
