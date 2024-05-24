@@ -48,4 +48,28 @@ theorem chromaticNumber_pathGraph (n : ℕ) (h : 2 ≤ n) :
   · simpa only [pathGraph_two_eq_top, chromaticNumber_top] using
       chromaticNumber_mono_of_embedding (pathGraph_two_embedding n h)
 
+theorem coloring_apply_iff_of_bicoloring_of_walk_general {α} (G : SimpleGraph α)
+    (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) :
+    c v ↔ (c u ↔ Even p.length) := by
+  induction p with
+  | nil => simp
+  | @cons u v w h p ih =>
+    simp only [Walk.length_cons, Nat.even_add_one]
+    have : ¬ c u = true ↔ c v = true := by
+      rw [← not_iff, ← Bool.eq_iff_iff]
+      exact c.valid h
+    tauto
+
+theorem coloring_apply_iff_of_bicoloring_of_walk {α} (G : SimpleGraph α)
+    (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) (hcu : c u) :
+    c v ↔ Even p.length := by
+  rw [coloring_apply_iff_of_bicoloring_of_walk_general G c p]
+  exact iff_true_left hcu
+
+theorem coloring_apply_iff_of_bicoloring_of_walk' {α} (G : SimpleGraph α)
+    (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) (hcu : !c u) :
+    c v ↔ Odd p.length := by
+  rw [coloring_apply_iff_of_bicoloring_of_walk_general G c p, Nat.even_iff_not_odd]
+  simp [(Bool.not_inj hcu : c u = false)]
+
 end SimpleGraph
