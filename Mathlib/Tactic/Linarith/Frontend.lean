@@ -85,9 +85,8 @@ which takes a list of comparisons and the largest variable
 index appearing in those comparisons, and returns a map from comparison indices to coefficients.
 An alternate oracle can be specified in the `LinarithConfig` object.
 
--- TODO Not implemented yet
 A variant, `nlinarith`, adds an extra preprocessing step to handle some basic nonlinear goals.
-There is a hook in the `linarith_config` configuration object to add custom preprocessing routines.
+There is a hook in the `LinarithConfig` configuration object to add custom preprocessing routines.
 
 The certificate checking step is *not* by reflection. `linarith` converts the certificate into a
 proof term of type `False`.
