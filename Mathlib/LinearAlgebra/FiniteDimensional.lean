@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.FieldTheory.Finiteness
+import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 import Mathlib.LinearAlgebra.Dimension.DivisionRing
 
 #align_import linear_algebra.finite_dimensional from "leanprover-community/mathlib"@"e95e4f92c8f8da3c7f693c3ec948bcf9b6683f51"
@@ -1118,60 +1119,6 @@ instance FiniteDimensional.finiteDimensional_subalgebra [FiniteDimensional F E]
 theorem Subalgebra.finiteDimensional_bot : FiniteDimensional F (⊥ : Subalgebra F E) :=
   Subalgebra.finite_bot
 #align subalgebra.finite_dimensional_bot Subalgebra.finiteDimensional_bot
-
-theorem Subalgebra.eq_bot_of_rank_le_one {S : Subalgebra F E} (h : Module.rank F S ≤ 1) :
-    S = ⊥ := by
-  nontriviality E
-  obtain ⟨m, _, he⟩ := Cardinal.exists_nat_eq_of_le_nat (h.trans_eq Nat.cast_one.symm)
-  -- Porting note: fails without explicit type
-  haveI : FiniteDimensional F S := .of_rank_eq_nat he
-  rw [← not_bot_lt_iff, ← Subalgebra.toSubmodule.lt_iff_lt]
-  -- Porting note: fails without explicit type
-  haveI : FiniteDimensional F (Subalgebra.toSubmodule S) :=
-    S.toSubmoduleEquiv.symm.finiteDimensional
-  refine fun hl => (Submodule.finrank_lt_finrank_of_lt hl).not_le (natCast_le.1 ?_)
-  iterate 2 rw [Subalgebra.finrank_toSubmodule, finrank_eq_rank]
-  exact h.trans_eq Subalgebra.rank_bot.symm
-#align subalgebra.eq_bot_of_rank_le_one Subalgebra.eq_bot_of_rank_le_one
-
-theorem Subalgebra.eq_bot_of_finrank_one {S : Subalgebra F E} (h : finrank F S = 1) : S = ⊥ :=
-  Subalgebra.eq_bot_of_rank_le_one <| by
-    -- Porting note: fails without explicit type
-    haveI : FiniteDimensional F S := .of_finrank_eq_succ h
-    rw [← finrank_eq_rank, h, Nat.cast_one]
-#align subalgebra.eq_bot_of_finrank_one Subalgebra.eq_bot_of_finrank_one
-
-@[simp]
-theorem Subalgebra.rank_eq_one_iff [Nontrivial E] {S : Subalgebra F E} :
-    Module.rank F S = 1 ↔ S = ⊥ :=
-  ⟨fun h => Subalgebra.eq_bot_of_rank_le_one h.le, fun h => h.symm ▸ Subalgebra.rank_bot⟩
-#align subalgebra.rank_eq_one_iff Subalgebra.rank_eq_one_iff
-
-@[simp]
-theorem Subalgebra.finrank_eq_one_iff [Nontrivial E] {S : Subalgebra F E} :
-    finrank F S = 1 ↔ S = ⊥ :=
-  ⟨Subalgebra.eq_bot_of_finrank_one, fun h => h.symm ▸ Subalgebra.finrank_bot⟩
-#align subalgebra.finrank_eq_one_iff Subalgebra.finrank_eq_one_iff
-
-theorem Subalgebra.bot_eq_top_iff_rank_eq_one [Nontrivial E] :
-    (⊥ : Subalgebra F E) = ⊤ ↔ Module.rank F E = 1 := by
-  -- Porting note: removed `subalgebra_top_rank_eq_submodule_top_rank`
-  rw [← rank_top, Subalgebra.rank_eq_one_iff, eq_comm]
-#align subalgebra.bot_eq_top_iff_rank_eq_one Subalgebra.bot_eq_top_iff_rank_eq_one
-
-theorem Subalgebra.bot_eq_top_iff_finrank_eq_one [Nontrivial E] :
-    (⊥ : Subalgebra F E) = ⊤ ↔ finrank F E = 1 := by
-  rw [← finrank_top, ← subalgebra_top_finrank_eq_submodule_top_finrank,
-    Subalgebra.finrank_eq_one_iff, eq_comm]
-#align subalgebra.bot_eq_top_iff_finrank_eq_one Subalgebra.bot_eq_top_iff_finrank_eq_one
-
-alias ⟨_, Subalgebra.bot_eq_top_of_rank_eq_one⟩ := Subalgebra.bot_eq_top_iff_rank_eq_one
-#align subalgebra.bot_eq_top_of_rank_eq_one Subalgebra.bot_eq_top_of_rank_eq_one
-
-alias ⟨_, Subalgebra.bot_eq_top_of_finrank_eq_one⟩ := Subalgebra.bot_eq_top_iff_finrank_eq_one
-#align subalgebra.bot_eq_top_of_finrank_eq_one Subalgebra.bot_eq_top_of_finrank_eq_one
-
-attribute [simp] Subalgebra.bot_eq_top_of_finrank_eq_one Subalgebra.bot_eq_top_of_rank_eq_one
 
 theorem Subalgebra.isSimpleOrder_of_finrank (hr : finrank F E = 2) :
     IsSimpleOrder (Subalgebra F E) :=
