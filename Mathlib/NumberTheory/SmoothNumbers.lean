@@ -279,7 +279,7 @@ lemma primeFactors_subset_of_mem_smoothNumbers {m n : ℕ} (hms : m ∈ n.smooth
   primes below `n` -/
 lemma mem_smoothNumbers_of_primeFactors_subset (m n : ℕ) (hm : m ≠ 0)
     (hp : m.primeFactors ⊆ n.primesBelow) : m ∈ n.smoothNumbers :=
-  ⟨ hm, fun _ h' => lt_of_mem_primesBelow <| hp <| mem_primeFactors_iff_mem_factors.mpr h' ⟩
+  ⟨hm, fun _ h => lt_of_mem_primesBelow <| hp <| mem_primeFactors_iff_mem_factors.mpr h⟩
 
 /-- Zero is never a smooth number -/
 lemma ne_zero_of_mem_smoothNumbers {n m : ℕ} (h : m ∈ smoothNumbers n) : m ≠ 0 := h.1
