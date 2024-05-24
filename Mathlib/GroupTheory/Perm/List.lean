@@ -3,6 +3,7 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.List.Rotate
 import Mathlib.GroupTheory.Perm.Support
 
@@ -92,7 +93,7 @@ theorem zipWith_swap_prod_support [Fintype α] (l l' : List α) :
 #align list.zip_with_swap_prod_support List.zipWith_swap_prod_support
 
 theorem support_formPerm_le' : { x | formPerm l x ≠ x } ≤ l.toFinset := by
-  refine' (zipWith_swap_prod_support' l l.tail).trans _
+  refine (zipWith_swap_prod_support' l l.tail).trans ?_
   simpa [Finset.subset_iff] using tail_subset l
 #align list.support_form_perm_le' List.support_formPerm_le'
 
@@ -164,7 +165,7 @@ theorem formPerm_apply_head (x y : α) (xs : List α) (h : Nodup (x :: y :: xs))
 
 set_option linter.deprecated false in
 theorem formPerm_apply_nthLe_zero (l : List α) (h : Nodup l) (hl : 1 < l.length) :
-    formPerm l (l.nthLe 0 (zero_lt_one.trans hl)) = l.nthLe 1 hl := by
+    formPerm l (l.nthLe 0 (by omega)) = l.nthLe 1 hl := by
   rcases l with (_ | ⟨x, _ | ⟨y, tl⟩⟩)
   · simp at hl
   · simp
