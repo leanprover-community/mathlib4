@@ -146,10 +146,10 @@ example : Type ⥤ CommRingCat where
   -- I would find this either by https://www.moogle.ai/search/raw?q=Rename%20variables%20in%20multivariable%20polynomials
   -- or by typing `polynomial.*rename` in the search bar in VS Code,
 
--- /-- First attempt at the morphism level: -/
--- example : Type ⥤ CommRingCat where
---   obj X := CommRingCat.of (MvPolynomial X ℤ)
---   map {X Y} f := MvPolynomial.rename f
+/-- First attempt at the morphism level: -/
+example : Type ⥤ CommRingCat where
+  obj X := CommRingCat.of (MvPolynomial X ℤ)
+  map {X Y} f := MvPolynomial.rename f
 
 /-!
 There are some messages from `aesop` here, prematurely trying to prove functoriality,
@@ -167,20 +167,20 @@ but we're giving it at algebra homomorphism (that's the `→ₐ[?m]` in the type
 and moreover it can't work out which ring the coefficients should be in.
 -/
 
--- /-- Second attempt at the morphism level. Let's remind Lean we're working over `ℤ`. -/
--- example : Type ⥤ CommRingCat where
---   obj X := CommRingCat.of (MvPolynomial X ℤ)
---   map {X Y} f := MvPolynomial.rename (R := ℤ) f
+/-- Second attempt at the morphism level. Let's remind Lean we're working over `ℤ`. -/
+example : Type ⥤ CommRingCat where
+  obj X := CommRingCat.of (MvPolynomial X ℤ)
+  map {X Y} f := MvPolynomial.rename (R := ℤ) f
 
 /-!
 Pretty much the same error message:
 let's explicit coerce from an algebra homomorphism to a ring homomorphism to help out.
 -/
 
--- /-- Third attempt. -/
--- example : Type ⥤ CommRingCat where
---   obj X := CommRingCat.of (MvPolynomial X ℤ)
---   map {X Y} f := (MvPolynomial.rename (R := ℤ) f : MvPolynomial X ℤ →+* MvPolynomial Y ℤ)
+/-- Third attempt. -/
+example : Type ⥤ CommRingCat where
+  obj X := CommRingCat.of (MvPolynomial X ℤ)
+  map {X Y} f := (MvPolynomial.rename (R := ℤ) f : MvPolynomial X ℤ →+* MvPolynomial Y ℤ)
 
 /-!
 Now Lean accepts our definitions, but there are unsolved goals errors after `aesop` tries
@@ -189,10 +189,16 @@ to discharge the functoriality proofs.
 `aesop` got stuck at
 ```
 tactic 'aesop' failed, failed to prove the goal after exhaustive search.
+Initial goal:
+  ⊢ ∀ (X : Type),
+    { obj := fun X ↦ CommRingCat.of (MvPolynomial X ℤ), map := fun {X Y} f ↦ ↑(MvPolynomial.rename f) }.map (𝟙 X) =
+      𝟙 ({ obj := fun X ↦ CommRingCat.of (MvPolynomial X ℤ), map := fun {X Y} f ↦ ↑(MvPolynomial.rename f) }.obj X)
+Remaining goals after safe rules:
+  case h.a
 X : Type
 x✝ : MvPolynomial X ℤ
 m✝ : X →₀ ℕ
-⊢ MvPolynomial.coeff m✝ ((MvPolynomial.rename (𝟙 X)) x✝) = MvPolynomial.coeff m✝ x✝
+⊢ MvPolynomial.coeff m✝ ((MvPolynomial.rename (𝟙 X)) x✝) = MvPolynomial.coeff m✝ x✝Lean 4
 ```
 which suggests that the problem may just be that `simp` won't unfold the definition `𝟙 X`
 as the identity function!
@@ -223,10 +229,10 @@ the projection `Abelianization.of : G →* Abelianization G`.
 
 universe u
 
--- /-- First attempt: -/
--- example : GroupCat.{u} ⥤ CommGroupCat.{u} where
---   obj G := CommGroupCat.of (Abelianization G)
---   map f := Abelianization.lift (Abelianization.of.comp f)
+/-- First attempt: -/
+example : GroupCat.{u} ⥤ CommGroupCat.{u} where
+  obj G := CommGroupCat.of (Abelianization G)
+  map f := Abelianization.lift (Abelianization.of.comp f)
 
 /-!
 This fails when `aesop` gets stuck at
@@ -234,6 +240,8 @@ This fails when `aesop` gets stuck at
 Since `Abelianization.map` is about `→*`, i.e. unbundled group homomorphisms, probably this
 already exists as a theorem, we just need to convert the categorical compositions `≫`
 into `MulHom.comp`.
+One of these compositions is in `CommGroupCat`, the other is in `GroupCat`,
+so we'll need to unfold both, using the lemmas `CommGroupCat.comp_def` and `GroupCat.comp_def`.
 -/
 
 #check Abelianization.map_comp -- Looks promising!
@@ -504,6 +512,10 @@ def toSSet_monoidal : MonoidalFunctor TopCat SSet :=
   right_unitality := sorry }
 
 -- This has no dependencies: you could fill in the sorries here and PR just this declaration!
+set_option maxHeartbeats 400000 in -- Bonus question: why do we need this?
+                                   -- Turn on `set_option diagnostics true`
+                                   -- and then work out why Lean is thinking about irrelevancies:
+                                   -- `Limits.getLimitCone`, `monoidalOfHasFiniteProducts`, etc.
 def whiskeringRight_monoidal
   (C : Type*) [Category C]
   (D : Type*) [Category D] [MonoidalCategory D]
@@ -530,21 +542,21 @@ def toSModule_monoidal (R : Type) [CommRing R] :
 
 open Limits MonoidalCategory
 
-variable {C : Type _} [Category C] [MonoidalCategory C]
-  [Preadditive C] [HasFiniteBiproducts C] (X Y : SimplicialObject C)
+variable {V : Type _} [Category V] [MonoidalCategory V]
+  [Preadditive V] [HasFiniteBiproducts V] (X Y : SimplicialObject V)
 
 -- This one is a lot of work: Joël Riou has been working towards it.
 -- He's setting up bicomplexes first.
-instance : MonoidalCategory (ChainComplex C ℕ) := sorry
+instance : MonoidalCategory (ChainComplex V ℕ) := sorry
 
 -- Once you have this, we'd still need to describe how homology behaves:
 -- it's a lax monoidal functor.
 
 set_option quotPrecheck false in
-notation "C" => (alternatingFaceMapComplex C).obj
+notation "C" => (alternatingFaceMapComplex V).obj
 
 def alexanderWhitney : C (X ⊗ Y) ⟶ C X ⊗ C Y := sorry
-def eilenbergZilber : C X ⊗ C Y ⟶ C (X ⊗ Y) := sorry
+def eilenbergZilber : (C X ⊗ C Y : ChainComplex V ℕ) ⟶ C (X ⊗ Y) := sorry
 
 def homotopy_1 : Homotopy (eilenbergZilber X Y ≫ alexanderWhitney X Y) (𝟙 _) := sorry
 def homotopy_2 : Homotopy (alexanderWhitney X Y ≫ eilenbergZilber X Y) (𝟙 _) := sorry
