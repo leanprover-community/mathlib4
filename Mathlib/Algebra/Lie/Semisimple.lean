@@ -35,8 +35,8 @@ universe u v w w₁ w₂
 
 /-- A Lie module is *irreducible* if its only Lie submodules are `⊥` and `⊤`
 (which may coincide). -/
-abbrev LieModule.IsIrreducible (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
-  [AddCommGroup M] [Module R M] [LieRingModule L M] : Prop :=
+abbrev LieModule.IsIrreducible (R L M : Type*) [CommRing R] [LieRing L]
+    [AddCommGroup M] [Module R M] [LieRingModule L M] : Prop :=
   IsSimpleOrder (LieSubmodule R L M)
 #align lie_module.is_irreducible LieModule.IsIrreducible
 
