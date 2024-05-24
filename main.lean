@@ -46,8 +46,9 @@ theorem isProjectiveMeasureFamily_prod {ι : Type*} [∀ (S : Finset ι) i, Deci
     Finset.toFinset_coe, Finset.toFinset_coe,
     Finset.prod_subset hST (fun _ h h' ↦ by simp [h, h'])]
 
-theorem cyl_dependsOn (s : Finset ℕ) (S : Set ((n : s) → X n)) :
-    DependsOn ((cylinder s S).indicator (1 : (∀ n, X n) → ℝ≥0∞)) s := by
+theorem dependsOn_cylinder_indicator {ι : Type*} {α : ι → Type*} {β : Type*} [Zero β]
+    (s : Finset ι) (S : Set ((i : s) → α i)) (b : β) :
+    DependsOn ((cylinder s S).indicator (fun _ ↦ b)) s := by
   intro x y hxy
   have : x ∈ cylinder s S ↔ y ∈ cylinder s S := by simp [hxy]
   by_cases h : x ∈ cylinder s S
