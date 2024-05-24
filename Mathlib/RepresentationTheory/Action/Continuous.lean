@@ -43,14 +43,16 @@ instance (X : Action V G) : MulAction G ((CategoryTheory.forget₂ _ TopCat).obj
     simp
   mul_smul g h x := by
     show (CategoryTheory.forget₂ _ TopCat).map (X.ρ (g * h)) x =
-      ((CategoryTheory.forget₂ _ TopCat).map (X.ρ h)
-        ≫ (CategoryTheory.forget₂ _ TopCat).map (X.ρ g)) x
+      ((CategoryTheory.forget₂ _ TopCat).map (X.ρ h) ≫
+        (CategoryTheory.forget₂ _ TopCat).map (X.ρ g)) x
     rw [← Functor.map_comp, map_mul]
     rfl
 
+variable {V G}
+
 /-- For `HasForget₂ V TopCat` a predicate on an `X : Action V G` saying that the induced action on
 the underlying topological space is continuous. -/
-def IsContinuous (X : Action V G) : Prop :=
+abbrev IsContinuous (X : Action V G) : Prop :=
   ContinuousSMul G ((CategoryTheory.forget₂ _ TopCat).obj X)
 
 end Action
@@ -59,18 +61,18 @@ open Action
 
 /-- For `HasForget₂ V TopCat`, this is the full subcategory of `Action V G` where the induced
 action is continuous. -/
-def ContAction : Type _ := FullSubcategory (IsContinuous V G)
+def ContAction : Type _ := FullSubcategory (IsContinuous (V := V) (G := G))
 
 namespace ContAction
 
 instance : Category (ContAction V G) :=
-  FullSubcategory.category (IsContinuous V G)
+  FullSubcategory.category (IsContinuous (V := V) (G := G))
 
 instance : ConcreteCategory (ContAction V G) :=
-  FullSubcategory.concreteCategory (IsContinuous V G)
+  FullSubcategory.concreteCategory (IsContinuous (V := V) (G := G))
 
 instance : HasForget₂ (ContAction V G) (Action V G) :=
-  FullSubcategory.hasForget₂ (IsContinuous V G)
+  FullSubcategory.hasForget₂ (IsContinuous (V := V) (G := G))
 
 instance : HasForget₂ (ContAction V G) V :=
   HasForget₂.trans (ContAction V G) (Action V G) V
@@ -81,9 +83,11 @@ instance : HasForget₂ (ContAction V G) TopCat :=
 instance : Coe (ContAction V G) (Action V G) where
   coe X := X.obj
 
+variable {V G}
+
 /-- A predicate on an `X : ContAction V G` saying that the topology on the underlying type of `X`
 is discrete. -/
-def IsDiscrete (X : ContAction V G) : Prop :=
+abbrev IsDiscrete (X : ContAction V G) : Prop :=
   DiscreteTopology ((CategoryTheory.forget₂ _ TopCat).obj X)
 
 end ContAction
@@ -91,18 +95,18 @@ end ContAction
 open ContAction
 
 /-- The subcategory of `ContAction V G` where the topology is discrete. -/
-def DiscreteContAction : Type _ := FullSubcategory (IsDiscrete V G)
+def DiscreteContAction : Type _ := FullSubcategory (IsDiscrete (V := V) (G := G))
 
 namespace DiscreteContAction
 
 instance : Category (DiscreteContAction V G) :=
-  FullSubcategory.category (IsDiscrete V G)
+  FullSubcategory.category (IsDiscrete (V := V) (G := G))
 
 instance : ConcreteCategory (DiscreteContAction V G) :=
-  FullSubcategory.concreteCategory (IsDiscrete V G)
+  FullSubcategory.concreteCategory (IsDiscrete (V := V) (G := G))
 
 instance : HasForget₂ (DiscreteContAction V G) (ContAction V G) :=
-  FullSubcategory.hasForget₂ (IsDiscrete V G)
+  FullSubcategory.hasForget₂ (IsDiscrete (V := V) (G := G))
 
 instance : HasForget₂ (DiscreteContAction V G) TopCat :=
   HasForget₂.trans (DiscreteContAction V G) (ContAction V G) TopCat
