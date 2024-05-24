@@ -88,7 +88,7 @@ axiom Fintype.foo' (α : Type _) [Fintype α] [Fintype (Option α)] : Fintype.ca
 
 axiom instFintypeBool : Fintype Bool
 
-/- Would be "failed to synthesize instance Fintype ?m" without allowing TC failure. -/
+/- Would be "failed to synthesize instance Fintype m" without allowing TC failure. -/
 example : @Fintype.card Bool instFintypeBool = 2 := by
   convert Fintype.foo _
 
@@ -98,7 +98,7 @@ example : @Fintype.card Bool instFintypeBool = 2 := by
   exact test_sorry
 
 example : True := by
-  convert_to ?x + ?y = ?z
+  convert_to x + y = z
   case x => exact 1
   case y => exact 2
   case z => exact 3

@@ -19,6 +19,6 @@ elab_rules : tactic
       let mut toClear : Array FVarId := #[]
       for decl in ← getLCtx do
         unless fvarIds.contains decl.fvarId do
-          if let none ← isClass? decl.type then
+          if let none ← isClass decl.type then
             toClear := toClear.push decl.fvarId
       goal.tryClearMany toClear

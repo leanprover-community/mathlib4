@@ -45,7 +45,7 @@ instance : F.IsCoverDense (coherentTopology _) := by
   apply Coverage.saturate.of
   refine ⟨Unit, inferInstance, fun _ => F.effectiveEpiOverObj B,
     fun _ => F.effectiveEpiOver B, _ , _⟩
-  · funext; ext -- Do we want `Presieve.ext`?
+  · funext; ext -- Do we want `Presieve.ext`
     refine ⟨fun ⟨⟩ ↦ ⟨()⟩, _⟩
     rintro ⟨⟩
     simp
@@ -153,7 +153,7 @@ instance : F.IsCoverDense (regularTopology _) := by
   refine F.isCoverDense_of_generate_singleton_functor_π_mem _ fun B ↦ ⟨_, F.effectiveEpiOver B, _⟩
   apply Coverage.saturate.of
   refine ⟨F.effectiveEpiOverObj B, F.effectiveEpiOver B, _, inferInstance⟩
-  funext; ext -- Do we want `Presieve.ext`?
+  funext; ext -- Do we want `Presieve.ext`
   refine ⟨fun ⟨⟩ ↦ ⟨()⟩, _⟩
   rintro ⟨⟩
   simp

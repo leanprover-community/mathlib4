@@ -70,7 +70,7 @@ def lift : (α →ₙ* β) ≃ (WithOne α →* β) where
   invFun F := F.toMulHom.comp coeMulHom
   left_inv f := MulHom.ext fun x => rfl
   right_inv F := MonoidHom.ext fun x => WithOne.cases_on x F.map_one.symm (fun x => rfl)
--- Porting note: the above proofs were broken because they were parenthesized wrong by mathport?
+-- Porting note: the above proofs were broken because they were parenthesized wrong by mathport
 #align with_one.lift WithOne.lift
 #align with_zero.lift WithZero.lift
 

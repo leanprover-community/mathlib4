@@ -64,7 +64,7 @@ def addFunPropDecl (declName : Name) : MetaM Unit := do
   let path ← DiscrTree.mkPath e {}
 
   -- find the argument position of the function `f` in `P f`
-  let mut .some funArgId ← (xs.zip bi).findIdxM? fun (x,bi) => do
+  let mut .some funArgId ← (xs.zip bi).findIdxM fun (x,bi) => do
     if (← inferType x).isForall && bi.isExplicit then
       return true
     else
@@ -83,9 +83,9 @@ def addFunPropDecl (declName : Name) : MetaM Unit := do
     "added new function property `{declName}`\nlook up pattern is `{path}`"
 
 
-/-- Is `e` a function property statement? If yes return function property declaration and
+/-- Is `e` a function property statement If yes return function property declaration and
 the function it talks about. -/
-def getFunProp? (e : Expr) : MetaM (Option (FunPropDecl × Expr)) := do
+def getFunProp (e : Expr) : MetaM (Option (FunPropDecl × Expr)) := do
   let ext := funPropDeclsExt.getState (← getEnv)
 
   let decls ← ext.decls.getMatch e {}
@@ -103,19 +103,19 @@ fun_prop bug: expression {← ppExpr e} matches multiple function properties
 
   return (decl,f)
 
-/-- Is `e` a function property statement? -/
-def isFunProp (e : Expr) : MetaM Bool := do return (← getFunProp? e).isSome
+/-- Is `e` a function property statement -/
+def isFunProp (e : Expr) : MetaM Bool := do return (← getFunProp e).isSome
 
 /-- Returns function property declaration from `e = P f`. -/
-def getFunPropDecl? (e : Expr) : MetaM (Option FunPropDecl) := do
-  match ← getFunProp? e with
+def getFunPropDecl (e : Expr) : MetaM (Option FunPropDecl) := do
+  match ← getFunProp e with
   | .some (decl,_) => return decl
   | .none => return none
 
 
 /-- Returns function `f` from `e = P f` and `P` is function property. -/
-def getFunPropFun? (e : Expr) : MetaM (Option Expr) := do
-  match ← getFunProp? e with
+def getFunPropFun (e : Expr) : MetaM (Option Expr) := do
+  match ← getFunProp e with
   | .some (_,f) => return f
   | .none => return none
 
@@ -126,7 +126,7 @@ def tacticToDischarge (tacticCode : TSyntax `tactic) : Expr → MetaM (Option Ex
   withTraceNode `Meta.Tactic.fun_prop
     (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] discharging: {← ppExpr e}") do
     let mvar ← mkFreshExprSyntheticOpaqueMVar e `funProp.discharger
-    let runTac? : TermElabM (Option Expr) :=
+    let runTac : TermElabM (Option Expr) :=
       try
         withoutModifyingStateWithInfoAndMessages do
           instantiateMVarDeclMVars mvar.mvarId!
@@ -142,6 +142,6 @@ def tacticToDischarge (tacticCode : TSyntax `tactic) : Expr → MetaM (Option Ex
             return some result
       catch _ =>
         return none
-    let (result?, _) ← runTac?.run {} {}
+    let (result, _) ← runTac.run {} {}
 
-    return result?
+    return result

@@ -59,7 +59,7 @@ with the interval `Set.Ioo 0 a` for some positive `a`, then the set of positive 
 group admits the least element. -/
 theorem AddSubgroup.exists_isLeast_pos {H : AddSubgroup G} (hbot : H ≠ ⊥) {a : G} (h₀ : 0 < a)
     (hd : Disjoint (H : Set G) (Ioo 0 a)) : ∃ b, IsLeast { g : G | g ∈ H ∧ 0 < g } b := by
-  -- todo: move to a lemma?
+  -- todo: move to a lemma
   have hex : ∀ g > 0, ∃ n : ℕ, g ∈ Ioc (n • a) ((n + 1) • a) := fun g hg => by
     rcases existsUnique_add_zsmul_mem_Ico h₀ 0 (g - a) with ⟨m, ⟨hm, hm'⟩, -⟩
     simp only [zero_add, sub_le_iff_le_add, sub_add_cancel, ← add_one_zsmul] at hm hm'

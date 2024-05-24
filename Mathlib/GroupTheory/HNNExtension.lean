@@ -266,7 +266,7 @@ hypotheses that no normalization or cancellation need take place for the result 
 -/
 @[simps]
 def cons (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set u)
-    (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?, w.head ∈ toSubgroup A B u → u = u') :
+    (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head, w.head ∈ toSubgroup A B u → u = u') :
     NormalWord d :=
   { head := g,
     toList := (u, w.head) :: w.toList,
@@ -286,7 +286,7 @@ def cons (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set u)
 def consRecOn {motive : NormalWord d → Sort*} (w : NormalWord d)
     (ofGroup : ∀g, motive (ofGroup g))
     (cons : ∀ (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set u)
-      (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?,
+      (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head,
         w.head ∈ toSubgroup A B u → u = u'),
       motive w → motive (cons g u w h1 h2)) : motive w := by
   rcases w with ⟨⟨g, l, chain⟩, mem_set⟩
@@ -306,7 +306,7 @@ def consRecOn {motive : NormalWord d → Sort*} (w : NormalWord d)
 theorem consRecOn_ofGroup {motive : NormalWord d → Sort*}
     (g : G) (ofGroup : ∀g, motive (ofGroup g))
     (cons : ∀ (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set u)
-      (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?, w.head
+      (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head, w.head
         ∈ toSubgroup A B u → u = u'),
       motive w → motive (cons g u w h1 h2)) :
     consRecOn (.ofGroup g) ofGroup cons = ofGroup g := rfl
@@ -314,10 +314,10 @@ theorem consRecOn_ofGroup {motive : NormalWord d → Sort*}
 @[simp]
 theorem consRecOn_cons {motive : NormalWord d → Sort*}
     (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set u)
-    (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?, w.head ∈ toSubgroup A B u → u = u')
+    (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head, w.head ∈ toSubgroup A B u → u = u')
     (ofGroup : ∀g, motive (ofGroup g))
     (cons : ∀ (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set u)
-      (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?,
+      (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head,
         w.head ∈ toSubgroup A B u → u = u'),
       motive w → motive (cons g u w h1 h2)) :
     consRecOn (.cons g u w h1 h2) ofGroup cons = cons g u w h1 h2
@@ -325,7 +325,7 @@ theorem consRecOn_cons {motive : NormalWord d → Sort*}
 
 @[simp]
 theorem smul_cons (g₁ g₂ : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set u)
-    (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?, w.head ∈ toSubgroup A B u → u = u') :
+    (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head, w.head ∈ toSubgroup A B u → u = u') :
     g₁ • cons g₂ u w h1 h2 = cons (g₁ * g₂) u w h1 h2 :=
   rfl
 
@@ -350,7 +350,7 @@ variable {d} [DecidableEq G]
 /-- `Cancels u w` is a predicate expressing whether `t^u` cancels with some occurence
 of `t^-u` when when we multiply `t^u` by `w`. -/
 def Cancels (u : ℤˣ) (w : NormalWord d) : Prop :=
-  (w.head ∈ (toSubgroup A B u : Subgroup G)) ∧ w.toList.head?.map Prod.fst = some (-u)
+  (w.head ∈ (toSubgroup A B u : Subgroup G)) ∧ w.toList.head.map Prod.fst = some (-u)
 
 /-- Multiplying `t^u` by `w` in the special case where cancellation happens -/
 def unitsSMulWithCancel (u : ℤˣ) (w : NormalWord d) : Cancels u w → NormalWord d :=
@@ -383,7 +383,7 @@ noncomputable def unitsSMul (u : ℤˣ) (w : NormalWord d) : NormalWord d :=
 
 /-- A condition for not cancelling whose hypothese are the same as those of the `cons` function. -/
 theorem not_cancels_of_cons_hyp (u : ℤˣ) (w : NormalWord d)
-    (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?,
+    (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head,
       w.head ∈ toSubgroup A B u → u = u') :
     ¬ Cancels u w := by
   simp only [Cancels, Option.map_eq_some', Prod.exists,
@@ -473,7 +473,7 @@ theorem unitsSMul_one_group_smul (g : A) (w : NormalWord d) :
     dsimp
     congr 1
     · conv_lhs => erw [IsComplement.equiv_mul_left]
-      simp? says
+      simp says
         simp only [toSubgroup_one, SetLike.coe_sort_coe, map_mul, Submonoid.coe_mul,
           coe_toSubmonoid]
     conv_lhs => erw [IsComplement.equiv_mul_left]
@@ -506,7 +506,7 @@ theorem t_pow_smul_eq_unitsSMul (u : ℤˣ) (w : NormalWord d) :
 
 @[simp]
 theorem prod_cons (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set u)
-    (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?,
+    (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head,
       w.head ∈ toSubgroup A B u → u = u') :
     (cons g u w h1 h2).prod φ = of g * (t ^ (u : ℤ) * w.prod φ) := by
   simp [ReducedWord.prod, cons, smul_def, mul_assoc]
@@ -604,12 +604,12 @@ theorem exists_normalWord_prod_eq
     (d : TransversalPair G A B) (w : ReducedWord G A B) :
     ∃ w' : NormalWord d, w'.prod φ = w.prod φ ∧
       w'.toList.map Prod.fst = w.toList.map Prod.fst ∧
-      ∀ u ∈ w.toList.head?.map Prod.fst,
+      ∀ u ∈ w.toList.head.map Prod.fst,
       w'.head⁻¹ * w.head ∈ toSubgroup A B (-u) := by
   suffices ∀ w : ReducedWord G A B,
       w.head = 1 → ∃ w' : NormalWord d, w'.prod φ = w.prod φ ∧
       w'.toList.map Prod.fst = w.toList.map Prod.fst ∧
-      ∀ u ∈ w.toList.head?.map Prod.fst,
+      ∀ u ∈ w.toList.head.map Prod.fst,
       w'.head ∈ toSubgroup A B (-u) by
     by_cases hw1 : w.head = 1
     · simp only [hw1, inv_mem_iff, mul_one]
@@ -659,7 +659,7 @@ is the exponent of the first occurence of `t` in the word. -/
 theorem map_fst_eq_and_of_prod_eq {w₁ w₂ : ReducedWord G A B}
     (hprod : w₁.prod φ = w₂.prod φ) :
     w₁.toList.map Prod.fst = w₂.toList.map Prod.fst ∧
-     ∀ u ∈ w₁.toList.head?.map Prod.fst,
+     ∀ u ∈ w₁.toList.head.map Prod.fst,
       w₁.head⁻¹ * w₂.head ∈ toSubgroup A B (-u) := by
   rcases TransversalPair.nonempty G A B with ⟨d⟩
   rcases exists_normalWord_prod_eq φ d w₁ with ⟨w₁', hw₁'1, hw₁'2, hw₁'3⟩

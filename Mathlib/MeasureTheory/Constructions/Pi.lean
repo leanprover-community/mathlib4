@@ -256,7 +256,7 @@ theorem tprod_tprod (l : List δ) (μ : ∀ i, Measure (π i)) [∀ i, SigmaFini
   | nil => simp
   | cons a l ih =>
     rw [tprod_cons, Set.tprod]
-    erw [prod_prod] -- TODO: why `rw` fails?
+    erw [prod_prod] -- TODO: why `rw` fails
     rw [map_cons, prod_cons, ih]
 #align measure_theory.measure.tprod_tprod MeasureTheory.Measure.tprod_tprod
 

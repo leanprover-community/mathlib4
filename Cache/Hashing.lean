@@ -21,7 +21,7 @@ structure HashMemo where
 
 partial def insertDeps (hashMap : HashMap) (path : FilePath) (hashMemo : HashMemo) : HashMap :=
   if hashMap.contains path then hashMap else
-  match (hashMemo.depsMap.find? path, hashMemo.hashMap.find? path) with
+  match (hashMemo.depsMap.find path, hashMemo.hashMap.find path) with
   | (some deps, some hash) => deps.foldl (insertDeps · · hashMemo) (hashMap.insert path hash)
   | _ => hashMap
 
@@ -45,7 +45,7 @@ abbrev HashM := StateT HashMemo CacheM
 def getFileImports (source : String) (pkgDirs : PackageDirs) : Array FilePath :=
   let s := Lean.ParseImports.main source (Lean.ParseImports.whitespace source {})
   let imps := s.imports.map (·.module.components |> .map toString)
-    |>.filter fun parts => match parts.head? with
+    |>.filter fun parts => match parts.head with
       | some head => pkgDirs.contains head
       | none => false
   imps.map (mkFilePath · |>.withExtension "lean")
@@ -86,8 +86,8 @@ Computes the hash of a file, which mixes:
 * The hashes of the imported files that are part of `Mathlib`
 -/
 partial def getFileHash (filePath : FilePath) : HashM <| Option UInt64 := do
-  match (← get).cache.find? filePath with
-  | some hash? => return hash?
+  match (← get).cache.find filePath with
+  | some hash => return hash
   | none =>
     let fixedPath := (← IO.getPackageDir filePath) / filePath
     if !(← fixedPath.pathExists) then
@@ -97,8 +97,8 @@ partial def getFileHash (filePath : FilePath) : HashM <| Option UInt64 := do
     let content ← IO.FS.readFile fixedPath
     let fileImports := getFileImports content (← getPackageDirs)
     let mut importHashes := #[]
-    for importHash? in ← fileImports.mapM getFileHash do
-      match importHash? with
+    for importHash in ← fileImports.mapM getFileHash do
+      match importHash with
       | some importHash => importHashes := importHashes.push importHash
       | none =>
         modify fun stt => { stt with cache := stt.cache.insert filePath none }

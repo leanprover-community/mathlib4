@@ -42,7 +42,7 @@ structure Run where
   result : Result
 deriving ToJson, FromJson
 
-/-- The top-level API response for `http://speed.lean-fro.org/{repo}/api/run/{guid}?hash={sha}`. -/
+/-- The top-level API response for `http://speed.lean-fro.org/{repo}/api/run/{guid}hash={sha}`. -/
 structure RunResponse where
   run : Run
 deriving ToJson, FromJson

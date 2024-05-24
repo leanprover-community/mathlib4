@@ -218,12 +218,12 @@ def findAux (self : UnionFind α) (x : Fin self.size) :
       (∃ hr, (m'.parent ⟨root, hr⟩).1 = root) ∧
       m.rank x ≤ m.rank root := by
   let y := self.arr[x].parent
-  refine if h : y = x then ⟨self.arr, x, ?a'⟩ else
+  refine if h : y = x then ⟨self.arr, x, a'⟩ else
     have := Nat.sub_lt_sub_left (self.lt_rankMax x) (self.rank_lt _ h)
     let ⟨arr₁, root, H⟩ := self.findAux ⟨y, self.parent_lt _ x.2⟩
-    have hx := ?hx
+    have hx := hx
     let arr₂ := arr₁.set ⟨x, hx⟩ {arr₁.get ⟨x, hx⟩ with parent := root}
-    ⟨arr₂, ⟨root, by simp [root.2, arr₂]⟩, ?b'⟩
+    ⟨arr₂, ⟨root, by simp [root.2, arr₂]⟩, b'⟩
   -- start proof
   case a' => -- FIXME: hygiene bug causes `case a` to fail
     let ⟨m, hm⟩ := self.model'
@@ -258,13 +258,13 @@ def link (self : UnionFind α) (x y : Fin self.size)
     let nx := self.arr[x]
     let ny := self.arr[y]
     if h : ny.rank < nx.rank then
-      ⟨self.arr.set y {ny with parent := x}, ?a⟩
+      ⟨self.arr.set y {ny with parent := x}, a⟩
     else
       let arr₁ := self.arr.set x {nx with parent := y}
       let arr₂ := if nx.rank = ny.rank then
         arr₁.set ⟨y, by simp [arr₁]; exact y.2⟩ {ny with rank := ny.rank + 1}
       else arr₁
-      ⟨arr₂, ?b⟩
+      ⟨arr₂, b⟩
   -- start proof
   case a =>
     let ⟨m, hm⟩ := self.model'

@@ -37,7 +37,7 @@ variable (R : Type*) [CommRing R] {M : Submonoid R} (S : Type*) [CommRing S]
 variable [Algebra R S] {P : Type*} [CommRing P]
 variable {A : Type*} [CommRing A] [IsDomain A] (K : Type*)
 
--- TODO: should this extend `Algebra` instead of assuming it?
+-- TODO: should this extend `Algebra` instead of assuming it
 /-- `IsFractionRing R K` states `K` is the field of fractions of an integral domain `R`. -/
 abbrev IsFractionRing [CommRing K] [Algebra R K] :=
   IsLocalization (nonZeroDivisors R) K

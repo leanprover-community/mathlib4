@@ -145,7 +145,7 @@ end EqualizersAndKernels
 
 section Cokernel
 
--- PROJECT: can we reuse the work to construct cokernels in `SemiNormedGroupCat₁` here?
+-- PROJECT: can we reuse the work to construct cokernels in `SemiNormedGroupCat₁` here
 -- I don't see a way to do this that is less work than just repeating the relevant parts.
 /-- Auxiliary definition for `HasCokernels SemiNormedGroupCat`. -/
 noncomputable
@@ -246,7 +246,7 @@ theorem comp_explicitCokernelπ {X Y : SemiNormedGroupCat.{u}} (f : X ⟶ Y) :
 set_option linter.uppercaseLean3 false in
 #align SemiNormedGroup.comp_explicit_cokernel_π SemiNormedGroupCat.comp_explicitCokernelπ
 
--- Porting note: wasn't necessary in Lean 3. Is this a bug?
+-- Porting note: wasn't necessary in Lean 3. Is this a bug
 attribute [simp] comp_explicitCokernelπ_assoc
 
 @[simp]

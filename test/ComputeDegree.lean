@@ -167,7 +167,7 @@ example : natDegree (7 * X : R[X]) ≤ 1 := by
   have : 0 ≤ 1 := zero_le_one
   compute_degree
 
--- possibly only a vestigial test from mathlib3: maybe to check for `instantiateMVars`?
+-- possibly only a vestigial test from mathlib3: maybe to check for `instantiateMVars`
 example {R : Type _} [Ring R] (h : ∀ {p q : R[X]}, p.natDegree ≤ 0 → (p * q).natDegree = 0) :
     natDegree (- 1 * 1 : R[X]) = 0 := by
   apply h _

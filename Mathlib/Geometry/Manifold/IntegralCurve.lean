@@ -442,7 +442,7 @@ theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff (ht₀ : t₀ ∈ Ioo a b)
   suffices hsub : Ioo a b ⊆ s from fun t ht ↦ mem_setOf.mp ((subset_def ▸ hsub) t ht).1
   apply isPreconnected_Ioo.subset_of_closure_inter_subset (s := Ioo a b) (u := s) _
     ⟨t₀, ⟨ht₀, ⟨h, ht₀⟩⟩⟩
-  · -- is this really the most convenient way to pass to subtype topology?
+  · -- is this really the most convenient way to pass to subtype topology
     -- TODO: shorten this when better API around subtype topology exists
     rw [hs, inter_comm, ← Subtype.image_preimage_val, inter_comm, ← Subtype.image_preimage_val,
       image_subset_image_iff Subtype.val_injective, preimage_setOf_eq]

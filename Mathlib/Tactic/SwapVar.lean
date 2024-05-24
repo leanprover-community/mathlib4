@@ -17,7 +17,7 @@ open Lean Meta Elab.Tactic
 namespace Mathlib.Tactic
 
 /-- The parser for swap rules -/
-syntax swapRule := ident " ↔"? ppSpace ident
+syntax swapRule := ident " ↔" ppSpace ident
 
 /--
 `swap_var swap_rule₁, swap_rule₂, ⋯` applies `swap_rule₁` then `swap_rule₂` then `⋯`.
@@ -37,7 +37,7 @@ elab "swap_var " swapRules:(colGt swapRule),+ : tactic => do
   let localInstances := mdecl.localInstances
   let lctx ← swapRules.getElems.foldlM (init := mdecl.lctx) fun lctx swapRule ↦ do
     withLCtx lctx localInstances do
-      let `(swapRule| $n₁:ident $[↔]? $n₂:ident) := swapRule
+      let `(swapRule| $n₁:ident $[↔] $n₂:ident) := swapRule
         | unreachable!
       let n₁ := n₁.getId
       let n₂ := n₂.getId

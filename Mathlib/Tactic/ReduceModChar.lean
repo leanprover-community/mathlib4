@@ -89,7 +89,7 @@ partial def normNeg {α : Q(Type u)} (n : Q(ℕ)) (e : Q($α)) (_instRing : Q(Ri
     have : instAddMonoidWithOne =Q $sα := ⟨⟩
     let ⟨a', pa'⟩ ← mkOfNat α sα a
     let pf : Q(-$b = $a' * $b) := q(CharP.neg_eq_sub_one_mul $n $instCharP $b $a $a' $p $pa')
-    return { expr := q($a' * $b), proof? := pf }
+    return { expr := q($a' * $b), proof := pf }
   | .isNegNat _ _ _ =>
     throwError "normNeg: nothing useful to do in negative characteristic"
   | _ => throwError "normNeg: evaluating `{n} - 1` should give an integer result"
@@ -116,7 +116,7 @@ partial def normNegCoeffMul {α : Q(Type u)} (n : Q(ℕ)) (e : Q($α)) (_instRin
     let ⟨na', npa'⟩ ← mkOfNat α sα na
     let pf : Q(-($a * $b) = $na' * $b) :=
       q(CharP.neg_mul_eq_sub_one_mul $n $instCharP $a $b $na $na' $np $npa')
-    return { expr := q($na' * $b), proof? := pf }
+    return { expr := q($na' * $b), proof := pf }
   | .isNegNat _ _ _ =>
     throwError "normNegCoeffMul: nothing useful to do in negative characteristic"
   | _ => throwError "normNegCoeffMul: evaluating `{n} - 1` should give an integer result"
@@ -188,8 +188,8 @@ partial def derive (e : Expr) : MetaM Simp.Result := do
     iota := false
   }
   let congrTheorems ← Meta.getSimpCongrTheorems
-  let ext? ← getSimpExtension? `reduce_mod_char
-  let ext ← match ext? with
+  let ext ← getSimpExtension `reduce_mod_char
+  let ext ← match ext with
   | some ext => pure ext
   | none => throwError "internal error: reduce_mod_char not registered as simp extension"
   let ctx : Simp.Context := {
@@ -203,7 +203,7 @@ partial def derive (e : Expr) : MetaM Simp.Result := do
       try return (Simp.Step.done (← matchAndNorm e))
       catch _ => pure .continue
   let post := Simp.postDefault #[]
-  let r ← r.mkEqTrans (← Simp.main r.expr ctx (methods := { pre, post, discharge? := discharge })).1
+  let r ← r.mkEqTrans (← Simp.main r.expr ctx (methods := { pre, post, discharge := discharge })).1
 
   return r
 
@@ -213,7 +213,7 @@ partial def reduceModCharTarget : TacticM Unit := do
     let tgt ← instantiateMVars (← goal.getType)
     let prf ← derive tgt
     if prf.expr.consumeMData.isConstOf ``True then
-      match prf.proof? with
+      match prf.proof with
       | some proof => goal.assign (← mkOfEqTrue proof)
       | none => goal.assign (mkConst ``True.intro)
       return none
@@ -245,10 +245,10 @@ and similarly subtraction.
 This tactic uses the type of the subexpression to figure out if it is indeed of positive
 characteristic, for improved performance compared to trying to synthesise a `CharP` instance.
 -/
-syntax (name := reduce_mod_char) "reduce_mod_char" (location)? : tactic
+syntax (name := reduce_mod_char) "reduce_mod_char" (location) : tactic
 
 elab_rules : tactic
-| `(tactic| reduce_mod_char $[$loc]?) => unsafe do
+| `(tactic| reduce_mod_char $[$loc]) => unsafe do
   match expandOptLocation (Lean.mkOptionalNode loc) with
   | Location.targets hyps target => do
     (← getFVarIds hyps).forM reduceModCharHyp

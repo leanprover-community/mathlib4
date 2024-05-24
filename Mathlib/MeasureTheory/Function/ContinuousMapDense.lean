@@ -53,7 +53,7 @@ continuous function interpolating between these two sets.
 ## Related results
 
 Are you looking for a result on "directional" approximation (above or below with respect to an
-order) of functions whose codomain is `ℝ≥0∞` or `ℝ`, by semicontinuous functions?  See the
+order) of functions whose codomain is `ℝ≥0∞` or `ℝ`, by semicontinuous functions  See the
 Vitali-Carathéodory theorem, in the file `Mathlib/MeasureTheory/Integral/VitaliCaratheodory.lean`.
 
 -/

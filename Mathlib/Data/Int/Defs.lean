@@ -22,7 +22,7 @@ See note [foundational algebra order theory].
 ## TODO
 
 Split this file into:
-* `Data.Int.Init` (or maybe `Data.Int.Batteries`?) for lemmas that could go to Batteries
+* `Data.Int.Init` (or maybe `Data.Int.Batteries`) for lemmas that could go to Batteries
 * `Data.Int.Basic` for the lemmas that require mathlib definitions
 -/
 

@@ -45,7 +45,7 @@ theorem iSup_iInf_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : ι �
   · rintro ⟨μ, hμ⟩
     rw [Finset.sum_cons] at hμ
     -- Porting note: `refine` yields goals in a different order than in lean3.
-    refine ⟨ih.mp ⟨Pi.single h.choose ⟨μ a, ?a1⟩ + fun i => ⟨μ i, ?a2⟩, ?a3⟩, fun b hb ab => ?a4⟩
+    refine ⟨ih.mp ⟨Pi.single h.choose ⟨μ a, a1⟩ + fun i => ⟨μ i, a2⟩, a3⟩, fun b hb ab => a4⟩
     case a1 =>
       have := Submodule.coe_mem (μ a)
       rw [mem_iInf] at this ⊢

@@ -22,9 +22,9 @@ open Lean Parser Tactic Elab Tactic Meta
 initialize registerTraceClass `apply_fun
 
 /-- Apply a function to a hypothesis. -/
-def applyFunHyp (f : Term) (using? : Option Term) (h : FVarId) (g : MVarId) :
+def applyFunHyp (f : Term) (using : Option Term) (h : FVarId) (g : MVarId) :
     TacticM (List MVarId) := do
-  let using? ← using?.mapM (elabTerm · none)
+  let using ← using.mapM (elabTerm · none)
   let d ← h.getDecl
   let (prf, newGoals) ← match (← whnfR (← instantiateMVars d.type)).getAppFnArgs with
     | (``Eq, #[_, lhs, rhs]) => do
@@ -45,7 +45,7 @@ def applyFunHyp (f : Term) (using? : Option Term) (h : FVarId) (g : MVarId) :
     | (``Not, #[P]) =>
       match (← whnfR P).getAppFnArgs with
       | (``Eq, _) =>
-        let (injective_f, newGoals) ← match using? with
+        let (injective_f, newGoals) ← match using with
           -- Use the expression passed with `using`
           | some r => pure (r, [])
           -- Create a new `Injective f` goal
@@ -59,7 +59,7 @@ def applyFunHyp (f : Term) (using? : Option Term) (h : FVarId) (g : MVarId) :
       | _ => throwError
         "apply_fun can only handle negations of equality."
     | (``LT.lt, _) =>
-      let (strict_monotone_f, newGoals) ← match using? with
+      let (strict_monotone_f, newGoals) ← match using with
         -- Use the expression passed with `using`
         | some r => pure (r, [])
         -- Create a new `StrictMono f` goal
@@ -71,7 +71,7 @@ def applyFunHyp (f : Term) (using? : Option Term) (h : FVarId) (g : MVarId) :
           pure (ng, [ng.mvarId!])
       pure (← mkAppM' strict_monotone_f #[d.toExpr], newGoals)
     | (``LE.le, _) =>
-      let (monotone_f, newGoals) ← match using? with
+      let (monotone_f, newGoals) ← match using with
         -- Use the expression passed with `using`
         | some r => pure (r, [])
         -- Create a new `Monotone f` goal
@@ -95,9 +95,9 @@ def applyFunTargetFailure (f : Term) : MetaM (List MVarId) := do
 
 /-- Given a metavariable `ginj` of type `Injective f`, try to prove it.
 Returns whether it was successful. -/
-def maybeProveInjective (ginj : Expr) (using? : Option Expr) : MetaM Bool := do
+def maybeProveInjective (ginj : Expr) (using : Option Expr) : MetaM Bool := do
   -- Try the `using` clause
-  if let some u := using? then
+  if let some u := using then
     if ← isDefEq ginj u then
       ginj.mvarId!.assign u
       return true
@@ -111,7 +111,7 @@ def maybeProveInjective (ginj : Expr) (using? : Option Expr) : MetaM Bool := do
   -- Note: if `f` is itself a metavariable, this can cause it to become an equivalence;
   -- perhaps making sure `f` is an equivalence would be correct, but maybe users
   -- shouldn't do `apply_fun _`.
-  let ok ← observing? do
+  let ok ← observing do
     let [] ← ginj.mvarId!.apply (← mkConstWithFreshMVarLevels ``Equiv.injective) | failure
   if ok.isSome then return true
   return false
@@ -122,7 +122,7 @@ alias ⟨ApplyFun.le_of_le, _⟩ := OrderIso.le_iff_le
 alias ⟨ApplyFun.lt_of_lt, _⟩ := OrderIso.lt_iff_lt
 
 /-- Apply a function to the main goal. -/
-def applyFunTarget (f : Term) (using? : Option Term) (g : MVarId) : TacticM (List MVarId) := do
+def applyFunTarget (f : Term) (using : Option Term) (g : MVarId) : TacticM (List MVarId) := do
   -- handle applying a two-argument theorem whose first argument is f
   let handle (thm : Name) : TacticM (List MVarId) := do
     let ng ← mkFreshExprMVar none
@@ -158,8 +158,8 @@ def applyFunTarget (f : Term) (using? : Option Term) (g : MVarId) : TacticM (Lis
         let pf ← Term.elabAppArgs ginj #[] #[.expr g'] (← g.getType) false false
         let pf ← Term.ensureHasType (← g.getType) pf
         -- In the current context, let's try proving injectivity since it might fill in some holes
-        let using? ← using?.mapM (Term.elabTerm · (some inj))
-        _ ← withAssignableSyntheticOpaque <| maybeProveInjective ginj using?
+        let using ← using.mapM (Term.elabTerm · (some inj))
+        _ ← withAssignableSyntheticOpaque <| maybeProveInjective ginj using
         Term.synthesizeSyntheticMVarsUsingDefault
         gDefer.mvarId!.assign pf
         -- Return `inj` so that `withCollectingNewGoalsFrom` detects holes in `f`.
@@ -204,11 +204,11 @@ example (X Y Z : Type) (f : X → Y) (g : Y → Z) (H : Injective <| g ∘ f) :
 ```
 
 The function `f` is handled similarly to how it would be handled by `refine` in that `f` can contain
-placeholders. Named placeholders (like `?a` or `_`) will produce new goals.
+placeholders. Named placeholders (like `a` or `_`) will produce new goals.
  -/
-syntax (name := applyFun) "apply_fun " term (location)? (" using " term)? : tactic
+syntax (name := applyFun) "apply_fun " term (location) (" using " term) : tactic
 
-elab_rules : tactic | `(tactic| apply_fun $f $[$loc]? $[using $P]?) => do
+elab_rules : tactic | `(tactic| apply_fun $f $[$loc] $[using $P]) => do
   withLocation (expandOptLocation (Lean.mkOptionalNode loc))
     (atLocal := fun h ↦ do replaceMainGoal <| ← applyFunHyp f P h (← getMainGoal))
     (atTarget := withMainContext do

@@ -41,7 +41,7 @@ it will appear as a `(currently: true)` note next to the option.
 
 The form `#help option id` will show only options that begin with `id`.
 -/
-syntax withPosition("#help " colGt &"option" (colGt ppSpace Parser.rawIdent)?) : command
+syntax withPosition("#help " colGt &"option" (colGt ppSpace Parser.rawIdent)) : command
 
 private def elabHelpOption (id : Option Ident) : CommandElabM Unit := do
   let id := id.map (·.raw.getId.toString false)
@@ -71,7 +71,7 @@ private def elabHelpOption (id : Option Ident) : CommandElabM Unit := do
     msg := msg ++ .nest 2 (f!"option {name} : {msg1}" ++ .line ++ decl.descr) ++ .line ++ .line
   logInfo msg
 
-elab_rules : command | `(#help option $(id)?) => elabHelpOption id
+elab_rules : command | `(#help option $(id)) => elabHelpOption id
 
 /--
 The command `#help attribute` (or the short form `#help attr`) shows all attributes that have been
@@ -88,7 +88,7 @@ as the docstring will be displayed here.
 The form `#help attr id` will show only attributes that begin with `id`.
 -/
 syntax withPosition("#help " colGt (&"attr" <|> &"attribute")
-    (colGt ppSpace Parser.rawIdent)?) : command
+    (colGt ppSpace Parser.rawIdent)) : command
 
 private def elabHelpAttr (id : Option Ident) : CommandElabM Unit := do
   let id := id.map (·.raw.getId.toString false)
@@ -107,14 +107,14 @@ private def elabHelpAttr (id : Option Ident) : CommandElabM Unit := do
     | none => throwError "no attributes found (!)"
   for (name, decl) in decls do
     let mut msg1 := s!"[{name}]: {decl.descr}"
-    if let some doc ← findDocString? env decl.ref then
+    if let some doc ← findDocString env decl.ref then
       msg1 := s!"{msg1}\n{doc.trim}"
     msg := msg ++ .nest 2 msg1 ++ .line ++ .line
   logInfo msg
 
 elab_rules : command
-  | `(#help attr $(id)?) => elabHelpAttr id
-  | `(#help attribute $(id)?) => elabHelpAttr id
+  | `(#help attr $(id)) => elabHelpAttr id
+  | `(#help attribute $(id)) => elabHelpAttr id
 
 /-- Gets the initial string token in a parser description. For example, for a declaration like
 `syntax "bla" "baz" term : tactic`, it returns `some "bla"`. Returns `none` for syntax declarations
@@ -147,7 +147,7 @@ but you can click to go to the definition.) It also shows the doc string if avai
 
 The form `#help cats id` will show only syntax categories that begin with `id`.
 -/
-syntax withPosition("#help " colGt &"cats" (colGt ppSpace Parser.rawIdent)?) : command
+syntax withPosition("#help " colGt &"cats" (colGt ppSpace Parser.rawIdent)) : command
 
 private def elabHelpCats (id : Option Ident) : CommandElabM Unit := do
   let id := id.map (·.raw.getId.toString false)
@@ -166,12 +166,12 @@ private def elabHelpCats (id : Option Ident) : CommandElabM Unit := do
     | none => throwError "no syntax categories found (!)"
   for (name, cat) in decls do
     let mut msg1 := m!"category {name} [{mkConst cat.declName}]"
-    if let some doc ← findDocString? env cat.declName then
+    if let some doc ← findDocString env cat.declName then
       msg1 := msg1 ++ Format.line ++ doc.trim
     msg := msg ++ .nest 2 msg1 ++ (.line ++ .line : Format)
   logInfo msg
 
-elab_rules : command | `(#help cats $(id)?) => elabHelpCats id
+elab_rules : command | `(#help cats $(id)) => elabHelpCats id
 
 /--
 The command `#help cat C` shows all syntaxes that have been defined in syntax category `C` in the
@@ -188,21 +188,21 @@ name of the syntax (which you can also click to go to the definition), and the d
 * The form `#help cat+ C` will also show information about any `macro`s and `elab`s
   associated to the listed syntaxes.
 -/
-syntax withPosition("#help " colGt &"cat" "+"? colGt ident
-    (colGt ppSpace (Parser.rawIdent <|> str))?) : command
+syntax withPosition("#help " colGt &"cat" "+" colGt ident
+    (colGt ppSpace (Parser.rawIdent <|> str))) : command
 
 private def elabHelpCat (more : Option Syntax) (catStx : Ident) (id : Option String) :
     CommandElabM Unit := do
   let mut decls : Lean.RBMap _ _ compare := {}
   let mut rest : Lean.RBMap _ _ compare := {}
   let catName := catStx.getId.eraseMacroScopes
-  let some cat := (Parser.parserExtension.getState (← getEnv)).categories.find? catName
+  let some cat := (Parser.parserExtension.getState (← getEnv)).categories.find catName
     | throwErrorAt catStx "{catStx} is not a syntax category"
   liftTermElabM <| Term.addCategoryInfo catStx catName
   let env ← getEnv
   for (k, _) in cat.kinds do
     let mut used := false
-    if let some tk := do getHeadTk (← (← env.find? k).value?) then
+    if let some tk := do getHeadTk (← (← env.find k).value) then
       let tk := tk.trim
       if let some id := id then
         if !id.isPrefixOf tk then
@@ -219,7 +219,7 @@ private def elabHelpCat (more : Option Syntax) (catStx : Ident) (id : Option Str
   let env ← getEnv
   let addMsg (k : SyntaxNodeKind) (msg msg1 : MessageData) : CommandElabM MessageData := do
     let mut msg1 := msg1
-    if let some doc ← findDocString? env k then
+    if let some doc ← findDocString env k then
       msg1 := msg1 ++ Format.line ++ doc.trim
     msg1 := .nest 2 msg1
     if more.isSome then
@@ -229,7 +229,7 @@ private def elabHelpCat (more : Option Syntax) (catStx : Ident) (id : Option Str
         for e in attr.getEntries env k do
           let x := e.declName
           msg := msg ++ Format.line ++ m!"+ {type} {mkConst x}"
-          if let some doc ← findDocString? env x then
+          if let some doc ← findDocString env x then
             msg := msg ++ .nest 2 (Format.line ++ doc.trim)
         pure msg
       msg1 ← addElabs "macro" macroAttribute msg1
@@ -247,46 +247,46 @@ private def elabHelpCat (more : Option Syntax) (catStx : Ident) (id : Option Str
   logInfo msg
 
 elab_rules : command
-  | `(#help cat $[+%$more]? $cat) => elabHelpCat more cat none
-  | `(#help cat $[+%$more]? $cat $id:ident) => elabHelpCat more cat (id.getId.toString false)
-  | `(#help cat $[+%$more]? $cat $id:str) => elabHelpCat more cat id.getString
+  | `(#help cat $[+%$more] $cat) => elabHelpCat more cat none
+  | `(#help cat $[+%$more] $cat $id:ident) => elabHelpCat more cat (id.getId.toString false)
+  | `(#help cat $[+%$more] $cat $id:str) => elabHelpCat more cat id.getString
 
 /--
 The command `#help term` shows all term syntaxes that have been defined in the current environment.
 See `#help cat` for more information.
 -/
-syntax withPosition("#help " colGt &"term" "+"?
-    (colGt ppSpace (Parser.rawIdent <|> str))?) : command
+syntax withPosition("#help " colGt &"term" "+"
+    (colGt ppSpace (Parser.rawIdent <|> str))) : command
 macro_rules
-  | `(#help term%$tk $[+%$more]? $(id)?) =>
-    `(#help cat$[+%$more]? $(mkIdentFrom tk `term) $(id)?)
+  | `(#help term%$tk $[+%$more] $(id)) =>
+    `(#help cat$[+%$more] $(mkIdentFrom tk `term) $(id))
 
 /--
 The command `#help tactic` shows all tactics that have been defined in the current environment.
 See `#help cat` for more information.
 -/
-syntax withPosition("#help " colGt &"tactic" "+"?
-    (colGt ppSpace (Parser.rawIdent <|> str))?) : command
+syntax withPosition("#help " colGt &"tactic" "+"
+    (colGt ppSpace (Parser.rawIdent <|> str))) : command
 macro_rules
-  | `(#help tactic%$tk $[+%$more]? $(id)?) =>
-    `(#help cat$[+%$more]? $(mkIdentFrom tk `tactic) $(id)?)
+  | `(#help tactic%$tk $[+%$more] $(id)) =>
+    `(#help cat$[+%$more] $(mkIdentFrom tk `tactic) $(id))
 
 /--
 The command `#help conv` shows all tactics that have been defined in the current environment.
 See `#help cat` for more information.
 -/
-syntax withPosition("#help " colGt &"conv" "+"?
-    (colGt ppSpace (Parser.rawIdent <|> str))?) : command
+syntax withPosition("#help " colGt &"conv" "+"
+    (colGt ppSpace (Parser.rawIdent <|> str))) : command
 macro_rules
-  | `(#help conv%$tk $[+%$more]? $(id)?) =>
-    `(#help cat$[+%$more]? $(mkIdentFrom tk `conv) $(id)?)
+  | `(#help conv%$tk $[+%$more] $(id)) =>
+    `(#help cat$[+%$more] $(mkIdentFrom tk `conv) $(id))
 
 /--
 The command `#help command` shows all commands that have been defined in the current environment.
 See `#help cat` for more information.
 -/
-syntax withPosition("#help " colGt &"command" "+"?
-    (colGt ppSpace (Parser.rawIdent <|> str))?) : command
+syntax withPosition("#help " colGt &"command" "+"
+    (colGt ppSpace (Parser.rawIdent <|> str))) : command
 macro_rules
-  | `(#help command%$tk $[+%$more]? $(id)?) =>
-    `(#help cat$[+%$more]? $(mkIdentFrom tk `command) $(id)?)
+  | `(#help command%$tk $[+%$more] $(id)) =>
+    `(#help cat$[+%$more] $(mkIdentFrom tk `command) $(id))

@@ -656,12 +656,12 @@ def IsUniform : Prop :=
     abs ⟨a, f⟩ = abs ⟨a', f'⟩ → f '' univ = f' '' univ
 #align qpf.is_uniform QPF.IsUniform
 
-/-- does `abs` preserve `Liftp`? -/
+/-- does `abs` preserve `Liftp` -/
 def LiftpPreservation : Prop :=
   ∀ ⦃α⦄ (p : α → Prop) (x : q.P α), Liftp p (abs x) ↔ Liftp p x
 #align qpf.liftp_preservation QPF.LiftpPreservation
 
-/-- does `abs` preserve `supp`? -/
+/-- does `abs` preserve `supp` -/
 def SuppPreservation : Prop :=
   ∀ ⦃α⦄ (x : q.P α), supp (abs x) = supp x
 #align qpf.supp_preservation QPF.SuppPreservation

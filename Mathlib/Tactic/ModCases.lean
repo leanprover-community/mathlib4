@@ -60,7 +60,7 @@ and the `a ≡ b (mod n) → p` case becomes a subgoal.
 
 /--
 Proves an expression of the form `OnModCases n a b p` where `n` and `b` are raw nat literals
-and `b ≤ n`. Returns the list of subgoals `?gi : a ≡ i [ZMOD n] → p`.
+and `b ≤ n`. Returns the list of subgoals `gi : a ≡ i [ZMOD n] → p`.
 -/
 partial def proveOnModCases (n : Q(ℕ)) (a : Q(ℤ)) (b : Q(ℕ)) (p : Q(Sort u)) :
     MetaM (Q(OnModCases $n $a $b $p) × List MVarId) := do
@@ -136,7 +136,7 @@ and the `a ≡ b (mod n) → p` case becomes a subgoal.
 
 /--
 Proves an expression of the form `OnModCases n a b p` where `n` and `b` are raw nat literals
-and `b ≤ n`. Returns the list of subgoals `?gi : a ≡ i [MOD n] → p`.
+and `b ≤ n`. Returns the list of subgoals `gi : a ≡ i [MOD n] → p`.
 -/
 partial def proveOnModCases (n : Q(ℕ)) (a : Q(ℕ)) (b : Q(ℕ)) (p : Q(Sort u)) :
     MetaM (Q(OnModCases $n $a $b $p) × List MVarId) := do
@@ -178,10 +178,10 @@ end NatMod
   when `n` is a positive numeral and `e` is an expression of type `ℕ` or `ℤ`.
 * If `h` is omitted as in `mod_cases e % n`, it will be default-named `H`.
 -/
-syntax "mod_cases " (atomic(binderIdent ":"))? term:71 " % " num : tactic
+syntax "mod_cases " (atomic(binderIdent ":")) term:71 " % " num : tactic
 
 elab_rules : tactic
-  | `(tactic| mod_cases $[$h :]? $e % $n) => do
+  | `(tactic| mod_cases $[$h :] $e % $n) => do
     let n := n.getNat
     if n == 0 then Elab.throwUnsupportedSyntax
     let h := h.getD (← `(binderIdent| _))

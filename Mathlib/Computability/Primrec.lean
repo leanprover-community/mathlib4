@@ -371,13 +371,13 @@ theorem unpair : Primrec Nat.unpair :=
   (pair (nat_iff.2 .left) (nat_iff.2 .right)).of_eq fun n => by simp
 #align primrec.unpair Primrec.unpair
 
-theorem list_get?₁ : ∀ l : List α, Primrec l.get?
+theorem list_get₁ : ∀ l : List α, Primrec l.get
   | [] => dom_denumerable.2 zero
   | a :: l =>
     dom_denumerable.2 <|
-      (casesOn1 (encode a).succ <| dom_denumerable.1 <| list_get?₁ l).of_eq fun n => by
+      (casesOn1 (encode a).succ <| dom_denumerable.1 <| list_get₁ l).of_eq fun n => by
         cases n <;> simp
-#align primrec.list_nth₁ Primrec.list_get?₁
+#align primrec.list_nth₁ Primrec.list_get₁
 
 end Primrec
 
@@ -781,8 +781,8 @@ theorem dom_fintype [Finite α] (f : α → σ) : Primrec f :=
   let ⟨l, _, m⟩ := Finite.exists_univ_list α
   option_some_iff.1 <| by
     haveI := decidableEqOfEncodable α
-    refine ((list_get?₁ (l.map f)).comp (list_indexOf₁ l)).of_eq fun a => _
-    rw [List.get_map, List.indexOf_get? (m a), Option.map_some']
+    refine ((list_get₁ (l.map f)).comp (list_indexOf₁ l)).of_eq fun a => _
+    rw [List.get_map, List.indexOf_get (m a), Option.map_some']
 #align primrec.dom_fintype Primrec.dom_fintype
 
 -- Porting note: These are new lemmas
@@ -1029,13 +1029,13 @@ theorem list_foldr {f : α → List β} {g : α → σ} {h : α → β × σ →
     fun a => by simp [List.foldl_reverse]
 #align primrec.list_foldr Primrec.list_foldr
 
-theorem list_head? : Primrec (@List.head? α) :=
+theorem list_head : Primrec (@List.head α) :=
   (list_casesOn .id (const none) (option_some_iff.2 <| fst.comp snd).to₂).of_eq fun l => by
     cases l <;> rfl
-#align primrec.list_head' Primrec.list_head?
+#align primrec.list_head' Primrec.list_head
 
 theorem list_headI [Inhabited α] : Primrec (@List.headI α _) :=
-  (option_iget.comp list_head?).of_eq fun l => l.head!_eq_head?.symm
+  (option_iget.comp list_head).of_eq fun l => l.head!_eq_head.symm
 #align primrec.list_head Primrec.list_headI
 
 theorem list_tail : Primrec (@List.tail α) :=
@@ -1055,7 +1055,7 @@ theorem list_rec {f : α → List β} {g : α → σ} {h : α → β × List β 
     induction' f a with b l IH <;> simp [*]
 #align primrec.list_rec Primrec.list_rec
 
-theorem list_get? : Primrec₂ (@List.get? α) :=
+theorem list_get : Primrec₂ (@List.get α) :=
   let F (l : List α) (n : ℕ) :=
     l.foldl
       (fun (s : Sum ℕ α) (a : α) =>
@@ -1077,11 +1077,11 @@ theorem list_get? : Primrec₂ (@List.get? α) :=
       clear IH
       induction' l with _ l IH <;> simp [*]
     · apply IH
-#align primrec.list_nth Primrec.list_get?
+#align primrec.list_nth Primrec.list_get
 
 theorem list_getD (d : α) : Primrec₂ fun l n => List.getD l n d := by
-  simp only [List.getD_eq_getD_get?]
-  exact option_getD.comp₂ list_get? (const _)
+  simp only [List.getD_eq_getD_get]
+  exact option_getD.comp₂ list_get (const _)
 #align primrec.list_nthd Primrec.list_getD
 
 theorem list_getI [Inhabited α] : Primrec₂ (@List.getI α _) :=
@@ -1134,7 +1134,7 @@ theorem nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ
     (H : ∀ a n, g a ((List.range n).map (f a)) = some (f a n)) : Primrec₂ f :=
   suffices Primrec₂ fun a n => (List.range n).map (f a) from
     Primrec₂.option_some_iff.1 <|
-      (list_get?.comp (this.comp fst (succ.comp snd)) snd).to₂.of_eq fun a n => by
+      (list_get.comp (this.comp fst (succ.comp snd)) snd).to₂.of_eq fun a n => by
         simp [List.get_range (Nat.lt_succ_self n)]
   Primrec₂.option_some_iff.1 <|
     (nat_rec (const (some []))
@@ -1287,7 +1287,7 @@ theorem vector_length {n} : Primrec (@Vector.length α n) :=
 #align primrec.vector_length Primrec.vector_length
 
 theorem vector_head {n} : Primrec (@Vector.head α n) :=
-  option_some_iff.1 <| (list_head?.comp vector_toList).of_eq fun ⟨_ :: _, _⟩ => rfl
+  option_some_iff.1 <| (list_head.comp vector_toList).of_eq fun ⟨_ :: _, _⟩ => rfl
 #align primrec.vector_head Primrec.vector_head
 
 theorem vector_tail {n} : Primrec (@Vector.tail α n) :=
@@ -1296,7 +1296,7 @@ theorem vector_tail {n} : Primrec (@Vector.tail α n) :=
 
 theorem vector_get {n} : Primrec₂ (@Vector.get α n) :=
   option_some_iff.1 <|
-    (list_get?.comp (vector_toList.comp fst) (fin_val.comp snd)).of_eq fun a => by
+    (list_get.comp (vector_toList.comp fst) (fin_val.comp snd)).of_eq fun a => by
       rw [Vector.get_eq_get, ← List.get_eq_get]
       rfl
 

@@ -110,7 +110,7 @@ def homMk {U V : Over X} (f : U.left ⟶ V.left) (w : f ≫ V.hom = U.hom := by 
   CostructuredArrow.homMk f w
 #align category_theory.over.hom_mk CategoryTheory.Over.homMk
 
--- Porting note: simp solves this; simpNF still sees them after `-simp` (?)
+-- Porting note: simp solves this; simpNF still sees them after `-simp` ()
 attribute [-simp, nolint simpNF] homMk_right_down_down
 
 /-- Construct an isomorphism in the over category given isomorphisms of the objects whose forward
@@ -122,7 +122,7 @@ def isoMk {f g : Over X} (hl : f.left ≅ g.left) (hw : hl.hom ≫ g.hom = f.hom
   CostructuredArrow.isoMk hl hw
 #align category_theory.over.iso_mk CategoryTheory.Over.isoMk
 
--- Porting note: simp solves this; simpNF still sees them after `-simp` (?)
+-- Porting note: simp solves this; simpNF still sees them after `-simp` ()
 attribute [-simp, nolint simpNF] isoMk_hom_right_down_down isoMk_inv_right_down_down
 
 section
@@ -389,7 +389,7 @@ def homMk {U V : Under X} (f : U.right ⟶ V.right) (w : U.hom ≫ f = V.hom := 
   StructuredArrow.homMk f w
 #align category_theory.under.hom_mk CategoryTheory.Under.homMk
 
--- Porting note: simp solves this; simpNF still sees them after `-simp` (?)
+-- Porting note: simp solves this; simpNF still sees them after `-simp` ()
 attribute [-simp, nolint simpNF] homMk_left_down_down
 
 /-- Construct an isomorphism in the over category given isomorphisms of the objects whose forward

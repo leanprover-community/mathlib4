@@ -117,7 +117,7 @@ theorem isBigO_iff : f =O[l] g ↔ ∃ c : ℝ, ∀ᶠ x in l, ‖f x‖ ≤ c *
 /-- Definition of `IsBigO` in terms of filters, with a positive constant. -/
 theorem isBigO_iff' {g : α → E'''} :
     f =O[l] g ↔ ∃ c > 0, ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖ := by
-  refine ⟨fun h => ?mp, fun h => ?mpr⟩
+  refine ⟨fun h => mp, fun h => mpr⟩
   case mp =>
     rw [isBigO_iff] at h
     obtain ⟨c, hc⟩ := h
@@ -134,7 +134,7 @@ theorem isBigO_iff' {g : α → E'''} :
 /-- Definition of `IsBigO` in terms of filters, with the constant in the lower bound. -/
 theorem isBigO_iff'' {g : α → E'''} :
     f =O[l] g ↔ ∃ c > 0, ∀ᶠ x in l, c * ‖f x‖ ≤ ‖g x‖ := by
-  refine ⟨fun h => ?mp, fun h => ?mpr⟩
+  refine ⟨fun h => mp, fun h => mpr⟩
   case mp =>
     rw [isBigO_iff'] at h
     obtain ⟨c, ⟨hc_pos, hc⟩⟩ := h

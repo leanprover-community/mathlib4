@@ -193,13 +193,13 @@ section Nth
 --   cases i <;> apply to_list_nth_le
 #noalign array.to_list_nth_le' -- Array'.toList_nth_le'
 
--- theorem toList_get? {i v} : List.get? a.toList i = some v ↔ ∃ h, a.read ⟨i, h⟩ = v := by
+-- theorem toList_get {i v} : List.get a.toList i = some v ↔ ∃ h, a.read ⟨i, h⟩ = v := by
 --   rw [List.get_eq_some']
 --   have ll := to_list_length a
 --   constructor <;> intro h <;> cases' h with h e <;> subst v
 --   · exact ⟨ll ▸ h, (to_list_nth_le _ _ _).symm⟩
 --   · exact ⟨ll.symm ▸ h, to_list_nth_le _ _ _⟩
-#noalign array.to_list_nth --Array'.toList_get?
+#noalign array.to_list_nth --Array'.toList_get
 
 -- theorem write_toList {i v} : (a.write i v).toList = a.toList.set i v :=
 --   List.ext_nthLe (by simp) fun j h₁ h₂ => by
@@ -225,7 +225,7 @@ section Enum
 -- variable {n : ℕ} {α : Type u} {a : Array' n α}
 
 -- theorem mem_toList_enum {i v} : (i, v) ∈ a.toList.enum ↔ ∃ h, a.read ⟨i, h⟩ = v := by
---   simp [List.mem_iff_get?, to_list_nth, and_comm, and_assoc, and_left_comm]
+--   simp [List.mem_iff_get, to_list_nth, and_comm, and_assoc, and_left_comm]
 #noalign array.mem_to_list_enum --Array'.mem_toList_enum
 
 end Enum

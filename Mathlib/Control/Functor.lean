@@ -42,7 +42,7 @@ theorem Functor.map_id : (id <$> ·) = (id : F α → F α) := funext id_map
 theorem Functor.map_comp_map (f : α → β) (g : β → γ) :
     ((g <$> ·) ∘ (f <$> ·) : F α → F γ) = ((g ∘ f) <$> ·) :=
   funext fun _ => (comp_map _ _ _).symm
-  -- Porting note: was `apply funext <;> intro <;> rw [comp_map]` but `rw` failed?
+  -- Porting note: was `apply funext <;> intro <;> rw [comp_map]` but `rw` failed
 #align functor.map_comp_map Functor.map_comp_map
 
 theorem Functor.ext {F} :

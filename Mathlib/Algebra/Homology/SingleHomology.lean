@@ -189,7 +189,7 @@ is the same as doing nothing.
 noncomputable def homology'Functor0Single₀ : single₀ C ⋙ homology'Functor C _ 0 ≅ 𝟭 C :=
   NatIso.ofComponents (fun X => homology'.congr _ _ (by simp) (by simp) ≪≫ homology'ZeroZero)
     fun f => by
-      -- Porting note: why can't `aesop_cat` do this?
+      -- Porting note: why can't `aesop_cat` do this
       dsimp
       ext
       simp
@@ -219,7 +219,7 @@ is the same as doing nothing.
 noncomputable def homologyFunctor0Single₀ : single₀ C ⋙ homology'Functor C _ 0 ≅ 𝟭 C :=
   NatIso.ofComponents (fun X => homology'.congr _ _ (by simp) (by simp) ≪≫ homology'ZeroZero)
     fun f => by
-      -- Porting note: why can't `aesop_cat` do this?
+      -- Porting note: why can't `aesop_cat` do this
       dsimp
       ext
       simp

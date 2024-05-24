@@ -79,8 +79,8 @@ normed field, see `NormedField.punctured_nhds_neBot`). Let `M` be a nontrivial m
 such that `c • x = 0` implies `c = 0 ∨ x = 0`. Then `M` has no isolated points. We formulate this
 using `NeBot (𝓝[≠] x)`.
 
-This lemma is not an instance because Lean would need to find `[ContinuousSMul ?m_1 M]` with
-unknown `?m_1`. We register this as an instance for `R = ℝ` in `Real.punctured_nhds_module_neBot`.
+This lemma is not an instance because Lean would need to find `[ContinuousSMul m_1 M]` with
+unknown `m_1`. We register this as an instance for `R = ℝ` in `Real.punctured_nhds_module_neBot`.
 One can also use `haveI := Module.punctured_nhds_neBot R M` in a proof.
 -/
 theorem Module.punctured_nhds_neBot [Nontrivial M] [NeBot (𝓝[≠] (0 : R))] [NoZeroSMulDivisors R M]

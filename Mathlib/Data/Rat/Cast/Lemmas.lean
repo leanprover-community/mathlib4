@@ -32,7 +32,7 @@ theorem cast_inv_nat (n : ℕ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
     Int.sign_eq_one_of_pos (Nat.cast_pos.mpr n.succ_pos), Int.cast_one, one_div]
 #align rat.cast_inv_nat Rat.cast_inv_nat
 
--- Porting note: proof got a lot easier - is this still the intended statement?
+-- Porting note: proof got a lot easier - is this still the intended statement
 @[simp]
 theorem cast_inv_int (n : ℤ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
   cases' n with n n
@@ -44,8 +44,8 @@ theorem cast_inv_int (n : ℤ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
 theorem cast_nnratCast {K} [DivisionRing K] (q : ℚ≥0) :
     ((q : ℚ) : K) = (q : K) := by
   rw [Rat.cast_def, NNRat.cast_def, NNRat.cast_def]
-  have hn := @num_div_eq_of_coprime q.num q.den ?hdp q.coprime_num_den
-  on_goal 1 => have hd := @den_div_eq_of_coprime q.num q.den ?hdp q.coprime_num_den
+  have hn := @num_div_eq_of_coprime q.num q.den hdp q.coprime_num_den
+  on_goal 1 => have hd := @den_div_eq_of_coprime q.num q.den hdp q.coprime_num_den
   case hdp => simpa only [Nat.cast_pos] using q.den_pos
   simp only [Int.cast_natCast, Nat.cast_inj] at hn hd
   rw [hn, hd, Int.cast_natCast]

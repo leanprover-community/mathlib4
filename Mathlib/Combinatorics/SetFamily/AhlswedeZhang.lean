@@ -138,7 +138,7 @@ lemma map_truncatedSup (e : α ≃o β) (s : Finset α) (a : α) :
   simp only [filter_map, Function.comp, Equiv.coe_toEmbedding, RelIso.coe_fn_toEquiv,
     OrderIso.le_iff_le, id]
   rw [sup'_map]
-  -- TODO: Why can't `simp` use `Finset.sup'_map`?
+  -- TODO: Why can't `simp` use `Finset.sup'_map`
   simp only [sup'_map, Equiv.coe_toEmbedding, RelIso.coe_fn_toEquiv, Function.comp_apply]
 
 variable [DecidableEq α]

@@ -298,7 +298,7 @@ noncomputable instance instPreservesColimitsForget [HasColimits V] :
     PreservesColimits (forget V G) :=
   preservesColimitsOfNatIso (Action.functorCategoryEquivalenceCompEvaluation V G)
 
--- TODO construct categorical images?
+-- TODO construct categorical images
 end Forget
 
 theorem Iso.conj_ρ {M N : Action V G} (f : M ≅ N) (g : G) :

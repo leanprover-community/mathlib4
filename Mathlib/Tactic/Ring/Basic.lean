@@ -789,7 +789,7 @@ partial def evalPow₁ (va : ExSum sα a) (vb : ExProd sℕ b) : Result (ExSum s
   | .zero, vb => match vb.evalPos with
     | some p => ⟨_, .zero, q(zero_pow (R := $α) $p)⟩
     | none => evalPowAtom sα (.sum .zero) vb
-  | ExSum.add va .zero, vb => -- TODO: using `.add` here takes a while to compile?
+  | ExSum.add va .zero, vb => -- TODO: using `.add` here takes a while to compile
     let ⟨_, vc, pc⟩ := evalPowProd sα va vb
     ⟨_, vc.toSum, q(single_pow $pc)⟩
   | va, vb =>
@@ -883,7 +883,7 @@ def evalAtom (e : Q($α)) : AtomM (Result (ExSum sα) e) := do
   have e' : Q($α) := r.expr
   let i ← addAtom e'
   let ve' := (ExBase.atom i (e := e')).toProd (ExProd.mkNat sℕ 1).2 |>.toSum
-  pure ⟨_, ve', match r.proof? with
+  pure ⟨_, ve', match r.proof with
   | none => (q(atom_pf $e) : Expr)
   | some (p : Q($e = $e')) => (q(atom_pf' $p) : Expr)⟩
 
@@ -1122,7 +1122,7 @@ initialize ringCleanupRef : IO.Ref (Expr → MetaM Expr) ← IO.mkRef pure
 
 /-- Frontend of `ring1`: attempt to close a goal `g`, assuming it is an equation of semirings. -/
 def proveEq (g : MVarId) : AtomM Unit := do
-  let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars <|← g.getType).eq?
+  let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars <|← g.getType).eq
     | throwError "ring failed: not an equality"
   let .sort u ← whnf (← inferType α) | unreachable!
   let v ← try u.dec catch _ => throwError "not a type{indentExpr α}"
@@ -1169,7 +1169,7 @@ allowing variables in the exponent.
 * The variant `ring1!` will use a more aggressive reducibility setting
   to determine equality of atoms.
 -/
-elab (name := ring1) "ring1" tk:"!"? : tactic => liftMetaMAtMain fun g ↦ do
+elab (name := ring1) "ring1" tk:"!" : tactic => liftMetaMAtMain fun g ↦ do
   AtomM.run (if tk.isSome then .default else .reducible) (proveEq g)
 
 @[inherit_doc ring1] macro "ring1!" : tactic => `(tactic| ring1 !)

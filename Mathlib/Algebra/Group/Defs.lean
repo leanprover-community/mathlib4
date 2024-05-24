@@ -17,7 +17,7 @@ import Mathlib.Util.AssertExists
 # Typeclasses for (semi)groups and monoids
 
 In this file we define typeclasses for algebraic structures with one binary operation.
-The classes are named `(Add)?(Comm)?(Semigroup|Monoid|Group)`, where `Add` means that
+The classes are named `(Add)(Comm)(Semigroup|Monoid|Group)`, where `Add` means that
 the class uses additive notation and `Comm` means that the class assumes that the binary
 operation is commutative.
 
@@ -677,7 +677,7 @@ lemma pow_mul_comm' (a : M) (n : ℕ) : a ^ n * a = a * a ^ n := by rw [← pow_
 #align pow_two pow_two
 #align two_nsmul two_nsmul
 
--- TODO: Should `alias` automatically transfer `to_additive` statements?
+-- TODO: Should `alias` automatically transfer `to_additive` statements
 @[to_additive existing two_nsmul] alias sq := pow_two
 #align sq sq
 

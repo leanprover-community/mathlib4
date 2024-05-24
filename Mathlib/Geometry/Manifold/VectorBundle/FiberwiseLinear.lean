@@ -283,7 +283,7 @@ def smoothFiberwiseLinear : StructureGroupoid (B × F) where
 #align smooth_fiberwise_linear smoothFiberwiseLinear
 
 variable {F B IB} in
--- TODO: can this be inlined into the next lemma?
+-- TODO: can this be inlined into the next lemma
 private theorem mem_aux {e : PartialHomeomorph (B × F) (B × F)} :
     (e ∈ ⋃ (φ : B → F ≃L[𝕜] F) (U : Set B) (hU : IsOpen U)
       (hφ : SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun x => φ x : B → F →L[𝕜] F) U)

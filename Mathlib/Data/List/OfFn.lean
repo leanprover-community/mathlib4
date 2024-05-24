@@ -60,7 +60,7 @@ theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f (Fin.cast (by s
 
 /-- The `n`th element of a list -/
 @[simp]
-theorem get_ofFn {n} (f : Fin n → α) (i) : get? (ofFn f) i = ofFnNthVal f i :=
+theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = ofFnNthVal f i :=
   if h : i < (ofFn f).length
   then by
     rw [get_eq_get h, get_ofFn]

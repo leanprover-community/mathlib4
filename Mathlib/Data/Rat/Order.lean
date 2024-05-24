@@ -101,7 +101,7 @@ protected theorem nonneg_total (a : ℚ) : 0 ≤ a ∨ 0 ≤ -a := by
 
 #align rat.decidable_nonneg Rat.instDecidableLe
 
--- Porting note (#11215): TODO can this be shortened?
+-- Porting note (#11215): TODO can this be shortened
 protected theorem le_iff_sub_nonneg (a b : ℚ) : a ≤ b ↔ 0 ≤ b - a :=
   numDenCasesOn'' a fun na da ha hared =>
     numDenCasesOn'' b fun nb db hb hbred => by

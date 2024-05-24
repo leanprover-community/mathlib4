@@ -17,10 +17,10 @@ is not defeq to the goal:
 -/
 #guard_msgs in
 example : (fun x : Nat => x) 0 = 1 := by
-  change? 0 = _  -- change 0 = 1
-  change?        -- change (fun x ↦ x) 0 = 1
-  change? _      -- change (fun x ↦ x) 0 = 1
-  change? 1 = 0
+  change 0 = _  -- change 0 = 1
+  change        -- change (fun x ↦ x) 0 = 1
+  change _      -- change (fun x ↦ x) 0 = 1
+  change 1 = 0
     -- The term
     --   1 = 0
     -- is not defeq to the goal:

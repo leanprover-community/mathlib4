@@ -311,7 +311,7 @@ noncomputable def extendAlongYonedaYoneda : extendAlongYoneda (yoneda : C ⥤ _)
   Adjunction.natIsoOfRightAdjointNatIso (yonedaAdjunction _) Adjunction.id restrictedYonedaYoneda
 #align category_theory.extend_along_yoneda_yoneda CategoryTheory.extendAlongYonedaYoneda
 
--- Maybe this should be reducible or an abbreviation?
+-- Maybe this should be reducible or an abbreviation
 /-- A functor to the presheaf category in which everything in the image is representable (witnessed
 by the fact that it factors through the yoneda embedding).
 `coconeOfRepresentable` gives a cocone for this functor which is a colimit and has point `P`.

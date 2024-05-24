@@ -32,7 +32,7 @@ separate synonym for each type (`ProdLp`, `PiLp`, etc), and allows all the struc
 to be shared.
 
 TODO: is it safe to copy across the topology and uniform space structure too for all reasonable
-choices of `V`?
+choices of `V`
 -/
 
 

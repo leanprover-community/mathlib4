@@ -235,7 +235,7 @@ theorem nodup_iff_injective_get {v : Vector α n} : v.toList.Nodup ↔ Function.
   exact List.nodup_iff_injective_get
 #align vector.nodup_iff_nth_inj Vector.nodup_iff_injective_get
 
-theorem head_toList : ∀ v : Vector α n.succ, (toList v).head? = some (head v)
+theorem head_toList : ∀ v : Vector α n.succ, (toList v).head = some (head v)
   | ⟨_ :: _, _⟩ => rfl
 #align vector.head'_to_list Vector.head_toList
 

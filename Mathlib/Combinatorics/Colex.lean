@@ -75,7 +75,7 @@ structure Colex (α) :=
   /-- `ofColex` is the "identity" function between `Finset.Colex α` and `Finset α`. -/
   (ofColex : Finset α)
 
--- TODO: Why can't we export?
+-- TODO: Why can't we export
 --export Colex (toColex)
 
 open Colex
@@ -102,7 +102,7 @@ instance instLE : LE (Colex α) where
   le s t := ∀ ⦃a⦄, a ∈ ofColex s → a ∉ ofColex t → ∃ b, b ∈ ofColex t ∧ b ∉ ofColex s ∧ a ≤ b
 
 -- TODO: This lemma is weirdly useful given how strange its statement is.
--- Is there a nicer statement? Should this lemma be made public?
+-- Is there a nicer statement Should this lemma be made public
 private lemma trans_aux (hst : toColex s ≤ toColex t) (htu : toColex t ≤ toColex u)
     (has : a ∈ s) (hat : a ∉ t) : ∃ b, b ∈ u ∧ b ∉ s ∧ a ≤ b := by
   classical

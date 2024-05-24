@@ -37,7 +37,7 @@ partial def explodeCore (e : Expr) (depth : Nat) (entries : Entries) (start : Bo
     MetaM (Option Entry × Entries) := do
   trace[explode] "depth = {depth}, start = {start}, e = {e}"
   let e := e.cleanupAnnotations
-  if let some entry := entries.find? e then
+  if let some entry := entries.find e then
     trace[explode] "already seen"
     return (entry, entries)
   if !(← select e) then
@@ -62,14 +62,14 @@ partial def explodeCore (e : Expr) (depth : Nat) (entries : Entries) (start : Bo
             useAsDep := ← select arg }
         entries' := entries''
         rdeps := some argEntry.line! :: rdeps
-      let (bodyEntry?, entries) ←
+      let (bodyEntry, entries) ←
         explodeCore body (if start then depth else depth + 1) entries'
-      rdeps := consDep bodyEntry? rdeps
+      rdeps := consDep bodyEntry rdeps
       let (entry, entries) := entries.add e
         { type     := ← addMessageContext <| ← Meta.inferType e
           depth    := depth
           status   := Status.lam
-          thm      := "∀I" -- TODO use "→I" if it's purely implications?
+          thm      := "∀I" -- TODO use "→I" if it's purely implications
           deps     := rdeps.reverse
           useAsDep := true }
       return (entry, entries)
@@ -84,19 +84,19 @@ partial def explodeCore (e : Expr) (depth : Nat) (entries : Entries) (start : Bo
     -- entry in the table for it. We store the theorem name in the `thm` field
     -- below, giving access to the theorem's type on hover in the UI.
     -- Whether to include the entry could be controlled by a configuration option.
-    let (fnEntry?, entries) ←
+    let (fnEntry, entries) ←
       if fn.isConst then
         pure (none, entries)
       else
         explodeCore fn depth entries
-    let deps := if fn.isConst then [] else consDep fnEntry? []
+    let deps := if fn.isConst then [] else consDep fnEntry []
 
     let mut entries' := entries
     let mut rdeps := []
     for arg in args do
-      let (appEntry?, entries'') ← explodeCore arg depth entries'
+      let (appEntry, entries'') ← explodeCore arg depth entries'
       entries' := entries''
-      rdeps := consDep appEntry? rdeps
+      rdeps := consDep appEntry rdeps
     let deps := deps ++ rdeps.reverse
 
     let (entry, entries) := entries'.add e
@@ -111,9 +111,9 @@ partial def explodeCore (e : Expr) (depth : Nat) (entries : Entries) (start : Bo
     trace[explode] ".letE"
     let varType := varType.cleanupAnnotations
     Meta.withLocalDeclD varName varType fun var => do
-      let (valEntry?, entries) ← explodeCore val depth entries
-      -- Add a synonym so that the substituted fvars refer to `valEntry?`
-      let entries := valEntry?.map (entries.addSynonym var) |>.getD entries
+      let (valEntry, entries) ← explodeCore val depth entries
+      -- Add a synonym so that the substituted fvars refer to `valEntry`
+      let entries := valEntry.map (entries.addSynonym var) |>.getD entries
       explodeCore (body.instantiate1 var) depth entries
   | _ => do
     -- Right now all of these are caught by this case case:
@@ -132,8 +132,8 @@ partial def explodeCore (e : Expr) (depth : Nat) (entries : Entries) (start : Bo
 where
   /-- Prepend the `line` of the `Entry` to `deps` if it's not `none`, but if the entry isn't marked
   with `useAsDep` then it's not added to the list at all. -/
-  consDep (entry? : Option Entry) (deps : List (Option Nat)) : List (Option Nat) :=
-    if let some entry := entry? then
+  consDep (entry : Option Entry) (deps : List (Option Nat)) : List (Option Nat) :=
+    if let some entry := entry then
       if includeAllDeps || entry.useAsDep then entry.line! :: deps else deps
     else
       deps

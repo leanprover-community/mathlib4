@@ -32,7 +32,7 @@ example (x2 : Fin 2) (x3 : Fin 3) : True := by
 
 -- Checking that `fin_cases` can handle a metavariable for the type
 example (p : ℕ) (h2 : 2 < p) (h5 : p < 5) : p = 3 ∨ p = 4 := by
-  have hp : _ := ?foo
+  have hp : _ := foo
   case foo => exact (Finset.mem_Ioo).2 ⟨h2, h5⟩
   fin_cases hp
   · norm_num

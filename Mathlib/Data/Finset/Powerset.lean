@@ -341,7 +341,7 @@ theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) 
       rw [← card_map f, this, h.2]; simp
     · rintro ⟨a, ⟨has, rfl⟩, rfl⟩
       dsimp [RelEmbedding.coe_toEmbedding]
-      -- Porting note: Why is `rw` required here and not `simp`?
+      -- Porting note: Why is `rw` required here and not `simp`
       rw [mapEmbedding_apply]
       simp [has]
 #align finset.powerset_len_map Finset.powersetCard_map

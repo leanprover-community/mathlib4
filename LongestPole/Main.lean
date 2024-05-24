@@ -33,18 +33,18 @@ def mathlib4RepoId : String := "e7b27246-a3e6-496a-b552-ff4b45c7236e"
 namespace SpeedCenterAPI
 
 def runJson (hash : String) (repoId : String := mathlib4RepoId) : IO String :=
-  runCurl #[s!"http://speed.lean-fro.org/mathlib4/api/run/{repoId}?hash={hash}"]
+  runCurl #[s!"http://speed.lean-fro.org/mathlib4/api/run/{repoId}hash={hash}"]
 
 def getRunResponse (hash : String) : IO RunResponse := do
   let r ← runJson hash
   match Json.parse r with
   | .error e => throw <| IO.userError s!"Could not parse speed center JSON: {e}\n{r}"
-  | .ok j => match fromJson? j with
+  | .ok j => match fromJson j with
     | .ok v => pure v
-    | .error e => match fromJson? j with
+    | .error e => match fromJson j with
       | .ok (v : ErrorMessage) =>
         IO.eprintln s!"http://speed.lean-fro.org says: {v.message}"
-        IO.eprintln s!"Try moving to an older commit?"
+        IO.eprintln s!"Try moving to an older commit"
         IO.Process.exit 1
       | .error _ => throw <| IO.userError s!"Could not parse speed center JSON: {e}\n{j}"
 
@@ -118,7 +118,7 @@ def Float.toStringDecimals (r : Float) (digits : Nat) : String :=
 
 /-- Implementation of the longest pole command line program. -/
 def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
-  let to ← match args.flag? "to" with
+  let to ← match args.flag "to" with
   | some to => pure <| to.as! ModuleName
   | none => ImportGraph.getCurrentModule -- autodetect the main module from the `lakefile.lean`
   searchPathRef.set compile_time_search_path%
@@ -139,8 +139,8 @@ def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
       let t := total.find! n'
       let r := (t / c).toStringDecimals 2
       table := table.push (n', i/10^6 |>.toUInt64, c/10^6 |>.toUInt64, r)
-      n := slowest.find? n'
-    let widest := table.map (·.1.toString.length) |>.toList.maximum?.getD 0
+      n := slowest.find n'
+    let widest := table.map (·.1.toString.length) |>.toList.maximum.getD 0
     IO.println s!"{"file".rightpad widest} | instructions | (cumulative) | parallelism"
     IO.println s!"{"".rightpad widest '-'} | ------------ | ------------ | -----------"
     for (name, inst, cumu, speedup) in table do

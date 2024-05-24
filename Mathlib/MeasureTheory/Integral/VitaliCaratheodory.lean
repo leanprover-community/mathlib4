@@ -61,7 +61,7 @@ Finally, we glue them together to obtain the main statement
 
 ## Related results
 
-Are you looking for a result on approximation by continuous functions (not just semicontinuous)?
+Are you looking for a result on approximation by continuous functions (not just semicontinuous)
 See result `MeasureTheory.Lp.boundedContinuousFunction_dense`, in the file
 `Mathlib/MeasureTheory/Function/ContinuousMapDense.lean`.
 
@@ -112,7 +112,7 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
       · simp only [lintegral_const, zero_mul, zero_le, ENNReal.coe_zero]
     have : μ s < μ s + ε / c := by
       have : (0 : ℝ≥0∞) < ε / c := ENNReal.div_pos_iff.2 ⟨ε0, ENNReal.coe_ne_top⟩
-      simpa using ENNReal.add_lt_add_left ?aux this
+      simpa using ENNReal.add_lt_add_left aux this
     case aux =>
       classical
       simpa [f, hs, hc, lt_top_iff_ne_top, true_and_iff, SimpleFunc.coe_const,
@@ -475,7 +475,7 @@ theorem exists_lt_lowerSemicontinuous_integral_lt [SigmaFinite μ] (f : α → �
   have ae_g : ∀ᵐ x ∂μ, (g x).toReal = (gp x : EReal).toReal - (gm x : EReal).toReal := by
     filter_upwards [gp_lt_top] with _ hx
     rw [EReal.toReal_sub] <;> simp [hx.ne]
-  refine ⟨g, ?lt, ?lsc, ?int, ?aelt, ?intlt⟩
+  refine ⟨g, lt, lsc, int, aelt, intlt⟩
   case int =>
     show Integrable (fun x => EReal.toReal (g x)) μ
     rw [integrable_congr ae_g]

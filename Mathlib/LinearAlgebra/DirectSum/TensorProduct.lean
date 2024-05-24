@@ -50,7 +50,7 @@ variable [∀ i₁, Module S (M₁ i₁)] [∀ i₁, IsScalarTower R S (M₁ i�
 protected def directSum :
     ((⨁ i₁, M₁ i₁) ⊗[R] ⨁ i₂, M₂ i₂) ≃ₗ[S] ⨁ i : ι₁ × ι₂, M₁ i.1 ⊗[R] M₂ i.2 := by
   -- Porting note: entirely rewritten to allow unification to happen one step at a time
-  refine LinearEquiv.ofLinear (R := S) (R₂ := S) ?toFun ?invFun ?left ?right
+  refine LinearEquiv.ofLinear (R := S) (R₂ := S) toFun invFun left right
   · refine AlgebraTensorModule.lift _
     refine DirectSum.toModule S _ _ fun i₁ => _
     refine LinearMap.flip _

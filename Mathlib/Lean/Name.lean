@@ -41,9 +41,9 @@ gathered together into a `HashMap` according to the module they are defined in.
 def allNamesByModule (p : Name → Bool) : CoreM (Batteries.HashMap Name (Array Name)) := do
   (← getEnv).constants.foldM (init := Batteries.HashMap.empty) fun names n _ => do
     if p n && !(← isBlackListed n) then
-      let some m ← findModuleOf? n | return names
+      let some m ← findModuleOf n | return names
       -- TODO use `Batteries.HashMap.modify` when we bump Batteries (or `alter` if that is written).
-      match names.find? m with
+      match names.find m with
       | some others => return names.insert m (others.push n)
       | none => return names.insert m #[n]
     else

@@ -550,7 +550,7 @@ section CommRing
 
 variable (F K : Type*) [CommRing F] [Ring K] [Algebra F K]
 
--- TODO: refactor to allow transcendental extensions?
+-- TODO: refactor to allow transcendental extensions
 -- See: https://en.wikipedia.org/wiki/Separable_extension#Separability_of_transcendental_extensions
 -- Note that right now a Galois extension (class `IsGalois`) is defined to be an extension which
 -- is separable and normal, so if the definition of separable changes here at some point

@@ -57,20 +57,20 @@ register_option push_neg.use_distrib : Bool :=
 def transformNegationStep (e : Expr) : SimpM (Option Simp.Step) := do
   -- Wrapper around `Simp.Step.visit`
   let mkSimpStep (e : Expr) (pf : Expr) : Simp.Step :=
-    Simp.Step.visit { expr := e, proof? := some pf }
+    Simp.Step.visit { expr := e, proof := some pf }
   -- Try applying the inequality lemma and verify that we do get a defeq type.
   -- Sometimes there might be the wrong LinearOrder available!
   let handleIneq (e₁ e₂ : Expr) (notThm : Name) : SimpM (Option Simp.Step) := do
     try
       -- Allowed to fail if it can't synthesize an instance:
       let thm ← mkAppM notThm #[e₁, e₂]
-      let some (_, lhs, rhs) := (← inferType thm).eq? | failure -- this should never fail
+      let some (_, lhs, rhs) := (← inferType thm).eq | failure -- this should never fail
       -- Make sure the inferred instances are right:
       guard <| ← isDefEq e lhs
       return some <| mkSimpStep rhs thm
     catch _ => return none
   let e_whnf ← whnfR e
-  let some ex := e_whnf.not? | return Simp.Step.continue
+  let some ex := e_whnf.not | return Simp.Step.continue
   let ex := (← instantiateMVars ex).cleanupAnnotations
   match ex.getAppFnArgs with
   | (``Not, #[e]) =>
@@ -88,12 +88,12 @@ def transformNegationStep (e : Expr) : SimpM (Option Simp.Step) := do
         -- test if equality is of the form `s = ∅`, and negate it to `s.Nonempty`
         if e₂.isAppOfArity ``EmptyCollection.emptyCollection 2 then
           let thm ← mkAppM ``ne_empty_eq_nonempty #[e₁]
-          let some (_, _, rhs) := (← inferType thm).eq? | return none
+          let some (_, _, rhs) := (← inferType thm).eq | return none
           return mkSimpStep rhs thm
         -- test if equality is of the form `∅ = s`, and negate it to `s.Nonempty`
         if e₁.isAppOfArity ``EmptyCollection.emptyCollection 2 then
           let thm ← mkAppM ``empty_ne_eq_nonempty #[e₂]
-          let some (_, _, rhs) := (← inferType thm).eq? | return none
+          let some (_, _, rhs) := (← inferType thm).eq | return none
           return mkSimpStep rhs thm
       -- negate `a = b` to `a ≠ b`
       return Simp.Step.visit { expr := ← mkAppM ``Ne #[e₁, e₂] }
@@ -106,7 +106,7 @@ def transformNegationStep (e : Expr) : SimpM (Option Simp.Step) := do
   | (``Set.Nonempty, #[_ty, e]) =>
       -- negate `s.Nonempty` to `s = ∅`
       let thm ← mkAppM ``not_nonempty_eq #[e]
-      let some (_, _, rhs) := (← inferType thm).eq? | return none
+      let some (_, _, rhs) := (← inferType thm).eq | return none
       return mkSimpStep rhs thm
   | (``Exists, #[_, .lam n typ bo bi]) =>
       return mkSimpStep (.forallE n typ (mkNot bo) bi)
@@ -128,7 +128,7 @@ def transformNegationStep (e : Expr) : SimpM (Option Simp.Step) := do
 to handle e.g. triple negation. -/
 partial def transformNegation (e : Expr) : SimpM Simp.Step := do
   let Simp.Step.visit r₁ ← transformNegationStep e | return Simp.Step.continue
-  match r₁.proof? with
+  match r₁.proof with
   | none => return Simp.Step.continue r₁
   | some _ => do
       let Simp.Step.visit r₂ ← transformNegation r₁.expr | return Simp.Step.visit r₁
@@ -220,7 +220,7 @@ using say `push_neg at h h' ⊢` as usual.
 This tactic has two modes: in standard mode, it transforms `¬(p ∧ q)` into `p → ¬q`, whereas in
 distrib mode it produces `¬p ∨ ¬q`. To use distrib mode, use `set_option push_neg.use_distrib true`.
 -/
-elab "push_neg" loc:(location)? : tactic =>
+elab "push_neg" loc:(location) : tactic =>
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   withLocation loc
     pushNegLocalDecl

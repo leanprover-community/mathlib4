@@ -40,7 +40,7 @@ The actual assumptions on `R` are weaker.
 * The instance showing that `Semiring R, NoZeroDivisors R, Add A, UniqueSums A` imply
   `NoZeroDivisors R[A]`.
 
-TODO: move the rest of the docs to UniqueProds?
+TODO: move the rest of the docs to UniqueProds
  `NoZeroDivisors.of_left_ordered` shows that if `R` is a semiring with no non-zero
   zero-divisors, `A` is a linearly ordered, add right cancel semigroup with strictly monotone
   left addition, then `R[A]` has no non-zero zero-divisors.

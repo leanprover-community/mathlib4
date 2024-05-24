@@ -159,7 +159,7 @@ theorem limit_topology (F : J ⥤ TopCat.{max v u}) :
 
 section Prod
 
--- Porting note: why is autoParam not firing?
+-- Porting note: why is autoParam not firing
 /-- The first projection from the product. -/
 abbrev prodFst {X Y : TopCat.{u}} : TopCat.of (X × Y) ⟶ X :=
   ⟨Prod.fst, by continuity⟩

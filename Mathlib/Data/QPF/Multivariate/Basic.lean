@@ -214,12 +214,12 @@ def IsUniform : Prop :=
     abs ⟨a, f⟩ = abs ⟨a', f'⟩ → ∀ i, f i '' univ = f' i '' univ
 #align mvqpf.is_uniform MvQPF.IsUniform
 
-/-- does `abs` preserve `liftp`? -/
+/-- does `abs` preserve `liftp` -/
 def LiftPPreservation : Prop :=
   ∀ ⦃α : TypeVec n⦄ (p : ∀ ⦃i⦄, α i → Prop) (x : q.P α), LiftP p (abs x) ↔ LiftP p x
 #align mvqpf.liftp_preservation MvQPF.LiftPPreservation
 
-/-- does `abs` preserve `supp`? -/
+/-- does `abs` preserve `supp` -/
 def SuppPreservation : Prop :=
   ∀ ⦃α⦄ (x : q.P α), supp (abs x) = supp x
 #align mvqpf.supp_preservation MvQPF.SuppPreservation

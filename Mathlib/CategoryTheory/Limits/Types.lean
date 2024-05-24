@@ -285,9 +285,9 @@ theorem limit_ext_iff' (F : J ⥤ Type v) (x y : limit F) :
   ⟨fun t _ => t ▸ rfl, limit_ext' _ _ _⟩
 #align category_theory.limits.types.limit_ext_iff' CategoryTheory.Limits.Types.limit_ext_iff'
 
--- TODO: are there other limits lemmas that should have `_apply` versions?
--- Can we generate these like with `@[reassoc]`?
--- PROJECT: prove these for any concrete category where the forgetful functor preserves limits?
+-- TODO: are there other limits lemmas that should have `_apply` versions
+-- Can we generate these like with `@[reassoc]`
+-- PROJECT: prove these for any concrete category where the forgetful functor preserves limits
 -- Porting note (#11119): @[simp] was removed because the linter said it was useless
 --@[simp]
 variable {F} in

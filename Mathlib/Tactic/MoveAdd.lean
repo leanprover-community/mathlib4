@@ -170,7 +170,7 @@ similarly for the pairs with second coordinate equal to `false`.
 -/
 def weight (L : List (α × Bool)) (a : α) : ℤ :=
   let l := L.length
-  match L.find? (Prod.fst · == a) with
+  match L.find (Prod.fst · == a) with
     | some (_, b) => if b then - l + (L.indexOf (a, b) : ℤ) else (L.indexOf (a, b) + 1 : ℤ)
     | none => 0
 
@@ -192,12 +192,12 @@ For example,
 -/
 def reorderUsing (toReorder : List α) (instructions : List (α × Bool)) : List α :=
   let uInstructions :=
-    let (as, as?) := instructions.unzip
-    (uniquify as).zip as?
+    let (as, as) := instructions.unzip
+    (uniquify as).zip as
   let uToReorder := (uniquify toReorder).toArray
   let reorder := uToReorder.qsort fun x y =>
-    match uInstructions.find? (Prod.fst · == x), uInstructions.find? (Prod.fst · == y) with
-      | none, none => (uToReorder.getIdx? x).get! ≤ (uToReorder.getIdx? y).get!
+    match uInstructions.find (Prod.fst · == x), uInstructions.find (Prod.fst · == y) with
+      | none, none => (uToReorder.getIdx x).get! ≤ (uToReorder.getIdx y).get!
       | _, _ => weight uInstructions x ≤ weight uInstructions y
   (reorder.map Prod.fst).toList
 
@@ -217,22 +217,22 @@ def prepareOp (sum : Expr) : Expr :=
   let opargs := sum.getAppArgs
   (opargs.toList.take (opargs.size - 2)).foldl (fun x y => Expr.app x y) sum.getAppFn
 
-/-- `sumList prepOp left_assoc? exs` assumes that `prepOp` is an `Expr`ession representing a
+/-- `sumList prepOp left_assoc exs` assumes that `prepOp` is an `Expr`ession representing a
 binary operation already fully applied up until its last two arguments and assumes that the
 last two arguments are the operands of the operation.
 Such an expression is the result of `prepareOp`.
 
-If `exs` is the list `[e₁, e₂, ..., eₙ]` of `Expr`essions, then `sumList prepOp left_assoc? exs`
+If `exs` is the list `[e₁, e₂, ..., eₙ]` of `Expr`essions, then `sumList prepOp left_assoc exs`
 returns
-* `prepOp (prepOp( ... prepOp (prepOp e₁ e₂) e₃) ... eₙ)`, if `left_assoc?` is `false`, and
-* `prepOp e₁ (prepOp e₂ (... prepOp (prepOp eₙ₋₁  eₙ))`, if `left_assoc?` is `true`.
+* `prepOp (prepOp( ... prepOp (prepOp e₁ e₂) e₃) ... eₙ)`, if `left_assoc` is `false`, and
+* `prepOp e₁ (prepOp e₂ (... prepOp (prepOp eₙ₋₁  eₙ))`, if `left_assoc` is `true`.
 -/
 partial
-def sumList (prepOp : Expr) (left_assoc? : Bool) : List Expr → Expr
+def sumList (prepOp : Expr) (left_assoc : Bool) : List Expr → Expr
   | []    => default
   | [a]   => a
   | a::as =>
-    if left_assoc? then
+    if left_assoc then
       Expr.app (prepOp.app a) (sumList prepOp true as)
     else
       as.foldl (fun x y => Expr.app (prepOp.app x) y) a
@@ -282,8 +282,8 @@ def rankSums (tgt : Expr) (instructions : List (Expr × Bool)) : MetaM (List (Ex
   let sums ← getOps op (← instantiateMVars tgt)
   let candidates := sums.map fun (addends, sum) => do
     let reord := reorderUsing addends.toList instructions
-    let left_assoc? := sum.getAppFn.isConstOf `And || sum.getAppFn.isConstOf `Or
-    let resummed := sumList (prepareOp sum) left_assoc? reord
+    let left_assoc := sum.getAppFn.isConstOf `And || sum.getAppFn.isConstOf `Or
+    let resummed := sumList (prepareOp sum) left_assoc reord
     if (resummed != sum) then some (sum, resummed) else none
   return (candidates.toList.reduceOption.toArray.qsort
     (fun x y : Expr × Expr ↦ (y.1.size  ≤ x.1.size))).toList
@@ -327,7 +327,7 @@ the output RHS list `[0]` corresponds to the last `0` in `L`.
 def pairUp : List (Expr × Bool × Syntax) → List Expr →
     MetaM ((List (Expr × Bool)) × List (Expr × Bool × Syntax))
   | (m::ms), l => do
-    match ← l.findM? (isDefEq · m.1) with
+    match ← l.findM (isDefEq · m.1) with
       | none => let (found, unfound) ← pairUp ms l; return (found, m::unfound)
       | some d => let (found, unfound) ← pairUp ms (l.erase d)
                   return ((d, m.2.1)::found, unfound)

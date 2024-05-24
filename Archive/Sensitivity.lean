@@ -146,7 +146,7 @@ theorem adj_iff_proj_adj {p q : Q n.succ} (h₀ : p 0 = q 0) :
   · rintro ⟨i, h_eq, h_uni⟩
     use i.succ, h_eq
     intro y hy
-    rw [← Fin.pred_inj (ha := (?ha : y ≠ 0)) (hb := (?hb : i.succ ≠ 0)),
+    rw [← Fin.pred_inj (ha := (ha : y ≠ 0)) (hb := (hb : i.succ ≠ 0)),
       Fin.pred_succ]
     case ha =>
       contrapose! hy

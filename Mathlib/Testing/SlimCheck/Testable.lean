@@ -28,7 +28,7 @@ counter-example it will then use a `Shrinkable` instance to reduce the
 example. This allows the user to create new instances and apply
 `SlimCheck` to new situations.
 
-### What do I do if I'm testing a property about my newly defined type?
+### What do I do if I'm testing a property about my newly defined type
 
 Let us consider a type made for a new formalization:
 
@@ -40,7 +40,7 @@ structure MyType where
   deriving Repr
 ```
 
-How do we test a property about `MyType`? For instance, let us consider
+How do we test a property about `MyType` For instance, let us consider
 `Testable.check <| ∀ a b : MyType, a.y ≤ b.x → a.x ≤ b.y`. Writing this
 property as is will give us an error because we do not have an instance
 of `Shrinkable MyType` and `SampleableExt MyType`. We can define one as follows:

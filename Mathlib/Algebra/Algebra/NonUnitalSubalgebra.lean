@@ -632,7 +632,7 @@ lemma adjoin_eq_span (s : Set A) : (adjoin R s).toSubmodule = span R (Subsemigro
     | add x _ y _ hpx hpy => exact add_mem hpx hpy
     | zero => exact zero_mem _
     | mul x _ y _ hpx hpy =>
-      apply span_induction₂ hpx hpy ?Hs (by simp) (by simp) ?Hadd_l ?Hadd_r ?Hsmul_l ?Hsmul_r
+      apply span_induction₂ hpx hpy Hs (by simp) (by simp) Hadd_l Hadd_r Hsmul_l Hsmul_r
       case Hs => exact fun x hx y hy ↦ subset_span <| mul_mem hx hy
       case Hadd_l => exact fun x y z hxz hyz ↦ by simpa [add_mul] using add_mem hxz hyz
       case Hadd_r => exact fun x y z hxz hyz ↦ by simpa [mul_add] using add_mem hxz hyz

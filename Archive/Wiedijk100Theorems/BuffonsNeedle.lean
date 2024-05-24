@@ -133,7 +133,7 @@ lemma volume_needleSpace : ℙ (needleSpace d) = ENNReal.ofReal (d * π) := by
 
 lemma measurable_needleCrossesIndicator : Measurable (needleCrossesIndicator l) := by
   unfold needleCrossesIndicator
-  refine Measurable.indicator measurable_const (IsClosed.measurableSet (IsClosed.inter ?l ?r))
+  refine Measurable.indicator measurable_const (IsClosed.measurableSet (IsClosed.inter l r))
   all_goals simp only [tsub_le_iff_right, zero_add, ← neg_le_iff_add_nonneg']
   case' l => refine isClosed_le continuous_fst _
   case' r => refine isClosed_le (Continuous.neg continuous_fst) _
@@ -145,10 +145,10 @@ lemma measurable_needleCrossesIndicator : Measurable (needleCrossesIndicator l) 
 lemma stronglyMeasurable_needleCrossesIndicator :
     MeasureTheory.StronglyMeasurable (needleCrossesIndicator l) := by
   refine stronglyMeasurable_iff_measurable_separable.mpr
-    ⟨measurable_needleCrossesIndicator l, {0, 1}, ?separable⟩
+    ⟨measurable_needleCrossesIndicator l, {0, 1}, separable⟩
   have range_finite : Set.Finite ({0, 1} : Set ℝ) := by
     simp only [Set.mem_singleton_iff, Set.finite_singleton, Set.Finite.insert]
-  refine ⟨range_finite.countable, ?subset_closure⟩
+  refine ⟨range_finite.countable, subset_closure⟩
   rw [IsClosed.closure_eq range_finite.isClosed, Set.subset_def, Set.range]
   intro x ⟨p, hxp⟩
   by_cases hp : 0 ∈ needleProjX l p.1 p.2
@@ -173,7 +173,7 @@ lemma integrable_needleCrossesIndicator :
   refine And.intro
     (stronglyMeasurable_needleCrossesIndicator l).aestronglyMeasurable
     ((MeasureTheory.hasFiniteIntegral_iff_norm (needleCrossesIndicator l)).mpr _)
-  refine lt_of_le_of_lt (MeasureTheory.lintegral_mono (g := 1) ?le_const) ?lt_top
+  refine lt_of_le_of_lt (MeasureTheory.lintegral_mono (g := 1) le_const) lt_top
   case le_const =>
     intro p
     simp only [Real.norm_eq_abs, abs_of_nonneg (needleCrossesIndicator_nonneg _),
@@ -213,7 +213,7 @@ lemma buffon_integral :
     simp_rw [MeasureTheory.IntegrableOn, Measure.volume_eq_prod, ← Measure.prod_restrict,
       integrable_needleCrossesIndicator d l hd]
   rw [Measure.volume_eq_prod, MeasureTheory.setIntegral_prod _ this,
-    MeasureTheory.integral_integral_swap ?integrable]
+    MeasureTheory.integral_integral_swap integrable]
   case integrable => simp_rw [Function.uncurry_def, Prod.mk.eta,
     integrable_needleCrossesIndicator d l hd]
   simp only [needleCrossesIndicator, needleProjX, Set.mem_Icc]

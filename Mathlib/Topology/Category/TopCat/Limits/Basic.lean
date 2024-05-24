@@ -42,7 +42,7 @@ def limitCone (F : J ⥤ TopCat.{max v u}) : Cone F where
           -- Porting note: `continuity` from the original mathlib3 proof failed here.
           continuous_toFun := Continuous.comp (continuous_apply _) (continuous_subtype_val) }
       naturality := fun X Y f => by
-        -- Automation fails in various ways in this proof. Why?!
+        -- Automation fails in various ways in this proof. Why!
         dsimp
         rw [Category.id_comp]
         apply ContinuousMap.ext

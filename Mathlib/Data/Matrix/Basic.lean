@@ -562,7 +562,7 @@ theorem map_one [Zero β] [One β] (f : α → β) (h₀ : f 0 = 0) (h₁ : f 1 
   split_ifs <;> simp [h₀, h₁]
 #align matrix.map_one Matrix.map_one
 
--- Porting note: added implicit argument `(f := fun_ => α)`, why is that needed?
+-- Porting note: added implicit argument `(f := fun_ => α)`, why is that needed
 theorem one_eq_pi_single {i j} : (1 : Matrix n n α) i j = Pi.single (f := fun _ => α) i 1 j := by
   simp only [one_apply, Pi.single_apply, eq_comm]
 #align matrix.one_eq_pi_single Matrix.one_eq_pi_single

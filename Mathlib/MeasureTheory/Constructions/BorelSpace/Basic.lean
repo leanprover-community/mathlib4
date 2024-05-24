@@ -185,8 +185,8 @@ def borelToRefl (e : Expr) (i : FVarId) : TacticM Unit := do
 def borelize (t : Term) : TacticM Unit := withMainContext <| do
   let u ← mkFreshLevelMVar
   let e ← withoutRecover <| Tactic.elabTermEnsuringType t (mkSort (mkLevelSucc u))
-  let i? ← findLocalDeclWithType? (← mkAppOptM ``MeasurableSpace #[e])
-  i?.elim (addBorelInstance e) (borelToRefl e)
+  let i ← findLocalDeclWithType (← mkAppOptM ``MeasurableSpace #[e])
+  i.elim (addBorelInstance e) (borelToRefl e)
 
 elab_rules : tactic
   | `(tactic| borelize $[$t:term]*) => t.forM borelize

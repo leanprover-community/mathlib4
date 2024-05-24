@@ -406,11 +406,11 @@ instance EuclideanSpace.instSmoothManifoldWithCornersSphere {n : ℕ} [Fact (fin
     (by
       rintro _ _ ⟨v, rfl⟩ ⟨v', rfl⟩
       let U :=
-        (-- Removed type ascription, and this helped for some reason with timeout issues?
+        (-- Removed type ascription, and this helped for some reason with timeout issues
             OrthonormalBasis.fromOrthogonalSpanSingleton (𝕜 := ℝ)
             n (ne_zero_of_mem_unit_sphere v)).repr
       let U' :=
-        (-- Removed type ascription, and this helped for some reason with timeout issues?
+        (-- Removed type ascription, and this helped for some reason with timeout issues
             OrthonormalBasis.fromOrthogonalSpanSingleton (𝕜 := ℝ)
             n (ne_zero_of_mem_unit_sphere v')).repr
       have H₁ := U'.contDiff.comp_contDiffOn contDiffOn_stereoToFun

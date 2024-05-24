@@ -27,7 +27,7 @@ def printNameHashMap (h : Batteries.HashMap Name (Array Name)) : IO Unit :=
 Lists all declarations with a long name, gathered according to the module they are defined in.
 Use as `#long_names` or `#long_names 100` to specify the length.
 -/
-elab "#long_names " N:(num)? : command =>
+elab "#long_names " N:(num) : command =>
   Command.runTermElabM fun _ => do
     let N := N.map TSyntax.getNat |>.getD 50
     let namesByModule ← allNamesByModule (fun n => n.toString.length > N)
@@ -41,7 +41,7 @@ This is useful for finding automatically named instances with absurd names.
 
 Use as `#long_names` or `#long_names 100` to specify the length.
 -/
-elab "#long_instances " N:(num)?: command =>
+elab "#long_instances " N:(num): command =>
   Command.runTermElabM fun _ => do
     let N := N.map TSyntax.getNat |>.getD 50
     let namesByModule ← allNamesByModule

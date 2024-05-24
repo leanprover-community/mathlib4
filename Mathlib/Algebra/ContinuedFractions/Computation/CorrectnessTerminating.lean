@@ -147,7 +147,7 @@ theorem compExactValue_correctness_of_stream_eq_some :
         IntFractPair.exists_succ_nth_stream_of_fr_zero succ_nth_stream_eq ifp_succ_n_fr_eq_zero
       have : ifp_n' = ifp_n := by injection Eq.trans nth_stream_eq'.symm nth_stream_eq
       cases this
-      have s_nth_eq : g.s.get? n = some ⟨1, ⌊ifp_n.fr⁻¹⌋⟩ :=
+      have s_nth_eq : g.s.get n = some ⟨1, ⌊ifp_n.fr⁻¹⌋⟩ :=
         get_of_eq_some_of_get_intFractPair_stream_fr_ne_zero nth_stream_eq nth_fract_ne_zero
       rw [← ifp_n_fract_inv_eq_floor] at s_nth_eq
       suffices v = compExactValue ppconts pconts ifp_n.fr by
@@ -168,7 +168,7 @@ theorem compExactValue_correctness_of_stream_eq_some :
       have : ifp_n' = ifp_n := by injection Eq.trans nth_stream_eq'.symm nth_stream_eq
       cases this
       -- get the correspondence between ifp_n and g.s.nth n
-      have s_nth_eq : g.s.get? n = some ⟨1, (⌊ifp_n.fr⁻¹⌋ : K)⟩ :=
+      have s_nth_eq : g.s.get n = some ⟨1, (⌊ifp_n.fr⁻¹⌋ : K)⟩ :=
         get_of_eq_some_of_get_intFractPair_stream_fr_ne_zero nth_stream_eq ifp_n_fract_ne_zero
       -- the claim now follows by unfolding the definitions and tedious calculations
       -- some shorthand notation

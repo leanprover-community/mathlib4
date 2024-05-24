@@ -19,8 +19,8 @@ namespace Lean
 deriving instance FromJson, ToJson for PUnit
 
 instance {n : Nat} : FromJson (Fin n) where
-  fromJson? j := do
-    let i : Nat ← fromJson? j
+  fromJson j := do
+    let i : Nat ← fromJson j
     if h : i < n then
       return ⟨i, h⟩
     else
@@ -30,8 +30,8 @@ instance {n : Nat} : ToJson (Fin n) where
   toJson i := toJson i.val
 
 instance {α : Type u} [FromJson α] (p : α → Prop) [DecidablePred p] : FromJson (Subtype p) where
-  fromJson? j := do
-    let i : α ← fromJson? j
+  fromJson j := do
+    let i : α ← fromJson j
     if h : p i then
       return ⟨i, h⟩
     else

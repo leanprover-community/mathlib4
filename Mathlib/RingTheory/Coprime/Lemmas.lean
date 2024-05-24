@@ -193,7 +193,7 @@ theorem pairwise_coprime_iff_coprime_prod [DecidableEq I] :
   · rw [Finset.mem_sdiff, Finset.mem_singleton] at hj
     obtain ⟨hj, ji⟩ := hj
     refine @hp ⟨i, hi⟩ ⟨j, hj⟩ fun h ↦ ji (congrArg Subtype.val h).symm
-    -- Porting note: is there a better way compared to the old `congr_arg coe h`?
+    -- Porting note: is there a better way compared to the old `congr_arg coe h`
   · rintro ⟨i, hi⟩ ⟨j, hj⟩ h
     apply IsCoprime.prod_right_iff.mp (hp i hi)
     exact Finset.mem_sdiff.mpr ⟨hj, fun f ↦ h <| Subtype.ext (Finset.mem_singleton.mp f).symm⟩

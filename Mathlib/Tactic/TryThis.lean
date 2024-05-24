@@ -19,9 +19,9 @@ open Lean
 /-- Produces the text `Try this: <tac>` with the given tactic, and then executes it. -/
 elab tk:"try_this" tac:tactic : tactic => do
   Elab.Tactic.evalTactic tac
-  Meta.Tactic.TryThis.addSuggestion tk tac (origSpan? := ← getRef)
+  Meta.Tactic.TryThis.addSuggestion tk tac (origSpan := ← getRef)
 
 /-- Produces the text `Try this: <tac>` with the given conv tactic, and then executes it. -/
 elab tk:"try_this" tac:conv : conv => do
   Elab.Tactic.evalTactic tac
-  Meta.Tactic.TryThis.addSuggestion tk tac (origSpan? := ← getRef)
+  Meta.Tactic.TryThis.addSuggestion tk tac (origSpan := ← getRef)

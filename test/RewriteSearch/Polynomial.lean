@@ -7,7 +7,7 @@ set_option autoImplicit true
 
 open Polynomial
 
--- Fails, but used to work prior to `rw?` moving to `lean4`.
+-- Fails, but used to work prior to `rw` moving to `lean4`.
 -- -- info: Try this: rw [@natDegree_sub, @sub_eq_neg_add, @natDegree_add_C, @natDegree_neg]
 -- #guard_msgs(drop info) in
 -- example {R : Type*} [Ring R] {p : Polynomial R} {a : R} :

@@ -54,7 +54,7 @@ def toContinuousMapOn (p : R[X]) (X : Set R) : C(X, R) :=
   ⟨fun x : X => p.toContinuousMap x, Continuous.comp (by continuity) (by continuity)⟩
 #align polynomial.to_continuous_map_on Polynomial.toContinuousMapOn
 
--- TODO some lemmas about when `toContinuousMapOn` is injective?
+-- TODO some lemmas about when `toContinuousMapOn` is injective
 end
 
 section

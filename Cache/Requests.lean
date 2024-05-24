@@ -94,19 +94,19 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
         let line := line.trim
         if !line.isEmpty then
           let result ← IO.ofExcept <| Lean.Json.parse line
-          match result.getObjValAs? Nat "http_code" with
+          match result.getObjValAs Nat "http_code" with
           | .ok 200 =>
-            if let .ok fn := result.getObjValAs? String "filename_effective" then
+            if let .ok fn := result.getObjValAs String "filename_effective" then
               if (← System.FilePath.pathExists fn) && fn.endsWith ".part" then
                 IO.FS.rename fn (fn.dropRight 5)
             success := success + 1
           | .ok 404 => pure ()
           | _ =>
             failed := failed + 1
-            if let .ok e := result.getObjValAs? String "errormsg" then
+            if let .ok e := result.getObjValAs String "errormsg" then
               IO.println e
             -- `curl --remove-on-error` can already do this, but only from 7.83 onwards
-            if let .ok fn := result.getObjValAs? String "filename_effective" then
+            if let .ok fn := result.getObjValAs String "filename_effective" then
               if (← System.FilePath.pathExists fn) then
                 IO.FS.removeFile fn
           done := done + 1
@@ -180,21 +180,21 @@ def UPLOAD_URL : String :=
 
 /-- Formats the config file for `curl`, containing the list of files to be uploaded -/
 def mkPutConfigContent (fileNames : Array String) (token : String) : IO String := do
-  let token := if useFROCache then "" else s!"?{token}" -- the FRO cache doesn't pass the token here
+  let token := if useFROCache then "" else s!"{token}" -- the FRO cache doesn't pass the token here
   let l ← fileNames.data.mapM fun fileName : String => do
     pure s!"-T {(IO.CACHEDIR / fileName).toString}\nurl = {mkFileURL UPLOAD_URL fileName}{token}"
   return "\n".intercalate l
 
 /-- Calls `curl` to send a set of cached files to the server -/
 def putFiles (fileNames : Array String) (overwrite : Bool) (token : String) : IO Unit := do
-  -- TODO: reimplement using HEAD requests?
+  -- TODO: reimplement using HEAD requests
   let _ := overwrite
   let size := fileNames.size
   if size > 0 then
     IO.FS.writeFile IO.CURLCFG (← mkPutConfigContent fileNames token)
     IO.println s!"Attempting to upload {size} file(s)"
     let args := if useFROCache then
-      -- TODO: reimplement using HEAD requests?
+      -- TODO: reimplement using HEAD requests
       let _ := overwrite
       #["--aws-sigv4", "aws:amz:auto:s3", "--user", token]
     else if overwrite then
@@ -227,7 +227,7 @@ def commit (hashMap : IO.HashMap) (overwrite : Bool) (token : String) : IO Unit 
   IO.mkDir IO.CACHEDIR
   IO.FS.writeFile path <| ("\n".intercalate <| hashMap.hashes.toList.map toString) ++ "\n"
   if useFROCache then
-    -- TODO: reimplement using HEAD requests?
+    -- TODO: reimplement using HEAD requests
     let _ := overwrite
     discard <| IO.runCurl #["-T", path.toString,
       "--aws-sigv4", "aws:amz:auto:s3", "--user", token, s!"{UPLOAD_URL}/c/{hash}"]
@@ -235,7 +235,7 @@ def commit (hashMap : IO.HashMap) (overwrite : Bool) (token : String) : IO Unit 
     let params := if overwrite
       then #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob"]
       else #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
-    discard <| IO.runCurl <| params ++ #["-T", path.toString, s!"{URL}/c/{hash}?{token}"]
+    discard <| IO.runCurl <| params ++ #["-T", path.toString, s!"{URL}/c/{hash}{token}"]
   IO.FS.removeFile path
 
 end Commit
@@ -267,7 +267,7 @@ def getFilesInfo (q : QueryType) : IO <| List (String × String) := do
   if useFROCache then
     throw <| .userError "FIXME: getFilesInfo is not adapted to FRO cache yet"
   IO.println s!"Downloading info list of {q.desc}"
-  let ret ← IO.runCurl #["-X", "GET", s!"{URL}?comp=list&restype=container{q.prefix}"]
+  let ret ← IO.runCurl #["-X", "GET", s!"{URL}comp=list&restype=container{q.prefix}"]
   match ret.splitOn "<Name>" with
   | [] => formatError
   | [_] => return default

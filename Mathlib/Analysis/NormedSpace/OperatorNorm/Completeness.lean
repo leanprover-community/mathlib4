@@ -245,7 +245,7 @@ variable {N : ℝ≥0} (h_e : ∀ x, ‖x‖ ≤ N * ‖e x‖) [RingHomIsometri
 norm of the extension of `f` along `e` is bounded by `N * ‖f‖`. -/
 theorem opNorm_extend_le :
     ‖f.extend e h_dense (uniformEmbedding_of_bound _ h_e).toUniformInducing‖ ≤ N * ‖f‖ := by
-  -- Add `opNorm_le_of_dense`?
+  -- Add `opNorm_le_of_dense`
   refine opNorm_le_bound _ _ (isClosed_property h_dense (isClosed_le _ _) fun x ↦ _)
   · cases le_total 0 N with
     | inl hN => exact mul_nonneg hN (norm_nonneg _)

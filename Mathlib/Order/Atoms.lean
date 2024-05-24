@@ -1011,7 +1011,7 @@ theorem isAtom_iff {f : ∀ i, π i} [∀ i, PartialOrder (π i)] [∀ i, OrderB
   case mp =>
     rintro ⟨hbot, h⟩
     have ⟨i, hbot⟩ : ∃ i, f i ≠ ⊥ := by rw [ne_eq, Pi.eq_bot_iff, not_forall] at hbot; exact hbot
-    refine ⟨i, ⟨hbot, ?c⟩, ?d⟩
+    refine ⟨i, ⟨hbot, c⟩, d⟩
     case c =>
       intro b hb
       have := h (Function.update ⊥ i b)
@@ -1064,7 +1064,7 @@ instance isAtomistic [∀ i, CompleteLattice (π i)] [∀ i, IsAtomistic (π i)]
     ext i
     rw [← sSup_atoms_le_eq (s i)]
     simp_rw [isAtom_iff_eq_single]
-    refine le_antisymm ?le ?ge
+    refine le_antisymm le ge
     case le =>
       refine sSup_le fun a ⟨ha, hle⟩ => _
       refine le_sSup ⟨⟨_, ⟨_, _, ha, rfl⟩, fun j => _⟩, by simp⟩

@@ -30,7 +30,7 @@ This file contains basic definitions for root systems and root data.
 * Introduce the Weyl Group
 * Base change of root pairings.
 * Isomorphism of root pairings.
-* Crystallographic root systems are isomorphic to base changes of root systems over ℤ?
+* Crystallographic root systems are isomorphic to base changes of root systems over ℤ
 
 ## Implementation details
 

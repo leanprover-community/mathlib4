@@ -56,7 +56,7 @@ open Set Filter BigOperators Pointwise
 /-- `IsNoetherian R M` is the proposition that `M` is a Noetherian `R`-module,
 implemented as the predicate that all `R`-submodules of `M` are finitely generated.
 -/
--- Porting note: should this be renamed to `Noetherian`?
+-- Porting note: should this be renamed to `Noetherian`
 class IsNoetherian (R M) [Semiring R] [AddCommMonoid M] [Module R M] : Prop where
   noetherian : ∀ s : Submodule R M, s.FG
 #align is_noetherian IsNoetherian

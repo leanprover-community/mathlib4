@@ -98,7 +98,7 @@ protected theorem Nodup.sym2 {xs : List α} (h : xs.Nodup) : xs.sym2.Nodup := by
     rw [List.sym2]
     specialize ih h.of_cons
     rw [nodup_cons] at h
-    refine Nodup.append (Nodup.cons ?notmem (h.2.map ?inj)) ih ?disj
+    refine Nodup.append (Nodup.cons notmem (h.2.map inj)) ih disj
     case disj =>
       intro z hz hz'
       simp only [mem_cons, mem_map] at hz
@@ -232,7 +232,7 @@ protected theorem Nodup.sym (n : ℕ) {xs : List α} (h : xs.Nodup) : (xs.sym n)
   | n + 1, [] => by simp [List.sym]
   | n + 1, x :: xs => by
     rw [List.sym]
-    refine Nodup.append (Nodup.map ?inj (Nodup.sym n h)) (Nodup.sym (n + 1) h.of_cons) ?disj
+    refine Nodup.append (Nodup.map inj (Nodup.sym n h)) (Nodup.sym (n + 1) h.of_cons) disj
     case inj =>
       intro z z'
       simp

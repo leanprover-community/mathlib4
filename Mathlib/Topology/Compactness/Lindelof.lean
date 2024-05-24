@@ -140,7 +140,7 @@ theorem IsLindelof.elim_countable_subcover {ι : Type v} (hs : IsLindelof s) (U 
     intro S hS hsr
     choose! r hr using hsr
     refine ⟨⋃ s ∈ S, r s, hS.biUnion_iff.mpr (fun s hs ↦ (hr s hs).1), _⟩
-    refine sUnion_subset ?h.right.h
+    refine sUnion_subset h.right.h
     simp only [mem_iUnion, exists_prop, iUnion_exists, biUnion_and']
     exact fun i is x hx ↦ mem_biUnion is ((hr i is).2 hx)
   have h_nhds : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, ∃ r : Set ι, r.Countable ∧ (t ⊆ ⋃ i ∈ r, U i) := by
@@ -310,9 +310,9 @@ theorem Set.Countable.isLindelof_biUnion {s : Set ι} {f : ι → Set X} (hs : s
   choose! r hr using iSets
   use ⋃ i ∈ s, r i
   constructor
-  · refine (Countable.biUnion_iff hs).mpr ?h.left.a
+  · refine (Countable.biUnion_iff hs).mpr h.left.a
     exact fun s hs ↦ (hr s hs).1
-  · refine iUnion₂_subset ?h.right.h
+  · refine iUnion₂_subset h.right.h
     intro i is
     simp only [mem_iUnion, exists_prop, iUnion_exists, biUnion_and']
     intro x hx
@@ -718,7 +718,7 @@ instance SecondCountableTopology.ofPseudoMetrizableSpaceLindelofSpace [PseudoMet
     have hU : ∀ z, U z ∈ 𝓝 z := by
       intro z
       have : IsOpen (U z) := Metric.isOpen_ball
-      refine IsOpen.mem_nhds this ?hx
+      refine IsOpen.mem_nhds this hx
       simp only [U, Metric.mem_ball, dist_self, hpos]
     have ⟨t, hct, huniv⟩ := LindelofSpace.elim_nhds_subcover U hU
     refine ⟨t, hct, _⟩

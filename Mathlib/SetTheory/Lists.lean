@@ -195,7 +195,7 @@ theorem mem_of_subset' {a} : ∀ {l₁ l₂ : Lists' α true} (_ : l₁ ⊆ l₂
   | nil, _, Lists'.Subset.nil, h => by cases h
   | cons' a0 l0, l₂, s, h => by
     cases' s with _ _ _ _ _ e m s
-    simp only [toList, Sigma.eta, List.find?, List.mem_cons] at h
+    simp only [toList, Sigma.eta, List.find, List.mem_cons] at h
     rcases h with (rfl | h)
     · exact ⟨_, m, e⟩
     · exact mem_of_subset' s h
@@ -206,7 +206,7 @@ theorem subset_def {l₁ l₂ : Lists' α true} : l₁ ⊆ l₂ ↔ ∀ a ∈ l�
     rw [← of_toList l₁]
     revert H; induction' toList l₁ with h t t_ih <;> intro H
     · exact Subset.nil
-    · simp only [ofList, List.find?, List.mem_cons, forall_eq_or_imp] at *
+    · simp only [ofList, List.find, List.mem_cons, forall_eq_or_imp] at *
       exact cons_subset.2 ⟨H.1, t_ih H.2⟩⟩
 #align lists'.subset_def Lists'.subset_def
 
@@ -344,7 +344,7 @@ theorem Equiv.trans : ∀ {l₁ l₂ l₃ : Lists α}, l₁ ~ l₂ → l₂ ~ l�
     -- simpa [IH₁] using IH
     --
     -- Assumption fails.
-    simp only [Lists'.toList, Sigma.eta, List.find?, List.mem_cons, forall_eq_or_imp]
+    simp only [Lists'.toList, Sigma.eta, List.find, List.mem_cons, forall_eq_or_imp]
     constructor
     · intros l₂ l₃ h₁ h₂
       exact IH₁ h₁ h₂

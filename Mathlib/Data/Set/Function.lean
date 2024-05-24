@@ -722,7 +722,7 @@ theorem exists_injOn_iff_injective [Nonempty β] :
 
 theorem injOn_preimage {B : Set (Set β)} (hB : B ⊆ 𝒫 range f) : InjOn (preimage f) B :=
   fun s hs t ht hst => (preimage_eq_preimage' (@hB s hs) (@hB t ht)).1 hst
--- Porting note: is there a semi-implicit variable problem with `⊆`?
+-- Porting note: is there a semi-implicit variable problem with `⊆`
 #align set.inj_on_preimage Set.injOn_preimage
 
 theorem InjOn.mem_of_mem_image {x} (hf : InjOn f s) (hs : s₁ ⊆ s) (h : x ∈ s) (h₁ : f x ∈ f '' s₁) :
@@ -762,7 +762,7 @@ lemma InjOn.image_inter {s t u : Set α} (hf : u.InjOn f) (hs : s ⊆ u) (ht : t
 
 end injOn
 
--- TODO: can this move to a better place?
+-- TODO: can this move to a better place
 theorem _root_.Disjoint.image {s t u : Set α} {f : α → β} (h : Disjoint s t) (hf : u.InjOn f)
     (hs : s ⊆ u) (ht : t ⊆ u) : Disjoint (f '' s) (f '' t) := by
   rw [disjoint_iff_inter_eq_empty] at h ⊢
@@ -877,7 +877,7 @@ theorem SurjOn.inter (h₁ : SurjOn f s₁ t) (h₂ : SurjOn f s₂ t) (h : InjO
   inter_self t ▸ h₁.inter_inter h₂ h
 #align set.surj_on.inter Set.SurjOn.inter
 
--- Porting note: Why does `simp` not call `refl` by itself?
+-- Porting note: Why does `simp` not call `refl` by itself
 lemma surjOn_id (s : Set α) : SurjOn id s s := by simp [SurjOn, subset_rfl]
 #align set.surj_on_id Set.surjOn_id
 

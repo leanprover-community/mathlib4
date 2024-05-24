@@ -85,7 +85,7 @@ variable {E : Type u₃} [Category.{v₃} E]
 
 -- This is no longer viable as an instance in Lean 3.7,
 -- #lint reports an instance loop
--- Will this be a problem?
+-- Will this be a problem
 /-- `G ∘ F` is a functorial if both `F` and `G` are.
 -/
 def functorial_comp (F : C → D) [Functorial.{v₁, v₂} F] (G : D → E) [Functorial.{v₂, v₃} G] :

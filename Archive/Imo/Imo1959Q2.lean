@@ -13,7 +13,7 @@ For what real values of $x$ is
 $\sqrt{x+\sqrt{2x-1}} + \sqrt{x-\sqrt{2x-1}} = A,$
 
 given (a) $A=\sqrt{2}$, (b) $A=1$, (c) $A=2$,
-where only non-negative real numbers are admitted for square roots?
+where only non-negative real numbers are admitted for square roots
 
 We encode the equation as a predicate saying both that the equation holds
 and that all arguments of square roots are nonnegative.

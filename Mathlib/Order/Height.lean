@@ -68,7 +68,7 @@ theorem nil_mem_subchain : [] ∈ s.subchain := ⟨trivial, fun _ ↦ nofun⟩
 variable {s} {l : List α} {a : α}
 
 theorem cons_mem_subchain_iff :
-    (a::l) ∈ s.subchain ↔ a ∈ s ∧ l ∈ s.subchain ∧ ∀ b ∈ l.head?, a < b := by
+    (a::l) ∈ s.subchain ↔ a ∈ s ∧ l ∈ s.subchain ∧ ∀ b ∈ l.head, a < b := by
   simp only [subchain, mem_setOf_eq, forall_mem_cons, chain'_cons', and_left_comm, and_comm,
     and_assoc]
 #align set.cons_mem_subchain_iff Set.cons_mem_subchain_iff
@@ -295,7 +295,7 @@ theorem chainHeight_insert_of_forall_gt (a : α) (hx : ∀ b ∈ s, a < b) :
   · intro l hl
     refine ⟨a::l, ⟨_, _⟩, by simp⟩
     · rw [chain'_cons']
-      exact ⟨fun y hy ↦ hx _ (hl.2 _ (mem_of_mem_head? hy)), hl.1⟩
+      exact ⟨fun y hy ↦ hx _ (hl.2 _ (mem_of_mem_head hy)), hl.1⟩
     · -- Porting note: originally this was
         -- rintro x (rfl | hx)
         -- exacts [Or.inl (Set.mem_singleton x), Or.inr (hl.2 x hx)]
@@ -343,7 +343,7 @@ theorem chainHeight_union_eq (s t : Set α) (H : ∀ a ∈ s, ∀ b ∈ t, a < b
   intro l hl
   obtain ⟨l', hl', rfl⟩ := exists_chain_of_le_chainHeight t h.symm.le
   refine ⟨l ++ l', ⟨Chain'.append hl.1 hl'.1 fun x hx y hy ↦ _, fun i hi ↦ _⟩, by simp⟩
-  · exact H x (hl.2 _ <| mem_of_mem_getLast? hx) y (hl'.2 _ <| mem_of_mem_head? hy)
+  · exact H x (hl.2 _ <| mem_of_mem_getLast hx) y (hl'.2 _ <| mem_of_mem_head hy)
   · rw [mem_append] at hi
     cases' hi with hi hi
     exacts [Or.inl (hl.2 _ hi), Or.inr (hl'.2 _ hi)]

@@ -8,7 +8,7 @@ import Mathlib.Tactic.GCongr
 
 /-! # Gcongr widget
 
-This file defines a `gcongr?` tactic that displays a widget panel allowing to generate
+This file defines a `gcongr` tactic that displays a widget panel allowing to generate
 a `gcongr` call with holes specified by selecting subexpressions in the goal.
 -/
 
@@ -47,7 +47,7 @@ def GCongrSelectionPanel : Component SelectInsertParams :=
 open scoped Json in
 /-- Display a widget panel allowing to generate a `gcongr` call with holes specified by selecting
 subexpressions in the goal. -/
-elab stx:"gcongr?" : tactic => do
-  let some replaceRange := (← getFileMap).rangeOfStx? stx | return
+elab stx:"gcongr" : tactic => do
+  let some replaceRange := (← getFileMap).rangeOfStx stx | return
   Widget.savePanelWidgetInfo GCongrSelectionPanel.javascriptHash
     (pure <| json% { replaceRange: $(replaceRange) }) stx

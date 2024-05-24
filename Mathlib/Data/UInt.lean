@@ -107,23 +107,23 @@ run_cmd
 
 namespace UInt8
 
-/-- Is this an uppercase ASCII letter? -/
+/-- Is this an uppercase ASCII letter -/
 def isUpper (c : UInt8) : Bool :=
   c ≥ 65 && c ≤ 90
 
-/-- Is this a lowercase ASCII letter? -/
+/-- Is this a lowercase ASCII letter -/
 def isLower (c : UInt8) : Bool :=
   c ≥ 97 && c ≤ 122
 
-/-- Is this an alphabetic ASCII character? -/
+/-- Is this an alphabetic ASCII character -/
 def isAlpha (c : UInt8) : Bool :=
   c.isUpper || c.isLower
 
-/-- Is this an ASCII digit character? -/
+/-- Is this an ASCII digit character -/
 def isDigit (c : UInt8) : Bool :=
   c ≥ 48 && c ≤ 57
 
-/-- Is this an alphanumeric ASCII character? -/
+/-- Is this an alphanumeric ASCII character -/
 def isAlphanum (c : UInt8) : Bool :=
   c.isAlpha || c.isDigit
 

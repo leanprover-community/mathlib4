@@ -260,26 +260,26 @@ theorem revzip_swap (l : List α) : (revzip l).map Prod.swap = revzip l.reverse 
 #align list.revzip_swap List.revzip_swap
 
 theorem get_zip_with (f : α → β → γ) (l₁ : List α) (l₂ : List β) (i : ℕ) :
-    (zipWith f l₁ l₂).get? i = ((l₁.get? i).map f).bind fun g => (l₂.get? i).map g := by
+    (zipWith f l₁ l₂).get i = ((l₁.get i).map f).bind fun g => (l₂.get i).map g := by
   induction' l₁ with head tail generalizing l₂ i
   · rw [zipWith] <;> simp
   · cases l₂
-    · simp only [zipWith, Seq.seq, Functor.map, get?, Option.map_none']
-      cases (head :: tail).get? i <;> rfl
-    · cases i <;> simp only [Option.map_some', get?, Option.some_bind', *]
+    · simp only [zipWith, Seq.seq, Functor.map, get, Option.map_none']
+      cases (head :: tail).get i <;> rfl
+    · cases i <;> simp only [Option.map_some', get, Option.some_bind', *]
 #align list.nth_zip_with List.get_zip_with
 
 theorem get_zip_with_eq_some {α β γ} (f : α → β → γ) (l₁ : List α) (l₂ : List β) (z : γ) (i : ℕ) :
-    (zipWith f l₁ l₂).get? i = some z ↔
-      ∃ x y, l₁.get? i = some x ∧ l₂.get? i = some y ∧ f x y = z := by
+    (zipWith f l₁ l₂).get i = some z ↔
+      ∃ x y, l₁.get i = some x ∧ l₂.get i = some y ∧ f x y = z := by
   induction l₁ generalizing l₂ i
   · simp [zipWith]
-  · cases l₂ <;> simp only [zipWith, get?, exists_false, and_false_iff, false_and_iff]
+  · cases l₂ <;> simp only [zipWith, get, exists_false, and_false_iff, false_and_iff]
     cases i <;> simp [*]
 #align list.nth_zip_with_eq_some List.get_zip_with_eq_some
 
 theorem get_zip_eq_some (l₁ : List α) (l₂ : List β) (z : α × β) (i : ℕ) :
-    (zip l₁ l₂).get? i = some z ↔ l₁.get? i = some z.1 ∧ l₂.get? i = some z.2 := by
+    (zip l₁ l₂).get i = some z ↔ l₁.get i = some z.1 ∧ l₂.get i = some z.2 := by
   cases z
   rw [zip, get_zip_with_eq_some]; constructor
   · rintro ⟨x, y, h₀, h₁, h₂⟩

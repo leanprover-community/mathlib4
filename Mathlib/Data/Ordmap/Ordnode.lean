@@ -144,7 +144,7 @@ def size : Ordnode α → ℕ
     size (node sz l x r) = sz :=
   rfl
 
-/-- O(1). Is the set empty?
+/-- O(1). Is the set empty
 
      empty ∅ = tt
      empty {1, 2, 3} = ff -/
@@ -320,7 +320,7 @@ def balance (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
               (node (size lrr + rs + 1) lrr x r)
 #align ordnode.balance Ordnode.balance
 
-/-- O(n). Does every element of the map satisfy property `P`?
+/-- O(n). Does every element of the map satisfy property `P`
 
      All (fun x ↦ x < 5) {1, 2, 3} = True
      All (fun x ↦ x < 5) {1, 2, 3, 5} = False -/
@@ -337,7 +337,7 @@ instance All.decidable {P : α → Prop} : (t : Ordnode α) → [DecidablePred P
     And.decidable
 #align ordnode.all.decidable Ordnode.All.decidable
 
-/-- O(n). Does any element of the map satisfy property `P`?
+/-- O(n). Does any element of the map satisfy property `P`
 
      Any (fun x ↦ x < 2) {1, 2, 3} = True
      Any (fun x ↦ x < 2) {2, 3, 5} = False -/
@@ -907,8 +907,8 @@ section
 
 variable [LE α] [@DecidableRel α (· ≤ ·)]
 
-/-- O(log n). Does the set (approximately) contain the element `x`? That is,
-is there an element that is equivalent to `x` in the order?
+/-- O(log n). Does the set (approximately) contain the element `x` That is,
+is there an element that is equivalent to `x` in the order
 
     1 ∈ {1, 2, 3} = true
     4 ∈ {1, 2, 3} = false
@@ -1249,7 +1249,7 @@ def isSubsetAux : Ordnode α → Ordnode α → Bool
     found.isSome && isSubsetAux l lt && isSubsetAux r gt
 #align ordnode.is_subset_aux Ordnode.isSubsetAux
 
-/-- O(m + n). Is every element of `t₁` equivalent to some element of `t₂`?
+/-- O(m + n). Is every element of `t₁` equivalent to some element of `t₂`
 
      is_subset {1, 4} {1, 2, 4} = tt
      is_subset {1, 3} {1, 2, 4} = ff -/
@@ -1257,7 +1257,7 @@ def isSubset (t₁ t₂ : Ordnode α) : Bool :=
   decide (size t₁ ≤ size t₂) && isSubsetAux t₁ t₂
 #align ordnode.is_subset Ordnode.isSubset
 
-/-- O(m + n). Is every element of `t₁` not equivalent to any element of `t₂`?
+/-- O(m + n). Is every element of `t₁` not equivalent to any element of `t₂`
 
      disjoint {1, 3} {2, 4} = tt
      disjoint {1, 2} {2, 4} = ff -/

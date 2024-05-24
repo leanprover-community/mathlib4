@@ -140,7 +140,7 @@ lemma isLittleO_self_div_log_id : (fun (n:ℕ) => n / log n ^ 2) =o[atTop] (fun 
                   simp_rw [div_eq_mul_inv]
          _ =o[atTop] fun (n:ℕ) => (n:ℝ) * 1⁻¹    := by
                   refine IsBigO.mul_isLittleO (isBigO_refl _ _) _
-                  refine IsLittleO.inv_rev ?main ?zero
+                  refine IsLittleO.inv_rev main zero
                   case zero => simp
                   case main => calc
                     _ = (fun (_:ℕ) => ((1:ℝ) ^ 2))        := by simp
@@ -270,7 +270,7 @@ lemma eventually_log_b_mul_pos : ∀ᶠ (n:ℕ) in atTop, ∀ i, 0 < log (b i * 
     | inr hn => -- R.n₀ ≤ n
       rw [R.h_rec n hn]
       have := R.g_nonneg
-      refine add_pos_of_pos_of_nonneg (Finset.sum_pos ?sum_elems univ_nonempty) (by aesop)
+      refine add_pos_of_pos_of_nonneg (Finset.sum_pos sum_elems univ_nonempty) (by aesop)
       exact fun i _ => mul_pos (R.a_pos i) <| h_ind _ (R.r_lt_n i _ hn)
 
 @[aesop safe apply]
@@ -443,7 +443,7 @@ lemma eventually_one_add_smoothingFn_nonneg : ∀ᶠ (n:ℕ) in atTop, 0 ≤ 1 +
 lemma strictAntiOn_smoothingFn : StrictAntiOn ε (Set.Ioi 1) := by
   show StrictAntiOn (fun x => 1 / log x) (Set.Ioi 1)
   simp_rw [one_div]
-  refine StrictAntiOn.comp_strictMonoOn inv_strictAntiOn ?log fun _ hx => log_pos hx
+  refine StrictAntiOn.comp_strictMonoOn inv_strictAntiOn log fun _ hx => log_pos hx
   refine StrictMonoOn.mono strictMonoOn_log (fun x hx => _)
   exact Set.Ioi_subset_Ioi zero_le_one hx
 
@@ -506,7 +506,7 @@ lemma continuous_sumCoeffsExp : Continuous (fun (p : ℝ) => ∑ i, a i * (b i) 
 
 lemma strictAnti_sumCoeffsExp : StrictAnti (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) := by
   rw [← Finset.sum_fn]
-  refine Finset.sum_induction_nonempty _ _ (fun _ _ => StrictAnti.add) univ_nonempty ?terms
+  refine Finset.sum_induction_nonempty _ _ (fun _ _ => StrictAnti.add) univ_nonempty terms
   refine fun i _ => StrictAnti.const_mul _ (R.a_pos i)
   exact Real.strictAnti_rpow_of_base_lt_one (R.b_pos i) (R.b_lt_one i)
 
@@ -531,7 +531,7 @@ lemma tendsto_atTop_sumCoeffsExp : Tendsto (fun (p : ℝ) => ∑ i, a i * (b i) 
   positivity
 
 lemma one_mem_range_sumCoeffsExp : 1 ∈ Set.range (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) := by
-  refine mem_range_of_exists_le_of_exists_ge R.continuous_sumCoeffsExp ?le_one ?ge_one
+  refine mem_range_of_exists_le_of_exists_ge R.continuous_sumCoeffsExp le_one ge_one
   case le_one =>
     exact Eventually.exists <| eventually_le_of_tendsto_lt zero_lt_one R.tendsto_zero_sumCoeffsExp
   case ge_one =>
@@ -796,8 +796,8 @@ lemma isBigO_apply_r_sub_b (q : ℝ → ℝ) (hq_diff : DifferentiableOn ℝ q (
     n hn h_bi_le_r h_ge_n₀ h_n_pos h_bn
   rw [norm_mul, ← mul_assoc]
   refine Convex.norm_image_sub_le_of_norm_deriv_le
-    (s := Set.Icc (b'*n) n) (fun z hz => ?diff) (fun z hz => (hn z hz).2)
-    (convex_Icc _ _) ?mem_Icc <| ⟨h_bi_le_r i, by exact_mod_cast (le_of_lt (R.r_lt_n i n h_ge_n₀))⟩
+    (s := Set.Icc (b'*n) n) (fun z hz => diff) (fun z hz => (hn z hz).2)
+    (convex_Icc _ _) mem_Icc <| ⟨h_bi_le_r i, by exact_mod_cast (le_of_lt (R.r_lt_n i n h_ge_n₀))⟩
   case diff =>
     refine hq_diff.differentiableAt (Ioi_mem_nhds _)
     calc 1 < b' * n := by exact h_bn
@@ -847,7 +847,7 @@ lemma isEquivalent_deriv_rpow_p_mul_one_sub_smoothingFn {p : ℝ} (hp : p ≠ 0)
     =ᶠ[atTop] fun z => p * z ^ (p-1) * (1 - ε z) + z^(p-1) / (log z ^ 2) :=
         eventually_deriv_rpow_p_mul_one_sub_smoothingFn p
   _ ~[atTop] fun z => p * z ^ (p-1) := by
-        refine IsEquivalent.add_isLittleO ?one ?two
+        refine IsEquivalent.add_isLittleO one two
         case one => calc
           (fun z => p * z ^ (p-1) * (1 - ε z)) ~[atTop] fun z => p * z ^ (p-1) * 1 :=
                 IsEquivalent.mul IsEquivalent.refl isEquivalent_one_sub_smoothingFn_one
@@ -871,7 +871,7 @@ lemma isEquivalent_deriv_rpow_p_mul_one_add_smoothingFn {p : ℝ} (hp : p ≠ 0)
     =ᶠ[atTop] fun z => p * z ^ (p-1) * (1 + ε z) - z ^ (p-1) / (log z ^ 2) :=
         eventually_deriv_rpow_p_mul_one_add_smoothingFn p
   _ ~[atTop] fun z => p * z ^ (p-1) := by
-        refine IsEquivalent.add_isLittleO ?one ?two
+        refine IsEquivalent.add_isLittleO one two
         case one => calc
           (fun z => p * z ^ (p-1) * (1 + ε z)) ~[atTop] fun z => p * z ^ (p-1) * 1 :=
                 IsEquivalent.mul IsEquivalent.refl isEquivalent_one_add_smoothingFn_one
@@ -970,7 +970,7 @@ lemma rpow_p_mul_one_sub_smoothingFn_le :
               filter_upwards [eventually_ne_atTop 0, eventually_gt_atTop 1] with x hx hx'
               rw [deriv_mul] <;> aesop
           _ =O[atTop] fun x => x ^ ((p a b) - 1) := by
-              refine IsBigO.add ?left ?right
+              refine IsBigO.add left right
               case left => calc
                 (fun x => deriv (fun z => z ^ (p a b)) x * (1 - ε x))
                     =O[atTop] fun x => x ^ ((p a b) - 1) * (1 - ε x) := by
@@ -1025,7 +1025,7 @@ lemma rpow_p_mul_one_sub_smoothingFn_le :
                 have h₁ := R.b_pos i
                 have h₂ : 0 ≤ ε (b i * n) - ε n := by
                   refine sub_nonneg_of_le <|
-                    (strictAntiOn_smoothingFn.le_iff_le ?n_gt_one ?bn_gt_one).mpr ?le
+                    (strictAntiOn_smoothingFn.le_iff_le n_gt_one bn_gt_one).mpr le
                   case n_gt_one =>
                     rwa [Set.mem_Ioi, Nat.one_lt_cast]
                   case bn_gt_one =>
@@ -1065,7 +1065,7 @@ lemma rpow_p_mul_one_add_smoothingFn_ge :
                 filter_upwards [eventually_ne_atTop 0, eventually_gt_atTop 1] with x hx hx'
                 rw [deriv_mul] <;> aesop
           _ =O[atTop] fun x => x ^ ((p a b) - 1) := by
-                refine IsBigO.add ?left ?right
+                refine IsBigO.add left right
                 case left => calc
                   (fun x => deriv (fun z => z ^ (p a b)) x * (1 + ε x))
                       =O[atTop] fun x => x ^ ((p a b) - 1) * (1 + ε x) := by
@@ -1119,7 +1119,7 @@ lemma rpow_p_mul_one_add_smoothingFn_ge :
               have h₁ := R.b_pos i
               have h₂ : 0 ≤ ε (b i * n) - ε n := by
                 refine sub_nonneg_of_le <|
-                  (strictAntiOn_smoothingFn.le_iff_le ?n_gt_one ?bn_gt_one).mpr ?le
+                  (strictAntiOn_smoothingFn.le_iff_le n_gt_one bn_gt_one).mpr le
                 case n_gt_one =>
                   show 1 < (n:ℝ)
                   rw [Nat.one_lt_cast]

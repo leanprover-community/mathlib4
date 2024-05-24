@@ -24,7 +24,7 @@ initialize_simps_projections Foo1 (Projone → toNat, two → toBool, three → 
 
 run_cmd liftTermElabM <| do
   let env ← getEnv
-  let state := ((Simps.structureExt.getState env).find? `Foo1).get!
+  let state := ((Simps.structureExt.getState env).find `Foo1).get!
   guard <| state.1 == []
   guard <| state.2.map (·.1) == #[`toNat, `toBool, `coe, `four, `five]
   liftMetaM <| guard (← isDefEq (state.2[0]!.2) (← elabTerm (← `(Foo1.Projone)) none))
@@ -45,7 +45,7 @@ initialize_simps_projections Foo2
 def Foo2.foo2 : Foo2 Nat := ⟨(0, 0)⟩
 
 -- run_cmd do
---   logInfo m!"{Simps.structureExt.getState (← getEnv) |>.find? `Foo2 |>.get!}"
+--   logInfo m!"{Simps.structureExt.getState (← getEnv) |>.find `Foo2 |>.get!}"
 
 structure Left (α : Type _) extends Foo2 α where
   moreData1 : Nat
@@ -60,7 +60,7 @@ initialize_simps_projections Right (elim → newProjection, -otherData, +toFoo2)
 
 run_cmd liftTermElabM <| do
   let env ← getEnv
-  let state := ((Simps.structureExt.getState env).find? `Right).get!
+  let state := ((Simps.structureExt.getState env).find `Right).get!
   -- logInfo m!"{state}"
   guard <| state.1 == [`u, `v]
   guard <| state.2.map (·.1) == #[`toFoo2, `otherData, `newProjection]
@@ -113,11 +113,11 @@ namespace foo
 /- simps adds declarations -/
 run_cmd liftTermElabM <| do
   let env ← getEnv
-  guard <| env.find? `foo.rfl_toFun |>.isSome
-  guard <| env.find? `foo.rfl_invFun |>.isSome
-  guard <| env.find? `foo.rfl_left_inv |>.isNone
-  guard <| env.find? `foo.rfl_right_inv |>.isNone
-  guard <| simpsAttr.getParam? env `foo.rfl == #[`foo.rfl_toFun, `foo.rfl_invFun]
+  guard <| env.find `foo.rfl_toFun |>.isSome
+  guard <| env.find `foo.rfl_invFun |>.isSome
+  guard <| env.find `foo.rfl_left_inv |>.isNone
+  guard <| env.find `foo.rfl_right_inv |>.isNone
+  guard <| simpsAttr.getParam env `foo.rfl == #[`foo.rfl_toFun, `foo.rfl_invFun]
 
 example (n : ℕ) : foo.rfl.toFun n = n := by rw [foo.rfl_toFun, id]
 example (n : ℕ) : foo.rfl.invFun n = n := by rw [foo.rfl_invFun]
@@ -191,14 +191,14 @@ end CountNested
 
 run_cmd liftTermElabM <| do
   let env ← getEnv
-  guard <| env.find? `CountNested.nested1_fst |>.isSome
-  guard <| env.find? `CountNested.nested1_snd_fst |>.isSome
-  guard <| env.find? `CountNested.nested1_snd_snd |>.isSome
-  guard <| env.find? `CountNested.nested2_fst |>.isSome
-  guard <| env.find? `CountNested.nested2_snd |>.isSome
-  guard <| simpsAttr.getParam? env `CountNested.nested1 ==
+  guard <| env.find `CountNested.nested1_fst |>.isSome
+  guard <| env.find `CountNested.nested1_snd_fst |>.isSome
+  guard <| env.find `CountNested.nested1_snd_snd |>.isSome
+  guard <| env.find `CountNested.nested2_fst |>.isSome
+  guard <| env.find `CountNested.nested2_snd |>.isSome
+  guard <| simpsAttr.getParam env `CountNested.nested1 ==
     #[`CountNested.nested1_fst, `CountNested.nested1_snd_fst, `CountNested.nested1_snd_snd]
-  guard <| simpsAttr.getParam? env `CountNested.nested2 ==
+  guard <| simpsAttr.getParam env `CountNested.nested2 ==
     #[`CountNested.nested2_fst, `CountNested.nested2_snd]
   -- todo: test that another attribute can be added (not working yet)
   guard <| hasSimpAttribute env `CountNested.nested1_fst -- simp attribute is global
@@ -251,15 +251,15 @@ def test_sneaky {α} : ComplicatedEquivPlusData α :=
 
 run_cmd liftTermElabM <| do
   let env ← getEnv
-  guard <| env.find? `rflWithData_toFun |>.isSome
-  guard <| env.find? `rflWithData'_toFun |>.isSome
-  guard <| env.find? `test_extra_fst |>.isSome
-  guard <| simpsAttr.getParam? env `test ==
+  guard <| env.find `rflWithData_toFun |>.isSome
+  guard <| env.find `rflWithData'_toFun |>.isSome
+  guard <| env.find `test_extra_fst |>.isSome
+  guard <| simpsAttr.getParam env `test ==
     #[`test_P, `test_extra_fst, `test_extra_snd, `test_toFun, `test_invFun]
-  guard <| env.find? `test_sneaky_extra_fst |>.isSome
-  guard <| env.find? `rflWithData_toEquiv_toFun |>.isNone
-  guard <| env.find? `rflWithData'_toEquiv_toFun |>.isNone
-  guard <| env.find? `test_sneaky_extra |>.isNone
+  guard <| env.find `test_sneaky_extra_fst |>.isSome
+  guard <| env.find `rflWithData_toEquiv_toFun |>.isNone
+  guard <| env.find `rflWithData'_toEquiv_toFun |>.isNone
+  guard <| env.find `test_sneaky_extra |>.isNone
 
 structure PartiallyAppliedStr :=
   (data : ℕ → MyProd ℕ ℕ)
@@ -273,9 +273,9 @@ def another_term : PartiallyAppliedStr := ⟨fun n ↦ ⟨n + 1, n + 2⟩⟩
 
 run_cmd liftTermElabM <| do
   let env ← getEnv
-  guard <| env.find? `partially_applied_term_data_fst |>.isSome
-  guard <| env.find? `partially_applied_term_data_snd |>.isSome
-  guard <| simpsAttr.getParam? env `partially_applied_term ==
+  guard <| env.find `partially_applied_term_data_fst |>.isSome
+  guard <| env.find `partially_applied_term_data_snd |>.isSome
+  guard <| simpsAttr.getParam env `partially_applied_term ==
     #[`partially_applied_term_data_fst, `partially_applied_term_data_snd]
 
 structure VeryPartiallyAppliedStr :=
@@ -288,8 +288,8 @@ def very_partially_applied_term : VeryPartiallyAppliedStr := ⟨@MyProd.mk ℕ�
 
 run_cmd liftTermElabM <| do
   let env ← getEnv
-  guard <| env.find? `very_partially_applied_term_data_fst |>.isSome
-  guard <| env.find? `very_partially_applied_term_data_snd |>.isSome
+  guard <| env.find `very_partially_applied_term_data_fst |>.isSome
+  guard <| env.find `very_partially_applied_term_data_snd |>.isSome
 
 @[simps] def let1 : ℕ × ℤ :=
   let n := 3; ⟨n + 4, 5⟩
@@ -305,14 +305,14 @@ run_cmd liftTermElabM <| do
 
 run_cmd liftTermElabM <| do
   let env ← getEnv
-  guard <| env.find? `let1_fst |>.isSome
-  guard <| env.find? `let2_fst |>.isSome
-  guard <| env.find? `let3_fst |>.isSome
-  guard <| env.find? `let4_fst |>.isSome
-  guard <| env.find? `let1_snd |>.isSome
-  guard <| env.find? `let2_snd |>.isSome
-  guard <| env.find? `let3_snd |>.isSome
-  guard <| env.find? `let4_snd |>.isSome
+  guard <| env.find `let1_fst |>.isSome
+  guard <| env.find `let2_fst |>.isSome
+  guard <| env.find `let3_fst |>.isSome
+  guard <| env.find `let4_fst |>.isSome
+  guard <| env.find `let1_snd |>.isSome
+  guard <| env.find `let2_snd |>.isSome
+  guard <| env.find `let3_snd |>.isSome
+  guard <| env.find `let4_snd |>.isSome
 
 
 namespace specify
@@ -326,17 +326,17 @@ end specify
 
 run_cmd liftTermElabM <| do
   let env ← getEnv
-  guard <| env.find? `specify.specify1_fst |>.isSome
-  guard <| env.find? `specify.specify2_snd |>.isSome
-  guard <| env.find? `specify.specify3_snd_fst |>.isSome
-  guard <| env.find? `specify.specify4_snd_snd |>.isSome
-  guard <| env.find? `specify.specify4_snd |>.isSome
-  guard <| env.find? `specify.specify5_fst |>.isSome
-  guard <| env.find? `specify.specify5_snd |>.isSome
-  guard <| simpsAttr.getParam? env `specify.specify1 == #[`specify.specify1_fst]
-  guard <| simpsAttr.getParam? env `specify.specify4 ==
+  guard <| env.find `specify.specify1_fst |>.isSome
+  guard <| env.find `specify.specify2_snd |>.isSome
+  guard <| env.find `specify.specify3_snd_fst |>.isSome
+  guard <| env.find `specify.specify4_snd_snd |>.isSome
+  guard <| env.find `specify.specify4_snd |>.isSome
+  guard <| env.find `specify.specify5_fst |>.isSome
+  guard <| env.find `specify.specify5_snd |>.isSome
+  guard <| simpsAttr.getParam env `specify.specify1 == #[`specify.specify1_fst]
+  guard <| simpsAttr.getParam env `specify.specify4 ==
     #[`specify.specify4_snd_snd, `specify.specify4_snd]
-  guard <| simpsAttr.getParam? env `specify.specify5 ==
+  guard <| simpsAttr.getParam env `specify.specify5 ==
     #[`specify.specify5_fst, `specify.specify5_snd]
   _ ← successIfFail <| simpsTac .missing `specify.specify1 {} [("fst_fst", .missing)]
 --     "Invalid simp lemma specify.specify1_fst_fst.
@@ -346,14 +346,14 @@ run_cmd liftTermElabM <| do
 -- The known projections are:
 --   [fst, snd]
 -- You can also see this information by running
---   `initialize_simps_projections? prod`.
+--   `initialize_simps_projections prod`.
 -- Note: these projection names might not correspond to the projection names of the structure."
   _ ← successIfFail <| simpsTac .missing `specify.specify1 {} [("snd_bar", .missing)]
 --     "Invalid simp lemma specify.specify1_snd_bar. Structure prod does not have projection bar.
 -- The known projections are:
 --   [fst, snd]
 -- You can also see this information by running
---   `initialize_simps_projections? prod`.
+--   `initialize_simps_projections prod`.
 -- Note: these projection names might not correspond to the projection names of the structure."
   _ ← successIfFail <| simpsTac .missing `specify.specify5 { rhsMd := .default, simpRhs := true }
     [("snd_snd", .missing)]
@@ -401,15 +401,15 @@ example (n : ℕ) : myNatEquiv.toFun (myNatEquiv.toFun <| myNatEquiv.invFun n) =
 
 run_cmd liftTermElabM <| do
   let env ← getEnv
-  guard <| env.find? `pprodEquivProd2_toFun |>.isSome
-  guard <| env.find? `pprodEquivProd2_invFun |>.isSome
+  guard <| env.find `pprodEquivProd2_toFun |>.isSome
+  guard <| env.find `pprodEquivProd2_invFun |>.isSome
 
 attribute [simps toFun_fst invFun_snd] pprodEquivProd2
 
 run_cmd liftTermElabM <| do
   let env ← getEnv
-  guard <| env.find? `pprodEquivProd2_toFun_fst |>.isSome
-  guard <| env.find? `pprodEquivProd2_invFun_snd |>.isSome
+  guard <| env.find `pprodEquivProd2_toFun_fst |>.isSome
+  guard <| env.find `pprodEquivProd2_invFun_snd |>.isSome
 
 -- we can disable this behavior with the option `notRecursive`.
 @[simps! (config := {notRecursive := []})] def pprodEquivProd22 : PProd ℕ ℕ ≃ ℕ × ℕ :=
@@ -417,10 +417,10 @@ run_cmd liftTermElabM <| do
 
 run_cmd liftTermElabM <| do
   let env ← getEnv
-  guard <| env.find? `pprodEquivProd22_toFun_fst |>.isSome
-  guard <| env.find? `pprodEquivProd22_toFun_snd |>.isSome
-  guard <| env.find? `pprodEquivProd22_invFun_fst |>.isSome
-  guard <| env.find? `pprodEquivProd22_invFun_snd |>.isSome
+  guard <| env.find `pprodEquivProd22_toFun_fst |>.isSome
+  guard <| env.find `pprodEquivProd22_toFun_snd |>.isSome
+  guard <| env.find `pprodEquivProd22_invFun_fst |>.isSome
+  guard <| env.find `pprodEquivProd22_invFun_snd |>.isSome
 
 /- Tests with universe levels -/
 class has_hom (obj : Type u) : Type (max u (v+1)) :=
@@ -897,8 +897,8 @@ instance instMulProd {M N} [Mul M] [Mul N] : Mul (M × N) := ⟨fun p q ↦ ⟨p
 
 run_cmd liftTermElabM <| do
   let env ← getEnv
-  guard <| env.find? `instMulProd_mul |>.isSome
-  guard <| env.find? `instAddProd_add |>.isSome
+  guard <| env.find `instMulProd_mul |>.isSome
+  guard <| env.find `instAddProd_add |>.isSome
   -- hasAttribute `to_additive `instMulProd
   -- hasAttribute `to_additive `instMulProd_mul
   guard <| hasSimpAttribute env `instMulProd_mul
@@ -914,8 +914,8 @@ instance my_instance {M N} [One M] [One N] : One (M × N) := ⟨(1, 1)⟩
 
 run_cmd liftTermElabM <| do
   let env ← getEnv
-  guard <| env.find? `my_instance_one |>.isSome
-  guard <| env.find? `my_add_instance_zero |>.isSome
+  guard <| env.find `my_instance_one |>.isSome
+  guard <| env.find `my_add_instance_zero |>.isSome
   -- hasAttribute `to_additive `my_instance -- todo
   -- hasAttribute `to_additive `my_instance_one
   guard <| hasSimpAttribute env `my_instance_one
@@ -957,7 +957,7 @@ def some_test1 (M : Type _) [CommMonoid M] : Subtype (fun _ : M ↦ True) := ⟨
 
 run_cmd liftTermElabM <| do
   let env ← getEnv
-  guard <| env.find? `some_test2_coe |>.isSome
+  guard <| env.find `some_test2_coe |>.isSome
 
 end
 

@@ -43,17 +43,17 @@ match loc with
 -/
 private def findIfCondAt (loc : Location) : TacticM (Option (SplitPosition × Expr)) := do
   for (pos, e) in (← getSplitCandidates loc) do
-    if let some cond := SplitIf.findIfToSplit? e
+    if let some cond := SplitIf.findIfToSplit e
     then return some (pos, cond)
   return none
 
 /-- `Simp.Discharge` strategy to use in `reduceIfsAt`. Delegates to
-`SplitIf.discharge?`, and additionally supports discharging `True`, to
+`SplitIf.discharge`, and additionally supports discharging `True`, to
 better match the behavior of mathlib3's `split_ifs`.
 -/
-private def discharge? (e : Expr) : SimpM (Option Expr) := do
+private def discharge (e : Expr) : SimpM (Option Expr) := do
   let e ← instantiateMVars e
-  if let some e1 ← (← SplitIf.mkDischarge? false) e
+  if let some e1 ← (← SplitIf.mkDischarge false) e
     then return some e1
   if e.isConstOf `True
     then return some (mkConst `True.intro)
@@ -64,11 +64,11 @@ private def discharge? (e : Expr) : SimpM (Option Expr) := do
 private def reduceIfsAt (loc : Location) : TacticM Unit := do
   let ctx ← SplitIf.getSimpContext
   let ctx := { ctx with config := { ctx.config with failIfUnchanged := false } }
-  let _ ← simpLocation ctx {} discharge? loc
+  let _ ← simpLocation ctx {} discharge loc
   pure ()
 
 /-- Splits a single if-then-else expression and then reduces the resulting goals.
-Has a similar effect as `SplitIf.splitIfTarget?` or `SplitIf.splitIfLocalDecl?` from
+Has a similar effect as `SplitIf.splitIfTarget` or `SplitIf.splitIfLocalDecl` from
 core Lean 4. We opt not to use those library functions so that we can better mimic
 the behavior of mathlib3's `split_ifs`.
 -/
@@ -127,10 +127,10 @@ ite-expression.
 `split_ifs at *` splits all ite-expressions in all hypotheses as well as the goal.
 `split_ifs with h₁ h₂ h₃` overrides the default names for the hypotheses.
 -/
-syntax (name := splitIfs) "split_ifs" (location)? (" with" (ppSpace colGt binderIdent)+)? : tactic
+syntax (name := splitIfs) "split_ifs" (location) (" with" (ppSpace colGt binderIdent)+) : tactic
 
 elab_rules : tactic
-| `(tactic| split_ifs $[$loc:location]? $[with $withArg*]?) =>
+| `(tactic| split_ifs $[$loc:location] $[with $withArg*]) =>
   let loc := match loc with
   | none => Location.targets #[] true
   | some loc => expandLocation loc

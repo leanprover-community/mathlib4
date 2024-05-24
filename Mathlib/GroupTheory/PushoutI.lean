@@ -680,7 +680,7 @@ theorem inf_of_range_eq_base_range (hφ : ∀ i, Injective (φ i)) {i j : ι} (h
         exact hx (of_apply_eq_base φ j y ▸ MonoidHom.mem_range.2 ⟨y, rfl⟩)
       let w : Word G := ⟨[⟨_, g₁⟩, ⟨_, g₂⁻¹⟩], by simp_all, by simp_all⟩
       have hw : Reduced φ w := by
-        simp only [not_exists, ne_eq, Reduced, List.find?, List.mem_cons, List.mem_singleton,
+        simp only [not_exists, ne_eq, Reduced, List.find, List.mem_cons, List.mem_singleton,
           forall_eq_or_imp, not_false_eq_true, forall_const, forall_eq, true_and, hg₁r, hg₂r,
           List.mem_nil_iff, false_imp_iff, imp_true_iff, and_true, inv_mem_iff]
       have := hw.eq_empty_of_mem_range hφ (by

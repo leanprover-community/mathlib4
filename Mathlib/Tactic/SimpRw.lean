@@ -53,7 +53,7 @@ example {a : ℕ}
 by simp_rw [h1, h2]
 ```
 -/
-elab s:"simp_rw " cfg:(config)? rws:rwRuleSeq g:(location)? : tactic => focus do
+elab s:"simp_rw " cfg:(config) rws:rwRuleSeq g:(location) : tactic => focus do
   let cfg' : TSyntax `Lean.Parser.Tactic.config ← do
     match cfg with
     | Option.none =>
@@ -62,11 +62,11 @@ elab s:"simp_rw " cfg:(config)? rws:rwRuleSeq g:(location)? : tactic => focus do
       | `(config| (config := $cfg)) =>
         `(config| (config := ({ ($cfg : Lean.Meta.Simp.Config) with failIfUnchanged := false })))
       | _ => throwError "malformed cfg"
-  evalTactic (← `(tactic| simp%$s $cfg' only $g ?))
+  evalTactic (← `(tactic| simp%$s $cfg' only $g ))
   withSimpRWRulesSeq s rws fun symm term => do
     evalTactic (← match term with
     | `(term| $e:term) =>
       if symm then
-        `(tactic| simp%$e $[$cfg]? only [← $e:term] $g ?)
+        `(tactic| simp%$e $[$cfg] only [← $e:term] $g )
       else
-        `(tactic| simp%$e $[$cfg]? only [$e:term] $g ?))
+        `(tactic| simp%$e $[$cfg] only [$e:term] $g ))

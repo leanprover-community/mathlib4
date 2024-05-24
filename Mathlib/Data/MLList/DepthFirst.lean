@@ -62,7 +62,7 @@ If you want to do efficient enumerations from a generation function,
 avoiding duplication up to equality or isomorphism,
 use Brendan McKay's method of "generation by canonical construction path".
 -/
--- TODO can you make this work in `List` and `MLList m` simultaneously, by being tricky with monads?
+-- TODO can you make this work in `List` and `MLList m` simultaneously, by being tricky with monads
 def depthFirstRemovingDuplicates {α : Type u} [BEq α] [Hashable α]
     (f : α → MLList m α) (a : α) (maxDepth : Option Nat := none) : MLList m α :=
 let f' : α → MLList (StateT.{u} (HashSet α) m) α := fun a =>

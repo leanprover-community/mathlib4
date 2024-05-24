@@ -29,7 +29,7 @@ namespace Mathlib.Tactic.CC
 
 /-- Return true if `e` represents a constant value (numeral, character, or string). -/
 def isValue (e : Expr) : Bool :=
-  e.int?.isSome || e.isCharLit || e.isStringLit
+  e.int.isSome || e.isCharLit || e.isStringLit
 
 /-- Return true if `e` represents a value (nat/int numeral, character, or string).
 
@@ -38,7 +38,7 @@ kernel computation can compare the values for equality. -/
 def isInterpretedValue (e : Expr) : MetaM Bool := do
   if e.isCharLit || e.isStringLit then
     return true
-  else if e.int?.isSome then
+  else if e.int.isSome then
     let type ← inferType e
     pureIsDefEq type (.const ``Nat []) <||> pureIsDefEq type (.const ``Int [])
   else
@@ -49,7 +49,7 @@ def liftFromEq (R : Name) (H : Expr) : MetaM Expr := do
   if R == ``Eq then return H
   let HType ← whnf (← inferType H)
   -- `HType : @Eq A a _`
-  let some (A, a, _) := HType.eq?
+  let some (A, a, _) := HType.eq
     | throwError "failed to build liftFromEq equality proof expected: {H}"
   -- `motive : (x : _) → a = x → Prop := fun x h => R a x`
   let motive ←
@@ -486,7 +486,7 @@ attribute [inherit_doc SubsingletonReprs] CCState.subsingletonReprs
 /-- Update the `CCState` by constructing and inserting a new `Entry`. -/
 def CCState.mkEntryCore (ccs : CCState) (e : Expr) (interpreted : Bool) (constructor : Bool) :
     CCState :=
-  assert! ccs.entries.find? e |>.isNone
+  assert! ccs.entries.find e |>.isNone
   let n : Entry :=
     { next := e
       root := e
@@ -505,7 +505,7 @@ namespace CCState
 
 /-- Get the root representative of the given expression. -/
 def root (ccs : CCState) (e : Expr) : Expr :=
-  match ccs.entries.find? e with
+  match ccs.entries.find e with
   | some n => n.root
   | none => e
 #align cc_state.root Mathlib.Tactic.CC.CCState.root
@@ -513,14 +513,14 @@ def root (ccs : CCState) (e : Expr) : Expr :=
 /-- Get the next element in the equivalence class.
 Note that if the given `Expr` `e` is not in the graph then it will just return `e`. -/
 def next (ccs : CCState) (e : Expr) : Expr :=
-  match ccs.entries.find? e with
+  match ccs.entries.find e with
   | some n => n.next
   | none => e
 #align cc_state.next Mathlib.Tactic.CC.CCState.next
 
 /-- Check if `e` is the root of the congruence class. -/
 def isCgRoot (ccs : CCState) (e : Expr) : Bool :=
-  match ccs.entries.find? e with
+  match ccs.entries.find e with
   | some n => e == n.cgRoot
   | none => true
 #align cc_state.is_cg_root Mathlib.Tactic.CC.CCState.isCgRoot
@@ -532,14 +532,14 @@ heuristic instantiation that have occurred in the current branch. It is incremen
 of heuristic instantiation. The field `mt` records the last time any proper descendant of of thie
 entry was involved in a merge. -/
 def mt (ccs : CCState) (e : Expr) : Nat :=
-  match ccs.entries.find? e with
+  match ccs.entries.find e with
   | some n => n.mt
   | none => ccs.gmt
 #align cc_state.mt Mathlib.Tactic.CC.CCState.mt
 
-/-- Is the expression in an equivalence class with only one element (namely, itself)? -/
+/-- Is the expression in an equivalence class with only one element (namely, itself) -/
 def inSingletonEqc (ccs : CCState) (e : Expr) : Bool :=
-  match ccs.entries.find? e with
+  match ccs.entries.find e with
   | some it => it.next == e
   | none => true
 #align cc_state.in_singlenton_eqc Mathlib.Tactic.CC.CCState.inSingletonEqc
@@ -562,12 +562,12 @@ def checkEqc (ccs : CCState) (e : Expr) : Bool :=
     let mut size : Nat := 0
     let mut it := e
     repeat
-      let some itN := ccs.entries.find? it | failure
+      let some itN := ccs.entries.find it | failure
       guard (itN.root == root)
       let mut it₂ := it
       -- following `target` fields should lead to root
       repeat
-        let it₂N := ccs.entries.find? it₂
+        let it₂N := ccs.entries.find it₂
         match it₂N.bind Entry.target with
         | some it₃ => it₂ := it₃
         | none => break
@@ -575,14 +575,14 @@ def checkEqc (ccs : CCState) (e : Expr) : Bool :=
       it := itN.next
       size := size + 1
     until it == e
-    guard (ccs.entries.find? root |>.any (·.size == size))
+    guard (ccs.entries.find root |>.any (·.size == size))
 
 /-- Check for integrity of the `CCState`. -/
 def checkInvariant (ccs : CCState) : Bool :=
   ccs.entries.all fun k n => k != n.root || checkEqc ccs k
 
 def getNumROccs (ccs : CCState) (e : Expr) (inLHS : Bool) : Nat :=
-  match ccs.acEntries.find? e with
+  match ccs.acEntries.find e with
   | some ent => (ent.ROccs inLHS).size
   | none => 0
 
@@ -590,7 +590,7 @@ def getNumROccs (ccs : CCState) (e : Expr) (inLHS : Bool) : Nat :=
 def getVarWithLeastOccs (ccs : CCState) (e : ACApps) (inLHS : Bool) : Option Expr :=
   match e with
   | .apps _ args => Id.run do
-    let mut r := args[0]?
+    let mut r := args[0]
     let mut numOccs := r.casesOn 0 fun r' => ccs.getNumROccs r' inLHS
     for hi : i in [1:args.size] do
       if (args[i]'hi.2) != (args[i - 1]'(Nat.lt_of_le_of_lt (i.sub_le 1) hi.2)) then
@@ -614,7 +614,7 @@ def ppEqc (ccs : CCState) (e : Expr) : MessageData := Id.run do
   let mut lr : List MessageData := []
   let mut it := e
   repeat
-    let some itN := ccs.entries.find? it | break
+    let some itN := ccs.entries.find it | break
     let mdIt : MessageData :=
       if it.isForall || it.isLambda || it.isLet then paren (ofExpr it) else ofExpr it
     lr := mdIt :: lr
@@ -635,7 +635,7 @@ def ppEqcs (ccs : CCState) (nonSingleton : Bool := true) : MessageData :=
 #align cc_state.pp_core Mathlib.Tactic.CC.CCState.ppEqcs
 
 def ppParentOccsAux (ccs : CCState) (e : Expr) : MessageData :=
-  match ccs.parents.find? e with
+  match ccs.parents.find e with
   | some poccs =>
     let r := ofExpr e ++ ofFormat (.line ++ ":=" ++ .line)
     let ps := poccs.toList.map fun o => ofExpr o.expr
@@ -647,7 +647,7 @@ def ppParentOccs (ccs : CCState) : MessageData :=
   bracket "{" (group <| joinSep r (ofFormat ("," ++ .line))) "}"
 
 def ppACDecl (ccs : CCState) (e : Expr) : MessageData :=
-  match ccs.acEntries.find? e with
+  match ccs.acEntries.find e with
   | some it => group (ofFormat (s!"x_{it.idx}" ++ .line ++ ":=" ++ .line) ++ ofExpr e)
   | none => nil
 
@@ -656,7 +656,7 @@ def ppACDecls (ccs : CCState) : MessageData :=
   bracket "{" (joinSep r (ofFormat ("," ++ .line))) "}"
 
 def ppACExpr (ccs : CCState) (e : Expr) : MessageData :=
-  if let some it := ccs.acEntries.find? e then
+  if let some it := ccs.acEntries.find e then
     s!"x_{it.idx}"
   else
     ofExpr e

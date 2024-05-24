@@ -165,7 +165,7 @@ In practice this is rarely a problem.
 
 # Making a pull request
 
-With so many moving parts, how do you actually go about changing the algebraic hierarchy?
+With so many moving parts, how do you actually go about changing the algebraic hierarchy
 
 We're still evolving how to handle this, but the current suggestion is:
 

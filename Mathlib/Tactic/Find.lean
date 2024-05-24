@@ -13,7 +13,7 @@ import Lean.Elab.Command
 The `#find` command finds definitions & lemmas using pattern matching on the type. For instance:
 ```lean
 #find _ + _ = _ + _
-#find ?n + _ = _ + ?n
+#find n + _ = _ + n
 #find (_ : Nat) + _ = _ + _
 #find Nat → Nat
 ```
@@ -68,7 +68,7 @@ def findType (t : Expr) : TermElabM Unit := withReducible do
   let env ← getEnv
   let mut numFound := 0
   for n in (← findDeclsPerHead.get).findD head #[] do
-    let c := env.find? n |>.get!
+    let c := env.find n |>.get!
     let cTy := c.instantiateTypeLevelParams (← mkFreshLevelMVars c.numLevelParams)
     let found ← forallTelescopeReducing cTy fun cParams cTy' ↦ do
       let pat := pat.expr.instantiateLevelParamsArray pat.paramNames
@@ -88,7 +88,7 @@ open Lean.Elab.Command in
 The `#find` command finds definitions & lemmas using pattern matching on the type. For instance:
 ```lean
 #find _ + _ = _ + _
-#find ?n + _ = _ + ?n
+#find n + _ = _ + n
 #find (_ : Nat) + _ = _ + _
 #find Nat → Nat
 ```
@@ -107,10 +107,10 @@ elab "#find " t:term : command =>
    but they will work fine in a new file!) -/
 -- #find _ + _ = _ + _
 -- #find _ + _ = _ + _
--- #find ?n + _ = _ + ?n
+-- #find n + _ = _ + n
 -- #find (_ : Nat) + _ = _ + _
 -- #find Nat → Nat
--- #find ?n ≤ ?m → ?n + _ ≤ ?m + _
+-- #find n ≤ m → n + _ ≤ m + _
 
 open Lean.Elab.Tactic
 /-

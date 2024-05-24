@@ -49,7 +49,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     if za = zb then
       haveI' : $na =Q $nb := ⟨⟩
       return .isTrue q(isInt_eq_true $pa $pb)
-    else if let some _i ← inferCharZeroOfRing? rα then
+    else if let some _i ← inferCharZeroOfRing rα then
       let r : Q(decide ($na = $nb) = false) := (q(Eq.refl false) : Expr)
       return .isFalse q(isInt_eq_false $pa $pb $r)
     else
@@ -60,7 +60,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       haveI' : $na =Q $nb := ⟨⟩
       haveI' : $da =Q $db := ⟨⟩
       return .isTrue q(isRat_eq_true $pa $pb)
-    else if let some _i ← inferCharZeroOfDivisionRing? dα then
+    else if let some _i ← inferCharZeroOfDivisionRing dα then
       let r : Q(decide (Int.mul $na (.ofNat $db) = Int.mul $nb (.ofNat $da)) = false) :=
         (q(Eq.refl false) : Expr)
       return .isFalse q(isRat_eq_false $pa $pb $r)
@@ -86,7 +86,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     if na.natLit! = nb.natLit! then
       haveI' : $na =Q $nb := ⟨⟩
       return .isTrue q(isNat_eq_true $pa $pb)
-    else if let some _i ← inferCharZeroOfAddMonoidWithOne? mα then
+    else if let some _i ← inferCharZeroOfAddMonoidWithOne mα then
       let r : Q(Nat.beq $na $nb = false) := (q(Eq.refl false) : Expr)
       return .isFalse q(isNat_eq_false $pa $pb $r)
     else

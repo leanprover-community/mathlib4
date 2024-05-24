@@ -20,7 +20,7 @@ namespace Meta.FunProp
 
 -- TODO: add support for specifying priority and discharger
 -- open Lean.Parser.Tactic
--- syntax (name:=Attr.funProp) "funProp" (prio)? (discharger)? : attr
+-- syntax (name:=Attr.funProp) "funProp" (prio) (discharger) : attr
 
 private def funPropHelpString : String :=
 "`funProp` tactic to prove function properties like `Continuous`, `Differentiable`, `IsLinearMap`"

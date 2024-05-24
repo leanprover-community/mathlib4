@@ -203,8 +203,8 @@ The Lean 3 version of this tactic by default attempted to avoid classical reason
 where possible. This Lean 4 version makes no such attempt. The `itauto` tactic
 is designed for that purpose.
 -/
-syntax (name := tauto) "tauto" (config)? : tactic
+syntax (name := tauto) "tauto" (config) : tactic
 
-elab_rules : tactic | `(tactic| tauto $[$cfg:config]?) => do
+elab_rules : tactic | `(tactic| tauto $[$cfg:config]) => do
   let _cfg ← elabConfig (mkOptionalNode cfg)
   tautology

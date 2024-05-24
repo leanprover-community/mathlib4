@@ -63,7 +63,7 @@ end Set
 
 section Subgroup
 
--- TODO: Is there a lemma that could unify the following three very similar lemmas?
+-- TODO: Is there a lemma that could unify the following three very similar lemmas
 
 @[to_additive (attr := simp)]
 lemma stabilizer_subgroup (s : Subgroup G) : stabilizer G (s : Set G) = s := by
@@ -74,7 +74,7 @@ lemma stabilizer_subgroup (s : Subgroup G) : stabilizer G (s : Set G) = s := by
 @[to_additive (attr := simp)]
 lemma stabilizer_op_subgroup (s : Subgroup G) : stabilizer Gᵐᵒᵖ (s : Set G) = s.op := by
   simp_rw [SetLike.ext_iff, mem_stabilizer_set]
-  simp? says simp only [smul_eq_mul_unop, SetLike.mem_coe, Subgroup.mem_op]
+  simp says simp only [smul_eq_mul_unop, SetLike.mem_coe, Subgroup.mem_op]
   refine fun a ↦ ⟨fun h ↦ _, fun ha b ↦ s.mul_mem_cancel_right ha⟩
   simpa only [op_smul_eq_mul, SetLike.mem_coe, one_mul] using (h 1).2 s.one_mem
 

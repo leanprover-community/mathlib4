@@ -88,10 +88,10 @@ macro (name := restrict_tac) "restrict_tac" c:Aesop.tactic_clause* : tactic =>
                  enableSimp := false })
     (rule_sets := [-default, -builtin, $(Lean.mkIdent `Restrict):ident]))
 
-/-- `restrict_tac?` passes along `Try this` from `aesop` -/
-macro (name := restrict_tac?) "restrict_tac?" c:Aesop.tactic_clause* : tactic =>
+/-- `restrict_tac` passes along `Try this` from `aesop` -/
+macro (name := restrict_tac) "restrict_tac" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
-  aesop? $c*
+  aesop $c*
     (config := { terminal := true
                  assumptionTransparency := .reducible
                  enableSimp := false

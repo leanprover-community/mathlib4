@@ -104,7 +104,7 @@ initialize registerBuiltinAttribute {
       unless kind == AttributeKind.global do
         throwError "invalid attribute 'positivity', must be global"
       let env ← getEnv
-      unless (env.getModuleIdxFor? declName).isNone do
+      unless (env.getModuleIdxFor declName).isNone do
         throwError "invalid attribute 'positivity', declaration is in an imported module"
       if (IR.getSorryDep env declName).isSome then return -- ignore in progress definitions
       let ext ← mkPositivityExt declName

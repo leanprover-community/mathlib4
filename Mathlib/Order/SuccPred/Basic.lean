@@ -46,7 +46,7 @@ combination of `SuccOrder α` and `NoMaxOrder α`.
 
 ## TODO
 
-Is `GaloisConnection pred succ` always true? If not, we should introduce
+Is `GaloisConnection pred succ` always true If not, we should introduce
 ```lean
 class SuccPredOrder (α : Type*) [Preorder α] extends SuccOrder α, PredOrder α :=
   (pred_succ_gc : GaloisConnection (pred : α → α) succ)

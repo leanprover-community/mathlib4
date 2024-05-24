@@ -93,7 +93,7 @@ lemma comm₁ (j : J) :
           (mapBifunctor L₁ L₂ F c).d (c.prev j) j +
       (mapBifunctorMap f₁' f₂ F c).f j := by
   ext i₁ i₂ h
-  simp? [h₁.comm i₁, dFrom, fromNext, toPrev, dTo] says
+  simp [h₁.comm i₁, dFrom, fromNext, toPrev, dTo] says
     simp only [Functor.mapBifunctorHomologicalComplex_obj_obj_X_X, ι_mapBifunctorMap,
       h₁.comm i₁, dNext_eq_dFrom_fromNext, dFrom, fromNext, AddMonoidHom.mk'_apply,
       prevD_eq_toPrev_dTo, toPrev, dTo, Functor.map_add, Functor.map_comp, NatTrans.app_add,

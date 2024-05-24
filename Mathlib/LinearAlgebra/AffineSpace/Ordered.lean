@@ -23,7 +23,7 @@ slope, see section docstring below for details.
 
 ## Implementation notes
 
-We do not introduce the notion of ordered affine spaces (yet?). Instead, we prove various theorems
+We do not introduce the notion of ordered affine spaces (yet). Instead, we prove various theorems
 for an ordered module interpreted as an affine space.
 
 ## Tags

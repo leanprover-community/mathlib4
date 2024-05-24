@@ -53,7 +53,7 @@ elab "assert_not_exists " n:ident : command => do
   let env ← getEnv
   let c ← mkConstWithLevelParams decl
   let msg ← (do
-    let mut some idx := env.getModuleIdxFor? decl
+    let mut some idx := env.getModuleIdxFor decl
       | pure m!"Declaration {c} is defined in this file."
     let mut msg := m!"Declaration {c} is not allowed to be imported by this file.\n\
       It is defined in {env.header.moduleNames[idx.toNat]!},"

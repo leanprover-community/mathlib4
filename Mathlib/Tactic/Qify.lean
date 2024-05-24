@@ -54,14 +54,14 @@ example (a b c : ℤ) (h : a / b = c) (hab : b ∣ a) (hb : b ≠ 0) : a = c * b
 ```
 `qify` makes use of the `@[zify_simps]` and `@[qify_simps]` attributes to move propositions,
 and the `push_cast` tactic to simplify the `ℚ`-valued expressions. -/
-syntax (name := qify) "qify" (simpArgs)? (location)? : tactic
+syntax (name := qify) "qify" (simpArgs) (location) : tactic
 
 macro_rules
-| `(tactic| qify $[[$simpArgs,*]]? $[at $location]?) =>
+| `(tactic| qify $[[$simpArgs,*]] $[at $location]) =>
   let args := simpArgs.map (·.getElems) |>.getD #[]
   `(tactic|
     simp (config := {decide := false}) only [zify_simps, qify_simps, push_cast, $args,*]
-      $[at $location]?)
+      $[at $location])
 
 @[qify_simps] lemma intCast_eq (a b : ℤ) : a = b ↔ (a : ℚ) = (b : ℚ) := by simp only [Int.cast_inj]
 @[qify_simps] lemma intCast_le (a b : ℤ) : a ≤ b ↔ (a : ℚ) ≤ (b : ℚ) := Int.cast_le.symm

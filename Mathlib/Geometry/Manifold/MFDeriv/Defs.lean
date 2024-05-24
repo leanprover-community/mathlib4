@@ -81,7 +81,7 @@ definition, differentiability implies continuity).
 that one is given a smooth submanifold `N`, and a function which is smooth on `N` (i.e., its
 restriction to the subtype `N` is smooth). Then, in the whole manifold `M`, the property
 `MDifferentiableOn I I' f N` holds. However, `mfderivWithin I I' f N` is not uniquely defined
-(what values would one choose for vectors that are transverse to `N`?), which can create issues down
+(what values would one choose for vectors that are transverse to `N`), which can create issues down
 the road. The problem here is that knowing the value of `f` along `N` does not determine the
 differential of `f` in all directions. This is in contrast to the case where `N` would be an open
 subset, or a submanifold with boundary of maximal dimension, where this issue does not appear.

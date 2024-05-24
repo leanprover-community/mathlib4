@@ -10,7 +10,7 @@ import Mathlib.Data.Real.Sqrt
 
 For what values of the variable $x$ does the following inequality hold:
 
-\[\dfrac{4x^2}{(1 - \sqrt {2x + 1})^2} < 2x + 9 \ ?\]
+\[\dfrac{4x^2}{(1 - \sqrt {2x + 1})^2} < 2x + 9 \ \]
 
 We follow solution at
 [Art of Problem Solving](https://artofproblemsolving.com/wiki/index.php/1960_IMO_Problems/Problem_2)

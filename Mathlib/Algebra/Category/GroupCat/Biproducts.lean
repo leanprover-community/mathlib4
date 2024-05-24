@@ -100,7 +100,7 @@ to the cartesian product of those groups.
 -- This was marked `@[simps]` until we made `AddCommGroupCat.coe_of` a simp lemma,
 -- after which the simp normal form linter complains.
 -- The generated simp lemmas were not used in Mathlib.
--- Possible solution: higher priority function coercions that remove the `of`?
+-- Possible solution: higher priority function coercions that remove the `of`
 -- @[simps]
 def lift (s : Fan f) : s.pt ⟶ AddCommGroupCat.of (∀ j, f j) where
   toFun x j := s.π.app ⟨j⟩ x

@@ -99,11 +99,11 @@ theorem getD_append_right (l l' : List α) (d : α) (n : ℕ) (h : l.length ≤ 
     rwa [Nat.le_sub_iff_add_le' h, ← length_append]
 #align list.nthd_append_right List.getD_append_rightₓ -- argument order
 
-theorem getD_eq_getD_get? (n : ℕ) : l.getD n d = (l.get? n).getD d := by
+theorem getD_eq_getD_get (n : ℕ) : l.getD n d = (l.get n).getD d := by
   cases Nat.lt_or_ge n l.length with
   | inl h => rw [getD_eq_get _ _ h, get_eq_get h, Option.getD_some]
   | inr h => rw [getD_eq_default _ _ h, get_eq_none.mpr h, Option.getD_none]
-#align list.nthd_eq_get_or_else_nth List.getD_eq_getD_get?ₓ -- argument order
+#align list.nthd_eq_get_or_else_nth List.getD_eq_getD_getₓ -- argument order
 
 end getD
 
@@ -147,9 +147,9 @@ theorem getI_append_right (l l' : List α) (n : ℕ) (h : l.length ≤ n) :
   getD_append_right _ _ _ _ h
 #align list.inth_append_right List.getI_append_right
 
-theorem getI_eq_iget_get? (n : ℕ) : l.getI n = (l.get? n).iget := by
-  rw [← getD_default_eq_getI, getD_eq_getD_get?, Option.getD_default_eq_iget]
-#align list.inth_eq_iget_nth List.getI_eq_iget_get?
+theorem getI_eq_iget_get (n : ℕ) : l.getI n = (l.get n).iget := by
+  rw [← getD_default_eq_getI, getD_eq_getD_get, Option.getD_default_eq_iget]
+#align list.inth_eq_iget_nth List.getI_eq_iget_get
 
 theorem getI_zero_eq_headI : l.getI 0 = l.headI := by cases l <;> rfl
 #align list.inth_zero_eq_head List.getI_zero_eq_headI

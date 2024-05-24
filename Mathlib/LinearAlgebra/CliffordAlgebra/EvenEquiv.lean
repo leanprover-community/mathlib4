@@ -178,7 +178,7 @@ theorem ofEven_ι (x y : M × R) :
   unfold ofEven
   lift_lets
   intro f
-  -- TODO: replacing `_` with `_` takes way longer?
+  -- TODO: replacing `_` with `_` takes way longer
   exact @even.lift_ι R (M × R) _ _ _ (Q' Q) _ _ _ ⟨f, _, _⟩ x y
 #align clifford_algebra.of_even_ι CliffordAlgebra.ofEven_ι
 

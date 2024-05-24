@@ -39,10 +39,10 @@ def boundary (a : α) : α :=
 
 /-- The boundary of an element of a co-Heyting algebra. -/
 scoped[Heyting] prefix:120 "∂ " => Coheyting.boundary
--- Porting note: Should the notation be automatically included in the current scope?
+-- Porting note: Should the notation be automatically included in the current scope
 open Heyting
 
--- Porting note: Should hnot be named hNot?
+-- Porting note: Should hnot be named hNot
 theorem inf_hnot_self (a : α) : a ⊓ ￢a = ∂ a :=
   rfl
 #align coheyting.inf_hnot_self Coheyting.inf_hnot_self

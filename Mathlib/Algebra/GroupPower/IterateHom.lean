@@ -95,7 +95,7 @@ theorem AddMonoid.End.coe_pow {A} [AddMonoid A] (f : AddMonoid.End A) (n : ℕ) 
   hom_coe_pow _ rfl (fun _ _ => rfl) _ _
 #align add_monoid.End.coe_pow AddMonoid.End.coe_pow
 
---what should be the namespace for this section?
+--what should be the namespace for this section
 section Monoid
 
 variable [Monoid G] (a : G) (n : ℕ)

@@ -32,7 +32,7 @@ the size of the biggest 3AP-free subset of `{0, ..., n - 1}`.
 
 ## TODO
 
-* Can `threeAPFree_iff_eq_right` be made more general?
+* Can `threeAPFree_iff_eq_right` be made more general
 * Generalize `ThreeGPFree.image` to Freiman homs
 
 ## References

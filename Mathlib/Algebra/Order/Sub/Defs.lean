@@ -371,7 +371,7 @@ theorem lt_add_of_tsub_lt_right (h : a - c < b) : a < b + c :=
 #align lt_add_of_tsub_lt_right lt_add_of_tsub_lt_right
 
 /-- This lemma (and some of its corollaries) also holds for `ENNReal`, but this proof doesn't work
-for it. Maybe we should add this lemma as field to `OrderedSub`? -/
+for it. Maybe we should add this lemma as field to `OrderedSub` -/
 theorem lt_tsub_of_add_lt_left : a + c < b → c < b - a :=
   Contravariant.AddLECancellable.lt_tsub_of_add_lt_left
 #align lt_tsub_of_add_lt_left lt_tsub_of_add_lt_left

@@ -264,11 +264,11 @@ The list is an optional parameter, `[]` being its default value.
 Combining both shortcuts is done by writing `filter_upwards [h₁, ⋯, hₙ] with a₁ a₂ ⋯ aₖ using e`.
 Note that in this case, the `aᵢ` terms can be used in `e`.
 -/
-syntax (name := filterUpwards) "filter_upwards" (" [" term,* "]")?
-  (" with" (ppSpace colGt term:max)*)? (" using " term)? : tactic
+syntax (name := filterUpwards) "filter_upwards" (" [" term,* "]")
+  (" with" (ppSpace colGt term:max)*) (" using " term) : tactic
 
 elab_rules : tactic
-| `(tactic| filter_upwards $[[$[$args],*]]? $[with $wth*]? $[using $usingArg]?) => do
+| `(tactic| filter_upwards $[[$[$args],*]] $[with $wth*] $[using $usingArg]) => do
   let config : ApplyConfig := {newGoals := ApplyNewGoals.nonDependentOnly}
   for e in args.getD #[] |>.reverse do
     let goal ← getMainGoal

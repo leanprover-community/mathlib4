@@ -41,7 +41,7 @@ instance [DecidableEq α] : SDiff (List α) :=
 #align list.split_on_p List.splitOnP
 #align list.split_on List.splitOn
 #align list.concat List.concat
-#align list.head' List.head?
+#align list.head' List.head
 
 -- mathlib3 `array` is not ported.
 #noalign list.to_array
@@ -71,7 +71,7 @@ def takeI [Inhabited α] (n : Nat) (l : List α) : List α :=
 #align list.scanl List.scanl
 #align list.scanr List.scanr
 #align list.partition_map List.partitionMap
-#align list.find List.find?
+#align list.find List.find
 
 /-- `findM tac l` returns the first element of `l` on which `tac` succeeds, and
 fails otherwise. -/
@@ -79,20 +79,20 @@ def findM {α} {m : Type u → Type v} [Alternative m] (tac : α → m PUnit) : 
   List.firstM fun a => (tac a) $> a
 #align list.mfind List.findM
 
-/-- `findM? p l` returns the first element `a` of `l` for which `p a` returns
-true. `findM?` short-circuits, so `p` is not necessarily run on every `a` in
+/-- `findM p l` returns the first element `a` of `l` for which `p a` returns
+true. `findM` short-circuits, so `p` is not necessarily run on every `a` in
 `l`. This is a monadic version of `List.find`. -/
-def findM?'
+def findM'
     {m : Type u → Type v}
     [Monad m] {α : Type u}
     (p : α → m (ULift Bool)) : List α → m (Option α)
   | [] => pure none
   | x :: xs => do
     let ⟨px⟩ ← p x
-    if px then pure (some x) else findM?' p xs
-#align list.mbfind' List.findM?'
+    if px then pure (some x) else findM' p xs
+#align list.mbfind' List.findM'
 
-#align list.mbfind List.findM?
+#align list.mbfind List.findM
 #align list.many List.anyM
 #align list.mall List.allM
 
@@ -345,7 +345,7 @@ def destutter' (R : α → α → Prop) [DecidableRel R] : α → List α → Li
   | a, h :: l => if R a h then a :: destutter' R h l else destutter' R a l
 #align list.destutter' List.destutter'
 
--- TODO: should below be "lazily"?
+-- TODO: should below be "lazily"
 /-- Greedily create a sublist of `l` such that, for every two adjacent elements `a, b ∈ l`,
 `R a b` holds. Mostly used with ≠; for example, `destutter (≠) [1, 2, 2, 1, 1] = [1, 2, 1]`,
 `destutter (≠) [1, 2, 3, 3] = [1, 2, 3]`, `destutter (<) [1, 2, 5, 2, 3, 4, 9] = [1, 2, 5, 9]`. -/
@@ -359,7 +359,7 @@ def destutter (R : α → α → Prop) [DecidableRel R] : List α → List α
 -- Porting note: replace ilast' by getLastD
 #align list.ilast' List.ilast'
 -- Porting note: remove last' from Batteries
-#align list.last' List.getLast?
+#align list.last' List.getLast
 #align list.rotate List.rotate
 #align list.rotate' List.rotate'
 

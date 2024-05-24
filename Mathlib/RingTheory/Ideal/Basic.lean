@@ -407,7 +407,7 @@ section Lattice
 
 variable {R : Type u} [Semiring R]
 
--- Porting note: is this the right approach? or is there a better way to prove? (next 4 decls)
+-- Porting note: is this the right approach or is there a better way to prove (next 4 decls)
 theorem mem_sup_left {S T : Ideal R} : ∀ {x : R}, x ∈ S → x ∈ S ⊔ T :=
   @le_sup_left _ _ S T
 #align ideal.mem_sup_left Ideal.mem_sup_left

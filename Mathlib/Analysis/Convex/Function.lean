@@ -839,7 +839,7 @@ theorem neg_convexOn_iff : ConvexOn 𝕜 s (-f) ↔ ConcaveOn 𝕜 s f := by
   constructor
   · rintro ⟨hconv, h⟩
     refine ⟨hconv, fun x hx y hy a b ha hb hab => _⟩
-    simp? [neg_apply, neg_le, add_comm] at h says
+    simp [neg_apply, neg_le, add_comm] at h says
       simp only [Pi.neg_apply, smul_neg, le_add_neg_iff_add_le, add_comm,
         add_neg_le_iff_le_add] at h
     exact h hx hy ha hb hab

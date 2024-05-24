@@ -129,17 +129,17 @@ use in auto-params.
 macro (name := aesop_cat) "aesop_cat" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
   first | sorry_if_sorry |
-  aesop $c* (config := { introsTransparency? := some .default, terminal := true })
+  aesop $c* (config := { introsTransparency := some .default, terminal := true })
             (simp_config := { decide := true, zetaDelta := true })
             (rule_sets := [$(Lean.mkIdent `CategoryTheory):ident]))
 
 /--
-We also use `aesop_cat?` to pass along a `Try this` suggestion when using `aesop_cat`
+We also use `aesop_cat` to pass along a `Try this` suggestion when using `aesop_cat`
 -/
-macro (name := aesop_cat?) "aesop_cat?" c:Aesop.tactic_clause* : tactic =>
+macro (name := aesop_cat) "aesop_cat" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
   first | sorry_if_sorry |
-  aesop? $c* (config := { introsTransparency? := some .default, terminal := true })
+  aesop $c* (config := { introsTransparency := some .default, terminal := true })
              (simp_config := { decide := true, zetaDelta := true })
              (rule_sets := [$(Lean.mkIdent `CategoryTheory):ident]))
 /--
@@ -149,7 +149,7 @@ nonterminal `simp`.
 -/
 macro (name := aesop_cat_nonterminal) "aesop_cat_nonterminal" c:Aesop.tactic_clause* : tactic =>
   `(tactic|
-    aesop $c* (config := { introsTransparency? := some .default, warnOnNonterminal := false })
+    aesop $c* (config := { introsTransparency := some .default, warnOnNonterminal := false })
               (simp_config := { decide := true, zetaDelta := true })
               (rule_sets := [$(Lean.mkIdent `CategoryTheory):ident]))
 

@@ -302,7 +302,7 @@ macro "pgame_wf_tac" : tactic =>
 -- (which are applied by default for WF goals)
 
 -- This is different from mk_right from the POV of the simplifier,
--- because the unifier can't solve `xr =?= RightMoves (mk xl xr xL xR)` at reducible transparency.
+-- because the unifier can't solve `xr == RightMoves (mk xl xr xL xR)` at reducible transparency.
 @[simp]
 theorem Subsequent.mk_right' (xL : xl → PGame) (xR : xr → PGame) (j : RightMoves (mk xl xr xL xR)) :
     Subsequent (xR j) (mk xl xr xL xR) := by
@@ -324,7 +324,7 @@ theorem Subsequent.mk_right' (xL : xl → PGame) (xR : xr → PGame) (j : RightM
     Subsequent ((xR i).moveLeft j) (mk xl xr xL xR) := by
   pgame_wf_tac
 
--- Porting note: linter claims these lemmas don't simplify?
+-- Porting note: linter claims these lemmas don't simplify
 open Subsequent in attribute [nolint simpNF] mk_left mk_right mk_right'
   moveRight_mk_left moveRight_mk_right moveLeft_mk_left moveLeft_mk_right
 

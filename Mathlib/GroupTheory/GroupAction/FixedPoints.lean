@@ -143,7 +143,7 @@ theorem set_mem_fixedBy_of_subset_fixedBy {s : Set α} {g : G} (s_ss_fixedBy : s
   rw [← fixedBy_inv]
   ext x
   rw [Set.mem_inv_smul_set_iff]
-  refine ⟨fun gxs => ?xs, fun xs => (s_ss_fixedBy xs).symm ▸ xs⟩
+  refine ⟨fun gxs => xs, fun xs => (s_ss_fixedBy xs).symm ▸ xs⟩
   rw [← fixedBy_inv] at s_ss_fixedBy
   rwa [← s_ss_fixedBy gxs, inv_smul_smul] at gxs
 

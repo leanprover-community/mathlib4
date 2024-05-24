@@ -1721,7 +1721,7 @@ instance instSingleton : Singleton α (Ordset α) :=
   ⟨Ordset.singleton⟩
 #align ordset.has_singleton Ordset.instSingleton
 
-/-- O(1). Is the set empty? -/
+/-- O(1). Is the set empty -/
 def Empty (s : Ordset α) : Prop :=
   s = ∅
 #align ordset.empty Ordset.Empty
@@ -1757,8 +1757,8 @@ section
 
 variable [@DecidableRel α (· ≤ ·)]
 
-/-- O(log n). Does the set contain the element `x`? That is,
-  is there an element that is equivalent to `x` in the order? -/
+/-- O(log n). Does the set contain the element `x` That is,
+  is there an element that is equivalent to `x` in the order -/
 def mem (x : α) (s : Ordset α) : Bool :=
   x ∈ s.val
 #align ordset.mem Ordset.mem
@@ -1778,7 +1778,7 @@ instance mem.decidable (x : α) (s : Ordset α) : Decidable (x ∈ s) :=
 #align ordset.mem.decidable Ordset.mem.decidable
 
 theorem pos_size_of_mem {x : α} {t : Ordset α} (h_mem : x ∈ t) : 0 < size t := by
-  simp? [Membership.mem, mem] at h_mem says
+  simp [Membership.mem, mem] at h_mem says
     simp only [Membership.mem, mem, Bool.decide_eq_true] at h_mem
   apply Ordnode.pos_size_of_mem t.property.sz h_mem
 #align ordset.pos_size_of_mem Ordset.pos_size_of_mem

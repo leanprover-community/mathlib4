@@ -102,14 +102,14 @@ def isMathlibRoot : IO Bool :=
 section
 
 private def parseMathlibDepPath (json : Lean.Json) : Except String (Option FilePath) := do
-  let deps ← (← json.getObjVal? "packages").getArr?
+  let deps ← (← json.getObjVal "packages").getArr
   for d in deps do
-    let n := ← (← d.getObjVal? "name").getStr?
+    let n := ← (← d.getObjVal "name").getStr
     if n != "mathlib" then
       continue
-    let t := ← (← d.getObjVal? "type").getStr?
+    let t := ← (← d.getObjVal "type").getStr
     if t == "path" then
-      return some ⟨← (← d.getObjVal? "dir").getStr?⟩
+      return some ⟨← (← d.getObjVal "dir").getStr⟩
     else
       return LAKEPACKAGESDIR / "mathlib"
   return none
@@ -149,9 +149,9 @@ def mathlibDepPath : CacheM FilePath := return (← read).mathlibDepPath
 def getPackageDirs : CacheM PackageDirs := return (← read).packageDirs
 
 def getPackageDir (path : FilePath) : CacheM FilePath := do
-  match path.withExtension "" |>.components.head? with
+  match path.withExtension "" |>.components.head with
   | none => throw <| IO.userError "Can't find package directory for empty path"
-  | some pkg => match (← getPackageDirs).find? pkg with
+  | some pkg => match (← getPackageDirs).find pkg with
     | none => throw <| IO.userError s!"Unknown package directory for {pkg}"
     | some path => return path
 
@@ -383,7 +383,7 @@ file) regarding the files with specified paths. -/
 def lookup (hashMap : HashMap) (paths : List FilePath) : IO Unit := do
   let mut err := false
   for path in paths do
-    let some hash := hashMap.find? path | err := true
+    let some hash := hashMap.find path | err := true
     let ltar := CACHEDIR / hash.asLTar
     IO.println s!"{path}: {ltar}"
     for line in (← runCmd (← getLeanTar) #["-k", ltar.toString]).splitOn "\n" |>.dropLast do

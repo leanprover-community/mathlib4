@@ -42,8 +42,8 @@ def runTacForHeartbeats (tac : TSyntax `Lean.Parser.Tactic.tacticSeq) (revert : 
 Given a `List Nat`, return the minimum, maximum, and standard deviation.
 -/
 def variation (counts : List Nat) : List Nat :=
-  let min := counts.minimum?.getD 0
-  let max := counts.maximum?.getD 0
+  let min := counts.minimum.getD 0
+  let max := counts.maximum.getD 0
   let toFloat (n : Nat) := n.toUInt64.toFloat
   let toNat (f : Float) := f.toUInt64.toNat
   let counts' := counts.map toFloat
@@ -69,7 +69,7 @@ elab "count_heartbeats " tac:tacticSeq : tactic => do
 `count_heartbeats! in tac` runs a tactic 10 times, counting the heartbeats used, and logs the range
 and standard deviation. The tactic `count_heartbeats! n in tac` runs it `n` times instead.
 -/
-elab "count_heartbeats! " n:(num)? "in" ppLine tac:tacticSeq : tactic => do
+elab "count_heartbeats! " n:(num) "in" ppLine tac:tacticSeq : tactic => do
   let n := match n with
            | some j => j.getNat
            | none => 10
@@ -137,7 +137,7 @@ def f := 37
 ```
 displays the info message `Min: 7 Max: 8 StdDev: 14%`.
 -/
-elab "count_heartbeats! " n:(num)? "in" ppLine cmd:command : command => do
+elab "count_heartbeats! " n:(num) "in" ppLine cmd:command : command => do
   let n := match n with
            | some j => j.getNat
            | none => 10

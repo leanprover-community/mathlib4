@@ -288,7 +288,7 @@ theorem mem_comap {s : NonUnitalSubsemiring S} {f : F} {x : R} : x ∈ s.comap f
   Iff.rfl
 #align non_unital_subsemiring.mem_comap NonUnitalSubsemiring.mem_comap
 
--- this has some nasty coercions, how to deal with it?
+-- this has some nasty coercions, how to deal with it
 theorem comap_comap (s : NonUnitalSubsemiring T) (g : G) (f : F) :
     ((s.comap g : NonUnitalSubsemiring S).comap f : NonUnitalSubsemiring R) =
       s.comap ((g : S →ₙ+* T).comp (f : R →ₙ+* S)) :=
@@ -315,7 +315,7 @@ theorem map_id : s.map (NonUnitalRingHom.id R) = s :=
   SetLike.coe_injective <| Set.image_id _
 #align non_unital_subsemiring.map_id NonUnitalSubsemiring.map_id
 
--- unavoidable coercions?
+-- unavoidable coercions
 theorem map_map (g : G) (f : F) :
     (s.map (f : R →ₙ+* S)).map (g : S →ₙ+* T) = s.map ((g : S →ₙ+* T).comp (f : R →ₙ+* S)) :=
   SetLike.coe_injective <| Set.image_image _ _ _
@@ -392,7 +392,7 @@ end NonUnitalRingHom
 
 namespace NonUnitalSubsemiring
 
--- should we define this as the range of the zero homomorphism?
+-- should we define this as the range of the zero homomorphism
 instance : Bot (NonUnitalSubsemiring R) :=
   ⟨{  carrier := {0}
       add_mem' := fun _ _ => by simp_all

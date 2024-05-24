@@ -196,7 +196,7 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
     refine Fin.val_eq_of_eq <| @hl ⟨k, Nat.lt_of_succ_lt <| by simpa using hk⟩
       ⟨tl.length, by simp⟩ _
     rw [← Option.some_inj] at hk'
-    rw [← get_eq_get, dropLast_eq_take, get_take, get?, get_eq_get, Option.some_inj] at hk'
+    rw [← get_eq_get, dropLast_eq_take, get_take, get, get_eq_get, Option.some_inj] at hk'
     · rw [hk']
       simp only [getLast_eq_get, length_cons, ge_iff_le, Nat.succ_sub_succ_eq_sub,
         nonpos_iff_eq_zero, add_eq_zero_iff, and_false, tsub_zero, get_cons_succ]

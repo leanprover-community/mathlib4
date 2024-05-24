@@ -280,16 +280,16 @@ def intervalCases (g : MVarId) (e e' : Expr) (lbs ubs : Array Expr) (mustUseBoun
     if α.isConstOf ``Int then pure intMethods else
     -- if α.isConstOf ``PNat then pure pnatMethods else
     throwError "interval_cases failed: unsupported type {α}"
-  let mut lb ← try? (m.initLB e)
+  let mut lb ← try (m.initLB e)
   for pf in lbs do
-    if let some lb1 ← try? (m.getBound e pf true) then
+    if let some lb1 ← try (m.getBound e pf true) then
       if lb.all (·.1.asLower < lb1.1.asLower) then
         lb := some lb1
     else if mustUseBounds then
       throwError "interval_cases failed: provided bound '{← inferType pf}' cannot be evaluated"
-  let mut ub ← try? (m.initUB e)
+  let mut ub ← try (m.initUB e)
   for pf in ubs do
-    if let some ub1 ← try? (m.getBound e pf false) then
+    if let some ub1 ← try (m.getBound e pf false) then
       if ub.all (·.1.asUpper > ub1.1.asUpper) then
         ub := some ub1
     else if mustUseBounds then
@@ -341,24 +341,24 @@ in which case `interval_cases` calls `fin_cases` on the resulting fact `n ∈ Se
 You can specify a name `h` for the new hypothesis,
 as `interval_cases h : n` or `interval_cases h : n using hl, hu`.
 -/
-syntax (name := intervalCases) "interval_cases" (ppSpace colGt atomic(binderIdent " : ")? term)?
-  (" using " term ", " term)? : tactic
+syntax (name := intervalCases) "interval_cases" (ppSpace colGt atomic(binderIdent " : ") term)
+  (" using " term ", " term) : tactic
 
 elab_rules : tactic
-  | `(tactic| interval_cases $[$[$h :]? $e]? $[using $lb, $ub]?) => do
+  | `(tactic| interval_cases $[$[$h :] $e] $[using $lb, $ub]) => do
     let g ← getMainGoal
-    let cont x h? subst g e lbs ubs mustUseBounds : TacticM Unit := do
+    let cont x h subst g e lbs ubs mustUseBounds : TacticM Unit := do
       let goals ← IntervalCases.intervalCases g (.fvar x) e lbs ubs mustUseBounds
       let gs ← goals.mapM fun { goal, .. } => do
         let (fv, g) ← goal.intro1
         let (subst, g) ← substCore g fv (fvarSubst := subst)
         if let some hStx := h.getD none then
-          if let some fv := h? then
+          if let some fv := h then
             g.withContext <| (subst.get fv).addLocalVarInfoForBinderIdent hStx
         pure g
       replaceMainGoal gs.toList
     g.withContext do
-    let hName? := (h.getD none).map fun
+    let hName := (h.getD none).map fun
       | `(binderIdent| $n:ident) => n.getId
       | _ => `_
     match e, lb, ub with
@@ -376,12 +376,12 @@ elab_rules : tactic
         let (lo, _) ← parseBound ubTy
         let .true ← isDefEq e lo | failure
       catch _ => throwErrorAt ub "expected a term of the form {e} < _ or {e} ≤ _, got {ubTy}"
-      let (subst, xs, g) ← g.generalizeHyp #[{ expr := e, hName? }] (← getFVarIdsAt g)
+      let (subst, xs, g) ← g.generalizeHyp #[{ expr := e, hName }] (← getFVarIdsAt g)
       g.withContext do
-      cont xs[0]! xs[1]? subst g e #[subst.apply lb'] #[subst.apply ub'] (mustUseBounds := true)
+      cont xs[0]! xs[1] subst g e #[subst.apply lb'] #[subst.apply ub'] (mustUseBounds := true)
     | some e, none, none =>
       let e ← Tactic.elabTerm e none
-      let (subst, xs, g) ← g.generalizeHyp #[{ expr := e, hName? }] (← getFVarIdsAt g)
+      let (subst, xs, g) ← g.generalizeHyp #[{ expr := e, hName }] (← getFVarIdsAt g)
       let x := xs[0]!
       g.withContext do
       let e := subst.apply e
@@ -396,5 +396,5 @@ elab_rules : tactic
             lbs := lbs.push (.fvar ldecl.fvarId)
           else failure
         catch _ => pure ()
-      cont x xs[1]? subst g e lbs ubs (mustUseBounds := false)
+      cont x xs[1] subst g e lbs ubs (mustUseBounds := false)
     | _, _, _ => throwUnsupportedSyntax

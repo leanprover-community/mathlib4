@@ -111,7 +111,7 @@ example : foo := by
 #guard_msgs in
 -- `use` puts placeholders after the current goal
 example : foo := show_term by
-  use ?x, ⟨?b, 4⟩
+  use x, ⟨b, 4⟩
   exact (3 : Nat)
   exact (100 : Nat)
   exact true
@@ -121,7 +121,7 @@ example : foo := show_term by
 -- `use` puts placeholders after the current goal
 example : foo := show_term by
   -- Type ascriptions keep refinement from occurring before applying the constructor
-  use! (?x : Nat), (?b : Bool), 4
+  use! (x : Nat), (b : Bool), 4
   exact (3 : Nat)
   exact (100 : Nat)
   exact true

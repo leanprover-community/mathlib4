@@ -125,9 +125,9 @@ def mkProjectMapExpr (e : Expr) : TermElabM Expr := do
 def monoidal_coherence (g : MVarId) : TermElabM Unit := g.withContext do
   withOptions (fun opts => synthInstance.maxSize.set opts
     (max 512 (synthInstance.maxSize.get opts))) do
-  -- TODO: is this `dsimp only` step necessary? It doesn't appear to be in the tests below.
+  -- TODO: is this `dsimp only` step necessary It doesn't appear to be in the tests below.
   let (ty, _) ← dsimp (← g.getType) (← Simp.Context.ofNames [] true)
-  let some (_, lhs, rhs) := (← whnfR ty).eq? | exception g "Not an equation of morphisms."
+  let some (_, lhs, rhs) := (← whnfR ty).eq | exception g "Not an equation of morphisms."
   let projectMap_lhs ← mkProjectMapExpr lhs
   let projectMap_rhs ← mkProjectMapExpr rhs
   -- This new equation is defeq to the original by assumption
@@ -203,7 +203,7 @@ lemma insert_id_rhs {C : Type*} [Category C] {X Y : C} (f g : X ⟶ Y) (w : f = 
 
 /-- If either the lhs or rhs is not a composition, compose it on the right with an identity. -/
 def insertTrailingIds (g : MVarId) : MetaM MVarId := do
-  let some (_, lhs, rhs) := (← withReducible g.getType').eq? | exception g "Not an equality."
+  let some (_, lhs, rhs) := (← withReducible g.getType').eq | exception g "Not an equality."
   let mut g := g
   if !(lhs.isAppOf ``CategoryStruct.comp) then
     let [g'] ← g.applyConst ``insert_id_lhs | exception g "failed to apply insert_id_lhs"
@@ -228,7 +228,7 @@ def coherence_loop (maxSteps := 37) : TacticM Unit :=
     -- that is built out of unitors and associators:
     evalTactic (← `(tactic| liftable_prefixes)) <|>
       exception' "Something went wrong in the `coherence` tactic: \
-        is the target an equation in a monoidal category?"
+        is the target an equation in a monoidal category"
     -- The goal should now look like `f₀ ≫ f₁ = g₀ ≫ g₁`,
     liftMetaTactic MVarId.congrCore
     -- and now we have two goals `f₀ = g₀` and `f₁ = g₁`.
@@ -251,13 +251,13 @@ open Lean.Parser.Tactic
 /--
 Simp lemmas for rewriting a hom in monoical categories into a normal form.
 -/
-syntax (name := monoidal_simps) "monoidal_simps" (config)? : tactic
+syntax (name := monoidal_simps) "monoidal_simps" (config) : tactic
 
 @[inherit_doc monoidal_simps]
 elab_rules : tactic
-| `(tactic| monoidal_simps $[$cfg]?) => do
+| `(tactic| monoidal_simps $[$cfg]) => do
   evalTactic (← `(tactic|
-    simp $[$cfg]? only [
+    simp $[$cfg] only [
       Category.assoc, MonoidalCategory.tensor_whiskerLeft, MonoidalCategory.id_whiskerLeft,
       MonoidalCategory.whiskerRight_tensor, MonoidalCategory.whiskerRight_id,
       MonoidalCategory.whiskerLeft_comp, MonoidalCategory.whiskerLeft_id,

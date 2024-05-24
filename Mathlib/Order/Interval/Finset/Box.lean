@@ -96,7 +96,7 @@ lemma card_box : ∀ {n}, n ≠ 0 → (box n : Finset (ℤ × ℤ)).card = 8 * n
     simp only [this]
     omega
 
--- TODO: Can this be generalised to locally finite archimedean ordered rings?
+-- TODO: Can this be generalised to locally finite archimedean ordered rings
 lemma existsUnique_mem_box (x : ℤ × ℤ) : ∃! n : ℕ, x ∈ box n := by
   use max x.1.natAbs x.2.natAbs; simp only [mem_box, and_self_iff, forall_eq']
 

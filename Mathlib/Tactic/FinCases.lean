@@ -78,7 +78,7 @@ example (f : ℕ → Prop) (p : Fin 3) (h0 : f 0) (h1 : f 1) (h2 : f 2) : f p.va
 ```
 after `fin_cases p; simp`, there are three goals, `f 0`, `f 1`, and `f 2`.
 -/
-syntax (name := finCases) "fin_cases " ("*" <|> term,+) (" with " term,+)? : tactic
+syntax (name := finCases) "fin_cases " ("*" <|> term,+) (" with " term,+) : tactic
 
 /-!
 `fin_cases` used to also have two modifiers, `fin_cases ... with ...` and `fin_cases ... using ...`.
@@ -115,9 +115,9 @@ produces three goals with hypotheses
 `ha : a = 0`, `ha : a = 1`, and `ha : a = 2`.
 -/
 
-/- TODO: In mathlib3 we ran `norm_num` when there is no `with` clause. Is this still useful? -/
+/- TODO: In mathlib3 we ran `norm_num` when there is no `with` clause. Is this still useful -/
 /- TODO: can we name the cases generated according to their values,
-   rather than `tail.tail.tail.head`? -/
+   rather than `tail.tail.tail.head` -/
 
 @[tactic finCases] elab_rules : tactic
   | `(tactic| fin_cases $[$hyps:ident],*) => withMainContext <| focus do

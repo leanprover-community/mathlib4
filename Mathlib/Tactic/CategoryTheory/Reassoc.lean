@@ -49,17 +49,17 @@ def reassocExpr (e : Expr) : MetaM Expr := do
   mapForallTelescope (fun e => do simpType categorySimp (← mkAppM ``eq_whisker' #[e])) e
 
 /-- Syntax for the `reassoc` attribute -/
-syntax (name := reassoc) "reassoc" (" (" &"attr" ":=" Parser.Term.attrInstance,* ")")? : attr
+syntax (name := reassoc) "reassoc" (" (" &"attr" ":=" Parser.Term.attrInstance,* ")") : attr
 
 initialize registerBuiltinAttribute {
   name := `reassoc
   descr := ""
   applicationTime := .afterCompilation
   add := fun src ref kind => match ref with
-  | `(attr| reassoc $[(attr := $stx?,*)]?) => MetaM.run' do
+  | `(attr| reassoc $[(attr := $stx,*)]) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`reassoc` can only be used as a global attribute"
-    addRelatedDecl src "_assoc" ref stx? fun type value levels => do
+    addRelatedDecl src "_assoc" ref stx fun type value levels => do
       pure (← reassocExpr (← mkExpectedTypeHint value type), levels)
   | _ => throwUnsupportedSyntax }
 

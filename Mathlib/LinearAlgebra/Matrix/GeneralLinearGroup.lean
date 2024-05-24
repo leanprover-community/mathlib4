@@ -138,7 +138,7 @@ theorem coe_toLinear : (@toLinear n ‹_› ‹_› _ _ A : (n → R) →ₗ[R] 
   rfl
 #align matrix.general_linear_group.coe_to_linear Matrix.GeneralLinearGroup.coe_toLinear
 
--- Porting note: is inserting toLinearEquiv here correct?
+-- Porting note: is inserting toLinearEquiv here correct
 @[simp]
 theorem toLinear_apply (v : n → R) : (toLinear A).toLinearEquiv v = Matrix.mulVecLin (↑A) v :=
   rfl

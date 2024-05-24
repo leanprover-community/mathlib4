@@ -14,7 +14,7 @@ namespace Lean.Expr
 
 /-- If `e` is a coercion of a set to a type, return the set.
 Succeeds either for `Set.Elem s` terms or `{x // x ∈ s}` subtype terms. -/
-def coeTypeSet? (e : Expr) : Option Expr := do
+def coeTypeSet (e : Expr) : Option Expr := do
   if e.isAppOfArity ``Set.Elem 2 then
     return e.appArg!
   else if e.isAppOfArity ``Subtype 2 then

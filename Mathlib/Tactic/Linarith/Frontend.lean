@@ -268,7 +268,7 @@ partial def linarith (only_on : Bool) (hyps : List Expr) (cfg : LinarithConfig :
   -- if the target is an equality, we run `linarith` twice, to prove ≤ and ≥.
   if (← whnfR (← instantiateMVars (← g.getType))).isEq then
     trace[linarith] "target is an equality: splitting"
-    if let some [g₁, g₂] ← try? (g.apply (← mkConst' ``eq_of_not_lt_of_not_gt)) then
+    if let some [g₁, g₂] ← try (g.apply (← mkConst' ``eq_of_not_lt_of_not_gt)) then
       linarith only_on hyps cfg g₁
       linarith only_on hyps cfg g₂
       return
@@ -309,7 +309,7 @@ end Linarith
 open Parser Tactic Syntax
 
 /-- Syntax for the arguments of `linarith`, after the optional `!`. -/
-syntax linarithArgsRest := (config)? (&" only")? (" [" term,* "]")?
+syntax linarithArgsRest := (config) (&" only") (" [" term,* "]")
 
 /--
 `linarith` attempts to find a contradiction between hypotheses that are linear (in)equalities.
@@ -369,7 +369,7 @@ A variant, `nlinarith`, does some basic preprocessing to handle some nonlinear g
 The option `set_option trace.linarith true` will trace certain intermediate stages of the `linarith`
 routine.
 -/
-syntax (name := linarith) "linarith" "!"? linarithArgsRest : tactic
+syntax (name := linarith) "linarith" "!" linarithArgsRest : tactic
 
 @[inherit_doc linarith] macro "linarith!" rest:linarithArgsRest : tactic =>
   `(tactic| linarith ! $rest:linarithArgsRest)
@@ -386,7 +386,7 @@ in `linarith`. The preprocessing is as follows:
   the assumption `0 R' (b1 - a1) * (b2 - a2)` is added to the context (non-recursively),
   where `R ∈ {<, ≤, =}` is the appropriate comparison derived from `R1, R2`.
 -/
-syntax (name := nlinarith) "nlinarith" "!"? linarithArgsRest : tactic
+syntax (name := nlinarith) "nlinarith" "!" linarithArgsRest : tactic
 @[inherit_doc nlinarith] macro "nlinarith!" rest:linarithArgsRest : tactic =>
   `(tactic| nlinarith ! $rest:linarithArgsRest)
 
@@ -403,7 +403,7 @@ Allow elaboration of `LinarithConfig` arguments to tactics.
 declare_config_elab elabLinarithConfig Linarith.LinarithConfig
 
 elab_rules : tactic
-  | `(tactic| linarith $[!%$bang]? $[$cfg]? $[only%$o]? $[[$args,*]]?) => withMainContext do
+  | `(tactic| linarith $[!%$bang] $[$cfg] $[only%$o] $[[$args,*]]) => withMainContext do
     let args ← ((args.map (TSepArray.getElems)).getD {}).mapM (elabLinarithArg `linarith)
     let cfg := (← elabLinarithConfig (mkOptionalNode cfg)).updateReducibility bang.isSome
     commitIfNoEx do liftMetaFinishingTactic <| Linarith.linarith o.isSome args.toList cfg
@@ -418,7 +418,7 @@ elab_rules : tactic
 open Linarith
 
 elab_rules : tactic
-  | `(tactic| nlinarith $[!%$bang]? $[$cfg]? $[only%$o]? $[[$args,*]]?) => withMainContext do
+  | `(tactic| nlinarith $[!%$bang] $[$cfg] $[only%$o] $[[$args,*]]) => withMainContext do
     let args ← ((args.map (TSepArray.getElems)).getD {}).mapM (elabLinarithArg `nlinarith)
     let cfg := (← elabLinarithConfig (mkOptionalNode cfg)).updateReducibility bang.isSome
     let cfg := { cfg with

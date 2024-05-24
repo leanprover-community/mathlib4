@@ -29,7 +29,7 @@ Transforms the goal into its contrapositive.
 * `contrapose h`   first reverts the local assumption `h`, and then uses `contrapose` and `intro h`
 * `contrapose h with new_h` uses the name `new_h` for the introduced hypothesis
 -/
-syntax (name := contrapose) "contrapose" (ppSpace colGt ident (" with " ident)?)? : tactic
+syntax (name := contrapose) "contrapose" (ppSpace colGt ident (" with " ident)) : tactic
 macro_rules
   | `(tactic| contrapose) => `(tactic| (refine mtr _))
   | `(tactic| contrapose $e) => `(tactic| (revert $e:ident; contrapose; intro $e:ident))
@@ -39,7 +39,7 @@ macro_rules
 Transforms the goal into its contrapositive and uses pushes negations inside `P` and `Q`.
 Usage matches `contrapose`
 -/
-syntax (name := contrapose!) "contrapose!" (ppSpace colGt ident (" with " ident)?)? : tactic
+syntax (name := contrapose!) "contrapose!" (ppSpace colGt ident (" with " ident)) : tactic
 macro_rules
   | `(tactic| contrapose!) => `(tactic| (contrapose; try push_neg))
   | `(tactic| contrapose! $e) => `(tactic| (revert $e:ident; contrapose!; intro $e:ident))

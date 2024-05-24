@@ -30,7 +30,7 @@ We also produce the following instances:
 
 ## Todo
 
-* to_additive?
+* to_additive
 
 -/
 

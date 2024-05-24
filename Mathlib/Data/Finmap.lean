@@ -398,7 +398,7 @@ def any (f : ∀ x, β x → Bool) (s : Finmap β) : Bool :=
     (fun _ _ _ _ => by simp_rw [Bool.or_assoc, Bool.or_comm, imp_true_iff]) false
 #align finmap.any Finmap.any
 
--- TODO: should this really return `false` if `s` is empty?
+-- TODO: should this really return `false` if `s` is empty
 /-- `all f s` returns `true` iff `f v = true` for all values `v` in `s`. -/
 def all (f : ∀ x, β x → Bool) (s : Finmap β) : Bool :=
   s.foldl (fun x y z => x && f y z)
@@ -526,7 +526,7 @@ theorem mem_list_toFinmap (a : α) (xs : List (Sigma β)) :
     a ∈ xs.toFinmap ↔ ∃ b : β a, Sigma.mk a b ∈ xs := by
   -- Porting note: golfed
   induction' xs with x xs
-  · simp only [toFinmap_nil, not_mem_empty, find?, not_mem_nil, exists_false]
+  · simp only [toFinmap_nil, not_mem_empty, find, not_mem_nil, exists_false]
   cases' x with fst_i snd_i
   -- Porting note: `Sigma.mk.inj_iff` required because `simp` behaves differently
   simp only [toFinmap_cons, *, exists_or, mem_cons, mem_insert, exists_and_left, Sigma.mk.inj_iff]

@@ -330,7 +330,7 @@ def uniformity (α : Type u) [UniformSpace α] : Filter (α × α) :=
 /-- Notation for the uniformity filter with respect to a non-standard `UniformSpace` instance. -/
 scoped[Uniformity] notation "𝓤[" u "]" => @uniformity _ u
 
-@[inherit_doc] -- Porting note (#11215): TODO: should we drop the `uniformity` def?
+@[inherit_doc] -- Porting note (#11215): TODO: should we drop the `uniformity` def
 scoped[Uniformity] notation "𝓤" => uniformity
 
 /-- Construct a `UniformSpace` from a `u : UniformSpace.Core` and a `TopologicalSpace` structure
@@ -408,7 +408,7 @@ theorem UniformSpace.replaceTopology_eq {α : Type*} [i : TopologicalSpace α] (
   UniformSpace.ext rfl
 #align uniform_space.replace_topology_eq UniformSpace.replaceTopology_eq
 
--- Porting note: rfc: use `UniformSpace.Core.mkOfBasis`? This will change defeq here and there
+-- Porting note: rfc: use `UniformSpace.Core.mkOfBasis` This will change defeq here and there
 /-- Define a `UniformSpace` using a "distance" function. The function can be, e.g., the
 distance in a (usual or extended) metric space or an absolute value on a ring. -/
 def UniformSpace.ofFun {α : Type u} {β : Type v} [OrderedAddCommMonoid β]
@@ -1354,7 +1354,7 @@ instance ULift.uniformSpace [UniformSpace α] : UniformSpace (ULift α) :=
 
 section UniformContinuousInfi
 
--- Porting note: renamed for dot notation; add an `iff` lemma?
+-- Porting note: renamed for dot notation; add an `iff` lemma
 theorem UniformContinuous.inf_rng {f : α → β} {u₁ : UniformSpace α} {u₂ u₃ : UniformSpace β}
     (h₁ : UniformContinuous[u₁, u₂] f) (h₂ : UniformContinuous[u₁, u₃] f) :
     UniformContinuous[u₁, u₂ ⊓ u₃] f :=

@@ -287,7 +287,7 @@ theorem eigenvalue_nonneg_of_nonneg {μ : ℝ} {T : E →ₗ[𝕜] E} (hμ : Has
   have hpos : (0 : ℝ) < ‖v‖ ^ 2 := by simpa only [sq_pos_iff, norm_ne_zero_iff] using hv.2
   have : RCLike.re ⟪v, T v⟫ = μ * ‖v‖ ^ 2 := by
     have := congr_arg RCLike.re (inner_product_apply_eigenvector hv.1)
-    -- Porting note: why can't `exact_mod_cast` do this? These lemmas are marked `norm_cast`
+    -- Porting note: why can't `exact_mod_cast` do this These lemmas are marked `norm_cast`
     rw [← RCLike.ofReal_pow, ← RCLike.ofReal_mul] at this
     exact mod_cast this
   exact (mul_nonneg_iff_of_pos_right hpos).mp (this ▸ hnn v)
@@ -299,7 +299,7 @@ theorem eigenvalue_pos_of_pos {μ : ℝ} {T : E →ₗ[𝕜] E} (hμ : HasEigenv
   have hpos : (0 : ℝ) < ‖v‖ ^ 2 := by simpa only [sq_pos_iff, norm_ne_zero_iff] using hv.2
   have : RCLike.re ⟪v, T v⟫ = μ * ‖v‖ ^ 2 := by
     have := congr_arg RCLike.re (inner_product_apply_eigenvector hv.1)
-    -- Porting note: why can't `exact_mod_cast` do this? These lemmas are marked `norm_cast`
+    -- Porting note: why can't `exact_mod_cast` do this These lemmas are marked `norm_cast`
     rw [← RCLike.ofReal_pow, ← RCLike.ofReal_mul] at this
     exact mod_cast this
   exact (mul_pos_iff_of_pos_right hpos).mp (this ▸ hnn v)

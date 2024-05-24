@@ -61,15 +61,15 @@ where
         go e
     | _ =>
       withRef s do
-        match ← liftMacroM <| expandMacroImpl? (← getEnv) s with
-        | some (macroName, s?) =>
-          let s' ← liftMacroM <| liftExcept s?
+        match ← liftMacroM <| expandMacroImpl (← getEnv) s with
+        | some (macroName, s) =>
+          let s' ← liftMacroM <| liftExcept s
           withPushMacroExpansionStack s s' do
             return .macroExpansion macroName s s' (← go s')
         | none => processLeaf s
 
   processBinOp (ref : Syntax) (f lhs rhs : Syntax) := do
-    let some f ← resolveId? f | throwUnknownConstant f.getId
+    let some f ← resolveId f | throwUnknownConstant f.getId
     return .binop ref f (← go lhs) (← go rhs)
 
   processLeaf (s : Syntax) := do
@@ -114,9 +114,9 @@ private def applyS (S : SRec) (x : Expr) : TermElabM (Option Expr) :=
   try
     let f ← mkConstWithFreshMVarLevels S.name
     let v ← elabAppArgs f #[] ((S.args.push x).map .expr)
-      (expectedType? := none) (explicit := true) (ellipsis := false)
+      (expectedType := none) (explicit := true) (ellipsis := false)
     -- Now elaborate any remaining instance arguments
-    elabAppArgs v #[] #[] (expectedType? := none) (explicit := false) (ellipsis := false)
+    elabAppArgs v #[] #[] (expectedType := none) (explicit := false) (ellipsis := false)
   catch _ =>
     return none
 
@@ -127,21 +127,21 @@ private def hasCoeS (fromS toS : SRec) (x : Expr) : TermElabM Bool := do
   let some toType ← applyS toS x | return false
   trace[Elab.fbinop] m!"fromType = {fromType}, toType = {toType}"
   withLocalDeclD `v fromType fun v => do
-    match ← coerceSimple? v toType with
+    match ← coerceSimple v toType with
     | .some _ => return true
     | .none   => return false
-    | .undef  => return false -- TODO: should we do something smarter here?
+    | .undef  => return false -- TODO: should we do something smarter here
 
 /-- Result returned by `analyze`. -/
 private structure AnalyzeResult where
-  maxS? : Option SRec := none
+  maxS : Option SRec := none
   /-- `true` if there are two types `α` and `β` where we don't have coercions in any direction. -/
   hasUncomparable : Bool := false
 
 /-- Compute a minimal `SRec` for an expression tree. -/
-private def analyze (t : Tree) (expectedType? : Option Expr) : TermElabM AnalyzeResult := do
-  let maxS? ←
-    match expectedType? with
+private def analyze (t : Tree) (expectedType : Option Expr) : TermElabM AnalyzeResult := do
+  let maxS ←
+    match expectedType with
     | none => pure none
     | some expectedType =>
       let expectedType ← instantiateMVars expectedType
@@ -149,7 +149,7 @@ private def analyze (t : Tree) (expectedType? : Option Expr) : TermElabM Analyze
         pure S
       else
         pure none
-  (go t *> get).run' { maxS? }
+  (go t *> get).run' { maxS }
 where
   go (t : Tree) : StateRefT AnalyzeResult TermElabM Unit := do
     unless (← get).hasUncomparable do
@@ -160,21 +160,21 @@ where
         let type ← instantiateMVars (← inferType val)
         let some (S, x) ← extractS type
           | return -- Rather than marking as incomparable, let's hope there's a coercion!
-        match (← get).maxS? with
-        | none     => modify fun s => { s with maxS? := S }
+        match (← get).maxS with
+        | none     => modify fun s => { s with maxS := S }
         | some maxS =>
           let some maxSx ← applyS maxS x | return -- Same here.
           unless ← withNewMCtxDepth <| isDefEqGuarded maxSx type do
             if ← hasCoeS S maxS x then
               return ()
             else if ← hasCoeS maxS S x then
-              modify fun s => { s with maxS? := S }
+              modify fun s => { s with maxS := S }
             else
               trace[Elab.fbinop] "uncomparable types: {maxSx}, {type}"
               modify fun s => { s with hasUncomparable := true }
 
 private def mkBinOp (f : Expr) (lhs rhs : Expr) : TermElabM Expr := do
-  elabAppArgs f #[] #[Arg.expr lhs, Arg.expr rhs] (expectedType? := none)
+  elabAppArgs f #[] #[Arg.expr lhs, Arg.expr rhs] (expectedType := none)
     (explicit := false) (ellipsis := false) (resultIsOutParamSupport := false)
 
 /-- Turn a tree back into an expression. -/
@@ -196,7 +196,7 @@ private def toExprCore (t : Tree) : TermElabM Expr := do
 private def applyCoe (t : Tree) (maxS : SRec) : TermElabM Tree := do
   go t none
 where
-  go (t : Tree) (f? : Option Expr) : TermElabM Tree := do
+  go (t : Tree) (f : Option Expr) : TermElabM Tree := do
     match t with
     | .binop ref f lhs rhs =>
       let lhs' ← go lhs f
@@ -209,13 +209,13 @@ where
         | -- We want our operators to be "homogenous" so do a defeq check as an elaboration hint
           let x' ← mkFreshExprMVar none
           let some maxType ← applyS maxS x' | trace[Elab.fbinop] "mvar apply failed"; return t
-          trace[Elab.fbinop] "defeq hint {maxType} =?= {type}"
+          trace[Elab.fbinop] "defeq hint {maxType} == {type}"
           _ ← isDefEqGuarded maxType type
           return t
       let some maxType ← applyS maxS x
         | trace[Elab.fbinop] "applying {Lean.toExpr maxS} {x} failed"
           return t
-      trace[Elab.fbinop] "{type} =?= {maxType}"
+      trace[Elab.fbinop] "{type} == {maxType}"
       if ← isDefEqGuarded maxType type then
         return t
       else
@@ -223,21 +223,21 @@ where
         withRef ref <| return .term ref trees (← mkCoe maxType e)
     | .macroExpansion macroName stx stx' nested =>
       withRef stx <| withPushMacroExpansionStack stx stx' do
-        return .macroExpansion macroName stx stx' (← go nested f?)
+        return .macroExpansion macroName stx stx' (← go nested f)
 
-private def toExpr (tree : Tree) (expectedType? : Option Expr) : TermElabM Expr := do
-  let r ← analyze tree expectedType?
-  trace[Elab.fbinop] "hasUncomparable: {r.hasUncomparable}, maxType: {Lean.toExpr r.maxS?}"
-  if r.hasUncomparable || r.maxS?.isNone then
+private def toExpr (tree : Tree) (expectedType : Option Expr) : TermElabM Expr := do
+  let r ← analyze tree expectedType
+  trace[Elab.fbinop] "hasUncomparable: {r.hasUncomparable}, maxType: {Lean.toExpr r.maxS}"
+  if r.hasUncomparable || r.maxS.isNone then
     let result ← toExprCore tree
-    ensureHasType expectedType? result
+    ensureHasType expectedType result
   else
-    let result ← toExprCore (← applyCoe tree r.maxS?.get!)
+    let result ← toExprCore (← applyCoe tree r.maxS.get!)
     trace[Elab.fbinop] "result: {result}"
-    ensureHasType expectedType? result
+    ensureHasType expectedType result
 
 @[term_elab prodSyntax]
-def elabBinOp : TermElab := fun stx expectedType? => do
-  toExpr (← toTree stx) expectedType?
+def elabBinOp : TermElab := fun stx expectedType => do
+  toExpr (← toTree stx) expectedType
 
 end FBinopElab

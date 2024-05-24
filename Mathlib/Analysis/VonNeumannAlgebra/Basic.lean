@@ -52,7 +52,7 @@ class WStarAlgebra (M : Type u) [NormedRing M] [StarRing M] [CstarRing M] [Modul
       Nonempty (NormedSpace.Dual ℂ X ≃ₗᵢ⋆[ℂ] M)
 #align wstar_algebra WStarAlgebra
 
--- TODO: Without this, `VonNeumannAlgebra` times out. Why?
+-- TODO: Without this, `VonNeumannAlgebra` times out. Why
 /-- The double commutant definition of a von Neumann algebra,
 as a *-closed subalgebra of bounded operators on a Hilbert space,
 which is equal to its double commutant.
@@ -88,7 +88,7 @@ instance instSetLike : SetLike (VonNeumannAlgebra H) (H →L[ℂ] H) where
   coe S := S.carrier
   coe_injective' S T h := by obtain ⟨⟨⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩, _⟩, _⟩ := S; cases T; congr
 
--- Porting note: `StarMemClass` should be in `Prop`?
+-- Porting note: `StarMemClass` should be in `Prop`
 noncomputable instance instStarMemClass : StarMemClass (VonNeumannAlgebra H) (H →L[ℂ] H) where
   star_mem {s} := s.star_mem'
 

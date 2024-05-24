@@ -253,7 +253,7 @@ theorem isUnit_iff_ne_zero : IsUnit a ↔ a ≠ 0 :=
 alias ⟨_, Ne.isUnit⟩ := isUnit_iff_ne_zero
 #align ne.is_unit Ne.isUnit
 
--- Porting note: can't add this attribute?
+-- Porting note: can't add this attribute
 -- https://github.com/leanprover-community/mathlib4/issues/740
 -- attribute [protected] Ne.is_unit
 

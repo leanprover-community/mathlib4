@@ -458,7 +458,7 @@ theorem monomial_zero_one : monomial 0 (1 : R) = 1 :=
   rfl
 #align polynomial.monomial_zero_one Polynomial.monomial_zero_one
 
--- TODO: can't we just delete this one?
+-- TODO: can't we just delete this one
 theorem monomial_add (n : ℕ) (r s : R) : monomial n (r + s) = monomial n r + monomial n s :=
   (monomial n).map_add _ _
 #align polynomial.monomial_add Polynomial.monomial_add

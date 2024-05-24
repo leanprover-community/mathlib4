@@ -44,7 +44,7 @@ initialize registerBuiltinAttribute {
       unless kind == AttributeKind.global do
         throwError "invalid attribute 'gcongr_forward', must be global"
       let env ← getEnv
-      unless (env.getModuleIdxFor? declName).isNone do
+      unless (env.getModuleIdxFor declName).isNone do
         throwError "invalid attribute 'gcongr_forward', declaration is in an imported module"
       if (IR.getSorryDep env declName).isSome then return -- ignore in progress definitions
       let ext ← mkForwardExt declName

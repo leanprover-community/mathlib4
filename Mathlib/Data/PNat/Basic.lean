@@ -231,10 +231,10 @@ set_option linter.deprecated false
 -- Some lemmas that rewrite inequalities between explicit numerals in `ℕ+`
 -- into the corresponding inequalities in `ℕ`.
 -- TODO: perhaps this should not be attempted by `simp`,
--- and instead we should expect `norm_num` to take care of these directly?
+-- and instead we should expect `norm_num` to take care of these directly
 -- TODO: these lemmas are perhaps incomplete:
 -- * 1 is not represented as a bit0 or bit1
--- * strict inequalities?
+-- * strict inequalities
 @[simp, deprecated]
 theorem bit0_le_bit0 (n m : ℕ+) : bit0 n ≤ bit0 m ↔ bit0 (n : ℕ) ≤ bit0 (m : ℕ) :=
   Iff.rfl

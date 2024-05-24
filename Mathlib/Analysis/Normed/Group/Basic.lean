@@ -330,7 +330,7 @@ def GroupSeminorm.toSeminormedGroup [Group E] (f : GroupSeminorm E) : Seminormed
   dist_triangle := le_map_div_add_map_div f
   dist_comm := map_div_rev f
   edist_dist x y := by exact ENNReal.coe_nnreal_eq _
-  -- Porting note: how did `mathlib3` solve this automatically?
+  -- Porting note: how did `mathlib3` solve this automatically
 #align group_seminorm.to_seminormed_group GroupSeminorm.toSeminormedGroup
 #align add_group_seminorm.to_seminormed_add_group AddGroupSeminorm.toSeminormedAddGroup
 
@@ -1735,7 +1735,7 @@ theorem smul_closedBall'' : a • closedBall b r = closedBall (a • b) r := by
   ext
   simp [mem_closedBall, Set.mem_smul_set, dist_eq_norm_div, _root_.div_eq_inv_mul, ←
     eq_inv_mul_iff_mul_eq, mul_assoc]
-  -- Porting note: `ENNReal.div_eq_inv_mul` should be `protected`?
+  -- Porting note: `ENNReal.div_eq_inv_mul` should be `protected`
 #align smul_closed_ball'' smul_closedBall''
 #align vadd_closed_ball'' vadd_closedBall''
 
@@ -1914,7 +1914,7 @@ theorem ofReal_le_ennnorm (r : ℝ) : ENNReal.ofReal r ≤ ‖r‖₊ := by
   · rw [ENNReal.ofReal_eq_zero.2 hr]
     exact bot_le
 #align real.of_real_le_ennnorm Real.ofReal_le_ennnorm
--- Porting note: should this be renamed to `Real.ofReal_le_nnnorm`?
+-- Porting note: should this be renamed to `Real.ofReal_le_nnnorm`
 
 end Real
 
@@ -2043,7 +2043,7 @@ theorem mul_lipschitzWith (hf : AntilipschitzWith Kf f) (hg : LipschitzWith Kg g
   rw [NNReal.coe_inv, ← _root_.div_eq_inv_mul]
   rw [le_div_iff (NNReal.coe_pos.2 <| tsub_pos_iff_lt.2 hK)]
   rw [mul_comm, NNReal.coe_sub hK.le, _root_.sub_mul]
-  -- Porting note: `ENNReal.sub_mul` should be `protected`?
+  -- Porting note: `ENNReal.sub_mul` should be `protected`
   calc
     ↑Kf⁻¹ * dist x y - Kg * dist x y ≤ dist (f x) (f y) - dist (g x) (g y) :=
       sub_le_sub (hf.mul_le_dist x y) (hg.dist_le_mul x y)
@@ -2239,7 +2239,7 @@ theorem HasCompactMulSupport.exists_pos_le_norm [One E] (hf : HasCompactMulSuppo
   obtain ⟨K, ⟨hK1, hK2⟩⟩ := exists_compact_iff_hasCompactMulSupport.mpr hf
   obtain ⟨S, hS, hS'⟩ := hK1.isBounded.exists_pos_norm_le
   refine ⟨S + 1, by positivity, fun x hx => hK2 x ((mt <| hS' x) _)⟩
-  -- Porting note: `ENNReal.add_lt_add` should be `protected`?
+  -- Porting note: `ENNReal.add_lt_add` should be `protected`
   -- [context: we used `_root_.add_lt_add` in a previous version of this proof]
   contrapose! hx
   exact lt_add_of_le_of_pos hx zero_lt_one

@@ -51,13 +51,13 @@ def IsZeckendorfRep (l : List ℕ) : Prop := (l ++ [0]).Chain' (fun a b ↦ b + 
 @[simp]
 lemma IsZeckendorfRep_nil : IsZeckendorfRep [] := by simp [IsZeckendorfRep]
 
-lemma IsZeckendorfRep.sum_fib_lt : ∀ {n l}, IsZeckendorfRep l → (∀ a ∈ (l ++ [0]).head?, a < n) →
+lemma IsZeckendorfRep.sum_fib_lt : ∀ {n l}, IsZeckendorfRep l → (∀ a ∈ (l ++ [0]).head, a < n) →
     (l.map fib).sum < fib n
   | n, [], _, hn => fib_pos.2 <| hn _ rfl
   | n, a :: l, hl, hn => by
     simp only [IsZeckendorfRep, cons_append, chain'_iff_pairwise, pairwise_cons] at hl
-    have : ∀ b, b ∈ head? (l ++ [0]) → b < a - 1 :=
-      fun b hb ↦ lt_tsub_iff_right.2 <| hl.1 _ <| mem_of_mem_head? hb
+    have : ∀ b, b ∈ head (l ++ [0]) → b < a - 1 :=
+      fun b hb ↦ lt_tsub_iff_right.2 <| hl.1 _ <| mem_of_mem_head hb
     simp only [mem_append, mem_singleton, ← chain'_iff_pairwise, or_imp, forall_and, forall_eq,
       zero_add] at hl
     simp only [map, List.sum_cons]

@@ -295,7 +295,7 @@ theorem δ_comp_σ_self {n} {i : Fin (n + 1)} :
     δ (Fin.castSucc i) ≫ σ i = 𝟙 ([n] : SimplexCategory) := by
   rcases i with ⟨i, hi⟩
   ext ⟨j, hj⟩
-  simp? at hj says simp only [len_mk] at hj
+  simp at hj says simp only [len_mk] at hj
   dsimp [σ, δ, Fin.predAbove, Fin.succAbove]
   simp only [Fin.lt_iff_val_lt_val, Fin.dite_val, Fin.ite_val, Fin.coe_pred, ge_iff_le,
     Fin.coe_castLT, dite_eq_ite]

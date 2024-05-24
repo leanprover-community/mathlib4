@@ -244,13 +244,13 @@ instance : (whiskeringLeftFunctor' L W E).Full := by
   rw [whiskeringLeftFunctor'_eq]
   apply @Functor.Full.comp _ _ _ _ _ _ _ _ _ _
   · infer_instance
-  apply InducedCategory.full -- why is it not found automatically ???
+  apply InducedCategory.full -- why is it not found automatically 
 
 instance : (whiskeringLeftFunctor' L W E).Faithful := by
   rw [whiskeringLeftFunctor'_eq]
   apply @Functor.Faithful.comp _ _ _ _ _ _ _ _ _ _
   · infer_instance
-  apply InducedCategory.faithful -- why is it not found automatically ???
+  apply InducedCategory.faithful -- why is it not found automatically 
 
 lemma full_whiskeringLeft : ((whiskeringLeft C D E).obj L).Full :=
   inferInstanceAs (whiskeringLeftFunctor' L W E).Full

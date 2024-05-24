@@ -150,7 +150,7 @@ protected theorem continuous_symm (h : α ≃ᵤ β) : Continuous h.symm :=
 #align uniform_equiv.continuous_symm UniformEquiv.continuous_symm
 
 /-- A uniform isomorphism as a homeomorphism. -/
--- @[simps] -- Porting note: removed, `simps?` produced no `simp` lemmas
+-- @[simps] -- Porting note: removed, `simps` produced no `simp` lemmas
 protected def toHomeomorph (e : α ≃ᵤ β) : α ≃ₜ β :=
   { e.toEquiv with
     continuous_toFun := e.continuous
@@ -421,7 +421,7 @@ def image (e : α ≃ᵤ β) (s : Set α) : s ≃ᵤ e '' s where
 end UniformEquiv
 
 /-- A uniform inducing equiv between uniform spaces is a uniform isomorphism. -/
--- @[simps] -- Porting note: removed, `simps?` produced no `simp` lemmas
+-- @[simps] -- Porting note: removed, `simps` produced no `simp` lemmas
 def Equiv.toUniformEquivOfUniformInducing [UniformSpace α] [UniformSpace β] (f : α ≃ β)
     (hf : UniformInducing f) : α ≃ᵤ β :=
   { f with

@@ -25,7 +25,7 @@ Options:
 * `maxDepth` allows bounding the search depth
 * `maxQueued` implements "beam" search,
   by discarding elements from the priority queue when it grows too large
-* `removeDuplicatesBy?` maintains an `RBSet` of previously visited nodes;
+* `removeDuplicatesBy` maintains an `RBSet` of previously visited nodes;
   otherwise if the graph is not a tree nodes may be visited multiple times.
 -/
 
@@ -128,7 +128,7 @@ def insertAndEject
     if q.size < max then
       q.insert n l
     else
-      match q.max? with
+      match q.max with
       | none => RBMap.empty
       | some m => q.insert n l |>.erase m.1
 
@@ -139,11 +139,11 @@ ensure that the first element of the queue has the greatest priority.
 partial def ensureFirstIsBest (q : BestFirstQueue prio ε m β maxSize) :
     m (BestFirstQueue prio ε m β maxSize) := do
   let s := @toStream (RBMap _ _ _) _ _ q
-  match s.next? with
+  match s.next with
   | none =>
     -- The queue is empty, nothing to do.
     return q
-  | some ((n, l), s') => match s'.next? with
+  | some ((n, l), s') => match s'.next with
     | none => do
       -- There's only one element in the queue, no reordering necessary.
       return q
@@ -172,7 +172,7 @@ This may require improving estimates of priorities and shuffling the queue.
 partial def popWithBound (q : BestFirstQueue prio ε m β maxSize) :
     m (Option (((a : α) × (ε a) × β) × BestFirstQueue prio ε m β maxSize)) := do
   let q' ← ensureFirstIsBest q
-  match q'.min? with
+  match q'.min with
   | none =>
     -- The queue is empty, nothing to return.
     return none
@@ -286,10 +286,10 @@ the lowest possible `prio a` amongst unvisited neighbours of visited nodes,
 but lazily estimates these priorities to avoid unnecessary computations.
 -/
 def bestFirstSearchCore (f : α → MLList m α) (a : α)
-    (β : Type _) [Ord β] (removeDuplicatesBy? : Option (α → β) := none)
+    (β : Type _) [Ord β] (removeDuplicatesBy : Option (α → β) := none)
     (maxQueued : Option Nat := none) (maxDepth : Option Nat := none)  :
     MLList m α :=
-  match removeDuplicatesBy? with
+  match removeDuplicatesBy with
   | some g =>
     let f' : α → MLList (StateT (RBSet β compare) m) α := fun a =>
       (f a).liftM >>= fun a' => do
@@ -336,5 +336,5 @@ def bestFirstSearch (f : α → MLList m α) (a : α)
     (maxQueued : Option Nat := none) (maxDepth : Option Nat := none) (removeDuplicates := true) :
     MLList m α :=
   bestFirstSearchCore Thunk.pure (fun a : α => { x // x = a }) f a
-    (β := α) (removeDuplicatesBy? := if removeDuplicates then some id else none)
+    (β := α) (removeDuplicatesBy := if removeDuplicates then some id else none)
     maxQueued maxDepth

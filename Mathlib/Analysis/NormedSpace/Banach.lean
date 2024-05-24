@@ -567,7 +567,7 @@ lemma closed_range_of_antilipschitz {f : E →SL[σ] F} {c : ℝ≥0} (hf : Anti
 open Function
 lemma bijective_iff_dense_range_and_antilipschitz (f : E →SL[σ] F) :
     Bijective f ↔ (LinearMap.range f).topologicalClosure = ⊤ ∧ ∃ c, AntilipschitzWith c f := by
-  refine ⟨fun h ↦ ⟨?eq_top, ?anti⟩, fun ⟨hd, c, hf⟩ ↦ ⟨hf.injective, ?surj⟩⟩
+  refine ⟨fun h ↦ ⟨eq_top, anti⟩, fun ⟨hd, c, hf⟩ ↦ ⟨hf.injective, surj⟩⟩
   case eq_top => simpa [SetLike.ext'_iff] using h.2.denseRange.closure_eq
   case anti =>
     refine ⟨_, ContinuousLinearEquiv.ofBijective f _ _ |>.antilipschitz⟩ <;>

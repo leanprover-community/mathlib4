@@ -2292,7 +2292,7 @@ theorem union_sdiff_self (s t : Finset α) : (s ∪ t) \ t = s \ t :=
 #align finset.union_sdiff_self Finset.union_sdiff_self
 
 -- TODO: Do we want to delete this lemma and `Finset.disjUnion_singleton`,
--- or instead add `Finset.union_singleton`/`Finset.singleton_union`?
+-- or instead add `Finset.union_singleton`/`Finset.singleton_union`
 theorem sdiff_singleton_eq_erase (a : α) (s : Finset α) : s \ singleton a = erase s a := by
   ext
   rw [mem_erase, mem_sdiff, mem_singleton, and_comm]
@@ -3576,6 +3576,6 @@ def proveFinsetNonempty {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) :
   -- Fail if there are open goals remaining, this serves as an extra check for the
   -- Aesop configuration option `terminal := true`.
   if remainingGoals.size > 0 then return none
-  Lean.getExprMVarAssignment? mvar
+  Lean.getExprMVarAssignment mvar
 
 end Mathlib.Meta

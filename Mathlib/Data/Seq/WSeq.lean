@@ -161,9 +161,9 @@ def drop (s : WSeq α) : ℕ → WSeq α
 #align stream.wseq.drop Stream'.WSeq.drop
 
 /-- Get the nth element of `s`. -/
-def get? (s : WSeq α) (n : ℕ) : Computation (Option α) :=
+def get (s : WSeq α) (n : ℕ) : Computation (Option α) :=
   head (drop s n)
-#align stream.wseq.nth Stream'.WSeq.get?
+#align stream.wseq.nth Stream'.WSeq.get
 
 /-- Convert `s` to a list (if it is finite and completes in finite time). -/
 def toList (s : WSeq α) : Computation (List α) :=
@@ -206,15 +206,15 @@ def get (s : WSeq α) [IsFinite s] : List α :=
  always a finite number of `think`s between `cons` constructors.
  The sequence itself is allowed to be infinite though. -/
 class Productive (s : WSeq α) : Prop where
-  get_terminates : ∀ n, (get? s n).Terminates
+  get_terminates : ∀ n, (get s n).Terminates
 #align stream.wseq.productive Stream'.WSeq.Productive
 #align stream.wseq.productive.nth_terminates Stream'.WSeq.Productive.get_terminates
 
-theorem productive_iff (s : WSeq α) : Productive s ↔ ∀ n, (get? s n).Terminates :=
+theorem productive_iff (s : WSeq α) : Productive s ↔ ∀ n, (get s n).Terminates :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
 #align stream.wseq.productive_iff Stream'.WSeq.productive_iff
 
-instance get_terminates (s : WSeq α) [h : Productive s] : ∀ n, (get? s n).Terminates :=
+instance get_terminates (s : WSeq α) [h : Productive s] : ∀ n, (get s n).Terminates :=
   h.get_terminates
 #align stream.wseq.nth_terminates Stream'.WSeq.get_terminates
 
@@ -742,11 +742,11 @@ theorem dropn_tail (s : WSeq α) (n) : drop (tail s) n = drop s (n + 1) := by
   apply dropn_add
 #align stream.wseq.dropn_tail Stream'.WSeq.dropn_tail
 
-theorem get_add (s : WSeq α) (m n) : get? s (m + n) = get? (drop s m) n :=
+theorem get_add (s : WSeq α) (m n) : get s (m + n) = get (drop s m) n :=
   congr_arg head (dropn_add _ _ _)
 #align stream.wseq.nth_add Stream'.WSeq.get_add
 
-theorem get_tail (s : WSeq α) (n) : get? (tail s) n = get? s (n + 1) :=
+theorem get_tail (s : WSeq α) (n) : get (tail s) n = get s (n + 1) :=
   congr_arg head (dropn_tail _ _)
 #align stream.wseq.nth_tail Stream'.WSeq.get_tail
 
@@ -831,7 +831,7 @@ theorem head_terminates_of_head_tail_terminates (s : WSeq α) [T : Terminates (h
     Terminates (head s) :=
   (head_terminates_iff _).2 <| by
     rcases (head_terminates_iff _).1 T with ⟨⟨a, h⟩⟩
-    simp? [tail] at h says simp only [tail, destruct_flatten] at h
+    simp [tail] at h says simp only [tail, destruct_flatten] at h
     rcases exists_of_mem_bind h with ⟨s', h1, _⟩
     unfold Functor.map at h1
     exact
@@ -859,7 +859,7 @@ theorem head_some_of_head_tail_some {s : WSeq α} {a} (h : some a ∈ head (tail
   exact ⟨_, Computation.mem_map (@Prod.fst α (WSeq α) <$> ·) am⟩
 #align stream.wseq.head_some_of_head_tail_some Stream'.WSeq.head_some_of_head_tail_some
 
-theorem head_some_of_get_some {s : WSeq α} {a n} (h : some a ∈ get? s n) :
+theorem head_some_of_get_some {s : WSeq α} {a n} (h : some a ∈ get s n) :
     ∃ a', some a' ∈ head s := by
   induction n generalizing a with
   | zero => exact ⟨_, h⟩
@@ -879,29 +879,29 @@ instance productive_dropn (s : WSeq α) [Productive s] (n) : Productive (drop s 
 /-- Given a productive weak sequence, we can collapse all the `think`s to
   produce a sequence. -/
 def toSeq (s : WSeq α) [Productive s] : Seq α :=
-  ⟨fun n => (get? s n).get,
+  ⟨fun n => (get s n).get,
    fun {n} h => by
-    cases e : Computation.get (get? s (n + 1))
+    cases e : Computation.get (get s (n + 1))
     · assumption
     have := Computation.mem_of_get_eq _ e
-    simp? [get?] at this h says simp only [get?] at this h
+    simp [get] at this h says simp only [get] at this h
     cases' head_some_of_head_tail_some this with a' h'
     have := mem_unique h' (@Computation.mem_of_get_eq _ _ _ _ h)
     contradiction⟩
 #align stream.wseq.to_seq Stream'.WSeq.toSeq
 
 theorem get_terminates_le {s : WSeq α} {m n} (h : m ≤ n) :
-    Terminates (get? s n) → Terminates (get? s m) := by
+    Terminates (get s n) → Terminates (get s m) := by
   induction' h with m' _ IH
   exacts [id, fun T => IH (@head_terminates_of_head_tail_terminates _ _ T)]
 #align stream.wseq.nth_terminates_le Stream'.WSeq.get_terminates_le
 
 theorem head_terminates_of_get_terminates {s : WSeq α} {n} :
-    Terminates (get? s n) → Terminates (head s) :=
+    Terminates (get s n) → Terminates (head s) :=
   get_terminates_le (Nat.zero_le n)
 #align stream.wseq.head_terminates_of_nth_terminates Stream'.WSeq.head_terminates_of_get_terminates
 
-theorem destruct_terminates_of_get_terminates {s : WSeq α} {n} (T : Terminates (get? s n)) :
+theorem destruct_terminates_of_get_terminates {s : WSeq α} {n} (T : Terminates (get s n)) :
     Terminates (destruct s) :=
   (head_terminates_iff _).1 <| head_terminates_of_get_terminates T
 #align stream.wseq.destruct_terminates_of_nth_terminates Stream'.WSeq.destruct_terminates_of_get_terminates
@@ -985,11 +985,11 @@ theorem mem_of_mem_dropn {s : WSeq α} {a} : ∀ {n}, a ∈ drop s n → a ∈ s
   | n + 1, h => @mem_of_mem_dropn s a n (mem_of_mem_tail h)
 #align stream.wseq.mem_of_mem_dropn Stream'.WSeq.mem_of_mem_dropn
 
-theorem get_mem {s : WSeq α} {a n} : some a ∈ get? s n → a ∈ s := by
+theorem get_mem {s : WSeq α} {a n} : some a ∈ get s n → a ∈ s := by
   revert s; induction' n with n IH <;> intro s h
   · -- Porting note: This line is required to infer metavariables in
     --               `Computation.exists_of_mem_map`.
-    dsimp only [get?, head] at h
+    dsimp only [get, head] at h
     rcases Computation.exists_of_mem_map h with ⟨o, h1, h2⟩
     cases' o with o
     · injection h2
@@ -1001,22 +1001,22 @@ theorem get_mem {s : WSeq α} {a n} : some a ∈ get? s n → a ∈ s := by
     exact mem_of_mem_tail (this h)
 #align stream.wseq.nth_mem Stream'.WSeq.get_mem
 
-theorem exists_get_of_mem {s : WSeq α} {a} (h : a ∈ s) : ∃ n, some a ∈ get? s n := by
+theorem exists_get_of_mem {s : WSeq α} {a} (h : a ∈ s) : ∃ n, some a ∈ get s n := by
   apply mem_rec_on h
   · intro a' s' h
     cases' h with h h
     · exists 0
-      simp only [get?, drop, head_cons]
+      simp only [get, drop, head_cons]
       rw [h]
       apply ret_mem
     · cases' h with n h
       exists n + 1
-      -- porting note (#10745): was `simp [get?]`.
-      simpa [get?]
+      -- porting note (#10745): was `simp [get]`.
+      simpa [get]
   · intro s' h
     cases' h with n h
     exists n
-    simp only [get?, dropn_think, head_think]
+    simp only [get, dropn_think, head_think]
     apply think_mem h
 #align stream.wseq.exists_nth_of_mem Stream'.WSeq.exists_get_of_mem
 
@@ -1055,7 +1055,7 @@ theorem exists_of_liftRel_left {R : α → β → Prop} {s t} (H : LiftRel R s t
   let ⟨n, h⟩ := exists_get_of_mem h
   -- Porting note: This line is required to infer metavariables in
   --               `Computation.exists_of_mem_map`.
-  dsimp only [get?, head] at h
+  dsimp only [get, head] at h
   let ⟨some (_, s'), sd, rfl⟩ := Computation.exists_of_mem_map h
   let ⟨some (b, t'), td, ⟨ab, _⟩⟩ := (liftRel_dropn_destruct H n).left sd
   exact ⟨b, get_mem (Computation.mem_map (Prod.fst.{v, v} <$> ·) td), ab⟩
@@ -1190,7 +1190,7 @@ theorem dropn_congr {s t : WSeq α} (h : s ~ʷ t) (n) : drop s n ~ʷ drop t n :=
   induction n <;> simp [*, tail_congr, drop]
 #align stream.wseq.dropn_congr Stream'.WSeq.dropn_congr
 
-theorem get_congr {s t : WSeq α} (h : s ~ʷ t) (n) : get? s n ~ get? t n :=
+theorem get_congr {s t : WSeq α} (h : s ~ʷ t) (n) : get s n ~ get t n :=
   head_congr (dropn_congr h _)
 #align stream.wseq.nth_congr Stream'.WSeq.get_congr
 
@@ -1205,8 +1205,8 @@ theorem productive_congr {s t : WSeq α} (h : s ~ʷ t) : Productive s ↔ Produc
   simp only [productive_iff]; exact forall_congr' fun n => terminates_congr <| get_congr h _
 #align stream.wseq.productive_congr Stream'.WSeq.productive_congr
 
-theorem Equiv.ext {s t : WSeq α} (h : ∀ n, get? s n ~ get? t n) : s ~ʷ t :=
-  ⟨fun s t => ∀ n, get? s n ~ get? t n, h, fun {s t} h => by
+theorem Equiv.ext {s t : WSeq α} (h : ∀ n, get s n ~ get t n) : s ~ʷ t :=
+  ⟨fun s t => ∀ n, get s n ~ get t n, h, fun {s t} h => by
     refine liftRel_def.2 ⟨_, _⟩
     · rw [← head_terminates_iff, ← head_terminates_iff]
       exact terminates_congr (h 0)
@@ -1222,7 +1222,7 @@ theorem Equiv.ext {s t : WSeq α} (h : ∀ n, get? s n ~ get? t n) : s ~ʷ t :=
         refine ⟨ab, fun n => _⟩
         refine
           (get_congr (flatten_equiv (Computation.mem_map _ ma)) n).symm.trans
-            ((_ : get? (tail s) n ~ get? (tail t) n).trans
+            ((_ : get (tail s) n ~ get (tail t) n).trans
               (get_congr (flatten_equiv (Computation.mem_map _ mb)) n))
         rw [get_tail, get_tail]
         apply h⟩
@@ -1352,8 +1352,8 @@ theorem destruct_ofSeq (s : Seq α) :
   destruct_eq_pure <| by
     simp only [destruct, Seq.destruct, Option.map_eq_map, ofSeq, Computation.corec_eq, rmap,
       Seq.head]
-    rw [show Seq.get? (some <$> s) 0 = some <$> Seq.get? s 0 by apply Seq.map_get?]
-    cases' Seq.get? s 0 with a
+    rw [show Seq.get (some <$> s) 0 = some <$> Seq.get s 0 by apply Seq.map_get]
+    cases' Seq.get s 0 with a
     · rfl
     dsimp only [(· <$> ·)]
     simp [destruct]
@@ -1381,8 +1381,8 @@ theorem dropn_ofSeq (s : Seq α) : ∀ n, drop (ofSeq s) n = ofSeq (s.drop n)
     rw [dropn_ofSeq s n, tail_ofSeq]
 #align stream.wseq.dropn_of_seq Stream'.WSeq.dropn_ofSeq
 
-theorem get_ofSeq (s : Seq α) (n) : get? (ofSeq s) n = Computation.pure (Seq.get? s n) := by
-  dsimp [get?]; rw [dropn_ofSeq, head_ofSeq, Seq.head_dropn]
+theorem get_ofSeq (s : Seq α) (n) : get (ofSeq s) n = Computation.pure (Seq.get s n) := by
+  dsimp [get]; rw [dropn_ofSeq, head_ofSeq, Seq.head_dropn]
 #align stream.wseq.nth_of_seq Stream'.WSeq.get_ofSeq
 
 instance productive_ofSeq (s : Seq α) : Productive (ofSeq s) :=
@@ -1450,7 +1450,7 @@ theorem exists_of_mem_join {a : α} : ∀ {S : WSeq (WSeq α)}, a ∈ join S →
       intro ej m <;> simp at ej <;> have := congr_arg Seq.destruct ej <;>
       simp at this; cases this
     substs b' ss
-    simp? at m ⊢ says simp only [cons_append, mem_cons_iff] at m ⊢
+    simp at m ⊢ says simp only [cons_append, mem_cons_iff] at m ⊢
     cases' o with e IH
     · simp [e]
     cases' m with e m
@@ -1468,7 +1468,7 @@ theorem exists_of_mem_join {a : α} : ∀ {S : WSeq (WSeq α)}, a ∈ join S →
       · rcases ex with ⟨s', sS, as⟩
         exact ⟨s', Or.inr sS, as⟩
     · apply Or.inr
-      simp? at m says simp only [join_think, nil_append, mem_think] at m
+      simp at m says simp only [join_think, nil_append, mem_think] at m
       rcases (IH nil S (by simp) (by simp [m])).resolve_left (not_mem_nil _) with ⟨s, sS, as⟩
       exact ⟨s, by simp [sS], as⟩
     · simp only [think_append, mem_think] at m IH ⊢
@@ -1611,7 +1611,7 @@ theorem liftRel_join.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β
       simp only [destruct_join]
       exact ⟨none, mem_bind mT (ret_mem _), by rw [eq_of_pure_mem rs2.mem]; trivial⟩
     | some (s, S'), some (t, T'), ⟨st, ST'⟩, _, rs2, mT => by
-      simp? [destruct_append]  at rs2  says simp only [destruct_join.aux, destruct_append] at rs2
+      simp [destruct_append]  at rs2  says simp only [destruct_join.aux, destruct_append] at rs2
       exact
         let ⟨k1, rs3, ek⟩ := of_results_think rs2
         let ⟨o', m1, n1, rs4, rs5, ek1⟩ := of_results_bind rs3
@@ -1631,7 +1631,7 @@ theorem liftRel_join.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β
             apply mem_bind mt
             exact mb
         | some (a, s'), some (b, t'), ⟨ab, st'⟩, _, rs5, mt => by
-          simp?  at rs5  says simp only [destruct_append.aux] at rs5
+          simp  at rs5  says simp only [destruct_append.aux] at rs5
           refine ⟨some (b, append t' (join T')), _, _⟩
           · simp (config := { unfoldPartialApp := true }) only [destruct_join, destruct_join.aux]
             apply mem_bind mT

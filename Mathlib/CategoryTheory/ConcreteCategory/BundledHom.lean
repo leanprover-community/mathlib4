@@ -57,7 +57,7 @@ variable [𝒞 : BundledHom hom]
 set_option synthInstance.checkSynthOrder false in
 /-- Every `@BundledHom c _` defines a category with objects in `Bundled c`.
 
-This instance generates the type-class problem `BundledHom ?m`.
+This instance generates the type-class problem `BundledHom m`.
 Currently that is not a problem, as there are almost no instances of `BundledHom`.
 -/
 instance category : Category (Bundled c) where

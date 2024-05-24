@@ -731,7 +731,7 @@ set_option linter.uppercaseLean3 false in
 -- It would be nice if we could have the following,
 -- but it requires making `reflectsIsomorphisms_forget₂` an instance,
 -- which can cause typeclass loops:
--- Porting note: This was the case in mathlib3, perhaps it is different now?
+-- Porting note: This was the case in mathlib3, perhaps it is different now
 attribute [local instance] reflectsIsomorphisms_forget₂
 
 example : (forget₂ RingCat AddCommGroupCat).ReflectsIsomorphisms := by infer_instance

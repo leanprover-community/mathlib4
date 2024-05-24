@@ -144,7 +144,7 @@ protected theorem all [CommMagma S] (a b : S) : Commute a b :=
   mul_comm a b
 #align commute.all Commute.allₓ
 #align add_commute.all AddCommute.allₓ
--- not sure why this needs an `ₓ`, maybe instance names not aligned?
+-- not sure why this needs an `ₓ`, maybe instance names not aligned
 
 section MulOneClass
 
@@ -184,7 +184,7 @@ theorem pow_left (h : Commute a b) (n : ℕ) : Commute (a ^ n) b :=
 #align add_commute.nsmul_left AddCommute.nsmul_leftₓ
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
--- todo: should nat power be called `nsmul` here?
+-- todo: should nat power be called `nsmul` here
 @[to_additive (attr := simp)]
 theorem pow_pow (h : Commute a b) (m n : ℕ) : Commute (a ^ m) (b ^ n) :=
   (h.pow_left m).pow_right n

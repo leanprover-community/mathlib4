@@ -146,6 +146,6 @@ instance inverseAssociatorIsEquivalence : (inverseAssociator C D E).IsEquivalenc
   (by infer_instance : (associativity C D E).inverse.IsEquivalence)
 #align category_theory.sum.inverse_associator_is_equivalence CategoryTheory.sum.inverseAssociatorIsEquivalence
 
--- TODO unitors?
--- TODO pentagon natural transformation? ...satisfying?
+-- TODO unitors
+-- TODO pentagon natural transformation ...satisfying
 end CategoryTheory.sum

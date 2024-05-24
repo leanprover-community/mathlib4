@@ -54,7 +54,7 @@ The naive first attempt is to enter tactic mode and try `rw [zero_add]`.
 However, this fails with a frustrating
 ```text
 tactic 'rewrite' failed, did not find instance of the pattern in the target expression
-  0 + ?a
+  0 + a
 ⊢ (fun x ↦ 0 + x) = fun x ↦ x
 ```
 

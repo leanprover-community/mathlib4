@@ -38,11 +38,11 @@ example (x y z k : ℤ)
   mono
 ```
 -/
-syntax (name := mono) "mono" "*"? (ppSpace mono.side)?
-  (" with " (colGt term),+)? (" using " (colGt simpArg),+)? : tactic
+syntax (name := mono) "mono" "*" (ppSpace mono.side)
+  (" with " (colGt term),+) (" using " (colGt simpArg),+) : tactic
 
 elab_rules : tactic
-| `(tactic| mono $[*]? $[$h:mono.side]? $[ with%$w $a:term,*]? $[ using%$u $s,*]? ) => do
+| `(tactic| mono $[*] $[$h:mono.side] $[ with%$w $a:term,*] $[ using%$u $s,*] ) => do
   let msg (s : String) := s ++ " syntax is not yet supported in 'mono'"
   if let some h := h then throwErrorAt h (msg "'left'/'right'/'both'")
   if let some w := w then throwErrorAt w (msg "'with'")

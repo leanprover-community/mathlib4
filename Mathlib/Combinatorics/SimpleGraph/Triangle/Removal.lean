@@ -165,7 +165,7 @@ Note this looks for `ε ≤ 1` in the context. -/
 def evalTriangleRemovalBound : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(triangleRemovalBound $ε) =>
-    let some fvarId ← findLocalDeclWithType? q($ε ≤ 1)
+    let some fvarId ← findLocalDeclWithType q($ε ≤ 1)
       | throwError "`ε ≤ 1` is not available in the local context"
     let hε₁ : Q($ε ≤ 1) := .fvar fvarId
     let .positive hε ← core q(inferInstance) q(inferInstance) ε | failure

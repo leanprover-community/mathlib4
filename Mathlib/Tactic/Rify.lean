@@ -65,14 +65,14 @@ example (a b c : ℕ) (h : a - b < c) (hab : b ≤ a) : a < b + c := by
 ```
 Note that `zify` or `qify` would work just as well in the above example (and `zify` is the natural
 choice since it is enough to get rid of the pathological `ℕ` subtraction). -/
-syntax (name := rify) "rify" (simpArgs)? (location)? : tactic
+syntax (name := rify) "rify" (simpArgs) (location) : tactic
 
 macro_rules
-| `(tactic| rify $[[$simpArgs,*]]? $[at $location]?) =>
+| `(tactic| rify $[[$simpArgs,*]] $[at $location]) =>
   let args := simpArgs.map (·.getElems) |>.getD #[]
   `(tactic|
     simp (config := {decide := false}) only [zify_simps, qify_simps, rify_simps, push_cast, $args,*]
-      $[at $location]?)
+      $[at $location])
 
 @[rify_simps] lemma ratCast_eq (a b : ℚ) : a = b ↔ (a : ℝ) = (b : ℝ) := by simp
 @[rify_simps] lemma ratCast_le (a b : ℚ) : a ≤ b ↔ (a : ℝ) ≤ (b : ℝ) := by simp

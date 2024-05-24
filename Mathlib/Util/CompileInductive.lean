@@ -26,7 +26,7 @@ namespace Mathlib.Util
 open Lean Meta
 
 private def replaceConst (repl : AssocList Name Name) (e : Expr) : Expr :=
-  e.replace fun | .const n us => repl.find? n |>.map (.const · us) | _ => none
+  e.replace fun | .const n us => repl.find n |>.map (.const · us) | _ => none
 
 /-- Returns the names of the recursors for a nested or mutual inductive,
 using the `all` and `numMotives` arguments from `RecursorVal`. -/
@@ -51,7 +51,7 @@ Compile the definition `dv` by adding a second definition `dv✝` with the same 
 and registering a `csimp`-lemma `dv = dv✝`.
 -/
 def compileDefn (dv : DefinitionVal) : MetaM Unit := do
-  if ((← getEnv).getModuleIdxFor? dv.name).isNone then
+  if ((← getEnv).getModuleIdxFor dv.name).isNone then
     -- If it's in the same module then we can safely just call `compileDecl`
     -- on the original definition
     return ← compileDecl <| .defnDecl dv
@@ -180,7 +180,7 @@ def compileInductiveOnly (iv : InductiveVal) (warn := true) : MetaM Unit := do
     Compiler.CSimp.add name .global
   for name in iv.all do
     for aux in [mkRecOnName name, mkBRecOnName name] do
-      if let some (.defnInfo dv) := (← getEnv).find? aux then
+      if let some (.defnInfo dv) := (← getEnv).find aux then
         compileDefn dv
 
 mutual
@@ -198,12 +198,12 @@ compile the `sizeOf` definition (because `sizeOf` definitions depend on `T.rec`)
 -/
 partial def compileSizeOf (iv : InductiveVal) : MetaM Unit := do
   let go aux := do
-    if let some (.defnInfo dv) := (← getEnv).find? aux then
+    if let some (.defnInfo dv) := (← getEnv).find aux then
       if !isCompiled (← getEnv) aux then
         let deps : NameSet := dv.value.foldConsts ∅ fun c arr =>
           if let .str name "_sizeOf_inst" := c then arr.insert name else arr
         for i in deps do
-          if let some (.inductInfo iv) := (← getEnv).find? i then
+          if let some (.inductInfo iv) := (← getEnv).find i then
             compileInductive iv (warn := false)
         compileDefn dv
   let rv ← getConstInfoRec <| mkRecName iv.name

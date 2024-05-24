@@ -145,7 +145,7 @@ lemma isNilpotent_of_forall_le_engel [IsNoetherian R L]
   rw [LieAlgebra.isNilpotent_iff_forall]
   intro x
   let K : ℕ →o Submodule R H :=
-    ⟨fun n ↦ LinearMap.ker ((ad R H x) ^ n), fun m n hmn ↦ ?mono⟩
+    ⟨fun n ↦ LinearMap.ker ((ad R H x) ^ n), fun m n hmn ↦ mono⟩
   case mono =>
     intro y hy
     rw [LinearMap.mem_ker] at hy ⊢

@@ -77,7 +77,7 @@ theorem ofInt_eq_cast (n : ℤ) : ofInt n = Int.cast n :=
 #noalign rat.mk_pnat_eq
 #noalign rat.zero_mk_pnat
 
--- Porting note (#11215): TODO Should this be namespaced?
+-- Porting note (#11215): TODO Should this be namespaced
 #align rat.mk_nat mkRat
 
 lemma mkRat_eq_divInt (n d) : mkRat n d = n /. d := rfl

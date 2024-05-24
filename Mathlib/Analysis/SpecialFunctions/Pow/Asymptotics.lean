@@ -59,7 +59,7 @@ lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : -1 < b) (hb₁ : b < 
   case inl => -- b < 0
     simp_rw [Real.rpow_def_of_nonpos hb.le, hb.ne, ite_false]
     rw [← isLittleO_const_iff (c := (1:ℝ)) one_ne_zero, (one_mul (1 : ℝ)).symm]
-    refine IsLittleO.mul_isBigO ?exp ?cos
+    refine IsLittleO.mul_isBigO exp cos
     case exp =>
       rw [isLittleO_const_iff one_ne_zero]
       refine tendsto_exp_atBot.comp <| (tendsto_const_mul_atBot_of_neg _).mpr tendsto_id

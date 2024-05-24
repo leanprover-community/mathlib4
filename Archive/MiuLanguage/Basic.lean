@@ -16,7 +16,7 @@ Hofstadter in the first chapter of his 1979 book,
 The system is defined by four rules of inference, one axiom, and an alphabet of three symbols:
 `M`, `I`, and `U`.
 
-Hofstadter's central question is: can the string `"MU"` be derived?
+Hofstadter's central question is: can the string `"MU"` be derived
 
 It transpires that there is a simple decision procedure for this system. A string is derivable if
 and only if it starts with `M`, contains no other `M`s, and the number of `I`s in the string is

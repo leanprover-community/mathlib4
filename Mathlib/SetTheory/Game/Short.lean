@@ -188,7 +188,7 @@ class inductive ListShort : List PGame.{u} → Type (u + 1)
   | nil : ListShort []
   -- Porting note: We introduce `cons` as a separate instance because attempting to use
   -- `[ListShort tl]` as a constructor argument errors saying that `ListShort tl` is not a class.
-  -- Is this a bug in `class inductive`?
+  -- Is this a bug in `class inductive`
   | cons' {hd : PGame.{u}} {tl : List PGame.{u}} : Short hd → ListShort tl → ListShort (hd::tl)
 #align pgame.list_short SetTheory.PGame.ListShort
 

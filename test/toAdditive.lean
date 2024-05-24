@@ -130,8 +130,8 @@ run_cmd do
   let mul2 := `test.toAdditive._auxLemma |>.mkNum 2
   let add1 := `test.toAdditive._auxLemma |>.mkNum 3
   let add2 := `test.toAdditive._auxLemma |>.mkNum 4
-  unless findTranslation? (← getEnv) mul1 == some add1 do throwError "1"
-  unless findTranslation? (← getEnv) mul2 == some add2 do throwError "2"
+  unless findTranslation (← getEnv) mul1 == some add1 do throwError "1"
+  unless findTranslation (← getEnv) mul2 == some add2 do throwError "2"
 
 /- Testing nested to_additive calls -/
 @[to_additive (attr := simp, to_additive baz19) bar19]
@@ -152,7 +152,7 @@ example {x} (h : 1 = x) : baz20 = x := by simp; guard_target = 1 = x; exact h
 @[to_additive bar21]
 def foo21 {N} {A} [Pow A N] (a : A) (n : N) : A := a ^ n
 
-run_cmd liftCoreM <| MetaM.run' <| guard <| relevantArgAttr.find? (← getEnv) `Test.foo21 == some 1
+run_cmd liftCoreM <| MetaM.run' <| guard <| relevantArgAttr.find (← getEnv) `Test.foo21 == some 1
 
 /- test the eta-expansion applied on `foo6`. -/
 run_cmd do
@@ -175,9 +175,9 @@ inductive MulInd : ℕ → Prop where
   | one : MulInd 1
 
 run_cmd do
-  unless findTranslation? (← getEnv) `Test.MulInd.one == some `Test.AddInd.zero do throwError "1"
-  unless findTranslation? (← getEnv) `Test.MulInd.basic == none do throwError "2"
-  unless findTranslation? (← getEnv) `Test.MulInd == some `Test.AddInd do throwError "3"
+  unless findTranslation (← getEnv) `Test.MulInd.one == some `Test.AddInd.zero do throwError "1"
+  unless findTranslation (← getEnv) `Test.MulInd.basic == none do throwError "2"
+  unless findTranslation (← getEnv) `Test.MulInd == some `Test.AddInd do throwError "3"
 
 @[to_additive addFixedNumeralTest]
 def fixedNumeralTest {α} [One α] :=
@@ -392,6 +392,6 @@ run_cmd Elab.Command.liftCoreM <| ToAdditive.insertTranslation `localize `add_lo
 @[to_additive] def localize.s := Nat
 
 run_cmd do
-  unless findTranslation? (← getEnv) `localize.r == some `add_localize.r do throwError "1"
-  unless findTranslation? (← getEnv) `localize   == some `add_localize   do throwError "2"
-  unless findTranslation? (← getEnv) `localize.s == some `add_localize.s do throwError "3"
+  unless findTranslation (← getEnv) `localize.r == some `add_localize.r do throwError "1"
+  unless findTranslation (← getEnv) `localize   == some `add_localize   do throwError "2"
+  unless findTranslation (← getEnv) `localize.s == some `add_localize.s do throwError "3"

@@ -766,7 +766,7 @@ theorem HasFPowerSeriesOnBall.isBigO_image_sub_image_sub_deriv_principal
           rw [pow_succ ‖y - (x, x)‖]
           ring
         -- Porting note: the two `↑` in `↑r'` are new, without them, Lean fails to synthesize
-        -- instances `HDiv ℝ ℝ≥0 ?m` or `HMul ℝ ℝ≥0 ?m`
+        -- instances `HDiv ℝ ℝ≥0 m` or `HMul ℝ ℝ≥0 m`
         _ ≤ C * a ^ (n + 2) / ↑r' ^ (n + 2)
             * ↑r' ^ n * (↑(n + 2) * ‖y - (x, x)‖ * ‖y.1 - y.2‖) := by
           have : 0 < a := ha.1
@@ -1229,7 +1229,7 @@ theorem changeOriginSeries_summable_aux₁ {r r' : ℝ≥0} (hr : (r + r' : ℝ�
       HasSum (fun s : Finset (Fin n) => ‖p (n - s.card + s.card)‖₊ * r ^ s.card * r' ^ (n - s.card))
         (‖p n‖₊ * (r + r') ^ n) := by
     intro n
-    -- TODO: why `simp only [tsub_add_cancel_of_le (card_finset_fin_le _)]` fails?
+    -- TODO: why `simp only [tsub_add_cancel_of_le (card_finset_fin_le _)]` fails
     convert_to HasSum (fun s : Finset (Fin n) => ‖p n‖₊ * (r ^ s.card * r' ^ (n - s.card))) _
     · ext1 s
       rw [tsub_add_cancel_of_le (card_finset_fin_le _), mul_assoc]

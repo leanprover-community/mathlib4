@@ -75,7 +75,7 @@ Let `Z : FiberBundleCore ι B F`. Then we define
 
 For both fiber and vector bundles, one faces a choice: should the definition state the *existence*
 of local trivializations (a propositional typeclass), or specify a fixed atlas of trivializations (a
-typeclass containing data)?
+typeclass containing data)
 
 In their initial mathlib implementations, both fiber and vector bundles were defined
 propositionally. For vector bundles, this turns out to be mathematically wrong: in infinite

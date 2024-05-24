@@ -101,6 +101,6 @@ theorem reduceOption_mem_iff {l : List (Option α)} {x : α} : x ∈ l.reduceOpt
 #align list.reduce_option_mem_iff List.reduceOption_mem_iff
 
 theorem reduceOption_get_iff {l : List (Option α)} {x : α} :
-    (∃ i, l.get? i = some (some x)) ↔ ∃ i, l.reduceOption.get? i = some x := by
-  rw [← mem_iff_get?, ← mem_iff_get?, reduceOption_mem_iff]
+    (∃ i, l.get i = some (some x)) ↔ ∃ i, l.reduceOption.get i = some x := by
+  rw [← mem_iff_get, ← mem_iff_get, reduceOption_mem_iff]
 #align list.reduce_option_nth_iff List.reduceOption_get_iff

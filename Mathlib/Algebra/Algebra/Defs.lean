@@ -183,7 +183,7 @@ theorem coe_sum {ι : Type*} {s : Finset ι} (a : ι → R) :
   map_sum (algebraMap R A) a s
 #align algebra_map.coe_sum algebraMap.coe_sum
 
--- Porting note: removed attribute [to_additive] coe_prod; why should this be a `to_additive`?
+-- Porting note: removed attribute [to_additive] coe_prod; why should this be a `to_additive`
 
 end CommSemiringCommSemiring
 

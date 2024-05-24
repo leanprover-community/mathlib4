@@ -30,9 +30,9 @@ and then `Lean.Expr.headBeta` is applied. -/
 syntax (name := betaStx) "beta% " term : term
 
 @[term_elab betaStx, inherit_doc betaStx]
-def elabBeta : TermElab := fun stx expectedType? =>
+def elabBeta : TermElab := fun stx expectedType =>
   match stx with
   | `(beta% $t) => do
-    let e ← elabTerm t expectedType?
+    let e ← elabTerm t expectedType
     return (← instantiateMVars e).headBeta
   | _ => throwUnsupportedSyntax

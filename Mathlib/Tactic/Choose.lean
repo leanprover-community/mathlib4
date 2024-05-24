@@ -102,7 +102,7 @@ def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
             g' ← g'.assert .anonymous nety neval
           (_, g') ← g'.intros
           g'.withContext do
-            match ← synthInstance? (← g'.getType) with
+            match ← synthInstance (← g'.getType) with
             | some e => do
               g'.assign e
               let m ← instantiateMVars m
@@ -139,7 +139,7 @@ def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
         | .fvar v => g.clear v
         | _ => pure g
         return (.success, .fvar fvar, g)
-      -- TODO: support Σ, ×, or even any inductive type with 1 constructor ?
+      -- TODO: support Σ, ×, or even any inductive type with 1 constructor 
       | _, _ => throwError "expected a term of the shape `∀xs, ∃a, p xs a` or `∀xs, p xs ∧ q xs`"
 
 /-- A wrapper around `choose1` that parses identifiers and adds variable info to new variables. -/
@@ -209,14 +209,14 @@ example (h : ∀ i : ℕ, i < 7 → ∃ j, i < j ∧ j < i+i) : True := by
   trivial
 ```
 -/
-syntax (name := choose) "choose" "!"? (ppSpace colGt binderIdent)+ (" using " term)? : tactic
+syntax (name := choose) "choose" "!" (ppSpace colGt binderIdent)+ (" using " term) : tactic
 elab_rules : tactic
-| `(tactic| choose $[!%$b]? $[$ids]* $[using $h]?) => withMainContext do
+| `(tactic| choose $[!%$b] $[$ids]* $[using $h]) => withMainContext do
   let h ← h.mapM (Elab.Tactic.elabTerm · none)
   let g ← elabChoose b.isSome h ids.toList (.failure []) (← getMainGoal)
   replaceMainGoal [g]
 
 @[inherit_doc choose]
-syntax "choose!" (ppSpace colGt binderIdent)+ (" using " term)? : tactic
+syntax "choose!" (ppSpace colGt binderIdent)+ (" using " term) : tactic
 macro_rules
-  | `(tactic| choose! $[$ids]* $[using $h]?) => `(tactic| choose ! $[$ids]* $[using $h]?)
+  | `(tactic| choose! $[$ids]* $[using $h]) => `(tactic| choose ! $[$ids]* $[using $h])

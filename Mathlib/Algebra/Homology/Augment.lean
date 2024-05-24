@@ -43,7 +43,7 @@ def truncateTo [HasZeroObject V] [HasZeroMorphisms V] (C : ChainComplex V ℕ) :
   (toSingle₀Equiv (truncate.obj C) (C.X 0)).symm ⟨C.d 1 0, by aesop⟩
 #align chain_complex.truncate_to ChainComplex.truncateTo
 
--- PROJECT when `V` is abelian (but not generally?)
+-- PROJECT when `V` is abelian (but not generally)
 -- `[∀ n, Exact (C.d (n+2) (n+1)) (C.d (n+1) n)] [Epi (C.d 1 0)]` iff `QuasiIso (C.truncate_to)`
 variable [HasZeroMorphisms V]
 
@@ -242,7 +242,7 @@ def augment (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0) (w : f ≫ C.d 
     | i + 1, j + 1 => C.d i j
     | _, _ => 0
   shape i j s := by
-    simp? at s says simp only [ComplexShape.up_Rel] at s
+    simp at s says simp only [ComplexShape.up_Rel] at s
     rcases j with (_ | _ | j) <;> cases i <;> try simp
     · contradiction
     · rw [C.shape]

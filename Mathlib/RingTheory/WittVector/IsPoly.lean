@@ -459,10 +459,10 @@ namespace Tactic
 open Lean Parser.Tactic Elab.Tactic
 
 /-- A macro for a common simplification when rewriting with ghost component equations. -/
-syntax (name := ghostSimp) "ghost_simp" (simpArgs)? : tactic
+syntax (name := ghostSimp) "ghost_simp" (simpArgs) : tactic
 
 macro_rules
-  | `(tactic| ghost_simp $[[$simpArgs,*]]?) => do
+  | `(tactic| ghost_simp $[[$simpArgs,*]]) => do
     let args := simpArgs.map (·.getElems) |>.getD #[]
     `(tactic| simp only [← sub_eq_add_neg, ghost_simps, $args,*])
 
@@ -511,7 +511,7 @@ elab_rules : tactic | `(tactic| ghost_calc $[$ids']*) => do
   let ids ← ids'.mapM getLocalOrIntro
   withMainContext do
   let idsS ← ids.mapM (fun id => Elab.Term.exprToSyntax (.fvar id))
-  let some (α, lhs, rhs) := (← getMainTarget'').eq?
+  let some (α, lhs, rhs) := (← getMainTarget'').eq
     | throwError "ghost_calc expecting target to be an equality"
   let (``WittVector, #[_, R]) := α.getAppFnArgs
     | throwError "ghost_calc expecting target to be an equality of `WittVector`s"

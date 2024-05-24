@@ -57,16 +57,16 @@ to standard `aesop`:
 macro (name := aesop_graph) "aesop_graph" c:Aesop.tactic_clause* : tactic =>
   `(tactic|
     aesop $c*
-      (config := { introsTransparency? := some .default, terminal := true })
+      (config := { introsTransparency := some .default, terminal := true })
       (rule_sets := [$(Lean.mkIdent `SimpleGraph):ident]))
 
 /--
-Use `aesop_graph?` to pass along a `Try this` suggestion when using `aesop_graph`
+Use `aesop_graph` to pass along a `Try this` suggestion when using `aesop_graph`
 -/
-macro (name := aesop_graph?) "aesop_graph?" c:Aesop.tactic_clause* : tactic =>
+macro (name := aesop_graph) "aesop_graph" c:Aesop.tactic_clause* : tactic =>
   `(tactic|
     aesop $c*
-      (config := { introsTransparency? := some .default, terminal := true })
+      (config := { introsTransparency := some .default, terminal := true })
       (rule_sets := [$(Lean.mkIdent `SimpleGraph):ident]))
 
 /--
@@ -77,7 +77,7 @@ nonterminal `simp`.
 macro (name := aesop_graph_nonterminal) "aesop_graph_nonterminal" c:Aesop.tactic_clause* : tactic =>
   `(tactic|
     aesop $c*
-      (config := { introsTransparency? := some .default, warnOnNonterminal := false })
+      (config := { introsTransparency := some .default, warnOnNonterminal := false })
       (rule_sets := [$(Lean.mkIdent `SimpleGraph):ident]))
 
 open Finset Function

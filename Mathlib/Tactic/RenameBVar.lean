@@ -34,9 +34,9 @@ example (P : ℕ → ℕ → Prop) (h : ∀ n, ∃ m, P n m) : ∀ l, ∃ m, P l
 ```
 Note: name clashes are resolved automatically.
 -/
-elab "rename_bvar " old:ident " → " new:ident loc?:(location)? : tactic => do
+elab "rename_bvar " old:ident " → " new:ident loc:(location) : tactic => do
   let mvarId ← getMainGoal
-  match loc? with
+  match loc with
   | none => renameBVarTarget mvarId old.getId new.getId
   | some loc =>
     withLocation (expandLocation loc)

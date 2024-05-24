@@ -427,7 +427,7 @@ Porting note (#11445): Added this def as a replacement for the "dangerous" `Coe`
 def sieve (S : J.Cover X) : Sieve X := S.1
 
 /-
-Porting note: This somehow yields different behavior than the better instance below. Why?!
+Porting note: This somehow yields different behavior than the better instance below. Why!
 
 With this instance, we have to write `S _ f` but with the uncommented one, we can write `S f`
 as expected.

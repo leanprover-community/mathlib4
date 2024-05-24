@@ -23,7 +23,7 @@ open Lean Name Meta Elab Expr Term
 
 namespace Lean.Parser.Attr
 
-syntax (name := higherOrder) "higher_order" (ppSpace ident)? : attr
+syntax (name := higherOrder) "higher_order" (ppSpace ident) : attr
 
 end Lean.Parser.Attr
 
@@ -59,7 +59,7 @@ partial def mkHigherOrderType (e : Expr) : MetaM Expr := do
       let exp ← mkHigherOrderType body
       mkForallFVars #[fvar] exp (binderInfoForMVars := e.binderInfo)
     else
-      let some (_, lhs, rhs) ← matchEq? body | throwError "not an equality {← ppExpr body}"
+      let some (_, lhs, rhs) ← matchEq body | throwError "not an equality {← ppExpr body}"
       mkEq (← mkComp fvar lhs) (← mkComp fvar rhs)
 
 /-- A user attribute that applies to lemmas of the shape `∀ x, f (g x) = h x`.
@@ -67,7 +67,7 @@ It derives an auxiliary lemma of the form `f ∘ g = h` for reasoning about high
 -/
 def higherOrderGetParam (thm : Name) (stx : Syntax) : AttrM Name := do
   match stx with
-  | `(attr| higher_order $[$name]?) =>
+  | `(attr| higher_order $[$name]) =>
     let ref := (name : Option Syntax).getD stx[0]
     let hothmName :=
       if let some sname := name then
@@ -98,7 +98,7 @@ def higherOrderGetParam (thm : Name) (stx : Syntax) : AttrM Name := do
       let hsm := simpExtension.getState (← getEnv) |>.lemmaNames.contains (.decl thm)
       if hsm then
         addSimpTheorem simpExtension hothmName true false .global 1000
-      let some fcn ← getSimpExtension? `functor_norm | failure
+      let some fcn ← getSimpExtension `functor_norm | failure
       let hfm := fcn.getState (← getEnv) |>.lemmaNames.contains <| .decl thm
       if hfm then
         addSimpTheorem fcn hothmName true false .global 1000

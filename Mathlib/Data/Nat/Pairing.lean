@@ -126,7 +126,7 @@ theorem unpair_right_le (n : ℕ) : (unpair n).2 ≤ n := by
 theorem pair_lt_pair_left {a₁ a₂} (b) (h : a₁ < a₂) : pair a₁ b < pair a₂ b := by
   by_cases h₁ : a₁ < b <;> simp [pair, h₁, Nat.add_assoc]
   · by_cases h₂ : a₂ < b <;> simp [pair, h₂, h]
-    simp? at h₂ says simp only [not_lt] at h₂
+    simp at h₂ says simp only [not_lt] at h₂
     apply Nat.add_lt_add_of_le_of_lt
     · exact Nat.mul_self_le_mul_self h₂
     · exact Nat.lt_add_right _ h
@@ -142,7 +142,7 @@ theorem pair_lt_pair_right (a) {b₁ b₂} (h : b₁ < b₂) : pair a b₁ < pai
   · simp [pair, lt_trans h₁ h, h]
     exact mul_self_lt_mul_self h
   · by_cases h₂ : a < b₂ <;> simp [pair, h₂, h]
-    simp? at h₁ says simp only [not_lt] at h₁
+    simp at h₁ says simp only [not_lt] at h₁
     rw [Nat.add_comm, Nat.add_comm _ a, Nat.add_assoc, Nat.add_lt_add_iff_left]
     rwa [Nat.add_comm, ← sqrt_lt, sqrt_add_eq]
     exact le_trans h₁ (Nat.le_add_left _ _)

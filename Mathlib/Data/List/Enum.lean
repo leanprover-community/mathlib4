@@ -18,20 +18,20 @@ variable {α β : Type*}
 
 @[simp]
 theorem get_enumFrom :
-    ∀ n (l : List α) m, get? (enumFrom n l) m = (get? l m).map fun a => (n + m, a)
+    ∀ n (l : List α) m, get (enumFrom n l) m = (get l m).map fun a => (n + m, a)
   | n, [], m => rfl
   | n, a :: l, 0 => rfl
   | n, a :: l, m + 1 => (get_enumFrom (n + 1) l m).trans <| by rw [Nat.add_right_comm]; rfl
 #align list.enum_from_nth List.get_enumFrom
 
-@[deprecated] alias enumFrom_get? := get_enumFrom -- 2024-04-06
+@[deprecated] alias enumFrom_get := get_enumFrom -- 2024-04-06
 
 @[simp]
-theorem get_enum (l : List α) (n) : get? (enum l) n = (get? l n).map fun a => (n, a) := by
+theorem get_enum (l : List α) (n) : get (enum l) n = (get l n).map fun a => (n, a) := by
   rw [enum, get_enumFrom, Nat.zero_add]
 #align list.enum_nth List.get_enum
 
-@[deprecated] alias enum_get? := get_enum -- 2024-04-06
+@[deprecated] alias enum_get := get_enum -- 2024-04-06
 
 @[simp]
 theorem enumFrom_map_snd : ∀ (n) (l : List α), map Prod.snd (enumFrom n l) = l
@@ -47,7 +47,7 @@ theorem enum_map_snd (l : List α) : map Prod.snd (enum l) = l :=
 @[simp]
 theorem get_enumFrom (l : List α) (n) (i : Fin (l.enumFrom n).length) :
     (l.enumFrom n).get i = (n + i, l.get (i.cast enumFrom_length)) := by
-  simp [get_eq_get?]
+  simp [get_eq_get]
 #align list.nth_le_enum_from List.get_enumFrom
 
 @[simp]
@@ -56,24 +56,24 @@ theorem get_enum (l : List α) (i : Fin l.enum.length) :
   simp [enum]
 #align list.nth_le_enum List.get_enum
 
-theorem mk_add_mem_enumFrom_iff_get? {n i : ℕ} {x : α} {l : List α} :
-    (n + i, x) ∈ enumFrom n l ↔ l.get? i = x := by
-  simp [mem_iff_get?]
+theorem mk_add_mem_enumFrom_iff_get {n i : ℕ} {x : α} {l : List α} :
+    (n + i, x) ∈ enumFrom n l ↔ l.get i = x := by
+  simp [mem_iff_get]
 
 theorem mk_mem_enumFrom_iff_le_and_get_sub {n i : ℕ} {x : α} {l : List α} :
-    (i, x) ∈ enumFrom n l ↔ n ≤ i ∧ l.get? (i - n) = x := by
+    (i, x) ∈ enumFrom n l ↔ n ≤ i ∧ l.get (i - n) = x := by
   if h : n ≤ i then
     rcases Nat.exists_eq_add_of_le h with ⟨i, rfl⟩
-    simp [mk_add_mem_enumFrom_iff_get?, Nat.add_sub_cancel_left]
+    simp [mk_add_mem_enumFrom_iff_get, Nat.add_sub_cancel_left]
   else
     have : ∀ k, n + k ≠ i := by rintro k rfl; simp at h
-    simp [h, mem_iff_get?, this]
+    simp [h, mem_iff_get, this]
 
-theorem mk_mem_enum_iff_get? {i : ℕ} {x : α} {l : List α} : (i, x) ∈ enum l ↔ l.get? i = x := by
+theorem mk_mem_enum_iff_get {i : ℕ} {x : α} {l : List α} : (i, x) ∈ enum l ↔ l.get i = x := by
   simp [enum, mk_mem_enumFrom_iff_le_and_get_sub]
 
-theorem mem_enum_iff_get? {x : ℕ × α} {l : List α} : x ∈ enum l ↔ l.get? x.1 = x.2 :=
-  mk_mem_enum_iff_get?
+theorem mem_enum_iff_get {x : ℕ × α} {l : List α} : x ∈ enum l ↔ l.get x.1 = x.2 :=
+  mk_mem_enum_iff_get
 
 theorem le_fst_of_mem_enumFrom {x : ℕ × α} {n : ℕ} {l : List α} (h : x ∈ enumFrom n l) :
     n ≤ x.1 :=
@@ -135,7 +135,7 @@ theorem enum_append (xs ys : List α) : enum (xs ++ ys) = enum xs ++ enumFrom xs
 
 theorem map_fst_add_enumFrom_eq_enumFrom (l : List α) (n k : ℕ) :
     map (Prod.map (· + n) id) (enumFrom k l) = enumFrom (n + k) l :=
-  ext_get? fun i ↦ by simp [(· ∘ ·), Nat.add_comm, Nat.add_left_comm]
+  ext_get fun i ↦ by simp [(· ∘ ·), Nat.add_comm, Nat.add_left_comm]
 #align list.map_fst_add_enum_from_eq_enum_from List.map_fst_add_enumFrom_eq_enumFrom
 
 theorem map_fst_add_enum_eq_enumFrom (l : List α) (n : ℕ) :

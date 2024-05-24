@@ -120,7 +120,7 @@ structure Result where
 
 /-- Check if previously used theorem was `thmOrigin`. -/
 def previouslyUsedThm (thmOrigin : Origin) : FunPropM Bool := do
-  match (← read).thmStack.head? with
+  match (← read).thmStack.head with
   | .some thmOrigin' => return thmOrigin == thmOrigin'
   | _ => return false
 

@@ -313,8 +313,8 @@ open List
 open Nat
 
 theorem List.applyId_zip_eq [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup xs)
-    (h₁ : xs.length = ys.length) (x y : α) (i : ℕ) (h₂ : xs.get? i = some x) :
-    List.applyId.{u} (xs.zip ys) x = y ↔ ys.get? i = some y := by
+    (h₁ : xs.length = ys.length) (x y : α) (i : ℕ) (h₂ : xs.get i = some x) :
+    List.applyId.{u} (xs.zip ys) x = y ↔ ys.get i = some y := by
   induction xs generalizing ys i with
   | nil => cases h₂
   | cons x' xs xs_ih =>
@@ -323,13 +323,13 @@ theorem List.applyId_zip_eq [DecidableEq α] {xs ys : List α} (h₀ : List.Nodu
       cases ys
       · cases h₁
       · -- Porting note: `open List` no longer makes `zip_cons_cons` visible
-        simp only [List.applyId, Prod.toSigma, Option.getD_some, List.get?, List.dlookup_cons_eq,
+        simp only [List.applyId, Prod.toSigma, Option.getD_some, List.get, List.dlookup_cons_eq,
           List.zip_cons_cons, List.map, Option.some_inj]
     · cases ys
       · cases h₁
       · cases' h₀ with _ _ h₀ h₁
         -- Porting note: `open List` no longer makes `zip_cons_cons` visible
-        simp only [List.get?, List.zip_cons_cons, List.applyId_cons] at h₂ ⊢
+        simp only [List.get, List.zip_cons_cons, List.applyId_cons] at h₂ ⊢
         rw [if_neg]
         · apply xs_ih <;> solve_by_elim [Nat.succ.inj]
         · apply h₀; apply List.get_mem h₂
@@ -385,7 +385,7 @@ theorem applyId_injective [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup 
     Injective.{u + 1, u + 1} (List.applyId (xs.zip ys)) := by
   intro x y h
   by_cases hx : x ∈ xs <;> by_cases hy : y ∈ xs
-  · rw [List.mem_iff_get?] at hx hy
+  · rw [List.mem_iff_get] at hx hy
     cases' hx with i hx
     cases' hy with j hy
     suffices some x = some y by injection this

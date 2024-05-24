@@ -223,8 +223,8 @@ section OrthogonalGroup
 variable (n) (β : Type v) [CommRing β]
 
 -- Porting note (#11215): TODO: will lemmas about `Matrix.orthogonalGroup` work without making
--- `starRingOfComm` a local instance? E.g., can we talk about unitary group and orthogonal group
--- at the same time?
+-- `starRingOfComm` a local instance E.g., can we talk about unitary group and orthogonal group
+-- at the same time
 attribute [local instance] starRingOfComm
 
 /-- `Matrix.orthogonalGroup n` is the group of `n` by `n` matrices where the transpose is the

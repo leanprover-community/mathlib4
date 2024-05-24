@@ -419,8 +419,8 @@ theorem ListBlank.nth_map {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMa
   refine l.inductionOn fun l ↦ _
   -- Porting note: Added `suffices` to get `simp` to work.
   suffices ((mk l).map f).nth n = f ((mk l).nth n) by exact this
-  simp only [List.get_map, ListBlank.map_mk, ListBlank.nth_mk, List.getI_eq_iget_get?]
-  cases l.get? n
+  simp only [List.get_map, ListBlank.map_mk, ListBlank.nth_mk, List.getI_eq_iget_get]
+  cases l.get n
   · exact f.2.symm
   · rfl
 #align turing.list_blank.nth_map Turing.ListBlank.nth_map
@@ -2139,8 +2139,8 @@ variable {Γ Λ σ}
 @[simp]
 def stepAux : Stmt₂ → σ → (∀ k, List (Γ k)) → Cfg₂
   | push k f q, v, S => stepAux q v (update S k (f v :: S k))
-  | peek k f q, v, S => stepAux q (f v (S k).head?) S
-  | pop k f q, v, S => stepAux q (f v (S k).head?) (update S k (S k).tail)
+  | peek k f q, v, S => stepAux q (f v (S k).head) S
+  | pop k f q, v, S => stepAux q (f v (S k).head) (update S k (S k).tail)
   | load a q, v, S => stepAux q (a v) S
   | branch f q₁ q₂, v, S => cond (f v) (stepAux q₁ v S) (stepAux q₂ v S)
   | goto f, v, S => ⟨some (f v), v, S⟩
@@ -2322,10 +2322,10 @@ set_option linter.uppercaseLean3 false -- for "TM2to1"
 -- A displaced lemma proved in unnecessary generality
 theorem stk_nth_val {K : Type*} {Γ : K → Type*} {L : ListBlank (∀ k, Option (Γ k))} {k S} (n)
     (hL : ListBlank.map (proj k) L = ListBlank.mk (List.map some S).reverse) :
-    L.nth n k = S.reverse.get? n := by
-  rw [← proj_map_nth, hL, ← List.map_reverse, ListBlank.nth_mk, List.getI_eq_iget_get?,
+    L.nth n k = S.reverse.get n := by
+  rw [← proj_map_nth, hL, ← List.map_reverse, ListBlank.nth_mk, List.getI_eq_iget_get,
     List.get_map]
-  cases S.reverse.get? n <;> rfl
+  cases S.reverse.get n <;> rfl
 #align turing.TM2to1.stk_nth_val Turing.TM2to1.stk_nth_val
 
 section
@@ -2422,8 +2422,8 @@ def stRun {k : K} : StAct₂ k → Stmt₂ → Stmt₂
 /-- The effect of a stack action on the local variables, given the value of the stack. -/
 def stVar {k : K} (v : σ) (l : List (Γ k)) : StAct₂ k → σ
   | push _ => v
-  | peek f => f v l.head?
-  | pop f => f v l.head?
+  | peek f => f v l.head
+  | pop f => f v l.head
 #align turing.TM2to1.st_var Turing.TM2to1.stVar
 
 /-- The effect of a stack action on the stack. -/
@@ -2592,7 +2592,7 @@ theorem tr_respects_aux₂ {k : K} {q : Stmt₂₁} {v : σ} {S : ∀ k, List (�
   | pop f =>
     cases' e : S k with hd tl
     · simp only [Tape.mk'_head, ListBlank.head_cons, Tape.move_left_mk', List.length,
-        Tape.write_mk', List.head?, iterate_zero_apply, List.tail_nil]
+        Tape.write_mk', List.head, iterate_zero_apply, List.tail_nil]
       rw [← e, Function.update_eq_self]
       exact ⟨L, hL, by rw [addBottom_head_fst, cond]⟩
     · refine
@@ -2602,9 +2602,9 @@ theorem tr_respects_aux₂ {k : K} {q : Stmt₂₁} {v : σ} {S : ∀ k, List (�
             Tape.mk'_nth_nat, Tape.write_move_right_n fun a : Γ' ↦ (a.1, update a.2 k none),
             addBottom_modifyNth fun a ↦ update a k none, addBottom_nth_snd,
             stk_nth_val _ (hL k), e,
-            show (List.cons hd tl).reverse.get? tl.length = some hd by
+            show (List.cons hd tl).reverse.get tl.length = some hd by
               rw [List.reverse_cons, ← List.length_reverse, List.get_concat_length],
-            List.head?, List.tail]⟩
+            List.head, List.tail]⟩
       refine ListBlank.ext fun i ↦ _
       rw [ListBlank.nth_map, ListBlank.nth_modifyNth, proj, PointedMap.mk_val]
       by_cases h' : k' = k
@@ -2720,7 +2720,7 @@ theorem trCfg_init (k) (L : List (Γ k)) : TrCfg (TM2.init k L) (TM1.init (trIni
   rw [(_ : TM1.init _ = _)]
   · refine ⟨ListBlank.mk (L.reverse.map fun a ↦ update default k (some a)), fun k' ↦ _⟩
     refine ListBlank.ext fun i ↦ _
-    rw [ListBlank.map_mk, ListBlank.nth_mk, List.getI_eq_iget_get?, List.map_map]
+    rw [ListBlank.map_mk, ListBlank.nth_mk, List.getI_eq_iget_get, List.map_map]
     have : ((proj k').f ∘ fun a => update (β := fun k => Option (Γ k)) default k (some a))
       = fun a => (proj k').f (update (β := fun k => Option (Γ k)) default k (some a)) := rfl
     rw [this, List.get_map, proj, PointedMap.mk_val]
@@ -2728,10 +2728,10 @@ theorem trCfg_init (k) (L : List (Γ k)) : TrCfg (TM2.init k L) (TM1.init (trIni
     by_cases h : k' = k
     · subst k'
       simp only [Function.update_same]
-      rw [ListBlank.nth_mk, List.getI_eq_iget_get?, ← List.map_reverse, List.get_map]
+      rw [ListBlank.nth_mk, List.getI_eq_iget_get, ← List.map_reverse, List.get_map]
     · simp only [Function.update_noteq h]
-      rw [ListBlank.nth_mk, List.getI_eq_iget_get?, List.map, List.reverse_nil]
-      cases L.reverse.get? i <;> rfl
+      rw [ListBlank.nth_mk, List.getI_eq_iget_get, List.map, List.reverse_nil]
+      cases L.reverse.get i <;> rfl
   · rw [trInit, TM1.init]
     dsimp only
     congr <;> cases L.reverse <;> try rfl

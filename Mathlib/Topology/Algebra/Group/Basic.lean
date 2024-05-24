@@ -449,7 +449,7 @@ that the division operation `x y ↦ x * y⁻¹` (resp., subtraction) is continu
 -/
 
 -- Porting note (#11215): TODO should this docstring be extended
--- to match the multiplicative version?
+-- to match the multiplicative version
 /-- A topological (additive) group is a group in which the addition and negation operations are
 continuous. -/
 class TopologicalAddGroup (G : Type u) [TopologicalSpace G] [AddGroup G] extends

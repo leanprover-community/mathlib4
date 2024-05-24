@@ -69,7 +69,7 @@ def getCache : CCM CCCongrTheoremCache := do
 
 /-- Look up an entry associated with the given expression. -/
 def getEntry (e : Expr) : CCM (Option Entry) := do
-  return (← get).entries.find? e
+  return (← get).entries.find e
 
 /-- Use the normalizer to normalize `e`.
 
@@ -105,7 +105,7 @@ def pushReflEq (lhs rhs : Expr) : CCM Unit :=
 def getRoot (e : Expr) : CCM Expr := do
   return (← get).root e
 
-/-- Is `e` the root of its congruence class? -/
+/-- Is `e` the root of its congruence class -/
 def isCgRoot (e : Expr) : CCM Bool := do
   return (← get).isCgRoot e
 
@@ -114,8 +114,8 @@ def addOccurrence (parent child : Expr) (symmTable : Bool) : CCM Unit := do
   let childRoot ← getRoot child
   modify fun ccs =>
     { ccs with
-      parents := ccs.parents.alter childRoot fun ps? =>
-        let ps := ps?.getD ∅
+      parents := ccs.parents.alter childRoot fun ps =>
+        let ps := ps.getD ∅
         ps.insert { expr := parent, symmTable } }
 
 /--
@@ -191,7 +191,7 @@ def mkCCHCongrTheorem (fn : Expr) (nargs : Nat) : CCM (Option CCCongrTheorem) :=
 
   -- Check if `{ fn, nargs }` is in the cache
   let key₁ : CCCongrTheoremKey := { fn, nargs }
-  if let some it₁ := cache.findEntry? key₁ then
+  if let some it₁ := cache.findEntry key₁ then
     return it₁.2
 
   -- Try automatically generated congruence lemma with support for heterogeneous equality.
@@ -215,7 +215,7 @@ def mkCCCongrTheorem (e : Expr) : CCM (Option CCCongrTheorem) := do
 def propagateInstImplicit (e : Expr) : CCM Unit := do
   let type ← inferType e
   let type ← normalize type
-  match (← get).instImplicitReprs.find? type with
+  match (← get).instImplicitReprs.find type with
   | some l =>
     for e' in l do
       if ← pureIsDefEq e e' then
@@ -235,7 +235,7 @@ def setFO (e : Expr) : CCM Unit :=
 /-- Update the modification time of the congruence class of `e`. -/
 partial def updateMT (e : Expr) : CCM Unit := do
   let r ← getRoot e
-  let some ps := (← get).parents.find? r | return
+  let some ps := (← get).parents.find r | return
   for p in ps do
     let some it ← getEntry p.expr | failure
     let gmt := (← get).gmt
@@ -245,7 +245,7 @@ partial def updateMT (e : Expr) : CCM Unit := do
         { ccs with entries := ccs.entries.insert p.expr newIt }
       updateMT p.expr
 
-/-- Does the congruence class with root `root` have any `HEq` proofs? -/
+/-- Does the congruence class with root `root` have any `HEq` proofs -/
 def hasHEqProofs (root : Expr) : CCM Bool := do
   let some n ← getEntry root | failure
   guard (n.root == root)
@@ -291,13 +291,13 @@ def flipProof (H : EntryExpr) (flipped heqProofs : Bool) : CCM EntryExpr :=
   | .ofDExpr H => EntryExpr.ofDExpr <$> flipDelayedProofCore H flipped heqProofs
   | _ => return H
 
-/-- Are `e₁` and `e₂` known to be in the same equivalence class? -/
+/-- Are `e₁` and `e₂` known to be in the same equivalence class -/
 def isEqv (e₁ e₂ : Expr) : CCM Bool := do
   let some n₁ ← getEntry e₁ | return false
   let some n₂ ← getEntry e₂ | return false
   return n₁.root == n₂.root
 
-/-- Is `e₁ ≠ e₂` known to be true?
+/-- Is `e₁ ≠ e₂` known to be true
 
 Note that this is stronger than `not (isEqv e₁ e₂)`:
 only if we can prove they are distinct this returns `true`. -/
@@ -307,12 +307,12 @@ def isNotEqv (e₁ e₂ : Expr) : CCM Bool := do
   let tmp ← mkHEq e₁ e₂
   isEqv tmp (.const ``False [])
 
-/-- Is the proposition `e` known to be true? -/
+/-- Is the proposition `e` known to be true -/
 @[inline]
 def isEqTrue (e : Expr) : CCM Bool :=
   isEqv e (.const ``True [])
 
-/-- Is the proposition `e` known to be false? -/
+/-- Is the proposition `e` known to be false -/
 @[inline]
 def isEqFalse (e : Expr) : CCM Bool :=
   isEqv e (.const ``False [])
@@ -321,11 +321,11 @@ def isEqFalse (e : Expr) : CCM Bool :=
 def mkTrans (H₁ H₂ : Expr) (heqProofs : Bool) : MetaM Expr :=
   if heqProofs then mkHEqTrans H₁ H₂ else mkEqTrans H₁ H₂
 
-/-- Apply transitivity to `H₁?` and `H₂`, which are both `Eq` or `HEq` depending on `heqProofs`.
+/-- Apply transitivity to `H₁` and `H₂`, which are both `Eq` or `HEq` depending on `heqProofs`.
 
-If `H₁?` is `none`, return `H₂` instead. -/
-def mkTransOpt (H₁? : Option Expr) (H₂ : Expr) (heqProofs : Bool) : MetaM Expr :=
-  match H₁? with
+If `H₁` is `none`, return `H₂` instead. -/
+def mkTransOpt (H₁ : Option Expr) (H₂ : Expr) (heqProofs : Bool) : MetaM Expr :=
+  match H₁ with
   | some H₁ => mkTrans H₁ H₂ heqProofs
   | none => pure H₂
 
@@ -416,8 +416,8 @@ prove `R lhs₁ rhs₁` is equivalent to `R lhs₂ rhs₂`.
  * if `lhs₁` is known to equal `lhs₂`, return `none`
  * if `lhs₁` is not known to equal `rhs₂`, fail. -/
 partial def mkSymmCongrProof (e₁ e₂ : Expr) (heqProofs : Bool) : CCM (Option Expr) := do
-  let some (R₁, lhs₁, rhs₁) ← e₁.relSidesIfSymm? | return none
-  let some (R₂, lhs₂, rhs₂) ← e₂.relSidesIfSymm? | return none
+  let some (R₁, lhs₁, rhs₁) ← e₁.relSidesIfSymm | return none
+  let some (R₂, lhs₂, rhs₂) ← e₂.relSidesIfSymm | return none
   if R₁ != R₂ then return none
   if (← isEqv lhs₁ lhs₂) then
     return none
@@ -484,9 +484,9 @@ partial def mkProof (lhs rhs : Expr) (H : EntryExpr) (heqProofs : Bool) : CCM Ex
   | .eqTrue =>
     let (flip, some (R, a, b)) ←
       if lhs == .const ``True [] then
-        ((true, ·)) <$> rhs.relSidesIfRefl?
+        ((true, ·)) <$> rhs.relSidesIfRefl
       else
-        ((false, ·)) <$> lhs.relSidesIfRefl?
+        ((false, ·)) <$> lhs.relSidesIfRefl
       | failure
     let aRb ←
       if R == ``Eq then
@@ -565,17 +565,17 @@ partial def getEqProofCore (e₁ e₂ : Expr) (asHEq : Bool) : CCM (Option Expr)
     Hs₁ := Hs₁.pop
 
   -- 4. Build transitivity proof
-  let mut pr? : Option Expr := none
+  let mut pr : Option Expr := none
   let mut lhs := e₁
   for i in [:path₁.size] do
-    pr? ← some <$> mkTransOpt pr? (← mkProof lhs path₁[i]! Hs₁[i]! heqProofs) heqProofs
+    pr ← some <$> mkTransOpt pr (← mkProof lhs path₁[i]! Hs₁[i]! heqProofs) heqProofs
     lhs := path₁[i]!
   let mut i := Hs₂.size
   while i > 0 do
     i := i - 1
-    pr? ← some <$> mkTransOpt pr? (← mkProof lhs path₂[i]! Hs₂[i]! heqProofs) heqProofs
+    pr ← some <$> mkTransOpt pr (← mkProof lhs path₂[i]! Hs₂[i]! heqProofs) heqProofs
     lhs := path₂[i]!
-  let mut some pr := pr? | failure
+  let mut some pr := pr | failure
   if heqProofs && !asHEq then
     pr ← mkAppM ``eq_of_heq #[pr]
   else if !heqProofs && asHEq then
@@ -642,14 +642,14 @@ def compareSymm : (k₁ k₂ : Expr × Name) → CCM Bool
     if n₁ == ``Eq || n₁ == ``Iff then
       compareSymmAux e₁.appFn!.appArg! e₁.appArg! e₂.appFn!.appArg! e₂.appArg!
     else
-      let some (_, lhs₁, rhs₁) ← e₁.relSidesIfSymm? | failure
-      let some (_, lhs₂, rhs₂) ← e₂.relSidesIfSymm? | failure
+      let some (_, lhs₁, rhs₁) ← e₁.relSidesIfSymm | failure
+      let some (_, lhs₂, rhs₂) ← e₂.relSidesIfSymm | failure
       compareSymmAux lhs₁ rhs₁ lhs₂ rhs₂
 
 /-- Given `e := R lhs rhs`, if `R` is a reflexive relation and `lhs` is equivalent to `rhs`, add
 equality `e = True`. -/
 def checkEqTrue (e : Expr) : CCM Unit := do
-  let some (_, lhs, rhs) ← e.relSidesIfRefl? | return
+  let some (_, lhs, rhs) ← e.relSidesIfRefl | return
   if ← isEqv e (.const ``True []) then return -- it is already equivalent to `True`
   let lhsR ← getRoot lhs
   let rhsR ← getRoot rhs
@@ -662,7 +662,7 @@ equality to the todo list. If not, add `e` to the congruence table. -/
 def addCongruenceTable (e : Expr) : CCM Unit := do
   guard e.isApp
   let k ← mkCongruencesKey e
-  if let some es := (← get).congruences.find? k then
+  if let some es := (← get).congruences.find k then
     for oldE in es do
       if ← isCongruent e oldE then
         -- Found new equivalence: `e ~ oldE`
@@ -684,10 +684,10 @@ def addCongruenceTable (e : Expr) : CCM Unit := do
 /-- If the symm congruence table (`symmCongruences` field) has congruent expression to `e`, add the
 equality to the todo list. If not, add `e` to the symm congruence table. -/
 def addSymmCongruenceTable (e : Expr) : CCM Unit := do
-  let some (rel, lhs, rhs) ← e.relSidesIfSymm? | failure
+  let some (rel, lhs, rhs) ← e.relSidesIfSymm | failure
   let k ← mkSymmCongruencesKey lhs rhs
   let newP := (e, rel)
-  if let some ps := (← get).symmCongruences.find? k then
+  if let some ps := (← get).symmCongruences.find k then
     for p in ps do
       if ← compareSymm newP p then
         -- Found new equivalence: `e ~ p.1`
@@ -737,8 +737,8 @@ between their root representatives to the todo list, or update the root represen
 def checkNewSubsingletonEq (oldRoot newRoot : Expr) : CCM Unit := do
   guard (← isEqv oldRoot newRoot)
   guard ((← getRoot oldRoot) == newRoot)
-  let some it₁ := (← get).subsingletonReprs.find? oldRoot | return
-  if let some it₂ := (← get).subsingletonReprs.find? newRoot then
+  let some it₁ := (← get).subsingletonReprs.find oldRoot | return
+  if let some it₂ := (← get).subsingletonReprs.find newRoot then
     pushSubsingletonEq it₁ it₂
   else
     modify fun ccs =>
@@ -801,8 +801,8 @@ return the canonical form of `op`. -/
 def isAC (e : Expr) : CCM (Option Expr) := do
   let .app (.app op _) _ := e | return none
   let ccs ← get
-  if let some cop := ccs.canOps.find? op then
-    let some b := ccs.opInfo.find? cop
+  if let some cop := ccs.canOps.find op then
+    let some b := ccs.opInfo.find cop
       | throwError "opInfo should contain all canonical operators in canOps"
     return bif b then some cop else none
   for (cop, b) in ccs.opInfo do
@@ -812,9 +812,9 @@ def isAC (e : Expr) : CCM (Option Expr) := do
   let b ←
     try
       let aop ← mkAppM ``Std.Associative #[op]
-      let some _ ← synthInstance? aop | failure
+      let some _ ← synthInstance aop | failure
       let cop ← mkAppM ``Std.Commutative #[op]
-      let some _ ← synthInstance? cop | failure
+      let some _ ← synthInstance cop | failure
       pure true
     catch _ =>
       pure false
@@ -909,7 +909,7 @@ def simplifyACCore (e lhs rhs : ACApps) (H : DelayedExpr) :
     let r : ACApps := if newArgs.isEmpty then default else .mkApps op newArgs
     let newArgs := ACApps.append op rhs newArgs
     let newE := ACApps.mkApps op newArgs
-    let some true := (← get).opInfo.find? op | failure
+    let some true := (← get).opInfo.find op | failure
     let newPr ← mkACSimpProof e lhs rhs r newE H
     return (newE, newPr)
 
@@ -921,17 +921,17 @@ def simplifyACStep (e : ACApps) : CCM (Option (ACApps × DelayedExpr)) := do
   if let .apps _ args := e then
     for h : i in [:args.size] do
       if i == 0 || (args[i]'h.2) != (args[i - 1]'(Nat.lt_of_le_of_lt (i.sub_le 1) h.2)) then
-        let some ae := (← get).acEntries.find? (args[i]'h.2) | failure
+        let some ae := (← get).acEntries.find (args[i]'h.2) | failure
         let occs := ae.RLHSOccs
-        let mut Rlhs? : Option ACApps := none
+        let mut Rlhs : Option ACApps := none
         for Rlhs in occs do
           if Rlhs.isSubset e then
-            Rlhs? := some Rlhs
+            Rlhs := some Rlhs
             break
-        if let some Rlhs := Rlhs? then
-          let some (Rrhs, H) := (← get).acR.find? Rlhs | failure
+        if let some Rlhs := Rlhs then
+          let some (Rrhs, H) := (← get).acR.find Rlhs | failure
           return (some <| ← simplifyACCore e Rlhs Rrhs H)
-  else if let some p := (← get).acR.find? e then
+  else if let some p := (← get).acR.find e then
     return some p
   return none
 
@@ -947,7 +947,7 @@ def simplifyAC (e : ACApps) : CCM (Option (ACApps × DelayedExpr)) := do
 
 /-- Insert or erase `lhs` to the occurrences of `arg` on an equality in `acR`. -/
 def insertEraseROcc (arg : Expr) (lhs : ACApps) (inLHS isInsert : Bool) : CCM Unit := do
-  let some entry := (← get).acEntries.find? arg | failure
+  let some entry := (← get).acEntries.find arg | failure
   let occs := entry.ROccs inLHS
   let newOccs := if isInsert then occs.insert lhs else occs.erase (compare lhs)
   let newEntry :=
@@ -1004,10 +1004,10 @@ open MessageData in
 /-- Try to simplify the right hand sides of equalities in `acR` by `H : lhs = rhs`. -/
 def composeAC (lhs rhs : ACApps) (H : DelayedExpr) : CCM Unit := do
   let some x := (← get).getVarWithLeastRHSOccs lhs | failure
-  let some ent := (← get).acEntries.find? x | failure
+  let some ent := (← get).acEntries.find x | failure
   let occs := ent.RRHSOccs
   for Rlhs in occs do
-    let some (Rrhs, RH) := (← get).acR.find? Rlhs | failure
+    let some (Rrhs, RH) := (← get).acR.find Rlhs | failure
     if lhs.isSubset Rrhs then
       let (newRrhs, RrhsEqNewRrhs) ← simplifyACCore Rrhs lhs rhs H
       let newRH := DelayedExpr.eqTransOpt Rlhs Rrhs newRrhs RH RrhsEqNewRrhs
@@ -1028,11 +1028,11 @@ open MessageData in
 /-- Try to simplify the left hand sides of equalities in `acR` by `H : lhs = rhs`. -/
 def collapseAC (lhs rhs : ACApps) (H : DelayedExpr) : CCM Unit := do
   let some x := (← get).getVarWithLeastLHSOccs lhs | failure
-  let some ent := (← get).acEntries.find? x | failure
+  let some ent := (← get).acEntries.find x | failure
   let occs := ent.RLHSOccs
   for Rlhs in occs do
     if lhs.isSubset Rlhs then
-      let some (Rrhs, RH) := (← get).acR.find? Rlhs | failure
+      let some (Rrhs, RH) := (← get).acR.find Rlhs | failure
       eraseRBHSOccs Rlhs Rrhs
       modify fun ccs => { ccs with acR := ccs.acR.erase Rlhs }
       let (newRlhs, RlhsEqNewRlhs) ← simplifyACCore Rlhs lhs rhs H
@@ -1057,12 +1057,12 @@ def superposeAC (ts a : ACApps) (tsEqa : DelayedExpr) : CCM Unit := do
   let .apps op args := ts | return
   for hi : i in [:args.size] do
     if i == 0 || (args[i]'hi.2) != (args[i - 1]'(Nat.lt_of_le_of_lt (i.sub_le 1) hi.2)) then
-      let some ent := (← get).acEntries.find? (args[i]'hi.2) | failure
+      let some ent := (← get).acEntries.find (args[i]'hi.2) | failure
       let occs := ent.RLHSOccs
       for tr in occs do
         let .apps optr _ := tr | continue
         unless optr == op do continue
-        let some (b, trEqb) := (← get).acR.find? tr | failure
+        let some (b, trEqb) := (← get).acR.find tr | failure
         let tArgs := ts.intersection tr
         guard !tArgs.isEmpty
         let t := ACApps.mkApps op tArgs
@@ -1074,7 +1074,7 @@ def superposeAC (ts a : ACApps) (tsEqa : DelayedExpr) : CCM Unit := do
         let r := ACApps.mkApps op rArgs
         let ra := ACApps.mkFlatApps op r a
         let sb := ACApps.mkFlatApps op s b
-        let some true := (← get).opInfo.find? op | failure
+        let some true := (← get).opInfo.find op | failure
         let raEqsb ← mkACSuperposeProof ra sb a b r s ts tr tsEqa trEqb
         modifyACTodo fun todo => todo.push (ra, sb, raEqsb)
         let ccs ← get
@@ -1094,7 +1094,7 @@ open MessageData in
 def processAC : CCM Unit := do
   repeat
     let acTodo ← getACTodo
-    let mut some (lhs, rhs, H) := acTodo.back? | break
+    let mut some (lhs, rhs, H) := acTodo.back | break
     modifyACTodo fun _ => acTodo.pop
     let lhs₀ := lhs
     let rhs₀ := rhs
@@ -1189,16 +1189,16 @@ open MessageData in
 
 If the expression does not contain an AC operator, or the parent expression
 is already processed by `internalizeAC`, this operation does nothing. -/
-def internalizeAC (e : Expr) (parent? : Option Expr) : CCM Unit := do
+def internalizeAC (e : Expr) (parent : Option Expr) : CCM Unit := do
   let some op ← isAC e | return
-  let parentOp? ← parent?.casesOn (pure none) isAC
-  if parentOp?.any (op == ·) then return
+  let parentOp ← parent.casesOn (pure none) isAC
+  if parentOp.any (op == ·) then return
 
   unless (← internalizeACVar e) do return
 
   let (args, norme) ← convertAC op e
   let rep := ACApps.mkApps op args
-  let some true := (← get).opInfo.find? op | failure
+  let some true := (← get).opInfo.find op | failure
   let some repe := rep.toExpr | failure
   let pr ← mkACProof norme repe
 
@@ -1220,7 +1220,7 @@ partial def internalizeAppLit (e : Expr) : CCM Unit := do
   else
     mkEntry e false
     if (← get).values && isValue e then return -- we treat values as atomic symbols
-  if let some (_, lhs, rhs) ← e.relSidesIfSymm? then
+  if let some (_, lhs, rhs) ← e.relSidesIfSymm then
     internalizeCore lhs (some e)
     internalizeCore rhs (some e)
     addOccurrence e lhs true
@@ -1239,7 +1239,7 @@ partial def internalizeAppLit (e : Expr) : CCM Unit := do
       for h : i in [:apps.size] do
         let arg := (apps[i]'h.2).appArg!
         addOccurrence e arg false
-        if pinfo.head?.any ParamInfo.isInstImplicit then
+        if pinfo.head.any ParamInfo.isInstImplicit then
           -- We do not recurse on instances when `(← get).config.ignoreInstances` is `true`.
           mkEntry arg false
           propagateInstImplicit arg
@@ -1262,7 +1262,7 @@ partial def internalizeAppLit (e : Expr) : CCM Unit := do
         for h : j in [i:apps.size] do
           addOccurrence (apps[j]'h.2) currArg false
           addOccurrence (apps[j]'h.2) currFn false
-        if pinfo.head?.any ParamInfo.isInstImplicit then
+        if pinfo.head.any ParamInfo.isInstImplicit then
           -- We do not recurse on instances when `(← get).config.ignoreInstances` is `true`.
           mkEntry currArg false
           mkEntry currFn false
@@ -1277,7 +1277,7 @@ partial def internalizeAppLit (e : Expr) : CCM Unit := do
 
 /-- Internalize `e` so that the congruence closure can deal with the given expression. Don't forget
 to process the tasks in the `todo` field later. -/
-partial def internalizeCore (e : Expr) (parent? : Option Expr) : CCM Unit := do
+partial def internalizeCore (e : Expr) (parent : Option Expr) : CCM Unit := do
   guard !e.hasLooseBVars
   /- We allow metavariables after partitions have been frozen. -/
   if e.hasExprMVar && !(← get).frozePartitions then
@@ -1291,7 +1291,7 @@ partial def internalizeCore (e : Expr) (parent? : Option Expr) : CCM Unit := do
     | .lam _ _ _ _ | .letE _ _ _ _ _ => mkEntry e false
     | .fvar f =>
       mkEntry e false
-      if let some v ← f.getValue? then
+      if let some v ← f.getValue then
         pushReflEq e v
     | .mdata _ e' =>
       mkEntry e false
@@ -1311,7 +1311,7 @@ partial def internalizeCore (e : Expr) (parent? : Option Expr) : CCM Unit := do
     | .app _ _ | .lit _ => internalizeAppLit e
     | .proj sn i pe =>
       mkEntry e false
-      let some fn := (getStructureFields (← getEnv) sn)[i]? | failure
+      let some fn := (getStructureFields (← getEnv) sn)[i] | failure
       let e' ← pe.mkDirectProjection fn
       internalizeAppLit e'
       pushReflEq e e'
@@ -1319,11 +1319,11 @@ partial def internalizeCore (e : Expr) (parent? : Option Expr) : CCM Unit := do
   /- Remark: if should invoke `internalizeAC` even if the test `(← getEntry e).isNone` above failed.
      Reason, the first time `e` was visited, it may have been visited with a different parent. -/
   if (← get).ac then
-    internalizeAC e parent?
+    internalizeAC e parent
 
 /-- Propagate equality from `a` and `b` to `a ↔ b`. -/
 partial def propagateIffUp (e : Expr) : CCM Unit := do
-  let some (a, b) := e.iff? | failure
+  let some (a, b) := e.iff | failure
   if ← isEqTrue a then
     -- `a = True  → (Iff a b) = b`
     pushEq e b (mkApp3 (.const ``iff_eq_of_eq_true_left []) a b (← getEqTrueProof a))
@@ -1336,7 +1336,7 @@ partial def propagateIffUp (e : Expr) : CCM Unit := do
 
 /-- Propagate equality from `a` and `b` to `a ∧ b`. -/
 partial def propagateAndUp (e : Expr) : CCM Unit := do
-  let some (a, b) := e.and? | failure
+  let some (a, b) := e.and | failure
   if ← isEqTrue a then
     -- `a = True  → (And a b) = b`
     pushEq e b (mkApp3 (.const ``and_eq_of_eq_true_left []) a b (← getEqTrueProof a))
@@ -1358,7 +1358,7 @@ partial def propagateAndUp (e : Expr) : CCM Unit := do
 
 /-- Propagate equality from `a` and `b` to `a ∨ b`. -/
 partial def propagateOrUp (e : Expr) : CCM Unit := do
-  let some (a, b) := e.app2? ``Or | failure
+  let some (a, b) := e.app2 ``Or | failure
   if ← isEqTrue a then
     -- `a = True  → (Or a b) = True`
     pushEq e (.const ``True [])
@@ -1380,7 +1380,7 @@ partial def propagateOrUp (e : Expr) : CCM Unit := do
 
 /-- Propagate equality from `a` to `¬a`. -/
 partial def propagateNotUp (e : Expr) : CCM Unit := do
-  let some a := e.not? | failure
+  let some a := e.not | failure
   if ← isEqTrue a then
     -- `a = True  → Not a = False`
     pushEq e (.const ``False []) (mkApp2 (.const ``not_eq_of_eq_true []) a (← getEqTrueProof a))
@@ -1443,7 +1443,7 @@ partial def propagateIteUp (e : Expr) : CCM Unit := do
 /-- Propagate equality from `a` and `b` to *disprove* `a = b`. -/
 partial def propagateEqUp (e : Expr) : CCM Unit := do
   -- Remark: the positive case is implemented at `checkEqTrue` for any reflexive relation.
-  let some (_, a, b) := e.eq? | failure
+  let some (_, a, b) := e.eq | failure
   let ra ← getRoot a
   let rb ← getRoot b
   if ra != rb then
@@ -1452,8 +1452,8 @@ partial def propagateEqUp (e : Expr) : CCM Unit := do
       raNeRb := some
         (Expr.app (.proj ``Iff 0 (← mkAppM ``bne_iff_ne #[ra, rb])) (← mkEqRefl (.const ``true [])))
     else
-      if let some c₁ ← isConstructorApp? ra then
-      if let some c₂ ← isConstructorApp? rb then
+      if let some c₁ ← isConstructorApp ra then
+      if let some c₂ ← isConstructorApp rb then
       if c₁.name != c₂.name then
         raNeRb ← withLocalDeclD `h (← mkEq ra rb) fun h => do
           mkLambdaFVars #[h] (← mkNoConfusion (.const ``False []) h)
@@ -1520,7 +1520,7 @@ partial def applySimpleEqvs (e : Expr) : CCM Unit := do
     internalizeCore newE none
     pushReflEq e newE
 
-  if let some r ← e.reduceProjStruct? then
+  if let some r ← e.reduceProjStruct then
     pushReflEq e r
 
   let fn := e.getAppFn
@@ -1553,13 +1553,13 @@ partial def processSubsingletonElem (e : Expr) : CCM Unit := do
   let type ← inferType e
   -- TODO: this is likely to become a bottleneck. See e.g.
   -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/convert.20is.20often.20slow/near/433830798
-  let ss ← synthInstance? (← mkAppM ``Subsingleton #[type])
+  let ss ← synthInstance (← mkAppM ``Subsingleton #[type])
   if ss.isNone then return -- type is not a subsingleton
   let type ← normalize type
   -- Make sure type has been internalized
   internalizeCore type none
   -- Try to find representative
-  if let some it := (← get).subsingletonReprs.find? type then
+  if let some it := (← get).subsingletonReprs.find type then
     pushSubsingletonEq e it
   else
     modify fun ccs =>
@@ -1567,7 +1567,7 @@ partial def processSubsingletonElem (e : Expr) : CCM Unit := do
         subsingletonReprs := ccs.subsingletonReprs.insert type e }
   let typeRoot ← getRoot type
   if typeRoot == type then return
-  if let some it2 := (← get).subsingletonReprs.find? typeRoot then
+  if let some it2 := (← get).subsingletonReprs.find typeRoot then
     pushSubsingletonEq e it2
   else
     modify fun ccs =>
@@ -1583,7 +1583,7 @@ partial def mkEntry (e : Expr) (interpreted : Bool) : CCM Unit := do
   processSubsingletonElem e
 end
 
-/-- Can we propagate equality from subexpressions of `e` to `e`? -/
+/-- Can we propagate equality from subexpressions of `e` to `e` -/
 def mayPropagate (e : Expr) : Bool :=
   e.isAppOfArity ``Iff 2 || e.isAppOfArity ``And 2 || e.isAppOfArity ``Or 2 ||
     e.isAppOfArity ``Not 1 || e.isArrow || e.isIte
@@ -1592,7 +1592,7 @@ def mayPropagate (e : Expr) : Bool :=
 parents to propagate equality, to `parentsToPropagate`.
 Returns the new value of `parentsToPropagate`. -/
 def removeParents (e : Expr) (parentsToPropagate : Array Expr := #[]) : CCM (Array Expr) := do
-  let some ps := (← get).parents.find? e | return parentsToPropagate
+  let some ps := (← get).parents.find e | return parentsToPropagate
   let mut parentsToPropagate := parentsToPropagate
   for pocc in ps do
     let p := pocc.expr
@@ -1601,9 +1601,9 @@ def removeParents (e : Expr) (parentsToPropagate : Array Expr := #[]) : CCM (Arr
       parentsToPropagate := parentsToPropagate.push p
     if p.isApp then
       if pocc.symmTable then
-        let some (rel, lhs, rhs) ← p.relSidesIfSymm? | failure
+        let some (rel, lhs, rhs) ← p.relSidesIfSymm | failure
         let k' ← mkSymmCongruencesKey lhs rhs
-        if let some lst := (← get).symmCongruences.find? k' then
+        if let some lst := (← get).symmCongruences.find k' then
           let k := (p, rel)
           let newLst ← lst.filterM fun k₂ => (!·) <$> compareSymm k k₂
           if !newLst.isEmpty then
@@ -1614,7 +1614,7 @@ def removeParents (e : Expr) (parentsToPropagate : Array Expr := #[]) : CCM (Arr
               { ccs with symmCongruences := ccs.symmCongruences.erase k' }
       else
         let k' ← mkCongruencesKey p
-        if let some es := (← get).congruences.find? k' then
+        if let some es := (← get).congruences.find k' then
           let newEs := es.erase p
           if !newEs.isEmpty then
             modify fun ccs =>
@@ -1670,7 +1670,7 @@ def collectFnRoots (root : Expr) (fnRoots : Array Expr := #[]) : CCM (Array Expr
 
 Together with `removeParents`, this allows modifying parents of an expression. -/
 def reinsertParents (e : Expr) : CCM Unit := do
-  let some ps := (← get).parents.find? e | return
+  let some ps := (← get).parents.find e | return
   for p in ps do
     trace[Debug.Meta.Tactic.cc] "reinsert parent: {p.expr}"
     if p.expr.isApp then
@@ -1695,7 +1695,7 @@ def propagateBetaToEqc (fnRoots lambdas : Array Expr) (newLambdaApps : Array Exp
   let lambdaRoot ← getRoot lambdas.back
   guard (← lambdas.allM fun l => pure l.isLambda <&&> (· == lambdaRoot) <$> getRoot l)
   for fnRoot in fnRoots do
-    if let some ps := (← get).parents.find? fnRoot then
+    if let some ps := (← get).parents.find fnRoot then
       for { expr := p,.. } in ps do
         let mut revArgs : Array Expr := #[]
         let mut it₂ := p
@@ -1719,8 +1719,8 @@ equality `(x, y).fst = x` -/
 def propagateProjectionConstructor (p c : Expr) : CCM Unit := do
   guard (← isConstructorApp c)
   p.withApp fun pFn pArgs => do
-    let some pFnN := pFn.constName? | return
-    let some info ← getProjectionFnInfo? pFnN | return
+    let some pFnN := pFn.constName | return
+    let some info ← getProjectionFnInfo pFnN | return
     let mkidx := info.numParams
     if h : mkidx < pArgs.size then
       unless ← isEqv (pArgs[mkidx]'h) c do return
@@ -1744,8 +1744,8 @@ c₁ ... = c₂ ... => False
 where `c`, `c₁` and `c₂` are constructors -/
 partial def propagateConstructorEq (e₁ e₂ : Expr) : CCM Unit := do
   let env ← getEnv
-  let some c₁ ← isConstructorApp? e₁ | failure
-  let some c₂ ← isConstructorApp? e₂ | failure
+  let some c₁ ← isConstructorApp e₁ | failure
+  let some c₂ ← isConstructorApp e₂ | failure
   unless ← pureIsDefEq (← inferType e₁) (← inferType e₂) do
     -- The implications above only hold if the types are equal.
     -- TODO(Leo): if the types are different, we may still propagate by searching the equivalence
@@ -1761,13 +1761,13 @@ partial def propagateConstructorEq (e₁ e₂ : Expr) : CCM Unit := do
           `a₁ = a₂ ∧ HEq b₁ b₂ ∧ ..`, destruct `val` and push equality proofs to the todo list. -/
           go (type val : Expr) : CCM Unit := do
             let push (type val : Expr) : CCM Unit :=
-              match type.eq? with
+              match type.eq with
               | some (_, lhs, rhs) => pushEq lhs rhs val
               | none =>
-                match type.heq? with
+                match type.heq with
                 | some (_, _, lhs, rhs) => pushHEq lhs rhs val
                 | none => failure
-            match type.and? with
+            match type.and with
             | some (l, r) =>
               push l (.proj ``And 0 val)
               go r (.proj ``And 1 val)
@@ -1795,7 +1795,7 @@ def propagateValueInconsistency (e₁ e₂ : Expr) : CCM Unit := do
 /-- Propagate equality from `a ∧ b = True` to `a = True` and `b = True`. -/
 def propagateAndDown (e : Expr) : CCM Unit := do
   if ← isEqTrue e then
-    let some (a, b) := e.and? | failure
+    let some (a, b) := e.and | failure
     let h ← getEqTrueProof e
     pushEq a (.const ``True []) (mkApp3 (.const ``eq_true_of_and_eq_true_left []) a b h)
     pushEq b (.const ``True []) (mkApp3 (.const ``eq_true_of_and_eq_true_right []) a b h)
@@ -1803,7 +1803,7 @@ def propagateAndDown (e : Expr) : CCM Unit := do
 /-- Propagate equality from `a ∨ b = False` to `a = False` and `b = False`. -/
 def propagateOrDown (e : Expr) : CCM Unit := do
   if ← isEqFalse e then
-    let some (a, b) := e.app2? ``Or | failure
+    let some (a, b) := e.app2 ``Or | failure
     let h ← getEqFalseProof e
     pushEq a (.const ``False []) (mkApp3 (.const ``eq_false_of_or_eq_false_left []) a b h)
     pushEq b (.const ``False []) (mkApp3 (.const ``eq_false_of_or_eq_false_right []) a b h)
@@ -1811,18 +1811,18 @@ def propagateOrDown (e : Expr) : CCM Unit := do
 /-- Propagate equality from `¬a` to `a`. -/
 def propagateNotDown (e : Expr) : CCM Unit := do
   if ← isEqTrue e then
-    let some a := e.not? | failure
+    let some a := e.not | failure
     pushEq a (.const ``False [])
       (mkApp2 (.const ``eq_false_of_not_eq_true []) a (← getEqTrueProof e))
   else if ← (·.em) <$> get <&&> isEqFalse e then
-    let some a := e.not? | failure
+    let some a := e.not | failure
     pushEq a (.const ``True [])
       (mkApp2 (.const ``eq_true_of_not_eq_false []) a (← getEqFalseProof e))
 
 /-- Propagate equality from `(a = b) = True` to `a = b`. -/
 def propagateEqDown (e : Expr) : CCM Unit := do
   if ← isEqTrue e then
-    let some (a, b) := e.eqOrIff? | failure
+    let some (a, b) := e.eqOrIff | failure
     pushEq a b (← mkAppM ``of_eq_true #[← getEqTrueProof e])
 
 /-- Propagate equality from `¬∃ x, p x` to `∀ x, ¬p x`. -/
@@ -1887,8 +1887,8 @@ where
     if r₁.interpreted && r₂.interpreted then
       if n₁.root.isConstOf ``True || n₂.root.isConstOf ``True then
         modify fun ccs => { ccs with inconsistent := true }
-      else if n₁.root.int?.isSome && n₂.root.int?.isSome then
-        valueInconsistency := n₁.root.int? != n₂.root.int?
+      else if n₁.root.int.isSome && n₂.root.int.isSome then
+        valueInconsistency := n₁.root.int != n₂.root.int
       else
         valueInconsistency := true
 
@@ -1939,8 +1939,8 @@ where
     let some r₂ ← getEntry e₂Root | failure
     guard (r₁.root == e₂Root)
 
-    let acVar?₁ := r₁.acVar
-    let acVar?₂ := r₂.acVar
+    let acVar₁ := r₁.acVar
+    let acVar₂ := r₂.acVar
     let newR₁ : Entry :=
       { r₁ with
         next := r₂.next }
@@ -1950,7 +1950,7 @@ where
         size := r₂.size + r₁.size
         hasLambdas := r₂.hasLambdas || r₁.hasLambdas
         heqProofs := r₂.heqProofs || heqProof
-        acVar := acVar?₂ <|> acVar?₁ }
+        acVar := acVar₂ <|> acVar₁ }
     modify fun ccs =>
       { ccs with
         entries :=
@@ -1962,9 +1962,9 @@ where
 
     -- copy `e₁Root` parents to `e₂Root`
     let constructorEq := r₁.constructor && r₂.constructor
-    if let some ps₁ := (← get).parents.find? e₁Root then
+    if let some ps₁ := (← get).parents.find e₁Root then
       let mut ps₂ : ParentOccSet := ∅
-      if let some it' := (← get).parents.find? e₂Root then
+      if let some it' := (← get).parents.find e₂Root then
         ps₂ := it'
       for p in ps₁ do
         if ← pure p.expr.isApp <||> isCgRoot p.expr then
@@ -1976,8 +1976,8 @@ where
           parents := ccs.parents.erase e₁Root |>.insert e₂Root ps₂ }
 
     if !(← get).inconsistent then
-      if let some acVar₁ := acVar?₁ then
-      if let some acVar₂ := acVar?₂ then
+      if let some acVar₁ := acVar₁ then
+      if let some acVar₂ := acVar₂ then
         addACEq acVar₁ acVar₂
 
     if !(← get).inconsistent && constructorEq then
@@ -2013,7 +2013,7 @@ where
 def processTodo : CCM Unit := do
   repeat
     let todo ← getTodo
-    let some (lhs, rhs, H, heqProof) := todo.back? | return
+    let some (lhs, rhs, H, heqProof) := todo.back | return
     if (← get).inconsistent then
       modifyTodo fun _ => #[]
       return

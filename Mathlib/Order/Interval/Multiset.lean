@@ -30,7 +30,7 @@ In a `LocallyFiniteOrderBot`,
 
 ## TODO
 
-Do we really need this file at all? (March 2024)
+Do we really need this file at all (March 2024)
 -/
 
 

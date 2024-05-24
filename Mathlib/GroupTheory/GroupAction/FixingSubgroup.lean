@@ -35,7 +35,7 @@ TODO :
 
 * Maybe other lemmas are useful
 
-* Treat semigroups ?
+* Treat semigroups 
 
 * add `to_additive` for the various lemmas
 

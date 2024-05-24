@@ -32,7 +32,7 @@ example : let x := id 0; x = x := by
     run_tac do
       let g ← getMainGoal
       let decl ← g.getDecl
-      let some d := decl.lctx.findFromUserName? `x | throwError "no x"
+      let some d := decl.lctx.findFromUserName `x | throwError "no x"
       let lctx := decl.lctx.modifyLocalDecl d.fvarId fun d =>
         d.setValue (.const ``Nat.zero [])
       let g' ← Meta.mkFreshExprMVarAt lctx decl.localInstances decl.type
@@ -89,7 +89,7 @@ example : let x := (fun x => x) Nat.zero; x = x := by
     run_tac do
       let g ← getMainGoal
       let decl ← g.getDecl
-      let some d := decl.lctx.findFromUserName? `x | throwError "no x"
+      let some d := decl.lctx.findFromUserName `x | throwError "no x"
       let lctx := decl.lctx.modifyLocalDecl d.fvarId fun d =>
         d.setValue (.const ``Nat.zero [])
       let g' ← Meta.mkFreshExprMVarAt lctx decl.localInstances decl.type

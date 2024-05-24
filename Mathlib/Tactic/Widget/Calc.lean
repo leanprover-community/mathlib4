@@ -26,18 +26,18 @@ def createCalc : TacticCodeAction := fun _params _snap ctx _stack node => do
   if info.goalsBefore.isEmpty then return #[]
   let eager := {
     title := s!"Generate a calc block."
-    kind? := "quickfix"
+    kind := "quickfix"
   }
   let doc ← readDoc
   return #[{
     eager
-    lazy? := some do
-      let tacPos := doc.meta.text.utf8PosToLspPos info.stx.getPos?.get!
-      let endPos := doc.meta.text.utf8PosToLspPos info.stx.getTailPos?.get!
+    lazy := some do
+      let tacPos := doc.meta.text.utf8PosToLspPos info.stx.getPos.get!
+      let endPos := doc.meta.text.utf8PosToLspPos info.stx.getTailPos.get!
       let goal := info.goalsBefore[0]!
       let goalFmt ← ctx.runMetaM {} <| goal.withContext do Meta.ppExpr (← goal.getType)
       return { eager with
-        edit? := some <|.ofTextEdit doc.versionedIdentifier
+        edit := some <|.ofTextEdit doc.versionedIdentifier
           { range := ⟨tacPos, endPos⟩, newText := s!"calc {goalFmt} := by sorry" }
       }
   }]
@@ -50,7 +50,7 @@ open Lean Server in
 
 /-- Parameters for the calc widget. -/
 structure CalcParams extends SelectInsertParams where
-  /-- Is this the first calc step? -/
+  /-- Is this the first calc step -/
   isFirst : Bool
   /-- indentation level of the calc block. -/
   indent : Nat
@@ -62,12 +62,12 @@ open Lean Meta
 def suggestSteps (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) (params : CalcParams) :
     MetaM (String × String × Option (String.Pos × String.Pos)) := do
   let subexprPos := getGoalLocations pos
-  let some (rel, lhs, rhs) ← Lean.Elab.Term.getCalcRelation? goalType |
+  let some (rel, lhs, rhs) ← Lean.Elab.Term.getCalcRelation goalType |
       throwError "invalid 'calc' step, relation expected{indentExpr goalType}"
   let relApp := mkApp2 rel
     (← mkFreshExprMVar none)
     (← mkFreshExprMVar none)
-  let some relStr := (← Meta.ppExpr relApp) |> toString |>.splitOn |>.get? 1
+  let some relStr := (← Meta.ppExpr relApp) |> toString |>.splitOn |>.get 1
     | throwError "could not find relation symbol in {relApp}"
   let isSelectedLeft := subexprPos.any (fun L ↦ #[0, 1].isPrefixOf L.toArray)
   let isSelectedRight := subexprPos.any (fun L ↦ #[1].isPrefixOf L.toArray)
@@ -75,7 +75,7 @@ def suggestSteps (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) (par
   let mut goalType := goalType
   for pos in subexprPos do
     goalType ← insertMetaVar goalType pos
-  let some (_, newLhs, newRhs) ← Lean.Elab.Term.getCalcRelation? goalType | unreachable!
+  let some (_, newLhs, newRhs) ← Lean.Elab.Term.getCalcRelation goalType | unreachable!
 
   let lhsStr := (toString <| ← Meta.ppExpr lhs).renameMetaVar
   let newLhsStr := (toString <| ← Meta.ppExpr newLhs).renameMetaVar
@@ -108,7 +108,7 @@ def suggestSteps (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) (par
   | true, true => "Create two new steps"
   | true, false | false, true => "Create a new step"
   | false, false => "This should not happen"
-  let pos : String.Pos := insertedCode.find (fun c => c == '?')
+  let pos : String.Pos := insertedCode.find (fun c => c == '')
   return (stepInfo, insertedCode, some (pos, ⟨pos.byteIdx + 2⟩) )
 
 /-- Rpc function for the calc widget. -/
@@ -129,11 +129,11 @@ open Meta
 elab_rules : tactic
 | `(tactic|calc%$calcstx $stx) => do
   let steps : TSyntax ``calcSteps := ⟨stx⟩
-  let some calcRange := (← getFileMap).rangeOfStx? calcstx | unreachable!
+  let some calcRange := (← getFileMap).rangeOfStx calcstx | unreachable!
   let indent := calcRange.start.character
   let mut isFirst := true
   for step in ← Lean.Elab.Term.getCalcSteps steps do
-    let some replaceRange := (← getFileMap).rangeOfStx? step | unreachable!
+    let some replaceRange := (← getFileMap).rangeOfStx step | unreachable!
     let `(calcStep| $(_) := $proofTerm) := step | unreachable!
     let json := json% {"replaceRange": $(replaceRange),
                         "isFirst": $(isFirst),

@@ -125,7 +125,7 @@ represented with `↑`.
 def delab_set_image_subtype : Delab := whenPPOption getPPCoercions do
   let #[α, _, f, _] := (← getExpr).getAppArgs | failure
   guard <| f.isAppOfArity ``Subtype.val 2
-  let some _ := α.coeTypeSet? | failure
+  let some _ := α.coeTypeSet | failure
   let e ← withAppArg delab
   `(↑$e)
 

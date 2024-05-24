@@ -24,7 +24,7 @@ analysis, especially when dealing with `L^p` spaces.
 ## TODO
 
 * Eradicate the `1 / p` spelling in lemmas.
-* Do we want an `ℝ≥0∞` version?
+* Do we want an `ℝ≥0∞` version
 -/
 
 noncomputable section

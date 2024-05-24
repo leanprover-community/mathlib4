@@ -21,7 +21,7 @@ initialize registerTraceClass `adaptationNote
 /-- General function implementing adaptation notes. -/
 def reportAdaptationNote (f : Syntax → Meta.Tactic.TryThis.Suggestion) : MetaM Unit := do
   let stx ← getRef
-  if let some doc := stx[1].getOptional? then
+  if let some doc := stx[1].getOptional then
     trace[adaptationNote] (Lean.TSyntax.getDocString ⟨doc⟩)
   else
     logError "Adaptation notes must be followed by a /-- comment -/"
@@ -34,27 +34,27 @@ def reportAdaptationNote (f : Syntax → Meta.Tactic.TryThis.Suggestion) : MetaM
     let stx' := (← getRef)
     let stx' := stx'.setArg 0 stx'[0].unsetTrailing
     let stx' := stx'.setArg 1 (mkNullNode #[doc])
-    Meta.Tactic.TryThis.addSuggestion (← getRef) (f stx') (origSpan? := ← getRef)
+    Meta.Tactic.TryThis.addSuggestion (← getRef) (f stx') (origSpan := ← getRef)
 
 /-- Adaptation notes are comments that are used to indicate that a piece of code
 has been changed to accomodate a change in Lean core.
 They typically require further action/maintenance to be taken in the future. -/
-elab (name := adaptationNoteCmd) "#adaptation_note " (docComment)? : command => do
+elab (name := adaptationNoteCmd) "#adaptation_note " (docComment) : command => do
   Elab.Command.liftTermElabM <| reportAdaptationNote (fun s => (⟨s⟩ : TSyntax `tactic))
 
 @[inherit_doc adaptationNoteCmd]
-elab "#adaptation_note " (docComment)? : tactic =>
+elab "#adaptation_note " (docComment) : tactic =>
   reportAdaptationNote (fun s => (⟨s⟩ : TSyntax `tactic))
 
 @[inherit_doc adaptationNoteCmd]
-syntax (name := adaptationNoteTermStx) "#adaptation_note " (docComment)? term : term
+syntax (name := adaptationNoteTermStx) "#adaptation_note " (docComment) term : term
 
 /-- Elaborator for adaptation notes. -/
 @[term_elab adaptationNoteTermStx]
 def adaptationNoteTermElab : Elab.Term.TermElab
-  | `(#adaptation_note $[$_]? $t) => fun expectedType? => do
+  | `(#adaptation_note $[$_] $t) => fun expectedType => do
     reportAdaptationNote (fun s => (⟨s⟩ : Term))
-    Elab.Term.elabTerm t expectedType?
+    Elab.Term.elabTerm t expectedType
   | _ => fun _ => Elab.throwUnsupportedSyntax
 
 

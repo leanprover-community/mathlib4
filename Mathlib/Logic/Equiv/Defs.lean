@@ -100,7 +100,7 @@ instance : EquivLike (α ≃ β) α β where
 /-- Helper instance when inference gets stuck on following the normal chain
 `EquivLike → FunLike`.
 
-TODO: this instance doesn't appear to be necessary: remove it (after benchmarking?)
+TODO: this instance doesn't appear to be necessary: remove it (after benchmarking)
 -/
 instance : FunLike (α ≃ β) α β where
   coe := Equiv.toFun
@@ -557,7 +557,7 @@ theorem arrowCongr_comp {α₁ β₁ γ₁ α₂ β₂ γ₂ : Sort*} (ea : α�
 /-- A version of `Equiv.arrowCongr` in `Type`, rather than `Sort`.
 
 The `equiv_rw` tactic is not able to use the default `Sort` level `Equiv.arrowCongr`,
-because Lean's universe rules will not unify `?l_1` with `imax (1 ?m_1)`.
+because Lean's universe rules will not unify `l_1` with `imax (1 m_1)`.
 -/
 -- Porting note: removing `congr` attribute
 @[simps! apply]

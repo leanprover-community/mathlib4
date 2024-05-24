@@ -72,7 +72,7 @@ case all the `let` bindings are extracted.
 
 The tactic `extract_lets` (without `at`) or `extract_lets at h ⊢` acts as a weaker
 form of `intros` on the goal that only introduces obvious `let`s. -/
-syntax (name := extractLets) "extract_lets " (colGt (ident <|> hole))* (ppSpace location)? : tactic
+syntax (name := extractLets) "extract_lets " (colGt (ident <|> hole))* (ppSpace location) : tactic
 
 @[tactic Mathlib.extractLets, inherit_doc extractLets]
 def evalExtractLets : Tactic := fun stx => do
@@ -84,27 +84,27 @@ def evalExtractLets : Tactic := fun stx => do
   | _ => throwUnsupportedSyntax
 where
   @[nolint docBlame]
-  setupNames (ids? : Option (TSyntaxArray [`ident, `Lean.Parser.Term.hole])) (ty : Expr) :
+  setupNames (ids : Option (TSyntaxArray [`ident, `Lean.Parser.Term.hole])) (ty : Expr) :
       MetaM (Array Name) := do
-    if let some ids := ids? then
+    if let some ids := ids then
       return ids.map getNameOfIdent'
     else
       return Array.mkArray (← instantiateMVars ty).cleanupAnnotations.letDepth `_
   @[nolint docBlame]
-  doExtract (ids? : Option (TSyntaxArray [`ident, `Lean.Parser.Term.hole]))
-      (loc? : Option <| TSyntax `Lean.Parser.Tactic.location) :
+  doExtract (ids : Option (TSyntaxArray [`ident, `Lean.Parser.Term.hole]))
+      (loc : Option <| TSyntax `Lean.Parser.Tactic.location) :
       TacticM Unit := do
     let process (f : MVarId → Array Name → MetaM (Array FVarId × MVarId))
         (ty : MVarId → MetaM Expr) : TacticM Unit := do
       let fvarIds ← liftMetaTacticAux fun mvarId => do
-        let ids ← setupNames ids? (← ty mvarId)
+        let ids ← setupNames ids (← ty mvarId)
         let (fvarIds, mvarId) ← f mvarId ids
         return (fvarIds, [mvarId])
-      if let some ids := ids? then
+      if let some ids := ids then
         withMainContext do
           for stx in ids, fvarId in fvarIds do
             Term.addLocalVarInfo stx (.fvar fvarId)
-    withLocation (expandOptLocation (mkOptionalNode loc?))
+    withLocation (expandOptLocation (mkOptionalNode loc))
       (atLocal := fun h ↦ do
         process (fun mvarId ids => mvarId.extractLetsAt h ids) (fun _ => h.getType))
       (atTarget := do

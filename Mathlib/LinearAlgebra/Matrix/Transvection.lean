@@ -441,7 +441,7 @@ theorem mul_listTransvecRow_last_col_take (i : Sum (Fin r) Unit) {k : ℕ} (hk :
   · have hkr : k < r := hk
     let k' : Fin r := ⟨k, hkr⟩
     have :
-      (listTransvecRow M).get? k =
+      (listTransvecRow M).get k =
         ↑(transvection (inr Unit.unit) (inl k')
             (-M (inr Unit.unit) (inl k') / M (inr Unit.unit) (inr Unit.unit))) := by
       simp only [listTransvecRow, List.ofFnNthVal, hkr, dif_pos, List.get_ofFn]
@@ -478,7 +478,7 @@ theorem mul_listTransvecRow_last_row (hM : M (inr unit) (inr unit) ≠ 0) (i : F
   · have hnr : n < r := hk
     let n' : Fin r := ⟨n, hnr⟩
     have A :
-      (listTransvecRow M).get? n =
+      (listTransvecRow M).get n =
         ↑(transvection (inr unit) (inl n')
         (-M (inr unit) (inl n') / M (inr unit) (inr unit))) := by
       simp only [listTransvecRow, List.ofFnNthVal, hnr, dif_pos, List.get_ofFn]

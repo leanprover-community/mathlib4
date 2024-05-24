@@ -206,7 +206,7 @@ have the same `i`th element for every `i` -/
 theorem ext_fun {s₁ s₂ : CompositionSeries X} (hl : s₁.length = s₂.length)
     (h : ∀ i, s₁ i = s₂ (Fin.cast (congr_arg Nat.succ hl) i)) : s₁ = s₂ := by
   cases s₁; cases s₂
-  -- Porting note: `dsimp at *` doesn't work. Why?
+  -- Porting note: `dsimp at *` doesn't work. Why
   dsimp at hl h
   subst hl
   simpa [Function.funext_iff] using h

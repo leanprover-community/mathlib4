@@ -24,7 +24,7 @@ def inferCharZeroOfRing {α : Q(Type u)} (_i : Q(Ring $α) := by with_reducible 
     throwError "not a characteristic zero ring"
 
 /-- Helper function to synthesize a typed `CharZero α` expression given `Ring α`, if it exists. -/
-def inferCharZeroOfRing? {α : Q(Type u)} (_i : Q(Ring $α) := by with_reducible assumption) :
+def inferCharZeroOfRing {α : Q(Type u)} (_i : Q(Ring $α) := by with_reducible assumption) :
     MetaM (Option Q(CharZero $α)) :=
   return (← trySynthInstanceQ (q(CharZero $α) : Q(Prop))).toOption
 
@@ -36,7 +36,7 @@ def inferCharZeroOfAddMonoidWithOne {α : Q(Type u)}
 
 /-- Helper function to synthesize a typed `CharZero α` expression given `AddMonoidWithOne α`, if it
 exists. -/
-def inferCharZeroOfAddMonoidWithOne? {α : Q(Type u)}
+def inferCharZeroOfAddMonoidWithOne {α : Q(Type u)}
     (_i : Q(AddMonoidWithOne $α) := by with_reducible assumption) :
       MetaM (Option Q(CharZero $α)) :=
   return (← trySynthInstanceQ (q(CharZero $α) : Q(Prop))).toOption
@@ -49,7 +49,7 @@ def inferCharZeroOfDivisionRing {α : Q(Type u)}
 
 /-- Helper function to synthesize a typed `CharZero α` expression given `DivisionRing α`, if it
 exists. -/
-def inferCharZeroOfDivisionRing? {α : Q(Type u)}
+def inferCharZeroOfDivisionRing {α : Q(Type u)}
     (_i : Q(DivisionRing $α) := by with_reducible assumption) : MetaM (Option Q(CharZero $α)) :=
   return (← trySynthInstanceQ (q(CharZero $α) : Q(Prop))).toOption
 
@@ -138,7 +138,7 @@ such that `norm_num` successfully recognises `a`. -/
   let .app f (a : Q($α)) ← whnfR e | failure
   let ra ← derive a
   let dα ← inferDivisionRing α
-  let i ← inferCharZeroOfDivisionRing? dα
+  let i ← inferCharZeroOfDivisionRing dα
   guard <|← withNewMCtxDepth <| isDefEq f q(Inv.inv (α := $α))
   haveI' : $e =Q $a⁻¹ := ⟨⟩
   assumeInstancesCommute

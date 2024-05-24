@@ -279,7 +279,7 @@ set_option linter.uppercaseLean3 false in
 
 variable (f)
 
--- TODO: refactor to use colon ideals?
+-- TODO: refactor to use colon ideals
 /-- The ideal `I = {r | r • y ∈ N}`-/
 def ExtensionOfMaxAdjoin.ideal (y : N) : Ideal R :=
   (extensionOfMax i f).domain.comap ((LinearMap.id : R →ₗ[R] R).smulRight y)

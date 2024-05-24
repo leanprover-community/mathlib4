@@ -30,15 +30,15 @@ namespace Meta.FunProp
 
 namespace Mor
 
-/-- Is `name` a coerction from some function space to functiosn? -/
+/-- Is `name` a coerction from some function space to functiosn -/
 def isCoeFunName (name : Name) : CoreM Bool := do
-  let .some info ← getCoeFnInfo? name | return false
+  let .some info ← getCoeFnInfo name | return false
   return info.type == .coeFun
 
-/-- Is `e` a coerction from some function space to functiosn? -/
+/-- Is `e` a coerction from some function space to functiosn -/
 def isCoeFun (e : Expr) : MetaM Bool := do
-  let .some (name,_) := e.getAppFn.const? | return false
-  let .some info ← getCoeFnInfo? name | return false
+  let .some (name,_) := e.getAppFn.const | return false
+  let .some info ← getCoeFnInfo name | return false
   return e.getAppNumArgs' + 1 == info.numArgs
 
 /-- Morphism application -/
@@ -50,8 +50,8 @@ structure App where
   /-- morphism argument -/
   arg : Expr
 
-/-- Is `e` morphism application? -/
-def isMorApp? (e : Expr) : MetaM (Option App) := do
+/-- Is `e` morphism application -/
+def isMorApp (e : Expr) : MetaM (Option App) := do
 
   let .app (.app coe f) x := e | return none
   if ← isCoeFun coe then
@@ -70,7 +70,7 @@ partial def whnfPred (e : Expr) (pred : Expr → MetaM Bool) (cfg : WhnfCoreConf
   whnfEasyCases e fun e => do
     let e ← whnfCore e cfg
 
-    if let .some ⟨coe,f,x⟩ ← isMorApp? e then
+    if let .some ⟨coe,f,x⟩ ← isMorApp e then
       let f ← whnfPred f pred cfg
       if cfg.zeta then
         return (coe.app f).app x
@@ -79,7 +79,7 @@ partial def whnfPred (e : Expr) (pred : Expr → MetaM Bool) (cfg : WhnfCoreConf
           mkLambdaFVars xs ((coe.app f').app x)
 
     if (← pred e) then
-        match (← unfoldDefinition? e) with
+        match (← unfoldDefinition e) with
         | some e => whnfPred e pred cfg
         | none   => return e
     else

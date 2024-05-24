@@ -567,9 +567,9 @@ theorem id_apply (x : M) : id L M x = x :=
 @[trans]
 def comp (hnp : N →[L] P) (hmn : M →[L] N) : M →[L] P where
   toFun := hnp ∘ hmn
-  -- Porting note: should be done by autoparam?
+  -- Porting note: should be done by autoparam
   map_fun' _ _ := by simp; rfl
-  -- Porting note: should be done by autoparam?
+  -- Porting note: should be done by autoparam
   map_rel' _ _ h := map_rel _ _ _ (map_rel _ _ _ h)
 #align first_order.language.hom.comp FirstOrder.Language.Hom.comp
 
@@ -722,9 +722,9 @@ theorem refl_apply (x : M) : refl L M x = x :=
 def comp (hnp : N ↪[L] P) (hmn : M ↪[L] N) : M ↪[L] P where
   toFun := hnp ∘ hmn
   inj' := hnp.injective.comp hmn.injective
-  -- Porting note: should be done by autoparam?
+  -- Porting note: should be done by autoparam
   map_fun' := by intros; simp only [Function.comp_apply, map_fun]; trivial
-  -- Porting note: should be done by autoparam?
+  -- Porting note: should be done by autoparam
   map_rel' := by intros; rw [Function.comp.assoc, map_rel, map_rel]
 #align first_order.language.embedding.comp FirstOrder.Language.Embedding.comp
 
@@ -924,9 +924,9 @@ theorem refl_apply (x : M) : refl L M x = x := by simp [refl]; rfl
 def comp (hnp : N ≃[L] P) (hmn : M ≃[L] N) : M ≃[L] P :=
   { hmn.toEquiv.trans hnp.toEquiv with
     toFun := hnp ∘ hmn
-    -- Porting note: should be done by autoparam?
+    -- Porting note: should be done by autoparam
     map_fun' := by intros; simp only [Function.comp_apply, map_fun]; trivial
-    -- Porting note: should be done by autoparam?
+    -- Porting note: should be done by autoparam
     map_rel' := by intros; rw [Function.comp.assoc, map_rel, map_rel] }
 #align first_order.language.equiv.comp FirstOrder.Language.Equiv.comp
 

@@ -1,10 +1,10 @@
 import Mathlib.Tactic.Check
-/- Override metavariable delaborator for natural metavariables to print `?m` instead
+/- Override metavariable delaborator for natural metavariables to print `m` instead
 of including a unique number, for `#guard_msgs`. -/
 open Lean PrettyPrinter Delaborator in @[delab mvar] def delabMVar : Delab := do
   let kind ← (← SubExpr.getExpr).mvarId!.getKind
   unless kind.isNatural do failure
-  `(?m)
+  `(m)
 
 /-!
 Basic check of `#check`
@@ -22,7 +22,7 @@ example (x y : Nat) : True := by
 and `have := e` is not a substitute for `#check`
 -/
 
-/-- info: x + ?m✝ : Nat -/
+/-- info: x + m✝ : Nat -/
 #guard_msgs in
 example (x : Nat) : True := by
   #check x + _
@@ -53,7 +53,7 @@ info: rfl : x = x
 ---
 error: unsolved goals
 x : Nat
-y : Nat := ?a
+y : Nat := a
 ⊢ True
 
 case a
@@ -61,7 +61,7 @@ x : Nat
 ⊢ Nat
 ---
 info: x : Nat
-y : Nat := ?a
+y : Nat := a
 ⊢ True
 
 case a
@@ -70,8 +70,8 @@ x : Nat
 -/
 #guard_msgs in
 example (x : Nat) : True := by
-  let y : Nat := ?a
-  #check (by refine rfl : ?a = x)
+  let y : Nat := a
+  #check (by refine rfl : a = x)
   trace_state
 
 /--
@@ -88,6 +88,6 @@ this : x = x
 -/
 #guard_msgs in
 example (x : Nat) : True := by
-  let y : Nat := ?a
-  have := (by refine rfl : ?a = x)
+  let y : Nat := a
+  have := (by refine rfl : a = x)
   trace_state

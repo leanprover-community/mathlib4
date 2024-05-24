@@ -63,7 +63,7 @@ protected theorem comp_map {α β γ : Type u} (g : α → β) (h : β → γ) (
 #align equiv.comp_map Equiv.comp_map
 
 protected theorem lawfulFunctor : @LawfulFunctor _ (Equiv.functor eqv) :=
-  -- Porting note: why is `_inst` required here?
+  -- Porting note: why is `_inst` required here
   let _inst := Equiv.functor eqv; {
     map_const := fun {_ _} => rfl
     id_map := Equiv.id_map eqv
@@ -115,7 +115,7 @@ section Equiv
 
 variable {t t' : Type u → Type u} (eqv : ∀ α, t α ≃ t' α)
 
--- Is this to do with the fact it lives in `Type (u+1)` not `Prop`?
+-- Is this to do with the fact it lives in `Type (u+1)` not `Prop`
 variable [Traversable t] [LawfulTraversable t]
 variable {F G : Type u → Type u} [Applicative F] [Applicative G]
 variable [LawfulApplicative F] [LawfulApplicative G]

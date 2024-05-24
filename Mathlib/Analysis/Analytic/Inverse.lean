@@ -82,7 +82,7 @@ theorem leftInv_removeZero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
   induction' n using Nat.strongRec' with n IH
   match n with
   | 0 => simp -- if one replaces `simp` with `refl`, the proof times out in the kernel.
-  | 1 => simp -- TODO: why?
+  | 1 => simp -- TODO: why
   | n + 2 =>
     simp only [leftInv, neg_inj]
     refine Finset.sum_congr rfl fun c cuniv => _

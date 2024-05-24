@@ -27,7 +27,7 @@ I document here what features are not in the original:
   `[⟨Finset.sum, 5⟩, ⟨Nat, 0⟩, ⟨Nat, 0⟩, *0, ⟨Finset.Range, 1⟩, *1, λ, ⟨#0, 0⟩]`.
 
 - The key `Key.star` takes a `Nat` identifier as an argument. For example,
-  the library pattern `?a + ?a` is encoded as `[⟨HAdd.hAdd, 6⟩, *0, *0, *0, *1, *2, *2]`.
+  the library pattern `a + a` is encoded as `[⟨HAdd.hAdd, 6⟩, *0, *0, *0, *1, *2, *2]`.
   `*0` corresponds to the type of `a`, `*1` to the `HAdd` instance, and `*2` to `a`.
   This means that it will only match an expression `x + y` if `x` is definitionally equal to `y`.
   The matching algorithm requires that the same stars from the discrimination tree match with
@@ -52,8 +52,8 @@ I document here what features are not in the original:
   outParam, so this gets ignored. Similarly, matching it with `add_assoc` gives a score of 5.
 
 - Patterns that have the potential to be η-reduced are put into the `RefinedDiscrTree` under all
-  possible reduced key sequences. This is for terms of the form `fun x => f (?m x₁ .. xₙ)`, where
-  `?m` is a metavariable, and one of `x₁, .., xₙ` in `x`.
+  possible reduced key sequences. This is for terms of the form `fun x => f (m x₁ .. xₙ)`, where
+  `m` is a metavariable, and one of `x₁, .., xₙ` in `x`.
   For example, the pattern `Continuous fun y => Real.exp (f y)])` is indexed by
   both `[⟨Continuous, 5⟩, *0, ⟨Real, 0⟩, *1, *2, λ, ⟨Real.exp⟩, *3]`
   and  `[⟨Continuous, 5⟩, *0, ⟨Real, 0⟩, *1, *2, ⟨Real.exp⟩]`
@@ -87,14 +87,14 @@ I have also made some changes in the implementation:
 TODO:
 
 - More thought could be put into the matching algorithm for non-trivial unifications.
-  For example, when looking up the expression `?a + ?a` (for rewriting), there will only be
+  For example, when looking up the expression `a + a` (for rewriting), there will only be
   results like `n + n = 2 * n` or `a + b = b + a`, but not like `n + 1 = n.succ`,
   even though this would still unify.
 
 - The reason why implicit arguments are not ignored by the discrimination tree is that they provide
   important type information. Because of this it seems more natural to index the types of
   expressions instead of indexing the implicit type arguments. Then each key would additionally
-  index the type of that expression. So instead of indexing `?a + ?b` as
+  index the type of that expression. So instead of indexing `a + b` as
   `[⟨HAdd.hAdd, 6⟩, *0, *0, *0, *1, *2, *3]`, it would be indexed by something like
   `[(*0, ⟨HAdd.hAdd, 6⟩), _, _, _, _, (*0, *1), (*0, *2)]`.
   The advantage of this would be that there will be less duplicate indexing of types,
@@ -347,7 +347,7 @@ where
     | .proj n₁ i₁ a₁ as₁, .proj n₂ i₂ a₂ as₂ => pure (n₁ == n₂ && i₁ == i₂)
                                             <&&> go a₁ a₂ <&&> goArray as₁ as₂
     | .star none        , .star none         => pure true
-    | .star (some id₁)  , .star (some id₂)   => modifyGet fun map => match map.find? id₁ with
+    | .star (some id₁)  , .star (some id₂)   => modifyGet fun map => match map.find id₁ with
       | some id => (id == id₂, map)
       | none => (true, map.insert id₁ id₂)
     | _ , _ => return false
@@ -368,10 +368,10 @@ indexing by `Nat` in `Key`. -/
 private structure Flatten.State where
   stars : Array MVarId := #[]
 
-private def getStar (mvarId? : Option MVarId) : StateM Flatten.State Nat :=
+private def getStar (mvarId : Option MVarId) : StateM Flatten.State Nat :=
   modifyGet fun s =>
-    match mvarId? with
-    | some mvarId => match s.stars.findIdx? (· == mvarId) with
+    match mvarId with
+    | some mvarId => match s.stars.findIdx (· == mvarId) with
       | some idx => (idx, s)
       | none => (s.stars.size, { s with stars := s.stars.push mvarId })
     | none => (s.stars.size, { s with stars := s.stars.push ⟨.anonymous⟩ })
@@ -413,7 +413,7 @@ private partial def isNumeral (e : Expr) : Bool :=
       else false
 
 /-- Return `some n` if `e` is definitionally equal to the natural number `n`. -/
-private partial def toNatLit? (e : Expr) : Option Literal :=
+private partial def toNatLit (e : Expr) : Option Literal :=
   if isNumeral e then
     if let some n := loop e then
       some (.natVal n)
@@ -441,9 +441,9 @@ where
 /-- Reduction procedure for the `RefinedDiscrTree` indexing. -/
 partial def reduce (e : Expr) (config : WhnfCoreConfig) : MetaM Expr := do
   let e ← whnfCore e config
-  match (← unfoldDefinition? e) with
+  match (← unfoldDefinition e) with
   | some e => reduce e config
-  | none => match e.etaExpandedStrict? with
+  | none => match e.etaExpandedStrict with
     | some e => reduce e config
     | none   => return e
 
@@ -540,7 +540,7 @@ termination_by goalArity - args.size
 - `(fun x => f x + g x) = f + g` to get rid of any lambdas in front -/
 def reduceHBinOpAux (args : Array Expr) (lambdas : List FVarId) (instH instPi : Name) :
     OptionT MetaM (Expr × Expr × Expr × List FVarId) := do
-  let some (mkApp2 (.const instH' _) type inst) := args[3]? | failure
+  let some (mkApp2 (.const instH' _) type inst) := args[3] | failure
   guard (instH == instH')
   if args.size ≤ 6 then
     etaExpand args type lambdas 6 fun args lambdas =>
@@ -664,7 +664,7 @@ partial def mkDTExprAux (e : Expr) (root : Bool) : ReaderT Context MetaM DTExpr 
 
       /- since `(fun _ => 0) = 0` and `(fun _ => 1) = 1`,
       we don't index lambdas before literals -/
-      if let some v := toNatLit? e then
+      if let some v := toNatLit e then
         return .lit v
     withLams lambdas do
       return .const n (← argDTExprs)
@@ -680,7 +680,7 @@ partial def mkDTExprAux (e : Expr) (root : Bool) : ReaderT Context MetaM DTExpr 
           let type ← mkDTExprAux (← fvarId.getType) false
           return .const ``id #[type]
     withLams lambdas do
-      if let some idx := (← read).bvars.findIdx? (· == fvarId) then
+      if let some idx := (← read).bvars.findIdx (· == fvarId) then
         return .bvar idx (← argDTExprs)
       if (← read).fvarInContext fvarId then
         return .fvar fvarId (← argDTExprs)
@@ -717,9 +717,9 @@ a different number of binders, then the resulting De Bruijn indices are offset.
 In practice, getting a `.bvar` in a `DTExpr` is very rare, so we exclude such values from the cache.
 -/
 instance : MonadCache Expr DTExpr M where
-  findCached? e := do
+  findCached e := do
     let s ← get
-    return s.find? e
+    return s.find e
   cache e e' :=
     if e'.hasLooseBVars then
       return
@@ -790,7 +790,7 @@ partial def mkDTExprsAux (original : Expr) (root : Bool) : M DTExpr := do
       unless root do
         /- since `(fun _ => 0) = 0` and `(fun _ => 1) = 1`,
         we don't index lambdas before nat literals -/
-        if let some v := toNatLit? e then
+        if let some v := toNatLit e then
           return .lit v
       withLams lambdas do
         return .const n (← argDTExprs)
@@ -807,7 +807,7 @@ partial def mkDTExprsAux (original : Expr) (root : Bool) : M DTExpr := do
           return .const ``id #[type]
     withLams lambdas do
       let c ← read
-      if let some idx := c.bvars.findIdx? (· == fvarId) then
+      if let some idx := c.bvars.findIdx (· == fvarId) then
         return .bvar idx (← argDTExprs)
       guard !(c.forbiddenVars.contains fvarId)
       if c.fvarInContext fvarId then
@@ -915,7 +915,7 @@ so it is recommended to use `RefinedDiscrTree.insert` for insertion. -/
 def insertInRefinedDiscrTree [BEq α] (d : RefinedDiscrTree α) (keys : Array Key) (v : α) :
     RefinedDiscrTree α :=
   let k := keys[0]!
-  match d.root.find? k with
+  match d.root.find k with
   | none =>
     let c := .singleton keys v 1
     { root := d.root.insert k c }
@@ -1001,7 +1001,7 @@ private def insertStarAssignment (n : Nat) (e : DTExpr) : M Unit :=
 /-- Log a metavariable assignment in the `State`. -/
 private def assignMVar (mvarId : MVarId) (e : Array Key) : M Unit := do
   let { mvarAssignments, .. } ← get
-  match mvarAssignments.find? mvarId with
+  match mvarAssignments.find mvarId with
   | some e' => guard (e == e')
   | none =>
     modify fun s => { s with mvarAssignments := s.mvarAssignments.insert mvarId e }
@@ -1015,13 +1015,13 @@ partial def skipEntries (t : Trie α) (skipped : Array Key) : Nat → M (Array K
 /-- Return the possible `Trie α` that match with anything.
 We add 1 to the matching score when the key is `.opaque`,
 since this pattern is "harder" to match with. -/
-def matchTargetStar (mvarId? : Option MVarId) (t : Trie α) : M (Trie α) := do
+def matchTargetStar (mvarId : Option MVarId) (t : Trie α) : M (Trie α) := do
   let (keys, t) ← t.children!.foldr (init := failure) fun (k, c) x => (do
     if k == .opaque then
       incrementScore 1
     skipEntries c #[k] k.arity
     ) <|> x
-  if let some mvarId := mvarId? then
+  if let some mvarId := mvarId then
     assignMVar mvarId keys
   return t
 
@@ -1034,7 +1034,7 @@ def matchTreeStars (e : DTExpr) (t : Trie α) : M (Trie α) := do
   so this loops through all of them. -/
   for (k, c) in t.children! do
     let .star i := k | break
-    if let some assignment := starAssignments.find? i then
+    if let some assignment := starAssignments.find i then
       if e == assignment then
         result := (incrementScore e.size *> pure c) <|> result
     else
@@ -1044,9 +1044,9 @@ def matchTreeStars (e : DTExpr) (t : Trie α) : M (Trie α) := do
 mutual
   /-- Return the possible `Trie α` that match with `e`. -/
   partial def matchExpr (e : DTExpr) (t : Trie α) : M (Trie α) := do
-    if let .star mvarId? := e then
+    if let .star mvarId := e then
       if (← read).unify then
-        matchTargetStar mvarId? t
+        matchTargetStar mvarId t
       else
         matchTreeStars e t
     else
@@ -1054,10 +1054,10 @@ mutual
 
   /-- If `e` is not a metavariable, return the possible `Trie α` that exactly match with `e`. -/
   @[specialize]
-  partial def exactMatch (e : DTExpr) (find? : Key → Option (Trie α)) : M (Trie α) := do
+  partial def exactMatch (e : DTExpr) (find : Key → Option (Trie α)) : M (Trie α) := do
 
     let findKey (k : Key) (x : Trie α → M (Trie α) := pure) (score := 1) : M (Trie α) :=
-      match find? k with
+      match find k with
         | none => failure
         | some trie => do
           incrementScore score
@@ -1090,10 +1090,10 @@ private partial def getMatchWithScoreAux (d : RefinedDiscrTree α) (e : DTExpr) 
       let (_, t) ← GetUnify.skipEntries c #[k] k.arity
       return t) <|> x
   else
-    GetUnify.exactMatch e d.root.find?
+    GetUnify.exactMatch e d.root.find
     <|> do
     guard allowRootStar
-    let some c := d.root.find? (.star 0) | failure
+    let some c := d.root.find (.star 0) | failure
     return c
   ).run unify config
 

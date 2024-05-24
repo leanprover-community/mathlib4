@@ -683,7 +683,7 @@ theorem coeff_comp_degree_mul_degree (hqd0 : natDegree q ≠ 0) :
     leadingCoeff p * leadingCoeff q ^ natDegree p := by
   rw [comp, eval₂_def, coeff_sum]
   -- Porting note: `convert` → `refine`
-  refine Eq.trans (Finset.sum_eq_single p.natDegree ?h₀ ?h₁) ?h₂
+  refine Eq.trans (Finset.sum_eq_single p.natDegree h₀ h₁) h₂
   case h₂ =>
     simp only [coeff_natDegree, coeff_C_mul, coeff_pow_mul_natDegree]
   case h₀ =>
@@ -1022,7 +1022,7 @@ end Map
 /-!
 we have made `eval₂` irreducible from the start.
 
-Perhaps we can make also `eval`, `comp`, and `map` irreducible too?
+Perhaps we can make also `eval`, `comp`, and `map` irreducible too
 -/
 
 

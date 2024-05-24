@@ -18,6 +18,6 @@ elab (name := clear_) "clear_" : tactic =>
     for decl in ← getLCtx do
       if let Name.str _ str := decl.userName then
         if !str.isEmpty && str.front == '_' then
-          if let none ← isClass? decl.type then
+          if let none ← isClass decl.type then
             toClear := toClear.push decl.fvarId
     goal.tryClearMany toClear

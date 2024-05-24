@@ -89,7 +89,7 @@ lemma ext' (e e' : Pretrivialization F proj) (h₁ : e.toPartialEquiv = e'.toPar
   cases e; cases e'; congr
 #align pretrivialization.ext Pretrivialization.ext'
 
--- Porting note (#11215): TODO: move `ext` here?
+-- Porting note (#11215): TODO: move `ext` here
 lemma ext {e e' : Pretrivialization F proj} (h₁ : ∀ x, e x = e' x)
     (h₂ : ∀ x, e.toPartialEquiv.symm x = e'.toPartialEquiv.symm x) (h₃ : e.baseSet = e'.baseSet) :
     e = e' := by

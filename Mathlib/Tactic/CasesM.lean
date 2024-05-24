@@ -74,7 +74,7 @@ def elabPatterns (pats : Array Term) : TermElabM (Array AbstractMVarsResult) :=
 /-- Returns true if any of the patterns match the expression. -/
 def matchPatterns (pats : Array AbstractMVarsResult) (e : Expr) : MetaM Bool := do
   let e ← instantiateMVars e
-  pats.anyM fun p ↦ return (← Conv.matchPattern? p e) matches some (_, #[])
+  pats.anyM fun p ↦ return (← Conv.matchPattern p e) matches some (_, #[])
 
 /--
 * `casesm p` applies the `cases` tactic to a hypothesis `h : type`
@@ -89,7 +89,7 @@ Example: The following tactic destructs all conjunctions and disjunctions in the
 casesm* _ ∨ _, _ ∧ _
 ```
 -/
-elab (name := casesM) "casesm" recursive:"*"? ppSpace pats:term,+ : tactic => do
+elab (name := casesM) "casesm" recursive:"*" ppSpace pats:term,+ : tactic => do
   let pats ← elabPatterns pats.getElems
   liftMetaTactic (casesMatching (matchPatterns pats) recursive.isSome)
 
@@ -111,11 +111,11 @@ Example: The following tactic destructs all conjunctions and disjunctions in the
 cases_type* Or And
 ```
 -/
-elab (name := casesType) "cases_type" recursive:"*"? heads:(ppSpace colGt ident)+ : tactic =>
+elab (name := casesType) "cases_type" recursive:"*" heads:(ppSpace colGt ident)+ : tactic =>
   elabCasesType heads recursive.isSome true
 
 @[inherit_doc casesType]
-elab (name := casesType!) "cases_type!" recursive:"*"? heads:(ppSpace colGt ident)+ : tactic =>
+elab (name := casesType!) "cases_type!" recursive:"*" heads:(ppSpace colGt ident)+ : tactic =>
   elabCasesType heads recursive.isSome false
 
 /--
@@ -160,6 +160,6 @@ and/or/true:
 constructorm* _ ∨ _, _ ∧ _, True
 ```
 -/
-elab (name := constructorM) "constructorm" recursive:"*"? ppSpace pats:term,+ : tactic => do
+elab (name := constructorM) "constructorm" recursive:"*" ppSpace pats:term,+ : tactic => do
   let pats ← elabPatterns pats.getElems
   liftMetaTactic (constructorMatching · (matchPatterns pats) recursive.isSome)

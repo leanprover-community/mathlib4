@@ -243,7 +243,7 @@ theorem leftInvSeq_reverse (ω : List B) :
 theorem getD_rightInvSeq (ω : List B) (j : ℕ) :
     (ris ω).getD j 1 =
       (π (ω.drop (j + 1)))⁻¹
-        * (Option.map (cs.simple) (ω.get? j)).getD 1
+        * (Option.map (cs.simple) (ω.get j)).getD 1
         * π (ω.drop (j + 1)) := by
   induction' ω with i ω ih generalizing j
   · simp
@@ -255,7 +255,7 @@ theorem getD_rightInvSeq (ω : List B) (j : ℕ) :
 theorem getD_leftInvSeq (ω : List B) (j : ℕ) :
     (lis ω).getD j 1 =
       π (ω.take j)
-        * (Option.map (cs.simple) (ω.get? j)).getD 1
+        * (Option.map (cs.simple) (ω.get j)).getD 1
         * (π (ω.take j))⁻¹ := by
   induction' ω with i ω ih generalizing j
   · simp
@@ -389,8 +389,8 @@ theorem prod_leftInvSeq (ω : List B) : prod (lis ω) = (π ω)⁻¹ := by
   exact cs.prod_rightInvSeq _
 
 theorem IsReduced.nodup_rightInvSeq {ω : List B} (rω : cs.IsReduced ω) : List.Nodup (ris ω) := by
-  apply List.nodup_iff_get_ne_get?.mpr
-  intro j j' j_lt_j' j'_lt_length (dup : get? (rightInvSeq cs ω) j = get? (rightInvSeq cs ω) j')
+  apply List.nodup_iff_get_ne_get.mpr
+  intro j j' j_lt_j' j'_lt_length (dup : get (rightInvSeq cs ω) j = get (rightInvSeq cs ω) j')
   show False
   replace j'_lt_length : j' < List.length ω := by simpa using j'_lt_length
   rw [get_eq_get (by simp; omega), get_eq_get (by simp; omega)] at dup
@@ -405,7 +405,7 @@ theorem IsReduced.nodup_rightInvSeq {ω : List B} (rω : cs.IsReduced ω) : List
       drop_drop, nil_append, min_eq_left_of_lt (j_lt_j'.trans j'_lt_length), ← add_assoc,
       Nat.sub_add_cancel (by omega), mul_left_inj, mul_right_inj]
     congr 2
-    show get? (take j ω ++ drop (j + 1) ω) (j' - 1) = get? ω j'
+    show get (take j ω ++ drop (j + 1) ω) (j' - 1) = get ω j'
     rw [get_append_right (by simp; left; exact Nat.le_sub_one_of_lt j_lt_j'), get_drop]
     congr
     show j + 1 + (j' - 1 - List.length (take j ω)) = j'

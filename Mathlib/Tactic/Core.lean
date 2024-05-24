@@ -32,7 +32,7 @@ def toModifiers (nm : Name) (newDoc : Option String := none) :
   let env ← getEnv
   let d ← getConstInfo nm
   let mods : Modifiers :=
-  { docString? := newDoc
+  { docString := newDoc
     visibility :=
     if isPrivateNameExport nm then
       Visibility.private
@@ -40,8 +40,8 @@ def toModifiers (nm : Name) (newDoc : Option String := none) :
       Visibility.regular
     else
       Visibility.protected
-    isNoncomputable := if (env.find? <| nm.mkStr "_cstage1").isSome then false else true
-    recKind := RecKind.default -- nonrec only matters for name resolution, so is irrelevant (?)
+    isNoncomputable := if (env.find <| nm.mkStr "_cstage1").isSome then false else true
+    recKind := RecKind.default -- nonrec only matters for name resolution, so is irrelevant ()
     isUnsafe := d.isUnsafe
     attrs := #[] }
   return mods
@@ -251,9 +251,9 @@ open Lean
 /-- Returns the root directory which contains the package root file, e.g. `Mathlib.lean`. -/
 def getPackageDir (pkg : String) : IO System.FilePath := do
   let sp ← initSrcSearchPath
-  let root? ← sp.findM? fun p =>
+  let root ← sp.findM fun p =>
     (p / pkg).isDir <||> ((p / pkg).withExtension "lean").pathExists
-  if let some root := root? then return root
+  if let some root := root then return root
   throw <| IO.userError s!"Could not find {pkg} directory. \
     Make sure the LEAN_SRC_PATH environment variable is set correctly."
 

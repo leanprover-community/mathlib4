@@ -65,16 +65,16 @@ Antisymmetry is quite weak in the sense that there's no way to discriminate whic
 equal. This prevents defining closed-open intervals `cIco` and `cIoc` in the neat `=`-less way. We
 currently haven't defined them at all.
 
-What is the correct generality of "rolling the necklace" open? At least, this works for `α × β` and
+What is the correct generality of "rolling the necklace" open At least, this works for `α × β` and
 `β × α` where `α` is a circular order and `β` is a linear order.
 
 What's next is to define circular groups and provide instances for `ZMod n`, the usual circle group
 `Circle`, and `RootsOfUnity M`. What conditions do we need on `M` for this last one
-to work?
+to work
 
 We should have circular order homomorphisms. The typical example is
 `days_to_month : days_of_the_year →c months_of_the_year` which relates the circular order of days
-and the circular order of months. Is `α →c β` a good notation?
+and the circular order of months. Is `α →c β` a good notation
 
 ## References
 

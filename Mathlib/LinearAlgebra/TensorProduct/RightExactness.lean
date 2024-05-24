@@ -216,7 +216,7 @@ lemma lTensor.inverse_of_rightInverse_apply
   apply LinearMap.congr_fun
   apply TensorProduct.ext'
   intro n q
-  simp? [lTensor.inverse_of_rightInverse] says
+  simp [lTensor.inverse_of_rightInverse] says
     simp only [inverse_of_rightInverse, coe_comp, Function.comp_apply, lTensor_tmul,
       lift.tmul, flip_apply, coe_mk, AddHom.coe_mk, mk_apply, Submodule.mkQ_apply]
   rw [Submodule.Quotient.eq, ← TensorProduct.tmul_sub]
@@ -321,7 +321,7 @@ lemma rTensor.inverse_of_rightInverse_apply
   apply LinearMap.congr_fun
   apply TensorProduct.ext'
   intro n q
-  simp? [rTensor.inverse_of_rightInverse] says
+  simp [rTensor.inverse_of_rightInverse] says
     simp only [inverse_of_rightInverse, coe_comp, Function.comp_apply, rTensor_tmul,
       lift.tmul, coe_mk, AddHom.coe_mk, mk_apply, Submodule.mkQ_apply]
   rw [Submodule.Quotient.eq, ← TensorProduct.sub_tmul]

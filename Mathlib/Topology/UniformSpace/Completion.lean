@@ -570,7 +570,7 @@ theorem extension_map [CompleteSpace γ] [T0Space γ] {f : β → γ} {g : α �
   Completion.ext (continuous_extension.comp continuous_map) continuous_extension <| by
     intro a
     -- Porting note: this is not provable by simp [hf, hg, hf.comp hg, map_coe, extension_coe],
-    -- but should be?
+    -- but should be
     rw [extension_coe (hf.comp hg), Function.comp_apply, map_coe hg, extension_coe hf,
       Function.comp_apply]
 #align uniform_space.completion.extension_map UniformSpace.Completion.extension_map

@@ -16,7 +16,7 @@ import Mathlib.Tactic.Ring
 We introduce a condition `Decstr` and show that if a string `en` is `Derivable`, then `Decstr en`
 holds.
 
-Using this, we give a negative answer to the question: is `"MU"` derivable?
+Using this, we give a negative answer to the question: is `"MU"` derivable
 
 ## Tags
 

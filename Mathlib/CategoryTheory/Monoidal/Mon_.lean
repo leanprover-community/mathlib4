@@ -617,8 +617,8 @@ Projects:
 * Check that `Mon_ AddCommGroupCat ≌ RingCat`.
   (We've already got `Mon_ (ModuleCat R) ≌ AlgebraCat R`,
   in `Mathlib.CategoryTheory.Monoidal.Internal.Module`.)
-* Can you transport this monoidal structure to `RingCat` or `AlgebraCat R`?
-  How does it compare to the "native" one?
+* Can you transport this monoidal structure to `RingCat` or `AlgebraCat R`
+  How does it compare to the "native" one
 * Show that when `F` is a lax braided functor `C ⥤ D`, the functor `map_Mon F : Mon_ C ⥤ Mon_ D`
   is lax monoidal.
 -/

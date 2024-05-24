@@ -530,7 +530,7 @@ section LinearOrderedSemifield
 
 variable [LinearOrderedSemifield α] [FloorSemiring α]
 
--- TODO: should these lemmas be `simp`? `norm_cast`?
+-- TODO: should these lemmas be `simp` `norm_cast`
 
 theorem floor_div_nat (a : α) (n : ℕ) : ⌊a / n⌋₊ = ⌊a⌋₊ / n := by
   rcases le_total a 0 with ha | ha

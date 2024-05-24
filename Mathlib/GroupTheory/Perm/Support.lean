@@ -343,10 +343,10 @@ theorem exists_mem_support_of_mem_support_prod {l : List (Perm α)} {x : α}
   induction' l with f l ih
   · rfl
   · rw [List.prod_cons, mul_apply, ih, hx]
-    · simp only [List.find?, List.mem_cons, true_or]
+    · simp only [List.find, List.mem_cons, true_or]
     intros f' hf'
     refine hx f' _
-    simp only [List.find?, List.mem_cons]
+    simp only [List.find, List.mem_cons]
     exact Or.inr hf'
 #align equiv.perm.exists_mem_support_of_mem_support_prod Equiv.Perm.exists_mem_support_of_mem_support_prod
 

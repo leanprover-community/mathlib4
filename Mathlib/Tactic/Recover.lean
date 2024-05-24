@@ -36,9 +36,9 @@ partial def getUnassignedGoalMVarDependencies (mvarId : MVarId) :
         addMVars mdecl.type
         for ldecl in mdecl.lctx do
           addMVars ldecl.type
-          if let (some val) := ldecl.value? then
+          if let (some val) := ldecl.value then
             addMVars val
-        if let (some ass) ← getDelayedMVarAssignment? mvarId then
+        if let (some ass) ← getDelayedMVarAssignment mvarId then
           let pendingMVarId := ass.mvarIdPending
           unless ← pendingMVarId.isAssigned <||> pendingMVarId.isDelayedAssigned do
             modify (·.insert pendingMVarId)

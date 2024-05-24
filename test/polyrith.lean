@@ -41,14 +41,14 @@ A full test suite is provided at the bottom of the file.
 
 -- setup_tactic_parser
 
--- meta def tactic.interactive.test_polyrith (restr : parse (tk "only")?)
---   (hyps : parse pexpr_list?)
+-- meta def tactic.interactive.test_polyrith (restr : parse (tk "only"))
+--   (hyps : parse pexpr_list)
 --   (sage_out : string) (expected_args : list string) (expected_out : string) : tactic unit := do
 --   some sage_out ← return <| json.parse sage_out,
 --   tactic.test_polyrith restr.is_some (hyps.get_or_else []) sage_out expected_args expected_out
 
--- meta def tactic.interactive.test_sage_output (restr : parse (tk "only")?)
---   (hyps : parse pexpr_list?) (expected_out : string) : tactic unit := do
+-- meta def tactic.interactive.test_sage_output (restr : parse (tk "only"))
+--   (hyps : parse pexpr_list) (expected_out : string) : tactic unit := do
 --   expected_json ← json.parse expected_out,
 --   sleep 10, -- otherwise can lead to weird errors when actively editing code with polyrith calls
 --   (eq_names, m, R, args) ← create_args restr.is_some (hyps.get_or_else []),
@@ -59,8 +59,8 @@ A full test suite is provided at the bottom of the file.
 -- /--
 -- A convenience function. Given a working test, prints the code for a call to `test_sage_output`.
 -- -/
--- meta def tactic.interactive.create_sage_output_test (restr : parse (tk "only")?)
---   (hyps : parse pexpr_list?) : tactic unit := do
+-- meta def tactic.interactive.create_sage_output_test (restr : parse (tk "only"))
+--   (hyps : parse pexpr_list) : tactic unit := do
 --   let hyps := (hyps.get_or_else []),
 --   sleep 10, -- otherwise can lead to weird errors when actively editing code with polyrith calls
 --   (eq_names, m, R, args) ← create_args restr.is_some hyps,
@@ -73,8 +73,8 @@ A full test suite is provided at the bottom of the file.
 -- /--
 -- A convenience function. Given a working test, prints the code for a call to `test_polyrith`.
 -- -/
--- meta def tactic.interactive.create_polyrith_test (restr : parse (tk "only")?)
---   (hyps : parse pexpr_list?) : tactic unit := do
+-- meta def tactic.interactive.create_polyrith_test (restr : parse (tk "only"))
+--   (hyps : parse pexpr_list) : tactic unit := do
 --   let hyps := (hyps.get_or_else []),
 --   sleep 10, -- otherwise can lead to weird errors when actively editing code with polyrith calls
 --   (eq_names, m, R, args) ← create_args restr.is_some hyps,

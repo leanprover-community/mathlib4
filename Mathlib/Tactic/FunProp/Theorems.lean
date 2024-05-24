@@ -79,38 +79,38 @@ def detectLambdaTheoremArgs (f : Expr) (ctxVars : Array Expr) :
     match xBody with
     | .bvar 0 =>
       -- fun x => x
-      let .some argId_X := ctxVars.findIdx? (fun x => x == xType) | return none
+      let .some argId_X := ctxVars.findIdx (fun x => x == xType) | return none
       return .some (.id argId_X)
     | .fvar yId =>
       -- fun x => y
-      let .some argId_X := ctxVars.findIdx? (fun x => x == xType) | return none
-      let .some argId_y := ctxVars.findIdx? (fun x => x == (.fvar yId)) | return none
+      let .some argId_X := ctxVars.findIdx (fun x => x == xType) | return none
+      let .some argId_y := ctxVars.findIdx (fun x => x == (.fvar yId)) | return none
       return .some (.const argId_X argId_y)
     | .app (.bvar 0) (.fvar xId) =>
       -- fun f => f x
       let fType := xType
-       let .some argId_x := ctxVars.findIdx? (fun x => x == (.fvar xId)) | return none
+       let .some argId_x := ctxVars.findIdx (fun x => x == (.fvar xId)) | return none
        match fType with
        | .forallE xName' xType' (.fvar yId) xBi' =>
-         let .some argId_Y := ctxVars.findIdx? (fun x => x == (.fvar yId)) | return none
+         let .some argId_Y := ctxVars.findIdx (fun x => x == (.fvar yId)) | return none
          return .some <| .proj argId_x argId_Y
        | .forallE xName' xType' (.app (.fvar yId) (.bvar 0)) xBi' =>
-         let .some argId_Y := ctxVars.findIdx? (fun x => x == (.fvar yId)) | return none
+         let .some argId_Y := ctxVars.findIdx (fun x => x == (.fvar yId)) | return none
          return .some <| .projDep argId_x argId_Y
        | _ => return none
     | .app (.fvar fId) (.app (.fvar gId) (.bvar 0)) =>
       -- fun x => f (g x)
-      let .some argId_f := ctxVars.findIdx? (fun x => x == (.fvar fId)) | return none
-      let .some argId_g := ctxVars.findIdx? (fun x => x == (.fvar gId)) | return none
+      let .some argId_f := ctxVars.findIdx (fun x => x == (.fvar fId)) | return none
+      let .some argId_g := ctxVars.findIdx (fun x => x == (.fvar gId)) | return none
       return .some <| .comp argId_f argId_g
     | .letE yName yType (.app (.fvar gId) (.bvar 0))
                         (.app (.app (.fvar fId) (.bvar 1)) (.bvar 0)) dep =>
-      let .some argId_f := ctxVars.findIdx? (fun x => x == (.fvar fId)) | return none
-      let .some argId_g := ctxVars.findIdx? (fun x => x == (.fvar gId)) | return none
+      let .some argId_f := ctxVars.findIdx (fun x => x == (.fvar fId)) | return none
+      let .some argId_g := ctxVars.findIdx (fun x => x == (.fvar gId)) | return none
       return .some <| .letE argId_f argId_g
     | .lam Name yType (.app (.app (.fvar fId) (.bvar 1)) (.bvar 0)) yBi =>
       -- fun x y => f x y
-      let .some argId_f := ctxVars.findIdx? (fun x => x == (.fvar fId)) | return none
+      let .some argId_f := ctxVars.findIdx (fun x => x == (.fvar fId)) | return none
       return .some <| .pi argId_f
     | _ => return none
   | _ => return none
@@ -152,7 +152,7 @@ initialize lambdaTheoremsExt : LambdaTheoremsExt ←
 /-- -/
 def getLambdaTheorem (funPropName : Name) (type : LambdaTheoremType) :
     CoreM (Option LambdaTheorem) := do
-  return (lambdaTheoremsExt.getState (← getEnv)).theorems.find? (funPropName,type)
+  return (lambdaTheoremsExt.getState (← getEnv)).theorems.find (funPropName,type)
 
 
 --------------------------------------------------------------------------------
@@ -327,20 +327,20 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
   let info ← getConstInfo declName
   forallTelescope info.type fun xs b => do
 
-    let .some (decl,f) ← getFunProp? b
+    let .some (decl,f) ← getFunProp b
       | throwError "unrecognized function property `{← ppExpr b}`"
     let funPropName := decl.funPropName
 
-    let fData? ← getFunctionData? f defaultUnfoldPred {zeta:=false}
+    let fData ← getFunctionData f defaultUnfoldPred {zeta:=false}
 
-    if let .some thmArgs ← detectLambdaTheoremArgs (← fData?.get) xs then
+    if let .some thmArgs ← detectLambdaTheoremArgs (← fData.get) xs then
       return .lam {
         funPropName := funPropName
         thmName := declName
         thmArgs := thmArgs
       }
 
-    let .data fData := fData?
+    let .data fData := fData
       | throwError s!"function in invalid form {← ppExpr f}"
 
     match fData.fn with

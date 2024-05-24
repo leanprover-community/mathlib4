@@ -29,7 +29,7 @@ This list is used during the computation to merge let bindings.
 -/
 private partial def Lean.Expr.liftLetsAux (config : LiftLetsConfig) (e : Expr) (fvars : Array Expr)
     (f : Array Expr → Expr → MetaM Expr) : MetaM Expr := do
-  if (e.find? Expr.isLet).isNone then
+  if (e.find Expr.isLet).isNone then
     -- If `e` contains no `let` expressions, then we can avoid recursing into it.
     return ← f fvars e
   if !config.proofs then
@@ -41,10 +41,10 @@ private partial def Lean.Expr.liftLetsAux (config : LiftLetsConfig) (e : Expr) (
       v.liftLetsAux config fvars fun fvars v' => do
         if config.merge then
           -- Eliminate the let binding if there is already one of the same type and value.
-          let fvar? ← fvars.findM? (fun fvar => do
+          let fvar ← fvars.findM (fun fvar => do
             let decl ← fvar.fvarId!.getDecl
-            return decl.type == t' && decl.value? == some v')
-          if let some fvar' := fvar? then
+            return decl.type == t' && decl.value == some v')
+          if let some fvar' := fvar then
             return ← (b.instantiate1 fvar').liftLetsAux config fvars f
         withLetDecl n t' v' fun fvar =>
           (b.instantiate1 fvar).liftLetsAux config (fvars.push fvar) f
@@ -117,10 +117,10 @@ example : (let x := 1; x) = 1 := by
 
 During the lifting process, let bindings are merged if they have the same type and value.
 -/
-syntax (name := lift_lets) "lift_lets" (Parser.Tactic.config)? (ppSpace location)? : tactic
+syntax (name := lift_lets) "lift_lets" (Parser.Tactic.config) (ppSpace location) : tactic
 
 elab_rules : tactic
-  | `(tactic| lift_lets $[$cfg:config]? $[$loc:location]?) => do
+  | `(tactic| lift_lets $[$cfg:config] $[$loc:location]) => do
     let config ← elabConfig (mkOptionalNode cfg)
     withLocation (expandOptLocation (Lean.mkOptionalNode loc))
       (atLocal := fun h ↦ liftMetaTactic1 fun mvarId ↦ do

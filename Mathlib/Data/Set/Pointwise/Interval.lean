@@ -519,7 +519,7 @@ theorem preimage_add_const_uIcc : (fun x => x + a) ⁻¹' [[b, c]] = [[b - a, c 
   simpa only [add_comm] using preimage_const_add_uIcc a b c
 #align set.preimage_add_const_uIcc Set.preimage_add_const_uIcc
 
--- TODO: Why is the notation `-[[a, b]]` broken?
+-- TODO: Why is the notation `-[[a, b]]` broken
 @[simp]
 theorem preimage_neg_uIcc : @Neg.neg (Set α) Set.neg [[a, b]] = [[-a, -b]] := by
   simp only [← Icc_min_max, preimage_neg_Icc, min_neg_neg, max_neg_neg]

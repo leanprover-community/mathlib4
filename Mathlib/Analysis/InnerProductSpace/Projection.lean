@@ -977,7 +977,7 @@ theorem Submodule.topologicalClosure_eq_top_iff [CompleteSpace E] :
 namespace Dense
 
 /- Porting note: unneeded assumption `[CompleteSpace E]` was removed from all theorems in this
-section. TODO: Move to another file? -/
+section. TODO: Move to another file -/
 open Submodule
 
 variable {x y : E}

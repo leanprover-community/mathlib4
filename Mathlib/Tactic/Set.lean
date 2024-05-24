@@ -8,11 +8,11 @@ import Lean
 namespace Mathlib.Tactic
 open Lean Elab Elab.Tactic Meta
 
-syntax setArgsRest := ppSpace ident (" : " term)? " := " term (" with " "← "? ident)?
+syntax setArgsRest := ppSpace ident (" : " term) " := " term (" with " "← " ident)
 
 -- This is called `setTactic` rather than `set`
 -- as we sometimes refer to `MonadStateOf.set` from inside `Mathlib.Tactic`.
-syntax (name := setTactic) "set" "!"? setArgsRest : tactic
+syntax (name := setTactic) "set" "!" setArgsRest : tactic
 
 macro "set!" rest:setArgsRest : tactic => `(tactic| set ! $rest:setArgsRest)
 
@@ -39,7 +39,7 @@ h2 : x = y
 
 -/
 elab_rules : tactic
-| `(tactic| set%$tk $[!%$rw]? $a:ident $[: $ty:term]? := $val:term $[with $[←%$rev]? $h:ident]?) =>
+| `(tactic| set%$tk $[!%$rw] $a:ident $[: $ty:term] := $val:term $[with $[←%$rev] $h:ident]) =>
   withMainContext do
     let (ty, vale) ← match ty with
     | some ty =>

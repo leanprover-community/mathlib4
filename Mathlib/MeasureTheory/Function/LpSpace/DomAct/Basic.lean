@@ -64,7 +64,7 @@ instance [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E] : SMulCommClass 
 
 -- We don't have a typeclass for additive versions of the next few lemmas
 -- Should we add `AddDistribAddAction` with `to_additive` both from `MulDistribMulAction`
--- and `DistribMulAction`?
+-- and `DistribMulAction`
 
 @[to_additive]
 theorem smul_Lp_add (c : Mᵈᵐᵃ) : ∀ f g : Lp E p μ, c • (f + g) = c • f + c • g := by

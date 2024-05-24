@@ -1272,7 +1272,7 @@ theorem t2_separation [T2Space X] {x y : X} (h : x ≠ y) :
   T2Space.t2 h
 #align t2_separation t2_separation
 
--- todo: use this as a definition?
+-- todo: use this as a definition
 theorem t2Space_iff_disjoint_nhds : T2Space X ↔ Pairwise fun x y : X => Disjoint (𝓝 x) (𝓝 y) := by
   refine (t2Space_iff X).trans (forall₃_congr fun x y _ => _)
   simp only [(nhds_basis_opens x).disjoint_iff (nhds_basis_opens y), exists_prop, ← exists_and_left,

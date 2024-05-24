@@ -114,22 +114,22 @@ section
 variable (x y : Fin (2^w))
 
 @[simp] lemma ofFin_neg : ofFin (-x) = -(ofFin x) := by
-  ext; rw [neg_eq_zero_sub]; simp; rfl -- v4.7.0-rc1 issues remove?
+  ext; rw [neg_eq_zero_sub]; simp; rfl -- v4.7.0-rc1 issues remove
 
 @[simp] lemma ofFin_and : ofFin (x &&& y) = ofFin x &&& ofFin y := by
   ext
   simp [HAnd.hAnd, AndOp.and, Fin.land, BitVec.and, toNat_ofFin]
-  -- v4.7.0-rc1 issues remove?
+  -- v4.7.0-rc1 issues remove
 
 @[simp] lemma ofFin_or  : ofFin (x ||| y) = ofFin x ||| ofFin y := by
   ext
   simp [HOr.hOr, OrOp.or, Fin.lor, BitVec.or, toNat_ofFin]
-  -- v4.7.0-rc1 issues remove?
+  -- v4.7.0-rc1 issues remove
 
 @[simp] lemma ofFin_xor : ofFin (x ^^^ y) = ofFin x ^^^ ofFin y := by
   ext
   simp [HXor.hXor, Xor.xor, Fin.xor, BitVec.xor, toNat_ofFin]
-  -- v4.7.0-rc1 issues remove?
+  -- v4.7.0-rc1 issues remove
 
 @[simp] lemma ofFin_mul : ofFin (x * y)   = ofFin x * ofFin y   := rfl
 
@@ -161,7 +161,7 @@ variable (x y : BitVec w)
 
 @[simp] lemma toFin_neg : toFin (-x) = -(toFin x) := by
   ext; rw [neg_eq_zero_sub]; simp; rfl
-  -- v4.7.0-rc1 issues remove?
+  -- v4.7.0-rc1 issues remove
 
 -- These should be simp, but Std's simp-lemmas do not allow this yet.
 lemma toFin_zero : toFin (0 : BitVec w) = 0 := rfl

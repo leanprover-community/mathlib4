@@ -243,7 +243,7 @@ theorem le_comap_sup : comap f K ⊔ comap f L ≤ comap f (K ⊔ L) :=
   (gc_map_comap f : GaloisConnection (map f) (comap f)).monotone_u.le_map_sup _ _
 #align ideal.le_comap_sup Ideal.le_comap_sup
 
--- TODO: Should these be simp lemmas?
+-- TODO: Should these be simp lemmas
 theorem _root_.element_smul_restrictScalars {R S M}
     [CommSemiring R] [CommSemiring S] [Algebra R S] [AddCommMonoid M]
     [Module R M] [Module S M] [IsScalarTower R S M] (r : R) (N : Submodule S M) :

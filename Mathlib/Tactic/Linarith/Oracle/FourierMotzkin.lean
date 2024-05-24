@@ -269,7 +269,7 @@ def getPCompSet : LinarithM PCompSet :=
 
 /-- Throws an exception if a contradictory `PComp` is contained in the current state. -/
 def validate : LinarithM Unit := do
-  match (← getPCompSet).toList.find? (fun p : PComp => p.isContr) with
+  match (← getPCompSet).toList.find (fun p : PComp => p.isContr) with
   | none => return ()
   | some c => throw c
 

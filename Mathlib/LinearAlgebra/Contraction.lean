@@ -181,7 +181,7 @@ theorem dualTensorHomEquivOfBasis_toLinearMap :
   rfl
 #align dual_tensor_hom_equiv_of_basis_to_linear_map dualTensorHomEquivOfBasis_toLinearMap
 
--- Porting note: should N be explicit in dualTensorHomEquivOfBasis?
+-- Porting note: should N be explicit in dualTensorHomEquivOfBasis
 @[simp]
 theorem dualTensorHomEquivOfBasis_symm_cancel_left (x : Module.Dual R M ⊗[R] N) :
     (dualTensorHomEquivOfBasis (N := N) b).symm (dualTensorHom R M N x) = x := by

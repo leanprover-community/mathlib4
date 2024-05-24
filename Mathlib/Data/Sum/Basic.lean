@@ -43,8 +43,8 @@ section get
 
 #align sum.is_left Sum.isLeft
 #align sum.is_right Sum.isRight
-#align sum.get_left Sum.getLeft?
-#align sum.get_right Sum.getRight?
+#align sum.get_left Sum.getLeft
+#align sum.get_right Sum.getRight
 
 variable {x y : Sum α β}
 
@@ -60,11 +60,11 @@ theorem eq_right_iff_getRight_eq {b : β} : x = inr b ↔ ∃ h, x.getRight h = 
 #align sum.get_left_eq_some_iff Sum.getLeft_eq_some_iff
 #align sum.get_right_eq_some_iff Sum.getRight_eq_some_iff
 
-theorem getLeft_eq_getLeft? (h₁ : x.isLeft) (h₂ : x.getLeft?.isSome) :
-    x.getLeft h₁ = x.getLeft?.get h₂ := by simp [← getLeft_eq_some_iff]
+theorem getLeft_eq_getLeft (h₁ : x.isLeft) (h₂ : x.getLeft.isSome) :
+    x.getLeft h₁ = x.getLeft.get h₂ := by simp [← getLeft_eq_some_iff]
 
-theorem getRight_eq_getRight? (h₁ : x.isRight) (h₂ : x.getRight?.isSome) :
-    x.getRight h₁ = x.getRight?.get h₂ := by simp [← getRight_eq_some_iff]
+theorem getRight_eq_getRight (h₁ : x.isRight) (h₂ : x.getRight.isSome) :
+    x.getRight h₁ = x.getRight.get h₂ := by simp [← getRight_eq_some_iff]
 
 #align sum.bnot_is_left Sum.bnot_isLeft
 #align sum.is_left_eq_ff Sum.isLeft_eq_false
@@ -75,10 +75,10 @@ theorem getRight_eq_getRight? (h₁ : x.isRight) (h₂ : x.getRight?.isSome) :
 #align sum.is_left_iff Sum.isLeft_iff
 #align sum.is_right_iff Sum.isRight_iff
 
-@[simp] theorem isSome_getLeft_iff_isLeft : x.getLeft?.isSome ↔ x.isLeft := by
+@[simp] theorem isSome_getLeft_iff_isLeft : x.getLeft.isSome ↔ x.isLeft := by
   rw [isLeft_iff, Option.isSome_iff_exists]; simp
 
-@[simp] theorem isSome_getRight_iff_isRight : x.getRight?.isSome ↔ x.isRight := by
+@[simp] theorem isSome_getRight_iff_isRight : x.getRight.isSome ↔ x.isRight := by
   rw [isRight_iff, Option.isSome_iff_exists]; simp
 
 end get

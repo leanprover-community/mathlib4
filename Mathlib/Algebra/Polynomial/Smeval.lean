@@ -33,7 +33,7 @@ is a generalization of `Algebra.Polynomial.Eval`.
 ## To do
 
 * `smeval_neg` and `smeval_intCast` for `R` a ring and `S` an `AddCommGroup`.
-* Nonunital evaluation for polynomials with vanishing constant term for `Pow S ℕ+` (different file?)
+* Nonunital evaluation for polynomials with vanishing constant term for `Pow S ℕ+` (different file)
 
 -/
 

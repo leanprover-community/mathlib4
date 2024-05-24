@@ -80,7 +80,7 @@ def elementwiseExpr (src : Name) (type pf : Expr) (simpSides := true) :
     MetaM (Expr × Option Level) := do
   let type := (← instantiateMVars type).cleanupAnnotations
   forallTelescope type fun fvars type' => do
-    mkHomElementwise type' (mkAppN pf fvars) fun eqPf instConcr? => do
+    mkHomElementwise type' (mkAppN pf fvars) fun eqPf instConcr => do
       -- First simplify using elementwise-specific lemmas
       let mut eqPf' ← simpType (simpOnlyNames elementwiseThms (config := { decide := false })) eqPf
       if (← inferType eqPf') == .const ``True [] then
@@ -92,13 +92,13 @@ def elementwiseExpr (src : Name) (type pf : Expr) (simpSides := true) :
         let (ty', eqPf'') ← simpEq (fun e => return (← simp e ctx).1) (← inferType eqPf') eqPf'
         -- check that it's not a simp-trivial equality:
         forallTelescope ty' fun _ ty' => do
-          if let some (_, lhs, rhs) := ty'.eq? then
+          if let some (_, lhs, rhs) := ty'.eq then
             if ← Std.Tactic.Lint.isSimpEq lhs rhs then
               throwError "applying simp to both sides reduces elementwise lemma for {src} \
                 to the trivial equality {ty'}. \
                 Either add `nosimp` or remove the `elementwise` attribute."
         eqPf' ← mkExpectedTypeHint eqPf'' ty'
-      if let some (w, instConcr) := instConcr? then
+      if let some (w, instConcr) := instConcr then
         return (← Meta.mkLambdaFVars (fvars.push instConcr) eqPf', w)
       else
         return (← Meta.mkLambdaFVars fvars eqPf', none)
@@ -106,7 +106,7 @@ where
   /-- Given an equality, extract a `Category` instance from it or raise an error.
   Returns the name of the category and its instance. -/
   extractCatInstance (eqTy : Expr) : MetaM (Expr × Expr) := do
-    let some (α, _, _) := eqTy.cleanupAnnotations.eq? | failure
+    let some (α, _, _) := eqTy.cleanupAnnotations.eq | failure
     let (``Quiver.Hom, #[_, instQuiv, _, _]) := α.getAppFnArgs | failure
     let (``CategoryTheory.CategoryStruct.toQuiver, #[_, instCS]) := instQuiv.getAppFnArgs | failure
     let (``CategoryTheory.Category.toCategoryStruct, #[C, instC]) := instCS.getAppFnArgs | failure
@@ -116,7 +116,7 @@ where
     let (C, instC) ← try extractCatInstance eqTy catch _ =>
       throwError "elementwise expects equality of morphisms in a category"
     -- First try being optimistic that there is already a ConcreteCategory instance.
-    if let some eqPf' ← observing? (mkAppM ``hom_elementwise #[eqPf]) then
+    if let some eqPf' ← observing (mkAppM ``hom_elementwise #[eqPf]) then
       k eqPf' none
     else
       -- That failed, so we need to introduce the instance, which takes creating
@@ -180,19 +180,19 @@ The name of the produced lemma can be specified with `@[elementwise other_lemma_
 If `simp` is added first, the generated lemma will also have the `simp` attribute.
  -/
 syntax (name := elementwise) "elementwise"
-  " nosimp"? (" (" &"attr" ":=" Parser.Term.attrInstance,* ")")? : attr
+  " nosimp" (" (" &"attr" ":=" Parser.Term.attrInstance,* ")") : attr
 
 initialize registerBuiltinAttribute {
   name := `elementwise
   descr := ""
   applicationTime := .afterCompilation
   add := fun src ref kind => match ref with
-  | `(attr| elementwise $[nosimp%$nosimp?]? $[(attr := $stx?,*)]?) => MetaM.run' do
+  | `(attr| elementwise $[nosimp%$nosimp] $[(attr := $stx,*)]) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`elementwise` can only be used as a global attribute"
-    addRelatedDecl src "_apply" ref stx? fun type value levels => do
-      let (newValue, level?) ← elementwiseExpr src type value (simpSides := nosimp?.isNone)
-      let newLevels ← if let some level := level? then do
+    addRelatedDecl src "_apply" ref stx fun type value levels => do
+      let (newValue, level) ← elementwiseExpr src type value (simpSides := nosimp.isNone)
+      let newLevels ← if let some level := level then do
         let w := mkUnusedName levels `w
         unless ← isLevelDefEq level (mkLevelParam w) do
           throwError "Could not create level parameter for ConcreteCategory instance"

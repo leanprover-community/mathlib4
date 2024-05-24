@@ -227,7 +227,7 @@ This edge only exists if `{i, a, b}` has cardinality less than `n`. -/
 @[simps]
 def edge (n : ℕ) (i a b : Fin (n+1)) (hab : a ≤ b) (H : Finset.card {i, a, b} ≤ n) :
     Λ[n, i] _[1] := by
-  refine ⟨standardSimplex.edge n a b hab, ?range⟩
+  refine ⟨standardSimplex.edge n a b hab, range⟩
   case range =>
     suffices ∃ x, ¬i = x ∧ ¬a = x ∧ ¬b = x by
       simpa only [unop_op, SimplexCategory.len_mk, asOrderHom, SimplexCategory.Hom.toOrderHom_mk,

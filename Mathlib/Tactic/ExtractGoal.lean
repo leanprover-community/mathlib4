@@ -23,7 +23,7 @@ theorem extracted_1 (i j k : Nat) (h₀ : i ≤ j) (h₁ : j ≤ k) : i ≤ k :=
 -/
 ```
 
-* TODO: Add tactic code actions?
+* TODO: Add tactic code actions
 * Output may produce lines with more than 100 characters
 
 ### Caveat
@@ -62,7 +62,7 @@ example {z : Int} : ∃ n : Nat, ↑n = z := by
   apply extracted_1
 /-
 tactic 'apply' failed, failed to unify
-  ∃ n, n = ?z
+  ∃ n, n = z
 with
   ∃ n, ↑n = z
 z: Int
@@ -88,7 +88,7 @@ theorem extracted_1 : X = X := sorry
 -- Yet, Lean is unable to figure out what is the coefficients Semiring for `X`
 /-
 typeclass instance problem is stuck, it is often due to metavariables
-  Semiring ?m.28495
+  Semiring m.28495
 -/
 
 example : (X : Nat[X]) = X := by
@@ -127,11 +127,11 @@ to being unambiguously pretty printed.
 The tactic responds to pretty printing options.
 For example, `set_option pp.all true in extract_goal` gives the `pp.all` form.
 -/
-syntax (name := extractGoal) "extract_goal" config (" using " ident)? : tactic
+syntax (name := extractGoal) "extract_goal" config (" using " ident) : tactic
 
 elab_rules : tactic
-  | `(tactic| extract_goal $cfg:config $[using $name?]?) => do
-    let name ← if let some name := name?
+  | `(tactic| extract_goal $cfg:config $[using $name]) => do
+    let name ← if let some name := name
                 then pure name.getId
                 else mkAuxName ((← getCurrNamespace) ++ `extracted) 1
     let msg ← withoutModifyingEnv <| withoutModifyingState do
@@ -152,7 +152,7 @@ elab_rules : tactic
       let (_, g) ← g.revert (clearAuxDeclsInsteadOfRevert := true) (← g.getDecl).lctx.getFVarIds
       let ty ← instantiateMVars (← g.getType)
       if ty.hasExprMVar then
-        -- TODO: turn metavariables into new hypotheses?
+        -- TODO: turn metavariables into new hypotheses
         throwError "Extracted goal has metavariables: {ty}"
       let ty ← Term.levelMVarToParam ty
       let seenLevels := collectLevelParams {} ty

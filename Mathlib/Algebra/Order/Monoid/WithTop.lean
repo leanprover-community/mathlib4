@@ -367,10 +367,10 @@ instance addMonoidWithOne : AddMonoidWithOne (WithTop α) :=
   { WithTop.one, WithTop.addMonoid with
     natCast := fun n => ↑(n : α),
     natCast_zero := by
-      simp only -- Porting note: Had to add this...?
+      simp only -- Porting note: Had to add this...
       rw [Nat.cast_zero, WithTop.coe_zero],
     natCast_succ := fun n => by
-      simp only -- Porting note: Had to add this...?
+      simp only -- Porting note: Had to add this...
       rw [Nat.cast_add_one, WithTop.coe_add, WithTop.coe_one] }
 
 @[simp, norm_cast] lemma coe_natCast (n : ℕ) : ((n : α) : WithTop α) = n := rfl

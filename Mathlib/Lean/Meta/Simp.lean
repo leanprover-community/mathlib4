@@ -42,7 +42,7 @@ given a simp result which simplifies the target to `True`.
 -/
 def Result.ofTrue (r : Simp.Result) : MetaM (Option Expr) :=
   if r.expr.isConstOf ``True then
-    some <$> match r.proof? with
+    some <$> match r.proof with
     | some proof => mkOfEqTrue proof
     | none => pure (mkConst ``True.intro)
   else
@@ -103,10 +103,10 @@ def addSimpAttr (declName : Name) (ext : SimpExtension) (attrKind : AttributeKin
   if (← isProp info.type) then
     addSimpTheorem' ext declName post (inv := false) attrKind prio
   else if info.hasValue then
-    if let some eqns ← getEqnsFor? declName then
+    if let some eqns ← getEqnsFor declName then
       let mut auxNames := #[]
       for eqn in eqns do
-        -- Is this list is always empty?
+        -- Is this list is always empty
         let newAuxNames ← addSimpTheorem' ext eqn post (inv := false) attrKind prio
         auxNames := auxNames ++ newAuxNames
       ext.add (SimpEntry.toUnfoldThms declName eqns) attrKind
@@ -171,12 +171,12 @@ Returns the simplified equality and a proof of it. -/
 def simpEq (S : Expr → MetaM Simp.Result) (type pf : Expr) : MetaM (Expr × Expr) := do
   forallTelescope type fun fvars type => do
     let .app (.app (.app (.const `Eq [u]) α) lhs) rhs := type | throwError "simpEq expecting Eq"
-    let ⟨lhs', lhspf?, _⟩ ← S lhs
-    let ⟨rhs', rhspf?, _⟩ ← S rhs
+    let ⟨lhs', lhspf, _⟩ ← S lhs
+    let ⟨rhs', rhspf, _⟩ ← S rhs
     let mut pf' := mkAppN pf fvars
-    if let some lhspf := lhspf? then
+    if let some lhspf := lhspf then
       pf' ← mkEqTrans (← mkEqSymm lhspf) pf'
-    if let some rhspf := rhspf? then
+    if let some rhspf := rhspf then
       pf' ← mkEqTrans pf' rhspf
     let type' := mkApp3 (mkConst ``Eq [u]) α lhs' rhs'
     return (← mkForallFVars fvars type', ← mkLambdaFVars fvars pf')
@@ -188,13 +188,13 @@ def SimpTheorems.contains (d : SimpTheorems) (declName : Name) :=
 /-- Tests whether `decl` has `simp`-attribute `simpAttr`. Returns `false` is `simpAttr` is not a
 valid simp-attribute. -/
 def isInSimpSet (simpAttr decl : Name) : CoreM Bool := do
-  let .some simpDecl ← getSimpExtension? simpAttr | return false
+  let .some simpDecl ← getSimpExtension simpAttr | return false
   return (← simpDecl.getTheorems).contains decl
 
 /-- Returns all declarations with the `simp`-attribute `simpAttr`.
   Note: this also returns many auxiliary declarations. -/
 def getAllSimpDecls (simpAttr : Name) : CoreM (List Name) := do
-  let .some simpDecl ← getSimpExtension? simpAttr | return []
+  let .some simpDecl ← getSimpExtension simpAttr | return []
   let thms ← simpDecl.getTheorems
   return thms.toUnfold.toList ++ thms.lemmaNames.toList.filterMap fun
     | .decl decl => some decl

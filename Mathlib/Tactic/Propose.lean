@@ -14,13 +14,13 @@ import Mathlib.Tactic.Core
 /-!
 # Propose
 
-This file defines a tactic `have? using a, b, c`
+This file defines a tactic `have using a, b, c`
 that tries to find a lemma which makes use of each of the local hypotheses `a, b, c`.
 
-The variant `have? : t using a, b, c` restricts to lemmas with type `t` (which may contain `_`).
+The variant `have : t using a, b, c` restricts to lemmas with type `t` (which may contain `_`).
 
-Note that in either variant `have?` does not look at the current goal at all.
-It is a relative of `apply?` but for *forward reasoning* (i.e. looking at the hypotheses)
+Note that in either variant `have` does not look at the current goal at all.
+It is a relative of `apply` but for *forward reasoning* (i.e. looking at the hypotheses)
 rather than backward reasoning.
 
 ```
@@ -28,7 +28,7 @@ import Batteries.Data.List.Basic
 import Mathlib.Tactic.Propose
 
 example (K L M : List α) (w : L.Disjoint M) (m : K ⊆ L) : True := by
-  have? using w, m -- Try this: `List.disjoint_of_subset_left m w`
+  have using w, m -- Try this: `List.disjoint_of_subset_left m w`
   trivial
 ```
 -/
@@ -45,7 +45,7 @@ initialize registerTraceClass `Tactic.propose
 def discrTreeConfig : WhnfCoreConfig := {}
 
 initialize proposeLemmas : DeclCache (DiscrTree Name) ←
-  DeclCache.mk "have?: init cache" failure {} fun name constInfo lemmas => do
+  DeclCache.mk "have: init cache" failure {} fun name constInfo lemmas => do
     if constInfo.isUnsafe then return lemmas
     if ← name.isBlackListed then return lemmas
     withNewMCtxDepth do withReducible do
@@ -101,24 +101,24 @@ def propose (lemmas : DiscrTree Name) (type : Expr) (required : Array Expr)
 open Lean.Parser.Tactic
 
 /--
-* `have? using a, b, c` tries to find a lemma
+* `have using a, b, c` tries to find a lemma
 which makes use of each of the local hypotheses `a, b, c`,
 and reports any results via trace messages.
-* `have? : h using a, b, c` only returns lemmas whose type matches `h` (which may contain `_`).
-* `have?! using a, b, c` will also call `have` to add results to the local goal state.
+* `have : h using a, b, c` only returns lemmas whose type matches `h` (which may contain `_`).
+* `have! using a, b, c` will also call `have` to add results to the local goal state.
 
-Note that `have?` (unlike `apply?`) does not inspect the goal at all,
+Note that `have` (unlike `apply`) does not inspect the goal at all,
 only the types of the lemmas in the `using` clause.
 
-`have?` should not be left in proofs; it is a search tool, like `apply?`.
+`have` should not be left in proofs; it is a search tool, like `apply`.
 
 Suggestions are printed as `have := f a b c`.
 -/
-syntax (name := propose') "have?" "!"? (ident)? (" : " term)? " using " (colGt term),+ : tactic
+syntax (name := propose') "have" "!" (ident) (" : " term) " using " (colGt term),+ : tactic
 
 open Elab.Tactic Elab Tactic in
 elab_rules : tactic
-  | `(tactic| have?%$tk $[!%$lucky]? $[$h:ident]? $[ : $type:term]? using $[$terms:term],*) => do
+  | `(tactic| have%$tk $[!%$lucky] $[$h:ident] $[ : $type:term] using $[$terms:term],*) => do
     let stx ← getRef
     let goal ← getMainGoal
     goal.withContext do
@@ -138,10 +138,10 @@ elab_rules : tactic
           (_, g) ← g.let p.1 p.2
         replaceMainGoal [g]
 
-@[inherit_doc propose'] syntax "have?!" (" : " term)? " using " (colGt term),+ : tactic
-@[inherit_doc propose'] syntax "have!?" (" : " term)? " using " (colGt term),+ : tactic
+@[inherit_doc propose'] syntax "have!" (" : " term) " using " (colGt term),+ : tactic
+@[inherit_doc propose'] syntax "have!" (" : " term) " using " (colGt term),+ : tactic
 macro_rules
-  | `(tactic| have?!%$tk $[: $type]? using $terms,*) =>
-    `(tactic| have?%$tk ! $[: $type]? using $terms,*)
-  | `(tactic| have!?%$tk $[: $type]? using $terms,*) =>
-    `(tactic| have?%$tk ! $[: $type]? using $terms,*)
+  | `(tactic| have!%$tk $[: $type] using $terms,*) =>
+    `(tactic| have%$tk ! $[: $type] using $terms,*)
+  | `(tactic| have!%$tk $[: $type] using $terms,*) =>
+    `(tactic| have%$tk ! $[: $type] using $terms,*)

@@ -164,7 +164,7 @@ The main datatype for FM elimination.
 Variables are represented by natural numbers, each of which has an integer coefficient.
 Index 0 is reserved for constants, i.e. `coeffs.find 0` is the coefficient of 1.
 The represented term is `coeffs.sum (fun ⟨k, v⟩ ↦ v * Var[k])`.
-str determines the strength of the comparison -- is it < 0, ≤ 0, or = 0?
+str determines the strength of the comparison -- is it < 0, ≤ 0, or = 0
 -/
 structure Comp : Type where
   /-- The strength of the comparison, `<`, `≤`, or `=`. -/
@@ -317,7 +317,7 @@ open Meta
 /-- A configuration object for `linarith`. -/
 structure LinarithConfig : Type where
   /-- Discharger to prove that a candidate linear combination of hypothesis is zero. -/
-  -- TODO There should be a def for this, rather than calling `evalTactic`?
+  -- TODO There should be a def for this, rather than calling `evalTactic`
   discharger : TacticM Unit := do evalTactic (← `(tactic| ring1))
   -- We can't actually store a `Type` here,
   -- as we want `LinarithConfig : Type` rather than ` : Type 1`,
@@ -378,9 +378,9 @@ If it is, it returns the comparison along with `t`.
 def parseCompAndExpr (e : Expr) : MetaM (Ineq × Expr) := do
   let e ← instantiateMVars e
   match e.getAppFnArgs with
-  | (``LT.lt, #[_, _, e, z]) => if z.zero? then return (Ineq.lt, e) else throwNotZero z
-  | (``LE.le, #[_, _, e, z]) => if z.zero? then return (Ineq.le, e) else throwNotZero z
-  | (``Eq, #[_, e, z]) => if z.zero? then return (Ineq.eq, e) else throwNotZero z
+  | (``LT.lt, #[_, _, e, z]) => if z.zero then return (Ineq.lt, e) else throwNotZero z
+  | (``LE.le, #[_, _, e, z]) => if z.zero then return (Ineq.le, e) else throwNotZero z
+  | (``Eq, #[_, e, z]) => if z.zero then return (Ineq.eq, e) else throwNotZero z
   | _ => throwError "invalid comparison: {e}"
   where /-- helper function for error message -/
   throwNotZero (z : Expr) := throwError "invalid comparison, rhs not zero: {z}"

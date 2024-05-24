@@ -35,13 +35,13 @@ namespace Commute
 theorem add_right [Distrib R] {a b c : R} : Commute a b → Commute a c → Commute a (b + c) :=
   SemiconjBy.add_right
 #align commute.add_right Commute.add_rightₓ
--- for some reason mathport expected `Semiring` instead of `Distrib`?
+-- for some reason mathport expected `Semiring` instead of `Distrib`
 
 @[simp]
 theorem add_left [Distrib R] {a b c : R} : Commute a c → Commute b c → Commute (a + b) c :=
   SemiconjBy.add_left
 #align commute.add_left Commute.add_leftₓ
--- for some reason mathport expected `Semiring` instead of `Distrib`?
+-- for some reason mathport expected `Semiring` instead of `Distrib`
 
 section deprecated
 set_option linter.deprecated false

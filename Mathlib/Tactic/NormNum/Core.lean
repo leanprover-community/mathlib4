@@ -170,7 +170,7 @@ initialize registerBuiltinAttribute {
   add := fun declName stx kind ↦ match stx with
     | `(attr| norm_num $es,*) => do
       let env ← getEnv
-      unless (env.getModuleIdxFor? declName).isNone do
+      unless (env.getModuleIdxFor declName).isNone do
         throwError "invalid attribute 'norm_num', declaration is in an imported module"
       if (IR.getSorryDep env declName).isSome then return -- ignore in progress definitions
       let ext ← mkNormNumExt declName
@@ -206,11 +206,11 @@ mutual
     if useSimp then {
       pre := Simp.preDefault #[] >> tryNormNum
       post := Simp.postDefault #[] >> tryNormNum (post := true)
-      discharge? := discharge
+      discharge := discharge
     } else {
       pre := tryNormNum
       post := tryNormNum (post := true)
-      discharge? := discharge
+      discharge := discharge
     }
 
   /-- Traverses the given expression using simp and normalises any numbers it finds. -/
@@ -241,7 +241,7 @@ def normNumAt (g : MVarId) (ctx : Simp.Context) (fvarIdsToSimp : Array FVarId)
     let type ← instantiateMVars localDecl.type
     let ctx := { ctx with simpTheorems := ctx.simpTheorems.eraseTheorem (.fvar localDecl.fvarId) }
     let r ← deriveSimp ctx useSimp type
-    match r.proof? with
+    match r.proof with
     | some _ =>
       let some (value, type) ← applySimpResultToProp g (mkFVar fvarId) type r
         | return none
@@ -285,9 +285,9 @@ def getSimpContext (cfg args : Syntax) (simpOnly := false) : TacticM Simp.Contex
 
 open Elab.Tactic in
 /--
-Elaborates a call to `norm_num only? [args]` or `norm_num1`.
-* `args`: the `(simpArgs)?` syntax for simp arguments
-* `loc`: the `(location)?` syntax for the optional location argument
+Elaborates a call to `norm_num only [args]` or `norm_num1`.
+* `args`: the `(simpArgs)` syntax for simp arguments
+* `loc`: the `(location)` syntax for the optional location argument
 * `simpOnly`: true if `only` was used in `norm_num`
 * `useSimp`: false if `norm_num1` was used, in which case only the structural parts
   of `simp` will be used, not any of the post-processing that `simp only` does without lemmas
@@ -315,11 +315,11 @@ and can prove goals of the form `A = B`, `A ≠ B`, `A < B` and `A ≤ B`, where
 numerical expressions. It also has a relatively simple primality prover.
 -/
 elab (name := normNum)
-    "norm_num" cfg:(config ?) only:&" only"? args:(simpArgs ?) loc:(location ?) : tactic =>
+    "norm_num" cfg:(config ) only:&" only" args:(simpArgs ) loc:(location ) : tactic =>
   elabNormNum cfg args loc (simpOnly := only.isSome) (useSimp := true)
 
 /-- Basic version of `norm_num` that does not call `simp`. -/
-elab (name := normNum1) "norm_num1" loc:(location ?) : tactic =>
+elab (name := normNum1) "norm_num1" loc:(location ) : tactic =>
   elabNormNum mkNullNode mkNullNode loc (simpOnly := true) (useSimp := false)
 
 open Lean Elab Tactic
@@ -332,7 +332,7 @@ open Lean Elab Tactic
   Conv.applySimpResult (← deriveSimp ctx (← instantiateMVars (← Conv.getLhs)) (useSimp := false))
 
 @[inherit_doc normNum] syntax (name := normNumConv)
-    "norm_num" (config)? &" only"? (simpArgs)? : conv
+    "norm_num" (config) &" only" (simpArgs) : conv
 
 /-- Elaborator for `norm_num` conv tactic. -/
 @[tactic normNumConv] def elabNormNumConv : Tactic := fun stx ↦ withMainContext do
@@ -343,7 +343,7 @@ open Lean Elab Tactic
 The basic usage is `#norm_num e`, where `e` is an expression,
 which will print the `norm_num` form of `e`.
 
-Syntax: `#norm_num` (`only`)? (`[` simp lemma list `]`)? `:`? expression
+Syntax: `#norm_num` (`only`) (`[` simp lemma list `]`) `:` expression
 
 This accepts the same options as the `#simp` command.
 You can specify additional simp lemmas as usual, for example using `#norm_num [f, g] : e`.
@@ -355,6 +355,6 @@ Unlike `norm_num`, this command does not fail when no simplifications are made.
 
 `#norm_num` understands local variables, so you can use them to introduce parameters.
 -/
-macro (name := normNumCmd) "#norm_num" cfg:(config)? o:(&" only")?
-    args:(Parser.Tactic.simpArgs)? " :"? ppSpace e:term : command =>
-  `(command| #conv norm_num $(cfg)? $[only%$o]? $(args)? => $e)
+macro (name := normNumCmd) "#norm_num" cfg:(config) o:(&" only")
+    args:(Parser.Tactic.simpArgs) " :" ppSpace e:term : command =>
+  `(command| #conv norm_num $(cfg) $[only%$o] $(args) => $e)

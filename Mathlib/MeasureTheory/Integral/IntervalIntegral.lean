@@ -429,7 +429,7 @@ Suppose that `f : ℝ → E` has a finite limit at `l' ⊓ μ.ae`. Then `f` is i
 
 Typeclass instances allow Lean to find `l'` based on `l` but not vice versa, so
 `apply Tendsto.eventually_intervalIntegrable_ae` will generate goals `Filter ℝ` and
-`TendstoIxxClass Ioc ?m_1 l'`. -/
+`TendstoIxxClass Ioc m_1 l'`. -/
 theorem Filter.Tendsto.eventually_intervalIntegrable_ae {f : ℝ → E} {μ : Measure ℝ}
     {l l' : Filter ℝ} (hfm : StronglyMeasurableAtFilter f l' μ) [TendstoIxxClass Ioc l l']
     [IsMeasurablyGenerated l'] (hμ : μ.FiniteAtFilter l') {c : E} (hf : Tendsto f (l' ⊓ μ.ae) (𝓝 c))
@@ -447,7 +447,7 @@ provided that both `u` and `v` tend to `l`.
 
 Typeclass instances allow Lean to find `l'` based on `l` but not vice versa, so
 `apply Tendsto.eventually_intervalIntegrable` will generate goals `Filter ℝ` and
-`TendstoIxxClass Ioc ?m_1 l'`. -/
+`TendstoIxxClass Ioc m_1 l'`. -/
 theorem Filter.Tendsto.eventually_intervalIntegrable {f : ℝ → E} {μ : Measure ℝ} {l l' : Filter ℝ}
     (hfm : StronglyMeasurableAtFilter f l' μ) [TendstoIxxClass Ioc l l'] [IsMeasurablyGenerated l']
     (hμ : μ.FiniteAtFilter l') {c : E} (hf : Tendsto f l' (𝓝 c)) {u v : ι → ℝ} {lt : Filter ι}

@@ -865,7 +865,7 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
       · rw [PrimeSpectrum.basicOpen_eq_zeroLocus_compl]
       · simp only [Opens.iSup_mk, Opens.carrier_eq_coe, PrimeSpectrum.basicOpen_eq_zeroLocus_compl]
     rw [Set.compl_subset_comm] at ht_cover
-    -- Why doesn't `simp_rw` do this?
+    -- Why doesn't `simp_rw` do this
     simp_rw [Set.compl_iUnion, compl_compl, ← PrimeSpectrum.zeroLocus_iUnion,
       ← Finset.set_biUnion_coe, ← Set.image_eq_iUnion] at ht_cover
     apply PrimeSpectrum.vanishingIdeal_anti_mono ht_cover

@@ -56,7 +56,7 @@ def mapField (n : Name) (cl f α β e : Expr) : TermElabM Expr := do
 /-- Get the auxiliary local declaration corresponding to the current declaration. If there are
 multiple declaraions it will throw. -/
 def getAuxDefOfDeclName : TermElabM FVarId := do
-  let some declName ← getDeclName? | throwError "no 'declName?'"
+  let some declName ← getDeclName | throwError "no 'declName'"
   let auxDeclMap := (← read).auxDeclToFullName
   let fvars := auxDeclMap.fold (init := []) fun fvars fvar fullName =>
     if fullName = declName then fvars.concat fvar else fvars
@@ -85,7 +85,7 @@ This is convenient to make a definition with equation lemmas. -/
 def mkCasesOnMatch (type : Name) (levels : List Level) (params : List Expr) (motive : Expr)
     (indices : List Expr) (val : Expr)
     (rhss : (ctor : Name) → (fields : List FVarId) → TermElabM Expr) : TermElabM Expr := do
-  let matcherName ← getDeclName? >>= (fun n? => Lean.mkAuxName (.mkStr (n?.getD type) "match") 1)
+  let matcherName ← getDeclName >>= (fun n => Lean.mkAuxName (.mkStr (n.getD type) "match") 1)
   let matchType ← generalizeTelescope (indices.concat val).toArray fun iargs =>
     mkForallFVars iargs (motive.beta iargs)
   let iinfo ← getConstInfoInduct type
@@ -119,7 +119,7 @@ def mkCasesOnMatch (type : Name) (levels : List Level) (params : List Expr) (mot
 /-- Get `FVarId`s which is not implementation details in the current context. -/
 def getFVarIdsNotImplementationDetails : MetaM (List FVarId) := do
   let lctx ← getLCtx
-  return lctx.decls.foldl (init := []) fun r decl? => match decl? with
+  return lctx.decls.foldl (init := []) fun r decl => match decl with
     | some decl => if decl.isImplementationDetail then r else r.concat decl.fvarId
     | none      => r
 
@@ -154,7 +154,7 @@ def deriveFunctor (m : MVarId) : TermElabM Unit := do
   let levels ← getLevelNames
   let vars ← getFVarsNotImplementationDetails
   let .app (.const ``Functor _) F ← m.getType >>= instantiateMVars | failure
-  let some n := F.getAppFn.constName? | failure
+  let some n := F.getAppFn.constName | failure
   let d ← getConstInfo n
   let [m] ← run m <| evalTactic (← `(tactic| refine { map := @(_) })) | failure
   let t ← m.getType >>= instantiateMVars
@@ -275,7 +275,7 @@ def deriveLawfulFunctor (m : MVarId) : TermElabM Unit := do
       s ← hs.foldlM (fun s f => f.getDecl >>= fun d => s.add (.fvar f) #[] d.toExpr) s
     return { simpTheorems := #[s] }
   let .app (.app (.const ``LawfulFunctor _) F) _ ← m.getType >>= instantiateMVars | failure
-  let some n := F.getAppFn.constName? | failure
+  let some n := F.getAppFn.constName | failure
   let [mcn, mim, mcm] ← m.applyConst ``LawfulFunctor.mk | failure
   let (_, mcn) ← mcn.introN 2
   mcn.refl
@@ -395,7 +395,7 @@ def deriveTraversable (m : MVarId) : TermElabM Unit := do
   let levels ← getLevelNames
   let vars ← getFVarsNotImplementationDetails
   let .app (.const ``Traversable _) F ← m.getType >>= instantiateMVars | failure
-  let some n := F.getAppFn.constName? | failure
+  let some n := F.getAppFn.constName | failure
   let d ← getConstInfo n
   let [m] ← run m <| evalTactic (← `(tactic| refine { traverse := @(_) })) | failure
   let t ← m.getType >>= instantiateMVars
@@ -428,13 +428,13 @@ initialize registerDerivingHandler ``Traversable traversableDeriveHandler
 
 /-- Simplify the goal `m` using `functor_norm`. -/
 def simpFunctorGoal (m : MVarId) (s : Simp.Context) (simprocs : Simp.SimprocsArray := {})
-    (discharge? : Option Simp.Discharge := none)
+    (discharge : Option Simp.Discharge := none)
     (simplifyTarget : Bool := true) (fvarIdsToSimp : Array FVarId := #[])
     (stats : Simp.Stats := {}) :
     MetaM (Option (Array FVarId × MVarId) × Simp.Stats) := do
-  let some e ← getSimpExtension? `functor_norm | failure
+  let some e ← getSimpExtension `functor_norm | failure
   let s' ← e.getTheorems
-  simpGoal m { s with simpTheorems := s.simpTheorems.push s' } simprocs discharge? simplifyTarget
+  simpGoal m { s with simpTheorems := s.simpTheorems.push s' } simprocs discharge simplifyTarget
     fvarIdsToSimp stats
 /--
 Run the following tactic:
@@ -470,7 +470,7 @@ def deriveLawfulTraversable (m : MVarId) : TermElabM Unit := do
     { config := { failIfUnchanged := false, unfoldPartialApp := true },
       simpTheorems := #[s] }
   let .app (.app (.const ``LawfulTraversable _) F) _ ← m.getType >>= instantiateMVars | failure
-  let some n := F.getAppFn.constName? | failure
+  let some n := F.getAppFn.constName | failure
   let [mit, mct, mtmi, mn] ← m.applyConst ``LawfulTraversable.mk | failure
   let defEqns : MetaM Simp.Context := rules [] [.mkStr n "map", .mkStr n "traverse"] true
   traversableLawStarter mit n defEqns fun _ _ m => m.refl

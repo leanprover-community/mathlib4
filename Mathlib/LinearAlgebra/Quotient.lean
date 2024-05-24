@@ -129,7 +129,7 @@ instance instSMul' : SMul S (M ⧸ P) :=
       leftRel_apply.mpr <| by simpa using Submodule.smul_mem P (a • (1 : R)) (leftRel_apply.mp h)⟩
 #align submodule.quotient.has_smul' Submodule.Quotient.instSMul'
 
--- Porting note: should this be marked as a `@[default_instance]`?
+-- Porting note: should this be marked as a `@[default_instance]`
 /-- Shortcut to help the elaborator in the common case. -/
 instance instSMul : SMul R (M ⧸ P) :=
   Quotient.instSMul' P
@@ -170,7 +170,7 @@ instance mulAction' [Monoid S] [SMul S R] [MulAction S M] [IsScalarTower S R M]
     toSMul := instSMul' _ }
 #align submodule.quotient.mul_action' Submodule.Quotient.mulAction'
 
--- Porting note: should this be marked as a `@[default_instance]`?
+-- Porting note: should this be marked as a `@[default_instance]`
 instance mulAction (P : Submodule R M) : MulAction R (M ⧸ P) :=
   Quotient.mulAction' P
 #align submodule.quotient.mul_action Submodule.Quotient.mulAction
@@ -180,7 +180,7 @@ instance smulZeroClass' [SMul S R] [SMulZeroClass S M] [IsScalarTower S R M] (P 
   ZeroHom.smulZeroClass ⟨mk, mk_zero _⟩ <| Submodule.Quotient.mk_smul P
 #align submodule.quotient.smul_zero_class' Submodule.Quotient.smulZeroClass'
 
--- Porting note: should this be marked as a `@[default_instance]`?
+-- Porting note: should this be marked as a `@[default_instance]`
 instance smulZeroClass (P : Submodule R M) : SMulZeroClass R (M ⧸ P) :=
   Quotient.smulZeroClass' P
 #align submodule.quotient.smul_zero_class Submodule.Quotient.smulZeroClass
@@ -194,7 +194,7 @@ instance distribSMul' [SMul S R] [DistribSMul S M] [IsScalarTower S R M] (P : Su
     toSMulZeroClass := smulZeroClass' _ }
 #align submodule.quotient.distrib_smul' Submodule.Quotient.distribSMul'
 
--- Porting note: should this be marked as a `@[default_instance]`?
+-- Porting note: should this be marked as a `@[default_instance]`
 instance distribSMul (P : Submodule R M) : DistribSMul R (M ⧸ P) :=
   Quotient.distribSMul' P
 #align submodule.quotient.distrib_smul Submodule.Quotient.distribSMul
@@ -208,7 +208,7 @@ instance distribMulAction' [Monoid S] [SMul S R] [DistribMulAction S M] [IsScala
     toMulAction := mulAction' _ }
 #align submodule.quotient.distrib_mul_action' Submodule.Quotient.distribMulAction'
 
--- Porting note: should this be marked as a `@[default_instance]`?
+-- Porting note: should this be marked as a `@[default_instance]`
 instance distribMulAction (P : Submodule R M) : DistribMulAction R (M ⧸ P) :=
   Quotient.distribMulAction' P
 #align submodule.quotient.distrib_mul_action Submodule.Quotient.distribMulAction
@@ -222,7 +222,7 @@ instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] (P :
     toDistribMulAction := distribMulAction' _ }
 #align submodule.quotient.module' Submodule.Quotient.module'
 
--- Porting note: should this be marked as a `@[default_instance]`?
+-- Porting note: should this be marked as a `@[default_instance]`
 instance module (P : Submodule R M) : Module R (M ⧸ P) :=
   Quotient.module' P
 #align submodule.quotient.module Submodule.Quotient.module
@@ -456,8 +456,8 @@ theorem mapQ_pow {f : M →ₗ[R] M} (h : p ≤ p.comap f) (k : ℕ)
   induction' k with k ih
   · simp [LinearMap.one_eq_id]
   · simp only [LinearMap.iterate_succ]
-    -- Porting note: why does any of these `optParams` need to be applied? Why didn't `simp` handle
-    -- all of this for us?
+    -- Porting note: why does any of these `optParams` need to be applied Why didn't `simp` handle
+    -- all of this for us
     convert mapQ_comp p p p f (f ^ k) h (p.le_comap_pow_of_le_comap h k)
       (h.trans (comap_mono <| p.le_comap_pow_of_le_comap h k))
     exact (ih _).symm

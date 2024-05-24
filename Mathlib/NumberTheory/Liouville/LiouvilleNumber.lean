@@ -152,7 +152,7 @@ theorem aux_calc (n : ℕ) {m : ℝ} (hm : 2 ≤ m) :
         conv_rhs => rw [one_mul, mul_add, pow_add, mul_one, pow_mul, mul_comm, ← pow_mul]
         -- the second factors coincide, so we prove the inequality of the first factors*
         refine (mul_le_mul_right _).mpr _
-      -- solve all the inequalities `0 < m ^ ??`
+      -- solve all the inequalities `0 < m ^ `
       any_goals exact pow_pos (zero_lt_two.trans_le hm) _
       -- `2 ≤ m ^ n!` is a consequence of monotonicity of exponentiation at `2 ≤ m`.
       exact _root_.trans (_root_.trans hm (pow_one _).symm.le)

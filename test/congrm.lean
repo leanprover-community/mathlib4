@@ -13,7 +13,7 @@ section docs
 
 example {a b c d : ℕ} :
     Nat.pred a.succ * (d + (c + a.pred)) = Nat.pred b.succ * (b + (c + d.pred)) := by
-  congrm Nat.pred (Nat.succ ?h1) * (?h2 + ?h3)
+  congrm Nat.pred (Nat.succ h1) * (h2 + h3)
   case h1 =>
     guard_target = a = b
     exact test_sorry
@@ -84,7 +84,7 @@ example {b d : ℕ} (h : b = d) : (∀ a, a = b) ↔ (∀ c, c = d) := by
   exact h
 
 example {p q r s : Prop} (pr : p ↔ r) (qs : q ↔ s) : p ∧ q ↔ r ∧ s := by
-  congrm ?h1 ∧ ?h2
+  congrm h1 ∧ h2
   case h1 => guard_target = p ↔ r; assumption
   case h2 => guard_target = q ↔ s; assumption
 

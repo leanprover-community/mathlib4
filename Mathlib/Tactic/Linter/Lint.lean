@@ -26,12 +26,12 @@ Linter that checks whether a structure should be in Prop.
   errorsFound := "FOUND STRUCTURES THAT SHOULD BE IN PROP."
   test declName := do
     unless isStructure (← getEnv) declName do return none
-    -- remark: using `Lean.Meta.isProp` doesn't suffice here, because it doesn't (always?)
+    -- remark: using `Lean.Meta.isProp` doesn't suffice here, because it doesn't (always)
     -- recognize predicates as propositional.
     let isProp ← forallTelescopeReducing (← inferType (← mkConstWithLevelParams declName))
       fun _ ty => return ty == .sort .zero
     if isProp then return none
-    let projs := (getStructureInfo? (← getEnv) declName).get!.fieldNames
+    let projs := (getStructureInfo (← getEnv) declName).get!.fieldNames
     if projs.isEmpty then return none -- don't flag empty structures
     let allProofs ← projs.allM (do isProof <| ← mkConstWithLevelParams <| declName ++ ·)
     unless allProofs do return none
@@ -90,7 +90,7 @@ def dupNamespace : Linter where run := withSetOptionIn fun stx => do
         let ns := (← getScope).currNamespace
         let declName := ns ++ (if id.getKind == ``declId then id[0].getId else id.getId)
         let nm := declName.components
-        let some (dup, _) := nm.zip (nm.tailD []) |>.find? fun (x, y) => x == y
+        let some (dup, _) := nm.zip (nm.tailD []) |>.find fun (x, y) => x == y
           | return
         Linter.logLint linter.dupNamespace id
           m!"The namespace '{dup}' is duplicated in the declaration '{declName}'"

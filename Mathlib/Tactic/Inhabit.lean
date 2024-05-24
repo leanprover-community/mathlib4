@@ -29,7 +29,7 @@ def nonempty_prop_to_inhabited (α : Prop) (α_nonempty : Nonempty α) : Inhabit
 then uses it to make an `Inhabited α` instance.
 If the target is a `Prop`, this is done constructively. Otherwise, it uses `Classical.choice`.
 -/
-syntax (name := inhabit) "inhabit " atomic(ident " : ")? term : tactic
+syntax (name := inhabit) "inhabit " atomic(ident " : ") term : tactic
 
 /-- `evalInhabit` takes in the MVarId of the main goal, runs the core portion of the inhabit tactic,
     and returns the resulting MVarId -/
@@ -51,6 +51,6 @@ def evalInhabit (goal : MVarId) (h_name : Option Ident) (term : Syntax) : Tactic
     return r
 
 elab_rules : tactic
-  | `(tactic| inhabit $[$h_name:ident :]? $term) => do
+  | `(tactic| inhabit $[$h_name:ident :] $term) => do
     let goal ← evalInhabit (← getMainGoal) h_name term
     replaceMainGoal [goal]

@@ -15,7 +15,7 @@ namespace Attr
 
 /-- A lemma stating the monotonicity of some function, with respect to appropriate relations on its
 domain and range, and possibly with side conditions. -/
-syntax (name := mono) "mono" (ppSpace mono.side)? : attr
+syntax (name := mono) "mono" (ppSpace mono.side) : attr
 
 -- The following is inlined from `register_label_attr`.
 /- TODO: currently `left`/`right`/`both` is ignored, and e.g. `@[mono left]` means the same as

@@ -81,8 +81,8 @@ This tactic works by repeatedly applying lemmas such as `forall_imp`, `Exists.im
 `Filter.Eventually.mp`, `Filter.Frequently.mp`, and `Filter.eventually_of_forall`.
 -/
 syntax (name := peel)
-  "peel" (num)? (ppSpace colGt term)?
-  (" with" (ppSpace colGt (ident <|> hole))+)? (usingArg)? : tactic
+  "peel" (num) (ppSpace colGt term)
+  (" with" (ppSpace colGt (ident <|> hole))+) (usingArg) : tactic
 
 private lemma and_imp_left_of_imp_imp {p q r : Prop} (h : r → p → q) : r ∧ p → r ∧ q := by tauto
 
@@ -149,52 +149,52 @@ the `quantifiers` list), then applies "peel theorems" using `applyPeelThm`.
 
 We treat `∧` as a quantifier for sake of dealing with quantified statements
 like `∃ δ > (0 : ℝ), q δ`, which is notation for `∃ δ, δ > (0 : ℝ) ∧ q δ`. -/
-def peelCore (goal : MVarId) (e : Expr) (n? : Option Name) (n' : Name) (unfold : Bool) :
+def peelCore (goal : MVarId) (e : Expr) (n : Option Name) (n' : Name) (unfold : Bool) :
     MetaM (FVarId × List MVarId) := goal.withContext do
   let ty ← whnfQuantifier (← inferType e) unfold
   let target ← whnfQuantifier (← goal.getType) unfold
   if ty.isForall && target.isForall then
-    applyPeelThm ``forall_imp goal e ty target (← n?.getDM (mkFreshUserName target.bindingName!)) n'
+    applyPeelThm ``forall_imp goal e ty target (← n.getDM (mkFreshUserName target.bindingName!)) n'
   else if ty.getAppFn.isConst
             && ty.getAppNumArgs == target.getAppNumArgs
             && ty.getAppFn == target.getAppFn then
     match target.getAppFnArgs with
     | (``Exists, #[_, p]) =>
-      applyPeelThm ``Exists.imp goal e ty target (← n?.getDM (mkFreshBinderName p)) n'
+      applyPeelThm ``Exists.imp goal e ty target (← n.getDM (mkFreshBinderName p)) n'
     | (``And, #[_, _]) =>
-      applyPeelThm ``and_imp_left_of_imp_imp goal e ty target (← n?.getDM (mkFreshUserName `p)) n'
+      applyPeelThm ``and_imp_left_of_imp_imp goal e ty target (← n.getDM (mkFreshUserName `p)) n'
     | (``Filter.Eventually, #[_, p, _]) =>
-      applyPeelThm ``eventually_imp goal e ty target (← n?.getDM (mkFreshBinderName p)) n'
+      applyPeelThm ``eventually_imp goal e ty target (← n.getDM (mkFreshBinderName p)) n'
     | (``Filter.Frequently, #[_, p, _]) =>
-      applyPeelThm ``frequently_imp goal e ty target (← n?.getDM (mkFreshBinderName p)) n'
+      applyPeelThm ``frequently_imp goal e ty target (← n.getDM (mkFreshBinderName p)) n'
     | _ => throwPeelError ty target
   else
     throwPeelError ty target
 
 /-- Given a list `l` of names, this peels `num` quantifiers off of the expression `e` and
 the main goal and introduces variables with the provided names until the list of names is exhausted.
-Note: the name `n?` (with default `this`) is used for the name of the expression `e` with
+Note: the name `n` (with default `this`) is used for the name of the expression `e` with
 quantifiers peeled. -/
-def peelArgs (e : Expr) (num : Nat) (l : List Name) (n? : Option Name) (unfold : Bool := true) :
+def peelArgs (e : Expr) (num : Nat) (l : List Name) (n : Option Name) (unfold : Bool := true) :
     TacticM Unit := do
   match num with
     | 0 => return
     | num + 1 =>
-      let fvarId ← liftMetaTacticAux (peelCore · e l.head? (n?.getD `this) unfold)
-      peelArgs (.fvar fvarId) num l.tail n?
+      let fvarId ← liftMetaTacticAux (peelCore · e l.head (n.getD `this) unfold)
+      peelArgs (.fvar fvarId) num l.tail n
       unless num == 0 do
-        if let some mvarId ← observing? do (← getMainGoal).clear fvarId then
+        if let some mvarId ← observing do (← getMainGoal).clear fvarId then
           replaceMainGoal [mvarId]
 
 /-- Similar to `peelArgs` but peels arbitrarily many quantifiers. Returns whether or not
 any quantifiers were peeled. -/
-partial def peelUnbounded (e : Expr) (n? : Option Name) (unfold : Bool := false) :
+partial def peelUnbounded (e : Expr) (n : Option Name) (unfold : Bool := false) :
     TacticM Bool := do
-  let fvarId? ← observing? <| liftMetaTacticAux (peelCore · e none (n?.getD `this) unfold)
-  if let some fvarId := fvarId? then
-    let peeled ← peelUnbounded (.fvar fvarId) n?
+  let fvarId ← observing <| liftMetaTacticAux (peelCore · e none (n.getD `this) unfold)
+  if let some fvarId := fvarId then
+    let peeled ← peelUnbounded (.fvar fvarId) n
     if peeled then
-      if let some mvarId ← observing? do (← getMainGoal).clear fvarId then
+      if let some mvarId ← observing do (← getMainGoal).clear fvarId then
         replaceMainGoal [mvarId]
     return true
   else
@@ -223,23 +223,23 @@ def peelArgsIff (l : List Name) : TacticM Unit := withMainContext do
       peelArgsIff hs
 
 elab_rules : tactic
-  | `(tactic| peel $[$num?:num]? $e:term $[with $l?* $n?]?) => withMainContext do
+  | `(tactic| peel $[$num:num] $e:term $[with $l* $n]) => withMainContext do
     /- we use `elabTermForApply` instead of `elabTerm` so that terms passed to `peel` can contain
     quantifiers with implicit bound variables without causing errors or requiring `@`.  -/
     let e ← elabTermForApply e false
-    let n? := n?.bind fun n => if n.raw.isIdent then pure n.raw.getId else none
-    let l := (l?.getD #[]).map getNameOfIdent' |>.toList
+    let n := n.bind fun n => if n.raw.isIdent then pure n.raw.getId else none
+    let l := (l.getD #[]).map getNameOfIdent' |>.toList
     -- If num is not present and if there are any provided variable names,
     -- use the number of variable names.
-    let num? := num?.map (·.getNat) <|> if l.isEmpty then none else l.length
-    if let some num := num? then
-      peelArgs e num l n?
+    let num := num.map (·.getNat) <|> if l.isEmpty then none else l.length
+    if let some num := num then
+      peelArgs e num l n
     else
-      unless ← peelUnbounded e n? do
+      unless ← peelUnbounded e n do
         throwPeelError (← inferType e) (← getMainTarget)
   | `(tactic| peel $n:num) => peelArgsIff <| .replicate n.getNat `_
   | `(tactic| peel with $args*) => peelArgsIff (args.map getNameOfIdent').toList
 
 macro_rules
-  | `(tactic| peel $[$n:num]? $[$e:term]? $[with $h*]? using $u:term) =>
-    `(tactic| peel $[$n:num]? $[$e:term]? $[with $h*]?; exact $u)
+  | `(tactic| peel $[$n:num] $[$e:term] $[with $h*] using $u:term) =>
+    `(tactic| peel $[$n:num] $[$e:term] $[with $h*]; exact $u)

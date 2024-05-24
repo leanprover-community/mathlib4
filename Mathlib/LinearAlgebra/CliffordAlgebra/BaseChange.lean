@@ -146,7 +146,7 @@ theorem toBaseChange_reverse (Q : QuadraticForm R V) (x : CliffordAlgebra (Q.bas
   rw [reverse, ← AlgEquiv.toLinearMap, ← AlgEquiv.toLinearEquiv_toLinearMap,
     AlgEquiv.toLinearEquiv_toOpposite]
   dsimp
-  -- `simp` fails here due to a timeout looking for a `Subsingleton` instance!?
+  -- `simp` fails here due to a timeout looking for a `Subsingleton` instance!
   rw [LinearEquiv.self_trans_symm]
   rfl
 

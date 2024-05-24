@@ -16,7 +16,7 @@ A chain map is a quasi-isomorphism if it induces isomorphisms on homology.
 
 ## Future work
 
-Define the derived category as the localization at quasi-isomorphisms? (TODO @joelriou)
+Define the derived category as the localization at quasi-isomorphisms (TODO @joelriou)
 -/
 
 

@@ -34,7 +34,7 @@ def bodd : ℤ → Bool
   | -[n +1] => not (n.bodd)
 #align int.bodd Int.bodd
 
--- Porting note: `bit0, bit1` deprecated, do we need to adapt `bit`?
+-- Porting note: `bit0, bit1` deprecated, do we need to adapt `bit`
 set_option linter.deprecated false in
 /-- `bit b` appends the digit `b` to the binary representation of
   its integer input. -/
@@ -470,13 +470,13 @@ theorem shiftLeft_neg (m n : ℤ) : m <<< (-n) = m >>> n :=
 theorem shiftRight_neg (m n : ℤ) : m >>> (-n) = m <<< n := by rw [← shiftLeft_neg, neg_neg]
 #align int.shiftr_neg Int.shiftRight_neg
 
--- Porting note: what's the correct new name?
+-- Porting note: what's the correct new name
 @[simp]
 theorem shiftLeft_coe_nat (m n : ℕ) : (m : ℤ) <<< (n : ℤ) = ↑(m <<< n) :=
   by unfold_projs; simp
 #align int.shiftl_coe_nat Int.shiftLeft_coe_nat
 
--- Porting note: what's the correct new name?
+-- Porting note: what's the correct new name
 @[simp]
 theorem shiftRight_coe_nat (m n : ℕ) : (m : ℤ) >>> (n : ℤ) = m >>> n := by cases n <;> rfl
 #align int.shiftr_coe_nat Int.shiftRight_coe_nat

@@ -187,7 +187,7 @@ which always exists, does not necessarily coincide with
 When `V` is any of `Type`, `Top`, `AddCommGroup`, or `Module R`,
 `coyonedaTensorUnit` is just the usual forgetful functor, however.
 For `V = Algebra R`, the usual forgetful functor is coyoneda of `R[X]`, not of `R`.
-(Perhaps we should have a typeclass for this situation: `ConcreteMonoidal`?)
+(Perhaps we should have a typeclass for this situation: `ConcreteMonoidal`)
 -/
 @[nolint unusedArguments]
 def ForgetEnrichment (W : Type (v + 1)) [Category.{v} W] [MonoidalCategory W] (C : Type u₁)

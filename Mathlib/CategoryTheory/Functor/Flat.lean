@@ -165,7 +165,7 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     g₁.right = hc.lift (c.extend g₁.right) := by
       apply hc.uniq (c.extend _)
       -- Porting note: was `by tidy`, but `aesop` only works if max heartbeats
-      -- is increased, so we replace it by the output of `tidy?`
+      -- is increased, so we replace it by the output of `tidy`
       intro j; rfl
     _ = hc.lift (c.extend g₂.right) := by
       congr
@@ -173,7 +173,7 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
       symm
       apply hc.uniq (c.extend _)
       -- Porting note: was `by tidy`, but `aesop` only works if max heartbeats
-      -- is increased, so we replace it by the output of `tidy?`
+      -- is increased, so we replace it by the output of `tidy`
       intro _; rfl
 
   -- Finally, since `fᵢ` factors through `F(gᵢ)`, the result follows.

@@ -292,7 +292,7 @@ section
 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
   CategoryTheory.Discrete.discreteCases
--- Porting note: would it be okay to use this more generally?
+-- Porting note: would it be okay to use this more generally
 attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Eq
 
 /-- A binary fan with vertex `P` consists of the two projections `π₁ : P ⟶ X` and `π₂ : P ⟶ Y`. -/
@@ -762,7 +762,7 @@ theorem prod.map_map {A₁ A₂ A₃ B₁ B₂ B₃ : C} [HasBinaryProduct A₁ 
 #align category_theory.limits.prod.map_map CategoryTheory.Limits.prod.map_map
 #align category_theory.limits.prod.map_map_assoc CategoryTheory.Limits.prod.map_map_assoc
 
--- TODO: is it necessary to weaken the assumption here?
+-- TODO: is it necessary to weaken the assumption here
 @[reassoc]
 theorem prod.map_swap {A B X Y : C} (f : A ⟶ B) (g : X ⟶ Y)
     [HasLimitsOfShape (Discrete WalkingPair) C] :

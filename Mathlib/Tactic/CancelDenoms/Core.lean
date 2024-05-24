@@ -129,7 +129,7 @@ partial def findCancelFactor (e : Expr) : ℕ × Tree ℕ :=
     (pd, .node pd t1 t2)
   | (``HDiv.hDiv, #[_, _, _, _, e1, e2]) =>
     -- If e2 is a rational, then it's a natural number due to the simp lemmas in `deriveThms`.
-    match e2.nat? with
+    match e2.nat with
     | some q =>
       let (v1, t1) := findCancelFactor e1
       let n := v1 * q
@@ -137,14 +137,14 @@ partial def findCancelFactor (e : Expr) : ℕ × Tree ℕ :=
     | none => (1, .node 1 .nil .nil)
   | (``Neg.neg, #[_, _, e]) => findCancelFactor e
   | (``HPow.hPow, #[_, ℕ, _, _, e1, e2]) =>
-    match e2.nat? with
+    match e2.nat with
     | some k =>
       let (v1, t1) := findCancelFactor e1
       let n := v1 ^ k
       (n, .node n t1 <| .node k .nil .nil)
     | none => (1, .node 1 .nil .nil)
   | (``Inv.inv, #[_, _, e]) =>
-    match e.nat? with
+    match e.nat with
     | some q => (q, .node q .nil <| .node q .nil .nil)
     | none => (1, .node 1 .nil .nil)
   | _ => (1, .node 1 .nil .nil)
@@ -244,7 +244,7 @@ def derive (e : Expr) : MetaM (ℕ × Expr) := do
     let r ← mkProdPrf tp stp n n' t e
     trace[CancelDenoms] "pf : {← inferType r.pf}"
     let pf' ←
-      if let some pfSimp := eSimp.proof? then
+      if let some pfSimp := eSimp.proof then
         mkAppM ``derive_trans #[pfSimp, r.pf]
       else
         pure r.pf
@@ -325,7 +325,7 @@ example (h : a > 0) : a / 5 > 0 := by
   exact h
 ```
 -/
-syntax (name := cancelDenoms) "cancel_denoms" (location)? : tactic
+syntax (name := cancelDenoms) "cancel_denoms" (location) : tactic
 
 open Elab Tactic
 
@@ -344,6 +344,6 @@ def cancelDenominators (loc : Location) : TacticM Unit := do
   withLocation loc cancelDenominatorsAt cancelDenominatorsTarget
     (fun _ ↦ throwError "Failed to cancel any denominators")
 
-elab "cancel_denoms" loc?:(location)? : tactic => do
-  cancelDenominators (expandOptLocation (Lean.mkOptionalNode loc?))
-  Lean.Elab.Tactic.evalTactic (← `(tactic| try norm_num [← mul_assoc] $[$loc?]?))
+elab "cancel_denoms" loc:(location) : tactic => do
+  cancelDenominators (expandOptLocation (Lean.mkOptionalNode loc))
+  Lean.Elab.Tactic.evalTactic (← `(tactic| try norm_num [← mul_assoc] $[$loc]))

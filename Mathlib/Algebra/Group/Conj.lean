@@ -204,7 +204,7 @@ theorem map_surjective {f : α →* β} (hf : Function.Surjective f) :
   exact ⟨ConjClasses.mk a, rfl⟩
 #align conj_classes.map_surjective ConjClasses.map_surjective
 
--- Porting note: This has not been adapted to mathlib4, is it still accurate?
+-- Porting note: This has not been adapted to mathlib4, is it still accurate
 library_note "slow-failing instance priority"/--
 Certain instances trigger further searches when they are considered as candidate instances;
 these instances should be assigned a priority lower than the default of 1000 (for example, 900).
@@ -224,7 +224,7 @@ a `Mul M` instance, so this unification triggers a search for `Mul (List α)`;
 this will traverse all subclasses of `Mul` before failing.
 On the other hand, the search for an instance of `DecidableEq (Con.quotient c)` for `c : Con M`
 can quickly reject the candidate instance `Multiset.decidableEq` because the type of
-`List.perm : List ?m_1 → List ?m_1 → Prop` does not unify with `M → M → Prop`.
+`List.perm : List m_1 → List m_1 → Prop` does not unify with `M → M → Prop`.
 Therefore, we should assign `Con.quotient.decidableEq` a lower priority because it fails slowly.
 (In terms of the rules above, `C := DecidableEq`, `T := Con.quotient`,
 `instT := Con.quotient.decidableEq`, `T' := Multiset`, `instT' := Multiset.decidableEq`,

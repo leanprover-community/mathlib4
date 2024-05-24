@@ -216,13 +216,13 @@ def twoHeadsArgs (e : Expr) : Name × Name × Sum Name Name × List Bool := Id.r
     | (na@``Eq, #[_, lhs, rhs])       => pure (na, lhs, rhs)
     | (na@``LE.le, #[_, _, lhs, rhs]) => pure (na, lhs, rhs)
     | _ => return (.anonymous, .anonymous, .inl .anonymous, [])
-  let (ndeg_or_deg_or_coeff, pol, and?) ← match lhs.getAppFnArgs with
+  let (ndeg_or_deg_or_coeff, pol, and) ← match lhs.getAppFnArgs with
     | (na@``Polynomial.natDegree, #[_, _, pol])     => (na, pol, [rhs.isMVar])
     | (na@``Polynomial.degree,    #[_, _, pol])     => (na, pol, [rhs.isMVar])
     | (na@``Polynomial.coeff,     #[_, _, pol, c])  => (na, pol, [rhs.isMVar, c.isMVar])
     | _ => return (.anonymous, eq_or_le, .inl .anonymous, [])
-  let head := match pol.numeral? with
-    -- can I avoid the tri-splitting `n = 0`, `n = 1`, and generic `n`?
+  let head := match pol.numeral with
+    -- can I avoid the tri-splitting `n = 0`, `n = 1`, and generic `n`
     | some 0 => .inl `zero
     | some 1 => .inl `one
     | some _ => .inl `many
@@ -234,10 +234,10 @@ def twoHeadsArgs (e : Expr) : Name × Name × Sum Name Name × List Bool := Id.r
         else
           .inl .anonymous
       | (na, _) => .inr na
-  (ndeg_or_deg_or_coeff, eq_or_le, head, and?)
+  (ndeg_or_deg_or_coeff, eq_or_le, head, and)
 
 /--
-`getCongrLemma (lhs_name, rel_name, Mvars?)` returns the name of a lemma that preprocesses
+`getCongrLemma (lhs_name, rel_name, Mvars)` returns the name of a lemma that preprocesses
 one of the five target
 *  `natDegree f ≤ d`;
 *  `natDegree f = d`.
@@ -359,7 +359,7 @@ def try_rfl (mvs : List MVarId) : MetaM (List MVarId) := do
   let tried_rfl := ← noMV.mapM fun g => g.applyConst ``rfl <|> return [g]
   let assignable := ← yesMV.mapM fun g => do
     let tgt := ← instantiateMVars (← g.getDecl).type
-    match tgt.eq? with
+    match tgt.eq with
       | some (_, lhs, rhs) =>
         if (isMVar rhs && (! hasExprMVar lhs)) ||
            (isMVar lhs && (! hasExprMVar rhs)) then
@@ -387,14 +387,14 @@ def splitApply (mvs static : List MVarId) : MetaM ((List MVarId) × (List MVarId
     mv.applyConst <| lem
   return (progress.join, static ++ curr_static)
 
-/-- `miscomputedDegree? deg false_goals` takes as input
+/-- `miscomputedDegree deg false_goals` takes as input
 *  an `Expr`ession `deg`, representing the degree of a polynomial
    (i.e. an `Expr`ession of inferred type either `ℕ` or `WithBot ℕ`);
 *  a list of `MVarId`s `false_goals`.
 
 Although inconsequential for this function, the list of goals `false_goals` reduces to `False`
 if `norm_num`med.
-`miscomputedDegree?` extracts error information from goals of the form
+`miscomputedDegree` extracts error information from goals of the form
 *  `a ≠ b`, assuming it comes from `⊢ coeff_of_given_degree ≠ 0`
    -- reducing to `False` means that the coefficient that was supposed to vanish, does not;
 *  `a ≤ b`, assuming it comes from `⊢ degree_of_subterm ≤ degree_of_polynomial`
@@ -408,14 +408,14 @@ It does mean that `compute_degree` reduced the initial goal to an unprovable sta
 (unless there was already a contradiction in the initial hypotheses!), but it is indicative that
 there may be some problem.
 -/
-def miscomputedDegree? (deg : Expr) : List Expr → List MessageData
+def miscomputedDegree (deg : Expr) : List Expr → List MessageData
   | tgt::tgts =>
-    let rest := miscomputedDegree? deg tgts
-    if tgt.ne?.isSome then
+    let rest := miscomputedDegree deg tgts
+    if tgt.ne.isSome then
       m!"* the coefficient of degree {deg} may be zero" :: rest
-    else if let some ((Expr.const ``Nat []), lhs, _) := tgt.le? then
+    else if let some ((Expr.const ``Nat []), lhs, _) := tgt.le then
       m!"* there is at least one term of naïve degree {lhs}" :: rest
-    else if let some (_, lhs, _) := tgt.eq? then
+    else if let some (_, lhs, _) := tgt.eq then
       m!"* there may be a term of naïve degree {lhs}" :: rest
     else rest
   | [] => []
@@ -437,17 +437,17 @@ leading coefficient of `f`.
 The variant `compute_degree!` first applies `compute_degree`.
 Then it uses `norm_num` on all the whole remaining goals and tries `assumption`.
 -/
-syntax (name := computeDegree) "compute_degree" "!"? : tactic
+syntax (name := computeDegree) "compute_degree" "!" : tactic
 
 initialize registerTraceClass `Tactic.compute_degree
 
 @[inherit_doc computeDegree]
 macro "compute_degree!" : tactic => `(tactic| compute_degree !)
 
-elab_rules : tactic | `(tactic| compute_degree $[!%$bang]?) => focus <| withMainContext do
+elab_rules : tactic | `(tactic| compute_degree $[!%$bang]) => focus <| withMainContext do
   let goal ← getMainGoal
   let gt ← goal.getType''
-  let deg? := match gt.eq? with
+  let deg := match gt.eq with
     | some (_, _, rhs) => some rhs
     | _ => none
   let twoH := twoHeadsArgs gt
@@ -479,8 +479,8 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$bang]?) => focus <| withMain
           if ← gs'.anyM fun g' => g'.withContext do return (← g'.getType'').isConstOf ``False then
             false_goals := false_goals.push g
         setGoals new_goals.toList
-        if let some deg := deg? then
-          let errors := miscomputedDegree? deg (← false_goals.mapM (MVarId.getType'' ·)).toList
+        if let some deg := deg then
+          let errors := miscomputedDegree deg (← false_goals.mapM (MVarId.getType'' ·)).toList
           unless errors.isEmpty do
             throwError Lean.MessageData.joinSep
               (m!"The given degree is '{deg}'.  However,\n" :: errors) "\n"

@@ -99,7 +99,7 @@ noncomputable instance [Small.{v} α] [Div α] : Div (Shrink.{v} α) :=
   (equivShrink α).symm.div
 
 -- Porting note: this should be called `inv`,
--- but we already have an `Equiv.inv` (which perhaps should move to `Perm.inv`?)
+-- but we already have an `Equiv.inv` (which perhaps should move to `Perm.inv`)
 /-- Transfer `Inv` across an `Equiv` -/
 @[to_additive (attr := reducible) "Transfer `Neg` across an `Equiv`"]
 protected def Inv [Inv β] : Inv α :=

@@ -32,7 +32,7 @@ example (a b c d : Nat) (f : Nat → Nat → Nat) :
   run_tac withMainContext do
     let s ← CCState.mkUsingHs
     logInfo (toMessageData s)
-    let some (_, t₁, t₂) ← liftM <| getFVarFromUserName `h >>= inferType >>= matchNe? | failure
+    let some (_, t₁, t₂) ← liftM <| getFVarFromUserName `h >>= inferType >>= matchNe | failure
     let b ← getFVarFromUserName `b
     let d ← getFVarFromUserName `d
     guard s.inconsistent

@@ -289,7 +289,7 @@ if `b` is an infinite basis for a module `M`,
 then every maximal linearly independent set has the same cardinality as `b`.
 
 This proof (along with some of the lemmas above) comes from
-[Les familles libres maximales d'un module ont-elles le meme cardinal?][lazarus1973]
+[Les familles libres maximales d'un module ont-elles le meme cardinal][lazarus1973]
 -/
 theorem maximal_linearIndependent_eq_infinite_basis {ι : Type w} (b : Basis ι R M) [Infinite ι]
     {κ : Type w} (v : κ → M) (i : LinearIndependent R v) (m : i.Maximal) : #κ = #ι := by

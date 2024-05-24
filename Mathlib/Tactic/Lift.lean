@@ -64,7 +64,7 @@ namespace Mathlib.Tactic
 open Lean Parser Tactic Elab Tactic Meta
 
 /-- Lift an expression to another type.
-* Usage: `'lift' expr 'to' expr ('using' expr)? ('with' id (id id?)?)?`.
+* Usage: `'lift' expr 'to' expr ('using' expr) ('with' id (id id))`.
 * If `n : ℤ` and `hn : n ≥ 0` then the tactic `lift n to ℕ using hn` creates a new
   constant of type `ℕ`, also named `n` and replaces all occurrences of the old variable `(n : ℤ)`
   with `↑n` (where `n` in the new variable). It will remove `n` and `hn` from the context.
@@ -101,8 +101,8 @@ integer `z` (in the supertype) to `ℕ` (the subtype), given a proof that `z ≥
 propositions concerning `z` will still be over `ℤ`. `zify` changes propositions about `ℕ` (the
 subtype) to propositions about `ℤ` (the supertype), without changing the type of any variable.
 -/
-syntax (name := lift) "lift " term " to " term (" using " term)?
-  (" with " ident (ppSpace colGt ident)? (ppSpace colGt ident)?)? : tactic
+syntax (name := lift) "lift " term " to " term (" using " term)
+  (" with " ident (ppSpace colGt ident) (ppSpace colGt ident)) : tactic
 
 /-- Generate instance for the `lift` tactic. -/
 def Lift.getInst (old_tp new_tp : Expr) : MetaM (Expr × Expr × Expr) := do
@@ -116,12 +116,12 @@ def Lift.getInst (old_tp new_tp : Expr) : MetaM (Expr × Expr × Expr) := do
 def Lift.main (e t : TSyntax `term) (hUsing : Option (TSyntax `term))
     (newVarName newEqName : Option (TSyntax `ident)) (keepUsing : Bool) : TacticM Unit :=
     withMainContext do
-  -- Are we using a new variable for the lifted var?
+  -- Are we using a new variable for the lifted var
   let isNewVar := !newVarName.isNone
   -- Name of the new hypothesis containing the equality of the lifted variable with the old one
   -- rfl if none is given
   let newEqName := (newEqName.map Syntax.getId).getD `rfl
-  -- Was a new hypothesis given?
+  -- Was a new hypothesis given
   let isNewEq := newEqName != `rfl
   let e ← elabTerm e none
   let goal ← getMainGoal
@@ -167,15 +167,15 @@ def Lift.main (e t : TSyntax `term) (hUsing : Option (TSyntax `term))
   if hUsing.isNone then withMainContext <| setGoals (prf.mvarId! :: (← getGoals))
 
 elab_rules : tactic
-  | `(tactic| lift $e to $t $[using $h]?) => withMainContext <| Lift.main e t h none none False
+  | `(tactic| lift $e to $t $[using $h]) => withMainContext <| Lift.main e t h none none False
 
-elab_rules : tactic | `(tactic| lift $e to $t $[using $h]?
+elab_rules : tactic | `(tactic| lift $e to $t $[using $h]
     with $newVarName) => withMainContext <| Lift.main e t h newVarName none False
 
-elab_rules : tactic | `(tactic| lift $e to $t $[using $h]?
+elab_rules : tactic | `(tactic| lift $e to $t $[using $h]
     with $newVarName $newEqName) => withMainContext <| Lift.main e t h newVarName newEqName False
 
-elab_rules : tactic | `(tactic| lift $e to $t $[using $h]?
+elab_rules : tactic | `(tactic| lift $e to $t $[using $h]
     with $newVarName $newEqName $newPrfName) => withMainContext do
   if h.isNone then Lift.main e t h newVarName newEqName False
   else

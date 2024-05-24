@@ -25,7 +25,7 @@ original `i`.
 -/
 elab "apply" t:term "at" i:ident : tactic => withSynthesize <| withMainContext do
   let f ← elabTermForApply t
-  let some ldecl := (← getLCtx).findFromUserName? i.getId
+  let some ldecl := (← getLCtx).findFromUserName i.getId
     | throwErrorAt i m!"Identifier {i} not found"
   let (mvs, bis, tp) ← forallMetaTelescopeReducingUntilDefEq (← inferType f) ldecl.type
   let mainGoal ← getMainGoal

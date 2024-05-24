@@ -1264,7 +1264,7 @@ abbrev NormedField.induced [Field R] [NormedField S] [NonUnitalRingHomClass F R 
 theorem NormOneClass.induced {F : Type*} (R S : Type*) [Ring R] [SeminormedRing S]
     [NormOneClass S] [FunLike F R S] [RingHomClass F R S] (f : F) :
     @NormOneClass R (SeminormedRing.induced R S f).toNorm _ :=
-  -- Porting note: is this `let` a bad idea somehow?
+  -- Porting note: is this `let` a bad idea somehow
   let _ : SeminormedRing R := SeminormedRing.induced R S f
   { norm_one := (congr_arg norm (map_one f)).trans norm_one }
 #align norm_one_class.induced NormOneClass.induced

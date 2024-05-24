@@ -566,7 +566,7 @@ In degree `n : ℤ`, it consists of the abelian group `HomComplex.Cochain F G n`
 -- until we made `AddCommGroupCat.coe_of` a simp lemma,
 -- after which the simp normal form linter complains.
 -- It was not used a simp lemma in Mathlib.
--- Possible solution: higher priority function coercions that remove the `of`?
+-- Possible solution: higher priority function coercions that remove the `of`
 -- @[simp]
 @[simps! X]
 def HomComplex : CochainComplex AddCommGroupCat ℤ where

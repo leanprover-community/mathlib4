@@ -161,9 +161,9 @@ Options:
   the proposition
 * `set_option trace.slim_check.success true`: print the tested samples that satisfy a property
 -/
-syntax (name := slimCheckSyntax) "slim_check" (config)? : tactic
+syntax (name := slimCheckSyntax) "slim_check" (config) : tactic
 
-elab_rules : tactic | `(tactic| slim_check $[$cfg]?) => withMainContext do
+elab_rules : tactic | `(tactic| slim_check $[$cfg]) => withMainContext do
   let cfg ← elabConfig (mkOptionalNode cfg)
   let (_, g) ← (← getMainGoal).revert ((← getLocalHyps).map (Expr.fvarId!))
   g.withContext do
@@ -217,7 +217,7 @@ set_option trace.Meta.synthInstance true
 -- | node : name → expr → list instance_tree → instance_tree
 
 -- /-- Gather information about a `testable` instance. Given
--- an expression of type `testable ?p`, gather the
+-- an expression of type `testable p`, gather the
 -- name of the `testable` instances that it is built from
 -- and the proposition that they test. -/
 -- meta def summarize_instance : expr → tactic instance_tree

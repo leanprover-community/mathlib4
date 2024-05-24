@@ -372,7 +372,7 @@ bar : ∀ (m n : ℕ), Foo m n ↔ m = n ∧ m + n = 2
 
 See also the user command `mk_iff_of_inductive_prop`.
 -/
-syntax (name := mkIff) "mk_iff" (ppSpace ident)? : attr
+syntax (name := mkIff) "mk_iff" (ppSpace ident) : attr
 
 /--
 `mk_iff_of_inductive_prop i r` makes an `iff` rule for the inductively-defined proposition `i`.

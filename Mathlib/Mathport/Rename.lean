@@ -45,13 +45,13 @@ def RenameMap.insert (m : RenameMap) (e : NameEntry) : RenameMap :=
   let ⟨to4, to3⟩ := m
   let to4 := to4.insert e.n3 (e.dubious, e.n4)
   let to3 := if e.synthetic || e.n4.isAnonymous then to3 else
-    match to3.find? e.n4 with
+    match to3.find e.n4 with
     | none => to3.insert e.n4 (e.n3, [])
     | some (a, l) => if (a::l).contains e.n3 then to3 else to3.insert e.n4 (a, e.n3 :: l)
   ⟨to4, to3⟩
 
 /-- Look up a lean 4 name from the lean 3 name. Also return the `dubious` error message. -/
-def RenameMap.find? (m : RenameMap) : Name → Option (String × Name) := m.toLean4.find?
+def RenameMap.find (m : RenameMap) : Name → Option (String × Name) := m.toLean4.find
 
 set_option autoImplicit true in
 -- TODO: upstream into core/std
@@ -127,7 +127,7 @@ syntax (name := align) "#align " ident ppSpace ident : command
 
 /-- Checks that `id` has not already been `#align`ed or `#noalign`ed. -/
 def ensureUnused {m : Type → Type} [Monad m] [MonadEnv m] [MonadError m] (id : Name) : m Unit := do
-  if let some (_, n) := (renameExtension.getState (← getEnv)).get.toLean4.find? id then
+  if let some (_, n) := (renameExtension.getState (← getEnv)).get.toLean4.find id then
     if n.isAnonymous then
       throwError "{id} has already been no-aligned"
     else
@@ -200,7 +200,7 @@ syntax (name := lookup3) "#lookup3 " ident : command
   | `(#lookup3%$tk $id3:ident) => do
     let n3 := id3.getId
     let m := renameExtension.getState (← getEnv) |>.get
-    match m.find? n3 with
+    match m.find n3 with
     | none    => logInfoAt tk s!"name `{n3} not found"
     | some (dubious, n4) => do
       if n4.isAnonymous then
@@ -210,7 +210,7 @@ syntax (name := lookup3) "#lookup3 " ident : command
         if !dubious.isEmpty then
           msg := msg ++ s!" (dubious: {dubious})"
         logInfoAt tk <|
-          match m.toLean3.find? n4 with
+          match m.toLean3.find n4 with
           | none | some (_, []) => msg
           | some (n, l) => m!"{msg} (aliases {n :: l})"
   | _ => throwUnsupportedSyntax
@@ -247,11 +247,11 @@ initialize renameImportExtension :
   }
 
 /-- Declare the corresponding mathlib3 module for the current mathlib4 module. -/
-syntax (name := alignImport) "#align_import " ident (" from " str "@" str)? : command
+syntax (name := alignImport) "#align_import " ident (" from " str "@" str) : command
 
 /-- Elaborate a `#align_import` command. -/
 @[command_elab alignImport] def elabAlignImport : CommandElab
-  | `(#align_import $mod3 $[from $repo @ $sha]?) => do
+  | `(#align_import $mod3 $[from $repo @ $sha]) => do
     let origin ← repo.mapM fun repo => do
       let sha := sha.get!
       let shaStr := sha.getString

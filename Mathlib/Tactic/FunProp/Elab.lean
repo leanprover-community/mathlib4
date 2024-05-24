@@ -19,7 +19,7 @@ open Lean.Parser.Tactic
 
 /-- Tactic to prove function properties -/
 syntax (name := funPropTacStx)
-  "fun_prop" (discharger)? (" [" withoutPosition(ident,*,?) "]")? : tactic
+  "fun_prop" (discharger) (" [" withoutPosition(ident,*,) "]") : tactic
 
 private def emptyDischarge : Expr → MetaM (Option Expr) :=
   fun e =>
@@ -30,7 +30,7 @@ private def emptyDischarge : Expr → MetaM (Option Expr) :=
 /-- Tactic to prove function properties -/
 @[tactic funPropTacStx]
 def funPropTac : Tactic
-  | `(tactic| fun_prop $[$d]? $[[$names,*]]?) => do
+  | `(tactic| fun_prop $[$d] $[[$names,*]]) => do
 
     let disch ← show MetaM (Expr → MetaM (Option Expr)) from do
       match d with
@@ -52,8 +52,8 @@ def funPropTac : Tactic
       let goalType ← goal.getType
 
       let cfg : Config := {disch := disch, constToUnfold := .ofArray namesToUnfold _}
-      let (r?, s) ← funProp goalType cfg |>.run {}
-      if let .some r := r? then
+      let (r, s) ← funProp goalType cfg |>.run {}
+      if let .some r := r then
         goal.assign r.proof
       else
         let mut msg := s!"`fun_prop` was unable to prove `{← Meta.ppExpr goalType}`\n\n"

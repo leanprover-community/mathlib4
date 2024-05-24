@@ -42,11 +42,11 @@ def FunctionData.toExpr (f : FunctionData) : MetaM Expr := do
     let body := Mor.mkAppN f.fn f.args
     mkLambdaFVars #[f.mainVar] body
 
-/-- Is `f` an indentity function? -/
+/-- Is `f` an indentity function -/
 def FunctionData.isIdentityFun (f : FunctionData) : Bool :=
   (f.args.size = 0 && f.fn == f.mainVar)
 
-/-- Is `f` a constant function? -/
+/-- Is `f` a constant function -/
 def FunctionData.isConstantFun (f : FunctionData) : Bool :=
   ((f.mainArgs.size = 0) && !(f.fn.containsFVar f.mainVar.fvarId!))
 
@@ -55,16 +55,16 @@ def FunctionData.domainType (f : FunctionData) : MetaM Expr :=
   withLCtx f.lctx f.insts do
     inferType f.mainVar
 
-/-- Is head function of `f` a constant?
+/-- Is head function of `f` a constant
 
 If the head of `f` is a projection return the name of corresponding projection function. -/
-def FunctionData.getFnConstName? (f : FunctionData) : MetaM (Option Name) := do
+def FunctionData.getFnConstName (f : FunctionData) : MetaM (Option Name) := do
 
   match f.fn with
   | .const n _ => return n
   | .proj typeName idx _ =>
-    let .some info := getStructureInfo? (← getEnv) typeName | return none
-    let .some projName := info.getProjFn? idx | return none
+    let .some info := getStructureInfo (← getEnv) typeName | return none
+    let .some projName := info.getProjFn idx | return none
     return projName
   | _ => return none
 
@@ -90,7 +90,7 @@ def getFunctionData (f : Expr) : MetaM FunctionData := do
         mainArgs := mainArgs
       }
 
-/-- Result of `getFunctionData?`. It returns function data if the function is in the form
+/-- Result of `getFunctionData`. It returns function data if the function is in the form
 `fun x => f y₁ ... yₙ`. Two other cases are `fun x => let y := ...` or `fun x y => ...` -/
 inductive MaybeFunctionData where
   /-- Can't generate function data as function body has let binder. -/
@@ -107,12 +107,12 @@ def MaybeFunctionData.get (fData : MaybeFunctionData) : MetaM Expr :=
   | .data d => d.toExpr
 
 /-- Get `FunctionData` for `f`. -/
-def getFunctionData? (f : Expr)
+def getFunctionData (f : Expr)
     (unfoldPred : Name → Bool := fun _ => false) (cfg : WhnfCoreConfig := {}) :
     MetaM MaybeFunctionData := do
 
   let unfold := fun e : Expr =>
-    if let .some n := e.getAppFn'.constName? then
+    if let .some n := e.getAppFn'.constName then
       pure (unfoldPred n)
     else
       pure false
@@ -128,9 +128,9 @@ def getFunctionData? (f : Expr)
 
 /-- If head function is a let-fvar unfold it and return resulting function.
 Return `none` otherwise. -/
-def FunctionData.unfoldHeadFVar? (fData : FunctionData) : MetaM (Option Expr) := do
+def FunctionData.unfoldHeadFVar (fData : FunctionData) : MetaM (Option Expr) := do
   let .fvar id := fData.fn | return none
-  let .some val ← id.getValue? | return none
+  let .some val ← id.getValue | return none
   let f ← withLCtx fData.lctx fData.insts do
     mkLambdaFVars #[fData.mainVar] (Mor.mkAppN val fData.args)
   return f
@@ -147,9 +147,9 @@ inductive MorApplication where
   | none
   deriving Inhabited, BEq
 
-/-- Is function body of `f` a morphism application? What kind? -/
+/-- Is function body of `f` a morphism application What kind -/
 def FunctionData.isMorApplication (f : FunctionData) : MetaM MorApplication := do
-  if let .some name := f.fn.constName? then
+  if let .some name := f.fn.constName then
     if ← Mor.isCoeFunName name then
       let info ← getConstInfo name
       let arity := info.type.forallArity

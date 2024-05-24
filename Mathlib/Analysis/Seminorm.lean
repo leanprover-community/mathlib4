@@ -290,7 +290,7 @@ variable [AddCommGroup F] [AddCommGroup G]
 variable [Module 𝕜 E] [Module 𝕜₂ E₂] [Module 𝕜₃ E₃] [Module 𝕜 F] [Module 𝕜 G]
 
 -- Porting note: even though this instance is found immediately by typeclass search,
--- it seems to be needed below!?
+-- it seems to be needed below!
 noncomputable instance smul_nnreal_real : SMul ℝ≥0 ℝ := inferInstance
 
 variable [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
@@ -749,7 +749,7 @@ theorem ball_finset_sup' (p : ι → Seminorm 𝕜 E) (s : Finset ι) (H : s.Non
   induction' H using Finset.Nonempty.cons_induction with a a s ha hs ih
   · classical simp
   · rw [Finset.sup'_cons hs, Finset.inf'_cons hs, ball_sup]
-    -- Porting note: `rw` can't use `inf_eq_inter` here, but `simp` can?
+    -- Porting note: `rw` can't use `inf_eq_inter` here, but `simp` can
     simp only [inf_eq_inter, ih]
 #align seminorm.ball_finset_sup' Seminorm.ball_finset_sup'
 
@@ -758,7 +758,7 @@ theorem closedBall_finset_sup' (p : ι → Seminorm 𝕜 E) (s : Finset ι) (H :
   induction' H using Finset.Nonempty.cons_induction with a a s ha hs ih
   · classical simp
   · rw [Finset.sup'_cons hs, Finset.inf'_cons hs, closedBall_sup]
-    -- Porting note: `rw` can't use `inf_eq_inter` here, but `simp` can?
+    -- Porting note: `rw` can't use `inf_eq_inter` here, but `simp` can
     simp only [inf_eq_inter, ih]
 #align seminorm.closed_ball_finset_sup' Seminorm.closedBall_finset_sup'
 

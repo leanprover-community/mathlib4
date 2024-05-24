@@ -130,7 +130,7 @@ instance [h : Fact (p.Splits (algebraMap F E))] : IsScalarTower F p.SplittingFie
 
 -- The `Algebra p.SplittingField E` instance above behaves badly when
 -- `E := p.SplittingField`, since it may result in a unification problem
--- `IsSplittingField.lift.toRingHom.toAlgebra =?= Algebra.id`,
+-- `IsSplittingField.lift.toRingHom.toAlgebra == Algebra.id`,
 -- which takes an extremely long time to resolve, causing timeouts.
 -- Since we don't really care about this definition, marking it as irreducible
 -- causes that unification to error out early.

@@ -20,11 +20,11 @@ General-Valued CSP subsumes Min-Cost-Hom (including 3-SAT for example) and Finit
 * `ValuedCSP.Term.evalSolution`: An evaluation of the VCSP term for given solution.
 * `ValuedCSP.Instance`: An instance of a VCSP problem over given template.
 * `ValuedCSP.Instance.evalSolution`: An evaluation of the VCSP instance for given solution.
-* `ValuedCSP.Instance.IsOptimumSolution`: Is given solution a minimum of the VCSP instance?
-* `Function.HasMaxCutProperty`: Can given binary function express the Max-Cut problem?
+* `ValuedCSP.Instance.IsOptimumSolution`: Is given solution a minimum of the VCSP instance
+* `Function.HasMaxCutProperty`: Can given binary function express the Max-Cut problem
 * `FractionalOperation`: Multiset of operations on given domain of the same arity.
 * `FractionalOperation.IsSymmetricFractionalPolymorphismFor`: Is given fractional operation a
-   symmetric fractional polymorphism for given VCSP template?
+   symmetric fractional polymorphism for given VCSP template
 
 ## References
 * [D. A. Cohen, M. C. Cooper, P. Creed, P. G. Jeavons, S. Živný,

@@ -534,7 +534,7 @@ example : 2^4-1 ∣ 2^16-1 := by norm_num1
 
 section norm_num_cmd_variable
 
--- [fixme] obsolete?
+-- [fixme] obsolete
 -- variables (x y : ℕ)
 -- #norm_num bit0 x < bit0 (y + x) ↔ 0 < y
 -- example : bit0 x < bit0 (y + x) ↔ 0 < y := by norm_num1

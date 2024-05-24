@@ -41,7 +41,7 @@ Arguments:
   to apply `simp` twice to the current declaration, but that causes no issues.
 -/
 def addRelatedDecl (src : Name) (suffix : String) (ref : Syntax)
-    (attrs? : Option (Syntax.TSepArray `Lean.Parser.Term.attrInstance ","))
+    (attrs : Option (Syntax.TSepArray `Lean.Parser.Term.attrInstance ","))
     (construct : Expr → Expr → List Name → MetaM (Expr × List Name)) :
     MetaM Unit := do
   let tgt := match src with
@@ -68,7 +68,7 @@ def addRelatedDecl (src : Name) (suffix : String) (ref : Syntax)
   | _ => throwError "Constant {src} is not a theorem or definition."
   if isProtected (← getEnv) src then
     setEnv <| addProtected (← getEnv) tgt
-  let attrs := match attrs? with | some attrs => attrs | none => #[]
+  let attrs := match attrs with | some attrs => attrs | none => #[]
   _ ← Term.TermElabM.run' <| do
     let attrs ← elabAttrs attrs
     Term.applyAttributes src attrs

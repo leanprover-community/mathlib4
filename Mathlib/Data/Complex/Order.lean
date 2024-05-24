@@ -136,7 +136,7 @@ private alias ⟨_, ofReal_ne_zero_of_ne_zero⟩ := ofReal_ne_zero
 input is. -/
 @[positivity Complex.ofReal' _, Complex.ofReal _]
 def evalComplexOfReal : PositivityExt where eval {u α} _ _ e := do
-  -- TODO: Can we avoid duplicating the code?
+  -- TODO: Can we avoid duplicating the code
   match u, α, e with
   | 0, ~q(ℂ), ~q(Complex.ofReal' $a) =>
     assumeInstancesCommute

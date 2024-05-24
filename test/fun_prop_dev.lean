@@ -203,7 +203,7 @@ example : Con (fun (f : α → α → α → α → α) y x => f x y x y) := by 
 
 -- local hypothesis are assumed to be always in fully applied form
 -- so `(hf : Con f)` is not considered valid
--- is this valid assumption?
+-- is this valid assumption
 example (f : α → β → γ) (hf : Con f) : Con f := by fun_prop
 example (f : α → β → γ) (hf : Con f) : Con (fun x => f x) := by fun_prop
 example (f : α → β → γ) (hf : Con f) : Con (fun x y => f x y) := by fun_prop

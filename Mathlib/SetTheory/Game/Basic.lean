@@ -498,7 +498,7 @@ def negMulRelabelling (x y : PGame.{u}) : -x * y ≡r -(x * y) :=
         · exact (negMulRelabelling _ _).symm
         -- Porting note: not sure what has gone wrong here.
         -- The goal is hideous here, and the `exact` doesn't work,
-        -- but if we just `change` it to look like the mathlib3 goal then we're fine!?
+        -- but if we just `change` it to look like the mathlib3 goal then we're fine!
         change -(mk xl xr xL xR * _) ≡r _
         exact (negMulRelabelling _ _).symm
   termination_by (x, y)

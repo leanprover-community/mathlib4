@@ -721,7 +721,7 @@ instance : ComplementedLattice αᵒᵈ :=
 
 end ComplementedLattice
 
--- TODO: Define as a sublattice?
+-- TODO: Define as a sublattice
 /-- The sublattice of complemented elements. -/
 abbrev Complementeds (α : Type*) [Lattice α] [BoundedOrder α] : Type _ :=
   {a : α // IsComplemented a}

@@ -198,7 +198,7 @@ def adj : T.free ⊣ T.forget :=
       homEquiv_naturality_right := by
         intros
         -- This doesn't look good:
-        simp? says simp only [forget_obj, free_obj_A, forget_map]
+        simp says simp only [forget_obj, free_obj_A, forget_map]
         dsimp
         simp }
 #align category_theory.monad.adj CategoryTheory.Monad.adj
@@ -214,7 +214,7 @@ theorem algebra_iso_of_iso {A B : Algebra T} (f : A ⟶ B) [IsIso f.f] : IsIso f
 #align category_theory.monad.algebra_iso_of_iso CategoryTheory.Monad.algebra_iso_of_iso
 
 instance forget_reflects_iso : T.forget.ReflectsIsomorphisms where
-  -- Porting note: Is this the right approach to introduce instances?
+  -- Porting note: Is this the right approach to introduce instances
   reflects {_ _} f := fun [IsIso f.f] => algebra_iso_of_iso T f
 #align category_theory.monad.forget_reflects_iso CategoryTheory.Monad.forget_reflects_iso
 
@@ -485,7 +485,7 @@ theorem coalgebra_iso_of_iso {A B : Coalgebra G} (f : A ⟶ B) [IsIso f.f] : IsI
 #align category_theory.comonad.coalgebra_iso_of_iso CategoryTheory.Comonad.coalgebra_iso_of_iso
 
 instance forget_reflects_iso : G.forget.ReflectsIsomorphisms where
-  -- Porting note: Is this the right approach to introduce instances?
+  -- Porting note: Is this the right approach to introduce instances
   reflects {_ _} f := fun [IsIso f.f] => coalgebra_iso_of_iso G f
 #align category_theory.comonad.forget_reflects_iso CategoryTheory.Comonad.forget_reflects_iso
 

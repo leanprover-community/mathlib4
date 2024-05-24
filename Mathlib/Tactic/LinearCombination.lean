@@ -117,7 +117,7 @@ theorem eq_of_add_pow [Ring α] [NoZeroDivisors α] (n : ℕ) (p : (a:α) = b)
 
 /-- Implementation of `linear_combination` and `linear_combination2`. -/
 def elabLinearCombination
-    (norm? : Option Syntax.Tactic) (exp? : Option Syntax.NumLit) (input : Option Syntax.Term)
+    (norm : Option Syntax.Tactic) (exp : Option Syntax.NumLit) (input : Option Syntax.Term)
     (twoGoals := false) : Tactic.TacticM Unit := Tactic.withMainContext do
   let p ← match input with
   | none => `(Eq.refl 0)
@@ -125,19 +125,19 @@ def elabLinearCombination
     match ← expandLinearCombo e with
     | none => `(Eq.refl $e)
     | some p => pure p
-  let norm := norm?.getD (Unhygienic.run `(tactic| ring1))
+  let norm := norm.getD (Unhygienic.run `(tactic| ring1))
   Tactic.evalTactic <| ← withFreshMacroScope <|
   if twoGoals then
     `(tactic| (
-      refine eq_trans₃ $p ?a ?b
+      refine eq_trans₃ $p a b
       case' a => $norm:tactic
       case' b => $norm:tactic))
   else
-    match exp? with
+    match exp with
     | some n =>
-      if n.getNat = 1 then `(tactic| (refine eq_of_add $p ?a; case' a => $norm:tactic))
-      else `(tactic| (refine eq_of_add_pow $n $p ?a; case' a => $norm:tactic))
-    | _ => `(tactic| (refine eq_of_add $p ?a; case' a => $norm:tactic))
+      if n.getNat = 1 then `(tactic| (refine eq_of_add $p a; case' a => $norm:tactic))
+      else `(tactic| (refine eq_of_add_pow $n $p a; case' a => $norm:tactic))
+    | _ => `(tactic| (refine eq_of_add $p a; case' a => $norm:tactic))
 
 /--
 The `(norm := $tac)` syntax says to use `tac` as a normalization postprocessor for
@@ -224,12 +224,12 @@ example (a b : ℚ) (h : ∀ p q : ℚ, p = q) : 3*a + qc = 3*b + 2*qc := by
 ```
 -/
 syntax (name := linearCombination) "linear_combination"
-  (normStx)? (expStx)? (ppSpace colGt term)? : tactic
+  (normStx) (expStx) (ppSpace colGt term) : tactic
 elab_rules : tactic
-  | `(tactic| linear_combination $[(norm := $tac)]? $[(exp := $n)]? $(e)?) =>
+  | `(tactic| linear_combination $[(norm := $tac)] $[(exp := $n)] $(e)) =>
     elabLinearCombination tac n e
 
 @[inherit_doc linearCombination]
-syntax "linear_combination2" (normStx)? (ppSpace colGt term)? : tactic
+syntax "linear_combination2" (normStx) (ppSpace colGt term) : tactic
 elab_rules : tactic
-  | `(tactic| linear_combination2 $[(norm := $tac)]? $(e)?) => elabLinearCombination tac none e true
+  | `(tactic| linear_combination2 $[(norm := $tac)] $(e)) => elabLinearCombination tac none e true

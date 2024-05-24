@@ -338,7 +338,7 @@ theorem cons_subperm_of_mem {a : α} {l₁ l₂ : List α} (d₁ : Nodup l₁) (
   induction s generalizing l₁ with
   | slnil => cases h₂
   | @cons r₁ r₂ b s' ih =>
-    simp? at h₂ says simp only [mem_cons] at h₂
+    simp at h₂ says simp only [mem_cons] at h₂
     cases' h₂ with e m
     · subst b
       exact ⟨a :: r₁, p.cons a, s'.cons₂ _⟩
@@ -347,7 +347,7 @@ theorem cons_subperm_of_mem {a : α} {l₁ l₂ : List α} (d₁ : Nodup l₁) (
   | @cons₂ r₁ r₂ b _ ih =>
     have bm : b ∈ l₁ := p.subset <| mem_cons_self _ _
     have am : a ∈ r₂ := by
-      simp only [find?, mem_cons] at h₂
+      simp only [find, mem_cons] at h₂
       exact h₂.resolve_left fun e => h₁ <| e.symm ▸ bm
     rcases append_of_mem bm with ⟨t₁, t₂, rfl⟩
     have st : t₁ ++ t₂ <+ t₁ ++ b :: t₂ := by simp

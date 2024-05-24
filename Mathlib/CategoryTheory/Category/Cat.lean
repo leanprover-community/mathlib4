@@ -41,7 +41,7 @@ namespace Cat
 instance : Inhabited Cat :=
   ⟨⟨Type u, CategoryTheory.types⟩⟩
 
--- Porting note: maybe this coercion should be defined to be `objects.obj`?
+-- Porting note: maybe this coercion should be defined to be `objects.obj`
 instance : CoeSort Cat (Type u) :=
   ⟨Bundled.α⟩
 

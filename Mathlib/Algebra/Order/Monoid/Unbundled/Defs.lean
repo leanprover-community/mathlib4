@@ -57,11 +57,11 @@ as it is easier to use.
 -/
 
 
--- TODO: convert `ExistsMulOfLE`, `ExistsAddOfLE`?
+-- TODO: convert `ExistsMulOfLE`, `ExistsAddOfLE`
 -- TODO: relationship with `Con/AddCon`
 -- TODO: include equivalence of `LeftCancelSemigroup` with
--- `Semigroup PartialOrder ContravariantClass α α (*) (≤)`?
--- TODO : use ⇒, as per Eric's suggestion?  See
+-- `Semigroup PartialOrder ContravariantClass α α (*) (≤)`
+-- TODO : use ⇒, as per Eric's suggestion  See
 -- https://leanprover.zulipchat.com/#narrow/stream/116395-maths/topic/ordered.20stuff/near/236148738
 -- for a discussion.
 open Function

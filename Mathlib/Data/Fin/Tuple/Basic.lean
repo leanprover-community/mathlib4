@@ -149,7 +149,7 @@ theorem cons_self_tail : cons (q 0) (tail q) = q := by
     rw [cons_succ]
 #align fin.cons_self_tail Fin.cons_self_tail
 
--- Porting note: Mathport removes `_root_`?
+-- Porting note: Mathport removes `_root_`
 /-- Recurse on an `n+1`-tuple by splitting it into a single element and an `n`-tuple. -/
 @[elab_as_elim]
 def consCases {P : (∀ i : Fin n.succ, α i) → Sort v} (h : ∀ x₀ x, P (Fin.cons x₀ x))

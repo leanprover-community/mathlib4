@@ -112,13 +112,13 @@ def calcNeeds (constToIdx : HashMap Name USize) (mod : ModuleData) : Bitset :=
   mod.constants.foldl (init := 0) fun deps ci =>
     if isBlacklisted ci.name then deps else
     let deps := visitExpr ci.type deps
-    match ci.value? with
+    match ci.value with
     | some e => visitExpr e deps
     | none => deps
 where
   /-- Accumulate the results from expression `e` into `deps`. -/
   visitExpr e deps :=
-    Lean.Expr.foldConsts e deps fun c deps => match constToIdx.find? c with
+    Lean.Expr.foldConsts e deps fun c deps => match constToIdx.find c with
       | some i => deps ||| (1 <<< i.toNat)
       | none => deps
 
@@ -128,16 +128,16 @@ def getExplanations (constToIdx : HashMap Name USize) (mod : ModuleData) :
   mod.constants.foldl (init := {}) fun deps ci =>
     if isBlacklisted ci.name then deps else
     let deps := visitExpr ci.name ci.type deps
-    match ci.value? with
+    match ci.value with
     | some e => visitExpr ci.name e deps
     | none => deps
 where
   /-- Accumulate the results from expression `e` into `deps`. -/
   visitExpr name e deps :=
-    Lean.Expr.foldConsts e deps fun c deps => match constToIdx.find? c with
+    Lean.Expr.foldConsts e deps fun c deps => match constToIdx.find c with
       | some i =>
         if
-          if let some (name', _) := deps.find? i then
+          if let some (name', _) := deps.find i then
             decide (name.toString.length < name'.toString.length)
           else true
         then
@@ -157,7 +157,7 @@ partial def loadModules (imports : Array Import) : StateT State IO (Array USize 
   let mut transImps := 0
   for imp in imports do
     let s ← get
-    if let some i := s.toIdx.find? imp.module then
+    if let some i := s.toIdx.find imp.module then
       imps := imps.push i
       transImps := transImps ||| s.transDeps[i]!
     else
@@ -192,13 +192,13 @@ def Edits := HashMap Name (NameSet × Bitset)
 
 /-- Register that we want to remove `tgt` from the imports of `src`. -/
 def Edits.remove (ed : Edits) (src tgt : Name) : Edits :=
-  match ed.find? src with
+  match ed.find src with
   | none => ed.insert src (RBTree.insert ∅ tgt, 0)
   | some (a, b) => ed.insert src (a.insert tgt, b)
 
 /-- Register that we want to add `tgt` to the imports of `src`. -/
 def Edits.add (ed : Edits) (src : Name) (tgt : Nat) : Edits :=
-  match ed.find? src with
+  match ed.find src with
   | none => ed.insert src (∅, 1 <<< tgt)
   | some (a, b) => ed.insert src (a, b ||| (1 <<< tgt))
 
@@ -219,7 +219,7 @@ def parseHeader (srcSearchPath : SearchPath) (mod : Name) :
     msgs.forM fun msg => msg.toString >>= IO.println
     throw <| .userError "parse errors in file"
   -- the insertion point for `add` is the first newline after the imports
-  let insertion := header.getTailPos?.getD parserState.pos
+  let insertion := header.getTailPos.getD parserState.pos
   let insertion := text.findAux (· == '\n') text.endPos insertion + ⟨1⟩
   pure (path, inputCtx, header, insertion)
 
@@ -277,7 +277,7 @@ def visitModule (s : State) (srcSearchPath : SearchPath) (ignoreImps : Bitset)
       let (path, inputCtx, header, endHeader) ← parseHeader srcSearchPath s.modNames[i]!
       for stx in header[1].getArgs do
         if toRemove.any fun i => s.modNames[i]! == stx[2].getId then
-          let pos := inputCtx.fileMap.toPosition stx.getPos?.get!
+          let pos := inputCtx.fileMap.toPosition stx.getPos.get!
           println! "{path}:{pos.line}:{pos.column+1}: warning: unused import \
             (use `lake exe shake --fix` to fix this, or `lake exe shake --update` to ignore)"
       if !toAdd.isEmpty then
@@ -351,7 +351,7 @@ def visitModule (s : State) (srcSearchPath : SearchPath) (ignoreImps : Bitset)
     let explanation := getExplanations s.constToIdx s.mods[i]!
     let sanitize n := if n.hasMacroScopes then (sanitizeName n).run' { options := {} } else n
     let run j := do
-      if let some (n, c) := explanation.find? j then
+      if let some (n, c) := explanation.find j then
         println! "  note: {s.modNames[i]!} requires {s.modNames[j]!}\
           \n    because {sanitize n} refers to {sanitize c}"
     for imp in s.mods[i]!.imports do run <| s.toIdx.find! imp.module
@@ -362,7 +362,7 @@ def visitModule (s : State) (srcSearchPath : SearchPath) (ignoreImps : Bitset)
 /-- Convert a list of module names to a bitset of module indexes -/
 def toBitset (s : State) (ns : List Name) : Bitset :=
   ns.foldl (init := 0) fun c name =>
-    match s.toIdx.find? name with
+    match s.toIdx.find name with
     | some i => c ||| (1 <<< i.toNat)
     | none => c
 
@@ -388,9 +388,9 @@ structure Args where
   mods : Array Name := #[]
 
 instance {α} [FromJson α] : FromJson (NameMap α) where
-  fromJson? j := do
-    (← j.getObj?).foldM (init := mkNameMap _) fun m a b => do
-      m.insert a.toName <$> fromJson? b
+  fromJson j := do
+    (← j.getObj).foldM (init := mkNameMap _) fun m a b => do
+      m.insert a.toName <$> fromJson b
 instance {α} [ToJson α] : ToJson (NameMap α) where
   toJson m := Json.obj <| m.fold (init := ∅) fun m a b =>
       m.insert compare (toString a) (toJson b)
@@ -398,11 +398,11 @@ instance {α} [ToJson α] : ToJson (NameMap α) where
 /-- The config file format, which we both read and write. -/
 structure ShakeCfg where
   /-- All imports from modules in this list will be ignored -/
-  ignoreAll? : Option (List Name) := none
+  ignoreAll : Option (List Name) := none
   /-- The modules in this list will be ignored as imports of any other file -/
-  ignoreImport? : Option (List Name) := [`Init, `Lean]
+  ignoreImport : Option (List Name) := [`Init, `Lean]
   /-- If `X` maps to `Y` then an import of `Y` in module `X` will be ignored -/
-  ignore? : Option (NameMap (Array Name)) := none
+  ignore : Option (NameMap (Array Name)) := none
   deriving FromJson, ToJson
 
 /-- The main entry point. See `help` for more information on arguments. -/
@@ -443,7 +443,7 @@ def main (args : List String) : IO UInt32 := do
   -- Read the config file
   let cfg ← if let some file := cfgFile then
     try
-      IO.ofExcept (Json.parse (← IO.FS.readFile file) >>= fromJson? (α := ShakeCfg))
+      IO.ofExcept (Json.parse (← IO.FS.readFile file) >>= fromJson (α := ShakeCfg))
     catch e =>
       println! "{e.toString}"
       pure {}
@@ -458,9 +458,9 @@ def main (args : List String) : IO UInt32 := do
   let mut (_, s) ← (loadModules (mods.map ({module := ·}))).run {}
 
   -- Parse the config file
-  let ignoreMods := toBitset s (cfg.ignoreAll?.getD [])
-  let ignoreImps := toBitset s (cfg.ignoreImport?.getD [])
-  let ignore := (cfg.ignore?.getD {}).fold (init := mkHashMap) fun m a v =>
+  let ignoreMods := toBitset s (cfg.ignoreAll.getD [])
+  let ignoreImps := toBitset s (cfg.ignoreImport.getD [])
+  let ignore := (cfg.ignore.getD {}).fold (init := mkHashMap) fun m a v =>
     m.insert a (toBitset s v.toList)
 
   let noIgnore (i : Nat) :=
@@ -494,8 +494,8 @@ def main (args : List String) : IO UInt32 := do
   -- Write the config file
   if args.update then
     if let some cfgFile := cfgFile then
-      let mut ignore := cfg.ignore?.getD {}
-      let ignoreImport := cfg.ignoreImport?.getD {}
+      let mut ignore := cfg.ignore.getD {}
+      let ignoreImport := cfg.ignoreImport.getD {}
       let mut ignoreImportSet : NameSet := ignoreImport.foldl .insert {}
       -- if `args.fix` is true then we assume the errors will be fixed after,
       -- so it's just reformatting the existing file
@@ -511,7 +511,7 @@ def main (args : List String) : IO UInt32 := do
             if ns.isEmpty then ignore.erase mod else
               ignore.insert mod ns.toArray
       -- If an entry is in `ignoreAll`, the `ignore` key is redundant
-      for i in cfg.ignoreAll?.getD {} do
+      for i in cfg.ignoreAll.getD {} do
         if ignore.contains i then
           ignore := ignore.erase i
       -- If an entry is in `ignoreImport`, the `ignore` value is redundant
@@ -521,9 +521,9 @@ def main (args : List String) : IO UInt32 := do
       -- Sort the lists alphabetically
       let ignoreImport := (ignoreImportSet.toArray.qsort (·.toString < ·.toString)).toList
       let cfg : ShakeCfg := {
-        ignoreAll? := cfg.ignoreAll?.filter (!·.isEmpty)
-        ignoreImport? := (some ignoreImport).filter (!·.isEmpty)
-        ignore? := (some ignore).filter (!·.isEmpty)
+        ignoreAll := cfg.ignoreAll.filter (!·.isEmpty)
+        ignoreImport := (some ignoreImport).filter (!·.isEmpty)
+        ignore := (some ignore).filter (!·.isEmpty)
       }
       IO.FS.writeFile cfgFile <| toJson cfg |>.pretty.push '\n'
 
@@ -561,9 +561,9 @@ def main (args : List String) : IO UInt32 := do
     for stx in header[1].getArgs do
       let mod := stx[2].getId
       if remove.contains mod || seen.contains mod then
-        out := out ++ text.extract pos stx.getPos?.get!
+        out := out ++ text.extract pos stx.getPos.get!
         -- We use the end position of the syntax, but include whitespace up to the first newline
-        pos := text.findAux (· == '\n') text.endPos stx.getTailPos?.get! + ⟨1⟩
+        pos := text.findAux (· == '\n') text.endPos stx.getTailPos.get! + ⟨1⟩
       seen := seen.insert mod
     out := out ++ text.extract pos insertion
     for mod in add do

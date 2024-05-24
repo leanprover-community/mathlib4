@@ -18,7 +18,7 @@ A morphism between two such objects is a family of morphisms between the corresp
 which are carried to one another by the action on morphisms of the functors in the diagram.
 
 ## Future work
-Can the indexing category live in a lower universe?
+Can the indexing category live in a lower universe
 -/
 
 

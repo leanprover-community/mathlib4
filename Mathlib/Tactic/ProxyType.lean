@@ -180,7 +180,7 @@ def ensureProxyEquiv (config : ProxyEquivConfig) (indVal : InductiveVal) : TermE
     -- Create the proxy type definition
     trace[Elab.ProxyType] "proxy type: {ctype}"
     let ctype' ← mkLambdaFVars params ctype
-    if let some const := (← getEnv).find? config.proxyName then
+    if let some const := (← getEnv).find config.proxyName then
       unless ← isDefEq const.value! ctype' do
         throwError "Declaration {config.proxyName} already exists and it is not the proxy type."
       trace[Elab.ProxyType] "proxy type already exists"
@@ -204,7 +204,7 @@ def ensureProxyEquiv (config : ProxyEquivConfig) (indVal : InductiveVal) : TermE
 
     -- Create the `Equiv`
     let equivType ← mkAppM ``Equiv #[ctype, mkAppN (mkConst indVal.name levels) params]
-    if let some const := (← getEnv).find? config.proxyEquivName then
+    if let some const := (← getEnv).find config.proxyEquivName then
       unless ← isDefEq const.type (← mkForallFVars params equivType) do
         throwError "Declaration {config.proxyEquivName} already exists and has the wrong type."
       trace[Elab.ProxyType] "proxy equivalence already exists"
@@ -244,10 +244,10 @@ def ensureProxyEquiv (config : ProxyEquivConfig) (indVal : InductiveVal) : TermE
 
 Elaborate `type` and get its `InductiveVal`. Uses the `expectedType`, where the
 expected type should be of the form `_ ≃ type`. -/
-def elabProxyEquiv (type : Term) (expectedType? : Option Expr) :
+def elabProxyEquiv (type : Term) (expectedType : Option Expr) :
     TermElabM (Expr × InductiveVal) := do
   let type ← Term.elabType type
-  if let some expectedType := expectedType? then
+  if let some expectedType := expectedType then
     let equivType ← Term.elabType (← `(_ ≃ $(← Term.exprToSyntax type)))
     unless ← isDefEq expectedType equivType do
       throwError
@@ -287,10 +287,10 @@ syntax (name := proxy_equiv) "proxy_equiv% " term : term
 
 /-- Elaborator for `proxy_equiv%`. -/
 @[term_elab proxy_equiv]
-def elab_proxy_equiv : Elab.Term.TermElab := fun stx expectedType? =>
+def elab_proxy_equiv : Elab.Term.TermElab := fun stx expectedType =>
   match stx with
   | `(proxy_equiv% $t) => do
-    let (type, indVal) ← elabProxyEquiv t expectedType?
+    let (type, indVal) ← elabProxyEquiv t expectedType
     let config : ProxyEquivConfig := ProxyEquivConfig.default indVal
     ensureProxyEquiv config indVal
     mkAppOptM config.proxyEquivName (type.getAppArgs.map .some)

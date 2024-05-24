@@ -94,7 +94,7 @@ lemma cos_quadratic_upper_bound (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x
   wlog hx₀ : 0 ≤ x
   · simpa using this (by rwa [abs_neg]) $ neg_nonneg.2 $ le_of_not_le hx₀
   rw [abs_of_nonneg hx₀] at hx
-  -- TODO: `compute_deriv` tactic?
+  -- TODO: `compute_deriv` tactic
   have hderiv (x) : HasDerivAt (fun x ↦ 1 - 2 / π ^ 2 * x ^ 2 - cos x) _ x :=
     (((hasDerivAt_pow ..).const_mul _).const_sub _).sub $ hasDerivAt_cos _
   simp only [Nat.cast_ofNat, Nat.succ_sub_succ_eq_sub, tsub_zero, pow_one, ← neg_sub', neg_sub,

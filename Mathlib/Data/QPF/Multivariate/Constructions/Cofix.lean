@@ -455,13 +455,13 @@ namespace Mathlib.Tactic.MvBisim
 open Lean Expr Elab Term Tactic Meta Qq
 
 /-- tactic for proof by bisimulation -/
-syntax "mv_bisim" (ppSpace colGt term) (" with" (ppSpace colGt binderIdent)+)? : tactic
+syntax "mv_bisim" (ppSpace colGt term) (" with" (ppSpace colGt binderIdent)+) : tactic
 
 elab_rules : tactic
-  | `(tactic| mv_bisim $e $[ with $ids:binderIdent*]?) => do
+  | `(tactic| mv_bisim $e $[ with $ids:binderIdent*]) => do
     let ids : TSyntaxArray `Lean.binderIdent := ids.getD #[]
     let idsn (n : ℕ) : Name :=
-      match ids[n]? with
+      match ids[n] with
       | some s =>
         match s with
         | `(binderIdent| $n:ident) => n.getId
@@ -469,7 +469,7 @@ elab_rules : tactic
         | _ => unreachable!
       | none => `_
     let idss (n : ℕ) : TacticM (TSyntax `rcasesPat) := do
-      match ids[n]? with
+      match ids[n] with
       | some s =>
         match s with
         | `(binderIdent| $n:ident) => `(rcasesPat| $n)
@@ -482,7 +482,7 @@ elab_rules : tactic
         let (#[fv], g) ← g.generalize #[{ expr := e }] | unreachable!
         return (mkFVar fv, [g])
       withMainContext do
-        let some (t, l, r) ← matchEq? (← getMainTarget) | throwError "goal is not an equality"
+        let some (t, l, r) ← matchEq (← getMainTarget) | throwError "goal is not an equality"
         let ex ←
           withLocalDecl (idsn 1) .default t fun v₀ =>
             withLocalDecl (idsn 2) .default t fun v₁ => do
@@ -497,7 +497,7 @@ elab_rules : tactic
           let (Rv, g₂) ← g₁.intro1P
           return (mkFVar Rv, [g₂])
         withMainContext do
-          ids[0]?.forM fun s => addLocalVarInfoForBinderIdent R s
+          ids[0].forM fun s => addLocalVarInfoForBinderIdent R s
           let sR ← exprToSyntax R
           evalTactic <| ← `(tactic|
             refine MvQPF.Cofix.bisim₂ $sR _ _ _ ⟨_, rfl, rfl⟩;

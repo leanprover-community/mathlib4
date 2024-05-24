@@ -332,7 +332,7 @@ namespace EuclideanSpace
 
 variable (ι)
 
--- TODO: do we want these instances for `PiLp` too?
+-- TODO: do we want these instances for `PiLp` too
 instance : MeasurableSpace (EuclideanSpace ℝ ι) := MeasurableSpace.pi
 
 instance [Finite ι] : BorelSpace (EuclideanSpace ℝ ι) := Pi.borelSpace

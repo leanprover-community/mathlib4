@@ -241,7 +241,7 @@ def powersHom : α ≃ (Multiplicative ℕ →* α) :=
 
 variable {α}
 
--- TODO: can `to_additive` generate the following lemmas automatically?
+-- TODO: can `to_additive` generate the following lemmas automatically
 
 lemma multiplesHom_apply (x : α) (n : ℕ) : multiplesHom α x n = n • x := rfl
 #align multiples_hom_apply multiplesHom_apply

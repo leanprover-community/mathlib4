@@ -114,7 +114,7 @@ theorem presheafToTop_obj (T : TopCat.{v}) (U : (Opens X)ᵒᵖ) :
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf_to_Top_obj TopCat.presheafToTop_obj
 
--- TODO upgrade the result to TopCommRing?
+-- TODO upgrade the result to TopCommRing
 /-- The (bundled) commutative ring of continuous functions from a topological space
 to a topological commutative ring, with pointwise multiplication. -/
 def continuousFunctions (X : TopCat.{v}ᵒᵖ) (R : TopCommRingCat.{v}) : CommRingCat.{v} :=

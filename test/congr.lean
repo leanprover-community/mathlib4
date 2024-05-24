@@ -292,7 +292,7 @@ example (x y x' : Nat) (hx : id x = id x') : x + y = x' + y := by
 
 example : { f : Nat → Nat // f = id } :=
   ⟨_, by
-    -- prevents `rfl` from solving for `?m` in `?m = id`:
+    -- prevents `rfl` from solving for `m` in `m = id`:
     congr! (config := { closePre := false, closePost := false })
     ext x
     exact Nat.zero_add x⟩

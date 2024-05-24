@@ -93,7 +93,7 @@ section GaussSumProd
 variable {R : Type u} [Field R] [Fintype R] {R' : Type v} [CommRing R'] [IsDomain R']
 
 -- A helper lemma for `gaussSum_mul_gaussSum_eq_card` below
--- Is this useful enough in other contexts to be public?
+-- Is this useful enough in other contexts to be public
 private theorem gaussSum_mul_aux {χ : MulChar R R'} (hχ : IsNontrivial χ) (ψ : AddChar R R')
     (b : R) : ∑ a, χ (a * b⁻¹) * ψ (a - b) = ∑ c, χ c * ψ (b * (c - 1)) := by
   rcases eq_or_ne b 0 with hb | hb

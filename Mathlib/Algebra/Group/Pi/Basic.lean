@@ -148,7 +148,7 @@ theorem pow_comp [Pow γ α] (x : β → γ) (a : α) (y : I → β) : (x ^ a) �
 
 /-!
 Porting note: `bit0` and `bit1` are deprecated. This section can be removed entirely
-(without replacement?).
+(without replacement).
 -/
 section deprecated
 
@@ -387,8 +387,8 @@ theorem mulSingle_one (i : I) : mulSingle i (1 : f i) = 1 :=
 #align pi.single_zero Pi.single_zero
 
 -- Porting note:
--- 1) Why do I have to specify the type of `mulSingle i x` explicitly?
--- 2) Why do I have to specify the type of `(1 : I → β)`?
+-- 1) Why do I have to specify the type of `mulSingle i x` explicitly
+-- 2) Why do I have to specify the type of `(1 : I → β)`
 -- 3) Removed `{β : Sort*}` as `[One β]` converts it to a type anyways.
 /-- On non-dependent functions, `Pi.mulSingle` can be expressed as an `ite` -/
 @[to_additive "On non-dependent functions, `Pi.single` can be expressed as an `ite`"]

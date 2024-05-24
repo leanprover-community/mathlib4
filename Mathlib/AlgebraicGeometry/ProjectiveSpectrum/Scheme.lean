@@ -101,7 +101,7 @@ open CategoryTheory Opposite
 open ProjectiveSpectrum.StructureSheaf
 
 -- Porting note: currently require lack of hygiene to use in variable declarations
--- maybe all make into notation3?
+-- maybe all make into notation3
 set_option hygiene false
 /-- `Proj` as a locally ringed space -/
 local notation3 "Proj" => Proj.toLocallyRingedSpace 𝒜
@@ -357,7 +357,7 @@ theorem carrier.add_mem (q : Spec.T A⁰_ f) {a b : A} (ha : a ∈ carrier f_deg
   let g : ℕ → A⁰_ f := fun j => (m + m).choose j •
       if h2 : m + m < j then (0 : A⁰_ f)
       else
-        -- Porting note: inlining `l`, `r` causes a "can't synth HMul A⁰_ f A⁰_ f ?" error
+        -- Porting note: inlining `l`, `r` causes a "can't synth HMul A⁰_ f A⁰_ f " error
         if h1 : j ≤ m then
           letI l : A⁰_ f := Quotient.mk''
             ⟨m * i, ⟨proj 𝒜 i a ^ j * proj 𝒜 i b ^ (m - j), _⟩,

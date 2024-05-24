@@ -20,7 +20,7 @@ import Mathlib.LinearAlgebra.Quotient
 
 * generalize to `SemilinearMap`, even `SemilinearMapClass`
 
-* add the multiplicative case (`Function.Exact` will become `Function.AddExact`?)
+* add the multiplicative case (`Function.Exact` will become `Function.AddExact`)
 -/
 
 

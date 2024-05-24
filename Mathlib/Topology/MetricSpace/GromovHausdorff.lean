@@ -95,7 +95,7 @@ instance : Inhabited GHSpace :=
   ⟨Quot.mk _ ⟨⟨{0}, isCompact_singleton⟩, singleton_nonempty _⟩⟩
 
 /-- A metric space representative of any abstract point in `GHSpace` -/
--- Porting note(#5171): linter not yet ported; removed @[nolint has_nonempty_instance]; why?
+-- Porting note(#5171): linter not yet ported; removed @[nolint has_nonempty_instance]; why
 def GHSpace.Rep (p : GHSpace) : Type :=
   (Quotient.out p : NonemptyCompacts ℓ_infty_ℝ)
 #align Gromov_Hausdorff.GH_space.rep GromovHausdorff.GHSpace.Rep
@@ -415,7 +415,7 @@ theorem ghDist_eq_hausdorffDist (X : Type u) [MetricSpace X] [CompactSpace X] [N
 /-- The Gromov-Hausdorff distance defines a genuine distance on the Gromov-Hausdorff space. -/
 instance : MetricSpace GHSpace where
   dist := dist
-  -- Porting note: why does Lean 4 want this?
+  -- Porting note: why does Lean 4 want this
   edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
   dist_self x := by
     rcases exists_rep x with ⟨y, hy⟩
@@ -443,7 +443,7 @@ instance : MetricSpace GHSpace where
       -- The next line had `singlePass := true` before #9928,
       -- then was changed to be `simp only [hausdorffDist_comm]`,
       -- then `singlePass := true` was readded in #8386 because of timeouts.
-      -- TODO: figure out what causes the slowdown and make it a `simp only` again?
+      -- TODO: figure out what causes the slowdown and make it a `simp only` again
       simp (config := { singlePass := true }) only [hausdorffDist_comm]
     simp only [dist, A, image_comp, image_swap_prod]
   eq_of_dist_eq_zero {x} {y} hxy := by

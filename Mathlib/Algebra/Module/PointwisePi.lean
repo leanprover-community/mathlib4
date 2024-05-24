@@ -33,7 +33,7 @@ theorem smul_pi_subset [∀ i, SMul K (R i)] (r : K) (s : Set ι) (t : ∀ i, Se
 #align smul_pi_subset smul_pi_subset
 #align vadd_pi_subset vadd_pi_subset
 
--- Porting note: Lean 4 can't synthesize `Set.mem_univ i`?
+-- Porting note: Lean 4 can't synthesize `Set.mem_univ i`
 @[to_additive]
 theorem smul_univ_pi [∀ i, SMul K (R i)] (r : K) (t : ∀ i, Set (R i)) :
     r • pi (univ : Set ι) t = pi (univ : Set ι) (r • t) :=

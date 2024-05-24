@@ -96,20 +96,20 @@ example {α : Type} (a b : α) (h : a = b) : myeq a b := by
   assumption
 ```
 -/
-syntax (name := nontriviality) "nontriviality" (ppSpace colGt term)?
-  (" using " Parser.Tactic.simpArg,+)? : tactic
+syntax (name := nontriviality) "nontriviality" (ppSpace colGt term)
+  (" using " Parser.Tactic.simpArg,+) : tactic
 
 /-- Elaborator for the `nontriviality` tactic. -/
 @[tactic nontriviality] def elabNontriviality : Tactic := fun stx => do
     let g ← getMainGoal
-    let α ← match stx[1].getOptional? with
+    let α ← match stx[1].getOptional with
     | some e => Term.elabType e
     | none => (do
       let mut tgt ← withReducible g.getType'
-      if let some tgt' := tgt.not? then tgt ← withReducible (whnf tgt')
-      if let some (α, _) := tgt.eq? then return α
-      if let some (α, _) := tgt.app4? ``LE.le then return α
-      if let some (α, _) := tgt.app4? ``LT.lt then return α
+      if let some tgt' := tgt.not then tgt ← withReducible (whnf tgt')
+      if let some (α, _) := tgt.eq then return α
+      if let some (α, _) := tgt.app4 ``LE.le then return α
+      if let some (α, _) := tgt.app4 ``LT.lt then return α
       throwError "The goal is not an (in)equality, so you'll need to specify the desired \
         `Nontrivial α` instance by invoking `nontriviality α`.")
     let .sort u ← whnf (← inferType α) | unreachable!

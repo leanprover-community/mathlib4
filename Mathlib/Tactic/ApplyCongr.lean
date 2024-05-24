@@ -25,12 +25,12 @@ When called without an argument `apply_congr` will try applying all lemmas marke
 Otherwise `apply_congr e` will apply the lemma `e`.
 
 Recall that a goal that appears as `∣ X` in `conv` mode
-represents a goal of `⊢ X = ?m`,
+represents a goal of `⊢ X = m`,
 i.e. an equation with a metavariable for the right hand side.
 
 To successfully use `apply_congr e`, `e` will need to be an equation
 (possibly after function arguments),
-which can be unified with a goal of the form `X = ?m`.
+which can be unified with a goal of the form `X = m`.
 The right hand side of `e` will then determine the metavariable,
 and `conv` will subsequently replace `X` with that right hand side.
 
@@ -82,12 +82,12 @@ def Lean.Elab.Tactic.applyCongr (q : Option Expr) : TacticM Unit := do
     let newGoals ← mainGoal.apply congrTheoremExpr { newGoals := .nonDependentOnly }
     newGoals.mapM fun newGoal => Prod.snd <$> newGoal.intros)
 
-syntax (name := Lean.Parser.Tactic.applyCongr) "apply_congr" (ppSpace colGt term)? : conv
+syntax (name := Lean.Parser.Tactic.applyCongr) "apply_congr" (ppSpace colGt term) : conv
 
 -- TODO: add `apply_congr with h` to specify hypothesis name
 -- https://github.com/leanprover-community/mathlib/issues/2882
 
 elab_rules : conv
-  | `(conv| apply_congr$[ $t?]?) => do
-    let e? ← t?.mapM (fun t => elabTerm t.raw none)
-    applyCongr e?
+  | `(conv| apply_congr$[ $t]) => do
+    let e ← t.mapM (fun t => elabTerm t.raw none)
+    applyCongr e

@@ -270,9 +270,9 @@ def mkLiftMap₂LiftExpr (e : Expr) : TermElabM Expr := do
 def bicategory_coherence (g : MVarId) : TermElabM Unit := g.withContext do
   withOptions (fun opts => synthInstance.maxSize.set opts
     (max 256 (synthInstance.maxSize.get opts))) do
-  -- TODO: is this `dsimp only` step necessary? It doesn't appear to be in the tests below.
+  -- TODO: is this `dsimp only` step necessary It doesn't appear to be in the tests below.
   let (ty, _) ← dsimp (← g.getType) (← Simp.Context.ofNames [] true)
-  let some (_, lhs, rhs) := (← whnfR ty).eq? | exception g "Not an equation of morphisms."
+  let some (_, lhs, rhs) := (← whnfR ty).eq | exception g "Not an equation of morphisms."
   let lift_lhs ← mkLiftMap₂LiftExpr lhs
   let lift_rhs ← mkLiftMap₂LiftExpr rhs
   -- This new equation is defeq to the original by assumption
@@ -292,13 +292,13 @@ open Lean.Parser.Tactic
 /--
 Simp lemmas for rewriting a 2-morphism into a normal form.
 -/
-syntax (name := whisker_simps) "whisker_simps" (config)? : tactic
+syntax (name := whisker_simps) "whisker_simps" (config) : tactic
 
 @[inherit_doc whisker_simps]
 elab_rules : tactic
-| `(tactic| whisker_simps $[$cfg]?) => do
+| `(tactic| whisker_simps $[$cfg]) => do
   evalTactic (← `(tactic|
-    simp $[$cfg]? only [Category.assoc,
+    simp $[$cfg] only [Category.assoc,
       Bicategory.comp_whiskerLeft, Bicategory.id_whiskerLeft,
       Bicategory.whiskerRight_comp, Bicategory.whiskerRight_id,
       Bicategory.whiskerLeft_comp, Bicategory.whiskerLeft_id,

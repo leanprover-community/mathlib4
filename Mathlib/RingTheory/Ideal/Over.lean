@@ -385,7 +385,7 @@ theorem exists_ideal_over_prime_of_isIntegral_of_isDomain [Algebra.IsIntegral R 
 end
 
 /-- More general going-up theorem than `exists_ideal_over_prime_of_isIntegral_of_isDomain`.
-TODO: Version of going-up theorem with arbitrary length chains (by induction on this)?
+TODO: Version of going-up theorem with arbitrary length chains (by induction on this)
   Not sure how best to write an ascending chain in Lean -/
 theorem exists_ideal_over_prime_of_isIntegral_of_isPrime
     [Algebra.IsIntegral R S] (P : Ideal R) [IsPrime P]

@@ -80,16 +80,16 @@ def splitAt (nm : Name) (n : Nat) : Name × Name :=
   let (nm2, nm1) := nm.componentsRev.splitAt n
   (.fromComponents <| nm1.reverse, .fromComponents <| nm2.reverse)
 
-/-- `isPrefixOf? pre nm` returns `some post` if `nm = pre ++ post`.
+/-- `isPrefixOf pre nm` returns `some post` if `nm = pre ++ post`.
   Note that this includes the case where `nm` has multiple more namespaces.
   If `pre` is not a prefix of `nm`, it returns `none`. -/
-def isPrefixOf? (pre nm : Name) : Option Name :=
+def isPrefixOf (pre nm : Name) : Option Name :=
   if pre == nm then
     some anonymous
   else match nm with
   | anonymous => none
-  | num p' a => (isPrefixOf? pre p').map (·.num a)
-  | str p' s => (isPrefixOf? pre p').map (·.str s)
+  | num p' a => (isPrefixOf pre p').map (·.num a)
+  | str p' s => (isPrefixOf pre p').map (·.str s)
 
 open Meta
 
@@ -173,7 +173,7 @@ namespace Expr
 
 /-! ### Declarations about `Expr` -/
 
-def bvarIdx? : Expr → Option Nat
+def bvarIdx : Expr → Option Nat
   | bvar idx => some idx
   | _        => none
 
@@ -215,16 +215,16 @@ or `n / d` where `n` is an integer in normal form, `d` is a natural number in no
 `d ≠ 1`, and `n` and `d` are coprime (in particular, we check that `(mkRat n d).den = d`).
 If so returns the rational number.
 -/
-def rat? (e : Expr) : Option Rat := do
+def rat (e : Expr) : Option Rat := do
   if e.isAppOfArity ``Div.div 4 then
-    let d ← e.appArg!.nat?
+    let d ← e.appArg!.nat
     guard (d ≠ 1)
-    let n ← e.appFn!.appArg!.int?
+    let n ← e.appFn!.appArg!.int
     let q := mkRat n d
     guard (q.den = d)
     pure q
   else
-    e.int?
+    e.int
 
 /--
 Test if an expression represents an explicit number written in normal form:
@@ -239,15 +239,15 @@ Test if an expression represents an explicit number written in normal form:
 def isExplicitNumber : Expr → Bool
   | .lit _ => true
   | .mdata _ e => isExplicitNumber e
-  | e => e.rat?.isSome
+  | e => e.rat.isSome
 
 /-- If an `Expr` has form `.fvar n`, then returns `some n`, otherwise `none`. -/
-def fvarId? : Expr → Option FVarId
+def fvarId : Expr → Option FVarId
   | .fvar n => n
   | _ => none
 
 /-- If an `Expr` has the form `Type u`, then return `some u`, otherwise `none`. -/
-def type? : Expr → Option Level
+def type : Expr → Option Level
   | .sort u => u.dec
   | _ => none
 
@@ -297,48 +297,48 @@ section recognizers
   - `Nat.zero`
   - `Nat.succ x` where `isNumeral x`
   - `OfNat.ofNat _ x _` where `isNumeral x` -/
-partial def numeral? (e : Expr) : Option Nat :=
-  if let some n := e.rawNatLit? then n
+partial def numeral (e : Expr) : Option Nat :=
+  if let some n := e.rawNatLit then n
   else
     let f := e.getAppFn
     if !f.isConst then none
     else
       let fName := f.constName!
-      if fName == ``Nat.succ && e.getAppNumArgs == 1 then (numeral? e.appArg!).map Nat.succ
-      else if fName == ``OfNat.ofNat && e.getAppNumArgs == 3 then numeral? (e.getArg! 1)
+      if fName == ``Nat.succ && e.getAppNumArgs == 1 then (numeral e.appArg!).map Nat.succ
+      else if fName == ``OfNat.ofNat && e.getAppNumArgs == 3 then numeral (e.getArg! 1)
       else if fName == ``Nat.zero && e.getAppNumArgs == 0 then some 0
       else none
 
 /-- Test if an expression is either `Nat.zero`, or `OfNat.ofNat 0`. -/
-def zero? (e : Expr) : Bool :=
-  match e.numeral? with
+def zero (e : Expr) : Bool :=
+  match e.numeral with
   | some 0 => true
   | _ => false
 
 /-- Tests is if an expression matches either `x ≠ y` or `¬ (x = y)`.
 If it matches, returns `some (type, x, y)`. -/
-def ne?' (e : Expr) : Option (Expr × Expr × Expr) :=
-  e.ne? <|> (e.not? >>= Expr.eq?)
+def ne' (e : Expr) : Option (Expr × Expr × Expr) :=
+  e.ne <|> (e.not >>= Expr.eq)
 
-/-- `Lean.Expr.le? e` takes `e : Expr` as input.
+/-- `Lean.Expr.le e` takes `e : Expr` as input.
 If `e` represents `a ≤ b`, then it returns `some (t, a, b)`, where `t` is the Type of `a`,
 otherwise, it returns `none`. -/
-@[inline] def le? (p : Expr) : Option (Expr × Expr × Expr) := do
-  let (type, _, lhs, rhs) ← p.app4? ``LE.le
+@[inline] def le (p : Expr) : Option (Expr × Expr × Expr) := do
+  let (type, _, lhs, rhs) ← p.app4 ``LE.le
   return (type, lhs, rhs)
 
 /-- Given a proposition `ty` that is an `Eq`, `Iff`, or `HEq`, returns `(tyLhs, lhs, tyRhs, rhs)`,
 where `lhs : tyLhs` and `rhs : tyRhs`,
 and where `lhs` is related to `rhs` by the respective relation.
 
-See also `Lean.Expr.iff?`, `Lean.Expr.eq?`, and `Lean.Expr.heq?`. -/
-def sides? (ty : Expr) : Option (Expr × Expr × Expr × Expr) :=
-  if let some (lhs, rhs) := ty.iff? then
+See also `Lean.Expr.iff`, `Lean.Expr.eq`, and `Lean.Expr.heq`. -/
+def sides (ty : Expr) : Option (Expr × Expr × Expr × Expr) :=
+  if let some (lhs, rhs) := ty.iff then
     some (.sort .zero, lhs, .sort .zero, rhs)
-  else if let some (ty, lhs, rhs) := ty.eq? then
+  else if let some (ty, lhs, rhs) := ty.eq then
     some (ty, lhs, ty, rhs)
   else
-    ty.heq?
+    ty.heq
 
 end recognizers
 
@@ -361,20 +361,20 @@ returns the original expression if out of bounds. -/
 def setArg (e : Expr) (i : Nat) (x : Expr) (n := e.getAppNumArgs) : Expr :=
   e.modifyArg (fun _ => x) i n
 
-def getRevArg? : Expr → Nat → Option Expr
+def getRevArg : Expr → Nat → Option Expr
   | app _ a, 0   => a
   | app f _, i+1 => getRevArg! f i
   | _,       _   => none
 
 /-- Given `f a₀ a₁ ... aₙ₋₁`, returns the `i`th argument or none if out of bounds. -/
-def getArg? (e : Expr) (i : Nat) (n := e.getAppNumArgs) : Option Expr :=
-  getRevArg? e (n - i - 1)
+def getArg (e : Expr) (i : Nat) (n := e.getAppNumArgs) : Option Expr :=
+  getRevArg e (n - i - 1)
 
 /-- Given `f a₀ a₁ ... aₙ₋₁`, runs `modifier` on the `i`th argument.
 An argument `n` may be provided which says how many arguments we are expecting `e` to have. -/
 def modifyArgM [Monad M] (modifier : Expr → M Expr) (e : Expr) (i : Nat) (n := e.getAppNumArgs) :
     M Expr := do
-  let some a := getArg? e i | return e
+  let some a := getArg e i | return e
   let a ← modifier a
   return modifyArg (fun _ ↦ a) e i n
 
@@ -411,7 +411,7 @@ the projection expression `e.fieldName` -/
 def mkDirectProjection (e : Expr) (fieldName : Name) : MetaM Expr := do
   let type ← whnf (← inferType e)
   let .const structName us := type.getAppFn | throwError "{e} doesn't have a structure as type"
-  let some projName := getProjFnForField? (← getEnv) structName fieldName |
+  let some projName := getProjFnForField (← getEnv) structName fieldName |
     throwError "{structName} doesn't have field {fieldName}"
   return mkAppN (.const projName us) (type.getAppArgs.push e)
 
@@ -420,10 +420,10 @@ structure), `mkProjection e fieldName` creates the projection expression `e.fiel
 def mkProjection (e : Expr) (fieldName : Name) : MetaM Expr := do
   let .const structName _ := (← whnf (← inferType e)).getAppFn |
     throwError "{e} doesn't have a structure as type"
-  let some baseStruct := findField? (← getEnv) structName fieldName |
+  let some baseStruct := findField (← getEnv) structName fieldName |
     throwError "No parent of {structName} has field {fieldName}"
   let mut e := e
-  for projName in (getPathToBaseStructure? (← getEnv) baseStruct structName).get! do
+  for projName in (getPathToBaseStructure (← getEnv) baseStruct structName).get! do
     let type ← whnf (← inferType e)
     let .const _structName us := type.getAppFn | throwError "{e} doesn't have a structure as type"
     e := mkAppN (.const projName us) (type.getAppArgs.push e)
@@ -432,9 +432,9 @@ def mkProjection (e : Expr) (fieldName : Name) : MetaM Expr := do
 /-- If `e` is a projection of the structure constructor, reduce the projection.
 Otherwise returns `none`. If this function detects that expression is ill-typed, throws an error.
 For example, given `Prod.fst (x, y)`, returns `some x`. -/
-def reduceProjStruct? (e : Expr) : MetaM (Option Expr) := do
+def reduceProjStruct (e : Expr) : MetaM (Option Expr) := do
   let .const cname _ := e.getAppFn | return none
-  let some pinfo ← getProjectionFnInfo? cname | return none
+  let some pinfo ← getProjectionFnInfo cname | return none
   let args := e.getAppArgs
   if ha : args.size = pinfo.numParams + 1 then
     -- The last argument of a projection is the structure.
@@ -455,7 +455,7 @@ def reduceProjStruct? (e : Expr) : MetaM (Option Expr) := do
 
 /-- Returns true if `e` contains a name `n` where `p n` is true. -/
 def containsConst (e : Expr) (p : Name → Bool) : Bool :=
-  Option.isSome <| e.find? fun | .const n _ => p n | _ => false
+  Option.isSome <| e.find fun | .const n _ => p n | _ => false
 
 /--
 Rewrites `e` via some `eq`, producing a proof `e = e'` for some `e'`.
@@ -514,6 +514,6 @@ end Expr
 -/
 def getFieldsToParents (env : Environment) (structName : Name) : Array Name :=
   getStructureFields env structName |>.filter fun fieldName =>
-    isSubobjectField? env structName fieldName |>.isSome
+    isSubobjectField env structName fieldName |>.isSome
 
 end Lean

@@ -20,7 +20,7 @@ private unsafe def memoFixImplObj (f : (Object → Object) → (Object → Objec
     Object := unsafeBaseIO do
   let cache : IO.Ref ObjectMap ← ST.mkRef ∅
   let rec fix (a) := unsafeBaseIO do
-    if let some b := (← cache.get).find? a then
+    if let some b := (← cache.get).find a then
       return b
     let b := f fix a
     cache.modify (·.insert a b)

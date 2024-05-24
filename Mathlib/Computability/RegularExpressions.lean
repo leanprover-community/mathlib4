@@ -430,7 +430,7 @@ theorem matches'_map (f : α → β) :
   | char a => by
     rw [eq_comm]
     exact image_singleton
-  -- Porting note: the following close with last `rw` but not with `simp`?
+  -- Porting note: the following close with last `rw` but not with `simp`
   | R + S => by simp only [matches'_map, map, matches'_add]; rw [map_add]
   | comp R S => by simp only [matches'_map, map, matches'_mul]; erw [map_mul]
   | star R => by

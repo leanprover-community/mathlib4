@@ -27,7 +27,7 @@ def sleepAtLeastHeartbeats (n : Nat) : IO Unit := do
 
 /-- do nothing for at least n heartbeats -/
 elab "sleep_heartbeats " n:num : tactic => do
-  match Syntax.isNatLit? n with
+  match Syntax.isNatLit n with
   | none    => throwIllFormedSyntax
   /- as this is a user facing command we multiply the user input by 1000 to match the maxHeartbeats
      option -/

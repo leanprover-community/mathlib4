@@ -70,7 +70,7 @@ protected irreducible_def zero : RatFunc K :=
 instance : Zero (RatFunc K) :=
   ⟨RatFunc.zero⟩
 
--- Porting note: added `OfNat.ofNat`.  using `simp?` produces `simp only [zero_def]`
+-- Porting note: added `OfNat.ofNat`.  using `simp` produces `simp only [zero_def]`
 -- that does not close the goal
 theorem ofFractionRing_zero : (ofFractionRing 0 : RatFunc K) = 0 := by
   simp only [Zero.zero, OfNat.ofNat, RatFunc.zero]
@@ -84,7 +84,7 @@ protected irreducible_def add : RatFunc K → RatFunc K → RatFunc K
 instance : Add (RatFunc K) :=
   ⟨RatFunc.add⟩
 
--- Porting note: added `HAdd.hAdd`.  using `simp?` produces `simp only [add_def]`
+-- Porting note: added `HAdd.hAdd`.  using `simp` produces `simp only [add_def]`
 -- that does not close the goal
 theorem ofFractionRing_add (p q : FractionRing K[X]) :
     ofFractionRing (p + q) = ofFractionRing p + ofFractionRing q := by
@@ -99,7 +99,7 @@ protected irreducible_def sub : RatFunc K → RatFunc K → RatFunc K
 instance : Sub (RatFunc K) :=
   ⟨RatFunc.sub⟩
 
--- Porting note: added `HSub.hSub`.  using `simp?` produces `simp only [sub_def]`
+-- Porting note: added `HSub.hSub`.  using `simp` produces `simp only [sub_def]`
 -- that does not close the goal
 theorem ofFractionRing_sub (p q : FractionRing K[X]) :
     ofFractionRing (p - q) = ofFractionRing p - ofFractionRing q := by
@@ -126,7 +126,7 @@ protected irreducible_def one : RatFunc K :=
 instance : One (RatFunc K) :=
   ⟨RatFunc.one⟩
 
--- Porting note: added `OfNat.ofNat`.  using `simp?` produces `simp only [one_def]`
+-- Porting note: added `OfNat.ofNat`.  using `simp` produces `simp only [one_def]`
 -- that does not close the goal
 theorem ofFractionRing_one : (ofFractionRing 1 : RatFunc K) = 1 := by
   simp only [One.one, OfNat.ofNat, RatFunc.one]
@@ -140,7 +140,7 @@ protected irreducible_def mul : RatFunc K → RatFunc K → RatFunc K
 instance : Mul (RatFunc K) :=
   ⟨RatFunc.mul⟩
 
--- Porting note: added `HMul.hMul`.  using `simp?` produces `simp only [mul_def]`
+-- Porting note: added `HMul.hMul`.  using `simp` produces `simp only [mul_def]`
 -- that does not close the goal
 theorem ofFractionRing_mul (p q : FractionRing K[X]) :
     ofFractionRing (p * q) = ofFractionRing p * ofFractionRing q := by
@@ -159,7 +159,7 @@ protected irreducible_def div : RatFunc K → RatFunc K → RatFunc K
 instance : Div (RatFunc K) :=
   ⟨RatFunc.div⟩
 
--- Porting note: added `HDiv.hDiv`.  using `simp?` produces `simp only [div_def]`
+-- Porting note: added `HDiv.hDiv`.  using `simp` produces `simp only [div_def]`
 -- that does not close the goal
 theorem ofFractionRing_div (p q : FractionRing K[X]) :
     ofFractionRing (p / q) = ofFractionRing p / ofFractionRing q := by
@@ -204,7 +204,7 @@ protected irreducible_def smul [SMul R (FractionRing K[X])] : R → RatFunc K �
 instance [SMul R (FractionRing K[X])] : SMul R (RatFunc K) :=
   ⟨RatFunc.smul⟩
 
--- Porting note: added `SMul.hSMul`.  using `simp?` produces `simp only [smul_def]`
+-- Porting note: added `SMul.hSMul`.  using `simp` produces `simp only [smul_def]`
 -- that does not close the goal
 theorem ofFractionRing_smul [SMul R (FractionRing K[X])] (c : R) (p : FractionRing K[X]) :
     ofFractionRing (c • p) = c • ofFractionRing p := by

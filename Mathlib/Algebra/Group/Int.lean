@@ -188,7 +188,7 @@ lemma eq_one_or_neg_one_of_mul_eq_neg_one (h : u * v = -1) : u = 1 ∨ u = -1 :=
 
 end Int
 
--- TODO: Do we really need this lemma? This is just `smul_eq_mul`
+-- TODO: Do we really need this lemma This is just `smul_eq_mul`
 lemma zsmul_int_int (a b : ℤ) : a • b = a * b := rfl
 #align zsmul_int_int zsmul_int_int
 

@@ -114,7 +114,7 @@ def delabLinearIndependent : Delab :=
   withOptionAtCurrPos `pp.analysis.skip true do
     let e ← getExpr
     guard <| e.isAppOfArity ``LinearIndependent 7
-    let some _ := (e.getArg! 0).coeTypeSet? | failure
+    let some _ := (e.getArg! 0).coeTypeSet | failure
     let optionsPerPos ← if (e.getArg! 3).isLambda then
       withNaryArg 3 do return (← read).optionsPerPos.setBool (← getPos) pp.funBinderTypes.name true
     else
@@ -1372,7 +1372,7 @@ theorem linearIndependent_fin_snoc {n} {v : Fin n → V} :
   -- Porting note: `rw` → `erw`
   -- https://github.com/leanprover-community/mathlib4/issues/5164
   -- Here Lean can not see that `fun i ↦ Fin.cons x v (↑(finRotate (n + 1)) i)`
-  -- matches with `?f ∘ ↑(finRotate (n + 1))`.
+  -- matches with `f ∘ ↑(finRotate (n + 1))`.
   erw [Fin.snoc_eq_cons_rotate, linearIndependent_equiv, linearIndependent_fin_cons]
 #align linear_independent_fin_snoc linearIndependent_fin_snoc
 
@@ -1461,7 +1461,7 @@ theorem LinearIndependent.linearIndependent_extend (hs : LinearIndependent K (fu
   hli
 #align linear_independent.linear_independent_extend LinearIndependent.linearIndependent_extend
 
--- TODO(Mario): rewrite?
+-- TODO(Mario): rewrite
 theorem exists_of_linearIndependent_of_finite_span {t : Finset V}
     (hs : LinearIndependent K (fun x => x : s → V)) (hst : s ⊆ (span K ↑t : Submodule K V)) :
     ∃ t' : Finset V, ↑t' ⊆ s ∪ ↑t ∧ s ⊆ ↑t' ∧ t'.card = t.card := by

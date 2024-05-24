@@ -65,7 +65,7 @@ where
           -- See if we can prove `eq` from previous parameters.
           let g := (← mkFreshExprMVar (← inferType eq)).mvarId!
           let g ← g.clear eq.fvarId!
-          if (← observing? <| prove g args).isSome then
+          if (← observing <| prove g args).isSome then
             let eqPf ← instantiateMVars (.mvar g)
             process cthm type' argKinds (argKinds'.push .subsingletonInst)
               (params := params ++ #[x, y]) (args := args ++ params')
@@ -154,10 +154,10 @@ def withSubsingletonAsFast {α : Type} [Inhabited α] (mx : (Expr → Expr) → 
 /-- Like `subsingletonElim` but uses `FastSubsingleton` to fail fast. -/
 def fastSubsingletonElim (mvarId : MVarId) : MetaM Bool :=
   mvarId.withContext do
-    let res ← observing? do
+    let res ← observing do
       mvarId.checkNotAssigned `fastSubsingletonElim
       let tgt ← withReducible mvarId.getType'
-      let some (_, lhs, rhs) := tgt.eq? | failure
+      let some (_, lhs, rhs) := tgt.eq | failure
       -- Note: `mkAppM` uses `withNewMCtxDepth`, which prevents `Sort _` from specializing to `Prop`
       let pf ← withSubsingletonAsFast fun elim =>
         elim <$> mkAppM ``FastSubsingleton.elim #[lhs, rhs]
@@ -253,8 +253,8 @@ partial def mkRichHCongr (fType : Expr) (info : FunInfo)
         if let some (_, eq', _) := eqs[i]! then
           -- Not a fixed argument
           hs'' := hs''.push ys[i]!
-          let pf? ← withLCtx lctx (← getLocalInstances) <| trySolve (← inferType eq')
-          if let some pf := pf? then
+          let pf ← withLCtx lctx (← getLocalInstances) <| trySolve (← inferType eq')
+          if let some pf := pf then
             pfVars := pfVars.push eq'
             pfVals := pfVals.push pf
             kinds' := kinds'.push .subsingletonInst
@@ -323,7 +323,7 @@ where
           withLocalDeclD ((`e).appendIndexAfter (i+1)) (← mkEqHEq x y) fun h =>
           withLocalDeclD ((`e').appendIndexAfter (i+1)) eq' fun h' => do
             let v := mkAppN h' (deps.map fun (_, _, val) => val)
-            let kind := if (← inferType h).eq?.isSome then .eq else .heq
+            let kind := if (← inferType h).eq.isSome then .eq else .heq
             loop (i+1) (kinds.push kind) (eqs.push (h, h', v))
       else
         k kinds eqs
@@ -346,7 +346,7 @@ where
     -- We have no more tricks.
     throwError "was not able to solve for proof"
   /-- Driver for `trySolveCore`. -/
-  trySolve (ty : Expr) : MetaM (Option Expr) := observing? do
+  trySolve (ty : Expr) : MetaM (Option Expr) := observing do
     let mvar ← mkFreshExprMVar ty
     trace[Meta.CongrTheorems] "trySolve {mvar.mvarId!}"
     -- The proofs we generate shouldn't require unfolding anything.

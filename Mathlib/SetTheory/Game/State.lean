@@ -18,7 +18,7 @@ We provide a simple mechanism for constructing combinatorial (pre-)games, by des
 
 We're very careful to produce a computable definition, so small games can be evaluated
 using `decide`. To achieve this, I've had to rely solely on induction on natural numbers:
-relying on general well-foundedness seems to be poisonous to computation?
+relying on general well-foundedness seems to be poisonous to computation
 
 See `SetTheory/Game/Domineering` for an example using this construction.
 -/

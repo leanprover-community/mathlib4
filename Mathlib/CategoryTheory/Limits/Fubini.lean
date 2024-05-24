@@ -47,7 +47,7 @@ variable {J K : Type v} [SmallCategory J] [SmallCategory K]
 variable {C : Type u} [Category.{v} C]
 variable (F : J ⥤ K ⥤ C)
 
--- We could try introducing a "dependent functor type" to handle this?
+-- We could try introducing a "dependent functor type" to handle this
 /-- A structure carrying a diagram of cones over the functors `F.obj j`.
 -/
 structure DiagramOfCones where
@@ -111,7 +111,7 @@ def coneOfConeUncurry {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j))
                   dsimp; simp only [Category.id_comp]
                   have := @NatTrans.naturality _ _ _ _ _ _ c.π (j, k) (j, k') (𝟙 j, f)
                   dsimp at this
-                  simp? at this says
+                  simp at this says
                     simp only [Category.id_comp, Functor.map_id, NatTrans.id_app] at this
                   exact this } }
       naturality := fun j j' f =>
@@ -530,7 +530,7 @@ theorem limitCurrySwapCompLimIsoLimitCurryCompLim_hom_π_π {j} {k} :
   simp only [Iso.refl_hom, Prod.braiding_counitIso_hom_app, Limits.HasLimit.isoOfEquivalence_hom_π,
     Iso.refl_inv, limitIsoLimitCurryCompLim_hom_π_π, eqToIso_refl, Category.assoc]
   erw [NatTrans.id_app]
-  -- Why can't `simp` do this?
+  -- Why can't `simp` do this
   dsimp
   -- Porting note: the original proof only had `simp`.
   -- However, now `CategoryTheory.Bifunctor.map_id` does not get used by `simp`

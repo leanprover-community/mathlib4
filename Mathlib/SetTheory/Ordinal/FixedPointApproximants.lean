@@ -76,7 +76,7 @@ decreasing_by exact h
 
 theorem lfpApprox_monotone : Monotone (lfpApprox f x) := by
   unfold Monotone; intros a b h; unfold lfpApprox
-  refine sSup_le_sSup ?h
+  refine sSup_le_sSup h
   apply sup_le_sup_right
   simp only [exists_prop, Set.le_eq_subset, Set.setOf_subset_setOf, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂]

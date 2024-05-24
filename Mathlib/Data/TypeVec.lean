@@ -264,7 +264,7 @@ theorem appendFun_comp' {α₀ α₁ α₂ : TypeVec n} {β₀ β₁ β₂ : Typ
 #align typevec.append_fun_comp' TypeVec.appendFun_comp'
 
 theorem nilFun_comp {α₀ : TypeVec 0} (f₀ : α₀ ⟹ Fin2.elim0) : nilFun ⊚ f₀ = f₀ :=
-  funext fun x => by apply Fin2.elim0 x -- Porting note: `by apply` is necessary?
+  funext fun x => by apply Fin2.elim0 x -- Porting note: `by apply` is necessary
 #align typevec.nil_fun_comp TypeVec.nilFun_comp
 
 theorem appendFun_comp_id {α : TypeVec n} {β₀ β₁ β₂ : Type u} (g₀ : β₀ → β₁) (g₁ : β₁ → β₂) :
@@ -295,7 +295,7 @@ theorem appendFun_id_id {α : TypeVec n} {β : Type*} :
 #align typevec.append_fun_id_id TypeVec.appendFun_id_id
 
 instance subsingleton0 : Subsingleton (TypeVec 0) :=
-  ⟨fun a b => funext fun a => by apply Fin2.elim0 a⟩ -- Porting note: `by apply` necessary?
+  ⟨fun a b => funext fun a => by apply Fin2.elim0 a⟩ -- Porting note: `by apply` necessary
 #align typevec.subsingleton0 TypeVec.subsingleton0
 
 -- Porting note: `simp` attribute `TypeVec` moved to file `Tactic/Attr/Register.lean`
@@ -772,7 +772,7 @@ theorem subtypeVal_diagSub {α : TypeVec n} : subtypeVal (repeatEq α) ⊚ diagS
   induction' i with _ _ _ i_ih
   · simp [comp, diagSub, subtypeVal, prod.diag]
   · simp [prod.diag]
-    simp? [comp, diagSub, subtypeVal, prod.diag] at * says
+    simp [comp, diagSub, subtypeVal, prod.diag] at * says
       simp only [comp, subtypeVal, diagSub] at *
     apply @i_ih (drop _)
 #align typevec.subtype_val_diag_sub TypeVec.subtypeVal_diagSub

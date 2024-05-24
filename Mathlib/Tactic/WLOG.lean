@@ -124,10 +124,10 @@ In this way, the wlog-claim `this` can be applied to `x` and `y` in different or
 
 By default, the entire context is reverted. -/
 syntax (name := wlog) "wlog " binderIdent " : " term
-  (" generalizing" (ppSpace colGt ident)*)? (" with " binderIdent)? : tactic
+  (" generalizing" (ppSpace colGt ident)*) (" with " binderIdent) : tactic
 
 elab_rules : tactic
-| `(tactic| wlog $h:binderIdent : $P:term $[ generalizing $xs*]? $[ with $H:ident]?) =>
+| `(tactic| wlog $h:binderIdent : $P:term $[ generalizing $xs*] $[ with $H:ident]) =>
   withMainContext do
   let H := H.map (·.getId)
   let h := match h with

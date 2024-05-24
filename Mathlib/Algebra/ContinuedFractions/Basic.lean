@@ -198,7 +198,7 @@ $$
 -/
 def GeneralizedContinuedFraction.IsSimpleContinuedFraction (g : GeneralizedContinuedFraction α)
     [One α] : Prop :=
-  ∀ (n : ℕ) (aₙ : α), g.partialNumerators.get? n = some aₙ → aₙ = 1
+  ∀ (n : ℕ) (aₙ : α), g.partialNumerators.get n = some aₙ → aₙ = 1
 #align generalized_continued_fraction.is_simple_continued_fraction GeneralizedContinuedFraction.IsSimpleContinuedFraction
 
 variable (α)
@@ -254,7 +254,7 @@ A simple continued fraction is a *(regular) continued fraction* ((r)cf) if all p
 def SimpleContinuedFraction.IsContinuedFraction [One α] [Zero α] [LT α]
     (s : SimpleContinuedFraction α) : Prop :=
   ∀ (n : ℕ) (bₙ : α),
-    (↑s : GeneralizedContinuedFraction α).partialDenominators.get? n = some bₙ → 0 < bₙ
+    (↑s : GeneralizedContinuedFraction α).partialDenominators.get n = some bₙ → 0 < bₙ
 #align simple_continued_fraction.is_continued_fraction SimpleContinuedFraction.IsContinuedFraction
 
 variable (α)
@@ -355,7 +355,7 @@ def continuantsAux (g : GeneralizedContinuedFraction K) : Stream' (Pair K)
   | 0 => ⟨1, 0⟩
   | 1 => ⟨g.h, 1⟩
   | n + 2 =>
-    match g.s.get? n with
+    match g.s.get n with
     | none => continuantsAux g (n + 1)
     | some gp => nextContinuants gp.a gp.b (continuantsAux g n) (continuantsAux g (n + 1))
 #align generalized_continued_fraction.continuants_aux GeneralizedContinuedFraction.continuantsAux

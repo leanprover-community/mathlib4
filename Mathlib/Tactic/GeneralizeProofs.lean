@@ -86,12 +86,12 @@ structure AState where
   /-- The prop/proof triples to add to the local context.
   The proofs must not refer to fvars in `fvars`. -/
   generalizations : Array (Expr × Expr) := #[]
-  /-- Map version of `generalizations`. Use `MAbs.findProof?` and `MAbs.insertProof`. -/
+  /-- Map version of `generalizations`. Use `MAbs.findProof` and `MAbs.insertProof`. -/
   propToProof : ExprMap Expr := {}
 
 /--
 Monad used to abstract proofs, to prepare for generalization.
-Has a cache (of expr/type? pairs),
+Has a cache (of expr/type pairs),
 and it also has a reader context `Mathlib.Tactic.GeneralizeProofs.AContext`
 and a state `Mathlib.Tactic.GeneralizeProofs.AState`.
 -/
@@ -108,11 +108,11 @@ def MGen.runMAbs {α : Type} (mx : MAbs α) : MGen (α × Array (Expr × Expr)) 
 /--
 Finds a proof of `prop` by looking at `propToFVar` and `propToProof`.
 -/
-def MAbs.findProof? (prop : Expr) : MAbs (Option Expr) := do
-  if let some pf := (← read).propToFVar.find? prop then
+def MAbs.findProof (prop : Expr) : MAbs (Option Expr) := do
+  if let some pf := (← read).propToFVar.find prop then
     return pf
   else
-    return (← get).propToProof.find? prop
+    return (← get).propToProof.find prop
 
 /--
 Generalize `prop`, where `proof` is its proof.
@@ -143,22 +143,22 @@ def MAbs.withRecurse {α : Type} (x : MAbs α) : MAbs α := do
 
 /--
 Computes expected types for each argument to `f`,
-given that the type of `mkAppN f args` is supposed to be `ty?`
-(where if `ty?` is none, there's no type to propagate inwards).
+given that the type of `mkAppN f args` is supposed to be `ty`
+(where if `ty` is none, there's no type to propagate inwards).
 -/
-def appArgExpectedTypes (f : Expr) (args : Array Expr) (ty? : Option Expr) :
+def appArgExpectedTypes (f : Expr) (args : Array Expr) (ty : Option Expr) :
     MetaM (Array (Option Expr)) :=
   withTransparency .all <| withNewMCtxDepth do
     -- Try using the expected type, but (*) below might find a bad solution
-    (guard ty?.isSome *> go f args ty?) <|> go f args none
+    (guard ty.isSome *> go f args ty) <|> go f args none
 where
   /-- Core implementation for `appArgExpectedTypes`.  -/
-  go (f : Expr) (args : Array Expr) (ty? : Option Expr) : MetaM (Array (Option Expr)) := do
+  go (f : Expr) (args : Array Expr) (ty : Option Expr) : MetaM (Array (Option Expr)) := do
     -- Metavariables for each argument to `f`:
     let mut margs := #[]
     -- The current type of `mAppN f margs`:
     let mut fty ← inferType f
-    -- Whether we have already unified the type `ty?` with `fty` (once `margs` is filled)
+    -- Whether we have already unified the type `ty` with `fty` (once `margs` is filled)
     let mut unifiedFTy := false
     for i in [0 : args.size] do
       unless i < margs.size do
@@ -169,8 +169,8 @@ where
       let arg := args[i]!
       let marg := margs[i]!
       if !unifiedFTy && margs.size == args.size then
-        if let some ty := ty? then
-          unifiedFTy := (← observing? <| isDefEq fty ty).getD false -- (*)
+        if let some ty := ty then
+          unifiedFTy := (← observing <| isDefEq fty ty).getD false -- (*)
       unless ← isDefEq (← inferType marg) (← inferType arg) do
         throwError s!"failed isDefEq types {i}, {← ppExpr marg}, {← ppExpr arg}"
       unless ← isDefEq marg arg do
@@ -219,27 +219,27 @@ since the inferred type might be different.
 For example, `(by simp : 1 < [1, 2].length)` has `1 < Nat.succ 1` as the inferred type,
 but from knowing it's an argument to `List.nthLe` we can deduce `1 < [1, 2].length`.
 -/
-partial def abstractProofs (e : Expr) (ty? : Option Expr) : MAbs Expr := do
+partial def abstractProofs (e : Expr) (ty : Option Expr) : MAbs Expr := do
   if (← read).depth ≤ (← read).config.maxDepth then
-    MAbs.withRecurse <| visit (← instantiateMVars e) ty?
+    MAbs.withRecurse <| visit (← instantiateMVars e) ty
   else
     return e
 where
   /--
   Core implementation of `abstractProofs`.
   -/
-  visit (e : Expr) (ty? : Option Expr) : MAbs Expr := do
+  visit (e : Expr) (ty : Option Expr) : MAbs Expr := do
     trace[Tactic.generalize_proofs] "visit (fvars := {(← read).fvars}) e is {e}"
     if (← read).config.debug then
-      if let some ty := ty? then
+      if let some ty := ty then
         unless ← isDefEq (← inferType e) ty do
           throwError "visit: type of{indentD e}\nis not{indentD ty}"
     if e.isAtomic then
       return e
     else
-      checkCache (e, ty?) fun _ ↦ do
+      checkCache (e, ty) fun _ ↦ do
         if ← isProof e then
-          visitProof e ty?
+          visitProof e ty
         else
           match e with
           | .forallE n t b i =>
@@ -247,34 +247,34 @@ where
               mkForallFVars #[x] (← visit (b.instantiate1 x) none)
           | .lam n t b i => do
             withLocalDecl n i (← visit t none) fun x ↦ MAbs.withLocal x do
-              let ty'? ←
-                if let some ty := ty? then
+              let ty' ←
+                if let some ty := ty then
                   let .forallE _ _ tyB _ ← whnfD ty
                     | throwError "Expecting forall in abstractProofs .lam"
                   pure <| some <| tyB.instantiate1 x
                 else
                   pure none
-              mkLambdaFVars #[x] (← visit (b.instantiate1 x) ty'?)
+              mkLambdaFVars #[x] (← visit (b.instantiate1 x) ty')
           | .letE n t v b _ =>
             let t' ← visit t none
             withLetDecl n t' (← visit v t') fun x ↦ MAbs.withLocal x do
-              mkLetFVars #[x] (← visit (b.instantiate1 x) ty?)
+              mkLetFVars #[x] (← visit (b.instantiate1 x) ty)
           | .app .. =>
             e.withApp fun f args ↦ do
               let f' ← visit f none
-              let argTys ← appArgExpectedTypes f' args ty?
+              let argTys ← appArgExpectedTypes f' args ty
               let mut args' := #[]
               for arg in args, argTy in argTys do
                 args' := args'.push <| ← visit arg argTy
               return mkAppN f' args'
-          | .mdata _ b  => return e.updateMData! (← visit b ty?)
+          | .mdata _ b  => return e.updateMData! (← visit b ty)
           -- Giving up propagating expected types for `.proj`, which we shouldn't see anyway:
           | .proj _ _ b => return e.updateProj! (← visit b none)
           | _           => unreachable!
   /--
   Core implementation of abstracting a proof.
   -/
-  visitProof (e : Expr) (ty? : Option Expr) : MAbs Expr := do
+  visitProof (e : Expr) (ty : Option Expr) : MAbs Expr := do
     let eOrig := e
     let fvars := (← read).fvars
     -- Strip metadata and beta reduce, in case there are some false dependencies
@@ -286,7 +286,7 @@ where
     -- The use of `mkLambdaFVarsUsedOnly` is *key* to make sure that the fvars in `fvars`
     -- don't leak into the expression, since that would poison the cache in `MonadCacheT`.
     let e ←
-      if let some ty := ty? then
+      if let some ty := ty then
         if (← read).config.debug then
           unless ← isDefEq ty (← inferType e) do
             throwError m!"visitProof: incorrectly propagated type{indentD ty}\nfor{indentD e}"
@@ -311,7 +311,7 @@ where
     let pfTy ← abstractProofs pfTy none
     -- Check if there is already a recorded proof for this proposition.
     trace[Tactic.generalize_proofs] "finding {pfTy}"
-    if let some pf' ← MAbs.findProof? pfTy then
+    if let some pf' ← MAbs.findProof pfTy then
       trace[Tactic.generalize_proofs] "found proof"
       return mkAppN pf' fvars'
     -- Record the proof in the state and return the proof.
@@ -341,12 +341,12 @@ This continuation `k` is passed
 
 The `propToFVar` map is updated with the new proposition fvars.
 -/
-partial def withGeneralizedProofs {α : Type} [Inhabited α] (e : Expr) (ty? : Option Expr)
+partial def withGeneralizedProofs {α : Type} [Inhabited α] (e : Expr) (ty : Option Expr)
     (k : Array Expr → Array Expr → Expr → MGen α) :
     MGen α := do
   let propToFVar := (← get).propToFVar
   trace[Tactic.generalize_proofs] "pre-abstracted{indentD e}\npropToFVar: {propToFVar.toArray}"
-  let (e, generalizations) ← MGen.runMAbs <| abstractProofs e ty?
+  let (e, generalizations) ← MGen.runMAbs <| abstractProofs e ty
   trace[Tactic.generalize_proofs] "\
     post-abstracted{indentD e}\nnew generalizations: {generalizations}"
   let rec
@@ -355,14 +355,14 @@ partial def withGeneralizedProofs {α : Type} [Inhabited α] (e : Expr) (ty? : O
         (proofToFVar propToFVar : ExprMap Expr) : MGen α := do
       if h : i < generalizations.size then
         let (ty, pf) := generalizations[i]
-        let ty := (← instantiateMVars (ty.replace proofToFVar.find?)).cleanupAnnotations
+        let ty := (← instantiateMVars (ty.replace proofToFVar.find)).cleanupAnnotations
         withLocalDeclD (← mkFreshUserName `pf) ty fun fvar => do
           go (i + 1) (fvars := fvars.push fvar) (pfs := pfs.push pf)
             (proofToFVar := proofToFVar.insert pf fvar)
             (propToFVar := propToFVar.insert ty fvar)
       else
         withNewLocalInstances fvars 0 do
-          let e' := e.replace proofToFVar.find?
+          let e' := e.replace proofToFVar.find
           trace[Tactic.generalize_proofs] "after: e' = {e}"
           modify fun s => { s with propToFVar }
           k fvars pfs e'
@@ -395,7 +395,7 @@ where
           let g' ← mkFreshExprSyntheticOpaqueMVar tgt' tag
           g.assign <| .app g' tgt.letValue!
           return ← go g'.mvarId! i hs
-        if let some pf := (← get).propToFVar.find? ty then
+        if let some pf := (← get).propToFVar.find ty then
           -- Eliminate this local hypothesis using the pre-existing proof, using proof irrelevance
           let tgt' := tgt.bindingBody!.instantiate1 pf
           let g' ← mkFreshExprSyntheticOpaqueMVar tgt' tag
@@ -469,7 +469,7 @@ partial def _root_.Lean.MVarId.generalizeProofs
     GeneralizeProofs.generalizeProofsCore g fvars rfvars target |>.run config |>.run' s
 
 /--
-`generalize_proofs ids* [at locs]?` generalizes proofs in the current goal,
+`generalize_proofs ids* [at locs]` generalizes proofs in the current goal,
 turning them into new local hypotheses.
 
 - `generalize_proofs` generalizes proofs in the target.
@@ -500,11 +500,11 @@ example : List.nthLe [1, 2] 1 (by simp) = 2 := by
   -- ⊢ [1, 2].nthLe 1 h = 2
 ```
 -/
-elab (name := generalizeProofsElab) "generalize_proofs" config?:(Parser.Tactic.config)?
-    hs:(ppSpace colGt binderIdent)* loc?:(location)? : tactic => withMainContext do
-  let config ← GeneralizeProofs.elabConfig (mkOptionalNode config?)
+elab (name := generalizeProofsElab) "generalize_proofs" config:(Parser.Tactic.config)
+    hs:(ppSpace colGt binderIdent)* loc:(location) : tactic => withMainContext do
+  let config ← GeneralizeProofs.elabConfig (mkOptionalNode config)
   let (fvars, target) ←
-    match expandOptLocation (Lean.mkOptionalNode loc?) with
+    match expandOptLocation (Lean.mkOptionalNode loc) with
     | .wildcard => pure ((← getLCtx).getFVarIds, true)
     | .targets t target => pure (← getFVarIds t, target)
   liftMetaTactic1 fun g => do

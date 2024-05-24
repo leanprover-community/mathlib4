@@ -160,13 +160,13 @@ end
 /--
 `init_ring` is an auxiliary tactic that discharges goals factoring `init` over ring operations.
 -/
-syntax (name := initRing) "init_ring" (" using " term)? : tactic
+syntax (name := initRing) "init_ring" (" using " term) : tactic
 
 -- Porting note: this tactic requires that we turn hygiene off (note the free `n`).
 -- TODO: make this tactic hygienic.
 open Lean Elab Tactic in
 elab_rules : tactic
-| `(tactic| init_ring $[ using $a:term]?) => withMainContext <| set_option hygiene false in do
+| `(tactic| init_ring $[ using $a:term]) => withMainContext <| set_option hygiene false in do
   evalTactic <|← `(tactic|(
     rw [WittVector.ext_iff]
     intro i

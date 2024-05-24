@@ -34,7 +34,7 @@ an `app_unexpander` for it to get it to pretty print using dot notation.
 See also the docstring of the `pp_dot` attribute. -/
 def mkExtendedFieldNotationUnexpander (f : Name) : CommandElabM Unit := do
   let .str A projName := f | throwError "Projection name must end in a string component."
-  if let some _ := getStructureInfo? (← getEnv) A then
+  if let some _ := getStructureInfo (← getEnv) A then
     -- If this is for a structure, then generate an extra `.toA` remover.
     -- It's easier to handle the two cases completely separately than to try to merge them.
     let .str _ A' := A | throwError "{A} must end in a string component"

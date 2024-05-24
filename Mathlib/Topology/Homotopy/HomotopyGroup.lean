@@ -460,7 +460,7 @@ def genLoopEquivOfUnique (N) [Unique N] : Ω^ N X x ≃ Ω X x where
 
 #align gen_loop_equiv_of_unique genLoopEquivOfUnique
 
-/- TODO (?): deducing this from `homotopyGroupEquivFundamentalGroup` would require
+/- TODO (): deducing this from `homotopyGroupEquivFundamentalGroup` would require
   combination of `CategoryTheory.Functor.mapAut` and
   `FundamentalGroupoid.fundamentalGroupoidFunctor` applied to `genLoopHomeoOfIsEmpty`,
   with possibly worse defeq. -/

@@ -805,7 +805,7 @@ theorem mk_d_2_1 : (mk X₀ X₁ X₂ d₀ d₁ s succ).d 2 1 = d₁ := by
   rw [if_pos rfl, Category.id_comp]
 #align chain_complex.mk_d_2_0 ChainComplex.mk_d_2_1
 
--- TODO simp lemmas for the inductive steps? It's not entirely clear that they are needed.
+-- TODO simp lemmas for the inductive steps It's not entirely clear that they are needed.
 /-- A simpler inductive constructor for `ℕ`-indexed chain complexes.
 
 You provide explicitly the first differential,
@@ -1052,7 +1052,7 @@ theorem mk_d_2_0 : (mk X₀ X₁ X₂ d₀ d₁ s succ).d 1 2 = d₁ := by
   rw [if_pos rfl, Category.comp_id]
 #align cochain_complex.mk_d_2_0 CochainComplex.mk_d_2_0
 
--- TODO simp lemmas for the inductive steps? It's not entirely clear that they are needed.
+-- TODO simp lemmas for the inductive steps It's not entirely clear that they are needed.
 /-- A simpler inductive constructor for `ℕ`-indexed cochain complexes.
 
 You provide explicitly the first differential,
@@ -1086,7 +1086,7 @@ theorem mk'_d_1_0 : (mk' X₀ X₁ d₀ succ').d 0 1 = d₀ := by
   rw [if_pos rfl, Category.comp_id]
 #align cochain_complex.mk'_d_1_0 CochainComplex.mk'_d_1_0
 
--- TODO simp lemmas for the inductive steps? It's not entirely clear that they are needed.
+-- TODO simp lemmas for the inductive steps It's not entirely clear that they are needed.
 end Mk
 
 section MkHom

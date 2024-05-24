@@ -225,7 +225,7 @@ theorem zipWith_rotate_one {β : Type*} (f : α → α → β) (x y : α) (l : L
 #align list.zip_with_rotate_one List.zipWith_rotate_one
 
 theorem get_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
-    (l.rotate n).get? m = l.get? ((m + n) % l.length) := by
+    (l.rotate n).get m = l.get ((m + n) % l.length) := by
   rw [rotate_eq_drop_append_take_mod]
   rcases lt_or_le m (l.drop (n % l.length)).length with hm | hm
   · rw [get_append hm, get_drop, ← add_mod_mod]
@@ -253,7 +253,7 @@ theorem get_rotate (l : List α) (n : ℕ) (k : Fin (l.rotate n).length) :
   rw [← Option.some_inj, ← get_eq_get, ← get_eq_get, get_rotate]
   exact k.2.trans_eq (length_rotate _ _)
 
-theorem head_rotate {l : List α} {n : ℕ} (h : n < l.length) : head? (l.rotate n) = l.get? n := by
+theorem head_rotate {l : List α} {n : ℕ} (h : n < l.length) : head (l.rotate n) = l.get n := by
   rw [← get_zero, get_rotate (n.zero_le.trans_lt h), Nat.zero_add, Nat.mod_eq_of_lt h]
 #align list.head'_rotate List.head_rotate
 
@@ -387,7 +387,7 @@ theorem Nodup.rotate_congr {l : List α} (hl : l.Nodup) (hn : l ≠ []) (i j : �
     (h : l.rotate i = l.rotate j) : i % l.length = j % l.length := by
   rw [← rotate_mod l i, ← rotate_mod l j] at h
   simpa only [head_rotate, mod_lt, length_pos_of_ne_nil hn, get_eq_get, Option.some_inj,
-    hl.get_inj_iff, Fin.ext_iff] using congr_arg head? h
+    hl.get_inj_iff, Fin.ext_iff] using congr_arg head h
 #align list.nodup.rotate_congr List.Nodup.rotate_congr
 
 theorem Nodup.rotate_congr_iff {l : List α} (hl : l.Nodup) {i j : ℕ} :
@@ -599,11 +599,11 @@ theorem head_cyclicPermutations (l : List α) :
   rw [← get_mk_zero h, get_cyclicPermutations, Fin.val_mk, rotate_zero]
 
 @[simp]
-theorem head_cyclicPermutations (l : List α) : (cyclicPermutations l).head? = l := by
+theorem head_cyclicPermutations (l : List α) : (cyclicPermutations l).head = l := by
   rw [head_eq_head, head_cyclicPermutations]
 
 theorem cyclicPermutations_injective : Function.Injective (@cyclicPermutations α) := fun l l' h ↦ by
-  simpa using congr_arg head? h
+  simpa using congr_arg head h
 
 @[simp]
 theorem cyclicPermutations_inj {l l' : List α} :

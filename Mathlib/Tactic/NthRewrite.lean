@@ -22,11 +22,11 @@ to be rewritten.
 
 Note: The occurrences are counted beginning with `1` and not `0`, this is different than in
 mathlib3. The translation will be handled by mathport. -/
-syntax (name := nthRewriteSeq) "nth_rewrite" (config)? ppSpace num rwRuleSeq (location)? : tactic
+syntax (name := nthRewriteSeq) "nth_rewrite" (config) ppSpace num rwRuleSeq (location) : tactic
 
 @[inherit_doc nthRewriteSeq, tactic nthRewriteSeq] def evalNthRewriteSeq : Tactic := fun stx => do
   match stx with
-  | `(tactic| nth_rewrite $[$_cfg]? $n $_rules $[$_loc]?) =>
+  | `(tactic| nth_rewrite $[$_cfg] $n $_rules $[$_loc]) =>
     -- [TODO] `stx` should not be used directly, but the corresponding functions do not yet exist
     -- in Lean 4 core
     let cfg ← elabRewriteConfig stx[1]
@@ -43,11 +43,11 @@ syntax (name := nthRewriteSeq) "nth_rewrite" (config)? ppSpace num rwRuleSeq (lo
 /--
 `nth_rw` is like `nth_rewrite`, but also tries to close the goal by trying `rfl` afterwards.
 -/
-macro (name := nthRwSeq) "nth_rw" c:(config)? ppSpace n:num s:rwRuleSeq l:(location)? : tactic =>
+macro (name := nthRwSeq) "nth_rw" c:(config) ppSpace n:num s:rwRuleSeq l:(location) : tactic =>
   -- Note: This is a direct copy of `nth_rw` from core.
   match s with
   | `(rwRuleSeq| [$rs,*]%$rbrak) =>
     -- We show the `rfl` state on `]`
-    `(tactic| (nth_rewrite $(c)? $n [$rs,*] $(l)?; with_annotate_state $rbrak
+    `(tactic| (nth_rewrite $(c) $n [$rs,*] $(l); with_annotate_state $rbrak
       (try (with_reducible rfl))))
   | _ => Macro.throwUnsupported

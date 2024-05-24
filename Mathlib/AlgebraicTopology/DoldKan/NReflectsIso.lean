@@ -109,7 +109,7 @@ instance : (N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ)
       (ComplexShape.down ℕ)
     let F := F₁ ⋙ F₂ ⋙ F₃ ⋙ F₄
     -- Porting note: we have to help Lean4 find the `ReflectsIsomorphisms` instances
-    -- could this be fixed by setting better instance priorities?
+    -- could this be fixed by setting better instance priorities
     haveI : F₁.ReflectsIsomorphisms := reflectsIsomorphisms_of_full_and_faithful _
     haveI : F₂.ReflectsIsomorphisms := by infer_instance
     haveI : F₃.ReflectsIsomorphisms := reflectsIsomorphisms_of_full_and_faithful _

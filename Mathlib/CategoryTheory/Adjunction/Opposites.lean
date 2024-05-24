@@ -44,7 +44,7 @@ def adjointOfOpAdjointOp (F : C ⥤ D) (G : D ⥤ C) (h : G.op ⊣ F.op) : F ⊣
       -- Porting note: This proof was handled by `obviously` in mathlib3.
       intros X' X Y f g
       dsimp [opEquiv]
-      -- Porting note: Why is `erw` needed here?
+      -- Porting note: Why is `erw` needed here
       -- https://github.com/leanprover-community/mathlib4/issues/5164
       erw [homEquiv_unit, homEquiv_unit]
       simp
@@ -52,7 +52,7 @@ def adjointOfOpAdjointOp (F : C ⥤ D) (G : D ⥤ C) (h : G.op ⊣ F.op) : F ⊣
       -- Porting note: This proof was handled by `obviously` in mathlib3.
       intros X Y Y' f g
       dsimp [opEquiv]
-      -- Porting note: Why is `erw` needed here?
+      -- Porting note: Why is `erw` needed here
       -- https://github.com/leanprover-community/mathlib4/issues/5164
       erw [homEquiv_counit, homEquiv_counit]
       simp }
@@ -87,7 +87,7 @@ def opAdjointOpOfAdjoint (F : C ⥤ D) (G : D ⥤ C) (h : G ⊣ F) : F.op ⊣ G.
       -- Porting note: This proof was handled by `obviously` in mathlib3.
       intros X' X Y f g
       dsimp [opEquiv]
-      -- Porting note: Why is `erw` needed here?
+      -- Porting note: Why is `erw` needed here
       -- https://github.com/leanprover-community/mathlib4/issues/5164
       erw [homEquiv_unit, homEquiv_unit]
       simp
@@ -95,7 +95,7 @@ def opAdjointOpOfAdjoint (F : C ⥤ D) (G : D ⥤ C) (h : G ⊣ F) : F.op ⊣ G.
       -- Porting note: This proof was handled by `obviously` in mathlib3.
       intros X' X Y f g
       dsimp [opEquiv]
-      -- Porting note: Why is `erw` needed here?
+      -- Porting note: Why is `erw` needed here
       -- https://github.com/leanprover-community/mathlib4/issues/5164
       erw [homEquiv_counit, homEquiv_counit]
       simp }

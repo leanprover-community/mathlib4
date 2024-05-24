@@ -33,7 +33,7 @@ in the file where we declare `@[simps]`. For further documentation, see `Tactic.
     `findArgType` which is defined to be `Name → Name → Array Expr → MetaM (Array (Option Expr))`.
     This declaration specifies how to generate the arguments of the notation class from the
     arguments of classes that use the projection. -/
-syntax (name := notation_class) "notation_class" "*"? (ppSpace ident)? (ppSpace ident)? : attr
+syntax (name := notation_class) "notation_class" "*" (ppSpace ident) (ppSpace ident) : attr
 
 open Lean Meta Elab Term
 
@@ -46,7 +46,7 @@ def findArgType : Type := Name → Name → Array Expr → MetaM (Array (Option 
 
 /-- Find arguments for a notation class -/
 def defaultfindArgs : findArgType := λ _ className args => do
-  let some classExpr := (← getEnv).find? className | throwError "no such class {className}"
+  let some classExpr := (← getEnv).find className | throwError "no such class {className}"
   let arity := classExpr.type.forallArity
   if arity == args.size then
     return args.map some
@@ -57,30 +57,30 @@ def defaultfindArgs : findArgType := λ _ className args => do
       {className}"
 
 /-- Find arguments by duplicating the first argument. Used for `pow`. -/
-def copyFirst : findArgType := λ _ _ args => return (args.push <| args[0]?.getD default).map some
+def copyFirst : findArgType := λ _ _ args => return (args.push <| args[0].getD default).map some
 
 /-- Find arguments by duplicating the first argument. Used for `smul`. -/
-def copySecond : findArgType := λ _ _ args => return (args.push <| args[1]?.getD default).map some
+def copySecond : findArgType := λ _ _ args => return (args.push <| args[1].getD default).map some
 
 /-- Find arguments by prepending `ℕ` and duplicating the first argument. Used for `nsmul`. -/
 def nsmulArgs : findArgType := λ _ _ args =>
-  return #[Expr.const `Nat [], args[0]?.getD default] ++ args |>.map some
+  return #[Expr.const `Nat [], args[0].getD default] ++ args |>.map some
 
 /-- Find arguments by prepending `ℤ` and duplicating the first argument. Used for `zsmul`. -/
 def zsmulArgs : findArgType := λ _ _ args =>
-  return #[Expr.const `Int [], args[0]?.getD default] ++ args |>.map some
+  return #[Expr.const `Int [], args[0].getD default] ++ args |>.map some
 
 /-- Find arguments for the `Zero` class. -/
 def findZeroArgs : findArgType := λ _ _ args =>
-  return #[some <| args[0]?.getD default, some <| mkRawNatLit 0]
+  return #[some <| args[0].getD default, some <| mkRawNatLit 0]
 
 /-- Find arguments for the `One` class. -/
 def findOneArgs : findArgType := λ _ _ args =>
-  return #[some <| args[0]?.getD default, some <| mkRawNatLit 1]
+  return #[some <| args[0].getD default, some <| mkRawNatLit 1]
 
 /-- Find arguments of a coercion class (`DFunLike` or `SetLike`) -/
 def findCoercionArgs : findArgType := λ str className args => do
-  let some classExpr := (← getEnv).find? className | throwError "no such class {className}"
+  let some classExpr := (← getEnv).find className | throwError "no such class {className}"
   let arity := classExpr.type.forallArity
   let eStr := mkAppN (← mkConstWithLevelParams str) args
   let classArgs := mkArray (arity - 1) none
@@ -110,12 +110,12 @@ initialize notationClassAttr : NameMapExtension AutomaticProjectionData ← do
       unless isStructure (← getEnv) src do
         throwError "@[notation_class] attribute can only be added to classes."
       match stx with
-      | `(attr|notation_class $[*%$coercion]? $[$projName?]? $[$findArgs?]?) => do
-        let projName ← match projName? with
+      | `(attr|notation_class $[*%$coercion] $[$projName] $[$findArgs]) => do
+        let projName ← match projName with
           | none => pure (getStructureFields (← getEnv) src)[0]!
           | some projName => pure projName.getId
-        let findArgs := if findArgs?.isSome then findArgs?.get!.getId else `Simps.defaultfindArgs
-        match (← getEnv).find? findArgs with
+        let findArgs := if findArgs.isSome then findArgs.get!.getId else `Simps.defaultfindArgs
+        match (← getEnv).find findArgs with
         | none => throwError "no such declaration {findArgs}"
         | some declInfo =>
           unless ← MetaM.run' <| isDefEq declInfo.type (mkConst ``findArgType) do

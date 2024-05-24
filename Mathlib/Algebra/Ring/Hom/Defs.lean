@@ -430,7 +430,7 @@ instance instRingHomClass : RingHomClass (α →+* β) α β where
 
 initialize_simps_projections RingHom (toFun → apply)
 
--- Porting note: is this lemma still needed in Lean4?
+-- Porting note: is this lemma still needed in Lean4
 -- Porting note: because `f.toFun` really means `f.toMonoidHom.toOneHom.toFun` and
 -- `toMonoidHom_eq_coe` wants to simplify `f.toMonoidHom` to `(↑f : M →* N)`, this can't
 -- be a simp lemma anymore

@@ -61,7 +61,7 @@ example (x y z w : Nat) (h : x = y) (h' : z = w) : 1 + x * z^2 = 1 + y * w^2 := 
   · exact h'
 
 example (x y z w : Nat) (h : x = y) (h' : z = w) : 1 + x * z^2 = 1 + y * w^2 := by
-  refine congr(1 + $(?foo) * $(?bar)^2)
+  refine congr(1 + $(foo) * $(bar)^2)
   case foo => exact h
   case bar => exact h'
 

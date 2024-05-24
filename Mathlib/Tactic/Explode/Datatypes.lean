@@ -64,8 +64,8 @@ structure Entries : Type where
   deriving Inhabited
 
 /-- Find a row where `Entry.expr` == `e`. -/
-def Entries.find? (es : Entries) (e : Expr) : Option Entry :=
-  es.s.find? e
+def Entries.find (es : Entries) (e : Expr) : Option Entry :=
+  es.s.find e
 
 /-- Length of our entries. -/
 def Entries.size (es : Entries) : Nat :=
@@ -74,7 +74,7 @@ def Entries.size (es : Entries) : Nat :=
 /-- Add the entry unless it already exists. Sets the `line` field to the next
 available value. -/
 def Entries.add (entries : Entries) (expr : Expr) (entry : Entry) : Entry × Entries :=
-  if let some entry' := entries.find? expr then
+  if let some entry' := entries.find expr then
     (entry', entries)
   else
     let entry := { entry with line := entries.size }

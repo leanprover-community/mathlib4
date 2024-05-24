@@ -94,8 +94,8 @@ instance : Quiver LocallyRingedSpace :=
 @[ext] lemma Hom.ext' (X Y : LocallyRingedSpace.{u}) {f g : X ⟶ Y} (h : f.val = g.val) : f = g :=
   Hom.ext _ _ h
 
--- TODO perhaps we should make a bundled `LocalRing` and return one here?
--- TODO define `sheaf.stalk` so we can write `X.𝒪.stalk` here?
+-- TODO perhaps we should make a bundled `LocalRing` and return one here
+-- TODO define `sheaf.stalk` so we can write `X.𝒪.stalk` here
 /-- The stalk of a locally ringed space, just as a `CommRing`.
 -/
 noncomputable def stalk (X : LocallyRingedSpace.{u}) (x : X) : CommRingCat :=

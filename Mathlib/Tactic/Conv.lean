@@ -13,15 +13,15 @@ Additional `conv` tactics.
 namespace Mathlib.Tactic.Conv
 open Lean Parser.Tactic Parser.Tactic.Conv Elab.Tactic Meta
 
-syntax (name := convLHS) "conv_lhs" (" at " ident)? (" in " (occs)? term)? " => " convSeq : tactic
+syntax (name := convLHS) "conv_lhs" (" at " ident) (" in " (occs) term) " => " convSeq : tactic
 macro_rules
-  | `(tactic| conv_lhs $[at $id]? $[in $[$occs]? $pat]? => $seq) =>
-    `(tactic| conv $[at $id]? $[in $[$occs]? $pat]? => lhs; ($seq:convSeq))
+  | `(tactic| conv_lhs $[at $id] $[in $[$occs] $pat] => $seq) =>
+    `(tactic| conv $[at $id] $[in $[$occs] $pat] => lhs; ($seq:convSeq))
 
-syntax (name := convRHS) "conv_rhs" (" at " ident)? (" in " (occs)? term)? " => " convSeq : tactic
+syntax (name := convRHS) "conv_rhs" (" at " ident) (" in " (occs) term) " => " convSeq : tactic
 macro_rules
-  | `(tactic| conv_rhs $[at $id]? $[in $[$occs]? $pat]? => $seq) =>
-    `(tactic| conv $[at $id]? $[in $[$occs]? $pat]? => rhs; ($seq:convSeq))
+  | `(tactic| conv_rhs $[at $id] $[in $[$occs] $pat] => $seq) =>
+    `(tactic| conv $[at $id] $[in $[$occs] $pat] => rhs; ($seq:convSeq))
 
 macro "run_conv" e:doSeq : conv => `(conv| tactic' => run_tac $e)
 
@@ -38,19 +38,19 @@ The syntax also supports the `occs` clause. Example:
 conv in (occs := *) x + y => rw [add_comm]
 ```
 -/
-macro "conv" " in " occs?:(occs)? p:term " => " code:convSeq : conv =>
-  `(conv| conv => pattern $[$occs?]? $p; ($code:convSeq))
+macro "conv" " in " occs:(occs) p:term " => " code:convSeq : conv =>
+  `(conv| conv => pattern $[$occs] $p; ($code:convSeq))
 
 /--
 * `discharge => tac` is a conv tactic which rewrites target `p` to `True` if `tac` is a tactic
   which proves the goal `⊢ p`.
 * `discharge` without argument returns `⊢ p` as a subgoal.
 -/
-syntax (name := dischargeConv) "discharge" (" => " tacticSeq)? : conv
+syntax (name := dischargeConv) "discharge" (" => " tacticSeq) : conv
 
 /-- Elaborator for the `discharge` tactic. -/
 @[tactic dischargeConv] def elabDischargeConv : Tactic := fun
-  | `(conv| discharge $[=> $tac]?) => do
+  | `(conv| discharge $[=> $tac]) => do
     let g :: gs ← getGoals | throwNoGoalsToBeSolved
     let (theLhs, theRhs) ← Conv.getLhsRhsCore g
     let .true ← isProp theLhs | throwError "target is not a proposition"
@@ -129,7 +129,7 @@ macro tk:"#whnfR " e:term : command => `(command| #conv%$tk with_reducible whnf 
 * The `=>` is optional, so `#simp e` and `#simp only [lems] e` have the same behavior.
   It is mostly useful for disambiguating the expression `e` from the lemmas.
 -/
-syntax "#simp" (&" only")? (simpArgs)? " =>"? ppSpace term : command
+syntax "#simp" (&" only") (simpArgs) " =>" ppSpace term : command
 macro_rules
-  | `(#simp%$tk $[only%$o]? $[[$args,*]]? $[=>]? $e) =>
-    `(#conv%$tk simp $[only%$o]? $[[$args,*]]? => $e)
+  | `(#simp%$tk $[only%$o] $[[$args,*]] $[=>] $e) =>
+    `(#conv%$tk simp $[only%$o] $[[$args,*]] => $e)

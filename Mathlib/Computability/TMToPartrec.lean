@@ -1339,7 +1339,7 @@ theorem move_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k₁
     revert e; cases' S k₁ with a Sk <;> intro e
     · cases e
       rfl
-    simp only [splitAtPred, Option.elim, List.head?, List.tail_cons, Option.iget_some] at e ⊢
+    simp only [splitAtPred, Option.elim, List.head, List.tail_cons, Option.iget_some] at e ⊢
     revert e; cases p a <;> intro e <;>
       simp only [cond_false, cond_true, Prod.mk.injEq, true_and, false_and] at e ⊢
     simp only [e]
@@ -1397,7 +1397,7 @@ theorem clear_ok {p k q s L₁ o L₂} {S : K' → List Γ'} (e : splitAtPred p 
     revert e; cases' S k with a Sk <;> intro e
     · cases e
       rfl
-    simp only [splitAtPred, Option.elim, List.head?, List.tail_cons] at e ⊢
+    simp only [splitAtPred, Option.elim, List.head, List.tail_cons] at e ⊢
     revert e; cases p a <;> intro e <;>
       simp only [cond_false, cond_true, Prod.mk.injEq, true_and, false_and] at e ⊢
     rcases e with ⟨e₁, e₂⟩
@@ -1524,7 +1524,7 @@ theorem succ_ok {q s n} {c d : List Γ'} :
         Reaches₁ (TM2.step tr) ⟨some q.succ, s, K'.elim (trPosNum a ++ [Γ'.cons]) l₁ c d⟩
           ⟨some (unrev q), s', K'.elim (l₂' ++ [Γ'.cons]) l₁' c d⟩ by
     obtain ⟨l₁', l₂', s', e, h⟩ := this []
-    simp? [List.reverseAux] at e says simp only [List.reverseAux] at e
+    simp [List.reverseAux] at e says simp only [List.reverseAux] at e
     refine h.trans _
     convert unrev_ok using 2
     simp [e, List.reverseAux_eq]
@@ -1656,9 +1656,9 @@ theorem tr_ret_respects (k v s) : ∃ b₂,
   | fix f k IH =>
     rw [stepRet]
     have :
-      if v.headI = 0 then natEnd (trList v).head?.iget = true ∧ (trList v).tail = trList v.tail
+      if v.headI = 0 then natEnd (trList v).head.iget = true ∧ (trList v).tail = trList v.tail
       else
-        natEnd (trList v).head?.iget = false ∧
+        natEnd (trList v).head.iget = false ∧
           (trList v).tail = (trNat v.headI).tail ++ Γ'.cons :: trList v.tail := by
       cases' v with n
       · exact ⟨rfl, rfl⟩
@@ -1667,7 +1667,7 @@ theorem tr_ret_respects (k v s) : ∃ b₂,
       rw [trList, List.headI, trNat, Nat.cast_succ, Num.add_one, Num.succ, List.tail]
       cases (n : Num).succ' <;> exact ⟨rfl, rfl⟩
     by_cases h : v.headI = 0 <;> simp only [h, ite_true, ite_false] at this ⊢
-    · obtain ⟨c, h₁, h₂⟩ := IH v.tail (trList v).head?
+    · obtain ⟨c, h₁, h₂⟩ := IH v.tail (trList v).head
       refine ⟨c, h₁, TransGen.head rfl _⟩
       simp only [Option.mem_def, TM2.stepAux, trContStack, contStack, elim_main, this, cond_true,
         elim_update_main]

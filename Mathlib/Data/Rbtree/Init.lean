@@ -47,7 +47,7 @@ https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Mathlib4.2
 
 #noalign rbnode.mem_exact
 
-#align rbnode.find Batteries.RBNode.find?
+#align rbnode.find Batteries.RBNode.find
 #align rbnode.well_formed Batteries.RBNode.WF
 
 #align rbtree Batteries.RBSet
@@ -66,7 +66,7 @@ https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Mathlib4.2
 #align rbtree.min Batteries.RBSet.min
 #align rbtree.max Batteries.RBSet.max
 #align rbtree.insert Batteries.RBSet.insert
-#align rbtree.find Batteries.RBSet.find?
+#align rbtree.find Batteries.RBSet.find
 #align rbtree.contains Batteries.RBSet.contains
 #align rbtree.from_list Batteries.RBSet.ofList
 

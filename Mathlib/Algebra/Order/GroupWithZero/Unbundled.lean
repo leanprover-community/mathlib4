@@ -756,7 +756,7 @@ theorem lt_mul_of_one_lt_right [PosMulStrictMono α] (ha : 0 < a) (h : 1 < b) : 
 /-! Lemmas of the form `b ≤ c → a ≤ 1 → b * a ≤ c`. -/
 
 
-/- Yaël: What's the point of these lemmas? They just chain an existing lemma with an assumption in
+/- Yaël: What's the point of these lemmas They just chain an existing lemma with an assumption in
 all possible ways, thereby artificially inflating the API and making the truly relevant lemmas hard
 to find -/
 theorem mul_le_of_le_of_le_one_of_nonneg [PosMulMono α] (h : b ≤ c) (ha : a ≤ 1) (hb : 0 ≤ b) :
@@ -1017,7 +1017,7 @@ section LinearOrder
 
 variable [LinearOrder α]
 
--- Yaël: What's the point of this lemma? If we have `0 * 0 = 0`, then we can just take `b = 0`.
+-- Yaël: What's the point of this lemma If we have `0 * 0 = 0`, then we can just take `b = 0`.
 -- proven with `a0 : 0 ≤ a` as `exists_square_le`
 theorem exists_square_le' [PosMulStrictMono α] (a0 : 0 < a) : ∃ b : α, b * b ≤ a := by
   obtain ha | ha := lt_or_le a 1

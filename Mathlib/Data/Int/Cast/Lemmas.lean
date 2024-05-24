@@ -480,7 +480,7 @@ end RingHom
 
 end NonAssocRing
 
-#align int.cast_id Int.cast_idₓ -- dubious translation, type involves HasLiftT?
+#align int.cast_id Int.cast_idₓ -- dubious translation, type involves HasLiftT
 
 @[simp]
 theorem Int.castRingHom_int : Int.castRingHom ℤ = RingHom.id ℤ :=

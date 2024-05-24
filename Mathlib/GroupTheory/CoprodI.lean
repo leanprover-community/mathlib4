@@ -45,7 +45,7 @@ When `M i` are all groups, `Monoid.CoprodI M` is also a group
 
 ## Remarks
 
-There are many answers to the question "what is the coproduct of a family `M` of monoids?",
+There are many answers to the question "what is the coproduct of a family `M` of monoids",
 and they are all equivalent but not obviously equivalent.
 We provide two answers.
 The first, almost tautological answer is given by `Monoid.CoprodI M`,
@@ -312,11 +312,11 @@ theorem prod_empty : prod (empty : Word M) = 1 :=
 /-- `fstIdx w` is `some i` if the first letter of `w` is `⟨i, m⟩` with `m : M i`. If `w` is empty
 then it's `none`. -/
 def fstIdx (w : Word M) : Option ι :=
-  w.toList.head?.map Sigma.fst
+  w.toList.head.map Sigma.fst
 #align free_product.word.fst_idx Monoid.CoprodI.Word.fstIdx
 
 theorem fstIdx_ne_iff {w : Word M} {i} :
-    fstIdx w ≠ some i ↔ ∀ l ∈ w.toList.head?, i ≠ Sigma.fst l :=
+    fstIdx w ≠ some i ↔ ∀ l ∈ w.toList.head, i ≠ Sigma.fst l :=
   not_iff_not.mp <| by simp [fstIdx]
 #align free_product.word.fst_idx_ne_iff Monoid.CoprodI.Word.fstIdx_ne_iff
 
@@ -552,7 +552,7 @@ theorem mem_smul_iff {i j : ι} {m₁ : M i} {m₂ : M j} {w : Word M} :
     ⟨_, m₁⟩ ∈ (of m₂ • w).toList ↔
       (¬i = j ∧ ⟨i, m₁⟩ ∈ w.toList)
       ∨ (m₁ ≠ 1 ∧ ∃ (hij : i = j),(⟨i, m₁⟩ ∈ w.toList.tail) ∨
-        (∃ m', ⟨j, m'⟩ ∈ w.toList.head? ∧ m₁ = hij ▸ (m₂ * m')) ∨
+        (∃ m', ⟨j, m'⟩ ∈ w.toList.head ∧ m₁ = hij ▸ (m₂ * m')) ∨
         (w.fstIdx ≠ some j ∧ m₁ = hij ▸ m₂)) := by
   rw [of_smul_def, mem_rcons_iff, mem_equivPair_tail_iff, equivPair_head, or_assoc]
   by_cases hij : i = j
@@ -700,22 +700,22 @@ def last : ∀ {i j} (_w : NeWord M i j), M j
 #align free_product.neword.last Monoid.CoprodI.NeWord.last
 
 @[simp]
-theorem toList_head? {i j} (w : NeWord M i j) : w.toList.head? = Option.some ⟨i, w.head⟩ := by
+theorem toList_head {i j} (w : NeWord M i j) : w.toList.head = Option.some ⟨i, w.head⟩ := by
   rw [← Option.mem_def]
   induction w
   · rw [Option.mem_def]
     rfl
   · exact List.head_append (by assumption)
-#align free_product.neword.to_list_head' Monoid.CoprodI.NeWord.toList_head?
+#align free_product.neword.to_list_head' Monoid.CoprodI.NeWord.toList_head
 
 @[simp]
-theorem toList_getLast? {i j} (w : NeWord M i j) : w.toList.getLast? = Option.some ⟨j, w.last⟩ := by
+theorem toList_getLast {i j} (w : NeWord M i j) : w.toList.getLast = Option.some ⟨j, w.last⟩ := by
   rw [← Option.mem_def]
   induction w
   · rw [Option.mem_def]
     rfl
   · exact List.getLast_append (by assumption)
-#align free_product.neword.to_list_last' Monoid.CoprodI.NeWord.toList_getLast?
+#align free_product.neword.to_list_last' Monoid.CoprodI.NeWord.toList_getLast
 
 /-- The `Word M` represented by a `NeWord M i j` -/
 def toWord {i j} (w : NeWord M i j) : Word M where
@@ -731,8 +731,8 @@ def toWord {i j} (w : NeWord M i j) : Word M where
     · exact List.chain'_singleton _
     · refine List.Chain'.append (by assumption) (by assumption) _
       intro x hx y hy
-      rw [toList_getLast?, Option.mem_some_iff] at hx
-      rw [toList_head?, Option.mem_some_iff] at hy
+      rw [toList_getLast, Option.mem_some_iff] at hx
+      rw [toList_head, Option.mem_some_iff] at hy
       subst hx
       subst hy
       assumption
@@ -755,7 +755,7 @@ theorem of_word (w : Word M) (h : w ≠ empty) : ∃ (i j : _) (w' : NeWord M i 
     · rw [List.chain'_cons] at hchain
       specialize hi hnot1.2 hchain.2 (by rintro ⟨rfl⟩)
       obtain ⟨i, j, w', hw' : w'.toList = y::l⟩ := hi
-      obtain rfl : y = ⟨i, w'.head⟩ := by simpa [hw'] using w'.toList_head?
+      obtain rfl : y = ⟨i, w'.head⟩ := by simpa [hw'] using w'.toList_head
       refine ⟨x.1, j, append (singleton x.2 hnot1.1) hchain.1 w', _⟩
       simpa [toWord] using hw'
 #align free_product.neword.of_word Monoid.CoprodI.NeWord.of_word
@@ -834,7 +834,7 @@ theorem mulHead_prod {i j : ι} (w : NeWord M i j) (x : M i) (hnotone : x * w.he
   · simp [mulHead, replaceHead]
   · specialize w_ih_w₁ _ hnotone
     clear w_ih_w₂
-    simp? [replaceHead, ← mul_assoc] at * says
+    simp [replaceHead, ← mul_assoc] at * says
       simp only [replaceHead, head, append_prod, ← mul_assoc] at *
     congr 1
 #align free_product.neword.mul_head_prod Monoid.CoprodI.NeWord.mulHead_prod

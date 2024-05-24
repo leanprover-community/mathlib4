@@ -489,7 +489,7 @@ variable {A F hF hA}
 
 -- Porting note: did not need `by delta liftCover'; exact` in mathlib3; goal was
 -- closed by `liftCover_coe x'`
--- Might be something to do with the `let`s in the definition of `liftCover'`?
+-- Might be something to do with the `let`s in the definition of `liftCover'`
 @[simp]
 theorem liftCover_coe' {s : Set α} {hs : s ∈ A} (x : s) : liftCover' A F hF hA x = F s hs x :=
   let x' : ((↑) : A → Set α) ⟨s, hs⟩ := x

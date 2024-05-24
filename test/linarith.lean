@@ -583,7 +583,7 @@ error: Argument passed to linarith has metavariables:
 -/
 #guard_msgs in
 example (q : Prop) (p : ∀ (x : ℤ), 1 = 2) : 1 = 2 := by
-  linarith [p ?a]
+  linarith [p a]
 
 /--
 error: Argument passed to nlinarith has metavariables:
@@ -591,7 +591,7 @@ error: Argument passed to nlinarith has metavariables:
 -/
 #guard_msgs in
 example (q : Prop) (p : ∀ (x : ℤ), 1 = 2) : 1 = 2 := by
-  nlinarith [p ?a]
+  nlinarith [p a]
 
 open BigOperators
 

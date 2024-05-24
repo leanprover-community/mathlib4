@@ -281,12 +281,12 @@ theorem prod_set :
 
 /-- We'd like to state this as `L.headI * L.tail.prod = L.prod`, but because `L.headI` relies on an
 inhabited instance to return a garbage value on the empty list, this is not possible.
-Instead, we write the statement in terms of `(L.get? 0).getD 1`.
+Instead, we write the statement in terms of `(L.get 0).getD 1`.
 -/
 @[to_additive "We'd like to state this as `L.headI + L.tail.sum = L.sum`, but because `L.headI`
   relies on an inhabited instance to return a garbage value on the empty list, this is not possible.
-  Instead, we write the statement in terms of `(L.get? 0).getD 0`."]
-theorem get_zero_mul_tail_prod (l : List M) : (l.get? 0).getD 1 * l.tail.prod = l.prod := by
+  Instead, we write the statement in terms of `(L.get 0).getD 0`."]
+theorem get_zero_mul_tail_prod (l : List M) : (l.get 0).getD 1 * l.tail.prod = l.prod := by
   cases l <;> simp
 #align list.nth_zero_mul_tail_prod List.get_zero_mul_tail_prod
 #align list.nth_zero_add_tail_sum List.get_zero_add_tail_sum
@@ -665,7 +665,7 @@ theorem sum_map_count_dedup_filter_eq_countP (p : α → Bool) (l : List α) :
       · refine _root_.trans (List.sum_eq_zero fun n hn => _) (by simp [hp])
         obtain ⟨a', ha'⟩ := List.mem_map.1 hn
         split_ifs at ha' with ha
-        · simp only [ha, mem_filter, mem_dedup, find?, mem_cons, true_or, hp,
+        · simp only [ha, mem_filter, mem_dedup, find, mem_cons, true_or, hp,
             and_false, false_and] at ha'
         · exact ha'.2.symm
 #align list.sum_map_count_dedup_filter_eq_countp List.sum_map_count_dedup_filter_eq_countP

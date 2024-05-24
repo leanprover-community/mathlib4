@@ -213,7 +213,7 @@ def proveFalseByLinarith (cfg : LinarithConfig) : MVarId → List Expr → MetaM
       trace[linarith] "linarith has found a contradiction: {certificate.toList}"
       let enum_inputs := inputs.enum
       -- construct a list pairing nonzero coeffs with the proof of their corresponding comparison
-      let zip := enum_inputs.filterMap fun ⟨n, e⟩ => (certificate.find? n).map (e, ·)
+      let zip := enum_inputs.filterMap fun ⟨n, e⟩ => (certificate.find n).map (e, ·)
       let mls ← zip.mapM fun ⟨e, n⟩ => do mulExpr n (← leftOfIneqProof e)
       -- `sm` is the sum of input terms, scaled to cancel out all variables.
       let sm ← addExprs mls

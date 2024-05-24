@@ -14,7 +14,7 @@ It is not meant to be comprehensive, but rather a "cheat sheet." See also the
 
 The syntax for the `conv` tactic is
 ```
-"conv" ("at" ident)? ("in" ("(occs :=" ("*" <|> num+) ")")? term)? "=>" convSeq
+"conv" ("at" ident) ("in" ("(occs :=" ("*" <|> num+) ")") term) "=>" convSeq
 ```
 where `convSeq` is any sequence of "`conv` tactics", which are tactics specifically written
 for `conv` mode.
@@ -37,20 +37,20 @@ simultaneously.
 Mathlib also provides `conv_lhs` and `conv_rhs` variants to immediately apply either the
 `lhs` or `rhs` tactic.
 
-## What is `conv` mode?
+## What is `conv` mode
 
 `conv` mode is essentially the normal tactic mode but with two differences.
 
 1. Only "`conv` tactics" can appear in the `conv` block. These are tactics with syntax
    in the `conv` category.
 
-2. The goals are all of the form `⊢ lhs = ?rhs` with `?rhs` a metavariable, but the goals
+2. The goals are all of the form `⊢ lhs = rhs` with `rhs` a metavariable, but the goals
    are annotated in such a way that they display as `| lhs`.
 
 Each `conv` tactic is aware that the goal is of this form, and in addition to solving for the
-goal like normal, they also solve for the `?rhs` metavariable in some controlled way.
-For example, the `rfl` tactic uses `rfl` to solve the goal, which sets `?rhs := lhs`.
-Other tactics, like `congr`, partially solve for `?rhs` and create new goal metavariables
+goal like normal, they also solve for the `rhs` metavariable in some controlled way.
+For example, the `rfl` tactic uses `rfl` to solve the goal, which sets `rhs := lhs`.
+Other tactics, like `congr`, partially solve for `rhs` and create new goal metavariables
 for each unsolved-for hole.
 
 Once all the tactics have had a chance to run, `conv` mode itself uses `rfl` to solve
@@ -70,8 +70,8 @@ in Lean 4 core.
 * `skip` does nothing. It can be used to be the single tactic in an otherwise empty `conv` block.
   It does *not* skip a `conv` goal.
 
-* `rfl` skips/closes a `conv` goal by using `rfl`. (Remember, the actual goal is `⊢ lhs = ?rhs`, so
-  this sets `?rhs := lhs` and uses `rfl` to prove `lhs = lhs`.)
+* `rfl` skips/closes a `conv` goal by using `rfl`. (Remember, the actual goal is `⊢ lhs = rhs`, so
+  this sets `rhs := lhs` and uses `rfl` to prove `lhs = lhs`.)
 
 * `conv => convSeq` is a nested `conv`. It uses `conv` to change the current goal without
   closing it. For example, this is how you can do a `conv`-targeted rewrite of the current
@@ -110,7 +110,7 @@ in Lean 4 core.
 
 * `conv1 <;> conv2` is for running `conv1` and running `conv2` on every goal produced by `conv`.
 
-* `tactic => tacticSeq` converts the goal into `⊢ lhs = ?rhs` form and applies the tactic sequence.
+* `tactic => tacticSeq` converts the goal into `⊢ lhs = rhs` form and applies the tactic sequence.
   The tactic does not have to solve the goal completely, and remaining goals are turned back
   into `conv` goals. (Internal: there's also a `tactic' => tacticSeq` that does not remove
   the `conv` annotations from the goal before applying the tactic sequence.)
@@ -169,13 +169,13 @@ in Lean 4 core.
 
 * `simp_match` simplifies `match` expressions.
 
-* `apply e` applies `e` to the goal (which remember is `⊢ lhs = ?rhs`) using the `apply` tactic.
+* `apply e` applies `e` to the goal (which remember is `⊢ lhs = rhs`) using the `apply` tactic.
   Strange results may occur if the hypotheses of `e` are not equalities.
 
-* `refine e` applies `e` to the goal (which remember is `⊢ lhs = ?rhs`) using the `refine` tactic.
+* `refine e` applies `e` to the goal (which remember is `⊢ lhs = rhs`) using the `refine` tactic.
   Strange results may occur if the placeholders in `e` are not equalities.
 
-* `exact e` closes the goal, where `e : lhs = ?rhs`. (Batteries)
+* `exact e` closes the goal, where `e : lhs = rhs`. (Batteries)
 
 * Mathlib provides a number of tactics as `conv` tactics:
   * `abel` and `abel_nf`

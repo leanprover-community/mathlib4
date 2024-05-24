@@ -18,8 +18,8 @@ example (f : ℕ → ℕ) (h : f x = f y) : x = y := by
     exact test_sorry
 
 example (f : ℕ → ℕ → ℕ) (h : f 1 x = f 1 y) (hinj : ∀ n, Injective (f n)) : x = y := by
-  apply_fun f ?foo
-  guard_target = f ?foo x = f ?foo y
+  apply_fun f foo
+  guard_target = f foo x = f foo y
   case foo => exact 1
   · exact h
   · apply hinj
@@ -50,8 +50,8 @@ example (f : ℕ → ℕ) (h : f x = f y) (hinj : Injective f) : x = y := by
 
 -- Make sure named holes generate new goals for `≠`
 example (f : ℕ → ℕ → ℕ) (h : f 1 x ≠ f 1 y) : x ≠ y := by
-  apply_fun f ?foo
-  guard_target = f ?foo x ≠ f ?foo y
+  apply_fun f foo
+  guard_target = f foo x ≠ f foo y
   case foo => exact 1
   assumption
 

@@ -21,7 +21,7 @@ on intervals.
 
 ## Main results
 
-* `IsPreconnected_I??` : all intervals `I??` are preconnected,
+* `IsPreconnected_I` : all intervals `I` are preconnected,
 * `IsPreconnected.intermediate_value`, `intermediate_value_univ` : Intermediate Value Theorem for
   connected sets and connected spaces, respectively;
 * `intermediate_value_Icc`, `intermediate_value_Icc'`: Intermediate Value Theorem for functions

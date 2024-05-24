@@ -206,7 +206,7 @@ theorem det_toMatrix (b : Basis ι A M) (f : M →ₗ[A] M) :
   haveI := Classical.decEq M
   rw [det_eq_det_toMatrix_of_finset b.reindexFinsetRange]
   -- Porting note: moved out of `rw` due to error
-  -- typeclass instance problem is stuck, it is often due to metavariables `DecidableEq ?m.628881`
+  -- typeclass instance problem is stuck, it is often due to metavariables `DecidableEq m.628881`
   apply det_toMatrix_eq_det_toMatrix b
 #align linear_map.det_to_matrix LinearMap.det_toMatrix
 

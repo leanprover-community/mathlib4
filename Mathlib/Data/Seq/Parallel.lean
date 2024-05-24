@@ -80,7 +80,7 @@ theorem terminates_parallel.aux :
       split <;> simp
     · cases' IH m with a' e
       simp only [parallel.aux2, rmap, List.foldr_cons]
-      simp? [parallel.aux2] at e says simp only [parallel.aux2, rmap] at e
+      simp [parallel.aux2] at e says simp only [parallel.aux2, rmap] at e
       rw [e]
       exact ⟨a', rfl⟩
   · intro s IH l S m
@@ -124,7 +124,7 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
     Terminates (parallel S) := by
   suffices
     ∀ (n) (l : List (Computation α)) (S c),
-      c ∈ l ∨ some (some c) = Seq.get? S n → Terminates c → Terminates (corec parallel.aux1 (l, S))
+      c ∈ l ∨ some (some c) = Seq.get S n → Terminates c → Terminates (corec parallel.aux1 (l, S))
     from
     let ⟨n, h⟩ := h
     this n [] S c (Or.inr h) T
@@ -172,7 +172,7 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
         rw [a]
         cases' S with f al
         rfl
-      induction' e : Seq.get? S 0 with o
+      induction' e : Seq.get S 0 with o
       · have D : Seq.destruct S = none := by
           dsimp [Seq.destruct]
           rw [e]
@@ -224,7 +224,7 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
           apply ret_mem
         · intro a' h
           rcases h with ⟨d, dm, ad⟩
-          simp? at dm says simp only [List.mem_cons] at dm
+          simp at dm says simp only [List.mem_cons] at dm
           cases' dm with e dl
           · rw [e] at ad
             refine ⟨c, List.mem_cons_self _ _, _⟩

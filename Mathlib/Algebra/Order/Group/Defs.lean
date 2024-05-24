@@ -142,7 +142,7 @@ theorem le_inv_mul_iff_le : 1 ≤ b⁻¹ * a ↔ b ≤ a := by
 
 @[to_additive]
 theorem inv_mul_le_one_iff : a⁻¹ * b ≤ 1 ↔ b ≤ a :=
-  -- Porting note: why is the `_root_` needed?
+  -- Porting note: why is the `_root_` needed
   _root_.trans inv_mul_le_iff_le_mul <| by rw [mul_one]
 #align inv_mul_le_one_iff inv_mul_le_one_iff
 #align neg_add_nonpos_iff neg_add_nonpos_iff
@@ -758,7 +758,7 @@ theorem div_le_iff_le_mul : a / c ≤ b ↔ a ≤ b * c := by
 attribute [simp] div_le_iff_le_mul
 
 -- TODO: Should we get rid of `sub_le_iff_le_add` in favor of
--- (a renamed version of) `tsub_le_iff_right`?
+-- (a renamed version of) `tsub_le_iff_right`
 -- see Note [lower instance priority]
 instance (priority := 100) AddGroup.toHasOrderedSub {α : Type*} [AddGroup α] [LE α]
     [CovariantClass α α (swap (· + ·)) (· ≤ ·)] : OrderedSub α :=
@@ -1070,7 +1070,7 @@ theorem div_le_inv_mul_iff [CovariantClass α α (swap (· * ·)) (· ≤ ·)] :
 #align div_le_inv_mul_iff div_le_inv_mul_iff
 #align sub_le_neg_add_iff sub_le_neg_add_iff
 
--- What is the point of this lemma?  See comment about `div_le_inv_mul_iff` above.
+-- What is the point of this lemma  See comment about `div_le_inv_mul_iff` above.
 -- Note: we intentionally don't have `@[simp]` for the additive version,
 -- since the LHS simplifies with `tsub_le_iff_right`
 @[to_additive]

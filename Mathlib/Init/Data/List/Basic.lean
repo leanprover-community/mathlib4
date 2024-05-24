@@ -19,7 +19,7 @@ universe u v w
 
 namespace List
 
-#align list.nth List.get?
+#align list.nth List.get
 
 /-- The head of a list, or the default element of the type is the list is `nil`. -/
 def headI [Inhabited α] : List α → α

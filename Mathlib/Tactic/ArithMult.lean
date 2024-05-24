@@ -30,7 +30,7 @@ macro (name := arith_mult) "arith_mult" c:Aesop.tactic_clause* : tactic =>
   { aesop $c* (config :=
     { destructProductsTransparency := .reducible,
       applyHypsTransparency := .default,
-      introsTransparency? := some .reducible,
+      introsTransparency := some .reducible,
       enableSimp := false } )
   (rule_sets := [$(Lean.mkIdent `IsMultiplicative):ident])})
 
@@ -38,6 +38,6 @@ macro (name := arith_mult) "arith_mult" c:Aesop.tactic_clause* : tactic =>
 `arith_mult` solves goals of the form `IsMultiplicative f` for `f : ArithmeticFunction R`
 by applying lemmas tagged with the user attribute `arith_mult`, and prints out the generated
 proof term. -/
-macro (name := arith_mult?) "arith_mult?" c:Aesop.tactic_clause* : tactic =>
+macro (name := arith_mult) "arith_mult" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
   { show_term { arith_mult $c* } })

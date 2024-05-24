@@ -20,9 +20,9 @@ open Lean Elab Tactic Meta
 /-- Close a goal of the form `optParam α a` or `autoParam α stx` by using `a`. -/
 elab (name := inferOptParam) "infer_param" : tactic => do
   let tgt ← getMainTarget
-  if let some val := tgt.getOptParamDefault? then
+  if let some val := tgt.getOptParamDefault then
     liftMetaTactic fun goal => do goal.assign val; pure []
-  else if let some (.const tacticDecl ..) := tgt.getAutoParamTactic? then
+  else if let some (.const tacticDecl ..) := tgt.getAutoParamTactic then
     match evalSyntaxConstant (← getEnv) (← getOptions) tacticDecl with
     | .error err => throwError err
     | Except.ok tacticSyntax =>

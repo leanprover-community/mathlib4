@@ -30,8 +30,8 @@ open scoped Classical
 open RCLike
 
 library_note "RCLike instance"/--
-This instance generates a type-class problem with a metavariable `?m` that should satisfy
-`RCLike ?m`. Since this can only be satisfied by `ℝ` or `ℂ`, this does not cause problems. -/
+This instance generates a type-class problem with a metavariable `m` that should satisfy
+`RCLike m`. Since this can only be satisfied by `ℝ` or `ℂ`, this does not cause problems. -/
 
 /-- An `RCLike` field is finite-dimensional over `ℝ`, since it is spanned by `{1, I}`. -/
 -- Porting note(#12094): removed nolint; dangerous_instance linter not ported yet
@@ -48,8 +48,8 @@ variable [NormedAddCommGroup E] [NormedSpace K E]
 
 /-- A finite dimensional vector space over an `RCLike` is a proper metric space.
 
-This is not an instance because it would cause a search for `FiniteDimensional ?x E` before
-`RCLike ?x`. -/
+This is not an instance because it would cause a search for `FiniteDimensional x E` before
+`RCLike x`. -/
 theorem proper_rclike [FiniteDimensional K E] : ProperSpace E := by
   letI : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ K E
   letI : FiniteDimensional ℝ E := FiniteDimensional.trans ℝ K E

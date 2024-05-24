@@ -22,7 +22,7 @@ For a more detailed overview of one-dimensional derivatives in mathlib, see the 
 ## TODO
 
 * Add results about multivariable polynomials.
-* Generalize some (most?) results to an algebra over the base field.
+* Generalize some (most) results to an algebra over the base field.
 
 ## Keywords
 

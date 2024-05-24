@@ -362,7 +362,7 @@ notation:25 (name := «DistribMulActionHomLocal≺»)
 notation:25 (name := «DistribMulActionHomIdLocal≺»)
   A " →+[" M:25 "] " B:0 => DistribMulActionHom (MonoidHom.id M) A B
 
--- QUESTION/TODO : Impose that `φ` is a morphism of monoids?
+-- QUESTION/TODO : Impose that `φ` is a morphism of monoids
 
 /-- `DistribMulActionSemiHomClass F φ A B` states that `F` is a type of morphisms
   preserving the additive monoid structure and equivariant with respect to `φ`.

@@ -277,7 +277,7 @@ theorem nontrivial_of_nontrivial (hs : s.Nontrivial) : Nontrivial α :=
 #align set.nontrivial_of_nontrivial Set.nontrivial_of_nontrivial
 
 -- Porting note: simp_rw broken here
--- Perhaps review after https://github.com/leanprover/lean4/issues/1937?
+-- Perhaps review after https://github.com/leanprover/lean4/issues/1937
 /-- `s`, coerced to a type, is a nontrivial type if and only if `s` is a nontrivial set. -/
 @[simp, norm_cast]
 theorem nontrivial_coe_sort {s : Set α} : Nontrivial s ↔ s.Nontrivial := by

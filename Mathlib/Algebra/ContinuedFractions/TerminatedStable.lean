@@ -44,7 +44,7 @@ theorem continuantsAux_stable_of_terminated (n_lt_m : n < m) (terminated_at_n : 
 
 theorem convergents'Aux_stable_step_of_terminated {s : Stream'.Seq <| Pair K}
     (terminated_at_n : s.TerminatedAt n) : convergents'Aux s (n + 1) = convergents'Aux s n := by
-  change s.get? n = none at terminated_at_n
+  change s.get n = none at terminated_at_n
   induction n generalizing s with
   | zero => simp only [convergents'Aux, terminated_at_n, Stream'.Seq.head]
   | succ n IH =>

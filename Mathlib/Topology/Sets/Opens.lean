@@ -44,7 +44,7 @@ We define order structures on both `Opens α` (`CompleteLattice`, `Frame`) and `
 
 ## TODO
 
-- Rename `TopologicalSpace.Opens` to `Open`?
+- Rename `TopologicalSpace.Opens` to `Open`
 - Port the `auto_cases` tactic version (as a plugin if the ported `auto_cases` will allow plugins).
 -/
 
@@ -100,7 +100,7 @@ protected theorem nonempty_coeSort {U : Opens α} : Nonempty U ↔ (U : Set α).
   Set.nonempty_coe_sort
 #align topological_space.opens.nonempty_coe_sort TopologicalSpace.Opens.nonempty_coeSort
 
--- Porting note (#10756): new lemma; todo: prove it for a `SetLike`?
+-- Porting note (#10756): new lemma; todo: prove it for a `SetLike`
 protected theorem nonempty_coe {U : Opens α} : (U : Set α).Nonempty ↔ ∃ x, x ∈ U :=
   Iff.rfl
 

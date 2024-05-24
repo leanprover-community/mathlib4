@@ -20,9 +20,9 @@ private def setOption [Monad m] [MonadError m]
   let val ← match val with
     | Syntax.ident _ _ `true _  => pure <| DataValue.ofBool true
     | Syntax.ident _ _ `false _ => pure <| DataValue.ofBool false
-    | _ => match val.isNatLit? with
+    | _ => match val.isNatLit with
       | some num => pure <| DataValue.ofNat num
-      | none => match val.isStrLit? with
+      | none => match val.isStrLit with
         | some str => pure <| DataValue.ofString str
         | none => throwError "unsupported option value {val}"
   pure <| opts.insert name.getId val

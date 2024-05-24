@@ -904,7 +904,7 @@ def firstDart (p : G.Walk v w) (hp : ¬ p.Nil) : G.Dart where
 lemma edge_firstDart (p : G.Walk v w) (hp : ¬ p.Nil) :
     (p.firstDart hp).edge = s(v, p.sndOfNotNil hp) := rfl
 
-variable {x y : V} -- TODO: rename to u, v, w instead?
+variable {x y : V} -- TODO: rename to u, v, w instead
 
 @[simp] lemma cons_tail_eq (p : G.Walk x y) (hp : ¬ p.Nil) :
     cons (p.adj_sndOfNotNil hp) (p.tail hp) = p :=
@@ -1859,7 +1859,7 @@ protected theorem IsCycle.transfer {q : G.Walk u u} (qc : q.IsCycle) (hq) :
   cases q with
   | nil => simp at qc
   | cons _ q =>
-    simp only [edges_cons, List.find?, List.mem_cons, forall_eq_or_imp, mem_edgeSet] at hq
+    simp only [edges_cons, List.find, List.mem_cons, forall_eq_or_imp, mem_edgeSet] at hq
     simp only [Walk.transfer, cons_isCycle_iff, edges_transfer q hq.2] at qc ⊢
     exact ⟨qc.1.transfer hq.2, qc.2⟩
 #align simple_graph.walk.is_cycle.transfer SimpleGraph.Walk.IsCycle.transfer

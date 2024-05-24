@@ -27,7 +27,7 @@ This file develops the basic, abstract theory of these schemes and the functions
 
 We consider end-appending to be the fundamental way to build lists (say on `β`) inductively,
 as this interacts better with the topology on `ℕ → β`.
-As a result, functions like `List.get?` or `Stream'.take` do not have their intended meaning
+As a result, functions like `List.get` or `Stream'.take` do not have their intended meaning
 in this file. See instead `PiNat.res`.
 
 ## References

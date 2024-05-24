@@ -89,7 +89,7 @@ example (p : Prop) (h : False) : p := by
 
 example (hp : p) (hq : q) : p ∧ q := by
   -- causes goal to have a type that's a metavariable:
-  suffices h : ?foo by exact h
+  suffices h : foo by exact h
   tauto
 
 -- Checking `tauto` can deal with annotations:

@@ -15,9 +15,9 @@ namespace Lean.Elab.Term
 but while setting `errToSorry` to false.
 Typeclass failures result in plain metavariables.
 Instantiates all assigned metavariables. -/
-def elabPattern (patt : Term) (expectedType? : Option Expr) : TermElabM Expr := do
+def elabPattern (patt : Term) (expectedType : Option Expr) : TermElabM Expr := do
   withTheReader Term.Context ({ · with ignoreTCFailures := true, errToSorry := false }) <|
     withSynthesizeLight do
-      let t ← elabTerm patt expectedType?
+      let t ← elabTerm patt expectedType
       synthesizeSyntheticMVars (mayPostpone := false) (ignoreStuckTC := true)
       instantiateMVars t

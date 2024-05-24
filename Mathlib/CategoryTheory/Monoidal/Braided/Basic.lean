@@ -744,7 +744,7 @@ monoidal opposite, upgraded to a braided functor. -/
   μ X Y := (β_ (mop X) (mop Y)).hom
   ε := 𝟙 (𝟙_ Cᴹᵒᵖ)
   -- we could make this fully automated if we mark `← yang_baxter_assoc` as simp
-  -- should it be marked as such?
+  -- should it be marked as such
   associativity X Y Z := by
     simp [← yang_baxter_assoc]
   __ := mopFunctor C

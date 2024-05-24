@@ -95,7 +95,7 @@ protected theorem cfc (f : C(S, R)) (h_isom : Isometry (algebraMap R S))
     ContinuousFunctionalCalculus R p where
   exists_cfc_of_predicate a ha := by
     refine ⟨((h a).mp ha).2.starAlgHom (cfcHom ((h a).mp ha).1 (R := S)),
-      ?hom_closedEmbedding, ?hom_id, ?hom_map_spectrum, ?predicate_hom⟩
+      hom_closedEmbedding, hom_id, hom_map_spectrum, predicate_hom⟩
     case hom_closedEmbedding =>
       exact ((h a).mp ha).2.closedEmbedding_starAlgHom (cfcHom_closedEmbedding ((h a).mp ha).1)
         h_isom (h_cpct := h_cpct a ((h a).mp ha).1)

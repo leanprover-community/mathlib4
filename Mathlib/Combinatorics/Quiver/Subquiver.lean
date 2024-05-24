@@ -52,7 +52,7 @@ instance {V} [Quiver V] : Top (WideSubquiver V) :=
 noncomputable instance {V} [Quiver V] : Inhabited (WideSubquiver V) :=
   ⟨⊤⟩
 
--- TODO Unify with `CategoryTheory.Arrow`? (The fields have been named to match.)
+-- TODO Unify with `CategoryTheory.Arrow` (The fields have been named to match.)
 /-- `Total V` is the type of _all_ arrows of `V`. -/
 -- Porting note: no hasNonemptyInstance linter yet
 @[ext]

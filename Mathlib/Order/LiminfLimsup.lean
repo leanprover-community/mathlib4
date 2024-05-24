@@ -407,7 +407,7 @@ macro "isBoundedDefault" : tactic =>
     | apply isBounded_le_of_top
     | apply isBounded_ge_of_bot)
 
--- Porting note: The above is a lean 4 reconstruction of (note that applyc is not available (yet?)):
+-- Porting note: The above is a lean 4 reconstruction of (note that applyc is not available (yet)):
 -- unsafe def is_bounded_default : tactic Unit :=
 --   tactic.applyc `` is_cobounded_le_of_bot <|>
 --     tactic.applyc `` is_cobounded_ge_of_top <|>

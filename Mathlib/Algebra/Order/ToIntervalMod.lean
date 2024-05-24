@@ -931,7 +931,7 @@ theorem btw_coe_iff' {x₁ x₂ x₃ : α} :
   Iff.rfl
 #align quotient_add_group.btw_coe_iff' QuotientAddGroup.btw_coe_iff'
 
--- maybe harder to use than the primed one?
+-- maybe harder to use than the primed one
 theorem btw_coe_iff {x₁ x₂ x₃ : α} :
     Btw.btw (x₁ : α ⧸ AddSubgroup.zmultiples p) x₂ x₃ ↔
       toIcoMod hp'.out x₁ x₂ ≤ toIocMod hp'.out x₁ x₃ :=

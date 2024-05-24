@@ -129,14 +129,14 @@ noncomputable instance : OrderedSub ℝ≥0∞ := inferInstanceAs (OrderedSub (W
 noncomputable instance : LinearOrderedAddCommMonoidWithTop ℝ≥0∞ :=
   inferInstanceAs (LinearOrderedAddCommMonoidWithTop (WithTop ℝ≥0))
 
--- Porting note: rfc: redefine using pattern matching?
+-- Porting note: rfc: redefine using pattern matching
 noncomputable instance : Inv ℝ≥0∞ := ⟨fun a => sInf { b | 1 ≤ a * b }⟩
 
 noncomputable instance : DivInvMonoid ℝ≥0∞ where
 
 variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
 
--- Porting note: are these 2 instances still required in Lean 4?
+-- Porting note: are these 2 instances still required in Lean 4
 instance covariantClass_mul_le : CovariantClass ℝ≥0∞ ℝ≥0∞ (· * ·) (· ≤ ·) := inferInstance
 #align ennreal.covariant_class_mul_le ENNReal.covariantClass_mul_le
 

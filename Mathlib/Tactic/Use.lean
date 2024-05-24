@@ -98,10 +98,10 @@ def useLoop (eager : Bool) (gs : List MVarId) (args : List Term) (acc insts : Li
     let refineArg ← `(tactic| refine ($arg : $(← Term.exprToSyntax (← g.getType))))
     if eager then
       -- In eager mode, first try refining with the argument before applying the constructor
-      if let some newGoals ← observing? (run g do withoutRecover <| evalTactic refineArg) then
+      if let some newGoals ← observing (run g do withoutRecover <| evalTactic refineArg) then
         return ← useLoop eager gs' args' (acc ++ newGoals) insts
     if eager || gs'.isEmpty then
-      if let some (expl, impl, insts') ← observing? do
+      if let some (expl, impl, insts') ← observing do
                 try applyTheConstructor g
                 catch e => trace[tactic.use] "Constructor. {e.toMessageData}"; throw e then
         trace[tactic.use] "expl.length = {expl.length}, impl.length = {impl.length}"
@@ -118,7 +118,7 @@ def runUse (eager : Bool) (discharger : TacticM Unit) (args : List Term) : Tacti
     -- Try synthesizing instance arguments
     for inst in insts do
       if !(← inst.isAssigned) then
-        discard <| inst.withContext <| observing? do inst.assign (← synthInstance (← inst.getType))
+        discard <| inst.withContext <| observing do inst.assign (← synthInstance (← inst.getType))
     -- Set the goals.
     setGoals (egoals ++ acc)
     pruneSolvedGoals
@@ -142,12 +142,12 @@ macro_rules | `(tactic| use_discharger) => `(tactic| rfl)
 macro_rules | `(tactic| use_discharger) => `(tactic| assumption)
 macro_rules | `(tactic| use_discharger) => `(tactic| apply True.intro)
 
-/-- Returns a `TacticM Unit` that either runs the tactic sequence from `discharger?` if it's
+/-- Returns a `TacticM Unit` that either runs the tactic sequence from `discharger` if it's
 non-`none`, or it does `try with_reducible use_discharger`. -/
-def mkUseDischarger (discharger? : Option (TSyntax ``Parser.Tactic.discharger)) :
+def mkUseDischarger (discharger : Option (TSyntax ``Parser.Tactic.discharger)) :
     TacticM (TacticM Unit) := do
   let discharger ←
-    if let some disch := discharger? then
+    if let some disch := discharger then
       match disch with
       | `(Parser.Tactic.discharger| ($_ := $d)) => `(tactic| ($d))
       | _ => throwUnsupportedSyntax
@@ -194,9 +194,9 @@ To turn off the discharger and keep all goals, use `(discharger := skip)`.
 To allow "heavy refls", use `(discharger := try use_discharger)`.
 -/
 elab (name := useSyntax)
-    "use" discharger?:(Parser.Tactic.discharger)? ppSpace args:term,+ : tactic => do
-  runUse false (← mkUseDischarger discharger?) args.getElems.toList
+    "use" discharger:(Parser.Tactic.discharger) ppSpace args:term,+ : tactic => do
+  runUse false (← mkUseDischarger discharger) args.getElems.toList
 
 @[inherit_doc useSyntax]
-elab "use!" discharger?:(Parser.Tactic.discharger)? ppSpace args:term,+ : tactic => do
-  runUse true (← mkUseDischarger discharger?) args.getElems.toList
+elab "use!" discharger:(Parser.Tactic.discharger) ppSpace args:term,+ : tactic => do
+  runUse true (← mkUseDischarger discharger) args.getElems.toList

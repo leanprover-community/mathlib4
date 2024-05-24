@@ -167,8 +167,8 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
   rw [← this, add_left_inj]
   choose f hf hf' using (hG.existsUnique_path · default)
   refine Eq.symm <| Finset.card_congr
-          (fun w hw => ((f w).firstDart <| ?notNil).edge)
-          (fun a ha => ?memEdges) ?inj ?surj
+          (fun w hw => ((f w).firstDart <| notNil).edge)
+          (fun a ha => memEdges) inj surj
   case notNil => exact not_nil_of_ne (by simpa using hw)
   case memEdges => simp
   case inj =>
@@ -197,7 +197,7 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
           ← hf' _ (.cons h .nil) (IsPath.nil.cons <| by simpa using h.ne),
           length_cons, length_nil] at h'
       simp [Nat.le_zero, Nat.one_ne_zero] at h'
-    rw [← hf' _ (.cons h.symm (f x)) ((cons_isPath_iff _ _).2 ⟨hf _, fun hy => ?contra⟩)]
+    rw [← hf' _ (.cons h.symm (f x)) ((cons_isPath_iff _ _).2 ⟨hf _, fun hy => contra⟩)]
     · rfl
     case contra =>
       suffices (f x).takeUntil y hy = .cons h .nil by

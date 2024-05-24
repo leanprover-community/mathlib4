@@ -268,7 +268,7 @@ set_option linter.uppercaseLean3 false in
 #align mvpfunctor.W_map_W_mk MvPFunctor.w_map_wMk
 
 -- TODO: this technical theorem is used in one place in constructing the initial algebra.
--- Can it be avoided?
+-- Can it be avoided
 /-- Constructor of a value of `P.obj (α ::: β)` from components.
 Useful to avoid complicated type annotation -/
 abbrev objAppend1 {α : TypeVec n} {β : Type u} (a : P.A) (f' : P.drop.B a ⟹ α)

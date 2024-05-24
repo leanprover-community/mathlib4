@@ -1165,7 +1165,7 @@ protected noncomputable def span : Basis ι R (span R (range v)) :=
     have h₂ : map (Submodule.subtype (span R (range v))) (span R (range fun i => ⟨v i, this i⟩)) =
         span R (range v) := by
       rw [← span_image, Submodule.coeSubtype]
-      -- Porting note: why doesn't `rw [h₁]` work here?
+      -- Porting note: why doesn't `rw [h₁]` work here
       exact congr_arg _ h₁
     have h₃ : (x : M) ∈ map (Submodule.subtype (span R (range v)))
         (span R (Set.range fun i => Subtype.mk (v i) _)) := by
@@ -1527,7 +1527,7 @@ lemma basis_finite_of_finite_spans (w : Set M) (hw : w.Finite) (s : span R w = �
   exact b.linearIndependent.not_mem_span_image nm k'
 #align basis_fintype_of_finite_spans basis_finite_of_finite_spansₓ
 
--- From [Les familles libres maximales d'un module ont-elles le meme cardinal?][lazarus1973]
+-- From [Les familles libres maximales d'un module ont-elles le meme cardinal][lazarus1973]
 /-- Over any ring `R`, if `b` is a basis for a module `M`,
 and `s` is a maximal linearly independent set,
 then the union of the supports of `x ∈ s` (when written out in the basis `b`) is all of `b`.

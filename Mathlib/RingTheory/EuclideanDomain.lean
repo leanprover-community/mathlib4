@@ -15,7 +15,7 @@ import Mathlib.RingTheory.PrincipalIdealDomain
 
 Various about Euclidean domains are proved; all of them seem to be true
 more generally for principal ideal domains, so these lemmas should
-probably be reproved in more generality and this file perhaps removed?
+probably be reproved in more generality and this file perhaps removed
 
 ## Tags
 
@@ -94,7 +94,7 @@ theorem gcd_isUnit_iff [DecidableEq α] {x y : α} : IsUnit (gcd x y) ↔ IsCopr
   _root_.gcd_isUnit_iff x y
 #align euclidean_domain.gcd_is_unit_iff EuclideanDomain.gcd_isUnit_iff
 
--- this should be proved for UFDs surely?
+-- this should be proved for UFDs surely
 theorem isCoprime_of_dvd {x y : α} (nonzero : ¬(x = 0 ∧ y = 0))
     (H : ∀ z ∈ nonunits α, z ≠ 0 → z ∣ x → ¬z ∣ y) : IsCoprime x y :=
   letI := Classical.decEq α
@@ -102,7 +102,7 @@ theorem isCoprime_of_dvd {x y : α} (nonzero : ¬(x = 0 ∧ y = 0))
   _root_.isCoprime_of_dvd x y nonzero H
 #align euclidean_domain.is_coprime_of_dvd EuclideanDomain.isCoprime_of_dvd
 
--- this should be proved for UFDs surely?
+-- this should be proved for UFDs surely
 theorem dvd_or_coprime (x y : α) (h : Irreducible x) :
     x ∣ y ∨ IsCoprime x y :=
   letI := Classical.decEq α

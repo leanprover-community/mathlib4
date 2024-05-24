@@ -114,7 +114,7 @@ any element of `l` found at index `ix` can be found at index `f ix` in `l'`,
 then `Sublist l l'`.
 -/
 theorem sublist_of_orderEmbedding_get_eq {l l' : List α} (f : ℕ ↪o ℕ)
-    (hf : ∀ ix : ℕ, l.get? ix = l'.get? (f ix)) : l <+ l' := by
+    (hf : ∀ ix : ℕ, l.get ix = l'.get (f ix)) : l <+ l' := by
   induction' l with hd tl IH generalizing l' f
   · simp
   have : some hd = _ := hf 0
@@ -126,9 +126,9 @@ theorem sublist_of_orderEmbedding_get_eq {l l' : List α} (f : ℕ ↪o ℕ)
       rw [Nat.sub_le_sub_iff_right, OrderEmbedding.le_iff_le, Nat.succ_le_succ_iff]
       rw [Nat.succ_le_iff, OrderEmbedding.lt_iff_lt]
       exact b.succ_pos
-  have : ∀ ix, tl.get? ix = (l'.drop (f 0 + 1)).get? (f' ix) := by
+  have : ∀ ix, tl.get ix = (l'.drop (f 0 + 1)).get (f' ix) := by
     intro ix
-    rw [List.get_drop, OrderEmbedding.coe_ofMapLEIff, Nat.add_sub_cancel', ← hf, List.get?]
+    rw [List.get_drop, OrderEmbedding.coe_ofMapLEIff, Nat.add_sub_cancel', ← hf, List.get]
     rw [Nat.succ_le_iff, OrderEmbedding.lt_iff_lt]
     exact ix.succ_pos
   rw [← List.take_append_drop (f 0 + 1) l', ← List.singleton_append]
@@ -142,7 +142,7 @@ there is `f`, an order-preserving embedding of `ℕ` into `ℕ` such that
 any element of `l` found at index `ix` can be found at index `f ix` in `l'`.
 -/
 theorem sublist_iff_exists_orderEmbedding_get_eq {l l' : List α} :
-    l <+ l' ↔ ∃ f : ℕ ↪o ℕ, ∀ ix : ℕ, l.get? ix = l'.get? (f ix) := by
+    l <+ l' ↔ ∃ f : ℕ ↪o ℕ, ∀ ix : ℕ, l.get ix = l'.get (f ix) := by
   constructor
   · intro H
     induction' H with xs ys y _H IH xs ys x _H IH

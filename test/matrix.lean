@@ -134,7 +134,7 @@ example {a b c d e f g h : α} : ![a, b, c, d, e, f, g, h] 99 = d := by simp
 
 example {α : Type _} [CommRing α] {a b c d : α} :
     Matrix.det !![a, b; c, d] = a * d - b * c := by
-  simp? [Matrix.det_succ_row_zero, Fin.sum_univ_succ] says
+  simp [Matrix.det_succ_row_zero, Fin.sum_univ_succ] says
     simp only [det_succ_row_zero, Nat.succ_eq_add_one, Nat.reduceAdd,
       Fin.isValue, of_apply, cons_val', empty_val', cons_val_fin_one, cons_val_zero, det_unique,
       Fin.default_eq_zero, submatrix_apply, Fin.succ_zero_eq_one, cons_val_one, head_fin_const,
@@ -146,7 +146,7 @@ example {α : Type _} [CommRing α] {a b c d : α} :
 example {α : Type _} [CommRing α] {a b c d e f g h i : α} :
     Matrix.det !![a, b, c; d, e, f; g, h, i] =
       a * e * i - a * f * h - b * d * i + b * f * g + c * d * h - c * e * g := by
-  simp? [Matrix.det_succ_row_zero, Fin.sum_univ_succ] says
+  simp [Matrix.det_succ_row_zero, Fin.sum_univ_succ] says
     simp only [det_succ_row_zero, Nat.succ_eq_add_one, Nat.reduceAdd,
       Fin.isValue, of_apply, cons_val', empty_val', cons_val_fin_one, cons_val_zero,
       submatrix_apply, Fin.succ_zero_eq_one, cons_val_one, head_cons, submatrix_submatrix,

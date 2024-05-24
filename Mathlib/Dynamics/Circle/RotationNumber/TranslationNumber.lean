@@ -102,7 +102,7 @@ preserving circle homeomorphisms for two reasons:
 Here are some short-term goals.
 
 * Introduce a structure or a typeclass for lifts of circle homeomorphisms. We use
-  `Units CircleDeg1Lift` for now, but it's better to have a dedicated type (or a typeclass?).
+  `Units CircleDeg1Lift` for now, but it's better to have a dedicated type (or a typeclass).
 
 * Prove that the `SemiconjBy` relation on circle homeomorphisms is an equivalence relation.
 

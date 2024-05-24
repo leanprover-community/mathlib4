@@ -370,7 +370,7 @@ theorem EquicontinuousOn.isClosed_range_pi_of_uniformOnFun'
     (F_eqcont : ∀ K ∈ 𝔖, EquicontinuousOn F K)
     (H : IsClosed (range <| UniformOnFun.ofFun 𝔖 ∘ F)) :
     IsClosed (range <| (⋃₀ 𝔖).restrict ∘ F) := by
-  -- Do we have no equivalent of `nontriviality`?
+  -- Do we have no equivalent of `nontriviality`
   rcases isEmpty_or_nonempty α with _ | _
   · simp [isClosed_discrete]
   -- This follows from the previous lemmas and the characterization of the closure using filters.

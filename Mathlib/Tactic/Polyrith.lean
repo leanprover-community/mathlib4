@@ -170,7 +170,7 @@ inductive Source where
 def parseContext (only : Bool) (hyps : Array Expr) (tgt : Expr) :
     AtomM (Expr × Array (Source × Poly) × Poly) := do
   let fail {α} : AtomM α := throwError "polyrith failed: target is not an equality in semirings"
-  let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars tgt).eq? | fail
+  let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars tgt).eq | fail
   let .sort u ← instantiateMVars (← whnf (← inferType α)) | unreachable!
   let some v := u.dec | throwError "not a type{indentExpr α}"
   have α : Q(Type v) := α
@@ -181,7 +181,7 @@ def parseContext (only : Bool) (hyps : Array Expr) (tgt : Expr) :
   let rec
     /-- Parses a hypothesis and adds it to the `out` list. -/
     processHyp src ty out := do
-      if let some (β, e₁, e₂) := (← instantiateMVars ty).eq? then
+      if let some (β, e₁, e₂) := (← instantiateMVars ty).eq then
         if ← withTransparency (← read).red <| isDefEq α β then
           return out.push (src, (← parse sα c e₁).sub (← parse sα c e₂))
       pure out
@@ -200,13 +200,13 @@ def createSageArgs (trace : Bool) (α : Expr) (atoms : Nat)
   #[toString trace, toString α, toString atoms, hyps, toString tgt]
 
 /-- A JSON parser for `ℚ` specific to the return value of `polyrith_sage.py`. -/
-local instance : FromJson ℚ where fromJson?
-  | .arr #[a, b] => return (← fromJson? a : ℤ) / (← fromJson? b : ℕ)
+local instance : FromJson ℚ where fromJson
+  | .arr #[a, b] => return (← fromJson a : ℤ) / (← fromJson b : ℕ)
   | _ => .error "expected array with two elements"
 
 /-- Removes an initial `-` sign from a polynomial with negative leading coefficient. -/
-def Poly.unNeg? : Poly → Option Poly
-  | .mul a b => return .mul (← a.unNeg?) b
+def Poly.unNeg : Poly → Option Poly
+  | .mul a b => return .mul (← a.unNeg) b
   | .const i => if i < 0 then some (.const (-i)) else none
   | .neg p => p
   | _ => none
@@ -214,11 +214,11 @@ def Poly.unNeg? : Poly → Option Poly
 /-- Adds two polynomials, performing some simple simplifications for presentation like
 `a + -b = a - b`. -/
 def Poly.add' : Poly → Poly → Poly
-  | .const 0, p => match p.unNeg? with
+  | .const 0, p => match p.unNeg with
     | some np => .neg np
     | none => p
   | p, .const 0 => p
-  | a, b => match b.unNeg? with
+  | a, b => match b.unNeg with
     | some nb => a.sub nb
     | none => a.add b
 
@@ -231,10 +231,10 @@ def Poly.mul' : Poly → Poly → Poly
   | a, b => a.mul b
 
 /-- Extracts the divisor `c : ℕ` from a polynomial of the form `1/c * b`. -/
-def Poly.unDiv? : Poly → Option (Poly × ℕ)
-  | .mul a b => do let (a, r) ← a.unDiv?; return (.mul' a b, r)
+def Poly.unDiv : Poly → Option (Poly × ℕ)
+  | .mul a b => do let (a, r) ← a.unDiv; return (.mul' a b, r)
   | .const r => if r.num = 1 ∧ r.den ≠ 1 then some (.const r.num, r.den) else none
-  | .neg p => do let (p, r) ← p.unDiv?; return (.neg p, r)
+  | .neg p => do let (p, r) ← p.unDiv; return (.neg p, r)
   | _ => none
 
 /-- Constructs a power expression `v_i ^ j`, performing some simplifications in trivial cases. -/
@@ -248,11 +248,11 @@ def Poly.sumM [Monad m] (a : Array α) (f : α → m Poly) : m Poly :=
   a.foldlM (init := .const 0) fun p a => return p.add' (← f a)
 
 instance : FromJson Poly where
-  fromJson? j := do
-    Poly.sumM (← j.getArr?) fun j => do
-      let mut mon := .const (← fromJson? (← j.getArrVal? 1))
-      for j in ← (← j.getArrVal? 0).getArr? do
-        mon := mon.mul' (.pow' (← fromJson? (← j.getArrVal? 0)) (← fromJson? (← j.getArrVal? 1)))
+  fromJson j := do
+    Poly.sumM (← j.getArr) fun j => do
+      let mut mon := .const (← fromJson (← j.getArrVal 1))
+      for j in ← (← j.getArrVal 0).getArr do
+        mon := mon.mul' (.pow' (← fromJson (← j.getArrVal 0)) (← fromJson (← j.getArrVal 1)))
       pure mon
 
 /-- A schema for the data reported by the Sage calculation -/
@@ -286,11 +286,11 @@ structure SageError where
 /-- The result of a sage call. -/
 def SageResult := Except SageError SageSuccess
 
-instance : FromJson SageResult where fromJson? j := do
-  if let .ok true := fromJson? <| j.getObjValD "success" then
-    return .ok (← fromJson? j)
+instance : FromJson SageResult where fromJson j := do
+  if let .ok true := fromJson <| j.getObjValD "success" then
+    return .ok (← fromJson j)
   else
-    return .error (← fromJson? j)
+    return .error (← fromJson j)
 
 /--
 This tactic calls python from the command line with the args in `arg_list`.
@@ -305,7 +305,7 @@ def sageOutput (args : Array String) : IO SageResult := do
   if out.exitCode != 0 then
     throw <| IO.userError <|
       s!"scripts/polyrith_sage.py exited with code {out.exitCode}:\n\n{out.stderr}"
-  match Json.parse out.stdout >>= fromJson? with
+  match Json.parse out.stdout >>= fromJson with
   | .ok v => return v
   | .error e => throw <| .userError e
 
@@ -357,7 +357,7 @@ def polyrith (g : MVarId) (only : Bool) (hyps : Array Expr)
         let vars ← liftM <| (← get).atoms.mapM delab
         let p ← Poly.sumM (polys.zip hyps') fun (p, src, _) => do
           let h := .hyp (← delab (match src with | .input i => hyps[i]! | .fvar h => .fvar h))
-          pure <| match p.unDiv? with
+          pure <| match p.unDiv with
           | some (p, den) => (p.mul' h).div (.const den)
           | none => p.mul' h
         let stx := (withRef (← getRef) <| p.toSyntax vars).run
@@ -415,11 +415,11 @@ by polyrith only [scary c d, h]
 -- Try this: linear_combination scary c d + h
 ```
 -/
-syntax "polyrith" (&" only")? (" [" term,* "]")? : tactic
+syntax "polyrith" (&" only") (" [" term,* "]") : tactic
 
 open Elab Tactic
 elab_rules : tactic
-  | `(tactic| polyrith%$tk $[only%$onlyTk]? $[[$hyps,*]]?) => do
+  | `(tactic| polyrith%$tk $[only%$onlyTk] $[[$hyps,*]]) => do
     let hyps ← hyps.map (·.getElems) |>.getD #[] |>.mapM (elabTerm · none)
     let traceMe ← Lean.isTracingEnabledFor `Meta.Tactic.polyrith
     match ← polyrith (← getMainGoal) onlyTk.isSome hyps traceMe with

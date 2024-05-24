@@ -42,7 +42,7 @@ result, relying on the `Fintype` instance of a `Cycle.nodup` subtype.
 It is unclear if this works faster than the `Equiv.Perm.toCycle`, which relies
 on recursion over `Finset.univ`.
 Running `#eval` on even a simple noncyclic permutation `c[(1 : Fin 7), 2, 3] * c[0, 5]`
-to show it takes a long time. TODO: is this because computing the cycle factors is slow?
+to show it takes a long time. TODO: is this because computing the cycle factors is slow
 
 -/
 
@@ -530,7 +530,7 @@ notation3 (prettyPrint := false) "c["(l", "* => foldr (h t => List.cons h t) Lis
 
 unsafe instance repr_perm [Repr α] : Repr (Perm α) :=
   ⟨fun f _ => repr (Multiset.pmap (fun (g : Perm α) (hg : g.IsCycle) => isoCycle ⟨g, hg⟩)
-    (Perm.cycleFactorsFinset f).val -- toCycle is faster?
+    (Perm.cycleFactorsFinset f).val -- toCycle is faster
     fun _ hg => (mem_cycleFactorsFinset_iff.mp (Finset.mem_def.mpr hg)).left)⟩
 #align equiv.perm.repr_perm Equiv.Perm.repr_perm
 

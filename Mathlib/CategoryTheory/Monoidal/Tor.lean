@@ -19,7 +19,7 @@ It would be good to show that this is naturally isomorphic to the functor obtain
 by left-deriving in the first factor, instead.
 For now we define `Tor'` by left-deriving in the first factor,
 but showing `Tor C n ≅ Tor' C n` will require a bit more theory!
-Possibly it's best to axiomatize delta functors, and obtain a unique characterisation?
+Possibly it's best to axiomatize delta functors, and obtain a unique characterisation
 
 -/
 

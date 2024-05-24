@@ -56,7 +56,7 @@ example : TFAE [P, Q, R] := by
   tfae_finish
 ```
 -/
-syntax (name := tfaeHave) "tfae_have " (ident " : ")? num impArrow num : tactic
+syntax (name := tfaeHave) "tfae_have " (ident " : ") num impArrow num : tactic
 
 /--
 `tfae_finish` is used to close goals of the form `TFAE [P₁, P₂, ...]` once a sufficient collection
@@ -203,7 +203,7 @@ def mkImplType (Pi : Q(Prop)) (arr : TSyntax ``impArrow) (Pj : Q(Prop)) : MetaM 
 /-! # Tactic implementation -/
 
 elab_rules : tactic
-| `(tactic| tfae_have $[$h:ident : ]? $i:num $arr:impArrow $j:num) => do
+| `(tactic| tfae_have $[$h:ident : ] $i:num $arr:impArrow $j:num) => do
   let goal ← getMainGoal
   goal.withContext do
     let (_, tfaeList) ← getTFAEList (← goal.getType)

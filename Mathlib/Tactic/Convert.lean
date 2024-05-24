@@ -95,14 +95,14 @@ convert (config := {transparency := .default}) h
 ```
 These are passed to `congr!`. See `Congr!.Config` for options.
 -/
-syntax (name := convert) "convert" (Parser.Tactic.config)? " ←"? ppSpace term (" using " num)?
-  (" with" (ppSpace colGt rintroPat)*)? : tactic
+syntax (name := convert) "convert" (Parser.Tactic.config) " ←" ppSpace term (" using " num)
+  (" with" (ppSpace colGt rintroPat)*) : tactic
 
 elab_rules : tactic
-| `(tactic| convert $[$cfg:config]? $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
+| `(tactic| convert $[$cfg:config] $[←%$sym] $term $[using $n] $[with $ps*]) =>
   withMainContext do
     let config ← Congr!.elabConfig (mkOptionalNode cfg)
-    let patterns := (Lean.Elab.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
+    let patterns := (Lean.Elab.Tactic.RCases.expandRIntroPats (ps.getD #[])).toList
     let expectedType ← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))
     let (e, gs) ←
       withCollectingNewGoalsFrom (allowNaturalHoles := true) (tagSuffix := `convert) do
@@ -135,14 +135,14 @@ That is, `convert_to g using n` is equivalent to `convert (_ : g) using n`.
 The syntax for `convert_to` is the same as for `convert`, and it has variations such as
 `convert_to ← g` and `convert_to (config := {transparency := .default}) g`.
 -/
-syntax (name := convertTo) "convert_to" (Parser.Tactic.config)? " ←"? ppSpace term (" using " num)?
-  (" with" (ppSpace colGt rintroPat)*)? : tactic
+syntax (name := convertTo) "convert_to" (Parser.Tactic.config) " ←" ppSpace term (" using " num)
+  (" with" (ppSpace colGt rintroPat)*) : tactic
 
 macro_rules
-| `(tactic| convert_to $[$cfg]? $[←%$sym]? $term $[with $ps?*]?) =>
-  `(tactic| convert $[$cfg]? $[←%$sym]? (_ : $term) using 1 $[with $ps?*]?)
-| `(tactic| convert_to $[$cfg]? $[←%$sym]? $term using $n $[with $ps?*]?) =>
-  `(tactic| convert $[$cfg]? $[←%$sym]? (_ : $term) using $n $[with $ps?*]?)
+| `(tactic| convert_to $[$cfg] $[←%$sym] $term $[with $ps*]) =>
+  `(tactic| convert $[$cfg] $[←%$sym] (_ : $term) using 1 $[with $ps*])
+| `(tactic| convert_to $[$cfg] $[←%$sym] $term using $n $[with $ps*]) =>
+  `(tactic| convert $[$cfg] $[←%$sym] (_ : $term) using $n $[with $ps*])
 
 /--
 `ac_change g using n` is `convert_to g using n` followed by `ac_rfl`. It is useful for
@@ -153,9 +153,9 @@ example (a b c d e f g N : ℕ) : (a + b) + (c + d) + (e + f) + g ≤ N := by
   -- ⊢ a + d + e + f + c + g + b ≤ N
 ```
 -/
-syntax (name := acChange) "ac_change " term (" using " num)? : tactic
+syntax (name := acChange) "ac_change " term (" using " num) : tactic
 
 macro_rules
-| `(tactic| ac_change $t $[using $n]?) => `(tactic| convert_to $t:term $[using $n]? <;> try ac_rfl)
+| `(tactic| ac_change $t $[using $n]) => `(tactic| convert_to $t:term $[using $n] <;> try ac_rfl)
 
 end Mathlib.Tactic

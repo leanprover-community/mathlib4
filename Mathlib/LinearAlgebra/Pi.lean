@@ -460,7 +460,7 @@ theorem piRing_symm_apply (f : ι → M) (g : ι → R) : (piRing R M ι S).symm
   simp [piRing, LinearMap.lsum_apply]
 #align linear_equiv.pi_ring_symm_apply LinearEquiv.piRing_symm_apply
 
--- TODO additive version?
+-- TODO additive version
 /-- `Equiv.sumArrowEquivProdArrow` as a linear equivalence.
 -/
 def sumArrowLequivProdArrow (α β R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] :

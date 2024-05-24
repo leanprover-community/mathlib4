@@ -46,13 +46,13 @@ do guard (n % 2 = 0)
 
 run_cmd Lean.Elab.Command.liftTermElabM do
   let x : MLList MetaM Nat := MLList.range
-  let y := x.filterMapM fun n => try? <| half_or_fail n
+  let y := x.filterMapM fun n => try <| half_or_fail n
   let z ← y.takeAsList 10
   guard <| z.length = 10
 
 run_cmd Lean.Elab.Command.liftTermElabM do
   let R : MLList MetaM Nat := MLList.range
-  let S : MLList MetaM Nat := R.filterMapM fun n => try? do
+  let S : MLList MetaM Nat := R.filterMapM fun n => try do
     guard (n % 5 = 0)
     pure n
   let n ← R.takeAsList 5
@@ -62,7 +62,7 @@ run_cmd Lean.Elab.Command.liftTermElabM do
 
 run_cmd Lean.Elab.Command.liftTermElabM do
   let R : MLList MetaM Nat := MLList.range
-  let n ← R.firstM fun n => try? do
+  let n ← R.firstM fun n => try do
     guard (n = 5)
     pure n
   guard <| n = 5

@@ -697,7 +697,7 @@ section FilterMap
   `a` is excluded from the resulting finset.
 
   In notation, `filterMap f s` is the finset `{b : β | ∃ a ∈ s , f a = some b}`. -/
--- TODO: should there be `filterImage` too?
+-- TODO: should there be `filterImage` too
 def filterMap (f : α → Option β) (s : Finset α)
     (f_inj : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a') : Finset β :=
   ⟨s.val.filterMap f, s.nodup.filterMap f f_inj⟩

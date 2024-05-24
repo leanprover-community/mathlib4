@@ -34,7 +34,7 @@ def insertMetaVar (e : Expr) (pos : SubExpr.Pos) : MetaM Expr :=
 
 /-- Replace all meta-variable names by "_". -/
 def String.renameMetaVar (s : String) : String :=
-  match s.splitOn "?m." with
+  match s.splitOn "m." with
   | [] => ""
   | [s] => s
   | head::tail => head ++ "_" ++ "_".intercalate (tail.map fun s ↦ s.dropWhile Char.isDigit)
@@ -100,11 +100,11 @@ if h : 0 < (goals params).size then
       let md ← mainGoal.mvarId.getDecl
       let lctx := md.lctx |>.sanitizeNames.run' {options := (← getOptions)}
       Meta.withLCtx lctx md.localInstances do
-        let (linkText, newCode, range?) ← mkCmdStr (selectedLocations params) md.type.consumeMData
+        let (linkText, newCode, range) ← mkCmdStr (selectedLocations params) md.type.consumeMData
           params
         return .ofComponent
           MakeEditLink
-          (.ofReplaceRange doc.meta (replaceRange params) newCode range?)
+          (.ofReplaceRange doc.meta (replaceRange params) newCode range)
           #[ .text linkText ])
   return <details «open»={true}>
       <summary className="mv2 pointer">{.text title}</summary>

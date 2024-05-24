@@ -178,7 +178,7 @@ def tryM {α} (x : F α) : F Unit :=
 #align mtry tryM
 
 /-- Attempts to perform the computation, and returns `none` if it doesn't succeed. -/
-def try? {α} (x : F α) : F (Option α) :=
+def try {α} (x : F α) : F (Option α) :=
   some <$> x <|> pure none
 
 @[simp]

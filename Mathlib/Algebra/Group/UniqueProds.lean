@@ -448,7 +448,7 @@ open UniqueMul in
     UniqueProds (∀ i, G i) where
   uniqueMul_of_nonempty {A} := by
     classical
-    let _ := isWellFounded_ssubset (α := ∀ i, G i) -- why need this?
+    let _ := isWellFounded_ssubset (α := ∀ i, G i) -- why need this
     apply IsWellFounded.induction (· ⊂ ·) A; intro A ihA B hA
     apply IsWellFounded.induction (· ⊂ ·) B; intro B ihB hB
     by_cases hc : A.card ≤ 1 ∧ B.card ≤ 1
@@ -526,7 +526,7 @@ instance instForall {ι} (G : ι → Type*) [∀ i, Mul (G i)] [∀ i, TwoUnique
     TwoUniqueProds (∀ i, G i) where
   uniqueMul_of_one_lt_card {A} := by
     classical
-    let _ := isWellFounded_ssubset (α := ∀ i, G i) -- why need this?
+    let _ := isWellFounded_ssubset (α := ∀ i, G i) -- why need this
     apply IsWellFounded.induction (· ⊂ ·) A; intro A ihA B
     apply IsWellFounded.induction (· ⊂ ·) B; intro B ihB hc
     obtain ⟨hA, hB, hc⟩ := Nat.one_lt_mul_iff.mp hc

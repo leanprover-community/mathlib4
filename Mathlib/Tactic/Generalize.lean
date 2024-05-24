@@ -30,7 +30,7 @@ elab "generalize'" h:ident " : " t:term:51 " = " x:ident : tactic => do
       hIdents := hIdents.push h
       let expr ← elabTerm t none
       xIdents := xIdents.push x
-      args := args.push { hName? := h.getId, expr, xName? := x.getId : GeneralizeArg }
+      args := args.push { hName := h.getId, expr, xName := x.getId : GeneralizeArg }
       let hyps := #[]
       let mvarId ← getMainGoal
       mvarId.withContext do

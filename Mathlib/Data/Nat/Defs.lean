@@ -31,7 +31,7 @@ See note [foundational algebra order theory].
 ## TODO
 
 Split this file into:
-* `Data.Nat.Init` (or maybe `Data.Nat.Batteries`?) for lemmas that could go to Batteries
+* `Data.Nat.Init` (or maybe `Data.Nat.Batteries`) for lemmas that could go to Batteries
 * `Data.Nat.Basic` for the lemmas that require mathlib definitions
 -/
 

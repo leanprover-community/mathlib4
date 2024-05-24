@@ -1248,7 +1248,7 @@ variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 β]
 variable [SeminormedAddCommGroup γ] [NormedSpace 𝕜 γ]
 variable (α)
 
--- TODO does this work in the `BoundedSMul` setting, too?
+-- TODO does this work in the `BoundedSMul` setting, too
 /-- Postcomposition of bounded continuous functions into a normed module by a continuous linear map
 is a continuous linear map.
 Upgraded version of `ContinuousLinearMap.compLeftContinuous`, similar to `LinearMap.compLeft`. -/

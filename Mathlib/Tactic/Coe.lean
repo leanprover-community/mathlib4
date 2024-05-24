@@ -32,13 +32,13 @@ def elabPartiallyAppliedCoe (sym : String) (expectedType : Expr)
   if a.hasExprMVar then tryPostpone
   let f ← withLocalDeclD `x a fun x ↦ do
     mkLambdaFVars #[x] (← mkCoe b x)
-  return f.etaExpanded?.getD f
+  return f.etaExpanded.getD f
 
 /-- Partially applied coercion.  Equivalent to the η-reduction of `(↑ ·)` -/
 elab "(" "↑" ")" : term <= expectedType =>
   elabPartiallyAppliedCoe "↑" expectedType fun b x => do
     if b.hasExprMVar then tryPostpone
-    if let .some e ← coerce? x b then
+    if let .some e ← coerce x b then
       return e
     else
       throwError "cannot coerce{indentExpr x}\nto type{indentExpr b}"
@@ -46,7 +46,7 @@ elab "(" "↑" ")" : term <= expectedType =>
 /-- Partially applied function coercion.  Equivalent to the η-reduction of `(⇑ ·)` -/
 elab "(" "⇑" ")" : term <= expectedType =>
   elabPartiallyAppliedCoe "⇑" expectedType fun b x => do
-    if let some ty ← coerceToFunction? x then
+    if let some ty ← coerceToFunction x then
       ensureHasType b ty
     else
       throwError "cannot coerce to function{indentExpr x}"
@@ -54,7 +54,7 @@ elab "(" "⇑" ")" : term <= expectedType =>
 /-- Partially applied type coercion.  Equivalent to the η-reduction of `(↥ ·)` -/
 elab "(" "↥" ")" : term <= expectedType =>
   elabPartiallyAppliedCoe "↥" expectedType fun b x => do
-    if let some ty ← coerceToSort? x then
+    if let some ty ← coerceToSort x then
       ensureHasType b ty
     else
       throwError "cannot coerce to sort{indentExpr x}"

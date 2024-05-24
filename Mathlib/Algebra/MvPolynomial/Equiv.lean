@@ -251,7 +251,7 @@ with coefficients in multivariable polynomials in the other type.
 -/
 def sumRingEquiv : MvPolynomial (Sum S₁ S₂) R ≃+* MvPolynomial S₁ (MvPolynomial S₂ R) := by
   apply mvPolynomialEquivMvPolynomial R (Sum S₁ S₂) _ _ (sumToIter R S₁ S₂) (iterToSum R S₁ S₂)
-  · refine RingHom.ext (hom_eq_hom _ _ ?hC ?hX)
+  · refine RingHom.ext (hom_eq_hom _ _ hC hX)
     case hC => ext1; simp only [RingHom.comp_apply, iterToSum_C_C, sumToIter_C]
     case hX => intro; simp only [RingHom.comp_apply, iterToSum_C_X, sumToIter_Xr]
   · simp [iterToSum_X, sumToIter_Xl]

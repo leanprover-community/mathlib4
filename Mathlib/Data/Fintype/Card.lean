@@ -962,7 +962,7 @@ instance (priority := 10) LinearOrder.isWellOrder_gt [LinearOrder α] : IsWellOr
 
 end Finite
 
--- @[nolint fintype_finite] -- Porting note: do we need this?
+-- @[nolint fintype_finite] -- Porting note: do we need this
 protected theorem Fintype.false [Infinite α] (_h : Fintype α) : False :=
   not_finite α
 #align fintype.false Fintype.false

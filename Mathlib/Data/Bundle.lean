@@ -9,7 +9,7 @@ import Mathlib.Data.Set.Basic
 
 /-!
 # Bundle
-Basic data structure to implement fiber bundles, vector bundles (maybe fibrations?), etc. This file
+Basic data structure to implement fiber bundles, vector bundles (maybe fibrations), etc. This file
 should contain all possible results that do not involve any topology.
 
 We represent a bundle `E` over a base space `B` as a dependent type `E : B → Type*`.

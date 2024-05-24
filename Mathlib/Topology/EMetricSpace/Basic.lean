@@ -321,7 +321,7 @@ nonrec theorem uniformEmbedding_iff [PseudoEMetricSpace β] {f : α → β} :
 and `f y` is controlled in terms of the distance between `x` and `y`.
 
 In fact, this lemma holds for a `UniformInducing` map.
-TODO: generalize? -/
+TODO: generalize -/
 theorem controlled_of_uniformEmbedding [PseudoEMetricSpace β] {f : α → β} (h : UniformEmbedding f) :
     (∀ ε > 0, ∃ δ > 0, ∀ {a b : α}, edist a b < δ → edist (f a) (f b) < ε) ∧
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, edist (f a) (f b) < ε → edist a b < δ :=
@@ -1082,7 +1082,7 @@ theorem EMetric.uniformEmbedding_iff' [EMetricSpace β] {f : γ → β} :
 
 /-- If a `PseudoEMetricSpace` is a T₀ space, then it is an `EMetricSpace`. -/
 -- Porting note: made `reducible`;
--- Porting note (#11215): TODO: make it an instance?
+-- Porting note (#11215): TODO: make it an instance
 abbrev EMetricSpace.ofT0PseudoEMetricSpace (α : Type*) [PseudoEMetricSpace α] [T0Space α] :
     EMetricSpace α :=
   { ‹PseudoEMetricSpace α› with

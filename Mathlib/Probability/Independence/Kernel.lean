@@ -916,7 +916,7 @@ theorem iIndepFun.indepFun_finset [IsMarkovKernel κ] (S T : Finset ι) (hST : D
     · rw [h_sets_s'_univ hi_mem, Set.univ_inter]
       exact h_meas_t' i hi_mem
   filter_upwards [hf_Indep S h_meas_s', hf_Indep T h_meas_t', hf_Indep (S ∪ T) h_meas_inter]
-    with a h_indepS h_indepT h_indepST -- todo: this unfolded sets_s', sets_t'?
+    with a h_indepS h_indepT h_indepST -- todo: this unfolded sets_s', sets_t'
   rw [h_eq_inter_S, h_eq_inter_T, h_indepS, h_indepT, h_Inter_inter, h_indepST,
     Finset.prod_union hST]
   congr 1

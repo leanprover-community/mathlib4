@@ -505,7 +505,7 @@ theorem abv_pos_of_not_limZero {f : CauSeq β abv} (hf : ¬LimZero f) :
   haveI := Classical.propDecidable
   by_contra nk
   refine hf fun ε ε0 => _
-  simp? [not_forall] at nk says
+  simp [not_forall] at nk says
     simp only [gt_iff_lt, ge_iff_le, not_exists, not_and, not_forall, Classical.not_imp,
       not_le] at nk
   cases' f.cauchy₃ (half_pos ε0) with i hi

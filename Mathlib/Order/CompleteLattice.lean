@@ -1627,7 +1627,7 @@ theorem Antitone.iInf_nat_add {f : ℕ → α} (hf : Antitone f) (k : ℕ) : ⨅
 -- saying that it doesn't work when called on its LHS.
 -- Mysteriously, it *does* work. Nevertheless, per
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/complete_lattice.20and.20has_sup/near/316497982
--- "the subterm ?f (i + ?k) produces an ugly higher-order unification problem."
+-- "the subterm f (i + k) produces an ugly higher-order unification problem."
 -- @[simp]
 theorem iSup_iInf_ge_nat_add (f : ℕ → α) (k : ℕ) :
     ⨆ n, ⨅ i ≥ n, f (i + k) = ⨆ n, ⨅ i ≥ n, f i := by

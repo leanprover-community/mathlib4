@@ -38,7 +38,7 @@ def monoidalClosedHomEquiv (M N P : ModuleCat.{u} R) :
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [coe_comp]
     rw [Function.comp_apply]
-    -- This used to be `rw` and was longer (?), but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw` and was longer (), but we need `erw` after leanprover/lean4#2644
     erw [MonoidalCategory.braiding_hom_apply, TensorProduct.lift.tmul]
   right_inv f := rfl
 set_option linter.uppercaseLean3 false in

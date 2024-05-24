@@ -16,7 +16,7 @@ At this stage, in `Mathlib/Topology/Sheaves/SheafOfFunctions.lean`
 we've proved that not-necessarily-continuous functions from a topological space
 into some type (or type family) form a sheaf.
 
-Why do the continuous functions form a sheaf?
+Why do the continuous functions form a sheaf
 The point is just that continuity is a local condition,
 so one can use the lifting condition for functions to provide a candidate lift,
 then verify that the lift is actually continuous by using the factorisation condition for the lift

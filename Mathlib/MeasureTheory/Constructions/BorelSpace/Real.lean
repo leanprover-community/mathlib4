@@ -116,7 +116,7 @@ def finiteSpanningSetsInIooRat (μ : Measure ℝ) [IsLocallyFiniteMeasure μ] :
   set_mem n := by
     simp only [mem_iUnion, mem_singleton_iff]
     refine ⟨-(n + 1 : ℕ), n + 1, _, by simp⟩
-    -- TODO: norm_cast fails here?
+    -- TODO: norm_cast fails here
     push_cast
     exact neg_lt_self n.cast_add_one_pos
   finite n := measure_Ioo_lt_top

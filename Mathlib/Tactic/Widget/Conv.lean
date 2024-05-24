@@ -11,7 +11,7 @@ import Batteries.Tactic.Lint
 /-! # Conv widget
 
 This is a slightly improved version of one of the examples in the ProofWidget library.
-It defines a `conv?` tactic that displays a widget panel allowing to generate
+It defines a `conv` tactic that displays a widget panel allowing to generate
 a `conv` call zooming to the subexpression selected in the goal.
 -/
 
@@ -20,7 +20,7 @@ open Lean Meta Server ProofWidgets
 
 private structure SolveReturn where
   expr : Expr
-  val? : Option String
+  val : Option String
   listRest : List Nat
 
 private def solveLevel (expr : Expr) (path : List Nat) : MetaM SolveReturn := match expr with
@@ -57,29 +57,29 @@ private def solveLevel (expr : Expr) (path : List Nat) : MetaM SolveReturn := ma
 
     let pathRest := if mutablePath.isEmpty then [] else mutablePath.tail!
 
-    return { expr := nextExp, val? := toString count , listRest := pathRest }
+    return { expr := nextExp, val := toString count , listRest := pathRest }
 
   | Expr.lam n _ b _ => do
     let name := match n with
       | Name.str _ s => s
       | _ => panic! "no name found"
-    return { expr := b, val? := name, listRest := path.tail! }
+    return { expr := b, val := name, listRest := path.tail! }
 
   | Expr.forallE n _ b _ => do
     let name := match n with
       | Name.str _ s => s
       | _ => panic! "no name found"
-    return { expr := b, val? := name, listRest := path.tail! }
+    return { expr := b, val := name, listRest := path.tail! }
 
   | Expr.mdata _ b => do
     match b with
-      | Expr.mdata _ _ => return { expr := b, val? := none, listRest := path }
-      | _ => return { expr := b.appFn!.appArg!, val? := none, listRest := path.tail!.tail! }
+      | Expr.mdata _ _ => return { expr := b, val := none, listRest := path }
+      | _ => return { expr := b.appFn!.appArg!, val := none, listRest := path.tail!.tail! }
 
   | _ => do
     return {
       expr := ← (Lean.Core.viewSubexpr path.head! expr)
-      val? := toString (path.head! + 1)
+      val := toString (path.head! + 1)
       listRest := path.tail!
     }
 
@@ -88,7 +88,7 @@ open Lean Syntax in
 @[nolint unusedArguments]
 def insertEnter (locations : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
     (params : SelectInsertParams): MetaM (String × String × Option (String.Pos × String.Pos)) := do
-  let some pos := locations[0]? | throwError "You must select something."
+  let some pos := locations[0] | throwError "You must select something."
   let (fvar, subexprPos) ← match pos with
   | ⟨_, .target subexprPos⟩ => pure (none, subexprPos)
   | ⟨_, .hypType fvar subexprPos⟩ => pure (some fvar, subexprPos)
@@ -101,7 +101,7 @@ def insertEnter (locations : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
   while !list.isEmpty do
     let res ← solveLevel expr list
     expr := res.expr
-    retList := match res.val? with
+    retList := match res.val with
       | none => retList
       | some val => val::retList
     list := res.listRest
@@ -133,7 +133,7 @@ def ConvSelectionPanel : Component SelectInsertParams :=
 open scoped Json in
 /-- Display a widget panel allowing to generate a `conv` call zooming to the subexpression selected
 in the goal. -/
-elab stx:"conv?" : tactic => do
-  let some replaceRange := (← getFileMap).rangeOfStx? stx | return
+elab stx:"conv" : tactic => do
+  let some replaceRange := (← getFileMap).rangeOfStx stx | return
   Widget.savePanelWidgetInfo ConvSelectionPanel.javascriptHash
    (pure <| json% { replaceRange: $(replaceRange) }) stx

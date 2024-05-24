@@ -494,7 +494,7 @@ See `Nat.div_mod_unique` for a similar propositional statement. -/
 def Nat.divModEquiv (n : ℕ) [NeZero n] : ℕ ≃ ℕ × Fin n where
   toFun a := (a / n, ↑a)
   invFun p := p.1 * n + ↑p.2
-  -- TODO: is there a canonical order of `*` and `+` here?
+  -- TODO: is there a canonical order of `*` and `+` here
   left_inv a := Nat.div_add_mod' _ _
   right_inv p := by
     refine Prod.ext _ (Fin.ext <| Nat.mul_add_mod_of_lt p.2.is_lt)

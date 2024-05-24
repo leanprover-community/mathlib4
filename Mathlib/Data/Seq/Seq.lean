@@ -70,32 +70,32 @@ theorem val_cons (s : Seq α) (x : α) : (cons x s).val = some x::s.val :=
 #align stream.seq.val_cons Stream'.Seq.val_cons
 
 /-- Get the nth element of a sequence (if it exists) -/
-def get? : Seq α → ℕ → Option α :=
+def get : Seq α → ℕ → Option α :=
   Subtype.val
-#align stream.seq.nth Stream'.Seq.get?
+#align stream.seq.nth Stream'.Seq.get
 
 @[simp]
-theorem get_mk (f hf) : @get? α ⟨f, hf⟩ = f :=
+theorem get_mk (f hf) : @get α ⟨f, hf⟩ = f :=
   rfl
 #align stream.seq.nth_mk Stream'.Seq.get_mk
 
 @[simp]
-theorem get_nil (n : ℕ) : (@nil α).get? n = none :=
+theorem get_nil (n : ℕ) : (@nil α).get n = none :=
   rfl
 #align stream.seq.nth_nil Stream'.Seq.get_nil
 
 @[simp]
-theorem get_cons_zero (a : α) (s : Seq α) : (cons a s).get? 0 = some a :=
+theorem get_cons_zero (a : α) (s : Seq α) : (cons a s).get 0 = some a :=
   rfl
 #align stream.seq.nth_cons_zero Stream'.Seq.get_cons_zero
 
 @[simp]
-theorem get_cons_succ (a : α) (s : Seq α) (n : ℕ) : (cons a s).get? (n + 1) = s.get? n :=
+theorem get_cons_succ (a : α) (s : Seq α) (n : ℕ) : (cons a s).get (n + 1) = s.get n :=
   rfl
 #align stream.seq.nth_cons_succ Stream'.Seq.get_cons_succ
 
 @[ext]
-protected theorem ext {s t : Seq α} (h : ∀ n : ℕ, s.get? n = t.get? n) : s = t :=
+protected theorem ext {s t : Seq α} (h : ∀ n : ℕ, s.get n = t.get n) : s = t :=
   Subtype.eq <| funext h
 #align stream.seq.ext Stream'.Seq.ext
 
@@ -114,12 +114,12 @@ theorem cons_right_injective (x : α) : Function.Injective (cons x) :=
 
 /-- A sequence has terminated at position `n` if the value at position `n` equals `none`. -/
 def TerminatedAt (s : Seq α) (n : ℕ) : Prop :=
-  s.get? n = none
+  s.get n = none
 #align stream.seq.terminated_at Stream'.Seq.TerminatedAt
 
 /-- It is decidable whether a sequence terminates at a given position. -/
 instance terminatedAtDecidable (s : Seq α) (n : ℕ) : Decidable (s.TerminatedAt n) :=
-  decidable_of_iff' (s.get? n).isNone <| by unfold TerminatedAt; cases s.get? n <;> simp
+  decidable_of_iff' (s.get n).isNone <| by unfold TerminatedAt; cases s.get n <;> simp
 #align stream.seq.terminated_at_decidable Stream'.Seq.terminatedAtDecidable
 
 /-- A sequence terminates if there is some position `n` at which it has terminated. -/
@@ -127,7 +127,7 @@ def Terminates (s : Seq α) : Prop :=
   ∃ n : ℕ, s.TerminatedAt n
 #align stream.seq.terminates Stream'.Seq.Terminates
 
-theorem not_terminates_iff {s : Seq α} : ¬s.Terminates ↔ ∀ n, (s.get? n).isSome := by
+theorem not_terminates_iff {s : Seq α} : ¬s.Terminates ↔ ∀ n, (s.get n).isSome := by
   simp only [Terminates, TerminatedAt, ← Ne.eq_def, Option.ne_none_iff_isSome, not_exists, iff_self]
 #align stream.seq.not_terminates_iff Stream'.Seq.not_terminates_iff
 
@@ -140,7 +140,7 @@ def omap (f : β → γ) : Option (α × β) → Option (α × γ)
 
 /-- Get the first element of a sequence -/
 def head (s : Seq α) : Option α :=
-  get? s 0
+  get s 0
 #align stream.seq.head Stream'.Seq.head
 
 /-- Get the tail of a sequence (or `nil` if the sequence is `nil`) -/
@@ -158,7 +158,7 @@ protected def Mem (a : α) (s : Seq α) :=
 instance : Membership α (Seq α) :=
   ⟨Seq.Mem⟩
 
-theorem le_stable (s : Seq α) {m n} (h : m ≤ n) : s.get? m = none → s.get? n = none := by
+theorem le_stable (s : Seq α) {m n} (h : m ≤ n) : s.get m = none → s.get n = none := by
   cases' s with f al
   induction' h with n _ IH
   exacts [id, fun h2 => al (IH h2)]
@@ -169,13 +169,13 @@ theorem terminated_stable : ∀ (s : Seq α) {m n : ℕ}, m ≤ n → s.Terminat
   le_stable
 #align stream.seq.terminated_stable Stream'.Seq.terminated_stable
 
-/-- If `s.get? n = some aₙ` for some value `aₙ`, then there is also some value `aₘ` such
-that `s.get? = some aₘ` for `m ≤ n`.
+/-- If `s.get n = some aₙ` for some value `aₙ`, then there is also some value `aₘ` such
+that `s.get = some aₘ` for `m ≤ n`.
 -/
 theorem ge_stable (s : Seq α) {aₙ : α} {n m : ℕ} (m_le_n : m ≤ n)
-    (s_nth_eq_some : s.get? n = some aₙ) : ∃ aₘ : α, s.get? m = some aₘ :=
-  have : s.get? n ≠ none := by simp [s_nth_eq_some]
-  have : s.get? m ≠ none := mt (s.le_stable m_le_n) this
+    (s_nth_eq_some : s.get n = some aₙ) : ∃ aₘ : α, s.get m = some aₘ :=
+  have : s.get n ≠ none := by simp [s_nth_eq_some]
+  have : s.get m ≠ none := mt (s.le_stable m_le_n) this
   Option.ne_none_iff_exists'.mp this
 #align stream.seq.ge_stable Stream'.Seq.ge_stable
 
@@ -202,12 +202,12 @@ theorem mem_cons_iff {a b : α} {s : Seq α} : a ∈ cons b s ↔ a = b ∨ a �
 /-- Destructor for a sequence, resulting in either `none` (for `nil`) or
   `some (a, s)` (for `cons a s`). -/
 def destruct (s : Seq α) : Option (Seq1 α) :=
-  (fun a' => (a', s.tail)) <$> get? s 0
+  (fun a' => (a', s.tail)) <$> get s 0
 #align stream.seq.destruct Stream'.Seq.destruct
 
 theorem destruct_eq_nil {s : Seq α} : destruct s = none → s = nil := by
   dsimp [destruct]
-  induction' f0 : get? s 0 <;> intro h
+  induction' f0 : get s 0 <;> intro h
   · apply Subtype.eq
     funext n
     induction' n with n IH
@@ -217,7 +217,7 @@ theorem destruct_eq_nil {s : Seq α} : destruct s = none → s = nil := by
 
 theorem destruct_eq_cons {s : Seq α} {a s'} : destruct s = some (a, s') → s = cons a s' := by
   dsimp [destruct]
-  induction' f0 : get? s 0 with a' <;> intro h
+  induction' f0 : get s 0 with a' <;> intro h
   · contradiction
   · cases' s with f al
     injections _ h1 h2
@@ -244,7 +244,7 @@ theorem destruct_cons (a : α) : ∀ s, destruct (cons a s) = some (a, s)
 
 -- Porting note: needed universe annotation to avoid universe issues
 theorem head_eq_destruct (s : Seq α) : head.{u} s = Prod.fst.{u} <$> destruct.{u} s := by
-  unfold destruct head; cases get? s 0 <;> rfl
+  unfold destruct head; cases get s 0 <;> rfl
 #align stream.seq.head_eq_destruct Stream'.Seq.head_eq_destruct
 
 @[simp]
@@ -270,7 +270,7 @@ theorem tail_cons (a : α) (s) : tail (cons a s) = s := by
 #align stream.seq.tail_cons Stream'.Seq.tail_cons
 
 @[simp]
-theorem get_tail (s : Seq α) (n) : get? (tail s) n = get? s (n + 1) :=
+theorem get_tail (s : Seq α) (n) : get (tail s) n = get s (n + 1) :=
   rfl
 #align stream.seq.nth_tail Stream'.Seq.get_tail
 
@@ -291,7 +291,7 @@ theorem mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
   induction' k with k IH generalizing s
   · have TH : s = cons a (tail s) := by
       apply destruct_eq_cons
-      unfold destruct get? Functor.map
+      unfold destruct get Functor.map
       rw [← e]
       rfl
     rw [TH]
@@ -430,7 +430,7 @@ theorem coinduction2 (s) (f g : Seq α → Seq β)
 /-- Embed a list as a sequence -/
 @[coe]
 def ofList (l : List α) : Seq α :=
-  ⟨List.get? l, fun {n} h => by
+  ⟨List.get l, fun {n} h => by
     rw [List.get_eq_none] at h ⊢
     exact h.trans (Nat.le_succ n)⟩
 #align stream.seq.of_list Stream'.Seq.ofList
@@ -445,7 +445,7 @@ theorem ofList_nil : ofList [] = (nil : Seq α) :=
 #align stream.seq.of_list_nil Stream'.Seq.ofList_nil
 
 @[simp]
-theorem ofList_get (l : List α) (n : ℕ) : (ofList l).get? n = l.get? n :=
+theorem ofList_get (l : List α) (n : ℕ) : (ofList l).get n = l.get n :=
   rfl
 #align stream.seq.of_list_nth Stream'.Seq.ofList_get
 
@@ -499,9 +499,9 @@ def nats : Seq ℕ :=
 #align stream.seq.nats Stream'.Seq.nats
 
 @[simp]
-theorem nats_get? (n : ℕ) : nats.get? n = some n :=
+theorem nats_get (n : ℕ) : nats.get n = some n :=
   rfl
-#align stream.seq.nats_nth Stream'.Seq.nats_get?
+#align stream.seq.nats_nth Stream'.Seq.nats_get
 
 /-- Append two sequences. If `s₁` is infinite, then `s₁ ++ s₂ = s₁`,
   otherwise it puts `s₂` at the location of the `nil` in `s₁`. -/
@@ -574,7 +574,7 @@ section ZipWith
 
 /-- Combine two sequences with a function -/
 def zipWith (f : α → β → γ) (s₁ : Seq α) (s₂ : Seq β) : Seq γ :=
-  ⟨fun n => Option.map₂ f (s₁.get? n) (s₂.get? n), fun {_} hn =>
+  ⟨fun n => Option.map₂ f (s₁.get n) (s₂.get n), fun {_} hn =>
     Option.map₂_eq_none_iff.2 <| (Option.map₂_eq_none_iff.1 hn).imp s₁.2 s₂.2⟩
 #align stream.seq.zip_with Stream'.Seq.zipWith
 
@@ -582,7 +582,7 @@ variable {s : Seq α} {s' : Seq β} {n : ℕ}
 
 @[simp]
 theorem get_zipWith (f : α → β → γ) (s s' n) :
-    (zipWith f s s').get? n = Option.map₂ f (s.get? n) (s'.get? n) :=
+    (zipWith f s s').get n = Option.map₂ f (s.get n) (s'.get n) :=
   rfl
 #align stream.seq.nth_zip_with Stream'.Seq.get_zipWith
 
@@ -594,7 +594,7 @@ def zip : Seq α → Seq β → Seq (α × β) :=
 #align stream.seq.zip Stream'.Seq.zip
 
 theorem get_zip (s : Seq α) (t : Seq β) (n : ℕ) :
-    get? (zip s t) n = Option.map₂ Prod.mk (get? s n) (get? t n) :=
+    get (zip s t) n = Option.map₂ Prod.mk (get s n) (get t n) :=
   get_zipWith _ _ _ _
 #align stream.seq.nth_zip Stream'.Seq.get_zip
 
@@ -609,7 +609,7 @@ def enum (s : Seq α) : Seq (ℕ × α) :=
 #align stream.seq.enum Stream'.Seq.enum
 
 @[simp]
-theorem get_enum (s : Seq α) (n : ℕ) : get? (enum s) n = Option.map (Prod.mk n) (get? s n) :=
+theorem get_enum (s : Seq α) (n : ℕ) : get (enum s) n = Option.map (Prod.mk n) (get s n) :=
   get_zip _ _ _
 #align stream.seq.nth_enum Stream'.Seq.get_enum
 
@@ -731,9 +731,9 @@ theorem map_append (f : α → β) (s t) : map f (append s t) = append (map f s)
 #align stream.seq.map_append Stream'.Seq.map_append
 
 @[simp]
-theorem map_get? (f : α → β) : ∀ s n, get? (map f s) n = (get? s n).map f
+theorem map_get (f : α → β) : ∀ s n, get (map f s) n = (get s n).map f
   | ⟨_, _⟩, _ => rfl
-#align stream.seq.map_nth Stream'.Seq.map_get?
+#align stream.seq.map_nth Stream'.Seq.map_get
 
 instance : Functor Seq where map := @map
 
@@ -841,7 +841,7 @@ theorem dropn_tail (s : Seq α) (n) : drop (tail s) n = drop s (n + 1) := by
 #align stream.seq.dropn_tail Stream'.Seq.dropn_tail
 
 @[simp]
-theorem head_dropn (s : Seq α) (n) : head (drop s n) = get? s n := by
+theorem head_dropn (s : Seq α) (n) : head (drop s n) = get s n := by
   induction' n with n IH generalizing s; · rfl
   rw [← get_tail, ← dropn_tail]; apply IH
 #align stream.seq.head_dropn Stream'.Seq.head_dropn
@@ -888,7 +888,7 @@ theorem enum_cons (s : Seq α) (x : α) :
     enum (cons x s) = cons (0, x) (map (Prod.map Nat.succ id) (enum s)) := by
   ext ⟨n⟩ : 1
   · simp
-  · simp only [get_enum, get_cons_succ, map_get?, Option.map_map]
+  · simp only [get_enum, get_cons_succ, map_get, Option.map_map]
     congr
 #align stream.seq.enum_cons Stream'.Seq.enum_cons
 

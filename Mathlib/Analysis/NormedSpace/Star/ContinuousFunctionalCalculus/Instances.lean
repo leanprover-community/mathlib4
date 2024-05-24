@@ -51,7 +51,7 @@ instance IsStarNormal.instContinuousFunctionalCalculus {A : Type*} [NormedRing A
     ContinuousFunctionalCalculus ℂ (IsStarNormal : A → Prop) where
   exists_cfc_of_predicate a ha := by
     refine ⟨(elementalStarAlgebra ℂ a).subtype.comp <| continuousFunctionalCalculus a,
-      ?hom_closedEmbedding, ?hom_id, ?hom_map_spectrum, ?predicate_hom⟩
+      hom_closedEmbedding, hom_id, hom_map_spectrum, predicate_hom⟩
     case hom_closedEmbedding => exact Isometry.closedEmbedding <|
       isometry_subtype_coe.comp <| StarAlgEquiv.isometry (continuousFunctionalCalculus a)
     case hom_id => exact congr_arg Subtype.val <| continuousFunctionalCalculus_map_id a

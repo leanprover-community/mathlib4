@@ -359,7 +359,7 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
       -- Porting note: This `change` is not ideal.
       -- I think lean is having issues understanding when a `ContinuousMap` should be considered
       -- as a morphism.
-      -- TODO(?): Make morphisms in `CompHaus` (and other topological categories)
+      -- TODO(): Make morphisms in `CompHaus` (and other topological categories)
       -- into a one-field-structure.
       change 0 = φ (f x)
       simp only [hφ0 (Set.mem_range_self x), Pi.zero_apply]

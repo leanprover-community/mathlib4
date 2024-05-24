@@ -107,7 +107,7 @@ add_decl_doc MulEquiv.toMulHom
 
 /-- `MulEquivClass F A B` states that `F` is a type of multiplication-preserving morphisms.
 You should extend this class when you extend `MulEquiv`. -/
--- TODO: make this a synonym for MulHomClass?
+-- TODO: make this a synonym for MulHomClass
 @[to_additive]
 class MulEquivClass (F : Type*) (A B : outParam Type*) [Mul A] [Mul B] [EquivLike F A B] :
     Prop where
@@ -606,7 +606,7 @@ noncomputable def ofBijective {M N F} [Mul M] [Mul N] [FunLike F M N] [MulHomCla
 #align mul_equiv.of_bijective_apply MulEquiv.ofBijective_apply
 #align add_equiv.of_bijective_apply AddEquiv.ofBijective_apply
 
--- Porting note (#11215): TODO: simplify `symm_apply` to `surjInv`?
+-- Porting note (#11215): TODO: simplify `symm_apply` to `surjInv`
 @[to_additive (attr := simp)]
 theorem ofBijective_apply_symm_apply {n : N} (f : M →* N) (hf : Bijective f) :
     f ((ofBijective f hf).symm n) = n := (ofBijective f hf).apply_symm_apply n

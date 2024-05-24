@@ -41,8 +41,8 @@ initialize registerBuiltinAttribute {
       "@[trans] attribute only applies to lemmas proving
       x ∼ y → y ∼ z → x ∼ z, got {indentExpr declTy} with target {indentExpr targetTy}"
     let .app (.app rel _) _ := targetTy | fail
-    let some yzHyp := xs.back? | fail
-    let some xyHyp := xs.pop.back? | fail
+    let some yzHyp := xs.back | fail
+    let some xyHyp := xs.pop.back | fail
     let .app (.app _ _) _ ← inferType yzHyp | fail
     let .app (.app _ _) _ ← inferType xyHyp | fail
     let key ← withReducible <| DiscrTree.mkPath rel transExt.config
@@ -61,17 +61,17 @@ def _root_.Trans.het {a : α} {b : β} {c : γ}
 open Lean.Elab.Tactic
 
 /-- solving `e ← mkAppM' f #[x]` -/
-def getExplicitFuncArg? (e : Expr) : MetaM (Option <| Expr × Expr) := do
+def getExplicitFuncArg (e : Expr) : MetaM (Option <| Expr × Expr) := do
   match e with
   | Expr.app f a => do
     if ← isDefEq (← mkAppM' f #[a]) e then
       return some (f, a)
     else
-      getExplicitFuncArg? f
+      getExplicitFuncArg f
   | _ => return none
 
 /-- solving `tgt ← mkAppM' rel #[x, z]` given `tgt = f z` -/
-def getExplicitRelArg? (tgt f z : Expr) : MetaM (Option <| Expr × Expr) := do
+def getExplicitRelArg (tgt f z : Expr) : MetaM (Option <| Expr × Expr) := do
   match f with
   | Expr.app rel x => do
     let check: Bool ← do
@@ -83,7 +83,7 @@ def getExplicitRelArg? (tgt f z : Expr) : MetaM (Option <| Expr × Expr) := do
     if check then
       return some (rel, x)
     else
-      getExplicitRelArg? tgt rel z
+      getExplicitRelArg tgt rel z
   | _ => return none
 
 /-- refining `tgt ← mkAppM' rel #[x, z]` dropping more arguments if possible -/
@@ -109,12 +109,12 @@ that is, a relation which has a transitivity lemma tagged with the attribute [tr
 * `trans s` replaces the goal with the two subgoals `t ~ s` and `s ~ u`.
 * If `s` is omitted, then a metavariable is used instead.
 -/
-elab "trans" t?:(ppSpace colGt term)? : tactic => withMainContext do
+elab "trans" t:(ppSpace colGt term) : tactic => withMainContext do
   let tgt ← getMainTarget''
   let (rel, x, z) ←
     match tgt with
     | Expr.app f z =>
-      match (← getExplicitRelArg? tgt f z) with
+      match (← getExplicitRelArg tgt f z) with
       | some (rel, x) =>
         let (rel, x) ← getExplicitRelArgCore tgt rel x z
         pure (rel, x, z)
@@ -128,7 +128,7 @@ elab "trans" t?:(ppSpace colGt term)? : tactic => withMainContext do
   -- first trying the homogeneous case
   try
     let ty ← inferType x
-    let t'? ← t?.mapM (elabTermWithHoles · ty (← getMainTag))
+    let t' ← t.mapM (elabTermWithHoles · ty (← getMainTag))
     let s ← saveState
     trace[Tactic.trans]"trying homogeneous case"
     let lemmas :=
@@ -139,17 +139,17 @@ elab "trans" t?:(ppSpace colGt term)? : tactic => withMainContext do
         liftMetaTactic fun g ↦ do
           let lemTy ← inferType (← mkConstWithLevelParams lem)
           let arity ← withReducible <| forallTelescopeReducing lemTy fun es _ ↦ pure es.size
-          let y ← (t'?.map (pure ·.1)).getD (mkFreshExprMVar ty)
+          let y ← (t'.map (pure ·.1)).getD (mkFreshExprMVar ty)
           let g₁ ← mkFreshExprMVar (some <| ← mkAppM' rel #[x, y]) .synthetic
           let g₂ ← mkFreshExprMVar (some <| ← mkAppM' rel #[y, z]) .synthetic
           g.assign (← mkAppOptM lem (mkArray (arity - 2) none ++ #[some g₁, some g₂]))
-          pure <| [g₁.mvarId!, g₂.mvarId!] ++ if let some (_, gs') := t'? then gs' else [y.mvarId!]
+          pure <| [g₁.mvarId!, g₂.mvarId!] ++ if let some (_, gs') := t' then gs' else [y.mvarId!]
         return
       catch _ => s.restore
     pure ()
   catch _ =>
   trace[Tactic.trans]"trying heterogeneous case"
-  let t'? ← t?.mapM (elabTermWithHoles · none (← getMainTag))
+  let t' ← t.mapM (elabTermWithHoles · none (← getMainTag))
   let s ← saveState
   for lem in (← (transExt.getState (← getEnv)).getUnify rel transExt.config).push
       ``HEq.trans |>.push ``HEq.trans do
@@ -160,7 +160,7 @@ elab "trans" t?:(ppSpace colGt term)? : tactic => withMainContext do
         let arity ← withReducible <| forallTelescopeReducing lemTy fun es _ ↦ pure es.size
         trace[Tactic.trans]"arity: {arity}"
         trace[Tactic.trans]"lemma-type: {lemTy}"
-        let y ← (t'?.map (pure ·.1)).getD (mkFreshExprMVar none)
+        let y ← (t'.map (pure ·.1)).getD (mkFreshExprMVar none)
         trace[Tactic.trans]"obtained y: {y}"
         trace[Tactic.trans]"rel: {indentExpr rel}"
         trace[Tactic.trans]"x:{indentExpr x}"
@@ -170,7 +170,7 @@ elab "trans" t?:(ppSpace colGt term)? : tactic => withMainContext do
         let g₁ ← mkFreshExprMVar (some <| ← mkAppM' rel #[x, y]) .synthetic
         trace[Tactic.trans]"obtained g₁: {g₁}"
         g.assign (← mkAppOptM lem (mkArray (arity - 2) none ++ #[some g₁, some g₂]))
-        pure <| [g₁.mvarId!, g₂.mvarId!] ++ if let some (_, gs') := t'? then gs' else [y.mvarId!]
+        pure <| [g₁.mvarId!, g₂.mvarId!] ++ if let some (_, gs') := t' then gs' else [y.mvarId!]
       return
     catch e =>
       trace[Tactic.trans]"failed: {e.toMessageData}"
@@ -179,7 +179,7 @@ elab "trans" t?:(ppSpace colGt term)? : tactic => withMainContext do
   throwError m!"no applicable transitivity lemma found for {indentExpr tgt}
 "
 
-syntax "transitivity" (ppSpace colGt term)? : tactic
+syntax "transitivity" (ppSpace colGt term) : tactic
 set_option hygiene false in
 macro_rules
   | `(tactic| transitivity) => `(tactic| trans)

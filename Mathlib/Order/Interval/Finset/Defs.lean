@@ -673,7 +673,7 @@ instance : Subsingleton (LocallyFiniteOrderBot α) :=
       rw [h₀_finset_mem_Iio, h₁_finset_mem_Iio]
     simp_rw [hIic, hIio]
 
--- Should this be called `LocallyFiniteOrder.lift`?
+-- Should this be called `LocallyFiniteOrder.lift`
 /-- Given an order embedding `α ↪o β`, pulls back the `LocallyFiniteOrder` on `β` to `α`. -/
 protected noncomputable def OrderEmbedding.locallyFiniteOrder [LocallyFiniteOrder β] (f : α ↪o β) :
     LocallyFiniteOrder α where

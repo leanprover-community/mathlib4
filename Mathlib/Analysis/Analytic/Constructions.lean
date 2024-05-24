@@ -147,7 +147,7 @@ alias AnalyticOn.along_snd := AnalyticOn.curry_right
 pedantic to allow towers of field extensions.
 
 TODO: can we replace `𝕜'` with a "normed module" in such a way that `analyticAt_mul` is a special
-case of this? -/
+case of this -/
 lemma analyticAt_smul [NormedSpace 𝕝 E] [IsScalarTower 𝕜 𝕝 E] (z : 𝕝 × E) :
     AnalyticAt 𝕜 (fun x : 𝕝 × E ↦ x.1 • x.2) z :=
   (ContinuousLinearMap.lsmul 𝕜 𝕝).analyticAt_bilinear z

@@ -30,7 +30,7 @@ TODO :
 * align with RingHomCompTriple
 * probably rename MonoidHom.CompTriple as MonoidHomCompTriple
 (or, on the opposite, rename RingHomCompTriple as RingHom.CompTriple)
-* does one need AddHom.CompTriple ?
+* does one need AddHom.CompTriple 
 
 -/
 

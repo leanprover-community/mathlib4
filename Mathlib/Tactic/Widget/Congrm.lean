@@ -10,7 +10,7 @@ import Mathlib.Tactic.Congrm
 
 /-! # Congrm widget
 
-This file defines a `congrm?` tactic that displays a widget panel allowing to generate
+This file defines a `congrm` tactic that displays a widget panel allowing to generate
 a `congrm` call with holes specified by selecting subexpressions in the goal.
 -/
 
@@ -49,7 +49,7 @@ def CongrmSelectionPanel : Component SelectInsertParams :=
 open scoped Json in
 /-- Display a widget panel allowing to generate a `congrm` call with holes specified by selecting
 subexpressions in the goal. -/
-elab stx:"congrm?" : tactic => do
-  let some replaceRange := (← getFileMap).rangeOfStx? stx | return
+elab stx:"congrm" : tactic => do
+  let some replaceRange := (← getFileMap).rangeOfStx stx | return
   Widget.savePanelWidgetInfo CongrmSelectionPanel.javascriptHash
     (pure <| json% { replaceRange: $(replaceRange) }) stx

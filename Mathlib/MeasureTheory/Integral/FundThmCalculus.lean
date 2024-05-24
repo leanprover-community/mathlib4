@@ -31,8 +31,8 @@ and its second version states that, if `f` has an integrable derivative on `[a, 
 ### FTC-1 for Lebesgue measure
 
 We prove several versions of FTC-1, all in the `intervalIntegral` namespace. Many of them follow
-the naming scheme `integral_has(Strict?)(F?)Deriv(Within?)At(_of_tendsto_ae?)(_right|_left?)`.
-They formulate FTC in terms of `Has(Strict?)(F?)Deriv(Within?)At`.
+the naming scheme `integral_has(Strict)(F)Deriv(Within)At(_of_tendsto_ae)(_right|_left)`.
+They formulate FTC in terms of `Has(Strict)(F)Deriv(Within)At`.
 Let us explain the meaning of each part of the name:
 
 * `Strict` means that the theorem is about strict differentiability, see `HasStrictDerivAt` and
@@ -45,8 +45,8 @@ Let us explain the meaning of each part of the name:
 * `_right` or `_left` mean that the theorem is about differentiability in the right (resp., left)
   endpoint.
 
-We also reformulate these theorems in terms of `(f?)deriv(Within?)`. These theorems are named
-`(f?)deriv(Within?)_integral(_of_tendsto_ae?)(_right|_left?)` with the same meaning of parts of the
+We also reformulate these theorems in terms of `(f)deriv(Within)`. These theorems are named
+`(f)deriv(Within)_integral(_of_tendsto_ae)(_right|_left)` with the same meaning of parts of the
 name.
 
 ### One-sided derivatives

@@ -108,7 +108,7 @@ def mkOfNat (α : Q(Type u)) (_sα : Q(AddMonoidWithOne $α)) (lit : Q(ℕ)) :
     let a' : Q(ℚ) := q(OfNat.ofNat $lit : ℚ)
     pure ⟨a', (q(Eq.refl $a') : Expr)⟩
   else
-    let some n := lit.rawNatLit? | failure
+    let some n := lit.rawNatLit | failure
     match n with
     | 0 => pure ⟨q(0 : $α), (q(Nat.cast_zero (R := $α)) : Expr)⟩
     | 1 => pure ⟨q(1 : $α), (q(Nat.cast_one (R := $α)) : Expr)⟩
@@ -415,25 +415,25 @@ def Result.ofRawRat {α : Q(Type u)} (q : ℚ) (e : Q($α)) (hyp : Option Expr :
 
 /-- Convert a `Result` to a `Simp.Result`. -/
 def Result.toSimpResult {α : Q(Type u)} {e : Q($α)} : Result e → MetaM Simp.Result
-  | r@(.isBool ..) => let ⟨expr, proof?⟩ := r.toRawEq; pure { expr, proof? }
+  | r@(.isBool ..) => let ⟨expr, proof⟩ := r.toRawEq; pure { expr, proof }
   | .isNat sα lit p => do
     let ⟨a', pa'⟩ ← mkOfNat α sα lit
-    return { expr := a', proof? := q(IsNat.to_eq $p $pa') }
+    return { expr := a', proof := q(IsNat.to_eq $p $pa') }
   | .isNegNat _rα lit p => do
     let ⟨a', pa'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) lit
-    return { expr := q(-$a'), proof? := q(IsInt.neg_to_eq $p $pa') }
+    return { expr := q(-$a'), proof := q(IsInt.neg_to_eq $p $pa') }
   | .isRat _ q n d p => do
     have lit : Q(ℕ) := n.appArg!
     if q < 0 then
       let p : Q(IsRat $e (.negOfNat $lit) $d) := p
       let ⟨n', pn'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) lit
       let ⟨d', pd'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) d
-      return { expr := q(-($n' / $d')), proof? := q(IsRat.neg_to_eq $p $pn' $pd') }
+      return { expr := q(-($n' / $d')), proof := q(IsRat.neg_to_eq $p $pn' $pd') }
     else
       let p : Q(IsRat $e (.ofNat $lit) $d) := p
       let ⟨n', pn'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) lit
       let ⟨d', pd'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) d
-      return { expr := q($n' / $d'), proof? := q(IsRat.nonneg_to_eq $p $pn' $pd') }
+      return { expr := q($n' / $d'), proof := q(IsRat.nonneg_to_eq $p $pn' $pd') }
 
 /-- Given `Mathlib.Meta.NormNum.Result.isBool p b`, this is the type of `p`.
   Note that `BoolResult p b` is definitionally equal to `Expr`, and if you write `match b with ...`,

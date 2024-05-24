@@ -269,23 +269,23 @@ theorem Chain'.rel_head {x y l} (h : Chain' R (x :: y :: l)) : R x y :=
   rel_of_chain_cons h
 #align list.chain'.rel_head List.Chain'.rel_head
 
-theorem Chain'.rel_head? {x l} (h : Chain' R (x :: l)) ⦃y⦄ (hy : y ∈ head? l) : R x y := by
+theorem Chain'.rel_head {x l} (h : Chain' R (x :: l)) ⦃y⦄ (hy : y ∈ head l) : R x y := by
   rw [← cons_head_tail hy] at h
   exact h.rel_head
-#align list.chain'.rel_head' List.Chain'.rel_head?
+#align list.chain'.rel_head' List.Chain'.rel_head
 
-theorem Chain'.cons' {x} : ∀ {l : List α}, Chain' R l → (∀ y ∈ l.head?, R x y) → Chain' R (x :: l)
+theorem Chain'.cons' {x} : ∀ {l : List α}, Chain' R l → (∀ y ∈ l.head, R x y) → Chain' R (x :: l)
   | [], _, _ => chain'_singleton x
   | _ :: _, hl, H => hl.cons <| H _ rfl
 #align list.chain'.cons' List.Chain'.cons'
 
-theorem chain'_cons' {x l} : Chain' R (x :: l) ↔ (∀ y ∈ head? l, R x y) ∧ Chain' R l :=
-  ⟨fun h => ⟨h.rel_head?, h.tail⟩, fun ⟨h₁, h₂⟩ => h₂.cons' h₁⟩
+theorem chain'_cons' {x l} : Chain' R (x :: l) ↔ (∀ y ∈ head l, R x y) ∧ Chain' R l :=
+  ⟨fun h => ⟨h.rel_head, h.tail⟩, fun ⟨h₁, h₂⟩ => h₂.cons' h₁⟩
 #align list.chain'_cons' List.chain'_cons'
 
 theorem chain'_append :
     ∀ {l₁ l₂ : List α},
-      Chain' R (l₁ ++ l₂) ↔ Chain' R l₁ ∧ Chain' R l₂ ∧ ∀ x ∈ l₁.getLast?, ∀ y ∈ l₂.head?, R x y
+      Chain' R (l₁ ++ l₂) ↔ Chain' R l₁ ∧ Chain' R l₂ ∧ ∀ x ∈ l₁.getLast, ∀ y ∈ l₂.head, R x y
   | [], l => by simp
   | [a], l => by simp [chain'_cons', and_comm]
   | a :: b :: l₁, l₂ => by
@@ -295,7 +295,7 @@ theorem chain'_append :
 #align list.chain'_append List.chain'_append
 
 theorem Chain'.append (h₁ : Chain' R l₁) (h₂ : Chain' R l₂)
-    (h : ∀ x ∈ l₁.getLast?, ∀ y ∈ l₂.head?, R x y) : Chain' R (l₁ ++ l₂) :=
+    (h : ∀ x ∈ l₁.getLast, ∀ y ∈ l₂.head, R x y) : Chain' R (l₁ ++ l₂) :=
   chain'_append.2 ⟨h₁, h₂, h⟩
 #align list.chain'.append List.Chain'.append
 
@@ -338,7 +338,7 @@ theorem chain'_pair {x y} : Chain' R [x, y] ↔ R x y := by
 
 theorem Chain'.imp_head {x y} (h : ∀ {z}, R x z → R y z) {l} (hl : Chain' R (x :: l)) :
     Chain' R (y :: l) :=
-  hl.tail.cons' fun _ hz => h <| hl.rel_head? hz
+  hl.tail.cons' fun _ hz => h <| hl.rel_head hz
 #align list.chain'.imp_head List.Chain'.imp_head
 
 theorem chain'_reverse : ∀ {l}, Chain' R (reverse l) ↔ Chain' (flip R) l
@@ -383,7 +383,7 @@ theorem Chain'.append_overlap {l₁ l₂ l₃ : List α} (h₁ : Chain' R (l₁ 
 -- Porting note (#10756): new lemma
 lemma chain'_join : ∀ {L : List (List α)}, [] ∉ L →
     (Chain' R L.join ↔ (∀ l ∈ L, Chain' R l) ∧
-    L.Chain' (fun l₁ l₂ => ∀ᵉ (x ∈ l₁.getLast?) (y ∈ l₂.head?), R x y))
+    L.Chain' (fun l₁ l₂ => ∀ᵉ (x ∈ l₁.getLast) (y ∈ l₂.head), R x y))
 | [], _ => by simp
 | [l], _ => by simp [join]
 | (l₁ :: l₂ :: L), hL => by
@@ -489,7 +489,7 @@ variable {r}
 
 /-- If an `r`-decreasing chain `l` is empty or its head is accessible by `r`, then
   `l` is accessible by the lexicographic order `List.Lex r`. -/
-theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r a) :
+theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head, Acc r a) :
     Acc (List.lex_chains r) l := by
   obtain ⟨_ | ⟨a, l⟩, hl⟩ := l
   · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩

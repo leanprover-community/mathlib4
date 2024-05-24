@@ -91,7 +91,7 @@ def comp (r : Rel α β) (s : Rel β γ) : Rel α γ := fun x z => ∃ y, r x y 
 #align rel.comp Rel.comp
 
 -- Porting note: the original `∘` syntax can't be overloaded here, lean considers it ambiguous.
--- TODO: Change this syntax to something nicer?
+-- TODO: Change this syntax to something nicer
 /-- Local syntax for composition of relations. -/
 local infixr:90 " • " => Rel.comp
 

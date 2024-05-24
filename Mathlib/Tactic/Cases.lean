@@ -55,7 +55,7 @@ def ElimApp.evalNames (elimInfo : ElimInfo) (alts : Array ElimApp.Alt) (withArg 
     let (altVarNames, names') := names.splitAtD numFields (Unhygienic.run `(_))
     names := names'
     let (fvars, g) ← g.introN numFields <| altVarNames.map (getNameOfIdent' ·[0])
-    let some (g, subst) ← Cases.unifyEqs? numEqs g {} | pure ()
+    let some (g, subst) ← Cases.unifyEqs numEqs g {} | pure ()
     let (introduced, g) ← g.introNP generalized.size
     let subst := (generalized.zip introduced).foldl (init := subst) fun subst (a, b) =>
       subst.insert a (.fvar b)
@@ -70,9 +70,9 @@ def ElimApp.evalNames (elimInfo : ElimInfo) (alts : Array ElimApp.Alt) (withArg 
 
 open private getElimNameInfo generalizeTargets generalizeVars from Lean.Elab.Tactic.Induction
 elab (name := induction') "induction' " tgts:(Parser.Tactic.casesTarget,+)
-    usingArg:((" using " ident)?)
-    withArg:((" with" (ppSpace colGt binderIdent)+)?)
-    genArg:((" generalizing" (ppSpace colGt ident)+)?) : tactic => do
+    usingArg:((" using " ident))
+    withArg:((" with" (ppSpace colGt binderIdent)+))
+    genArg:((" generalizing" (ppSpace colGt ident)+)) : tactic => do
   let (targets, toTag) ← elabCasesTargets tgts.1.getSepArgs
   let g :: gs ← getUnsolvedGoals | throwNoGoalsToBeSolved
   g.withContext do
@@ -102,8 +102,8 @@ elab (name := induction') "induction' " tgts:(Parser.Tactic.casesTarget,+)
           (generalized := fvarIds) (toClear := targetFVarIds) (toTag := toTag)
         setGoals <| (subgoals ++ result.others).toList ++ gs
 
-elab (name := cases') "cases' " tgts:(Parser.Tactic.casesTarget,+) usingArg:((" using " ident)?)
-  withArg:((" with" (ppSpace colGt binderIdent)+)?) : tactic => do
+elab (name := cases') "cases' " tgts:(Parser.Tactic.casesTarget,+) usingArg:((" using " ident))
+  withArg:((" with" (ppSpace colGt binderIdent)+)) : tactic => do
   let (targets, toTag) ← elabCasesTargets tgts.1.getSepArgs
   let g :: gs ← getUnsolvedGoals | throwNoGoalsToBeSolved
   g.withContext do

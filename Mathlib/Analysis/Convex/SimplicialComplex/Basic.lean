@@ -49,7 +49,7 @@ variable (𝕜 E : Type*) {ι : Type*} [OrderedRing 𝕜] [AddCommGroup E] [Modu
 
 namespace Geometry
 
--- TODO: update to new binder order? not sure what binder order is correct for `down_closed`.
+-- TODO: update to new binder order not sure what binder order is correct for `down_closed`.
 /-- A simplicial complex in a `𝕜`-module is a collection of simplices which glue nicely together.
 Note that the textbook meaning of "glue nicely" is given in
 `Geometry.SimplicialComplex.disjoint_or_exists_inter_eq_convexHull`. It is mostly useless, as

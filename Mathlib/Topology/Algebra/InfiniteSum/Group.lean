@@ -25,7 +25,7 @@ section TopologicalGroup
 variable [CommGroup α] [TopologicalSpace α] [TopologicalGroup α]
 variable {f g : β → α} {a a₁ a₂ : α}
 
--- `by simpa using` speeds up elaboration. Why?
+-- `by simpa using` speeds up elaboration. Why
 @[to_additive]
 theorem HasProd.inv (h : HasProd f a) : HasProd (fun b ↦ (f b)⁻¹) a⁻¹ := by
   simpa only using h.map (MonoidHom.id α)⁻¹ continuous_inv

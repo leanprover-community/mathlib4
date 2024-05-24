@@ -21,7 +21,7 @@ abbrev DBFile := Array (String × Name)
 
 def readJsonFile (α) [FromJson α] (path : System.FilePath) : IO α := do
   let _ : MonadExceptOf String IO := ⟨throw ∘ IO.userError, fun x _ => x⟩
-  liftExcept <| fromJson? <|← liftExcept <| Json.parse <|← IO.FS.readFile path
+  liftExcept <| fromJson <|← liftExcept <| Json.parse <|← IO.FS.readFile path
 
 def databases : List (String × String) := [
   ("undergrad.json", "Entries in `docs/undergrad.yaml` refer to declarations that don't exist. Please correct the following:"),

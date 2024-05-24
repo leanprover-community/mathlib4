@@ -1274,7 +1274,7 @@ instance (priority := 100) LinearOrderedRing.toLinearOrderedAddCommGroup :
 #align linear_ordered_ring.to_linear_ordered_add_comm_group LinearOrderedRing.toLinearOrderedAddCommGroup
 
 -- TODO: Can the following five lemmas be generalised to
--- `[LinearOrderedSemiring α] [ExistsAddOfLE α]`?
+-- `[LinearOrderedSemiring α] [ExistsAddOfLE α]`
 
 lemma mul_neg_iff : a * b < 0 ↔ 0 < a ∧ b < 0 ∨ a < 0 ∧ 0 < b := by
   rw [← neg_pos, neg_mul_eq_mul_neg, mul_pos_iff (α := α), neg_pos, neg_lt_zero]

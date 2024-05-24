@@ -68,7 +68,7 @@ theorem le_extend {s : α} (h : P s) : m s h ≤ extend m s := by
   rfl
 #align measure_theory.le_extend MeasureTheory.le_extend
 
--- TODO: why this is a bad `congr` lemma?
+-- TODO: why this is a bad `congr` lemma
 theorem extend_congr {β : Type*} {Pb : β → Prop} {mb : ∀ s : β, Pb s → ℝ≥0∞} {sa : α} {sb : β}
     (hP : P sa ↔ Pb sb) (hm : ∀ (ha : P sa) (hb : Pb sb), m sa ha = mb sb hb) :
     extend m sa = extend mb sb :=

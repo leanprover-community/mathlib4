@@ -138,7 +138,7 @@ initialize_simps_projections CategoryTheory.Monad
 initialize_simps_projections CategoryTheory.Comonad
   (obj → obj, map → map, toFunctor → coe, ε' → ε, δ' → δ)
 
--- Porting note: investigate whether this can be a `simp` lemma?
+-- Porting note: investigate whether this can be a `simp` lemma
 @[reassoc]
 theorem Monad.assoc (T : Monad C) (X : C) :
     (T : C ⥤ C).map (T.μ.app X) ≫ T.μ.app _ = T.μ.app _ ≫ T.μ.app _ :=

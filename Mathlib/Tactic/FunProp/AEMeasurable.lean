@@ -37,8 +37,8 @@ attribute [fun_prop]
   aemeasurable_const
   AEMeasurable.comp_aemeasurable'
   -- Measurable.comp_aemeasurable'
-  -- AEMeasurable_apply -- is this somewhere?
-  -- AEMeasurable_pi -- is this somewhere?
+  -- AEMeasurable_apply -- is this somewhere
+  -- AEMeasurable_pi -- is this somewhere
 
 -- product
 attribute [fun_prop]

@@ -77,8 +77,8 @@ For example, if `prf : ¬ a < b`, ``flipNegatedComparison prf q(a < b)`` returns
 -/
 def flipNegatedComparison (prf : Expr) (e : Expr) : MetaM (Option Expr) :=
   match e.getAppFnArgs with
-  | (``LE.le, #[_, _, _, _]) => try? <| mkAppM ``lt_of_not_ge #[prf]
-  | (``LT.lt, #[_, _, _, _]) => try? <| mkAppM ``le_of_not_gt #[prf]
+  | (``LE.le, #[_, _, _, _]) => try <| mkAppM ``lt_of_not_ge #[prf]
+  | (``LT.lt, #[_, _, _, _]) => try <| mkAppM ``le_of_not_gt #[prf]
   | _ => throwError "Not a comparison (flipNegatedComparison): {e}"
 
 /--
@@ -235,24 +235,24 @@ where
     match e.getAppFnArgs with
     | (``LE.le, #[_, _, a, b]) => match isZero a, isZero b with
       | _, true => return proof
-      | true, _ => try? <| mkAppM ``neg_nonpos_of_nonneg #[proof]
-      | _, _    => try? <| mkAppM ``sub_nonpos_of_le #[proof]
+      | true, _ => try <| mkAppM ``neg_nonpos_of_nonneg #[proof]
+      | _, _    => try <| mkAppM ``sub_nonpos_of_le #[proof]
     | (``LT.lt, #[_, _, a, b]) => match isZero a, isZero b with
       | _, true => return proof
-      | true, _ => try? <| mkAppM ``neg_neg_of_pos #[proof]
-      | _, _    => try? <| mkAppM ``sub_neg_of_lt #[proof]
+      | true, _ => try <| mkAppM ``neg_neg_of_pos #[proof]
+      | _, _    => try <| mkAppM ``sub_neg_of_lt #[proof]
     | (``Eq, #[_, a, b]) => match isZero a, isZero b with
       | _, true => return proof
-      | true, _ => try? <| mkAppM ``Eq.symm #[proof]
-      | _, _    => try? <| mkAppM ``sub_eq_zero_of_eq #[proof]
+      | true, _ => try <| mkAppM ``Eq.symm #[proof]
+      | _, _    => try <| mkAppM ``sub_eq_zero_of_eq #[proof]
     | (``GT.gt, #[_, _, a, b]) => match isZero a, isZero b with
-      | _, true => try? <| mkAppM ``neg_neg_of_pos #[proof]
-      | true, _ => try? <| mkAppM ``lt_zero_of_zero_gt #[proof]
-      | _, _    => try? <| mkAppM ``sub_neg_of_lt #[proof]
+      | _, true => try <| mkAppM ``neg_neg_of_pos #[proof]
+      | true, _ => try <| mkAppM ``lt_zero_of_zero_gt #[proof]
+      | _, _    => try <| mkAppM ``sub_neg_of_lt #[proof]
     | (``GE.ge, #[_, _, a, b]) => match isZero a, isZero b with
-      | _, true => try? <| mkAppM ``neg_nonpos_of_nonneg #[proof]
-      | true, _ => try? <| mkAppM ``le_zero_of_zero_ge #[proof]
-      | _, _    => try? <| mkAppM ``sub_nonpos_of_le #[proof]
+      | _, true => try <| mkAppM ``neg_nonpos_of_nonneg #[proof]
+      | true, _ => try <| mkAppM ``le_zero_of_zero_ge #[proof]
+      | _, _    => try <| mkAppM ``sub_nonpos_of_le #[proof]
     | (``Not, #[a]) => do
       let some nproof ← flipNegatedComparison proof a | return none
       aux nproof (← inferType nproof)
@@ -317,7 +317,7 @@ partial def findSquares (s : HashSet (Expr × Bool)) (e : Expr) : MetaM (HashSet
   -- In the meantime we just bail out if we ever encounter loose bvars.
   if e.hasLooseBVars then return s else
   match e.getAppFnArgs with
-  | (``HPow.hPow, #[_, _, _, _, a, b]) => match b.numeral? with
+  | (``HPow.hPow, #[_, _, _, _, a, b]) => match b.numeral with
     | some 2 => do
       let s ← findSquares s a
       return (s.insert (a, true))
@@ -383,8 +383,8 @@ turning it into `a < b ∨ a > b`.
 This produces `2^n` branches when there are `n` such hypotheses in the input.
 -/
 partial def removeNe_aux : MVarId → List Expr → MetaM (List Branch) := fun g hs => do
-  let some (e, α, a, b) ← hs.findSomeM? (fun e : Expr => do
-    let some (α, a, b) := (← instantiateMVars (← inferType e)).ne?' | return none
+  let some (e, α, a, b) ← hs.findSomeM (fun e : Expr => do
+    let some (α, a, b) := (← instantiateMVars (← inferType e)).ne' | return none
     return some (e, α, a, b)) | return [(g, hs)]
   let [ng1, ng2] ← g.apply (← mkAppOptM ``Or.elim #[none, none, ← g.getType,
       ← mkAppOptM ``lt_or_gt_of_ne #[α, none, a, b, e]]) | failure

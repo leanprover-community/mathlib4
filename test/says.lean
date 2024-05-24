@@ -14,14 +14,14 @@ example : Nat := by
   (show_term exact 37) says exact 37
 
 /--
-info: Try this: simp? says simp only [List.length_append]
+info: Try this: simp says simp only [List.length_append]
 -/
 #guard_msgs in
 example (x y : List α) : (x ++ y).length = x.length + y.length := by
-  simp? says
+  simp says
 
 example (x y : List α) : (x ++ y).length = x.length + y.length := by
-  simp? says simp only [List.length_append]
+  simp says simp only [List.length_append]
 
 /--
 error: Tactic `have := 0` did not produce any messages.
@@ -40,21 +40,21 @@ example : true := by
 -- Check that `says` does not reverify the right-hand-side.
 set_option says.no_verify_in_CI true in
 example (x y : List α) : (x ++ y).length = x.length + y.length := by
-  simp? says skip
+  simp says skip
   simp
 
 -- Check that with `says.verify` `says` will reverify that the left-hand-side constructs
 -- the right-hand-side.
 set_option says.verify true in
 /--
-error: Tactic `simp?` produced `simp only [List.length_append]`,
+error: Tactic `simp` produced `simp only [List.length_append]`,
 but was expecting it to produce `simp only []`!
 
 You can reproduce this error locally using `set_option says.verify true`.
 -/
 #guard_msgs in
 example (x y : List α) : (x ++ y).length = x.length + y.length := by
-  simp? says simp only []
+  simp says simp only []
 
 set_option linter.unreachableTactic false
 -- Now we check that `says` does not consume following tactics unless they are indented.
@@ -68,7 +68,7 @@ example : True := by
 
 set_option says.verify true in
 example (x y : List α) : (x ++ y).length = x.length + y.length := by
-  simp? says simp only [List.length_append]
+  simp says simp only [List.length_append]
   -- This is a comment to test that `says` ignores following comments.
 
 set_option says.no_verify_in_CI true in
@@ -100,9 +100,9 @@ def very_long_lemma_name_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa : Q → P := fun _ 
 @[simp]
 def very_long_lemma_name_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb : Q := trivial
 /--
-info: Try this: aesop? says simp_all only [very_long_lemma_name_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,
+info: Try this: aesop says simp_all only [very_long_lemma_name_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,
     very_long_lemma_name_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]
 -/
 #guard_msgs in
 example : P := by
-  aesop? says
+  aesop says

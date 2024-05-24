@@ -42,7 +42,7 @@ and returns the value associated with this key if it exists.
 Otherwise, it fails.
 -/
 def List.findDefeq (red : TransparencyMode) (m : List (Expr × v)) (e : Expr) : MetaM v := do
-  if let some (_, n) ← m.findM? fun ⟨e', _⟩ => withTransparency red (isDefEq e e') then
+  if let some (_, n) ← m.findM fun ⟨e', _⟩ => withTransparency red (isDefEq e e') then
     return n
   else
     failure
@@ -159,7 +159,7 @@ and forces some functions that call it into `MetaM` as well.
 
 partial def linearFormOfExpr (red : TransparencyMode) (m : ExprMap) (e : Expr) :
     MetaM (ExprMap × Sum) :=
-  match e.numeral? with
+  match e.numeral with
   | some 0 => return ⟨m, RBMap.empty⟩
   | some (n+1) => return ⟨m, scalar (n+1)⟩
   | none =>
@@ -180,7 +180,7 @@ partial def linearFormOfExpr (red : TransparencyMode) (m : ExprMap) (e : Expr) :
     let (m1, comp) ← linearFormOfExpr red m e
     return (m1, comp.mapVal (fun _ v => -v))
   | (``HPow.hPow, #[_, _, _, _, a, n]) => do
-    match n.numeral? with
+    match n.numeral with
     | some n => do
       let (m1, comp) ← linearFormOfExpr red m a
       return (m1, comp.pow n)
@@ -197,7 +197,7 @@ If any new monomials are encountered, they are assigned variable numbers and `ma
  -/
 def elimMonom (s : Sum) (m : Map Monom ℕ) : Map Monom ℕ × Map ℕ ℤ :=
   s.foldr (fun mn coeff ⟨map, out⟩ ↦
-    match map.find? mn with
+    match map.find mn with
     | some n => ⟨map, out.insert n coeff⟩
     | none =>
       let n := map.size

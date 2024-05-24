@@ -36,7 +36,7 @@ be satisfied by itself and all stricter types.
 
 ## TODO
 
-Do we need more intersections between `BotHom`, `TopHom` and lattice homomorphisms?
+Do we need more intersections between `BotHom`, `TopHom` and lattice homomorphisms
 -/
 
 

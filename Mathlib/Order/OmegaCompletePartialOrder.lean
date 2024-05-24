@@ -57,7 +57,7 @@ supremum helps define the meaning of recursive procedures.
 
 universe u v
 
--- Porting note: can this really be a good idea?
+-- Porting note: can this really be a good idea
 attribute [-simp] Part.bind_eq_bind Part.map_eq_map
 
 open scoped Classical

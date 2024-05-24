@@ -173,7 +173,7 @@ def invertibleOfMul {α} [Semiring α] (k : ℕ) (b : α) :
 def invertibleOfMul' {α} [Semiring α] {a k b : ℕ} [Invertible (a : α)]
     (h : a = k * b) : Invertible (b : α) := invertibleOfMul k (b:α) ↑a (by simp [h])
 
--- TODO: clean up and move it somewhere in mathlib? It's a bit much for this file
+-- TODO: clean up and move it somewhere in mathlib It's a bit much for this file
 -- see note [norm_num lemma function equality]
 theorem isRat_add {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : ℤ} {da db dc k : ℕ} :
     f = HAdd.hAdd → IsRat a na da → IsRat b nb db →

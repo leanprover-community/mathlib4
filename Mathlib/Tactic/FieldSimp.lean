@@ -32,18 +32,18 @@ private def dischargerTraceMessage (prop: Expr) : Except ε (Option Expr) → Si
 | .error _ | .ok none => return m!"{crossEmoji} discharge {prop}"
 | .ok (some _) => return m!"{checkEmoji} discharge {prop}"
 
-open private Simp.dischargeUsingAssumption? from Lean.Meta.Tactic.Simp.Rewrite
+open private Simp.dischargeUsingAssumption from Lean.Meta.Tactic.Simp.Rewrite
 
 /-- Discharge strategy for the `field_simp` tactic. -/
 partial def discharge (prop : Expr) : SimpM (Option Expr) :=
   withTraceNode `Tactic.field_simp (dischargerTraceMessage prop) do
     -- Discharge strategy 1: Use assumptions
-    if let some r ← Simp.dischargeUsingAssumption? prop then
+    if let some r ← Simp.dischargeUsingAssumption prop then
       return some r
 
     -- Discharge strategy 2: Normalize inequalities using NormNum
     let prop : Q(Prop) ← (do pure prop)
-    let pf? ← match prop with
+    let pf ← match prop with
     | ~q(($e : $α) ≠ $b) =>
         try
           let res ← Mathlib.Meta.NormNum.derive (α := (q(Prop) : Q(Type))) prop
@@ -53,13 +53,13 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) :=
         catch _ =>
           pure none
     | _ => pure none
-    if let some pf := pf? then return some pf
+    if let some pf := pf then return some pf
 
     -- Discharge strategy 3: Use positivity
-    let pf? ←
+    let pf ←
       try some <$> Mathlib.Meta.Positivity.solve prop
       catch _ => pure none
-    if let some pf := pf? then return some pf
+    if let some pf := pf then return some pf
 
     -- Discharge strategy 4: Use the simplifier
     let ctx ← readThe Simp.Context
@@ -68,9 +68,9 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) :=
     -- Porting note: mathlib3's analogous field_simp discharger `field_simp.ne_zero`
     -- does not explicitly call `simp` recursively like this. It's unclear to me
     -- whether this is because
-    --   1) Lean 3 simp dischargers automatically call `simp` recursively. (Do they?),
+    --   1) Lean 3 simp dischargers automatically call `simp` recursively. (Do they),
     --   2) mathlib3 norm_num1 is able to handle any needed discharging, or
-    --   3) some other reason?
+    --   3) some other reason
     let ⟨simpResult, stats'⟩ ←
       simp prop { ctx with dischargeDepth := ctx.dischargeDepth + 1 } #[(← Simp.getSimprocs)]
         discharge stats
@@ -146,12 +146,12 @@ that have numerals in denominators.
 The tactics are not related: `cancel_denoms` will only handle numeric denominators, and will try to
 entirely remove (numeric) division from the expression by multiplying by a factor.
 -/
-syntax (name := fieldSimp) "field_simp" (config)? (discharger)? (&" only")?
-  (simpArgs)? (location)? : tactic
+syntax (name := fieldSimp) "field_simp" (config) (discharger) (&" only")
+  (simpArgs) (location) : tactic
 
 elab_rules : tactic
-| `(tactic| field_simp $[$cfg:config]? $[(discharger := $dis)]? $[only%$only?]?
-    $[$sa:simpArgs]? $[$loc:location]?) => withMainContext do
+| `(tactic| field_simp $[$cfg:config] $[(discharger := $dis)] $[only%$only]
+    $[$sa:simpArgs] $[$loc:location]) => withMainContext do
   let cfg ← elabSimpConfig (mkOptionalNode cfg) .simp
   -- The `field_simp` discharger relies on recursively calling the discharger.
   -- Prior to https://github.com/leanprover/lean4/pull/3523,
@@ -165,7 +165,7 @@ elab_rules : tactic
     let ⟨_, d⟩ ← tacticToDischarge d
     pure d
 
-  let thms0 ← if only?.isSome then
+  let thms0 ← if only.isSome then
     simpOnlyBuiltins.foldlM (·.addConst ·) ({} : SimpTheorems)
   else do
     let thms0 ← getSimpTheorems
@@ -173,7 +173,7 @@ elab_rules : tactic
     let thms0 ← thms0.erase (.decl `mul_eq_zero)
     thms0.erase (.decl ``one_divp)
 
-  let some ext ← getSimpExtension? `field_simps | throwError "field_simps not found"
+  let some ext ← getSimpExtension `field_simps | throwError "field_simps not found"
   let thms ← ext.getTheorems
 
   let ctx : Simp.Context := {

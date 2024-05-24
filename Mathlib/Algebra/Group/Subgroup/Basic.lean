@@ -2076,7 +2076,7 @@ def normalizer : Subgroup G where
 #align add_subgroup.normalizer AddSubgroup.normalizer
 
 -- variant for sets.
--- TODO should this replace `normalizer`?
+-- TODO should this replace `normalizer`
 /-- The `setNormalizer` of `S` is the subgroup of `G` whose elements satisfy `g*S*g⁻¹=S` -/
 @[to_additive
       "The `setNormalizer` of `S` is the subgroup of `G` whose elements satisfy

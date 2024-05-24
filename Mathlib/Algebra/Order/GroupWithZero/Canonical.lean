@@ -113,7 +113,7 @@ end LinearOrderedCommMonoidWithZero
 section LinearOrderedCommGroupWithZero
 variable [LinearOrderedCommGroupWithZero α] {a b c d : α} {m n : ℕ}
 
--- TODO: Do we really need the following two?
+-- TODO: Do we really need the following two
 /-- Alias of `mul_le_one'` for unification. -/
 theorem mul_le_one₀ (ha : a ≤ 1) (hb : b ≤ 1) : a * b ≤ 1 :=
   mul_le_one' ha hb

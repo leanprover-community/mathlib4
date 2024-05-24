@@ -18,7 +18,7 @@ info: Try this: have : M.Disjoint L := List.disjoint_symm w
 -/
 #guard_msgs in
 example (K L M : List α) (w : L.Disjoint M) (m : K ⊆ L) : True := by
-  have? using w
+  have using w
   -- have : List.Disjoint K M := List.disjoint_of_subset_left m w
   -- have : List.Disjoint M L := List.disjoint_symm w
   trivial
@@ -30,9 +30,9 @@ info: Try this: have : K.Disjoint M := List.disjoint_of_subset_left m w
 -/
 #guard_msgs in
 example (K L M : List α) (w : L.Disjoint M) (m : K ⊆ L) : True := by
-  have? using w, m
+  have using w, m
   -- have : List.Disjoint K M := List.disjoint_of_subset_left m w
-  have?! using w, m
+  have! using w, m
   guard_hyp List.disjoint_of_subset_left : List.Disjoint K M :=
     _root_.List.disjoint_of_subset_left m w
   fail_if_success
@@ -49,9 +49,9 @@ info: Try this: let _ : ℕ × String := bar p.1 p.2
 -/
 #guard_msgs in
 example (p : Nat × String) : True := by
-  fail_if_success have? using p
-  have? a : Nat × String using p.1, p.2
-  have? : Nat × _ using p.1, p.2
+  fail_if_success have using p
+  have a : Nat × String using p.1, p.2
+  have : Nat × _ using p.1, p.2
   trivial
 
 /--
@@ -61,7 +61,7 @@ info: Try this: have : a ∉ M := foo L M w m
 -/
 #guard_msgs in
 example (_K L M : List α) (w : L.Disjoint M) (m : a ∈ L) : True := by
-  have?! using w
+  have! using w
   guard_hyp List.disjoint_symm : List.Disjoint M L := _root_.List.disjoint_symm w
   have : a ∉ M := by assumption
   trivial
@@ -94,9 +94,9 @@ theorem dvd_of_dvd_pow (hp : Prime p) {a : α} {n : ℕ} (h : p ∣ a ^ n) : p �
     -- have := isUnit_of_dvd_one h
     -- have := not_unit hp
     -- `propose!` successfully guesses them both:
-    have?! using h
+    have! using h
     guard_hyp isUnit_of_dvd_one : IsUnit p := _root_.isUnit_of_dvd_one h
-    have?! using hp
+    have! using hp
     guard_hyp Prime.not_unit : ¬IsUnit p := not_unit hp
     contradiction
   rw [pow_succ'] at h

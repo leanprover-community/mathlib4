@@ -32,7 +32,7 @@ namespace Foo
 
 --  However, the declaration `Foo.add.add` is present in the environment.
 run_cmd Lean.Elab.Command.liftTermElabM do
-  let decl := (← Lean.getEnv).find? ``Foo.add.add
+  let decl := (← Lean.getEnv).find ``Foo.add.add
   guard decl.isSome
 
 namespace Nat

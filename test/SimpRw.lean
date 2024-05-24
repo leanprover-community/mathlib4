@@ -49,4 +49,4 @@ error: no goals to be solved
 #guard_msgs in
 example {n : Nat} (hn : n = 0) : (n = 0) ∧ (n = 0) := by
   constructor
-  simp_rw [hn, hn]  -- does this work?
+  simp_rw [hn, hn]  -- does this work

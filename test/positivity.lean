@@ -381,7 +381,7 @@ example (s : Finset ℕ) : 0 ≤ ∑ j in s, j := by positivity
 example (s : Finset ℕ) : 0 ≤ s.sum id := by positivity
 example (s : Finset ℕ) (f : ℕ → ℕ) (a : ℕ) : 0 ≤ s.sum (f a) := by positivity
 
--- Make sure that the extension doesn't produce an invalid term by accidentally unifying `?n` with
+-- Make sure that the extension doesn't produce an invalid term by accidentally unifying `n` with
 -- `0` because of the `hf` assumption
 set_option linter.unusedVariables false in
 example (f : ℕ → ℕ) (hf : 0 ≤ f 0) : 0 ≤ ∑ n in Finset.range 10, f n := by positivity
@@ -398,7 +398,7 @@ example (s : Finset ℕ) : 0 ≤ ∏ j in s, j := by positivity
 example (s : Finset ℕ) : 0 ≤ s.sum id := by positivity
 example (s : Finset ℕ) (f : ℕ → ℕ) (a : ℕ) : 0 ≤ s.sum (f a) := by positivity
 
--- Make sure that the extension doesn't produce an invalid term by accidentally unifying `?n` with
+-- Make sure that the extension doesn't produce an invalid term by accidentally unifying `n` with
 -- `0` because of the `hf` assumption
 set_option linter.unusedVariables false in
 example (f : ℕ → ℕ) (hf : 0 ≤ f 0) : 0 ≤ ∏ n in Finset.range 10, f n := by positivity

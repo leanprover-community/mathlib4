@@ -363,7 +363,7 @@ end Metric
 
 section EqRel
 
--- TODO: add `dist_congr` similar to `edist_congr`?
+-- TODO: add `dist_congr` similar to `edist_congr`
 instance SeparationQuotient.instDist {α : Type u} [PseudoMetricSpace α] :
     Dist (SeparationQuotient α) where
   dist := lift₂ dist fun x y x' y' hx hy ↦ by rw [dist_edist, dist_edist, ← edist_mk x,

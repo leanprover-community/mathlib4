@@ -161,9 +161,9 @@ initialize registerBuiltinAttribute {
       x₁ ~₁ x₁' → ... xₙ ~ₙ xₙ' → f x₁ ... xₙ ∼ f x₁' ... xₙ', got {declTy}"
     -- verify that conclusion of the lemma is of the form `rel (head x₁ ... xₙ) (head y₁ ... yₙ)`
     let .app (.app rel lhs) rhs ← whnf targetTy | fail
-    let some relName := rel.getAppFn.constName? | fail
-    let (some head, lhsArgs) := lhs.withApp fun e a => (e.constName?, a) | fail
-    let (some head', rhsArgs) := rhs.withApp fun e a => (e.constName?, a) | fail
+    let some relName := rel.getAppFn.constName | fail
+    let (some head, lhsArgs) := lhs.withApp fun e a => (e.constName, a) | fail
+    let (some head', rhsArgs) := rhs.withApp fun e a => (e.constName, a) | fail
     unless head == head' && lhsArgs.size == rhsArgs.size do fail
     let mut varyingArgs := #[]
     let mut pairs := #[]
@@ -193,7 +193,7 @@ initialize registerBuiltinAttribute {
           let rhs₁ := rhs₁.getAppFn
           -- check whether `(lhs₁, rhs₁)` is in some order one of the "varying argument" pairs from
           -- the conclusion to the lemma
-          if let some j ← pairs.findM? fun (_, e1, e2) =>
+          if let some j ← pairs.findM fun (_, e1, e2) =>
             isDefEq lhs₁ e1 <&&> isDefEq rhs₁ e2 <||>
             isDefEq lhs₁ e2 <&&> isDefEq rhs₁ e1
           then
@@ -303,18 +303,18 @@ partial def _root_.Lean.MVarId.gcongr
   -- Check that the goal is of the form `rel (lhsHead _ ... _) (rhsHead _ ... _)`
   let .app (.app rel lhs) rhs ← withReducible g.getType'
     | throwError "gcongr failed, not a relation"
-  let some relName := rel.getAppFn.constName?
+  let some relName := rel.getAppFn.constName
     | throwError "gcongr failed, relation head {rel} is not a constant"
-  let (some lhsHead, lhsArgs) := lhs.withApp fun e a => (e.constName?, a)
+  let (some lhsHead, lhsArgs) := lhs.withApp fun e a => (e.constName, a)
     | if template.isNone then return (false, names, #[g])
       throwError "gcongr failed, {lhs} is not a constant"
-  let (some rhsHead, rhsArgs) := rhs.withApp fun e a => (e.constName?, a)
+  let (some rhsHead, rhsArgs) := rhs.withApp fun e a => (e.constName, a)
     | if template.isNone then return (false, names, #[g])
       throwError "gcongr failed, {rhs} is not a constant"
   -- B. If there is a template, check that it is of the form `tplHead _ ... _` and that
   -- `tplHead = lhsHead = rhsHead`
   let tplArgs ← if let some tpl := template then
-    let (some tplHead, tplArgs) := tpl.withApp fun e a => (e.constName?, a)
+    let (some tplHead, tplArgs) := tpl.withApp fun e a => (e.constName, a)
       | throwError "gcongr failed, {tpl} is not a constant"
     unless tplHead == lhsHead && tplArgs.size == rhsArgs.size do
       throwError "expected {tplHead}, got {lhsHead}\n{lhs}"
@@ -325,8 +325,8 @@ partial def _root_.Lean.MVarId.gcongr
     -- according to which of these contain `_`
     tplArgs.mapM fun tpl => do
       let mctx ← getMCtx
-      let hasMVar := tpl.findMVar? fun mvarId =>
-        if let some mdecl := mctx.findDecl? mvarId then
+      let hasMVar := tpl.findMVar fun mvarId =>
+        if let some mdecl := mctx.findDecl mvarId then
           mdecl.kind matches .syntheticOpaque
         else
           false
@@ -347,7 +347,7 @@ partial def _root_.Lean.MVarId.gcongr
   if varyingArgs.all not then
     throwError "try rfl"
   let s ← saveState
-  let mut ex? := none
+  let mut ex := none
   -- Look up the `@[gcongr]` lemmas whose conclusion has the same relation and head function as
   -- the goal and whether the boolean-array of varying/nonvarying arguments of such
   -- a lemma matches `varyingArgs`.
@@ -361,10 +361,10 @@ partial def _root_.Lean.MVarId.gcongr
       -- If the `apply` fails, go on to try to apply the next matching lemma.
       -- If all the matching lemmas fail to `apply`, we will report (somewhat arbitrarily) the
       -- error message on the first failure, so stash that.
-      ex? := ex? <|> (some (← saveState, e))
+      ex := ex <|> (some (← saveState, e))
       s.restore
     | .ok gs =>
-      let some e ← getExprMVarAssignment? g | panic! "unassigned?"
+      let some e ← getExprMVarAssignment g | panic! "unassigned"
       let args := e.getAppArgs
       let mut subgoals := #[]
       let mut names := names
@@ -377,7 +377,7 @@ partial def _root_.Lean.MVarId.gcongr
       for (i, j) in lem.mainSubgoals do
         -- We anticipate that such a "main" subgoal should not have been solved by the `apply` by
         -- unification ...
-        let some (.mvar mvarId) := args[i]? | panic! "what kind of lemma is this?"
+        let some (.mvar mvarId) := args[i] | panic! "what kind of lemma is this"
         -- Introduce all variables and hypotheses in this subgoal.
         let (names2, _vs, mvarId) ← mvarId.introsWithBinderIdents names
         -- B. If there is a template, look up the part of the template corresponding to the `j`-th
@@ -402,7 +402,7 @@ partial def _root_.Lean.MVarId.gcongr
   -- report this goal back.
   if template.isNone then
     return (false, names, #[g])
-  let some (sErr, e) := ex?
+  let some (sErr, e) := ex
     -- B. If there is a template, and there was no `@[gcongr]` lemma which matched the template,
     -- fail.
     | throwError "gcongr failed, no @[gcongr] lemma applies for the template portion \
@@ -449,8 +449,8 @@ The tactic attempts to discharge side goals to these "generalized congruence" le
 side goal `0 ≤ x ^ 2` in the above application of `mul_le_mul_of_nonneg_left`) using the tactic
 `gcongr_discharger`, which wraps `positivity` but can also be extended. Side goals not discharged
 in this way are left for the user. -/
-elab "gcongr" template:(colGt term)?
-    withArg:((" with " (colGt binderIdent)+)?) : tactic => do
+elab "gcongr" template:(colGt term)
+    withArg:((" with " (colGt binderIdent)+)) : tactic => do
   let g ← getMainGoal
   g.withContext do
   let .app (.app _rel lhs) _rhs ← withReducible g.getType'

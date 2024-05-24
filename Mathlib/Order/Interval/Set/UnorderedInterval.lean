@@ -63,7 +63,7 @@ scoped[Interval] notation "[[" a ", " b "]]" => Set.uIcc a b
 open Interval
 
 @[simp] lemma dual_uIcc (a b : α) : [[toDual a, toDual b]] = ofDual ⁻¹' [[a, b]] :=
-  -- Note: needed to hint `(α := α)` after #8386 (elaboration order?)
+  -- Note: needed to hint `(α := α)` after #8386 (elaboration order)
   dual_Icc (α := α)
 #align set.dual_uIcc Set.dual_uIcc
 
@@ -273,7 +273,7 @@ lemma monotoneOn_or_antitoneOn_iff_uIcc :
     mem_uIcc]
 #align set.monotone_on_or_antitone_on_iff_uIcc Set.monotoneOn_or_antitoneOn_iff_uIcc
 
--- Porting note: what should the naming scheme be here? This is a term, so should be `uIoc`,
+-- Porting note: what should the naming scheme be here This is a term, so should be `uIoc`,
 -- but we also want to match the `Ioc` convention.
 /-- The open-closed uIcc with unordered bounds. -/
 def uIoc : α → α → Set α := fun a b => Ioc (min a b) (max a b)

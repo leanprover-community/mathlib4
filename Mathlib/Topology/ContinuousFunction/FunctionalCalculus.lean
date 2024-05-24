@@ -50,9 +50,9 @@ arguments to `cfc`, and a bundled continuous counterpart can only make sense whe
 `a` does not contain zero and when we have an `⁻¹` operation on the domain.
 
 A reader familiar with C⋆-algebra theory may be somewhat surprised at the level of abstraction here.
-For instance, why not require `A` to be an actual C⋆-algebra? Why define separate continuous
+For instance, why not require `A` to be an actual C⋆-algebra Why define separate continuous
 functional calculi for `R := ℂ`, `ℝ` or `ℝ≥0` instead of simply using the continuous functional
-calculus for normal elements? The reason for both can be explained with a simple example,
+calculus for normal elements The reason for both can be explained with a simple example,
 `A := Matrix n n ℝ`. In Mathlib, matrices are not equipped with a norm (nor even a metric), and so
 requiring `A` to be a C⋆-algebra is far too stringent. Likewise, `A` is not a `ℂ`-algebra, and so
 it is impossible to consider the `ℂ`-spectrum of `a : Matrix n n ℝ`.

@@ -136,7 +136,7 @@ instance : ValuationRing A where
 instance : Algebra A K :=
   show Algebra A.toSubring K by infer_instance
 
--- Porting note: Somehow it cannot find this instance and I'm too lazy to debug. wrong prio?
+-- Porting note: Somehow it cannot find this instance and I'm too lazy to debug. wrong prio
 instance localRing : LocalRing A := ValuationRing.localRing A
 
 @[simp]

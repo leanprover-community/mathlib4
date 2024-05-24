@@ -50,7 +50,7 @@ To do so, we will need to introduce a pair of quantifiers
 ∀ ε > 0, ∃ N, ∀ n ≥ N, ∃ δ > 0, ∀ y ∈ B_δ(x), |y - x|⁻¹ * |(g y - g x) - g' x (y - x)| < ε.
 ```
 
-So how do we write this in terms of filters? Well, the initial definition of the derivative is
+So how do we write this in terms of filters Well, the initial definition of the derivative is
 
 ```lean
 tendsto (|y - x|⁻¹ * |(g y - g x) - g' x (y - x)|) (𝓝 x) (𝓝 0)

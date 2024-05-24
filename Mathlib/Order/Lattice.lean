@@ -661,7 +661,7 @@ lemma inf_eq_and_sup_eq_iff : a ⊓ b = c ∧ a ⊔ b = c ↔ a = c ∧ b = c :=
 -/
 
 
--- TODO: better names?
+-- TODO: better names
 theorem sup_inf_le : a ⊔ b ⊓ c ≤ (a ⊔ b) ⊓ (a ⊔ c) :=
   le_inf (sup_le_sup_left inf_le_left _) (sup_le_sup_left inf_le_right _)
 #align sup_inf_le sup_inf_le

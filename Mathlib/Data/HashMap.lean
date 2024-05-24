@@ -38,7 +38,7 @@ def values (m : HashMap α β) : List β :=
 
 /-- Add a value to a `HashMap α (List β)` viewed as a multimap. -/
 def consVal (self : HashMap α (List β)) (a : α) (b : β) : HashMap α (List β) :=
-  match self.find? a with
+  match self.find a with
   | none => self.insert a [b]
   | some L => self.insert a (b::L)
 

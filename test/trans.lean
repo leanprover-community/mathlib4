@@ -32,14 +32,14 @@ example : @Trans Nat Nat Nat (· ≤ ·) (· ≤ ·) (· ≤ ·) := inferInstanc
 
 example (a b c : Nat) : a ≤ b → b ≤ c → a ≤ c := by
   intros h₁ h₂
-  trans ?b
+  trans b
   case b => exact b
   exact h₁
   exact h₂
 
 example (a b c : α) (R : α → α → Prop) [Trans R R R] : R a b → R b c → R a c := by
   intros h₁ h₂
-  trans ?b
+  trans b
   case b => exact b
   exact h₁
   exact h₂

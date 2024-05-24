@@ -571,7 +571,7 @@ instance instSemilinearIsometryEquivClass :
   map_smulₛₗ e := map_smulₛₗ e.toLinearEquiv
   norm_map e := e.norm_map'
 
--- TODO: Shouldn't these `CoeFun` instances be scrapped?
+-- TODO: Shouldn't these `CoeFun` instances be scrapped
 /-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 directly. -/
 instance instCoeFun : CoeFun (E ≃ₛₗᵢ[σ₁₂] E₂) fun _ ↦ E → E₂ := ⟨DFunLike.coe⟩

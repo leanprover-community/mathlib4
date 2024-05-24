@@ -596,12 +596,12 @@ theorem take_take {s : Stream' α} : ∀ {m n}, (s.take n).take m = s.take (min 
 @[simp] theorem concat_take_get {s : Stream' α} : s.take n ++ [s.get n] = s.take (n+1) :=
   (take_succ' n).symm
 
-theorem get_take {s : Stream' α} : ∀ {k n}, k < n → (s.take n).get? k = s.get k
+theorem get_take {s : Stream' α} : ∀ {k n}, k < n → (s.take n).get k = s.get k
   | 0, n+1, _ => rfl
-  | k+1, n+1, h => by rw [take_succ, List.get?, get_take (Nat.lt_of_succ_lt_succ h), get_succ]
+  | k+1, n+1, h => by rw [take_succ, List.get, get_take (Nat.lt_of_succ_lt_succ h), get_succ]
 
 theorem get_take_succ (n : Nat) (s : Stream' α) :
-    List.get? (take (succ n) s) n = some (get s n) :=
+    List.get (take (succ n) s) n = some (get s n) :=
   get_take (Nat.lt_succ_self n)
 #align stream.nth_take_succ Stream'.get_take_succ
 
@@ -628,7 +628,7 @@ theorem take_theorem (s₁ s₂ : Stream' α) : (∀ n : Nat, take n s₁ = take
   intro h; apply Stream'.ext; intro n
   induction' n with n _
   · have aux := h 1
-    simp? [take] at aux says
+    simp [take] at aux says
       simp only [take, List.cons.injEq, and_true] at aux
     exact aux
   · have h₁ : some (get s₁ (succ n)) = some (get s₂ (succ n)) := by

@@ -45,7 +45,7 @@ Daykin, *A lattice is distributive iff |A| |B| <= |A ∨ B| |A ∧ B|*
 
 Prove the Fishburn-Shepp inequality.
 
-Is `collapse` a construct generally useful for set family inductions? If so, we should move it to an
+Is `collapse` a construct generally useful for set family inductions If so, we should move it to an
 earlier file and give it a proper API.
 
 ## References

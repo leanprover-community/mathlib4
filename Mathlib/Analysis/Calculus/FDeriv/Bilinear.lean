@@ -46,7 +46,7 @@ variable {b : E × F → G} {u : Set (E × F)}
 
 open NormedField
 
--- Porting note (#11215): TODO: rewrite/golf using analytic functions?
+-- Porting note (#11215): TODO: rewrite/golf using analytic functions
 @[fun_prop]
 theorem IsBoundedBilinearMap.hasStrictFDerivAt (h : IsBoundedBilinearMap 𝕜 b) (p : E × F) :
     HasStrictFDerivAt b (h.deriv p) p := by

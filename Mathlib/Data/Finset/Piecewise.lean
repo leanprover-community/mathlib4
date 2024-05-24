@@ -14,7 +14,7 @@ which is equal to `f` on `s` and `g` on the complement.
 
 ## TODO
 
-Should we deduplicate this from `Set.piecewise`?
+Should we deduplicate this from `Set.piecewise`
 -/
 
 open Function

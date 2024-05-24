@@ -1528,7 +1528,7 @@ theorem Iic_union_Ico_eq_Iio (h : a < b) : Iic a ∪ Ico a b = Iio b :=
     Iio_subset_Iic_union_Ico
 #align set.Iic_union_Ico_eq_Iio Set.Iic_union_Ico_eq_Iio
 
-/-! #### Two finite intervals, `I?o` and `Ic?` -/
+/-! #### Two finite intervals, `Io` and `Ic` -/
 
 
 theorem Ioo_subset_Ioo_union_Ico : Ioo a c ⊆ Ioo a b ∪ Ico b c := fun x hx =>
@@ -1594,7 +1594,7 @@ theorem Ioo_union_Icc_eq_Ioc (h₁ : a < b) (h₂ : b ≤ c) : Ioo a b ∪ Icc b
     Ioc_subset_Ioo_union_Icc
 #align set.Ioo_union_Icc_eq_Ioc Set.Ioo_union_Icc_eq_Ioc
 
-/-! #### Two finite intervals, `I?c` and `Io?` -/
+/-! #### Two finite intervals, `Ic` and `Io` -/
 
 
 theorem Ioo_subset_Ioc_union_Ioo : Ioo a c ⊆ Ioc a b ∪ Ioo b c := fun x hx =>

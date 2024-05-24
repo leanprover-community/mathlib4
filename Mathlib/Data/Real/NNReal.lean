@@ -221,7 +221,7 @@ example : CommSemiring ℝ≥0 := by infer_instance
 
 /-- Coercion `ℝ≥0 → ℝ` as a `RingHom`.
 
-Porting note (#11215): TODO: what if we define `Coe ℝ≥0 ℝ` using this function? -/
+Porting note (#11215): TODO: what if we define `Coe ℝ≥0 ℝ` using this function -/
 def toRealHom : ℝ≥0 →+* ℝ where
   toFun := (↑)
   map_one' := NNReal.coe_one
@@ -349,7 +349,7 @@ theorem _root_.Real.toNNReal_prod_of_nonneg {α} {s : Finset α} {f : α → ℝ
   exact Finset.prod_congr rfl fun x hxs => by rw [Real.coe_toNNReal _ (hf x hxs)]
 #align real.to_nnreal_prod_of_nonneg Real.toNNReal_prod_of_nonneg
 
--- Porting note (#11215): TODO: `simp`? `norm_cast`?
+-- Porting note (#11215): TODO: `simp` `norm_cast`
 theorem coe_nsmul (r : ℝ≥0) (n : ℕ) : ↑(n • r) = n • (r : ℝ) := rfl
 #align nnreal.nsmul_coe NNReal.coe_nsmul
 
@@ -467,7 +467,7 @@ instance instSMulPosStrictMono {α} [Zero α] [Preorder α] [MulAction ℝ α] [
 
 /-- If `a` is a nonnegative real number, then the closed interval `[0, a]` in `ℝ` is order
 isomorphic to the interval `Set.Iic a`. -/
--- Porting note (#11215): TODO: restore once `simps` supports `ℝ≥0` @[simps!? apply_coe_coe]
+-- Porting note (#11215): TODO: restore once `simps` supports `ℝ≥0` @[simps! apply_coe_coe]
 def orderIsoIccZeroCoe (a : ℝ≥0) : Set.Icc (0 : ℝ) a ≃o Set.Iic a where
   toEquiv := Equiv.Set.sep (Set.Ici 0) fun x : ℝ => x ≤ a
   map_rel_iff' := Iff.rfl
@@ -556,7 +556,7 @@ theorem le_iInf_add_iInf {ι ι' : Sort*} [Nonempty ι] [Nonempty ι'] {f : ι �
 
 example : Archimedean ℝ≥0 := by infer_instance
 
--- Porting note (#11215): TODO: remove?
+-- Porting note (#11215): TODO: remove
 instance covariant_add : CovariantClass ℝ≥0 ℝ≥0 (· + ·) (· ≤ ·) := inferInstance
 #align nnreal.covariant_add NNReal.covariant_add
 
@@ -566,7 +566,7 @@ instance contravariant_add : ContravariantClass ℝ≥0 ℝ≥0 (· + ·) (· < 
 instance covariant_mul : CovariantClass ℝ≥0 ℝ≥0 (· * ·) (· ≤ ·) := inferInstance
 #align nnreal.covariant_mul NNReal.covariant_mul
 
--- Porting note (#11215): TODO: delete?
+-- Porting note (#11215): TODO: delete
 nonrec theorem le_of_forall_pos_le_add {a b : ℝ≥0} (h : ∀ ε, 0 < ε → a ≤ b + ε) : a ≤ b :=
   le_of_forall_pos_le_add h
 #align nnreal.le_of_forall_pos_le_add NNReal.le_of_forall_pos_le_add
@@ -1140,7 +1140,7 @@ theorem image_coe_nnreal_real (h : t.OrdConnected) : ((↑) '' t : Set ℝ).OrdC
       forall_mem_image.2 fun _y hy z hz => ⟨⟨z, x.2.trans hz.1⟩, h.out hx hy hz, rfl⟩⟩
 #align set.ord_connected.image_coe_nnreal_real Set.OrdConnected.image_coe_nnreal_real
 
--- Porting note (#11215): TODO: does it generalize to a `GaloisInsertion`?
+-- Porting note (#11215): TODO: does it generalize to a `GaloisInsertion`
 theorem image_real_toNNReal (h : s.OrdConnected) : (Real.toNNReal '' s).OrdConnected := by
   refine ⟨forall_mem_image.2 fun x hx => forall_mem_image.2 fun y hy z hz => _⟩
   rcases le_total y 0 with hy₀ | hy₀

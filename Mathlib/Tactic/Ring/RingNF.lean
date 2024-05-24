@@ -104,7 +104,7 @@ def rewrite (parent : Expr) (root := true) : M Simp.Result :=
         | none => eval sα c e rctx s -- `none` indicates that `eval` will find something algebraic.
         | some none => failure -- No point rewriting atoms
         | some (some r) => pure r -- Nothing algebraic for `eval` to use, but `norm_num` simplifies.
-        let r ← nctx.simp { expr := a, proof? := pa }
+        let r ← nctx.simp { expr := a, proof := pa }
         if ← withReducible <| isDefEq r.expr e then return .done { expr := r.expr }
         pure (.done r)
       catch _ => pure <| .continue
@@ -200,7 +200,7 @@ which rewrites all ring expressions into a normal form.
 * `ring_nf` works as both a tactic and a conv tactic.
   In tactic mode, `ring_nf at h` can be used to rewrite in a hypothesis.
 -/
-elab (name := ringNF) "ring_nf" tk:"!"? cfg:(config ?) loc:(location)? : tactic => do
+elab (name := ringNF) "ring_nf" tk:"!" cfg:(config ) loc:(location) : tactic => do
   let mut cfg ← elabConfig cfg
   if tk.isSome then cfg := { cfg with red := .default }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
@@ -208,10 +208,10 @@ elab (name := ringNF) "ring_nf" tk:"!"? cfg:(config ?) loc:(location)? : tactic 
   withLocation loc (ringNFLocalDecl s cfg) (ringNFTarget s cfg)
     fun _ ↦ throwError "ring_nf failed"
 
-@[inherit_doc ringNF] macro "ring_nf!" cfg:(config)? loc:(location)? : tactic =>
-  `(tactic| ring_nf ! $(cfg)? $(loc)?)
+@[inherit_doc ringNF] macro "ring_nf!" cfg:(config) loc:(location) : tactic =>
+  `(tactic| ring_nf ! $(cfg) $(loc))
 
-@[inherit_doc ringNF] syntax (name := ringNFConv) "ring_nf" "!"? (config)? : conv
+@[inherit_doc ringNF] syntax (name := ringNFConv) "ring_nf" "!" (config) : conv
 
 /--
 Tactic for solving equations of *commutative* (semi)rings, allowing variables in the exponent.
@@ -220,24 +220,24 @@ Tactic for solving equations of *commutative* (semi)rings, allowing variables in
 * The variant `ring1_nf!` will use a more aggressive reducibility setting
   to determine equality of atoms.
 -/
-elab (name := ring1NF) "ring1_nf" tk:"!"? cfg:(config ?) : tactic => do
+elab (name := ring1NF) "ring1_nf" tk:"!" cfg:(config ) : tactic => do
   let mut cfg ← elabConfig cfg
   if tk.isSome then cfg := { cfg with red := .default }
   let s ← IO.mkRef {}
   liftMetaMAtMain fun g ↦ M.run s cfg <| proveEq g
 
-@[inherit_doc ring1NF] macro "ring1_nf!" cfg:(config)? : tactic => `(tactic| ring1_nf ! $(cfg)?)
+@[inherit_doc ring1NF] macro "ring1_nf!" cfg:(config) : tactic => `(tactic| ring1_nf ! $(cfg))
 
 /-- Elaborator for the `ring_nf` tactic. -/
 @[tactic ringNFConv] def elabRingNFConv : Tactic := fun stx ↦ match stx with
-  | `(conv| ring_nf $[!%$tk]? $(_cfg)?) => withMainContext do
+  | `(conv| ring_nf $[!%$tk] $(_cfg)) => withMainContext do
     let mut cfg ← elabConfig stx[2]
     if tk.isSome then cfg := { cfg with red := .default }
     let s ← IO.mkRef {}
     Conv.applySimpResult (← M.run s cfg <| rewrite (← instantiateMVars (← Conv.getLhs)))
   | _ => Elab.throwUnsupportedSyntax
 
-@[inherit_doc ringNF] macro "ring_nf!" cfg:(config)? : conv => `(conv| ring_nf ! $(cfg)?)
+@[inherit_doc ringNF] macro "ring_nf!" cfg:(config) : conv => `(conv| ring_nf ! $(cfg))
 
 /--
 Tactic for evaluating expressions in *commutative* (semi)rings, allowing for variables in the

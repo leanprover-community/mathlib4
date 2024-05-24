@@ -59,7 +59,7 @@ def listDecode : List (Sum α (Σi, L.Functions i)) → List (Option (L.Term α)
   | [] => []
   | Sum.inl a::l => some (var a)::listDecode l
   | Sum.inr ⟨n, f⟩::l =>
-    if h : ∀ i : Fin n, ((listDecode l).get? i).join.isSome then
+    if h : ∀ i : Fin n, ((listDecode l).get i).join.isSome then
       (func f fun i => Option.get _ (h i))::(listDecode l).drop n
     else [none]
 #align first_order.language.term.list_decode FirstOrder.Language.Term.listDecode
@@ -81,7 +81,7 @@ theorem listDecode_encode_list (l : List (L.Term α)) :
       · rfl
       · rw [cons_bind, List.append_assoc, ih, map_cons, l'ih, cons_append, Function.comp]
     have h' : ∀ i : Fin n,
-        (listDecode (((finRange n).bind fun i : Fin n => (ts i).listEncode) ++ l)).get? ↑i =
+        (listDecode (((finRange n).bind fun i : Fin n => (ts i).listEncode) ++ l)).get ↑i =
           some (some (ts i)) := by
       intro i
       rw [h, get_append, get_map]
@@ -103,11 +103,11 @@ theorem listDecode_encode_list (l : List (L.Term α)) :
 protected def encoding : Encoding (L.Term α) where
   Γ := Sum α (Σi, L.Functions i)
   encode := listEncode
-  decode l := (listDecode l).head?.join
+  decode l := (listDecode l).head.join
   decode_encode t := by
     have h := listDecode_encode_list [t]
     rw [bind_singleton] at h
-    simp only [h, Option.join, head?, List.map, Option.some_bind, id]
+    simp only [h, Option.join, head, List.map, Option.some_bind, id]
 #align first_order.language.term.encoding FirstOrder.Language.Term.encoding
 
 theorem listEncode_injective :
@@ -152,10 +152,10 @@ theorem card_sigma : #(Σn, L.Term (Sum α (Fin n))) = max ℵ₀ #(Sum α (Σi,
 #align first_order.language.term.card_sigma FirstOrder.Language.Term.card_sigma
 
 instance [Encodable α] [Encodable (Σi, L.Functions i)] : Encodable (L.Term α) :=
-  Encodable.ofLeftInjection listEncode (fun l => (listDecode l).head?.join) fun t => by
+  Encodable.ofLeftInjection listEncode (fun l => (listDecode l).head.join) fun t => by
     simp only
     rw [← bind_singleton listEncode, listDecode_encode_list]
-    simp only [Option.join, head?, List.map, Option.some_bind, id]
+    simp only [Option.join, head, List.map, Option.some_bind, id]
 
 instance [h1 : Countable α] [h2 : Countable (Σl, L.Functions l)] : Countable (L.Term α) := by
   refine mk_le_aleph0_iff.1 (card_le.trans (max_le_iff.2 _))
@@ -206,7 +206,7 @@ def listDecode : ∀ l : List (Sum (Σk, L.Term (Sum α (Fin k))) (Sum (Σn, L.R
       simp only [SizeOf.sizeOf, List._sizeOf_1, ← add_assoc]
       exact le_max_of_le_right le_add_self⟩
   | Sum.inr (Sum.inl ⟨n, R⟩)::Sum.inr (Sum.inr k)::l =>
-    ⟨if h : ∀ i : Fin n, ((l.map Sum.getLeft?).get? i).join.isSome then
+    ⟨if h : ∀ i : Fin n, ((l.map Sum.getLeft).get i).join.isSome then
         if h' : ∀ i, (Option.get _ (h i)).1 = k then
           ⟨k, BoundedFormula.rel R fun i => Eq.mp (by rw [h' i]) (Option.get _ (h i)).2⟩
         else default
@@ -248,15 +248,15 @@ theorem listDecode_encode_list (l : List (Σn, L.BoundedFormula α n)) :
     · simp only [eq_mp_eq_cast, cast_eq, eq_self_iff_true, heq_iff_eq, and_self_iff, nil_append]
     · simp only [eq_self_iff_true, heq_iff_eq, and_self_iff]
   · rw [listEncode, cons_append, cons_append, singleton_append, cons_append, listDecode]
-    have h : ∀ i : Fin φ_l, ((List.map Sum.getLeft? (List.map (fun i : Fin φ_l =>
+    have h : ∀ i : Fin φ_l, ((List.map Sum.getLeft (List.map (fun i : Fin φ_l =>
       Sum.inl (⟨(⟨φ_n, rel φ_R ts⟩ : Σn, L.BoundedFormula α n).fst, ts i⟩ :
-        Σn, L.Term (Sum α (Fin n)))) (finRange φ_l) ++ l)).get? ↑i).join = some ⟨_, ts i⟩ := by
+        Σn, L.Term (Sum α (Fin n)))) (finRange φ_l) ++ l)).get ↑i).join = some ⟨_, ts i⟩ := by
       intro i
       simp only [Option.join, map_append, map_map, Option.bind_eq_some, id, exists_eq_right,
         get_eq_some, length_append, length_map, length_finRange]
       refine ⟨lt_of_lt_of_le i.2 le_self_add, _⟩
       rw [get_append, get_map]
-      · simp only [Sum.getLeft?, get_finRange, Fin.eta, Function.comp_apply, eq_self_iff_true,
+      · simp only [Sum.getLeft, get_finRange, Fin.eta, Function.comp_apply, eq_self_iff_true,
           heq_iff_eq, and_self_iff]
       · simp only [length_map, length_finRange, is_lt]
     rw [dif_pos]

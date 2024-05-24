@@ -63,7 +63,7 @@ variable {ι : Type u} (F : Discrete ι ⥤ LocallyRingedSpace.{u})
 /-
 ```
 stuck at solving universe constraint
-  u =?= max u ?u.11876
+  u == max u u.11876
 while trying to unify
   HasLimits CommRingCat
 with

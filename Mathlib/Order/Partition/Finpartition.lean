@@ -51,7 +51,7 @@ not because the parts of `P` and the parts of `Q` have the same elements that `P
 ## TODO
 
 The order is the wrong way around to make `Finpartition a` a graded order. Is it bad to depart from
-the literature and turn the order around?
+the literature and turn the order around
 -/
 
 

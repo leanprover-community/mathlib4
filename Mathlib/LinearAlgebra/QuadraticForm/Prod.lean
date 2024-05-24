@@ -331,7 +331,7 @@ theorem nonneg_pi_iff [Fintype ι] {R} [OrderedCommRing R] [∀ i, Module R (M�
     {Q : ∀ i, QuadraticForm R (Mᵢ i)} : (∀ x, 0 ≤ pi Q x) ↔ ∀ i x, 0 ≤ Q i x := by
   simp_rw [pi, sum_apply, comp_apply, LinearMap.proj_apply]
   constructor
-  -- TODO: does this generalize to a useful lemma independent of `QuadraticForm`?
+  -- TODO: does this generalize to a useful lemma independent of `QuadraticForm`
   · intro h i x
     classical
     convert h (Pi.single i x) using 1

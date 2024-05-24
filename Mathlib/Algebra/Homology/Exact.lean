@@ -34,7 +34,7 @@ these results are found in `CategoryTheory/Abelian/Exact.lean`.
 
 # Future work
 * Short exact sequences, split exact sequences, the splitting lemma (maybe only for abelian
-  categories?)
+  categories)
 * Two adjacent maps in a chain complex are exact iff the homology vanishes
 
 Note: It is planned that the definition in this file will be replaced by the new

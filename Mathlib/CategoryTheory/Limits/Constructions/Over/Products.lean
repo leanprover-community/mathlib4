@@ -104,7 +104,7 @@ def conesEquivUnitIso (B : C) (F : Discrete J ⥤ Over B) :
 #align category_theory.over.construct_products.cones_equiv_unit_iso CategoryTheory.Over.ConstructProducts.conesEquivUnitIso
 
 -- TODO: Can we add `:= by aesop` to the second arguments of `NatIso.ofComponents` and
---       `Cones.ext`?
+--       `Cones.ext`
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simp]
 def conesEquivCounitIso (B : C) (F : Discrete J ⥤ Over B) :
