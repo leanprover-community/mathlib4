@@ -404,7 +404,7 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ}
     · intro j hj hj'
       obtain ⟨w, hw1, hw2⟩ := exists_between hj
       obtain ⟨w', hw1', hw2'⟩ := exists_between hj'
-      refine mellin_convergent_of_isBigO_scalar ?_ ?_ hw1?' _ hw2
+      refine mellin_convergent_of_isBigO_scalar ?_ ?_ hw1' ?_ hw2
       · simp_rw [mul_comm]
         refine hfc.norm.mul_continuousOn ?_ isOpen_Ioi
         refine Continuous.comp_continuousOn _root_.continuous_abs (continuousOn_log.mono ?_)

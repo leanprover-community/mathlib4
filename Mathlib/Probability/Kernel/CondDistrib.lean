@@ -237,7 +237,7 @@ theorem condexp_prod_ae_eq_integral_condDistrib' [NormedSpace ℝ F] [CompleteSp
     μ[fun a => f (X a, Y a)|mβ.comap X] =ᵐ[μ] fun a => ∫ y, f (X a,y) ∂condDistrib Y X μ (X a) := by
   have hf_int' : Integrable (fun a => f (X a, Y a)) μ :=
     (integrable_map_measure hf_int.1 (hX.aemeasurable.prod_mk hY)).mp hf_int
-  refine (ae_eq_condexp_of_forall_setIntegral_eq hX.comap_le hf_int' (fun s _ _ => ?_)? ?_ _).symm
+  refine (ae_eq_condexp_of_forall_setIntegral_eq hX.comap_le hf_int' (fun s _ _ => ?_) ?_ ?_).symm
   · exact (hf_int.integral_condDistrib hX.aemeasurable hY).integrableOn
   · rintro s ⟨t, ht, rfl⟩ _
     change ∫ a in X ⁻¹' t, ((fun x' => ∫ y, f (x', y) ∂(condDistrib Y X μ) x') ∘ X) a ∂μ =
