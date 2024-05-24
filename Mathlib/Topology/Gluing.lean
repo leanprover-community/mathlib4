@@ -133,6 +133,7 @@ theorem rel_equiv : Equivalence D.Rel :=
   ⟨fun x => Or.inl (refl x), by
     rintro a b (⟨⟨⟩⟩ | ⟨x, e₁, e₂⟩)
     exacts [Or.inl rfl, Or.inr ⟨D.t _ _ x, e₂, by erw [← e₁, D.t_inv_apply]⟩], by
+     -- now `erw` after #13170
     rintro ⟨i, a⟩ ⟨j, b⟩ ⟨k, c⟩ (⟨⟨⟩⟩ | ⟨x, e₁, e₂⟩)
     · exact id
     rintro (⟨⟨⟩⟩ | ⟨y, e₃, e₄⟩)
@@ -140,7 +141,7 @@ theorem rel_equiv : Equivalence D.Rel :=
     let z := (pullbackIsoProdSubtype (D.f j i) (D.f j k)).inv ⟨⟨_, _⟩, e₂.trans e₃.symm⟩
     have eq₁ : (D.t j i) ((pullback.fst : _ /-(D.f j k)-/ ⟶ D.V (j, i)) z) = x := by
       dsimp only [coe_of, z]
-      erw [pullbackIsoProdSubtype_inv_fst_apply, D.t_inv_apply]
+      erw [pullbackIsoProdSubtype_inv_fst_apply, D.t_inv_apply]-- now `erw` after #13170
     have eq₂ : (pullback.snd : _ ⟶ D.V _) z = y := pullbackIsoProdSubtype_inv_snd_apply _ _ _
     clear_value z
     right
@@ -221,6 +222,7 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
     simp only [forget_map_eq_coe]
     erw [TopCat.comp_app, sigmaIsoSigma_inv_apply, ← comp_apply, ← comp_apply,
       colimit.ι_desc_assoc, ← comp_apply, ← comp_apply, colimit.ι_desc_assoc]
+      -- now `erw` after #13170
     erw [sigmaIsoSigma_hom_ι_apply, sigmaIsoSigma_hom_ι_apply]
     exact Or.inr ⟨y, ⟨rfl, rfl⟩⟩
   · rintro (⟨⟨⟩⟩ | ⟨z, e₁, e₂⟩)
@@ -228,8 +230,8 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
     dsimp only at *
     -- Porting note: there were `subst e₁` and `subst e₂`, instead of the `rw`
     rw [← e₁, ← e₂] at *
-    erw [D.glue_condition_apply]
-    rfl
+    erw [D.glue_condition_apply] -- now `erw` after #13170
+    rfl -- now `rfl` after #13170
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.ι_eq_iff_rel TopCat.GlueData.ι_eq_iff_rel
 
@@ -268,7 +270,7 @@ theorem image_inter (i j : D.J) :
       exact ⟨y, by simp [e₁]⟩
   · rintro ⟨x, hx⟩
     refine ⟨⟨D.f i j x, hx⟩, ⟨D.f j i (D.t _ _ x), ?_⟩⟩
-    erw [D.glue_condition_apply]
+    erw [D.glue_condition_apply] -- now `erw` after #13170
     exact hx
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.image_inter TopCat.GlueData.image_inter
@@ -285,7 +287,7 @@ theorem preimage_image_eq_image (i j : D.J) (U : Set (𝖣.U i)) :
   have : D.f _ _ ⁻¹' (𝖣.ι j ⁻¹' (𝖣.ι i '' U)) = (D.t j i ≫ D.f _ _) ⁻¹' U := by
     ext x
     conv_rhs => rw [← Set.preimage_image_eq U (D.ι_injective _)]
-    generalize 𝖣.ι i '' U = U'
+    generalize 𝖣.ι i '' U = U' -- was done with `simp` before #13170
     simp only [GlueData.diagram_l, GlueData.diagram_r, Set.mem_preimage, coe_comp,
       Function.comp_apply]
     erw [D.glue_condition_apply]
@@ -405,7 +407,7 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
     exact (h.V_id i).symm ▸ IsIso.of_iso (Opens.inclusionTopIso (h.U i))
   f_open := fun i j : h.J => (h.V i j).openEmbedding
   t := h.t
-  t_id i := by ext; erw [h.t_id]; rfl
+  t_id i := by ext; erw [h.t_id]; rfl  -- now `erw` after #13170
   t' := h.t'
   t_fac i j k := by
     delta MkCore.t'
@@ -423,7 +425,7 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
     -- The next 9 tactics (up to `convert ...` were a single `rw` before leanprover/lean4#2644
     -- rw [comp_app, ContinuousMap.coe_mk, comp_app, id_app, ContinuousMap.coe_mk, Subtype.mk_eq_mk,
     --   Prod.mk.inj_iff, Subtype.mk_eq_mk, Subtype.ext_iff, and_self_iff]
-    erw [comp_app] --, comp_app, id_app]
+    erw [comp_app] --, comp_app, id_app] -- now `erw` after #13170
     -- erw [ContinuousMap.coe_mk]
     conv_lhs => erw [ContinuousMap.coe_mk]
     erw [id_app]

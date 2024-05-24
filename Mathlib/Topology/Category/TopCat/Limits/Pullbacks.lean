@@ -161,14 +161,14 @@ theorem range_pullback_to_prod {X Y Z : TopCat} (f : X ⟶ Z) (g : Y ⟶ Z) :
   ext x
   constructor
   · rintro ⟨y, rfl⟩
-    change (_ ≫ _ ≫ f) _ = (_ ≫ _ ≫ g) _
+    change (_ ≫ _ ≫ f) _ = (_ ≫ _ ≫ g) _ -- new `change` after #13170
     simp [pullback.condition]
   · rintro (h : f (_, _).1 = g (_, _).2)
     use (pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, h⟩
-    change (forget TopCat).map _ _ = _
+    change (forget TopCat).map _ _ = _ -- new `change` after #13170
     apply Concrete.limit_ext
     rintro ⟨⟨⟩⟩ <;>
-    erw [← comp_apply, ← comp_apply, limit.lift_π] <;>
+    erw [← comp_apply, ← comp_apply, limit.lift_π] <;> -- now `erw` after #13170
     -- This used to be `simp` before leanprover/lean4#2644
     aesop_cat
 #align Top.range_pullback_to_prod TopCat.range_pullback_to_prod
@@ -219,33 +219,33 @@ theorem range_pullback_map {W X Y Z S T : TopCat} (f₁ : W ⟶ S) (f₂ : X ⟶
   constructor
   · rintro ⟨y, rfl⟩
     simp only [Set.mem_inter_iff, Set.mem_preimage, Set.mem_range]
-    erw [← comp_apply, ← comp_apply]
+    erw [← comp_apply, ← comp_apply] -- now `erw` after #13170
     simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, comp_apply]
     exact ⟨exists_apply_eq_apply _ _, exists_apply_eq_apply _ _⟩
   rintro ⟨⟨x₁, hx₁⟩, ⟨x₂, hx₂⟩⟩
   have : f₁ x₁ = f₂ x₂ := by
     apply (TopCat.mono_iff_injective _).mp H₃
-    erw [← comp_apply, eq₁, ← comp_apply, eq₂,
+    erw [← comp_apply, eq₁, ← comp_apply, eq₂, -- now `erw` after #13170
       comp_apply, comp_apply, hx₁, hx₂, ← comp_apply, pullback.condition]
-    rfl
+    rfl -- now `rfl` after #13170
   use (pullbackIsoProdSubtype f₁ f₂).inv ⟨⟨x₁, x₂⟩, this⟩
   change (forget TopCat).map _ _ = _
   apply Concrete.limit_ext
   rintro (_ | _ | _) <;>
-  erw [← comp_apply, ← comp_apply]
+  erw [← comp_apply, ← comp_apply] -- now `erw` after #13170
   simp only [Category.assoc, limit.lift_π, PullbackCone.mk_π_app_one]
   · simp only [cospan_one, pullbackIsoProdSubtype_inv_fst_assoc, comp_apply]
     erw [pullbackFst_apply, hx₁]
     rw [← limit.w _ WalkingCospan.Hom.inl, cospan_map_inl, comp_apply (g := g₁)]
-    rfl
+    rfl -- now `rfl` after #13170
   · simp only [cospan_left, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
       pullbackIsoProdSubtype_inv_fst_assoc, comp_apply]
-    erw [hx₁]
-    rfl
+    erw [hx₁] -- now `erw` after #13170
+    rfl -- now `rfl` after #13170
   · simp only [cospan_right, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
       pullbackIsoProdSubtype_inv_snd_assoc, comp_apply]
-    erw [hx₂]
-    rfl
+    erw [hx₂] -- now `erw` after #13170
+    rfl -- now `rfl` after #13170
 #align Top.range_pullback_map TopCat.range_pullback_map
 
 theorem pullback_fst_range {X Y S : TopCat} (f : X ⟶ S) (g : Y ⟶ S) :
@@ -411,7 +411,7 @@ theorem pullback_snd_image_fst_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set X) 
   · rintro ⟨(y : (forget TopCat).obj _), hy, rfl⟩
     exact
       ⟨(pullback.fst : pullback f g ⟶ _) y, hy, ConcreteCategory.congr_hom pullback.condition y⟩
-  · rintro ⟨y, hy, eq⟩
+  · rintro ⟨y, hy, eq⟩ -- was an `exact` before #13170
     refine ⟨(TopCat.pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, eq⟩, ?_, ?_⟩
     · simp only [coe_of, Set.mem_preimage]
       convert hy
@@ -428,7 +428,7 @@ theorem pullback_fst_image_snd_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set Y) 
     exact
       ⟨(pullback.snd : pullback f g ⟶ _) y, hy,
         (ConcreteCategory.congr_hom pullback.condition y).symm⟩
-  · rintro ⟨y, hy, eq⟩
+  · rintro ⟨y, hy, eq⟩ -- was an `exact` before #13170
     refine ⟨(TopCat.pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, eq.symm⟩, ?_, ?_⟩
     · simp only [coe_of, Set.mem_preimage]
       convert hy

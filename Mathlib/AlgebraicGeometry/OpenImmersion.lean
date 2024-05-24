@@ -118,11 +118,11 @@ def affineCover (X : Scheme.{u}) : OpenCover X where
     apply PresheafedSpace.IsOpenImmersion.ofRestrict
   Covers := by
     intro x
-    erw [TopCat.coe_comp]
+    erw [TopCat.coe_comp] -- now `erw` after #13170
     rw [Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ]
     · erw [Subtype.range_coe_subtype]
       exact (X.local_affine x).choose.2
-    erw [← TopCat.epi_iff_surjective]
+    erw [← TopCat.epi_iff_surjective] -- now `erw` after #13170
     change Epi ((SheafedSpace.forget _).map (LocallyRingedSpace.forgetToSheafedSpace.map _))
     infer_instance
 #align algebraic_geometry.Scheme.affine_cover AlgebraicGeometry.Scheme.affineCover
@@ -145,7 +145,7 @@ def OpenCover.bind (f : ∀ x : 𝒰.J, OpenCover (𝒰.obj x)) : OpenCover X wh
     change x ∈ Set.range ((f (𝒰.f x)).map ((f (𝒰.f x)).f y) ≫ 𝒰.map (𝒰.f x)).1.base
     use z
     erw [comp_apply]
-    erw [hz, hy]
+    erw [hz, hy] -- now `erw` after #13170
   -- Porting note: weirdly, even though no input is needed, `inferInstance` does not work
   -- `PresheafedSpace.IsOpenImmersion.comp` is marked as `instance`
   IsOpen x := PresheafedSpace.IsOpenImmersion.comp _ _
@@ -177,7 +177,7 @@ def OpenCover.copy {X : Scheme.{u}} (𝒰 : OpenCover X) (J : Type*) (obj : J �
       rw [e₂, Scheme.comp_val_base, TopCat.coe_comp, Set.range_comp, Set.range_iff_surjective.mpr,
         Set.image_univ, e₁.rightInverse_symm]
       · exact 𝒰.Covers x
-      · erw [← TopCat.epi_iff_surjective]; infer_instance
+      · erw [← TopCat.epi_iff_surjective]; infer_instance -- now `erw` after #13170
     -- Porting note: weirdly, even though no input is needed, `inferInstance` does not work
     -- `PresheafedSpace.IsOpenImmersion.comp` is marked as `instance`
     IsOpen := fun i => by rw [e₂]; exact PresheafedSpace.IsOpenImmersion.comp _ _ }
@@ -566,7 +566,7 @@ theorem range_pullback_snd_of_left :
   · erw [TopCat.pullback_snd_image_fst_preimage]
     rw [Set.image_univ]
     rfl
-  erw [← TopCat.epi_iff_surjective]
+  erw [← TopCat.epi_iff_surjective] -- now `erw` after #13170
   infer_instance
 #align algebraic_geometry.IsOpenImmersion.range_pullback_snd_of_left AlgebraicGeometry.IsOpenImmersion.range_pullback_snd_of_left
 
@@ -583,7 +583,7 @@ theorem range_pullback_fst_of_right :
   · erw [TopCat.pullback_fst_image_snd_preimage]
     rw [Set.image_univ]
     rfl
-  erw [← TopCat.epi_iff_surjective]
+  erw [← TopCat.epi_iff_surjective] -- now `erw` after #13170
   infer_instance
 #align algebraic_geometry.IsOpenImmersion.range_pullback_fst_of_right AlgebraicGeometry.IsOpenImmersion.range_pullback_fst_of_right
 

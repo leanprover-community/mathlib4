@@ -253,7 +253,7 @@ theorem range_prod_map {W X Y Z : TopCat.{u}} (f : W ⟶ Y) (g : X ⟶ Z) :
   ext x
   constructor
   · rintro ⟨y, rfl⟩
-    simp_rw [Set.mem_inter_iff, Set.mem_preimage, Set.mem_range]
+    simp_rw [Set.mem_inter_iff, Set.mem_preimage, Set.mem_range] -- sizable changes after #13170
     erw  [← comp_apply, ← comp_apply]
     simp_rw [Limits.prod.map_fst,
       Limits.prod.map_snd, comp_apply]
@@ -280,8 +280,8 @@ theorem inducing_prod_map {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (hf
   constructor
   simp_rw [topologicalSpace_coe, prod_topology, induced_inf, induced_compose, ← coe_comp,
     prod.map_fst, prod.map_snd, coe_comp, ← induced_compose (g := f), ← induced_compose (g := g)]
-  erw [← hf.induced, ← hg.induced]
-  rfl
+  erw [← hf.induced, ← hg.induced] -- now `erw` after #13170
+  rfl -- now `rfl` after #13170
 #align Top.inducing_prod_map TopCat.inducing_prod_map
 
 theorem embedding_prod_map {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (hf : Embedding f)
@@ -334,6 +334,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
       erw [Set.range_comp, ← eq_compl_iff_isCompl, Set.range_comp _ Sum.inr,
         ← Set.image_compl_eq (homeoOfIso <| h.coconePointUniqueUpToIso
             (binaryCofanIsColimit X Y)).symm.bijective, Set.compl_range_inr, Set.image_comp]
+           -- now `erw` after #13170
     · rintro ⟨h₁, h₂, h₃⟩
       have : ∀ x, x ∈ Set.range c.inl ∨ x ∈ Set.range c.inr := by
         rw [eq_compl_iff_isCompl.mpr h₃.symm]
@@ -382,7 +383,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
         · exact ⟨x, rfl⟩
         · dsimp
           conv_lhs => erw [Equiv.ofInjective_symm_apply]
-          rfl
+          rfl -- now `rfl` after #13170
       · intro T f g
         ext x
         refine' (dif_neg _).trans _
