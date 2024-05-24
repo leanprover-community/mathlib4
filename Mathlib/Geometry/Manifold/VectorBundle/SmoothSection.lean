@@ -42,7 +42,9 @@ variable [∀ x : M, TopologicalSpace (V x)] [FiberBundle F V] [VectorBundle �
 
 /-- Bundled `n` times continuously differentiable sections of a vector bundle. -/
 structure ContMDiffSection where
+  /-- the underlying function of this section -/
   protected toFun : ∀ x, V x
+  /-- proof that this section is `C^n` -/
   protected contMDiff_toFun : ContMDiff I (I.prod 𝓘(𝕜, F)) n fun x ↦
     TotalSpace.mk' F x (toFun x)
 #align cont_mdiff_section ContMDiffSection
@@ -210,9 +212,9 @@ instance instZSMul : SMul ℤ Cₛ^n⟮I; F, V⟯ :=
 @[simp]
 theorem coe_zsmul (s : Cₛ^n⟮I; F, V⟯) (z : ℤ) : ⇑(z • s : Cₛ^n⟮I; F, V⟯) = z • ⇑s := by
   cases' z with n n
-  · refine' (coe_nsmul s n).trans _
+  · refine (coe_nsmul s n).trans ?_
     simp only [Int.ofNat_eq_coe, natCast_zsmul]
-  · refine' (congr_arg Neg.neg (coe_nsmul s (n + 1))).trans _
+  · refine (congr_arg Neg.neg (coe_nsmul s (n + 1))).trans ?_
     simp only [negSucc_zsmul, neg_inj]
 #align cont_mdiff_section.coe_zsmul ContMDiffSection.coe_zsmul
 
