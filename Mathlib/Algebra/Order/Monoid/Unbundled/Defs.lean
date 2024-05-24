@@ -404,14 +404,14 @@ instance mulRightReflectLT_of_mulRightMono [Mul N] [LinearOrder N] [MulRightMono
   elim := covariant_le_iff_contravariant_lt.mp MulRightMono.elim
 
 @[to_additive]
-instance mulLeftMono_of_mulLeftReflectLT [Mul N] [LinearOrder N] [MulLeftReflectLT N] :
-    MulLeftMono N where
-  elim := covariant_le_iff_contravariant_lt.mpr MulLeftReflectLT.elim
+instance mulLeftStrictMono_of_mulLeftReflectLE [Mul N] [LinearOrder N] [MulLeftReflectLE N] :
+    MulLeftStrictMono N where
+  elim := covariant_lt_iff_contravariant_le.mpr MulLeftReflectLE.elim
 
 @[to_additive]
-instance mulRightMono_of_mulRightReflectLT [Mul N] [LinearOrder N] [MulRightReflectLT N] :
-    MulRightMono N where
-  elim := covariant_le_iff_contravariant_lt.mpr MulRightReflectLT.elim
+instance mulRightStrictMono_of_mulRightReflectLE [Mul N] [LinearOrder N] [MulRightReflectLE N] :
+    MulRightStrictMono N where
+  elim := covariant_lt_iff_contravariant_le.mpr MulRightReflectLE.elim
 
 @[to_additive]
 instance mulRightMono_of_mulLeftMono [CommSemigroup N] [LE N] [MulLeftMono N] :
