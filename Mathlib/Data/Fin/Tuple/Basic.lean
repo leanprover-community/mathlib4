@@ -310,7 +310,7 @@ theorem append_right {α : Type*} (u : Fin m → α) (v : Fin n → α) (i : Fin
 
 theorem append_right_nil {α : Type*} (u : Fin m → α) (v : Fin n → α) (hv : n = 0) :
     append u v = u ∘ Fin.cast (by rw [hv, Nat.add_zero]) := by
-  refine funext (Fin.addCases (fun l => ?_) fun r =>? _)
+  refine funext (Fin.addCases (fun l => ?_) fun r => ?_)
   · rw [append_left, Function.comp_apply]
     refine congr_arg u (Fin.ext ?_)
     simp
@@ -325,7 +325,7 @@ theorem append_elim0 {α : Type*} (u : Fin m → α) :
 
 theorem append_left_nil {α : Type*} (u : Fin m → α) (v : Fin n → α) (hu : m = 0) :
     append u v = v ∘ Fin.cast (by rw [hu, Nat.zero_add]) := by
-  refine funext (Fin.addCases (fun l => ?_) fun r =>? _)
+  refine funext (Fin.addCases (fun l => ?_) fun r => ?_)
   · exact (Fin.cast hu l).elim0
   · rw [append_right, Function.comp_apply]
     refine congr_arg v (Fin.ext ?_)
@@ -342,7 +342,7 @@ theorem append_assoc {p : ℕ} {α : Type*} (a : Fin m → α) (b : Fin n → α
     append (append a b) c = append a (append b c) ∘ Fin.cast (Nat.add_assoc ..) := by
   ext i
   rw [Function.comp_apply]
-  refine Fin.addCases (fun l => ?_) (fun r =>? _) i
+  refine Fin.addCases (fun l => ?_) (fun r => ?_) i
   · rw [append_left]
     refine Fin.addCases (fun ll => ?_) (fun lr => ?_) l
     · rw [append_left]
@@ -522,7 +522,7 @@ theorem snoc_comp_nat_add {n m : ℕ} {α : Sort _} (f : Fin (m + n) → α) (a 
     (snoc f a : Fin _ → α) ∘ (natAdd m : Fin (n + 1) → Fin (m + n + 1)) =
       snoc (f ∘ natAdd m) a := by
   ext i
-  refine Fin.lastCases ?_ (fun i ↦? _) i
+  refine Fin.lastCases ?_ (fun i ↦ ?_) i
   · simp only [Function.comp_apply]
     rw [snoc_last, natAdd_last, snoc_last]
   · simp only [comp_apply, snoc_castSucc]

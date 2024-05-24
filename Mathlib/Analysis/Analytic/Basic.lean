@@ -1006,7 +1006,7 @@ theorem HasFPowerSeriesAt.apply_eq_zero {p : FormalMultilinearSeries 𝕜 E F} {
   refine Nat.strong_induction_on n fun k hk => ?_
   have psum_eq : p.partialSum (k + 1) = fun y => p k fun _ => y := by
     funext z
-    refine Finset.sum_eq_single _ (fun b hb hnb => ?_) fun hn =>? _
+    refine Finset.sum_eq_single _ (fun b hb hnb => ?_) fun hn => ?_
     · have := Finset.mem_range_succ_iff.mp hb
       simp only [hk b (this.lt_of_ne hnb), Pi.zero_apply]
     · exact False.elim (hn (Finset.mem_range.mpr (lt_add_one k)))
@@ -1331,7 +1331,7 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
       refine ContinuousMultilinearMap.hasSum_eval ?_ _
       have := (p.hasFPowerSeriesOnBall_changeOrigin k radius_pos).hasSum x_mem_ball
       rw [zero_add] at this
-      refine HasSum.sigma_of_hasSum this (fun l => ?_)? _
+      refine HasSum.sigma_of_hasSum this (fun l => ?_) ?_
       · simp only [changeOriginSeries, ContinuousMultilinearMap.sum_apply]
         apply hasSum_fintype
       · refine .of_nnnorm_bounded _

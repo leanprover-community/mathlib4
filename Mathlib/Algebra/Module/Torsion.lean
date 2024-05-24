@@ -98,7 +98,7 @@ theorem torsionOf_eq_top_iff (m : M) : torsionOf R M m = ⊤ ↔ m = 0 := by
 @[simp]
 theorem torsionOf_eq_bot_iff_of_noZeroSMulDivisors [Nontrivial R] [NoZeroSMulDivisors R M] (m : M) :
     torsionOf R M m = ⊥ ↔ m ≠ 0 := by
-  refine ⟨fun h contra => ?_, fun h => (Submodule.eq_bot_iff _).mpr fun r hr =>? _⟩
+  refine ⟨fun h contra => ?_, fun h => (Submodule.eq_bot_iff _).mpr fun r hr => ?_⟩
   · rw [contra, torsionOf_zero] at h
     exact bot_ne_top.symm h
   · rw [mem_torsionOf_iff, smul_eq_zero] at hr

@@ -729,7 +729,7 @@ theorem Perm.permutations' {s t : List α} (p : s ~ t) : permutations' s ~ permu
 theorem permutations_perm_permutations' (ts : List α) : ts.permutations ~ ts.permutations' := by
   obtain ⟨n, h⟩ : ∃ n, length ts < n := ⟨_, Nat.lt_succ_self _⟩
   induction' n with n IH generalizing ts; · cases h
-  refine List.reverseRecOn ts (fun _ => ?_) (fun ts t _ h =>? _) h; · simp [permutations]
+  refine List.reverseRecOn ts (fun _ => ?_) (fun ts t _ h => ?_) h; · simp [permutations]
   rw [← concat_eq_append, length_concat, Nat.succ_lt_succ_iff] at h
   have IH₂ := (IH ts.reverse (by rwa [length_reverse])).trans (reverse_perm _).permutations'
   simp only [permutations_append, foldr_permutationsAux2, permutationsAux_nil,

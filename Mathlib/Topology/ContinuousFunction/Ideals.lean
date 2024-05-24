@@ -261,7 +261,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
       simp only [comp_apply, zero_apply, ContinuousMap.coe_coe, map_zero]
     · rintro s₁ s₂ hs ⟨g, hI, hgt⟩; exact ⟨g, hI, fun x hx => hgt x (hs hx)⟩
     · rintro s₁ s₂ ⟨g₁, hI₁, hgt₁⟩ ⟨g₂, hI₂, hgt₂⟩
-      refine ⟨g₁ + g₂, ?_, fun x hx =>? _⟩
+      refine ⟨g₁ + g₂, ?_, fun x hx => ?_⟩
       · convert I.add_mem hI₁ hI₂
         ext y
         simp only [coe_add, Pi.add_apply, map_add, coe_comp, Function.comp_apply,

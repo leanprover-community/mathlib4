@@ -584,7 +584,7 @@ theorem altitude_replace_orthocenter_eq_affineSpan {t₁ t₂ : Triangle ℝ P}
   have he : affineSpan ℝ (Set.range t₂.points) = affineSpan ℝ (Set.range t₁.points) := by
     refine ext_of_direction_eq ?_
       ⟨t₁.points i₃, mem_affineSpan ℝ ⟨j₃, h₃⟩, mem_affineSpan ℝ (Set.mem_range_self _)⟩
-    refine eq_of_le_of_finrank_eq (direction_le (spanPoints_subset_coe_of_subset_coe ?_))? _
+    refine eq_of_le_of_finrank_eq (direction_le (spanPoints_subset_coe_of_subset_coe ?_)) ?_
     · have hu : (Finset.univ : Finset (Fin 3)) = {j₁, j₂, j₃} := by
         clear h₁ h₂ h₃
         -- Porting note (#11043): was `decide!`

@@ -417,7 +417,7 @@ theorem Submartingale.sum_sub_upcrossingStrat_mul [IsFiniteMeasure μ] (hf : Sub
     (a b : ℝ) (N : ℕ) : Submartingale (fun n : ℕ =>
       ∑ k in Finset.range n, (1 - upcrossingStrat a b f N k) * (f (k + 1) - f k)) ℱ μ := by
   refine hf.sum_mul_sub (fun n => (adapted_const ℱ 1 n).sub (hf.adapted.upcrossingStrat_adapted n))
-    (?_ : ∀ n ω, (1 - upcrossingStrat a b f N n) ω ≤ 1)? _
+    (?_ : ∀ n ω, (1 - upcrossingStrat a b f N n) ω ≤ 1) ?_
   · exact fun n ω => sub_le_self _ upcrossingStrat_nonneg
   · intro n ω
     simp [upcrossingStrat_le_one]
@@ -661,7 +661,7 @@ theorem integral_mul_upcrossingsBefore_le_integral [IsFiniteMeasure μ] (hf : Su
     (b - a) * μ[upcrossingsBefore a b f N] ≤
         μ[∑ k in Finset.range N, upcrossingStrat a b f N k * (f (k + 1) - f k)] := by
       rw [← integral_mul_left]
-      refine integral_mono_of_nonneg ?_ ((hf.sum_upcrossingStrat_mul a b N).integrable N)? _
+      refine integral_mono_of_nonneg ?_ ((hf.sum_upcrossingStrat_mul a b N).integrable N) ?_
       · exact eventually_of_forall fun ω => mul_nonneg (sub_nonneg.2 hab.le) (Nat.cast_nonneg _)
       · filter_upwards with ω
         simpa using mul_upcrossingsBefore_le (hfN ω) hab

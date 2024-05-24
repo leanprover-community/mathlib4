@@ -117,7 +117,7 @@ theorem cardinal_generateMeasurableRec_le (s : Set (Set α)) (i : ω₁) :
 theorem generateMeasurable_eq_rec (s : Set (Set α)) :
     { t | GenerateMeasurable s t } =
         ⋃ (i : (Quotient.out (aleph 1).ord).α), generateMeasurableRec s i := by
-  ext t; refine ⟨fun ht => ?_, fun ht =>? _⟩
+  ext t; refine ⟨fun ht => ?_, fun ht => ?_⟩
   · inhabit ω₁
     induction' ht with u hu u _ IH f _ IH
     · exact mem_iUnion.2 ⟨default, self_subset_generateMeasurableRec s _ hu⟩

@@ -752,7 +752,7 @@ theorem integral_eq_norm_posPart_sub (f : α →₁[μ] ℝ) :
   -- Use `isClosed_property` and `isClosed_eq`
   refine @isClosed_property _ _ _ ((↑) : (α →₁ₛ[μ] ℝ) → α →₁[μ] ℝ)
       (fun f : α →₁[μ] ℝ => integral f = ‖Lp.posPart f‖ - ‖Lp.negPart f‖)
-      (simpleFunc.denseRange one_ne_top) (isClosed_eq ?_ ?_)? _ f
+      (simpleFunc.denseRange one_ne_top) (isClosed_eq ?_ ?_) ?_ f
   · simp only [integral]
     exact cont _
   · refine' Continuous.sub (continuous_norm.comp Lp.continuous_posPart)

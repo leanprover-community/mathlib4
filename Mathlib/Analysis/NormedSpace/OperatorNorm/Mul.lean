@@ -280,7 +280,7 @@ This is `ContinuousLinearMap.opNorm_lsmul_le` as an equality. -/
 @[simp]
 theorem opNorm_lsmul [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' E]
     [IsScalarTower 𝕜 𝕜' E] [Nontrivial E] : ‖(lsmul 𝕜 𝕜' : 𝕜' →L[𝕜] E →L[𝕜] E)‖ = 1 := by
-  refine ContinuousLinearMap.opNorm_eq_of_bounds zero_le_one (fun x => ?_) fun N _ h =>? _
+  refine ContinuousLinearMap.opNorm_eq_of_bounds zero_le_one (fun x => ?_) fun N _ h => ?_
   · rw [one_mul]
     apply opNorm_lsmul_apply_le
   obtain ⟨y, hy⟩ := exists_ne (0 : E)

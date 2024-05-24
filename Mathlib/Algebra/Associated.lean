@@ -293,7 +293,7 @@ theorem irreducible_isUnit_mul {a b : α} (h : IsUnit a) : Irreducible (a * b) �
 
 theorem irreducible_mul_units (a : αˣ) (b : α) : Irreducible (b * ↑a) ↔ Irreducible b := by
   simp only [irreducible_iff, Units.isUnit_mul_units, and_congr_right_iff]
-  refine fun _ => ⟨fun h A B HAB => ?_, fun h A B HAB =>? _⟩
+  refine fun _ => ⟨fun h A B HAB => ?_, fun h A B HAB => ?_⟩
   · rw [← Units.isUnit_mul_units B a]
     apply h
     rw [← mul_assoc, ← HAB]

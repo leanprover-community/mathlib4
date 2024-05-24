@@ -165,7 +165,7 @@ theorem ae_bdd_condexp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x
   · simp_rw [← Real.norm_eq_abs]
     exact (stronglyMeasurable_condexp.mono hnm).measurable.norm
   · exact integrable_condexp.abs.integrableOn
-  refine (setIntegral_abs_condexp_le ?_ _).trans? _
+  refine (setIntegral_abs_condexp_le ?_ _).trans ?_
   · simp_rw [← Real.norm_eq_abs]
     exact @measurableSet_lt _ _ _ _ _ m _ _ _ _ _ measurable_const
       stronglyMeasurable_condexp.norm.measurable
@@ -337,7 +337,7 @@ theorem condexp_stronglyMeasurable_mul {f g : α → ℝ} (hf : StronglyMeasurab
     exact this.trans (EventuallyEq.rfl.mul (condexp_restrict_ae_eq_restrict hm (h_meas n) hg))
   suffices (μ.restrict (sets n))[(sets n).indicator f * g|m] =ᵐ[μ.restrict (sets n)]
       (sets n).indicator f * (μ.restrict (sets n))[g|m] by
-    refine EventuallyEq.trans ?_ (this.trans? _)
+    refine EventuallyEq.trans ?_ (this.trans ?_)
     · exact
         condexp_congr_ae ((indicator_ae_eq_restrict <| hm _ <| h_meas n).symm.mul EventuallyEq.rfl)
     · exact (indicator_ae_eq_restrict <| hm _ <| h_meas n).mul EventuallyEq.rfl

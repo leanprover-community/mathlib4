@@ -1157,7 +1157,7 @@ theorem closure_induction₂ {p : G → G → Prop} {x} {y : G} (hx : x ∈ clos
 theorem closure_closure_coe_preimage {k : Set G} : closure (((↑) : closure k → G) ⁻¹' k) = ⊤ :=
   eq_top_iff.2 fun x =>
     Subtype.recOn x fun x hx _ => by
-      refine closure_induction' (fun g hg => ?_) ?_ (fun g₁ g₂ hg₁ hg₂ =>? _) (fun g hg =>? _) hx
+      refine closure_induction' (fun g hg => ?_) ?_ (fun g₁ g₂ hg₁ hg₂ => ?_) (fun g hg => ?_) hx
       · exact subset_closure hg
       · exact one_mem _
       · exact mul_mem

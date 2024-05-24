@@ -540,7 +540,7 @@ theorem AffineBasis.convexHull_eq_nonneg_coord {ι : Type*} (b : AffineBasis ι 
     convexHull R (range b) = { x | ∀ i, 0 ≤ b.coord i x } := by
   rw [convexHull_range_eq_exists_affineCombination]
   ext x
-  refine ⟨?_, fun hx =>? _⟩
+  refine ⟨?_, fun hx => ?_⟩
   · rintro ⟨s, w, hw₀, hw₁, rfl⟩ i
     by_cases hi : i ∈ s
     · rw [b.coord_apply_combination_of_mem hi hw₁]

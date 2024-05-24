@@ -39,7 +39,7 @@ instance : TopologicalSpace Ordinal.{u} := Preorder.topology Ordinal.{u}
 instance : OrderTopology Ordinal.{u} := ⟨rfl⟩
 
 theorem isOpen_singleton_iff : IsOpen ({a} : Set Ordinal) ↔ ¬IsLimit a := by
-  refine ⟨fun h ⟨h₀, hsucc⟩ => ?_, fun ha =>? _⟩
+  refine ⟨fun h ⟨h₀, hsucc⟩ => ?_, fun ha => ?_⟩
   · obtain ⟨b, c, hbc, hbc'⟩ :=
       (mem_nhds_iff_exists_Ioo_subset' ⟨0, Ordinal.pos_iff_ne_zero.2 h₀⟩ ⟨_, lt_succ a⟩).1
         (h.mem_nhds rfl)
@@ -164,7 +164,7 @@ theorem isClosed_iff_bsup :
       ∀ {o : Ordinal}, o ≠ 0 → ∀ f : ∀ a < o, Ordinal,
         (∀ i hi, f i hi ∈ s) → bsup.{u, u} o f ∈ s := by
   rw [isClosed_iff_sup]
-  refine ⟨fun H o ho f hf => H (out_nonempty_iff_ne_zero.2 ho) _ ?_, fun H ι hι f hf =>? _⟩
+  refine ⟨fun H o ho f hf => H (out_nonempty_iff_ne_zero.2 ho) _ ?_, fun H ι hι f hf => ?_⟩
   · exact fun i => hf _ _
   · rw [← bsup_eq_sup]
     apply H (type_ne_zero_iff_nonempty.2 hι)

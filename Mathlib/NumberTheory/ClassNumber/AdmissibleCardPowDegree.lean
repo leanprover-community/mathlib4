@@ -198,7 +198,7 @@ theorem exists_partition_polynomial_aux (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b :
   rsuffices ⟨j, hj⟩ :
     ∃ j, ∀ i, t' i = j ↔ (cardPowDegree (A 0 % b - A i.succ % b) : ℝ) < cardPowDegree b • ε
   · refine ⟨Fin.cons j t', fun i₀ i₁ => ?_⟩
-    refine Fin.cases ?_ (fun i₀ =>? _) i₀ <;> refine' Fin.cases _ (fun i₁ => _) i₁
+    refine Fin.cases ?_ (fun i₀ => ?_) i₀ <;> refine' Fin.cases _ (fun i₁ => _) i₁
     · simpa using hbε
     · rw [Fin.cons_succ, Fin.cons_zero, eq_comm, AbsoluteValue.map_sub]
       exact hj i₁
@@ -214,7 +214,7 @@ theorem exists_partition_polynomial_aux (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b :
     obtain ⟨j₀, j₁, j_ne, approx⟩ := exists_approx_polynomial hb hε
       (Fin.cons (A 0) fun j => A (Fin.succ (Classical.choose (hg j))))
     revert j_ne approx
-    refine Fin.cases ?_ (fun j₀ =>? _) j₀ <;>
+    refine Fin.cases ?_ (fun j₀ => ?_) j₀ <;>
       refine Fin.cases (fun j_ne approx => ?_) (fun j₁ j_ne approx => ?_) j₁
     · exact absurd rfl j_ne
     · rw [Fin.cons_succ, Fin.cons_zero, ← not_le, AbsoluteValue.map_sub] at approx

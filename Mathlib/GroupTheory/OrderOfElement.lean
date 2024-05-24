@@ -960,7 +960,7 @@ theorem zpow_eq_zpow_iff_modEq {m n : ℤ} : x ^ m = x ^ n ↔ m ≡ n [ZMOD ord
 
 @[to_additive (attr := simp)]
 theorem injective_zpow_iff_not_isOfFinOrder : (Injective fun n : ℤ => x ^ n) ↔ ¬IsOfFinOrder x := by
-  refine ⟨?_, fun h n m hnm =>? _⟩
+  refine ⟨?_, fun h n m hnm => ?_⟩
   · simp_rw [isOfFinOrder_iff_pow_eq_one]
     rintro h ⟨n, hn, hx⟩
     exact Nat.cast_ne_zero.2 hn.ne' (h <| by simpa using hx)

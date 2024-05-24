@@ -141,7 +141,7 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
   have hPα : P.parts.card * 16 ^ P.parts.card ≤ card α :=
     (Nat.mul_le_mul hsize (Nat.pow_le_pow_of_le_right (by norm_num) hsize)).trans hα
   -- We return the increment equipartition of `P`, which has energy `≥ ε ^ 5 / 4 * (i + 1)`.
-  refine ⟨increment hP₁ G ε, increment_isEquipartition hP₁ G ε, ?_, ?_, Or.inr <| le_trans? _ <|
+  refine ⟨increment hP₁ G ε, increment_isEquipartition hP₁ G ε, ?_, ?_, Or.inr <| le_trans ?_ <|
     energy_increment hP₁ ((seven_le_initialBound ε l).trans hP₂) hεl' hPα huniform hε.le hε₁⟩
   · rw [card_increment hPα huniform]
     exact hP₂.trans (le_stepBound _)

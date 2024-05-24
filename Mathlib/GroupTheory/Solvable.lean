@@ -188,7 +188,7 @@ theorem IsSimpleGroup.comm_iff_isSolvable : (∀ a b : G, a * b = b * a) ↔ IsS
   ⟨isSolvable_of_comm, fun ⟨⟨n, hn⟩⟩ => by
     cases n
     · intro a b
-      refine (mem_bot.1 ?_).trans (mem_bot.1? _).symm <;>
+      refine (mem_bot.1 ?_).trans (mem_bot.1 ?_).symm <;>
         · rw [← hn]
           exact mem_top _
     · rw [IsSimpleGroup.derivedSeries_succ] at hn

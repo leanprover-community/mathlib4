@@ -120,7 +120,7 @@ set_option linter.uppercaseLean3 false in
 /-- Every exponent in the Cantor normal form `CNF b o` is less or equal to `log b o`. -/
 theorem CNF_fst_le_log {b o : Ordinal.{u}} {x : Ordinal × Ordinal} :
     x ∈ CNF b o → x.1 ≤ log b o := by
-  refine CNFRec b ?_ (fun o ho H ↦? _) o
+  refine CNFRec b ?_ (fun o ho H ↦ ?_) o
   · rw [CNF_zero]
     intro contra; contradiction
   · rw [CNF_ne_zero ho, mem_cons]

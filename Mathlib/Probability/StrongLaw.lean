@@ -358,7 +358,7 @@ theorem sum_variance_truncation_le {X : Ω → ℝ} (hint : Integrable X) (hnonn
       have Ik : (k : ℝ) ≤ (k + 1 : ℕ) := by simp
       rw [← intervalIntegral.integral_const_mul, intervalIntegral.integral_of_le Ik,
         intervalIntegral.integral_of_le Ik]
-      refine setIntegral_mono_on ?_ ?_ measurableSet_Ioc fun x hx =>? _
+      refine setIntegral_mono_on ?_ ?_ measurableSet_Ioc fun x hx => ?_
       · apply Continuous.integrableOn_Ioc
         exact continuous_const.mul (continuous_pow 2)
       · apply Continuous.integrableOn_Ioc

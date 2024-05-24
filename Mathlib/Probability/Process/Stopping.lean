@@ -173,7 +173,7 @@ theorem IsStoppingTime.measurableSet_lt_of_isLUB (hτ : IsStoppingTime f τ) (i 
   have h_Ioi_eq_Union : Set.Iio i = ⋃ j, {k | k ≤ seq j} := by
     ext1 k
     simp only [Set.mem_Iio, Set.mem_iUnion, Set.mem_setOf_eq]
-    refine ⟨fun hk_lt_i => ?_, fun h_exists_k_le_seq =>? _⟩
+    refine ⟨fun hk_lt_i => ?_, fun h_exists_k_le_seq => ?_⟩
     · rw [tendsto_atTop'] at h_tendsto
       have h_nhds : Set.Ici k ∈ 𝓝 i :=
         mem_nhds_iff.mpr ⟨Set.Ioi k, Set.Ioi_subset_Ici le_rfl, isOpen_Ioi, hk_lt_i⟩

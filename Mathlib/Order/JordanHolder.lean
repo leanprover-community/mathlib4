@@ -561,7 +561,7 @@ theorem mem_snoc {s : CompositionSeries X} {x y : X} {hsat : IsMaximal s.top x} 
   simp only [snoc, mem_def]
   constructor
   · rintro ⟨i, rfl⟩
-    refine Fin.lastCases ?_ (fun i =>? _) i
+    refine Fin.lastCases ?_ (fun i => ?_) i
     · right
       simp
     · left

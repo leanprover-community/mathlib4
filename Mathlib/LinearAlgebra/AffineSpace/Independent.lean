@@ -524,7 +524,7 @@ theorem weightedVSub_mem_vectorSpan_pair {p : ι → P} (h : AffineIndependent k
         vectorSpan k ({s.affineCombination k p w₁, s.affineCombination k p w₂} : Set P) ↔
       ∃ r : k, ∀ i ∈ s, w i = r * (w₁ i - w₂ i) := by
   rw [mem_vectorSpan_pair]
-  refine ⟨fun h => ?_, fun h =>? _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · rcases h with ⟨r, hr⟩
     refine ⟨r, fun i hi => ?_⟩
     rw [s.affineCombination_vsub, ← s.weightedVSub_const_smul, ← sub_eq_zero, ← map_sub] at hr

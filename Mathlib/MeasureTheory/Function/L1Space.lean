@@ -352,7 +352,7 @@ theorem tendsto_lintegral_norm_of_dominated_convergence {F : ℕ → α → β} 
   suffices Tendsto (fun n => ∫⁻ a, ENNReal.ofReal ‖F n a - f a‖ ∂μ) atTop (𝓝 (∫⁻ _ : α, 0 ∂μ)) by
     rwa [lintegral_zero] at this
   -- Using the dominated convergence theorem.
-  refine tendsto_lintegral_of_dominated_convergence' _ ?_ hb? _ ?_
+  refine tendsto_lintegral_of_dominated_convergence' _ ?_ hb ?_ ?_
   -- Show `fun a => ‖f a - F n a‖` is almost everywhere measurable for all `n`
   · exact fun n =>
       measurable_ofReal.comp_aemeasurable ((F_measurable n).sub f_measurable).norm.aemeasurable

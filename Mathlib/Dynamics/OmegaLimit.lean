@@ -172,7 +172,7 @@ theorem omegaLimit_union : ω f ϕ (s₁ ∪ s₂) = ω f ϕ s₁ ∪ ω f ϕ s�
     contrapose!
     simp only [not_frequently, not_nonempty_iff_eq_empty, ← subset_empty_iff]
     rintro ⟨⟨n₁, hn₁, h₁⟩, ⟨n₂, hn₂, h₂⟩⟩
-    refine ⟨n₁ ∩ n₂, inter_mem hn₁ hn₂, h₁.mono fun t ↦ ?_, h₂.mono fun t ↦? _⟩
+    refine ⟨n₁ ∩ n₂, inter_mem hn₁ hn₂, h₁.mono fun t ↦ ?_, h₂.mono fun t ↦ ?_⟩
     exacts [Subset.trans <| inter_subset_inter_right _ <| preimage_mono <| inter_subset_left _ _,
       Subset.trans <| inter_subset_inter_right _ <| preimage_mono <| inter_subset_right _ _]
   · rintro (hy | hy)

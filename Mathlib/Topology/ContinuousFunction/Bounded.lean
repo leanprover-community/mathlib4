@@ -562,7 +562,7 @@ theorem arzela_ascoli₁ [CompactSpace β] (A : Set (α →ᵇ β)) (closed : Is
     dist (f x) (g x) ≤ dist (f x) (f x') + dist (g x) (g x') + dist (f x') (g x') :=
       dist_triangle4_right _ _ _ _
     _ ≤ ε₂ + ε₂ + ε₁ / 2 := by
-      refine le_of_lt (add_lt_add (add_lt_add ?_ ?_)? _)
+      refine le_of_lt (add_lt_add (add_lt_add ?_ ?_) ?_)
       · exact (hU x').2.2 _ hx' _ (hU x').1 hf
       · exact (hU x').2.2 _ hx' _ (hU x').1 hg
       · have F_f_g : F (f x') = F (g x') :=

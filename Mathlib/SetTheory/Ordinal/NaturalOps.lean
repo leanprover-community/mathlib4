@@ -580,7 +580,7 @@ theorem nmul_one (a : Ordinal) : a ⨳ 1 = a := by
   -- Porting note: added this `simp` line, as the result from `convert`
   -- is slightly different.
   simp only [Set.mem_setOf_eq, Set.mem_Ici]
-  refine ⟨fun H => le_of_forall_lt fun c hc => ?_, fun ha c hc =>? _⟩
+  refine ⟨fun H => le_of_forall_lt fun c hc => ?_, fun ha c hc => ?_⟩
   -- Porting note: had to add arguments to `nmul_one` in the next two lines
   -- for the termination checker.
   · simpa only [nmul_one c] using H c hc

@@ -288,7 +288,7 @@ private theorem density_sub_eps_le_sum_density_div_card [Nonempty α]
     · apply le_sum_card_subset_chunk_parts hA hx
     · apply le_sum_card_subset_chunk_parts hB hy
     · positivity
-  refine mul_pos (mul_pos ?_ ?_) (mul_pos? _ ?_) <;> rw [cast_pos, Finset.card_pos]
+  refine mul_pos (mul_pos ?_ ?_) (mul_pos ?_ ?_) <;> rw [cast_pos, Finset.card_pos]
   exacts [⟨_, hx⟩, nonempty_of_mem_parts _ (hA hx), ⟨_, hy⟩, nonempty_of_mem_parts _ (hB hy)]
 
 private theorem sum_density_div_card_le_density_add_eps [Nonempty α]
@@ -326,7 +326,7 @@ private theorem sum_density_div_card_le_density_add_eps [Nonempty α]
     apply mul_pos <;> rw [Finset.card_pos, sup_eq_biUnion, biUnion_nonempty]
     · exact ⟨_, hx, nonempty_of_mem_parts _ (hA hx)⟩
     · exact ⟨_, hy, nonempty_of_mem_parts _ (hB hy)⟩
-  refine mul_pos (mul_pos ?_ ?_) (mul_po?s? _ _) <;> rw [cast_pos, Finset.card_pos]
+  refine mul_pos (mul_pos ?_ ?_) (mul_po?s ?_ _) <;> rw [cast_pos, Finset.card_pos]
   exacts [⟨_, hx⟩, nonempty_of_mem_parts _ (hA hx), ⟨_, hy⟩, nonempty_of_mem_parts _ (hB hy)]
 
 private theorem average_density_near_total_density [Nonempty α]
@@ -363,7 +363,7 @@ private theorem edgeDensity_chunk_aux [Nonempty α]
         (G.edgeDensity ab.1 ab.2 : ℝ)) / ↑16 ^ P.parts.card := by
     have rflU := Set.Subset.refl (chunk hP G ε hU).parts.toSet
     have rflV := Set.Subset.refl (chunk hP G ε hV).parts.toSet
-    refine (le_trans ?_ <| density_sub_eps_le_sum_density_div_card hPα hPε rflU rflV).trans? _
+    refine (le_trans ?_ <| density_sub_eps_le_sum_density_div_card hPα hPε rflU rflV).trans ?_
     · rw [biUnion_parts, biUnion_parts]
     · rw [card_chunk (m_pos hPα).ne', card_chunk (m_pos hPα).ne', ← cast_mul, ← mul_pow, cast_pow]
       norm_cast

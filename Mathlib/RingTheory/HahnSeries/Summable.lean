@@ -340,7 +340,7 @@ theorem hsum_smul {x : HahnSeries Γ R} {s : SummableFamily Γ R α} : (x • s)
     simp_rw [Function.support_subset_iff', Function.mem_support, Classical.not_not]
     intro a ha
     rw [ha, mul_zero]
-  · refine (sum_congr rfl ?_).trans (sum_subset (addAntidiagonal_mono_right? _) ?_).symm
+  · refine (sum_congr rfl ?_).trans (sum_subset (addAntidiagonal_mono_right ?_) ?_).symm
     · rintro ⟨i, j⟩ _
       rw [mul_finsum]
       apply s.finite_co_support

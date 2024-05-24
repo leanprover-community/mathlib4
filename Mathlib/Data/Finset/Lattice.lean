@@ -78,7 +78,7 @@ theorem sup_singleton {b : β} : ({b} : Finset β).sup f = f b :=
 #align finset.sup_singleton Finset.sup_singleton
 
 theorem sup_sup : s.sup (f ⊔ g) = s.sup f ⊔ s.sup g := by
-  refine Finset.cons_induction_on s ?_ fun b t _ h =>? _
+  refine Finset.cons_induction_on s ?_ fun b t _ h => ?_
   · rw [sup_empty, sup_empty, sup_empty, bot_sup_eq]
   · rw [sup_cons, sup_cons, sup_cons, h]
     exact sup_sup_sup_comm _ _ _ _
@@ -633,7 +633,7 @@ variable [BooleanAlgebra α] {s : Finset ι}
 
 theorem sup_sdiff_left (s : Finset ι) (f : ι → α) (a : α) :
     (s.sup fun b => a \ f b) = a \ s.inf f := by
-  refine Finset.cons_induction_on s ?_ fun b t _ h =>? _
+  refine Finset.cons_induction_on s ?_ fun b t _ h => ?_
   · rw [sup_empty, inf_empty, sdiff_top]
   · rw [sup_cons, inf_cons, h, sdiff_inf]
 #align finset.sup_sdiff_left Finset.sup_sdiff_left
@@ -1312,7 +1312,7 @@ theorem lt_inf'_iff : a < s.inf' H f ↔ ∀ i ∈ s, a < f i :=
 #align finset.lt_inf'_iff Finset.lt_inf'_iff
 
 theorem exists_mem_eq_sup' (f : ι → α) : ∃ i, i ∈ s ∧ s.sup' H f = f i := by
-  refine H.cons_induction (fun c => ?_) fun c s hc hs ih =>? _
+  refine H.cons_induction (fun c => ?_) fun c s hc hs ih => ?_
   · exact ⟨c, mem_singleton_self c, rfl⟩
   · rcases ih with ⟨b, hb, h'⟩
     rw [sup'_cons hs, h']

@@ -256,7 +256,7 @@ theorem trace_gen_eq_zero {x : L} (hx : ¬IsIntegral K x) :
   rw [trace_eq_zero_of_not_exists_basis, LinearMap.zero_apply]
   contrapose! hx
   obtain ⟨s, ⟨b⟩⟩ := hx
-  refine .of_mem_of_fg K⟮x⟯.toSubalgebra ?_ x? _
+  refine .of_mem_of_fg K⟮x⟯.toSubalgebra ?_ x ?_
   · exact (Submodule.fg_iff_finiteDimensional _).mpr (FiniteDimensional.of_fintype_basis b)
   · exact subset_adjoin K _ (Set.mem_singleton x)
 #align intermediate_field.adjoin_simple.trace_gen_eq_zero IntermediateField.AdjoinSimple.trace_gen_eq_zero
@@ -610,7 +610,7 @@ theorem det_traceForm_ne_zero [IsSeparable K L] [DecidableEq ι] (b : Basis ι K
   swap; · apply Basis.toMatrix_mul_toMatrix_flip
   refine
     mul_ne_zero
-      (isUnit_of_mul_eq_one _ ((b.toMatrix pb.basis)ᵀ * b.toMatrix pb.basis).det ?_).ne_zero? _
+      (isUnit_of_mul_eq_one _ ((b.toMatrix pb.basis)ᵀ * b.toMatrix pb.basis).det ?_).ne_zero ?_
   · calc
       (pb.basis.toMatrix b * (pb.basis.toMatrix b)ᵀ).det *
             ((b.toMatrix pb.basis)ᵀ * b.toMatrix pb.basis).det =

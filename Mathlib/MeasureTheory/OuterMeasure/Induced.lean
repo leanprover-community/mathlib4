@@ -416,7 +416,7 @@ theorem exists_measurable_superset_eq_trim (m : OuterMeasure α) (s : Set α) :
     have : Tendsto (fun n : ℕ => ms + (n : ℝ≥0∞)⁻¹) atTop (𝓝 (ms + 0)) :=
       tendsto_const_nhds.add ENNReal.tendsto_inv_nat_nhds_zero
     rw [add_zero] at this
-    refine le_antisymm (ge_of_tendsto' this fun n => ?_)? _
+    refine le_antisymm (ge_of_tendsto' this fun n => ?_) ?_
     · exact le_trans (measure_mono <| iInter_subset t n) (hm' n).le
     · refine iInf_le_of_le (⋂ n, t n) ?_
       refine iInf_le_of_le (subset_iInter hsub) ?_

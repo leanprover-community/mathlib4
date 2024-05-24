@@ -146,7 +146,7 @@ set_option linter.uppercaseLean3 false in
 theorem content_C_mul (r : R) (p : R[X]) : (C r * p).content = normalize r * p.content := by
   by_cases h0 : r = 0; · simp [h0]
   rw [content]; rw [content]; rw [← Finset.gcd_mul_left]
-  refine congr (congr rfl ?_)? _ <;> ext <;> simp [h0, mem_support_iff]
+  refine congr (congr rfl ?_) ?_ <;> ext <;> simp [h0, mem_support_iff]
 set_option linter.uppercaseLean3 false in
 #align polynomial.content_C_mul Polynomial.content_C_mul
 

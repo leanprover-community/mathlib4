@@ -697,7 +697,7 @@ theorem comap_monotone {G' : SimpleGraph W} (f : G →g G') : Monotone (Subgraph
 
 theorem map_le_iff_le_comap {G' : SimpleGraph W} (f : G →g G') (H : G.Subgraph) (H' : G'.Subgraph) :
     H.map f ≤ H' ↔ H ≤ H'.comap f := by
-  refine ⟨fun h ↦ ⟨fun v hv ↦ ?_, fun v w hvw ↦? _⟩, fun h ↦ ⟨fun v ↦ ?_, fun v w ↦? _⟩⟩
+  refine ⟨fun h ↦ ⟨fun v hv ↦ ?_, fun v w hvw ↦ ?_⟩, fun h ↦ ⟨fun v ↦ ?_, fun v w ↦ ?_⟩⟩
   · simp only [comap_verts, Set.mem_preimage]
     exact h.1 ⟨v, hv, rfl⟩
   · simp only [H.adj_sub hvw, comap_adj, true_and_iff]

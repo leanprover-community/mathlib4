@@ -329,7 +329,7 @@ theorem range_toContinuousLinearMap (f : E →ₗ[𝕜] F') :
 theorem isOpenMap_of_finiteDimensional (f : F →ₗ[𝕜] E) (hf : Function.Surjective f) :
     IsOpenMap f := by
   rcases f.exists_rightInverse_of_surjective (LinearMap.range_eq_top.2 hf) with ⟨g, hg⟩
-  refine IsOpenMap.of_sections fun x => ⟨fun y => g (y - f x) + x, ?_, ?_, fun y =>? _⟩
+  refine IsOpenMap.of_sections fun x => ⟨fun y => g (y - f x) + x, ?_, ?_, fun y => ?_⟩
   · exact
       ((g.continuous_of_finiteDimensional.comp <| continuous_id.sub continuous_const).add
           continuous_const).continuousAt

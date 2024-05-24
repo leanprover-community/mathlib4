@@ -128,7 +128,7 @@ theorem ZMod.isSquare_neg_one_iff' {n : ℕ} (hn : Squarefree n) :
   rw [ZMod.isSquare_neg_one_iff hn]
   refine ⟨?_, fun H q _ => H⟩
   intro H
-  refine @induction_on_primes _ ?_ ?_ (fun p q hp hq hpq =>? _)
+  refine @induction_on_primes _ ?_ ?_ (fun p q hp hq hpq => ?_)
   · exact fun _ => by norm_num
   · exact fun _ => by norm_num
   · replace hp := H hp (dvd_of_mul_right_dvd hpq)
@@ -217,7 +217,7 @@ theorem Nat.eq_sq_add_sq_iff {n : ℕ} :
   · exact ⟨fun _ q _ _ => (@padicValNat.zero q).symm ▸ even_zero, fun _ => ⟨0, 0, rfl⟩⟩
   -- now `0 < n`
   rw [Nat.eq_sq_add_sq_iff_eq_sq_mul]
-  refine ⟨fun H q hq h => ?_, fun H =>? _⟩
+  refine ⟨fun H q hq h => ?_, fun H => ?_⟩
   · obtain ⟨a, b, h₁, h₂⟩ := H
     have hqb := padicValNat.eq_zero_of_not_dvd fun hf =>
       (hq.mod_four_ne_three_of_dvd_isSquare_neg_one hf h₂) h

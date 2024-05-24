@@ -315,7 +315,7 @@ theorem induction3 {α : solvableByRad F E} {n : ℕ} (hn : n ≠ 0) (hα : P (�
   apply gal_isSolvable_of_splits
   · exact ⟨splits_of_splits_of_dvd _ hp (SplittingField.splits (p.comp (X ^ n)))
       (minpoly.dvd F α (by rw [aeval_comp, aeval_X_pow, minpoly.aeval]))⟩
-  · refine gal_isSolvable_tower p (p.comp (X ^ n)) ?_ hα? _
+  · refine gal_isSolvable_tower p (p.comp (X ^ n)) ?_ hα ?_
     · exact Gal.splits_in_splittingField_of_comp _ _ (by rwa [natDegree_X_pow])
     · obtain ⟨s, hs⟩ := (splits_iff_exists_multiset _).1 (SplittingField.splits p)
       rw [map_comp, Polynomial.map_pow, map_X, hs, mul_comp, C_comp]

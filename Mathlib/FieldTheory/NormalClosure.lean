@@ -237,7 +237,7 @@ lemma normalClosure_def' : normalClosure F K L = ⨆ f : L →ₐ[F] L, K.map f 
   · exact le_iSup_of_le (f.comp K.val) (fun b ⟨a, h⟩ ↦ ⟨⟨a, h.1⟩, h.2⟩)
 
 lemma normalClosure_def'' : normalClosure F K L = ⨆ f : L ≃ₐ[F] L, K.map f := by
-  refine (normalClosure_def' K).trans (le_antisymm (iSup_le (fun f ↦ ?_)) (iSup_le (fun f ↦? _)))
+  refine (normalClosure_def' K).trans (le_antisymm (iSup_le (fun f ↦ ?_)) (iSup_le (fun f ↦ ?_)))
   · exact le_iSup_of_le (f.restrictNormal' L)
       (fun b ⟨a, h⟩ ↦ ⟨a, h.1, h.2 ▸ f.restrictNormal_commutes L a⟩)
   · exact le_iSup_of_le f le_rfl

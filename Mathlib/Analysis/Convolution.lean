@@ -119,7 +119,7 @@ theorem convolution_integrand_bound_right_of_le_of_subset {C : ℝ} (hC : ∀ i,
     {s u : Set G} (hx : x ∈ s) (hu : -tsupport g + s ⊆ u) :
     ‖L (f t) (g (x - t))‖ ≤ u.indicator (fun t => ‖L‖ * ‖f t‖ * C) t := by
   -- Porting note: had to add `f := _`
-  refine le_indicator (f := fun t ↦ ‖L (f t) (g (x - t))‖) (fun t _ => ?_) (fun t ht =>? _) t
+  refine le_indicator (f := fun t ↦ ‖L (f t) (g (x - t))‖) (fun t _ => ?_) (fun t ht => ?_) t
   · apply_rules [L.le_of_opNorm₂_le_of_le, le_rfl]
   · have : x - t ∉ support g := by
       refine mt (fun hxt => hu ?_) ht
@@ -224,7 +224,7 @@ theorem _root_.BddAbove.convolutionExistsAt' {x₀ : G} {s : Set G}
   have : ∀ᵐ t : G ∂μ.restrict s,
       ‖L (f t) (g (x₀ - t))‖ ≤ s.indicator (fun t => ‖L‖ * ‖f t‖ * ⨆ i : s', ‖g i‖) t := by
     filter_upwards
-    refine le_indicator (fun t ht => ?_) fun t ht =>? _
+    refine le_indicator (fun t ht => ?_) fun t ht => ?_
     · apply_rules [L.le_of_opNorm₂_le_of_le, le_rfl]
       refine (le_ciSup_set hbg <| mem_preimage.mpr ?_)
       rwa [neg_sub, sub_add_cancel]
@@ -380,7 +380,7 @@ theorem _root_.BddAbove.convolutionExistsAt [MeasurableAdd₂ G] [SigmaFinite μ
     (hbg : BddAbove ((fun i => ‖g i‖) '' ((fun t => x₀ - t) ⁻¹' s))) (hs : MeasurableSet s)
     (h2s : (support fun t => L (f t) (g (x₀ - t))) ⊆ s) (hf : IntegrableOn f s μ)
     (hmg : AEStronglyMeasurable g μ) : ConvolutionExistsAt f g x₀ L μ := by
-  refine BddAbove.convolutionExistsAt' L ?_ hs h2s hf? _
+  refine BddAbove.convolutionExistsAt' L ?_ hs h2s hf ?_
   · simp_rw [← sub_eq_neg_add, hbg]
   · have : AEStronglyMeasurable g (map (fun t : G => x₀ - t) μ) :=
       hmg.mono_ac (quasiMeasurePreserving_sub_left_of_right_invariant μ x₀).absolutelyContinuous
@@ -796,7 +796,7 @@ theorem dist_convolution_le' {x₀ : G} {R ε : ℝ} {z₀ : E'} (hε : 0 ≤ ε
     (hg : ∀ x ∈ ball x₀ R, dist (g x) z₀ ≤ ε) :
     dist ((f ⋆[L, μ] g : G → F) x₀) (∫ t, L (f t) z₀ ∂μ) ≤ (‖L‖ * ∫ x, ‖f x‖ ∂μ) * ε := by
   have hfg : ConvolutionExistsAt f g x₀ L μ := by
-    refine BddAbove.convolutionExistsAt L ?_ Metric.isOpen_ball.measurableSet (Subset.trans? _ hf)
+    refine BddAbove.convolutionExistsAt L ?_ Metric.isOpen_ball.measurableSet (Subset.trans ?_ hf)
       hif.integrableOn hmg
     swap; · refine fun t => mt fun ht : f t = 0 => ?_; simp_rw [ht, L.map_zero₂]
     rw [bddAbove_def]

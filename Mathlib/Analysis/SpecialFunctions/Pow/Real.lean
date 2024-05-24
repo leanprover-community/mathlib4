@@ -934,7 +934,7 @@ theorem exists_rat_pow_btwn {α : Type*} [LinearOrderedField α] [Archimedean α
   have : (0 : α) < q₂ := (le_max_right _ _).trans_lt hx₂
   norm_cast at hq₁₂ this
   obtain ⟨q, hq, hq₁, hq₂⟩ := exists_rat_pow_btwn_rat hn hq₁₂ this
-  refine ⟨q, hq, (le_max_left _ _).trans_lt <| hx₁.trans ?_, hy₂.trans'? _⟩ <;> assumption_mod_cast
+  refine ⟨q, hq, (le_max_left _ _).trans_lt <| hx₁.trans ?_, hy₂.trans' ?_⟩ <;> assumption_mod_cast
 #align real.exists_rat_pow_btwn Real.exists_rat_pow_btwn
 
 end Real

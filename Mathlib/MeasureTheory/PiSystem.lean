@@ -363,7 +363,7 @@ theorem piiUnionInter_singleton (π : ι → Set (Set α)) (i : ι) :
     piiUnionInter π {i} = π i ∪ {univ} := by
   ext1 s
   simp only [piiUnionInter, exists_prop, mem_union]
-  refine ⟨?_, fun h =>? _⟩
+  refine ⟨?_, fun h => ?_⟩
   · rintro ⟨t, hti, f, hfπ, rfl⟩
     simp only [subset_singleton_iff, Finset.mem_coe] at hti
     by_cases hi : i ∈ t
@@ -412,7 +412,7 @@ theorem generateFrom_piiUnionInter_singleton_left (s : ι → Set α) (S : Set �
     refine Finset.measurableSet_biInter _ fun m hm => measurableSet_generateFrom ?_
     exact ⟨m, hI hm, (hf m hm).symm⟩
   · rintro _ ⟨k, hk, rfl⟩
-    refine ⟨{k}, fun m hm => ?_, s, fun i _ =>? _, ?_⟩
+    refine ⟨{k}, fun m hm => ?_, s, fun i _ => ?_, ?_⟩
     · rw [Finset.mem_coe, Finset.mem_singleton] at hm
       rwa [hm]
     · exact Set.mem_singleton _
@@ -433,7 +433,7 @@ theorem isPiSystem_piiUnionInter (π : ι → Set (Set α)) (hpi : ∀ x, IsPiSy
     simp_rw [← Set.inf_eq_inter]
     ext1 x
     simp only [g, inf_eq_inter, mem_inter_iff, mem_iInter, Finset.mem_union]
-    refine ⟨fun h i _ => ?_, fun h => ⟨fun i hi1 =>? _, fun i hi2 =>? _⟩⟩
+    refine ⟨fun h i _ => ?_, fun h => ⟨fun i hi1 => ?_, fun i hi2 => ?_⟩⟩
     · split_ifs with h_1 h_2 h_2
       exacts [⟨h.1 i h_1, h.2 i h_2⟩, ⟨h.1 i h_1, Set.mem_univ _⟩, ⟨Set.mem_univ _, h.2 i h_2⟩,
         ⟨Set.mem_univ _, Set.mem_univ _⟩]

@@ -295,7 +295,7 @@ theorem powerset_card_disjiUnion (s : Finset α) :
     Finset.powerset s =
       (range (s.card + 1)).disjiUnion (fun i => powersetCard i s)
         (s.pairwise_disjoint_powersetCard.set_pairwise _) := by
-  refine ext fun a => ⟨fun ha => ?_, fun ha =>? _⟩
+  refine ext fun a => ⟨fun ha => ?_, fun ha => ?_⟩
   · rw [mem_disjiUnion]
     exact
       ⟨a.card, mem_range.mpr (Nat.lt_succ_of_le (card_le_card (mem_powerset.mp ha))),

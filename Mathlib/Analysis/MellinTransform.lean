@@ -399,7 +399,7 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ}
     simp_rw [bound, add_mul, mul_assoc]
     suffices ∀ {j : ℝ}, b < j → j < a →
         IntegrableOn (fun t : ℝ => t ^ (j - 1) * (|log t| * ‖f t‖)) (Ioi 0) volume by
-      refine Integrable.add (this ?_ ?_) (this? _ ?_)
+      refine Integrable.add (this ?_ ?_) (this ?_ ?_)
       all_goals linarith
     · intro j hj hj'
       obtain ⟨w, hw1, hw2⟩ := exists_between hj

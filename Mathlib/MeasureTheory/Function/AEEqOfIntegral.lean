@@ -287,7 +287,7 @@ theorem ae_nonneg_of_forall_setIntegral_nonneg_of_stronglyMeasurable (hfm : Stro
     rwa [setIntegral_const, smul_eq_mul, mul_comm] at h_const_le
   by_contra h
   refine (lt_self_iff_false (∫ x in s, f x ∂μ)).mp (h_int_gt.trans_lt ?_)
-  refine (mul_neg_iff.mpr (Or.inr ⟨hb_neg, ?_⟩)).trans_le? _
+  refine (mul_neg_iff.mpr (Or.inr ⟨hb_neg, ?_⟩)).trans_le ?_
   swap
   · exact hf_zero s hs mus
   refine ENNReal.toReal_nonneg.lt_of_ne fun h_eq => h ?_
@@ -370,7 +370,7 @@ theorem AEFinStronglyMeasurable.ae_nonneg_of_forall_setIntegral_nonneg {f : α �
     ae_of_ae_restrict_of_ae_restrict_compl _ this hf.ae_eq_zero_compl.symm.le
   haveI : SigmaFinite (μ.restrict t) := hf.sigmaFinite_restrict
   refine
-    ae_nonneg_of_forall_setIntegral_nonneg_of_sigmaFinite (fun s hs hμts => ?_) fun s hs hμts =>? _
+    ae_nonneg_of_forall_setIntegral_nonneg_of_sigmaFinite (fun s hs hμts => ?_) fun s hs hμts => ?_
   · rw [IntegrableOn, Measure.restrict_restrict hs]
     rw [Measure.restrict_apply hs] at hμts
     exact hf_int_finite (s ∩ t) (hs.inter hf.measurableSet) hμts

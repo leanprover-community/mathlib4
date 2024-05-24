@@ -923,10 +923,10 @@ theorem restrict_le_restrict_iUnion {f : ℕ → Set α} (hf₁ : ∀ n, Measura
   · refine tsum_le_tsum (fun n => (restrict_le_restrict_iff v w (hf₁ n)).1 (hf₂ n) ?_ ?_?) _ ?_
     · exact ha₁.inter (MeasurableSet.disjointed hf₁ n)
     · exact Set.Subset.trans (Set.inter_subset_right _ _) (disjointed_subset _ _)
-    · refine (v.m_iUnion (fun n => ?_)? _).summable
+    · refine (v.m_iUnion (fun n => ?_) ?_).summable
       · exact ha₁.inter (MeasurableSet.disjointed hf₁ n)
       · exact (disjoint_disjointed _).mono fun i j => Disjoint.mono inf_le_right inf_le_right
-    · refine (w.m_iUnion (fun n => ?_)? _).summable
+    · refine (w.m_iUnion (fun n => ?_) ?_).summable
       · exact ha₁.inter (MeasurableSet.disjointed hf₁ n)
       · exact (disjoint_disjointed _).mono fun i j => Disjoint.mono inf_le_right inf_le_right
   · intro n

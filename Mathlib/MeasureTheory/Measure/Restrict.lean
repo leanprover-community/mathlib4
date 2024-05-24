@@ -1093,7 +1093,7 @@ theorem indicator_meas_zero (hs : μ s = 0) : indicator s f =ᵐ[μ] 0 :=
 theorem ae_eq_restrict_iff_indicator_ae_eq {g : α → β} (hs : MeasurableSet s) :
     f =ᵐ[μ.restrict s] g ↔ s.indicator f =ᵐ[μ] s.indicator g := by
   rw [Filter.EventuallyEq, ae_restrict_iff' hs]
-  refine ⟨fun h => ?_, fun h =>? _⟩ <;> filter_upwards [h] with x hx
+  refine ⟨fun h => ?_, fun h => ?_⟩ <;> filter_upwards [h] with x hx
   · by_cases hxs : x ∈ s
     · simp [hxs, hx hxs]
     · simp [hxs]

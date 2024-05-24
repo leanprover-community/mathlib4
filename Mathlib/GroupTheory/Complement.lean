@@ -216,7 +216,7 @@ theorem isComplement'_top_right : IsComplement' H ⊤ ↔ H = ⊥ :=
 theorem mem_leftTransversals_iff_existsUnique_inv_mul_mem :
     S ∈ leftTransversals T ↔ ∀ g : G, ∃! s : S, (s : G)⁻¹ * g ∈ T := by
   rw [leftTransversals, Set.mem_setOf_eq, isComplement_iff_existsUnique]
-  refine ⟨fun h g => ?_, fun h g =>? _⟩
+  refine ⟨fun h g => ?_, fun h g => ?_⟩
   · obtain ⟨x, h1, h2⟩ := h g
     exact
       ⟨x.1, (congr_arg (· ∈ T) (eq_inv_mul_of_mul_eq h1)).mp x.2.2, fun y hy =>
@@ -232,7 +232,7 @@ theorem mem_leftTransversals_iff_existsUnique_inv_mul_mem :
 theorem mem_rightTransversals_iff_existsUnique_mul_inv_mem :
     S ∈ rightTransversals T ↔ ∀ g : G, ∃! s : S, g * (s : G)⁻¹ ∈ T := by
   rw [rightTransversals, Set.mem_setOf_eq, isComplement_iff_existsUnique]
-  refine ⟨fun h g => ?_, fun h g =>? _⟩
+  refine ⟨fun h g => ?_, fun h g => ?_⟩
   · obtain ⟨x, h1, h2⟩ := h g
     exact
       ⟨x.2, (congr_arg (· ∈ T) (eq_mul_inv_of_mul_eq h1)).mp x.1.2, fun y hy =>

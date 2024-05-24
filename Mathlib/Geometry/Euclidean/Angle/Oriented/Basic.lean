@@ -57,7 +57,7 @@ def oangle (x y : V) : Real.Angle :=
 /-- Oriented angles are continuous when the vectors involved are nonzero. -/
 theorem continuousAt_oangle {x : V × V} (hx1 : x.1 ≠ 0) (hx2 : x.2 ≠ 0) :
     ContinuousAt (fun y : V × V => o.oangle y.1 y.2) x := by
-  refine (Complex.continuousAt_arg_coe_angle ?_).comp? _
+  refine (Complex.continuousAt_arg_coe_angle ?_).comp ?_
   · exact o.kahler_ne_zero hx1 hx2
   exact ((continuous_ofReal.comp continuous_inner).add
     ((continuous_ofReal.comp o.areaForm'.continuous₂).mul continuous_const)).continuousAt
@@ -755,7 +755,7 @@ theorem oangle_eq_neg_angle_of_sign_eq_neg_one {x y : V} (h : (o.oangle x y).sig
 is zero. -/
 theorem oangle_eq_zero_iff_angle_eq_zero {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     o.oangle x y = 0 ↔ InnerProductGeometry.angle x y = 0 := by
-  refine ⟨fun h => ?_, fun h =>? _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · simpa [o.angle_eq_abs_oangle_toReal hx hy]
   · have ha := o.oangle_eq_angle_or_eq_neg_angle hx hy
     rw [h] at ha
@@ -771,7 +771,7 @@ theorem oangle_eq_pi_iff_angle_eq_pi {x y : V} :
   by_cases hy : y = 0
   · simp [hy, Real.Angle.pi_ne_zero.symm, div_eq_mul_inv, mul_right_eq_self₀, not_or,
       Real.pi_ne_zero]
-  refine ⟨fun h => ?_, fun h =>? _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · rw [o.angle_eq_abs_oangle_toReal hx hy, h]
     simp [Real.pi_pos.le]
   · have ha := o.oangle_eq_angle_or_eq_neg_angle hx hy
@@ -786,7 +786,7 @@ theorem eq_zero_or_oangle_eq_iff_inner_eq_zero {x y : V} :
   by_cases hx : x = 0; · simp [hx]
   by_cases hy : y = 0; · simp [hy]
   rw [InnerProductGeometry.inner_eq_zero_iff_angle_eq_pi_div_two, or_iff_right hx, or_iff_right hy]
-  refine ⟨fun h => ?_, fun h =>? _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · rwa [o.angle_eq_abs_oangle_toReal hx hy, Real.Angle.abs_toReal_eq_pi_div_two_iff]
   · convert o.oangle_eq_angle_or_eq_neg_angle hx hy using 2 <;> rw [h]
     simp only [neg_div, Real.Angle.coe_neg]
@@ -868,7 +868,7 @@ theorem oangle_smul_add_right_eq_zero_or_eq_pi_iff {x y : V} (r : ℝ) :
   conv_lhs => enter [1, g]; rw [Fin.exists_fin_two]
   conv_rhs => enter [1, g, 2, 1, i]; tactic => change Fin 2 at i
   conv_rhs => enter [1, g]; rw [Fin.exists_fin_two]
-  refine ⟨fun h => ?_, fun h =>? _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · rcases h with ⟨m, h, hm⟩
     change m 0 • x + m 1 • (r • x + y) = 0 at h
     refine ⟨![m 0 + m 1 * r, m 1], ?_⟩

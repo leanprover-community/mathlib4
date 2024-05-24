@@ -349,7 +349,7 @@ theorem continuousWithinAt_primitive (hb₀ : μ {b₀} = 0)
     apply ContinuousWithinAt.congr_of_eventuallyEq _ this (integral_indicator h₀).symm
     have : IntervalIntegrable (fun x => ‖f x‖) μ b₁ b₂ :=
       IntervalIntegrable.norm (h_int' <| right_mem_Icc.mpr h₁₂)
-    refine continuousWithinAt_of_dominated_interval ?_ ?_ this? _ <;> clear this
+    refine continuousWithinAt_of_dominated_interval ?_ ?_ this ?_ <;> clear this
     · filter_upwards [self_mem_nhdsWithin]
       intro x hx
       erw [aestronglyMeasurable_indicator_iff, Measure.restrict_restrict, Iic_inter_Ioc_of_le]

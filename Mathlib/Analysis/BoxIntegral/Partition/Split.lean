@@ -322,7 +322,7 @@ theorem eventually_splitMany_inf_eq_filter (π : Prepartition I) :
     ∀ᶠ t : Finset (ι × ℝ) in atTop,
       π ⊓ splitMany I t = (splitMany I t).filter fun J => ↑J ⊆ π.iUnion := by
   refine (eventually_not_disjoint_imp_le_of_mem_splitMany π.boxes).mono fun t ht => ?_
-  refine le_antisymm ((biUnion_le_iff _).2 fun J hJ => ?_) (le_inf (fun J hJ =>? _) (filter_le _ _))
+  refine le_antisymm ((biUnion_le_iff _).2 fun J hJ => ?_) (le_inf (fun J hJ => ?_) (filter_le _ _))
   · refine ofWithBot_mono ?_
     simp only [Finset.mem_image, exists_prop, mem_boxes, mem_filter]
     rintro _ ⟨J₁, h₁, rfl⟩ hne

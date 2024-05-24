@@ -191,7 +191,7 @@ variable {P}
 
 theorem parts_eq_empty_iff : P.parts = ∅ ↔ a = ⊥ := by
   simp_rw [← P.sup_parts]
-  refine ⟨fun h ↦ ?_, fun h ↦ eq_empty_iff_forall_not_mem.2 fun b hb ↦ P.not_bot_mem? _⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ eq_empty_iff_forall_not_mem.2 fun b hb ↦ P.not_bot_mem ?_⟩
   · rw [h]
     exact Finset.sup_empty
   · rwa [← le_bot_iff.1 ((le_sup hb).trans h.le)]

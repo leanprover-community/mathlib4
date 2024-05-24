@@ -622,7 +622,7 @@ theorem LinearIndependent.units_smul {v : ι → M} (hv : LinearIndependent R v)
   rw [linearIndependent_iff''] at hv ⊢
   intro s g hgs hsum i
   rw [← (w i).mul_left_eq_zero]
-  refine hv s (fun i => g i • (w i : R)) (fun i hi => ?_)? _ i
+  refine hv s (fun i => g i • (w i : R)) (fun i hi => ?_) ?_ i
   · dsimp only
     exact (hgs i hi).symm ▸ zero_smul _ _
   · rw [← hsum, Finset.sum_congr rfl _]
@@ -1099,7 +1099,7 @@ theorem LinearIndependent.inl_union_inr {s : Set M} {t : Set M'}
     (hs : LinearIndependent R (fun x => x : s → M))
     (ht : LinearIndependent R (fun x => x : t → M')) :
     LinearIndependent R (fun x => x : ↥(inl R M M' '' s ∪ inr R M M' '' t) → M × M') := by
-  refine (hs.image_subtype ?_).union (ht.image_subtype ?_)? _ <;> [simp; simp; skip]
+  refine (hs.image_subtype ?_).union (ht.image_subtype ?_) ?_ <;> [simp; simp; skip]
   -- Note: #8386 had to change `span_image` into `span_image _`
   simp only [span_image _]
   simp [disjoint_iff, prod_inf_prod]
@@ -1406,7 +1406,7 @@ theorem exists_linearIndependent_extension (hs : LinearIndependent K ((↑) : s 
   -- Porting note: The placeholder should be solved before `rcases`.
   have := by
     refine zorn_subset_nonempty { b | b ⊆ t ∧ LinearIndependent K ((↑) : b → V) } ?_ _ ⟨hst, hs⟩
-    · refine fun c hc cc _c0 => ⟨⋃₀ c, ⟨?_, ?_⟩, fun x =>? _⟩
+    · refine fun c hc cc _c0 => ⟨⋃₀ c, ⟨?_, ?_⟩, fun x => ?_⟩
       · exact sUnion_subset fun x xc => (hc xc).1
       · exact linearIndependent_sUnion_of_directed cc.directedOn fun x xc => (hc xc).2
       · exact subset_sUnion_of_mem

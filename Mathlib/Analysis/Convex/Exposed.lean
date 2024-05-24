@@ -256,7 +256,7 @@ protected theorem isExtreme (hAB : IsExposed 𝕜 A B) : IsExtreme 𝕜 A B := b
   have hl : ConvexOn 𝕜 univ l := l.toLinearMap.convexOn convex_univ
   have hlx₁ := hxB.2 x₁ hx₁A
   have hlx₂ := hxB.2 x₂ hx₂A
-  refine ⟨⟨hx₁A, fun y hy => ?_⟩, ⟨hx₂A, fun y hy =>? _⟩⟩
+  refine ⟨⟨hx₁A, fun y hy => ?_⟩, ⟨hx₂A, fun y hy => ?_⟩⟩
   · rw [hlx₁.antisymm (hl.le_left_of_right_le (mem_univ _) (mem_univ _) hx hlx₂)]
     exact hxB.2 y hy
   · rw [hlx₂.antisymm (hl.le_right_of_left_le (mem_univ _) (mem_univ _) hx hlx₁)]

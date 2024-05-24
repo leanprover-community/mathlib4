@@ -497,7 +497,7 @@ theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (
   have hv₀ : σ v₀ = v₀ := Subtype.ext (Subtype.ext (List.rotate_replicate (1 : G) p 1))
   obtain ⟨v, hv1, hv2⟩ := exists_fixed_point_of_prime' Scard hσ hv₀
   refine
-    Exists.imp (fun g hg => orderOf_eq_prime ?_ fun hg' => hv2? _)
+    Exists.imp (fun g hg => orderOf_eq_prime ?_ fun hg' => hv2 ?_)
       (List.rotate_one_eq_self_iff_eq_replicate.mp (Subtype.ext_iff.mp (Subtype.ext_iff.mp hv1)))
   · rw [← List.prod_replicate, ← v.1.2, ← hg, show v.val.val.prod = 1 from v.2]
   · rw [Subtype.ext_iff_val, Subtype.ext_iff_val, hg, hg', v.1.2]
@@ -560,7 +560,7 @@ theorem filter_parts_partition_eq_cycleType {σ : Perm α} :
 
 theorem partition_eq_of_isConj {σ τ : Perm α} : IsConj σ τ ↔ σ.partition = τ.partition := by
   rw [isConj_iff_cycleType_eq]
-  refine ⟨fun h => ?_, fun h =>? _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · rw [Nat.Partition.ext_iff, parts_partition, parts_partition, ← sum_cycleType, ← sum_cycleType,
       h]
   · rw [← filter_parts_partition_eq_cycleType, ← filter_parts_partition_eq_cycleType, h]

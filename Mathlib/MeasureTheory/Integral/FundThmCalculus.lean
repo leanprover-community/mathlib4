@@ -617,7 +617,7 @@ theorem integral_hasStrictFDerivAt_of_tendsto_ae (hf : IntervalIntegrable f volu
       (continuous_fst.fst.tendsto ((a, b), (a, b)))
       (continuous_snd.snd.tendsto ((a, b), (a, b)))
       (continuous_fst.snd.tendsto ((a, b), (a, b)))
-  refine (this.congr_left ?_).trans_isBigO? _
+  refine (this.congr_left ?_).trans_isBigO ?_
   · intro x; simp [sub_smul]; abel
   · exact isBigO_fst_prod.norm_left.add isBigO_snd_prod.norm_left
 #align interval_integral.integral_has_strict_fderiv_at_of_tendsto_ae intervalIntegral.integral_hasStrictFDerivAt_of_tendsto_ae

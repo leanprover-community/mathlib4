@@ -112,7 +112,7 @@ theorem hitting_of_le {m : ι} (hmn : m ≤ n) : hitting u s n m ω = m := by
 theorem le_hitting {m : ι} (hnm : n ≤ m) (ω : Ω) : n ≤ hitting u s n m ω := by
   simp only [hitting]
   split_ifs with h
-  · refine le_csInf ?_ fun b hb =>? _
+  · refine le_csInf ?_ fun b hb => ?_
     · obtain ⟨k, hk_Icc, hk_s⟩ := h
       exact ⟨k, hk_Icc, hk_s⟩
     · rw [Set.mem_inter_iff] at hb

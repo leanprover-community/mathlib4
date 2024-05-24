@@ -256,7 +256,7 @@ theorem Stable.bounded_difference (h : F.Stable) (h' : F'.Stable) (e : F.N 0 = F
   obtain ⟨n₂, h₂⟩ := h'.exists_forall_le (le_of_eq e.symm)
   use max n₁ n₂
   intro n
-  refine ⟨(F.antitone ?_).trans (h₁ n), (F'.antitone? _).trans (h₂ n)⟩ <;> simp
+  refine ⟨(F.antitone ?_).trans (h₁ n), (F'.antitone ?_).trans (h₂ n)⟩ <;> simp
 #align ideal.filtration.stable.bounded_difference Ideal.Filtration.Stable.bounded_difference
 
 open PolynomialModule

@@ -128,7 +128,7 @@ theorem integralSum_disjUnion (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ]
     (h : Disjoint π₁.iUnion π₂.iUnion) :
     integralSum f vol (π₁.disjUnion π₂ h) = integralSum f vol π₁ + integralSum f vol π₂ := by
   refine (Prepartition.sum_disj_union_boxes h _).trans
-      (congr_arg₂ (· + ·) (sum_congr rfl fun J hJ => ?_) (sum_congr rfl fun J hJ =>? _))
+      (congr_arg₂ (· + ·) (sum_congr rfl fun J hJ => ?_) (sum_congr rfl fun J hJ => ?_))
   · rw [disjUnion_tag_of_mem_left _ hJ]
   · rw [disjUnion_tag_of_mem_right _ hJ]
 #align box_integral.integral_sum_disj_union BoxIntegral.integralSum_disjUnion

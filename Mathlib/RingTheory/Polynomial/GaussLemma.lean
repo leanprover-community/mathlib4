@@ -169,7 +169,7 @@ theorem Monic.irreducible_iff_irreducible_map_fraction_map [IsIntegrallyClosed R
     C_mul, this, C_1, one_mul, ← Polynomial.map_mul] at H
   rw [← hb, ← Polynomial.coe_mapRingHom]
   refine
-    IsUnit.mul (IsUnit.map _ (Or.resolve_left (hp.isUnit_or_isUnit ?_) (show ¬IsUnit a' from? _)))
+    IsUnit.mul (IsUnit.map _ (Or.resolve_left (hp.isUnit_or_isUnit ?_) (show ¬IsUnit a' from ?_)))
       (isUnit_iff_exists_inv'.mpr
         -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5073): was `rwa`
         (Exists.intro (C a.leadingCoeff) <| by rw [← C_mul, this, C_1]))

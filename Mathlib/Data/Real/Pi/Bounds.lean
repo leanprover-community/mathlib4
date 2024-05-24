@@ -58,7 +58,7 @@ theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :
       · apply div_pos pi_pos; apply pow_pos; norm_num
       · apply pow_pos; norm_num
     · rw [← le_div_iff (by norm_num)]
-      refine le_trans ((div_le_div_right ?_).mpr pi_le_four)? _
+      refine le_trans ((div_le_div_right ?_).mpr pi_le_four) ?_
       · apply pow_pos; norm_num
       · simp only [pow_succ', ← div_div, one_div]
       -- Porting note: removed `convert le_rfl`

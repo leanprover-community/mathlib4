@@ -311,7 +311,7 @@ theorem IsCycle.conj : IsCycle f → IsCycle (g * f * g⁻¹) := by
 protected theorem IsCycle.extendDomain {p : β → Prop} [DecidablePred p] (f : α ≃ Subtype p) :
     IsCycle g → IsCycle (g.extendDomain f) := by
   rintro ⟨a, ha, ha'⟩
-  refine ⟨f a, ?_, fun b hb =>? _⟩
+  refine ⟨f a, ?_, fun b hb => ?_⟩
   · rw [extendDomain_apply_image]
     exact Subtype.coe_injective.ne (f.injective.ne ha)
   have h : b = f (f.symm ⟨b, of_not_not <| hb ∘ extendDomain_apply_not_subtype _ _⟩) := by

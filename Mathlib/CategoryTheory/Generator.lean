@@ -99,7 +99,7 @@ theorem isSeparating_op_iff (𝒢 : Set C) : IsSeparating 𝒢.op ↔ IsCosepara
 #align category_theory.is_separating_op_iff CategoryTheory.isSeparating_op_iff
 
 theorem isCoseparating_op_iff (𝒢 : Set C) : IsCoseparating 𝒢.op ↔ IsSeparating 𝒢 := by
-  refine ⟨fun h𝒢 X Y f g hfg => ?_, fun h𝒢 X Y f g hfg =>? _⟩
+  refine ⟨fun h𝒢 X Y f g hfg => ?_, fun h𝒢 X Y f g hfg => ?_⟩
   · refine Quiver.Hom.op_inj (h𝒢 _ _ fun G hG h => Quiver.Hom.unop_inj ?_)
     simpa only [unop_comp, Quiver.Hom.unop_op] using hfg _ (Set.mem_op.1 hG) _
   · refine Quiver.Hom.unop_inj (h𝒢 _ _ fun G hG h => Quiver.Hom.op_inj ?_)
@@ -127,7 +127,7 @@ theorem isDetecting_op_iff (𝒢 : Set C) : IsDetecting 𝒢.op ↔ IsCodetectin
 #align category_theory.is_detecting_op_iff CategoryTheory.isDetecting_op_iff
 
 theorem isCodetecting_op_iff (𝒢 : Set C) : IsCodetecting 𝒢.op ↔ IsDetecting 𝒢 := by
-  refine ⟨fun h𝒢 X Y f hf => ?_, fun h𝒢 X Y f hf =>? _⟩
+  refine ⟨fun h𝒢 X Y f hf => ?_, fun h𝒢 X Y f hf => ?_⟩
   · refine (isIso_op_iff _).1 (h𝒢 _ fun G hG h => ?_)
     obtain ⟨t, ht, ht'⟩ := hf (unop G) (Set.mem_op.1 hG) h.unop
     exact
@@ -167,7 +167,7 @@ theorem IsSeparating.isDetecting [Balanced C] {𝒢 : Set C} (h𝒢 : IsSeparati
     IsDetecting 𝒢 := by
   intro X Y f hf
   refine
-    (isIso_iff_mono_and_epi _).2 ⟨⟨fun g h hgh => h𝒢 _ _ fun G hG i => ?_⟩, ⟨fun g h hgh =>? _⟩⟩
+    (isIso_iff_mono_and_epi _).2 ⟨⟨fun g h hgh => h𝒢 _ _ fun G hG i => ?_⟩, ⟨fun g h hgh => ?_⟩⟩
   · obtain ⟨t, -, ht⟩ := hf G hG (i ≫ g ≫ f)
     rw [ht (i ≫ g) (Category.assoc _ _ _), ht (i ≫ h) (hgh.symm ▸ Category.assoc _ _ _)]
   · refine h𝒢 _ _ fun G hG i => ?_
@@ -639,7 +639,7 @@ theorem isDetector_iff_reflectsIsomorphisms_coyoneda_obj (G : C) :
 
 theorem isCodetector_iff_reflectsIsomorphisms_yoneda_obj (G : C) :
     IsCodetector G ↔ (yoneda.obj G).ReflectsIsomorphisms := by
-  refine ⟨fun hG => ⟨fun f hf => ?_⟩, fun h => (isCodetector_def _).2 fun X Y f hf =>? _⟩
+  refine ⟨fun hG => ⟨fun f hf => ?_⟩, fun h => (isCodetector_def _).2 fun X Y f hf => ?_⟩
   · refine (isIso_unop_iff _).1 (hG.def _ ?_)
     rwa [isIso_iff_bijective, Function.bijective_iff_existsUnique] at hf
   · rw [← isIso_op_iff]

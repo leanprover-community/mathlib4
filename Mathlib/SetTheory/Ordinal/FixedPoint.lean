@@ -127,7 +127,7 @@ theorem nfpFamily_fp {i} (H : IsNormal (f i)) (a) :
 
 theorem apply_le_nfpFamily [hι : Nonempty ι] {f : ι → Ordinal → Ordinal} (H : ∀ i, IsNormal (f i))
     {a b} : (∀ i, f i b ≤ nfpFamily.{u, v} f a) ↔ b ≤ nfpFamily.{u, v} f a := by
-  refine ⟨fun h => ?_, fun h i =>? _⟩
+  refine ⟨fun h => ?_, fun h i => ?_⟩
   · cases' hι with i
     exact ((H i).self_le b).trans (h i)
   rw [← nfpFamily_fp (H i)]
@@ -326,7 +326,7 @@ theorem nfpBFamily_fp {i hi} (H : IsNormal (f i hi)) (a) :
 
 theorem apply_le_nfpBFamily (ho : o ≠ 0) (H : ∀ i hi, IsNormal (f i hi)) {a b} :
     (∀ i hi, f i hi b ≤ nfpBFamily.{u, v} o f a) ↔ b ≤ nfpBFamily.{u, v} o f a := by
-  refine ⟨fun h => ?_, fun h i hi =>? _⟩
+  refine ⟨fun h => ?_, fun h i hi => ?_⟩
   · have ho' : 0 < o := Ordinal.pos_iff_ne_zero.2 ho
     exact ((H 0 ho').self_le b).trans (h 0 ho')
   · rw [← nfpBFamily_fp (H i hi)]
@@ -423,7 +423,7 @@ theorem nfp_eq_nfpFamily (f : Ordinal → Ordinal) : nfp f = nfpFamily fun _ : U
 @[simp]
 theorem sup_iterate_eq_nfp (f : Ordinal.{u} → Ordinal.{u}) :
     (fun a => sup fun n : ℕ => f^[n] a) = nfp f := by
-  refine funext fun a => le_antisymm ?_ (sup_le fun l =>? _)
+  refine funext fun a => le_antisymm ?_ (sup_le fun l => ?_)
   · rw [sup_le_iff]
     intro n
     rw [← List.length_replicate n Unit.unit, ← List.foldr_const f a]
@@ -578,7 +578,7 @@ theorem nfp_add_eq_mul_omega {a b} (hba : b ≤ a * omega) : nfp (a + ·) b = a 
 #align ordinal.nfp_add_eq_mul_omega Ordinal.nfp_add_eq_mul_omega
 
 theorem add_eq_right_iff_mul_omega_le {a b : Ordinal} : a + b = b ↔ a * omega ≤ b := by
-  refine ⟨fun h => ?_, fun h =>? _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · rw [← nfp_add_zero a, ← deriv_zero]
     cases' (add_isNormal a).fp_iff_deriv.1 h with c hc
     rw [← hc]
@@ -715,7 +715,7 @@ theorem deriv_mul_eq_opow_omega_mul {a : Ordinal.{u}} (ha : 0 < a) (b) :
   revert b
   rw [← funext_iff,
     IsNormal.eq_iff_zero_and_succ (deriv_isNormal _) (mul_isNormal (opow_pos omega ha))]
-  refine ⟨?_, fun c h =>? _⟩
+  refine ⟨?_, fun c h => ?_⟩
   · dsimp only; rw [deriv_zero, nfp_mul_zero, mul_zero]
   · rw [deriv_succ, h]
     exact nfp_mul_opow_omega_add c ha zero_lt_one (one_le_iff_pos.2 (opow_pos _ ha))

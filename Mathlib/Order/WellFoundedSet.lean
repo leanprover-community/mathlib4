@@ -359,7 +359,7 @@ theorem partiallyWellOrderedOn_iff_finite_antichains [IsSymm α r] :
   refine ⟨fun h t ht hrt => hrt.finite_of_partiallyWellOrderedOn (h.mono ht), ?_⟩
   rintro hs f hf
   by_contra! H
-  refine infinite_range_of_injective (fun m n hmn => ?_) (hs _ (range_subset_iff.2 hf)? _)
+  refine infinite_range_of_injective (fun m n hmn => ?_) (hs _ (range_subset_iff.2 hf) ?_)
   · obtain h | h | h := lt_trichotomy m n
     · refine (H _ _ h ?_).elim
       rw [hmn]
@@ -761,7 +761,7 @@ theorem exists_min_bad_of_exists_bad (r : α → α → Prop) (rk : α → ℕ) 
     (∃ f, IsBadSeq r s f) → ∃ f, IsBadSeq r s f ∧ ∀ n, IsMinBadSeq r rk s n f := by
   rintro ⟨f0, hf0 : IsBadSeq r s f0⟩
   let fs : ∀ n : ℕ, { f : ℕ → α // IsBadSeq r s f ∧ IsMinBadSeq r rk s n f } := by
-    refine Nat.rec ?_ fun n fn =>? _
+    refine Nat.rec ?_ fun n fn => ?_
     · exact ⟨(minBadSeqOfBadSeq r rk s 0 f0 hf0).1, (minBadSeqOfBadSeq r rk s 0 f0 hf0).2.2⟩
     · exact ⟨(minBadSeqOfBadSeq r rk s (n + 1) fn.1 fn.2.1).1,
         (minBadSeqOfBadSeq r rk s (n + 1) fn.1 fn.2.1).2.2⟩

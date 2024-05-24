@@ -91,7 +91,7 @@ theorem exists_isLUB {S : Set ℝ} (hne : S.Nonempty) (hbdd : BddAbove S) : ∃ 
     refine lt_of_lt_of_le ((@Rat.cast_lt ℝ _ _ _).1 ?_) ((inv_le ε0 (Nat.cast_pos.2 k0)).1 ik)
     simpa using sub_lt_iff_lt_add'.2 (lt_of_le_of_lt hy <| sub_lt_iff_lt_add.1 <| hf₂ _ k0 _ yS)
   let g : CauSeq ℚ abs := ⟨fun n => f n / n, hg⟩
-  refine ⟨mk g, ⟨fun x xS => ?_, fun y h =>? _⟩⟩
+  refine ⟨mk g, ⟨fun x xS => ?_, fun y h => ?_⟩⟩
   · refine le_of_forall_ge_of_dense fun z xz => ?_
     cases' exists_nat_gt (x - z)⁻¹ with K hK
     refine le_mk_of_forall_le ⟨K, fun n nK => ?_⟩
@@ -175,7 +175,7 @@ theorem sInf_le_iff {s : Set ℝ} (h : BddBelow s) (h' : s.Nonempty) {a : ℝ} :
 theorem le_sSup_iff {s : Set ℝ} (h : BddAbove s) (h' : s.Nonempty) {a : ℝ} :
     a ≤ sSup s ↔ ∀ ε, ε < 0 → ∃ x ∈ s, a + ε < x := by
   rw [le_iff_forall_pos_lt_add]
-  refine ⟨fun H ε ε_neg => ?_, fun H ε ε_pos =>? _⟩
+  refine ⟨fun H ε ε_neg => ?_, fun H ε ε_pos => ?_⟩
   · exact exists_lt_of_lt_csSup h' (lt_sub_iff_add_lt.mp (H _ (neg_pos.mpr ε_neg)))
   · rcases H _ (neg_lt_zero.mpr ε_pos) with ⟨x, x_in, hx⟩
     exact sub_lt_iff_lt_add.mp (lt_csSup_of_lt h x_in hx)
@@ -312,7 +312,7 @@ theorem cauSeq_converges (f : CauSeq ℝ abs) : ∃ x, f ≈ const abs x := by
   have ub' : ∀ x, f < const abs x → ∀ y ∈ S, y ≤ x := fun x h y yS =>
     le_of_lt <| const_lt.1 <| CauSeq.lt_trans yS h
   have ub : ∃ x, ∀ y ∈ S, y ≤ x := (exists_gt f).imp ub'
-  refine ⟨sSup S, ((lt_total _ _).resolve_left fun h => ?_).resolve_right fun h =>? _⟩
+  refine ⟨sSup S, ((lt_total _ _).resolve_left fun h => ?_).resolve_right fun h => ?_⟩
   · rcases h with ⟨ε, ε0, i, ih⟩
     refine (csSup_le lb (ub' _ ?_)).not_lt (sub_lt_self _ (half_pos ε0))
     refine ⟨_, half_pos ε0, i, fun j ij => ?_⟩

@@ -254,7 +254,7 @@ theorem iff_union_singleton_one :
   obtain hS | rfl := S.eq_empty_or_nonempty.symm
   · exact iff_union_of_dvd _ _ (fun s _ => one_dvd _) hS
   rw [empty_union]
-  refine ⟨fun H => ?_, fun H =>? _⟩
+  refine ⟨fun H => ?_, fun H => ?_⟩
   · refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs => ⟨1, by simp [mem_singleton_iff.1 hs]⟩, ?_⟩
     simp [adjoin_singleton_one, empty]
   · refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs => (not_mem_empty s hs).elim, ?_⟩
@@ -324,7 +324,7 @@ protected theorem finite [IsDomain B] [h₁ : Finite S] [h₂ : IsCyclotomicExte
     Module.Finite A B := by
   cases' nonempty_fintype S with h
   revert h₂ A B
-  refine Set.Finite.induction_on h₁ (fun A B => ?_) @fun n S _ _ H A B =>? _
+  refine Set.Finite.induction_on h₁ (fun A B => ?_) @fun n S _ _ H A B => ?_
   · intro _ _ _ _ _
     refine Module.finite_def.2 ⟨({1} : Finset B), ?_⟩
     simp [← top_toSubmodule, ← empty, toSubmodule_bot, Submodule.one_eq_span]
@@ -372,7 +372,7 @@ theorem adjoin_roots_cyclotomic_eq_adjoin_nth_roots [IsDomain B] {ζ : B} {n : �
     adjoin A ((cyclotomic n A).rootSet B) =
       adjoin A {b : B | ∃ a : ℕ+, a ∈ ({n} : Set ℕ+) ∧ b ^ (a : ℕ) = 1} := by
   simp only [mem_singleton_iff, exists_eq_left, map_cyclotomic]
-  refine le_antisymm (adjoin_mono fun x hx => ?_) (adjoin_le fun x hx =>? _)
+  refine le_antisymm (adjoin_mono fun x hx => ?_) (adjoin_le fun x hx => ?_)
   · rw [mem_rootSet'] at hx
     simp only [mem_singleton_iff, exists_eq_left, mem_setOf_eq]
     rw [isRoot_of_unity_iff n.pos]

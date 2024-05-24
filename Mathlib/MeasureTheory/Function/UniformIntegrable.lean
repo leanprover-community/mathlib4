@@ -357,7 +357,7 @@ theorem Memℒp.snorm_indicator_le' (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (hf 
   refine ⟨δ, hδpos, fun s hs hμs => ?_⟩
   rw [(_ : f = { x : α | M ≤ ‖f x‖₊ }.indicator f + { x : α | ‖f x‖ < M }.indicator f)]
   · rw [snorm_indicator_eq_snorm_restrict hs]
-    refine le_trans (snorm_add_le ?_ ?_ hp_one)? _
+    refine le_trans (snorm_add_le ?_ ?_ hp_one) ?_
     · exact StronglyMeasurable.aestronglyMeasurable
         (hmeas.indicator (measurableSet_le measurable_const hmeas.nnnorm.measurable.subtype_coe))
     · exact StronglyMeasurable.aestronglyMeasurable
@@ -921,7 +921,7 @@ theorem uniformIntegrable_average
     (hp : 1 ≤ p) {f : ℕ → α → E} (hf : UniformIntegrable f p μ) :
     UniformIntegrable (fun (n : ℕ) => (n : ℝ)⁻¹ • (∑ i in Finset.range n, f i)) p μ := by
   obtain ⟨hf₁, hf₂, hf₃⟩ := hf
-  refine ⟨fun n => ?_, fun ε hε =>? _, ?_⟩
+  refine ⟨fun n => ?_, fun ε hε => ?_, ?_⟩
   · exact (Finset.aestronglyMeasurable_sum' _ fun i _ => hf₁ i).const_smul _
   · obtain ⟨δ, hδ₁, hδ₂⟩ := hf₂ hε
     refine ⟨δ, hδ₁, fun n s hs hle => ?_⟩

@@ -93,7 +93,7 @@ theorem MonovaryOn.sum_smul_comp_perm_le_sum_smul (hfg : MonovaryOn f g s)
     simp only [← s.sum_erase_add _ h1s, add_comm]
     rw [← add_assoc, ← add_assoc]
     simp only [hτ, swap_apply_left, Function.comp_apply, Equiv.coe_trans, apply_inv_self]
-    refine add_le_add (smul_add_smul_le_smul_add_smul' ?_ ?_) (sum_congr rfl fun x hx ↦? _).le
+    refine add_le_add (smul_add_smul_le_smul_add_smul' ?_ ?_) (sum_congr rfl fun x hx ↦ ?_).le
     · specialize hamax (σ⁻¹ a) h1s
       rw [Prod.Lex.le_iff] at hamax
       cases' hamax with hamax hamax

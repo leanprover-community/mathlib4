@@ -317,7 +317,7 @@ theorem ListBlank.ext {Γ} [i : Inhabited Γ] {L₁ L₂ : ListBlank Γ} :
     intro
     rw [H]
   refine Quotient.sound' (Or.inl ⟨l₂.length - l₁.length, ?_⟩)
-  refine List.ext_get ?_ fun i h h₂ ↦ Eq.symm? _
+  refine List.ext_get ?_ fun i h h₂ ↦ Eq.symm ?_
   · simp only [add_tsub_cancel_of_le h, List.length_append, List.length_replicate]
   simp only [ListBlank.nth_mk] at H
   cases' lt_or_le i l₁.length with h' h'
@@ -866,7 +866,7 @@ theorem eval_maximal {σ} {f : σ → Option σ} {a b} (h : b ∈ eval f a) {c} 
 #align turing.eval_maximal Turing.eval_maximal
 
 theorem reaches_eval {σ} {f : σ → Option σ} {a b} (ab : Reaches f a b) : eval f a = eval f b := by
-  refine Part.ext fun _ ↦ ⟨fun h ↦ ?_, fun h ↦? _⟩
+  refine Part.ext fun _ ↦ ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · have ⟨ac, c0⟩ := mem_eval.1 h
     exact mem_eval.2 ⟨(or_iff_left_of_imp fun cb ↦ (eval_maximal h).1 cb ▸ ReflTransGen.refl).1
       (reaches_total ab ac), c0⟩
@@ -2029,7 +2029,7 @@ theorem tr_respects : Respects (TM0.step M) (TM1.step (tr M)) fun a b ↦ trCfg 
         | TM0.Stmt.write a => T.write a⟩ := by
       cases' s with d a <;> rfl
     intro e
-    refine TransGen.head ?_ (TransGen.head' this? _)
+    refine TransGen.head ?_ (TransGen.head' this ?_)
     · simp only [TM1.step, TM1.stepAux]
       rw [e]
       rfl

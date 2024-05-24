@@ -383,7 +383,7 @@ theorem rfindOpt {n} {f : Vector ℕ (n + 1) → ℕ} (hf : @Partrec' (n + 1) f)
       simp only [Nat.rfindOpt, exists_prop, tsub_eq_zero_iff_le, PFun.coe_val, Part.mem_bind_iff,
         Part.mem_some_iff, Option.mem_def, Part.mem_coe]
       refine
-        exists_congr fun a => (and_congr (iff_of_eq ?_) Iff.rfl).trans (and_congr_right fun h =>? _)
+        exists_congr fun a => (and_congr (iff_of_eq ?_) Iff.rfl).trans (and_congr_right fun h => ?_)
       · congr
         funext n
         cases f (n ::ᵥ v) <;> simp [Nat.succ_le_succ] <;> rfl

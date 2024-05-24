@@ -506,7 +506,7 @@ theorem hausdorffDist_optimal_le_HD {f} (h : f ∈ candidatesB X Y) :
     have I : ⨅ y, optimalGHDist X Y (inl z, inr y) < r := lt_of_le_of_lt I2 I1
     rcases exists_lt_of_csInf_lt (range_nonempty _) I with ⟨r', ⟨z', rfl⟩, hr'⟩
     exact ⟨optimalGHInjr X Y z', mem_range_self _, le_of_lt hr'⟩
-  refine hausdorffDist_le_of_mem_dist ?_ A? _
+  refine hausdorffDist_le_of_mem_dist ?_ A ?_
   · inhabit X
     rcases A _ (mem_range_self default) with ⟨y, -, hy⟩
     exact le_trans dist_nonneg hy

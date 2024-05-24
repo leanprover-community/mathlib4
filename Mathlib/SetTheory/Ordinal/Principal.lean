@@ -60,7 +60,7 @@ theorem principal_zero {op : Ordinal → Ordinal → Ordinal} : Principal op 0 :
 
 @[simp]
 theorem principal_one_iff {op : Ordinal → Ordinal → Ordinal} : Principal op 1 ↔ op 0 0 = 0 := by
-  refine ⟨fun h => ?_, fun h a b ha hb =>? _⟩
+  refine ⟨fun h => ?_, fun h a b ha hb => ?_⟩
   · rw [← lt_one_iff_zero]
     exact h zero_lt_one zero_lt_one
   · rwa [lt_one_iff_zero, ha, hb] at *
@@ -130,7 +130,7 @@ theorem principal_add_of_le_one {o : Ordinal} (ho : o ≤ 1) : Principal (· + �
 
 theorem principal_add_isLimit {o : Ordinal} (ho₁ : 1 < o) (ho : Principal (· + ·) o) :
     o.IsLimit := by
-  refine ⟨fun ho₀ => ?_, fun a hao =>? _⟩
+  refine ⟨fun ho₀ => ?_, fun a hao => ?_⟩
   · rw [ho₀] at ho₁
     exact not_lt_of_gt zero_lt_one ho₁
   · rcases eq_or_ne a 0 with ha | ha
@@ -142,7 +142,7 @@ theorem principal_add_isLimit {o : Ordinal} (ho₁ : 1 < o) (ho : Principal (· 
 
 theorem principal_add_iff_add_left_eq_self {o : Ordinal} :
     Principal (· + ·) o ↔ ∀ a < o, a + o = o := by
-  refine ⟨fun ho a hao => ?_, fun h a b hao hbo =>? _⟩
+  refine ⟨fun ho a hao => ?_, fun h a b hao hbo => ?_⟩
   · cases' lt_or_le 1 o with ho₁ ho₁
     · exact op_eq_self_of_principal hao (add_isNormal a) ho (principal_add_isLimit ho₁ ho)
     · rcases le_one_iff.1 ho₁ with (rfl | rfl)
@@ -310,7 +310,7 @@ theorem principal_mul_isLimit {o : Ordinal.{u}} (ho₂ : 2 < o) (ho : Principal 
 
 theorem principal_mul_iff_mul_left_eq {o : Ordinal} :
     Principal (· * ·) o ↔ ∀ a, 0 < a → a < o → a * o = o := by
-  refine ⟨fun h a ha₀ hao => ?_, fun h a b hao hbo =>? _⟩
+  refine ⟨fun h a ha₀ hao => ?_, fun h a b hao hbo => ?_⟩
   · cases' le_or_gt o 2 with ho ho
     · convert one_mul o
       apply le_antisymm

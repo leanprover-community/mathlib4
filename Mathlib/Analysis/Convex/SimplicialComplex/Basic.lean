@@ -113,7 +113,7 @@ theorem disjoint_or_exists_inter_eq_convexHull (hs : s ∈ K.faces) (ht : t ∈ 
   classical
   by_contra! h
   refine h.2 (s ∩ t) (K.down_closed hs (inter_subset_left _ _) fun hst => h.1 <|
-    disjoint_iff_inf_le.mpr <| (K.inter_subset_convexHull hs ht).trans ?_)? _
+    disjoint_iff_inf_le.mpr <| (K.inter_subset_convexHull hs ht).trans ?_) ?_
   · rw [← coe_inter, hst, coe_empty, convexHull_empty]
     rfl
   · rw [coe_inter, convexHull_inter_convexHull hs ht]

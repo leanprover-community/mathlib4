@@ -96,7 +96,7 @@ theorem zero_divisors_of_torsion {R A} [Nontrivial R] [Ring R] [AddMonoid A] (a 
         false_imp_iff]
     · rw [single_pow, one_pow, zero_smul, single_eq_same]
   · apply_fun fun x : R[A] => x 0
-    refine sub_ne_zero.mpr (ne_of_eq_of_ne (?_ : (_ : R) = 0)? _)
+    refine sub_ne_zero.mpr (ne_of_eq_of_ne (?_ : (_ : R) = 0) ?_)
     · have a0 : a ≠ 0 :=
         ne_of_eq_of_ne (one_nsmul a).symm
           (nsmul_ne_zero_of_lt_addOrderOf' one_ne_zero (Nat.succ_le_iff.mp o2))

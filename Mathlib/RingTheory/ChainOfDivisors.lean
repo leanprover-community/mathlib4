@@ -100,7 +100,7 @@ theorem second_of_chain_is_irreducible {q : Associates M} {n : ℕ} (hn : n ≠ 
     {c : Fin (n + 1) → Associates M} (h₁ : StrictMono c) (h₂ : ∀ {r}, r ≤ q ↔ ∃ i, r = c i)
     (hq : q ≠ 0) : Irreducible (c 1) := by
   cases' n with n; · contradiction
-  refine (Associates.isAtom_iff (ne_zero_of_dvd_ne_zero hq (h₂.2 ⟨1, rfl⟩))).mp ⟨?_, fun b hb =>? _⟩
+  refine (Associates.isAtom_iff (ne_zero_of_dvd_ne_zero hq (h₂.2 ⟨1, rfl⟩))).mp ⟨?_, fun b hb => ?_⟩
   · exact ne_bot_of_gt (h₁ (show (0 : Fin (n + 2)) < 1 from Fin.one_pos))
   obtain ⟨⟨i, hi⟩, rfl⟩ := h₂.1 (hb.le.trans (h₂.2 ⟨1, rfl⟩))
   cases i
@@ -115,7 +115,7 @@ theorem eq_second_of_chain_of_prime_dvd {p q r : Associates M} {n : ℕ} (hn : n
   cases' n with n
   · contradiction
   obtain ⟨i, rfl⟩ := h₂.1 (dvd_trans hp' hr)
-  refine congr_arg c (eq_of_ge_of_not_gt ?_ fun hi =>? _)
+  refine congr_arg c (eq_of_ge_of_not_gt ?_ fun hi => ?_)
   · rw [Fin.le_iff_val_le_val, Fin.val_one, Nat.succ_le_iff, ← Fin.val_zero' (n.succ + 1), ←
       Fin.lt_iff_val_lt_val, Fin.pos_iff_ne_zero]
     rintro rfl

@@ -243,7 +243,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
     refine Finset.sum_congr rfl fun x _ => ?_
     ring
   rw [this, Algebra.norm_algebraMap_of_basis bS, abv.map_pow]
-  refine Int.cast_lt.mp ((norm_lt abv bS _ fun i => lt_of_le_of_lt ?_ (hjk' i)).trans_le? _)
+  refine Int.cast_lt.mp ((norm_lt abv bS _ fun i => lt_of_le_of_lt ?_ (hjk' i)).trans_le ?_)
   · apply le_of_eq
     congr
     simp_rw [map_sum, map_sub, map_smul, Finset.sum_apply',
@@ -306,7 +306,7 @@ theorem exists_mk0_eq_mk0 [IsDedekindDomain S] [Algebra.IsAlgebraic R L] (I : (I
     · rw [ClassGroup.mk0_eq_mk0_iff]
       exact ⟨algebraMap _ _ M, b, hM, b_ne_zero, hJ⟩
     rw [← SetLike.mem_coe, ← Set.singleton_subset_iff, ← Ideal.span_le, ← Ideal.dvd_iff_le]
-    refine (mul_dvd_mul_iff_left ?_).mp? _
+    refine (mul_dvd_mul_iff_left ?_).mp ?_
     swap; · exact mt Ideal.span_singleton_eq_bot.mp b_ne_zero
     rw [Subtype.coe_mk, Ideal.dvd_iff_le, ← hJ, mul_comm]
     apply Ideal.mul_mono le_rfl

@@ -378,12 +378,12 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
             exact h₂.isOpen_range
       · intro T f g
         ext x
-        refine (dif_pos ?_).trans? _
+        refine (dif_pos ?_).trans ?_
         · exact ⟨x, rfl⟩
         · dsimp; conv_lhs => erw [Equiv.ofInjective_symm_apply]
       · intro T f g
         ext x
-        refine (dif_neg ?_).trans? _
+        refine (dif_neg ?_).trans ?_
         · rintro ⟨y, e⟩
           have : c.inr x ∈ Set.range c.inl ⊓ Set.range c.inr := ⟨⟨_, e⟩, ⟨_, rfl⟩⟩
           rwa [disjoint_iff.mp h₃.1] at this

@@ -686,7 +686,7 @@ theorem iSup_toAddSubmonoid {ι : Sort*} (p : ι → Submodule R M) :
   refine le_antisymm (fun x => ?_) (iSup_le fun i => toAddSubmonoid_mono <| le_iSup _ i)
   simp_rw [iSup_eq_span, AddSubmonoid.iSup_eq_closure, mem_toAddSubmonoid, coe_toAddSubmonoid]
   intro hx
-  refine Submodule.span_induction hx (fun x hx => ?_)? _ (fun x y hx hy => ?_) fun r x hx => ?_
+  refine Submodule.span_induction hx (fun x hx => ?_) ?_ (fun x y hx hy => ?_) fun r x hx => ?_
   · exact AddSubmonoid.subset_closure hx
   · exact AddSubmonoid.zero_mem _
   · exact AddSubmonoid.add_mem _ hx hy

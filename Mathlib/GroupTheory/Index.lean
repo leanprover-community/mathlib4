@@ -183,7 +183,7 @@ theorem index_eq_two_iff : H.index = 2 ↔ ∃ a, ∀ b, Xor' (b * a ∈ H) (b �
     QuotientGroup.exists_mk, QuotientGroup.forall_mk, Ne, QuotientGroup.eq, mul_one,
     xor_iff_iff_not]
   refine exists_congr fun a =>
-    ⟨fun ha b => ⟨fun hba hb => ?_, fun hb =>? _⟩, fun ha => ?⟨_, fun b hb ?=> _⟩⟩
+    ⟨fun ha b => ⟨fun hba hb => ?_, fun hb => ?_⟩, fun ha => ?⟨_, fun b hb ?=> _⟩⟩
   · exact ha.1 ((mul_mem_cancel_left hb).1 hba)
   · exact inv_inv b ▸ ha.2 _ (mt (inv_mem_iff (x := b)).1 hb)
   · rw [← inv_mem_iff (x := a), ← ha, inv_mul_self]

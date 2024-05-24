@@ -354,7 +354,7 @@ theorem set_lintegral_nnnorm_condexpL2_indicator_le (hm : m ≤ m0) (hs : Measur
 theorem lintegral_nnnorm_condexpL2_indicator_le (hm : m ≤ m0) (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
     (x : E') [SigmaFinite (μ.trim hm)] :
     ∫⁻ a, ‖(condexpL2 E' 𝕜 hm (indicatorConstLp 2 hs hμs x) : α → E') a‖₊ ∂μ ≤ μ s * ‖x‖₊ := by
-  refine lintegral_le_of_forall_fin_meas_le' hm (μ s * ‖x‖₊) ?_ fun t ht hμt =>? _
+  refine lintegral_le_of_forall_fin_meas_le' hm (μ s * ‖x‖₊) ?_ fun t ht hμt => ?_
   · rw [lpMeas_coe]
     exact (Lp.aestronglyMeasurable _).ennnorm
   refine (set_lintegral_nnnorm_condexpL2_indicator_le hm hs hμs x ht hμt).trans ?_

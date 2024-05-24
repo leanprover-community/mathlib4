@@ -194,7 +194,7 @@ theorem insert_fz (a : α) (v : Vector3 α n) : insert a v fz = a :: v := by
 theorem insert_fs (a : α) (b : α) (v : Vector3 α n) (i : Fin2 (n + 1)) :
     insert a (b :: v) (fs i) = b :: insert a v i :=
   funext fun j => by
-    refine j.cases' ?_ fun j =>? _ <;> simp [insert, insertPerm]
+    refine j.cases' ?_ fun j => ?_ <;> simp [insert, insertPerm]
     refine Fin2.cases' ?_ ?_ (insertPerm i j) <;> simp [insertPerm]
 #align vector3.insert_fs Vector3.insert_fs
 

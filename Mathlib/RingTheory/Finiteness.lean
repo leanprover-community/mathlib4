@@ -291,7 +291,7 @@ theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type*} [Ring R] [AddCommGroup M] [Mo
   exists t1.image g ∪ t2
   rw [Finset.coe_union, span_union, Finset.coe_image]
   apply le_antisymm
-  · refine sup_le (span_le.2 <| image_subset_iff.2 ?_) (span_le.2? _)
+  · refine sup_le (span_le.2 <| image_subset_iff.2 ?_) (span_le.2 ?_)
     · intro y hy
       exact (hg y hy).1
     · intro x hx

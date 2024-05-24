@@ -196,7 +196,7 @@ theorem ord_cof_eq (r : α → α → Prop) [IsWellOrder α r] :
     rcases a with ⟨a, aS, ha⟩
     rcases b with ⟨b, bS, hb⟩
     change s ⟨a, _⟩ ⟨b, _⟩
-    refine ((trichotomous_of s _ _).resolve_left fun hn => ?_).resolve_left? _
+    refine ((trichotomous_of s _ _).resolve_left fun hn => ?_).resolve_left ?_
     · exact asymm h (ha _ hn)
     · intro e
       injection e with e
@@ -227,7 +227,7 @@ theorem cof_lsub_def_nonempty (o) :
 
 theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
     sInf { a : Cardinal | ∃ (ι : Type u) (f : ι → Ordinal), lsub.{u, u} f = o ∧ #ι = a } := by
-  refine le_antisymm (le_csInf (cof_lsub_def_nonempty o) ?_) (csInf_le'? _)
+  refine le_antisymm (le_csInf (cof_lsub_def_nonempty o) ?_) (csInf_le' ?_)
   · rintro a ⟨ι, f, hf, rfl⟩
     rw [← type_lt o]
     refine
@@ -378,7 +378,7 @@ theorem iSup_lt {ι} {f : ι → Cardinal} {c : Cardinal} (hι : #ι < c.ord.cof
 theorem nfpFamily_lt_ord_lift {ι} {f : ι → Ordinal → Ordinal} {c} (hc : ℵ₀ < cof c)
     (hc' : Cardinal.lift.{v, u} #ι < cof c) (hf : ∀ (i), ∀ b < c, f i b < c) {a} (ha : a < c) :
     nfpFamily.{u, v} f a < c := by
-  refine sup_lt_ord_lift ((Cardinal.lift_le.2 (mk_list_le_max ι)).trans_lt ?_) fun l =>? _
+  refine sup_lt_ord_lift ((Cardinal.lift_le.2 (mk_list_le_max ι)).trans_lt ?_) fun l => ?_
   · rw [lift_max]
     apply max_lt _ hc'
     rwa [Cardinal.lift_aleph0]
@@ -522,7 +522,7 @@ theorem cof_eq_one_iff_is_succ {o} : cof.{u} o = 1 ↔ ∃ a, o = succ a :=
         ⟨typein r a,
           Eq.symm <|
             Quotient.sound
-              ⟨RelIso.ofSurjective (RelEmbedding.ofMonotone ?_ fun x y => ?_) fun x =>? _⟩⟩
+              ⟨RelIso.ofSurjective (RelEmbedding.ofMonotone ?_ fun x y => ?_) fun x => ?_⟩⟩
       · apply Sum.rec <;> [exact Subtype.val; exact fun _ => a]
       · rcases x with (x | ⟨⟨⟨⟩⟩⟩) <;> rcases y with (y | ⟨⟨⟨⟩⟩⟩) <;>
           simp [Subrel, Order.Preimage, EmptyRelation]
@@ -583,7 +583,7 @@ protected theorem zero {f : ∀ b < (0 : Ordinal), Ordinal} : IsFundamentalSeque
 #align ordinal.is_fundamental_sequence.zero Ordinal.IsFundamentalSequence.zero
 
 protected theorem succ : IsFundamentalSequence (succ o) 1 fun _ _ => o := by
-  refine ⟨?_, @fun i j hi hj h =>? _, blsub_const Ordinal.one_ne_zero o⟩
+  refine ⟨?_, @fun i j hi hj h => ?_, blsub_const Ordinal.one_ne_zero o⟩
   · rw [cof_succ, ord_one]
   · rw [lt_one_iff_zero] at hi hj
     rw [hi, hj] at h
@@ -665,7 +665,7 @@ protected theorem IsNormal.isFundamentalSequence {f : Ordinal.{u} → Ordinal.{u
       have := lt_lsub.{u, u} f' i
       rw [hf', ← IsNormal.blsub_eq.{u, u} hf ha, lt_blsub_iff] at this
       simpa using this
-    refine (lsub_le fun i => ?_).antisymm (le_of_forall_lt fun b hb =>? _)
+    refine (lsub_le fun i => ?_).antisymm (le_of_forall_lt fun b hb => ?_)
     · rcases H i with ⟨b, hb, hb'⟩
       exact lt_of_le_of_lt (csInf_le' hb') hb
     · have := hf.strictMono hb
@@ -912,7 +912,7 @@ theorem mk_bounded_subset {α : Type*} (h : ∀ x < #α, (2^x) < #α) {r : α �
     apply (h'.two_power_lt _).le
     rw [coe_setOf, card_typein, ← lt_ord, hr]
     apply typein_lt_type
-  · refine @mk_le_of_injective α _ (fun x => Subtype.mk {x} ?_)? _
+  · refine @mk_le_of_injective α _ (fun x => Subtype.mk {x} ?_) ?_
     · apply bounded_singleton
       rw [← hr]
       apply ord_isLimit ha
@@ -933,7 +933,7 @@ theorem mk_subset_mk_lt_cof {α : Type*} (h : ∀ x < #α, (2^x) < #α) :
     intro s hs
     rw [hr] at hs
     exact lt_cof_type hs
-  · refine @mk_le_of_injective α _ (fun x => Subtype.mk {x} ?_)? _
+  · refine @mk_le_of_injective α _ (fun x => Subtype.mk {x} ?_) ?_
     · rw [mk_singleton]
       exact one_lt_aleph0.trans_le (aleph0_le_cof.2 (ord_isLimit h'.isLimit.aleph0_le))
     · intro a b hab
@@ -985,7 +985,7 @@ theorem isRegular_succ {c : Cardinal.{u}} (h : ℵ₀ ≤ c) : IsRegular (succ c
         rw [← Se]
         apply lt_imp_lt_of_le_imp_le fun h => mul_le_mul_right' h c
         rw [mul_eq_self h, ← succ_le_iff, ← αe, ← sum_const']
-        refine le_trans ?_ (sum_le_sum (fun (x : S) => card (typein r (x : α))) _ fun i =>? _)
+        refine le_trans ?_ (sum_le_sum (fun (x : S) => card (typein r (x : α))) _ fun i => ?_)
         · simp only [← card_typein, ← mk_sigma]
           exact
             ⟨Embedding.ofSurjective (fun x => x.2.1) fun a =>

@@ -290,7 +290,7 @@ theorem exists_code {n} {f : Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
     | zero => exact ⟨zero', fun ⟨[], _⟩ => rfl⟩
     | succ => exact ⟨succ, fun ⟨[v], _⟩ => rfl⟩
     | get i =>
-      refine Fin.succRec (fun n => ?_) (fun n i IH =>? _) i
+      refine Fin.succRec (fun n => ?_) (fun n i IH => ?_) i
       · exact ⟨head, fun ⟨List.cons a as, _⟩ => by simp [Bind.bind]; rfl⟩
       · obtain ⟨c, h⟩ := IH
         exact ⟨c.comp tail, fun v => by simpa [← Vector.get_tail, Bind.bind] using h v.tail⟩
@@ -704,7 +704,7 @@ theorem code_is_ok (c) : Code.Ok c := by
     rw [reaches_eval]; swap
     · exact ReflTransGen.single rfl
     rw [stepRet, IHfs]; congr; funext v'
-    refine Eq.trans ?_ (Eq.symm? _) <;> try exact reaches_eval (ReflTransGen.single rfl)
+    refine Eq.trans ?_ (Eq.symm ?_) <;> try exact reaches_eval (ReflTransGen.single rfl)
   | comp f g IHf IHg =>
     rw [Code.eval, IHg]
     simp only [bind_assoc, Cont.eval, pure_bind]; congr; funext v
@@ -1467,7 +1467,7 @@ theorem head_main_ok {q s L} {c d : List Γ'} :
   simp only [TM2.step, Option.mem_def, TM2.stepAux, elim_update_main, elim_rev, elim_update_rev,
     Function.update_same, trList]
   rw [if_neg (show o ≠ some Γ'.consₗ by cases L <;> simp [o])]
-  refine (clear_ok (splitAtPred_eq _ _ _ none [] ?_ ⟨rfl, rfl⟩)).trans? _
+  refine (clear_ok (splitAtPred_eq _ _ _ none [] ?_ ⟨rfl, rfl⟩)).trans ?_
   · exact fun x h => Bool.decide_false (trList_ne_consₗ _ _ h)
   convert unrev_ok using 2; simp [List.reverseAux_eq]
 #align turing.partrec_to_TM2.head_main_ok Turing.PartrecToTM2.head_main_ok
@@ -1742,7 +1742,7 @@ theorem trStmts₁_trans {q q'} : q' ∈ trStmts₁ q → trStmts₁ q' ⊆ trSt
     · intro h x h'
       simp only [Finset.mem_insert]
       exact Or.inr (Or.inr <| q_ih h h')
-  · refine ⟨fun h x h' => ?_, fun _ x h' =>? _, fun h x h' => ?_⟩ <;> simp
+  · refine ⟨fun h x h' => ?_, fun _ x h' => ?_, fun h x h' => ?_⟩ <;> simp
     · exact Or.inr (Or.inr <| Or.inl <| q₁_ih h h')
     · cases' Finset.mem_insert.1 h' with h' h' <;> simp [h', unrev]
     · exact Or.inr (Or.inr <| Or.inr <| q₂_ih h h')
@@ -2000,7 +2000,7 @@ theorem codeSupp'_supports {S c k} (H : codeSupp c k ⊆ S) : Supports (codeSupp
     have H' := H; simp only [codeSupp_cons, Finset.union_subset_iff] at H'
     refine trStmts₁_supports' (trNormal_supports H) (Finset.union_subset_left H) fun h => ?_
     refine supports_union.2 ⟨IHf H'.2, ?_⟩
-    refine trStmts₁_supports' (trNormal_supports ?_) (Finset.union_subset_right h) fun h =>? _
+    refine trStmts₁_supports' (trNormal_supports ?_) (Finset.union_subset_right h) fun h => ?_
     · simp only [codeSupp, Finset.union_subset_iff, contSupp] at h H ⊢
       exact ⟨h.2.2.1, h.2.2.2, H.2⟩
     refine supports_union.2 ⟨IHfs ?_, ?_⟩

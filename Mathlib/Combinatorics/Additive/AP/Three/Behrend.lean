@@ -206,7 +206,7 @@ theorem threeAPFree_image_sphere :
     ThreeAPFree ((sphere n d k).image (map (2 * d - 1)) : Set ℕ) := by
   rw [coe_image]
   refine ThreeAPFree.image' (α := Fin n → ℕ) (β := ℕ) (s := sphere n d k) (map (2 * d - 1))
-    (map_injOn.?mono? _) threeAPFree_sphere
+    (map_injOn.?mono ?_) threeAPFree_sphere
   · exact x
   rw [Set.add_subset_iff]
   rintro a ha b hb i
@@ -263,7 +263,7 @@ that we then optimize by tweaking the parameters. The (almost) optimal parameter
 
 theorem exists_large_sphere_aux (n d : ℕ) : ∃ k ∈ range (n * (d - 1) ^ 2 + 1),
     (↑(d ^ n) / ((n * (d - 1) ^ 2 :) + 1) : ℝ) ≤ (sphere n d k).card := by
-  refine exists_le_card_fiber_of_nsmul_le_card_of_maps_to (fun x hx => ?_) nonempty_range_succ? _
+  refine exists_le_card_fiber_of_nsmul_le_card_of_maps_to (fun x hx => ?_) nonempty_range_succ ?_
   · rw [mem_range, Nat.lt_succ_iff]
     exact sum_sq_le_of_mem_box hx
   · rw [card_range, _root_.nsmul_eq_mul, mul_div_assoc', cast_add_one, mul_div_cancel_left₀,
@@ -499,7 +499,7 @@ theorem roth_lower_bound_explicit (hN : 4096 ≤ N) :
     rw [← exp_add, ← add_mul]
     norm_num
   rw [this]
-  refine mul_le_mul ?_ (exp_neg_two_mul_le <| Real.sqrt_pos.2 <| log_pos? _).le (exp_pos _).le <|
+  refine mul_le_mul ?_ (exp_neg_two_mul_le <| Real.sqrt_pos.2 <| log_pos ?_).le (exp_pos _).le <|
       rpow_nonneg (cast_nonneg _) _
   · rw [← le_log_iff_exp_le (rpow_pos_of_pos hN₀ _), log_rpow hN₀, ← le_div_iff, mul_div_assoc,
       div_sqrt, neg_mul, neg_le_neg_iff, div_mul_eq_mul_div, div_le_iff hn]

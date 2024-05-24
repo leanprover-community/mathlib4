@@ -726,7 +726,7 @@ theorem dropLast_append_getLast? : ∀ {l : List α}, ∀ a ∈ l.getLast?, drop
   | [a], _, rfl => rfl
   | a :: b :: l, c, hc => by
     rw [getLast?_cons_cons] at hc
-    rw [dropLast_cons₂, cons_append, dropLast_append_getLast? _ hc]
+    rw [dropLast_cons₂, cons_append, dropLast_append_getLast ?_ hc]
 #align list.init_append_last' List.dropLast_append_getLast?
 
 theorem getLastI_eq_getLast? [Inhabited α] : ∀ l : List α, l.getLastI = l.getLast?.iget

@@ -395,7 +395,7 @@ disjoint iff `f` is injective . -/
 theorem pairwiseDisjoint_image_right_iff {f : α → β → γ} {s : Set α} {t : Set β}
     (hf : ∀ a ∈ s, Injective (f a)) :
     (s.PairwiseDisjoint fun a => f a '' t) ↔ (s ×ˢ t).InjOn fun p => f p.1 p.2 := by
-  refine ⟨fun hs x hx y hy (h : f _ _ = _) => ?_, fun hs x hx y hy h =>? _⟩
+  refine ⟨fun hs x hx y hy (h : f _ _ = _) => ?_, fun hs x hx y hy h => ?_⟩
   · suffices x.1 = y.1 by exact Prod.ext this (hf _ hx.1 <| h.trans <| by rw [this])
     refine hs.elim hx.1 hy.1 (not_disjoint_iff.2 ⟨_, mem_image_of_mem _ hx.2, ?_⟩)
     rw [h]
@@ -410,7 +410,7 @@ disjoint iff `f` is injective . -/
 theorem pairwiseDisjoint_image_left_iff {f : α → β → γ} {s : Set α} {t : Set β}
     (hf : ∀ b ∈ t, Injective fun a => f a b) :
     (t.PairwiseDisjoint fun b => (fun a => f a b) '' s) ↔ (s ×ˢ t).InjOn fun p => f p.1 p.2 := by
-  refine ⟨fun ht x hx y hy (h : f _ _ = _) => ?_, fun ht x hx y hy h =>? _⟩
+  refine ⟨fun ht x hx y hy (h : f _ _ = _) => ?_, fun ht x hx y hy h => ?_⟩
   · suffices x.2 = y.2 by exact Prod.ext (hf _ hx.2 <| h.trans <| by rw [this]) this
     refine ht.elim hx.2 hy.2 (not_disjoint_iff.2 ⟨_, mem_image_of_mem _ hx.1, ?_⟩)
     rw [h]

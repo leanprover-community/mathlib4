@@ -1860,7 +1860,7 @@ theorem parallel_iff_direction_eq_and_eq_bot_iff_eq_bot {s₁ s₂ : AffineSubsp
     · have hs₂ : s₂ ≠ ⊥ := hb.not.1 hs₁
       rcases (nonempty_iff_ne_bot s₁).2 hs₁ with ⟨p₁, hp₁⟩
       rcases (nonempty_iff_ne_bot s₂).2 hs₂ with ⟨p₂, hp₂⟩
-      refine ⟨p₂ -ᵥ p₁, (eq_iff_direction_eq_of_mem hp₂ ?_).2? _⟩
+      refine ⟨p₂ -ᵥ p₁, (eq_iff_direction_eq_of_mem hp₂ ?_).2 ?_⟩
       · rw [mem_map]
         refine ⟨p₁, hp₁, ?_⟩
         simp

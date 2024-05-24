@@ -268,7 +268,7 @@ variable (α)
 @[to_additive]
 theorem uniformity_eq_comap_nhds_one : 𝓤 α = comap (fun x : α × α => x.2 / x.1) (𝓝 (1 : α)) := by
   rw [nhds_eq_comap_uniformity, Filter.comap_comap]
-  refine le_antisymm (Filter.map_le_iff_le_comap.1 ?_)? _
+  refine le_antisymm (Filter.map_le_iff_le_comap.1 ?_) ?_
   · intro s hs
     rcases mem_uniformity_of_uniformContinuous_invariant uniformContinuous_div hs with ⟨t, ht, hts⟩
     refine mem_map.2 (mem_of_superset ht ?_)
@@ -416,7 +416,7 @@ theorem UniformGroup.uniformContinuous_iff_open_ker {hom : Type*} [UniformSpace 
     [DiscreteTopology β] [Group β] [UniformGroup β] [FunLike hom α β] [MonoidHomClass hom α β]
     {f : hom} :
     UniformContinuous f ↔ IsOpen ((f : α →* β).ker : Set α) := by
-  refine ⟨fun hf => ?_, fun hf =>? _⟩
+  refine ⟨fun hf => ?_, fun hf => ?_⟩
   · apply (isOpen_discrete ({1} : Set β)).preimage hf.continuous
   · apply uniformContinuous_of_continuousAt_one
     rw [ContinuousAt, nhds_discrete β, map_one, tendsto_pure]

@@ -90,7 +90,7 @@ theorem listDecode_encode_list (l : List (L.Term α)) :
         rw [get_finRange, Fin.eta]
       · refine lt_of_lt_of_le i.2 ?_
         simp
-    refine (dif_pos fun i => Option.isSome_iff_exists.2 ⟨ts i, ?_⟩).trans? _
+    refine (dif_pos fun i => Option.isSome_iff_exists.2 ⟨ts i, ?_⟩).trans ?_
     · rw [Option.join_eq_some, h']
     refine congr (congr rfl (congr rfl (congr rfl (funext fun i => Option.get_of_mem _ ?_)))) ?_
     · simp [h']

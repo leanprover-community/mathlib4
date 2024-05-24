@@ -314,7 +314,7 @@ noncomputable def zero [HasZeroObject V] : HomologicalComplex V c where
 #align homological_complex.zero HomologicalComplex.zero
 
 theorem isZero_zero [HasZeroObject V] : IsZero (zero : HomologicalComplex V c) := by
-  refine ⟨fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨0⟩, fun f =>? _⟩⟩⟩
+  refine ⟨fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩⟩
   all_goals
     ext
     dsimp [zero]

@@ -132,7 +132,7 @@ theorem linear_isometry_complex_aux {f : ℂ ≃ₗᵢ[ℝ] ℂ} (h : f 1 = 1) :
     · apply @LinearIsometry.im_apply_eq_im_or_neg_of_re_apply_eq_re f.toLinearIsometry
       intro z
       rw [@LinearIsometry.re_apply_eq_re f.toLinearIsometry h]
-  refine h0.imp (fun h' : f I = I => ?_) fun h' : f I = -I =>? _ <;>
+  refine h0.imp (fun h' : f I = I => ?_) fun h' : f I = -I => ?_ <;>
     · apply LinearIsometryEquiv.toLinearEquiv_injective
       apply Complex.basisOneI.ext'
       intro i

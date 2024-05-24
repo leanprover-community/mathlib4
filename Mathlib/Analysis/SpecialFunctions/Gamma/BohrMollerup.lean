@@ -280,7 +280,7 @@ theorem ge_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
     f 1 + logGammaSeq x n ≤ f x := by
   dsimp [logGammaSeq]
   rw [← add_sub_assoc, sub_le_iff_le_add, ← f_add_nat_eq (@hf_feq) hx, add_comm x _]
-  refine le_trans (le_of_eq ?_) (f_add_nat_ge hf_conv @hf_feq? _ hx)
+  refine le_trans (le_of_eq ?_) (f_add_nat_ge hf_conv @hf_feq ?_ hx)
   · rw [f_nat_eq @hf_feq, Nat.add_sub_cancel, Nat.cast_add_one, add_sub_cancel_right]
     · ring
     · exact Nat.succ_ne_zero _
@@ -290,7 +290,7 @@ theorem ge_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
 theorem tendsto_logGammaSeq_of_le_one (hf_conv : ConvexOn ℝ (Ioi 0) f)
     (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hx : 0 < x) (hx' : x ≤ 1) :
     Tendsto (logGammaSeq x) atTop (𝓝 <| f x - f 1) := by
-  refine tendsto_of_tendsto_of_tendsto_of_le_of_le' ?_ tendsto_const_nhds? _ ?_
+  refine tendsto_of_tendsto_of_tendsto_of_le_of_le' ?_ tendsto_const_nhds ?_ ?_
   -- Porting note: `show` no longer reorders goals
   pick_goal 4
   · show ∀ᶠ n : ℕ in atTop, logGammaSeq x n ≤ f x - f 1
@@ -474,7 +474,7 @@ theorem log_doublingGamma_eq :
 #align real.log_doubling_Gamma_eq Real.log_doublingGamma_eq
 
 theorem doublingGamma_log_convex_Ioi : ConvexOn ℝ (Ioi (0 : ℝ)) (log ∘ doublingGamma) := by
-  refine (((ConvexOn.add ?_ ?_).add? _).add_const _).congr log_doublingGamma_eq.symm
+  refine (((ConvexOn.add ?_ ?_).add ?_).add_const _).congr log_doublingGamma_eq.symm
   · convert
       convexOn_log_Gamma.comp_affineMap (DistribMulAction.toLinearMap ℝ ℝ (1 / 2 : ℝ)).toAffineMap
       using 1

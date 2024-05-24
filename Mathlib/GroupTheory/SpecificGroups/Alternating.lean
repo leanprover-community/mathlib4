@@ -122,7 +122,7 @@ theorem isConj_of {σ τ : alternatingGroup α} (hc : IsConj (σ : Perm α) (τ 
       rw [Finset.card_compl, le_tsub_iff_left σ.support.card_le_univ]
       exact hσ
     obtain ⟨a, ha, b, hb, ab⟩ := Finset.one_lt_card.1 h2
-    refine isConj_iff.2 ⟨⟨π * swap a b, ?_⟩, Subtype.val_injective? _⟩
+    refine isConj_iff.2 ⟨⟨π * swap a b, ?_⟩, Subtype.val_injective ?_⟩
     · rw [mem_alternatingGroup, MonoidHom.map_mul, h, sign_swap ab, Int.units_mul_self]
     · simp only [← hπ, coe_mk, Subgroup.coe_mul, Subtype.val]
       have hd : Disjoint (swap a b) σ := by

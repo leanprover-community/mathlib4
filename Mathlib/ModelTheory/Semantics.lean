@@ -519,7 +519,7 @@ theorem realize_toPrenexImpRight {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ)
     rw [realize_ex]
     refine _root_.trans (exists_congr fun _ => ih hφ.liftAt) ?_
     simp only [realize_imp, realize_liftAt_one_self, snoc_comp_castSucc, realize_ex]
-    refine ⟨?_, fun h' =>? _⟩
+    refine ⟨?_, fun h' => ?_⟩
     · rintro ⟨a, ha⟩ h
       exact ⟨a, ha h⟩
     · by_cases h : φ.Realize v xs

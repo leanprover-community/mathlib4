@@ -286,7 +286,7 @@ theorem h_apply_fromCoset_nin_range (x : B) (hx : x ∈ f.range) (b : B) (hb : b
 #align Group.surjective_of_epi_auxs.h_apply_fromCoset_nin_range GroupCat.SurjectiveOfEpiAuxs.h_apply_fromCoset_nin_range
 
 theorem agree : f.range = { x | h x = g x } := by
-  refine Set.ext fun b => ⟨?_, fun hb : h b = g b => by_contradiction fun r =>? _⟩
+  refine Set.ext fun b => ⟨?_, fun hb : h b = g b => by_contradiction fun r => ?_⟩
   · rintro ⟨a, rfl⟩
     change h (f a) = g (f a)
     ext ⟨⟨_, ⟨y, rfl⟩⟩⟩

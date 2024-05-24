@@ -521,7 +521,7 @@ theorem adjoin_induction₂ {s : Set A} {p : A → A → Prop} {a b : A} (ha : a
     (Hstar : ∀ x y : A, p x y → p (star x) (star y)) (Hstar_left : ∀ x y : A, p x y → p (star x) y)
     (Hstar_right : ∀ x y : A, p x y → p x (star y)) : p a b := by
   refine
-    Algebra.adjoin_induction₂ ha hb (fun x hx y hy => ?_) Halg (fun r x hx =>? _) (fun r x hx =?> _)
+    Algebra.adjoin_induction₂ ha hb (fun x hx y hy => ?_) Halg (fun r x hx => ?_) (fun r x hx =?> _)
       Hadd_left Hadd_right Hmul_left Hmul_right
   · cases' hx with hx hx <;> cases' hy with hy hy
     · exact Hs x hx y hy
@@ -771,8 +771,8 @@ theorem ext_adjoin {s : Set A} [FunLike F (adjoin R s) B]
     [AlgHomClass F R (adjoin R s) B] [StarAlgHomClass F R (adjoin R s) B] {f g : F}
     (h : ∀ x : adjoin R s, (x : A) ∈ s → f x = g x) : f = g := by
   refine DFunLike.ext f g fun a =>
-    adjoin_induction' (p := fun y => f y = g y) a (fun x hx => ?_) (fun r =>? _)
-    (fun x y hx hy => ?_) (fun x y hx hy => ?_) fun x hx =>? _
+    adjoin_induction' (p := fun y => f y = g y) a (fun x hx => ?_) (fun r => ?_)
+    (fun x y hx hy => ?_) (fun x y hx hy => ?_) fun x hx => ?_
   · exact h ⟨x, subset_adjoin R s hx⟩ hx
   · simp only [AlgHomClass.commutes]
   · simp only [map_add, map_add, hx, hy]

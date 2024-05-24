@@ -432,7 +432,7 @@ theorem norm_integral_lt_of_norm_le_const_of_lt {f : ℂ → E} {c : ℂ} {R C :
       simp only [norm_smul, deriv_circleMap, norm_eq_abs, map_mul, abs_I, mul_one,
         abs_circleMap_zero, abs_of_pos hR]
       refine intervalIntegral.integral_lt_integral_of_continuousOn_of_le_of_exists_lt
-          Real.two_pi_pos ?_ continuousOn_const (fun θ _ =>? _) ⟨θ₀, Ioc_subset_Icc_self hmem, ?_⟩
+          Real.two_pi_pos ?_ continuousOn_const (fun θ _ => ?_) ⟨θ₀, Ioc_subset_Icc_self hmem, ?_⟩
       · exact continuousOn_const.mul (hc.comp (continuous_circleMap _ _).continuousOn fun θ _ =>
           circleMap_mem_sphere _ hR.le _).norm
       · exact mul_le_mul_of_nonneg_left (hf _ <| circleMap_mem_sphere _ hR.le _) hR.le
@@ -589,7 +589,7 @@ theorem hasSum_two_pi_I_cauchyPowerSeries_integral {f : ℂ → E} {c : ℂ} {R 
   have hwR : abs w / R ∈ Ico (0 : ℝ) 1 :=
     ⟨div_nonneg (Complex.abs.nonneg w) hR.le, (div_lt_one hR).2 hw⟩
   refine intervalIntegral.hasSum_integral_of_dominated_convergence
-      (fun n θ => ‖f (circleMap c R θ)‖ * (abs w / R) ^ n) (fun n => ?_) (fun n =>? _?) ?_ _ ?_
+      (fun n θ => ‖f (circleMap c R θ)‖ * (abs w / R) ^ n) (fun n => ?_) (fun n => ?_?) ?_ _ ?_
   · simp only [deriv_circleMap]
     apply_rules [AEStronglyMeasurable.smul, hf.def'.1] <;> apply Measurable.aestronglyMeasurable
     -- Porting note: these were `measurability`

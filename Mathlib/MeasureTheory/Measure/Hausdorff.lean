@@ -652,7 +652,7 @@ variable (X)
 theorem noAtoms_hausdorff {d : ℝ} (hd : 0 < d) : NoAtoms (hausdorffMeasure d : Measure X) := by
   refine ⟨fun x => ?_⟩
   rw [← nonpos_iff_eq_zero, hausdorffMeasure_apply]
-  refine iSup₂_le fun ε _ => iInf₂_le_of_le (fun _ => {x}) ?_ <| iInf_le_of_le (fun _ =>? _) ?_
+  refine iSup₂_le fun ε _ => iInf₂_le_of_le (fun _ => {x}) ?_ <| iInf_le_of_le (fun _ => ?_) ?_
   · exact subset_iUnion (fun _ => {x} : ℕ → Set X) 0
   · simp only [EMetric.diam_singleton, zero_le]
   · simp [hd]
@@ -841,7 +841,7 @@ theorem hausdorffMeasure_preimage_le (hf : AntilipschitzWith K f) (hd : 0 ≤ d)
   refine le_iSup₂_of_le (ε / K) (by simp [ε0.ne']) ?_
   refine le_iInf₂ fun t hst => le_iInf fun htε => ?_
   replace hst : f ⁻¹' s ⊆ _ := preimage_mono hst; rw [preimage_iUnion] at hst
-  refine iInf₂_le_of_le _ hst (iInf_le_of_le (fun n => ?_)? _)
+  refine iInf₂_le_of_le _ hst (iInf_le_of_le (fun n => ?_) ?_)
   · exact (hf.ediam_preimage_le _).trans (ENNReal.mul_le_of_le_div' <| htε n)
   · refine ENNReal.tsum_le_tsum fun n => iSup_le_iff.2 fun hft => ?_
     simp only [nonempty_of_nonempty_preimage hft, ciSup_pos]

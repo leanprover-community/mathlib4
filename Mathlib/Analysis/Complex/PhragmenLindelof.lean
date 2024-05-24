@@ -69,7 +69,7 @@ theorem isBigO_sub_exp_exp {a : ℝ} {f g : ℂ → E} {l : Filter ℂ} {u : ℂ
     simp only [Real.norm_eq_abs, Real.abs_exp]; gcongr
   rcases hBf with ⟨cf, hcf, Bf, hOf⟩; rcases hBg with ⟨cg, hcg, Bg, hOg⟩
   refine ⟨max cf cg, max_lt hcf hcg, max 0 (max Bf Bg), ?_⟩
-  refine (hOf.trans_le <| this ?_ ?_ ?_).sub (hOg.trans_le <| th?i?s? _ _ _)
+  refine (hOf.trans_le <| this ?_ ?_ ?_).sub (hOg.trans_le <| th?i?s ?_ _ _)
   exacts [le_max_left _ _, le_max_left _ _, (le_max_left _ _).trans (le_max_right _ _),
     le_max_right _ _, le_max_left _ _, (le_max_right _ _).trans (le_max_right _ _)]
 set_option linter.uppercaseLean3 false in
@@ -167,7 +167,7 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
       abs_exp_mul_exp_add_exp_neg_le_of_abs_im_le ε₀.le hw hb'.le
   -- `abs (g ε w) ≤ 1` on the lines `w.im = a ± b` (actually, it holds everywhere in the strip)
   have hg₁ : ∀ w, im w = a - b ∨ im w = a + b → abs (g ε w) ≤ 1 := by
-    refine fun w hw => (hδ <| hw.by_cases ?_ ?_).trans (Real.exp_le_one_iff.2? _)
+    refine fun w hw => (hδ <| hw.by_cases ?_ ?_).trans (Real.exp_le_one_iff.2 ?_)
     exacts [fun h => h.symm ▸ left_mem_Icc.2 hab.le, fun h => h.symm ▸ right_mem_Icc.2 hab.le,
       mul_nonpos_of_nonpos_of_nonneg δ₀.le (Real.exp_pos _).le]
   /- Our apriori estimate on `f` implies that `g ε w • f w → 0` as `|w.re| → ∞` along the strip. In

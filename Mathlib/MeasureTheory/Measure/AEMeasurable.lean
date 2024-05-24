@@ -95,7 +95,7 @@ theorem sum_measure [Countable ι] {μ : ι → Measure α} (h : ∀ i, AEMeasur
     contrapose! hx
     exact subset_toMeasurable _ _ hx
   set g : α → β := (⋂ i, s i).piecewise (const α default) f
-  refine ⟨g, measurable_of_restrict_of_restrict_compl hsm ?_ ?_, ae_sum_iff.mpr fun i =>? _⟩
+  refine ⟨g, measurable_of_restrict_of_restrict_compl hsm ?_ ?_, ae_sum_iff.mpr fun i => ?_⟩
   · rw [restrict_piecewise]
     simp only [s, Set.restrict, const]
     exact measurable_const

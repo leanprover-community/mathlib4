@@ -70,7 +70,7 @@ theorem continuous_right_toIcoMod : ContinuousWithinAt (toIcoMod hp a) (Ici x) x
   let d := toIcoDiv hp a x • p
   have hd := toIcoMod_mem_Ico hp a x
   simp_rw [subset_def, mem_inter_iff]
-  refine ⟨_, ⟨l + d, min (a + p) u + d, ?_, fun x => id⟩, fun y =>? _⟩ <;>
+  refine ⟨_, ⟨l + d, min (a + p) u + d, ?_, fun x => id⟩, fun y => ?_⟩ <;>
     simp_rw [← sub_mem_Ioo_iff_left, mem_Ioo, lt_min_iff]
   · exact ⟨hxI.1, hd.2, hxI.2⟩
   · rintro ⟨h, h'⟩
@@ -405,7 +405,7 @@ variable {p}
 theorem addOrderOf_period_div {n : ℕ} (h : 0 < n) : addOrderOf ((p / n : 𝕜) : AddCircle p) = n := by
   rw [addOrderOf_eq_iff h]
   replace h : 0 < (n : 𝕜) := Nat.cast_pos.2 h
-  refine ⟨?_, fun m hn h0 =>? _⟩ <;> simp only [Ne, ← coe_nsmul, nsmul_eq_mul]
+  refine ⟨?_, fun m hn h0 => ?_⟩ <;> simp only [Ne, ← coe_nsmul, nsmul_eq_mul]
   · rw [mul_div_cancel₀ _ h.ne', coe_period]
   rw [coe_eq_zero_of_pos_iff p hp.out (mul_pos (Nat.cast_pos.2 h0) <| div_pos hp.out h)]
   rintro ⟨k, hk⟩

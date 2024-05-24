@@ -335,7 +335,7 @@ theorem Filter.HasBasis.cauchySeq_iff {γ} [Nonempty β] [SemilatticeSup β] {u 
 theorem Filter.HasBasis.cauchySeq_iff' {γ} [Nonempty β] [SemilatticeSup β] {u : β → α}
     {p : γ → Prop} {s : γ → Set (α × α)} (H : (𝓤 α).HasBasis p s) :
     CauchySeq u ↔ ∀ i, p i → ∃ N, ∀ n ≥ N, (u n, u N) ∈ s i := by
-  refine H.cauchySeq_iff.trans ⟨fun h i hi => ?_, fun h i hi =>? _⟩
+  refine H.cauchySeq_iff.trans ⟨fun h i hi => ?_, fun h i hi => ?_⟩
   · exact (h i hi).imp fun N hN n hn => hN n hn N le_rfl
   · rcases comp_symm_of_uniformity (H.mem_of_mem hi) with ⟨t, ht, ht', hts⟩
     rcases H.mem_iff.1 ht with ⟨j, hj, hjt⟩
