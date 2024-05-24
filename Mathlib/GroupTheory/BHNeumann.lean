@@ -119,14 +119,14 @@ theorem Subgroup.exists_finiteIndex_of_leftCoset_cover_aux
   have ⟨n, hn⟩ : ∃ n, s.card ≤ n + 1 := ⟨s.card - 1, by rw [← Nat.sub_le_iff_le_add]⟩
   induction n generalizing ι s with
   | zero =>
-    have hsH (i) : H i ∈ s := hH ▸ mem_image_univ_iff_mem_range.mpr (Set.mem_range_self i)
+    replace hH (i) : H i ∈ s := hH ▸ mem_image_univ_iff_mem_range.mpr (Set.mem_range_self i)
     have : Subsingleton { x // x ∈ s } := Finset.card_le_one_iff_subsingleton_coe.mp hn
     have (i) : H i = H j :=
-      Subtype.ext_iff.mp <| Subsingleton.elim (⟨H i, hsH i⟩ : { x // x ∈ s }) ⟨H j, hsH j⟩
+      Subtype.ext_iff.mp <| Subsingleton.elim (⟨H i, hH i⟩ : { x // x ∈ s }) ⟨H j, hH j⟩
     refine (hj ?_).elim
     simpa [this] using hcover
   | succ n ih =>
-    have hsH (i) : H i ∈ s := hH ▸ mem_image_univ_iff_mem_range.mpr (Set.mem_range_self i)
+    replace hH (i) : H i ∈ s := hH ▸ mem_image_univ_iff_mem_range.mpr (Set.mem_range_self i)
     rw [← Set.biUnion_univ, ← Finset.coe_univ, Finset.set_biUnion_coe,
       ← Finset.univ.filter_union_filter_neg_eq (H · = H j), Finset.set_biUnion_union] at hcover
     -- Since `G ≠ ⋃ k ∈ {k : H k = H j}, g k • H j`,
@@ -134,7 +134,8 @@ theorem Subgroup.exists_finiteIndex_of_leftCoset_cover_aux
     have ⟨x, hx⟩ : ∃ x, x ∉ ⋃ i ∈ Finset.univ.filter (H · = H j), g i • (H i : Set G) := by
       rwa [ne_eq, Set.eq_univ_iff_forall, not_forall] at hj
     -- Then `x • H j ∩ ⋃ k ∈ {k : H k = H j}, g k • H k = ∅`.
-    have h : x • (H j : Set G) ∩ ⋃ k ∈ Finset.univ.filter (H · = H j), g k • (H k : Set G) = ∅ := by
+    replace hx :
+        x • (H j : Set G) ∩ ⋃ k ∈ Finset.univ.filter (H · = H j), g k • (H k : Set G) = ∅ := by
       rw [Set.eq_empty_iff_forall_not_mem]
       suffices ∀ i ∈ x • (H j : Set G), ∀ (x : ι), H x = H j → i ∉ g x • (H x : Set G) by
         simpa using this
@@ -145,24 +146,24 @@ theorem Subgroup.exists_finiteIndex_of_leftCoset_cover_aux
       rw [mem_leftCoset_iff, SetLike.mem_coe, ← QuotientGroup.eq] at hy₁ hy₂ ⊢
       exact hy₂.trans hy₁.symm
     -- Therefore `x • H j ⊆ ⋃ k ∈ {k : H k ≠ H j}, g k • H k`.
-    replace h :
+    replace hx :
         x • (H j : Set G) ⊆ ⋃ k ∈ Finset.univ.filter (H · ≠ H j), g k • (H k : Set G) := by
-      rw [← Set.left_eq_inter, ← Set.empty_union (_ ∩ _), ← h,
+      rw [← Set.left_eq_inter, ← Set.empty_union (_ ∩ _), ← hx,
         ← Set.inter_union_distrib_left, Set.left_eq_inter, hcover]
       exact Set.subset_univ _
     -- Thus `y • H j ⊆ ⋃ k ∈ {k : H k ≠ H j}, (y * x⁻¹ * g k) • H k` for all `y : G`, that is,
     -- every left coset of `H j` is contained in a finite union of left cosets of the
     -- subgroups `H k ≠ H j`.
-    replace h (y : G) :
+    replace hx (y : G) :
         y • (H j : Set G) ⊆
           ⋃ i ∈ Finset.univ.filter (H · ≠ H j), (y * x⁻¹ * g i) • (H i : Set G) := by
-      replace h : ∀ w, x⁻¹ * w ∈ H j → ∃ i, H i ≠ H j ∧ (g i)⁻¹ * w ∈ H i := by
-        simpa [Set.subset_def, mem_leftCoset_iff] using h
+      replace hx : ∀ w, x⁻¹ * w ∈ H j → ∃ i, H i ≠ H j ∧ (g i)⁻¹ * w ∈ H i := by
+        simpa [Set.subset_def, mem_leftCoset_iff] using hx
       intro z hz
-      specialize h (x * y⁻¹ * z)
-      rw [← mul_assoc, inv_mul_cancel_left] at h
+      specialize hx (x * y⁻¹ * z)
+      rw [← mul_assoc, inv_mul_cancel_left] at hx
       simpa [Set.subset_def, mem_leftCoset_iff, ← QuotientGroup.eq, mul_assoc]
-        using h ((mem_leftCoset_iff _).mp hz)
+        using hx ((mem_leftCoset_iff _).mp hz)
     -- Then `G` can also be covered by a finite union `U k, f k • K k` of left cosets
     -- of the subgroups `H k ≠ H j`.
     let κ := ↥(Finset.univ.filter (H · ≠ H j)) × Option ↥(Finset.univ.filter (H · = H j))
@@ -171,14 +172,14 @@ theorem Subgroup.exists_finiteIndex_of_leftCoset_cover_aux
     | ⟨k₁, none⟩  => g k₁
     let K (k : κ) : Subgroup G := H k.1.val
     have hK' (k : κ) : K k ∈ s.erase (H j) :=
-      Finset.mem_erase.mpr ⟨(Finset.mem_filter.mp k.1.property).right, hsH k.1.val⟩
+      Finset.mem_erase.mpr ⟨(Finset.mem_filter.mp k.1.property).right, hH k.1.val⟩
     have hK (k : κ) : K k ≠ H j := ((Finset.mem_erase.mp (hK' k)).left ·)
     replace hcover : ⋃ k, f k • (K k : Set G) = Set.univ := Set.iUnion_eq_univ_iff.mpr fun y => by
       cases (Set.mem_union _ _ _).mp (hcover.symm.subset (Set.mem_univ y)) with
       | inl hy =>
         have ⟨k, hk, hy⟩ := Set.mem_iUnion₂.mp hy
         have hk' : H k = H j := by simpa using hk
-        have ⟨i, hi, hy⟩ := Set.mem_iUnion₂.mp (h (g k) (hk' ▸ hy))
+        have ⟨i, hi, hy⟩ := Set.mem_iUnion₂.mp (hx (g k) (hk' ▸ hy))
         exact ⟨⟨⟨i, hi⟩, some ⟨k, hk⟩⟩, hy⟩
       | inr hy =>
         have ⟨i, hi, hy⟩ := Set.mem_iUnion₂.mp hy
@@ -198,7 +199,7 @@ theorem Subgroup.exists_finiteIndex_of_leftCoset_cover_aux
       · refine Finset.card_le_card fun x => ?_
         rw [mem_image_univ_iff_mem_range, Set.mem_range]
         exact fun ⟨k, hk⟩ => hk ▸ hK' k
-      · rwa [Finset.card_erase_of_mem (hsH j), Nat.sub_le_iff_le_add]
+      · rwa [Finset.card_erase_of_mem (hH j), Nat.sub_le_iff_le_add]
     have ⟨k', hk'⟩ := ih κ K f hcover k hcover' _ rfl hn
     exact ⟨k'.1, hK k', hk'.right⟩
 
