@@ -224,9 +224,9 @@ theorem quasiSober_of_open_cover (S : Set (Set α)) (hS : ∀ s : S, IsOpen (s :
     rw [hS'']
     trivial
   haveI : QuasiSober U := hS' ⟨U, hU⟩
-  have H : IsPreirreducible ((↑) ⁻¹' t : Set U) :=
+  have H : IsPreirreducible (U ↓∩ t) :=
     h.2.preimage (hS ⟨U, hU⟩).openEmbedding_subtype_val
-  replace H : IsIrreducible ((↑) ⁻¹' t : Set U) := ⟨⟨⟨x, hU'⟩, by simpa using hx⟩, H⟩
+  replace H : IsIrreducible (U ↓∩ t) := ⟨⟨⟨x, hU'⟩, by simpa using hx⟩, H⟩
   use H.genericPoint
   have := continuous_subtype_val.closure_preimage_subset _ H.genericPoint_spec.mem
   rw [h'.closure_eq] at this

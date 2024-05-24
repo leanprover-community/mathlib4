@@ -580,9 +580,9 @@ countably separated measurable space then the preimage of a set `s` is measurabl
 if and only if the set is measurable in `Set.range f`. -/
 theorem measurableSet_preimage_iff_preimage_val {f : X → Z} [CountablySeparated (range f)]
     (hf : Measurable f) {s : Set Z} :
-    MeasurableSet (f ⁻¹' s) ↔ MeasurableSet ((↑) ⁻¹' s : Set (range f)) :=
+    MeasurableSet (f ⁻¹' s) ↔ MeasurableSet (range f ↓∩ s) :=
   have hf' : Measurable (rangeFactorization f) := hf.subtype_mk
-  hf'.measurableSet_preimage_iff_of_surjective (s := Subtype.val ⁻¹' s) surjective_onto_range
+  hf'.measurableSet_preimage_iff_of_surjective (s := range f ↓∩ s) surjective_onto_range
 #align measurable.measurable_set_preimage_iff_preimage_coe Measurable.measurableSet_preimage_iff_preimage_val
 
 /-- If `f : X → Z` is a Borel measurable map from a standard Borel space to a

@@ -1044,7 +1044,7 @@ theorem IsPathConnected.union {U V : Set X} (hU : IsPathConnected U) (hV : IsPat
 /-- If a set `W` is path-connected, then it is also path-connected when seen as a set in a smaller
 ambient type `U` (when `U` contains `W`). -/
 theorem IsPathConnected.preimage_coe {U W : Set X} (hW : IsPathConnected W) (hWU : W ⊆ U) :
-    IsPathConnected (((↑) : U → X) ⁻¹' W) := by
+    IsPathConnected (U ↓∩ W) := by
   rcases hW with ⟨x, x_in, hx⟩
   use ⟨x, hWU x_in⟩, by simp [x_in]
   rintro ⟨y, hyU⟩ hyW
@@ -1307,7 +1307,7 @@ theorem locPathConnected_of_isOpen [LocPathConnectedSpace X] {U : Set X} (h : Is
     rw [(HasBasis.comap ((↑) : U → X) (pathConnected_subset_basis h x_in)).mem_iff]
     constructor
     · rintro ⟨W, ⟨W_in, hW, hWU⟩, hWV⟩
-      exact ⟨Subtype.val ⁻¹' W, ⟨⟨preimage_mem_comap W_in, hW.preimage_coe hWU⟩, hWV⟩⟩
+      exact ⟨U ↓∩ W, ⟨⟨preimage_mem_comap W_in, hW.preimage_coe hWU⟩, hWV⟩⟩
     · rintro ⟨W, ⟨W_in, hW⟩, hWV⟩
       refine'
         ⟨(↑) '' W,

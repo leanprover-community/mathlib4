@@ -72,7 +72,7 @@ theorem range_restrict (f : α → β) (s : Set α) : Set.range (s.restrict f) =
 #align set.range_restrict Set.range_restrict
 
 theorem image_restrict (f : α → β) (s t : Set α) :
-    s.restrict f '' (Subtype.val ⁻¹' t) = f '' (t ∩ s) := by
+    s.restrict f '' (s ↓∩ t) = f '' (t ∩ s) := by
   rw [restrict_eq, image_comp, image_preimage_eq_inter_range, Subtype.range_coe]
 #align set.image_restrict Set.image_restrict
 
@@ -381,7 +381,7 @@ theorem MapsTo.coe_restrict (h : Set.MapsTo f s t) :
 #align set.maps_to.coe_restrict Set.MapsTo.coe_restrict
 
 theorem MapsTo.range_restrict (f : α → β) (s : Set α) (t : Set β) (h : MapsTo f s t) :
-    range (h.restrict f s t) = Subtype.val ⁻¹' (f '' s) :=
+    range (h.restrict f s t) = t ↓∩ (f '' s) :=
   Set.range_subtype_map f h
 #align set.maps_to.range_restrict Set.MapsTo.range_restrict
 
@@ -570,13 +570,13 @@ variable (t)
 
 variable (f s) in
 theorem image_restrictPreimage :
-    t.restrictPreimage f '' (Subtype.val ⁻¹' s) = Subtype.val ⁻¹' (f '' s) := by
+    t.restrictPreimage f '' ((f ⁻¹' t) ↓∩ s) = t ↓∩ (f '' s) := by
   delta Set.restrictPreimage
   rw [← (Subtype.coe_injective).image_injective.eq_iff, ← image_comp, MapsTo.restrict_commutes,
     image_comp, Subtype.image_preimage_coe, Subtype.image_preimage_coe, image_preimage_inter]
 
 variable (f) in
-theorem range_restrictPreimage : range (t.restrictPreimage f) = Subtype.val ⁻¹' range f := by
+theorem range_restrictPreimage : range (t.restrictPreimage f) = t ↓∩ range f := by
   simp only [← image_univ, ← image_restrictPreimage, preimage_univ]
 #align set.range_restrict_preimage Set.range_restrictPreimage
 
