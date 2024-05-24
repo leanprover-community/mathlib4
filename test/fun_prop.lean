@@ -73,9 +73,11 @@ attribute [fun_prop]
 A silly example on which `measurability` fails and `fun_prop` succeeds. Let's turn on tracing to see what is going on
 set_option trace.Meta.Tactic.fun_prop true in
 -/
-
+set_option maxHeartbeats 300000
 example {α} [MeasurableSpace α] (f : α → α → α) (hf : Measurable fun (x,y) => f x y) (a : α) :
-    Measurable (fun x => (f x a, f (f x x) (f (f x x) x))) := by (try measurability); fun_prop
+    Measurable (fun x => (f x a, f (f x x) (f (f x x) x))) := by
+  fail_if_success measurability
+  fun_prop
 
 /-!
 To give more complicated examples we mark theorems about arithmetic operations with `@[fun_prop]`
