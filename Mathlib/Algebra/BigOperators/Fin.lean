@@ -188,14 +188,14 @@ theorem sum_const [AddCommMonoid α] (n : ℕ) (x : α) : ∑ _i : Fin n, x = n 
 @[to_additive]
 theorem prod_Ioi_zero {M : Type*} [CommMonoid M] {n : ℕ} {v : Fin n.succ → M} :
     ∏ i in Ioi 0, v i = ∏ j : Fin n, v j.succ := by
-  rw [Ioi_zero_eq_map, Finset.prod_map, RelEmbedding.coe_toEmbedding, val_succEmb]
+  rw [Ioi_zero_eq_map, Finset.prod_map, val_succEmb]
 #align fin.prod_Ioi_zero Fin.prod_Ioi_zero
 #align fin.sum_Ioi_zero Fin.sum_Ioi_zero
 
 @[to_additive]
 theorem prod_Ioi_succ {M : Type*} [CommMonoid M] {n : ℕ} (i : Fin n) (v : Fin n.succ → M) :
     ∏ j in Ioi i.succ, v j = ∏ j in Ioi i, v j.succ := by
-  rw [Ioi_succ, Finset.prod_map, RelEmbedding.coe_toEmbedding, val_succEmb]
+  rw [Ioi_succ, Finset.prod_map, val_succEmb]
 #align fin.prod_Ioi_succ Fin.prod_Ioi_succ
 #align fin.sum_Ioi_succ Fin.sum_Ioi_succ
 
@@ -276,11 +276,11 @@ theorem partialProd_right_inv {G : Type*} [Group G] (f : Fin n → G) (i : Fin n
   | succ i hi =>
     specialize hi (lt_trans (Nat.lt_succ_self i) hn)
     simp only [Fin.coe_eq_castSucc, Fin.succ_mk, Fin.castSucc_mk] at hi ⊢
-    rw [← Fin.succ_mk _ _ (lt_trans (Nat.lt_succ_self _) hn), ← Fin.succ_mk]
+    rw [← Fin.succ_mk _ _ (lt_trans (Nat.lt_succ_self _) hn), ← Fin.succ_mk _ _ hn]
     simp only [partialProd_succ, mul_inv_rev, Fin.castSucc_mk]
     -- Porting note: was
     -- assoc_rw [hi, inv_mul_cancel_left]
-    rw [← mul_assoc, mul_left_eq_self, mul_assoc, castSucc_mk, hi, mul_left_inv]
+    rw [← mul_assoc, mul_left_eq_self, mul_assoc, hi, mul_left_inv]
 #align fin.partial_prod_right_inv Fin.partialProd_right_inv
 #align fin.partial_sum_right_neg Fin.partialSum_right_neg
 
@@ -345,7 +345,7 @@ def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=
     fun a => by
       dsimp
       induction' n with n ih
-      · haveI : Subsingleton (Fin (m ^ 0)) := (Fin.castIso <| pow_zero _).toEquiv.subsingleton
+      · haveI : Subsingleton (Fin (m ^ 0)) := (finCongr <| pow_zero _).subsingleton
         exact Subsingleton.elim _ _
       simp_rw [Fin.forall_iff, Fin.ext_iff] at ih
       ext
@@ -402,14 +402,14 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
       refine' Fin.consInduction _ _ n
       · intro a
         haveI : Subsingleton (Fin (∏ i : Fin 0, i.elim0)) :=
-          (Fin.castIso <| prod_empty).toEquiv.subsingleton
+          (finCongr <| prod_empty).subsingleton
         exact Subsingleton.elim _ _
       · intro n x xs ih a
         simp_rw [Fin.forall_iff, Fin.ext_iff] at ih
         ext
         simp_rw [Fin.sum_univ_succ, Fin.cons_succ]
         have := fun i : Fin n =>
-          Fintype.prod_equiv (Fin.castIso <| Fin.val_succ i).toEquiv
+          Fintype.prod_equiv (finCongr <| Fin.val_succ i)
             (fun j => (Fin.cons x xs : _ → ℕ) (Fin.castLE (Fin.is_lt _).le j))
             (fun j => (Fin.cons x xs : _ → ℕ) (Fin.castLE (Nat.succ_le_succ (Fin.is_lt _).le) j))
             fun j => rfl

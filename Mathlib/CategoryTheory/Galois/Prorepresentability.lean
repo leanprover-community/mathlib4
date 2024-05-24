@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.Limits.IndYoneda
 # Pro-Representability of fiber functors
 
 We show that any fiber functor is pro-representable, i.e. there exists a pro-object
-`X : I ⥤ C` such that `F` is naturally isomorphic to `X ⋙ coyoneda`.
+`X : I ⥤ C` such that `F` is naturally isomorphic to the colimit of `X ⋙ coyoneda`.
 
 From this we deduce the canonical isomorphism of `Aut F` with the limit over the automorphism
 groups of all Galois objects.
@@ -69,19 +69,20 @@ instance (X : PointedGaloisObject F) : CoeDep (PointedGaloisObject F) X C where
 variable {F} in
 /-- The type of homomorphisms between two pointed Galois objects. This is a homomorphism
 of the underlying objects of `C` that maps the distinguished points to each other. -/
+@[ext]
 structure Hom (A B : PointedGaloisObject F) where
   /-- The underlying homomorphism of `C`. -/
   val : A.obj ⟶ B.obj
   /-- The distinguished point of `A` is mapped to the distinguished point of `B`. -/
-  comp : F.map val A.pt = B.pt
+  comp : F.map val A.pt = B.pt := by simp
+
+attribute [simp] Hom.comp
 
 /-- The category of pointed Galois objects. -/
 instance : Category.{u₂} (PointedGaloisObject F) where
   Hom A B := Hom A B
-  id A := ⟨𝟙 (A : C), by simp⟩
-  comp {A B C} f g := by
-    refine ⟨f.val ≫ g.val, ?_⟩
-    simp only [F.map_comp, FintypeCat.comp_apply, f.comp, g.comp]
+  id A := { val := 𝟙 (A : C) }
+  comp {A B C} f g := { val := f.val ≫ g.val }
 
 instance {A B : PointedGaloisObject F} : Coe (Hom A B) (A.obj ⟶ B.obj) where
   coe f := f.val
@@ -89,19 +90,14 @@ instance {A B : PointedGaloisObject F} : Coe (Hom A B) (A.obj ⟶ B.obj) where
 variable {F}
 
 @[ext]
-lemma Hom.ext {A B : PointedGaloisObject F} {f g : A ⟶ B} (_ : f.val = g.val) : f = g :=
-  match f, g with | ⟨_, _⟩, ⟨_, _⟩ => by congr
-
-@[simp]
-lemma Hom.map_point {A B : PointedGaloisObject F} (f : A ⟶ B) :
-    F.map f A.pt = B.pt :=
-  f.comp
+lemma hom_ext {A B : PointedGaloisObject F} {f g : A ⟶ B} (h : f.val = g.val) : f = g :=
+  Hom.ext f g h
 
 @[simp]
 lemma id_val (A : PointedGaloisObject F) : 𝟙 A = 𝟙 A.obj :=
   rfl
 
-@[simp]
+@[simp, reassoc]
 lemma comp_val {A B C : PointedGaloisObject F} (f : A ⟶ B) (g : B ⟶ C) :
     (f ≫ g).val = f.val ≫ g.val :=
   rfl
@@ -118,10 +114,9 @@ instance : IsCofilteredOrEmpty (PointedGaloisObject F) where
     · simp only [F.map_comp, hfz, FintypeCat.comp_apply, fiberBinaryProductEquiv_symm_snd_apply]
   cone_maps := fun ⟨A, a, _⟩ ⟨B, b, _⟩ ⟨f, hf⟩ ⟨g, hg⟩ ↦ by
     obtain ⟨Z, h, z, hgal, hhz⟩ := exists_hom_from_galois_of_fiber F A a
-    refine ⟨⟨Z, z, hgal⟩, ⟨h, hhz⟩, Hom.ext ?_⟩
-    apply evaluationInjective_of_isConnected F Z B z
-    show F.map (h ≫ f) z = F.map (h ≫ g) z
-    simp only [map_comp, FintypeCat.comp_apply, hhz, hf, hg]
+    refine ⟨⟨Z, z, hgal⟩, ⟨h, hhz⟩, hom_ext ?_⟩
+    apply evaluation_injective_of_isConnected F Z B z
+    simp [hhz, hf, hg]
 
 /-- The canonical functor from pointed Galois objects to `C`. -/
 def incl : PointedGaloisObject F ⥤ C where
@@ -133,7 +128,7 @@ lemma incl_obj (A : PointedGaloisObject F) : (incl F).obj A = A :=
   rfl
 
 @[simp]
-lemma incl_map {A B : PointedGaloisObject F} (f : A ⟶ B) : ((incl F).map f) = f.val :=
+lemma incl_map {A B : PointedGaloisObject F} (f : A ⟶ B) : (incl F).map f = f.val :=
   rfl
 
 /-- `F ⋙ FintypeCat.incl` as a cocone over `(can F).op ⋙ coyoneda`.
@@ -144,8 +139,7 @@ def cocone : Cocone ((incl F).op ⋙ coyoneda) where
     app := fun ⟨A, a, _⟩ ↦ { app := fun X (f : (A : C) ⟶ X) ↦ F.map f a }
     naturality := fun ⟨A, a, _⟩ ⟨B, b, _⟩ ⟨f, (hf : F.map f b = a)⟩ ↦ by
       ext Y (g : (A : C) ⟶ Y)
-      suffices h : F.map g (F.map f b) = F.map g a by
-        simpa
+      suffices h : F.map g (F.map f b) = F.map g a by simpa
       rw [hf]
   }
 
@@ -166,58 +160,15 @@ noncomputable def isColimit : IsColimit (cocone F) := by
       ← h1, FintypeCat.comp_apply, hfz]
   · intro ⟨A, a, _⟩ ⟨B, b, _⟩ (u : (A : C) ⟶ X) (v : (B : C) ⟶ X) (h : F.map u a = F.map v b)
     obtain ⟨⟨Z, z, _⟩, ⟨f, hf⟩, ⟨g, hg⟩, _⟩ :=
-      @IsFilteredOrEmpty.cocone_objs (PointedGaloisObject F)ᵒᵖ _ _
-      ⟨{ obj := A, pt := a}⟩ ⟨{obj := B, pt := b}⟩
+      IsFilteredOrEmpty.cocone_objs (C := (PointedGaloisObject F)ᵒᵖ)
+        ⟨{ obj := A, pt := a}⟩ ⟨{obj := B, pt := b}⟩
     refine ⟨⟨{ obj := Z, pt := z }⟩, ⟨f, hf⟩, ⟨g, hg⟩, ?_⟩
-    apply evaluationInjective_of_isConnected F Z X z
+    apply evaluation_injective_of_isConnected F Z X z
     change F.map (f ≫ u) z = F.map (g ≫ v) z
     rw [map_comp, FintypeCat.comp_apply, hf, map_comp, FintypeCat.comp_apply, hg, h]
 
 instance : HasColimit ((incl F).op ⋙ coyoneda) where
   exists_colimit := ⟨cocone F, isColimit F⟩
-
-variable {F}
-
-/-- A morphism of pointed Galois objects induces a map on automorphism groups
-of the underlying objects in `C`. This is a group homomorphism (see `autMapMul`). -/
-noncomputable def autMap {A B : PointedGaloisObject F} (f : A ⟶ B) (σ : Aut A.obj) : Aut B.obj :=
-  (evaluationEquivOfIsGalois F B B.pt).symm (F.map (σ.hom ≫ f) A.pt)
-
-@[simp]
-lemma autMap_eval {A B : PointedGaloisObject F} (f : A ⟶ B) (σ : Aut A.obj) :
-    F.map (autMap f σ).hom B.pt = F.map f (F.map σ.hom A.pt) := by
-  simp [autMap]
-
-lemma autMap_surjective {A B : PointedGaloisObject F} (f : A ⟶ B) :
-    Function.Surjective (autMap f) := by
-  intro σ
-  obtain ⟨a', ha'⟩ := surjective_of_nonempty_fiber_of_isConnected F f.val (F.map σ.hom B.pt)
-  obtain ⟨τ, (hτ : F.map τ.hom A.pt = a')⟩ := MulAction.exists_smul_eq (Aut A.obj) A.pt a'
-  use τ
-  apply evaluation_aut_injective_of_isConnected F B B.pt
-  simp [hτ, ha']
-
-@[simp]
-lemma comp_autMap {A B : PointedGaloisObject F} (f : A ⟶ B) (σ : Aut A.obj) :
-    f.val ≫ (autMap f σ).hom = σ.hom ≫ f := by
-  apply evaluationInjective_of_isConnected F A B A.pt
-  simp
-
-@[simp]
-lemma comp_autMap_apply {A B : PointedGaloisObject F} (f : A ⟶ B) (σ : Aut A.obj) (a : F.obj A) :
-    F.map (autMap f σ).hom (F.map f.val a) = F.map f.val (F.map σ.hom a) := by
-  simpa [-comp_autMap] using congrFun (congrArg F.map (comp_autMap f σ)) a
-
-@[simp]
-lemma autMap_apply_mul {A B : PointedGaloisObject F} (f : A ⟶ B) (σ τ : Aut A.obj) :
-    autMap f (σ * τ) = autMap f σ * autMap f τ := by
-  apply evaluation_aut_injective_of_isConnected F (B : C) B.pt
-  simp [Aut.Aut_mul_def]
-
-/-- `MonoidHom` version of `autMap`. -/
-noncomputable def autMapMul {A B : PointedGaloisObject F} (f : A ⟶ B) :
-     Aut (A : C) →* Aut (B : C) :=
-  MonoidHom.mk' (autMap f) (autMap_apply_mul f)
 
 end PointedGaloisObject
 
@@ -227,16 +178,12 @@ open PointedGaloisObject
 as an object of `C`. -/
 noncomputable def autGaloisSystem : PointedGaloisObject F ⥤ GroupCat.{u₂} where
   obj := fun A ↦ GroupCat.of <| Aut (A : C)
-  map := fun {A B} f ↦ (autMapMul f : Aut (A : C) →* Aut (B : C))
+  map := fun {A B} f ↦ (autMapHom f : Aut (A : C) →* Aut (B : C))
   map_id := fun A ↦ by
-    ext (σ : Aut (A : C))
-    show autMap (𝟙 A) σ = σ
-    apply evaluation_aut_injective_of_isConnected F A A.pt
+    ext (σ : Aut A.obj)
     simp
   map_comp {A B C} f g := by
     ext (σ : Aut A.obj)
-    show autMap (f ≫ g) σ = autMap g (autMap f σ)
-    apply evaluation_aut_injective_of_isConnected F C C.pt
     simp
 
 /-- `autGaloisSystem` but lifted to a bigger universe. This is needed to compute its limit. -/
@@ -245,7 +192,7 @@ noncomputable def autGaloisSystem' : PointedGaloisObject F ⥤ GroupCat.{max u�
 
 @[simp]
 lemma autGaloisSystem'_map {A B : PointedGaloisObject F} (f : A ⟶ B) (φ : Aut (A : C)) :
-    ((autGaloisSystem' F).map f) ⟨φ⟩ = ⟨autMapMul f φ⟩ :=
+    ((autGaloisSystem' F).map f) ⟨φ⟩ = ⟨autMapHom f.val φ⟩ :=
   rfl
 
 /-- The limit of `autGaloisSystem` computed in `GroupCat.{max u₁ u₂}`. -/
@@ -264,7 +211,7 @@ lemma autGalois.π_apply (A : PointedGaloisObject F) (x : autGalois F) :
 lemma autGaloisSystem'_map_surjective ⦃A B : PointedGaloisObject F⦄ (f : A ⟶ B) :
     Function.Surjective ((autGaloisSystem' F).map f) := by
   intro ⟨(φ : Aut B.obj)⟩
-  obtain ⟨ψ, hψ⟩ := autMap_surjective f φ
+  obtain ⟨ψ, hψ⟩ := autMap_surjective_of_isGalois f.val φ
   use ⟨ψ⟩
   simp only [autGaloisSystem'_map]
   apply ULift.ext
@@ -355,7 +302,7 @@ noncomputable def autIsoFibers :
       apply ULift.ext
       dsimp
       erw [Equiv.ulift_symm_down, Equiv.ulift_symm_down, Equiv.apply_symm_apply]
-      simp)
+      simp [-Hom.comp, ← f.comp])
 
 lemma autIsoFibers_inv_app (A : PointedGaloisObject F) (b : F.obj A) :
     (autIsoFibers F).inv.app A ⟨b⟩ = ⟨(evaluationEquivOfIsGalois F A A.pt).symm b⟩ :=

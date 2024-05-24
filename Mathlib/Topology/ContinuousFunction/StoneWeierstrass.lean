@@ -181,7 +181,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   -- so we get that out of the way here.
   by_cases nX : Nonempty X
   swap
-  exact ⟨nA.some, (dist_lt_iff pos).mpr fun x => False.elim (nX ⟨x⟩), nA.choose_spec⟩
+  · exact ⟨nA.some, (dist_lt_iff pos).mpr fun x => False.elim (nX ⟨x⟩), nA.choose_spec⟩
   /-
     The strategy now is to pick a family of continuous functions `g x y` in `A`
     with the property that `g x y x = f x` and `g x y y = f y`
@@ -248,7 +248,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   let k : (L : Type _) :=
     ⟨xs.inf' xs_nonempty fun x => (h x : C(X, ℝ)),
       Finset.inf'_mem _ inf_mem _ _ _ fun x _ => (h x).2⟩
-  refine' ⟨k.1, _, k.2⟩
+  refine ⟨k.1, ?_, k.2⟩
   -- We just need to verify the bound, which we do pointwise.
   rw [dist_lt_iff pos]
   intro z

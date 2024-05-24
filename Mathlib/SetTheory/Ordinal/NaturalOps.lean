@@ -280,8 +280,8 @@ theorem blsub_nadd_of_mono {f : ∀ c < a ♯ b, Ordinal.{max u v}}
       max (blsub.{u, v} a fun a' ha' => f (a' ♯ b) <| nadd_lt_nadd_right ha' b)
         (blsub.{u, v} b fun b' hb' => f (a ♯ b') <| nadd_lt_nadd_left hb' a) := by
   apply (blsub_le_iff.2 fun i h => _).antisymm (max_le _ _)
-  intro i h
-  · rcases lt_nadd_iff.1 h with (⟨a', ha', hi⟩ | ⟨b', hb', hi⟩)
+  · intro i h
+    rcases lt_nadd_iff.1 h with (⟨a', ha', hi⟩ | ⟨b', hb', hi⟩)
     · exact lt_max_of_lt_left ((hf h (nadd_lt_nadd_right ha' b) hi).trans_lt (lt_blsub _ _ ha'))
     · exact lt_max_of_lt_right ((hf h (nadd_lt_nadd_left hb' a) hi).trans_lt (lt_blsub _ _ hb'))
   all_goals
@@ -696,7 +696,7 @@ theorem lt_nmul_iff₃ :
   · intro h
     rcases lt_nmul_iff.1 h with ⟨e, he, c', hc, H₁⟩
     rcases lt_nmul_iff.1 he with ⟨a', ha, b', hb, H₂⟩
-    refine' ⟨a', ha, b', hb, c', hc, _⟩
+    refine ⟨a', ha, b', hb, c', hc, ?_⟩
     have := nadd_le_nadd H₁ (nmul_nadd_le H₂ hc.le)
     simp only [nadd_nmul, nadd_assoc] at this
     rw [nadd_left_comm, nadd_left_comm d, nadd_left_comm, nadd_le_nadd_iff_left,

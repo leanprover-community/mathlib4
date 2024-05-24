@@ -211,7 +211,6 @@ namespace Finpartition
 
 /-- The pairs of parts of a partition `P` which are not `ε`-dense in a graph `G`. Note that we
 dismiss the diagonal. We do not care whether `s` is `ε`-dense with itself. -/
-@[pp_dot]
 def sparsePairs (ε : 𝕜) : Finset (Finset α × Finset α) :=
   P.parts.offDiag.filter fun (u, v) ↦ G.edgeDensity u v < ε
 
@@ -225,7 +224,6 @@ lemma sparsePairs_mono {ε ε' : 𝕜} (h : ε ≤ ε') : P.sparsePairs G ε ⊆
 
 /-- The pairs of parts of a partition `P` which are not `ε`-uniform in a graph `G`. Note that we
 dismiss the diagonal. We do not care whether `s` is `ε`-uniform with itself. -/
-@[pp_dot]
 def nonUniforms (ε : 𝕜) : Finset (Finset α × Finset α) :=
   P.parts.offDiag.filter fun (u, v) ↦ ¬G.IsUniform ε u v
 #align finpartition.non_uniforms Finpartition.nonUniforms
@@ -451,7 +449,7 @@ lemma unreduced_edges_subset :
   obtain ⟨U, hU, hx⟩ := P.exists_mem hx
   obtain ⟨V, hV, hy⟩ := P.exists_mem hy
   obtain rfl | hUV := eq_or_ne U V
-  { exact Or.inr (Or.inl ⟨U, hU, hx, hy, G.ne_of_adj h⟩) }
+  · exact Or.inr (Or.inl ⟨U, hU, hx, hy, G.ne_of_adj h⟩)
   by_cases h₂ : G.IsUniform (ε/8) U V
   · exact Or.inr $ Or.inr ⟨U, V, hU, hV, hUV, h' _ hU _ hV hx hy hUV h₂, hx, hy, h⟩
   · exact Or.inl ⟨U, V, hU, hV, hUV, h₂, hx, hy⟩

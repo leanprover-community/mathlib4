@@ -290,8 +290,8 @@ theorem ker_toZMod : RingHom.ker (toZMod : ℤ_[p] →+* ZMod p) = maximalIdeal 
     rw [← sub_zero x] at h
     dsimp [toZMod, toZModHom]
     convert zmod_congr_of_sub_mem_max_ideal x _ 0 _ h
-    norm_cast
-    apply sub_zmodRepr_mem
+    · norm_cast
+    · apply sub_zmodRepr_mem
 #align padic_int.ker_to_zmod PadicInt.ker_toZMod
 
 /-- `appr n x` gives a value `v : ℕ` such that `x` and `↑v : ℤ_p` are congruent mod `p^n`.

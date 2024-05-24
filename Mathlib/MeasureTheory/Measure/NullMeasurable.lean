@@ -299,22 +299,16 @@ theorem measure_union₀_aux (hs : NullMeasurableSet s μ) (ht : NullMeasurableS
 `μ (s ∩ t) + μ (s \ t) = μ s`. -/
 theorem measure_inter_add_diff₀ (s : Set α) (ht : NullMeasurableSet t μ) :
     μ (s ∩ t) + μ (s \ t) = μ s := by
-  refine' le_antisymm _ _
-  · rcases exists_measurable_superset μ s with ⟨s', hsub, hs'm, hs'⟩
-    replace hs'm : NullMeasurableSet s' μ := hs'm.nullMeasurableSet
-    calc
-      μ (s ∩ t) + μ (s \ t) ≤ μ (s' ∩ t) + μ (s' \ t) :=
-        add_le_add (measure_mono <| inter_subset_inter_left _ hsub)
-          (measure_mono <| diff_subset_diff_left hsub)
-      _ = μ (s' ∩ t ∪ s' \ t) :=
-        (measure_union₀_aux (hs'm.inter ht) (hs'm.diff ht) <|
-            (@disjoint_inf_sdiff _ s' t _).aedisjoint).symm
-      _ = μ s' := congr_arg μ (inter_union_diff _ _)
-      _ = μ s := hs'
-  · calc
-      μ s = μ (s ∩ t ∪ s \ t) := by rw [inter_union_diff]
-      _ ≤ μ (s ∩ t) + μ (s \ t) := measure_union_le _ _
-
+  refine le_antisymm ?_ (measure_le_inter_add_diff _ _ _)
+  rcases exists_measurable_superset μ s with ⟨s', hsub, hs'm, hs'⟩
+  replace hs'm : NullMeasurableSet s' μ := hs'm.nullMeasurableSet
+  calc
+    μ (s ∩ t) + μ (s \ t) ≤ μ (s' ∩ t) + μ (s' \ t) := by gcongr
+    _ = μ (s' ∩ t ∪ s' \ t) :=
+      (measure_union₀_aux (hs'm.inter ht) (hs'm.diff ht) <|
+          (@disjoint_inf_sdiff _ s' t _).aedisjoint).symm
+    _ = μ s' := congr_arg μ (inter_union_diff _ _)
+    _ = μ s := hs'
 #align measure_theory.measure_inter_add_diff₀ MeasureTheory.measure_inter_add_diff₀
 
 theorem measure_union_add_inter₀ (s : Set α) (ht : NullMeasurableSet t μ) :
@@ -483,7 +477,7 @@ namespace Measure
 
 TODO: generalize to any larger σ-algebra. -/
 def completion {_ : MeasurableSpace α} (μ : Measure α) :
-    @MeasureTheory.Measure (NullMeasurableSpace α μ) _ where
+    MeasureTheory.Measure (NullMeasurableSpace α μ) where
   toOuterMeasure := μ.toOuterMeasure
   m_iUnion s hs hd := measure_iUnion₀ (hd.mono fun i j h => h.aedisjoint) hs
   trim_le := by
