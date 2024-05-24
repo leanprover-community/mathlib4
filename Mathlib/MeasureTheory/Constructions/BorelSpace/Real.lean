@@ -212,7 +212,7 @@ theorem aemeasurable_coe_nnreal_real_iff {f : α → ℝ≥0} {μ : Measure α} 
   ⟨fun h ↦ by simpa only [Real.toNNReal_coe] using h.real_toNNReal, AEMeasurable.coe_nnreal_real⟩
 #align ae_measurable_coe_nnreal_real_iff aemeasurable_coe_nnreal_real_iff
 
-@[deprecated] -- 2024-03-02
+@[deprecated (since := "2024-03-02")]
 alias aEMeasurable_coe_nnreal_real_iff := aemeasurable_coe_nnreal_real_iff
 
 /-- The set of finite `ℝ≥0∞` numbers is `MeasurableEquiv` to `ℝ≥0`. -/
@@ -311,8 +311,8 @@ theorem measurable_of_tendsto' {ι : Type*} {f : ι → α → ℝ≥0∞} {g : 
   exact measurable_liminf fun n => hf (x n)
 #align measurable_of_tendsto_ennreal' ENNReal.measurable_of_tendsto'
 
--- 2024-03-09
-@[deprecated] alias _root_.measurable_of_tendsto_ennreal' := ENNReal.measurable_of_tendsto'
+@[deprecated (since := "2024-03-09")] alias
+_root_.measurable_of_tendsto_ennreal' := ENNReal.measurable_of_tendsto'
 
 /-- A sequential limit of measurable `ℝ≥0∞` valued functions is measurable. -/
 theorem measurable_of_tendsto {f : ℕ → α → ℝ≥0∞} {g : α → ℝ≥0∞} (hf : ∀ i, Measurable (f i))
@@ -320,8 +320,8 @@ theorem measurable_of_tendsto {f : ℕ → α → ℝ≥0∞} {g : α → ℝ≥
   measurable_of_tendsto' atTop hf lim
 #align measurable_of_tendsto_ennreal ENNReal.measurable_of_tendsto
 
--- 2024-03-09
-@[deprecated] alias _root_.measurable_of_tendsto_ennreal := ENNReal.measurable_of_tendsto
+@[deprecated (since := "2024-03-09")] alias
+_root_.measurable_of_tendsto_ennreal := ENNReal.measurable_of_tendsto
 
 /-- A limit (over a general filter) of a.e.-measurable `ℝ≥0∞` valued functions is
 a.e.-measurable. -/
