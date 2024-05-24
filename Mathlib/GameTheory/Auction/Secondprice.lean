@@ -63,13 +63,17 @@ lemma two_different_elements {I : Type*} (h : ∃ (i j : I), i≠ j) : ∀ (i:I)
 
 /-!###   Structure Definition  -/
 
+/-- Defines an auction with a set of participants `I`,
+a `Fintype` instance,
+an `Inhabited` instance,
+and a function `v` mapping each participant to their valuation. -/
 structure Auction where
    I : Type*
    hF : Fintype I
    hI: Inhabited I
    hP : ∃ i j : I , i ≠ j
    hP' :  ∀ i : I , ∃ j, i ≠  j := two_different_elements hP
-   v : I → ℝ -- The value of each clients
+   v : I → ℝ 
 
 namespace Auction
 
