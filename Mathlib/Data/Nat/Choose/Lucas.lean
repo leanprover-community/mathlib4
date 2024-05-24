@@ -65,7 +65,7 @@ theorem lucas_theorem' (a : ℕ) : choose n k ≡ choose (n / p ^ a) (k / p ^ a)
     rfl
 
 /-- **Lucas's Theorem**: For primes `p`, `choose n k` is congruent to the product of
-  `choose (n / p ^ i) (k / p ^ i)` over `i` modulo `p`. -/
+  `choose (n / p ^ i % p) (k / p ^ i % p)` over `i` modulo `p`. -/
 theorem lucas_theorem'' {a : ℕ} (ha₁ : n < p ^ a) (ha₂ : k < p ^ a) :
     choose n k ≡ ∏ i in range a, choose (n / p ^ i % p) (k / p ^ i % p) [ZMOD p] := by
   apply (lucas_theorem' a).trans

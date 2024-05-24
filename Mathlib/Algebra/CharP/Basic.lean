@@ -152,7 +152,8 @@ theorem sub_pow_char_pow [CommRing R] {p : ℕ} [Fact p.Prime] [CharP R p] {n : 
   sub_pow_char_pow_of_commute _ _ _ (Commute.all _ _)
 #align sub_pow_char_pow sub_pow_char_pow
 
-theorem sub_pow_eq_sub_pow_mod_mul_pow_sub_pow_div [CommRing R] {p : ℕ} [Fact p.Prime] [CharP R p] {n : ℕ} (x y : R) :
+theorem sub_pow_eq_sub_pow_mod_mul_pow_sub_pow_div
+    [CommRing R] {p : ℕ} [Fact p.Prime] [CharP R p] {n : ℕ} (x y : R) :
     (x - y) ^ n = (x - y) ^ (n % p) * (x ^ p - y ^ p) ^ (n / p) := by
   rw [← sub_pow_char, ← pow_mul, ← pow_add, Nat.mod_add_div]
 
