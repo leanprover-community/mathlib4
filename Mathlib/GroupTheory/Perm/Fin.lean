@@ -126,7 +126,7 @@ theorem support_finRotate_of_le {n : ℕ} (h : 2 ≤ n) : support (finRotate n) 
 #align support_fin_rotate_of_le support_finRotate_of_le
 
 theorem isCycle_finRotate {n : ℕ} : IsCycle (finRotate (n + 2)) := by
-  refine' ⟨0, by simp, fun x hx' => ⟨x, _⟩⟩
+  refine ⟨0, by simp, fun x hx' => ⟨x, ?_⟩⟩
   clear hx'
   cases' x with x hx
   rw [zpow_natCast, Fin.ext_iff, Fin.val_mk]
@@ -158,7 +158,7 @@ namespace Fin
 /-- `Fin.cycleRange i` is the cycle `(0 1 2 ... i)` leaving `(i+1 ... (n-1))` unchanged. -/
 def cycleRange {n : ℕ} (i : Fin n) : Perm (Fin n) :=
   (finRotate (i + 1)).extendDomain
-    (Equiv.ofLeftInverse' (Fin.castLEEmb (Nat.succ_le_of_lt i.is_lt)).toEmbedding (↑)
+    (Equiv.ofLeftInverse' (Fin.castLEEmb (Nat.succ_le_of_lt i.is_lt)) (↑)
       (by
         intro x
         ext
@@ -181,7 +181,7 @@ theorem cycleRange_of_le {n : ℕ} {i j : Fin n.succ} (h : j ≤ i) :
   ext
   erw [this, cycleRange, ofLeftInverse'_eq_ofInjective, ←
     Function.Embedding.toEquivRange_eq_ofInjective, ← viaFintypeEmbedding,
-    viaFintypeEmbedding_apply_image, castLEEmb_toEmbedding, Function.Embedding.coeFn_mk,
+    viaFintypeEmbedding_apply_image, Function.Embedding.coeFn_mk,
     coe_castLE, coe_finRotate]
   simp only [Fin.ext_iff, val_last, val_mk, val_zero, Fin.eta, castLE_mk]
   split_ifs with heq

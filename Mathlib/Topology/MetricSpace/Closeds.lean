@@ -221,7 +221,7 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
     -- `F` is finite
     · apply @Finite.of_finite_image _ _ F _
       · apply fs.finite_subsets.subset fun b => _
-        exact fun s => (s : Set α)
+        · exact fun s => (s : Set α)
         simp only [F, and_imp, Set.mem_image, Set.mem_setOf_eq, exists_imp]
         intro _ x hx hx'
         rwa [hx'] at hx
@@ -261,7 +261,7 @@ theorem NonemptyCompacts.isClosed_in_closeds [CompleteSpace α] :
     range NonemptyCompacts.toCloseds =
       { s : Closeds α | (s : Set α).Nonempty ∧ IsCompact (s : Set α) } := by
     ext s
-    refine' ⟨_, fun h => ⟨⟨⟨s, h.2⟩, h.1⟩, Closeds.ext rfl⟩⟩
+    refine ⟨?_, fun h => ⟨⟨⟨s, h.2⟩, h.1⟩, Closeds.ext rfl⟩⟩
     rintro ⟨s, hs, rfl⟩
     exact ⟨s.nonempty, s.isCompact⟩
   rw [this]
@@ -280,7 +280,7 @@ theorem NonemptyCompacts.isClosed_in_closeds [CompleteSpace α] :
     rcases totallyBounded_iff.1 (isCompact_iff_totallyBounded_isComplete.1 ht.2).1 (ε / 2)
         (ENNReal.half_pos εpos.ne') with
       ⟨u, fu, ut⟩
-    refine' ⟨u, ⟨fu, fun x hx => _⟩⟩
+    refine ⟨u, ⟨fu, fun x hx => ?_⟩⟩
     -- u : set α, fu : u.finite, ut : t ⊆ ⋃ (y : α) (H : y ∈ u), eball y (ε / 2)
     -- then s is covered by the union of the balls centered at u of radius ε
     rcases exists_edist_lt_of_hausdorffEdist_lt hx Dst with ⟨z, hz, Dxz⟩

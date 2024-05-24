@@ -957,10 +957,9 @@ theorem cardFactors_apply {n : ℕ} : Ω n = n.factors.length :=
   rfl
 #align nat.arithmetic_function.card_factors_apply ArithmeticFunction.cardFactors_apply
 
-@[simp, nolint simpNF] -- this is a `dsimp` lemma
-lemma cardFactors_zero : Ω 0 = 0 := rfl
+lemma cardFactors_zero : Ω 0 = 0 := by simp
 
-@[simp] theorem cardFactors_one : Ω 1 = 0 := rfl
+@[simp] theorem cardFactors_one : Ω 1 = 0 := by simp [cardFactors_apply]
 #align nat.arithmetic_function.card_factors_one ArithmeticFunction.cardFactors_one
 
 @[simp]
@@ -1133,7 +1132,7 @@ theorem moebius_apply_isPrimePow_not_prime {n : ℕ} (hn : IsPrimePow n) (hn' : 
 @[arith_mult]
 theorem isMultiplicative_moebius : IsMultiplicative μ := by
   rw [IsMultiplicative.iff_ne_zero]
-  refine' ⟨by simp, fun {n m} hn hm hnm => _⟩
+  refine ⟨by simp, fun {n m} hn hm hnm => ?_⟩
   simp only [moebius, ZeroHom.coe_mk, coe_mk, ZeroHom.toFun_eq_coe, Eq.ndrec, ZeroHom.coe_mk,
     IsUnit.mul_iff, Nat.isUnit_iff, squarefree_mul hnm, ite_zero_mul_ite_zero,
     cardFactors_mul hn hm, pow_add]

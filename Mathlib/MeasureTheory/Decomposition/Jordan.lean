@@ -186,7 +186,6 @@ theorem toSignedMeasure_neg : (-j).toSignedMeasure = -j.toSignedMeasure := by
 
 theorem toSignedMeasure_smul (r : ℝ≥0) : (r • j).toSignedMeasure = r • j.toSignedMeasure := by
   ext1 i hi
-  -- Porting note: removed `rfl` after the `rw` by adding further steps.
   rw [VectorMeasure.smul_apply, toSignedMeasure, toSignedMeasure,
     toSignedMeasure_sub_apply hi, toSignedMeasure_sub_apply hi, smul_sub, smul_posPart,
     smul_negPart, ← ENNReal.toReal_smul, ← ENNReal.toReal_smul, Measure.smul_apply,

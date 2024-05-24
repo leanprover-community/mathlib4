@@ -49,7 +49,7 @@ namespace Iso
 
 /-- The application of a natural isomorphism to an object. We put this definition in a different
 namespace, so that we can use `α.app` -/
-@[simps, pp_dot]
+@[simps]
 def app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
     F.obj X ≅ G.obj X where
   hom := α.hom.app X
@@ -263,6 +263,10 @@ theorem isIso_map_iff {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) {X Y : C} (f : X
 #align category_theory.nat_iso.is_iso_map_iff CategoryTheory.NatIso.isIso_map_iff
 
 end NatIso
+
+lemma NatTrans.isIso_iff_isIso_app {F G : C ⥤ D} (τ : F ⟶ G) :
+    IsIso τ ↔ ∀ X, IsIso (τ.app X) :=
+  ⟨fun _ ↦ inferInstance, fun _ ↦ NatIso.isIso_of_isIso_app _⟩
 
 namespace Functor
 
