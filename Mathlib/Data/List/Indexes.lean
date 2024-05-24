@@ -329,8 +329,8 @@ theorem lt_findIdx_of_not {p : α → Bool} {xs : List α} {i : ℕ} (h : i < xs
 
 theorem findIdx_eq {p : α → Bool} {xs : List α} {i : ℕ} (h : i < xs.length) :
     xs.findIdx p = i ↔ p (xs.get ⟨i, h⟩) ∧ ∀ j (hji : j < i), ¬p (xs.get ⟨j, hji.trans h⟩) := by
-  refine' ⟨fun f ↦ ⟨f ▸ (@findIdx_get _ p xs (f ▸ h)), fun _ hji ↦ not_of_lt_findIdx (f ▸ hji)⟩,
-    fun ⟨h1, h2⟩ ↦ _⟩
+  refine ⟨fun f ↦ ⟨f ▸ (@findIdx_get _ p xs (f ▸ h)), fun _ hji ↦ not_of_lt_findIdx (f ▸ hji)⟩,
+    fun ⟨h1, h2⟩ ↦ ?_⟩
   apply Nat.le_antisymm _ (le_findIdx_of_not h h2)
   contrapose! h1
   exact not_of_lt_findIdx h1

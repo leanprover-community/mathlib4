@@ -94,7 +94,7 @@ theorem Multiset.prod_primes_dvd [CancelCommMonoidWithZero α]
     have b_div_n := div b (Multiset.mem_cons_of_mem b_in_s)
     have a_prime := h a (Multiset.mem_cons_self a s)
     have b_prime := h b (Multiset.mem_cons_of_mem b_in_s)
-    refine' (b_prime.dvd_or_dvd b_div_n).resolve_left fun b_div_a => _
+    refine (b_prime.dvd_or_dvd b_div_n).resolve_left fun b_div_a => ?_
     have assoc := b_prime.associated_of_dvd a_prime b_div_a
     have := uniq a
     rw [Multiset.countP_cons_of_pos _ (Associated.refl _), Nat.succ_le_succ_iff, ← not_lt,

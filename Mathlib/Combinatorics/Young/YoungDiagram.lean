@@ -172,7 +172,7 @@ theorem cells_bot : (⊥ : YoungDiagram).cells = ∅ :=
 -- @[simp] -- Porting note (#10618): simp can prove this
 @[norm_cast]
 theorem coe_bot : (⊥ : YoungDiagram).cells = (∅ : Set (ℕ × ℕ)) := by
-  refine' Set.eq_of_subset_of_subset _ _
+  refine Set.eq_of_subset_of_subset ?_ ?_
   · intros x h
     simp? [mem_mk, Finset.coe_empty, Set.mem_empty_iff_false] at h says
       simp only [cells_bot, Finset.coe_empty, Set.mem_empty_iff_false] at h

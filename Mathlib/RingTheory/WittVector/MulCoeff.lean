@@ -58,8 +58,8 @@ def wittPolyProd (n : ℕ) : 𝕄 :=
 theorem wittPolyProd_vars (n : ℕ) : (wittPolyProd p n).vars ⊆ univ ×ˢ range (n + 1) := by
   rw [wittPolyProd]
   apply Subset.trans (vars_mul _ _)
-  refine' union_subset _ _ <;>
-  · refine' Subset.trans (vars_rename _ _) _
+  refine union_subset ?_ ?_ <;>
+  · refine Subset.trans (vars_rename _ _) ?_
     simp [wittPolynomial_vars, image_subset_iff]
 #align witt_vector.witt_poly_prod_vars WittVector.wittPolyProd_vars
 
@@ -71,11 +71,11 @@ def wittPolyProdRemainder (n : ℕ) : 𝕄 :=
 theorem wittPolyProdRemainder_vars (n : ℕ) :
     (wittPolyProdRemainder p n).vars ⊆ univ ×ˢ range n := by
   rw [wittPolyProdRemainder]
-  refine' Subset.trans (vars_sum_subset _ _) _
+  refine Subset.trans (vars_sum_subset _ _) ?_
   rw [biUnion_subset]
   intro x hx
   apply Subset.trans (vars_mul _ _)
-  refine' union_subset _ _
+  refine union_subset ?_ ?_
   · apply Subset.trans (vars_pow _ _)
     have : (p : 𝕄) = C (p : ℤ) := by simp only [Int.cast_natCast, eq_intCast]
     rw [this, vars_C]
@@ -101,8 +101,8 @@ def remainder (n : ℕ) : 𝕄 :=
 theorem remainder_vars (n : ℕ) : (remainder p n).vars ⊆ univ ×ˢ range (n + 1) := by
   rw [remainder]
   apply Subset.trans (vars_mul _ _)
-  refine' union_subset _ _ <;>
-  · refine' Subset.trans (vars_sum_subset _ _) _
+  refine union_subset ?_ ?_ <;>
+  · refine Subset.trans (vars_sum_subset _ _) ?_
     rw [biUnion_subset]
     intro x hx
     rw [rename_monomial, vars_monomial, Finsupp.mapDomain_single]
@@ -199,7 +199,7 @@ theorem mul_polyOfInterest_vars (n : ℕ) :
     ((p : 𝕄) ^ (n + 1) * polyOfInterest p n).vars ⊆ univ ×ˢ range (n + 1) := by
   rw [mul_polyOfInterest_aux5]
   apply Subset.trans (vars_sub_subset _)
-  refine' union_subset _ _
+  refine union_subset ?_ ?_
   · apply remainder_vars
   · apply wittPolyProdRemainder_vars
 #align witt_vector.mul_poly_of_interest_vars WittVector.mul_polyOfInterest_vars

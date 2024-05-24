@@ -315,9 +315,8 @@ variable [Module 𝕜 E] [Module 𝕜 β]
 theorem convexOn_iff_forall_pos {s : Set E} {f : E → β} :
     ConvexOn 𝕜 s f ↔ Convex 𝕜 s ∧ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b →
       a + b = 1 → f (a • x + b • y) ≤ a • f x + b • f y := by
-  refine'
-    and_congr_right'
-      ⟨fun h x hx y hy a b ha hb hab => h hx hy ha.le hb.le hab, fun h x hx y hy a b ha hb hab => _⟩
+  refine and_congr_right'
+    ⟨fun h x hx y hy a b ha hb hab => h hx hy ha.le hb.le hab, fun h x hx y hy a b ha hb hab => ?_⟩
   obtain rfl | ha' := ha.eq_or_lt
   · rw [zero_add] at hab
     subst b
@@ -342,9 +341,9 @@ theorem convexOn_iff_pairwise_pos {s : Set E} {f : E → β} :
         s.Pairwise fun x y =>
           ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 → f (a • x + b • y) ≤ a • f x + b • f y := by
   rw [convexOn_iff_forall_pos]
-  refine'
+  refine
     and_congr_right'
-      ⟨fun h x hx y hy _ a b ha hb hab => h hx hy ha hb hab, fun h x hx y hy a b ha hb hab => _⟩
+      ⟨fun h x hx y hy _ a b ha hb hab => h hx hy ha hb hab, fun h x hx y hy a b ha hb hab => ?_⟩
   obtain rfl | hxy := eq_or_ne x y
   · rw [Convex.combo_self hab, Convex.combo_self hab]
   exact h hx hy hxy ha hb hab
@@ -417,7 +416,7 @@ theorem LinearOrder.convexOn_of_lt (hs : Convex 𝕜 s)
     (hf : ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → x < y → ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 →
       f (a • x + b • y) ≤ a • f x + b • f y) :
     ConvexOn 𝕜 s f := by
-  refine' convexOn_iff_pairwise_pos.2 ⟨hs, fun x hx y hy hxy a b ha hb hab => _⟩
+  refine convexOn_iff_pairwise_pos.2 ⟨hs, fun x hx y hy hxy a b ha hb hab => ?_⟩
   -- Porting note: without clearing the stray variables, `wlog` gives a bad term.
   -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/wlog.20.2316495
   clear! α F ι
@@ -602,7 +601,7 @@ variable [LinearOrderedAddCommMonoid β] [SMul 𝕜 E] [Module 𝕜 β] [Ordered
 
 /-- The pointwise maximum of convex functions is convex. -/
 theorem ConvexOn.sup (hf : ConvexOn 𝕜 s f) (hg : ConvexOn 𝕜 s g) : ConvexOn 𝕜 s (f ⊔ g) := by
-  refine' ⟨hf.left, fun x hx y hy a b ha hb hab => sup_le _ _⟩
+  refine ⟨hf.left, fun x hx y hy a b ha hb hab => sup_le ?_ ?_⟩
   · calc
       f (a • x + b • y) ≤ a • f x + b • f y := hf.right hx hy ha hb hab
       _ ≤ a • (f x ⊔ g x) + b • (f y ⊔ g y) := by gcongr <;> apply le_sup_left

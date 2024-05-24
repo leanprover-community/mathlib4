@@ -359,7 +359,7 @@ theorem derivedLength_zero (I : LieIdeal R L) [hI : IsSolvable R I] :
   change sInf s = 0 ↔ _
   have hne : s ≠ ∅ := by
     obtain ⟨k, hk⟩ := id hI
-    refine' Set.Nonempty.ne_empty ⟨k, _⟩
+    refine Set.Nonempty.ne_empty ⟨k, ?_⟩
     rw [derivedSeries_def, LieIdeal.derivedSeries_eq_bot_iff] at hk; exact hk
   simp [s, hne]
 #align lie_algebra.derived_length_zero LieAlgebra.derivedLength_zero

@@ -139,7 +139,7 @@ theorem arcsin_neg (x : ℝ) : arcsin (-x) = -arcsin x := by
   · rw [arcsin_of_le_neg_one hx₁, neg_neg, arcsin_of_one_le (le_neg.2 hx₁)]
   rcases le_total 1 x with hx₂ | hx₂
   · rw [arcsin_of_one_le hx₂, arcsin_of_le_neg_one (neg_le_neg hx₂)]
-  refine' arcsin_eq_of_sin_eq _ _
+  refine arcsin_eq_of_sin_eq ?_ ?_
   · rw [sin_neg, sin_arcsin hx₁ hx₂]
   · exact ⟨neg_le_neg (arcsin_le_pi_div_two _), neg_le.2 (neg_pi_div_two_le_arcsin _)⟩
 #align real.arcsin_neg Real.arcsin_neg

@@ -166,12 +166,12 @@ theorem norm_row (v : n → α) : ‖row v‖ = ‖v‖ :=
 theorem nnnorm_diagonal [DecidableEq n] (v : n → α) : ‖diagonal v‖₊ = ‖v‖₊ := by
   simp_rw [nnnorm_def, Pi.nnnorm_def]
   congr 1 with i : 1
-  refine' le_antisymm (Finset.sup_le fun j hj => _) _
+  refine le_antisymm (Finset.sup_le fun j hj => ?_) ?_
   · obtain rfl | hij := eq_or_ne i j
     · rw [diagonal_apply_eq]
     · rw [diagonal_apply_ne _ hij, nnnorm_zero]
       exact zero_le _
-  · refine' Eq.trans_le _ (Finset.le_sup (Finset.mem_univ i))
+  · refine Eq.trans_le ?_ (Finset.le_sup (Finset.mem_univ i))
     rw [diagonal_apply_eq]
 #align matrix.nnnorm_diagonal Matrix.nnnorm_diagonal
 
@@ -313,7 +313,7 @@ theorem linfty_opNorm_row (v : n → α) : ‖row v‖ = ∑ i, ‖v i‖ :=
 theorem linfty_opNNNorm_diagonal [DecidableEq m] (v : m → α) : ‖diagonal v‖₊ = ‖v‖₊ := by
   rw [linfty_opNNNorm_def, Pi.nnnorm_def]
   congr 1 with i : 1
-  refine' (Finset.sum_eq_single_of_mem _ (Finset.mem_univ i) fun j _hj hij => _).trans _
+  refine (Finset.sum_eq_single_of_mem _ (Finset.mem_univ i) fun j _hj hij => ?_).trans ?_
   · rw [diagonal_apply_ne' _ hij, nnnorm_zero]
   · rw [diagonal_apply_eq]
 #align matrix.linfty_op_nnnorm_diagonal Matrix.linfty_opNNNorm_diagonal
@@ -651,7 +651,7 @@ end SeminormedAddCommGroup
 
 theorem frobenius_nnnorm_one [DecidableEq n] [SeminormedAddCommGroup α] [One α] :
     ‖(1 : Matrix n n α)‖₊ = NNReal.sqrt (Fintype.card n) * ‖(1 : α)‖₊ := by
-  refine' (frobenius_nnnorm_diagonal _).trans _
+  refine (frobenius_nnnorm_diagonal _).trans ?_
   -- Porting note: change to erw, since `fun x => 1` no longer matches `Function.const`
   erw [PiLp.nnnorm_equiv_symm_const ENNReal.two_ne_top]
   simp_rw [NNReal.sqrt_eq_rpow]

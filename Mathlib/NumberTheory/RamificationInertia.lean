@@ -210,7 +210,7 @@ theorem inertiaDeg_algebraMap [Algebra R S] [Algebra (R ⧸ p) (S ⧸ P)]
   have := comap_eq_of_scalar_tower_quotient (algebraMap (R ⧸ p) (S ⧸ P)).injective
   rw [inertiaDeg, dif_pos this]
   congr
-  refine' Algebra.algebra_ext _ _ fun x' => Quotient.inductionOn' x' fun x => _
+  refine Algebra.algebra_ext _ _ fun x' => Quotient.inductionOn' x' fun x => ?_
   change Ideal.Quotient.lift p _ _ (Ideal.Quotient.mk p x) = algebraMap _ _ (Ideal.Quotient.mk p x)
   rw [Ideal.Quotient.lift_mk, ← Ideal.Quotient.algebraMap_eq P, ← IsScalarTower.algebraMap_eq,
     ← Ideal.Quotient.algebraMap_eq, ← IsScalarTower.algebraMap_apply]
@@ -674,7 +674,7 @@ theorem finrank_prime_pow_ramificationIdx [IsDedekindDomain S] (hP0 : P ≠ ⊥)
   by_cases hP : FiniteDimensional (R ⧸ p) (S ⧸ P)
   · haveI := hP
     haveI := (finiteDimensional_iff_of_rank_eq_nsmul he hdim).mpr hP
-    refine' Cardinal.natCast_injective _
+    refine Cardinal.natCast_injective ?_
     rw [finrank_eq_rank', Nat.cast_mul, finrank_eq_rank', hdim, nsmul_eq_mul]
   have hPe := mt (finiteDimensional_iff_of_rank_eq_nsmul he hdim).mp hP
   simp only [finrank_of_infinite_dimensional hP, finrank_of_infinite_dimensional hPe,

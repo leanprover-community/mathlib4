@@ -697,7 +697,7 @@ theorem comap_monotone {G' : SimpleGraph W} (f : G →g G') : Monotone (Subgraph
 
 theorem map_le_iff_le_comap {G' : SimpleGraph W} (f : G →g G') (H : G.Subgraph) (H' : G'.Subgraph) :
     H.map f ≤ H' ↔ H ≤ H'.comap f := by
-  refine' ⟨fun h ↦ ⟨fun v hv ↦ _, fun v w hvw ↦ _⟩, fun h ↦ ⟨fun v ↦ _, fun v w ↦ _⟩⟩
+  refine ⟨fun h ↦ ⟨fun v hv ↦ ?_, fun v w hvw ↦ ?_⟩, fun h ↦ ⟨fun v ↦ ?_, fun v w ↦ ?_⟩⟩
   · simp only [comap_verts, Set.mem_preimage]
     exact h.1 ⟨v, hv, rfl⟩
   · simp only [H.adj_sub hvw, comap_adj, true_and_iff]
@@ -846,7 +846,7 @@ instance nonempty_singletonSubgraph_verts (v : V) : Nonempty (G.singletonSubgrap
 @[simp]
 theorem singletonSubgraph_le_iff (v : V) (H : G.Subgraph) :
     G.singletonSubgraph v ≤ H ↔ v ∈ H.verts := by
-  refine' ⟨fun h ↦ h.1 (Set.mem_singleton v), _⟩
+  refine ⟨fun h ↦ h.1 (Set.mem_singleton v), ?_⟩
   intro h
   constructor
   · rwa [singletonSubgraph_verts, Set.singleton_subset_iff]
@@ -874,7 +874,7 @@ theorem edgeSet_singletonSubgraph (v : V) : (G.singletonSubgraph v).edgeSet = �
 
 theorem eq_singletonSubgraph_iff_verts_eq (H : G.Subgraph) {v : V} :
     H = G.singletonSubgraph v ↔ H.verts = {v} := by
-  refine' ⟨fun h ↦ by rw [h, singletonSubgraph_verts], fun h ↦ _⟩
+  refine ⟨fun h ↦ by rw [h, singletonSubgraph_verts], fun h ↦ ?_⟩
   ext
   · rw [h, singletonSubgraph_verts]
   · simp only [Prop.bot_eq_false, singletonSubgraph_adj, Pi.bot_apply, iff_false_iff]

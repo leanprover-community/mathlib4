@@ -103,7 +103,7 @@ variable {ι M : Type*} [Fintype ι] [DecidableEq ι] [AddCommMonoid M] [Module 
 @[simp]
 lemma isNilpotent_toMatrix_iff (b : Basis ι R M) (f : M →ₗ[R] M) :
     IsNilpotent (toMatrix b b f) ↔ IsNilpotent f := by
-  refine' exists_congr fun k ↦ _
+  refine exists_congr fun k ↦ ?_
   rw [toMatrix_pow]
   exact (toMatrix b b).map_eq_zero_iff
 

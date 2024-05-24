@@ -156,7 +156,7 @@ statement that works on `ℕ`, `ℤ` and `ℝ`, although not necessary (a versio
 given in `Filter.Tendsto.const_mul_atTop`). -/
 theorem Tendsto.const_mul_atTop' (hr : 0 < r) (hf : Tendsto f l atTop) :
     Tendsto (fun x => r * f x) l atTop := by
-  refine' tendsto_atTop.2 fun b => _
+  refine tendsto_atTop.2 fun b => ?_
   obtain ⟨n : ℕ, hn : 1 ≤ n • r⟩ := Archimedean.arch 1 hr
   rw [nsmul_eq_mul'] at hn
   filter_upwards [tendsto_atTop.1 hf (n * max b 0)] with x hx
@@ -175,7 +175,7 @@ statement that works on `ℕ`, `ℤ` and `ℝ`, although not necessary (a versio
 given in `Filter.Tendsto.atTop_mul_const`). -/
 theorem Tendsto.atTop_mul_const' (hr : 0 < r) (hf : Tendsto f l atTop) :
     Tendsto (fun x => f x * r) l atTop := by
-  refine' tendsto_atTop.2 fun b => _
+  refine tendsto_atTop.2 fun b => ?_
   obtain ⟨n : ℕ, hn : 1 ≤ n • r⟩ := Archimedean.arch 1 hr
   have hn' : 1 ≤ (n : R) * r := by rwa [nsmul_eq_mul] at hn
   filter_upwards [tendsto_atTop.1 hf (max b 0 * n)] with x hx
@@ -224,7 +224,7 @@ variable [LinearOrderedCancelAddCommMonoid R] [Archimedean R]
 
 theorem Tendsto.atTop_nsmul_const {f : α → ℕ} (hr : 0 < r) (hf : Tendsto f l atTop) :
     Tendsto (fun x => f x • r) l atTop := by
-  refine' tendsto_atTop.mpr fun s => _
+  refine tendsto_atTop.mpr fun s => ?_
   obtain ⟨n : ℕ, hn : s ≤ n • r⟩ := Archimedean.arch s hr
   exact (tendsto_atTop.mp hf n).mono fun a ha => hn.trans (nsmul_le_nsmul_left hr.le ha)
 #align filter.tendsto.at_top_nsmul_const Filter.Tendsto.atTop_nsmul_const
@@ -241,7 +241,7 @@ theorem Tendsto.atTop_nsmul_neg_const {f : α → ℕ} (hr : r < 0) (hf : Tendst
 
 theorem Tendsto.atTop_zsmul_const {f : α → ℤ} (hr : 0 < r) (hf : Tendsto f l atTop) :
     Tendsto (fun x => f x • r) l atTop := by
-  refine' tendsto_atTop.mpr fun s => _
+  refine tendsto_atTop.mpr fun s => ?_
   obtain ⟨n : ℕ, hn : s ≤ n • r⟩ := Archimedean.arch s hr
   replace hn : s ≤ (n : ℤ) • r := by simpa
   exact (tendsto_atTop.mp hf n).mono fun a ha => hn.trans (zsmul_le_zsmul hr.le ha)

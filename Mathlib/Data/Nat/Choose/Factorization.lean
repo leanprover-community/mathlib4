@@ -40,7 +40,7 @@ theorem factorization_choose_le_log : (choose n k).factorization p ≤ log p n :
   · simp [h]
   have hp : p.Prime := Not.imp_symm (choose n k).factorization_eq_zero_of_non_prime h
   have hkn : k ≤ n := by
-    refine' le_of_not_lt fun hnk => h _
+    refine le_of_not_lt fun hnk => h ?_
     simp [choose_eq_zero_of_lt hnk]
   rw [factorization_def _ hp, @padicValNat_def _ ⟨hp⟩ _ (choose_pos hkn)]
   simp only [hp.multiplicity_choose hkn (lt_add_one _), PartENat.get_natCast]
@@ -94,7 +94,7 @@ theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk'
 `centralBinom n`. -/
 theorem factorization_centralBinom_of_two_mul_self_lt_three_mul (n_big : 2 < n) (p_le_n : p ≤ n)
     (big : 2 * n < 3 * p) : (centralBinom n).factorization p = 0 := by
-  refine' factorization_choose_of_lt_three_mul _ p_le_n (p_le_n.trans _) big
+  refine factorization_choose_of_lt_three_mul ?_ p_le_n (p_le_n.trans ?_) big
   · omega
   · rw [two_mul, add_tsub_cancel_left]
 #align nat.factorization_central_binom_of_two_mul_self_lt_three_mul Nat.factorization_centralBinom_of_two_mul_self_lt_three_mul

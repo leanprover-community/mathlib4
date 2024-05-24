@@ -118,13 +118,13 @@ theorem StieltjesFunction.ae_hasDerivAt (f : StieltjesFunction) :
     apply tendsto_of_tendsto_of_tendsto_of_le_of_le' L3 L2
     · filter_upwards [self_mem_nhdsWithin]
       rintro y (hy : y < x)
-      refine' div_le_div_of_nonpos_of_le (by linarith) ((sub_le_sub_iff_right _).2 _)
+      refine div_le_div_of_nonpos_of_le (by linarith) ((sub_le_sub_iff_right _).2 ?_)
       apply f.mono.le_leftLim
       have : ↑0 < (x - y) ^ 2 := sq_pos_of_pos (sub_pos.2 hy)
       norm_num; linarith
     · filter_upwards [self_mem_nhdsWithin]
       rintro y (hy : y < x)
-      refine' div_le_div_of_nonpos_of_le (by linarith) _
+      refine div_le_div_of_nonpos_of_le (by linarith) ?_
       simpa only [sub_le_sub_iff_right] using f.mono.leftLim_le (le_refl y)
   -- prove the result by splitting into left and right limits.
   rw [hasDerivAt_iff_tendsto_slope, slope_fun_def_field, ← nhds_left'_sup_nhds_right', tendsto_sup]

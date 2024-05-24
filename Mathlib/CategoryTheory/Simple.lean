@@ -204,7 +204,7 @@ theorem Biprod.isIso_inl_iff_isZero (X Y : C) : IsIso (biprod.inl : X ⟶ X ⊞ 
 /-- Any simple object in a preadditive category is indecomposable. -/
 theorem indecomposable_of_simple (X : C) [Simple X] : Indecomposable X :=
   ⟨Simple.not_isZero X, fun Y Z i => by
-    refine' or_iff_not_imp_left.mpr fun h => _
+    refine or_iff_not_imp_left.mpr fun h => ?_
     rw [IsZero.iff_isSplitMono_eq_zero (biprod.inl : Y ⟶ Y ⊞ Z)] at h
     change biprod.inl ≠ 0 at h
     have : Simple (Y ⊞ Z) := Simple.of_iso i.symm -- Porting note: this instance is needed

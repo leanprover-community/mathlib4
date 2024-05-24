@@ -101,9 +101,9 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [LocalRing R] [IsDomain R]
     rw [Ideal.radical_eq_sInf]
     apply le_antisymm
     · exact sInf_le ⟨hle, inferInstance⟩
-    · refine'
+    · refine
         le_sInf fun I hI =>
-          (eq_maximalIdeal <| hI.2.isMaximal (fun e => ha₂ _)).ge
+          (eq_maximalIdeal <| hI.2.isMaximal (fun e => ha₂ ?_)).ge
       rw [← Ideal.span_singleton_eq_bot, eq_bot_iff, ← e]; exact hI.1
   have : ∃ n, maximalIdeal R ^ n ≤ Ideal.span {a} := by
     rw [← this]; apply Ideal.exists_radical_pow_le_of_fg; exact IsNoetherian.noetherian _
@@ -124,10 +124,10 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [LocalRing R] [IsDomain R]
   by_cases hx : ∀ y ∈ M, x * y ∈ M
   · have := isIntegral_of_smul_mem_submodule M ?_ ?_ x hx
     · obtain ⟨y, e⟩ := IsIntegrallyClosed.algebraMap_eq_of_integral this
-      refine' (hb₂ (Ideal.mem_span_singleton'.mpr ⟨y, _⟩)).elim
+      refine (hb₂ (Ideal.mem_span_singleton'.mpr ⟨y, ?_⟩)).elim
       apply IsFractionRing.injective R K
       rw [map_mul, e, div_mul_cancel₀ _ ha₃]
-    · rw [Submodule.ne_bot_iff]; refine' ⟨_, ⟨a, ha₁, rfl⟩, _⟩
+    · rw [Submodule.ne_bot_iff]; refine ⟨_, ⟨a, ha₁, rfl⟩, ?_⟩
       exact (IsFractionRing.to_map_eq_zero_iff (K := K)).not.mpr ha₂
     · apply Submodule.FG.map; exact IsNoetherian.noetherian _
   · have :

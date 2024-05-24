@@ -528,7 +528,7 @@ theorem tulip {j₁ j₂ j₃ k₁ k₂ l : C} (f₁ : j₁ ⟶ k₁) (f₂ : j�
       f₁ ≫ α = g₁ ≫ β ∧ f₂ ≫ α = f₃ ≫ γ ∧ f₄ ≫ γ = g₂ ≫ β := by
   obtain ⟨l', k₁l, k₂l, hl⟩ := span f₂ f₃
   obtain ⟨s, ls, l's, hs₁, hs₂⟩ := bowtie g₁ (f₁ ≫ k₁l) g₂ (f₄ ≫ k₂l)
-  refine' ⟨s, k₁l ≫ l's, ls, k₂l ≫ l's, _, by simp only [← Category.assoc, hl], _⟩ <;>
+  refine ⟨s, k₁l ≫ l's, ls, k₂l ≫ l's, ?_, by simp only [← Category.assoc, hl], ?_⟩ <;>
     simp only [hs₁, hs₂, Category.assoc]
 #align category_theory.is_filtered.tulip CategoryTheory.IsFiltered.tulip
 
@@ -677,7 +677,7 @@ theorem cospan {i j j' : C} (f : j ⟶ i) (f' : j' ⟶ i) :
 theorem _root_.CategoryTheory.Functor.ranges_directed (F : C ⥤ Type*) (j : C) :
     Directed (· ⊇ ·) fun f : Σ'i, i ⟶ j => Set.range (F.map f.2) := fun ⟨i, ij⟩ ⟨k, kj⟩ => by
   let ⟨l, li, lk, e⟩ := cospan ij kj
-  refine' ⟨⟨l, lk ≫ kj⟩, e ▸ _, _⟩ <;> simp_rw [F.map_comp] <;> apply Set.range_comp_subset_range
+  refine ⟨⟨l, lk ≫ kj⟩, e ▸ ?_, ?_⟩ <;> simp_rw [F.map_comp] <;> apply Set.range_comp_subset_range
 #align category_theory.functor.ranges_directed CategoryTheory.Functor.ranges_directed
 
 end AllowEmpty

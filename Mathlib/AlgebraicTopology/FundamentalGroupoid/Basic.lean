@@ -44,7 +44,7 @@ def reflTransSymmAux (x : I × I) : ℝ :=
 
 @[continuity]
 theorem continuous_reflTransSymmAux : Continuous reflTransSymmAux := by
-  refine' continuous_if_le _ _ (Continuous.continuousOn _) (Continuous.continuousOn _) _
+  refine continuous_if_le ?_ ?_ (Continuous.continuousOn ?_) (Continuous.continuousOn ?_) ?_
   · continuity
   · continuity
   · continuity
@@ -129,7 +129,7 @@ def transReflReparamAux (t : I) : ℝ :=
 
 @[continuity]
 theorem continuous_transReflReparamAux : Continuous transReflReparamAux := by
-  refine' continuous_if_le _ _ (Continuous.continuousOn _) (Continuous.continuousOn _) _ <;>
+  refine continuous_if_le ?_ ?_ (Continuous.continuousOn ?_) (Continuous.continuousOn ?_) ?_ <;>
     [continuity; continuity; continuity; continuity; skip]
   intro x hx
   simp [hx]
@@ -187,9 +187,10 @@ def transAssocReparamAux (t : I) : ℝ :=
 
 @[continuity]
 theorem continuous_transAssocReparamAux : Continuous transAssocReparamAux := by
-  refine' continuous_if_le _ _ (Continuous.continuousOn _)
-      (continuous_if_le _ _ (Continuous.continuousOn _) (Continuous.continuousOn _) _).continuousOn
-      _ <;>
+  refine continuous_if_le ?_ ?_ (Continuous.continuousOn ?_)
+    (continuous_if_le ?_ ?_
+      (Continuous.continuousOn ?_) (Continuous.continuousOn ?_) ?_).continuousOn
+      ?_ <;>
     [continuity; continuity; continuity; continuity; continuity; continuity; continuity; skip;
       skip] <;>
     · intro x hx

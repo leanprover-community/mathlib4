@@ -45,7 +45,7 @@ theorem numDerangements_tendsto_inv_e :
   push_cast
   rw [Finset.sum_div]
   -- get down to individual terms
-  refine' Finset.sum_congr (refl _) _
+  refine Finset.sum_congr (refl _) ?_
   intro k hk
   have h_le : k ≤ n := Finset.mem_range_succ_iff.mp hk
   rw [Nat.ascFactorial_eq_div, add_tsub_cancel_of_le h_le]

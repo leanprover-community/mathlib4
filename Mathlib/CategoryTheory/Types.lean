@@ -272,7 +272,7 @@ See <https://stacks.math.columbia.edu/tag/003C>.
 theorem epi_iff_surjective {X Y : Type u} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
   constructor
   · rintro ⟨H⟩
-    refine' Function.surjective_of_right_cancellable_Prop fun g₁ g₂ hg => _
+    refine Function.surjective_of_right_cancellable_Prop fun g₁ g₂ hg => ?_
     rw [← Equiv.ulift.symm.injective.comp_left.eq_iff]
     apply H
     change ULift.up ∘ g₁ ∘ f = ULift.up ∘ g₂ ∘ f

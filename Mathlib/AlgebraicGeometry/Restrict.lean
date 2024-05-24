@@ -64,7 +64,7 @@ instance ΓRestrictAlgebra {X : Scheme.{u}} {Y : TopCat.{u}} {f : Y ⟶ X} (hf :
 lemma Scheme.map_basicOpen' (X : Scheme.{u}) (U : Opens X) (r : Scheme.Γ.obj (op <| X ∣_ᵤ U)) :
     U.openEmbedding.isOpenMap.functor.obj ((X ∣_ᵤ U).basicOpen r) = X.basicOpen
     (X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op r) := by
-  refine' (Scheme.image_basicOpen (X.ofRestrict U.openEmbedding) r).trans _
+  refine (Scheme.image_basicOpen (X.ofRestrict U.openEmbedding) r).trans ?_
   erw [← Scheme.basicOpen_res_eq _ _ (eqToHom U.openEmbedding_obj_top).op]
   rw [← comp_apply, ← CategoryTheory.Functor.map_comp, ← op_comp, eqToHom_trans, eqToHom_refl,
     op_id, CategoryTheory.Functor.map_id]
@@ -280,8 +280,8 @@ theorem isPullback_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens 
     IsPullback (f ∣_ U) (Scheme.ιOpens (f ⁻¹ᵁ U)) (Scheme.ιOpens U) f := by
   delta morphismRestrict
   rw [← Category.id_comp f]
-  refine'
-    (IsPullback.of_horiz_isIso ⟨_⟩).paste_horiz
+  refine
+    (IsPullback.of_horiz_isIso ⟨?_⟩).paste_horiz
       (IsPullback.of_hasPullback f (Y.ofRestrict U.openEmbedding)).flip
   -- Porting note: changed `rw` to `erw`
   erw [pullbackRestrictIsoRestrict_inv_fst]; rw [Category.comp_id]
@@ -321,7 +321,7 @@ theorem image_morphismRestrict_preimage {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Op
   ext x
   constructor
   · rintro ⟨⟨x, hx⟩, hx' : (f ∣_ U).1.base _ ∈ V, rfl⟩
-    refine' ⟨⟨_, hx⟩, _, rfl⟩
+    refine ⟨⟨_, hx⟩, ?_, rfl⟩
     -- Porting note: this rewrite was not necessary
     rw [SetLike.mem_coe]
     convert hx'
@@ -329,7 +329,7 @@ theorem image_morphismRestrict_preimage {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Op
     refine Subtype.ext ?_
     exact (morphismRestrict_base_coe f U ⟨x, hx⟩).symm
   · rintro ⟨⟨x, hx⟩, hx' : _ ∈ V.1, rfl : x = _⟩
-    refine' ⟨⟨_, hx⟩, (_ : (f ∣_ U).1.base ⟨x, hx⟩ ∈ V.1), rfl⟩
+    refine ⟨⟨_, hx⟩, (?_ : (f ∣_ U).1.base ⟨x, hx⟩ ∈ V.1), rfl⟩
     convert hx'
     -- Porting note: `ext1` is compiling
     refine Subtype.ext ?_

@@ -44,7 +44,7 @@ theorem dirac_apply' (a : α) (hs : MeasurableSet s) : dirac a s = s.indicator 1
 @[simp]
 theorem dirac_apply_of_mem {a : α} (h : a ∈ s) : dirac a s = 1 := by
   have : ∀ t : Set α, a ∈ t → t.indicator (1 : α → ℝ≥0∞) a = 1 := fun t ht => indicator_of_mem ht 1
-  refine' le_antisymm (this univ trivial ▸ _) (this s h ▸ le_dirac_apply)
+  refine le_antisymm (this univ trivial ▸ ?_) (this s h ▸ le_dirac_apply)
   rw [← dirac_apply' a MeasurableSet.univ]
   exact measure_mono (subset_univ s)
 #align measure_theory.measure.dirac_apply_of_mem MeasureTheory.Measure.dirac_apply_of_mem

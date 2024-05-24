@@ -96,7 +96,7 @@ theorem IsLUB.mem_upperBounds_of_tendsto [Preorder γ] [TopologicalSpace γ] [Or
   rintro _ ⟨x, hx, rfl⟩
   replace ha := ha.inter_Ici_of_mem hx
   haveI := ha.nhdsWithin_neBot ⟨x, hx, le_rfl⟩
-  refine' ge_of_tendsto (hb.mono_left (nhdsWithin_mono _ (inter_subset_left s (Ici x)))) _
+  refine ge_of_tendsto (hb.mono_left (nhdsWithin_mono _ (inter_subset_left s (Ici x)))) ?_
   exact mem_of_superset self_mem_nhdsWithin fun y hy => hf hx hy.1 hy.2
 #align is_lub.mem_upper_bounds_of_tendsto IsLUB.mem_upperBounds_of_tendsto
 

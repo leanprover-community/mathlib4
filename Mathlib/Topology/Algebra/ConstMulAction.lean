@@ -576,7 +576,7 @@ theorem set_smul_mem_nhds_smul {c : G₀} {s : Set α} {x : α} (hs : s ∈ 𝓝
 
 theorem set_smul_mem_nhds_smul_iff {c : G₀} {s : Set α} {x : α} (hc : c ≠ 0) :
     c • s ∈ 𝓝 (c • x : α) ↔ s ∈ 𝓝 x := by
-  refine' ⟨fun h => _, fun h => set_smul_mem_nhds_smul h hc⟩
+  refine ⟨fun h => ?_, fun h => set_smul_mem_nhds_smul h hc⟩
   rw [← inv_smul_smul₀ hc x, ← inv_smul_smul₀ hc s]
   exact set_smul_mem_nhds_smul h (inv_ne_zero hc)
 #align set_smul_mem_nhds_smul_iff set_smul_mem_nhds_smul_iff
@@ -590,7 +590,7 @@ variable {G₀ : Type*} [GroupWithZero G₀] [AddMonoid α] [DistribMulAction G�
 
 theorem set_smul_mem_nhds_zero_iff {s : Set α} {c : G₀} (hc : c ≠ 0) :
     c • s ∈ 𝓝 (0 : α) ↔ s ∈ 𝓝 (0 : α) := by
-  refine' Iff.trans _ (set_smul_mem_nhds_smul_iff hc)
+  refine Iff.trans ?_ (set_smul_mem_nhds_smul_iff hc)
   rw [smul_zero]
 #align set_smul_mem_nhds_zero_iff set_smul_mem_nhds_zero_iff
 

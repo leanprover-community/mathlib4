@@ -143,8 +143,8 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
           Nat.mul_div_assoc p (even_iff_two_dvd.mp (Nat.Odd.sub_odd hp odd_one))]
       ring_nf
       rw [mul_assoc, mul_assoc]
-      refine' mul_eq_zero_of_left _ _
-      refine' Ideal.Quotient.eq_zero_iff_mem.mpr _
+      refine mul_eq_zero_of_left ?_ _
+      refine Ideal.Quotient.eq_zero_iff_mem.mpr ?_
       simp [mem_span_singleton]
 #align odd_sq_dvd_geom_sum₂_sub odd_sq_dvd_geom_sum₂_sub
 
@@ -164,13 +164,13 @@ variable (hp : Prime (p : R)) (hp1 : Odd p) (hxy : ↑p ∣ x - y) (hx : ¬↑p 
 
 theorem geom_sum₂_eq_one : multiplicity (↑p) (∑ i in range p, x ^ i * y ^ (p - 1 - i)) = 1 := by
   rw [← Nat.cast_one]
-  refine' multiplicity.eq_coe_iff.2 ⟨_, _⟩
+  refine multiplicity.eq_coe_iff.2 ⟨?_, ?_⟩
   · rw [pow_one]
     exact dvd_geom_sum₂_self hxy
   rw [dvd_iff_dvd_of_dvd_sub hxy] at hx
   cases' hxy with k hk
   rw [one_add_one_eq_two, eq_add_of_sub_eq' hk]
-  refine' mt (dvd_iff_dvd_of_dvd_sub (@odd_sq_dvd_geom_sum₂_sub _ _ y k _ hp1)).mp _
+  refine mt (dvd_iff_dvd_of_dvd_sub (@odd_sq_dvd_geom_sum₂_sub _ _ y k _ hp1)).mp ?_
   rw [pow_two, mul_dvd_mul_iff_left hp.ne_zero]
   exact mt hp.dvd_of_dvd_pow hx
 #align multiplicity.geom_sum₂_eq_one multiplicity.geom_sum₂_eq_one
@@ -277,7 +277,7 @@ theorem Int.two_pow_two_pow_add_two_pow_two_pow {x y : ℤ} (hx : ¬2 ∣ x) (hx
   have hx_odd : Odd x := by rwa [Int.odd_iff_not_even, even_iff_two_dvd]
   have hxy_even : Even (x - y) := even_iff_two_dvd.mpr (dvd_trans (by decide) hxy)
   have hy_odd : Odd y := by simpa using hx_odd.sub_even hxy_even
-  refine' multiplicity.eq_coe_iff.mpr ⟨_, _⟩
+  refine multiplicity.eq_coe_iff.mpr ⟨?_, ?_⟩
   · rw [pow_one, ← even_iff_two_dvd]
     exact hx_odd.pow.add_odd hy_odd.pow
   cases' i with i

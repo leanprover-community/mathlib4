@@ -233,7 +233,7 @@ variable [OrderedCancelCommMonoid α] {s : Set α} {a : α}
 theorem threeGPFree_insert_of_lt (hs : ∀ i ∈ s, i < a) :
     ThreeGPFree (insert a s) ↔
       ThreeGPFree s ∧ ∀ ⦃b⦄, b ∈ s → ∀ ⦃c⦄, c ∈ s → a * c = b * b → a = b := by
-  refine' threeGPFree_insert.trans _
+  refine threeGPFree_insert.trans ?_
   rw [← and_assoc]
   exact and_iff_left fun b hb c hc h => ((mul_lt_mul_of_lt_of_lt (hs _ hb) (hs _ hc)).ne h).elim
 #align mul_salem_spencer_insert_of_lt threeGPFree_insert_of_lt
@@ -268,7 +268,7 @@ section Nat
 
 theorem threeAPFree_iff_eq_right {s : Set ℕ} :
     ThreeAPFree s ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → ∀ ⦃c⦄, c ∈ s → a + c = b + b → a = c := by
-  refine' forall₄_congr fun a _ha b hb => forall₃_congr fun c hc habc => ⟨_, _⟩
+  refine forall₄_congr fun a _ha b hb => forall₃_congr fun c hc habc => ⟨?_, ?_⟩
   · rintro rfl
     exact (add_left_cancel habc).symm
   · rintro rfl
@@ -340,7 +340,7 @@ theorem mulRothNumber_empty : mulRothNumber (∅ : Finset α) = 0 :=
 
 @[to_additive (attr := simp)]
 theorem mulRothNumber_singleton (a : α) : mulRothNumber ({a} : Finset α) = 1 := by
-  refine' ThreeGPFree.mulRothNumber_eq _
+  refine ThreeGPFree.mulRothNumber_eq ?_
   rw [coe_singleton]
   exact threeGPFree_singleton a
 #align mul_roth_number_singleton mulRothNumber_singleton
@@ -366,7 +366,7 @@ theorem le_mulRothNumber_product (s : Finset α) (t : Finset β) :
   obtain ⟨u, hus, hucard, hu⟩ := mulRothNumber_spec s
   obtain ⟨v, hvt, hvcard, hv⟩ := mulRothNumber_spec t
   rw [← hucard, ← hvcard, ← card_product]
-  refine' ThreeGPFree.le_mulRothNumber _ (product_subset_product hus hvt)
+  refine ThreeGPFree.le_mulRothNumber ?_ (product_subset_product hus hvt)
   rw [coe_product]
   exact hu.prod hv
 #align le_mul_roth_number_product le_mulRothNumber_product
@@ -427,7 +427,7 @@ variable [CancelCommMonoid α] (s : Finset α) (a : α)
 @[to_additive (attr := simp)]
 theorem mulRothNumber_map_mul_left :
     mulRothNumber (s.map <| mulLeftEmbedding a) = mulRothNumber s := by
-  refine' le_antisymm _ _
+  refine le_antisymm ?_ ?_
   · obtain ⟨u, hus, hcard, hu⟩ := mulRothNumber_spec (s.map <| mulLeftEmbedding a)
     rw [subset_map_iff] at hus
     obtain ⟨u, hus, rfl⟩ := hus

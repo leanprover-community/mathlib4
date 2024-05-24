@@ -161,9 +161,9 @@ theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : Opens X
     (s : X.presheaf.obj (op U)) (hs : X.basicOpen s = ⊥) : s = 0 := by
   apply TopCat.Presheaf.section_ext X.sheaf U
   conv => intro x; rw [RingHom.map_zero]
-  refine' (@reduce_to_affine_global (fun X U =>
+  refine (@reduce_to_affine_global (fun X U =>
      ∀ [IsReduced X] (s : X.presheaf.obj (op U)),
-       X.basicOpen s = ⊥ → ∀ x, (X.sheaf.presheaf.germ x) s = 0) _ _ _) X U s hs
+       X.basicOpen s = ⊥ → ∀ x, (X.sheaf.presheaf.germ x) s = 0) ?_ ?_ ?_) X U s hs
   · intro X U hx hX s hs x
     obtain ⟨V, hx, i, H⟩ := hx x
     specialize H (X.presheaf.map i.op s)
@@ -175,7 +175,7 @@ theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : Opens X
   · rintro X Y f hf
     have e : f.val.base ⁻¹' Set.range ↑f.val.base = Set.univ := by
       rw [← Set.image_univ, Set.preimage_image_eq _ hf.base_open.inj]
-    refine' ⟨_, _, e, rfl, _⟩
+    refine ⟨_, _, e, rfl, ?_⟩
     rintro H hX s hs ⟨_, x, rfl⟩
     haveI := isReducedOfOpenImmersion f
     specialize H (f.1.c.app _ s) _ ⟨x, by rw [Opens.mem_mk, e]; trivial⟩
@@ -197,7 +197,7 @@ theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : Opens X
 @[simp]
 theorem basicOpen_eq_bot_iff {X : Scheme} [IsReduced X] {U : Opens X.carrier}
     (s : X.presheaf.obj <| op U) : X.basicOpen s = ⊥ ↔ s = 0 := by
-  refine' ⟨eq_zero_of_basicOpen_eq_bot s, _⟩
+  refine ⟨eq_zero_of_basicOpen_eq_bot s, ?_⟩
   rintro rfl
   simp
 #align algebraic_geometry.basic_open_eq_bot_iff AlgebraicGeometry.basicOpen_eq_bot_iff
@@ -273,7 +273,7 @@ theorem isIntegralOfIsIrreducibleIsReduced [IsReduced X] [H : IrreducibleSpace X
     subst e'
     replace e := congr_arg (X.presheaf.germ x) e
     rw [RingHom.map_mul, RingHom.map_zero] at e
-    refine' zero_ne_one' (X.presheaf.stalk x.1) (isUnit_zero_iff.1 _)
+    refine zero_ne_one' (X.presheaf.stalk x.1) (isUnit_zero_iff.1 ?_)
     convert hx₁.mul hx₂
     exact e.symm
   exact NoZeroDivisors.to_isDomain _

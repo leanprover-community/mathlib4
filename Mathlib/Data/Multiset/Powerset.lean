@@ -323,7 +323,7 @@ theorem nodup_powerset {s : Multiset α} : Nodup (powerset s) ↔ Nodup s :=
   ⟨fun h => (nodup_of_le (map_single_le_powerset _) h).of_map _,
     Quotient.inductionOn s fun l h => by
       simp only [quot_mk_to_coe, powerset_coe', coe_nodup]
-      refine' (nodup_sublists'.2 h).map_on _
+      refine (nodup_sublists'.2 h).map_on ?_
       exact fun x sx y sy e =>
         (h.perm_iff_eq_of_sublist (mem_sublists'.1 sx) (mem_sublists'.1 sy)).1 (Quotient.exact e)⟩
 #align multiset.nodup_powerset Multiset.nodup_powerset

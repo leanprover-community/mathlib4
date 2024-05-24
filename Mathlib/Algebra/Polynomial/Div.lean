@@ -451,7 +451,7 @@ theorem sum_modByMonic_coeff (hq : q.Monic) {n : ℕ} (hn : q.degree ≤ n) :
 theorem mul_div_mod_by_monic_cancel_left (p : R[X]) {q : R[X]} (hmo : q.Monic) :
     q * p /ₘ q = p := by
   nontriviality R
-  refine' (div_modByMonic_unique _ 0 hmo ⟨by rw [zero_add], _⟩).1
+  refine (div_modByMonic_unique _ 0 hmo ⟨by rw [zero_add], ?_⟩).1
   rw [degree_zero]
   exact Ne.bot_lt fun h => hmo.ne_zero (degree_eq_bot.1 h)
 #align polynomial.mul_div_mod_by_monic_cancel_left Polynomial.mul_div_mod_by_monic_cancel_left
@@ -507,7 +507,7 @@ def decidableDvdMonic [DecidableEq R] (p : R[X]) (hq : Monic q) : Decidable (q �
 
 theorem multiplicity_X_sub_C_finite (a : R) (h0 : p ≠ 0) : multiplicity.Finite (X - C a) p := by
   haveI := Nontrivial.of_polynomial_ne h0
-  refine' multiplicity_finite_of_degree_pos_of_monic _ (monic_X_sub_C _) h0
+  refine multiplicity_finite_of_degree_pos_of_monic ?_ (monic_X_sub_C _) h0
   rw [degree_X_sub_C]
   decide
 set_option linter.uppercaseLean3 false in

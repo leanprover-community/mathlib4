@@ -407,7 +407,7 @@ theorem nondegenerate_iff_ker_eq_bot {B : BilinForm R M} :
     B.Nondegenerate ↔ LinearMap.ker B = ⊥ := by
   rw [LinearMap.ker_eq_bot']
   constructor <;> intro h
-  · refine' fun m hm => h _ fun x => _
+  · refine fun m hm => h _ fun x => ?_
     rw [hm]
     rfl
   · intro m hm
@@ -424,7 +424,7 @@ theorem Nondegenerate.ker_eq_bot {B : BilinForm R M} (h : B.Nondegenerate) :
 theorem compLeft_injective (B : BilinForm R₁ M₁) (b : B.Nondegenerate) :
     Function.Injective B.compLeft := fun φ ψ h => by
   ext w
-  refine' eq_of_sub_eq_zero (b _ _)
+  refine eq_of_sub_eq_zero (b _ ?_)
   intro v
   rw [sub_left, ← compLeft_apply, ← compLeft_apply, ← h, sub_self]
 #align bilin_form.comp_left_injective LinearMap.BilinForm.compLeft_injective

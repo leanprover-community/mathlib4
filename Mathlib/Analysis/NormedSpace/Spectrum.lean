@@ -150,7 +150,7 @@ instance instCompactSpaceNNReal {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
   exact closedEmbedding_subtype_val isClosed_nonneg |>.isCompact_preimage <| by assumption
 
 theorem spectralRadius_le_nnnorm [NormOneClass A] (a : A) : spectralRadius 𝕜 a ≤ ‖a‖₊ := by
-  refine' iSup₂_le fun k hk => _
+  refine iSup₂_le fun k hk => ?_
   exact mod_cast norm_le_norm_of_mem hk
 #align spectrum.spectral_radius_le_nnnorm spectrum.spectralRadius_le_nnnorm
 
@@ -175,7 +175,7 @@ variable (𝕜)
 theorem spectralRadius_le_pow_nnnorm_pow_one_div (a : A) (n : ℕ) :
     spectralRadius 𝕜 a ≤ (‖a ^ (n + 1)‖₊ : ℝ≥0∞) ^ (1 / (n + 1) : ℝ) *
       (‖(1 : A)‖₊ : ℝ≥0∞) ^ (1 / (n + 1) : ℝ) := by
-  refine' iSup₂_le fun k hk => _
+  refine iSup₂_le fun k hk => ?_
   -- apply easy direction of the spectral mapping theorem for polynomials
   have pow_mem : k ^ (n + 1) ∈ σ (a ^ (n + 1)) := by
     simpa only [one_mul, Algebra.algebraMap_eq_smul_one, one_smul, aeval_monomial, one_mul,
@@ -195,7 +195,7 @@ theorem spectralRadius_le_pow_nnnorm_pow_one_div (a : A) (n : ℕ) :
 
 theorem spectralRadius_le_liminf_pow_nnnorm_pow_one_div (a : A) :
     spectralRadius 𝕜 a ≤ atTop.liminf fun n : ℕ => (‖a ^ n‖₊ : ℝ≥0∞) ^ (1 / n : ℝ) := by
-  refine' ENNReal.le_of_forall_lt_one_mul_le fun ε hε => _
+  refine ENNReal.le_of_forall_lt_one_mul_le fun ε hε => ?_
   by_cases h : ε = 0
   · simp only [h, zero_mul, zero_le']
   have hε' : ε⁻¹ ≠ ∞ := fun h' =>
@@ -206,10 +206,10 @@ theorem spectralRadius_le_liminf_pow_nnnorm_pow_one_div (a : A) :
   rw [← ENNReal.inv_lt_inv, inv_one] at hε
   obtain ⟨N, hN⟩ := eventually_atTop.mp
     (ENNReal.eventually_pow_one_div_le (ENNReal.coe_ne_top : ↑‖(1 : A)‖₊ ≠ ∞) hε)
-  refine' le_trans _ (le_iSup _ (N + 1))
-  refine' le_iInf fun n => _
+  refine le_trans ?_ (le_iSup _ (N + 1))
+  refine le_iInf fun n => ?_
   simp only [← add_assoc]
-  refine' (spectralRadius_le_pow_nnnorm_pow_one_div 𝕜 a (n + N)).trans _
+  refine (spectralRadius_le_pow_nnnorm_pow_one_div 𝕜 a (n + N)).trans ?_
   norm_cast
   exact mul_le_mul_left' (hN (n + N + 1) (by omega)) _
 #align spectrum.spectral_radius_le_liminf_pow_nnnorm_pow_one_div spectrum.spectralRadius_le_liminf_pow_nnnorm_pow_one_div
@@ -274,13 +274,13 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [CompleteSpace A] (a : A) :
     HasFPowerSeriesOnBall (fun z : 𝕜 => Ring.inverse (1 - z • a))
       (fun n => ContinuousMultilinearMap.mkPiRing 𝕜 (Fin n) (a ^ n)) 0 ‖a‖₊⁻¹ :=
   { r_le := by
-      refine'
-        le_of_forall_nnreal_lt fun r hr => le_radius_of_bound_nnreal _ (max 1 ‖(1 : A)‖₊) fun n => _
+      refine le_of_forall_nnreal_lt fun r hr =>
+        le_radius_of_bound_nnreal _ (max 1 ‖(1 : A)‖₊) fun n => ?_
       rw [← norm_toNNReal, norm_mkPiRing, norm_toNNReal]
       cases' n with n
       · simp only [Nat.zero_eq, le_refl, mul_one, or_true_iff, le_max_iff, pow_zero]
-      · refine'
-          le_trans (le_trans (mul_le_mul_right' (nnnorm_pow_le' a n.succ_pos) (r ^ n.succ)) _)
+      · refine
+          le_trans (le_trans (mul_le_mul_right' (nnnorm_pow_le' a n.succ_pos) (r ^ n.succ)) ?_)
             (le_max_left _ _)
         by_cases h : ‖a‖₊ = 0
         · simp only [h, zero_mul, zero_le', pow_succ']
@@ -322,7 +322,7 @@ theorem differentiableOn_inverse_one_sub_smul [CompleteSpace A] {a : A} {r : ℝ
   intro z z_mem
   apply DifferentiableAt.differentiableWithinAt
   have hu : IsUnit (1 - z • a) := by
-    refine' isUnit_one_sub_smul_of_lt_inv_radius (lt_of_le_of_lt (coe_mono _) hr)
+    refine isUnit_one_sub_smul_of_lt_inv_radius (lt_of_le_of_lt (coe_mono ?_) hr)
     simpa only [norm_toNNReal, Real.toNNReal_coe] using
       Real.toNNReal_mono (mem_closedBall_zero_iff.mp z_mem)
   have H₁ : Differentiable 𝕜 fun w : 𝕜 => 1 - w • a := (differentiable_id.smul_const a).const_sub 1
@@ -342,7 +342,7 @@ variable [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A]
 /-- The `limsup` relationship for the spectral radius used to prove `spectrum.gelfand_formula`. -/
 theorem limsup_pow_nnnorm_pow_one_div_le_spectralRadius (a : A) :
     limsup (fun n : ℕ => (‖a ^ n‖₊ : ℝ≥0∞) ^ (1 / n : ℝ)) atTop ≤ spectralRadius ℂ a := by
-  refine' ENNReal.inv_le_inv.mp (le_of_forall_pos_nnreal_lt fun r r_pos r_lt => _)
+  refine ENNReal.inv_le_inv.mp (le_of_forall_pos_nnreal_lt fun r r_pos r_lt => ?_)
   simp_rw [inv_limsup, ← one_div]
   let p : FormalMultilinearSeries ℂ ℂ A := fun n =>
     ContinuousMultilinearMap.mkPiRing ℂ (Fin n) (a ^ n)
@@ -477,7 +477,7 @@ theorem exp_mem_exp [RCLike 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [Complet
       sub_add_cancel]
   let b := ∑' n : ℕ, ((n + 1).factorial⁻¹ : 𝕜) • (a - ↑ₐ z) ^ n
   have hb : Summable fun n : ℕ => ((n + 1).factorial⁻¹ : 𝕜) • (a - ↑ₐ z) ^ n := by
-    refine' .of_norm_bounded_eventually _ (Real.summable_pow_div_factorial ‖a - ↑ₐ z‖) _
+    refine .of_norm_bounded_eventually _ (Real.summable_pow_div_factorial ‖a - ↑ₐ z‖) ?_
     filter_upwards [Filter.eventually_cofinite_ne 0] with n hn
     rw [norm_smul, mul_comm, norm_inv, RCLike.norm_natCast, ← div_eq_mul_inv]
     exact div_le_div (pow_nonneg (norm_nonneg _) n) (norm_pow_le' (a - ↑ₐ z) (zero_lt_iff.mpr hn))

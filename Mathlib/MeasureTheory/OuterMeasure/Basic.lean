@@ -262,7 +262,7 @@ theorem iUnion_nat_of_monotone_of_tsum_ne_top (m : OuterMeasure α) {s : ℕ →
     m (⋃ n, s n) = ⨆ n, m (s n) := by
   refine measure_iUnion_of_tendsto_zero m atTop ?_
   refine tendsto_nhds_bot_mono' (ENNReal.tendsto_sum_nat_add _ h0) fun n => ?_
-  refine' (m.mono _).trans (measure_iUnion_le _)
+  refine (m.mono ?_).trans (measure_iUnion_le _)
   -- Current goal: `(⋃ k, s k) \ s n ⊆ ⋃ k, s (k + n + 1) \ s (k + n)`
   have h' : Monotone s := @monotone_nat_of_le_succ (Set α) _ _ h_mono
   simp only [diff_subset_iff, iUnion_subset_iff]
@@ -273,7 +273,7 @@ theorem iUnion_nat_of_monotone_of_tsum_ne_top (m : OuterMeasure α) {s : ℕ →
   rcases le_or_lt j n with hjn | hnj
   · exact Or.inl (h' hjn hj)
   have : j - (n + 1) + n + 1 = j := by omega
-  refine' Or.inr (mem_iUnion.2 ⟨j - (n + 1), _, hlt _ _⟩)
+  refine Or.inr (mem_iUnion.2 ⟨j - (n + 1), ?_, hlt _ ?_⟩)
   · rwa [this]
   · rw [← Nat.succ_le_iff, Nat.succ_eq_add_one, this]
 #align measure_theory.outer_measure.Union_nat_of_monotone_of_tsum_ne_top MeasureTheory.OuterMeasure.iUnion_nat_of_monotone_of_tsum_ne_top

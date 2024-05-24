@@ -191,7 +191,7 @@ theorem pi_ext_iff : f = g ↔ ∀ i x, f (Pi.single i x) = g (Pi.single i x) :=
 note [partially-applied ext lemmas]. -/
 @[ext]
 theorem pi_ext' (h : ∀ i, f.comp (single i) = g.comp (single i)) : f = g := by
-  refine' pi_ext fun i x => _
+  refine pi_ext fun i x => ?_
   convert LinearMap.congr_fun (h i) x
 #align linear_map.pi_ext' LinearMap.pi_ext'
 
@@ -324,7 +324,7 @@ theorem iInf_comap_proj :
 theorem iSup_map_single [DecidableEq ι] [Finite ι] :
     ⨆ i, map (LinearMap.single i : φ i →ₗ[R] (i : ι) → φ i) (p i) = pi Set.univ p := by
   cases nonempty_fintype ι
-  refine' (iSup_le fun i => _).antisymm _
+  refine (iSup_le fun i => ?_).antisymm ?_
   · rintro _ ⟨x, hx : x ∈ p i, rfl⟩ j -
     rcases em (j = i) with (rfl | hj) <;> simp [*]
   · intro x hx

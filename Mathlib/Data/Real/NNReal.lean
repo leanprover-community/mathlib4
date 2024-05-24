@@ -1142,7 +1142,7 @@ theorem image_coe_nnreal_real (h : t.OrdConnected) : ((↑) '' t : Set ℝ).OrdC
 
 -- Porting note (#11215): TODO: does it generalize to a `GaloisInsertion`?
 theorem image_real_toNNReal (h : s.OrdConnected) : (Real.toNNReal '' s).OrdConnected := by
-  refine' ⟨forall_mem_image.2 fun x hx => forall_mem_image.2 fun y hy z hz => _⟩
+  refine ⟨forall_mem_image.2 fun x hx => forall_mem_image.2 fun y hy z hz => ?_⟩
   rcases le_total y 0 with hy₀ | hy₀
   · rw [mem_Icc, Real.toNNReal_of_nonpos hy₀, nonpos_iff_eq_zero] at hz
     exact ⟨y, hy, (toNNReal_of_nonpos hy₀).trans hz.2.symm⟩

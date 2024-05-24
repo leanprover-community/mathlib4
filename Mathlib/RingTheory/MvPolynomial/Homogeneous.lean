@@ -190,7 +190,7 @@ theorem prod {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : �
     (h : ∀ i ∈ s, IsHomogeneous (φ i) (n i)) : IsHomogeneous (∏ i in s, φ i) (∑ i in s, n i) := by
   classical
   revert h
-  refine' Finset.induction_on s _ _
+  refine Finset.induction_on s ?_ ?_
   · intro
     simp only [isHomogeneous_one, Finset.sum_empty, Finset.prod_empty]
   · intro i s his IH h

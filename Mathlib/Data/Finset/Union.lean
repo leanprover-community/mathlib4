@@ -79,10 +79,9 @@ lemma disjiUnion_disjiUnion (s : Finset α) (f : α → Finset β) (g : β → F
         disjoint_left.mpr fun x hxa hxb ↦ by
           obtain ⟨xa, hfa, hga⟩ := mem_disjiUnion.mp hxa
           obtain ⟨xb, hfb, hgb⟩ := mem_disjiUnion.mp hxb
-          refine'
-            disjoint_left.mp
-              (h2 (mem_disjiUnion.mpr ⟨_, a.prop, hfa⟩) (mem_disjiUnion.mpr ⟨_, b.prop, hfb⟩) _) hga
-              hgb
+          refine disjoint_left.mp
+            (h2 (mem_disjiUnion.mpr ⟨_, a.prop, hfa⟩) (mem_disjiUnion.mpr ⟨_, b.prop, hfb⟩) ?_) hga
+            hgb
           rintro rfl
           exact disjoint_left.mp (h1 a.prop b.prop <| Subtype.coe_injective.ne hab) hfa hfb :=
   eq_of_veq <| Multiset.bind_assoc.trans (Multiset.attach_bind_coe _ _).symm

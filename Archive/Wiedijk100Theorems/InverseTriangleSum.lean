@@ -30,7 +30,7 @@ open Finset
 /-- **Sum of the Reciprocals of the Triangular Numbers** -/
 theorem Theorems100.inverse_triangle_sum :
     ∀ n, ∑ k in range n, (2 : ℚ) / (k * (k + 1)) = if n = 0 then 0 else 2 - (2 : ℚ) / n := by
-  refine' sum_range_induction _ _ (if_pos rfl) _
+  refine sum_range_induction _ _ (if_pos rfl) ?_
   rintro (_ | n)
   · rw [if_neg, if_pos] <;> norm_num
   simp only [Nat.succ_ne_zero, ↓reduceIte, Nat.cast_succ]

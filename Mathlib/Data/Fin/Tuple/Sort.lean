@@ -176,7 +176,7 @@ smallest permutation `σ` such that `f ∘ σ` is monotone. -/
 theorem eq_sort_iff :
     σ = sort f ↔ Monotone (f ∘ σ) ∧ ∀ i j, i < j → f (σ i) = f (σ j) → σ i < σ j := by
   rw [eq_sort_iff']
-  refine' ⟨fun h => ⟨(monotone_proj f).comp h.monotone, fun i j hij hfij => _⟩, fun h i j hij => _⟩
+  refine ⟨fun h => ⟨(monotone_proj f).comp h.monotone, fun i j hij hfij => ?_⟩, fun h i j hij => ?_⟩
   · exact (((Prod.Lex.lt_iff _ _).1 <| h hij).resolve_left hfij.not_lt).2
   · obtain he | hl := (h.1 hij.le).eq_or_lt <;> apply (Prod.Lex.lt_iff _ _).2
     exacts [Or.inr ⟨he, h.2 i j hij he⟩, Or.inl hl]

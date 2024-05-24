@@ -125,7 +125,7 @@ theorem card_le_of_separated (s : Finset E) (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
     convert h c hc d hd hcd
     norm_num
   have A_subset : A ⊆ ball (0 : E) ρ := by
-    refine' iUnion₂_subset fun x hx => _
+    refine iUnion₂_subset fun x hx => ?_
     apply ball_subset_ball'
     calc
       δ + dist x 0 ≤ δ + 2 := by rw [dist_zero_right]; exact add_le_add le_rfl (hs x hx)
@@ -160,7 +160,7 @@ theorem multiplicity_le : multiplicity E ≤ 5 ^ finrank ℝ E := by
 theorem card_le_multiplicity {s : Finset E} (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
     (h's : ∀ c ∈ s, ∀ d ∈ s, c ≠ d → 1 ≤ ‖c - d‖) : s.card ≤ multiplicity E := by
   apply le_csSup
-  · refine' ⟨5 ^ finrank ℝ E, _⟩
+  · refine ⟨5 ^ finrank ℝ E, ?_⟩
     rintro _ ⟨s, ⟨rfl, h⟩⟩
     exact Besicovitch.card_le_of_separated s h.1 h.2
   · simp only [mem_setOf_eq, Ne]
@@ -213,7 +213,7 @@ theorem exists_goodδ :
       ∃ f ∈ closedBall (0 : Fin N → E) 2,
         ∃ φ : ℕ → ℕ, StrictMono φ ∧ Tendsto ((F ∘ u) ∘ φ) atTop (𝓝 f) :=
       IsCompact.tendsto_subseq (isCompact_closedBall _ _) A
-    refine' ⟨f, fun i => _, fun i j hij => _⟩
+    refine ⟨f, fun i => ?_, fun i j hij => ?_⟩
     · simp only [pi_norm_le_iff_of_nonneg zero_le_two, mem_closedBall, dist_zero_right] at fmem
       exact fmem i
     · have A : Tendsto (fun n => ‖F (u (φ n)) i - F (u (φ n)) j‖) atTop (𝓝 ‖f i - f j‖) :=
@@ -476,7 +476,7 @@ theorem exists_normalized {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ) (las
     simp only [c']
     split_ifs with h; · exact h
     by_cases hi : ‖a.c i‖ = 0 <;> field_simp [norm_smul, hi]
-  refine' ⟨c', fun n => norm_c'_le n, fun i j inej => _⟩
+  refine ⟨c', fun n => norm_c'_le n, fun i j inej => ?_⟩
   -- up to exchanging `i` and `j`, one can assume `‖c i‖ ≤ ‖c j‖`.
   wlog hij : ‖a.c i‖ ≤ ‖a.c j‖ generalizing i j
   · rw [norm_sub_rev]; exact this j i inej.symm (le_of_not_le hij)

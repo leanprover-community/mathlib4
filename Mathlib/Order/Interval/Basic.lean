@@ -745,9 +745,9 @@ theorem coe_sInf [@DecidableRel α (· ≤ ·)] (S : Set (Interval α)) :
     simp [WithBot.some_eq_coe, Interval.forall, h.1, ← forall_and, ← NonemptyInterval.mem_def]
   simp_rw [not_and_or, Classical.not_not] at h
   rcases h with h | h
-  · refine' (eq_empty_of_subset_empty _).symm
+  · refine (eq_empty_of_subset_empty ?_).symm
     exact iInter₂_subset_of_subset _ h Subset.rfl
-  · refine' (not_nonempty_iff_eq_empty.1 _).symm
+  · refine (not_nonempty_iff_eq_empty.1 ?_).symm
     rintro ⟨x, hx⟩
     rw [mem_iInter₂] at hx
     exact h fun s ha t hb => (hx _ ha).1.trans (hx _ hb).2

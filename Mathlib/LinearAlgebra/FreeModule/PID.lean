@@ -63,7 +63,7 @@ theorem eq_bot_of_generator_maximal_map_eq_zero (b : Basis ι R M) {N : Submodul
     (hgen : generator (N.map ϕ) = (0 : R)) : N = ⊥ := by
   rw [Submodule.eq_bot_iff]
   intro x hx
-  refine' b.ext_elem fun i ↦ _
+  refine b.ext_elem fun i ↦ ?_
   rw [(eq_bot_iff_generator_eq_zero _).mpr hgen] at hϕ
   rw [LinearEquiv.map_zero, Finsupp.zero_apply]
   exact
@@ -121,7 +121,7 @@ theorem generator_maximal_submoduleImage_dvd {N O : Submodule R M} (hNO : N ≤ 
   have d_dvd_left : d ∣ a := (mem_iff_generator_dvd _).mp (subset_span (mem_insert _ _))
   have d_dvd_right : d ∣ ψ ⟨y, hNO yN⟩ :=
     (mem_iff_generator_dvd _).mp (subset_span (mem_insert_of_mem _ (mem_singleton _)))
-  refine' dvd_trans _ d_dvd_right
+  refine dvd_trans ?_ d_dvd_right
   rw [dvd_generator_iff, Ideal.span, ←
     span_singleton_generator (Submodule.span R {a, ψ ⟨y, hNO yN⟩})]
   · obtain ⟨r₁, r₂, d_eq⟩ : ∃ r₁ r₂ : R, d = r₁ * a + r₂ * ψ ⟨y, hNO yN⟩ := by
@@ -135,8 +135,8 @@ theorem generator_maximal_submoduleImage_dvd {N O : Submodule R M} (hNO : N ≤ 
       refine ⟨y, yN, ?_⟩
       change r₁ * ϕ ⟨y, hNO yN⟩ + r₂ * ψ ⟨y, hNO yN⟩ = d
       rw [d_eq, ϕy_eq]
-    refine'
-      le_antisymm (this.trans (le_of_eq _)) (Ideal.span_singleton_le_span_singleton.mpr d_dvd_left)
+    refine
+      le_antisymm (this.trans (le_of_eq ?_)) (Ideal.span_singleton_le_span_singleton.mpr d_dvd_left)
     rw [span_singleton_generator]
     apply (le_trans _ this).eq_of_not_gt (hϕ ψ')
     rw [← span_singleton_generator (ϕ.submoduleImage N)]
@@ -205,11 +205,11 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
   have a_smul_y' : a • y' = y := by
     refine Subtype.mk_eq_mk.mp (show (a • ⟨y', y'M⟩ : M) = ⟨y, N_le_M yN⟩ from ?_)
     rw [← b'M.sum_repr ⟨y, N_le_M yN⟩, mk_y', Finset.smul_sum]
-    refine' Finset.sum_congr rfl fun i _ ↦ _
+    refine Finset.sum_congr rfl fun i _ ↦ ?_
     rw [← mul_smul, ← hc]
     rfl
   -- We found a `y` and an `a`!
-  refine' ⟨y', y'M, a, a_smul_y'.symm ▸ yN, _⟩
+  refine ⟨y', y'M, a, a_smul_y'.symm ▸ yN, ?_⟩
   have ϕy'_eq : ϕ ⟨y', y'M⟩ = 1 :=
     mul_left_cancel₀ a_zero
       (calc
@@ -230,7 +230,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
     exact ⟨⟨x, N_le_M xN⟩, hx, rfl⟩
   have N'_le_N : N' ≤ N := N.map_subtype_le (LinearMap.ker (ϕ.comp (inclusion N_le_M)))
   -- So fill in those results as well.
-  refine' ⟨M', M'_le_M, N', N'_le_N, N'_le_M', _⟩
+  refine ⟨M', M'_le_M, N', N'_le_N, N'_le_M', ?_⟩
   -- Note that `y'` is orthogonal to `M'`.
   have y'_ortho_M' : ∀ (c : R), ∀ z ∈ M', c • y' + z = 0 → c = 0 := by
     intro c x xM' hc
@@ -242,26 +242,26 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
   -- And `a • y'` is orthogonal to `N'`.
   have ay'_ortho_N' : ∀ (c : R), ∀ z ∈ N', c • a • y' + z = 0 → c = 0 := by
     intro c z zN' hc
-    refine' (mul_eq_zero.mp (y'_ortho_M' (a * c) z (N'_le_M' zN') _)).resolve_left a_zero
+    refine (mul_eq_zero.mp (y'_ortho_M' (a * c) z (N'_le_M' zN') ?_)).resolve_left a_zero
     rw [mul_comm, mul_smul, hc]
   -- So we can extend a basis for `N'` with `y`
-  refine' ⟨y'_ortho_M', ay'_ortho_N', fun n' bN' ↦ ⟨_, _⟩⟩
-  · refine' Basis.mkFinConsOfLE y yN bN' N'_le_N _ _
+  refine ⟨y'_ortho_M', ay'_ortho_N', fun n' bN' ↦ ⟨?_, ?_⟩⟩
+  · refine Basis.mkFinConsOfLE y yN bN' N'_le_N ?_ ?_
     · intro c z zN' hc
-      refine' ay'_ortho_N' c z zN' _
+      refine ay'_ortho_N' c z zN' ?_
       rwa [← a_smul_y'] at hc
     · intro z zN
       obtain ⟨b, hb⟩ : _ ∣ ϕ ⟨z, N_le_M zN⟩ := generator_submoduleImage_dvd_of_mem N_le_M ϕ zN
-      refine' ⟨-b, Submodule.mem_map.mpr ⟨⟨_, N.sub_mem zN (N.smul_mem b yN)⟩, _, _⟩⟩
-      · refine' LinearMap.mem_ker.mpr (show ϕ (⟨z, N_le_M zN⟩ - b • ⟨y, N_le_M yN⟩) = 0 from _)
+      refine ⟨-b, Submodule.mem_map.mpr ⟨⟨_, N.sub_mem zN (N.smul_mem b yN)⟩, ?_, ?_⟩⟩
+      · refine LinearMap.mem_ker.mpr (show ϕ (⟨z, N_le_M zN⟩ - b • ⟨y, N_le_M yN⟩) = 0 from ?_)
         rw [LinearMap.map_sub, LinearMap.map_smul, hb, ϕy_eq, smul_eq_mul, mul_comm, sub_self]
       · simp only [sub_eq_add_neg, neg_smul, coeSubtype]
   -- And extend a basis for `M'` with `y'`
   intro m' hn'm' bM'
-  refine' ⟨Nat.succ_le_succ hn'm', _, _⟩
-  · refine' Basis.mkFinConsOfLE y' y'M bM' M'_le_M y'_ortho_M' _
+  refine ⟨Nat.succ_le_succ hn'm', ?_, ?_⟩
+  · refine Basis.mkFinConsOfLE y' y'M bM' M'_le_M y'_ortho_M' ?_
     intro z zM
-    refine' ⟨-ϕ ⟨z, zM⟩, ⟨⟨z, zM⟩ - ϕ ⟨z, zM⟩ • ⟨y', y'M⟩, LinearMap.mem_ker.mpr _, _⟩⟩
+    refine ⟨-ϕ ⟨z, zM⟩, ⟨⟨z, zM⟩ - ϕ ⟨z, zM⟩ • ⟨y', y'M⟩, LinearMap.mem_ker.mpr ?_, ?_⟩⟩
     · rw [LinearMap.map_sub, LinearMap.map_smul, ϕy'_eq, smul_eq_mul, mul_one, sub_self]
     · rw [LinearMap.map_sub, LinearMap.map_smul, sub_eq_add_neg, neg_smul]
       rfl
@@ -270,7 +270,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
   refine ⟨Fin.cons a as, ?_⟩
   intro i
   rw [Basis.coe_mkFinConsOfLE, Basis.coe_mkFinConsOfLE]
-  refine' Fin.cases _ (fun i ↦ _) i
+  refine Fin.cases ?_ (fun i ↦ ?_) i
   · simp only [Fin.cons_zero, Fin.castLE_zero]
     exact a_smul_y'.symm
   · rw [Fin.castLE_succ]
@@ -667,7 +667,7 @@ theorem Ideal.smithCoeffs_ne_zero (b : Basis ι R S) (I : Ideal S) (hI : I ≠ �
     Ideal.smithCoeffs b I hI i ≠ 0 := by
   intro hi
   apply Basis.ne_zero (Ideal.selfBasis b I hI) i
-  refine' Subtype.coe_injective _
+  refine Subtype.coe_injective ?_
   simp [hi]
 #align ideal.smith_coeffs_ne_zero Ideal.smithCoeffs_ne_zero
 

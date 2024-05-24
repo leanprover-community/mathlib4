@@ -177,10 +177,10 @@ theorem factorization_eq_zero_of_remainder {p r : ℕ} (i : ℕ) (hr : ¬p ∣ r
 
 theorem factorization_eq_zero_iff_remainder {p r : ℕ} (i : ℕ) (pp : p.Prime) (hr0 : r ≠ 0) :
     ¬p ∣ r ↔ (p * i + r).factorization p = 0 := by
-  refine' ⟨factorization_eq_zero_of_remainder i, fun h => _⟩
+  refine ⟨factorization_eq_zero_of_remainder i, fun h => ?_⟩
   rw [factorization_eq_zero_iff] at h
   contrapose! h
-  refine' ⟨pp, _, _⟩
+  refine ⟨pp, ?_, ?_⟩
   · rwa [← Nat.dvd_add_iff_right (dvd_mul_right p i)]
   · contrapose! hr0
     exact (add_eq_zero_iff.mp hr0).2
@@ -424,7 +424,7 @@ theorem factorization_le_iff_dvd {d n : ℕ} (hd : d ≠ 0) (hn : n ≠ 0) :
 theorem factorization_prime_le_iff_dvd {d n : ℕ} (hd : d ≠ 0) (hn : n ≠ 0) :
     (∀ p : ℕ, p.Prime → d.factorization p ≤ n.factorization p) ↔ d ∣ n := by
   rw [← factorization_le_iff_dvd hd hn]
-  refine' ⟨fun h p => (em p.Prime).elim (h p) fun hp => _, fun h p _ => h p⟩
+  refine ⟨fun h p => (em p.Prime).elim (h p) fun hp => ?_, fun h p _ => h p⟩
   simp_rw [factorization_eq_zero_of_non_prime _ hp]
   rfl
 #align nat.factorization_prime_le_iff_dvd Nat.factorization_prime_le_iff_dvd
@@ -538,7 +538,7 @@ theorem exists_eq_pow_mul_and_not_dvd {n : ℕ} (hn : n ≠ 0) (p : ℕ) (hp : p
 
 theorem dvd_iff_div_factorization_eq_tsub {d n : ℕ} (hd : d ≠ 0) (hdn : d ≤ n) :
     d ∣ n ↔ (n / d).factorization = n.factorization - d.factorization := by
-  refine' ⟨factorization_div, _⟩
+  refine ⟨factorization_div, ?_⟩
   rcases eq_or_lt_of_le hdn with (rfl | hd_lt_n); · simp
   have h1 : n / d ≠ 0 := fun H => Nat.lt_asymm hd_lt_n ((Nat.div_eq_zero_iff hd.bot_lt).mp H)
   intro h
@@ -559,7 +559,7 @@ theorem ord_proj_dvd_ord_proj_of_dvd {a b : ℕ} (hb0 : b ≠ 0) (hab : a ∣ b)
 
 theorem ord_proj_dvd_ord_proj_iff_dvd {a b : ℕ} (ha0 : a ≠ 0) (hb0 : b ≠ 0) :
     (∀ p : ℕ, ord_proj[p] a ∣ ord_proj[p] b) ↔ a ∣ b := by
-  refine' ⟨fun h => _, fun hab p => ord_proj_dvd_ord_proj_of_dvd hb0 hab p⟩
+  refine ⟨fun h => ?_, fun hab p => ord_proj_dvd_ord_proj_of_dvd hb0 hab p⟩
   rw [← factorization_le_iff_dvd ha0 hb0]
   intro q
   rcases le_or_lt q 1 with (hq_le | hq1)
@@ -587,7 +587,7 @@ theorem ord_compl_dvd_ord_compl_of_dvd {a b : ℕ} (hab : a ∣ b) (p : ℕ) :
 
 theorem ord_compl_dvd_ord_compl_iff_dvd (a b : ℕ) :
     (∀ p : ℕ, ord_compl[p] a ∣ ord_compl[p] b) ↔ a ∣ b := by
-  refine' ⟨fun h => _, fun hab p => ord_compl_dvd_ord_compl_of_dvd hab p⟩
+  refine ⟨fun h => ?_, fun hab p => ord_compl_dvd_ord_compl_of_dvd hab p⟩
   rcases eq_or_ne b 0 with (rfl | hb0)
   · simp
   if pa : a.Prime then ?_ else simpa [pa] using h a
@@ -606,7 +606,7 @@ theorem dvd_iff_prime_pow_dvd_dvd (n d : ℕ) :
   rcases eq_or_ne d 0 with (rfl | hd)
   · simp only [zero_dvd_iff, hn, false_iff_iff, not_forall]
     exact ⟨2, n, prime_two, dvd_zero _, mt (le_of_dvd hn.bot_lt) (lt_two_pow n).not_le⟩
-  refine' ⟨fun h p k _ hpkd => dvd_trans hpkd h, _⟩
+  refine ⟨fun h p k _ hpkd => dvd_trans hpkd h, ?_⟩
   rw [← factorization_prime_le_iff_dvd hd hn]
   intro h p pp
   simp_rw [← pp.pow_dvd_iff_le_factorization hn]
@@ -939,7 +939,7 @@ theorem eq_iff_prime_padicValNat_eq (a b : ℕ) (ha : a ≠ 0) (hb : b ≠ 0) :
   · rintro rfl
     simp
   · intro h
-    refine' eq_of_factorization_eq ha hb fun p => _
+    refine eq_of_factorization_eq ha hb fun p => ?_
     by_cases pp : p.Prime
     · simp [factorization_def, pp, h p pp]
     · simp [factorization_eq_zero_of_non_prime, pp]

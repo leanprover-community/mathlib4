@@ -260,7 +260,7 @@ theorem nodup_of_separable_prod [Nontrivial R] {s : Multiset R}
     (hs : Separable (Multiset.map (fun a => X - C a) s).prod) : s.Nodup := by
   rw [Multiset.nodup_iff_ne_cons_cons]
   rintro a t rfl
-  refine' not_isUnit_X_sub_C a (isUnit_of_self_mul_dvd_separable hs _)
+  refine not_isUnit_X_sub_C a (isUnit_of_self_mul_dvd_separable hs ?_)
   simpa only [Multiset.map_cons, Multiset.prod_cons] using mul_dvd_mul_left _ (dvd_mul_right _ _)
 #align polynomial.nodup_of_separable_prod Polynomial.nodup_of_separable_prod
 
@@ -382,7 +382,7 @@ theorem exists_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : p 
   replace hp : p.Prime := (CharP.char_is_prime_or_zero F p).resolve_right hp
   induction' hn : f.natDegree using Nat.strong_induction_on with N ih generalizing f
   rcases separable_or p hf with (h | ⟨h1, g, hg, hgf⟩)
-  · refine' ⟨0, f, h, _⟩
+  · refine ⟨0, f, h, ?_⟩
     rw [pow_zero, expand_one]
   · cases' N with N
     · rw [natDegree_eq_zero_iff_degree_le_zero, degree_le_zero_iff] at hn
@@ -453,7 +453,7 @@ set_option linter.uppercaseLean3 false in
 -- bi-implication, but it is nontrivial!
 /-- In a field `F`, `X ^ n - 1` is separable iff `↑n ≠ 0`. -/
 theorem X_pow_sub_one_separable_iff {n : ℕ} : (X ^ n - 1 : F[X]).Separable ↔ (n : F) ≠ 0 := by
-  refine' ⟨_, fun h => separable_X_pow_sub_C_unit 1 (IsUnit.mk0 (↑n) h)⟩
+  refine ⟨?_, fun h => separable_X_pow_sub_C_unit 1 (IsUnit.mk0 (↑n) h)⟩
   rw [separable_def', derivative_sub, derivative_X_pow, derivative_one, sub_zero]
   -- Suppose `(n : F) = 0`, then the derivative is `0`, so `X ^ n - 1` is a unit, contradiction.
   rintro (h : IsCoprime _ _) hn'
@@ -533,7 +533,7 @@ theorem _root_.Irreducible.separable [CharZero F] {f : F[X]} (hf : Irreducible f
   rw [separable_iff_derivative_ne_zero hf, Ne, ← degree_eq_bot, degree_derivative_eq]
   · rintro ⟨⟩
   rw [pos_iff_ne_zero, Ne, natDegree_eq_zero_iff_degree_le_zero, degree_le_zero_iff]
-  refine' fun hf1 => hf.not_unit _
+  refine fun hf1 => hf.not_unit ?_
   rw [hf1, isUnit_C, isUnit_iff_ne_zero]
   intro hf2
   rw [hf2, C_0] at hf1

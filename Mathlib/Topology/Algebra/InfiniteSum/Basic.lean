@@ -344,7 +344,7 @@ it gives a relationship between the sums of `f` and `ite (n = b) 0 (f n)` given 
 theorem eq_mul_of_hasProd_ite {α β : Type*} [TopologicalSpace α] [CommMonoid α] [T2Space α]
     [ContinuousMul α] [DecidableEq β] {f : β → α} {a : α} (hf : HasProd f a) (b : β) (a' : α)
     (hf' : HasProd (fun n ↦ ite (n = b) 1 (f n)) a') : a = a' * f b := by
-  refine' (mul_one a).symm.trans (hf.update' b 1 _)
+  refine (mul_one a).symm.trans (hf.update' b 1 ?_)
   convert hf'
   apply update_apply
 #align eq_add_of_has_sum_ite eq_add_of_hasSum_ite

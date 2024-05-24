@@ -113,7 +113,7 @@ protected theorem cfc (f : C(S, R)) (h_isom : Isometry (algebraMap R S))
         exact ⟨_, this⟩
       · rintro ⟨y, rfl⟩
         rw [Set.mem_preimage]
-        refine' ⟨⟨algebraMap R S y, spectrum.algebraMap_mem S y.prop⟩, _⟩
+        refine ⟨⟨algebraMap R S y, spectrum.algebraMap_mem S y.prop⟩, ?_⟩
         simp only [ContinuousMap.coe_mk, ContinuousMap.comp_apply, StarAlgHom.ofId_apply]
         congr
         exact Subtype.ext (((h a).mp ha).2.left_inv y)

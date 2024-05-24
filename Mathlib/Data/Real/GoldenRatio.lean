@@ -110,7 +110,7 @@ theorem gold_ne_zero : φ ≠ 0 :=
 #align gold_ne_zero gold_ne_zero
 
 theorem one_lt_gold : 1 < φ := by
-  refine' lt_of_mul_lt_mul_left _ (le_of_lt gold_pos)
+  refine lt_of_mul_lt_mul_left ?_ (le_of_lt gold_pos)
   simp [← sq, gold_pos, zero_lt_one, - div_pow] -- Porting note: Added `- div_pow`
 #align one_lt_gold one_lt_gold
 

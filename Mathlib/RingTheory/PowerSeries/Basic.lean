@@ -468,7 +468,7 @@ theorem coeff_mul_X_pow' (p : R⟦X⟧) (n d : ℕ) :
     coeff R d (p * X ^ n) = ite (n ≤ d) (coeff R (d - n) p) 0 := by
   split_ifs with h
   · rw [← tsub_add_cancel_of_le h, coeff_mul_X_pow, add_tsub_cancel_right]
-  · refine' (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => _)
+  · refine (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => ?_)
     rw [coeff_X_pow, if_neg, mul_zero]
     exact ((le_of_add_le_right (mem_antidiagonal.mp hx).le).trans_lt <| not_le.mp h).ne
 set_option linter.uppercaseLean3 false in
@@ -479,7 +479,7 @@ theorem coeff_X_pow_mul' (p : R⟦X⟧) (n d : ℕ) :
   split_ifs with h
   · rw [← tsub_add_cancel_of_le h, coeff_X_pow_mul]
     simp
-  · refine' (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => _)
+  · refine (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => ?_)
     rw [coeff_X_pow, if_neg, zero_mul]
     have := mem_antidiagonal.mp hx
     rw [add_comm] at this

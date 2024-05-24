@@ -210,7 +210,7 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
       show _ = Sigma.mk j y from ConcreteCategory.congr_hom (sigmaIsoSigma.{_, u} D.U).inv_hom_id _]
     change InvImage D.Rel (sigmaIsoSigma.{_, u} D.U).hom _ _
     rw [← (InvImage.equivalence _ _ D.rel_equiv).eqvGen_iff]
-    refine' EqvGen.mono _ (D.eqvGen_of_π_eq h : _)
+    refine EqvGen.mono ?_ (D.eqvGen_of_π_eq h : _)
     rintro _ _ ⟨x⟩
     obtain ⟨⟨⟨i, j⟩, y⟩, rfl⟩ :=
       (ConcreteCategory.bijective_of_isIso (sigmaIsoSigma.{u, u} _).inv).2 x
@@ -505,7 +505,7 @@ theorem fromOpenSubsetsGlue_isOpenMap : IsOpenMap (fromOpenSubsetsGlue U) := by
     --  porting note: `congr 1` did nothing, so I replaced it with `apply congr_arg`
     apply congr_arg
     exact Set.preimage_image_eq _ (fromOpenSubsetsGlue_injective U)
-  · refine' ⟨Set.mem_image_of_mem _ hx, _⟩
+  · refine ⟨Set.mem_image_of_mem _ hx, ?_⟩
     -- Porting note: another `rw ↦ erw`
     -- See above.
     erw [ι_fromOpenSubsetsGlue_apply]

@@ -804,7 +804,7 @@ theorem Orthonormal.exists_orthonormalBasis_extension (hv : Orthonormal 𝕜 ((�
   let u : Finset E := hu₀_finite.toFinset
   let fu : ↥u ≃ ↥u₀ := hu₀_finite.subtypeEquivToFinset.symm
   have hu : Orthonormal 𝕜 ((↑) : u → E) := by simpa using hu₀.comp _ fu.injective
-  refine' ⟨u, OrthonormalBasis.mkOfOrthogonalEqBot hu _, _, _⟩
+  refine ⟨u, OrthonormalBasis.mkOfOrthogonalEqBot hu ?_, ?_, ?_⟩
   · simpa [u] using hu₀_max
   · simpa [u] using hu₀s
   · simp
@@ -818,7 +818,7 @@ theorem Orthonormal.exists_orthonormalBasis_extension_of_card_eq {ι : Type*} [F
     rwa [orthonormal_subtype_range hsv]
   obtain ⟨Y, b₀, hX, hb₀⟩ := hX.exists_orthonormalBasis_extension
   have hιY : Fintype.card ι = Y.card := by
-    refine' card_ι.symm.trans _
+    refine card_ι.symm.trans ?_
     exact FiniteDimensional.finrank_eq_card_finset_basis b₀.toBasis
   have hvsY : s.MapsTo v Y := (s.mapsTo_image v).mono_right (by rwa [← range_restrict])
   have hsv' : Set.InjOn v s := by
@@ -854,7 +854,7 @@ theorem orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ) :
     have : ‖b default‖ = 1 := b.orthonormal.1 _
     rwa [Real.norm_eq_abs, abs_eq (zero_le_one' ℝ)] at this
   rw [eq_const_of_unique b]
-  refine' this.imp _ _ <;> (intro; ext; simp [*])
+  refine this.imp ?_ ?_ <;> (intro; ext; simp [*])
 #align orthonormal_basis_one_dim orthonormalBasis_one_dim
 
 variable {𝕜 E}

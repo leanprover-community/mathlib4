@@ -498,7 +498,7 @@ theorem measurable_of_tendsto' {ι} {f : ι → α → ℝ≥0} {g : α → ℝ�
     [IsCountablyGenerated u] (hf : ∀ i, Measurable (f i)) (lim : Tendsto f u (𝓝 g)) :
     Measurable g := by
   simp_rw [← measurable_coe_nnreal_ennreal_iff] at hf ⊢
-  refine' ENNReal.measurable_of_tendsto' u hf _
+  refine ENNReal.measurable_of_tendsto' u hf ?_
   rw [tendsto_pi_nhds] at lim ⊢
   exact fun x => (ENNReal.continuous_coe.tendsto (g x)).comp (lim x)
 #align measurable_of_tendsto_nnreal' NNReal.measurable_of_tendsto'
@@ -534,17 +534,17 @@ theorem exists_spanning_measurableSet_le {m : MeasurableSpace α} {f : α → �
     exact exists_nat_ge (f x)
   let sets n := sigma_finite_sets n ∩ norm_sets n
   have h_meas : ∀ n, MeasurableSet (sets n) := by
-    refine' fun n => MeasurableSet.inter _ _
+    refine fun n => MeasurableSet.inter ?_ ?_
     · exact measurable_spanningSets μ n
     · exact hf measurableSet_Iic
   have h_finite : ∀ n, μ (sets n) < ∞ := by
-    refine' fun n => (measure_mono (Set.inter_subset_left _ _)).trans_lt _
+    refine fun n => (measure_mono (Set.inter_subset_left _ _)).trans_lt ?_
     exact measure_spanningSets_lt_top μ n
-  refine' ⟨sets, fun n => ⟨h_meas n, h_finite n, _⟩, _⟩
+  refine ⟨sets, fun n => ⟨h_meas n, h_finite n, ?_⟩, ?_⟩
   · exact fun x hx => hx.2
   · have :
       ⋃ i, sigma_finite_sets i ∩ norm_sets i = (⋃ i, sigma_finite_sets i) ∩ ⋃ i, norm_sets i := by
-      refine' Set.iUnion_inter_of_monotone (monotone_spanningSets μ) fun i j hij x => _
+      refine Set.iUnion_inter_of_monotone (monotone_spanningSets μ) fun i j hij x => ?_
       simp only [norm_sets, Set.mem_setOf_eq]
       refine fun hif => hif.trans ?_
       exact mod_cast hij

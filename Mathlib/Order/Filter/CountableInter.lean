@@ -264,7 +264,7 @@ theorem mem_countableGenerate_iff {s : Set α} :
   · induction' h with s hs s t _ st ih S Sct _ ih
     · exact ⟨{s}, by simp [hs, subset_refl]⟩
     · exact ⟨∅, by simp⟩
-    · refine' Exists.imp (fun S => _) ih
+    · refine Exists.imp (fun S => ?_) ih
       tauto
     choose T Tg Tct hT using ih
     refine ⟨⋃ (s) (H : s ∈ S), T s H, by simpa, Sct.biUnion Tct, ?_⟩
@@ -272,7 +272,7 @@ theorem mem_countableGenerate_iff {s : Set α} :
     intro s H
     exact subset_trans (sInter_subset_sInter (subset_iUnion₂ s H)) (hT s H)
   rcases h with ⟨S, Sg, Sct, hS⟩
-  refine' mem_of_superset ((countable_sInter_mem Sct).mpr _) hS
+  refine mem_of_superset ((countable_sInter_mem Sct).mpr ?_) hS
   intro s H
   exact CountableGenerateSets.basic (Sg H)
 #align filter.mem_countable_generate_iff Filter.mem_countableGenerate_iff

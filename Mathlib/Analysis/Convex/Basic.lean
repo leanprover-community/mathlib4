@@ -153,7 +153,7 @@ theorem convex_iff_forall_pos :
 
 theorem convex_iff_pairwise_pos : Convex 𝕜 s ↔
     s.Pairwise fun x y => ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 → a • x + b • y ∈ s := by
-  refine' convex_iff_forall_pos.trans ⟨fun h x hx y hy _ => h hx hy, _⟩
+  refine convex_iff_forall_pos.trans ⟨fun h x hx y hy _ => h hx hy, ?_⟩
   intro h x hx y hy a b ha hb hab
   obtain rfl | hxy := eq_or_ne x y
   · rwa [Convex.combo_self hab]
@@ -178,9 +178,9 @@ theorem convex_zero : Convex 𝕜 (0 : Set E) :=
 
 theorem convex_segment (x y : E) : Convex 𝕜 [x -[𝕜] y] := by
   rintro p ⟨ap, bp, hap, hbp, habp, rfl⟩ q ⟨aq, bq, haq, hbq, habq, rfl⟩ a b ha hb hab
-  refine'
+  refine
     ⟨a * ap + b * aq, a * bp + b * bq, add_nonneg (mul_nonneg ha hap) (mul_nonneg hb haq),
-      add_nonneg (mul_nonneg ha hbp) (mul_nonneg hb hbq), _, _⟩
+      add_nonneg (mul_nonneg ha hbp) (mul_nonneg hb hbq), ?_, ?_⟩
   · rw [add_add_add_comm, ← mul_add, ← mul_add, habp, habq, mul_one, mul_one, hab]
   · simp_rw [add_smul, mul_smul, smul_add]
     exact add_add_add_comm _ _ _ _
@@ -477,7 +477,7 @@ variable [StrictOrderedCommSemiring 𝕜] [AddCommGroup E] [Module 𝕜 E]
 theorem convex_openSegment (a b : E) : Convex 𝕜 (openSegment 𝕜 a b) := by
   rw [convex_iff_openSegment_subset]
   rintro p ⟨ap, bp, hap, hbp, habp, rfl⟩ q ⟨aq, bq, haq, hbq, habq, rfl⟩ z ⟨a, b, ha, hb, hab, rfl⟩
-  refine' ⟨a * ap + b * aq, a * bp + b * bq, by positivity, by positivity, _, _⟩
+  refine ⟨a * ap + b * aq, a * bp + b * bq, by positivity, by positivity, ?_, ?_⟩
   · rw [add_add_add_comm, ← mul_add, ← mul_add, habp, habq, mul_one, mul_one, hab]
   · simp_rw [add_smul, mul_smul, smul_add, add_add_add_comm]
 #align convex_open_segment convex_openSegment
@@ -619,7 +619,7 @@ section
 
 theorem Set.OrdConnected.convex_of_chain [OrderedSemiring 𝕜] [OrderedAddCommMonoid E] [Module 𝕜 E]
     [OrderedSMul 𝕜 E] {s : Set E} (hs : s.OrdConnected) (h : IsChain (· ≤ ·) s) : Convex 𝕜 s := by
-  refine' convex_iff_segment_subset.mpr fun x hx y hy => _
+  refine convex_iff_segment_subset.mpr fun x hx y hy => ?_
   obtain hxy | hyx := h.total hx hy
   · exact (segment_subset_Icc hxy).trans (hs.out hx hy)
   · rw [segment_symm]
@@ -649,7 +649,7 @@ variable [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E]
 
 protected theorem convex (K : Submodule 𝕜 E) : Convex 𝕜 (↑K : Set E) := by
   repeat' intro
-  refine' add_mem (smul_mem _ _ _) (smul_mem _ _ _) <;> assumption
+  refine add_mem (smul_mem _ _ ?_) (smul_mem _ _ ?_) <;> assumption
 #align submodule.convex Submodule.convex
 
 protected theorem starConvex (K : Submodule 𝕜 E) : StarConvex 𝕜 (0 : E) K :=
@@ -679,7 +679,7 @@ theorem stdSimplex_eq_inter : stdSimplex 𝕜 ι = (⋂ x, { f | 0 ≤ f x }) �
 #align std_simplex_eq_inter stdSimplex_eq_inter
 
 theorem convex_stdSimplex : Convex 𝕜 (stdSimplex 𝕜 ι) := by
-  refine' fun f hf g hg a b ha hb hab => ⟨fun x => _, _⟩
+  refine fun f hf g hg a b ha hb hab => ⟨fun x => ?_, ?_⟩
   · apply_rules [add_nonneg, mul_nonneg, hf.1, hg.1]
   · erw [Finset.sum_add_distrib]
     simp only [Pi.smul_apply] -- Porting note: `erw` failed to rewrite with `← Finset.smul_sum`

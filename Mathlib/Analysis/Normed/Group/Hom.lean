@@ -189,7 +189,7 @@ theorem SurjectiveOnWith.mono {f : NormedAddGroupHom V₁ V₂} {K : AddSubgroup
 
 theorem SurjectiveOnWith.exists_pos {f : NormedAddGroupHom V₁ V₂} {K : AddSubgroup V₂} {C : ℝ}
     (h : f.SurjectiveOnWith K C) : ∃ C' > 0, f.SurjectiveOnWith K C' := by
-  refine' ⟨|C| + 1, _, _⟩
+  refine ⟨|C| + 1, ?_, ?_⟩
   · linarith [abs_nonneg C]
   · apply h.mono
     linarith [le_abs_self C]
@@ -434,7 +434,7 @@ theorem norm_id_of_nontrivial_seminorm (h : ∃ x : V, ‖x‖ ≠ 0) : ‖id V�
 
 /-- If a normed space is non-trivial, then the norm of the identity equals `1`. -/
 theorem norm_id {V : Type*} [NormedAddCommGroup V] [Nontrivial V] : ‖id V‖ = 1 := by
-  refine' norm_id_of_nontrivial_seminorm V _
+  refine norm_id_of_nontrivial_seminorm V ?_
   obtain ⟨x, hx⟩ := exists_ne (0 : V)
   exact ⟨x, ne_of_gt (norm_pos_iff.2 hx)⟩
 #align normed_add_group_hom.norm_id NormedAddGroupHom.norm_id
@@ -821,8 +821,8 @@ def NormNoninc (f : NormedAddGroupHom V W) : Prop :=
 namespace NormNoninc
 
 theorem normNoninc_iff_norm_le_one : f.NormNoninc ↔ ‖f‖ ≤ 1 := by
-  refine' ⟨fun h => _, fun h => fun v => _⟩
-  · refine' opNorm_le_bound _ zero_le_one fun v => _
+  refine ⟨fun h => ?_, fun h => fun v => ?_⟩
+  · refine opNorm_le_bound _ zero_le_one fun v => ?_
     simpa [one_mul] using h v
   · simpa using le_of_opNorm_le f h v
 #align normed_add_group_hom.norm_noninc.norm_noninc_iff_norm_le_one NormedAddGroupHom.NormNoninc.normNoninc_iff_norm_le_one

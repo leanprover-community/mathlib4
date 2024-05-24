@@ -167,7 +167,7 @@ theorem isIntegral_iff_isIntegral_closure_finite {r : B} :
     IsIntegral R r ↔ ∃ s : Set R, s.Finite ∧ IsIntegral (Subring.closure s) r := by
   constructor <;> intro hr
   · rcases hr with ⟨p, hmp, hpr⟩
-    refine' ⟨_, Finset.finite_toSet _, p.restriction, monic_restriction.2 hmp, _⟩
+    refine ⟨_, Finset.finite_toSet _, p.restriction, monic_restriction.2 hmp, ?_⟩
     rw [← aeval_def, ← aeval_map_algebraMap R r p.restriction, map_restriction, aeval_def, hpr]
   rcases hr with ⟨s, _, hsr⟩
   exact hsr.of_subring _
@@ -747,9 +747,9 @@ theorem isIntegral_algebra [Algebra R A] [IsScalarTower R A B] : Algebra.IsInteg
 
 theorem noZeroSMulDivisors [Algebra R A] [IsScalarTower R A B] [NoZeroSMulDivisors R B] :
     NoZeroSMulDivisors R A := by
-  refine'
+  refine
     Function.Injective.noZeroSMulDivisors _ (IsIntegralClosure.algebraMap_injective A R B)
-      (map_zero _) fun _ _ => _
+      (map_zero _) fun _ _ => ?_
   simp only [Algebra.algebraMap_eq_smul_one, IsScalarTower.smul_assoc]
 #align is_integral_closure.no_zero_smul_divisors IsIntegralClosure.noZeroSMulDivisors
 
@@ -970,8 +970,8 @@ theorem isIntegral_quotientMap_iff {I : Ideal S} :
   -- Porting note: added type ascription
   have : (Ideal.quotientMap I f le_rfl).comp g = (Ideal.Quotient.mk I).comp f :=
     Ideal.quotientMap_comp_mk le_rfl
-  refine' ⟨fun h => _, fun h => RingHom.IsIntegral.tower_top g _ (this ▸ h)⟩
-  refine' this ▸ RingHom.IsIntegral.trans g (Ideal.quotientMap I f le_rfl) _ h
+  refine ⟨fun h => ?_, fun h => RingHom.IsIntegral.tower_top g _ (this ▸ h)⟩
+  refine this ▸ RingHom.IsIntegral.trans g (Ideal.quotientMap I f le_rfl) ?_ h
   exact g.isIntegral_of_surjective Ideal.Quotient.mk_surjective
 #align is_integral_quotient_map_iff isIntegral_quotientMap_iff
 

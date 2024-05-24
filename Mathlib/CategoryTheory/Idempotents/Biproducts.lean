@@ -76,7 +76,7 @@ theorem karoubi_hasFiniteBiproducts [HasFiniteBiproducts C] : HasFiniteBiproduct
       { has_biproduct := fun F => by
           apply hasBiproduct_of_total (Biproducts.bicone F)
           simp only [hom_ext_iff]
-          refine' biproduct.hom_ext' _ _ (fun j => _)
+          refine biproduct.hom_ext' _ _ (fun j => ?_)
           simp only [Biproducts.bicone_pt_X, sum_hom, comp_f, Biproducts.bicone_π_f,
             biproduct.bicone_π, biproduct.map_π, Biproducts.bicone_ι_f, biproduct.ι_map, assoc,
             idem_assoc, id_eq, Biproducts.bicone_pt_p, comp_sum]

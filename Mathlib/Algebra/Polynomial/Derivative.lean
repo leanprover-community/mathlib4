@@ -362,7 +362,7 @@ theorem degree_derivative_eq [NoZeroSMulDivisors ℕ R] (p : R[X]) (hp : 0 < nat
     intro n hn
     apply le_trans (degree_C_mul_X_pow_le _ _) (WithBot.coe_le_coe.2 (tsub_le_tsub_right _ _))
     apply le_natDegree_of_mem_supp _ hn
-  · refine' le_sup _
+  · refine le_sup ?_
     rw [mem_support_derivative, tsub_add_cancel_of_le, mem_support_iff]
     · rw [coeff_natDegree, Ne, leadingCoeff_eq_zero]
       intro h
@@ -424,9 +424,9 @@ theorem iterate_derivative_mul {n} (p q : R[X]) :
           n.succ.choose k • (derivative^[n.succ - k] p * derivative^[k] q) :=
       by rw [sum_range_succ' _ n.succ, Nat.choose_zero_right, tsub_zero]
   congr
-  refine' (sum_range_succ' _ _).trans (congr_arg₂ (· + ·) _ _)
+  refine (sum_range_succ' _ _).trans (congr_arg₂ (· + ·) ?_ ?_)
   · rw [sum_range_succ, Nat.choose_succ_self, zero_smul, add_zero]
-    refine' sum_congr rfl fun k hk => _
+    refine sum_congr rfl fun k hk => ?_
     rw [mem_range] at hk
     congr
     omega
@@ -550,14 +550,14 @@ set_option linter.uppercaseLean3 false in
 theorem derivative_prod [DecidableEq ι] {s : Multiset ι} {f : ι → R[X]} :
     derivative (Multiset.map f s).prod =
       (Multiset.map (fun i => (Multiset.map f (s.erase i)).prod * derivative (f i)) s).sum := by
-  refine' Multiset.induction_on s (by simp) fun i s h => _
+  refine Multiset.induction_on s (by simp) fun i s h => ?_
   rw [Multiset.map_cons, Multiset.prod_cons, derivative_mul, Multiset.map_cons _ i s,
     Multiset.sum_cons, Multiset.erase_cons_head, mul_comm (derivative (f i))]
   congr
   rw [h, ← AddMonoidHom.coe_mulLeft, (AddMonoidHom.mulLeft (f i)).map_multiset_sum _,
     AddMonoidHom.coe_mulLeft]
   simp only [Function.comp_apply, Multiset.map_map]
-  refine' congr_arg _ (Multiset.map_congr rfl fun j hj => _)
+  refine congr_arg _ (Multiset.map_congr rfl fun j hj => ?_)
   rw [← mul_assoc, ← Multiset.prod_cons, ← Multiset.map_cons]
   by_cases hij : i = j
   · simp [hij, ← Multiset.prod_cons, ← Multiset.map_cons, Multiset.cons_erase hj]

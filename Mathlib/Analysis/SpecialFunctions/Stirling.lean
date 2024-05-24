@@ -114,7 +114,7 @@ theorem log_stirlingSeq_diff_le_geo_sum (n : ℕ) :
     exact inv_lt_one (one_lt_pow ((lt_add_iff_pos_left 1).mpr <| by positivity) two_ne_zero)
   have hab (k : ℕ) : (1 : ℝ) / (2 * ↑(k + 1) + 1) * ((1 / (2 * ↑(n + 1) + 1)) ^ 2) ^ ↑(k + 1) ≤
       (((1 : ℝ) / (2 * ↑(n + 1) + 1)) ^ 2) ^ ↑(k + 1) := by
-    refine' mul_le_of_le_one_left (pow_nonneg h_nonneg ↑(k + 1)) _
+    refine mul_le_of_le_one_left (pow_nonneg h_nonneg ↑(k + 1)) ?_
     rw [one_div]
     exact inv_le_one (le_add_of_nonneg_left <| by positivity)
   exact hasSum_le hab (log_stirlingSeq_diff_hasSum n) g
@@ -180,7 +180,7 @@ theorem stirlingSeq'_pos (n : ℕ) : 0 < stirlingSeq (n + 1) := by unfold stirli
 -/
 theorem stirlingSeq'_bounded_by_pos_constant : ∃ a, 0 < a ∧ ∀ n : ℕ, a ≤ stirlingSeq (n + 1) := by
   cases' log_stirlingSeq_bounded_by_constant with c h
-  refine' ⟨exp c, exp_pos _, fun n => _⟩
+  refine ⟨exp c, exp_pos _, fun n => ?_⟩
   rw [← le_log_iff_exp_le (stirlingSeq'_pos n)]
   exact h n
 #align stirling.stirling_seq'_bounded_by_pos_constant Stirling.stirlingSeq'_bounded_by_pos_constant
@@ -194,7 +194,7 @@ theorem stirlingSeq'_antitone : Antitone (stirlingSeq ∘ succ) := fun n m h =>
 theorem stirlingSeq_has_pos_limit_a : ∃ a : ℝ, 0 < a ∧ Tendsto stirlingSeq atTop (𝓝 a) := by
   obtain ⟨x, x_pos, hx⟩ := stirlingSeq'_bounded_by_pos_constant
   have hx' : x ∈ lowerBounds (Set.range (stirlingSeq ∘ succ)) := by simpa [lowerBounds] using hx
-  refine' ⟨_, lt_of_lt_of_le x_pos (le_csInf (Set.range_nonempty _) hx'), _⟩
+  refine ⟨_, lt_of_lt_of_le x_pos (le_csInf (Set.range_nonempty _) hx'), ?_⟩
   rw [← Filter.tendsto_add_atTop_iff_nat 1]
   exact tendsto_atTop_ciInf stirlingSeq'_antitone ⟨x, hx'⟩
 #align stirling.stirling_seq_has_pos_limit_a Stirling.stirlingSeq_has_pos_limit_a
@@ -213,8 +213,8 @@ theorem tendsto_self_div_two_mul_self_add_one :
     · skip
     · skip
     rw [one_div, ← add_zero (2 : ℝ)]
-  refine' (((tendsto_const_div_atTop_nhds_zero_nat 1).const_add (2 : ℝ)).inv₀
-    ((add_zero (2 : ℝ)).symm ▸ two_ne_zero)).congr' (eventually_atTop.mpr ⟨1, fun n hn => _⟩)
+  refine (((tendsto_const_div_atTop_nhds_zero_nat 1).const_add (2 : ℝ)).inv₀
+    ((add_zero (2 : ℝ)).symm ▸ two_ne_zero)).congr' (eventually_atTop.mpr ⟨1, fun n hn => ?_⟩)
   rw [add_div' (1 : ℝ) 2 n (cast_ne_zero.mpr (one_le_iff_ne_zero.mp hn)), inv_div]
 #align stirling.tendsto_self_div_two_mul_self_add_one Stirling.tendsto_self_div_two_mul_self_add_one
 

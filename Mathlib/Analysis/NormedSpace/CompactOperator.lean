@@ -260,7 +260,7 @@ theorem IsCompactOperator.comp_clm [AddCommMonoid M₂] [Module R₂ M₂] {f : 
 theorem IsCompactOperator.continuous_comp {f : M₁ → M₂} (hf : IsCompactOperator f) {g : M₂ → M₃}
     (hg : Continuous g) : IsCompactOperator (g ∘ f) := by
   rcases hf with ⟨K, hK, hKf⟩
-  refine' ⟨g '' K, hK.image hg, mem_of_superset hKf _⟩
+  refine ⟨g '' K, hK.image hg, mem_of_superset hKf ?_⟩
   rw [preimage_comp]
   exact preimage_mono (subset_preimage_image _ _)
 #align is_compact_operator.continuous_comp IsCompactOperator.continuous_comp
@@ -339,7 +339,7 @@ theorem IsCompactOperator.continuous {f : M₁ →ₛₗ[σ₁₂] M₂} (hf : I
   haveI : UniformAddGroup M₂ := comm_topologicalAddGroup_is_uniform
   -- Since `f` is linear, we only need to show that it is continuous at zero.
   -- Let `U` be a neighborhood of `0` in `M₂`.
-  refine' continuous_of_continuousAt_zero f fun U hU => _
+  refine continuous_of_continuousAt_zero f fun U hU => ?_
   rw [map_zero] at hU
   -- The compactness of `f` gives us a compact set `K : Set M₂` such that `f ⁻¹' K` is a
   -- neighborhood of `0` in `M₁`.
@@ -353,7 +353,7 @@ theorem IsCompactOperator.continuous {f : M₁ →ₛₗ[σ₁₂] M₂} (hf : I
   -- We have `f ⁻¹' ((σ₁₂ c⁻¹) • K) = c⁻¹ • f ⁻¹' K ∈ 𝓝 0`. Thus, showing that
   -- `(σ₁₂ c⁻¹) • K ⊆ U` is enough to deduce that `f ⁻¹' U ∈ 𝓝 0`.
   suffices (σ₁₂ <| c⁻¹) • K ⊆ U by
-    refine' mem_of_superset _ this
+    refine mem_of_superset ?_ this
     have : IsUnit c⁻¹ := hcnz.isUnit.inv
     rwa [mem_map, preimage_smul_setₛₗ _ _ _ f this, set_smul_mem_nhds_zero_iff (inv_ne_zero hcnz)]
   -- Since `σ₁₂ c⁻¹` = `(σ₁₂ c)⁻¹`, we have to prove that `K ⊆ σ₁₂ c • U`.
@@ -399,7 +399,7 @@ theorem isClosed_setOf_isCompactOperator {𝕜₁ 𝕜₂ : Type*} [Nontrivially
     [AddCommGroup M₂] [NormedSpace 𝕜₁ M₁] [Module 𝕜₂ M₂] [UniformSpace M₂] [UniformAddGroup M₂]
     [ContinuousConstSMul 𝕜₂ M₂] [T2Space M₂] [CompleteSpace M₂] :
     IsClosed { f : M₁ →SL[σ₁₂] M₂ | IsCompactOperator f } := by
-  refine' isClosed_of_closure_subset _
+  refine isClosed_of_closure_subset ?_
   rintro u hu
   rw [mem_closure_iff_nhds_zero] at hu
   suffices TotallyBounded (u '' Metric.closedBall 0 1) by

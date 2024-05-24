@@ -93,7 +93,7 @@ theorem IntermediateField.finiteDimensional_bot (K L : Type*) [Field K] [Field L
 theorem IntermediateField.fixingSubgroup.bot {K L : Type*} [Field K] [Field L] [Algebra K L] :
     IntermediateField.fixingSubgroup (⊥ : IntermediateField K L) = ⊤ := by
   ext f
-  refine' ⟨fun _ => Subgroup.mem_top _, fun _ => _⟩
+  refine ⟨fun _ => Subgroup.mem_top _, fun _ => ?_⟩
   rintro ⟨x, hx : x ∈ (⊥ : IntermediateField K L)⟩
   rw [IntermediateField.mem_bot] at hx
   rcases hx with ⟨y, rfl⟩
@@ -236,8 +236,8 @@ theorem krullTopology_t2 {K L : Type*} [Field K] [Field L] [Algebra K L]
       have h_nhd := GroupFilterBasis.mem_nhds_one (galGroupBasis K L) h_basis
       rw [mem_nhds_iff] at h_nhd
       rcases h_nhd with ⟨W, hWH, hW_open, hW_1⟩
-      refine' ⟨f • W, g • W,
-        ⟨hW_open.leftCoset f, hW_open.leftCoset g, ⟨1, hW_1, mul_one _⟩, ⟨1, hW_1, mul_one _⟩, _⟩⟩
+      refine ⟨f • W, g • W,
+        ⟨hW_open.leftCoset f, hW_open.leftCoset g, ⟨1, hW_1, mul_one _⟩, ⟨1, hW_1, mul_one _⟩, ?_⟩⟩
       rw [Set.disjoint_left]
       rintro σ ⟨w1, hw1, h⟩ ⟨w2, hw2, rfl⟩
       dsimp at h
@@ -268,9 +268,9 @@ theorem krullTopology_totallyDisconnected {K L : Type*} [Field K] [Field L] [Alg
   let E := IntermediateField.adjoin K ({x} : Set L)
   haveI := IntermediateField.adjoin.finiteDimensional
     (Algebra.IsIntegral.isIntegral (R := K) x)
-  refine' ⟨σ • E.fixingSubgroup,
+  refine ⟨σ • E.fixingSubgroup,
     ⟨E.fixingSubgroup_isClosed.leftCoset σ, E.fixingSubgroup_isOpen.leftCoset σ⟩,
-    ⟨1, E.fixingSubgroup.one_mem', mul_one σ⟩, _⟩
+    ⟨1, E.fixingSubgroup.one_mem', mul_one σ⟩, ?_⟩
   simp only [mem_leftCoset_iff, SetLike.mem_coe, IntermediateField.mem_fixingSubgroup_iff,
     not_forall]
   exact ⟨x, IntermediateField.mem_adjoin_simple_self K x, hx⟩

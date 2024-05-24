@@ -505,7 +505,7 @@ variable (R)
 theorem apply_eq_prod_continuousLinearEquivAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B)
     (hb : b ∈ e.baseSet) (z : E b) : e ⟨b, z⟩ = (b, e.continuousLinearEquivAt R b hb z) := by
   ext
-  · refine' e.coe_fst _
+  · refine e.coe_fst ?_
     rw [e.source_eq]
     exact hb
   · simp only [coe_coe, continuousLinearEquivAt_apply]

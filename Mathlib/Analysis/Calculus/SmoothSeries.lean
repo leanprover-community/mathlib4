@@ -234,7 +234,7 @@ theorem contDiff_tsum (hf : ∀ i, ContDiff 𝕜 N (f i)) (hv : ∀ k : ℕ, (k 
   constructor
   · intro m hm
     rw [iteratedFDeriv_tsum hf hv h'f hm]
-    refine' continuous_tsum _ (hv m hm) _
+    refine continuous_tsum ?_ (hv m hm) ?_
     · intro i
       exact ContDiff.continuous_iteratedFDeriv hm (hf i)
     · intro n x
@@ -279,15 +279,15 @@ theorem contDiff_tsum_of_eventually (hf : ∀ i, ContDiff 𝕜 N (f i))
     have : (fun x => ∑' i, f i x) = (fun x => ∑ i in T, f i x) +
         fun x => ∑' i : { i // i ∉ T }, f i x := by
       ext1 x
-      refine' (sum_add_tsum_subtype_compl _ T).symm
-      refine' .of_norm_bounded_eventually _ (hv 0 (zero_le _)) _
+      refine (sum_add_tsum_subtype_compl ?_ T).symm
+      refine .of_norm_bounded_eventually _ (hv 0 (zero_le _)) ?_
       filter_upwards [h'f 0 (zero_le _)] with i hi
       simpa only [norm_iteratedFDeriv_zero] using hi x
     rw [this]
     apply (ContDiff.sum fun i _ => (hf i).of_le hm).add
     have h'u : ∀ k : ℕ, (k : ℕ∞) ≤ m → Summable (v k ∘ ((↑) : { i // i ∉ T } → α)) := fun k hk =>
       (hv k (hk.trans hm)).subtype _
-    refine' contDiff_tsum (fun i => (hf i).of_le hm) h'u _
+    refine contDiff_tsum (fun i => (hf i).of_le hm) h'u ?_
     rintro k ⟨i, hi⟩ x hk
     simp only [t, T, Finite.mem_toFinset, mem_setOf_eq, Finset.mem_range, not_forall, not_le,
       exists_prop, not_exists, not_and, not_lt] at hi

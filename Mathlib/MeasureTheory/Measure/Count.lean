@@ -71,7 +71,7 @@ theorem count_apply_finite [MeasurableSingletonClass α] (s : Set α) (hs : s.Fi
 
 /-- `count` measure evaluates to infinity at infinite sets. -/
 theorem count_apply_infinite (hs : s.Infinite) : count s = ∞ := by
-  refine' top_unique (le_of_tendsto' ENNReal.tendsto_nat_nhds_top fun n => _)
+  refine top_unique (le_of_tendsto' ENNReal.tendsto_nat_nhds_top fun n => ?_)
   rcases hs.exists_subset_card_eq n with ⟨t, ht, rfl⟩
   calc
     (t.card : ℝ≥0∞) = ∑ i in t, 1 := by simp

@@ -297,7 +297,7 @@ theorem exists_subset_of_mem_upShadow (hs : s ∈ ∂⁺ 𝒜) : ∃ t ∈ 𝒜,
 theorem mem_upShadow_iff_exists_mem_card_add :
     s ∈ ∂⁺ ^[k] 𝒜 ↔ ∃ t ∈ 𝒜, t ⊆ s ∧ t.card + k = s.card := by
   induction' k with k ih generalizing 𝒜 s
-  · refine' ⟨fun hs => ⟨s, hs, Subset.refl _, rfl⟩, _⟩
+  · refine ⟨fun hs => ⟨s, hs, Subset.refl _, rfl⟩, ?_⟩
     rintro ⟨t, ht, hst, hcard⟩
     rwa [← eq_of_subset_of_card_le hst hcard.ge]
   simp only [exists_prop, Function.comp_apply, Function.iterate_succ]
@@ -317,7 +317,7 @@ theorem mem_upShadow_iff_exists_mem_card_add :
           exact add_le_add_left (succ_le_of_lt (zero_lt_succ _)) _)
         hts
     rw [add_comm] at hu
-    refine' ⟨u, mem_upShadow_iff_exists_mem_card_add_one.2 ⟨t, ht, htu, hu⟩, hus, _⟩
+    refine ⟨u, mem_upShadow_iff_exists_mem_card_add_one.2 ⟨t, ht, htu, hu⟩, hus, ?_⟩
     rw [hu, ← hcard, add_right_comm]
     rfl
 #align finset.mem_up_shadow_iff_exists_mem_card_add Finset.mem_upShadow_iff_exists_mem_card_add

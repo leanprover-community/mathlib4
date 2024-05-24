@@ -121,7 +121,7 @@ protected theorem continuous {g : X → Y} (hf : LocallyFinite f) (h_cov : ⋃ i
 protected theorem closure (hf : LocallyFinite f) : LocallyFinite fun i => closure (f i) := by
   intro x
   rcases hf x with ⟨s, hsx, hsf⟩
-  refine' ⟨interior s, interior_mem_nhds.2 hsx, hsf.subset fun i hi => _⟩
+  refine ⟨interior s, interior_mem_nhds.2 hsx, hsf.subset fun i hi => ?_⟩
   exact (hi.mono isOpen_interior.closure_inter).of_closure.mono
     (inter_subset_inter_right _ interior_subset)
 #align locally_finite.closure LocallyFinite.closure
@@ -140,7 +140,7 @@ theorem isClosed_iUnion (hf : LocallyFinite f) (hc : ∀ i, IsClosed (f i)) :
 intersection of the complements to `f i`, `x ∉ f i`, is a neighbourhood of `x`. -/
 theorem iInter_compl_mem_nhds (hf : LocallyFinite f) (hc : ∀ i, IsClosed (f i)) (x : X) :
     (⋂ (i) (_ : x ∉ f i), (f i)ᶜ) ∈ 𝓝 x := by
-  refine' IsOpen.mem_nhds _ (mem_iInter₂.2 fun i => id)
+  refine IsOpen.mem_nhds ?_ (mem_iInter₂.2 fun i => id)
   suffices IsClosed (⋃ i : { i // x ∉ f i }, f i) by
     rwa [← isOpen_compl_iff, compl_iUnion, iInter_subtype] at this
   exact (hf.comp_injective Subtype.val_injective).isClosed_iUnion fun i => hc _

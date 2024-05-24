@@ -165,7 +165,7 @@ theorem I_not_prime : ¬I.IsPrime := by
 
 theorem I_isHomogeneous : Ideal.IsHomogeneous (grading R) I := by
   rw [Ideal.IsHomogeneous.iff_exists]
-  refine' ⟨{⟨(2, 2), ⟨0, rfl⟩⟩}, _⟩
+  refine ⟨{⟨(2, 2), ⟨0, rfl⟩⟩}, ?_⟩
   rw [Set.image_singleton]
   rfl
 #align counterexample.counterexample_not_prime_but_homogeneous_prime.I_is_homogeneous Counterexample.CounterexampleNotPrimeButHomogeneousPrime.I_isHomogeneous

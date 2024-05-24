@@ -518,7 +518,7 @@ theorem disjSups_subset_right (hs : s₁ ⊆ s₂) : s₁ ○ t ⊆ s₂ ○ t :
 theorem forall_disjSups_iff {p : α → Prop} :
     (∀ c ∈ s ○ t, p c) ↔ ∀ a ∈ s, ∀ b ∈ t, Disjoint a b → p (a ⊔ b) := by
   simp_rw [mem_disjSups]
-  refine' ⟨fun h a ha b hb hab => h _ ⟨_, ha, _, hb, hab, rfl⟩, _⟩
+  refine ⟨fun h a ha b hb hab => h _ ⟨_, ha, _, hb, hab, rfl⟩, ?_⟩
   rintro h _ ⟨a, ha, b, hb, hab, rfl⟩
   exact h _ ha _ hb hab
 #align finset.forall_disj_sups_iff Finset.forall_disjSups_iff
@@ -588,7 +588,7 @@ section DistribLattice
 variable [DistribLattice α] [OrderBot α] [@DecidableRel α Disjoint] (s t u v : Finset α)
 
 theorem disjSups_assoc : ∀ s t u : Finset α, s ○ t ○ u = s ○ (t ○ u) := by
-  refine' associative_of_commutative_of_le disjSups_comm _
+  refine associative_of_commutative_of_le disjSups_comm ?_
   simp only [le_eq_subset, disjSups_subset_iff, mem_disjSups]
   rintro s t u _ ⟨a, ha, b, hb, hab, rfl⟩ c hc habc
   rw [disjoint_sup_left] at habc

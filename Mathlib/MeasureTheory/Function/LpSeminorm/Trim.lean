@@ -26,8 +26,8 @@ theorem snorm'_trim (hm : m ≤ m0) {f : α → E} (hf : StronglyMeasurable[m] f
     snorm' f q (μ.trim hm) = snorm' f q μ := by
   simp_rw [snorm']
   congr 1
-  refine' lintegral_trim hm _
-  refine' @Measurable.pow_const _ _ _ _ _ _ _ m _ (@Measurable.coe_nnreal_ennreal _ m _ _) q
+  refine lintegral_trim hm ?_
+  refine @Measurable.pow_const _ _ _ _ _ _ _ m _ (@Measurable.coe_nnreal_ennreal _ m _ ?_) q
   apply @StronglyMeasurable.measurable
   exact @StronglyMeasurable.nnnorm α m _ _ _ hf
 #align measure_theory.snorm'_trim MeasureTheory.snorm'_trim
@@ -41,8 +41,8 @@ theorem limsup_trim (hm : m ≤ m0) {f : α → ℝ≥0∞} (hf : Measurable[m] 
   suffices h_meas_eq : μ { x | ¬f x ≤ a } = μ.trim hm { x | ¬f x ≤ a } by
     set_option tactic.skipAssignedInstances false in
     simp_rw [Set.mem_setOf_eq, ae_iff, h_meas_eq]; rfl
-  refine' (trim_measurableSet_eq hm _).symm
-  refine' @MeasurableSet.compl _ _ m (@measurableSet_le ℝ≥0∞ _ _ _ _ m _ _ _ _ _ hf _)
+  refine (trim_measurableSet_eq hm ?_).symm
+  refine @MeasurableSet.compl _ _ m (@measurableSet_le ℝ≥0∞ _ _ _ _ m _ _ _ _ _ hf ?_)
   exact @measurable_const _ _ _ m _
 #align measure_theory.limsup_trim MeasureTheory.limsup_trim
 

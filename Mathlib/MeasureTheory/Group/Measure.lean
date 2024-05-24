@@ -182,7 +182,7 @@ theorem forall_measure_preimage_mul_iff (μ : Measure G) :
       IsMulLeftInvariant μ := by
   trans ∀ g, map (g * ·) μ = μ
   · simp_rw [Measure.ext_iff]
-    refine' forall_congr' fun g => forall_congr' fun A => forall_congr' fun hA => _
+    refine forall_congr' fun g => forall_congr' fun A => forall_congr' fun hA => ?_
     rw [map_apply (measurable_const_mul g) hA]
   exact ⟨fun h => ⟨h⟩, fun h => h.1⟩
 #align measure_theory.forall_measure_preimage_mul_iff MeasureTheory.forall_measure_preimage_mul_iff
@@ -195,7 +195,7 @@ theorem forall_measure_preimage_mul_right_iff (μ : Measure G) :
       IsMulRightInvariant μ := by
   trans ∀ g, map (· * g) μ = μ
   · simp_rw [Measure.ext_iff]
-    refine' forall_congr' fun g => forall_congr' fun A => forall_congr' fun hA => _
+    refine forall_congr' fun g => forall_congr' fun A => forall_congr' fun hA => ?_
     rw [map_apply (measurable_mul_const g) hA]
   exact ⟨fun h => ⟨h⟩, fun h => h.1⟩
 #align measure_theory.forall_measure_preimage_mul_right_iff MeasureTheory.forall_measure_preimage_mul_right_iff

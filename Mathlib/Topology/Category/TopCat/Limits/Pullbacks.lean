@@ -278,11 +278,11 @@ theorem pullback_map_embedding_of_embeddings {W X Y Z S T : TopCat.{u}} (f₁ : 
     (g₁ : Y ⟶ T) (g₂ : Z ⟶ T) {i₁ : W ⟶ Y} {i₂ : X ⟶ Z} (H₁ : Embedding i₁) (H₂ : Embedding i₂)
     (i₃ : S ⟶ T) (eq₁ : f₁ ≫ i₃ = i₁ ≫ g₁) (eq₂ : f₂ ≫ i₃ = i₂ ≫ g₂) :
     Embedding (pullback.map f₁ f₂ g₁ g₂ i₁ i₂ i₃ eq₁ eq₂) := by
-  refine'
+  refine
     embedding_of_embedding_compose (ContinuousMap.continuous_toFun _)
       (show Continuous (prod.lift pullback.fst pullback.snd : pullback g₁ g₂ ⟶ Y ⨯ Z) from
         ContinuousMap.continuous_toFun _)
-      _
+      ?_
   suffices
     Embedding (prod.lift pullback.fst pullback.snd ≫ Limits.prod.map i₁ i₂ : pullback f₁ f₂ ⟶ _) by
     simpa [← coe_comp] using this
@@ -428,7 +428,7 @@ theorem coinduced_of_isColimit {F : J ⥤ TopCat.{max v u}} (c : Cocone F) (hc :
     c.pt.str = ⨆ j, (F.obj j).str.coinduced (c.ι.app j) := by
   let homeo := homeoOfIso (hc.coconePointUniqueUpToIso (colimitCoconeIsColimit F))
   ext
-  refine' homeo.symm.isOpen_preimage.symm.trans (Iff.trans _ isOpen_iSup_iff.symm)
+  refine homeo.symm.isOpen_preimage.symm.trans (Iff.trans ?_ isOpen_iSup_iff.symm)
   exact isOpen_iSup_iff
 #align Top.coinduced_of_is_colimit TopCat.coinduced_of_isColimit
 

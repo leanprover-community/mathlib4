@@ -88,7 +88,7 @@ theorem IsQuasiSeparated.image_of_embedding {s : Set α} (H : IsQuasiSeparated s
 
 theorem OpenEmbedding.isQuasiSeparated_iff (h : OpenEmbedding f) {s : Set α} :
     IsQuasiSeparated s ↔ IsQuasiSeparated (f '' s) := by
-  refine' ⟨fun hs => hs.image_of_embedding h.toEmbedding, _⟩
+  refine ⟨fun hs => hs.image_of_embedding h.toEmbedding, ?_⟩
   intro H U V hU hU' hU'' hV hV' hV''
   rw [h.toEmbedding.isCompact_iff, Set.image_inter h.inj]
   exact

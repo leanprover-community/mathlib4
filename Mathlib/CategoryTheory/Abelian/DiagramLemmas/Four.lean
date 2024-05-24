@@ -112,8 +112,8 @@ theorem epi_of_epi_of_epi_of_mono'
   dsimp at g₀ h₅
   rw [comp_sub] at h₅
   obtain ⟨A₄, π₄, _, f₀, h₆⟩ := surjective_up_to_refinements_of_epi (app' φ 0 _) g₀
-  refine' ⟨A₄, π₄ ≫ π₃ ≫ π₂ ≫ π₁, inferInstance,
-    π₄ ≫ π₃ ≫ f₁ + f₀ ≫ (by exact R₁.map' 0 1), _⟩
+  refine ⟨A₄, π₄ ≫ π₃ ≫ π₂ ≫ π₁, inferInstance,
+    π₄ ≫ π₃ ≫ f₁ + f₀ ≫ (by exact R₁.map' 0 1), ?_⟩
   rw [assoc, assoc, assoc, add_comp, assoc, assoc, assoc, NatTrans.naturality,
     ← reassoc_of% h₆, ← h₅, comp_sub]
   dsimp
@@ -170,7 +170,7 @@ theorem mono_of_epi_of_epi_mono' (hR₁ : R₁.map' 0 2 = 0) (hR₁' : Epi (R₁
   let ψ : mk₃ (R₁.map' 0 1) (R₁.map' 1 2) (0 : _ ⟶ R₁.obj' 0) ⟶
     mk₃ (R₂.map' 0 1) (R₂.map' 1 2) (0 : _ ⟶ R₁.obj' 0) := homMk₃ (app' φ 0) (app' φ 1)
       (app' φ 2) (𝟙 _) (naturality' φ 0 1) (naturality' φ 1 2) (by simp)
-  refine' mono_of_epi_of_mono_of_mono' ψ _ (exact₂_mk _ (by simp) _)
+  refine mono_of_epi_of_mono_of_mono' ψ ?_ (exact₂_mk _ (by simp) ?_)
     (hR₂.exact 0).exact_toComposableArrows h₀ h₁ (by dsimp [ψ]; infer_instance)
   · dsimp
     rw [← Functor.map_comp]
@@ -190,8 +190,8 @@ theorem epi_of_mono_of_epi_of_mono' (hR₁ : R₁.Exact) (hR₂ : R₂.map' 0 2 
   let ψ : mk₃ (0 : R₁.obj' 0 ⟶ _) (R₁.map' 0 1) (R₁.map' 1 2) ⟶
     mk₃ (0 : R₁.obj' 0 ⟶ _) (R₂.map' 0 1) (R₂.map' 1 2) := homMk₃ (𝟙 _) (app' φ 0) (app' φ 1)
       (app' φ 2) (by simp) (naturality' φ 0 1) (naturality' φ 1 2)
-  refine' epi_of_epi_of_epi_of_mono' ψ (hR₁.exact 0).exact_toComposableArrows
-    (exact₂_mk _ (by simp) _) _ (by dsimp [ψ]; infer_instance) h₀ h₁
+  refine epi_of_epi_of_epi_of_mono' ψ (hR₁.exact 0).exact_toComposableArrows
+    (exact₂_mk _ (by simp) ?_) ?_ (by dsimp [ψ]; infer_instance) h₀ h₁
   · rw [ShortComplex.exact_iff_mono _ (by simp)]
     exact hR₂'
   · dsimp
@@ -212,9 +212,9 @@ theorem mono_of_mono_of_mono_of_mono (hR₁ : R₁.Exact)
   let ψ : mk₃ (0 : R₁.obj' 0 ⟶ _) (R₁.map' 0 1) (R₁.map' 1 2) ⟶
     mk₃ (0 : R₁.obj' 0 ⟶ _) (R₂.map' 0 1) (R₂.map' 1 2) := homMk₃ (𝟙 _) (app' φ 0) (app' φ 1)
       (app' φ 2) (by simp) (naturality' φ 0 1) (naturality' φ 1 2)
-  refine' mono_of_epi_of_mono_of_mono' ψ (by simp)
+  refine mono_of_epi_of_mono_of_mono' ψ (by simp)
     (hR₁.exact 0).exact_toComposableArrows
-    (exact₂_mk _ (by simp) _) (by dsimp [ψ]; infer_instance) h₀ h₁
+    (exact₂_mk _ (by simp) ?_) (by dsimp [ψ]; infer_instance) h₀ h₁
   rw [ShortComplex.exact_iff_mono _ (by simp)]
   exact hR₂'
 
@@ -224,7 +224,7 @@ theorem epi_of_epi_of_epi_of_epi (hR₂ : R₂.Exact) (hR₁' : Epi (R₁.map' 1
   let ψ : mk₃ (R₁.map' 0 1) (R₁.map' 1 2) (0 : _ ⟶ R₁.obj' 0) ⟶
     mk₃ (R₂.map' 0 1) (R₂.map' 1 2) (0 : _ ⟶ R₁.obj' 0) := homMk₃ (app' φ 0) (app' φ 1)
       (app' φ 2) (𝟙 _) (naturality' φ 0 1) (naturality' φ 1 2) (by simp)
-  refine' epi_of_epi_of_epi_of_mono' ψ (exact₂_mk _ (by simp) _)
+  refine epi_of_epi_of_epi_of_mono' ψ (exact₂_mk _ (by simp) ?_)
     (hR₂.exact 0).exact_toComposableArrows (by simp)
     h₀ h₁ (by dsimp [ψ]; infer_instance)
   rw [ShortComplex.exact_iff_epi _ (by simp)]

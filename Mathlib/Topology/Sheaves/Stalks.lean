@@ -217,7 +217,7 @@ theorem stalkPushforward_iso_of_openEmbedding {f : X ⟶ Y} (hf : OpenEmbedding 
     erw [colimit.ι_map_assoc, colimit.ι_pre, ← F.map_comp_assoc]
     apply colimit.w ((OpenNhds.inclusion (f x)).op ⋙ f _* F) _
     dsimp only [Functor.op]
-    refine' ((homOfLE _).op : op (unop U) ⟶ _)
+    refine ((homOfLE ?_).op : op (unop U) ⟶ _)
     exact Set.image_preimage_subset _ _
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pushforward.stalk_pushforward_iso_of_open_embedding TopCat.Presheaf.stalkPushforward.stalkPushforward_iso_of_openEmbedding
@@ -563,7 +563,7 @@ set_option linter.uppercaseLean3 false in
 theorem app_surjective_of_stalkFunctor_map_bijective {F G : Sheaf C X} (f : F ⟶ G) (U : Opens X)
     (h : ∀ x : U, Function.Bijective ((stalkFunctor C x.val).map f.1)) :
     Function.Surjective (f.1.app (op U)) := by
-  refine' app_surjective_of_injective_of_locally_surjective f U (fun x => (h x).1) fun t x => _
+  refine app_surjective_of_injective_of_locally_surjective f U (fun x => (h x).1) fun t x => ?_
   -- Now we need to prove our initial claim: That we can find preimages of `t` locally.
   -- Since `f` is surjective on stalks, we can find a preimage `s₀` of the germ of `t` at `x`
   obtain ⟨s₀, hs₀⟩ := (h x).2 (G.presheaf.germ x t)

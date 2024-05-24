@@ -81,7 +81,7 @@ theorem tendsto_of_tendsto_pointwise_of_cauchySeq {f : ℕ → E' →SL[σ₁₂
   have : Tendsto (fun m => ‖f n x - f m x‖) atTop (𝓝 ‖f n x - g x‖) :=
     (tendsto_const_nhds.sub <| tendsto_pi_nhds.1 hg _).norm
   -- Thus it suffices to verify `‖f n x - f m x‖ ≤ b n * ‖x‖` for `m ≥ n`.
-  refine' le_of_tendsto this (eventually_atTop.2 ⟨n, fun m hm => _⟩)
+  refine le_of_tendsto this (eventually_atTop.2 ⟨n, fun m hm => ?_⟩)
   -- This inequality follows from `‖f n - f m‖ ≤ b n`.
   exact (f n - f m).le_of_opNorm_le (hfb _ _ _ le_rfl hm) _
 #align continuous_linear_map.tendsto_of_tendsto_pointwise_of_cauchy_seq ContinuousLinearMap.tendsto_of_tendsto_pointwise_of_cauchySeq
@@ -158,10 +158,10 @@ theorem is_weak_closed_closedBall (f₀ : E' →SL[σ₁₂] F) (r : ℝ) ⦃f :
     (hf : ⇑f ∈ closure (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' closedBall f₀ r)) :
     f ∈ closedBall f₀ r := by
   have hr : 0 ≤ r := nonempty_closedBall.1 (closure_nonempty_iff.1 ⟨_, hf⟩).of_image
-  refine' mem_closedBall_iff_norm.2 (opNorm_le_bound _ hr fun x => _)
+  refine mem_closedBall_iff_norm.2 (opNorm_le_bound _ hr fun x => ?_)
   have : IsClosed { g : E' → F | ‖g x - f₀ x‖ ≤ r * ‖x‖ } :=
     isClosed_Iic.preimage ((@continuous_apply E' (fun _ => F) _ x).sub continuous_const).norm
-  refine' this.closure_subset_iff.2 (image_subset_iff.2 fun g hg => _) hf
+  refine this.closure_subset_iff.2 (image_subset_iff.2 fun g hg => ?_) hf
   exact (g - f₀).le_of_opNorm_le (mem_closedBall_iff_norm.1 hg) _
 #align continuous_linear_map.is_weak_closed_closed_ball ContinuousLinearMap.is_weak_closed_closedBall
 

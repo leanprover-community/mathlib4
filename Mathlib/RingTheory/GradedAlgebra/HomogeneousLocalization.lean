@@ -569,8 +569,8 @@ theorem isUnit_iff_isUnit_val (f : HomogeneousLocalization.AtPrime 𝒜 𝔭) : 
       contrapose! mem1
       erw [Classical.not_not]
       exact Ideal.mul_mem_left _ _ (Ideal.mul_mem_left _ _ mem1)
-    refine' ⟨⟨f, Quotient.mk'' ⟨f.deg, ⟨f.den, f.den_mem_deg⟩, ⟨f.num, f.num_mem_deg⟩, mem2⟩, _, _⟩,
-        rfl⟩
+    refine ⟨⟨f, Quotient.mk'' ⟨f.deg, ⟨f.den, f.den_mem_deg⟩,
+              ⟨f.num, f.num_mem_deg⟩, mem2⟩, ?_, ?_⟩, rfl⟩
       <;> simp only [ext_iff_val, mul_val, val_mk'', f.eq_num_div_den, Localization.mk_mul, one_val]
       <;> convert Localization.mk_self (M := A) _
       <;> rw [mul_comm]

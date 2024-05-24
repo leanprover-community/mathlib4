@@ -606,7 +606,7 @@ theorem image_projection_prod {ι : Type*} {α : ι → Type*} {v : ∀ i : ι, 
     · intro y y_in
       simp only [mem_image, mem_iInter, mem_preimage]
       rcases hv with ⟨z, hz⟩
-      refine' ⟨Function.update z i y, _, update_same i y z⟩
+      refine ⟨Function.update z i y, ?_, update_same i y z⟩
       rw [@forall_update_iff ι α _ z i y fun i t => t ∈ v i]
       exact ⟨y_in, fun j _ => by simpa using hz j⟩
 #align set.image_projection_prod Set.image_projection_prod
@@ -1367,11 +1367,11 @@ theorem iUnion_range_eq_sUnion {α β : Type*} (C : Set (Set α)) {f : ∀ s : C
     (hf : ∀ s : C, Surjective (f s)) : ⋃ y : β, range (fun s : C => (f s y).val) = ⋃₀C := by
   ext x; constructor
   · rintro ⟨s, ⟨y, rfl⟩, ⟨s, hs⟩, rfl⟩
-    refine' ⟨_, hs, _⟩
+    refine ⟨_, hs, ?_⟩
     exact (f ⟨s, hs⟩ y).2
   · rintro ⟨s, hs, hx⟩
     cases' hf ⟨s, hs⟩ ⟨x, hx⟩ with y hy
-    refine' ⟨_, ⟨y, rfl⟩, ⟨s, hs⟩, _⟩
+    refine ⟨_, ⟨y, rfl⟩, ⟨s, hs⟩, ?_⟩
     exact congr_arg Subtype.val hy
 #align set.Union_range_eq_sUnion Set.iUnion_range_eq_sUnion
 
@@ -1499,7 +1499,7 @@ variable (s : Set β) {f : α → β} {U : ι → Set β} (hU : iUnion U = univ)
 
 theorem injective_iff_injective_of_iUnion_eq_univ :
     Injective f ↔ ∀ i, Injective ((U i).restrictPreimage f) := by
-  refine' ⟨fun H i => (U i).restrictPreimage_injective H, fun H x y e => _⟩
+  refine ⟨fun H i => (U i).restrictPreimage_injective H, fun H x y e => ?_⟩
   obtain ⟨i, hi⟩ := Set.mem_iUnion.mp
       (show f x ∈ Set.iUnion U by rw [hU]; trivial)
   injection @H i ⟨x, hi⟩ ⟨y, show f y ∈ U i from e ▸ hi⟩ (Subtype.ext e)
@@ -1507,7 +1507,7 @@ theorem injective_iff_injective_of_iUnion_eq_univ :
 
 theorem surjective_iff_surjective_of_iUnion_eq_univ :
     Surjective f ↔ ∀ i, Surjective ((U i).restrictPreimage f) := by
-  refine' ⟨fun H i => (U i).restrictPreimage_surjective H, fun H x => _⟩
+  refine ⟨fun H i => (U i).restrictPreimage_surjective H, fun H x => ?_⟩
   obtain ⟨i, hi⟩ :=
     Set.mem_iUnion.mp
       (show x ∈ Set.iUnion U by rw [hU]; trivial)
@@ -1529,10 +1529,10 @@ end
 theorem InjOn.image_iInter_eq [Nonempty ι] {s : ι → Set α} {f : α → β} (h : InjOn f (⋃ i, s i)) :
     (f '' ⋂ i, s i) = ⋂ i, f '' s i := by
   inhabit ι
-  refine' Subset.antisymm (image_iInter_subset s f) fun y hy => _
+  refine Subset.antisymm (image_iInter_subset s f) fun y hy => ?_
   simp only [mem_iInter, mem_image] at hy
   choose x hx hy using hy
-  refine' ⟨x default, mem_iInter.2 fun i => _, hy _⟩
+  refine ⟨x default, mem_iInter.2 fun i => ?_, hy _⟩
   suffices x default = x i by
     rw [this]
     apply hx
@@ -1845,7 +1845,7 @@ theorem sInter_prod_sInter {S : Set (Set α)} {T : Set (Set β)} (hS : S.Nonempt
     ⋂₀ S ×ˢ ⋂₀ T = ⋂ r ∈ S ×ˢ T, r.1 ×ˢ r.2 := by
   obtain ⟨s₁, h₁⟩ := hS
   obtain ⟨s₂, h₂⟩ := hT
-  refine' Set.Subset.antisymm (sInter_prod_sInter_subset S T) fun x hx => _
+  refine Set.Subset.antisymm (sInter_prod_sInter_subset S T) fun x hx => ?_
   rw [mem_iInter₂] at hx
   exact ⟨fun s₀ h₀ => (hx (s₀, s₂) ⟨h₀, h₂⟩).1, fun s₀ h₀ => (hx (s₁, s₀) ⟨h₁, h₀⟩).2⟩
 #align set.sInter_prod_sInter Set.sInter_prod_sInter
@@ -2018,7 +2018,7 @@ theorem univ_pi_eq_iInter (t : ∀ i, Set (π i)) : pi univ t = ⋂ i, eval i �
 
 theorem pi_diff_pi_subset (i : Set α) (s t : ∀ a, Set (π a)) :
     pi i s \ pi i t ⊆ ⋃ a ∈ i, eval a ⁻¹' (s a \ t a) := by
-  refine' diff_subset_comm.2 fun x hx a ha => _
+  refine diff_subset_comm.2 fun x hx a ha => ?_
   simp only [mem_diff, mem_pi, mem_iUnion, not_exists, mem_preimage, not_and, not_not,
     eval_apply] at hx
   exact hx.2 _ ha (hx.1 _ ha)

@@ -222,7 +222,7 @@ theorem norm_of_mem_unitary [Nontrivial E] {U : E} (hU : U ∈ unitary E) : ‖U
 @[simp]
 theorem norm_coe_unitary_mul (U : unitary E) (A : E) : ‖(U : E) * A‖ = ‖A‖ := by
   nontriviality E
-  refine' le_antisymm _ _
+  refine le_antisymm ?_ ?_
   · calc
       _ ≤ ‖(U : E)‖ * ‖A‖ := norm_mul_le _ _
       _ = ‖A‖ := by rw [norm_coe_unitary, one_mul]

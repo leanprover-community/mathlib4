@@ -225,7 +225,7 @@ theorem image_sub_const_Ico (h : c ≤ a) :
     rw [mem_Ico] at hx ⊢
     exact ⟨tsub_le_tsub_right hx.1 _, tsub_lt_tsub_right_of_le (h.trans hx.1) hx.2⟩
   · rintro h
-    refine' ⟨x + c, _, add_tsub_cancel_right _ _⟩
+    refine ⟨x + c, ?_, add_tsub_cancel_right _ _⟩
     rw [mem_Ico] at h ⊢
     exact ⟨tsub_le_iff_right.1 h.1, lt_tsub_iff_right.1 h.2⟩
 #align nat.image_sub_const_Ico Nat.image_sub_const_Ico
@@ -237,8 +237,8 @@ theorem Ico_image_const_sub_eq_Ico (hac : a ≤ c) :
   constructor
   · rintro ⟨x, hx, rfl⟩
     rw [mem_Ico] at hx
-    refine'
-      ⟨_,
+    refine
+      ⟨?_,
         ((tsub_le_tsub_iff_left hac).2 hx.1).trans_lt
           ((tsub_lt_tsub_iff_right hac).2 (Nat.lt_succ_self _))⟩
     cases lt_or_le c b with
@@ -251,7 +251,7 @@ theorem Ico_image_const_sub_eq_Ico (hac : a ≤ c) :
   · rintro ⟨hb, ha⟩
     rw [lt_tsub_iff_left, Nat.lt_succ_iff] at ha
     have hx : x ≤ c := (Nat.le_add_left _ _).trans ha
-    refine' ⟨c - x, _, tsub_tsub_cancel_of_le hx⟩
+    refine ⟨c - x, ?_, tsub_tsub_cancel_of_le hx⟩
     rw [mem_Ico]
     exact
       ⟨le_tsub_of_add_le_right ha,
@@ -287,7 +287,7 @@ theorem mod_injOn_Ico (n a : ℕ) : Set.InjOn (· % a) (Finset.Ico n (n + a)) :=
     suffices k = n by contradiction
     refine ih hk ?_ hkl
     simp only [lt_add_iff_pos_right, Set.left_mem_Ico, Finset.coe_Ico, ha]
-  · refine' ih _ _ hkl <;> simp only [Finset.mem_coe, hk, hl]
+  · refine ih ?_ ?_ hkl <;> simp only [Finset.mem_coe, hk, hl]
 #align nat.mod_inj_on_Ico Nat.mod_injOn_Ico
 
 /-- Note that while this lemma cannot be easily generalized to a type class, it holds for ℤ as
@@ -303,17 +303,17 @@ theorem image_Ico_mod (n a : ℕ) : (Ico n (n + a)).image (· % a) = range a := 
   intro hia
   have hn := Nat.mod_add_div n a
   obtain hi | hi := lt_or_le i (n % a)
-  · refine' ⟨i + a * (n / a + 1), ⟨_, _⟩, _⟩
+  · refine ⟨i + a * (n / a + 1), ⟨?_, ?_⟩, ?_⟩
     · rw [add_comm (n / a), mul_add, mul_one, ← add_assoc]
-      refine' hn.symm.le.trans (add_le_add_right _ _)
+      refine hn.symm.le.trans (add_le_add_right ?_ _)
       simpa only [zero_add] using add_le_add (zero_le i) (Nat.mod_lt n ha.bot_lt).le
-    · refine' lt_of_lt_of_le (add_lt_add_right hi (a * (n / a + 1))) _
+    · refine lt_of_lt_of_le (add_lt_add_right hi (a * (n / a + 1))) ?_
       rw [mul_add, mul_one, ← add_assoc, hn]
     · rw [Nat.add_mul_mod_self_left, Nat.mod_eq_of_lt hia]
-  · refine' ⟨i + a * (n / a), ⟨_, _⟩, _⟩
+  · refine ⟨i + a * (n / a), ⟨?_, ?_⟩, ?_⟩
     · exact hn.symm.le.trans (add_le_add_right hi _)
     · rw [add_comm n a]
-      refine' add_lt_add_of_lt_of_le hia (le_trans _ hn.le)
+      refine add_lt_add_of_lt_of_le hia (le_trans ?_ hn.le)
       simp only [zero_le, le_add_iff_nonneg_left]
     · rw [Nat.add_mul_mod_self_left, Nat.mod_eq_of_lt hia]
 #align nat.image_Ico_mod Nat.image_Ico_mod
@@ -325,7 +325,7 @@ open Multiset
 theorem multiset_Ico_map_mod (n a : ℕ) :
     (Multiset.Ico n (n + a)).map (· % a) = Multiset.range a := by
   convert congr_arg Finset.val (image_Ico_mod n a)
-  refine' ((nodup_map_iff_inj_on (Finset.Ico _ _).nodup).2 <| _).dedup.symm
+  refine ((nodup_map_iff_inj_on (Finset.Ico _ _).nodup).2 <| ?_).dedup.symm
   exact mod_injOn_Ico _ _
 #align nat.multiset_Ico_map_mod Nat.multiset_Ico_map_mod
 

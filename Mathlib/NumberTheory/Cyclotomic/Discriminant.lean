@@ -39,12 +39,12 @@ theorem discr_zeta_eq_discr_zeta_sub_one (hζ : IsPrimitiveRoot ζ n) :
   haveI : NumberField K := @NumberField.mk _ _ _ (IsCyclotomicExtension.finiteDimensional {n} ℚ K)
   have H₁ : (aeval (hζ.powerBasis ℚ).gen) (X - 1 : ℤ[X]) = (hζ.subOnePowerBasis ℚ).gen := by simp
   have H₂ : (aeval (hζ.subOnePowerBasis ℚ).gen) (X + 1 : ℤ[X]) = (hζ.powerBasis ℚ).gen := by simp
-  refine' discr_eq_discr_of_toMatrix_coeff_isIntegral _ (fun i j => toMatrix_isIntegral H₁ _ _ _ _)
-    fun i j => toMatrix_isIntegral H₂ _ _ _ _
+  refine discr_eq_discr_of_toMatrix_coeff_isIntegral _ (fun i j => toMatrix_isIntegral H₁ ?_ ?_ _ _)
+    fun i j => toMatrix_isIntegral H₂ ?_ ?_ _ _
   · exact hζ.isIntegral n.pos
   · refine' minpoly.isIntegrallyClosed_eq_field_fractions' (K := ℚ) (hζ.isIntegral n.pos)
   · exact (hζ.isIntegral n.pos).sub isIntegral_one
-  · refine' minpoly.isIntegrallyClosed_eq_field_fractions' (K := ℚ) _
+  · refine minpoly.isIntegrallyClosed_eq_field_fractions' (K := ℚ) ?_
     exact (hζ.isIntegral n.pos).sub isIntegral_one
 #align is_primitive_root.discr_zeta_eq_discr_zeta_sub_one IsPrimitiveRoot.discr_zeta_eq_discr_zeta_sub_one
 

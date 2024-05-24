@@ -77,14 +77,14 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
           field_simp
         _ ≤ 2 * ε := by gcongr; apply sum_geometric_two_le
     have B : 2 ^ (n + 1) * ϕ x ≤ ϕ (u (n + 1)) := by
-      refine' @geom_le (ϕ ∘ u) _ zero_le_two (n + 1) fun m hm => _
+      refine @geom_le (ϕ ∘ u) _ zero_le_two (n + 1) fun m hm => ?_
       exact (IH _ <| Nat.lt_add_one_iff.1 hm).2.le
     exact hu (n + 1) ⟨A, B⟩
   cases' forall_and.mp key with key₁ key₂
   clear hu key
   -- Hence u is Cauchy
   have cauchy_u : CauchySeq u := by
-    refine' cauchySeq_of_le_geometric _ ε one_half_lt_one fun n => _
+    refine cauchySeq_of_le_geometric _ ε one_half_lt_one fun n => ?_
     simpa only [one_div, inv_pow] using key₁ n
   -- So u converges to some y
   obtain ⟨y, limy⟩ : ∃ y, Tendsto u atTop (𝓝 y) := CompleteSpace.complete cauchy_u

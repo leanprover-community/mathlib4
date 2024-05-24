@@ -325,7 +325,7 @@ theorem finSuccEquiv_eq :
   · simp only [finSuccEquiv, optionEquivLeft_apply, aeval_C, AlgEquiv.coe_trans, RingHom.coe_coe,
       coe_eval₂Hom, comp_apply, renameEquiv_apply, eval₂_C, RingHom.coe_comp, rename_C]
     rfl
-  · refine' Fin.cases _ _ i <;> simp [finSuccEquiv]
+  · refine Fin.cases ?_ ?_ i <;> simp [finSuccEquiv]
 #align mv_polynomial.fin_succ_equiv_eq MvPolynomial.finSuccEquiv_eq
 
 @[simp]
@@ -342,9 +342,9 @@ theorem finSuccEquiv_comp_C_eq_C {R : Type u} [CommSemiring R] (n : ℕ) :
       (MvPolynomial.C : R →+* MvPolynomial (Fin n.succ) R) := by
   refine RingHom.ext fun x => ?_
   rw [RingHom.comp_apply]
-  refine'
+  refine
     (MvPolynomial.finSuccEquiv R n).injective
-      (Trans.trans ((MvPolynomial.finSuccEquiv R n).apply_symm_apply _) _)
+      (Trans.trans ((MvPolynomial.finSuccEquiv R n).apply_symm_apply _) ?_)
   simp only [MvPolynomial.finSuccEquiv_apply, MvPolynomial.eval₂Hom_C]
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.fin_succ_equiv_comp_C_eq_C MvPolynomial.finSuccEquiv_comp_C_eq_C
@@ -450,7 +450,7 @@ theorem finSuccEquiv_support (f : MvPolynomial (Fin (n + 1)) R) :
   rw [Polynomial.mem_support_iff, Finset.mem_image, Finsupp.ne_iff]
   constructor
   · rintro ⟨m, hm⟩
-    refine' ⟨cons i m, _, cons_zero _ _⟩
+    refine ⟨cons i m, ?_, cons_zero _ _⟩
     rw [← support_coeff_finSuccEquiv]
     simpa using hm
   · rintro ⟨m, h, rfl⟩

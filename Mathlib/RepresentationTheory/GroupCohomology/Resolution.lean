@@ -109,7 +109,7 @@ theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (
     (actionDiagonalSucc G n).hom.hom f = (f 0, fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) := by
   induction' n with n hn
   · exact Prod.ext rfl (funext fun x => Fin.elim0 x)
-  · refine' Prod.ext rfl (funext fun x => _)
+  · refine Prod.ext rfl (funext fun x => ?_)
 /- Porting note (#11039): broken proof was
     · dsimp only [actionDiagonalSucc]
       simp only [Iso.trans_hom, comp_hom, types_comp_apply, diagonalSucc_hom_hom,
@@ -147,7 +147,7 @@ theorem actionDiagonalSucc_inv_apply {G : Type u} [Group G] {n : ℕ} (g : G) (f
     funext x
     dsimp [actionDiagonalSucc]
     erw [hn, Equiv.piFinSuccAbove_symm_apply]
-    refine' Fin.cases _ (fun i => _) x
+    refine Fin.cases ?_ (fun i => ?_) x
     · simp only [Fin.insertNth_zero, Fin.cons_zero, Fin.partialProd_zero, mul_one]
     · simp only [Fin.cons_succ, Pi.smul_apply, smul_eq_mul, Fin.partialProd_succ', ← mul_assoc]
       rfl
@@ -553,7 +553,7 @@ set_option linter.uppercaseLean3 false in
 /-- Simpler expression for the differential in the standard resolution of `k` as a
 `G`-representation. It sends `(g₀, ..., gₙ₊₁) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ₊₁)`. -/
 theorem d_eq (n : ℕ) : ((groupCohomology.resolution k G).d (n + 1) n).hom = d k G (n + 1) := by
-  refine' Finsupp.lhom_ext' fun x => LinearMap.ext_ring _
+  refine Finsupp.lhom_ext' fun x => LinearMap.ext_ring ?_
   dsimp [groupCohomology.resolution]
 /- Porting note (#11039): broken proof was
   simpa [← @intCast_smul k, simplicial_object.δ] -/
@@ -564,7 +564,7 @@ theorem d_eq (n : ℕ) : ((groupCohomology.resolution k G).d (n + 1) n).hom = d 
   erw [d_of (k := k) x]
 /- Porting note: want to rewrite `LinearMap.smul_apply` but simp/simp_rw won't do it; I need erw,
 so using Finset.sum_congr to get rid of the binder -/
-  refine' Finset.sum_congr rfl fun _ _ => _
+  refine Finset.sum_congr rfl fun _ _ => ?_
   erw [LinearMap.smul_apply]
   rw [Finsupp.lmapDomain_apply, Finsupp.mapDomain_single, Finsupp.smul_single', mul_one]
   rfl

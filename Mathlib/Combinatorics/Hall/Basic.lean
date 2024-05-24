@@ -78,7 +78,7 @@ theorem hallMatchingsOn.nonempty {ι : Type u} {α : Type v} [DecidableEq α] (t
     (h : ∀ s : Finset ι, s.card ≤ (s.biUnion t).card) (ι' : Finset ι) :
     Nonempty (hallMatchingsOn t ι') := by
   classical
-    refine' ⟨Classical.indefiniteDescription _ _⟩
+    refine ⟨Classical.indefiniteDescription _ ?_⟩
     apply (all_card_le_biUnion_card_iff_existsInjective' fun i : ι' => t i).mp
     intro s'
     convert h (s'.image (↑)) using 1
@@ -137,7 +137,7 @@ theorem Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α :
       -- Apply the compactness argument
       obtain ⟨u, hu⟩ := nonempty_sections_of_finite_inverse_system (hallMatchingsFunctor t)
       -- Interpret the resulting section of the inverse limit
-      refine' ⟨_, _, _⟩
+      refine ⟨?_, ?_, ?_⟩
       ·-- Build the matching function from the section
         exact fun i =>
           (u (Opposite.op ({i} : Finset ι))).val ⟨i, by simp only [Opposite.unop_op, mem_singleton]⟩

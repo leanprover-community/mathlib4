@@ -450,8 +450,8 @@ theorem eq_of_base_iff_base_forall {M₁ M₂ : Matroid α} (hE : M₁.E = M₂.
 theorem base_compl_iff_mem_maximals_disjoint_base (hB : B ⊆ M.E := by aesop_mat) :
     M.Base (M.E \ B) ↔ B ∈ maximals (· ⊆ ·) {I | I ⊆ M.E ∧ ∃ B, M.Base B ∧ Disjoint I B} := by
   simp_rw [mem_maximals_setOf_iff, and_iff_right hB, and_imp, forall_exists_index]
-  refine' ⟨fun h ↦ ⟨⟨_, h, disjoint_sdiff_right⟩,
-    fun I hI B' ⟨hB', hIB'⟩ hBI ↦ hBI.antisymm _⟩, fun ⟨⟨B', hB', hBB'⟩,h⟩ ↦ _⟩
+  refine ⟨fun h ↦ ⟨⟨_, h, disjoint_sdiff_right⟩,
+    fun I hI B' ⟨hB', hIB'⟩ hBI ↦ hBI.antisymm ?_⟩, fun ⟨⟨B', hB', hBB'⟩,h⟩ ↦ ?_⟩
   · rw [hB'.eq_of_subset_base h, ← subset_compl_iff_disjoint_right, diff_eq, compl_inter,
       compl_compl] at hIB'
     · exact fun e he ↦ (hIB' he).elim (fun h' ↦ (h' (hI he)).elim) id
@@ -554,7 +554,7 @@ theorem Base.eq_of_subset_indep (hB : M.Base B) (hI : M.Indep I) (hBI : B ⊆ I)
   hBI.antisymm (by rwa [hB.eq_of_subset_base hB' (hBI.trans hB'I)])
 
 theorem base_iff_maximal_indep : M.Base B ↔ M.Indep B ∧ ∀ I, M.Indep I → B ⊆ I → B = I := by
-  refine' ⟨fun h ↦ ⟨h.indep, fun _ ↦ h.eq_of_subset_indep ⟩, fun ⟨h, h'⟩ ↦ _⟩
+  refine ⟨fun h ↦ ⟨h.indep, fun _ ↦ h.eq_of_subset_indep ⟩, fun ⟨h, h'⟩ ↦ ?_⟩
   obtain ⟨B', hB', hBB'⟩ := h.exists_base_superset
   rwa [h' _ hB'.indep hBB']
 
@@ -873,8 +873,8 @@ theorem Base.basis_ground (hB : M.Base B) : M.Basis B M.E :=
 theorem Indep.basis_iff_forall_insert_dep (hI : M.Indep I) (hIX : I ⊆ X) :
     M.Basis I X ↔ ∀ e ∈ X \ I, M.Dep (insert e I) := by
   rw [basis_iff', and_iff_right hIX, and_iff_right hI]
-  refine' ⟨fun h e he ↦ ⟨fun hi ↦ he.2 _, insert_subset (h.2 he.1) hI.subset_ground⟩,
-    fun h ↦ ⟨fun J hJ hIJ hJX ↦ hIJ.antisymm (fun e heJ ↦ by_contra (fun heI ↦ _)),_⟩⟩
+  refine ⟨fun h e he ↦ ⟨fun hi ↦ he.2 ?_, insert_subset (h.2 he.1) hI.subset_ground⟩,
+    fun h ↦ ⟨fun J hJ hIJ hJX ↦ hIJ.antisymm (fun e heJ ↦ by_contra (fun heI ↦ ?_)), ?_⟩⟩
   · exact (h.1 _ hi (subset_insert _ _) (insert_subset he.1 hIX)).symm.subset (mem_insert e I)
   · exact (h e ⟨hJX heJ, heI⟩).not_indep (hJ.subset (insert_subset heJ hIJ))
   rw [← diff_union_of_subset hIX, union_subset_iff, and_iff_left hI.subset_ground]
@@ -893,11 +893,11 @@ theorem Indep.basis_insert_iff (hI : M.Indep I) :
 
 theorem Basis.iUnion_basis_iUnion {ι : Type _} (X I : ι → Set α) (hI : ∀ i, M.Basis (I i) (X i))
     (h_ind : M.Indep (⋃ i, I i)) : M.Basis (⋃ i, I i) (⋃ i, X i) := by
-  refine' h_ind.basis_of_forall_insert
-    (iUnion_subset (fun i ↦ (hI i).subset.trans (subset_iUnion _ _))) _
+  refine h_ind.basis_of_forall_insert
+    (iUnion_subset (fun i ↦ (hI i).subset.trans (subset_iUnion _ _))) ?_
   rintro e ⟨⟨_, ⟨⟨i, hi, rfl⟩, (hes : e ∈ X i)⟩⟩, he'⟩
   rw [mem_iUnion, not_exists] at he'
-  refine' ((hI i).insert_dep ⟨hes, he' _⟩).superset (insert_subset_insert (subset_iUnion _ _)) _
+  refine ((hI i).insert_dep ⟨hes, he' _⟩).superset (insert_subset_insert (subset_iUnion _ _)) ?_
   rw [insert_subset_iff, iUnion_subset_iff, and_iff_left (fun i ↦ (hI i).indep.subset_ground)]
   exact (hI i).subset_ground hes
 
@@ -914,15 +914,15 @@ theorem Basis.basis_sUnion {Xs : Set (Set α)} (hne : Xs.Nonempty) (h : ∀ X �
 
 theorem Indep.basis_setOf_insert_basis (hI : M.Indep I) :
     M.Basis I {x | M.Basis I (insert x I)} := by
-  refine' hI.basis_of_forall_insert (fun e he ↦ (_ : M.Basis _ _))
-    (fun e he ↦ ⟨fun hu ↦ he.2 _, he.1.subset_ground⟩)
+  refine hI.basis_of_forall_insert (fun e he ↦ (?_ : M.Basis _ _))
+    (fun e he ↦ ⟨fun hu ↦ he.2 ?_, he.1.subset_ground⟩)
   · rw [insert_eq_of_mem he]; exact hI.basis_self
   simpa using (hu.eq_of_basis he.1).symm
 
 theorem Basis.union_basis_union (hIX : M.Basis I X) (hJY : M.Basis J Y) (h : M.Indep (I ∪ J)) :
     M.Basis (I ∪ J) (X ∪ Y) := by
   rw [union_eq_iUnion, union_eq_iUnion]
-  refine' Basis.iUnion_basis_iUnion _ _ _ _
+  refine Basis.iUnion_basis_iUnion _ _ ?_ ?_
   · simp only [Bool.forall_bool, cond_false, cond_true]; exact ⟨hJY, hIX⟩
   rwa [← union_eq_iUnion]
 

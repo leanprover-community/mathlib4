@@ -63,11 +63,11 @@ theorem AntitoneOn.integral_le_sum (hf : AntitoneOn f (Icc x₀ (x₀ + a))) :
     _ ≤ ∑ i in Finset.range a, ∫ _ in x₀ + i..x₀ + (i + 1 : ℕ), f (x₀ + i) := by
       apply Finset.sum_le_sum fun i hi => ?_
       have ia : i < a := Finset.mem_range.1 hi
-      refine' intervalIntegral.integral_mono_on (by simp) (hint _ ia) (by simp) fun x hx => _
+      refine intervalIntegral.integral_mono_on (by simp) (hint _ ia) (by simp) fun x hx => ?_
       apply hf _ _ hx.1
       · simp only [ia.le, mem_Icc, le_add_iff_nonneg_right, Nat.cast_nonneg, add_le_add_iff_left,
           Nat.cast_le, and_self_iff]
-      · refine' mem_Icc.2 ⟨le_trans (by simp) hx.1, le_trans hx.2 _⟩
+      · refine mem_Icc.2 ⟨le_trans (by simp) hx.1, le_trans hx.2 ?_⟩
         simp only [add_le_add_iff_left, Nat.cast_le, Nat.succ_le_of_lt ia]
     _ = ∑ i in Finset.range a, f (x₀ + i) := by simp
 #align antitone_on.integral_le_sum AntitoneOn.integral_le_sum
@@ -113,12 +113,12 @@ theorem AntitoneOn.sum_le_integral (hf : AntitoneOn f (Icc x₀ (x₀ + a))) :
     _ ≤ ∑ i in Finset.range a, ∫ x in x₀ + i..x₀ + (i + 1 : ℕ), f x := by
       apply Finset.sum_le_sum fun i hi => ?_
       have ia : i + 1 ≤ a := Finset.mem_range.1 hi
-      refine' intervalIntegral.integral_mono_on (by simp) (by simp) (hint _ ia) fun x hx => _
+      refine intervalIntegral.integral_mono_on (by simp) (by simp) (hint _ ia) fun x hx => ?_
       apply hf _ _ hx.2
-      · refine' mem_Icc.2 ⟨le_trans ((le_add_iff_nonneg_right _).2 (Nat.cast_nonneg _)) hx.1,
-          le_trans hx.2 _⟩
+      · refine mem_Icc.2 ⟨le_trans ((le_add_iff_nonneg_right _).2 (Nat.cast_nonneg _)) hx.1,
+          le_trans hx.2 ?_⟩
         simp only [Nat.cast_le, add_le_add_iff_left, ia]
-      · refine' mem_Icc.2 ⟨(le_add_iff_nonneg_right _).2 (Nat.cast_nonneg _), _⟩
+      · refine mem_Icc.2 ⟨(le_add_iff_nonneg_right _).2 (Nat.cast_nonneg _), ?_⟩
         simp only [add_le_add_iff_left, Nat.cast_le, ia]
     _ = ∫ x in x₀..x₀ + a, f x := by
       convert intervalIntegral.sum_integral_adjacent_intervals hint

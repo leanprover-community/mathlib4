@@ -64,8 +64,8 @@ theorem ContMDiffWithinAt.comp {t : Set M'} {g : M' → M''} (x : M)
       inter_mem_nhdsWithin s (extChartAt_source_mem_nhds I x)]
     rintro x' (hfx' : f x' ∈ e'.source) ⟨hx's, hx'⟩
     simp only [e.map_source hx', true_and_iff, e.left_inv hx', st hx's, *]
-  refine' ((hg.2.comp _ (hf.2.mono (inter_subset_right _ _)) (inter_subset_left _ _)).mono_of_mem
-    (inter_mem _ self_mem_nhdsWithin)).congr_of_eventuallyEq _ _
+  refine ((hg.2.comp _ (hf.2.mono (inter_subset_right _ _)) (inter_subset_left _ _)).mono_of_mem
+    (inter_mem ?_ self_mem_nhdsWithin)).congr_of_eventuallyEq ?_ ?_
   · filter_upwards [A]
     rintro x' ⟨ht, hfx'⟩
     simp only [*, mem_preimage, writtenInExtChartAt, (· ∘ ·), mem_inter_iff, e'.left_inv,
@@ -243,7 +243,7 @@ variable {c : M'}
 
 theorem contMDiff_const : ContMDiff I I' n fun _ : M => c := by
   intro x
-  refine' ⟨continuousWithinAt_const, _⟩
+  refine ⟨continuousWithinAt_const, ?_⟩
   simp only [ContDiffWithinAtProp, (· ∘ ·)]
   exact contDiffWithinAt_const
 #align cont_mdiff_const contMDiff_const

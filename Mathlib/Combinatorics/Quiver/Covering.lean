@@ -131,7 +131,7 @@ theorem Prefunctor.IsCovering.of_comp_right (hψ : ψ.IsCovering) (hφψ : (φ �
 
 theorem Prefunctor.IsCovering.of_comp_left (hφ : φ.IsCovering) (hφψ : (φ ⋙q ψ).IsCovering)
     (φsur : Surjective φ.obj) : ψ.IsCovering := by
-  refine' ⟨fun v => _, fun v => _⟩ <;> obtain ⟨u, rfl⟩ := φsur v
+  refine ⟨fun v => ?_, fun v => ?_⟩ <;> obtain ⟨u, rfl⟩ := φsur v
   exacts [(Bijective.of_comp_iff _ (hφ.star_bijective u)).mp (hφψ.star_bijective u),
     (Bijective.of_comp_iff _ (hφ.costar_bijective u)).mp (hφψ.costar_bijective u)]
 #align prefunctor.is_covering.of_comp_left Prefunctor.IsCovering.of_comp_left

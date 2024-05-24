@@ -53,11 +53,11 @@ theorem rfind' {f} (hf : Nat.Partrec f) :
       (Nat.unpaired fun a m =>
         (Nat.rfind fun n => (fun m => m = 0) <$> f (Nat.pair a (n + m))).map (· + m)) :=
   Partrec₂.unpaired'.2 <| by
-    refine'
+    refine
       Partrec.map
         ((@Partrec₂.unpaired' fun a b : ℕ =>
               Nat.rfind fun n => (fun m => m = 0) <$> f (Nat.pair a (n + b))).1
-          _)
+          ?_)
         (Primrec.nat_add.comp Primrec.snd <| Primrec.snd.comp Primrec.fst).to_comp.to₂
     have : Nat.Partrec (fun a => Nat.rfind (fun n => (fun m => decide (m = 0)) <$>
       Nat.unpaired (fun a b => f (Nat.pair (Nat.unpair a).1 (b + (Nat.unpair a).2)))
@@ -225,7 +225,7 @@ theorem encode_lt_rfind' (cf) : encode cf < encode (rfind' cf) := by
   simp only [encodeCode_eq, encodeCode]
   have := Nat.mul_le_mul_right cf.encodeCode (by decide : 1 ≤ 2 * 2)
   rw [one_mul, mul_assoc] at this
-  refine' lt_of_le_of_lt (le_trans this _) (lt_add_of_pos_right _ (by decide : 0 < 4))
+  refine lt_of_le_of_lt (le_trans this ?_) (lt_add_of_pos_right _ (by decide : 0 < 4))
   exact le_of_lt (Nat.lt_succ_of_le <| Nat.mul_le_mul_left _ <| le_of_lt <|
     Nat.lt_succ_of_le <| Nat.mul_le_mul_left _ <| le_rfl)
 #align nat.partrec.code.encode_lt_rfind' Nat.Partrec.Code.encode_lt_rfind'
@@ -687,7 +687,7 @@ theorem evaln_mono : ∀ {k₁ k₂ c n x}, k₁ ≤ k₂ → x ∈ evaln k₁ c
       simp? [Bind.bind] at h ⊢ says
         simp only [unpaired, bind, pair_unpair, Option.pure_def, Option.mem_def,
           Option.bind_eq_some] at h ⊢
-      refine' h.imp fun x => And.imp (hf _ _) _
+      refine h.imp fun x => And.imp (hf _ _) ?_
       by_cases x0 : x = 0 <;> simp [x0]
       exact evaln_mono hl'
 #align nat.partrec.code.evaln_mono Nat.Partrec.Code.evaln_mono
@@ -709,7 +709,7 @@ theorem evaln_sound : ∀ {k c n x}, x ∈ evaln k c n → x ∈ eval c n
       revert h
       induction' n.unpair.2 with m IH generalizing x <;> simp
       · apply hf
-      · refine' fun y h₁ h₂ => ⟨y, IH _ _, _⟩
+      · refine fun y h₁ h₂ => ⟨y, IH _ ?_, ?_⟩
         · have := evaln_mono k.le_succ h₁
           simp [evaln, Bind.bind] at this
           exact this.2
@@ -722,8 +722,8 @@ theorem evaln_sound : ∀ {k c n x}, x ∈ evaln k c n → x ∈ eval c n
       · have := evaln_sound h₂
         simp [eval] at this
         rcases this with ⟨y, ⟨hy₁, hy₂⟩, rfl⟩
-        refine'
-          ⟨y + 1, ⟨by simpa [add_comm, add_left_comm] using hy₁, fun {i} im => _⟩, by
+        refine
+          ⟨y + 1, ⟨by simpa [add_comm, add_left_comm] using hy₁, fun {i} im => ?_⟩, by
             simp [add_comm, add_left_comm]⟩
         cases' i with i
         · exact ⟨m, by simpa using hf _ _ h₁, m0⟩
@@ -762,11 +762,11 @@ theorem evaln_complete {c n x} : x ∈ eval c n ↔ ∃ k, x ∈ evaln k c n := 
     · intro y hy hx
       rcases IH hy with ⟨k₁, nk₁, hk₁⟩
       rcases hg hx with ⟨k₂, hk₂⟩
-      refine'
+      refine
         ⟨(max k₁ k₂).succ,
           Nat.le_succ_of_le <| le_max_of_le_left <|
             le_trans (le_max_left _ (Nat.pair n₁ m)) nk₁, y,
-          evaln_mono (Nat.succ_le_succ <| le_max_left _ _) _,
+          evaln_mono (Nat.succ_le_succ <| le_max_left _ _) ?_,
           evaln_mono (Nat.succ_le_succ <| Nat.le_succ_of_le <| le_max_right _ _) hk₂⟩
       simp only [evaln.eq_8, bind, unpaired, unpair_pair, Option.mem_def, Option.bind_eq_some,
         Option.guard_eq_some', exists_and_left, exists_const]
@@ -848,10 +848,10 @@ private def G (L : List (List (Option ℕ))) : Option (List (Option ℕ)) :=
 private theorem hG : Primrec G := by
   have a := (Primrec.ofNat (ℕ × Code)).comp (Primrec.list_length (α := List (Option ℕ)))
   have k := Primrec.fst.comp a
-  refine' Primrec.option_some.comp (Primrec.list_map (Primrec.list_range.comp k) (_ : Primrec _))
+  refine Primrec.option_some.comp (Primrec.list_map (Primrec.list_range.comp k) (?_ : Primrec _))
   replace k := k.comp (Primrec.fst (β := ℕ))
   have n := Primrec.snd (α := List (List (Option ℕ))) (β := ℕ)
-  refine' Primrec.nat_casesOn k (_root_.Primrec.const Option.none) (_ : Primrec _)
+  refine Primrec.nat_casesOn k (_root_.Primrec.const Option.none) (?_ : Primrec _)
   have k := k.comp (Primrec.fst (β := ℕ))
   have n := n.comp (Primrec.fst (β := ℕ))
   have k' := Primrec.snd (α := List (List (Option ℕ)) × ℕ) (β := ℕ)
@@ -908,17 +908,17 @@ private theorem hG : Primrec G := by
       (Primrec.snd (α := (List (List (Option ℕ)) × ℕ) × ℕ)
         (β := Code × Code × Option ℕ × Option ℕ))
     have z := Primrec.fst.comp (Primrec.unpair.comp n)
-    refine'
+    refine
       Primrec.nat_casesOn (Primrec.snd.comp (Primrec.unpair.comp n))
         (hlup.comp <| L.pair <| (k.pair cf).pair z)
-        (_ : Primrec _)
+        (?_ : Primrec _)
     have L := L.comp (Primrec.fst (β := ℕ))
     have z := z.comp (Primrec.fst (β := ℕ))
     have y := Primrec.snd
       (α := ((List (List (Option ℕ)) × ℕ) × ℕ) × Code × Code × Option ℕ × Option ℕ) (β := ℕ)
     have h₁ := hlup.comp <| L.pair <| (((k'.pair c).comp Primrec.fst).comp Primrec.fst).pair
       (Primrec₂.natPair.comp z y)
-    refine' Primrec.option_bind h₁ (_ : Primrec _)
+    refine Primrec.option_bind h₁ (?_ : Primrec _)
     have z := z.comp (Primrec.fst (β := ℕ))
     have y := y.comp (Primrec.fst (β := ℕ))
     have i := Primrec.snd
@@ -938,7 +938,7 @@ private theorem hG : Primrec G := by
     have z := Primrec.fst.comp (Primrec.unpair.comp n)
     have m := Primrec.snd.comp (Primrec.unpair.comp n)
     have h₁ := hlup.comp <| L.pair <| (k.pair cf).pair (Primrec₂.natPair.comp z m)
-    refine' Primrec.option_bind h₁ (_ : Primrec _)
+    refine Primrec.option_bind h₁ (?_ : Primrec _)
     have m := m.comp (Primrec.fst (β := ℕ))
     refine Primrec.nat_casesOn Primrec.snd (Primrec.option_some.comp m) ?_
     unfold Primrec₂
@@ -1028,7 +1028,7 @@ open Partrec Computable
 
 theorem eval_eq_rfindOpt (c n) : eval c n = Nat.rfindOpt fun k => evaln k c n :=
   Part.ext fun x => by
-    refine' evaln_complete.trans (Nat.rfindOpt_mono _).symm
+    refine evaln_complete.trans (Nat.rfindOpt_mono ?_).symm
     intro a m n hl; apply evaln_mono hl
 #align nat.partrec.code.eval_eq_rfind_opt Nat.Partrec.Code.eval_eq_rfindOpt
 

@@ -98,7 +98,7 @@ theorem hasSum_expSeries_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) {c s 
 theorem exp_of_re_eq_zero (q : Quaternion ℝ) (hq : q.re = 0) :
     exp ℝ q = ↑(Real.cos ‖q‖) + (Real.sin ‖q‖ / ‖q‖) • q := by
   rw [exp_eq_tsum]
-  refine' HasSum.tsum_eq _
+  refine HasSum.tsum_eq ?_
   simp_rw [← expSeries_apply_eq]
   exact hasSum_expSeries_of_imaginary hq (Real.hasSum_cos _) (Real.hasSum_sin _)
 #align quaternion.exp_of_re_eq_zero Quaternion.exp_of_re_eq_zero

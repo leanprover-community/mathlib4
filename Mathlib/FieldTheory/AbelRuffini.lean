@@ -275,7 +275,7 @@ theorem induction (P : solvableByRad F E → Prop)
     exact ⟨α₀⁻¹, by rw [← hα₀]; rfl, inv α₀ Pα⟩
   · intro α n hn hα Pα
     obtain ⟨α₀, hα₀, Pα⟩ := Pα
-    refine' ⟨⟨α, IsSolvableByRad.rad α n hn hα⟩, rfl, rad _ n hn _⟩
+    refine ⟨⟨α, IsSolvableByRad.rad α n hn hα⟩, rfl, rad _ n hn ?_⟩
     convert Pα
     exact Subtype.ext (Eq.trans ((solvableByRad F E).coe_pow _ n) hα₀.symm)
 #align solvable_by_rad.induction solvableByRad.induction
@@ -292,8 +292,8 @@ theorem isIntegral (α : solvableByRad F E) : IsIntegral F α := by
       (show IsAlgebraic F ↑(⟨α, hα⟩ : integralClosure F (solvableByRad F E)) from hα.isAlgebraic)
   · intro α n hn hα
     obtain ⟨p, h1, h2⟩ := hα.isAlgebraic
-    refine' IsAlgebraic.isIntegral ⟨p.comp (X ^ n),
-      ⟨fun h => h1 (leadingCoeff_eq_zero.mp _), by rw [aeval_comp, aeval_X_pow, h2]⟩⟩
+    refine IsAlgebraic.isIntegral ⟨p.comp (X ^ n),
+      ⟨fun h => h1 (leadingCoeff_eq_zero.mp ?_), by rw [aeval_comp, aeval_X_pow, h2]⟩⟩
     rwa [← leadingCoeff_eq_zero, leadingCoeff_comp, leadingCoeff_X_pow, one_pow, mul_one] at h
     rwa [natDegree_X_pow]
 #align solvable_by_rad.is_integral solvableByRad.isIntegral
@@ -315,7 +315,7 @@ theorem induction3 {α : solvableByRad F E} {n : ℕ} (hn : n ≠ 0) (hα : P (�
   apply gal_isSolvable_of_splits
   · exact ⟨splits_of_splits_of_dvd _ hp (SplittingField.splits (p.comp (X ^ n)))
       (minpoly.dvd F α (by rw [aeval_comp, aeval_X_pow, minpoly.aeval]))⟩
-  · refine' gal_isSolvable_tower p (p.comp (X ^ n)) _ hα _
+  · refine gal_isSolvable_tower p (p.comp (X ^ n)) ?_ hα ?_
     · exact Gal.splits_in_splittingField_of_comp _ _ (by rwa [natDegree_X_pow])
     · obtain ⟨s, hs⟩ := (splits_iff_exists_multiset _).1 (SplittingField.splits p)
       rw [map_comp, Polynomial.map_pow, map_X, hs, mul_comp, C_comp]
@@ -346,8 +346,8 @@ theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮α, β⟯) (
       | inl hx => exact ⟨isIntegral α, hpq.1⟩
       | inr hx => exact ⟨isIntegral β, hpq.2⟩
   have key : minpoly F γ = minpoly F (f ⟨γ, hγ⟩) := by
-    refine' minpoly.eq_of_irreducible_of_monic
-      (minpoly.irreducible (isIntegral γ)) _ (minpoly.monic (isIntegral γ))
+    refine minpoly.eq_of_irreducible_of_monic
+      (minpoly.irreducible (isIntegral γ)) ?_ (minpoly.monic (isIntegral γ))
     suffices aeval (⟨γ, hγ⟩ : F⟮α, β⟯) (minpoly F γ) = 0 by
       rw [aeval_algHom_apply, this, AlgHom.map_zero]
     apply (algebraMap (↥F⟮α, β⟯) (solvableByRad F E)).injective
@@ -358,7 +358,7 @@ theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮α, β⟯) (
     erw [Polynomial.aeval_subalgebra_coe (minpoly F γ)]
     simp
   rw [P, key]
-  refine' gal_isSolvable_of_splits ⟨Normal.splits _ (f ⟨γ, hγ⟩)⟩ (gal_mul_isSolvable hα hβ)
+  refine gal_isSolvable_of_splits ⟨Normal.splits ?_ (f ⟨γ, hγ⟩)⟩ (gal_mul_isSolvable hα hβ)
   apply SplittingField.instNormal
 #align solvable_by_rad.induction2 solvableByRad.induction2
 
@@ -389,7 +389,7 @@ theorem isSolvable' {α : E} {q : F[X]} (q_irred : Irreducible q) (q_aeval : aev
       show minpoly F (⟨α, hα⟩ : solvableByRad F E) = minpoly F α from
         (minpoly.algebraMap_eq (RingHom.injective _) _).symm]
     exact isSolvable ⟨α, hα⟩
-  refine' solvable_of_surjective (Gal.restrictDvd_surjective ⟨C q.leadingCoeff⁻¹, rfl⟩ _)
+  refine solvable_of_surjective (Gal.restrictDvd_surjective ⟨C q.leadingCoeff⁻¹, rfl⟩ ?_)
   rw [mul_ne_zero_iff, Ne, Ne, C_eq_zero, inv_eq_zero]
   exact ⟨q_irred.ne_zero, leadingCoeff_ne_zero.mpr q_irred.ne_zero⟩
 #align solvable_by_rad.is_solvable' solvableByRad.isSolvable'

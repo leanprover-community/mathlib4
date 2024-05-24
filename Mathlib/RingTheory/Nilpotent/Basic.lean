@@ -153,14 +153,14 @@ protected lemma isNilpotent_sum {ι : Type*} {s : Finset ι} {f : ι → R}
 
 protected lemma isNilpotent_mul_left_iff (hy : y ∈ nonZeroDivisorsLeft R) :
     IsNilpotent (x * y) ↔ IsNilpotent x := by
-  refine' ⟨_, h_comm.isNilpotent_mul_left⟩
+  refine ⟨?_, h_comm.isNilpotent_mul_left⟩
   rintro ⟨k, hk⟩
   rw [mul_pow h_comm] at hk
   exact ⟨k, (nonZeroDivisorsLeft R).pow_mem hy k _ hk⟩
 
 protected lemma isNilpotent_mul_right_iff (hx : x ∈ nonZeroDivisorsRight R) :
     IsNilpotent (x * y) ↔ IsNilpotent y := by
-  refine' ⟨_, h_comm.isNilpotent_mul_right⟩
+  refine ⟨?_, h_comm.isNilpotent_mul_right⟩
   rintro ⟨k, hk⟩
   rw [mul_pow h_comm] at hk
   exact ⟨k, (nonZeroDivisorsRight R).pow_mem hx k _ hk⟩

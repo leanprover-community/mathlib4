@@ -177,7 +177,7 @@ theorem not_solvable_by_rad (p : ℕ) (x : ℂ) (hx : aeval x (Φ ℚ a b) = 0) 
   have h_irred := irreducible_Phi a b p hp hpa hpb hp2b
   apply mt (solvableByRad.isSolvable' h_irred hx)
   intro h
-  refine' Equiv.Perm.not_solvable _ (le_of_eq _)
+  refine Equiv.Perm.not_solvable _ (le_of_eq ?_)
     (solvable_of_surjective (gal_Phi a b hab h_irred).2)
   rw_mod_cast [Cardinal.mk_fintype, complex_roots_Phi a b h_irred.separable]
 #align abel_ruffini.not_solvable_by_rad AbelRuffini.not_solvable_by_rad

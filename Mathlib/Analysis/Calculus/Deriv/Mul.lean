@@ -277,7 +277,7 @@ theorem deriv_mul_const_field (v : 𝕜') : deriv (fun y => u y * v) x = deriv u
   · rw [deriv_zero_of_not_differentiableAt hu, zero_mul]
     rcases eq_or_ne v 0 with (rfl | hd)
     · simp only [mul_zero, deriv_const]
-    · refine' deriv_zero_of_not_differentiableAt (mt (fun H => _) hu)
+    · refine deriv_zero_of_not_differentiableAt (mt (fun H => ?_) hu)
       simpa only [mul_inv_cancel_right₀ hd] using H.mul_const v⁻¹
 #align deriv_mul_const_field deriv_mul_const_field
 

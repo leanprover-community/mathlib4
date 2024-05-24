@@ -67,7 +67,7 @@ theorem le_of_all_pow_lt_succ {x y : ℝ} (hx : 1 < x) (hy : 1 < y)
 -/
 theorem le_of_all_pow_lt_succ' {x y : ℝ} (hx : 1 < x) (hy : 0 < y)
     (h : ∀ n : ℕ, 0 < n → x ^ n - 1 < y ^ n) : x ≤ y := by
-  refine' le_of_all_pow_lt_succ hx _ h
+  refine le_of_all_pow_lt_succ hx ?_ h
   by_contra! hy'' : y ≤ 1
   -- Then there exists y' such that 0 < y ≤ 1 < y' < x.
   let y' := (x + 1) / 2

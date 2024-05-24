@@ -100,7 +100,7 @@ theorem Filtration.adapted_natural [MetrizableSpace β] [mβ : MeasurableSpace �
     {u : ι → Ω → β} (hum : ∀ i, StronglyMeasurable[m] (u i)) :
     Adapted (Filtration.natural u hum) u := by
   intro i
-  refine' StronglyMeasurable.mono _ (le_iSup₂_of_le i (le_refl i) le_rfl)
+  refine StronglyMeasurable.mono ?_ (le_iSup₂_of_le i (le_refl i) le_rfl)
   rw [stronglyMeasurable_iff_measurable_separable]
   exact ⟨measurable_iff_comap_le.2 le_rfl, (hum i).isSeparable_range⟩
 #align measure_theory.filtration.adapted_natural MeasureTheory.Filtration.adapted_natural

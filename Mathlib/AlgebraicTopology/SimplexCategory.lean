@@ -725,7 +725,7 @@ theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : mk (
     rcases hθ with ⟨x, y, ⟨h₁, h₂⟩⟩
     by_cases h : x < y
     · exact ⟨x, y, ⟨h₁, h⟩⟩
-    · refine' ⟨y, x, ⟨h₁.symm, _⟩⟩
+    · refine ⟨y, x, ⟨h₁.symm, ?_⟩⟩
       rcases lt_or_eq_of_le (not_lt.mp h) with h' | h'
       · exact h'
       · exfalso

@@ -204,8 +204,8 @@ at most `2 ^ Fintype.card ι`. -/
 theorem card_filter_mem_Icc_le [Fintype ι] (x : ι → ℝ) :
     (π.boxes.filter fun J : Box ι => x ∈ Box.Icc J).card ≤ 2 ^ Fintype.card ι := by
   rw [← Fintype.card_set]
-  refine' Finset.card_le_card_of_inj_on (fun J : Box ι => { i | J.lower i = x i })
-    (fun _ _ => Finset.mem_univ _) _
+  refine Finset.card_le_card_of_inj_on (fun J : Box ι => { i | J.lower i = x i })
+    (fun _ _ => Finset.mem_univ _) ?_
   simpa only [Finset.mem_filter] using π.injOn_setOf_mem_Icc_setOf_lower_eq x
 #align box_integral.prepartition.card_filter_mem_Icc_le BoxIntegral.Prepartition.card_filter_mem_Icc_le
 
@@ -271,7 +271,7 @@ theorem le_iff_nonempty_imp_le_and_iUnion_subset :
     π₁ ≤ π₂ ↔
       (∀ J ∈ π₁, ∀ J' ∈ π₂, (J ∩ J' : Set (ι → ℝ)).Nonempty → J ≤ J') ∧ π₁.iUnion ⊆ π₂.iUnion := by
   constructor
-  · refine' fun H => ⟨fun J hJ J' hJ' Hne => _, iUnion_mono H⟩
+  · refine fun H => ⟨fun J hJ J' hJ' Hne => ?_, iUnion_mono H⟩
     rcases H hJ with ⟨J'', hJ'', Hle⟩
     rcases Hne with ⟨x, hx, hx'⟩
     rwa [π₂.eq_of_mem_of_mem hJ' hJ'' hx' (Hle hx)]
@@ -352,7 +352,7 @@ theorem sum_biUnion_boxes {M : Type*} [AddCommMonoid M] (π : Prepartition I)
     (πi : ∀ J, Prepartition J) (f : Box ι → M) :
     (∑ J in π.boxes.biUnion fun J => (πi J).boxes, f J) =
       ∑ J in π.boxes, ∑ J' in (πi J).boxes, f J' := by
-  refine' Finset.sum_biUnion fun J₁ h₁ J₂ h₂ hne => Finset.disjoint_left.2 fun J' h₁' h₂' => _
+  refine Finset.sum_biUnion fun J₁ h₁ J₂ h₂ hne => Finset.disjoint_left.2 fun J' h₁' h₂' => ?_
   exact hne (π.eq_of_le_of_le h₁ h₂ ((πi J₁).le_of_mem h₁') ((πi J₂).le_of_mem h₂'))
 #align box_integral.prepartition.sum_bUnion_boxes BoxIntegral.Prepartition.sum_biUnion_boxes
 
@@ -498,7 +498,7 @@ theorem mem_restrict' : J₁ ∈ π.restrict J ↔ ∃ J' ∈ π, (J₁ : Set (�
 
 @[mono]
 theorem restrict_mono {π₁ π₂ : Prepartition I} (Hle : π₁ ≤ π₂) : π₁.restrict J ≤ π₂.restrict J := by
-  refine' ofWithBot_mono fun J₁ hJ₁ hne => _
+  refine ofWithBot_mono fun J₁ hJ₁ hne => ?_
   rw [Finset.mem_image] at hJ₁; rcases hJ₁ with ⟨J₁, hJ₁, rfl⟩
   rcases Hle hJ₁ with ⟨J₂, hJ₂, hle⟩
   exact ⟨_, Finset.mem_image_of_mem _ hJ₂, inf_le_inf_left _ <| WithBot.coe_le_coe.2 hle⟩
@@ -512,8 +512,8 @@ theorem monotone_restrict : Monotone fun π : Prepartition I => restrict π J :=
 of prepartitions because they have different types. -/
 theorem restrict_boxes_of_le (π : Prepartition I) (h : I ≤ J) : (π.restrict J).boxes = π.boxes := by
   simp only [restrict, ofWithBot, eraseNone_eq_biUnion]
-  refine' Finset.image_biUnion.trans _
-  refine' (Finset.biUnion_congr rfl _).trans Finset.biUnion_singleton_eq_self
+  refine Finset.image_biUnion.trans ?_
+  refine (Finset.biUnion_congr rfl ?_).trans Finset.biUnion_singleton_eq_self
   intro J' hJ'
   rw [inf_of_le_right, ← WithBot.some_eq_coe, Option.toFinset_some]
   exact WithBot.coe_le_coe.2 ((π.le_of_mem hJ').trans h)
@@ -532,8 +532,8 @@ theorem iUnion_restrict : (π.restrict J).iUnion = (J : Set (ι → ℝ)) ∩ (�
 @[simp]
 theorem restrict_biUnion (πi : ∀ J, Prepartition J) (hJ : J ∈ π) :
     (π.biUnion πi).restrict J = πi J := by
-  refine' (eq_of_boxes_subset_iUnion_superset (fun J₁ h₁ => _) _).symm
-  · refine' (mem_restrict _).2 ⟨J₁, π.mem_biUnion.2 ⟨J, hJ, h₁⟩, (inf_of_le_right _).symm⟩
+  refine (eq_of_boxes_subset_iUnion_superset (fun J₁ h₁ => ?_) ?_).symm
+  · refine (mem_restrict _).2 ⟨J₁, π.mem_biUnion.2 ⟨J, hJ, h₁⟩, (inf_of_le_right ?_).symm⟩
     exact WithBot.coe_le_coe.2 (le_of_mem _ h₁)
   · simp only [iUnion_restrict, iUnion_biUnion, Set.subset_def, Set.mem_inter_iff, Set.mem_iUnion]
     rintro x ⟨hxJ, J₁, h₁, hx⟩
@@ -555,7 +555,7 @@ theorem biUnion_le_iff {πi : ∀ J, Prepartition J} {π' : Prepartition I} :
 
 theorem le_biUnion_iff {πi : ∀ J, Prepartition J} {π' : Prepartition I} :
     π' ≤ π.biUnion πi ↔ π' ≤ π ∧ ∀ J ∈ π, π'.restrict J ≤ πi J := by
-  refine' ⟨fun H => ⟨H.trans (π.biUnion_le πi), fun J hJ => _⟩, _⟩
+  refine ⟨fun H => ⟨H.trans (π.biUnion_le πi), fun J hJ => ?_⟩, ?_⟩
   · rw [← π.restrict_biUnion πi hJ]
     exact restrict_mono H
   · rintro ⟨H, Hi⟩ J' hJ'

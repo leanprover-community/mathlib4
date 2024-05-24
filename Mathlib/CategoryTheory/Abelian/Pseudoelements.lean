@@ -123,7 +123,7 @@ section
     be epimorphisms since in an abelian category, pullbacks of epimorphisms are epimorphisms. -/
 theorem pseudoEqual_trans {P : C} : Transitive (PseudoEqual P) := by
   intro f g h ⟨R, p, q, ep, Eq, comm⟩ ⟨R', p', q', ep', eq', comm'⟩
-  refine' ⟨pullback q p', pullback.fst ≫ p, pullback.snd ≫ q', epi_comp _ _, epi_comp _ _, _⟩
+  refine ⟨pullback q p', pullback.fst ≫ p, pullback.snd ≫ q', epi_comp _ _, epi_comp _ _, ?_⟩
   rw [Category.assoc, comm, ← Category.assoc, pullback.condition, Category.assoc, comm',
     Category.assoc]
 #align category_theory.abelian.pseudo_equal_trans CategoryTheory.Abelian.pseudoEqual_trans
@@ -371,8 +371,8 @@ theorem pseudo_exact_of_exact {P Q R : C} {f : P ⟶ Q} {g : Q ⟶ R} (h : Exact
       -- It remains to show that the image of this element under `f` is pseudo-equal to `b`.
       apply Quotient.sound
       -- `pullback.snd` is an epimorphism because the map onto the image is!
-      refine'
-        ⟨pullback (Abelian.factorThruImage f) c, 𝟙 _, pullback.snd, inferInstance, inferInstance, _⟩
+      refine ⟨pullback (Abelian.factorThruImage f) c, 𝟙 _,
+              pullback.snd, inferInstance, inferInstance, ?_⟩
       -- Now we can verify that the diagram commutes.
       calc
         𝟙 (pullback (Abelian.factorThruImage f) c) ≫ pullback.fst ≫ f = pullback.fst ≫ f :=
@@ -480,7 +480,7 @@ morphisms is the same. -/
 theorem ModuleCat.eq_range_of_pseudoequal {R : Type*} [CommRing R] {G : ModuleCat R} {x y : Over G}
     (h : PseudoEqual G x y) : LinearMap.range x.hom = LinearMap.range y.hom := by
   obtain ⟨P, p, q, hp, hq, H⟩ := h
-  refine' Submodule.ext fun a => ⟨fun ha => _, fun ha => _⟩
+  refine Submodule.ext fun a => ⟨fun ha => ?_, fun ha => ?_⟩
   · obtain ⟨a', ha'⟩ := ha
     obtain ⟨a'', ha''⟩ := (ModuleCat.epi_iff_surjective p).1 hp a'
     refine ⟨q a'', ?_⟩

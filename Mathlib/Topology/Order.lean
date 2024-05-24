@@ -129,7 +129,7 @@ theorem nhds_mkOfNhds (n : α → Filter α) (a : α) (h₀ : pure ≤ n)
 theorem nhds_mkOfNhds_single [DecidableEq α] {a₀ : α} {l : Filter α} (h : pure a₀ ≤ l) (b : α) :
     @nhds α (TopologicalSpace.mkOfNhds (update pure a₀ l)) b =
       (update pure a₀ l : α → Filter α) b := by
-  refine' nhds_mkOfNhds _ _ (le_update_iff.mpr ⟨h, fun _ _ => le_rfl⟩) fun a s hs => _
+  refine nhds_mkOfNhds _ _ (le_update_iff.mpr ⟨h, fun _ _ => le_rfl⟩) fun a s hs => ?_
   rcases eq_or_ne a a₀ with (rfl | ha)
   · filter_upwards [hs] with b hb
     rcases eq_or_ne b a with (rfl | hb)

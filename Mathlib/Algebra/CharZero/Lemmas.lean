@@ -132,7 +132,7 @@ set_option linter.deprecated false
 theorem bit0_injective : Function.Injective (bit0 : R → R) := fun a b h => by
   dsimp [bit0] at h
   simp only [(two_mul a).symm, (two_mul b).symm] at h
-  refine' nat_mul_inj' _ two_ne_zero
+  refine nat_mul_inj' ?_ two_ne_zero
   exact mod_cast h
 #align bit0_injective bit0_injective
 

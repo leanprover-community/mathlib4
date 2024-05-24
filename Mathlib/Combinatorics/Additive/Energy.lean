@@ -93,11 +93,11 @@ lemma mulEnergy_mono (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) : Eₘ[s₁, t₁
 
 @[to_additive] lemma le_mulEnergy : s.card * t.card ≤ Eₘ[s, t] := by
   rw [← card_product]
-  refine'
+  refine
     card_le_card_of_inj_on (@fun x => ((x.1, x.1), x.2, x.2)) (by
     -- Porting note: changed this from a `simp` proof without `only` because of a timeout
       simp only [← and_imp, mem_product, Prod.forall, mem_filter, and_self, and_true, imp_self,
-        implies_true]) fun a _ b _ => _
+        implies_true]) fun a _ b _ => ?_
   simp only [Prod.mk.inj_iff, and_self_iff, and_imp]
   exact Prod.ext
 #align finset.le_multiplicative_energy Finset.le_mulEnergy
@@ -210,7 +210,7 @@ lemma mulEnergy_univ_left : Eₘ[univ, t] = Fintype.card α * t.card ^ 2 := by
   congr with a
   simp only [mem_filter, mem_product, mem_univ, true_and_iff, mem_image, exists_prop,
     Prod.exists]
-  refine' ⟨fun h => ⟨a.1.1 * a.2.2⁻¹, _, _, h.1, by simp [f, mul_right_comm, h.2]⟩, _⟩
+  refine ⟨fun h => ⟨a.1.1 * a.2.2⁻¹, _, _, h.1, by simp [f, mul_right_comm, h.2]⟩, ?_⟩
   rintro ⟨b, c, d, hcd, rfl⟩
   simpa [mul_right_comm]
 #align finset.multiplicative_energy_univ_left Finset.mulEnergy_univ_left

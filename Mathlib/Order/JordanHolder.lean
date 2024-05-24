@@ -270,7 +270,7 @@ theorem length_ofList (l : List X) (hl : l ≠ []) (hc : List.Chain' IsMaximal l
 
 theorem ofList_toList (s : CompositionSeries X) :
     ofList s.toList s.toList_ne_nil s.chain'_toList = s := by
-  refine' ext_fun _ _
+  refine ext_fun ?_ ?_
   · rw [length_ofList, length_toList, Nat.add_one_sub_one]
   · rintro ⟨i, hi⟩
     simp [ofList, toList]
@@ -285,7 +285,7 @@ theorem ofList_toList' (s : CompositionSeries X) :
 @[simp]
 theorem toList_ofList (l : List X) (hl : l ≠ []) (hc : List.Chain' IsMaximal l) :
     toList (ofList l hl hc) = l := by
-  refine' List.ext_get _ _
+  refine List.ext_get ?_ ?_
   · rw [length_toList, length_ofList]
     have := List.length_pos_of_ne_nil hl
     omega
@@ -561,7 +561,7 @@ theorem mem_snoc {s : CompositionSeries X} {x y : X} {hsat : IsMaximal s.top x} 
   simp only [snoc, mem_def]
   constructor
   · rintro ⟨i, rfl⟩
-    refine' Fin.lastCases _ (fun i => _) i
+    refine Fin.lastCases ?_ (fun i => ?_) i
     · right
       simp
     · left
@@ -588,7 +588,7 @@ theorem snoc_eraseTop_top {s : CompositionSeries X} (h : IsMaximal s.eraseTop.to
     Nat.pos_of_ne_zero
       (by
         intro hs
-        refine' ne_of_gt (lt_of_isMaximal h) _
+        refine ne_of_gt (lt_of_isMaximal h) ?_
         simp [top, Fin.ext_iff, hs])
   (eq_snoc_eraseTop h).symm
 #align composition_series.snoc_erase_top_top CompositionSeries.snoc_eraseTop_top
@@ -649,7 +649,7 @@ protected theorem snoc {s₁ s₂ : CompositionSeries X} {x₁ x₂ : X} {hsat�
       _ ≃ Fin (s₂.length + 1) := finSuccEquivLast.symm
 
   ⟨e, fun i => by
-    refine' Fin.lastCases _ _ i
+    refine Fin.lastCases ?_ ?_ i
     · simpa [e, top] using htop
     · intro i
       simpa [e, Fin.succ_castSucc] using hequiv.choose_spec i⟩
@@ -675,12 +675,12 @@ theorem snoc_snoc_swap {s : CompositionSeries X} {x₁ x₂ y₁ y₂ : X} {hsat
   ⟨e, by
     intro i
     dsimp only [e]
-    refine' Fin.lastCases _ (fun i => _) i
+    refine Fin.lastCases ?_ (fun i => ?_) i
     · erw [Equiv.swap_apply_left, snoc_castSucc, snoc_last, Fin.succ_last, snoc_last,
         snoc_castSucc, snoc_castSucc, Fin.succ_castSucc, snoc_castSucc, Fin.succ_last,
         snoc_last]
       exact hr₂
-    · refine' Fin.lastCases _ (fun i => _) i
+    · refine Fin.lastCases ?_ (fun i => ?_) i
       · erw [Equiv.swap_apply_right, snoc_castSucc, snoc_castSucc, snoc_castSucc,
           Fin.succ_castSucc, snoc_castSucc, Fin.succ_last, snoc_last, snoc_last,
           Fin.succ_last, snoc_last]
@@ -757,7 +757,7 @@ theorem exists_top_eq_snoc_equivalant (s : CompositionSeries X) (x : X) (hm : Is
         conv_lhs => rw [eq_snoc_eraseTop h0s]
         exact Equivalent.snoc hteqv (by simpa using (isMaximal_eraseTop_top h0s).iso_refl)
       refine this.trans ?_
-      refine' Equivalent.snoc_snoc_swap _ _
+      refine Equivalent.snoc_snoc_swap ?_ ?_
       · exact
           iso_symm
             (second_iso_of_eq hm

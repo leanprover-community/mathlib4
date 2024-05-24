@@ -45,7 +45,7 @@ def mk {a : α} {s : Set α} (h : a ∈ s) : Semiquot α :=
 #align semiquot.mk Semiquot.mk
 
 theorem ext_s {q₁ q₂ : Semiquot α} : q₁ = q₂ ↔ q₁.s = q₂.s := by
-  refine' ⟨congr_arg _, fun h => _⟩
+  refine ⟨congr_arg _, fun h => ?_⟩
   cases' q₁ with _ v₁; cases' q₂ with _ v₂; congr
   exact Subsingleton.helim (congrArg Trunc (congrArg Set.Elem h)) v₁ v₂
 #align semiquot.ext_s Semiquot.ext_s

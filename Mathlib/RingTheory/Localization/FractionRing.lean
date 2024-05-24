@@ -186,7 +186,7 @@ theorem mk'_eq_zero_iff_eq_zero [Algebra R K] [IsFractionRing R K] {x : R} {y : 
 #align is_fraction_ring.mk'_eq_zero_iff_eq_zero IsFractionRing.mk'_eq_zero_iff_eq_zero
 
 theorem mk'_eq_one_iff_eq {x : A} {y : nonZeroDivisors A} : mk' K x y = 1 ↔ x = y := by
-  refine' ⟨_, fun hxy => by rw [hxy, mk'_self']⟩
+  refine ⟨?_, fun hxy => by rw [hxy, mk'_self']⟩
   intro hxy
   have hy : (algebraMap A K) ↑y ≠ (0 : K) :=
     IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors y.property

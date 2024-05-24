@@ -139,11 +139,11 @@ theorem zetaKernel₁_eq_jacobiTheta {t : ℝ} (ht : 0 < t) :
 /-- Continuity of `zetaKernel₁`. -/
 theorem continuousAt_zetaKernel₁ {t : ℝ} (ht : 0 < t) : ContinuousAt zetaKernel₁ t := by
   have : ContinuousAt (fun u : ℝ => (jacobiTheta (u * I) - 1) / 2) t := by
-    refine' (ContinuousAt.sub _ continuousAt_const).div_const _
-    refine' (continuousAt_jacobiTheta _).comp (ContinuousAt.mul _ continuousAt_const)
+    refine (ContinuousAt.sub ?_ continuousAt_const).div_const _
+    refine (continuousAt_jacobiTheta ?_).comp (ContinuousAt.mul ?_ continuousAt_const)
     · rwa [mul_I_im, ofReal_re]
     · exact continuous_ofReal.continuousAt
-  refine' this.congr (eventually_of_mem (Ioi_mem_nhds ht) fun u hu => _)
+  refine this.congr (eventually_of_mem (Ioi_mem_nhds ht) fun u hu => ?_)
   rw [zetaKernel₁_eq_jacobiTheta hu]
 #align continuous_at_zeta_kernel₁ continuousAt_zetaKernel₁
 
@@ -229,8 +229,8 @@ set_option linter.uppercaseLean3 false in
 
 /-- Bound for `zetaKernel₂` for large `t`. -/
 theorem isBigO_atTop_zetaKernel₂ : IsBigO atTop zetaKernel₂ fun t => exp (-π * t) := by
-  refine'
-    (eventuallyEq_of_mem (Ioi_mem_atTop (1 : ℝ)) fun t ht => _).trans_isBigO
+  refine
+    (eventuallyEq_of_mem (Ioi_mem_atTop (1 : ℝ)) fun t ht => ?_).trans_isBigO
       isBigO_atTop_zetaKernel₁
   rw [zetaKernel₂, Pi.add_apply, indicator_of_not_mem (not_mem_Ioc_of_gt (Set.mem_Iio.mp ht)),
     add_zero]

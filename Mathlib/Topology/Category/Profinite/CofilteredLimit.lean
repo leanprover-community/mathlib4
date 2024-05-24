@@ -72,7 +72,7 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
     dsimp only
     rw [h]
     rintro x ⟨T, hT, hx⟩
-    refine' ⟨_, ⟨⟨T, hT⟩, rfl⟩, _⟩
+    refine ⟨_, ⟨⟨T, hT⟩, rfl⟩, ?_⟩
     dsimp only [forget_map_eq_coe]
     rwa [← (hV ⟨T, hT⟩).2]
   have := hU.1.isCompact.elim_finite_subcover (fun s : S => C.π.app (j s) ⁻¹' V s) hUo hsU
@@ -87,7 +87,7 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
   let f : ∀ s ∈ G, j0 ⟶ j s := fun s hs => (hj0 (Finset.mem_image.mpr ⟨s, hs, rfl⟩)).some
   let W : S → Set (F.obj j0) := fun s => if hs : s ∈ G then F.map (f s hs) ⁻¹' V s else Set.univ
   -- Conclude, using the `j0` and the clopen set of `F.obj j0` obtained above.
-  refine' ⟨j0, ⋃ (s : S) (_ : s ∈ G), W s, _, _⟩
+  refine ⟨j0, ⋃ (s : S) (_ : s ∈ G), W s, ?_, ?_⟩
   · apply isClopen_biUnion_finset
     intro s hs
     dsimp [W]
@@ -201,7 +201,7 @@ theorem exists_locallyConstant {α : Type*} (hC : IsLimit C) (f : LocallyConstan
   cases isEmpty_or_nonempty S
   · suffices ∃ j, IsEmpty (F.obj j) by
       refine this.imp fun j hj => ?_
-      refine' ⟨⟨hj.elim, fun A => _⟩, _⟩
+      refine ⟨⟨hj.elim, fun A => ?_⟩, ?_⟩
       · suffices (fun a ↦ IsEmpty.elim hj a) ⁻¹' A = ∅ by
           rw [this]
           exact isOpen_empty
@@ -224,7 +224,7 @@ theorem exists_locallyConstant {α : Type*} (hC : IsLimit C) (f : LocallyConstan
     exact cond.map CD
   · let f' : LocallyConstant C.pt S := ⟨S.proj, S.proj_isLocallyConstant⟩
     obtain ⟨j, g', hj⟩ := exists_locallyConstant_finite_nonempty _ hC f'
-    refine' ⟨j, ⟨ff ∘ g', g'.isLocallyConstant.comp _⟩, _⟩
+    refine ⟨j, ⟨ff ∘ g', g'.isLocallyConstant.comp _⟩, ?_⟩
     ext1 t
     apply_fun fun e => e t at hj
     dsimp at hj ⊢

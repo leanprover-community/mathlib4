@@ -97,7 +97,7 @@ theorem hasFDerivAt_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
   suffices
     (fun h => exp 𝕂 x * (exp 𝕂 (0 + h) - exp 𝕂 0 - ContinuousLinearMap.id 𝕂 𝔸 h)) =ᶠ[𝓝 0] fun h =>
       exp 𝕂 (x + h) - exp 𝕂 x - exp 𝕂 x • ContinuousLinearMap.id 𝕂 𝔸 h by
-    refine' (IsLittleO.const_mul_left _ _).congr' this (EventuallyEq.refl _ _)
+    refine (IsLittleO.const_mul_left ?_ _).congr' this (EventuallyEq.refl _ _)
     rw [← hasFDerivAt_iff_isLittleO_nhds_zero]
     exact hasFDerivAt_exp_zero_of_radius_pos hpos
   have : ∀ᶠ h in 𝓝 (0 : 𝔸), h ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius :=

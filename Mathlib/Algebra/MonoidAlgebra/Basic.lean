@@ -850,7 +850,7 @@ theorem single_algebraMap_eq_algebraMap_mul_of {A : Type*} [CommSemiring k] [Sem
 theorem induction_on [Semiring k] [Monoid G] {p : MonoidAlgebra k G → Prop} (f : MonoidAlgebra k G)
     (hM : ∀ g, p (of k G g)) (hadd : ∀ f g : MonoidAlgebra k G, p f → p g → p (f + g))
     (hsmul : ∀ (r : k) (f), p f → p (r • f)) : p f := by
-  refine' Finsupp.induction_linear f _ (fun f g hf hg => hadd f g hf hg) fun g r => _
+  refine Finsupp.induction_linear f ?_ (fun f g hf hg => hadd f g hf hg) fun g r => ?_
   · simpa using hsmul 0 (of k G 1) (hM 1)
   · convert hsmul r (of k G g) (hM g)
     -- Porting note: Was `simp only`.
@@ -1730,7 +1730,7 @@ theorem induction_on [AddMonoid G] {p : k[G] → Prop} (f : k[G])
     (hM : ∀ g, p (of k G (Multiplicative.ofAdd g)))
     (hadd : ∀ f g : k[G], p f → p g → p (f + g))
     (hsmul : ∀ (r : k) (f), p f → p (r • f)) : p f := by
-  refine' Finsupp.induction_linear f _ (fun f g hf hg => hadd f g hf hg) fun g r => _
+  refine Finsupp.induction_linear f ?_ (fun f g hf hg => hadd f g hf hg) fun g r => ?_
   · simpa using hsmul 0 (of k G (Multiplicative.ofAdd 0)) (hM 0)
   · convert hsmul r (of k G (Multiplicative.ofAdd g)) (hM g)
     -- Porting note: Was `simp only`.

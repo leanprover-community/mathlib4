@@ -166,7 +166,7 @@ protected theorem of_int (z : ℤ) : padicNorm p z ≤ 1 :=
   else by
     unfold padicNorm
     rw [if_neg _]
-    · refine' zpow_le_one_of_nonpos _ _
+    · refine zpow_le_one_of_nonpos ?_ ?_
       · exact mod_cast le_of_lt hp.1.one_lt
       · rw [padicValRat.of_int, neg_nonpos]
         norm_cast
@@ -315,7 +315,7 @@ open BigOperators
 theorem sum_lt {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α} :
     s.Nonempty → (∀ i ∈ s, padicNorm p (F i) < t) → padicNorm p (∑ i in s, F i) < t := by
   classical
-    refine' s.induction_on (by rintro ⟨-, ⟨⟩⟩) _
+    refine s.induction_on (by rintro ⟨-, ⟨⟩⟩) ?_
     rintro a S haS IH - ht
     by_cases hs : S.Nonempty
     · rw [Finset.sum_insert haS]
@@ -329,7 +329,7 @@ theorem sum_lt {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α} :
 theorem sum_le {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α} :
     s.Nonempty → (∀ i ∈ s, padicNorm p (F i) ≤ t) → padicNorm p (∑ i in s, F i) ≤ t := by
   classical
-    refine' s.induction_on (by rintro ⟨-, ⟨⟩⟩) _
+    refine s.induction_on (by rintro ⟨-, ⟨⟩⟩) ?_
     rintro a S haS IH - ht
     by_cases hs : S.Nonempty
     · rw [Finset.sum_insert haS]

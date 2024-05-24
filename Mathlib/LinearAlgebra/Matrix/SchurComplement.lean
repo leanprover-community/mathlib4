@@ -516,7 +516,7 @@ theorem IsHermitian.fromBlocks₁₁ [Fintype m] [DecidableEq m] {A : Matrix m m
   · intro h
     apply IsHermitian.sub h.2.2.2 hBAB
   · intro h
-    refine' ⟨hA, rfl, conjTranspose_conjTranspose B, _⟩
+    refine ⟨hA, rfl, conjTranspose_conjTranspose B, ?_⟩
     rw [← sub_add_cancel D]
     apply IsHermitian.add h hBAB
 #align matrix.is_hermitian.from_blocks₁₁ Matrix.IsHermitian.fromBlocks₁₁
@@ -534,12 +534,12 @@ theorem PosSemidef.fromBlocks₁₁ [Fintype m] [DecidableEq m] [Fintype n] {A :
     (fromBlocks A B Bᴴ D).PosSemidef ↔ (D - Bᴴ * A⁻¹ * B).PosSemidef := by
   rw [PosSemidef, IsHermitian.fromBlocks₁₁ _ _ hA.1]
   constructor
-  · refine' fun h => ⟨h.1, fun x => _⟩
+  · refine fun h => ⟨h.1, fun x => ?_⟩
     have := h.2 (-((A⁻¹ * B) *ᵥ x) ⊕ᵥ x)
     rw [dotProduct_mulVec, schur_complement_eq₁₁ B D _ _ hA.1, neg_add_self, dotProduct_zero,
       zero_add] at this
     rw [dotProduct_mulVec]; exact this
-  · refine' fun h => ⟨h.1, fun x => _⟩
+  · refine fun h => ⟨h.1, fun x => ?_⟩
     rw [dotProduct_mulVec, ← Sum.elim_comp_inl_inr x, schur_complement_eq₁₁ B D _ _ hA.1]
     apply le_add_of_nonneg_of_le
     · rw [← dotProduct_mulVec]

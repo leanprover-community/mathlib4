@@ -275,7 +275,7 @@ theorem next_get : ∀ (l : List α) (_h : Nodup l) (i : Fin l.length),
       intro H
       suffices (i + 1 : ℕ) = 0 by simpa
       rw [nodup_iff_injective_get] at hn
-      refine' Fin.val_eq_of_eq (@hn ⟨i + 1, hi⟩ ⟨0, by simp⟩ _)
+      refine Fin.val_eq_of_eq (@hn ⟨i + 1, hi⟩ ⟨0, by simp⟩ ?_)
       simpa using H
     have hi' : i ≤ l.length := Nat.le_of_lt_succ (Nat.succ_lt_succ_iff.1 hi)
     rcases hi'.eq_or_lt with (hi' | hi')
@@ -988,11 +988,11 @@ theorem chain_of_pairwise : (∀ a ∈ s, ∀ b ∈ s, r a b) → Chain r s := b
   rw [Cycle.chain_coe_cons]
   apply Pairwise.chain
   rw [pairwise_cons]
-  refine'
-    ⟨fun b hb => _,
+  refine
+    ⟨fun b hb => ?_,
       pairwise_append.2
         ⟨pairwise_of_forall_mem_list fun b hb c hc => hs b (Hl hb) c (Hl hc),
-          pairwise_singleton r a, fun b hb c hc => _⟩⟩
+          pairwise_singleton r a, fun b hb c hc => ?_⟩⟩
   · rw [mem_append] at hb
     cases' hb with hb hb
     · exact hs a Ha b (Hl hb)

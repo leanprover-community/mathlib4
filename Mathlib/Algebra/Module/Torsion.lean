@@ -98,7 +98,7 @@ theorem torsionOf_eq_top_iff (m : M) : torsionOf R M m = ⊤ ↔ m = 0 := by
 @[simp]
 theorem torsionOf_eq_bot_iff_of_noZeroSMulDivisors [Nontrivial R] [NoZeroSMulDivisors R M] (m : M) :
     torsionOf R M m = ⊥ ↔ m ≠ 0 := by
-  refine' ⟨fun h contra => _, fun h => (Submodule.eq_bot_iff _).mpr fun r hr => _⟩
+  refine ⟨fun h contra => ?_, fun h => (Submodule.eq_bot_iff _).mpr fun r hr => ?_⟩
   · rw [contra, torsionOf_zero] at h
     exact bot_ne_top.symm h
   · rw [mem_torsionOf_iff, smul_eq_zero] at hr
@@ -110,12 +110,12 @@ but requires the stronger hypothesis `NoZeroSMulDivisors R M`. -/
 theorem CompleteLattice.Independent.linear_independent' {ι R M : Type*} {v : ι → M} [Ring R]
     [AddCommGroup M] [Module R M] (hv : CompleteLattice.Independent fun i => R ∙ v i)
     (h_ne_zero : ∀ i, Ideal.torsionOf R M (v i) = ⊥) : LinearIndependent R v := by
-  refine' linearIndependent_iff_not_smul_mem_span.mpr fun i r hi => _
+  refine linearIndependent_iff_not_smul_mem_span.mpr fun i r hi => ?_
   replace hv := CompleteLattice.independent_def.mp hv i
   simp only [iSup_subtype', ← Submodule.span_range_eq_iSup (ι := Subtype _), disjoint_iff] at hv
   have : r • v i ∈ ⊥ := by
     rw [← hv, Submodule.mem_inf]
-    refine' ⟨Submodule.mem_span_singleton.mpr ⟨r, rfl⟩, _⟩
+    refine ⟨Submodule.mem_span_singleton.mpr ⟨r, rfl⟩, ?_⟩
     convert hi
     ext
     simp
@@ -261,7 +261,7 @@ theorem mem_torsionBy_iff (x : M) : x ∈ torsionBy R M a ↔ a • x = 0 :=
 
 @[simp]
 theorem mem_torsionBySet_iff (x : M) : x ∈ torsionBySet R M s ↔ ∀ a : s, (a : R) • x = 0 := by
-  refine' ⟨fun h ⟨a, ha⟩ => mem_sInf.mp h _ (Set.mem_image_of_mem _ ha), fun h => mem_sInf.mpr _⟩
+  refine ⟨fun h ⟨a, ha⟩ => mem_sInf.mp h _ (Set.mem_image_of_mem _ ha), fun h => mem_sInf.mpr ?_⟩
   rintro _ ⟨a, ha, rfl⟩; exact h ⟨a, ha⟩
 #align submodule.mem_torsion_by_set_iff Submodule.mem_torsionBySet_iff
 
@@ -321,7 +321,7 @@ namespace Module
 
 @[simp]
 theorem isTorsionBySet_singleton_iff : IsTorsionBySet R M {a} ↔ IsTorsionBy R M a := by
-  refine' ⟨fun h x => @h _ ⟨_, Set.mem_singleton _⟩, fun h x => _⟩
+  refine ⟨fun h x => @h _ ⟨_, Set.mem_singleton _⟩, fun h x => ?_⟩
   rintro ⟨b, rfl : b = a⟩; exact @h _
 #align module.is_torsion_by_singleton_iff Module.isTorsionBySet_singleton_iff
 
@@ -419,7 +419,7 @@ theorem iSup_torsionBySet_ideal_eq_torsionBySet_iInf :
     obtain ⟨μ, hμ⟩ :=
       (mem_iSup_finset_iff_exists_sum _ _).mp
         ((Ideal.eq_top_iff_one _).mp <| (Ideal.iSup_iInf_eq_top_iff_pairwise h _).mpr hp)
-    refine' ⟨fun i => ⟨(μ i : R) • x, _⟩, _⟩
+    refine ⟨fun i => ⟨(μ i : R) • x, ?_⟩, ?_⟩
     · rw [mem_torsionBySet_iff] at hx ⊢
       rintro ⟨a, ha⟩
       rw [smul_smul]
@@ -758,7 +758,7 @@ variable {R M}
 theorem _root_.Submodule.annihilator_top_inter_nonZeroDivisors [Module.Finite R M]
     (hM : Module.IsTorsion R M) : ((⊤ : Submodule R M).annihilator : Set R) ∩ R⁰ ≠ ∅ := by
   obtain ⟨S, hS⟩ := ‹Module.Finite R M›.out
-  refine' Set.Nonempty.ne_empty ⟨_, _, (∏ x in S, (@hM x).choose : R⁰).prop⟩
+  refine Set.Nonempty.ne_empty ⟨_, ?_, (∏ x in S, (@hM x).choose : R⁰).prop⟩
   rw [Submonoid.coe_finset_prod, SetLike.mem_coe, ← hS, mem_annihilator_span]
   intro n
   letI := Classical.decEq M
@@ -914,7 +914,7 @@ namespace AddMonoid
 
 theorem isTorsion_iff_isTorsion_nat [AddCommMonoid M] :
     AddMonoid.IsTorsion M ↔ Module.IsTorsion ℕ M := by
-  refine' ⟨fun h x => _, fun h x => _⟩
+  refine ⟨fun h x => ?_, fun h x => ?_⟩
   · obtain ⟨n, h0, hn⟩ := (h x).exists_nsmul_eq_zero
     exact ⟨⟨n, mem_nonZeroDivisors_of_ne_zero <| ne_of_gt h0⟩, hn⟩
   · rw [isOfFinAddOrder_iff_nsmul_eq_zero]
@@ -924,7 +924,7 @@ theorem isTorsion_iff_isTorsion_nat [AddCommMonoid M] :
 
 theorem isTorsion_iff_isTorsion_int [AddCommGroup M] :
     AddMonoid.IsTorsion M ↔ Module.IsTorsion ℤ M := by
-  refine' ⟨fun h x => _, fun h x => _⟩
+  refine ⟨fun h x => ?_, fun h x => ?_⟩
   · obtain ⟨n, h0, hn⟩ := (h x).exists_nsmul_eq_zero
     exact
       ⟨⟨n, mem_nonZeroDivisors_of_ne_zero <| ne_of_gt <| Int.natCast_pos.mpr h0⟩,

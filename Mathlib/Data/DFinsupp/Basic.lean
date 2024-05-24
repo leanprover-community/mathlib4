@@ -982,7 +982,7 @@ protected theorem induction {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (
   cases' Classical.em (f i = 0) with h h
   · rw [h, single_zero, zero_add]
     exact H2
-  refine' ha _ _ _ _ h H2
+  refine ha _ _ _ ?_ h H2
   rw [erase_same]
 #align dfinsupp.induction DFinsupp.induction
 
@@ -1012,7 +1012,7 @@ theorem add_closure_iUnion_range_single :
 they are equal. -/
 theorem addHom_ext {γ : Type w} [AddZeroClass γ] ⦃f g : (Π₀ i, β i) →+ γ⦄
     (H : ∀ (i : ι) (y : β i), f (single i y) = g (single i y)) : f = g := by
-  refine' AddMonoidHom.eq_of_eqOn_denseM add_closure_iUnion_range_single fun f hf => _
+  refine AddMonoidHom.eq_of_eqOn_denseM add_closure_iUnion_range_single fun f hf => ?_
   simp only [Set.mem_iUnion, Set.mem_range] at hf
   rcases hf with ⟨x, y, rfl⟩
   apply H
@@ -1717,13 +1717,13 @@ theorem prod_mapRange_index {β₁ : ι → Type v₁} {β₂ : ι → Type v₂
     [CommMonoid γ] {f : ∀ i, β₁ i → β₂ i} {hf : ∀ i, f i 0 = 0} {g : Π₀ i, β₁ i} {h : ∀ i, β₂ i → γ}
     (h0 : ∀ i, h i 0 = 1) : (mapRange f hf g).prod h = g.prod fun i b => h i (f i b) := by
   rw [mapRange_def]
-  refine' (Finset.prod_subset support_mk_subset _).trans _
+  refine (Finset.prod_subset support_mk_subset ?_).trans ?_
   · intro i h1 h2
     simp only [mem_support_toFun, ne_eq] at h1
     simp only [Finset.coe_sort_coe, mem_support_toFun, mk_apply, ne_eq, h1, not_false_iff,
       dite_eq_ite, ite_true, not_not] at h2
     simp [h2, h0]
-  · refine' Finset.prod_congr rfl _
+  · refine Finset.prod_congr rfl ?_
     intro i h1
     simp only [mem_support_toFun, ne_eq] at h1
     simp [h1]
@@ -1981,12 +1981,12 @@ theorem _root_.AddSubmonoid.bsupr_eq_mrange_dfinsupp_sumAddHom (p : ι → Prop)
     ⨆ (i) (_ : p i), S i =
       AddMonoidHom.mrange ((sumAddHom fun i => (S i).subtype).comp (filterAddMonoidHom _ p)) := by
   apply le_antisymm
-  · refine' iSup₂_le fun i hi y hy => ⟨DFinsupp.single i ⟨y, hy⟩, _⟩
+  · refine iSup₂_le fun i hi y hy => ⟨DFinsupp.single i ⟨y, hy⟩, ?_⟩
     rw [AddMonoidHom.comp_apply, filterAddMonoidHom_apply, filter_single_pos _ _ hi]
     exact sumAddHom_single _ _ _
   · rintro x ⟨v, rfl⟩
-    refine' dfinsupp_sumAddHom_mem _ _ _ fun i _ => _
-    refine' AddSubmonoid.mem_iSup_of_mem i _
+    refine dfinsupp_sumAddHom_mem _ _ _ fun i _ => ?_
+    refine AddSubmonoid.mem_iSup_of_mem i ?_
     by_cases hp : p i
     · simp [hp]
     · simp [hp]
@@ -2186,7 +2186,7 @@ theorem mapRange.addMonoidHom_id :
 theorem mapRange.addMonoidHom_comp (f : ∀ i, β₁ i →+ β₂ i) (f₂ : ∀ i, β i →+ β₁ i) :
     (mapRange.addMonoidHom fun i => (f i).comp (f₂ i)) =
       (mapRange.addMonoidHom f).comp (mapRange.addMonoidHom f₂) := by
-  refine' AddMonoidHom.ext <| mapRange_comp (fun i x => f i x) (fun i x => f₂ i x) _ _ _
+  refine AddMonoidHom.ext <| mapRange_comp (fun i x => f i x) (fun i x => f₂ i x) ?_ ?_ ?_
   · intros; apply map_zero
   · intros; apply map_zero
   · intros; dsimp; simp only [map_zero]
@@ -2219,7 +2219,7 @@ theorem mapRange.addEquiv_refl :
 theorem mapRange.addEquiv_trans (f : ∀ i, β i ≃+ β₁ i) (f₂ : ∀ i, β₁ i ≃+ β₂ i) :
     (mapRange.addEquiv fun i => (f i).trans (f₂ i)) =
       (mapRange.addEquiv f).trans (mapRange.addEquiv f₂) := by
-  refine' AddEquiv.ext <| mapRange_comp (fun i x => f₂ i x) (fun i x => f i x) _ _ _
+  refine AddEquiv.ext <| mapRange_comp (fun i x => f₂ i x) (fun i x => f i x) ?_ ?_ ?_
   · intros; apply map_zero
   · intros; apply map_zero
   · intros; dsimp; simp only [map_zero]

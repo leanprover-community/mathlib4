@@ -399,7 +399,7 @@ The converse of `relationReflTransGen_of_exists_chain`.
 -/
 theorem exists_chain_of_relationReflTransGen (h : Relation.ReflTransGen r a b) :
     ∃ l, Chain r a l ∧ getLast (a :: l) (cons_ne_nil _ _) = b := by
-  refine' Relation.ReflTransGen.head_induction_on h _ _
+  refine Relation.ReflTransGen.head_induction_on h ?_ ?_
   · exact ⟨[], Chain.nil, rfl⟩
   · intro c d e _ ih
     obtain ⟨l, hl₁, hl₂⟩ := ih

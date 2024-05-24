@@ -465,7 +465,7 @@ theorem dom_dioph {f : (α → ℕ) →. ℕ} (d : DiophPFun f) : Dioph f.Dom :=
 #align dioph.dom_dioph Dioph.dom_dioph
 
 theorem diophFn_iff_pFun (f : (α → ℕ) → ℕ) : DiophFn f = @DiophPFun α f := by
-  refine' congr_arg Dioph (Set.ext fun v => _); exact PFun.lift_graph.symm
+  refine congr_arg Dioph (Set.ext fun v => ?_); exact PFun.lift_graph.symm
 #align dioph.dioph_fn_iff_pfun Dioph.diophFn_iff_pFun
 
 theorem abs_poly_dioph (p : Poly α) : DiophFn fun v => (p v).natAbs :=
@@ -482,7 +482,7 @@ theorem diophPFun_comp1 {S : Set (Option α → ℕ)} (d : Dioph S) {f} (df : Di
   ext (ex1_dioph (d.inter df)) fun v =>
     ⟨fun ⟨x, hS, (h : Exists _)⟩ => by
       rw [show (x ::ₒ v) ∘ some = v from funext fun s => rfl] at h;
-        cases' h with hf h; refine' ⟨hf, _⟩; rw [PFun.fn, h]; exact hS,
+        cases' h with hf h; refine ⟨hf, ?_⟩; rw [PFun.fn, h]; exact hS,
     fun ⟨x, hS⟩ =>
       ⟨f.fn v x, hS, show Exists _ by
         rw [show (f.fn v x ::ₒ v) ∘ some = v from funext fun s => rfl]; exact ⟨x, rfl⟩⟩⟩

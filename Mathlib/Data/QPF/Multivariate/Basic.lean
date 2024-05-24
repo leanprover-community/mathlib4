@@ -243,7 +243,7 @@ theorem liftP_iff_of_isUniform (h : q.IsUniform) {α : TypeVec n} (x : F α) (p 
     rw [← hi]
     apply hf
   intro h'
-  refine' ⟨a, f, rfl, fun _ i => h' _ _ _⟩
+  refine ⟨a, f, rfl, fun _ i => h' _ _ ?_⟩
   rw [supp_eq_of_isUniform h]
   exact ⟨i, mem_univ i, rfl⟩
 #align mvqpf.liftp_iff_of_is_uniform MvQPF.liftP_iff_of_isUniform

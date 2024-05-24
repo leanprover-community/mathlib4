@@ -130,7 +130,7 @@ theorem to_single₀_epi_at_zero [hf : QuasiIso' f] : Epi (f.f 0) := by
 theorem to_single₀_exact_d_f_at_zero [hf : QuasiIso' f] : Exact (X.d 1 0) (f.f 0) := by
   rw [Preadditive.exact_iff_homology'_zero]
   have h : X.d 1 0 ≫ f.f 0 = 0 := by simp only [← f.comm 1 0, single_obj_d, comp_zero]
-  refine' ⟨h, Nonempty.intro (homology'IsoKernelDesc _ _ _ ≪≫ _)⟩
+  refine ⟨h, Nonempty.intro (homology'IsoKernelDesc _ _ _ ≪≫ ?_)⟩
   suffices IsIso (cokernel.desc _ _ h) by apply kernel.ofMono
   rw [← toSingle₀CokernelAtZeroIso_hom_eq]
   infer_instance
@@ -182,7 +182,7 @@ theorem from_single₀_mono_at_zero [hf : QuasiIso' f] : Mono (f.f 0) := by
 theorem from_single₀_exact_f_d_at_zero [hf : QuasiIso' f] : Exact (f.f 0) (X.d 0 1) := by
   rw [Preadditive.exact_iff_homology'_zero]
   have h : f.f 0 ≫ X.d 0 1 = 0 := by simp
-  refine' ⟨h, Nonempty.intro (homology'IsoCokernelLift _ _ _ ≪≫ _)⟩
+  refine ⟨h, Nonempty.intro (homology'IsoCokernelLift _ _ _ ≪≫ ?_)⟩
   suffices IsIso (kernel.lift (X.d 0 1) (f.f 0) h) by apply cokernel.ofEpi
   rw [← fromSingle₀KernelAtZeroIso_inv_eq f]
   infer_instance

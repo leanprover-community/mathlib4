@@ -199,7 +199,7 @@ theorem le_zeroRootSubalgebra : H ≤ zeroRootSubalgebra R L H := by
 @[simp]
 theorem zeroRootSubalgebra_normalizer_eq_self :
     (zeroRootSubalgebra R L H).normalizer = zeroRootSubalgebra R L H := by
-  refine' le_antisymm _ (LieSubalgebra.le_normalizer _)
+  refine le_antisymm ?_ (LieSubalgebra.le_normalizer _)
   intro x hx
   rw [LieSubalgebra.mem_normalizer_iff] at hx
   rw [mem_zeroRootSubalgebra]
@@ -227,7 +227,7 @@ theorem is_cartan_of_zeroRootSubalgebra_eq (h : zeroRootSubalgebra R L H = H) :
 @[simp]
 theorem zeroRootSubalgebra_eq_of_is_cartan (H : LieSubalgebra R L) [H.IsCartanSubalgebra]
     [IsNoetherian R L] : zeroRootSubalgebra R L H = H := by
-  refine' le_antisymm _ (le_zeroRootSubalgebra R L H)
+  refine le_antisymm ?_ (le_zeroRootSubalgebra R L H)
   suffices rootSpace H 0 ≤ H.toLieSubmodule by exact fun x hx => this hx
   obtain ⟨k, hk⟩ := (rootSpace H 0).isNilpotent_iff_exists_self_le_ucs.mp (by infer_instance)
   exact hk.trans (LieSubmodule.ucs_le_of_normalizer_eq_self (by simp) k)

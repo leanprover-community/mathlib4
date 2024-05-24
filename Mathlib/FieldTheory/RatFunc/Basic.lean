@@ -1007,7 +1007,7 @@ theorem num_div_denom (x : RatFunc K) : algebraMap _ _ (num x) / algebraMap _ _ 
   · apply gcd_dvd_left
   · exact algebraMap_ne_zero q_div_ne_zero
   · exact algebraMap_ne_zero hq
-  · refine' algebraMap_ne_zero (mt Polynomial.C_eq_zero.mp _)
+  · refine algebraMap_ne_zero (mt Polynomial.C_eq_zero.mp ?_)
     exact inv_ne_zero (Polynomial.leadingCoeff_ne_zero.mpr q_div_ne_zero)
 #align ratfunc.num_div_denom RatFunc.num_div_denom
 
@@ -1089,7 +1089,7 @@ theorem num_mul_dvd (x y : RatFunc K) : num (x * y) ∣ num x * num y := by
   by_cases hy : y = 0
   · simp [hy]
   rw [num_dvd (mul_ne_zero (num_ne_zero hx) (num_ne_zero hy))]
-  refine' ⟨x.denom * y.denom, mul_ne_zero (denom_ne_zero x) (denom_ne_zero y), _⟩
+  refine ⟨x.denom * y.denom, mul_ne_zero (denom_ne_zero x) (denom_ne_zero y), ?_⟩
   rw [RingHom.map_mul, RingHom.map_mul, ← div_mul_div_comm, num_div_denom, num_div_denom]
 #align ratfunc.num_mul_dvd RatFunc.num_mul_dvd
 
