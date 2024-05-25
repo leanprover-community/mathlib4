@@ -69,7 +69,8 @@ namespace CoreLogic
 
 /-- Iterates over a collection of strings, finding all lines which are longer than 100 chars. -/
 def check_line_length (lines : Array String) : Array (StyleError × Nat) :=
-  let is_too_long := (fun s : String ↦ if s.length > 100 then some (StyleError.lineLength s.length) else none)
+  let is_too_long :=
+    (fun s : String ↦ if s.length > 100 then some (StyleError.lineLength s.length) else none)
   let errors := Array.filterMap is_too_long lines
   -- TODO: enumerate over all lines, and report actual line numbers!
   Array.map (fun e ↦ (e, 42)) errors
@@ -80,12 +81,17 @@ end CoreLogic
 def all_linters : Array (Array String → Array (StyleError × Nat)) := Array.mk
   [CoreLogic.check_line_length]
 
+def add_path (path : System.FilePath) : StyleError × Nat → ErrorContext :=
+  fun (e, n) ↦ ErrorContext.mk e n path
+
 /-- Read a file, apply all text-based linters and return the formatted errors. -/
 def lint_file (path : System.FilePath) : IO Unit := do
   let lines ← IO.FS.lines path
-  let all_output := (Array.map (fun linter ↦ (Array.map (fun (e, n) ↦ ErrorContext.mk e n path) (linter lines))) all_linters)
+  let all_output := (Array.map (fun lint ↦ (Array.map (add_path path)) (lint lines))) all_linters
   -- XXX: this list is currently not sorted: for github, that's probably fine
   format_errors (Array.flatten all_output) (Array.mkEmpty 0)
+
+-- #eval lint_file (System.mkFilePath ["Mathlib", "Tactic", "Linter", "TextBased.lean"])
 
 /-- Lint all files in `Mathlib.lean`. -/
 def check_all_files : IO Unit := do
