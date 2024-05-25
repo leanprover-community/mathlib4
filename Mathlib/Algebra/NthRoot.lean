@@ -22,10 +22,15 @@ class NthRoot (R : Type*) (n : Nat) where
   /-- `n`-th root of a number. -/
   nthRoot : R → R
 
+/-- The square root of a number, `NthRoot.nthRoot 2`. -/
 syntax:arg "√" term:max : term
+/-- The cube root of a number, `NthRoot.nthRoot 3`. -/
 syntax:arg "∛" term:max : term
+/-- The fourth root of a number, `NthRoot.nthRoot 3`. -/
 syntax:arg "∜" term:max : term
+/-- The `n`th root of a number, `NthRoot.nthRoot n`. -/
 syntax:arg superscript(term) "√" term:max : term
+
 macro_rules | `(√ $r:term) => `(NthRoot.nthRoot 2 $r)
 macro_rules | `(∛ $r:term) => `(NthRoot.nthRoot 3 $r)
 macro_rules | `(∜ $r:term) => `(NthRoot.nthRoot 4 $r)
