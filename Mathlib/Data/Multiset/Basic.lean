@@ -2653,6 +2653,11 @@ theorem count_map_eq_count' [DecidableEq β] (f : α → β) (s : Multiset α) (
     contradiction
 #align multiset.count_map_eq_count' Multiset.count_map_eq_count'
 
+@[simp]
+theorem sub_filter_eq_filter_not [DecidableEq α] (p) [DecidablePred p] (s : Multiset α) :
+    s - s.filter p = s.filter (fun a ↦ ¬ p a) := by
+  ext a; by_cases h : p a <;> simp [h]
+
 theorem filter_eq' (s : Multiset α) (b : α) : s.filter (· = b) = replicate (count b s) b :=
   Quotient.inductionOn s fun l => by
     simp only [quot_mk_to_coe, filter_coe, mem_coe, coe_count]
