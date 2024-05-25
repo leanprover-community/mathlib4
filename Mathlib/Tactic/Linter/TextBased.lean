@@ -117,7 +117,8 @@ def format_errors (errors : Array ErrorContext) (exceptions : Array ErrorContext
   -- do we also need to?
   -- TODO: do I need to compare exceptions in a fancy way? for instance, are line number ignored?
   for e in errors do
-    if !exceptions.contains e then IO.println (output_message e)
+    --if !exceptions.contains e then
+    IO.println (output_message e)
 
 /-- Core logic of a text based linter: given a collection of lines,
 return an array of all style errors with line numbers. -/
@@ -228,9 +229,9 @@ def isolated_by_dot_semicolon : LinterCore := fun lines ↦ Id.run do
           if !(previous_line.containsSubstr ", fun" &&
               (previous_line.endsWith "=>" || previous_line.endsWith "↦")) then
             output := output.push (StyleError.leading_by, line_number)
-      else if line.trimLeft.startsWith "by " then
-        -- Let's see what this finds!
-        output := output.push (StyleError.leading_by, line_number)
+      -- else if line.trimLeft.startsWith "by " then
+      --   -- This check is a bit overzealous right now.
+      --   output := output.push (StyleError.leading_by, line_number)
       -- We also check for a "leading where", which has far fewer exceptions.
       if line.trim == "where " then
         output := output.push (StyleError.isolated_where, line_number)
@@ -283,10 +284,16 @@ def check_file_length (lines : Array String) (existing_limit : Option ℕ) : Opt
   none
 end
 
+-- perhaps 1s for just the copyright headers
+-- checking line length is REALLY slow: took 16s for 500 items, for probably 2-3min for mathlib
+-- need to optimise for sure!
+-- contains_broad_imports was perhaps 5s
+-- 2min for isolated_by_dot_semicolon (while spewing out ~4500 errors)
+-- 30s for line_endings
+
 /-- All text-based linters registered in this file. -/
 def all_linters : Array LinterCore := Array.mk
-  [check_line_length, contains_broad_imports, copyright_header, isolated_by_dot_semicolon,
-    line_endings]
+  [check_line_length]
 
 /-- Read a file, apply all text-based linters and return the formatted errors.
 
@@ -301,16 +308,13 @@ def lint_file (path : System.FilePath)
     return
   -- Check first if the file is too long: since this requires mucking with previous exceptions,
   -- I'll just handle this directly.
-  if let some (StyleError.fileTooLong n limit) := check_file_length lines size_limit then
-    let arr := Array.mkArray1 (ErrorContext.mk (StyleError.fileTooLong n limit) 1 path)
-    format_errors arr (Array.mkEmpty 0)
+  -- if let some (StyleError.fileTooLong n limit) := check_file_length lines size_limit then
+  --   let arr := Array.mkArray1 (ErrorContext.mk (StyleError.fileTooLong n limit) 1 path)
+  --   format_errors arr (Array.mkEmpty 0)
   let all_output := (Array.map (fun lint ↦
     (Array.map (fun (e, n) ↦ ErrorContext.mk e n path)) (lint lines))) all_linters
   -- XXX: this list is currently not sorted: for github, that's probably fine
   format_errors (Array.flatten all_output) exceptions
-
--- #eval lint_file (System.mkFilePath ["Mathlib", "Tactic", "Linter", "TextBased.lean"])
---   none (Array.mkEmpty 0)
 
 def parse_style_error (line : String) : Option ErrorContext := Id.run do
   let parts := line.split (fun c ↦ c == ' ')
@@ -362,9 +366,19 @@ def check_all_files : IO Unit := do
   -- Read the style exceptions file.
   let exceptions_file ← IO.FS.lines (System.mkFilePath ["scripts/style-exceptions.txt"])
   let style_exceptions := parse_style_exceptions exceptions_file
+  let mut i := 0
   for module in allModules do
+    i := i + 1
+    if i == 50 then
+      break
     let module := module.stripPrefix "import "
     -- Convert the module name to a file name, then lint that file.
     -- TODO: what's the size limit for *this* file?
     let path := (System.mkFilePath (module.split fun c ↦ (c == '.'))).addExtension "lean"
     lint_file path (some 1500) style_exceptions
+
+-- #eval lint_file (System.mkFilePath ("Mathlib/RingTheory/Kaehler.lean".splitOn "/"))
+--     none (Array.mkEmpty 0)
+
+--run_cmd check_all_files
+--#print "all done"
