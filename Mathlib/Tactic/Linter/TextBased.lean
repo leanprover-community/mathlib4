@@ -340,13 +340,14 @@ def parse_style_error (line : String) : Option ErrorContext := Id.run do
         | "ERR_NUM_LIN" =>
             -- Parse the error message in the script. `none` indicates invalid input.
             match (error_message.get? 0, error_message.get? 3) with
-            | (some mark, some size) =>
-              match (String.toNat? mark, String.toNat? size) with
-              | (some size_limit, some current_size) => some (StyleError.fileTooLong size_limit current_size)
+            | (some limit, some current) =>
+              match (String.toNat? limit, String.toNat? current) with
+              | (some size_limit, some current_size) =>
+                some (StyleError.fileTooLong current_size size_limit)
               | _ => none
             | _ => none
         | _ => none
-      -- I'm omitting the line number... for various reasons.
+      -- Omit the line number, as we don't pay use it anyway.
       err.map fun e ↦ (ErrorContext.mk e 0 path)
     | _ => none -- The line doesn't match the known format: continue.
 
@@ -356,13 +357,14 @@ def parse_style_exceptions (lines : Array String) : Array ErrorContext := Id.run
 /-- Lint all files in `Mathlib.lean`. -/
 def check_all_files : IO Unit := do
   -- Read all module names in Mathlib from `Mathlib.lean`.
-  -- XXX: is this the right path? where to find this?
+  -- The working directory is mathlib's root.
   let allModules ← IO.FS.lines (System.mkFilePath [(toString "Mathlib.lean")])
-  -- Read the style-exceptions. TODO verify the right file path is found!
-  let exceptions_file ← IO.FS.lines (System.mkFilePath ["style-exceptions.txt"])
+  -- Read the style exceptions file.
+  let exceptions_file ← IO.FS.lines (System.mkFilePath ["scripts/style-exceptions.txt"])
   let style_exceptions := parse_style_exceptions exceptions_file
   for module in allModules do
+    let module := module.stripPrefix "import "
     -- Convert the module name to a file name, then lint that file.
     -- TODO: what's the size limit for *this* file?
-    let path := (System.mkFilePath ((module.split fun c ↦ (c == '.')).append [".lean"]))
+    let path := (System.mkFilePath (module.split fun c ↦ (c == '.'))).addExtension "lean"
     lint_file path (some 1500) style_exceptions
