@@ -15,15 +15,25 @@ The famous Cartan-Dynkin-Killing classification of semisimple Lie algebras rende
 most important classes of Lie algebras. In this file we define simple and semisimple Lie algebras
 and prove some basic related results.
 
-## Main definitions
+## Main declarations
 
-  * `LieModule.IsIrreducible`
-  * `LieAlgebra.IsSimple`
-  * `LieAlgebra.HasTrivialRadical`
-  * `LieAlgebra.IsSemisimple`
-  * `LieAlgebra.hasTrivialRadical_iff_no_solvable_ideals`
-  * `LieAlgebra.hasTrivialRadical_iff_no_abelian_ideals`
-  * `LieAlgebra.abelian_radical_iff_solvable_is_abelian`
+* `LieModule.IsIrreducible`
+* `LieAlgebra.IsSimple`
+* `LieAlgebra.HasTrivialRadical`
+* `LieAlgebra.SemisimpleGenerators`:
+  An abstraction that captures the conditions on a set of ideals
+  that ensure that they generate a semisimple Lie algebra.
+* `LieAlgebra.IsSemisimple`
+* `LieAlgebra.IsSemisimple.hasTrivialRadical`: A semisimple Lie algebra has trivial radical.
+* `LieAlgebra.IsSemisimple.complementedLattice`:
+  The lattice of ideals in a semisimple Lie algebra is a complemented lattice.
+  In particular, this implies that the lattice of ideals is atomistic:
+  every ideal is a direct sum of atoms (simple ideals), in a unique way.
+* `LieAlgebra.IsSemisimple.distribLattice`:
+  The lattice of ideals in a semisimple Lie algebra is a distributive lattice.
+* `LieAlgebra.hasTrivialRadical_iff_no_solvable_ideals`
+* `LieAlgebra.hasTrivialRadical_iff_no_abelian_ideals`
+* `LieAlgebra.abelian_radical_iff_solvable_is_abelian`
 
 ## Tags
 
@@ -82,6 +92,11 @@ theorem HasTrivialRadical.eq_bot_of_isSolvable [HasTrivialRadical R L]
     (I : LieIdeal R L) [hI : IsSolvable R I] : I = ⊥ :=
   sSup_eq_bot.mp radical_eq_bot _ hI
 
+@[simp]
+theorem HasTrivialRadical.center_eq_bot [HasTrivialRadical R L] : center R L = ⊥ :=
+  HasTrivialRadical.eq_bot_of_isSolvable _
+#align lie_algebra.center_eq_bot_of_semisimple LieAlgebra.HasTrivialRadical.center_eq_bot
+
 variable {R L} in
 theorem hasTrivialRadical_of_no_solvable_ideals (h : ∀ I : LieIdeal R L, IsSolvable R I → I = ⊥) :
     HasTrivialRadical R L :=
@@ -101,11 +116,6 @@ theorem hasTrivialRadical_iff_no_abelian_ideals :
     exact abelian_derivedAbelianOfIdeal I
 #align lie_algebra.is_semisimple_iff_no_abelian_ideals LieAlgebra.hasTrivialRadical_iff_no_abelian_ideals
 
-@[simp]
-theorem HasTrivialRadical.center_eq_bot [HasTrivialRadical R L] : center R L = ⊥ :=
-  HasTrivialRadical.eq_bot_of_isSolvable _
-#align lie_algebra.center_eq_bot_of_semisimple LieAlgebra.HasTrivialRadical.center_eq_bot
-
 /-- A Lie algebra is simple if it is irreducible as a Lie module over itself via the adjoint
 action, and it is non-Abelian. -/
 class IsSimple : Prop where
@@ -113,7 +123,11 @@ class IsSimple : Prop where
   non_abelian : ¬IsLieAbelian L
 #align lie_algebra.is_simple LieAlgebra.IsSimple
 
-instance [IsSimple R L] : LieModule.IsIrreducible R L L := by
+namespace IsSimple
+
+variable [IsSimple R L]
+
+instance : LieModule.IsIrreducible R L L := by
   have : Nontrivial (LieIdeal R L) := by
     constructor
     by_contra! H
@@ -126,10 +140,10 @@ instance [IsSimple R L] : LieModule.IsIrreducible R L L := by
   apply IsSimple.eq_bot_or_eq_top
 
 variable {R L} in
-lemma eq_top_of_isAtom [IsSimple R L] (I : LieIdeal R L) (hI : IsAtom I) : I = ⊤ :=
+lemma eq_top_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : I = ⊤ :=
   (IsSimple.eq_bot_or_eq_top I).resolve_left hI.1
 
-lemma isAtom_top [IsSimple R L] : IsAtom (⊤ : LieIdeal R L) := by
+lemma isAtom_top : IsAtom (⊤ : LieIdeal R L) := by
   constructor
   · intro h
     apply IsSimple.non_abelian R (L := L)
@@ -143,10 +157,10 @@ lemma isAtom_top [IsSimple R L] : IsAtom (⊤ : LieIdeal R L) := by
     exact ⟨this, hI.ne⟩
 
 variable {R L} in
-@[simp] lemma isAtom_iff_eq_top [IsSimple R L] (I : LieIdeal R L) : IsAtom I ↔ I = ⊤ :=
+@[simp] lemma isAtom_iff_eq_top (I : LieIdeal R L) : IsAtom I ↔ I = ⊤ :=
   ⟨eq_top_of_isAtom I, fun h ↦ h ▸ isAtom_top R L⟩
 
-instance [IsSimple R L] : HasTrivialRadical R L := by
+instance : HasTrivialRadical R L := by
   rw [hasTrivialRadical_iff_no_abelian_ideals]
   intro I hI
   apply (IsSimple.eq_bot_or_eq_top I).resolve_right
@@ -154,10 +168,29 @@ instance [IsSimple R L] : HasTrivialRadical R L := by
   rw [lie_abelian_iff_equiv_lie_abelian LieIdeal.topEquiv] at hI
   exact IsSimple.non_abelian R (L := L) hI
 
+end IsSimple
+
 variable {R L} in
+/--
+A set of ideals in a Lie algebra is a set of *semisimple generators* if:
+
+* the ideals are all atoms (in the lattice-theoretic sense),
+  so they are nontrivial and do not contain any nontrivial ideals,
+* the ideals are all simple, and
+* the set is independent in the sense that the intersection of any the ideals
+  with the supremum of the others is trivial.
+
+If the supremum of such a collection of semisimple generators
+is the whole Lie algebra, then the Lie algebra is semisimple.
+See `SemisimpleGenerators.isSemisimple_of_sSup_eq_top`.
+-/
 structure SemisimpleGenerators (S : Set (LieIdeal R L)) : Prop where
+  /-- The ideals in a collection of semisimple generators are all atoms. -/
   isAtom : ∀ I ∈ S, IsAtom I
+  /-- The ideals in a collection of semisimple generators are all simple. -/
   isSimple : ∀ I ∈ S, IsSimple R I
+  /-- The ideals in a collection of semisimple generators are independent
+  (in the lattice-theoretic sense). -/
   setIndependent : CompleteLattice.SetIndependent S
 
 namespace SemisimpleGenerators
@@ -353,7 +386,8 @@ lemma complementedLattice_of_sSup_eq_top (h : sSup S = ⊤) : ComplementedLattic
 end SemisimpleGenerators
 
 /--
-A *semisimple* Lie algebra is one that is a direct sum of simple Lie algebras.
+A *semisimple* Lie algebra is one that is a direct sum of non-abelian atomic ideals.
+These ideals are simple Lie algebras, by `isSimple_of_isAtom`.
 
 Note that the label 'semisimple' is apparently not universally agreed
 [upon](https://mathoverflow.net/questions/149391/on-radicals-of-a-lie-algebra#comment383669_149391)
@@ -363,8 +397,11 @@ For example [Seligman, page 15](seligman1967) uses the label for `LieAlgebra.Has
 the weakest of the various properties which are all equivalent over a field of characteristic zero.
 -/
 class IsSemisimple : Prop where
+  /-- In a semisimple Lie algebra, the supremum of the atoms is the whole Lie algebra. -/
   sSup_isAtom_eq_top : sSup {I : LieIdeal R L | IsAtom I} = ⊤
+  /-- In a semisimple Lie algebra, the atoms are independent. -/
   setIndependent_isAtom : CompleteLattice.SetIndependent {I : LieIdeal R L | IsAtom I}
+  /-- In a semisimple Lie algebra, the atoms are non-abelian. -/
   non_abelian_of_isAtom : ∀ I : LieIdeal R L, IsAtom I → ¬ IsLieAbelian I
 
 variable {R L} in
@@ -433,21 +470,6 @@ lemma isSimple_of_isAtom [IsSemisimple R L] (I : LieIdeal R L) (hI : IsAtom I) :
     rcases hx with ⟨y, hy, rfl⟩
     exact hy
 
-lemma IsSemisimple.semisimpleGenerators_atoms [IsSemisimple R L] :
-    SemisimpleGenerators {I : LieIdeal R L | IsAtom I} := by
-  constructor
-  · intro I hI
-    exact hI
-  · intro I hI
-    exact isSimple_of_isAtom I hI
-  · apply IsSemisimple.setIndependent_isAtom
-
-variable {R L} in
-lemma IsSemisimple.semisimpleGenerators [IsSemisimple R L]
-    (S : Set (LieIdeal R L)) (hS : S ⊆ {I : LieIdeal R L | IsAtom I}) :
-    SemisimpleGenerators S :=
-  (IsSemisimple.semisimpleGenerators_atoms R L).mono hS
-
 variable {R L} in
 lemma SemisimpleGenerators.isSemisimple_of_sSup_eq_top
     (S : Set (LieIdeal R L)) (hS : SemisimpleGenerators S) (h : sSup S = ⊤) :
@@ -460,28 +482,45 @@ lemma SemisimpleGenerators.isSemisimple_of_sSup_eq_top
     have := hS.isSimple I hI
     apply IsSimple.non_abelian (R := R)
 
-instance (priority := 100) [IsSemisimple R L] :
-    ComplementedLattice (LieIdeal R L) :=
+namespace IsSemisimple
+
+variable [IsSemisimple R L]
+
+lemma semisimpleGenerators_atoms : SemisimpleGenerators {I : LieIdeal R L | IsAtom I} := by
+  constructor
+  · intro I hI
+    exact hI
+  · intro I hI
+    exact isSimple_of_isAtom I hI
+  · apply IsSemisimple.setIndependent_isAtom
+
+variable {R L} in
+lemma semisimpleGenerators (S : Set (LieIdeal R L)) (hS : S ⊆ {I : LieIdeal R L | IsAtom I}) :
+    SemisimpleGenerators S :=
+  (IsSemisimple.semisimpleGenerators_atoms R L).mono hS
+
+instance (priority := 100) complementedLattice : ComplementedLattice (LieIdeal R L) :=
   (IsSemisimple.semisimpleGenerators_atoms R L).complementedLattice_of_sSup_eq_top
     IsSemisimple.sSup_isAtom_eq_top
 
-lemma IsSemisimple.mem_of_isAtom_of_le_sSup_atoms [IsSemisimple R L]
-    (S : Set (LieIdeal R L)) (hS : ∀ I ∈ S, IsAtom I)
+variable {R L}
+
+lemma mem_of_isAtom_of_le_sSup_atoms (S : Set (LieIdeal R L)) (hS : ∀ I ∈ S, IsAtom I)
     (I : LieIdeal R L) (hI : IsAtom I) (hJ : I ≤ sSup S) :
     I ∈ S :=
   (IsSemisimple.semisimpleGenerators S hS).mem_of_isAtom_of_le_sSup_atoms I hI hJ
 
-lemma IsSemisimple.sSup_le_sSup_iff_of_atoms [IsSemisimple R L] (X Y : Set (LieIdeal R L))
+lemma sSup_le_sSup_iff_of_atoms (X Y : Set (LieIdeal R L))
     (hX : ∀ I ∈ X, IsAtom I) (hY : ∀ I ∈ Y, IsAtom I) :
     sSup X ≤ sSup Y ↔ X ⊆ Y :=
   (IsSemisimple.semisimpleGenerators_atoms R L).sSup_le_sSup_iff_of_atoms X Y hX hY
 
-lemma IsSemisimple.sSup_inter_of_atoms [IsSemisimple R L] (T₁ T₂ : Set (LieIdeal R L))
+lemma sSup_inter_of_atoms (T₁ T₂ : Set (LieIdeal R L))
     (hT₁ : ∀ I ∈ T₁, IsAtom I) (hT₂ : ∀ I ∈ T₂, IsAtom I) :
     sSup (T₁ ∩ T₂) = (sSup T₁) ⊓ (sSup T₂) :=
   (IsSemisimple.semisimpleGenerators_atoms R L).sSup_inter T₁ T₂ hT₁ hT₂
 
-instance (priority := 100) [IsSemisimple R L] : DistribLattice (LieIdeal R L) where
+instance (priority := 100) distribLattice : DistribLattice (LieIdeal R L) where
   __ := (inferInstance : CompleteLattice (LieIdeal R L))
   le_sup_inf I₁ I₂ I₃ := by
     apply le_of_eq
@@ -497,30 +536,8 @@ instance (priority := 100) [IsSemisimple R L] : DistribLattice (LieIdeal R L) wh
         [Set.mem_setOf_eq, Set.mem_union, and_imp, implies_true]
       try tauto
 
--- move this to `Mathlib.Order.SupIndep`
-lemma _root_.CompleteLattice.setIndependent_singleton {α : Type w} [CompleteLattice α] (a : α) :
-    CompleteLattice.SetIndependent ({a} : Set α) := by
-  intro i hi
-  simp_all
-
-/-- A simple Lie algebra is semisimple. -/
-instance (priority := 100) isSemisimple_of_isSimple [h : IsSimple R L] :
-    IsSemisimple R L := by
-  have aux : {I : LieIdeal R L | IsAtom I} = {⊤} := by
-    simp only [isAtom_iff_eq_top, Set.setOf_eq_eq_singleton]
-  constructor
-  · simp [aux]
-  · simpa [aux] using CompleteLattice.setIndependent_singleton _
-  · intro I hI₁ hI₂
-    rw [isAtom_iff_eq_top] at hI₁
-    subst I
-    obtain @⟨-, h₂⟩ := id h
-    rw [lie_abelian_iff_equiv_lie_abelian LieIdeal.topEquiv] at hI₂
-    contradiction
-
 /-- A semisimple Lie algebra has trivial radical. -/
-instance (priority := 100) hasTrivialRadical_of_isSemisimple [IsSemisimple R L] :
-    HasTrivialRadical R L := by
+instance (priority := 100) hasTrivialRadical : HasTrivialRadical R L := by
   rw [hasTrivialRadical_iff_no_abelian_ideals]
   intro I hI
   apply (eq_bot_or_exists_atom_le I).resolve_right
@@ -533,6 +550,21 @@ instance (priority := 100) hasTrivialRadical_of_isSemisimple [IsSemisimple R L] 
   have : (⁅(⟨x, hJ' x.2⟩ : I), ⟨y, hJ' y.2⟩⁆ : I) = 0 := trivial_lie_zero _ _ _ _
   apply_fun Subtype.val at this
   exact this
+
+end IsSemisimple
+
+/-- A simple Lie algebra is semisimple. -/
+instance (priority := 100) IsSimple.isSemisimple [h : IsSimple R L] :
+    IsSemisimple R L := by
+  constructor
+  · simp
+  · simpa using CompleteLattice.setIndependent_singleton _
+  · intro I hI₁ hI₂
+    rw [IsSimple.isAtom_iff_eq_top] at hI₁
+    subst I
+    obtain @⟨-, h₂⟩ := id h
+    rw [lie_abelian_iff_equiv_lie_abelian LieIdeal.topEquiv] at hI₂
+    contradiction
 
 /-- A simple Lie algebra has trivial radical. -/
 instance (priority := 100) hasTrivialRadical_of_isSimple [IsSimple R L] :
