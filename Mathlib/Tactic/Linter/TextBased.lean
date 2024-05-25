@@ -108,6 +108,7 @@ def output_message (errctx : ErrorContext) : String :=
 def format_errors (errors : Array ErrorContext) (exceptions : Array ErrorContext): IO Unit := do
   -- XXX: `lint-style.py` was `resolve()`ing paths in the `exceptions` list;
   -- do we also need to?
+  -- TODO: do I need to compare exceptions in a fancy way? for instance, are line number ignored?
   for e in errors do
     if !exceptions.contains e then IO.println (output_message e)
 
@@ -268,8 +269,10 @@ def all_linters : Array LinterCore := Array.mk
   [check_line_length, contains_broad_imports, copyright_header, isolated_by_dot_semicolon,
     line_endings]
 
-/-- Read a file, apply all text-based linters and return the formatted errors. -/
-def lint_file (path : System.FilePath) : IO Unit := do
+/-- Read a file, apply all text-based linters and return the formatted errors.
+
+`exceptions` are any previous style exceptions. -/
+def lint_file (path : System.FilePath) (exceptions : Array ErrorContext) : IO Unit := do
   let lines ← IO.FS.lines path
   -- We don't need to run any checks on imports-only files.
   -- NB. The Python script used to still run a few linters; this is in fact not necessary.
@@ -278,9 +281,10 @@ def lint_file (path : System.FilePath) : IO Unit := do
   let all_output := (Array.map (fun lint ↦
     (Array.map (fun (e, n) ↦ ErrorContext.mk e n path)) (lint lines))) all_linters
   -- XXX: this list is currently not sorted: for github, that's probably fine
-  format_errors (Array.flatten all_output) (Array.mkEmpty 0)
+  format_errors (Array.flatten all_output) exceptions
 
 #eval lint_file (System.mkFilePath ["Mathlib", "Tactic", "Linter", "TextBased.lean"])
+  (Array.mkEmpty 0)
 
 /-- Lint all files in `Mathlib.lean`. -/
 def check_all_files : IO Unit := do
@@ -288,4 +292,6 @@ def check_all_files : IO Unit := do
   let allModules ← IO.FS.lines (System.mkFilePath [(toString "Mathlib.lean")])
   for module in allModules do
     -- Convert the module name to a file name, then lint that file.
-    lint_file (System.mkFilePath ((module.split fun c ↦ (c == '.')).append [".lean"]))
+    let path := System.mkFilePath ((module.split fun c ↦ (c == '.')).append [".lean"])
+    -- TODO: parse `style-exceptions.txt`, then pass these exceptions in!
+    lint_file path (Array.mkEmpty 0)
