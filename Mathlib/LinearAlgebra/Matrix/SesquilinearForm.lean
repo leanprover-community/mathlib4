@@ -123,7 +123,7 @@ theorem LinearMap.toLinearMap₂'Aux_toMatrix₂Aux (f : (n → R₁) →ₛₗ[
         (LinearMap.toMatrix₂Aux (R := R) (fun i => stdBasis R₁ (fun _ => R₁) i 1)
           (fun j => stdBasis R₂ (fun _ => R₂) j 1) f) =
       f := by
-  refine' ext_basis (Pi.basisFun R₁ n) (Pi.basisFun R₂ m) fun i j => _
+  refine ext_basis (Pi.basisFun R₁ n) (Pi.basisFun R₂ m) fun i j => ?_
   simp_rw [Pi.basisFun_apply, Matrix.toLinearMap₂'Aux_stdBasis, LinearMap.toMatrix₂Aux_apply]
 #align linear_map.to_linear_map₂'_aux_to_matrix₂_aux LinearMap.toLinearMap₂'Aux_toMatrix₂Aux
 
@@ -204,9 +204,9 @@ theorem Matrix.toLinearMap₂'_apply (M : Matrix n m N₂) (x : n → S₁) (y :
 theorem Matrix.toLinearMap₂'_apply' {T : Type*} [CommSemiring T] (M : Matrix n m T) (v : n → T)
     (w : m → T) : Matrix.toLinearMap₂' (R := T) M v w = Matrix.dotProduct v (M *ᵥ w) := by
   simp_rw [Matrix.toLinearMap₂'_apply, Matrix.dotProduct, Matrix.mulVec, Matrix.dotProduct]
-  refine' Finset.sum_congr rfl fun _ _ => _
+  refine Finset.sum_congr rfl fun _ _ => ?_
   rw [Finset.mul_sum]
-  refine' Finset.sum_congr rfl fun _ _ => _
+  refine Finset.sum_congr rfl fun _ _ => ?_
   rw [smul_eq_mul, smul_eq_mul, mul_comm (w _), ← mul_assoc]
 #align matrix.to_linear_map₂'_apply' Matrix.toLinearMap₂'_apply'
 
@@ -651,7 +651,7 @@ theorem mem_pairSelfAdjointMatricesSubmodule :
     rw [← isAdjointPair_toLinearMap₂']
     exact hf
   · intro h
-    refine' ⟨toLin' A₁, _, LinearMap.toMatrix'_toLin' _⟩
+    refine ⟨toLin' A₁, ?_, LinearMap.toMatrix'_toLin' _⟩
     exact (isAdjointPair_toLinearMap₂' _ _ _ _).mpr h
 #align mem_pair_self_adjoint_matrices_submodule mem_pairSelfAdjointMatricesSubmodule
 

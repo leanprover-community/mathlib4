@@ -247,7 +247,7 @@ theorem strictMonoOn_log : StrictMonoOn log (Set.Ioi 0) := fun _ hx _ _ hxy => l
 theorem strictAntiOn_log : StrictAntiOn log (Set.Iio 0) := by
   rintro x (hx : x < 0) y (hy : y < 0) hxy
   rw [← log_abs y, ← log_abs x]
-  refine' log_lt_log (abs_pos.2 hy.ne) _
+  refine log_lt_log (abs_pos.2 hy.ne) ?_
   rwa [abs_of_neg hy, abs_of_neg hx, neg_lt_neg_iff]
 #align real.strict_anti_on_log Real.strictAntiOn_log
 
@@ -275,7 +275,7 @@ theorem log_eq_zero {x : ℝ} : log x = 0 ↔ x = 0 ∨ x = 1 ∨ x = -1 := by
   constructor
   · intro h
     rcases lt_trichotomy x 0 with (x_lt_zero | rfl | x_gt_zero)
-    · refine' Or.inr (Or.inr (neg_eq_iff_eq_neg.mp _))
+    · refine Or.inr (Or.inr (neg_eq_iff_eq_neg.mp ?_))
       rw [← log_neg_eq_log x] at h
       exact eq_one_of_pos_of_log_eq_zero (neg_pos.mpr x_lt_zero) h
     · exact Or.inl rfl
@@ -321,7 +321,7 @@ theorem abs_log_mul_self_lt (x : ℝ) (h1 : 0 < x) (h2 : x ≤ 1) : |log x * x| 
   replace : log (1 / x) < 1 / x := by linarith
   rw [log_div one_ne_zero h1.ne', log_one, zero_sub, lt_div_iff h1] at this
   have aux : 0 ≤ -log x * x := by
-    refine' mul_nonneg _ h1.le
+    refine mul_nonneg ?_ h1.le
     rw [← log_inv]
     apply log_nonneg
     rw [← le_inv h1 zero_lt_one, inv_one]
@@ -337,7 +337,7 @@ theorem tendsto_log_atTop : Tendsto log atTop atTop :=
 
 theorem tendsto_log_nhdsWithin_zero : Tendsto log (𝓝[≠] 0) atBot := by
   rw [← show _ = log from funext log_abs]
-  refine' Tendsto.comp (g := log) _ tendsto_abs_nhdsWithin_zero
+  refine Tendsto.comp (g := log) ?_ tendsto_abs_nhdsWithin_zero
   simpa [← tendsto_comp_exp_atBot] using tendsto_id
 #align real.tendsto_log_nhds_within_zero Real.tendsto_log_nhdsWithin_zero
 
@@ -367,7 +367,7 @@ theorem continuousAt_log (hx : x ≠ 0) : ContinuousAt log x :=
 
 @[simp]
 theorem continuousAt_log_iff : ContinuousAt log x ↔ x ≠ 0 := by
-  refine' ⟨_, continuousAt_log⟩
+  refine ⟨?_, continuousAt_log⟩
   rintro h rfl
   exact not_tendsto_nhds_of_tendsto_atBot tendsto_log_nhdsWithin_zero _
     (h.tendsto.mono_left inf_le_left)
@@ -469,7 +469,7 @@ theorem tendsto_log_comp_add_sub_log (y : ℝ) :
   have : Tendsto (fun x ↦ 1 + y / x) atTop (𝓝 (1 + 0)) :=
     tendsto_const_nhds.add (tendsto_const_nhds.div_atTop tendsto_id)
   rw [← comap_exp_nhds_exp, exp_zero, tendsto_comap_iff, ← add_zero (1 : ℝ)]
-  refine' this.congr' _
+  refine this.congr' ?_
   filter_upwards [eventually_gt_atTop (0 : ℝ), eventually_gt_atTop (-y)] with x hx₀ hxy
   rw [comp_apply, exp_sub, exp_log, exp_log, one_add_div] <;> linarith
 #align real.tendsto_log_comp_add_sub_log Real.tendsto_log_comp_add_sub_log

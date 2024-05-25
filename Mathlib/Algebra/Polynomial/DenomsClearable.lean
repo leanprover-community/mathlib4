@@ -46,7 +46,7 @@ theorem denomsClearable_zero (N : ℕ) (a : R) (bu : bi * i b = 1) : DenomsClear
 
 theorem denomsClearable_C_mul_X_pow {N : ℕ} (a : R) (bu : bi * i b = 1) {n : ℕ} (r : R)
     (nN : n ≤ N) : DenomsClearable a b N (C r * X ^ n) i := by
-  refine' ⟨r * a ^ n * b ^ (N - n), bi, bu, _⟩
+  refine ⟨r * a ^ n * b ^ (N - n), bi, bu, ?_⟩
   rw [C_mul_X_pow_eq_monomial, map_monomial, ← C_mul_X_pow_eq_monomial, eval_mul, eval_pow, eval_C]
   rw [RingHom.map_mul, RingHom.map_mul, RingHom.map_pow, RingHom.map_pow, eval_X, mul_comm]
   rw [← tsub_add_cancel_of_le nN]
@@ -61,7 +61,7 @@ theorem DenomsClearable.add {N : ℕ} {f g : R[X]} :
   ⟨Df + Dg, bf, bfu, by
     rw [RingHom.map_add, Polynomial.map_add, eval_add, mul_add, Hf, Hg]
     congr
-    refine' @inv_unique K _ (i b) bg bf _ _ <;> rwa [mul_comm]⟩
+    refine @inv_unique K _ (i b) bg bf ?_ ?_ <;> rwa [mul_comm]⟩
 #align denoms_clearable.add DenomsClearable.add
 
 theorem denomsClearable_of_natDegree_le (N : ℕ) (a : R) (bu : bi * i b = 1) :
@@ -100,7 +100,7 @@ theorem one_le_pow_mul_abs_eval_div {K : Type*} [LinearOrderedField K] {f : ℤ[
   rw [eq_one_div_of_mul_eq_one_left bu, eq_intCast, eq_intCast, abs_mul] at Fa
   rw [abs_of_pos (pow_pos (Int.cast_pos.mpr b0) _ : 0 < (b : K) ^ _), one_div, eq_intCast] at Fa
   rw [div_eq_mul_inv, ← Fa, ← Int.cast_abs, ← Int.cast_one, Int.cast_le]
-  refine' Int.le_of_lt_add_one ((lt_add_iff_pos_left 1).mpr (abs_pos.mpr fun F0 => fab _))
+  refine Int.le_of_lt_add_one ((lt_add_iff_pos_left 1).mpr (abs_pos.mpr fun F0 => fab ?_))
   rw [eq_one_div_of_mul_eq_one_left bu, F0, one_div, eq_intCast, Int.cast_zero, zero_eq_mul] at hF
   cases' hF with hF hF
   · exact (not_le.mpr b0 (le_of_eq (Int.cast_eq_zero.mp (pow_eq_zero hF)))).elim

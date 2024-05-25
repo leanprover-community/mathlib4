@@ -3,8 +3,8 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Yaël Dillies
 -/
+import Mathlib.Algebra.Order.Group.Synonym
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Group.OrderSynonym
 
 #align_import algebra.ring.order_synonym from "leanprover-community/mathlib"@"d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d"
 

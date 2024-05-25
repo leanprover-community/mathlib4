@@ -198,7 +198,7 @@ theorem bodd_add_div2 : ∀ n, cond (bodd n) 1 0 + 2 * div2 n = n
     rw [show (cond (bodd n) 1 0 : ℤ) = (cond (bodd n) 1 0 : ℕ) by cases bodd n <;> rfl]
     exact congr_arg ofNat n.bodd_add_div2
   | -[n+1] => by
-    refine' Eq.trans _ (congr_arg negSucc n.bodd_add_div2)
+    refine Eq.trans ?_ (congr_arg negSucc n.bodd_add_div2)
     dsimp [bodd]; cases Nat.bodd n <;> dsimp [cond, not, div2, Int.mul]
     · change -[2 * Nat.div2 n+1] = _
       rw [zero_add]
