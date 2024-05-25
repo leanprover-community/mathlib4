@@ -23,7 +23,7 @@ namespace AbsTheory
 
 -- We develop enough theory to bundle `abs` into an `AbsoluteValue` before making things public;
 -- this is so there's not two versions of it hanging around.
-local notation "abs" z => Real.sqrt (normSq z)
+local notation "abs" z => √(normSq z)
 
 private theorem mul_self_abs (z : ℂ) : ((abs z) * abs z) = normSq z :=
   Real.mul_self_sqrt (normSq_nonneg _)
@@ -63,11 +63,11 @@ noncomputable def _root_.Complex.abs : AbsoluteValue ℂ ℝ where
 
 end AbsTheory
 
-theorem abs_def : (Complex.abs : ℂ → ℝ) = fun z => (normSq z).sqrt :=
+theorem abs_def : (Complex.abs : ℂ → ℝ) = fun z => √(normSq z) :=
   rfl
 #align complex.abs_def Complex.abs_def
 
-theorem abs_apply {z : ℂ} : Complex.abs z = (normSq z).sqrt :=
+theorem abs_apply {z : ℂ} : Complex.abs z = √(normSq z) :=
   rfl
 #align complex.abs_apply Complex.abs_apply
 
@@ -110,10 +110,10 @@ theorem sq_abs_sub_sq_im (z : ℂ) : Complex.abs z ^ 2 - z.im ^ 2 = z.re ^ 2 := 
   rw [← sq_abs_sub_sq_re, sub_sub_cancel]
 #align complex.sq_abs_sub_sq_im Complex.sq_abs_sub_sq_im
 
-lemma abs_add_mul_I (x y : ℝ) : abs (x + y * I) = (x ^ 2 + y ^ 2).sqrt := by
+lemma abs_add_mul_I (x y : ℝ) : abs (x + y * I) = √(x ^ 2 + y ^ 2) := by
   rw [← normSq_add_mul_I]; rfl
 
-lemma abs_eq_sqrt_sq_add_sq (z : ℂ) : abs z = (z.re ^ 2 + z.im ^ 2).sqrt := by
+lemma abs_eq_sqrt_sq_add_sq (z : ℂ) : abs z = √(z.re ^ 2 + z.im ^ 2) := by
   rw [abs_apply, normSq_apply, sq, sq]
 
 @[simp]
@@ -210,21 +210,21 @@ theorem abs_le_abs_re_add_abs_im (z : ℂ) : Complex.abs z ≤ |z.re| + |z.im| :
 instance : NeZero (1 : ℝ) :=
  ⟨by apply one_ne_zero⟩
 
-theorem abs_le_sqrt_two_mul_max (z : ℂ) : Complex.abs z ≤ Real.sqrt 2 * max |z.re| |z.im| := by
+theorem abs_le_sqrt_two_mul_max (z : ℂ) : Complex.abs z ≤ √2 * max |z.re| |z.im| := by
   cases' z with x y
   simp only [abs_apply, normSq_mk, ← sq]
   by_cases hle : |x| ≤ |y|
   · calc
-      Real.sqrt (x ^ 2 + y ^ 2) ≤ Real.sqrt (y ^ 2 + y ^ 2) :=
+      √(x ^ 2 + y ^ 2) ≤ √(y ^ 2 + y ^ 2) :=
         Real.sqrt_le_sqrt (add_le_add_right (sq_le_sq.2 hle) _)
-      _ = Real.sqrt 2 * max |x| |y| := by
+      _ = √2 * max |x| |y| := by
         rw [max_eq_right hle, ← two_mul, Real.sqrt_mul two_pos.le, Real.sqrt_sq_eq_abs]
   · have hle' := le_of_not_le hle
     rw [add_comm]
     calc
-      Real.sqrt (y ^ 2 + x ^ 2) ≤ Real.sqrt (x ^ 2 + x ^ 2) :=
+      √(y ^ 2 + x ^ 2) ≤ √(x ^ 2 + x ^ 2) :=
         Real.sqrt_le_sqrt (add_le_add_right (sq_le_sq.2 hle') _)
-      _ = Real.sqrt 2 * max |x| |y| := by
+      _ = √2 * max |x| |y| := by
         rw [max_eq_left hle', ← two_mul, Real.sqrt_mul two_pos.le, Real.sqrt_sq_eq_abs]
 #align complex.abs_le_sqrt_two_mul_max Complex.abs_le_sqrt_two_mul_max
 
@@ -253,7 +253,7 @@ theorem normSq_eq_abs (x : ℂ) : normSq x = (Complex.abs x) ^ 2 := by
 @[simp]
 theorem range_normSq : range normSq = Ici 0 :=
   Subset.antisymm (range_subset_iff.2 normSq_nonneg) fun x hx =>
-    ⟨Real.sqrt x, by rw [normSq_ofReal, Real.mul_self_sqrt hx]⟩
+    ⟨(√x : ℝ), by rw [normSq_ofReal, Real.mul_self_sqrt hx]⟩
 #align complex.range_norm_sq Complex.range_normSq
 
 /-! ### Cauchy sequences -/

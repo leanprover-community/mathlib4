@@ -902,7 +902,7 @@ lemma toStarOrderedRing : StarOrderedRing K :=
       simpa [map_add, add_le_add_iff_left, add_right_inj] using hxy)
     (h_nonneg_iff := fun x => by
       rw [nonneg_iff]
-      refine ⟨fun h ↦ ⟨√(re x), by simp [ext_iff (K := K), h.1, h.2]⟩, ?_⟩
+      refine ⟨fun h ↦ ⟨(√(re x) : ℝ), by simp [ext_iff (K := K), h.1, h.2]⟩, ?_⟩
       rintro ⟨s, rfl⟩
       simp [mul_comm, mul_self_nonneg, add_nonneg])
 
