@@ -1480,6 +1480,27 @@ lemma isCompl_ker_of_disjoint_of_ne_bot {p : Submodule K V₁}
   rwa [finrank_top, this, ← finrank_ker_add_one_of_ne_zero hf, add_le_add_iff_left,
     Submodule.one_le_finrank_iff]
 
+lemma eq_of_ker_eq_of_apply_eq {f g : Module.Dual K V₁} (x : V₁)
+    (h : LinearMap.ker f = LinearMap.ker g) (h' : f x = g x) (hx : f x ≠ 0) :
+    f = g := by
+  let p := K ∙ x
+  have hp : p ≠ ⊥ := by aesop
+  have hpf : Disjoint (LinearMap.ker f) p := by
+    rw [disjoint_iff, Submodule.eq_bot_iff]
+    rintro y ⟨hfy : f y = 0, hpy : y ∈ p⟩
+    obtain ⟨t, rfl⟩ := Submodule.mem_span_singleton.mp hpy
+    have ht : t = 0 := by simpa [hx] using hfy
+    simp [ht]
+  have hf : f ≠ 0 := by aesop
+  ext v
+  obtain ⟨y, hy, z, hz, rfl⟩ : ∃ᵉ (y ∈ LinearMap.ker f) (z ∈ p), y + z = v := by
+    have : v ∈ (⊤ : Submodule K V₁) := Submodule.mem_top
+    rwa [← (isCompl_ker_of_disjoint_of_ne_bot hf hpf hp).sup_eq_top, Submodule.mem_sup] at this
+  have hy' : g y = 0 := by rwa [← LinearMap.mem_ker, ← h]
+  replace hy : f y = 0 := by rwa [LinearMap.mem_ker] at hy
+  obtain ⟨t, rfl⟩ := Submodule.mem_span_singleton.mp hz
+  simp [h', hy, hy']
+
 end Module.Dual
 
 namespace LinearMap
