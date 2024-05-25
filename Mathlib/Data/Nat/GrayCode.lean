@@ -10,19 +10,19 @@ import Mathlib.Data.Nat.Units
 /-!
 # Gray Code
 
-This file defines [the binary reflected gray code](https://en.wikipedia.org/wiki/Gray_code), both
-as a permutation of `ℕ`, in `Nat.gray_code`, and then, using that, as a permutation of `BitVec n`,
-in `Nat.partial_gray_code`. We also prove some theorems about them:
+This file defines [the binary reflected Gray code](https://en.wikipedia.org/wiki/Gray_code), both
+as a permutation of `ℕ`, in `Nat.grayCode`, and then, using that, as a permutation of `BitVec n`,
+in `Nat.partialGrayCode`. We also prove some theorems about them:
 
-* `Nat.gray_code_prop`: the xor of `Nat.gray_code n` and `Nat.gray_code (n+1)` is a power of 2
+* `grayCode_prop`: the xor of `grayCode n` and `grayCode (n + 1)` is a power of 2
 for all `n`.
-* `gray_code_size`: `Nat.gray_code` preserves the binary length of integers.
-* `partial_gray_code_prop`: the xor of `n.partial_gray_code m` and `n.partial_gray_code (m+1)`
+* `grayCode_size`: `grayCode` preserves the binary length of integers.
+* `partialGrayCode_prop`: the xor of `n.partialGrayCode m` and `n.partialGrayCode (m + 1)`
 is a power of 2 for all `n ≠ 0` and `m`.
 -/
 namespace Nat
 
-/-- The inverse of `f(n) = n ⊕ ⌊n/2⌋`, defined by `g(n) = n ⊕ g(⌊n/2⌋)`. -/
+/-- The inverse of `f(n) = n ⊕ ⌊n / 2⌋`, defined by `g(n) = n ⊕ g(⌊n / 2⌋)`. -/
 def grayCodeInv : ℕ → ℕ
   | 0 => 0
   | n+1 => (n+1) ^^^ grayCodeInv (n+1).div2
@@ -34,7 +34,7 @@ theorem grayCodeInv_val : (n : ℕ) → grayCodeInv n = n ^^^ grayCodeInv n.div2
   | 0 => rfl
   | _+1 => rfl
 
-/-- Gray code, `f(n) = n ⊕ ⌊n/2⌋`, as a permutation of `ℕ`. -/
+/-- Gray code, `f(n) = n ⊕ ⌊n / 2⌋`, as a permutation of `ℕ`. -/
 def grayCode : Equiv.Perm ℕ where
   toFun (n : ℕ) := n ^^^ n.div2
   invFun := grayCodeInv
@@ -125,7 +125,7 @@ theorem grayCode_size (n : ℕ) : n.size = (grayCode n).size := by
       refine' (v.2 ..).symm
       omega
 
-/-- Gray code, `f(n) = n ⊕ ⌊n/2⌋`, as a permutation of `BitVec n`. -/
+/-- Gray code, `f(n) = n ⊕ ⌊n / 2⌋`, as a permutation of `BitVec n`. -/
 def partialGrayCode (n : ℕ) : Equiv.Perm (BitVec n) where
   toFun (n : BitVec n) := ⟨grayCode n.toNat,
     by rw [← Nat.size_le, ← grayCode_size, Nat.size_le]; simp [BitVec.isLt]⟩
