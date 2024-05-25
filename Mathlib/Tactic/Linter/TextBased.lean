@@ -7,6 +7,7 @@ Authors: Michael Rothgang
 import Lean.Elab.Command
 import Batteries.Data.String.Basic
 import Mathlib.Init.Data.Nat.Notation
+import Lake.Build.Trace
 
 /-!
 ## Text-based linters
@@ -15,7 +16,7 @@ This file defines various mathlib linters which are based on reading the source 
 In practice, only style linters will have this form.
 All of these have been rewritten from the `lint-style.py` script.
 
-FUTURE: rewrite the remaining lints, e.g. line endings
+FUTURE: rewrite the remaining lints
 
 -/
 
@@ -42,6 +43,10 @@ inductive StyleError where
   | semicolon : StyleError
   /-- A line starting with a colon: `:` and `:=` should be put before line breaks, not after. -/
   | colon : StyleError
+  /-- Trailing whitespace on this line -/
+  | trailingWhitespace : StyleError
+  /-- A line ends with Windows line endings (\\r\\n) -/
+  | windowsLineEndings : StyleError
   deriving BEq
 
 /-- Create the underlying error message for a given `StyleError`. -/
@@ -56,6 +61,8 @@ def errorMessage (err : StyleError) : String := match err with
   | StyleError.dot => "Line is an isolated focusing dot or uses . instead of ·"
   | StyleError.semicolon => "Line contains a space before a semicolon"
   | StyleError.colon => "Put : and := before line breaks, not after"
+  | StyleError.trailingWhitespace => "Trailing whitespace detected"
+  | StyleError.windowsLineEndings => "Windows line endings (\\r\\n) detected"
 
 /-- The error code for a given style error. Kept in sync with `lint-style.py` for now. -/
 def errorCode (err : StyleError) : String := match err with
@@ -67,6 +74,8 @@ def errorCode (err : StyleError) : String := match err with
   | StyleError.semicolon => "ERR_SEM"
   | StyleError.colon => "ERR_CLN"
   | StyleError.dot => "ERR_DOT"
+  | StyleError.trailingWhitespace => "ERR_TWS"
+  | StyleError.windowsLineEndings => "ERR_WIN"
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
 and the path to the file. -/
@@ -218,11 +227,28 @@ def isolated_by_dot_semicolon : LinterCore := fun lines ↦ Id.run do
         output := output.push (StyleError.colon, line_number)
     return output
 
+/-- Check if a line ends with trailing whitespace or with a windows line ending.
+
+Assumes the lines are not newline-terminated. -/
+def line_endings : LinterCore := fun lines ↦ Id.run do
+  let mut output := Array.mkEmpty 0
+  -- XXX: more elegant fix? is there an enumerate for Lean?
+  let mut line_number := 0
+  for line in lines do
+    line_number := line_number + 1
+    let line' := Lake.crlf2lf line
+    if line' != line then
+      output := output.push (StyleError.windowsLineEndings, line_number)
+    if line'.trimRight != line' then
+      output := output.push (StyleError.trailingWhitespace, line_number)
+  return output
+
 end
 
 /-- All text-based linters registered in this file. -/
 def all_linters : Array LinterCore := Array.mk
-  [check_line_length, contains_broad_imports, copyright_header, isolated_by_dot_semicolon]
+  [check_line_length, contains_broad_imports, copyright_header, isolated_by_dot_semicolon,
+    line_endings]
 
 /-- Read a file, apply all text-based linters and return the formatted errors. -/
 def lint_file (path : System.FilePath) : IO Unit := do
@@ -232,7 +258,7 @@ def lint_file (path : System.FilePath) : IO Unit := do
   -- XXX: this list is currently not sorted: for github, that's probably fine
   format_errors (Array.flatten all_output) (Array.mkEmpty 0)
 
---#eval lint_file (System.mkFilePath ["Mathlib", "Tactic", "Linter", "TextBased.lean"])
+#eval lint_file (System.mkFilePath ["Mathlib", "Tactic", "Linter", "TextBased.lean"])
 
 /-- Lint all files in `Mathlib.lean`. -/
 def check_all_files : IO Unit := do

@@ -38,8 +38,6 @@ import re
 import shutil
 
 ERR_MOD = 2 # module docstring
-ERR_WIN = 14 # Windows line endings "\r\n"
-ERR_TWS = 15 # trailing whitespace
 ERR_IND = 17 # second line not correctly indented
 ERR_ARR = 18 # space after "←"
 ERR_NUM_LIN = 19 # file is too large
@@ -122,19 +120,6 @@ def annotate_strings(enumerate_lines):
                 yield line_nr, line, *rem, True
                 continue
         yield line_nr, line, *rem, False
-
-def line_endings_check(lines, path):
-    errors = []
-    newlines = []
-    for line_nr, line in lines:
-        if "\r\n" in line:
-            errors += [(ERR_WIN, line_nr, path)]
-            line = line.replace("\r\n", "\n")
-        if line.endswith(" \n"):
-            errors += [(ERR_TWS, line_nr, path)]
-            line = line.rstrip() + "\n"
-        newlines.append((line_nr, line))
-    return errors, newlines
 
 def four_spaces_in_second_line(lines, path):
     # TODO: also fix the space for all lines before ":=", right now we only fix the line after
@@ -274,10 +259,6 @@ def format_errors(errors):
         new_exceptions = True
         if errno == ERR_MOD:
             output_message(path, line_nr, "ERR_MOD", "Module docstring missing, or too late")
-        if errno == ERR_WIN:
-            output_message(path, line_nr, "ERR_WIN", "Windows line endings (\\r\\n) detected")
-        if errno == ERR_TWS:
-            output_message(path, line_nr, "ERR_TWS", "Trailing whitespace detected on line")
         if errno == ERR_IND:
             output_message(path, line_nr, "ERR_IND", "If the theorem/def statement requires multiple lines, indent it correctly (4 spaces or 2 for `|`)")
         if errno == ERR_ARR:
@@ -293,8 +274,7 @@ def lint(path, fix=False):
         lines = f.readlines()
         enum_lines = enumerate(lines, 1)
         newlines = enum_lines
-        for error_check in [line_endings_check,
-                            four_spaces_in_second_line,
+        for error_check in [four_spaces_in_second_line,
                             left_arrow_check,
                             nonterminal_simp_check]:
             errs, newlines = error_check(newlines, path)
