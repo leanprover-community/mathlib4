@@ -567,9 +567,9 @@ instance (priority := 100) IsSimple.isSemisimple [h : IsSimple R L] :
     contradiction
 
 /-- A simple Lie algebra has trivial radical. -/
-instance (priority := 100) hasTrivialRadical_of_isSimple [IsSimple R L] :
+instance (priority := 100) IsSimple.hasTrivialRadical [IsSimple R L] :
     HasTrivialRadical R L := inferInstance
-#align lie_algebra.is_semisimple_of_is_simple LieAlgebra.hasTrivialRadical_of_isSimple
+#align lie_algebra.is_semisimple_of_is_simple LieAlgebra.IsSimple.hasTrivialRadical
 
 /-- An abelian Lie algebra with trivial radical is trivial. -/
 theorem subsingleton_of_hasTrivialRadical_lie_abelian [HasTrivialRadical R L] [h : IsLieAbelian L] :
