@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
 import Mathlib.Algebra.Algebra.Tower
+import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Regular.Pow
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Data.Finsupp.Antidiagonal
@@ -511,7 +512,7 @@ theorem algHom_C {τ : Type*} (f : MvPolynomial σ R →ₐ[R] MvPolynomial τ R
 @[simp]
 theorem adjoin_range_X : Algebra.adjoin R (range (X : σ → MvPolynomial σ R)) = ⊤ := by
   set S := Algebra.adjoin R (range (X : σ → MvPolynomial σ R))
-  refine' top_unique fun p hp => _; clear hp
+  refine top_unique fun p hp => ?_; clear hp
   induction p using MvPolynomial.induction_on with
   | h_C => exact S.algebraMap_mem _
   | h_add p q hp hq => exact S.add_mem hp hq
@@ -797,14 +798,14 @@ theorem coeff_monomial_mul' (m) (s : σ →₀ ℕ) (r : R) (p : MvPolynomial σ
 
 theorem coeff_mul_X' [DecidableEq σ] (m) (s : σ) (p : MvPolynomial σ R) :
     coeff m (p * X s) = if s ∈ m.support then coeff (m - Finsupp.single s 1) p else 0 := by
-  refine' (coeff_mul_monomial' _ _ _ _).trans _
+  refine (coeff_mul_monomial' _ _ _ _).trans ?_
   simp_rw [Finsupp.single_le_iff, Finsupp.mem_support_iff, Nat.succ_le_iff, pos_iff_ne_zero,
     mul_one]
 #align mv_polynomial.coeff_mul_X' MvPolynomial.coeff_mul_X'
 
 theorem coeff_X_mul' [DecidableEq σ] (m) (s : σ) (p : MvPolynomial σ R) :
     coeff m (X s * p) = if s ∈ m.support then coeff (m - Finsupp.single s 1) p else 0 := by
-  refine' (coeff_monomial_mul' _ _ _ _).trans _
+  refine (coeff_monomial_mul' _ _ _ _).trans ?_
   simp_rw [Finsupp.single_le_iff, Finsupp.mem_support_iff, Nat.succ_le_iff, pos_iff_ne_zero,
     one_mul]
 #align mv_polynomial.coeff_X_mul' MvPolynomial.coeff_X_mul'
@@ -1696,7 +1697,7 @@ theorem eval₂_mem {f : R →+* S} {p : MvPolynomial σ R} {s : subS}
   induction' p using MvPolynomial.induction_on''' with a a b f ha _ ih
   · simpa using hs 0
   rw [eval₂_add, eval₂_monomial]
-  refine' add_mem (mul_mem _ <| prod_mem fun i _ => pow_mem (hv _) _) (ih fun i => _)
+  refine add_mem (mul_mem ?_ <| prod_mem fun i _ => pow_mem (hv _) _) (ih fun i => ?_)
   · have := hs a -- Porting note: was `simpa only [...]`
     rwa [coeff_add, MvPolynomial.not_mem_support_iff.1 ha, add_zero, coeff_monomial,
       if_pos rfl] at this

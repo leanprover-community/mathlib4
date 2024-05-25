@@ -414,9 +414,9 @@ theorem measurable_measure_condCDF (ρ : Measure (α × ℝ)) :
   rw [Measure.measurable_measure]
   refine fun s hs => ?_
   -- Porting note: supplied `C`
-  refine' MeasurableSpace.induction_on_inter
+  refine MeasurableSpace.induction_on_inter
     (C := fun s => Measurable fun b ↦ StieltjesFunction.measure (condCDF ρ b) s)
-    (borel_eq_generateFrom_Iic ℝ) isPiSystem_Iic _ _ _ _ hs
+    (borel_eq_generateFrom_Iic ℝ) isPiSystem_Iic ?_ ?_ ?_ ?_ hs
   · simp only [measure_empty, measurable_const]
   · rintro S ⟨u, rfl⟩
     simp_rw [measure_condCDF_Iic ρ _ u]

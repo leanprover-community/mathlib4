@@ -90,7 +90,7 @@ theorem Submodule.exists_isInternal_prime_power_torsion_of_pid [Module.Finite R 
     (hM : Module.IsTorsion R M) :
     ∃ (ι : Type u) (_ : Fintype ι) (_ : DecidableEq ι) (p : ι → R) (_ : ∀ i, Irreducible <| p i)
         (e : ι → ℕ), DirectSum.IsInternal fun i => torsionBy R M <| p i ^ e i := by
-  refine' ⟨_, _, _, _, _, _, Submodule.isInternal_prime_power_torsion_of_pid hM⟩
+  refine ⟨_, ?_, _, _, ?_, _, Submodule.isInternal_prime_power_torsion_of_pid hM⟩
   · exact Finset.fintypeCoeSort _
   · rintro ⟨p, hp⟩
     have hP := prime_of_factor p (Multiset.mem_toFinset.mp hp)
@@ -160,7 +160,7 @@ theorem exists_smul_eq_zero_and_mk_eq {z : M} (hz : Module.IsTorsionBy R M (p ^ 
     rw [← mk_smul, Quotient.mk_eq_zero, Algebra.id.smul_eq_mul, mul_one]
     exact Submodule.mem_span_singleton_self _
   obtain ⟨a, ha⟩ := p_pow_smul_lift hp hM hz this
-  refine' ⟨f1.choose - a • z, by rw [smul_sub, sub_eq_zero, ha], _⟩
+  refine ⟨f1.choose - a • z, by rw [smul_sub, sub_eq_zero, ha], ?_⟩
   rw [mk_sub, mk_smul, (Quotient.mk_eq_zero _).mpr <| Submodule.mem_span_singleton_self _,
     smul_zero, sub_zero, f1.choose_spec]
 #align module.exists_smul_eq_zero_and_mk_eq Module.exists_smul_eq_zero_and_mk_eq
@@ -193,7 +193,7 @@ theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoi
           ∃ x : N, p ^ k i • x = 0 ∧ f (Submodule.Quotient.mk x) = DirectSum.lof R _ _ i 1 := by
         intro i
         let fi := f.symm.toLinearMap.comp (DirectSum.lof _ _ _ i)
-        obtain ⟨x, h0, h1⟩ := exists_smul_eq_zero_and_mk_eq hp hN hj fi; refine' ⟨x, h0, _⟩; rw [h1]
+        obtain ⟨x, h0, h1⟩ := exists_smul_eq_zero_and_mk_eq hp hN hj fi; refine ⟨x, h0, ?_⟩; rw [h1]
         simp only [fi, LinearMap.coe_comp, f.symm.coe_toLinearMap, f.apply_symm_apply,
           Function.comp_apply]
       refine ⟨?_, ⟨?_⟩⟩

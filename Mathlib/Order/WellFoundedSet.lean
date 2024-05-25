@@ -102,7 +102,7 @@ theorem wellFoundedOn_range : (range f).WellFoundedOn r ↔ WellFounded (r on f)
   let f' : β → range f := fun c => ⟨f c, c, rfl⟩
   refine ⟨fun h => (InvImage.wf f' h).mono fun c c' => id, fun h => ⟨?_⟩⟩
   rintro ⟨_, c, rfl⟩
-  refine' Acc.of_downward_closed f' _ _ _
+  refine Acc.of_downward_closed f' ?_ _ ?_
   · rintro _ ⟨_, c', rfl⟩ -
     exact ⟨c', rfl⟩
   · exact h.apply _
@@ -312,7 +312,7 @@ theorem PartiallyWellOrderedOn.image_of_monotone_on (hs : s.PartiallyWellOrdered
 
 theorem _root_.IsAntichain.finite_of_partiallyWellOrderedOn (ha : IsAntichain r s)
     (hp : s.PartiallyWellOrderedOn r) : s.Finite := by
-  refine' not_infinite.1 fun hi => _
+  refine not_infinite.1 fun hi => ?_
   obtain ⟨m, n, hmn, h⟩ := hp (fun n => hi.natEmbedding _ n) fun n => (hi.natEmbedding _ n).2
   exact hmn.ne ((hi.natEmbedding _).injective <| Subtype.val_injective <|
     ha.eq (hi.natEmbedding _ m).2 (hi.natEmbedding _ n).2 h)
@@ -356,16 +356,16 @@ protected theorem PartiallyWellOrderedOn.insert (h : PartiallyWellOrderedOn s r)
 
 theorem partiallyWellOrderedOn_iff_finite_antichains [IsSymm α r] :
     s.PartiallyWellOrderedOn r ↔ ∀ t, t ⊆ s → IsAntichain r t → t.Finite := by
-  refine' ⟨fun h t ht hrt => hrt.finite_of_partiallyWellOrderedOn (h.mono ht), _⟩
+  refine ⟨fun h t ht hrt => hrt.finite_of_partiallyWellOrderedOn (h.mono ht), ?_⟩
   rintro hs f hf
   by_contra! H
-  refine' infinite_range_of_injective (fun m n hmn => _) (hs _ (range_subset_iff.2 hf) _)
+  refine infinite_range_of_injective (fun m n hmn => ?_) (hs _ (range_subset_iff.2 hf) ?_)
   · obtain h | h | h := lt_trichotomy m n
-    · refine' (H _ _ h _).elim
+    · refine (H _ _ h ?_).elim
       rw [hmn]
       exact refl _
     · exact h
-    · refine' (H _ _ h _).elim
+    · refine (H _ _ h ?_).elim
       rw [hmn]
       exact refl _
   rintro _ ⟨m, hm, rfl⟩ _ ⟨n, hn, rfl⟩ hmn
@@ -379,7 +379,7 @@ variable [IsTrans α r]
 theorem PartiallyWellOrderedOn.exists_monotone_subseq (h : s.PartiallyWellOrderedOn r) (f : ℕ → α)
     (hf : ∀ n, f n ∈ s) : ∃ g : ℕ ↪o ℕ, ∀ m n : ℕ, m ≤ n → r (f (g m)) (f (g n)) := by
   obtain ⟨g, h1 | h2⟩ := exists_increasing_or_nonincreasing_subseq r f
-  · refine' ⟨g, fun m n hle => _⟩
+  · refine ⟨g, fun m n hle => ?_⟩
     obtain hlt | rfl := hle.lt_or_eq
     exacts [h1 m n hlt, refl_of r _]
   · exfalso
@@ -691,8 +691,8 @@ theorem IsWF.min_le_min_of_subset {hs : s.IsWF} {hsn : s.Nonempty} {ht : t.IsWF}
 theorem IsWF.min_union (hs : s.IsWF) (hsn : s.Nonempty) (ht : t.IsWF) (htn : t.Nonempty) :
     (hs.union ht).min (union_nonempty.2 (Or.intro_left _ hsn)) =
       Min.min (hs.min hsn) (ht.min htn) := by
-  refine' le_antisymm (le_min (IsWF.min_le_min_of_subset (subset_union_left _ _))
-    (IsWF.min_le_min_of_subset (subset_union_right _ _))) _
+  refine le_antisymm (le_min (IsWF.min_le_min_of_subset (subset_union_left _ _))
+    (IsWF.min_le_min_of_subset (subset_union_right _ _))) ?_
   rw [min_le_iff]
   exact ((mem_union _ _ _).1 ((hs.union ht).min_mem (union_nonempty.2 (.inl hsn)))).imp
     (hs.min_le _) (ht.min_le _)
@@ -761,7 +761,7 @@ theorem exists_min_bad_of_exists_bad (r : α → α → Prop) (rk : α → ℕ) 
     (∃ f, IsBadSeq r s f) → ∃ f, IsBadSeq r s f ∧ ∀ n, IsMinBadSeq r rk s n f := by
   rintro ⟨f0, hf0 : IsBadSeq r s f0⟩
   let fs : ∀ n : ℕ, { f : ℕ → α // IsBadSeq r s f ∧ IsMinBadSeq r rk s n f } := by
-    refine' Nat.rec _ fun n fn => _
+    refine Nat.rec ?_ fun n fn => ?_
     · exact ⟨(minBadSeqOfBadSeq r rk s 0 f0 hf0).1, (minBadSeqOfBadSeq r rk s 0 f0 hf0).2.2⟩
     · exact ⟨(minBadSeqOfBadSeq r rk s (n + 1) fn.1 fn.2.1).1,
         (minBadSeqOfBadSeq r rk s (n + 1) fn.1 fn.2.1).2.2⟩
@@ -907,7 +907,7 @@ theorem Pi.isPWO {α : ι → Type*} [∀ i, LinearOrder (α i)] [∀ i, IsWellO
     ∃ g : ℕ ↪o ℕ, ∀ ⦃a b : ℕ⦄, a ≤ b → ∀ x, x ∈ s → (f ∘ g) a x ≤ (f ∘ g) b x by
     refine isPWO_iff_exists_monotone_subseq.2 fun f _ => ?_
     simpa only [Finset.mem_univ, true_imp_iff] using this Finset.univ f
-  refine' Finset.cons_induction _ _
+  refine Finset.cons_induction ?_ ?_
   · intro f
     exists RelEmbedding.refl (· ≤ ·)
     simp only [IsEmpty.forall_iff, imp_true_iff, forall_const, Finset.not_mem_empty]
@@ -915,7 +915,7 @@ theorem Pi.isPWO {α : ι → Type*} [∀ i, LinearOrder (α i)] [∀ i, IsWellO
     obtain ⟨g, hg⟩ :=
       (IsWellFounded.wf.isWF univ).isPWO.exists_monotone_subseq (fun n => f n x) mem_univ
     obtain ⟨g', hg'⟩ := ih (f ∘ g)
-    refine' ⟨g'.trans g, fun a b hab => (Finset.forall_mem_cons _ _).2 _⟩
+    refine ⟨g'.trans g, fun a b hab => (Finset.forall_mem_cons _ _).2 ?_⟩
     exact ⟨hg (OrderHomClass.mono g' hab), hg' hab⟩
 #align pi.is_pwo Pi.isPWO
 
