@@ -316,6 +316,7 @@ def Continuous' (f : α → β) : Prop :=
   ∃ hf : Monotone f, Continuous ⟨f, hf⟩
 #align omega_complete_partial_order.continuous' OmegaCompletePartialOrder.Continuous'
 
+/-- ωScottContinuous - Scott Continuous over Chains-/
 def ωScottContinuous (f : α → β) := ScottContinuous { d | ∃ (c : Chain α), Set.range c = d } f
 
 lemma ωScottContinuous.monotone {f : α → β} (h : ωScottContinuous f) : Monotone f :=
