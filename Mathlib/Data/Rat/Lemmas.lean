@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Ring.Int
-import Mathlib.Data.Nat.Cast.Order
+import Mathlib.Algebra.Order.Group.Int
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Ring.Rat
 import Mathlib.Data.PNat.Defs
-import Mathlib.Data.Rat.Defs
 
 #align_import data.rat.lemmas from "leanprover-community/mathlib"@"550b58538991c8977703fdeb7c9d51a5aa27df11"
 
@@ -254,7 +254,7 @@ theorem inv_intCast_den_of_pos {a : ℤ} (ha0 : 0 < a) : ((a : ℚ)⁻¹.den : �
 
 theorem inv_natCast_den_of_pos {a : ℕ} (ha0 : 0 < a) : (a : ℚ)⁻¹.den = a := by
   rw [← Int.ofNat_inj, ← Int.cast_natCast a, inv_intCast_den_of_pos]
-  rwa [Nat.cast_pos]
+  rwa [Int.natCast_pos]
 #align rat.inv_coe_nat_denom_of_pos Rat.inv_natCast_den_of_pos
 
 @[simp]
