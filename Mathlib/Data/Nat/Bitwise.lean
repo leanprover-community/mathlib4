@@ -50,7 +50,7 @@ variable {f : Bool → Bool → Bool}
 
 lemma succ_testBit_zero (n : ℕ) : (n + 1).testBit 0 = !n.testBit 0 := by
   apply n.bitCasesOn
-  rcases; simp [testBit_bit_zero, -testBit_zero]
+  simp [testBit_bit_zero, -testBit_zero]
 
 @[simp]
 lemma add_pow_testBit (n : ℕ) : (i : ℕ) → (n + 2 ^ i).testBit i = !n.testBit i

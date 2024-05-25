@@ -160,9 +160,9 @@ theorem size_eq_bits_len (n : ℕ) : n.bits.length = n.size := by
   · simpa [bit_eq_zero_iff]
 #align nat.size_eq_bits_len Nat.size_eq_bits_len
 
-lemma size_eq_iff_le_and_lt (n : ℕ) (i : ℕ) : n.size = i + 1 ↔ 2 ^ i ≤ n ∧ n < 2 ^ (i + 1) :=
-    ⟨fun h => ⟨lt_size.mp <| h ▸ lt_succ_self _, h ▸ lt_size_self _⟩,
-    fun h => le_antisymm (size_le.mpr h.2) <| succ_le_iff.mp <| lt_size.mpr h.1⟩
+lemma size_eq_iff_le_and_lt (n : ℕ) (i : ℕ) : n.size = i + 1 ↔ 2 ^ i ≤ n ∧ n < 2 ^ (i + 1) where
+  mp h := ⟨lt_size.mp <| h ▸ lt_succ_self _, h ▸ lt_size_self _⟩
+  mpr h := le_antisymm (size_le.mpr h.2) <| succ_le_iff.mp <| lt_size.mpr h.1
 
 lemma size_eq_iff_testBit (n : ℕ) (i : ℕ) : n.size = i + 1 ↔
     n.testBit i ∧ ∀ j > i, n.testBit j = false := by
