@@ -585,8 +585,6 @@ lemma ProbabilityMeasure.continuous_toLevyProkhorov :
   -- Instead of the whole space `Ω = ⋃ n ∈ ℕ, Es n`, focus on a large but finite
   -- union `⋃ n < N, Es n`, chosen in such a way that the complement has small `P`-mass,
   -- `P (⋃ n < N, Es n)ᶜ < ε/3`.
-  -- (TODO: Split a standalone lemma out of this argument.)
-  -- (TODO: Use `tendsto_measure_biUnion_Ici_zero_of_iUnion_eq_univ_of_pairwise_disjoint`.)
   have exhaust := @tendsto_measure_biUnion_Ici_zero_of_iUnion_eq_univ_of_pairwise_disjoint
                 Ω _ P.toMeasure _ Es Es_cover Es_mble Es_disjoint
   simp only [tendsto_atTop_nhds, Function.comp_apply] at exhaust
