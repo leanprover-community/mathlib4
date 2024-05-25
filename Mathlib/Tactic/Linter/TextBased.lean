@@ -49,6 +49,10 @@ inductive StyleError where
   | trailingWhitespace : StyleError
   /-- A line ends with Windows line endings (\\r\\n) -/
   | windowsLineEndings : StyleError
+  /-- The current file was too large: this error contains the current number of lines
+  as well as a size limit (slightly larger). On future runs, this linter will allow this file
+  to grow up to this limit. -/
+  | fileTooLong (number_lines : ℕ) (new_size_limit : ℕ) : StyleError
   deriving BEq
 
 /-- Create the underlying error message for a given `StyleError`. -/
@@ -66,6 +70,8 @@ def errorMessage (err : StyleError) : String := match err with
   | StyleError.colon => "Put : and := before line breaks, not after"
   | StyleError.trailingWhitespace => "Trailing whitespace detected"
   | StyleError.windowsLineEndings => "Windows line endings (\\r\\n) detected"
+  | StyleError.fileTooLong current_size size_limit =>
+      s!"{size_limit} file contains {current_size} lines, try to split it up"
 
 /-- The error code for a given style error. Kept in sync with `lint-style.py` for now. -/
 def errorCode (err : StyleError) : String := match err with
@@ -80,6 +86,7 @@ def errorCode (err : StyleError) : String := match err with
   | StyleError.dot => "ERR_DOT"
   | StyleError.trailingWhitespace => "ERR_TWS"
   | StyleError.windowsLineEndings => "ERR_WIN"
+  | StyleError.fileTooLong _ _ => "ERR_NUM_LIN"
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
 and the path to the file. -/
@@ -261,7 +268,22 @@ def is_imports_only_file (lines : Array String) : Bool :=
   -- automatically generated and don't contains comments, this is in fact not necessary.
   lines.all (fun line ↦ line.startsWith "import ")
 
-
+/-- Error if a collection of lines is too large. "Too large" means more than 1500 lines
+**and** longer than an optional previous limit.
+If the file is too large, return a matching `StyleError`, which includes a new size limit
+(which is somewhat larger than the current size). -/
+def check_file_length (lines : Array String) (existing_limit : Option ℕ) : Option StyleError :=
+  Id.run do
+  if lines.size > 1500 then
+    let is_larger : Bool := match existing_limit with
+    | some mark => lines.size > mark
+    | none => true
+    if is_larger then
+      -- We add about 200 lines of slack to the current file size:
+      -- small PRs will be unperturbed, but sufficiently large PRs will get nudged towards
+      -- split up this file.
+      return some (StyleError.fileTooLong lines.size ((Nat.div lines.size 100) * 100 + 200))
+  none
 end
 
 /-- All text-based linters registered in this file. -/
@@ -271,20 +293,27 @@ def all_linters : Array LinterCore := Array.mk
 
 /-- Read a file, apply all text-based linters and return the formatted errors.
 
+`size_limit` is any pre-existing limit on this file's size;
 `exceptions` are any previous style exceptions. -/
-def lint_file (path : System.FilePath) (exceptions : Array ErrorContext) : IO Unit := do
+def lint_file (path : System.FilePath)
+    (size_limit : Option ℕ) (exceptions : Array ErrorContext) : IO Unit := do
   let lines ← IO.FS.lines path
   -- We don't need to run any checks on imports-only files.
   -- NB. The Python script used to still run a few linters; this is in fact not necessary.
   if is_imports_only_file lines then
     return
+  -- Check first if the file is too long: since this requires mucking with previous exceptions,
+  -- I'll just handle this directly.
+  if let some (StyleError.fileTooLong n limit) := check_file_length lines size_limit then
+    let arr := Array.mkArray1 (ErrorContext.mk (StyleError.fileTooLong n limit) 1 path)
+    format_errors arr (Array.mkEmpty 0)
   let all_output := (Array.map (fun lint ↦
     (Array.map (fun (e, n) ↦ ErrorContext.mk e n path)) (lint lines))) all_linters
   -- XXX: this list is currently not sorted: for github, that's probably fine
   format_errors (Array.flatten all_output) exceptions
 
 #eval lint_file (System.mkFilePath ["Mathlib", "Tactic", "Linter", "TextBased.lean"])
-  (Array.mkEmpty 0)
+  none (Array.mkEmpty 0)
 
 /-- Lint all files in `Mathlib.lean`. -/
 def check_all_files : IO Unit := do
@@ -292,6 +321,6 @@ def check_all_files : IO Unit := do
   let allModules ← IO.FS.lines (System.mkFilePath [(toString "Mathlib.lean")])
   for module in allModules do
     -- Convert the module name to a file name, then lint that file.
-    let path := System.mkFilePath ((module.split fun c ↦ (c == '.')).append [".lean"])
-    -- TODO: parse `style-exceptions.txt`, then pass these exceptions in!
-    lint_file path (Array.mkEmpty 0)
+    -- TODO: parse `style-exceptions.txt`, then pass these exceptions in, including a size limit!
+    let path := (System.mkFilePath ((module.split fun c ↦ (c == '.')).append [".lean"]))
+    lint_file path (some 1500) (Array.mkEmpty 0)
