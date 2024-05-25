@@ -29,7 +29,7 @@ produceSed () {
 : <<'DOES_NOT_PARSE'
 ## import the `theorem` vs `lemma` linter wherever `Mathlib.Tactic.Lemma` is imported
 ## (alternatively, the linter could be imported just in `Mathlib.Tactic.Lemma`)
-sed -i 's=import Mathlib\.Tactic\.Lemma=&\nimport Mathlib.Tactic.ThmLemma=' $(
+sed -i 's=import Mathlib\.Tactic\.Lemma=&\nimport Mathlib.Tactic.Linter.ThmLemma=' $(
   grep "import Mathlib\.Tactic\.Lemma" $(git ls-files 'Mathlib/*.lean') |
    awk -F: '{printf " "$1}END{ print "" }')
 
