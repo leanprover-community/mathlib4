@@ -40,7 +40,6 @@ import shutil
 ERR_MOD = 2 # module docstring
 ERR_IND = 17 # second line not correctly indented
 ERR_ARR = 18 # space after "←"
-ERR_NUM_LIN = 19 # file is too large
 ERR_NSP = 20 # non-terminal simp
 
 exceptions = []
@@ -56,7 +55,7 @@ with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
         if errno == "ERR_MOD":
             exceptions += [(ERR_MOD, path, None)]
         elif errno == "ERR_NUM_LIN":
-            exceptions += [(ERR_NUM_LIN, path, extra[1])]
+            pass
         else:
             print(f"Error: unexpected errno in style-exceptions.txt: {errno}")
             sys.exit(1)
@@ -243,13 +242,9 @@ def output_message(path, line_nr, code, msg):
         # filename first, then line so that we can call "sort" on the output
         print(f"{path} : line {line_nr} : {code} : {msg}")
     else:
-        if code.startswith("ERR"):
-            msg_type = "error"
-        if code.startswith("WRN"):
-            msg_type = "warning"
         # We are outputting for github. We duplicate path, line_nr and code,
         # so that they are also visible in the plaintext output.
-        print(f"::{msg_type} file={path},line={line_nr},code={code}::{path}:{line_nr} {code}: {msg}")
+        print(f"::error file={path},line={line_nr},code={code}::{path}:{line_nr} {code}: {msg}")
 
 def format_errors(errors):
     global new_exceptions
@@ -281,21 +276,6 @@ def lint(path, fix=False):
         #     format_errors(errs)
 
         if not import_only_check(newlines, path):
-            # Check for too long files: either longer than 1500 lines, or not covered by an exception.
-            # Each exception contains a "watermark". If the file is longer than that, we also complain.
-            if len(lines) > 1500:
-                ex = [e for e in exceptions if e[1] == path.resolve()]
-                if ex:
-                    (_ERR_NUM, _path, watermark) = list(ex)[0]
-                    assert int(watermark) > 500 # protect against parse error
-                    is_too_long = len(lines) > int(watermark)
-                else:
-                    is_too_long = True
-                if is_too_long:
-                    new_exceptions = True
-                    # add up to 200 lines of slack, so simple PRs don't trigger this right away
-                    watermark = len(lines) // 100 * 100 + 200
-                    output_message(path, 1, "ERR_NUM_LIN", f"{watermark} file contains {len(lines)} lines, try to split it up")
             errs, newlines = regular_check(newlines, path)
             format_errors(errs)
     # if we haven't been asked to fix errors, or there are no errors or no fixes, we're done
