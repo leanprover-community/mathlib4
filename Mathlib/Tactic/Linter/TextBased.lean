@@ -7,6 +7,7 @@ Authors: Michael Rothgang
 import Lean.Elab.Command
 import Lean.Linter.Util
 import Batteries.Data.String.Basic
+import Mathlib.Init.Data.Nat.Notation
 
 /-!
 ## Text-based linters
@@ -82,7 +83,7 @@ def format_errors (errors : Array ErrorContext) (exceptions : Array ErrorContext
 
 /-- Core logic of a text based linter: given a collection of lines,
 return an array of all style errors with line numbers. -/
-abbrev LinterCore := Array String → Array (StyleError × Nat)
+abbrev LinterCore := Array String → Array (StyleError × ℕ)
 
 /-! Definitions of the actual text-based linters. -/
 section
@@ -125,8 +126,6 @@ def contains_broad_imports : LinterCore := fun lines ↦ Id.run do
       if line.startsWith "/-" then
         in_doc_comment := True
   output
-
--- xxx: use ℕ notation, if cheap to import!
 
 /-- Return if `line` looks like a correct authors line in a copyright header. -/
 def is_correct_authors_line (line : String) : Bool :=
@@ -178,7 +177,7 @@ end
 def all_linters : Array LinterCore := Array.mk
   [check_line_length, contains_broad_imports, copyright_header]
 
-def add_path (path : System.FilePath) : StyleError × Nat → ErrorContext :=
+def add_path (path : System.FilePath) : StyleError × ℕ → ErrorContext :=
   fun (e, n) ↦ ErrorContext.mk e n path
 
 /-- Read a file, apply all text-based linters and return the formatted errors. -/
