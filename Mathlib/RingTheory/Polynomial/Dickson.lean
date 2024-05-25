@@ -187,7 +187,7 @@ theorem dickson_two_one_eq_chebyshev_U [Invertible (2 : R)] (n : ℕ) :
     dickson 2 (1 : R) n = (Chebyshev.U R n).comp (C (⅟ 2) * X) :=
   (dickson_two_one_eq_chebyshev_S R n).trans (Chebyshev.S_eq_U_comp_half_mul_X R n)
 
-theorem chebyshev_U_eq_dickson_two_one [Invertible (2 : R)] (n : ℕ) :
+theorem chebyshev_U_eq_dickson_two_one (n : ℕ) :
     Chebyshev.U R n = (dickson 2 (1 : R) n).comp (2 * X) :=
   dickson_two_one_eq_chebyshev_S R n ▸ (Chebyshev.S_comp_two_mul_X R n).symm
 
