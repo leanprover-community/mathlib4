@@ -46,6 +46,11 @@ theorem invOf_mul_add_mul_invOf_eq_invOf_add_invOf
     ⅟a * (a + b) * ⅟b = ⅟a + ⅟b := by
   rw [mul_add, invOf_mul_self, add_mul, one_mul, mul_assoc, mul_invOf_self, mul_one, add_comm]
 
+theorem invOf_mul_sub_mul_invOf_eq_invOf_sub_invOf
+    [Ring α] (a b : α) [Invertible a] [Invertible b] :
+    ⅟a * (a - b) * ⅟b = ⅟b - ⅟a := by
+  rw [mul_sub, invOf_mul_self, sub_mul, one_mul, mul_assoc, mul_invOf_self, mul_one]
+
 theorem Ring.inverse_mul_add_mul_inverse_eq_inverse_add_inverse
     [Semiring α] {a b : α} (h : IsUnit a ↔ IsUnit b) :
     Ring.inverse a * (a + b) * Ring.inverse b = Ring.inverse a + Ring.inverse b := by
@@ -54,5 +59,16 @@ theorem Ring.inverse_mul_add_mul_inverse_eq_inverse_add_inverse
     obtain ⟨ia⟩ := ha.nonempty_invertible
     obtain ⟨ib⟩ := hb.nonempty_invertible
     simp_rw [inverse_invertible, invOf_mul_add_mul_invOf_eq_invOf_add_invOf]
+  · have hb := h.not.mp ha
+    simp [inverse_non_unit, ha, hb]
+
+theorem Ring.inverse_mul_sub_mul_inverse_eq_inverse_sub_inverse
+    [Ring α] {a b : α} (h : IsUnit a ↔ IsUnit b) :
+    Ring.inverse a * (a - b) * Ring.inverse b = Ring.inverse b - Ring.inverse a := by
+  by_cases ha : IsUnit a
+  · have hb := h.mp ha
+    obtain ⟨ia⟩ := ha.nonempty_invertible
+    obtain ⟨ib⟩ := hb.nonempty_invertible
+    simp_rw [inverse_invertible, invOf_mul_sub_mul_invOf_eq_invOf_sub_invOf]
   · have hb := h.not.mp ha
     simp [inverse_non_unit, ha, hb]

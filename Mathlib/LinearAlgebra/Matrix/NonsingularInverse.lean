@@ -669,6 +669,16 @@ theorem inv_inv_inv (A : Matrix n n α) : A⁻¹⁻¹⁻¹ = A⁻¹ := by
   · simp [nonsing_inv_apply_not_isUnit _ h]
 #align matrix.inv_inv_inv Matrix.inv_inv_inv
 
+theorem inv_mul_add_mul_inv_eq_inv_add_inv {A B : Matrix n n α} (h : IsUnit A ↔ IsUnit B) :
+    A⁻¹ * (A + B) * B⁻¹ = A⁻¹ + B⁻¹ := by
+  simpa only [nonsing_inv_eq_ring_inverse]
+    using Ring.inverse_mul_add_mul_inverse_eq_inverse_add_inverse h
+
+theorem inv_mul_sub_mul_inv_eq_inv_sub_inv {A B : Matrix n n α} (h : IsUnit A ↔ IsUnit B) :
+    A⁻¹ * (A - B) * B⁻¹ = B⁻¹ - A⁻¹ := by
+  simpa only [nonsing_inv_eq_ring_inverse]
+    using Ring.inverse_mul_sub_mul_inverse_eq_inverse_sub_inverse h
+
 theorem mul_inv_rev (A B : Matrix n n α) : (A * B)⁻¹ = B⁻¹ * A⁻¹ := by
   simp only [inv_def]
   rw [Matrix.smul_mul, Matrix.mul_smul, smul_smul, det_mul, adjugate_mul_distrib,
