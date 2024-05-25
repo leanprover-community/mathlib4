@@ -35,8 +35,10 @@ inductive StyleError where
   | copyright (context : Option String)
   /-- Malformed authors line in the copyright header -/
   | authors
-  /-- An "isolated by": a line containing just the string "by" -/
-  | isolated_by : StyleError
+  /-- A "leading by": a line starting with "by" (this should go on the previous line) -/
+  | leading_by : StyleError
+    /-- An "isolated where": a line containing just the string "where" -/
+  | isolated_where : StyleError
   /-- Line is an isolated focusing dot or uses `.` instead of `·` -/
   | dot : StyleError
   /-- A semicolon preceded by a space -/
@@ -57,7 +59,8 @@ def errorMessage (err : StyleError) : String := match err with
   | StyleError.copyright none => s!"Malformed or missing copyright header"
   | StyleError.authors =>
     "Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'"
-  | StyleError.isolated_by => "Line is an isolated 'by'"
+  | StyleError.leading_by => "Line starts with 'by'"
+  | StyleError.isolated_where => "Line containing just the string 'where'"
   | StyleError.dot => "Line is an isolated focusing dot or uses . instead of ·"
   | StyleError.semicolon => "Line contains a space before a semicolon"
   | StyleError.colon => "Put : and := before line breaks, not after"
@@ -70,7 +73,8 @@ def errorCode (err : StyleError) : String := match err with
   | StyleError.broadImport => "ERR_TAC"
   | StyleError.copyright _ => "ERR_COP"
   | StyleError.authors => "ERR_AUT"
-  | StyleError.isolated_by => "ERR_IBY"
+  | StyleError.leading_by => "ERR_IBY"
+  | StyleError.isolated_where => "ERR_IWH"
   | StyleError.semicolon => "ERR_SEM"
   | StyleError.colon => "ERR_CLN"
   | StyleError.dot => "ERR_DOT"
@@ -207,7 +211,7 @@ def isolated_by_dot_semicolon : LinterCore := fun lines ↦ Id.run do
     let mut line_number := 0
     for line in lines do
       line_number := line_number + 1
-      if line.trim == "by" && line_number >= 2 then
+      if line.trimLeft.startsWith "by" && line_number >= 2 then
         -- This is safe since `line_number` is the line we iterated over, just a moment ago.
         let previous_line := lines[line_number - 2]!
         -- We excuse those "by"s following a comma or ", fun ... =>", since generally hanging "by"s
@@ -216,7 +220,13 @@ def isolated_by_dot_semicolon : LinterCore := fun lines ↦ Id.run do
         if !previous_line.endsWith "," then
           if !(previous_line.containsSubstr ", fun" &&
               (previous_line.endsWith "=>" || previous_line.endsWith "↦")) then
-            output := output.push (StyleError.isolated_by, line_number)
+            output := output.push (StyleError.leading_by, line_number)
+      else if line.trimLeft.startsWith "by " then
+        -- Let's see what this finds!
+        output := output.push (StyleError.leading_by, line_number)
+      -- We also check for a "leading where", which has far fewer exceptions.
+      if line.trim == "where " then
+        output := output.push (StyleError.isolated_where, line_number)
       if line.trimRight.startsWith ". " then
         output := output.push (StyleError.dot, line_number) -- has an auto-fix
       if [".", "·"].contains line.trim then
