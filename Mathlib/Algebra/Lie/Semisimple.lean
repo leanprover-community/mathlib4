@@ -369,7 +369,7 @@ class IsSemisimple : Prop where
 
 variable {R L} in
 lemma isSimple_of_isAtom [IsSemisimple R L] (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
-    non_abelian := IsSemisimple.non_abelian_of_isAtom I hI
+  non_abelian := IsSemisimple.non_abelian_of_isAtom I hI
     eq_bot_or_eq_top := by
       -- Suppose that `J` is an ideal of `I`.
       intro J
