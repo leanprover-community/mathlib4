@@ -5,16 +5,24 @@ Authors: Yoh Tanimoto
 -/
 import Mathlib.Topology.ContinuousFunction.Bounded
 import Mathlib.Topology.ContinuousFunction.CocompactMap
-import Mathlib.Topology.ContinuousFunction.Compact
 import Mathlib.Topology.ContinuousFunction.ZeroAtInfty
+import Mathlib.Topology.Support
 
 /-!
 # Compactly supported continuous functions
 
-The type of compactly supported continuous functions. When the domain is compact,
-`C(α, β) ≃ C_c(α, β)` via the identity map. When the codomain is a metric space, every continuous
-compactly supported map is a bounded continuous function. When the domain is a locally
-compact space, this type has nice properties.
+In this file, we define the type `C_c(α, β)` of compactly supported continuous functions and the
+class `CompactlySupportedContinuousMapClass`, and prove basic properties.
+
+## Main definitions and results
+
+This file contains various instances such as `Add`, `Mul`, `SMul C(α, β) C_c(α, β)`.
+When `β` has more structures, `C_c(α, β)` inherits such structures as `AddCommGroup`,
+`NonUnitalRing`, `NormedSpace` and `CstarRing`.
+
+When the domain `α` is compact, `ContinuousMap.liftCompactlySupported` gives the identification
+`C(α, β) ≃ C_c(α, β)`. When the codomain is a metric space, every continuous compactly supported map
+is a bounded continuous function by `bounded `.
 
 ## TODO
 
@@ -59,11 +67,11 @@ class CompactlySupportedContinuousMapClass (F : Type*) (α β : outParam <| Type
     [TopologicalSpace α] [Zero β] [TopologicalSpace β] [FunLike F α β]
     extends ContinuousMapClass F α β : Prop where
   /-- Each member of the class has compact support. -/
-  hasCompactSupport (f : F) : HasCompactSupport f
+hasCompactSupport (f : F) : HasCompactSupport f
 
 end
 
-export CompactlySupportedContinuousMapClass (has_compact_support)
+export CompactlySupportedContinuousMapClass (hasCompactSupport)
 
 namespace CompactlySupportedContinuousMap
 
@@ -81,13 +89,13 @@ instance instFunLike : FunLike C_c(α, β) α β where
 instance instCompactlySupportedContinuousMapClass :
     CompactlySupportedContinuousMapClass C_c(α, β) α β where
   map_continuous f := f.continuous_toFun
-  has_compact_support f := f.has_compact_support'
+  hasCompactSupport f := f.hasCompactSupport'
 
 instance instCoeTC : CoeTC F C_c(α, β) :=
   ⟨fun f =>
     { toFun := f
       continuous_toFun := map_continuous f
-      has_compact_support' := has_compact_support f }⟩
+      hasCompactSupport' := hasCompactSupport f }⟩
 
 @[simp]
 theorem coe_toContinuousMap (f : C_c(α, β)) : (f.toContinuousMap : α → β) = f :=
@@ -108,9 +116,9 @@ protected def copy (f : C_c(α, β)) (f' : α → β) (h : f' = f) : C_c(α, β)
   continuous_toFun := by
     rw [h]
     exact f.continuous_toFun
-  has_compact_support' := by
+  hasCompactSupport' := by
     simp_rw [h]
-    exact f.has_compact_support'
+    exact f.hasCompactSupport'
 
 @[simp]
 theorem coe_copy (f : C_c(α, β)) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' :=
@@ -128,7 +136,7 @@ def ContinuousMap.liftCompactlySupported [CompactSpace α] : C(α, β) ≃ C_c(�
   toFun f :=
     { toFun := f
       continuous_toFun := f.continuous
-      has_compact_support' := ContinuousMap.isCompact_tsupport_of_CompactSpace f
+      hasCompactSupport' := hasCompactSupport_of_compactSpace f
         }
   invFun f := f
   left_inv _ := rfl
@@ -139,9 +147,9 @@ instance to avoid type class loops. -/
 lemma compactlySupportedContinuousMapClass.ofCompact {G : Type*} [FunLike G α β]
     [ContinuousMapClass G α β] [CompactSpace α] : CompactlySupportedContinuousMapClass G α β where
   map_continuous := map_continuous
-  has_compact_support := by
+  hasCompactSupport := by
     intro f
-    exact ContinuousMap.isCompact_tsupport_of_CompactSpace f
+    exact hasCompactSupport_of_compactSpace f
 
 end Basics
 
@@ -159,7 +167,7 @@ variable [TopologicalSpace β] (x : α)
 instance instZero [Zero β] : Zero C_c(α, β) where
   zero := { toFun := (0 : C(α, β))
             continuous_toFun := (0 : C(α, β)).2
-            has_compact_support' := by
+            hasCompactSupport' := by
               rw [HasCompactSupport, tsupport]
               simp only [ContinuousMap.coe_zero, Function.support_zero', closure_empty,
                 isCompact_empty] }
@@ -264,7 +272,7 @@ variable [AddGroup β] [TopologicalAddGroup β] (f g : C_c(α, β))
 instance instNeg : Neg C_c(α, β) where
   neg f := {  toFun := -f.1
               continuous_toFun := map_continuous (-f.1)
-              has_compact_support' := by
+              hasCompactSupport' := by
                 rw [HasCompactSupport, tsupport]
                 simp only [ContinuousMap.coe_neg, Function.support_neg']
                 exact f.2 }
@@ -279,7 +287,7 @@ theorem neg_apply : (-f) x = -f x :=
 instance instSub : Sub C_c(α, β) where
   sub f g := {  toFun := f.1 - g.1
                 continuous_toFun := map_continuous (f.1 - g.1)
-                has_compact_support' := by
+                hasCompactSupport' := by
                   rw [HasCompactSupport, tsupport]
                   simp only [coe_toContinuousMap]
                   rw [sub_eq_add_neg]
@@ -378,7 +386,7 @@ lemma zero_at_infty_of_hasCompactSupport (f : F) :
   rw [Filter.mem_cocompact]
   use tsupport f
   constructor
-  · exact has_compact_support f
+  · exact hasCompactSupport f
   · intro x hx
     simp only [Set.mem_preimage]
     rw [← Set.not_mem_compl_iff, compl_compl] at hx
@@ -418,7 +426,7 @@ variable [PseudoMetricSpace β] [Zero β] [FunLike F α β] [CompactlySupportedC
 
 protected theorem bounded (f : F) : ∃ C, ∀ x y : α, dist ((f : α → β) x) (f y) ≤ C := by
   obtain ⟨C, hC⟩ := Metric.isBounded_iff_nndist.mp
-    ((has_compact_support f).isCompact_range (map_continuous f)).isBounded
+    ((hasCompactSupport f).isCompact_range (map_continuous f)).isBounded
   use C
   intro x y
   exact hC (Set.mem_range_self x) (Set.mem_range_self y)
@@ -553,7 +561,7 @@ instance instStar : Star C_c(α, β) where
   star f :=
     { toFun := fun x => star (f x)
       continuous_toFun := (map_continuous f).star
-      has_compact_support' := by
+      hasCompactSupport' := by
         rw [HasCompactSupport, tsupport]
         simp only
         have support_star : (Function.support fun (x : α) => star (f x)) = Function.support f := by
@@ -633,7 +641,7 @@ variable [T2Space γ] [Zero δ]
 yields another continuous function with compact support. -/
 def comp (f : C_c(γ, δ)) (g : β →co γ) : C_c(β, δ) where
   toContinuousMap := (f : C(γ, δ)).comp g
-  has_compact_support' := by
+  hasCompactSupport' := by
     simp only [ContinuousMap.toFun_eq_coe, ContinuousMap.coe_comp, ContinuousMap.coe_coe]
     rw [HasCompactSupport]
     apply IsCompact.of_isClosed_subset
