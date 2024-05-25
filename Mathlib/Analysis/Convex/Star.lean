@@ -92,8 +92,8 @@ theorem StarConvex.openSegment_subset (h : StarConvex 𝕜 x s) {y : E} (hy : y 
 /-- Alternative definition of star-convexity, in terms of pointwise set operations. -/
 theorem starConvex_iff_pointwise_add_subset :
     StarConvex 𝕜 x s ↔ ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → a + b = 1 → a • {x} + b • s ⊆ s := by
-  refine'
-    ⟨_, fun h y hy a b ha hb hab =>
+  refine
+    ⟨?_, fun h y hy a b ha hb hab =>
       h ha hb hab (add_mem_add (smul_mem_smul_set <| mem_singleton _) ⟨_, hy, rfl⟩)⟩
   rintro hA a b ha hb hab w ⟨au, ⟨u, rfl : u = x, rfl⟩, bv, ⟨v, hv, rfl⟩, rfl⟩
   exact hA hv ha hb hab
@@ -163,7 +163,7 @@ theorem StarConvex.mem (hs : StarConvex 𝕜 x s) (h : s.Nonempty) : x ∈ s := 
 
 theorem starConvex_iff_forall_pos (hx : x ∈ s) : StarConvex 𝕜 x s ↔
     ∀ ⦃y⦄, y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 → a • x + b • y ∈ s := by
-  refine' ⟨fun h y hy a b ha hb hab => h hy ha.le hb.le hab, _⟩
+  refine ⟨fun h y hy a b ha hb hab => h hy ha.le hb.le hab, ?_⟩
   intro h y hy a b ha hb hab
   obtain rfl | ha := ha.eq_or_lt
   · rw [zero_add] at hab
@@ -177,7 +177,7 @@ theorem starConvex_iff_forall_pos (hx : x ∈ s) : StarConvex 𝕜 x s ↔
 theorem starConvex_iff_forall_ne_pos (hx : x ∈ s) :
     StarConvex 𝕜 x s ↔
       ∀ ⦃y⦄, y ∈ s → x ≠ y → ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 → a • x + b • y ∈ s := by
-  refine' ⟨fun h y hy _ a b ha hb hab => h hy ha.le hb.le hab, _⟩
+  refine ⟨fun h y hy _ a b ha hb hab => h hy ha.le hb.le hab, ?_⟩
   intro h y hy a b ha hb hab
   obtain rfl | ha' := ha.eq_or_lt
   · rw [zero_add] at hab
@@ -234,7 +234,7 @@ theorem StarConvex.add_left (hs : StarConvex 𝕜 x s) (z : E) :
     StarConvex 𝕜 (z + x) ((fun x => z + x) '' s) := by
   intro y hy a b ha hb hab
   obtain ⟨y', hy', rfl⟩ := hy
-  refine' ⟨a • x + b • y', hs hy' ha hb hab, _⟩
+  refine ⟨a • x + b • y', hs hy' ha hb hab, ?_⟩
   rw [smul_add, smul_add, add_add_add_comm, ← add_smul, hab, one_smul]
 #align star_convex.add_left StarConvex.add_left
 
@@ -242,7 +242,7 @@ theorem StarConvex.add_right (hs : StarConvex 𝕜 x s) (z : E) :
     StarConvex 𝕜 (x + z) ((fun x => x + z) '' s) := by
   intro y hy a b ha hb hab
   obtain ⟨y', hy', rfl⟩ := hy
-  refine' ⟨a • x + b • y', hs hy' ha hb hab, _⟩
+  refine ⟨a • x + b • y', hs hy' ha hb hab, ?_⟩
   rw [smul_add, smul_add, add_add_add_comm, ← add_smul, hab, one_smul]
 #align star_convex.add_right StarConvex.add_right
 
@@ -315,8 +315,8 @@ variable [AddCommMonoid E] [SMulWithZero 𝕜 E] {s : Set E}
 
 theorem starConvex_zero_iff :
     StarConvex 𝕜 0 s ↔ ∀ ⦃x : E⦄, x ∈ s → ∀ ⦃a : 𝕜⦄, 0 ≤ a → a ≤ 1 → a • x ∈ s := by
-  refine'
-    forall_congr' fun x => forall_congr' fun _ => ⟨fun h a ha₀ ha₁ => _, fun h a b ha hb hab => _⟩
+  refine
+    forall_congr' fun x => forall_congr' fun _ => ⟨fun h a ha₀ ha₁ => ?_, fun h a b ha hb hab => ?_⟩
   · simpa only [sub_add_cancel, eq_self_iff_true, forall_true_left, zero_add, smul_zero] using
       h (sub_nonneg_of_le ha₁) ha₀
   · rw [smul_zero, zero_add]
@@ -360,7 +360,7 @@ theorem StarConvex.affine_preimage (f : E →ᵃ[𝕜] F) {s : Set F} (hs : Star
 theorem StarConvex.affine_image (f : E →ᵃ[𝕜] F) {s : Set E} (hs : StarConvex 𝕜 x s) :
     StarConvex 𝕜 (f x) (f '' s) := by
   rintro y ⟨y', ⟨hy', hy'f⟩⟩ a b ha hb hab
-  refine' ⟨a • x + b • y', ⟨hs hy' ha hb hab, _⟩⟩
+  refine ⟨a • x + b • y', ⟨hs hy' ha hb hab, ?_⟩⟩
   rw [Convex.combo_affine_apply hab, hy'f]
 #align star_convex.affine_image StarConvex.affine_image
 
@@ -449,14 +449,14 @@ theorem Set.OrdConnected.starConvex [OrderedSemiring 𝕜] [OrderedAddCommMonoid
     (h : ∀ y ∈ s, x ≤ y ∨ y ≤ x) : StarConvex 𝕜 x s := by
   intro y hy a b ha hb hab
   obtain hxy | hyx := h _ hy
-  · refine' hs.out hx hy (mem_Icc.2 ⟨_, _⟩)
+  · refine hs.out hx hy (mem_Icc.2 ⟨?_, ?_⟩)
     · calc
         x = a • x + b • x := (Convex.combo_self hab _).symm
         _ ≤ a • x + b • y := by gcongr
     calc
       a • x + b • y ≤ a • y + b • y := by gcongr
       _ = y := Convex.combo_self hab _
-  · refine' hs.out hy hx (mem_Icc.2 ⟨_, _⟩)
+  · refine hs.out hy hx (mem_Icc.2 ⟨?_, ?_⟩)
     · calc
         y = a • y + b • y := (Convex.combo_self hab _).symm
         _ ≤ a • x + b • y := by gcongr

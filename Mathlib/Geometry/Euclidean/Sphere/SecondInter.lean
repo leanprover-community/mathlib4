@@ -69,7 +69,7 @@ variable {V}
 orthogonal to the radius vector. -/
 theorem Sphere.secondInter_eq_self_iff {s : Sphere P} {p : P} {v : V} :
     s.secondInter p v = p ↔ ⟪v, p -ᵥ s.center⟫ = 0 := by
-  refine' ⟨fun hp => _, fun hp => _⟩
+  refine ⟨fun hp => ?_, fun hp => ?_⟩
   · by_cases hv : v = 0
     · simp [hv]
     rwa [Sphere.secondInter, eq_comm, eq_vadd_iff_vsub_eq, vsub_self, eq_comm, smul_eq_zero,
@@ -82,7 +82,7 @@ theorem Sphere.secondInter_eq_self_iff {s : Sphere P} {p : P} {v : V} :
 theorem Sphere.eq_or_eq_secondInter_of_mem_mk'_span_singleton_iff_mem {s : Sphere P} {p : P}
     (hp : p ∈ s) {v : V} {p' : P} (hp' : p' ∈ AffineSubspace.mk' p (ℝ ∙ v)) :
     p' = p ∨ p' = s.secondInter p v ↔ p' ∈ s := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · rcases h with (h | h)
     · rwa [h]
     · rwa [h, Sphere.secondInter_mem]
@@ -160,9 +160,9 @@ between the first point and the result of `secondInter`. -/
 theorem Sphere.wbtw_secondInter {s : Sphere P} {p p' : P} (hp : p ∈ s)
     (hp' : dist p' s.center ≤ s.radius) : Wbtw ℝ p p' (s.secondInter p (p' -ᵥ p)) := by
   by_cases h : p' = p; · simp [h]
-  refine'
+  refine
     wbtw_of_collinear_of_dist_center_le_radius (s.secondInter_collinear p p') hp hp'
-      ((Sphere.secondInter_mem _).2 hp) _
+      ((Sphere.secondInter_mem _).2 hp) ?_
   intro he
   rw [eq_comm, Sphere.secondInter_eq_self_iff, ← neg_neg (p' -ᵥ p), inner_neg_left,
     neg_vsub_eq_vsub_rev, neg_eq_zero, eq_comm] at he
@@ -174,7 +174,7 @@ theorem Sphere.wbtw_secondInter {s : Sphere P} {p p' : P} (hp : p ∈ s)
 the first point and the result of `secondInter`. -/
 theorem Sphere.sbtw_secondInter {s : Sphere P} {p p' : P} (hp : p ∈ s)
     (hp' : dist p' s.center < s.radius) : Sbtw ℝ p p' (s.secondInter p (p' -ᵥ p)) := by
-  refine' ⟨Sphere.wbtw_secondInter hp hp'.le, _, _⟩
+  refine ⟨Sphere.wbtw_secondInter hp hp'.le, ?_, ?_⟩
   · rintro rfl
     rw [mem_sphere] at hp
     simp [hp] at hp'

@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.OuterMeasure.Basic
+import Mathlib.MeasureTheory.OuterMeasure.Induced
 import Mathlib.Order.Filter.CountableInter
 
 #align_import measure_theory.measure.measure_space_def from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
@@ -94,6 +94,12 @@ instance Measure.instFunLike [MeasurableSpace α] : FunLike (Measure α) (Set α
 
 #noalign measure_theory.measure.has_coe_to_fun
 
+set_option linter.deprecated false in -- Not immediately obvious how to use `measure_empty` here.
+instance Measure.instOuterMeasureClass [MeasurableSpace α] : OuterMeasureClass (Measure α) α where
+  measure_empty m := m.empty'
+  measure_iUnion_nat_le m := m.iUnion_nat
+  measure_mono m := m.mono
+
 section
 
 variable [MeasurableSpace α] {μ μ₁ μ₂ : Measure α} {s s₁ s₂ t : Set α}
@@ -142,6 +148,9 @@ theorem ext_iff : μ₁ = μ₂ ↔ ∀ s, MeasurableSet s → μ₁ s = μ₂ s
 theorem ext_iff' : μ₁ = μ₂ ↔ ∀ s, μ₁ s = μ₂ s :=
   ⟨by rintro rfl s; rfl, fun h ↦ Measure.ext (fun s _ ↦ h s)⟩
 
+theorem outerMeasure_le_iff {m : OuterMeasure α} : m ≤ μ.1 ↔ ∀ s, MeasurableSet s → m s ≤ μ s := by
+  simpa only [μ.trimmed] using OuterMeasure.le_trim_iff (m₂ := μ.1)
+
 end Measure
 
 @[simp] theorem Measure.coe_toOuterMeasure (μ : Measure α) : ⇑μ.toOuterMeasure = μ := rfl
@@ -180,26 +189,13 @@ theorem toOuterMeasure_eq_inducedOuterMeasure :
 
 theorem measure_eq_extend (hs : MeasurableSet s) :
     μ s = extend (fun t (_ht : MeasurableSet t) => μ t) s := by
-    rw [extend_eq]
-    exact hs
+  rw [extend_eq]
+  exact hs
 #align measure_theory.measure_eq_extend MeasureTheory.measure_eq_extend
-
-@[simp]
-theorem measure_empty : μ ∅ = 0 :=
-  μ.empty
-#align measure_theory.measure_empty MeasureTheory.measure_empty
 
 theorem nonempty_of_measure_ne_zero (h : μ s ≠ 0) : s.Nonempty :=
   nonempty_iff_ne_empty.2 fun h' => h <| h'.symm ▸ measure_empty
 #align measure_theory.nonempty_of_measure_ne_zero MeasureTheory.nonempty_of_measure_ne_zero
-
-@[gcongr] theorem measure_mono (h : s₁ ⊆ s₂) : μ s₁ ≤ μ s₂ :=
-  μ.mono h
-#align measure_theory.measure_mono MeasureTheory.measure_mono
-
-theorem measure_mono_null (h : s₁ ⊆ s₂) (h₂ : μ s₂ = 0) : μ s₁ = 0 :=
-  nonpos_iff_eq_zero.1 <| h₂ ▸ measure_mono h
-#align measure_theory.measure_mono_null MeasureTheory.measure_mono_null
 
 theorem measure_mono_top (h : s₁ ⊆ s₂) (h₁ : μ s₁ = ∞) : μ s₂ = ∞ :=
   top_unique <| h₁ ▸ measure_mono h
@@ -240,78 +236,21 @@ theorem exists_measurable_superset_iff_measure_eq_zero :
   ⟨fun ⟨_t, hst, _, ht⟩ => measure_mono_null hst ht, exists_measurable_superset_of_null⟩
 #align measure_theory.exists_measurable_superset_iff_measure_eq_zero MeasureTheory.exists_measurable_superset_iff_measure_eq_zero
 
-theorem measure_iUnion_le [Countable β] (s : β → Set α) : μ (⋃ i, s i) ≤ ∑' i, μ (s i) :=
-  μ.toOuterMeasure.iUnion _
-#align measure_theory.measure_Union_le MeasureTheory.measure_iUnion_le
-
-theorem measure_biUnion_le {s : Set β} (hs : s.Countable) (f : β → Set α) :
-    μ (⋃ b ∈ s, f b) ≤ ∑' p : s, μ (f p) := by
-  haveI := hs.to_subtype
-  rw [biUnion_eq_iUnion]
-  apply measure_iUnion_le
-#align measure_theory.measure_bUnion_le MeasureTheory.measure_biUnion_le
-
-theorem measure_biUnion_finset_le (s : Finset β) (f : β → Set α) :
-    μ (⋃ b ∈ s, f b) ≤ ∑ p in s, μ (f p) := by
-  rw [← Finset.sum_attach, Finset.attach_eq_univ, ← tsum_fintype]
-  exact measure_biUnion_le s.countable_toSet f
-#align measure_theory.measure_bUnion_finset_le MeasureTheory.measure_biUnion_finset_le
-
-theorem measure_iUnion_fintype_le [Fintype β] (f : β → Set α) : μ (⋃ b, f b) ≤ ∑ p, μ (f p) := by
-  convert measure_biUnion_finset_le Finset.univ f
-  simp
-#align measure_theory.measure_Union_fintype_le MeasureTheory.measure_iUnion_fintype_le
-
 theorem measure_biUnion_lt_top {s : Set β} {f : β → Set α} (hs : s.Finite)
     (hfin : ∀ i ∈ s, μ (f i) ≠ ∞) : μ (⋃ i ∈ s, f i) < ∞ := by
-  convert (measure_biUnion_finset_le hs.toFinset f).trans_lt _ using 3
+  convert (measure_biUnion_finset_le (μ := μ) hs.toFinset f).trans_lt _ using 3
   · ext
     rw [Finite.mem_toFinset]
-  apply ENNReal.sum_lt_top; simpa only [Finite.mem_toFinset]
+  · apply ENNReal.sum_lt_top; simpa only [Finite.mem_toFinset]
 #align measure_theory.measure_bUnion_lt_top MeasureTheory.measure_biUnion_lt_top
 
-theorem measure_iUnion_null [Countable ι] {s : ι → Set α} : (∀ i, μ (s i) = 0) → μ (⋃ i, s i) = 0 :=
-  μ.toOuterMeasure.iUnion_null
-#align measure_theory.measure_Union_null MeasureTheory.measure_iUnion_null
-
-@[simp]
-theorem measure_iUnion_null_iff [Countable ι] {s : ι → Set α} :
-    μ (⋃ i, s i) = 0 ↔ ∀ i, μ (s i) = 0 :=
-  μ.toOuterMeasure.iUnion_null_iff
-#align measure_theory.measure_Union_null_iff MeasureTheory.measure_iUnion_null_iff
-
-@[deprecated] -- Deprecated since 14 January 2024
+@[deprecated measure_iUnion_null_iff (since := "2024-01-14")]
 theorem measure_iUnion_null_iff' {ι : Prop} {s : ι → Set α} : μ (⋃ i, s i) = 0 ↔ ∀ i, μ (s i) = 0 :=
   measure_iUnion_null_iff
 #align measure_theory.measure_Union_null_iff' MeasureTheory.measure_iUnion_null_iff'
 
-theorem measure_biUnion_null_iff {ι : Type*} {s : Set ι} (hs : s.Countable) {t : ι → Set α} :
-    μ (⋃ i ∈ s, t i) = 0 ↔ ∀ i ∈ s, μ (t i) = 0 :=
-  μ.toOuterMeasure.biUnion_null_iff hs
-#align measure_theory.measure_bUnion_null_iff MeasureTheory.measure_biUnion_null_iff
-
-theorem measure_sUnion_null_iff {S : Set (Set α)} (hS : S.Countable) :
-    μ (⋃₀ S) = 0 ↔ ∀ s ∈ S, μ s = 0 :=
-  μ.toOuterMeasure.sUnion_null_iff hS
-#align measure_theory.measure_sUnion_null_iff MeasureTheory.measure_sUnion_null_iff
-
 lemma measure_null_iff_singleton {s : Set α} (hs : s.Countable) : μ s = 0 ↔ ∀ x ∈ s, μ {x} = 0 := by
   rw [← measure_biUnion_null_iff hs, biUnion_of_singleton]
-
-theorem measure_union_le (s₁ s₂ : Set α) : μ (s₁ ∪ s₂) ≤ μ s₁ + μ s₂ :=
-  μ.toOuterMeasure.union _ _
-#align measure_theory.measure_union_le MeasureTheory.measure_union_le
-
-theorem measure_union_null : μ s₁ = 0 → μ s₂ = 0 → μ (s₁ ∪ s₂) = 0 :=
-  μ.toOuterMeasure.union_null
-#align measure_theory.measure_union_null MeasureTheory.measure_union_null
-
-@[simp]
-theorem measure_union_null_iff : μ (s₁ ∪ s₂) = 0 ↔ μ s₁ = 0 ∧ μ s₂ = 0 :=
-  ⟨fun h =>
-    ⟨measure_mono_null (subset_union_left _ _) h, measure_mono_null (subset_union_right _ _) h⟩,
-    fun h => measure_union_null h.1 h.2⟩
-#align measure_theory.measure_union_null_iff MeasureTheory.measure_union_null_iff
 
 theorem measure_union_lt_top (hs : μ s < ∞) (ht : μ t < ∞) : μ (s ∪ t) < ∞ :=
   (measure_union_le s t).trans_lt (ENNReal.add_lt_top.mpr ⟨hs, ht⟩)
@@ -319,7 +258,7 @@ theorem measure_union_lt_top (hs : μ s < ∞) (ht : μ t < ∞) : μ (s ∪ t) 
 
 @[simp]
 theorem measure_union_lt_top_iff : μ (s ∪ t) < ∞ ↔ μ s < ∞ ∧ μ t < ∞ := by
-  refine' ⟨fun h => ⟨_, _⟩, fun h => measure_union_lt_top h.1 h.2⟩
+  refine ⟨fun h => ⟨?_, ?_⟩, fun h => measure_union_lt_top h.1 h.2⟩
   · exact (measure_mono (Set.subset_union_left s t)).trans_lt h
   · exact (measure_mono (Set.subset_union_right s t)).trans_lt h
 #align measure_theory.measure_union_lt_top_iff MeasureTheory.measure_union_lt_top_iff

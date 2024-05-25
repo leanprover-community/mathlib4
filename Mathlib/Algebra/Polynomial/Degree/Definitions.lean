@@ -356,9 +356,9 @@ theorem coeff_eq_zero_of_natDegree_lt {p : R[X]} {n : ℕ} (h : p.natDegree < n)
 
 theorem ext_iff_natDegree_le {p q : R[X]} {n : ℕ} (hp : p.natDegree ≤ n) (hq : q.natDegree ≤ n) :
     p = q ↔ ∀ i ≤ n, p.coeff i = q.coeff i := by
-  refine' Iff.trans Polynomial.ext_iff _
-  refine' forall_congr' fun i => ⟨fun h _ => h, fun h => _⟩
-  refine' (le_or_lt i n).elim h fun k => _
+  refine Iff.trans Polynomial.ext_iff ?_
+  refine forall_congr' fun i => ⟨fun h _ => h, fun h => ?_⟩
+  refine (le_or_lt i n).elim h fun k => ?_
   exact
     (coeff_eq_zero_of_natDegree_lt (hp.trans_lt k)).trans
       (coeff_eq_zero_of_natDegree_lt (hq.trans_lt k)).symm
@@ -909,7 +909,7 @@ theorem monic_of_natDegree_le_of_coeff_eq_one (n : ℕ) (pn : p.natDegree ≤ n)
     Monic p := by
   unfold Monic
   nontriviality
-  refine' (congr_arg _ <| natDegree_eq_of_le_of_coeff_ne_zero pn _).trans p1
+  refine (congr_arg _ <| natDegree_eq_of_le_of_coeff_ne_zero pn ?_).trans p1
   exact ne_of_eq_of_ne p1 one_ne_zero
 #align polynomial.monic_of_nat_degree_le_of_coeff_eq_one Polynomial.monic_of_natDegree_le_of_coeff_eq_one
 
@@ -952,7 +952,7 @@ theorem coeff_mul_degree_add_degree (p q : R[X]) :
         ∑ x in antidiagonal (natDegree p + natDegree q), coeff p x.1 * coeff q x.2 :=
       coeff_mul _ _ _
     _ = coeff p (natDegree p) * coeff q (natDegree q) := by
-      refine' Finset.sum_eq_single (natDegree p, natDegree q) _ _
+      refine Finset.sum_eq_single (natDegree p, natDegree q) ?_ ?_
       · rintro ⟨i, j⟩ h₁ h₂
         rw [mem_antidiagonal] at h₁
         by_cases H : natDegree p < i
@@ -982,8 +982,8 @@ theorem coeff_mul_degree_add_degree (p q : R[X]) :
 
 theorem degree_mul' (h : leadingCoeff p * leadingCoeff q ≠ 0) :
     degree (p * q) = degree p + degree q :=
-  have hp : p ≠ 0 := by refine' mt _ h; exact fun hp => by rw [hp, leadingCoeff_zero, zero_mul]
-  have hq : q ≠ 0 := by refine' mt _ h; exact fun hq => by rw [hq, leadingCoeff_zero, mul_zero]
+  have hp : p ≠ 0 := by refine mt ?_ h; exact fun hp => by rw [hp, leadingCoeff_zero, zero_mul]
+  have hq : q ≠ 0 := by refine mt ?_ h; exact fun hq => by rw [hq, leadingCoeff_zero, mul_zero]
   le_antisymm (degree_mul_le _ _)
     (by
       rw [degree_eq_natDegree hp, degree_eq_natDegree hq]
@@ -1643,8 +1643,7 @@ theorem degree_mul : degree (p * q) = degree p + degree q :=
 
 /-- `degree` as a monoid homomorphism between `R[X]` and `Multiplicative (WithBot ℕ)`.
   This is useful to prove results about multiplication and degree. -/
-def degreeMonoidHom [Nontrivial R] : R[X] →* Multiplicative (WithBot ℕ)
-    where
+def degreeMonoidHom [Nontrivial R] : R[X] →* Multiplicative (WithBot ℕ) where
   toFun := degree
   map_one' := degree_one
   map_mul' _ _ := degree_mul

@@ -81,7 +81,7 @@ variable (hP G ε)
 
 theorem increment_isEquipartition : (increment hP G ε).IsEquipartition := by
   simp_rw [IsEquipartition, Set.equitableOn_iff_exists_eq_eq_add_one]
-  refine' ⟨m, fun A hA => _⟩
+  refine ⟨m, fun A hA => ?_⟩
   rw [mem_coe, increment, mem_bind] at hA
   obtain ⟨U, hU, hA⟩ := hA
   exact card_eq_of_mem_parts_chunk hA
@@ -100,7 +100,7 @@ private theorem distinctPairs_increment :
   simp only [distinctPairs, increment, mem_offDiag, bind_parts, mem_biUnion, Prod.exists,
     exists_and_left, exists_prop, mem_product, mem_attach, true_and_iff, Subtype.exists, and_imp,
     mem_offDiag, forall_exists_index, exists₂_imp, Ne]
-  refine' fun U V hUV hUi hVj => ⟨⟨_, hUV.1, hUi⟩, ⟨_, hUV.2.1, hVj⟩, _⟩
+  refine fun U V hUV hUi hVj => ⟨⟨_, hUV.1, hUi⟩, ⟨_, hUV.2.1, hVj⟩, ?_⟩
   rintro rfl
   obtain ⟨i, hi⟩ := nonempty_of_mem_parts _ hUi
   exact hUV.2.2 (P.disjoint.elim_finset hUV.1 hUV.2.1 i (Finpartition.le _ hUi hi) <|

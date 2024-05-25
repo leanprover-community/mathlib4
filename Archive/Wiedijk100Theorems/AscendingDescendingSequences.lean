@@ -109,7 +109,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
       refine' ⟨insert j t, _, _⟩
       -- First make sure it's valid, i.e., that this subsequence ends at `j` and is increasing
       · rw [mem_filter]
-        refine' ⟨_, _, _⟩
+        refine ⟨?_, ?_, ?_⟩
         · rw [mem_powerset]; apply subset_univ
         -- It ends at `j` since `i < j`.
         · convert max_insert (a := j) (s := t)
@@ -156,12 +156,12 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
         · apply le_max'
           rw [mem_image]
           refine' ⟨{i}, by solve_by_elim, card_singleton i⟩
-    refine' ⟨_, _⟩
+    refine ⟨?_, ?_⟩
     -- Need to get `a_i ≤ r`, here phrased as: there is some `a < r` with `a+1 = a_i`.
-    · refine' ⟨(ab i).1 - 1, _, Nat.succ_pred_eq_of_pos z.1⟩
+    · refine ⟨(ab i).1 - 1, ?_, Nat.succ_pred_eq_of_pos z.1⟩
       rw [tsub_lt_iff_right z.1]
       apply Nat.lt_succ_of_le q.1
-    · refine' ⟨(ab i).2 - 1, _, Nat.succ_pred_eq_of_pos z.2⟩
+    · refine ⟨(ab i).2 - 1, ?_, Nat.succ_pred_eq_of_pos z.2⟩
       rw [tsub_lt_iff_right z.2]
       apply Nat.lt_succ_of_le q.2
   -- To get our contradiction, it suffices to prove `n ≤ r * s`
