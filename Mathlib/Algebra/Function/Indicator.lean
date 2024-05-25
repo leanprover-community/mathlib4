@@ -582,7 +582,6 @@ theorem inter_indicator_one {s t : Set α} :
 #align set.inter_indicator_one Set.inter_indicator_one
 
 -- Porting note: Think the following note was due to writing (1 : _ → M) instead of (1 : α × β → M)
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem indicator_prod_one {s : Set α} {t : Set β} {x : α} {y : β} :
     (s ×ˢ t).indicator (1 : α × β → M) (x, y) = s.indicator 1 x * t.indicator 1 y := by
   simp_rw [indicator, mem_prod_eq]

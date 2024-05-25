@@ -39,7 +39,6 @@ theorem assoc_flip :
 set_option linter.uppercaseLean3 false in
 #align Mod_.assoc_flip Mod_.assoc_flip
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- A morphism of module objects. -/
 @[ext]
 structure Hom (M N : Mod_ A) where
