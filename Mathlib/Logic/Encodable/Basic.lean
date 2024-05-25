@@ -606,9 +606,6 @@ def encode' (α) [Encodable α] : α ↪ ℕ :=
   ⟨Encodable.encode, Encodable.encode_injective⟩
 #align encodable.encode' Encodable.encode'
 
-instance {α} [Encodable α] : IsTrans _ (encode' α ⁻¹'o (· ≤ ·)) :=
-  (RelEmbedding.preimage _ _).isTrans
-
 instance {α} [Encodable α] : IsAntisymm _ (Encodable.encode' α ⁻¹'o (· ≤ ·)) :=
   (RelEmbedding.preimage _ _).isAntisymm
 
