@@ -22,7 +22,7 @@ attribute [instance] ConcreteCategory.instFunLike in
 instance (X Y : TopCat.{u}) : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe f := f
 ```
-Despite the in, this makes `ConcreteCategory.instFunLike` a global instance.
+Despite the `in`, this makes `ConcreteCategory.instFunLike` a global instance.
 -/
 
 open Lean Elab Command
@@ -67,10 +67,10 @@ def attributeInstanceIn : Linter where run := withSetOptionIn fun stx => do
       -- "in" attribute: something non-trivial of index 0
       match chain.get? 0 with
       -- This is the case we're interested in
-      | some (_next, 0) => Linter.logLint linter.attributeInstanceIn head m!
-      "careful: `attribute [instance] ... in` declarations are surprising:
-      they are **not** limited to the subsequent declaration,
-      but define global instances
+      | some (_next, 0) => Linter.logLint linter.attributeInstanceIn head m!"careful:\
+      `attribute [instance] ... in` declarations are surprising:\n\
+      they are **not** limited to the subsequent declaration,\n\
+      but define global instances\n\
       please remove the `in` or make this a `local instance` instead"
       -- This is e.g. a scoped instance, which we don't care about.
       | some (_next, _n) => return
