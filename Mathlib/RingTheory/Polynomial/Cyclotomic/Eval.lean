@@ -78,7 +78,7 @@ theorem cyclotomic_pos {n : ℕ} (hn : 2 < n) {R} [LinearOrderedCommRing R] (x :
   apply_fun eval x at this
   rw [← cons_self_properDivisors hn'.ne', Finset.erase_cons_of_ne _ hn''.ne', Finset.prod_cons,
     eval_mul, eval_geom_sum] at this
-  rcases lt_trichotomy 0 (∑ i in Finset.range n, x ^ i) with (h | h | h)
+  rcases lt_trichotomy 0 (∑ i ∈ Finset.range n, x ^ i) with (h | h | h)
   · apply pos_of_mul_pos_left
     · rwa [this]
     rw [eval_prod]

@@ -208,12 +208,12 @@ theorem factorization_mul {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
 
 /-- A product over `n.factorization` can be written as a product over `n.primeFactors`; -/
 lemma prod_factorization_eq_prod_primeFactors {β : Type*} [CommMonoid β] (f : ℕ → ℕ → β) :
-    n.factorization.prod f = ∏ p in n.primeFactors, f p (n.factorization p) := rfl
+    n.factorization.prod f = ∏ p ∈ n.primeFactors, f p (n.factorization p) := rfl
 #align nat.prod_factorization_eq_prod_factors Nat.prod_factorization_eq_prod_primeFactors
 
 /-- A product over `n.primeFactors` can be written as a product over `n.factorization`; -/
 lemma prod_primeFactors_prod_factorization {β : Type*} [CommMonoid β] (f : ℕ → β) :
-    ∏ p in n.primeFactors, f p = n.factorization.prod (fun p _ ↦ f p) := rfl
+    ∏ p ∈ n.primeFactors, f p = n.factorization.prod (fun p _ ↦ f p) := rfl
 
 /-- For any `p : ℕ` and any function `g : α → ℕ` that's non-zero on `S : Finset α`,
 the power of `p` in `S.prod g` equals the sum over `x ∈ S` of the powers of `p` in `g x`.
@@ -277,7 +277,7 @@ theorem Prime.eq_of_factorization_pos {p q : ℕ} (hp : Prime p) (h : p.factoriz
 
 
 /-- Any Finsupp `f : ℕ →₀ ℕ` whose support is in the primes is equal to the factorization of
-the product `∏ (a : ℕ) in f.support, a ^ f a`. -/
+the product `∏ (a : ℕ) ∈ f.support, a ^ f a`. -/
 theorem prod_pow_factorization_eq_self {f : ℕ →₀ ℕ} (hf : ∀ p : ℕ, p ∈ f.support → Prime p) :
     (f.prod (· ^ ·)).factorization = f := by
   have h : ∀ x : ℕ, x ∈ f.support → x ^ f x ≠ 0 := fun p hp =>
@@ -613,7 +613,7 @@ theorem dvd_iff_prime_pow_dvd_dvd (n d : ℕ) :
   exact h p _ pp (ord_proj_dvd _ _)
 #align nat.dvd_iff_prime_pow_dvd_dvd Nat.dvd_iff_prime_pow_dvd_dvd
 
-theorem prod_primeFactors_dvd (n : ℕ) : ∏ p in n.primeFactors, p ∣ n := by
+theorem prod_primeFactors_dvd (n : ℕ) : ∏ p ∈ n.primeFactors, p ∣ n := by
   by_cases hn : n = 0
   · subst hn
     simp
@@ -946,7 +946,7 @@ theorem eq_iff_prime_padicValNat_eq (a b : ℕ) (ha : a ≠ 0) (hb : b ≠ 0) :
 #align nat.eq_iff_prime_padic_val_nat_eq Nat.eq_iff_prime_padicValNat_eq
 
 theorem prod_pow_prime_padicValNat (n : Nat) (hn : n ≠ 0) (m : Nat) (pr : n < m) :
-    (∏ p in Finset.filter Nat.Prime (Finset.range m), p ^ padicValNat p n) = n := by
+    (∏ p ∈ Finset.filter Nat.Prime (Finset.range m), p ^ padicValNat p n) = n := by
   -- Porting note: was `nth_rw_rhs`
   conv =>
     rhs

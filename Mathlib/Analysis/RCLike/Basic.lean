@@ -213,7 +213,7 @@ theorem ofReal_sub (r s : ℝ) : ((r - s : ℝ) : K) = r - s :=
 
 @[simp, rclike_simps, norm_cast]
 theorem ofReal_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
-    ((∑ i in s, f i : ℝ) : K) = ∑ i in s, (f i : K) :=
+    ((∑ i ∈ s, f i : ℝ) : K) = ∑ i ∈ s, (f i : K) :=
   map_sum (algebraMap ℝ K) _ _
 #align is_R_or_C.of_real_sum RCLike.ofReal_sum
 
@@ -235,7 +235,7 @@ theorem ofReal_pow (r : ℝ) (n : ℕ) : ((r ^ n : ℝ) : K) = (r : K) ^ n :=
 
 @[simp, rclike_simps, norm_cast]
 theorem ofReal_prod {α : Type*} (s : Finset α) (f : α → ℝ) :
-    ((∏ i in s, f i : ℝ) : K) = ∏ i in s, (f i : K) :=
+    ((∏ i ∈ s, f i : ℝ) : K) = ∏ i ∈ s, (f i : K) :=
   map_prod (algebraMap ℝ K) _ _
 #align is_R_or_C.of_real_prod RCLike.ofReal_prod
 
