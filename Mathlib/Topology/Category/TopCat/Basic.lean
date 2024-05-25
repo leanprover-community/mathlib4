@@ -57,7 +57,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.topological_space_unbundled TopCat.topologicalSpaceUnbundled
 
 -- Porting note: cannot find a coercion to function otherwise
-attribute [instance] ConcreteCategory.instFunLike in
+attribute [instance] ConcreteCategory.instFunLike
 instance (X Y : TopCat.{u}) : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe f := f
 
