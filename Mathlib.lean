@@ -639,6 +639,7 @@ import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Algebra.Ring.Parity
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.Algebra.Ring.Prod
+import Mathlib.Algebra.Ring.Rat
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Algebra.Ring.Semiconj
 import Mathlib.Algebra.Ring.Subring.Basic
@@ -2713,6 +2714,7 @@ import Mathlib.LinearAlgebra.Matrix.MvPolynomial
 import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.Orthogonal
+import Mathlib.LinearAlgebra.Matrix.Permutation
 import Mathlib.LinearAlgebra.Matrix.Polynomial
 import Mathlib.LinearAlgebra.Matrix.PosDef
 import Mathlib.LinearAlgebra.Matrix.ProjectiveSpecialLinearGroup
@@ -3387,6 +3389,7 @@ import Mathlib.Probability.StrongLaw
 import Mathlib.Probability.Variance
 import Mathlib.RepresentationTheory.Action.Basic
 import Mathlib.RepresentationTheory.Action.Concrete
+import Mathlib.RepresentationTheory.Action.Continuous
 import Mathlib.RepresentationTheory.Action.Limits
 import Mathlib.RepresentationTheory.Action.Monoidal
 import Mathlib.RepresentationTheory.Basic

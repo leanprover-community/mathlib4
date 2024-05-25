@@ -330,7 +330,7 @@ then `J(a | b)` equals `χ b` for all odd natural numbers `b`. -/
 theorem value_at (a : ℤ) {R : Type*} [CommSemiring R] (χ : R →* ℤ)
     (hp : ∀ (p : ℕ) (pp : p.Prime), p ≠ 2 → @legendreSym p ⟨pp⟩ a = χ p) {b : ℕ} (hb : Odd b) :
     J(a | b) = χ b := by
-  conv_rhs => rw [← prod_factors hb.pos.ne', cast_list_prod, χ.map_list_prod]
+  conv_rhs => rw [← prod_factors hb.pos.ne', cast_list_prod, map_list_prod χ]
   rw [jacobiSym, List.map_map, ← List.pmap_eq_map Nat.Prime _ _ fun _ => prime_of_mem_factors]
   congr 1; apply List.pmap_congr
   exact fun p h pp _ => hp p pp (hb.ne_two_of_dvd_nat <| dvd_of_mem_factors h)
