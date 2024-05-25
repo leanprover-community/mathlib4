@@ -45,7 +45,7 @@ theorem dvd_div_of_mul_dvd {a b c : ℤ} (h : a * b ∣ c) : b ∣ c / a := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · simp only [Int.ediv_zero, Int.dvd_zero]
   rcases h with ⟨d, rfl⟩
-  refine' ⟨d, _⟩
+  refine ⟨d, ?_⟩
   rw [mul_assoc, Int.mul_ediv_cancel_left _ ha]
 #align int.dvd_div_of_mul_dvd Int.dvd_div_of_mul_dvd
 

@@ -124,7 +124,7 @@ theorem monad_seq_eq_seq {α β : Type u} (q : PMF (α → β)) (p : PMF α) : q
 @[simp]
 theorem seq_apply : (seq q p) b = ∑' (f : α → β) (a : α), if b = f a then q f * p a else 0 := by
   simp only [seq, mul_boole, bind_apply, pure_apply]
-  refine' tsum_congr fun f => ENNReal.tsum_mul_left.symm.trans (tsum_congr fun a => _)
+  refine tsum_congr fun f => ENNReal.tsum_mul_left.symm.trans (tsum_congr fun a => ?_)
   simpa only [mul_zero] using mul_ite (b = f a) (q f) (p a) 0
 #align pmf.seq_apply PMF.seq_apply
 
@@ -314,7 +314,7 @@ theorem bernoulli_apply : bernoulli p h b = cond b p (1 - p) := rfl
 
 @[simp]
 theorem support_bernoulli : (bernoulli p h).support = { b | cond b (p ≠ 0) (p ≠ 1) } := by
-  refine' Set.ext fun b => _
+  refine Set.ext fun b => ?_
   induction b
   · simp_rw [mem_support_iff, bernoulli_apply, Bool.cond_false, Ne, tsub_eq_zero_iff_le, not_le]
     exact ⟨ne_of_lt, lt_of_le_of_ne h⟩

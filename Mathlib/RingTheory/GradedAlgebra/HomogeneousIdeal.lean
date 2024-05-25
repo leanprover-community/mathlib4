@@ -175,10 +175,10 @@ theorem Ideal.homogeneous_span (s : Set A) (h : ∀ x ∈ s, Homogeneous 𝒜 x)
   obtain ⟨s, rfl⟩ := hr
   rw [Finsupp.total_apply, Finsupp.sum, decompose_sum, DFinsupp.finset_sum_apply,
     AddSubmonoidClass.coe_finset_sum]
-  refine' Ideal.sum_mem _ _
+  refine Ideal.sum_mem _ ?_
   rintro z hz1
   rw [smul_eq_mul]
-  refine' Ideal.mul_homogeneous_element_mem_of_mem 𝒜 (s z) z _ _ i
+  refine Ideal.mul_homogeneous_element_mem_of_mem 𝒜 (s z) z ?_ ?_ i
   · rcases z with ⟨z, hz2⟩
     apply h _ hz2
   · exact Ideal.subset_span z.2
@@ -273,7 +273,7 @@ theorem sup {I J : Ideal A} (HI : I.IsHomogeneous 𝒜) (HJ : J.IsHomogeneous �
     (I ⊔ J).IsHomogeneous 𝒜 := by
   rw [iff_exists] at HI HJ ⊢
   obtain ⟨⟨s₁, rfl⟩, ⟨s₂, rfl⟩⟩ := HI, HJ
-  refine' ⟨s₁ ∪ s₂, _⟩
+  refine ⟨s₁ ∪ s₂, ?_⟩
   rw [Set.image_union]
   exact (Submodule.span_union _ _).symm
 #align ideal.is_homogeneous.sup Ideal.IsHomogeneous.sup
@@ -282,7 +282,7 @@ protected theorem iSup {κ : Sort*} {f : κ → Ideal A} (h : ∀ i, (f i).IsHom
     (⨆ i, f i).IsHomogeneous 𝒜 := by
   simp_rw [iff_exists] at h ⊢
   choose s hs using h
-  refine' ⟨⋃ i, s i, _⟩
+  refine ⟨⋃ i, s i, ?_⟩
   simp_rw [Set.image_iUnion, Ideal.span_iUnion]
   congr
   exact funext hs
@@ -510,13 +510,13 @@ theorem Ideal.homogeneousCore_eq_sSup :
 
 theorem Ideal.homogeneousCore'_eq_sSup :
     I.homogeneousCore' 𝒜 = sSup { J : Ideal A | J.IsHomogeneous 𝒜 ∧ J ≤ I } := by
-  refine' (IsLUB.sSup_eq _).symm
+  refine (IsLUB.sSup_eq ?_).symm
   apply IsGreatest.isLUB
   have coe_mono : Monotone (toIdeal : HomogeneousIdeal 𝒜 → Ideal A) := fun x y => id
   convert coe_mono.map_isGreatest (Ideal.homogeneousCore.gc 𝒜).isGreatest_u using 1
   ext x
   rw [mem_image, mem_setOf_eq]
-  refine' ⟨fun hI => ⟨⟨x, hI.1⟩, ⟨hI.2, rfl⟩⟩, _⟩
+  refine ⟨fun hI => ⟨⟨x, hI.1⟩, ⟨hI.2, rfl⟩⟩, ?_⟩
   rintro ⟨x, ⟨hx, rfl⟩⟩
   exact ⟨x.isHomogeneous, hx⟩
 #align ideal.homogeneous_core'_eq_Sup Ideal.homogeneousCore'_eq_sSup
@@ -547,7 +547,7 @@ theorem Ideal.le_toIdeal_homogeneousHull : I ≤ (Ideal.homogeneousHull 𝒜 I).
   intro r hr
   classical
   rw [← DirectSum.sum_support_decompose 𝒜 r]
-  refine' Ideal.sum_mem _ _
+  refine Ideal.sum_mem _ ?_
   intro j _
   apply Ideal.subset_span
   use j
