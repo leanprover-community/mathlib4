@@ -43,7 +43,7 @@ noncomputable section
 
 open Filter Set MeasureTheory
 
-open scoped Nat ENNReal Topology BigOperators Real
+open scoped Nat ENNReal Topology Real
 
 section Convexity
 

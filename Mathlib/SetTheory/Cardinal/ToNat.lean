@@ -17,7 +17,6 @@ We also prove basic lemmas about this definition.
 
 universe u v
 open Function Set
-open scoped BigOperators
 
 namespace Cardinal
 

@@ -16,8 +16,7 @@ In this file we define products and sums indexed by finite sets (specifically, `
 
 ## Notation
 
-We introduce the following notation, localized in `BigOperators`.
-To enable the notation, use `open BigOperators`.
+We introduce the following notation.
 
 Let `s` be a `Finset α`, and `f : α → β` a function.
 
@@ -259,8 +258,6 @@ to show the domain type when the sum is over `Finset.univ`. -/
     `(∑ $(.mk i):ident ∈ $ss, $body)
 
 end BigOperators
-
-open BigOperators
 
 namespace Finset
 

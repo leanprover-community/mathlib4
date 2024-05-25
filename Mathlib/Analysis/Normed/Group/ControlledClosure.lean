@@ -19,7 +19,7 @@ lemmas in this file]."
 
 open Filter Finset
 
-open Topology BigOperators
+open Topology
 
 variable {G : Type*} [NormedAddCommGroup G] [CompleteSpace G]
 variable {H : Type*} [NormedAddCommGroup H]

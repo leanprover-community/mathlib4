@@ -40,8 +40,6 @@ Instances are defined:
 
 noncomputable section
 
-open BigOperators
-
 open Finset (antidiagonal mem_antidiagonal)
 
 namespace MvPowerSeries

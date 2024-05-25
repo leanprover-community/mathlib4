@@ -20,8 +20,6 @@ This operation is called `MvPolynomial.expand` and it is an algebra homomorphism
 -/
 
 
-open BigOperators
-
 namespace MvPolynomial
 
 variable {σ τ R S : Type*} [CommSemiring R] [CommSemiring S]

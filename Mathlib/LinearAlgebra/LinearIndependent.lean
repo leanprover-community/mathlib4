@@ -81,7 +81,7 @@ noncomputable section
 
 open Function Set Submodule
 
-open BigOperators Cardinal
+open Cardinal
 
 universe u' u
 

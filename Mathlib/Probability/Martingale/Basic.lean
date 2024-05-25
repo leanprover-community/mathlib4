@@ -40,7 +40,7 @@ The definitions of filtration and adapted can be found in `Probability.Process.S
 
 open TopologicalSpace Filter
 
-open scoped NNReal ENNReal MeasureTheory ProbabilityTheory BigOperators
+open scoped NNReal ENNReal MeasureTheory ProbabilityTheory
 
 namespace MeasureTheory
 

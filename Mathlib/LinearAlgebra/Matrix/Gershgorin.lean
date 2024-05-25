@@ -18,8 +18,6 @@ of matrices and some applications.
 * https://en.wikipedia.org/wiki/Gershgorin_circle_theorem
 -/
 
-open BigOperators
-
 variable {K n : Type*} [NormedField K] [Fintype n] [DecidableEq n] {A : Matrix n n K}
 
 /-- **Gershgorin's circle theorem**: for any eigenvalue `μ` of a square matrix `A`, there exists an

@@ -34,7 +34,6 @@ variable {α β γ δ : Type*} [MeasurableSpace α] [MeasurableSpace β] [Measur
 namespace MeasureTheory
 
 open Measure Function Set
-open scoped BigOperators
 
 variable {μa : Measure α} {μb : Measure β} {μc : Measure γ} {μd : Measure δ}
 

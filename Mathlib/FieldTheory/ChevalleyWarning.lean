@@ -38,8 +38,6 @@ and `q` is notation for the cardinality of `K`.
 
 universe u v
 
-open scoped BigOperators
-
 section FiniteField
 
 open MvPolynomial

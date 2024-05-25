@@ -29,7 +29,7 @@ In this file we define a number of linear maps involving submodules of a module.
 submodule, subspace, linear map
 -/
 
-open BigOperators Function Set
+open Function Set
 
 universe u'' u' u v w
 

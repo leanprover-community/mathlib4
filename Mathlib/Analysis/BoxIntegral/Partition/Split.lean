@@ -41,7 +41,7 @@ rectangular box, partition, hyperplane
 noncomputable section
 
 open scoped Classical
-open BigOperators Filter
+open Filter
 
 open Function Set Filter
 

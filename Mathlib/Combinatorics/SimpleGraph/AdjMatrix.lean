@@ -38,7 +38,7 @@ properties to computational properties of the matrix.
 -/
 
 
-open BigOperators Matrix
+open Matrix
 
 open Finset Matrix SimpleGraph
 

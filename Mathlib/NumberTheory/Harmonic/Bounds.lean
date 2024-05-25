@@ -14,8 +14,6 @@ This file proves $\log(n+1) \le H_n \le 1 + \log(n)$ for all natural numbers $n$
 
 -/
 
-open BigOperators
-
 theorem log_add_one_le_harmonic (n : ℕ) :
     Real.log ↑(n+1) ≤ harmonic n := by
   calc _ = ∫ x in (1:ℕ)..↑(n+1), x⁻¹ := ?_

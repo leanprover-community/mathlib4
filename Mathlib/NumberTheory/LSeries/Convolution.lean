@@ -29,7 +29,7 @@ open Complex LSeries
 ### Dirichlet convolution of two functions
 -/
 
-open BigOperators Nat
+open Nat
 
 /-- We turn any function `ℕ → R` into an `ArithmeticFunction R` by setting its value at `0`
 to be zero. -/

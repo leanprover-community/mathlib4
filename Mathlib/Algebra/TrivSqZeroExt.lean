@@ -68,7 +68,7 @@ def TrivSqZeroExt (R : Type u) (M : Type v) :=
 
 local notation "tsze" => TrivSqZeroExt
 
-open scoped BigOperators RightActions
+open scoped RightActions
 
 namespace TrivSqZeroExt
 

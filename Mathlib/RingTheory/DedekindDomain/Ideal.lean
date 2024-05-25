@@ -1206,8 +1206,6 @@ section ChineseRemainder
 
 open Ideal UniqueFactorizationMonoid
 
-open scoped BigOperators
-
 variable {R}
 
 theorem Ring.DimensionLeOne.prime_le_prime_iff_eq [Ring.DimensionLEOne R] {P Q : Ideal R}

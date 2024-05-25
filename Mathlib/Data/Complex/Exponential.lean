@@ -19,7 +19,7 @@ hyperbolic sine, hyperbolic cosine, and hyperbolic tangent functions.
 -/
 
 open CauSeq Finset IsAbsoluteValue
-open scoped BigOperators Classical ComplexConjugate
+open scoped Classical ComplexConjugate
 
 namespace Complex
 

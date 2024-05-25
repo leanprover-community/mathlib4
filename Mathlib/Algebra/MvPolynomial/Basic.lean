@@ -72,7 +72,7 @@ polynomial, multivariate polynomial, multivariable polynomial
 noncomputable section
 
 open Set Function Finsupp AddMonoidAlgebra
-open scoped BigOperators Pointwise
+open scoped Pointwise
 
 universe u v w x
 

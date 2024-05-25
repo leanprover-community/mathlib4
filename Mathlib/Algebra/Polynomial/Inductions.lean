@@ -20,7 +20,7 @@ This file contains lemmas dealing with different flavours of induction on polyno
 
 noncomputable section
 
-open BigOperators Polynomial
+open Polynomial
 
 open Finset
 

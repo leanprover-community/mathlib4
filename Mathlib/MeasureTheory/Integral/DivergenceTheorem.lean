@@ -58,7 +58,7 @@ divergence theorem, Bochner integral
 
 open Set Finset TopologicalSpace Function BoxIntegral MeasureTheory Filter
 
-open scoped BigOperators Classical Topology Interval
+open scoped Classical Topology Interval
 
 universe u
 

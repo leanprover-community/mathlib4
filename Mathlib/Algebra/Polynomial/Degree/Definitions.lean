@@ -34,7 +34,7 @@ noncomputable section
 
 open Finsupp Finset
 
-open BigOperators Polynomial
+open Polynomial
 
 namespace Polynomial
 

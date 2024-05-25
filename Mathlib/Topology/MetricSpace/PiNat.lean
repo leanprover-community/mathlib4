@@ -848,7 +848,7 @@ theorem dist_le_dist_pi_of_dist_lt {x y : ∀ i, F i} {i : ι} (h : dist x y < (
   simpa only [not_le.2 h, false_or_iff] using min_le_iff.1 (min_dist_le_dist_pi x y i)
 #align pi_countable.dist_le_dist_pi_of_dist_lt PiCountable.dist_le_dist_pi_of_dist_lt
 
-open BigOperators Topology Filter NNReal
+open Topology Filter NNReal
 
 variable (E)
 

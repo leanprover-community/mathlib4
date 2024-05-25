@@ -36,7 +36,7 @@ It's possibly interesting to have
 (whose `card` is `mulEnergy s t`) as a standalone definition.
 -/
 
-open scoped BigOperators Pointwise
+open scoped Pointwise
 
 variable {α : Type*} [DecidableEq α]
 

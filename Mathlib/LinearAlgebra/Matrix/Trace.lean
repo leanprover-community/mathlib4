@@ -24,7 +24,7 @@ matrix, trace, diagonal
 -/
 
 
-open BigOperators Matrix
+open Matrix
 
 namespace Matrix
 

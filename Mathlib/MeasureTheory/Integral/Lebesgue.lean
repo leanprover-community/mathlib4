@@ -44,7 +44,7 @@ open Filter ENNReal
 open Function (support)
 
 open scoped Classical
-open Topology BigOperators NNReal ENNReal MeasureTheory
+open Topology NNReal ENNReal MeasureTheory
 
 namespace MeasureTheory
 

@@ -10,8 +10,6 @@ import Mathlib.Algebra.Module.Defs
 # Summation by parts
 -/
 
-open scoped BigOperators
-
 namespace Finset
 variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] (f : ℕ → R) (g : ℕ → M) {m n : ℕ}
 

@@ -26,7 +26,7 @@ holds true for `n = 0` as well, so we first prove it, then deduce the original v
 
 variable (α : Type*) [Fintype α] [DecidableEq α]
 
-open scoped BigOperators Nat
+open scoped Nat
 
 open Equiv Fintype Function
 

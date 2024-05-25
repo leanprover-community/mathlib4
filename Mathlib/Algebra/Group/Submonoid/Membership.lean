@@ -36,8 +36,6 @@ In this file we prove various facts about membership in a submonoid:
 submonoid, submonoids
 -/
 
-open BigOperators
-
 variable {M A B : Type*}
 
 section Assoc

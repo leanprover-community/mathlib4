@@ -31,8 +31,6 @@ noncomputable section
 
 open Complex UpperHalfPlane Set Finset
 
-open scoped BigOperators
-
 variable (z : ℍ)
 
 namespace EisensteinSeries

@@ -42,8 +42,6 @@ analysis, comparison, asymptotics
 
 open Set MeasureTheory.MeasureSpace
 
-open scoped BigOperators
-
 variable {x₀ : ℝ} {a b : ℕ} {f : ℝ → ℝ}
 
 theorem AntitoneOn.integral_le_sum (hf : AntitoneOn f (Icc x₀ (x₀ + a))) :

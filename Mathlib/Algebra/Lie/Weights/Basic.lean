@@ -53,7 +53,7 @@ variable {K R L M : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] [LieAlgebra
 namespace LieModule
 
 open Set Function LieAlgebra TensorProduct TensorProduct.LieModule
-open scoped BigOperators TensorProduct
+open scoped TensorProduct
 
 section notation_weightSpaceOf
 

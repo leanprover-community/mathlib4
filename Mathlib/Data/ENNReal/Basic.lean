@@ -90,7 +90,6 @@ context, or if we have `(f : α → ℝ≥0∞) (hf : ∀ x, f x ≠ ∞)`.
 
 
 open Function Set NNReal
-open scoped BigOperators
 
 variable {α : Type*}
 

@@ -29,7 +29,7 @@ This could be generalized to similar results about finite abelian groups.
 
 open Finset Nat FiniteField ZMod
 
-open scoped BigOperators Nat
+open scoped Nat
 
 namespace ZMod
 

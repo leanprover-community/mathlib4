@@ -93,8 +93,6 @@ end NormedLinearOrderedField
 
 section Real
 
-open BigOperators
-
 open Finset
 
 theorem Asymptotics.IsLittleO.sum_range {α : Type*} [NormedAddCommGroup α] {f : ℕ → α} {g : ℕ → ℝ}

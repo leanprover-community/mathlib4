@@ -62,7 +62,7 @@ This creates a little bit of friction, but lemmas like `IsPrimitiveRoot.isUnit` 
 -/
 
 
-open scoped Classical BigOperators Polynomial
+open scoped Classical Polynomial
 
 noncomputable section
 

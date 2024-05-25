@@ -70,8 +70,6 @@ variable {α : Type u} {β : Type v} {M : Type w} [DecidableEq β]
 
 open Nat
 
-open BigOperators
-
 namespace Finset
 
 variable {s : Finset α} {t : Finset β} {f : α → β} {w : α → M} {b : M} {n : ℕ}

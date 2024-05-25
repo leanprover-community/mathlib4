@@ -42,7 +42,7 @@ rectangular box, partition
 open Set Finset Function
 
 open scoped Classical
-open NNReal BigOperators
+open NNReal
 
 noncomputable section
 

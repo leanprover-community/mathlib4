@@ -31,7 +31,7 @@ element of `G`, where `G` is a group that acts on `F`.
 
 noncomputable section
 
-open scoped Classical BigOperators
+open scoped Classical
 
 open MulAction Finset FiniteDimensional
 

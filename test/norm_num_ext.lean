@@ -326,8 +326,6 @@ section big_operators
 
 variable {α : Type _} [CommRing α]
 
-open BigOperators
-
 -- Lists:
 -- `by decide` closes the three goals below.
 example : ([1, 2, 1, 3]).sum = 7 := by norm_num (config := {decide := true}) only

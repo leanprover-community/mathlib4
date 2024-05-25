@@ -16,7 +16,6 @@ This file proves some more lemmas about basic Cauchy sequences that involve fini
 -/
 
 open Finset IsAbsoluteValue
-open scoped BigOperators
 
 namespace IsCauSeq
 variable {α β : Type*} [LinearOrderedField α] [Ring β] {abv : β → α} [IsAbsoluteValue abv]

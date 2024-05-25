@@ -49,7 +49,7 @@ set_option linter.uppercaseLean3 false -- S
 
 noncomputable section
 
-open scoped Classical BigOperators BoundedContinuousFunction unitInterval
+open scoped Classical BoundedContinuousFunction unitInterval
 
 /-- The Bernstein polynomials, as continuous functions on `[0,1]`.
 -/

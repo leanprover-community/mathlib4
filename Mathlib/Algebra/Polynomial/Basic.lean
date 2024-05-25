@@ -71,7 +71,7 @@ open AddMonoidAlgebra
 open Finsupp hiding single
 open Function hiding Commute
 
-open BigOperators Polynomial
+open Polynomial
 
 namespace Polynomial
 

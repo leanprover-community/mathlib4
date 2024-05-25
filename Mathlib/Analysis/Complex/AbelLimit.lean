@@ -29,7 +29,7 @@ left with angle less than `π`.
 
 open Filter Finset
 
-open scoped BigOperators Topology
+open scoped Topology
 
 namespace Complex
 
