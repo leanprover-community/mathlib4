@@ -107,13 +107,13 @@ namespace LieModule
 
 /-- The kernel of the action of a Lie algebra `L` on a Lie module `M` as a Lie ideal in `L`. -/
 protected def ker : LieIdeal R L :=
-  (toEndomorphism R L M).ker
+  (toEnd R L M).ker
 #align lie_module.ker LieModule.ker
 
 @[simp]
 protected theorem mem_ker (x : L) : x ∈ LieModule.ker R L M ↔ ∀ m : M, ⁅x, m⁆ = 0 := by
   simp only [LieModule.ker, LieHom.mem_ker, LinearMap.ext_iff, LinearMap.zero_apply,
-    toEndomorphism_apply_apply]
+    toEnd_apply_apply]
 #align lie_module.mem_ker LieModule.mem_ker
 
 /-- The largest submodule of a Lie module `M` on which the Lie algebra `L` acts trivially. -/
@@ -143,7 +143,7 @@ theorem ideal_oper_maxTrivSubmodule_eq_bot (I : LieIdeal R L) :
 
 theorem le_max_triv_iff_bracket_eq_bot {N : LieSubmodule R L M} :
     N ≤ maxTrivSubmodule R L M ↔ ⁅(⊤ : LieIdeal R L), N⁆ = ⊥ := by
-  refine' ⟨fun h => _, fun h m hm => _⟩
+  refine ⟨fun h => ?_, fun h m hm => ?_⟩
   · rw [← le_bot_iff, ← ideal_oper_maxTrivSubmodule_eq_bot R L M ⊤]
     exact LieSubmodule.mono_lie_right _ _ ⊤ h
   · rw [mem_maxTrivSubmodule]
@@ -287,13 +287,13 @@ namespace LieModule
 variable {R L}
 variable {x : L} (hx : x ∈ LieAlgebra.center R L) (y : L)
 
-lemma commute_toEndomorphism_of_mem_center_left :
-    Commute (toEndomorphism R L M x) (toEndomorphism R L M y) := by
+lemma commute_toEnd_of_mem_center_left :
+    Commute (toEnd R L M x) (toEnd R L M y) := by
   rw [Commute.symm_iff, commute_iff_lie_eq, ← LieHom.map_lie, hx y, LieHom.map_zero]
 
-lemma commute_toEndomorphism_of_mem_center_right :
-    Commute (toEndomorphism R L M y) (toEndomorphism R L M x) :=
-  (LieModule.commute_toEndomorphism_of_mem_center_left M hx y).symm
+lemma commute_toEnd_of_mem_center_right :
+    Commute (toEnd R L M y) (toEnd R L M x) :=
+  (LieModule.commute_toEnd_of_mem_center_left M hx y).symm
 
 end LieModule
 

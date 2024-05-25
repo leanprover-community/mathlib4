@@ -63,7 +63,7 @@ theorem mem_closure_ne_iff_frequently_within {z : α} {s : Set α} :
 @[simp]
 theorem eventually_nhdsWithin_nhdsWithin {a : α} {s : Set α} {p : α → Prop} :
     (∀ᶠ y in 𝓝[s] a, ∀ᶠ x in 𝓝[s] y, p x) ↔ ∀ᶠ x in 𝓝[s] a, p x := by
-  refine' ⟨fun h => _, fun h => (eventually_nhds_nhdsWithin.2 h).filter_mono inf_le_left⟩
+  refine ⟨fun h => ?_, fun h => (eventually_nhds_nhdsWithin.2 h).filter_mono inf_le_left⟩
   simp only [eventually_nhdsWithin_iff] at h ⊢
   exact h.mono fun x hx hxs => (hx hxs).self_of_nhds hxs
 #align eventually_nhds_within_nhds_within eventually_nhdsWithin_nhdsWithin
@@ -859,7 +859,7 @@ theorem continuousAt_update_same [DecidableEq α] {f : α → β} {x : α} {y : 
 theorem IsOpenMap.continuousOn_image_of_leftInvOn {f : α → β} {s : Set α}
     (h : IsOpenMap (s.restrict f)) {finv : β → α} (hleft : LeftInvOn finv f s) :
     ContinuousOn finv (f '' s) := by
-  refine' continuousOn_iff'.2 fun t ht => ⟨f '' (t ∩ s), _, _⟩
+  refine continuousOn_iff'.2 fun t ht => ⟨f '' (t ∩ s), ?_, ?_⟩
   · rw [← image_restrict]
     exact h _ (ht.preimage continuous_subtype_val)
   · rw [inter_eq_self_of_subset_left (image_subset f (inter_subset_right t s)), hleft.image_inter']
@@ -1007,7 +1007,7 @@ theorem Set.LeftInvOn.map_nhdsWithin_eq {f : α → β} {g : β → α} {x : β}
   · exact hg.tendsto_nhdsWithin (mapsTo_image _ _)
   · have A : g ∘ f =ᶠ[𝓝[g '' s] g x] id :=
       h.rightInvOn_image.eqOn.eventuallyEq_of_mem self_mem_nhdsWithin
-    refine' le_map_of_right_inverse A _
+    refine le_map_of_right_inverse A ?_
     simpa only [hx] using hf.tendsto_nhdsWithin (h.mapsTo (surjOn_image _ _))
 #align set.left_inv_on.map_nhds_within_eq Set.LeftInvOn.map_nhdsWithin_eq
 
@@ -1083,7 +1083,7 @@ theorem continuousOn_open_iff {f : α → β} {s : Set α} (hs : IsOpen s) :
     rw [inter_comm, hu]
     apply IsOpen.inter u_open hs
   · intro h t ht
-    refine' ⟨s ∩ f ⁻¹' t, h t ht, _⟩
+    refine ⟨s ∩ f ⁻¹' t, h t ht, ?_⟩
     rw [@inter_comm _ s (f ⁻¹' t), inter_assoc, inter_self]
 #align continuous_on_open_iff continuousOn_open_iff
 

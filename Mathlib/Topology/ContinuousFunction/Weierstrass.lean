@@ -32,8 +32,8 @@ This is just a matter of unravelling definitions and using the Bernstein approxi
 theorem polynomialFunctions_closure_eq_top' : (polynomialFunctions I).topologicalClosure = ⊤ := by
   rw [eq_top_iff]
   rintro f -
-  refine' Filter.Frequently.mem_closure _
-  refine' Filter.Tendsto.frequently (bernsteinApproximation_uniform f) _
+  refine Filter.Frequently.mem_closure ?_
+  refine Filter.Tendsto.frequently (bernsteinApproximation_uniform f) ?_
   apply frequently_of_forall
   intro n
   simp only [SetLike.mem_coe]
