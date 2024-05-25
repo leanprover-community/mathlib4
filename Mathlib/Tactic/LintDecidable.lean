@@ -1,4 +1,4 @@
-import Std.Tactic.Lint
+import Batteries.Tactic.Lint
 import Mathlib.Lean.Expr.Basic
 
 namespace Std.Tactic.Lint
@@ -8,7 +8,7 @@ open Lean Meta
 Linter that checks for theorems that assume `[Decidable p]`
 but don't use this assumption in the type.
 -/
-@[std_linter] def decidableClassical : Linter where
+@[env_linter] def decidableClassical : Linter where
   noErrorsFound := "No uses of `Decidable` arguments should be replaced with `classical`"
   errorsFound := "USES OF `Decidable` SHOULD BE REPLACED WITH `classical` IN THE PROOF."
   test declName := do
