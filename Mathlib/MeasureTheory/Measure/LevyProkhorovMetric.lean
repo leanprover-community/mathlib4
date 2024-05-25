@@ -496,6 +496,73 @@ lemma SeparableSpace.exists_measurable_partition_diam_le {ε : ℝ} (ε_pos : 0 
 
 variable {Ω}
 
+lemma ProbabilityMeasure.toMeasure_add_pos_gt_mem_nhds {P : ProbabilityMeasure Ω}
+    {G : Set Ω} (G_open : IsOpen G) {ε : ℝ≥0∞} (ε_pos : 0 < ε) (ε_ne_top : ε ≠ ∞) :
+    ({Q | P.toMeasure G < Q.toMeasure G + ε} ∈ 𝓝 P) := by
+  by_cases easy : P.toMeasure G < ε
+  · exact eventually_of_forall (fun _ ↦ lt_of_lt_of_le easy le_add_self)
+  simp only [not_lt] at easy
+  have aux : P.toMeasure G - ε < liminf (fun Q ↦ Q.toMeasure G) (𝓝 P) := by
+    apply lt_of_lt_of_le (ENNReal.sub_lt_self (measure_lt_top _ _).ne _ _)
+        <| ProbabilityMeasure.le_liminf_measure_open_of_tendsto tendsto_id G_open
+    · exact (lt_of_lt_of_le ε_pos easy).ne.symm
+    · exact ε_pos.ne.symm
+  filter_upwards [gt_mem_sets_of_limsInf_gt (α := ℝ≥0∞) isBounded_ge_of_bot
+      (show P.toMeasure G - ε < limsInf ((𝓝 P).map (fun Q ↦ Q.toMeasure G)) from aux)] with Q hQ
+  simp only [preimage_setOf_eq, mem_setOf_eq] at hQ
+  convert ENNReal.add_lt_add_right ε_ne_top hQ
+  exact (tsub_add_cancel_of_le easy).symm
+
+-- TODO: Move to an appropriate place.
+lemma _root_.biUnion_compl_eq_of_pairwise_disjoint {X ι : Type*} {Es : ι → Set X}
+    (Es_union : ⋃ i, Es i = univ) (Es_disj : Pairwise fun i j ↦ Disjoint (Es i) (Es j))
+    (I : Set ι) :
+    (⋃ i ∈ I, Es i)ᶜ = ⋃ i ∈ Iᶜ, Es i := by
+  ext x
+  obtain ⟨i, hix⟩ := show ∃ i, x ∈ Es i by simp [← mem_iUnion, Es_union]
+  have obs : ∀ (J : Set ι), x ∈ ⋃ j ∈ J, Es j ↔ i ∈ J := by
+    intro J
+    refine ⟨?_, fun i_in_J ↦ by simpa only [mem_iUnion, exists_prop] using ⟨i, i_in_J, hix⟩⟩
+    intro x_in_U
+    simp only [mem_iUnion, exists_prop] at x_in_U
+    obtain ⟨j, j_in_J, hjx⟩ := x_in_U
+    convert j_in_J
+    by_contra i_ne_j
+    exact Disjoint.ne_of_mem (Es_disj i_ne_j) hix hjx rfl
+  have obs' : ∀ (J : Set ι), x ∈ (⋃ j ∈ J, Es j)ᶜ ↔ i ∉ J :=
+    fun J ↦ by simpa only [mem_compl_iff, not_iff_not] using obs J
+  rw [obs, obs', mem_compl_iff]
+
+-- TODO: Move to an appropriate place.
+lemma tendsto_measure_biUnion_Iio_of_iUnion_eq_univ
+    {X : Type*} [MeasurableSpace X] {μ : Measure X} {Es : ℕ → Set X} (Es_union : ⋃ i, Es i = univ) :
+    Tendsto (μ ∘ fun n => ⋃ i, ⋃ (_ : i < n), Es i) atTop (𝓝 (μ univ)) := by
+  have Es_union_incr : Monotone (fun (n : ℕ) ↦ ⋃ i ∈ Iio n, Es i) :=
+    fun _ _ hnm ↦ biUnion_mono (Iio_subset_Iio_iff.mpr hnm) (fun _ _ ↦ le_rfl)
+  convert @tendsto_measure_iUnion X ℕ _ μ _ _ _ (fun (n : ℕ) ↦ ⋃ i ∈ Iio n, Es i) Es_union_incr
+  apply subset_antisymm _ (subset_univ _)
+  simpa only [← biUnion_iUnion, iUnion_Iio, mem_univ, iUnion_true, univ_subset_iff] using Es_union
+
+-- TODO: Move to an appropriate place.
+lemma tendsto_measure_biUnion_Ici_zero_of_iUnion_eq_univ_of_pairwise_disjoint
+    {X : Type*} [MeasurableSpace X] {μ : Measure X} [IsFiniteMeasure μ]
+    {Es : ℕ → Set X} (Es_union : ⋃ i, Es i = univ) (Es_mble : ∀ i, MeasurableSet (Es i))
+    (Es_disj : Pairwise fun n m ↦ Disjoint (Es n) (Es m)) :
+    Tendsto (μ ∘ fun n => ⋃ i, ⋃ (_ : n ≤ i), Es i) atTop (𝓝 0) := by
+  have obs : ∀ n, ⋃ i, ⋃ (_ : n ≤ i), Es i = (⋃ i, ⋃ (_ : i < n), Es i)ᶜ :=
+    fun n ↦ by simpa only [mem_Iio, compl_Iio, mem_Ici]
+                using (biUnion_compl_eq_of_pairwise_disjoint Es_union Es_disj (Iio n)).symm
+  simp_rw [obs]
+  have : Tendsto (fun n ↦ (μ univ - μ (⋃ i, ⋃ (_ : i < n), Es i))) atTop (𝓝 0) := by
+    have aux := (@ENNReal.continuous_sub_left (μ univ) (measure_ne_top _ _)).tendsto (μ univ)
+    simp only [ge_iff_le, le_refl, tsub_eq_zero_of_le] at aux
+    exact aux.comp <| tendsto_measure_biUnion_Iio_of_iUnion_eq_univ Es_union
+  convert this
+  simp only [Function.comp_apply]
+  apply measure_compl
+  · exact MeasurableSet.iUnion fun i ↦ MeasurableSet.iUnion fun _ ↦ Es_mble i
+  · exact measure_ne_top _ _
+
 lemma ProbabilityMeasure.continuous_toLevyProkhorov :
     Continuous (ProbabilityMeasure.toLevyProkhorov (Ω := Ω)) := by
 
@@ -519,23 +586,12 @@ lemma ProbabilityMeasure.continuous_toLevyProkhorov :
   -- union `⋃ n < N, Es n`, chosen in such a way that the complement has small `P`-mass,
   -- `P (⋃ n < N, Es n)ᶜ < ε/3`.
   -- (TODO: Split a standalone lemma out of this argument.)
-  have Es_union_incr : Monotone (fun (n : ℕ) ↦ ⋃ i ∈ Iio n, Es i) :=
-    fun _ _ hnm ↦ biUnion_mono (Iio_subset_Iio_iff.mpr hnm) (fun _ _ ↦ le_rfl)
-  have exhaust : Tendsto (P.toMeasure ∘ fun n => ⋃ i, ⋃ (_ : i < n), Es i) atTop (𝓝 (P univ)) := by
-    suffices
-        Tendsto (P.toMeasure ∘ fun n => ⋃ i, ⋃ (_ : i < n), Es i) atTop (𝓝 (P.toMeasure univ)) by
-      convert this
-      exact P.ennreal_coeFn_eq_coeFn_toMeasure univ
-    convert @tendsto_measure_iUnion Ω ℕ _ P _ _ _ (fun (n : ℕ) ↦ ⋃ i ∈ Iio n, Es i) Es_union_incr
-    apply subset_antisymm _ (subset_univ _)
-    simpa only [← biUnion_iUnion, iUnion_Iio, mem_univ, iUnion_true, univ_subset_iff] using Es_cover
-  simp only [measure_univ, one_toNNReal, ENNReal.coe_one, tendsto_atTop_nhds,
-             Function.comp_apply] at exhaust
-  specialize exhaust (Ioi (1 - ENNReal.ofReal (ε / 3))) ?_ isOpen_Ioi
-  · exact ENNReal.sub_lt_self one_ne_top one_ne_zero third_ε_pos'.ne.symm
-  obtain ⟨N, hN⟩ := exhaust
+  -- (TODO: Use `tendsto_measure_biUnion_Ici_zero_of_iUnion_eq_univ_of_pairwise_disjoint`.)
+  have exhaust := @tendsto_measure_biUnion_Ici_zero_of_iUnion_eq_univ_of_pairwise_disjoint
+                Ω _ P.toMeasure _ Es Es_cover Es_mble Es_disjoint
+  simp only [tendsto_atTop_nhds, Function.comp_apply] at exhaust
+  obtain ⟨N, hN⟩ := exhaust (Iio (ENNReal.ofReal (ε / 3))) third_ε_pos' isOpen_Iio
   specialize hN N le_rfl
-  simp only [Function.comp_apply, mem_Ioi] at hN
 
   -- With the finite `N` fixed above, consider the finite collection of open sets of the form
   -- `Gs J = thickening (ε/3) (⋃ j ∈ J, Es j)`, where `J ⊆ {0, 1, ..., N-1}`.
@@ -546,25 +602,9 @@ lemma ProbabilityMeasure.continuous_toLevyProkhorov :
 
   -- Any open set `G ⊆ Ω` determines a neighborhood of `P` consisting of those `Q` that
   -- satisfy `P G < Q G + ε/3`.
-  -- (TODO: This should probably be a standalone lemma.)
   have mem_nhds_P :
-      ∀ G, IsOpen G → ({Q | P.toMeasure G < Q.toMeasure G + ENNReal.ofReal (ε/3)} ∈ 𝓝 P) := by
-    intro G G_open
-    by_cases easy : P.toMeasure G < ENNReal.ofReal (ε/3)
-    · exact eventually_of_forall (fun _ ↦ lt_of_lt_of_le easy le_add_self)
-    simp only [not_lt] at easy
-    have liminf_open :=
-      @ProbabilityMeasure.le_liminf_measure_open_of_tendsto Ω _ (𝓝 P) _ _ _ _ P id tendsto_id
-    have aux : P.toMeasure G - ENNReal.ofReal (ε/3) < liminf (fun Q ↦ Q.toMeasure G) (𝓝 P) := by
-      apply lt_of_lt_of_le (ENNReal.sub_lt_self (measure_lt_top _ _).ne _ _) <| liminf_open G_open
-      · exact (lt_of_lt_of_le third_ε_pos' easy).ne.symm
-      · exact third_ε_pos'.ne.symm
-    filter_upwards [gt_mem_sets_of_limsInf_gt (α := ℝ≥0∞) isBounded_ge_of_bot
-        (show P.toMeasure G - ENNReal.ofReal (ε/3) < limsInf ((𝓝 P).map (fun Q ↦ Q.toMeasure G))
-          from aux)] with Q hQ
-    simp only [preimage_setOf_eq, mem_setOf_eq] at hQ
-    convert ENNReal.add_lt_add_right (ofReal_ne_top (r := ε/3)) hQ
-    exact (tsub_add_cancel_of_le easy).symm
+      ∀ G, IsOpen G → ({Q | P.toMeasure G < Q.toMeasure G + ENNReal.ofReal (ε/3)} ∈ 𝓝 P) :=
+    fun G G_open ↦ P.toMeasure_add_pos_gt_mem_nhds G_open third_ε_pos' ofReal_ne_top
 
   -- Assume that `Q` is in the neighborhood of `P` such that for each `J ⊆ {0, 1, ..., N-1}`
   -- we have `P (Gs J) < Q (Gs J) + ε/3`.
@@ -629,15 +669,11 @@ lemma ProbabilityMeasure.continuous_toLevyProkhorov :
 
     -- We need to convince Lean that the small complement is small, `P (small complement) < ε/3`,
     -- which really is exactly the way we chose it to be from the beginning...
-    -- (TODO: I guess this suggests that we might have wanted to phrase the smallness originally
-    -- more directly in the form it will be used...)
     have aux : P.toMeasure (⋃ j ∈ Iio N, Es j)ᶜ < ENNReal.ofReal (ε/3) := by
-      by_cases whatif : 1 < ENNReal.ofReal (ε/3)
-      · exact lt_of_le_of_lt prob_le_one whatif
-      simp only [gt_iff_lt, not_lt] at whatif
-      convert prob_compl_lt_one_sub_of_lt_prob hN ?_
-      · exact ENNReal.eq_sub_of_add_eq (sub_ne_top one_ne_top) (add_tsub_cancel_iff_le.mpr whatif)
-      · exact (finite_Iio N).measurableSet_biUnion fun i _ => Es_mble i
+      have rewr : ⋃ i, ⋃ (_ : N ≤ i), Es i = (⋃ i, ⋃ (_ : i < N), Es i)ᶜ :=
+        by simpa only [mem_Iio, compl_Iio, mem_Ici]
+          using (biUnion_compl_eq_of_pairwise_disjoint Es_cover Es_disjoint (Iio N)).symm
+      simpa only [mem_Iio, ← rewr] using hN
 
     -- From the choice of `Q` in a suitable neighborhood, we have `P (Gs JB) < Q (Gs JB) + ε/3`.
     specialize hQ _ (show JB ⊆ Iio N from fun _ h ↦ h.2)
