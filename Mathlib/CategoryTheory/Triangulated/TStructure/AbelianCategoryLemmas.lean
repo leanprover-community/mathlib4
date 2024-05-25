@@ -100,6 +100,71 @@ map α :=
        comp_zero]
   }
 
+def CategoryTheory.Functor.mapCokernelCofork {C : Type u} [CategoryTheory.Category.{v, u} C]
+    [CategoryTheory.Limits.HasZeroMorphisms C] {X : C} {Y : C} {f : X ⟶ Y} {D : Type u'}
+    [CategoryTheory.Category.{v, u'} D] [CategoryTheory.Limits.HasZeroMorphisms D]
+    (F : CategoryTheory.Functor C D) [F.PreservesZeroMorphisms] (c : CokernelCofork f) :
+    CokernelCofork (F.map f) := (Cocones.precompose (compNatIso' F).inv).obj (F.mapCocone c)
+
+
+lemma CategoryTheory.Functor.mapCokernelCofork_pt {C : Type u} [CategoryTheory.Category.{v, u} C]
+    [CategoryTheory.Limits.HasZeroMorphisms C] {X : C} {Y : C} {f : X ⟶ Y} {D : Type u'}
+    [CategoryTheory.Category.{v, u'} D] [CategoryTheory.Limits.HasZeroMorphisms D]
+    (F : CategoryTheory.Functor C D) [F.PreservesZeroMorphisms] (c : CokernelCofork f) :
+    (F.mapCokernelCofork c).pt = F.obj c.pt :=
+  by simp only [mapCokernelCofork, Cocones.precompose_obj_pt, mapCocone_pt]
+
+lemma CategoryTheory.Functor.mapCokernelCofork_π {C : Type u} [CategoryTheory.Category.{v, u} C]
+    [CategoryTheory.Limits.HasZeroMorphisms C] {X : C} {Y : C} {f : X ⟶ Y} {D : Type u'}
+    [CategoryTheory.Category.{v, u'} D] [CategoryTheory.Limits.HasZeroMorphisms D]
+    (F : CategoryTheory.Functor C D) [F.PreservesZeroMorphisms] (c : CokernelCofork f) :
+    (F.mapCokernelCofork c).π = F.map c.π := by
+  simp only [parallelPair_obj_one, mapCokernelCofork, compNatIso', comp_obj, parallelPair_obj_zero,
+    Cocones.precompose_obj_pt, mapCocone_pt, const_obj_obj]
+  rw [Cofork.π, Cocones.precompose_obj_ι]
+  simp only [Cocones.precompose_obj_pt, mapCocone_pt, NatTrans.comp_app, parallelPair_obj_one,
+    comp_obj, const_obj_obj, NatIso.ofComponents_inv_app, Iso.refl_inv, mapCocone_ι_app,
+    Cofork.app_one_eq_π, Category.id_comp]
+
+def CategoryTheory.Functor.mapCokernelCoforkIso {C : Type u} [CategoryTheory.Category.{v, u} C]
+    [CategoryTheory.Limits.HasZeroMorphisms C] {X : C} {Y : C} {f : X ⟶ Y} {D : Type u'}
+    [CategoryTheory.Category.{v, u'} D] [CategoryTheory.Limits.HasZeroMorphisms D]
+    (F : CategoryTheory.Functor C D) [F.PreservesZeroMorphisms] (c : CokernelCofork f) :
+    F.mapCokernelCofork c ≅ CokernelCofork.ofπ (F.map c.π) (by simp only [const_obj_obj,
+      CokernelCofork.map_condition]) := by
+  refine Cocones.ext ?_ ?_
+  · rw [F.mapCokernelCofork_pt]
+    exact Iso.refl _
+  · intro j
+    cases j with
+    | zero => simp only [parallelPair_obj_zero, const_obj_obj, Cofork.ofπ_pt,
+      Cofork.app_zero_eq_comp_π_left, CokernelCofork.condition, eq_mpr_eq_cast, cast_eq,
+      Iso.refl_hom, zero_comp, Cofork.ofπ_ι_app, CokernelCofork.map_condition]
+    | one => simp only [parallelPair_obj_one, const_obj_obj, Cofork.ofπ_pt, Cofork.app_one_eq_π,
+      eq_mpr_eq_cast, cast_eq, Iso.refl_hom, Cofork.ofπ_ι_app]
+             erw [Category.comp_id]
+             rw [F.mapCokernelCofork_π]
+
+def CategoryTheory.Limits.CokernelCofork.functoriality {C : Type u}
+    [CategoryTheory.Category.{v, u} C] [CategoryTheory.Limits.HasZeroMorphisms C] {D : Type u'}
+    [CategoryTheory.Category.{v, u'} D] [CategoryTheory.Limits.HasZeroMorphisms D]
+    (F : CategoryTheory.Functor C D) [F.PreservesZeroMorphisms] {X Y : C} (f : X ⟶ Y) :
+    CategoryTheory.Limits.CokernelCofork f ⥤ CategoryTheory.Limits.CokernelCofork (F.map f) where
+obj c := F.mapCokernelCofork c
+map α :=
+  {hom := by simp only; rw [F.mapCokernelCofork_pt, F.mapCokernelCofork_pt]; exact F.map α.hom
+   w := by
+     intro j
+     cases j with
+     | zero => simp only [parallelPair_obj_zero, Functor.const_obj_obj,
+       Cofork.app_zero_eq_comp_π_left, condition, eq_mpr_eq_cast, cast_eq, id_eq, zero_comp]
+--               rw [← Functor.map_comp]; simp only [Fork.hom_comp_ι]
+     | one => simp only [parallelPair_obj_one, Functor.const_obj_obj, Cofork.app_one_eq_π,
+       eq_mpr_eq_cast, cast_eq, id_eq]
+              rw [F.mapCokernelCofork_π, ← Functor.map_comp, F.mapCokernelCofork_π]
+              simp only [parallelPair_obj_one, Functor.const_obj_obj, Fork.π_comp_hom]
+  }
+
 #exit
 
 variable {A : Type u} [Category.{v} A] [Abelian A]

@@ -123,6 +123,7 @@ lemma AcyclicExtension {S : ShortComplex t₁.Heart} (SE : S.ShortExact)
 lemma AcyclicShortExact {S : ShortComplex (AcyclicCategory F t₁ t₂)}
     (SE : ((AcyclicToHeart F t₁ t₂).mapShortComplex.obj S).ShortExact) :
     ((FunctorFromAcyclic F t₁ t₂).mapShortComplex.obj S).ShortExact := by sorry
+  -- prood needs to be adjusted because the definition of "Acyclic" changed
   /-
   set T := heartShortExactTriangle t₁ _ SE with hTdef
   set DT := heartShortExactTriangle_distinguished t₁ _ SE
@@ -241,8 +242,8 @@ noncomputable local instance : t₂.homology₀.ShiftSequence ℤ :=
 noncomputable def ShortComplexHomologyFunctor {S : ShortComplex t₁.Heart}
     (hS₁ : AcyclicObject F t₁ t₂ S.X₁) (hS : S.Exact) {n : ℤ} (hn : n ≠ -1 ∧ n ≠ 0) :
     (t₂.homology n).obj (F.obj (Limits.kernel S.g).1) ≅ (t₂.homology (n + 1)).obj
-    (F.obj (Limits.kernel S.f).1) := by
-  set S' : ShortComplex t₁.Heart := ShortComplex.mk (X₁ := Limits.kernel S.f) (X₂ := S.X₁)
+    (F.obj (Limits.kernel S.f).1) := by sorry
+/-  set S' : ShortComplex t₁.Heart := ShortComplex.mk (X₁ := Limits.kernel S.f) (X₂ := S.X₁)
     (X₃ := Limits.kernel S.g) (Limits.kernel.ι S.f) (Limits.kernel.lift S.g S.f S.zero)
     (by refine Mono.right_cancellation (f := Limits.kernel.ι S.g) _ _ ?_
         simp only [assoc, kernel.lift_ι, kernel.condition, zero_comp])
@@ -300,14 +301,14 @@ noncomputable def ShortComplexHomologyFunctor {S : ShortComplex t₁.Heart}
       rw [lt_iff_le_and_ne, Int.add_one_le_iff, and_iff_right (lt_iff_not_le.mpr hn'), ne_eq,
           ← eq_neg_iff_add_eq_zero]
       exact hn.1
-  exact @asIso _ _ _ _ f ((isIso_iff_mono_and_epi f).mpr ⟨h1, h2⟩)
+  exact @asIso _ _ _ _ f ((isIso_iff_mono_and_epi f).mpr ⟨h1, h2⟩)-/
 
 noncomputable def KernelMapEpiAcyclic {X Y : t₁.Heart} (hX : AcyclicObject F t₁ t₂ X)
     (hY : AcyclicObject F t₁ t₂ Y) (f : X ⟶ Y)
     (hf1 : AcyclicObject F t₁ t₂ (Limits.kernel f)) (hf2 : Epi f)
     {c : KernelFork f} (hc : IsLimit c) :
-    IsLimit ((F.FunctorFromHeartToHeart t₁ t₂).mapKernelFork c) := by
-  refine IsLimit.ofIsoLimit (r := Limits.KernelFork.ofι (f := (F.FunctorFromHeartToHeart t₁ t₂).map
+    IsLimit ((F.FunctorFromHeartToHeart t₁ t₂).mapKernelFork c) := by sorry
+/-  refine IsLimit.ofIsoLimit (r := Limits.KernelFork.ofι (f := (F.FunctorFromHeartToHeart t₁ t₂).map
      f) ((F.FunctorFromHeartToHeart t₁ t₂).map (kernel.ι f))
     (by rw [← map_comp, kernel.condition, Functor.map_zero])) ?_ ?_
   · set Z : AcyclicCategory F t₁ t₂ := ⟨(Limits.kernel f), hf1⟩
@@ -374,18 +375,17 @@ noncomputable def KernelMapEpiAcyclic {X Y : t₁.Heart} (hX : AcyclicObject F t
          Fork.ofι_π_app, id_eq, eq_mpr_eq_cast, mapIso_hom]
                erw [← Functor.map_comp, ← map_comp, ← map_comp]
                refine congrArg _ ?_
-               simp only [KernelFork.condition, kernel.condition, comp_zero]
+               simp only [KernelFork.condition, kernel.condition, comp_zero]-/
 
-#exit
-
-set_option maxHeartbeats 500000
+--set_option maxHeartbeats 500000
 
 noncomputable def KernelMapAcyclic {X Y : t₁.Heart} (hX : AcyclicObject F t₁ t₂ X)
+    (hY : AcyclicObject F t₁ t₂ Y)
     (f : X ⟶ Y) (hf0 : AcyclicObject F t₁ t₂ (Abelian.image f))
     (hf1 : AcyclicObject F t₁ t₂ (Limits.kernel f))
     (hf2 : AcyclicObject F t₁ t₂ (Limits.cokernel f)) {c : KernelFork f} (hc : IsLimit c) :
-    IsLimit ((F.FunctorFromHeartToHeart t₁ t₂).mapKernelFork c) := by
-  set g := Abelian.factorThruImage f
+    IsLimit ((F.FunctorFromHeartToHeart t₁ t₂).mapKernelFork c) := by sorry
+/-  set g := Abelian.factorThruImage f
   have hg := isKernelCompMono (kernelIsKernel g) (Abelian.image.ι f)
     (Abelian.image.fac f).symm
   have hg1 : AcyclicObject F t₁ t₂ (kernel g) := by
@@ -397,7 +397,20 @@ noncomputable def KernelMapAcyclic {X Y : t₁.Heart} (hX : AcyclicObject F t₁
       (Abelian.image.ι f) := by rw [← map_comp, Abelian.image.fac]
   have hgK' := IsLimit.ofIsoLimit hgK ((F.FunctorFromHeartToHeart t₁ t₂).mapKernelForkIso
     (KernelFork.ofι (kernel.ι g) (kernel.condition g)))
-  have hmon : Mono ((F.FunctorFromHeartToHeart t₁ t₂).map (Abelian.image.ι f)) := sorry
+  have hmon : Mono ((F.FunctorFromHeartToHeart t₁ t₂).map (Abelian.image.ι f)) := by
+    have : IsLimit (Fork.ofι (Abelian.image.ι f) (by simp only [equalizer_as_kernel,
+      kernel.condition, comp_zero])) :=
+      kernelIsKernel (cokernel.π f)
+    have := KernelMapEpiAcyclic F t₁ t₂ hY hf2 (cokernel.π f) hf0 inferInstance this
+    set e := (F.FunctorFromHeartToHeart t₁ t₂).mapKernelForkIso (KernelFork.ofι
+      (Abelian.image.ι f) (f := cokernel.π f) (by simp only [equalizer_as_kernel,
+        kernel.condition]))
+    have := IsLimit.ofIsoLimit this e
+    simp only [equalizer_as_kernel, Fork.ofι_pt, const_obj_obj, Fork.ι_ofι] at this
+    have := mono_of_isLimit_fork this
+    simp only [equalizer_as_kernel, Fork.ofι_pt, const_obj_obj, Fork.ι_ofι,
+      parallelPair_obj_zero, id_eq] at this
+    exact this
   letI := hmon
   have := isKernelCompMono hgK' ((F.FunctorFromHeartToHeart t₁ t₂).map (Abelian.image.ι f)) heq
   simp only [Fork.ofι_pt, const_obj_obj, Fork.ι_ofι, parallelPair_obj_zero] at this
@@ -408,8 +421,15 @@ noncomputable def KernelMapAcyclic {X Y : t₁.Heart} (hX : AcyclicObject F t₁
   set f := ((F.FunctorFromHeartToHeart t₁ t₂).mapKernelForkIso (KernelFork.ofι (kernel.ι g)
     (f := f) (by conv_lhs => congr; simp only [g]; rfl; rw [← Abelian.image.fac f]
                  rw [← Category.assoc, kernel.condition, zero_comp])))
-  exact IsLimit.ofIsoLimit this (f.symm.trans e)
+  exact IsLimit.ofIsoLimit this (f.symm.trans e)-/
 
+noncomputable def CokernelMapAcyclic {X Y : t₁.Heart} (hX : AcyclicObject F t₁ t₂ X)
+    (hY : AcyclicObject F t₁ t₂ Y)
+    (f : X ⟶ Y) (hf0 : AcyclicObject F t₁ t₂ (Abelian.image f))
+    (hf1 : AcyclicObject F t₁ t₂ (Limits.kernel f))
+    (hf2 : AcyclicObject F t₁ t₂ (Limits.cokernel f)) {c : CokernelCofork f} (hc : IsColimit c) :
+    IsColimit ((F.FunctorFromHeartToHeart t₁ t₂).mapCokernelCofork c) := by sorry
+-- dual to previous def
 
 #exit
 abbrev IsCohomologicalBound (a b : ℤ) := ∀ (X : t₁.Heart) (r : ℤ),
