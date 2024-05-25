@@ -91,6 +91,7 @@ instance Measure.instFunLike [MeasurableSpace α] : FunLike (Measure α) (Set α
 
 #noalign measure_theory.measure.has_coe_to_fun
 
+set_option linter.deprecated false in -- Not immediately obvious how to use `measure_empty` here.
 instance Measure.instOuterMeasureClass [MeasurableSpace α] : OuterMeasureClass (Measure α) α where
   measure_empty m := m.empty'
   measure_iUnion_nat_le m := m.iUnion_nat
@@ -144,6 +145,9 @@ theorem ext_iff : μ₁ = μ₂ ↔ ∀ s, MeasurableSet s → μ₁ s = μ₂ s
 theorem ext_iff' : μ₁ = μ₂ ↔ ∀ s, μ₁ s = μ₂ s :=
   ⟨by rintro rfl s; rfl, fun h ↦ Measure.ext (fun s _ ↦ h s)⟩
 
+theorem outerMeasure_le_iff {m : OuterMeasure α} : m ≤ μ.1 ↔ ∀ s, MeasurableSet s → m s ≤ μ s := by
+  simpa only [μ.trimmed] using OuterMeasure.le_trim_iff (m₂ := μ.1)
+
 end Measure
 
 @[simp] theorem Measure.coe_toOuterMeasure (μ : Measure α) : ⇑μ.toOuterMeasure = μ := rfl
@@ -182,8 +186,8 @@ theorem toOuterMeasure_eq_inducedOuterMeasure :
 
 theorem measure_eq_extend (hs : MeasurableSet s) :
     μ s = extend (fun t (_ht : MeasurableSet t) => μ t) s := by
-    rw [extend_eq]
-    exact hs
+  rw [extend_eq]
+  exact hs
 #align measure_theory.measure_eq_extend MeasureTheory.measure_eq_extend
 
 theorem nonempty_of_measure_ne_zero (h : μ s ≠ 0) : s.Nonempty :=
@@ -248,7 +252,7 @@ theorem measure_union_lt_top (hs : μ s < ∞) (ht : μ t < ∞) : μ (s ∪ t) 
 
 @[simp]
 theorem measure_union_lt_top_iff : μ (s ∪ t) < ∞ ↔ μ s < ∞ ∧ μ t < ∞ := by
-  refine' ⟨fun h => ⟨_, _⟩, fun h => measure_union_lt_top h.1 h.2⟩
+  refine ⟨fun h => ⟨?_, ?_⟩, fun h => measure_union_lt_top h.1 h.2⟩
   · exact (measure_mono (Set.subset_union_left s t)).trans_lt h
   · exact (measure_mono (Set.subset_union_right s t)).trans_lt h
 #align measure_theory.measure_union_lt_top_iff MeasureTheory.measure_union_lt_top_iff

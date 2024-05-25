@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Basic
-import Mathlib.Algebra.BigOperators.Multiset.Lemmas
+import Mathlib.Algebra.BigOperators.Ring.Multiset
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Int.Cast.Lemmas
@@ -145,11 +145,11 @@ lemma prod_sum (s : Finset ι) (t : ∀ i, Finset (κ i)) (f : ∀ i, κ i → �
       rw [Pi.cons_same, Pi.cons_same] at this
       exact h this
     rw [prod_insert ha, pi_insert ha, ih, sum_mul, sum_biUnion h₁]
-    refine' sum_congr rfl fun b _ => _
+    refine sum_congr rfl fun b _ => ?_
     have h₂ : ∀ p₁ ∈ pi s t, ∀ p₂ ∈ pi s t, Pi.cons s a b p₁ = Pi.cons s a b p₂ → p₁ = p₂ :=
       fun p₁ _ p₂ _ eq => Pi.cons_injective ha eq
     rw [sum_image h₂, mul_sum]
-    refine' sum_congr rfl fun g _ => _
+    refine sum_congr rfl fun g _ => ?_
     rw [attach_insert, prod_insert, prod_image]
     · simp only [Pi.cons_same]
       congr with ⟨v, hv⟩
@@ -210,7 +210,7 @@ theorem prod_add_ordered [LinearOrder ι] [CommSemiring α] (s : Finset ι) (f g
       (∏ i in s, f i) +
         ∑ i in s,
           g i * (∏ j in s.filter (· < i), (f j + g j)) * ∏ j in s.filter fun j => i < j, f j := by
-  refine' Finset.induction_on_max s (by simp) _
+  refine Finset.induction_on_max s (by simp) ?_
   clear s
   intro a s ha ihs
   have ha' : a ∉ s := fun ha' => lt_irrefl a (ha a ha')
@@ -222,7 +222,7 @@ theorem prod_add_ordered [LinearOrder ι] [CommSemiring α] (s : Finset ι) (f g
   · rw [filter_false_of_mem, prod_empty, mul_one]
     exact (forall_mem_insert _ _ _).2 ⟨lt_irrefl a, fun i hi => (ha i hi).not_lt⟩
   · rw [mul_sum]
-    refine' sum_congr rfl fun i hi => _
+    refine sum_congr rfl fun i hi => ?_
     rw [filter_insert, if_neg (ha i hi).not_lt, filter_insert, if_pos (ha i hi), prod_insert,
       mul_left_comm]
     exact mt (fun ha => (mem_filter.1 ha).1) ha'
@@ -234,7 +234,7 @@ theorem sum_pow_mul_eq_add_pow (a b : α) (s : Finset ι) :
     (∑ t in s.powerset, a ^ t.card * b ^ (s.card - t.card)) = (a + b) ^ s.card := by
   classical
   rw [← prod_const, prod_add]
-  refine' Finset.sum_congr rfl fun t ht => _
+  refine Finset.sum_congr rfl fun t ht => ?_
   rw [prod_const, prod_const, ← card_sdiff (mem_powerset.1 ht)]
 #align finset.sum_pow_mul_eq_add_pow Finset.sum_pow_mul_eq_add_pow
 
@@ -320,7 +320,7 @@ protected lemma sum_div (hf : ∀ i ∈ s, n ∣ f i) : (∑ i in s, f i) / n = 
   obtain rfl | hn := n.eq_zero_or_pos
   · simp
   rw [Nat.div_eq_iff_eq_mul_left hn (dvd_sum hf), sum_mul]
-  refine' sum_congr rfl fun s hs ↦ _
+  refine sum_congr rfl fun s hs ↦ ?_
   rw [Nat.div_mul_cancel (hf _ hs)]
 
 @[simp, norm_cast]

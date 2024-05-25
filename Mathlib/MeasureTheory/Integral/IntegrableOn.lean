@@ -364,7 +364,7 @@ theorem IntegrableOn.integrable_of_forall_not_mem_eq_zero (hf : IntegrableOn f s
 
 theorem integrableOn_iff_integrable_of_support_subset (h1s : support f ⊆ s) :
     IntegrableOn f s μ ↔ Integrable f μ := by
-  refine' ⟨fun h => _, fun h => h.integrableOn⟩
+  refine ⟨fun h => ?_, fun h => h.integrableOn⟩
   refine h.integrable_of_forall_not_mem_eq_zero fun x hx => ?_
   contrapose! hx
   exact h1s (mem_support.2 hx)
@@ -372,7 +372,7 @@ theorem integrableOn_iff_integrable_of_support_subset (h1s : support f ⊆ s) :
 
 theorem integrableOn_Lp_of_measure_ne_top {E} [NormedAddCommGroup E] {p : ℝ≥0∞} {s : Set α}
     (f : Lp E p μ) (hp : 1 ≤ p) (hμs : μ s ≠ ∞) : IntegrableOn f s μ := by
-  refine' memℒp_one_iff_integrable.mp _
+  refine memℒp_one_iff_integrable.mp ?_
   have hμ_restrict_univ : (μ.restrict s) Set.univ < ∞ := by
     simpa only [Set.univ_inter, MeasurableSet.univ, Measure.restrict_apply, lt_top_iff_ne_top]
   haveI hμ_finite : IsFiniteMeasure (μ.restrict s) := ⟨hμ_restrict_univ⟩
@@ -504,7 +504,7 @@ theorem Measure.FiniteAtFilter.integrableAtFilter {l : Filter α} [IsMeasurablyG
     hf.imp fun C hC => eventually_smallSets.2 ⟨_, hC, fun t => id⟩
   rcases (hfm.eventually.and (hμ.eventually.and hC)).exists_measurable_mem_of_smallSets with
     ⟨s, hsl, hsm, hfm, hμ, hC⟩
-  refine' ⟨s, hsl, ⟨hfm, hasFiniteIntegral_restrict_of_bounded hμ (C := C) _⟩⟩
+  refine ⟨s, hsl, ⟨hfm, hasFiniteIntegral_restrict_of_bounded hμ (C := C) ?_⟩⟩
   rw [ae_restrict_eq hsm, eventually_inf_principal]
   exact eventually_of_forall hC
 #align measure_theory.measure.finite_at_filter.integrable_at_filter MeasureTheory.Measure.FiniteAtFilter.integrableAtFilter
@@ -538,7 +538,7 @@ lemma Measure.integrableOn_of_bounded (s_finite : μ s ≠ ∞) (f_mble : AEStro
 theorem integrable_add_of_disjoint {f g : α → E} (h : Disjoint (support f) (support g))
     (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :
     Integrable (f + g) μ ↔ Integrable f μ ∧ Integrable g μ := by
-  refine' ⟨fun hfg => ⟨_, _⟩, fun h => h.1.add h.2⟩
+  refine ⟨fun hfg => ⟨?_, ?_⟩, fun h => h.1.add h.2⟩
   · rw [← indicator_add_eq_left h]; exact hfg.indicator hf.measurableSet_support
   · rw [← indicator_add_eq_right h]; exact hfg.indicator hg.measurableSet_support
 #align measure_theory.integrable_add_of_disjoint MeasureTheory.integrable_add_of_disjoint
@@ -574,7 +574,7 @@ theorem ContinuousOn.aemeasurable [TopologicalSpace α] [OpensMeasurableSpace α
     (hf : ContinuousOn f s) (hs : MeasurableSet s) : AEMeasurable f (μ.restrict s) := by
   nontriviality α; inhabit α
   have : (Set.piecewise s f fun _ => f default) =ᵐ[μ.restrict s] f := piecewise_ae_eq_restrict hs
-  refine' ⟨Set.piecewise s f fun _ => f default, _, this.symm⟩
+  refine ⟨Set.piecewise s f fun _ => f default, ?_, this.symm⟩
   apply measurable_of_isOpen
   intro t ht
   obtain ⟨u, u_open, hu⟩ : ∃ u : Set α, IsOpen u ∧ f ⁻¹' t ∩ s = u ∩ s :=
@@ -593,7 +593,7 @@ theorem ContinuousOn.aestronglyMeasurable_of_isSeparable [TopologicalSpace α]
   letI := pseudoMetrizableSpacePseudoMetric α
   borelize β
   rw [aestronglyMeasurable_iff_aemeasurable_separable]
-  refine' ⟨hf.aemeasurable hs, f '' s, hf.isSeparable_image h's, _⟩
+  refine ⟨hf.aemeasurable hs, f '' s, hf.isSeparable_image h's, ?_⟩
   exact mem_of_superset (self_mem_ae_restrict hs) (subset_preimage_image _ _)
 #align continuous_on.ae_strongly_measurable_of_is_separable ContinuousOn.aestronglyMeasurable_of_isSeparable
 
@@ -604,9 +604,9 @@ theorem ContinuousOn.aestronglyMeasurable [TopologicalSpace α] [TopologicalSpac
     {f : α → β} {s : Set α} {μ : Measure α} (hf : ContinuousOn f s) (hs : MeasurableSet s) :
     AEStronglyMeasurable f (μ.restrict s) := by
   borelize β
-  refine'
+  refine
     aestronglyMeasurable_iff_aemeasurable_separable.2
-      ⟨hf.aemeasurable hs, f '' s, _,
+      ⟨hf.aemeasurable hs, f '' s, ?_,
         mem_of_superset (self_mem_ae_restrict hs) (subset_preimage_image _ _)⟩
   cases h.out
   · rw [image_eq_range]
@@ -623,7 +623,7 @@ theorem ContinuousOn.aestronglyMeasurable_of_isCompact [TopologicalSpace α] [Op
   letI := pseudoMetrizableSpacePseudoMetric β
   borelize β
   rw [aestronglyMeasurable_iff_aemeasurable_separable]
-  refine' ⟨hf.aemeasurable h's, f '' s, _, _⟩
+  refine ⟨hf.aemeasurable h's, f '' s, ?_, ?_⟩
   · exact (hs.image_of_continuousOn hf).isSeparable
   · exact mem_of_superset (self_mem_ae_restrict h's) (subset_preimage_image _ _)
 #align continuous_on.ae_strongly_measurable_of_is_compact ContinuousOn.aestronglyMeasurable_of_isCompact

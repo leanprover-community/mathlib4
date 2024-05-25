@@ -77,11 +77,11 @@ theorem evariance_eq_top [IsFiniteMeasure μ] (hXm : AEStronglyMeasurable X μ) 
   by_contra h
   rw [← Ne, ← lt_top_iff_ne_top] at h
   have : Memℒp (fun ω => X ω - μ[X]) 2 μ := by
-    refine' ⟨hXm.sub aestronglyMeasurable_const, _⟩
+    refine ⟨hXm.sub aestronglyMeasurable_const, ?_⟩
     rw [snorm_eq_lintegral_rpow_nnnorm two_ne_zero ENNReal.two_ne_top]
     simp only [coe_two, ENNReal.one_toReal, ENNReal.rpow_two, Ne]
     exact ENNReal.rpow_lt_top_of_nonneg (by linarith) h.ne
-  refine' hX _
+  refine hX ?_
   -- Porting note: `μ[X]` without whitespace is ambiguous as it could be GetElem,
   -- and `convert` cannot disambiguate based on typeclass inference failure.
   convert this.add (memℒp_const <| μ [X])
@@ -91,7 +91,7 @@ theorem evariance_eq_top [IsFiniteMeasure μ] (hXm : AEStronglyMeasurable X μ) 
 
 theorem evariance_lt_top_iff_memℒp [IsFiniteMeasure μ] (hX : AEStronglyMeasurable X μ) :
     evariance X μ < ∞ ↔ Memℒp X 2 μ := by
-  refine' ⟨_, MeasureTheory.Memℒp.evariance_lt_top⟩
+  refine ⟨?_, MeasureTheory.Memℒp.evariance_lt_top⟩
   contrapose
   rw [not_lt, top_le_iff]
   exact evariance_eq_top hX
@@ -248,7 +248,7 @@ theorem evariance_def' [@IsProbabilityMeasure Ω _ ℙ] {X : Ω → ℝ} (hX : A
     · exact hℒ.abs.integrable_sq
   · symm
     rw [evariance_eq_top hX hℒ, ENNReal.sub_eq_top_iff]
-    refine' ⟨_, ENNReal.ofReal_ne_top⟩
+    refine ⟨?_, ENNReal.ofReal_ne_top⟩
     rw [Memℒp, not_and] at hℒ
     specialize hℒ hX
     simp only [snorm_eq_lintegral_rpow_nnnorm two_ne_zero ENNReal.two_ne_top, not_lt, top_le_iff,

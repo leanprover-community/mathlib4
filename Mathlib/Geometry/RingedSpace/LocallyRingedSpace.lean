@@ -175,6 +175,9 @@ theorem comp_val {X Y Z : LocallyRingedSpace.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.comp_val AlgebraicGeometry.LocallyRingedSpace.comp_val
 
+@[simp] theorem id_val' (X : LocallyRingedSpace.{u}) : Hom.val (𝟙 X) = 𝟙 X.toSheafedSpace :=
+  rfl
+
 -- Porting note: complains that `(f ≫ g).val.c` can be further simplified
 -- so changed to its simp normal form `(f.val ≫ g.val).c`
 @[simp]
