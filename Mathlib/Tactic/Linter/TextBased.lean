@@ -42,7 +42,7 @@ and the path to the file. -/
 structure ErrorContext where
   error : StyleError
   line_number : Int
-  path : String -- TODO use the right type!
+  path : System.FilePath
   deriving BEq
 
 /-- Output the formatted error message, containing its context. -/
@@ -58,8 +58,30 @@ def output_message (errctx : ErrorContext) : String :=
   s!"::ERR file={path},line={nr},code={code}::{path}:{nr} {code}: {errorMessage errctx.error}"
 
 /-- Print information about all errors encountered to standard output. -/
-def format_errors(errors : List ErrorContext) (exceptions : List ErrorContext): IO Unit := do
+def format_errors (errors : Array ErrorContext) (exceptions : Array ErrorContext): IO Unit := do
   -- XXX: `lint-style.py` was `resolve()`ing paths in the `exceptions` list;
   -- do we also need to?
   for e in errors do
     if !exceptions.contains e then IO.println (output_message e)
+
+/-- Iterates over a collection of strings, finding all lines which are longer than 100 chars. -/
+def check_line_length (lines : Array String) : Array (StyleError × Int) :=
+  let is_too_long := (fun s : String ↦ if s.length > 100 then some (StyleError.lineLength s.length) else none)
+  let errors := Array.filterMap is_too_long lines
+  -- TODO: enumerate over all lines, and report actual line numbers!
+  Array.map (fun e ↦ (e, 42)) errors
+
+/-- Read a file, apply all text-based linters and return the formatted errors. -/
+-- XXX: support multiple linters and sort output
+def lint_file (path : System.FilePath) : IO Unit := do
+  let lines ← IO.FS.lines path
+  let output := Array.map (fun (e, n) ↦ ErrorContext.mk e n path) (check_line_length lines)
+  format_errors output (Array.mkEmpty 0)
+
+/-- Lint all files in `Mathlib.lean`. -/
+def check_all_files : IO Unit := do
+  -- Read all module names in Mathlib from `Mathlib.lean`.
+  let allModules ← IO.FS.lines (System.mkFilePath [(toString "Mathlib.lean")])
+  for module in allModules do
+    -- Convert the module name to a file name, then lint that file.
+    lint_file (System.mkFilePath ((module.split fun c ↦ (c == '.')).append [".lean"]))
