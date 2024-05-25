@@ -61,8 +61,7 @@ notation:25 P1 " →ᵃ[" k:25 "] " P2:0 => AffineMap k P1 P2
 
 instance AffineMap.instFunLike (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Type*)
     [Ring k] [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]
-    [AffineSpace V2 P2] : FunLike (P1 →ᵃ[k] P2) P1 P2
-    where
+    [AffineSpace V2 P2] : FunLike (P1 →ᵃ[k] P2) P1 P2 where
   coe := AffineMap.toFun
   coe_injective' := fun ⟨f, f_linear, f_add⟩ ⟨g, g_linear, g_add⟩ => fun (h : f = g) => by
     cases' (AddTorsor.nonempty : Nonempty P1) with p
@@ -188,7 +187,7 @@ variable {k P1}
 
 theorem linear_eq_zero_iff_exists_const (f : P1 →ᵃ[k] P2) :
     f.linear = 0 ↔ ∃ q, f = const k P1 q := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · use f (Classical.arbitrary P1)
     ext
     rw [coe_const, Function.const_apply, ← @vsub_eq_zero_iff_eq V2, ← f.linearMap_vsub, h,

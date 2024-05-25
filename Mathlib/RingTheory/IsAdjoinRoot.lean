@@ -435,8 +435,8 @@ def basis (h : IsAdjoinRootMonic S f) : Basis (Fin (natDegree f)) R S :=
         ext i
         simp only [h.modByMonicHom_map, Finsupp.comapDomain_apply, Polynomial.toFinsupp_apply]
         rw [(Polynomial.modByMonic_eq_self_iff h.Monic).mpr, Polynomial.coeff]
-        dsimp only -- Porting note (#10752): added `dsimp only`
-        rw [Finsupp.mapDomain_apply Fin.val_injective]
+        · dsimp only -- Porting note (#10752): added `dsimp only`
+          rw [Finsupp.mapDomain_apply Fin.val_injective]
         rw [degree_eq_natDegree h.Monic.ne_zero, degree_lt_iff_coeff_zero]
         intro m hm
         rw [Polynomial.coeff]
@@ -575,7 +575,7 @@ theorem coeff_algebraMap [Nontrivial S] (h : IsAdjoinRootMonic S f) (x : R) :
     h.coeff (algebraMap R S x) = Pi.single 0 x := by
   ext i
   rw [Algebra.algebraMap_eq_smul_one, map_smul, coeff_one, Pi.smul_apply, smul_eq_mul]
-  refine' (Pi.apply_single (fun _ y => x * y) _ 0 1 i).trans (by simp)
+  refine (Pi.apply_single (fun _ y => x * y) ?_ 0 1 i).trans (by simp)
   intros
   simp
 #align is_adjoin_root_monic.coeff_algebra_map IsAdjoinRootMonic.coeff_algebraMap

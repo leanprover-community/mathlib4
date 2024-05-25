@@ -19,45 +19,63 @@ converges if and only if so does `∑ k, 2 ^ k f (2 ^ k)`. We prove this test in
 `NNReal.summable_condensed_iff` and `summable_condensed_iff_of_nonneg`, then use it to prove
 `summable_one_div_rpow`. After this transformation, a `p`-series turns into a geometric series.
 
-## TODO
-
-It should be easy to generalize arguments to Schlömilch's generalization of the Cauchy condensation
-test once we need it.
-
 ## Tags
 
 p-series, Cauchy condensation test
 -/
 
 /-!
-### Cauchy condensation test
+### Schlömilch's generalization of the Cauchy condensation test
 
-In this section we prove the Cauchy condensation test: for an antitone `f : ℕ → ℝ≥0` or `f : ℕ → ℝ`,
-`∑ k, f k` converges if and only if so does `∑ k, 2 ^ k f (2 ^ k)`. Instead of giving a monolithic
-proof, we split it into a series of lemmas with explicit estimates of partial sums of each series in
-terms of the partial sums of the other series.
+In this section we prove the Schlömilch's generalization of the Cauchy condensation test:
+for a strictly increasing `u : ℕ → ℕ` with ratio of successive differences bounded and an
+antitone `f : ℕ → ℝ≥0` or `f : ℕ → ℝ`, `∑ k, f k` converges if and only if
+so does `∑ k, (u (k + 1) - u k) * f (u k)`. Instead of giving a monolithic proof, we split it
+into a series of lemmas with explicit estimates of partial sums of each series in terms of the
+partial sums of the other series.
 -/
 
+/--
+A sequence `u` has the property that its ratio of successive differences is bounded
+when there is a positive real number `C` such that, for all n ∈ ℕ,
+(u (n + 2) - u (n + 1)) ≤ C * (u (n + 1) - u n)
+-/
+def SuccDiffBounded (C : ℕ) (u : ℕ → ℕ) : Prop :=
+  ∀ n : ℕ, u (n + 2) - u (n + 1) ≤ C • (u (n + 1) - u n)
 
 namespace Finset
 
 open BigOperators
 
-variable {M : Type*} [OrderedAddCommMonoid M] {f : ℕ → M}
+variable {M : Type*} [OrderedAddCommMonoid M] {f : ℕ → M} {u : ℕ → ℕ}
+
+theorem le_sum_schlomilch' (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
+    (hu : Monotone u) (n : ℕ) :
+    (∑ k in Ico (u 0) (u n), f k) ≤ ∑ k in range n, (u (k + 1) - u k) • f (u k) := by
+  induction' n with n ihn
+  · simp
+  suffices (∑ k in Ico (u n) (u (n + 1)), f k) ≤ (u (n + 1) - u n) • f (u n) by
+    rw [sum_range_succ, ← sum_Ico_consecutive]
+    · exact add_le_add ihn this
+    exacts [hu n.zero_le, hu n.le_succ]
+  have : ∀ k ∈ Ico (u n) (u (n + 1)), f k ≤ f (u n) := fun k hk =>
+    hf (Nat.succ_le_of_lt (h_pos n)) (mem_Ico.mp hk).1
+  convert sum_le_sum this
+  simp [pow_succ, mul_two]
 
 theorem le_sum_condensed' (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
     (∑ k in Ico 1 (2 ^ n), f k) ≤ ∑ k in range n, 2 ^ k • f (2 ^ k) := by
-  induction' n with n ihn
-  · simp
-  suffices (∑ k in Ico (2 ^ n) (2 ^ (n + 1)), f k) ≤ 2 ^ n • f (2 ^ n) by
-    rw [sum_range_succ, ← sum_Ico_consecutive]
-    · exact add_le_add ihn this
-    exacts [n.one_le_two_pow, Nat.pow_le_pow_of_le_right zero_lt_two n.le_succ]
-  have : ∀ k ∈ Ico (2 ^ n) (2 ^ (n + 1)), f k ≤ f (2 ^ n) := fun k hk =>
-    hf (pow_pos zero_lt_two _) (mem_Ico.mp hk).1
-  convert sum_le_sum this
-  simp [pow_succ, mul_two]
+  convert le_sum_schlomilch' hf (fun n => pow_pos zero_lt_two n)
+    (fun m n hm => pow_le_pow_right one_le_two hm) n using 2
+  simp [pow_succ, mul_two, two_mul]
 #align finset.le_sum_condensed' Finset.le_sum_condensed'
+
+theorem le_sum_schlomilch (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
+    (hu : Monotone u) (n : ℕ) :
+    (∑ k in range (u n), f k) ≤
+      ∑ k in range (u 0), f k + ∑ k in range n, (u (k + 1) - u k) • f (u k) := by
+  convert add_le_add_left (le_sum_schlomilch' hf h_pos hu n) (∑ k in range (u 0), f k)
+  rw [← sum_range_add_sum_Ico _ (hu n.zero_le)]
 
 theorem le_sum_condensed (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
     (∑ k in range (2 ^ n), f k) ≤ f 0 + ∑ k in range n, 2 ^ k • f (2 ^ k) := by
@@ -65,24 +83,48 @@ theorem le_sum_condensed (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m)
   rw [← sum_range_add_sum_Ico _ n.one_le_two_pow, sum_range_succ, sum_range_zero, zero_add]
 #align finset.le_sum_condensed Finset.le_sum_condensed
 
-theorem sum_condensed_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
-    (∑ k in range n, 2 ^ k • f (2 ^ (k + 1))) ≤ ∑ k in Ico 2 (2 ^ n + 1), f k := by
+theorem sum_schlomilch_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
+    (hu : Monotone u) (n : ℕ) :
+    (∑ k in range n, (u (k + 1) - u k) • f (u (k + 1))) ≤ ∑ k in Ico (u 0 + 1) (u n + 1), f k := by
   induction' n with n ihn
   · simp
-  suffices 2 ^ n • f (2 ^ (n + 1)) ≤ ∑ k in Ico (2 ^ n + 1) (2 ^ (n + 1) + 1), f k by
+  suffices (u (n + 1) - u n) • f (u (n + 1)) ≤ ∑ k in Ico (u n + 1) (u (n + 1) + 1), f k by
     rw [sum_range_succ, ← sum_Ico_consecutive]
     exacts [add_le_add ihn this,
-      (add_le_add_right n.one_le_two_pow _ : 1 + 1 ≤ 2 ^ n + 1),
-      add_le_add_right (Nat.pow_le_pow_of_le_right zero_lt_two n.le_succ) _]
-  have : ∀ k ∈ Ico (2 ^ n + 1) (2 ^ (n + 1) + 1), f (2 ^ (n + 1)) ≤ f k := by
-    -- Note(kmill): was `fun k hk => ...` but `mem_Ico.mp hk` was elaborating with some
-    -- delayed assignment metavariables that weren't resolved in time. `intro` fixes this.
-    intro k hk
-    exact hf (Nat.one_le_two_pow.trans_lt <| (Nat.lt_succ_of_le le_rfl).trans_le (mem_Ico.mp hk).1)
-      (Nat.le_of_lt_succ <| (mem_Ico.mp hk).2)
+      (add_le_add_right (hu n.zero_le) _ : u 0 + 1 ≤ u n + 1),
+      add_le_add_right (hu n.le_succ) _]
+  have : ∀ k ∈ Ico (u n + 1) (u (n + 1) + 1), f (u (n + 1)) ≤ f k := fun k hk =>
+    hf (Nat.lt_of_le_of_lt (Nat.succ_le_of_lt (h_pos n)) <| (Nat.lt_succ_of_le le_rfl).trans_le
+      (mem_Ico.mp hk).1) (Nat.le_of_lt_succ <| (mem_Ico.mp hk).2)
   convert sum_le_sum this
   simp [pow_succ, mul_two]
+
+theorem sum_condensed_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
+    (∑ k in range n, 2 ^ k • f (2 ^ (k + 1))) ≤ ∑ k in Ico 2 (2 ^ n + 1), f k := by
+  convert sum_schlomilch_le' hf (fun n => pow_pos zero_lt_two n)
+    (fun m n hm => pow_le_pow_right one_le_two hm) n using 2
+  simp [pow_succ, mul_two, two_mul]
 #align finset.sum_condensed_le' Finset.sum_condensed_le'
+
+theorem sum_schlomilch_le {C : ℕ} (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
+    (h_nonneg : ∀ n, 0 ≤ f n) (hu : Monotone u) (h_succ_diff : SuccDiffBounded C u) (n : ℕ) :
+    ∑ k in range (n + 1), (u (k + 1) - u k) • f (u k) ≤
+    (u 1 - u 0) • f (u 0) + C • ∑ k in Ico (u 0 + 1) (u n + 1), f k := by
+  rw [sum_range_succ', add_comm]
+  gcongr
+  suffices ∑ k in range n, (u (k + 2) - u (k + 1)) • f (u (k + 1)) ≤
+  C • ∑ k in range n, ((u (k + 1) - u k) • f (u (k + 1))) by
+    refine this.trans (nsmul_le_nsmul_right ?_ _)
+    exact sum_schlomilch_le' hf h_pos hu n
+  have : ∀ k ∈ range n, (u (k + 2) - u (k + 1)) • f (u (k + 1)) ≤
+    C • ((u (k + 1) - u k) • f (u (k + 1))) := by
+    intro k _
+    rw [smul_smul]
+    gcongr
+    · exact h_nonneg (u (k + 1))
+    exact mod_cast h_succ_diff k
+  convert sum_le_sum this
+  simp [smul_sum]
 
 theorem sum_condensed_le (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
     (∑ k in range (n + 1), 2 ^ k • f (2 ^ k)) ≤ f 1 + 2 • ∑ k in Ico 2 (2 ^ n + 1), f k := by
@@ -94,24 +136,48 @@ end Finset
 
 namespace ENNReal
 
-open Filter BigOperators
+open Filter BigOperators Finset
 
-variable {f : ℕ → ℝ≥0∞}
+variable {u : ℕ → ℕ} {f : ℕ → ℝ≥0∞}
+
+open NNReal in
+theorem le_tsum_schlomilch (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
+    (hu : StrictMono u) :
+    ∑' k , f k ≤ ∑ k in range (u 0), f k + ∑' k : ℕ, (u (k + 1) - u k) * f (u k) := by
+  rw [ENNReal.tsum_eq_iSup_nat' hu.tendsto_atTop]
+  refine iSup_le fun n =>
+    (Finset.le_sum_schlomilch hf h_pos hu.monotone n).trans (add_le_add_left ?_ _)
+  have (k : ℕ) : (u (k + 1) - u k : ℝ≥0∞) = (u (k + 1) - (u k : ℕ) : ℕ) := by
+    simp [NNReal.coe_sub (Nat.cast_le (α := ℝ≥0).mpr <| (hu k.lt_succ_self).le)]
+  simp only [nsmul_eq_mul, this]
+  apply ENNReal.sum_le_tsum
 
 theorem le_tsum_condensed (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) :
     ∑' k, f k ≤ f 0 + ∑' k : ℕ, 2 ^ k * f (2 ^ k) := by
   rw [ENNReal.tsum_eq_iSup_nat' (Nat.tendsto_pow_atTop_atTop_of_one_lt _root_.one_lt_two)]
-  refine' iSup_le fun n => (Finset.le_sum_condensed hf n).trans (add_le_add_left _ _)
+  refine iSup_le fun n => (Finset.le_sum_condensed hf n).trans (add_le_add_left ?_ _)
   simp only [nsmul_eq_mul, Nat.cast_pow, Nat.cast_two]
   apply ENNReal.sum_le_tsum
 #align ennreal.le_tsum_condensed ENNReal.le_tsum_condensed
 
+theorem tsum_schlomilch_le {C : ℕ} (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
+    (h_nonneg : ∀ n, 0 ≤ f n) (hu : Monotone u) (h_succ_diff : SuccDiffBounded C u) :
+    ∑' k : ℕ, (u (k + 1) - u k) * f (u k) ≤ (u 1 - u 0) * f (u 0) + C * ∑' k, f k := by
+  rw [ENNReal.tsum_eq_iSup_nat' (tendsto_atTop_mono Nat.le_succ tendsto_id)]
+  refine
+    iSup_le fun n =>
+      le_trans ?_
+        (add_le_add_left
+          (mul_le_mul_of_nonneg_left (ENNReal.sum_le_tsum <| Finset.Ico (u 0 + 1) (u n + 1)) ?_) _)
+  simpa using Finset.sum_schlomilch_le hf h_pos h_nonneg hu h_succ_diff n
+  exact zero_le _
+
 theorem tsum_condensed_le (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) :
     (∑' k : ℕ, 2 ^ k * f (2 ^ k)) ≤ f 1 + 2 * ∑' k, f k := by
   rw [ENNReal.tsum_eq_iSup_nat' (tendsto_atTop_mono Nat.le_succ tendsto_id), two_mul, ← two_nsmul]
-  refine'
+  refine
     iSup_le fun n =>
-      le_trans _
+      le_trans ?_
         (add_le_add_left
           (nsmul_le_nsmul_right (ENNReal.sum_le_tsum <| Finset.Ico 2 (2 ^ n + 1)) _) _)
   simpa using Finset.sum_condensed_le hf n
@@ -121,31 +187,65 @@ end ENNReal
 
 namespace NNReal
 
+open BigOperators Finset
+
 open ENNReal in
-/-- Cauchy condensation test for a series of `NNReal` version. -/
-theorem summable_condensed_iff {f : ℕ → ℝ≥0} (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) :
-    (Summable fun k : ℕ => (2 : ℝ≥0) ^ k * f (2 ^ k)) ↔ Summable f := by
-  simp only [← ENNReal.tsum_coe_ne_top_iff_summable, Ne, not_iff_not, ENNReal.coe_mul,
-    ENNReal.coe_pow, ENNReal.coe_two]
+/-- for a series of `NNReal` version. -/
+theorem summable_schlomilch_iff {C : ℕ} {u : ℕ → ℕ} {f : ℕ → ℝ≥0}
+    (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m)
+    (h_pos : ∀ n, 0 < u n) (hu_strict : StrictMono u)
+    (hC_nonzero : C ≠ 0) (h_succ_diff : SuccDiffBounded C u) :
+    (Summable fun k : ℕ => (u (k + 1) - (u k : ℝ≥0)) * f (u k)) ↔ Summable f := by
+  simp only [← tsum_coe_ne_top_iff_summable, Ne, not_iff_not, ENNReal.coe_mul]
   constructor <;> intro h
   · replace hf : ∀ m n, 1 < m → m ≤ n → (f n : ℝ≥0∞) ≤ f m := fun m n hm hmn =>
       ENNReal.coe_le_coe.2 (hf (zero_lt_one.trans hm) hmn)
-    simpa [h, ENNReal.add_eq_top, ENNReal.mul_eq_top] using ENNReal.tsum_condensed_le hf
+    have h_nonneg : ∀ n, 0 ≤ (f n : ℝ≥0∞) := fun n =>
+      ENNReal.coe_le_coe.2 (f n).2
+    obtain hC := tsum_schlomilch_le hf h_pos h_nonneg hu_strict.monotone h_succ_diff
+    simpa [add_eq_top, mul_ne_top, mul_eq_top, hC_nonzero] using eq_top_mono hC h
   · replace hf : ∀ m n, 0 < m → m ≤ n → (f n : ℝ≥0∞) ≤ f m := fun m n hm hmn =>
       ENNReal.coe_le_coe.2 (hf hm hmn)
-    simpa [h, ENNReal.add_eq_top] using ENNReal.le_tsum_condensed hf
+    have : ∑ k in range (u 0), (f k : ℝ≥0∞) ≠ ∞ := (sum_lt_top fun a _ => coe_ne_top).ne
+    simpa [h, add_eq_top, this] using le_tsum_schlomilch hf h_pos hu_strict
+
+open ENNReal in
+theorem summable_condensed_iff {f : ℕ → ℝ≥0} (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) :
+    (Summable fun k : ℕ => (2 : ℝ≥0) ^ k * f (2 ^ k)) ↔ Summable f := by
+  have h_succ_diff : SuccDiffBounded 2 (2 ^ ·) := by
+    intro n
+    simp [pow_succ, mul_two, two_mul]
+  convert summable_schlomilch_iff hf (pow_pos zero_lt_two) (pow_right_strictMono _root_.one_lt_two)
+    two_ne_zero h_succ_diff
+  simp [pow_succ, mul_two, two_mul]
 #align nnreal.summable_condensed_iff NNReal.summable_condensed_iff
 
 end NNReal
 
 open NNReal in
+/-- for series of nonnegative real numbers. -/
+theorem summable_schlomilch_iff_of_nonneg {C : ℕ} {u : ℕ → ℕ} {f : ℕ → ℝ} (h_nonneg : ∀ n, 0 ≤ f n)
+    (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
+    (hu_strict : StrictMono u) (hC_nonzero : C ≠ 0) (h_succ_diff : SuccDiffBounded C u) :
+    (Summable fun k : ℕ => (u (k + 1) - (u k : ℝ)) * f (u k)) ↔ Summable f := by
+  lift f to ℕ → ℝ≥0 using h_nonneg
+  simp only [NNReal.coe_le_coe] at *
+  have (k : ℕ) : (u (k + 1) - (u k : ℝ)) = ((u (k + 1) : ℝ≥0) - (u k : ℝ≥0) : ℝ≥0) := by
+    have := Nat.cast_le (α := ℝ≥0).mpr <| (hu_strict k.lt_succ_self).le
+    simp [NNReal.coe_sub this]
+  simp_rw [this]
+  exact_mod_cast NNReal.summable_schlomilch_iff hf h_pos hu_strict hC_nonzero h_succ_diff
+
 /-- Cauchy condensation test for antitone series of nonnegative real numbers. -/
 theorem summable_condensed_iff_of_nonneg {f : ℕ → ℝ} (h_nonneg : ∀ n, 0 ≤ f n)
     (h_mono : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) :
     (Summable fun k : ℕ => (2 : ℝ) ^ k * f (2 ^ k)) ↔ Summable f := by
-  lift f to ℕ → ℝ≥0 using h_nonneg
-  simp only [NNReal.coe_le_coe] at *
-  exact_mod_cast NNReal.summable_condensed_iff h_mono
+  have h_succ_diff : SuccDiffBounded 2 (2 ^ ·) := by
+    intro n
+    simp [pow_succ, mul_two, two_mul]
+  convert summable_schlomilch_iff_of_nonneg h_nonneg h_mono (pow_pos zero_lt_two)
+    (pow_right_strictMono one_lt_two) two_ne_zero h_succ_diff
+  simp [pow_succ, mul_two, two_mul]
 #align summable_condensed_iff_of_nonneg summable_condensed_iff_of_nonneg
 
 section p_series
@@ -328,7 +428,7 @@ theorem sum_Ioo_inv_sq_le (k n : ℕ) : (∑ i in Ioo k n, (i ^ 2 : α)⁻¹) �
       swap; · exact Nat.succ_lt_succ ((Nat.lt_succ_self k).trans_le (le_max_left _ _))
       rw [Nat.Ico_succ_right, Nat.Icc_succ_left, Nat.cast_succ]
     _ ≤ ((k + 1 : α) ^ 2)⁻¹ + (k + 1 : α)⁻¹ := by
-      refine' add_le_add le_rfl ((sum_Ioc_inv_sq_le_sub _ (le_max_left _ _)).trans _)
+      refine add_le_add le_rfl ((sum_Ioc_inv_sq_le_sub ?_ (le_max_left _ _)).trans ?_)
       · simp only [Ne, Nat.succ_ne_zero, not_false_iff]
       · simp only [Nat.cast_succ, one_div, sub_le_self_iff, inv_nonneg, Nat.cast_nonneg]
     _ ≤ 1 / (k + 1) + 1 / (k + 1) := by

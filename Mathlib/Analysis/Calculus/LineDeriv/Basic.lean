@@ -433,7 +433,7 @@ then its line derivative at `x₀` in the direction `v` has norm bounded by `C *
 Version using `lineDeriv`. -/
 theorem norm_lineDeriv_le_of_lipschitzOn {f : E → F} {x₀ : E} {s : Set E} (hs : s ∈ 𝓝 x₀)
     {C : ℝ≥0} (hlip : LipschitzOnWith C f s) : ‖lineDeriv 𝕜 f x₀ v‖ ≤ C * ‖v‖ := by
-  refine' norm_lineDeriv_le_of_lip' 𝕜 C.coe_nonneg _
+  refine norm_lineDeriv_le_of_lip' 𝕜 C.coe_nonneg ?_
   filter_upwards [hs] with x hx using hlip.norm_sub_le hx (mem_of_mem_nhds hs)
 
 /-- Converse to the mean value inequality: if `f` is `C`-lipschitz then

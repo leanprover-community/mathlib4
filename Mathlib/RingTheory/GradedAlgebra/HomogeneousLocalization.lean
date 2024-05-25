@@ -476,6 +476,9 @@ instance homogeneousLocalizationAlgebra :
   smul_def' _ _ := rfl
 #align homogeneous_localization.homogeneous_localization_algebra HomogeneousLocalization.homogeneousLocalizationAlgebra
 
+@[simp] lemma algebraMap_apply (y) :
+    algebraMap (HomogeneousLocalization 𝒜 x) (Localization x) y = y.val := rfl
+
 end HomogeneousLocalization
 
 namespace HomogeneousLocalization
@@ -520,6 +523,11 @@ theorem eq_num_div_den (f : HomogeneousLocalization 𝒜 x) :
   rfl
 #align homogeneous_localization.eq_num_div_denom HomogeneousLocalization.eq_num_div_den
 
+theorem den_smul_val (f : HomogeneousLocalization 𝒜 x) :
+    f.den • f.val = algebraMap _ _ f.num := by
+  rw [eq_num_div_den, Localization.mk_eq_mk', IsLocalization.smul_mk']
+  exact IsLocalization.mk'_mul_cancel_left _ ⟨_, _⟩
+
 theorem ext_iff_val (f g : HomogeneousLocalization 𝒜 x) : f = g ↔ f.val = g.val :=
   { mp := fun h => h ▸ rfl
     mpr := fun h => by
@@ -561,8 +569,8 @@ theorem isUnit_iff_isUnit_val (f : HomogeneousLocalization.AtPrime 𝒜 𝔭) : 
       contrapose! mem1
       erw [Classical.not_not]
       exact Ideal.mul_mem_left _ _ (Ideal.mul_mem_left _ _ mem1)
-    refine' ⟨⟨f, Quotient.mk'' ⟨f.deg, ⟨f.den, f.den_mem_deg⟩, ⟨f.num, f.num_mem_deg⟩, mem2⟩, _, _⟩,
-        rfl⟩
+    refine ⟨⟨f, Quotient.mk'' ⟨f.deg, ⟨f.den, f.den_mem_deg⟩,
+              ⟨f.num, f.num_mem_deg⟩, mem2⟩, ?_, ?_⟩, rfl⟩
       <;> simp only [ext_iff_val, mul_val, val_mk'', f.eq_num_div_den, Localization.mk_mul, one_val]
       <;> convert Localization.mk_self (M := A) _
       <;> rw [mul_comm]
@@ -607,6 +615,23 @@ variable (𝒜) (f : A)
 abbrev Away :=
   HomogeneousLocalization 𝒜 (Submonoid.powers f)
 #align homogeneous_localization.away HomogeneousLocalization.Away
+
+variable {𝒜} {f}
+
+theorem Away.eventually_smul_mem {m} (hf : f ∈ 𝒜 m) (z : Away 𝒜 f) :
+    ∀ᶠ n in Filter.atTop, f ^ n • z.val ∈ algebraMap _ _ '' (𝒜 (n • m) : Set A) := by
+  obtain ⟨k, hk : f ^ k = _⟩ := z.den_mem
+  apply Filter.mem_of_superset (Filter.Ici_mem_atTop k)
+  rintro k' (hk' : k ≤ k')
+  simp only [Set.mem_image, SetLike.mem_coe, Set.mem_setOf_eq]
+  by_cases hfk : f ^ k = 0
+  · refine ⟨0, zero_mem _, ?_⟩
+    rw [← tsub_add_cancel_of_le hk', map_zero, pow_add, hfk, mul_zero, zero_smul]
+  rw [← tsub_add_cancel_of_le hk', pow_add, mul_smul, hk, den_smul_val,
+    Algebra.smul_def, ← _root_.map_mul]
+  rw [← smul_eq_mul, add_smul,
+    DirectSum.degree_eq_of_mem_mem 𝒜 (SetLike.pow_mem_graded _ hf) (hk.symm ▸ z.den_mem_deg) hfk]
+  exact ⟨_, SetLike.mul_mem_graded (SetLike.pow_mem_graded _ hf) z.num_mem_deg, rfl⟩
 
 end
 

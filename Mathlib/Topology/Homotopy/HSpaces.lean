@@ -195,7 +195,7 @@ theorem qRight_zero_right (t : I) :
   simp only [qRight, coe_zero, add_zero, div_one]
   split_ifs
   · rw [Set.projIcc_of_mem _ ((mul_pos_mem_iff zero_lt_two).2 _)]
-    refine' ⟨t.2.1, _⟩
+    refine ⟨t.2.1, ?_⟩
     tauto
   · rw [(Set.projIcc_eq_right _).2]
     · linarith

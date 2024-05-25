@@ -41,7 +41,6 @@ noncomputable def restrictₗ {m0 : MeasurableSpace α} (s : Set α) : Measure �
 #align measure_theory.measure.restrictₗ MeasureTheory.Measure.restrictₗ
 
 /-- Restrict a measure `μ` to a set `s`. -/
-@[pp_dot]
 noncomputable def restrict {_m0 : MeasurableSpace α} (μ : Measure α) (s : Set α) : Measure α :=
   restrictₗ s μ
 #align measure_theory.measure.restrict MeasureTheory.Measure.restrict
@@ -361,11 +360,11 @@ measurable subsets of `s ∪ t`. -/
 theorem restrict_union_congr :
     μ.restrict (s ∪ t) = ν.restrict (s ∪ t) ↔
       μ.restrict s = ν.restrict s ∧ μ.restrict t = ν.restrict t := by
-  refine'
+  refine
     ⟨fun h =>
       ⟨restrict_congr_mono (subset_union_left _ _) h,
         restrict_congr_mono (subset_union_right _ _) h⟩,
-      _⟩
+      ?_⟩
   rintro ⟨hs, ht⟩
   ext1 u hu
   simp only [restrict_apply hu, inter_union_distrib_left]
@@ -394,7 +393,7 @@ theorem restrict_finset_biUnion_congr {s : Finset ι} {t : ι → Set α} :
 
 theorem restrict_iUnion_congr [Countable ι] {s : ι → Set α} :
     μ.restrict (⋃ i, s i) = ν.restrict (⋃ i, s i) ↔ ∀ i, μ.restrict (s i) = ν.restrict (s i) := by
-  refine' ⟨fun h i => restrict_congr_mono (subset_iUnion _ _) h, fun h => _⟩
+  refine ⟨fun h i => restrict_congr_mono (subset_iUnion _ _) h, fun h => ?_⟩
   ext1 t ht
   have D : Directed (· ⊆ ·) fun t : Finset ι => ⋃ i ∈ t, s i :=
     Monotone.directed_le fun t₁ t₂ ht => biUnion_subset_biUnion_left ht
@@ -466,10 +465,10 @@ alias ⟨_, ext_of_sUnion_eq_univ⟩ := ext_iff_of_sUnion_eq_univ
 theorem ext_of_generateFrom_of_cover {S T : Set (Set α)} (h_gen : ‹_› = generateFrom S)
     (hc : T.Countable) (h_inter : IsPiSystem S) (hU : ⋃₀ T = univ) (htop : ∀ t ∈ T, μ t ≠ ∞)
     (ST_eq : ∀ t ∈ T, ∀ s ∈ S, μ (s ∩ t) = ν (s ∩ t)) (T_eq : ∀ t ∈ T, μ t = ν t) : μ = ν := by
-  refine' ext_of_sUnion_eq_univ hc hU fun t ht => _
+  refine ext_of_sUnion_eq_univ hc hU fun t ht => ?_
   ext1 u hu
   simp only [restrict_apply hu]
-  refine' induction_on_inter h_gen h_inter _ (ST_eq t ht) _ _ hu
+  refine induction_on_inter h_gen h_inter ?_ (ST_eq t ht) ?_ ?_ hu
   · simp only [Set.empty_inter, measure_empty]
   · intro v hv hvt
     have := T_eq t ht
@@ -488,7 +487,7 @@ theorem ext_of_generateFrom_of_cover {S T : Set (Set α)} (h_gen : ‹_› = gen
 theorem ext_of_generateFrom_of_cover_subset {S T : Set (Set α)} (h_gen : ‹_› = generateFrom S)
     (h_inter : IsPiSystem S) (h_sub : T ⊆ S) (hc : T.Countable) (hU : ⋃₀ T = univ)
     (htop : ∀ s ∈ T, μ s ≠ ∞) (h_eq : ∀ s ∈ S, μ s = ν s) : μ = ν := by
-  refine' ext_of_generateFrom_of_cover h_gen hc h_inter hU htop _ fun t ht => h_eq t (h_sub ht)
+  refine ext_of_generateFrom_of_cover h_gen hc h_inter hU htop ?_ fun t ht => h_eq t (h_sub ht)
   intro t ht s hs; rcases (s ∩ t).eq_empty_or_nonempty with H | H
   · simp only [H, measure_empty]
   · exact h_eq _ (h_inter _ hs _ (h_sub ht) H)
@@ -501,7 +500,7 @@ theorem ext_of_generateFrom_of_cover_subset {S T : Set (Set α)} (h_gen : ‹_�
 theorem ext_of_generateFrom_of_iUnion (C : Set (Set α)) (B : ℕ → Set α) (hA : ‹_› = generateFrom C)
     (hC : IsPiSystem C) (h1B : ⋃ i, B i = univ) (h2B : ∀ i, B i ∈ C) (hμB : ∀ i, μ (B i) ≠ ∞)
     (h_eq : ∀ s ∈ C, μ s = ν s) : μ = ν := by
-  refine' ext_of_generateFrom_of_cover_subset hA hC _ (countable_range B) h1B _ h_eq
+  refine ext_of_generateFrom_of_cover_subset hA hC ?_ (countable_range B) h1B ?_ h_eq
   · rintro _ ⟨i, rfl⟩
     apply h2B
   · rintro _ ⟨i, rfl⟩
@@ -642,7 +641,7 @@ theorem ae_restrict_iff' {p : α → Prop} (hs : MeasurableSet s) :
 theorem _root_.Filter.EventuallyEq.restrict {f g : α → δ} {s : Set α} (hfg : f =ᵐ[μ] g) :
     f =ᵐ[μ.restrict s] g := by
   -- note that we cannot use `ae_restrict_iff` since we do not require measurability
-  refine' hfg.filter_mono _
+  refine hfg.filter_mono ?_
   rw [Measure.ae_le_iff_absolutelyContinuous]
   exact Measure.absolutelyContinuous_of_le Measure.restrict_le_self
 #align filter.eventually_eq.restrict Filter.EventuallyEq.restrict
@@ -668,11 +667,10 @@ theorem ae_of_ae_restrict_of_ae_restrict_compl (t : Set α) {p : α → Prop}
     (ht : ∀ᵐ x ∂μ.restrict t, p x) (htc : ∀ᵐ x ∂μ.restrict tᶜ, p x) : ∀ᵐ x ∂μ, p x :=
   nonpos_iff_eq_zero.1 <|
     calc
-      μ { x | ¬p x } = μ ({ x | ¬p x } ∩ t ∪ { x | ¬p x } ∩ tᶜ) := by
-        rw [← inter_union_distrib_left, union_compl_self, inter_univ]
-      _ ≤ μ ({ x | ¬p x } ∩ t) + μ ({ x | ¬p x } ∩ tᶜ) := measure_union_le _ _
+      μ { x | ¬p x } ≤ μ ({ x | ¬p x } ∩ t) + μ ({ x | ¬p x } ∩ tᶜ) :=
+        measure_le_inter_add_diff _ _ _
       _ ≤ μ.restrict t { x | ¬p x } + μ.restrict tᶜ { x | ¬p x } :=
-        (add_le_add (le_restrict_apply _ _) (le_restrict_apply _ _))
+        add_le_add (le_restrict_apply _ _) (le_restrict_apply _ _)
       _ = 0 := by rw [ae_iff.1 ht, ae_iff.1 htc, zero_add]
 #align measure_theory.ae_of_ae_restrict_of_ae_restrict_compl MeasureTheory.ae_of_ae_restrict_of_ae_restrict_compl
 
@@ -807,9 +805,9 @@ section ComapAnyMeasure
 theorem MeasurableSet.nullMeasurableSet_subtype_coe {t : Set s} (hs : NullMeasurableSet s μ)
     (ht : MeasurableSet t) : NullMeasurableSet ((↑) '' t) μ := by
   rw [Subtype.instMeasurableSpace, comap_eq_generateFrom] at ht
-  refine'
+  refine
     generateFrom_induction (p := fun t : Set s => NullMeasurableSet ((↑) '' t) μ)
-      { t : Set s | ∃ s' : Set α, MeasurableSet s' ∧ (↑) ⁻¹' s' = t } _ _ _ _ ht
+      { t : Set s | ∃ s' : Set α, MeasurableSet s' ∧ (↑) ⁻¹' s' = t } ?_ ?_ ?_ ?_ ht
   · rintro t' ⟨s', hs', rfl⟩
     rw [Subtype.image_preimage_coe]
     exact hs.inter (hs'.nullMeasurableSet)
@@ -1095,7 +1093,7 @@ theorem indicator_meas_zero (hs : μ s = 0) : indicator s f =ᵐ[μ] 0 :=
 theorem ae_eq_restrict_iff_indicator_ae_eq {g : α → β} (hs : MeasurableSet s) :
     f =ᵐ[μ.restrict s] g ↔ s.indicator f =ᵐ[μ] s.indicator g := by
   rw [Filter.EventuallyEq, ae_restrict_iff' hs]
-  refine' ⟨fun h => _, fun h => _⟩ <;> filter_upwards [h] with x hx
+  refine ⟨fun h => ?_, fun h => ?_⟩ <;> filter_upwards [h] with x hx
   · by_cases hxs : x ∈ s
     · simp [hxs, hx hxs]
     · simp [hxs]

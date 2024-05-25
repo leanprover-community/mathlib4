@@ -3,7 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 
 #align_import measure_theory.function.simple_func from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
 
@@ -728,7 +728,7 @@ instance instBoundedOrder [LE β] [BoundedOrder β] : BoundedOrder (α →ₛ β
 
 theorem finset_sup_apply [SemilatticeSup β] [OrderBot β] {f : γ → α →ₛ β} (s : Finset γ) (a : α) :
     s.sup f a = s.sup fun c => f c a := by
-  refine' Finset.induction_on s rfl _
+  refine Finset.induction_on s rfl ?_
   intro a s _ ih
   rw [Finset.sup_insert, Finset.sup_insert, sup_apply, ih]
 #align measure_theory.simple_func.finset_sup_apply MeasureTheory.SimpleFunc.finset_sup_apply
@@ -857,16 +857,16 @@ end
 theorem iSup_approx_apply [TopologicalSpace β] [CompleteLattice β] [OrderClosedTopology β] [Zero β]
     [MeasurableSpace β] [OpensMeasurableSpace β] (i : ℕ → β) (f : α → β) (a : α) (hf : Measurable f)
     (h_zero : (0 : β) = ⊥) : ⨆ n, (approx i f n : α →ₛ β) a = ⨆ (k) (_ : i k ≤ f a), i k := by
-  refine' le_antisymm (iSup_le fun n => _) (iSup_le fun k => iSup_le fun hk => _)
+  refine le_antisymm (iSup_le fun n => ?_) (iSup_le fun k => iSup_le fun hk => ?_)
   · rw [approx_apply a hf, h_zero]
-    refine' Finset.sup_le fun k _ => _
+    refine Finset.sup_le fun k _ => ?_
     split_ifs with h
     · exact le_iSup_of_le k (le_iSup (fun _ : i k ≤ f a => i k) h)
     · exact bot_le
-  · refine' le_iSup_of_le (k + 1) _
+  · refine le_iSup_of_le (k + 1) ?_
     rw [approx_apply a hf]
     have : k ∈ Finset.range (k + 1) := Finset.mem_range.2 (Nat.lt_succ_self _)
-    refine' le_trans (le_of_eq _) (Finset.le_sup this)
+    refine le_trans (le_of_eq ?_) (Finset.le_sup this)
     rw [if_pos hk]
 #align measure_theory.simple_func.supr_approx_apply MeasureTheory.SimpleFunc.iSup_approx_apply
 
@@ -910,12 +910,12 @@ theorem monotone_eapprox (f : α → ℝ≥0∞) : Monotone (eapprox f) :=
 theorem iSup_eapprox_apply (f : α → ℝ≥0∞) (hf : Measurable f) (a : α) :
     ⨆ n, (eapprox f n : α →ₛ ℝ≥0∞) a = f a := by
   rw [eapprox, iSup_approx_apply ennrealRatEmbed f a hf rfl]
-  refine' le_antisymm (iSup_le fun i => iSup_le fun hi => hi) (le_of_not_gt _)
+  refine le_antisymm (iSup_le fun i => iSup_le fun hi => hi) (le_of_not_gt ?_)
   intro h
   rcases ENNReal.lt_iff_exists_rat_btwn.1 h with ⟨q, _, lt_q, q_lt⟩
   have :
     (Real.toNNReal q : ℝ≥0∞) ≤ ⨆ (k : ℕ) (_ : ennrealRatEmbed k ≤ f a), ennrealRatEmbed k := by
-    refine' le_iSup_of_le (Encodable.encode q) _
+    refine le_iSup_of_le (Encodable.encode q) ?_
     rw [ennrealRatEmbed_encode q]
     exact le_iSup_of_le (le_of_lt q_lt) le_rfl
   exact lt_irrefl _ (lt_of_le_of_lt this lt_q)
@@ -968,12 +968,12 @@ def lintegral {_m : MeasurableSpace α} (f : α →ₛ ℝ≥0∞) (μ : Measure
 theorem lintegral_eq_of_subset (f : α →ₛ ℝ≥0∞) {s : Finset ℝ≥0∞}
     (hs : ∀ x, f x ≠ 0 → μ (f ⁻¹' {f x}) ≠ 0 → f x ∈ s) :
     f.lintegral μ = ∑ x in s, x * μ (f ⁻¹' {x}) := by
-  refine' Finset.sum_bij_ne_zero (fun r _ _ => r) _ _ _ _
+  refine Finset.sum_bij_ne_zero (fun r _ _ => r) ?_ ?_ ?_ ?_
   · simpa only [forall_mem_range, mul_ne_zero_iff, and_imp]
   · intros
     assumption
   · intro b _ hb
-    refine' ⟨b, _, hb, rfl⟩
+    refine ⟨b, ?_, hb, rfl⟩
     rw [mem_range, ← preimage_singleton_nonempty]
     exact nonempty_of_measure_ne_zero (mul_ne_zero_iff.1 hb).2
   · intros
@@ -990,10 +990,10 @@ theorem lintegral_eq_of_subset' (f : α →ₛ ℝ≥0∞) {s : Finset ℝ≥0�
 theorem map_lintegral (g : β → ℝ≥0∞) (f : α →ₛ β) :
     (f.map g).lintegral μ = ∑ x in f.range, g x * μ (f ⁻¹' {x}) := by
   simp only [lintegral, range_map]
-  refine' Finset.sum_image' _ fun b hb => _
+  refine Finset.sum_image' _ fun b hb => ?_
   rcases mem_range.1 hb with ⟨a, rfl⟩
   rw [map_preimage_singleton, ← f.sum_measure_preimage_singleton, Finset.mul_sum]
-  refine' Finset.sum_congr _ _
+  refine Finset.sum_congr ?_ ?_
   · congr
   · intro x
     simp only [Finset.mem_filter]
@@ -1106,7 +1106,7 @@ theorem le_sup_lintegral (f g : α →ₛ ℝ≥0∞) : f.lintegral μ ⊔ g.lin
       rfl
     _ ≤ ∑ x in (pair f g).range, (x.1 ⊔ x.2) * μ (pair f g ⁻¹' {x}) := by
       rw [map_lintegral, map_lintegral]
-      refine' sup_le _ _ <;> refine' Finset.sum_le_sum fun a _ => mul_le_mul_right' _ _
+      refine sup_le ?_ ?_ <;> refine' Finset.sum_le_sum fun a _ => mul_le_mul_right' _ _
       · exact le_sup_left
       · exact le_sup_right
     _ = (f ⊔ g).lintegral μ := by rw [sup_eq_map₂, map_lintegral]
@@ -1184,11 +1184,11 @@ theorem finMeasSupp_iff_support : f.FinMeasSupp μ ↔ μ (support f) < ∞ :=
 
 theorem finMeasSupp_iff : f.FinMeasSupp μ ↔ ∀ y, y ≠ 0 → μ (f ⁻¹' {y}) < ∞ := by
   constructor
-  · refine' fun h y hy => lt_of_le_of_lt (measure_mono _) h
+  · refine fun h y hy => lt_of_le_of_lt (measure_mono ?_) h
     exact fun x hx (H : f x = 0) => hy <| H ▸ Eq.symm hx
   · intro H
     rw [finMeasSupp_iff_support, support_eq]
-    refine' lt_of_le_of_lt (measure_biUnion_finset_le _ _) (sum_lt_top _)
+    refine lt_of_le_of_lt (measure_biUnion_finset_le _ _) (sum_lt_top ?_)
     exact fun y hy => (H y (Finset.mem_filter.1 hy).2).ne
 #align measure_theory.simple_func.fin_meas_supp_iff MeasureTheory.SimpleFunc.finMeasSupp_iff
 
@@ -1240,7 +1240,7 @@ protected theorem mul {β} [MonoidWithZero β] {f g : α →ₛ β} (hf : f.FinM
 
 theorem lintegral_lt_top {f : α →ₛ ℝ≥0∞} (hm : f.FinMeasSupp μ) (hf : ∀ᵐ a ∂μ, f a ≠ ∞) :
     f.lintegral μ < ∞ := by
-  refine' sum_lt_top fun a ha => _
+  refine sum_lt_top fun a ha => ?_
   rcases eq_or_ne a ∞ with (rfl | ha)
   · simp only [ae_iff, Ne, Classical.not_not] at hf
     simp [Set.preimage, hf]
@@ -1251,9 +1251,9 @@ theorem lintegral_lt_top {f : α →ₛ ℝ≥0∞} (hm : f.FinMeasSupp μ) (hf 
 #align measure_theory.simple_func.fin_meas_supp.lintegral_lt_top MeasureTheory.SimpleFunc.FinMeasSupp.lintegral_lt_top
 
 theorem of_lintegral_ne_top {f : α →ₛ ℝ≥0∞} (h : f.lintegral μ ≠ ∞) : f.FinMeasSupp μ := by
-  refine' finMeasSupp_iff.2 fun b hb => _
+  refine finMeasSupp_iff.2 fun b hb => ?_
   rw [f.lintegral_eq_of_subset' (Finset.subset_insert b _)] at h
-  refine' ENNReal.lt_top_of_mul_ne_top_right _ hb
+  refine ENNReal.lt_top_of_mul_ne_top_right ?_ hb
   exact (lt_top_of_sum_ne_top h (Finset.mem_insert_self _ _)).ne
 #align measure_theory.simple_func.fin_meas_supp.of_lintegral_ne_top MeasureTheory.SimpleFunc.FinMeasSupp.of_lintegral_ne_top
 

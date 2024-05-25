@@ -317,7 +317,7 @@ theorem isWide_iff_objs_eq_univ : S.IsWide ↔ S.objs = Set.univ := by
     ext x; constructor <;> simp only [top_eq_univ, mem_univ, imp_true_iff, forall_true_left]
     apply mem_objs_of_src S (h.wide x)
   · rintro h
-    refine' ⟨fun c => _⟩
+    refine ⟨fun c => ?_⟩
     obtain ⟨γ, γS⟩ := (le_of_eq h.symm : ⊤ ⊆ S.objs) (Set.mem_univ c)
     exact id_mem_of_src S γS
 #align category_theory.subgroupoid.is_wide_iff_objs_eq_univ CategoryTheory.Subgroupoid.isWide_iff_objs_eq_univ
@@ -342,8 +342,8 @@ theorem IsNormal.conj' {S : Subgroupoid C} (Sn : IsNormal S) :
 
 theorem IsNormal.conjugation_bij (Sn : IsNormal S) {c d} (p : c ⟶ d) :
     Set.BijOn (fun γ : c ⟶ c => Groupoid.inv p ≫ γ ≫ p) (S.arrows c c) (S.arrows d d) := by
-  refine' ⟨fun γ γS => Sn.conj p γS, fun γ₁ _ γ₂ _ h => _, fun δ δS =>
-    ⟨p ≫ δ ≫ Groupoid.inv p, Sn.conj' p δS, _⟩⟩
+  refine ⟨fun γ γS => Sn.conj p γS, fun γ₁ _ γ₂ _ h => ?_, fun δ δS =>
+    ⟨p ≫ δ ≫ Groupoid.inv p, Sn.conj' p δS, ?_⟩⟩
   · simpa only [inv_eq_inv, Category.assoc, IsIso.hom_inv_id, Category.comp_id,
       IsIso.hom_inv_id_assoc] using p ≫= h =≫ inv p
   · simp only [inv_eq_inv, Category.assoc, IsIso.inv_hom_id, Category.comp_id,
