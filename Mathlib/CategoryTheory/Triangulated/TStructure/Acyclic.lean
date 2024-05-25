@@ -431,6 +431,12 @@ noncomputable def CokernelMapAcyclic {X Y : t₁.Heart} (hX : AcyclicObject F t�
     IsColimit ((F.FunctorFromHeartToHeart t₁ t₂).mapCokernelCofork c) := by sorry
 -- dual to previous def
 
+def AcyclicCycles_aux (S : CochainComplex t₁.Heart ℤ){r k : ℤ}
+    (hr : r > 0) (hk1 : ∀ (i : ℤ), i < k → S.homology' i = 0)
+    (hk2 : ∀ (i : ℤ), i ≤ k → AcyclicObject F t₁ t₂ (S.X i)) (n : ℕ) :
+    (t₂.homology r).obj (F.obj (Limits.kernel (S.d k (k + 1))).1) ≅ (t₂.homology (r + n)).obj
+    (F.obj (Limits.kernel (S.d (k - n) (k - n + 1))).1) := by sorry
+
 #exit
 abbrev IsCohomologicalBound (a b : ℤ) := ∀ (X : t₁.Heart) (r : ℤ),
     r < a ∨ b < r → (t₂.homology r).obj (F.obj X.1) = 0
