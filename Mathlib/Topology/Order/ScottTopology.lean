@@ -264,10 +264,10 @@ lemma monotone_of_continuous (hf : Continuous f) : Monotone f := fun _ b hab ↦
 @[simp] lemma scottContinuous_iff_continuous : ScottContinuous univ f ↔ Continuous f := by
   refine ⟨fun h ↦ continuous_def.2 fun u hu ↦ ?_, ?_⟩
   · rw [isOpen_iff_isUpperSet_and_dirSupInacc]
-    exact ⟨(isUpperSet_of_isOpen hu).preimage (h.monotone (by exact fun _ _ ↦ trivial)),
+    exact ⟨(isUpperSet_of_isOpen hu).preimage (h.monotone (by exact fun _ _ _ ↦ trivial)),
       fun _ hd₁ hd₂ _ hd₃ ha ↦
         image_inter_nonempty_iff.mp <| (isOpen_iff_isUpperSet_and_dirSupInacc.mp hu).2 (hd₁.image f)
-        (directedOn_image.mpr (hd₂.mono @(h.monotone (by exact fun _ _ ↦ trivial))))
+        (directedOn_image.mpr (hd₂.mono @(h.monotone (by exact fun _ _ _ ↦ trivial))))
         (h hd₁ hd₂ (trivial) hd₃) ha⟩
   · refine fun hf _ d₁ d₂ _ _ d₃ ↦ ⟨(monotone_of_continuous hf).mem_upperBounds_image d₃.1,
       fun b hb ↦ ?_⟩
