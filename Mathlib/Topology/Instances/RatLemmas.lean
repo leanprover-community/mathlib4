@@ -58,7 +58,7 @@ theorem not_countably_generated_cocompact : ¬IsCountablyGenerated (cocompact �
   rcases exists_seq_tendsto (cocompact ℚ ⊓ 𝓝 0) with ⟨x, hx⟩
   rw [tendsto_inf] at hx; rcases hx with ⟨hxc, hx0⟩
   obtain ⟨n, hn⟩ : ∃ n : ℕ, x n ∉ insert (0 : ℚ) (range x)
-  exact (hxc.eventually hx0.isCompact_insert_range.compl_mem_cocompact).exists
+  · exact (hxc.eventually hx0.isCompact_insert_range.compl_mem_cocompact).exists
   exact hn (Or.inr ⟨n, rfl⟩)
 #align rat.not_countably_generated_cocompact Rat.not_countably_generated_cocompact
 
@@ -80,7 +80,7 @@ theorem not_secondCountableTopology_opc : ¬SecondCountableTopology ℚ∞ := by
 #align rat.not_second_countable_topology_alexandroff Rat.not_secondCountableTopology_opc
 
 instance : TotallyDisconnectedSpace ℚ := by
-  refine' ⟨fun s hsu hs x hx y hy => _⟩; clear hsu
+  refine ⟨fun s hsu hs x hx y hy => ?_⟩; clear hsu
   by_contra! H : x ≠ y
   wlog hlt : x < y
   · refine' this s hs y hy x hx H.symm <| H.lt_or_lt.resolve_left hlt <;> assumption

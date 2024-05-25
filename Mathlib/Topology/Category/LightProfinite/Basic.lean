@@ -70,7 +70,6 @@ def toProfinite (S : LightProfinite) : Profinite := S.cone.pt
 @[simps!]
 instance : Category LightProfinite := InducedCategory.category toProfinite
 
-@[simps!]
 instance concreteCategory : ConcreteCategory LightProfinite := InducedCategory.concreteCategory _
 
 /-- The fully faithful embedding `LightProfinite ⥤ Profinite` -/
@@ -148,8 +147,7 @@ instance : LightProfinite'.toLightFunctor.{u}.EssSurj where
       Skeleton.equivalence.counitIso)) toProfinite)) ≪≫
       (limit.isLimit _).conePointUniqueUpToIso Y.isLimit)⟩⟩
 
-instance : LightProfinite'.toLightFunctor.IsEquivalence :=
-  Functor.IsEquivalence.ofFullyFaithfullyEssSurj _
+instance : LightProfinite'.toLightFunctor.IsEquivalence where
 
 /-- The equivalence beween `LightProfinite` and a small category. -/
 def LightProfinite.equivSmall : LightProfinite.{u} ≌ LightProfinite'.{u} :=

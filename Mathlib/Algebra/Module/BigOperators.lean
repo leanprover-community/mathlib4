@@ -22,7 +22,7 @@ section AddCommMonoid
 variable [Semiring R] [AddCommMonoid M] [Module R M] (r s : R) (x y : M)
 
 theorem List.sum_smul {l : List R} {x : M} : l.sum • x = (l.map fun r ↦ r • x).sum :=
-  ((smulAddHom R M).flip x).map_list_sum l
+  map_list_sum ((smulAddHom R M).flip x) l
 #align list.sum_smul List.sum_smul
 
 theorem Multiset.sum_smul {l : Multiset R} {x : M} : l.sum • x = (l.map fun r ↦ r • x).sum :=
@@ -50,7 +50,7 @@ theorem Finset.sum_smul_sum {f : α → R} {g : β → M} {s : Finset α} {t : F
 end AddCommMonoid
 
 theorem Finset.cast_card [CommSemiring R] (s : Finset α) : (s.card : R) = ∑ a in s, 1 := by
-  rw [Finset.sum_const, Nat.smul_one_eq_coe]
+  rw [Finset.sum_const, Nat.smul_one_eq_cast]
 #align finset.cast_card Finset.cast_card
 
 open Finset

@@ -14,6 +14,7 @@ import Mathlib.Init.Classical
 
 -/
 
+assert_not_exists DenselyOrdered
 
 variable {α M₀ G₀ M₀' G₀' F F' : Type*}
 
@@ -64,4 +65,34 @@ theorem div_right (h : SemiconjBy a x y) (h' : SemiconjBy a x' y') :
   exact h.mul_right h'.inv_right₀
 #align semiconj_by.div_right SemiconjBy.div_right
 
+lemma zpow_right₀ {a x y : G₀} (h : SemiconjBy a x y) : ∀ m : ℤ, SemiconjBy a (x ^ m) (y ^ m)
+  | (n : ℕ) => by simp [h.pow_right n]
+  | .negSucc n => by simp only [zpow_negSucc, (h.pow_right (n + 1)).inv_right₀]
+#align semiconj_by.zpow_right₀ SemiconjBy.zpow_right₀
+
 end SemiconjBy
+
+namespace Commute
+variable [GroupWithZero G₀] {a b : G₀}
+
+lemma zpow_right₀ (h : Commute a b) : ∀ m : ℤ, Commute a (b ^ m) := SemiconjBy.zpow_right₀ h
+#align commute.zpow_right₀ Commute.zpow_right₀
+
+lemma zpow_left₀ (h : Commute a b) (m : ℤ) : Commute (a ^ m) b := (h.symm.zpow_right₀ m).symm
+#align commute.zpow_left₀ Commute.zpow_left₀
+
+lemma zpow_zpow₀ (h : Commute a b) (m n : ℤ) : Commute (a ^ m) (b ^ n) :=
+  (h.zpow_left₀ m).zpow_right₀ n
+#align commute.zpow_zpow₀ Commute.zpow_zpow₀
+
+lemma zpow_self₀ (a : G₀) (n : ℤ) : Commute (a ^ n) a := (Commute.refl a).zpow_left₀ n
+#align commute.zpow_self₀ Commute.zpow_self₀
+
+lemma self_zpow₀ (a : G₀) (n : ℤ) : Commute a (a ^ n) := (Commute.refl a).zpow_right₀ n
+#align commute.self_zpow₀ Commute.self_zpow₀
+
+lemma zpow_zpow_self₀ (a : G₀) (m n : ℤ) : Commute (a ^ m) (a ^ n) :=
+  (Commute.refl a).zpow_zpow₀ m n
+#align commute.zpow_zpow_self₀ Commute.zpow_zpow_self₀
+
+end Commute

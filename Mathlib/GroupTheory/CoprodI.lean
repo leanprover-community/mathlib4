@@ -718,8 +718,7 @@ theorem toList_getLast? {i j} (w : NeWord M i j) : w.toList.getLast? = Option.so
 #align free_product.neword.to_list_last' Monoid.CoprodI.NeWord.toList_getLast?
 
 /-- The `Word M` represented by a `NeWord M i j` -/
-def toWord {i j} (w : NeWord M i j) : Word M
-    where
+def toWord {i j} (w : NeWord M i j) : Word M where
   toList := w.toList
   ne_one := by
     induction w
@@ -743,7 +742,7 @@ def toWord {i j} (w : NeWord M i j) : Word M
 theorem of_word (w : Word M) (h : w ≠ empty) : ∃ (i j : _) (w' : NeWord M i j), w'.toWord = w := by
   suffices ∃ (i j : _) (w' : NeWord M i j), w'.toWord.toList = w.toList by
     rcases this with ⟨i, j, w, h⟩
-    refine' ⟨i, j, w, _⟩
+    refine ⟨i, j, w, ?_⟩
     ext
     rw [h]
   cases' w with l hnot1 hchain
@@ -751,13 +750,13 @@ theorem of_word (w : Word M) (h : w ≠ empty) : ∃ (i j : _) (w' : NeWord M i 
   · contradiction
   · rw [List.forall_mem_cons] at hnot1
     cases' l with y l
-    · refine' ⟨x.1, x.1, singleton x.2 hnot1.1, _⟩
+    · refine ⟨x.1, x.1, singleton x.2 hnot1.1, ?_⟩
       simp [toWord]
     · rw [List.chain'_cons] at hchain
       specialize hi hnot1.2 hchain.2 (by rintro ⟨rfl⟩)
       obtain ⟨i, j, w', hw' : w'.toList = y::l⟩ := hi
       obtain rfl : y = ⟨i, w'.head⟩ := by simpa [hw'] using w'.toList_head?
-      refine' ⟨x.1, j, append (singleton x.2 hnot1.1) hchain.1 w', _⟩
+      refine ⟨x.1, j, append (singleton x.2 hnot1.1) hchain.1 w', ?_⟩
       simpa [toWord] using hw'
 #align free_product.neword.of_word Monoid.CoprodI.NeWord.of_word
 
@@ -988,8 +987,7 @@ theorem lift_injective_of_ping_pong : Function.Injective (lift f) := by
     rw [(CoprodI.Word.equiv).forall_congr_left']
     intro w Heq
     dsimp [Word.equiv] at *
-    rw [empty_of_word_prod_eq_one f hcard X hXnonempty hXdisj hpp Heq]
-    rfl
+    rw [empty_of_word_prod_eq_one f hcard X hXnonempty hXdisj hpp Heq, Word.prod_empty]
 #align free_product.lift_injective_of_ping_pong Monoid.CoprodI.lift_injective_of_ping_pong
 
 end PingPongLemma
@@ -1060,7 +1058,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
     simp
   rw [this, MonoidHom.coe_comp]
   clear this
-  refine' Function.Injective.comp _ (MulEquiv.injective freeGroupEquivCoprodI)
+  refine Function.Injective.comp ?_ (MulEquiv.injective freeGroupEquivCoprodI)
   -- Step two: Invoke the ping-pong lemma for free products
   show Function.Injective (lift fun i : ι => FreeGroup.lift fun _ => a i)
   -- Prepare to instantiate lift_injective_of_ping_pong
@@ -1081,7 +1079,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
   · show Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X' j ⊆ X' i
     rintro i j hij
     -- use free_group unit ≃ ℤ
-    refine' FreeGroup.freeGroupUnitEquivInt.forall_congr_left'.mpr _
+    refine FreeGroup.freeGroupUnitEquivInt.forall_congr_left'.mpr ?_
     intro n hne1
     change FreeGroup.lift (fun _ => a i) (FreeGroup.of () ^ n) • X' j ⊆ X' i
     simp only [map_zpow, FreeGroup.lift.of]
@@ -1120,7 +1118,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
         a i ^ n • X' j ⊆ a i ^ n • (X i)ᶜ :=
           smul_set_mono ((hXdisj hij.symm).union_left (hXYdisj i j).symm).subset_compl_right
         _ ⊆ Y i := by
-          refine' Int.le_induction_down (P := fun n => a i ^ n • (X i)ᶜ ⊆ Y i) _ _ _ h1n
+          refine Int.le_induction_down (P := fun n => a i ^ n • (X i)ᶜ ⊆ Y i) ?_ ?_ _ h1n
           · dsimp
             rw [zpow_neg, zpow_one]
             exact hY i
