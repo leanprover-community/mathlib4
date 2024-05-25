@@ -188,23 +188,20 @@ theorem U_neg (n : ℤ) : U R (-n) = -U R (n - 2) := by simpa [sub_sub] using U_
 theorem U_neg_sub_two (n : ℤ) : U R (-n - 2) = -U R n := by
   simpa [sub_eq_add_neg, add_comm] using U_neg R (n + 2)
 
-theorem U_eq_X_mul_U_add_T : ∀ n, U R (n + 1) = X * U R n + T R (n + 1)
-  | -1 | 0 | 1 => by simp [T_two, U_two]; try ring
-  | (n : ℕ) + 2 => by
-    have H₁ := U_eq_X_mul_U_add_T (n + 1)
-    have H₂ := U_eq_X_mul_U_add_T n
+theorem U_eq_X_mul_U_add_T (n : ℤ) : U R (n + 1) = X * U R n + T R (n + 1) := by
+  induction n using U.induct R with
+  | case1 => simp [two_mul]
+  | case2 => simp [U_two, T_two]; ring
+  | case3 n ih1 ih2 =>
     have h₁ := U_add_two R (n + 1)
     have h₂ := U_add_two R n
     have h₃ := T_add_two R (n + 1)
-    linear_combination (norm := ring_nf) -h₃ - (X:R[X]) * h₂ + h₁ + 2 * (X:R[X]) * H₁ - H₂
-  | -((n : ℕ) + 2) => by
-    have H₁ := U_eq_X_mul_U_add_T (-n - 1)
-    have H₂ := U_eq_X_mul_U_add_T (-n)
-    have h₁ := U_add_two R (-n - 2)
-    have h₂ := U_add_two R (-n - 1)
-    have h₃ := T_add_two R (-n - 1)
-    linear_combination (norm := ring_nf) -h₃ + h₂ - (X:R[X]) * h₁ - H₂ + 2 * (X:R[X]) * H₁
-  termination_by n => Int.natAbs n
+    linear_combination (norm := int_ring_nf) -h₃ - (X:R[X]) * h₂ + h₁ + 2 * (X:R[X]) * ih1 - ih2
+  | case4 n ih1 ih2 =>
+    have h₁ := U_add_two R (-n - 1)
+    have h₂ := U_add_two R (-n)
+    have h₃ := T_add_two R (-n)
+    linear_combination (norm := int_ring_nf) -h₃ + h₂ - (X:R[X]) * h₁ - ih2 + 2 * (X:R[X]) * ih1
 #align polynomial.chebyshev.U_eq_X_mul_U_add_T Polynomial.Chebyshev.U_eq_X_mul_U_add_T
 
 theorem T_eq_U_sub_X_mul_U (n : ℤ) : T R n = U R n - X * U R (n - 1) := by
