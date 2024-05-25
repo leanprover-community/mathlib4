@@ -25,8 +25,8 @@ This file contains basic definitions and results for such Lie algebras.
 ## Main definitions
  * `LieAlgebra.IsKilling`: a typeclass encoding the fact that a Lie algebra has a non-singular
    Killing form.
- * `LieAlgebra.IsKilling.instIsSemisimple`: if a Lie algebra has non-singular Killing form then it
-   is semisimple.
+ * `LieAlgebra.IsKilling.instHasTrivialRadical`: if a Lie algebra has non-singular Killing form
+   then it has trivial radical.
 
 ## TODO
 
@@ -62,8 +62,8 @@ lemma killingForm_nondegenerate :
 
 /-- The converse of this is true over a field of characteristic zero. There are counterexamples
 over fields with positive characteristic. -/
-instance instIsSemisimple [IsDomain R] [IsPrincipalIdealRing R] : IsSemisimple R L := by
-  refine' (isSemisimple_iff_no_abelian_ideals R L).mpr fun I hI ↦ _
+instance instHasTrivialRadical [IsDomain R] [IsPrincipalIdealRing R] : HasTrivialRadical R L := by
+  refine' (hasTrivialRadical_iff_no_abelian_ideals R L).mpr fun I hI ↦ _
   rw [eq_bot_iff, ← killingCompl_top_eq_bot]
   exact I.le_killingCompl_top_of_isLieAbelian
 
