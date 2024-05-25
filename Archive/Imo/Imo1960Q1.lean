@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Lacker
 -/
 import Mathlib.Data.Nat.Digits
-import Mathlib.Tactic.BetterObtain
 
 #align_import imo.imo1960_q1 from "leanprover-community/mathlib"@"2d6f88c296da8df484d7f5b9ee1d10910ab473a2"
 

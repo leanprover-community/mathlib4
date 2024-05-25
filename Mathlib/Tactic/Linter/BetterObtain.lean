@@ -25,6 +25,7 @@ def is_obtain_without_proof : Syntax → Bool
   -- Case without a proof.
   | `(tactic|obtain : $_type) => true
   | `(tactic|obtain $_pat : $_type) => true
+  -- sanity check: obtain which is neither: make that complain next!
   | _ => false
 
 /-- The `badObtain` linter emits a warning upon uses of "stream-of-conciousness" obtain,
