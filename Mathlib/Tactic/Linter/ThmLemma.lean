@@ -20,7 +20,7 @@ open Lean Elab Command
 
 namespace Mathlib.ThmLemma
 
-/-- `thmNoDoc cmd` checks whether the `cmd` is a `theorem` with no doc-string.
+/-- `thmNoDoc cmd` checks if the syntax that `cmd` represents is a `theorem` with no doc-string.
 If that is the case, then it returns two syntax nodes: the one for `theorem` and the one
 for the name of the theorem.
 Otherwise, it returns `none`.
@@ -53,9 +53,7 @@ def thmLemmaLinter : Linter where
       return
     if (← MonadState.get).messages.hasErrors then
       return
-    match thmNoDoc stx with
-    | none => return
-    | some (thm, id) =>
+    if let some (thm, id) := thmNoDoc stx then
       Linter.logLint linter.thmLemma thm m!"'theorem' requires a doc-string. \
                                             Either add one to '{id}' or use 'lemma' instead."
 
