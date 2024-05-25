@@ -629,7 +629,7 @@ theorem isSheafFor_iff_generate (R : Presieve X) :
 -/
 theorem isSheafFor_singleton_iso (P : Cᵒᵖ ⥤ Type w) : IsSheafFor P (Presieve.singleton (𝟙 X)) := by
   intro x _
-  refine' ⟨x _ (Presieve.singleton_self _), _, _⟩
+  refine ⟨x _ (Presieve.singleton_self _), ?_, ?_⟩
   · rintro _ _ ⟨rfl, rfl⟩
     simp
   · intro t ht

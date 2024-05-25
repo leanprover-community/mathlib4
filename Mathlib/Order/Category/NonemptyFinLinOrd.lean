@@ -150,7 +150,7 @@ instance {A B : NonemptyFinLinOrd.{u}} : OrderHomClass (A ⟶ B) A B where
 
 theorem mono_iff_injective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
     Mono f ↔ Function.Injective f := by
-  refine' ⟨_, ConcreteCategory.mono_of_injective f⟩
+  refine ⟨?_, ConcreteCategory.mono_of_injective f⟩
   intro
   intro a₁ a₂ h
   let X := NonemptyFinLinOrd.of (ULift (Fin 1))

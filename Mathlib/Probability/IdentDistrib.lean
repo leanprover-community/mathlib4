@@ -161,9 +161,9 @@ theorem aestronglyMeasurable_fst [TopologicalSpace γ] [MetrizableSpace γ] [Ope
 /-- If `f` and `g` are identically distributed and `f` is a.e. strongly measurable, so is `g`. -/
 theorem aestronglyMeasurable_snd [TopologicalSpace γ] [MetrizableSpace γ] [BorelSpace γ]
     (h : IdentDistrib f g μ ν) (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable g ν := by
-  refine' aestronglyMeasurable_iff_aemeasurable_separable.2 ⟨h.aemeasurable_snd, _⟩
+  refine aestronglyMeasurable_iff_aemeasurable_separable.2 ⟨h.aemeasurable_snd, ?_⟩
   rcases (aestronglyMeasurable_iff_aemeasurable_separable.1 hf).2 with ⟨t, t_sep, ht⟩
-  refine' ⟨closure t, t_sep.closure, _⟩
+  refine ⟨closure t, t_sep.closure, ?_⟩
   apply h.ae_mem_snd isClosed_closure.measurableSet
   filter_upwards [ht] with x hx using subset_closure hx
 #align probability_theory.ident_distrib.ae_strongly_measurable_snd ProbabilityTheory.IdentDistrib.aestronglyMeasurable_snd
@@ -193,7 +193,7 @@ theorem integral_eq [NormedAddCommGroup γ] [NormedSpace ℝ γ] [BorelSpace γ]
   · have A : AEStronglyMeasurable id (Measure.map f μ) := by
       rw [aestronglyMeasurable_iff_aemeasurable_separable]
       rcases (aestronglyMeasurable_iff_aemeasurable_separable.1 hf).2 with ⟨t, t_sep, ht⟩
-      refine' ⟨aemeasurable_id, ⟨closure t, t_sep.closure, _⟩⟩
+      refine ⟨aemeasurable_id, ⟨closure t, t_sep.closure, ?_⟩⟩
       rw [ae_map_iff h.aemeasurable_fst]
       · filter_upwards [ht] with x hx using subset_closure hx
       · exact isClosed_closure.measurableSet
@@ -223,7 +223,7 @@ theorem snorm_eq [NormedAddCommGroup γ] [OpensMeasurableSpace γ] (h : IdentDis
 
 theorem memℒp_snd [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h : IdentDistrib f g μ ν)
     (hf : Memℒp f p μ) : Memℒp g p ν := by
-  refine' ⟨h.aestronglyMeasurable_snd hf.aestronglyMeasurable, _⟩
+  refine ⟨h.aestronglyMeasurable_snd hf.aestronglyMeasurable, ?_⟩
   rw [← h.snorm_eq]
   exact hf.2
 #align probability_theory.ident_distrib.mem_ℒp_snd ProbabilityTheory.IdentDistrib.memℒp_snd
@@ -326,11 +326,11 @@ variable {E : Type*} [MeasurableSpace E] [NormedAddCommGroup E] [BorelSpace E]
 theorem Memℒp.uniformIntegrable_of_identDistrib_aux {ι : Type*} {f : ι → α → E} {j : ι} {p : ℝ≥0∞}
     (hp : 1 ≤ p) (hp' : p ≠ ∞) (hℒp : Memℒp (f j) p μ) (hfmeas : ∀ i, StronglyMeasurable (f i))
     (hf : ∀ i, IdentDistrib (f i) (f j) μ μ) : UniformIntegrable f p μ := by
-  refine' uniformIntegrable_of' hp hp' hfmeas fun ε hε => _
+  refine uniformIntegrable_of' hp hp' hfmeas fun ε hε => ?_
   by_cases hι : Nonempty ι
   swap; · exact ⟨0, fun i => False.elim (hι <| Nonempty.intro i)⟩
   obtain ⟨C, hC₁, hC₂⟩ := hℒp.snorm_indicator_norm_ge_pos_le (hfmeas _) hε
-  refine' ⟨⟨C, hC₁.le⟩, fun i => le_trans (le_of_eq _) hC₂⟩
+  refine ⟨⟨C, hC₁.le⟩, fun i => le_trans (le_of_eq ?_) hC₂⟩
   have : {x | (⟨C, hC₁.le⟩ : ℝ≥0) ≤ ‖f i x‖₊} = {x | C ≤ ‖f i x‖} := by
     ext x
     simp_rw [← norm_toNNReal]

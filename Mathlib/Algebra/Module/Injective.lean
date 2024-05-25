@@ -428,7 +428,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem extensionOfMax_to_submodule_eq_top (h : Module.Baer R Q) :
     (extensionOfMax i f).domain = ⊤ := by
-  refine' Submodule.eq_top_iff'.mpr fun y => _
+  refine Submodule.eq_top_iff'.mpr fun y => ?_
   dsimp
   rw [← extensionOfMax_is_max i f _ (extensionOfMax_le i f h), extensionOfMaxAdjoin,
     Submodule.mem_sup]
@@ -454,7 +454,7 @@ theorem extension_property_addMonoidHom (h : Module.Baer ℤ Q)
 /-- **Baer's criterion** for injective module : a Baer module is an injective module, i.e. if every
 linear map from an ideal can be extended, then the module is injective. -/
 protected theorem injective (h : Module.Baer R Q) : Module.Injective R Q where
-  out := fun X Y _ _ _ _ i hi f ↦ by
+  out X Y _ _ _ _ i hi f := by
     obtain ⟨h, H⟩ := Module.Baer.extension_property h i hi f
     exact ⟨h, DFunLike.congr_fun H⟩
 set_option linter.uppercaseLean3 false in
@@ -466,7 +466,7 @@ protected theorem of_injective [Small.{v} R] (inj : Module.Injective R Q) : Modu
   let eR := Shrink.linearEquiv R R
   obtain ⟨g', hg'⟩ := Module.Injective.out (eR.symm.toLinearMap ∘ₗ I.subtype ∘ₗ eI.toLinearMap)
     (eR.symm.injective.comp <| Subtype.val_injective.comp eI.injective) (g ∘ₗ eI.toLinearMap)
-  exact ⟨g' ∘ₗ eR.symm.toLinearMap, fun x mx ↦ by simpa [eI,eR] using hg' (equivShrink I ⟨x, mx⟩)⟩
+  exact ⟨g' ∘ₗ eR.symm.toLinearMap, fun x mx ↦ by simpa [eI, eR] using hg' (equivShrink I ⟨x, mx⟩)⟩
 
 protected theorem iff_injective [Small.{v} R] : Module.Baer R Q ↔ Module.Injective R Q :=
   ⟨Module.Baer.injective, Module.Baer.of_injective⟩
