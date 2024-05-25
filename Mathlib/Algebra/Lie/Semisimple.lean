@@ -56,25 +56,6 @@ namespace LieAlgebra
 variable (R : Type u) (L : Type v)
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
 
-/-- A Lie algebra is simple if it is irreducible as a Lie module over itself via the adjoint
-action, and it is non-Abelian. -/
-class IsSimple : Prop where
-  eq_bot_or_eq_top : ∀ I : LieIdeal R L, I = ⊥ ∨ I = ⊤
-  non_abelian : ¬IsLieAbelian L
-#align lie_algebra.is_simple LieAlgebra.IsSimple
-
-instance [IsSimple R L] : LieModule.IsIrreducible R L L := by
-  have : Nontrivial (LieIdeal R L) := by
-    constructor
-    by_contra! H
-    apply IsSimple.non_abelian R (L := L)
-    constructor
-    intro x y
-    rw [← LieSubmodule.mem_bot (R := R) (L := L), H ⊥ ⊤]
-    trivial
-  constructor
-  apply IsSimple.eq_bot_or_eq_top
-
 /--
 A Lie algebra *has trivial radical* if its radical is trivial.
 This is equivalent to having no non-trivial solvable ideals,
@@ -96,6 +77,233 @@ class HasTrivialRadical : Prop where
 export HasTrivialRadical (radical_eq_bot)
 attribute [simp] radical_eq_bot
 
+variable {R L} in
+theorem HasTrivialRadical.eq_bot_of_isSolvable [HasTrivialRadical R L]
+    (I : LieIdeal R L) [hI : IsSolvable R I] : I = ⊥ :=
+  sSup_eq_bot.mp radical_eq_bot _ hI
+
+variable {R L} in
+theorem hasTrivialRadical_of_no_solvable_ideals (h : ∀ I : LieIdeal R L, IsSolvable R I → I = ⊥) :
+    HasTrivialRadical R L :=
+  ⟨sSup_eq_bot.mpr h⟩
+
+theorem hasTrivialRadical_iff_no_solvable_ideals :
+    HasTrivialRadical R L ↔ ∀ I : LieIdeal R L, IsSolvable R I → I = ⊥ :=
+  ⟨@HasTrivialRadical.eq_bot_of_isSolvable _ _ _ _ _, hasTrivialRadical_of_no_solvable_ideals⟩
+#align lie_algebra.is_semisimple_iff_no_solvable_ideals LieAlgebra.hasTrivialRadical_iff_no_solvable_ideals
+
+theorem hasTrivialRadical_iff_no_abelian_ideals :
+    HasTrivialRadical R L ↔ ∀ I : LieIdeal R L, IsLieAbelian I → I = ⊥ := by
+  rw [hasTrivialRadical_iff_no_solvable_ideals]
+  constructor <;> intro h₁ I h₂
+  · apply h₁; exact LieAlgebra.ofAbelianIsSolvable R I
+  · rw [← abelian_of_solvable_ideal_eq_bot_iff]; apply h₁
+    exact abelian_derivedAbelianOfIdeal I
+#align lie_algebra.is_semisimple_iff_no_abelian_ideals LieAlgebra.hasTrivialRadical_iff_no_abelian_ideals
+
+@[simp]
+theorem HasTrivialRadical.center_eq_bot [HasTrivialRadical R L] : center R L = ⊥ :=
+  HasTrivialRadical.eq_bot_of_isSolvable _
+#align lie_algebra.center_eq_bot_of_semisimple LieAlgebra.HasTrivialRadical.center_eq_bot
+
+/-- A Lie algebra is simple if it is irreducible as a Lie module over itself via the adjoint
+action, and it is non-Abelian. -/
+class IsSimple : Prop where
+  eq_bot_or_eq_top : ∀ I : LieIdeal R L, I = ⊥ ∨ I = ⊤
+  non_abelian : ¬IsLieAbelian L
+#align lie_algebra.is_simple LieAlgebra.IsSimple
+
+instance [IsSimple R L] : LieModule.IsIrreducible R L L := by
+  have : Nontrivial (LieIdeal R L) := by
+    constructor
+    by_contra! H
+    apply IsSimple.non_abelian R (L := L)
+    constructor
+    intro x y
+    rw [← LieSubmodule.mem_bot (R := R) (L := L), H ⊥ ⊤]
+    trivial
+  constructor
+  apply IsSimple.eq_bot_or_eq_top
+
+variable {R L} in
+lemma eq_top_of_isAtom [IsSimple R L] (I : LieIdeal R L) (hI : IsAtom I) : I = ⊤ :=
+  (IsSimple.eq_bot_or_eq_top I).resolve_left hI.1
+
+lemma isAtom_top [IsSimple R L] : IsAtom (⊤ : LieIdeal R L) := by
+  constructor
+  · intro h
+    apply IsSimple.non_abelian R (L := L)
+    constructor
+    intro x y
+    rw [← LieSubmodule.mem_bot (R := R) (L := L), ← h]
+    trivial
+  · intro I hI
+    have := IsSimple.eq_bot_or_eq_top I
+    contrapose! this
+    exact ⟨this, hI.ne⟩
+
+variable {R L} in
+lemma isAtom_iff_eq_top [IsSimple R L] (I : LieIdeal R L) : IsAtom I ↔ I = ⊤ :=
+  ⟨eq_top_of_isAtom I, fun h ↦ h ▸ isAtom_top R L⟩
+
+instance [IsSimple R L] : HasTrivialRadical R L := by
+  rw [hasTrivialRadical_iff_no_abelian_ideals]
+  intro I hI
+  apply (IsSimple.eq_bot_or_eq_top I).resolve_right
+  rintro rfl
+  rw [lie_abelian_iff_equiv_lie_abelian LieIdeal.topEquiv] at hI
+  exact IsSimple.non_abelian R (L := L) hI
+
+variable {R L} in
+structure SemisimpleGenerators (S : Set (LieIdeal R L)) : Prop where
+  isAtom : ∀ I ∈ S, IsAtom I
+  isSimple : ∀ I ∈ S, IsSimple R I
+  setIndependent : CompleteLattice.SetIndependent S
+
+namespace SemisimpleGenerators
+
+open CompleteLattice
+
+variable {R L}
+variable {S : Set (LieIdeal R L)} (hS : SemisimpleGenerators S)
+
+lemma mono {T : Set (LieIdeal R L)} (hTS : T ⊆ S) : SemisimpleGenerators T where
+  isAtom I hI := hS.isAtom I (hTS hI)
+  isSimple I hI := hS.isSimple I (hTS hI)
+  setIndependent := hS.setIndependent.mono hTS
+
+private
+lemma compact_step : ∀ s : Finset (LieIdeal R L), ↑s ⊆ S →
+    ∀ I : LieIdeal R L, I ≤ s.sup id → ∃ t ⊆ s, I = t.sup id := by
+  intro s hs I hI
+  obtain rfl | hI := hI.eq_or_lt
+  · exact ⟨s, le_rfl, rfl⟩
+  obtain ⟨J, hJs, hJI⟩ : ∃ J ∈ s, ¬ J ≤ I := by
+    by_contra! H
+    exact hI.ne (le_antisymm hI.le (s.sup_le H))
+  classical
+  let s' := s.erase J
+  have hs' : s' ⊂ s := Finset.erase_ssubset hJs
+  have hs'S : ↑s' ⊆ S := Set.Subset.trans (Finset.coe_subset.mpr hs'.subset) hs
+  suffices I ≤ s'.sup id by
+    obtain ⟨t, hts', htI⟩ := compact_step s' hs'S I this
+    exact ⟨t, le_trans hts' hs'.subset, htI⟩
+  intro x hx
+  obtain ⟨y, hy, z, hz, rfl⟩ : ∃ y ∈ id J, ∃ z ∈ s'.sup id, y + z = x := by
+    rw [← LieSubmodule.mem_sup, ← Finset.sup_insert, Finset.insert_erase hJs]
+    exact hI.le hx
+  suffices ⟨y, hy⟩ ∈ LieAlgebra.center R J by
+    have _inst := hS.isSimple J (hs hJs)
+    rw [HasTrivialRadical.center_eq_bot R J, LieSubmodule.mem_bot] at this
+    apply_fun Subtype.val at this
+    dsimp at this
+    rwa [this, zero_add]
+  intro j
+  suffices ⁅(j : L), z⁆ = 0 ∧ ⁅(j : L), y + z⁆ = 0 by
+    rw [lie_add, this.1, add_zero] at this
+    ext
+    exact this.2
+  rw [← LieSubmodule.mem_bot (R := R) (L := L), ← LieSubmodule.mem_bot (R := R) (L := L)]
+  constructor
+  · apply (hS.setIndependent.disjoint_sSup (hs hJs) hs'S (Finset.not_mem_erase _ _)).le_bot
+    apply LieSubmodule.lie_le_inf
+    apply LieSubmodule.lie_mem_lie _ _ j.2
+    simpa only [Finset.sup_id_eq_sSup] using hz
+  suffices J ⊓ I = ⊥ by
+    apply this.le
+    apply LieSubmodule.lie_le_inf
+    exact LieSubmodule.lie_mem_lie _ _ j.2 hx
+  apply ((hS.isAtom J (hs hJs)).le_iff.mp _).resolve_right
+  · contrapose! hJI
+    rw [← hJI]
+    exact inf_le_right
+  exact inf_le_left
+termination_by s => s.card
+decreasing_by
+  simp_wf
+  exact Finset.card_lt_card hs'
+
+lemma atomistic_helper (J : LieIdeal R L) (hJ : J ≤ sSup S) : ∃ T ⊆ S, J = sSup T := by
+  obtain ⟨C, hC, rfl⟩ := IsCompactlyGenerated.exists_sSup_eq J
+  suffices ∀ J' : LieIdeal R L, IsCompactElement J' → J' ≤ sSup S → ∃ T ⊆ S, J' = sSup T by
+    choose T hT₁ hT₂ using this
+    use sSup {T J' h₁ h₂ | (J' ∈ C) (h₁ : IsCompactElement J') (h₂ : J' ≤ sSup S)}
+    constructor
+    · apply CompleteLattice.sSup_le
+      rintro _ ⟨J', -, h₁, h₂, rfl⟩
+      apply hT₁
+    · apply le_antisymm
+      · apply CompleteLattice.sSup_le
+        intro J' hJ'
+        rw [hT₂ J' (hC _ hJ') ((le_sSup hJ').trans hJ)]
+        apply sSup_le_sSup
+        apply CompleteLattice.le_sSup
+        use J', hJ', hC _ hJ', (le_sSup hJ').trans hJ
+      · simp only [Set.sSup_eq_sUnion, sSup_le_iff, Set.mem_sUnion, Set.mem_setOf_eq,
+          forall_exists_index, and_imp]
+        rintro I T J' hJ'C hJ' hJ'S rfl hIT
+        apply (le_sSup hIT).trans
+        rw [← hT₂]
+        exact le_sSup hJ'C
+  clear hJ hC C
+  intro J hJ hJS
+  obtain ⟨s, hs₁, hs₂⟩ := hJ S hJS
+  obtain ⟨t, ht, rfl⟩ := hS.compact_step s hs₁ J hs₂
+  refine ⟨t, ?_, Finset.sup_id_eq_sSup t⟩
+  refine Set.Subset.trans ?_ hs₁
+  simpa only [Finset.coe_subset] using ht
+
+lemma mem_of_isAtom_of_le_sSup_atoms (I : LieIdeal R L) (hI : IsAtom I) (hJ : I ≤ sSup S) :
+    I ∈ S := by
+  obtain ⟨T, hT, rfl⟩ := hS.atomistic_helper I hJ
+  obtain rfl | ⟨I, hIT⟩ := T.eq_empty_or_nonempty
+  · simp only [sSup_empty] at hI
+    exact (hI.1 rfl).elim
+  suffices sSup T = I from this ▸ hT hIT
+  have hIJ : I ≤ sSup T := le_sSup hIT
+  rwa [hI.le_iff_eq, eq_comm] at hIJ
+  exact (hS.isAtom I (hT hIT)).1
+
+lemma sSup_le_sSup_iff_of_atoms (X Y : Set (LieIdeal R L)) (hX : X ⊆ S) (hY : Y ⊆ S) :
+    sSup X ≤ sSup Y ↔ X ⊆ Y := by
+  refine ⟨?_, sSup_le_sSup⟩
+  intro h I hI
+  apply (hS.mono hY).mem_of_isAtom_of_le_sSup_atoms _ _ ((le_sSup hI).trans h)
+  exact (hS.mono hX).isAtom I hI
+
+lemma eq_atoms_of_sSup_eq_top (h : sSup S = ⊤) : S = {I : LieIdeal R L | IsAtom I} := by
+  apply le_antisymm
+  · exact hS.isAtom
+  intro J hJ
+  obtain ⟨T, hT, rfl⟩ := hS.atomistic_helper J (le_top.trans h.ge)
+  exact hS.mem_of_isAtom_of_le_sSup_atoms _ hJ (sSup_le_sSup hT)
+
+lemma isAtomistic_of_sSup_eq_top (h : sSup S = ⊤) : IsAtomistic (LieIdeal R L) := by
+  constructor
+  intro I
+  obtain ⟨T, hT, rfl⟩ := hS.atomistic_helper I (le_top.trans h.ge)
+  exact ⟨T, rfl, (hS.mono hT).isAtom⟩
+
+lemma complementedLattice_of_sSup_eq_top (h : sSup S = ⊤) : ComplementedLattice (LieIdeal R L) := by
+  constructor
+  intro I
+  obtain ⟨T, hT, rfl⟩ := hS.atomistic_helper I (le_top.trans h.ge)
+  use sSup (S \ T)
+  constructor
+  swap
+  · rw [codisjoint_iff, ← sSup_union, Set.union_diff_self, Set.union_eq_right.mpr hT, h]
+  intro J hJ₁ hJ₂
+  obtain ⟨X, hX, rfl⟩ := hS.atomistic_helper J (le_top.trans h.ge)
+  rw [hS.sSup_le_sSup_iff_of_atoms _ _ hX] at hJ₁ hJ₂
+  · obtain rfl : X = ∅ := by
+      have := Set.disjoint_sdiff_right hJ₁ hJ₂
+      rwa [← eq_bot_iff] at this
+    simp only [sSup_empty, le_refl]
+  · exact Set.diff_subset _ _
+  · exact hT
+
+end SemisimpleGenerators
+
 /--
 A *semisimple* Lie algebra is one that is a direct sum of simple Lie algebras.
 
@@ -111,6 +319,7 @@ class IsSemisimple : Prop where
   setIndependent_isAtom : CompleteLattice.SetIndependent {I : LieIdeal R L | IsAtom I}
   non_abelian_of_isAtom : ∀ I : LieIdeal R L, IsAtom I → ¬ IsLieAbelian I
 
+variable {R L} in
 lemma isSimple_of_isAtom [IsSemisimple R L] (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
     non_abelian := IsSemisimple.non_abelian_of_isAtom I hI
     eq_bot_or_eq_top := by
@@ -163,57 +372,27 @@ lemma isSimple_of_isAtom [IsSemisimple R L] (I : LieIdeal R L) (hI : IsAtom I) :
       rcases hx with ⟨y, hy, rfl⟩
       exact hy
 
--- TODO: show that the atomic ideals of a semisimple Lie algebra are simple
-
-variable {R L} in
-theorem HasTrivialRadical.eq_bot_of_isSolvable [HasTrivialRadical R L]
-    (I : LieIdeal R L) [hI : IsSolvable R I] : I = ⊥ :=
-  sSup_eq_bot.mp radical_eq_bot _ hI
-
-variable {R L} in
-theorem hasTrivialRadical_of_no_solvable_ideals (h : ∀ I : LieIdeal R L, IsSolvable R I → I = ⊥) :
-    HasTrivialRadical R L :=
-  ⟨sSup_eq_bot.mpr h⟩
-
-theorem hasTrivialRadical_iff_no_solvable_ideals :
-    HasTrivialRadical R L ↔ ∀ I : LieIdeal R L, IsSolvable R I → I = ⊥ :=
-  ⟨@HasTrivialRadical.eq_bot_of_isSolvable _ _ _ _ _, hasTrivialRadical_of_no_solvable_ideals⟩
-#align lie_algebra.is_semisimple_iff_no_solvable_ideals LieAlgebra.hasTrivialRadical_iff_no_solvable_ideals
-
-theorem hasTrivialRadical_iff_no_abelian_ideals :
-    HasTrivialRadical R L ↔ ∀ I : LieIdeal R L, IsLieAbelian I → I = ⊥ := by
-  rw [hasTrivialRadical_iff_no_solvable_ideals]
-  constructor <;> intro h₁ I h₂
-  · apply h₁; exact LieAlgebra.ofAbelianIsSolvable R I
-  · rw [← abelian_of_solvable_ideal_eq_bot_iff]; apply h₁
-    exact abelian_derivedAbelianOfIdeal I
-#align lie_algebra.is_semisimple_iff_no_abelian_ideals LieAlgebra.hasTrivialRadical_iff_no_abelian_ideals
-
-@[simp]
-theorem center_eq_bot_of_hasTrivialRadical [h : HasTrivialRadical R L] : center R L = ⊥ := by
-  rw [hasTrivialRadical_iff_no_abelian_ideals] at h; apply h; infer_instance
-#align lie_algebra.center_eq_bot_of_semisimple LieAlgebra.center_eq_bot_of_hasTrivialRadical
-
-variable {R L} in
-lemma eq_top_of_isAtom [IsSimple R L] (I : LieIdeal R L) (hI : IsAtom I) : I = ⊤ :=
-  (IsSimple.eq_bot_or_eq_top I).resolve_left hI.1
-
-lemma isAtom_top [IsSimple R L] : IsAtom (⊤ : LieIdeal R L) := by
+lemma IsSemisimple.semisimpleGenerators [IsSemisimple R L]
+    (S : Set (LieIdeal R L)) (hS : S ⊆ {I : LieIdeal R L | IsAtom I}) :
+    SemisimpleGenerators S := by
+  apply SemisimpleGenerators.mono _ hS
   constructor
-  · intro h
-    apply IsSimple.non_abelian R (L := L)
-    constructor
-    intro x y
-    rw [← LieSubmodule.mem_bot (R := R) (L := L), ← h]
-    trivial
   · intro I hI
-    have := IsSimple.eq_bot_or_eq_top I
-    contrapose! this
-    exact ⟨this, hI.ne⟩
+    exact hI
+  · intro I hI
+    exact isSimple_of_isAtom I hI
+  · apply IsSemisimple.setIndependent_isAtom
 
-variable {R L} in
-lemma isAtom_iff_eq_top [IsSimple R L] (I : LieIdeal R L) : IsAtom I ↔ I = ⊤ :=
-  ⟨eq_top_of_isAtom I, fun h ↦ h ▸ isAtom_top R L⟩
+lemma SemisimpleGenerators.isSemisimple_of_sSup_eq_top
+    (S : Set (LieIdeal R L)) (hS : SemisimpleGenerators S) (h : sSup S = ⊤) :
+    IsSemisimple R L := by
+  obtain rfl := hS.eq_atoms_of_sSup_eq_top h
+  constructor
+  · exact h
+  · exact hS.setIndependent
+  · intro I hI
+    have := hS.isSimple I hI
+    apply IsSimple.non_abelian (R := R)
 
 -- move this to `Mathlib.Order.SupIndep`
 lemma _root_.CompleteLattice.setIndependent_singleton {α : Type w} [CompleteLattice α] (a : α) :
@@ -225,8 +404,7 @@ lemma _root_.CompleteLattice.setIndependent_singleton {α : Type w} [CompleteLat
 instance (priority := 100) isSemisimple_of_isSimple [h : IsSimple R L] :
     IsSemisimple R L := by
   have aux : {I : LieIdeal R L | IsAtom I} = {⊤} := by
-    ext I
-    simp only [Set.mem_setOf_eq, Set.mem_singleton_iff, isAtom_iff_eq_top]
+    simp only [isAtom_iff_eq_top, Set.setOf_eq_eq_singleton]
   constructor
   · simp [aux]
   · simpa [aux] using _root_.CompleteLattice.setIndependent_singleton _
@@ -237,130 +415,16 @@ instance (priority := 100) isSemisimple_of_isSimple [h : IsSimple R L] :
     rw [lie_abelian_iff_equiv_lie_abelian LieIdeal.topEquiv] at hI₂
     contradiction
 
--- move this
-lemma _root_.Submodule.exists_sum_of_mem_sSup {R : Type u} {M : Type v} [Ring R] [AddCommGroup M]
-    [Module R M] (S : Set (Submodule R M)) (x : M) (hx : x ∈ sSup S) :
-    ∃ (T : Finset (Submodule R M)) (_ : ↑T ⊆ S) (f : Submodule R M → M),
-      T.sum f = x ∧ ∀ N ∈ T, f N ∈ N := by
-  rw [← Submodule.span_singleton_le_iff_mem] at hx
-  obtain ⟨T, h₁, h₂⟩ := Submodule.singleton_span_isCompactElement _ _ hx
-  rw [Submodule.span_singleton_le_iff_mem] at h₂
-  use T, h₁
-  clear h₁ hx S
-  revert x
-  classical
-  refine T.induction_on (by simp) ?_
-  intro N s hNs IH x hx
-  rw [Finset.sup_insert, Submodule.mem_sup] at hx
-  obtain ⟨n, hn : n ∈ N, x, hx, rfl⟩ := hx
-  obtain ⟨f, rfl, hf⟩ := IH x hx
-  use Function.update f N n
-  simp only [hNs, not_false_eq_true, Finset.sum_insert, Function.update_same, add_right_inj,
-    Finset.mem_insert, forall_eq_or_imp, hn, true_and]
-  constructor
-  · apply Finset.sum_congr rfl
-    intro M hM
-    rw [Function.update_noteq]
-    rintro rfl
-    contradiction
-  · intro M hM
-    rw [Function.update_noteq]
-    · exact hf M hM
-    rintro rfl
-    contradiction
-
--- instance (priority := 100) [h : IsSemisimple R L] :
---     ComplementedLattice (LieIdeal R L) where
---       exists_isCompl := _
-
--- instance (priority := 100) [h : IsSemisimple R L] :
---     BooleanAlgebra (LieIdeal R L) where
---   __ := (inferInstance : CompleteLattice (LieIdeal R L))
---   le_sup_inf := _
---   compl := _
---   inf_compl_le_bot := _
---   top_le_sup_compl := _
---   sdiff := _
---   himp := _
---   sdiff_eq := _
---   himp_eq := _
-
-lemma exists_unique_sum [IsSemisimple R L] (x : L) :
-    ∃! a : {I : LieIdeal R L // IsAtom I} →₀ L, a.sum (fun _ ↦ id) = x ∧ ∀ I, a I ∈ I.1 := by
-  have hx : x ∈ (⊤ : LieIdeal R L) := trivial
-  rw [← IsSemisimple.sSup_isAtom_eq_top] at hx
-  obtain ⟨T, hT, f, rfl, hf⟩ := Submodule.exists_sum_of_mem_sSup _ _ hx
-  classical
-  let a : {I : LieIdeal R L // IsAtom I} →₀ L :=
-  { toFun := fun I ↦ if (I : Submodule R L) ∈ T then f I else 0
-    support := (T.preimage ?coe ?inj).filter fun I ↦ f I ≠ 0
-    mem_support_toFun := ?cond }
-  case coe => exact fun I ↦ I
-  case cond => intro I; simp
-  case inj =>
-   intro I hI J hJ hIJ
-   ext
-   rw [SetLike.ext_iff] at hIJ
-   apply hIJ
-  refine ⟨a, ?_, ?_⟩
-  · sorry
-  · intro b hb
-    ext ⟨I, hI⟩
-    sorry
-
-lemma _root_.LieIdeal.sSup_inter [IsSemisimple R L] (S T : Set (LieIdeal R L))
-    (hS : S ⊆ {I | IsAtom I}) (hT : T ⊆ {I | IsAtom I}) :
-    sSup (S ∩ T) = (sSup S) ⊓ (sSup T) := by
-  apply le_antisymm
-  · apply le_inf
-    · apply sSup_le_sSup (Set.inter_subset_left S T)
-    · apply sSup_le_sSup (Set.inter_subset_right S T)
-  rintro x ⟨hxS, hxT⟩
-  sorry
-
-lemma _root_.LieIdeal.sSup_atoms_le_eq [IsSemisimple R L] (J : LieIdeal R L) :
-    sSup {I | IsAtom I ∧ I ≤ J} = J := by
-  apply le_antisymm
-  · apply sSup_le
-    rintro I ⟨hI, hIJ⟩
-    exact hIJ
-  -- intro x hx
-  sorry
-
 instance (priority := 100) [IsSemisimple R L] : DistribLattice (LieIdeal R L) where
   __ := (inferInstance : CompleteLattice (LieIdeal R L))
   le_sup_inf I₁ I₂ I₃ := by
-    apply le_of_eq
-    rw [← I₁.sSup_atoms_le_eq, ← I₂.sSup_atoms_le_eq, ← I₃.sSup_atoms_le_eq,
-        ← sSup_union, ← sSup_union, ← LieIdeal.sSup_inter, ← LieIdeal.sSup_inter, ← sSup_union]
-    · congr 1
-      ext
-      simp only [Set.mem_union, Set.mem_inter_iff, Set.mem_setOf_eq]
-      tauto
-    all_goals simp (config := { contextual := true })
+    sorry
 
 instance (priority := 100) [IsSemisimple R L] :
-    ComplementedLattice (LieIdeal R L) where
-  exists_isCompl J := by
-    use sSup {I | IsAtom I ∧ ¬ I ≤ J}
-    nth_rewrite 1 [← J.sSup_atoms_le_eq]
-    constructor
-    · rw [disjoint_iff, ← LieIdeal.sSup_inter]
-      · simp only [sSup_eq_bot, Set.mem_inter_iff, Set.mem_setOf_eq, and_imp]
-        intro I _ h₁ _ h₂
-        contradiction
-      · simp only [Set.setOf_subset_setOf, and_imp]
-        intro I hI _
-        exact hI
-      · simp only [Set.setOf_subset_setOf, and_imp]
-        intro I hI _
-        exact hI
-    · rw [codisjoint_iff, ← sSup_union]
-      · suffices {I | IsAtom I ∧ I ≤ J} ∪ {I | IsAtom I ∧ ¬I ≤ J} = {I | IsAtom I} by
-          rw [this, IsSemisimple.sSup_isAtom_eq_top]
-        ext
-        simp only [Set.mem_union, Set.mem_setOf_eq]
-        tauto
+    ComplementedLattice (LieIdeal R L) := by
+  apply SemisimpleGenerators.complementedLattice_of_sSup_eq_top (S := {I : LieIdeal R L | IsAtom I})
+  · exact IsSemisimple.semisimpleGenerators _ _ _ le_rfl
+  · exact IsSemisimple.sSup_isAtom_eq_top
 
 /-- A semisimple Lie algebra has trivial radical. -/
 instance (priority := 100) hasTrivialRadical_of_isSemisimple [IsSemisimple R L] :
@@ -386,7 +450,7 @@ instance (priority := 100) hasTrivialRadical_of_isSimple [IsSimple R L] :
 /-- An abelian Lie algebra with trivial radical is trivial. -/
 theorem subsingleton_of_hasTrivialRadical_lie_abelian [HasTrivialRadical R L] [h : IsLieAbelian L] :
     Subsingleton L := by
-  rw [isLieAbelian_iff_center_eq_top R L, center_eq_bot_of_hasTrivialRadical] at h
+  rw [isLieAbelian_iff_center_eq_top R L, HasTrivialRadical.center_eq_bot] at h
   exact (LieSubmodule.subsingleton_iff R L L).mp (subsingleton_of_bot_eq_top h)
 #align lie_algebra.subsingleton_of_semisimple_lie_abelian LieAlgebra.subsingleton_of_hasTrivialRadical_lie_abelian
 
