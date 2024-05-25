@@ -69,7 +69,7 @@ theorem multiplicity_eq_card_pow_dvd {m n b : ℕ} (hm : m ≠ 1) (hn : 0 < n) (
           Finset.ext fun i => by
             rw [mem_filter, mem_Ico, mem_Ico, Nat.lt_succ_iff, ← @PartENat.coe_le_coe i,
               PartENat.natCast_get, ← pow_dvd_iff_le_multiplicity, and_right_comm]
-            refine' (and_iff_left_of_imp fun h => lt_of_le_of_lt _ hb).symm
+            refine (and_iff_left_of_imp fun h => lt_of_le_of_lt ?_ hb).symm
             cases' m with m
             · rw [zero_pow, zero_dvd_iff] at h
               exacts [(hn.ne' h.2).elim, one_le_iff_ne_zero.1 h.1]
@@ -235,7 +235,7 @@ theorem multiplicity_le_multiplicity_choose_add {p : ℕ} (hp : p.Prime) :
   | 0, _ + 1 => by simp
   | n + 1, k + 1 => by
     rw [← hp.multiplicity_mul]
-    refine' multiplicity_le_multiplicity_of_dvd_right _
+    refine multiplicity_le_multiplicity_of_dvd_right ?_
     rw [← succ_mul_choose_eq]
     exact dvd_mul_right _ _
 #align nat.prime.multiplicity_le_multiplicity_choose_add Nat.Prime.multiplicity_le_multiplicity_choose_add
@@ -272,14 +272,14 @@ theorem multiplicity_choose_prime_pow {p n k : ℕ} (hp : p.Prime) (hkn : k ≤ 
 theorem dvd_choose_pow (hp : Prime p) (hk : k ≠ 0) (hkp : k ≠ p ^ n) : p ∣ (p ^ n).choose k := by
   obtain hkp | hkp := hkp.symm.lt_or_lt
   · simp [choose_eq_zero_of_lt hkp]
-  refine' multiplicity_ne_zero.1 fun h => hkp.not_le <| Nat.le_of_dvd hk.bot_lt _
+  refine multiplicity_ne_zero.1 fun h => hkp.not_le <| Nat.le_of_dvd hk.bot_lt ?_
   have H := hp.multiplicity_choose_prime_pow_add_multiplicity hkp.le hk
   rw [h, zero_add, eq_coe_iff] at H
   exact H.1
 #align nat.prime.dvd_choose_pow Nat.Prime.dvd_choose_pow
 
 theorem dvd_choose_pow_iff (hp : Prime p) : p ∣ (p ^ n).choose k ↔ k ≠ 0 ∧ k ≠ p ^ n := by
-  refine' ⟨fun h => ⟨_, _⟩, fun h => dvd_choose_pow hp h.1 h.2⟩ <;> rintro rfl <;>
+  refine ⟨fun h => ⟨?_, ?_⟩, fun h => dvd_choose_pow hp h.1 h.2⟩ <;> rintro rfl <;>
     simp [hp.ne_one] at h
 #align nat.prime.dvd_choose_pow_iff Nat.Prime.dvd_choose_pow_iff
 
@@ -287,7 +287,7 @@ end Prime
 
 theorem multiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), multiplicity 2 n ! < n := by
   have h2 := prime_two.prime
-  refine' binaryRec _ _
+  refine binaryRec ?_ ?_
   · exact fun h => False.elim <| h rfl
   · intro b n ih h
     by_cases hn : n = 0
@@ -299,7 +299,7 @@ theorem multiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), multiplicit
       · decide
     have : multiplicity 2 (2 * n)! < (2 * n : ℕ) := by
       rw [prime_two.multiplicity_factorial_mul]
-      refine' (PartENat.add_lt_add_right (ih hn) (PartENat.natCast_ne_top _)).trans_le _
+      refine (PartENat.add_lt_add_right (ih hn) (PartENat.natCast_ne_top _)).trans_le ?_
       rw [two_mul]
       norm_cast
     cases b
