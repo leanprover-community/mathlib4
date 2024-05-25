@@ -5,6 +5,7 @@ Authors: Michael Rothgang, Damiano Testa
 -/
 
 import Lean.Elab.Command
+import Lean.Linter.Util
 
 /-!
 # Linter for `attribute instance in` declarations
