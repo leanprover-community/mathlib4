@@ -133,7 +133,7 @@ We allow #aligns or URLs to be longer, though.
 def check_line_length : LinterCore := fun lines ↦ Id.run do
   -- FIXME: benchmark this; does the Array -> List conversion matter? (perhaps not)
   let errors := (lines.toList.enumFrom 1).filterMap (fun (line_number, line) ↦
-    if !(line.containsSubstr "http" || line.containsSubstr "#align") && line.length > 101 then
+    if line.length > 101 && !(line.startsWith "#align" || line.containsSubstr "http")  then
       some (StyleError.lineLength line.length, line_number)
     else none)
   errors.toArray
@@ -285,8 +285,8 @@ def check_file_length (lines : Array String) (existing_limit : Option ℕ) : Opt
 end
 
 -- perhaps 1s for just the copyright headers
--- checking line length is REALLY slow: took 16s for 500 items, for probably 2-3min for mathlib
--- need to optimise for sure!
+-- checking line length is now down to 4-5s for all of mathlib: slower than I'd like,
+-- but barely acceptable for now
 -- contains_broad_imports was perhaps 5s
 -- 2min for isolated_by_dot_semicolon (while spewing out ~4500 errors)
 -- 30s for line_endings
