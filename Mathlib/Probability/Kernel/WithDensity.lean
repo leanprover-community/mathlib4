@@ -218,7 +218,7 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : kernel α β) [IsFin
     intro a b n hn
     have : (f a b).toReal ≤ n := Nat.le_of_ceil_le hn
     rw [← ENNReal.le_ofReal_iff_toReal_le (hf_ne_top a b) _] at this
-    · refine' this.trans (le_of_eq _)
+    · refine this.trans (le_of_eq ?_)
       rw [ENNReal.ofReal_natCast]
     · norm_cast
       exact zero_le _
@@ -246,15 +246,15 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : kernel α β) [IsFin
       rw [Finset.sum_range_succ, hn]
       simp [fs]
     simp_rw [h_finset_sum]
-    refine' (Filter.Tendsto.liminf_eq _).symm
-    refine' Filter.Tendsto.congr' _ tendsto_const_nhds
+    refine (Filter.Tendsto.liminf_eq ?_).symm
+    refine Filter.Tendsto.congr' ?_ tendsto_const_nhds
     rw [Filter.EventuallyEq, Filter.eventually_atTop]
     exact ⟨⌈(f a b).toReal⌉₊, fun n hn => (min_eq_left (h_le a b n hn)).symm⟩
   rw [hf_eq_tsum, withDensity_tsum _ fun n : ℕ => _]
   swap; · exact fun _ => (hf.min measurable_const).sub (hf.min measurable_const)
-  refine' isSFiniteKernel_sum fun n => _
+  refine isSFiniteKernel_sum fun n => ?_
   suffices IsFiniteKernel (withDensity κ (fs n)) by haveI := this; infer_instance
-  refine' isFiniteKernel_withDensity_of_bounded _ (ENNReal.coe_ne_top : ↑n + 1 ≠ ∞) fun a b => _
+  refine isFiniteKernel_withDensity_of_bounded _ (ENNReal.coe_ne_top : ↑n + 1 ≠ ∞) fun a b => ?_
   -- After leanprover/lean4#2734, we need to do beta reduction before `norm_cast`
   beta_reduce
   norm_cast

@@ -156,7 +156,7 @@ theorem odd_card_odd_degree_vertices_ne [Fintype V] [DecidableEq V] [DecidableRe
     rw [and_comm]
   simp only [hc, filter_congr]
   rw [← filter_filter, filter_ne', card_erase_of_mem]
-  · refine' ⟨k - 1, tsub_eq_of_eq_add <| hg.trans _⟩
+  · refine ⟨k - 1, tsub_eq_of_eq_add <| hg.trans ?_⟩
     rw [add_assoc, one_add_one_eq_two, ← Nat.mul_succ, ← two_mul]
     congr
     omega
