@@ -64,19 +64,28 @@ def format_errors (errors : Array ErrorContext) (exceptions : Array ErrorContext
   for e in errors do
     if !exceptions.contains e then IO.println (output_message e)
 
+/-! Definitions of the actual text-based linters. -/
+namespace CoreLogic
+
 /-- Iterates over a collection of strings, finding all lines which are longer than 100 chars. -/
-def check_line_length (lines : Array String) : Array (StyleError × Int) :=
+def check_line_length (lines : Array String) : Array (StyleError × Nat) :=
   let is_too_long := (fun s : String ↦ if s.length > 100 then some (StyleError.lineLength s.length) else none)
   let errors := Array.filterMap is_too_long lines
   -- TODO: enumerate over all lines, and report actual line numbers!
   Array.map (fun e ↦ (e, 42)) errors
 
+end CoreLogic
+
+/-- All text-based linters registered in this file. -/
+def all_linters : Array (Array String → Array (StyleError × Nat)) := Array.mk
+  [CoreLogic.check_line_length]
+
 /-- Read a file, apply all text-based linters and return the formatted errors. -/
--- XXX: support multiple linters and sort output
 def lint_file (path : System.FilePath) : IO Unit := do
   let lines ← IO.FS.lines path
-  let output := Array.map (fun (e, n) ↦ ErrorContext.mk e n path) (check_line_length lines)
-  format_errors output (Array.mkEmpty 0)
+  let all_output := (Array.map (fun linter ↦ (Array.map (fun (e, n) ↦ ErrorContext.mk e n path) (linter lines))) all_linters)
+  -- XXX: this list is currently not sorted: for github, that's probably fine
+  format_errors (Array.flatten all_output) (Array.mkEmpty 0)
 
 /-- Lint all files in `Mathlib.lean`. -/
 def check_all_files : IO Unit := do
