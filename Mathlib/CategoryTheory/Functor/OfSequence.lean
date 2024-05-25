@@ -55,7 +55,7 @@ lemma comp_map' (i k₁ k₂ : ℕ) :
       simp [reassoc_of% (hk₂ i k₁), congr_f f _ _ (add_assoc i k₁ k₂)]
 
 /-- The morphism `X i ⟶ X j` obtained by composing morphisms of
-the form ``X n ⟶ X (n + 1)` when `i ≤ j`. -/
+the form `X n ⟶ X (n + 1)` when `i ≤ j`. -/
 def map (i j : ℕ) (hij : i ≤ j) : X i ⟶ X j :=
   map' f i (j - i) ≫ eqToHom (by congr; omega)
 
