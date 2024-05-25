@@ -5,7 +5,6 @@ Authors: Michael Rothgang
 -/
 
 import Lean.Elab.Command
-import Lean.Linter.Util
 import Batteries.Data.String.Basic
 import Mathlib.Init.Data.Nat.Notation
 
@@ -72,8 +71,11 @@ def errorCode (err : StyleError) : String := match err with
 /-- Context for a style error: the actual error, the line number in the file we're reading
 and the path to the file. -/
 structure ErrorContext where
+  /-- The underlying `StyleError`-/
   error : StyleError
-  line_number : Int
+  /-- The line number of the error -/
+  line_number : ℕ
+  /-- The path to the file which was linted -/
   path : System.FilePath
   deriving BEq
 
@@ -222,17 +224,15 @@ end
 def all_linters : Array LinterCore := Array.mk
   [check_line_length, contains_broad_imports, copyright_header, isolated_by_dot_semicolon]
 
-def add_path (path : System.FilePath) : StyleError × ℕ → ErrorContext :=
-  fun (e, n) ↦ ErrorContext.mk e n path
-
 /-- Read a file, apply all text-based linters and return the formatted errors. -/
 def lint_file (path : System.FilePath) : IO Unit := do
   let lines ← IO.FS.lines path
-  let all_output := (Array.map (fun lint ↦ (Array.map (add_path path)) (lint lines))) all_linters
+  let all_output := (Array.map (fun lint ↦
+    (Array.map (fun (e, n) ↦ ErrorContext.mk e n path)) (lint lines))) all_linters
   -- XXX: this list is currently not sorted: for github, that's probably fine
   format_errors (Array.flatten all_output) (Array.mkEmpty 0)
 
-#eval lint_file (System.mkFilePath ["Mathlib", "Tactic", "Linter", "TextBased.lean"])
+--#eval lint_file (System.mkFilePath ["Mathlib", "Tactic", "Linter", "TextBased.lean"])
 
 /-- Lint all files in `Mathlib.lean`. -/
 def check_all_files : IO Unit := do
