@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li
 -/
 
-import Mathlib.Topology.Irreducible
+import Mathlib.Topology.Sets.IrreducibleCloseds
 import Mathlib.Order.KrullDimension
 
 /-!
@@ -21,4 +21,4 @@ closed irreducible sets.
 -/
 noncomputable def topologicalKrullDim (T : Type _) [TopologicalSpace T] :
     WithBot (WithTop ℕ) :=
-  krullDim { s : Set T | IsClosed s ∧ IsIrreducible s }
+  krullDim { s : Set T | IsIrreducibleClosed s }

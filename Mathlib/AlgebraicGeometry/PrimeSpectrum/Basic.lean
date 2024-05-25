@@ -10,6 +10,7 @@ import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.Topology.Sets.Closeds
+import Mathlib.Topology.Sets.IrreducibleCloseds
 import Mathlib.Topology.Sober
 
 #align_import algebraic_geometry.prime_spectrum.basic from "leanprover-community/mathlib"@"a7c017d750512a352b623b1824d75da5998457d0"
@@ -958,7 +959,7 @@ Zero loci of prime ideals are closed irreducible sets in the Zariski topology an
 irreducible set is a zero locus of some prime ideal.
 -/
 protected def pointsEquivIrreducibleCloseds :
-    PrimeSpectrum R ≃o {s : Set (PrimeSpectrum R) | IsIrreducible s ∧ IsClosed s}ᵒᵈ where
+    PrimeSpectrum R ≃o {s : Set (PrimeSpectrum R) | IsIrreducibleClosed s}ᵒᵈ where
   __ := irreducibleSetEquivPoints.toEquiv.symm.trans OrderDual.toDual
   map_rel_iff' {p q} :=
     (RelIso.symm irreducibleSetEquivPoints).map_rel_iff.trans (le_iff_specializes p q).symm
