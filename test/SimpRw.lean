@@ -19,7 +19,7 @@ example (a b c d : Nat) : a + (b + (c + d)) = ((d + c) + b) + a := by simp_rw [N
 
 -- `simp_rw` can also rewrite in assumptions:
 example (p : Nat → Prop) (a b : Nat) (h : p (a + b)) : p (b + a) := by
-  {simp_rw [Nat.add_comm a b] at h; exact h}
+  simp_rw [Nat.add_comm a b] at h; exact h
 -- or at multiple assumptions:
 example (p : Nat → Prop) (a b : Nat) (h₁ : p (b + a) → p (a + b)) (h₂ : p (a + b)) : p (b + a) := by
   {simp_rw [Nat.add_comm a b] at h₁ h₂; exact h₁ h₂}

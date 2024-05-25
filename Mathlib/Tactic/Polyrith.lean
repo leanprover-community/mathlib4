@@ -400,7 +400,7 @@ Examples:
 
 ```lean
 example (x y : ℚ) (h1 : x*y + 2*x = 1) (h2 : x = y) :
-  x*y = -2*y + 1 := by
+    x*y = -2*y + 1 := by
   polyrith
 -- Try this: linear_combination h1 - 2 * h2
 
