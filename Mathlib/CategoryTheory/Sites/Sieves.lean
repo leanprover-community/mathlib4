@@ -504,7 +504,7 @@ lemma ofArrows_le_ofObjects
 lemma ofArrows_eq_ofObjects {X : C} (hX : IsTerminal X)
     {I : Type*} (Y : I → C) (f : ∀ i, Y i ⟶ X) :
     ofArrows Y f = ofObjects Y X := by
-  refine' le_antisymm (ofArrows_le_ofObjects Y f) (fun W g => _)
+  refine le_antisymm (ofArrows_le_ofObjects Y f) (fun W g => ?_)
   rw [mem_ofArrows_iff, mem_ofObjects_iff]
   rintro ⟨i, ⟨h⟩⟩
   exact ⟨i, h, hX.hom_ext _ _⟩
@@ -720,7 +720,7 @@ theorem functor_galoisConnection (X : C) :
   constructor
   · intro hle X f hf
     apply hle
-    refine' ⟨X, f, 𝟙 _, hf, _⟩
+    refine ⟨X, f, 𝟙 _, hf, ?_⟩
     rw [id_comp]
   · rintro hle Y f ⟨X, g, h, hg, rfl⟩
     apply Sieve.downward_closed S
@@ -769,7 +769,7 @@ theorem functorPushforward_bot (F : C ⥤ D) (X : C) : (⊥ : Sieve X).functorPu
 
 @[simp]
 theorem functorPushforward_top (F : C ⥤ D) (X : C) : (⊤ : Sieve X).functorPushforward F = ⊤ := by
-  refine' (generate_sieve _).symm.trans _
+  refine (generate_sieve _).symm.trans ?_
   apply generate_of_contains_isSplitEpi (𝟙 (F.obj X))
   exact ⟨X, 𝟙 _, 𝟙 _, trivial, by simp⟩
 #align category_theory.sieve.functor_pushforward_top CategoryTheory.Sieve.functorPushforward_top
@@ -852,7 +852,7 @@ def sieveOfSubfunctor {R} (f : R ⟶ yoneda.obj X) : Sieve X where
   arrows Y g := ∃ t, f.app (Opposite.op Y) t = g
   downward_closed := by
     rintro Y Z _ ⟨t, rfl⟩ g
-    refine' ⟨R.map g.op t, _⟩
+    refine ⟨R.map g.op t, ?_⟩
     rw [FunctorToTypes.naturality _ _ f]
     simp
 #align category_theory.sieve.sieve_of_subfunctor CategoryTheory.Sieve.sieveOfSubfunctor

@@ -420,7 +420,7 @@ def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) 
   toFun f :=
     { hom := (TensorProduct.curry f.hom).flip
       comm := fun g => by
-        refine' LinearMap.ext fun x => LinearMap.ext fun y => _
+        refine LinearMap.ext fun x => LinearMap.ext fun y => ?_
         change f.hom (_ ⊗ₜ[k] _) = C.ρ g (f.hom (_ ⊗ₜ[k] _))
         rw [← hom_comm_apply]
         change _ = f.hom ((A.ρ g * A.ρ g⁻¹) y ⊗ₜ[k] _)
@@ -659,7 +659,7 @@ set_option linter.uppercaseLean3 false in
 /-- Auxiliary definition for `equivalenceModuleMonoidAlgebra`. -/
 def unitIsoAddEquiv {V : Rep k G} : V ≃+ (toModuleMonoidAlgebra ⋙ ofModuleMonoidAlgebra).obj V := by
   dsimp [ofModuleMonoidAlgebra, toModuleMonoidAlgebra]
-  refine' V.ρ.asModuleEquiv.symm.trans _
+  refine V.ρ.asModuleEquiv.symm.trans ?_
   exact (RestrictScalars.addEquiv _ _ _).symm
 set_option linter.uppercaseLean3 false in
 #align Rep.unit_iso_add_equiv Rep.unitIsoAddEquiv

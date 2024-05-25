@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.BigOperators.Group.List
-import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Group.Hom.Basic
-import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.Group.Prod
 import Mathlib.Data.Multiset.Basic
 
 #align_import algebra.big_operators.multiset.basic from "leanprover-community/mathlib"@"6c5f73fd6f6cc83122788a80a27cdd54663609f4"
@@ -22,22 +20,17 @@ and sums indexed by finite sets.
 * `Multiset.prod`: `s.prod f` is the product of `f i` over all `i ∈ s`. Not to be mistaken with
   the cartesian product `Multiset.product`.
 * `Multiset.sum`: `s.sum f` is the sum of `f i` over all `i ∈ s`.
-
-## Implementation notes
-
-Nov 2022: To speed the Lean 4 port, lemmas requiring extra algebra imports
-(`data.list.big_operators.lemmas` rather than `.basic`) have been moved to a separate file,
-`algebra.big_operators.multiset.lemmas`.  This split does not need to be permanent.
 -/
 
+assert_not_exists MonoidWithZero
 
-variable {ι α β γ : Type*}
+variable {F ι α β γ : Type*}
 
 namespace Multiset
 
 section CommMonoid
 
-variable [CommMonoid α] {s t : Multiset α} {a : α} {m : Multiset ι} {f g : ι → α}
+variable [CommMonoid α] [CommMonoid β] {s t : Multiset α} {a : α} {m : Multiset ι} {f g : ι → α}
 
 /-- Product of a multiset given a commutative monoid structure on `α`.
   `prod {a, b, c} = a * b * c` -/
@@ -250,6 +243,28 @@ theorem prod_dvd_prod_of_le (h : s ≤ t) : s.prod ∣ t.prod := by
   simp only [prod_add, dvd_mul_right]
 #align multiset.prod_dvd_prod_of_le Multiset.prod_dvd_prod_of_le
 
+@[to_additive]
+lemma _root_.map_multiset_prod [FunLike F α β] [MonoidHomClass F α β] (f : F) (s : Multiset α) :
+    f s.prod = (s.map f).prod := (s.prod_hom f).symm
+#align map_multiset_prod map_multiset_prod
+#align map_multiset_sum map_multiset_sum
+
+@[to_additive]
+protected lemma _root_.MonoidHom.map_multiset_prod (f : α →* β) (s : Multiset α) :
+    f s.prod = (s.map f).prod := (s.prod_hom f).symm
+#align monoid_hom.map_multiset_prod MonoidHom.map_multiset_prod
+#align add_monoid_hom.map_multiset_sum AddMonoidHom.map_multiset_sum
+
+lemma dvd_prod : a ∈ s → a ∣ s.prod :=
+  Quotient.inductionOn s (fun l a h ↦ by simpa using List.dvd_prod h) a
+#align multiset.dvd_prod Multiset.dvd_prod
+
+@[to_additive] lemma fst_prod (s : Multiset (α × β)) : s.prod.1 = (s.map Prod.fst).prod :=
+  map_multiset_prod (MonoidHom.fst _ _) _
+
+@[to_additive] lemma snd_prod (s : Multiset (α × β)) : s.prod.2 = (s.map Prod.snd).prod :=
+  map_multiset_prod (MonoidHom.snd _ _) _
+
 end CommMonoid
 
 theorem prod_dvd_prod_of_dvd [CommMonoid β] {S : Multiset α} (g1 g2 : α → β)
@@ -311,20 +326,6 @@ theorem prod_map_zpow {n : ℤ} : (m.map fun i => f i ^ n).prod = (m.map f).prod
 
 end DivisionCommMonoid
 
-section NonUnitalNonAssocSemiring
-
-variable [NonUnitalNonAssocSemiring α] {a : α} {s : Multiset ι} {f : ι → α}
-
-theorem sum_map_mul_left : sum (s.map fun i => a * f i) = a * sum (s.map f) :=
-  Multiset.induction_on s (by simp) fun i s ih => by simp [ih, mul_add]
-#align multiset.sum_map_mul_left Multiset.sum_map_mul_left
-
-theorem sum_map_mul_right : sum (s.map fun i => f i * a) = sum (s.map f) * a :=
-  Multiset.induction_on s (by simp) fun a s ih => by simp [ih, add_mul]
-#align multiset.sum_map_mul_right Multiset.sum_map_mul_right
-
-end NonUnitalNonAssocSemiring
-
 @[simp]
 theorem sum_map_singleton (s : Multiset α) : (s.map fun a => ({a} : Multiset α)).sum = s :=
   Multiset.induction_on s (by simp) (by simp)
@@ -347,18 +348,3 @@ theorem prod_int_mod (s : Multiset ℤ) (n : ℤ) : s.prod % n = (s.map (· % n)
 #align multiset.prod_int_mod Multiset.prod_int_mod
 
 end Multiset
-
-@[to_additive]
-theorem map_multiset_prod [CommMonoid α] [CommMonoid β] {F : Type*} [FunLike F α β]
-    [MonoidHomClass F α β] (f : F)
-    (s : Multiset α) : f s.prod = (s.map f).prod :=
-  (s.prod_hom f).symm
-#align map_multiset_prod map_multiset_prod
-#align map_multiset_sum map_multiset_sum
-
-@[to_additive]
-protected theorem MonoidHom.map_multiset_prod [CommMonoid α] [CommMonoid β] (f : α →* β)
-    (s : Multiset α) : f s.prod = (s.map f).prod :=
-  (s.prod_hom f).symm
-#align monoid_hom.map_multiset_prod MonoidHom.map_multiset_prod
-#align add_monoid_hom.map_multiset_sum AddMonoidHom.map_multiset_sum

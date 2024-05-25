@@ -36,7 +36,7 @@ theorem analyticAt_of_differentiable_on_punctured_nhds_of_continuousAt {f : ℂ 
   rcases (nhdsWithin_hasBasis nhds_basis_closedBall _).mem_iff.1 hd with ⟨R, hR0, hRs⟩
   lift R to ℝ≥0 using hR0.le
   replace hc : ContinuousOn f (closedBall c R) := by
-    refine' fun z hz => ContinuousAt.continuousWithinAt _
+    refine fun z hz => ContinuousAt.continuousWithinAt ?_
     rcases eq_or_ne z c with (rfl | hne)
     exacts [hc, (hRs ⟨hz, hne⟩).continuousAt]
   exact (hasFPowerSeriesOnBall_of_differentiable_off_countable (countable_singleton c) hc
@@ -46,12 +46,12 @@ theorem analyticAt_of_differentiable_on_punctured_nhds_of_continuousAt {f : ℂ 
 theorem differentiableOn_compl_singleton_and_continuousAt_iff {f : ℂ → E} {s : Set ℂ} {c : ℂ}
     (hs : s ∈ 𝓝 c) :
     DifferentiableOn ℂ f (s \ {c}) ∧ ContinuousAt f c ↔ DifferentiableOn ℂ f s := by
-  refine' ⟨_, fun hd => ⟨hd.mono (diff_subset _ _), (hd.differentiableAt hs).continuousAt⟩⟩
+  refine ⟨?_, fun hd => ⟨hd.mono (diff_subset _ _), (hd.differentiableAt hs).continuousAt⟩⟩
   rintro ⟨hd, hc⟩ x hx
   rcases eq_or_ne x c with (rfl | hne)
-  · refine' (analyticAt_of_differentiable_on_punctured_nhds_of_continuousAt
-      _ hc).differentiableAt.differentiableWithinAt
-    refine' eventually_nhdsWithin_iff.2 ((eventually_mem_nhds.2 hs).mono fun z hz hzx => _)
+  · refine (analyticAt_of_differentiable_on_punctured_nhds_of_continuousAt
+      ?_ hc).differentiableAt.differentiableWithinAt
+    refine eventually_nhdsWithin_iff.2 ((eventually_mem_nhds.2 hs).mono fun z hz hzx => ?_)
     exact hd.differentiableAt (inter_mem hz (isOpen_ne.mem_nhds hzx))
   · simpa only [DifferentiableWithinAt, HasFDerivWithinAt, hne.nhdsWithin_diff_singleton] using
       hd x ⟨hx, hne⟩
@@ -79,7 +79,7 @@ theorem differentiableOn_update_limUnder_of_isLittleO {f : ℂ → E} {s : Set �
     have hc : Tendsto f (𝓝[≠] c) (𝓝 (deriv F c)) :=
       continuousAt_update_same.mp (this.continuousOn.continuousAt hc)
     rwa [hc.limUnder_eq]
-  refine' ⟨(differentiableOn_id.sub_const _).smul hd, _⟩
+  refine ⟨(differentiableOn_id.sub_const _).smul hd, ?_⟩
   rw [← continuousWithinAt_compl_self]
   have H := ho.tendsto_inv_smul_nhds_zero
   have H' : Tendsto (fun z => (z - c) • f c) (𝓝[≠] c) (𝓝 (F c)) :=
@@ -145,10 +145,10 @@ theorem two_pi_I_inv_smul_circleIntegral_sub_sq_inv_smul_of_differentiable {U : 
   congr 1
   trans ∮ z in C(c, R), ((z - w₀) ^ 2)⁻¹ • (f z - f w₀)
   · have h1 : ContinuousOn (fun z : ℂ => ((z - w₀) ^ 2)⁻¹) (sphere c R) := by
-      refine' ((continuous_id'.sub continuous_const).pow 2).continuousOn.inv₀ fun w hw h => _
+      refine ((continuous_id'.sub continuous_const).pow 2).continuousOn.inv₀ fun w hw h => ?_
       exact sphere_disjoint_ball.ne_of_mem hw hw₀ (sub_eq_zero.mp (sq_eq_zero_iff.mp h))
     have h2 : CircleIntegrable (fun z : ℂ => ((z - w₀) ^ 2)⁻¹ • f z) c R := by
-      refine' ContinuousOn.circleIntegrable (pos_of_mem_ball hw₀).le _
+      refine ContinuousOn.circleIntegrable (pos_of_mem_ball hw₀).le ?_
       exact h1.smul (hf.continuousOn.mono (sphere_subset_closedBall.trans hc))
     have h3 : CircleIntegrable (fun z : ℂ => ((z - w₀) ^ 2)⁻¹ • f w₀) c R :=
       ContinuousOn.circleIntegrable (pos_of_mem_ball hw₀).le (h1.smul continuousOn_const)
@@ -156,7 +156,7 @@ theorem two_pi_I_inv_smul_circleIntegral_sub_sq_inv_smul_of_differentiable {U : 
       simpa using circleIntegral.integral_sub_zpow_of_ne (by decide : (-2 : ℤ) ≠ -1) c w₀ R
     simp only [smul_sub, circleIntegral.integral_sub h2 h3, h4, circleIntegral.integral_smul_const,
       zero_smul, sub_zero]
-  · refine' circleIntegral.integral_congr (pos_of_mem_ball hw₀).le fun z hz => _
+  · refine circleIntegral.integral_congr (pos_of_mem_ball hw₀).le fun z hz => ?_
     simp only [dslope_of_ne, Metric.sphere_disjoint_ball.ne_of_mem hz hw₀, slope, ← smul_assoc, sq,
       mul_inv, Ne, not_false_iff, vsub_eq_sub, Algebra.id.smul_eq_mul]
 set_option linter.uppercaseLean3 false in
