@@ -3,10 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Group.Pi
-import Mathlib.GroupTheory.FreeGroup.Basic
+import Mathlib.Algebra.Group.Pi.Lemmas
+import Mathlib.Algebra.Module.Defs
 import Mathlib.GroupTheory.Abelianization
-import Mathlib.Algebra.Module.Basic
+import Mathlib.GroupTheory.FreeGroup.Basic
 
 #align_import group_theory.free_abelian_group from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
@@ -139,7 +139,7 @@ end lift
 
 section
 
-open Classical
+open scoped Classical
 
 theorem of_injective : Function.Injective (of : α → FreeAbelianGroup α) :=
   fun x y hoxy ↦ Classical.by_contradiction fun hxy : x ≠ y ↦
@@ -165,7 +165,7 @@ protected theorem induction_on {C : FreeAbelianGroup α → Prop} (z : FreeAbeli
 
 theorem lift.add' {α β} [AddCommGroup β] (a : FreeAbelianGroup α) (f g : α → β) :
     lift (f + g) a = lift f a + lift g a := by
-  refine' FreeAbelianGroup.induction_on a _ _ _ _
+  refine FreeAbelianGroup.induction_on a ?_ ?_ ?_ ?_
   · simp only [(lift _).map_zero, zero_add]
   · intro x
     simp only [lift.of, Pi.add_apply]
@@ -202,7 +202,7 @@ protected theorem induction_on' {C : FreeAbelianGroup α → Prop} (z : FreeAbel
   FreeAbelianGroup.induction_on z C0 C1 Cn Cp
 #align free_abelian_group.induction_on' FreeAbelianGroup.induction_on'
 
-@[simp, nolint simpNF] -- Porting note: dsimp can not prove this
+@[simp, nolint simpNF] -- Porting note (#10675): dsimp can not prove this
 theorem map_pure (f : α → β) (x : α) : f <$> (pure x : FreeAbelianGroup α) = pure (f x) :=
   rfl
 #align free_abelian_group.map_pure FreeAbelianGroup.map_pure
@@ -234,7 +234,7 @@ theorem map_of (f : α → β) (y : α) : f <$> of y = of (f y) :=
   rfl
 #align free_abelian_group.map_of FreeAbelianGroup.map_of
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem pure_bind (f : α → FreeAbelianGroup β) (x) : pure x >>= f = f x :=
   lift.of _ _
 #align free_abelian_group.pure_bind FreeAbelianGroup.pure_bind
@@ -505,8 +505,8 @@ def liftMonoid : (α →* R) ≃ (FreeAbelianGroup α →+* R) where
     map_one' := (lift.of f _).trans f.map_one
     map_mul' := fun x y ↦ by
       simp only
-      refine' FreeAbelianGroup.induction_on y
-          (by simp only [mul_zero, map_zero]) (fun L2 ↦ _) (fun L2 ih ↦ _) _
+      refine FreeAbelianGroup.induction_on y
+          (by simp only [mul_zero, map_zero]) (fun L2 ↦ ?_) (fun L2 ih ↦ ?_) ?_
       · refine' FreeAbelianGroup.induction_on x
             (by simp only [zero_mul, map_zero]) (fun L1 ↦ _) (fun L1 ih ↦ _) _
         · simp_rw [of_mul_of, lift.of]

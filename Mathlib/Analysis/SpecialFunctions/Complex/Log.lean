@@ -45,8 +45,8 @@ theorem log_im_le_pi (x : ℂ) : (log x).im ≤ π := by simp only [log_im, arg_
 theorem exp_log {x : ℂ} (hx : x ≠ 0) : exp (log x) = x := by
   rw [log, exp_add_mul_I, ← ofReal_sin, sin_arg, ← ofReal_cos, cos_arg hx, ← ofReal_exp,
     Real.exp_log (abs.pos hx), mul_add, ofReal_div, ofReal_div,
-    mul_div_cancel' _ (ofReal_ne_zero.2 <| abs.ne_zero hx), ← mul_assoc,
-    mul_div_cancel' _ (ofReal_ne_zero.2 <| abs.ne_zero hx), re_add_im]
+    mul_div_cancel₀ _ (ofReal_ne_zero.2 <| abs.ne_zero hx), ← mul_assoc,
+    mul_div_cancel₀ _ (ofReal_ne_zero.2 <| abs.ne_zero hx), re_add_im]
 #align complex.exp_log Complex.exp_log
 
 @[simp]
@@ -72,6 +72,14 @@ theorem ofReal_log {x : ℝ} (hx : 0 ≤ x) : (x.log : ℂ) = log x :=
     (by rw [ofReal_im, log_im, arg_ofReal_of_nonneg hx])
 #align complex.of_real_log Complex.ofReal_log
 
+@[simp, norm_cast]
+lemma natCast_log {n : ℕ} : Real.log n = log n := ofReal_natCast n ▸ ofReal_log n.cast_nonneg
+
+@[simp]
+lemma ofNat_log {n : ℕ} [n.AtLeastTwo] :
+    Real.log (no_index (OfNat.ofNat n)) = log (OfNat.ofNat n) :=
+  natCast_log
+
 theorem log_ofReal_re (x : ℝ) : (log (x : ℂ)).re = Real.log x := by simp [log_re]
 #align complex.log_of_real_re Complex.log_ofReal_re
 
@@ -83,7 +91,7 @@ theorem log_ofReal_mul {r : ℝ} (hr : 0 < r) {x : ℂ} (hx : x ≠ 0) :
 #align complex.log_of_real_mul Complex.log_ofReal_mul
 
 theorem log_mul_ofReal (r : ℝ) (hr : 0 < r) (x : ℂ) (hx : x ≠ 0) :
-    log (x * r) = Real.log r + log x := by rw [mul_comm, log_ofReal_mul hr hx, add_comm]
+    log (x * r) = Real.log r + log x := by rw [mul_comm, log_ofReal_mul hr hx]
 #align complex.log_mul_of_real Complex.log_mul_ofReal
 
 lemma log_mul_eq_add_log_iff {x y : ℂ} (hx₀ : x ≠ 0) (hy₀ : y ≠ 0) :
@@ -132,8 +140,8 @@ theorem log_inv_eq_ite (x : ℂ) : log x⁻¹ = if x.arg = π then -conj (log x)
       Nat.cast_two, ofReal_mul, neg_add, mul_neg, neg_neg]
     norm_num; rw [two_mul] -- Porting note: added to simplify `↑2`
     split_ifs
-    · rw [add_sub_right_comm, sub_add_cancel']
-    · rw [add_sub_right_comm, sub_add_cancel']
+    · rw [add_sub_right_comm, sub_add_cancel_left]
+    · rw [add_sub_right_comm, sub_add_cancel_left]
   · rwa [inv_pos, Complex.normSq_pos]
   · rwa [map_ne_zero]
 #align complex.log_inv_eq_ite Complex.log_inv_eq_ite
@@ -167,13 +175,13 @@ theorem exp_eq_exp_iff_exists_int {x y : ℂ} : exp x = exp y ↔ ∃ n : ℤ, x
 
 @[simp]
 theorem countable_preimage_exp {s : Set ℂ} : (exp ⁻¹' s).Countable ↔ s.Countable := by
-  refine' ⟨fun hs => _, fun hs => _⟩
-  · refine' ((hs.image exp).insert 0).mono _
+  refine ⟨fun hs => ?_, fun hs => ?_⟩
+  · refine ((hs.image exp).insert 0).mono ?_
     rw [Set.image_preimage_eq_inter_range, range_exp, ← Set.diff_eq, ← Set.union_singleton,
         Set.diff_union_self]
     exact Set.subset_union_left _ _
   · rw [← Set.biUnion_preimage_singleton]
-    refine' hs.biUnion fun z hz => _
+    refine hs.biUnion fun z hz => ?_
     rcases em (∃ w, exp w = z) with (⟨w, rfl⟩ | hne)
     · simp only [Set.preimage, Set.mem_singleton_iff, exp_eq_exp_iff_exists_int, Set.setOf_exists]
       exact Set.countable_iUnion fun m => Set.countable_singleton _
@@ -205,8 +213,8 @@ theorem continuousWithinAt_log_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0) (
       ((continuous_ofReal.continuousAt.comp_continuousWithinAt <|
             continuousWithinAt_arg_of_re_neg_of_im_zero hre him).mul
         tendsto_const_nhds) using 1
-  · lift z to ℝ using him
-    simpa using hre.ne
+  lift z to ℝ using him
+  simpa using hre.ne
 #align complex.continuous_within_at_log_of_re_neg_of_im_zero Complex.continuousWithinAt_log_of_re_neg_of_im_zero
 
 theorem tendsto_log_nhdsWithin_im_nonneg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0)
@@ -220,7 +228,10 @@ theorem map_exp_comap_re_atBot : map exp (comap re atBot) = 𝓝[≠] 0 := by
   rw [← comap_exp_nhds_zero, map_comap, range_exp, nhdsWithin]
 #align complex.map_exp_comap_re_at_bot Complex.map_exp_comap_re_atBot
 
-@[simp]
+-- Adaptation note: nightly-2024-04-01
+-- The simpNF linter now times out on this lemma.
+-- See https://github.com/leanprover-community/mathlib4/issues/12226
+@[simp, nolint simpNF]
 theorem map_exp_comap_re_atTop : map exp (comap re atTop) = cobounded ℂ := by
   rw [← comap_exp_cobounded, map_comap, range_exp, inf_eq_left, le_principal_iff]
   exact eventually_ne_cobounded _
@@ -237,12 +248,12 @@ open Topology
 variable {α : Type*}
 
 theorem continuousAt_clog {x : ℂ} (h : x ∈ slitPlane) : ContinuousAt log x := by
-  refine' ContinuousAt.add _ _
-  · refine' continuous_ofReal.continuousAt.comp _
-    refine' (Real.continuousAt_log _).comp Complex.continuous_abs.continuousAt
+  refine ContinuousAt.add ?_ ?_
+  · refine continuous_ofReal.continuousAt.comp ?_
+    refine (Real.continuousAt_log ?_).comp Complex.continuous_abs.continuousAt
     exact Complex.abs.ne_zero_iff.mpr <| slitPlane_ne_zero h
   · have h_cont_mul : Continuous fun x : ℂ => x * I := continuous_id'.mul continuous_const
-    refine' h_cont_mul.continuousAt.comp (continuous_ofReal.continuousAt.comp _)
+    refine h_cont_mul.continuousAt.comp (continuous_ofReal.continuousAt.comp ?_)
     exact continuousAt_arg h
 #align continuous_at_clog continuousAt_clog
 

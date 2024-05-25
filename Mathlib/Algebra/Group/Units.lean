@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johannes Hölzl, Chris Hughes, Jens Wagemaker, Jon Eugster
 -/
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.GroupPower.Basic
+import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Logic.Unique
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Lift
@@ -187,14 +187,22 @@ theorem copy_eq (u : αˣ) (val hv inv hi) : u.copy val hv inv hi = u :=
 #align units.copy_eq Units.copy_eq
 #align add_units.copy_eq AddUnits.copy_eq
 
-/-- Units of a monoid form have a multiplication and multiplicative identity. -/
-@[to_additive "Additive units of an additive monoid have an addition and an additive identity."]
-instance instMulOneClass : MulOneClass αˣ where
+/-- Units of a monoid have an induced multiplication. -/
+@[to_additive "Additive units of an additive monoid have an induced addition."]
+instance : Mul αˣ where
   mul u₁ u₂ :=
     ⟨u₁.val * u₂.val, u₂.inv * u₁.inv,
       by rw [mul_assoc, ← mul_assoc u₂.val, val_inv, one_mul, val_inv],
       by rw [mul_assoc, ← mul_assoc u₁.inv, inv_val, one_mul, inv_val]⟩
+
+/-- Units of a monoid have a unit -/
+@[to_additive "Additive units of an additive monoid have a zero."]
+instance : One αˣ where
   one := ⟨1, 1, one_mul 1, one_mul 1⟩
+
+/-- Units of a monoid have a multiplication and multiplicative identity. -/
+@[to_additive "Additive units of an additive monoid have an addition and an additive identity."]
+instance instMulOneClass : MulOneClass αˣ where
   one_mul u := ext <| one_mul (u : α)
   mul_one u := ext <| mul_one (u : α)
 
@@ -202,7 +210,6 @@ instance instMulOneClass : MulOneClass αˣ where
 @[to_additive "Additive units of an additive monoid are inhabited because `0` is an additive unit."]
 instance : Inhabited αˣ :=
   ⟨1⟩
-
 
 /-- Units of a monoid have a representation of the base value in the `Monoid`. -/
 @[to_additive "Additive units of an additive monoid have a representation of the base value in
@@ -378,23 +385,29 @@ instance instMonoid : Monoid αˣ :=
     npow_zero := fun a ↦ by ext; simp
     npow_succ := fun n a ↦ by ext; simp [pow_succ] }
 
+/-- Units of a monoid have division -/
+@[to_additive "Additive units of an additive monoid have subtraction."]
+instance : Div αˣ where
+  div := fun a b ↦
+    { val := a * b⁻¹
+      inv := b * a⁻¹
+      val_inv := by rw [mul_assoc, inv_mul_cancel_left, mul_inv]
+      inv_val := by rw [mul_assoc, inv_mul_cancel_left, mul_inv] }
+
+/-- Units of a monoid form a `DivInvMonoid`. -/
+@[to_additive "Additive units of an additive monoid form a `SubNegMonoid`."]
+instance instDivInvMonoid : DivInvMonoid αˣ where
+  zpow := fun n a ↦ match n, a with
+    | Int.ofNat n, a => a ^ n
+    | Int.negSucc n, a => (a ^ n.succ)⁻¹
+  zpow_zero' := fun a ↦ by simp
+  zpow_succ' := fun n a ↦ by simp [pow_succ]
+  zpow_neg' := fun n a ↦ by simp
+
 /-- Units of a monoid form a group. -/
 @[to_additive "Additive units of an additive monoid form an additive group."]
-instance instGroup : Group αˣ :=
-  { (inferInstance : Monoid αˣ) with
-    inv := Inv.inv
-    mul_left_inv := fun u => ext u.inv_val
-    div := fun a b ↦
-      { val := a * b⁻¹
-        inv := b * a⁻¹
-        val_inv := by rw [mul_assoc, inv_mul_cancel_left, mul_inv]
-        inv_val := by rw [mul_assoc, inv_mul_cancel_left, mul_inv] }
-    zpow := fun n a ↦ match n, a with
-      | Int.ofNat n, a => a ^ n
-      | Int.negSucc n, a => (a ^ n.succ)⁻¹
-    zpow_zero' := fun a ↦ by simp
-    zpow_succ' := fun n a ↦ by simp [pow_succ]
-    zpow_neg' := fun n a ↦ by simp }
+instance instGroup : Group αˣ where
+  mul_left_inv := fun u => ext u.inv_val
 
 /-- Units of a commutative monoid form a commutative group. -/
 @[to_additive "Additive units of an additive commutative monoid form
@@ -528,7 +541,7 @@ theorem divp_divp_eq_divp_mul (x : α) (u₁ u₂ : αˣ) : x /ₚ u₁ /ₚ u�
   simp only [divp, mul_inv_rev, Units.val_mul, mul_assoc]
 #align divp_divp_eq_divp_mul divp_divp_eq_divp_mul
 
-/- Port note: to match the mathlib3 behavior, this needs to have higher simp
+/- Porting note: to match the mathlib3 behavior, this needs to have higher simp
 priority than eq_divp_iff_mul_eq. -/
 @[field_simps 1010]
 theorem divp_eq_iff_mul_eq {x : α} {u : αˣ} {y : α} : x /ₚ u = y ↔ y * u = x :=
@@ -639,6 +652,21 @@ def IsUnit [Monoid M] (a : M) : Prop :=
 #align is_unit IsUnit
 #align is_add_unit IsAddUnit
 
+/-- See `isUnit_iff_exists_and_exists` for a similar lemma with two existentials. -/
+@[to_additive "See `isAddUnit_iff_exists_and_exists` for a similar lemma with two existentials."]
+lemma isUnit_iff_exists [Monoid M] {x : M} : IsUnit x ↔ ∃ b, x * b = 1 ∧ b * x = 1 := by
+  refine ⟨fun ⟨u, hu⟩ => ?_, fun ⟨b, h1b, h2b⟩ => ⟨⟨x, b, h1b, h2b⟩, rfl⟩⟩
+  subst x
+  exact ⟨u.inv, u.val_inv, u.inv_val⟩
+
+/-- See `isUnit_iff_exists` for a similar lemma with one existential. -/
+@[to_additive "See `isAddUnit_iff_exists` for a similar lemma with one existential."]
+theorem isUnit_iff_exists_and_exists [Monoid M] {a : M} :
+    IsUnit a ↔ (∃ b, a * b = 1) ∧ (∃ c, c * a = 1) :=
+  isUnit_iff_exists.trans
+    ⟨fun ⟨b, hba, hab⟩ => ⟨⟨b, hba⟩, ⟨b, hab⟩⟩,
+      fun ⟨⟨b, hb⟩, ⟨_, hc⟩⟩ => ⟨b, hb, left_inv_eq_right_inv hc hb ▸ hc⟩⟩
+
 @[to_additive (attr := nontriviality)]
 theorem isUnit_of_subsingleton [Monoid M] [Subsingleton M] (a : M) : IsUnit a :=
   ⟨⟨a, a, Subsingleton.elim _ _, Subsingleton.elim _ _⟩, rfl⟩
@@ -652,9 +680,7 @@ instance [Monoid M] : CanLift M Mˣ Units.val IsUnit :=
 /-- A subsingleton `Monoid` has a unique unit. -/
 @[to_additive "A subsingleton `AddMonoid` has a unique additive unit."]
 instance [Monoid M] [Subsingleton M] : Unique Mˣ where
-  default := 1
   uniq a := Units.val_eq_one.mp <| Subsingleton.elim (a : M) 1
-
 
 @[to_additive (attr := simp)]
 protected theorem Units.isUnit [Monoid M] (u : Mˣ) : IsUnit (u : M) :=
@@ -674,6 +700,11 @@ theorem isUnit_of_mul_eq_one [CommMonoid M] (a b : M) (h : a * b = 1) : IsUnit a
 #align is_unit_of_mul_eq_one isUnit_of_mul_eq_one
 #align is_add_unit_of_add_eq_zero isAddUnit_of_add_eq_zero
 
+@[to_additive]
+theorem isUnit_of_mul_eq_one_right [CommMonoid M] (a b : M) (h : a * b = 1) : IsUnit b := by
+  rw [mul_comm] at h
+  exact isUnit_of_mul_eq_one b a h
+
 section Monoid
 variable [Monoid M] {a b : M}
 
@@ -685,7 +716,7 @@ lemma IsUnit.exists_right_inv (h : IsUnit a) : ∃ b, a * b = 1 := by
 #align is_add_unit.exists_neg IsAddUnit.exists_neg
 
 @[to_additive IsAddUnit.exists_neg']
-lemma IsUnit.exists_left_inv [Monoid M] {a : M} (h : IsUnit a) : ∃ b, b * a = 1 := by
+lemma IsUnit.exists_left_inv {a : M} (h : IsUnit a) : ∃ b, b * a = 1 := by
   rcases h with ⟨⟨a, b, _, hba⟩, rfl⟩
   exact ⟨b, hba⟩
 #align is_unit.exists_left_inv IsUnit.exists_left_inv
@@ -903,7 +934,7 @@ def unit' (h : IsUnit a) : αˣ := ⟨a, a⁻¹, h.mul_inv_cancel, h.inv_mul_can
 #align is_unit.coe_unit' IsUnit.val_unit'
 #align is_add_unit.coe_add_unit' IsAddUnit.val_addUnit'
 
--- Porting note: TODO: `simps val_inv` fails
+-- Porting note (#11215): TODO: `simps val_inv` fails
 @[to_additive] lemma val_inv_unit' (h : IsUnit a) : ↑(h.unit'⁻¹) = a⁻¹ := rfl
 #align is_unit.coe_inv_unit' IsUnit.val_inv_unit'
 #align is_add_unit.coe_neg_add_unit' IsAddUnit.val_neg_addUnit'
@@ -992,10 +1023,10 @@ protected lemma div_mul_cancel (h : IsUnit b) (a : α) : a / b * b = a := by
 #align is_add_unit.sub_add_cancel IsAddUnit.sub_add_cancel
 
 @[to_additive (attr := simp)]
-protected lemma mul_div_cancel (h : IsUnit b) (a : α) : a * b / b = a := by
+protected lemma mul_div_cancel_right (h : IsUnit b) (a : α) : a * b / b = a := by
   rw [div_eq_mul_inv, h.mul_inv_cancel_right]
-#align is_unit.mul_div_cancel IsUnit.mul_div_cancel
-#align is_add_unit.add_sub_cancel IsAddUnit.add_sub_cancel
+#align is_unit.mul_div_cancel mul_div_cancel_right
+#align is_add_unit.add_sub_cancel add_sub_cancel_right
 
 @[to_additive]
 protected lemma mul_one_div_cancel (h : IsUnit a) : a * (1 / a) = 1 := by simp [h]
@@ -1057,10 +1088,13 @@ protected lemma div_eq_one_iff_eq (h : IsUnit b) : a / b = 1 ↔ a = b :=
 #align is_unit.div_eq_one_iff_eq IsUnit.div_eq_one_iff_eq
 #align is_add_unit.sub_eq_zero_iff_eq IsAddUnit.sub_eq_zero_iff_eq
 
-/-- The `Group` version of this lemma is `div_mul_cancel'''` -/
-@[to_additive "The `AddGroup` version of this lemma is `sub_add_cancel''`"]
+@[to_additive]
+protected lemma div_mul_cancel_right (h : IsUnit b) (a : α) : b / (a * b) = a⁻¹ := by
+  rw [div_eq_mul_inv, mul_inv_rev, h.mul_inv_cancel_left]
+
+@[to_additive]
 protected lemma div_mul_left (h : IsUnit b) : b / (a * b) = 1 / a := by
-  rw [div_eq_mul_inv, mul_inv_rev, h.mul_inv_cancel_left, one_div]
+  rw [h.div_mul_cancel_right, one_div]
 #align is_unit.div_mul_left IsUnit.div_mul_left
 #align is_add_unit.sub_add_left IsAddUnit.sub_add_left
 
@@ -1081,6 +1115,10 @@ section DivisionCommMonoid
 variable [DivisionCommMonoid α] {a b c d : α}
 
 @[to_additive]
+protected lemma div_mul_cancel_left (h : IsUnit a) (b : α) : a / (a * b) = b⁻¹ := by
+  rw [mul_comm, h.div_mul_cancel_right]
+
+@[to_additive]
 protected lemma div_mul_right (h : IsUnit a) (b : α) : a / (a * b) = 1 / b := by
   rw [mul_comm, h.div_mul_left]
 #align is_unit.div_mul_right IsUnit.div_mul_right
@@ -1088,15 +1126,15 @@ protected lemma div_mul_right (h : IsUnit a) (b : α) : a / (a * b) = 1 / b := b
 
 @[to_additive]
 protected lemma mul_div_cancel_left (h : IsUnit a) (b : α) : a * b / a = b := by
-  rw [mul_comm, h.mul_div_cancel]
-#align is_unit.mul_div_cancel_left IsUnit.mul_div_cancel_left
-#align is_add_unit.add_sub_cancel_left IsAddUnit.add_sub_cancel_left
+  rw [mul_comm, h.mul_div_cancel_right]
+#align is_unit.mul_div_cancel_left mul_div_cancel_left
+#align is_add_unit.add_sub_cancel_left add_sub_cancel_left
 
 @[to_additive]
-protected lemma mul_div_cancel' (h : IsUnit a) (b : α) : a * (b / a) = b := by
+protected lemma mul_div_cancel (h : IsUnit a) (b : α) : a * (b / a) = b := by
   rw [mul_comm, h.div_mul_cancel]
-#align is_unit.mul_div_cancel' IsUnit.mul_div_cancel'
-#align is_add_unit.add_sub_cancel' IsAddUnit.add_sub_cancel'
+#align is_unit.mul_div_cancel' IsUnit.mul_div_cancel
+#align is_add_unit.add_sub_cancel' IsAddUnit.add_sub_cancel
 
 @[to_additive]
 protected lemma mul_div_mul_left (h : IsUnit c) (a b : α) : c * a / (c * b) = a / b := by
@@ -1152,10 +1190,14 @@ section NoncomputableDefs
 
 variable {M : Type*}
 
+/-- Constructs an inv operation for a `Monoid` consisting only of units. -/
+noncomputable def invOfIsUnit [Monoid M] (h : ∀ a : M, IsUnit a) : Inv M where
+  inv := fun a => ↑(h a).unit⁻¹
+
 /-- Constructs a `Group` structure on a `Monoid` consisting only of units. -/
 noncomputable def groupOfIsUnit [hM : Monoid M] (h : ∀ a : M, IsUnit a) : Group M :=
   { hM with
-    inv := fun a => ↑(h a).unit⁻¹,
+    toInv := invOfIsUnit h,
     mul_left_inv := fun a => by
       change ↑(h a).unit⁻¹ * a = 1
       rw [Units.inv_mul_eq_iff_eq_mul, (h a).unit_spec, mul_one] }
@@ -1164,10 +1206,21 @@ noncomputable def groupOfIsUnit [hM : Monoid M] (h : ∀ a : M, IsUnit a) : Grou
 /-- Constructs a `CommGroup` structure on a `CommMonoid` consisting only of units. -/
 noncomputable def commGroupOfIsUnit [hM : CommMonoid M] (h : ∀ a : M, IsUnit a) : CommGroup M :=
   { hM with
-    inv := fun a => ↑(h a).unit⁻¹,
+    toInv := invOfIsUnit h,
     mul_left_inv := fun a => by
       change ↑(h a).unit⁻¹ * a = 1
       rw [Units.inv_mul_eq_iff_eq_mul, (h a).unit_spec, mul_one] }
 #align comm_group_of_is_unit commGroupOfIsUnit
 
 end NoncomputableDefs
+
+attribute [deprecated div_mul_cancel_right (since := "2024-03-20")] IsUnit.div_mul_left
+attribute [deprecated sub_add_cancel_right (since := "2024-03-20")] IsAddUnit.sub_add_left
+attribute [deprecated div_mul_cancel_left (since := "2024-03-20")] IsUnit.div_mul_right
+attribute [deprecated sub_add_cancel_left (since := "2024-03-20")] IsAddUnit.sub_add_right
+-- The names `IsUnit.mul_div_cancel` and `IsAddUnit.add_sub_cancel` have been reused
+-- @[deprecated (since := "2024-03-20")] alias IsUnit.mul_div_cancel := IsUnit.mul_div_cancel_right
+-- @[deprecated (since := "2024-03-20")]
+-- alias IsAddUnit.add_sub_cancel := IsAddUnit.add_sub_cancel_right
+@[deprecated (since := "2024-03-20")] alias IsUnit.mul_div_cancel' := IsUnit.mul_div_cancel
+@[deprecated (since := "2024-03-20")] alias IsAddUnit.add_sub_cancel' := IsAddUnit.add_sub_cancel

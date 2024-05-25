@@ -28,7 +28,7 @@ Jordan algebras arising this way are said to be special.
 
 A real Jordan algebra `A` can be introduced by
 ```lean
-variables {A : Type*} [NonUnitalNonAssocRing A] [Module ℝ A] [SMulCommClass ℝ A A]
+variable {A : Type*} [NonUnitalNonAssocCommRing A] [Module ℝ A] [SMulCommClass ℝ A A]
   [IsScalarTower ℝ A A] [IsCommJordan A]
 ```
 
@@ -179,8 +179,7 @@ theorem two_nsmul_lie_lmul_lmul_add_eq_lie_lmul_lmul_add (a b : A) :
 #align two_nsmul_lie_lmul_lmul_add_eq_lie_lmul_lmul_add two_nsmul_lie_lmul_lmul_add_eq_lie_lmul_lmul_add
 
 -- Porting note: the monolithic `calc`-based proof of `two_nsmul_lie_lmul_lmul_add_add_eq_zero`
--- has had four auxiliary parts `aux{0,1,2,3}` split off from it. Even with this splitting
--- `aux1` and `aux2` still need a (small) increase in `maxHeartbeats` to avoid timeouts.
+-- has had four auxiliary parts `aux{0,1,2,3}` split off from it.
 private theorem aux0 {a b c : A} : ⁅L (a + b + c), L ((a + b + c) * (a + b + c))⁆ =
     ⁅L a + L b + L c, L (a * a) + L (b * b) + L (c * c) +
     2 • L (a * b) + 2 • L (c * a) + 2 • L (b * c)⁆ := by
@@ -192,7 +191,6 @@ private theorem aux0 {a b c : A} : ⁅L (a + b + c), L ((a + b + c) * (a + b + c
   simp only [lie_add, add_lie, commute_lmul_lmul_sq, zero_add, add_zero]
   abel
 
-set_option maxHeartbeats 300000 in
 private theorem aux1 {a b c : A} :
     ⁅L a + L b + L c, L (a * a) + L (b * b) + L (c * c) +
     2 • L (a * b) + 2 • L (c * a) + 2 • L (b * c)⁆
@@ -206,7 +204,6 @@ private theorem aux1 {a b c : A} :
   rw [add_lie, add_lie]
   iterate 15 rw [lie_add]
 
-set_option maxHeartbeats 300000 in
 private theorem aux2 {a b c : A} :
     ⁅L a, L (a * a)⁆ + ⁅L a, L (b * b)⁆ + ⁅L a, L (c * c)⁆ +
     ⁅L a, 2 • L (a * b)⁆ + ⁅L a, 2 • L (c * a)⁆ + ⁅L a, 2 • L (b * c)⁆ +

@@ -80,7 +80,8 @@ universe u v
 
 open Function Set Filter
 
-open BigOperators Topology Classical
+open scoped Classical
+open BigOperators Topology
 
 noncomputable section
 
@@ -180,7 +181,7 @@ section finsupport
 variable {s : Set X} (ρ : PartitionOfUnity ι X s) (x₀ : X)
 
 /-- The support of a partition of unity at a point `x₀` as a `Finset`.
-  This is the set of `i : ι` such that `f i` doesn't vanish at `x₀`. -/
+  This is the set of `i : ι` such that `x₀ ∈ support f i`, i.e. `f i ≠ x₀`. -/
 def finsupport : Finset ι := (ρ.locallyFinite.point_finite x₀).toFinset
 
 @[simp]
@@ -210,7 +211,7 @@ theorem sum_finsupport' (hx₀ : x₀ ∈ s) {I : Finset ι} (hI : ρ.finsupport
   simp only [Finset.mem_sdiff, ρ.mem_finsupport, mem_support, Classical.not_not] at hx
   exact hx.2
 
-theorem sum_finsupport_smul_eq_finsum {M : Type _} [AddCommGroup M] [Module ℝ M] (φ : ι → X → M) :
+theorem sum_finsupport_smul_eq_finsum {M : Type*} [AddCommGroup M] [Module ℝ M] (φ : ι → X → M) :
     ∑ i in ρ.finsupport x₀, ρ i x₀ • φ i x₀ = ∑ᶠ i, ρ i x₀ • φ i x₀ := by
   apply (finsum_eq_sum_of_support_subset _ _).symm
   have : (fun i ↦ (ρ i) x₀ • φ i x₀) = (fun i ↦ (ρ i) x₀) • (fun i ↦ φ i x₀) :=
@@ -219,6 +220,44 @@ theorem sum_finsupport_smul_eq_finsum {M : Type _} [AddCommGroup M] [Module ℝ 
   exact inter_subset_left _ _
 
 end finsupport
+
+section fintsupport -- partitions of unity have locally finite `tsupport`
+
+variable {s : Set X} (ρ : PartitionOfUnity ι X s) (x₀ : X)
+
+/-- The `tsupport`s of a partition of unity are locally finite. -/
+theorem finite_tsupport : {i | x₀ ∈ tsupport (ρ i)}.Finite := by
+  rcases ρ.locallyFinite x₀ with ⟨t, t_in, ht⟩
+  apply ht.subset
+  rintro i hi
+  simp only [inter_comm]
+  exact mem_closure_iff_nhds.mp hi t t_in
+
+/-- The tsupport of a partition of unity at a point `x₀` as a `Finset`.
+  This is the set of `i : ι` such that `x₀ ∈ tsupport f i`. -/
+def fintsupport (x₀ : X) : Finset ι :=
+  (ρ.finite_tsupport x₀).toFinset
+
+theorem mem_fintsupport_iff (i : ι) : i ∈ ρ.fintsupport x₀ ↔ x₀ ∈ tsupport (ρ i) :=
+  Finite.mem_toFinset _
+
+theorem eventually_fintsupport_subset :
+    ∀ᶠ y in 𝓝 x₀, ρ.fintsupport y ⊆ ρ.fintsupport x₀ := by
+  apply (ρ.locallyFinite.closure.eventually_subset (fun _ ↦ isClosed_closure) x₀).mono
+  intro y hy z hz
+  rw [PartitionOfUnity.mem_fintsupport_iff] at *
+  exact hy hz
+
+theorem finsupport_subset_fintsupport : ρ.finsupport x₀ ⊆ ρ.fintsupport x₀ := fun i hi ↦ by
+  rw [ρ.mem_fintsupport_iff]
+  apply subset_closure
+  exact (ρ.mem_finsupport x₀).mp hi
+
+theorem eventually_finsupport_subset : ∀ᶠ y in 𝓝 x₀, ρ.finsupport y ⊆ ρ.fintsupport x₀ :=
+  (ρ.eventually_fintsupport_subset x₀).mono
+    fun y hy ↦ (ρ.finsupport_subset_fintsupport y).trans hy
+
+end fintsupport
 
 /-- If `f` is a partition of unity on `s : Set X` and `g : X → E` is continuous at every point of
 the topological support of some `f i`, then `fun x ↦ f i x • g x` is continuous on the whole space.
@@ -263,7 +302,7 @@ theorem exists_finset_nhd (ρ : PartitionOfUnity ι X univ) (x₀ : X) :
 
 theorem exists_finset_nhd_support_subset {U : ι → Set X} (hso : f.IsSubordinate U)
     (ho : ∀ i, IsOpen (U i)) (x : X) :
-    ∃ (is : Finset ι),  ∃ n ∈ 𝓝 x, n ⊆ ⋂ i ∈ is, U i ∧ ∀ z ∈ n, (support (f · z)) ⊆ is :=
+    ∃ is : Finset ι, ∃ n ∈ 𝓝 x, n ⊆ ⋂ i ∈ is, U i ∧ ∀ z ∈ n, (support (f · z)) ⊆ is :=
   f.locallyFinite.exists_finset_nhd_support_subset hso ho x
 #align partition_of_unity.exists_finset_nhd_support_subset PartitionOfUnity.exists_finset_nhd_support_subset
 
@@ -360,8 +399,8 @@ theorem exists_isSubordinate_of_locallyFinite_of_prop [NormalSpace X] (p : (X �
     h01 _ _ (isClosed_compl_iff.2 <| hVo i) isClosed_closure
       (disjoint_right.2 fun x hx => Classical.not_not.2 (hWV i hx))
   have hsupp : ∀ i, support (f i) ⊆ V i := fun i => support_subset_iff'.2 (hf0 i)
-  refine' ⟨⟨f, hf.subset fun i => Subset.trans (hsupp i) (hVU' i), fun i x => (hf01 i x).1,
-      fun i x => (hf01 i x).2, fun x hx => _⟩,
+  refine ⟨⟨f, hf.subset fun i => Subset.trans (hsupp i) (hVU' i), fun i x => (hf01 i x).1,
+      fun i x => (hf01 i x).2, fun x hx => ?_⟩,
     hfp, fun i => Subset.trans (closure_mono (hsupp i)) (hVU i)⟩
   rcases mem_iUnion.1 (hsW hx) with ⟨i, hi⟩
   exact ⟨i, ((hf1 i).mono subset_closure).eventuallyEq_of_mem ((hWo i).mem_nhds hi)⟩
@@ -443,8 +482,8 @@ theorem support_toPOUFun_subset (i : ι) : support (f.toPOUFun i) ⊆ support (f
 theorem toPOUFun_eq_mul_prod (i : ι) (x : X) (t : Finset ι)
     (ht : ∀ j, WellOrderingRel j i → f j x ≠ 0 → j ∈ t) :
     f.toPOUFun i x = f i x * ∏ j in t.filter fun j => WellOrderingRel j i, (1 - f j x) := by
-  refine' congr_arg _ (finprod_cond_eq_prod_of_cond_iff _ fun {j} hj => _)
-  rw [Ne.def, sub_eq_self] at hj
+  refine congr_arg _ (finprod_cond_eq_prod_of_cond_iff _ fun {j} hj => ?_)
+  rw [Ne, sub_eq_self] at hj
   rw [Finset.mem_filter, Iff.comm, and_iff_right_iff_imp]
   exact flip (ht j) hj
 #align bump_covering.to_pou_fun_eq_mul_prod BumpCovering.toPOUFun_eq_mul_prod
@@ -461,7 +500,7 @@ theorem sum_toPOUFun_eq (x : X) : ∑ᶠ i, f.toPOUFun i x = 1 - ∏ᶠ i, (1 - 
   letI : LinearOrder ι := linearOrderOfSTO WellOrderingRel
   rw [finsum_eq_sum_of_support_subset _ A, finprod_eq_prod_of_mulSupport_subset _ B,
     Finset.prod_one_sub_ordered, sub_sub_cancel]
-  refine' Finset.sum_congr rfl fun i _ => _
+  refine Finset.sum_congr rfl fun i _ => ?_
   convert f.toPOUFun_eq_mul_prod _ _ _ fun j _ hj => _
   rwa [Finite.mem_toFinset]
 #align bump_covering.sum_to_pou_fun_eq BumpCovering.sum_toPOUFun_eq
@@ -478,8 +517,8 @@ theorem exists_finset_toPOUFun_eventuallyEq (i : ι) (x : X) : ∃ t : Finset ι
 #align bump_covering.exists_finset_to_pou_fun_eventually_eq BumpCovering.exists_finset_toPOUFun_eventuallyEq
 
 theorem continuous_toPOUFun (i : ι) : Continuous (f.toPOUFun i) := by
-  refine' (f i).continuous.mul <|
-    continuous_finprod_cond (fun j _ => continuous_const.sub (f j).continuous) _
+  refine (f i).continuous.mul <|
+    continuous_finprod_cond (fun j _ => continuous_const.sub (f j).continuous) ?_
   simp only [mulSupport_one_sub]
   exact f.locallyFinite
 #align bump_covering.continuous_to_pou_fun BumpCovering.continuous_toPOUFun

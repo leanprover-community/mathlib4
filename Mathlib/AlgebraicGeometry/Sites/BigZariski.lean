@@ -1,10 +1,11 @@
 /-
 Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
+Authors: Joël Riou, Adam Topaz
 -/
 import Mathlib.AlgebraicGeometry.Pullbacks
 import Mathlib.CategoryTheory.Sites.Pretopology
+import Mathlib.CategoryTheory.Sites.Canonical
 /-!
 # The big Zariski site of schemes
 
@@ -41,7 +42,7 @@ def zariskiPretopology : Pretopology (Scheme.{u}) where
   pullbacks := by
     rintro Y X f _ ⟨U, rfl⟩
     exact ⟨U.pullbackCover' f, (Presieve.ofArrows_pullback _ _ _).symm⟩
-  Transitive := by
+  transitive := by
     rintro X _ T ⟨U, rfl⟩ H
     choose V hV using H
     use U.bind (fun j => V (U.map j) ⟨j⟩)
@@ -65,9 +66,28 @@ lemma zariskiTopology_openCover {Y : Scheme.{u}} (U : OpenCover.{v} Y) :
       f := id
       Covers := U.Covers
       IsOpen := fun _ => U.IsOpen _ }
-  refine' ⟨_, zariskiPretopology_openCover V, _⟩
+  refine ⟨_, zariskiPretopology_openCover V, ?_⟩
   rintro _ _ ⟨y⟩
   exact ⟨_, 𝟙 _, U.map (U.f y), ⟨_⟩, by simp⟩
+
+lemma subcanonical_zariskiTopology : Sheaf.Subcanonical zariskiTopology := by
+  apply Sheaf.Subcanonical.of_yoneda_isSheaf
+  intro X
+  rw [Presieve.isSheaf_pretopology]
+  rintro Y S ⟨𝓤,rfl⟩ x hx
+  let e : Y ⟶ X := 𝓤.glueMorphisms (fun j => x (𝓤.map _) (.mk _)) <| by
+    intro i j
+    apply hx
+    exact Limits.pullback.condition
+  refine ⟨e, ?_, ?_⟩
+  · rintro Z e ⟨j⟩
+    dsimp [e]
+    rw [𝓤.ι_glueMorphisms]
+  · intro e' h
+    apply 𝓤.hom_ext
+    intro j
+    rw [𝓤.ι_glueMorphisms]
+    exact h (𝓤.map j) (.mk j)
 
 end Scheme
 

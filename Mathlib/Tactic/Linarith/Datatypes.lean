@@ -16,7 +16,7 @@ We split them into their own file.
 This file also contains a few convenient auxiliary functions.
 -/
 
-open Lean Elab Tactic Meta
+open Lean Elab Tactic Meta Qq
 
 initialize registerTraceClass `linarith
 initialize registerTraceClass `linarith.detail
@@ -41,8 +41,7 @@ Some functions on `Linexp` assume that `n : Nat` occurs at most once as the firs
 and that the list is sorted in decreasing order of the first argument.
 This is not enforced by the type but the operations here preserve it.
 -/
-@[reducible]
-def Linexp : Type := List (Nat × Int)
+abbrev Linexp : Type := List (Nat × Int)
 
 namespace Linexp
 /--
@@ -164,7 +163,7 @@ end Ineq
 The main datatype for FM elimination.
 Variables are represented by natural numbers, each of which has an integer coefficient.
 Index 0 is reserved for constants, i.e. `coeffs.find 0` is the coefficient of 1.
-The represented term is `coeffs.sum (λ ⟨k, v⟩, v * Var[k])`.
+The represented term is `coeffs.sum (fun ⟨k, v⟩ ↦ v * Var[k])`.
 str determines the strength of the comparison -- is it < 0, ≤ 0, or = 0?
 -/
 structure Comp : Type where
@@ -299,18 +298,19 @@ instance GlobalPreprocessorToGlobalBranchingPreprocessor :
   ⟨GlobalPreprocessor.branching⟩
 
 /--
-A `CertificateOracle` is a function
+A `CertificateOracle` provides a function
 `produceCertificate : List Comp → Nat → MetaM (HashMap Nat Nat)`.
-`produceCertificate hyps max_var` tries to derive a contradiction from the comparisons in `hyps`
-by eliminating all variables ≤ `max_var`.
-If successful, it returns a map `coeff : Nat → Nat` as a certificate.
-This map represents that we can find a contradiction by taking the sum `∑ (coeff i) * hyps[i]`.
 
 The default `CertificateOracle` used by `linarith` is
-`Linarith.FourierMotzkin.produceCertificate`.
+`Linarith.CertificateOracle.simplexAlgorithm`.
+`Linarith.CertificateOracle.fourierMotzkin` is also available (though has some bugs).
 -/
-def CertificateOracle : Type :=
-  List Comp → Nat → MetaM (Std.HashMap Nat Nat)
+structure CertificateOracle : Type where
+  /-- `produceCertificate hyps max_var` tries to derive a contradiction from the comparisons in
+  `hyps` by eliminating all variables ≤ `max_var`.
+  If successful, it returns a map `coeff : Nat → Nat` as a certificate.
+  This map represents that we can find a contradiction by taking the sum `∑ (coeff i) * hyps[i]`. -/
+  produceCertificate (hyps : List Comp) (max_var : Nat) : MetaM (Batteries.HashMap Nat Nat)
 
 open Meta
 
@@ -335,7 +335,7 @@ structure LinarithConfig : Type where
   /-- Override the list of preprocessors. -/
   preprocessors : Option (List GlobalBranchingPreprocessor) := none
   /-- Specify an oracle for identifying candidate contradictions.
-  The only implementation here is Fourier-Motzkin elimination. -/
+  `.simplexAlgorithm` and `.fourierMotzkin` are both available. -/
   oracle : Option CertificateOracle := none
 
 /--
@@ -400,7 +400,7 @@ def mkSingleCompZeroOf (c : Nat) (h : Expr) : MetaM (Ineq × Expr) := do
   else if c = 1 then return (iq, h)
   else do
     let tp ← inferType (← getRelSides (← inferType h)).2
-    let cpos ← mkAppM ``GT.gt #[(← tp.ofNat c), (← tp.ofNat 0)]
+    let cpos : Q(Prop) ← mkAppM ``GT.gt #[(← tp.ofNat c), (← tp.ofNat 0)]
     let ex ← synthesizeUsingTactic' cpos (← `(tactic| norm_num))
     let e' ← mkAppM iq.toConstMulName #[h, ex]
     return (iq, e')

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Lattice
 
 #align_import data.set.sigma from "leanprover-community/mathlib"@"2258b40dacd2942571c8ce136215350c702dc78f"
 
@@ -42,7 +43,7 @@ theorem image_sigmaMk_preimage_sigmaMap_subset {β : ι' → Type*} (f : ι → 
 theorem image_sigmaMk_preimage_sigmaMap {β : ι' → Type*} {f : ι → ι'} (hf : Function.Injective f)
     (g : ∀ i, α i → β (f i)) (i : ι) (s : Set (β (f i))) :
     Sigma.mk i '' (g i ⁻¹' s) = Sigma.map f g ⁻¹' (Sigma.mk (f i) '' s) := by
-  refine' (image_sigmaMk_preimage_sigmaMap_subset f g i s).antisymm _
+  refine (image_sigmaMk_preimage_sigmaMap_subset f g i s).antisymm ?_
   rintro ⟨j, x⟩ ⟨y, hys, hxy⟩
   simp only [hf.eq_iff, Sigma.map, Sigma.ext_iff] at hxy
   rcases hxy with ⟨rfl, hxy⟩; rw [heq_iff_eq] at hxy; subst y
@@ -50,7 +51,7 @@ theorem image_sigmaMk_preimage_sigmaMap {β : ι' → Type*} {f : ι → ι'} (h
 #align set.image_sigma_mk_preimage_sigma_map Set.image_sigmaMk_preimage_sigmaMap
 
 /-- Indexed sum of sets. `s.sigma t` is the set of dependent pairs `⟨i, a⟩` such that `i ∈ s` and
-`a ∈ t i`.-/
+`a ∈ t i`. -/
 protected def sigma (s : Set ι) (t : ∀ i, Set (α i)) : Set (Σ i, α i) := {x | x.1 ∈ s ∧ x.2 ∈ t x.1}
 #align set.sigma Set.sigma
 
@@ -131,6 +132,44 @@ theorem sigma_inter_sigma : s₁.sigma t₁ ∩ s₂.sigma t₂ = (s₁ ∩ s₂
   ext ⟨x, y⟩
   simp [and_assoc, and_left_comm]
 #align set.sigma_inter_sigma Set.sigma_inter_sigma
+
+variable {β : Type*} [CompleteLattice β]
+
+theorem _root_.biSup_sigma (s : Set ι) (t : ∀ i, Set (α i)) (f : Sigma α → β) :
+    ⨆ ij ∈ s.sigma t, f ij = ⨆ (i ∈ s) (j ∈ t i), f ⟨i, j⟩ :=
+  eq_of_forall_ge_iff fun _ ↦ ⟨by simp_all, by simp_all⟩
+
+theorem _root_.biSup_sigma' (s : Set ι) (t : ∀ i, Set (α i)) (f : ∀ i, α i → β) :
+    ⨆ (i ∈ s) (j ∈ t i), f i j = ⨆ ij ∈ s.sigma t, f ij.fst ij.snd :=
+  Eq.symm (biSup_sigma _ _ _)
+
+theorem _root_.biInf_sigma (s : Set ι) (t : ∀ i, Set (α i)) (f : Sigma α → β) :
+    ⨅ ij ∈ s.sigma t, f ij = ⨅ (i ∈ s) (j ∈ t i), f ⟨i, j⟩ :=
+  biSup_sigma (β := βᵒᵈ) _ _ _
+
+theorem _root_.biInf_sigma' (s : Set ι) (t : ∀ i, Set (α i)) (f : ∀ i, α i → β) :
+    ⨅ (i ∈ s) (j ∈ t i), f i j = ⨅ ij ∈ s.sigma t, f ij.fst ij.snd :=
+  Eq.symm (biInf_sigma _ _ _)
+
+variable {β : Type*}
+
+theorem biUnion_sigma (s : Set ι) (t : ∀ i, Set (α i)) (f : Sigma α → Set β) :
+    ⋃ ij ∈ s.sigma t, f ij = ⋃ i ∈ s, ⋃ j ∈ t i, f ⟨i, j⟩ :=
+  biSup_sigma _ _ _
+
+theorem biUnion_sigma' (s : Set ι) (t : ∀ i, Set (α i)) (f : ∀ i, α i → Set β) :
+    ⋃ i ∈ s, ⋃ j ∈ t i, f i j = ⋃ ij ∈ s.sigma t, f ij.fst ij.snd :=
+  biSup_sigma' _ _ _
+
+theorem biInter_sigma (s : Set ι) (t : ∀ i, Set (α i)) (f : Sigma α → Set β) :
+    ⋂ ij ∈ s.sigma t, f ij = ⋂ i ∈ s, ⋂ j ∈ t i, f ⟨i, j⟩ :=
+  biInf_sigma _ _ _
+
+theorem biInter_sigma' (s : Set ι) (t : ∀ i, Set (α i)) (f : ∀ i, α i → Set β) :
+    ⋂ i ∈ s, ⋂ j ∈ t i, f i j = ⋂ ij ∈ s.sigma t, f ij.fst ij.snd :=
+  biInf_sigma' _ _ _
+
+variable {β : ι → Type*}
 
 theorem insert_sigma : (insert i s).sigma t = Sigma.mk i '' t i ∪ s.sigma t := by
   rw [insert_eq, union_sigma, singleton_sigma]

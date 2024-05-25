@@ -7,7 +7,6 @@ import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Functor.Const
 import Mathlib.Tactic.FinCases
-import Std.Tactic.Omega
 
 /-!
 # Composable arrows
@@ -31,12 +30,25 @@ like `mk₁ f`, `mk₂ f g`, `mk₃ f g h` for `ComposableArrows C n` for small 
 TODO (@joelriou):
 * redefine `Arrow C` as `ComposableArrow C 1`?
 * construct some elements in `ComposableArrows m (Fin (n + 1))` for small `n`
-the precomposition with which shall induce funtors
+the precomposition with which shall induce functors
 `ComposableArrows C n ⥤ ComposableArrows C m` which correspond to simplicial operations
 (specifically faces) with good definitional properties (this might be necessary for
 up to `n = 7` in order to formalize spectral sequences following Verdier)
 
 -/
+
+/-!
+New `simprocs` that run even in `dsimp` have caused breakages in this file.
+
+(e.g. `dsimp` can now simplify `2 + 3` to `5`)
+
+For now, we just turn off simprocs in this file.
+We'll soon provide finer grained options here, e.g. to turn off simprocs only in `dsimp`, etc.
+
+*However*, hopefully it is possible to refactor the material here so that no backwards compatibility
+`set_option`s are required at all
+-/
+set_option simprocs false
 
 namespace CategoryTheory
 
@@ -174,7 +186,7 @@ def homMk {F G : ComposableArrows C n} (app : ∀ i, F.obj i ⟶ G.obj i)
       obtain rfl := hj
       rw [F.map'_self i, G.map'_self i, id_comp, comp_id]
     · intro i j hj hj'
-      rw [Nat.succ_eq_add_one, ← add_assoc] at hj
+      rw [← add_assoc] at hj
       subst hj
       rw [F.map'_comp i (i + k) (i + k + 1), G.map'_comp i (i + k) (i + k + 1), assoc,
         w (i + k) (by valid), reassoc_of% (hk i (i + k) rfl (by valid))]
@@ -343,13 +355,13 @@ lemma map_comp {i j k : Fin (n + 1 + 1)} (hij : i ≤ j) (hjk : j ≤ k) :
     · dsimp
       rw [id_comp]
     · obtain _ | _ | k := k
-      · simp at hjk
-      · dsimp
-        rw [F.map_id, comp_id]
+      · simp [Nat.succ.injEq] at hjk
+      · simp
       · rfl
     · obtain _ | _ | k := k
       · simp [Fin.ext_iff] at hjk
-      · simp [Fin.le_def, Nat.succ_eq_add_one] at hjk
+      · simp [Fin.le_def] at hjk
+        omega
       · dsimp
         rw [assoc, ← F.map_comp, homOfLE_comp]
   · obtain _ | j := j
@@ -367,7 +379,7 @@ def precomp {X : C} (f : X ⟶ F.left) : ComposableArrows C (n + 1) where
   obj := Precomp.obj F X
   map g := Precomp.map F f _ _ (leOfHom g)
   map_id := Precomp.map_id F f
-  map_comp g g' := (Precomp.map_comp F f (leOfHom g) (leOfHom g'))
+  map_comp g g' := Precomp.map_comp F f (leOfHom g) (leOfHom g')
 
 /-- Constructor for `ComposableArrows C 2`. -/
 @[simp]
@@ -498,8 +510,7 @@ lemma hom_ext_succ {F G : ComposableArrows C (n + 1)} {f g : F ⟶ G}
   ext ⟨i, hi⟩
   obtain _ | i := i
   · exact h₀
-  · rw [Nat.succ_eq_add_one] at hi
-    exact congr_app h₁ ⟨i, by valid⟩
+  · exact congr_app h₁ ⟨i, by valid⟩
 
 /-- Inductive construction of isomorphisms in `ComposableArrows C (n + 1)`: in order to
 construct an isomorphism `F ≅ G`, it suffices to provide `α : F.obj' 0 ≅ G.obj' 0` and
@@ -530,8 +541,7 @@ lemma ext_succ {F G : ComposableArrows C (n + 1)} (h₀ : F.obj' 0 = G.obj' 0)
     intro ⟨i, hi⟩
     cases' i with i
     · exact h₀
-    · rw [Nat.succ_eq_add_one] at hi
-      exact Functor.congr_obj h ⟨i, by valid⟩
+    · exact Functor.congr_obj h ⟨i, by valid⟩
   exact Functor.ext_of_iso (isoMkSucc (eqToIso h₀) (eqToIso h) (by
       rw [w]
       dsimp [app']
@@ -845,9 +855,9 @@ lemma mkOfObjOfMapSucc_exists : ∃ (F : ComposableArrows C n) (e : ∀ i, F.obj
     exact ⟨mk₀ (obj 0), fun 0 => Iso.refl _, fun i hi => by simp at hi⟩
   · intro obj mapSucc
     obtain ⟨F, e, h⟩ := hn (fun i => obj i.succ) (fun i => mapSucc i.succ)
-    refine' ⟨F.precomp (mapSucc 0 ≫ (e 0).inv), fun i => match i with
+    refine ⟨F.precomp (mapSucc 0 ≫ (e 0).inv), fun i => match i with
       | 0 => Iso.refl _
-      | ⟨i + 1, hi⟩ => e _, fun i hi => _⟩
+      | ⟨i + 1, hi⟩ => e _, fun i hi => ?_⟩
     obtain _ | i := i
     · dsimp
       rw [assoc, Iso.inv_hom_id, comp_id]

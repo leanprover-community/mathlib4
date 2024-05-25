@@ -105,7 +105,7 @@ protected lemma sUnion (hT : T.Finite) (hs : ∀ t ∈ T, Absorbs M s t) :
 @[simp]
 lemma _root_.absorbs_iUnion {ι : Sort*} [Finite ι] {t : ι → Set α} :
     Absorbs M s (⋃ i, t i) ↔ ∀ i, Absorbs M s (t i) :=
-  (finite_range t).absorbs_sUnion.trans forall_range_iff
+  (finite_range t).absorbs_sUnion.trans forall_mem_range
 
 protected alias ⟨_, iUnion⟩ := absorbs_iUnion
 
@@ -155,11 +155,16 @@ variable {G₀ α : Type*} [GroupWithZero G₀] [Bornology G₀] [MulAction G₀
 protected lemma univ : Absorbs G₀ univ s :=
   (eventually_ne_cobounded 0).mono fun a ha ↦ by rw [smul_set_univ₀ ha]; apply subset_univ
 
+lemma _root_.absorbs_iff_eventually_cobounded_mapsTo :
+    Absorbs G₀ s t ↔ ∀ᶠ c in cobounded G₀, MapsTo (c⁻¹ • ·) t s :=
+  eventually_congr <| (eventually_ne_cobounded 0).mono fun c hc ↦ by
+    rw [← preimage_smul_inv₀ hc]; rfl
+
+alias ⟨eventually_cobounded_mapsTo, _⟩ := absorbs_iff_eventually_cobounded_mapsTo
+
 lemma _root_.Set.Finite.absorbs_sInter (hS : S.Finite) :
     Absorbs G₀ (⋂₀ S) t ↔ ∀ s ∈ S, Absorbs G₀ s t := by
-  simp only [Absorbs, ← hS.eventually_all]
-  refine eventually_congr <| (eventually_ne_cobounded 0).mono fun a ha ↦ ?_
-  simp only [← preimage_smul_inv₀ ha, preimage_sInter, subset_iInter_iff]
+  simp only [absorbs_iff_eventually_cobounded_mapsTo, mapsTo_sInter, hS.eventually_all]
 
 protected alias ⟨_, sInter⟩ := Set.Finite.absorbs_sInter
 
@@ -175,23 +180,21 @@ protected lemma inter (hs : Absorbs G₀ s u) (ht : Absorbs G₀ t u) : Absorbs 
 @[simp]
 lemma _root_.absorbs_iInter {ι : Sort*} [Finite ι] {s : ι → Set α} :
     Absorbs G₀ (⋂ i, s i) t ↔ ∀ i, Absorbs G₀ (s i) t :=
-  (finite_range s).absorbs_sInter.trans forall_range_iff
+  (finite_range s).absorbs_sInter.trans forall_mem_range
 
 protected alias ⟨_, iInter⟩ := absorbs_iInter
 
 lemma _root_.Set.Finite.absorbs_biInter {ι : Type*} {I : Set ι} (hI : I.Finite) {s : ι → Set α} :
     Absorbs G₀ (⋂ i ∈ I, s i) t ↔ ∀ i ∈ I, Absorbs G₀ (s i) t := by
-  simpa only [sInter_image, ball_image_iff] using (hI.image s).absorbs_sInter
+  simpa only [sInter_image, forall_mem_image] using (hI.image s).absorbs_sInter
 
 protected alias ⟨_, biInter⟩ := Set.Finite.absorbs_biInter
 
 @[simp]
 lemma _root_.absorbs_zero_iff [NeBot (cobounded G₀)] {E : Type*} [AddMonoid E]
     [DistribMulAction G₀ E] {s : Set E} : Absorbs G₀ s 0 ↔ 0 ∈ s := by
-  refine ⟨fun h ↦ ?_, .zero⟩
-  rcases (h.and (eventually_ne_cobounded 0)).exists with ⟨c, hc, hc₀⟩
-  rcases hc rfl with ⟨x, hx, hx₀⟩
-  rwa [← smul_zero c⁻¹, ← hx₀, inv_smul_smul₀ hc₀]
+  simp only [absorbs_iff_eventually_cobounded_mapsTo, ← singleton_zero,
+    mapsTo_singleton, smul_zero, eventually_const]
 #align absorbs_zero_iff absorbs_zero_iff
 
 end GroupWithZero
@@ -259,8 +262,7 @@ lemma absorbent_univ : Absorbent G₀ (univ : Set α) := fun _ ↦ .univ
 
 lemma absorbent_iff_inv_smul {s : Set α} :
     Absorbent G₀ s ↔ ∀ x, ∀ᶠ c in cobounded G₀, c⁻¹ • x ∈ s :=
-  forall_congr' fun x ↦ eventually_congr <| (eventually_ne_cobounded 0).mono fun c hc ↦ by
-    rw [singleton_subset_iff, ← preimage_smul_inv₀ hc, mem_preimage]
+  forall_congr' fun x ↦ by simp only [absorbs_iff_eventually_cobounded_mapsTo, mapsTo_singleton]
 
 lemma Absorbent.zero_mem [NeBot (cobounded G₀)] [AddMonoid E] [DistribMulAction G₀ E]
     {s : Set E} (hs : Absorbent G₀ s) : (0 : E) ∈ s :=

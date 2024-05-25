@@ -40,9 +40,11 @@ notation:25 Q₁ " →qᵢ " Q₂:0 => Isometry Q₁ Q₂
 variable {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
 variable {Q₃ : QuadraticForm R M₃} {Q₄ : QuadraticForm R M₄}
 
-instance instLinearMapClass : LinearMapClass (Q₁ →qᵢ Q₂) R M₁ M₂ where
+instance instFunLike : FunLike (Q₁ →qᵢ Q₂) M₁ M₂ where
   coe f := f.toLinearMap
   coe_injective' f g h := by cases f; cases g; congr; exact DFunLike.coe_injective h
+
+instance instLinearMapClass : LinearMapClass (Q₁ →qᵢ Q₂) R M₁ M₂ where
   map_add f := f.toLinearMap.map_add
   map_smulₛₗ f := f.toLinearMap.map_smul
 
@@ -72,6 +74,15 @@ theorem coe_toLinearMap (f : Q₁ →qᵢ Q₂) : ⇑f.toLinearMap = f :=
 def id (Q : QuadraticForm R M) : Q →qᵢ Q where
   __ := LinearMap.id
   map_app' _ := rfl
+
+/-- The identity isometry between equal quadratic forms. -/
+@[simps!]
+def ofEq {Q₁ Q₂ : QuadraticForm R M₁} (h : Q₁ = Q₂) : Q₁ →qᵢ Q₂ where
+  __ := LinearMap.id
+  map_app' _ := h ▸ rfl
+
+@[simp]
+theorem ofEq_rfl {Q : QuadraticForm R M₁} : ofEq (rfl : Q = Q) = .id Q := rfl
 
 /-- The composition of two isometries between quadratic forms. -/
 @[simps]

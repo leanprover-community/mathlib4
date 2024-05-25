@@ -24,14 +24,14 @@ variable [One M]
 @[to_additive]
 lemma mulSupport_sup [SemilatticeSup M] (f g : α → M) :
     mulSupport (fun x ↦ f x ⊔ g x) ⊆ mulSupport f ∪ mulSupport g :=
-  mulSupport_binop_subset (· ⊔ ·) sup_idem f g
+  mulSupport_binop_subset (· ⊔ ·) (sup_idem _) f g
 #align function.mul_support_sup Function.mulSupport_sup
 #align function.support_sup Function.support_sup
 
 @[to_additive]
 lemma mulSupport_inf [SemilatticeInf M] (f g : α → M) :
     mulSupport (fun x ↦ f x ⊓ g x) ⊆ mulSupport f ∪ mulSupport g :=
-  mulSupport_binop_subset (· ⊓ ·) inf_idem f g
+  mulSupport_binop_subset (· ⊓ ·) (inf_idem _) f g
 #align function.mul_support_inf Function.mulSupport_inf
 #align function.support_inf Function.support_inf
 
@@ -178,7 +178,7 @@ lemma mulIndicator_iUnion_apply (h1 : (⊥ : M) = 1) (s : ι → Set α) (f : α
   by_cases hx : x ∈ ⋃ i, s i
   · rw [mulIndicator_of_mem hx]
     rw [mem_iUnion] at hx
-    refine' le_antisymm _ (iSup_le fun i ↦ mulIndicator_le_self' (fun x _ ↦ h1 ▸ bot_le) x)
+    refine le_antisymm ?_ (iSup_le fun i ↦ mulIndicator_le_self' (fun x _ ↦ h1 ▸ bot_le) x)
     rcases hx with ⟨i, hi⟩
     exact le_iSup_of_le i (ge_of_eq <| mulIndicator_of_mem hi _)
   · rw [mulIndicator_of_not_mem hx]

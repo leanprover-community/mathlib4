@@ -27,7 +27,7 @@ open Simplicial NNReal BigOperators Classical CategoryTheory
 
 attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
--- porting note: added, should be moved
+-- Porting note: added, should be moved
 instance (x : SimplexCategory) : Fintype (ConcreteCategory.forget.obj x) :=
   inferInstanceAs (Fintype (Fin _))
 
@@ -63,13 +63,13 @@ theorem coe_toTopMap {x y : SimplexCategory} (f : x ⟶ y) (g : x.toTopObj) (i :
 
 @[continuity]
 theorem continuous_toTopMap {x y : SimplexCategory} (f : x ⟶ y) : Continuous (toTopMap f) := by
-  refine' Continuous.subtype_mk (continuous_pi fun i => _) _
+  refine Continuous.subtype_mk (continuous_pi fun i => ?_) _
   dsimp only [coe_toTopMap]
   exact continuous_finset_sum _ (fun j _ => (continuous_apply _).comp continuous_subtype_val)
 #align simplex_category.continuous_to_Top_map SimplexCategory.continuous_toTopMap
 
 /-- The functor associating the topological `n`-simplex to `[n] : SimplexCategory`. -/
-@[simps]
+@[simps obj map]
 def toTop : SimplexCategory ⥤ TopCat where
   obj x := TopCat.of x.toTopObj
   map f := ⟨toTopMap f, by continuity⟩
@@ -85,18 +85,12 @@ def toTop : SimplexCategory ⥤ TopCat where
     apply toTopObj.ext
     funext i
     dsimp
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    rw [CategoryTheory.comp_apply]; erw [ContinuousMap.coe_mk,
-      ContinuousMap.coe_mk, ContinuousMap.coe_mk]
-    simp only [coe_toTopMap]
-    erw [← Finset.sum_biUnion]
+    simp only [comp_apply, TopCat.coe_of_of, ContinuousMap.coe_mk, coe_toTopMap]
+    rw [← Finset.sum_biUnion]
     · apply Finset.sum_congr
       · exact Finset.ext (fun j => ⟨fun hj => by simpa using hj, fun hj => by simpa using hj⟩)
       · tauto
     · apply Set.pairwiseDisjoint_filter
 #align simplex_category.to_Top SimplexCategory.toTop
-
--- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
-attribute [nolint simpNF] SimplexCategory.toTop_map_apply
 
 end SimplexCategory

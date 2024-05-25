@@ -22,7 +22,7 @@ universe v u
 -- morphism levels before object levels. See note [CategoryTheory universes].
 variable (α : Sort u)
 
--- porting note: in mathlib, `opposite α` was a type synonym for `α`, but if we did
+-- Porting note: in mathlib, `opposite α` was a type synonym for `α`, but if we did
 -- the same in Lean4, one could write problematic definitions like:
 -- example (X : C) : Cᵒᵖ := X
 -- example {X Y : C} (f : X ⟶ Y): op Y ⟶ op X := f
@@ -33,10 +33,15 @@ variable (α : Sort u)
 
 -/
 structure Opposite :=
+  /-- The canonical map `α → αᵒᵖ`. -/
+  op ::
   /-- The canonical map `αᵒᵖ → α`. -/
   unop : α
 #align opposite Opposite
 #align opposite.unop Opposite.unop
+#align opposite.op Opposite.op
+
+-- Porting note: pp_nodot has not been implemented for Opposite.op
 
 @[inherit_doc]
 notation:max -- Use a high right binding power (like that of postfix ⁻¹) so that, for example,
@@ -46,12 +51,6 @@ notation:max -- Use a high right binding power (like that of postfix ⁻¹) so t
 namespace Opposite
 
 variable {α}
-
-/-- The canonical map `α → αᵒᵖ`. -/
--- Porting note: pp_nodot has not been implemented.
---@[pp_nodot]
-def op (x : α) : αᵒᵖ := ⟨x⟩
-#align opposite.op Opposite.op
 
 theorem op_injective : Function.Injective (op : α → αᵒᵖ) := fun _ _ => congr_arg Opposite.unop
 #align opposite.op_injective Opposite.op_injective
@@ -64,14 +63,12 @@ theorem op_unop (x : αᵒᵖ) : op (unop x) = x :=
   rfl
 #align opposite.op_unop Opposite.op_unop
 
-@[simp]
 theorem unop_op (x : α) : unop (op x) = x :=
   rfl
 #align opposite.unop_op Opposite.unop_op
 
 -- We could prove these by `Iff.rfl`, but that would make these eligible for `dsimp`. That would be
 -- a bad idea because `Opposite` is irreducible.
-@[simp]
 theorem op_inj_iff (x y : α) : op x = op y ↔ x = y :=
   op_injective.eq_iff
 #align opposite.op_inj_iff Opposite.op_inj_iff
@@ -88,6 +85,10 @@ def equivToOpposite : α ≃ αᵒᵖ where
   left_inv := unop_op
   right_inv := op_unop
 #align opposite.equiv_to_opposite Opposite.equivToOpposite
+
+theorem op_surjective : Function.Surjective (op : α → αᵒᵖ) := equivToOpposite.surjective
+
+theorem unop_surjective : Function.Surjective (unop : αᵒᵖ → α) := equivToOpposite.symm.surjective
 
 @[simp]
 theorem equivToOpposite_coe : (equivToOpposite : α → αᵒᵖ) = op :=
@@ -115,9 +116,9 @@ instance [Nonempty α] : Nonempty αᵒᵖ := Nonempty.map op ‹_›
 instance [Subsingleton α] : Subsingleton αᵒᵖ := unop_injective.subsingleton
 
 /-- A recursor for `Opposite`.
-The `@[eliminator]` attribute makes it the default induction principle for `Opposite`
+The `@[induction_eliminator]` attribute makes it the default induction principle for `Opposite`
 so you don't need to use `induction x using Opposite.rec'`. -/
-@[simp, eliminator]
+@[simp, induction_eliminator]
 protected def rec' {F : αᵒᵖ → Sort v} (h : ∀ X, F (op X)) : ∀ X, F X := fun X => h (unop X)
 #align opposite.rec Opposite.rec'
 

@@ -3,7 +3,7 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Std.Data.Fin.Basic
+import Batteries.Data.Fin.Basic
 
 set_option autoImplicit true
 
@@ -35,8 +35,7 @@ def heapifyDown (lt : α → α → Bool) (a : Array α) (i : Fin a.size) :
       rw [a.size_swap i j]; exact Nat.sub_lt_sub_left i.2 <| Nat.lt_of_le_of_ne j.2 h
     let ⟨a₂, h₂⟩ := heapifyDown lt a' j'
     ⟨a₂, h₂.trans (a.size_swap i j)⟩
-termination_by _ => a.size - i
-decreasing_by assumption
+termination_by a.size - i
 
 @[simp] theorem size_heapifyDown (lt : α → α → Bool) (a : Array α) (i : Fin a.size) :
   (heapifyDown lt a i).1.size = a.size := (heapifyDown lt a i).2
@@ -69,8 +68,6 @@ if i0 : i.1 = 0 then ⟨a, rfl⟩ else
     let ⟨a₂, h₂⟩ := heapifyUp lt a' ⟨j.1, by rw [a.size_swap i j]; exact j.2⟩
     ⟨a₂, h₂.trans (a.size_swap i j)⟩
   else ⟨a, rfl⟩
-termination_by _ => i.1
-decreasing_by assumption
 
 @[simp] theorem size_heapifyUp (lt : α → α → Bool) (a : Array α) (i : Fin a.size) :
   (heapifyUp lt a i).1.size = a.size := (heapifyUp lt a i).2
@@ -112,7 +109,7 @@ def popMaxAux {lt} (self : BinaryHeap α lt) : {a' : BinaryHeap α lt // a'.size
     if hn0 : 0 < n then
       let a := self.1.swap ⟨0, h0⟩ ⟨n, hn⟩ |>.pop
       ⟨⟨heapifyDown lt a ⟨0, by rwa [Array.size_pop, Array.size_swap, e]⟩⟩,
-        by simp [size]⟩
+        by simp [size, a]⟩
     else
       ⟨⟨self.1.pop⟩, by simp [size]⟩
 
@@ -137,7 +134,7 @@ def insertExtractMax {lt} (self : BinaryHeap α lt) (x : α) : α × BinaryHeap 
   | some m =>
     if lt x m then
       let a := self.1.set ⟨0, size_pos_of_max e⟩ x
-      (m, ⟨heapifyDown lt a ⟨0, by simp; exact size_pos_of_max e⟩⟩)
+      (m, ⟨heapifyDown lt a ⟨0, by simp only [Array.size_set, a]; exact size_pos_of_max e⟩⟩)
     else (x, self)
 
 /-- `O(log n)`. Equivalent to `(self.max, self.popMax.insert x)`. -/
@@ -146,7 +143,7 @@ def replaceMax {lt} (self : BinaryHeap α lt) (x : α) : Option α × BinaryHeap
   | none => (none, ⟨self.1.push x⟩)
   | some m =>
     let a := self.1.set ⟨0, size_pos_of_max e⟩ x
-    (some m, ⟨heapifyDown lt a ⟨0, by simp; exact size_pos_of_max e⟩⟩)
+    (some m, ⟨heapifyDown lt a ⟨0, by simp only [Array.size_set, a]; exact size_pos_of_max e⟩⟩)
 
 /-- `O(log n)`. Replace the value at index `i` by `x`. Assumes that `x ≤ self.get i`. -/
 def decreaseKey {lt} (self : BinaryHeap α lt) (i : Fin self.size) (x : α) : BinaryHeap α lt where
@@ -172,6 +169,5 @@ def Array.toBinaryHeap (lt : α → α → Bool) (a : Array α) : BinaryHeap α 
       have : a.popMax.size < a.size := by
         simp; exact Nat.sub_lt (BinaryHeap.size_pos_of_max e) Nat.zero_lt_one
       loop a.popMax (out.push x)
+    termination_by a.size
   loop (a.toBinaryHeap gt) #[]
-termination_by _ => a.size
-decreasing_by assumption

@@ -40,55 +40,6 @@ produces the third one.
 non-cyclic abelian group
 -/
 
-/-! # Properties of groups with exponent two -/
-
-section ExponentTwo
-
-variable {G : Type*} [Group G]
-
-/-- In a group of exponent two, every element is its own inverse. -/
-@[to_additive]
-lemma inv_eq_self_of_exponent_two (hG : Monoid.exponent G = 2) (x : G) :
-    x⁻¹ = x :=
-  inv_eq_of_mul_eq_one_left <| pow_two (a := x) ▸ hG ▸ Monoid.pow_exponent_eq_one x
-
-/-- If an element in a group has order two, then it is its own inverse. -/
-@[to_additive]
-lemma inv_eq_self_of_orderOf_eq_two {x : G} (hx : orderOf x = 2) :
-    x⁻¹ = x :=
-  inv_eq_of_mul_eq_one_left <| pow_two (a := x) ▸ hx ▸ pow_orderOf_eq_one x
-
-@[to_additive]
-lemma orderOf_eq_two_iff (hG : Monoid.exponent G = 2) {x : G} :
-    orderOf x = 2 ↔ x ≠ 1 :=
-  ⟨by rintro hx rfl; norm_num at hx, orderOf_eq_prime (hG ▸ Monoid.pow_exponent_eq_one x)⟩
-
-/-- In a group of exponent two, all elements commute. -/
-@[to_additive]
-lemma mul_comm_of_exponent_two (hG : Monoid.exponent G = 2) (x y : G) :
-    x * y = y * x := by
-  simpa only [inv_eq_self_of_exponent_two hG] using mul_inv_rev x y
-
-/-- Any group of exponent two is abelian. -/
-@[to_additive (attr := reducible) "Any additive group of exponent two is abelian."]
-def instCommGroupOfExponentTwo (hG : Monoid.exponent G = 2) : CommGroup G where
-  mul_comm := mul_comm_of_exponent_two hG
-
-@[to_additive]
-lemma mul_not_mem_of_orderOf_eq_two {G : Type*} [Group G] {x y : G} (hx : orderOf x = 2)
-    (hy : orderOf y = 2) (hxy : x ≠ y) : x * y ∉ ({x, y, 1} : Set G) := by
-  simp only [Set.mem_singleton_iff, Set.mem_insert_iff, mul_right_eq_self, mul_left_eq_self,
-    mul_eq_one_iff_eq_inv, inv_eq_self_of_orderOf_eq_two hy, not_or]
-  aesop
-
-@[to_additive]
-lemma mul_not_mem_of_exponent_two {G : Type*} [Group G] (h : Monoid.exponent G = 2) {x y : G}
-    (hx : x ≠ 1) (hy : y ≠ 1) (hxy : x ≠ y) : x * y ∉ ({x, y, 1} : Set G) :=
-  mul_not_mem_of_orderOf_eq_two (orderOf_eq_prime (h ▸ Monoid.pow_exponent_eq_one x) hx)
-    (orderOf_eq_prime (h ▸ Monoid.pow_exponent_eq_one y) hy) hxy
-
-end ExponentTwo
-
 /-! # Klein four-groups as a mixin class -/
 
 /-- An (additive) Klein four-group is an (additive) group of cardinality four and exponent two. -/
@@ -192,7 +143,7 @@ def mulEquiv' (e : G₁ ≃ G₂) (he : e 1 = 1) (h : Monoid.exponent G₂ = 2) 
       have univ₂ : {e (x * y), e x, e y, (1 : G₂)} = Finset.univ := by
         simpa [map_univ_equiv e, map_insert, he]
           using congr(Finset.map e.toEmbedding $(eq_finset_univ hx hy hxy))
-      rw [← Ne.def, ← e.injective.ne_iff] at hx hy hxy
+      rw [← Ne, ← e.injective.ne_iff] at hx hy hxy
       rw [he] at hx hy
       symm
       apply eq_of_not_mem_of_mem_insert <| univ₂.symm ▸ mem_univ _

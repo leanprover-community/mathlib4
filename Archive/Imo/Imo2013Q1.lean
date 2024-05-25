@@ -3,9 +3,9 @@ Copyright (c) 2021 David Renshaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Renshaw
 -/
-import Mathlib.Data.PNat.Basic
-import Mathlib.Data.Nat.Parity
 import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Data.PNat.Basic
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Positivity.Basic
@@ -32,15 +32,15 @@ open scoped BigOperators
 
 namespace Imo2013Q1
 
--- porting note: simplified proof using `positivity`
+-- Porting note: simplified proof using `positivity`
 theorem arith_lemma (k n : ℕ) : 0 < 2 * n + 2 ^ k.succ := by positivity
 #align imo2013_q1.arith_lemma Imo2013Q1.arith_lemma
 
 theorem prod_lemma (m : ℕ → ℕ+) (k : ℕ) (nm : ℕ+) :
     ∏ i : ℕ in Finset.range k, ((1 : ℚ) + 1 / ↑(if i < k then m i else nm)) =
       ∏ i : ℕ in Finset.range k, (1 + 1 / (m i : ℚ)) := by
-  suffices : ∀ i, i ∈ Finset.range k → (1 : ℚ) + 1 / ↑(if i < k then m i else nm) = 1 + 1 / m i
-  exact Finset.prod_congr rfl this
+  suffices ∀ i, i ∈ Finset.range k → (1 : ℚ) + 1 / ↑(if i < k then m i else nm) = 1 + 1 / m i from
+    Finset.prod_congr rfl this
   intro i hi
   simp [Finset.mem_range.mp hi]
 #align imo2013_q1.prod_lemma Imo2013Q1.prod_lemma
@@ -70,15 +70,13 @@ theorem imo2013_q1 (n : ℕ+) (k : ℕ) :
       have : m pk = ⟨2 * t + 2 ^ pk.succ, _⟩ := if_neg (irrefl pk); simp [this]
     calc
       ((1 : ℚ) + (2 ^ pk.succ - 1) / (n : ℚ) : ℚ)= 1 + (2 * 2 ^ pk - 1) / (2 * (t + 1) : ℕ) := by
-        rw [ht, pow_succ]
+        rw [ht, pow_succ']
       _ = (1 + 1 / (2 * t + 2 * 2 ^ pk)) * (1 + (2 ^ pk - 1) / (↑t + 1)) := by
         field_simp
         ring
       _ = (1 + 1 / (2 * t + 2 ^ pk.succ)) * (1 + (2 ^ pk - 1) / t_succ) := by
-        -- porting note: used to work with `norm_cast`
-        simp only [PNat.mk_coe, Nat.cast_add, Nat.cast_one, mul_eq_mul_right_iff]
-        left
-        rfl
+        -- Porting note: used to work with `norm_cast`
+        simp only [t_succ, PNat.mk_coe, Nat.cast_add, Nat.cast_one, mul_eq_mul_right_iff, pow_succ']
       _ = (∏ i in Finset.range pk, (1 + 1 / (m i : ℚ))) * (1 + 1 / m pk) := by
         rw [prod_lemma, hpm, ← hmpk, mul_comm]
       _ = ∏ i in Finset.range pk.succ, (1 + 1 / (m i : ℚ)) := by rw [← Finset.prod_range_succ _ pk]
@@ -92,7 +90,7 @@ theorem imo2013_q1 (n : ℕ+) (k : ℕ) :
       simp [this]
     calc
       ((1 : ℚ) + (2 ^ pk.succ - 1) / ↑n : ℚ) = 1 + (2 * 2 ^ pk - 1) / (2 * t + 1 : ℕ) := by
-        rw [ht, pow_succ]
+        rw [ht, pow_succ']
       _ = (1 + 1 / (2 * t + 1)) * (1 + (2 ^ pk - 1) / (t + 1)) := by
         field_simp
         ring

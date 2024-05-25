@@ -52,7 +52,7 @@ theorem image2_mem_map₂ (hs : s ∈ f) (ht : t ∈ g) : image2 m s t ∈ map�
 
 theorem map_prod_eq_map₂ (m : α → β → γ) (f : Filter α) (g : Filter β) :
     Filter.map (fun p : α × β => m p.1 p.2) (f ×ˢ g) = map₂ m f g := by
-  rw [map₂, copy_eq]; rfl
+  rw [map₂, copy_eq, uncurry_def]
 #align filter.map_prod_eq_map₂ Filter.map_prod_eq_map₂
 
 theorem map_prod_eq_map₂' (m : α × β → γ) (f : Filter α) (g : Filter β) :
@@ -148,7 +148,7 @@ theorem map₂_pure : map₂ m (pure a) (pure b) = pure (m a b) := by rw [map₂
 
 theorem map₂_swap (m : α → β → γ) (f : Filter α) (g : Filter β) :
     map₂ m f g = map₂ (fun a b => m b a) g f := by
-  rw [← map_prod_eq_map₂, prod_comm, map_map, ← map_prod_eq_map₂]; rfl
+  rw [← map_prod_eq_map₂, prod_comm, map_map, ← map_prod_eq_map₂, Function.comp_def]
 #align filter.map₂_swap Filter.map₂_swap
 
 @[simp]
@@ -206,7 +206,7 @@ theorem map₂_assoc {m : δ → γ → ε} {n : α → β → δ} {m' : α → 
     map₂ m (map₂ n f g) h = map₂ m' f (map₂ n' g h) := by
   rw [← map_prod_eq_map₂ n, ← map_prod_eq_map₂ n', map₂_map_left, map₂_map_right,
     ← map_prod_eq_map₂, ← map_prod_eq_map₂, ← prod_assoc, map_map]
-  simp only [h_assoc]; rfl
+  simp only [h_assoc, Function.comp, Equiv.prodAssoc_apply]
 #align filter.map₂_assoc Filter.map₂_assoc
 
 theorem map₂_comm {n : β → α → γ} (h_comm : ∀ a b, m a b = n b a) : map₂ m f g = map₂ n g f :=
@@ -262,8 +262,8 @@ theorem map₂_distrib_le_left {m : α → δ → ε} {n : β → γ → δ} {m�
     {n' : β' → γ' → ε} (h_distrib : ∀ a b c, m a (n b c) = n' (m₁ a b) (m₂ a c)) :
     map₂ m f (map₂ n g h) ≤ map₂ n' (map₂ m₁ f g) (map₂ m₂ f h) := by
   rintro s ⟨t₁, ⟨u₁, hu₁, v, hv, ht₁⟩, t₂, ⟨u₂, hu₂, w, hw, ht₂⟩, hs⟩
-  refine' ⟨u₁ ∩ u₂, inter_mem hu₁ hu₂, _, image2_mem_map₂ hv hw, _⟩
-  refine' (image2_distrib_subset_left h_distrib).trans ((image2_subset _ _).trans hs)
+  refine ⟨u₁ ∩ u₂, inter_mem hu₁ hu₂, _, image2_mem_map₂ hv hw, ?_⟩
+  refine (image2_distrib_subset_left h_distrib).trans ((image2_subset ?_ ?_).trans hs)
   · exact (image2_subset_right <| inter_subset_left _ _).trans ht₁
   · exact (image2_subset_right <| inter_subset_right _ _).trans ht₂
 #align filter.map₂_distrib_le_left Filter.map₂_distrib_le_left
@@ -273,8 +273,8 @@ theorem map₂_distrib_le_right {m : δ → γ → ε} {n : α → β → δ} {m
     {n' : α' → β' → ε} (h_distrib : ∀ a b c, m (n a b) c = n' (m₁ a c) (m₂ b c)) :
     map₂ m (map₂ n f g) h ≤ map₂ n' (map₂ m₁ f h) (map₂ m₂ g h) := by
   rintro s ⟨t₁, ⟨u, hu, w₁, hw₁, ht₁⟩, t₂, ⟨v, hv, w₂, hw₂, ht₂⟩, hs⟩
-  refine' ⟨_, image2_mem_map₂ hu hv, w₁ ∩ w₂, inter_mem hw₁ hw₂, _⟩
-  refine' (image2_distrib_subset_right h_distrib).trans ((image2_subset _ _).trans hs)
+  refine ⟨_, image2_mem_map₂ hu hv, w₁ ∩ w₂, inter_mem hw₁ hw₂, ?_⟩
+  refine (image2_distrib_subset_right h_distrib).trans ((image2_subset ?_ ?_).trans hs)
   · exact (image2_subset_left <| inter_subset_left _ _).trans ht₁
   · exact (image2_subset_left <| inter_subset_right _ _).trans ht₂
 #align filter.map₂_distrib_le_right Filter.map₂_distrib_le_right

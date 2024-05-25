@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Scott Morrison
 -/
 import Archive.Examples.IfNormalization.Statement
+import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 import Mathlib.Data.List.AList
 
 /-!
@@ -66,13 +68,13 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
             refine ⟨fun _ => ?_, fun _ => ?_⟩
             · congr
               ext w
-              by_cases h : w = v <;> rename_i x
+              by_cases h : w = v
               · substs h
                 simp_all
               · simp_all
             · congr
               ext w
-              by_cases h : w = v <;> rename_i x
+              by_cases h : w = v
               · substs h
                 simp_all
               · simp_all
@@ -80,20 +82,20 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
             refine ⟨fun _ => ?_, fun _ => ?_⟩
             · congr
               ext w
-              by_cases h : w = v <;> rename_i x
+              by_cases h : w = v
               · substs h
                 simp_all
               · simp_all
             · congr
               ext w
-              by_cases h : w = v <;> rename_i x
+              by_cases h : w = v
               · substs h
                 simp_all
               · simp_all
         · have := ht₃ v
           have := he₃ v
           simp_all? says simp_all only [Option.elim, normalized, Bool.and_eq_true,
-              Bool.not_eq_true', AList.lookup_insert, imp_false]
+              Bool.not_eq_true', AList.lookup_insert_eq_none, ne_eq, AList.lookup_insert, imp_false]
           obtain ⟨⟨⟨tn, tc⟩, tr⟩, td⟩ := ht₂
           split <;> rename_i h'
           · subst h'
@@ -106,7 +108,8 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
           by_cases h : w = v
           · subst h; simp_all
           · simp_all? says simp_all only [Option.elim, normalized, Bool.and_eq_true,
-              Bool.not_eq_true', ne_eq, not_false_eq_true, AList.lookup_insert_ne]
+              Bool.not_eq_true', AList.lookup_insert_eq_none, ne_eq, not_false_eq_true,
+              AList.lookup_insert_ne, implies_true]
             obtain ⟨⟨⟨en, ec⟩, er⟩, ed⟩ := he₂
             split at b <;> rename_i h'
             · subst h'; simp_all
@@ -116,7 +119,7 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
     | some b =>
       have ⟨e', he'⟩ := normalize' l (.ite (lit b) t e)
       ⟨e', by simp_all⟩
-  termination_by normalize' e => e.normSize'
+  termination_by e' => e'.normSize'
 
 example : IfNormalization :=
   ⟨fun e => (normalize' ∅ e).1,
