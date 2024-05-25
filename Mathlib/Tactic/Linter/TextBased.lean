@@ -318,7 +318,8 @@ def lint_file (path : System.FilePath)
   -- XXX: this list is currently not sorted: for github, that's probably fine
   format_errors (Array.flatten all_output) exceptions
 
-def parse_style_error (line : String) : Option ErrorContext := Id.run do
+/-- Try parsing an `ErrorContext` from a string: return `some` if successful, `none` otherwise. -/
+def parse?_style_error (line : String) : Option ErrorContext := Id.run do
   let parts := line.split (fun c ↦ c == ' ')
   match parts with
     | filename :: ":" :: "line" :: _line_number :: ":" :: error_code :: ":" :: error_message =>
@@ -357,8 +358,10 @@ def parse_style_error (line : String) : Option ErrorContext := Id.run do
       err.map fun e ↦ (ErrorContext.mk e 0 path)
     | _ => none -- The line doesn't match the known format: continue.
 
+/-- Parse all style exceptions for a line of input.
+Return an array of all exceptions which could be parsed: invalid input is ignore. -/
 def parse_style_exceptions (lines : Array String) : Array ErrorContext := Id.run do
-  Array.filterMap (fun line ↦ parse_style_error line) lines
+  Array.filterMap (fun line ↦ parse?_style_error line) lines
 
 /-- Lint all files in `Mathlib.lean`. -/
 def check_all_files : IO Unit := do
@@ -374,9 +377,14 @@ def check_all_files : IO Unit := do
     --if i == 500 then break
     let module := module.stripPrefix "import "
     -- Convert the module name to a file name, then lint that file.
-    -- TODO: what's the size limit for *this* file?
     let path := (System.mkFilePath (module.split fun c ↦ (c == '.'))).addExtension "lean"
-    lint_file path (some 1500) style_exceptions
+    -- Find the size limit for this given file.
+    -- If several size limits are given (unlikely in practice), we use the first one.
+    let size_limits := (style_exceptions.filter (fun e ↦ e.path == path)).filterMap (fun errctx ↦
+      if let StyleError.fileTooLong _ limit := errctx.error then
+        some limit
+      else none)
+    lint_file path (size_limits.get? 0) style_exceptions
 
 -- #eval lint_file (System.mkFilePath ("Mathlib/RingTheory/Kaehler.lean".splitOn "/"))
 --     none (Array.mkEmpty 0)
