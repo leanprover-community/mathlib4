@@ -11,6 +11,7 @@ import Mathlib.Tactic.Linter.AttributeInstanceIn
 -- Test disabling the linter.
 set_option linter.attributeInstanceIn false
 
+set_option autoImplicit false in
 attribute [instance] Int.add in
 instance : Inhabited Int where
   default := 0
@@ -26,23 +27,23 @@ instance : Inhabited Int where
 
 set_option linter.attributeInstanceIn false in
 /--
-warning: careful:`attribute [instance] ... in` declarations are surprising:
-they are **not** limited to the subsequent declaration,
-but define global instances
+warning: careful: `attribute [instance] ... in` declarations are surprising:
+they are **not** limited to the subsequent declaration, but define global instances
 please remove the `in` or make this a `local instance` instead
 note: this linter can be disabled with `set_option linter.attributeInstanceIn false`
 -/
 #guard_msgs in
+set_option autoImplicit false in
 set_option linter.attributeInstanceIn true in
 attribute [instance 1100] Int.add in
+set_option autoImplicit false in
 instance : Inhabited Int where
   default := 0
 
 set_option linter.attributeInstanceIn false in
 /--
-warning: careful:`attribute [instance] ... in` declarations are surprising:
-they are **not** limited to the subsequent declaration,
-but define global instances
+warning: careful: `attribute [instance] ... in` declarations are surprising:
+they are **not** limited to the subsequent declaration, but define global instances
 please remove the `in` or make this a `local instance` instead
 note: this linter can be disabled with `set_option linter.attributeInstanceIn false`
 -/
