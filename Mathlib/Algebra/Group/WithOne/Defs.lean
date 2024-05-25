@@ -41,6 +41,7 @@ assert_not_exists div_right_inj
 assert_not_exists pow_ite
 
 assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
 
 universe u v w
 
