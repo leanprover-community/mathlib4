@@ -154,7 +154,7 @@ theorem Filter.mem_ofCountableInter {l : Set (Set α)}
   Iff.rfl
 #align filter.mem_of_countable_Inter Filter.mem_ofCountableInter
 
-/-- Construct a filter with countable intersection property.
+/-- Construct a filter with countable union property.
 Similarly to `Filter.comk`, a set belongs to this filter if its complement satisfies the property.
 Similarly to `Filter.ofCountableInter`,
 this constructor deduces some properties from the countable intersection property
