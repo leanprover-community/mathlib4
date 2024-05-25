@@ -325,7 +325,7 @@ variable (R L)
 @[simp]
 lemma weightSpace_zero_normalizer_eq_self :
     (weightSpace M (0 : L → R)).normalizer = weightSpace M 0 := by
-  refine' le_antisymm _ (LieSubmodule.le_normalizer _)
+  refine le_antisymm ?_ (LieSubmodule.le_normalizer _)
   intro m hm
   rw [LieSubmodule.mem_normalizer] at hm
   simp only [mem_weightSpace, Pi.zero_apply, zero_smul, sub_zero] at hm ⊢

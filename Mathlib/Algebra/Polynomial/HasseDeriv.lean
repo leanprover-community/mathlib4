@@ -95,7 +95,7 @@ theorem hasseDeriv_zero : @hasseDeriv R _ 0 = LinearMap.id :=
 theorem hasseDeriv_eq_zero_of_lt_natDegree (p : R[X]) (n : ℕ) (h : p.natDegree < n) :
     hasseDeriv n p = 0 := by
   rw [hasseDeriv_apply, sum_def]
-  refine' Finset.sum_eq_zero fun x hx => _
+  refine Finset.sum_eq_zero fun x hx => ?_
   simp [Nat.choose_eq_zero_of_lt ((le_natDegree_of_mem_supp _ hx).trans_lt h)]
 #align polynomial.hasse_deriv_eq_zero_of_lt_nat_degree Polynomial.hasseDeriv_eq_zero_of_lt_natDegree
 
@@ -195,7 +195,7 @@ theorem natDegree_hasseDeriv_le (p : R[X]) (n : ℕ) :
     natDegree (hasseDeriv n p) ≤ natDegree p - n := by
   classical
     rw [hasseDeriv_apply, sum_def]
-    refine' (natDegree_sum_le _ _).trans _
+    refine (natDegree_sum_le _ _).trans ?_
     simp_rw [Function.comp, natDegree_monomial]
     rw [Finset.fold_ite, Finset.fold_const]
     · simp only [ite_self, max_eq_right, zero_le', Finset.fold_max_le, true_and_iff, and_imp,
@@ -213,7 +213,7 @@ theorem natDegree_hasseDeriv [NoZeroSMulDivisors ℕ R] (p : R[X]) (n : ℕ) :
     natDegree (hasseDeriv n p) = natDegree p - n := by
   cases' lt_or_le p.natDegree n with hn hn
   · simpa [hasseDeriv_eq_zero_of_lt_natDegree, hn] using (tsub_eq_zero_of_le hn.le).symm
-  · refine' map_natDegree_eq_sub _ _
+  · refine map_natDegree_eq_sub ?_ ?_
     · exact fun h => hasseDeriv_eq_zero_of_lt_natDegree _ _
     · classical
         simp only [ite_eq_right_iff, Ne, natDegree_monomial, hasseDeriv_monomial]
