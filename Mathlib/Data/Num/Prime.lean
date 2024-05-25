@@ -45,7 +45,7 @@ theorem minFacAux_to_nat {fuel : ℕ} {n k : PosNum} (h : Nat.sqrt n < fuel + k.
     (minFacAux n fuel k : ℕ) = Nat.minFacAux n k.bit1 := by
   induction' fuel with fuel ih generalizing k <;> rw [minFacAux, Nat.minFacAux]
   · rw [Nat.zero_add, Nat.sqrt_lt] at h
-    simp only [h, dite_true]
+    simp only [h, ite_true]
   simp_rw [← mul_to_nat]
   simp only [cast_lt, dvd_to_nat]
   split_ifs <;> try rfl

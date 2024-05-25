@@ -167,8 +167,8 @@ def Matrix.isRepresentation : Subalgebra R (Matrix ι ι R) where
 #align matrix.is_representation Matrix.isRepresentation
 
 /-- The map sending a matrix to the endomorphism it represents. This is an `R`-algebra morphism. -/
-noncomputable def Matrix.isRepresentation.toEnd : Matrix.isRepresentation R b →ₐ[R] Module.End R M
-    where
+noncomputable def Matrix.isRepresentation.toEnd :
+    Matrix.isRepresentation R b →ₐ[R] Module.End R M where
   toFun A := A.2.choose
   map_one' := (1 : Matrix.isRepresentation R b).2.choose_spec.eq hb Matrix.Represents.one
   map_mul' A₁ A₂ := (A₁ * A₂).2.choose_spec.eq hb (A₁.2.choose_spec.mul A₂.2.choose_spec)
@@ -237,7 +237,7 @@ theorem LinearMap.exists_monic_and_coeff_mem_pow_and_aeval_eq_zero_of_range_le_s
       Matrix.isRepresentation.toEnd_exists_mem_ideal R ((↑) : s → M)
         (by rw [Subtype.range_coe_subtype, Finset.setOf_mem, hs]) f I hI
     rw [← H]
-    refine' ⟨A.1.charpoly, A.1.charpoly_monic, _, _⟩
+    refine ⟨A.1.charpoly, A.1.charpoly_monic, ?_, ?_⟩
     · rw [A.1.charpoly_natDegree_eq_dim]
       exact coeff_charpoly_mem_ideal_pow h
     · rw [Polynomial.aeval_algHom_apply,

@@ -276,7 +276,7 @@ theorem mem_fix_iff {f : α →. Sum β α} {a : α} {b : β} :
    fun h => by
     simp only [fix, Part.mem_assert_iff]
     rcases h with (⟨h₁, h₂⟩ | ⟨a', h, h₃⟩)
-    · refine' ⟨⟨_, fun y h' => _⟩, _⟩
+    · refine ⟨⟨_, fun y h' => ?_⟩, ?_⟩
       · injection Part.mem_unique ⟨h₁, h₂⟩ h'
       · rw [WellFounded.fixFEq]
         -- Porting note: used to be simp [h₁, h₂]
@@ -288,7 +288,7 @@ theorem mem_fix_iff {f : α →. Sum β α} {a : α} {b : β} :
           injection h₂.symm.trans e
     · simp [fix] at h₃
       cases' h₃ with h₃ h₄
-      refine' ⟨⟨_, fun y h' => _⟩, _⟩
+      refine ⟨⟨_, fun y h' => ?_⟩, ?_⟩
       · injection Part.mem_unique h h' with e
         exact e ▸ h₃
       · cases' h with h₁ h₂
@@ -351,7 +351,7 @@ theorem fixInduction_spec {C : α → Sort*} {f : α →. Sum β α} {b : β} {a
 def fixInduction' {C : α → Sort*} {f : α →. Sum β α} {b : β} {a : α}
     (h : b ∈ f.fix a) (hbase : ∀ a_final : α, Sum.inl b ∈ f a_final → C a_final)
     (hind : ∀ a₀ a₁ : α, b ∈ f.fix a₁ → Sum.inr a₁ ∈ f a₀ → C a₁ → C a₀) : C a := by
-  refine' fixInduction h fun a' h ih => _
+  refine fixInduction h fun a' h ih => ?_
   rcases e : (f a').get (dom_of_mem_fix h) with b' | a'' <;> replace e : _ ∈ f a' := ⟨_, e⟩
   · apply hbase
     convert e

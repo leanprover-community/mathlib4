@@ -23,7 +23,7 @@ Killing form, the range of the adjoint action is full,
 Killing form, any derivation is an inner derivation.
 -/
 
-namespace LieDerivation.Killing
+namespace LieDerivation.IsKilling
 
 section
 
@@ -75,7 +75,7 @@ variable [LieAlgebra.IsKilling R L]
 
 @[simp] lemma ad_apply_eq_zero_iff (x : L) : ad R L x = 0 ↔ x = 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
-  rwa [← LieHom.mem_ker, ad_ker_eq_center, LieAlgebra.center_eq_bot_of_semisimple,
+  rwa [← LieHom.mem_ker, ad_ker_eq_center, LieAlgebra.center_eq_bot_of_hasTrivialRadical,
     LieSubmodule.mem_bot] at h
 
 instance instIsKilling_range_ad : LieAlgebra.IsKilling R 𝕀 :=

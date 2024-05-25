@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
 import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Algebra.Regular.Pow
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Data.Finsupp.Antidiagonal
@@ -242,7 +241,7 @@ theorem C_injective (σ : Type*) (R : Type*) [CommSemiring R] :
 
 theorem C_surjective {R : Type*} [CommSemiring R] (σ : Type*) [IsEmpty σ] :
     Function.Surjective (C : R → MvPolynomial σ R) := by
-  refine' fun p => ⟨p.toFun 0, Finsupp.ext fun a => _⟩
+  refine fun p => ⟨p.toFun 0, Finsupp.ext fun a => ?_⟩
   simp only [C_apply, ← single_eq_monomial, (Finsupp.ext isEmptyElim (α := σ) : a = 0),
     single_eq_same]
   rfl
@@ -512,7 +511,7 @@ theorem algHom_C {τ : Type*} (f : MvPolynomial σ R →ₐ[R] MvPolynomial τ R
 @[simp]
 theorem adjoin_range_X : Algebra.adjoin R (range (X : σ → MvPolynomial σ R)) = ⊤ := by
   set S := Algebra.adjoin R (range (X : σ → MvPolynomial σ R))
-  refine' top_unique fun p hp => _; clear hp
+  refine top_unique fun p hp => ?_; clear hp
   induction p using MvPolynomial.induction_on with
   | h_C => exact S.algebraMap_mem _
   | h_add p q hp hq => exact S.add_mem hp hq
@@ -638,8 +637,7 @@ theorem coeff_zero_X (i : σ) : coeff 0 (X i : MvPolynomial σ R) = 0 :=
 
 /-- `MvPolynomial.coeff m` but promoted to an `AddMonoidHom`. -/
 @[simps]
-def coeffAddMonoidHom (m : σ →₀ ℕ) : MvPolynomial σ R →+ R
-    where
+def coeffAddMonoidHom (m : σ →₀ ℕ) : MvPolynomial σ R →+ R where
   toFun := coeff m
   map_zero' := coeff_zero m
   map_add' := coeff_add m
@@ -799,14 +797,14 @@ theorem coeff_monomial_mul' (m) (s : σ →₀ ℕ) (r : R) (p : MvPolynomial σ
 
 theorem coeff_mul_X' [DecidableEq σ] (m) (s : σ) (p : MvPolynomial σ R) :
     coeff m (p * X s) = if s ∈ m.support then coeff (m - Finsupp.single s 1) p else 0 := by
-  refine' (coeff_mul_monomial' _ _ _ _).trans _
+  refine (coeff_mul_monomial' _ _ _ _).trans ?_
   simp_rw [Finsupp.single_le_iff, Finsupp.mem_support_iff, Nat.succ_le_iff, pos_iff_ne_zero,
     mul_one]
 #align mv_polynomial.coeff_mul_X' MvPolynomial.coeff_mul_X'
 
 theorem coeff_X_mul' [DecidableEq σ] (m) (s : σ) (p : MvPolynomial σ R) :
     coeff m (X s * p) = if s ∈ m.support then coeff (m - Finsupp.single s 1) p else 0 := by
-  refine' (coeff_monomial_mul' _ _ _ _).trans _
+  refine (coeff_monomial_mul' _ _ _ _).trans ?_
   simp_rw [Finsupp.single_le_iff, Finsupp.mem_support_iff, Nat.succ_le_iff, pos_iff_ne_zero,
     one_mul]
 #align mv_polynomial.coeff_X_mul' MvPolynomial.coeff_X_mul'
@@ -882,8 +880,7 @@ section ConstantCoeff
 /-- `constantCoeff p` returns the constant term of the polynomial `p`, defined as `coeff 0 p`.
 This is a ring homomorphism.
 -/
-def constantCoeff : MvPolynomial σ R →+* R
-    where
+def constantCoeff : MvPolynomial σ R →+* R where
   toFun := coeff 0
   map_one' := by simp [AddMonoidAlgebra.one_def]
   map_mul' := by classical simp [coeff_mul, Finsupp.support_single_ne_zero]
@@ -1045,8 +1042,7 @@ theorem eval₂_pow {p : MvPolynomial σ R} : ∀ {n : ℕ}, (p ^ n).eval₂ f g
 #align mv_polynomial.eval₂_pow MvPolynomial.eval₂_pow
 
 /-- `MvPolynomial.eval₂` as a `RingHom`. -/
-def eval₂Hom (f : R →+* S₁) (g : σ → S₁) : MvPolynomial σ R →+* S₁
-    where
+def eval₂Hom (f : R →+* S₁) (g : σ → S₁) : MvPolynomial σ R →+* S₁ where
   toFun := eval₂ f g
   map_one' := eval₂_one _ _
   map_mul' _ _ := eval₂_mul _ _
@@ -1700,7 +1696,7 @@ theorem eval₂_mem {f : R →+* S} {p : MvPolynomial σ R} {s : subS}
   induction' p using MvPolynomial.induction_on''' with a a b f ha _ ih
   · simpa using hs 0
   rw [eval₂_add, eval₂_monomial]
-  refine' add_mem (mul_mem _ <| prod_mem fun i _ => pow_mem (hv _) _) (ih fun i => _)
+  refine add_mem (mul_mem ?_ <| prod_mem fun i _ => pow_mem (hv _) _) (ih fun i => ?_)
   · have := hs a -- Porting note: was `simpa only [...]`
     rwa [coeff_add, MvPolynomial.not_mem_support_iff.1 ha, add_zero, coeff_monomial,
       if_pos rfl] at this

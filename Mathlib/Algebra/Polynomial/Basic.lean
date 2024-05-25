@@ -3,7 +3,6 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Data.Finset.Sort
 
@@ -840,7 +839,7 @@ theorem addSubmonoid_closure_setOf_eq_monomial :
   apply top_unique
   rw [← AddSubmonoid.map_equiv_top (toFinsuppIso R).symm.toAddEquiv, ←
     Finsupp.add_closure_setOf_eq_single, AddMonoidHom.map_mclosure]
-  refine' AddSubmonoid.closure_mono (Set.image_subset_iff.2 _)
+  refine AddSubmonoid.closure_mono (Set.image_subset_iff.2 ?_)
   rintro _ ⟨n, a, rfl⟩
   exact ⟨n, a, Polynomial.ofFinsupp_single _ _⟩
 #align polynomial.add_submonoid_closure_set_of_eq_monomial Polynomial.addSubmonoid_closure_setOf_eq_monomial
@@ -1247,7 +1246,7 @@ variable [Semiring R] [Nontrivial R]
 instance nontrivial : Nontrivial R[X] := by
   have h : Nontrivial R[ℕ] := by infer_instance
   rcases h.exists_pair_ne with ⟨x, y, hxy⟩
-  refine' ⟨⟨⟨x⟩, ⟨y⟩, _⟩⟩
+  refine ⟨⟨⟨x⟩, ⟨y⟩, ?_⟩⟩
   simp [hxy]
 #align polynomial.nontrivial Polynomial.nontrivial
 
@@ -1262,7 +1261,7 @@ section DivisionSemiring
 variable [DivisionSemiring R]
 
 lemma nnqsmul_eq_C_mul (q : ℚ≥0) (f : R[X]) : q • f = Polynomial.C (q : R) * f := by
-  rw [← NNRat.smul_one_eq_coe, ← Polynomial.smul_C, C_1, smul_one_mul]
+  rw [← NNRat.smul_one_eq_cast, ← Polynomial.smul_C, C_1, smul_one_mul]
 
 end DivisionSemiring
 
@@ -1271,7 +1270,7 @@ section DivisionRing
 variable [DivisionRing R]
 
 theorem qsmul_eq_C_mul (a : ℚ) (f : R[X]) : a • f = Polynomial.C (a : R) * f := by
-  rw [← Rat.smul_one_eq_coe, ← Polynomial.smul_C, C_1, smul_one_mul]
+  rw [← Rat.smul_one_eq_cast, ← Polynomial.smul_C, C_1, smul_one_mul]
 #align polynomial.rat_smul_eq_C_mul Polynomial.qsmul_eq_C_mul
 
 end DivisionRing

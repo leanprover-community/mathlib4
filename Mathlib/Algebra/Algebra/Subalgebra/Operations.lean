@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Antoine Chambert-Loir
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.RingTheory.Ideal.Maps
 
 #align_import algebra.algebra.subalgebra.basic from "leanprover-community/mathlib"@"b915e9392ecb2a861e1e766f0e1df6ac481188ca"
 
@@ -66,7 +66,7 @@ theorem mem_of_finset_sum_eq_one_of_pow_smul_mem
   rintro ⟨_, _, ⟨i, hi, rfl⟩, rfl⟩
   change s' i ^ N • x ∈ _
   rw [← tsub_add_cancel_of_le (show n i ≤ N from Finset.le_sup hi), pow_add, mul_smul]
-  refine' Submodule.smul_mem _ (⟨_, pow_mem (hs i) _⟩ : S') _
+  refine Submodule.smul_mem _ (⟨_, pow_mem (hs i) _⟩ : S') ?_
   exact ⟨⟨_, hn i⟩, rfl⟩
 #align subalgebra.mem_of_finset_sum_eq_one_of_pow_smul_mem Subalgebra.mem_of_finset_sum_eq_one_of_pow_smul_mem
 

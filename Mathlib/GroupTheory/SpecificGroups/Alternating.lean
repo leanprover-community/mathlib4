@@ -116,13 +116,13 @@ theorem isConj_of {σ τ : alternatingGroup α} (hc : IsConj (σ : Perm α) (τ 
   rw [Subtype.coe_mk, Subtype.coe_mk] at hπ
   cases' Int.units_eq_one_or (Perm.sign π) with h h
   · rw [isConj_iff]
-    refine' ⟨⟨π, mem_alternatingGroup.mp h⟩, Subtype.val_injective _⟩
+    refine ⟨⟨π, mem_alternatingGroup.mp h⟩, Subtype.val_injective ?_⟩
     simpa only [Subtype.val, Subgroup.coe_mul, coe_inv, coe_mk] using hπ
   · have h2 : 2 ≤ σ.supportᶜ.card := by
       rw [Finset.card_compl, le_tsub_iff_left σ.support.card_le_univ]
       exact hσ
     obtain ⟨a, ha, b, hb, ab⟩ := Finset.one_lt_card.1 h2
-    refine' isConj_iff.2 ⟨⟨π * swap a b, _⟩, Subtype.val_injective _⟩
+    refine isConj_iff.2 ⟨⟨π * swap a b, ?_⟩, Subtype.val_injective ?_⟩
     · rw [mem_alternatingGroup, MonoidHom.map_mul, h, sign_swap ab, Int.units_mul_self]
     · simp only [← hπ, coe_mk, Subgroup.coe_mul, Subtype.val]
       have hd : Disjoint (swap a b) σ := by
@@ -180,12 +180,12 @@ theorem IsThreeCycle.alternating_normalClosure (h5 : 5 ≤ Fintype.card α) {f :
   eq_top_iff.2
     (by
       have hi : Function.Injective (alternatingGroup α).subtype := Subtype.coe_injective
-      refine' eq_top_iff.1 (map_injective hi (le_antisymm (map_mono le_top) _))
+      refine eq_top_iff.1 (map_injective hi (le_antisymm (map_mono le_top) ?_))
       rw [← MonoidHom.range_eq_map, subtype_range, normalClosure, MonoidHom.map_closure]
-      refine' (le_of_eq closure_three_cycles_eq_alternating.symm).trans (closure_mono _)
+      refine (le_of_eq closure_three_cycles_eq_alternating.symm).trans (closure_mono ?_)
       intro g h
       obtain ⟨c, rfl⟩ := isConj_iff.1 (isConj_iff_cycleType_eq.2 (hf.trans h.symm))
-      refine' ⟨⟨c * f * c⁻¹, h.mem_alternatingGroup⟩, _, rfl⟩
+      refine ⟨⟨c * f * c⁻¹, h.mem_alternatingGroup⟩, ?_, rfl⟩
       rw [Group.mem_conjugatesOfSet_iff]
       exact ⟨⟨f, hf.mem_alternatingGroup⟩, Set.mem_singleton _, isThreeCycle_isConj h5 hf h⟩)
 #align equiv.perm.is_three_cycle.alternating_normal_closure Equiv.Perm.IsThreeCycle.alternating_normalClosure
@@ -218,7 +218,7 @@ open Equiv.Perm
 theorem nontrivial_of_three_le_card (h3 : 3 ≤ card α) : Nontrivial (alternatingGroup α) := by
   haveI := Fintype.one_lt_card_iff_nontrivial.1 (lt_trans (by decide) h3)
   rw [← Fintype.one_lt_card_iff_nontrivial]
-  refine' lt_of_mul_lt_mul_left _ (le_of_lt Nat.prime_two.pos)
+  refine lt_of_mul_lt_mul_left ?_ (le_of_lt Nat.prime_two.pos)
   rw [two_mul_card_alternatingGroup, card_perm, ← Nat.succ_le_iff]
   exact le_trans h3 (card α).self_le_factorial
 #align alternating_group.nontrivial_of_three_le_card alternatingGroup.nontrivial_of_three_le_card
@@ -239,7 +239,7 @@ theorem normalClosure_finRotate_five : normalClosure ({⟨finRotate 5,
         IsThreeCycle (Fin.cycleRange 2 * finRotate 5 * (Fin.cycleRange 2)⁻¹ * (finRotate 5)⁻¹) :=
         card_support_eq_three_iff.1 (by decide)
       rw [← h3.alternating_normalClosure (by rw [card_fin])]
-      refine' normalClosure_le_normal _
+      refine normalClosure_le_normal ?_
       rw [Set.singleton_subset_iff, SetLike.mem_coe]
       have h :
         (⟨finRotate 5, finRotate_bit1_mem_alternatingGroup (n := 2)⟩ : alternatingGroup (Fin 5)) ∈
@@ -266,7 +266,7 @@ theorem normalClosure_swap_mul_swap_five :
     simp only [Fin.val_mk, Subgroup.coe_mul, Subgroup.coe_inv, Fin.val_mk]
     decide
   rw [eq_top_iff, ← normalClosure_finRotate_five]
-  refine' normalClosure_le_normal _
+  refine normalClosure_le_normal ?_
   rw [Set.singleton_subset_iff, SetLike.mem_coe, ← h5]
   have h : g2 ∈ normalClosure {g2} :=
     SetLike.mem_coe.1 (subset_normalClosure (Set.mem_singleton _))

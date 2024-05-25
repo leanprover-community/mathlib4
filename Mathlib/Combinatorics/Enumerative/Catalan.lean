@@ -131,7 +131,7 @@ theorem catalan_eq_centralBinom_div (n : ℕ) : catalan n = n.centralBinom / (n 
       rw [hd _ m_le_d, hd _ d_minus_x_le_d]
       norm_cast
     · trans (∑ i : Fin d.succ, (gosperCatalan (d + 1) (i + 1) - gosperCatalan (d + 1) i))
-      · refine' sum_congr rfl fun i _ => _
+      · refine sum_congr rfl fun i _ => ?_
         rw [gosper_trick i.is_le, mul_div]
       · rw [← sum_range fun i => gosperCatalan (d + 1) (i + 1) - gosperCatalan (d + 1) i,
             sum_range_sub, Nat.succ_eq_add_one]
@@ -157,8 +157,7 @@ open Tree
 
 /-- Given two finsets, find all trees that can be formed with
   left child in `a` and right child in `b` -/
-@[reducible]
-def pairwiseNode (a b : Finset (Tree Unit)) : Finset (Tree Unit) :=
+abbrev pairwiseNode (a b : Finset (Tree Unit)) : Finset (Tree Unit) :=
   (a ×ˢ b).map ⟨fun x => x.1 △ x.2, fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ => fun h => by simpa using h⟩
 #align tree.pairwise_node Tree.pairwiseNode
 
