@@ -30,17 +30,28 @@ inductive StyleError where
   /-- Broad import, which is disallowed in Mathlib -/
   -- Future: if this includes more than one import, report the module name
   | broadImport : StyleError
+  /-- Missing or malformed copyright header.
+  Unlike in the python script, we may provide some context on the actual error. -/
+  | copyright (context : Option String)
+  /-- Malformed authors line in the copyright header -/
+  | authors
   deriving BEq
 
 /-- Create the underlying error message for a given `StyleError`. -/
 def errorMessage (err : StyleError) : String := match err with
   | StyleError.lineLength n => s!"Line has {n} characters, which is more than 100"
   | StyleError.broadImport => "Files in mathlib must not import the whole tactic folder"
+  | StyleError.copyright (some context) => s!"Malformed or missing copyright header: {context}"
+  | StyleError.copyright none => s!"Malformed or missing copyright header"
+  | StyleError.authors =>
+    "Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'"
 
 /-- The error code for a given style error. Kept in sync with `lint-style.py` for now. -/
 def errorCode (err : StyleError) : String := match err with
-  | StyleError.lineLength _n => "ERR_LIN"
+  | StyleError.lineLength _ => "ERR_LIN"
   | StyleError.broadImport => "ERR_TAC"
+  | StyleError.copyright _ => "ERR_COP"
+  | StyleError.authors => "ERR_AUT"
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
 and the path to the file. -/
@@ -107,11 +118,57 @@ def contains_broad_imports(lines : Array String) : Array (StyleError × Nat) := 
         in_doc_comment := True
   output
 
+-- xxx: use ℕ notation, if cheap to import!
+
+/-- Return if `line` looks like a correct authors line in a copyright header. -/
+def is_correct_authors_line (line : String) : Bool :=
+  -- We cannot reasonably validate the author names, so we look only for the three common mistakes:
+  -- the file starting wrong, using ' and ' between names, and a '.' at the end of line.
+  !(line.startsWith "Authors: " && line.containsSubstr "  "
+    && line.containsSubstr " and " && line.endsWith ".")
+
+/-- Lint a collection of input lines if they are missing an appropriate copyright header.
+
+A copyright header should start at the very beginning of the file and contain precisely five lines,
+including the copy year and holder, the license and main author(s) of the file (in this order).
+-/
+def copyright_header(lines : Array String) : Array (StyleError × Nat) := Id.run do
+  -- Unlike the Python script, we just emit one warning.
+  let start := lines.extract 0 4
+  -- The header should start and end with blank comments.
+  let _ := match (start.get? 0, start.get? 4) with
+  | (some "/-", some "-/") => none
+  | (some "/-", _) => return Array.mk [(StyleError.copyright none, 4)]
+  | _ => return Array.mk [(StyleError.copyright none, 0)]
+
+  -- If this is given, we go over the individual lines one by one,
+  -- and provide some context on what is mis-formatted (if anything).
+  let mut output := Array.mkEmpty 0
+  -- By hypotheses above, start has at least five lines, so the `none` cases below are never hit.
+  -- The first real line should state the copyright.
+  if let some copy := start.get? 1 then
+    if !(copy.startsWith "Copyright (c) " && copy.endsWith ". All rights reserved.") then
+      output := output.push (StyleError.copyright "Copyright line is malformed", 2)
+  -- The second line should be standard.
+  let expected_second_line := "Released under Apache 2.0 license as described in the file LICENSE."
+  if start.get? 2 != some expected_second_line then
+    output := output.push (StyleError.copyright s!"Second line should be {expected_second_line}", 3)
+  -- The third line should contain authors.
+  if let some line := start.get? 3 then
+    if !line.containsSubstr "Author" then
+      output := output.push (StyleError.copyright
+        "The third line should describe the file's main authors", 4)
+    else
+      -- If it does, we check the authors line is formatted correctly.
+      if !is_correct_authors_line line then
+        output := output.push (StyleError.authors, 4)
+  return output
+
 end CoreLogic
 
 /-- All text-based linters registered in this file. -/
 def all_linters : Array (Array String → Array (StyleError × Nat)) := Array.mk
-  [CoreLogic.check_line_length, CoreLogic.contains_broad_imports]
+  [CoreLogic.check_line_length, CoreLogic.contains_broad_imports, CoreLogic.copyright_header]
 
 def add_path (path : System.FilePath) : StyleError × Nat → ErrorContext :=
   fun (e, n) ↦ ErrorContext.mk e n path
