@@ -22,10 +22,7 @@ compact space, this type has nice properties.
   type classes (e.g., `TopologicalRing`) are sufficiently generalized.
 -/
 
-
-universe u v w
-
-variable {F : Type*} {α : Type u} {β : Type v} {γ : Type w} [TopologicalSpace α]
+variable {F α β γ : Type*} [TopologicalSpace α]
 
 open BoundedContinuousFunction Topology Bornology
 
