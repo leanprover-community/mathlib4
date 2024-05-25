@@ -13,6 +13,12 @@ In this file we prove that an element `k : Fin n` is even in `Fin n`
 iff `n` is odd or `Fin.val k` is even.
 -/
 
+lemma Even.natCast {R : Type*} [AddMonoidWithOne R] {n : ℕ} (hn : Even n) : Even (n : R) :=
+  hn.map <| Nat.castAddMonoidHom R
+
+lemma Odd.natCast {R : Type*} [Semiring R] {n : ℕ} (hn : Odd n) : Odd (n : R) :=
+  hn.map <| Nat.castRingHom R
+
 namespace Fin
 
 /-- In `Fin n`, all elements are even for odd `n`,
