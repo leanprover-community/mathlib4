@@ -33,9 +33,6 @@ universe v u
 
 
 attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
-/- Previously, this had accidentally been made a global instance, and we now turn it on locally as
-convenient. -/
-
 
 noncomputable section
 
