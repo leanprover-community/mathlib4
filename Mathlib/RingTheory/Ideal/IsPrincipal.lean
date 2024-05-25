@@ -26,6 +26,7 @@ namespace Ideal
 open Submodule
 
 variable (R) in
+/-- The principal ideals of `R` form a submonoid of `Ideal R`. -/
 def isPrincipalSubmonoid : Submonoid (Ideal R) where
   carrier := { I | IsPrincipal I}
   mul_mem' := by
@@ -79,6 +80,7 @@ theorem associatesEquivIsPrincipal_map_one :
     span_singleton_one, one_eq_top]
 
 variable (R) in
+/-- The `MulEquiv` version of `Ideal.associatesEquivIsPrincipal`. -/
 noncomputable def associatesMulEquivIsPrincipal :
     Associates R ≃* (isPrincipalSubmonoid R) where
   __ := Ideal.associatesEquivIsPrincipal R
