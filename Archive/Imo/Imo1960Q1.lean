@@ -77,7 +77,7 @@ theorem searchUpTo_start : SearchUpTo 9 99 :=
 theorem searchUpTo_step {c n} (H : SearchUpTo c n) {c' n'} (ec : c + 1 = c') (en : n + 11 = n') {l}
     (el : Nat.digits 10 n = l) (H' : c = sumOfSquares l → c = 50 ∨ c = 73) : SearchUpTo c' n' := by
   subst ec; subst en; subst el
-  myobtain ⟨rfl, H⟩ := H
+  obtain ⟨rfl, H⟩ := H
   refine ⟨by ring, fun m l p => ?_⟩
   obtain ⟨h₁, ⟨m, rfl⟩, h₂⟩ := id p
   by_cases h : 11 * m < c * 11; · exact H _ h p
