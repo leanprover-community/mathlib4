@@ -253,10 +253,9 @@ def line_endings : LinterCore := fun lines ↦ Id.run do
   let mut output := Array.mkEmpty 0
   -- FIXME: benchmark this; does the Array -> List conversion matter?
   for (line_number, line) in lines.toList.enumFrom 1 do
-    let line' := Lake.crlf2lf line
-    if line' != line then
+    if line.back == '\r' then
       output := output.push (StyleError.windowsLineEndings, line_number)
-    if line'.trimRight != line' then
+    if line.back.isWhitespace then
       output := output.push (StyleError.trailingWhitespace, line_number)
   return output
 
@@ -291,13 +290,12 @@ end
   but barely acceptable for now
 - contains_broad_imports was perhaps 5s
 - 3s for 100 items, 9 for 500 --> perhaps 1min for all of mathlib (while spewing out lots of errors)
-
--- 30s for line_endings
+- now ~5 for checking line endings
 -/
 
 /-- All text-based linters registered in this file. -/
 def all_linters : Array LinterCore := Array.mk
-  [check_line_length]
+  [line_endings]
 
 /-- Read a file, apply all text-based linters and return the formatted errors.
 
@@ -373,8 +371,7 @@ def check_all_files : IO Unit := do
   let mut i := 0
   for module in allModules do
     i := i + 1
-    if i == 50 then
-      break
+    --if i == 500 then break
     let module := module.stripPrefix "import "
     -- Convert the module name to a file name, then lint that file.
     -- TODO: what's the size limit for *this* file?
@@ -383,6 +380,5 @@ def check_all_files : IO Unit := do
 
 -- #eval lint_file (System.mkFilePath ("Mathlib/RingTheory/Kaehler.lean".splitOn "/"))
 --     none (Array.mkEmpty 0)
-
---run_cmd check_all_files
---#print "all done"
+-- run_cmd check_all_files
+-- #print "all done"
