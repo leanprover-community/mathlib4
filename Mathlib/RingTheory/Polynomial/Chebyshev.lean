@@ -29,9 +29,10 @@ with integral coefficients.
   Chebyshev polynomials of the second kind.
 * `Polynomial.Chebyshev.mul_T`, twice the product of the `m`-th and `k`-th Chebyshev polynomials of
   the first kind is the sum of the `m + k`-th and `m - k`-th Chebyshev polynomials of the first
-  kind.
+  kind. There is a similar statement `Polynomial.Chebyshev.mul_C` for the `C` polynomials.
 * `Polynomial.Chebyshev.T_mul`, the `(m * n)`-th Chebyshev polynomial of the first kind is the
-  composition of the `m`-th and `n`-th Chebyshev polynomials of the first kind.
+  composition of the `m`-th and `n`-th Chebyshev polynomials of the first kind. There is a similar
+  statement `Polynomial.Chebyshev.C_mul` for the `C` polynomials.
 
 ## Implementation details
 
