@@ -7,11 +7,38 @@ Authors: Michael Rothgang
 import Lean.Elab.Command
 import Lean.Linter.Util
 
-/-! ## Attempt to remove stream-of-conciousness syntax from `obtain`
+/-! ## The `oldObtain` linter, against stream-of-conciousness obtain
 
-Create a clone `myobtain` which requires a proof directly.
+The `oldObtain` linter flags any occurrences of "stream-of-conciousness" obtain,
+i.e. uses of the `obtain` tactic which do not immediately provide a proof.
 
-On second thought, just write a linter against it... -/
+**Example.** There are six different kinds of `obtain` uses. In one example, they look like this.
+```
+theorem foo : True := by
+  -- These cases are fine.
+  obtain := trivial
+  obtain h := trivial
+  obtain : True := trivial
+  obtain h : True := trivial
+  -- These are linted against.
+  obtain : True
+  · trivial
+  obtain h : True
+  · trivial
+```
+We allow the first four (since an explicit proof is provided), but lint against the last two.
+
+**Why is this bad?** This is similar to removing all uses of `Tactic.Replace` and `Tactic.Have`
+from mathlib: in summary,
+- this version is a Lean3-ism, which can be unlearned now
+- the syntax `obtain foo : type := proof` is slightly shorter;
+  particularly so when the first tactic of the proof is `exact`
+- when using the old syntax as `obtain foo : type; · proof`, there is an intermediate state with
+multiple goals right before the focusing dot. This can be confusing.
+(This gets amplified with the in-flight "multiple goal linter", which in my perception seems generally desired - for many reasons, including teachability. Granted, the linter could be tweaked to not lint in this case... but by now, the "old" syntax is not clearly better.)
+- the old syntax *could* be slightly nicer when deferring goals: however, this is rare.
+In the 30 replacements of the last PR, this occurred twice. In both cases, the `suffices` tactic
+could also be used, as was in fact clearer. -/
 
 open Lean Elab
 
@@ -19,16 +46,9 @@ namespace Mathlib.Linter.Style
 
 /-- Whether a syntax element is an `obtain` tactic call without a provided proof. -/
 def is_obtain_without_proof : Syntax → Bool
-  -- Cases with a proof.
-  | `(tactic|obtain $_pat := $_proof) => false
-  | `(tactic|obtain $_pat : $_type := $_proof) => false
-  | `(tactic|obtain : $_type := $_proof) => false
-  | `(tactic|obtain := $_proof) => false
-  -- Case without a proof.
-  | `(tactic|obtain : $_type) => true
-  | `(tactic|obtain $_pat : $_type) => true
-  -- The above should be all possible `obtain` pattern: to double-check, let's flag any others.
-  | `(tactic|obtain _) => true
+  -- Using the `obtain` tactic without a proof requires proving a type;
+  -- a pattern is optional.
+  | `(tactic|obtain : $_type) | `(tactic|obtain $_pat : $_type) => true
   | _ => false
 
 /-- The `badObtain` linter emits a warning upon uses of "stream-of-conciousness" obtain,
@@ -41,10 +61,7 @@ register_option linter.badObtain : Bool := {
 /-- Gets the value of the `linter.badObtain` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.badObtain o
 
-/-- The `badObtain` linter: this lints ...
-why bad?
-what else?
--/
+/-- The `badObtain` linter: see docstring above -/
 def badObtainLinter : Linter where run := withSetOptionIn fun stx => do
     unless getLinterHash (← getOptions) do
       return
@@ -54,3 +71,5 @@ def badObtainLinter : Linter where run := withSetOptionIn fun stx => do
       Linter.logLint linter.badObtain head m!"Bad obtain syntax; please remove"
 
 initialize addLinter badObtainLinter
+
+end Mathlib.Linter.Style
