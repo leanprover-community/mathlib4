@@ -252,7 +252,7 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
     by the Bochner integral of `f (Nx (π.tag J)) x` over `J`, then we jump to the Bochner
     integral of `g`. -/
   refine (dist_triangle4 _ (∑ J ∈ π.boxes, (μ J).toReal • f (Nx <| π.tag J) (π.tag J))
-    (∑ J ∈ π.boxes, ∫ x ∈ J, f (Nx <| π.tag J) x ∂μ) _).trans ?_
+    (∑ J ∈ π.boxes, ∫ x in J, f (Nx <| π.tag J) x ∂μ) _).trans ?_
   rw [add_mul, add_mul, one_mul]
   refine add_le_add_three ?_ ?_ ?_
   · /- Since each `f (Nx <| π.tag J)` is `ε`-close to `g (π.tag J)`, replacing the latter with

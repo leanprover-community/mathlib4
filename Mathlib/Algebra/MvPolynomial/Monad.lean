@@ -367,10 +367,10 @@ theorem vars_bind₁ [DecidableEq τ] (f : σ → MvPolynomial τ R) (φ : MvPol
   · apply Finset.biUnion_mono
     intro d _hd
     calc
-      vars (C (coeff d φ) * ∏ i : σ ∈ d.support, f i ^ d i) ≤
-          (C (coeff d φ)).vars ∪ (∏ i : σ ∈ d.support, f i ^ d i).vars :=
+      vars (C (coeff d φ) * ∏ i ∈ d.support, f i ^ d i) ≤
+          (C (coeff d φ)).vars ∪ (∏ i ∈ d.support, f i ^ d i).vars :=
         vars_mul _ _
-      _ ≤ (∏ i : σ ∈ d.support, f i ^ d i).vars := by
+      _ ≤ (∏ i ∈ d.support, f i ^ d i).vars := by
         simp only [Finset.empty_union, vars_C, Finset.le_iff_subset, Finset.Subset.refl]
       _ ≤ d.support.biUnion fun i : σ => vars (f i ^ d i) := vars_prod _
       _ ≤ d.support.biUnion fun i : σ => (f i).vars := ?_

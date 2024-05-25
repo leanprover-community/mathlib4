@@ -449,7 +449,7 @@ theorem Nat.geom_sum_Ico_le {b : ℕ} (hb : 2 ≤ b) (a n : ℕ) :
     exact Nat.zero_le _
   rw [← add_le_add_iff_left a]
   calc
-    (a + ∑ i : ℕ ∈ Ico 1 n.succ, a / b ^ i) = a / b ^ 0 + ∑ i : ℕ ∈ Ico 1 n.succ, a / b ^ i := by
+    (a + ∑ i ∈ Ico 1 n.succ, a / b ^ i) = a / b ^ 0 + ∑ i ∈ Ico 1 n.succ, a / b ^ i := by
       rw [pow_zero, Nat.div_one]
     _ = ∑ i ∈ range n.succ, a / b ^ i := by
       rw [range_eq_Ico, ← Nat.Ico_insert_succ_left (Nat.succ_pos _), sum_insert]

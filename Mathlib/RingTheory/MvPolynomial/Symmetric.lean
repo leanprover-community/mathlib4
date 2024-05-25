@@ -240,7 +240,7 @@ theorem esymm_isSymmetric (n : ℕ) : IsSymmetric (esymm σ R n) := by
 theorem support_esymm'' (n : ℕ) [DecidableEq σ] [Nontrivial R] :
     (esymm σ R n).support =
       (powersetCard n (univ : Finset σ)).biUnion fun t =>
-        (Finsupp.single (∑ i : σ ∈ t, Finsupp.single i 1) (1 : R)).support := by
+        (Finsupp.single (∑ i ∈ t, Finsupp.single i 1) (1 : R)).support := by
   rw [esymm_eq_sum_monomial]
   simp only [← single_eq_monomial]
   refine Finsupp.support_sum_eq_biUnion (powersetCard n (univ : Finset σ)) ?_
@@ -264,7 +264,7 @@ theorem support_esymm'' (n : ℕ) [DecidableEq σ] [Nontrivial R] :
 
 theorem support_esymm' (n : ℕ) [DecidableEq σ] [Nontrivial R] :
     (esymm σ R n).support =
-      (powersetCard n (univ : Finset σ)).biUnion fun t => {∑ i : σ ∈ t, Finsupp.single i 1} := by
+      (powersetCard n (univ : Finset σ)).biUnion fun t => {∑ i ∈ t, Finsupp.single i 1} := by
   rw [support_esymm'']
   congr
   funext
@@ -273,7 +273,7 @@ theorem support_esymm' (n : ℕ) [DecidableEq σ] [Nontrivial R] :
 
 theorem support_esymm (n : ℕ) [DecidableEq σ] [Nontrivial R] :
     (esymm σ R n).support =
-      (powersetCard n (univ : Finset σ)).image fun t => ∑ i : σ ∈ t, Finsupp.single i 1 := by
+      (powersetCard n (univ : Finset σ)).image fun t => ∑ i ∈ t, Finsupp.single i 1 := by
   rw [support_esymm']
   exact biUnion_singleton
 #align mv_polynomial.support_esymm MvPolynomial.support_esymm
@@ -282,7 +282,7 @@ theorem degrees_esymm [Nontrivial R] (n : ℕ) (hpos : 0 < n) (hn : n ≤ Fintyp
     (esymm σ R n).degrees = (univ : Finset σ).val := by
   classical
     have :
-      (Finsupp.toMultiset ∘ fun t : Finset σ => ∑ i : σ ∈ t, Finsupp.single i 1) = val := by
+      (Finsupp.toMultiset ∘ fun t : Finset σ => ∑ i ∈ t, Finsupp.single i 1) = val := by
       funext
       simp [Finsupp.toMultiset_sum_single]
     rw [degrees_def, support_esymm, sup_image, this]

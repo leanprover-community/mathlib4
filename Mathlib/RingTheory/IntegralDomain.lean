@@ -233,10 +233,10 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
     let c := (univ.filter fun g => f.toHomUnits g = 1).card
     calc
       ∑ g : G, f g = ∑ g : G, (f.toHomUnits g : R) := rfl
-      _ = ∑ u : Rˣ ∈ univ.image f.toHomUnits,
+      _ = ∑ u ∈ univ.image f.toHomUnits,
             (univ.filter fun g => f.toHomUnits g = u).card • (u : R) :=
         (sum_comp ((↑) : Rˣ → R) f.toHomUnits)
-      _ = ∑ u : Rˣ ∈ univ.image f.toHomUnits, c • (u : R) :=
+      _ = ∑ u ∈ univ.image f.toHomUnits, c • (u : R) :=
         (sum_congr rfl fun u hu => congr_arg₂ _ ?_ rfl)
       -- remaining goal 1, proven below
       -- Porting note: have to change `(b : R)` into `((b : Rˣ) : R)`

@@ -317,7 +317,7 @@ theorem iIndepSets.indepSets {s : ι → Set (Set Ω)} {_mΩ : MeasurableSpace �
       ite (i = i) t₁ t₂ ∩ ite (j = i) t₁ t₂ := by
     simp only [Finset.set_biInter_singleton, Finset.set_biInter_insert]
   filter_upwards [h_indep {i, j} hf_m] with a h_indep'
-  have h_prod : (∏ t : ι ∈ ({i, j} : Finset ι), κ a (ite (t = i) t₁ t₂))
+  have h_prod : (∏ t ∈ ({i, j} : Finset ι), κ a (ite (t = i) t₁ t₂))
       = κ a (ite (i = i) t₁ t₂) * κ a (ite (j = i) t₁ t₂) := by
     simp only [hij, Finset.prod_singleton, Finset.prod_insert, not_false_iff,
       Finset.mem_singleton]

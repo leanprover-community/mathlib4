@@ -317,7 +317,7 @@ the original family. -/
 theorem LinearIndependent.of_comp (f : M →ₗ[R] M') (hfv : LinearIndependent R (f ∘ v)) :
     LinearIndependent R v :=
   linearIndependent_iff'.2 fun s g hg i his =>
-    have : (∑ i : ι ∈ s, g i • f (v i)) = 0 := by
+    have : (∑ i ∈ s, g i • f (v i)) = 0 := by
       simp_rw [← map_smul, ← map_sum, hg, f.map_zero]
     linearIndependent_iff'.1 hfv s g this i his
 #align linear_independent.of_comp LinearIndependent.of_comp

@@ -1134,7 +1134,7 @@ variable [_i : Fact (1 ≤ p)]
 
 theorem sum_rpow_le_of_tendsto (hp : p ≠ ∞) {C : ℝ} {F : ι → lp E p} (hCF : ∀ᶠ k in l, ‖F k‖ ≤ C)
     {f : ∀ a, E a} (hf : Tendsto (id fun i => F i : ι → ∀ a, E a) l (𝓝 f)) (s : Finset α) :
-    ∑ i : α ∈ s, ‖f i‖ ^ p.toReal ≤ C ^ p.toReal := by
+    ∑ i ∈ s, ‖f i‖ ^ p.toReal ≤ C ^ p.toReal := by
   have hp' : p ≠ 0 := (zero_lt_one.trans_le _i.elim).ne'
   have hp'' : 0 < p.toReal := ENNReal.toReal_pos hp' hp
   let G : (∀ a, E a) → ℝ := fun f => ∑ a ∈ s, ‖f a‖ ^ p.toReal

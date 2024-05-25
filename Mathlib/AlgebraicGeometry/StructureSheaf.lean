@@ -878,7 +878,7 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
   -- Finally, we have all the ingredients.
   -- We claim that our preimage is given by `(∑ (i : ι) ∈ t, b i * a i) / f ^ (n+1)`
   use
-    IsLocalization.mk' (Localization.Away f) (∑ i : ι ∈ t, b i * a i)
+    IsLocalization.mk' (Localization.Away f) (∑ i ∈ t, b i * a i)
       (⟨f ^ (n + 1), n + 1, rfl⟩ : Submonoid.powers _)
   rw [toBasicOpen_mk']
   -- Since the structure sheaf is a sheaf, we can show the desired equality locally.

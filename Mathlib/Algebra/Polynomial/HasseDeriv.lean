@@ -235,7 +235,7 @@ theorem hasseDeriv_mul (f g : R[X]) :
   let Φ := @AddMonoidHom.mul R[X] _
   show
     (compHom (D k)).comp Φ f g =
-      ∑ ij : ℕ × ℕ ∈ antidiagonal k, ((compHom.comp ((compHom Φ) (D ij.1))).flip (D ij.2) f) g
+      ∑ ij ∈ antidiagonal k, ((compHom.comp ((compHom Φ) (D ij.1))).flip (D ij.2) f) g
   simp only [← finset_sum_apply]
   congr 2
   clear f g

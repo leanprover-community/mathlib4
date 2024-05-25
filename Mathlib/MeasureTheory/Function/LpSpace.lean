@@ -1608,7 +1608,7 @@ theorem ae_tendsto_of_cauchy_snorm' [CompleteSpace E] {f : ℕ → α → E} {p 
       (fun n => ∑ i ∈ Finset.range n, (f (i + 1) x - f i x)) = fun n => f n x - f 0 x := by
     ext1 n
     change
-      (∑ i : ℕ ∈ Finset.range n, ((fun m => f m x) (i + 1) - (fun m => f m x) i)) = f n x - f 0 x
+      (∑ i ∈ Finset.range n, ((fun m => f m x) (i + 1) - (fun m => f m x) i)) = f n x - f 0 x
     rw [Finset.sum_range_sub (fun m => f m x)]
   rw [h_rw_sum] at hx
   have hf_rw : (fun n => f n x) = fun n => f n x - f 0 x + f 0 x := by

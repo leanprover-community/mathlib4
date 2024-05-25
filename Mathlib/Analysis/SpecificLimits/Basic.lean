@@ -295,7 +295,7 @@ theorem tsum_geometric_two : (∑' n : ℕ, ((1 : ℝ) / 2) ^ n) = 2 :=
   hasSum_geometric_two.tsum_eq
 #align tsum_geometric_two tsum_geometric_two
 
-theorem sum_geometric_two_le (n : ℕ) : (∑ i : ℕ ∈ range n, (1 / (2 : ℝ)) ^ i) ≤ 2 := by
+theorem sum_geometric_two_le (n : ℕ) : (∑ i ∈ range n, (1 / (2 : ℝ)) ^ i) ≤ 2 := by
   have : ∀ i, 0 ≤ (1 / (2 : ℝ)) ^ i := by
     intro i
     apply pow_nonneg

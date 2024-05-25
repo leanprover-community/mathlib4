@@ -246,7 +246,7 @@ theorem signAux_mul {n : ℕ} (f g : Perm (Fin n)) : signAux (f * g) = signAux f
 #align equiv.perm.sign_aux_mul Equiv.Perm.signAux_mul
 
 private theorem signAux_swap_zero_one' (n : ℕ) : signAux (swap (0 : Fin (n + 2)) 1) = -1 :=
-  show _ = ∏ x : Σ_a : Fin (n + 2), Fin (n + 2) ∈ {(⟨1, 0⟩ : Σa : Fin (n + 2), Fin (n + 2))},
+  show _ = ∏ x ∈ {(⟨1, 0⟩ : Σ a : Fin (n + 2), Fin (n + 2))},
       if (Equiv.swap 0 1) x.1 ≤ swap 0 1 x.2 then (-1 : ℤˣ) else 1 by
     refine Eq.symm (prod_subset (fun ⟨x₁, x₂⟩ => by
       simp (config := { contextual := true }) [mem_finPairsLT, Fin.one_pos]) fun a ha₁ ha₂ => ?_)

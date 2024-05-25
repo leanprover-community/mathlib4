@@ -342,7 +342,7 @@ theorem IsSFiniteKernel.finset_sum {κs : ι → kernel α β} (I : Finset ι)
   · rw [Finset.sum_empty]; infer_instance
   · rw [Finset.sum_insert hi_nmem_I]
     haveI : IsSFiniteKernel (κs i) := h i (Finset.mem_insert_self _ _)
-    have : IsSFiniteKernel (∑ x : ι ∈ I, κs x) :=
+    have : IsSFiniteKernel (∑ x ∈ I, κs x) :=
       h_ind fun i hiI => h i (Finset.mem_insert_of_mem hiI)
     exact IsSFiniteKernel.add _ _
 #align probability_theory.kernel.is_s_finite_kernel.finset_sum ProbabilityTheory.kernel.IsSFiniteKernel.finset_sum

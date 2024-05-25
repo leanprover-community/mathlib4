@@ -211,7 +211,7 @@ theorem betaIntegral_recurrence {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
 
 /-- Explicit formula for the Beta function when second argument is a positive integer. -/
 theorem betaIntegral_eval_nat_add_one_right {u : ℂ} (hu : 0 < re u) (n : ℕ) :
-    betaIntegral u (n + 1) = n ! / ∏ j : ℕ ∈ Finset.range (n + 1), (u + j) := by
+    betaIntegral u (n + 1) = n ! / ∏ j ∈ Finset.range (n + 1), (u + j) := by
   induction' n with n IH generalizing u
   · rw [Nat.cast_zero, zero_add, betaIntegral_eval_one_right hu, Nat.factorial_zero, Nat.cast_one]
     simp
@@ -241,7 +241,7 @@ namespace Complex
 /-- The sequence with `n`-th term `n ^ s * n! / (s * (s + 1) * ... * (s + n))`, for complex `s`.
 We will show that this tends to `Γ(s)` as `n → ∞`. -/
 noncomputable def GammaSeq (s : ℂ) (n : ℕ) :=
-  (n : ℂ) ^ s * n ! / ∏ j : ℕ ∈ Finset.range (n + 1), (s + j)
+  (n : ℂ) ^ s * n ! / ∏ j ∈ Finset.range (n + 1), (s + j)
 #align complex.Gamma_seq Complex.GammaSeq
 
 theorem GammaSeq_eq_betaIntegral_of_re_pos {s : ℂ} (hs : 0 < re s) (n : ℕ) :
@@ -488,7 +488,7 @@ namespace Real
 /-- The sequence with `n`-th term `n ^ s * n! / (s * (s + 1) * ... * (s + n))`, for real `s`. We
 will show that this tends to `Γ(s)` as `n → ∞`. -/
 noncomputable def GammaSeq (s : ℝ) (n : ℕ) :=
-  (n : ℝ) ^ s * n ! / ∏ j : ℕ ∈ Finset.range (n + 1), (s + j)
+  (n : ℝ) ^ s * n ! / ∏ j ∈ Finset.range (n + 1), (s + j)
 #align real.Gamma_seq Real.GammaSeq
 
 /-- Euler's limit formula for the real Gamma function. -/

@@ -175,7 +175,7 @@ theorem sum_totient (n : ℕ) : n.divisors.sum φ = n := by
   rcases n.eq_zero_or_pos with (rfl | hn)
   · simp
   rw [← sum_div_divisors n φ]
-  have : n = ∑ d : ℕ ∈ n.divisors, (filter (fun k : ℕ => n.gcd k = d) (range n)).card := by
+  have : n = ∑ d ∈ n.divisors, (filter (fun k : ℕ => n.gcd k = d) (range n)).card := by
     nth_rw 1 [← card_range n]
     refine card_eq_sum_card_fiberwise fun x _ => mem_divisors.2 ⟨?_, hn.ne'⟩
     apply gcd_dvd_left

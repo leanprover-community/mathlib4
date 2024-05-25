@@ -96,7 +96,7 @@ theorem measure_limsup_eq_one {s : ℕ → Set Ω} (hsm : ∀ n, MeasurableSet (
   · rintro ⟨B, hB⟩
     refine not_eventually.2 (frequently_of_forall fun n => ?_) (htends B.toNNReal)
     rw [mem_upperBounds] at hB
-    specialize hB (∑ k : ℕ ∈ Finset.range n, μ (s (k + 1))).toReal _
+    specialize hB (∑ k ∈ Finset.range n, μ (s (k + 1))).toReal _
     · refine ⟨n, ?_⟩
       rw [ENNReal.toReal_sum]
       exact fun _ _ => measure_ne_top _ _

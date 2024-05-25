@@ -397,30 +397,30 @@ theorem iterate_derivative_mul {n} (p q : R[X]) :
   · simp [Finset.range]
   calc
     derivative^[n + 1] (p * q) =
-        derivative (∑ k : ℕ ∈ range n.succ,
+        derivative (∑ k ∈ range n.succ,
             n.choose k • (derivative^[n - k] p * derivative^[k] q)) :=
       by rw [Function.iterate_succ_apply', IH]
-    _ = (∑ k : ℕ ∈ range n.succ,
+    _ = (∑ k ∈ range n.succ,
           n.choose k • (derivative^[n - k + 1] p * derivative^[k] q)) +
-        ∑ k : ℕ ∈ range n.succ,
+        ∑ k ∈ range n.succ,
           n.choose k • (derivative^[n - k] p * derivative^[k + 1] q) := by
       simp_rw [derivative_sum, derivative_smul, derivative_mul, Function.iterate_succ_apply',
         smul_add, sum_add_distrib]
-    _ = (∑ k : ℕ ∈ range n.succ,
+    _ = (∑ k ∈ range n.succ,
               n.choose k.succ • (derivative^[n - k] p * derivative^[k + 1] q)) +
             1 • (derivative^[n + 1] p * derivative^[0] q) +
-          ∑ k : ℕ ∈ range n.succ, n.choose k • (derivative^[n - k] p * derivative^[k + 1] q) :=
+          ∑ k ∈ range n.succ, n.choose k • (derivative^[n - k] p * derivative^[k + 1] q) :=
       ?_
-    _ = ((∑ k : ℕ ∈ range n.succ, n.choose k • (derivative^[n - k] p * derivative^[k + 1] q)) +
-            ∑ k : ℕ ∈ range n.succ,
+    _ = ((∑ k ∈ range n.succ, n.choose k • (derivative^[n - k] p * derivative^[k + 1] q)) +
+            ∑ k ∈ range n.succ,
               n.choose k.succ • (derivative^[n - k] p * derivative^[k + 1] q)) +
           1 • (derivative^[n + 1] p * derivative^[0] q) :=
       by rw [add_comm, add_assoc]
-    _ = (∑ i : ℕ ∈ range n.succ,
+    _ = (∑ i ∈ range n.succ,
             (n + 1).choose (i + 1) • (derivative^[n + 1 - (i + 1)] p * derivative^[i + 1] q)) +
           1 • (derivative^[n + 1] p * derivative^[0] q) :=
       by simp_rw [Nat.choose_succ_succ, Nat.succ_sub_succ, add_smul, sum_add_distrib]
-    _ = ∑ k : ℕ ∈ range n.succ.succ,
+    _ = ∑ k ∈ range n.succ.succ,
           n.succ.choose k • (derivative^[n.succ - k] p * derivative^[k] q) :=
       by rw [sum_range_succ' _ n.succ, Nat.choose_zero_right, tsub_zero]
   congr

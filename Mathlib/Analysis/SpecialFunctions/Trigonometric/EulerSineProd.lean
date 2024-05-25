@@ -329,8 +329,8 @@ theorem _root_.Real.tendsto_euler_sin_prod (x : ℝ) :
   · ext1 n
     rw [Function.comp_apply, ← Complex.ofReal_mul, Complex.re_ofReal_mul]
     suffices
-      (∏ j : ℕ ∈ Finset.range n, (1 - x ^ 2 / (j + 1) ^ 2) : ℂ) =
-        (∏ j : ℕ ∈ Finset.range n, (1 - x ^ 2 / (j + 1) ^ 2) : ℝ) by
+      (∏ j ∈ Finset.range n, (1 - x ^ 2 / (j + 1) ^ 2) : ℂ) =
+        (∏ j ∈ Finset.range n, (1 - x ^ 2 / (j + 1) ^ 2) : ℝ) by
       rw [this, Complex.ofReal_re]
     rw [Complex.ofReal_prod]
     refine Finset.prod_congr (by rfl) fun n _ => ?_

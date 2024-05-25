@@ -127,11 +127,9 @@ instance instSMul [Zero R] : SMul (HahnSeries Γ R) (HahnModule Γ R V) where
         x.coeff ij.fst • ((of R).symm y).coeff ij.snd
     isPWO_support' :=
         haveI h :
-          { a : Γ |
-              (∑ ij : Γ × Γ ∈ addAntidiagonal x.isPWO_support y.isPWO_support a,
-                  x.coeff ij.fst • y.coeff ij.snd) ≠
-                0 } ⊆
-            { a : Γ | (addAntidiagonal x.isPWO_support y.isPWO_support a).Nonempty } := by
+          {a : Γ | ∑ ij ∈ addAntidiagonal x.isPWO_support y.isPWO_support a,
+            x.coeff ij.fst • y.coeff ij.snd ≠ 0} ⊆
+            {a : Γ | (addAntidiagonal x.isPWO_support y.isPWO_support a).Nonempty} := by
           intro a ha
           contrapose! ha
           simp [not_nonempty_iff_eq_empty.1 ha]
@@ -251,7 +249,7 @@ theorem single_mul_coeff_add [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeri
     rw [add_comm] at h1
     rw [← add_right_cancel h1] at hx
     exact h2 hx
-  trans ∑ ij : Γ × Γ ∈ {(b, a)}, (single b r).coeff ij.fst * x.coeff ij.snd
+  trans ∑ ij ∈ {(b, a)}, (single b r).coeff ij.fst * x.coeff ij.snd
   · apply sum_congr _ fun _ _ => rfl
     ext ⟨a1, a2⟩
     simp only [Set.mem_singleton_iff, Prod.mk.inj_iff, mem_addAntidiagonal, mem_singleton,
@@ -279,7 +277,7 @@ theorem mul_single_coeff_add [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeri
     rintro h2 rfl h1
     rw [← add_right_cancel h1] at hx
     exact h2 hx
-  trans ∑ ij : Γ × Γ ∈ {(a, b)}, x.coeff ij.fst * (single b r).coeff ij.snd
+  trans ∑ ij ∈ {(a, b)}, x.coeff ij.fst * (single b r).coeff ij.snd
   · apply sum_congr _ fun _ _ => rfl
     ext ⟨a1, a2⟩
     simp only [Set.mem_singleton_iff, Prod.mk.inj_iff, mem_addAntidiagonal, mem_singleton,

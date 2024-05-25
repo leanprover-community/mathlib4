@@ -167,7 +167,7 @@ theorem finset_prod_subset_finset_prod (t : Finset ι) (f₁ f₂ : ι → Set �
 
 @[to_additive]
 theorem finset_prod_singleton {M ι : Type*} [CommMonoid M] (s : Finset ι) (I : ι → M) :
-    (∏ i : ι ∈ s, ({I i} : Set M)) = {∏ i : ι ∈ s, I i} :=
+    ∏ i ∈ s, ({I i} : Set M) = {∏ i ∈ s, I i} :=
   (map_prod (singletonMonoidHom : M →* Set M) _ _).symm
 #align set.finset_prod_singleton Set.finset_prod_singleton
 #align set.finset_sum_singleton Set.finset_sum_singleton

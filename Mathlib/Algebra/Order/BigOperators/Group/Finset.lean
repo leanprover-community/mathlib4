@@ -142,7 +142,7 @@ theorem one_le_prod' (h : ∀ i ∈ s, 1 ≤ f i) : 1 ≤ ∏ i ∈ s, f i :=
 #align finset.sum_nonneg Finset.sum_nonneg
 
 @[to_additive Finset.sum_nonneg']
-theorem one_le_prod'' (h : ∀ i : ι, 1 ≤ f i) : 1 ≤ ∏ i : ι ∈ s, f i :=
+theorem one_le_prod'' (h : ∀ i : ι, 1 ≤ f i) : 1 ≤ ∏ i ∈ s, f i :=
   Finset.one_le_prod' fun i _ ↦ h i
 #align finset.one_le_prod'' Finset.one_le_prod''
 #align finset.sum_nonneg' Finset.sum_nonneg'
@@ -267,12 +267,12 @@ theorem abs_sum_le_sum_abs {G : Type*} [LinearOrderedAddCommGroup G] (f : ι →
 #align finset.abs_sum_le_sum_abs Finset.abs_sum_le_sum_abs
 
 theorem abs_sum_of_nonneg {G : Type*} [LinearOrderedAddCommGroup G] {f : ι → G} {s : Finset ι}
-    (hf : ∀ i ∈ s, 0 ≤ f i) : |∑ i : ι ∈ s, f i| = ∑ i : ι ∈ s, f i := by
+    (hf : ∀ i ∈ s, 0 ≤ f i) : |∑ i ∈ s, f i| = ∑ i ∈ s, f i := by
   rw [abs_of_nonneg (Finset.sum_nonneg hf)]
 #align finset.abs_sum_of_nonneg Finset.abs_sum_of_nonneg
 
 theorem abs_sum_of_nonneg' {G : Type*} [LinearOrderedAddCommGroup G] {f : ι → G} {s : Finset ι}
-    (hf : ∀ i, 0 ≤ f i) : |∑ i : ι ∈ s, f i| = ∑ i : ι ∈ s, f i := by
+    (hf : ∀ i, 0 ≤ f i) : |∑ i ∈ s, f i| = ∑ i ∈ s, f i := by
   rw [abs_of_nonneg (Finset.sum_nonneg' hf)]
 #align finset.abs_sum_of_nonneg' Finset.abs_sum_of_nonneg'
 

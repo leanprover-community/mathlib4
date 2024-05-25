@@ -513,7 +513,7 @@ theorem X_pow_sub_one_dvd_prod_cyclotomic (R : Type*) [CommRing R] {n m : ℕ} (
     (Nat.mem_properDivisors.1 hm).1 (ne_of_lt (Nat.mem_properDivisors.1 hm).2)),
     Finset.prod_union Finset.sdiff_disjoint,
     prod_cyclotomic_eq_X_pow_sub_one (Nat.pos_of_mem_properDivisors hm)]
-  exact ⟨∏ x : ℕ ∈ n.properDivisors \ m.divisors, cyclotomic x R, by rw [mul_comm]⟩
+  exact ⟨∏ x ∈ n.properDivisors \ m.divisors, cyclotomic x R, by rw [mul_comm]⟩
 set_option linter.uppercaseLean3 false in
 #align polynomial.X_pow_sub_one_dvd_prod_cyclotomic Polynomial.X_pow_sub_one_dvd_prod_cyclotomic
 
@@ -560,7 +560,7 @@ theorem cyclotomic_prime_pow_eq_geom_sum {R : Type*} [CommRing R] {p n : ℕ} (h
     cyclotomic (p ^ (n + 1)) R = ∑ i ∈ Finset.range p, (X ^ p ^ n) ^ i := by
   have : ∀ m, (cyclotomic (p ^ (m + 1)) R = ∑ i ∈ Finset.range p, (X ^ p ^ m) ^ i) ↔
       ((∑ i ∈ Finset.range p, (X ^ p ^ m) ^ i) *
-        ∏ x : ℕ ∈ Finset.range (m + 1), cyclotomic (p ^ x) R) = X ^ p ^ (m + 1) - 1 := by
+        ∏ x ∈ Finset.range (m + 1), cyclotomic (p ^ x) R) = X ^ p ^ (m + 1) - 1 := by
     intro m
     have := eq_cyclotomic_iff (R := R) (P := ∑ i ∈ range p, (X ^ p ^ m) ^ i)
       (pow_pos hp.pos (m + 1))
@@ -599,7 +599,7 @@ theorem cyclotomic_coeff_zero (R : Type*) [CommRing R] {n : ℕ} (hn : 1 < n) :
     have hcongr : ∀ j ∈ n.properDivisors.erase 1, (cyclotomic j R).coeff 0 = 1 := by
       intro j hj
       exact hi j (Nat.mem_properDivisors.1 (Finset.mem_erase.1 hj).2).2 (hleq j hj)
-    have hrw : (∏ x : ℕ ∈ n.properDivisors.erase 1, (cyclotomic x R).coeff 0) = 1 := by
+    have hrw : (∏ x ∈ n.properDivisors.erase 1, (cyclotomic x R).coeff 0) = 1 := by
       rw [Finset.prod_congr (refl (n.properDivisors.erase 1)) hcongr]
       simp only [Finset.prod_const_one]
     simp only [hrw, mul_one, zero_sub, coeff_one_zero, coeff_X_zero, coeff_sub]

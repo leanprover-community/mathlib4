@@ -429,7 +429,7 @@ $$(d + 1) (1 + y)^d - (d + 1)y^d = \sum_{i = 0}^d {d + 1 \choose i} \cdot i \cdo
 -/
 theorem eval_monomial_one_add_sub [CommRing S] (d : ℕ) (y : S) :
     eval (1 + y) (monomial d (d + 1 : S)) - eval y (monomial d (d + 1 : S)) =
-      ∑ x_1 : ℕ ∈ range (d + 1), ↑((d + 1).choose x_1) * (↑x_1 * y ^ (x_1 - 1)) := by
+      ∑ x_1 ∈ range (d + 1), ↑((d + 1).choose x_1) * (↑x_1 * y ^ (x_1 - 1)) := by
   have cast_succ : (d + 1 : S) = ((d.succ : ℕ) : S) := by simp only [Nat.cast_succ]
   rw [cast_succ, eval_monomial, eval_monomial, add_comm, add_pow]
   -- Porting note: `apply_congr` hadn't been ported yet, so `congr` & `ext` is used.

@@ -125,7 +125,7 @@ theorem leftInv_comp (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
       exact FormalMultilinearSeries.congr _ rfl fun k _ _ => by congr
     have D :
       (p.leftInv i (n + 2) fun j : Fin (n + 2) => p 1 fun _ => v j) =
-        -∑ c : Composition (n + 2) ∈ {c : Composition (n + 2) | c.length < n + 2}.toFinset,
+        -∑ c ∈ {c : Composition (n + 2) | c.length < n + 2}.toFinset,
             (p.leftInv i c.length) (p.applyComposition c v) := by
       simp only [leftInv, ContinuousMultilinearMap.neg_apply, neg_inj,
         ContinuousMultilinearMap.sum_apply]
@@ -202,7 +202,7 @@ theorem rightInv_removeZero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
 theorem comp_rightInv_aux1 {n : ℕ} (hn : 0 < n) (p : FormalMultilinearSeries 𝕜 E F)
     (q : FormalMultilinearSeries 𝕜 F E) (v : Fin n → F) :
     p.comp q n v =
-      ∑ c : Composition n ∈ {c : Composition n | 1 < c.length}.toFinset,
+      ∑ c ∈ {c : Composition n | 1 < c.length}.toFinset,
           p c.length (q.applyComposition c v) +
         p 1 fun _ => q n v := by
   have A :
@@ -230,9 +230,9 @@ theorem comp_rightInv_aux1 {n : ℕ} (hn : 0 < n) (p : FormalMultilinearSeries �
 
 theorem comp_rightInv_aux2 (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (n : ℕ)
     (v : Fin (n + 2) → F) :
-    ∑ c : Composition (n + 2) ∈ {c : Composition (n + 2) | 1 < c.length}.toFinset,
+    ∑ c ∈ {c : Composition (n + 2) | 1 < c.length}.toFinset,
         p c.length (applyComposition (fun k : ℕ => ite (k < n + 2) (p.rightInv i k) 0) c v) =
-      ∑ c : Composition (n + 2) ∈ {c : Composition (n + 2) | 1 < c.length}.toFinset,
+      ∑ c ∈ {c : Composition (n + 2) | 1 < c.length}.toFinset,
         p c.length ((p.rightInv i).applyComposition c v) := by
   have N : 0 < n + 2 := by norm_num
   refine sum_congr rfl fun c hc => p.congr rfl fun j hj1 hj2 => ?_

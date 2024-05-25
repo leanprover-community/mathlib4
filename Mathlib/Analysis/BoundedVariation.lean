@@ -194,8 +194,8 @@ theorem lowerSemicontinuous_aux {ι : Type*} {F : ι → α → E} {p : Filter �
     ∃ p : ℕ × { u : ℕ → α // Monotone u ∧ ∀ i, u i ∈ s },
       v < ∑ i ∈ Finset.range p.1, edist (f ((p.2 : ℕ → α) (i + 1))) (f ((p.2 : ℕ → α) i)) :=
     lt_iSup_iff.mp hv
-  have : Tendsto (fun j => ∑ i : ℕ ∈ Finset.range n, edist (F j (u (i + 1))) (F j (u i))) p
-      (𝓝 (∑ i : ℕ ∈ Finset.range n, edist (f (u (i + 1))) (f (u i)))) := by
+  have : Tendsto (fun j => ∑ i ∈ Finset.range n, edist (F j (u (i + 1))) (F j (u i))) p
+      (𝓝 (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i)))) := by
     apply tendsto_finset_sum
     exact fun i _ => Tendsto.edist (Ffs (u i.succ) (us i.succ)) (Ffs (u i) (us i))
   exact (eventually_gt_of_tendsto_gt hlt this).mono fun i h => h.trans_le (sum_le (F i) n um us)
@@ -419,9 +419,9 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
     · apply hv (tsub_le_tsub hij le_rfl)
   calc
     ((∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) +
-          ∑ i : ℕ ∈ Finset.range m, edist (f (v (i + 1))) (f (v i))) =
+          ∑ i ∈ Finset.range m, edist (f (v (i + 1))) (f (v i))) =
         (∑ i ∈ Finset.range n, edist (f (w (i + 1))) (f (w i))) +
-          ∑ i : ℕ ∈ Finset.range m, edist (f (w (n + 1 + i + 1))) (f (w (n + 1 + i))) := by
+          ∑ i ∈ Finset.range m, edist (f (w (n + 1 + i + 1))) (f (w (n + 1 + i))) := by
       dsimp only [w]
       congr 1
       · refine Finset.sum_congr rfl fun i hi => ?_
@@ -438,7 +438,7 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
           · exact n.le_succ.trans (n.succ.le_add_right i)
         simp only [A, B, C, Nat.succ_sub_succ_eq_sub, if_false, add_tsub_cancel_left]
     _ = (∑ i ∈ Finset.range n, edist (f (w (i + 1))) (f (w i))) +
-          ∑ i : ℕ ∈ Finset.Ico (n + 1) (n + 1 + m), edist (f (w (i + 1))) (f (w i)) := by
+          ∑ i ∈ Finset.Ico (n + 1) (n + 1 + m), edist (f (w (i + 1))) (f (w i)) := by
       congr 1
       rw [Finset.range_eq_Ico]
       convert Finset.sum_Ico_add (fun i : ℕ => edist (f (w (i + 1))) (f (w i))) 0 m (n + 1)

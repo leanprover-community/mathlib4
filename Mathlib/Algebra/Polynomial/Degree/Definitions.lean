@@ -394,7 +394,7 @@ theorem as_sum_support_C_mul_X_pow (p : R[X]) : p = ∑ i ∈ p.support, C (p.co
 for any `n` satisfying `p.natDegree < n`.
 -/
 theorem sum_over_range' [AddCommMonoid S] (p : R[X]) {f : ℕ → R → S} (h : ∀ n, f n 0 = 0) (n : ℕ)
-    (w : p.natDegree < n) : p.sum f = ∑ a : ℕ ∈ range n, f a (coeff p a) := by
+    (w : p.natDegree < n) : p.sum f = ∑ a ∈ range n, f a (coeff p a) := by
   rcases p with ⟨⟩
   have := supp_subset_range w
   simp only [Polynomial.sum, support, coeff, natDegree, degree] at this ⊢
@@ -404,7 +404,7 @@ theorem sum_over_range' [AddCommMonoid S] (p : R[X]) {f : ℕ → R → S} (h : 
 /-- We can reexpress a sum over `p.support` as a sum over `range (p.natDegree + 1)`.
 -/
 theorem sum_over_range [AddCommMonoid S] (p : R[X]) {f : ℕ → R → S} (h : ∀ n, f n 0 = 0) :
-    p.sum f = ∑ a : ℕ ∈ range (p.natDegree + 1), f a (coeff p a) :=
+    p.sum f = ∑ a ∈ range (p.natDegree + 1), f a (coeff p a) :=
   sum_over_range' p h (p.natDegree + 1) (lt_add_one _)
 #align polynomial.sum_over_range Polynomial.sum_over_range
 

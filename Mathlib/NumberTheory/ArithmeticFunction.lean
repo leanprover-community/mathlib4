@@ -642,13 +642,13 @@ theorem map_prod {ι : Type*} [CommMonoidWithZero R] (g : ι → ℕ) {f : Arith
 theorem map_prod_of_prime [CommSemiring R] {f : ArithmeticFunction R}
     (h_mult : ArithmeticFunction.IsMultiplicative f)
     (t : Finset ℕ) (ht : ∀ p ∈ t, p.Prime) :
-    f (∏ a ∈ t, a) = ∏ a : ℕ ∈ t, f a :=
+    f (∏ a ∈ t, a) = ∏ a ∈ t, f a :=
   map_prod _ h_mult t fun x hx y hy hxy => (coprime_primes (ht x hx) (ht y hy)).mpr hxy
 
 theorem map_prod_of_subset_primeFactors [CommSemiring R] {f : ArithmeticFunction R}
     (h_mult : ArithmeticFunction.IsMultiplicative f) (l : ℕ)
     (t : Finset ℕ) (ht : t ⊆ l.primeFactors) :
-    f (∏ a ∈ t, a) = ∏ a : ℕ ∈ t, f a :=
+    f (∏ a ∈ t, a) = ∏ a ∈ t, f a :=
   map_prod_of_prime h_mult t fun _ a => prime_of_mem_primeFactors (ht a)
 
 @[arith_mult]
@@ -1226,7 +1226,7 @@ end CommRing
 /-- Möbius inversion for functions to an `AddCommGroup`. -/
 theorem sum_eq_iff_sum_smul_moebius_eq [AddCommGroup R] {f g : ℕ → R} :
     (∀ n > 0, ∑ i ∈ n.divisors, f i = g n) ↔
-      ∀ n > 0, ∑ x : ℕ × ℕ ∈ n.divisorsAntidiagonal, μ x.fst • g x.snd = f n := by
+      ∀ n > 0, ∑ x ∈ n.divisorsAntidiagonal, μ x.fst • g x.snd = f n := by
   let f' : ArithmeticFunction R := ⟨fun x => if x = 0 then 0 else f x, if_pos rfl⟩
   let g' : ArithmeticFunction R := ⟨fun x => if x = 0 then 0 else g x, if_pos rfl⟩
   trans (ζ : ArithmeticFunction ℤ) • f' = g'
@@ -1262,7 +1262,7 @@ theorem sum_eq_iff_sum_smul_moebius_eq [AddCommGroup R] {f g : ℕ → R} :
 /-- Möbius inversion for functions to a `Ring`. -/
 theorem sum_eq_iff_sum_mul_moebius_eq [Ring R] {f g : ℕ → R} :
     (∀ n > 0, ∑ i ∈ n.divisors, f i = g n) ↔
-      ∀ n > 0, ∑ x : ℕ × ℕ ∈ n.divisorsAntidiagonal, (μ x.fst : R) * g x.snd = f n := by
+      ∀ n > 0, ∑ x ∈ n.divisorsAntidiagonal, (μ x.fst : R) * g x.snd = f n := by
   rw [sum_eq_iff_sum_smul_moebius_eq]
   apply forall_congr'
   refine fun a => imp_congr_right fun _ => (sum_congr rfl fun x _hx => ?_).congr_left
@@ -1272,7 +1272,7 @@ theorem sum_eq_iff_sum_mul_moebius_eq [Ring R] {f g : ℕ → R} :
 /-- Möbius inversion for functions to a `CommGroup`. -/
 theorem prod_eq_iff_prod_pow_moebius_eq [CommGroup R] {f g : ℕ → R} :
     (∀ n > 0, ∏ i ∈ n.divisors, f i = g n) ↔
-      ∀ n > 0, ∏ x : ℕ × ℕ ∈ n.divisorsAntidiagonal, g x.snd ^ μ x.fst = f n :=
+      ∀ n > 0, ∏ x ∈ n.divisorsAntidiagonal, g x.snd ^ μ x.fst = f n :=
   @sum_eq_iff_sum_smul_moebius_eq (Additive R) _ _ _
 #align nat.arithmetic_function.prod_eq_iff_prod_pow_moebius_eq ArithmeticFunction.prod_eq_iff_prod_pow_moebius_eq
 
@@ -1280,7 +1280,7 @@ theorem prod_eq_iff_prod_pow_moebius_eq [CommGroup R] {f g : ℕ → R} :
 theorem prod_eq_iff_prod_pow_moebius_eq_of_nonzero [CommGroupWithZero R] {f g : ℕ → R}
     (hf : ∀ n : ℕ, 0 < n → f n ≠ 0) (hg : ∀ n : ℕ, 0 < n → g n ≠ 0) :
     (∀ n > 0, ∏ i ∈ n.divisors, f i = g n) ↔
-      ∀ n > 0, ∏ x : ℕ × ℕ ∈ n.divisorsAntidiagonal, g x.snd ^ μ x.fst = f n := by
+      ∀ n > 0, ∏ x ∈ n.divisorsAntidiagonal, g x.snd ^ μ x.fst = f n := by
   refine
       Iff.trans
         (Iff.trans (forall_congr' fun n => ?_)
@@ -1307,7 +1307,7 @@ well-behaved set. -/
 theorem sum_eq_iff_sum_smul_moebius_eq_on [AddCommGroup R] {f g : ℕ → R}
     (s : Set ℕ) (hs : ∀ m n, m ∣ n → n ∈ s → m ∈ s) :
     (∀ n > 0, n ∈ s → (∑ i ∈ n.divisors, f i) = g n) ↔
-      ∀ n > 0, n ∈ s → (∑ x : ℕ × ℕ ∈ n.divisorsAntidiagonal, μ x.fst • g x.snd) = f n := by
+      ∀ n > 0, n ∈ s → (∑ x ∈ n.divisorsAntidiagonal, μ x.fst • g x.snd) = f n := by
   constructor
   · intro h
     let G := fun (n:ℕ) => (∑ i ∈ n.divisors, f i)
@@ -1320,7 +1320,7 @@ theorem sum_eq_iff_sum_smul_moebius_eq_on [AddCommGroup R] {f g : ℕ → R}
     apply sum_eq_iff_sum_smul_moebius_eq.mp _ n hn
     intro _ _; rfl
   · intro h
-    let F := fun (n:ℕ) => ∑ x : ℕ × ℕ ∈ n.divisorsAntidiagonal, μ x.fst • g x.snd
+    let F := fun (n:ℕ) => ∑ x ∈ n.divisorsAntidiagonal, μ x.fst • g x.snd
     intro n hn hnP
     suffices ∑ d ∈ n.divisors, F d = g n from by
       rw [← this, sum_congr rfl]
@@ -1345,7 +1345,7 @@ theorem sum_eq_iff_sum_mul_moebius_eq_on [Ring R] {f g : ℕ → R}
     (s : Set ℕ) (hs : ∀ m n, m ∣ n → n ∈ s → m ∈ s) :
     (∀ n > 0, n ∈ s → (∑ i ∈ n.divisors, f i) = g n) ↔
       ∀ n > 0, n ∈ s →
-        (∑ x : ℕ × ℕ ∈ n.divisorsAntidiagonal, (μ x.fst : R) * g x.snd) = f n := by
+        (∑ x ∈ n.divisorsAntidiagonal, (μ x.fst : R) * g x.snd) = f n := by
   rw [sum_eq_iff_sum_smul_moebius_eq_on s hs]
   apply forall_congr'
   intro a; refine imp_congr_right ?_
@@ -1357,7 +1357,7 @@ well-behaved set. -/
 theorem prod_eq_iff_prod_pow_moebius_eq_on [CommGroup R] {f g : ℕ → R}
     (s : Set ℕ) (hs : ∀ m n, m ∣ n → n ∈ s → m ∈ s) :
     (∀ n > 0, n ∈ s → (∏ i ∈ n.divisors, f i) = g n) ↔
-      ∀ n > 0, n ∈ s → (∏ x : ℕ × ℕ ∈ n.divisorsAntidiagonal, g x.snd ^ μ x.fst) = f n :=
+      ∀ n > 0, n ∈ s → (∏ x ∈ n.divisorsAntidiagonal, g x.snd ^ μ x.fst) = f n :=
   @sum_eq_iff_sum_smul_moebius_eq_on (Additive R) _ _ _ s hs
 
 /-- Möbius inversion for functions to a `CommGroupWithZero`, where the equalities only hold on
@@ -1366,7 +1366,7 @@ theorem prod_eq_iff_prod_pow_moebius_eq_on_of_nonzero [CommGroupWithZero R]
     (s : Set ℕ) (hs : ∀ m n, m ∣ n → n ∈ s → m ∈ s) {f g : ℕ → R}
     (hf : ∀ n > 0, f n ≠ 0) (hg : ∀ n > 0, g n ≠ 0):
     (∀ n > 0, n ∈ s → (∏ i ∈ n.divisors, f i) = g n) ↔
-      ∀ n > 0, n ∈ s → (∏ x : ℕ × ℕ ∈ n.divisorsAntidiagonal, g x.snd ^ μ x.fst) = f n := by
+      ∀ n > 0, n ∈ s → (∏ x ∈ n.divisorsAntidiagonal, g x.snd ^ μ x.fst) = f n := by
   refine
       Iff.trans
         (Iff.trans (forall_congr' fun n => ?_)

@@ -77,7 +77,7 @@ theorem bernoulli_zero : bernoulli 0 = 1 := by simp [bernoulli]
 @[simp]
 theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = _root_.bernoulli n := by
   rw [bernoulli, eval_finset_sum, sum_range_succ]
-  have : ∑ x : ℕ ∈ range n, _root_.bernoulli x * n.choose x * 0 ^ (n - x) = 0 := by
+  have : ∑ x ∈ range n, _root_.bernoulli x * n.choose x * 0 ^ (n - x) = 0 := by
     apply sum_eq_zero fun x hx => _
     intros x hx
     simp [tsub_eq_zero_iff_le, mem_range.1 hx]

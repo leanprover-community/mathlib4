@@ -62,7 +62,7 @@ theorem sq_dvd_add_pow_sub_sub (p x : R) (n : ℕ) :
   · simp only [Nat.succ_sub_succ_eq_sub, tsub_zero, Nat.cast_succ, add_pow, Finset.sum_range_succ,
       Nat.choose_self, Nat.succ_sub _, tsub_self, pow_one, Nat.choose_succ_self_right, pow_zero,
       mul_one, Nat.cast_zero, zero_add, Nat.succ_eq_add_one, add_tsub_cancel_left]
-    suffices p ^ 2 ∣ ∑ i : ℕ ∈ range n, x ^ i * p ^ (n + 1 - i) * ↑((n + 1).choose i) by
+    suffices p ^ 2 ∣ ∑ i ∈ range n, x ^ i * p ^ (n + 1 - i) * ↑((n + 1).choose i) by
       convert this; abel
     apply Finset.dvd_sum
     intro y hy
@@ -94,21 +94,21 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
   let s : R := (p : R)^2
   calc
     (Ideal.Quotient.mk (span {s})) (∑ i ∈ range p, (a + (p : R) * b) ^ i * a ^ (p - 1 - i)) =
-        ∑ i : ℕ ∈ Finset.range p,
+        ∑ i ∈ Finset.range p,
         mk (span {s}) ((a ^ (i - 1) * (↑p * b) * ↑i + a ^ i) * a ^ (p - 1 - i)) :=
       by simp_rw [RingHom.map_geom_sum₂, ← map_pow, h1, ← _root_.map_mul]
     _ =
         mk (span {s})
-            (∑ x : ℕ ∈ Finset.range p, a ^ (x - 1) * (a ^ (p - 1 - x) * (↑p * (b * ↑x)))) +
-          mk (span {s}) (∑ x : ℕ ∈ Finset.range p, a ^ (x + (p - 1 - x))) := by
+            (∑ x ∈ Finset.range p, a ^ (x - 1) * (a ^ (p - 1 - x) * (↑p * (b * ↑x)))) +
+          mk (span {s}) (∑ x ∈ Finset.range p, a ^ (x + (p - 1 - x))) := by
       ring_nf
       simp only [← pow_add, map_add, Finset.sum_add_distrib, ← map_sum]
       congr
       simp [pow_add a, mul_assoc]
     _ =
         mk (span {s})
-            (∑ x : ℕ ∈ Finset.range p, a ^ (x - 1) * (a ^ (p - 1 - x) * (↑p * (b * ↑x)))) +
-          mk (span {s}) (∑ _x : ℕ ∈ Finset.range p, a ^ (p - 1)) := by
+            (∑ x ∈ Finset.range p, a ^ (x - 1) * (a ^ (p - 1 - x) * (↑p * (b * ↑x)))) +
+          mk (span {s}) (∑ _x ∈ Finset.range p, a ^ (p - 1)) := by
       rw [add_right_inj]
       have : ∀ (x : ℕ), (hx : x ∈ range p) → a ^ (x + (p - 1 - x)) = a ^ (p - 1) := by
         intro x hx
@@ -117,11 +117,11 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
       rw [Finset.sum_congr rfl this]
     _ =
         mk (span {s})
-            (∑ x : ℕ ∈ Finset.range p, a ^ (x - 1) * (a ^ (p - 1 - x) * (↑p * (b * ↑x)))) +
+            (∑ x ∈ Finset.range p, a ^ (x - 1) * (a ^ (p - 1 - x) * (↑p * (b * ↑x)))) +
           mk (span {s}) (↑p * a ^ (p - 1)) :=
       by simp only [add_right_inj, Finset.sum_const, Finset.card_range, nsmul_eq_mul]
     _ =
-        mk (span {s}) (↑p * b * ∑ x : ℕ ∈ Finset.range p, a ^ (p - 2) * x) +
+        mk (span {s}) (↑p * b * ∑ x ∈ Finset.range p, a ^ (p - 2) * x) +
           mk (span {s}) (↑p * a ^ (p - 1)) := by
       simp only [Finset.mul_sum, ← mul_assoc, ← pow_add]
       rw [Finset.sum_congr rfl]

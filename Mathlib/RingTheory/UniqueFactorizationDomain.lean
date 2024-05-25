@@ -1181,7 +1181,7 @@ theorem multiplicative_of_coprime (f : α → β) (a b : α) (h0 : f 0 = 0)
         p ^ ((normalizedFactors a).count p + (normalizedFactors b).count p)) =
       f (∏ p ∈ (normalizedFactors a).toFinset ∪ (normalizedFactors b).toFinset,
         p ^ (normalizedFactors a).count p) *
-      f (∏ p : α ∈ (normalizedFactors a).toFinset ∪ (normalizedFactors b).toFinset,
+      f (∏ p ∈ (normalizedFactors a).toFinset ∪ (normalizedFactors b).toFinset,
         p ^ (normalizedFactors b).count p) by
     obtain ⟨ua, a_eq⟩ := normalizedFactors_prod ha0
     obtain ⟨ub, b_eq⟩ := normalizedFactors_prod hb0

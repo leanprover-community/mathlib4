@@ -232,26 +232,26 @@ theorem sum_prob_mem_Ioc_le {X : Ω → ℝ} (hint : Integrable X) (hnonneg : 0 
     ∑ j ∈ range K, ℙ {ω | X ω ∈ Set.Ioc (j : ℝ) N} ≤ ENNReal.ofReal (𝔼[X] + 1) := by
   let ρ : Measure ℝ := Measure.map X ℙ
   haveI : IsProbabilityMeasure ρ := isProbabilityMeasure_map hint.aemeasurable
-  have A : ∑ j ∈ range K, ∫ _ ∈ j..N, (1 : ℝ) ∂ρ ≤ 𝔼[X] + 1 :=
+  have A : ∑ j ∈ range K, ∫ _ in j..N, (1 : ℝ) ∂ρ ≤ 𝔼[X] + 1 :=
     calc
-      ∑ j ∈ range K, ∫ _ ∈ j..N, (1 : ℝ) ∂ρ =
-          ∑ j ∈ range K, ∑ i ∈ Ico j N, ∫ _ ∈ i..(i + 1 : ℕ), (1 : ℝ) ∂ρ := by
+      ∑ j ∈ range K, ∫ _ in j..N, (1 : ℝ) ∂ρ =
+          ∑ j ∈ range K, ∑ i ∈ Ico j N, ∫ _ in i..(i + 1 : ℕ), (1 : ℝ) ∂ρ := by
         apply sum_congr rfl fun j hj => ?_
         rw [intervalIntegral.sum_integral_adjacent_intervals_Ico ((mem_range.1 hj).le.trans hKN)]
         intro k _
         exact continuous_const.intervalIntegrable _ _
-      _ = ∑ i ∈ range N, ∑ j ∈ range (min (i + 1) K), ∫ _ ∈ i..(i + 1 : ℕ), (1 : ℝ) ∂ρ := by
+      _ = ∑ i ∈ range N, ∑ j ∈ range (min (i + 1) K), ∫ _ in i..(i + 1 : ℕ), (1 : ℝ) ∂ρ := by
         simp_rw [sum_sigma']
         refine sum_nbij' (fun p ↦ ⟨p.2, p.1⟩) (fun p ↦ ⟨p.2, p.1⟩) ?_ ?_ ?_ ?_ ?_ <;>
           aesop (add simp Nat.lt_succ_iff)
-      _ ≤ ∑ i ∈ range N, (i + 1) * ∫ _ ∈ i..(i + 1 : ℕ), (1 : ℝ) ∂ρ := by
+      _ ≤ ∑ i ∈ range N, (i + 1) * ∫ _ in i..(i + 1 : ℕ), (1 : ℝ) ∂ρ := by
         apply sum_le_sum fun i _ => ?_
         simp only [Nat.cast_add, Nat.cast_one, sum_const, card_range, nsmul_eq_mul, Nat.cast_min]
         refine mul_le_mul_of_nonneg_right (min_le_left _ _) ?_
         apply intervalIntegral.integral_nonneg
         · simp only [le_add_iff_nonneg_right, zero_le_one]
         · simp only [zero_le_one, imp_true_iff]
-      _ ≤ ∑ i ∈ range N, ∫ x ∈ i..(i + 1 : ℕ), x + 1 ∂ρ := by
+      _ ≤ ∑ i ∈ range N, ∫ x in i..(i + 1 : ℕ), x + 1 ∂ρ := by
         apply sum_le_sum fun i _ => ?_
         have I : (i : ℝ) ≤ (i + 1 : ℕ) := by
           simp only [Nat.cast_add, Nat.cast_one, le_add_iff_nonneg_right, zero_le_one]
@@ -289,12 +289,12 @@ theorem sum_prob_mem_Ioc_le {X : Ω → ℝ} (hint : Integrable X) (hnonneg : 0 
     rfl
   calc
     ∑ j ∈ range K, ℙ {ω | X ω ∈ Set.Ioc (j : ℝ) N} =
-        ∑ j ∈ range K, ENNReal.ofReal (∫ _ ∈ Set.Ioc (j : ℝ) N, (1 : ℝ) ∂ρ) := by simp_rw [B]
-    _ = ENNReal.ofReal (∑ j ∈ range K, ∫ _ ∈ Set.Ioc (j : ℝ) N, (1 : ℝ) ∂ρ) := by
+        ∑ j ∈ range K, ENNReal.ofReal (∫ _ in Set.Ioc (j : ℝ) N, (1 : ℝ) ∂ρ) := by simp_rw [B]
+    _ = ENNReal.ofReal (∑ j ∈ range K, ∫ _ in Set.Ioc (j : ℝ) N, (1 : ℝ) ∂ρ) := by
       rw [ENNReal.ofReal_sum_of_nonneg]
       simp only [integral_const, Algebra.id.smul_eq_mul, mul_one, ENNReal.toReal_nonneg,
         imp_true_iff]
-    _ = ENNReal.ofReal (∑ j ∈ range K, ∫ _ ∈ (j : ℝ)..N, (1 : ℝ) ∂ρ) := by
+    _ = ENNReal.ofReal (∑ j ∈ range K, ∫ _ in (j : ℝ)..N, (1 : ℝ) ∂ρ) := by
       congr 1
       refine sum_congr rfl fun j hj => ?_
       rw [intervalIntegral.integral_of_le (Nat.cast_le.2 ((mem_range.1 hj).le.trans hKN))]
@@ -336,24 +336,24 @@ theorem sum_variance_truncation_le {X : Ω → ℝ} (hint : Integrable X) (hnonn
     rw [moment_truncation_eq_intervalIntegral_of_nonneg hint.1 two_ne_zero hnonneg]
   calc
     ∑ j ∈ range K, ((j : ℝ) ^ 2)⁻¹ * 𝔼[Y j ^ 2] =
-        ∑ j ∈ range K, ((j : ℝ) ^ 2)⁻¹ * ∫ x ∈ (0)..j, x ^ 2 ∂ρ := by simp_rw [Y2]
-    _ = ∑ j ∈ range K, ((j : ℝ) ^ 2)⁻¹ * ∑ k ∈ range j, ∫ x ∈ k..(k + 1 : ℕ), x ^ 2 ∂ρ := by
+        ∑ j ∈ range K, ((j : ℝ) ^ 2)⁻¹ * ∫ x in (0)..j, x ^ 2 ∂ρ := by simp_rw [Y2]
+    _ = ∑ j ∈ range K, ((j : ℝ) ^ 2)⁻¹ * ∑ k ∈ range j, ∫ x in k..(k + 1 : ℕ), x ^ 2 ∂ρ := by
       congr 1 with j
       congr 1
       rw [intervalIntegral.sum_integral_adjacent_intervals]
       · norm_cast
       intro k _
       exact (continuous_id.pow _).intervalIntegrable _ _
-    _ = ∑ k ∈ range K, (∑ j ∈ Ioo k K, ((j : ℝ) ^ 2)⁻¹) * ∫ x ∈ k..(k + 1 : ℕ), x ^ 2 ∂ρ := by
+    _ = ∑ k ∈ range K, (∑ j ∈ Ioo k K, ((j : ℝ) ^ 2)⁻¹) * ∫ x in k..(k + 1 : ℕ), x ^ 2 ∂ρ := by
       simp_rw [mul_sum, sum_mul, sum_sigma']
       refine sum_nbij' (fun p ↦ ⟨p.2, p.1⟩) (fun p ↦ ⟨p.2, p.1⟩) ?_ ?_ ?_ ?_ ?_ <;>
         aesop (add unsafe lt_trans)
-    _ ≤ ∑ k ∈ range K, 2 / (k + 1 : ℝ) * ∫ x ∈ k..(k + 1 : ℕ), x ^ 2 ∂ρ := by
+    _ ≤ ∑ k ∈ range K, 2 / (k + 1 : ℝ) * ∫ x in k..(k + 1 : ℕ), x ^ 2 ∂ρ := by
       apply sum_le_sum fun k _ => ?_
       refine mul_le_mul_of_nonneg_right (sum_Ioo_inv_sq_le _ _) ?_
       refine intervalIntegral.integral_nonneg_of_forall ?_ fun u => sq_nonneg _
       simp only [Nat.cast_add, Nat.cast_one, le_add_iff_nonneg_right, zero_le_one]
-    _ ≤ ∑ k ∈ range K, ∫ x ∈ k..(k + 1 : ℕ), 2 * x ∂ρ := by
+    _ ≤ ∑ k ∈ range K, ∫ x in k..(k + 1 : ℕ), 2 * x ∂ρ := by
       apply sum_le_sum fun k _ => ?_
       have Ik : (k : ℝ) ≤ (k + 1 : ℕ) := by simp
       rw [← intervalIntegral.integral_const_mul, intervalIntegral.integral_of_le Ik,

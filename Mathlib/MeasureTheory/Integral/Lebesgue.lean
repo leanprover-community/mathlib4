@@ -1325,13 +1325,13 @@ theorem lintegral_biUnion {t : Set β} {s : β → Set α} (ht : t.Countable)
 
 theorem lintegral_biUnion_finset₀ {s : Finset β} {t : β → Set α}
     (hd : Set.Pairwise (↑s) (AEDisjoint μ on t)) (hm : ∀ b ∈ s, NullMeasurableSet (t b) μ)
-    (f : α → ℝ≥0∞) : ∫⁻ a in ⋃ b ∈ s, t b, f a ∂μ = ∑ b ∈ s, ∫⁻ a ∈ t b, f a ∂μ := by
+    (f : α → ℝ≥0∞) : ∫⁻ a in ⋃ b ∈ s, t b, f a ∂μ = ∑ b ∈ s, ∫⁻ a in t b, f a ∂μ := by
   simp only [← Finset.mem_coe, lintegral_biUnion₀ s.countable_toSet hm hd, ← Finset.tsum_subtype']
 #align measure_theory.lintegral_bUnion_finset₀ MeasureTheory.lintegral_biUnion_finset₀
 
 theorem lintegral_biUnion_finset {s : Finset β} {t : β → Set α} (hd : Set.PairwiseDisjoint (↑s) t)
     (hm : ∀ b ∈ s, MeasurableSet (t b)) (f : α → ℝ≥0∞) :
-    ∫⁻ a in ⋃ b ∈ s, t b, f a ∂μ = ∑ b ∈ s, ∫⁻ a ∈ t b, f a ∂μ :=
+    ∫⁻ a in ⋃ b ∈ s, t b, f a ∂μ = ∑ b ∈ s, ∫⁻ a in t b, f a ∂μ :=
   lintegral_biUnion_finset₀ hd.aedisjoint (fun b hb => (hm b hb).nullMeasurableSet) f
 #align measure_theory.lintegral_bUnion_finset MeasureTheory.lintegral_biUnion_finset
 

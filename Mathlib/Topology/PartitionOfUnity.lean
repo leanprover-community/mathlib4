@@ -291,7 +291,7 @@ theorem exists_finset_nhd' {s : Set X} (ρ : PartitionOfUnity ι X s) (x₀ : X)
       ∀ᶠ x in 𝓝 x₀, support (ρ · x) ⊆ I := by
   rcases ρ.locallyFinite.exists_finset_support x₀ with ⟨I, hI⟩
   refine ⟨I, eventually_nhdsWithin_iff.mpr (hI.mono fun x hx x_in ↦ ?_), hI⟩
-  have : ∑ᶠ i : ι, ρ i x = ∑ i : ι ∈ I, ρ i x := finsum_eq_sum_of_support_subset _ hx
+  have : ∑ᶠ i : ι, ρ i x = ∑ i ∈ I, ρ i x := finsum_eq_sum_of_support_subset _ hx
   rwa [eq_comm, ρ.sum_eq_one x_in] at this
 
 theorem exists_finset_nhd (ρ : PartitionOfUnity ι X univ) (x₀ : X) :

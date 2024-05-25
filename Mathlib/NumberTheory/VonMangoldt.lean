@@ -147,8 +147,8 @@ theorem sum_moebius_mul_log_eq {n : ℕ} : (∑ d ∈ n.divisors, (μ d : ℝ) *
   simp only [← log_mul_moebius_eq_vonMangoldt, mul_comm log, mul_apply, log_apply, intCoe_apply, ←
     Finset.sum_neg_distrib, neg_mul_eq_mul_neg]
   rw [sum_divisorsAntidiagonal fun i j => (μ i : ℝ) * -Real.log j]
-  have : (∑ i : ℕ ∈ n.divisors, (μ i : ℝ) * -Real.log (n / i : ℕ)) =
-      ∑ i : ℕ ∈ n.divisors, ((μ i : ℝ) * Real.log i - μ i * Real.log n) := by
+  have : (∑ i ∈ n.divisors, (μ i : ℝ) * -Real.log (n / i : ℕ)) =
+      ∑ i ∈ n.divisors, ((μ i : ℝ) * Real.log i - μ i * Real.log n) := by
     apply sum_congr rfl
     simp only [and_imp, Int.cast_eq_zero, mul_eq_mul_left_iff, Ne, neg_inj, mem_divisors]
     intro m mn hn

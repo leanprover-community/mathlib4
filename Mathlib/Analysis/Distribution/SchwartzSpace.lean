@@ -877,7 +877,7 @@ def bilinLeftCLM (B : E →L[ℝ] F →L[ℝ] G) {g : D → F} (hg : g.HasTemper
       simp_rw [mul_assoc ‖B‖]
       gcongr _ * ?_
       rw [Finset.mul_sum]
-      have : (∑ _x : ℕ ∈ Finset.range (n + 1), (1 : ℝ)) = n + 1 := by simp
+      have : (∑ _x ∈ Finset.range (n + 1), (1 : ℝ)) = n + 1 := by simp
       simp_rw [mul_assoc ((n : ℝ) + 1)]
       rw [← this, Finset.sum_mul]
       refine' Finset.sum_le_sum fun i hi => _

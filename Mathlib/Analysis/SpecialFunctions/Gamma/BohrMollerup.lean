@@ -193,7 +193,7 @@ namespace BohrMollerup
 /-- The function `n ↦ x log n + log n! - (log x + ... + log (x + n))`, which we will show tends to
 `log (Gamma x)` as `n → ∞`. -/
 def logGammaSeq (x : ℝ) (n : ℕ) : ℝ :=
-  x * log n + log n ! - ∑ m : ℕ ∈ Finset.range (n + 1), log (x + m)
+  x * log n + log n ! - ∑ m ∈ Finset.range (n + 1), log (x + m)
 #align real.bohr_mollerup.log_gamma_seq Real.BohrMollerup.logGammaSeq
 
 variable {f : ℝ → ℝ} {x : ℝ} {n : ℕ}
@@ -211,7 +211,7 @@ theorem f_nat_eq (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hn
 #align real.bohr_mollerup.f_nat_eq Real.BohrMollerup.f_nat_eq
 
 theorem f_add_nat_eq (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hx : 0 < x) (n : ℕ) :
-    f (x + n) = f x + ∑ m : ℕ ∈ Finset.range n, log (x + m) := by
+    f (x + n) = f x + ∑ m ∈ Finset.range n, log (x + m) := by
   induction' n with n hn
   · simp
   · have : x + n.succ = x + n + 1 := by push_cast; ring
@@ -257,8 +257,8 @@ theorem logGammaSeq_add_one (x : ℝ) (n : ℕ) :
   · rw [Nat.cast_ne_zero]; exact Nat.succ_ne_zero n
   · rw [Nat.cast_ne_zero]; exact Nat.factorial_ne_zero n
   have :
-    ∑ m : ℕ ∈ Finset.range (n + 1), log (x + 1 + ↑m) =
-      ∑ k : ℕ ∈ Finset.range (n + 1), log (x + ↑(k + 1)) := by
+    ∑ m ∈ Finset.range (n + 1), log (x + 1 + ↑m) =
+      ∑ k ∈ Finset.range (n + 1), log (x + ↑(k + 1)) := by
     congr! 2 with m
     push_cast
     abel

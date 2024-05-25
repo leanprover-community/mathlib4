@@ -105,7 +105,7 @@ theorem div_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type*} {g : ι → R[X]} {s 
     div_eq_quo_add_rem_div_add_rem_div R K f
       (hg a (b.mem_insert_self a) : Monic (g a))
       (monic_prod_of_monic _ _ fun i hi => hg i (Finset.mem_insert_of_mem hi) :
-        Monic (∏ i : ι ∈ b, g i))
+        Monic (∏ i ∈ b, g i))
       (IsCoprime.prod_right fun i hi =>
         hcop (Finset.mem_coe.2 (b.mem_insert_self a))
           (Finset.mem_coe.2 (Finset.mem_insert_of_mem hi)) (by rintro rfl; exact hab hi))
@@ -123,7 +123,7 @@ theorem div_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type*} {g : ι → R[X]} {s 
       exact hrdeg i (Finset.mem_of_mem_insert_of_ne hi h1)
   norm_cast at hf IH ⊢
   rw [Finset.prod_insert hab, hf, IH, Finset.sum_insert hab, if_pos rfl]
-  trans (↑(q₀ + q : R[X]) : K) + (↑r₁ / ↑(g a) + ∑ i : ι ∈ b, (r i : K) / (g i : K))
+  trans (↑(q₀ + q : R[X]) : K) + (↑r₁ / ↑(g a) + ∑ i ∈ b, (r i : K) / (g i : K))
   · push_cast
     ring
   congr 2

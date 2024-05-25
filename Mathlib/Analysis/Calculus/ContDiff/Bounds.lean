@@ -61,15 +61,15 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
       (RingHom.id 𝕜)
     have I1 :
         ‖iteratedFDerivWithin 𝕜 n (fun y : Du => B.precompR Du (f y) (fderivWithin 𝕜 g s y)) s x‖ ≤
-          ‖B‖ * ∑ i : ℕ ∈ Finset.range (n + 1), n.choose i * ‖iteratedFDerivWithin 𝕜 i f s x‖ *
+          ‖B‖ * ∑ i ∈ Finset.range (n + 1), n.choose i * ‖iteratedFDerivWithin 𝕜 i f s x‖ *
             ‖iteratedFDerivWithin 𝕜 (n + 1 - i) g s x‖ := by
       calc
         ‖iteratedFDerivWithin 𝕜 n (fun y : Du => B.precompR Du (f y) (fderivWithin 𝕜 g s y)) s x‖ ≤
-            ‖B.precompR Du‖ * ∑ i : ℕ ∈ Finset.range (n + 1),
+            ‖B.precompR Du‖ * ∑ i ∈ Finset.range (n + 1),
               n.choose i * ‖iteratedFDerivWithin 𝕜 i f s x‖ *
                 ‖iteratedFDerivWithin 𝕜 (n - i) (fderivWithin 𝕜 g s) s x‖ :=
           IH _ (hf.of_le (Nat.cast_le.2 (Nat.le_succ n))) (hg.fderivWithin hs In)
-        _ ≤ ‖B‖ * ∑ i : ℕ ∈ Finset.range (n + 1), n.choose i * ‖iteratedFDerivWithin 𝕜 i f s x‖ *
+        _ ≤ ‖B‖ * ∑ i ∈ Finset.range (n + 1), n.choose i * ‖iteratedFDerivWithin 𝕜 i f s x‖ *
               ‖iteratedFDerivWithin 𝕜 (n - i) (fderivWithin 𝕜 g s) s x‖ :=
             mul_le_mul_of_nonneg_right (B.norm_precompR_le Du) (by positivity)
         _ = _ := by
@@ -82,15 +82,15 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
       (RingHom.id 𝕜)
     have I2 :
         ‖iteratedFDerivWithin 𝕜 n (fun y : Du => B.precompL Du (fderivWithin 𝕜 f s y) (g y)) s x‖ ≤
-        ‖B‖ * ∑ i : ℕ ∈ Finset.range (n + 1), n.choose i * ‖iteratedFDerivWithin 𝕜 (i + 1) f s x‖ *
+        ‖B‖ * ∑ i ∈ Finset.range (n + 1), n.choose i * ‖iteratedFDerivWithin 𝕜 (i + 1) f s x‖ *
           ‖iteratedFDerivWithin 𝕜 (n - i) g s x‖ :=
       calc
         ‖iteratedFDerivWithin 𝕜 n (fun y : Du => B.precompL Du (fderivWithin 𝕜 f s y) (g y)) s x‖ ≤
-            ‖B.precompL Du‖ * ∑ i : ℕ ∈ Finset.range (n + 1),
+            ‖B.precompL Du‖ * ∑ i ∈ Finset.range (n + 1),
               n.choose i * ‖iteratedFDerivWithin 𝕜 i (fderivWithin 𝕜 f s) s x‖ *
                 ‖iteratedFDerivWithin 𝕜 (n - i) g s x‖ :=
           IH _ (hf.fderivWithin hs In) (hg.of_le (Nat.cast_le.2 (Nat.le_succ n)))
-        _ ≤ ‖B‖ * ∑ i : ℕ ∈ Finset.range (n + 1),
+        _ ≤ ‖B‖ * ∑ i ∈ Finset.range (n + 1),
             n.choose i * ‖iteratedFDerivWithin 𝕜 i (fderivWithin 𝕜 f s) s x‖ *
               ‖iteratedFDerivWithin 𝕜 (n - i) g s x‖ :=
             mul_le_mul_of_nonneg_right (B.norm_precompL_le Du) (by positivity)

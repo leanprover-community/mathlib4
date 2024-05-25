@@ -133,7 +133,7 @@ theorem OxfordInvariants.Week3P1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤ 
       _ = a (n + 2) / a (n + 1) * b + a 0 * a (n + 2) / (a (n + 1) * a (n + 2)) := by
         rw [add_div, add_mul, sub_div, mul_div_right_comm, add_sub_sub_cancel,
           mul_div_mul_right _ _ (a_pos _ le_rfl).ne']
-      _ = ∑ i : ℕ ∈ Finset.range (n + 2), (a 0 : α) * a (n + 2) / (a i * a (i + 1)) := by
+      _ = ∑ i ∈ Finset.range (n + 2), (a 0 : α) * a (n + 2) / (a i * a (i + 1)) := by
         rw [Finset.sum_range_succ, hb, Finset.mul_sum]
         congr; ext i
         rw [← mul_div_assoc, ← mul_div_right_comm, mul_div_assoc,

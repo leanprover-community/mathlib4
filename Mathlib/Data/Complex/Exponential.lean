@@ -1350,13 +1350,13 @@ theorem exp_bound' {x : ℂ} {n : ℕ} (hx : abs x / n.succ ≤ 1 / 2) :
   have hj : j = n + k := (add_tsub_cancel_of_le hj).symm
   rw [hj, sum_range_add_sub_sum_range]
   calc
-    abs (∑ i : ℕ ∈ range k, x ^ (n + i) / ((n + i).factorial : ℂ)) ≤
-        ∑ i : ℕ ∈ range k, abs (x ^ (n + i) / ((n + i).factorial : ℂ)) :=
+    abs (∑ i ∈ range k, x ^ (n + i) / ((n + i).factorial : ℂ)) ≤
+        ∑ i ∈ range k, abs (x ^ (n + i) / ((n + i).factorial : ℂ)) :=
       IsAbsoluteValue.abv_sum _ _ _
-    _ ≤ ∑ i : ℕ ∈ range k, abs x ^ (n + i) / (n + i).factorial := by
+    _ ≤ ∑ i ∈ range k, abs x ^ (n + i) / (n + i).factorial := by
       simp [Complex.abs_natCast, map_div₀, abv_pow abs]
-    _ ≤ ∑ i : ℕ ∈ range k, abs x ^ (n + i) / ((n.factorial : ℝ) * (n.succ : ℝ) ^ i) := ?_
-    _ = ∑ i : ℕ ∈ range k, abs x ^ n / n.factorial * (abs x ^ i / (n.succ : ℝ) ^ i) := ?_
+    _ ≤ ∑ i ∈ range k, abs x ^ (n + i) / ((n.factorial : ℝ) * (n.succ : ℝ) ^ i) := ?_
+    _ = ∑ i ∈ range k, abs x ^ n / n.factorial * (abs x ^ i / (n.succ : ℝ) ^ i) := ?_
     _ ≤ abs x ^ n / ↑n.factorial * 2 := ?_
   · gcongr
     exact mod_cast Nat.factorial_mul_pow_le_factorial

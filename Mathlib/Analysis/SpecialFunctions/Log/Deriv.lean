@@ -270,7 +270,7 @@ theorem abs_log_sub_add_sum_range_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
 theorem hasSum_pow_div_log_of_abs_lt_one {x : ℝ} (h : |x| < 1) :
     HasSum (fun n : ℕ => x ^ (n + 1) / (n + 1)) (-log (1 - x)) := by
   rw [Summable.hasSum_iff_tendsto_nat]
-  · show Tendsto (fun n : ℕ => ∑ i : ℕ ∈ range n, x ^ (i + 1) / (i + 1)) atTop (𝓝 (-log (1 - x)))
+  · show Tendsto (fun n : ℕ => ∑ i ∈ range n, x ^ (i + 1) / (i + 1)) atTop (𝓝 (-log (1 - x)))
     rw [tendsto_iff_norm_sub_tendsto_zero]
     simp only [norm_eq_abs, sub_neg_eq_add]
     refine squeeze_zero (fun n => abs_nonneg _) (abs_log_sub_add_sum_range_le h) ?_

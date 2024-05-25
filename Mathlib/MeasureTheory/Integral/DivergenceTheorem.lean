@@ -273,8 +273,8 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable (hle : a ≤ b)
     (Hd : ∀ x ∈ (Set.pi univ fun i => Ioo (a i) (b i)) \ s, HasFDerivAt f (f' x) x)
     (Hi : IntegrableOn (fun x => ∑ i, f' x (e i) i) (Icc a b)) :
     (∫ x in Icc a b, ∑ i, f' x (e i) i) =
-      ∑ i : Fin (n + 1), ((∫ x ∈ face i, f (frontFace i x) i) -
-        ∫ x in face i, f (backFace i x) i) := by
+      ∑ i : Fin (n + 1),
+        ((∫ x in face i, f (frontFace i x) i) - ∫ x in face i, f (backFace i x) i) := by
   rcases em (∃ i, a i = b i) with (⟨i, hi⟩ | hne)
   · -- First we sort out the trivial case `∃ i, a i = b i`.
     rw [volume_pi, ← setIntegral_congr_set_ae Measure.univ_pi_Ioc_ae_eq_Icc]
@@ -306,7 +306,7 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable' (hle : a ≤ b)
     (Hd : ∀ x ∈ (pi Set.univ fun i => Ioo (a i) (b i)) \ s, ∀ (i), HasFDerivAt (f i) (f' i x) x)
     (Hi : IntegrableOn (fun x => ∑ i, f' i x (e i)) (Icc a b)) :
     (∫ x in Icc a b, ∑ i, f' i x (e i)) =
-      ∑ i : Fin (n + 1), ((∫ x ∈ face i, f i (frontFace i x)) -
+      ∑ i : Fin (n + 1), ((∫ x in face i, f i (frontFace i x)) -
         ∫ x in face i, f i (backFace i x)) :=
   integral_divergence_of_hasFDerivWithinAt_off_countable a b hle (fun x i => f i x)
     (fun x => ContinuousLinearMap.pi fun i => f' i x) s hs (continuousOn_pi.2 Hc)

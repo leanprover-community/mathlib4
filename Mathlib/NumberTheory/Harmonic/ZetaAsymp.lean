@@ -40,7 +40,7 @@ namespace ZetaAsymptotics
 noncomputable def term (n : ℕ) (s : ℝ) : ℝ := ∫ x : ℝ in n..(n + 1), (x - n) / x ^ (s + 1)
 
 /-- Sum of finitely many `term`s. -/
-noncomputable def term_sum (s : ℝ) (N : ℕ) : ℝ := ∑ n : ℕ ∈ Finset.range N, term (n + 1) s
+noncomputable def term_sum (s : ℝ) (N : ℕ) : ℝ := ∑ n ∈ Finset.range N, term (n + 1) s
 
 /-- Topological sum of `term`s. -/
 noncomputable def term_tsum (s : ℝ) : ℝ := ∑' n, term (n + 1) s

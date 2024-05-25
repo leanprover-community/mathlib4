@@ -355,7 +355,7 @@ noncomputable def fintypeOfAdmissibleOfAlgebraic [IsDedekindDomain S]
     [Algebra.IsAlgebraic R L] : Fintype (ClassGroup S) :=
   @Fintype.ofSurjective _ _ _
     (@Fintype.ofEquiv _
-      { J // J ∣ Ideal.span ({algebraMap R S (∏ m : R ∈ finsetApprox bS adm, m)} : Set S) }
+      { J // J ∣ Ideal.span ({algebraMap R S (∏ m ∈ finsetApprox bS adm, m)} : Set S) }
       (UniqueFactorizationMonoid.fintypeSubtypeDvd _
         (by
           rw [Ne, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]
