@@ -16,8 +16,7 @@ This file defines various mathlib linters which are based on reading the source 
 In practice, only style linters will have this form.
 All of these have been rewritten from the `lint-style.py` script.
 
-TODO: rewrite more of these lints, e.g.
-checking the copyright header, authors line, line length, isolated "where" or "by"
+FUTURE: rewrite the remaining lints, e.g. line endings
 
 -/
 
@@ -145,10 +144,11 @@ def contains_broad_imports : LinterCore := fun lines ↦ Id.run do
 
 /-- Return if `line` looks like a correct authors line in a copyright header. -/
 def is_correct_authors_line (line : String) : Bool :=
-  -- We cannot reasonably validate the author names, so we look only for the three common mistakes:
-  -- the file starting wrong, using ' and ' between names, and a '.' at the end of line.
-  !(line.startsWith "Authors: " && line.containsSubstr "  "
-    && line.containsSubstr " and " && line.endsWith ".")
+  -- We cannot reasonably validate the author names, so we look only for a few common mistakes:
+  -- the file starting wrong, double spaces, using ' and ' between names,
+  -- and ending the line with a period.
+  line.startsWith "Authors: " && (!line.containsSubstr "  ")
+    && (!line.containsSubstr " and ") && (!line.endsWith ".")
 
 /-- Lint a collection of input lines if they are missing an appropriate copyright header.
 
@@ -175,7 +175,8 @@ def copyright_header : LinterCore := fun lines ↦ Id.run do
   -- The second line should be standard.
   let expected_second_line := "Released under Apache 2.0 license as described in the file LICENSE."
   if start.get? 2 != some expected_second_line then
-    output := output.push (StyleError.copyright s!"Second line should be {expected_second_line}", 3)
+    output := output.push (StyleError.copyright
+      s!"Second line should be \"{expected_second_line}\"", 3)
   -- The third line should contain authors.
   if let some line := start.get? 3 then
     if !line.containsSubstr "Author" then
@@ -202,7 +203,8 @@ def isolated_by_dot_semicolon : LinterCore := fun lines ↦ Id.run do
         -- should not be used in the second or later arguments of a tuple/anonymous constructor
         -- See https://github.com/leanprover-community/mathlib4/pull/3825#discussion_r1186702599
         if !previous_line.endsWith "," then
-          if !(line.containsSubstr ", fun" && (line.endsWith "=>" || line.endsWith "↦")) then
+          if !(previous_line.containsSubstr ", fun" &&
+              (previous_line.endsWith "=>" || previous_line.endsWith "↦")) then
             output := output.push (StyleError.isolated_by, line_number)
       if line.trimRight.startsWith ". " then
         output := output.push (StyleError.dot, line_number) -- has an auto-fix
@@ -230,7 +232,7 @@ def lint_file (path : System.FilePath) : IO Unit := do
   -- XXX: this list is currently not sorted: for github, that's probably fine
   format_errors (Array.flatten all_output) (Array.mkEmpty 0)
 
--- #eval lint_file (System.mkFilePath ["Mathlib", "Tactic", "Linter", "TextBased.lean"])
+#eval lint_file (System.mkFilePath ["Mathlib", "Tactic", "Linter", "TextBased.lean"])
 
 /-- Lint all files in `Mathlib.lean`. -/
 def check_all_files : IO Unit := do
