@@ -98,7 +98,7 @@ lemma le_prod_of_submultiplicative_on_pred (f : α → β)
     (h_mul : ∀ a b, p a → p b → f (a * b) ≤ f a * f b) (hp_mul : ∀ a b, p a → p b → p (a * b))
     (s : Multiset α) (hps : ∀ a, a ∈ s → p a) : f s.prod ≤ (s.map f).prod := by
   revert s
-  refine' Multiset.induction _ _
+  refine Multiset.induction ?_ ?_
   · simp [le_of_eq h_one]
   intro a s hs hpsa
   have hps : ∀ x, x ∈ s → p x := fun x hx => hpsa x (mem_cons_of_mem hx)
@@ -121,7 +121,7 @@ lemma le_prod_nonempty_of_submultiplicative_on_pred (f : α → β) (p : α → 
     (h_mul : ∀ a b, p a → p b → f (a * b) ≤ f a * f b) (hp_mul : ∀ a b, p a → p b → p (a * b))
     (s : Multiset α) (hs_nonempty : s ≠ ∅) (hs : ∀ a, a ∈ s → p a) : f s.prod ≤ (s.map f).prod := by
   revert s
-  refine' Multiset.induction _ _
+  refine Multiset.induction ?_ ?_
   · simp
   rintro a s hs - hsa_prop
   rw [prod_cons, map_cons, prod_cons]

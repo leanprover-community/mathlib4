@@ -305,7 +305,7 @@ theorem le_succ_iterate (k : ℕ) (x : α) : x ≤ succ^[k] x := by
 
 theorem isMax_iterate_succ_of_eq_of_lt {n m : ℕ} (h_eq : succ^[n] a = succ^[m] a)
     (h_lt : n < m) : IsMax (succ^[n] a) := by
-  refine' max_of_succ_le (le_trans _ h_eq.symm.le)
+  refine max_of_succ_le (le_trans ?_ h_eq.symm.le)
   have : succ (succ^[n] a) = succ^[n + 1] a := by rw [Function.iterate_succ', comp]
   rw [this]
   have h_le : n + 1 ≤ m := Nat.succ_le_of_lt h_lt
@@ -435,11 +435,11 @@ theorem succ_eq_succ_iff_of_not_isMax (ha : ¬IsMax a) (hb : ¬IsMax b) :
 #align order.succ_eq_succ_iff_of_not_is_max Order.succ_eq_succ_iff_of_not_isMax
 
 theorem le_le_succ_iff : a ≤ b ∧ b ≤ succ a ↔ b = a ∨ b = succ a := by
-  refine'
+  refine
     ⟨fun h =>
       or_iff_not_imp_left.2 fun hba : b ≠ a =>
         h.2.antisymm (succ_le_of_lt <| h.1.lt_of_ne <| hba.symm),
-      _⟩
+      ?_⟩
   rintro (rfl | rfl)
   · exact ⟨le_rfl, le_succ b⟩
   · exact ⟨le_succ a, le_rfl⟩
@@ -595,7 +595,7 @@ section CompleteLattice
 variable [CompleteLattice α] [SuccOrder α]
 
 theorem succ_eq_iInf (a : α) : succ a = ⨅ (b) (_ : a < b), b := by
-  refine' le_antisymm (le_iInf fun b => le_iInf succ_le_of_lt) _
+  refine le_antisymm (le_iInf fun b => le_iInf succ_le_of_lt) ?_
   obtain rfl | ha := eq_or_ne a ⊤
   · rw [succ_top]
     exact le_top
@@ -809,9 +809,9 @@ theorem pred_eq_pred_iff_of_not_isMin (ha : ¬IsMin a) (hb : ¬IsMin b) :
     pred_lt_pred_iff_of_not_isMin ha hb]
 
 theorem pred_le_le_iff {a b : α} : pred a ≤ b ∧ b ≤ a ↔ b = a ∨ b = pred a := by
-  refine'
+  refine
     ⟨fun h =>
-      or_iff_not_imp_left.2 fun hba : b ≠ a => (le_pred_of_lt <| h.2.lt_of_ne hba).antisymm h.1, _⟩
+      or_iff_not_imp_left.2 fun hba : b ≠ a => (le_pred_of_lt <| h.2.lt_of_ne hba).antisymm h.1, ?_⟩
   rintro (rfl | rfl)
   · exact ⟨pred_le b, le_rfl⟩
   · exact ⟨le_rfl, pred_le a⟩
@@ -959,7 +959,7 @@ section CompleteLattice
 variable [CompleteLattice α] [PredOrder α]
 
 theorem pred_eq_iSup (a : α) : pred a = ⨆ (b) (_ : b < a), b := by
-  refine' le_antisymm _ (iSup_le fun b => iSup_le le_pred_of_lt)
+  refine le_antisymm ?_ (iSup_le fun b => iSup_le le_pred_of_lt)
   obtain rfl | ha := eq_or_ne a ⊥
   · rw [pred_bot]
     exact bot_le
@@ -1006,7 +1006,7 @@ theorem pred_succ_iterate_of_not_isMax (i : α) (n : ℕ) (hin : ¬IsMax (succ^[
     have h_sub_le : succ^[n] i ≤ succ^[n.succ] i := by
       rw [Function.iterate_succ']
       exact le_succ _
-    refine' fun h_max => hin fun j hj => _
+    refine fun h_max => hin fun j hj => ?_
     have hj_le : j ≤ succ^[n] i := h_max (h_sub_le.trans hj)
     exact hj_le.trans h_sub_le
   rw [Function.iterate_succ, Function.iterate_succ']
@@ -1144,7 +1144,7 @@ theorem pred_coe (a : α) : pred (↑a : WithTop α) = ↑(pred a) :=
 @[simp]
 theorem pred_untop :
     ∀ (a : WithTop α) (ha : a ≠ ⊤),
-      pred (a.untop ha) = (pred a).untop (by induction a using WithTop.recTopCoe <;> simp)
+      pred (a.untop ha) = (pred a).untop (by induction a <;> simp)
   | ⊤, ha => (ha rfl).elim
   | (a : α), _ => rfl
 #align with_top.pred_untop WithTop.pred_untop
@@ -1255,7 +1255,7 @@ theorem succ_coe (a : α) : succ (↑a : WithBot α) = ↑(succ a) :=
 @[simp]
 theorem succ_unbot :
     ∀ (a : WithBot α) (ha : a ≠ ⊥),
-      succ (a.unbot ha) = (succ a).unbot (by induction a using WithBot.recBotCoe <;> simp)
+      succ (a.unbot ha) = (succ a).unbot (by induction a <;> simp)
   | ⊥, ha => (ha rfl).elim
   | (a : α), _ => rfl
 #align with_bot.succ_unbot WithBot.succ_unbot
@@ -1413,7 +1413,7 @@ theorem LE.le.exists_succ_iterate (h : a ≤ b) : ∃ n, succ^[n] a = b :=
 #align has_le.le.exists_succ_iterate LE.le.exists_succ_iterate
 
 theorem exists_succ_iterate_iff_le : (∃ n, succ^[n] a = b) ↔ a ≤ b := by
-  refine' ⟨_, exists_succ_iterate_of_le⟩
+  refine ⟨?_, exists_succ_iterate_of_le⟩
   rintro ⟨n, rfl⟩
   exact id_le_iterate_of_id_le le_succ n a
 #align exists_succ_iterate_iff_le exists_succ_iterate_iff_le
@@ -1591,7 +1591,7 @@ lemma SuccOrder.forall_ne_bot_iff
     [Nontrivial α] [PartialOrder α] [OrderBot α] [SuccOrder α] [IsSuccArchimedean α]
     (P : α → Prop) :
     (∀ i, i ≠ ⊥ → P i) ↔ (∀ i, P (SuccOrder.succ i)) := by
-  refine' ⟨fun h i ↦ h _ (Order.succ_ne_bot i), fun h i hi ↦ _⟩
+  refine ⟨fun h i ↦ h _ (Order.succ_ne_bot i), fun h i hi ↦ ?_⟩
   obtain ⟨j, rfl⟩ := exists_succ_iterate_of_le (bot_le : ⊥ ≤ i)
   have hj : 0 < j := by apply Nat.pos_of_ne_zero; contrapose! hi; simp [hi]
   rw [← Nat.succ_pred_eq_of_pos hj]
