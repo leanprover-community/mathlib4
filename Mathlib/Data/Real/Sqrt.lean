@@ -124,7 +124,11 @@ end NNReal
 
 namespace Real
 
-/-- The square root of a real number. This returns 0 for negative inputs. -/
+/-- The square root of a real number. This returns 0 for negative inputs.
+
+By default, `√n` will assume that the user is working with real numbers, as this is a
+`default_instance`. -/
+@[default_instance]
 noncomputable instance : NthRoot ℝ 2 := ⟨fun x ↦ NNReal.sqrt (Real.toNNReal x)⟩
 #align real.sqrt NthRoot.nthRoot
 
