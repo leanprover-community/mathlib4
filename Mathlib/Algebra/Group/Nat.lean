@@ -17,7 +17,8 @@ This file contains the additive and multiplicative monoid instances on the natur
 See note [foundational algebra order theory].
 -/
 
-assert_not_exists Ring
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
 
 open Multiplicative
 
