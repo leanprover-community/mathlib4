@@ -478,7 +478,8 @@ theorem add_one_mul_T_eq_poly_in_U (n : ℤ) :
 
 variable (R)
 
-/-- The product of two Chebyshev polynomials is the sum of two other Chebyshev polynomials. -/
+/-- Twice the product of two Chebyshev `T` polynomials is the sum of two other Chebyshev `T`
+polynomials. -/
 theorem mul_T (m k : ℤ) : 2 * T R m * T R k = T R (m + k) + T R (m - k) := by
   induction k using T.induct R with
   | case1 => simp [two_mul]
@@ -512,7 +513,7 @@ theorem mul_C (m k : ℤ) : C R m * C R k = C R (m + k) + C R (m - k) := by
     have h₃ := C_add_two R (-k - 1)
     linear_combination (norm := int_ring_nf) C R m * h₃ - h₂ - h₁ - ih2 + (X:R[X]) * ih1
 
-/-- The `(m * n)`-th Chebyshev polynomial is the composition of the `m`-th and `n`-th -/
+/-- The `(m * n)`-th Chebyshev `T` polynomial is the composition of the `m`-th and `n`-th. -/
 theorem T_mul (m n : ℤ) : T R (m * n) = (T R m).comp (T R n) := by
   induction m using T.induct R with
   | case1 => simp
