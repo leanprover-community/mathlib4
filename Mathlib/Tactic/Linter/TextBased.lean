@@ -129,14 +129,13 @@ section
 /-- Iterates over a collection of strings, finding all lines which are longer than 101 chars.
 We allow #aligns or URLs to be longer, though.
 -/
-def check_line_length : LinterCore := fun lines ↦
-  let is_too_long := fun s : String ↦
-    if !(s.containsSubstr "http" || s.containsSubstr "#align") && s.length > 101 then
-      some (StyleError.lineLength s.length)
-    else none
-  let errors := Array.filterMap is_too_long lines
-  -- TODO: enumerate over all lines, and report actual line numbers!
-  Array.map (fun e ↦ (e, 42)) errors
+def check_line_length : LinterCore := fun lines ↦ Id.run do
+  -- FIXME: benchmark this; does the Array -> List conversion matter? (perhaps not)
+  let errors := (lines.toList.enumFrom 1).filterMap (fun (line_number, line) ↦
+    if !(line.containsSubstr "http" || line.containsSubstr "#align") && line.length > 101 then
+      some (StyleError.lineLength line.length, line_number)
+    else none)
+  errors.toArray
 
 /-- Lint a collection of input strings if one of them contains an unnecessary broad import.
 Return `none` if no import was found, and `some n` if such an import was on line `n` (1-based). -/
@@ -250,10 +249,8 @@ def isolated_by_dot_semicolon : LinterCore := fun lines ↦ Id.run do
 Assumes the lines are not newline-terminated. -/
 def line_endings : LinterCore := fun lines ↦ Id.run do
   let mut output := Array.mkEmpty 0
-  -- XXX: more elegant fix? is there an enumerate for Lean?
-  let mut line_number := 0
-  for line in lines do
-    line_number := line_number + 1
+  -- FIXME: benchmark this; does the Array -> List conversion matter?
+  for (line_number, line) in lines.toList.enumFrom 1 do
     let line' := Lake.crlf2lf line
     if line' != line then
       output := output.push (StyleError.windowsLineEndings, line_number)
@@ -312,8 +309,8 @@ def lint_file (path : System.FilePath)
   -- XXX: this list is currently not sorted: for github, that's probably fine
   format_errors (Array.flatten all_output) exceptions
 
-#eval lint_file (System.mkFilePath ["Mathlib", "Tactic", "Linter", "TextBased.lean"])
-  none (Array.mkEmpty 0)
+-- #eval lint_file (System.mkFilePath ["Mathlib", "Tactic", "Linter", "TextBased.lean"])
+--   none (Array.mkEmpty 0)
 
 /-- Lint all files in `Mathlib.lean`. -/
 def check_all_files : IO Unit := do
