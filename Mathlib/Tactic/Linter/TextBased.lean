@@ -219,7 +219,8 @@ def isolated_by_dot_semicolon : LinterCore := fun lines ↦ Id.run do
     let mut line_number := 0
     for line in lines do
       line_number := line_number + 1
-      if line.trimLeft.startsWith "by" && line_number >= 2 then
+      let line := line.trimLeft
+      if line == "by" && line_number >= 2 then
         -- This is safe since `line_number` is the line we iterated over, just a moment ago.
         let previous_line := lines[line_number - 2]!
         -- We excuse those "by"s following a comma or ", fun ... =>", since generally hanging "by"s
@@ -229,19 +230,19 @@ def isolated_by_dot_semicolon : LinterCore := fun lines ↦ Id.run do
           if !(previous_line.containsSubstr ", fun" &&
               (previous_line.endsWith "=>" || previous_line.endsWith "↦")) then
             output := output.push (StyleError.leading_by, line_number)
-      -- else if line.trimLeft.startsWith "by " then
-      --   -- This check is a bit overzealous right now.
+      -- else if line.startsWith "by " then
+      --   -- This finds lots of interesting output, which I cannot fix yet.
       --   output := output.push (StyleError.leading_by, line_number)
       -- We also check for a "leading where", which has far fewer exceptions.
-      if line.trim == "where " then
+      if line == "where " then
         output := output.push (StyleError.isolated_where, line_number)
-      if line.trimRight.startsWith ". " then
+      if line.startsWith ". " then
         output := output.push (StyleError.dot, line_number) -- has an auto-fix
       if [".", "·"].contains line.trim then
         output := output.push (StyleError.dot, line_number)
       if line.containsSubstr " ;" then
         output := output.push (StyleError.semicolon, line_number) -- has an auto-fix
-      if line.trimRight.startsWith ":" then
+      if line.startsWith ":" then
         output := output.push (StyleError.colon, line_number)
     return output
 
@@ -284,12 +285,15 @@ def check_file_length (lines : Array String) (existing_limit : Option ℕ) : Opt
   none
 end
 
--- perhaps 1s for just the copyright headers
--- checking line length is now down to 4-5s for all of mathlib: slower than I'd like,
--- but barely acceptable for now
--- contains_broad_imports was perhaps 5s
--- 2min for isolated_by_dot_semicolon (while spewing out ~4500 errors)
+/- current durations of all the linters, when run in isolation
+- perhaps 1s for just the copyright headers
+- checking line length is now down to 4-5s for all of mathlib: slower than I'd like,
+  but barely acceptable for now
+- contains_broad_imports was perhaps 5s
+- 3s for 100 items, 9 for 500 --> perhaps 1min for all of mathlib (while spewing out lots of errors)
+
 -- 30s for line_endings
+-/
 
 /-- All text-based linters registered in this file. -/
 def all_linters : Array LinterCore := Array.mk
