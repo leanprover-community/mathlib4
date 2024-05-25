@@ -746,11 +746,7 @@ lemma coeff_single_X_pow [DecidableEq σ] (s s' : σ) (n n' : ℕ) :
 @[simp]
 lemma coeff_single_X [DecidableEq σ] (s s' : σ) (n : ℕ) :
     (X s).coeff (R := R) (Finsupp.single s' n) = if n = 1 ∧ s = s' then 1 else 0 := by
-  rw [coeff_X']
-  simp only [single_eq_single_iff]
-  congr 1
-  simp only [one_ne_zero, false_and, or_false, eq_iff_iff]
-  tauto
+  simpa [eq_comm, and_comm] using coeff_single_X_pow s s' 1 n
 
 @[simp]
 theorem support_mul_X (s : σ) (p : MvPolynomial σ R) :
