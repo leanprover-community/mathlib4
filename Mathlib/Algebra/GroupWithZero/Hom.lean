@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Group.Equiv.Basic
-import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.NeZero
 
 #align_import algebra.hom.group from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
@@ -39,7 +39,7 @@ assert_not_exists DenselyOrdered
 open Function
 
 namespace NeZero
-variable {F α β  : Type*} [Zero α] [Zero β] [FunLike F α β] [ZeroHomClass F α β] {a : α}
+variable {F α β : Type*} [Zero α] [Zero β] [FunLike F α β] [ZeroHomClass F α β] {a : α}
 
 lemma of_map (f : F) [neZero : NeZero (f a)] : NeZero a :=
   ⟨fun h ↦ ne (f a) <| by rw [h]; exact ZeroHomClass.map_zero f⟩
@@ -51,7 +51,7 @@ lemma of_injective {f : F} (hf : Injective f) [NeZero a] : NeZero (f a) :=
 
 end NeZero
 
-variable {F α β γ δ : Type*} [MulZeroOneClass α] [MulZeroOneClass β] [MulZeroOneClass γ]
+variable {F α β γ δ M₀ : Type*} [MulZeroOneClass α] [MulZeroOneClass β] [MulZeroOneClass γ]
   [MulZeroOneClass δ]
 
 /-- `MonoidWithZeroHomClass F α β` states that `F` is a type of
@@ -259,6 +259,22 @@ instance {β} [CommMonoidWithZero β] : Mul (α →*₀ β) where
       map_zero' := by dsimp; rw [map_zero, zero_mul] }
 
 end MonoidWithZeroHom
+
+section CommMonoidWithZero
+variable [CommMonoidWithZero M₀] {n : ℕ} (hn : n ≠ 0)
+
+/-- We define `x ↦ x^n` (for positive `n : ℕ`) as a `MonoidWithZeroHom` -/
+def powMonoidWithZeroHom : M₀ →*₀ M₀ :=
+  { powMonoidHom n with map_zero' := zero_pow hn }
+#align pow_monoid_with_zero_hom powMonoidWithZeroHom
+
+@[simp] lemma coe_powMonoidWithZeroHom : (powMonoidWithZeroHom hn : M₀ → M₀) = fun x ↦ x ^ n := rfl
+#align coe_pow_monoid_with_zero_hom coe_powMonoidWithZeroHom
+
+@[simp] lemma powMonoidWithZeroHom_apply (a : M₀) : powMonoidWithZeroHom hn a = a ^ n := rfl
+#align pow_monoid_with_zero_hom_apply powMonoidWithZeroHom_apply
+
+end CommMonoidWithZero
 
 /-! ### Equivalences -/
 

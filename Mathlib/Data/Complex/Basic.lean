@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Mario Carneiro
 -/
 import Mathlib.Algebra.CharZero.Lemmas
+import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Image
 
