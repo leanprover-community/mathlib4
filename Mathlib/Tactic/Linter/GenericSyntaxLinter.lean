@@ -56,7 +56,6 @@ def findDot : Syntax → Array Syntax
 The function return an array of syntax atoms corresponding to `cdot`s that are not the
 written with the character `·`. -/
 def unwanted.cDot (stx : Syntax) : Array Syntax :=
-  dbg_trace findDot stx
   (findDot stx).filter (!isCDot? ·)
 
 /-- Whether a syntax element is adding an `instance` attribute without a `local` modifier. -/
