@@ -316,11 +316,16 @@ def parse_style_error (line : String) : Option ErrorContext := Id.run do
   let parts := line.split (fun c ↦ c == ' ')
   match parts with
     | filename :: ":" :: "line" :: _line_number :: ":" :: error_code :: ":" :: error_message =>
+      -- Turn the filename into a path. XXX: is there a nicer way to do this?
+      -- Invariant: `style-exceptions.txt` always contains Unix paths
+      -- (because, for example, in practice it is updated by CI, which runs on unix).
+      -- Hence, splitting and joining on "/" is actually somewhat safe.
+      let path : System.FilePath := System.mkFilePath (filename.split (fun c ↦ c == '/'))
       -- Parse the error kind from the error code, ugh.
-      -- TODO: keep this in sync with `error_code`, somehow...
+      -- XXX: can I ensure this list is kept in sync with `error_codes`?
       let err : Option StyleError := match error_code with
-        -- I'm using "0"/ the empty string as the dummy value for all parameters I cannot quite parse.
-        -- TODO: tweak equality of exceptions accordingly!
+        -- I'm using "0" resp. the empty string as dummy values for parameters which do not matter.
+        -- TODO: tweak equality of style error contexts accordingly!
         | "ERR_LIN" => some (StyleError.lineLength 0)
         | "ERR_TAC" => some (StyleError.broadImport)
         | "ERR_COP" => some (StyleError.copyright "")
@@ -336,13 +341,12 @@ def parse_style_error (line : String) : Option ErrorContext := Id.run do
             -- Parse the error message in the script. `none` indicates invalid input.
             match (error_message.get? 0, error_message.get? 3) with
             | (some mark, some size) =>
-              let (size_limit, current_size) := (0, 0) -- TODO actually parse the strings!
-              some (StyleError.fileTooLong size_limit current_size)
+              match (String.toNat? mark, String.toNat? size) with
+              | (some size_limit, some current_size) => some (StyleError.fileTooLong size_limit current_size)
+              | _ => none
             | _ => none
-        -- XXX: can I ensure this list is kept in sync with "error_codes"?
         | _ => none
-      let path : System.FilePath := sorry -- urgh: have to parse the file name into a path...
-      -- I'm omitting the line number... for various reasons, including having to parse it...
+      -- I'm omitting the line number... for various reasons.
       err.map fun e ↦ (ErrorContext.mk e 0 path)
     | _ => none -- The line doesn't match the known format: continue.
 
