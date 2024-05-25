@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.BoxIntegral.Partition.Filter
 import Mathlib.Analysis.BoxIntegral.Partition.Measure
+import Mathlib.Analysis.Oscillation
 import Mathlib.Topology.UniformSpace.Compact
 import Mathlib.Init.Data.Bool.Lemmas
 
@@ -670,74 +671,6 @@ end Integrable
 open MeasureTheory
 
 /-!
-### Oscillation
--/
-
-section oscillation
-
-open EMetric
-
-/-- The oscillation of `f` at `x`. -/
-noncomputable def oscillation (f : ℝⁿ → E) (x : ℝⁿ) : ENNReal :=
-  ⨅ S ∈ (𝓝 x).map f, EMetric.diam S
-
-/-- The oscillation of `f` at `x` is 0 whenever `f` is continuous at `x`. -/
-theorem oscillation_zero_of_continuousAt {f : ℝⁿ → E} {x : ℝⁿ} (hf : ContinuousAt f x) :
-    oscillation f x = 0 := by
-  refine le_antisymm (ENNReal.le_of_forall_pos_le_add fun ε hε _ ↦ ?_) (zero_le _)
-  rw [zero_add]
-  have : EMetric.ball (f x) (ε / 2) ∈ (𝓝 x).map f :=
-    hf <| EMetric.ball_mem_nhds _ (by simp [ne_of_gt hε])
-  refine (biInf_le EMetric.diam this).trans (le_of_le_of_eq diam_ball ?_)
-  refine (ENNReal.mul_div_cancel' ?_ ?_) <;> norm_num
-
-/-- If `oscillation f x < ε` at every `x` in a compact set `K`, then there exists `δ > 0` such
-that the oscillation of `f` on `Metric.ball x δ` is less than `ε` for every `x` in `K`. -/
-theorem uniform_oscillation_of_compact {K : Set ℝⁿ} (comp : IsCompact K) (f : ℝⁿ → E)
-    (ε : ENNReal) (hK : ∀ x ∈ K, oscillation f x < ε) :
-    ∃ δ > 0, ∀ x ∈ K, EMetric.diam (f '' (Metric.ball x δ)) ≤ ε := by
-  let S := fun r ↦ { x : ℝⁿ | ∃ (a : ℝ), (a > r ∧ EMetric.diam (f '' (Metric.ball x a)) ≤ ε) }
-  have S_open : ∀ r > 0, IsOpen (S r) := by
-    intro r _
-    rw [isOpen_iff_nhds]
-    rintro x ⟨a, ar, ha⟩ t ht
-    rw [Metric.mem_nhds_iff]
-    use (a - r) / 2, by simp [ar]
-    intro y hy
-    apply ht
-    use a - (a - r) / 2, by linarith
-    refine le_trans (diam_mono (Set.image_mono fun z hz ↦ ?_)) ha
-    rw [Metric.mem_ball] at *
-    linarith [dist_triangle z y x]
-  have S_cover : K ⊆ ⋃ r > 0, S r := by
-    intro x hx
-    have : oscillation f x < ε := hK x hx
-    simp only [oscillation, Filter.mem_map, iInf_lt_iff] at this
-    obtain ⟨n, hn₁, hn₂⟩ := this
-    obtain ⟨r, r0, hr⟩ := Metric.mem_nhds_iff.1 hn₁
-    use (S (r / 2)), ⟨r / 2, by simp [r0]⟩, r, div_two_lt_of_pos r0
-    exact le_trans (diam_mono (Set.image_subset_iff.2 hr)) (le_of_lt hn₂)
-  have S_antitone : ∀ (r₁ r₂ : ℝ), r₁ ≤ r₂ → S r₂ ⊆ S r₁ :=
-    fun r₁ r₂ hr x ⟨a, ar₂, ha⟩ ↦ ⟨a, lt_of_le_of_lt hr ar₂, ha⟩
-  have : ∃ r > 0, K ⊆ S r := by
-    obtain ⟨T, Tb, Tfin, hT⟩ := comp.elim_finite_subcover_image S_open S_cover
-    by_cases T_nonempty : T.Nonempty
-    · use Tfin.isWF.min T_nonempty, Tb (Tfin.isWF.min_mem T_nonempty)
-      intro x hx
-      obtain ⟨r, hr⟩ := Set.mem_iUnion.1 (hT hx)
-      simp only [Set.mem_iUnion, exists_prop] at hr
-      exact (S_antitone _ r (Set.IsWF.min_le Tfin.isWF T_nonempty hr.1)) hr.2
-    · rw [Set.not_nonempty_iff_eq_empty] at T_nonempty
-      use 1, one_pos, subset_trans hT (by simp [T_nonempty])
-  obtain ⟨δ, δ0, hδ⟩ := this
-  use δ, δ0
-  intro x xK
-  obtain ⟨a, δa, ha⟩ := hδ xK
-  exact le_trans (diam_mono (Set.image_mono (Metric.ball_subset_ball (le_of_lt δa)))) ha
-
-end oscillation
-
-/-!
 ### Integrability conditions
 -/
 
@@ -750,6 +683,11 @@ theorem integrable_of_bounded_and_ae_continuous (l : IntegrationParams) [Complet
     {I : Box ι} {f : ℝⁿ → E} (hb : ∃ C : ℝ, ∀ x ∈ Box.Icc I, ‖f x‖ ≤ C) (μ : Measure ℝⁿ)
     [IsLocallyFiniteMeasure μ] (hc : ∀ᵐ x ∂μ, ContinuousAt f x) :
     Integrable I l f μ.toBoxAdditive.toSMul := by
+  /- We prove that f is integrable by proving that we can ensure that the integralSums over any
+     two tagged prepartitions π₁ and π₂ can be made ε-close by making the partitions
+     sufficiently fine.
+
+     Start by defining some constants C, ε₁, ε₂ that will be useful later. -/
   refine' integrable_iff_cauchy_basis.2 fun ε ε0 ↦ _
   rcases exists_pos_mul_lt ε0 (2 * μ.toBoxAdditive I) with ⟨ε₁, ε₁0, hε₁⟩
   rcases hb with ⟨C, hC⟩
@@ -758,6 +696,8 @@ theorem integrable_of_bounded_and_ae_continuous (l : IntegrationParams) [Complet
     exact False.elim <| C0 <| le_trans (norm_nonneg (f x)) <| hC x (Box.coe_subset_Icc hx)
   rcases exists_pos_mul_lt ε0 (4 * C) with ⟨ε₂, ε₂0, hε₂⟩
   have ε₂0': ENNReal.ofReal ε₂ ≠ 0 := fun h ↦ not_le_of_gt ε₂0 (ENNReal.ofReal_eq_zero.1 h)
+
+  -- The set of discontinuities of f is contained in an open set U with μ U < ε₂.
   let D := { x ∈ Box.Icc I | ¬ ContinuousAt f x }
   have μD : μ D = 0 := by
     obtain ⟨v, v_ae, hv⟩ := Filter.eventually_iff_exists_mem.1 hc
@@ -765,14 +705,20 @@ theorem integrable_of_bounded_and_ae_continuous (l : IntegrationParams) [Complet
                                 (mem_ae_iff.1 v_ae)) ENNReal.not_lt_zero
   obtain ⟨U, UD, Uopen, hU⟩ := Set.exists_isOpen_lt_add D (show μ D ≠ ⊤ by simp [μD]) ε₂0'
   rw [μD, zero_add] at hU
+
+  /- Box.Icc I \ U is compact and avoids discontinuities of f, so there exists r > 0 such that for
+     every x ∈ Box.Icc I \ U, the oscillation of f on the ball of radius r centered at x is ≤ ε₁ -/
   have comp : IsCompact (Box.Icc I \ U) :=
     I.isCompact_Icc.of_isClosed_subset (I.isCompact_Icc.isClosed.sdiff Uopen) (Set.diff_subset _ U)
   have : ∀ x ∈ (Box.Icc I \ U), oscillation f x < (ENNReal.ofReal ε₁) := by
     intro x hx
     suffices oscillation f x = 0 by rw [this]; exact ENNReal.ofReal_pos.2 ε₁0
-    apply oscillation_zero_of_continuousAt
-    simpa [D, hx.1] using hx.2 ∘ (fun a ↦ UD a)
-  obtain ⟨r, r0, hr⟩ := uniform_oscillation_of_compact comp f (ENNReal.ofReal ε₁) this
+    simpa [oscillation_zero_iff_continuousAt, D, hx.1] using hx.2 ∘ (fun a ↦ UD a)
+  obtain ⟨r, r0, hr⟩ := uniform_oscillation_of_compact comp this
+
+  /- We prove the claim for partitions π₁ and π₂ subordinate to r/2, by writing the difference as
+     an integralSum over π₁ ⊓ π₂ and considering separately the boxes of π₁ ⊓ π₂ which are/aren't
+     fully contained within U. -/
   refine' ⟨fun _ _ ↦ ⟨r / 2, half_pos r0⟩, fun _ _ _ ↦ rfl, fun c₁ c₂ π₁ π₂ h₁ h₁p h₂ h₂p ↦ _⟩
   simp only [dist_eq_norm, integralSum_sub_partitions _ _ h₁p h₂p, BoxAdditiveMap.toSMul_apply,
     ← smul_sub]
@@ -785,16 +731,18 @@ theorem integrable_of_bounded_and_ae_continuous (l : IntegrationParams) [Complet
   have union : ∀ S ⊆ B, ⋃ J ∈ S, J.toSet ⊆ I.toSet :=
     fun S hS ↦ iUnion_subset_iff.2 (fun J ↦ iUnion_subset_iff.2 fun hJ ↦ le_of_mem' _ J (hS hJ))
   apply le_trans (norm_add_le _ _) (add_le_add ?_ ?_)
+
+  /- If a box J is not contained within U, then the oscillation of f on J is small, which bounds
+     the contribution of J to the overall sum. -/
   · have : ∀ J ∈ B \ B.filter p, ‖μ.toBoxAdditive J •
       (f ((π₁.infPrepartition π₂.toPrepartition).tag J) -
       f ((π₂.infPrepartition π₁.toPrepartition).tag J))‖ ≤ μ.toBoxAdditive J * ε₁ := by
       intro J hJ
       rw [norm_smul, μ.toBoxAdditive_apply, Real.norm_of_nonneg ENNReal.toReal_nonneg]
       refine mul_le_mul_of_nonneg_left ?_ ENNReal.toReal_nonneg
-      have : ∃ x ∈ J, x ∉ U := by
+      obtain ⟨x, xJ, xnU⟩ : ∃ x ∈ J, x ∉ U := by
         rw [Finset.mem_sdiff, Finset.mem_filter, not_and] at hJ
         simpa only [p, Set.not_subset] using hJ.2 hJ.1
-      obtain ⟨x, xJ, xnU⟩ := this
       have hx : x ∈ Box.Icc I \ U :=
         ⟨Box.coe_subset_Icc <| (le_of_mem' _ J (Finset.mem_sdiff.1 hJ).1) xJ, xnU⟩
       have JB : J ∈ B := (Finset.mem_sdiff.1 hJ).1
@@ -805,9 +753,10 @@ theorem integrable_of_bounded_and_ae_continuous (l : IntegrationParams) [Complet
         refine Metric.closedBall_subset_ball (div_two_lt_of_pos r0) (Metric.mem_closedBall_comm.1 <|
             h₂.isSubordinate.infPrepartition π₁.toPrepartition J ?_ (Box.coe_subset_Icc xJ))
         rwa [BoxIntegral.TaggedPrepartition.mem_infPrepartition_comm]
+      have ineq := (edist_le_diam_of_mem (Set.mem_image_of_mem f hy) (Set.mem_image_of_mem f hz))
+      rw [← emetric_ball] at ineq
       simpa only [edist_le_ofReal (le_of_lt ε₁0), dist_eq_norm, (Finset.mem_sdiff.1 hJ).1] using
-        (edist_le_diam_of_mem (Set.mem_image_of_mem f hy) (Set.mem_image_of_mem f hz)).trans
-        (hr x hx)
+        ineq.trans (hr x hx)
     refine (norm_sum_le _ _).trans <| (Finset.sum_le_sum this).trans ?_
     rw [← Finset.sum_mul]
     trans μ.toBoxAdditive I * ε₁; swap
@@ -823,6 +772,8 @@ theorem integrable_of_bounded_and_ae_continuous (l : IntegrationParams) [Complet
       refine measure_biUnion (Finset.countable_toSet _) ?_ (fun J _ ↦ J.measurableSet_coe)
       intro J hJ J' hJ' hJJ'
       exact pairwiseDisjoint _ (Finset.mem_sdiff.1 hJ).1 (Finset.mem_sdiff.1 hJ').1 hJJ'
+
+  -- The contribution of the boxes contained within U is bounded because f is bounded and μ U < ε₂.
   · have : ∀ J ∈ B.filter p, ‖μ.toBoxAdditive J •
         (f ((π₁.infPrepartition π₂.toPrepartition).tag J) -
         f ((π₂.infPrepartition π₁.toPrepartition).tag J))‖ ≤ μ.toBoxAdditive J * (2 * C) := by
