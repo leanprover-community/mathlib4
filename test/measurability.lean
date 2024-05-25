@@ -35,8 +35,8 @@ example {ι} [Encodable ι] {S₁ S₂ : ι → Set α} (hS₁ : ∀ i, Measurab
 
 -- Tests on sets
 
-example (hs₁ : MeasurableSet s₁) (hs₂ : MeasurableSet s₂) : MeasurableSet (s₁ ∪ s₁) :=
-  by measurability
+example (hs₁ : MeasurableSet s₁) (hs₂ : MeasurableSet s₂) : MeasurableSet (s₁ ∪ s₁) := by
+  measurability
 
 example {ι} [Encodable ι] {S : ι → Set α} (hs : ∀ i, MeasurableSet (S i)) :
     MeasurableSet (⋃ i, S i) := by measurability

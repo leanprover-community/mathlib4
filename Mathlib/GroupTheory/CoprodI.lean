@@ -99,8 +99,8 @@ def Monoid.CoprodI : Type _ := (conGen (Monoid.CoprodI.Rel M)).Quotient
 #align free_product Monoid.CoprodI
 
 -- Porting note: could not de derived
-instance : Monoid (Monoid.CoprodI M) :=
-  by delta Monoid.CoprodI; infer_instance
+instance : Monoid (Monoid.CoprodI M) := by
+  delta Monoid.CoprodI; infer_instance
 
 instance : Inhabited (Monoid.CoprodI M) :=
   ⟨1⟩

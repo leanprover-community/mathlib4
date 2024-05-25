@@ -722,8 +722,8 @@ theorem lintegral_piecewise (a : α) (g : β → ℝ≥0∞) :
 
 theorem set_lintegral_piecewise (a : α) (g : β → ℝ≥0∞) (t : Set β) :
     ∫⁻ b in t, g b ∂piecewise hs κ η a =
-      if a ∈ s then ∫⁻ b in t, g b ∂κ a else ∫⁻ b in t, g b ∂η a :=
-  by simp_rw [piecewise_apply]; split_ifs <;> rfl
+      if a ∈ s then ∫⁻ b in t, g b ∂κ a else ∫⁻ b in t, g b ∂η a := by
+  simp_rw [piecewise_apply]; split_ifs <;> rfl
 #align probability_theory.kernel.set_lintegral_piecewise ProbabilityTheory.kernel.set_lintegral_piecewise
 
 theorem integral_piecewise {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -735,8 +735,8 @@ theorem integral_piecewise {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
 theorem setIntegral_piecewise {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (a : α) (g : β → E) (t : Set β) :
     ∫ b in t, g b ∂piecewise hs κ η a =
-      if a ∈ s then ∫ b in t, g b ∂κ a else ∫ b in t, g b ∂η a :=
-  by simp_rw [piecewise_apply]; split_ifs <;> rfl
+      if a ∈ s then ∫ b in t, g b ∂κ a else ∫ b in t, g b ∂η a := by
+  simp_rw [piecewise_apply]; split_ifs <;> rfl
 #align probability_theory.kernel.set_integral_piecewise ProbabilityTheory.kernel.setIntegral_piecewise
 
 @[deprecated]

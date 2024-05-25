@@ -210,8 +210,8 @@ theorem kernel.measure_zero_or_one_of_measurableSet_limsup (h_le : ∀ n, s n �
 theorem measure_zero_or_one_of_measurableSet_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ)
     (hf : ∀ t, p t → tᶜ ∈ f) (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a))
     (hns_univ : ∀ n, ∃ a, n ∈ ns a) {t : Set Ω} (ht_tail : MeasurableSet[limsup s f] t) :
-    μ t = 0 ∨ μ t = 1 :=
-  by simpa only [ae_dirac_eq, Filter.eventually_pure]
+    μ t = 0 ∨ μ t = 1 := by
+  simpa only [ae_dirac_eq, Filter.eventually_pure]
     using kernel.measure_zero_or_one_of_measurableSet_limsup h_le h_indep hf hns hnsp hns_univ
       ht_tail
 #align probability_theory.measure_zero_or_one_of_measurable_set_limsup ProbabilityTheory.measure_zero_or_one_of_measurableSet_limsup

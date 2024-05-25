@@ -1755,8 +1755,8 @@ theorem count_ne_zero_iff_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p) :
 #align associates.count_ne_zero_iff_dvd Associates.count_ne_zero_iff_dvd
 
 theorem count_self [Nontrivial α] [DecidableEq (Associates α)] {p : Associates α}
-    (hp : Irreducible p) : p.count p.factors = 1 :=
-  by simp [factors_self hp, Associates.count_some hp]
+    (hp : Irreducible p) : p.count p.factors = 1 := by
+  simp [factors_self hp, Associates.count_some hp]
 #align associates.count_self Associates.count_self
 
 theorem count_eq_zero_of_ne [DecidableEq (Associates α)] {p q : Associates α} (hp : Irreducible p)
