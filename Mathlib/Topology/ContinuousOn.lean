@@ -51,8 +51,8 @@ theorem eventually_nhdsWithin_iff {a : α} {s : Set α} {p : α → Prop} :
 #align eventually_nhds_within_iff eventually_nhdsWithin_iff
 
 theorem frequently_nhdsWithin_iff {z : α} {s : Set α} {p : α → Prop} :
-    (∃ᶠ x in 𝓝[s] z, p x) ↔ ∃ᶠ x in 𝓝 z, p x ∧ x ∈ s := by
-  simp only [Filter.Frequently, eventually_nhdsWithin_iff, not_and']
+    (∃ᶠ x in 𝓝[s] z, p x) ↔ ∃ᶠ x in 𝓝 z, p x ∧ x ∈ s :=
+  frequently_inf_principal.trans <| by simp only [and_comm]
 #align frequently_nhds_within_iff frequently_nhdsWithin_iff
 
 theorem mem_closure_ne_iff_frequently_within {z : α} {s : Set α} :
