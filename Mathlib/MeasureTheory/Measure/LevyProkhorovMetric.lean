@@ -620,8 +620,7 @@ lemma ProbabilityMeasure.continuous_toLevyProkhorov :
   rw [LevyProkhorov.dist_def, levyProkhorovDist, levyProkhorovEDist_comm]
   apply levyProkhorovDist_le_of_forall_add_pos_le
   · linarith
-  ·
-    -- Fix an arbitrary set `B ⊆ Ω`, and an arbitrary `δ > 0` to be used for error and thickening.
+  · -- Fix an arbitrary set `B ⊆ Ω`, and an arbitrary `δ > 0` to be used for error and thickening.
     intro δ B δ_pos _
 
     -- Let `JB ⊆ {0, 1, ..., N-1}` consist of those indices `j` such that `B` intersects `Es j`.
