@@ -117,8 +117,8 @@ def format_errors (errors : Array ErrorContext) (exceptions : Array ErrorContext
   -- do we also need to?
   -- TODO: do I need to compare exceptions in a fancy way? for instance, are line number ignored?
   for e in errors do
-    --if !exceptions.contains e then
-    IO.println (output_message e)
+    if !exceptions.contains e then
+      IO.println (output_message e)
 
 /-- Core logic of a text based linter: given a collection of lines,
 return an array of all style errors with line numbers. -/
@@ -211,6 +211,7 @@ def copyright_header : LinterCore := fun lines ↦ Id.run do
         output := output.push (StyleError.authors, 4)
   return output
 
+
 /-- Check for miscellaneous formatting things: starting with a dot or using the wrong dot,
   isolated by, a semicolon preceded by a space or a line starting with a colon. -/
 -- FUTURE: remove most of these, once there is a formatter!
@@ -238,10 +239,11 @@ def isolated_by_dot_semicolon : LinterCore := fun lines ↦ Id.run do
         output := output.push (StyleError.isolated_where, line_number)
       if line.startsWith ". " then
         output := output.push (StyleError.dot, line_number) -- has an auto-fix
-      if [".", "·"].contains line.trim then
+      if line == "." || line == "·" then
         output := output.push (StyleError.dot, line_number)
-      if line.containsSubstr " ;" then
-        output := output.push (StyleError.semicolon, line_number) -- has an auto-fix
+      -- This check is *much* slower than the others, hence commented for now.
+      -- if line.containsSubstr " ;" then
+      --   output := output.push (StyleError.semicolon, line_number) -- has an auto-fix
       if line.startsWith ":" then
         output := output.push (StyleError.colon, line_number)
     return output
@@ -289,13 +291,16 @@ end
 - checking line length is now down to 4-5s for all of mathlib: slower than I'd like,
   but barely acceptable for now
 - contains_broad_imports was perhaps 5s
-- 3s for 100 items, 9 for 500 --> perhaps 1min for all of mathlib (while spewing out lots of errors)
-- now ~5 for checking line endings
+- misc formatting: the semicolon check took ages (at least one minute for all of mathlib)
+  with that disabled, all of mathlib takes ~6-7s
+- ~5s for checking line endings
+overall: about 20-25s for all of mathlib; twice as slow as the python linter (with less work...)
 -/
 
 /-- All text-based linters registered in this file. -/
 def all_linters : Array LinterCore := Array.mk
-  [line_endings]
+  [check_line_length, contains_broad_imports, copyright_header, isolated_by_dot_semicolon,
+   line_endings]
 
 /-- Read a file, apply all text-based linters and return the formatted errors.
 
@@ -310,9 +315,9 @@ def lint_file (path : System.FilePath)
     return
   -- Check first if the file is too long: since this requires mucking with previous exceptions,
   -- I'll just handle this directly.
-  -- if let some (StyleError.fileTooLong n limit) := check_file_length lines size_limit then
-  --   let arr := Array.mkArray1 (ErrorContext.mk (StyleError.fileTooLong n limit) 1 path)
-  --   format_errors arr (Array.mkEmpty 0)
+  if let some (StyleError.fileTooLong n limit) := check_file_length lines size_limit then
+    let arr := Array.mkArray1 (ErrorContext.mk (StyleError.fileTooLong n limit) 1 path)
+    format_errors arr (Array.mkEmpty 0)
   let all_output := (Array.map (fun lint ↦
     (Array.map (fun (e, n) ↦ ErrorContext.mk e n path)) (lint lines))) all_linters
   -- XXX: this list is currently not sorted: for github, that's probably fine
@@ -371,10 +376,7 @@ def check_all_files : IO Unit := do
   -- Read the style exceptions file.
   let exceptions_file ← IO.FS.lines (System.mkFilePath ["scripts/style-exceptions.txt"])
   let style_exceptions := parse_style_exceptions exceptions_file
-  let mut i := 0
   for module in allModules do
-    i := i + 1
-    --if i == 500 then break
     let module := module.stripPrefix "import "
     -- Convert the module name to a file name, then lint that file.
     let path := (System.mkFilePath (module.split fun c ↦ (c == '.'))).addExtension "lean"
@@ -386,7 +388,5 @@ def check_all_files : IO Unit := do
       else none)
     lint_file path (size_limits.get? 0) style_exceptions
 
--- #eval lint_file (System.mkFilePath ("Mathlib/RingTheory/Kaehler.lean".splitOn "/"))
---     none (Array.mkEmpty 0)
--- run_cmd check_all_files
--- #print "all done"
+--run_cmd check_all_files
+--#print "all done"
