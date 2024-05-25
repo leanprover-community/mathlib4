@@ -70,7 +70,8 @@ theorem IsOpenImmersion.isOpen_range {X Y : Scheme.{u}} (f : X ⟶ Y) [H : IsOpe
   H.base_open.isOpen_range
 #align algebraic_geometry.IsOpenImmersion.open_range AlgebraicGeometry.IsOpenImmersion.isOpen_range
 
-@[deprecated] alias IsOpenImmersion.open_range := IsOpenImmersion.isOpen_range -- 2024-03-17
+@[deprecated (since := "2024-03-17")]
+alias IsOpenImmersion.open_range := IsOpenImmersion.isOpen_range
 
 section OpenCover
 
