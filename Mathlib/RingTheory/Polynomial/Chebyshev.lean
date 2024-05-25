@@ -302,7 +302,7 @@ theorem T_eq_half_mul_C_comp_two_mul_X [Invertible (2 : R)] (n : ℤ) :
     map_one, one_mul]
 
 /-- `S n` is the `n`th rescaled Chebyshev polynomial of the second kind (also known as a
-Vieta–Fibonacci polynomial), given by $S_n(2x) = S_n(x)$. See
+Vieta–Fibonacci polynomial), given by $S_n(2x) = U_n(x)$. See
 `Polynomial.Chebyshev.S_comp_two_mul_X`. -/
 noncomputable def S : ℤ → R[X]
   | 0 => 1
