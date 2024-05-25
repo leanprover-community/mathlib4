@@ -6,6 +6,9 @@ Authors: Yury G. Kudryashov
 import Mathlib.Analysis.NormedSpace.AddTorsor
 import Mathlib.LinearAlgebra.AffineSpace.Ordered
 import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.GDelta
+import Mathlib.Analysis.NormedSpace.FunctionSeries
+import Mathlib.Analysis.SpecificLimits.Basic
 
 #align_import topology.urysohns_lemma from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -176,7 +179,7 @@ theorem approx_nonneg (c : CU P) (n : ℕ) (x : X) : 0 ≤ c.approx n x := by
   induction' n with n ihn generalizing c
   · exact indicator_nonneg (fun _ _ => zero_le_one) _
   · simp only [approx, midpoint_eq_smul_add, invOf_eq_inv]
-    refine' mul_nonneg (inv_nonneg.2 zero_le_two) (add_nonneg _ _) <;> apply ihn
+    refine mul_nonneg (inv_nonneg.2 zero_le_two) (add_nonneg ?_ ?_) <;> apply ihn
 #align urysohns.CU.approx_nonneg Urysohns.CU.approx_nonneg
 
 theorem approx_le_one (c : CU P) (n : ℕ) (x : X) : c.approx n x ≤ 1 := by
@@ -184,6 +187,7 @@ theorem approx_le_one (c : CU P) (n : ℕ) (x : X) : c.approx n x ≤ 1 := by
   · exact indicator_apply_le' (fun _ => le_rfl) fun _ => zero_le_one
   · simp only [approx, midpoint_eq_smul_add, invOf_eq_inv, smul_eq_mul, ← div_eq_inv_mul]
     have := add_le_add (ihn (left c)) (ihn (right c))
+    set_option tactic.skipAssignedInstances false in
     norm_num at this
     exact Iff.mpr (div_le_one zero_lt_two) this
 #align urysohns.CU.approx_le_one Urysohns.CU.approx_le_one
@@ -209,7 +213,7 @@ theorem approx_mem_Icc_right_left (c : CU P) (n : ℕ) (x : X) :
   · exact ⟨le_rfl, indicator_le_indicator_of_subset (compl_subset_compl.2 c.left_U_subset)
       (fun _ => zero_le_one) _⟩
   · simp only [approx, mem_Icc]
-    refine' ⟨midpoint_le_midpoint _ (ihn _).1, midpoint_le_midpoint (ihn _).2 _⟩ <;>
+    refine ⟨midpoint_le_midpoint ?_ (ihn _).1, midpoint_le_midpoint (ihn _).2 ?_⟩ <;>
       apply approx_le_approx_of_U_sub_C
     exacts [subset_closure, subset_closure]
 #align urysohns.CU.approx_mem_Icc_right_left Urysohns.CU.approx_mem_Icc_right_left
@@ -250,7 +254,7 @@ theorem lim_of_nmem_U (c : CU P) (x : X) (h : x ∉ c.U) : c.lim x = 1 := by
 
 theorem lim_eq_midpoint (c : CU P) (x : X) :
     c.lim x = midpoint ℝ (c.left.lim x) (c.right.lim x) := by
-  refine' tendsto_nhds_unique (c.tendsto_approx_atTop x) ((tendsto_add_atTop_iff_nat 1).1 _)
+  refine tendsto_nhds_unique (c.tendsto_approx_atTop x) ((tendsto_add_atTop_iff_nat 1).1 ?_)
   simp only [approx]
   exact (c.left.tendsto_approx_atTop x).midpoint (c.right.tendsto_approx_atTop x)
 #align urysohns.CU.lim_eq_midpoint Urysohns.CU.lim_eq_midpoint
@@ -274,35 +278,35 @@ theorem lim_mem_Icc (c : CU P) (x : X) : c.lim x ∈ Icc (0 : ℝ) 1 :=
 /-- Continuity of `Urysohns.CU.lim`. See module docstring for a sketch of the proofs. -/
 theorem continuous_lim (c : CU P) : Continuous c.lim := by
   obtain ⟨h0, h1234, h1⟩ : 0 < (2⁻¹ : ℝ) ∧ (2⁻¹ : ℝ) < 3 / 4 ∧ (3 / 4 : ℝ) < 1 := by norm_num
-  refine'
+  refine
     continuous_iff_continuousAt.2 fun x =>
-      (Metric.nhds_basis_closedBall_pow (h0.trans h1234) h1).tendsto_right_iff.2 fun n _ => _
+      (Metric.nhds_basis_closedBall_pow (h0.trans h1234) h1).tendsto_right_iff.2 fun n _ => ?_
   simp only [Metric.mem_closedBall]
   induction' n with n ihn generalizing c
-  · refine' eventually_of_forall fun y => _
+  · filter_upwards with y
     rw [pow_zero]
     exact Real.dist_le_of_mem_Icc_01 (c.lim_mem_Icc _) (c.lim_mem_Icc _)
   · by_cases hxl : x ∈ c.left.U
     · filter_upwards [IsOpen.mem_nhds c.left.open_U hxl, ihn c.left] with _ hyl hyd
-      rw [pow_succ, c.lim_eq_midpoint, c.lim_eq_midpoint,
+      rw [pow_succ', c.lim_eq_midpoint, c.lim_eq_midpoint,
         c.right.lim_of_mem_C _ (c.left_U_subset_right_C hyl),
         c.right.lim_of_mem_C _ (c.left_U_subset_right_C hxl)]
-      refine' (dist_midpoint_midpoint_le _ _ _ _).trans _
+      refine (dist_midpoint_midpoint_le _ _ _ _).trans ?_
       rw [dist_self, add_zero, div_eq_inv_mul]
       gcongr
-    · replace hxl : x ∈ c.left.right.Cᶜ
-      exact compl_subset_compl.2 c.left.right.subset hxl
+    · replace hxl : x ∈ c.left.right.Cᶜ :=
+        compl_subset_compl.2 c.left.right.subset hxl
       filter_upwards [IsOpen.mem_nhds (isOpen_compl_iff.2 c.left.right.closed_C) hxl,
         ihn c.left.right, ihn c.right] with y hyl hydl hydr
-      replace hxl : x ∉ c.left.left.U
-      exact compl_subset_compl.2 c.left.left_U_subset_right_C hxl
-      replace hyl : y ∉ c.left.left.U
-      exact compl_subset_compl.2 c.left.left_U_subset_right_C hyl
+      replace hxl : x ∉ c.left.left.U :=
+        compl_subset_compl.2 c.left.left_U_subset_right_C hxl
+      replace hyl : y ∉ c.left.left.U :=
+        compl_subset_compl.2 c.left.left_U_subset_right_C hyl
       simp only [pow_succ, c.lim_eq_midpoint, c.left.lim_eq_midpoint,
         c.left.left.lim_of_nmem_U _ hxl, c.left.left.lim_of_nmem_U _ hyl]
-      refine' (dist_midpoint_midpoint_le _ _ _ _).trans _
-      refine' (div_le_div_of_le zero_le_two
-        (add_le_add_right (dist_midpoint_midpoint_le _ _ _ _) _)).trans _
+      refine (dist_midpoint_midpoint_le _ _ _ _).trans ?_
+      refine (div_le_div_of_nonneg_right (add_le_add_right (dist_midpoint_midpoint_le _ _ _ _) _)
+        zero_le_two).trans ?_
       rw [dist_self, zero_add]
       set r := (3 / 4 : ℝ) ^ n
       calc _ ≤ (r / 2 + r) / 2 := by gcongr
@@ -397,3 +401,68 @@ theorem exists_continuous_one_zero_of_isCompact [RegularSpace X] [LocallyCompact
     exact interior_subset hx
   · have : 0 ≤ f x ∧ f x ≤ 1 := by simpa using h'f x
     simp [this]
+
+/-- Urysohn's lemma: if `s` and `t` are two disjoint sets in a regular locally compact topological
+space `X`, with `s` compact and `t` closed, then there exists a continuous compactly supported
+function `f : X → ℝ` such that
+
+* `f` equals one on `s`;
+* `f` equals zero on `t`;
+* `0 ≤ f x ≤ 1` for all `x`.
+
+Moreover, if `s` is Gδ, one can ensure that `f ⁻¹ {1}` is exactly `s`.
+-/
+theorem exists_continuous_one_zero_of_isCompact_of_isGδ [RegularSpace X] [LocallyCompactSpace X]
+    {s t : Set X} (hs : IsCompact s) (h's : IsGδ s) (ht : IsClosed t) (hd : Disjoint s t) :
+    ∃ f : C(X, ℝ), s = f ⁻¹' {1} ∧ EqOn f 0 t ∧ HasCompactSupport f
+      ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
+  rcases h's.eq_iInter_nat with ⟨U, U_open, hU⟩
+  obtain ⟨m, m_comp, -, sm, mt⟩ : ∃ m, IsCompact m ∧ IsClosed m ∧ s ⊆ interior m ∧ m ⊆ tᶜ :=
+    exists_compact_closed_between hs ht.isOpen_compl hd.symm.subset_compl_left
+  have A n : ∃ f : C(X, ℝ), EqOn f 1 s ∧ EqOn f 0 (U n ∩ interior m)ᶜ ∧ HasCompactSupport f
+      ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
+    apply exists_continuous_one_zero_of_isCompact hs
+      ((U_open n).inter isOpen_interior).isClosed_compl
+    rw [disjoint_compl_right_iff_subset]
+    exact subset_inter ((hU.subset.trans (iInter_subset U n))) sm
+  choose f fs fm _hf f_range using A
+  obtain ⟨u, u_pos, u_sum, hu⟩ : ∃ (u : ℕ → ℝ), (∀ i, 0 < u i) ∧ Summable u ∧ ∑' i, u i = 1 :=
+    ⟨fun n ↦ 1/2/2^n, fun n ↦ by positivity, summable_geometric_two' 1, tsum_geometric_two' 1⟩
+  let g : X → ℝ := fun x ↦ ∑' n, u n * f n x
+  have hgmc : EqOn g 0 mᶜ := by
+    intro x hx
+    have B n : f n x = 0 := by
+      have : mᶜ ⊆ (U n ∩ interior m)ᶜ := by
+        simpa using (inter_subset_right _ _).trans interior_subset
+      exact fm n (this hx)
+    simp [g, B]
+  have I n x : u n * f n x ≤ u n := mul_le_of_le_one_right (u_pos n).le (f_range n x).2
+  have S x : Summable (fun n ↦ u n * f n x) := Summable.of_nonneg_of_le
+      (fun n ↦ mul_nonneg (u_pos n).le (f_range n x).1) (fun n ↦ I n x) u_sum
+  refine ⟨⟨g, ?_⟩, ?_, hgmc.mono (subset_compl_comm.mp mt), ?_, fun x ↦ ⟨?_, ?_⟩⟩
+  · apply continuous_tsum (fun n ↦ continuous_const.mul (f n).continuous) u_sum (fun n x ↦ ?_)
+    simpa [abs_of_nonneg, (u_pos n).le, (f_range n x).1] using I n x
+  · apply Subset.antisymm (fun x hx ↦ by simp [g, fs _ hx, hu]) ?_
+    apply compl_subset_compl.1
+    intro x hx
+    obtain ⟨n, hn⟩ : ∃ n, x ∉ U n := by simpa [hU] using hx
+    have fnx : f n x = 0 := fm _ (by simp [hn])
+    have : g x < 1 := by
+      apply lt_of_lt_of_le ?_ hu.le
+      exact tsum_lt_tsum (i := n) (fun i ↦ I i x) (by simp [fnx, u_pos n]) (S x) u_sum
+    simpa using this.ne
+  · exact HasCompactSupport.of_support_subset_isCompact m_comp
+      (Function.support_subset_iff'.mpr hgmc)
+  · exact tsum_nonneg (fun n ↦ mul_nonneg (u_pos n).le (f_range n x).1)
+  · apply le_trans _ hu.le
+    exact tsum_le_tsum (fun n ↦ I n x) (S x) u_sum
+
+theorem exists_continuous_nonneg_pos [RegularSpace X] [LocallyCompactSpace X] (x : X) :
+    ∃ f : C(X, ℝ), HasCompactSupport f ∧ 0 ≤ (f : X → ℝ) ∧ f x ≠ 0 := by
+  rcases exists_compact_mem_nhds x with ⟨k, hk, k_mem⟩
+  rcases exists_continuous_one_zero_of_isCompact hk isClosed_empty (disjoint_empty k)
+    with ⟨f, fk, -, f_comp, hf⟩
+  refine ⟨f, f_comp, fun x ↦ (hf x).1, ?_⟩
+  have := fk (mem_of_mem_nhds k_mem)
+  simp only [ContinuousMap.coe_mk, Pi.one_apply] at this
+  simp [this]

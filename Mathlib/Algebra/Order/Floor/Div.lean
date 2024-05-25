@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Module.Defs
+import Mathlib.Algebra.Order.Pi
 import Mathlib.Data.Finsupp.Order
-import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Order.GaloisConnection
 
 /-!
@@ -237,7 +237,8 @@ noncomputable instance instFloorDiv : FloorDiv α (ι →₀ β) where
   floorDiv_nonpos a ha f := by ext i; exact floorDiv_of_nonpos ha _
   zero_floorDiv a := by ext; exact zero_floorDiv _
 
-lemma floorDiv_def (f : ι →₀ β) (a : α) : f ⌊/⌋ a = fun i ↦ f i ⌊/⌋ a := rfl
+lemma floorDiv_def (f : ι →₀ β) (a : α) : f ⌊/⌋ a = f.mapRange (· ⌊/⌋ a) (zero_floorDiv _) := rfl
+@[norm_cast] lemma coe_floorDiv (f : ι →₀ β) (a : α) : f ⌊/⌋ a = fun i ↦ f i ⌊/⌋ a := rfl
 @[simp] lemma floorDiv_apply (f : ι →₀ β) (a : α) (i : ι) : (f ⌊/⌋ a) i = f i ⌊/⌋ a := rfl
 
 lemma support_floorDiv_subset : (f ⌊/⌋ a).support ⊆ f.support := by
@@ -249,13 +250,14 @@ section CeilDiv
 variable [CeilDiv α β] {f : ι →₀ β} {a : α}
 
 noncomputable instance instCeilDiv : CeilDiv α (ι →₀ β) where
-  ceilDiv f a := f.mapRange (· ⌈/⌉ a) <| by simp
+  ceilDiv f a := f.mapRange (· ⌈/⌉ a) <| zero_ceilDiv _
   ceilDiv_gc _a ha f _g := forall_congr' fun i ↦ by
     simpa only [coe_smul, Pi.smul_apply, mapRange_apply] using gc_smul_ceilDiv ha (f i) _
   ceilDiv_nonpos a ha f := by ext i; exact ceilDiv_of_nonpos ha _
   zero_ceilDiv a := by ext; exact zero_ceilDiv _
 
-lemma ceilDiv_def (f : ι →₀ β) (a : α) : f ⌈/⌉ a = fun i ↦ f i ⌈/⌉ a := rfl
+lemma ceilDiv_def (f : ι →₀ β) (a : α) : f ⌈/⌉ a = f.mapRange (· ⌈/⌉ a) (zero_ceilDiv _) := rfl
+@[norm_cast] lemma coe_ceilDiv_def (f : ι →₀ β) (a : α) : f ⌈/⌉ a = fun i ↦ f i ⌈/⌉ a := rfl
 @[simp] lemma ceilDiv_apply (f : ι →₀ β) (a : α) (i : ι) : (f ⌈/⌉ a) i = f i ⌈/⌉ a := rfl
 
 lemma support_ceilDiv_subset : (f ⌈/⌉ a).support ⊆ f.support := by
@@ -264,5 +266,5 @@ lemma support_ceilDiv_subset : (f ⌈/⌉ a).support ⊆ f.support := by
 end CeilDiv
 end Finsupp
 
-/-- This is the motivating example.-/
+/-- This is the motivating example. -/
 noncomputable example : FloorDiv ℕ (ℕ →₀ ℕ) := inferInstance

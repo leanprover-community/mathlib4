@@ -3,11 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Algebra.Algebra.Equiv
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.GroupPower.IterateHom
-import Mathlib.LinearAlgebra.TensorProduct
+import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 #align_import algebra.algebra.bilinear from "leanprover-community/mathlib"@"657df4339ae6ceada048c8a2980fb10e393143ec"
 
@@ -196,7 +195,7 @@ theorem _root_.Algebra.coe_lmul_eq_mul : ⇑(Algebra.lmul R A) = mul R A :=
 #align algebra.coe_lmul_eq_mul Algebra.coe_lmul_eq_mul
 
 theorem _root_.Algebra.lmul_injective : Function.Injective (Algebra.lmul R A) :=
-  fun a₁ a₂ h ↦ by simpa using FunLike.congr_fun h 1
+  fun a₁ a₂ h ↦ by simpa using DFunLike.congr_fun h 1
 
 theorem _root_.Algebra.lmul_isUnit_iff {x : A} :
     IsUnit (Algebra.lmul R A x) ↔ IsUnit x := by
@@ -206,7 +205,7 @@ theorem _root_.Algebra.lmul_isUnit_iff {x : A} :
 @[simp]
 theorem mulLeft_eq_zero_iff (a : A) : mulLeft R a = 0 ↔ a = 0 := by
   constructor <;> intro h
-  -- porting note: had to supply `R` explicitly in `@mulLeft_apply` below
+  -- Porting note: had to supply `R` explicitly in `@mulLeft_apply` below
   · rw [← mul_one a, ← @mulLeft_apply R _ _ _ _ _ _ a 1, h, LinearMap.zero_apply]
   · rw [h]
     exact mulLeft_zero_eq_zero
@@ -215,7 +214,7 @@ theorem mulLeft_eq_zero_iff (a : A) : mulLeft R a = 0 ↔ a = 0 := by
 @[simp]
 theorem mulRight_eq_zero_iff (a : A) : mulRight R a = 0 ↔ a = 0 := by
   constructor <;> intro h
-  -- porting note: had to supply `R` explicitly in `@mulRight_apply` below
+  -- Porting note: had to supply `R` explicitly in `@mulRight_apply` below
   · rw [← one_mul a, ← @mulRight_apply R _ _ _ _ _ _ a 1, h, LinearMap.zero_apply]
   · rw [h]
     exact mulRight_zero_eq_zero
@@ -224,13 +223,13 @@ theorem mulRight_eq_zero_iff (a : A) : mulRight R a = 0 ↔ a = 0 := by
 @[simp]
 theorem mulLeft_one : mulLeft R (1 : A) = LinearMap.id := by
   ext
-  simp only [LinearMap.id_coe, one_mul, id.def, mulLeft_apply]
+  simp
 #align linear_map.mul_left_one LinearMap.mulLeft_one
 
 @[simp]
 theorem mulRight_one : mulRight R (1 : A) = LinearMap.id := by
   ext
-  simp only [LinearMap.id_coe, mul_one, id.def, mulRight_apply]
+  simp
 #align linear_map.mul_right_one LinearMap.mulRight_one
 
 @[simp]

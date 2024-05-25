@@ -40,11 +40,11 @@ protected theorem floor_def' (a : ℚ) : a.floor = a.num / a.den := by
 protected theorem le_floor {z : ℤ} : ∀ {r : ℚ}, z ≤ Rat.floor r ↔ (z : ℚ) ≤ r
   | ⟨n, d, h, c⟩ => by
     simp only [Rat.floor_def']
-    rw [num_den']
+    rw [mk'_eq_divInt]
     have h' := Int.ofNat_lt.2 (Nat.pos_of_ne_zero h)
     conv =>
       rhs
-      rw [coe_int_eq_divInt, Rat.le_def zero_lt_one h', mul_one]
+      rw [intCast_eq_divInt, Rat.divInt_le_divInt zero_lt_one h', mul_one]
     exact Int.le_ediv_iff_mul_le h'
 #align rat.le_floor Rat.le_floor
 
@@ -63,8 +63,8 @@ theorem floor_int_div_nat_eq_div {n : ℤ} {d : ℕ} : ⌊(↑n : ℚ) / (↑d :
     rw [q_eq]
     exact mod_cast @Rat.exists_eq_mul_div_num_and_eq_mul_div_den n d (mod_cast hd.ne')
   rw [n_eq_c_mul_num, d_eq_c_mul_denom]
-  refine' (Int.mul_ediv_mul_of_pos _ _ <| pos_of_mul_pos_left _ <| Int.coe_nat_nonneg q.den).symm
-  rwa [← d_eq_c_mul_denom, Int.coe_nat_pos]
+  refine (Int.mul_ediv_mul_of_pos _ _ <| pos_of_mul_pos_left ?_ <| Int.natCast_nonneg q.den).symm
+  rwa [← d_eq_c_mul_denom, Int.natCast_pos]
 #align rat.floor_int_div_nat_eq_div Rat.floor_int_div_nat_eq_div
 
 @[simp, norm_cast]
@@ -85,7 +85,7 @@ theorem round_cast (x : ℚ) : round (x : α) = round x := by
 
 @[simp, norm_cast]
 theorem cast_fract (x : ℚ) : (↑(fract x) : α) = fract (x : α) := by
-  simp only [fract, cast_sub, cast_coe_int, floor_cast]
+  simp only [fract, cast_sub, cast_intCast, floor_cast]
 #align rat.cast_fract Rat.cast_fract
 
 end Rat
@@ -128,14 +128,14 @@ theorem num_lt_succ_floor_mul_den (q : ℚ) : q.num < (⌊q⌋ + 1) * q.den := b
 
 theorem fract_inv_num_lt_num_of_pos {q : ℚ} (q_pos : 0 < q) : (fract q⁻¹).num < q.num := by
   -- we know that the numerator must be positive
-  have q_num_pos : 0 < q.num := Rat.num_pos_iff_pos.mpr q_pos
+  have q_num_pos : 0 < q.num := Rat.num_pos.mpr q_pos
   -- we will work with the absolute value of the numerator, which is equal to the numerator
   have q_num_abs_eq_q_num : (q.num.natAbs : ℤ) = q.num := Int.natAbs_of_nonneg q_num_pos.le
-  set q_inv := (q.den : ℚ) / q.num with q_inv_def
-  have q_inv_eq : q⁻¹ = q_inv := Rat.inv_def''
+  set q_inv : ℚ := q.den / q.num with q_inv_def
+  have q_inv_eq : q⁻¹ = q_inv := by rw [q_inv_def, inv_def', divInt_eq_div, Int.cast_natCast]
   suffices (q_inv - ⌊q_inv⌋).num < q.num by rwa [q_inv_eq]
   suffices ((q.den - q.num * ⌊q_inv⌋ : ℚ) / q.num).num < q.num by
-    field_simp [this, ne_of_gt q_num_pos]
+    field_simp [q_inv, this, ne_of_gt q_num_pos]
   suffices (q.den : ℤ) - q.num * ⌊q_inv⌋ < q.num by
     -- use that `q.num` and `q.den` are coprime to show that the numerator stays unreduced
     have : ((q.den - q.num * ⌊q_inv⌋ : ℚ) / q.num).num = q.den - q.num * ⌊q_inv⌋ := by

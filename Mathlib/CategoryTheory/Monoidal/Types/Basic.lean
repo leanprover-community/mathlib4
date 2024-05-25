@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Jendrusch, Scott Morrison
 -/
 import Mathlib.CategoryTheory.Monoidal.Functor
-import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Basic
+import Mathlib.CategoryTheory.ChosenFiniteProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.Logic.Equiv.Fin
 
@@ -23,9 +23,9 @@ universe v u
 
 namespace CategoryTheory
 
-noncomputable instance typesMonoidal : MonoidalCategory.{u} (Type u) :=
-  monoidalOfChosenFiniteProducts Types.terminalLimitCone Types.binaryProductLimitCone
-#align category_theory.types_monoidal CategoryTheory.typesMonoidal
+instance typesChosenFiniteProducts : ChosenFiniteProducts (Type u) where
+  product := Types.binaryProductLimitCone
+  terminal := Types.terminalLimitCone
 
 @[simp]
 theorem tensor_apply {W X Y Z : Type u} (f : W ⟶ X) (g : Y ⟶ Z) (p : W ⊗ Y) :

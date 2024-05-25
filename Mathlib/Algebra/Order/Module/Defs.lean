@@ -3,8 +3,10 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled
 import Mathlib.Algebra.Order.Module.Synonym
-import Mathlib.Algebra.Order.Ring.Lemmas
+import Mathlib.GroupTheory.GroupAction.Group
+import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Monotonicity of scalar multiplication by positive elements
@@ -93,7 +95,7 @@ because:
   anyway. It is easily copied over.
 
 In the future, it would be good to make the corresponding typeclasses in
-`Mathlib.Algebra.Order.Ring.Lemmas` custom typeclasses too.
+`Mathlib.Algebra.Order.GroupWithZero.Unbundled` custom typeclasses too.
 
 ## TODO
 
@@ -530,9 +532,9 @@ variable [PartialOrder α] [Preorder β]
 lemma PosSMulMono.of_pos (h₀ : ∀ a : α, 0 < a → ∀ b₁ b₂ : β, b₁ ≤ b₂ → a • b₁ ≤ a • b₂) :
     PosSMulMono α β where
   elim a ha b₁ b₂ h := by
-      obtain ha | ha := ha.eq_or_lt
-      · simp [← ha]
-      · exact h₀ _ ha _ _ h
+    obtain ha | ha := ha.eq_or_lt
+    · simp [← ha]
+    · exact h₀ _ ha _ _ h
 
 /-- A constructor for `PosSMulReflectLT` requiring you to prove `a • b₁ < a • b₂ → b₁ < b₂` only
 when `0 < a`-/
@@ -561,7 +563,7 @@ lemma SMulPosMono.of_pos (h₀ : ∀ b : β, 0 < b → ∀ a₁ a₂ : α, a₁ 
 when `0 < b`-/
 lemma SMulPosReflectLT.of_pos (h₀ : ∀ b : β, 0 < b → ∀ a₁ a₂ : α, a₁ • b < a₂ • b → a₁ < a₂) :
     SMulPosReflectLT α β where
-  elim  b hb a₁ a₂ h := by
+  elim b hb a₁ a₂ h := by
     obtain hb | hb := hb.eq_or_lt
     · simp [← hb] at h
     · exact h₀ _ hb _ _ h
@@ -619,11 +621,11 @@ variable [LinearOrder α] [LinearOrder β]
 lemma pos_and_pos_or_neg_and_neg_of_smul_pos [PosSMulMono α β] [SMulPosMono α β] (hab : 0 < a • b) :
     0 < a ∧ 0 < b ∨ a < 0 ∧ b < 0 := by
   obtain ha | rfl | ha := lt_trichotomy a 0
-  · refine' Or.inr ⟨ha, lt_imp_lt_of_le_imp_le (fun hb ↦ _) hab⟩
+  · refine Or.inr ⟨ha, lt_imp_lt_of_le_imp_le (fun hb ↦ ?_) hab⟩
     exact smul_nonpos_of_nonpos_of_nonneg ha.le hb
   · rw [zero_smul] at hab
     exact hab.false.elim
-  · refine' Or.inl ⟨ha, lt_imp_lt_of_le_imp_le (fun hb ↦ _) hab⟩
+  · refine Or.inl ⟨ha, lt_imp_lt_of_le_imp_le (fun hb ↦ ?_) hab⟩
     exact smul_nonpos_of_nonneg_of_nonpos ha.le hb
 
 lemma neg_of_smul_pos_right [PosSMulMono α β] [SMulPosMono α β] (h : 0 < a • b) (ha : a ≤ 0) :
@@ -1091,7 +1093,7 @@ lemma PosSMulMono.lift [PosSMulMono α γ] : PosSMulMono α β where
   elim a ha b₁ b₂ hb := by simp only [← hf, smul] at *; exact smul_le_smul_of_nonneg_left hb ha
 
 lemma PosSMulStrictMono.lift [PosSMulStrictMono α γ] : PosSMulStrictMono α β where
-  elim a ha b₁ b₂ hb :=  by
+  elim a ha b₁ b₂ hb := by
     simp only [← lt_iff_lt_of_le_iff_le' hf hf, smul] at *; exact smul_lt_smul_of_pos_left hb ha
 
 lemma PosSMulReflectLE.lift [PosSMulReflectLE α γ] : PosSMulReflectLE α β where
@@ -1121,6 +1123,26 @@ lemma SMulPosReflectLT.lift [SMulPosReflectLT α γ] : SMulPosReflectLT α β wh
     exact lt_of_smul_lt_smul_right h hb
 
 end Lift
+
+section Nat
+
+instance OrderedSemiring.toPosSMulMonoNat [OrderedSemiring α] : PosSMulMono ℕ α where
+  elim _n _ _a _b hab := nsmul_le_nsmul_right hab _
+
+instance OrderedSemiring.toSMulPosMonoNat [OrderedSemiring α] : SMulPosMono ℕ α where
+  elim _a ha _m _n hmn := nsmul_le_nsmul_left ha hmn
+
+instance StrictOrderedSemiring.toPosSMulStrictMonoNat [StrictOrderedSemiring α] :
+    PosSMulStrictMono ℕ α where
+  elim _n hn _a _b hab := nsmul_right_strictMono hn.ne' hab
+
+instance StrictOrderedSemiring.toSMulPosStrictMonoNat [StrictOrderedSemiring α] :
+    SMulPosStrictMono ℕ α where
+  elim _a ha _m _n hmn := nsmul_lt_nsmul_left ha hmn
+
+end Nat
+
+-- TODO: Instances for `Int` and `Rat`
 
 namespace Mathlib.Meta.Positivity
 section OrderedSMul
@@ -1154,8 +1176,8 @@ def evalHSMul : PositivityExt where eval {_u α} zα pα (e : Q($α)) := do
   let .app (.app (.app (.app (.app (.app
         (.const ``HSMul.hSMul [u1, _, _]) (β : Q(Type u1))) _) _) _)
           (a : Q($β))) (b : Q($α)) ← whnfR e | throwError "failed to match hSMul"
-  let zM : Q(Zero $β) ← synthInstanceQ (q(Zero $β))
-  let pM : Q(PartialOrder $β) ← synthInstanceQ (q(PartialOrder $β))
+  let zM : Q(Zero $β) ← synthInstanceQ q(Zero $β)
+  let pM : Q(PartialOrder $β) ← synthInstanceQ q(PartialOrder $β)
   -- Using `q()` here would be impractical, as we would have to manually `synthInstanceQ` all the
   -- required typeclasses. Ideally we could tell `q()` to do this automatically.
   match ← core zM pM a, ← core zα pα b with

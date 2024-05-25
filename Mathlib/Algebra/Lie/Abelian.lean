@@ -69,7 +69,7 @@ theorem Function.Injective.isLieAbelian {R : Type u} {L₁ : Type v} {L₂ : Typ
   { trivial := fun x y => h₁ <|
       calc
         f ⁅x, y⁆ = ⁅f x, f y⁆ := LieHom.map_lie f x y
-        _ = 0 := (trivial_lie_zero _ _ _ _)
+        _ = 0 := trivial_lie_zero _ _ _ _
         _ = f 0 := f.map_zero.symm}
 #align function.injective.is_lie_abelian Function.Injective.isLieAbelian
 
@@ -89,8 +89,9 @@ theorem lie_abelian_iff_equiv_lie_abelian {R : Type u} {L₁ : Type v} {L₂ : T
 #align lie_abelian_iff_equiv_lie_abelian lie_abelian_iff_equiv_lie_abelian
 
 theorem commutative_ring_iff_abelian_lie_ring {A : Type v} [Ring A] :
-    IsCommutative A (· * ·) ↔ IsLieAbelian A := by
-  have h₁ : IsCommutative A (· * ·) ↔ ∀ a b : A, a * b = b * a := ⟨fun h => h.1, fun h => ⟨h⟩⟩
+    Std.Commutative (α := A) (· * ·) ↔ IsLieAbelian A := by
+  have h₁ : Std.Commutative (α := A) (· * ·) ↔ ∀ a b : A, a * b = b * a :=
+    ⟨fun h => h.1, fun h => ⟨h⟩⟩
   have h₂ : IsLieAbelian A ↔ ∀ a b : A, ⁅a, b⁆ = 0 := ⟨fun h => h.1, fun h => ⟨h⟩⟩
   simp only [h₁, h₂, LieRing.of_associative_ring_bracket, sub_eq_zero]
 #align commutative_ring_iff_abelian_lie_ring commutative_ring_iff_abelian_lie_ring
@@ -98,24 +99,21 @@ theorem commutative_ring_iff_abelian_lie_ring {A : Type v} [Ring A] :
 section Center
 
 variable (R : Type u) (L : Type v) (M : Type w) (N : Type w₁)
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
-
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
-
 variable [AddCommGroup N] [Module R N] [LieRingModule L N] [LieModule R L N]
 
 namespace LieModule
 
 /-- The kernel of the action of a Lie algebra `L` on a Lie module `M` as a Lie ideal in `L`. -/
 protected def ker : LieIdeal R L :=
-  (toEndomorphism R L M).ker
+  (toEnd R L M).ker
 #align lie_module.ker LieModule.ker
 
 @[simp]
 protected theorem mem_ker (x : L) : x ∈ LieModule.ker R L M ↔ ∀ m : M, ⁅x, m⁆ = 0 := by
   simp only [LieModule.ker, LieHom.mem_ker, LinearMap.ext_iff, LinearMap.zero_apply,
-    toEndomorphism_apply_apply]
+    toEnd_apply_apply]
 #align lie_module.mem_ker LieModule.mem_ker
 
 /-- The largest submodule of a Lie module `M` on which the Lie algebra `L` acts trivially. -/
@@ -145,7 +143,7 @@ theorem ideal_oper_maxTrivSubmodule_eq_bot (I : LieIdeal R L) :
 
 theorem le_max_triv_iff_bracket_eq_bot {N : LieSubmodule R L M} :
     N ≤ maxTrivSubmodule R L M ↔ ⁅(⊤ : LieIdeal R L), N⁆ = ⊥ := by
-  refine' ⟨fun h => _, fun h m hm => _⟩
+  refine ⟨fun h => ?_, fun h m hm => ?_⟩
   · rw [← le_bot_iff, ← ideal_oper_maxTrivSubmodule_eq_bot R L M ⊤]
     exact LieSubmodule.mono_lie_right _ _ ⊤ h
   · rw [mem_maxTrivSubmodule]
@@ -289,13 +287,13 @@ namespace LieModule
 variable {R L}
 variable {x : L} (hx : x ∈ LieAlgebra.center R L) (y : L)
 
-lemma commute_toEndomorphism_of_mem_center_left :
-    Commute (toEndomorphism R L M x) (toEndomorphism R L M y) := by
+lemma commute_toEnd_of_mem_center_left :
+    Commute (toEnd R L M x) (toEnd R L M y) := by
   rw [Commute.symm_iff, commute_iff_lie_eq, ← LieHom.map_lie, hx y, LieHom.map_zero]
 
-lemma commute_toEndomorphism_of_mem_center_right :
-    Commute (toEndomorphism R L M y) (toEndomorphism R L M x) :=
-  (LieModule.commute_toEndomorphism_of_mem_center_left M hx y).symm
+lemma commute_toEnd_of_mem_center_right :
+    Commute (toEnd R L M y) (toEnd R L M x) :=
+  (LieModule.commute_toEnd_of_mem_center_left M hx y).symm
 
 end LieModule
 
@@ -306,16 +304,13 @@ section IdealOperations
 open LieSubmodule LieSubalgebra
 
 variable {R : Type u} {L : Type v} {M : Type w}
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M] [Module R M]
-
 variable [LieRingModule L M] [LieModule R L M]
-
 variable (N N' : LieSubmodule R L M) (I J : LieIdeal R L)
 
 @[simp]
 theorem LieSubmodule.trivial_lie_oper_zero [LieModule.IsTrivial L M] : ⁅I, N⁆ = ⊥ := by
-  suffices : ⁅I, N⁆ ≤ ⊥; exact le_bot_iff.mp this
+  suffices ⁅I, N⁆ ≤ ⊥ from le_bot_iff.mp this
   rw [lieIdeal_oper_eq_span, LieSubmodule.lieSpan_le]
   rintro m ⟨x, n, h⟩; rw [trivial_lie_zero] at h; simp [← h]
 #align lie_submodule.trivial_lie_oper_zero LieSubmodule.trivial_lie_oper_zero

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudriashov, Malo Jaffré
 -/
 import Mathlib.Analysis.Convex.Function
+import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
 
@@ -18,9 +19,12 @@ of their slopes.
 The main use is to show convexity/concavity from monotonicity of the derivative.
 -/
 
-
 variable {𝕜 : Type*} [LinearOrderedField 𝕜] {s : Set 𝕜} {f : 𝕜 → 𝕜}
 
+#adaptation_note /-- after v4.7.0-rc1, there is a performance problem in `field_simp`.
+(Part of the code was ignoring the `maxDischargeDepth` setting:
+ now that we have to increase it, other paths become slow.) -/
+set_option maxHeartbeats 400000 in
 /-- If `f : 𝕜 → 𝕜` is convex, then for any three points `x < y < z` the slope of the secant line of
 `f` on `[x, y]` is less than the slope of the secant line of `f` on `[x, z]`. -/
 theorem ConvexOn.slope_mono_adjacent (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s) (hz : z ∈ s)
@@ -32,14 +36,14 @@ theorem ConvexOn.slope_mono_adjacent (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx
     linarith
   set a := (z - y) / (z - x)
   set b := (y - x) / (z - x)
-  have hy : a • x + b • z = y := by field_simp; ring
+  have hy : a • x + b • z = y := by field_simp [a, b]; ring
   have key :=
     hf.2 hx hz (show 0 ≤ a by apply div_nonneg <;> linarith)
       (show 0 ≤ b by apply div_nonneg <;> linarith)
-      (show a + b = 1 by field_simp)
+      (show a + b = 1 by field_simp [a, b])
   rw [hy] at key
   replace key := mul_le_mul_of_nonneg_left key hxz.le
-  field_simp [mul_comm (z - x) _] at key ⊢
+  field_simp [a, b, mul_comm (z - x) _] at key ⊢
   rw [div_le_div_right]
   · linarith
   · nlinarith
@@ -68,10 +72,10 @@ theorem StrictConvexOn.slope_strict_mono_adjacent (hf : StrictConvexOn 𝕜 s f)
     linarith
   set a := (z - y) / (z - x)
   set b := (y - x) / (z - x)
-  have hy : a • x + b • z = y := by field_simp; ring
+  have hy : a • x + b • z = y := by field_simp [a, b]; ring
   have key :=
     hf.2 hx hz hxz' (div_pos hyz hxz) (div_pos hxy hxz)
-      (show a + b = 1 by field_simp)
+      (show a + b = 1 by field_simp [a, b])
   rw [hy] at key
   replace key := mul_lt_mul_of_pos_left key hxz
   field_simp [mul_comm (z - x) _] at key ⊢
@@ -110,10 +114,12 @@ theorem convexOn_of_slope_mono_adjacent (hs : Convex 𝕜 s)
     have hxz : 0 < z - x := sub_pos.2 (hxy.trans hyz)
     have ha : (z - y) / (z - x) = a := by
       rw [eq_comm, ← sub_eq_iff_eq_add'] at hab
+      dsimp [y]
       simp_rw [div_eq_iff hxz.ne', ← hab]
       ring
     have hb : (y - x) / (z - x) = b := by
       rw [eq_comm, ← sub_eq_iff_eq_add] at hab
+      dsimp [y]
       simp_rw [div_eq_iff hxz.ne', ← hab]
       ring
     rwa [sub_mul, sub_mul, sub_le_iff_le_add', ← add_sub_assoc, le_sub_iff_add_le, ← mul_add,
@@ -129,7 +135,7 @@ theorem concaveOn_of_slope_anti_adjacent (hs : Convex 𝕜 s)
         x ∈ s → z ∈ s → x < y → y < z → (f z - f y) / (z - y) ≤ (f y - f x) / (y - x)) :
     ConcaveOn 𝕜 s f := by
   rw [← neg_convexOn_iff]
-  refine' convexOn_of_slope_mono_adjacent hs fun hx hz hxy hyz => _
+  refine convexOn_of_slope_mono_adjacent hs fun hx hz hxy hyz => ?_
   rw [← neg_le_neg_iff]
   simp_rw [← neg_div, neg_sub, Pi.neg_apply, neg_sub_neg]
   exact hf hx hz hxy hyz
@@ -155,10 +161,12 @@ theorem strictConvexOn_of_slope_strict_mono_adjacent (hs : Convex 𝕜 s)
     have hxz : 0 < z - x := sub_pos.2 (hxy.trans hyz)
     have ha : (z - y) / (z - x) = a := by
       rw [eq_comm, ← sub_eq_iff_eq_add'] at hab
+      dsimp [y]
       simp_rw [div_eq_iff hxz.ne', ← hab]
       ring
     have hb : (y - x) / (z - x) = b := by
       rw [eq_comm, ← sub_eq_iff_eq_add] at hab
+      dsimp [y]
       simp_rw [div_eq_iff hxz.ne', ← hab]
       ring
     rwa [sub_mul, sub_mul, sub_lt_iff_lt_add', ← add_sub_assoc, lt_sub_iff_add_lt, ← mul_add,
@@ -175,7 +183,7 @@ theorem strictConcaveOn_of_slope_strict_anti_adjacent (hs : Convex 𝕜 s)
         x ∈ s → z ∈ s → x < y → y < z → (f z - f y) / (z - y) < (f y - f x) / (y - x)) :
     StrictConcaveOn 𝕜 s f := by
   rw [← neg_strictConvexOn_iff]
-  refine' strictConvexOn_of_slope_strict_mono_adjacent hs fun hx hz hxy hyz => _
+  refine strictConvexOn_of_slope_strict_mono_adjacent hs fun hx hz hxy hyz => ?_
   rw [← neg_lt_neg_iff]
   simp_rw [← neg_div, neg_sub, Pi.neg_apply, neg_sub_neg]
   exact hf hx hz hxy hyz
@@ -286,7 +294,7 @@ theorem StrictConvexOn.secant_strict_mono_aux1 (hf : StrictConvexOn 𝕜 s f) {x
   have hb : 0 < (y - x) / (z - x) := by positivity
   calc
     f y = f ((z - y) / (z - x) * x + (y - x) / (z - x) * z) := ?_
-    _ < (z - y) / (z - x) * f x + (y - x) / (z - x) * f z := (hf.2 hx hz (by linarith) ha hb ?_)
+    _ < (z - y) / (z - x) * f x + (y - x) / (z - x) * f z := hf.2 hx hz (by linarith) ha hb ?_
     _ = ((z - y) * f x + (y - x) * f z) / (z - x) := ?_
   · congr 1
     field_simp
@@ -346,7 +354,7 @@ theorem ConvexOn.strict_mono_of_lt (hf : ConvexOn 𝕜 s f) {x y : 𝕜} (hx : x
     exact ⟨hxy, hz.2⟩
   rcases eq_or_lt_of_le hu.2 with (rfl | hu2)
   · exact step1 ⟨hv.1, huv⟩
-  · refine' hf.lt_right_of_left_lt _ hv.1 _ (step1 ⟨hu.1, hu2⟩)
+  · refine hf.lt_right_of_left_lt ?_ hv.1 ?_ (step1 ⟨hu.1, hu2⟩)
     · apply hf.1.segment_subset hx hu.1
       rw [segment_eq_Icc (hxy.le.trans hu.2)]
       exact ⟨hxy.le, hu.2⟩

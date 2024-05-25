@@ -6,8 +6,7 @@ Authors: Robert Y. Lewis
 import Mathlib.Tactic.Linarith.Datatypes
 import Mathlib.Tactic.Zify
 import Mathlib.Tactic.CancelDenoms.Core
-import Mathlib.Lean.Exception
-import Std.Data.RBMap.Basic
+import Batteries.Data.RBMap.Basic
 import Mathlib.Data.HashMap
 import Mathlib.Control.Basic
 
@@ -140,15 +139,15 @@ partial def getNatComparisons (e : Expr) : List (Expr × Expr) :=
     | _ => []
 
 /-- If `e : ℕ`, returns a proof of `0 ≤ (e : C)`. -/
-def mk_coe_nat_nonneg_prf (p : Expr × Expr) : MetaM (Option Expr) :=
+def mk_natCast_nonneg_prf (p : Expr × Expr) : MetaM (Option Expr) :=
   match p with
-  | ⟨e, target⟩ => try commitIfNoEx (mkAppM ``nat_cast_nonneg #[target, e])
+  | ⟨e, target⟩ => try commitIfNoEx (mkAppM ``natCast_nonneg #[target, e])
     catch e => do
       trace[linarith] "Got exception when using cast {e.toMessageData}"
       return none
 
 
-open Std
+open Batteries
 
 /-- Ordering on `Expr`. -/
 def Expr.Ord : Ord Expr :=
@@ -186,7 +185,7 @@ def natToInt : GlobalBranchingPreprocessor where
         let (a, b) ← getRelSides (← inferType h)
         pure <| (es.insertList (getNatComparisons a)).insertList (getNatComparisons b)
       catch _ => pure es
-    pure [(g, ((← nonnegs.toList.filterMapM mk_coe_nat_nonneg_prf) ++ l : List Expr))]
+    pure [(g, ((← nonnegs.toList.filterMapM mk_natCast_nonneg_prf) ++ l : List Expr))]
 
 end natToInt
 
@@ -311,6 +310,12 @@ and adds them to the set `s`.
 A pair `(a, true)` is added to `s` when `a^2` appears in `e`,
 and `(a, false)` is added to `s` when `a*a` appears in `e`.  -/
 partial def findSquares (s : HashSet (Expr × Bool)) (e : Expr) : MetaM (HashSet (Expr × Bool)) :=
+  -- Completely traversing the expression is non-ideal,
+  -- as we can descend into expressions that could not possibly be seen by `linarith`.
+  -- As a result we visit expressions with bvars, which then cause panics.
+  -- Ideally this preprocessor would be reimplemented so it only visits things that could be atoms.
+  -- In the meantime we just bail out if we ever encounter loose bvars.
+  if e.hasLooseBVars then return s else
   match e.getAppFnArgs with
   | (``HPow.hPow, #[_, _, _, _, a, b]) => match b.numeral? with
     | some 2 => do

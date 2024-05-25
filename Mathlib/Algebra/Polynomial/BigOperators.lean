@@ -3,8 +3,7 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark
 -/
-import Mathlib.Algebra.Order.WithZero
-import Mathlib.Data.Polynomial.Monic
+import Mathlib.Algebra.Polynomial.Monic
 
 #align_import algebra.polynomial.big_operators from "leanprover-community/mathlib"@"47adfab39a11a072db552f47594bf8ed2cf8a722"
 
@@ -45,6 +44,7 @@ section Semiring
 
 variable {S : Type*} [Semiring S]
 
+set_option backward.isDefEq.lazyProjDelta false in -- See https://github.com/leanprover-community/mathlib4/issues/12535
 theorem natDegree_list_sum_le (l : List S[X]) : natDegree l.sum ≤ (l.map natDegree).foldr max 0 :=
   List.sum_le_foldr_max natDegree (by simp) natDegree_add_le _
 #align polynomial.nat_degree_list_sum_le Polynomial.natDegree_list_sum_le
@@ -58,6 +58,10 @@ theorem natDegree_sum_le (f : ι → S[X]) :
     natDegree (∑ i in s, f i) ≤ s.fold max 0 (natDegree ∘ f) := by
   simpa using natDegree_multiset_sum_le (s.val.map f)
 #align polynomial.nat_degree_sum_le Polynomial.natDegree_sum_le
+
+lemma natDegree_sum_le_of_forall_le {n : ℕ} (f : ι → S[X]) (h : ∀ i ∈ s, natDegree (f i) ≤ n) :
+    natDegree (∑ i in s, f i) ≤ n :=
+  le_trans (natDegree_sum_le s f) <| (Finset.fold_max_le n).mpr <| by simpa
 
 theorem degree_list_sum_le (l : List S[X]) : degree l.sum ≤ (l.map natDegree).maximum := by
   by_cases h : l.sum = 0
@@ -93,9 +97,9 @@ theorem coeff_list_prod_of_natDegree_le (l : List S[X]) (n : ℕ) (hl : ∀ p �
     simp only [List.prod_cons, List.map, List.length]
     rw [add_mul, one_mul, add_comm, ← IH hl', mul_comm tl.length]
     have h : natDegree tl.prod ≤ n * tl.length := by
-      refine' (natDegree_list_prod_le _).trans _
+      refine (natDegree_list_prod_le _).trans ?_
       rw [← tl.length_map natDegree, mul_comm]
-      refine' List.sum_le_card_nsmul _ _ _
+      refine List.sum_le_card_nsmul _ _ ?_
       simpa using hl'
     have hdn : natDegree hd ≤ n := hl _ (List.mem_cons_self _ _)
     rcases hdn.eq_or_lt with (rfl | hdn')
@@ -147,7 +151,7 @@ theorem leadingCoeff_multiset_prod' (h : (t.map leadingCoeff).prod ≠ 0) :
     simp only [ne_eq]
     apply right_ne_zero_of_mul h
   · rw [ih]
-    exact h
+    · exact h
     simp only [ne_eq, not_false_eq_true]
     apply right_ne_zero_of_mul h
 #align polynomial.leading_coeff_multiset_prod' Polynomial.leadingCoeff_multiset_prod'
@@ -172,7 +176,7 @@ where this condition is automatically satisfied.
 theorem natDegree_multiset_prod' (h : (t.map fun f => leadingCoeff f).prod ≠ 0) :
     t.prod.natDegree = (t.map fun f => natDegree f).sum := by
   revert h
-  refine' Multiset.induction_on t _ fun a t ih ht => _; · simp
+  refine Multiset.induction_on t ?_ fun a t ih ht => ?_; · simp
   rw [Multiset.map_cons, Multiset.prod_cons] at ht ⊢
   rw [Multiset.sum_cons, Polynomial.natDegree_mul', ih]
   · apply right_ne_zero_of_mul ht
@@ -228,7 +232,7 @@ theorem coeff_prod_of_natDegree_le (f : ι → R[X]) (n : ℕ) (h : ∀ p ∈ s,
 #align polynomial.coeff_prod_of_nat_degree_le Polynomial.coeff_prod_of_natDegree_le
 
 theorem coeff_zero_multiset_prod : t.prod.coeff 0 = (t.map fun f => coeff f 0).prod := by
-  refine' Multiset.induction_on t _ fun a t ht => _; · simp
+  refine Multiset.induction_on t ?_ fun a t ht => ?_; · simp
   rw [Multiset.prod_cons, Multiset.map_cons, Multiset.prod_cons, Polynomial.mul_coeff_zero, ht]
 #align polynomial.coeff_zero_multiset_prod Polynomial.coeff_zero_multiset_prod
 
@@ -266,16 +270,16 @@ theorem multiset_prod_X_sub_C_coeff_card_pred (t : Multiset R) (ht : 0 < Multise
     (t.map fun x => X - C x).prod.coeff ((Multiset.card t) - 1) = -t.sum := by
   nontriviality R
   convert multiset_prod_X_sub_C_nextCoeff (by assumption)
-  rw [nextCoeff]; split_ifs with h
-  · rw [natDegree_multiset_prod_of_monic] at h
+  rw [nextCoeff, if_neg]
+  swap
+  · rw [natDegree_multiset_prod_of_monic]
     swap
     · simp only [Multiset.mem_map]
       rintro _ ⟨_, _, rfl⟩
       apply monic_X_sub_C
-    simp_rw [Multiset.sum_eq_zero_iff, Multiset.mem_map] at h
-    contrapose! h
+    simp_rw [Multiset.sum_eq_zero_iff, Multiset.mem_map]
     obtain ⟨x, hx⟩ := card_pos_iff_exists_mem.mp ht
-    exact ⟨_, ⟨_, ⟨x, hx, rfl⟩, natDegree_X_sub_C _⟩, one_ne_zero⟩
+    exact fun h => one_ne_zero <| h 1 ⟨_, ⟨x, hx, rfl⟩, natDegree_X_sub_C _⟩
   congr; rw [natDegree_multiset_prod_of_monic] <;> · simp [natDegree_X_sub_C, monic_X_sub_C]
 set_option linter.uppercaseLean3 false in
 #align polynomial.multiset_prod_X_sub_C_coeff_card_pred Polynomial.multiset_prod_X_sub_C_coeff_card_pred
@@ -326,7 +330,7 @@ theorem natDegree_multiset_prod (h : (0 : R[X]) ∉ t) :
     natDegree t.prod = (t.map natDegree).sum := by
   nontriviality R
   rw [natDegree_multiset_prod']
-  simp_rw [Ne.def, Multiset.prod_eq_zero_iff, Multiset.mem_map, leadingCoeff_eq_zero]
+  simp_rw [Ne, Multiset.prod_eq_zero_iff, Multiset.mem_map, leadingCoeff_eq_zero]
   rintro ⟨_, h, rfl⟩
   contradiction
 #align polynomial.nat_degree_multiset_prod Polynomial.natDegree_multiset_prod

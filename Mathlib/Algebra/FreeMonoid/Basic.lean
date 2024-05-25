@@ -3,8 +3,9 @@ Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yury Kudryashov
 -/
-import Mathlib.Data.List.BigOperators.Basic
-import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.Algebra.BigOperators.Group.List
+import Mathlib.Algebra.Group.Action.Defs
+import Mathlib.Algebra.Group.Units
 
 #align_import algebra.free_monoid.basic from "leanprover-community/mathlib"@"657df4339ae6ceada048c8a2980fb10e393143ec"
 
@@ -30,10 +31,6 @@ def FreeMonoid (α) := List α
 #align free_add_monoid FreeAddMonoid
 
 namespace FreeMonoid
-
--- Porting note: TODO. Check this is still needed
-@[to_additive]
-instance [DecidableEq α] : DecidableEq (FreeMonoid α) := instDecidableEqList
 
 /-- The identity equivalence between `FreeMonoid α` and `List α`. -/
 @[to_additive "The identity equivalence between `FreeAddMonoid α` and `List α`."]
@@ -78,15 +75,14 @@ theorem ofList_comp_toList : @ofList α ∘ toList = id := rfl
 #align free_add_monoid.of_list_comp_to_list FreeAddMonoid.ofList_comp_toList
 
 @[to_additive]
-instance : CancelMonoid (FreeMonoid α)
-    where
+instance : CancelMonoid (FreeMonoid α) where
   one := ofList []
   mul x y := ofList (toList x ++ toList y)
   mul_one := List.append_nil
   one_mul := List.nil_append
   mul_assoc := List.append_assoc
-  mul_left_cancel _ _ _ := List.append_left_cancel
-  mul_right_cancel _ _ _ := List.append_right_cancel
+  mul_left_cancel _ _ _ := List.append_cancel_left
+  mul_right_cancel _ _ _ := List.append_cancel_right
 
 @[to_additive]
 instance : Inhabited (FreeMonoid α) := ⟨1⟩
@@ -235,7 +231,7 @@ def lift : (α → M) ≃ (FreeMonoid α →* M) where
 #align free_monoid.lift FreeMonoid.lift
 #align free_add_monoid.lift FreeAddMonoid.lift
 
--- porting note: new
+-- Porting note (#10756): new theorem
 @[to_additive (attr := simp)]
 theorem lift_ofList (f : α → M) (l : List α) : lift f (ofList l) = (l.map f).prod :=
   prodAux_eq _
@@ -275,7 +271,7 @@ theorem comp_lift (g : M →* N) (f : α → M) : g.comp (lift f) = lift (g ∘ 
 
 @[to_additive]
 theorem hom_map_lift (g : M →* N) (f : α → M) (x : FreeMonoid α) : g (lift f x) = lift (g ∘ f) x :=
-  FunLike.ext_iff.1 (comp_lift g f) x
+  DFunLike.ext_iff.1 (comp_lift g f) x
 #align free_monoid.hom_map_lift FreeMonoid.hom_map_lift
 #align free_add_monoid.hom_map_lift FreeAddMonoid.hom_map_lift
 
@@ -313,8 +309,7 @@ theorem of_smul (f : α → β → β) (x : α) (y : β) :
 each `of x` to `of (f x)`. -/
 @[to_additive "The unique additive monoid homomorphism `FreeAddMonoid α →+ FreeAddMonoid β`
 that sends each `of x` to `of (f x)`."]
-def map (f : α → β) : FreeMonoid α →* FreeMonoid β
-    where
+def map (f : α → β) : FreeMonoid α →* FreeMonoid β where
   toFun l := ofList <| l.toList.map f
   map_one' := rfl
   map_mul' _ _ := List.map_append _ _ _
@@ -355,7 +350,7 @@ theorem map_id : map (@id α) = MonoidHom.id (FreeMonoid α) := hom_eq fun _ ↦
 @[to_additive]
 instance uniqueUnits : Unique (FreeMonoid α)ˣ where
   uniq u := Units.ext <| toList.injective <|
-    have : toList u.val ++ toList u.inv = [] := FunLike.congr_arg toList u.val_inv
+    have : toList u.val ++ toList u.inv = [] := DFunLike.congr_arg toList u.val_inv
     (List.append_eq_nil.mp this).1
 
 end FreeMonoid

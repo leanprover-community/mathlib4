@@ -51,7 +51,7 @@ theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : S
     have h₃ : 1 ≤ (j : ℕ) := by
       by_contra h
       exact h₂ (by simpa only [Fin.ext_iff, not_le, Nat.lt_one_iff] using h)
-    exact (HigherFacesVanish.of_P (m + 1) m).comp_δ_eq_zero j h₂ (by linarith)
+    exact (HigherFacesVanish.of_P (m + 1) m).comp_δ_eq_zero j h₂ (by omega)
   · simp only [Nat.succ_eq_add_one, ← add_assoc] at hk
     clear h₂ hi
     subst hk
@@ -59,19 +59,19 @@ theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : S
       eq_comp_δ_of_not_surjective i fun h => by
         have h' := len_le_of_epi (SimplexCategory.epi_iff_surjective.2 h)
         dsimp at h'
-        linarith
+        omega
     obtain ⟨j₂, i, rfl⟩ :=
       eq_comp_δ_of_not_surjective i fun h => by
         have h' := len_le_of_epi (SimplexCategory.epi_iff_surjective.2 h)
         dsimp at h'
-        linarith
+        omega
     by_cases hj₁ : j₁ = 0
     · subst hj₁
       rw [assoc, ← SimplexCategory.δ_comp_δ'' (Fin.zero_le _)]
       simp only [op_comp, X.map_comp, assoc, PInfty_f]
       erw [(HigherFacesVanish.of_P _ _).comp_δ_eq_zero_assoc _ j₂.succ_ne_zero, zero_comp]
       simp only [Nat.succ_eq_add_one, Nat.add, Fin.succ]
-      linarith
+      omega
     · simp only [op_comp, X.map_comp, assoc, PInfty_f]
       erw [(HigherFacesVanish.of_P _ _).comp_δ_eq_zero_assoc _ hj₁, zero_comp]
       by_contra
@@ -165,12 +165,12 @@ def natTrans : (N₁ : SimplicialObject C ⥤ _) ⋙ Γ₂ ⟶ toKaroubi _ where
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.Γ₂N₁.nat_trans AlgebraicTopology.DoldKan.Γ₂N₁.natTrans
 
--- Porting note: added to speed up elaboration
+-- Porting note (#10694): added to speed up elaboration
 attribute [irreducible] natTrans
 
 end Γ₂N₁
 
--- porting note: removed @[simps] attribute because it was creating timeouts
+-- Porting note: removed @[simps] attribute because it was creating timeouts
 /-- The compatibility isomorphism relating `N₂ ⋙ Γ₂` and `N₁ ⋙ Γ₂`. -/
 def Γ₂N₂ToKaroubiIso : toKaroubi (SimplicialObject C) ⋙ N₂ ⋙ Γ₂ ≅ N₁ ⋙ Γ₂ :=
   (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight toKaroubiCompN₂IsoN₁ Γ₂
@@ -187,7 +187,7 @@ lemma Γ₂N₂ToKaroubiIso_inv_app (X : SimplicialObject C) :
     Γ₂N₂ToKaroubiIso.inv.app X = Γ₂.map (toKaroubiCompN₂IsoN₁.inv.app X) := by
   simp [Γ₂N₂ToKaroubiIso]
 
--- Porting note: added to speed up elaboration
+-- Porting note (#10694): added to speed up elaboration
 attribute [irreducible] Γ₂N₂ToKaroubiIso
 
 namespace Γ₂N₂
@@ -208,7 +208,7 @@ theorem natTrans_app_f_app (P : Karoubi (SimplicialObject C)) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.Γ₂N₂.nat_trans_app_f_app AlgebraicTopology.DoldKan.Γ₂N₂.natTrans_app_f_app
 
--- Porting note: added to speed up elaboration
+-- Porting note (#10694): added to speed up elaboration
 attribute [irreducible] natTrans
 
 end Γ₂N₂
@@ -250,7 +250,7 @@ theorem identity_N₂_objectwise (P : Karoubi (SimplicialObject C)) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.identity_N₂_objectwise AlgebraicTopology.DoldKan.identity_N₂_objectwise
 
--- porting note: `Functor.associator` was added to the statement in order to prevent a timeout
+-- Porting note: `Functor.associator` was added to the statement in order to prevent a timeout
 theorem identity_N₂ :
     (𝟙 (N₂ : Karoubi (SimplicialObject C) ⥤ _) ◫ N₂Γ₂.inv) ≫
     (Functor.associator _ _ _).inv ≫ Γ₂N₂.natTrans ◫ 𝟙 (@N₂ C _ _) = 𝟙 N₂ := by

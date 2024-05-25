@@ -19,6 +19,8 @@ This is a field when the scheme is integral.
   field. This map is injective.
 -/
 
+-- Explicit universe annotations were used in this file to improve perfomance #12737
+
 set_option linter.uppercaseLean3 false
 
 universe u v
@@ -48,17 +50,17 @@ noncomputable instance [IrreducibleSpace X.carrier] (U : Opens X.carrier) [Nonem
   (X.germToFunctionField U).toAlgebra
 
 noncomputable instance [IsIntegral X] : Field X.functionField := by
-  apply fieldOfIsUnitOrEqZero
-  intro a
+  refine .ofIsUnitOrEqZero fun a ↦ ?_
   obtain ⟨U, m, s, rfl⟩ := TopCat.Presheaf.germ_exist _ _ a
   rw [or_iff_not_imp_right, ← (X.presheaf.germ ⟨_, m⟩).map_zero]
   intro ha
   replace ha := ne_of_apply_ne _ ha
   have hs : genericPoint X.carrier ∈ RingedSpace.basicOpen _ s := by
     rw [← SetLike.mem_coe, (genericPoint_spec X.carrier).mem_open_set_iff, Set.top_eq_univ,
-      Set.univ_inter, Set.nonempty_iff_ne_empty, Ne.def, ← Opens.coe_bot, ← SetLike.ext'_iff]
-    erw [basicOpen_eq_bot_iff]
-    exacts [ha, (RingedSpace.basicOpen _ _).isOpen]
+      Set.univ_inter, Set.nonempty_iff_ne_empty, Ne, ← Opens.coe_bot, ← SetLike.ext'_iff]
+    · erw [basicOpen_eq_bot_iff]
+      exact ha
+    · exact (RingedSpace.basicOpen _ _).isOpen
   have := (X.presheaf.germ ⟨_, hs⟩).isUnit_map (RingedSpace.isUnit_res_basicOpen _ s)
   rwa [TopCat.Presheaf.germ_res_apply] at this
 
@@ -87,10 +89,10 @@ theorem genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsO
     (show Continuous f.1.base from ContinuousMap.continuous_toFun _)
   symm
   rw [eq_top_iff, Set.top_eq_univ, Set.top_eq_univ]
-  convert subset_closure_inter_of_isPreirreducible_of_isOpen _ H.base_open.open_range _
-  rw [Set.univ_inter, Set.image_univ]
-  apply PreirreducibleSpace.isPreirreducible_univ (X := Y.carrier)
-  exact ⟨_, trivial, Set.mem_range_self hX.2.some⟩
+  convert subset_closure_inter_of_isPreirreducible_of_isOpen _ H.base_open.isOpen_range _
+  · rw [Set.univ_inter, Set.image_univ]
+  · apply PreirreducibleSpace.isPreirreducible_univ (X := Y.carrier)
+  · exact ⟨_, trivial, Set.mem_range_self hX.2.some⟩
 #align algebraic_geometry.generic_point_eq_of_is_open_immersion AlgebraicGeometry.genericPoint_eq_of_isOpenImmersion
 
 noncomputable instance stalkFunctionFieldAlgebra [IrreducibleSpace X.carrier] (x : X.carrier) :
@@ -107,7 +109,7 @@ instance functionField_isScalarTower [IrreducibleSpace X.carrier] (U : Opens X.c
   rw [X.presheaf.germ_stalkSpecializes]
 #align algebraic_geometry.function_field_is_scalar_tower AlgebraicGeometry.functionField_isScalarTower
 
-noncomputable instance (R : CommRingCat) [IsDomain R] :
+noncomputable instance (R : CommRingCat.{u}) [IsDomain R] :
     Algebra R (Scheme.Spec.obj <| op R).functionField :=
   RingHom.toAlgebra <| by change CommRingCat.of R ⟶ _; apply StructureSheaf.toStalk
 
@@ -123,7 +125,7 @@ theorem genericPoint_eq_bot_of_affine (R : CommRingCat) [IsDomain R] :
 
 instance functionField_isFractionRing_of_affine (R : CommRingCat.{u}) [IsDomain R] :
     IsFractionRing R (Scheme.Spec.obj <| op R).functionField := by
-  convert StructureSheaf.IsLocalization.to_stalk R (genericPoint _)
+  convert StructureSheaf.IsLocalization.to_stalk R (genericPoint (Scheme.Spec.obj (op R)))
   delta IsFractionRing IsLocalization.AtPrime
   -- Porting note: `congr` does not work for `Iff`
   apply Eq.to_iff
@@ -176,7 +178,7 @@ instance [IsIntegral X] (x : X.carrier) :
     IsFractionRing (X.presheaf.stalk x) X.functionField :=
   let U : Opens X.carrier :=
     ⟨Set.range (X.affineCover.map x).1.base,
-      PresheafedSpace.IsOpenImmersion.base_open.open_range⟩
+      PresheafedSpace.IsOpenImmersion.base_open.isOpen_range⟩
   have hU : IsAffineOpen U := rangeIsAffineOpenOfOpenImmersion (X.affineCover.map x)
   let x : U := ⟨x, X.affineCover.Covers x⟩
   have : Nonempty U := ⟨x⟩

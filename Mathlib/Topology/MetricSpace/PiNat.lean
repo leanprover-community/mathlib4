@@ -52,7 +52,8 @@ in general), and `ι` is countable.
 
 noncomputable section
 
-open Classical Topology Filter
+open scoped Classical
+open Topology Filter
 
 open TopologicalSpace Set Metric Filter Function
 
@@ -179,7 +180,7 @@ theorem iUnion_cylinder_update (x : ∀ n, E n) (n : ℕ) :
   · rintro ⟨k, hk⟩ i hi
     simpa [hi.ne] using hk i (Nat.lt_succ_of_lt hi)
   · intro H
-    refine' ⟨y n, fun i hi => _⟩
+    refine ⟨y n, fun i hi => ?_⟩
     rcases Nat.lt_succ_iff_lt_or_eq.1 hi with (h'i | rfl)
     · simp [H i h'i, h'i.ne]
     · simp
@@ -198,7 +199,7 @@ open List
 /-- In the case where `E` has constant value `α`,
 the cylinder `cylinder x n` can be identified with the element of `List α`
 consisting of the first `n` entries of `x`. See `cylinder_eq_res`.
-We call this list `res x n`, the restriction of `x` to `n`.-/
+We call this list `res x n`, the restriction of `x` to `n`. -/
 def res (x : ℕ → α) : ℕ → List α
   | 0 => nil
   | Nat.succ n => x n :: res x n
@@ -218,7 +219,7 @@ theorem res_succ (x : ℕ → α) (n : ℕ) : res x n.succ = x n :: res x n :=
 theorem res_length (x : ℕ → α) (n : ℕ) : (res x n).length = n := by induction n <;> simp [*]
 #align pi_nat.res_length PiNat.res_length
 
-/-- The restrictions of `x` and `y` to `n` are equal if and only if `x m = y m` for all `m < n`.-/
+/-- The restrictions of `x` and `y` to `n` are equal if and only if `x m = y m` for all `m < n`. -/
 theorem res_eq_res {x y : ℕ → α} {n : ℕ} :
     res x n = res y n ↔ ∀ ⦃m⦄, m < n → x m = y m := by
   constructor <;> intro h <;> induction' n with n ih; · simp
@@ -231,7 +232,7 @@ theorem res_eq_res {x y : ℕ → α} {n : ℕ} :
     exact h.1
   · simp
   simp only [res_succ, cons.injEq]
-  refine' ⟨h (Nat.lt_succ_self _), ih fun m hm => _⟩
+  refine ⟨h (Nat.lt_succ_self _), ih fun m hm => ?_⟩
   exact h (hm.trans (Nat.lt_succ_self _))
 #align pi_nat.res_eq_res PiNat.res_eq_res
 
@@ -242,7 +243,7 @@ theorem res_injective : Injective (@res α) := by
   rw [h]
 #align pi_nat.res_injective PiNat.res_injective
 
-/-- `cylinder x n` is equal to the set of sequences `y` with the same restriction to `n` as `x`.-/
+/-- `cylinder x n` is equal to the set of sequences `y` with the same restriction to `n` as `x`. -/
 theorem cylinder_eq_res (x : ℕ → α) (n : ℕ) :
     cylinder x n = { y | res y n = res x n } := by
   ext y
@@ -294,7 +295,7 @@ theorem dist_triangle_nonarch (x y z : ∀ n, E n) : dist x z ≤ max (dist x y)
   · simp
   rcases eq_or_ne y z with (rfl | hyz)
   · simp
-  simp only [dist_eq_of_ne, hxz, hxy, hyz, inv_le_inv, one_div, inv_pow, zero_lt_two, Ne.def,
+  simp only [dist_eq_of_ne, hxz, hxy, hyz, inv_le_inv, one_div, inv_pow, zero_lt_two, Ne,
     not_false_iff, le_max_iff, pow_le_pow_iff_right, one_lt_two, pow_pos,
     min_le_iff.1 (min_firstDiff_le x y z hxz)]
 #align pi_nat.dist_triangle_nonarch PiNat.dist_triangle_nonarch
@@ -374,7 +375,7 @@ theorem isTopologicalBasis_cylinders :
       (isTopologicalBasis_pi fun n : ℕ => isTopologicalBasis_opens).exists_subset_of_mem_open hx
         u_open
     rcases Finset.bddAbove F with ⟨n, hn⟩
-    refine' ⟨cylinder x (n + 1), ⟨x, n + 1, rfl⟩, self_mem_cylinder _ _, Subset.trans _ Uu⟩
+    refine ⟨cylinder x (n + 1), ⟨x, n + 1, rfl⟩, self_mem_cylinder _ _, Subset.trans ?_ Uu⟩
     intro y hy
     suffices ∀ i : ℕ, i ∈ F → y i ∈ U i by simpa
     intro i hi
@@ -400,7 +401,7 @@ theorem isOpen_iff_dist (s : Set (∀ n, E n)) :
     refine (isTopologicalBasis_cylinders E).isOpen_iff.2 fun x hx => ?_
     rcases h x hx with ⟨ε, εpos, hε⟩
     obtain ⟨n, hn⟩ : ∃ n : ℕ, (1 / 2 : ℝ) ^ n < ε := exists_pow_lt_of_lt_one εpos one_half_lt_one
-    refine' ⟨cylinder x n, ⟨x, n, rfl⟩, self_mem_cylinder x n, fun y hy => hε y _⟩
+    refine ⟨cylinder x n, ⟨x, n, rfl⟩, self_mem_cylinder x n, fun y hy => hε y ?_⟩
     rw [PiNat.dist_comm]
     exact (mem_cylinder_iff_dist_le.1 hy).trans_lt hn
 #align pi_nat.is_open_iff_dist PiNat.isOpen_iff_dist
@@ -465,10 +466,10 @@ def metricSpaceNatNat : MetricSpace (ℕ → ℕ) :=
 attribute [local instance] PiNat.metricSpace
 
 protected theorem completeSpace : CompleteSpace (∀ n, E n) := by
-  refine' Metric.complete_of_convergent_controlled_sequences (fun n => (1 / 2) ^ n) (by simp) _
+  refine Metric.complete_of_convergent_controlled_sequences (fun n => (1 / 2) ^ n) (by simp) ?_
   intro u hu
-  refine' ⟨fun n => u n n, tendsto_pi_nhds.2 fun i => _⟩
-  refine' tendsto_const_nhds.congr' _
+  refine ⟨fun n => u n n, tendsto_pi_nhds.2 fun i => ?_⟩
+  refine tendsto_const_nhds.congr' ?_
   filter_upwards [Filter.Ici_mem_atTop i] with n hn
   exact apply_eq_of_dist_lt (hu i i n le_rfl hn) le_rfl
 #align pi_nat.complete_space PiNat.completeSpace
@@ -489,7 +490,7 @@ theorem exists_disjoint_cylinder {s : Set (∀ n, E n)} (hs : IsClosed s) {x : �
   · exact ⟨0, by simp⟩
   have A : 0 < infDist x s := (hs.not_mem_iff_infDist_pos hne).1 hx
   obtain ⟨n, hn⟩ : ∃ n, (1 / 2 : ℝ) ^ n < infDist x s := exists_pow_lt_of_lt_one A one_half_lt_one
-  refine' ⟨n, disjoint_left.2 fun y ys hy => ?_⟩
+  refine ⟨n, disjoint_left.2 fun y ys hy => ?_⟩
   apply lt_irrefl (infDist x s)
   calc
     infDist x s ≤ dist x y := infDist_le_dist_of_mem ys
@@ -513,7 +514,7 @@ theorem firstDiff_lt_shortestPrefixDiff {s : Set (∀ n, E n)} (hs : IsClosed s)
   have B := Nat.find_spec A
   contrapose! B
   rw [not_disjoint_iff_nonempty_inter]
-  refine' ⟨y, hy, _⟩
+  refine ⟨y, hy, ?_⟩
   rw [mem_cylinder_comm]
   exact cylinder_anti y B (mem_cylinder_firstDiff x y)
 #align pi_nat.first_diff_lt_shortest_prefix_diff PiNat.firstDiff_lt_shortestPrefixDiff
@@ -548,7 +549,7 @@ theorem inter_cylinder_longestPrefix_nonempty {s : Set (∀ n, E n)} (hs : IsClo
   rw [longestPrefix, shortestPrefixDiff, dif_pos A] at B ⊢
   obtain ⟨y, ys, hy⟩ : ∃ y : ∀ n : ℕ, E n, y ∈ s ∧ x ∈ cylinder y (Nat.find A - 1) := by
     simpa only [not_disjoint_iff, mem_cylinder_comm] using Nat.find_min A B
-  refine' ⟨y, ys, _⟩
+  refine ⟨y, ys, ?_⟩
   rw [mem_cylinder_iff_eq] at hy ⊢
   rw [hy]
 #align pi_nat.inter_cylinder_longest_prefix_nonempty PiNat.inter_cylinder_longestPrefix_nonempty
@@ -608,14 +609,14 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
     Otherwise, `f x` remains in the same `n`-cylinder as `x`. Similarly for `y`. Finally, `f x` and
     `f y` are again in the same `n`-cylinder, as desired. -/
   set f := fun x => if x ∈ s then x else (inter_cylinder_longestPrefix_nonempty hs hne x).some
-  have fs : ∀ x ∈ s, f x = x := fun x xs => by simp [xs]
-  refine' ⟨f, fs, _, _⟩
+  have fs : ∀ x ∈ s, f x = x := fun x xs => by simp [f, xs]
+  refine ⟨f, fs, ?_, ?_⟩
   -- check that the range of `f` is `s`.
   · apply Subset.antisymm
     · rintro x ⟨y, rfl⟩
       by_cases hy : y ∈ s
       · rwa [fs y hy]
-      simpa [if_neg hy] using (inter_cylinder_longestPrefix_nonempty hs hne y).choose_spec.1
+      simpa [f, if_neg hy] using (inter_cylinder_longestPrefix_nonempty hs hne y).choose_spec.1
     · intro x hx
       rw [← fs x hx]
       exact mem_range_self _
@@ -640,7 +641,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
       -- case where `y ∉ s`
       have A : (s ∩ cylinder y (longestPrefix y s)).Nonempty :=
         inter_cylinder_longestPrefix_nonempty hs hne y
-      have fy : f y = A.some := by simp_rw [if_neg ys]
+      have fy : f y = A.some := by simp_rw [f, if_neg ys]
       have I : cylinder A.some (firstDiff x y) = cylinder y (firstDiff x y) := by
         rw [← mem_cylinder_iff_eq, firstDiff_comm]
         apply cylinder_anti y _ A.some_mem.2
@@ -652,7 +653,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
       -- case where `y ∈ s` (similar to the above)
       · have A : (s ∩ cylinder x (longestPrefix x s)).Nonempty :=
           inter_cylinder_longestPrefix_nonempty hs hne x
-        have fx : f x = A.some := by simp_rw [if_neg xs]
+        have fx : f x = A.some := by simp_rw [f, if_neg xs]
         have I : cylinder A.some (firstDiff x y) = cylinder x (firstDiff x y) := by
           rw [← mem_cylinder_iff_eq]
           apply cylinder_anti x _ A.some_mem.2
@@ -662,10 +663,10 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
       -- case where `y ∉ s`
       · have Ax : (s ∩ cylinder x (longestPrefix x s)).Nonempty :=
           inter_cylinder_longestPrefix_nonempty hs hne x
-        have fx : f x = Ax.some := by simp_rw [if_neg xs]
+        have fx : f x = Ax.some := by simp_rw [f, if_neg xs]
         have Ay : (s ∩ cylinder y (longestPrefix y s)).Nonempty :=
           inter_cylinder_longestPrefix_nonempty hs hne y
-        have fy : f y = Ay.some := by simp_rw [if_neg ys]
+        have fy : f y = Ay.some := by simp_rw [f, if_neg ys]
         -- case where the common prefix to `x` and `s`, or `y` and `s`, is shorter than the
         -- common part to `x` and `y` -- then `f x = f y`.
         by_cases H : longestPrefix x s < firstDiff x y ∨ longestPrefix y s < firstDiff x y
@@ -746,7 +747,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
     have diff_pos : 0 < firstDiff x.1 y.1 := by
       by_contra! h
       apply apply_firstDiff_ne hne'
-      rw [le_zero_iff.1 h]
+      rw [Nat.le_zero.1 h]
       apply apply_eq_of_dist_lt _ le_rfl
       rw [pow_zero]
       exact hxy
@@ -757,7 +758,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
       dist (g x) (g y) ≤ dist (g x) (u (x.1 n)) + dist (g y) (u (x.1 n)) :=
         dist_triangle_right _ _ _
       _ = dist (g x) (u (x.1 n)) + dist (g y) (u (y.1 n)) := by rw [← B]
-      _ ≤ (1 / 2) ^ n + (1 / 2) ^ n := (add_le_add (A x n) (A y n))
+      _ ≤ (1 / 2) ^ n + (1 / 2) ^ n := add_le_add (A x n) (A y n)
       _ = 4 * (1 / 2) ^ (n + 1) := by ring
   have g_surj : Surjective g := fun y ↦ by
     have : ∀ n : ℕ, ∃ j, y ∈ closedBall (u j) ((1 / 2) ^ n) := fun n ↦ by
@@ -765,22 +766,23 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
       exact ⟨j, hj.le⟩
     choose x hx using this
     have I : (⋂ n : ℕ, closedBall (u (x n)) ((1 / 2) ^ n)).Nonempty := ⟨y, mem_iInter.2 hx⟩
-    refine' ⟨⟨x, I⟩, _⟩
-    refine' dist_le_zero.1 _
+    refine ⟨⟨x, I⟩, ?_⟩
+    refine dist_le_zero.1 ?_
     have J : ∀ n : ℕ, dist (g ⟨x, I⟩) y ≤ (1 / 2) ^ n + (1 / 2) ^ n := fun n =>
       calc
         dist (g ⟨x, I⟩) y ≤ dist (g ⟨x, I⟩) (u (x n)) + dist y (u (x n)) :=
           dist_triangle_right _ _ _
         _ ≤ (1 / 2) ^ n + (1 / 2) ^ n := add_le_add (A ⟨x, I⟩ n) (hx n)
     have L : Tendsto (fun n : ℕ => (1 / 2 : ℝ) ^ n + (1 / 2) ^ n) atTop (𝓝 (0 + 0)) :=
-      (tendsto_pow_atTop_nhds_0_of_lt_1 I0.le I1).add (tendsto_pow_atTop_nhds_0_of_lt_1 I0.le I1)
+      (tendsto_pow_atTop_nhds_zero_of_lt_one I0.le I1).add
+        (tendsto_pow_atTop_nhds_zero_of_lt_one I0.le I1)
     rw [add_zero] at L
     exact ge_of_tendsto' L J
   have s_closed : IsClosed s := by
     refine isClosed_iff_clusterPt.mpr fun x hx ↦ ?_
     have L : Tendsto (fun n : ℕ => diam (closedBall (u (x n)) ((1 / 2) ^ n))) atTop (𝓝 0) := by
       have : Tendsto (fun n : ℕ => (2 : ℝ) * (1 / 2) ^ n) atTop (𝓝 (2 * 0)) :=
-        (tendsto_pow_atTop_nhds_0_of_lt_1 I0.le I1).const_mul _
+        (tendsto_pow_atTop_nhds_zero_of_lt_one I0.le I1).const_mul _
       rw [mul_zero] at this
       exact
         squeeze_zero (fun n => diam_nonneg) (fun n => diam_closedBall (pow_nonneg I0.le _)) this

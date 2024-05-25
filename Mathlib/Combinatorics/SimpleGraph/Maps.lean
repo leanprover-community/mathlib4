@@ -3,7 +3,8 @@ Copyright (c) 2021 Hunter Monroe. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hunter Monroe, Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.Combinatorics.SimpleGraph.Dart
+import Mathlib.Data.FunLike.Fintype
 
 /-!
 # Maps between graphs
@@ -23,6 +24,15 @@ injective, surjective and bijective, and have corresponding notation.
 * `SimpleGraph.Hom`, `G →g H`: a graph homomorphism from `G` to `H`.
 * `SimpleGraph.Embedding`, `G ↪g H`: a graph embedding of `G` in `H`.
 * `SimpleGraph.Iso`, `G ≃g H`: a graph isomorphism between `G` and `H`.
+
+Note that a graph embedding is a stronger notion than an injective graph homomorphism,
+since its image is an induced subgraph.
+
+## Implementation notes
+
+Morphisms of graphs are abbreviations for `RelHom`, `RelEmbedding` and `RelIso`.
+To make use of pre-existing simp lemmas, definitions involving morphisms are
+abbreviations as well.
 -/
 
 
@@ -41,10 +51,10 @@ the adjacency relation.
 This is injective (see `SimpleGraph.map_injective`). -/
 protected def map (f : V ↪ W) (G : SimpleGraph V) : SimpleGraph W where
   Adj := Relation.Map G.Adj f f
-  symm a b := by -- porting note: `obviously` used to handle this
+  symm a b := by -- Porting note: `obviously` used to handle this
     rintro ⟨v, w, h, rfl, rfl⟩
     use w, v, h.symm, rfl
-  loopless a := by -- porting note: `obviously` used to handle this
+  loopless a := by -- Porting note: `obviously` used to handle this
     rintro ⟨v, w, h, rfl, h'⟩
     exact h.ne (f.injective h'.symm)
 #align simple_graph.map SimpleGraph.map
@@ -80,7 +90,7 @@ theorem map_monotone (f : V ↪ W) : Monotone (SimpleGraph.map f) := by
 adjacency relation.
 This is one of the ways of creating induced graphs. See `SimpleGraph.induce` for a wrapper.
 
-This is surjective when `f` is injective (see `SimpleGraph.comap_surjective`).-/
+This is surjective when `f` is injective (see `SimpleGraph.comap_surjective`). -/
 protected def comap (f : V → W) (G : SimpleGraph W) : SimpleGraph V where
   Adj u v := G.Adj (f u) (f v)
   symm _ _ h := h.symm
@@ -186,8 +196,7 @@ adjacency relation. This gives a map between `SimpleGraph V` and `SimpleGraph s`
 There is also a notion of induced subgraphs (see `SimpleGraph.subgraph.induce`). -/
 /-- Restrict a graph to the vertices in the set `s`, deleting all edges incident to vertices
 outside the set. This is a wrapper around `SimpleGraph.comap`. -/
-@[reducible]
-def induce (s : Set V) (G : SimpleGraph V) : SimpleGraph s :=
+abbrev induce (s : Set V) (G : SimpleGraph V) : SimpleGraph s :=
   G.comap (Function.Embedding.subtype _)
 #align simple_graph.induce SimpleGraph.induce
 
@@ -197,8 +206,7 @@ def induce (s : Set V) (G : SimpleGraph V) : SimpleGraph s :=
 /-- Given a graph on a set of vertices, we can make it be a `SimpleGraph V` by
 adding in the remaining vertices without adding in any additional edges.
 This is a wrapper around `SimpleGraph.map`. -/
-@[reducible]
-def spanningCoe {s : Set V} (G : SimpleGraph s) : SimpleGraph V :=
+abbrev spanningCoe {s : Set V} (G : SimpleGraph s) : SimpleGraph V :=
   G.map (Function.Embedding.subtype _)
 #align simple_graph.spanning_coe SimpleGraph.spanningCoe
 
@@ -236,9 +244,9 @@ abbrev Iso :=
   RelIso G.Adj G'.Adj
 #align simple_graph.iso SimpleGraph.Iso
 
-infixl:50 " →g " => Hom
-infixl:50 " ↪g " => Embedding
-infixl:50 " ≃g " => Iso
+@[inherit_doc] infixl:50 " →g " => Hom
+@[inherit_doc] infixl:50 " ↪g " => Embedding
+@[inherit_doc] infixl:50 " ≃g " => Iso
 
 namespace Hom
 
@@ -252,7 +260,7 @@ protected abbrev id : G →g G :=
 @[simp, norm_cast] lemma coe_id : ⇑(Hom.id : G →g G) = id := rfl
 #align simple_graph.hom.coe_id SimpleGraph.Hom.coe_id
 
-instance [Subsingleton (V → W)] : Subsingleton (G →g H) := FunLike.coe_injective.subsingleton
+instance [Subsingleton (V → W)] : Subsingleton (G →g H) := DFunLike.coe_injective.subsingleton
 
 instance [IsEmpty V] : Unique (G →g H) where
   default := ⟨isEmptyElim, fun {a} ↦ isEmptyElim a⟩
@@ -264,7 +272,7 @@ instance instFintype [DecidableEq V] [Fintype V] [Fintype W] [DecidableRel G.Adj
     { toFun := fun f ↦ ⟨f.1, f.2⟩, invFun := fun f ↦ ⟨f.1, f.2⟩,
       left_inv := fun _ ↦ rfl, right_inv := fun _ ↦ rfl }
 
-instance [Finite V] [Finite W] : Finite (G →g H) := FunLike.finite _
+instance [Finite V] [Finite W] : Finite (G →g H) := DFunLike.finite _
 
 theorem map_adj {v w : V} (h : G.Adj v w) : G'.Adj (f v) (f w) :=
   f.map_rel' h
@@ -311,7 +319,7 @@ def mapSpanningSubgraphs {G G' : SimpleGraph V} (h : G ≤ G') : G →g G' where
 theorem mapEdgeSet.injective (hinj : Function.Injective f) : Function.Injective f.mapEdgeSet := by
   rintro ⟨e₁, h₁⟩ ⟨e₂, h₂⟩
   dsimp [Hom.mapEdgeSet]
-  repeat' rw [Subtype.mk_eq_mk]
+  repeat rw [Subtype.mk_eq_mk]
   apply Sym2.map.injective hinj
 #align simple_graph.hom.map_edge_set.injective SimpleGraph.Hom.mapEdgeSet.injective
 
@@ -343,11 +351,11 @@ theorem coe_comp (f' : G' →g G'') (f : G →g G') : ⇑(f'.comp f) = f' ∘ f 
 #align simple_graph.hom.coe_comp SimpleGraph.Hom.coe_comp
 
 /-- The graph homomorphism from a smaller graph to a bigger one. -/
-def ofLe (h : G₁ ≤ G₂) : G₁ →g G₂ := ⟨id, @h⟩
-#align simple_graph.hom.of_le SimpleGraph.Hom.ofLe
+def ofLE (h : G₁ ≤ G₂) : G₁ →g G₂ := ⟨id, @h⟩
+#align simple_graph.hom.of_le SimpleGraph.Hom.ofLE
 
-@[simp, norm_cast] lemma coe_ofLe (h : G₁ ≤ G₂) : ⇑(ofLe h) = id := rfl
-#align simple_graph.hom.coe_of_le SimpleGraph.Hom.coe_ofLe
+@[simp, norm_cast] lemma coe_ofLE (h : G₁ ≤ G₂) : ⇑(ofLE h) = id := rfl
+#align simple_graph.hom.coe_of_le SimpleGraph.Hom.coe_ofLE
 
 end Hom
 
@@ -389,8 +397,7 @@ def mapEdgeSet : G.edgeSet ↪ G'.edgeSet where
 
 /-- A graph embedding induces an embedding of neighbor sets. -/
 @[simps]
-def mapNeighborSet (v : V) : G.neighborSet v ↪ G'.neighborSet (f v)
-    where
+def mapNeighborSet (v : V) : G.neighborSet v ↪ G'.neighborSet (f v) where
   toFun w := ⟨f w, f.apply_mem_neighborSet_iff.mpr w.2⟩
   inj' := by
     rintro ⟨w₁, h₁⟩ ⟨w₂, h₂⟩ h
@@ -400,7 +407,7 @@ def mapNeighborSet (v : V) : G.neighborSet v ↪ G'.neighborSet (f v)
 
 /-- Given an injective function, there is an embedding from the comapped graph into the original
 graph. -/
--- porting note: @[simps] does not work here since `f` is not a constructor application.
+-- Porting note: @[simps] does not work here since `f` is not a constructor application.
 -- `@[simps toEmbedding]` could work, but Floris suggested writing `comap_apply` for now.
 protected def comap (f : V ↪ W) (G : SimpleGraph W) : G.comap f ↪g G :=
   { f with map_rel_iff' := by simp }
@@ -412,7 +419,7 @@ theorem comap_apply (f : V ↪ W) (G : SimpleGraph W) (v : V) :
 #align simple_graph.embedding.comap_apply SimpleGraph.Embedding.comap_apply
 
 /-- Given an injective function, there is an embedding from a graph into the mapped graph. -/
--- porting note: @[simps] does not work here since `f` is not a constructor application.
+-- Porting note: @[simps] does not work here since `f` is not a constructor application.
 -- `@[simps toEmbedding]` could work, but Floris suggested writing `map_apply` for now.
 protected def map (f : V ↪ W) (G : SimpleGraph V) : G ↪g G.map f :=
   { f with map_rel_iff' := by simp }
@@ -427,14 +434,12 @@ theorem map_apply (f : V ↪ W) (G : SimpleGraph V) (v : V) :
 
 Note that if `G.induce s = ⊤` (i.e., if `s` is a clique) then this gives the embedding of a
 complete graph. -/
-@[reducible]
-protected def induce (s : Set V) : G.induce s ↪g G :=
+protected abbrev induce (s : Set V) : G.induce s ↪g G :=
   SimpleGraph.Embedding.comap (Function.Embedding.subtype _) G
 #align simple_graph.embedding.induce SimpleGraph.Embedding.induce
 
 /-- Graphs on a set of vertices embed in their `spanningCoe`. -/
-@[reducible]
-protected def spanningCoe {s : Set V} (G : SimpleGraph s) : G ↪g G.spanningCoe :=
+protected abbrev spanningCoe {s : Set V} (G : SimpleGraph s) : G ↪g G.spanningCoe :=
   SimpleGraph.Embedding.map (Function.Embedding.subtype _) G
 #align simple_graph.embedding.spanning_coe SimpleGraph.Embedding.spanningCoe
 
@@ -443,6 +448,8 @@ protected def completeGraph {α β : Type*} (f : α ↪ β) :
     (⊤ : SimpleGraph α) ↪g (⊤ : SimpleGraph β) :=
   { f with map_rel_iff' := by simp }
 #align simple_graph.embedding.complete_graph SimpleGraph.Embedding.completeGraph
+
+@[simp] lemma coe_completeGraph {α β : Type*} (f : α ↪ β) : ⇑(Embedding.completeGraph f) = f := rfl
 
 variable {G'' : SimpleGraph X}
 
@@ -546,8 +553,7 @@ theorem apply_mem_neighborSet_iff {v w : V} : f w ∈ G'.neighborSet (f v) ↔ w
 
 /-- An isomorphism of graphs induces an equivalence of edge sets. -/
 @[simps]
-def mapEdgeSet : G.edgeSet ≃ G'.edgeSet
-    where
+def mapEdgeSet : G.edgeSet ≃ G'.edgeSet where
   toFun := Hom.mapEdgeSet f
   invFun := Hom.mapEdgeSet f.symm
   left_inv := by
@@ -568,8 +574,7 @@ def mapEdgeSet : G.edgeSet ≃ G'.edgeSet
 
 /-- A graph isomorphism induces an equivalence of neighbor sets. -/
 @[simps]
-def mapNeighborSet (v : V) : G.neighborSet v ≃ G'.neighborSet (f v)
-    where
+def mapNeighborSet (v : V) : G.neighborSet v ≃ G'.neighborSet (f v) where
   toFun w := ⟨f w, f.apply_mem_neighborSet_iff.mpr w.2⟩
   invFun w :=
     ⟨f.symm w, by
@@ -578,15 +583,14 @@ def mapNeighborSet (v : V) : G.neighborSet v ≃ G'.neighborSet (f v)
   right_inv w := by simp
 #align simple_graph.iso.map_neighbor_set SimpleGraph.Iso.mapNeighborSet
 
-theorem card_eq_of_iso [Fintype V] [Fintype W] (f : G ≃g G') : Fintype.card V = Fintype.card W := by
+theorem card_eq [Fintype V] [Fintype W] : Fintype.card V = Fintype.card W := by
   rw [← Fintype.ofEquiv_card f.toEquiv]
-  -- porting note: need to help it to find the typeclass instances from the target expression
-  apply @Fintype.card_congr' _ _ (_) (_) rfl
-#align simple_graph.iso.card_eq_of_iso SimpleGraph.Iso.card_eq_of_iso
+  convert rfl
+#align simple_graph.iso.card_eq_of_iso SimpleGraph.Iso.card_eq
 
 /-- Given a bijection, there is an embedding from the comapped graph into the original
 graph. -/
--- porting note: `@[simps]` does not work here anymore since `f` is not a constructor application.
+-- Porting note: `@[simps]` does not work here anymore since `f` is not a constructor application.
 -- `@[simps toEmbedding]` could work, but Floris suggested writing `comap_apply` for now.
 protected def comap (f : V ≃ W) (G : SimpleGraph W) : G.comap f.toEmbedding ≃g G :=
   { f with map_rel_iff' := by simp }
@@ -603,7 +607,7 @@ lemma comap_symm_apply (f : V ≃ W) (G : SimpleGraph W) (w : W) :
 #align simple_graph.iso.comap_symm_apply SimpleGraph.Iso.comap_symm_apply
 
 /-- Given an injective function, there is an embedding from a graph into the mapped graph. -/
--- porting note: `@[simps]` does not work here anymore since `f` is not a constructor application.
+-- Porting note: `@[simps]` does not work here anymore since `f` is not a constructor application.
 -- `@[simps toEmbedding]` could work, but Floris suggested writing `map_apply` for now.
 protected def map (f : V ≃ W) (G : SimpleGraph V) : G ≃g G.map f.toEmbedding :=
   { f with map_rel_iff' := by simp }
@@ -650,5 +654,21 @@ def induceUnivIso (G : SimpleGraph V) : G.induce Set.univ ≃g G where
   toEquiv := Equiv.Set.univ V
   map_rel_iff' := by simp only [Equiv.Set.univ, Equiv.coe_fn_mk, comap_adj, Embedding.coe_subtype,
                                 Subtype.forall, Set.mem_univ, forall_true_left, implies_true]
+
+section Finite
+
+variable [Fintype V] {n : ℕ}
+
+/-- Given a graph over a finite vertex type `V` and a proof `hc` that `Fintype.card V = n`,
+`G.overFin n` is an isomorphic (as shown in `overFinIso`) graph over `Fin n`. -/
+def overFin (hc : Fintype.card V = n) : SimpleGraph (Fin n) where
+  Adj x y := G.Adj ((Fintype.equivFinOfCardEq hc).symm x) ((Fintype.equivFinOfCardEq hc).symm y)
+  symm x y := by simp_rw [adj_comm, imp_self]
+
+/-- The isomorphism between `G` and `G.overFin hc`. -/
+noncomputable def overFinIso (hc : Fintype.card V = n) : G ≃g G.overFin hc := by
+  use Fintype.equivFinOfCardEq hc; simp [overFin]
+
+end Finite
 
 end SimpleGraph

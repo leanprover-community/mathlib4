@@ -3,7 +3,10 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
-import Mathlib.MeasureTheory.Constructions.Pi
+import Mathlib.MeasureTheory.PiSystem
+import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.Topology.Constructions
+import Mathlib.MeasureTheory.MeasurableSpace.Basic
 
 /-!
 # π-systems of cylinders and square cylinders
@@ -168,14 +171,14 @@ theorem cylinder_eq_empty_iff [h_nonempty : Nonempty (∀ i, α i)] (s : Finset 
     cylinder s S = ∅ ↔ S = ∅ := by
   refine ⟨fun h ↦ ?_, fun h ↦ by (rw [h]; exact cylinder_empty _)⟩
   by_contra hS
-  rw [← Ne.def, ← nonempty_iff_ne_empty] at hS
+  rw [← Ne, ← nonempty_iff_ne_empty] at hS
   let f := hS.some
   have hf : f ∈ S := hS.choose_spec
   classical
   let f' : ∀ i, α i := fun i ↦ if hi : i ∈ s then f ⟨i, hi⟩ else h_nonempty.some i
   have hf' : f' ∈ cylinder s S := by
     rw [mem_cylinder]
-    simpa only [Finset.coe_mem, dif_pos]
+    simpa only [f', Finset.coe_mem, dif_pos]
   rw [h] at hf'
   exact not_mem_empty _ hf'
 
@@ -187,10 +190,9 @@ theorem inter_cylinder (s₁ s₂ : Finset ι) (S₁ : Set (∀ i : s₁, α i))
           (fun f ↦ fun j : s₂ ↦ f ⟨j, Finset.mem_union_right s₁ j.prop⟩) ⁻¹' S₂) := by
   ext1 f; simp only [mem_inter_iff, mem_cylinder, mem_setOf_eq]; rfl
 
-theorem inter_cylinder_same (s : Finset ι) (S₁ : Set (∀ i : s, α i)) (S₂ : Set (∀ i : s, α i))
-    [DecidableEq ι] :
+theorem inter_cylinder_same (s : Finset ι) (S₁ : Set (∀ i : s, α i)) (S₂ : Set (∀ i : s, α i)) :
     cylinder s S₁ ∩ cylinder s S₂ = cylinder s (S₁ ∩ S₂) := by
-  rw [inter_cylinder]; rfl
+  classical rw [inter_cylinder]; rfl
 
 theorem union_cylinder (s₁ s₂ : Finset ι) (S₁ : Set (∀ i : s₁, α i)) (S₂ : Set (∀ i : s₂, α i))
     [DecidableEq ι] :
@@ -200,10 +202,9 @@ theorem union_cylinder (s₁ s₂ : Finset ι) (S₁ : Set (∀ i : s₁, α i))
           (fun f ↦ fun j : s₂ ↦ f ⟨j, Finset.mem_union_right s₁ j.prop⟩) ⁻¹' S₂) := by
   ext1 f; simp only [mem_union, mem_cylinder, mem_setOf_eq]; rfl
 
-theorem union_cylinder_same (s : Finset ι) (S₁ : Set (∀ i : s, α i)) (S₂ : Set (∀ i : s, α i))
-    [DecidableEq ι] :
+theorem union_cylinder_same (s : Finset ι) (S₁ : Set (∀ i : s, α i)) (S₂ : Set (∀ i : s, α i)) :
     cylinder s S₁ ∪ cylinder s S₂ = cylinder s (S₁ ∪ S₂) := by
-  rw [union_cylinder]; rfl
+  classical rw [union_cylinder]; rfl
 
 theorem compl_cylinder (s : Finset ι) (S : Set (∀ i : s, α i)) :
     (cylinder s S)ᶜ = cylinder s (Sᶜ) := by

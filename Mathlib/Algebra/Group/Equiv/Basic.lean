@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Data.FunLike.Equiv
-import Mathlib.Data.Pi.Algebra
 import Mathlib.Logic.Equiv.Basic
 
 #align_import algebra.hom.equiv.basic from "leanprover-community/mathlib"@"1ac8d4304efba9d03fa720d06516fac845aa5353"
@@ -29,6 +28,7 @@ notation when treating the isomorphisms as maps.
 Equiv, MulEquiv, AddEquiv
 -/
 
+open Function
 
 variable {F α β A B M N P Q G H : Type*}
 
@@ -75,8 +75,8 @@ structure AddEquiv (A B : Type*) [Add A] [Add B] extends A ≃ B, AddHom A B
 
 /-- `AddEquivClass F A B` states that `F` is a type of addition-preserving morphisms.
 You should extend this class when you extend `AddEquiv`. -/
-class AddEquivClass (F : Type*) (A B : outParam (Type*)) [Add A] [Add B]
-    extends EquivLike F A B where
+class AddEquivClass (F : Type*) (A B : outParam Type*) [Add A] [Add B] [EquivLike F A B] :
+    Prop where
   /-- Preserves addition. -/
   map_add : ∀ (f : F) (a b), f (a + b) = f a + f b
 #align add_equiv_class AddEquivClass
@@ -107,9 +107,10 @@ add_decl_doc MulEquiv.toMulHom
 
 /-- `MulEquivClass F A B` states that `F` is a type of multiplication-preserving morphisms.
 You should extend this class when you extend `MulEquiv`. -/
+-- TODO: make this a synonym for MulHomClass?
 @[to_additive]
-class MulEquivClass (F : Type*) (A B : outParam (Type*)) [Mul A] [Mul B] extends
-  EquivLike F A B where
+class MulEquivClass (F : Type*) (A B : outParam Type*) [Mul A] [Mul B] [EquivLike F A B] :
+    Prop where
   /-- Preserves multiplication. -/
   map_mul : ∀ (f : F) (a b), f (a * b) = f a * f b
 #align mul_equiv_class MulEquivClass
@@ -123,12 +124,13 @@ infixl:25 " ≃+ " => AddEquiv
 namespace MulEquivClass
 
 variable (F)
+variable [EquivLike F M N]
 
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) instMulHomClass (F : Type*)
-    [Mul M] [Mul N] [h : MulEquivClass F M N] : MulHomClass F M N :=
-  { h with coe := h.coe, coe_injective' := FunLike.coe_injective' }
+    [Mul M] [Mul N] [EquivLike F M N] [h : MulEquivClass F M N] : MulHomClass F M N :=
+  { h with }
 
 -- See note [lower instance priority]
 @[to_additive]
@@ -136,46 +138,34 @@ instance (priority := 100) instMonoidHomClass
     [MulOneClass M] [MulOneClass N] [MulEquivClass F M N] :
     MonoidHomClass F M N :=
   { MulEquivClass.instMulHomClass F with
-    coe := fun _ => _,
     map_one := fun e =>
       calc
         e 1 = e 1 * 1 := (mul_one _).symm
-        _ = e 1 * e (MulEquivClass.toEquivLike.inv e (1 : N) : M) :=
-          congr_arg _ (MulEquivClass.toEquivLike.right_inv e 1).symm
-        _ = e (MulEquivClass.toEquivLike.inv e (1 : N)) := by rw [← map_mul, one_mul]
-        _ = 1 := MulEquivClass.toEquivLike.right_inv e 1 }
+        _ = e 1 * e (EquivLike.inv e (1 : N) : M) :=
+          congr_arg _ (EquivLike.right_inv e 1).symm
+        _ = e (EquivLike.inv e (1 : N)) := by rw [← map_mul, one_mul]
+        _ = 1 := EquivLike.right_inv e 1 }
 
--- See note [lower instance priority]
-instance (priority := 100) toZeroHomClass
-    [MulZeroClass α] [MulZeroClass β] [MulEquivClass F α β] :
-    ZeroHomClass F α β where
-  map_zero := fun e =>
-    calc
-      e 0 = e 0 * e (EquivLike.inv e 0) := by rw [← map_mul, zero_mul]
-        _ = 0 := by simp
-
--- See note [lower instance priority]
-instance (priority := 100) toMonoidWithZeroHomClass
-    [MulZeroOneClass α] [MulZeroOneClass β] [MulEquivClass F α β] :
-    MonoidWithZeroHomClass F α β :=
-  { MulEquivClass.instMonoidHomClass F, MulEquivClass.toZeroHomClass F with }
-#align mul_equiv_class.to_monoid_with_zero_hom_class MulEquivClass.toMonoidWithZeroHomClass
-
+variable [EquivLike F α β]
 variable {F}
 
 @[to_additive (attr := simp)]
-theorem map_eq_one_iff {M N} [MulOneClass M] [MulOneClass N] [MulEquivClass F M N] (h : F) {x : M} :
+theorem map_eq_one_iff {M N} [MulOneClass M] [MulOneClass N] [EquivLike F M N] [MulEquivClass F M N]
+    (h : F) {x : M} :
     h x = 1 ↔ x = 1 := _root_.map_eq_one_iff h (EquivLike.injective h)
 #align mul_equiv_class.map_eq_one_iff MulEquivClass.map_eq_one_iff
 #align add_equiv_class.map_eq_zero_iff AddEquivClass.map_eq_zero_iff
 
 @[to_additive]
-theorem map_ne_one_iff {M N} [MulOneClass M] [MulOneClass N] [MulEquivClass F M N] (h : F) {x : M} :
+theorem map_ne_one_iff {M N} [MulOneClass M] [MulOneClass N] [EquivLike F M N] [MulEquivClass F M N]
+    (h : F) {x : M} :
     h x ≠ 1 ↔ x ≠ 1 := _root_.map_ne_one_iff h (EquivLike.injective h)
 #align mul_equiv_class.map_ne_one_iff MulEquivClass.map_ne_one_iff
 #align add_equiv_class.map_ne_zero_iff AddEquivClass.map_ne_zero_iff
 
 end MulEquivClass
+
+variable [EquivLike F α β]
 
 /-- Turn an element of a type `F` satisfying `MulEquivClass F α β` into an actual
 `MulEquiv`. This is declared as the default coercion from `F` to `α ≃* β`. -/
@@ -195,12 +185,14 @@ instance [Mul α] [Mul β] [MulEquivClass F α β] : CoeTC F (α ≃* β) :=
 @[to_additive]
 theorem MulEquivClass.toMulEquiv_injective [Mul α] [Mul β] [MulEquivClass F α β] :
     Function.Injective ((↑) : F → α ≃* β) :=
-  fun _ _ e ↦ FunLike.ext _ _ fun a ↦ congr_arg (fun e : α ≃* β ↦ e.toFun a) e
+  fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ congr_arg (fun e : α ≃* β ↦ e.toFun a) e
 
 namespace MulEquiv
+section Mul
+variable [Mul M] [Mul N] [Mul P] [Mul Q]
 
 @[to_additive]
-instance [Mul M] [Mul N] : MulEquivClass (M ≃* N) M N where
+instance : EquivLike (M ≃* N) M N where
   coe f := f.toFun
   inv f := f.invFun
   left_inv f := f.left_inv
@@ -210,13 +202,14 @@ instance [Mul M] [Mul N] : MulEquivClass (M ≃* N) M N where
     cases g
     congr
     apply Equiv.coe_fn_injective h₁
+
+@[to_additive]
+instance : MulEquivClass (M ≃* N) M N where
   map_mul f := f.map_mul'
 
 @[to_additive] -- shortcut instance that doesn't generate any subgoals
-instance [Mul M] [Mul N] : CoeFun (M ≃* N) fun _ => M → N where
+instance : CoeFun (M ≃* N) fun _ ↦ M → N where
   coe f := f
-
-variable [Mul M] [Mul N] [Mul P] [Mul Q]
 
 @[to_additive (attr := simp)]
 theorem toEquiv_eq_coe (f : M ≃* N) : f.toEquiv = f :=
@@ -238,7 +231,7 @@ theorem coe_toEquiv (f : M ≃* N) : ⇑(f : M ≃ N) = f := rfl
 #align mul_equiv.coe_to_equiv MulEquiv.coe_toEquiv
 #align add_equiv.coe_to_equiv AddEquiv.coe_toEquiv
 
--- porting note: todo: `MulHom.coe_mk` simplifies `↑f.toMulHom` to `f.toMulHom.toFun`,
+-- Porting note (#11215): TODO: `MulHom.coe_mk` simplifies `↑f.toMulHom` to `f.toMulHom.toFun`,
 -- not `f.toEquiv.toFun`; use higher priority as a workaround
 @[to_additive (attr := simp 1100)]
 theorem coe_toMulHom {f : M ≃* N} : (f.toMulHom : M → N) = f := rfl
@@ -301,7 +294,7 @@ def symm {M N : Type*} [Mul M] [Mul N] (h : M ≃* N) : N ≃* M :=
 #align mul_equiv.symm MulEquiv.symm
 #align add_equiv.symm AddEquiv.symm
 
-@[to_additive] -- porting note: no longer a `simp`, see below
+@[to_additive] -- Porting note: no longer a `simp`, see below
 theorem invFun_eq_symm {f : M ≃* N} : f.invFun = f.symm := rfl
 #align mul_equiv.inv_fun_eq_symm MulEquiv.invFun_eq_symm
 -- Porting note: to_additive translated the name incorrectly in mathlib 3.
@@ -332,7 +325,7 @@ theorem toEquiv_symm (f : M ≃* N) : (f.symm : N ≃ M) = (f : M ≃ N).symm :=
 #align mul_equiv.to_equiv_symm MulEquiv.toEquiv_symm
 #align add_equiv.to_equiv_symm AddEquiv.toEquiv_symm
 
--- porting note: doesn't align with Mathlib 3 because `MulEquiv.mk` has a new signature
+-- Porting note: doesn't align with Mathlib 3 because `MulEquiv.mk` has a new signature
 @[to_additive (attr := simp)]
 theorem coe_mk (f : M ≃ N) (hf : ∀ x y, f (x * y) = f x * f y) : (mk f hf : M → N) = f := rfl
 #align mul_equiv.coe_mk MulEquiv.coe_mkₓ
@@ -427,7 +420,7 @@ theorem symm_trans_apply (e₁ : M ≃* N) (e₂ : N ≃* P) (p : P) :
 #align mul_equiv.symm_trans_apply MulEquiv.symm_trans_apply
 #align add_equiv.symm_trans_apply AddEquiv.symm_trans_apply
 
--- Porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 @[to_additive]
 theorem apply_eq_iff_eq (e : M ≃* N) {x y : M} : e x = e y ↔ x = y :=
   e.injective.eq_iff
@@ -482,42 +475,28 @@ theorem symm_comp_eq {α : Type*} (e : M ≃* N) (f : α → M) (g : α → N) :
 
 @[to_additive (attr := simp)]
 theorem symm_trans_self (e : M ≃* N) : e.symm.trans e = refl N :=
-  FunLike.ext _ _ e.apply_symm_apply
+  DFunLike.ext _ _ e.apply_symm_apply
 #align mul_equiv.symm_trans_self MulEquiv.symm_trans_self
 #align add_equiv.symm_trans_self AddEquiv.symm_trans_self
 
 @[to_additive (attr := simp)]
 theorem self_trans_symm (e : M ≃* N) : e.trans e.symm = refl M :=
-  FunLike.ext _ _ e.symm_apply_apply
+  DFunLike.ext _ _ e.symm_apply_apply
 #align mul_equiv.self_trans_symm MulEquiv.self_trans_symm
 #align add_equiv.self_trans_symm AddEquiv.self_trans_symm
-
--- Porting note: `simp` can prove this
-@[to_additive]
-theorem coe_monoidHom_refl {M} [MulOneClass M] : (refl M : M →* M) = MonoidHom.id M := rfl
-#align mul_equiv.coe_monoid_hom_refl MulEquiv.coe_monoidHom_refl
-#align add_equiv.coe_add_monoid_hom_refl AddEquiv.coe_addMonoidHom_refl
-
--- Porting note: `simp` can prove this
-@[to_additive]
-theorem coe_monoidHom_trans {M N P} [MulOneClass M] [MulOneClass N] [MulOneClass P]
-    (e₁ : M ≃* N) (e₂ : N ≃* P) :
-    (e₁.trans e₂ : M →* P) = (e₂ : N →* P).comp ↑e₁ := rfl
-#align mul_equiv.coe_monoid_hom_trans MulEquiv.coe_monoidHom_trans
-#align add_equiv.coe_add_monoid_hom_trans AddEquiv.coe_addMonoidHom_trans
 
 /-- Two multiplicative isomorphisms agree if they are defined by the
 same underlying function. -/
 @[to_additive (attr := ext)
   "Two additive isomorphisms agree if they are defined by the same underlying function."]
 theorem ext {f g : MulEquiv M N} (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align mul_equiv.ext MulEquiv.ext
 #align add_equiv.ext AddEquiv.ext
 
 @[to_additive]
 theorem ext_iff {f g : MulEquiv M N} : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align mul_equiv.ext_iff MulEquiv.ext_iff
 #align add_equiv.ext_iff AddEquiv.ext_iff
 
@@ -535,13 +514,13 @@ theorem mk_coe' (e : M ≃* N) (f h₁ h₂ h₃) : (MulEquiv.mk ⟨f, e, h₁, 
 
 @[to_additive]
 protected theorem congr_arg {f : MulEquiv M N} {x x' : M} : x = x' → f x = f x' :=
-  FunLike.congr_arg f
+  DFunLike.congr_arg f
 #align mul_equiv.congr_arg MulEquiv.congr_arg
 #align add_equiv.congr_arg AddEquiv.congr_arg
 
 @[to_additive]
 protected theorem congr_fun {f g : MulEquiv M N} (h : f = g) (x : M) : f x = g x :=
-  FunLike.congr_fun h x
+  DFunLike.congr_fun h x
 #align mul_equiv.congr_fun MulEquiv.congr_fun
 #align add_equiv.congr_fun AddEquiv.congr_fun
 
@@ -559,49 +538,78 @@ instance {M N} [Unique M] [Unique N] [Mul M] [Mul N] : Unique (M ≃* N) where
   default := mulEquivOfUnique
   uniq _ := ext fun _ => Subsingleton.elim _ _
 
+end Mul
+
 /-!
 ## Monoids
 -/
+
+section MulOneClass
+variable [MulOneClass M] [MulOneClass N] [MulOneClass P]
+
+-- Porting note (#10618): `simp` can prove this
+@[to_additive]
+theorem coe_monoidHom_refl : (refl M : M →* M) = MonoidHom.id M := rfl
+#align mul_equiv.coe_monoid_hom_refl MulEquiv.coe_monoidHom_refl
+#align add_equiv.coe_add_monoid_hom_refl AddEquiv.coe_addMonoidHom_refl
+
+-- Porting note (#10618): `simp` can prove this
+@[to_additive]
+lemma coe_monoidHom_trans (e₁ : M ≃* N) (e₂ : N ≃* P) :
+    (e₁.trans e₂ : M →* P) = (e₂ : N →* P).comp ↑e₁ := rfl
+#align mul_equiv.coe_monoid_hom_trans MulEquiv.coe_monoidHom_trans
+#align add_equiv.coe_add_monoid_hom_trans AddEquiv.coe_addMonoidHom_trans
+
+@[to_additive (attr := simp)]
+lemma coe_monoidHom_comp_coe_monoidHom_symm (e : M ≃* N) :
+    (e : M →* N).comp e.symm = MonoidHom.id _ := by ext; simp
+
+@[to_additive (attr := simp)]
+lemma coe_monoidHom_symm_comp_coe_monoidHom (e : M ≃* N) :
+    (e.symm : N →* M).comp e = MonoidHom.id _ := by ext; simp
+
+@[to_additive]
+lemma comp_left_injective (e : M ≃* N) : Injective fun f : N →* P ↦ f.comp (e : M →* N) :=
+  LeftInverse.injective (g := fun f ↦ f.comp e.symm) fun f ↦ by simp [MonoidHom.comp_assoc]
+
+@[to_additive]
+lemma comp_right_injective (e : M ≃* N) : Injective fun f : P →* M ↦ (e : M →* N).comp f :=
+  LeftInverse.injective (g := (e.symm : N →* M).comp) fun f ↦ by simp [← MonoidHom.comp_assoc]
 
 /-- A multiplicative isomorphism of monoids sends `1` to `1` (and is hence a monoid isomorphism). -/
 @[to_additive
   "An additive isomorphism of additive monoids sends `0` to `0`
   (and is hence an additive monoid isomorphism)."]
-protected theorem map_one {M N} [MulOneClass M] [MulOneClass N] (h : M ≃* N) : h 1 = 1 :=
-  _root_.map_one h
+protected theorem map_one (h : M ≃* N) : h 1 = 1 := _root_.map_one h
 #align mul_equiv.map_one MulEquiv.map_one
 #align add_equiv.map_zero AddEquiv.map_zero
 
 @[to_additive]
-protected theorem map_eq_one_iff {M N} [MulOneClass M] [MulOneClass N] (h : M ≃* N) {x : M} :
-    h x = 1 ↔ x = 1 :=
+protected theorem map_eq_one_iff (h : M ≃* N) {x : M} : h x = 1 ↔ x = 1 :=
   MulEquivClass.map_eq_one_iff h
 #align mul_equiv.map_eq_one_iff MulEquiv.map_eq_one_iff
 #align add_equiv.map_eq_zero_iff AddEquiv.map_eq_zero_iff
 
 @[to_additive]
-theorem map_ne_one_iff {M N} [MulOneClass M] [MulOneClass N] (h : M ≃* N) {x : M} :
-    h x ≠ 1 ↔ x ≠ 1 :=
+theorem map_ne_one_iff (h : M ≃* N) {x : M} : h x ≠ 1 ↔ x ≠ 1 :=
   MulEquivClass.map_ne_one_iff h
 #align mul_equiv.map_ne_one_iff MulEquiv.map_ne_one_iff
 #align add_equiv.map_ne_zero_iff AddEquiv.map_ne_zero_iff
 
 /-- A bijective `Semigroup` homomorphism is an isomorphism -/
 @[to_additive (attr := simps! apply) "A bijective `AddSemigroup` homomorphism is an isomorphism"]
-noncomputable def ofBijective {M N F} [Mul M] [Mul N] [MulHomClass F M N]
-(f : F) (hf : Function.Bijective f) :
-    M ≃* N :=
+noncomputable def ofBijective {M N F} [Mul M] [Mul N] [FunLike F M N] [MulHomClass F M N]
+    (f : F) (hf : Bijective f) : M ≃* N :=
   { Equiv.ofBijective f hf with map_mul' := map_mul f }
 #align mul_equiv.of_bijective MulEquiv.ofBijective
 #align add_equiv.of_bijective AddEquiv.ofBijective
 #align mul_equiv.of_bijective_apply MulEquiv.ofBijective_apply
 #align add_equiv.of_bijective_apply AddEquiv.ofBijective_apply
 
--- porting note: todo: simplify `symm_apply` to `surjInv`?
+-- Porting note (#11215): TODO: simplify `symm_apply` to `surjInv`?
 @[to_additive (attr := simp)]
-theorem ofBijective_apply_symm_apply {M N} [MulOneClass M] [MulOneClass N] {n : N} (f : M →* N)
-    (hf : Function.Bijective f) : f ((Equiv.ofBijective f hf).symm n) = n :=
-  (MulEquiv.ofBijective f hf).apply_symm_apply n
+theorem ofBijective_apply_symm_apply {n : N} (f : M →* N) (hf : Bijective f) :
+    f ((ofBijective f hf).symm n) = n := (ofBijective f hf).apply_symm_apply n
 #align mul_equiv.of_bijective_apply_symm_apply MulEquiv.ofBijective_apply_symm_apply
 #align add_equiv.of_bijective_apply_symm_apply AddEquiv.ofBijective_apply_symm_apply
 
@@ -610,24 +618,24 @@ as a multiplication-preserving function.
 -/
 @[to_additive "Extract the forward direction of an additive equivalence
   as an addition-preserving function."]
-def toMonoidHom {M N} [MulOneClass M] [MulOneClass N] (h : M ≃* N) : M →* N :=
+def toMonoidHom (h : M ≃* N) : M →* N :=
   { h with map_one' := h.map_one }
 #align mul_equiv.to_monoid_hom MulEquiv.toMonoidHom
 #align add_equiv.to_add_monoid_hom AddEquiv.toAddMonoidHom
 
 @[to_additive (attr := simp)]
-theorem coe_toMonoidHom {M N} [MulOneClass M] [MulOneClass N] (e : M ≃* N) :
-    ⇑e.toMonoidHom = e := rfl
+theorem coe_toMonoidHom (e : M ≃* N) : ⇑e.toMonoidHom = e := rfl
 #align mul_equiv.coe_to_monoid_hom MulEquiv.coe_toMonoidHom
 #align add_equiv.coe_to_add_monoid_hom AddEquiv.coe_toAddMonoidHom
 
 set_option linter.deprecated false in
 @[to_additive]
-theorem toMonoidHom_injective {M N} [MulOneClass M] [MulOneClass N] :
-    Function.Injective (toMonoidHom : M ≃* N → M →* N) :=
+theorem toMonoidHom_injective : Injective (toMonoidHom : M ≃* N → M →* N) :=
   fun _ _ h => MulEquiv.ext (MonoidHom.ext_iff.1 h)
 #align mul_equiv.to_monoid_hom_injective MulEquiv.toMonoidHom_injective
 #align add_equiv.to_add_monoid_hom_injective AddEquiv.toAddMonoidHom_injective
+
+end MulOneClass
 
 /-- A multiplicative analogue of `Equiv.arrowCongr`,
 where the equivalence between the targets is multiplicative.
@@ -652,7 +660,7 @@ for multiplicative maps from a monoid to a commutative monoid.
 @[to_additive (attr := simps apply)
   "An additive analogue of `Equiv.arrowCongr`,
   for additive maps from an additive monoid to a commutative additive monoid."]
--- porting note: @[simps apply] removed because it was making a lemma which
+-- Porting note: @[simps apply] removed because it was making a lemma which
 -- wasn't in simp normal form.
 def monoidHomCongr {M N P Q} [MulOneClass M] [MulOneClass N] [CommMonoid P] [CommMonoid Q]
     (f : M ≃* N) (g : P ≃* Q) : (M →* P) ≃* (N →* Q) where
@@ -745,7 +753,7 @@ protected theorem map_div [Group G] [DivisionMonoid H] (h : G ≃* H) (x y : G) 
 
 end MulEquiv
 
--- porting note: we want to add
+-- Porting note: we want to add
 -- `@[simps (config := .asFn)]`
 -- here, but it generates simp lemmas which aren't in simp normal form
 -- (they have `toFun` in)
@@ -762,13 +770,13 @@ def MulHom.toMulEquiv [Mul M] [Mul N] (f : M →ₙ* N) (g : N →ₙ* M) (h₁ 
     (h₂ : f.comp g = MulHom.id _) : M ≃* N where
   toFun := f
   invFun := g
-  left_inv := FunLike.congr_fun h₁
-  right_inv := FunLike.congr_fun h₂
+  left_inv := DFunLike.congr_fun h₁
+  right_inv := DFunLike.congr_fun h₂
   map_mul' := f.map_mul
 #align mul_hom.to_mul_equiv MulHom.toMulEquiv
 #align add_hom.to_add_equiv AddHom.toAddEquiv
 
--- porting note: the next two lemmas were added manually because `@[simps]` is generating
+-- Porting note: the next two lemmas were added manually because `@[simps]` is generating
 -- lemmas with `toFun` in
 @[to_additive (attr := simp)]
 theorem MulHom.toMulEquiv_apply [Mul M] [Mul N] (f : M →ₙ* N) (g : N →ₙ* M)
@@ -798,8 +806,8 @@ def MonoidHom.toMulEquiv [MulOneClass M] [MulOneClass N] (f : M →* N) (g : N �
     (h₁ : g.comp f = MonoidHom.id _) (h₂ : f.comp g = MonoidHom.id _) : M ≃* N where
   toFun := f
   invFun := g
-  left_inv := FunLike.congr_fun h₁
-  right_inv := FunLike.congr_fun h₂
+  left_inv := DFunLike.congr_fun h₁
+  right_inv := DFunLike.congr_fun h₂
   map_mul' := f.map_mul
 #align monoid_hom.to_mul_equiv MonoidHom.toMulEquiv
 #align add_monoid_hom.to_add_equiv AddMonoidHom.toAddEquiv

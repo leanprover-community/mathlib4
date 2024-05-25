@@ -107,8 +107,8 @@ private lemma trans_aux (hst : toColex s ≤ toColex t) (htu : toColex t ≤ toC
     (has : a ∈ s) (hat : a ∉ t) : ∃ b, b ∈ u ∧ b ∉ s ∧ a ≤ b := by
   classical
   let s' : Finset α := s.filter fun b ↦ b ∉ t ∧ a ≤ b
-  have ⟨b, hb, hbmax⟩ := exists_maximal s' ⟨a, by simp [has, hat]⟩
-  simp only [mem_filter, and_imp] at hb hbmax
+  have ⟨b, hb, hbmax⟩ := exists_maximal s' ⟨a, by simp [s', has, hat]⟩
+  simp only [s', mem_filter, and_imp] at hb hbmax
   have ⟨c, hct, hcs, hbc⟩ := hst hb.1 hb.2.1
   by_cases hcu : c ∈ u
   · exact ⟨c, hcu, hcs, hb.2.2.trans hbc⟩
@@ -266,6 +266,8 @@ instance instLinearOrder : LinearOrder (Colex α) where
   decidableLE := instDecidableLE
   decidableLT := instDecidableLT
 
+open scoped symmDiff
+
 private lemma max_mem_aux {s t : Colex α} (hst : s ≠ t) : (ofColex s ∆ ofColex t).Nonempty := by
   simpa
 
@@ -365,10 +367,10 @@ lemma IsInitSeg.exists_initSeg (h𝒜 : IsInitSeg 𝒜 r) (h𝒜₀ : 𝒜.Nonem
     ∃ s : Finset α, s.card = r ∧ 𝒜 = initSeg s := by
   have hs := sup'_mem (ofColex ⁻¹' 𝒜) (LinearOrder.supClosed _) 𝒜 h𝒜₀ toColex
     (fun a ha ↦ by simpa using ha)
-  refine' ⟨_, h𝒜.1 hs, _⟩
+  refine ⟨_, h𝒜.1 hs, ?_⟩
   ext t
   rw [mem_initSeg]
-  refine' ⟨fun p ↦ _, _⟩
+  refine ⟨fun p ↦ ?_, ?_⟩
   · rw [h𝒜.1 p, h𝒜.1 hs]
     exact ⟨rfl, le_sup' _ p⟩
   rintro ⟨cards, le⟩

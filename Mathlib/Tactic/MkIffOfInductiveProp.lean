@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, David Renshaw
 -/
 import Lean
-import Std.Tactic.LeftRight
 import Mathlib.Lean.Meta
 import Mathlib.Lean.Name
-import Mathlib.Tactic.Basic
+import Mathlib.Tactic.TypeStar
 
 /-!
 # mk_iff_of_inductive_prop
@@ -35,11 +34,11 @@ private def select (m n : Nat) (goal : MVarId) : MetaM MVarId :=
   match m,n with
   | 0, 0             => pure goal
   | 0, (_ + 1)       => do
-    let [new_goal] ← Std.Tactic.NthConstructor.nthConstructor `left 0 (some 2) goal
+    let [new_goal] ← goal.nthConstructor `left 0 (some 2)
       | throwError "expected only one new goal"
     pure new_goal
   | (m + 1), (n + 1) => do
-    let [new_goal] ← Std.Tactic.NthConstructor.nthConstructor `right 1 (some 2) goal
+    let [new_goal] ← goal.nthConstructor `right 1 (some 2)
       | throwError "expected only one new goal"
     select m n new_goal
   | _, _             => failure

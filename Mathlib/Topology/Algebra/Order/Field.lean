@@ -3,9 +3,9 @@ Copyright (c) 2022 Benjamin Davidson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson, Devon Tuma, Eric Rodriguez, Oliver Nash
 -/
-import Mathlib.Tactic.Positivity
-import Mathlib.Topology.Algebra.Order.Group
+import Mathlib.Data.Set.Pointwise.Interval
 import Mathlib.Topology.Algebra.Field
+import Mathlib.Topology.Algebra.Order.Group
 
 #align_import topology.algebra.order.field from "leanprover-community/mathlib"@"9a59dcb7a2d06bf55da57b9030169219980660cd"
 
@@ -32,8 +32,9 @@ theorem TopologicalRing.of_norm {R 𝕜 : Type*} [NonUnitalNonAssocRing R] [Line
     (norm_nonneg : ∀ x, 0 ≤ norm x) (norm_mul_le : ∀ x y, norm (x * y) ≤ norm x * norm y)
     (nhds_basis : (𝓝 (0 : R)).HasBasis ((0 : 𝕜) < ·) (fun ε ↦ { x | norm x < ε })) :
     TopologicalRing R := by
-  have h0 : ∀ f : R → R, ∀ c ≥ (0 : 𝕜), (∀ x, norm (f x) ≤ c * norm x) → Tendsto f (𝓝 0) (𝓝 0)
-  · refine fun f c c0 hf ↦ (nhds_basis.tendsto_iff nhds_basis).2 fun ε ε0 ↦ ?_
+  have h0 : ∀ f : R → R, ∀ c ≥ (0 : 𝕜), (∀ x, norm (f x) ≤ c * norm x) →
+      Tendsto f (𝓝 0) (𝓝 0) := by
+    refine fun f c c0 hf ↦ (nhds_basis.tendsto_iff nhds_basis).2 fun ε ε0 ↦ ?_
     rcases exists_pos_mul_lt ε0 c with ⟨δ, δ0, hδ⟩
     refine ⟨δ, δ0, fun x hx ↦ (hf _).trans_lt ?_⟩
     exact (mul_le_mul_of_nonneg_left (le_of_lt hx) c0).trans_lt hδ
@@ -61,7 +62,7 @@ instance (priority := 100) LinearOrderedField.topologicalRing : TopologicalRing 
 tends to a positive constant `C` then `f * g` tends to `Filter.atTop`. -/
 theorem Filter.Tendsto.atTop_mul {C : 𝕜} (hC : 0 < C) (hf : Tendsto f l atTop)
     (hg : Tendsto g l (𝓝 C)) : Tendsto (fun x => f x * g x) l atTop := by
-  refine' tendsto_atTop_mono' _ _ (hf.atTop_mul_const (half_pos hC))
+  refine tendsto_atTop_mono' _ ?_ (hf.atTop_mul_const (half_pos hC))
   filter_upwards [hg.eventually (lt_mem_nhds (half_lt_self hC)), hf.eventually_ge_atTop 0]
     with x hg hf using mul_le_mul_of_nonneg_left hg.le hf
 #align filter.tendsto.at_top_mul Filter.Tendsto.atTop_mul
@@ -158,7 +159,7 @@ theorem Filter.Tendsto.inv_tendsto_zero (h : Tendsto f l (𝓝[>] 0)) : Tendsto 
 A version for positive real powers exists as `tendsto_rpow_neg_atTop`. -/
 theorem tendsto_pow_neg_atTop {n : ℕ} (hn : n ≠ 0) :
     Tendsto (fun x : 𝕜 => x ^ (-(n : ℤ))) atTop (𝓝 0) := by
-  simpa only [zpow_neg, zpow_ofNat] using (@tendsto_pow_atTop 𝕜 _ _ hn).inv_tendsto_atTop
+  simpa only [zpow_neg, zpow_natCast] using (@tendsto_pow_atTop 𝕜 _ _ hn).inv_tendsto_atTop
 #align tendsto_pow_neg_at_top tendsto_pow_neg_atTop
 
 theorem tendsto_zpow_atTop_zero {n : ℤ} (hn : n < 0) :
@@ -192,8 +193,8 @@ theorem tendsto_const_mul_pow_nhds_iff {n : ℕ} {c d : 𝕜} (hc : c ≠ 0) :
 
 theorem tendsto_const_mul_zpow_atTop_nhds_iff {n : ℤ} {c d : 𝕜} (hc : c ≠ 0) :
     Tendsto (fun x : 𝕜 => c * x ^ n) atTop (𝓝 d) ↔ n = 0 ∧ c = d ∨ n < 0 ∧ d = 0 := by
-  refine' ⟨fun h => _, fun h => _⟩
-  · cases n with -- porting note: Lean 3 proof used `by_cases`, then `lift` but `lift` failed
+  refine ⟨fun h => ?_, fun h => ?_⟩
+  · cases n with -- Porting note: Lean 3 proof used `by_cases`, then `lift` but `lift` failed
     | ofNat n =>
       left
       simpa [tendsto_const_mul_pow_nhds_iff hc] using h
@@ -223,7 +224,7 @@ instance (priority := 100) LinearOrderedField.toTopologicalDivisionRing :
     TopologicalDivisionRing 𝕜 := ⟨⟩
 #align linear_ordered_field.to_topological_division_ring LinearOrderedField.toTopologicalDivisionRing
 
--- porting note: todo: generalize to a `GroupWithZero`
+-- Porting note (#11215): TODO: generalize to a `GroupWithZero`
 theorem nhdsWithin_pos_comap_mul_left {x : 𝕜} (hx : 0 < x) :
     comap (x * ·) (𝓝[>] 0) = 𝓝[>] 0 := by
   rw [nhdsWithin, comap_inf, comap_principal, preimage_const_mul_Ioi _ hx, zero_div]

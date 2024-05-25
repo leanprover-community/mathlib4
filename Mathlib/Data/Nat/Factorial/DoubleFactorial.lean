@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jake Levinson
 -/
 import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Positivity.Core
 
 #align_import data.nat.factorial.double_factorial from "leanprover-community/mathlib"@"7daeaf3072304c498b653628add84a88d0e78767"
 
@@ -34,7 +35,7 @@ def doubleFactorial : ℕ → ℕ
 #align nat.double_factorial Nat.doubleFactorial
 
 -- This notation is `\!!` not two !'s
-scoped notation:10000 n "‼" => Nat.doubleFactorial n
+@[inherit_doc] scoped notation:10000 n "‼" => Nat.doubleFactorial n
 
 lemma doubleFactorial_pos : ∀ n, 0 < n‼
   | 0 | 1 => zero_lt_one
@@ -94,13 +95,11 @@ open Lean Meta Qq
 /-- Extension for `Nat.doubleFactorial`. -/
 @[positivity Nat.doubleFactorial _]
 def evalDoubleFactorial : PositivityExt where eval {u α} _ _ e := do
-  if let 0 := u then -- lean4#3060 means we can't combine this with the match below
-    match α, e with
-    | ~q(ℕ), ~q(Nat.doubleFactorial $n) =>
-      assumeInstancesCommute
-      return .positive q(Nat.doubleFactorial_pos $n)
-    | _, _ => throwError "not Nat.doubleFactorial"
-  else throwError "not Nat.doubleFactorial"
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(Nat.doubleFactorial $n) =>
+    assumeInstancesCommute
+    return .positive q(Nat.doubleFactorial_pos $n)
+  | _, _ => throwError "not Nat.doubleFactorial"
 
 example (n : ℕ) : 0 < n‼ := by positivity
 

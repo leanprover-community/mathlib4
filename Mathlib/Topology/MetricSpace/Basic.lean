@@ -3,7 +3,7 @@ Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Topology.MetricSpace.PseudoMetric
+import Mathlib.Topology.MetricSpace.ProperSpace
 
 #align_import topology.metric_space.basic from "leanprover-community/mathlib"@"c8f305514e0d47dfaa710f5a52f0d21b588e6328"
 
@@ -131,10 +131,9 @@ theorem subsingleton_sphere (x : γ) {r : ℝ} (hr : r ≤ 0) : (sphere x r).Sub
 #align metric.subsingleton_sphere Metric.subsingleton_sphere
 
 -- see Note [lower instance priority]
-instance (priority := 100) _root_.MetricSpace.to_separated : SeparatedSpace γ :=
-  separated_def.2 fun _ _ h =>
-    eq_of_forall_dist_le fun _ ε0 => le_of_lt (h _ (dist_mem_uniformity ε0))
-#align metric_space.to_separated MetricSpace.to_separated
+instance (priority := 100) _root_.MetricSpace.instT0Space : T0Space γ where
+  t0 _ _ h := eq_of_dist_eq_zero <| Metric.inseparable_iff.1 h
+#align metric_space.to_separated MetricSpace.instT0Space
 
 /-- A map between metric spaces is a uniform embedding if and only if the distance between `f x`
 and `f y` is controlled in terms of the distance between `x` and `y` and conversely. -/
@@ -146,8 +145,7 @@ theorem uniformEmbedding_iff' [MetricSpace β] {f : γ → β} :
 #align metric.uniform_embedding_iff' Metric.uniformEmbedding_iff'
 
 /-- If a `PseudoMetricSpace` is a T₀ space, then it is a `MetricSpace`. -/
-@[reducible]
-def _root_.MetricSpace.ofT0PseudoMetricSpace (α : Type*) [PseudoMetricSpace α] [T0Space α] :
+abbrev _root_.MetricSpace.ofT0PseudoMetricSpace (α : Type*) [PseudoMetricSpace α] [T0Space α] :
     MetricSpace α where
   toPseudoMetricSpace := ‹_›
   eq_of_dist_eq_zero hdist := (Metric.inseparable_iff.2 hdist).eq
@@ -199,8 +197,7 @@ theorem MetricSpace.replaceUniformity_eq {γ} [U : UniformSpace γ] (m : MetricS
 (but typically non-definitionaly) equal to some given topological structure.
 See Note [forgetful inheritance].
 -/
-@[reducible]
-def MetricSpace.replaceTopology {γ} [U : TopologicalSpace γ] (m : MetricSpace γ)
+abbrev MetricSpace.replaceTopology {γ} [U : TopologicalSpace γ] (m : MetricSpace γ)
     (H : U = m.toPseudoMetricSpace.toUniformSpace.toTopologicalSpace) : MetricSpace γ :=
   @MetricSpace.replaceUniformity γ (m.toUniformSpace.replaceTopology H) m rfl
 #align metric_space.replace_topology MetricSpace.replaceTopology
@@ -216,8 +213,7 @@ is everywhere finite, by pushing the edistance to reals. We set it up so that th
 uniformity are defeq in the metric space and the emetric space. In this definition, the distance
 is given separately, to be able to prescribe some expression which is not defeq to the push-forward
 of the edistance to reals. -/
-@[reducible]
-def EMetricSpace.toMetricSpaceOfDist {α : Type u} [EMetricSpace α] (dist : α → α → ℝ)
+abbrev EMetricSpace.toMetricSpaceOfDist {α : Type u} [EMetricSpace α] (dist : α → α → ℝ)
     (edist_ne_top : ∀ x y : α, edist x y ≠ ⊤) (h : ∀ x y, dist x y = ENNReal.toReal (edist x y)) :
     MetricSpace α :=
   @MetricSpace.ofT0PseudoMetricSpace _
@@ -250,8 +246,7 @@ theorem MetricSpace.replaceBornology_eq {α} [m : MetricSpace α] [B : Bornology
 
 /-- Metric space structure pulled back by an injective function. Injectivity is necessary to
 ensure that `dist x y = 0` only if `x = y`. -/
-@[reducible]
-def MetricSpace.induced {γ β} (f : γ → β) (hf : Function.Injective f) (m : MetricSpace β) :
+abbrev MetricSpace.induced {γ β} (f : γ → β) (hf : Function.Injective f) (m : MetricSpace β) :
     MetricSpace γ :=
   { PseudoMetricSpace.induced f m.toPseudoMetricSpace with
     eq_of_dist_eq_zero := fun h => hf (dist_eq_zero.1 h) }
@@ -259,16 +254,14 @@ def MetricSpace.induced {γ β} (f : γ → β) (hf : Function.Injective f) (m :
 
 /-- Pull back a metric space structure by a uniform embedding. This is a version of
 `MetricSpace.induced` useful in case if the domain already has a `UniformSpace` structure. -/
-@[reducible]
-def UniformEmbedding.comapMetricSpace {α β} [UniformSpace α] [m : MetricSpace β] (f : α → β)
+abbrev UniformEmbedding.comapMetricSpace {α β} [UniformSpace α] [m : MetricSpace β] (f : α → β)
     (h : UniformEmbedding f) : MetricSpace α :=
   .replaceUniformity (.induced f h.inj m) h.comap_uniformity.symm
 #align uniform_embedding.comap_metric_space UniformEmbedding.comapMetricSpace
 
 /-- Pull back a metric space structure by an embedding. This is a version of
 `MetricSpace.induced` useful in case if the domain already has a `TopologicalSpace` structure. -/
-@[reducible]
-def Embedding.comapMetricSpace {α β} [TopologicalSpace α] [m : MetricSpace β] (f : α → β)
+abbrev Embedding.comapMetricSpace {α β} [TopologicalSpace α] [m : MetricSpace β] (f : α → β)
     (h : Embedding f) : MetricSpace α :=
   .replaceTopology (.induced f h.inj m) h.induced
 #align embedding.comap_metric_space Embedding.comapMetricSpace
@@ -287,7 +280,7 @@ instance : MetricSpace Empty where
   dist_self _ := rfl
   dist_comm _ _ := rfl
   edist _ _ := 0
-  edist_dist _ _ := ENNReal.ofReal_zero.symm -- porting note: should not be needed
+  edist_dist _ _ := ENNReal.ofReal_zero.symm -- Porting note: should not be needed
   eq_of_dist_eq_zero _ := Subsingleton.elim _ _
   dist_triangle _ _ _ := show (0 : ℝ) ≤ 0 + 0 by rw [add_zero]
   toUniformSpace := inferInstance
@@ -298,7 +291,7 @@ instance : MetricSpace PUnit.{u + 1} where
   dist_self _ := rfl
   dist_comm _ _ := rfl
   edist _ _ := 0
-  edist_dist _ _ := ENNReal.ofReal_zero.symm -- porting note: should not be needed
+  edist_dist _ _ := ENNReal.ofReal_zero.symm -- Porting note: should not be needed
   eq_of_dist_eq_zero _ := Subsingleton.elim _ _
   dist_triangle _ _ _ := show (0 : ℝ) ≤ 0 + 0 by rw [add_zero]
   toUniformSpace := inferInstance
@@ -348,7 +341,7 @@ section SecondCountable
 
 open TopologicalSpace
 
--- porting note: todo: use `Countable` instead of `Encodable`
+-- Porting note (#11215): TODO: use `Countable` instead of `Encodable`
 /-- A metric space is second countable if one can reconstruct up to any `ε>0` any element of the
 space from countably many data. -/
 theorem secondCountable_of_countable_discretization {α : Type u} [MetricSpace α]
@@ -370,19 +363,21 @@ end Metric
 
 section EqRel
 
-instance {α : Type u} [PseudoMetricSpace α] : Dist (UniformSpace.SeparationQuotient α) where
-  dist p q := Quotient.liftOn₂' p q dist fun x y x' y' hx hy => by
-    rw [dist_edist, dist_edist, ← UniformSpace.SeparationQuotient.edist_mk x,
-      ← UniformSpace.SeparationQuotient.edist_mk x', Quot.sound hx, Quot.sound hy]
+-- TODO: add `dist_congr` similar to `edist_congr`?
+instance SeparationQuotient.instDist {α : Type u} [PseudoMetricSpace α] :
+    Dist (SeparationQuotient α) where
+  dist := lift₂ dist fun x y x' y' hx hy ↦ by rw [dist_edist, dist_edist, ← edist_mk x,
+    ← edist_mk x', mk_eq_mk.2 hx, mk_eq_mk.2 hy]
 
-theorem UniformSpace.SeparationQuotient.dist_mk {α : Type u} [PseudoMetricSpace α] (p q : α) :
-    @dist (UniformSpace.SeparationQuotient α) _ (Quot.mk _ p) (Quot.mk _ q) = dist p q :=
+theorem SeparationQuotient.dist_mk {α : Type u} [PseudoMetricSpace α] (p q : α) :
+    dist (mk p) (mk q) = dist p q :=
   rfl
-#align uniform_space.separation_quotient.dist_mk UniformSpace.SeparationQuotient.dist_mk
+#align uniform_space.separation_quotient.dist_mk SeparationQuotient.dist_mk
 
-instance {α : Type u} [PseudoMetricSpace α] : MetricSpace (UniformSpace.SeparationQuotient α) :=
-  EMetricSpace.toMetricSpaceOfDist dist (fun x y => Quotient.inductionOn₂' x y edist_ne_top)
-    fun x y => Quotient.inductionOn₂' x y dist_edist
+instance SeparationQuotient.instMetricSpace {α : Type u} [PseudoMetricSpace α] :
+    MetricSpace (SeparationQuotient α) :=
+  EMetricSpace.toMetricSpaceOfDist dist (surjective_mk.forall₂.2 edist_ne_top) <|
+    surjective_mk.forall₂.2 dist_edist
 
 end EqRel
 
@@ -443,6 +438,9 @@ instance [MetricSpace X] : MetricSpace (Multiplicative X) := ‹MetricSpace X›
 
 instance [PseudoMetricSpace X] [ProperSpace X] : ProperSpace (Additive X) := ‹ProperSpace X›
 instance [PseudoMetricSpace X] [ProperSpace X] : ProperSpace (Multiplicative X) := ‹ProperSpace X›
+
+instance MulOpposite.instMetricSpace [MetricSpace X] : MetricSpace Xᵐᵒᵖ :=
+  MetricSpace.induced unop unop_injective ‹_›
 
 /-!
 ### Order dual

@@ -3,10 +3,10 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Data.Set.Image
 import Mathlib.Topology.Bases
 import Mathlib.Topology.Inseparable
-import Mathlib.Topology.Compactness.LocallyCompact
-import Mathlib.Topology.Clopen
+import Mathlib.Topology.Compactness.Compact
 
 /-!
 # Alexandrov-discrete topological spaces
@@ -62,37 +62,37 @@ variable [AlexandrovDiscrete α] {S : Set (Set α)} {f : ι → Set α}
 lemma isOpen_sInter : (∀ s ∈ S, IsOpen s) → IsOpen (⋂₀ S) := AlexandrovDiscrete.isOpen_sInter _
 
 lemma isOpen_iInter (hf : ∀ i, IsOpen (f i)) : IsOpen (⋂ i, f i) :=
-  isOpen_sInter <| forall_range_iff.2 hf
+  isOpen_sInter <| forall_mem_range.2 hf
 
 lemma isOpen_iInter₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsOpen (f i j)) :
     IsOpen (⋂ i, ⋂ j, f i j) :=
   isOpen_iInter fun _ ↦ isOpen_iInter <| hf _
 
 lemma isClosed_sUnion (hS : ∀ s ∈ S, IsClosed s) : IsClosed (⋃₀ S) := by
-  simp only [← isOpen_compl_iff, compl_sUnion] at hS ⊢; exact isOpen_sInter <| ball_image_iff.2 hS
+  simp only [← isOpen_compl_iff, compl_sUnion] at hS ⊢; exact isOpen_sInter <| forall_mem_image.2 hS
 
 lemma isClosed_iUnion (hf : ∀ i, IsClosed (f i)) : IsClosed (⋃ i, f i) :=
-  isClosed_sUnion <| forall_range_iff.2 hf
+  isClosed_sUnion <| forall_mem_range.2 hf
 
 lemma isClosed_iUnion₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsClosed (f i j)) :
     IsClosed (⋃ i, ⋃ j, f i j) :=
   isClosed_iUnion fun _ ↦ isClosed_iUnion <| hf _
 
 lemma isClopen_sInter (hS : ∀ s ∈ S, IsClopen s) : IsClopen (⋂₀ S) :=
-  ⟨isOpen_sInter fun s hs ↦ (hS s hs).1, isClosed_sInter fun s hs ↦ (hS s hs).2⟩
+  ⟨isClosed_sInter fun s hs ↦ (hS s hs).1, isOpen_sInter fun s hs ↦ (hS s hs).2⟩
 
 lemma isClopen_iInter (hf : ∀ i, IsClopen (f i)) : IsClopen (⋂ i, f i) :=
-  ⟨isOpen_iInter fun i ↦ (hf i).1, isClosed_iInter fun i ↦ (hf i).2⟩
+  ⟨isClosed_iInter fun i ↦ (hf i).1, isOpen_iInter fun i ↦ (hf i).2⟩
 
 lemma isClopen_iInter₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsClopen (f i j)) :
     IsClopen (⋂ i, ⋂ j, f i j) :=
   isClopen_iInter fun _ ↦ isClopen_iInter <| hf _
 
 lemma isClopen_sUnion (hS : ∀ s ∈ S, IsClopen s) : IsClopen (⋃₀ S) :=
-  ⟨isOpen_sUnion fun s hs ↦ (hS s hs).1, isClosed_sUnion fun s hs ↦ (hS s hs).2⟩
+  ⟨isClosed_sUnion fun s hs ↦ (hS s hs).1, isOpen_sUnion fun s hs ↦ (hS s hs).2⟩
 
 lemma isClopen_iUnion (hf : ∀ i, IsClopen (f i)) : IsClopen (⋃ i, f i) :=
-  ⟨isOpen_iUnion fun i ↦ (hf i).1, isClosed_iUnion fun i ↦ (hf i).2⟩
+  ⟨isClosed_iUnion fun i ↦ (hf i).1, isOpen_iUnion fun i ↦ (hf i).2⟩
 
 lemma isClopen_iUnion₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsClopen (f i j)) :
     IsClopen (⋃ i, ⋃ j, f i j) :=
@@ -203,7 +203,7 @@ lemma specializes_iff_exterior_subset : x ⤳ y ↔ exterior {x} ⊆ exterior {y
   simp [Specializes]
 
 lemma isOpen_iff_forall_specializes : IsOpen s ↔ ∀ x y, x ⤳ y → y ∈ s → x ∈ s := by
-  refine' ⟨fun hs x y hxy ↦ hxy.mem_open hs, fun hs ↦ _⟩
+  refine ⟨fun hs x y hxy ↦ hxy.mem_open hs, fun hs ↦ ?_⟩
   simp_rw [specializes_iff_exterior_subset] at hs
   simp_rw [isOpen_iff_mem_nhds, mem_nhds_iff]
   rintro a ha
@@ -217,7 +217,7 @@ lemma Set.Finite.isCompact_exterior (hs : s.Finite) : IsCompact (exterior s) := 
   refine ⟨hs.toFinset.attach.image fun a ↦
     g a.1 <| subset_exterior <| (Finite.mem_toFinset _).1 a.2,
     (isOpen_iUnion fun i ↦ isOpen_iUnion ?_).exterior_subset.2 ?_⟩
-  exact fun _ ↦ hf _
+  · exact fun _ ↦ hf _
   refine fun a ha ↦ mem_iUnion₂.2 ⟨_, ?_, hg _ <| subset_exterior ha⟩
   simp only [Finset.mem_image, Finset.mem_attach, true_and, Subtype.exists, Finite.mem_toFinset]
   exact ⟨a, ha, rfl⟩

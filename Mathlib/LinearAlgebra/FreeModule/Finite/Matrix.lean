@@ -89,7 +89,7 @@ theorem cardinal_mk_algHom_le_rank : #(M →ₐ[K] L) ≤ lift.{v} (Module.rank 
     rw [lift_id, FiniteDimensional.rank_linearMap_self]
 
 theorem card_algHom_le_finrank : Nat.card (M →ₐ[K] L) ≤ finrank K M := by
-  convert toNat_le_of_le_of_lt_aleph0 ?_ (cardinal_mk_algHom_le_rank K M L)
+  convert toNat_le_toNat (cardinal_mk_algHom_le_rank K M L) ?_
   · rw [toNat_lift, finrank]
   · rw [lift_lt_aleph0]; have := Module.nontrivial K L; apply rank_lt_aleph0
 
@@ -114,7 +114,7 @@ theorem Matrix.rank_vecMulVec {K m n : Type u} [CommRing K] [Fintype n]
     [DecidableEq n] (w : m → K) (v : n → K) : (Matrix.vecMulVec w v).toLin'.rank ≤ 1 := by
   nontriviality K
   rw [Matrix.vecMulVec_eq, Matrix.toLin'_mul]
-  refine' le_trans (LinearMap.rank_comp_le_left _ _) _
-  refine' (LinearMap.rank_le_domain _).trans_eq _
+  refine le_trans (LinearMap.rank_comp_le_left _ _) ?_
+  refine (LinearMap.rank_le_domain _).trans_eq ?_
   rw [rank_fun', Fintype.card_unit, Nat.cast_one]
 #align matrix.rank_vec_mul_vec Matrix.rank_vecMulVec
