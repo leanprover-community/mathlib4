@@ -1,7 +1,6 @@
 /-
 Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Isometries of emetric and metric spaces
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Topology.MetricSpace.Antilipschitz
