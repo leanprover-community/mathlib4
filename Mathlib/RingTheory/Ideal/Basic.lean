@@ -3,10 +3,11 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.Tactic.FinCases
-import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.Algebra.Field.IsField
+import Mathlib.Data.Fin.VecNotation
+import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.LinearAlgebra.Span
+import Mathlib.Tactic.FinCases
 
 #align_import ring_theory.ideal.basic from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
