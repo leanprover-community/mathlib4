@@ -85,7 +85,7 @@ lemma hasDerivAt_Gamma_nat (n : ℕ) :
   (deriv_Gamma_nat n).symm ▸
     (differentiableAt_Gamma fun m ↦ (by linarith : (n : ℝ) + 1 ≠ -m)).hasDerivAt
 
-lemma γ_eq_neg_deriv : γ = -deriv Gamma 1 := by
+lemma eulerMascheroniConstant_eq_neg_deriv : γ = -deriv Gamma 1 := by
   rw [show (1 : ℝ) = ↑(0 : ℕ) + 1 by simp, deriv_Gamma_nat 0]
   simp
 
@@ -174,8 +174,8 @@ lemma hasDerivAt_Gamma_nat (n : ℕ) :
 /-- Explicit formula for the derivative of the complex Gamma function at positive integers, in
 terms of harmonic numbers and the Euler-Mascheroni constant `γ`. -/
 lemma deriv_Gamma_nat (n : ℕ) :
-    deriv Gamma (n + 1) = (n)! * (-γ + harmonic n) := by
-  exact (hasDerivAt_Gamma_nat n).deriv
+    deriv Gamma (n + 1) = (n)! * (-γ + harmonic n) :=
+  (hasDerivAt_Gamma_nat n).deriv
 
 lemma hasDerivAt_Gamma_one : HasDerivAt Gamma (-γ) 1 := by
   simpa only [factorial_zero, cast_one, harmonic_zero, Rat.cast_zero, add_zero, mul_neg, one_mul,
