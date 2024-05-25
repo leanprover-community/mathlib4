@@ -31,17 +31,13 @@ open TopologicalSpace Opposite CategoryTheory
 
 universe v u w
 
-attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
-/- Previously, this had accidentally been made a global instance, and we now turn it on locally as
-convenient. -/
-
 namespace TopCat
 
 namespace Presheaf
 
 variable {X : TopCat.{w}} {C : Type u} [Category.{v} C] [ConcreteCategory C]
 
-attribute [local instance 1000] ConcreteCategory.hasCoeToSort
+attribute [local instance 1000] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
 /-- A subpresheaf with a submonoid structure on each of the components. -/
 structure SubmonoidPresheaf [∀ X : C, MulOneClass X] [∀ X Y : C, MonoidHomClass (X ⟶ Y) X Y]
