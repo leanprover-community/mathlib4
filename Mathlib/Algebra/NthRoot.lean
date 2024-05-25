@@ -31,7 +31,7 @@ macro_rules | `(∛ $r:term) => `(NthRoot.nthRoot 3 $r)
 macro_rules | `(∜ $r:term) => `(NthRoot.nthRoot 4 $r)
 macro_rules | `($n:superscript √ $r:term) => `(NthRoot.nthRoot $n $r)
 
-/-- Print `nthRoot` with the appropriate symbol-/
+/-- Print `nthRoot` with the appropriate symbol. -/
 @[app_unexpander NthRoot.nthRoot]
 def NthRoot.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $n $a) =>
