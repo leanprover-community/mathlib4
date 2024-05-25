@@ -3,9 +3,9 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Tactic.IntervalCases
-import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Data.Nat.Factorial.BigOperators
 import Mathlib.Data.Nat.Multiplicity
+import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.GCongr
 
 #align_import imo.imo2019_q4 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
@@ -40,7 +40,7 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
   have h2 : ∑ i in range n, i < k := by
     suffices multiplicity 2 (k ! : ℤ) = ↑(∑ i in range n, i : ℕ) by
       rw [← PartENat.coe_lt_coe, ← this]; change multiplicity ((2 : ℕ) : ℤ) _ < _
-      simp_rw [Int.coe_nat_multiplicity, multiplicity_two_factorial_lt hk.lt.ne.symm]
+      simp_rw [Int.natCast_multiplicity, multiplicity_two_factorial_lt hk.lt.ne.symm]
     rw [h, multiplicity.Finset.prod Int.prime_two, Nat.cast_sum]
     apply sum_congr rfl; intro i hi
     rw [multiplicity_sub_of_gt, multiplicity_pow_self_of_prime Int.prime_two]
@@ -97,9 +97,9 @@ theorem imo2019_q4 {k n : ℕ} (hk : k > 0) (hn : n > 0) :
     norm_num
   all_goals exfalso; norm_num [prod_range_succ] at h; norm_cast at h
   -- n = 3
-  · refine' monotone_factorial.ne_of_lt_of_lt_nat 5 _ _ _ h <;> decide
+  · refine monotone_factorial.ne_of_lt_of_lt_nat 5 ?_ ?_ _ h <;> decide
   -- n = 4
-  · refine' monotone_factorial.ne_of_lt_of_lt_nat 7 _ _ _ h <;> decide
+  · refine monotone_factorial.ne_of_lt_of_lt_nat 7 ?_ ?_ _ h <;> decide
   -- n = 5
-  · refine' monotone_factorial.ne_of_lt_of_lt_nat 10 _ _ _ h <;> decide
+  · refine monotone_factorial.ne_of_lt_of_lt_nat 10 ?_ ?_ _ h <;> decide
 #align imo2019_q4 imo2019_q4

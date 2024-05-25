@@ -104,19 +104,19 @@ theorem sub_add_cancel_of_le [IsFiniteMeasure ν] (h₁ : ν ≤ μ) : μ - ν +
 
 theorem restrict_sub_eq_restrict_sub_restrict (h_meas_s : MeasurableSet s) :
     (μ - ν).restrict s = μ.restrict s - ν.restrict s := by
-  repeat' rw [sub_def]
+  repeat rw [sub_def]
   have h_nonempty : { d | μ ≤ d + ν }.Nonempty := ⟨μ, Measure.le_add_right le_rfl⟩
   rw [restrict_sInf_eq_sInf_restrict h_nonempty h_meas_s]
   apply le_antisymm
-  · refine' sInf_le_sInf_of_forall_exists_le _
+  · refine sInf_le_sInf_of_forall_exists_le ?_
     intro ν' h_ν'_in
     rw [mem_setOf_eq] at h_ν'_in
-    refine' ⟨ν'.restrict s, _, restrict_le_self⟩
-    refine' ⟨ν' + (⊤ : Measure α).restrict sᶜ, _, _⟩
+    refine ⟨ν'.restrict s, ?_, restrict_le_self⟩
+    refine ⟨ν' + (⊤ : Measure α).restrict sᶜ, ?_, ?_⟩
     · rw [mem_setOf_eq, add_right_comm, Measure.le_iff]
       intro t h_meas_t
-      repeat' rw [← measure_inter_add_diff t h_meas_s]
-      refine' add_le_add _ _
+      repeat rw [← measure_inter_add_diff t h_meas_s]
+      refine add_le_add ?_ ?_
       · rw [add_apply, add_apply]
         apply le_add_right _
         rw [← restrict_eq_self μ (inter_subset_right _ _),
@@ -128,8 +128,8 @@ theorem restrict_sub_eq_restrict_sub_restrict (h_meas_s : MeasurableSet s) :
         exact Measure.le_iff'.1 h_mu_le_add_top _
     · ext1 t h_meas_t
       simp [restrict_apply h_meas_t, restrict_apply (h_meas_t.inter h_meas_s), inter_assoc]
-  · refine' sInf_le_sInf_of_forall_exists_le _
-    refine' forall_mem_image.2 fun t h_t_in => ⟨t.restrict s, _, le_rfl⟩
+  · refine sInf_le_sInf_of_forall_exists_le ?_
+    refine forall_mem_image.2 fun t h_t_in => ⟨t.restrict s, ?_, le_rfl⟩
     rw [Set.mem_setOf_eq, ← restrict_add]
     exact restrict_mono Subset.rfl h_t_in
 #align measure_theory.measure.restrict_sub_eq_restrict_sub_restrict MeasureTheory.Measure.restrict_sub_eq_restrict_sub_restrict

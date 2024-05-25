@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
 import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Algebra.Polynomial.Monic
 import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Data.Polynomial.Monic
 import Mathlib.LinearAlgebra.Vandermonde
 import Mathlib.RingTheory.Polynomial.Pochhammer
 
@@ -97,7 +97,7 @@ theorem superFactorial_four_mul (n : ℕ) :
     sf (4 * n) = ((∏ i in range (2 * n), (2 * i + 1) !) * 2 ^ n) ^ 2 * (2 * n) ! :=
   calc
     sf (4 * n) = (∏ i in range (2 * n), (2 * i + 1) !) ^ 2 * 2 ^ (2 * n) * (2 * n) ! := by
-      rw [← superFactorial_two_mul, ← mul_assoc]
+      rw [← superFactorial_two_mul, ← mul_assoc, Nat.mul_two]
     _ = ((∏ i in range (2 * n), (2 * i + 1) !) * 2 ^ n) ^ 2 * (2 * n) ! := by
       rw [pow_mul', mul_pow]
 

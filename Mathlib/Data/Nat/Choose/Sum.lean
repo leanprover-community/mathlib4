@@ -3,13 +3,13 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Patrick Stevens
 -/
-import Mathlib.Data.Nat.Choose.Basic
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.Linarith
-import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
+import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Data.Nat.Choose.Basic
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
 
 #align_import data.nat.choose.sum from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
@@ -52,21 +52,21 @@ theorem add_pow (h : Commute x y) (n : ℕ) :
     dsimp only [t]
     rw [Function.comp_apply, choose_succ_succ, Nat.cast_add, mul_add]
     congr 1
-    · rw [pow_succ x, succ_sub_succ, mul_assoc, mul_assoc, mul_assoc]
+    · rw [pow_succ' x, succ_sub_succ, mul_assoc, mul_assoc, mul_assoc]
     · rw [← mul_assoc y, ← mul_assoc y, (h.symm.pow_right i.succ).eq]
       by_cases h_eq : i = n
       · rw [h_eq, choose_succ_self, Nat.cast_zero, mul_zero, mul_zero]
       · rw [succ_sub (lt_of_le_of_ne h_le h_eq)]
-        rw [pow_succ y, mul_assoc, mul_assoc, mul_assoc, mul_assoc]
+        rw [pow_succ' y, mul_assoc, mul_assoc, mul_assoc, mul_assoc]
   induction' n with n ih
   · rw [_root_.pow_zero, sum_range_succ, range_zero, sum_empty, zero_add]
     dsimp only [t]
     rw [_root_.pow_zero, _root_.pow_zero, choose_self, Nat.cast_one, mul_one, mul_one]
   · rw [sum_range_succ', h_first]
     erw [sum_congr rfl (h_middle n), sum_add_distrib, add_assoc]
-    rw [pow_succ (x + y), ih, add_mul, mul_sum, mul_sum]
+    rw [pow_succ' (x + y), ih, add_mul, mul_sum, mul_sum]
     congr 1
-    rw [sum_range_succ', sum_range_succ, h_first, h_last, mul_zero, add_zero, _root_.pow_succ]
+    rw [sum_range_succ', sum_range_succ, h_first, h_last, mul_zero, add_zero, _root_.pow_succ']
 #align commute.add_pow Commute.add_pow
 
 /-- A version of `Commute.add_pow` that avoids ℕ-subtraction by summing over the antidiagonal and
@@ -162,14 +162,14 @@ namespace Finset
 theorem sum_powerset_apply_card {α β : Type*} [AddCommMonoid α] (f : ℕ → α) {x : Finset β} :
     ∑ m in x.powerset, f m.card = ∑ m in range (x.card + 1), x.card.choose m • f m := by
   trans ∑ m in range (x.card + 1), ∑ j in x.powerset.filter fun z ↦ z.card = m, f j.card
-  · refine' (sum_fiberwise_of_maps_to _ _).symm
+  · refine (sum_fiberwise_of_maps_to ?_ _).symm
     intro y hy
     rw [mem_range, Nat.lt_succ_iff]
     rw [mem_powerset] at hy
     exact card_le_card hy
-  · refine' sum_congr rfl fun y _ ↦ _
+  · refine sum_congr rfl fun y _ ↦ ?_
     rw [← card_powersetCard, ← sum_const]
-    refine' sum_congr powersetCard_eq_filter.symm fun z hz ↦ _
+    refine sum_congr powersetCard_eq_filter.symm fun z hz ↦ ?_
     rw [(mem_powersetCard.1 hz).2]
 #align finset.sum_powerset_apply_card Finset.sum_powerset_apply_card
 
@@ -183,7 +183,7 @@ theorem sum_powerset_neg_one_pow_card_of_nonempty {α : Type*} {x : Finset α} (
     (∑ m in x.powerset, (-1 : ℤ) ^ m.card) = 0 := by
   classical
     rw [sum_powerset_neg_one_pow_card, if_neg]
-    rw [← Ne.def, ← nonempty_iff_ne_empty]
+    rw [← Ne, ← nonempty_iff_ne_empty]
     apply h0
 #align finset.sum_powerset_neg_one_pow_card_of_nonempty Finset.sum_powerset_neg_one_pow_card_of_nonempty
 
@@ -234,5 +234,12 @@ theorem sum_antidiagonal_choose_succ_mul (f : ℕ → ℕ → R) (n : ℕ) :
         ∑ ij in antidiagonal n, (n.choose ij.2 : R) * f (ij.1 + 1) ij.2 := by
   simpa only [nsmul_eq_mul] using sum_antidiagonal_choose_succ_nsmul f n
 #align finset.sum_antidiagonal_choose_succ_mul Finset.sum_antidiagonal_choose_succ_mul
+
+theorem sum_antidiagonal_choose_add (d n : ℕ) :
+    (Finset.sum (antidiagonal n) fun ij => (d + ij.2).choose d) =
+    (d + n).choose d + (d + n).choose (succ d) := by
+  induction n with
+  | zero => simp
+  | succ n hn => simpa [Nat.sum_antidiagonal_succ] using hn
 
 end Finset

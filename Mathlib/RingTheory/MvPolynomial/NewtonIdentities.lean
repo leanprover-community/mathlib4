@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Lee
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.Algebra.MvPolynomial.Rename
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.MvPolynomial.CommRing
-import Mathlib.Data.MvPolynomial.Rename
 import Mathlib.RingTheory.MvPolynomial.Symmetric
 
 /-!
@@ -127,7 +127,8 @@ private theorem weight_add_weight_pairMap {k : ℕ} (t : Finset σ × σ) (h : t
   · rw [pairMap_of_snd_nmem_fst σ h1]
     simp only [mul_comm, mul_assoc (∏ a in t.fst, X a), card_cons, prod_cons]
     nth_rewrite 2 [← pow_one (X t.snd)]
-    simp only [← pow_add, ← Nat.add_sub_assoc (Nat.lt_of_le_of_ne h.left (mt h.right h1)), add_comm]
+    simp only [← pow_add, ← Nat.add_sub_assoc (Nat.lt_of_le_of_ne h.left (mt h.right h1)), add_comm,
+      Nat.succ_eq_add_one, Nat.add_sub_add_right]
     rw [← neg_neg ((-1 : MvPolynomial σ R) ^ card t.fst), h2]
     simp
 
@@ -180,7 +181,7 @@ private theorem disjUnion_filter_pairs_eq_pairs (k : ℕ) :
   simp only [disjUnion_eq_union, Finset.ext_iff, pairs, filter_filter, mem_filter]
   intro a
   rw [← filter_or, mem_filter]
-  refine' ⟨fun ha ↦ by tauto, fun ha ↦ _⟩
+  refine ⟨fun ha ↦ by tauto, fun ha ↦ ?_⟩
   have hacard := le_iff_lt_or_eq.mp ha.2.1
   tauto
 
@@ -199,9 +200,9 @@ private theorem esymm_mul_psum_summand_to_weight (k : ℕ) (a : ℕ × ℕ) (ha 
     (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd := by
   simp only [esymm, psum_def, weight, ← mul_assoc, mul_sum]
   rw [sum_comm]
-  refine' sum_congr rfl fun x _ ↦ _
+  refine sum_congr rfl fun x _ ↦ ?_
   rw [sum_mul]
-  refine' sum_congr rfl fun s hs ↦ _
+  refine sum_congr rfl fun s hs ↦ ?_
   rw [mem_powersetCard_univ.mp hs, ← mem_antidiagonal.mp ha, add_sub_self_left]
 
 private theorem esymm_mul_psum_to_weight (k : ℕ) :
@@ -252,7 +253,7 @@ theorem psum_eq_mul_esymm_sub_sum (k : ℕ) (h : 0 < k) : psum σ R k =
   have sub_both_sides := congrArg (· - (-1 : MvPolynomial σ R) ^ (k + 1) *
     ∑ a in ((antidiagonal k).filter (fun a ↦ a.fst < k)).filter (fun a ↦ 0 < a.fst),
     (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd) hesymm
-  simp only [left_distrib, add_sub_cancel'] at sub_both_sides
+  simp only [left_distrib, add_sub_cancel_left] at sub_both_sides
   have sub_both_sides := congrArg ((-1 : MvPolynomial σ R) ^ (k + 1) * ·) sub_both_sides
   simp only [mul_sub_left_distrib, ← mul_assoc, ← pow_add, Even.neg_one_pow ⟨k + 1, rfl⟩, one_mul,
     not_le, lt_one_iff, filter_filter (fun a : ℕ × ℕ ↦ a.fst < k) (fun a ↦ ¬0 < a.fst)]
@@ -260,7 +261,7 @@ theorem psum_eq_mul_esymm_sub_sum (k : ℕ) (h : 0 < k) : psum σ R k =
   have : filter (fun a ↦ a.fst < k ∧ ¬0 < a.fst) (antidiagonal k) = {(0, k)} := by
     ext a
     rw [mem_filter, mem_antidiagonal, mem_singleton]
-    refine' ⟨_, fun ha ↦ by aesop⟩
+    refine ⟨?_, by rintro rfl; omega⟩
     rintro ⟨ha, ⟨_, ha0⟩⟩
     rw [← ha, Nat.eq_zero_of_not_pos ha0, zero_add, ← Nat.eq_zero_of_not_pos ha0]
   rw [this, sum_singleton] at sub_both_sides

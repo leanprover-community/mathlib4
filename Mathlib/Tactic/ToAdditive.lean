@@ -11,9 +11,9 @@ import Mathlib.Lean.EnvExtension
 import Mathlib.Lean.Meta.Simp
 import Lean.Elab.Tactic.Ext
 import Lean.Meta.Tactic.Symm
-import Std.Lean.NameMapAttribute
-import Std.Tactic.Lint -- useful to lint this file and for for DiscrTree.elements
-import Std.Tactic.Relation.Rfl -- just to copy the attribute
+import Lean.Meta.Tactic.Rfl
+import Batteries.Lean.NameMapAttribute
+import Batteries.Tactic.Lint -- useful to lint this file and for for DiscrTree.elements
 import Mathlib.Tactic.Relation.Trans -- just to copy the attribute
 import Mathlib.Tactic.Eqns -- just to copy the attribute
 import Mathlib.Tactic.Simps.Basic
@@ -47,7 +47,7 @@ has a doc string, a doc string for the additive version should be passed explici
 ```
 /-- Multiplication is commutative -/
 @[to_additive "Addition is commutative"]
-theorem mul_comm' {α} [comm_semigroup α] (x y : α) : x * y = y * x := comm_semigroup.mul_comm
+theorem mul_comm' {α} [CommSemigroup α] (x y : α) : x * y = y * x := CommSemigroup.mul_comm
 ```
 
 The transport tries to do the right thing in most cases using several
@@ -64,7 +64,7 @@ Use the `(attr := ...)` syntax to apply attributes to both the multiplicative an
 version:
 
 ```
-@[to_additive (attr := simp)] lemma mul_one' {G : Type*} [group G] (x : G) : x * 1 = x := mul_one x
+@[to_additive (attr := simp)] lemma mul_one' {G : Type*} [Group G] (x : G) : x * 1 = x := mul_one x
 ```
 
 For `simp` and `simps` this also ensures that some generated lemmas are added to the additive
@@ -90,9 +90,9 @@ that have previously been labeled with `to_additive`.
 
 In the `mul_comm'` example above, `to_additive` maps:
 * `mul_comm'` to `add_comm'`,
-* `comm_semigroup` to `add_comm_semigroup`,
+* `CommSemigroup` to `AddCommSemigroup`,
 * `x * y` to `x + y` and `y * x` to `y + x`, and
-* `comm_semigroup.mul_comm'` to `add_comm_semigroup.add_comm'`.
+* `CommSemigroup.mul_comm'` to `AddCommSemigroup.add_comm'`.
 
 ### Heuristics
 
@@ -106,7 +106,7 @@ Examples:
 * `@Mul.mul Nat n m` (i.e. `(n * m : Nat)`) will not change to `+`, since its
   first argument is `Nat`, an identifier not applied to any arguments.
 * `@Mul.mul (α × β) x y` will change to `+`. It's first argument contains only the identifier
-  `prod`, but this is applied to arguments, `α` and `β`.
+  `Prod`, but this is applied to arguments, `α` and `β`.
 * `@Mul.mul (α × Int) x y` will not change to `+`, since its first argument contains `Int`.
 
 The reasoning behind the heuristic is that the first argument is the type which is "additivized",
@@ -214,18 +214,18 @@ In this case `to_additive` adds all structure fields to its mapping.
 
 * [todo] Namespaces can be transformed using `map_namespace`. For example:
   ```
-  run_cmd to_additive.map_namespace `quotient_group `quotient_add_group
+  run_cmd to_additive.map_namespace `QuotientGroup `QuotientAddGroup
   ```
 
-  Later uses of `to_additive` on declarations in the `quotient_group`
-  namespace will be created in the `quotient_add_group` namespaces.
+  Later uses of `to_additive` on declarations in the `QuotientGroup`
+  namespace will be created in the `QuotientAddGroup` namespaces.
 
 * If `@[to_additive]` is called with a `name` argument `new_name`
   /without a dot/, then `to_additive` updates the prefix as described
   above, then replaces the last part of the name with `new_name`.
 
 * If `@[to_additive]` is called with a `name` argument
-  `new_namespace.new_name` /with a dot/, then `to_additive` uses this
+  `NewNamespace.new_name` /with a dot/, then `to_additive` uses this
   new name as is.
 
 As a safety check, in the first case `to_additive` double checks
@@ -453,9 +453,9 @@ structure Config : Type where
   /-- View the trace of the to_additive procedure.
   Equivalent to `set_option trace.to_additive true`. -/
   trace : Bool := false
-  /-- The name of the target (the additive declaration).-/
+  /-- The name of the target (the additive declaration). -/
   tgt : Name := Name.anonymous
-  /-- An optional doc string.-/
+  /-- An optional doc string. -/
   doc : Option String := none
   /-- If `allowAutoName` is `false` (default) then
   `@[to_additive]` will check whether the given name can be auto-generated. -/
@@ -491,7 +491,7 @@ open Lean.Expr.FindImpl in
   and we're not remembering the cache between these calls. -/
 unsafe def additiveTestUnsafe (findTranslation? : Name → Option Name)
   (ignore : Name → Option (List ℕ)) (e : Expr) : Option Name :=
-  let rec visit (e : Expr) (inApp := false) : OptionT FindM Name := do
+  let rec visit (e : Expr) (inApp := false) : OptionT (FindM Id) Name := do
     if e.isConst then
       if inApp || (findTranslation? e.constName).isSome then
         failure
@@ -636,7 +636,7 @@ where /-- Implementation of `applyReplacementFun`. -/
       return some <| .proj n₁ idx <| ← r e
     | _ => return none
 
-/-- Eta expands `e` at most `n` times.-/
+/-- Eta expands `e` at most `n` times. -/
 def etaExpandN (n : Nat) (e : Expr) : MetaM Expr := do
   forallBoundedTelescope (← inferType e) (some n) fun xs _ ↦ mkLambdaFVars xs (mkAppN e xs)
 
@@ -925,6 +925,7 @@ def nameDict : String → List String
   | "hdiv"        => ["hsub"]
   | "hpow"        => ["hsmul"]
   | "finprod"     => ["finsum"]
+  | "tprod"       => ["tsum"]
   | "pow"         => ["nsmul"]
   | "npow"        => ["nsmul"]
   | "zpow"        => ["zsmul"]
@@ -945,6 +946,7 @@ def nameDict : String → List String
   | "semiconj"    => ["add", "Semiconj"]
   | "zpowers"     => ["zmultiples"]
   | "powers"      => ["multiples"]
+  | "multipliable"=> ["summable"]
   | x             => [x]
 
 /--
@@ -1004,6 +1006,10 @@ def fixAbbreviation : List String → List String
   | "Is" :: "Left" :: "Regular" :: s  => "IsAddLeftRegular" :: fixAbbreviation s
   | "is" :: "Right" :: "Regular" :: s => "isAddRightRegular" :: fixAbbreviation s
   | "Is" :: "Right" :: "Regular" :: s => "IsAddRightRegular" :: fixAbbreviation s
+  | "Has" :: "Fundamental" :: "Domain" :: s => "HasAddFundamentalDomain" :: fixAbbreviation s
+  | "has" :: "Fundamental" :: "Domain" :: s => "hasAddFundamentalDomain" :: fixAbbreviation s
+  | "Quotient" :: "Measure" :: s => "AddQuotientMeasure" :: fixAbbreviation s
+  | "quotient" :: "Measure" :: s => "addQuotientMeasure" :: fixAbbreviation s
   -- the capitalization heuristic of `applyNameDict` doesn't work in the following cases
   | "HSmul" :: s                      => "HSMul" :: fixAbbreviation s -- from `HPow`
   | "NSmul" :: s                      => "NSMul" :: fixAbbreviation s -- from `NPow`
@@ -1025,6 +1031,8 @@ def fixAbbreviation : List String → List String
                                       => "function" :: "_" :: "commute" :: fixAbbreviation s
   | "zero" :: "Le" :: "Part" :: s         => "posPart" :: fixAbbreviation s
   | "le" :: "Zero" :: "Part" :: s         => "negPart" :: fixAbbreviation s
+  | "three" :: "GPFree" :: s         => "three" :: "APFree" :: fixAbbreviation s
+  | "Three" :: "GPFree" :: s         => "Three" :: "APFree" :: fixAbbreviation s
   | x :: s                            => x :: fixAbbreviation s
   | []                                => []
 
@@ -1086,7 +1094,8 @@ def proceedFields (src tgt : Name) : CoreM Unit := do
     else
       return #[]
   aux fun declName ↦ do match (← getEnv).find? declName with
-    | some (ConstantInfo.inductInfo {ctors := ctors, ..}) => return ctors.toArray.map (·.getString)
+    | some (ConstantInfo.inductInfo {ctors := ctors, ..}) =>
+        return ctors.toArray.map (.mkSimple ·.lastComponentAsString)
     | _ => pure #[]
 
 /-- Elaboration of the configuration options for `to_additive`. -/
@@ -1133,7 +1142,7 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
         {src} and the target declaration {tgt}."
     warnAttr stx Lean.Elab.Tactic.Ext.extExtension
       (fun b n => (b.tree.values.any fun t => t.declName = n)) thisAttr `ext src tgt
-    warnAttr stx Std.Tactic.reflExt (·.values.contains ·) thisAttr `refl src tgt
+    warnAttr stx Lean.Meta.Rfl.reflExt (·.values.contains ·) thisAttr `refl src tgt
     warnAttr stx Lean.Meta.Symm.symmExt (·.values.contains ·) thisAttr `symm src tgt
     warnAttr stx Mathlib.Tactic.transExt (·.values.contains ·) thisAttr `trans src tgt
     warnAttr stx Lean.Meta.coeExt (·.contains ·) thisAttr `coe src tgt
@@ -1289,7 +1298,7 @@ has a doc string, a doc string for the additive version should be passed explici
 ```
 /-- Multiplication is commutative -/
 @[to_additive "Addition is commutative"]
-theorem mul_comm' {α} [comm_semigroup α] (x y : α) : x * y = y * x := comm_semigroup.mul_comm
+theorem mul_comm' {α} [CommSemigroup α] (x y : α) : x * y = y * x := CommSemigroup.mul_comm
 ```
 
 The transport tries to do the right thing in most cases using several
@@ -1306,7 +1315,7 @@ Use the `(attr := ...)` syntax to apply attributes to both the multiplicative an
 version:
 
 ```
-@[to_additive (attr := simp)] lemma mul_one' {G : Type*} [group G] (x : G) : x * 1 = x := mul_one x
+@[to_additive (attr := simp)] lemma mul_one' {G : Type*} [Group G] (x : G) : x * 1 = x := mul_one x
 ```
 
 For `simp` and `simps` this also ensures that some generated lemmas are added to the additive
@@ -1332,9 +1341,9 @@ that have previously been labeled with `to_additive`.
 
 In the `mul_comm'` example above, `to_additive` maps:
 * `mul_comm'` to `add_comm'`,
-* `comm_semigroup` to `add_comm_semigroup`,
+* `CommSemigroup` to `AddCommSemigroup`,
 * `x * y` to `x + y` and `y * x` to `y + x`, and
-* `comm_semigroup.mul_comm'` to `add_comm_semigroup.add_comm'`.
+* `CommSemigroup.mul_comm'` to `AddCommSemigroup.add_comm'`.
 
 ### Heuristics
 
@@ -1348,7 +1357,7 @@ Examples:
 * `@Mul.mul Nat n m` (i.e. `(n * m : Nat)`) will not change to `+`, since its
   first argument is `Nat`, an identifier not applied to any arguments.
 * `@Mul.mul (α × β) x y` will change to `+`. It's first argument contains only the identifier
-  `prod`, but this is applied to arguments, `α` and `β`.
+  `Prod`, but this is applied to arguments, `α` and `β`.
 * `@Mul.mul (α × Int) x y` will not change to `+`, since its first argument contains `Int`.
 
 The reasoning behind the heuristic is that the first argument is the type which is "additivized",
@@ -1456,18 +1465,18 @@ In this case `to_additive` adds all structure fields to its mapping.
 
 * [todo] Namespaces can be transformed using `map_namespace`. For example:
   ```
-  run_cmd to_additive.map_namespace `quotient_group `quotient_add_group
+  run_cmd to_additive.map_namespace `QuotientGroup `QuotientAddGroup
   ```
 
-  Later uses of `to_additive` on declarations in the `quotient_group`
-  namespace will be created in the `quotient_add_group` namespaces.
+  Later uses of `to_additive` on declarations in the `QuotientGroup`
+  namespace will be created in the `QuotientAddGroup` namespaces.
 
 * If `@[to_additive]` is called with a `name` argument `new_name`
   /without a dot/, then `to_additive` updates the prefix as described
   above, then replaces the last part of the name with `new_name`.
 
 * If `@[to_additive]` is called with a `name` argument
-  `new_namespace.new_name` /with a dot/, then `to_additive` uses this
+  `NewNamespace.new_name` /with a dot/, then `to_additive` uses this
   new name as is.
 
 As a safety check, in the first case `to_additive` double checks

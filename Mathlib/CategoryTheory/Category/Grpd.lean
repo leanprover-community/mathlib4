@@ -91,11 +91,11 @@ def forgetToCat : Grpd.{v, u} ⥤ Cat.{v, u} where
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.forget_to_Cat CategoryTheory.Grpd.forgetToCat
 
-instance forgetToCatFull : Full forgetToCat where preimage := id
+instance forgetToCat_full : forgetToCat.Full where map_surjective f := ⟨f, rfl⟩
 set_option linter.uppercaseLean3 false in
-#align category_theory.Groupoid.forget_to_Cat_full CategoryTheory.Grpd.forgetToCatFull
+#align category_theory.Groupoid.forget_to_Cat_full CategoryTheory.Grpd.forgetToCat_full
 
-instance forgetToCat_faithful : Faithful forgetToCat where
+instance forgetToCat_faithful : forgetToCat.Faithful where
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.forget_to_Cat_faithful CategoryTheory.Grpd.forgetToCat_faithful
 

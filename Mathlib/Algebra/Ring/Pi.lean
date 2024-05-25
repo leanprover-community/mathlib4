@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
 import Mathlib.Algebra.Group.Pi.Lemmas
+import Mathlib.Algebra.GroupWithZero.Pi
 import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.Algebra.Ring.Hom.Defs
 
@@ -41,6 +42,18 @@ instance distrib [∀ i, Distrib <| f i] : Distrib (∀ i : I, f i) :=
 instance hasDistribNeg [∀ i, Mul (f i)] [∀ i, HasDistribNeg (f i)] : HasDistribNeg (∀ i, f i) where
   neg_mul _ _ := funext fun _ ↦ neg_mul _ _
   mul_neg _ _ := funext fun _ ↦ mul_neg _ _
+
+instance addMonoidWithOne [∀ i, AddMonoidWithOne (f i)] : AddMonoidWithOne (∀ i, f i) where
+  natCast n _ := n
+  natCast_zero := funext fun _ ↦ AddMonoidWithOne.natCast_zero
+  natCast_succ n := funext fun _ ↦ AddMonoidWithOne.natCast_succ n
+
+instance addGroupWithOne [∀ i, AddGroupWithOne (f i)] : AddGroupWithOne (∀ i, f i) where
+  __ := addGroup
+  __ := addMonoidWithOne
+  intCast n _ := n
+  intCast_ofNat n := funext fun _ ↦ AddGroupWithOne.intCast_ofNat n
+  intCast_negSucc n := funext fun _ ↦ AddGroupWithOne.intCast_negSucc n
 
 instance nonUnitalNonAssocSemiring [∀ i, NonUnitalNonAssocSemiring <| f i] :
     NonUnitalNonAssocSemiring (∀ i : I, f i) :=

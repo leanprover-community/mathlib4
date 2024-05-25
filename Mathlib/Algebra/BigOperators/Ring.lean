@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Ring.Multiset
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Data.Fintype.Powerset
+import Mathlib.Data.Int.Cast.Lemmas
 
 #align_import algebra.big_operators.ring from "leanprover-community/mathlib"@"b2c89893177f66a48daf993b7ba5ef7cddeff8c9"
 
@@ -19,8 +21,36 @@ multiplicative and additive structures on the values being combined.
 open Fintype
 open scoped BigOperators
 
+variable {ι α β γ : Type*} {κ : ι → Type*} {s s₁ s₂ : Finset ι} {i : ι} {a : α} {f g : ι → α}
+
+#align monoid_hom.map_prod map_prod
+#align add_monoid_hom.map_sum map_sum
+#align mul_equiv.map_prod map_prod
+#align add_equiv.map_sum map_sum
+#align ring_hom.map_list_prod map_list_prod
+#align ring_hom.map_list_sum map_list_sum
+#align ring_hom.unop_map_list_prod unop_map_list_prod
+#align ring_hom.map_multiset_prod map_multiset_prod
+#align ring_hom.map_multiset_sum map_multiset_sum
+#align ring_hom.map_prod map_prod
+#align ring_hom.map_sum map_sum
+
 namespace Finset
-variable {ι α : Type*} {κ : ι → Type*} {s s₁ s₂ : Finset ι} {i : ι} {a : α} {f g : ι → α}
+
+section AddCommMonoidWithOne
+variable [AddCommMonoidWithOne α]
+
+lemma natCast_card_filter (p) [DecidablePred p] (s : Finset ι) :
+    ((filter p s).card : α) = ∑ a in s, if p a then (1 : α) else 0 := by
+  rw [sum_ite, sum_const_zero, add_zero, sum_const, nsmul_one]
+#align finset.nat_cast_card_filter Finset.natCast_card_filter
+
+@[simp] lemma sum_boole (p) [DecidablePred p] (s : Finset ι) :
+    (∑ x in s, if p x then 1 else 0 : α) = (s.filter p).card :=
+  (natCast_card_filter _ _).symm
+#align finset.sum_boole Finset.sum_boole
+
+end AddCommMonoidWithOne
 
 section NonUnitalNonAssocSemiring
 variable [NonUnitalNonAssocSemiring α]
@@ -37,6 +67,18 @@ lemma sum_mul_sum {κ : Type*} (s : Finset ι) (t : Finset κ) (f : ι → α) (
     (∑ i in s, f i) * ∑ j in t, g j = ∑ i in s, ∑ j in t, f i * g j := by
   simp_rw [sum_mul, ← mul_sum]
 #align finset.sum_mul_sum Finset.sum_mul_sum
+
+lemma _root_.Commute.sum_right [NonUnitalNonAssocSemiring α] (s : Finset ι) (f : ι → α) (b : α)
+    (h : ∀ i ∈ s, Commute b (f i)) : Commute b (∑ i in s, f i) :=
+  (Commute.multiset_sum_right _ _) fun b hb => by
+    obtain ⟨i, hi, rfl⟩ := Multiset.mem_map.mp hb
+    exact h _ hi
+#align commute.sum_right Commute.sum_right
+
+lemma _root_.Commute.sum_left [NonUnitalNonAssocSemiring α] (s : Finset ι) (f : ι → α) (b : α)
+    (h : ∀ i ∈ s, Commute (f i) b) : Commute (∑ i in s, f i) b :=
+  ((Commute.sum_right _ _ _) fun _i hi => (h _ hi).symm).symm
+#align commute.sum_left Commute.sum_left
 
 lemma sum_range_succ_mul_sum_range_succ (m n : ℕ) (f g : ℕ → α) :
     (∑ i in range (m + 1), f i) * ∑ i in range (n + 1), g i =
@@ -72,6 +114,16 @@ end NonAssocSemiring
 section CommSemiring
 variable [CommSemiring α]
 
+/-- If `f = g = h` everywhere but at `i`, where `f i = g i + h i`, then the product of `f` over `s`
+  is the sum of the products of `g` and `h`. -/
+theorem prod_add_prod_eq {s : Finset ι} {i : ι} {f g h : ι → α} (hi : i ∈ s)
+    (h1 : g i + h i = f i) (h2 : ∀ j ∈ s, j ≠ i → g j = f j) (h3 : ∀ j ∈ s, j ≠ i → h j = f j) :
+    (∏ i in s, g i) + ∏ i in s, h i = ∏ i in s, f i := by
+  classical
+    simp_rw [prod_eq_mul_prod_diff_singleton hi, ← h1, right_distrib]
+    congr 2 <;> apply prod_congr rfl <;> simpa
+#align finset.prod_add_prod_eq Finset.prod_add_prod_eq
+
 section DecidableEq
 variable [DecidableEq ι]
 
@@ -93,11 +145,11 @@ lemma prod_sum (s : Finset ι) (t : ∀ i, Finset (κ i)) (f : ∀ i, κ i → �
       rw [Pi.cons_same, Pi.cons_same] at this
       exact h this
     rw [prod_insert ha, pi_insert ha, ih, sum_mul, sum_biUnion h₁]
-    refine' sum_congr rfl fun b _ => _
+    refine sum_congr rfl fun b _ => ?_
     have h₂ : ∀ p₁ ∈ pi s t, ∀ p₂ ∈ pi s t, Pi.cons s a b p₁ = Pi.cons s a b p₂ → p₁ = p₂ :=
       fun p₁ _ p₂ _ eq => Pi.cons_injective ha eq
     rw [sum_image h₂, mul_sum]
-    refine' sum_congr rfl fun g _ => _
+    refine sum_congr rfl fun g _ => ?_
     rw [attach_insert, prod_insert, prod_image]
     · simp only [Pi.cons_same]
       congr with ⟨v, hv⟩
@@ -118,11 +170,11 @@ lemma prod_univ_sum [Fintype ι] (t : ∀ i, Finset (κ i)) (f : ∀ i, κ i →
 
 lemma sum_prod_piFinset {κ : Type*} [Fintype ι] (s : Finset κ) (g : ι → κ → α) :
     ∑ f in piFinset fun _ : ι ↦ s, ∏ i, g i (f i) = ∏ i, ∑ j in s, g i j := by
-  classical rw [← prod_univ_sum]
+  rw [← prod_univ_sum]
 
 lemma sum_pow' (s : Finset ι) (f : ι → α) (n : ℕ) :
     (∑ a in s, f a) ^ n = ∑ p in piFinset fun _i : Fin n ↦ s, ∏ i, f (p i) := by
-  classical convert @prod_univ_sum (Fin n) _ _ _ _ _ (fun _i ↦ s) fun _i d ↦ f d; simp
+  convert @prod_univ_sum (Fin n) _ _ _ _ _ (fun _i ↦ s) fun _i d ↦ f d; simp
 
 /-- The product of `f a + g a` over all of `s` is the sum over the powerset of `s` of the product of
 `f` over a subset `t` times the product of `g` over the complement of `t`  -/
@@ -158,7 +210,7 @@ theorem prod_add_ordered [LinearOrder ι] [CommSemiring α] (s : Finset ι) (f g
       (∏ i in s, f i) +
         ∑ i in s,
           g i * (∏ j in s.filter (· < i), (f j + g j)) * ∏ j in s.filter fun j => i < j, f j := by
-  refine' Finset.induction_on_max s (by simp) _
+  refine Finset.induction_on_max s (by simp) ?_
   clear s
   intro a s ha ihs
   have ha' : a ∉ s := fun ha' => lt_irrefl a (ha a ha')
@@ -170,19 +222,19 @@ theorem prod_add_ordered [LinearOrder ι] [CommSemiring α] (s : Finset ι) (f g
   · rw [filter_false_of_mem, prod_empty, mul_one]
     exact (forall_mem_insert _ _ _).2 ⟨lt_irrefl a, fun i hi => (ha i hi).not_lt⟩
   · rw [mul_sum]
-    refine' sum_congr rfl fun i hi => _
+    refine sum_congr rfl fun i hi => ?_
     rw [filter_insert, if_neg (ha i hi).not_lt, filter_insert, if_pos (ha i hi), prod_insert,
       mul_left_comm]
     exact mt (fun ha => (mem_filter.1 ha).1) ha'
 #align finset.prod_add_ordered Finset.prod_add_ordered
 
 /-- Summing `a^s.card * b^(n-s.card)` over all finite subsets `s` of a `Finset`
-gives `(a + b)^s.card`.-/
+gives `(a + b)^s.card`. -/
 theorem sum_pow_mul_eq_add_pow (a b : α) (s : Finset ι) :
     (∑ t in s.powerset, a ^ t.card * b ^ (s.card - t.card)) = (a + b) ^ s.card := by
   classical
   rw [← prod_const, prod_add]
-  refine' Finset.sum_congr rfl fun t ht => _
+  refine Finset.sum_congr rfl fun t ht => ?_
   rw [prod_const, prod_const, ← card_sdiff (mem_powerset.1 ht)]
 #align finset.sum_pow_mul_eq_add_pow Finset.sum_pow_mul_eq_add_pow
 
@@ -197,7 +249,7 @@ lemma _root_.Fintype.sum_pow_mul_eq_add_pow (ι : Type*) [Fintype ι] (a b : α)
 
 @[norm_cast]
 theorem prod_natCast (s : Finset ι) (f : ι → ℕ) : ↑(∏ i in s, f i : ℕ) = ∏ i in s, (f i : α) :=
-  (Nat.castRingHom α).map_prod f s
+  map_prod (Nat.castRingHom α) f s
 #align finset.prod_nat_cast Finset.prod_natCast
 
 end CommSemiring
@@ -244,3 +296,102 @@ lemma sum_div (s : Finset ι) (f : ι → α) (a : α) :
 
 end DivisionSemiring
 end Finset
+
+open Finset
+
+namespace Fintype
+variable {ι κ α : Type*} [DecidableEq ι] [Fintype ι] [Fintype κ] [CommSemiring α]
+
+lemma sum_pow (f : ι → α) (n : ℕ) : (∑ a, f a) ^ n = ∑ p : Fin n → ι, ∏ i, f (p i) := by
+  simp [sum_pow']
+
+lemma sum_mul_sum (f : ι → α) (g : κ → α) : (∑ i, f i) * ∑ j, g j = ∑ i, ∑ j, f i * g j :=
+  Finset.sum_mul_sum _ _ _ _
+
+lemma prod_add (f g : ι → α) : ∏ a, (f a + g a) = ∑ t, (∏ a in t, f a) * ∏ a in tᶜ, g a := by
+  simpa [compl_eq_univ_sdiff] using Finset.prod_add f g univ
+
+end Fintype
+
+namespace Nat
+variable {ι : Type*} {s : Finset ι} {f : ι → ℕ} {n : ℕ}
+
+protected lemma sum_div (hf : ∀ i ∈ s, n ∣ f i) : (∑ i in s, f i) / n = ∑ i in s, f i / n := by
+  obtain rfl | hn := n.eq_zero_or_pos
+  · simp
+  rw [Nat.div_eq_iff_eq_mul_left hn (dvd_sum hf), sum_mul]
+  refine sum_congr rfl fun s hs ↦ ?_
+  rw [Nat.div_mul_cancel (hf _ hs)]
+
+@[simp, norm_cast]
+lemma cast_list_sum [AddMonoidWithOne β] (s : List ℕ) : (↑s.sum : β) = (s.map (↑)).sum :=
+  map_list_sum (castAddMonoidHom β) _
+#align nat.cast_list_sum Nat.cast_list_sum
+
+@[simp, norm_cast]
+lemma cast_list_prod [Semiring β] (s : List ℕ) : (↑s.prod : β) = (s.map (↑)).prod :=
+  map_list_prod (castRingHom β) _
+#align nat.cast_list_prod Nat.cast_list_prod
+
+@[simp, norm_cast]
+lemma cast_multiset_sum [AddCommMonoidWithOne β] (s : Multiset ℕ) :
+    (↑s.sum : β) = (s.map (↑)).sum :=
+  map_multiset_sum (castAddMonoidHom β) _
+#align nat.cast_multiset_sum Nat.cast_multiset_sum
+
+@[simp, norm_cast]
+lemma cast_multiset_prod [CommSemiring β] (s : Multiset ℕ) : (↑s.prod : β) = (s.map (↑)).prod :=
+  map_multiset_prod (castRingHom β) _
+#align nat.cast_multiset_prod Nat.cast_multiset_prod
+
+@[simp, norm_cast]
+lemma cast_sum [AddCommMonoidWithOne β] (s : Finset α) (f : α → ℕ) :
+    ↑(∑ x in s, f x : ℕ) = ∑ x in s, (f x : β) :=
+  map_sum (castAddMonoidHom β) _ _
+#align nat.cast_sum Nat.cast_sum
+
+@[simp, norm_cast]
+lemma cast_prod [CommSemiring β] (f : α → ℕ) (s : Finset α) :
+    (↑(∏ i in s, f i) : β) = ∏ i in s, (f i : β) :=
+  map_prod (castRingHom β) _ _
+#align nat.cast_prod Nat.cast_prod
+
+end Nat
+
+namespace Int
+
+@[simp, norm_cast]
+lemma cast_list_sum [AddGroupWithOne β] (s : List ℤ) : (↑s.sum : β) = (s.map (↑)).sum :=
+  map_list_sum (castAddHom β) _
+#align int.cast_list_sum Int.cast_list_sum
+
+@[simp, norm_cast]
+lemma cast_list_prod [Ring β] (s : List ℤ) : (↑s.prod : β) = (s.map (↑)).prod :=
+  map_list_prod (castRingHom β) _
+#align int.cast_list_prod Int.cast_list_prod
+
+@[simp, norm_cast]
+lemma cast_multiset_sum [AddCommGroupWithOne β] (s : Multiset ℤ) :
+    (↑s.sum : β) = (s.map (↑)).sum :=
+  map_multiset_sum (castAddHom β) _
+#align int.cast_multiset_sum Int.cast_multiset_sum
+
+@[simp, norm_cast]
+lemma cast_multiset_prod {R : Type*} [CommRing R] (s : Multiset ℤ) :
+    (↑s.prod : R) = (s.map (↑)).prod :=
+  map_multiset_prod (castRingHom R) _
+#align int.cast_multiset_prod Int.cast_multiset_prod
+
+@[simp, norm_cast]
+lemma cast_sum [AddCommGroupWithOne β] (s : Finset α) (f : α → ℤ) :
+    ↑(∑ x in s, f x : ℤ) = ∑ x in s, (f x : β) :=
+  map_sum (castAddHom β) _ _
+#align int.cast_sum Int.cast_sum
+
+@[simp, norm_cast]
+lemma cast_prod {R : Type*} [CommRing R] (f : α → ℤ) (s : Finset α) :
+    (↑(∏ i in s, f i) : R) = ∏ i in s, (f i : R) :=
+  map_prod (Int.castRingHom R) _ _
+#align int.cast_prod Int.cast_prod
+
+end Int

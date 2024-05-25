@@ -3,9 +3,9 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Chris Hughes
 -/
-import Mathlib.Data.Polynomial.RingDivision
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
 #align_import ring_theory.integral_domain from "leanprover-community/mathlib"@"6e70e0d419bf686784937d64ed4bfde866ff229e"
 
@@ -61,7 +61,7 @@ def Fintype.groupWithZeroOfCancel (M : Type*) [CancelMonoidWithZero M] [Decidabl
 theorem exists_eq_pow_of_mul_eq_pow_of_coprime {R : Type*} [CommSemiring R] [IsDomain R]
     [GCDMonoid R] [Unique Rˣ] {a b c : R} {n : ℕ} (cp : IsCoprime a b) (h : a * b = c ^ n) :
     ∃ d : R, a = d ^ n := by
-  refine' exists_eq_pow_of_mul_eq_pow (isUnit_of_dvd_one _) h
+  refine exists_eq_pow_of_mul_eq_pow (isUnit_of_dvd_one ?_) h
   obtain ⟨x, y, hxy⟩ := cp
   rw [← hxy]
   exact  -- Porting note: added `GCDMonoid.` twice
@@ -77,9 +77,9 @@ theorem Finset.exists_eq_pow_of_mul_eq_pow_of_coprime {ι R : Type*} [CommSemiri
   classical
     intro i hi
     rw [← insert_erase hi, prod_insert (not_mem_erase i s)] at hprod
-    refine'
+    refine
       exists_eq_pow_of_mul_eq_pow_of_coprime
-        (IsCoprime.prod_right fun j hj => h i hi j (erase_subset i s hj) fun hij => _) hprod
+        (IsCoprime.prod_right fun j hj => h i hi j (erase_subset i s hj) fun hij => ?_) hprod
     rw [hij] at hj
     exact (s.not_mem_erase _) hj
 #align finset.exists_eq_pow_of_mul_eq_pow_of_coprime Finset.exists_eq_pow_of_mul_eq_pow_of_coprime
@@ -95,9 +95,11 @@ variable [Ring R] [IsDomain R] [Fintype R]
 /-- Every finite domain is a division ring. More generally, they are fields; this can be found in
 `Mathlib.RingTheory.LittleWedderburn`. -/
 def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableEq R] [Fintype R] :
-    DivisionRing R :=
-  { show GroupWithZero R from Fintype.groupWithZeroOfCancel R, ‹Ring R› with
-    qsmul := qsmulRec _}
+    DivisionRing R where
+  __ := Fintype.groupWithZeroOfCancel R
+  __ := ‹Ring R›
+  nnqsmul := _
+  qsmul := _
 #align fintype.division_ring_of_is_domain Fintype.divisionRingOfIsDomain
 
 /-- Every finite commutative domain is a field. More generally, commutativity is not required: this
@@ -121,7 +123,7 @@ theorem card_nthRoots_subgroup_units [Fintype G] [DecidableEq G] (f : G →* R) 
     {n : ℕ} (hn : 0 < n) (g₀ : G) :
     Finset.card (Finset.univ.filter (fun g ↦ g^n = g₀)) ≤ Multiset.card (nthRoots n (f g₀)) := by
   haveI : DecidableEq R := Classical.decEq _
-  refine' le_trans _ (nthRoots n (f g₀)).toFinset_card_le
+  refine le_trans ?_ (nthRoots n (f g₀)).toFinset_card_le
   apply card_le_card_of_inj_on f
   · intro g hg
     rw [mem_filter] at hg
@@ -173,7 +175,7 @@ theorem div_eq_quo_add_rem_div (f : R[X]) {g : R[X]} (hg : g.Monic) :
     ∃ q r : R[X], r.degree < g.degree ∧
       (algebraMap R[X] K f) / (algebraMap R[X] K g) =
         algebraMap R[X] K q + (algebraMap R[X] K r) / (algebraMap R[X] K g) := by
-  refine' ⟨f /ₘ g, f %ₘ g, _, _⟩
+  refine ⟨f /ₘ g, f %ₘ g, ?_, ?_⟩
   · exact degree_modByMonic_lt _ hg
   · have hg' : algebraMap R[X] K g ≠ 0 :=
       -- Porting note: the proof was `by exact_mod_cast Monic.ne_zero hg`
@@ -196,7 +198,7 @@ theorem card_fiber_eq_of_mem_range {H : Type*} [Group H] [DecidableEq H] (f : G 
     (univ.filter fun g => f g = x).card = (univ.filter fun g => f g = y).card := by
   rcases hx with ⟨x, rfl⟩
   rcases hy with ⟨y, rfl⟩
-  refine' card_congr (fun g _ => g * x⁻¹ * y) _ _ fun g hg => ⟨g * y⁻¹ * x, _⟩
+  refine card_congr (fun g _ => g * x⁻¹ * y) ?_ ?_ fun g hg => ⟨g * y⁻¹ * x, ?_⟩
   · simp (config := { contextual := true }) only [*, mem_filter, one_mul, MonoidHom.map_mul,
       mem_univ, mul_right_inv, eq_self_iff_true, MonoidHom.map_mul_inv, and_self_iff,
       forall_true_iff]
@@ -241,7 +243,7 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
       _ = ∑ b : MonoidHom.range f.toHomUnits, c • ((b : Rˣ) : R) :=
         (Finset.sum_subtype _ (by simp) _)
       _ = c • ∑ b : MonoidHom.range f.toHomUnits, ((b : Rˣ) : R) := smul_sum.symm
-      _ = c • (0 : R) := (congr_arg₂ _ rfl ?_)
+      _ = c • (0 : R) := congr_arg₂ _ rfl ?_
       -- remaining goal 2, proven below
       _ = (0 : R) := smul_zero _
     · -- remaining goal 1

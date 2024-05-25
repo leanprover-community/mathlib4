@@ -96,10 +96,21 @@ structure State where
   /-- Maps a constant name to the module index containing it. -/
   constToIdx : HashMap Name USize := {}
 
+/-- Returns `true` if this is a constant whose body should not be considered for dependency
+tracking purposes. -/
+def isBlacklisted (name : Name) : Bool :=
+  -- Compiler-produced definitions are skipped, because they can sometimes pick up spurious
+  -- dependencies due to specializations in unrelated files. Even if we remove these modules
+  -- from the import path, the compiler will still just find another way to compile the definition.
+  if let .str _ "_cstage2" := name then true else
+  if let .str _ "_cstage1" := name then true else
+  false
+
 /-- Calculates the value of the `needs[i]` bitset for a given module `mod`.
 Bit `j` is set in the result if some constant from module `j` is used in this module. -/
 def calcNeeds (constToIdx : HashMap Name USize) (mod : ModuleData) : Bitset :=
   mod.constants.foldl (init := 0) fun deps ci =>
+    if isBlacklisted ci.name then deps else
     let deps := visitExpr ci.type deps
     match ci.value? with
     | some e => visitExpr e deps
@@ -109,6 +120,30 @@ where
   visitExpr e deps :=
     Lean.Expr.foldConsts e deps fun c deps => match constToIdx.find? c with
       | some i => deps ||| (1 <<< i.toNat)
+      | none => deps
+
+/-- Calculates the same as `calcNeeds` but tracing each module to a specific constant. -/
+def getExplanations (constToIdx : HashMap Name USize) (mod : ModuleData) :
+    HashMap USize (Name × Name) :=
+  mod.constants.foldl (init := {}) fun deps ci =>
+    if isBlacklisted ci.name then deps else
+    let deps := visitExpr ci.name ci.type deps
+    match ci.value? with
+    | some e => visitExpr ci.name e deps
+    | none => deps
+where
+  /-- Accumulate the results from expression `e` into `deps`. -/
+  visitExpr name e deps :=
+    Lean.Expr.foldConsts e deps fun c deps => match constToIdx.find? c with
+      | some i =>
+        if
+          if let some (name', _) := deps.find? i then
+            decide (name.toString.length < name'.toString.length)
+          else true
+        then
+          deps.insert i (name, c)
+        else
+          deps
       | none => deps
 
 /-- Load all the modules in `imports` into the `State`, as well as their transitive dependencies.
@@ -201,7 +236,7 @@ def parseHeader (srcSearchPath : SearchPath) (mod : Name) :
  -/
 def visitModule (s : State) (srcSearchPath : SearchPath) (ignoreImps : Bitset)
     (i : Nat) (needs : Bitset) (edits : Edits)
-    (downstream := true) (githubStyle := false) : IO Edits := do
+    (downstream := true) (githubStyle := false) (explain := false) : IO Edits := do
   -- Do transitive reduction of `needs` in `deps` and transitive closure in `transDeps`.
   -- Include the `ignoreImps` in `transDeps`
   let mut deps := needs
@@ -271,11 +306,13 @@ def visitModule (s : State) (srcSearchPath : SearchPath) (ignoreImps : Bitset)
     -- where `newTransDeps` is the result of recalculating `transDeps` after breaking the `B -> C`
     -- link.
 
-    -- calculate `newTransDeps[C]`, removing all `B -> C` links from `toRemove`
+    -- calculate `newTransDeps[C]`, removing all `B -> C` links from `toRemove` and adding `toAdd`
     let mut newTransDepsI := 1 <<< i
     for j in s.deps[i]! do
       if !toRemove.contains j then
         newTransDepsI := newTransDepsI ||| s.transDeps[j]!
+    for j in toAdd do
+      newTransDepsI := newTransDepsI ||| s.transDeps[j]!
 
     let mut newTransDeps := s.transDeps.set! i newTransDepsI -- deep copy
     let mut reAdded := #[]
@@ -309,6 +346,17 @@ def visitModule (s : State) (srcSearchPath : SearchPath) (ignoreImps : Bitset)
       println! "  instead"
       for (j, reAddArr) in reAdded do
         println! "    import {reAddArr.map (s.modNames[·]!)} in {s.modNames[j]!}"
+
+  if explain then
+    let explanation := getExplanations s.constToIdx s.mods[i]!
+    let sanitize n := if n.hasMacroScopes then (sanitizeName n).run' { options := {} } else n
+    let run j := do
+      if let some (n, c) := explanation.find? j then
+        println! "  note: {s.modNames[i]!} requires {s.modNames[j]!}\
+          \n    because {sanitize n} refers to {sanitize c}"
+    for imp in s.mods[i]!.imports do run <| s.toIdx.find! imp.module
+    for i in toAdd do run i.toUSize
+
   return edits
 
 /-- Convert a list of module names to a bitset of module indexes -/
@@ -326,6 +374,8 @@ structure Args where
   downstream : Bool := true
   /-- `--gh-style`: output messages that can be parsed by `gh-problem-matcher-wrap` -/
   githubStyle : Bool := false
+  /-- `--explain`: give constants explaining why each module is needed -/
+  explain : Bool := false
   /-- `--fix`: apply the fixes directly -/
   fix : Bool := false
   /-- `--update`: update the config file -/
@@ -364,6 +414,7 @@ def main (args : List String) : IO UInt32 := do
     | "--help" :: rest => parseArgs { args with help := true } rest
     | "--no-downstream" :: rest => parseArgs { args with downstream := false } rest
     | "--fix" :: rest => parseArgs { args with fix := true } rest
+    | "--explain" :: rest => parseArgs { args with explain := true } rest
     | "--gh-style" :: rest => parseArgs { args with githubStyle := true } rest
     | "--update" :: rest => parseArgs { args with update := true } rest
     | "--global" :: rest => parseArgs { args with global := true } rest
@@ -438,7 +489,7 @@ def main (args : List String) : IO UInt32 := do
       if noIgnore i then
         let ignoreImps := ignoreImps ||| ignore.findD s.modNames[i]! 0
         edits ← visitModule s srcSearchPath ignoreImps i t.get edits
-          args.downstream args.githubStyle
+          args.downstream args.githubStyle args.explain
 
   -- Write the config file
   if args.update then
@@ -474,7 +525,7 @@ def main (args : List String) : IO UInt32 := do
         ignoreImport? := (some ignoreImport).filter (!·.isEmpty)
         ignore? := (some ignore).filter (!·.isEmpty)
       }
-      IO.FS.writeFile cfgFile <| toJson cfg |>.pretty
+      IO.FS.writeFile cfgFile <| toJson cfg |>.pretty.push '\n'
 
   if !args.fix then
     -- return error if any issues were found

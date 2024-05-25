@@ -56,10 +56,10 @@ theorem stolzSet_empty {M : ℝ} (hM : M ≤ 1) : stolzSet M = ∅ := by
 theorem nhdsWithin_lt_le_nhdsWithin_stolzSet {M : ℝ} (hM : 1 < M) :
     (𝓝[<] 1).map ofReal' ≤ 𝓝[stolzSet M] 1 := by
   rw [← tendsto_id']
-  refine' tendsto_map' <| tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within ofReal'
-    (tendsto_nhdsWithin_of_tendsto_nhds <| ofRealCLM.continuous.tendsto' 1 1 rfl) _
+  refine tendsto_map' <| tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within ofReal'
+    (tendsto_nhdsWithin_of_tendsto_nhds <| ofRealCLM.continuous.tendsto' 1 1 rfl) ?_
   simp only [eventually_iff, norm_eq_abs, abs_ofReal, abs_lt, mem_nhdsWithin]
-  refine' ⟨Set.Ioo 0 2, isOpen_Ioo, by norm_num, fun x hx ↦ _⟩
+  refine ⟨Set.Ioo 0 2, isOpen_Ioo, by norm_num, fun x hx ↦ ?_⟩
   simp only [Set.mem_inter_iff, Set.mem_Ioo, Set.mem_Iio] at hx
   simp only [Set.mem_setOf_eq, stolzSet, ← ofReal_one, ← ofReal_sub, norm_eq_abs, abs_ofReal,
     abs_of_pos hx.1.1, abs_of_pos <| sub_pos.mpr hx.2]
@@ -225,8 +225,8 @@ theorem tendsto_tsum_powerSeries_nhdsWithin_stolzSet
         rw [tsum_geometric_of_lt_one (by positivity) zn, ← div_eq_mul_inv]
       _ < M * (1 - ‖z‖) * (ε / 4 / M) / (1 - ‖z‖) := by gcongr; linarith only [zn]
       _ = _ := by
-        rw [← mul_rotate, mul_div_cancel _ (by linarith only [zn]),
-          div_mul_cancel _ (by linarith only [hM])]
+        rw [← mul_rotate, mul_div_cancel_right₀ _ (by linarith only [zn]),
+          div_mul_cancel₀ _ (by linarith only [hM])]
   convert add_lt_add S₁ S₂ using 1
   linarith only
 

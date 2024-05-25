@@ -181,7 +181,7 @@ theorem forall_mem_inter_of_forall_right (l₁ : List α) (h : ∀ x ∈ l₂, p
 
 @[simp]
 theorem inter_reverse {xs ys : List α} : xs.inter ys.reverse = xs.inter ys := by
-  simp only [List.inter, mem_reverse]
+  simp only [List.inter, elem_eq_mem, mem_reverse]
 #align list.inter_reverse List.inter_reverse
 
 end Inter
@@ -242,7 +242,7 @@ theorem count_bagInter {a : α} :
       by_cases ab : a = b
       · rw [if_pos ab, Nat.sub_add_cancel]
         rwa [succ_le_iff, count_pos_iff_mem, ab]
-      · rw [if_neg ab, Nat.sub_zero, add_zero, add_zero]
+      · rw [if_neg ab, Nat.sub_zero, Nat.add_zero, Nat.add_zero]
     · rw [cons_bagInter_of_neg _ hb, count_bagInter]
       by_cases ab : a = b
       · rw [← ab] at hb

@@ -40,7 +40,10 @@ variable {ι : Type*}
 prepartition. For simplicity we require that `tag` is defined for all boxes in `ι → ℝ` but
 we will use only the values of `tag` on the boxes of the partition. -/
 structure TaggedPrepartition (I : Box ι) extends Prepartition I where
+  /-- Choice of tagged point of each box in this prepartition:
+    we extend this to a total function, on all boxes in `ι → ℝ`. -/
   tag : Box ι → ι → ℝ
+  /-- Each tagged point belongs to `I` -/
   tag_mem_Icc : ∀ J, tag J ∈ Box.Icc I
 #align box_integral.tagged_prepartition BoxIntegral.TaggedPrepartition
 
@@ -155,7 +158,7 @@ theorem forall_biUnionTagged (p : (ι → ℝ) → Box ι → Prop) (π : Prepar
     (∀ J ∈ π.biUnionTagged πi, p ((π.biUnionTagged πi).tag J) J) ↔
       ∀ J ∈ π, ∀ J' ∈ πi J, p ((πi J).tag J') J' := by
   simp only [mem_biUnionTagged]
-  refine' ⟨fun H J hJ J' hJ' => _, fun H J' ⟨J, hJ, hJ'⟩ => _⟩
+  refine ⟨fun H J hJ J' hJ' => ?_, fun H J' ⟨J, hJ, hJ'⟩ => ?_⟩
   · rw [← π.tag_biUnionTagged hJ hJ']
     exact H J' ⟨J, hJ, hJ'⟩
   · rw [π.tag_biUnionTagged hJ hJ']
@@ -238,7 +241,7 @@ theorem IsHenstock.card_filter_tag_eq_le [Fintype ι] (h : π.IsHenstock) (x : �
   calc
     (π.boxes.filter fun J => π.tag J = x).card ≤
         (π.boxes.filter fun J : Box ι => x ∈ Box.Icc J).card := by
-      refine' Finset.card_le_card fun J hJ => _
+      refine Finset.card_le_card fun J hJ => ?_
       rw [Finset.mem_filter] at hJ ⊢; rcases hJ with ⟨hJ, rfl⟩
       exact ⟨hJ, h J hJ⟩
     _ ≤ 2 ^ Fintype.card ι := π.toPrepartition.card_filter_mem_Icc_le x
@@ -380,7 +383,7 @@ theorem disjUnion_tag_of_mem_right (h : Disjoint π₁.iUnion π₂.iUnion) (hJ 
 
 theorem IsSubordinate.disjUnion [Fintype ι] (h₁ : IsSubordinate π₁ r) (h₂ : IsSubordinate π₂ r)
     (h : Disjoint π₁.iUnion π₂.iUnion) : IsSubordinate (π₁.disjUnion π₂ h) r := by
-  refine' fun J hJ => (Finset.mem_union.1 hJ).elim (fun hJ => _) fun hJ => _
+  refine fun J hJ => (Finset.mem_union.1 hJ).elim (fun hJ => ?_) fun hJ => ?_
   · rw [disjUnion_tag_of_mem_left _ hJ]
     exact h₁ _ hJ
   · rw [disjUnion_tag_of_mem_right _ hJ]
@@ -389,7 +392,7 @@ theorem IsSubordinate.disjUnion [Fintype ι] (h₁ : IsSubordinate π₁ r) (h�
 
 theorem IsHenstock.disjUnion (h₁ : IsHenstock π₁) (h₂ : IsHenstock π₂)
     (h : Disjoint π₁.iUnion π₂.iUnion) : IsHenstock (π₁.disjUnion π₂ h) := by
-  refine' fun J hJ => (Finset.mem_union.1 hJ).elim (fun hJ => _) fun hJ => _
+  refine fun J hJ => (Finset.mem_union.1 hJ).elim (fun hJ => ?_) fun hJ => ?_
   · rw [disjUnion_tag_of_mem_left _ hJ]
     exact h₁ _ hJ
   · rw [disjUnion_tag_of_mem_right _ hJ]

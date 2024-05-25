@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Data.ZMod.Basic
-import Mathlib.RingTheory.Subsemiring.Order
 import Mathlib.Algebra.Order.Monoid.Basic
+import Mathlib.Algebra.Ring.Subsemiring.Order
 
 #align_import canonically_ordered_comm_semiring_two_mul from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
 
@@ -76,11 +76,11 @@ instance csrN21 : AddCancelCommMonoid (ℕ × ZMod 2) :=
 /-- A strict inequality forces the first components to be different. -/
 @[simp]
 theorem lt_def : a < b ↔ a.1 < b.1 := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · rcases h with ⟨rfl | a1, h1⟩
     · exact (not_or.mp h1).1.elim rfl
     · exact a1
-  refine' ⟨Or.inr h, not_or.mpr ⟨fun k => _, not_lt.mpr h.le⟩⟩
+  refine ⟨Or.inr h, not_or.mpr ⟨fun k => ?_, not_lt.mpr h.le⟩⟩
   rw [k] at h
   exact Nat.lt_asymm h h
 #align counterexample.Nxzmod_2.lt_def Counterexample.Nxzmod2.lt_def
@@ -185,7 +185,7 @@ theorem bot_le : ∀ a : L, 0 ≤ a := by
   · rcases mem_zmod_2 a2 with (rfl | rfl)
     · rfl
     · exact (ha rfl).elim
-  · refine' Or.inr _
+  · refine Or.inr ?_
     exact Nat.succ_pos _
 #align counterexample.ex_L.bot_le Counterexample.ExL.bot_le
 
@@ -199,7 +199,7 @@ theorem exists_add_of_le : ∀ a b : L, a ≤ b → ∃ c, b = a + c := by
   · exact ⟨0, (add_zero _).symm⟩
   · exact
       ⟨⟨b - a.1, fun H => (tsub_pos_of_lt h).ne' (Prod.mk.inj_iff.1 H).1⟩,
-        Subtype.ext <| Prod.ext (add_tsub_cancel_of_le h.le).symm (add_sub_cancel'_right _ _).symm⟩
+        Subtype.ext <| Prod.ext (add_tsub_cancel_of_le h.le).symm (add_sub_cancel _ _).symm⟩
 #align counterexample.ex_L.exists_add_of_le Counterexample.ExL.exists_add_of_le
 
 theorem le_self_add : ∀ a b : L, a ≤ a + b := by
@@ -217,11 +217,11 @@ theorem eq_zero_or_eq_zero_of_mul_eq_zero : ∀ a b : L, a * b = 0 → a = 0 ∨
   injection ab with abn ab2
   rw [mul_eq_zero] at abn
   rcases abn with (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)
-  · refine' Or.inl _
+  · refine Or.inl ?_
     rcases mem_zmod_2 a2 with (rfl | rfl)
     · rfl
     · exact (ha rfl).elim
-  · refine' Or.inr _
+  · refine Or.inr ?_
     rcases mem_zmod_2 b2 with (rfl | rfl)
     · rfl
     · exact (hb rfl).elim
@@ -239,7 +239,7 @@ instance can : CanonicallyOrderedCommSemiring L :=
 /-- The elements `(1,0)` and `(1,1)` of `L` are different, but their doubles coincide.
 -/
 example : ∃ a b : L, a ≠ b ∧ 2 * a = 2 * b := by
-  refine' ⟨⟨(1, 0), by simp⟩, 1, fun h : (⟨(1, 0), _⟩ : L) = ⟨⟨1, 1⟩, _⟩ => _, rfl⟩
+  refine ⟨⟨(1, 0), by simp⟩, 1, fun h : (⟨(1, 0), _⟩ : L) = ⟨⟨1, 1⟩, _⟩ => ?_, rfl⟩
   obtain F : (0 : ZMod 2) = 1 := congr_arg (fun j : L => j.1.2) h
   cases F
 

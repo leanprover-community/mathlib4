@@ -3,15 +3,15 @@ Copyright (c) 2020 Bhavik Mehta, Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Aaron Anderson
 -/
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Combinatorics.Enumerative.Partition
+import Mathlib.Data.Finset.NatAntidiagonal
+import Mathlib.Data.Finset.PiAntidiagonal
+import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Order
-import Mathlib.Combinatorics.Partition
-import Mathlib.Data.Nat.Parity
-import Mathlib.Data.Finset.NatAntidiagonal
-import Mathlib.Data.Fin.Tuple.NatAntidiagonal
-import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.ApplyFun
-import Mathlib.Data.Finset.PiAntidiagonal
+import Mathlib.Tactic.IntervalCases
 
 #align_import wiedijk_100_theorems.partition from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 
@@ -147,24 +147,24 @@ theorem num_series' [Field α] (i : ℕ) :
       symm
       split_ifs with h
       · suffices
-          ((antidiagonal n.succ).filter fun a : ℕ × ℕ => i + 1 ∣ a.fst ∧ a.snd = i + 1).card =
+          ((antidiagonal (n+1)).filter fun a : ℕ × ℕ => i + 1 ∣ a.fst ∧ a.snd = i + 1).card =
             1 by
           simp only [Set.mem_setOf_eq]; convert congr_arg ((↑) : ℕ → α) this; norm_cast
         rw [card_eq_one]
         cases' h with p hp
-        refine' ⟨((i + 1) * (p - 1), i + 1), _⟩
+        refine ⟨((i + 1) * (p - 1), i + 1), ?_⟩
         ext ⟨a₁, a₂⟩
         simp only [mem_filter, Prod.mk.inj_iff, mem_antidiagonal, mem_singleton]
         constructor
         · rintro ⟨a_left, ⟨a, rfl⟩, rfl⟩
-          refine' ⟨_, rfl⟩
+          refine ⟨?_, rfl⟩
           rw [Nat.mul_sub_left_distrib, ← hp, ← a_left, mul_one, Nat.add_sub_cancel]
         · rintro ⟨rfl, rfl⟩
           match p with
           | 0 => rw [mul_zero] at hp; cases hp
           | p + 1 => rw [hp]; simp [mul_add]
       · suffices
-          (filter (fun a : ℕ × ℕ => i + 1 ∣ a.fst ∧ a.snd = i + 1) (antidiagonal n.succ)).card =
+          (filter (fun a : ℕ × ℕ => i + 1 ∣ a.fst ∧ a.snd = i + 1) (antidiagonal (n+1))).card =
             0 by
           simp only [Set.mem_setOf_eq]; convert congr_arg ((↑) : ℕ → α) this; norm_cast
         rw [card_eq_zero]
@@ -201,7 +201,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
         simp only [smul_eq_mul, ne_eq, mul_eq_zero, Multiset.count_eq_zero]
         rw [not_or, not_not]
         simp only [Multiset.mem_toFinset, not_not, mem_filter] }
-  refine' Finset.card_congr φ _ _ _
+  refine Finset.card_congr φ ?_ ?_ ?_
   · intro a  ha
     simp only [φ, not_forall, not_exists, not_and, exists_prop, mem_filter]
     rw [mem_piAntidiagonal']
@@ -215,7 +215,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
       exact fun hi _ => ha.2 i hi
     · conv_rhs => simp [← a.parts_sum]
       rw [sum_multiset_count_of_subset _ s]
-      simp only [smul_eq_mul]
+      · simp only [smul_eq_mul]
       · intro i
         simp only [Multiset.mem_toFinset, not_not, mem_filter]
         apply ha.2
@@ -229,8 +229,8 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
     by_cases hi : i = 0
     · rw [hi]
       rw [Multiset.count_eq_zero_of_not_mem]
-      rw [Multiset.count_eq_zero_of_not_mem]
-      intro a; exact Nat.lt_irrefl 0 (hs 0 (hp₂.2 0 a))
+      · rw [Multiset.count_eq_zero_of_not_mem]
+        intro a; exact Nat.lt_irrefl 0 (hs 0 (hp₂.2 0 a))
       intro a; exact Nat.lt_irrefl 0 (hs 0 (hp₁.2 0 a))
     · rw [← mul_left_inj' hi]
       rw [Function.funext_iff] at h
@@ -247,7 +247,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
       rwa [Multiset.eq_of_mem_replicate z]
     · simp_rw [Multiset.sum_sum, Multiset.sum_replicate, Nat.nsmul_eq_mul]
       rw [← hf'.2]
-      refine' sum_congr rfl fun i hi => Nat.div_mul_cancel _
+      refine sum_congr rfl fun i hi => Nat.div_mul_cancel ?_
       rcases hf₄ i hi with ⟨w, _, hw₂⟩
       rw [← hw₂]
       exact dvd_mul_left _ _
@@ -291,7 +291,7 @@ theorem partialOddGF_prop [Field α] (n m : ℕ) :
     ext k
     constructor
     · rintro ⟨p, rfl⟩
-      refine' ⟨p, ⟨⟩, _⟩
+      refine ⟨p, ⟨⟩, ?_⟩
       apply mul_comm
     rintro ⟨a_w, -, rfl⟩
     apply Dvd.intro_left a_w rfl
@@ -306,7 +306,7 @@ theorem oddGF_prop [Field α] (n m : ℕ) (h : n < m * 2) :
     (Finset.card (Nat.Partition.odds n) : α) = coeff α n (partialOddGF m) := by
   rw [← partialOddGF_prop, Nat.Partition.odds]
   congr with p
-  apply ball_congr
+  apply forall₂_congr
   intro i hi
   have hin : i ≤ n := by
     simpa [p.parts_sum] using Multiset.single_le_sum (fun _ _ => Nat.zero_le _) _ hi
@@ -316,7 +316,7 @@ theorem oddGF_prop [Field α] (n m : ℕ) (h : n < m * 2) :
     have := Nat.mod_add_div i 2
     rw [Nat.not_even_iff] at hi₂
     rw [hi₂, add_comm] at this
-    refine' ⟨i / 2, _, this⟩
+    refine ⟨i / 2, ?_, this⟩
     rw [Nat.div_lt_iff_lt_mul zero_lt_two]
     exact lt_of_le_of_lt hin h
   · rintro ⟨a, -, rfl⟩
@@ -358,7 +358,7 @@ theorem distinctGF_prop [CommSemiring α] (n m : ℕ) (h : n < m + 1) :
   have : i ≤ n := by
     simpa [p.parts_sum] using Multiset.single_le_sum (fun _ _ => Nat.zero_le _) _ hi
   simp only [mkOdd, exists_prop, mem_range, Function.Embedding.coeFn_mk, mem_map]
-  refine' ⟨i - 1, _, Nat.succ_pred_eq_of_pos (p.parts_pos hi)⟩
+  refine ⟨i - 1, ?_, Nat.succ_pred_eq_of_pos (p.parts_pos hi)⟩
   rw [tsub_lt_iff_right (Nat.one_le_iff_ne_zero.mpr (p.parts_pos hi).ne')]
   exact lt_of_le_of_lt this h
 #align theorems_100.distinct_gf_prop Theorems100.distinctGF_prop
@@ -373,7 +373,6 @@ theorem same_gf [Field α] (m : ℕ) :
   rw [partialOddGF, partialDistinctGF]
   induction' m with m ih
   · simp
-  rw [Nat.succ_eq_add_one]
   set! π₀ : PowerSeries α := ∏ i in range m, (1 - X ^ (m + 1 + i + 1)) with hπ₀
   set! π₁ : PowerSeries α := ∏ i in range m, (1 - X ^ (2 * i + 1))⁻¹ with hπ₁
   set! π₂ : PowerSeries α := ∏ i in range m, (1 - X ^ (m + i + 1)) with hπ₂

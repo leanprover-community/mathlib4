@@ -111,7 +111,7 @@ theorem vonMangoldt_eq_zero_iff {n : ℕ} : Λ n = 0 ↔ ¬IsPrimePow n :=
 open scoped BigOperators
 
 theorem vonMangoldt_sum {n : ℕ} : ∑ i in n.divisors, Λ i = Real.log n := by
-  refine' recOnPrimeCoprime _ _ _ n
+  refine recOnPrimeCoprime ?_ ?_ ?_ n
   · simp
   · intro p k hp
     rw [sum_divisors_prime_pow hp, cast_pow, Real.log_pow, Finset.sum_range_succ', Nat.pow_zero,
@@ -150,7 +150,7 @@ theorem sum_moebius_mul_log_eq {n : ℕ} : (∑ d in n.divisors, (μ d : ℝ) * 
   have : (∑ i : ℕ in n.divisors, (μ i : ℝ) * -Real.log (n / i : ℕ)) =
       ∑ i : ℕ in n.divisors, ((μ i : ℝ) * Real.log i - μ i * Real.log n) := by
     apply sum_congr rfl
-    simp only [and_imp, Int.cast_eq_zero, mul_eq_mul_left_iff, Ne.def, neg_inj, mem_divisors]
+    simp only [and_imp, Int.cast_eq_zero, mul_eq_mul_left_iff, Ne, neg_inj, mem_divisors]
     intro m mn hn
     have : (m : ℝ) ≠ 0 := by
       rw [cast_ne_zero]
