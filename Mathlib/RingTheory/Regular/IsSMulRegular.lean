@@ -100,27 +100,22 @@ lemma isSMulRegular_of_range_eq_ker {f : M →ₗ[R] M'} {g : M' →ₗ[R] M''}
   exact hf <| Eq.trans (f.map_smul r y) <| Eq.trans hx f.map_zero.symm
 
 lemma isSMulRegular_of_isSMulRegular_on_submodule_on_quotient
-    (h1 : IsSMulRegular N r) (h2 : IsSMulRegular (M⧸N) r) : IsSMulRegular M r :=
+    (h1 : IsSMulRegular N r) (h2 : IsSMulRegular (M ⧸ N) r) : IsSMulRegular M r :=
   isSMulRegular_of_range_eq_ker N.injective_subtype
     (Eq.trans N.range_subtype N.ker_mkQ.symm) h1 h2
 
 end Ring
 
-variable (M) [CommRing R] [AddCommGroup M] [Module R M]
+variable (R M) [CommRing R] [AddCommGroup M] [Module R M]
     [AddCommGroup M'] [Module R M'] {I : Ideal R} (N : Submodule R M) (r : R)
 
-lemma isSMulRegular_iff_ker_lsmul_eq_bot :
-    IsSMulRegular M r ↔ LinearMap.ker (LinearMap.lsmul R M r) = ⊥ :=
-  isSMulRegular_iff_torsionBy_eq_bot M r
+lemma biUnion_associatedPrimes_eq_compl_regular [IsNoetherianRing R] :
+    ⋃ p ∈ associatedPrimes R M, p = { r : R | IsSMulRegular M r }ᶜ :=
+  Eq.trans (biUnion_associatedPrimes_eq_zero_divisors R M) <| by
+    simp_rw [Set.compl_setOf, isSMulRegular_iff_smul_eq_zero_imp_eq_zero,
+      not_forall, exists_prop, and_comm]
 
-variable {M r}
-
-lemma isSMulRegular_of_ker_lsmul_eq_bot
-    (h : LinearMap.ker (LinearMap.lsmul R M r) = ⊥) :
-    IsSMulRegular M r :=
-  (isSMulRegular_iff_ker_lsmul_eq_bot M r).mpr h
-
-variable (M r)
+variable {R}
 
 lemma isSMulRegular_iff_isSMulRegular_over_quotient_by_torsion_ideal
     (hI : Module.IsTorsionBySet R M I) :
@@ -130,20 +125,14 @@ lemma isSMulRegular_iff_isSMulRegular_over_quotient_by_torsion_ideal
 
 variable (I)
 
+lemma isSMulRegular_iff_ker_lsmul_eq_bot :
+    IsSMulRegular M r ↔ LinearMap.ker (LinearMap.lsmul R M r) = ⊥ :=
+  isSMulRegular_iff_torsionBy_eq_bot M r
+
 lemma isSMulRegular_on_quotient_ideal_smul_iff_isSMulRegular_over_quotient :
     IsSMulRegular (M ⧸ (I • ⊤ : Submodule R M)) r ↔
       IsSMulRegular (M ⧸ (I • ⊤ : Submodule R M)) (Ideal.Quotient.mk I r) :=
   (Equiv.refl _).isSMulRegular_congr fun _ => rfl
-
-lemma lTensor [Module.Flat R M] (h : IsSMulRegular M' r) :
-    IsSMulRegular (M ⊗[R] M') r :=
-  have h1 := congrArg DFunLike.coe (LinearMap.lTensor_smul_action M M' r)
-  h1.subst (Module.Flat.lTensor_preserves_injective_linearMap _ h)
-
-lemma rTensor [Module.Flat R M] (h : IsSMulRegular M' r) :
-    IsSMulRegular (M' ⊗[R] M) r :=
-  have h1 := congrArg DFunLike.coe (LinearMap.rTensor_smul_action M M' r)
-  h1.subst (Module.Flat.rTensor_preserves_injective_linearMap _ h)
 
 variable {M}
 
@@ -171,6 +160,11 @@ lemma isSMulRegular_on_quot_iff_smul_top_inf_eq_smul_of_isSMulRegular :
     show DistribMulAction.toLinearMap R M r = LinearMap.lsmul R M r from rfl,
     map_comap_eq, LinearMap.range_eq_map]; rfl
 
+lemma isSMulRegular_of_ker_lsmul_eq_bot
+    (h : LinearMap.ker (LinearMap.lsmul R M r) = ⊥) :
+    IsSMulRegular M r :=
+  (isSMulRegular_iff_ker_lsmul_eq_bot M r).mpr h
+
 variable {N}
 
 lemma smul_top_inf_eq_smul_of_isSMulRegular_on_quot :
@@ -178,13 +172,17 @@ lemma smul_top_inf_eq_smul_of_isSMulRegular_on_quot :
   convert map_mono ∘ (isSMulRegular_on_quot_iff_lsmul_comap_le N r).mp using 2
   exact Eq.trans (congrArg (· ⊓ N) (map_top _)) (map_comap_eq _ _).symm
 
-variable (R r)
+variable (M)
 
-lemma biUnion_associatedPrimes_eq_compl_regular [IsNoetherianRing R] :
-    ⋃ p ∈ associatedPrimes R M, p = { r : R | IsSMulRegular M r }ᶜ :=
-  Eq.trans (biUnion_associatedPrimes_eq_zero_divisors R M) <| by
-    simp_rw [Set.compl_setOf, isSMulRegular_iff_smul_eq_zero_imp_eq_zero,
-      not_forall, exists_prop, and_comm]
+lemma lTensor [Module.Flat R M] (h : IsSMulRegular M' r) :
+    IsSMulRegular (M ⊗[R] M') r :=
+  have h1 := congrArg DFunLike.coe (LinearMap.lTensor_smul_action M M' r)
+  h1.subst (Module.Flat.lTensor_preserves_injective_linearMap _ h)
+
+lemma rTensor [Module.Flat R M] (h : IsSMulRegular M' r) :
+    IsSMulRegular (M' ⊗[R] M) r :=
+  have h1 := congrArg DFunLike.coe (LinearMap.rTensor_smul_action M M' r)
+  h1.subst (Module.Flat.rTensor_preserves_injective_linearMap _ h)
 
 end IsSMulRegular
 
@@ -250,7 +248,7 @@ lemma equivQuotTensor_naturality_mk (f : M →ₗ[R] M') (x : M) :
     equivQuotTensor M' r (map r f (Submodule.Quotient.mk x)) =
       f.lTensor (R ⧸ Ideal.span {r})
         (equivQuotTensor M r (Submodule.Quotient.mk x)) := by
-  simp only [equivQuotTensor, map_apply_apply, LinearEquiv.trans_apply,
+  simp_rw [equivQuotTensor, map_apply_apply, LinearEquiv.trans_apply,
     quotEquivOfEq_mk, quotTensorEquivQuotSMul_symm_mk, LinearMap.lTensor_tmul]
 
 lemma equivQuotTensor_naturality (f : M →ₗ[R] M') :
@@ -262,7 +260,7 @@ lemma equivTensorQuot_naturality_mk (f : M →ₗ[R] M') (x : M) :
     equivTensorQuot M' r (map r f (Submodule.Quotient.mk x)) =
       f.rTensor (R ⧸ Ideal.span {r})
         (equivTensorQuot M r (Submodule.Quotient.mk x)) := by
-  simp only [equivTensorQuot, map_apply_apply, LinearEquiv.trans_apply,
+  simp_rw [equivTensorQuot, map_apply_apply, LinearEquiv.trans_apply,
     quotEquivOfEq_mk, tensorQuotEquivQuotSMul_symm_mk, LinearMap.rTensor_tmul]
 
 lemma equivTensorQuot_naturality (f : M →ₗ[R] M') :

@@ -27,9 +27,8 @@ universe u v
 
 namespace RingTheory.Sequence
 
-open scoped Pointwise
-
-open Submodule
+open scoped Pointwise TensorProduct
+open Function Submodule
 
 variable (R : Type u) {S : Type*} (M : Type v) {M' M'' : Type*}
 
@@ -87,7 +86,7 @@ lemma restrictScalars_map_algebraMap_smul_eq_smul_restrictScalars
     (rs : List R) (N : Submodule S M) :
     (rs.map (algebraMap R S) • N).restrictScalars R = rs • N.restrictScalars R := by
   simp_rw [sequence_smul_eq_ideal_span_smul, List.mem_map,
-    Ideal.smul_restrictScalars, Ideal.map_span, Set.image, Set.mem_setOf]
+    ← Ideal.smul_restrictScalars, Ideal.map_span, Set.image, Set.mem_setOf]
 
 lemma smul_le_ideal_smul_of_forall_mem {I : Ideal R} {rs : List R}
     (N : Submodule R M) (h : ∀ r ∈ rs, r ∈ I) : rs • N ≤ I • N :=
@@ -162,38 +161,34 @@ protected abbrev ModSMulBy (rs : List R) := M ⧸ rs • (⊤ : Submodule R M)
 
 namespace ModSMulBy
 
-open Submodule Function
-
-open TensorProduct in
 /-- Reducing a module modulo `r₁,…,rₙ` is the same as left tensoring with `R/(r₁,…,rₙ)`. -/
-noncomputable def equiv_lTensor_ring_mod (rs : List R) :
+protected noncomputable def equivQuotTensor (rs : List R) :
     Sequence.ModSMulBy M rs ≃ₗ[R] (R⧸Ideal.span { r | r ∈ rs }) ⊗[R] M :=
   quotEquivOfEq _ _ (sequence_smul_eq_ideal_span_smul _ _) ≪≫ₗ
-   (lTensor_ring_mod_ideal_equiv_mod_ideal_smul M _).symm
+   (quotTensorEquivQuotSMul M _).symm
 
-open TensorProduct in
 /-- Reducing a module modulo `r₁,…,rₙ` is the same as right tensoring with `R/(r₁,…,rₙ)`. -/
-noncomputable def equiv_rTensor_ring_mod (rs : List R) :
+protected noncomputable def equivTensorQuot (rs : List R) :
     Sequence.ModSMulBy M rs ≃ₗ[R] M ⊗[R] (R⧸Ideal.span { r | r ∈ rs }) :=
   quotEquivOfEq _ _ (sequence_smul_eq_ideal_span_smul _ _) ≪≫ₗ
-   (rTensor_ring_mod_ideal_equiv_mod_ideal_smul M _).symm
+   (tensorQuotEquivQuotSMul M _).symm
 
 variable (R)
 
 /-- Reducing mod no elements is isomorphic to the original module. -/
-def nil_equiv_self : Sequence.ModSMulBy M ([] : List R) ≃ₗ[R] M :=
+def nilEquivSelf : Sequence.ModSMulBy M ([] : List R) ≃ₗ[R] M :=
   quotEquivOfEqBot ([] • ⊤) rfl
 
 variable {R}
 
 /-- The equivalence `M⧸(r₀,r₁,…,rₙ)M ≃ (M⧸r₀M)⧸(r₁,…,rₙ)M`. -/
-def cons_equiv_mod_tail_mod_head (r : R) (rs : List R) :
+def consEquivQuotTailQuotHead (r : R) (rs : List R) :
     Sequence.ModSMulBy M (r::rs) ≃ₗ[R] Sequence.ModSMulBy (ModSMulBy M r) rs :=
   (quotientQuotientEquivQuotientSup (r • ⊤) (rs • ⊤)).symm ≪≫ₗ
     quotEquivOfEq _ _ (by rw [map_sequence_smul, Submodule.map_top, range_mkQ])
 
 /-- The equivalence `M⧸(r₁,…,rₙ,s₁,…,sₘ)M ≃ (M⧸(r₁,…,rₙ)M)⧸(s₁,…,sₘ)M`. -/
-def append_equiv_mod_mod (rs₁ rs₂ : List R) :
+def appendEquivQuotQuot (rs₁ rs₂ : List R) :
     Sequence.ModSMulBy M (rs₁ ++ rs₂) ≃ₗ[R]
       Sequence.ModSMulBy (Sequence.ModSMulBy M rs₁) rs₂ :=
   quotEquivOfEq _ _ (append_smul rs₁ rs₂ ⊤) ≪≫ₗ
@@ -201,15 +196,15 @@ def append_equiv_mod_mod (rs₁ rs₂ : List R) :
       quotEquivOfEq _ _ (by rw [map_sequence_smul, Submodule.map_top, range_mkQ])
 
 /-- Reducing modulo a list is independent of order and multiplicity. -/
-def equiv_of_subset_subset {rs₁ rs₂ : List R} (h₁₂ : rs₁ ⊆ rs₂) (h₂₁ : rs₂ ⊆ rs₁) :
+def equivOfSubsetSubset {rs₁ rs₂ : List R} (h₁₂ : rs₁ ⊆ rs₂) (h₂₁ : rs₂ ⊆ rs₁) :
     Sequence.ModSMulBy M rs₁ ≃ₗ[R] Sequence.ModSMulBy M rs₂ :=
   quotEquivOfEq _ _ <| by
     simp_rw [sequence_smul_eq_set_smul]; congr; exact subset_antisymm h₁₂ h₂₁
 
 /-- An important special case of `equiv_of_subset_subset`. -/
-def equiv_of_perm {rs₁ rs₂ : List R} (h : List.Perm rs₁ rs₂) :
+def equivOfPerm {rs₁ rs₂ : List R} (h : List.Perm rs₁ rs₂) :
     Sequence.ModSMulBy M rs₁ ≃ₗ[R] Sequence.ModSMulBy M rs₂ :=
-  equiv_of_subset_subset M h.subset h.symm.subset
+  equivOfSubsetSubset M h.subset h.symm.subset
 
 variable {M}
 
@@ -241,56 +236,57 @@ lemma map_comp (rs : List R) (g : M' →ₗ[R] M'') (f : M →ₗ[R] M') :
     map rs (g ∘ₗ f) = map rs g ∘ₗ map rs f :=
   DFunLike.ext _ _ <| (mkQ_surjective _).forall.mpr fun _ => rfl
 
-lemma equiv_lTensor_ring_mod_naturality_apply (rs : List R) (f : M →ₗ[R] M') (x : M) :
-    equiv_lTensor_ring_mod M' rs (map rs f (Submodule.Quotient.mk x)) =
+lemma equivQuotTensor_naturality_apply (rs : List R) (f : M →ₗ[R] M') (x : M) :
+    Sequence.ModSMulBy.equivQuotTensor M' rs (map rs f (Submodule.Quotient.mk x)) =
       f.lTensor (R⧸Ideal.span {r | r ∈ rs})
-        (equiv_lTensor_ring_mod M rs (Submodule.Quotient.mk x)) := by
-  simp only [equiv_lTensor_ring_mod, LinearMap.coe_comp, comp_apply, mkQ_apply,
-    LinearEquiv.trans_apply, quotEquivOfEq_mk, LinearMap.lTensor_tmul, map_apply,
-    LinearEquiv.coe_coe, lTensor_ring_mod_ideal_equiv_mod_ideal_smul_symm_apply]
+        (Sequence.ModSMulBy.equivQuotTensor M rs (Submodule.Quotient.mk x)) := by
+  simp only [Sequence.ModSMulBy.equivQuotTensor, LinearMap.coe_comp, comp_apply,
+    mkQ_apply, LinearEquiv.trans_apply, quotEquivOfEq_mk, LinearMap.lTensor_tmul,
+    map_apply, LinearEquiv.coe_coe, quotTensorEquivQuotSMul_symm_mk]
 
-lemma equiv_lTensor_ring_mod_naturality (rs : List R) (f : M →ₗ[R] M') :
-    equiv_lTensor_ring_mod M' rs ∘ₗ map rs f =
-      f.lTensor (R⧸Ideal.span {r | r ∈ rs}) ∘ₗ equiv_lTensor_ring_mod M rs :=
-  by ext x; exact equiv_lTensor_ring_mod_naturality_apply rs f x
+lemma equivQuotTensor_naturality (rs : List R) (f : M →ₗ[R] M') :
+    Sequence.ModSMulBy.equivQuotTensor M' rs ∘ₗ map rs f =
+      f.lTensor (R⧸Ideal.span {r | r ∈ rs}) ∘ₗ
+        Sequence.ModSMulBy.equivQuotTensor M rs :=
+  by ext x; exact equivQuotTensor_naturality_apply rs f x
 
-lemma equiv_rTensor_ring_mod_naturality_apply (rs : List R) (f : M →ₗ[R] M') (x : M) :
-    equiv_rTensor_ring_mod M' rs (map rs f (Submodule.Quotient.mk x)) =
+lemma equivTensorQuot_naturality_apply (rs : List R) (f : M →ₗ[R] M') (x : M) :
+    Sequence.ModSMulBy.equivTensorQuot M' rs (map rs f (Submodule.Quotient.mk x)) =
       f.rTensor (R⧸Ideal.span {r | r ∈ rs})
-        (equiv_rTensor_ring_mod M rs (Submodule.Quotient.mk x)) := by
-  simp only [equiv_rTensor_ring_mod, LinearMap.coe_comp, comp_apply, mkQ_apply,
-    LinearEquiv.trans_apply, quotEquivOfEq_mk, LinearMap.rTensor_tmul, map_apply,
-    LinearEquiv.coe_coe, rTensor_ring_mod_ideal_equiv_mod_ideal_smul_symm_apply]
+        (Sequence.ModSMulBy.equivTensorQuot M rs (Submodule.Quotient.mk x)) := by
+  simp only [Sequence.ModSMulBy.equivTensorQuot, LinearMap.coe_comp, comp_apply,
+    mkQ_apply, LinearEquiv.trans_apply, quotEquivOfEq_mk, LinearMap.rTensor_tmul,
+    map_apply, LinearEquiv.coe_coe, tensorQuotEquivQuotSMul_symm_mk]
 
-lemma equiv_rTensor_ring_mod_naturality (rs : List R) (f : M →ₗ[R] M') :
-    equiv_rTensor_ring_mod M' rs ∘ₗ map rs f =
-      f.rTensor (R⧸Ideal.span {r | r ∈ rs}) ∘ₗ equiv_rTensor_ring_mod M rs :=
-  by ext x; exact equiv_rTensor_ring_mod_naturality_apply rs f x
+lemma equivTensorQuot_naturality (rs : List R) (f : M →ₗ[R] M') :
+    Sequence.ModSMulBy.equivTensorQuot M' rs ∘ₗ map rs f =
+      f.rTensor (R⧸Ideal.span {r | r ∈ rs}) ∘ₗ
+        Sequence.ModSMulBy.equivTensorQuot M rs :=
+  by ext x; exact equivTensorQuot_naturality_apply rs f x
 
-lemma nil_equiv_self_naturality (f : M →ₗ[R] M') :
-    nil_equiv_self R M' ∘ₗ map [] f = f ∘ₗ nil_equiv_self R M :=
+lemma nilEquivSelf_naturality (f : M →ₗ[R] M') :
+    nilEquivSelf R M' ∘ₗ map [] f = f ∘ₗ nilEquivSelf R M :=
   by ext; rfl
 
-lemma cons_equiv_mod_tail_mod_head_naturality (r : R) (rs : List R)
-    (f : M →ₗ[R] M') :
-    cons_equiv_mod_tail_mod_head M' r rs ∘ₗ map (r::rs) f =
-      map rs (_root_.ModSMulBy.map r f) ∘ₗ cons_equiv_mod_tail_mod_head M r rs :=
+lemma consEquivQuotTailQuotHead_naturality (r : R) (rs : List R) (f : M →ₗ[R] M') :
+    consEquivQuotTailQuotHead M' r rs ∘ₗ map (r::rs) f =
+      map rs (_root_.ModSMulBy.map r f) ∘ₗ consEquivQuotTailQuotHead M r rs :=
   by ext; rfl
 
 lemma append_equiv_mod_mod_naturality (rs₁ rs₂ : List R) (f : M →ₗ[R] M') :
-    append_equiv_mod_mod M' rs₁ rs₂ ∘ₗ map (rs₁ ++ rs₂) f =
-      map rs₂ (map rs₁ f) ∘ₗ append_equiv_mod_mod M rs₁ rs₂ :=
+    appendEquivQuotQuot M' rs₁ rs₂ ∘ₗ map (rs₁ ++ rs₂) f =
+      map rs₂ (map rs₁ f) ∘ₗ appendEquivQuotQuot M rs₁ rs₂ :=
   by ext; rfl
 
 lemma equiv_of_subset_subset_naturality {rs₁ rs₂} (h₁₂ : rs₁ ⊆ rs₂)
     (h₂₁ : rs₂ ⊆ rs₁) (f : M →ₗ[R] M') :
-    equiv_of_subset_subset M' h₁₂ h₂₁ ∘ₗ map rs₁ f =
-      map rs₂ f ∘ₗ equiv_of_subset_subset M h₁₂ h₂₁ :=
+    equivOfSubsetSubset M' h₁₂ h₂₁ ∘ₗ map rs₁ f =
+      map rs₂ f ∘ₗ equivOfSubsetSubset M h₁₂ h₂₁ :=
   by ext; rfl
 
 lemma equiv_of_perm_naturality {rs₁ rs₂} (h : List.Perm rs₁ rs₂)
     (f : M →ₗ[R] M') :
-    equiv_of_perm M' h ∘ₗ map rs₁ f = map rs₂ f ∘ₗ equiv_of_perm M h :=
+    equivOfPerm M' h ∘ₗ map rs₁ f = map rs₂ f ∘ₗ equivOfPerm M h :=
   by ext; rfl
 
 lemma map_surjective (rs : List R) {f : M →ₗ[R] M'} (hf : Surjective f) :
@@ -302,10 +298,10 @@ lemma map_surjective (rs : List R) {f : M →ₗ[R] M'} (hf : Surjective f) :
 
 lemma map_exact (rs : List R) {f : M →ₗ[R] M'} {g : M' →ₗ[R] M''}
     (hfg : Exact f g) (hg : Surjective g) : Exact (map rs f) (map rs g) :=
-  (Exact.iff_of_ladder_linear_equiv
-      (equiv_lTensor_ring_mod_naturality rs f).symm
-      (equiv_lTensor_ring_mod_naturality rs g).symm).mp
-    (lTensor_exact (R⧸Ideal.span {r | r ∈ rs}) hfg hg)
+  (Exact.iff_of_ladder_linearEquiv
+      (equivQuotTensor_naturality rs f).symm
+      (equivQuotTensor_naturality rs g).symm).mp
+    (lTensor_exact (R ⧸ Ideal.span {r | r ∈ rs}) hfg hg)
 
 end ModSMulBy
 
@@ -323,7 +319,6 @@ section Congr
 variable {M} [Module S M'] {σ : R →+* S} {σ' : S →+* R}
     [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
 
-open DistribMulAction renaming toAddMonoidEnd → toEnd in
 lemma _root_.AddEquiv.isWeaklyRegular_congr {e : M ≃+ M'} {as bs}
     (h : List.Forall₂ (fun (r : R) (s : S) => ∀ x, e (r • x) = s • e x) as bs) :
     IsWeaklyRegular M as ↔ IsWeaklyRegular M' bs :=
@@ -333,7 +328,8 @@ lemma _root_.AddEquiv.isWeaklyRegular_congr {e : M ≃+ M'} {as bs}
     induction h with
     | nil => exact AddSubgroup.map_bot _
     | cons h _ ih =>
-      change ∀ x, (e : M →+ M').comp (toEnd R M _) x = (toEnd S M' _).comp e x at h
+      change ∀ x, (e : M →+ M').comp (DistribMulAction.toAddMonoidEnd R M _) x =
+                    (DistribMulAction.toAddMonoidEnd S M' _).comp e x at h
       simp_rw [cons_smul, sup_toAddSubgroup, pointwise_smul_toAddSubgroup,
         top_toAddSubgroup, AddSubgroup.pointwise_smul_def, AddSubgroup.map_sup,
         ih, AddSubgroup.map_map, DFunLike.ext _ _ h, ← AddSubgroup.map_map,
@@ -396,7 +392,7 @@ lemma isWeaklyRegular_cons_iff (r : R) (rs : List R) :
   refine and_congr ?_ <| forall₂_congr fun i h => ?_ <;>
     apply LinearEquiv.isSMulRegular_congr
   · exact quotEquivOfEqBot ⊥ rfl
-  · exact ModSMulBy.cons_equiv_mod_tail_mod_head M r (rs.take i)
+  · exact ModSMulBy.consEquivQuotTailQuotHead M r (rs.take i)
 
 lemma isWeaklyRegular_cons_iff' (r : R) (rs : List R) :
     IsWeaklyRegular M (r::rs) ↔
@@ -417,11 +413,11 @@ lemma isWeaklyRegular_append_iff (rs₁ rs₂ : List R) :
   induction rs₁ generalizing M with
   | nil =>
     simp only [List.nil_append, IsWeaklyRegular.nil, true_and]
-    exact ((ModSMulBy.nil_equiv_self R M).isWeaklyRegular_congr rs₂).symm
+    exact ((ModSMulBy.nilEquivSelf R M).isWeaklyRegular_congr rs₂).symm
   | cons r rs₁ ih =>
     simp_rw [List.cons_append, isWeaklyRegular_cons_iff, ih, ← and_assoc]
-    refine and_congr_right' ?_
-    exact ((ModSMulBy.cons_equiv_mod_tail_mod_head M r rs₁).isWeaklyRegular_congr rs₂).symm
+    let e := ModSMulBy.consEquivQuotTailQuotHead M r rs₁
+    exact and_congr_right' (e.isWeaklyRegular_congr rs₂).symm
 
 variable {M}
 
@@ -693,46 +689,43 @@ lemma eq_nil_of_isRegular_on_artinian [IsArtinian R M] :
 
 variable (M')
 
-open scoped TensorProduct in
 lemma IsWeaklyRegular.isWeaklyRegular_lTensor [Module.Flat R M']
     {rs : List R} (h : IsWeaklyRegular M rs) :
     IsWeaklyRegular (M' ⊗[R] M) rs := by
   induction h with
   | nil N => exact nil R (M' ⊗[R] N)
   | @cons N _ _ r rs' h1 _ ih =>
-    refine cons (h1.isSMulRegular_lTensor M' N r) ?_
+    refine cons (h1.lTensor M') ?_
     refine (LinearEquiv.isWeaklyRegular_congr ?_ rs').mp ih
-    exact ModSMulBy.lTensor_ModSMulBy_equiv_ModSMulBy M' N r
+    exact ModSMulBy.tensorModSMulByEquivModSMulBy M' N r
 
-open scoped TensorProduct in
 lemma IsWeaklyRegular.isWeaklyRegular_rTensor [Module.Flat R M']
     {rs : List R} (h : IsWeaklyRegular M rs) :
     IsWeaklyRegular (M ⊗[R] M') rs := by
   induction h with
   | nil N => exact nil R (N ⊗[R] M')
   | @cons N _ _ r rs' h1 _ ih =>
-    refine cons (h1.isSMulRegular_rTensor M' N r) ?_
+    refine cons (h1.rTensor M') ?_
     refine (LinearEquiv.isWeaklyRegular_congr ?_ rs').mp ih
-    exact ModSMulBy.rTensor_ModSMulBy_equiv_ModSMulBy M' N r
+    exact ModSMulBy.modSMulByTensorEquivModSMulBy M' N r
 
 -- TODO: apply the above to localization and completion (Corollary 1.1.3 in B&H)
 
 variable {M'}
 
-open Function in
 lemma ModSMulBy.map_first_exact_on_four_term_right_exact_of_isSMulRegular_last
     {M₂ M₃} [AddCommGroup M₂] [Module R M₂] [AddCommGroup M₃] [Module R M₃]
     {rs : List R} {f₁ : M →ₗ[R] M'} {f₂ : M' →ₗ[R] M₂} {f₃ : M₂ →ₗ[R] M₃}
     (h₁₂ : Exact f₁ f₂) (h₂₃ : Exact f₂ f₃) (h₃ : Surjective f₃)
     (h : IsWeaklyRegular M₃ rs) : Exact (map rs f₁) (map rs f₂) := by
   induction' h with _ _ _ N _ _ r rs h _ ih generalizing M M' M₂
-  · apply (Exact.iff_of_ladder_linear_equiv (Eq.symm ?_) (Eq.symm ?_)).mp h₁₂
-    any_goals apply nil_equiv_self_naturality
+  · apply (Exact.iff_of_ladder_linearEquiv (Eq.symm ?_) (Eq.symm ?_)).mp h₁₂
+    any_goals apply nilEquivSelf_naturality
   · specialize ih
       (_root_.ModSMulBy.map_first_exact_on_four_term_exact_of_isSMulRegular_last h₁₂ h₂₃ h)
       (_root_.ModSMulBy.map_exact r h₂₃ h₃) (_root_.ModSMulBy.map_surjective r h₃)
-    apply (Exact.iff_of_ladder_linear_equiv (Eq.symm ?_) (Eq.symm ?_)).mp ih
-    any_goals apply cons_equiv_mod_tail_mod_head_naturality
+    apply (Exact.iff_of_ladder_linearEquiv (Eq.symm ?_) (Eq.symm ?_)).mp ih
+    any_goals apply consEquivQuotTailQuotHead_naturality
 -- todo: modding out a complex by a regular sequence (prop 1.1.5 in B&H)
 
 open LinearMap in
@@ -741,13 +734,14 @@ private lemma IsWeaklyRegular.swap {a b : R} (h1 : IsWeaklyRegular M [a, b])
     IsWeaklyRegular M [b, a] := by
   simp_rw [isWeaklyRegular_cons_iff, and_iff_left (nil _ _)] at h1 ⊢
   obtain ⟨ha, hb⟩ := h1
-  rw [← IsSMulRegular.isSMulRegular_iff_torsionBy_top_eq_bot] at h2
+  rw [← isSMulRegular_iff_torsionBy_eq_bot] at h2
   specialize h2 (le_antisymm ?_ (smul_le_self_of_tower a (torsionBy R M b)))
-  · refine le_of_eq_of_le (inf_eq_right.mpr (ker_le_comap (p := a • ⊤) _)).symm ?_
-    rw [(IsSMulRegular.isSMulRegular_on_quot_iff_smul_comap_eq _ _).mp hb]
-    refine IsSMulRegular.smul_top_inf_eq_smul_of_isSMulRegular_on_quot ?_
-    have := ker_liftQ_eq_bot' _ (DistribMulAction.toLinearMap R M b) rfl
-    exact ha.isSMulRegular_of_injective_of_isSMulRegular _ (ker_eq_bot.mp this)
+  · refine le_of_eq_of_le ?_ <|
+      IsSMulRegular.smul_top_inf_eq_smul_of_isSMulRegular_on_quot <|
+        ha.isSMulRegular_of_injective_of_isSMulRegular _ <|
+          ker_eq_bot.mp <| ker_liftQ_eq_bot' _ (lsmul R M b) rfl
+    rw [← (IsSMulRegular.isSMulRegular_on_quot_iff_lsmul_comap_eq _ _).mp hb]
+    exact (inf_eq_right.mpr (ker_le_comap _)).symm
   · rwa [ha.isSMulRegular_on_quot_iff_smul_top_inf_eq_smul_of_isSMulRegular, inf_comm, smul_comm,
       ← h2.isSMulRegular_on_quot_iff_smul_top_inf_eq_smul_of_isSMulRegular, and_iff_left hb]
 
@@ -759,9 +753,9 @@ lemma IsWeaklyRegular.prototype_perm {rs : List R} (h : IsWeaklyRegular M rs)
     {rs'} (h'' : rs ~ rs') (h' : ∀ a b rs', (a :: b :: rs') <+~ rs →
       let K := torsionBy R (Sequence.ModSMulBy M rs') b; K = a • K → K = ⊥) :
     IsWeaklyRegular M rs' :=
-  ((ModSMulBy.nil_equiv_self R M).isWeaklyRegular_congr rs').mp <|
+  ((nilEquivSelf R M).isWeaklyRegular_congr rs').mp <|
     aux [] h'' (.refl rs) (h''.symm.subperm) <|
-      ((ModSMulBy.nil_equiv_self R M).isWeaklyRegular_congr rs).mpr h
+      ((nilEquivSelf R M).isWeaklyRegular_congr rs).mpr h
   where aux {rs₁ rs₂} (rs₀ : List R)
     (h₁₂ : rs₁ ~ rs₂) (H₁ : rs₀ ++ rs₁ <+~ rs) (H₃ : rs₀ ++ rs₂ <+~ rs)
     (h : IsWeaklyRegular (Sequence.ModSMulBy M rs₀) rs₁) :
@@ -769,14 +763,14 @@ lemma IsWeaklyRegular.prototype_perm {rs : List R} (h : IsWeaklyRegular M rs)
   induction h₁₂ generalizing rs₀ with
   | nil => exact .nil R _
   | cons r _ ih =>
-    let e := (equiv_of_perm M (List.perm_append_singleton r rs₀).symm) ≪≫ₗ
-      append_equiv_mod_mod _ _ _ ≪≫ₗ quotEquivOfEq _ _ (singleton_smul r ⊤)
+    let e := (equivOfPerm M (List.perm_append_singleton r rs₀).symm) ≪≫ₗ
+      appendEquivQuotQuot _ _ _ ≪≫ₗ quotEquivOfEq _ _ (singleton_smul r ⊤)
     simp only [isWeaklyRegular_cons_iff, ← e.isWeaklyRegular_congr] at h ⊢
     refine h.imp_right (ih (r::rs₀) ?_ ?_)
     <;> refine List.perm_middle.subperm_right.mp ?_ <;> assumption
   | swap a b =>
     erw [isWeaklyRegular_append_iff _ [_, _]] at h ⊢
-    rw [(equiv_of_perm _ (.swap a b [])).isWeaklyRegular_congr] at h
+    rw [(equivOfPerm _ (.swap a b [])).isWeaklyRegular_congr] at h
     rw [List.append_cons, List.append_cons, List.append_assoc _ [b] [a]] at H₁
     apply (List.sublist_append_left (rs₀ ++ [b, a]) _).subperm.trans at H₁
     apply List.perm_append_comm.subperm.trans at H₁
@@ -791,11 +785,12 @@ lemma IsWeaklyRegular.of_perm_of_subset_jacobson_annihilator [IsNoetherian R M]
     {rs rs' : List R} (h1 : IsWeaklyRegular M rs) (h2 : List.Perm rs rs')
     (h3 : ∀ r ∈ rs, r ∈ (Module.annihilator R M).jacobson) :
     IsWeaklyRegular M rs' :=
-  h1.prototype_perm h2 fun r _ _ h h' =>
+  h1.prototype_perm h2 fun r _ xs h h' =>
+    have h4 : Module.annihilator R M ≤ Module.annihilator R (M ⧸ xs • ⊤) :=
+      LinearMap.annihilator_le_of_surjective _ (mkQ_surjective _)
     eq_bot_of_element_smul_eq_of_FG_of_mem_jacobson_annihilator h'.symm
       (Ideal.jacobson_mono
-        (le_trans (LinearMap.annihilator_le_of_surjective _ (mkQ_surjective _))
-          (LinearMap.annihilator_le_of_injective _ (injective_subtype _)))
+        (le_trans h4 (LinearMap.annihilator_le_of_injective _ (injective_subtype _)))
         (h3 r (h.subset (List.mem_cons_self _ _)))) (IsNoetherian.noetherian _)
 
 lemma IsRegular.of_perm_of_subset_jacobson_annihilator [IsNoetherian R M]
@@ -809,7 +804,7 @@ lemma _root_.LocalRing.isWeaklyRegular_of_perm_of_subset_maximalIdeal
     [LocalRing R] [IsNoetherian R M] {rs rs' : List R}
     (h1 : IsWeaklyRegular M rs) (h2 : List.Perm rs rs')
     (h3 : ∀ r ∈ rs, r ∈ LocalRing.maximalIdeal R) : IsWeaklyRegular M rs' :=
-  IsWeaklyRegular.of_perm_of_subset_jacobson_annihilator h1 h2 <| fun r hr =>
+  IsWeaklyRegular.of_perm_of_subset_jacobson_annihilator h1 h2 fun r hr =>
     LocalRing.maximalIdeal_le_jacobson _ (h3 r hr)
 
 lemma _root_.LocalRing.isRegular_of_perm [LocalRing R] [IsNoetherian R M]
