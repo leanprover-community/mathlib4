@@ -27,15 +27,20 @@ open Lean Elab Command
 inductive StyleError where
   /-- Line longer than 100 characters -/
   | lineLength (actual : Int) : StyleError
+  /-- Broad import, which is disallowed in Mathlib -/
+  -- Future: if this includes more than one import, report the module name
+  | broadImport : StyleError
   deriving BEq
 
 /-- Create the underlying error message for a given `StyleError`. -/
 def errorMessage (err : StyleError) : String := match err with
   | StyleError.lineLength n => s!"Line has {n} characters, which is more than 100"
+  | StyleError.broadImport => "Files in mathlib must not import the whole tactic folder"
 
 /-- The error code for a given style error. Kept in sync with `lint-style.py` for now. -/
 def errorCode (err : StyleError) : String := match err with
   | StyleError.lineLength _n => "ERR_LIN"
+  | StyleError.broadImport => "ERR_TAC"
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
 and the path to the file. -/
@@ -75,11 +80,38 @@ def check_line_length (lines : Array String) : Array (StyleError × Nat) :=
   -- TODO: enumerate over all lines, and report actual line numbers!
   Array.map (fun e ↦ (e, 42)) errors
 
+/-- Lint a collection of input strings if one of them contains an unnecessary broad import.
+Return `none` if no import was found, and `some n` if such an import was on line `n` (1-based). -/
+def contains_broad_imports(lines : Array String) : Array (StyleError × Nat) := Id.run do
+  let mut output := Array.mkEmpty 0
+  -- All import statements must be placed "at the beginning" of the file:
+  -- we can have any number of blank lines, imports and single or multi-line comments.
+  -- Doc comments, however, are not allowed: there is no item they could document.
+  let mut in_doc_comment : Bool := False
+  let mut line_number := 0
+  for line in lines do
+    line_number := line_number + 1
+    if in_doc_comment then
+      if line.endsWith "-/" then
+        in_doc_comment := False
+    else
+      if let some (rest) := line.dropPrefix? "import " then
+          -- If there is any in-line or beginning doc comment on that line, trim that.
+          -- HACK: just split the string on space, "/" and "-":
+          -- none of these occur in module names, so this is safe.
+          if let some name := ((toString rest).split fun c ↦ (" /-".contains c)).head? then
+            if name == "Mathlib.Tactic" then
+              output := output.push (StyleError.broadImport, line_number)
+      -- If this is just a single-line comment (starts with "--"), just continue.
+      if line.startsWith "/-" then
+        in_doc_comment := True
+  output
+
 end CoreLogic
 
 /-- All text-based linters registered in this file. -/
 def all_linters : Array (Array String → Array (StyleError × Nat)) := Array.mk
-  [CoreLogic.check_line_length]
+  [CoreLogic.check_line_length, CoreLogic.contains_broad_imports]
 
 def add_path (path : System.FilePath) : StyleError × Nat → ErrorContext :=
   fun (e, n) ↦ ErrorContext.mk e n path
