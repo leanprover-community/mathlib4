@@ -62,7 +62,7 @@ class CompactlySupportedContinuousMapClass (F : Type*) (α β : outParam <| Type
     [TopologicalSpace α] [Zero β] [TopologicalSpace β] [FunLike F α β]
     extends ContinuousMapClass F α β : Prop where
   /-- Each member of the class has compact support. -/
-  has_compact_support (f : F) : HasCompactSupport f
+  hasCompactSupport (f : F) : HasCompactSupport f
 
 end
 
