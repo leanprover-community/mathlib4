@@ -399,8 +399,8 @@ theorem exists_isSubordinate_of_locallyFinite_of_prop [NormalSpace X] (p : (X �
     h01 _ _ (isClosed_compl_iff.2 <| hVo i) isClosed_closure
       (disjoint_right.2 fun x hx => Classical.not_not.2 (hWV i hx))
   have hsupp : ∀ i, support (f i) ⊆ V i := fun i => support_subset_iff'.2 (hf0 i)
-  refine' ⟨⟨f, hf.subset fun i => Subset.trans (hsupp i) (hVU' i), fun i x => (hf01 i x).1,
-      fun i x => (hf01 i x).2, fun x hx => _⟩,
+  refine ⟨⟨f, hf.subset fun i => Subset.trans (hsupp i) (hVU' i), fun i x => (hf01 i x).1,
+      fun i x => (hf01 i x).2, fun x hx => ?_⟩,
     hfp, fun i => Subset.trans (closure_mono (hsupp i)) (hVU i)⟩
   rcases mem_iUnion.1 (hsW hx) with ⟨i, hi⟩
   exact ⟨i, ((hf1 i).mono subset_closure).eventuallyEq_of_mem ((hWo i).mem_nhds hi)⟩
@@ -482,7 +482,7 @@ theorem support_toPOUFun_subset (i : ι) : support (f.toPOUFun i) ⊆ support (f
 theorem toPOUFun_eq_mul_prod (i : ι) (x : X) (t : Finset ι)
     (ht : ∀ j, WellOrderingRel j i → f j x ≠ 0 → j ∈ t) :
     f.toPOUFun i x = f i x * ∏ j in t.filter fun j => WellOrderingRel j i, (1 - f j x) := by
-  refine' congr_arg _ (finprod_cond_eq_prod_of_cond_iff _ fun {j} hj => _)
+  refine congr_arg _ (finprod_cond_eq_prod_of_cond_iff _ fun {j} hj => ?_)
   rw [Ne, sub_eq_self] at hj
   rw [Finset.mem_filter, Iff.comm, and_iff_right_iff_imp]
   exact flip (ht j) hj
@@ -500,7 +500,7 @@ theorem sum_toPOUFun_eq (x : X) : ∑ᶠ i, f.toPOUFun i x = 1 - ∏ᶠ i, (1 - 
   letI : LinearOrder ι := linearOrderOfSTO WellOrderingRel
   rw [finsum_eq_sum_of_support_subset _ A, finprod_eq_prod_of_mulSupport_subset _ B,
     Finset.prod_one_sub_ordered, sub_sub_cancel]
-  refine' Finset.sum_congr rfl fun i _ => _
+  refine Finset.sum_congr rfl fun i _ => ?_
   convert f.toPOUFun_eq_mul_prod _ _ _ fun j _ hj => _
   rwa [Finite.mem_toFinset]
 #align bump_covering.sum_to_pou_fun_eq BumpCovering.sum_toPOUFun_eq
@@ -517,8 +517,8 @@ theorem exists_finset_toPOUFun_eventuallyEq (i : ι) (x : X) : ∃ t : Finset ι
 #align bump_covering.exists_finset_to_pou_fun_eventually_eq BumpCovering.exists_finset_toPOUFun_eventuallyEq
 
 theorem continuous_toPOUFun (i : ι) : Continuous (f.toPOUFun i) := by
-  refine' (f i).continuous.mul <|
-    continuous_finprod_cond (fun j _ => continuous_const.sub (f j).continuous) _
+  refine (f i).continuous.mul <|
+    continuous_finprod_cond (fun j _ => continuous_const.sub (f j).continuous) ?_
   simp only [mulSupport_one_sub]
   exact f.locallyFinite
 #align bump_covering.continuous_to_pou_fun BumpCovering.continuous_toPOUFun

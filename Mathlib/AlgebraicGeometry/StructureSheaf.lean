@@ -114,7 +114,7 @@ theorem IsFraction.eq_mk' {U : Opens (PrimeSpectrum.Top R)} {f : ∀ x : U, Loca
             IsLocalization.mk' (Localization.AtPrime _) r
               (⟨s, hs⟩ : (x : PrimeSpectrum.Top R).asIdeal.primeCompl) := by
   rcases hf with ⟨r, s, h⟩
-  refine' ⟨r, s, fun x => ⟨(h x).1, (IsLocalization.mk'_eq_iff_eq_mul.mpr _).symm⟩⟩
+  refine ⟨r, s, fun x => ⟨(h x).1, (IsLocalization.mk'_eq_iff_eq_mul.mpr ?_).symm⟩⟩
   exact (h x).2.symm
 #align algebraic_geometry.structure_sheaf.is_fraction.eq_mk' AlgebraicGeometry.StructureSheaf.IsFraction.eq_mk'
 
@@ -787,9 +787,9 @@ theorem normalize_finite_fraction_representation (U : Opens (PrimeSpectrum.Top R
   have basic_opens_eq : ∀ i : ι, PrimeSpectrum.basicOpen (h i ^ (N + 1)) =
     PrimeSpectrum.basicOpen (h i) := fun i => PrimeSpectrum.basicOpen_pow _ _ (by omega)
   -- Expanding the fraction `a i / h i` by the power `(h i) ^ n` gives the desired normalization
-  refine'
+  refine
     ⟨fun i => a i * h i ^ N, fun i => h i ^ (N + 1), fun i => eqToHom (basic_opens_eq i) ≫ iDh i,
-      _, _, _⟩
+      ?_, ?_, ?_⟩
   · simpa only [basic_opens_eq] using h_cover
   · intro i hi j hj
     -- Here we need to show that our new fractions `a i / h i` satisfy the normalization condition
@@ -1089,10 +1089,10 @@ theorem comapFunIsLocallyFraction (f : R →+* S) (U : Opens (PrimeSpectrum.Top 
   rcases hs ⟨PrimeSpectrum.comap f p, hUV hpV⟩ with ⟨W, m, iWU, a, b, h_frac⟩
   -- We claim that we can write our new section as the fraction `f a / f b` on the neighborhood
   -- `(comap f) ⁻¹ W ⊓ V` of `p`.
-  refine' ⟨Opens.comap (PrimeSpectrum.comap f) W ⊓ V, ⟨m, hpV⟩, Opens.infLERight _ _, f a, f b, _⟩
+  refine ⟨Opens.comap (PrimeSpectrum.comap f) W ⊓ V, ⟨m, hpV⟩, Opens.infLERight _ _, f a, f b, ?_⟩
   rintro ⟨q, ⟨hqW, hqV⟩⟩
   specialize h_frac ⟨PrimeSpectrum.comap f q, hqW⟩
-  refine' ⟨h_frac.1, _⟩
+  refine ⟨h_frac.1, ?_⟩
   dsimp only [comapFun]
   erw [← Localization.localRingHom_to_map (PrimeSpectrum.comap f q).asIdeal, ← RingHom.map_mul,
     h_frac.2, Localization.localRingHom_to_map]

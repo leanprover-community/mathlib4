@@ -157,7 +157,7 @@ theorem dist_eq : dist f g = sInf { C | 0 ≤ C ∧ ∀ x : α, dist (f x) (g x)
 
 theorem dist_set_exists : ∃ C, 0 ≤ C ∧ ∀ x : α, dist (f x) (g x) ≤ C := by
   rcases isBounded_iff.1 (f.isBounded_range.union g.isBounded_range) with ⟨C, hC⟩
-  refine' ⟨max 0 C, le_max_left _ _, fun x => (hC _ _).trans (le_max_right _ _)⟩
+  refine ⟨max 0 C, le_max_left _ _, fun x => (hC ?_ ?_).trans (le_max_right _ _)⟩
     <;> [left; right]
     <;> apply mem_range_self
 #align bounded_continuous_function.dist_set_exists BoundedContinuousFunction.dist_set_exists
@@ -246,7 +246,7 @@ theorem dist_zero_of_empty [IsEmpty α] : dist f g = 0 := by
 
 theorem dist_eq_iSup : dist f g = ⨆ x : α, dist (f x) (g x) := by
   cases isEmpty_or_nonempty α; · rw [iSup_of_empty', Real.sSup_empty, dist_zero_of_empty]
-  refine' (dist_le_iff_of_nonempty.mpr <| le_ciSup _).antisymm (ciSup_le dist_coe_le_dist)
+  refine (dist_le_iff_of_nonempty.mpr <| le_ciSup ?_).antisymm (ciSup_le dist_coe_le_dist)
   exact dist_set_exists.imp fun C hC => forall_mem_range.2 hC.2
 #align bounded_continuous_function.dist_eq_supr BoundedContinuousFunction.dist_eq_iSup
 
@@ -274,7 +274,7 @@ theorem tendsto_iff_tendstoUniformly {ι : Type*} {F : ι → α →ᵇ β} {f :
 /-- The topology on `α →ᵇ β` is exactly the topology induced by the natural map to `α →ᵤ β`. -/
 theorem inducing_coeFn : Inducing (UniformFun.ofFun ∘ (⇑) : (α →ᵇ β) → α →ᵤ β) := by
   rw [inducing_iff_nhds]
-  refine' fun f => eq_of_forall_le_iff fun l => _
+  refine fun f => eq_of_forall_le_iff fun l => ?_
   rw [← tendsto_iff_comap, ← tendsto_id', tendsto_iff_tendstoUniformly,
     UniformFun.tendsto_iff_tendstoUniformly]
   rfl
@@ -478,7 +478,7 @@ theorem extend_of_empty [IsEmpty α] (f : α ↪ δ) (g : α →ᵇ β) (h : δ 
 theorem dist_extend_extend (f : α ↪ δ) (g₁ g₂ : α →ᵇ β) (h₁ h₂ : δ →ᵇ β) :
     dist (g₁.extend f h₁) (g₂.extend f h₂) =
       max (dist g₁ g₂) (dist (h₁.restrict (range f)ᶜ) (h₂.restrict (range f)ᶜ)) := by
-  refine' le_antisymm ((dist_le <| le_max_iff.2 <| Or.inl dist_nonneg).2 fun x => _) (max_le _ _)
+  refine le_antisymm ((dist_le <| le_max_iff.2 <| Or.inl dist_nonneg).2 fun x => ?_) (max_le ?_ ?_)
   · rcases _root_.em (∃ y, f y = x) with (⟨x, rfl⟩ | hx)
     · simp only [extend_apply]
       exact (dist_coe_le_dist x).trans (le_max_left _ _)
@@ -488,10 +488,10 @@ theorem dist_extend_extend (f : α ↪ δ) (g₁ g₂ : α →ᵇ β) (h₁ h₂
         dist (h₁ x) (h₂ x) = dist (h₁.restrict (range f)ᶜ x) (h₂.restrict (range f)ᶜ x) := rfl
         _ ≤ dist (h₁.restrict (range f)ᶜ) (h₂.restrict (range f)ᶜ) := dist_coe_le_dist x
         _ ≤ _ := le_max_right _ _
-  · refine' (dist_le dist_nonneg).2 fun x => _
+  · refine (dist_le dist_nonneg).2 fun x => ?_
     rw [← extend_apply f g₁ h₁, ← extend_apply f g₂ h₂]
     exact dist_coe_le_dist _
-  · refine' (dist_le dist_nonneg).2 fun x => _
+  · refine (dist_le dist_nonneg).2 fun x => ?_
     calc
       dist (h₁ x) (h₂ x) = dist (extend f g₁ h₁ x) (extend f g₂ h₂ x) := by
         rw [extend_apply' x.coe_prop, extend_apply' x.coe_prop]
@@ -519,8 +519,8 @@ and several useful variations around it. -/
 theorem arzela_ascoli₁ [CompactSpace β] (A : Set (α →ᵇ β)) (closed : IsClosed A)
     (H : Equicontinuous ((↑) : A → α → β)) : IsCompact A := by
   simp_rw [Equicontinuous, Metric.equicontinuousAt_iff_pair] at H
-  refine' isCompact_of_totallyBounded_isClosed _ closed
-  refine' totallyBounded_of_finite_discretization fun ε ε0 => _
+  refine isCompact_of_totallyBounded_isClosed ?_ closed
+  refine totallyBounded_of_finite_discretization fun ε ε0 => ?_
   rcases exists_between ε0 with ⟨ε₁, ε₁0, εε₁⟩
   let ε₂ := ε₁ / 2 / 2
   /- We have to find a finite discretization of `u`, i.e., finite information
@@ -553,16 +553,16 @@ theorem arzela_ascoli₁ [CompactSpace β] (A : Set (α →ᵇ β)) (closed : Is
   -- `F : β → β`, `hF : ∀ (y : β), F y ∈ tβ ∧ dist y (F y) < ε₂`
   /- Associate to every function a discrete approximation, mapping each point in `tα`
     to a point in `tβ` close to its true image by the function. -/
-  refine' ⟨tα → tβ, by infer_instance, fun f a => ⟨F (f.1 a), (hF (f.1 a)).1⟩, _⟩
+  refine ⟨tα → tβ, by infer_instance, fun f a => ⟨F (f.1 a), (hF (f.1 a)).1⟩, ?_⟩
   rintro ⟨f, hf⟩ ⟨g, hg⟩ f_eq_g
   -- If two functions have the same approximation, then they are within distance `ε`
-  refine' lt_of_le_of_lt ((dist_le <| le_of_lt ε₁0).2 fun x => _) εε₁
+  refine lt_of_le_of_lt ((dist_le <| le_of_lt ε₁0).2 fun x => ?_) εε₁
   obtain ⟨x', x'tα, hx'⟩ := mem_iUnion₂.1 (htα (mem_univ x))
   calc
     dist (f x) (g x) ≤ dist (f x) (f x') + dist (g x) (g x') + dist (f x') (g x') :=
       dist_triangle4_right _ _ _ _
     _ ≤ ε₂ + ε₂ + ε₁ / 2 := by
-      refine' le_of_lt (add_lt_add (add_lt_add _ _) _)
+      refine le_of_lt (add_lt_add (add_lt_add ?_ ?_) ?_)
       · exact (hU x').2.2 _ hx' _ (hU x').1 hf
       · exact (hU x').2.2 _ hx' _ (hU x').1 hg
       · have F_f_g : F (f x') = F (g x') :=
@@ -584,10 +584,10 @@ theorem arzela_ascoli₂ (s : Set β) (hs : IsCompact s) (A : Set (α →ᵇ β)
   using compactness there and then lifting everything to the original space. -/
   have M : LipschitzWith 1 Subtype.val := LipschitzWith.subtype_val s
   let F : (α →ᵇ s) → α →ᵇ β := comp (↑) M
-  refine' IsCompact.of_isClosed_subset ((_ : IsCompact (F ⁻¹' A)).image (continuous_comp M)) closed
-      fun f hf => _
+  refine IsCompact.of_isClosed_subset ((?_ : IsCompact (F ⁻¹' A)).image (continuous_comp M)) closed
+      fun f hf => ?_
   · haveI : CompactSpace s := isCompact_iff_compactSpace.1 hs
-    refine' arzela_ascoli₁ _ (continuous_iff_isClosed.1 (continuous_comp M) _ closed) _
+    refine arzela_ascoli₁ _ (continuous_iff_isClosed.1 (continuous_comp M) _ closed) ?_
     rw [uniformEmbedding_subtype_val.toUniformInducing.equicontinuous_iff]
     exact H.comp (A.restrictPreimage F)
   · let g := codRestrict s f fun x => in_s f x hf

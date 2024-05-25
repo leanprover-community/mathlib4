@@ -351,7 +351,7 @@ theorem mem_carrier_iff_of_mem_mul (hm : 0 < m)
 
 theorem carrier.add_mem (q : Spec.T A⁰_ f) {a b : A} (ha : a ∈ carrier f_deg q)
     (hb : b ∈ carrier f_deg q) : a + b ∈ carrier f_deg q := by
-  refine' fun i => (q.2.mem_or_mem _).elim id id
+  refine fun i => (q.2.mem_or_mem ?_).elim id id
   change (Quotient.mk'' ⟨_, _, _, _⟩ : A⁰_ f) ∈ q.1; dsimp only [Subtype.coe_mk]
   simp_rw [← pow_add, map_add, add_pow, mul_comm, ← nsmul_eq_mul]
   let g : ℕ → A⁰_ f := fun j => (m + m).choose j •
@@ -383,7 +383,7 @@ theorem carrier.add_mem (q : Spec.T A⁰_ f) {a b : A} (ha : a ∈ carrier f_deg
     apply GradedMonoid.toGradedMul.mul_mem (i := (j-m) • i) (j := (m + m - j) • i) <;> mem_tac_aux
     rw [← add_smul]; congr; zify [le_of_not_lt h2, le_of_not_le h1]; abel
   convert_to ∑ i in range (m + m + 1), g i ∈ q.1; swap
-  · refine' q.1.sum_mem fun j _ => nsmul_mem _ _; split_ifs
+  · refine q.1.sum_mem fun j _ => nsmul_mem ?_ _; split_ifs
     exacts [q.1.zero_mem, q.1.mul_mem_left _ (hb i), q.1.mul_mem_right _ (ha i)]
   rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk'']
   change _ = (algebraMap (HomogeneousLocalization.Away 𝒜 f) (Localization.Away f)) _
@@ -413,7 +413,7 @@ theorem carrier.zero_mem : (0 : A) ∈ carrier f_deg q := fun i => by
 
 theorem carrier.smul_mem (c x : A) (hx : x ∈ carrier f_deg q) : c • x ∈ carrier f_deg q := by
   revert c
-  refine' DirectSum.Decomposition.inductionOn 𝒜 _ _ _
+  refine DirectSum.Decomposition.inductionOn 𝒜 ?_ ?_ ?_
   · rw [zero_smul]; exact carrier.zero_mem f_deg hm _
   · rintro n ⟨a, ha⟩ i
     simp_rw [proj_apply, smul_eq_mul, coe_decompose_mul_of_left_mem 𝒜 i ha]

@@ -102,7 +102,7 @@ theorem coe_vanishingIdeal (t : Set (ProjectiveSpectrum 𝒜)) :
   ext f
   rw [vanishingIdeal, SetLike.mem_coe, ← HomogeneousIdeal.mem_iff, HomogeneousIdeal.toIdeal_iInf,
     Submodule.mem_iInf]
-  refine' forall_congr' fun x => _
+  refine forall_congr' fun x => ?_
   rw [HomogeneousIdeal.toIdeal_iInf, Submodule.mem_iInf, HomogeneousIdeal.mem_iff]
 #align projective_spectrum.coe_vanishing_ideal ProjectiveSpectrum.coe_vanishingIdeal
 

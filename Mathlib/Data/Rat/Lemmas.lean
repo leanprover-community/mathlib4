@@ -34,7 +34,7 @@ theorem den_dvd (a b : ℤ) : ((a /. b).den : ℤ) ∣ b := by
   by_cases b0 : b = 0; · simp [b0]
   cases' e : a /. b with n d h c
   rw [mk'_eq_divInt, divInt_eq_iff b0 (ne_of_gt (Int.natCast_pos.2 (Nat.pos_of_ne_zero h)))] at e
-  refine' Int.dvd_natAbs.1 <| Int.natCast_dvd_natCast.2 <| c.symm.dvd_of_dvd_mul_left _
+  refine Int.dvd_natAbs.1 <| Int.natCast_dvd_natCast.2 <| c.symm.dvd_of_dvd_mul_left ?_
   rw [← Int.natAbs_mul, ← Int.natCast_dvd_natCast, Int.dvd_natAbs, ← e]; simp
 #align rat.denom_dvd Rat.den_dvd
 
@@ -43,15 +43,15 @@ theorem num_den_mk {q : ℚ} {n d : ℤ} (hd : d ≠ 0) (qdf : q = n /. d) :
   obtain rfl | hn := eq_or_ne n 0
   · simp [qdf]
   have : q.num * d = n * ↑q.den := by
-    refine' (divInt_eq_iff _ hd).mp _
+    refine (divInt_eq_iff ?_ hd).mp ?_
     · exact Int.natCast_ne_zero.mpr (Rat.den_nz _)
     · rwa [num_divInt_den]
   have hqdn : q.num ∣ n := by
     rw [qdf]
     exact Rat.num_dvd _ hd
-  refine' ⟨n / q.num, _, _⟩
+  refine ⟨n / q.num, ?_, ?_⟩
   · rw [Int.ediv_mul_cancel hqdn]
-  · refine' Int.eq_mul_div_of_mul_eq_mul_of_dvd_left _ hqdn this
+  · refine Int.eq_mul_div_of_mul_eq_mul_of_dvd_left ?_ hqdn this
     rw [qdf]
     exact Rat.num_ne_zero.2 ((divInt_ne_zero hd).mpr hn)
 #align rat.num_denom_mk Rat.num_den_mk

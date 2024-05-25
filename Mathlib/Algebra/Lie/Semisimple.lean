@@ -5,7 +5,6 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Lie.Solvable
 import Mathlib.Order.Atoms
-import Mathlib.Order.Minimal
 
 #align_import algebra.lie.semisimple from "leanprover-community/mathlib"@"356447fe00e75e54777321045cdff7c9ea212e60"
 
@@ -34,12 +33,23 @@ lie algebra, radical, simple, semisimple
 
 universe u v w w₁ w₂
 
-/-- A Lie module is irreducible if it is zero or its only non-trivial Lie submodule is itself. -/
-class LieModule.IsIrreducible (R : Type u) (L : Type v) (M : Type w) [CommRing R] [LieRing L]
-    [LieAlgebra R L] [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M] :
-    Prop where
-  irreducible : ∀ N : LieSubmodule R L M, N ≠ ⊥ → N = ⊤
+section Irreducible
+
+variable (R L M : Type*) [CommRing R] [LieRing L] [AddCommGroup M] [Module R M] [LieRingModule L M]
+
+/-- A nontrivial Lie module is *irreducible* if its only Lie submodules are `⊥` and `⊤`. -/
+abbrev LieModule.IsIrreducible : Prop :=
+  IsSimpleOrder (LieSubmodule R L M)
 #align lie_module.is_irreducible LieModule.IsIrreducible
+
+lemma LieModule.nontrivial_of_isIrreducible [LieModule.IsIrreducible R L M] : Nontrivial M where
+  exists_pair_ne := by
+    have aux : (⊥ : LieSubmodule R L M) ≠ ⊤ := bot_ne_top
+    contrapose! aux
+    ext m
+    simpa using aux m 0
+
+end Irreducible
 
 namespace LieAlgebra
 
@@ -48,7 +58,8 @@ variable [CommRing R] [LieRing L] [LieAlgebra R L]
 
 /-- A Lie algebra is simple if it is irreducible as a Lie module over itself via the adjoint
 action, and it is non-Abelian. -/
-class IsSimple extends LieModule.IsIrreducible R L L : Prop where
+class IsSimple : Prop where
+  irreducible : LieModule.IsIrreducible R L L
   non_abelian : ¬IsLieAbelian L
 #align lie_algebra.is_simple LieAlgebra.IsSimple
 
@@ -67,8 +78,11 @@ For example [Seligman, page 15](seligman1967) uses the label for `LieAlgebra.Has
 whereas we reserve it for Lie algebras that are a direct sum of simple Lie algebras.
 -/
 class HasTrivialRadical : Prop where
-  trivial_radical : radical R L = ⊥
+  radical_eq_bot : radical R L = ⊥
 #align lie_algebra.is_semisimple LieAlgebra.HasTrivialRadical
+
+export HasTrivialRadical (radical_eq_bot)
+attribute [simp] radical_eq_bot
 
 /--
 A *semisimple* Lie algebra is one that is a direct sum of simple Lie algebras.
@@ -137,6 +151,27 @@ lemma isSimple_of_isAtom [IsSemisimple R L] (I : LieIdeal R L) (hI : IsAtom I) :
 theorem hasTrivialRadical_iff_no_solvable_ideals :
     HasTrivialRadical R L ↔ ∀ I : LieIdeal R L, IsSolvable R I → I = ⊥ :=
   ⟨fun h => sSup_eq_bot.mp h.trivial_radical, fun h => ⟨sSup_eq_bot.mpr h⟩⟩
+=======
+  sSup_isAtom_eq_top : sSup {I : LieIdeal R L | IsAtom I} = ⊤
+  setIndependent_isAtom : CompleteLattice.SetIndependent {I : LieIdeal R L | IsAtom I}
+  non_abelian_of_isAtom : ∀ I : LieIdeal R L, IsAtom I → ¬ IsLieAbelian I
+
+-- TODO: show that the atomic ideals of a semisimple Lie algebra are simple
+
+variable {R L} in
+theorem HasTrivialRadical.eq_bot_of_isSolvable [HasTrivialRadical R L]
+    (I : LieIdeal R L) [hI : IsSolvable R I] : I = ⊥ :=
+  sSup_eq_bot.mp radical_eq_bot _ hI
+
+variable {R L} in
+theorem hasTrivialRadical_of_no_solvable_ideals (h : ∀ I : LieIdeal R L, IsSolvable R I → I = ⊥) :
+    HasTrivialRadical R L :=
+  ⟨sSup_eq_bot.mpr h⟩
+
+theorem hasTrivialRadical_iff_no_solvable_ideals :
+    HasTrivialRadical R L ↔ ∀ I : LieIdeal R L, IsSolvable R I → I = ⊥ :=
+  ⟨@HasTrivialRadical.eq_bot_of_isSolvable _ _ _ _ _, hasTrivialRadical_of_no_solvable_ideals⟩
+>>>>>>> origin/master
 #align lie_algebra.is_semisimple_iff_no_solvable_ideals LieAlgebra.hasTrivialRadical_iff_no_solvable_ideals
 
 theorem hasTrivialRadical_iff_no_abelian_ideals :
@@ -351,7 +386,7 @@ theorem subsingleton_of_hasTrivialRadical_lie_abelian [HasTrivialRadical R L] [h
 
 theorem abelian_radical_of_hasTrivialRadical [HasTrivialRadical R L] :
     IsLieAbelian (radical R L) := by
-  rw [HasTrivialRadical.trivial_radical]; infer_instance
+  rw [HasTrivialRadical.radical_eq_bot]; infer_instance
 #align lie_algebra.abelian_radical_of_semisimple LieAlgebra.abelian_radical_of_hasTrivialRadical
 
 /-- The two properties shown to be equivalent here are possible definitions for a Lie algebra
