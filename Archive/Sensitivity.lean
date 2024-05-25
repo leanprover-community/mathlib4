@@ -441,7 +441,7 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
   have H_q_pos : 0 < |ε q y| := by
     contrapose! y_ne
     exact epsilon_total fun p => abs_nonpos_iff.mp (le_trans (H_max p) y_ne)
-  refine' ⟨q, (dualBases_e_ε _).mem_of_mem_span y_mem_H q (abs_pos.mp H_q_pos), _⟩
+  refine ⟨q, (dualBases_e_ε _).mem_of_mem_span y_mem_H q (abs_pos.mp H_q_pos), ?_⟩
   let s := √ (m + 1)
   suffices s * |ε q y| ≤ _ * |ε q y| from (mul_le_mul_right H_q_pos).mp ‹_›
   let coeffs := (dualBases_e_ε m.succ).coeffs
@@ -467,7 +467,7 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     _ = (((coeffs y).support ∩ q.adjacent.toFinset).card : ℝ) * |coeffs y q| := by
       congr with x; simp; rfl
     _ ≤ Finset.card (H ∩ q.adjacent).toFinset * |ε q y| := by
-      refine' (mul_le_mul_right H_q_pos).2 _
+      refine (mul_le_mul_right H_q_pos).2 ?_
       norm_cast
       apply Finset.card_le_card
       rw [Set.toFinset_inter]

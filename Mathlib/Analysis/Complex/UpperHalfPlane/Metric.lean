@@ -341,12 +341,12 @@ theorem image_coe_sphere (z : ℍ) (r : ℝ) :
 #align upper_half_plane.image_coe_sphere UpperHalfPlane.image_coe_sphere
 
 instance : ProperSpace ℍ := by
-  refine' ⟨fun z r => _⟩
+  refine ⟨fun z r => ?_⟩
   rw [inducing_subtype_val.isCompact_iff (f := ((↑) : ℍ → ℂ)), image_coe_closedBall]
   apply isCompact_closedBall
 
 theorem isometry_vertical_line (a : ℝ) : Isometry fun y => mk ⟨a, exp y⟩ (exp_pos y) := by
-  refine' Isometry.of_dist_eq fun y₁ y₂ => _
+  refine Isometry.of_dist_eq fun y₁ y₂ => ?_
   rw [dist_of_re_eq]
   exacts [congr_arg₂ _ (log_exp _) (log_exp _), rfl]
 #align upper_half_plane.isometry_vertical_line UpperHalfPlane.isometry_vertical_line
@@ -356,7 +356,7 @@ theorem isometry_real_vadd (a : ℝ) : Isometry (a +ᵥ · : ℍ → ℍ) :=
 #align upper_half_plane.isometry_real_vadd UpperHalfPlane.isometry_real_vadd
 
 theorem isometry_pos_mul (a : { x : ℝ // 0 < x }) : Isometry (a • · : ℍ → ℍ) := by
-  refine' Isometry.of_dist_eq fun y₁ y₂ => _
+  refine Isometry.of_dist_eq fun y₁ y₂ => ?_
   simp only [dist_eq, coe_pos_real_smul, pos_real_im]; congr 2
   rw [dist_smul₀, mul_mul_mul_comm, Real.sqrt_mul (mul_self_nonneg _), Real.sqrt_mul_self_eq_abs,
     Real.norm_eq_abs, mul_left_comm]

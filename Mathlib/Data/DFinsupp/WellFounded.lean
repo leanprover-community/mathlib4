@@ -123,8 +123,8 @@ theorem Lex.acc_of_single [DecidableEq ι] [∀ (i) (x : α i), Decidable (x ≠
     · intro x ht
       rw [support_eq_empty.1 ht]
       exact fun _ => Lex.acc_zero hbot
-    refine' fun x ht h => Lex.acc_of_single_erase b (h b <| t.mem_insert_self b) _
-    refine' ih _ (by rw [support_erase, ht, Finset.erase_insert hb]) fun a ha => _
+    refine fun x ht h => Lex.acc_of_single_erase b (h b <| t.mem_insert_self b) ?_
+    refine ih _ (by rw [support_erase, ht, Finset.erase_insert hb]) fun a ha => ?_
     rw [erase_ne (ha.ne_of_not_mem hb)]
     exact h a (Finset.mem_insert_of_mem ha)
 #align dfinsupp.lex.acc_of_single DFinsupp.Lex.acc_of_single
@@ -188,7 +188,7 @@ theorem Pi.Lex.wellFounded [IsStrictTotalOrder ι r] [Finite ι] (hs : ∀ i, We
   · convert emptyWf.wf
   letI : ∀ i, Zero (α i) := fun i => ⟨(hs i).min ⊤ ⟨x i, trivial⟩⟩
   haveI := IsTrans.swap r; haveI := IsIrrefl.swap r; haveI := Fintype.ofFinite ι
-  refine' InvImage.wf equivFunOnFintype.symm (Lex.wellFounded' (fun i a => _) hs _)
+  refine InvImage.wf equivFunOnFintype.symm (Lex.wellFounded' (fun i a => ?_) hs ?_)
   exacts [(hs i).not_lt_min ⊤ _ trivial, Finite.wellFounded_of_trans_of_irrefl (Function.swap r)]
 #align pi.lex.well_founded Pi.Lex.wellFounded
 
@@ -247,7 +247,7 @@ instance Pi.wellFoundedLT [Finite ι] [∀ i, Preorder (α i)] [hw : ∀ i, Well
     · convert emptyWf.wf
     letI : ∀ i, Zero (α i) := fun i => ⟨(hw i).wf.min ⊤ ⟨x i, trivial⟩⟩
     haveI := Fintype.ofFinite ι
-    refine' InvImage.wf equivFunOnFintype.symm (DFinsupp.wellFoundedLT fun i a => _).wf
+    refine InvImage.wf equivFunOnFintype.symm (DFinsupp.wellFoundedLT fun i a => ?_).wf
     exact (hw i).wf.not_lt_min ⊤ _ trivial⟩
 #align pi.well_founded_lt Pi.wellFoundedLT
 

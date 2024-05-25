@@ -316,7 +316,7 @@ section Cancel
 theorem addLECancellable_iff_ne {a : ℝ≥0∞} : AddLECancellable a ↔ a ≠ ∞ := by
   constructor
   · rintro h rfl
-    refine' zero_lt_one.not_le (h _)
+    refine zero_lt_one.not_le (h ?_)
     simp
   · rintro h b c hbc
     apply ENNReal.le_of_add_le_add_left h hbc

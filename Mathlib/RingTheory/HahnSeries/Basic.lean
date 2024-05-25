@@ -224,7 +224,7 @@ instance [Nonempty Γ] [Nontrivial R] : Nontrivial (HahnSeries Γ R) :=
   ⟨by
     obtain ⟨r, s, rs⟩ := exists_pair_ne R
     inhabit Γ
-    refine' ⟨single default r, single default s, fun con => rs _⟩
+    refine ⟨single default r, single default s, fun con => rs ?_⟩
     rw [← single_coeff_same (default : Γ) r, con, single_coeff_same]⟩
 
 section Order

@@ -3,8 +3,8 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.GroupRingAction.Invariant
 import Mathlib.Algebra.Polynomial.GroupRingAction
+import Mathlib.Algebra.Ring.Action.Invariant
 import Mathlib.FieldTheory.Normal
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.Tower
@@ -124,25 +124,25 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
     (LinearIndependent (FixedPoints.subfield G F) fun i : (s : Set F) => (i : F)) →
       LinearIndependent F fun i : (s : Set F) => MulAction.toFun G F i := by
   haveI : IsEmpty ((∅ : Finset F) : Set F) := by simp
-  refine' Finset.induction_on s (fun _ => linearIndependent_empty_type) fun a s has ih hs => _
+  refine Finset.induction_on s (fun _ => linearIndependent_empty_type) fun a s has ih hs => ?_
   rw [coe_insert] at hs ⊢
   rw [linearIndependent_insert (mt mem_coe.1 has)] at hs
-  rw [linearIndependent_insert' (mt mem_coe.1 has)]; refine' ⟨ih hs.1, fun ha => _⟩
+  rw [linearIndependent_insert' (mt mem_coe.1 has)]; refine ⟨ih hs.1, fun ha => ?_⟩
   rw [Finsupp.mem_span_image_iff_total] at ha; rcases ha with ⟨l, hl, hla⟩
   rw [Finsupp.total_apply_of_mem_supported F hl] at hla
   suffices ∀ i ∈ s, l i ∈ FixedPoints.subfield G F by
     replace hla := (sum_apply _ _ fun i => l i • toFun G F i).symm.trans (congr_fun hla 1)
     simp_rw [Pi.smul_apply, toFun_apply, one_smul] at hla
-    refine' hs.2 (hla ▸ Submodule.sum_mem _ fun c hcs => _)
+    refine hs.2 (hla ▸ Submodule.sum_mem _ fun c hcs => ?_)
     change (⟨l c, this c hcs⟩ : FixedPoints.subfield G F) • c ∈ _
     exact Submodule.smul_mem _ _ (Submodule.subset_span <| mem_coe.2 hcs)
   intro i his g
-  refine'
+  refine
     eq_of_sub_eq_zero
-      (linearIndependent_iff'.1 (ih hs.1) s.attach (fun i => g • l i - l i) _ ⟨i, his⟩
+      (linearIndependent_iff'.1 (ih hs.1) s.attach (fun i => g • l i - l i) ?_ ⟨i, his⟩
           (mem_attach _ _) :
         _)
-  refine' (sum_attach s fun i ↦ (g • l i - l i) • MulAction.toFun G F i).trans _
+  refine (sum_attach s fun i ↦ (g • l i - l i) • MulAction.toFun G F i).trans ?_
   ext g'; dsimp only
   conv_lhs =>
     rw [sum_apply]
@@ -209,10 +209,10 @@ theorem of_eval₂ (f : Polynomial (FixedPoints.subfield G F))
     ((IsInvariantSubring.subtypeHom G (subfield G F).toSubring)) f := rfl
   erw [← Polynomial.map_dvd_map' (Subfield.subtype <| FixedPoints.subfield G F), minpoly, this,
     Polynomial.map_toSubring _ _, prodXSubSMul]
-  refine'
+  refine
     Fintype.prod_dvd_of_coprime
       (Polynomial.pairwise_coprime_X_sub_C <| MulAction.injective_ofQuotientStabilizer G x) fun y =>
-      QuotientGroup.induction_on y fun g => _
+      QuotientGroup.induction_on y fun g => ?_
   rw [Polynomial.dvd_iff_isRoot, Polynomial.IsRoot.def, MulAction.ofQuotientStabilizer_mk,
     Polynomial.eval_smul', ← this, ← Subfield.toSubring_subtype_eq_subtype, ←
     IsInvariantSubring.coe_subtypeHom' G (FixedPoints.subfield G F).toSubring, h,
