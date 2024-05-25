@@ -592,8 +592,8 @@ theorem mem_support_iff {p : MvPolynomial σ R} {m : σ →₀ ℕ} : m ∈ p.su
   simp [support, coeff]
 #align mv_polynomial.mem_support_iff MvPolynomial.mem_support_iff
 
-theorem not_mem_support_iff {p : MvPolynomial σ R} {m : σ →₀ ℕ} : m ∉ p.support ↔ p.coeff m = 0 := by
-  simp
+theorem not_mem_support_iff {p : MvPolynomial σ R} {m : σ →₀ ℕ} : m ∉ p.support ↔ p.coeff m = 0 :=
+  by simp
 #align mv_polynomial.not_mem_support_iff MvPolynomial.not_mem_support_iff
 
 theorem sum_def {A} [AddCommMonoid A] {p : MvPolynomial σ R} {b : (σ →₀ ℕ) → R → A} :
@@ -1375,8 +1375,8 @@ theorem constantCoeff_map (f : R →+* S₁) (φ : MvPolynomial σ R) :
 #align mv_polynomial.constant_coeff_map MvPolynomial.constantCoeff_map
 
 theorem constantCoeff_comp_map (f : R →+* S₁) :
-    (constantCoeff : MvPolynomial σ S₁ →+* S₁).comp (MvPolynomial.map f) = f.comp constantCoeff := by
-  ext <;> simp
+    (constantCoeff : MvPolynomial σ S₁ →+* S₁).comp (MvPolynomial.map f) = f.comp constantCoeff :=
+  by ext <;> simp
 #align mv_polynomial.constant_coeff_comp_map MvPolynomial.constantCoeff_comp_map
 
 theorem support_map_subset (p : MvPolynomial σ R) : (map f p).support ⊆ p.support := by

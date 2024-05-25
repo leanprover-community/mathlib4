@@ -541,8 +541,8 @@ theorem rootMultiplicity_eq_nat_find_of_nonzero [DecidableEq R] {p : R[X]} (p0 :
 theorem rootMultiplicity_eq_multiplicity [DecidableEq R] [@DecidableRel R[X] (· ∣ ·)]
     (p : R[X]) (a : R) :
     rootMultiplicity a p =
-      if h0 : p = 0 then 0 else (multiplicity (X - C a) p).get (multiplicity_X_sub_C_finite a h0) := by
-  simp [multiplicity, rootMultiplicity, Part.Dom]; congr; funext; congr
+      if h0 : p = 0 then 0 else (multiplicity (X - C a) p).get (multiplicity_X_sub_C_finite a h0) :=
+  by simp [multiplicity, rootMultiplicity, Part.Dom]; congr; funext; congr
 #align polynomial.root_multiplicity_eq_multiplicity Polynomial.rootMultiplicity_eq_multiplicity
 
 @[simp]
@@ -682,7 +682,8 @@ theorem rootMultiplicity_eq_zero {p : R[X]} {x : R} (h : ¬IsRoot p x) : rootMul
 #align polynomial.root_multiplicity_eq_zero Polynomial.rootMultiplicity_eq_zero
 
 @[simp]
-theorem rootMultiplicity_pos' {p : R[X]} {x : R} : 0 < rootMultiplicity x p ↔ p ≠ 0 ∧ IsRoot p x := by
+theorem rootMultiplicity_pos' {p : R[X]} {x : R} :
+    0 < rootMultiplicity x p ↔ p ≠ 0 ∧ IsRoot p x := by
   rw [pos_iff_ne_zero, Ne, rootMultiplicity_eq_zero_iff, Classical.not_imp, and_comm]
 #align polynomial.root_multiplicity_pos' Polynomial.rootMultiplicity_pos'
 

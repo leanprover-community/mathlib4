@@ -82,8 +82,8 @@ theorem count_apply [DecidableEq α] (x : α) (l : FreeAddMonoid α) :
 #align free_monoid.count_apply FreeMonoid.count_apply
 
 theorem count_of [DecidableEq α] (x y : α) :
-    count x (of y) = @Pi.mulSingle α (fun _ => Multiplicative ℕ) _ _ x (Multiplicative.ofAdd 1) y := by
-  simp [count, countP_of, Pi.mulSingle_apply, eq_comm, Bool.beq_eq_decide_eq]
+    count x (of y) = @Pi.mulSingle α (fun _ => Multiplicative ℕ) _ _ x (Multiplicative.ofAdd 1) y :=
+  by simp [count, countP_of, Pi.mulSingle_apply, eq_comm, Bool.beq_eq_decide_eq]
 #align free_monoid.count_of FreeMonoid.count_of
 
 end FreeMonoid

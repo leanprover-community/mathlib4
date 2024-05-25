@@ -279,7 +279,8 @@ theorem toIcoDiv_sub_zsmul (a b : α) (m : ℤ) : toIcoDiv hp a (b - m • p) = 
 #align to_Ico_div_sub_zsmul toIcoDiv_sub_zsmul
 
 @[simp]
-theorem toIcoDiv_sub_zsmul' (a b : α) (m : ℤ) : toIcoDiv hp (a - m • p) b = toIcoDiv hp a b + m := by
+theorem toIcoDiv_sub_zsmul' (a b : α) (m : ℤ) :
+    toIcoDiv hp (a - m • p) b = toIcoDiv hp a b + m := by
   rw [sub_eq_add_neg, ← neg_smul, toIcoDiv_add_zsmul', sub_neg_eq_add]
 #align to_Ico_div_sub_zsmul' toIcoDiv_sub_zsmul'
 
@@ -289,7 +290,8 @@ theorem toIocDiv_sub_zsmul (a b : α) (m : ℤ) : toIocDiv hp a (b - m • p) = 
 #align to_Ioc_div_sub_zsmul toIocDiv_sub_zsmul
 
 @[simp]
-theorem toIocDiv_sub_zsmul' (a b : α) (m : ℤ) : toIocDiv hp (a - m • p) b = toIocDiv hp a b + m := by
+theorem toIocDiv_sub_zsmul' (a b : α) (m : ℤ) :
+    toIocDiv hp (a - m • p) b = toIocDiv hp a b + m := by
   rw [sub_eq_add_neg, ← neg_smul, toIocDiv_add_zsmul', sub_neg_eq_add]
 #align to_Ioc_div_sub_zsmul' toIocDiv_sub_zsmul'
 
@@ -535,11 +537,13 @@ theorem toIocMod_sub_eq_sub (a b c : α) : toIocMod hp a (b - c) = toIocMod hp (
   simp_rw [toIocMod, toIocDiv_sub_eq_toIocDiv_add, sub_right_comm]
 #align to_Ioc_mod_sub_eq_sub toIocMod_sub_eq_sub
 
-theorem toIcoMod_add_right_eq_add (a b c : α) : toIcoMod hp a (b + c) = toIcoMod hp (a - c) b + c := by
+theorem toIcoMod_add_right_eq_add (a b c : α) :
+    toIcoMod hp a (b + c) = toIcoMod hp (a - c) b + c := by
   simp_rw [toIcoMod, toIcoDiv_sub_eq_toIcoDiv_add', sub_add_eq_add_sub]
 #align to_Ico_mod_add_right_eq_add toIcoMod_add_right_eq_add
 
-theorem toIocMod_add_right_eq_add (a b c : α) : toIocMod hp a (b + c) = toIocMod hp (a - c) b + c := by
+theorem toIocMod_add_right_eq_add (a b c : α) :
+    toIocMod hp a (b + c) = toIocMod hp (a - c) b + c := by
   simp_rw [toIocMod, toIocDiv_sub_eq_toIocDiv_add', sub_add_eq_add_sub]
 #align to_Ioc_mod_add_right_eq_add toIocMod_add_right_eq_add
 

@@ -26,8 +26,8 @@ variable {K : Type*} {g : GeneralizedContinuedFraction K} {n : ℕ} [DivisionRin
 theorem continuantsAux_recurrence {gp ppred pred : Pair K} (nth_s_eq : g.s.get? n = some gp)
     (nth_conts_aux_eq : g.continuantsAux n = ppred)
     (succ_nth_conts_aux_eq : g.continuantsAux (n + 1) = pred) :
-    g.continuantsAux (n + 2) = ⟨gp.b * pred.a + gp.a * ppred.a, gp.b * pred.b + gp.a * ppred.b⟩ := by
-  simp [*, continuantsAux, nextContinuants, nextDenominator, nextNumerator]
+    g.continuantsAux (n + 2) = ⟨gp.b * pred.a + gp.a * ppred.a, gp.b * pred.b + gp.a * ppred.b⟩ :=
+  by simp [*, continuantsAux, nextContinuants, nextDenominator, nextNumerator]
 #align generalized_continued_fraction.continuants_aux_recurrence GeneralizedContinuedFraction.continuantsAux_recurrence
 
 theorem continuants_recurrenceAux {gp ppred pred : Pair K} (nth_s_eq : g.s.get? n = some gp)

@@ -960,7 +960,8 @@ theorem mem_map_range {R S : Type*} [Ring R] [Ring S] (f : R →+* S) {p : S[X]}
   mem_map_rangeS f
 #align polynomial.mem_map_range Polynomial.mem_map_range
 
-theorem eval₂_map [Semiring T] (g : S →+* T) (x : T) : (p.map f).eval₂ g x = p.eval₂ (g.comp f) x := by
+theorem eval₂_map [Semiring T] (g : S →+* T) (x : T) :
+    (p.map f).eval₂ g x = p.eval₂ (g.comp f) x := by
   rw [eval₂_eq_eval_map, eval₂_eq_eval_map, map_map]
 #align polynomial.eval₂_map Polynomial.eval₂_map
 

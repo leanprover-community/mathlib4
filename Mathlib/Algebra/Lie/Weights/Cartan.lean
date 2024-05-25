@@ -140,8 +140,9 @@ def rootSpaceProduct (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ₂ = χ₃)
 theorem rootSpaceProduct_def : rootSpaceProduct R L H = rootSpaceWeightSpaceProduct R L H L := rfl
 #align lie_algebra.root_space_product_def LieAlgebra.rootSpaceProduct_def
 
-theorem rootSpaceProduct_tmul (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ₂ = χ₃) (x : rootSpace H χ₁)
-    (y : rootSpace H χ₂) : (rootSpaceProduct R L H χ₁ χ₂ χ₃ hχ (x ⊗ₜ y) : L) = ⁅(x : L), (y : L)⁆ := by
+theorem rootSpaceProduct_tmul
+    (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ₂ = χ₃) (x : rootSpace H χ₁) (y : rootSpace H χ₂) :
+    (rootSpaceProduct R L H χ₁ χ₂ χ₃ hχ (x ⊗ₜ y) : L) = ⁅(x : L), (y : L)⁆ := by
   simp only [rootSpaceProduct_def, coe_rootSpaceWeightSpaceProduct_tmul]
 #align lie_algebra.root_space_product_tmul LieAlgebra.rootSpaceProduct_tmul
 

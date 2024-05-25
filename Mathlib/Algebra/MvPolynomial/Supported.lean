@@ -65,8 +65,8 @@ set_option linter.uppercaseLean3 false in
 
 @[simp, nolint simpNF]  -- Porting note: the `simpNF` linter complained about this lemma.
 theorem supportedEquivMvPolynomial_symm_X (s : Set σ) (i : s) :
-    (↑((supportedEquivMvPolynomial s).symm (X i : MvPolynomial s R)) : MvPolynomial σ R) = X ↑i := by
-  simp [supportedEquivMvPolynomial]
+    (↑((supportedEquivMvPolynomial s).symm (X i : MvPolynomial s R)) : MvPolynomial σ R) = X ↑i :=
+  by simp [supportedEquivMvPolynomial]
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.supported_equiv_mv_polynomial_symm_X MvPolynomial.supportedEquivMvPolynomial_symm_X
 
