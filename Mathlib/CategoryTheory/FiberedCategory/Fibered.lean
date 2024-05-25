@@ -60,6 +60,8 @@ universe v₁ v₂ u₁ u₂
 
 open CategoryTheory Functor Category IsHomLift
 
+namespace CategoryTheory
+
 variable {𝒮 : Type u₁} {𝒳 : Type u₂} [Category.{v₁} 𝒮] [Category.{v₂} 𝒳]
 
 /-- The proposition that a lift
@@ -72,10 +74,10 @@ variable {𝒮 : Type u₁} {𝒳 : Type u₂} [Category.{v₁} 𝒮] [Category.
 ```
 is a cartesian arrow.
 -/
-class IsCartesian (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) extends
+class Functor.IsCartesian (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) extends
     IsHomLift p f φ : Prop where mk' ::
   universal_property {R' : 𝒮} {a' : 𝒳} {g : R' ⟶ R} {f' : R' ⟶ S}
-    (_ : f' = g ≫ f) {φ' : a' ⟶ b} (_ : IsHomLift p f' φ') :
+    (_ : f' = g ≫ f) (φ' : a' ⟶ b) [IsHomLift p f' φ'] :
       ∃! χ : a' ⟶ a, IsHomLift p g χ ∧ χ ≫ φ = φ'
 
 protected lemma IsCartesian.mk {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : b ⟶ a}
@@ -83,16 +85,14 @@ protected lemma IsCartesian.mk {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f 
       ∃! χ : a' ⟶ b, IsHomLift p g χ ∧ χ ≫ φ = φ') : IsCartesian p f φ where
   universal_property := by
     intro R' a' g f' hf' φ' hφ'
-    have := hφ'.domain_eq.symm
-    subst this
-    subst hf'
-    apply h a' g φ' hφ'
+    subst_hom_lift p f' φ'
+    apply h a' g φ' (hf' ▸ inferInstance)
 
-instance {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : a ⟶ b} [hφ : IsCartesian p f φ] :
-    IsHomLift p f φ := hφ.toIsHomLift
+-- instance {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) [IsCartesian p f φ] :
+--     IsHomLift p f φ := inferInstance
 
 /-- Definition of a Fibered category. -/
-class IsFibered (p : 𝒳 ⥤ 𝒮) : Prop where mk' ::
+class Functor.IsFibered (p : 𝒳 ⥤ 𝒮) : Prop where mk' ::
   has_pullbacks {a : 𝒳} {R S : 𝒮} (_ : p.obj a = S) (f : R ⟶ S) :
     ∃ (b : 𝒳) (φ : b ⟶ a), IsCartesian p f φ
 
@@ -112,21 +112,21 @@ R' --g--> R --f--> S
 such that `φ` is a cartesian arrow, and an arrow `φ' : a' ⟶ b`,
 the induced map is the map `a' ⟶ a` obtained from the
 universal property of `φ`. -/
-noncomputable def inducedMap {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : a ⟶ b}
-    [hφ : IsCartesian p f φ] {R' : 𝒮} {a' : 𝒳} {g : R' ⟶ R} {f' : R' ⟶ S} (hf' : f' = g ≫ f)
-    (φ' : a' ⟶ b) [hφ' : IsHomLift p f' φ'] : a' ⟶ a :=
-  Classical.choose $ hφ.universal_property hf' hφ'
+noncomputable def inducedMap (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
+    [IsCartesian p f φ] {R' : 𝒮} {a' : 𝒳} {g : R' ⟶ R} {f' : R' ⟶ S} (hf' : f' = g ≫ f)
+    (φ' : a' ⟶ b) [IsHomLift p f' φ'] : a' ⟶ a :=
+  Classical.choose <| IsCartesian.universal_property (p:=p) (f:=f) (φ:=φ) hf' φ'
 
-instance inducedMap_isHomLift {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : a ⟶ b}
-    [hφ : IsCartesian p f φ] {R' : 𝒮} {a' : 𝒳} {g : R' ⟶ R} {f' : R' ⟶ S} (hf' : f' = g ≫ f)
-    (φ' : a' ⟶ b) [hφ' : IsHomLift p f' φ'] : IsHomLift p g (hφ.inducedMap hf' φ') :=
-  (Classical.choose_spec (hφ.universal_property hf' hφ')).1.1
+instance inducedMap_isHomLift (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
+    [IsCartesian p f φ] {R' : 𝒮} {a' : 𝒳} {g : R' ⟶ R} {f' : R' ⟶ S} (hf' : f' = g ≫ f)
+    (φ' : a' ⟶ b) [IsHomLift p f' φ'] : IsHomLift p g (inducedMap p f φ hf' φ') :=
+  (Classical.choose_spec <| IsCartesian.universal_property (p:=p) (f:=f) (φ:=φ) hf' φ').1.1
 
 @[simp]
-lemma inducedMap_comp {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : a ⟶ b}
-    [hφ : IsCartesian p f φ] {R' : 𝒮} {a' : 𝒳} {g : R' ⟶ R} {f' : R' ⟶ S} (hf' : f' = g ≫ f)
-    (φ' : a' ⟶ b) [hφ' : IsHomLift p f' φ'] : (hφ.inducedMap hf' φ') ≫ φ = φ' :=
-  (Classical.choose_spec (hφ.universal_property hf' hφ')).1.2
+lemma inducedMap_comp (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
+    [IsCartesian p f φ] {R' : 𝒮} {a' : 𝒳} {g : R' ⟶ R} {f' : R' ⟶ S} (hf' : f' = g ≫ f)
+    (φ' : a' ⟶ b) [IsHomLift p f' φ'] : (inducedMap p f φ hf' φ') ≫ φ = φ' :=
+  (Classical.choose_spec <| IsCartesian.universal_property (p:=p) (f:=f) (φ:=φ) hf' φ').1.2
 
 /-- Given a diagram:
 ```
@@ -137,11 +137,12 @@ R' --g--> R --f--> S
 ```
 with `φ` a cartesian arrow. Then for any arrow `φ' : a' ⟶ b`, and `ψ : a' ⟶ a` such that
 `g ≫ ψ = φ'`. Then `ψ` is the map induced by the universal property. -/
-lemma inducedMap_unique {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : a ⟶ b}
-    [hφ : IsCartesian p f φ] {R' : 𝒮} {a' : 𝒳} {g : R' ⟶ R} {f' : R' ⟶ S} (hf' : f' = g ≫ f)
-    (φ' : a' ⟶ b) [hφ' : IsHomLift p f' φ'] (ψ : a' ⟶ a) [hψ : IsHomLift p g ψ]
-    (hcomp : ψ ≫ φ = φ') : ψ = hφ.inducedMap hf' φ' :=
-  (Classical.choose_spec (hφ.universal_property hf' hφ')).2 ψ ⟨hψ, hcomp⟩
+lemma inducedMap_unique (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
+    [IsCartesian p f φ] {R' : 𝒮} {a' : 𝒳} {g : R' ⟶ R} {f' : R' ⟶ S} (hf' : f' = g ≫ f)
+    (φ' : a' ⟶ b) [IsHomLift p f' φ'] (ψ : a' ⟶ a) [IsHomLift p g ψ] (hψ : ψ ≫ φ = φ') :
+    ψ = inducedMap p f φ hf' φ' :=
+  (Classical.choose_spec <| IsCartesian.universal_property (p:=p) (f:=f) (φ:=φ) hf' φ').2
+    ψ ⟨inferInstance, hψ⟩
 
 /-- Given a diagram:
 ```
@@ -152,16 +153,18 @@ R' --g--> R --f--> S
 ```
 with `φ` a cartesian arrow. Then for any arrow `φ' : a' ⟶ b`, any two arrows `ψ ψ' : a' ⟶ a` such
 that `g ≫ ψ = φ' = g ≫ ψ'`. Then `ψ = ψ'`. -/
-protected lemma uniqueness {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : a ⟶ b}
-    [hφ : IsCartesian p f φ] {R' : 𝒮} {a' : 𝒳} {g : R' ⟶ R} {f' : R' ⟶ S} (hf' : f' = g ≫ f)
-    (φ' : a' ⟶ b) [hφ' : IsHomLift p f' φ'] {ψ ψ' : a' ⟶ a} [hψ : IsHomLift p g ψ]
-    [hψ' : IsHomLift p g ψ'] (hcomp : ψ ≫ φ = φ') (hcomp' : ψ' ≫ φ = φ') : ψ = ψ' := by
-  rw [hφ.inducedMap_unique hf' φ' ψ hcomp, hφ.inducedMap_unique hf' φ' ψ' hcomp']
+protected lemma uniqueness (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
+    [IsCartesian p f φ] {R' : 𝒮} {a' : 𝒳} {g : R' ⟶ R} {f' : R' ⟶ S} (hf' : f' = g ≫ f)
+    (φ' : a' ⟶ b) [IsHomLift p f' φ'] {ψ ψ' : a' ⟶ a} [IsHomLift p g ψ]
+    [IsHomLift p g ψ'] (hcomp : ψ ≫ φ = φ') (hcomp' : ψ' ≫ φ = φ') : ψ = ψ' := by
+  rw [inducedMap_unique p f φ hf' φ' ψ hcomp, inducedMap_unique p f φ hf' φ' ψ' hcomp']
 
 @[simp]
-lemma inducedMap_self_eq_id {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : a ⟶ b}
-    [hφ : IsCartesian p f φ] : hφ.inducedMap (id_comp f).symm φ = 𝟙 a:=
-  (hφ.inducedMap_unique (id_comp f).symm φ (hψ := IsHomLift.id hφ.domain_eq) (id_comp _)).symm
+lemma inducedMap_self_eq_id (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
+    [IsCartesian p f φ] : inducedMap p f φ (id_comp f).symm φ = 𝟙 a := by
+  subst_hom_lift p f φ; symm
+  apply inducedMap_unique
+  simp only [id_comp]
 
 /- The composition of two induced maps is also an induced map.
 Given a diagrams
@@ -174,13 +177,13 @@ R'' --h'--> R' --h--> R --f--> S          R' --f'--> S          R'' --f''--> S
 such that `φ` and `φ'` are cartesian arrows. Composing the induced map from `a'' ⟶ a'` with the
 induced map from `a' ⟶ a` gives the induced map from `a'' ⟶ a`. -/
 @[simp]
-lemma inducedMap_inducedMap {p : 𝒳 ⥤ 𝒮} {R R' R'' S: 𝒮} {a a' a'' b : 𝒳}
+lemma inducedMap_inducedMap (p : 𝒳 ⥤ 𝒮) {R R' R'' S: 𝒮} {a a' a'' b : 𝒳}
     {f : R ⟶ S} {f' : R' ⟶ S} {f'' : R'' ⟶ S} {g : R' ⟶ R} {h : R'' ⟶ R'}
     (H : f' = g ≫ f) (H' : f'' = h ≫ f') {φ : a ⟶ b} {φ' : a' ⟶ b} {φ'' : a'' ⟶ b}
-    [hφ : IsCartesian p f φ] [hφ' : IsCartesian p f' φ'] [hφ'' : IsHomLift p f'' φ''] :
-    hφ'.inducedMap H' φ'' ≫ hφ.inducedMap H φ' =
-      hφ.inducedMap (show f'' = (h ≫ g) ≫ f by rwa [assoc, ← H]) φ'' := by
-  apply hφ.inducedMap_unique
+    [IsCartesian p f φ] [IsCartesian p f' φ'] [IsHomLift p f'' φ''] :
+    inducedMap p f' φ' H' φ'' ≫ inducedMap p f φ H φ' =
+      inducedMap p f φ (show f'' = (h ≫ g) ≫ f by rwa [assoc, ← H]) φ'' := by
+  apply inducedMap_unique p f φ
   simp only [assoc, inducedMap_comp]
 
 /-- Given two cartesian arrows `φ`, `ψ` as follows
@@ -191,17 +194,18 @@ v        v        v
 R --f--> S --g--> T
 ```
 Then the composite `φ ≫ ψ` is also cartesian. -/
-instance comp {p : 𝒳 ⥤ 𝒮} {R S T : 𝒮} {a b c: 𝒳} {f : R ⟶ S} {g : S ⟶ T} {φ : a ⟶ b}
-    (ψ : b ⟶ c) [hφ : IsCartesian p f φ] [hψ : IsCartesian p g ψ] :
+instance comp (p : 𝒳 ⥤ 𝒮) {R S T : 𝒮} {a b c: 𝒳} (f : R ⟶ S) (g : S ⟶ T) (φ : a ⟶ b)
+    (ψ : b ⟶ c) [IsCartesian p f φ] [IsCartesian p g ψ] :
       IsCartesian p (f ≫ g) (φ ≫ ψ) := by
   apply IsCartesian.mk
   · intro a' h τ hτ
-    use hφ.inducedMap (rfl (a := h ≫ f)) (hψ.inducedMap (assoc h f g).symm τ)
+    -- TODO: can simplify this line??
+    use inducedMap p f φ (rfl (a := h ≫ f)) (inducedMap p g ψ (assoc h f g).symm τ)
     refine ⟨⟨inferInstance, ?_⟩, ?_⟩
-    · rw [← assoc, (hφ.inducedMap_comp rfl _), (hψ.inducedMap_comp _ _)]
+    · rw [← assoc, inducedMap_comp, inducedMap_comp]
     · intro π' ⟨hπ'₁, hπ'₂⟩
-      apply hφ.inducedMap_unique
-      apply hψ.inducedMap_unique
+      apply inducedMap_unique
+      apply inducedMap_unique
       simp only [assoc, hπ'₂]
 
 /-- Given two commutative squares
@@ -212,69 +216,73 @@ v        v        v
 R --f--> S --g--> T
 ```
 such that the composite `φ ≫ ψ` and `ψ` are cartesian, then so is `φ`. -/
-protected lemma of_comp {p : 𝒳 ⥤ 𝒮} {R S T : 𝒮} {a b c: 𝒳} {f : R ⟶ S} {g : S ⟶ T}
-    {φ : a ⟶ b} {ψ : b ⟶ c} [hψ : IsCartesian p g ψ] [hcomp : IsCartesian p (f ≫ g) (φ ≫ ψ)]
-    [hφ : IsHomLift p f φ] : IsCartesian p f φ := by
+protected lemma of_comp (p : 𝒳 ⥤ 𝒮) {R S T : 𝒮} {a b c: 𝒳} {f : R ⟶ S} {g : S ⟶ T}
+    {φ : a ⟶ b} {ψ : b ⟶ c} [IsCartesian p g ψ] [IsCartesian p (f ≫ g) (φ ≫ ψ)]
+    [IsHomLift p f φ] : IsCartesian p f φ := by
   apply IsCartesian.mk
   -- Fix a morphism `τ : a' ⟶ b` and a morphism `h : p(a') ⟶ R` such that `τ` lifts `h ≫ f`
   intro a' h τ hτ
-  have h₁ : IsHomLift p (h ≫ f ≫ g) (τ ≫ ψ) := by simpa using hτ.comp ψ
+  have h₁ : IsHomLift p (h ≫ f ≫ g) (τ ≫ ψ) := by simpa using IsHomLift.comp (h ≫ f) _ τ ψ
   -- We get a morphism `π : a' ⟶ a` from the universal property of `φ ≫ ψ`
-  use hcomp.inducedMap rfl (hφ' := h₁)
+  use inducedMap p (f ≫ g) (φ ≫ ψ) (f' := h ≫ f ≫ g) rfl (τ ≫ ψ)
   refine ⟨⟨inferInstance, ?_⟩,?_⟩
   -- The fact that `π ≫ φ = τ` follows from `π ≫ φ ≫ ψ = τ ≫ ψ` and the universal property of `ψ`
-  · have := (hcomp.inducedMap_isHomLift (f':= h ≫ f ≫ g) rfl (τ ≫ ψ)).comp (hψ:=hφ)
-    apply hψ.uniqueness rfl (τ ≫ ψ) (hψ := this) _ rfl
-    · rw [assoc, (hcomp.inducedMap_comp rfl _)]
+  · apply IsCartesian.uniqueness p g ψ (g := h ≫ f) rfl (τ ≫ ψ) (by simp) rfl
   -- Finally, uniqueness of `π` comes from the universal property of `φ ≫ ψ`
   intro π' ⟨hπ'₁, hπ'₂⟩
-  apply hcomp.inducedMap_unique _ _ _ (by rw [← hπ'₂, assoc])
+  apply inducedMap_unique
+  simp [hπ'₂.symm]
 
-lemma of_iso {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : a ≅ b} [hφ : IsHomLift p f φ.hom] :
+lemma of_iso (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ≅ b) [IsHomLift p f φ.hom] :
     IsCartesian p f φ.hom := by
   apply IsCartesian.mk
   intro a' g τ hτ
   use τ ≫ φ.inv
   refine ⟨?_, by aesop_cat⟩
-  simpa using (hτ.comp (hψ := IsHomLift.inv_lift f φ))
+  simpa using (IsHomLift.comp (g ≫ f) (isoOfIsoLift p f φ).inv τ φ.inv)
 
-lemma of_isIso {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳}
-    {f : R ⟶ S} {φ : a ⟶ b} [hφ : IsHomLift p f φ] [IsIso φ] : IsCartesian p f φ :=
-  IsCartesian.of_iso (φ := asIso φ) (hφ := hφ)
+lemma of_isIso (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳}
+    (f : R ⟶ S) (φ : a ⟶ b) [IsHomLift p f φ] [IsIso φ] : IsCartesian p f φ :=
+  -- TODO: this is also annoying to have to state
+  have : p.IsHomLift f (asIso φ).hom := by aesop
+  IsCartesian.of_iso p f (asIso φ)
 
 /-- A cartesian arrow lying over an isomorphism is an isomorphism. -/
-lemma isIso_of_base_isIso {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : a ⟶ b}
-    [hφ : IsCartesian p f φ] (hf : IsIso f) : IsIso φ := by
+lemma isIso_of_base_isIso (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
+    [IsCartesian p f φ] (hf : IsIso f) : IsIso φ := by
   -- The inverse will be given by applying the universal property to the arrows f⁻¹ : S ⟶ R and 𝟙 b
-  have := IsHomLift.id hφ.codomain_eq
-  let φ' := hφ.inducedMap (IsIso.inv_hom_id f).symm (𝟙 b)
+  -- TODO: this is annoying because now we have to state p.map φ instead of f....
+  subst_hom_lift p f φ; clear a b R S -- TODO: make this into meta-code
+  let φ' := inducedMap p (p.map φ) φ (IsIso.inv_hom_id (p.map φ)).symm (𝟙 b)
   use φ'
   -- `φ' ≫ φ = 𝟙 b` follows immediately from the universal property
-  have inv_hom : φ' ≫ φ = 𝟙 b := hφ.inducedMap_comp (IsIso.inv_hom_id f).symm (𝟙 b)
+  have inv_hom : φ' ≫ φ = 𝟙 b := inducedMap_comp p (p.map φ) φ _ (𝟙 b)
   refine ⟨?_, inv_hom⟩
   -- We now show that `φ ≫ φ' = 𝟙 a` by applying the universal property of `φ` to the equality
   -- `φ ≫ φ' ≫ φ = φ ≫ 𝟙 b = 𝟙 a ≫ φ`
-  have h₁ : IsHomLift p (𝟙 R) (φ  ≫ φ') := by
-    rw [← IsIso.hom_inv_id f]
-    apply hφ.toIsHomLift.comp (hψ := _)
-    apply inducedMap_isHomLift
-  have h₂ : IsHomLift p f (φ ≫ φ' ≫ φ) := by simpa using h₁.comp φ
-  apply hφ.uniqueness (id_comp f).symm (φ ≫ φ' ≫ φ) (hψ' := IsHomLift.id hφ.domain_eq)
+  have h₁ : IsHomLift p (𝟙 (p.obj a)) (φ  ≫ φ') := by
+    rw [← IsIso.hom_inv_id (p.map φ)]
+    apply IsHomLift.comp
+  have h₂ : IsHomLift p (p.map φ) (φ ≫ φ' ≫ φ) := by
+    simpa using IsHomLift.comp (𝟙 (p.obj a)) (p.map φ) (φ ≫ φ') φ
+  apply IsCartesian.uniqueness p _ φ (id_comp (p.map φ)).symm (φ ≫ φ' ≫ φ)
   · apply Category.assoc
   · simp only [inv_hom, id_comp, comp_id]
 
 /-- The canonical isomorphism between the domains of two cartesian arrows lying over
 isomorphic objects. -/
 noncomputable def isoOfBaseIso (p : 𝒳 ⥤ 𝒮) {R R' S : 𝒮} {a a' b : 𝒳} {f : R ⟶ S} {f' : R' ⟶ S}
-  {g : R' ≅ R} (h : f' = g.hom ≫ f) (φ : a ⟶ b) (φ' : a' ⟶ b) [hφ : IsCartesian p f φ]
-    [hφ' : IsCartesian p f' φ'] : a' ≅ a where
-  hom := hφ.inducedMap h φ'
-  inv := hφ'.inducedMap (congrArg (g.inv ≫ ·) h.symm) (hφ' := by simpa using hφ.toIsHomLift)
+  {g : R' ≅ R} (h : f' = g.hom ≫ f) (φ : a ⟶ b) (φ' : a' ⟶ b) [IsCartesian p f φ]
+    [IsCartesian p f' φ'] : a' ≅ a where
+  hom := inducedMap p f φ h φ'
+  -- TODO: make this cleaner...
+  inv := @inducedMap _ _ _ _ p _ _ _ _ f' φ' _ _ _ _ _ (congrArg (g.inv ≫ ·) h.symm) φ
+    (by simp; infer_instance)
 
 /-- The canonical isomorphism between the domains of two cartesian arrows
 lying over the same object. -/
-noncomputable def naturalIso {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a' a b : 𝒳} {f : R ⟶ S} {φ : a ⟶ b}
-    {φ' : a' ⟶ b} (hφ : IsCartesian p f φ) (hφ' : IsCartesian p f φ') : a' ≅ a :=
+noncomputable def naturalIso (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a' a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
+    (φ' : a' ⟶ b) [IsCartesian p f φ] [IsCartesian p f φ'] : a' ≅ a :=
   isoOfBaseIso p (show f = (Iso.refl R).hom ≫ f by simp) φ φ'
 
 end IsCartesian
@@ -293,9 +301,9 @@ open IsCartesian
 ```
 `pullbackObj` is defined as the domain `R ×_S a` of some cartesian arrow lying over
 `f`, which exists by the fibered category structure on `p`. -/
-noncomputable def pullbackObj {p : 𝒳 ⥤ 𝒮} [hp : IsFibered p] {R S : 𝒮}
+noncomputable def pullbackObj {p : 𝒳 ⥤ 𝒮} [IsFibered p] {R S : 𝒮}
     {a : 𝒳} (ha : p.obj a = S) (f : R ⟶ S) : 𝒳 :=
-  Classical.choose (hp.1 ha f)
+  Classical.choose (IsFibered.has_pullbacks ha f)
 
 /-- Given a fibered category `p : 𝒳 ⥤ 𝒫`, and a diagram
 ```
@@ -306,17 +314,17 @@ noncomputable def pullbackObj {p : 𝒳 ⥤ 𝒮} [hp : IsFibered p] {R S : 𝒮
 R --f--> S
 ```
 we get a map `R ×_S b ⟶ a` -/
-noncomputable def pullbackMap {p : 𝒳 ⥤ 𝒮} [hp : IsFibered p] {R S : 𝒮}
+noncomputable def pullbackMap {p : 𝒳 ⥤ 𝒮} [IsFibered p] {R S : 𝒮}
     {a : 𝒳} (ha : p.obj a = S) (f : R ⟶ S) : pullbackObj ha f ⟶ a :=
-  Classical.choose (Classical.choose_spec (hp.1 ha f))
+  Classical.choose (Classical.choose_spec (IsFibered.has_pullbacks ha f))
 
-instance pullbackMap.IsCartesian {p : 𝒳 ⥤ 𝒮} [hp : IsFibered p] {R S : 𝒮}
+instance pullbackMap.IsCartesian {p : 𝒳 ⥤ 𝒮} [IsFibered p] {R S : 𝒮}
     {a : 𝒳} (ha : p.obj a = S) (f : R ⟶ S) : IsCartesian p f (pullbackMap ha f) :=
-  Classical.choose_spec (Classical.choose_spec (hp.1 ha f))
+  Classical.choose_spec (Classical.choose_spec (IsFibered.has_pullbacks ha f))
 
 lemma pullbackObj_proj {p : 𝒳 ⥤ 𝒮} [IsFibered p]
     {R S : 𝒮} {a : 𝒳} (ha : p.obj a = S) (f : R ⟶ S) : p.obj (pullbackObj ha f) = R :=
-  (pullbackMap.IsCartesian ha f).domain_eq
+  domain_eq p f (pullbackMap ha f)
 
 /-- Given a diagram
 ```
@@ -330,7 +338,9 @@ we have an isomorphism `T ×_S a ≅ T ×_R (R ×_S a)` -/
 noncomputable def pullbackPullbackIso {p : 𝒳 ⥤ 𝒮} [IsFibered p]
     {R S T : 𝒮}  {a : 𝒳} (ha : p.obj a = S) (f : R ⟶ S) (g : T ⟶ R) :
       pullbackObj ha (g ≫ f) ≅ pullbackObj (pullbackObj_proj ha f) g :=
-  naturalIso ((pullbackMap.IsCartesian (pullbackObj_proj ha f) g).comp (pullbackMap ha f))
-    (pullbackMap.IsCartesian ha (g ≫ f))
+  naturalIso p (g ≫ f) (pullbackMap (pullbackObj_proj ha f) g ≫ pullbackMap ha f)
+    (pullbackMap ha (g ≫ f))
 
 end IsFibered
+
+end CategoryTheory
