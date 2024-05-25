@@ -38,7 +38,7 @@ When you extend this structure, make sure to extend `CompactlySupportedContinuou
 structure CompactlySupportedContinuousMap (α β : Type*) [TopologicalSpace α] [Zero β]
     [TopologicalSpace β] extends ContinuousMap α β where
   /-- The function has compact support . -/
-  has_compact_support' : HasCompactSupport toFun
+  hasCompactSupport' : HasCompactSupport toFun
 
 @[inherit_doc]
 scoped[CompactlySupported] notation (priority := 2000)
