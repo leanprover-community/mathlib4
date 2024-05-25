@@ -14,7 +14,7 @@ The "generic" linter takes as input a function
 should be flagged.
 
 
-TODO:
+Future extensions:
 * Add `blackout? : Syntax → Bool` to prevent further inspection by the linter?
 * Add `context? : InfoTree → Bool` for further effects combining `unwanted` and `blackout?` and
   possibly doing some further filtering?
@@ -26,7 +26,7 @@ open Lean Elab
 
 namespace Mathlib.Linter
 
-/-- The "generic" linter emits a warning on "generic" syntax. -/
+/-- The "generic" linter emits a warning on all syntax matching a given pattern. -/
 register_option linter.generic : Bool := {
   defValue := true
   descr := "enable the generic linter"
@@ -52,7 +52,9 @@ def findDot : Syntax → Array Syntax
       | _ =>  dargs
   |_ => default
 
-/-- the main unwanted syntax: a `cdot` that is not a `·`. -/
+/-- the main unwanted syntax: a `cdot` that is not a `·`.
+The function return an array of syntax atoms corresponding to `cdot`s that are not the
+written with the character `·`. -/
 def unwanted.cDot (stx : Syntax) : Array Syntax :=
   dbg_trace findDot stx
   (findDot stx).filter (!isCDot? ·)
