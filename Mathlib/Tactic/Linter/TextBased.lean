@@ -253,6 +253,14 @@ def line_endings : LinterCore := fun lines ↦ Id.run do
       output := output.push (StyleError.trailingWhitespace, line_number)
   return output
 
+/-- Whether a collection of lines consists *only* of imports:
+in practice, this means it's an imports-only file and exempt from file length linting. -/
+def is_imports_only_file (lines : Array String) : Bool :=
+  -- The Python version also excluded comments: since the import-only files are
+  -- automatically generated and don't contains comments, this is in fact not necessary.
+  lines.all (fun line ↦ line.startsWith "import ")
+
+
 end
 
 /-- All text-based linters registered in this file. -/
@@ -263,6 +271,10 @@ def all_linters : Array LinterCore := Array.mk
 /-- Read a file, apply all text-based linters and return the formatted errors. -/
 def lint_file (path : System.FilePath) : IO Unit := do
   let lines ← IO.FS.lines path
+  -- We don't need to run any checks on imports-only files.
+  -- NB. The Python script used to still run a few linters; this is in fact not necessary.
+  if is_imports_only_file lines then
+    return
   let all_output := (Array.map (fun lint ↦
     (Array.map (fun (e, n) ↦ ErrorContext.mk e n path)) (lint lines))) all_linters
   -- XXX: this list is currently not sorted: for github, that's probably fine
