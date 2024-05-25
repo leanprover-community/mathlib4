@@ -89,7 +89,7 @@ theorem derivedSeriesOfIdeal_add (k l : ℕ) : D (k + l) I = D k (D l I) := by
 theorem derivedSeriesOfIdeal_le {I J : LieIdeal R L} {k l : ℕ} (h₁ : I ≤ J) (h₂ : l ≤ k) :
     D k I ≤ D l J := by
   revert l; induction' k with k ih <;> intro l h₂
-  · rw [Nat.zero_eq, Nat.le_zero] at h₂; rw [h₂, derivedSeriesOfIdeal_zero]; exact h₁
+  · rw [le_zero_iff] at h₂; rw [h₂, derivedSeriesOfIdeal_zero]; exact h₁
   · have h : l = k.succ ∨ l ≤ k := by rwa [le_iff_eq_or_lt, Nat.lt_succ_iff] at h₂
     cases' h with h h
     · rw [h, derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_succ]
@@ -359,7 +359,7 @@ theorem derivedLength_zero (I : LieIdeal R L) [hI : IsSolvable R I] :
   change sInf s = 0 ↔ _
   have hne : s ≠ ∅ := by
     obtain ⟨k, hk⟩ := id hI
-    refine' Set.Nonempty.ne_empty ⟨k, _⟩
+    refine Set.Nonempty.ne_empty ⟨k, ?_⟩
     rw [derivedSeries_def, LieIdeal.derivedSeries_eq_bot_iff] at hk; exact hk
   simp [s, hne]
 #align lie_algebra.derived_length_zero LieAlgebra.derivedLength_zero

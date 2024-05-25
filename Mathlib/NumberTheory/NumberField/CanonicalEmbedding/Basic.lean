@@ -3,7 +3,7 @@ Copyright (c) 2022 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Algebra.Module.Zlattice
+import Mathlib.Algebra.Module.Zlattice.Basic
 import Mathlib.NumberTheory.NumberField.Embeddings
 import Mathlib.NumberTheory.NumberField.FractionalIdeal
 
@@ -78,8 +78,8 @@ theorem norm_le_iff [NumberField K] (x : K) (r : ℝ) :
   obtain hr | hr := lt_or_le r 0
   · obtain ⟨φ⟩ := (inferInstance : Nonempty (K →+* ℂ))
     refine iff_of_false ?_ ?_
-    exact (hr.trans_le (norm_nonneg _)).not_le
-    exact fun h => hr.not_le (le_trans (norm_nonneg _) (h φ))
+    · exact (hr.trans_le (norm_nonneg _)).not_le
+    · exact fun h => hr.not_le (le_trans (norm_nonneg _) (h φ))
   · lift r to NNReal using hr
     simp_rw [← coe_nnnorm, nnnorm_eq, NNReal.coe_le_coe, Finset.sup_le_iff, Finset.mem_univ,
       forall_true_left]
@@ -100,7 +100,7 @@ theorem integerLattice.inter_ball_finite [NumberField K] (r : ℝ) :
     convert (Embeddings.finite_of_norm_le K ℂ r).image (canonicalEmbedding K)
     ext; constructor
     · rintro ⟨⟨_, ⟨x, rfl⟩, rfl⟩, hx⟩
-      exact ⟨↑x, ⟨SetLike.coe_mem x, fun φ => (heq x).mp hx φ⟩, rfl⟩
+      exact ⟨x, ⟨SetLike.coe_mem x, fun φ => (heq _).mp hx φ⟩, rfl⟩
     · rintro ⟨x, ⟨hx1, hx2⟩, rfl⟩
       exact ⟨⟨x, ⟨⟨x, hx1⟩, rfl⟩, rfl⟩, (heq x).mpr hx2⟩
 
@@ -142,13 +142,14 @@ theorem latticeBasis_apply [NumberField K] (i : Free.ChooseBasisIndex ℤ (𝓞 
     Function.comp_apply, Equiv.apply_symm_apply]
 
 theorem mem_span_latticeBasis [NumberField K] (x : (K →+* ℂ) → ℂ) :
-    x ∈ Submodule.span ℤ (Set.range (latticeBasis K)) ↔ x ∈ canonicalEmbedding K '' (𝓞 K) := by
+    x ∈ Submodule.span ℤ (Set.range (latticeBasis K)) ↔
+      x ∈ ((canonicalEmbedding K).comp (algebraMap (𝓞 K) K)).range := by
   rw [show Set.range (latticeBasis K) =
       (canonicalEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (integralBasis K)) by
     rw [← Set.range_comp]; exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))]
   rw [← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
-  rw [show (Submodule.span ℤ (Set.range (integralBasis K)) : Set K) = 𝓞 K by
-    ext; exact mem_span_integralBasis K]
+  rw [← RingHom.map_range, Subring.mem_map, Set.mem_image]
+  simp only [SetLike.mem_coe, mem_span_integralBasis K]
   rfl
 
 end NumberField.canonicalEmbedding
@@ -241,9 +242,76 @@ theorem disjoint_span_commMap_ker [NumberField K] :
 
 end commMap
 
+noncomputable section norm
+
+open scoped Classical
+
+open BigOperators
+
+variable [NumberField K] {K}
+
+/-- The norm of `x` is `∏ w real, ‖x‖_w * ∏ w complex, ‖x‖_w ^ 2`. It is defined such that
+the norm of `mixedEmbedding K a` for `a : K` is equal to the absolute value of the norm of `a`
+over `ℚ`, see `norm_eq_norm`. -/
+protected def norm : (E K) →*₀ ℝ where
+  toFun := fun x ↦ (∏ w, ‖x.1 w‖) * ∏ w, ‖x.2 w‖ ^ 2
+  map_one' := by simp only [Prod.fst_one, Pi.one_apply, norm_one, Finset.prod_const_one,
+    Prod.snd_one, one_pow, mul_one]
+  map_zero' := by
+    simp_rw [Prod.fst_zero, Prod.snd_zero, Pi.zero_apply, norm_zero, zero_pow (two_ne_zero),
+      mul_eq_zero, Finset.prod_const, pow_eq_zero_iff', true_and, Finset.card_univ]
+    by_contra!
+    have : finrank ℚ K = 0 := by
+      rw [← card_add_two_mul_card_eq_rank, NrRealPlaces, NrComplexPlaces, this.1, this.2]
+    exact ne_of_gt finrank_pos this
+  map_mul' _ _ := by simp only [Prod.fst_mul, Pi.mul_apply, norm_mul, Real.norm_eq_abs,
+      Finset.prod_mul_distrib, Prod.snd_mul, Complex.norm_eq_abs, mul_pow]; ring
+
+protected theorem norm_eq_zero_iff {x : E K} :
+    mixedEmbedding.norm x = 0 ↔ (∃ w, x.1 w = 0) ∨ (∃ w, x.2 w = 0) := by
+  simp_rw [mixedEmbedding.norm, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, mul_eq_zero,
+    Finset.prod_eq_zero_iff, Finset.mem_univ, true_and, pow_eq_zero_iff two_ne_zero, norm_eq_zero]
+
+protected theorem norm_ne_zero_iff {x : E K} :
+    mixedEmbedding.norm x ≠ 0 ↔ (∀ w, x.1 w ≠ 0) ∧ (∀ w, x.2 w ≠ 0) := by
+  rw [← not_iff_not]
+  simp_rw [ne_eq, mixedEmbedding.norm_eq_zero_iff, not_and_or, not_forall, not_not]
+
+theorem norm_real (c : ℝ) :
+    mixedEmbedding.norm ((fun _ ↦ c, fun _ ↦ c) : (E K)) = |c| ^ finrank ℚ K := by
+  simp_rw [mixedEmbedding.norm, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, Real.norm_eq_abs,
+    Complex.norm_eq_abs, Complex.abs_ofReal, Finset.prod_const, ← pow_mul,
+    ← card_add_two_mul_card_eq_rank, Finset.card_univ, pow_add]
+
+theorem norm_smul (c : ℝ) (x : E K) :
+    mixedEmbedding.norm (c • x) = |c| ^ finrank ℚ K * (mixedEmbedding.norm x) := by
+  rw [show c • x = ((fun _ ↦ c, fun _ ↦ c) : (E K)) * x by rfl, map_mul, norm_real]
+
+@[simp]
+theorem norm_eq_norm (x : K) :
+    mixedEmbedding.norm (mixedEmbedding K x) = |Algebra.norm ℚ x| := by
+  simp_rw [← prod_eq_abs_norm, mixedEmbedding.norm, mixedEmbedding, RingHom.prod_apply,
+    MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, Pi.ringHom_apply, norm_embedding_eq,
+    norm_embedding_of_isReal]
+  rw [← Fintype.prod_subtype_mul_prod_subtype (fun w : InfinitePlace K ↦ IsReal w)]
+  congr 1
+  · exact Finset.prod_congr rfl (fun w _ ↦ by rw [mult, if_pos w.prop, pow_one])
+  · refine (Fintype.prod_equiv (Equiv.subtypeEquivRight ?_) _ _ (fun w ↦ ?_)).symm
+    · exact fun _ ↦ not_isReal_iff_isComplex
+    · rw [Equiv.subtypeEquivRight_apply_coe, mult, if_neg w.prop]
+
+theorem norm_eq_zero_iff' {x : E K} (hx : x ∈ Set.range (mixedEmbedding K)) :
+    mixedEmbedding.norm x = 0 ↔ x = 0 := by
+  obtain ⟨a, rfl⟩ := hx
+  rw [norm_eq_norm, Rat.cast_abs, abs_eq_zero, Rat.cast_eq_zero, Algebra.norm_eq_zero_iff,
+    map_eq_zero]
+
+end norm
+
 noncomputable section stdBasis
 
 open scoped Classical
+
 open Complex MeasureTheory MeasureTheory.Measure Zspan Matrix BigOperators
   ComplexConjugate
 
@@ -417,13 +485,14 @@ theorem latticeBasis_apply (i : ChooseBasisIndex ℤ (𝓞 K)) :
     canonicalEmbedding.latticeBasis_apply, integralBasis_apply, commMap_canonical_eq_mixed]
 
 theorem mem_span_latticeBasis (x : (E K)) :
-    x ∈ Submodule.span ℤ (Set.range (latticeBasis K)) ↔ x ∈ mixedEmbedding K '' (𝓞 K) := by
+    x ∈ Submodule.span ℤ (Set.range (latticeBasis K)) ↔
+      x ∈ ((mixedEmbedding K).comp (algebraMap (𝓞 K) K)).range := by
   rw [show Set.range (latticeBasis K) =
       (mixedEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (integralBasis K)) by
     rw [← Set.range_comp]; exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))]
   rw [← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
-  rw [show (Submodule.span ℤ (Set.range (integralBasis K)) : Set K) = 𝓞 K by
-    ext; exact mem_span_integralBasis K]
+  simp only [Set.mem_image, SetLike.mem_coe, mem_span_integralBasis K,
+    RingHom.mem_range, exists_exists_eq_and]
   rfl
 
 theorem mem_rat_span_latticeBasis (x : K) :

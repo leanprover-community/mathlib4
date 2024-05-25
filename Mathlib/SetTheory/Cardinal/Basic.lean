@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Defs
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Set.Countable
@@ -736,7 +736,7 @@ theorem self_le_power (a : Cardinal) {b : Cardinal} (hb : 1 ≤ b) : a ≤ a ^ b
 theorem cantor (a : Cardinal.{u}) : a < 2 ^ a := by
   induction' a using Cardinal.inductionOn with α
   rw [← mk_set]
-  refine' ⟨⟨⟨singleton, fun a b => singleton_eq_singleton_iff.1⟩⟩, _⟩
+  refine ⟨⟨⟨singleton, fun a b => singleton_eq_singleton_iff.1⟩⟩, ?_⟩
   rintro ⟨⟨f, hf⟩⟩
   exact cantor_injective f hf
 #align cardinal.cantor Cardinal.cantor
@@ -977,7 +977,7 @@ theorem bddAbove_iff_small {s : Set Cardinal.{u}} : BddAbove s ↔ Small.{u} s :
       rw [← this]
       apply bddAbove_range.{u, u}
     ext x
-    refine' ⟨_, fun hx => ⟨e ⟨x, hx⟩, _⟩⟩
+    refine ⟨?_, fun hx => ⟨e ⟨x, hx⟩, ?_⟩⟩
     · rintro ⟨a, rfl⟩
       exact (e.symm a).2
     · simp_rw [Equiv.symm_apply_apply]⟩
@@ -1018,7 +1018,7 @@ theorem sum_le_iSup {ι : Type u} (f : ι → Cardinal.{u}) : sum f ≤ #ι * iS
 
 theorem sum_nat_eq_add_sum_succ (f : ℕ → Cardinal.{u}) :
     Cardinal.sum f = f 0 + Cardinal.sum fun i => f (i + 1) := by
-  refine' (Equiv.sigmaNatSucc fun i => Quotient.out (f i)).cardinal_eq.trans _
+  refine (Equiv.sigmaNatSucc fun i => Quotient.out (f i)).cardinal_eq.trans ?_
   simp only [mk_sum, mk_out, lift_id, mk_sigma]
 #align cardinal.sum_nat_eq_add_sum_succ Cardinal.sum_nat_eq_add_sum_succ
 
@@ -1116,7 +1116,7 @@ theorem lift_prod {ι : Type u} (c : ι → Cardinal.{v}) :
 theorem prod_eq_of_fintype {α : Type u} [h : Fintype α] (f : α → Cardinal.{v}) :
     prod f = Cardinal.lift.{u} (∏ i, f i) := by
   revert f
-  refine' Fintype.induction_empty_option _ _ _ α (h_fintype := h)
+  refine Fintype.induction_empty_option ?_ ?_ ?_ α (h_fintype := h)
   · intro α β hβ e h f
     letI := Fintype.ofEquiv β e.symm
     rw [← e.prod_comp f, ← h]
@@ -1481,7 +1481,7 @@ theorem natCast_injective : Injective ((↑) : ℕ → Cardinal) :=
   Nat.cast_injective
 #align cardinal.nat_cast_injective Cardinal.natCast_injective
 
-@[simp, norm_cast]
+@[norm_cast]
 theorem nat_succ (n : ℕ) : (n.succ : Cardinal) = succ ↑n := by
   rw [Nat.cast_succ]
   refine (add_one_le_succ _).antisymm (succ_le_of_lt ?_)
@@ -1697,7 +1697,7 @@ theorem mul_lt_aleph0 {a b : Cardinal} (ha : a < ℵ₀) (hb : b < ℵ₀) : a *
 #align cardinal.mul_lt_aleph_0 Cardinal.mul_lt_aleph0
 
 theorem mul_lt_aleph0_iff {a b : Cardinal} : a * b < ℵ₀ ↔ a = 0 ∨ b = 0 ∨ a < ℵ₀ ∧ b < ℵ₀ := by
-  refine' ⟨fun h => _, _⟩
+  refine ⟨fun h => ?_, ?_⟩
   · by_cases ha : a = 0
     · exact Or.inl ha
     right
@@ -1851,7 +1851,7 @@ variable {c : Cardinal}
 theorem sum_lt_prod {ι} (f g : ι → Cardinal) (H : ∀ i, f i < g i) : sum f < prod g :=
   lt_of_not_ge fun ⟨F⟩ => by
     have : Inhabited (∀ i : ι, (g i).out) := by
-      refine' ⟨fun i => Classical.choice <| mk_ne_zero_iff.1 _⟩
+      refine ⟨fun i => Classical.choice <| mk_ne_zero_iff.1 ?_⟩
       rw [mk_out]
       exact (H i).ne_bot
     let G := invFun F
@@ -1860,7 +1860,7 @@ theorem sum_lt_prod {ι} (f g : ι → Cardinal) (H : ∀ i, f i < g i) : sum f 
       show ∀ i, ∃ b, ∀ a, G ⟨i, a⟩ i ≠ b by
         intro i
         simp only [not_exists.symm, not_forall.symm]
-        refine' fun h => (H i).not_le _
+        refine fun h => (H i).not_le ?_
         rw [← mk_out (f i), ← mk_out (g i)]
         exact ⟨Embedding.ofSurjective _ h⟩
     let ⟨⟨i, a⟩, h⟩ := sG C
@@ -2177,7 +2177,7 @@ theorem mk_preimage_of_injective_lift {α : Type u} {β : Type v} (f : α → β
 theorem mk_preimage_of_subset_range_lift {α : Type u} {β : Type v} (f : α → β) (s : Set β)
     (h : s ⊆ range f) : lift.{u} #s ≤ lift.{v} #(f ⁻¹' s) := by
   rw [lift_mk_le.{0}]
-  refine' ⟨⟨_, _⟩⟩
+  refine ⟨⟨?_, ?_⟩⟩
   · rintro ⟨y, hy⟩
     rcases Classical.subtype_of_exists (h hy) with ⟨x, rfl⟩
     exact ⟨x, hy⟩

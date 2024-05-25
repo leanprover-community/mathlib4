@@ -49,7 +49,7 @@ theorem rel_of_quot_rel (x y : Σ j, F.obj j) :
 
 theorem eqvGen_quot_rel_of_rel (x y : Σ j, F.obj j) :
     FilteredColimit.Rel.{v, u} F x y → EqvGen (Quot.Rel F) x y := fun ⟨k, f, g, h⟩ => by
-  refine' EqvGen.trans _ ⟨k, F.map f x.2⟩ _ _ _
+  refine EqvGen.trans _ ⟨k, F.map f x.2⟩ _ ?_ ?_
   · exact (EqvGen.rel _ _ ⟨f, rfl⟩)
   · exact (EqvGen.symm _ _ (EqvGen.rel _ _ ⟨g, h⟩))
 #align category_theory.limits.types.filtered_colimit.eqv_gen_quot_rel_of_rel CategoryTheory.Limits.Types.FilteredColimit.eqvGen_quot_rel_of_rel
@@ -62,30 +62,23 @@ noncomputable def isColimitOf (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x 
       ∀ i j xi xj,
         t.ι.app i xi = t.ι.app j xj → ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f xi = F.map g xj) :
     IsColimit t := by
-  -- Strategy: Prove that the map from "the" colimit of F (defined above) to t.X
-  -- is a bijection.
-  apply IsColimit.ofIsoColimit (colimit.isColimit F)
-  refine' Cocones.ext (Equiv.toIso (Equiv.ofBijective _ _)) _
-  · exact colimit.desc F t
-  · constructor
-    · show Function.Injective _
-      intro a b h
-      rcases jointly_surjective F (colimit.isColimit F) a with ⟨i, xi, rfl⟩
-      rcases jointly_surjective F (colimit.isColimit F) b with ⟨j, xj, rfl⟩
-      replace h : (colimit.ι F i ≫ colimit.desc F t) xi = (colimit.ι F j ≫ colimit.desc F t) xj := h
-      rw [colimit.ι_desc, colimit.ι_desc] at h
-      rcases hinj i j xi xj h with ⟨k, f, g, h'⟩
-      change colimit.ι F i xi = colimit.ι F j xj
-      rw [← colimit.w F f, ← colimit.w F g]
-      change colimit.ι F k (F.map f xi) = colimit.ι F k (F.map g xj)
-      rw [h']
-    · show Function.Surjective _
-      intro x
-      rcases hsurj x with ⟨i, xi, rfl⟩
-      use colimit.ι F i xi
-      apply Colimit.ι_desc_apply
-  · intro j
-    apply colimit.ι_desc
+  let α : t.pt → J := fun x => (hsurj x).choose
+  let f : ∀ (x : t.pt), F.obj (α x) := fun x => (hsurj x).choose_spec.choose
+  have hf : ∀ (x : t.pt), x = t.ι.app _ (f x) := fun x => (hsurj x).choose_spec.choose_spec
+  exact
+    { desc := fun s x => s.ι.app _ (f x)
+      fac := fun s j => by
+        ext y
+        obtain ⟨k, l, g, eq⟩ := hinj _ _ _ _ (hf (t.ι.app j y))
+        have h := congr_fun (s.ι.naturality g) (f (t.ι.app j y))
+        have h' := congr_fun (s.ι.naturality l) y
+        dsimp at h h' ⊢
+        rw [← h, ← eq, h']
+      uniq := fun s m hm => by
+        ext x
+        dsimp
+        nth_rw 1 [hf x]
+        rw [← hm, types_comp_apply] }
 #align category_theory.limits.types.filtered_colimit.is_colimit_of CategoryTheory.Limits.Types.FilteredColimit.isColimitOf
 
 variable [IsFilteredOrEmpty J]
@@ -126,7 +119,7 @@ theorem colimit_eq_iff_aux {i j : J} {xi : F.obj i} {xj : F.obj j} :
 
 theorem isColimit_eq_iff {t : Cocone F} (ht : IsColimit t) {i j : J} {xi : F.obj i} {xj : F.obj j} :
     t.ι.app i xi = t.ι.app j xj ↔ ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f xi = F.map g xj := by
-  refine' Iff.trans _ (colimit_eq_iff_aux F)
+  refine Iff.trans ?_ (colimit_eq_iff_aux F)
   rw [← (IsColimit.coconePointUniqueUpToIso ht (colimitCoconeIsColimit F)).toEquiv.injective.eq_iff]
   convert Iff.rfl
   · exact (congrFun

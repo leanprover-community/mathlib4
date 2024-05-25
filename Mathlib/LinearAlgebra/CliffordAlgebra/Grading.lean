@@ -33,12 +33,12 @@ def evenOdd (i : ZMod 2) : Submodule R (CliffordAlgebra Q) :=
 #align clifford_algebra.even_odd CliffordAlgebra.evenOdd
 
 theorem one_le_evenOdd_zero : 1 ≤ evenOdd Q 0 := by
-  refine' le_trans _ (le_iSup _ ⟨0, Nat.cast_zero⟩)
+  refine le_trans ?_ (le_iSup _ ⟨0, Nat.cast_zero⟩)
   exact (pow_zero _).ge
 #align clifford_algebra.one_le_even_odd_zero CliffordAlgebra.one_le_evenOdd_zero
 
 theorem range_ι_le_evenOdd_one : LinearMap.range (ι Q) ≤ evenOdd Q 1 := by
-  refine' le_trans _ (le_iSup _ ⟨1, Nat.cast_one⟩)
+  refine le_trans ?_ (le_iSup _ ⟨1, Nat.cast_one⟩)
   exact (pow_one _).ge
 #align clifford_algebra.range_ι_le_even_odd_one CliffordAlgebra.range_ι_le_evenOdd_one
 
@@ -110,7 +110,7 @@ theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
     | mem_mul m hm i x hx ih =>
       obtain ⟨_, rfl⟩ := hm
       rw [AlgHom.map_mul, ih, lift_ι_apply, GradedAlgebra.ι_apply Q, DirectSum.of_mul_of]
-      refine' DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext _ _) <;>
+      refine DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext ?_ ?_) <;>
         dsimp only [GradedMonoid.mk, Subtype.coe_mk]
       · rw [Nat.succ_eq_add_one, add_comm, Nat.cast_add, Nat.cast_one]
       rfl
@@ -161,7 +161,7 @@ of vectors. -/
 @[elab_as_elim]
 theorem evenOdd_induction (n : ZMod 2) {motive : ∀ x, x ∈ evenOdd Q n → Prop}
     (range_ι_pow : ∀ (v) (h : v ∈ LinearMap.range (ι Q) ^ n.val),
-        motive v (Submodule.mem_iSup_of_mem ⟨n.val, n.nat_cast_zmod_val⟩ h))
+        motive v (Submodule.mem_iSup_of_mem ⟨n.val, n.natCast_zmod_val⟩ h))
     (add : ∀ x y hx hy, motive x hx → motive y hy → motive (x + y) (Submodule.add_mem _ hx hy))
     (ι_mul_ι_mul :
       ∀ m₁ m₂ x hx,
@@ -170,7 +170,7 @@ theorem evenOdd_induction (n : ZMod 2) {motive : ∀ x, x ∈ evenOdd Q n → Pr
             (zero_add n ▸ SetLike.mul_mem_graded (ι_mul_ι_mem_evenOdd_zero Q m₁ m₂) hx))
     (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q n) : motive x hx := by
   apply Submodule.iSup_induction' (C := motive) _ (range_ι_pow 0 (Submodule.zero_mem _)) add
-  refine' Subtype.rec _
+  refine Subtype.rec ?_
   simp_rw [ZMod.nat_coe_zmod_eq_iff, add_comm n.val]
   rintro n' ⟨k, rfl⟩ xv
   simp_rw [pow_add, pow_mul]

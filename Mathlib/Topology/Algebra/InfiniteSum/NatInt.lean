@@ -46,6 +46,14 @@ theorem tendsto_prod_nat {f : ℕ → M} (h : HasProd f m) :
   h.comp tendsto_finset_range
 #align has_sum.tendsto_sum_nat HasSum.tendsto_sum_nat
 
+/-- If `f : ℕ → M` is multipliable, then the partial products `∏ i in range n, f i` converge
+to `∏' i, f i`. -/
+@[to_additive "If `f : ℕ → M` is summable, then the partial sums `∑ i in range n, f i` converge
+to `∑' i, f i`."]
+theorem Multipliable.tendsto_prod_tprod_nat {f : ℕ → M} (h : Multipliable f) :
+    Tendsto (fun n ↦ ∏ i in range n, f i) atTop (𝓝 (∏' i, f i)) :=
+  tendsto_prod_nat h.hasProd
+
 section ContinuousMul
 
 variable [ContinuousMul M]

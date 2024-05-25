@@ -107,7 +107,7 @@ open Witt
 
 open MvPolynomial
 
-/- The first observation is that the Witt polynomial doesn't really depend on the coefficient ring.
+/-! The first observation is that the Witt polynomial doesn't really depend on the coefficient ring.
 If we map the coefficients through a ring homomorphism, we obtain the corresponding Witt polynomial
 over the target ring. -/
 section
@@ -151,8 +151,7 @@ theorem aeval_wittPolynomial {A : Type*} [CommRing A] [Algebra R A] (f : ℕ →
 #align aeval_witt_polynomial aeval_wittPolynomial
 
 /-- Over the ring `ZMod (p^(n+1))`, we produce the `n+1`st Witt polynomial
-by expanding the `n`th Witt polynomial by `p`.
--/
+by expanding the `n`th Witt polynomial by `p`. -/
 @[simp]
 theorem wittPolynomial_zmod_self (n : ℕ) :
     W_ (ZMod (p ^ (n + 1))) (n + 1) = expand p (W_ (ZMod (p ^ (n + 1))) n) := by
@@ -173,7 +172,7 @@ variable [hp : NeZero p]
 theorem wittPolynomial_vars [CharZero R] (n : ℕ) : (wittPolynomial p R n).vars = range (n + 1) := by
   have : ∀ i, (monomial (Finsupp.single i (p ^ (n - i))) ((p : R) ^ i)).vars = {i} := by
     intro i
-    refine' vars_monomial_single i (pow_ne_zero _ hp.1) _
+    refine vars_monomial_single i (pow_ne_zero _ hp.1) ?_
     rw [← Nat.cast_pow, Nat.cast_ne_zero]
     exact pow_ne_zero i hp.1
   rw [wittPolynomial, vars_sum_of_disjoint]
@@ -229,7 +228,7 @@ theorem constantCoeff_xInTermsOfW [hp : Fact p.Prime] [Invertible (p : R)] (n : 
   -- Porting note: here, we should be able to do `rw [sum_eq_zero]`, but the goal that
   -- is created is not what we expect, and the sum is not replaced by zero...
   -- is it a bug in `rw` tactic?
-  refine' Eq.trans (_ : _ = ((⅟↑p : R) ^ n)* 0) (mul_zero _)
+  refine Eq.trans (?_ : _ = ((⅟↑p : R) ^ n)* 0) (mul_zero _)
   congr 1
   rw [sum_eq_zero]
   intro m H

@@ -61,6 +61,10 @@ theorem Multipliable.congr (hf : Multipliable f) (hfg : ∀ b, f b = g b) : Mult
 #align summable.congr Summable.congr
 
 @[to_additive]
+lemma HasProd.congr_fun (hf : HasProd f a) (h : ∀ x : β, g x = f x) : HasProd g a :=
+  (funext h : g = f) ▸ hf
+
+@[to_additive]
 theorem HasProd.hasProd_of_prod_eq {g : γ → α}
     (h_eq : ∀ u : Finset γ, ∃ v : Finset β, ∀ v', v ⊆ v' →
       ∃ u', u ⊆ u' ∧ ∏ x in u', g x = ∏ b in v', f b)
@@ -192,11 +196,12 @@ theorem Equiv.multipliable_iff_of_mulSupport {g : γ → α} (e : mulSupport f �
 @[to_additive]
 protected theorem HasProd.map [CommMonoid γ] [TopologicalSpace γ] (hf : HasProd f a) {G}
     [FunLike G α γ] [MonoidHomClass G α γ] (g : G) (hg : Continuous g) :
-    HasProd (g ∘ f) (g a) :=
-  have : (g ∘ fun s : Finset β ↦ ∏ b in s, f b) = fun s : Finset β ↦ ∏ b in s, g (f b) :=
+    HasProd (g ∘ f) (g a) := by
+  have : (g ∘ fun s : Finset β ↦ ∏ b in s, f b) = fun s : Finset β ↦ ∏ b in s, (g ∘ f) b :=
     funext <| map_prod g _
-  show Tendsto (fun s : Finset β ↦ ∏ b in s, g (f b)) atTop (𝓝 (g a)) from
-    this ▸ (hg.tendsto a).comp hf
+  unfold HasProd
+  rw [← this]
+  exact (hg.tendsto a).comp hf
 #align has_sum.map HasSum.map
 
 @[to_additive]
@@ -339,7 +344,7 @@ it gives a relationship between the sums of `f` and `ite (n = b) 0 (f n)` given 
 theorem eq_mul_of_hasProd_ite {α β : Type*} [TopologicalSpace α] [CommMonoid α] [T2Space α]
     [ContinuousMul α] [DecidableEq β] {f : β → α} {a : α} (hf : HasProd f a) (b : β) (a' : α)
     (hf' : HasProd (fun n ↦ ite (n = b) 1 (f n)) a') : a = a' * f b := by
-  refine' (mul_one a).symm.trans (hf.update' b 1 _)
+  refine (mul_one a).symm.trans (hf.update' b 1 ?_)
   convert hf'
   apply update_apply
 #align eq_add_of_has_sum_ite eq_add_of_hasSum_ite

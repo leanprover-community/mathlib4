@@ -129,7 +129,7 @@ variable [hp : Fact p.Prime]
 /-- If `q ≠ 0`, then `padicNorm p q ≠ 0`. -/
 protected theorem nonzero {q : ℚ} (hq : q ≠ 0) : padicNorm p q ≠ 0 := by
   rw [padicNorm.eq_zpow_of_nonzero hq]
-  apply zpow_ne_zero_of_ne_zero
+  apply zpow_ne_zero
   exact mod_cast ne_of_gt hp.1.pos
 #align padic_norm.nonzero padicNorm.nonzero
 
@@ -138,7 +138,7 @@ theorem zero_of_padicNorm_eq_zero {q : ℚ} (h : padicNorm p q = 0) : q = 0 := b
   apply by_contradiction; intro hq
   unfold padicNorm at h; rw [if_neg hq] at h
   apply absurd h
-  apply zpow_ne_zero_of_ne_zero
+  apply zpow_ne_zero
   exact mod_cast hp.1.ne_zero
 #align padic_norm.zero_of_padic_norm_eq_zero padicNorm.zero_of_padicNorm_eq_zero
 
@@ -166,7 +166,7 @@ protected theorem of_int (z : ℤ) : padicNorm p z ≤ 1 :=
   else by
     unfold padicNorm
     rw [if_neg _]
-    · refine' zpow_le_one_of_nonpos _ _
+    · refine zpow_le_one_of_nonpos ?_ ?_
       · exact mod_cast le_of_lt hp.1.one_lt
       · rw [padicValRat.of_int, neg_nonpos]
         norm_cast
@@ -245,8 +245,7 @@ theorem add_eq_max_of_ne {q r : ℚ} (hne : padicNorm p q ≠ padicNorm p r) :
 
 /-- The `p`-adic norm is an absolute value: positive-definite and multiplicative, satisfying the
 triangle inequality. -/
-instance : IsAbsoluteValue (padicNorm p)
-    where
+instance : IsAbsoluteValue (padicNorm p) where
   abv_nonneg' := padicNorm.nonneg
   abv_eq_zero' := ⟨zero_of_padicNorm_eq_zero, fun hx ↦ by simp [hx]⟩
   abv_add' := padicNorm.triangle_ineq
@@ -316,7 +315,7 @@ open BigOperators
 theorem sum_lt {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α} :
     s.Nonempty → (∀ i ∈ s, padicNorm p (F i) < t) → padicNorm p (∑ i in s, F i) < t := by
   classical
-    refine' s.induction_on (by rintro ⟨-, ⟨⟩⟩) _
+    refine s.induction_on (by rintro ⟨-, ⟨⟩⟩) ?_
     rintro a S haS IH - ht
     by_cases hs : S.Nonempty
     · rw [Finset.sum_insert haS]
@@ -330,7 +329,7 @@ theorem sum_lt {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α} :
 theorem sum_le {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α} :
     s.Nonempty → (∀ i ∈ s, padicNorm p (F i) ≤ t) → padicNorm p (∑ i in s, F i) ≤ t := by
   classical
-    refine' s.induction_on (by rintro ⟨-, ⟨⟩⟩) _
+    refine s.induction_on (by rintro ⟨-, ⟨⟩⟩) ?_
     rintro a S haS IH - ht
     by_cases hs : S.Nonempty
     · rw [Finset.sum_insert haS]

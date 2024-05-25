@@ -173,7 +173,7 @@ theorem le_degrees_add {p q : MvPolynomial σ R} (h : p.degrees.Disjoint q.degre
     obtain ⟨j, hj⟩ := h0
     contrapose! h
     rw [mem_support_iff] at hd
-    refine' ⟨j, _, j, _, rfl⟩
+    refine ⟨j, ?_, j, ?_, rfl⟩
     all_goals rw [mem_degrees]; refine' ⟨d, _, hj⟩; assumption
 #align mv_polynomial.le_degrees_add MvPolynomial.le_degrees_add
 
@@ -223,7 +223,7 @@ theorem degrees_rename_of_injective {p : MvPolynomial σ R} {f : σ → τ} (h :
   classical
   simp only [degrees, Multiset.map_finset_sup p.support Finsupp.toMultiset f h,
     support_rename_of_injective h, Finset.sup_image]
-  refine' Finset.sup_congr rfl fun x _ => _
+  refine Finset.sup_congr rfl fun x _ => ?_
   exact (Finsupp.toMultiset_map _ _).symm
 #align mv_polynomial.degrees_rename_of_injective MvPolynomial.degrees_rename_of_injective
 
@@ -459,6 +459,14 @@ theorem totalDegree_monomial (s : σ →₀ ℕ) {c : R} (hc : c ≠ 0) :
   classical simp [totalDegree, support_monomial, if_neg hc]
 #align mv_polynomial.total_degree_monomial MvPolynomial.totalDegree_monomial
 
+theorem totalDegree_monomial_le (s : σ →₀ ℕ) (c : R) :
+    (monomial s c).totalDegree ≤ s.sum fun _ ↦ id := by
+  if hc : c = 0 then
+    simp only [hc, map_zero, totalDegree_zero, zero_le]
+  else
+    rw [totalDegree_monomial _ hc]
+    exact le_rfl
+
 @[simp]
 theorem totalDegree_X_pow [Nontrivial R] (s : σ) (n : ℕ) :
     (X s ^ n : MvPolynomial σ R).totalDegree = n := by simp [X_pow_eq_monomial, one_ne_zero]
@@ -476,14 +484,14 @@ theorem totalDegree_list_prod :
 
 theorem totalDegree_multiset_prod (s : Multiset (MvPolynomial σ R)) :
     s.prod.totalDegree ≤ (s.map MvPolynomial.totalDegree).sum := by
-  refine' Quotient.inductionOn s fun l => _
+  refine Quotient.inductionOn s fun l => ?_
   rw [Multiset.quot_mk_to_coe, Multiset.prod_coe, Multiset.map_coe, Multiset.sum_coe]
   exact totalDegree_list_prod l
 #align mv_polynomial.total_degree_multiset_prod MvPolynomial.totalDegree_multiset_prod
 
 theorem totalDegree_finset_prod {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ R) :
     (s.prod f).totalDegree ≤ ∑ i in s, (f i).totalDegree := by
-  refine' le_trans (totalDegree_multiset_prod _) _
+  refine le_trans (totalDegree_multiset_prod _) ?_
   rw [Multiset.map_map]
   rfl
 #align mv_polynomial.total_degree_finset_prod MvPolynomial.totalDegree_finset_prod
@@ -507,7 +515,7 @@ theorem exists_degree_lt [Fintype σ] (f : MvPolynomial σ R) (n : ℕ)
   calc
     n * Fintype.card σ = ∑ _s : σ, n := by
       rw [Finset.sum_const, Nat.nsmul_eq_mul, mul_comm, Finset.card_univ]
-    _ ≤ ∑ s, d s := (Finset.sum_le_sum fun s _ => h s)
+    _ ≤ ∑ s, d s := Finset.sum_le_sum fun s _ => h s
     _ ≤ d.sum fun _ e => e := by
       rw [Finsupp.sum_fintype]
       intros
@@ -521,7 +529,7 @@ theorem coeff_eq_zero_of_totalDegree_lt {f : MvPolynomial σ R} {d : σ →₀ �
     rw [totalDegree, Finset.sup_lt_iff] at h
     · specialize h d
       rw [mem_support_iff] at h
-      refine' not_not.mp (mt h _)
+      refine not_not.mp (mt h ?_)
       exact lt_irrefl _
     · exact lt_of_le_of_lt (Nat.zero_le _) h
 #align mv_polynomial.coeff_eq_zero_of_total_degree_lt MvPolynomial.coeff_eq_zero_of_totalDegree_lt

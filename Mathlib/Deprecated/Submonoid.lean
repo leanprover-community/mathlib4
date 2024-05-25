@@ -3,8 +3,8 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard
 -/
-import Mathlib.GroupTheory.Submonoid.Basic
 import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.Group.Submonoid.Basic
 import Mathlib.Deprecated.Group
 
 #align_import deprecated.submonoid from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
@@ -222,7 +222,7 @@ theorem IsSubmonoid.powers_subset {a : M} (hs : IsSubmonoid s) (h : a ∈ s) : p
   fun _ ⟨_, hx⟩ => hx ▸ hs.pow_mem h
 #align is_submonoid.power_subset IsSubmonoid.powers_subset
 #align is_add_submonoid.multiples_subset IsAddSubmonoid.multiples_subset
-/- 2024-02-21 -/ @[deprecated] alias IsSubmonoid.power_subset := IsSubmonoid.powers_subset
+@[deprecated] alias IsSubmonoid.power_subset := IsSubmonoid.powers_subset -- 2024-02-21
 
 end powers
 
@@ -247,7 +247,7 @@ the submonoid. -/
       is an element of the `AddSubmonoid`. "]
 theorem multiset_prod_mem {M} [CommMonoid M] {s : Set M} (hs : IsSubmonoid s) (m : Multiset M) :
     (∀ a ∈ m, a ∈ s) → m.prod ∈ s := by
-  refine' Quotient.inductionOn m fun l hl => _
+  refine Quotient.inductionOn m fun l hl => ?_
   rw [Multiset.quot_mk_to_coe, Multiset.prod_coe]
   exact list_prod_mem hs hl
 #align is_submonoid.multiset_prod_mem IsSubmonoid.multiset_prod_mem

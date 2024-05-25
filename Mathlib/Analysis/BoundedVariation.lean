@@ -263,7 +263,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
       · have A : ¬i ≤ n := hi.not_le
         have B : ¬i + 1 ≤ n := fun h => A (i.le_succ.trans h)
         simp only [A, B, if_false, le_rfl]
-    refine' ⟨v, n + 2, hv, vs, (mem_image _ _ _).2 ⟨n + 1, _, _⟩, _⟩
+    refine ⟨v, n + 2, hv, vs, (mem_image _ _ _).2 ⟨n + 1, ?_, ?_⟩, ?_⟩
     · rw [mem_Iio]; exact Nat.lt_succ_self (n + 1)
     · have : ¬n + 1 ≤ n := Nat.not_succ_le_self n
       simp only [v, this, ite_eq_right_iff, IsEmpty.forall_iff]
@@ -306,7 +306,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
       split_ifs
       · exact hN.2.le.trans (hu (le_of_not_lt A))
       · exact hu (Nat.pred_le _)
-  refine' ⟨w, n + 1, hw, ws, (mem_image _ _ _).2 ⟨N, hN.1.trans_lt (Nat.lt_succ_self n), _⟩, _⟩
+  refine ⟨w, n + 1, hw, ws, (mem_image _ _ _).2 ⟨N, hN.1.trans_lt (Nat.lt_succ_self n), ?_⟩, ?_⟩
   · dsimp only [w]; rw [if_neg (lt_irrefl N), if_pos rfl]
   rcases eq_or_lt_of_le (zero_le N) with (Npos | Npos)
   · calc
@@ -337,16 +337,17 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
       _ = (∑ i in Finset.Ico 0 (N - 1), edist (f (w (i + 1))) (f (w i))) +
               edist (f (u N)) (f (u (N - 1))) +
             ∑ i in Finset.Ico N n, edist (f (w (1 + i + 1))) (f (w (1 + i))) := by
-        congr 1; congr 1
-        · apply Finset.sum_congr rfl fun i hi => ?_
-          simp only [Finset.mem_Ico, zero_le', true_and_iff] at hi
-          dsimp only [w]
-          have A : i + 1 < N := Nat.lt_pred_iff.1 hi
-          have B : i < N := Nat.lt_of_succ_lt A
-          rw [if_pos A, if_pos B]
-        · have A : N - 1 + 1 = N := Nat.succ_pred_eq_of_pos Npos
-          have : Finset.Ico (N - 1) N = {N - 1} := by rw [← Nat.Ico_succ_singleton, A]
-          simp only [this, A, Finset.sum_singleton]
+        congr 1
+        · congr 1
+          · apply Finset.sum_congr rfl fun i hi => ?_
+            simp only [Finset.mem_Ico, zero_le', true_and_iff] at hi
+            dsimp only [w]
+            have A : i + 1 < N := Nat.lt_pred_iff.1 hi
+            have B : i < N := Nat.lt_of_succ_lt A
+            rw [if_pos A, if_pos B]
+          · have A : N - 1 + 1 = N := Nat.succ_pred_eq_of_pos Npos
+            have : Finset.Ico (N - 1) N = {N - 1} := by rw [← Nat.Ico_succ_singleton, A]
+            simp only [this, A, Finset.sum_singleton]
         · apply Finset.sum_congr rfl fun i hi => ?_
           rw [Finset.mem_Ico] at hi
           dsimp only [w]
@@ -359,17 +360,18 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
       _ = (∑ i in Finset.Ico 0 (N - 1), edist (f (w (i + 1))) (f (w i))) +
               edist (f (w (N + 1))) (f (w (N - 1))) +
             ∑ i in Finset.Ico (N + 1) (n + 1), edist (f (w (i + 1))) (f (w i)) := by
-        congr 1; congr 1
-        · dsimp only [w]
-          have A : ¬N + 1 < N := Nat.not_succ_lt_self
-          have B : N - 1 < N := Nat.pred_lt Npos.ne'
-          simp only [A, not_and, not_lt, Nat.succ_ne_self, Nat.add_succ_sub_one, add_zero, if_false,
-            B, if_true]
+        congr 1
+        · congr 1
+          · dsimp only [w]
+            have A : ¬N + 1 < N := Nat.not_succ_lt_self
+            have B : N - 1 < N := Nat.pred_lt Npos.ne'
+            simp only [A, not_and, not_lt, Nat.succ_ne_self, Nat.add_succ_sub_one, add_zero,
+              if_false, B, if_true]
         · exact Finset.sum_Ico_add (fun i => edist (f (w (i + 1))) (f (w i))) N n 1
       _ ≤ ((∑ i in Finset.Ico 0 (N - 1), edist (f (w (i + 1))) (f (w i))) +
               ∑ i in Finset.Ico (N - 1) (N + 1), edist (f (w (i + 1))) (f (w i))) +
             ∑ i in Finset.Ico (N + 1) (n + 1), edist (f (w (i + 1))) (f (w i)) := by
-        refine' add_le_add (add_le_add le_rfl _) le_rfl
+        refine add_le_add (add_le_add le_rfl ?_) le_rfl
         have A : N - 1 + 1 = N := Nat.succ_pred_eq_of_pos Npos
         have B : N - 1 + 1 < N + 1 := A.symm ▸ N.lt_succ_self
         have C : N - 1 < N + 1 := lt_of_le_of_lt N.pred_le N.lt_succ_self
@@ -396,7 +398,7 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
   · simp [ht]
   have : Nonempty { u // Monotone u ∧ ∀ i : ℕ, u i ∈ t } :=
     nonempty_monotone_mem (nonempty_iff_ne_empty.2 ht)
-  refine' ENNReal.iSup_add_iSup_le _
+  refine ENNReal.iSup_add_iSup_le ?_
   /- We start from two sequences `u` and `v` along `s` and `t` respectively, and we build a new
     sequence `w` along `s ∪ t` by juxtaposing them. Its variation is larger than the sum of the
     variations. -/
@@ -477,7 +479,7 @@ theorem union (f : α → E) {s t : Set α} {x : α} (hs : IsGreatest s x) (ht :
           ∑ j in Finset.Ico N m, edist (f (v (j + 1))) (f (v j)) :=
       by rw [Finset.range_eq_Ico, Finset.sum_Ico_consecutive _ (zero_le _) hN.le]
     _ ≤ eVariationOn f s + eVariationOn f t := by
-      refine' add_le_add _ _
+      refine add_le_add ?_ ?_
       · apply sum_le_of_monotoneOn_Icc _ (hv.monotoneOn _) fun i hi => ?_
         rcases vst i with (h | h); · exact h
         have : v i = x := by
@@ -517,18 +519,17 @@ theorem comp_le_of_monotoneOn (f : α → E) {s : Set α} {t : Set β} (φ : β 
 
 theorem comp_le_of_antitoneOn (f : α → E) {s : Set α} {t : Set β} (φ : β → α) (hφ : AntitoneOn φ t)
     (φst : MapsTo φ t s) : eVariationOn (f ∘ φ) t ≤ eVariationOn f s := by
-  refine' iSup_le _
+  refine iSup_le ?_
   rintro ⟨n, u, hu, ut⟩
   rw [← Finset.sum_range_reflect]
-  refine' (Finset.sum_congr rfl fun x hx => _).trans_le <| le_iSup_of_le
+  refine (Finset.sum_congr rfl fun x hx => ?_).trans_le <| le_iSup_of_le
     ⟨n, fun i => φ (u <| n - i), fun x y xy => hφ (ut _) (ut _) (hu <| Nat.sub_le_sub_left xy n),
       fun i => φst (ut _)⟩
     le_rfl
-  rw [edist_comm, Nat.sub_sub, add_comm, Nat.sub_succ, Nat.add_one, Nat.succ_eq_add_one]
-  simp only [Function.comp_apply, Nat.pred_eq_sub_one, Nat.sub_add_eq]
-  congr
-  simp only [Finset.mem_range] at hx
-  omega
+  rw [Finset.mem_range] at hx
+  dsimp only [Subtype.coe_mk, Function.comp_apply]
+  rw [edist_comm]
+  congr 4 <;> omega
 #align evariation_on.comp_le_of_antitone_on eVariationOn.comp_le_of_antitoneOn
 
 theorem comp_eq_of_monotoneOn (f : α → E) {t : Set β} (φ : β → α) (hφ : MonotoneOn φ t) :
@@ -672,7 +673,7 @@ protected theorem add {f : α → E} {s : Set α} (hf : LocallyBoundedVariationO
     (ha : a ∈ s) (hb : b ∈ s) (hc : c ∈ s) :
     variationOnFromTo f s a b + variationOnFromTo f s b c = variationOnFromTo f s a c := by
   symm
-  refine' additive_of_isTotal ((· : α) ≤ ·) (variationOnFromTo f s) (· ∈ s) _ _ ha hb hc
+  refine additive_of_isTotal ((· : α) ≤ ·) (variationOnFromTo f s) (· ∈ s) ?_ ?_ ha hb hc
   · rintro x y _xs _ys
     simp only [variationOnFromTo.eq_neg_swap f s y x, Subtype.coe_mk, add_right_neg,
       forall_true_left]

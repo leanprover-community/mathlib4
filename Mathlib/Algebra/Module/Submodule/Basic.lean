@@ -3,8 +3,8 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.GroupTheory.Submonoid.Membership
 
 #align_import algebra.module.submodule.basic from "leanprover-community/mathlib"@"8130e5155d637db35907c272de9aec9dc851c03a"
 
@@ -495,6 +495,24 @@ theorem ne_zero_of_ortho {x : M} {N : Submodule R M}
 end IsDomain
 
 end Submodule
+
+namespace SubmoduleClass
+
+instance (priority := 75) module' {T : Type*} [Semiring R] [AddCommMonoid M] [Semiring S]
+    [Module R M] [SMul S R] [Module S M] [IsScalarTower S R M] [SetLike T M] [AddSubmonoidClass T M]
+    [SMulMemClass T R M] (t : T) : Module S t where
+  one_smul _ := by ext; simp
+  mul_smul _ _ _ := by ext; simp [mul_smul]
+  smul_zero _ := by ext; simp
+  zero_smul _ := by ext; simp
+  add_smul _ _ _ := by ext; simp [add_smul]
+  smul_add _ _ _ := by ext; simp [smul_add]
+
+instance (priority := 75) module [Semiring R] [AddCommMonoid M] [Module R M] [SetLike S M]
+    [AddSubmonoidClass S M] [SMulMemClass S R M] (s : S) : Module R s :=
+  module' s
+
+end SubmoduleClass
 
 namespace Submodule
 

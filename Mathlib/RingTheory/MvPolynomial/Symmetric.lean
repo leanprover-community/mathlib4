@@ -243,7 +243,7 @@ theorem support_esymm'' (n : ℕ) [DecidableEq σ] [Nontrivial R] :
         (Finsupp.single (∑ i : σ in t, Finsupp.single i 1) (1 : R)).support := by
   rw [esymm_eq_sum_monomial]
   simp only [← single_eq_monomial]
-  refine' Finsupp.support_sum_eq_biUnion (powersetCard n (univ : Finset σ)) _
+  refine Finsupp.support_sum_eq_biUnion (powersetCard n (univ : Finset σ)) ?_
   intro s t hst
   rw [disjoint_left, Finsupp.support_single_ne_zero _ one_ne_zero]
   rw [Finsupp.support_single_ne_zero _ one_ne_zero]
@@ -251,14 +251,14 @@ theorem support_esymm'' (n : ℕ) [DecidableEq σ] [Nontrivial R] :
   rintro a h rfl
   have := congr_arg Finsupp.support h
   rw [Finsupp.support_sum_eq_biUnion, Finsupp.support_sum_eq_biUnion] at this
-  have hsingle : ∀ s : Finset σ, ∀ x : σ, x ∈ s → (Finsupp.single x 1).support = {x} := by
-    intros _ x _
-    rw [Finsupp.support_single_ne_zero x one_ne_zero]
-  have hs := biUnion_congr (of_eq_true (eq_self s)) (hsingle s)
-  have ht := biUnion_congr (of_eq_true (eq_self t)) (hsingle t)
-  rw [hs, ht] at this
-  · simp only [biUnion_singleton_eq_self] at this
-    exact absurd this hst.symm
+  · have hsingle : ∀ s : Finset σ, ∀ x : σ, x ∈ s → (Finsupp.single x 1).support = {x} := by
+      intros _ x _
+      rw [Finsupp.support_single_ne_zero x one_ne_zero]
+    have hs := biUnion_congr (of_eq_true (eq_self s)) (hsingle s)
+    have ht := biUnion_congr (of_eq_true (eq_self t)) (hsingle t)
+    rw [hs, ht] at this
+    · simp only [biUnion_singleton_eq_self] at this
+      exact absurd this hst.symm
   all_goals intro x y; simp [Finsupp.support_single_disjoint]
 #align mv_polynomial.support_esymm'' MvPolynomial.support_esymm''
 
@@ -288,7 +288,7 @@ theorem degrees_esymm [Nontrivial R] (n : ℕ) (hpos : 0 < n) (hn : n ≤ Fintyp
     rw [degrees_def, support_esymm, sup_image, this]
     have : ((powersetCard n univ).sup (fun (x : Finset σ) => x)).val
         = sup (powersetCard n univ) val := by
-      refine' comp_sup_eq_sup_comp _ _ _
+      refine comp_sup_eq_sup_comp _ ?_ ?_
       · intros
         simp only [union_val, sup_eq_union]
         congr

@@ -24,9 +24,6 @@ transformations.
   between `F` and `G`
 -/
 
-set_option autoImplicit true
-
-
 namespace CategoryTheory
 
 open Category Bicategory
@@ -77,9 +74,6 @@ attribute [nolint docBlame] CategoryTheory.OplaxNatTrans.app
   CategoryTheory.OplaxNatTrans.naturality_naturality
   CategoryTheory.OplaxNatTrans.naturality_id
   CategoryTheory.OplaxNatTrans.naturality_comp
-
-/- Porting note: removed primes from field names and removed `restate_axiom` since that is no longer
-  needed in Lean 4 -/
 
 attribute [reassoc (attr := simp)] OplaxNatTrans.naturality_naturality OplaxNatTrans.naturality_id
   OplaxNatTrans.naturality_comp
@@ -179,11 +173,11 @@ def vcomp (η : OplaxNatTrans F G) (θ : OplaxNatTrans G H) : OplaxNatTrans F H 
                         ?_ ≫ η.app a ◁ θ.naturality f ▷ H.map g ≫ ?_ :=
         ?_
       _ = _ := ?_
-    exact (α_ _ _ _).inv
-    exact (α_ _ _ _).hom ▷ _ ≫ (α_ _ _ _).hom
-    exact _ ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv
-    exact (α_ _ _ _).hom ≫ _ ◁ (α_ _ _ _).inv
-    exact _ ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv
+    · exact (α_ _ _ _).inv
+    · exact (α_ _ _ _).hom ▷ _ ≫ (α_ _ _ _).hom
+    · exact _ ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv
+    · exact (α_ _ _ _).hom ≫ _ ◁ (α_ _ _ _).inv
+    · exact _ ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv
     · rw [whisker_exchange_assoc]
       simp
     · simp
@@ -219,8 +213,6 @@ structure Modification (η θ : F ⟶ G) where
 #align category_theory.oplax_nat_trans.modification.app CategoryTheory.OplaxNatTrans.Modification
 #align category_theory.oplax_nat_trans.modification.naturality' CategoryTheory.OplaxNatTrans.Modification.naturality
 #align category_theory.oplax_nat_trans.modification.naturality CategoryTheory.OplaxNatTrans.Modification.naturality
-
-attribute [pp_dot] Modification.app
 
 attribute [nolint docBlame] CategoryTheory.OplaxNatTrans.Modification.app
   CategoryTheory.OplaxNatTrans.Modification.naturality
@@ -290,12 +282,13 @@ lemma ext {F G : OplaxFunctor B C} {α β : F ⟶ G} {m n : α ⟶ β} (w : ∀ 
   apply w
 
 @[simp]
-lemma Modification.id_app' {F G : OplaxFunctor B C} (α : F ⟶ G) :
+lemma Modification.id_app' {X : B} {F G : OplaxFunctor B C} (α : F ⟶ G) :
     Modification.app (𝟙 α) X = 𝟙 (α.app X) := rfl
 
 @[simp]
-lemma Modification.comp_app' {F G : OplaxFunctor B C} {α β γ : F ⟶ G} (m : α ⟶ β) (n : β ⟶ γ) :
-    (m ≫ n).app X = m.app X ≫ n.app X := rfl
+lemma Modification.comp_app' {X : B} {F G : OplaxFunctor B C} {α β γ : F ⟶ G}
+    (m : α ⟶ β) (n : β ⟶ γ) : (m ≫ n).app X = m.app X ≫ n.app X :=
+  rfl
 
 /-- Construct a modification isomorphism between oplax natural transformations
 by giving object level isomorphisms, and checking naturality only in the forward direction.
