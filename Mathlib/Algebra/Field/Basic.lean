@@ -6,6 +6,7 @@ Authors: Robert Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Ring.Commute
+import Mathlib.Algebra.Ring.Invertible
 import Mathlib.Order.Synonym
 
 #align_import algebra.field.basic from "leanprover-community/mathlib"@"05101c3df9d9cfe9430edc205860c79b6d660102"
@@ -47,10 +48,14 @@ theorem div_add_one (h : b ≠ 0) : a / b + 1 = (a + b) / b :=
   (div_add_same h).symm
 #align div_add_one div_add_one
 
+theorem inv_mul_add_mul_inv_eq_inv_add_inv (ha : a ≠ 0) (hb : b ≠ 0) :
+    a⁻¹ * (a + b) * b⁻¹ = a⁻¹ + b⁻¹ :=
+  let _ := invertibleOfNonzero ha; let _ := invertibleOfNonzero hb;
+  invOf_mul_add_mul_invOf_eq_invOf_add_invOf a b
+
 theorem one_div_mul_add_mul_one_div_eq_one_div_add_one_div (ha : a ≠ 0) (hb : b ≠ 0) :
     1 / a * (a + b) * (1 / b) = 1 / a + 1 / b := by
-  rw [mul_add, one_div_mul_cancel ha, add_mul, one_mul, mul_assoc, mul_one_div_cancel hb, mul_one,
-    add_comm]
+  simpa only [one_div] using inv_mul_add_mul_inv_eq_inv_add_inv ha hb
 #align one_div_mul_add_mul_one_div_eq_one_div_add_one_div one_div_mul_add_mul_one_div_eq_one_div_add_one_div
 
 theorem add_div_eq_mul_add_div (a b : α) (hc : c ≠ 0) : a + b / c = (a * c + b) / c :=

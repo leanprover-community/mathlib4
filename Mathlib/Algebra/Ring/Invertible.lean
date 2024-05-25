@@ -40,3 +40,19 @@ theorem invOf_two_add_invOf_two [NonAssocSemiring α] [Invertible (2 : α)] :
 
 theorem pos_of_invertible_cast [Semiring α] [Nontrivial α] (n : ℕ) [Invertible (n : α)] : 0 < n :=
   Nat.zero_lt_of_ne_zero fun h => nonzero_of_invertible (n : α) (h ▸ Nat.cast_zero)
+
+theorem invOf_mul_add_mul_invOf_eq_invOf_add_invOf
+    [Semiring α] (a b : α) [Invertible a] [Invertible b] :
+    ⅟a * (a + b) * ⅟b = ⅟a + ⅟b := by
+  rw [mul_add, invOf_mul_self, add_mul, one_mul, mul_assoc, mul_invOf_self, mul_one, add_comm]
+
+theorem Ring.inverse_mul_add_mul_inverse_eq_inverse_add_inverse
+    [Semiring α] {a b : α} (h : IsUnit a ↔ IsUnit b) :
+    Ring.inverse a * (a + b) * Ring.inverse b = Ring.inverse a + Ring.inverse b := by
+  by_cases ha : IsUnit a
+  · have hb := h.mp ha
+    obtain ⟨ia⟩ := ha.nonempty_invertible
+    obtain ⟨ib⟩ := hb.nonempty_invertible
+    simp_rw [inverse_invertible, invOf_mul_add_mul_invOf_eq_invOf_add_invOf]
+  · have hb := h.not.mp ha
+    simp [inverse_non_unit, ha, hb]
