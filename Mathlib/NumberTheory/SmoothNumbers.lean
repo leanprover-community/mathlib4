@@ -103,6 +103,18 @@ lemma mem_factoredNumbers' {s : Finset ℕ} {m : ℕ} :
     _ < 1 + s.sup id := lt_one_add _
     _ ≤ p := hp₁
 
+lemma primeFactors_subset_of_mem_factoredNumbers {s : Finset ℕ} {m : ℕ}
+    (hm : m ∈ factoredNumbers s) :
+    m.primeFactors ⊆ s := by
+  rw [mem_factoredNumbers] at hm
+  exact fun n hn ↦ hm.2 n (mem_primeFactors_iff_mem_factors.mp hn)
+
+lemma mem_factoredNumbers_of_primeFactors_subset {s : Finset ℕ} {m : ℕ} (hm : m ≠ 0)
+    (hp : m.primeFactors ⊆ s) :
+    m ∈ factoredNumbers s := by
+  rw [mem_factoredNumbers]
+  exact ⟨hm, fun p hp' ↦ hp <| mem_primeFactors_iff_mem_factors.mpr hp'⟩
+
 lemma ne_zero_of_mem_factoredNumbers {s : Finset ℕ} {m : ℕ} (h : m ∈ factoredNumbers s) : m ≠ 0 :=
   h.1
 
