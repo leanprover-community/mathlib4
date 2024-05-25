@@ -18,9 +18,8 @@ We verify that this is equivalent to the monoid objects in the category of comon
   and use this to define group schemes.
 * Construct the category of modules, and show that it is monoidal with a monoidal forgetful functor
   to `C`.
-* Relax the requirement that `C` is braided, instead requiring that the structure morphisms are
-  central. This would require completely replacing the definition.
-* Some form of Tannaka reconstruction: given a central monoidal functor `F : C ⥤ D`,
+* Some form of Tannaka reconstruction:
+  given a monoidal functor `F : C ⥤ D` into a braided category `D`,
   the internal endomorphisms of `F` form a bimonoid in presheaves on `D`,
   in good circumstances this is representable by a bimonoid in `D`, and then
   `C` is monoidally equivalent to the modules over that bimonoid.
