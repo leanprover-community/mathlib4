@@ -143,7 +143,7 @@ lemma isAtom_top [IsSimple R L] : IsAtom (⊤ : LieIdeal R L) := by
     exact ⟨this, hI.ne⟩
 
 variable {R L} in
-lemma isAtom_iff_eq_top [IsSimple R L] (I : LieIdeal R L) : IsAtom I ↔ I = ⊤ :=
+@[simp] lemma isAtom_iff_eq_top [IsSimple R L] (I : LieIdeal R L) : IsAtom I ↔ I = ⊤ :=
   ⟨eq_top_of_isAtom I, fun h ↦ h ▸ isAtom_top R L⟩
 
 instance [IsSimple R L] : HasTrivialRadical R L := by
