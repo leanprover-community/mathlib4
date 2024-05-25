@@ -24,7 +24,7 @@ namespace Pi
 @[to_additive]
 theorem list_prod_apply {α : Type*} {β : α → Type*} [∀ a, Monoid (β a)] (a : α)
     (l : List (∀ a, β a)) : l.prod a = (l.map fun f : ∀ a, β a ↦ f a).prod :=
-  (evalMonoidHom β a).map_list_prod _
+  map_list_prod (evalMonoidHom β a) _
 #align pi.list_prod_apply Pi.list_prod_apply
 #align pi.list_sum_apply Pi.list_sum_apply
 

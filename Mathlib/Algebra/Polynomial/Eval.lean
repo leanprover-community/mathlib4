@@ -1176,7 +1176,7 @@ theorem eval₂_finset_prod (s : Finset ι) (g : ι → R[X]) (x : S) :
 /-- Polynomial evaluation commutes with `List.prod`
 -/
 theorem eval_list_prod (l : List R[X]) (x : R) : eval x l.prod = (l.map (eval x)).prod :=
-  (evalRingHom x).map_list_prod l
+  map_list_prod (evalRingHom x) l
 #align polynomial.eval_list_prod Polynomial.eval_list_prod
 
 /-- Polynomial evaluation commutes with `Multiset.prod`
