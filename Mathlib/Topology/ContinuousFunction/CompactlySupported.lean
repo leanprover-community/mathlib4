@@ -35,8 +35,8 @@ When possible, instead of parametrizing results over `(f : C_c(α, β))`,
 you should parametrize over `(F : Type*) [CompactlySupportedContinuousMapClass F α β] (f : F)`.
 
 When you extend this structure, make sure to extend `CompactlySupportedContinuousMapClass`. -/
-structure CompactlySupportedContinuousMap (α : Type u) (β : Type v) [TopologicalSpace α] [Zero β]
-    [TopologicalSpace β] extends ContinuousMap α β : Type max u v where
+structure CompactlySupportedContinuousMap (α β : Type*) [TopologicalSpace α] [Zero β]
+    [TopologicalSpace β] extends ContinuousMap α β where
   /-- The function has compact support . -/
   has_compact_support' : HasCompactSupport toFun
 
