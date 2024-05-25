@@ -546,7 +546,7 @@ instance lattice : Lattice (Interval α) :=
       | some s, some t => by
         change dite _ _ _ ≤ _
         split_ifs
-        · exact WithBot.some_le_some.2 ⟨le_sup_right, inf_le_right⟩
+        · exact WithBot.coe_le_coe.2 ⟨le_sup_right, inf_le_right⟩
         · exact bot_le
     le_inf := fun s t c =>
       match s, t, c with
