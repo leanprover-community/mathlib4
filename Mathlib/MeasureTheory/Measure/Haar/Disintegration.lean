@@ -34,7 +34,6 @@ variable {𝕜 E F : Type*}
   [IsAddHaarMeasure μ] [IsAddHaarMeasure ν]
 
 variable [LocallyCompactSpace E]
-
 variable (L μ ν)
 
 /-- The image of an additive Haar measure under a surjective linear map is proportional to a given
@@ -47,13 +46,13 @@ theorem LinearMap.exists_map_addHaar_eq_smul_addHaar' (h : Function.Surjective L
   is also true for linear equivalences, as they map Haar measure to Haar measure. The general case
   follows from these two and linear algebra, as `L` can be interpreted as the composition of the
   projection `P` on a complement `T` to its kernel `S`, together with a linear equivalence. -/
-  have : ProperSpace E := properSpace_of_locallyCompactSpace 𝕜
-  have : FiniteDimensional 𝕜 E := finiteDimensional_of_locallyCompactSpace 𝕜
+  have : ProperSpace E := .of_locallyCompactSpace 𝕜
+  have : FiniteDimensional 𝕜 E := .of_locallyCompactSpace 𝕜
   have : ProperSpace F := by
     rcases subsingleton_or_nontrivial E with hE|hE
     · have : Subsingleton F := Function.Surjective.subsingleton h
       infer_instance
-    · have : ProperSpace 𝕜 := properSpace_of_locallyCompact_module 𝕜 E
+    · have : ProperSpace 𝕜 := .of_locallyCompact_module 𝕜 E
       have : FiniteDimensional 𝕜 F := Module.Finite.of_surjective L h
       exact FiniteDimensional.proper 𝕜 F
   let S : Submodule 𝕜 E := LinearMap.ker L
@@ -72,7 +71,7 @@ theorem LinearMap.exists_map_addHaar_eq_smul_addHaar' (h : Function.Surjective L
     obtain ⟨y, z, hyz⟩ : ∃ (y : S) (z : T), M.symm x = (y, z) := ⟨_, _, rfl⟩
     have : x = M (y, z) := by
       rw [← hyz]; simp only [LinearEquiv.apply_symm_apply]
-    simp [this]
+    simp [L', P, M, this]
   have I : μ.map L = ((μ.map M.symm).map P).map L' := by
     rw [Measure.map_map, Measure.map_map, A]
     · rfl
@@ -86,12 +85,18 @@ theorem LinearMap.exists_map_addHaar_eq_smul_addHaar' (h : Function.Surjective L
       ∃ c₀ : ℝ≥0∞, c₀ ≠ 0 ∧ c₀ ≠ ∞ ∧ μ.map M.symm = c₀ • μS.prod μT := by
     have : IsAddHaarMeasure (μ.map M.symm) :=
       M.toContinuousLinearEquiv.symm.isAddHaarMeasure_map μ
-    exact isAddHaarMeasure_eq_smul _ _
+    refine ⟨addHaarScalarFactor (μ.map M.symm) (μS.prod μT), ?_, ENNReal.coe_ne_top,
+      isAddLeftInvariant_eq_smul _ _⟩
+    simpa only [ne_eq, ENNReal.coe_eq_zero] using
+      (addHaarScalarFactor_pos_of_isAddHaarMeasure (μ.map M.symm) (μS.prod μT)).ne'
   have J : (μS.prod μT).map P = (μS univ) • μT := map_snd_prod
   obtain ⟨c₁, c₁_pos, c₁_fin, h₁⟩ : ∃ c₁ : ℝ≥0∞, c₁ ≠ 0 ∧ c₁ ≠ ∞ ∧ μT.map L' = c₁ • ν := by
     have : IsAddHaarMeasure (μT.map L') :=
       L'.toContinuousLinearEquiv.isAddHaarMeasure_map μT
-    exact isAddHaarMeasure_eq_smul _ _
+    refine ⟨addHaarScalarFactor (μT.map L') ν, ?_, ENNReal.coe_ne_top,
+      isAddLeftInvariant_eq_smul _ _⟩
+    simpa only [ne_eq, ENNReal.coe_eq_zero] using
+      (addHaarScalarFactor_pos_of_isAddHaarMeasure (μT.map L') ν).ne'
   refine ⟨c₀ * c₁, by simp [pos_iff_ne_zero, c₀_pos, c₁_pos], ENNReal.mul_lt_top c₀_fin c₁_fin, ?_⟩
   simp only [I, h₀, Measure.map_smul, J, smul_smul, h₁]
   rw [mul_assoc, mul_comm _ c₁, ← mul_assoc]
@@ -109,7 +114,7 @@ namespace MeasureTheory
 in the source or the target spaces of `L`, with respect to additive Haar measures there. -/
 lemma ae_comp_linearMap_mem_iff (h : Function.Surjective L) {s : Set F} (hs : MeasurableSet s) :
     (∀ᵐ x ∂μ, L x ∈ s) ↔ ∀ᵐ y ∂ν, y ∈ s := by
-  have : FiniteDimensional 𝕜 E := finiteDimensional_of_locallyCompactSpace 𝕜
+  have : FiniteDimensional 𝕜 E := .of_locallyCompactSpace 𝕜
   have : AEMeasurable L μ := L.continuous_of_finiteDimensional.aemeasurable
   apply (ae_map_iff this hs).symm.trans
   rcases L.exists_map_addHaar_eq_smul_addHaar μ ν h with ⟨c, c_pos, hc⟩
@@ -118,21 +123,23 @@ lemma ae_comp_linearMap_mem_iff (h : Function.Surjective L) {s : Set F} (hs : Me
 
 /-- Given a linear map `L : E → F`, a property holds almost everywhere in `F` if and only if,
 almost everywhere in `F`, it holds almost everywhere along the subspace spanned by the
-image of `L`. This is an instance of a disintegration argument for additive Haar measures.-/
+image of `L`. This is an instance of a disintegration argument for additive Haar measures. -/
 lemma ae_ae_add_linearMap_mem_iff [LocallyCompactSpace F] {s : Set F} (hs : MeasurableSet s) :
     (∀ᵐ y ∂ν, ∀ᵐ x ∂μ, y + L x ∈ s) ↔ ∀ᵐ y ∂ν, y ∈ s := by
-  have : FiniteDimensional 𝕜 E := finiteDimensional_of_locallyCompactSpace 𝕜
-  have : FiniteDimensional 𝕜 F := finiteDimensional_of_locallyCompactSpace 𝕜
-  have : ProperSpace E := properSpace_of_locallyCompactSpace 𝕜
-  have : ProperSpace F := properSpace_of_locallyCompactSpace 𝕜
+  have : FiniteDimensional 𝕜 E := .of_locallyCompactSpace 𝕜
+  have : FiniteDimensional 𝕜 F := .of_locallyCompactSpace 𝕜
+  have : ProperSpace E := .of_locallyCompactSpace 𝕜
+  have : ProperSpace F := .of_locallyCompactSpace 𝕜
   let M : F × E →ₗ[𝕜] F := LinearMap.id.coprod L
   have M_cont : Continuous M := M.continuous_of_finiteDimensional
-  have hM : Function.Surjective M := by simp [← LinearMap.range_eq_top, LinearMap.range_coprod]
+  -- Note: #8386 had to change `range_eq_top` into `range_eq_top (f := _)`
+  have hM : Function.Surjective M := by
+    simp [M, ← LinearMap.range_eq_top (f := _), LinearMap.range_coprod]
   have A : ∀ x, M x ∈ s ↔ x ∈ M ⁻¹' s := fun x ↦ Iff.rfl
   simp_rw [← ae_comp_linearMap_mem_iff M (ν.prod μ) ν hM hs, A]
   rw [Measure.ae_prod_mem_iff_ae_ae_mem]
-  simp only [mem_preimage, LinearMap.coprod_apply, LinearMap.id_coe, id_eq]
-  exact M_cont.measurable hs
+  · simp only [M, mem_preimage, LinearMap.coprod_apply, LinearMap.id_coe, id_eq]
+  · exact M_cont.measurable hs
 
 /-- To check that a property holds almost everywhere with respect to an additive Haar measure, it
 suffices to check it almost everywhere along all translates of a given vector subspace. This is an

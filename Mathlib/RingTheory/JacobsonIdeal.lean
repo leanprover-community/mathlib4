@@ -3,6 +3,7 @@ Copyright (c) 2020 Devon Tuma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Devon Tuma
 -/
+import Mathlib.RingTheory.Ideal.IsPrimary
 import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.RingTheory.Polynomial.Quotient
 
@@ -103,19 +104,19 @@ theorem mem_jacobson_iff {x : R} : x ∈ jacobson I ↔ ∀ y, ∃ z, z * y * x 
         let ⟨p, hpi, q, hq, hpq⟩ := Submodule.mem_sup.1 ((eq_top_iff_one _).1 hxy)
         let ⟨r, hr⟩ := mem_span_singleton'.1 hq
         ⟨r, by
-          -- Porting note : supply `mul_add_one` with explicit variables
-          rw [mul_assoc, ← mul_add_one r (y * x), hr, ← hpq, ← neg_sub, add_sub_cancel]
+          -- Porting note: supply `mul_add_one` with explicit variables
+          rw [mul_assoc, ← mul_add_one r (y * x), hr, ← hpq, ← neg_sub, add_sub_cancel_right]
           exact I.neg_mem hpi⟩)
       fun hxy : I ⊔ span {y * x + 1} ≠ ⊤ => let ⟨M, hm1, hm2⟩ := exists_le_maximal _ hxy
       suffices x ∉ M from (this <| mem_sInf.1 hx ⟨le_trans le_sup_left hm2, hm1⟩).elim
-      fun hxm => hm1.1.1 <| (eq_top_iff_one _).2 <| add_sub_cancel' (y * x) 1 ▸
+      fun hxm => hm1.1.1 <| (eq_top_iff_one _).2 <| add_sub_cancel_left (y * x) 1 ▸
         M.sub_mem (le_sup_right.trans hm2 <| subset_span rfl) (M.mul_mem_left _ hxm),
     fun hx => mem_sInf.2 fun M ⟨him, hm⟩ => by_contradiction fun hxm =>
       let ⟨y, i, hi, df⟩ := hm.exists_inv hxm
       let ⟨z, hz⟩ := hx (-y)
       hm.1.1 <| (eq_top_iff_one _).2 <| sub_sub_cancel (z * -y * x + z) 1 ▸
         M.sub_mem (by
-          -- Porting note : supply `mul_add_one` with explicit variables
+          -- Porting note: supply `mul_add_one` with explicit variables
           rw [mul_assoc, ← mul_add_one z, neg_mul, ← sub_eq_iff_eq_add.mpr df.symm, neg_sub,
             sub_add_cancel]
           exact M.mul_mem_left _ hi) <| him hz⟩
@@ -179,16 +180,16 @@ theorem map_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f) 
     RingHom.ker f ≤ I → map f I.jacobson = (map f I).jacobson := by
   intro h
   unfold Ideal.jacobson
-  -- porting note : dot notation for `RingHom.ker` does not work
+  -- Porting note: dot notation for `RingHom.ker` does not work
   have : ∀ J ∈ { J : Ideal R | I ≤ J ∧ J.IsMaximal }, RingHom.ker f ≤ J :=
     fun J hJ => le_trans h hJ.left
   refine Trans.trans (map_sInf hf this) (le_antisymm ?_ ?_)
-  · refine'
+  · refine
       sInf_le_sInf fun J hJ =>
-        ⟨comap f J, ⟨⟨le_comap_of_map_le hJ.1, _⟩, map_comap_of_surjective f hf J⟩⟩
+        ⟨comap f J, ⟨⟨le_comap_of_map_le hJ.1, ?_⟩, map_comap_of_surjective f hf J⟩⟩
     haveI : J.IsMaximal := hJ.right
     exact comap_isMaximal_of_surjective f hf
-  · refine' sInf_le_sInf_of_subset_insert_top fun j hj => hj.recOn fun J hJ => _
+  · refine sInf_le_sInf_of_subset_insert_top fun j hj => hj.recOn fun J hJ => ?_
     rw [← hJ.2]
     cases' map_eq_top_or_isMaximal_of_surjective f hf hJ.left.right with htop hmax
     · exact htop.symm ▸ Set.mem_insert ⊤ _
@@ -209,22 +210,21 @@ theorem comap_jacobson {f : R →+* S} {K : Ideal S} :
 theorem comap_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f) {K : Ideal S} :
     comap f K.jacobson = (comap f K).jacobson := by
   unfold Ideal.jacobson
-  refine' le_antisymm _ _
-  · refine le_trans (comap_mono (le_of_eq (Trans.trans top_inf_eq.symm sInf_insert.symm))) ?_
-    rw [comap_sInf', sInf_eq_iInf]
-    refine' iInf_le_iInf_of_subset fun J hJ => _
+  refine le_antisymm ?_ ?_
+  · rw [← top_inf_eq (sInf _), ← sInf_insert, comap_sInf', sInf_eq_iInf]
+    refine iInf_le_iInf_of_subset fun J hJ => ?_
     have : comap f (map f J) = J :=
       Trans.trans (comap_map_of_surjective f hf J)
         (le_antisymm (sup_le_iff.2 ⟨le_of_eq rfl, le_trans (comap_mono bot_le) hJ.left⟩)
           le_sup_left)
     cases' map_eq_top_or_isMaximal_of_surjective _ hf hJ.right with htop hmax
-    · exact ⟨⊤, ⟨Set.mem_insert ⊤ _, htop ▸ this⟩⟩
-    · exact ⟨map f J, ⟨Set.mem_insert_of_mem _ ⟨le_map_of_comap_le_of_surjective f hf hJ.1, hmax⟩,
-        this⟩⟩
-  · rw [comap_sInf]
-    refine' le_iInf_iff.2 fun J => le_iInf_iff.2 fun hJ => _
+    · exact ⟨⊤, Set.mem_insert ⊤ _, htop ▸ this⟩
+    · exact ⟨map f J, Set.mem_insert_of_mem _ ⟨le_map_of_comap_le_of_surjective f hf hJ.1, hmax⟩,
+        this⟩
+  · simp_rw [comap_sInf, le_iInf_iff]
+    intros J hJ
     haveI : J.IsMaximal := hJ.right
-    refine' sInf_le ⟨comap_mono hJ.left, comap_isMaximal_of_surjective _ hf⟩
+    exact sInf_le ⟨comap_mono hJ.left, comap_isMaximal_of_surjective _ hf⟩
 #align ideal.comap_jacobson_of_surjective Ideal.comap_jacobson_of_surjective
 
 @[mono]
@@ -268,7 +268,7 @@ theorem mem_jacobson_bot {x : R} : x ∈ jacobson (⊥ : Ideal R) ↔ ∀ y, IsU
 
 /-- An ideal `I` of `R` is equal to its Jacobson radical if and only if
 the Jacobson radical of the quotient ring `R/I` is the zero ideal -/
--- Porting note : changed `Quotient.mk'` to ``
+-- Porting note: changed `Quotient.mk'` to ``
 theorem jacobson_eq_iff_jacobson_quotient_eq_bot :
     I.jacobson = I ↔ jacobson (⊥ : Ideal (R ⧸ I)) = ⊥ := by
   have hf : Function.Surjective (Ideal.Quotient.mk I) := Submodule.Quotient.mk_surjective I
@@ -285,7 +285,7 @@ theorem jacobson_eq_iff_jacobson_quotient_eq_bot :
 
 /-- The standard radical and Jacobson radical of an ideal `I` of `R` are equal if and only if
 the nilradical and Jacobson radical of the quotient ring `R/I` coincide -/
--- Porting note : changed `Quotient.mk'` to ``
+-- Porting note: changed `Quotient.mk'` to ``
 theorem radical_eq_jacobson_iff_radical_quotient_eq_jacobson_bot :
     I.radical = I.jacobson ↔ radical (⊥ : Ideal (R ⧸ I)) = jacobson ⊥ := by
   have hf : Function.Surjective (Ideal.Quotient.mk I) := Submodule.Quotient.mk_surjective I
@@ -321,15 +321,15 @@ variable [CommRing R]
 
 theorem jacobson_bot_polynomial_le_sInf_map_maximal :
     jacobson (⊥ : Ideal R[X]) ≤ sInf (map (C : R →+* R[X]) '' { J : Ideal R | J.IsMaximal }) := by
-  refine' le_sInf fun J => exists_imp.2 fun j hj => _
+  refine le_sInf fun J => exists_imp.2 fun j hj => ?_
   haveI : j.IsMaximal := hj.1
-  refine' Trans.trans (jacobson_mono bot_le) (le_of_eq _ : J.jacobson ≤ J)
+  refine Trans.trans (jacobson_mono bot_le) (le_of_eq ?_ : J.jacobson ≤ J)
   suffices t : (⊥ : Ideal (Polynomial (R ⧸ j))).jacobson = ⊥ by
     rw [← hj.2, jacobson_eq_iff_jacobson_quotient_eq_bot]
     replace t := congr_arg (map (polynomialQuotientEquivQuotientPolynomial j).toRingHom) t
     rwa [map_jacobson_of_bijective _, map_bot] at t
     exact RingEquiv.bijective (polynomialQuotientEquivQuotientPolynomial j)
-  refine' eq_bot_iff.2 fun f hf => _
+  refine eq_bot_iff.2 fun f hf => ?_
   have r1 : (X : (R ⧸ j)[X]) ≠ 0 := fun hX => by
     replace hX := congr_arg (fun f => coeff f 1) hX
     simp only [coeff_X_one, coeff_zero] at hX
@@ -345,8 +345,8 @@ theorem jacobson_bot_polynomial_le_sInf_map_maximal :
 
 theorem jacobson_bot_polynomial_of_jacobson_bot (h : jacobson (⊥ : Ideal R) = ⊥) :
     jacobson (⊥ : Ideal R[X]) = ⊥ := by
-  refine' eq_bot_iff.2 (le_trans jacobson_bot_polynomial_le_sInf_map_maximal _)
-  refine' fun f hf => (Submodule.mem_bot R[X]).2 <| Polynomial.ext fun n =>
+  refine eq_bot_iff.2 (le_trans jacobson_bot_polynomial_le_sInf_map_maximal ?_)
+  refine fun f hf => (Submodule.mem_bot R[X]).2 <| Polynomial.ext fun n =>
     Trans.trans (?_ : coeff f n = 0) (coeff_zero n).symm
   suffices f.coeff n ∈ Ideal.jacobson ⊥ by rwa [h, Submodule.mem_bot] at this
   exact mem_sInf.2 fun j hj => (mem_map_C_iff.1 ((mem_sInf.1 hf) ⟨j, ⟨hj.2, rfl⟩⟩)) n
@@ -387,7 +387,8 @@ theorem IsLocal.mem_jacobson_or_exists_inv {I : Ideal R} (hi : IsLocal I) (x : R
     (fun h : I ⊔ span {x} = ⊤ =>
       let ⟨p, hpi, q, hq, hpq⟩ := Submodule.mem_sup.1 ((eq_top_iff_one _).1 h)
       let ⟨r, hr⟩ := mem_span_singleton.1 hq
-      Or.inr ⟨r, by rw [← hpq, mul_comm, ← hr, ← neg_sub, add_sub_cancel]; exact I.neg_mem hpi⟩)
+      Or.inr ⟨r, by
+        rw [← hpq, mul_comm, ← hr, ← neg_sub, add_sub_cancel_right]; exact I.neg_mem hpi⟩)
     fun h : I ⊔ span {x} ≠ ⊤ =>
     Or.inl <|
       le_trans le_sup_right (hi.le_jacobson le_sup_left h) <| mem_span_singleton.2 <| dvd_refl x

@@ -3,7 +3,7 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Defs
 import Mathlib.Data.SetLike.Basic
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.Hom
@@ -63,7 +63,7 @@ class VAddMemClass (S : Type*) (R : outParam <| Type*) (M : Type*) [VAdd R M] [S
 
 attribute [to_additive] SMulMemClass
 
-attribute [aesop safe 10 apply (rule_sets [SetLike])] SMulMemClass.smul_mem VAddMemClass.vadd_mem
+attribute [aesop safe 10 apply (rule_sets := [SetLike])] SMulMemClass.smul_mem VAddMemClass.vadd_mem
 
 /-- Not registered as an instance because `R` is an `outParam` in `SMulMemClass S R M`. -/
 lemma AddSubmonoidClass.nsmulMemClass {S M : Type*} [AddMonoid M] [SetLike S M]
@@ -77,9 +77,11 @@ lemma AddSubgroupClass.zsmulMemClass {S M : Type*} [SubNegMonoid M] [SetLike S M
 
 namespace SetLike
 
-variable [SMul R M] [SetLike S M] [hS : SMulMemClass S R M] (s : S)
-
 open SMulMemClass
+
+section SMul
+
+variable [SMul R M] [SetLike S M] [hS : SMulMemClass S R M] (s : S)
 
 -- lower priority so other instances are found first
 /-- A subset closed under the scalar action inherits that action. -/
@@ -104,7 +106,7 @@ instance instSMulCommClass [Mul M] [MulMemClass S M] [SMulCommClass R M M]
     (s : S) : SMulCommClass R s s where
   smul_comm r x y := Subtype.ext <| smul_comm r (x : M) (y : M)
 
--- Porting note: TODO lower priority not actually there
+-- Porting note (#11215): TODO lower priority not actually there
 -- lower priority so later simp lemmas are used first; to appease simp_nf
 @[to_additive (attr := simp, norm_cast)]
 protected theorem val_smul (r : R) (x : s) : (↑(r • x) : M) = r • (x : M) :=
@@ -112,7 +114,7 @@ protected theorem val_smul (r : R) (x : s) : (↑(r • x) : M) = r • (x : M) 
 #align set_like.coe_smul SetLike.val_smul
 #align set_like.coe_vadd SetLike.val_vadd
 
--- Porting note: TODO lower priority not actually there
+-- Porting note (#11215): TODO lower priority not actually there
 -- lower priority so later simp lemmas are used first; to appease simp_nf
 @[to_additive (attr := simp)]
 theorem mk_smul_mk (r : R) (x : M) (hx : x ∈ s) : r • (⟨x, hx⟩ : s) = ⟨r • x, smul_mem r hx⟩ :=
@@ -132,6 +134,35 @@ theorem forall_smul_mem_iff {R M S : Type*} [Monoid R] [MulAction R M] [SetLike 
   ⟨fun h => by simpa using h 1, fun h a => SMulMemClass.smul_mem a h⟩
 #align set_like.forall_smul_mem_iff SetLike.forall_smul_mem_iff
 
+end SMul
+
+section OfTower
+
+variable {N α : Type*} [SetLike S α] [SMul M N] [SMul M α] [Monoid N]
+    [MulAction N α] [SMulMemClass S N α] [IsScalarTower M N α] (s : S)
+
+-- lower priority so other instances are found first
+/-- A subset closed under the scalar action inherits that action. -/
+@[to_additive "A subset closed under the additive action inherits that action."]
+instance (priority := 900) smul' : SMul M s where
+  smul r x := ⟨r • x.1, smul_one_smul N r x.1 ▸ smul_mem _ x.2⟩
+
+@[to_additive (attr := simp, norm_cast)]
+protected theorem val_smul_of_tower (r : M) (x : s) : (↑(r • x) : α) = r • (x : α) :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem mk_smul_of_tower_mk (r : M) (x : α) (hx : x ∈ s) :
+    r • (⟨x, hx⟩ : s) = ⟨r • x, smul_one_smul N r x ▸ smul_mem _ hx⟩ :=
+  rfl
+
+@[to_additive]
+theorem smul_of_tower_def (r : M) (x : s) :
+    r • x = ⟨r • x, smul_one_smul N r x.1 ▸ smul_mem _ x.2⟩ :=
+  rfl
+
+end OfTower
+
 end SetLike
 
 /-- A SubMulAction is a set which is closed under scalar multiplication.  -/
@@ -147,7 +178,7 @@ namespace SubMulAction
 variable [SMul R M]
 
 instance : SetLike (SubMulAction R M) M :=
-  ⟨SubMulAction.carrier, fun p q h => by cases p; cases q; congr ⟩
+  ⟨SubMulAction.carrier, fun p q h => by cases p; cases q; congr⟩
 
 instance : SMulMemClass (SubMulAction R M) R M where smul_mem := smul_mem' _
 
@@ -162,9 +193,8 @@ theorem ext {p q : SubMulAction R M} (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
 #align sub_mul_action.ext SubMulAction.ext
 
 /-- Copy of a sub_mul_action with a new `carrier` equal to the old one. Useful to fix definitional
-equalities.-/
-protected def copy (p : SubMulAction R M) (s : Set M) (hs : s = ↑p) : SubMulAction R M
-    where
+equalities. -/
+protected def copy (p : SubMulAction R M) (s : Set M) (hs : s = ↑p) : SubMulAction R M where
   carrier := s
   smul_mem' := hs.symm ▸ p.smul_mem'
 #align sub_mul_action.copy SubMulAction.copy
@@ -193,9 +223,7 @@ namespace SubMulAction
 section SMul
 
 variable [SMul R M]
-
 variable (p : SubMulAction R M)
-
 variable {r : R} {x : M}
 
 theorem smul_mem (r : R) (h : x ∈ p) : r • x ∈ p :=
@@ -211,7 +239,7 @@ theorem val_smul (r : R) (x : p) : (↑(r • x) : M) = r • (x : M) :=
   rfl
 #align sub_mul_action.coe_smul SubMulAction.val_smul
 
--- porting note: no longer needed because of defeq structure eta
+-- Porting note: no longer needed because of defeq structure eta
 #noalign sub_mul_action.coe_mk
 
 variable (p)
@@ -234,7 +262,6 @@ end SMul
 namespace SMulMemClass
 
 variable [Monoid R] [MulAction R M] {A : Type*} [SetLike A M]
-
 variable [hA : SMulMemClass A R M] (S' : A)
 
 -- Prefer subclasses of `MulAction` over `SMulMemClass`.
@@ -262,7 +289,6 @@ variable [Monoid R] [MulAction R M]
 section
 
 variable [SMul S R] [SMul S M] [IsScalarTower S R M]
-
 variable (p : SubMulAction R M)
 
 theorem smul_of_tower_mem (s : S) {x : M} (h : x ∈ p) : s • x ∈ p := by
@@ -303,7 +329,6 @@ end
 section
 
 variable [Monoid S] [SMul S R] [MulAction S M] [IsScalarTower S R M]
-
 variable (p : SubMulAction R M)
 
 /-- If the scalar product forms a `MulAction`, then the subset inherits this action -/
@@ -329,6 +354,15 @@ theorem val_image_orbit {p : SubMulAction R M} (m : p) :
 lemma orbit_of_sub_mul {p : SubMulAction R M} (m : p) :
     (mul_action.orbit R m : set M) = MulAction.orbit R (m : M) := rfl
 -/
+
+theorem val_preimage_orbit {p : SubMulAction R M} (m : p) :
+    Subtype.val ⁻¹' MulAction.orbit R (m : M) = MulAction.orbit R m := by
+  rw [← val_image_orbit, Subtype.val_injective.preimage_image]
+
+lemma mem_orbit_subMul_iff {p : SubMulAction R M} {x m : p} :
+    x ∈ MulAction.orbit R m ↔ (x : M) ∈ MulAction.orbit R (m : M) := by
+  rw [← val_preimage_orbit, Set.mem_preimage]
+
 /-- Stabilizers in monoid SubMulAction coincide with stabilizers in the ambient space -/
 theorem stabilizer_of_subMul.submonoid {p : SubMulAction R M} (m : p) :
     MulAction.stabilizerSubmonoid R m = MulAction.stabilizerSubmonoid R (m : M) := by
@@ -342,6 +376,12 @@ section MulActionGroup
 
 variable [Group R] [MulAction R M]
 
+lemma orbitRel_of_subMul (p : SubMulAction R M) :
+    MulAction.orbitRel R p = (MulAction.orbitRel R M).comap Subtype.val := by
+  refine Setoid.ext_iff.2 (fun x y ↦ ?_)
+  rw [Setoid.comap_rel]
+  exact mem_orbit_subMul_iff
+
 /-- Stabilizers in group SubMulAction coincide with stabilizers in the ambient space -/
 theorem stabilizer_of_subMul {p : SubMulAction R M} (m : p) :
     MulAction.stabilizer R m = MulAction.stabilizer R (m : M) := by
@@ -354,9 +394,7 @@ end MulActionGroup
 section Module
 
 variable [Semiring R] [AddCommMonoid M]
-
 variable [Module R M]
-
 variable (p : SubMulAction R M)
 
 theorem zero_mem (h : (p : Set M).Nonempty) : (0 : M) ∈ p :=
@@ -374,11 +412,8 @@ end Module
 section AddCommGroup
 
 variable [Ring R] [AddCommGroup M]
-
 variable [Module R M]
-
 variable (p p' : SubMulAction R M)
-
 variable {r : R} {x y : M}
 
 theorem neg_mem (hx : x ∈ p) : -x ∈ p := by
@@ -408,9 +443,7 @@ end SubMulAction
 namespace SubMulAction
 
 variable [GroupWithZero S] [Monoid R] [MulAction R M]
-
 variable [SMul S R] [MulAction S M] [IsScalarTower S R M]
-
 variable (p : SubMulAction R M) {s : S} {x y : M}
 
 theorem smul_mem_iff (s0 : s ≠ 0) : s • x ∈ p ↔ x ∈ p :=

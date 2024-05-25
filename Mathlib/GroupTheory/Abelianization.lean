@@ -73,7 +73,7 @@ theorem commutator_centralizer_commutator_le_center :
   rw [← Subgroup.centralizer_univ, ← Subgroup.coe_top, ←
     Subgroup.commutator_eq_bot_iff_le_centralizer]
   suffices ⁅⁅⊤, centralizer (commutator G : Set G)⁆, centralizer (commutator G : Set G)⁆ = ⊥ by
-    refine' Subgroup.commutator_commutator_eq_bot_of_rotate _ this
+    refine Subgroup.commutator_commutator_eq_bot_of_rotate ?_ this
     rwa [Subgroup.commutator_comm (centralizer (commutator G : Set G))]
   rw [Subgroup.commutator_comm, Subgroup.commutator_eq_bot_iff_le_centralizer]
   exact Set.centralizer_subset (Subgroup.commutator_mono le_top le_top)
@@ -168,7 +168,7 @@ variable {A : Type v} [Monoid A]
 /-- See note [partially-applied ext lemmas]. -/
 @[ext]
 theorem hom_ext (φ ψ : Abelianization G →* A) (h : φ.comp of = ψ.comp of) : φ = ψ :=
-  MonoidHom.ext fun x => QuotientGroup.induction_on x <| FunLike.congr_fun h
+  MonoidHom.ext fun x => QuotientGroup.induction_on x <| DFunLike.congr_fun h
 #align abelianization.hom_ext Abelianization.hom_ext
 
 section Map
@@ -179,6 +179,10 @@ variable {H : Type v} [Group H] (f : G →* H)
 def map : Abelianization G →* Abelianization H :=
   lift (of.comp f)
 #align abelianization.map Abelianization.map
+
+/-- Use `map` as the preferred simp normal form. -/
+@[simp] theorem lift_of_comp :
+    Abelianization.lift (Abelianization.of.comp f) = Abelianization.map f := rfl
 
 @[simp]
 theorem map_of (x : G) : map f (of x) = of (f x) :=
@@ -198,7 +202,7 @@ theorem map_comp {I : Type w} [Group I] (g : H →* I) : (map g).comp (map f) = 
 @[simp]
 theorem map_map_apply {I : Type w} [Group I] {g : H →* I} {x : Abelianization G} :
     map g (map f x) = map (g.comp f) x :=
-  FunLike.congr_fun (map_comp _ _) x
+  DFunLike.congr_fun (map_comp _ _) x
 #align abelianization.map_map_apply Abelianization.map_map_apply
 
 end Map

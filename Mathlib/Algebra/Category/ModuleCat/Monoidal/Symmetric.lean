@@ -3,7 +3,7 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Scott Morrison, Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided
+import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 
 #align_import algebra.category.Module.monoidal.symmetric from "leanprover-community/mathlib"@"74403a3b2551b0970855e14ef5e8fd0d6af1bfc2"
@@ -54,7 +54,7 @@ theorem braiding_naturality_right (X : ModuleCat R) {Y Z : ModuleCat R} (f : Y �
 @[simp]
 theorem hexagon_forward (X Y Z : ModuleCat.{u} R) :
     (α_ X Y Z).hom ≫ (braiding X _).hom ≫ (α_ Y Z X).hom =
-      ((braiding X Y).hom ⊗ 𝟙 Z) ≫ (α_ Y X Z).hom ≫ (𝟙 Y ⊗ (braiding X Z).hom) := by
+      (braiding X Y).hom ▷ Z ≫ (α_ Y X Z).hom ≫ Y ◁ (braiding X Z).hom := by
   apply TensorProduct.ext_threefold
   intro x y z
   rfl
@@ -64,7 +64,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem hexagon_reverse (X Y Z : ModuleCat.{u} R) :
     (α_ X Y Z).inv ≫ (braiding _ Z).hom ≫ (α_ Z X Y).inv =
-      (𝟙 X ⊗ (Y.braiding Z).hom) ≫ (α_ X Z Y).inv ≫ ((X.braiding Z).hom ⊗ 𝟙 Y) := by
+      X ◁ (Y.braiding Z).hom ≫ (α_ X Z Y).inv ≫ (X.braiding Z).hom ▷ Y := by
   apply (cancel_epi (α_ X Y Z).hom).1
   apply TensorProduct.ext_threefold
   intro x y z
@@ -77,10 +77,11 @@ attribute [local ext] TensorProduct.ext
 /-- The symmetric monoidal structure on `Module R`. -/
 instance symmetricCategory : SymmetricCategory (ModuleCat.{u} R) where
   braiding := braiding
-  braiding_naturality f g := braiding_naturality f g
+  braiding_naturality_left := braiding_naturality_left
+  braiding_naturality_right := braiding_naturality_right
   hexagon_forward := hexagon_forward
   hexagon_reverse := hexagon_reverse
-  -- porting note: this proof was automatic in Lean3
+  -- Porting note: this proof was automatic in Lean3
   -- now `aesop` is applying `ModuleCat.ext` in favour of `TensorProduct.ext`.
   symmetry _ _ := by
     apply TensorProduct.ext'

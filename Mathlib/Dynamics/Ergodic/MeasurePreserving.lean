@@ -115,14 +115,14 @@ protected theorem trans {e : α ≃ᵐ β} {e' : β ≃ᵐ γ}
 
 protected theorem comp_left_iff {g : α → β} {e : β ≃ᵐ γ} (h : MeasurePreserving e μb μc) :
     MeasurePreserving (e ∘ g) μa μc ↔ MeasurePreserving g μa μb := by
-  refine' ⟨fun hg => _, fun hg => h.comp hg⟩
+  refine ⟨fun hg => ?_, fun hg => h.comp hg⟩
   convert (MeasurePreserving.symm e h).comp hg
   simp [← Function.comp.assoc e.symm e g]
 #align measure_theory.measure_preserving.comp_left_iff MeasureTheory.MeasurePreserving.comp_left_iff
 
 protected theorem comp_right_iff {g : α → β} {e : γ ≃ᵐ α} (h : MeasurePreserving e μc μa) :
     MeasurePreserving (g ∘ e) μc μb ↔ MeasurePreserving g μa μb := by
-  refine' ⟨fun hg => _, fun hg => hg.comp h⟩
+  refine ⟨fun hg => ?_, fun hg => hg.comp h⟩
   convert hg.comp (MeasurePreserving.symm e h)
   simp [Function.comp.assoc g e e.symm]
 #align measure_theory.measure_preserving.comp_right_iff MeasureTheory.MeasurePreserving.comp_right_iff
@@ -149,13 +149,14 @@ protected theorem iterate {f : α → α} (hf : MeasurePreserving f μa μa) :
 
 variable {μ : Measure α} {f : α → α} {s : Set α}
 
+open scoped symmDiff in
 lemma measure_symmDiff_preimage_iterate_le
     (hf : MeasurePreserving f μ μ) (hs : MeasurableSet s) (n : ℕ) :
     μ (s ∆ (f^[n] ⁻¹' s)) ≤ n • μ (s ∆ (f ⁻¹' s)) := by
-  induction' n with n ih; simp
+  induction' n with n ih; · simp
   simp only [add_smul, one_smul, ← n.add_one]
   refine' le_trans (measure_symmDiff_le s (f^[n] ⁻¹' s) (f^[n+1] ⁻¹' s)) (add_le_add ih _)
-  replace hs : MeasurableSet (s ∆ (f ⁻¹' s)) := hs.symmDiff $ hf.measurable hs
+  replace hs : MeasurableSet (s ∆ (f ⁻¹' s)) := hs.symmDiff <| hf.measurable hs
   rw [iterate_succ', preimage_comp, ← preimage_symmDiff, (hf.iterate n).measure_preimage hs]
 
 /-- If `μ univ < n * μ s` and `f` is a map preserving measure `μ`,
@@ -180,7 +181,7 @@ theorem exists_mem_iterate_mem_of_volume_lt_mul_volume (hf : MeasurePreserving f
 infinitely many times, see `MeasureTheory.MeasurePreserving.conservative` and theorems about
 `MeasureTheory.Conservative`. -/
 theorem exists_mem_iterate_mem [IsFiniteMeasure μ] (hf : MeasurePreserving f μ μ)
-    (hs : MeasurableSet s) (hs' : μ s ≠ 0) : ∃ x ∈ s, ∃ m, m ≠ 0 ∧ f^[m] x ∈ s := by
+    (hs : MeasurableSet s) (hs' : μ s ≠ 0) : ∃ x ∈ s, ∃ m ≠ 0, f^[m] x ∈ s := by
   rcases ENNReal.exists_nat_mul_gt hs' (measure_ne_top μ (Set.univ : Set α)) with ⟨N, hN⟩
   rcases hf.exists_mem_iterate_mem_of_volume_lt_mul_volume hs hN with ⟨x, hx, m, hm, hmx⟩
   exact ⟨x, hx, m, hm.1.ne', hmx⟩

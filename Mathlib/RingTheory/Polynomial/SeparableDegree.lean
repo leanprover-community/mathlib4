@@ -3,7 +3,7 @@ Copyright (c) 2021 Jakob Scholbach. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Scholbach
 -/
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.CharP.ExpChar
 import Mathlib.FieldTheory.Separable
 
@@ -22,7 +22,7 @@ This file contains basics about the separable degree of a polynomial.
 - `HasSeparableContraction`: the condition of having a separable contraction
 - `HasSeparableContraction.degree`: the separable degree, defined as the degree of some
   separable contraction
-- `Irreducible.HasSeparableContraction`: any irreducible polynomial can be contracted
+- `Irreducible.hasSeparableContraction`: any irreducible polynomial can be contracted
   to a separable polynomial
 - `HasSeparableContraction.dvd_degree'`: the degree of a separable contraction divides the degree,
   in function of the exponential characteristic of the field
@@ -40,14 +40,15 @@ noncomputable section
 
 namespace Polynomial
 
-open Classical Polynomial
+open scoped Classical
+open Polynomial
 
 section CommSemiring
 
 variable {F : Type*} [CommSemiring F] (q : ℕ)
 
 /-- A separable contraction of a polynomial `f` is a separable polynomial `g` such that
-`g(x^(q^m)) = f(x)` for some `m : ℕ`.-/
+`g(x^(q^m)) = f(x)` for some `m : ℕ`. -/
 def IsSeparableContraction (f : F[X]) (g : F[X]) : Prop :=
   g.Separable ∧ ∃ m : ℕ, expand F (q ^ m) g = f
 #align polynomial.is_separable_contraction Polynomial.IsSeparableContraction
@@ -68,6 +69,10 @@ def HasSeparableContraction.contraction : F[X] :=
 def HasSeparableContraction.degree : ℕ :=
   hf.contraction.natDegree
 #align polynomial.has_separable_contraction.degree Polynomial.HasSeparableContraction.degree
+
+/-- The `HasSeparableContraction.contraction` is indeed a separable contraction. -/
+theorem HasSeparableContraction.isSeparableContraction :
+    IsSeparableContraction q f hf.contraction := Classical.choose_spec hf
 
 /-- The separable degree divides the degree, in function of the exponential characteristic of F. -/
 theorem IsSeparableContraction.dvd_degree' {g} (hf : IsSeparableContraction q f g) :
@@ -99,18 +104,17 @@ end CommSemiring
 section Field
 
 variable {F : Type*} [Field F]
-
 variable (q : ℕ) {f : F[X]} (hf : HasSeparableContraction q f)
 
 /-- Every irreducible polynomial can be contracted to a separable polynomial.
 https://stacks.math.columbia.edu/tag/09H0 -/
-theorem Irreducible.hasSeparableContraction (q : ℕ) [hF : ExpChar F q] (f : F[X])
+theorem _root_.Irreducible.hasSeparableContraction (q : ℕ) [hF : ExpChar F q] {f : F[X]}
     (irred : Irreducible f) : HasSeparableContraction q f := by
   cases hF
   · exact ⟨f, irred.separable, ⟨0, by rw [pow_zero, expand_one]⟩⟩
   · rcases exists_separable_of_irreducible q irred ‹q.Prime›.ne_zero with ⟨n, g, hgs, hge⟩
     exact ⟨g, hgs, n, hge⟩
-#align irreducible.has_separable_contraction Polynomial.Irreducible.hasSeparableContraction
+#align irreducible.has_separable_contraction Irreducible.hasSeparableContraction
 
 /-- If two expansions (along the positive characteristic) of two separable polynomials `g` and `g'`
 agree, then they have the same degree. -/

@@ -37,7 +37,7 @@ lemma grahamConjecture_of_squarefree {n : ℕ} (f : ℕ → ℕ) (hf' : ∀ k < 
   by_contra!
   set 𝒜 := (Iio n).image fun n ↦ primeFactors (f n)
   have hf'' : ∀ i < n, ∀ j, Squarefree (f i / (f i).gcd (f j)) :=
-    fun i hi j ↦ (hf' _ hi).squarefree_of_dvd $ div_dvd_of_dvd $ gcd_dvd_left _ _
+    fun i hi j ↦ (hf' _ hi).squarefree_of_dvd <| div_dvd_of_dvd <| gcd_dvd_left _ _
   refine lt_irrefl n ?_
   calc
     n = 𝒜.card := ?_
@@ -50,9 +50,9 @@ lemma grahamConjecture_of_squarefree {n : ℕ} (f : ℕ → ℕ) (hf' : ∀ k < 
   · simp only [forall_mem_diffs, forall_image, mem_Ioo, mem_Iio]
     rintro i hi j hj
     rw [← primeFactors_div_gcd (hf' _ hi) (hf' _ hj).ne_zero,
-      prod_primeFactors_of_squarefree $ hf'' _ hi _]
-    exact ⟨Nat.div_pos (gcd_le_left _ (hf' _ hi).ne_zero.bot_lt) $
-      Nat.gcd_pos_of_pos_left _ (hf' _ hi).ne_zero.bot_lt, Nat.div_lt_of_lt_mul $ this _ hi _ hj⟩
+      prod_primeFactors_of_squarefree <| hf'' _ hi _]
+    exact ⟨Nat.div_pos (gcd_le_left _ (hf' _ hi).ne_zero.bot_lt) <|
+      Nat.gcd_pos_of_pos_left _ (hf' _ hi).ne_zero.bot_lt, Nat.div_lt_of_lt_mul <| this _ hi _ hj⟩
   · simp only [forall_mem_diffs, forall_image, mem_Ioo, mem_Iio]
     rintro a ha b hb c hc d hd
     rw [← primeFactors_div_gcd (hf' _ ha) (hf' _ hb).ne_zero, ← primeFactors_div_gcd

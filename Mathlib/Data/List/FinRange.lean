@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau, Scott Morrison, Alex Keizer
 -/
 import Mathlib.Data.List.OfFn
-import Mathlib.Data.List.Perm
+import Mathlib.Data.List.Range
 
 #align_import data.list.fin_range from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
@@ -39,7 +39,7 @@ theorem finRange_succ (n : ℕ) :
   apply map_injective_iff.mpr Fin.val_injective
   simp [range_succ, Function.comp_def]
 
--- Porting note : `map_nth_le` moved to `List.finRange_map_get` in Data.List.Range
+-- Porting note: `map_nth_le` moved to `List.finRange_map_get` in Data.List.Range
 
 theorem ofFn_eq_pmap {α n} {f : Fin n → α} :
     ofFn f = pmap (fun i hi => f ⟨i, hi⟩) (range n) fun _ => mem_range.1 := by
@@ -52,18 +52,18 @@ theorem ofFn_id (n) : ofFn id = finRange n :=
 #align list.of_fn_id List.ofFn_id
 
 theorem ofFn_eq_map {α n} {f : Fin n → α} : ofFn f = (finRange n).map f := by
-  rw [← ofFn_id, map_ofFn, Function.right_id]
+  rw [← ofFn_id, map_ofFn, Function.comp_id]
 #align list.of_fn_eq_map List.ofFn_eq_map
 
 theorem nodup_ofFn_ofInjective {α n} {f : Fin n → α} (hf : Function.Injective f) :
     Nodup (ofFn f) := by
   rw [ofFn_eq_pmap]
-  exact (nodup_range n).pmap fun _ _ _ _ H => Fin.veq_of_eq <| hf H
+  exact (nodup_range n).pmap fun _ _ _ _ H => Fin.val_eq_of_eq <| hf H
 #align list.nodup_of_fn_of_injective List.nodup_ofFn_ofInjective
 
 theorem nodup_ofFn {α n} {f : Fin n → α} : Nodup (ofFn f) ↔ Function.Injective f := by
-  refine' ⟨_, nodup_ofFn_ofInjective⟩
-  refine' Fin.consInduction _ (fun x₀ xs ih => _) f
+  refine ⟨?_, nodup_ofFn_ofInjective⟩
+  refine Fin.consInduction ?_ (fun x₀ xs ih => ?_) f
   · intro _
     exact Function.injective_of_subsingleton _
   · intro h

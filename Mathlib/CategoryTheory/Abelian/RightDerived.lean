@@ -197,7 +197,8 @@ lemma NatTrans.rightDerivedToHomotopyCategory_comp {F G H : C ⥤ D} (α : F ⟶
       NatTrans.rightDerivedToHomotopyCategory α ≫
         NatTrans.rightDerivedToHomotopyCategory β := rfl
 
-/-- The natural transformation between right-derived functors induced by a natural transformation.-/
+/-- The natural transformation between right-derived functors
+induced by a natural transformation. -/
 noncomputable def NatTrans.rightDerived
     {F G : C ⥤ D} [F.Additive] [G.Additive] (α : F ⟶ G) (n : ℕ) :
     F.rightDerived n ⟶ G.rightDerived n :=
@@ -273,7 +274,7 @@ instance (F : C ⥤ D) [F.Additive] (X : C) [Injective X] :
     IsIso ((InjectiveResolution.self X).toRightDerivedZero' F) := by
   dsimp [InjectiveResolution.toRightDerivedZero']
   rw [CochainComplex.isIso_liftCycles_iff]
-  refine' ⟨ShortComplex.Splitting.exact _, inferInstance⟩
+  refine ⟨ShortComplex.Splitting.exact ?_, inferInstance⟩
   exact
     { r := 𝟙 _
       s := 0

@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Init.Classical
 import Mathlib.Order.FixedPoints
 import Mathlib.Order.Zorn
 
@@ -29,7 +30,7 @@ Cardinals are defined and further developed in the folder `SetTheory.Cardinal`.
 
 open Set Function
 
-open Classical
+open scoped Classical
 
 universe u v
 
@@ -62,7 +63,7 @@ theorem schroeder_bernstein {f : α → β} {g : β → α} (hf : Function.Injec
   set h : α → β := s.piecewise f g'
   have : Surjective h := by rw [← range_iff_surjective, range_piecewise, hg'ns, union_compl_self]
   have : Injective h := by
-    refine' (injective_piecewise_iff _).2 ⟨hf.injOn _, _, _⟩
+    refine (injective_piecewise_iff _).2 ⟨hf.injOn _, ?_, ?_⟩
     · intro x hx y hy hxy
       obtain ⟨x', _, rfl⟩ : x ∈ g '' (f '' s)ᶜ := by rwa [hns]
       obtain ⟨y', _, rfl⟩ : y ∈ g '' (f '' s)ᶜ := by rwa [hns]
@@ -90,8 +91,7 @@ section Wo
 variable {ι : Type u} (β : ι → Type v)
 
 /-- `sets β` -/
-@[reducible]
-private def sets :=
+private abbrev sets :=
   { s : Set (∀ i, β i) | ∀ x ∈ s, ∀ y ∈ s, ∀ (i), (x : ∀ i, β i) i = y i → x = y }
 
 /-- The cardinals are well-ordered. We express it here by the fact that in any set of cardinals
