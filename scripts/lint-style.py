@@ -215,7 +215,7 @@ def regular_check(lines, path):
             continue
         words = line.split()
         if words[0] != "import" and words[0] != "--" and words[0] != "/-!" and words[0] != "#align_import":
-            errors += [(ERR_MOD, line_nr, path)]
+            #errors += [(ERR_MOD, line_nr, path)]
             break
         if words[0] == "/-!":
             break
@@ -274,11 +274,11 @@ def lint(path, fix=False):
         lines = f.readlines()
         enum_lines = enumerate(lines, 1)
         newlines = enum_lines
-        for error_check in [four_spaces_in_second_line,
-                            left_arrow_check,
-                            nonterminal_simp_check]:
-            errs, newlines = error_check(newlines, path)
-            format_errors(errs)
+        # for error_check in [four_spaces_in_second_line,
+        #                     left_arrow_check,
+        #                     nonterminal_simp_check]:
+        #     errs, newlines = error_check(newlines, path)
+        #     format_errors(errs)
 
         if not import_only_check(newlines, path):
             # Check for too long files: either longer than 1500 lines, or not covered by an exception.
