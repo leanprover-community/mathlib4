@@ -115,7 +115,7 @@ theorem powerSeriesPart_eq_zero (x : LaurentSeries R) : x.powerSeriesPart = 0 �
     simp only [ne_eq]
     intro h
     rw [PowerSeries.ext_iff, not_forall]
-    refine' ⟨0, _⟩
+    refine ⟨0, ?_⟩
     simp [coeff_order_ne_zero h]
   · rintro rfl
     simp
@@ -142,7 +142,7 @@ theorem single_order_mul_powerSeriesPart (x : LaurentSeries R) :
 
 theorem ofPowerSeries_powerSeriesPart (x : LaurentSeries R) :
     ofPowerSeries ℤ R x.powerSeriesPart = single (-x.order) 1 * x := by
-  refine' Eq.trans _ (congr rfl x.single_order_mul_powerSeriesPart)
+  refine Eq.trans ?_ (congr rfl x.single_order_mul_powerSeriesPart)
   rw [← mul_assoc, single_mul_single, neg_add_self, mul_one, ← C_apply, C_one, one_mul]
 #align laurent_series.of_power_series_power_series_part LaurentSeries.ofPowerSeries_powerSeriesPart
 
@@ -178,7 +178,7 @@ instance of_powerSeries_localization [CommRing R] :
     · refine' ⟨⟨powerSeriesPart z, PowerSeries.X ^ Int.natAbs z.order, ⟨_, rfl⟩⟩, _⟩
       simp only [coe_algebraMap, ofPowerSeries_powerSeriesPart]
       rw [mul_comm _ z]
-      refine' congr rfl _
+      refine congr rfl ?_
       rw [ofPowerSeries_X_pow, Int.ofNat_natAbs_of_nonpos]
       exact le_of_not_ge h
   exists_of_eq {x y} := by
