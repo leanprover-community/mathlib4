@@ -195,13 +195,15 @@ def isolated_by_dot_semicolon : LinterCore := fun lines ↦ Id.run do
     let mut line_number := 0
     for line in lines do
       line_number := line_number + 1
-      -- if line.strip() == "by":
-      --  We excuse those "by"s following a comma or ", fun ... =>", since generally hanging "by"s
-      --  should not be used in the second or later arguments of a tuple/anonymous constructor
-      --  See https://github.com/leanprover-community/mathlib4/pull/3825#discussion_r1186702599
-      --     prev_line = lines[line_nr - 2][1].rstrip()
-      --     if not prev_line.endswith(",") and not re.search(", fun [^,]* (=>|↦)$", prev_line):
-      --        errors += [(ERR_IBY, line_nr, path)]
+      if line.trim == "by" && line_number >= 2 then
+        -- This is safe since `line_number` is the line we iterated over, just a moment ago.
+        let previous_line := lines[line_number - 2]!
+        -- We excuse those "by"s following a comma or ", fun ... =>", since generally hanging "by"s
+        -- should not be used in the second or later arguments of a tuple/anonymous constructor
+        -- See https://github.com/leanprover-community/mathlib4/pull/3825#discussion_r1186702599
+        if !previous_line.endsWith "," then
+          if !(line.containsSubstr ", fun" && (line.endsWith "=>" || line.endsWith "↦")) then
+            output := output.push (StyleError.isolated_by, line_number)
       if line.trimRight.startsWith ". " then
         output := output.push (StyleError.dot, line_number) -- has an auto-fix
       if [".", "·"].contains line.trim then
