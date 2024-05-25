@@ -373,11 +373,9 @@ lemma unify  {f : α → β} :
     intro hf
     constructor
     · intro c
-      rw [ScottContinuous] at hf
       have e1 : f (ωSup c) = ωSup (c.map ⟨f,ωScottContinuous.monotone hf⟩) := by
         rw [← (ωSup_eq_of_isLUB (isLUB_of_ωScottContinuous hf))]
       exact e1
-    · exact ωScottContinuous.monotone hf
 
 lemma continuous'_ScottContinuous {f : α → β} (hf : Continuous' f) :
     ωScottContinuous f := by
