@@ -113,7 +113,10 @@ instance instDecidableRelSameCycle (f : Perm α) : DecidableRel (SameCycle f) :=
     · intro hxy
       by_cases hx : x ∈ f.support
       case pos =>
-        classical
+        -- we can't invoke the GDR lemmas above without obtaining the decidable instance we are
+        -- already building; but now we've left the data, so we can do this non-constructively
+        -- without sacrificing computability.
+        let _inst (f : Perm α) : DecidableRel (SameCycle f) := Classical.decRel _
         rcases hxy.exists_lt_card_support_cycleOfGDR_pow_eq_of_mem_support hx with ⟨i, hixy, hi⟩
         refine ⟨i, lt_of_lt_of_le hixy (card_le_univ _), hi⟩
       case neg =>
