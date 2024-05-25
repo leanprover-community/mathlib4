@@ -57,16 +57,14 @@ theorem _root_.Filter.cardinalInterFilter_aleph0 (l : Filter α) : CardinalInter
 /-- Every CardinalInterFilter with c > aleph0 is a CountableInterFilter -/
 theorem CardinalInterFilter.toCountableInterFilter (l : Filter α) [CardinalInterFilter l c]
     (hc : aleph0 < c) : CountableInterFilter l where
-  countable_sInter_mem := by
-    intro S hS
-    exact fun a ↦ CardinalInterFilter.cardinal_sInter_mem S
-      (lt_of_le_of_lt (Set.Countable.le_aleph0 hS) hc) a
+  countable_sInter_mem S hS a :=
+    CardinalInterFilter.cardinal_sInter_mem S (lt_of_le_of_lt (Set.Countable.le_aleph0 hS) hc) a
 
 /-- Every CountableInterFilter is a CardinalInterFilter with c = aleph 1-/
 instance CountableInterFilter.toCardinalInterFilter (l : Filter α) [CountableInterFilter l] :
     CardinalInterFilter l (aleph 1) where
-  cardinal_sInter_mem := fun S hS a ↦ CountableInterFilter.countable_sInter_mem S
-    ((countable_iff_lt_aleph_one S).mpr hS) a
+  cardinal_sInter_mem S hS a :=
+    CountableInterFilter.countable_sInter_mem S ((countable_iff_lt_aleph_one S).mpr hS) a
 
 theorem cardinalInterFilter_aleph_one_iff :
     CardinalInterFilter l (aleph 1) ↔ CountableInterFilter l :=
@@ -77,9 +75,9 @@ theorem cardinalInterFilter_aleph_one_iff :
 /-- Every CardinalInterFilter for some c also is a CardinalInterFilter for some a ≤ c -/
 theorem CardinalInterFilter.of_cardinalInterFilter_of_le (l : Filter α) [CardinalInterFilter l c]
     {a : Cardinal.{u}} (hac : a ≤ c) :
-  CardinalInterFilter l a where
-    cardinal_sInter_mem :=
-      fun S hS a ↦ CardinalInterFilter.cardinal_sInter_mem S (lt_of_lt_of_le hS hac) a
+    CardinalInterFilter l a where
+  cardinal_sInter_mem S hS a :=
+    CardinalInterFilter.cardinal_sInter_mem S (lt_of_lt_of_le hS hac) a
 
 theorem CardinalInterFilter.of_cardinalInterFilter_of_lt (l : Filter α) [CardinalInterFilter l c]
     {a : Cardinal.{u}} (hac : a < c) : CardinalInterFilter l a :=
@@ -291,7 +289,7 @@ def cardinalGenerate (hc : 2 < c) : Filter α :=
 
 lemma cardinalInter_ofCardinalGenerate (hc : 2 < c) :
     CardinalInterFilter (cardinalGenerate g hc) c := by
-  delta cardinalGenerate;
+  delta cardinalGenerate
   apply cardinalInter_ofCardinalInter _ _ _
 
 variable {g}
@@ -323,11 +321,11 @@ theorem le_cardinalGenerate_iff_of_cardinalInterFilter {f : Filter α} [Cardinal
   constructor <;> intro h
   · exact subset_trans (fun s => CardinalGenerateSets.basic) h
   intro s hs
-  induction' hs with s hs s t _ st ih S Sct _ ih
-  · exact h hs
-  · exact univ_mem
-  · exact mem_of_superset ih st
-  exact (cardinal_sInter_mem Sct).mpr ih
+  induction hs with
+  | basic hs => exact h hs
+  | univ => exact univ_mem
+  | superset _ st ih => exact mem_of_superset ih st
+  | sInter Sct _ ih => exact (cardinal_sInter_mem Sct).mpr ih
 
 /-- `cardinalGenerate g hc` is the greatest `cardinalInterFilter c` containing `g`. -/
 theorem cardinalGenerate_isGreatest (hc : 2 < c) :

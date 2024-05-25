@@ -3,7 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.BigOperators.List.Basic
+import Mathlib.Algebra.BigOperators.Group.List
 import Mathlib.Data.Vector
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.OfFn
@@ -78,7 +78,7 @@ theorem exists_eq_cons (v : Vector α n.succ) : ∃ (a : α) (as : Vector α n),
 
 @[simp]
 theorem toList_ofFn : ∀ {n} (f : Fin n → α), toList (ofFn f) = List.ofFn f
-  | 0, f => rfl
+  | 0, f => by rw [ofFn, List.ofFn_zero, toList, nil]
   | n + 1, f => by rw [ofFn, List.ofFn_succ, toList_cons, toList_ofFn]
 #align vector.to_list_of_fn Vector.toList_ofFn
 
@@ -119,12 +119,6 @@ theorem get_eq_get (v : Vector α n) (i : Fin n) :
     v.get i = v.toList.get (Fin.cast v.toList_length.symm i) :=
   rfl
 #align vector.nth_eq_nth_le Vector.get_eq_getₓ
-
--- Porting note: `nthLe` deprecated for `get`
-@[deprecated get_eq_get]
-theorem nth_eq_nthLe :
-    ∀ (v : Vector α n) (i), get v i = v.toList.nthLe i.1 (by rw [toList_length]; exact i.2)
-  | ⟨_, _⟩, _ => rfl
 
 @[simp]
 theorem get_replicate (a : α) (i : Fin n) : (Vector.replicate n a).get i = a := by
@@ -395,7 +389,7 @@ theorem scanl_get (i : Fin n) :
   · have i0 : i = 0 := Fin.eq_zero _
     simp [scanl_singleton, i0, get_zero]; simp [get_eq_get, List.get]
   · rw [← cons_head_tail v, scanl_cons, get_cons_succ]
-    refine' Fin.cases _ _ i
+    refine Fin.cases ?_ ?_ i
     · simp only [get_zero, scanl_head, Fin.castSucc_zero, head_cons]
     · intro i'
       simp only [hn, Fin.castSucc_fin_succ, get_cons_succ]
@@ -562,41 +556,47 @@ theorem insertNth_val {i : Fin (n + 1)} {v : Vector α n} :
 #align vector.insert_nth_val Vector.insertNth_val
 
 @[simp]
-theorem removeNth_val {i : Fin n} : ∀ {v : Vector α n}, (removeNth i v).val = v.val.removeNth i
+theorem eraseIdx_val {i : Fin n} : ∀ {v : Vector α n}, (eraseIdx i v).val = v.val.eraseIdx i
   | _ => rfl
-#align vector.remove_nth_val Vector.removeNth_val
+#align vector.remove_nth_val Vector.eraseIdx_val
 
-theorem removeNth_insertNth {v : Vector α n} {i : Fin (n + 1)} :
-    removeNth i (insertNth a i v) = v :=
-  Subtype.eq <| List.removeNth_insertNth i.1 v.1
-#align vector.remove_nth_insert_nth Vector.removeNth_insertNth
+@[deprecated (since := "2024-05-04")] alias removeNth_val := eraseIdx_val
 
-theorem removeNth_insertNth' {v : Vector α (n + 1)} :
+theorem eraseIdx_insertNth {v : Vector α n} {i : Fin (n + 1)} :
+    eraseIdx i (insertNth a i v) = v :=
+  Subtype.eq <| List.eraseIdx_insertNth i.1 v.1
+#align vector.remove_nth_insert_nth Vector.eraseIdx_insertNth
+
+@[deprecated (since := "2024-05-04")] alias removeNth_insertNth := eraseIdx_insertNth
+
+theorem eraseIdx_insertNth' {v : Vector α (n + 1)} :
     ∀ {i : Fin (n + 1)} {j : Fin (n + 2)},
-      removeNth (j.succAbove i) (insertNth a j v) = insertNth a (i.predAbove j) (removeNth i v)
+      eraseIdx (j.succAbove i) (insertNth a j v) = insertNth a (i.predAbove j) (eraseIdx i v)
   | ⟨i, hi⟩, ⟨j, hj⟩ => by
-    dsimp [insertNth, removeNth, Fin.succAbove, Fin.predAbove]
+    dsimp [insertNth, eraseIdx, Fin.succAbove, Fin.predAbove]
     rw [Subtype.mk_eq_mk]
     simp only [Fin.lt_iff_val_lt_val]
     split_ifs with hij
     · rcases Nat.exists_eq_succ_of_ne_zero
         (Nat.pos_iff_ne_zero.1 (lt_of_le_of_lt (Nat.zero_le _) hij)) with ⟨j, rfl⟩
-      rw [← List.insertNth_removeNth_of_ge]
+      rw [← List.insertNth_eraseIdx_of_ge]
       · simp; rfl
       · simpa
       · simpa [Nat.lt_succ_iff] using hij
     · dsimp
-      rw [← List.insertNth_removeNth_of_le i j _ _ _]
+      rw [← List.insertNth_eraseIdx_of_le i j _ _ _]
       · rfl
       · simpa
       · simpa [not_lt] using hij
-#align vector.remove_nth_insert_nth' Vector.removeNth_insertNth'
+#align vector.remove_nth_insert_nth' Vector.eraseIdx_insertNth'
+
+@[deprecated (since := "2024-05-04")] alias removeNth_insertNth' := eraseIdx_insertNth'
 
 theorem insertNth_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :
     ∀ v : Vector α n,
       (v.insertNth a i).insertNth b j.succ = (v.insertNth b j).insertNth a (Fin.castSucc i)
   | ⟨l, hl⟩ => by
-    refine' Subtype.eq _
+    refine Subtype.eq ?_
     simp only [insertNth_val, Fin.val_succ, Fin.castSucc, Fin.coe_castAdd]
     apply List.insertNth_comm
     · assumption
@@ -641,14 +641,14 @@ theorem get_set_eq_if {v : Vector α n} {i j : Fin n} (a : α) :
 @[to_additive]
 theorem prod_set [Monoid α] (v : Vector α n) (i : Fin n) (a : α) :
     (v.set i a).toList.prod = (v.take i).toList.prod * a * (v.drop (i + 1)).toList.prod := by
-  refine' (List.prod_set v.toList i a).trans _
+  refine (List.prod_set v.toList i a).trans ?_
   simp_all
 #align vector.prod_update_nth Vector.prod_set
 
 @[to_additive]
 theorem prod_set' [CommGroup α] (v : Vector α n) (i : Fin n) (a : α) :
     (v.set i a).toList.prod = v.toList.prod * (v.get i)⁻¹ * a := by
-  refine' (List.prod_set' v.toList i a).trans _
+  refine (List.prod_set' v.toList i a).trans ?_
   simp [get_eq_get, mul_assoc]; rfl
 #align vector.prod_update_nth' Vector.prod_set'
 
@@ -708,8 +708,8 @@ protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : Vector 
     Vector.traverse (Comp.mk ∘ Functor.map f ∘ g) x =
       Comp.mk (Vector.traverse f <$> Vector.traverse g x) := by
   induction' x using Vector.inductionOn with n x xs ih
-  simp! [cast, *, functor_norm]
-  · rfl
+  · simp! [cast, *, functor_norm]
+    rfl
   · rw [Vector.traverse_def, ih]
     simp [functor_norm, (· ∘ ·)]
 #align vector.comp_traverse Vector.comp_traverse

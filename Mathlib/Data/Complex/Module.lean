@@ -48,12 +48,14 @@ namespace Complex
 
 open ComplexConjugate
 
+open scoped SMul
+
 variable {R : Type*} {S : Type*}
 
 attribute [local ext] Complex.ext
 
 -- Test that the `SMul ℚ ℂ` instance is correct.
-example : (Complex.instSMulRealComplex : SMul ℚ ℂ) = (Algebra.toSMul : SMul ℚ ℂ) := rfl
+example : (Complex.SMul.instSMulRealComplex : SMul ℚ ℂ) = (Algebra.toSMul : SMul ℚ ℂ) := rfl
 
 /- The priority of the following instances has been manually lowered, as when they don't apply
 they lead Lean to a very costly path, and most often they don't apply (most actions on `ℂ` don't
@@ -93,7 +95,7 @@ instance (priority := 100) instModule [Semiring R] [Module R ℝ] : Module R ℂ
   zero_smul r := by ext <;> simp [smul_re, smul_im, zero_smul]
 
 -- priority manually adjusted in #11980
-instance (priority := 95) [CommSemiring R] [Algebra R ℝ] : Algebra R ℂ :=
+instance (priority := 95) instAlgebraOfReal [CommSemiring R] [Algebra R ℝ] : Algebra R ℂ :=
   { Complex.ofReal.comp (algebraMap R ℝ) with
     smul := (· • ·)
     smul_def' := fun r x => by ext <;> simp [smul_re, smul_im, Algebra.smul_def]
@@ -321,8 +323,8 @@ theorem toMatrix_conjAe :
 
 /-- The identity and the complex conjugation are the only two `ℝ`-algebra homomorphisms of `ℂ`. -/
 theorem real_algHom_eq_id_or_conj (f : ℂ →ₐ[ℝ] ℂ) : f = AlgHom.id ℝ ℂ ∨ f = conjAe := by
-  refine'
-      (eq_or_eq_neg_of_sq_eq_sq (f I) I <| by rw [← map_pow, I_sq, map_neg, map_one]).imp _ _ <;>
+  refine
+      (eq_or_eq_neg_of_sq_eq_sq (f I) I <| by rw [← map_pow, I_sq, map_neg, map_one]).imp ?_ ?_ <;>
     refine fun h => algHom_ext ?_
   exacts [h, conj_I.symm ▸ h]
 #align complex.real_alg_hom_eq_id_or_conj Complex.real_algHom_eq_id_or_conj
@@ -341,7 +343,7 @@ theorem equivRealProdAddHom_symm_apply (p : ℝ × ℝ) :
 def equivRealProdLm : ℂ ≃ₗ[ℝ] ℝ × ℝ :=
   { equivRealProdAddHom with
     -- Porting note: `simp` has issues with `Prod.smul_def`
-    map_smul' := fun r c => by simp [equivRealProdAddHom, (Prod.smul_def), smul_eq_mul] }
+    map_smul' := fun r c => by simp [equivRealProdAddHom, Prod.smul_def, smul_eq_mul] }
 #align complex.equiv_real_prod_lm Complex.equivRealProdLm
 
 theorem equivRealProdLm_symm_apply (p : ℝ × ℝ) :

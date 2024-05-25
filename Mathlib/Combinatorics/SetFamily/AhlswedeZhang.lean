@@ -121,7 +121,7 @@ lemma truncatedSup_of_not_mem (h : a ∉ lowerClosure s) : truncatedSup s a = �
 @[simp] lemma truncatedSup_empty (a : α) : truncatedSup ∅ a = ⊤ := truncatedSup_of_not_mem $ by simp
 
 @[simp] lemma truncatedSup_singleton (b a : α) : truncatedSup {b} a = if a ≤ b then b else ⊤ := by
-  simp [truncatedSup]; split_ifs <;> simp [*]
+  simp [truncatedSup]; split_ifs <;> simp [Finset.filter_true_of_mem, *]
 
 lemma le_truncatedSup : a ≤ truncatedSup s a := by
   rw [truncatedSup]
@@ -136,7 +136,7 @@ lemma map_truncatedSup (e : α ≃o β) (s : Finset α) (a : α) :
   simp_rw [truncatedSup, apply_dite e, map_finset_sup', map_top, this]
   congr with h
   simp only [filter_map, Function.comp, Equiv.coe_toEmbedding, RelIso.coe_fn_toEquiv,
-    OrderIso.le_iff_le, id.def]
+    OrderIso.le_iff_le, id]
   rw [sup'_map]
   -- TODO: Why can't `simp` use `Finset.sup'_map`?
   simp only [sup'_map, Equiv.coe_toEmbedding, RelIso.coe_fn_toEquiv, Function.comp_apply]
@@ -165,7 +165,7 @@ lemma truncatedSup_union_of_not_mem (hs : a ∉ lowerClosure s) (ht : a ∉ lowe
 
 lemma truncatedSup_of_isAntichain (hs : IsAntichain (· ≤ ·) (s : Set α)) (ha : a ∈ s) :
     truncatedSup s a = a := by
-  refine' le_antisymm _ le_truncatedSup
+  refine le_antisymm ?_ le_truncatedSup
   simp_rw [truncatedSup_of_mem (subset_lowerClosure ha), sup'_le_iff, mem_filter]
   rintro b ⟨hb, hab⟩
   exact (hs.eq ha hb hab).ge
@@ -200,7 +200,7 @@ lemma truncatedInf_le : truncatedInf s a ≤ a := by
 @[simp] lemma truncatedInf_singleton (b a : α) : truncatedInf {b} a = if b ≤ a then b else ⊥ := by
   simp only [truncatedInf, coe_singleton, upperClosure_singleton, UpperSet.mem_Ici_iff,
     filter_congr_decidable, id_eq]
-  split_ifs <;> simp [*]
+  split_ifs <;> simp [Finset.filter_true_of_mem, *]
 
 lemma map_truncatedInf (e : α ≃o β) (s : Finset α) (a : α) :
     e (truncatedInf s a) = truncatedInf (s.map e.toEquiv.toEmbedding) (e a) := by
@@ -208,7 +208,7 @@ lemma map_truncatedInf (e : α ≃o β) (s : Finset α) (a : α) :
   simp_rw [truncatedInf, apply_dite e, map_finset_inf', map_bot, this]
   congr with h
   simp only [filter_map, Function.comp, Equiv.coe_toEmbedding, RelIso.coe_fn_toEquiv,
-    OrderIso.le_iff_le, id.def, inf'_map]
+    OrderIso.le_iff_le, id, inf'_map]
 
 variable [DecidableEq α]
 
@@ -236,7 +236,7 @@ lemma truncatedInf_union_of_not_mem (hs : a ∉ upperClosure s) (ht : a ∉ uppe
 
 lemma truncatedInf_of_isAntichain (hs : IsAntichain (· ≤ ·) (s : Set α)) (ha : a ∈ s) :
     truncatedInf s a = a := by
-  refine' le_antisymm truncatedInf_le _
+  refine le_antisymm truncatedInf_le ?_
   simp_rw [truncatedInf_of_mem (subset_upperClosure ha), le_inf'_iff, mem_filter]
   rintro b ⟨hb, hba⟩
   exact (hs.eq hb ha hba).ge
@@ -356,7 +356,7 @@ lemma IsAntichain.le_infSum (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset
   calc
     _ = ∑ s in 𝒜, (truncatedInf 𝒜 s).card / (s.card * (card α).choose s.card : ℚ) := ?_
     _ ≤ _ := sum_le_univ_sum_of_nonneg fun s ↦ by positivity
-  refine' sum_congr rfl fun s hs ↦ _
+  refine sum_congr rfl fun s hs ↦ ?_
   rw [truncatedInf_of_isAntichain h𝒜 hs, div_mul_cancel_left₀]
   have := (nonempty_iff_ne_empty.2 $ ne_of_mem_of_not_mem hs h𝒜₀).card_pos
   positivity
@@ -375,7 +375,7 @@ variable [Nonempty α]
     ← eq_sub_iff_add_eq', supSum, ← sum_sub_distrib, ← sub_div]
   rw [sum_congr rfl fun t _ ↦ this t, sum_ite, sum_const_zero, add_zero, filter_subset_univ,
     sum_powerset, ← binomial_sum_eq ((card_lt_iff_ne_univ _).2 hs), eq_comm]
-  refine' sum_congr rfl fun n _ ↦ _
+  refine sum_congr rfl fun n _ ↦ ?_
   rw [mul_div_assoc, ← nsmul_eq_mul]
   exact sum_powersetCard n s fun m ↦ (card α - s.card : ℚ) / ((card α - m) * (card α).choose m)
 
@@ -395,7 +395,7 @@ lemma supSum_of_not_univ_mem (h𝒜₁ : 𝒜.Nonempty) (h𝒜₂ : univ ∉ �
   induction' m using Nat.strong_induction_on with m ih generalizing 𝒜
   replace ih := fun 𝒜 h𝒜 h𝒜₁ h𝒜₂ ↦ @ih _ h𝒜 𝒜 h𝒜₁ h𝒜₂ rfl
   obtain ⟨a, rfl⟩ | h𝒜₃ := h𝒜₁.exists_eq_singleton_or_nontrivial
-  · refine' supSum_singleton _
+  · refine supSum_singleton ?_
     simpa [eq_comm] using h𝒜₂
   cases m
   · cases h𝒜₁.card_pos.ne hm

@@ -53,8 +53,7 @@ theorem perfect_two_pow_mul_mersenne_of_prime (k : ℕ) (pr : (mersenne (k + 1))
       (Nat.prime_two.coprime_pow_of_not_dvd (odd_mersenne_succ _)),
     sigma_two_pow_eq_mersenne_succ]
   · simp [pr, Nat.prime_two, sigma_one_apply]
-  · apply mul_pos (pow_pos _ k) (mersenne_pos (Nat.succ_pos k))
-    norm_num
+  · positivity
 #align theorems_100.nat.perfect_two_pow_mul_mersenne_of_prime Theorems100.Nat.perfect_two_pow_mul_mersenne_of_prime
 
 theorem ne_zero_of_prime_mersenne (k : ℕ) (pr : (mersenne (k + 1)).Prime) : k ≠ 0 := by
@@ -70,7 +69,7 @@ theorem eq_two_pow_mul_odd {n : ℕ} (hpos : 0 < n) : ∃ k m : ℕ, n = 2 ^ k *
   have h := multiplicity.finite_nat_iff.2 ⟨Nat.prime_two.ne_one, hpos⟩
   cases' multiplicity.pow_multiplicity_dvd h with m hm
   use (multiplicity 2 n).get h, m
-  refine' ⟨hm, _⟩
+  refine ⟨hm, ?_⟩
   rw [even_iff_two_dvd]
   have hg := multiplicity.is_greatest' h (Nat.lt_succ_self _)
   contrapose! hg
@@ -94,7 +93,7 @@ theorem eq_two_pow_mul_prime_mersenne_of_even_perfect {n : ℕ} (ev : Even n) (p
       (Nat.prime_two.coprime_pow_of_not_dvd (odd_mersenne_succ _)) (Dvd.intro _ perf) with
     ⟨j, rfl⟩
   rw [← mul_assoc, mul_comm _ (mersenne _), mul_assoc] at perf
-  have h := mul_left_cancel₀ (ne_of_gt (mersenne_pos (Nat.succ_pos _))) perf
+  have h := mul_left_cancel₀ (by positivity) perf
   rw [sigma_one_apply, Nat.sum_divisors_eq_sum_properDivisors_add_self, ← succ_mersenne, add_mul,
     one_mul, add_comm] at h
   have hj := add_left_cancel h

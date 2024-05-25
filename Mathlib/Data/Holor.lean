@@ -198,7 +198,7 @@ theorem mul_assoc0 [Semigroup α] (x : Holor α ds₁) (y : Holor α ds₂) (z :
     unfold mul
     rw [mul_assoc, ← HolorIndex.take_take, ← HolorIndex.drop_take, ← HolorIndex.drop_drop,
       cast_type]
-    rfl
+    · rfl
     rw [append_assoc]
 #align holor.mul_assoc0 Holor.mul_assoc0
 
@@ -280,7 +280,7 @@ theorem slice_zero [Zero α] (i : ℕ) (hid : i < d) : slice (0 : Holor α (d ::
 theorem slice_sum [AddCommMonoid α] {β : Type} (i : ℕ) (hid : i < d) (s : Finset β)
     (f : β → Holor α (d :: ds)) : (∑ x in s, slice (f x) i hid) = slice (∑ x in s, f x) i hid := by
   letI := Classical.decEq β
-  refine' Finset.induction_on s _ _
+  refine Finset.induction_on s ?_ ?_
   · simp [slice_zero]
   · intro _ _ h_not_in ih
     rw [Finset.sum_insert h_not_in, ih, slice_add, Finset.sum_insert h_not_in]

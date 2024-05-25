@@ -129,12 +129,12 @@ theorem pred : Nat.Primrec pred :=
 
 theorem add : Nat.Primrec (unpaired (· + ·)) :=
   (prec .id ((Primrec.succ.comp right).comp right)).of_eq fun p => by
-    simp; induction p.unpair.2 <;> simp [*, add_succ]
+    simp; induction p.unpair.2 <;> simp [*, Nat.add_assoc]
 #align nat.primrec.add Nat.Primrec.add
 
 theorem sub : Nat.Primrec (unpaired (· - ·)) :=
   (prec .id ((pred.comp right).comp right)).of_eq fun p => by
-    simp; induction p.unpair.2 <;> simp [*, sub_succ]
+    simp; induction p.unpair.2 <;> simp [*, Nat.sub_add_eq]
 #align nat.primrec.sub Nat.Primrec.sub
 
 theorem mul : Nat.Primrec (unpaired (· * ·)) :=
@@ -568,7 +568,8 @@ theorem nat_rec {f : α → β} {g : α → ℕ × β → β} (hf : Primrec f) (
       simp only [Nat.unpaired, id_eq, Nat.unpair_pair, decode_prod_val, decode_nat,
         Option.some_bind, Option.map_map, Option.map_some']
       cases' @decode α _ n.unpair.1 with a; · rfl
-      simp only [encode_some, encodek, Option.map_some', Option.some_bind, Option.map_map]
+      simp only [Nat.pred_eq_sub_one, encode_some, Nat.succ_eq_add_one, encodek, Option.map_some',
+        Option.some_bind, Option.map_map]
       induction' n.unpair.2 with m <;> simp [encodek]
       simp [*, encodek]
 #align primrec.nat_elim Primrec.nat_rec
@@ -679,7 +680,7 @@ theorem cond {c : α → Bool} {f : α → σ} {g : α → σ} (hc : Primrec c) 
 
 theorem ite {c : α → Prop} [DecidablePred c] {f : α → σ} {g : α → σ} (hc : PrimrecPred c)
     (hf : Primrec f) (hg : Primrec g) : Primrec fun a => if c a then f a else g a := by
-  simpa using cond hc hf hg
+  simpa [Bool.cond_decide] using cond hc hf hg
 #align primrec.ite Primrec.ite
 
 theorem nat_le : PrimrecRel ((· ≤ ·) : ℕ → ℕ → Prop) :=
@@ -1215,7 +1216,7 @@ theorem subtype_val {p : α → Prop} [DecidablePred p] {hp : PrimrecPred p} :
     haveI := Primcodable.subtype hp
     Primrec (@Subtype.val α p) := by
   letI := Primcodable.subtype hp
-  refine' (@Primcodable.prim (Subtype p)).of_eq fun n => _
+  refine (@Primcodable.prim (Subtype p)).of_eq fun n => ?_
   rcases @decode (Subtype p) _ n with (_ | ⟨a, h⟩) <;> rfl
 #align primrec.subtype_val Primrec.subtype_val
 
@@ -1223,8 +1224,8 @@ theorem subtype_val_iff {p : β → Prop} [DecidablePred p] {hp : PrimrecPred p}
     haveI := Primcodable.subtype hp
     (Primrec fun a => (f a).1) ↔ Primrec f := by
   letI := Primcodable.subtype hp
-  refine' ⟨fun h => _, fun hf => subtype_val.comp hf⟩
-  refine' Nat.Primrec.of_eq h fun n => _
+  refine ⟨fun h => ?_, fun hf => subtype_val.comp hf⟩
+  refine Nat.Primrec.of_eq h fun n => ?_
   cases' @decode α _ n with a; · rfl
   simp; rfl
 #align primrec.subtype_val_iff Primrec.subtype_val_iff
@@ -1239,7 +1240,7 @@ theorem subtype_mk {p : β → Prop} [DecidablePred p] {hp : PrimrecPred p} {f :
 theorem option_get {f : α → Option β} {h : ∀ a, (f a).isSome} :
     Primrec f → Primrec fun a => (f a).get (h a) := by
   intro hf
-  refine' (Nat.Primrec.pred.comp hf).of_eq fun n => _
+  refine (Nat.Primrec.pred.comp hf).of_eq fun n => ?_
   generalize hx : @decode α _ n = x
   cases x <;> simp
 #align primrec.option_get Primrec.option_get
@@ -1446,8 +1447,8 @@ theorem add : @Primrec' 2 fun v => v.head + v.tail.head :=
 
 theorem sub : @Primrec' 2 fun v => v.head - v.tail.head := by
   have : @Primrec' 2 fun v ↦ (fun a b ↦ b - a) v.head v.tail.head := by
-    refine' (prec head (pred.comp₁ _ (tail head))).of_eq fun v => _
-    simp; induction v.head <;> simp [*, Nat.sub_succ]
+    refine (prec head (pred.comp₁ _ (tail head))).of_eq fun v => ?_
+    simp; induction v.head <;> simp [*, Nat.sub_add_eq]
   simpa using comp₂ (fun a b => b - a) this (tail head) head
 #align nat.primrec'.sub Nat.Primrec'.sub
 
@@ -1500,14 +1501,14 @@ theorem sqrt : @Primrec' 1 fun v => v.head.sqrt := by
 theorem unpair₁ {n f} (hf : @Primrec' n f) : @Primrec' n fun v => (f v).unpair.1 := by
   have s := sqrt.comp₁ _ hf
   have fss := sub.comp₂ _ hf (mul.comp₂ _ s s)
-  refine' (if_lt fss s fss s).of_eq fun v => _
+  refine (if_lt fss s fss s).of_eq fun v => ?_
   simp [Nat.unpair]; split_ifs <;> rfl
 #align nat.primrec'.unpair₁ Nat.Primrec'.unpair₁
 
 theorem unpair₂ {n f} (hf : @Primrec' n f) : @Primrec' n fun v => (f v).unpair.2 := by
   have s := sqrt.comp₁ _ hf
   have fss := sub.comp₂ _ hf (mul.comp₂ _ s s)
-  refine' (if_lt fss s s (sub.comp₂ _ fss s)).of_eq fun v => _
+  refine (if_lt fss s s (sub.comp₂ _ fss s)).of_eq fun v => ?_
   simp [Nat.unpair]; split_ifs <;> rfl
 #align nat.primrec'.unpair₂ Nat.Primrec'.unpair₂
 

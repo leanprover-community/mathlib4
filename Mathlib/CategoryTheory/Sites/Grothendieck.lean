@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.Order.Copy
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import category_theory.sites.grothendieck from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
 
@@ -239,8 +239,7 @@ def trivial : GrothendieckTopology C where
 
 See https://en.wikipedia.org/wiki/Grothendieck_topology#The_discrete_and_indiscrete_topologies.
 -/
-def discrete : GrothendieckTopology C
-    where
+def discrete : GrothendieckTopology C where
   sieves X := Set.univ
   top_mem' := by simp
   pullback_stable' X Y f := by simp
@@ -285,7 +284,7 @@ instance : InfSet (GrothendieckTopology C) where
 
 /-- See <https://stacks.math.columbia.edu/tag/00Z7> -/
 theorem isGLB_sInf (s : Set (GrothendieckTopology C)) : IsGLB s (sInf s) := by
-  refine' @IsGLB.of_image _ _ _ _ sieves _ _ _ _
+  refine @IsGLB.of_image _ _ _ _ sieves ?_ _ _ ?_
   · intros
     rfl
   · exact _root_.isGLB_sInf _
@@ -346,8 +345,7 @@ theorem top_covers (S : Sieve X) (f : Y ⟶ X) : (⊤ : GrothendieckTopology C).
 
 See https://ncatlab.org/nlab/show/dense+topology, or [MM92] Chapter III, Section 2, example (e).
 -/
-def dense : GrothendieckTopology C
-    where
+def dense : GrothendieckTopology C where
   sieves X S := ∀ {Y : C} (f : Y ⟶ X), ∃ (Z : _) (g : Z ⟶ Y), S (g ≫ f)
   top_mem' X Y f := ⟨Y, 𝟙 Y, ⟨⟩⟩
   pullback_stable' := by
@@ -383,8 +381,7 @@ For the pullback stability condition, we need the right Ore condition to hold.
 
 See https://ncatlab.org/nlab/show/atomic+site, or [MM92] Chapter III, Section 2, example (f).
 -/
-def atomic (hro : RightOreCondition C) : GrothendieckTopology C
-    where
+def atomic (hro : RightOreCondition C) : GrothendieckTopology C where
   sieves X S := ∃ (Y : _) (f : Y ⟶ X), S f
   top_mem' X := ⟨_, 𝟙 _, ⟨⟩⟩
   pullback_stable' := by
@@ -714,8 +711,7 @@ end Cover
 
 /-- Pull back a cover along a morphism. -/
 @[simps obj]
-def pullback (f : Y ⟶ X) : J.Cover X ⥤ J.Cover Y
-    where
+def pullback (f : Y ⟶ X) : J.Cover X ⥤ J.Cover Y where
   obj S := S.pullback f
   map f := (Sieve.pullback_monotone _ f.le).hom
 #align category_theory.grothendieck_topology.pullback CategoryTheory.GrothendieckTopology.pullback

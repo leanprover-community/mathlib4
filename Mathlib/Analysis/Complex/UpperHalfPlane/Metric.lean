@@ -305,8 +305,8 @@ theorem im_pos_of_dist_center_le {z : ℍ} {r : ℝ} {w : ℂ}
     (h : dist w (center z r) ≤ z.im * Real.sinh r) : 0 < w.im :=
   calc
     0 < z.im * (Real.cosh r - Real.sinh r) := mul_pos z.im_pos (sub_pos.2 <| sinh_lt_cosh _)
-    _ = (z.center r).im - z.im * Real.sinh r := (mul_sub _ _ _)
-    _ ≤ (z.center r).im - dist (z.center r : ℂ) w := (sub_le_sub_left (by rwa [dist_comm]) _)
+    _ = (z.center r).im - z.im * Real.sinh r := mul_sub _ _ _
+    _ ≤ (z.center r).im - dist (z.center r : ℂ) w := sub_le_sub_left (by rwa [dist_comm]) _
     _ ≤ w.im := sub_le_comm.1 <| (le_abs_self _).trans (abs_im_le_abs <| z.center r - w)
 #align upper_half_plane.im_pos_of_dist_center_le UpperHalfPlane.im_pos_of_dist_center_le
 
@@ -341,12 +341,12 @@ theorem image_coe_sphere (z : ℍ) (r : ℝ) :
 #align upper_half_plane.image_coe_sphere UpperHalfPlane.image_coe_sphere
 
 instance : ProperSpace ℍ := by
-  refine' ⟨fun z r => _⟩
+  refine ⟨fun z r => ?_⟩
   rw [inducing_subtype_val.isCompact_iff (f := ((↑) : ℍ → ℂ)), image_coe_closedBall]
   apply isCompact_closedBall
 
 theorem isometry_vertical_line (a : ℝ) : Isometry fun y => mk ⟨a, exp y⟩ (exp_pos y) := by
-  refine' Isometry.of_dist_eq fun y₁ y₂ => _
+  refine Isometry.of_dist_eq fun y₁ y₂ => ?_
   rw [dist_of_re_eq]
   exacts [congr_arg₂ _ (log_exp _) (log_exp _), rfl]
 #align upper_half_plane.isometry_vertical_line UpperHalfPlane.isometry_vertical_line
@@ -356,7 +356,7 @@ theorem isometry_real_vadd (a : ℝ) : Isometry (a +ᵥ · : ℍ → ℍ) :=
 #align upper_half_plane.isometry_real_vadd UpperHalfPlane.isometry_real_vadd
 
 theorem isometry_pos_mul (a : { x : ℝ // 0 < x }) : Isometry (a • · : ℍ → ℍ) := by
-  refine' Isometry.of_dist_eq fun y₁ y₂ => _
+  refine Isometry.of_dist_eq fun y₁ y₂ => ?_
   simp only [dist_eq, coe_pos_real_smul, pos_real_im]; congr 2
   rw [dist_smul₀, mul_mul_mul_comm, Real.sqrt_mul (mul_self_nonneg _), Real.sqrt_mul_self_eq_abs,
     Real.norm_eq_abs, mul_left_comm]

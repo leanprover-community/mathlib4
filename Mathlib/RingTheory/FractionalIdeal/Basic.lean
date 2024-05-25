@@ -632,14 +632,14 @@ protected theorem mul_induction_on {I J : FractionalIdeal S P} {C : P → Prop} 
 instance : NatCast (FractionalIdeal S P) :=
   ⟨Nat.unaryCast⟩
 
-theorem coe_nat_cast (n : ℕ) : ((n : FractionalIdeal S P) : Submodule R P) = n :=
+theorem coe_natCast (n : ℕ) : ((n : FractionalIdeal S P) : Submodule R P) = n :=
   show ((n.unaryCast : FractionalIdeal S P) : Submodule R P) = n
   by induction n <;> simp [*, Nat.unaryCast]
-#align fractional_ideal.coe_nat_cast FractionalIdeal.coe_nat_cast
+#align fractional_ideal.coe_nat_cast FractionalIdeal.coe_natCast
 
 instance commSemiring : CommSemiring (FractionalIdeal S P) :=
   Function.Injective.commSemiring _ Subtype.coe_injective coe_zero coe_one coe_add coe_mul
-    (fun _ _ => coe_nsmul _ _) coe_pow coe_nat_cast
+    (fun _ _ => coe_nsmul _ _) coe_pow coe_natCast
 
 end Semiring
 
@@ -688,7 +688,7 @@ theorem le_one_iff_exists_coeIdeal {J : FractionalIdeal S P} :
     J ≤ (1 : FractionalIdeal S P) ↔ ∃ I : Ideal R, ↑I = J := by
   constructor
   · intro hJ
-    refine' ⟨⟨⟨⟨{ x : R | algebraMap R P x ∈ J }, _⟩, _⟩, _⟩, _⟩
+    refine ⟨⟨⟨⟨{ x : R | algebraMap R P x ∈ J }, ?_⟩, ?_⟩, ?_⟩, ?_⟩
     · intro a b ha hb
       rw [mem_setOf, RingHom.map_add]
       exact J.val.add_mem ha hb

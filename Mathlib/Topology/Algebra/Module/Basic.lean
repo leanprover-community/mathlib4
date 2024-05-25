@@ -9,7 +9,7 @@ import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.UniformSpace.UniformEmbedding
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Finsupp
@@ -61,7 +61,7 @@ This is the case, e.g., if `R` is a nontrivially normed field. -/
 theorem Submodule.eq_top_of_nonempty_interior' [NeBot (𝓝[{ x : R | IsUnit x }] 0)]
     (s : Submodule R M) (hs : (interior (s : Set M)).Nonempty) : s = ⊤ := by
   rcases hs with ⟨y, hy⟩
-  refine' Submodule.eq_top_iff'.2 fun x => _
+  refine Submodule.eq_top_iff'.2 fun x => ?_
   rw [mem_interior_iff_mem_nhds] at hy
   have : Tendsto (fun c : R => y + c • x) (𝓝[{ x : R | IsUnit x }] 0) (𝓝 (y + (0 : R) • x)) :=
     tendsto_const_nhds.add ((tendsto_nhdsWithin_of_tendsto_nhds tendsto_id).smul tendsto_const_nhds)
@@ -87,7 +87,7 @@ theorem Module.punctured_nhds_neBot [Nontrivial M] [NeBot (𝓝[≠] (0 : R))] [
     (x : M) : NeBot (𝓝[≠] x) := by
   rcases exists_ne (0 : M) with ⟨y, hy⟩
   suffices Tendsto (fun c : R => x + c • y) (𝓝[≠] 0) (𝓝[≠] x) from this.neBot
-  refine' Tendsto.inf _ (tendsto_principal_principal.2 <| _)
+  refine Tendsto.inf ?_ (tendsto_principal_principal.2 <| ?_)
   · convert tendsto_const_nhds.add ((@tendsto_id R _).smul_const y)
     rw [zero_smul, add_zero]
   · intro c hc
@@ -1057,8 +1057,7 @@ theorem ker_codRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂
 #align continuous_linear_map.ker_cod_restrict ContinuousLinearMap.ker_codRestrict
 
 /-- Restrict the codomain of a continuous linear map `f` to `f.range`. -/
-@[reducible]
-def rangeRestrict [RingHomSurjective σ₁₂] (f : M₁ →SL[σ₁₂] M₂) :=
+abbrev rangeRestrict [RingHomSurjective σ₁₂] (f : M₁ →SL[σ₁₂] M₂) :=
   f.codRestrict (LinearMap.range f) (LinearMap.mem_range_self f)
 
 @[simp]
@@ -1259,8 +1258,7 @@ variable [ContinuousSMul R₁ M₁]
 
 /-- Given an element `x` of a topological space `M` over a semiring `R`, the natural continuous
 linear map from `R` to `M` by taking multiples of `x`. -/
-def toSpanSingleton (x : M₁) : R₁ →L[R₁] M₁
-    where
+def toSpanSingleton (x : M₁) : R₁ →L[R₁] M₁ where
   toLinearMap := LinearMap.toSpanSingleton R₁ M₁ x
   cont := continuous_id.smul continuous_const
 #align continuous_linear_map.to_span_singleton ContinuousLinearMap.toSpanSingleton
@@ -1351,12 +1349,23 @@ theorem iInf_ker_proj : (⨅ i, ker (proj i : (∀ i, φ i) →L[R] φ i) : Subm
 
 variable (R φ)
 
+/-- Given a function `f : α → ι`, it induces a continuous linear function by right composition on
+product types. For `f = Subtype.val`, this corresponds to forgetting some set of variables. -/
+def _root_.Pi.compRightL {α : Type*} (f : α → ι) : ((i : ι) → φ i) →L[R] ((i : α) → φ (f i)) where
+  toFun := fun v i ↦ v (f i)
+  map_add' := by intros; ext; simp
+  map_smul' := by intros; ext; simp
+  cont := by continuity
+
+@[simp] lemma _root_.Pi.compRightL_apply {α : Type*} (f : α → ι) (v : (i : ι) → φ i) (i : α) :
+    Pi.compRightL R φ f v i = v (f i) := rfl
+
 /-- If `I` and `J` are complementary index sets, the product of the kernels of the `J`th projections
 of `φ` is linearly equivalent to the product over `I`. -/
 def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjoint I J)
     (hu : Set.univ ⊆ I ∪ J) :
-    (⨅ i ∈ J, ker (proj i : (∀ i, φ i) →L[R] φ i) : Submodule R (∀ i, φ i)) ≃L[R] ∀ i : I, φ i
-    where
+    (⨅ i ∈ J, ker (proj i : (∀ i, φ i) →L[R] φ i) :
+    Submodule R (∀ i, φ i)) ≃L[R] ∀ i : I, φ i where
   toLinearEquiv := LinearMap.iInfKerProjEquiv R φ hd hu
   continuous_toFun :=
     continuous_pi fun i => by
@@ -1628,7 +1637,7 @@ theorem comp_smulₛₗ [SMulCommClass R₂ R₂ M₂] [SMulCommClass R₃ R₃ 
 
 instance distribMulAction [ContinuousAdd M₂] : DistribMulAction S₃ (M →SL[σ₁₂] M₂) where
   smul_add a f g := ext fun x => smul_add a (f x) (g x)
-  smul_zero _a := ext fun _x => smul_zero _
+  smul_zero a := ext fun _ => smul_zero a
 #align continuous_linear_map.distrib_mul_action ContinuousLinearMap.distribMulAction
 
 end SMulMonoid
@@ -1671,7 +1680,7 @@ theorem prod_ext {f g : M × N₂ →L[R] N₃} (hl : f.comp (inl _ _ _) = g.com
 variable [ContinuousAdd M₂] [ContinuousAdd M₃] [ContinuousAdd N₂]
 
 instance module : Module S₃ (M →SL[σ₁₃] M₃) where
-  zero_smul _ := ext fun _ => zero_smul _ _
+  zero_smul _ := ext fun _ => zero_smul S₃ _
   add_smul _ _ _ := ext fun _ => add_smul _ _ _
 #align continuous_linear_map.module ContinuousLinearMap.module
 
@@ -1727,7 +1736,7 @@ def smulRightₗ (c : M →L[R] S) : M₂ →ₗ[T] M →L[R] M₂ where
   toFun := c.smulRight
   map_add' x y := by
     ext e
-    apply smul_add
+    apply smul_add (c e)
   map_smul' a x := by
     ext e
     dsimp

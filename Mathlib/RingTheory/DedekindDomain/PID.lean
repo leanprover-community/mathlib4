@@ -50,21 +50,21 @@ theorem Ideal.eq_span_singleton_of_mem_of_not_mem_sq_of_not_mem_prime_ne {P : Id
     rwa [eq_comm, span_singleton_eq_bot, ← mem_bot]
   have hspan0 : span ({x} : Set R) ≠ ⊥ := mt Ideal.span_singleton_eq_bot.mp hx0
   have span_le := (Ideal.span_singleton_le_iff_mem _).mpr x_mem
-  refine'
+  refine
     associated_iff_eq.mp
       ((associated_iff_normalizedFactors_eq_normalizedFactors hP0 hspan0).mpr
-        (le_antisymm ((dvd_iff_normalizedFactors_le_normalizedFactors hP0 hspan0).mp _) _))
+        (le_antisymm ((dvd_iff_normalizedFactors_le_normalizedFactors hP0 hspan0).mp ?_) ?_))
   · rwa [Ideal.dvd_iff_le, Ideal.span_singleton_le_iff_mem]
   simp only [normalizedFactors_irreducible (Ideal.prime_of_isPrime hP0 hP).irreducible,
     normalize_eq, Multiset.le_iff_count, Multiset.count_singleton]
   intro Q
   split_ifs with hQ
   · subst hQ
-    refine' (Ideal.count_normalizedFactors_eq _ _).le <;>
+    refine (Ideal.count_normalizedFactors_eq ?_ ?_).le <;>
         simp only [Ideal.span_singleton_le_iff_mem, pow_one] <;>
       assumption
   by_cases hQp : IsPrime Q
-  · refine' (Ideal.count_normalizedFactors_eq _ _).le <;>
+  · refine (Ideal.count_normalizedFactors_eq ?_ ?_).le <;>
       -- Porting note: included `zero_add` in the simp arguments
       simp only [Ideal.span_singleton_le_iff_mem, zero_add, pow_one, pow_zero, one_eq_top,
                  Submodule.mem_top]
@@ -95,7 +95,7 @@ theorem FractionalIdeal.isPrincipal_of_unit_of_comap_mul_span_singleton_eq_top {
     rw [← hJ, h, IsLocalization.coeSubmodule_top, Submodule.mem_one]
     exact ⟨1, (algebraMap R _).map_one⟩
   obtain ⟨w, hw, hvw⟩ := Submodule.mem_mul_span_singleton.1 this
-  refine' ⟨⟨w, _⟩⟩
+  refine ⟨⟨w, ?_⟩⟩
   rw [← FractionalIdeal.coe_spanSingleton S, ← inv_inv I, eq_comm]
   refine' congr_arg (↑) (Units.eq_inv_of_mul_eq_one_left (le_antisymm _ _))
   · conv_rhs => rw [← hinv, mul_comm]
@@ -234,8 +234,8 @@ theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime [IsDomain S]
     IsScalarTower.algebraMap_eq R (Localization.AtPrime p) Sₚ, ← Ideal.map_map,
     Localization.AtPrime.map_eq_maximalIdeal, Ideal.map_le_iff_le_comap,
     hpu (LocalRing.maximalIdeal _) ⟨this, _⟩, hpu (comap _ _) ⟨_, _⟩]
-  · have hRS : Algebra.IsIntegral R S := isIntegral_of_noetherian inferInstance
-    exact mt (Ideal.eq_bot_of_comap_eq_bot (isIntegral_localization hRS)) hP0
+  · have : Algebra.IsIntegral (Localization.AtPrime p) Sₚ := ⟨isIntegral_localization⟩
+    exact mt (Ideal.eq_bot_of_comap_eq_bot ) hP0
   · exact Ideal.comap_isPrime (algebraMap (Localization.AtPrime p) Sₚ) P
   · exact (LocalRing.maximalIdeal.isMaximal _).isPrime
   · rw [Ne, zero_eq_bot, Ideal.map_eq_bot_iff_of_injective]
@@ -251,12 +251,12 @@ theorem IsDedekindDomain.isPrincipalIdealRing_localization_over_prime [IsDomain 
     IsPrincipalIdealRing Sₚ := by
   letI := Classical.decEq (Ideal Sₚ)
   letI := Classical.decPred fun P : Ideal Sₚ => P.IsPrime
-  refine'
+  refine
     IsPrincipalIdealRing.of_finite_primes
       (Set.Finite.ofFinset
         (Finset.filter (fun P => P.IsPrime)
           ({⊥} ∪ (normalizedFactors (Ideal.map (algebraMap R Sₚ) p)).toFinset))
-        fun P => _)
+        fun P => ?_)
   rw [Finset.mem_filter, Finset.mem_union, Finset.mem_singleton, Set.mem_setOf,
     Multiset.mem_toFinset]
   exact

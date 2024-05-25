@@ -53,10 +53,10 @@ theorem summable_iff_vanishing_norm [CompleteSpace E] {f : ι → E} :
 
 theorem cauchySeq_finset_of_norm_bounded_eventually {f : ι → E} {g : ι → ℝ} (hg : Summable g)
     (h : ∀ᶠ i in cofinite, ‖f i‖ ≤ g i) : CauchySeq fun s => ∑ i in s, f i := by
-  refine' cauchySeq_finset_iff_vanishing_norm.2 fun ε hε => _
+  refine cauchySeq_finset_iff_vanishing_norm.2 fun ε hε => ?_
   rcases summable_iff_vanishing_norm.1 hg ε hε with ⟨s, hs⟩
   classical
-  refine' ⟨s ∪ h.toFinset, fun t ht => _⟩
+  refine ⟨s ∪ h.toFinset, fun t ht => ?_⟩
   have : ∀ i ∈ t, ‖f i‖ ≤ g i := by
     intro i hi
     simp only [disjoint_left, mem_union, not_or, h.mem_toFinset, Set.mem_compl_iff,
@@ -64,7 +64,7 @@ theorem cauchySeq_finset_of_norm_bounded_eventually {f : ι → E} {g : ι → �
     exact (ht hi).2
   calc
     ‖∑ i in t, f i‖ ≤ ∑ i in t, g i := norm_sum_le_of_le _ this
-    _ ≤ ‖∑ i in t, g i‖ := (le_abs_self _)
+    _ ≤ ‖∑ i in t, g i‖ := le_abs_self _
     _ < ε := hs _ (ht.mono_right le_sup_left)
 #align cauchy_seq_finset_of_norm_bounded_eventually cauchySeq_finset_of_norm_bounded_eventually
 
@@ -78,14 +78,14 @@ See `cauchySeq_finset_of_norm_bounded` for the same statement about absolutely c
 theorem cauchySeq_range_of_norm_bounded {f : ℕ → E} (g : ℕ → ℝ)
     (hg : CauchySeq fun n => ∑ i in range n, g i) (hf : ∀ i, ‖f i‖ ≤ g i) :
     CauchySeq fun n => ∑ i in range n, f i := by
-  refine' Metric.cauchySeq_iff'.2 fun ε hε => _
-  refine' (Metric.cauchySeq_iff'.1 hg ε hε).imp fun N hg n hn => _
+  refine Metric.cauchySeq_iff'.2 fun ε hε => ?_
+  refine (Metric.cauchySeq_iff'.1 hg ε hε).imp fun N hg n hn => ?_
   specialize hg n hn
   rw [dist_eq_norm, ← sum_Ico_eq_sub _ hn] at hg ⊢
   calc
     ‖∑ k in Ico N n, f k‖ ≤ ∑ k in _, ‖f k‖ := norm_sum_le _ _
-    _ ≤ ∑ k in _, g k := (sum_le_sum fun x _ => hf x)
-    _ ≤ ‖∑ k in _, g k‖ := (le_abs_self _)
+    _ ≤ ∑ k in _, g k := sum_le_sum fun x _ => hf x
+    _ ≤ ‖∑ k in _, g k‖ := le_abs_self _
     _ < ε := hg
 #align cauchy_seq_range_of_norm_bounded cauchySeq_range_of_norm_bounded
 

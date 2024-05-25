@@ -6,6 +6,7 @@ Authors: Michael Stoll
 import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
 import Mathlib.FieldTheory.Finite.Trace
 import Mathlib.Algebra.Group.AddChar
+import Mathlib.Data.ZMod.Units
 
 #align_import number_theory.legendre_symbol.add_character from "leanprover-community/mathlib"@"0723536a0522d24fc2f159a096fb3304bef77472"
 
@@ -77,6 +78,15 @@ theorem IsNontrivial.isPrimitive {F : Type u} [Field F] {ψ : AddChar F R'} (hψ
   rwa [mulShift_apply, mul_inv_cancel_left₀ ha]
 #align add_char.is_nontrivial.is_primitive AddChar.IsNontrivial.isPrimitive
 
+/-- If `r` is not a unit, then `e.mulShift r` is not primitive. -/
+lemma not_isPrimitive_mulShift [Finite R] (e : AddChar R R') {r : R}
+    (hr : ¬ IsUnit r) : ¬ IsPrimitive (e.mulShift r) := by
+  simp only [IsPrimitive, not_forall]
+  simp only [isUnit_iff_mem_nonZeroDivisors_of_finite, mem_nonZeroDivisors_iff, not_forall] at hr
+  rcases hr with ⟨x, h, h'⟩
+  exact ⟨x, h', by simp only [mulShift_mulShift, mul_comm r, h, mulShift_zero, not_ne_iff,
+    isNontrivial_iff_ne_trivial]⟩
+
 -- Porting note: Using `structure` gives a timeout, see
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/mysterious.20finsupp.20related.20timeout/near/365719262 and
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/mysterious.20finsupp.20related.20timeout
@@ -110,6 +120,25 @@ theorem PrimitiveAddChar.prim {R : Type u} [CommRing R] {R' : Type v} [Field R']
 ### Additive characters on `ZMod n`
 -/
 
+section ZMod
+
+variable {N : ℕ+} {R : Type*} [CommRing R] (e : AddChar (ZMod N) R)
+
+/-- If `e` is not primitive, then `e.mulShift d = 1` for some proper divisor `d` of `N`. -/
+lemma exists_divisor_of_not_isPrimitive (he : ¬e.IsPrimitive) :
+    ∃ d : ℕ, d ∣ N ∧ d < N ∧ e.mulShift d = 1 := by
+  simp_rw [IsPrimitive, not_forall, isNontrivial_iff_ne_trivial, not_ne_iff] at he
+  rcases he with ⟨b, hb_ne, hb⟩
+  -- We have `AddChar.mulShift e b = 1`, but `b ≠ 0`.
+  obtain ⟨d, hd, u, hu, rfl⟩ := b.eq_unit_mul_divisor
+  refine ⟨d, hd, lt_of_le_of_ne (Nat.le_of_dvd N.pos hd) ?_, ?_⟩
+  · exact fun h ↦ by simp only [h, ZMod.natCast_self, mul_zero, ne_eq, not_true_eq_false] at hb_ne
+  · rw [← mulShift_unit_eq_one_iff _ hu, ← hb, mul_comm]
+    ext1 y
+    rw [mulShift_apply, mulShift_apply, mulShift_apply, mul_assoc]
+
+end ZMod
+
 section ZModChar
 
 variable {C : Type v} [CommMonoid C]
@@ -132,7 +161,7 @@ theorem zmodChar_apply {n : ℕ+} {ζ : C} (hζ : ζ ^ (n : ℕ) = 1) (a : ZMod 
 
 theorem zmodChar_apply' {n : ℕ+} {ζ : C} (hζ : ζ ^ (n : ℕ) = 1) (a : ℕ) :
     zmodChar n hζ a = ζ ^ a := by
-  rw [pow_eq_pow_mod a hζ, zmodChar_apply, ZMod.val_nat_cast a]
+  rw [pow_eq_pow_mod a hζ, zmodChar_apply, ZMod.val_natCast a]
 #align add_char.zmod_char_apply' AddChar.zmodChar_apply'
 
 end ZModCharDef
@@ -140,11 +169,11 @@ end ZModCharDef
 /-- An additive character on `ZMod n` is nontrivial iff it takes a value `≠ 1` on `1`. -/
 theorem zmod_char_isNontrivial_iff (n : ℕ+) (ψ : AddChar (ZMod n) C) :
     IsNontrivial ψ ↔ ψ 1 ≠ 1 := by
-  refine' ⟨_, fun h => ⟨1, h⟩⟩
+  refine ⟨?_, fun h => ⟨1, h⟩⟩
   contrapose!
   rintro h₁ ⟨a, ha⟩
   have ha₁ : a = a.val • (1 : ZMod ↑n) := by
-    rw [nsmul_eq_mul, mul_one]; exact (ZMod.nat_cast_zmod_val a).symm
+    rw [nsmul_eq_mul, mul_one]; exact (ZMod.natCast_zmod_val a).symm
   rw [ha₁, map_nsmul_pow, h₁, one_pow] at ha
   exact ha rfl
 #align add_char.zmod_char_is_nontrivial_iff AddChar.zmod_char_isNontrivial_iff
@@ -152,7 +181,7 @@ theorem zmod_char_isNontrivial_iff (n : ℕ+) (ψ : AddChar (ZMod n) C) :
 /-- A primitive additive character on `ZMod n` takes the value `1` only at `0`. -/
 theorem IsPrimitive.zmod_char_eq_one_iff (n : ℕ+) {ψ : AddChar (ZMod n) C} (hψ : IsPrimitive ψ)
     (a : ZMod n) : ψ a = 1 ↔ a = 0 := by
-  refine' ⟨fun h => not_imp_comm.mp (hψ a) _, fun ha => by rw [ha, map_zero_one]⟩
+  refine ⟨fun h => not_imp_comm.mp (hψ a) ?_, fun ha => by rw [ha, map_zero_one]⟩
   rw [zmod_char_isNontrivial_iff n (mulShift ψ a), mulShift_apply, mul_one, h, Classical.not_not]
 #align add_char.is_primitive.zmod_char_eq_one_iff AddChar.IsPrimitive.zmod_char_eq_one_iff
 
@@ -160,7 +189,7 @@ theorem IsPrimitive.zmod_char_eq_one_iff (n : ℕ+) {ψ : AddChar (ZMod n) C} (h
 then it is primitive. -/
 theorem zmod_char_primitive_of_eq_one_only_at_zero (n : ℕ) (ψ : AddChar (ZMod n) C)
     (hψ : ∀ a, ψ a = 1 → a = 0) : IsPrimitive ψ := by
-  refine' fun a ha => (isNontrivial_iff_ne_trivial _).mpr fun hf => _
+  refine fun a ha => (isNontrivial_iff_ne_trivial _).mpr fun hf => ?_
   have h : mulShift ψ a 1 = (1 : AddChar (ZMod n) C) (1 : ZMod n) :=
     congr_fun (congr_arg (↑) hf) 1
   rw [mulShift_apply, mul_one] at h; norm_cast at h
@@ -247,7 +276,7 @@ theorem sum_eq_card_of_is_trivial {ψ : AddChar R R'} (hψ : ¬IsNontrivial ψ) 
     ∑ a, ψ a = Fintype.card R := by
   simp only [IsNontrivial] at hψ
   push_neg at hψ
-  simp only [hψ, Finset.sum_const, Nat.smul_one_eq_coe]
+  simp only [hψ, Finset.sum_const, Nat.smul_one_eq_cast]
   rfl
 #align add_char.sum_eq_card_of_is_trivial AddChar.sum_eq_card_of_is_trivial
 
@@ -261,7 +290,7 @@ theorem sum_mulShift {R : Type*} [CommRing R] [Fintype R] [DecidableEq R]
     (hψ : IsPrimitive ψ) : ∑ x : R, ψ (x * b) = if b = 0 then Fintype.card R else 0 := by
   split_ifs with h
   · -- case `b = 0`
-    simp only [h, mul_zero, map_zero_one, Finset.sum_const, Nat.smul_one_eq_coe]
+    simp only [h, mul_zero, map_zero_one, Finset.sum_const, Nat.smul_one_eq_cast]
     rfl
   · -- case `b ≠ 0`
     simp_rw [mul_comm]

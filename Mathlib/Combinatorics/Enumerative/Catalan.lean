@@ -89,8 +89,8 @@ private def gosperCatalan (n j : ℕ) : ℚ :=
 private theorem gosper_trick {n i : ℕ} (h : i ≤ n) :
     gosperCatalan (n + 1) (i + 1) - gosperCatalan (n + 1) i =
       Nat.centralBinom i / (i + 1) * Nat.centralBinom (n - i) / (n - i + 1) := by
-  have l₁ : (i : ℚ) + 1 ≠ 0 := by norm_cast; exact i.succ_ne_zero
-  have l₂ : (n : ℚ) - i + 1 ≠ 0 := by norm_cast; exact (n - i).succ_ne_zero
+  have l₁ : (i : ℚ) + 1 ≠ 0 := by norm_cast
+  have l₂ : (n : ℚ) - i + 1 ≠ 0 := by norm_cast
   have h₁ := (mul_div_cancel_left₀ (↑(Nat.centralBinom (i + 1))) l₁).symm
   have h₂ := (mul_div_cancel_left₀ (↑(Nat.centralBinom (n - i + 1))) l₂).symm
   have h₃ : ((i : ℚ) + 1) * (i + 1).centralBinom = 2 * (2 * i + 1) * i.centralBinom :=
@@ -108,9 +108,9 @@ private theorem gosper_trick {n i : ℕ} (h : i ≤ n) :
 
 private theorem gosper_catalan_sub_eq_central_binom_div (n : ℕ) : gosperCatalan (n + 1) (n + 1) -
     gosperCatalan (n + 1) 0 = Nat.centralBinom (n + 1) / (n + 2) := by
-  have : (n : ℚ) + 1 ≠ 0 := by norm_cast; exact n.succ_ne_zero
-  have : (n : ℚ) + 1 + 1 ≠ 0 := by norm_cast; exact (n + 1).succ_ne_zero
-  have h : (n : ℚ) + 2 ≠ 0 := by norm_cast; exact (n + 1).succ_ne_zero
+  have : (n : ℚ) + 1 ≠ 0 := by norm_cast
+  have : (n : ℚ) + 1 + 1 ≠ 0 := by norm_cast
+  have h : (n : ℚ) + 2 ≠ 0 := by norm_cast
   simp only [gosperCatalan, Nat.sub_zero, Nat.centralBinom_zero, Nat.sub_self]
   field_simp
   ring
@@ -131,7 +131,7 @@ theorem catalan_eq_centralBinom_div (n : ℕ) : catalan n = n.centralBinom / (n 
       rw [hd _ m_le_d, hd _ d_minus_x_le_d]
       norm_cast
     · trans (∑ i : Fin d.succ, (gosperCatalan (d + 1) (i + 1) - gosperCatalan (d + 1) i))
-      · refine' sum_congr rfl fun i _ => _
+      · refine sum_congr rfl fun i _ => ?_
         rw [gosper_trick i.is_le, mul_div]
       · rw [← sum_range fun i => gosperCatalan (d + 1) (i + 1) - gosperCatalan (d + 1) i,
             sum_range_sub, Nat.succ_eq_add_one]
@@ -157,8 +157,7 @@ open Tree
 
 /-- Given two finsets, find all trees that can be formed with
   left child in `a` and right child in `b` -/
-@[reducible]
-def pairwiseNode (a b : Finset (Tree Unit)) : Finset (Tree Unit) :=
+abbrev pairwiseNode (a b : Finset (Tree Unit)) : Finset (Tree Unit) :=
   (a ×ˢ b).map ⟨fun x => x.1 △ x.2, fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ => fun h => by simpa using h⟩
 #align tree.pairwise_node Tree.pairwiseNode
 
@@ -195,7 +194,6 @@ theorem mem_treesOfNumNodesEq {x : Tree Unit} {n : ℕ} :
     x ∈ treesOfNumNodesEq n ↔ x.numNodes = n := by
   induction x using Tree.unitRecOn generalizing n <;> cases n <;>
     simp [treesOfNumNodesEq_succ, Nat.succ_eq_add_one, *]
-  exact (Nat.succ_ne_zero _).symm
 #align tree.mem_trees_of_nodes_eq Tree.mem_treesOfNumNodesEq
 
 theorem mem_treesOfNumNodesEq_numNodes (x : Tree Unit) : x ∈ treesOfNumNodesEq x.numNodes :=

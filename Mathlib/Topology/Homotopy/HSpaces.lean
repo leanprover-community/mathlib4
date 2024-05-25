@@ -195,7 +195,7 @@ theorem qRight_zero_right (t : I) :
   simp only [qRight, coe_zero, add_zero, div_one]
   split_ifs
   · rw [Set.projIcc_of_mem _ ((mul_pos_mem_iff zero_lt_two).2 _)]
-    refine' ⟨t.2.1, _⟩
+    refine ⟨t.2.1, ?_⟩
     tauto
   · rw [(Set.projIcc_eq_right _).2]
     · linarith
@@ -203,14 +203,7 @@ theorem qRight_zero_right (t : I) :
 #align unit_interval.Q_right_zero_right unitInterval.qRight_zero_right
 
 theorem qRight_one_right (t : I) : qRight (t, 1) = t :=
-  Eq.trans
-      (by
-        rw [qRight]
-        congr
-        norm_num
-        apply mul_div_cancel_left₀
-        exact two_ne_zero) <|
-    Set.projIcc_val zero_le_one _
+  Eq.trans (by rw [qRight]; norm_num) <| Set.projIcc_val zero_le_one _
 #align unit_interval.Q_right_one_right unitInterval.qRight_one_right
 
 end unitInterval
@@ -244,7 +237,8 @@ theorem delayReflRight_zero (γ : Path x y) : delayReflRight 0 γ = γ.trans (Pa
   ext t
   simp only [delayReflRight, trans_apply, refl_extend, Path.coe_mk_mk, Function.comp_apply,
     refl_apply]
-  split_ifs with h; swap; conv_rhs => rw [← γ.target]
+  split_ifs with h; swap
+  on_goal 1 => conv_rhs => rw [← γ.target]
   all_goals apply congr_arg γ; ext1; rw [qRight_zero_right]
   exacts [if_neg h, if_pos h]
 #align path.delay_refl_right_zero Path.delayReflRight_zero

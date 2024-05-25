@@ -48,8 +48,7 @@ def Component (j : ConnectedComponents J) : Type u₁ :=
   FullSubcategory fun k => Quotient.mk'' k = j
 #align category_theory.component CategoryTheory.Component
 
-set_option autoImplicit true in
-instance : Category (Component (j : ConnectedComponents J)) :=
+instance {j : ConnectedComponents J} : Category (Component j) :=
   FullSubcategory.category _
 
 -- Porting note: it was originally @[simps (config := { rhsMd := semireducible })]
@@ -59,12 +58,10 @@ def Component.ι (j : ConnectedComponents J) : Component j ⥤ J :=
   fullSubcategoryInclusion _
 #align category_theory.component.ι CategoryTheory.Component.ι
 
-set_option autoImplicit true in
-instance : Functor.Full (Component.ι (j : ConnectedComponents J)) :=
+instance {j : ConnectedComponents J} : Functor.Full (Component.ι j) :=
   FullSubcategory.full _
 
-set_option autoImplicit true in
-instance : Functor.Faithful (Component.ι (j : ConnectedComponents J)) :=
+instance {j : ConnectedComponents J} : Functor.Faithful (Component.ι j) :=
   FullSubcategory.faithful _
 
 /-- Each connected component of the category is nonempty. -/
@@ -130,23 +127,15 @@ theorem inclusion_comp_decomposedTo (j : ConnectedComponents J) :
   rfl
 #align category_theory.inclusion_comp_decomposed_to CategoryTheory.inclusion_comp_decomposedTo
 
-instance : (decomposedTo J).Full
-    where
-  preimage := by
+instance : (decomposedTo J).Full where
+  map_surjective := by
     rintro ⟨j', X, hX⟩ ⟨k', Y, hY⟩ f
     dsimp at f
     have : j' = k' := by
       rw [← hX, ← hY, Quotient.eq'']
       exact Relation.ReflTransGen.single (Or.inl ⟨f⟩)
     subst this
-    exact Sigma.SigmaHom.mk f
-  witness := by
-    rintro ⟨j', X, hX⟩ ⟨_, Y, rfl⟩ f
-    have : Quotient.mk'' Y = j' := by
-      rw [← hX, Quotient.eq'']
-      exact Relation.ReflTransGen.single (Or.inr ⟨f⟩)
-    subst this
-    rfl
+    exact ⟨Sigma.SigmaHom.mk f, rfl⟩
 
 instance : (decomposedTo J).Faithful where
   map_injective := by
@@ -155,8 +144,7 @@ instance : (decomposedTo J).Faithful where
 
 instance : (decomposedTo J).EssSurj where mem_essImage j := ⟨⟨_, j, rfl⟩, ⟨Iso.refl _⟩⟩
 
-instance : (decomposedTo J).IsEquivalence :=
-  Functor.IsEquivalence.ofFullyFaithfullyEssSurj _
+instance : (decomposedTo J).IsEquivalence where
 
 -- Porting note: it was originally @[simps (config := { rhsMd := semireducible }) Functor]
 /-- This gives that any category is equivalent to a disjoint union of connected categories. -/

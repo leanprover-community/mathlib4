@@ -180,7 +180,7 @@ theorem iUnion_cylinder_update (x : ∀ n, E n) (n : ℕ) :
   · rintro ⟨k, hk⟩ i hi
     simpa [hi.ne] using hk i (Nat.lt_succ_of_lt hi)
   · intro H
-    refine' ⟨y n, fun i hi => _⟩
+    refine ⟨y n, fun i hi => ?_⟩
     rcases Nat.lt_succ_iff_lt_or_eq.1 hi with (h'i | rfl)
     · simp [H i h'i, h'i.ne]
     · simp
@@ -232,7 +232,7 @@ theorem res_eq_res {x y : ℕ → α} {n : ℕ} :
     exact h.1
   · simp
   simp only [res_succ, cons.injEq]
-  refine' ⟨h (Nat.lt_succ_self _), ih fun m hm => _⟩
+  refine ⟨h (Nat.lt_succ_self _), ih fun m hm => ?_⟩
   exact h (hm.trans (Nat.lt_succ_self _))
 #align pi_nat.res_eq_res PiNat.res_eq_res
 
@@ -375,7 +375,7 @@ theorem isTopologicalBasis_cylinders :
       (isTopologicalBasis_pi fun n : ℕ => isTopologicalBasis_opens).exists_subset_of_mem_open hx
         u_open
     rcases Finset.bddAbove F with ⟨n, hn⟩
-    refine' ⟨cylinder x (n + 1), ⟨x, n + 1, rfl⟩, self_mem_cylinder _ _, Subset.trans _ Uu⟩
+    refine ⟨cylinder x (n + 1), ⟨x, n + 1, rfl⟩, self_mem_cylinder _ _, Subset.trans ?_ Uu⟩
     intro y hy
     suffices ∀ i : ℕ, i ∈ F → y i ∈ U i by simpa
     intro i hi
@@ -401,7 +401,7 @@ theorem isOpen_iff_dist (s : Set (∀ n, E n)) :
     refine (isTopologicalBasis_cylinders E).isOpen_iff.2 fun x hx => ?_
     rcases h x hx with ⟨ε, εpos, hε⟩
     obtain ⟨n, hn⟩ : ∃ n : ℕ, (1 / 2 : ℝ) ^ n < ε := exists_pow_lt_of_lt_one εpos one_half_lt_one
-    refine' ⟨cylinder x n, ⟨x, n, rfl⟩, self_mem_cylinder x n, fun y hy => hε y _⟩
+    refine ⟨cylinder x n, ⟨x, n, rfl⟩, self_mem_cylinder x n, fun y hy => hε y ?_⟩
     rw [PiNat.dist_comm]
     exact (mem_cylinder_iff_dist_le.1 hy).trans_lt hn
 #align pi_nat.is_open_iff_dist PiNat.isOpen_iff_dist
@@ -466,10 +466,10 @@ def metricSpaceNatNat : MetricSpace (ℕ → ℕ) :=
 attribute [local instance] PiNat.metricSpace
 
 protected theorem completeSpace : CompleteSpace (∀ n, E n) := by
-  refine' Metric.complete_of_convergent_controlled_sequences (fun n => (1 / 2) ^ n) (by simp) _
+  refine Metric.complete_of_convergent_controlled_sequences (fun n => (1 / 2) ^ n) (by simp) ?_
   intro u hu
-  refine' ⟨fun n => u n n, tendsto_pi_nhds.2 fun i => _⟩
-  refine' tendsto_const_nhds.congr' _
+  refine ⟨fun n => u n n, tendsto_pi_nhds.2 fun i => ?_⟩
+  refine tendsto_const_nhds.congr' ?_
   filter_upwards [Filter.Ici_mem_atTop i] with n hn
   exact apply_eq_of_dist_lt (hu i i n le_rfl hn) le_rfl
 #align pi_nat.complete_space PiNat.completeSpace
@@ -490,7 +490,7 @@ theorem exists_disjoint_cylinder {s : Set (∀ n, E n)} (hs : IsClosed s) {x : �
   · exact ⟨0, by simp⟩
   have A : 0 < infDist x s := (hs.not_mem_iff_infDist_pos hne).1 hx
   obtain ⟨n, hn⟩ : ∃ n, (1 / 2 : ℝ) ^ n < infDist x s := exists_pow_lt_of_lt_one A one_half_lt_one
-  refine' ⟨n, disjoint_left.2 fun y ys hy => ?_⟩
+  refine ⟨n, disjoint_left.2 fun y ys hy => ?_⟩
   apply lt_irrefl (infDist x s)
   calc
     infDist x s ≤ dist x y := infDist_le_dist_of_mem ys
@@ -514,7 +514,7 @@ theorem firstDiff_lt_shortestPrefixDiff {s : Set (∀ n, E n)} (hs : IsClosed s)
   have B := Nat.find_spec A
   contrapose! B
   rw [not_disjoint_iff_nonempty_inter]
-  refine' ⟨y, hy, _⟩
+  refine ⟨y, hy, ?_⟩
   rw [mem_cylinder_comm]
   exact cylinder_anti y B (mem_cylinder_firstDiff x y)
 #align pi_nat.first_diff_lt_shortest_prefix_diff PiNat.firstDiff_lt_shortestPrefixDiff
@@ -549,7 +549,7 @@ theorem inter_cylinder_longestPrefix_nonempty {s : Set (∀ n, E n)} (hs : IsClo
   rw [longestPrefix, shortestPrefixDiff, dif_pos A] at B ⊢
   obtain ⟨y, ys, hy⟩ : ∃ y : ∀ n : ℕ, E n, y ∈ s ∧ x ∈ cylinder y (Nat.find A - 1) := by
     simpa only [not_disjoint_iff, mem_cylinder_comm] using Nat.find_min A B
-  refine' ⟨y, ys, _⟩
+  refine ⟨y, ys, ?_⟩
   rw [mem_cylinder_iff_eq] at hy ⊢
   rw [hy]
 #align pi_nat.inter_cylinder_longest_prefix_nonempty PiNat.inter_cylinder_longestPrefix_nonempty
@@ -610,7 +610,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
     `f y` are again in the same `n`-cylinder, as desired. -/
   set f := fun x => if x ∈ s then x else (inter_cylinder_longestPrefix_nonempty hs hne x).some
   have fs : ∀ x ∈ s, f x = x := fun x xs => by simp [f, xs]
-  refine' ⟨f, fs, _, _⟩
+  refine ⟨f, fs, ?_, ?_⟩
   -- check that the range of `f` is `s`.
   · apply Subset.antisymm
     · rintro x ⟨y, rfl⟩
@@ -758,7 +758,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
       dist (g x) (g y) ≤ dist (g x) (u (x.1 n)) + dist (g y) (u (x.1 n)) :=
         dist_triangle_right _ _ _
       _ = dist (g x) (u (x.1 n)) + dist (g y) (u (y.1 n)) := by rw [← B]
-      _ ≤ (1 / 2) ^ n + (1 / 2) ^ n := (add_le_add (A x n) (A y n))
+      _ ≤ (1 / 2) ^ n + (1 / 2) ^ n := add_le_add (A x n) (A y n)
       _ = 4 * (1 / 2) ^ (n + 1) := by ring
   have g_surj : Surjective g := fun y ↦ by
     have : ∀ n : ℕ, ∃ j, y ∈ closedBall (u j) ((1 / 2) ^ n) := fun n ↦ by
@@ -766,8 +766,8 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
       exact ⟨j, hj.le⟩
     choose x hx using this
     have I : (⋂ n : ℕ, closedBall (u (x n)) ((1 / 2) ^ n)).Nonempty := ⟨y, mem_iInter.2 hx⟩
-    refine' ⟨⟨x, I⟩, _⟩
-    refine' dist_le_zero.1 _
+    refine ⟨⟨x, I⟩, ?_⟩
+    refine dist_le_zero.1 ?_
     have J : ∀ n : ℕ, dist (g ⟨x, I⟩) y ≤ (1 / 2) ^ n + (1 / 2) ^ n := fun n =>
       calc
         dist (g ⟨x, I⟩) y ≤ dist (g ⟨x, I⟩) (u (x n)) + dist y (u (x n)) :=

@@ -596,7 +596,7 @@ theorem xn_modEq_x2n_add_lem (n j) : xn a1 n ∣ d a1 * yn a1 n * (yn a1 n * xn 
 
 theorem xn_modEq_x2n_add (n j) : xn a1 (2 * n + j) + xn a1 j ≡ 0 [MOD xn a1 n] := by
   rw [two_mul, add_assoc, xn_add, add_assoc, ← zero_add 0]
-  refine' (dvd_mul_right (xn a1 n) (xn a1 (n + j))).modEq_zero_nat.add _
+  refine (dvd_mul_right (xn a1 n) (xn a1 (n + j))).modEq_zero_nat.add ?_
   rw [yn_add, left_distrib, add_assoc, ← zero_add 0]
   exact
     ((dvd_mul_right _ _).mul_left _).modEq_zero_nat.add (xn_modEq_x2n_add_lem _ _ _).modEq_zero_nat
@@ -628,7 +628,7 @@ theorem xn_modEq_x2n_sub {n j} (h : j ≤ 2 * n) : xn a1 (2 * n - j) + xn a1 j �
 
 theorem xn_modEq_x4n_add (n j) : xn a1 (4 * n + j) ≡ xn a1 j [MOD xn a1 n] :=
   ModEq.add_right_cancel' (xn a1 (2 * n + j)) <| by
-    refine' @ModEq.trans _ _ 0 _ _ (by rw [add_comm]; exact (xn_modEq_x2n_add _ _ _).symm)
+    refine @ModEq.trans _ _ 0 _ ?_ (by rw [add_comm]; exact (xn_modEq_x2n_add _ _ _).symm)
     rw [show 4 * n = 2 * n + 2 * n from right_distrib 2 2 n, add_assoc]
     apply xn_modEq_x2n_add
 #align pell.xn_modeq_x4n_add Pell.xn_modEq_x4n_add
@@ -636,7 +636,7 @@ theorem xn_modEq_x4n_add (n j) : xn a1 (4 * n + j) ≡ xn a1 j [MOD xn a1 n] :=
 theorem xn_modEq_x4n_sub {n j} (h : j ≤ 2 * n) : xn a1 (4 * n - j) ≡ xn a1 j [MOD xn a1 n] :=
   have h' : j ≤ 2 * n := le_trans h (by rw [Nat.succ_mul])
   ModEq.add_right_cancel' (xn a1 (2 * n - j)) <| by
-    refine' @ModEq.trans _ _ 0 _ _ (by rw [add_comm]; exact (xn_modEq_x2n_sub _ h).symm)
+    refine @ModEq.trans _ _ 0 _ ?_ (by rw [add_comm]; exact (xn_modEq_x2n_sub _ h).symm)
     rw [show 4 * n = 2 * n + 2 * n from right_distrib 2 2 n, add_tsub_assoc_of_le h']
     apply xn_modEq_x2n_add
 #align pell.xn_modeq_x4n_sub Pell.xn_modEq_x4n_sub
@@ -675,7 +675,8 @@ theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
         lt_of_add_lt_add_right <|
           show 2 * n - k + k < n + k by
             rw [tsub_add_cancel_of_le]
-            rw [two_mul]; exact add_lt_add_left kn n
+            · rw [two_mul]
+              exact add_lt_add_left kn n
             exact k2n
       have xle : xn a1 (2 * n - k) ≤ xn a1 n := le_of_lt <| strictMono_x a1 k2nl
       suffices xn a1 k % xn a1 n = xn a1 n - xn a1 (2 * n - k) by rw [this, Int.ofNat_sub xle]
@@ -748,13 +749,13 @@ theorem eq_of_xn_modEq_le {i j n} (ij : i ≤ j) (j2n : j ≤ 2 * n)
   else
     (lt_or_eq_of_le ij).resolve_left fun ij' =>
       if jn : j = n then by
-        refine' _root_.ne_of_gt _ h
+        refine _root_.ne_of_gt ?_ h
         rw [jn, Nat.mod_self]
         have x0 : 0 < xn a1 0 % xn a1 n := by
           rw [Nat.mod_eq_of_lt (strictMono_x a1 (Nat.pos_of_ne_zero npos))]
           exact Nat.succ_pos _
         cases' i with i
-        exact x0
+        · exact x0
         rw [jn] at ij'
         exact
           x0.trans
@@ -844,9 +845,9 @@ theorem matiyasevic {a k x y} :
           b ≡ a [MOD u] ∧ 0 < v ∧ y * y ∣ v ∧ s ≡ x [MOD u] ∧ t ≡ k [MOD 4 * y]) :=
   ⟨fun ⟨a1, hx, hy⟩ => by
     rw [← hx, ← hy]
-    refine' ⟨a1,
+    refine ⟨a1,
         (Nat.eq_zero_or_pos k).elim (fun k0 => by rw [k0]; exact ⟨le_rfl, Or.inl ⟨rfl, rfl⟩⟩)
-          fun kpos => _⟩
+          fun kpos => ?_⟩
     exact
       let x := xn a1 k
       let y := yn a1 k
@@ -946,7 +947,7 @@ theorem eq_pow_of_pell {m n k} :
       n ≤ w ∧ k ≤ w ∧ a * a - ((w + 1) * (w + 1) - 1) * (w * z) * (w * z) = 1) := by
   constructor
   · rintro rfl
-    refine' k.eq_zero_or_pos.imp (fun k0 : k = 0 => k0.symm ▸ ⟨rfl, rfl⟩) fun hk => ⟨hk, _⟩
+    refine k.eq_zero_or_pos.imp (fun k0 : k = 0 => k0.symm ▸ ⟨rfl, rfl⟩) fun hk => ⟨hk, ?_⟩
     refine n.eq_zero_or_pos.imp (fun n0 : n = 0 ↦ n0.symm ▸ ⟨rfl, zero_pow hk.ne'⟩)
       fun hn ↦ ⟨hn, ?_⟩
     set w := max n k
@@ -962,10 +963,10 @@ theorem eq_pow_of_pell {m n k} :
     obtain ⟨z, ze⟩ : w ∣ yn w1 w :=
       modEq_zero_iff_dvd.1 ((yn_modEq_a_sub_one w1 w).trans dvd_rfl.modEq_zero_nat)
     have nt : (↑(n ^ k) : ℤ) < 2 * a * n - n * n - 1 := by
-      refine' eq_pow_of_pell_lem hn.ne' hk.ne' _
+      refine eq_pow_of_pell_lem hn.ne' hk.ne' ?_
       calc
         n ^ k ≤ n ^ w := Nat.pow_le_pow_of_le_right hn kw
-        _ < (w + 1) ^ w := (Nat.pow_lt_pow_left (Nat.lt_succ_of_le nw) wpos.ne')
+        _ < (w + 1) ^ w := Nat.pow_lt_pow_left (Nat.lt_succ_of_le nw) wpos.ne'
         _ ≤ a := xn_ge_a_pow w1 w
     lift (2 * a * n - n * n - 1 : ℤ) to ℕ using (Nat.cast_nonneg _).trans nt.le with t te
     have tm : x ≡ y * (a - n) + n ^ k [MOD t] := by
@@ -994,7 +995,7 @@ theorem eq_pow_of_pell {m n k} :
           (yn_modEq_a_sub_one hw1 j).symm.trans <| modEq_zero_iff_dvd.2 ⟨z, yj.symm⟩)
     have hnka : n ^ k < xn hw1 j := calc
       n ^ k ≤ n ^ j := Nat.pow_le_pow_of_le_right hn0 (le_trans kw wj)
-      _ < (w + 1) ^ j := (Nat.pow_lt_pow_left (Nat.lt_succ_of_le nw) hj0.ne')
+      _ < (w + 1) ^ j := Nat.pow_lt_pow_left (Nat.lt_succ_of_le nw) hj0.ne'
       _ ≤ xn hw1 j := xn_ge_a_pow hw1 j
     have nt : (↑(n ^ k) : ℤ) < 2 * xn hw1 j * n - n * n - 1 :=
       eq_pow_of_pell_lem hn0.ne' hk0.ne' hnka

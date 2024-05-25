@@ -28,7 +28,10 @@ namespace Real
 theorem pi_gt_sqrtTwoAddSeries (n : ℕ) :
     (2 : ℝ) ^ (n + 1) * √(2 - sqrtTwoAddSeries 0 n) < π := by
   have : √(2 - sqrtTwoAddSeries 0 n) / (2 : ℝ) * (2 : ℝ) ^ (n + 2) < π := by
-    rw [← lt_div_iff, ← sin_pi_over_two_pow_succ]; apply sin_lt; apply div_pos pi_pos
+    rw [← lt_div_iff, ← sin_pi_over_two_pow_succ]
+    focus
+      apply sin_lt
+      apply div_pos pi_pos
     all_goals apply pow_pos; norm_num
   apply lt_of_le_of_lt (le_of_eq _) this
   rw [pow_succ' _ (n + 1), ← mul_assoc, div_mul_cancel₀, mul_comm]; norm_num
@@ -39,29 +42,32 @@ theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :
   have : π <
       (√(2 - sqrtTwoAddSeries 0 n) / (2 : ℝ) + (1 : ℝ) / ((2 : ℝ) ^ n) ^ 3 / 4) *
       (2 : ℝ) ^ (n + 2) := by
-    rw [← div_lt_iff, ← sin_pi_over_two_pow_succ]
-    refine' lt_of_lt_of_le (lt_add_of_sub_right_lt (sin_gt_sub_cube _ _)) _
+    rw [← div_lt_iff (by norm_num), ← sin_pi_over_two_pow_succ]
+    refine lt_of_lt_of_le (lt_add_of_sub_right_lt (sin_gt_sub_cube ?_ ?_)) ?_
     · apply div_pos pi_pos; apply pow_pos; norm_num
     · rw [div_le_iff']
-      · refine' le_trans pi_le_four _
+      · refine le_trans pi_le_four ?_
         simp only [show (4 : ℝ) = (2 : ℝ) ^ 2 by norm_num, mul_one]
-        apply pow_le_pow_right; norm_num; apply le_add_of_nonneg_left; apply Nat.zero_le
+        apply pow_le_pow_right (by norm_num)
+        apply le_add_of_nonneg_left; apply Nat.zero_le
       · apply pow_pos; norm_num
-    apply add_le_add_left; rw [div_le_div_right]
-    rw [le_div_iff, ← mul_pow]
-    refine' le_trans _ (le_of_eq (one_pow 3)); apply pow_le_pow_left
-    · apply le_of_lt; apply mul_pos; apply div_pos pi_pos; apply pow_pos; norm_num; apply pow_pos
-      norm_num
-    rw [← le_div_iff]
-    refine' le_trans ((div_le_div_right _).mpr pi_le_four) _; apply pow_pos; norm_num
-    simp only [pow_succ', ← div_div, one_div]
-    -- Porting note: removed `convert le_rfl`
-    all_goals (repeat' apply pow_pos); norm_num
+    apply add_le_add_left; rw [div_le_div_right (by norm_num)]
+    rw [le_div_iff (by norm_num), ← mul_pow]
+    refine le_trans ?_ (le_of_eq (one_pow 3)); apply pow_le_pow_left
+    · apply le_of_lt; apply mul_pos
+      · apply div_pos pi_pos; apply pow_pos; norm_num
+      · apply pow_pos; norm_num
+    · rw [← le_div_iff (by norm_num)]
+      refine le_trans ((div_le_div_right ?_).mpr pi_le_four) ?_
+      · apply pow_pos; norm_num
+      · simp only [pow_succ', ← div_div, one_div]
+      -- Porting note: removed `convert le_rfl`
+        norm_num
   apply lt_of_lt_of_le this (le_of_eq _); rw [add_mul]; congr 1
   · ring
   simp only [show (4 : ℝ) = 2 ^ 2 by norm_num, ← pow_mul, div_div, ← pow_add]
   rw [one_div, one_div, inv_mul_eq_iff_eq_mul₀, eq_comm, mul_inv_eq_iff_eq_mul₀, ← pow_add]
-  rw [add_assoc, Nat.mul_succ, add_comm, add_comm n, add_assoc, mul_comm n]
+  · rw [add_assoc, Nat.mul_succ, add_comm, add_comm n, add_assoc, mul_comm n]
   all_goals norm_num
 #align real.pi_lt_sqrt_two_add_series Real.pi_lt_sqrtTwoAddSeries
 
@@ -71,15 +77,15 @@ thanks to basic trigonometric inequalities as expressed in `pi_gt_sqrtTwoAddSeri
 theorem pi_lower_bound_start (n : ℕ) {a}
     (h : sqrtTwoAddSeries ((0 : ℕ) / (1 : ℕ)) n ≤ (2 : ℝ) - (a / (2 : ℝ) ^ (n + 1)) ^ 2) :
     a < π := by
-  refine' lt_of_le_of_lt _ (pi_gt_sqrtTwoAddSeries n); rw [mul_comm]
-  refine' (div_le_iff (pow_pos (by norm_num) _ : (0 : ℝ) < _)).mp (le_sqrt_of_sq_le _)
+  refine lt_of_le_of_lt ?_ (pi_gt_sqrtTwoAddSeries n); rw [mul_comm]
+  refine (div_le_iff (pow_pos (by norm_num) _ : (0 : ℝ) < _)).mp (le_sqrt_of_sq_le ?_)
   rwa [le_sub_comm, show (0 : ℝ) = (0 : ℕ) / (1 : ℕ) by rw [Nat.cast_zero, zero_div]]
 #align real.pi_lower_bound_start Real.pi_lower_bound_start
 
 theorem sqrtTwoAddSeries_step_up (c d : ℕ) {a b n : ℕ} {z : ℝ} (hz : sqrtTwoAddSeries (c / d) n ≤ z)
     (hb : 0 < b) (hd : 0 < d) (h : (2 * b + a) * d ^ 2 ≤ c ^ 2 * b) :
     sqrtTwoAddSeries (a / b) (n + 1) ≤ z := by
-  refine' le_trans _ hz; rw [sqrtTwoAddSeries_succ]; apply sqrtTwoAddSeries_monotone_left
+  refine le_trans ?_ hz; rw [sqrtTwoAddSeries_succ]; apply sqrtTwoAddSeries_monotone_left
   have hb' : 0 < (b : ℝ) := Nat.cast_pos.2 hb
   have hd' : 0 < (d : ℝ) := Nat.cast_pos.2 hd
   rw [sqrt_le_left (div_nonneg c.cast_nonneg d.cast_nonneg), div_pow,
@@ -123,7 +129,7 @@ theorem pi_upper_bound_start (n : ℕ) {a}
     (h : (2 : ℝ) - ((a - 1 / (4 : ℝ) ^ n) / (2 : ℝ) ^ (n + 1)) ^ 2 ≤
         sqrtTwoAddSeries ((0 : ℕ) / (1 : ℕ)) n)
     (h₂ : (1 : ℝ) / (4 : ℝ) ^ n ≤ a) : π < a := by
-  refine' lt_of_lt_of_le (pi_lt_sqrtTwoAddSeries n) _
+  refine lt_of_lt_of_le (pi_lt_sqrtTwoAddSeries n) ?_
   rw [← le_sub_iff_add_le, ← le_div_iff', sqrt_le_left, sub_le_comm]
   · rwa [Nat.cast_zero, zero_div] at h
   · exact div_nonneg (sub_nonneg.2 h₂) (pow_nonneg (le_of_lt zero_lt_two) _)

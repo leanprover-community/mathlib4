@@ -3,9 +3,10 @@ Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Data.Set.Intervals.Monotone
+import Mathlib.Order.Interval.Set.Monotone
 import Mathlib.Probability.Process.HittingTime
 import Mathlib.Probability.Martingale.Basic
+import Mathlib.Tactic.AdaptationNote
 
 #align_import probability.martingale.upcrossing from "leanprover-community/mathlib"@"2c1d8ca2812b64f88992a5294ea3dba144755cd1"
 
@@ -241,8 +242,8 @@ theorem stoppedValue_upperCrossingTime (h : upperCrossingTime a b f N (n + 1) ω
 theorem upperCrossingTime_lt_lowerCrossingTime (hab : a < b)
     (hn : lowerCrossingTime a b f N (n + 1) ω ≠ N) :
     upperCrossingTime a b f N (n + 1) ω < lowerCrossingTime a b f N (n + 1) ω := by
-  refine' lt_of_le_of_ne upperCrossingTime_le_lowerCrossingTime fun h =>
-    not_le.2 hab <| le_trans _ (stoppedValue_lowerCrossingTime hn)
+  refine lt_of_le_of_ne upperCrossingTime_le_lowerCrossingTime fun h =>
+    not_le.2 hab <| le_trans ?_ (stoppedValue_lowerCrossingTime hn)
   simp only [stoppedValue]
   rw [← h]
   exact stoppedValue_upperCrossingTime (h.symm ▸ hn)
@@ -251,8 +252,8 @@ theorem upperCrossingTime_lt_lowerCrossingTime (hab : a < b)
 theorem lowerCrossingTime_lt_upperCrossingTime (hab : a < b)
     (hn : upperCrossingTime a b f N (n + 1) ω ≠ N) :
     lowerCrossingTime a b f N n ω < upperCrossingTime a b f N (n + 1) ω := by
-  refine' lt_of_le_of_ne lowerCrossingTime_le_upperCrossingTime_succ fun h =>
-    not_le.2 hab <| le_trans (stoppedValue_upperCrossingTime hn) _
+  refine lt_of_le_of_ne lowerCrossingTime_le_upperCrossingTime_succ fun h =>
+    not_le.2 hab <| le_trans (stoppedValue_upperCrossingTime hn) ?_
   simp only [stoppedValue]
   rw [← h]
   exact stoppedValue_lowerCrossingTime (h.symm ▸ hn)
@@ -300,7 +301,7 @@ theorem exists_upperCrossingTime_eq (f : ℕ → Ω → ℝ) (N : ℕ) (ω : Ω)
 theorem upperCrossingTime_lt_bddAbove (hab : a < b) :
     BddAbove {n | upperCrossingTime a b f N n ω < N} := by
   obtain ⟨k, hk⟩ := exists_upperCrossingTime_eq f N ω hab
-  refine' ⟨k, fun n (hn : upperCrossingTime a b f N n ω < N) => _⟩
+  refine ⟨k, fun n (hn : upperCrossingTime a b f N n ω < N) => ?_⟩
   by_contra hn'
   exact hn.ne (upperCrossingTime_stabilize (not_le.1 hn').le hk)
 #align measure_theory.upper_crossing_time_lt_bdd_above MeasureTheory.upperCrossingTime_lt_bddAbove
@@ -313,10 +314,10 @@ theorem upperCrossingTime_lt_nonempty (hN : 0 < N) :
 theorem upperCrossingTime_bound_eq (f : ℕ → Ω → ℝ) (N : ℕ) (ω : Ω) (hab : a < b) :
     upperCrossingTime a b f N N ω = N := by
   by_cases hN' : N < Nat.find (exists_upperCrossingTime_eq f N ω hab)
-  · refine' le_antisymm upperCrossingTime_le _
+  · refine le_antisymm upperCrossingTime_le ?_
     have hmono : StrictMonoOn (fun n => upperCrossingTime a b f N n ω)
         (Set.Iic (Nat.find (exists_upperCrossingTime_eq f N ω hab)).pred) := by
-      refine' strictMonoOn_Iic_of_lt_succ fun m hm => upperCrossingTime_lt_succ hab _
+      refine strictMonoOn_Iic_of_lt_succ fun m hm => upperCrossingTime_lt_succ hab ?_
       rw [Nat.lt_pred_iff] at hm
       convert Nat.find_min _ hm
     convert StrictMonoOn.Iic_id_le hmono N (Nat.le_sub_one_of_lt hN')
@@ -336,7 +337,7 @@ theorem Adapted.isStoppingTime_crossing (hf : Adapted ℱ f) :
     IsStoppingTime ℱ (upperCrossingTime a b f N n) ∧
       IsStoppingTime ℱ (lowerCrossingTime a b f N n) := by
   induction' n with k ih
-  · refine' ⟨isStoppingTime_const _ 0, _⟩
+  · refine ⟨isStoppingTime_const _ 0, ?_⟩
     simp [hitting_isStoppingTime hf measurableSet_Iic]
   · obtain ⟨_, ih₂⟩ := ih
     have : IsStoppingTime ℱ (upperCrossingTime a b f N (k + 1)) := by
@@ -344,10 +345,10 @@ theorem Adapted.isStoppingTime_crossing (hf : Adapted ℱ f) :
       simp_rw [upperCrossingTime_succ_eq]
       exact isStoppingTime_hitting_isStoppingTime ih₂ (fun _ => lowerCrossingTime_le)
         measurableSet_Ici hf _
-    refine' ⟨this, _⟩
-    · intro n
-      exact isStoppingTime_hitting_isStoppingTime this (fun _ => upperCrossingTime_le)
-        measurableSet_Iic hf _
+    refine ⟨this, ?_⟩
+    intro n
+    exact isStoppingTime_hitting_isStoppingTime this (fun _ => upperCrossingTime_le)
+      measurableSet_Iic hf _
 #align measure_theory.adapted.is_stopping_time_crossing MeasureTheory.Adapted.isStoppingTime_crossing
 
 theorem Adapted.isStoppingTime_upperCrossingTime (hf : Adapted ℱ f) :
@@ -399,8 +400,8 @@ theorem Adapted.upcrossingStrat_adapted (hf : Adapted ℱ f) :
   change StronglyMeasurable[ℱ n] fun ω =>
     ∑ k in Finset.range N, ({n | lowerCrossingTime a b f N k ω ≤ n} ∩
       {n | n < upperCrossingTime a b f N (k + 1) ω}).indicator 1 n
-  refine' Finset.stronglyMeasurable_sum _ fun i _ =>
-    stronglyMeasurable_const.indicator ((hf.isStoppingTime_lowerCrossingTime n).inter _)
+  refine Finset.stronglyMeasurable_sum _ fun i _ =>
+    stronglyMeasurable_const.indicator ((hf.isStoppingTime_lowerCrossingTime n).inter ?_)
   simp_rw [← not_le]
   exact (hf.isStoppingTime_upperCrossingTime n).compl
 #align measure_theory.adapted.upcrossing_strat_adapted MeasureTheory.Adapted.upcrossingStrat_adapted
@@ -415,8 +416,8 @@ theorem Submartingale.sum_upcrossingStrat_mul [IsFiniteMeasure μ] (hf : Submart
 theorem Submartingale.sum_sub_upcrossingStrat_mul [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (a b : ℝ) (N : ℕ) : Submartingale (fun n : ℕ =>
       ∑ k in Finset.range n, (1 - upcrossingStrat a b f N k) * (f (k + 1) - f k)) ℱ μ := by
-  refine' hf.sum_mul_sub (fun n => (adapted_const ℱ 1 n).sub (hf.adapted.upcrossingStrat_adapted n))
-    (_ : ∀ n ω, (1 - upcrossingStrat a b f N n) ω ≤ 1) _
+  refine hf.sum_mul_sub (fun n => (adapted_const ℱ 1 n).sub (hf.adapted.upcrossingStrat_adapted n))
+    (?_ : ∀ n ω, (1 - upcrossingStrat a b f N n) ω ≤ 1) ?_
   · exact fun n ω => sub_le_self _ upcrossingStrat_nonneg
   · intro n ω
     simp [upcrossingStrat_le_one]
@@ -426,21 +427,21 @@ theorem Submartingale.sum_mul_upcrossingStrat_le [IsFiniteMeasure μ] (hf : Subm
     μ[∑ k in Finset.range n, upcrossingStrat a b f N k * (f (k + 1) - f k)] ≤ μ[f n] - μ[f 0] := by
   have h₁ : (0 : ℝ) ≤
       μ[∑ k in Finset.range n, (1 - upcrossingStrat a b f N k) * (f (k + 1) - f k)] := by
-    have := (hf.sum_sub_upcrossingStrat_mul a b N).set_integral_le (zero_le n) MeasurableSet.univ
+    have := (hf.sum_sub_upcrossingStrat_mul a b N).setIntegral_le (zero_le n) MeasurableSet.univ
     rw [integral_univ, integral_univ] at this
-    refine' le_trans _ this
+    refine le_trans ?_ this
     simp only [Finset.range_zero, Finset.sum_empty, integral_zero', le_refl]
   have h₂ : μ[∑ k in Finset.range n, (1 - upcrossingStrat a b f N k) * (f (k + 1) - f k)] =
     μ[∑ k in Finset.range n, (f (k + 1) - f k)] -
       μ[∑ k in Finset.range n, upcrossingStrat a b f N k * (f (k + 1) - f k)] := by
     simp only [sub_mul, one_mul, Finset.sum_sub_distrib, Pi.sub_apply, Finset.sum_apply,
       Pi.mul_apply]
-    refine' integral_sub (Integrable.sub (integrable_finset_sum _ fun i _ => hf.integrable _)
-      (integrable_finset_sum _ fun i _ => hf.integrable _)) _
+    refine integral_sub (Integrable.sub (integrable_finset_sum _ fun i _ => hf.integrable _)
+      (integrable_finset_sum _ fun i _ => hf.integrable _)) ?_
     convert (hf.sum_upcrossingStrat_mul a b N).integrable n using 1
     ext; simp
   rw [h₂, sub_nonneg] at h₁
-  refine' le_trans h₁ _
+  refine le_trans h₁ ?_
   simp_rw [Finset.sum_range_sub, integral_sub' (hf.integrable _) (hf.integrable _), le_refl]
 #align measure_theory.submartingale.sum_mul_upcrossing_strat_le MeasureTheory.Submartingale.sum_mul_upcrossingStrat_le
 
@@ -473,7 +474,7 @@ theorem upperCrossingTime_lt_of_le_upcrossingsBefore (hN : 0 < N) (hab : a < b)
 
 theorem upperCrossingTime_eq_of_upcrossingsBefore_lt (hab : a < b)
     (hn : upcrossingsBefore a b f N ω < n) : upperCrossingTime a b f N n ω = N := by
-  refine' le_antisymm upperCrossingTime_le (not_lt.1 _)
+  refine le_antisymm upperCrossingTime_le (not_lt.1 ?_)
   convert not_mem_of_csSup_lt hn (upperCrossingTime_lt_bddAbove hab)
 #align measure_theory.upper_crossing_time_eq_of_upcrossings_before_lt MeasureTheory.upperCrossingTime_eq_of_upcrossingsBefore_lt
 
@@ -482,7 +483,7 @@ theorem upcrossingsBefore_le (f : ℕ → Ω → ℝ) (ω : Ω) (hab : a < b) :
   by_cases hN : N = 0
   · subst hN
     rw [upcrossingsBefore_zero]
-  · refine' csSup_le ⟨0, zero_lt_iff.2 hN⟩ fun n (hn : _ < N) => _
+  · refine csSup_le ⟨0, zero_lt_iff.2 hN⟩ fun n (hn : _ < N) => ?_
     by_contra hnN
     exact hn.ne (upperCrossingTime_eq_of_bound_le hab (not_le.1 hnN).le)
 #align measure_theory.upcrossings_before_le MeasureTheory.upcrossingsBefore_le
@@ -496,21 +497,23 @@ theorem crossing_eq_crossing_of_lowerCrossingTime_lt {M : ℕ} (hNM : N ≤ M)
   induction' n with k ih
   · simp only [Nat.zero_eq, upperCrossingTime_zero, bot_eq_zero', eq_self_iff_true,
       lowerCrossingTime_zero, true_and_iff, eq_comm]
-    refine' hitting_eq_hitting_of_exists hNM _
+    refine hitting_eq_hitting_of_exists hNM ?_
     rw [lowerCrossingTime, hitting_lt_iff] at h
-    obtain ⟨j, hj₁, hj₂⟩ := h
-    exacts [⟨j, ⟨hj₁.1, hj₁.2.le⟩, hj₂⟩, le_rfl]
+    · obtain ⟨j, hj₁, hj₂⟩ := h
+      exact ⟨j, ⟨hj₁.1, hj₁.2.le⟩, hj₂⟩
+    · exact le_rfl
   · specialize ih (lt_of_le_of_lt (lowerCrossingTime_mono (Nat.le_succ _)) h)
       (lt_of_le_of_lt (upperCrossingTime_mono (Nat.le_succ _)) h')
     have : upperCrossingTime a b f M k.succ ω = upperCrossingTime a b f N k.succ ω := by
       rw [upperCrossingTime_succ_eq, hitting_lt_iff] at h'
-      simp only [upperCrossingTime_succ_eq]
-      obtain ⟨j, hj₁, hj₂⟩ := h'
-      rw [eq_comm, ih.2]
-      exacts [hitting_eq_hitting_of_exists hNM ⟨j, ⟨hj₁.1, hj₁.2.le⟩, hj₂⟩, le_rfl]
-    refine' ⟨this, _⟩
-    simp only [lowerCrossingTime, eq_comm, this]
-    refine' hitting_eq_hitting_of_exists hNM _
+      · simp only [upperCrossingTime_succ_eq]
+        obtain ⟨j, hj₁, hj₂⟩ := h'
+        rw [eq_comm, ih.2]
+        exact hitting_eq_hitting_of_exists hNM ⟨j, ⟨hj₁.1, hj₁.2.le⟩, hj₂⟩
+      · exact le_rfl
+    refine ⟨this, ?_⟩
+    simp only [lowerCrossingTime, eq_comm, this, Nat.succ_eq_add_one]
+    refine hitting_eq_hitting_of_exists hNM ?_
     rw [lowerCrossingTime, hitting_lt_iff _ le_rfl] at h
     obtain ⟨j, hj₁, hj₂⟩ := h
     exact ⟨j, ⟨hj₁.1, hj₁.2.le⟩, hj₂⟩
@@ -522,12 +525,13 @@ theorem crossing_eq_crossing_of_upperCrossingTime_lt {M : ℕ} (hNM : N ≤ M)
       lowerCrossingTime a b f M n ω = lowerCrossingTime a b f N n ω := by
   have := (crossing_eq_crossing_of_lowerCrossingTime_lt hNM
     (lt_of_le_of_lt lowerCrossingTime_le_upperCrossingTime_succ h)).2
-  refine' ⟨_, this⟩
+  refine ⟨?_, this⟩
   rw [upperCrossingTime_succ_eq, upperCrossingTime_succ_eq, eq_comm, this]
-  refine' hitting_eq_hitting_of_exists hNM _
+  refine hitting_eq_hitting_of_exists hNM ?_
   rw [upperCrossingTime_succ_eq, hitting_lt_iff] at h
-  obtain ⟨j, hj₁, hj₂⟩ := h
-  exacts [⟨j, ⟨hj₁.1, hj₁.2.le⟩, hj₂⟩, le_rfl]
+  · obtain ⟨j, hj₁, hj₂⟩ := h
+    exact ⟨j, ⟨hj₁.1, hj₁.2.le⟩, hj₂⟩
+  · exact le_rfl
 #align measure_theory.crossing_eq_crossing_of_upper_crossing_time_lt MeasureTheory.crossing_eq_crossing_of_upperCrossingTime_lt
 
 theorem upperCrossingTime_eq_upperCrossingTime_of_lt {M : ℕ} (hNM : N ≤ M)
@@ -542,7 +546,7 @@ theorem upcrossingsBefore_mono (hab : a < b) : Monotone fun N ω => upcrossingsB
   intro N M hNM ω
   simp only [upcrossingsBefore]
   by_cases hemp : {n : ℕ | upperCrossingTime a b f N n ω < N}.Nonempty
-  · refine' csSup_le_csSup (upperCrossingTime_lt_bddAbove hab) hemp fun n hn => _
+  · refine csSup_le_csSup (upperCrossingTime_lt_bddAbove hab) hemp fun n hn => ?_
     rw [Set.mem_setOf_eq, upperCrossingTime_eq_upperCrossingTime_of_lt hNM hn]
     exact lt_of_lt_of_le hn hNM
   · rw [Set.not_nonempty_iff_eq_empty] at hemp
@@ -552,20 +556,20 @@ theorem upcrossingsBefore_mono (hab : a < b) : Monotone fun N ω => upcrossingsB
 theorem upcrossingsBefore_lt_of_exists_upcrossing (hab : a < b) {N₁ N₂ : ℕ} (hN₁ : N ≤ N₁)
     (hN₁' : f N₁ ω < a) (hN₂ : N₁ ≤ N₂) (hN₂' : b < f N₂ ω) :
     upcrossingsBefore a b f N ω < upcrossingsBefore a b f (N₂ + 1) ω := by
-  refine' lt_of_lt_of_le (Nat.lt_succ_self _) (le_csSup (upperCrossingTime_lt_bddAbove hab) _)
+  refine lt_of_lt_of_le (Nat.lt_succ_self _) (le_csSup (upperCrossingTime_lt_bddAbove hab) ?_)
   rw [Set.mem_setOf_eq, upperCrossingTime_succ_eq, hitting_lt_iff _ le_rfl]
-  · refine' ⟨N₂, ⟨_, Nat.lt_succ_self _⟩, hN₂'.le⟩
-    rw [lowerCrossingTime, hitting_le_iff_of_lt _ (Nat.lt_succ_self _)]
-    refine' ⟨N₁, ⟨le_trans _ hN₁, hN₂⟩, hN₁'.le⟩
-    by_cases hN : 0 < N
-    · have : upperCrossingTime a b f N (upcrossingsBefore a b f N ω) ω < N :=
-        Nat.sSup_mem (upperCrossingTime_lt_nonempty hN) (upperCrossingTime_lt_bddAbove hab)
-      rw [upperCrossingTime_eq_upperCrossingTime_of_lt (hN₁.trans (hN₂.trans <| Nat.le_succ _))
-        this]
-      exact this.le
-    · rw [not_lt, Nat.le_zero] at hN
-      rw [hN, upcrossingsBefore_zero, upperCrossingTime_zero]
-      rfl
+  refine ⟨N₂, ⟨?_, Nat.lt_succ_self _⟩, hN₂'.le⟩
+  rw [lowerCrossingTime, hitting_le_iff_of_lt _ (Nat.lt_succ_self _)]
+  refine ⟨N₁, ⟨le_trans ?_ hN₁, hN₂⟩, hN₁'.le⟩
+  by_cases hN : 0 < N
+  · have : upperCrossingTime a b f N (upcrossingsBefore a b f N ω) ω < N :=
+      Nat.sSup_mem (upperCrossingTime_lt_nonempty hN) (upperCrossingTime_lt_bddAbove hab)
+    rw [upperCrossingTime_eq_upperCrossingTime_of_lt (hN₁.trans (hN₂.trans <| Nat.le_succ _))
+      this]
+    exact this.le
+  · rw [not_lt, Nat.le_zero] at hN
+    rw [hN, upcrossingsBefore_zero, upperCrossingTime_zero]
+    rfl
 #align measure_theory.upcrossings_before_lt_of_exists_upcrossing MeasureTheory.upcrossingsBefore_lt_of_exists_upcrossing
 
 theorem lowerCrossingTime_lt_of_lt_upcrossingsBefore (hN : 0 < N) (hab : a < b)
@@ -628,13 +632,13 @@ theorem mul_upcrossingsBefore_le (hf : a ≤ f N ω) (hab : a < b) :
           ∑ k in Finset.range (upcrossingsBefore a b f N ω),
             (stoppedValue f (upperCrossingTime a b f N (k + 1)) ω -
               stoppedValue f (lowerCrossingTime a b f N k) ω) := by
-        refine' Finset.sum_le_sum fun i hi =>
-          le_sub_of_le_upcrossingsBefore (zero_lt_iff.2 hN) hab _
+        refine Finset.sum_le_sum fun i hi =>
+          le_sub_of_le_upcrossingsBefore (zero_lt_iff.2 hN) hab ?_
         rwa [Finset.mem_range] at hi
       _ ≤ ∑ k in Finset.range N, (stoppedValue f (upperCrossingTime a b f N (k + 1)) ω -
           stoppedValue f (lowerCrossingTime a b f N k) ω) := by
-        refine' Finset.sum_le_sum_of_subset_of_nonneg
-          (Finset.range_subset.2 (upcrossingsBefore_le f ω hab)) fun i _ hi => _
+        refine Finset.sum_le_sum_of_subset_of_nonneg
+          (Finset.range_subset.2 (upcrossingsBefore_le f ω hab)) fun i _ hi => ?_
         by_cases hi' : i = upcrossingsBefore a b f N ω
         · subst hi'
           simp only [stoppedValue]
@@ -646,7 +650,7 @@ theorem mul_upcrossingsBefore_le (hf : a ≤ f N ω) (hab : a < b) :
         · rw [sub_eq_zero_of_upcrossingsBefore_lt hab]
           rw [Finset.mem_range, not_lt] at hi
           exact lt_of_le_of_ne hi (Ne.symm hi')
-  refine' le_trans _ h₂
+  refine le_trans ?_ h₂
   rw [Finset.sum_const, Finset.card_range, nsmul_eq_mul, mul_comm]
 #align measure_theory.mul_upcrossings_before_le MeasureTheory.mul_upcrossingsBefore_le
 
@@ -657,7 +661,7 @@ theorem integral_mul_upcrossingsBefore_le_integral [IsFiniteMeasure μ] (hf : Su
     (b - a) * μ[upcrossingsBefore a b f N] ≤
         μ[∑ k in Finset.range N, upcrossingStrat a b f N k * (f (k + 1) - f k)] := by
       rw [← integral_mul_left]
-      refine' integral_mono_of_nonneg _ ((hf.sum_upcrossingStrat_mul a b N).integrable N) _
+      refine integral_mono_of_nonneg ?_ ((hf.sum_upcrossingStrat_mul a b N).integrable N) ?_
       · exact eventually_of_forall fun ω => mul_nonneg (sub_nonneg.2 hab.le) (Nat.cast_nonneg _)
       · filter_upwards with ω
         simpa using mul_upcrossingsBefore_le (hfN ω) hab
@@ -671,17 +675,17 @@ theorem crossing_pos_eq (hab : a < b) :
   have hab' : 0 < b - a := sub_pos.2 hab
   have hf : ∀ ω i, b - a ≤ (f i ω - a)⁺ ↔ b ≤ f i ω := by
     intro i ω
-    refine' ⟨fun h => _, fun h => _⟩
+    refine ⟨fun h => ?_, fun h => ?_⟩
     · rwa [← sub_le_sub_iff_right a, ←
         posPart_eq_of_posPart_pos (lt_of_lt_of_le hab' h)]
     · rw [← sub_le_sub_iff_right a] at h
       rwa [posPart_eq_self.2 (le_trans hab'.le h)]
   have hf' (ω i) : (f i ω - a)⁺ ≤ 0 ↔ f i ω ≤ a := by rw [posPart_nonpos, sub_nonpos]
   induction' n with k ih
-  · refine' ⟨rfl, _⟩
-    -- Adaptation note: nightly-2024-03-16: simp was
-    -- simp (config := { unfoldPartialApp := true }) only [lowerCrossingTime_zero, hitting,
-    --   Set.mem_Icc, Set.mem_Iic, Nat.zero_eq]
+  · refine ⟨rfl, ?_⟩
+    #adaptation_note /-- nightly-2024-03-16: simp was
+    simp (config := { unfoldPartialApp := true }) only [lowerCrossingTime_zero, hitting,
+      Set.mem_Icc, Set.mem_Iic, Nat.zero_eq] -/
     simp (config := { unfoldPartialApp := true }) only [lowerCrossingTime_zero, hitting_def,
       Set.mem_Icc, Set.mem_Iic, Nat.zero_eq]
     ext ω
@@ -698,19 +702,19 @@ theorem crossing_pos_eq (hab : a < b) :
       simp only [upperCrossingTime_succ_eq, ← ih.2, hitting, Set.mem_Ici, tsub_le_iff_right]
       split_ifs with h₁ h₂ h₂
       · simp_rw [← sub_le_iff_le_add, hf ω]
-      · refine' False.elim (h₂ _)
+      · refine False.elim (h₂ ?_)
         simp_all only [Set.mem_Ici, not_true_eq_false]
-      · refine' False.elim (h₁ _)
+      · refine False.elim (h₁ ?_)
         simp_all only [Set.mem_Ici]
       · rfl
-    refine' ⟨this, _⟩
+    refine ⟨this, ?_⟩
     ext ω
     simp only [lowerCrossingTime, this, hitting, Set.mem_Iic]
     split_ifs with h₁ h₂ h₂
     · simp_rw [hf' ω]
-    · refine' False.elim (h₂ _)
+    · refine False.elim (h₂ ?_)
       simp_all only [Set.mem_Iic, not_true_eq_false]
-    · refine' False.elim (h₁ _)
+    · refine False.elim (h₁ ?_)
       simp_all only [Set.mem_Iic]
     · rfl
 #align measure_theory.crossing_pos_eq MeasureTheory.crossing_pos_eq
@@ -723,7 +727,7 @@ theorem upcrossingsBefore_pos_eq (hab : a < b) :
 theorem mul_integral_upcrossingsBefore_le_integral_pos_part_aux [IsFiniteMeasure μ]
     (hf : Submartingale f ℱ μ) (hab : a < b) :
     (b - a) * μ[upcrossingsBefore a b f N] ≤ μ[fun ω => (f N ω - a)⁺] := by
-  refine' le_trans (le_of_eq _)
+  refine le_trans (le_of_eq ?_)
     (integral_mul_upcrossingsBefore_le_integral (hf.sub_martingale (martingale_const _ _ _)).pos
       (fun ω => posPart_nonneg _)
       (fun ω => posPart_nonneg _) (sub_pos.2 hab))
@@ -842,9 +846,9 @@ theorem upcrossings_lt_top_iff :
   simp_rw [this, upcrossings, iSup_le_iff]
   constructor <;> rintro ⟨k, hk⟩
   · obtain ⟨m, hm⟩ := exists_nat_ge k
-    refine' ⟨m, fun N => Nat.cast_le.1 ((hk N).trans _)⟩
+    refine ⟨m, fun N => Nat.cast_le.1 ((hk N).trans ?_)⟩
     rwa [← ENNReal.coe_natCast, ENNReal.coe_le_coe]
-  · refine' ⟨k, fun N => _⟩
+  · refine ⟨k, fun N => ?_⟩
     simp only [ENNReal.coe_natCast, Nat.cast_le, hk N]
 #align measure_theory.upcrossings_lt_top_iff MeasureTheory.upcrossings_lt_top_iff
 
@@ -865,11 +869,11 @@ theorem Submartingale.mul_lintegral_upcrossings_le_lintegral_pos_part [IsFiniteM
       rw [(by simp :
           ∫⁻ ω, upcrossingsBefore a b f N ω ∂μ = ∫⁻ ω, ↑(upcrossingsBefore a b f N ω : ℝ≥0) ∂μ),
         lintegral_coe_eq_integral, ← ENNReal.ofReal_mul (sub_pos.2 hab).le]
-      · simp_rw [NNReal.coe_nat_cast]
+      · simp_rw [NNReal.coe_natCast]
         exact (ENNReal.ofReal_le_ofReal
           (hf.mul_integral_upcrossingsBefore_le_integral_pos_part a b N)).trans
             (le_iSup (α := ℝ≥0∞) _ N)
-      · simp only [NNReal.coe_nat_cast, hf.adapted.integrable_upcrossingsBefore hab]
+      · simp only [NNReal.coe_natCast, hf.adapted.integrable_upcrossingsBefore hab]
     · exact fun n => measurable_from_top.comp_aemeasurable
         (hf.adapted.measurable_upcrossingsBefore hab).aemeasurable
     · filter_upwards with ω N M hNM

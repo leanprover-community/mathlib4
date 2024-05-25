@@ -3,7 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.BigOperators.Multiset.Basic
+import Mathlib.Algebra.BigOperators.Group.Multiset
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.Data.Multiset.Dedup
 
@@ -21,6 +21,8 @@ This file defines a few basic operations on `Multiset`, notably the monadic bind
 * `Multiset.product`: Cartesian product of two multisets.
 * `Multiset.sigma`: Disjoint sum of multisets in a sigma type.
 -/
+
+assert_not_exists MonoidWithZero
 
 universe v
 
@@ -42,8 +44,7 @@ theorem coe_join :
     ∀ L : List (List α), join (L.map ((↑) : List α → Multiset α) : Multiset (Multiset α)) = L.join
   | [] => rfl
   | l :: L => by
-      -- Porting note: was `congr_arg (fun s : Multiset α => ↑l + s) (coe_join L)`
-      simp only [join, List.map, sum_coe, List.sum_cons, List.join, ← coe_add, ← coe_join L]
+      exact congr_arg (fun s : Multiset α => ↑l + s) (coe_join L)
 #align multiset.coe_join Multiset.coe_join
 
 @[simp]

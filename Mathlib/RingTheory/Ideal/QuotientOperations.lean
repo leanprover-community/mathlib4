@@ -3,10 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Patrick Massot
 -/
-import Mathlib.RingTheory.Ideal.Operations
-import Mathlib.RingTheory.Ideal.Quotient
+import Mathlib.Algebra.Algebra.Subalgebra.Operations
 import Mathlib.Algebra.Ring.Fin
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.RingTheory.Ideal.Quotient
 
 #align_import ring_theory.ideal.quotient_operations from "leanprover-community/mathlib"@"b88d81c84530450a8989e918608e5960f015e6c8"
 
@@ -524,7 +523,7 @@ theorem quotientEquiv_symm_mk (I : Ideal R) (J : Ideal S) (f : R ≃+* S)
 /-- `H` and `h` are kept as separate hypothesis since H is used in constructing the quotient map. -/
 theorem quotientMap_injective' {J : Ideal R} {I : Ideal S} {f : R →+* S} {H : J ≤ I.comap f}
     (h : I.comap f ≤ J) : Function.Injective (quotientMap I f H) := by
-  refine' (injective_iff_map_eq_zero (quotientMap I f H)).2 fun a ha => _
+  refine (injective_iff_map_eq_zero (quotientMap I f H)).2 fun a ha => ?_
   obtain ⟨r, rfl⟩ := Quotient.mk_surjective a
   rw [quotientMap_mk, Quotient.eq_zero_iff_mem] at ha
   exact Quotient.eq_zero_iff_mem.mpr (h ha)

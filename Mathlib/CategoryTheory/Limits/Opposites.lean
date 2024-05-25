@@ -48,8 +48,7 @@ variable {J : Type u₂} [Category.{v₂} J]
 /-- Turn a colimit for `F : J ⥤ Cᵒᵖ` into a limit for `F.leftOp : Jᵒᵖ ⥤ C`. -/
 @[simps]
 def isLimitConeLeftOpOfCocone (F : J ⥤ Cᵒᵖ) {c : Cocone F} (hc : IsColimit c) :
-    IsLimit (coneLeftOpOfCocone c)
-    where
+    IsLimit (coneLeftOpOfCocone c) where
   lift s := (hc.desc (coconeOfConeLeftOp s)).unop
   fac s j :=
     Quiver.Hom.op_inj <| by
@@ -63,8 +62,7 @@ def isLimitConeLeftOpOfCocone (F : J ⥤ Cᵒᵖ) {c : Cocone F} (hc : IsColimit
 /-- Turn a limit of `F : J ⥤ Cᵒᵖ` into a colimit of `F.leftOp : Jᵒᵖ ⥤ C`. -/
 @[simps]
 def isColimitCoconeLeftOpOfCone (F : J ⥤ Cᵒᵖ) {c : Cone F} (hc : IsLimit c) :
-    IsColimit (coconeLeftOpOfCone c)
-    where
+    IsColimit (coconeLeftOpOfCone c) where
   desc s := (hc.lift (coneOfCoconeLeftOp s)).unop
   fac s j :=
     Quiver.Hom.op_inj <| by
@@ -78,8 +76,7 @@ def isColimitCoconeLeftOpOfCone (F : J ⥤ Cᵒᵖ) {c : Cone F} (hc : IsLimit c
 /-- Turn a colimit for `F : Jᵒᵖ ⥤ C` into a limit for `F.rightOp : J ⥤ Cᵒᵖ`. -/
 @[simps]
 def isLimitConeRightOpOfCocone (F : Jᵒᵖ ⥤ C) {c : Cocone F} (hc : IsColimit c) :
-    IsLimit (coneRightOpOfCocone c)
-    where
+    IsLimit (coneRightOpOfCocone c) where
   lift s := (hc.desc (coconeOfConeRightOp s)).op
   fac s j := Quiver.Hom.unop_inj (by simp)
   uniq s m w := by
@@ -90,8 +87,7 @@ def isLimitConeRightOpOfCocone (F : Jᵒᵖ ⥤ C) {c : Cocone F} (hc : IsColimi
 /-- Turn a limit for `F : Jᵒᵖ ⥤ C` into a colimit for `F.rightOp : J ⥤ Cᵒᵖ`. -/
 @[simps]
 def isColimitCoconeRightOpOfCone (F : Jᵒᵖ ⥤ C) {c : Cone F} (hc : IsLimit c) :
-    IsColimit (coconeRightOpOfCone c)
-    where
+    IsColimit (coconeRightOpOfCone c) where
   desc s := (hc.lift (coneOfCoconeRightOp s)).op
   fac s j := Quiver.Hom.unop_inj (by simp)
   uniq s m w := by
@@ -102,8 +98,7 @@ def isColimitCoconeRightOpOfCone (F : Jᵒᵖ ⥤ C) {c : Cone F} (hc : IsLimit 
 /-- Turn a colimit for `F : Jᵒᵖ ⥤ Cᵒᵖ` into a limit for `F.unop : J ⥤ C`. -/
 @[simps]
 def isLimitConeUnopOfCocone (F : Jᵒᵖ ⥤ Cᵒᵖ) {c : Cocone F} (hc : IsColimit c) :
-    IsLimit (coneUnopOfCocone c)
-    where
+    IsLimit (coneUnopOfCocone c) where
   lift s := (hc.desc (coconeOfConeUnop s)).unop
   fac s j := Quiver.Hom.op_inj (by simp)
   uniq s m w := by
@@ -114,8 +109,7 @@ def isLimitConeUnopOfCocone (F : Jᵒᵖ ⥤ Cᵒᵖ) {c : Cocone F} (hc : IsCol
 /-- Turn a limit of `F : Jᵒᵖ ⥤ Cᵒᵖ` into a colimit of `F.unop : J ⥤ C`. -/
 @[simps]
 def isColimitCoconeUnopOfCone (F : Jᵒᵖ ⥤ Cᵒᵖ) {c : Cone F} (hc : IsLimit c) :
-    IsColimit (coconeUnopOfCone c)
-    where
+    IsColimit (coconeUnopOfCone c) where
   desc s := (hc.lift (coneOfCoconeUnop s)).unop
   fac s j := Quiver.Hom.op_inj (by simp)
   uniq s m w := by
@@ -126,8 +120,7 @@ def isColimitCoconeUnopOfCone (F : Jᵒᵖ ⥤ Cᵒᵖ) {c : Cone F} (hc : IsLim
 /-- Turn a colimit for `F.leftOp : Jᵒᵖ ⥤ C` into a limit for `F : J ⥤ Cᵒᵖ`. -/
 @[simps]
 def isLimitConeOfCoconeLeftOp (F : J ⥤ Cᵒᵖ) {c : Cocone F.leftOp} (hc : IsColimit c) :
-    IsLimit (coneOfCoconeLeftOp c)
-    where
+    IsLimit (coneOfCoconeLeftOp c) where
   lift s := (hc.desc (coconeLeftOpOfCone s)).op
   fac s j :=
     Quiver.Hom.unop_inj <| by
@@ -141,8 +134,7 @@ def isLimitConeOfCoconeLeftOp (F : J ⥤ Cᵒᵖ) {c : Cocone F.leftOp} (hc : Is
 /-- Turn a limit of `F.leftOp : Jᵒᵖ ⥤ C` into a colimit of `F : J ⥤ Cᵒᵖ`. -/
 @[simps]
 def isColimitCoconeOfConeLeftOp (F : J ⥤ Cᵒᵖ) {c : Cone F.leftOp} (hc : IsLimit c) :
-    IsColimit (coconeOfConeLeftOp c)
-    where
+    IsColimit (coconeOfConeLeftOp c) where
   desc s := (hc.lift (coneLeftOpOfCocone s)).op
   fac s j :=
     Quiver.Hom.unop_inj <| by
@@ -156,8 +148,7 @@ def isColimitCoconeOfConeLeftOp (F : J ⥤ Cᵒᵖ) {c : Cone F.leftOp} (hc : Is
 /-- Turn a colimit for `F.rightOp : J ⥤ Cᵒᵖ` into a limit for `F : Jᵒᵖ ⥤ C`. -/
 @[simps]
 def isLimitConeOfCoconeRightOp (F : Jᵒᵖ ⥤ C) {c : Cocone F.rightOp} (hc : IsColimit c) :
-    IsLimit (coneOfCoconeRightOp c)
-    where
+    IsLimit (coneOfCoconeRightOp c) where
   lift s := (hc.desc (coconeRightOpOfCone s)).unop
   fac s j := Quiver.Hom.op_inj (by simp)
   uniq s m w := by
@@ -168,8 +159,7 @@ def isLimitConeOfCoconeRightOp (F : Jᵒᵖ ⥤ C) {c : Cocone F.rightOp} (hc : 
 /-- Turn a limit for `F.rightOp : J ⥤ Cᵒᵖ` into a limit for `F : Jᵒᵖ ⥤ C`. -/
 @[simps]
 def isColimitCoconeOfConeRightOp (F : Jᵒᵖ ⥤ C) {c : Cone F.rightOp} (hc : IsLimit c) :
-    IsColimit (coconeOfConeRightOp c)
-    where
+    IsColimit (coconeOfConeRightOp c) where
   desc s := (hc.lift (coneRightOpOfCocone s)).unop
   fac s j := Quiver.Hom.op_inj (by simp)
   uniq s m w := by
@@ -180,8 +170,7 @@ def isColimitCoconeOfConeRightOp (F : Jᵒᵖ ⥤ C) {c : Cone F.rightOp} (hc : 
 /-- Turn a colimit for `F.unop : J ⥤ C` into a limit for `F : Jᵒᵖ ⥤ Cᵒᵖ`. -/
 @[simps]
 def isLimitConeOfCoconeUnop (F : Jᵒᵖ ⥤ Cᵒᵖ) {c : Cocone F.unop} (hc : IsColimit c) :
-    IsLimit (coneOfCoconeUnop c)
-    where
+    IsLimit (coneOfCoconeUnop c) where
   lift s := (hc.desc (coconeUnopOfCone s)).op
   fac s j := Quiver.Hom.unop_inj (by simp)
   uniq s m w := by
@@ -192,8 +181,7 @@ def isLimitConeOfCoconeUnop (F : Jᵒᵖ ⥤ Cᵒᵖ) {c : Cocone F.unop} (hc : 
 /-- Turn a limit for `F.unop : J ⥤ C` into a colimit for `F : Jᵒᵖ ⥤ Cᵒᵖ`. -/
 @[simps]
 def isColimitConeOfCoconeUnop (F : Jᵒᵖ ⥤ Cᵒᵖ) {c : Cone F.unop} (hc : IsLimit c) :
-    IsColimit (coconeOfConeUnop c)
-    where
+    IsColimit (coconeOfConeUnop c) where
   desc s := (hc.lift (coneUnopOfCocone s)).op
   fac s j := Quiver.Hom.unop_inj (by simp)
   uniq s m w := by
@@ -416,6 +404,23 @@ theorem opCoproductIsoProduct'_inv_comp_inj {c : Cofan Z} {f : Fan (op <| Z ·)}
     (opCoproductIsoProduct' hc hf).inv ≫ (c.inj b).op = f.proj b :=
   IsLimit.conePointUniqueUpToIso_inv_comp (Cofan.IsColimit.op hc) hf ⟨b⟩
 
+theorem opCoproductIsoProduct'_comp_self {c c' : Cofan Z} {f : Fan (op <| Z ·)}
+    (hc : IsColimit c) (hc' : IsColimit c') (hf : IsLimit f) :
+    (opCoproductIsoProduct' hc hf).hom ≫ (opCoproductIsoProduct' hc' hf).inv =
+    (hc.coconePointUniqueUpToIso hc').op.inv := by
+  apply Quiver.Hom.unop_inj
+  apply hc'.hom_ext
+  intro ⟨j⟩
+  change c'.inj _ ≫ _ = _
+  simp only [unop_op, unop_comp, Discrete.functor_obj, const_obj_obj, Iso.op_inv,
+    Quiver.Hom.unop_op, IsColimit.comp_coconePointUniqueUpToIso_inv]
+  apply Quiver.Hom.op_inj
+  simp only [op_comp, op_unop, Quiver.Hom.op_unop, Category.assoc,
+    opCoproductIsoProduct'_inv_comp_inj]
+  rw [← opCoproductIsoProduct'_inv_comp_inj hc hf]
+  simp only [Iso.hom_inv_id_assoc]
+  rfl
+
 variable (Z) in
 theorem opCoproductIsoProduct_inv_comp_ι (b : α) :
     (opCoproductIsoProduct Z).inv ≫ (Sigma.ι Z b).op = Pi.π (op <| Z ·) b :=
@@ -490,8 +495,24 @@ theorem proj_comp_opProductIsoCoproduct'_hom {f : Fan Z} {c : Cofan (op <| Z ·)
     (f.proj b).op ≫ (opProductIsoCoproduct' hf hc).hom = c.inj b :=
   IsColimit.comp_coconePointUniqueUpToIso_hom (Fan.IsLimit.op hf) hc ⟨b⟩
 
+theorem opProductIsoCoproduct'_comp_self {f f' : Fan Z} {c : Cofan (op <| Z ·)}
+    (hf : IsLimit f) (hf' : IsLimit f') (hc : IsColimit c) :
+    (opProductIsoCoproduct' hf hc).hom ≫ (opProductIsoCoproduct' hf' hc).inv =
+    (hf.conePointUniqueUpToIso hf').op.inv := by
+  apply Quiver.Hom.unop_inj
+  apply hf.hom_ext
+  intro ⟨j⟩
+  change _ ≫ f.proj _ = _
+  simp only [unop_op, unop_comp, Category.assoc, Discrete.functor_obj, Iso.op_inv,
+    Quiver.Hom.unop_op, IsLimit.conePointUniqueUpToIso_inv_comp]
+  apply Quiver.Hom.op_inj
+  simp only [op_comp, op_unop, Quiver.Hom.op_unop, proj_comp_opProductIsoCoproduct'_hom]
+  rw [← proj_comp_opProductIsoCoproduct'_hom hf' hc]
+  simp only [Category.assoc, Iso.hom_inv_id, Category.comp_id]
+  rfl
+
 variable (Z) in
-theorem proj_comp_opProductIsoCoproduct_hom (b : α) :
+theorem π_comp_opProductIsoCoproduct_hom (b : α) :
     (Pi.π Z b).op ≫ (opProductIsoCoproduct Z).hom = Sigma.ι (op <| Z ·) b :=
   proj_comp_opProductIsoCoproduct'_hom _ _ b
 

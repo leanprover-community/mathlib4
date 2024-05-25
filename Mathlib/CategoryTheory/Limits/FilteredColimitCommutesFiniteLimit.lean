@@ -29,7 +29,6 @@ colimit (over `K`) of the limits (over `J`) with the limit of the colimits is an
 -/
 
 -- Various pieces of algebra that have previously been spuriously imported here:
-assert_not_exists zero_zpow
 assert_not_exists map_ne_zero
 assert_not_exists Field
  -- TODO: We should morally be able to strengthen this to `assert_not_exists GroupWithZero`, but
@@ -117,7 +116,7 @@ theorem colimitLimitToLimitColimit_injective :
           (by
             simp only [true_and_iff, Finset.mem_univ, eq_self_iff_true, exists_prop_of_true,
               Finset.mem_image, heq_iff_eq]
-            refine' ⟨j, _⟩
+            refine ⟨j, ?_⟩
             simp only [heq_iff_eq] ))
     have gH :
       ∀ j, (⟨ky, k j, kyO, kjO j, g j⟩ : Σ' (X Y : K) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) ∈ H :=
@@ -127,7 +126,7 @@ theorem colimitLimitToLimitColimit_injective :
           (by
             simp only [true_and_iff, Finset.mem_univ, eq_self_iff_true, exists_prop_of_true,
               Finset.mem_image, heq_iff_eq]
-            refine' ⟨j, _⟩
+            refine ⟨j, ?_⟩
             simp only [heq_iff_eq]))
     -- Our goal is now an equation between equivalence classes of representatives of a colimit,
     -- and so it suffices to show those representative become equal somewhere, in particular at `S`.
@@ -319,7 +318,7 @@ theorem colimitLimitToLimitColimit_surjective :
       intro j
       -- and as each component is an equation in a colimit, we can verify it by
       -- pointing out the morphism which carries one representative to the other:
-      simp only [id.def, ← e, Limits.ι_colimitLimitToLimitColimit_π_apply,
+      simp only [id, ← e, Limits.ι_colimitLimitToLimitColimit_π_apply,
           colimit_eq_iff, Bifunctor.map_id_comp, types_comp_apply, curry_obj_obj_map,
           Functor.comp_obj, colim_obj, Limit.π_mk]
       refine ⟨k'', 𝟙 k'', g j ≫ gf (𝟙 j) ≫ i (𝟙 j), ?_⟩

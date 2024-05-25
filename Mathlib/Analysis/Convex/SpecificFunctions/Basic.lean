@@ -78,7 +78,7 @@ theorem strictConcaveOn_log_Ioi : StrictConcaveOn ℝ (Ioi 0) log := by
       simp [h]
     calc
       log z - log y = log (z / y) := by rw [← log_div hz.ne' hy.ne']
-      _ < z / y - 1 := (log_lt_sub_one_of_pos hyz' hyz'')
+      _ < z / y - 1 := log_lt_sub_one_of_pos hyz' hyz''
       _ = y⁻¹ * (z - y) := by field_simp
   · have h : 0 < y - x := by linarith
     rw [lt_div_iff h]
@@ -210,14 +210,14 @@ theorem convexOn_rpow {p : ℝ} (hp : 1 ≤ p) : ConvexOn ℝ (Ici 0) fun x : �
 #align convex_on_rpow convexOn_rpow
 
 theorem strictConcaveOn_log_Iio : StrictConcaveOn ℝ (Iio 0) log := by
-  refine' ⟨convex_Iio _, _⟩
+  refine ⟨convex_Iio _, ?_⟩
   intro x (hx : x < 0) y (hy : y < 0) hxy a b ha hb hab
   have hx' : 0 < -x := by linarith
   have hy' : 0 < -y := by linarith
   have hxy' : -x ≠ -y := by contrapose! hxy; linarith
   calc
     a • log x + b • log y = a • log (-x) + b • log (-y) := by simp_rw [log_neg_eq_log]
-    _ < log (a • -x + b • -y) := (strictConcaveOn_log_Ioi.2 hx' hy' hxy' ha hb hab)
+    _ < log (a • -x + b • -y) := strictConcaveOn_log_Ioi.2 hx' hy' hxy' ha hb hab
     _ = log (-(a • x + b • y)) := by congr 1; simp only [Algebra.id.smul_eq_mul]; ring
     _ = _ := by rw [log_neg_eq_log]
 #align strict_concave_on_log_Iio strictConcaveOn_log_Iio

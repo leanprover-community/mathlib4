@@ -38,7 +38,8 @@ theorem le_prod_nonempty_of_submultiplicative_on_pred (f : M → N) (p : M → P
     (h_mul : ∀ x y, p x → p y → f (x * y) ≤ f x * f y) (hp_mul : ∀ x y, p x → p y → p (x * y))
     (g : ι → M) (s : Finset ι) (hs_nonempty : s.Nonempty) (hs : ∀ i ∈ s, p (g i)) :
     f (∏ i in s, g i) ≤ ∏ i in s, f (g i) := by
-  refine' le_trans (Multiset.le_prod_nonempty_of_submultiplicative_on_pred f p h_mul hp_mul _ _ _) _
+  refine le_trans
+    (Multiset.le_prod_nonempty_of_submultiplicative_on_pred f p h_mul hp_mul _ ?_ ?_) ?_
   · simp [hs_nonempty.ne_empty]
   · exact Multiset.forall_mem_map_iff.mpr hs
   rw [Multiset.map_map]
@@ -92,7 +93,7 @@ add_decl_doc le_sum_of_subadditive_on_pred
 theorem le_prod_of_submultiplicative (f : M → N) (h_one : f 1 = 1)
     (h_mul : ∀ x y, f (x * y) ≤ f x * f y) (s : Finset ι) (g : ι → M) :
     f (∏ i in s, g i) ≤ ∏ i in s, f (g i) := by
-  refine' le_trans (Multiset.le_prod_of_submultiplicative f h_one h_mul _) _
+  refine le_trans (Multiset.le_prod_of_submultiplicative f h_one h_mul _) ?_
   rw [Multiset.map_map]
   rfl
 #align finset.le_prod_of_submultiplicative Finset.le_prod_of_submultiplicative
@@ -217,7 +218,7 @@ lemma mul_le_prod {i j : ι} (hf : ∀ i ∈ s, 1 ≤ f i) (hi : i ∈ s) (hj : 
 @[to_additive sum_le_card_nsmul]
 theorem prod_le_pow_card (s : Finset ι) (f : ι → N) (n : N) (h : ∀ x ∈ s, f x ≤ n) :
     s.prod f ≤ n ^ s.card := by
-  refine' (Multiset.prod_le_pow_card (s.val.map f) n _).trans _
+  refine (Multiset.prod_le_pow_card (s.val.map f) n ?_).trans ?_
   · simpa using h
   · simp
 #align finset.prod_le_pow_card Finset.prod_le_pow_card
@@ -317,7 +318,7 @@ variable [DecidableEq α] {s : Finset α} {B : Finset (Finset α)} {n : ℕ}
 times how many they are. -/
 theorem sum_card_inter_le (h : ∀ a ∈ s, (B.filter (a ∈ ·)).card ≤ n) :
     (∑ t in B, (s ∩ t).card) ≤ s.card * n := by
-  refine' le_trans _ (s.sum_le_card_nsmul _ _ h)
+  refine le_trans ?_ (s.sum_le_card_nsmul _ _ h)
   simp_rw [← filter_mem_eq_inter, card_eq_sum_ones, sum_filter]
   exact sum_comm.le
 #align finset.sum_card_inter_le Finset.sum_card_inter_le
@@ -659,7 +660,7 @@ theorem finset_sum_eq_sup_iff_disjoint [DecidableEq α] {β : Type*} {i : Finset
   · simp only [Finset.not_mem_empty, IsEmpty.forall_iff, imp_true_iff, Finset.sum_empty,
       Finset.sup_empty, bot_eq_zero, eq_self_iff_true]
   · simp_rw [Finset.sum_cons hz, Finset.sup_cons, Finset.mem_cons, Multiset.sup_eq_union,
-      forall_eq_or_imp, Ne.def, not_true_eq_false, IsEmpty.forall_iff, true_and_iff,
+      forall_eq_or_imp, Ne, not_true_eq_false, IsEmpty.forall_iff, true_and_iff,
       imp_and, forall_and, ← hr, @eq_comm _ z]
     have := fun x (H : x ∈ i) => ne_of_mem_of_not_mem H hz
     simp (config := { contextual := true }) only [this, not_false_iff, true_imp_iff]

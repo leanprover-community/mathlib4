@@ -3,9 +3,9 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Benjamin Davidson
 -/
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Group.Int
+import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.Int.Sqrt
-import Mathlib.Data.Nat.Parity
 import Mathlib.Tactic.Abel
 
 #align_import data.int.parity from "leanprover-community/mathlib"@"e3d9ab8faa9dea8f78155c6c27d62a621f4c152d"

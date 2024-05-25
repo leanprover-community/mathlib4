@@ -139,11 +139,11 @@ theorem zetaKernel₁_eq_jacobiTheta {t : ℝ} (ht : 0 < t) :
 /-- Continuity of `zetaKernel₁`. -/
 theorem continuousAt_zetaKernel₁ {t : ℝ} (ht : 0 < t) : ContinuousAt zetaKernel₁ t := by
   have : ContinuousAt (fun u : ℝ => (jacobiTheta (u * I) - 1) / 2) t := by
-    refine' (ContinuousAt.sub _ continuousAt_const).div_const _
-    refine' (continuousAt_jacobiTheta _).comp (ContinuousAt.mul _ continuousAt_const)
+    refine (ContinuousAt.sub ?_ continuousAt_const).div_const _
+    refine (continuousAt_jacobiTheta ?_).comp (ContinuousAt.mul ?_ continuousAt_const)
     · rwa [mul_I_im, ofReal_re]
     · exact continuous_ofReal.continuousAt
-  refine' this.congr (eventually_of_mem (Ioi_mem_nhds ht) fun u hu => _)
+  refine this.congr (eventually_of_mem (Ioi_mem_nhds ht) fun u hu => ?_)
   rw [zetaKernel₁_eq_jacobiTheta hu]
 #align continuous_at_zeta_kernel₁ continuousAt_zetaKernel₁
 
@@ -219,7 +219,7 @@ theorem isBigO_atTop_zetaKernel₁ : IsBigO atTop zetaKernel₁ fun t => exp (-�
     rw [tendsto_comap_iff]
     convert tendsto_id
     ext1 t
-    rw [Function.comp_apply, mul_I_im, ofReal_re, id.def]
+    rw [Function.comp_apply, mul_I_im, ofReal_re, id]
   convert ((h.norm_left.comp_tendsto h').congr' (eventually_of_mem (Ioi_mem_atTop 0) fun t ht => _)
         (eventually_of_mem (Ioi_mem_atTop 0) fun t _ => _)).of_norm_left (E' := ℂ)
   · rw [Function.comp_apply, ← zetaKernel₁_eq_jacobiTheta ht]
@@ -229,8 +229,8 @@ set_option linter.uppercaseLean3 false in
 
 /-- Bound for `zetaKernel₂` for large `t`. -/
 theorem isBigO_atTop_zetaKernel₂ : IsBigO atTop zetaKernel₂ fun t => exp (-π * t) := by
-  refine'
-    (eventuallyEq_of_mem (Ioi_mem_atTop (1 : ℝ)) fun t ht => _).trans_isBigO
+  refine
+    (eventuallyEq_of_mem (Ioi_mem_atTop (1 : ℝ)) fun t ht => ?_).trans_isBigO
       isBigO_atTop_zetaKernel₁
   rw [zetaKernel₂, Pi.add_apply, indicator_of_not_mem (not_mem_Ioc_of_gt (Set.mem_Iio.mp ht)),
     add_zero]
@@ -377,12 +377,12 @@ theorem differentiableAt_riemannZeta {s : ℂ} (hs' : s ≠ 1) : DifferentiableA
     · refine Tendsto.mono_left ?_ nhdsWithin_le_nhds
       have : ContinuousAt riemannCompletedZeta₀ 0 :=
         differentiable_completed_zeta₀.continuous.continuousAt
-      simpa only [id.def, mul_zero] using Tendsto.mul this tendsto_id
+      simpa only [id, mul_zero] using Tendsto.mul this tendsto_id
     · refine tendsto_const_nhds.congr' (eventuallyEq_of_mem self_mem_nhdsWithin fun t ht => ?_)
       simp_rw [one_div_mul_cancel ht]
     · refine Tendsto.mono_left ?_ nhdsWithin_le_nhds
       suffices ContinuousAt (fun z : ℂ => 1 / (z - 1)) 0 by
-        simpa only [id.def, mul_zero] using Tendsto.mul this tendsto_id
+        simpa only [id, mul_zero] using Tendsto.mul this tendsto_id
       refine continuousAt_const.div (continuousAt_id.sub continuousAt_const) ?_
       simpa only [zero_sub] using neg_ne_zero.mpr one_ne_zero
   -- Now the main proof.
@@ -501,10 +501,10 @@ theorem integral_cpow_mul_exp_neg_pi_mul_sq {s : ℂ} (hs : 0 < s.re) (n : ℕ) 
     exact Nat.cast_nonneg _
   conv_rhs => rw [this, mul_comm, ← smul_eq_mul]
   rw [← mellin_comp_mul_right _ _ (show 0 < ((n : ℝ) + 1) ^ (2 : ℝ) by positivity)]
-  refine set_integral_congr measurableSet_Ioi fun t _ => ?_
+  refine setIntegral_congr measurableSet_Ioi fun t _ => ?_
   simp_rw [smul_eq_mul]
   congr 3
-  conv_rhs => rw [← Nat.cast_two, rpow_nat_cast]
+  conv_rhs => rw [← Nat.cast_two, rpow_natCast]
   ring
 #align integral_cpow_mul_exp_neg_pi_mul_sq integral_cpow_mul_exp_neg_pi_mul_sq
 
@@ -534,7 +534,7 @@ theorem mellin_zetaKernel₁_eq_tsum {s : ℂ} (hs : 1 / 2 < s.re) :
     convert
       (hasSum_ofReal.mpr (summable_exp_neg_pi_mul_nat_sq ht).hasSum).mul_left ((t : ℂ) ^ (s - 1))
     simp only [neg_mul, ofReal_exp, ofReal_neg, ofReal_mul, ofReal_pow, ofReal_add,
-      ofReal_nat_cast, ofReal_one, ofReal_tsum]
+      ofReal_natCast, ofReal_one, ofReal_tsum]
   have h_sum' : ∀ᵐ t : ℝ ∂volume.restrict (Ioi 0), HasSum (fun n : ℕ => f n t)
       ((t : ℂ) ^ (s - 1) * zetaKernel₁ t) :=
     (ae_restrict_iff' hm).mpr (ae_of_all _ fun t ht => h_sum0 ht)
@@ -587,7 +587,7 @@ theorem zeta_eq_tsum_one_div_nat_cpow {s : ℂ} (hs : 1 < re s) :
   · simp_rw [Nat.cast_zero, zero_cpow hs', div_zero, zero_add,
       zeta_eq_tsum_one_div_nat_add_one_cpow hs, Nat.cast_add, Nat.cast_one]
   · refine .of_norm ?_
-    simp_rw [norm_div, norm_one, Complex.norm_eq_abs, ← ofReal_nat_cast,
+    simp_rw [norm_div, norm_one, Complex.norm_eq_abs, ← ofReal_natCast,
       abs_cpow_eq_rpow_re_of_nonneg (Nat.cast_nonneg _) (zero_lt_one.trans hs).ne',
       summable_one_div_nat_rpow]
     assumption
@@ -598,8 +598,8 @@ function can be expressed using naïve `pow` rather than `cpow`. -/
 theorem zeta_nat_eq_tsum_of_gt_one {k : ℕ} (hk : 1 < k) :
     riemannZeta k = ∑' n : ℕ, 1 / (n : ℂ) ^ k := by
   simp only [zeta_eq_tsum_one_div_nat_cpow
-      (by rwa [← ofReal_nat_cast, ofReal_re, ← Nat.cast_one, Nat.cast_lt] : 1 < re k),
-    cpow_nat_cast]
+      (by rwa [← ofReal_natCast, ofReal_re, ← Nat.cast_one, Nat.cast_lt] : 1 < re k),
+    cpow_natCast]
 #align zeta_nat_eq_tsum_of_gt_one zeta_nat_eq_tsum_of_gt_one
 
 /-- Explicit formula for `ζ (2 * k)`, for `k ∈ ℕ` with `k ≠ 0`: we have
@@ -648,7 +648,7 @@ theorem riemannCompletedZeta₀_one_sub (s : ℂ) :
   simp_rw [rpow_neg_one, ← one_div, abs_neg, abs_one, div_one, one_smul, ofReal_neg, ofReal_one,
     div_neg, div_one, neg_sub] at this
   conv_lhs => rw [riemannCompletedZeta₀, sub_div, ← this]
-  refine set_integral_congr measurableSet_Ioi fun t ht => ?_
+  refine setIntegral_congr measurableSet_Ioi fun t ht => ?_
   simp_rw [zetaKernel₂_one_div (le_of_lt ht), smul_eq_mul, ← mul_assoc, sqrt_eq_rpow,
     ofReal_cpow (le_of_lt ht), ← cpow_add _ _ (ofReal_ne_zero.mpr <| ne_of_gt ht)]
   congr 2
@@ -732,7 +732,7 @@ theorem riemannZeta_neg_nat_eq_bernoulli (k : ℕ) :
   rcases Nat.even_or_odd' k with ⟨m, rfl | rfl⟩
   · cases' m with m m
     ·-- k = 0 : evaluate explicitly
-      rw [Nat.zero_eq, mul_zero, Nat.cast_zero, pow_zero, one_mul, zero_add, neg_zero, zero_add,
+      rw [mul_zero, Nat.cast_zero, pow_zero, one_mul, zero_add, neg_zero, zero_add,
         div_one, bernoulli_one, riemannZeta_zero]
       norm_num
     · -- k = 2 * (m + 1) : both sides "trivially" zero
@@ -753,7 +753,7 @@ theorem riemannZeta_neg_nat_eq_bernoulli (k : ℕ) :
       exact lt_of_le_of_lt
         (by set_option tactic.skipAssignedInstances false in norm_num : (-n : ℤ) ≤ 0)
         (by positivity)
-    · rw [(by norm_cast : 2 * (m : ℂ) + 2 = ↑(2 * m + 2)), Ne, Nat.cast_eq_one]; norm_num
+    · rw [(by norm_cast : 2 * (m : ℂ) + 2 = ↑(2 * m + 2)), Ne, Nat.cast_eq_one]; omega
     -- get rid of sine term
     rw [show Complex.sin (↑π * (1 - (2 * ↑m + 2)) / 2) = -(-1 : ℂ) ^ m by
         rw [(by field_simp; ring : (π : ℂ) * (1 - (2 * ↑m + 2)) / 2 = π / 2 - (π * m + π))]
@@ -767,8 +767,8 @@ theorem riemannZeta_neg_nat_eq_bernoulli (k : ℕ) :
           push_cast; ring_nf]
     -- substitute in what we know about zeta values at positive integers
     have step1 := congr_arg ((↑) : ℝ → ℂ) (hasSum_zeta_nat (by norm_num : m + 1 ≠ 0)).tsum_eq
-    have step2 := zeta_nat_eq_tsum_of_gt_one (by rw [mul_add]; norm_num : 1 < 2 * (m + 1))
-    simp_rw [ofReal_tsum, ofReal_div, ofReal_one, ofReal_pow, ofReal_nat_cast] at step1
+    have step2 := zeta_nat_eq_tsum_of_gt_one (by rw [mul_add]; omega : 1 < 2 * (m + 1))
+    simp_rw [ofReal_tsum, ofReal_div, ofReal_one, ofReal_pow, ofReal_natCast] at step1
     rw [step1, (by norm_cast : (↑(2 * (m + 1)) : ℂ) = 2 * ↑m + 2)] at step2
     rw [step2, mul_div]
     -- now the rest is just a lengthy but elementary rearrangement
@@ -781,7 +781,7 @@ theorem riemannZeta_neg_nat_eq_bernoulli (k : ℕ) :
     congr 1
     rw [div_eq_iff (Gamma_ne_zero_of_re_pos _)]
     swap; · rw [(by norm_num : 2 * (m : ℂ) + 2 = ↑(2 * (m : ℝ) + 2)), ofReal_re]; positivity
-    simp_rw [ofReal_mul, ← mul_assoc, ofReal_rat_cast, mul_add, Nat.add_assoc, mul_one,
+    simp_rw [ofReal_mul, ← mul_assoc, ofReal_ratCast, mul_add, Nat.add_assoc, mul_one,
       one_add_one_eq_two, mul_neg, neg_mul, neg_inj]
     conv_rhs => rw [mul_comm]
     congr 1
@@ -791,13 +791,13 @@ theorem riemannZeta_neg_nat_eq_bernoulli (k : ℕ) :
       congr
       rw [mul_assoc, ← pow_add, ← two_mul, pow_mul, neg_one_sq, one_pow, mul_one]
     rw [show (2 : ℂ) ^ (1 - (2 * (m : ℂ) + 2)) = (↑((2 : ℝ) ^ (2 * m + 2 - 1)))⁻¹ by
-        rw [ofReal_pow, ← cpow_nat_cast, ← cpow_neg, show (2 : ℝ) = (2 : ℂ) by norm_num]
+        rw [ofReal_pow, ← cpow_natCast, ← cpow_neg, show (2 : ℝ) = (2 : ℂ) by norm_num]
         congr 1
         rw [Nat.add_sub_assoc one_le_two, Nat.cast_add, Nat.cast_mul, Nat.cast_two,
           (by norm_num : 2 - 1 = 1)]
         push_cast; ring]
     rw [show (π : ℂ) ^ (-(2 * (m : ℂ) + 2)) = (↑(π ^ (2 * m + 2)))⁻¹ by
-        rw [ofReal_pow, ← cpow_nat_cast, ← cpow_neg, Nat.cast_add, Nat.cast_mul, Nat.cast_two]]
+        rw [ofReal_pow, ← cpow_natCast, ← cpow_neg, Nat.cast_add, Nat.cast_mul, Nat.cast_two]]
     rw [(by intros; ring : ∀ a b c d e : ℂ, a * b * c * d * e = a * d * (b * e) * c)]
     rw [inv_mul_cancel (ofReal_ne_zero.mpr <| pow_ne_zero _ pi_pos.ne'),
       inv_mul_cancel (ofReal_ne_zero.mpr <| pow_ne_zero _ two_ne_zero), one_mul, one_mul]
