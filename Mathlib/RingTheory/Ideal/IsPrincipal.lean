@@ -14,9 +14,14 @@ This file deals with the set of principal ideals of a `CommRing R`.
 
 * `Ideal.isPrincipalSubmonoid`: the submonoid of `Ideal R` formed by the principal ideals of `R`.
 
+* `Ideal.isPrincipalNonZeroDivisorSubmonoid`: the submonoid of `(Ideal R)⁰` formed by the
+non-zero-divisors principal ideals of `R`.
+
 * `Ideal.associatesMulEquivIsPrincipal`: the `MulEquiv` between the monoid of `Associates R` and
 the submonoid of principal ideals of `R`.
 
+* `Ideal.associatesNonZeroDivisorsMulEquivIsPrincipal`: the `MulEquiv` between the monoid of
+`Associates R⁰` and the submonoid of non-zero-divisors principal ideals of `R`.
 -/
 
 variable {R : Type*} [CommRing R]
@@ -25,12 +30,15 @@ namespace Ideal
 
 open Submodule
 
+open scoped nonZeroDivisors
+
 variable (R) in
+/-- The principal ideals of `R` form a submonoid of `Ideal R`. -/
 def isPrincipalSubmonoid : Submonoid (Ideal R) where
   carrier := { I | IsPrincipal I}
   mul_mem' := by
     rintro _ _ ⟨x, rfl⟩ ⟨y, rfl⟩
-    exact ⟨x * y, Ideal.span_singleton_mul_span_singleton x y⟩
+    exact ⟨x * y, span_singleton_mul_span_singleton x y⟩
   one_mem' := ⟨1, one_eq_span⟩
 
 theorem mem_isPrincipalSubmonoid_iff {I : Ideal R} :
@@ -38,6 +46,16 @@ theorem mem_isPrincipalSubmonoid_iff {I : Ideal R} :
 
 theorem span_singleton_mem_isPrincipalSubmonoid (a : R) :
     span {a} ∈ isPrincipalSubmonoid R := mem_isPrincipalSubmonoid_iff.mpr ⟨a, rfl⟩
+
+variable (R) in
+/-- The non-zero-divisors principal ideals of `R` form a submonoid of `(Ideal R)⁰`. -/
+def isPrincipalNonZeroDivisorsSubmonoid : Submonoid (Ideal R)⁰ where
+  carrier := { I | IsPrincipal I.val}
+  mul_mem' := by
+    rintro ⟨_, _⟩ ⟨_, _⟩ ⟨x, rfl⟩ ⟨y, rfl⟩
+    exact ⟨x * y, by
+      simp_rw [Submonoid.mk_mul_mk, submodule_span_eq, span_singleton_mul_span_singleton]⟩
+  one_mem' := ⟨1, by simp⟩
 
 variable [IsDomain R]
 
@@ -58,8 +76,8 @@ noncomputable def associatesEquivIsPrincipal :
 @[simp]
 theorem associatesEquivIsPrincipal_apply (x : R) :
     associatesEquivIsPrincipal R ⟦x⟧ = span {x} := by
-  rw [associatesEquivIsPrincipal, Equiv.ofBijective_apply, span_singleton_eq_span_singleton]
-  exact Associates.mk_quot_out x
+  simpa only [associatesEquivIsPrincipal, Equiv.ofBijective_apply, span_singleton_eq_span_singleton]
+    using Associates.mk_quot_out x
 
 theorem associatesEquivIsPrincipal_mul (x y : Associates R) :
     (associatesEquivIsPrincipal R (x * y) : Ideal R) =
@@ -78,10 +96,74 @@ theorem associatesEquivIsPrincipal_map_one :
   rw [Associates.one_eq_mk_one, ← Associates.quotient_mk_eq_mk, associatesEquivIsPrincipal_apply,
     span_singleton_one, one_eq_top]
 
+
 variable (R) in
+/-- The `MulEquiv` version of `Ideal.associatesEquivIsPrincipal`. -/
 noncomputable def associatesMulEquivIsPrincipal :
     Associates R ≃* (isPrincipalSubmonoid R) where
-  __ := Ideal.associatesEquivIsPrincipal R
+  __ := associatesEquivIsPrincipal R
   map_mul' _ _ := by
     erw [Subtype.ext_iff, associatesEquivIsPrincipal_mul]
+    rfl
+
+theorem associatesEquivIsPrincipal_mem_nonZeroDivisors_iff {x : R} :
+    ↑(Ideal.associatesEquivIsPrincipal R ⟦x⟧) ∈ (Ideal R)⁰ ↔ x ∈ R⁰ := by
+  rw [Ideal.associatesEquivIsPrincipal_apply, mem_nonZeroDivisors_iff, mem_nonZeroDivisors_iff,
+    ← not_iff_not]
+  push_neg
+  refine ⟨fun ⟨I, hI₁, hI₂⟩ ↦ ?_, fun ⟨y, hy₁, hy₂⟩ ↦ ?_⟩
+  · rw [zero_eq_bot, Submodule.ne_bot_iff] at hI₂
+    refine ⟨hI₂.choose, ?_, hI₂.choose_spec.2⟩
+    · suffices hI₂.choose * x ∈ I * Ideal.span {x} by
+        rwa [hI₁] at this
+      rw [mem_mul_span_singleton]
+      exact ⟨hI₂.choose, hI₂.choose_spec.1, rfl⟩
+  · refine ⟨span {y}, ?_, ?_⟩
+    · rw [span_singleton_mul_span_singleton, hy₁, Set.singleton_zero, span_zero, zero_eq_bot]
+    · rw [zero_eq_bot, Submodule.ne_bot_iff]
+      exact ⟨y, Ideal.mem_span_singleton_self y, hy₂⟩
+
+variable (R) in
+/-- A version of `Ideal.associatesEquivIsPrincipal` for non-zero-divisor generators. -/
+noncomputable def associatesNonZeroDivisorsEquivIsPrincipal :
+    Associates R⁰ ≃ {I : (Ideal R)⁰ // IsPrincipal (I : Ideal R)} :=
+  calc Associates R⁰ ≃ (Associates R)⁰ := associatesNonZeroDivisorsEquiv.toEquiv.symm
+    _ ≃ {I : {I : Ideal R // IsPrincipal I} // I.1 ∈ (Ideal R)⁰} :=
+      Equiv.subtypeEquiv (associatesEquivIsPrincipal R)
+        (fun x ↦ by rw [← Associates.quot_out x, mk_mem_nonZeroDivisors_associates,
+          associatesEquivIsPrincipal_mem_nonZeroDivisors_iff])
+    _ ≃ {I : Ideal R // IsPrincipal I ∧ I ∈ (Ideal R)⁰} :=
+      Equiv.subtypeSubtypeEquivSubtypeInter (fun I ↦ IsPrincipal I) (fun I ↦ I ∈ (Ideal R)⁰)
+    _ ≃ {I : Ideal R // I ∈ (Ideal R)⁰ ∧ IsPrincipal I} := Equiv.setCongr (by simp_rw [and_comm])
+    _ ≃ {I : (Ideal R)⁰ // IsPrincipal I.1} := (Equiv.subtypeSubtypeEquivSubtypeInter _ _).symm
+
+@[simp]
+theorem associatesNonZeroDivisorsEquivIsPrincipal_apply (x : R⁰) :
+    associatesNonZeroDivisorsEquivIsPrincipal R ⟦x⟧  = Ideal.span {(x : R)} := by
+  rw [← Ideal.associatesEquivIsPrincipal_apply]
+  rfl
+
+theorem associatesNonZeroDivisorsEquivIsPrincipal_coe (x : Associates R⁰) :
+    (associatesNonZeroDivisorsEquivIsPrincipal R x : Ideal R) =
+      (associatesEquivIsPrincipal R (associatesNonZeroDivisorsEquiv.symm x)) := rfl
+
+theorem associatesNonZeroDivisorsEquivIsPrincipal_mul (x y : Associates R⁰) :
+    (associatesNonZeroDivisorsEquivIsPrincipal R (x * y) : Ideal R) =
+      (associatesNonZeroDivisorsEquivIsPrincipal R x) *
+        (associatesNonZeroDivisorsEquivIsPrincipal R y) := by
+  simp_rw [associatesNonZeroDivisorsEquivIsPrincipal_coe, map_mul, Submonoid.coe_mul,
+    associatesEquivIsPrincipal_mul]
+
+theorem associatesNonZeroDivisorsEquivIsPrincipal_map_one :
+    (associatesNonZeroDivisorsEquivIsPrincipal R 1 : Ideal R) = 1 := by
+  rw [associatesNonZeroDivisorsEquivIsPrincipal_coe, map_one, OneMemClass.coe_one,
+    associatesEquivIsPrincipal_map_one]
+
+variable (R) in
+/-- The `MulEquiv` version of `Ideal.associatesNonZeroDivisorsEquivIsPrincipal`. -/
+noncomputable def associatesNonZeroDivisorsMulEquivIsPrincipal :
+    Associates R⁰ ≃* (isPrincipalNonZeroDivisorsSubmonoid R) where
+  __ := associatesNonZeroDivisorsEquivIsPrincipal R
+  map_mul' _ _ := by
+    erw [Subtype.ext_iff, Subtype.ext_iff, associatesNonZeroDivisorsEquivIsPrincipal_mul]
     rfl
