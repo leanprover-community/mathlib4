@@ -78,7 +78,7 @@ def eq : KleisliCat m ≌ Kleisli (ofTypeMonad m) where
         simp only [joinM, seq_bind_eq, Function.id_comp]
         rfl }
   unitIso := by
-    refine' NatIso.ofComponents (fun X => Iso.refl X) fun f => _
+    refine NatIso.ofComponents (fun X => Iso.refl X) fun f => ?_
     change f >=> pure = pure >=> f
     simp [functor_norm]
   counitIso := NatIso.ofComponents fun X => Iso.refl X

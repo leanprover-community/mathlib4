@@ -294,7 +294,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
     simpa only [UniqueMDiffOn, UniqueMDiffWithinAt, hy.1, inter_comm, mfld_simps]
       using hs (I.symm y) hy.2
   rw [contMDiffOn_iff]
-  refine' ⟨hf.continuousOn_tangentMapWithin_aux one_le_n hs, fun p q => _⟩
+  refine ⟨hf.continuousOn_tangentMapWithin_aux one_le_n hs, fun p q => ?_⟩
   suffices h :
     ContDiffOn 𝕜 m
       (((fun p : H' × E' => (I' p.fst, p.snd)) ∘ TotalSpace.toProd H' E') ∘
@@ -364,7 +364,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
     -/
   have one_le_n : 1 ≤ n := (le_add_left le_rfl).trans hmn
   -- First step: local reduction on the space, to a set `s'` which is contained in chart domains.
-  refine' contMDiffOn_of_locally_contMDiffOn fun p hp => _
+  refine contMDiffOn_of_locally_contMDiffOn fun p hp => ?_
   have hf' := contMDiffOn_iff.1 hf
   simp only [mfld_simps] at hp
   let l := chartAt H p.proj
@@ -379,7 +379,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
   let s'l_lift := π E (TangentSpace I) ⁻¹' s'l
   rcases continuousOn_iff'.1 hf'.1 r.source r.open_source with ⟨o, o_open, ho⟩
   suffices h : ContMDiffOn I.tangent I'.tangent m (tangentMapWithin I I' f s) s'_lift by
-    refine' ⟨π E (TangentSpace I) ⁻¹' (o ∩ l.source), _, _, _⟩
+    refine ⟨π E (TangentSpace I) ⁻¹' (o ∩ l.source), ?_, ?_, ?_⟩
     · show IsOpen (π E (TangentSpace I) ⁻¹' (o ∩ l.source));
       exact (o_open.inter l.open_source).preimage (FiberBundle.continuous_proj E _)
     · show p ∈ π E (TangentSpace I) ⁻¹' (o ∩ l.source)
@@ -460,7 +460,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
     have A :
       tangentMapWithin I I' ((r ∘ f) ∘ l.symm) s'l (il.symm (Dl q)) =
         tangentMapWithin I I' (r ∘ f) s' (tangentMapWithin I I l.symm s'l (il.symm (Dl q))) := by
-      refine' tangentMapWithin_comp_at (il.symm (Dl q)) _ _ (fun p hp => _) U'lq
+      refine tangentMapWithin_comp_at (il.symm (Dl q)) ?_ ?_ (fun p hp => ?_) U'lq
       · apply diff_rf.mdifferentiableOn one_le_n
         simp only [hq, s', Dl, l, il, mfld_simps]
       · apply diff_l.mdifferentiableOn one_le_n
@@ -469,9 +469,9 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
     have B : tangentMapWithin I I l.symm s'l (il.symm (Dl q)) = q := by
       have : tangentMapWithin I I l.symm s'l (il.symm (Dl q)) =
           tangentMap I I l.symm (il.symm (Dl q)) := by
-        refine' tangentMapWithin_eq_tangentMap U'lq _
+        refine tangentMapWithin_eq_tangentMap U'lq ?_
         -- Porting note: the arguments below were underscores.
-        refine' mdifferentiableAt_atlas_symm I (chart_mem_atlas H (TotalSpace.proj p)) _
+        refine mdifferentiableAt_atlas_symm I (chart_mem_atlas H (TotalSpace.proj p)) ?_
         simp only [Dl, il, hq, mfld_simps]
       rw [this, tangentMap_chart_symm, hDl]
       · simp only [il, hq, mfld_simps]
@@ -481,7 +481,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
     have C :
       tangentMapWithin I I' (r ∘ f) s' q =
         tangentMapWithin I' I' r r.source (tangentMapWithin I I' f s' q) := by
-      refine' tangentMapWithin_comp_at q _ _ (fun r hr => _) U'q
+      refine tangentMapWithin_comp_at q ?_ ?_ (fun r hr => ?_) U'q
       · apply diff_r.mdifferentiableOn one_le_n
         simp only [hq, mfld_simps]
       · apply diff_f.mdifferentiableOn one_le_n
@@ -510,7 +510,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
         exact (chartAt (ModelProd H' E') (tangentMapWithin I I' f s p)).left_inv this
       · simp only [hq, mfld_simps]
     have E : tangentMapWithin I I' f s' q = tangentMapWithin I I' f s q := by
-      refine' tangentMapWithin_subset (by unfold_let; mfld_set_tac) U'q _
+      refine tangentMapWithin_subset (by unfold_let; mfld_set_tac) U'q ?_
       apply hf.mdifferentiableOn one_le_n
       simp only [hq, mfld_simps]
     dsimp only [Function.comp_def] at A B C D E ⊢
@@ -593,7 +593,7 @@ theorem tangentMap_tangentBundle_pure (p : TangentBundle I M) :
   rw [← fderivWithin_inter N] at B
   rw [← fderivWithin_inter N, ← B]
   congr 1
-  refine' fderivWithin_congr (fun y hy => _) _
+  refine fderivWithin_congr (fun y hy => ?_) ?_
   · simp only [mfld_simps] at hy
     simp only [hy, Prod.mk.inj_iff, mfld_simps]
   · simp only [Prod.mk.inj_iff, mfld_simps]

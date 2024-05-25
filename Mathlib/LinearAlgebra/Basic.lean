@@ -445,7 +445,7 @@ protected theorem _root_.LinearEquivClass.range [Module R M] [Module R₂ M₂] 
 #align linear_equiv_class.range LinearEquivClass.range
 
 theorem eq_bot_of_equiv [Module R₂ M₂] (e : p ≃ₛₗ[σ₁₂] (⊥ : Submodule R₂ M₂)) : p = ⊥ := by
-  refine' bot_unique (SetLike.le_def.2 fun b hb => (Submodule.mem_bot R).2 _)
+  refine bot_unique (SetLike.le_def.2 fun b hb => (Submodule.mem_bot R).2 ?_)
   rw [← p.mk_eq_zero hb, ← e.map_eq_zero_iff]
   apply Submodule.eq_zero_of_bot_submodule
 #align linear_equiv.eq_bot_of_equiv LinearEquiv.eq_bot_of_equiv
@@ -800,7 +800,7 @@ theorem funLeft_surjective_of_injective (f : m → n) (hf : Injective f) :
     Surjective (funLeft R M f) := by
   classical
     intro g
-    refine' ⟨fun x => if h : ∃ y, f y = x then g h.choose else 0, _⟩
+    refine ⟨fun x => if h : ∃ y, f y = x then g h.choose else 0, ?_⟩
     ext
     dsimp only [funLeft_apply]
     split_ifs with w
