@@ -8,9 +8,9 @@ import Mathlib.Algebra.Polynomial.BigOperators
 import Mathlib.Algebra.Polynomial.Lifts
 import Mathlib.Algebra.Polynomial.Splits
 import Mathlib.RingTheory.RootsOfUnity.Complex
-import Mathlib.FieldTheory.RatFunc
 import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.RingTheory.RootsOfUnity.Basic
+import Mathlib.FieldTheory.RatFunc.AsPolynomial
 
 #align_import ring_theory.polynomial.cyclotomic.basic from "leanprover-community/mathlib"@"7fdeecc0d03cd40f7a165e6cf00a4d2286db599f"
 
@@ -108,8 +108,8 @@ theorem natDegree_cyclotomic' {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
     (cyclotomic' n R).natDegree = Nat.totient n := by
   rw [cyclotomic']
   rw [natDegree_prod (primitiveRoots n R) fun z : R => X - C z]
-  simp only [IsPrimitiveRoot.card_primitiveRoots h, mul_one, natDegree_X_sub_C, Nat.cast_id,
-    Finset.sum_const, nsmul_eq_mul]
+  · simp only [IsPrimitiveRoot.card_primitiveRoots h, mul_one, natDegree_X_sub_C, Nat.cast_id,
+      Finset.sum_const, nsmul_eq_mul]
   intro z _
   exact X_sub_C_ne_zero z
 #align polynomial.nat_degree_cyclotomic' Polynomial.natDegree_cyclotomic'
@@ -188,7 +188,7 @@ theorem cyclotomic'_eq_X_pow_sub_one_div {K : Type*} [CommRing K] [IsDomain K] {
     exact cyclotomic'.monic i K
   rw [(div_modByMonic_unique (cyclotomic' n K) 0 prod_monic _).1]
   simp only [degree_zero, zero_add]
-  refine' ⟨by rw [mul_comm], _⟩
+  refine ⟨by rw [mul_comm], ?_⟩
   rw [bot_lt_iff_ne_bot]
   intro h
   exact Monic.ne_zero prod_monic (degree_eq_bot.1 h)
@@ -200,7 +200,7 @@ monic polynomial with integer coefficients. -/
 theorem int_coeff_of_cyclotomic' {K : Type*} [CommRing K] [IsDomain K] {ζ : K} {n : ℕ}
     (h : IsPrimitiveRoot ζ n) : ∃ P : ℤ[X], map (Int.castRingHom K) P =
       cyclotomic' n K ∧ P.degree = (cyclotomic' n K).degree ∧ P.Monic := by
-  refine' lifts_and_degree_eq_and_monic _ (cyclotomic'.monic n K)
+  refine lifts_and_degree_eq_and_monic ?_ (cyclotomic'.monic n K)
   induction' n using Nat.strong_induction_on with k ihk generalizing ζ
   rcases k.eq_zero_or_pos with (rfl | hpos)
   · use 1
@@ -211,7 +211,7 @@ theorem int_coeff_of_cyclotomic' {K : Type*} [CommRing K] [IsDomain K] {ζ : K} 
     intro i _
     exact cyclotomic'.monic i K
   have Bint : B ∈ lifts (Int.castRingHom K) := by
-    refine' Subsemiring.prod_mem (lifts (Int.castRingHom K)) _
+    refine Subsemiring.prod_mem (lifts (Int.castRingHom K)) ?_
     intro x hx
     have xsmall := (Nat.mem_properDivisors.1 hx).2
     obtain ⟨d, hd⟩ := (Nat.mem_properDivisors.1 hx).1
@@ -238,7 +238,7 @@ theorem unique_int_coeff_of_cycl {K : Type*} [CommRing K] [IsDomain K] [CharZero
     {n : ℕ+} (h : IsPrimitiveRoot ζ n) :
     ∃! P : ℤ[X], map (Int.castRingHom K) P = cyclotomic' n K := by
   obtain ⟨P, hP⟩ := int_coeff_of_cyclotomic' h
-  refine' ⟨P, hP.1, fun Q hQ => _⟩
+  refine ⟨P, hP.1, fun Q hQ => ?_⟩
   apply map_injective (Int.castRingHom K) Int.cast_injective
   rw [hP.1, hQ]
 #align polynomial.unique_int_coeff_of_cycl Polynomial.unique_int_coeff_of_cycl
@@ -540,7 +540,7 @@ theorem eq_cyclotomic_iff {R : Type*} [CommRing R] {n : ℕ} (hpos : 0 < n) (P :
     P = cyclotomic n R ↔
     (P * ∏ i in Nat.properDivisors n, Polynomial.cyclotomic i R) = X ^ n - 1 := by
   nontriviality R
-  refine' ⟨fun hcycl => _, fun hP => _⟩
+  refine ⟨fun hcycl => ?_, fun hP => ?_⟩
   · rw [hcycl, ← prod_cyclotomic_eq_X_pow_sub_one hpos R, ← Nat.cons_self_properDivisors hpos.ne',
       Finset.prod_cons]
   · have prod_monic : (∏ i in Nat.properDivisors n, cyclotomic i R).Monic := by
@@ -548,7 +548,7 @@ theorem eq_cyclotomic_iff {R : Type*} [CommRing R] {n : ℕ} (hpos : 0 < n) (P :
       intro i _
       exact cyclotomic.monic i R
     rw [@cyclotomic_eq_X_pow_sub_one_div R _ _ hpos, (div_modByMonic_unique P 0 prod_monic _).1]
-    refine' ⟨by rwa [zero_add, mul_comm], _⟩
+    refine ⟨by rwa [zero_add, mul_comm], ?_⟩
     rw [degree_zero, bot_lt_iff_ne_bot]
     intro h
     exact Monic.ne_zero prod_monic (degree_eq_bot.1 h)

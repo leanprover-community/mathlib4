@@ -34,7 +34,7 @@ parallelepiped associated to any orthonormal basis. This is a rephrasing of
 theorem Orientation.measure_orthonormalBasis (o : Orientation ℝ F (Fin n))
     (b : OrthonormalBasis ι ℝ F) : o.volumeForm.measure (parallelepiped b) = 1 := by
   have e : ι ≃ Fin n := by
-    refine' Fintype.equivFinOfCardEq _
+    refine Fintype.equivFinOfCardEq ?_
     rw [← _i.out, finrank_eq_card_basis b.toBasis]
   have A : ⇑b = b.reindex e ∘ e := by
     ext x

@@ -46,12 +46,12 @@ theorem Submartingale.expected_stoppedValue_mono [SigmaFiniteFiltration μ 𝒢]
   · simp only [Finset.sum_apply]
     have : ∀ i, MeasurableSet[𝒢 i] {ω : Ω | τ ω ≤ i ∧ i < π ω} := by
       intro i
-      refine' (hτ i).inter _
+      refine (hτ i).inter ?_
       convert (hπ i).compl using 1
       ext x
       simp; rfl
     rw [integral_finset_sum]
-    · refine' Finset.sum_nonneg fun i _ => _
+    · refine Finset.sum_nonneg fun i _ => ?_
       rw [integral_indicator (𝒢.le _ _ (this _)), integral_sub', sub_nonneg]
       · exact hf.setIntegral_le (Nat.le_succ i) (this _)
       · exact (hf.integrable _).integrableOn
@@ -70,7 +70,7 @@ theorem submartingale_of_expected_stoppedValue_mono [IsFiniteMeasure μ] (hadp :
     (hint : ∀ i, Integrable (f i) μ) (hf : ∀ τ π : Ω → ℕ, IsStoppingTime 𝒢 τ → IsStoppingTime 𝒢 π →
       τ ≤ π → (∃ N, ∀ ω, π ω ≤ N) → μ[stoppedValue f τ] ≤ μ[stoppedValue f π]) :
     Submartingale f 𝒢 μ := by
-  refine' submartingale_of_setIntegral_le hadp hint fun i j hij s hs => _
+  refine submartingale_of_setIntegral_le hadp hint fun i j hij s hs => ?_
   classical
   specialize hf (s.piecewise (fun _ => i) fun _ => j) _ (isStoppingTime_piecewise_const hij hs)
     (isStoppingTime_const 𝒢 j) (fun x => (ite_le_sup _ _ (x ∈ s)).trans (max_eq_right hij).le)
@@ -118,7 +118,7 @@ theorem smul_le_stoppedValue_hitting [IsFiniteMeasure μ] (hsub : Submartingale 
       (ε : ℝ) ≤ stoppedValue f (hitting f {y : ℝ | ↑ε ≤ y} 0 n) ω := by
     intro x hx
     simp_rw [le_sup'_iff, mem_range, Nat.lt_succ_iff] at hx
-    refine' stoppedValue_hitting_mem _
+    refine stoppedValue_hitting_mem ?_
     simp only [Set.mem_setOf_eq, exists_prop, hn]
     exact
       let ⟨j, hj₁, hj₂⟩ := hx
@@ -177,12 +177,12 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
         ENNReal.ofReal
           (∫ ω in {ω | ((range (n + 1)).sup' nonempty_range_succ fun k => f k ω) < ε},
             stoppedValue f (hitting f {y : ℝ | ↑ε ≤ y} 0 n) ω ∂μ) := by
-      refine' add_le_add (smul_le_stoppedValue_hitting hsub _)
+      refine add_le_add (smul_le_stoppedValue_hitting hsub _)
         (ENNReal.ofReal_le_ofReal (setIntegral_mono_on (hsub.integrable n).integrableOn
           (Integrable.integrableOn (hsub.integrable_stoppedValue
             (hitting_isStoppingTime hsub.adapted measurableSet_Ici) hitting_le))
               (measurableSet_lt (Finset.measurable_range_sup'' fun n _ =>
-                (hsub.stronglyMeasurable n).measurable.le (𝒢.le n)) measurable_const) _))
+                (hsub.stronglyMeasurable n).measurable.le (𝒢.le n)) measurable_const) ?_))
       intro ω hω
       rw [Set.mem_setOf_eq] at hω
       have : hitting f {y : ℝ | ↑ε ≤ y} 0 n ω = n := by
@@ -212,7 +212,7 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
           (hitting_isStoppingTime hsub.adapted measurableSet_Ici) hitting_le)
       exacts [integral_nonneg fun x => hnonneg _ _, integral_nonneg fun x => hnonneg _ _]
     _ ≤ ENNReal.ofReal (μ[f n]) := by
-      refine' ENNReal.ofReal_le_ofReal _
+      refine ENNReal.ofReal_le_ofReal ?_
       rw [← stoppedValue_const f n]
       exact hsub.expected_stoppedValue_mono (hitting_isStoppingTime hsub.adapted measurableSet_Ici)
         (isStoppingTime_const _ _) (fun ω => hitting_le ω) (fun _ => le_refl n)

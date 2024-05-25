@@ -99,7 +99,6 @@ result a binomial coefficient. We use `binomial` in the names of lemmas that
 involves `Nat.multinomial {a, b}`.
 -/
 
-
 theorem binomial_eq [DecidableEq α] (h : a ≠ b) :
     multinomial {a, b} f = (f a + f b)! / ((f a)! * (f b)!) := by
   simp [multinomial, Finset.sum_pair h, Finset.prod_pair h]
@@ -214,7 +213,8 @@ theorem multinomial_filter_ne [DecidableEq α] (a : α) (m : Multiset α) :
 #align multiset.multinomial_filter_ne Multiset.multinomial_filter_ne
 
 @[simp]
-theorem multinomial_zero [DecidableEq α] : multinomial (0 : Multiset α) = 1 := rfl
+theorem multinomial_zero [DecidableEq α] : multinomial (0 : Multiset α) = 1 := by
+  simp [multinomial, Finsupp.multinomial]
 
 end Multiset
 
@@ -247,7 +247,6 @@ theorem sum_pow_of_commute [Semiring R] (x : α → R)
       · have : Zero (Sym α 0) := Sym.instZeroSym
         exact ⟨0, by simp [eq_iff_true_of_subsingleton]⟩
       convert (@one_mul R _ _).symm
-      dsimp only
       convert @Nat.cast_one R _
     · rw [_root_.pow_succ, mul_zero]
       -- Porting note: Lean cannot infer this instance by itself
@@ -258,7 +257,7 @@ theorem sum_pow_of_commute [Semiring R] (x : α → R)
   · exact fun _ hb => hc (mem_insert_self a s) (mem_insert_of_mem hb)
       (ne_of_mem_of_not_mem hb ha).symm
   · simp_rw [ih, mul_sum, sum_mul, sum_sigma', univ_sigma_univ]
-    refine' (Fintype.sum_equiv (symInsertEquiv ha) _ _ fun m => _).symm
+    refine (Fintype.sum_equiv (symInsertEquiv ha) _ _ fun m => ?_).symm
     rw [m.1.1.multinomial_filter_ne a]
     conv in m.1.1.map _ => rw [← m.1.1.filter_add_not (a = ·), Multiset.map_add]
     simp_rw [Multiset.noncommProd_add, m.1.1.filter_eq, Multiset.map_replicate, m.1.2]

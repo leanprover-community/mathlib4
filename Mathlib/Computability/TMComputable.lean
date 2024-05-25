@@ -14,9 +14,9 @@ import Mathlib.Computability.TuringMachine
 # Computable functions
 
 This file contains the definition of a Turing machine with some finiteness conditions
-(bundling the definition of TM2 in TuringMachine.lean), a definition of when a TM gives a certain
-output (in a certain time), and the definition of computability (in polytime or any time function)
-of a function between two types that have an encoding (as in Encoding.lean).
+(bundling the definition of TM2 in `TuringMachine.lean`), a definition of when a TM gives a certain
+output (in a certain time), and the definition of computability (in polynomial time or
+any time function) of a function between two types that have an encoding (as in `Encoding.lean`).
 
 ## Main theorems
 
@@ -26,10 +26,10 @@ of a function between two types that have an encoding (as in Encoding.lean).
 ## Implementation notes
 
 To count the execution time of a Turing machine, we have decided to count the number of times the
-`step` function is used. Each step executes a statement (of type stmt); this is a function, and
-generally contains multiple "fundamental" steps (pushing, popping, so on). However, as functions
-only contain a finite number of executions and each one is executed at most once, this execution
-time is up to multiplication by a constant the amount of fundamental steps.
+`step` function is used. Each step executes a statement (of type `Stmt`); this is a function, and
+generally contains multiple "fundamental" steps (pushing, popping, and so on).
+However, as functions only contain a finite number of executions and each one is executed at most
+once, this execution time is up to multiplication by a constant the amount of fundamental steps.
 -/
 
 
@@ -41,17 +41,35 @@ namespace Turing
 
 /-- A bundled TM2 (an equivalent of the classical Turing machine, defined starting from
 the namespace `Turing.TM2` in `TuringMachine.lean`), with an input and output stack,
- a main function, an initial state and some finiteness guarantees. -/
+a main function, an initial state and some finiteness guarantees. -/
 structure FinTM2 where
-  {K : Type} [kDecidableEq : DecidableEq K] [kFin : Fintype K] -- index type of stacks
-  (k₀ k₁ : K) -- input and output stack
-  (Γ : K → Type) -- type of stack elements
-  (Λ : Type) (main : Λ) [ΛFin : Fintype Λ] -- type of function labels
-  (σ : Type) (initialState : σ) -- type of states of the machine
+  /-- index type of stacks -/
+  {K : Type} [kDecidableEq : DecidableEq K]
+  /-- A TM2 machine has finitely many stacks. -/
+  [kFin : Fintype K]
+  /-- input resp. output stack -/
+  (k₀ k₁ : K)
+  /-- type of stack elements -/
+  (Γ : K → Type)
+  /-- type of function labels -/
+  (Λ : Type)
+  /-- a main function: the initial function that is executed, given by its label -/
+  (main : Λ)
+  /-- A TM2 machine has finitely many function labels. -/
+  [ΛFin : Fintype Λ]
+  /-- type of states of the machine -/
+  (σ : Type)
+  /-- the initial state of the machine -/
+  (initialState : σ)
+  /-- a TM2 machine has finitely many internal states. -/
   [σFin : Fintype σ]
+  /-- Each internal stack is finite. -/
   [Γk₀Fin : Fintype (Γ k₀)]
-  (m : Λ → Turing.TM2.Stmt Γ Λ σ) -- the program itself, i.e. one function for every function label
+  /-- the program itself, i.e. one function for every function label -/
+  (m : Λ → Turing.TM2.Stmt Γ Λ σ)
 #align turing.fin_tm2 Turing.FinTM2
+
+attribute [nolint docBlame] FinTM2.kDecidableEq
 
 namespace FinTM2
 
@@ -114,9 +132,10 @@ def haltList (tm : FinTM2) (s : List (tm.Γ tm.k₁)) : tm.Cfg where
       fun _ => []
 #align turing.halt_list Turing.haltList
 
-/-- A "proof" of the fact that f eventually reaches b when repeatedly evaluated on a,
+/-- A "proof" of the fact that `f` eventually reaches `b` when repeatedly evaluated on `a`,
 remembering the number of steps it takes. -/
 structure EvalsTo {σ : Type*} (f : σ → Option σ) (a : σ) (b : Option σ) where
+  /-- number of steps taken -/
   steps : ℕ
   evals_in_steps : (flip bind f)^[steps] a = b
 #align turing.evals_to Turing.EvalsTo
@@ -176,26 +195,34 @@ def TM2OutputsInTime.toTM2Outputs {tm : FinTM2} {l : List (tm.Γ tm.k₀)}
   h.toEvalsTo
 #align turing.tm2_outputs_in_time.to_tm2_outputs Turing.TM2OutputsInTime.toTM2Outputs
 
-/-- A Turing machine with input alphabet equivalent to Γ₀ and output alphabet equivalent to Γ₁. -/
+/-- A (bundled TM2) Turing machine
+with input alphabet equivalent to `Γ₀` and output alphabet equivalent to `Γ₁`. -/
 structure TM2ComputableAux (Γ₀ Γ₁ : Type) where
+  /-- the underlying bundled TM2 -/
   tm : FinTM2
+  /-- the input alphabet is equivalent to `Γ₀` -/
   inputAlphabet : tm.Γ tm.k₀ ≃ Γ₀
+  /-- the output alphabet is equivalent to `Γ₁` -/
   outputAlphabet : tm.Γ tm.k₁ ≃ Γ₁
 #align turing.tm2_computable_aux Turing.TM2ComputableAux
 
-/-- A Turing machine + a proof it outputs f. -/
+/-- A Turing machine + a proof it outputs `f`. -/
 structure TM2Computable {α β : Type} (ea : FinEncoding α) (eb : FinEncoding β) (f : α → β) extends
   TM2ComputableAux ea.Γ eb.Γ where
+  /-- a proof this machine outputs `f` -/
   outputsFun :
     ∀ a,
       TM2Outputs tm (List.map inputAlphabet.invFun (ea.encode a))
         (Option.some ((List.map outputAlphabet.invFun) (eb.encode (f a))))
 #align turing.tm2_computable Turing.TM2Computable
 
-/-- A Turing machine + a time function + a proof it outputs f in at most time(len(input)) steps. -/
+/-- A Turing machine + a time function +
+a proof it outputs `f` in at most `time(input.length)` steps. -/
 structure TM2ComputableInTime {α β : Type} (ea : FinEncoding α) (eb : FinEncoding β)
   (f : α → β) extends TM2ComputableAux ea.Γ eb.Γ where
+  /-- a time function -/
   time : ℕ → ℕ
+  /-- proof this machine outputs `f` in at most `time(input.length)` steps -/
   outputsFun :
     ∀ a,
       TM2OutputsInTime tm (List.map inputAlphabet.invFun (ea.encode a))
@@ -203,11 +230,13 @@ structure TM2ComputableInTime {α β : Type} (ea : FinEncoding α) (eb : FinEnco
         (time (ea.encode a).length)
 #align turing.tm2_computable_in_time Turing.TM2ComputableInTime
 
-/-- A Turing machine + a polynomial time function + a proof it outputs f in at most time(len(input))
-steps. -/
+/-- A Turing machine + a polynomial time function +
+a proof it outputs `f` in at most `time(input.length)` steps. -/
 structure TM2ComputableInPolyTime {α β : Type} (ea : FinEncoding α) (eb : FinEncoding β)
   (f : α → β) extends TM2ComputableAux ea.Γ eb.Γ where
+  /-- a polynomial time function -/
   time : Polynomial ℕ
+  /-- proof that this machine outputs `f` in at most `time(input.length)` steps -/
   outputsFun :
     ∀ a,
       TM2OutputsInTime tm (List.map inputAlphabet.invFun (ea.encode a))

@@ -297,7 +297,6 @@ section BasicOpen
 variable (X : Scheme) {V U : Opens X.carrier} (f g : X.presheaf.obj (op U))
 
 /-- The subset of the underlying space where the given section does not vanish. -/
-@[pp_dot]
 def basicOpen : Opens X.carrier :=
   X.toLocallyRingedSpace.toRingedSpace.basicOpen f
 #align algebraic_geometry.Scheme.basic_open AlgebraicGeometry.Scheme.basicOpen
@@ -402,7 +401,7 @@ theorem Scheme.Spec_map_presheaf_map_eqToHom {X : Scheme} {U V : Opens X} (h : U
   have : Scheme.Spec.map (X.presheaf.map (𝟙 (op U))).op = 𝟙 _ := by
     rw [X.presheaf.map_id, op_id, Scheme.Spec.map_id]
   cases h
-  refine' (Scheme.congr_app this _).trans _
+  refine (Scheme.congr_app this _).trans ?_
   simp [eqToHom_map]
 #align algebraic_geometry.Scheme.Spec_map_presheaf_map_eqToHom AlgebraicGeometry.Scheme.Spec_map_presheaf_map_eqToHom
 

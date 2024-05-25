@@ -89,7 +89,7 @@ variable [AddCommMonoid F] [Module R F] [∀ x, AddCommMonoid (E x)] [∀ x, Mod
 /-- A fiberwise linear inverse to `e`. -/
 @[simps!]
 protected def symmₗ (e : Pretrivialization F (π F E)) [e.IsLinear R] (b : B) : F →ₗ[R] E b := by
-  refine' IsLinearMap.mk' (e.symm b) _
+  refine IsLinearMap.mk' (e.symm b) ?_
   by_cases hb : b ∈ e.baseSet
   · exact (((e.linear R hb).mk' _).inverse (e.symm b) (e.symm_apply_apply_mk hb) fun v ↦
       congr_arg Prod.snd <| e.apply_mk_symm hb v).isLinear
@@ -290,8 +290,8 @@ def coordChangeL (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.IsLinear 
       by_cases hb : b ∈ e.baseSet ∩ e'.baseSet
       · rw [dif_pos hb]
         refine' (e.continuousOn.comp_continuous _ _).snd
-        exact e'.continuousOn_symm.comp_continuous (Continuous.Prod.mk b) fun y =>
-          mk_mem_prod hb.2 (mem_univ y)
+        · exact e'.continuousOn_symm.comp_continuous (Continuous.Prod.mk b) fun y =>
+            mk_mem_prod hb.2 (mem_univ y)
         exact fun y => e.mem_source.mpr hb.1
       · rw [dif_neg hb]
         exact continuous_id }
@@ -433,7 +433,7 @@ def continuousLinearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B)
     cont := by
       dsimp
       rw [e.coe_linearMapAt b]
-      refine' continuous_if_const _ (fun hb => _) fun _ => continuous_zero
+      refine continuous_if_const _ (fun hb => ?_) fun _ => continuous_zero
       exact (e.continuousOn.comp_continuous (FiberBundle.totalSpaceMk_inducing F E b).continuous
         fun x => e.mem_source.mpr hb).snd }
 #align trivialization.continuous_linear_map_at Trivialization.continuousLinearMapAt
@@ -505,7 +505,7 @@ variable (R)
 theorem apply_eq_prod_continuousLinearEquivAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B)
     (hb : b ∈ e.baseSet) (z : E b) : e ⟨b, z⟩ = (b, e.continuousLinearEquivAt R b hb z) := by
   ext
-  · refine' e.coe_fst _
+  · refine e.coe_fst ?_
     rw [e.source_eq]
     exact hb
   · simp only [coe_coe, continuousLinearEquivAt_apply]

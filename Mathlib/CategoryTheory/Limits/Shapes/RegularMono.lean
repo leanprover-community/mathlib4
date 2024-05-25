@@ -110,7 +110,7 @@ def regularOfIsPullbackSndOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h
       rw [Category.assoc, s.condition, Category.assoc]
     obtain ⟨l, hl⟩ := Fork.IsLimit.lift' hr.isLimit _ l₁
     obtain ⟨p, _, hp₂⟩ := PullbackCone.IsLimit.lift' t _ _ hl
-    refine' ⟨p, hp₂, _⟩
+    refine ⟨p, hp₂, ?_⟩
     intro m w
     have z : m ≫ g = p ≫ g := w.trans hp₂.symm
     apply t.hom_ext
@@ -221,8 +221,7 @@ noncomputable def regularEpiOfKernelPair {B X : C} (f : X ⟶ B) [HasPullback f 
   isColimit := hc
 
 /-- Every split epimorphism is a regular epimorphism. -/
-instance (priority := 100) RegularEpi.ofSplitEpi (f : X ⟶ Y) [IsSplitEpi f] : RegularEpi f
-    where
+instance (priority := 100) RegularEpi.ofSplitEpi (f : X ⟶ Y) [IsSplitEpi f] : RegularEpi f where
   W := X
   left := 𝟙 X
   right := f ≫ section_ f
@@ -256,7 +255,7 @@ def regularOfIsPushoutSndOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h 
       rw [← Category.assoc, ← Category.assoc, s.condition]
     obtain ⟨l, hl⟩ := Cofork.IsColimit.desc' gr.isColimit (f ≫ Cofork.π s) l₁
     obtain ⟨p, hp₁, _⟩ := PushoutCocone.IsColimit.desc' t _ _ hl.symm
-    refine' ⟨p, hp₁, _⟩
+    refine ⟨p, hp₁, ?_⟩
     intro m w
     have z := w.trans hp₁.symm
     apply t.hom_ext

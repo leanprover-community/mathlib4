@@ -304,6 +304,14 @@ lemma sup_covering (x y : Coverage C) (B : C) :
     (x ⊔ y).covering B = x.covering B ∪ y.covering B :=
   rfl
 
+/--
+Any sieve that contains a covering presieve for a coverage is a covering sieve for the associated
+Grothendieck topology.
+-/
+theorem mem_toGrothendieck_sieves_of_superset (K : Coverage C) {X : C} {S : Sieve X}
+    {R : Presieve X} (h : R ≤ S) (hR : R ∈ K.covering X) : S ∈ (K.toGrothendieck C).sieves X :=
+  K.saturate_of_superset ((Sieve.sets_iff_generate _ _).mpr h) (Coverage.saturate.of X _ hR)
+
 end Coverage
 
 open Coverage
