@@ -370,7 +370,7 @@ lemma root_apply_coroot {α : Weight K H L} (hα : α.IsNonZero) :
   rw [← Weight.coe_coe]
   simpa [coroot] using inv_mul_cancel (root_apply_cartanEquivDual_symm_ne_zero hα)
 
-@[simp] lemma traceForm_coroot (α : Weight K H L) (x : H) :
+lemma traceForm_coroot (α : Weight K H L) (x : H) :
     traceForm K H L (coroot α) x = 2 • (α <| (cartanEquivDual H).symm α)⁻¹ • α x := by
   have : cartanEquivDual H ((cartanEquivDual H).symm α) x = α x := by
     rw [LinearEquiv.apply_symm_apply, Weight.toLinear_apply]
