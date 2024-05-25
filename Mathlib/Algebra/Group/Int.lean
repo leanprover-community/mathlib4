@@ -71,12 +71,6 @@ instance instAddSemigroup     : AddSemigroup ℤ     := by infer_instance
 
 /-! ### Miscellaneous lemmas -/
 
-lemma natAbs_pow (n : ℤ) (k : ℕ) : Int.natAbs (n ^ k) = Int.natAbs n ^ k := by
-  induction' k with k ih
-  · rfl
-  · rw [_root_.pow_succ, natAbs_mul, Nat.pow_succ, ih, Nat.mul_comm]
-#align int.nat_abs_pow Int.natAbs_pow
-
 section Multiplicative
 
 open Multiplicative
