@@ -436,7 +436,7 @@ lemma LevyProkhorov.continuous_toProbabilityMeasure :
             (le_of_eq ?_) (ofReal_pos.mpr εs_pos)
       rw [LevyProkhorov.dist_def, levyProkhorovDist,
           ofReal_toReal (levyProkhorovEDist_ne_top _ _)]
-      simp only [Ps, P, LevyProkhorov.probabilityMeasure]
+      simp only [Ps, P, LevyProkhorov.toProbabilityMeasure]
     · exact eventually_of_forall f_nn
   · simp only [IsCoboundedUnder, IsCobounded, eventually_map, eventually_atTop,
                ge_iff_le, forall_exists_index]
