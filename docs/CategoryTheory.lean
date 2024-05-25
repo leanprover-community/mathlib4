@@ -1,18 +1,3 @@
-import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.GroupTheory.Abelianization
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.AlgebraicTopology.SingularSet
-import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
-import Mathlib.Algebra.Category.ModuleCat.Adjunctions
-import Mathlib.Algebra.Category.ModuleCat.Abelian
-import Mathlib.Algebra.Homology.HomotopyCategory
-import Mathlib.CategoryTheory.Monoidal.FunctorCategory
-import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
-import Mathlib.AlgebraicGeometry.Scheme
-import Mathlib.AlgebraicGeometry.Limits
-import Mathlib.AlgebraicGeometry.AffineScheme
-import Mathlib.Tactic.Recall
 import Mathlib
 
 noncomputable section -- Much of the category theory library is noncomputable,
