@@ -38,7 +38,7 @@ related work.
 -/
 
 
-universe w w' v v' u u'
+universe w w' v v' v'' u u' u''
 
 namespace CategoryTheory
 
@@ -284,6 +284,17 @@ def HasForget₂.mk' {C : Type u} {D : Type u'} [Category.{v} C] [ConcreteCatego
   forget₂ := Functor.Faithful.div _ _ _ @h_obj _ @h_map
   forget_comp := by apply Functor.Faithful.div_comp
 #align category_theory.has_forget₂.mk' CategoryTheory.HasForget₂.mk'
+
+/-- Composition of `HasForget₂` instances. -/
+@[reducible]
+def HasForget₂.trans (C : Type u) [Category.{v} C] [ConcreteCategory.{w} C]
+    (D : Type u') [Category.{v'} D] [ConcreteCategory.{w} D]
+    (E : Type u'') [Category.{v''} E] [ConcreteCategory.{w} E]
+    [HasForget₂ C D] [HasForget₂ D E] : HasForget₂ C E where
+  forget₂ := CategoryTheory.forget₂ C D ⋙ CategoryTheory.forget₂ D E
+  forget_comp := by
+    show (CategoryTheory.forget₂ _ D) ⋙ (CategoryTheory.forget₂ D E ⋙ CategoryTheory.forget E) = _
+    simp only [HasForget₂.forget_comp]
 
 /-- Every forgetful functor factors through the identity functor. This is not a global instance as
     it is prone to creating type class resolution loops. -/
