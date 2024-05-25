@@ -80,13 +80,17 @@ def format_errors (errors : Array ErrorContext) (exceptions : Array ErrorContext
   for e in errors do
     if !exceptions.contains e then IO.println (output_message e)
 
+/-- Core logic of a text based linter: given a collection of lines,
+return an array of all style errors with line numbers. -/
+abbrev LinterCore := Array String → Array (StyleError × Nat)
+
 /-! Definitions of the actual text-based linters. -/
-namespace CoreLogic
+section
 
 /-- Iterates over a collection of strings, finding all lines which are longer than 101 chars.
 We allow #aligns or URLs to be longer, though.
 -/
-def check_line_length (lines : Array String) : Array (StyleError × Nat) :=
+def check_line_length : LinterCore := fun lines ↦
   let is_too_long := fun s : String ↦
     if !(s.containsSubstr "http" || s.containsSubstr "#align") && s.length > 101 then
       some (StyleError.lineLength s.length)
@@ -97,7 +101,7 @@ def check_line_length (lines : Array String) : Array (StyleError × Nat) :=
 
 /-- Lint a collection of input strings if one of them contains an unnecessary broad import.
 Return `none` if no import was found, and `some n` if such an import was on line `n` (1-based). -/
-def contains_broad_imports(lines : Array String) : Array (StyleError × Nat) := Id.run do
+def contains_broad_imports : LinterCore := fun lines ↦ Id.run do
   let mut output := Array.mkEmpty 0
   -- All import statements must be placed "at the beginning" of the file:
   -- we can have any number of blank lines, imports and single or multi-line comments.
@@ -136,7 +140,7 @@ def is_correct_authors_line (line : String) : Bool :=
 A copyright header should start at the very beginning of the file and contain precisely five lines,
 including the copy year and holder, the license and main author(s) of the file (in this order).
 -/
-def copyright_header(lines : Array String) : Array (StyleError × Nat) := Id.run do
+def copyright_header : LinterCore := fun lines ↦ Id.run do
   -- Unlike the Python script, we just emit one warning.
   let start := lines.extract 0 4
   -- The header should start and end with blank comments.
@@ -168,11 +172,11 @@ def copyright_header(lines : Array String) : Array (StyleError × Nat) := Id.run
         output := output.push (StyleError.authors, 4)
   return output
 
-end CoreLogic
+end
 
 /-- All text-based linters registered in this file. -/
-def all_linters : Array (Array String → Array (StyleError × Nat)) := Array.mk
-  [CoreLogic.check_line_length, CoreLogic.contains_broad_imports, CoreLogic.copyright_header]
+def all_linters : Array LinterCore := Array.mk
+  [check_line_length, contains_broad_imports, copyright_header]
 
 def add_path (path : System.FilePath) : StyleError × Nat → ErrorContext :=
   fun (e, n) ↦ ErrorContext.mk e n path
