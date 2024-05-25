@@ -34,6 +34,8 @@ can be inferred from the type it is faster to use this method than to use type c
 monoid homomorphism
 -/
 
+assert_not_exists DenselyOrdered
+
 open Function
 
 namespace NeZero

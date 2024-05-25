@@ -19,6 +19,8 @@ See note [foundational algebra order theory].
 -/
 
 assert_not_exists Ring
+-- TODO
+-- assert_not_exists DenselyOrdered
 
 open Nat
 
