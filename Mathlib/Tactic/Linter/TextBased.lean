@@ -83,10 +83,14 @@ def format_errors (errors : Array ErrorContext) (exceptions : Array ErrorContext
 /-! Definitions of the actual text-based linters. -/
 namespace CoreLogic
 
-/-- Iterates over a collection of strings, finding all lines which are longer than 100 chars. -/
+/-- Iterates over a collection of strings, finding all lines which are longer than 101 chars.
+We allow #aligns or URLs to be longer, though.
+-/
 def check_line_length (lines : Array String) : Array (StyleError × Nat) :=
-  let is_too_long :=
-    (fun s : String ↦ if s.length > 100 then some (StyleError.lineLength s.length) else none)
+  let is_too_long := fun s : String ↦
+    if !(s.containsSubstr "http" || s.containsSubstr "#align") && s.length > 101 then
+      some (StyleError.lineLength s.length)
+    else none
   let errors := Array.filterMap is_too_long lines
   -- TODO: enumerate over all lines, and report actual line numbers!
   Array.map (fun e ↦ (e, 42)) errors
