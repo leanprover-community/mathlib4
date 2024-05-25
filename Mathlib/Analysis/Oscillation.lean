@@ -3,7 +3,7 @@ Copyright (c) 2024 James Sundstrom. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: James Sundstrom
 -/
-import Mathlib.Topology.MetricSpace.PseudoMetric
+import Mathlib.Topology.EMetricSpace.Basic
 import Mathlib.Order.WellFoundedSet
 
 /-!
@@ -86,7 +86,7 @@ theorem uniform_oscillation_of_compact [PseudoEMetricSpace E] {K : Set E} (comp 
       use r', hr'.1, ENNReal.toReal r, hr'.2, this r.toReal ENNReal.ofReal_toReal_le
   have S_antitone : ∀ (r₁ r₂ : ℝ), r₁ ≤ r₂ → S r₂ ⊆ S r₁ :=
     fun r₁ r₂ hr x ⟨a, ar₂, ha⟩ ↦ ⟨a, lt_of_le_of_lt hr ar₂, ha⟩
-  have : ∃ r > 0, K ⊆ S r := by
+  obtain ⟨δ, δ0, hδ⟩ : ∃ r > 0, K ⊆ S r := by
     obtain ⟨T, Tb, Tfin, hT⟩ := comp.elim_finite_subcover_image S_open S_cover
     by_cases T_nonempty : T.Nonempty
     · use Tfin.isWF.min T_nonempty, Tb (Tfin.isWF.min_mem T_nonempty)
@@ -96,7 +96,6 @@ theorem uniform_oscillation_of_compact [PseudoEMetricSpace E] {K : Set E} (comp 
       exact (S_antitone _ r (Set.IsWF.min_le Tfin.isWF T_nonempty hr.1)) hr.2
     · rw [Set.not_nonempty_iff_eq_empty] at T_nonempty
       use 1, one_pos, subset_trans hT (by simp [T_nonempty])
-  obtain ⟨δ, δ0, hδ⟩ := this
   use δ, δ0
   intro x xK
   obtain ⟨a, δa, ha⟩ := hδ xK
