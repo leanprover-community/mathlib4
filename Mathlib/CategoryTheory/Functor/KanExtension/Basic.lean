@@ -152,7 +152,6 @@ lemma hom_ext_of_isLeftKanExtension {G : D ⥤ H} (γ₁ γ₂ : F' ⟶ G)
 
 /-- If `(F', α)` is a left Kan extension of `F` along `L`, then this
 is the induced bijection `(F' ⟶ G) ≃ (F ⟶ L ⋙ G)` for all `G`. -/
-@[pp_dot]
 noncomputable def homEquivOfIsLeftKanExtension (G : D ⥤ H) :
     (F' ⟶ G) ≃ (F ⟶ L ⋙ G) where
   toFun β := α ≫ whiskerLeft _ β
@@ -264,51 +263,57 @@ end
 
 section
 
-variable {L : C ⥤ D} {L' : C ⥤ D'} (G : D ⥤ D') (e : L ⋙ G ≅ L') (F : C ⥤ H)
+variable {L : C ⥤ D} {L' : C ⥤ D'} (G : D ⥤ D')
 
-/-- The functor `LeftExtension L' F ⥤ LeftExtension L F` induced by an isomorphism
-`L ⋙ G ≅ L'`. -/
+/-- The functor `LeftExtension L' F ⥤ LeftExtension L F`
+induced by a natural transformation `L' ⟶ L ⋙ G'`. -/
 @[simps!]
-def LeftExtension.postcomp₁ : LeftExtension L' F ⥤ LeftExtension L F :=
+def LeftExtension.postcomp₁ (f : L' ⟶ L ⋙ G) (F : C ⥤ H) :
+    LeftExtension L' F ⥤ LeftExtension L F :=
   StructuredArrow.map₂ (F := (whiskeringLeft D D' H).obj G) (G := 𝟭 _) (𝟙 _)
-    ((whiskeringLeft C D' H).map e.inv)
+    ((whiskeringLeft C D' H).map f)
 
-/-- The functor `RightExtension L' F ⥤ RightExtension L F` induced by an isomorphism
-`L ⋙ G ≅ L'`. -/
+/-- The functor `RightExtension L' F ⥤ RightExtension L F`
+induced by a natural transformation `L ⋙ G ⟶ L'`. -/
 @[simps!]
-def RightExtension.postcomp₁ : RightExtension L' F ⥤ RightExtension L F :=
+def RightExtension.postcomp₁ (f : L ⋙ G ⟶ L') (F : C ⥤ H) :
+    RightExtension L' F ⥤ RightExtension L F :=
   CostructuredArrow.map₂ (F := (whiskeringLeft D D' H).obj G) (G := 𝟭 _)
-    ((whiskeringLeft C D' H).map e.hom) (𝟙 _)
+    ((whiskeringLeft C D' H).map f) (𝟙 _)
 
 variable [IsEquivalence G]
 
-noncomputable instance : IsEquivalence (LeftExtension.postcomp₁ G e F) := by
+noncomputable instance (f : L' ⟶ L ⋙ G) [IsIso f] (F : C ⥤ H) :
+    IsEquivalence (LeftExtension.postcomp₁ G f F) := by
   apply StructuredArrow.isEquivalenceMap₂
 
-noncomputable instance : IsEquivalence (RightExtension.postcomp₁ G e F) := by
+noncomputable instance (f : L ⋙ G ⟶ L') [IsIso f] (F : C ⥤ H) :
+    IsEquivalence (RightExtension.postcomp₁ G f F) := by
   apply CostructuredArrow.isEquivalenceMap₂
+
+variable (e : L ⋙ G ≅ L') (F : C ⥤ H)
 
 variable {G} in
 lemma hasLeftExtension_iff_postcomp₁ :
     HasLeftKanExtension L' F ↔ HasLeftKanExtension L F :=
-  (LeftExtension.postcomp₁ G e F).asEquivalence.hasInitial_iff
+  (LeftExtension.postcomp₁ G e.inv F).asEquivalence.hasInitial_iff
 
 variable {G} in
 lemma hasRightExtension_iff_postcomp₁ :
     HasRightKanExtension L' F ↔ HasRightKanExtension L F :=
-  (RightExtension.postcomp₁ G e F).asEquivalence.hasTerminal_iff
+  (RightExtension.postcomp₁ G e.hom F).asEquivalence.hasTerminal_iff
 
 /-- Given an isomorphism `e : L ⋙ G ≅ L'`, a left extension of `F` along `L'` is universal
 iff the corresponding left extension of `L` along `L` is. -/
 noncomputable def LeftExtension.isUniversalPostcomp₁Equiv (ex : LeftExtension L' F) :
-    ex.IsUniversal ≃ ((LeftExtension.postcomp₁ G e F).obj ex).IsUniversal := by
-  apply IsInitial.isInitialIffObj (LeftExtension.postcomp₁ G e F)
+    ex.IsUniversal ≃ ((LeftExtension.postcomp₁ G e.inv F).obj ex).IsUniversal := by
+  apply IsInitial.isInitialIffObj (LeftExtension.postcomp₁ G e.inv F)
 
 /-- Given an isomorphism `e : L ⋙ G ≅ L'`, a right extension of `F` along `L'` is universal
 iff the corresponding right extension of `L` along `L` is. -/
 noncomputable def RightExtension.isUniversalPostcomp₁Equiv (ex : RightExtension L' F) :
-    ex.IsUniversal ≃ ((RightExtension.postcomp₁ G e F).obj ex).IsUniversal := by
-  apply IsTerminal.isTerminalIffObj (RightExtension.postcomp₁ G e F)
+    ex.IsUniversal ≃ ((RightExtension.postcomp₁ G e.hom F).obj ex).IsUniversal := by
+  apply IsTerminal.isTerminalIffObj (RightExtension.postcomp₁ G e.hom F)
 
 variable {F F'}
 

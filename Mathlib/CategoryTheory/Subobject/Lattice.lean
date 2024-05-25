@@ -146,8 +146,8 @@ def inf {A : C} : MonoOver A ⥤ MonoOver A ⥤ MonoOver A where
   map k :=
     { app := fun g => by
         apply homMk _ _
-        apply pullback.lift pullback.fst (pullback.snd ≫ k.left) _
-        rw [pullback.condition, assoc, w k]
+        · apply pullback.lift pullback.fst (pullback.snd ≫ k.left) _
+          rw [pullback.condition, assoc, w k]
         dsimp
         rw [pullback.lift_snd_assoc, assoc, w k] }
 #align category_theory.mono_over.inf CategoryTheory.MonoOver.inf
@@ -166,8 +166,8 @@ def infLERight {A : C} (f g : MonoOver A) : (inf.obj f).obj g ⟶ g :=
 def leInf {A : C} (f g h : MonoOver A) : (h ⟶ f) → (h ⟶ g) → (h ⟶ (inf.obj f).obj g) := by
   intro k₁ k₂
   refine' homMk (pullback.lift k₂.left k₁.left _) _
-  rw [w k₁, w k₂]
-  erw [pullback.lift_snd_assoc, w k₁]
+  · rw [w k₁, w k₂]
+  · erw [pullback.lift_snd_assoc, w k₁]
 #align category_theory.mono_over.le_inf CategoryTheory.MonoOver.leInf
 
 end Inf
@@ -201,8 +201,8 @@ def leSupRight {A : C} (f g : MonoOver A) : g ⟶ (sup.obj f).obj g := by
 def supLe {A : C} (f g h : MonoOver A) : (f ⟶ h) → (g ⟶ h) → ((sup.obj f).obj g ⟶ h) := by
   intro k₁ k₂
   refine' homMk _ _
-  apply image.lift ⟨_, h.arrow, coprod.desc k₁.left k₂.left, _⟩
-  · ext
+  · apply image.lift ⟨_, h.arrow, coprod.desc k₁.left k₂.left, _⟩
+    ext
     · simp [w k₁]
     · simp [w k₂]
   · apply image.lift_fac
@@ -219,7 +219,7 @@ section OrderTop
 instance orderTop {X : C} : OrderTop (Subobject X) where
   top := Quotient.mk'' ⊤
   le_top := by
-    refine' Quotient.ind' fun f => _
+    refine Quotient.ind' fun f => ?_
     exact ⟨MonoOver.leTop f⟩
 #align category_theory.subobject.order_top CategoryTheory.Subobject.orderTop
 
@@ -299,7 +299,7 @@ variable [HasInitial C] [InitialMonoClass C]
 instance orderBot {X : C} : OrderBot (Subobject X) where
   bot := Quotient.mk'' ⊥
   bot_le := by
-    refine' Quotient.ind' fun f => _
+    refine Quotient.ind' fun f => ?_
     exact ⟨MonoOver.botLE f⟩
 #align category_theory.subobject.order_bot CategoryTheory.Subobject.orderBot
 
@@ -685,7 +685,7 @@ def sSup {A : C} (s : Set (Subobject A)) : Subobject A :=
 
 theorem le_sSup {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : f ≤ sSup s := by
   fapply le_of_comm
-  · refine' eqToHom _ ≫ Sigma.ι _ ⟨equivShrink (Subobject A) f, by simpa [Set.mem_image] using hf⟩
+  · refine eqToHom ?_ ≫ Sigma.ι _ ⟨equivShrink (Subobject A) f, by simpa [Set.mem_image] using hf⟩
       ≫ factorThruImage _ ≫ (underlyingIso _).inv
     exact (congr_arg (fun X : Subobject A => (X : C)) (Equiv.symm_apply_apply _ _).symm)
   · simp [sSup, smallCoproductDesc]
@@ -701,10 +701,10 @@ theorem symm_apply_mem_iff_mem_image {α β : Type*} (e : α ≃ β) (s : Set α
 theorem sSup_le {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s, g ≤ f) :
     sSup s ≤ f := by
   fapply le_of_comm
-  · refine'(underlyingIso _).hom ≫ image.lift ⟨_, f.arrow, _, _⟩
-    · refine' Sigma.desc _
+  · refine(underlyingIso _).hom ≫ image.lift ⟨_, f.arrow, ?_, ?_⟩
+    · refine Sigma.desc ?_
       rintro ⟨g, m⟩
-      refine' underlying.map (homOfLE (k _ _))
+      refine underlying.map (homOfLE (k _ ?_))
       simpa using m
     · ext
       dsimp [smallCoproductDesc]

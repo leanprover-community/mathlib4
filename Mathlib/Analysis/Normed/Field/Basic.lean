@@ -361,7 +361,7 @@ theorem List.norm_prod_le' : ∀ {l : List α}, l ≠ [] → ‖l.prod‖ ≤ (l
   | [a], _ => by simp
   | a::b::l, _ => by
     rw [List.map_cons, List.prod_cons, @List.prod_cons _ _ _ ‖a‖]
-    refine' le_trans (norm_mul_le _ _) (mul_le_mul_of_nonneg_left _ (norm_nonneg _))
+    refine le_trans (norm_mul_le _ _) (mul_le_mul_of_nonneg_left ?_ (norm_nonneg _))
     exact List.norm_prod_le' (List.cons_ne_nil b l)
 #align list.norm_prod_le' List.norm_prod_le'
 
@@ -670,8 +670,8 @@ instance (priority := 100) semi_normed_ring_top_monoid [NonUnitalSeminormedRing 
 
 -- see Note [lower instance priority]
 /-- A seminormed ring is a topological ring. -/
-instance (priority := 100) semi_normed_top_ring [NonUnitalSeminormedRing α] : TopologicalRing α
-    where
+instance (priority := 100) semi_normed_top_ring [NonUnitalSeminormedRing α] :
+    TopologicalRing α where
 #align semi_normed_top_ring semi_normed_top_ring
 
 section NormedDivisionRing
@@ -687,8 +687,7 @@ instance (priority := 900) NormedDivisionRing.to_normOneClass : NormOneClass α 
   ⟨mul_left_cancel₀ (mt norm_eq_zero.1 (one_ne_zero' α)) <| by rw [← norm_mul, mul_one, mul_one]⟩
 #align normed_division_ring.to_norm_one_class NormedDivisionRing.to_normOneClass
 
-instance isAbsoluteValue_norm : IsAbsoluteValue (norm : α → ℝ)
-    where
+instance isAbsoluteValue_norm : IsAbsoluteValue (norm : α → ℝ) where
   abv_nonneg' := norm_nonneg
   abv_eq_zero' := norm_eq_zero
   abv_add' := norm_add_le
@@ -879,8 +878,8 @@ instance (priority := 100) NormedDivisionRing.to_hasContinuousInv₀ : HasContin
 
 -- see Note [lower instance priority]
 /-- A normed division ring is a topological division ring. -/
-instance (priority := 100) NormedDivisionRing.to_topologicalDivisionRing : TopologicalDivisionRing α
-    where
+instance (priority := 100) NormedDivisionRing.to_topologicalDivisionRing :
+    TopologicalDivisionRing α where
 #align normed_division_ring.to_topological_division_ring NormedDivisionRing.to_topologicalDivisionRing
 
 protected lemma IsOfFinOrder.norm_eq_one (ha : IsOfFinOrder a) : ‖a‖ = 1 :=
@@ -984,7 +983,7 @@ theorem punctured_nhds_neBot (x : α) : NeBot (𝓝[≠] x) := by
   rw [← mem_closure_iff_nhdsWithin_neBot, Metric.mem_closure_iff]
   rintro ε ε0
   rcases exists_norm_lt α ε0 with ⟨b, hb0, hbε⟩
-  refine' ⟨x + b, mt (Set.mem_singleton_iff.trans add_right_eq_self).1 <| norm_pos_iff.1 hb0, _⟩
+  refine ⟨x + b, mt (Set.mem_singleton_iff.trans add_right_eq_self).1 <| norm_pos_iff.1 hb0, ?_⟩
   rwa [dist_comm, dist_eq_norm, add_sub_cancel_left]
 #align normed_field.punctured_nhds_ne_bot NormedField.punctured_nhds_neBot
 
@@ -1082,6 +1081,14 @@ theorem norm_eq (x : ℝ≥0) : ‖(x : ℝ)‖ = x := by rw [Real.norm_eq_abs, 
 theorem nnnorm_eq (x : ℝ≥0) : ‖(x : ℝ)‖₊ = x :=
   NNReal.eq <| Real.norm_of_nonneg x.2
 #align nnreal.nnnorm_eq NNReal.nnnorm_eq
+
+lemma lipschitzWith_sub : LipschitzWith 2 (fun (p : ℝ≥0 × ℝ≥0) ↦ p.1 - p.2) := by
+  rw [← isometry_subtype_coe.lipschitzWith_iff]
+  have : Isometry (Prod.map ((↑) : ℝ≥0 → ℝ) ((↑) : ℝ≥0 → ℝ)) :=
+    isometry_subtype_coe.prod_map isometry_subtype_coe
+  convert (((LipschitzWith.prod_fst.comp this.lipschitz).sub
+    (LipschitzWith.prod_snd.comp this.lipschitz)).max_const 0)
+  norm_num
 
 end NNReal
 

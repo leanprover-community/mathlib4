@@ -3,8 +3,9 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Chris Hughes
 -/
-import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Associated
+import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Data.Nat.PartENat
 import Mathlib.Tactic.Linarith
@@ -124,7 +125,7 @@ theorem is_greatest' {a b : α} {m : ℕ} (h : Finite a b) (hm : get (multiplici
 
 theorem pos_of_dvd {a b : α} (hfin : Finite a b) (hdiv : a ∣ b) :
     0 < (multiplicity a b).get hfin := by
-  refine' zero_lt_iff.2 fun h => _
+  refine zero_lt_iff.2 fun h => ?_
   simpa [hdiv] using is_greatest' hfin (lt_one_iff.mpr h)
 #align multiplicity.pos_of_dvd multiplicity.pos_of_dvd
 
@@ -225,7 +226,7 @@ theorem lt_top_iff_finite {a b : α} : multiplicity a b < ⊤ ↔ Finite a b := 
 theorem exists_eq_pow_mul_and_not_dvd {a b : α} (hfin : Finite a b) :
     ∃ c : α, b = a ^ (multiplicity a b).get hfin * c ∧ ¬a ∣ c := by
   obtain ⟨c, hc⟩ := multiplicity.pow_multiplicity_dvd hfin
-  refine' ⟨c, hc, _⟩
+  refine ⟨c, hc, ?_⟩
   rintro ⟨k, hk⟩
   rw [hk, ← mul_assoc, ← _root_.pow_succ] at hc
   have h₁ : a ^ ((multiplicity a b).get hfin + 1) ∣ b := ⟨k, hc⟩
@@ -385,9 +386,9 @@ theorem multiplicity_mk_eq_multiplicity
     multiplicity (Associates.mk a) (Associates.mk b) = multiplicity a b := by
   by_cases h : Finite a b
   · rw [← PartENat.natCast_get (finite_iff_dom.mp h)]
-    refine'
+    refine
         (multiplicity.unique
-            (show Associates.mk a ^ (multiplicity a b).get h ∣ Associates.mk b from _) _).symm <;>
+            (show Associates.mk a ^ (multiplicity a b).get h ∣ Associates.mk b from ?_) ?_).symm <;>
       rw [← Associates.mk_pow, Associates.mk_dvd_mk]
     · exact pow_multiplicity_dvd h
     · exact is_greatest

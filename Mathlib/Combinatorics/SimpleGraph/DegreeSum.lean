@@ -3,11 +3,11 @@ Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Combinatorics.SimpleGraph.Dart
 import Mathlib.Combinatorics.SimpleGraph.Finite
-import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Data.Finset.Sym
-import Mathlib.Data.Nat.Parity
 import Mathlib.Data.ZMod.Parity
 
 #align_import combinatorics.simple_graph.degree_sum from "leanprover-community/mathlib"@"90659cbe25e59ec302e2fb92b00e9732160cc620"
@@ -90,7 +90,7 @@ variable (G)
 
 theorem dart_edge_fiber_card [DecidableEq V] (e : Sym2 V) (h : e ∈ G.edgeSet) :
     (univ.filter fun d : G.Dart => d.edge = e).card = 2 := by
-  refine' Sym2.ind (fun v w h => _) e h
+  refine Sym2.ind (fun v w h => ?_) e h
   let d : G.Dart := ⟨(v, w), h⟩
   convert congr_arg card d.edge_fiber
   rw [card_insert_of_not_mem, card_singleton]
@@ -156,7 +156,7 @@ theorem odd_card_odd_degree_vertices_ne [Fintype V] [DecidableEq V] [DecidableRe
     rw [and_comm]
   simp only [hc, filter_congr]
   rw [← filter_filter, filter_ne', card_erase_of_mem]
-  · refine' ⟨k - 1, tsub_eq_of_eq_add <| hg.trans _⟩
+  · refine ⟨k - 1, tsub_eq_of_eq_add <| hg.trans ?_⟩
     rw [add_assoc, one_add_one_eq_two, ← Nat.mul_succ, ← two_mul]
     congr
     omega

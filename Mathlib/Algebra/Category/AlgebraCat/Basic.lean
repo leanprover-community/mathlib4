@@ -252,3 +252,16 @@ instance AlgebraCat.forget_reflects_isos : (forget (AlgebraCat.{u} R)).ReflectsI
     let e : X ≃ₐ[R] Y := { f, i.toEquiv with }
     exact ⟨(IsIso.of_iso e.toAlgebraIso).1⟩
 #align Algebra.forget_reflects_isos AlgebraCat.forget_reflects_isos
+
+/-!
+`@[simp]` lemmas for `AlgHom.comp` and categorical identities.
+-/
+
+@[simp] theorem AlgHom.comp_id_algebraCat
+    {R} [CommRing R] {G : AlgebraCat.{u} R} {H : Type u} [Ring H] [Algebra R H] (f : G →ₐ[R] H) :
+    f.comp (𝟙 G) = f :=
+  Category.id_comp (AlgebraCat.ofHom f)
+@[simp] theorem AlgHom.id_algebraCat_comp
+    {R} [CommRing R] {G : Type u} [Ring G] [Algebra R G] {H : AlgebraCat.{u} R} (f : G →ₐ[R] H) :
+    AlgHom.comp (𝟙 H) f = f :=
+  Category.comp_id (AlgebraCat.ofHom f)

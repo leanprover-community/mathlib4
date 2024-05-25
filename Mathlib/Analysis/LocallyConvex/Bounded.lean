@@ -79,7 +79,7 @@ theorem isVonNBounded_iff (s : Set E) : IsVonNBounded 𝕜 s ↔ ∀ V ∈ 𝓝 
 
 theorem _root_.Filter.HasBasis.isVonNBounded_iff {q : ι → Prop} {s : ι → Set E} {A : Set E}
     (h : (𝓝 (0 : E)).HasBasis q s) : IsVonNBounded 𝕜 A ↔ ∀ i, q i → Absorbs 𝕜 (s i) A := by
-  refine' ⟨fun hA i hi => hA (h.mem_of_mem hi), fun hA V hV => _⟩
+  refine ⟨fun hA i hi => hA (h.mem_of_mem hi), fun hA V hV => ?_⟩
   rcases h.mem_iff.mp hV with ⟨i, hi, hV⟩
   exact (hA i hi).mono_left hV
 #align filter.has_basis.is_vonN_bounded_basis_iff Filter.HasBasis.isVonNBounded_iff
@@ -205,11 +205,11 @@ theorem isVonNBounded_of_smul_tendsto_zero {ε : ι → 𝕝} {l : Filter ι} [l
     push_neg at hVS
     rcases hVS ‖(ε n)⁻¹‖ with ⟨a, haε, haS⟩
     rcases Set.not_subset.mp haS with ⟨x, hxS, hx⟩
-    refine' ⟨⟨x, hxS⟩, fun hnx => _⟩
+    refine ⟨⟨x, hxS⟩, fun hnx => ?_⟩
     rw [← Set.mem_inv_smul_set_iff₀ hn] at hnx
     exact hx (hVb.smul_mono haε hnx)
   rcases this.choice with ⟨x, hx⟩
-  refine' Filter.frequently_false l (Filter.Eventually.frequently _)
+  refine Filter.frequently_false l (Filter.Eventually.frequently ?_)
   filter_upwards [hx,
     (H (_ ∘ x) fun n => (x n).2).eventually (eventually_mem_set.mpr hV)] using fun n => id
 #align bornology.is_vonN_bounded_of_smul_tendsto_zero Bornology.isVonNBounded_of_smul_tendsto_zero

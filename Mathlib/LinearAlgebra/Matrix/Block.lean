@@ -62,7 +62,7 @@ protected theorem BlockTriangular.submatrix {f : n → m} (h : M.BlockTriangular
 
 theorem blockTriangular_reindex_iff {b : n → α} {e : m ≃ n} :
     (reindex e e M).BlockTriangular b ↔ M.BlockTriangular (b ∘ e) := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · convert h.submatrix
     simp only [reindex_apply, submatrix_submatrix, submatrix_id_id, Equiv.symm_comp_self]
   · convert h.submatrix
@@ -229,13 +229,13 @@ protected theorem BlockTriangular.det [DecidableEq α] [LinearOrder α] (hM : Bl
       rw [insert_erase]
       apply max'_mem
     rw [this, prod_insert (not_mem_erase _ _)]
-    refine' congr_arg _ _
+    refine congr_arg _ ?_
     let b' := fun i : { a // b a ≠ k } => b ↑i
     have h' : BlockTriangular (M.toSquareBlockProp fun i => b i ≠ k) b' := hM.submatrix
     have hb' : image b' univ = (image b univ).erase k := by
       convert image_subtype_ne_univ_eq_image_erase k b
     rw [ih _ (erase_ssubset <| max'_mem _ _) h' hb']
-    refine' Finset.prod_congr rfl fun l hl => _
+    refine Finset.prod_congr rfl fun l hl => ?_
     let he : { a // b' a = l } ≃ { a // b a = l } :=
       haveI hc : ∀ i, b i = l → b i ≠ k := fun i hi => ne_of_eq_of_ne hi (ne_of_mem_erase hl)
       Equiv.subtypeSubtypeEquivSubtype @(hc)
@@ -251,7 +251,7 @@ protected theorem BlockTriangular.det [DecidableEq α] [LinearOrder α] (hM : Bl
 
 theorem BlockTriangular.det_fintype [DecidableEq α] [Fintype α] [LinearOrder α]
     (h : BlockTriangular M b) : M.det = ∏ k : α, (M.toSquareBlock b k).det := by
-  refine' h.det.trans (prod_subset (subset_univ _) fun a _ ha => _)
+  refine h.det.trans (prod_subset (subset_univ _) fun a _ ha => ?_)
   have : IsEmpty { i // b i = a } := ⟨fun i => ha <| mem_image.2 ⟨i, mem_univ _, i.2⟩⟩
   exact det_isEmpty
 #align matrix.block_triangular.det_fintype Matrix.BlockTriangular.det_fintype

@@ -385,7 +385,7 @@ instance commRing : CommRing ℚ where
   npow_succ n q := by
     dsimp
     rw [← q.mk'_num_den, mk'_pow, mk'_mul_mk']
-    congr
+    · congr
     · rw [mk'_pow, Int.natAbs_pow]
       exact q.reduced.pow_left _
     · rw [mk'_pow]
@@ -523,6 +523,8 @@ theorem divInt_eq_div (n d : ℤ) : n /. d = (n : ℚ) / d := by simp [div_def']
 
 lemma intCast_div_eq_divInt (n d : ℤ) : (n : ℚ) / (d) = n /. d := by rw [divInt_eq_div]
 #align rat.coe_int_div_eq_mk Rat.intCast_div_eq_divInt
+
+theorem natCast_div_eq_divInt (n d : ℕ) : (n : ℚ) / d = n /. d := Rat.intCast_div_eq_divInt n d
 
 theorem divInt_mul_divInt_cancel {x : ℤ} (hx : x ≠ 0) (n d : ℤ) : n /. x * (x /. d) = n /. d := by
   by_cases hd : d = 0
