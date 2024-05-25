@@ -22,7 +22,7 @@ section AddCommMonoid
 variable [Semiring R] [AddCommMonoid M] [Module R M] (r s : R) (x y : M)
 
 theorem List.sum_smul {l : List R} {x : M} : l.sum • x = (l.map fun r ↦ r • x).sum :=
-  ((smulAddHom R M).flip x).map_list_sum l
+  map_list_sum ((smulAddHom R M).flip x) l
 #align list.sum_smul List.sum_smul
 
 theorem Multiset.sum_smul {l : Multiset R} {x : M} : l.sum • x = (l.map fun r ↦ r • x).sum :=

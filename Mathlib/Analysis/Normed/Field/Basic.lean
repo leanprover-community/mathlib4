@@ -728,11 +728,11 @@ theorem nnnorm_pow (a : α) (n : ℕ) : ‖a ^ n‖₊ = ‖a‖₊ ^ n :=
 #align nnnorm_pow nnnorm_pow
 
 protected theorem List.norm_prod (l : List α) : ‖l.prod‖ = (l.map norm).prod :=
-  (normHom.toMonoidHom : α →* ℝ).map_list_prod _
+  map_list_prod (normHom.toMonoidHom : α →* ℝ) _
 #align list.norm_prod List.norm_prod
 
 protected theorem List.nnnorm_prod (l : List α) : ‖l.prod‖₊ = (l.map nnnorm).prod :=
-  (nnnormHom.toMonoidHom : α →* ℝ≥0).map_list_prod _
+  map_list_prod (nnnormHom.toMonoidHom : α →* ℝ≥0) _
 #align list.nnnorm_prod List.nnnorm_prod
 
 @[simp]

@@ -48,7 +48,7 @@ namespace SubmonoidClass
 
 @[to_additive (attr := norm_cast, simp)]
 theorem coe_list_prod (l : List S) : (l.prod : M) = (l.map (↑)).prod :=
-  (SubmonoidClass.subtype S : _ →* M).map_list_prod l
+  map_list_prod (SubmonoidClass.subtype S : _ →* M) l
 #align submonoid_class.coe_list_prod SubmonoidClass.coe_list_prod
 #align add_submonoid_class.coe_list_sum AddSubmonoidClass.coe_list_sum
 
@@ -110,7 +110,7 @@ variable (s : Submonoid M)
 
 @[to_additive (attr := norm_cast)] -- Porting note (#10618): removed `simp`, `simp` can prove it
 theorem coe_list_prod (l : List s) : (l.prod : M) = (l.map (↑)).prod :=
-  s.subtype.map_list_prod l
+  map_list_prod s.subtype l
 #align submonoid.coe_list_prod Submonoid.coe_list_prod
 #align add_submonoid.coe_list_sum AddSubmonoid.coe_list_sum
 

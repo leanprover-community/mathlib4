@@ -2129,7 +2129,7 @@ variable {m n α}
 
 theorem transpose_list_sum [AddMonoid α] (l : List (Matrix m n α)) :
     l.sumᵀ = (l.map transpose).sum :=
-  (transposeAddEquiv m n α).toAddMonoidHom.map_list_sum l
+  map_list_sum (transposeAddEquiv m n α) l
 #align matrix.transpose_list_sum Matrix.transpose_list_sum
 
 theorem transpose_multiset_sum [AddCommMonoid α] (s : Multiset (Matrix m n α)) :
@@ -2402,7 +2402,7 @@ variable {m n α}
 
 theorem conjTranspose_list_sum [AddMonoid α] [StarAddMonoid α] (l : List (Matrix m n α)) :
     l.sumᴴ = (l.map conjTranspose).sum :=
-  (conjTransposeAddEquiv m n α).toAddMonoidHom.map_list_sum l
+  map_list_sum (conjTransposeAddEquiv m n α) l
 #align matrix.conj_transpose_list_sum Matrix.conjTranspose_list_sum
 
 theorem conjTranspose_multiset_sum [AddCommMonoid α] [StarAddMonoid α]
