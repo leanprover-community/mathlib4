@@ -22,6 +22,8 @@ def is_obtain_without_proof : Syntax → Bool
   -- Cases with a proof.
   | `(tactic|obtain $_pat := $_proof) => false
   | `(tactic|obtain $_pat : $_type := $_proof) => false
+  | `(tactic|obtain : $_type := $_proof) => false
+  | `(tactic|obtain := $_proof) => false
   -- Case without a proof.
   | `(tactic|obtain : $_type) => true
   | `(tactic|obtain $_pat : $_type) => true
