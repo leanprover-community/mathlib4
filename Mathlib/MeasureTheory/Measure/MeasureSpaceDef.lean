@@ -94,6 +94,7 @@ instance Measure.instFunLike [MeasurableSpace α] : FunLike (Measure α) (Set α
 
 #noalign measure_theory.measure.has_coe_to_fun
 
+set_option linter.deprecated false in -- Not immediately obvious how to use `measure_empty` here.
 instance Measure.instOuterMeasureClass [MeasurableSpace α] : OuterMeasureClass (Measure α) α where
   measure_empty m := m.empty'
   measure_iUnion_nat_le m := m.iUnion_nat
@@ -257,7 +258,7 @@ theorem measure_union_lt_top (hs : μ s < ∞) (ht : μ t < ∞) : μ (s ∪ t) 
 
 @[simp]
 theorem measure_union_lt_top_iff : μ (s ∪ t) < ∞ ↔ μ s < ∞ ∧ μ t < ∞ := by
-  refine' ⟨fun h => ⟨_, _⟩, fun h => measure_union_lt_top h.1 h.2⟩
+  refine ⟨fun h => ⟨?_, ?_⟩, fun h => measure_union_lt_top h.1 h.2⟩
   · exact (measure_mono (Set.subset_union_left s t)).trans_lt h
   · exact (measure_mono (Set.subset_union_right s t)).trans_lt h
 #align measure_theory.measure_union_lt_top_iff MeasureTheory.measure_union_lt_top_iff

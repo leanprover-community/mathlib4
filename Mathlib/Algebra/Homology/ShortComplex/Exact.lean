@@ -360,8 +360,8 @@ noncomputable def Exact.leftHomologyDataOfIsLimitKernelFork
     have := hS.hasHomology
     refine' ((MorphismProperty.RespectsIso.epimorphisms C).arrow_mk_iso_iff _).1
       hS.epi_toCycles
-    refine' Arrow.isoMk (Iso.refl _)
-      (IsLimit.conePointUniqueUpToIso S.cyclesIsKernel hkf) _
+    refine Arrow.isoMk (Iso.refl _)
+      (IsLimit.conePointUniqueUpToIso S.cyclesIsKernel hkf) ?_
     apply Fork.IsLimit.hom_ext hkf
     simp [IsLimit.conePointUniqueUpToIso]) (isZero_zero C)
 
@@ -404,7 +404,7 @@ lemma exact_iff_epi_kernel_lift [S.HasHomology] [HasKernel S.g] :
 lemma exact_iff_mono_cokernel_desc [S.HasHomology] [HasCokernel S.f] :
     S.Exact ↔ Mono (cokernel.desc S.f S.g S.zero) := by
   rw [exact_iff_mono_fromOpcycles]
-  refine' (MorphismProperty.RespectsIso.monomorphisms C).arrow_mk_iso_iff (Iso.symm _)
+  refine (MorphismProperty.RespectsIso.monomorphisms C).arrow_mk_iso_iff (Iso.symm ?_)
   exact Arrow.isoMk S.opcyclesIsoCokernel.symm (Iso.refl _) (by aesop_cat)
 
 lemma QuasiIso.exact_iff {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
@@ -855,12 +855,12 @@ lemma quasiIso_iff_of_zeros {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
     have : Mono φ.τ₂ := by
       rw [← S₂.liftCycles_i φ.τ₂ w]
       apply mono_comp
-    refine' ⟨_, this⟩
+    refine ⟨?_, this⟩
     apply exact_of_f_is_kernel
     exact IsLimit.ofIsoLimit S₂.cyclesIsKernel
       (Fork.ext (asIso (S₂.liftCycles φ.τ₂ w)).symm (by simp))
   · rintro ⟨h₁, h₂⟩
-    refine' ⟨⟨h₁.lift S₂.iCycles (by simp), _, _⟩⟩
+    refine ⟨⟨h₁.lift S₂.iCycles (by simp), ?_, ?_⟩⟩
     · rw [← cancel_mono φ.τ₂, assoc, h₁.lift_f, liftCycles_i, id_comp]
     · rw [← cancel_mono S₂.iCycles, assoc, liftCycles_i, h₁.lift_f, id_comp]
 

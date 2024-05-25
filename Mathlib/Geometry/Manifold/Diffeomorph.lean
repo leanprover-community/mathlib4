@@ -558,8 +558,8 @@ variable (e : E ≃ₘ[𝕜] F)
 instance smoothManifoldWithCorners_transDiffeomorph [SmoothManifoldWithCorners I M] :
     SmoothManifoldWithCorners (I.transDiffeomorph e) M := by
   refine smoothManifoldWithCorners_of_contDiffOn (I.transDiffeomorph e) M fun e₁ e₂ h₁ h₂ => ?_
-  refine' e.contDiff.comp_contDiffOn
-      (((contDiffGroupoid ⊤ I).compatible h₁ h₂).1.comp e.symm.contDiff.contDiffOn _)
+  refine e.contDiff.comp_contDiffOn
+      (((contDiffGroupoid ⊤ I).compatible h₁ h₂).1.comp e.symm.contDiff.contDiffOn ?_)
   mfld_set_tac
 #align diffeomorph.smooth_manifold_with_corners_trans_diffeomorph Diffeomorph.smoothManifoldWithCorners_transDiffeomorph
 
