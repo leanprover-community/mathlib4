@@ -23,21 +23,21 @@ is a power of 2 for all `n ≠ 0` and `m`.
 namespace Nat
 
 /-- The inverse of `f(n) = n ⊕ ⌊n/2⌋`, defined by `g(n) = n ⊕ g(⌊n/2⌋)`. -/
-def gray_code_inv : ℕ → ℕ
+def grayCodeInv : ℕ → ℕ
   | 0 => 0
-  | n+1 => (n+1) ^^^ gray_code_inv (n+1).div2
+  | n+1 => (n+1) ^^^ grayCodeInv (n+1).div2
   decreasing_by
     apply Nat.binaryRec_decreasing
     simp
 
-theorem gray_code_inv_val : (n : ℕ) → gray_code_inv n = n ^^^ gray_code_inv n.div2
+theorem grayCodeInv_val : (n : ℕ) → grayCodeInv n = n ^^^ grayCodeInv n.div2
   | 0 => rfl
   | _+1 => rfl
 
 /-- Gray code, `f(n) = n ⊕ ⌊n/2⌋`, as a permutation of `ℕ`. -/
-def gray_code : Equiv.Perm ℕ where
+def grayCode : Equiv.Perm ℕ where
   toFun (n : ℕ) := n ^^^ n.div2
-  invFun := gray_code_inv
+  invFun := grayCodeInv
   left_inv := by
     intro n
     apply Nat.binaryRec (n := n)
@@ -45,7 +45,7 @@ def gray_code : Equiv.Perm ℕ where
     clear n
     intro _ n h
     simp only [div2_bit]
-    rw [gray_code_inv_val]
+    rw [grayCodeInv_val]
     simp [h, Nat.xor_assoc]
   right_inv := by
     intro n
@@ -54,7 +54,7 @@ def gray_code : Equiv.Perm ℕ where
     clear n
     intro _ n h
     dsimp only at h
-    rw [gray_code_inv_val]
+    rw [grayCodeInv_val]
     simp only [div2_bit, xor_div2, Nat.xor_assoc]
     conv =>
       lhs
@@ -64,12 +64,12 @@ def gray_code : Equiv.Perm ℕ where
       rw [Nat.xor_comm, h]
     simp
 
-theorem gray_code_prop (n : ℕ) : (gray_code n ^^^ gray_code n.succ).isPowerOfTwo := by
+theorem grayCode_prop (n : ℕ) : (grayCode n ^^^ grayCode n.succ).isPowerOfTwo := by
   apply Nat.binaryRec (n := n)
   exists 0
   clear n
   intro b n h
-  unfold gray_code
+  unfold grayCode
   dsimp only [Equiv.coe_fn_mk, Nat.succ_eq_add_one]
   cases b with
   | false =>
@@ -95,12 +95,12 @@ theorem gray_code_prop (n : ℕ) : (gray_code n ^^^ gray_code n.succ).isPowerOfT
     rw [mul_two, ← bit0, ← Nat.bit_false]
     cases i
     · simp [h, Nat.testBit_bit_zero, succ_testBit_zero, -Nat.testBit_zero]
-    · unfold gray_code
+    · unfold grayCode
       dsimp only [Equiv.coe_fn_mk]
       simp only [testBit_xor, testBit_bit_succ, Bool.bne_assoc, div2_testBit]
 
-theorem gray_code_size (n : ℕ) : n.size = (gray_code n).size := by
-  unfold gray_code
+theorem grayCode_size (n : ℕ) : n.size = (grayCode n).size := by
+  unfold grayCode
   dsimp only [Equiv.coe_fn_mk]
   cases v : n.size
   · rw [Nat.size_eq_zero] at v
@@ -126,17 +126,17 @@ theorem gray_code_size (n : ℕ) : n.size = (gray_code n).size := by
       omega
 
 /-- Gray code, `f(n) = n ⊕ ⌊n/2⌋`, as a permutation of `BitVec n`. -/
-def partial_gray_code (n : ℕ) : Equiv.Perm (BitVec n) where
-  toFun (n : BitVec n) := ⟨gray_code n.toNat,
-    by rw [← Nat.size_le, ← gray_code_size, Nat.size_le]; simp [BitVec.isLt]⟩
-  invFun (n : BitVec n) := ⟨gray_code.symm n.toNat,
-    by rw [← Nat.size_le, gray_code_size, Equiv.apply_symm_apply, Nat.size_le]; simp [BitVec.isLt]⟩
+def partialGrayCode (n : ℕ) : Equiv.Perm (BitVec n) where
+  toFun (n : BitVec n) := ⟨grayCode n.toNat,
+    by rw [← Nat.size_le, ← grayCode_size, Nat.size_le]; simp [BitVec.isLt]⟩
+  invFun (n : BitVec n) := ⟨grayCode.symm n.toNat,
+    by rw [← Nat.size_le, grayCode_size, Equiv.apply_symm_apply, Nat.size_le]; simp [BitVec.isLt]⟩
   left_inv := by intro n; simp; norm_cast
   right_inv := by intro n; simp; norm_cast
 
-theorem partial_gray_code_prop (n : ℕ) (h : n ≠ 0) (m : BitVec n) :
-    (n.partial_gray_code m ^^^ n.partial_gray_code (m + 1)).toNat.isPowerOfTwo := by
-  unfold partial_gray_code gray_code
+theorem partialGrayCode_prop (n : ℕ) (h : n ≠ 0) (m : BitVec n) :
+    (n.partialGrayCode m ^^^ n.partialGrayCode (m + 1)).toNat.isPowerOfTwo := by
+  unfold partialGrayCode grayCode
   simp only [Equiv.coe_fn_mk, Equiv.coe_fn_symm_mk, BitVec.ofNat_eq_ofNat, BitVec.toNat_add,
     BitVec.toNat_ofNat, add_mod_mod, BitVec.toNat_xor, BitVec.toNat_ofFin]
   by_cases h : m.toNat = 2^n - 1
@@ -156,7 +156,7 @@ theorem partial_gray_code_prop (n : ℕ) (h : n ≠ 0) (m : BitVec n) :
       simp only [bne_eq_false_iff_eq, decide_eq_decide]; omega
       exact (Nat.testBit_two_pow_of_ne (Ne.symm h₂)).symm
   · rw [Nat.mod_eq_of_lt]
-    apply gray_code_prop m.toNat
+    apply grayCode_prop m.toNat
     have : m.toNat < 2^n := BitVec.isLt m
     omega
 
