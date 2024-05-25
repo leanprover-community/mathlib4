@@ -259,7 +259,7 @@ theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
   erw [coe_comp, coe_comp, coe_comp]
   rw [Set.image_comp, Set.preimage_comp]
   erw [Set.preimage_image_eq]
-  · refine' Eq.trans (D.toTopGlueData.preimage_image_eq_image' _ _ _) _
+  · refine Eq.trans (D.toTopGlueData.preimage_image_eq_image' _ _ _) ?_
     dsimp
     rw [coe_comp, Set.image_comp]
     refine congr_arg (_ '' ·) ?_

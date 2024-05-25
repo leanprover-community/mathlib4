@@ -252,7 +252,7 @@ lemma trans {X Y : C} {z₁ z₂ z₃ : W.LeftFraction X Y}
     simpa only [← reassoc_of% hsu, reassoc_of% hst] using fac
   obtain ⟨Z₇, w, hw, fac'⟩ := HasLeftCalculusOfFractions.ext _ _ _ z₂.hs eq
   simp only [Category.assoc] at fac'
-  refine' ⟨Z₇, t₁ ≫ v₄ ≫ w, u₃ ≫ v₅ ≫ w, _, _, _⟩
+  refine ⟨Z₇, t₁ ≫ v₄ ≫ w, u₃ ≫ v₅ ≫ w, ?_, ?_, ?_⟩
   · rw [reassoc_of% fac]
   · rw [reassoc_of% hft, ← fac', reassoc_of% hfu]
   · rw [← reassoc_of% fac, ← reassoc_of% hsu, ← Category.assoc]
@@ -295,7 +295,7 @@ lemma comp₀_rel {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFraction
     rw [← reassoc_of% h₃, ← reassoc_of% h₃', fac]
   obtain ⟨Y, t, ht, fac'⟩ := HasLeftCalculusOfFractions.ext _ _ _ z₁.hs eq
   simp only [assoc] at fac'
-  refine' ⟨Y, z₄.f ≫ t, z₄.s ≫ t, _, _, _⟩
+  refine ⟨Y, z₄.f ≫ t, z₄.s ≫ t, ?_, ?_, ?_⟩
   · simp only [comp₀, assoc, reassoc_of% fac]
   · simp only [comp₀, assoc, fac']
   · simp only [comp₀, assoc, ← reassoc_of% fac]
@@ -730,7 +730,7 @@ lemma Localization.exists_leftFraction {X Y : C} (f : L.obj X ⟶ L.obj Y) :
       f = e.inv.app _ ≫ f' ≫ e.hom.app _ := ⟨e.hom.app _ ≫ f ≫ e.inv.app _, by simp⟩
   obtain ⟨g, rfl⟩ := E.functor.map_surjective f'
   obtain ⟨g, rfl⟩ := MorphismProperty.LeftFraction.Localization.Hom.mk_surjective g
-  refine' ⟨g, _⟩
+  refine ⟨g, ?_⟩
   rw [← MorphismProperty.LeftFraction.Localization.homMk_eq_hom_mk,
     MorphismProperty.LeftFraction.Localization.homMk_eq g,
     g.map_compatibility (MorphismProperty.LeftFraction.Localization.Q W) L,
@@ -773,8 +773,8 @@ lemma Localization.essSurj_mapArrow_of_hasLeftCalculusofFractions :
     obtain ⟨Y, ⟨eY⟩⟩ : ∃ (Y : C), Nonempty (L.obj Y ≅ f.right) :=
       ⟨_, ⟨L.objObjPreimageIso f.right⟩⟩
     obtain ⟨φ, hφ⟩ := Localization.exists_leftFraction L W (eX.hom ≫ f.hom ≫ eY.inv)
-    refine' ⟨Arrow.mk φ.f, ⟨Iso.symm _⟩⟩
-    refine' Arrow.isoMk eX.symm (eY.symm ≪≫ Localization.isoOfHom L W φ.s φ.hs) _
+    refine ⟨Arrow.mk φ.f, ⟨Iso.symm ?_⟩⟩
+    refine Arrow.isoMk eX.symm (eY.symm ≪≫ Localization.isoOfHom L W φ.s φ.hs) ?_
     dsimp
     simp only [← cancel_epi eX.hom, Iso.hom_inv_id_assoc, reassoc_of% hφ,
       MorphismProperty.LeftFraction.map_comp_map_s]
@@ -943,7 +943,7 @@ variable [W.HasRightCalculusOfFractions]
 lemma Localization.exists_rightFraction {X Y : C} (f : L.obj X ⟶ L.obj Y) :
     ∃ (φ : W.RightFraction X Y), f = φ.map L (Localization.inverts L W) := by
   obtain ⟨φ, eq⟩ := Localization.exists_leftFraction L.op W.op f.op
-  refine' ⟨φ.unop, Quiver.Hom.op_inj _⟩
+  refine ⟨φ.unop, Quiver.Hom.op_inj ?_⟩
   rw [eq, MorphismProperty.RightFraction.op_map]
   rfl
 

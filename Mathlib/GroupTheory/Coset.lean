@@ -640,12 +640,12 @@ def quotientEquivProdOfLE' (h_le : s ≤ t) (f : α ⧸ t → α)
       change (f a.1 * b)⁻¹ * (f a.1 * c) ∈ s
       rwa [mul_inv_rev, mul_assoc, inv_mul_cancel_left]
   left_inv := by
-    refine' Quotient.ind' fun a => _
+    refine Quotient.ind' fun a => ?_
     simp_rw [Quotient.map'_mk'', id, mul_inv_cancel_left]
   right_inv := by
-    refine' Prod.rec _
-    refine' Quotient.ind' fun a => _
-    refine' Quotient.ind' fun b => _
+    refine Prod.rec ?_
+    refine Quotient.ind' fun a => ?_
+    refine Quotient.ind' fun b => ?_
     have key : Quotient.mk'' (f (Quotient.mk'' a) * b) = Quotient.mk'' a :=
       (QuotientGroup.mk_mul_of_mem (f a) b.2).trans (hf a)
     simp_rw [Quotient.map'_mk'', id, key, inv_mul_cancel_left]
