@@ -253,9 +253,9 @@ theorem inner_indicatorConstLp_eq_setIntegral_inner (f : Lp E 2 μ) (hs : Measur
   rw [h_left, h_right, add_zero]
 #align measure_theory.L2.inner_indicator_const_Lp_eq_set_integral_inner MeasureTheory.L2.inner_indicatorConstLp_eq_setIntegral_inner
 
-@[deprecated]
+@[deprecated (since := "2024-04-17")]
 alias inner_indicatorConstLp_eq_set_integral_inner :=
-  inner_indicatorConstLp_eq_setIntegral_inner -- deprecated on 2024-04-17
+  inner_indicatorConstLp_eq_setIntegral_inner
 
 /-- The inner product in `L2` of the indicator of a set `indicatorConstLp 2 hs hμs c` and `f` is
 equal to the inner product of the constant `c` and the integral of `f` over `s`. -/
@@ -266,9 +266,9 @@ theorem inner_indicatorConstLp_eq_inner_setIntegral [CompleteSpace E] [NormedSpa
     L2.inner_indicatorConstLp_eq_setIntegral_inner]
 #align measure_theory.L2.inner_indicator_const_Lp_eq_inner_set_integral MeasureTheory.L2.inner_indicatorConstLp_eq_inner_setIntegral
 
-@[deprecated]
+@[deprecated (since := "2024-04-17")]
 alias inner_indicatorConstLp_eq_inner_set_integral :=
-  inner_indicatorConstLp_eq_inner_setIntegral -- deprecated on 2024-04-17
+  inner_indicatorConstLp_eq_inner_setIntegral
 
 variable {𝕜}
 
