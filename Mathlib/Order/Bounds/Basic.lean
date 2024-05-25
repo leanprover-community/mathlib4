@@ -1706,10 +1706,10 @@ def ScottContinuous (D : Set (Set α)) (f : α → β) : Prop :=
   ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → d ∈ D → ∀ ⦃a⦄, IsLUB d a → IsLUB (f '' d) (f a)
 #align scott_continuous ScottContinuous
 
-protected theorem ScottContinuous.monotone (D : Set (Set α)) (hD : ∀ a b : α, {a, b} ∈ D)
+protected theorem ScottContinuous.monotone (D : Set (Set α)) (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
     (h : ScottContinuous D f) : Monotone f := by
   refine' fun a b hab =>
-    (h (insert_nonempty _ _) (directedOn_pair le_refl hab) (hD a b) _).1
+    (h (insert_nonempty _ _) (directedOn_pair le_refl hab) (hD a b hab) _).1
       (mem_image_of_mem _ <| mem_insert _ _)
   rw [IsLUB, upperBounds_insert, upperBounds_singleton,
     inter_eq_self_of_subset_right (Ici_subset_Ici.2 hab)]

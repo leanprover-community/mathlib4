@@ -115,6 +115,36 @@ lemma isChain_range : IsChain (· ≤ ·) (Set.range c) := Monotone.isChain_rang
 
 lemma directed : Directed (· ≤ ·) c := directedOn_range.2 c.isChain_range.directedOn
 
+lemma pairChain (a : α) (b : α) (hab : a ≤ b ): ∃ c : Chain α, Set.range c = {a , b} := by
+  let f : ℕ → α
+    | 0 => a
+    | _ => b
+  let c :  ℕ →o α := ⟨f, by
+    intros _ _ _
+    aesop⟩
+  use c
+  rw [le_antisymm_iff]
+  constructor
+  · simp only [Set.le_eq_subset]
+    intros d hd
+    simp only [Set.mem_range] at hd
+    rcases hd with ⟨n,hn⟩
+    simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+    cases n
+    · aesop
+    · aesop
+  · simp only [Set.le_eq_subset]
+    intros d hd
+    simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hd
+    simp only [Set.mem_range]
+    cases' hd with ha hb
+    · use 0
+      rw [ha]
+      rfl
+    · use 1
+      rw [hb]
+      rfl
+
 /-- `map` function for `Chain` -/
 -- Porting note: `simps` doesn't work with type synonyms
 -- @[simps! (config := .asFn)]
@@ -286,13 +316,33 @@ def Continuous' (f : α → β) : Prop :=
   ∃ hf : Monotone f, Continuous ⟨f, hf⟩
 #align omega_complete_partial_order.continuous' OmegaCompletePartialOrder.Continuous'
 
+def ωScottContinuous (f : α → β) := ScottContinuous { d | ∃ (c : Chain α), Set.range c = d } f
+
+lemma ωScottContinuous.monotone {f : α → β} (h : ωScottContinuous f) : Monotone f :=
+  ScottContinuous.monotone
+    { d | ∃ (c : Chain α), Set.range c = d } (by
+      intros a b hab
+      simp only [Set.mem_setOf_eq]
+      exact pairChain a b hab) h
+
+
 lemma isLUB_of_scottContinuous {c : Chain α} {f : α → β} (hf : ScottContinuous Set.univ f) :
-    IsLUB (Set.range (Chain.map c ⟨f, (ScottContinuous.monotone Set.univ (fun _ _ ↦ trivial) hf)⟩))
+    IsLUB (Set.range (Chain.map c ⟨f, (ScottContinuous.monotone Set.univ
+      (fun _ _ _ ↦ trivial) hf)⟩))
     (f (ωSup c)) := by
   simp only [map_coe, OrderHom.coe_mk]
   rw [(Set.range_comp f ↑c)]
   exact hf (Set.range_nonempty ↑c) (IsChain.directedOn (isChain_range c)) (trivial)
     (isLUB_range_ωSup c)
+
+lemma isLUB_of_ωScottContinuous {c : Chain α} {f : α → β}
+    (hf : ωScottContinuous f) :
+    IsLUB (Set.range (Chain.map c ⟨f, (ωScottContinuous.monotone hf)⟩))
+    (f (ωSup c)) := by
+  simp only [map_coe, OrderHom.coe_mk]
+  rw [(Set.range_comp f ↑c)]
+  exact hf (Set.range_nonempty ↑c) (IsChain.directedOn (isChain_range c))
+    (by simp only [Set.mem_setOf_eq, exists_apply_eq_apply]) (isLUB_range_ωSup c)
 
 lemma ScottContinuous.continuous' {f : α → β} (hf : ScottContinuous Set.univ f) :
     Continuous' f := by
@@ -301,8 +351,36 @@ lemma ScottContinuous.continuous' {f : α → β} (hf : ScottContinuous Set.univ
     rw [← (ωSup_eq_of_isLUB (isLUB_of_scottContinuous hf))]
     simp only [OrderHom.coe_mk]
 
+lemma unify  {f : α → β} :
+    Continuous' f = ωScottContinuous f := by
+  rw [le_antisymm_iff]
+  constructor
+  · simp only [le_Prop_eq]
+    intro hf
+    intro d _ _ hd₃ a hda
+    rcases hd₃ with ⟨c,hc⟩
+    rw [← hc] at hda
+    rw [← hc, ωSup_eq_of_isLUB hda]
+    have e1 : f (ωSup c) = ωSup (c.map ⟨f,hf.1⟩) := by
+      rw [← (hf.2 c)]
+      simp only [OrderHom.coe_mk]
+    have e2 : f '' Set.range c = Set.range (c.map ⟨f,hf.1⟩) := by
+      simp only [map_coe, OrderHom.coe_mk]
+      exact Eq.symm (Set.range_comp f ⇑c)
+    rw [e1, e2]
+    exact isLUB_range_ωSup (c.map { toFun := f, monotone' := hf.1 })
+  · simp only [le_Prop_eq]
+    intro hf
+    constructor
+    · intro c
+      rw [ScottContinuous] at hf
+      have e1 : f (ωSup c) = ωSup (c.map ⟨f,ωScottContinuous.monotone hf⟩) := by
+        rw [← (ωSup_eq_of_isLUB (isLUB_of_ωScottContinuous hf))]
+      exact e1
+    · exact ωScottContinuous.monotone hf
+
 lemma continuous'_ScottContinuous {f : α → β} (hf : Continuous' f) :
-    ScottContinuous { d | ∃ (c : Chain α), Set.range c = d } f := by
+    ωScottContinuous f := by
   intro d _ _ hd₃ a hda
   rcases hd₃ with ⟨c,hc⟩
   rw [← hc] at hda
