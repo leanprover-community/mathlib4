@@ -50,8 +50,7 @@ open WalkingPair
 
 /-- The equivalence swapping left and right.
 -/
-def WalkingPair.swap : WalkingPair ≃ WalkingPair
-    where
+def WalkingPair.swap : WalkingPair ≃ WalkingPair where
   toFun j := WalkingPair.recOn j right left
   invFun j := WalkingPair.recOn j right left
   left_inv j := by cases j; repeat rfl
@@ -80,8 +79,7 @@ theorem WalkingPair.swap_symm_apply_ff : WalkingPair.swap.symm right = left :=
 
 /-- An equivalence from `WalkingPair` to `Bool`, sometimes useful when reindexing limits.
 -/
-def WalkingPair.equivBool : WalkingPair ≃ Bool
-    where
+def WalkingPair.equivBool : WalkingPair ≃ Bool where
   toFun j := WalkingPair.recOn j true false
   -- to match equiv.sum_equiv_sigma_bool
   invFun b := Bool.recOn b right left
@@ -1012,8 +1010,7 @@ variable {C}
 
 /-- The braiding isomorphism which swaps a binary product. -/
 @[simps]
-def prod.braiding (P Q : C) [HasBinaryProduct P Q] [HasBinaryProduct Q P] : P ⨯ Q ≅ Q ⨯ P
-    where
+def prod.braiding (P Q : C) [HasBinaryProduct P Q] [HasBinaryProduct Q P] : P ⨯ Q ≅ Q ⨯ P where
   hom := prod.lift prod.snd prod.fst
   inv := prod.lift prod.snd prod.fst
 #align category_theory.limits.prod.braiding CategoryTheory.Limits.prod.braiding
@@ -1288,8 +1285,7 @@ theorem prodComparison_natural (f : A ⟶ A') (g : B ⟶ B') :
 -/
 @[simps]
 def prodComparisonNatTrans [HasBinaryProducts C] [HasBinaryProducts D] (F : C ⥤ D) (A : C) :
-    prod.functor.obj A ⋙ F ⟶ F ⋙ prod.functor.obj (F.obj A)
-    where
+    prod.functor.obj A ⋙ F ⟶ F ⋙ prod.functor.obj (F.obj A) where
   app B := prodComparison F A B
   naturality f := by simp [prodComparison_natural]
 #align category_theory.limits.prod_comparison_nat_trans CategoryTheory.Limits.prodComparisonNatTrans
