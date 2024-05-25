@@ -26,7 +26,7 @@ namespace GroupCat
 
 @[to_additive]
 theorem isZero_of_subsingleton (G : GroupCat) [Subsingleton G] : IsZero G := by
-  refine' ⟨fun X => ⟨⟨⟨1⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨1⟩, fun f => _⟩⟩⟩
+  refine ⟨fun X => ⟨⟨⟨1⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨1⟩, fun f => ?_⟩⟩⟩
   · ext x
     have : x = 1 := Subsingleton.elim _ _
     rw [this, map_one, map_one]
@@ -47,7 +47,7 @@ namespace CommGroupCat
 
 @[to_additive]
 theorem isZero_of_subsingleton (G : CommGroupCat) [Subsingleton G] : IsZero G := by
-  refine' ⟨fun X => ⟨⟨⟨1⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨1⟩, fun f => _⟩⟩⟩
+  refine ⟨fun X => ⟨⟨⟨1⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨1⟩, fun f => ?_⟩⟩⟩
   · ext x
     have : x = 1 := Subsingleton.elim _ _
     rw [this, map_one, map_one]

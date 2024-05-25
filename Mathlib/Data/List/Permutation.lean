@@ -95,7 +95,7 @@ theorem map_permutationsAux2' {α β α' β'} (g : α → α') (g' : β → β')
   · simp
   · simp only [map, permutationsAux2_snd_cons, cons_append, cons.injEq]
     rw [ys_ih, permutationsAux2_fst]
-    · refine' ⟨_, rfl⟩
+    · refine ⟨?_, rfl⟩
       simp only [← map_cons, ← map_append]; apply H
     · intro a; apply H
 #align list.map_permutations_aux2' List.map_permutationsAux2'

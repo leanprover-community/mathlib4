@@ -72,6 +72,14 @@ attribute [local instance] monoidalOfHasFiniteProducts
 
 open scoped MonoidalCategory
 
+@[ext] theorem unit_ext {X : C} (f g : X ⟶ 𝟙_ C) : f = g := terminal.hom_ext f g
+
+@[ext] theorem tensor_ext {X Y Z : C} (f g : X ⟶ Y ⊗ Z)
+    (w₁ : f ≫ prod.fst = g ≫ prod.fst) (w₂ : f ≫ prod.snd = g ≫ prod.snd) : f = g :=
+  prod.hom_ext w₁ w₂
+
+@[simp] theorem tensorUnit : 𝟙_ C = ⊤_ C := rfl
+
 @[simp]
 theorem tensorObj (X Y : C) : X ⊗ Y = (X ⨯ Y) :=
   rfl
@@ -124,6 +132,24 @@ theorem associator_inv (X Y Z : C) :
     (α_ X Y Z).inv =
       prod.lift (prod.lift prod.fst (prod.snd ≫ prod.fst)) (prod.snd ≫ prod.snd) :=
   rfl
+
+@[reassoc] theorem associator_hom_fst (X Y Z : C) :
+    (α_ X Y Z).hom ≫ prod.fst = prod.fst ≫ prod.fst := by simp [associator_hom]
+
+@[reassoc] theorem associator_hom_snd_fst (X Y Z : C) :
+    (α_ X Y Z).hom ≫ prod.snd ≫ prod.fst = prod.fst ≫ prod.snd := by simp [associator_hom]
+
+@[reassoc] theorem associator_hom_snd_snd (X Y Z : C) :
+    (α_ X Y Z).hom ≫ prod.snd ≫ prod.snd = prod.snd := by simp [associator_hom]
+
+@[reassoc] theorem associator_inv_fst_fst (X Y Z : C) :
+    (α_ X Y Z).inv ≫ prod.fst ≫ prod.fst = prod.fst := by simp [associator_inv]
+
+@[reassoc] theorem associator_inv_fst_snd (X Y Z : C) :
+    (α_ X Y Z).inv ≫ prod.fst ≫ prod.snd = prod.snd ≫ prod.fst := by simp [associator_inv]
+
+@[reassoc] theorem associator_inv_snd (X Y Z : C) :
+    (α_ X Y Z).inv ≫ prod.snd = prod.snd ≫ prod.snd := by simp [associator_inv]
 
 end monoidalOfHasFiniteProducts
 
