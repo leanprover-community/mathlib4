@@ -14,6 +14,8 @@ import Mathlib.Order.Minimal
   union of a nontrivial pair of disjoint opens.
 * `IsIrreducible`: for a nonempty set in a topological space, the property that the set is an
   irreducible space in the subspace topology.
+* `IsIrreducibleClosed`: for subset of a topological space, the property that the subset is both
+  irreducible and closed.
 
 ## On the definition of irreducible and connected sets/spaces
 
@@ -115,14 +117,39 @@ theorem isClosed_of_mem_irreducibleComponents (s) (H : s ∈ irreducibleComponen
   exact subset_closure.antisymm (H.2 H.1.closure subset_closure)
 #align is_closed_of_mem_irreducible_components isClosed_of_mem_irreducibleComponents
 
+section IsIrreducibleClosed
+
+variable {S : Type*} [TopologicalSpace S] (s : Set S)
+
+/--
+A set `s : Set X` satisfies `IsIrreducibleClosed s` if `s` is irreducible and closed.
+-/
+def IsIrreducibleClosed : Prop := IsIrreducible s ∧ IsClosed s
+
+namespace IsIrreducibleClosed
+
+theorem nonempty (h : IsIrreducibleClosed s) : s.Nonempty := h.1.1
+
+theorem isPreirreducible (h : IsIrreducibleClosed s) : IsPreirreducible s := h.1.2
+
+theorem isIrreducible (h : IsIrreducibleClosed s) : IsIrreducible s := h.1
+
+theorem isClosed (h : IsIrreducibleClosed s) : IsClosed s := h.2
+
+end IsIrreducibleClosed
+
+end IsIrreducibleClosed
+
 theorem irreducibleComponents_eq_maximals_closed (X : Type*) [TopologicalSpace X] :
-    irreducibleComponents X = maximals (· ≤ ·) { s : Set X | IsClosed s ∧ IsIrreducible s } := by
+    irreducibleComponents X = maximals (· ≤ ·) { s : Set X | IsIrreducibleClosed s } := by
   ext s
   constructor
   · intro H
+    simp_rw [IsIrreducibleClosed, and_comm]
     exact ⟨⟨isClosed_of_mem_irreducibleComponents _ H, H.1⟩, fun x h e => H.2 h.2 e⟩
   · intro H
-    refine ⟨H.1.2, fun x h e => ?_⟩
+    refine ⟨H.1.1, fun x h e => ?_⟩
+    simp_rw [IsIrreducibleClosed, and_comm] at H
     have : closure x ≤ s := H.2 ⟨isClosed_closure, h.closure⟩ (e.trans subset_closure)
     exact le_trans subset_closure this
 #align irreducible_components_eq_maximals_closed irreducibleComponents_eq_maximals_closed
