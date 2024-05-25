@@ -38,7 +38,7 @@ theorem sqrt_one_add_norm_sq_le (x : E) : √((1 : ℝ) + ‖x‖ ^ 2) ≤ 1 + �
 #align sqrt_one_add_norm_sq_le sqrt_one_add_norm_sq_le
 
 theorem one_add_norm_le_sqrt_two_mul_sqrt (x : E) :
-    (1 : ℝ) + ‖x‖ ≤ √(2 : ℝ) * √((1 : ℝ) + ‖x‖ ^ 2) := by
+    (1 : ℝ) + ‖x‖ ≤ √2 * √(1 + ‖x‖ ^ 2) := by
   rw [← sqrt_mul zero_le_two]
   have := sq_nonneg (‖x‖ - 1)
   apply le_sqrt_of_sq_le

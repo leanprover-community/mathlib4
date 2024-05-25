@@ -547,20 +547,20 @@ theorem cos_eq_sqrt_one_sub_sin_sq {x : ℝ} (hl : -(π / 2) ≤ x) (hu : x ≤ 
   rw [← abs_cos_eq_sqrt_one_sub_sin_sq, abs_of_nonneg (cos_nonneg_of_mem_Icc ⟨hl, hu⟩)]
 #align real.cos_eq_sqrt_one_sub_sin_sq Real.cos_eq_sqrt_one_sub_sin_sq
 
-lemma cos_half {x : ℝ} (hl : -π ≤ x) (hr : x ≤ π) : cos (x / 2) = sqrt ((1 + cos x) / 2) := by
+lemma cos_half {x : ℝ} (hl : -π ≤ x) (hr : x ≤ π) : cos (x / 2) = √((1 + cos x) / 2) := by
   have : 0 ≤ cos (x / 2) := cos_nonneg_of_mem_Icc <| by constructor <;> linarith
   rw [← sqrt_sq this, cos_sq, add_div, two_mul, add_halves]
 
-lemma abs_sin_half (x : ℝ) : |sin (x / 2)| = sqrt ((1 - cos x) / 2) := by
+lemma abs_sin_half (x : ℝ) : |sin (x / 2)| = √((1 - cos x) / 2) := by
   rw [← sqrt_sq_eq_abs, sin_sq_eq_half_sub, two_mul, add_halves, sub_div]
 
 lemma sin_half_eq_sqrt {x : ℝ} (hl : 0 ≤ x) (hr : x ≤ 2 * π) :
-    sin (x / 2) = sqrt ((1 - cos x) / 2) := by
+    sin (x / 2) = √((1 - cos x) / 2) := by
   rw [← abs_sin_half, abs_of_nonneg]
   apply sin_nonneg_of_nonneg_of_le_pi <;> linarith
 
 lemma sin_half_eq_neg_sqrt {x : ℝ} (hl : -(2 * π) ≤ x) (hr : x ≤ 0) :
-    sin (x / 2) = -sqrt ((1 - cos x) / 2) := by
+    sin (x / 2) = -√((1 - cos x) / 2) := by
   rw [← abs_sin_half, abs_of_nonpos, neg_neg]
   apply sin_nonpos_of_nonnpos_of_neg_pi_le <;> linarith
 
@@ -947,7 +947,7 @@ theorem sinOrderIso_apply (x : Icc (-(π / 2)) (π / 2)) : sinOrderIso x = ⟨si
 @[simp]
 theorem tan_pi_div_four : tan (π / 4) = 1 := by
   rw [tan_eq_sin_div_cos, cos_pi_div_four, sin_pi_div_four]
-  have h : √(2 : ℝ) / 2 > 0 := by positivity
+  have h : √2 / 2 > 0 := by positivity
   exact div_self (ne_of_gt h)
 #align real.tan_pi_div_four Real.tan_pi_div_four
 
@@ -956,12 +956,12 @@ theorem tan_pi_div_two : tan (π / 2) = 0 := by simp [tan_eq_sin_div_cos]
 #align real.tan_pi_div_two Real.tan_pi_div_two
 
 @[simp]
-theorem tan_pi_div_six : tan (π / 6) = 1 / sqrt 3 := by
+theorem tan_pi_div_six : tan (π / 6) = 1 / √3 := by
   rw [tan_eq_sin_div_cos, sin_pi_div_six, cos_pi_div_six]
   ring
 
 @[simp]
-theorem tan_pi_div_three : tan (π / 3) = sqrt 3 := by
+theorem tan_pi_div_three : tan (π / 3) = √3 := by
   rw [tan_eq_sin_div_cos, sin_pi_div_three, cos_pi_div_three]
   ring
 

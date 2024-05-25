@@ -253,7 +253,7 @@ theorem normSq_eq_abs (x : ℂ) : normSq x = (Complex.abs x) ^ 2 := by
 @[simp]
 theorem range_normSq : range normSq = Ici 0 :=
   Subset.antisymm (range_subset_iff.2 normSq_nonneg) fun x hx =>
-    ⟨(√x : ℝ), by rw [normSq_ofReal, Real.mul_self_sqrt hx]⟩
+    ⟨↑(√x), by rw [normSq_ofReal, Real.mul_self_sqrt hx]⟩
 #align complex.range_norm_sq Complex.range_normSq
 
 /-! ### Cauchy sequences -/
