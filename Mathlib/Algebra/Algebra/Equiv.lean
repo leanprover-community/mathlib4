@@ -224,7 +224,7 @@ theorem map_smul (r : R) (x : A₁) : e (r • x) = r • e x := by
   simp only [Algebra.smul_def, map_mul, commutes]
 #align alg_equiv.map_smul AlgEquiv.map_smul
 
-@[deprecated map_sum]
+@[deprecated _root_.map_sum (since := "2023-12-26")]
 nonrec theorem map_sum {ι : Type*} (f : ι → A₁) (s : Finset ι) :
     e (∑ x in s, f x) = ∑ x in s, e (f x) :=
   map_sum e f s
@@ -232,7 +232,7 @@ nonrec theorem map_sum {ι : Type*} (f : ι → A₁) (s : Finset ι) :
 
 theorem map_finsupp_sum {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A₁) :
     e (f.sum g) = f.sum fun i b => e (g i b) :=
-  e.map_sum _ _
+  _root_.map_sum e _ _
 #align alg_equiv.map_finsupp_sum AlgEquiv.map_finsupp_sum
 
 -- Porting note: Added [coe] attribute
@@ -663,7 +663,7 @@ end OfLinearEquiv
 
 section OfRingEquiv
 
-/-- Promotes a linear ring_equiv to an AlgEquiv. -/
+/-- Promotes a linear `RingEquiv` to an `AlgEquiv`. -/
 @[simps apply symm_apply toEquiv] -- Porting note: don't want redundant `toEquiv_symm_apply` simps
 def ofRingEquiv {f : A₁ ≃+* A₂} (hf : ∀ x, f (algebraMap R A₁ x) = algebraMap R A₂ x) :
     A₁ ≃ₐ[R] A₂ :=

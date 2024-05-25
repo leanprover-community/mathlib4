@@ -296,7 +296,7 @@ theorem ofReal_sub (p : ℝ) {q : ℝ} (hq : 0 ≤ q) :
     ENNReal.ofReal (p - q) = ENNReal.ofReal p - ENNReal.ofReal q := by
   obtain h | h := le_total p q
   · rw [ofReal_of_nonpos (sub_nonpos_of_le h), tsub_eq_zero_of_le (ofReal_le_ofReal h)]
-  refine' ENNReal.eq_sub_of_add_eq ofReal_ne_top _
+  refine ENNReal.eq_sub_of_add_eq ofReal_ne_top ?_
   rw [← ofReal_add (sub_nonneg_of_le h) hq, sub_add_cancel]
 #align ennreal.of_real_sub ENNReal.ofReal_sub
 
@@ -580,7 +580,7 @@ theorem iSup_sub : (⨆ i, f i) - a = ⨆ i, f i - a :=
 #align ennreal.supr_sub ENNReal.iSup_sub
 
 theorem sub_iInf : (a - ⨅ i, f i) = ⨆ i, a - f i := by
-  refine' eq_of_forall_ge_iff fun c => _
+  refine eq_of_forall_ge_iff fun c => ?_
   rw [tsub_le_iff_right, add_comm, iInf_add]
   simp [tsub_le_iff_right, sub_eq_add_neg, add_comm]
 #align ennreal.sub_infi ENNReal.sub_iInf
@@ -666,8 +666,7 @@ theorem iSup_natCast : ⨆ n : ℕ, (n : ℝ≥0∞) = ∞ :=
   (iSup_eq_top _).2 fun _b hb => ENNReal.exists_nat_gt (lt_top_iff_ne_top.1 hb)
 #align ennreal.supr_coe_nat ENNReal.iSup_natCast
 
--- 2024-04-05
-@[deprecated] alias iSup_coe_nat := iSup_natCast
+@[deprecated] alias iSup_coe_nat := iSup_natCast -- 2024-04-05
 
 end iSup
 

@@ -186,8 +186,7 @@ theorem uniformity_translate_mul (a : α) : ((𝓤 α).map fun x : α × α => (
 @[to_additive]
 theorem uniformEmbedding_translate_mul (a : α) : UniformEmbedding fun x : α => x * a :=
   { comap_uniformity := by
-      nth_rewrite 1 [← uniformity_translate_mul a, comap_map]
-      rfl
+      nth_rw 1 [← uniformity_translate_mul a, comap_map]
       rintro ⟨p₁, p₂⟩ ⟨q₁, q₂⟩
       simp only [Prod.mk.injEq, mul_left_inj, imp_self]
     inj := mul_left_injective a }
@@ -230,7 +229,7 @@ theorem uniformGroup_iInf {ι : Sort*} {us' : ι → UniformSpace β}
 theorem uniformGroup_inf {u₁ u₂ : UniformSpace β} (h₁ : @UniformGroup β u₁ _)
     (h₂ : @UniformGroup β u₂ _) : @UniformGroup β (u₁ ⊓ u₂) _ := by
   rw [inf_eq_iInf]
-  refine' uniformGroup_iInf fun b => _
+  refine uniformGroup_iInf fun b => ?_
   cases b <;> assumption
 #align uniform_group_inf uniformGroup_inf
 #align uniform_add_group_inf uniformAddGroup_inf
@@ -269,15 +268,15 @@ variable (α)
 @[to_additive]
 theorem uniformity_eq_comap_nhds_one : 𝓤 α = comap (fun x : α × α => x.2 / x.1) (𝓝 (1 : α)) := by
   rw [nhds_eq_comap_uniformity, Filter.comap_comap]
-  refine' le_antisymm (Filter.map_le_iff_le_comap.1 _) _
+  refine le_antisymm (Filter.map_le_iff_le_comap.1 ?_) ?_
   · intro s hs
     rcases mem_uniformity_of_uniformContinuous_invariant uniformContinuous_div hs with ⟨t, ht, hts⟩
-    refine' mem_map.2 (mem_of_superset ht _)
+    refine mem_map.2 (mem_of_superset ht ?_)
     rintro ⟨a, b⟩
     simpa [subset_def] using hts a b a
   · intro s hs
     rcases mem_uniformity_of_uniformContinuous_invariant uniformContinuous_mul hs with ⟨t, ht, hts⟩
-    refine' ⟨_, ht, _⟩
+    refine ⟨_, ht, ?_⟩
     rintro ⟨a, b⟩
     simpa [subset_def] using hts 1 (b / a) a
 #align uniformity_eq_comap_nhds_one uniformity_eq_comap_nhds_one
@@ -417,7 +416,7 @@ theorem UniformGroup.uniformContinuous_iff_open_ker {hom : Type*} [UniformSpace 
     [DiscreteTopology β] [Group β] [UniformGroup β] [FunLike hom α β] [MonoidHomClass hom α β]
     {f : hom} :
     UniformContinuous f ↔ IsOpen ((f : α →* β).ker : Set α) := by
-  refine' ⟨fun hf => _, fun hf => _⟩
+  refine ⟨fun hf => ?_, fun hf => ?_⟩
   · apply (isOpen_discrete ({1} : Set β)).preimage hf.continuous
   · apply uniformContinuous_of_continuousAt_one
     rw [ContinuousAt, nhds_discrete β, map_one, tendsto_pure]
@@ -593,7 +592,7 @@ variable {G}
 instance Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTopology H] :
     IsClosed (H : Set G) := by
   obtain ⟨V, V_in, VH⟩ : ∃ (V : Set G), V ∈ 𝓝 (1 : G) ∧ V ∩ (H : Set G) = {1}
-  exact nhds_inter_eq_singleton_of_mem_discrete H.one_mem
+  · exact nhds_inter_eq_singleton_of_mem_discrete H.one_mem
   have : (fun p : G × G => p.2 / p.1) ⁻¹' V ∈ 𝓤 G := preimage_mem_comap V_in
   apply isClosed_of_spaced_out this
   intro h h_in h' h'_in
@@ -826,7 +825,7 @@ open DenseInducing
 ℤ-bilinear continuous maps from dense images into a complete Hausdorff group extend by continuity.
 Note: Bourbaki assumes that α and β are also complete Hausdorff, but this is not necessary. -/
 theorem extend_Z_bilin : Continuous (extend (de.prod df) (fun p : β × δ => φ p.1 p.2)) := by
-  refine' continuous_extend_of_cauchy _ _
+  refine continuous_extend_of_cauchy _ ?_
   rintro ⟨x₀, y₀⟩
   constructor
   · apply NeBot.map

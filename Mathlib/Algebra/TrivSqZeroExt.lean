@@ -3,7 +3,7 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.GroupTheory.GroupAction.BigOperators
 import Mathlib.LinearAlgebra.Prod
 
@@ -626,7 +626,7 @@ theorem snd_pow_of_smul_comm [Monoid R] [AddMonoid M] [DistribMulAction R M]
   | 0 => rw [Nat.pred_zero, pow_zero, List.range_zero, zero_smul, List.map_nil, List.sum_nil]
   | (Nat.succ n) =>
     simp_rw [Nat.pred_succ]
-    refine' (List.sum_eq_card_nsmul _ (x.fst ^ n • x.snd) _).trans _
+    refine (List.sum_eq_card_nsmul _ (x.fst ^ n • x.snd) ?_).trans ?_
     · rintro m hm
       simp_rw [List.mem_map, List.mem_range] at hm
       obtain ⟨i, hi, rfl⟩ := hm
@@ -668,15 +668,17 @@ instance monoid [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulActio
           by simp_rw [smul_add, ← mul_smul, add_assoc, smul_comm, op_mul]
     npow := fun n x => x ^ n
     npow_zero := fun x => ext (pow_zero x.fst) (by simp [snd_pow_eq_sum])
-    npow_succ := fun n x => ext (pow_succ _ _) (by
-      simp_rw [snd_mul, snd_pow_eq_sum, Nat.pred_succ]
-      cases n
-      · simp [List.range_succ]
-      rw [List.sum_range_succ']
-      simp only [pow_zero, op_one, tsub_zero, one_smul, Nat.succ_sub_succ_eq_sub, fst_pow,
-        Nat.pred_succ, List.smul_sum, List.map_map, Function.comp]
-      simp_rw [← smul_comm (_ : R) (_ : Rᵐᵒᵖ), smul_smul, pow_succ]
-      rfl) }
+    npow_succ := fun n x =>
+      ext (pow_succ _ _)
+        (by
+          simp_rw [snd_mul, snd_pow_eq_sum, Nat.pred_succ]
+          cases n
+          · simp [List.range_succ]
+          rw [List.sum_range_succ']
+          simp only [pow_zero, op_one, tsub_zero, one_smul, Nat.succ_sub_succ_eq_sub, fst_pow,
+            Nat.pred_succ, List.smul_sum, List.map_map, Function.comp]
+          simp_rw [← smul_comm (_ : R) (_ : Rᵐᵒᵖ), smul_smul, pow_succ]
+          rfl) }
 
 theorem fst_list_prod [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
     [SMulCommClass R Rᵐᵒᵖ M] (l : List (tsze R M)) : l.prod.fst = (l.map fst).prod :=

@@ -186,8 +186,8 @@ theorem vars_sum_subset [DecidableEq σ] :
   | empty => simp
   | insert has hsum =>
     rw [Finset.biUnion_insert, Finset.sum_insert has]
-    refine'
-      Finset.Subset.trans (vars_add_subset _ _) (Finset.union_subset_union (Finset.Subset.refl _) _)
+    refine Finset.Subset.trans
+      (vars_add_subset _ _) (Finset.union_subset_union (Finset.Subset.refl _) ?_)
     assumption
 #align mv_polynomial.vars_sum_subset MvPolynomial.vars_sum_subset
 
@@ -204,7 +204,7 @@ theorem vars_sum_of_disjoint [DecidableEq σ] (h : Pairwise <| (Disjoint on fun 
     intro v hv v2 hv2
     rw [Finset.mem_biUnion] at hv2
     rcases hv2 with ⟨i, his, hi⟩
-    refine' h _ _ hv _ hi
+    refine h ?_ _ hv _ hi
     rintro rfl
     contradiction
 #align mv_polynomial.vars_sum_of_disjoint MvPolynomial.vars_sum_of_disjoint
@@ -259,7 +259,7 @@ theorem eval₂Hom_eq_constantCoeff_of_vars (f : R →+* S) {g : σ → S} {p : 
     rw [Finset.sum_eq_single (0 : σ →₀ ℕ)]
     · rw [Finsupp.prod_zero_index, mul_one]
       rfl
-    intro d hd hd0
+    on_goal 1 => intro d hd hd0
   on_goal 3 =>
     rw [constantCoeff_eq, coeff, ← Ne, ← Finsupp.mem_support_iff] at h0
     intro
@@ -317,7 +317,7 @@ theorem exists_rename_eq_of_vars_subset_range (p : MvPolynomial σ R) (f : τ �
   ⟨aeval (fun i : σ => Option.elim' 0 X <| partialInv f i) p,
     by
       show (rename f).toRingHom.comp _ p = RingHom.id _ p
-      refine' hom_congr_vars _ _ _
+      refine hom_congr_vars ?_ ?_ ?_
       · ext1
         simp [algebraMap_eq]
       · intro i hip _

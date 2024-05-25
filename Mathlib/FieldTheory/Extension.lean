@@ -173,7 +173,8 @@ theorem nonempty_algHom_of_adjoin_splits : Nonempty (E →ₐ[F] K) :=
 variable {x : E} (hx : x ∈ adjoin F S) {y : K} (hy : aeval y (minpoly F x) = 0)
 
 theorem exists_algHom_adjoin_of_splits_of_aeval : ∃ φ : adjoin F S →ₐ[F] K, φ ⟨x, hx⟩ = y := by
-  have ix := isAlgebraic_adjoin (fun s hs ↦ (hK s hs).1) ⟨x, hx⟩
+  have := isAlgebraic_adjoin (fun s hs ↦ (hK s hs).1)
+  have ix : IsAlgebraic F _ := Algebra.IsAlgebraic.isAlgebraic (⟨x, hx⟩ : adjoin F S)
   rw [isAlgebraic_iff_isIntegral, isIntegral_iff] at ix
   obtain ⟨φ, hφ⟩ := exists_algHom_adjoin_of_splits hK ((algHomAdjoinIntegralEquiv F ix).symm
     ⟨y, mem_aroots.mpr ⟨minpoly.ne_zero ix, hy⟩⟩) (adjoin_simple_le_iff.mpr hx)
@@ -207,12 +208,12 @@ of `x` over `F`. -/
 theorem Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly_of_splits {F K : Type*} (L : Type*)
     [Field F] [Field K] [Field L] [Algebra F L] [Algebra F K]
     (hA : ∀ x : K, (minpoly F x).Splits (algebraMap F L))
-    (hK : Algebra.IsAlgebraic F K) (x : K) :
+    [Algebra.IsAlgebraic F K] (x : K) :
     (Set.range fun (ψ : K →ₐ[F] L) => ψ x) = (minpoly F x).rootSet L := by
   ext a
-  rw [mem_rootSet_of_ne (minpoly.ne_zero (hK.isIntegral x))]
+  rw [mem_rootSet_of_ne (minpoly.ne_zero (Algebra.IsIntegral.isIntegral x))]
   refine ⟨fun ⟨ψ, hψ⟩ ↦ ?_, fun ha ↦ IntermediateField.exists_algHom_of_splits_of_aeval
-    (fun x ↦ ⟨hK.isIntegral x, hA x⟩) ha⟩
+    (fun x ↦ ⟨Algebra.IsIntegral.isIntegral x, hA x⟩) ha⟩
   rw [← hψ, Polynomial.aeval_algHom_apply ψ x, minpoly.aeval, map_zero]
 
 end Algebra.IsAlgebraic

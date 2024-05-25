@@ -264,9 +264,9 @@ theorem ofNat'_succ : ∀ {n}, ofNat' (n + 1) = ofNat' n + 1 :=
 
 @[simp]
 theorem add_ofNat' (m n) : Num.ofNat' (m + n) = Num.ofNat' m + Num.ofNat' n := by
-  -- Porting note: `simp` fails to unify `ofNat' (n + 1)` with `ofNat' n.succ`
-  have : ∀ {n}, ofNat' n.succ = ofNat' n + 1 := ofNat'_succ
-  induction n <;> simp [Nat.add_zero, this, add_zero, Nat.add_succ, add_one, add_succ, *]
+  induction n
+  · simp only [Nat.add_zero, ofNat'_zero, add_zero]
+  · simp only [Nat.add_succ, Nat.add_zero, ofNat'_succ, add_one, add_succ, *]
 #align num.add_of_nat' Num.add_ofNat'
 
 @[simp, norm_cast]
@@ -894,7 +894,7 @@ theorem castNum_eq_bitwise {f : Num → Num → Num} {g : Bool → Bool → Bool
       show PosNum.bit0 = PosNum.bit false from rfl, show PosNum.bit1 = PosNum.bit true from rfl,
       show ((1 : Num) : ℕ) = Nat.bit true 0 from rfl]
     all_goals
-      repeat'
+      repeat
         rw [show ∀ b n, (pos (PosNum.bit b n) : ℕ) = Nat.bit b ↑n by
           intros b _; cases b <;> rfl]
       rw [Nat.bitwise_bit gff]
@@ -956,13 +956,13 @@ theorem castNum_shiftRight (m : Num) (n : Nat) : ↑(m >>> n) = (m : ℕ) >>> (n
     apply Nat.div_eq_of_lt
     simp
   · trans
-    apply IH
+    · apply IH
     change Nat.shiftRight m n = Nat.shiftRight (_root_.bit1 m) (n + 1)
     rw [add_comm n 1, @Nat.shiftRight_eq _ (1 + n), Nat.shiftRight_add]
     apply congr_arg fun x => Nat.shiftRight x n
     simp [Nat.shiftRight_succ, Nat.shiftRight_zero, ← Nat.div2_val]
   · trans
-    apply IH
+    · apply IH
     change Nat.shiftRight m n = Nat.shiftRight (_root_.bit0 m) (n + 1)
     rw [add_comm n 1,  @Nat.shiftRight_eq _ (1 + n), Nat.shiftRight_add]
     apply congr_arg fun x => Nat.shiftRight x n
@@ -982,7 +982,7 @@ theorem castNum_testBit (m n) : testBit m n = Nat.testBit m n := by
     · rfl
     · rw [PosNum.cast_bit1, ← Nat.bit_true, Nat.testBit_bit_zero]
     · rw [PosNum.cast_bit0, ← Nat.bit_false, Nat.testBit_bit_zero]
-    · rw [PosNum.cast_one', ← bit1_zero, ← Nat.bit_true, Nat.testBit_bit_succ, Nat.zero_testBit]
+    · simp
     · rw [PosNum.cast_bit1, ← Nat.bit_true, Nat.testBit_bit_succ, IH]
     · rw [PosNum.cast_bit0, ← Nat.bit_false, Nat.testBit_bit_succ, IH]
 #align num.test_bit_to_nat Num.castNum_testBit
@@ -1558,7 +1558,7 @@ theorem divMod_to_nat_aux {n d : PosNum} {q r : Num} (h₁ : (r : ℕ) + d * _ro
     rw [← ZNum.to_int_inj, Num.cast_toZNum, Num.cast_sub', sub_eq_iff_eq_add, ← Int.natCast_inj]
     simp
   cases' e : Num.ofZNum' (Num.sub' r (Num.pos d)) with r₂ <;> simp [divModAux]
-  · refine' ⟨h₁, lt_of_not_ge fun h => _⟩
+  · refine ⟨h₁, lt_of_not_ge fun h => ?_⟩
     cases' Nat.le.dest h with r₂ e'
     rw [← Num.to_of_nat r₂, add_comm] at e'
     cases e.symm.trans (this.2 e'.symm)
@@ -1655,11 +1655,11 @@ theorem gcd_to_nat_aux :
     rw [natSize_to_nat, mul_to_nat, Nat.size_le] at h ⊢
     rw [mod_to_nat, mul_comm]
     rw [pow_succ, ← Nat.mod_add_div b (pos a)] at h
-    refine' lt_of_mul_lt_mul_right (lt_of_le_of_lt _ h) (Nat.zero_le 2)
+    refine lt_of_mul_lt_mul_right (lt_of_le_of_lt ?_ h) (Nat.zero_le 2)
     rw [mul_two, mul_add]
-    refine'
+    refine
       add_le_add_left
-        (Nat.mul_le_mul_left _ (le_trans (le_of_lt (Nat.mod_lt _ (PosNum.cast_pos _))) _)) _
+        (Nat.mul_le_mul_left _ (le_trans (le_of_lt (Nat.mod_lt _ (PosNum.cast_pos _))) ?_)) _
     suffices 1 ≤ _ by simpa using Nat.mul_le_mul_left (pos a) this
     rw [Nat.le_div_iff_mul_le a.cast_pos, one_mul]
     exact le_to_nat.2 ab

@@ -44,6 +44,7 @@ section Semiring
 
 variable {S : Type*} [Semiring S]
 
+set_option backward.isDefEq.lazyProjDelta false in -- See https://github.com/leanprover-community/mathlib4/issues/12535
 theorem natDegree_list_sum_le (l : List S[X]) : natDegree l.sum ≤ (l.map natDegree).foldr max 0 :=
   List.sum_le_foldr_max natDegree (by simp) natDegree_add_le _
 #align polynomial.nat_degree_list_sum_le Polynomial.natDegree_list_sum_le
@@ -96,9 +97,9 @@ theorem coeff_list_prod_of_natDegree_le (l : List S[X]) (n : ℕ) (hl : ∀ p �
     simp only [List.prod_cons, List.map, List.length]
     rw [add_mul, one_mul, add_comm, ← IH hl', mul_comm tl.length]
     have h : natDegree tl.prod ≤ n * tl.length := by
-      refine' (natDegree_list_prod_le _).trans _
+      refine (natDegree_list_prod_le _).trans ?_
       rw [← tl.length_map natDegree, mul_comm]
-      refine' List.sum_le_card_nsmul _ _ _
+      refine List.sum_le_card_nsmul _ _ ?_
       simpa using hl'
     have hdn : natDegree hd ≤ n := hl _ (List.mem_cons_self _ _)
     rcases hdn.eq_or_lt with (rfl | hdn')
@@ -150,7 +151,7 @@ theorem leadingCoeff_multiset_prod' (h : (t.map leadingCoeff).prod ≠ 0) :
     simp only [ne_eq]
     apply right_ne_zero_of_mul h
   · rw [ih]
-    exact h
+    · exact h
     simp only [ne_eq, not_false_eq_true]
     apply right_ne_zero_of_mul h
 #align polynomial.leading_coeff_multiset_prod' Polynomial.leadingCoeff_multiset_prod'
@@ -175,7 +176,7 @@ where this condition is automatically satisfied.
 theorem natDegree_multiset_prod' (h : (t.map fun f => leadingCoeff f).prod ≠ 0) :
     t.prod.natDegree = (t.map fun f => natDegree f).sum := by
   revert h
-  refine' Multiset.induction_on t _ fun a t ih ht => _; · simp
+  refine Multiset.induction_on t ?_ fun a t ih ht => ?_; · simp
   rw [Multiset.map_cons, Multiset.prod_cons] at ht ⊢
   rw [Multiset.sum_cons, Polynomial.natDegree_mul', ih]
   · apply right_ne_zero_of_mul ht
@@ -231,7 +232,7 @@ theorem coeff_prod_of_natDegree_le (f : ι → R[X]) (n : ℕ) (h : ∀ p ∈ s,
 #align polynomial.coeff_prod_of_nat_degree_le Polynomial.coeff_prod_of_natDegree_le
 
 theorem coeff_zero_multiset_prod : t.prod.coeff 0 = (t.map fun f => coeff f 0).prod := by
-  refine' Multiset.induction_on t _ fun a t ht => _; · simp
+  refine Multiset.induction_on t ?_ fun a t ht => ?_; · simp
   rw [Multiset.prod_cons, Multiset.map_cons, Multiset.prod_cons, Polynomial.mul_coeff_zero, ht]
 #align polynomial.coeff_zero_multiset_prod Polynomial.coeff_zero_multiset_prod
 

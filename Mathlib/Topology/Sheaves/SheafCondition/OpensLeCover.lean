@@ -234,7 +234,7 @@ set_option linter.uppercaseLean3 false in
     official definition of sheaves on spaces, but has the advantage that it does not
     require `has_products C`. -/
 theorem isSheaf_iff_isSheafOpensLeCover : F.IsSheaf ↔ F.IsSheafOpensLeCover := by
-  refine' (Presheaf.isSheaf_iff_isLimit _ _).trans _
+  refine (Presheaf.isSheaf_iff_isLimit _ _).trans ?_
   constructor
   · intro h ι U
     rw [(isLimitOpensLeEquivGenerate₁ F U rfl).nonempty_congr]

@@ -122,7 +122,7 @@ theorem div_rpow (x y : ℝ≥0) (z : ℝ) : (x / y) ^ z = x ^ z / y ^ z :=
 #align nnreal.div_rpow NNReal.div_rpow
 
 theorem sqrt_eq_rpow (x : ℝ≥0) : sqrt x = x ^ (1 / (2 : ℝ)) := by
-  refine' NNReal.eq _
+  refine NNReal.eq ?_
   push_cast
   exact Real.sqrt_eq_rpow x.1
 #align nnreal.sqrt_eq_rpow NNReal.sqrt_eq_rpow
@@ -186,7 +186,8 @@ theorem _root_.Real.list_prod_map_rpow (l : List ℝ) (hl : ∀ x ∈ l, (0 : �
 theorem _root_.Real.list_prod_map_rpow' {ι} (l : List ι) (f : ι → ℝ)
     (hl : ∀ i ∈ l, (0 : ℝ) ≤ f i) (r : ℝ) :
     (l.map (f · ^ r)).prod = (l.map f).prod ^ r := by
-  rw [← Real.list_prod_map_rpow (l.map f) _ r, List.map_map]; rfl
+  rw [← Real.list_prod_map_rpow (l.map f) _ r, List.map_map]
+  · rfl
   simpa using hl
 
 /-- `rpow` version of `Multiset.prod_map_pow`. -/

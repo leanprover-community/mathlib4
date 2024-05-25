@@ -88,7 +88,7 @@ section restrict
       rw [union_subset_iff, and_iff_left (subset_union_right _ _), union_comm]
       exact hBIB'.trans (union_subset_union_left _ (subset_inter hIY hI.subset_ground))
 
-    have hi : M﹡.Indep (M.E \ (B ∪ (R ∩ M.E))) := by
+    have hi : M✶.Indep (M.E \ (B ∪ (R ∩ M.E))) := by
       rw [dual_indep_iff_exists]
       exact ⟨B, hB, disjoint_of_subset_right (subset_union_left _ _) disjoint_sdiff_left⟩
 
@@ -120,8 +120,7 @@ def restrict (M : Matroid α) (R : Set α) : Matroid α := (M.restrictIndepMatro
 /-- `M ↾ R` means `M.restrict R`. -/
 scoped infixl:65  " ↾ " => Matroid.restrict
 
-@[simp] theorem restrict_indep_iff : (M ↾ R).Indep I ↔ M.Indep I ∧ I ⊆ R := by
-  simp [Matroid.restrict]
+@[simp] theorem restrict_indep_iff : (M ↾ R).Indep I ↔ M.Indep I ∧ I ⊆ R := Iff.rfl
 
 theorem Indep.indep_restrict_of_subset (h : M.Indep I) (hIR : I ⊆ R) : (M ↾ R).Indep I :=
   restrict_indep_iff.mpr ⟨h,hIR⟩
@@ -138,11 +137,11 @@ theorem restrict_finite {R : Set α} (hR : R.Finite) : (M ↾ R).Finite :=
   rw [Dep, restrict_indep_iff, restrict_ground_eq]; tauto
 
 @[simp] theorem restrict_ground_eq_self (M : Matroid α) : (M ↾ M.E) = M := by
-  refine' eq_of_indep_iff_indep_forall rfl _; aesop
+  refine eq_of_indep_iff_indep_forall rfl ?_; aesop
 
 theorem restrict_restrict_eq {R₁ R₂ : Set α} (M : Matroid α) (hR : R₂ ⊆ R₁) :
     (M ↾ R₁) ↾ R₂ = M ↾ R₂ := by
-  refine' eq_of_indep_iff_indep_forall rfl _
+  refine eq_of_indep_iff_indep_forall rfl ?_
   simp only [restrict_ground_eq, restrict_indep_iff, and_congr_left_iff, and_iff_left_iff_imp]
   exact fun _ h _ _ ↦ h.trans hR
 
@@ -198,7 +197,7 @@ theorem basis_restrict_iff (hR : R ⊆ M.E := by aesop_mat) :
 
 theorem restrict_eq_restrict_iff (M M' : Matroid α) (X : Set α) :
     M ↾ X = M' ↾ X ↔ ∀ I, I ⊆ X → (M.Indep I ↔ M'.Indep I) := by
-  refine' ⟨fun h I hIX ↦ _, fun h ↦ eq_of_indep_iff_indep_forall rfl fun I (hI : I ⊆ X) ↦ _⟩
+  refine ⟨fun h I hIX ↦ ?_, fun h ↦ eq_of_indep_iff_indep_forall rfl fun I (hI : I ⊆ X) ↦ ?_⟩
   · rw [← and_iff_left (a := (M.Indep I)) hIX, ← and_iff_left (a := (M'.Indep I)) hIX,
       ← restrict_indep_iff, h, restrict_indep_iff]
   rw [restrict_indep_iff, and_iff_left hI, restrict_indep_iff, and_iff_left hI, h _ hI]

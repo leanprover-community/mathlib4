@@ -76,7 +76,7 @@ structure IsTopologicalBasis (s : Set (Set α)) : Prop where
 
 theorem IsTopologicalBasis.insert_empty {s : Set (Set α)} (h : IsTopologicalBasis s) :
     IsTopologicalBasis (insert ∅ s) := by
-  refine' ⟨_, by rw [sUnion_insert, empty_union, h.sUnion_eq], _⟩
+  refine ⟨?_, by rw [sUnion_insert, empty_union, h.sUnion_eq], ?_⟩
   · rintro t₁ (rfl | h₁) t₂ (rfl | h₂) x ⟨hx₁, hx₂⟩
     · cases hx₁
     · cases hx₁
@@ -84,7 +84,7 @@ theorem IsTopologicalBasis.insert_empty {s : Set (Set α)} (h : IsTopologicalBas
     · obtain ⟨t₃, h₃, hs⟩ := h.exists_subset_inter _ h₁ _ h₂ x ⟨hx₁, hx₂⟩
       exact ⟨t₃, .inr h₃, hs⟩
   · rw [h.eq_generateFrom]
-    refine' le_antisymm (le_generateFrom fun t => _) (generateFrom_anti <| subset_insert ∅ s)
+    refine le_antisymm (le_generateFrom fun t => ?_) (generateFrom_anti <| subset_insert ∅ s)
     rintro (rfl | ht)
     · exact @isOpen_empty _ (generateFrom s)
     · exact .basic t ht
@@ -92,12 +92,12 @@ theorem IsTopologicalBasis.insert_empty {s : Set (Set α)} (h : IsTopologicalBas
 
 theorem IsTopologicalBasis.diff_empty {s : Set (Set α)} (h : IsTopologicalBasis s) :
     IsTopologicalBasis (s \ {∅}) := by
-  refine' ⟨_, by rw [sUnion_diff_singleton_empty, h.sUnion_eq], _⟩
+  refine ⟨?_, by rw [sUnion_diff_singleton_empty, h.sUnion_eq], ?_⟩
   · rintro t₁ ⟨h₁, -⟩ t₂ ⟨h₂, -⟩ x hx
     obtain ⟨t₃, h₃, hs⟩ := h.exists_subset_inter _ h₁ _ h₂ x hx
     exact ⟨t₃, ⟨h₃, Nonempty.ne_empty ⟨x, hs.1⟩⟩, hs⟩
   · rw [h.eq_generateFrom]
-    refine' le_antisymm (generateFrom_anti <| diff_subset s _) (le_generateFrom fun t ht => _)
+    refine le_antisymm (generateFrom_anti <| diff_subset s _) (le_generateFrom fun t ht => ?_)
     obtain rfl | he := eq_or_ne t ∅
     · exact @isOpen_empty _ (generateFrom _)
     · exact .basic t ⟨ht, he⟩
@@ -108,7 +108,7 @@ subcollections of `s` form a topological basis. -/
 theorem isTopologicalBasis_of_subbasis {s : Set (Set α)} (hs : t = generateFrom s) :
     IsTopologicalBasis ((fun f => ⋂₀ f) '' { f : Set (Set α) | f.Finite ∧ f ⊆ s }) := by
   subst t; letI := generateFrom s
-  refine' ⟨_, _, le_antisymm (le_generateFrom _) <| generateFrom_anti fun t ht => _⟩
+  refine ⟨?_, ?_, le_antisymm (le_generateFrom ?_) <| generateFrom_anti fun t ht => ?_⟩
   · rintro _ ⟨t₁, ⟨hft₁, ht₁b⟩, rfl⟩ _ ⟨t₂, ⟨hft₂, ht₂b⟩, rfl⟩ x h
     exact ⟨_, ⟨_, ⟨hft₁.union hft₂, union_subset ht₁b ht₂b⟩, sInter_union t₁ t₂⟩, h, Subset.rfl⟩
   · rw [sUnion_image, iUnion₂_eq_univ_iff]
@@ -229,7 +229,7 @@ theorem IsTopologicalBasis.dense_iff {b : Set (Set α)} (hb : IsTopologicalBasis
 
 theorem IsTopologicalBasis.isOpenMap_iff {β} [TopologicalSpace β] {B : Set (Set α)}
     (hB : IsTopologicalBasis B) {f : α → β} : IsOpenMap f ↔ ∀ s ∈ B, IsOpen (f '' s) := by
-  refine' ⟨fun H o ho => H _ (hB.isOpen ho), fun hf o ho => _⟩
+  refine ⟨fun H o ho => H _ (hB.isOpen ho), fun hf o ho => ?_⟩
   rw [hB.open_eq_sUnion' ho, sUnion_eq_iUnion, image_iUnion]
   exact isOpen_iUnion fun s => hf s s.2.1
 #align topological_space.is_topological_basis.is_open_map_iff TopologicalSpace.IsTopologicalBasis.isOpenMap_iff
@@ -280,7 +280,7 @@ protected theorem IsTopologicalBasis.prod {β} [TopologicalSpace β] {B₁ : Set
 theorem isTopologicalBasis_of_cover {ι} {U : ι → Set α} (Uo : ∀ i, IsOpen (U i))
     (Uc : ⋃ i, U i = univ) {b : ∀ i, Set (Set (U i))} (hb : ∀ i, IsTopologicalBasis (b i)) :
     IsTopologicalBasis (⋃ i : ι, image ((↑) : U i → α) '' b i) := by
-  refine' isTopologicalBasis_of_isOpen_of_nhds (fun u hu => _) _
+  refine isTopologicalBasis_of_isOpen_of_nhds (fun u hu => ?_) ?_
   · simp only [mem_iUnion, mem_image] at hu
     rcases hu with ⟨i, s, sb, rfl⟩
     exact (Uo i).isOpenMap_subtype_val _ ((hb i).isOpen sb)
@@ -459,7 +459,7 @@ theorem IsSeparable.mono {s u : Set α} (hs : IsSeparable s) (hu : u ⊆ s) : Is
 theorem IsSeparable.iUnion {ι : Sort*} [Countable ι] {s : ι → Set α}
     (hs : ∀ i, IsSeparable (s i)) : IsSeparable (⋃ i, s i) := by
   choose c hc h'c using hs
-  refine' ⟨⋃ i, c i, countable_iUnion hc, iUnion_subset_iff.2 fun i => _⟩
+  refine ⟨⋃ i, c i, countable_iUnion hc, iUnion_subset_iff.2 fun i => ?_⟩
   exact (h'c i).trans (closure_mono (subset_iUnion _ i))
 #align topological_space.is_separable_Union TopologicalSpace.IsSeparable.iUnion
 
@@ -526,12 +526,12 @@ lemma IsSeparable.prod {β : Type*} [TopologicalSpace β]
   rcases ht with ⟨ct, ct_count, hct⟩
   refine ⟨cs ×ˢ ct, cs_count.prod ct_count, ?_⟩
   rw [closure_prod_eq]
-  exact Set.prod_mono hcs hct
+  gcongr
 
 theorem IsSeparable.image {β : Type*} [TopologicalSpace β] {s : Set α} (hs : IsSeparable s)
     {f : α → β} (hf : Continuous f) : IsSeparable (f '' s) := by
   rcases hs with ⟨c, c_count, hc⟩
-  refine' ⟨f '' c, c_count.image _, _⟩
+  refine ⟨f '' c, c_count.image _, ?_⟩
   rw [image_subset_iff]
   exact hc.trans (closure_subset_preimage_closure_image hf)
 #align topological_space.is_separable.image TopologicalSpace.IsSeparable.image
@@ -553,14 +553,14 @@ theorem IsSeparable.of_subtype (s : Set α) [SeparableSpace s] : IsSeparable s :
   simpa using isSeparable_range (continuous_subtype_val (p := (· ∈ s)))
 #align topological_space.is_separable_of_separable_space_subtype TopologicalSpace.IsSeparable.of_subtype
 
-@[deprecated] -- Since 2024/02/05
+@[deprecated] -- Since 2024-02-05
 alias isSeparable_of_separableSpace_subtype := IsSeparable.of_subtype
 
 theorem IsSeparable.of_separableSpace [h : SeparableSpace α] (s : Set α) : IsSeparable s :=
   IsSeparable.mono (isSeparable_univ_iff.2 h) (subset_univ _)
 #align topological_space.is_separable_of_separable_space TopologicalSpace.IsSeparable.of_separableSpace
 
-@[deprecated] -- Since 2024/02/05
+@[deprecated] -- Since 2024-02-05
 alias isSeparable_of_separableSpace := IsSeparable.of_separableSpace
 
 end TopologicalSpace
@@ -636,7 +636,7 @@ theorem Dense.exists_countable_dense_subset_bot_top {α : Type*} [TopologicalSpa
     ∃ t ⊆ s, t.Countable ∧ Dense t ∧ (∀ x, IsBot x → x ∈ s → x ∈ t) ∧
       ∀ x, IsTop x → x ∈ s → x ∈ t := by
   rcases hs.exists_countable_dense_subset with ⟨t, hts, htc, htd⟩
-  refine' ⟨(t ∪ ({ x | IsBot x } ∪ { x | IsTop x })) ∩ s, _, _, _, _, _⟩
+  refine ⟨(t ∪ ({ x | IsBot x } ∪ { x | IsTop x })) ∩ s, ?_, ?_, ?_, ?_, ?_⟩
   exacts [inter_subset_right _ _,
     (htc.union ((countable_isBot α).union (countable_isTop α))).mono (inter_subset_left _ _),
     htd.mono (subset_inter (subset_union_left _ _) hts), fun x hx hxs => ⟨Or.inr <| Or.inl hx, hxs⟩,
@@ -753,7 +753,7 @@ variable (α)
 theorem exists_countable_basis [SecondCountableTopology α] :
     ∃ b : Set (Set α), b.Countable ∧ ∅ ∉ b ∧ IsTopologicalBasis b := by
   obtain ⟨b, hb₁, hb₂⟩ := @SecondCountableTopology.is_open_generated_countable α _ _
-  refine' ⟨_, _, not_mem_diff_of_mem _, (isTopologicalBasis_of_subbasis hb₂).diff_empty⟩
+  refine ⟨_, ?_, not_mem_diff_of_mem ?_, (isTopologicalBasis_of_subbasis hb₂).diff_empty⟩
   exacts [((countable_setOf_finite_subset hb₁).image _).mono (diff_subset _ _), rfl]
 #align topological_space.exists_countable_basis TopologicalSpace.exists_countable_basis
 
@@ -812,7 +812,7 @@ theorem secondCountableTopology_induced (β) [t : TopologicalSpace β] [SecondCo
     (f : α → β) : @SecondCountableTopology α (t.induced f) := by
   rcases @SecondCountableTopology.is_open_generated_countable β _ _ with ⟨b, hb, eq⟩
   letI := t.induced f
-  refine' { is_open_generated_countable := ⟨preimage f '' b, hb.image _, _⟩ }
+  refine { is_open_generated_countable := ⟨preimage f '' b, hb.image _, ?_⟩ }
   rw [eq, induced_generateFrom_eq]
 #align topological_space.second_countable_topology_induced TopologicalSpace.secondCountableTopology_induced
 
@@ -866,7 +866,7 @@ theorem isOpen_iUnion_countable [SecondCountableTopology α] {ι} (s : ι → Se
   let B := { b ∈ countableBasis α | ∃ i, b ⊆ s i }
   choose f hf using fun b : B => b.2.2
   haveI : Countable B := ((countable_countableBasis α).mono (sep_subset _ _)).to_subtype
-  refine' ⟨_, countable_range f, (iUnion₂_subset_iUnion _ _).antisymm (sUnion_subset _)⟩
+  refine ⟨_, countable_range f, (iUnion₂_subset_iUnion _ _).antisymm (sUnion_subset ?_)⟩
   rintro _ ⟨i, rfl⟩ x xs
   rcases (isBasis_countableBasis α).exists_subset_of_mem_open xs (H _) with ⟨b, hb, xb, bs⟩
   exact ⟨_, ⟨_, rfl⟩, _, ⟨⟨⟨_, hb, _, bs⟩, rfl⟩, rfl⟩, hf _ xb⟩
@@ -900,7 +900,7 @@ theorem countable_cover_nhdsWithin [SecondCountableTopology α] {f : α → Set 
     (hf : ∀ x ∈ s, f x ∈ 𝓝[s] x) : ∃ t ⊆ s, t.Countable ∧ s ⊆ ⋃ x ∈ t, f x := by
   have : ∀ x : s, (↑) ⁻¹' f x ∈ 𝓝 x := fun x => preimage_coe_mem_nhds_subtype.2 (hf x x.2)
   rcases countable_cover_nhds this with ⟨t, htc, htU⟩
-  refine' ⟨(↑) '' t, Subtype.coe_image_subset _ _, htc.image _, fun x hx => _⟩
+  refine ⟨(↑) '' t, Subtype.coe_image_subset _ _, htc.image _, fun x hx => ?_⟩
   simp only [biUnion_image, eq_univ_iff_forall, ← preimage_iUnion, mem_preimage] at htU ⊢
   exact htU ⟨x, hx⟩
 #align topological_space.countable_cover_nhds_within TopologicalSpace.countable_cover_nhdsWithin
@@ -1029,3 +1029,9 @@ protected theorem Embedding.secondCountableTopology [SecondCountableTopology β]
     SecondCountableTopology α :=
   hf.1.secondCountableTopology
 #align embedding.second_countable_topology Embedding.secondCountableTopology
+
+protected theorem Embedding.separableSpace [TopologicalSpace α]
+    [TopologicalSpace β] [SecondCountableTopology β] {f : α → β} (hf : Embedding f) :
+    TopologicalSpace.SeparableSpace α := by
+  have := hf.secondCountableTopology
+  exact SecondCountableTopology.to_separableSpace

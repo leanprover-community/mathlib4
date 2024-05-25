@@ -3,10 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.Periodic
+import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.Algebra.Star
-import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.Instances.Int
 
 #align_import topology.instances.real from "leanprover-community/mathlib"@"9a59dcb7a2d06bf55da57b9030169219980660cd"
@@ -138,11 +139,11 @@ protected theorem Real.continuous_mul : Continuous fun p : ℝ × ℝ => p.1 * p
 
 -- Porting note: moved `TopologicalRing` instance up
 
-instance : CompleteSpace ℝ := by
+instance Real.instCompleteSpace : CompleteSpace ℝ := by
   apply complete_of_cauchySeq_tendsto
   intro u hu
   let c : CauSeq ℝ abs := ⟨u, Metric.cauchySeq_iff'.1 hu⟩
-  refine' ⟨c.lim, fun s h => _⟩
+  refine ⟨c.lim, fun s h => ?_⟩
   rcases Metric.mem_nhds_iff.1 h with ⟨ε, ε0, hε⟩
   have := c.equiv_lim ε ε0
   simp only [mem_map, mem_atTop_sets, mem_setOf_eq]

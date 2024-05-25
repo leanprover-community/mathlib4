@@ -133,7 +133,7 @@ theorem Multiset.toEnumFinset_mono {m₁ m₂ : Multiset α} (h : m₁ ≤ m₂)
 @[simp]
 theorem Multiset.toEnumFinset_subset_iff {m₁ m₂ : Multiset α} :
     m₁.toEnumFinset ⊆ m₂.toEnumFinset ↔ m₁ ≤ m₂ := by
-  refine' ⟨fun h ↦ _, Multiset.toEnumFinset_mono⟩
+  refine ⟨fun h ↦ ?_, Multiset.toEnumFinset_mono⟩
   rw [Multiset.le_iff_count]
   intro x
   by_cases hx : x ∈ m₁
@@ -148,8 +148,7 @@ theorem Multiset.toEnumFinset_subset_iff {m₁ m₂ : Multiset α} :
 /-- The embedding from a multiset into `α × ℕ` where the second coordinate enumerates repeats.
 If you are looking for the function `m → α`, that would be plain `(↑)`. -/
 @[simps]
-def Multiset.coeEmbedding (m : Multiset α) : m ↪ α × ℕ
-    where
+def Multiset.coeEmbedding (m : Multiset α) : m ↪ α × ℕ where
   toFun x := (x, x.2)
   inj' := by
     intro ⟨x, i, hi⟩ ⟨y, j, hj⟩
@@ -160,8 +159,7 @@ def Multiset.coeEmbedding (m : Multiset α) : m ↪ α × ℕ
 /-- Another way to coerce a `Multiset` to a type is to go through `m.toEnumFinset` and coerce
 that `Finset` to a type. -/
 @[simps]
-def Multiset.coeEquiv (m : Multiset α) : m ≃ m.toEnumFinset
-    where
+def Multiset.coeEquiv (m : Multiset α) : m ≃ m.toEnumFinset where
   toFun x :=
     ⟨m.coeEmbedding x, by
       rw [Multiset.mem_toEnumFinset]

@@ -143,10 +143,10 @@ instance commMonoid [CommMonoid α] : CommMonoid (ULift α) :=
 #align ulift.comm_monoid ULift.commMonoid
 #align ulift.add_comm_monoid ULift.addCommMonoid
 
-instance natCast [NatCast α] : NatCast (ULift α) := ⟨(up ·)⟩
-#align ulift.has_nat_cast ULift.natCast
-instance intCast [IntCast α] : IntCast (ULift α) := ⟨(up ·)⟩
-#align ulift.has_int_cast ULift.intCast
+instance instNatCast [NatCast α] : NatCast (ULift α) := ⟨(up ·)⟩
+instance instIntCast [IntCast α] : IntCast (ULift α) := ⟨(up ·)⟩
+#align ulift.has_nat_cast ULift.instNatCast
+#align ulift.has_int_cast ULift.instIntCast
 
 @[simp, norm_cast]
 theorem up_natCast [NatCast α] (n : ℕ) : up (n : α) = n :=

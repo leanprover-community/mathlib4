@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.CharZero.Lemmas
-import Mathlib.Order.LocallyFinite
-import Mathlib.Data.Finset.LocallyFinite.Basic
+import Mathlib.Order.Interval.Finset.Basic
 
 #align_import data.int.interval from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
 
@@ -198,17 +197,17 @@ theorem image_Ico_emod (n a : ℤ) (h : 0 ≤ a) : (Ico n (n + a)).image (· % a
   intro hia
   have hn := Int.emod_add_ediv n a
   obtain hi | hi := lt_or_le i (n % a)
-  · refine' ⟨i + a * (n / a + 1), ⟨_, _⟩, _⟩
+  · refine ⟨i + a * (n / a + 1), ⟨?_, ?_⟩, ?_⟩
     · rw [add_comm (n / a), mul_add, mul_one, ← add_assoc]
-      refine' hn.symm.le.trans (add_le_add_right _ _)
+      refine hn.symm.le.trans (add_le_add_right ?_ _)
       simpa only [zero_add] using add_le_add hia.left (Int.emod_lt_of_pos n ha).le
-    · refine' lt_of_lt_of_le (add_lt_add_right hi (a * (n / a + 1))) _
+    · refine lt_of_lt_of_le (add_lt_add_right hi (a * (n / a + 1))) ?_
       rw [mul_add, mul_one, ← add_assoc, hn]
     · rw [Int.add_mul_emod_self_left, Int.emod_eq_of_lt hia.left hia.right]
-  · refine' ⟨i + a * (n / a), ⟨_, _⟩, _⟩
+  · refine ⟨i + a * (n / a), ⟨?_, ?_⟩, ?_⟩
     · exact hn.symm.le.trans (add_le_add_right hi _)
     · rw [add_comm n a]
-      refine' add_lt_add_of_lt_of_le hia.right (le_trans _ hn.le)
+      refine add_lt_add_of_lt_of_le hia.right (le_trans ?_ hn.le)
       simp only [zero_le, le_add_iff_nonneg_left]
       exact Int.emod_nonneg n (ne_of_gt ha)
     · rw [Int.add_mul_emod_self_left, Int.emod_eq_of_lt hia.left hia.right]
