@@ -23,7 +23,7 @@ with integral coefficients.
 
 * The formal derivative of the Chebyshev polynomials of the first kind is a scalar multiple of the
   Chebyshev polynomials of the second kind.
-* `Polynomial.Chebyshev.mul_T`, the product of the `m`-th and `k`-th Chebyshev polynomials of
+* `Polynomial.Chebyshev.mul_T`, twice the product of the `m`-th and `k`-th Chebyshev polynomials of
   the first kind is the sum of the `m + k`-th and `m - k`-th Chebyshev polynomials of the first
   kind.
 * `Polynomial.Chebyshev.T_mul`, the `(m * n)`-th Chebyshev polynomial of the first kind is the
