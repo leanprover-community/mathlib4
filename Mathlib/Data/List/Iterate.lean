@@ -31,7 +31,7 @@ theorem get?_iterate (f : α → α) (a : α) :
   | n + 1, i + 1, h => by simp [get?_iterate f (f a) n i (by simpa using h)]
 
 @[simp]
-theorem get_iterate (f : α → α) (a : α) (n : ℕ) (i : Fin (length (iterate f a n))) :
+theorem get_iterate (f : α → α) (a : α) (n : ℕ) (i : Fin (iterate f a n).length) :
     get (iterate f a n) i = f^[↑i] a :=
   (get?_eq_some.1 <| get?_iterate f a n i.1 (by simpa using i.2)).2
 
