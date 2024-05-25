@@ -312,12 +312,53 @@ def lint_file (path : System.FilePath)
 -- #eval lint_file (System.mkFilePath ["Mathlib", "Tactic", "Linter", "TextBased.lean"])
 --   none (Array.mkEmpty 0)
 
+def parse_style_error (line : String) : Option ErrorContext := Id.run do
+  let parts := line.split (fun c ↦ c == ' ')
+  match parts with
+    | filename :: ":" :: "line" :: _line_number :: ":" :: error_code :: ":" :: error_message =>
+      -- Parse the error kind from the error code, ugh.
+      -- TODO: keep this in sync with `error_code`, somehow...
+      let err : Option StyleError := match error_code with
+        -- I'm using "0"/ the empty string as the dummy value for all parameters I cannot quite parse.
+        -- TODO: tweak equality of exceptions accordingly!
+        | "ERR_LIN" => some (StyleError.lineLength 0)
+        | "ERR_TAC" => some (StyleError.broadImport)
+        | "ERR_COP" => some (StyleError.copyright "")
+        | "ERR_AUT" => some (StyleError.authors)
+        | "ERR_IBY" => some StyleError.leading_by
+        | "ERR_IWH" => some StyleError.isolated_where
+        | "ERR_SEM" => some StyleError.semicolon
+        | "ERR_CLN" => some StyleError.colon
+        | "ERR_DOT" => some StyleError.dot
+        | "ERR_TWS" => some StyleError.trailingWhitespace
+        | "ERR_WIN" => some StyleError.windowsLineEndings
+        | "ERR_NUM_LIN" =>
+            -- Parse the error message in the script. `none` indicates invalid input.
+            match (error_message.get? 0, error_message.get? 3) with
+            | (some mark, some size) =>
+              let (size_limit, current_size) := (0, 0) -- TODO actually parse the strings!
+              some (StyleError.fileTooLong size_limit current_size)
+            | _ => none
+        -- XXX: can I ensure this list is kept in sync with "error_codes"?
+        | _ => none
+      let path : System.FilePath := sorry -- urgh: have to parse the file name into a path...
+      -- I'm omitting the line number... for various reasons, including having to parse it...
+      err.map fun e ↦ (ErrorContext.mk e 0 path)
+    | _ => none -- The line doesn't match the known format: continue.
+
+def parse_style_exceptions (lines : Array String) : Array ErrorContext := Id.run do
+  Array.filterMap (fun line ↦ parse_style_error line) lines
+
 /-- Lint all files in `Mathlib.lean`. -/
 def check_all_files : IO Unit := do
   -- Read all module names in Mathlib from `Mathlib.lean`.
+  -- XXX: is this the right path? where to find this?
   let allModules ← IO.FS.lines (System.mkFilePath [(toString "Mathlib.lean")])
+  -- Read the style-exceptions. TODO verify the right file path is found!
+  let exceptions_file ← IO.FS.lines (System.mkFilePath ["style-exceptions.txt"])
+  let style_exceptions := parse_style_exceptions exceptions_file
   for module in allModules do
     -- Convert the module name to a file name, then lint that file.
-    -- TODO: parse `style-exceptions.txt`, then pass these exceptions in, including a size limit!
+    -- TODO: what's the size limit for *this* file?
     let path := (System.mkFilePath ((module.split fun c ↦ (c == '.')).append [".lean"]))
-    lint_file path (some 1500) (Array.mkEmpty 0)
+    lint_file path (some 1500) style_exceptions
