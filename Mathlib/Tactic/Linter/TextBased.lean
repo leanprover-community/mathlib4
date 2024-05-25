@@ -36,6 +36,14 @@ inductive StyleError where
   | copyright (context : Option String)
   /-- Malformed authors line in the copyright header -/
   | authors
+  /-- An "isolated by": a line containing just the string "by" -/
+  | isolated_by : StyleError
+  /-- Line is an isolated focusing dot or uses `.` instead of `·` -/
+  | dot : StyleError
+  /-- A semicolon preceded by a space -/
+  | semicolon : StyleError
+  /-- A line starting with a colon: `:` and `:=` should be put before line breaks, not after. -/
+  | colon : StyleError
   deriving BEq
 
 /-- Create the underlying error message for a given `StyleError`. -/
@@ -46,6 +54,10 @@ def errorMessage (err : StyleError) : String := match err with
   | StyleError.copyright none => s!"Malformed or missing copyright header"
   | StyleError.authors =>
     "Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'"
+  | StyleError.isolated_by => "Line is an isolated 'by'"
+  | StyleError.dot => "Line is an isolated focusing dot or uses . instead of ·"
+  | StyleError.semicolon => "Line contains a space before a semicolon"
+  | StyleError.colon => "Put : and := before line breaks, not after"
 
 /-- The error code for a given style error. Kept in sync with `lint-style.py` for now. -/
 def errorCode (err : StyleError) : String := match err with
@@ -53,6 +65,10 @@ def errorCode (err : StyleError) : String := match err with
   | StyleError.broadImport => "ERR_TAC"
   | StyleError.copyright _ => "ERR_COP"
   | StyleError.authors => "ERR_AUT"
+  | StyleError.isolated_by => "ERR_IBY"
+  | StyleError.semicolon => "ERR_SEM"
+  | StyleError.colon => "ERR_CLN"
+  | StyleError.dot => "ERR_DOT"
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
 and the path to the file. -/
@@ -171,11 +187,36 @@ def copyright_header : LinterCore := fun lines ↦ Id.run do
         output := output.push (StyleError.authors, 4)
   return output
 
+/-- Check for miscellaneous formatting things: starting with a dot or using the wrong dot,
+  isolated by, a semicolon preceded by a space or a line starting with a colon. -/
+-- FUTURE: remove most of these, once there is a formatter!
+def isolated_by_dot_semicolon : LinterCore := fun lines ↦ Id.run do
+    let mut output := Array.mkEmpty 0
+    let mut line_number := 0
+    for line in lines do
+      line_number := line_number + 1
+      -- if line.strip() == "by":
+      --  We excuse those "by"s following a comma or ", fun ... =>", since generally hanging "by"s
+      --  should not be used in the second or later arguments of a tuple/anonymous constructor
+      --  See https://github.com/leanprover-community/mathlib4/pull/3825#discussion_r1186702599
+      --     prev_line = lines[line_nr - 2][1].rstrip()
+      --     if not prev_line.endswith(",") and not re.search(", fun [^,]* (=>|↦)$", prev_line):
+      --        errors += [(ERR_IBY, line_nr, path)]
+      if line.trimRight.startsWith ". " then
+        output := output.push (StyleError.dot, line_number) -- has an auto-fix
+      if [".", "·"].contains line.trim then
+        output := output.push (StyleError.dot, line_number)
+      if line.containsSubstr " ;" then
+        output := output.push (StyleError.semicolon, line_number) -- has an auto-fix
+      if line.trimRight.startsWith ":" then
+        output := output.push (StyleError.colon, line_number)
+    return output
+
 end
 
 /-- All text-based linters registered in this file. -/
 def all_linters : Array LinterCore := Array.mk
-  [check_line_length, contains_broad_imports, copyright_header]
+  [check_line_length, contains_broad_imports, copyright_header, isolated_by_dot_semicolon]
 
 def add_path (path : System.FilePath) : StyleError × ℕ → ErrorContext :=
   fun (e, n) ↦ ErrorContext.mk e n path

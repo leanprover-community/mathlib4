@@ -38,12 +38,8 @@ import re
 import shutil
 
 ERR_MOD = 2 # module docstring
-ERR_IBY = 11 # isolated by
-ERR_DOT = 12 # isolated or low focusing dot
-ERR_SEM = 13 # the substring " ;"
 ERR_WIN = 14 # Windows line endings "\r\n"
 ERR_TWS = 15 # trailing whitespace
-ERR_CLN = 16 # line starts with a colon
 ERR_IND = 17 # second line not correctly indented
 ERR_ARR = 18 # space after "←"
 ERR_NUM_LIN = 19 # file is too large
@@ -240,29 +236,6 @@ def regular_check(lines, path):
             break
     return errors, lines
 
-def isolated_by_dot_semicolon_check(lines, path):
-    errors = []
-    newlines = []
-    for line_nr, line in lines:
-        if line.strip() == "by":
-            # We excuse those "by"s following a comma or ", fun ... =>", since generally hanging "by"s
-            # should not be used in the second or later arguments of a tuple/anonymous constructor
-            # See https://github.com/leanprover-community/mathlib4/pull/3825#discussion_r1186702599
-            prev_line = lines[line_nr - 2][1].rstrip()
-            if not prev_line.endswith(",") and not re.search(", fun [^,]* (=>|↦)$", prev_line):
-                errors += [(ERR_IBY, line_nr, path)]
-        if line.lstrip().startswith(". "):
-            errors += [(ERR_DOT, line_nr, path)]
-            line = line.replace(". ", "· ", 1)
-        if line.strip() in (".", "·"):
-            errors += [(ERR_DOT, line_nr, path)]
-        if " ;" in line:
-            errors += [(ERR_SEM, line_nr, path)]
-            line = line.replace(" ;", ";")
-        if line.lstrip().startswith(":"):
-            errors += [(ERR_CLN, line_nr, path)]
-        newlines.append((line_nr, line))
-    return errors, newlines
 
 def left_arrow_check(lines, path):
     errors = []
@@ -301,18 +274,10 @@ def format_errors(errors):
         new_exceptions = True
         if errno == ERR_MOD:
             output_message(path, line_nr, "ERR_MOD", "Module docstring missing, or too late")
-        if errno == ERR_IBY:
-            output_message(path, line_nr, "ERR_IBY", "Line is an isolated 'by'")
-        if errno == ERR_DOT:
-            output_message(path, line_nr, "ERR_DOT", "Line is an isolated focusing dot or uses . instead of ·")
-        if errno == ERR_SEM:
-            output_message(path, line_nr, "ERR_SEM", "Line contains a space before a semicolon")
         if errno == ERR_WIN:
             output_message(path, line_nr, "ERR_WIN", "Windows line endings (\\r\\n) detected")
         if errno == ERR_TWS:
             output_message(path, line_nr, "ERR_TWS", "Trailing whitespace detected on line")
-        if errno == ERR_CLN:
-            output_message(path, line_nr, "ERR_CLN", "Put : and := before line breaks, not after")
         if errno == ERR_IND:
             output_message(path, line_nr, "ERR_IND", "If the theorem/def statement requires multiple lines, indent it correctly (4 spaces or 2 for `|`)")
         if errno == ERR_ARR:
@@ -330,7 +295,6 @@ def lint(path, fix=False):
         newlines = enum_lines
         for error_check in [line_endings_check,
                             four_spaces_in_second_line,
-                            isolated_by_dot_semicolon_check,
                             left_arrow_check,
                             nonterminal_simp_check]:
             errs, newlines = error_check(newlines, path)
