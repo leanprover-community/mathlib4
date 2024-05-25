@@ -26,7 +26,7 @@ namespace Real
 /-- Explicit formula for the derivative of the Gamma function at positive integers, in terms of
 harmonic numbers and the Euler-Mascheroni constant `γ`. -/
 lemma deriv_Gamma_nat (n : ℕ) :
-    deriv Gamma (n + 1) = (n)! * (-γ + harmonic n) := by
+    deriv Gamma (n + 1) = n ! * (-γ + harmonic n) := by
   /- This follows from two properties of the function `f n = log (Gamma n)`:
   firstly, the elementary computation that `deriv f (n + 1) = deriv f n + 1 / n`, so that
   `deriv f n = deriv f 1 + harmonic n`; secondly, the convexity of `f` (the Bohr-Mollerup theorem),
@@ -81,7 +81,7 @@ lemma deriv_Gamma_nat (n : ℕ) :
 
 
 lemma hasDerivAt_Gamma_nat (n : ℕ) :
-    HasDerivAt Gamma ((n)! * (-γ + harmonic n)) (n + 1) :=
+    HasDerivAt Gamma (n ! * (-γ + harmonic n)) (n + 1) :=
   (deriv_Gamma_nat n).symm ▸
     (differentiableAt_Gamma fun m ↦ (by linarith : (n : ℝ) + 1 ≠ -m)).hasDerivAt
 
@@ -96,9 +96,8 @@ lemma hasDerivAt_Gamma_one : HasDerivAt Gamma (-γ) 1 := by
 lemma hasDerivAt_Gamma_one_half : HasDerivAt Gamma (-√π * (γ + 2 * log 2)) (1 / 2) := by
   have h_diff {s : ℝ} (hs : 0 < s) : DifferentiableAt ℝ Gamma s :=
     differentiableAt_Gamma fun m ↦ ((neg_nonpos.mpr m.cast_nonneg).trans_lt hs).ne'
-  have h_diff' {s : ℝ} (hs : 0 < s) : DifferentiableAt ℝ (fun s ↦ Gamma (2 * s)) s := by
-    exact DifferentiableAt.comp (g := Gamma) _ (h_diff <| mul_pos two_pos hs)
-      (differentiableAt_id.const_mul _)
+  have h_diff' {s : ℝ} (hs : 0 < s) : DifferentiableAt ℝ (fun s ↦ Gamma (2 * s)) s :=
+    .comp (g := Gamma) _ (h_diff <| mul_pos two_pos hs) (differentiableAt_id.const_mul _)
   refine (h_diff one_half_pos).hasDerivAt.congr_deriv ?_
   -- We calculate the deriv of Gamma at 1/2 using the doubling formula, since we already know
   -- the derivative of Gamma at 1.
@@ -115,10 +114,10 @@ lemma hasDerivAt_Gamma_one_half : HasDerivAt Gamma (-√π * (γ + 2 * log 2)) (
     rw [funext Gamma_mul_Gamma_add_half]
   _ = √π * (deriv (fun s ↦ Gamma (2 * s) * 2 ^ (1 - 2 * s)) (1 / 2) + γ) := by
     rw [mul_comm √π, mul_comm √π, deriv_mul_const, add_mul]
-    · apply DifferentiableAt.mul
-      · exact DifferentiableAt.comp (g := Gamma) _ (by apply h_diff; norm_num) -- s = 1
-          (differentiableAt_id.const_mul _)
-      · exact (differentiableAt_const _).rpow (by fun_prop) two_ne_zero
+    apply DifferentiableAt.mul
+    · exact .comp (g := Gamma) _ (by apply h_diff; norm_num) -- s = 1
+        (differentiableAt_id.const_mul _)
+    · exact (differentiableAt_const _).rpow (by fun_prop) two_ne_zero
   _ = √π * (deriv (fun s ↦ Gamma (2 * s)) (1 / 2) +
               deriv (fun s : ℝ ↦ 2 ^ (1 - 2 * s)) (1 / 2) + γ) := by
     congr 2
@@ -158,7 +157,7 @@ private lemma HasDerivAt.complex_of_real {f : ℂ → ℂ} {g : ℝ → ℝ} {g'
   rw [← (funext hfg ▸ hf.hasDerivAt.comp_ofReal.deriv :)]
   exact hg.ofReal_comp.deriv
 
-private lemma differentiable_at_Gamma_nat_add_one (n : ℕ) :
+lemma differentiable_at_Gamma_nat_add_one (n : ℕ) :
     DifferentiableAt ℂ Gamma (n + 1) := by
   refine differentiableAt_Gamma _ (fun m ↦ ?_)
   simp only [Ne, ← ofReal_natCast, ← ofReal_one, ← ofReal_add, ← ofReal_neg, ofReal_inj,
@@ -166,7 +165,7 @@ private lemma differentiable_at_Gamma_nat_add_one (n : ℕ) :
   positivity
 
 lemma hasDerivAt_Gamma_nat (n : ℕ) :
-    HasDerivAt Gamma ((n)! * (-γ + harmonic n)) (n + 1) := by
+    HasDerivAt Gamma (n ! * (-γ + harmonic n)) (n + 1) := by
   exact_mod_cast HasDerivAt.complex_of_real
     (by exact_mod_cast differentiable_at_Gamma_nat_add_one n)
     (Real.hasDerivAt_Gamma_nat n) Gamma_ofReal
@@ -174,7 +173,7 @@ lemma hasDerivAt_Gamma_nat (n : ℕ) :
 /-- Explicit formula for the derivative of the complex Gamma function at positive integers, in
 terms of harmonic numbers and the Euler-Mascheroni constant `γ`. -/
 lemma deriv_Gamma_nat (n : ℕ) :
-    deriv Gamma (n + 1) = (n)! * (-γ + harmonic n) :=
+    deriv Gamma (n + 1) = n ! * (-γ + harmonic n) :=
   (hasDerivAt_Gamma_nat n).deriv
 
 lemma hasDerivAt_Gamma_one : HasDerivAt Gamma (-γ) 1 := by
