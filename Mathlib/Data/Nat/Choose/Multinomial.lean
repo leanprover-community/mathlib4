@@ -257,7 +257,7 @@ theorem sum_pow_of_commute [Semiring R] (x : α → R)
   · exact fun _ hb => hc (mem_insert_self a s) (mem_insert_of_mem hb)
       (ne_of_mem_of_not_mem hb ha).symm
   · simp_rw [ih, mul_sum, sum_mul, sum_sigma', univ_sigma_univ]
-    refine' (Fintype.sum_equiv (symInsertEquiv ha) _ _ fun m => _).symm
+    refine (Fintype.sum_equiv (symInsertEquiv ha) _ _ fun m => ?_).symm
     rw [m.1.1.multinomial_filter_ne a]
     conv in m.1.1.map _ => rw [← m.1.1.filter_add_not (a = ·), Multiset.map_add]
     simp_rw [Multiset.noncommProd_add, m.1.1.filter_eq, Multiset.map_replicate, m.1.2]

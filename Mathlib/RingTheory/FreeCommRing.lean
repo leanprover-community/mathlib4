@@ -239,7 +239,7 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
   have : ∀ x, IsSupported x s →
         ∃ n : ℤ, lift (fun a => if a ∈ s then (0 : ℤ[X]) else Polynomial.X) x = n := by
     intro x hx
-    refine' Subring.InClosure.recOn hx _ _ _ _
+    refine Subring.InClosure.recOn hx ?_ ?_ ?_ ?_
     · use 1
       rw [RingHom.map_one]
       norm_cast
@@ -250,7 +250,7 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
       rw [RingHom.map_mul, lift_of, if_pos hzs, zero_mul]
       norm_cast
     · rintro x y ⟨q, hq⟩ ⟨r, hr⟩
-      refine' ⟨q + r, _⟩
+      refine ⟨q + r, ?_⟩
       rw [RingHom.map_add, hq, hr]
       norm_cast
   specialize this (of p) hps
@@ -268,7 +268,7 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
 -- Porting note: Changed `(Subtype.val : s → α)` to `(↑)` in the type
 theorem map_subtype_val_restriction {x} (s : Set α) [DecidablePred (· ∈ s)]
     (hxs : IsSupported x s) : map (↑) (restriction s x) = x := by
-  refine' Subring.InClosure.recOn hxs _ _ _ _
+  refine Subring.InClosure.recOn hxs ?_ ?_ ?_ ?_
   · rw [RingHom.map_one]
     rfl
   · rw [map_neg, map_one]

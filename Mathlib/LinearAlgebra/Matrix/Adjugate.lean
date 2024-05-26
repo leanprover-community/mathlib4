@@ -269,7 +269,7 @@ theorem cramer_eq_adjugate_mulVec (A : Matrix n n α) (b : n → α) :
   nth_rw 2 [← A.transpose_transpose]
   rw [← adjugate_transpose, adjugate_def]
   have : b = ∑ i, b i • (Pi.single i 1 : n → α) := by
-    refine' (pi_eq_sum_univ b).trans _
+    refine (pi_eq_sum_univ b).trans ?_
     congr with j
     -- Porting note: needed to help `Pi.smul_apply`
     simp [Pi.single_apply, eq_comm, Pi.smul_apply (b j)]
@@ -347,7 +347,7 @@ theorem adjugate_diagonal (v : n → α) :
   · rw [diagonal_apply_eq, diagonal_updateColumn_single, det_diagonal,
       prod_update_of_mem (Finset.mem_univ _), sdiff_singleton_eq_erase, one_mul]
   · rw [diagonal_apply_ne _ hij]
-    refine' det_eq_zero_of_row_eq_zero j fun k => _
+    refine det_eq_zero_of_row_eq_zero j fun k => ?_
     obtain rfl | hjk := eq_or_ne k j
     · rw [updateColumn_self, Pi.single_eq_of_ne' hij]
     · rw [updateColumn_ne hjk, diagonal_apply_ne' _ hjk]
@@ -469,12 +469,12 @@ theorem isRegular_of_isLeftRegular_det {A : Matrix n n α} (hA : IsLeftRegular A
     IsRegular A := by
   constructor
   · intro B C h
-    refine' hA.matrix _
+    refine hA.matrix ?_
     simp only at h ⊢
     rw [← Matrix.one_mul B, ← Matrix.one_mul C, ← Matrix.smul_mul, ← Matrix.smul_mul, ←
       adjugate_mul, Matrix.mul_assoc, Matrix.mul_assoc, h]
   · intro B C (h : B * A = C * A)
-    refine' hA.matrix _
+    refine hA.matrix ?_
     simp only
     rw [← Matrix.mul_one B, ← Matrix.mul_one C, ← Matrix.mul_smul, ← Matrix.mul_smul, ←
       mul_adjugate, ← Matrix.mul_assoc, ← Matrix.mul_assoc, h]
@@ -485,7 +485,7 @@ theorem adjugate_mul_distrib_aux (A B : Matrix n n α) (hA : IsLeftRegular A.det
   have hAB : IsLeftRegular (A * B).det := by
     rw [det_mul]
     exact hA.mul hB
-  refine' (isRegular_of_isLeftRegular_det hAB).left _
+  refine (isRegular_of_isLeftRegular_det hAB).left ?_
   simp only
   rw [mul_adjugate, Matrix.mul_assoc, ← Matrix.mul_assoc B, mul_adjugate,
     smul_mul, Matrix.one_mul, mul_smul, mul_adjugate, smul_smul, mul_comm, ← det_mul]
@@ -509,7 +509,7 @@ theorem adjugate_mul_distrib (A B : Matrix n n α) : adjugate (A * B) = adjugate
     rw [RingHom.map_mul, f'_inv, f'_inv]
   have hu : ∀ M : Matrix n n α, IsRegular (g M).det := by
     intro M
-    refine' Polynomial.Monic.isRegular _
+    refine Polynomial.Monic.isRegular ?_
     simp only [g, Polynomial.Monic.def, ← Polynomial.leadingCoeff_det_X_one_add_C M, add_comm]
   rw [← f'_adj, ← f'_adj, ← f'_adj, ← f'.map_mul, ←
     adjugate_mul_distrib_aux _ _ (hu A).left (hu B).left, RingHom.map_adjugate,
