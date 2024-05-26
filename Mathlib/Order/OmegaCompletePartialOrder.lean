@@ -328,8 +328,8 @@ lemma continuous'_eq_ωScottContinuous {f : α → β} : Continuous' f = ωScott
     rw [e1]
     exact isLUB_range_ωSup (c.map { toFun := f, monotone' := hf.1 })
   · intro hf
-    constructor
-    · exact fun _ => (ωSup_eq_of_isLUB (isLUB_of_ωScottContinuous hf))
+    exact ⟨ωScottContinuous.monotone hf, fun _ => (ωSup_eq_of_isLUB (isLUB_of_ωScottContinuous hf))⟩
+
 
 lemma ScottContinuous.continuous' {f : α → β} (hf : ScottContinuous f) : Continuous' f :=
   continuous'_eq_ωScottContinuous.mpr (DScottContinuous.LE { d | ∃ (c : Chain α), Set.range c = d }
