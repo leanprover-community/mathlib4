@@ -1,5 +1,5 @@
 import Mathlib.Tactic.CC
-import Mathlib.Data.Vector
+import Mathlib.Data.Vector.Defs
 import Mathlib.Data.Set.Basic
 
 set_option linter.unusedVariables false
