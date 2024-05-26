@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Wang Haocheng. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Ma Jiajun, Wang Haocheng.
+Authors: Ma Jiajun, Wang Haocheng
 -/
 import Mathlib.Tactic.Linarith.Lemmas
 import Mathlib.Data.Fintype.Basic
@@ -107,9 +107,10 @@ lemma winner_take_max : b (winner b) = maxb b:= Classical.choose_spec (exists_ma
 lemma delete_i_nonempty (i:a.I) :Finset.Nonempty (Finset.erase  Finset.univ i ) := by
   obtain ⟨ i , hi ⟩  := a.hP' i
   use i
-  simp only [Finset.mem_univ, not_true, Finset.mem_erase, and_true]
-  rw [ne_comm]
-  exact hi
+  aesop
+--   simp only [Finset.mem_univ, not_true, Finset.mem_erase, and_true]
+--   rw [ne_comm]
+--   exact hi
 
 /-- `B i` is the maximal bid of all participants but `i`. -/
 noncomputable def B (i: a.I) : ℝ  := Finset.sup' (Finset.erase Finset.univ i)
@@ -149,9 +150,8 @@ lemma gt_wins (i : a.I) (H: ∀ j , i ≠ j →  b i > b j) : i = winner b := by
             apply Finset.sup'_le
             intro j _
             by_cases hji : i=j
-            · rw [hji]
+            · aesop
             ·  have  := H j ( by rw [ne_eq]; exact hji)
-               simp only [ge_iff_le]
                exact le_of_lt (H j hji)
          simp only [maxb]
          exact Real.partialOrder.proof_4 (b i) (Finset.sup' Finset.univ maxb.proof_1 b) H1 H2
@@ -163,7 +163,6 @@ lemma gt_wins (i : a.I) (H: ∀ j , i ≠ j →  b i > b j) : i = winner b := by
       ·  intro hbj
          by_contra hji
          have hji' := H j (by rw [ne_eq];exact hji)
-         rw [hbj] at hji'
          aesop
    rw [HH]
    rw [<-winner_take_max]
@@ -188,7 +187,8 @@ lemma b_winner (H: i = winner b) : b i ≥ secondprice b := by
   apply delete_i_nonempty
   intro j _
   apply Finset.le_sup'
-  simp only [Finset.mem_erase, Finset.mem_univ]
+  aesop
+--   simp only [Finset.mem_erase, Finset.mem_univ]
 
 /-- If `i` is not the winner, then the highest bid excluding `i` is equal to the highest bid. -/
 lemma b_loser_max (H: i ≠ winner b) : B b i = maxb b := by
@@ -269,7 +269,6 @@ theorem valuation_is_dominant (i : a.I ) : dominant i (a.v i) := by
       convert this
       simp [utility,H]
 
-#check valuation_is_dominant
 
 /-- Computes the utility for a first price auction where the winner pays their bid. -/
 noncomputable def Utility.FirstPrice (i : a.I) : ℝ := if i = winner b then a.v i - b i else 0
@@ -278,13 +277,15 @@ noncomputable def Utility.FirstPrice (i : a.I) : ℝ := if i = winner b then a.v
 lemma utility_first_price_winner (i :a.I) (H :i = winner b):Utility.FirstPrice b i = a.v i-b i := by
    rw[H]
    simp only [Utility.FirstPrice]
-   simp only [if_true]
+   aesop
+   -- simp only [if_true]
 
 /-- If `i` is not the winner in a first price auction, their utility is 0. -/
 lemma utility_first_price_loser(i :a.I) (H : i ≠ winner b) : Utility.FirstPrice b i = 0 := by
    rw[Utility.FirstPrice]
-   simp only [H]
-   simp only [if_false]
+   aesop
+   -- simp only [H]
+   -- simp only [if_false]
 
 /-- Defines a dominant strategy in the context of a first price auction. -/
 def Dominant.FirstPrice (i : a.I) (bi : ℝ) : Prop :=
@@ -303,8 +304,9 @@ theorem first_price_has_no_dominant_strategy (i : a.I) (bi :  ℝ) : ¬ (Dominan
    simp only [if_false, hj]
    have winner_b : i = winner b := by
       apply gt_wins b i
-      intro j hj
-      simp [Ne.symm hj,b]
+      aesop
+      -- intro j hj
+      -- simp [Ne.symm hj,b]
    have winner_b' : i = winner b' := by
       apply gt_wins b' i
       intro j hj
