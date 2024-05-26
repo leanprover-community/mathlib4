@@ -22,7 +22,7 @@ jobs:
             awk -v url="${url}" -F'/' '/^ *href/ {gsub(/"/, "", $NF); printf("summary<<EOF\n%s/job/%s\nEOF", url, $NF)}')"
           printf '%s\n%s\n' "${job_no}" "${{ github.job }}"
           echo
-          printf '%s\n%s\n' "${job_no}" "${{ github.job }}" >> "$GITHUB_OUTPUT"
+          printf '%s\n' "${{ github.job }}" >> "$GITHUB_OUTPUT"
       - name: add_comment
         run: |
           gh pr comment "$NUMBER" --body "$BODY"
