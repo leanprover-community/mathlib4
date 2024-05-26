@@ -52,7 +52,6 @@ ERR_TWS = 15 # trailing whitespace
 ERR_CLN = 16 # line starts with a colon
 ERR_IND = 17 # second line not correctly indented
 ERR_ARR = 18 # space after "←"
-ERR_NUM_LIN = 19 # file is too large
 ERR_NSP = 20 # non-terminal simp
 ERR_ADN = 25 # the string "Adaptation note"
 
@@ -83,7 +82,7 @@ with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
         elif errno == "ERR_TAC2":
             exceptions += [(ERR_TAC2, path, None)]
         elif errno == "ERR_NUM_LIN":
-            exceptions += [(ERR_NUM_LIN, path, extra[1])]
+            pass # maintained by the Lean style linter now
         else:
             print(f"Error: unexpected errno in style-exceptions.txt: {errno}")
             sys.exit(1)
@@ -441,21 +440,6 @@ def lint(path, fix=False):
             format_errors(errs)
 
         if not import_only_check(newlines, path):
-            # Check for too long files: either longer than 1500 lines, or not covered by an exception.
-            # Each exception contains a "watermark". If the file is longer than that, we also complain.
-            if len(lines) > 1500:
-                ex = [e for e in exceptions if e[1] == path.resolve()]
-                if ex:
-                    (_ERR_NUM, _path, watermark) = list(ex)[0]
-                    assert int(watermark) > 500 # protect against parse error
-                    is_too_long = len(lines) > int(watermark)
-                else:
-                    is_too_long = True
-                if is_too_long:
-                    new_exceptions = True
-                    # add up to 200 lines of slack, so simple PRs don't trigger this right away
-                    watermark = len(lines) // 100 * 100 + 200
-                    output_message(path, 1, "ERR_NUM_LIN", f"{watermark} file contains {len(lines)} lines, try to split it up")
             errs, newlines = regular_check(newlines, path)
             format_errors(errs)
             errs, newlines = banned_import_check(newlines, path)
