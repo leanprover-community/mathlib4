@@ -66,6 +66,10 @@ lean_exe shake where
   root := `Shake.Main
   supportInterpreter := true
 
+/-- `lake exe update_style_exceptions` update the style exceptions file. -/
+lean_exe update_style_exceptions where
+  srcDir := "scripts"
+
 /--
 `lake exe pole` queries the Mathlib speedcenter for build times for the current commit,
 and then calculates the longest pole
