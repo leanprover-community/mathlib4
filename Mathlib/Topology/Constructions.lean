@@ -671,13 +671,12 @@ theorem Continuous.curry_right {f : X × Y → Z} (hf : Continuous f) {x : X} :
   hf.comp (continuous_const.prod_mk continuous_id)
 alias Continuous.along_snd := Continuous.curry_right
 
--- todo: reformulate using `Set.image2`
 -- todo: prove a version of `generateFrom_union` with `image2 (∩) s t` in the LHS and use it here
 theorem prod_generateFrom_generateFrom_eq {X Y : Type*} {s : Set (Set X)} {t : Set (Set Y)}
     (hs : ⋃₀ s = univ) (ht : ⋃₀ t = univ) :
     @instTopologicalSpaceProd X Y (generateFrom s) (generateFrom t) =
-      generateFrom { g | ∃ u ∈ s, ∃ v ∈ t, g = u ×ˢ v } :=
-  let G := generateFrom { g | ∃ u ∈ s, ∃ v ∈ t, g = u ×ˢ v }
+      generateFrom (Set.image2 (·  ×ˢ · ) s t) :=
+  let G := generateFrom  (Set.image2  (·  ×ˢ · ) s t)
   le_antisymm
     (le_generateFrom fun g ⟨u, hu, v, hv, g_eq⟩ =>
       g_eq.symm ▸
