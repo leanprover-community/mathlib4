@@ -24,7 +24,7 @@ jobs:
         run: |
           url=${{ github.repository }}/actions/runs/${{ github.run_id }}
           curl -s "https://github.com/${url}" | sed -n "/\\/job\\/[0-9]/{s|^ *href="\([^\"]*\)\"|\1|p}"
-          curl -s "https://github.com/${url}" | sed -n "/\\/job\\/[0-9]/{s|^ *href="\([^\"]*\)\"|\1|p}" >> "$GITHUB_OUTPUT"
+          curl -s "https://github.com/${url}" | sed -n "/\\/job\\/[0-9]/{s|^ *href="\([^\"]*\)\"|summary<<EOF\n\1\nEOF|p}" >> "$GITHUB_OUTPUT"
       - name: Add comment
         run: |
           gh pr comment "$NUMBER" --body "$BODY"
@@ -32,4 +32,4 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
           NUMBER: ${{ github.event.pull_request.number }}
-          BODY: Ok, but not quite https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}  jwfs https://github.com/${{ github.repository }}/actions/runs/${{ github.job_workflow_sha }}  run number ${{ github.run_number }} wfsha ${{ github.workflow_sha }} job -- ${{ github.job }} run no ${{ github.run_number }} api url ${{ github.job_name }}
+          BODY: Ok, but not quite https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}  jwfs https://github.com/${{ github.repository }}/actions/runs/${{ github.job_workflow_sha }}  run number ${{ github.run_number }} wfsha ${{ github.workflow_sha }} job -- ${{ github.job }} run no ${{ github.run_number }} api url ${{ github.job_name }} and also ${{ steps.ci_run_number.outputs.summary }}
