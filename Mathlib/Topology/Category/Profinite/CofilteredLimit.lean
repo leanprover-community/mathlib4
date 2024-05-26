@@ -32,7 +32,8 @@ open CategoryTheory
 
 open CategoryTheory.Limits
 
-attribute [local instance] ConcreteCategory.instFunLike -- TODO remove this?
+-- This was a global instance prior to #13170. We may experiment with removing it.
+attribute [local instance] ConcreteCategory.instFunLike
 
 universe u v
 
