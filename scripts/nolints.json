@@ -768,7 +768,7 @@
  ["docBlame", "SlimCheck.TestResult.toString"],
  ["docBlame", "SlimCheck.Testable.run"],
  ["docBlame", "SlimCheck.Testable.runProp"],
- ["docBlame", "Stream'.WSeq.«term_~ʷ_»"],
+ ["docBlame", "WSeq.«term_~ʷ_»"],
  ["docBlame", "String.toAsciiByteArray.loop"],
  ["docBlame", "Submodule.quotientPi_aux.invFun"],
  ["docBlame", "Submodule.quotientPi_aux.toFun"],
