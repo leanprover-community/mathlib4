@@ -429,6 +429,11 @@ theorem order_of_ne {x : HahnSeries Γ R} (hx : x ≠ 0) :
   dif_neg hx
 #align hahn_series.order_of_ne HahnSeries.order_of_ne
 
+theorem ne_zero_of_order_ne {x : HahnSeries Γ R} (hx : x.order ≠ 0) : x ≠ 0 := by
+  by_cases h : x = 0
+  · simp_all only [order_zero, ne_eq, not_true_eq_false]
+  · exact h
+
 theorem order_eq_orderTop_of_ne {x : HahnSeries Γ R} (hx : x ≠ 0) : order x = orderTop x := by
   rw [order_of_ne hx, orderTop_of_ne hx]
 

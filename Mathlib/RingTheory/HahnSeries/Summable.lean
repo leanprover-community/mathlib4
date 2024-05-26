@@ -101,12 +101,23 @@ theorem support_smul_MVpow_subset_closure [OrderedCancelAddCommMonoid Γ] [CommS
   exact (Function.support_const_smul_subset (f n) (∏ i ∈ x.support, x i ^ n i).coeff).trans
     (support_MVpow_subset_closure σ x n)
 
-/-!
 theorem isPWO_iUnion_support_MVpow [LinearOrderedCancelAddCommMonoid Γ] [CommSemiring R]
-    (σ : Type*) (f : (σ →₀ ℕ) → R) (x : σ →₀ HahnSeries Γ R) (hx : ∀ i : σ, 0 ≤ (x i).order)
-    (n : σ →₀ ℕ) : (⋃ n : σ →₀ ℕ, (f n •  ∏ i ∈ x.support, (x i) ^ (n i)).support).IsPWO := by
-  sorry
--/
+    (σ : Type*) (f : (σ →₀ ℕ) → R) (x : σ →₀ HahnSeries Γ R) (hx : ∀ i : σ, 0 ≤ (x i).order) :
+    (⋃ n : σ →₀ ℕ, (f n •  ∏ i ∈ x.support, (x i) ^ (n i)).support).IsPWO := by
+  refine Set.IsPWO.mono ?_ (Set.iUnion_subset fun n => support_smul_MVpow_subset_closure σ f x n)
+  refine Set.IsPWO.addSubmonoid_closure ?_ ?_
+  · intro g hg
+    simp only [Set.mem_iUnion, mem_support, ne_eq] at hg
+    obtain ⟨i, hi⟩ := hg
+    exact (hx i).trans (order_le_of_coeff_ne_zero hi)
+  · have h : ⋃ i, (x i).support =
+        (⋃ i ∈ x.support, (x i).support) ∪ (⋃ i ∉ x.support, (x i).support) := by
+      simp_rw [← Set.iUnion_ite, ite_id (x _).support]
+    rw [h, Set.isPWO_union]
+    constructor
+    · exact (isPWO_bUnion x.support).mpr fun i _ ↦ isPWO_support (x i)
+    · rw [show (⋃ i, ⋃ (_ : i ∉ x.support), (x i).support) = ∅ by simp_all]
+      exact Set.isPWO_empty
 
 theorem isPWO_iUnion_support_smul_pow [LinearOrderedCancelAddCommMonoid Γ] [Semiring R] (f : ℕ → R)
     (x : HahnSeries Γ R) (hx : 0 ≤ x.order) :
@@ -253,6 +264,10 @@ theorem hsum_add {s t : SummableFamily Γ R α} : (s + t).hsum = s.hsum + t.hsum
   simp only [hsum_coeff, add_coeff, add_apply]
   exact finsum_add_distrib (s.finite_co_support _) (t.finite_co_support _)
 #align hahn_series.summable_family.hsum_add HahnSeries.SummableFamily.hsum_add
+
+theorem hsum_coeff_sum {s : SummableFamily Γ R α} {g : Γ} :
+    s.hsum.coeff g = ∑ i ∈ Set.Finite.toFinset (s.finite_co_support g), (s i).coeff g := by
+  rw [hsum_coeff, finsum_eq_sum _ (s.finite_co_support _)]
 
 end AddCommMonoid
 
@@ -554,6 +569,46 @@ theorem smul_pow_finite_co_support (f : ℕ → R) (g : Γ) :
   intro n hn hng
   simp_all
 
+/-!
+theorem mvpow_finite_co_support (σ : Type*) (y : σ →₀ HahnSeries Γ R)
+    (hy : ∀ i : σ, 0 < (y i).order) (g : Γ) :
+    Set.Finite {a : (σ →₀ ℕ) |
+      ((fun n : (σ →₀ ℕ) ↦ ∏ i ∈ y.support, y i ^ n i) a).coeff g ≠ 0} := by
+  have hpwo : Set.IsPWO (⋃ n : (σ →₀ ℕ), ((1 : R) • ∏ i ∈ y.support, (y i) ^ (n i)).support) :=
+    isPWO_iUnion_support_MVpow σ (fun n => 1) y (fun i => le_of_lt (hy i))
+  have hy₁ : ∀ i : σ, y i ≠ 0 := fun i => ne_zero_of_order_ne (ne_of_gt (hy i))
+  have hy₂ : y.support = Set.univ (α := σ) := Set.eq_univ_of_univ_subset fun i hi => by simp_all
+  have hσ : Fintype σ := by
+    refine Set.fintypeOfFiniteUniv ?_
+    rw [← hy₂]
+    exact finite_toSet y.support
+  by_cases hg : g ∈ ⋃ n : (σ →₀ ℕ), { g | (∏ i ∈ y.support, (y i) ^ (n i)).coeff g ≠ 0 }
+  swap; · exact Set.finite_empty.subset fun n hn => hg (Set.mem_iUnion.2 ⟨n, hn⟩)
+  simp_all only [one_smul]
+  by_cases h0 : g = 0
+  ·
+    sorry
+  refine cons_induction (by simp_all) ?_ y.support
+  sorry
+  --refine Set.Finite.subset ?_ fun x ↦ ?_
+  -- take iUnion over adding one to exponents, i.e., multiplying by (y i).
+  -- each part of the union is an antidiagonal, hence finite.
+
+
+/-- A summable family of Hahn series given by substituting the multivariable power series generators
+into positive order Hahn series.-/
+@[simps]
+def mvPowerSeriesFamily (σ : Type*) (f : (σ →₀ ℕ) → R) (y : σ →₀ HahnSeries Γ R)
+    (hy : ∀ i : σ, 0 < (y i).order) : SummableFamily Γ R (σ →₀ ℕ) where
+  toFun n := f n • ∏ i ∈ y.support, y i ^ n i
+  isPWO_iUnion_support' :=
+    isPWO_iUnion_support_MVpow σ f y (fun i => le_of_lt (hy i))
+  finite_co_support' g := by
+    refine Set.Finite.subset (mvpow_finite_co_support σ y hy g) ?_
+    intro n hn hng
+    simp_all
+-/
+
 /-- A summable family of Hahn series given by substituting the power series variable `X` into the
 positive order Hahn series `x`.-/
 @[simps]
@@ -603,14 +658,16 @@ theorem xxx (n : ℕ) : Finite (Set.addAntidiagonal Set.univ Set.univ n) :=
 
 theorem finsumAntidiagonal {R} [AddCommMonoid R] (f : ℕ × ℕ →₀ R) :
     ∑ᶠ (i : ℕ), (∑ i_1 ∈ antidiagonal i, f i_1) = ∑ᶠ (i : ℕ × ℕ), f i := by
+
   -- sum_bij or sum_nbij with sum_sigma?
   sorry
-
+-/
 theorem sum_coeff {α} (s : Finset α) (f : α → HahnSeries Γ R) (g : Γ) :
     (Finset.sum s f).coeff g = Finset.sum s (fun i => (f i).coeff g) := by
-  refine sum_induction
-  sorry
--/
+  refine cons_induction_on s ?_ ?_
+  · simp
+  · intro i t hit hc
+    rw [sum_cons, sum_cons, add_coeff, hc]
 
 theorem finsum_prod {R} [AddCommMonoid R] (f : ℕ × ℕ →₀ R) :
     ∑ᶠ (i : ℕ), ∑ᶠ (j : ℕ),  f (i, j) = ∑ᶠ (i : ℕ × ℕ), f i := by
@@ -629,11 +686,15 @@ def powerSeriesComp : PowerSeries R →ₐ[R] HahnSeries Γ R where
       (fun n hn => by simp_all), pow_zero, ← zero_pow_eq 0, pow_zero]
   map_mul' a b := by
     ext g
-    simp only [hsum, powerSeriesFamily_toFun, mul_coeff, PowerSeries.coeff_mul, Finset.sum_smul]
-    rw [finsum]
+    simp only [hsum_coeff_sum, powerSeriesFamily_toFun]
+
+    simp only [powerSeriesFamily_toFun, mul_coeff, PowerSeries.coeff_mul,
+      Finset.sum_smul, smul_coeff, ← Finset.sum_product, sum_coeff]
+
     -- write f * g as a double sum. write each coefficient of X ^ n as a finite sum.
     -- make a summable family parametrized by ℕ × ℕ.
-    -- try finsum_mem_biUnion
+    -- Finset.sum_product and Finset.sum_mul_sum
+    -- write more haves and use nbij theorems
     sorry
   map_zero' := by
     simp only [hsum, powerSeriesFamily_toFun, map_zero, zero_smul, zero_coeff, finsum_zero]
@@ -646,9 +707,13 @@ def powerSeriesComp : PowerSeries R →ₐ[R] HahnSeries Γ R where
     rw [@algebraMap_apply]
     simp only [Algebra.id.map_eq_id, RingHom.id_apply, C_apply]
     ext g
-    simp only [hsum_coeff, powerSeriesFamily_toFun, smul_coeff, smul_eq_mul]
-
-    sorry
+    simp only [hsum_coeff, powerSeriesFamily_toFun, smul_coeff, smul_eq_mul, PowerSeries.coeff_C,
+      ite_mul, zero_mul]
+    rw [finsum_eq_single _ 0 ?_]
+    · simp only [↓reduceIte, pow_zero, one_coeff, mul_ite, mul_one, mul_zero, single_coeff]
+      aesop
+    · intro n hn
+      simp_all
 -/
 -- define composition with any `f : R[[X]]`.  Show that multiplication of substituted power series
 --corresponds to substitution of products., i.e., elements of strictly positive orderTop yield
