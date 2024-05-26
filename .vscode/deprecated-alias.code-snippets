@@ -1,5 +1,5 @@
 {
-	"Deprecated alias": {
+	"Deprecated alias for mathlib": {
 		"scope": "lean4",
 		"prefix": "deprecated alias",
 		"body": [
