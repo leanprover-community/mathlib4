@@ -27,7 +27,7 @@ instance : Inhabited Int where
 
 set_option linter.attributeInstanceIn false in
 /--
-warning: careful: `attribute [instance] ... in` declarations are surprising:
+warning: `attribute [instance] ... in` declarations are surprising:
 they are **not** limited to the subsequent declaration, but define global instances
 please remove the `in` or make this a `local instance` instead
 note: this linter can be disabled with `set_option linter.attributeInstanceIn false`
@@ -42,7 +42,7 @@ instance : Inhabited Int where
 
 set_option linter.attributeInstanceIn false in
 /--
-warning: careful: `attribute [instance] ... in` declarations are surprising:
+warning: `attribute [instance] ... in` declarations are surprising:
 they are **not** limited to the subsequent declaration, but define global instances
 please remove the `in` or make this a `local instance` instead
 note: this linter can be disabled with `set_option linter.attributeInstanceIn false`
