@@ -110,11 +110,11 @@ We follow the short and excellent paper
 
 -/
 
-variable {R K L}
+variable {R K L M}
 
 section ring
 
-variable (hL : ∀ I : LieIdeal R L, IsLieAbelian I → I = ⊥)
+variable (hL : ∀ I : LieIdeal R L, IsAtom I → ¬IsLieAbelian I)
 variable (Φ : LinearMap.BilinForm R L) (hΦ_inv : ∀ x y z, Φ ⁅x, y⁆ z = Φ x ⁅y, z⁆)
 variable (hΦ_nondeg : Φ.Nondegenerate)
 
@@ -124,8 +124,7 @@ lemma perfect_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : ⁅I, I⁆ = I := b
   · exact LieSubmodule.lie_le_right I I
   · intro h
     rw [LieSubmodule.lie_eq_bot_iff] at h
-    apply hI.1
-    apply hL
+    apply hL I hI
     constructor
     simpa only [LieIdeal.coe_bracket_of_module, Subtype.ext_iff, LieSubmodule.coe_bracket,
       ZeroMemClass.coe_zero, Subtype.forall, LieSubmodule.mem_coeSubmodule] using h
@@ -177,8 +176,31 @@ end ring
 
 section field
 
+-- move this
+open FiniteDimensional Submodule in
+lemma exists_atom_le_of_finite
+    [AddCommGroup M] [Module K M] [Module.Finite K M] [LieRingModule L M] :
+    ∀ (N : LieSubmodule K L M), N ≠ ⊥ → ∃ a : LieSubmodule K L M, IsAtom a ∧ a ≤ N := by
+  intro N hN
+  by_cases H : ∀ b, b < N → b = ⊥
+  · exact ⟨N, ⟨hN, H⟩, le_rfl⟩
+  push_neg at H
+  obtain ⟨b, hbN, hb⟩ := H
+  obtain ⟨a, ha, hab⟩ := exists_atom_le_of_finite b hb
+  exact ⟨a, ha, hab.trans hbN.le⟩
+termination_by N => finrank K N
+decreasing_by exact finrank_lt_finrank_of_lt hbN
+
+-- move this
+instance [AddCommGroup M] [Module K M] [Module.Finite K M] [LieRingModule L M] :
+    IsAtomic (LieSubmodule K L M) := by
+  constructor
+  intro N
+  rw [or_iff_not_imp_left]
+  exact exists_atom_le_of_finite N
+
 variable [Module.Finite K L]
-variable (hL : ∀ I : LieIdeal K L, IsLieAbelian I → I = ⊥)
+variable (hL : ∀ I : LieIdeal K L, IsAtom I → ¬IsLieAbelian I)
 variable (Φ : LinearMap.BilinForm K L) (hΦ_inv : ∀ x y z, Φ ⁅x, y⁆ z = Φ x ⁅y, z⁆)
 variable (hΦ_nondeg : Φ.Nondegenerate) (hΦ_refl : Φ.IsRefl)
 
@@ -259,6 +281,41 @@ lemma restrict_orthogonal_nondegenerate (I : LieIdeal K L) (hI : IsAtom I) :
     Φ.orthogonal_orthogonal hΦ_refl hΦ_nondeg]
   exact (orthogonalLieIdeal_isCompl_submodule hL Φ hΦ_inv hΦ_nondeg hΦ_refl I hI).symm
 
+open FiniteDimensional Submodule in
+lemma atomistic : ∀ I : LieIdeal K L, sSup {J : LieIdeal K L | IsAtom J ∧ J ≤ I} = I := by
+  intro I
+  apply le_antisymm
+  · apply sSup_le
+    rintro J ⟨-, hJ'⟩
+    exact hJ'
+  by_cases hI : I = ⊥
+  · exact hI.le.trans bot_le
+  obtain ⟨J, hJ, hJI⟩ := exists_atom_le_of_finite I hI
+  let J' := orthogonalLieIdeal Φ hΦ_inv J
+  suffices I ≤ J ⊔ (J' ⊓ I) by
+    refine this.trans ?_
+    apply sup_le
+    · exact le_sSup ⟨hJ, hJI⟩
+    rw [← atomistic (J' ⊓ I)]
+    apply sSup_le_sSup
+    simp only [le_inf_iff, Set.setOf_subset_setOf, and_imp]
+    tauto
+  suffices J ⊔ J' = ⊤ by rw [← sup_inf_assoc_of_le _ hJI, this, top_inf_eq]
+  exact (orthogonalLieIdeal_isCompl hL Φ hΦ_inv hΦ_nondeg hΦ_refl J hJ).codisjoint.eq_top
+termination_by I => finrank K I
+decreasing_by
+  apply finrank_lt_finrank_of_lt
+  suffices ¬I ≤ J' by simpa
+  intro hIJ'
+  apply hJ.1
+  rw [eq_bot_iff]
+  exact orthogonalLieIdeal_disjoint hL Φ hΦ_inv hΦ_nondeg J hJ le_rfl (hJI.trans hIJ')
+
+theorem isSemisimple_of_nondegenerate_invariant_form : IsSemisimple K L := by
+  refine ⟨?_, ?_, hL⟩
+  · simpa using atomistic hL Φ hΦ_inv hΦ_nondeg hΦ_refl ⊤
+  intro J hJ
+  sorry
 
 end field
 
