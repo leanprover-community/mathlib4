@@ -644,12 +644,13 @@ lemma ProbabilityMeasure.continuous_toLevyProkhorov :
   -- to a small error by the `Q`-measure of a small thickening of `B`. (The converse direction
   -- of upper bounding `Q`-measures by `P`-measures comes for free from complements, since `P`
   -- and `Q` are probability measures.)
-  apply lt_of_le_of_lt ?_ (show 2*ε/3 < ε by linarith)
+  apply lt_of_le_of_lt ?_ (show 2*(ε/3) < ε by linarith)
   rw [LevyProkhorov.dist_def, levyProkhorovDist, levyProkhorovEDist_comm]
-  apply levyProkhorovDist_le_of_forall_add_pos_le
+  apply levyProkhorovDist_le_of_forall_le
   · linarith
-  · -- Fix an arbitrary set `B ⊆ Ω`, and an arbitrary `δ > 0` to be used for error and thickening.
-    intro δ B δ_pos _
+  · -- Fix an arbitrary set `B ⊆ Ω`, and an arbitrary `δ > 2*ε/3` to gain some room for error
+    -- and for thickening.
+    intro δ B δ_gt _
 
     -- Let `JB ⊆ {0, 1, ..., N-1}` consist of those indices `j` such that `B` intersects `Es j`.
     -- Then the open set `Gs JB` approximates `B` rather well:
@@ -676,7 +677,7 @@ lemma ProbabilityMeasure.continuous_toLevyProkhorov :
         simp only [mem_Iio, mem_setOf_eq, JB]
         refine ⟨nonempty_iff_ne_empty.mp <| Set.nonempty_of_mem <| mem_inter ω_in_B hi, i_small⟩
       · exact Or.inr ⟨i, by simpa only [mem_Iio, not_lt] using i_small, hi⟩
-    have subset_thickB : ⋃ i ∈ JB, thickening (ε / 3) (Es i) ⊆ thickening (2 * ε / 3 + δ) B := by
+    have subset_thickB : ⋃ i ∈ JB, thickening (ε / 3) (Es i) ⊆ thickening δ B := by
       intro ω ω_in_U
       simp only [mem_setOf_eq, mem_iUnion, exists_prop] at ω_in_U
       obtain ⟨k, ⟨B_intersects, _⟩, ω_in_thEk⟩ := ω_in_U
@@ -707,7 +708,8 @@ lemma ProbabilityMeasure.continuous_toLevyProkhorov :
     apply (add_le_add hQ.le aux.le).trans
     rw [add_assoc, ← ENNReal.ofReal_add third_ε_pos.le third_ε_pos.le, ← two_mul]
     apply add_le_add (measure_mono subset_thickB) (ofReal_le_ofReal _)
-    simpa only [add_zero] using add_le_add (le_of_eq (by ring)) δ_pos.le
+    exact δ_gt.le
+
 
 /-- The topology of the Lévy-Prokhorov metric on probability measures on a separable space
 coincides with the topology of convergence in distribution. -/
