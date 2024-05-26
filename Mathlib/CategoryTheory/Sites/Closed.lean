@@ -124,7 +124,7 @@ theorem close_eq_self_of_isClosed {X : C} {S : Sieve X} (hS : J₁.IsClosed S) :
 theorem pullback_close {X Y : C} (f : Y ⟶ X) (S : Sieve X) :
     J₁.close (S.pullback f) = (J₁.close S).pullback f := by
   apply le_antisymm
-  · refine' J₁.le_close_of_isClosed (Sieve.pullback_monotone _ (J₁.le_close S)) _
+  · refine J₁.le_close_of_isClosed (Sieve.pullback_monotone _ (J₁.le_close S)) ?_
     apply J₁.isClosed_pullback _ _ (J₁.close_isClosed _)
   · intro Z g hg
     change _ ∈ J₁ _
@@ -177,7 +177,7 @@ The proof of this is adapted from [MM92], Chapter III, Section 7, Lemma 1.
 theorem classifier_isSheaf : Presieve.IsSheaf J₁ (Functor.closedSieves J₁) := by
   intro X S hS
   rw [← Presieve.isSeparatedFor_and_exists_isAmalgamation_iff_isSheafFor]
-  refine' ⟨_, _⟩
+  refine ⟨?_, ?_⟩
   · rintro x ⟨M, hM⟩ ⟨N, hN⟩ hM₂ hN₂
     simp only [Functor.closedSieves_obj]
     ext Y f
@@ -216,7 +216,7 @@ theorem classifier_isSheaf : Presieve.IsSheaf J₁ (Functor.closedSieves J₁) :
         rw [show (x (g ≫ f') _).1 = _ from congr_arg Subtype.val (hx f' g hf')]
         apply Sieve.pullback_eq_top_of_mem _ hg
       · apply Sieve.le_pullback_bind S fun Y f hf => (x f hf).1
-    refine' ⟨⟨_, J₁.close_isClosed M⟩, _⟩
+    refine ⟨⟨_, J₁.close_isClosed M⟩, ?_⟩
     intro Y f hf
     simp only [Functor.closedSieves_obj]
     ext1

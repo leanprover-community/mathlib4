@@ -188,7 +188,7 @@ theorem eval₂_mul_noncomm (hf : ∀ k, Commute (f <| q.coeff k) x) :
 
 @[simp]
 theorem eval₂_mul_X : eval₂ f x (p * X) = eval₂ f x p * x := by
-  refine' _root_.trans (eval₂_mul_noncomm _ _ fun k => _) (by rw [eval₂_X])
+  refine _root_.trans (eval₂_mul_noncomm _ _ fun k => ?_) (by rw [eval₂_X])
   rcases em (k = 1) with (rfl | hk)
   · simp
   · simp [coeff_X_of_ne_one hk]
@@ -688,9 +688,9 @@ theorem coeff_comp_degree_mul_degree (hqd0 : natDegree q ≠ 0) :
     simp only [coeff_natDegree, coeff_C_mul, coeff_pow_mul_natDegree]
   case h₀ =>
     intro b hbs hbp
-    refine' coeff_eq_zero_of_natDegree_lt (natDegree_mul_le.trans_lt _)
+    refine coeff_eq_zero_of_natDegree_lt (natDegree_mul_le.trans_lt ?_)
     rw [natDegree_C, zero_add]
-    refine' natDegree_pow_le.trans_lt ((mul_lt_mul_right (pos_iff_ne_zero.mpr hqd0)).mpr _)
+    refine natDegree_pow_le.trans_lt ((mul_lt_mul_right (pos_iff_ne_zero.mpr hqd0)).mpr ?_)
     exact lt_of_le_of_ne (le_natDegree_of_mem_supp _ hbs) hbp
   case h₁ =>
     simp (config := { contextual := true })
@@ -807,7 +807,7 @@ theorem map_dvd (f : R →+* S) {x y : R[X]} : x ∣ y → x.map f ∣ y.map f :
 theorem coeff_map (n : ℕ) : coeff (p.map f) n = f (coeff p n) := by
   rw [map, eval₂_def, coeff_sum, sum]
   conv_rhs => rw [← sum_C_mul_X_pow_eq p, coeff_sum, sum, map_sum]
-  refine' Finset.sum_congr rfl fun x _hx => _
+  refine Finset.sum_congr rfl fun x _hx => ?_
   simp only [RingHom.coe_comp, Function.comp, coeff_C_mul_X_pow]
   split_ifs <;> simp [f.map_zero]
 #align polynomial.coeff_map Polynomial.coeff_map
@@ -903,7 +903,7 @@ theorem degree_map_eq_of_leadingCoeff_ne_zero (f : R →+* S) (hf : f (leadingCo
     have hp0 : p ≠ 0 :=
       leadingCoeff_ne_zero.mp fun hp0 => hf (_root_.trans (congr_arg _ hp0) f.map_zero)
     rw [degree_eq_natDegree hp0]
-    refine' le_degree_of_ne_zero _
+    refine le_degree_of_ne_zero ?_
     rw [coeff_map]
     exact hf
 #align polynomial.degree_map_eq_of_leading_coeff_ne_zero Polynomial.degree_map_eq_of_leadingCoeff_ne_zero
@@ -948,7 +948,7 @@ theorem mem_map_rangeS {p : S[X]} : p ∈ (mapRingHom f).rangeS ↔ ∀ n, p.coe
     exact Set.mem_range_self _
   · intro h
     rw [p.as_sum_range_C_mul_X_pow]
-    refine' (mapRingHom f).rangeS.sum_mem _
+    refine (mapRingHom f).rangeS.sum_mem ?_
     intro i _hi
     rcases h i with ⟨c, hc⟩
     use C c * X ^ i
@@ -1176,7 +1176,7 @@ theorem eval₂_finset_prod (s : Finset ι) (g : ι → R[X]) (x : S) :
 /-- Polynomial evaluation commutes with `List.prod`
 -/
 theorem eval_list_prod (l : List R[X]) (x : R) : eval x l.prod = (l.map (eval x)).prod :=
-  (evalRingHom x).map_list_prod l
+  map_list_prod (evalRingHom x) l
 #align polynomial.eval_list_prod Polynomial.eval_list_prod
 
 /-- Polynomial evaluation commutes with `Multiset.prod`

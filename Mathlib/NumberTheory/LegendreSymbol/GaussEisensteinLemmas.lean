@@ -44,7 +44,7 @@ theorem Ico_map_valMinAbs_natAbs_eq_Ico_map_id (p : ℕ) [hp : Fact p.Prime] (a 
   have hsurj : ∀ (b : ℕ) (hb : b ∈ Ico 1 (p / 2).succ),
       ∃ x, ∃ _ : x ∈ Ico 1 (p / 2).succ, (a * x : ZMod p).valMinAbs.natAbs = b := by
     intro b hb
-    refine' ⟨(b / a : ZMod p).valMinAbs.natAbs, mem_Ico.mpr ⟨_, _⟩, _⟩
+    refine ⟨(b / a : ZMod p).valMinAbs.natAbs, mem_Ico.mpr ⟨?_, ?_⟩, ?_⟩
     · apply Nat.pos_of_ne_zero
       simp only [div_eq_mul_inv, hap, CharP.cast_eq_zero_iff (ZMod p) p, hpe hb, not_false_iff,
         valMinAbs_eq_zero, inv_eq_zero, Int.natAbs_eq_zero, Ne, _root_.mul_eq_zero, or_self_iff]
@@ -181,16 +181,11 @@ private theorem sum_Ico_eq_card_lt {p q : ℕ} :
             _ ≤ _ := Nat.div_mul_div_le_div _ _ _
       _ = _ := by
         rw [← card_sigma]
-        exact card_congr (fun a _ => ⟨a.1, a.2⟩) (by
-          simp (config := { contextual := true }) only [mem_filter, mem_sigma, and_self_iff,
+        exact card_nbij' (fun a ↦ ⟨a.1, a.2⟩) (fun a ↦ ⟨a.1, a.2⟩)
+          (by simp (config := { contextual := true }) only [mem_filter, mem_sigma, and_self_iff,
             forall_true_iff, mem_product])
-          (fun ⟨_, _⟩ ⟨_, _⟩ => by
-            simp (config := { contextual := true }) only [Prod.mk.inj_iff, eq_self_iff_true,
-              and_self_iff, heq_iff_eq, forall_true_iff])
-          fun ⟨b₁, b₂⟩ h => ⟨⟨b₁, b₂⟩, by
-            revert h
-            simp (config := { contextual := true }) only [mem_filter, eq_self_iff_true,
-              exists_prop_of_true, mem_sigma, and_self_iff, forall_true_iff, mem_product]⟩
+          (by simp (config := { contextual := true }) only [mem_filter, mem_sigma, and_self_iff,
+            forall_true_iff, mem_product]) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 /-- Each of the sums in this lemma is the cardinality of the set of integer points in each of the
   two triangles formed by the diagonal of the rectangle `(0, p/2) × (0, q/2)`. Adding them
@@ -202,17 +197,10 @@ theorem sum_mul_div_add_sum_mul_div_eq_mul (p q : ℕ) [hp : Fact p.Prime] (hq0 
     ((Ico 1 (q / 2).succ ×ˢ Ico 1 (p / 2).succ).filter fun x : ℕ × ℕ => x.2 * q ≤ x.1 * p).card =
       ((Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ).filter fun x : ℕ × ℕ =>
         x.1 * q ≤ x.2 * p).card :=
-    card_congr (fun x _ => Prod.swap x)
+    card_equiv (Equiv.prodComm _ _)
       (fun ⟨_, _⟩ => by
         simp (config := { contextual := true }) only [mem_filter, and_self_iff, Prod.swap_prod_mk,
-          forall_true_iff, mem_product])
-      (fun ⟨_, _⟩ ⟨_, _⟩ => by
-        simp (config := { contextual := true }) only [Prod.mk.inj_iff, eq_self_iff_true,
-          and_self_iff, Prod.swap_prod_mk, forall_true_iff])
-      fun ⟨x₁, x₂⟩ h => ⟨⟨x₂, x₁⟩, by
-        revert h
-        simp (config := { contextual := true }) only [mem_filter, eq_self_iff_true, and_self_iff,
-          exists_prop_of_true, Prod.swap_prod_mk, forall_true_iff, mem_product]⟩
+          forall_true_iff, mem_product, Equiv.prodComm_apply, and_assoc, and_left_comm])
   have hdisj :
     Disjoint ((Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ).filter fun x : ℕ × ℕ => x.2 * p ≤ x.1 * q)
       ((Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ).filter fun x : ℕ × ℕ => x.1 * q ≤ x.2 * p) := by

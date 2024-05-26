@@ -307,6 +307,7 @@ theorem mem_of_span_eq_top_of_smul_pow_mem (M' : Submodule R M) (s : Set R) (hs 
 
 variable {M' : Type w} [AddCommMonoid M'] [Module R M']
 
+@[simp]
 theorem map_smul'' (f : M →ₗ[R] M') : (I • N).map f = I • N.map f :=
   le_antisymm
       (map_le_iff_le_comap.2 <|
@@ -317,6 +318,12 @@ theorem map_smul'' (f : M →ₗ[R] M') : (I • N).map f = I • N.map f :=
       let ⟨p, hp, hfp⟩ := mem_map.1 hn
       hfp ▸ f.map_smul r p ▸ mem_map_of_mem (smul_mem_smul hr hp)
 #align submodule.map_smul'' Submodule.map_smul''
+
+open Pointwise in
+@[simp]
+theorem map_pointwise_smul (r : R) (N : Submodule R M) (f : M →ₗ[R] M') :
+    (r • N).map f = r • N.map f :=
+  by simp_rw [← ideal_span_singleton_smul, map_smul'']
 
 variable {I}
 
@@ -336,23 +343,23 @@ theorem mem_ideal_smul_span_iff_exists_sum {ι : Type*} (f : ι → M) (x : M) :
   constructor; swap
   · rintro ⟨a, ha, rfl⟩
     exact Submodule.sum_mem _ fun c _ => smul_mem_smul (ha c) <| subset_span <| Set.mem_range_self _
-  refine' fun hx => span_induction (mem_smul_span.mp hx) _ _ _ _
+  refine fun hx => span_induction (mem_smul_span.mp hx) ?_ ?_ ?_ ?_
   · simp only [Set.mem_iUnion, Set.mem_range, Set.mem_singleton_iff]
     rintro x ⟨y, hy, x, ⟨i, rfl⟩, rfl⟩
-    refine' ⟨Finsupp.single i y, fun j => _, _⟩
+    refine ⟨Finsupp.single i y, fun j => ?_, ?_⟩
     · letI := Classical.decEq ι
       rw [Finsupp.single_apply]
       split_ifs
       · assumption
       · exact I.zero_mem
-    refine' @Finsupp.sum_single_index ι R M _ _ i _ (fun i y => y • f i) _
+    refine @Finsupp.sum_single_index ι R M _ _ i _ (fun i y => y • f i) ?_
     simp
   · exact ⟨0, fun _ => I.zero_mem, Finsupp.sum_zero_index⟩
   · rintro x y ⟨ax, hax, rfl⟩ ⟨ay, hay, rfl⟩
-    refine' ⟨ax + ay, fun i => I.add_mem (hax i) (hay i), Finsupp.sum_add_index' _ _⟩ <;> intros <;>
-      simp only [zero_smul, add_smul]
+    refine ⟨ax + ay, fun i => I.add_mem (hax i) (hay i), Finsupp.sum_add_index' ?_ ?_⟩ <;>
+      intros <;> simp only [zero_smul, add_smul]
   · rintro c x ⟨a, ha, rfl⟩
-    refine' ⟨c • a, fun i => I.mul_mem_left c (ha i), _⟩
+    refine ⟨c • a, fun i => I.mul_mem_left c (ha i), ?_⟩
     rw [Finsupp.sum_smul_index, Finsupp.smul_sum] <;> intros <;> simp only [zero_smul, mul_smul]
 #align submodule.mem_ideal_smul_span_iff_exists_sum Submodule.mem_ideal_smul_span_iff_exists_sum
 
@@ -373,7 +380,7 @@ theorem mem_smul_top_iff (N : Submodule R M) (x : N) :
 @[simp]
 theorem smul_comap_le_comap_smul (f : M →ₗ[R] M') (S : Submodule R M') (I : Ideal R) :
     I • S.comap f ≤ (I • S).comap f := by
-  refine' Submodule.smul_le.mpr fun r hr x hx => _
+  refine Submodule.smul_le.mpr fun r hr x hx => ?_
   rw [Submodule.mem_comap] at hx ⊢
   rw [f.map_smul]
   exact Submodule.smul_mem_smul hr hx
@@ -640,7 +647,7 @@ theorem mul_le_inf : I * J ≤ I ⊓ J :=
 
 theorem multiset_prod_le_inf {s : Multiset (Ideal R)} : s.prod ≤ s.inf := by
   classical
-    refine' s.induction_on _ _
+    refine s.induction_on ?_ ?_
     · rw [Multiset.inf_zero]
       exact le_top
     intro a s ih
@@ -664,7 +671,7 @@ theorem sup_mul_eq_of_coprime_left (h : I ⊔ J = ⊤) : I ⊔ J * K = I ⊔ K :
   le_antisymm (sup_le_sup_left mul_le_left _) fun i hi => by
     rw [eq_top_iff_one] at h; rw [Submodule.mem_sup] at h hi ⊢
     obtain ⟨i1, hi1, j, hj, h⟩ := h; obtain ⟨i', hi', k, hk, hi⟩ := hi
-    refine' ⟨_, add_mem hi' (mul_mem_right k _ hi1), _, mul_mem_mul hj hk, _⟩
+    refine ⟨_, add_mem hi' (mul_mem_right k _ hi1), _, mul_mem_mul hj hk, ?_⟩
     rw [add_assoc, ← add_mul, h, one_mul, hi]
 #align ideal.sup_mul_eq_of_coprime_left Ideal.sup_mul_eq_of_coprime_left
 
@@ -969,8 +976,8 @@ theorem mem_radical_of_pow_mem {I : Ideal R} {x : R} {m : ℕ} (hx : x ^ m ∈ r
 
 theorem disjoint_powers_iff_not_mem (y : R) (hI : I.IsRadical) :
     Disjoint (Submonoid.powers y : Set R) ↑I ↔ y ∉ I.1 := by
-  refine' ⟨fun h => Set.disjoint_left.1 h (Submonoid.mem_powers _),
-      fun h => disjoint_iff.mpr (eq_bot_iff.mpr _)⟩
+  refine ⟨fun h => Set.disjoint_left.1 h (Submonoid.mem_powers _),
+      fun h => disjoint_iff.mpr (eq_bot_iff.mpr ?_)⟩
   rintro x ⟨⟨n, rfl⟩, hx'⟩
   exact h (hI <| mem_radical_of_pow_mem <| le_radical hx')
 #align ideal.disjoint_powers_iff_not_mem Ideal.disjoint_powers_iff_not_mem
@@ -1138,7 +1145,7 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
             Set.Subset.trans h <|
               Set.Subset.trans (Set.subset_union_right _ _) (Set.subset_union_left _ _))
           fun ⟨i, his, hi⟩ => by
-          refine' Set.Subset.trans hi <| Set.Subset.trans _ <| Set.subset_union_right _ _;
+          refine Set.Subset.trans hi <| Set.Subset.trans ?_ <| Set.subset_union_right _ _;
             exact Set.subset_biUnion_of_mem (u := fun x ↦ (f x : Set R)) (Finset.mem_coe.2 his)⟩
   generalize hn : s.card = n; intro h
   induction' n with n ih generalizing a b s
@@ -1247,7 +1254,7 @@ theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι →
           ⟨t.erase b, Finset.not_mem_erase b t, Finset.insert_erase hbt⟩
         have hp' : ∀ i ∈ u, IsPrime (f i) := by
           intro i hiu
-          refine' hp i (Finset.mem_insert_of_mem (Finset.mem_insert_of_mem hiu)) _ _ <;>
+          refine hp i (Finset.mem_insert_of_mem (Finset.mem_insert_of_mem hiu)) ?_ ?_ <;>
               rintro rfl <;>
             solve_by_elim only [Finset.mem_insert_of_mem, *]
         rw [Finset.coe_insert, Finset.coe_insert, Set.biUnion_insert, Set.biUnion_insert, ←
@@ -1255,7 +1262,7 @@ theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι →
         rwa [Finset.exists_mem_insert, Finset.exists_mem_insert]
       · have hp' : ∀ j ∈ t, IsPrime (f j) := by
           intro j hj
-          refine' hp j (Finset.mem_insert_of_mem hj) _ _ <;> rintro rfl <;>
+          refine hp j (Finset.mem_insert_of_mem hj) ?_ ?_ <;> rintro rfl <;>
             solve_by_elim only [Finset.mem_insert_of_mem, *]
         rw [Finset.coe_insert, Set.biUnion_insert, ← Set.union_self (f a : Set R),
           subset_union_prime' hp', ← or_assoc, or_self_iff] at h
@@ -1265,7 +1272,7 @@ theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι →
           ⟨s.erase b, Finset.not_mem_erase b s, Finset.insert_erase hbs⟩
         have hp' : ∀ j ∈ t, IsPrime (f j) := by
           intro j hj
-          refine' hp j (Finset.mem_insert_of_mem hj) _ _ <;> rintro rfl <;>
+          refine hp j (Finset.mem_insert_of_mem hj) ?_ ?_ <;> rintro rfl <;>
             solve_by_elim only [Finset.mem_insert_of_mem, *]
         rw [Finset.coe_insert, Set.biUnion_insert, ← Set.union_self (f b : Set R),
           subset_union_prime' hp', ← or_assoc, or_self_iff] at h
@@ -1280,7 +1287,7 @@ theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι →
           ⟨s.erase i, Finset.not_mem_erase i s, Finset.insert_erase his⟩
         have hp' : ∀ j ∈ t, IsPrime (f j) := by
           intro j hj
-          refine' hp j (Finset.mem_insert_of_mem hj) _ _ <;> rintro rfl <;>
+          refine hp j (Finset.mem_insert_of_mem hj) ?_ ?_ <;> rintro rfl <;>
             solve_by_elim only [Finset.mem_insert_of_mem, *]
         rw [Finset.coe_insert, Set.biUnion_insert, ← Set.union_self (f i : Set R),
           subset_union_prime' hp', ← or_assoc, or_self_iff] at h
@@ -1401,5 +1408,11 @@ lemma span_smul_eq
     (s : Set R) (N : Submodule R M) :
     Ideal.span s • N = s • N := by
   rw [← coe_set_smul, coe_span_smul]
+
+@[simp]
+theorem set_smul_top_eq_span (s : Set R) :
+    s • ⊤ = Ideal.span s :=
+  Eq.trans (span_smul_eq s ⊤).symm <|
+    Eq.trans (smul_eq_mul (Ideal R)) (Ideal.mul_top (.span s))
 
 end Submodule

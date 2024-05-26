@@ -259,7 +259,7 @@ theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
   erw [coe_comp, coe_comp, coe_comp]
   rw [Set.image_comp, Set.preimage_comp]
   erw [Set.preimage_image_eq]
-  · refine' Eq.trans (D.toTopGlueData.preimage_image_eq_image' _ _ _) _
+  · refine Eq.trans (D.toTopGlueData.preimage_image_eq_image' _ _ _) ?_
     dsimp
     rw [coe_comp, Set.image_comp]
     refine congr_arg (_ '' ·) ?_
@@ -341,8 +341,8 @@ diagram. We will lift these maps into `ιInvApp`. -/
 def ιInvAppπApp {i : D.J} (U : Opens (D.U i).carrier) (j) :
     (𝖣.U i).presheaf.obj (op U) ⟶ (D.diagramOverOpen U).obj (op j) := by
   rcases j with (⟨j, k⟩ | j)
-  · refine'
-      D.opensImagePreimageMap i j U ≫ (D.f j k).c.app _ ≫ (D.V (j, k)).presheaf.map (eqToHom _)
+  · refine
+      D.opensImagePreimageMap i j U ≫ (D.f j k).c.app _ ≫ (D.V (j, k)).presheaf.map (eqToHom ?_)
     rw [Functor.op_obj]
     congr 1; ext1
     dsimp only [Functor.op_obj, Opens.map_coe, unop_op, IsOpenMap.functor_obj_coe]
@@ -527,8 +527,8 @@ Vᵢⱼ ⟶ Uᵢ
 -/
 def vPullbackConeIsLimit (i j : D.J) : IsLimit (𝖣.vPullbackCone i j) :=
   PullbackCone.isLimitAux' _ fun s => by
-    refine' ⟨_, _, _, _⟩
-    · refine' PresheafedSpace.IsOpenImmersion.lift (D.f i j) s.fst _
+    refine ⟨?_, ?_, ?_, ?_⟩
+    · refine PresheafedSpace.IsOpenImmersion.lift (D.f i j) s.fst ?_
       erw [← D.toTopGlueData.preimage_range j i]
       have :
         s.fst.base ≫ D.toTopGlueData.ι i =

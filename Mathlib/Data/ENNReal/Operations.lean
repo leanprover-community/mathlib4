@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.WithTop
+import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Data.ENNReal.Basic
 
 #align_import data.real.ennreal from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
@@ -316,7 +317,7 @@ section Cancel
 theorem addLECancellable_iff_ne {a : ℝ≥0∞} : AddLECancellable a ↔ a ≠ ∞ := by
   constructor
   · rintro h rfl
-    refine' zero_lt_one.not_le (h _)
+    refine zero_lt_one.not_le (h ?_)
     simp
   · rintro h b c hbc
     apply ENNReal.le_of_add_le_add_left h hbc

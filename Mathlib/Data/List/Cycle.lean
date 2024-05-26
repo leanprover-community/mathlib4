@@ -3,9 +3,7 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.Order.Ring.CharZero
 import Mathlib.Data.Fintype.List
-import Mathlib.Data.List.Rotate
 
 #align_import data.list.cycle from "leanprover-community/mathlib"@"7413128c3bcb3b0818e3e18720abc9ea3100fb49"
 
@@ -277,7 +275,7 @@ theorem next_get : ∀ (l : List α) (_h : Nodup l) (i : Fin l.length),
       intro H
       suffices (i + 1 : ℕ) = 0 by simpa
       rw [nodup_iff_injective_get] at hn
-      refine' Fin.val_eq_of_eq (@hn ⟨i + 1, hi⟩ ⟨0, by simp⟩ _)
+      refine Fin.val_eq_of_eq (@hn ⟨i + 1, hi⟩ ⟨0, by simp⟩ ?_)
       simpa using H
     have hi' : i ≤ l.length := Nat.le_of_lt_succ (Nat.succ_lt_succ_iff.1 hi)
     rcases hi'.eq_or_lt with (hi' | hi')
@@ -592,8 +590,7 @@ def Subsingleton (s : Cycle α) : Prop :=
   s.length ≤ 1
 #align cycle.subsingleton Cycle.Subsingleton
 
-theorem subsingleton_nil : Subsingleton (@nil α) :=
-  zero_le_one
+theorem subsingleton_nil : Subsingleton (@nil α) := Nat.zero_le _
 #align cycle.subsingleton_nil Cycle.subsingleton_nil
 
 theorem length_subsingleton_iff {s : Cycle α} : Subsingleton s ↔ length s ≤ 1 :=
@@ -991,11 +988,11 @@ theorem chain_of_pairwise : (∀ a ∈ s, ∀ b ∈ s, r a b) → Chain r s := b
   rw [Cycle.chain_coe_cons]
   apply Pairwise.chain
   rw [pairwise_cons]
-  refine'
-    ⟨fun b hb => _,
+  refine
+    ⟨fun b hb => ?_,
       pairwise_append.2
         ⟨pairwise_of_forall_mem_list fun b hb c hc => hs b (Hl hb) c (Hl hc),
-          pairwise_singleton r a, fun b hb c hc => _⟩⟩
+          pairwise_singleton r a, fun b hb c hc => ?_⟩⟩
   · rw [mem_append] at hb
     cases' hb with hb hb
     · exact hs a Ha b (Hl hb)
