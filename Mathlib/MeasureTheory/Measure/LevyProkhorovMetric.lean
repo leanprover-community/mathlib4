@@ -542,26 +542,6 @@ lemma ProbabilityMeasure.toMeasure_add_pos_gt_mem_nhds {P : ProbabilityMeasure �
   exact (tsub_add_cancel_of_le easy).symm
 
 -- TODO: Move to an appropriate place.
-lemma _root_.biUnion_compl_eq_of_pairwise_disjoint {X ι : Type*} {Es : ι → Set X}
-    (Es_union : ⋃ i, Es i = univ) (Es_disj : Pairwise fun i j ↦ Disjoint (Es i) (Es j))
-    (I : Set ι) :
-    (⋃ i ∈ I, Es i)ᶜ = ⋃ i ∈ Iᶜ, Es i := by
-  ext x
-  obtain ⟨i, hix⟩ := show ∃ i, x ∈ Es i by simp [← mem_iUnion, Es_union]
-  have obs : ∀ (J : Set ι), x ∈ ⋃ j ∈ J, Es j ↔ i ∈ J := by
-    intro J
-    refine ⟨?_, fun i_in_J ↦ by simpa only [mem_iUnion, exists_prop] using ⟨i, i_in_J, hix⟩⟩
-    intro x_in_U
-    simp only [mem_iUnion, exists_prop] at x_in_U
-    obtain ⟨j, j_in_J, hjx⟩ := x_in_U
-    convert j_in_J
-    by_contra i_ne_j
-    exact Disjoint.ne_of_mem (Es_disj i_ne_j) hix hjx rfl
-  have obs' : ∀ (J : Set ι), x ∈ (⋃ j ∈ J, Es j)ᶜ ↔ i ∉ J :=
-    fun J ↦ by simpa only [mem_compl_iff, not_iff_not] using obs J
-  rw [obs, obs', mem_compl_iff]
-
--- TODO: Move to an appropriate place.
 lemma tendsto_measure_biUnion_Iio_of_iUnion_eq_univ
     {X : Type*} [MeasurableSpace X] {μ : Measure X} {Es : ℕ → Set X} (Es_union : ⋃ i, Es i = univ) :
     Tendsto (μ ∘ fun n => ⋃ i, ⋃ (_ : i < n), Es i) atTop (𝓝 (μ univ)) := by
@@ -579,7 +559,7 @@ lemma tendsto_measure_biUnion_Ici_zero_of_iUnion_eq_univ_of_pairwise_disjoint
     Tendsto (μ ∘ fun n => ⋃ i, ⋃ (_ : n ≤ i), Es i) atTop (𝓝 0) := by
   have obs : ∀ n, ⋃ i, ⋃ (_ : n ≤ i), Es i = (⋃ i, ⋃ (_ : i < n), Es i)ᶜ :=
     fun n ↦ by simpa only [mem_Iio, compl_Iio, mem_Ici]
-                using (biUnion_compl_eq_of_pairwise_disjoint Es_union Es_disj (Iio n)).symm
+      using (biUnion_compl_eq_of_pairwise_disjoint_of_iUnion_eq_univ Es_union Es_disj (Iio n)).symm
   simp_rw [obs]
   have : Tendsto (fun n ↦ (μ univ - μ (⋃ i, ⋃ (_ : i < n), Es i))) atTop (𝓝 0) := by
     have aux := (@ENNReal.continuous_sub_left (μ univ) (measure_ne_top _ _)).tendsto (μ univ)
