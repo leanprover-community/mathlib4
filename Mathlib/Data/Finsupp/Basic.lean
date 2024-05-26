@@ -104,7 +104,7 @@ theorem graph_injective (α M) [Zero M] : Injective (@graph α M _) := by
   intro f g h
   classical
     have hsup : f.support = g.support := by rw [← image_fst_graph, h, image_fst_graph]
-    refine' ext_iff'.2 ⟨hsup, fun x hx => apply_eq_of_mem_graph <| h.symm ▸ _⟩
+    refine ext_iff'.2 ⟨hsup, fun x hx => apply_eq_of_mem_graph <| h.symm ▸ ?_⟩
     exact mk_mem_graph _ (hsup ▸ hx)
 #align finsupp.graph_injective Finsupp.graph_injective
 
@@ -472,12 +472,12 @@ theorem mapDomain_id : mapDomain id v = v :=
 
 theorem mapDomain_comp {f : α → β} {g : β → γ} :
     mapDomain (g ∘ f) v = mapDomain g (mapDomain f v) := by
-  refine' ((sum_sum_index _ _).trans _).symm
+  refine ((sum_sum_index ?_ ?_).trans ?_).symm
   · intro
     exact single_zero _
   · intro
     exact single_add _
-  refine' sum_congr fun _ _ => sum_single_index _
+  refine sum_congr fun _ _ => sum_single_index ?_
   exact single_zero _
 #align finsupp.map_domain_comp Finsupp.mapDomain_comp
 
@@ -551,10 +551,10 @@ theorem mapDomain_apply' (S : Set α) {f : α → β} (x : α →₀ M) (hS : (x
     by_cases hax : a ∈ x.support
     · rw [← Finset.add_sum_erase _ _ hax, if_pos rfl]
       convert add_zero (x a)
-      refine' Finset.sum_eq_zero fun i hi => if_neg _
+      refine Finset.sum_eq_zero fun i hi => if_neg ?_
       exact (hf.mono hS).ne (Finset.mem_of_mem_erase hi) hax (Finset.ne_of_mem_erase hi)
     · rw [not_mem_support_iff.1 hax]
-      refine' Finset.sum_eq_zero fun i hi => if_neg _
+      refine Finset.sum_eq_zero fun i hi => if_neg ?_
       exact hf.ne (hS hi) ha (ne_of_mem_of_not_mem hi hax)
 #align finsupp.map_domain_apply' Finsupp.mapDomain_apply'
 
@@ -932,7 +932,7 @@ theorem filter_single_of_neg {a : α} {b : M} (h : ¬p a) : (single a b).filter 
 theorem prod_filter_index [CommMonoid N] (g : α → M → N) :
     (f.filter p).prod g = ∏ x in (f.filter p).support, g x (f x) := by
   classical
-    refine' Finset.prod_congr rfl fun x hx => _
+    refine Finset.prod_congr rfl fun x hx => ?_
     rw [support_filter, Finset.mem_filter] at hx
     rw [filter_apply_pos _ _ hx.2]
 #align finsupp.prod_filter_index Finsupp.prod_filter_index
@@ -1260,7 +1260,7 @@ theorem filter_curry (f : α × β →₀ M) (p : α → Prop) [DecidablePred p]
   classical
     rw [Finsupp.curry, Finsupp.curry, Finsupp.sum, Finsupp.sum, filter_sum, support_filter,
       sum_filter]
-    refine' Finset.sum_congr rfl _
+    refine Finset.sum_congr rfl ?_
     rintro ⟨a₁, a₂⟩ _
     split_ifs with h
     · rw [filter_apply_pos, filter_single_of_pos] <;> exact h
@@ -1270,7 +1270,7 @@ theorem filter_curry (f : α × β →₀ M) (p : α → Prop) [DecidablePred p]
 theorem support_curry [DecidableEq α] (f : α × β →₀ M) :
     f.curry.support ⊆ f.support.image Prod.fst := by
   rw [← Finset.biUnion_singleton]
-  refine' Finset.Subset.trans support_sum _
+  refine Finset.Subset.trans support_sum ?_
   exact Finset.biUnion_mono fun a _ => support_single_subset
 #align finsupp.support_curry Finsupp.support_curry
 
@@ -1922,19 +1922,5 @@ theorem sigmaFinsuppAddEquivPiFinsupp_apply {α : Type*} {ιs : η → Type*} [A
 #align finsupp.sigma_finsupp_add_equiv_pi_finsupp_apply Finsupp.sigmaFinsuppAddEquivPiFinsupp_apply
 
 end Sigma
-
-/-! ### Meta declarations -/
-
-/- porting note: meta code removed
-/-- Stringify a `Finsupp` as a sequence of `Finsupp.single` terms.
-
-Note this is `meta` as it has to choose some order for the terms. -/
-unsafe instance (ι α : Type*) [Zero α] [Repr ι] [Repr α] : Repr (ι →₀ α) where
-  repr f :=
-    if f.support.card = 0 then "0"
-    else
-      " + ".intercalate <|
-        f.support.val.unquot.map fun i => "finsupp.single " ++ repr i ++ " " ++ repr (f i)
--/
 
 end Finsupp

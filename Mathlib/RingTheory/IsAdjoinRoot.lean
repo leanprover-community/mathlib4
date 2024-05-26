@@ -1,5 +1,4 @@
 /-
-
 Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
@@ -575,7 +574,7 @@ theorem coeff_algebraMap [Nontrivial S] (h : IsAdjoinRootMonic S f) (x : R) :
     h.coeff (algebraMap R S x) = Pi.single 0 x := by
   ext i
   rw [Algebra.algebraMap_eq_smul_one, map_smul, coeff_one, Pi.smul_apply, smul_eq_mul]
-  refine' (Pi.apply_single (fun _ y => x * y) _ 0 1 i).trans (by simp)
+  refine (Pi.apply_single (fun _ y => x * y) ?_ 0 1 i).trans (by simp)
   intros
   simp
 #align is_adjoin_root_monic.coeff_algebra_map IsAdjoinRootMonic.coeff_algebraMap
