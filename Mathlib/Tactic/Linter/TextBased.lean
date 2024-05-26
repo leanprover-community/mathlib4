@@ -7,7 +7,6 @@ Authors: Michael Rothgang
 import Lean.Elab.Command
 import Batteries.Data.String.Basic
 import Mathlib.Init.Data.Nat.Notation
-import Lake.Build.Trace
 
 /-!
 ## Text-based linters
@@ -21,7 +20,7 @@ further linters will be ported in subsequent PRs.
 
 -/
 
-open Lean Elab Command
+open Lean Elab
 
 /-- Possible errors that text-based linters can report. -/
 -- We collect these in one inductive type to centralise error reporting.
