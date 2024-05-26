@@ -165,8 +165,7 @@ instance instSMul : SMul 𝕜 Cₛ^n⟮I; F, V⟯ := by
   have hs := s.contMDiff x₀
   rw [contMDiffAt_section] at hs ⊢
   set e := trivializationAt F V x₀
-  refine' (contMDiffAt_const.smul hs).congr_of_eventuallyEq ?_
-  · exact c
+  refine ((contMDiffAt_const (c := c)).smul hs).congr_of_eventuallyEq ?_
   refine eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) ?_
   intro x hx
   apply (e.linear 𝕜 hx).2
