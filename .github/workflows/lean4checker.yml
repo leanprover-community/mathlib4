@@ -81,11 +81,9 @@ jobs:
       - id: ci_url
         run: |
           url=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          job_no="$(curl -s "${url}" |
+          curl -s "${url}" |
             # extract the CI run number from the unique line that matches `  href=".../job/[job number]"`
-            awk -v url="${url}" -F'/' '/^ *href/ {gsub(/"/, "", $NF); printf("summary<<EOF\n%s/job/%s\nEOF", url, $NF)}')"
-          printf '%s\n' "${job_no}"
-          printf '%s\n' "${job_no}" >> "$GITHUB_OUTPUT"
+            awk -v url="${url}" -F'/' '/^ *href/ {gsub(/"/, "", $NF); printf("summary<<EOF\n%s/job/%s\nEOF", url, $NF)}' >> "$GITHUB_OUTPUT"
 
       - name: Post success message on Zulip
         if: success()
@@ -98,7 +96,7 @@ jobs:
           type: 'stream'
           topic: 'lean4checker'
           content: |
-            ✅ lean4checker succeeded on ${{ github.sha }} [CI_run](${{ steps.ci_url.outputs.summary }})
+            ✅ lean4checker [succeeded](${{ steps.ci_url.outputs.summary }}) on ${{ github.sha }}
 
       - name: Post failure message on Zulip
         if: failure()
@@ -111,7 +109,7 @@ jobs:
           type: 'stream'
           topic: 'lean4checker failure'
           content: |
-            ❌ lean4checker failed on ${{ github.sha }} [CI_run](${{ steps.ci_url.outputs.summary }})
+            ❌ lean4checker [failed](${{ steps.ci_url.outputs.summary }}) on ${{ github.sha }}
         continue-on-error: true
 
       - name: Post failure message on Zulip main topic
