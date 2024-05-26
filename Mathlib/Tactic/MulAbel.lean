@@ -169,7 +169,7 @@ partial def evalMul : NormalExpr → NormalExpr → M (NormalExpr × Expr)
     return (e₁, p)
   | he₁@(nterm e₁ n₁ x₁ a₁), he₂@(nterm e₂ n₂ x₂ a₂) => do
     if x₁.1 = x₂.1 then
-      let n' ← Mathlib.Meta.NormNum.eval (← mkAppM ``HMul.hMul #[n₁.1, n₂.1])
+      let n' ← Mathlib.Meta.NormNum.eval (← mkAppM ``HAdd.hAdd #[n₁.1, n₂.1])
       let (a', h₂) ← evalMul a₁ a₂
       let k := n₁.2 + n₂.2
       let p₁ ← iapp ``term_mul_term
@@ -357,8 +357,8 @@ partial def eval (e : Expr) : M (NormalExpr × Expr) := do
     evalPow' eval false e e₁ e₂
   | (``pow', #[_, _, e₁, e₂]) => evalPow' eval false e e₁ e₂
   | (``powg', #[_, _, e₁, e₂]) => evalPow' eval true e e₁ e₂
-  | (``OfNat.ofNat, #[_, .lit (.natVal 0), _])
-  | (``Zero.zero, #[_, _]) =>
+  | (``OfNat.ofNat, #[_, .lit (.natVal 1), _])
+  | (``One.one, #[_, _]) =>
     if ← isDefEq e (← read).α1 then
       pure (← one', ← mkEqRefl (← read).α1)
     else
@@ -441,7 +441,7 @@ partial def abelNFCore
   let simp ← match cfg.mode with
   | .raw => pure pure
   | .term =>
-    let thms := [``term_eq, ``termg_eq, ``add_zero, ``one_nsmul, ``one_zsmul, ``zsmul_zero]
+    let thms := [``term_eq, ``termg_eq, ``mul_one, ``pow_one, ``zpow_one, ``one_zpow]
     let ctx' := { ctx with simpTheorems := #[← thms.foldlM (·.addConst ·) {:_}] }
     pure fun r' : Simp.Result ↦ do
       r'.mkEqTrans (← Simp.main r'.expr ctx' (methods := ← Lean.Meta.Simp.mkDefaultMethods)).1
