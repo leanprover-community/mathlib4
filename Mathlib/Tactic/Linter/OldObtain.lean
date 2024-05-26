@@ -8,10 +8,10 @@ import Lean.Elab.Command
 import Lean.Linter.Util
 import Mathlib.Tactic.RSuffices
 
-/-! ## The `oldObtain` linter, against stream-of-conciousness `obtain` and `rsuffices`
+/-! ## The `oldObtain` linter, against stream-of-conciousness `obtain`
 
-The `oldObtain` linter flags any occurrences of "stream-of-conciousness" `obtain` or `rsuffices`,
-i.e. uses of the `obtain` or `rsuffices` tactic which do not immediately provide a proof.
+The `oldObtain` linter flags any occurrences of "stream-of-conciousness" `obtain`,
+i.e. uses of the `obtain` tactic which do not immediately provide a proof.
 
 **Example.** There are six different kinds of `obtain` uses. In one example, they look like this.
 ```
@@ -28,8 +28,6 @@ theorem foo : True := by
   · trivial
 ```
 We allow the first four (since an explicit proof is provided), but lint against the last two.
-
-The `rsuffices` tactic is a thin wrapper around `obtain`, hence follows the same syntax.
 
 **Why is this bad?** This is similar to removing all uses of `Tactic.Replace` and `Tactic.Have`
 from mathlib: in summary,
@@ -56,15 +54,9 @@ def is_obtain_without_proof : Syntax → Bool
   | `(tactic|obtain : $_type) | `(tactic|obtain $_pat : $_type) => true
   | _ => false
 
-/-- Whether a syntax element is an `rsuffices` tactic call without a provided proof. -/
-def is_rsuffices_without_proof : Syntax → Bool
-  -- Using the `rsuffices` tactic without a proof requires proving a type;
-  -- a pattern is optional.
-  | `(tactic|rsuffices : $_type) | `(tactic|rsuffices $_pat : $_type) => true
-  | _ => false
 
 /-- The `oldObtain` linter emits a warning upon uses of the "stream-of-conciousness" variants
-of the `obtain` or `rsuffices` tactics, i.e. with the proof postponed. -/
+of the `obtain` tactic, i.e. with the proof postponed. -/
 register_option linter.oldObtain : Bool := {
   defValue := true
   descr := "enable the `oldObtain` linter"
@@ -82,9 +74,6 @@ def oldObtainLinter : Linter where run := withSetOptionIn fun stx => do
 
     if let some ((head, _)::_) := stx.findStack? (fun _ ↦ true) is_obtain_without_proof then
       Linter.logLint linter.oldObtain head m!"Please remove stream-of-conciousness `obtain` syntax"
-    else if let some ((head, _)::_) := stx.findStack? (fun _ ↦ true)
-        is_rsuffices_without_proof then Linter.logLint linter.oldObtain head m!"Please \
-        remove stream-of-conciousness `rsuffices` syntax"
 
 initialize addLinter oldObtainLinter
 

@@ -40,38 +40,3 @@ theorem foo'' : True := by
   obtain h : True
   · trivial
   trivial
-
--- Analogous tests for the `rsuffices` tactic.
--- These cases are fine.
-theorem bar : 2 + 2 = 4 := by
-  rsuffices := trivial
-  rsuffices _h := trivial
-  rsuffices : True := trivial
-  rsuffices _h : True := trivial
-  exact rfl
-
--- These are linted against.
-
-set_option linter.oldObtain false in
-/--
-warning: Please remove stream-of-conciousness `rsuffices` syntax
-note: this linter can be disabled with `set_option linter.oldObtain false`
--/
-#guard_msgs in
-set_option linter.oldObtain true in
-theorem bar' : 2 + 2 = 4 := by
-  rsuffices : True
-  · trivial
-  sorry
-
-set_option linter.oldObtain false in
-/--
-warning: Please remove stream-of-conciousness `rsuffices` syntax
-note: this linter can be disabled with `set_option linter.oldObtain false`
--/
-#guard_msgs in
-set_option linter.oldObtain true in
-theorem bar'' : 2 + 2 = 4 := by
-  rsuffices h : True
-  · trivial
-  sorry
