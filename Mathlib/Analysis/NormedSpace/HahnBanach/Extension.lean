@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2020 Yury Kudryashov All rights reserved.
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Heather Macbeth
 -/
@@ -51,9 +51,9 @@ theorem exists_extension_norm_eq (p : Subspace ℝ E) (f : p →L[ℝ] ℝ) :
       fun x => le_trans (le_abs_self _) (f.le_opNorm _) with ⟨g, g_eq, g_le⟩
   set g' :=
     g.mkContinuous ‖f‖ fun x => abs_le.2 ⟨neg_le.1 <| g.map_neg x ▸ norm_neg x ▸ g_le (-x), g_le x⟩
-  refine' ⟨g', g_eq, _⟩
+  refine ⟨g', g_eq, ?_⟩
   apply le_antisymm (g.mkContinuous_norm_le (norm_nonneg f) _)
-  refine' f.opNorm_le_bound (norm_nonneg _) fun x => _
+  refine f.opNorm_le_bound (norm_nonneg _) fun x => ?_
   dsimp at g_eq
   rw [← g_eq]
   apply g'.le_opNorm
@@ -99,7 +99,7 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : p →L[𝕜] 𝕜) :
         zero_mul, ofReal_re, mul_neg, mul_im, zero_add, ofReal_neg, mul_re,
         sub_neg_eq_add, ContinuousLinearMap.map_smul]
   -- And we derive the equality of the norms by bounding on both sides.
-  refine' ⟨h, le_antisymm _ _⟩
+  refine ⟨h, le_antisymm ?_ ?_⟩
   · calc
       ‖g.extendTo𝕜‖ = ‖g‖ := g.norm_extendTo𝕜
       _ = ‖fr‖ := hnormeq
@@ -158,7 +158,7 @@ theorem exists_dual_vector (x : E) (h : x ≠ 0) : ∃ g : E →L[𝕜] 𝕜, �
   let p : Submodule 𝕜 E := 𝕜 ∙ x
   let f := (‖x‖ : 𝕜) • coord 𝕜 x h
   obtain ⟨g, hg⟩ := exists_extension_norm_eq p f
-  refine' ⟨g, _, _⟩
+  refine ⟨g, ?_, ?_⟩
   · rw [hg.2, coord_norm']
   · calc
       g x = g (⟨x, mem_span_singleton_self x⟩ : 𝕜 ∙ x) := by rw [coe_mk]
@@ -182,7 +182,7 @@ theorem exists_dual_vector' [Nontrivial E] (x : E) : ∃ g : E →L[𝕜] 𝕜, 
     vector space). -/
 theorem exists_dual_vector'' (x : E) : ∃ g : E →L[𝕜] 𝕜, ‖g‖ ≤ 1 ∧ g x = ‖x‖ := by
   by_cases hx : x = 0
-  · refine' ⟨0, by simp, _⟩
+  · refine ⟨0, by simp, ?_⟩
     symm
     simp [hx]
   · rcases exists_dual_vector 𝕜 x hx with ⟨g, g_norm, g_eq⟩

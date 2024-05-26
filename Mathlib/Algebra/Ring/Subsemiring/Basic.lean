@@ -1,11 +1,11 @@
 /-
-Copyright (c) 2020 Yury Kudryashov All rights reserved.
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Algebra.GroupRingAction.Subobjects
 import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Ring.Action.Subobjects
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Data.Set.Finite
@@ -803,9 +803,9 @@ theorem subsemiringClosure_toAddSubmonoid :
 `Subsemiring.closure` of the submonoid itself . -/
 theorem subsemiringClosure_eq_closure : M.subsemiringClosure = Subsemiring.closure (M : Set R) := by
   ext
-  refine'
-    ⟨fun hx => _, fun hx =>
-      (Subsemiring.mem_closure.mp hx) M.subsemiringClosure fun s sM => _⟩
+  refine
+    ⟨fun hx => ?_, fun hx =>
+      (Subsemiring.mem_closure.mp hx) M.subsemiringClosure fun s sM => ?_⟩
   <;> rintro - ⟨H1, rfl⟩
   <;> rintro - ⟨H2, rfl⟩
   · exact AddSubmonoid.mem_closure.mp hx H1.toAddSubmonoid H2
@@ -840,11 +840,11 @@ theorem mem_closure_iff {s : Set R} {x} :
 theorem closure_addSubmonoid_closure {s : Set R} :
     closure ↑(AddSubmonoid.closure s) = closure s := by
   ext x
-  refine' ⟨fun hx => _, fun hx => closure_mono AddSubmonoid.subset_closure hx⟩
+  refine ⟨fun hx => ?_, fun hx => closure_mono AddSubmonoid.subset_closure hx⟩
   rintro - ⟨H, rfl⟩
   rintro - ⟨J, rfl⟩
-  refine' (AddSubmonoid.mem_closure.mp (mem_closure_iff.mp hx)) H.toAddSubmonoid fun y hy => _
-  refine' (Submonoid.mem_closure.mp hy) H.toSubmonoid fun z hz => _
+  refine (AddSubmonoid.mem_closure.mp (mem_closure_iff.mp hx)) H.toAddSubmonoid fun y hy => ?_
+  refine (Submonoid.mem_closure.mp hy) H.toSubmonoid fun z hz => ?_
   exact (AddSubmonoid.mem_closure.mp hz) H.toAddSubmonoid fun w hw => J hw
 #align subsemiring.closure_add_submonoid_closure Subsemiring.closure_addSubmonoid_closure
 

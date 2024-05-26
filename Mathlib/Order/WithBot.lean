@@ -222,7 +222,7 @@ theorem some_le_some : @LE.le (WithBot α) _ (Option.some a) (Option.some b) ↔
   coe_le_coe
 #align with_bot.some_le_some WithBot.some_le_some
 
-@[simp]
+@[simp, deprecated bot_le "Don't mix Option and WithBot" (since := "2024-05-27")]
 theorem none_le {a : WithBot α} : @LE.le (WithBot α) _ none a := bot_le
 #align with_bot.none_le WithBot.none_le
 

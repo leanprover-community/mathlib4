@@ -114,14 +114,14 @@ theorem addMem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a b : ∀ x :
     (isLocallyFraction 𝒜).pred (a + b) := fun x => by
   rcases ha x with ⟨Va, ma, ia, ja, ⟨ra, ra_mem⟩, ⟨sa, sa_mem⟩, hwa, wa⟩
   rcases hb x with ⟨Vb, mb, ib, jb, ⟨rb, rb_mem⟩, ⟨sb, sb_mem⟩, hwb, wb⟩
-  refine'
+  refine
     ⟨Va ⊓ Vb, ⟨ma, mb⟩, Opens.infLELeft _ _ ≫ ia, ja + jb,
       ⟨sb * ra + sa * rb,
         add_mem (add_comm jb ja ▸ mul_mem_graded sb_mem ra_mem : sb * ra ∈ 𝒜 (ja + jb))
           (mul_mem_graded sa_mem rb_mem)⟩,
       ⟨sa * sb, mul_mem_graded sa_mem sb_mem⟩, fun y ↦
         y.1.asHomogeneousIdeal.toIdeal.primeCompl.mul_mem (hwa ⟨y.1, y.2.1⟩) (hwb ⟨y.1, y.2.2⟩),
-      fun y => _⟩
+      fun y => ?_⟩
   simp only at wa wb
   simp only [Pi.add_apply, wa ⟨y.1, y.2.1⟩, wb ⟨y.1, y.2.2⟩, ext_iff_val,
     add_val, val_mk'', add_mk, add_comm (sa * rb)]
@@ -131,7 +131,7 @@ theorem addMem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a b : ∀ x :
 theorem negMem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a : ∀ x : U.unop, at x.1)
     (ha : (isLocallyFraction 𝒜).pred a) : (isLocallyFraction 𝒜).pred (-a) := fun x => by
   rcases ha x with ⟨V, m, i, j, ⟨r, r_mem⟩, ⟨s, s_mem⟩, nin, hy⟩
-  refine' ⟨V, m, i, j, ⟨-r, Submodule.neg_mem _ r_mem⟩, ⟨s, s_mem⟩, nin, fun y => _⟩
+  refine ⟨V, m, i, j, ⟨-r, Submodule.neg_mem _ r_mem⟩, ⟨s, s_mem⟩, nin, fun y => ?_⟩
   simp only [ext_iff_val, val_mk''] at hy
   simp only [Pi.neg_apply, ext_iff_val, neg_val, hy, val_mk'', neg_mk]
 #align algebraic_geometry.projective_spectrum.structure_sheaf.section_subring.neg_mem' AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.SectionSubring.negMem'
@@ -141,12 +141,12 @@ theorem mulMem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a b : ∀ x :
     (isLocallyFraction 𝒜).pred (a * b) := fun x => by
   rcases ha x with ⟨Va, ma, ia, ja, ⟨ra, ra_mem⟩, ⟨sa, sa_mem⟩, hwa, wa⟩
   rcases hb x with ⟨Vb, mb, ib, jb, ⟨rb, rb_mem⟩, ⟨sb, sb_mem⟩, hwb, wb⟩
-  refine'
+  refine
     ⟨Va ⊓ Vb, ⟨ma, mb⟩, Opens.infLELeft _ _ ≫ ia, ja + jb,
       ⟨ra * rb, SetLike.mul_mem_graded ra_mem rb_mem⟩,
       ⟨sa * sb, SetLike.mul_mem_graded sa_mem sb_mem⟩, fun y =>
       y.1.asHomogeneousIdeal.toIdeal.primeCompl.mul_mem (hwa ⟨y.1, y.2.1⟩) (hwb ⟨y.1, y.2.2⟩),
-      fun y ↦ _⟩
+      fun y ↦ ?_⟩
   simp only [Pi.mul_apply, wa ⟨y.1, y.2.1⟩, wb ⟨y.1, y.2.2⟩, ext_iff_val, mul_val, val_mk'', mk_mul]
   rfl
 #align algebraic_geometry.projective_spectrum.structure_sheaf.section_subring.mul_mem' AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.SectionSubring.mulMem'
@@ -202,7 +202,7 @@ set_option linter.uppercaseLean3 false in
 attribute [nolint simpNF]
   AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.structurePresheafInCommRing_map_apply
 
-/-- Some glue, verifying that that structure presheaf valued in `CommRing` agrees with the `Type`
+/-- Some glue, verifying that the structure presheaf valued in `CommRing` agrees with the `Type`
 valued structure presheaf. -/
 def structurePresheafCompForget :
     structurePresheafInCommRing 𝒜 ⋙ forget CommRingCat ≅ (structureSheafInType 𝒜).1 :=
