@@ -150,7 +150,7 @@ theorem pow_comp [Pow γ α] (x : β → γ) (a : α) (y : I → β) : (x ^ a) �
 Porting note: `bit0` and `bit1` are deprecated. This section can be removed entirely
 (without replacement?).
 -/
-section deprecated
+section deprecated -- since the port, 2022-11-28
 
 set_option linter.deprecated false
 
