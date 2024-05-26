@@ -38,7 +38,9 @@ from mathlib: in summary,
   particularly so when the first tactic of the proof is `exact`
 - when using the old syntax as `obtain foo : type; · proof`, there is an intermediate state with
 multiple goals right before the focusing dot. This can be confusing.
-(This gets amplified with the in-flight "multiple goal linter", which in my perception seems generally desired - for many reasons, including teachability. Granted, the linter could be tweaked to not lint in this case... but by now, the "old" syntax is not clearly better.)
+(This gets amplified with the in-flight "multiple goal linter", which seems generally desired ---
+for many reasons, including teachability. Granted, the linter could be tweaked to not lint in this
+case... but by now, the "old" syntax is not clearly better.)
 - the old syntax *could* be slightly nicer when deferring goals: however, this is rare.
 In the 30 replacements of the last PR, this occurred twice. In both cases, the `suffices` tactic
 could also be used, as was in fact clearer. -/
@@ -80,8 +82,9 @@ def oldObtainLinter : Linter where run := withSetOptionIn fun stx => do
 
     if let some ((head, _)::_) := stx.findStack? (fun _ ↦ true) is_obtain_without_proof then
       Linter.logLint linter.oldObtain head m!"Please remove stream-of-conciousness `obtain` syntax"
-    else if let some ((head, _)::_) := stx.findStack? (fun _ ↦ true) is_rsuffices_without_proof then
-      Linter.logLint linter.oldObtain head m!"Please remove stream-of-conciousness `rsuffices` syntax"
+    else if let some ((head, _)::_) := stx.findStack? (fun _ ↦ true)
+        is_rsuffices_without_proof then Linter.logLint linter.oldObtain head m!"Please \
+        remove stream-of-conciousness `rsuffices` syntax"
 
 initialize addLinter oldObtainLinter
 
