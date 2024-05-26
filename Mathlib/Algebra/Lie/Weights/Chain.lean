@@ -292,7 +292,7 @@ lemma weightSpace_zsmul_add_ne_bot {n : ℤ}
     exact weightSpace_nsmul_add_ne_bot_of_le (-α) β hn
 
 lemma weightSpace_neg_zsmul_add_ne_bot {n : ℕ} (hn : n ≤ chainBotCoeff α β) :
-      weightSpace M ((-n : ℤ) • α + β : L → R) ≠ ⊥ := by
+    weightSpace M ((-n : ℤ) • α + β : L → R) ≠ ⊥ := by
   apply weightSpace_zsmul_add_ne_bot α β <;> omega
 
 /-- This is the first weight in an `α`-chain through `β`. -/
