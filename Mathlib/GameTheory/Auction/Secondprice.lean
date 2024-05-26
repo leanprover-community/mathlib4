@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Wang Haocheng. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Ma Jiajun, Wang Haocheng
+Authors: Ma Jiajun, Wang Haocheng.
 -/
 import Mathlib.Tactic.Linarith.Lemmas
 import Mathlib.Data.Fintype.Basic
@@ -64,6 +64,7 @@ lemma two_different_elements {I : Type*} (h : ∃ (i j : I), i≠ j) : ∀ (i:I)
 
 /-!###   Structure Definition  -/
 
+/-- The Auction structure is set with components including: -/
 structure Auction where
    /-- A set of participants.-/
    I : Type*
@@ -121,7 +122,6 @@ noncomputable def secondprice : ℝ  := B b (winner b)
 which is their valuation minus the second highest bid if `i` is the winner, otherwise, it's 0. -/
 noncomputable def utility  (i : a.I) : ℝ := if i = winner b then a.v i - secondprice b else 0
 
-
 /-! ### Proofs and Lemmas -/
 variable {i: a.I}
 /-- If `i` is the winner, then their utility is their valuation minus the second highest bid. -/
@@ -139,7 +139,7 @@ def dominant (i : a.I) (bi : ℝ) : Prop :=
    →  utility  b i ≥ utility b' i
 
 /-- If `i`'s bid is higher than all other bids, then `i` is the winner. -/
-lemma gt_wins (i : a.I) (H: ∀ j , i ≠j →  b i > b j) : i = winner b := by
+lemma gt_wins (i : a.I) (H: ∀ j , i ≠ j →  b i > b j) : i = winner b := by
    have HH : ∀ j, i = j ↔  b j = maxb b:= by
       have imax : b i = maxb b := by
          have H1 : b i ≤  maxb b := by
