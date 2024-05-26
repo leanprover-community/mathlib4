@@ -244,23 +244,9 @@ set_option linter.uppercaseLean3 false in
 -/
 @[simps!]
 def unitIso : 𝟭 (CommMon_ (C ⥤ D)) ≅ functor ⋙ inverse :=
-  NatIso.ofComponents
-    (fun A =>
-      { hom :=
-          { hom := { app := fun _ => 𝟙 _ }
-            one_hom := by ext X; dsimp; simp only [Category.comp_id]
-            mul_hom := by ext X; dsimp; simp only [tensor_id, Category.id_comp, Category.comp_id] }
-        inv :=
-          { hom := { app := fun _ => 𝟙 _ }
-            one_hom := by ext X; dsimp; simp only [Category.comp_id]
-            mul_hom := by
-              ext X
-              dsimp
-              simp only [tensor_id, Category.id_comp, Category.comp_id] } })
-    fun f => by
-      ext X
-      dsimp
-      simp only [Category.id_comp, Category.comp_id]
+  NatIso.ofComponents (fun A =>
+  { hom := { hom := { app := fun _ => 𝟙 _ }  }
+    inv := { hom := { app := fun _ => 𝟙 _ }  } })
 set_option linter.uppercaseLean3 false in
 #align category_theory.monoidal.CommMon_functor_category_equivalence.unit_iso CategoryTheory.Monoidal.CommMonFunctorCategoryEquivalence.unitIso
 
@@ -268,14 +254,8 @@ set_option linter.uppercaseLean3 false in
 -/
 @[simps!]
 def counitIso : inverse ⋙ functor ≅ 𝟭 (C ⥤ CommMon_ D) :=
-  NatIso.ofComponents
-    (fun A =>
-      NatIso.ofComponents
-        (fun X =>
-          { hom := { hom := 𝟙 _ }
-            inv := { hom := 𝟙 _ } })
-        (by aesop_cat))
-    (by aesop_cat)
+  NatIso.ofComponents (fun A =>
+    NatIso.ofComponents (fun X => { hom := { hom := 𝟙 _ }, inv := { hom := 𝟙 _ } }) )
 set_option linter.uppercaseLean3 false in
 #align category_theory.monoidal.CommMon_functor_category_equivalence.counit_iso CategoryTheory.Monoidal.CommMonFunctorCategoryEquivalence.counitIso
 

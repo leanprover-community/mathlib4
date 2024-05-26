@@ -7,6 +7,8 @@ import Mathlib.CategoryTheory.Monoidal.Internal.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Limits
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 
 #align_import category_theory.monoidal.internal.limits from "leanprover-community/mathlib"@"12921e9eaa574d0087ae4856860e6dda8690a438"
 
@@ -23,13 +25,13 @@ in particular `MonCat`, `SemiRingCat`, `RingCat`, and `AlgebraCat R`.)
 
 open CategoryTheory Limits Monoidal
 
-universe v u
+universe v u w
 
 noncomputable section
 
 namespace Mon_
 
-variable {J : Type v} [SmallCategory J]
+variable {J : Type w} [SmallCategory J]
 variable {C : Type u} [Category.{v} C] [HasLimitsOfShape J C] [MonoidalCategory.{v} C]
 
 /-- We construct the (candidate) limit of a functor `F : J ⥤ Mon_ C`
@@ -39,7 +41,7 @@ and hence sends monoid objects to monoid objects.
 -/
 @[simps!]
 def limit (F : J ⥤ Mon_ C) : Mon_ C :=
-  limLax.mapMon.obj (MonFunctorCategoryEquivalence.inverse.obj F)
+  limLax.mapMon.obj ((monFunctorCategoryEquivalence J C).inverse.obj F)
 set_option linter.uppercaseLean3 false in
 #align Mon_.limit Mon_.limit
 
@@ -75,8 +77,7 @@ def limitConeIsLimit (F : J ⥤ Mon_ C) : IsLimit (limitCone F) where
         ext
         simp only [Functor.comp_obj, forget_obj, Category.assoc, limit.lift_π, Functor.mapCone_pt,
           Functor.mapCone_π_app, forget_map, Hom.mul_hom, limit_mul, Cones.postcompose_obj_pt,
-          Cones.postcompose_obj_π, NatTrans.comp_app, Functor.const_obj_obj, tensorObj_obj,
-          MonFunctorCategoryEquivalence.Inverse.obj_mul_app]
+          Cones.postcompose_obj_π, NatTrans.comp_app, Functor.const_obj_obj, tensorObj_obj]
         slice_rhs 1 2 => rw [← MonoidalCategory.tensor_comp, limit.lift_π]
         rfl }
   fac s h := by ext; simp
@@ -105,10 +106,12 @@ set_option linter.uppercaseLean3 false in
 -- We verify that we have successfully created special shapes of limits in `Mon_ C`,
 -- assuming that only those special shapes existed in `C`.
 
-example (D : Type _) [Category D] [MonoidalCategory D] [HasTerminal D] :
-  HasTerminal (Mon_ D) := inferInstance
+def terminal_X_iso
+    (D : Type u) [Category.{v} D] [MonoidalCategory D] [HasTerminal D] :
+  (⊤_ (Mon_ D)).X ≅ (⊤_ D) := PreservesTerminal.iso (Mon_.forget D)
 
-example (D : Type _) [Category D] [MonoidalCategory D] [HasBinaryProducts D] :
-  HasBinaryProducts (Mon_ D) := inferInstance
+def prod_X_iso
+    (D : Type u) [Category.{v} D] [MonoidalCategory D] [HasBinaryProducts D] (A B : Mon_ D) :
+  (prod A B).X ≅ prod A.X B.X := PreservesLimitPair.iso (Mon_.forget D) A B
 
 end Mon_

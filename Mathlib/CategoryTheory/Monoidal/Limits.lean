@@ -17,6 +17,9 @@ i.e. there are morphisms
 * `limLax.ε : (𝟙_ C) → limit (𝟙_ (J ⥤ C))`
 * `limLax.μ : limit F ⊗ limit G ⟶ limit (F ⊗ G)`
 satisfying the laws of a lax monoidal functor.
+
+## TODO
+Now that we have oplax monoidal functors, assemble `Limits.colim` into an oplax monoidal functor.
 -/
 
 
@@ -26,11 +29,11 @@ open CategoryTheory.MonoidalCategory
 
 namespace CategoryTheory.Limits
 
-universe v u
+universe v u w
 
 noncomputable section
 
-variable {J : Type v} [SmallCategory J]
+variable {J : Type w} [SmallCategory J]
 variable {C : Type u} [Category.{v} C] [HasLimitsOfShape J C]
 
 instance limitFunctorial : Functorial fun F : J ⥤ C => limit F where

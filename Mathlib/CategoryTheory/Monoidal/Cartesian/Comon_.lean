@@ -55,6 +55,8 @@ the canonical comonoid structure on the underlying object.
   { hom := { hom := 𝟙 _ }
     inv := { hom := 𝟙 _ } }
 
+variable (C)
+
 /--
 The category of comonoid objects in a cartesian monoidal category is equivalent
 to the category itself, via the forgetful functor.

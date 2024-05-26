@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
 import Mathlib.CategoryTheory.Monoidal.Transport
 import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.CategoryTheory.Adjunction.Unique
 
 /-!
 # The category of comonoids in a monoidal category.
@@ -322,10 +323,39 @@ def mapComon (F : OplaxMonoidalFunctor C D) : Comon_ C ⥤ Comon_ D where
   map_id A := by ext; simp
   map_comp f g := by ext; simp
 
-variable (C D)
-
 -- TODO We haven't yet set up the category structure on `OplaxMonoidalFunctor C D`
 -- and so can't state `mapComonFunctor : OplaxMonoidalFunctor C D ⥤ Comon_ C ⥤ Comon_ D`.
 
-
 end CategoryTheory.OplaxMonoidalFunctor
+
+namespace CategoryTheory.MonoidalFunctor
+
+/-!
+## A monoidal equivalence gives an equivalence of comonoid categories.
+-/
+
+variable {C} {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
+
+-- For now, this is how we introduce a monoidal equivalence.
+variable (F : MonoidalFunctor C D) {G : D ⥤ C} (adj : F.toFunctor ⊣ G)
+  [F.IsEquivalence]
+
+open CategoryTheory
+
+noncomputable section
+
+example : F.asEquivalence.inverse ≅ G := F.adjunction.rightAdjointUniq adj
+
+def equivalenceMapComon_ : Comon_ C ≌ Comon_ D where
+  functor := F.toOplaxMonoidalFunctor.mapComon
+  inverse := (CategoryTheory.monoidalInverse F adj).toOplaxMonoidalFunctor.mapComon
+  unitIso := NatIso.ofComponents (fun A =>
+    Comon_.mkIso ((F.asEquivalence).unitIso.app A.X ≪≫
+      ((F.adjunction.rightAdjointUniq adj).app (F.obj A.X)))
+      (by dsimp; simp [Adjunction.rightAdjointUniq]; sorry)
+      (by dsimp; simp [Adjunction.rightAdjointUniq]; sorry))
+  counitIso := sorry
+
+end
+
+end CategoryTheory.MonoidalFunctor
