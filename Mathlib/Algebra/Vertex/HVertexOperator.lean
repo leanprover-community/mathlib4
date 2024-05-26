@@ -75,7 +75,7 @@ theorem coeff_inj : Function.Injective (coeff : HVertexOperator Γ R V W → Γ 
 /-- Given a coefficient function valued in linear maps satisfying a partially well-ordered support
 condition, we produce a heterogeneous vertex operator. -/
 @[simps]
-def HetVertexOperator.of_coeff (f : Γ → V →ₗ[R] W)
+def of_coeff (f : Γ → V →ₗ[R] W)
     (hf : ∀(x : V), (Function.support (f · x)).IsPWO) : HVertexOperator Γ R V W where
   toFun := fun x =>
   { coeff := fun g => f g x
@@ -102,7 +102,7 @@ open HahnModule
 /-- The composite of two heterogeneous vertex operators acting on a vector, as an iterated Hahn
   series.-/
 @[simps]
-def CompHahnSeries (u : U) : HahnSeries Γ' (HahnSeries Γ W) where
+def compHahnSeries (u : U) : HahnSeries Γ' (HahnSeries Γ W) where
   coeff g' := A (coeff B g' u)
   isPWO_support' := by
     refine Set.IsPWO.mono (((of R).symm (B u)).isPWO_support') ?_
@@ -113,38 +113,38 @@ def CompHahnSeries (u : U) : HahnSeries Γ' (HahnSeries Γ W) where
     simp_all only [map_zero, HahnSeries.zero_coeff, not_true_eq_false]
 
 @[simp]
-theorem CompHahnSeries.add (u v : U) :
-    CompHahnSeries A B (u + v) = CompHahnSeries A B u + CompHahnSeries A B v := by
+theorem compHahnSeries_add (u v : U) :
+    compHahnSeries A B (u + v) = compHahnSeries A B u + compHahnSeries A B v := by
   ext
-  simp only [CompHahnSeries_coeff, map_add, coeff_apply, HahnSeries.add_coeff', Pi.add_apply]
+  simp only [compHahnSeries_coeff, map_add, coeff_apply, HahnSeries.add_coeff', Pi.add_apply]
   rw [← @HahnSeries.add_coeff]
 
 @[simp]
-theorem CompHahnSeries.sMul (r : R) (u : U) :
-    CompHahnSeries A B (r • u) = r • CompHahnSeries A B u := by
+theorem compHahnSeries_smul (r : R) (u : U) :
+    compHahnSeries A B (r • u) = r • compHahnSeries A B u := by
   ext
-  simp only [CompHahnSeries_coeff, LinearMapClass.map_smul, coeff_apply, HahnSeries.smul_coeff]
+  simp only [compHahnSeries_coeff, LinearMapClass.map_smul, coeff_apply, HahnSeries.smul_coeff]
   exact rfl
 
 /-- The composite of two heterogeneous vertex operators, as a heterogeneous vertex operator. -/
 @[simps]
-def hComp : HVertexOperator (Γ' ×ₗ Γ) R U W where
-  toFun u := HahnModule.of R (HahnSeries.ofIterate (CompHahnSeries A B u))
+def comp : HVertexOperator (Γ' ×ₗ Γ) R U W where
+  toFun u := HahnModule.of R (HahnSeries.ofIterate (compHahnSeries A B u))
   map_add' := by
     intro u v
     ext g
-    simp only [HahnSeries.ofIterate, CompHahnSeries.add, Equiv.symm_apply_apply,
+    simp only [HahnSeries.ofIterate, compHahnSeries_add, Equiv.symm_apply_apply,
       HahnModule.of_symm_add, HahnSeries.add_coeff', Pi.add_apply]
   map_smul' := by
     intro r x
     ext g
-    simp only [HahnSeries.ofIterate, CompHahnSeries.sMul, Equiv.symm_apply_apply, RingHom.id_apply,
-      HahnSeries.smul_coeff, CompHahnSeries_coeff, coeff_apply]
+    simp only [HahnSeries.ofIterate, compHahnSeries_smul, Equiv.symm_apply_apply, RingHom.id_apply,
+      HahnSeries.smul_coeff, compHahnSeries_coeff, coeff_apply]
     exact rfl
 
 @[simp]
-theorem coeff_hetComp (g : Γ' ×ₗ Γ) :
-    (hComp A B).coeff g = A.coeff (ofLex g).2 ∘ₗ B.coeff (ofLex g).1 := by
+theorem comp_coeff (g : Γ' ×ₗ Γ) :
+    (comp A B).coeff g = A.coeff (ofLex g).2 ∘ₗ B.coeff (ofLex g).1 := by
   rfl
 
 end Products
