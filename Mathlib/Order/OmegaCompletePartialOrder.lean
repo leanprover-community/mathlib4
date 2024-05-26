@@ -115,35 +115,23 @@ lemma isChain_range : IsChain (· ≤ ·) (Set.range c) := Monotone.isChain_rang
 
 lemma directed : Directed (· ≤ ·) c := directedOn_range.2 c.isChain_range.directedOn
 
-lemma pairChain (a : α) (b : α) (hab : a ≤ b ): ∃ c : Chain α, Set.range c = {a , b} := by
-  let f : ℕ → α
+lemma ordered_pair_exists_chain (a : α) (b : α) (hab : a ≤ b) :
+    ∃ c : Chain α, Set.range c = {a , b} := by
+  let c :  ℕ →o α := ⟨fun n => match n with
     | 0 => a
-    | _ => b
-  let c :  ℕ →o α := ⟨f, by
-    intros _ _ _
-    aesop⟩
+    | _ => b, fun _ _ _ => by aesop⟩
   use c
   rw [le_antisymm_iff]
   constructor
-  · simp only [Set.le_eq_subset]
-    intros d hd
-    simp only [Set.mem_range] at hd
+  · intros d hd
     rcases hd with ⟨n,hn⟩
-    simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
     cases n
     · aesop
     · aesop
-  · simp only [Set.le_eq_subset]
-    intros d hd
-    simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hd
-    simp only [Set.mem_range]
+  · intros d hd
     cases' hd with ha hb
-    · use 0
-      rw [ha]
-      rfl
-    · use 1
-      rw [hb]
-      rfl
+    · use 0; rw [ha]; rfl
+    · use 1; rw [hb]; rfl
 
 /-- `map` function for `Chain` -/
 -- Porting note: `simps` doesn't work with type synonyms
@@ -324,7 +312,7 @@ lemma ωScottContinuous.monotone {f : α → β} (h : ωScottContinuous f) : Mon
     { d | ∃ (c : Chain α), Set.range c = d } (by
       intros a b hab
       simp only [Set.mem_setOf_eq]
-      exact pairChain a b hab) h
+      exact ordered_pair_exists_chain a b hab) h
 
 lemma isLUB_of_ωScottContinuous {c : Chain α} {f : α → β} (hf : ωScottContinuous f) :
     IsLUB (Set.range (Chain.map c ⟨f, (ωScottContinuous.monotone hf)⟩)) (f (ωSup c)) := by
