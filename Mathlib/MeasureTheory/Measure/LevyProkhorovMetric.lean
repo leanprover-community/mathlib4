@@ -524,7 +524,7 @@ lemma SeparableSpace.exists_measurable_partition_diam_le {ε : ℝ} (ε_pos : 0 
 
 variable {Ω}
 
-lemma ProbabilityMeasure.toMeasure_add_pos_gt_mem_nhds {P : ProbabilityMeasure Ω}
+lemma ProbabilityMeasure.toMeasure_add_pos_gt_mem_nhds (P : ProbabilityMeasure Ω)
     {G : Set Ω} (G_open : IsOpen G) {ε : ℝ≥0∞} (ε_pos : 0 < ε) (ε_ne_top : ε ≠ ∞) :
     ({Q | P.toMeasure G < Q.toMeasure G + ε} ∈ 𝓝 P) := by
   by_cases easy : P.toMeasure G < ε
@@ -584,16 +584,13 @@ lemma ProbabilityMeasure.continuous_toLevyProkhorov :
 
   -- Assume that `Q` is in the neighborhood of `P` such that for each `J ⊆ {0, 1, ..., N-1}`
   -- we have `P (Gs J) < Q (Gs J) + ε/3`.
-  have Gs_mem_nhds := fun (J : Set ℕ) ↦ mem_nhds_P _ (Gs_open J)
-  filter_upwards [(Finset.iInter_mem_sets Js_finite.toFinset).mpr <| fun J _ ↦ Gs_mem_nhds J]
-    with Q hQ
+  filter_upwards [(Finset.iInter_mem_sets Js_finite.toFinset).mpr <|
+                    fun J _ ↦ mem_nhds_P _ (Gs_open J)] with Q hQ
   simp only [Finite.mem_toFinset, mem_setOf_eq, thickening_iUnion, mem_iInter] at hQ
 
   -- Note that in order to show that the Lévy-Prokhorov distance `LPdist P Q` is small (`≤ 2*ε/3`),
   -- it suffices to show that for arbitrary subsets `B ⊆ Ω`, the measure `P B` is bounded above up
-  -- to a small error by the `Q`-measure of a small thickening of `B`. (The converse direction
-  -- of upper bounding `Q`-measures by `P`-measures comes for free from complements, since `P`
-  -- and `Q` are probability measures.)
+  -- to a small error by the `Q`-measure of a small thickening of `B`.
   apply lt_of_le_of_lt ?_ (show 2*(ε/3) < ε by linarith)
   rw [LevyProkhorov.dist_def, levyProkhorovDist, levyProkhorovEDist_comm]
   apply levyProkhorovDist_le_of_forall_le
@@ -605,8 +602,7 @@ lemma ProbabilityMeasure.continuous_toLevyProkhorov :
     -- Let `JB ⊆ {0, 1, ..., N-1}` consist of those indices `j` such that `B` intersects `Es j`.
     -- Then the open set `Gs JB` approximates `B` rather well:
     -- except for what happens in the small complement `(⋃ n < N, Es n)ᶜ`, the set `B` is
-    -- contained in `Gs JB`, and conversely `Gs JB` only contains points within `2*ε/3 + δ`
-    -- from `B`.
+    -- contained in `Gs JB`, and conversely `Gs JB` only contains points within `δ` from `B`.
     set JB := {i | B ∩ Es i ≠ ∅ ∧ i ∈ Iio N}
     have B_subset : B ⊆ (⋃ i ∈ JB, thickening (ε/3) (Es i)) ∪ (⋃ j ∈ Iio N, Es j)ᶜ := by
       suffices B ⊆ (⋃ i ∈ JB, thickening (ε/3) (Es i)) ∪ (⋃ j ∈ Ici N, Es j) by
@@ -643,8 +639,7 @@ lemma ProbabilityMeasure.continuous_toLevyProkhorov :
     apply (measure_mono B_subset).trans
     apply (measure_union_le _ _).trans
 
-    -- We need to convince Lean that the small complement is small, `P (small complement) < ε/3`,
-    -- which really is exactly the way we chose it to be from the beginning...
+    -- Recall that the small complement is small, `P (small complement) < ε/3`.
     have aux : P.toMeasure (⋃ j ∈ Iio N, Es j)ᶜ < ENNReal.ofReal (ε/3) := by
       have rewr : ⋃ i, ⋃ (_ : N ≤ i), Es i = (⋃ i, ⋃ (_ : i < N), Es i)ᶜ :=
         by simpa only [mem_Iio, compl_Iio, mem_Ici]
@@ -655,12 +650,11 @@ lemma ProbabilityMeasure.continuous_toLevyProkhorov :
     -- From the choice of `Q` in a suitable neighborhood, we have `P (Gs JB) < Q (Gs JB) + ε/3`.
     specialize hQ _ (show JB ⊆ Iio N from fun _ h ↦ h.2)
 
-    -- Now it remains to add the pieces and use the estimates we have.
+    -- Now it remains to add the pieces and use the above estimates.
     apply (add_le_add hQ.le aux.le).trans
     rw [add_assoc, ← ENNReal.ofReal_add third_ε_pos.le third_ε_pos.le, ← two_mul]
     apply add_le_add (measure_mono subset_thickB) (ofReal_le_ofReal _)
     exact δ_gt.le
-
 
 /-- The topology of the Lévy-Prokhorov metric on probability measures on a separable space
 coincides with the topology of convergence in distribution. -/
