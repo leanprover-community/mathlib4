@@ -679,9 +679,10 @@ open Prepartition EMetric
 variable (l)
 
 /-- A function that is bounded and a.e. continuous on a box `I` is integrable on `I`. -/
-theorem integrable_of_bounded_and_ae_continuous (l : IntegrationParams) [CompleteSpace E]
+theorem integrable_of_bounded_and_ae_continuousWithinAt (l : IntegrationParams) [CompleteSpace E]
     {I : Box ι} {f : ℝⁿ → E} (hb : ∃ C : ℝ, ∀ x ∈ Box.Icc I, ‖f x‖ ≤ C) (μ : Measure ℝⁿ)
-    [IsLocallyFiniteMeasure μ] (hc : ∀ᵐ x ∂μ, ContinuousAt f x) :
+    [IsLocallyFiniteMeasure μ]
+    (hc : ∀ᵐ x ∂(μ.restrict (Box.Icc I)), ContinuousWithinAt f (Box.Icc I) x) :
     Integrable I l f μ.toBoxAdditive.toSMul := by
   /- We prove that f is integrable by proving that we can ensure that the integralSums over any
      two tagged prepartitions π₁ and π₂ can be made ε-close by making the partitions
@@ -698,23 +699,25 @@ theorem integrable_of_bounded_and_ae_continuous (l : IntegrationParams) [Complet
   have ε₂0': ENNReal.ofReal ε₂ ≠ 0 := fun h ↦ not_le_of_gt ε₂0 (ENNReal.ofReal_eq_zero.1 h)
 
   -- The set of discontinuities of f is contained in an open set U with μ U < ε₂.
-  let D := { x ∈ Box.Icc I | ¬ ContinuousAt f x }
-  have μD : μ D = 0 := by
-    obtain ⟨v, v_ae, hv⟩ := Filter.eventually_iff_exists_mem.1 hc
-    exact eq_of_le_of_not_lt (le_of_le_of_eq (μ.mono <| fun x hx xv ↦ hx.2 (hv x xv))
+  let D := { x ∈ Box.Icc I | ¬ ContinuousWithinAt f (Box.Icc I) x }
+  let μ' := μ.restrict (Box.Icc I)
+  have μ'D : μ' D = 0 := by
+    obtain ⟨v, v_ae, hv⟩ := eventually_iff_exists_mem.1 hc
+    exact eq_of_le_of_not_lt (le_of_le_of_eq (μ'.mono <| fun x hx xv ↦ hx.2 (hv x xv))
                                 (mem_ae_iff.1 v_ae)) ENNReal.not_lt_zero
-  obtain ⟨U, UD, Uopen, hU⟩ := Set.exists_isOpen_lt_add D (show μ D ≠ ⊤ by simp [μD]) ε₂0'
-  rw [μD, zero_add] at hU
+  obtain ⟨U, UD, Uopen, hU⟩ := Set.exists_isOpen_lt_add D (show μ' D ≠ ⊤ by simp [μ'D]) ε₂0'
+  rw [μ'D, zero_add] at hU
 
   /- Box.Icc I \ U is compact and avoids discontinuities of f, so there exists r > 0 such that for
-     every x ∈ Box.Icc I \ U, the oscillation of f on the ball of radius r centered at x is ≤ ε₁ -/
+     every x ∈ Box.Icc I \ U, the oscillation (within Box.Icc I) of f on the ball of radius r
+     centered at x is ≤ ε₁ -/
   have comp : IsCompact (Box.Icc I \ U) :=
     I.isCompact_Icc.of_isClosed_subset (I.isCompact_Icc.isClosed.sdiff Uopen) (Set.diff_subset _ U)
-  have : ∀ x ∈ (Box.Icc I \ U), oscillation f x < (ENNReal.ofReal ε₁) := by
+  have : ∀ x ∈ (Box.Icc I \ U), oscillationWithin f (Box.Icc I) x < (ENNReal.ofReal ε₁) := by
     intro x hx
-    suffices oscillation f x = 0 by rw [this]; exact ENNReal.ofReal_pos.2 ε₁0
-    simpa [oscillation_zero_iff_continuousAt, D, hx.1] using hx.2 ∘ (fun a ↦ UD a)
-  obtain ⟨r, r0, hr⟩ := uniform_oscillation_of_compact comp this
+    suffices oscillationWithin f (Box.Icc I) x = 0 by rw [this]; exact ENNReal.ofReal_pos.2 ε₁0
+    simpa [oscillationWithin_zero_iff_continuousWithinAt, D, hx.1] using hx.2 ∘ (fun a ↦ UD a)
+  obtain ⟨r, r0, hr⟩ := uniform_oscillationWithin_of_compact comp this
 
   /- We prove the claim for partitions π₁ and π₂ subordinate to r/2, by writing the difference as
      an integralSum over π₁ ⊓ π₂ and considering separately the boxes of π₁ ⊓ π₂ which are/aren't
@@ -753,7 +756,11 @@ theorem integrable_of_bounded_and_ae_continuous (l : IntegrationParams) [Complet
         refine Metric.closedBall_subset_ball (div_two_lt_of_pos r0) (Metric.mem_closedBall_comm.1 <|
             h₂.isSubordinate.infPrepartition π₁.toPrepartition J ?_ (Box.coe_subset_Icc xJ))
         rwa [BoxIntegral.TaggedPrepartition.mem_infPrepartition_comm]
-      have ineq := (edist_le_diam_of_mem (Set.mem_image_of_mem f hy) (Set.mem_image_of_mem f hz))
+      have ineq : edist (f ((π₁.infPrepartition π₂.toPrepartition).tag J))
+                        (f ((π₂.infPrepartition π₁.toPrepartition).tag J)) ≤
+                        EMetric.diam (f '' (Metric.ball x r ∩ (Box.Icc I))) := by
+        apply edist_le_diam_of_mem <;>
+          exact Set.mem_image_of_mem _ ⟨by assumption, TaggedPrepartition.tag_mem_Icc _ _⟩
       rw [← emetric_ball] at ineq
       simpa only [edist_le_ofReal (le_of_lt ε₁0), dist_eq_norm, (Finset.mem_sdiff.1 hJ).1] using
         ineq.trans (hr x hx)
@@ -787,17 +794,31 @@ theorem integrable_of_bounded_and_ae_continuous (l : IntegrationParams) [Complet
     have : (∑ a in B.filter p, μ a).toReal ≤ ε₂ := by
       rw [← ENNReal.toReal_ofReal (le_of_lt ε₂0)]
       refine ENNReal.toReal_mono ENNReal.ofReal_ne_top ( le_of_lt <| lt_of_le_of_lt ?_ hU)
-      trans μ (⋃ J ∈ B.filter p, J)
-      · apply le_of_eq
-        rw [← Finset.tsum_subtype]
-        apply (measure_biUnion (B.filter p).countable_toSet ?_ (fun J _ ↦ J.measurableSet_coe)).symm
+      trans μ' (⋃ J ∈ B.filter p, J)
+      · simp only [μ', ← Finset.tsum_subtype,
+          μ.restrict_eq_self <| (union (B.filter p) (B.filter_subset p)).trans I.coe_subset_Icc]
+        apply le_of_eq <| Eq.symm <|
+                measure_biUnion (B.filter p).countable_toSet ?_ (fun J _ ↦ J.measurableSet_coe)
         intro J hJ J' hJ' hJJ'
         exact pairwiseDisjoint _ (B.filter_subset p hJ) (B.filter_subset p hJ') hJJ'
-      · apply μ.mono
+      · apply μ'.mono
         simp_rw [iUnion_subset_iff]
         exact fun J hJ ↦ (Finset.mem_filter.1 hJ).2
     apply le_trans <| mul_le_mul_of_nonneg_right this <| (mul_nonneg_iff_of_pos_left two_pos).2 C0
     linarith
+
+
+/-- A function that is bounded on a box `I` and a.e. continuous is integrable on `I`.
+
+This is a version of `integrable_of_bounded_and_ae_continuousWithinAt` with a stronger continuity
+assumption so that the user does not need to specialize the continuity assumption to each box on
+which the theorem is to be applied. -/
+theorem integrable_of_bounded_and_ae_continuous (l : IntegrationParams) [CompleteSpace E]
+    {I : Box ι} {f : ℝⁿ → E} (hb : ∃ C : ℝ, ∀ x ∈ Box.Icc I, ‖f x‖ ≤ C) (μ : Measure ℝⁿ)
+    [IsLocallyFiniteMeasure μ] (hc : ∀ᵐ x ∂μ, ContinuousAt f x) :
+    Integrable I l f μ.toBoxAdditive.toSMul :=
+  integrable_of_bounded_and_ae_continuousWithinAt l hb μ <|
+    Eventually.filter_mono (ae_mono μ.restrict_le_self) (hc.mono fun _ h ↦ h.continuousWithinAt)
 
 
 /-- A continuous function is box-integrable with respect to any locally finite measure.
@@ -806,34 +827,15 @@ This is true for any volume with bounded variation. -/
 theorem integrable_of_continuousOn [CompleteSpace E] {I : Box ι} {f : ℝⁿ → E}
     (hc : ContinuousOn f (Box.Icc I)) (μ : Measure ℝⁿ) [IsLocallyFiniteMeasure μ] :
     Integrable.{u, v, v} I l f μ.toBoxAdditive.toSMul := by
-  have huc := I.isCompact_Icc.uniformContinuousOn_of_continuous hc
-  rw [Metric.uniformContinuousOn_iff_le] at huc
-  refine' integrable_iff_cauchy_basis.2 fun ε ε0 => _
-  rcases exists_pos_mul_lt ε0 (μ.toBoxAdditive I) with ⟨ε', ε0', hε⟩
-  rcases huc ε' ε0' with ⟨δ, δ0 : 0 < δ, Hδ⟩
-  refine' ⟨fun _ _ => ⟨δ / 2, half_pos δ0⟩, fun _ _ _ => rfl, fun c₁ c₂ π₁ π₂ h₁ h₁p h₂ h₂p => _⟩
-  simp only [dist_eq_norm, integralSum_sub_partitions _ _ h₁p h₂p, BoxAdditiveMap.toSMul_apply,
-    ← smul_sub]
-  have : ∀ J ∈ π₁.toPrepartition ⊓ π₂.toPrepartition,
-      ‖μ.toBoxAdditive J • (f ((π₁.infPrepartition π₂.toPrepartition).tag J) -
-        f ((π₂.infPrepartition π₁.toPrepartition).tag J))‖ ≤ μ.toBoxAdditive J * ε' := by
-    intro J hJ
-    have : 0 ≤ μ.toBoxAdditive J := ENNReal.toReal_nonneg
-    rw [norm_smul, Real.norm_eq_abs, abs_of_nonneg this, ← dist_eq_norm]
-    refine' mul_le_mul_of_nonneg_left _ this
-    refine' Hδ _ (TaggedPrepartition.tag_mem_Icc _ _) _ (TaggedPrepartition.tag_mem_Icc _ _) _
-    rw [← add_halves δ]
-    refine' (dist_triangle_left _ _ J.upper).trans (add_le_add (h₁.1 _ _ _) (h₂.1 _ _ _))
-    · exact Prepartition.biUnionIndex_mem _ hJ
-    · exact Box.le_iff_Icc.1 (Prepartition.le_biUnionIndex _ hJ) J.upper_mem_Icc
-    · rw [_root_.inf_comm] at hJ
-      exact Prepartition.biUnionIndex_mem _ hJ
-    · rw [_root_.inf_comm] at hJ
-      exact Box.le_iff_Icc.1 (Prepartition.le_biUnionIndex _ hJ) J.upper_mem_Icc
-  refine' (norm_sum_le_of_le _ this).trans _
-  rw [← Finset.sum_mul, μ.toBoxAdditive.sum_partition_boxes le_top (h₁p.inf h₂p)]
-  exact hε.le
+  apply integrable_of_bounded_and_ae_continuousWithinAt
+  · obtain ⟨C, hC⟩ := (NormedSpace.isBounded_iff_subset_smul_closedBall ℝ E).1
+                        (I.isCompact_Icc.image_of_continuousOn hc).isBounded
+    use ‖C‖, fun x hx ↦ by
+      simpa only [smul_closedUnitBall, mem_closedBall_zero_iff] using hC (Set.mem_image_of_mem f hx)
+  · refine eventually_of_mem ?_ (fun x hx ↦ hc.continuousWithinAt hx)
+    rw [mem_ae_iff, μ.restrict_apply] <;> simp [MeasurableSet.compl_iff.2 I.measurableSet_Icc]
 #align box_integral.integrable_of_continuous_on BoxIntegral.integrable_of_continuousOn
+
 
 variable {l}
 
