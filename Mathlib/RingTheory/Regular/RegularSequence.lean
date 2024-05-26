@@ -38,7 +38,7 @@ variable [CommSemiring R] [CommSemiring S] [Algebra R S]
     [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M]
     [AddCommMonoid M'] [Module R M']
 
--- We need to choose whether we want the defeq `(r::rs) • N = r • N + rs • N` or
+-- We need to choose whether we want the defeq `(r :: rs) • N = r • N + rs • N` or
 -- `[r₁, …, rₙ] • N = r₁ • N + ⋯ + rₙ • N`. For now we pick the first
 instance smulSubmodule : SMul (List R) (Submodule R M) where
   smul rs N := rs.foldr (fun r N' => r • N ⊔ N') ⊥
@@ -50,12 +50,13 @@ variable {M}
 variable {R}
 
 @[simp] lemma cons_smul (r : R) (rs : List R) (N : Submodule R M) :
-    (r::rs) • N = r • N ⊔ rs • N := rfl
+    (r :: rs) • N = r • N ⊔ rs • N := rfl
 
 lemma singleton_smul (r : R) (N : Submodule R M) : [r] • N = r • N :=
   Eq.trans (cons_smul r [] N) (add_zero (r • N))
 
 -- better for reasoning about sometimes but worse def eqs
+-- argument order is reverse of `singleton_set_smul`
 lemma sequence_smul_eq_set_smul (rs : List R) (N : Submodule R M) :
     rs • N = { r | r ∈ rs } • N := by
   induction rs with
@@ -98,58 +99,37 @@ end
 variable {R M} [CommRing R] [CommRing S] [AddCommGroup M] [AddCommGroup M']
     [AddCommGroup M''] [Module R M] [Module R M'] [Module R M'']
 
-lemma eq_bot_of_ideal_smul_eq_of_FG_of_le_jacobson_annihilator {I N}
-    (h1 : I • N = N) (h2 : I ≤ N.annihilator.jacobson) (h3 : FG (M := M) N) :
-    N = (⊥ : Submodule R M) :=
-  Eq.trans (eq_smul_of_le_smul_of_le_jacobson h3 (ge_of_eq h1) h2)
-    N.annihilator_smul
+lemma eq_bot_of_sequence_smul_eq_of_subset_jacobson_annihilator {rs : List R}
+    {N : Submodule R M} (hN : FG N) (hrsN : N = rs • N)
+    (hrsJac : ∀ r ∈ rs, r ∈ N.annihilator.jacobson) : N = ⊥ :=
+  eq_bot_of_set_smul_eq_of_subset_jacobson_annihilator hN
+    (Eq.trans hrsN (sequence_smul_eq_set_smul rs N)) hrsJac
 
-lemma eq_bot_of_element_smul_eq_of_FG_of_mem_jacobson_annihilator {r N}
-    (h1 : r • N = N) (h2 : r ∈ N.annihilator.jacobson) (h3 : FG N) :
-    N = (⊥ : Submodule R M) :=
-  eq_bot_of_ideal_smul_eq_of_FG_of_le_jacobson_annihilator
-    (Eq.trans (ideal_span_singleton_smul r N) h1)
-    ((span_singleton_le_iff_mem r _).mpr h2) h3
-
-lemma eq_bot_of_set_smul_eq_of_FG_of_subset_jacobson_annihilator {s : Set R}
-    {N : Submodule R M} (h1 : s • N = N) (h2 : s ⊆ N.annihilator.jacobson)
-    (h3 : FG N) : N = ⊥ :=
-  eq_bot_of_ideal_smul_eq_of_FG_of_le_jacobson_annihilator
-    (Eq.trans (span_smul_eq s N) h1) (span_le.mpr h2) h3
-
-lemma eq_bot_of_sequence_smul_eq_of_FG_of_subset_jacobson_annihilator
-    {rs : List R} {N : Submodule R M} (h1 : rs • N = N)
-    (h2 : ∀ r ∈ rs, r ∈ N.annihilator.jacobson) (h3 : FG N) : N = ⊥ :=
-  eq_bot_of_set_smul_eq_of_FG_of_subset_jacobson_annihilator
-    (Eq.trans (sequence_smul_eq_set_smul rs N).symm h1) h2 h3
-
-lemma ideal_smul_ne_top_of_le_jacobson_annihilator [Nontrivial M]
+lemma top_ne_ideal_smul_of_le_jacobson_annihilator [Nontrivial M]
     [Module.Finite R M] {I} (h : I ≤ (Module.annihilator R M).jacobson) :
-    I • ⊤ ≠ (⊤ : Submodule R M) := fun H =>
-  top_ne_bot <| eq_bot_of_ideal_smul_eq_of_FG_of_le_jacobson_annihilator H
-    ((congrArg (I ≤ Ideal.jacobson ·) annihilator_top).mpr h) Module.Finite.out
+    (⊤ : Submodule R M) ≠ I • ⊤ := fun H => top_ne_bot <|
+  eq_bot_of_eq_ideal_smul_of_le_jacobson_annihilator Module.Finite.out H <|
+    (congrArg (I ≤ Ideal.jacobson ·) annihilator_top).mpr h
 
-lemma element_smul_ne_top_of_mem_jacobson_annihilator [Nontrivial M]
-    [Module.Finite R M] {r} (h : r ∈ (Module.annihilator R M).jacobson) :
-    r • ⊤ ≠ (⊤ : Submodule R M) := fun H =>
-  top_ne_bot <| eq_bot_of_element_smul_eq_of_FG_of_mem_jacobson_annihilator H
-    ((congrArg (r ∈ Ideal.jacobson ·) annihilator_top).mpr h) Module.Finite.out
-
-lemma set_smul_ne_top_of_subset_jacobson_annihilator [Nontrivial M]
+lemma top_ne_set_smul_of_subset_jacobson_annihilator [Nontrivial M]
     [Module.Finite R M] {s : Set R}
     (h : s ⊆ (Module.annihilator R M).jacobson) :
-    s • ⊤ ≠ (⊤ : Submodule R M) := fun H =>
-  top_ne_bot <| eq_bot_of_set_smul_eq_of_FG_of_subset_jacobson_annihilator H
-    ((congrArg (fun I : Ideal R => s ⊆ I.jacobson) annihilator_top).mpr h)
-    Module.Finite.out
+    (⊤ : Submodule R M) ≠ s • ⊤ :=
+  ne_of_ne_of_eq (top_ne_ideal_smul_of_le_jacobson_annihilator (span_le.mpr h))
+    (span_smul_eq _ _)
+
+lemma top_ne_pointwise_smul_of_mem_jacobson_annihilator [Nontrivial M]
+    [Module.Finite R M] {r} (h : r ∈ (Module.annihilator R M).jacobson) :
+    (⊤ : Submodule R M) ≠ r • ⊤ :=
+  ne_of_ne_of_eq (top_ne_set_smul_of_subset_jacobson_annihilator <|
+                    Set.singleton_subset_iff.mpr h) (singleton_set_smul ⊤ r)
 
 lemma sequence_smul_ne_top_of_subset_jacobson_annihilator [Nontrivial M]
     [Module.Finite R M] {rs : List R}
     (h : ∀ r ∈ rs, r ∈ (Module.annihilator R M).jacobson) :
-    rs • ⊤ ≠ (⊤ : Submodule R M) := fun H =>
-  top_ne_bot <| eq_bot_of_sequence_smul_eq_of_FG_of_subset_jacobson_annihilator
-    H ((congrArg (∀ r ∈ rs, r ∈ Ideal.jacobson ·) annihilator_top).mpr h)
-    Module.Finite.out
+    (⊤ : Submodule R M) ≠ rs • ⊤ :=
+  ne_of_ne_of_eq (top_ne_set_smul_of_subset_jacobson_annihilator h)
+    (sequence_smul_eq_set_smul rs ⊤).symm
 
 variable (M)
 
@@ -157,7 +137,7 @@ variable (M)
 -- or maybe we should develop the API for ideals first and foremost?
 /-- An abbreviation for `M⧸(r₁, …, rₙ)M` that keeps us from having to write
 `(⊤ : Submodule R M)` over and over to satisfy the typechecker. -/
-protected abbrev ModSMulBy (rs : List R) := M ⧸ rs • (⊤ : Submodule R M)
+protected abbrev ModSMulBy (rs : List R) := M ⧸ (rs • ⊤ : Submodule R M)
 
 namespace ModSMulBy
 
@@ -183,7 +163,7 @@ variable {R}
 
 /-- The equivalence `M⧸(r₀,r₁,…,rₙ)M ≃ (M⧸r₀M)⧸(r₁,…,rₙ)M`. -/
 def consEquivQuotTailQuotHead (r : R) (rs : List R) :
-    Sequence.ModSMulBy M (r::rs) ≃ₗ[R] Sequence.ModSMulBy (ModSMulBy M r) rs :=
+    Sequence.ModSMulBy M (r :: rs) ≃ₗ[R] Sequence.ModSMulBy (ModSMulBy M r) rs :=
   (quotientQuotientEquivQuotientSup (r • ⊤) (rs • ⊤)).symm ≪≫ₗ
     quotEquivOfEq _ _ (by rw [map_sequence_smul, Submodule.map_top, range_mkQ])
 
@@ -269,7 +249,7 @@ lemma nilEquivSelf_naturality (f : M →ₗ[R] M') :
   by ext; rfl
 
 lemma consEquivQuotTailQuotHead_naturality (r : R) (rs : List R) (f : M →ₗ[R] M') :
-    consEquivQuotTailQuotHead M' r rs ∘ₗ map (r::rs) f =
+    consEquivQuotTailQuotHead M' r rs ∘ₗ map (r :: rs) f =
       map rs (_root_.ModSMulBy.map r f) ∘ₗ consEquivQuotTailQuotHead M r rs :=
   by ext; rfl
 
@@ -383,7 +363,7 @@ lemma isWeaklyRegular_iff_isWeaklyRegular_over_quotient_by_torsion_ideal
 variable (M)
 
 lemma isWeaklyRegular_cons_iff (r : R) (rs : List R) :
-    IsWeaklyRegular M (r::rs) ↔
+    IsWeaklyRegular M (r :: rs) ↔
       IsSMulRegular M r ∧ IsWeaklyRegular (ModSMulBy M r) rs := by
   simp_rw [isWeaklyRegular_iff]
   refine Iff.trans Nat.and_forall_succ.symm ?_
@@ -395,7 +375,7 @@ lemma isWeaklyRegular_cons_iff (r : R) (rs : List R) :
   · exact ModSMulBy.consEquivQuotTailQuotHead M r (rs.take i)
 
 lemma isWeaklyRegular_cons_iff' (r : R) (rs : List R) :
-    IsWeaklyRegular M (r::rs) ↔
+    IsWeaklyRegular M (r :: rs) ↔
       IsSMulRegular M r ∧
         IsWeaklyRegular (ModSMulBy M r)
           (rs.map (Ideal.Quotient.mk (Ideal.span {r}))) :=
@@ -422,14 +402,13 @@ lemma isWeaklyRegular_append_iff (rs₁ rs₂ : List R) :
 variable {M}
 
 lemma cons {r : R} {rs : List R} (h1 : IsSMulRegular M r)
-    (h2 : IsWeaklyRegular (ModSMulBy M r) rs) :
-    IsWeaklyRegular M (r::rs) :=
+    (h2 : IsWeaklyRegular (ModSMulBy M r) rs) : IsWeaklyRegular M (r :: rs) :=
   (isWeaklyRegular_cons_iff M r rs).mpr ⟨h1, h2⟩
 
 lemma cons' {r : R} {rs : List R} (h1 : IsSMulRegular M r)
     (h2 : IsWeaklyRegular (ModSMulBy M r)
             (rs.map (Ideal.Quotient.mk (Ideal.span {r})))) :
-    IsWeaklyRegular M (r::rs) :=
+    IsWeaklyRegular M (r :: rs) :=
   (isWeaklyRegular_cons_iff' M r rs).mpr ⟨h1, h2⟩
 
 /-- Weakly regular sequences can be inductively characterized by:
@@ -447,11 +426,11 @@ def recIterModByRegular
     (cons : {M : Type v} → [AddCommGroup M] → [Module R M] → (r : R) →
       (rs : List R) → (h1 : IsSMulRegular M r) →
       (h2 : IsWeaklyRegular (ModSMulBy M r) rs) → (ih : motive (ModSMulBy M r) rs h2) →
-      motive M (r::rs) (cons h1 h2)) :
+      motive M (r :: rs) (cons h1 h2)) :
     {M : Type v} → [AddCommGroup M] → [Module R M] → {rs : List R} →
     (h : IsWeaklyRegular M rs) → motive M rs h
   | M, _, _, [], _ => nil M
-  | M, _, _, (r::rs), h =>
+  | M, _, _, r :: rs, h =>
     let ⟨h1, h2⟩ := (isWeaklyRegular_cons_iff M r rs).mp h
     cons r rs h1 h2 (recIterModByRegular nil cons h2)
 
@@ -462,7 +441,7 @@ def ndrecIterModByRegular
     (nil : (M : Type v) → [AddCommGroup M] → [Module R M] → motive M [])
     (cons : {M : Type v} → [AddCommGroup M] → [Module R M] → (r : R) →
       (rs : List R) → IsSMulRegular M r → IsWeaklyRegular (ModSMulBy M r) rs →
-      motive (ModSMulBy M r) rs → motive M (r::rs))
+      motive (ModSMulBy M r) rs → motive M (r :: rs))
     {M} [AddCommGroup M] [Module R M] {rs} :
     IsWeaklyRegular M rs → motive M rs :=
   recIterModByRegular (motive := (fun M _ _ rs _ => motive M rs)) nil cons
@@ -482,11 +461,11 @@ def recIterModByRegularWithRing
               (rs.map (Ideal.Quotient.mk (Ideal.span {r})))) →
       (ih : motive (R⧸Ideal.span {r}) (ModSMulBy M r)
               (rs.map (Ideal.Quotient.mk (Ideal.span {r}))) h2) →
-            motive R M (r::rs) (cons' h1 h2)) :
+            motive R M (r :: rs) (cons' h1 h2)) :
     {R : Type u} → [CommRing R] → {M : Type v} → [AddCommGroup M] →
     [Module R M] → {rs : List R} → (h : IsWeaklyRegular M rs) → motive R M rs h
   | R, _, M, _, _, [], _ => nil R M
-  | R, _, M, _, _, (r::rs), h =>
+  | R, _, M, _, _, r :: rs, h =>
     let ⟨h1, h2⟩ := (isWeaklyRegular_cons_iff' M r rs).mp h
     cons r rs h1 h2 (recIterModByRegularWithRing nil cons h2)
   termination_by _ _ _ _ _ rs => List.length rs
@@ -505,7 +484,7 @@ def ndrecWithRing
         (rs.map (Ideal.Quotient.mk (Ideal.span {r}))) →
       motive (R⧸Ideal.span {r}) (ModSMulBy M r)
         (rs.map (Ideal.Quotient.mk (Ideal.span {r}))) →
-      motive R M (r::rs))
+      motive R M (r :: rs))
     {R} [CommRing R] {M} [AddCommGroup M] [Module R M] {rs} :
     IsWeaklyRegular M rs → motive R M rs :=
   recIterModByRegularWithRing (motive := (fun R _ M _ _ rs _ => motive R M rs))
@@ -516,7 +495,7 @@ end IsWeaklyRegular
 /-- A weakly regular sequence `rs` on `M` is regular if also `M/rsM ≠ 0`. -/
 @[mk_iff]
 structure IsRegular (rs : List R) extends IsWeaklyRegular M rs : Prop where
-  smul_ne_top : rs • ⊤ ≠ (⊤ : Submodule R M)
+  top_ne_smul : (⊤ : Submodule R M) ≠ rs • ⊤
 
 namespace IsRegular
 
@@ -524,44 +503,45 @@ variable (R)
 
 lemma nil [Nontrivial M] : IsRegular M ([] : List R) where
   toIsWeaklyRegular := IsWeaklyRegular.nil R M
-  smul_ne_top h := not_subsingleton M <|
+  top_ne_smul h := not_subsingleton M <|
     (quotEquivOfEqBot _ rfl).toEquiv.subsingleton_congr.mp <|
-      subsingleton_quotient_iff_eq_top.mpr h
+      subsingleton_quotient_iff_eq_top.mpr h.symm
 
-variable {R}
+variable {R M}
 
-private lemma cons_smul_eq_top_iff {r : R} {rs} :
-    (r::rs) • (⊤ : Submodule R M) = ⊤ ↔
-      rs • (⊤ : Submodule R (ModSMulBy M r)) = ⊤ := by
+private lemma top_eq_cons_smul_iff {r : R} {rs} :
+    (⊤ : Submodule R M) = (r :: rs) • ⊤ ↔
+      (⊤ : Submodule R (ModSMulBy M r)) = rs • ⊤ := by
   rw [← range_mkQ, ← Submodule.map_top, ← map_sequence_smul]
   refine Iff.trans ?_ (comap_injective_of_surjective (mkQ_surjective _)).eq_iff
   rw [comap_map_mkQ, comap_map_mkQ, sup_top_eq, cons_smul]
 
+variable (M)
+
 lemma isRegular_cons_iff (r : R) (rs : List R) :
-    IsRegular M (r::rs) ↔
+    IsRegular M (r :: rs) ↔
       IsSMulRegular M r ∧ IsRegular (ModSMulBy M r) rs := by
   simp_rw [isRegular_iff, IsWeaklyRegular.isWeaklyRegular_cons_iff M r rs,
-    ne_eq, cons_smul_eq_top_iff M, and_assoc]
+    ne_eq, top_eq_cons_smul_iff, and_assoc]
 
 lemma isRegular_cons_iff' (r : R) (rs : List R) :
-    IsRegular M (r::rs) ↔
+    IsRegular M (r :: rs) ↔
       IsSMulRegular M r ∧ IsRegular (ModSMulBy M r)
           (rs.map (Ideal.Quotient.mk (Ideal.span {r}))) := by
   simp_rw [isRegular_iff, IsWeaklyRegular.isWeaklyRegular_cons_iff', ne_eq,
     ← restrictScalars_inj R (R⧸Ideal.span {r}), ← Ideal.Quotient.algebraMap_eq,
     restrictScalars_map_algebraMap_smul_eq_smul_restrictScalars]
-  exact Iff.trans (and_congr_right' (cons_smul_eq_top_iff M).not) and_assoc
+  exact Iff.trans (and_congr_right' top_eq_cons_smul_iff.not) and_assoc
 
 variable {M}
 
 lemma cons {r : R} {rs : List R} (h1 : IsSMulRegular M r)
-    (h2 : IsRegular (ModSMulBy M r) rs) :
-    IsRegular M (r::rs) :=
+    (h2 : IsRegular (ModSMulBy M r) rs) : IsRegular M (r :: rs) :=
   (isRegular_cons_iff M r rs).mpr ⟨h1, h2⟩
 
 lemma cons' {r : R} {rs : List R} (h1 : IsSMulRegular M r)
     (h2 : IsRegular (ModSMulBy M r) (rs.map (Ideal.Quotient.mk (Ideal.span {r})))) :
-    IsRegular M (r::rs) :=
+    IsRegular M (r :: rs) :=
   (isRegular_cons_iff' M r rs).mpr ⟨h1, h2⟩
 
 /-- Regular sequences can be inductively characterized by:
@@ -579,7 +559,7 @@ def recIterModByRegular
       motive M [] (nil R M))
     (cons : {M : Type v} → [AddCommGroup M] → [Module R M] → (r : R) →
       (rs : List R) → (h1 : IsSMulRegular M r) → (h2 : IsRegular (ModSMulBy M r) rs) →
-      (ih : motive (ModSMulBy M r) rs h2) → motive M (r::rs) (cons h1 h2))
+      (ih : motive (ModSMulBy M r) rs h2) → motive M (r :: rs) (cons h1 h2))
     {M} [AddCommGroup M] [Module R M] {rs} (h : IsRegular M rs) : motive M rs h :=
   h.toIsWeaklyRegular.recIterModByRegular
     (motive := fun N _ _ rs' h' => ∀ h'', motive N rs' ⟨h', h''⟩)
@@ -588,8 +568,8 @@ def recIterModByRegular
       nil N)
     (fun r rs' h1 h2 h3 h4 =>
       have h5 := (isRegular_cons_iff _ _ _).mp ⟨IsWeaklyRegular.cons h1 h2, h4⟩
-      cons r rs' h5.left h5.right <| h3 h5.right.smul_ne_top)
-    h.smul_ne_top
+      cons r rs' h5.left h5.right <| h3 h5.right.top_ne_smul)
+    h.top_ne_smul
 
 /-- A simplified version of `IsRegular.recIterModByRegular` where the motive is
 not allowed to depend on the proof of `IsRegular`. -/
@@ -598,7 +578,7 @@ def ndrecIterModByRegular
     (nil : (M : Type v) → [AddCommGroup M] → [Module R M] → [Nontrivial M] → motive M [])
     (cons : {M : Type v} → [AddCommGroup M] → [Module R M] → (r : R) →
       (rs : List R) → IsSMulRegular M r → IsRegular (ModSMulBy M r) rs →
-      motive (ModSMulBy M r) rs → motive M (r::rs))
+      motive (ModSMulBy M r) rs → motive M (r :: rs))
     {M} [AddCommGroup M] [Module R M] {rs} : IsRegular M rs → motive M rs :=
   recIterModByRegular (motive := (fun M _ _ rs _ => motive M rs)) nil cons
 
@@ -617,7 +597,7 @@ def recIterModByRegularWithRing
               (rs.map (Ideal.Quotient.mk (Ideal.span {r})))) →
       (ih : motive (R⧸Ideal.span {r}) (ModSMulBy M r)
               (rs.map (Ideal.Quotient.mk (Ideal.span {r}))) h2) →
-            motive R M (r::rs) (cons' h1 h2))
+            motive R M (r :: rs) (cons' h1 h2))
     {R} [CommRing R] {M} [AddCommGroup M] [Module R M] {rs}
     (h : IsRegular M rs) : motive R M rs h :=
   h.toIsWeaklyRegular.recIterModByRegularWithRing
@@ -627,8 +607,8 @@ def recIterModByRegularWithRing
       nil R N)
     (fun r rs' h1 h2 h3 h4 =>
       have h5 := (isRegular_cons_iff' _ _ _).mp ⟨IsWeaklyRegular.cons' h1 h2, h4⟩
-      cons r rs' h5.left h5.right <| h3 h5.right.smul_ne_top)
-    h.smul_ne_top
+      cons r rs' h5.left h5.right <| h3 h5.right.top_ne_smul)
+    h.top_ne_smul
 
 /-- A simplified version of `IsRegular.recIterModByRegularWithRing` where the
 motive is not allowed to depend on the proof of `IsRegular`. -/
@@ -644,7 +624,7 @@ def ndrecIterModByRegularWithRing
         (rs.map (Ideal.Quotient.mk (Ideal.span {r}))) →
       motive (R⧸Ideal.span {r}) (ModSMulBy M r)
         (rs.map (Ideal.Quotient.mk (Ideal.span {r}))) →
-      motive R M (r::rs))
+      motive R M (r :: rs))
     {R} [CommRing R] {M} [AddCommGroup M] [Module R M] {rs} :
     IsRegular M rs → motive R M rs :=
   recIterModByRegularWithRing (motive := (fun R _ M _ _ rs _ => motive R M rs))
@@ -652,11 +632,11 @@ def ndrecIterModByRegularWithRing
 
 lemma ModSMulBy_nontrivial {rs : List R} (h : IsRegular M rs) :
     Nontrivial (Sequence.ModSMulBy M rs) :=
-  Submodule.Quotient.nontrivial_of_lt_top _ h.smul_ne_top.lt_top
+  Submodule.Quotient.nontrivial_of_lt_top _ h.top_ne_smul.symm.lt_top
 
 lemma nontrivial {rs : List R} (h : IsRegular M rs) : Nontrivial M :=
   haveI := ModSMulBy_nontrivial h
-  (mkQ_surjective (rs • (⊤ : Submodule R M))).nontrivial
+  (mkQ_surjective (rs • ⊤ : Submodule R M)).nontrivial
 
 end IsRegular
 
@@ -681,8 +661,8 @@ lemma _root_.LocalRing.isRegular_iff_isWeaklyRegular_of_subset_maximalIdeal
 lemma eq_nil_of_isRegular_on_artinian [IsArtinian R M] :
     {rs : List R} → IsRegular M rs → rs = []
   | [], _ => rfl
-  | _::_, h =>
-    Not.elim (ne_of_lt (lt_of_le_of_lt le_sup_left (h.smul_ne_top.lt_top))) <|
+  | _ :: _, h =>
+    Not.elim (ne_of_lt (lt_of_le_of_lt le_sup_left (h.top_ne_smul.symm.lt_top))) <|
       Eq.trans (map_top _) <| LinearMap.range_eq_top.mpr <|
         IsArtinian.surjective_of_injective_endomorphism _ <|
           And.left <| (IsRegular.isRegular_cons_iff _ _ _).mp h
@@ -766,7 +746,7 @@ lemma IsWeaklyRegular.prototype_perm {rs : List R} (h : IsWeaklyRegular M rs)
     let e := (equivOfPerm M (List.perm_append_singleton r rs₀).symm) ≪≫ₗ
       appendEquivQuotQuot _ _ _ ≪≫ₗ quotEquivOfEq _ _ (singleton_smul r ⊤)
     simp only [isWeaklyRegular_cons_iff, ← e.isWeaklyRegular_congr] at h ⊢
-    refine h.imp_right (ih (r::rs₀) ?_ ?_)
+    refine h.imp_right (ih (r :: rs₀) ?_ ?_)
     <;> refine List.perm_middle.subperm_right.mp ?_ <;> assumption
   | swap a b =>
     erw [isWeaklyRegular_append_iff _ [_, _]] at h ⊢
@@ -788,10 +768,11 @@ lemma IsWeaklyRegular.of_perm_of_subset_jacobson_annihilator [IsNoetherian R M]
   h1.prototype_perm h2 fun r _ xs h h' =>
     have h4 : Module.annihilator R M ≤ Module.annihilator R (M ⧸ xs • ⊤) :=
       LinearMap.annihilator_le_of_surjective _ (mkQ_surjective _)
-    eq_bot_of_element_smul_eq_of_FG_of_mem_jacobson_annihilator h'.symm
+    eq_bot_of_eq_pointwise_smul_of_mem_jacobson_annihilator
+      (IsNoetherian.noetherian _) h'
       (Ideal.jacobson_mono
         (le_trans h4 (LinearMap.annihilator_le_of_injective _ (injective_subtype _)))
-        (h3 r (h.subset (List.mem_cons_self _ _)))) (IsNoetherian.noetherian _)
+        (h3 r (h.subset (List.mem_cons_self _ _))))
 
 lemma IsRegular.of_perm_of_subset_jacobson_annihilator [IsNoetherian R M]
     {rs rs' : List R} (h1 : IsRegular M rs) (h2 : List.Perm rs rs')
@@ -815,8 +796,8 @@ lemma _root_.LocalRing.isRegular_of_perm [LocalRing R] [IsNoetherian R M]
   · intro x (h6 : x ∈ { r | r ∈ rs })
     refine LocalRing.le_maximalIdeal (fun H => h4 ?_) (Ideal.subset_span h6)
     rw [sequence_smul_eq_ideal_span_smul, H, top_smul]
-  · refine ne_of_eq_of_ne ?_ h4
+  · refine ne_of_ne_of_eq h4 ?_
     simp_rw [sequence_smul_eq_set_smul]
-    exact congrArg (· • ⊤) <| Set.ext (fun _ => h2.symm.mem_iff)
+    exact congrArg (· • ⊤) <| Set.ext (fun _ => h2.mem_iff)
 
 end RingTheory.Sequence

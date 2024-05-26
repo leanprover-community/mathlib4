@@ -61,6 +61,26 @@ theorem eq_smul_of_le_smul_of_le_jacobson {I J : Ideal R} {N : Submodule R M} (h
   exact Submodule.smul_mem_smul (Submodule.neg_mem _ hs) hn
 #align submodule.eq_smul_of_le_smul_of_le_jacobson Submodule.eq_smul_of_le_smul_of_le_jacobson
 
+lemma eq_bot_of_eq_ideal_smul_of_le_jacobson_annihilator {I : Ideal R}
+    {N : Submodule R M} (hN : FG N) (hIN : N = I • N)
+    (hIjac : I ≤ N.annihilator.jacobson) : N = ⊥ :=
+  (eq_smul_of_le_smul_of_le_jacobson hN hIN.le hIjac).trans N.annihilator_smul
+
+open Pointwise in
+lemma eq_bot_of_eq_pointwise_smul_of_mem_jacobson_annihilator {r : R}
+    {N : Submodule R M} (hN : FG N) (hrN : N = r • N)
+    (hrJac : r ∈ N.annihilator.jacobson) : N = ⊥ :=
+  eq_bot_of_eq_ideal_smul_of_le_jacobson_annihilator hN
+    (Eq.trans hrN (ideal_span_singleton_smul r N).symm)
+    ((span_singleton_le_iff_mem r _).mpr hrJac)
+
+open Pointwise in
+lemma eq_bot_of_set_smul_eq_of_subset_jacobson_annihilator {s : Set R}
+    {N : Submodule R M} (hN : FG N) (hsN : N = s • N)
+    (hsJac : s ⊆ N.annihilator.jacobson) : N = ⊥ :=
+  eq_bot_of_eq_ideal_smul_of_le_jacobson_annihilator hN
+    (Eq.trans hsN (span_smul_eq s N).symm) (span_le.mpr hsJac)
+
 /-- **Nakayama's Lemma** - Statement (2) in
 [Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV).
 See also `eq_smul_of_le_smul_of_le_jacobson` for a generalisation
