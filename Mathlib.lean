@@ -3787,6 +3787,7 @@ import Mathlib.Tactic.Linter
 import Mathlib.Tactic.Linter.AttributeInstanceIn
 import Mathlib.Tactic.Linter.HashCommandLinter
 import Mathlib.Tactic.Linter.Lint
+import Mathlib.Tactic.Linter.TextBased
 import Mathlib.Tactic.Measurability
 import Mathlib.Tactic.Measurability.Init
 import Mathlib.Tactic.MkIffOfInductiveProp
