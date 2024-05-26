@@ -321,27 +321,19 @@ lemma isLUB_of_ωScottContinuous {c : Chain α} {f : α → β} (hf : ωScottCon
 lemma continuous'_eq_ωScottContinuous {f : α → β} : Continuous' f = ωScottContinuous f := by
   rw [le_antisymm_iff]
   constructor
-  · simp only [le_Prop_eq]
-    intro hf
-    intro d _ _ hd₃ a hda
+  · intro hf _ _ _ hd₃ _ hda
     rcases hd₃ with ⟨c,hc⟩
     rw [← hc] at hda
-    rw [← hc, ωSup_eq_of_isLUB hda]
+    rw [← hc, ωSup_eq_of_isLUB hda, ←(Set.range_comp f ⇑c)]
     have e1 : f (ωSup c) = ωSup (c.map ⟨f,hf.1⟩) := by
-      rw [← (hf.2 c)]
-      simp only [OrderHom.coe_mk]
-    have e2 : f '' Set.range c = Set.range (c.map ⟨f,hf.1⟩) := by
-      simp only [map_coe, OrderHom.coe_mk]
-      exact Eq.symm (Set.range_comp f ⇑c)
-    rw [e1, e2]
+      rw [← (hf.2 c), OrderHom.coe_mk]
+    rw [e1]
     exact isLUB_range_ωSup (c.map { toFun := f, monotone' := hf.1 })
-  · simp only [le_Prop_eq]
-    intro hf
+  · intro hf
     constructor
-    · intro c
-      have e1 : f (ωSup c) = ωSup (c.map ⟨f,ωScottContinuous.monotone hf⟩) := by
-        rw [← (ωSup_eq_of_isLUB (isLUB_of_ωScottContinuous hf))]
-      exact e1
+    · intro _
+      rw [← (ωSup_eq_of_isLUB (isLUB_of_ωScottContinuous hf))]
+      rfl
 
 lemma ScottContinuous.continuous' {f : α → β} (hf : ScottContinuous f) : Continuous' f :=
   continuous'_eq_ωScottContinuous.mpr (DScottContinuous.LE { d | ∃ (c : Chain α), Set.range c = d }
