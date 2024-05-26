@@ -524,7 +524,7 @@ theorem nonempty_of_nonempty_subtype [Nonempty (↥s)] : s.Nonempty :=
 /-! ### Lemmas about the empty set -/
 
 
-theorem empty_def : (↥(∅ : Set α)) = { _x : α | False } :=
+theorem empty_def : (∅ : Set α) = { _x : α | False } :=
   rfl
 #align set.empty_def Set.empty_def
 
