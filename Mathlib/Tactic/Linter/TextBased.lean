@@ -97,7 +97,25 @@ structure ErrorContext where
   line_number : ℕ
   /-- The path to the file which was linted -/
   path : System.FilePath
-  deriving BEq
+
+def normalise (err : StyleError) : StyleError := match err with
+  -- We do *not* care about: the line length in a too long line or the *kind* of wrong copyright.
+  -- NB: keep this in sync with `parse?_style_error` below.
+  | StyleError.lineLength _ => StyleError.lineLength 0
+  | StyleError.copyright _ => StyleError.copyright ""
+  -- TODO: should I normalise file length information? For now, I'm now...
+  --| StyleError.fileTooLong _ _ => StyleError.fileTooLong 0 0
+  | _ => err
+
+/-- Careful: we do not want to compare `ErrorContexts` exactly; we ignore some details. -/
+instance : BEq ErrorContext where
+  beq ctx ctx' :=
+      -- XXX: `lint-style.py` was calling `resolve()` on the path before before comparing them
+      -- should we also do so?
+      ctx.path == ctx'.path
+      -- XXX: do I care about line number of errors? (I might want to ignore them...)
+    && ctx.line_number == ctx.line_number
+    && (normalise ctx.error) == (normalise ctx'.error)
 
 /-- Output the formatted error message, containing its context. -/
 def outputMessage (errctx : ErrorContext) : String :=
@@ -110,9 +128,6 @@ def outputMessage (errctx : ErrorContext) : String :=
 
 /-- Print information about all errors encountered to standard output. -/
 def formatErrors (errors : Array ErrorContext) (exceptions : Array ErrorContext): IO Unit := do
-  -- XXX: `lint-style.py` was `resolve()`ing paths in the `exceptions` list;
-  -- do we also need to?
-  -- TODO: do I need to compare exceptions in a fancy way? for instance, are line number ignored?
   for e in errors do
     if !exceptions.contains e then
       IO.println (outputMessage e)
@@ -128,10 +143,10 @@ def parse?_style_error (line : String) : Option ErrorContext := Id.run do
       -- Hence, splitting and joining on "/" is actually somewhat safe.
       let path : System.FilePath := System.mkFilePath (filename.split (fun c ↦ c == '/'))
       -- Parse the error kind from the error code, ugh.
-      -- TODO: keep this in sync with `StyleError.error_code` above!
+      -- NB: keep this in sync with `StyleError.error_code` above!
       let err : Option StyleError := match error_code with
-        -- I'm using "0" resp. the empty string as dummy values for parameters which do not matter.
-        -- TODO: tweak equality of style error contexts accordingly!
+        -- I'm using default values for parameters which are normalised.
+        -- NB: keep this in sync with `normalise` above!
         | "ERR_LIN" => some (StyleError.lineLength 0)
         | "ERR_TAC" => some (StyleError.broadImport)
         | "ERR_COP" => some (StyleError.copyright "")
