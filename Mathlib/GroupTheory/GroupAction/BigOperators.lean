@@ -26,7 +26,7 @@ section
 variable [AddMonoid β] [DistribSMul α β]
 
 theorem List.smul_sum {r : α} {l : List β} : r • l.sum = (l.map (r • ·)).sum :=
-  (DistribSMul.toAddMonoidHom β r).map_list_sum l
+  map_list_sum (DistribSMul.toAddMonoidHom β r) l
 #align list.smul_sum List.smul_sum
 
 end
@@ -36,7 +36,7 @@ section
 variable [Monoid α] [Monoid β] [MulDistribMulAction α β]
 
 theorem List.smul_prod {r : α} {l : List β} : r • l.prod = (l.map (r • ·)).prod :=
-  (MulDistribMulAction.toMonoidHom β r).map_list_prod l
+  map_list_prod (MulDistribMulAction.toMonoidHom β r) l
 #align list.smul_prod List.smul_prod
 
 end
