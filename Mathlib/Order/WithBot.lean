@@ -217,7 +217,7 @@ theorem coe_le_coe : (a : WithBot α) ≤ b ↔ a ≤ b := by
 instance orderBot : OrderBot (WithBot α) where
   bot_le _ := fun _ h => Option.noConfusion h
 
-@[simp, deprecated coe_le_coe "Don't mix Option and WithBot"]
+@[simp, deprecated coe_le_coe "Don't mix Option and WithBot" (since := "2024-05-27")]
 theorem some_le_some : @LE.le (WithBot α) _ (Option.some a) (Option.some b) ↔ a ≤ b :=
   coe_le_coe
 #align with_bot.some_le_some WithBot.some_le_some
@@ -303,16 +303,16 @@ theorem bot_lt_coe (a : α) : ⊥ < (a : WithBot α) :=
 protected theorem not_lt_bot (a : WithBot α) : ¬a < ⊥ :=
   fun ⟨_, h, _⟩ => Option.not_mem_none _ h
 
-@[simp, deprecated coe_lt_coe "Don't mix Option and WithBot"]
+@[simp, deprecated coe_lt_coe "Don't mix Option and WithBot" (since := "2024-05-27")]
 theorem some_lt_some : @LT.lt (WithBot α) _ (Option.some a) (Option.some b) ↔ a < b :=
   coe_lt_coe
 #align with_bot.some_lt_some WithBot.some_lt_some
 
-@[simp, deprecated bot_lt_coe "Don't mix Option and WithBot"]
+@[simp, deprecated bot_lt_coe "Don't mix Option and WithBot" (since := "2024-05-27")]
 theorem none_lt_some (a : α) : @LT.lt (WithBot α) _ none (some a) := bot_lt_coe _
 #align with_bot.none_lt_some WithBot.none_lt_some
 
-@[simp, deprecated not_lt_none "Don't mix Option and WithBot"]
+@[simp, deprecated not_lt_none "Don't mix Option and WithBot" (since := "2024-05-27")]
 theorem not_lt_none (a : WithBot α) : ¬@LT.lt (WithBot α) _ a none := WithBot.not_lt_bot _
 #align with_bot.not_lt_none WithBot.not_lt_none
 
@@ -895,7 +895,7 @@ theorem coe_le_coe : (a : WithTop α) ≤ b ↔ a ≤ b := by
   simp only [← toDual_le_toDual_iff, toDual_apply_coe, WithBot.coe_le_coe, toDual_le_toDual]
 #align with_top.coe_le_coe WithTop.coe_le_coe
 
-@[simp, deprecated coe_le_coe "Don't mix Option and WithTop"]
+@[simp, deprecated coe_le_coe "Don't mix Option and WithTop" (since := "2024-05-27")]
 theorem some_le_some : @LE.le (WithTop α) _ (Option.some a) (Option.some b) ↔ a ≤ b :=
   coe_le_coe
 #align with_top.some_le_some WithTop.some_le_some
@@ -903,7 +903,7 @@ theorem some_le_some : @LE.le (WithTop α) _ (Option.some a) (Option.some b) ↔
 instance orderTop : OrderTop (WithTop α) where
   le_top := fun _ => toDual_le_toDual_iff.mp bot_le
 
-@[simp, deprecated le_top "Don't mix Option and WithTop"]
+@[simp, deprecated le_top "Don't mix Option and WithTop" (since := "2024-05-27")]
 theorem le_none {a : WithTop α} : @LE.le (WithTop α) _ a none := le_top
 #align with_top.le_none WithTop.le_none
 
@@ -1154,15 +1154,15 @@ protected theorem not_top_lt (a : WithTop α) : ¬⊤ < a := by
   rw [← toDual_lt_toDual_iff]
   exact WithBot.not_lt_bot _
 
-@[simp, deprecated coe_lt_coe "Don't mix Option and WithTop"]
+@[simp, deprecated coe_lt_coe "Don't mix Option and WithTop" (since := "2024-05-27")]
 theorem some_lt_some : @LT.lt (WithTop α) _ (Option.some a) (Option.some b) ↔ a < b := coe_lt_coe
 #align with_top.some_lt_some WithTop.some_lt_some
 
-@[simp, deprecated coe_lt_top "Don't mix Option and WithTop"]
+@[simp, deprecated coe_lt_top "Don't mix Option and WithTop" (since := "2024-05-27")]
 theorem some_lt_none (a : α) : @LT.lt (WithTop α) _ (Option.some a) none := coe_lt_top a
 #align with_top.some_lt_none WithTop.some_lt_none
 
-@[simp, deprecated not_top_lt "Don't mix Option and WithTop"]
+@[simp, deprecated not_top_lt "Don't mix Option and WithTop" (since := "2024-05-27")]
 theorem not_none_lt (a : WithTop α) : ¬@LT.lt (WithTop α) _ none a := WithTop.not_top_lt _
 #align with_top.not_none_lt WithTop.not_none_lt
 
