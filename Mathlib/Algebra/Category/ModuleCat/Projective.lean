@@ -15,9 +15,7 @@ import Mathlib.Data.Finsupp.Basic
 # The category of `R`-modules has enough projectives.
 -/
 
-set_option autoImplicit true
-
-universe v u
+universe v u u'
 
 open CategoryTheory
 
@@ -32,11 +30,11 @@ open scoped Module
 /-- The categorical notion of projective object agrees with the explicit module-theoretic notion. -/
 theorem IsProjective.iff_projective {R : Type u} [Ring R] {P : Type max u v} [AddCommGroup P]
     [Module R P] : Module.Projective R P ↔ Projective (ModuleCat.of R P) := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · letI : Module.Projective R (ModuleCat.of R P) := h
     exact ⟨fun E X epi => Module.projective_lifting_property _ _
       ((ModuleCat.epi_iff_surjective _).mp epi)⟩
-  · refine' Module.Projective.of_lifting_property.{u,v} _
+  · refine Module.Projective.of_lifting_property.{u,v} ?_
     intro E X mE mX sE sX f g s
     haveI : Epi (↟f) := (ModuleCat.epi_iff_surjective (↟f)).mpr s
     letI : Projective (ModuleCat.of R P) := h
@@ -69,7 +67,9 @@ instance moduleCat_enoughProjectives : EnoughProjectives (ModuleCat.{max u v} R)
               -- Porting note: simp [Finsupp.total_single] fails but rw succeeds
               dsimp [Basis.constr]
               simp only [Finsupp.lmapDomain_id, comp_id]
-              rw [Finsupp.total_single, one_smul]
+              -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+              erw [Finsupp.total_single]
+              rw [one_smul]
               rfl ⟩) }⟩
 set_option linter.uppercaseLean3 false in
 #align Module.Module_enough_projectives ModuleCat.moduleCat_enoughProjectives

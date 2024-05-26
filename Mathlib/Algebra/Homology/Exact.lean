@@ -37,6 +37,9 @@ these results are found in `CategoryTheory/Abelian/Exact.lean`.
   categories?)
 * Two adjacent maps in a chain complex are exact iff the homology vanishes
 
+Note: It is planned that the definition in this file will be replaced by the new
+homology API, in particular by the content of `Algebra.Homology.ShortComplex.Exact`.
+
 -/
 
 
@@ -45,7 +48,6 @@ universe v v₂ u u₂
 open CategoryTheory CategoryTheory.Limits
 
 variable {V : Type u} [Category.{v} V]
-
 variable [HasImages V]
 
 namespace CategoryTheory
@@ -67,7 +69,7 @@ structure Exact [HasZeroMorphisms V] [HasKernels V] {A B C : V} (f : A ⟶ B) (g
   epi : Epi (imageToKernel f g w)
 #align category_theory.exact CategoryTheory.Exact
 
--- porting note: it seems it no longer works in Lean4, so that some `haveI` have been added below
+-- Porting note: it seems it no longer works in Lean4, so that some `haveI` have been added below
 -- This works as an instance even though `Exact` itself is not a class, as long as the goal is
 -- literally of the form `Epi (imageToKernel f g h.w)` (where `h : Exact f g`). If the proof of
 -- `f ≫ g = 0` looks different, we are out of luck and have to add the instance by hand.
@@ -84,22 +86,22 @@ open ZeroObject
 /-- In any preadditive category,
 composable morphisms `f g` are exact iff they compose to zero and the homology vanishes.
 -/
-theorem Preadditive.exact_iff_homology_zero {A B C : V} (f : A ⟶ B) (g : B ⟶ C) :
-    Exact f g ↔ ∃ w : f ≫ g = 0, Nonempty (homology f g w ≅ 0) :=
+theorem Preadditive.exact_iff_homology'_zero {A B C : V} (f : A ⟶ B) (g : B ⟶ C) :
+    Exact f g ↔ ∃ w : f ≫ g = 0, Nonempty (homology' f g w ≅ 0) :=
   ⟨fun h => ⟨h.w, ⟨by
     haveI := h.epi
     exact cokernel.ofEpi _⟩⟩,
    fun h => by
     obtain ⟨w, ⟨i⟩⟩ := h
     exact ⟨w, Preadditive.epi_of_cokernel_zero ((cancel_mono i.hom).mp (by ext))⟩⟩
-#align category_theory.preadditive.exact_iff_homology_zero CategoryTheory.Preadditive.exact_iff_homology_zero
+#align category_theory.preadditive.exact_iff_homology_zero CategoryTheory.Preadditive.exact_iff_homology'_zero
 
 theorem Preadditive.exact_of_iso_of_exact {A₁ B₁ C₁ A₂ B₂ C₂ : V} (f₁ : A₁ ⟶ B₁) (g₁ : B₁ ⟶ C₁)
     (f₂ : A₂ ⟶ B₂) (g₂ : B₂ ⟶ C₂) (α : Arrow.mk f₁ ≅ Arrow.mk f₂) (β : Arrow.mk g₁ ≅ Arrow.mk g₂)
     (p : α.hom.right = β.hom.left) (h : Exact f₁ g₁) : Exact f₂ g₂ := by
-  rw [Preadditive.exact_iff_homology_zero] at h ⊢
+  rw [Preadditive.exact_iff_homology'_zero] at h ⊢
   rcases h with ⟨w₁, ⟨i⟩⟩
-  suffices w₂ : f₂ ≫ g₂ = 0; exact ⟨w₂, ⟨(homology.mapIso w₁ w₂ α β p).symm.trans i⟩⟩
+  suffices w₂ : f₂ ≫ g₂ = 0 from ⟨w₂, ⟨(homology'.mapIso w₁ w₂ α β p).symm.trans i⟩⟩
   rw [← cancel_epi α.hom.left, ← cancel_mono β.inv.right, comp_zero, zero_comp, ← w₁]
   have eq₁ := β.inv.w
   have eq₂ := α.hom.w
@@ -145,11 +147,12 @@ theorem comp_eq_zero_of_image_eq_kernel {A B C : V} (f : A ⟶ B) (g : B ⟶ C)
 theorem imageToKernel_isIso_of_image_eq_kernel {A B C : V} (f : A ⟶ B) (g : B ⟶ C)
     (p : imageSubobject f = kernelSubobject g) :
     IsIso (imageToKernel f g (comp_eq_zero_of_image_eq_kernel f g p)) := by
-  refine' ⟨⟨Subobject.ofLE _ _ p.ge, _⟩⟩
+  refine ⟨⟨Subobject.ofLE _ _ p.ge, ?_⟩⟩
   dsimp [imageToKernel]
-  simp only [Subobject.ofLE_comp_ofLE, Subobject.ofLE_refl]
+  simp only [Subobject.ofLE_comp_ofLE, Subobject.ofLE_refl, and_self]
 #align category_theory.image_to_kernel_is_iso_of_image_eq_kernel CategoryTheory.imageToKernel_isIso_of_image_eq_kernel
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 -- We'll prove the converse later, when `V` is abelian.
 theorem exact_of_image_eq_kernel {A B C : V} (f : A ⟶ B) (g : B ⟶ C)
     (p : imageSubobject f = kernelSubobject g) : Exact f g :=
@@ -170,7 +173,7 @@ section
 variable [HasZeroMorphisms V] [HasEqualizers V]
 
 theorem exact_comp_hom_inv_comp (i : B ≅ D) (h : Exact f g) : Exact (f ≫ i.hom) (i.inv ≫ g) := by
-  refine' ⟨by simp [h.w], _⟩
+  refine ⟨by simp [h.w], ?_⟩
   rw [imageToKernel_comp_hom_inv_comp]
   haveI := h.epi
   infer_instance
@@ -185,10 +188,10 @@ theorem exact_comp_hom_inv_comp_iff (i : B ≅ D) : Exact (f ≫ i.hom) (i.inv �
 #align category_theory.exact_comp_hom_inv_comp_iff CategoryTheory.exact_comp_hom_inv_comp_iff
 
 theorem exact_epi_comp (hgh : Exact g h) [Epi f] : Exact (f ≫ g) h := by
-  refine' ⟨by simp [hgh.w], _⟩
+  refine ⟨by simp [hgh.w], ?_⟩
   rw [imageToKernel_comp_left]
-  haveI := hgh.epi
-  infer_instance
+  · haveI := hgh.epi
+    infer_instance
 #align category_theory.exact_epi_comp CategoryTheory.exact_epi_comp
 
 @[simp]
@@ -199,7 +202,7 @@ theorem exact_iso_comp [IsIso f] : Exact (f ≫ g) h ↔ Exact g h :=
 #align category_theory.exact_iso_comp CategoryTheory.exact_iso_comp
 
 theorem exact_comp_mono (hfg : Exact f g) [Mono h] : Exact f (g ≫ h) := by
-  refine' ⟨by simp [hfg.w_assoc], _⟩
+  refine ⟨by simp [hfg.w_assoc], ?_⟩
   rw [imageToKernel_comp_right f g h hfg.w]
   haveI := hfg.epi
   infer_instance
@@ -207,8 +210,8 @@ theorem exact_comp_mono (hfg : Exact f g) [Mono h] : Exact f (g ≫ h) := by
 
 /-- The dual of this lemma is only true when `V` is abelian, see `Abelian.exact_epi_comp_iff`. -/
 theorem exact_comp_mono_iff [Mono h] : Exact f (g ≫ h) ↔ Exact f g := by
-  refine'
-    ⟨fun hfg => ⟨zero_of_comp_mono h (by rw [Category.assoc, hfg.1]), _⟩, fun h =>
+  refine
+    ⟨fun hfg => ⟨zero_of_comp_mono h (by rw [Category.assoc, hfg.1]), ?_⟩, fun h =>
       exact_comp_mono h⟩
   rw [← (Iso.eq_comp_inv _).1 (imageToKernel_comp_mono _ _ h hfg.1)]
   haveI := hfg.2; infer_instance
@@ -220,8 +223,8 @@ theorem exact_comp_iso [IsIso h] : Exact f (g ≫ h) ↔ Exact f g :=
 #align category_theory.exact_comp_iso CategoryTheory.exact_comp_iso
 
 theorem exact_kernelSubobject_arrow : Exact (kernelSubobject f).arrow f := by
-  refine' ⟨by simp, _⟩
-  refine' @IsIso.epi_of_iso _ _ _ _ _ ?_
+  refine ⟨by simp, ?_⟩
+  refine @IsIso.epi_of_iso _ _ _ _ _ ?_
   exact ⟨⟨factorThruImageSubobject _, by aesop_cat, by aesop_cat⟩⟩
 #align category_theory.exact_kernel_subobject_arrow CategoryTheory.exact_kernelSubobject_arrow
 
@@ -236,7 +239,7 @@ instance Exact.epi_factorThruKernelSubobject (h : Exact f g) :
   haveI := h.epi
   apply epi_comp
 
--- porting note: this can no longer be an instance in Lean4
+-- Porting note: this can no longer be an instance in Lean4
 lemma Exact.epi_kernel_lift (h : Exact f g) : Epi (kernel.lift g f h.w) := by
   rw [← factorThruKernelSubobject_comp_kernelSubobjectIso]
   haveI := h.epi_factorThruKernelSubobject
@@ -350,7 +353,6 @@ end
 namespace Functor
 
 variable [HasZeroMorphisms V] [HasKernels V] {W : Type u₂} [Category.{v₂} W]
-
 variable [HasImages W] [HasZeroMorphisms W] [HasKernels W]
 
 /-- A functor reflects exact sequences if any composable pair of morphisms that is mapped to an

@@ -25,12 +25,12 @@ variable {α : Type*} [PartialOrder α] [SuccOrder α] [IsSuccArchimedean α]
   for all `i` between `n` and `m`. -/
 theorem reflTransGen_of_succ_of_le (r : α → α → Prop) {n m : α} (h : ∀ i ∈ Ico n m, r i (succ i))
     (hnm : n ≤ m) : ReflTransGen r n m := by
-  revert h; refine' Succ.rec _ _ hnm
+  revert h; refine Succ.rec ?_ ?_ hnm
   · intro _
     exact ReflTransGen.refl
   · intro m hnm ih h
     have : ReflTransGen r n m := ih fun i hi => h i ⟨hi.1, hi.2.trans_le <| le_succ m⟩
-    cases' (le_succ m).eq_or_lt with hm hm
+    rcases (le_succ m).eq_or_lt with hm | hm
     · rwa [← hm]
     exact this.tail (h m ⟨hnm, hm⟩)
 #align refl_trans_gen_of_succ_of_le reflTransGen_of_succ_of_le

@@ -3,12 +3,12 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
+import Mathlib.Algebra.Group.Subgroup.Basic
+import Mathlib.Algebra.Group.Submonoid.Operations
+import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Set.Pointwise.Finite
 import Mathlib.GroupTheory.QuotientGroup
-import Mathlib.GroupTheory.Submonoid.Operations
-import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.SetTheory.Cardinal.Finite
-import Mathlib.Data.Finset.Preimage
 
 #align_import group_theory.finiteness from "leanprover-community/mathlib"@"dde670c9a3f503647fd5bfdf1037bad526d3397a"
 
@@ -187,13 +187,13 @@ instance Monoid.fg_range {M' : Type*} [Monoid M'] [Monoid.FG M] (f : M →* M') 
 #align monoid.fg_range Monoid.fg_range
 #align add_monoid.fg_range AddMonoid.fg_range
 
-@[to_additive AddSubmonoid.multiples_fg]
+@[to_additive]
 theorem Submonoid.powers_fg (r : M) : (Submonoid.powers r).FG :=
   ⟨{r}, (Finset.coe_singleton r).symm ▸ (Submonoid.powers_eq_closure r).symm⟩
 #align submonoid.powers_fg Submonoid.powers_fg
 #align add_submonoid.multiples_fg AddSubmonoid.multiples_fg
 
-@[to_additive AddMonoid.multiples_fg]
+@[to_additive]
 instance Monoid.powers_fg (r : M) : Monoid.FG (Submonoid.powers r) :=
   (Monoid.fg_iff_submonoid_fg _).mpr (Submonoid.powers_fg r)
 #align monoid.powers_fg Monoid.powers_fg
@@ -248,10 +248,10 @@ theorem Subgroup.fg_iff_submonoid_fg (P : Subgroup G) : P.FG ↔ P.toSubmonoid.F
   constructor
   · rintro ⟨S, rfl⟩
     rw [Submonoid.fg_iff]
-    refine' ⟨S ∪ S⁻¹, _, S.finite_toSet.union S.finite_toSet.inv⟩
+    refine ⟨S ∪ S⁻¹, ?_, S.finite_toSet.union S.finite_toSet.inv⟩
     exact (Subgroup.closure_toSubmonoid _).symm
   · rintro ⟨S, hS⟩
-    refine' ⟨S, le_antisymm _ _⟩
+    refine ⟨S, le_antisymm ?_ ?_⟩
     · rw [Subgroup.closure_le, ← Subgroup.coe_toSubmonoid, ← hS]
       exact Submonoid.subset_closure
     · rw [← Subgroup.toSubmonoid_le, ← hS, Submonoid.closure_le]
@@ -321,6 +321,11 @@ theorem Group.fg_iff_monoid_fg : Group.FG G ↔ Monoid.FG G :=
     Group.fg_def.2 <| (Subgroup.fg_iff_submonoid_fg ⊤).2 (Monoid.fg_def.1 h)⟩
 #align group.fg_iff_monoid.fg Group.fg_iff_monoid_fg
 #align add_group.fg_iff_add_monoid.fg AddGroup.fg_iff_addMonoid_fg
+
+@[to_additive (attr := simp)]
+theorem Group.fg_iff_subgroup_fg (H : Subgroup G) : Group.FG H ↔ H.FG :=
+  (fg_iff_monoid_fg.trans (Monoid.fg_iff_submonoid_fg _)).trans
+    (Subgroup.fg_iff_submonoid_fg _).symm
 
 theorem GroupFG.iff_add_fg : Group.FG G ↔ AddGroup.FG (Additive G) :=
   ⟨fun h => ⟨(Subgroup.fg_iff_add_fg ⊤).1 h.out⟩, fun h => ⟨(Subgroup.fg_iff_add_fg ⊤).2 h.out⟩⟩
@@ -437,15 +442,15 @@ theorem rank_congr {H K : Subgroup G} [Group.FG H] [Group.FG K] (h : H = K) :
 @[to_additive]
 theorem rank_closure_finset_le_card (s : Finset G) : Group.rank (closure (s : Set G)) ≤ s.card := by
   classical
-    let t : Finset (closure (s : Set G)) := s.preimage Subtype.val (Subtype.coe_injective.injOn _)
-    have ht : closure (t : Set (closure (s : Set G))) = ⊤ := by
-      rw [Finset.coe_preimage]
-      exact closure_preimage_eq_top (s : Set G)
-    apply (Group.rank_le (closure (s : Set G)) ht).trans
-    suffices H : Set.InjOn Subtype.val (t : Set (closure (s : Set G)))
+  let t : Finset (closure (s : Set G)) := s.preimage Subtype.val (Subtype.coe_injective.injOn _)
+  have ht : closure (t : Set (closure (s : Set G))) = ⊤ := by
+    rw [Finset.coe_preimage]
+    exact closure_preimage_eq_top (s : Set G)
+  apply (Group.rank_le (closure (s : Set G)) ht).trans
+  suffices H : Set.InjOn Subtype.val (t : Set (closure (s : Set G))) by
     rw [← Finset.card_image_of_injOn H, Finset.image_preimage]
-    · apply Finset.card_filter_le
-    · apply Subtype.coe_injective.injOn
+    apply Finset.card_filter_le
+  apply Subtype.coe_injective.injOn
 #align subgroup.rank_closure_finset_le_card Subgroup.rank_closure_finset_le_card
 #align add_subgroup.rank_closure_finset_le_card AddSubgroup.rank_closure_finset_le_card
 

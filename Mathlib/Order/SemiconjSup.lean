@@ -3,12 +3,12 @@ Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
+import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Logic.Function.Conjugate
 import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Order.RelIso.Group
 import Mathlib.Order.OrdContinuous
-import Mathlib.Algebra.Hom.Equiv.Units.Basic
+import Mathlib.Order.RelIso.Group
 
 #align_import order.semiconj_Sup from "leanprover-community/mathlib"@"422e70f7ce183d2900c586a8cda8381e788a0c62"
 
@@ -91,7 +91,7 @@ cohomologie bornée][ghys87:groupes]. -/
 theorem Semiconj.symm_adjoint [PartialOrder α] [Preorder β] {fa : α ≃o α} {fb : β ↪o β} {g : α → β}
     (h : Function.Semiconj g fa fb) {g' : β → α} (hg' : IsOrderRightAdjoint g g') :
     Function.Semiconj g' fb fa := by
-  refine' fun y => (hg' _).unique _
+  refine fun y => (hg' _).unique ?_
   rw [← fa.surjective.image_preimage { x | g x ≤ fb y }, preimage_setOf_eq]
   simp only [h.eq, fb.le_iff_le, fa.leftOrdContinuous (hg' _)]
 #align function.semiconj.symm_adjoint Function.Semiconj.symm_adjoint
@@ -101,7 +101,7 @@ variable {G : Type*}
 theorem semiconj_of_isLUB [PartialOrder α] [Group G] (f₁ f₂ : G →* α ≃o α) {h : α → α}
     (H : ∀ x, IsLUB (range fun g' => (f₁ g')⁻¹ (f₂ g' x)) (h x)) (g : G) :
     Function.Semiconj h (f₂ g) (f₁ g) := by
-  refine' fun y => (H _).unique _
+  refine fun y => (H _).unique ?_
   have := (f₁ g).leftOrdContinuous (H y)
   rw [← range_comp, ← (Equiv.mulRight g).surjective.range_comp _] at this
   simpa [(· ∘ ·)] using this

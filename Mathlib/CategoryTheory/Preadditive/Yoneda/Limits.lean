@@ -5,6 +5,7 @@ Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 import Mathlib.Algebra.Category.ModuleCat.Abelian
+import Mathlib.CategoryTheory.Limits.Yoneda
 
 #align_import category_theory.preadditive.yoneda.limits from "leanprover-community/mathlib"@"09f981f72d43749f1fa072deade828d9c1e185bb"
 

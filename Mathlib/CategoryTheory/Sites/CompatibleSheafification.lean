@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 import Mathlib.CategoryTheory.Sites.CompatiblePlus
-import Mathlib.CategoryTheory.Sites.Sheafification
+import Mathlib.CategoryTheory.Sites.ConcreteSheafification
 
 #align_import category_theory.sites.compatible_sheafification from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -27,28 +27,19 @@ open Opposite
 universe w₁ w₂ v u
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
-
 variable {D : Type w₁} [Category.{max v u} D]
-
 variable {E : Type w₂} [Category.{max v u} E]
-
 variable (F : D ⥤ E)
 
--- porting note: Removed this and made whatever necessary noncomputable
+-- Porting note: Removed this and made whatever necessary noncomputable
 -- noncomputable section
 
 variable [∀ (α β : Type max v u) (fst snd : β → α), HasLimitsOfShape (WalkingMulticospan fst snd) D]
-
 variable [∀ (α β : Type max v u) (fst snd : β → α), HasLimitsOfShape (WalkingMulticospan fst snd) E]
-
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
-
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ E]
-
 variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ F]
-
 variable [∀ (X : C) (W : J.Cover X) (P : Cᵒᵖ ⥤ D), PreservesLimit (W.index P).multicospan F]
-
 variable (P : Cᵒᵖ ⥤ D)
 
 /-- The isomorphism between the sheafification of `P` composed with `F` and
@@ -72,7 +63,7 @@ noncomputable def sheafificationWhiskerLeftIso (P : Cᵒᵖ ⥤ D)
     (whiskeringLeft _ _ _).obj P ⋙ J.sheafification E := by
   refine' J.plusFunctorWhiskerLeftIso _ ≪≫ _ ≪≫ Functor.associator _ _ _
   refine' isoWhiskerRight _ _
-  refine' J.plusFunctorWhiskerLeftIso _
+  exact J.plusFunctorWhiskerLeftIso _
 #align category_theory.grothendieck_topology.sheafification_whisker_left_iso CategoryTheory.GrothendieckTopology.sheafificationWhiskerLeftIso
 
 @[simp]
@@ -144,12 +135,13 @@ section
 
 -- We will sheafify `D`-valued presheaves in this section.
 variable [ConcreteCategory.{max v u} D] [PreservesLimits (forget D)]
-  [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)] [ReflectsIsomorphisms (forget D)]
+  [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)] [(forget D).ReflectsIsomorphisms]
 
 @[simp]
 theorem sheafifyCompIso_inv_eq_sheafifyLift :
     (J.sheafifyCompIso F P).inv =
-      J.sheafifyLift (whiskerRight (J.toSheafify P) F) ((J.sheafify_isSheaf _).comp _) := by
+      J.sheafifyLift (whiskerRight (J.toSheafify P) F)
+        (HasSheafCompose.isSheaf _ ((J.sheafify_isSheaf _))) := by
   apply J.sheafifyLift_unique
   rw [Iso.comp_inv_eq]
   simp

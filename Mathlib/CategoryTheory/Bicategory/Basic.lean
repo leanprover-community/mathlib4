@@ -193,9 +193,9 @@ attribute [simp]
 variable {B : Type u} [Bicategory.{w, v} B] {a b c d e : B}
 
 @[reassoc (attr := simp)]
-theorem hom_inv_whiskerLeft (f : a ⟶ b) {g h : b ⟶ c} (η : g ≅ h) :
+theorem whiskerLeft_hom_inv (f : a ⟶ b) {g h : b ⟶ c} (η : g ≅ h) :
     f ◁ η.hom ≫ f ◁ η.inv = 𝟙 (f ≫ g) := by rw [← whiskerLeft_comp, hom_inv_id, whiskerLeft_id]
-#align category_theory.bicategory.hom_inv_whisker_left CategoryTheory.Bicategory.hom_inv_whiskerLeft
+#align category_theory.bicategory.hom_inv_whisker_left CategoryTheory.Bicategory.whiskerLeft_hom_inv
 
 @[reassoc (attr := simp)]
 theorem hom_inv_whiskerRight {f g : a ⟶ b} (η : f ≅ g) (h : b ⟶ c) :
@@ -203,9 +203,9 @@ theorem hom_inv_whiskerRight {f g : a ⟶ b} (η : f ≅ g) (h : b ⟶ c) :
 #align category_theory.bicategory.hom_inv_whisker_right CategoryTheory.Bicategory.hom_inv_whiskerRight
 
 @[reassoc (attr := simp)]
-theorem inv_hom_whiskerLeft (f : a ⟶ b) {g h : b ⟶ c} (η : g ≅ h) :
+theorem whiskerLeft_inv_hom (f : a ⟶ b) {g h : b ⟶ c} (η : g ≅ h) :
     f ◁ η.inv ≫ f ◁ η.hom = 𝟙 (f ≫ h) := by rw [← whiskerLeft_comp, inv_hom_id, whiskerLeft_id]
-#align category_theory.bicategory.inv_hom_whisker_left CategoryTheory.Bicategory.inv_hom_whiskerLeft
+#align category_theory.bicategory.inv_hom_whisker_left CategoryTheory.Bicategory.whiskerLeft_inv_hom
 
 @[reassoc (attr := simp)]
 theorem inv_hom_whiskerRight {f g : a ⟶ b} (η : f ≅ g) (h : b ⟶ c) :
@@ -214,8 +214,7 @@ theorem inv_hom_whiskerRight {f g : a ⟶ b} (η : f ≅ g) (h : b ⟶ c) :
 
 /-- The left whiskering of a 2-isomorphism is a 2-isomorphism. -/
 @[simps]
-def whiskerLeftIso (f : a ⟶ b) {g h : b ⟶ c} (η : g ≅ h) : f ≫ g ≅ f ≫ h
-    where
+def whiskerLeftIso (f : a ⟶ b) {g h : b ⟶ c} (η : g ≅ h) : f ≫ g ≅ f ≫ h where
   hom := f ◁ η.hom
   inv := f ◁ η.inv
 #align category_theory.bicategory.whisker_left_iso CategoryTheory.Bicategory.whiskerLeftIso
@@ -226,15 +225,14 @@ instance whiskerLeft_isIso (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) [IsIso �
 
 @[simp]
 theorem inv_whiskerLeft (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) [IsIso η] :
-  inv (f ◁ η) = f ◁ inv η := by
-  aesop_cat_nonterminal
+    inv (f ◁ η) = f ◁ inv η := by
+  apply IsIso.inv_eq_of_hom_inv_id
   simp only [← whiskerLeft_comp, whiskerLeft_id, IsIso.hom_inv_id]
 #align category_theory.bicategory.inv_whisker_left CategoryTheory.Bicategory.inv_whiskerLeft
 
 /-- The right whiskering of a 2-isomorphism is a 2-isomorphism. -/
 @[simps!]
-def whiskerRightIso {f g : a ⟶ b} (η : f ≅ g) (h : b ⟶ c) : f ≫ h ≅ g ≫ h
-    where
+def whiskerRightIso {f g : a ⟶ b} (η : f ≅ g) (h : b ⟶ c) : f ≫ h ≅ g ≫ h where
   hom := η.hom ▷ h
   inv := η.inv ▷ h
 #align category_theory.bicategory.whisker_right_iso CategoryTheory.Bicategory.whiskerRightIso
@@ -246,7 +244,7 @@ instance whiskerRight_isIso {f g : a ⟶ b} (η : f ⟶ g) (h : b ⟶ c) [IsIso 
 @[simp]
 theorem inv_whiskerRight {f g : a ⟶ b} (η : f ⟶ g) (h : b ⟶ c) [IsIso η] :
     inv (η ▷ h) = inv η ▷ h := by
-  aesop_cat_nonterminal
+  apply IsIso.inv_eq_of_hom_inv_id
   simp only [← comp_whiskerRight, id_whiskerRight, IsIso.hom_inv_id]
 #align category_theory.bicategory.inv_whisker_right CategoryTheory.Bicategory.inv_whiskerRight
 

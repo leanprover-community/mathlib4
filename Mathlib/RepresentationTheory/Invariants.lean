@@ -20,6 +20,7 @@ In order for the definition of the average element to make sense, we need to ass
 results that the order of `G` is invertible in `k` (e. g. `k` has characteristic `0`).
 -/
 
+suppress_compilation
 
 open scoped BigOperators
 
@@ -30,7 +31,6 @@ open Representation
 namespace GroupAlgebra
 
 variable (k G : Type*) [CommSemiring k] [Group G]
-
 variable [Fintype G] [Invertible (Fintype.card G : k)]
 
 /-- The average of all elements of the group `G`, considered as an element of `MonoidAlgebra k G`.
@@ -70,7 +70,6 @@ section Invariants
 open GroupAlgebra
 
 variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
-
 variable (ρ : Representation k G V)
 
 /-- The subspace of invariants, consisting of the vectors fixed by all elements of `G`.
@@ -89,6 +88,10 @@ theorem mem_invariants (v : V) : v ∈ invariants ρ ↔ ∀ g : G, ρ g v = v :
 theorem invariants_eq_inter : (invariants ρ).carrier = ⋂ g : G, Function.fixedPoints (ρ g) := by
   ext; simp [Function.IsFixedPt]
 #align representation.invariants_eq_inter Representation.invariants_eq_inter
+
+theorem invariants_eq_top [ρ.IsTrivial] :
+    invariants ρ = ⊤ :=
+eq_top_iff.2 (fun x _ g => ρ.apply_eq_self g x)
 
 variable [Fintype G] [Invertible (Fintype.card G : k)]
 

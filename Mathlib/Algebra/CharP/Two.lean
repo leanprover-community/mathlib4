@@ -3,7 +3,7 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.CharP.ExpChar
 
 #align_import algebra.char_p.two from "leanprover-community/mathlib"@"7f1ba1a333d66eed531ecb4092493cd1b6715450"
 
@@ -73,7 +73,7 @@ theorem neg_eq' : Neg.neg = (id : R → R) :=
 theorem sub_eq_add (x y : R) : x - y = x + y := by rw [sub_eq_add_neg, neg_eq]
 #align char_two.sub_eq_add CharTwo.sub_eq_add
 
-theorem sub_eq_add' : Sub.sub = ((· + ·) : R → R → R) :=
+theorem sub_eq_add' : HSub.hSub = ((· + ·) : R → R → R) :=
   funext fun x => funext fun y => sub_eq_add x y
 #align char_two.sub_eq_add' CharTwo.sub_eq_add'
 
@@ -126,7 +126,7 @@ section ringChar
 variable [Ring R]
 
 theorem neg_one_eq_one_iff [Nontrivial R] : (-1 : R) = 1 ↔ ringChar R = 2 := by
-  refine' ⟨fun h => _, fun h => @CharTwo.neg_eq _ _ (ringChar.of_eq h) 1⟩
+  refine ⟨fun h => ?_, fun h => @CharTwo.neg_eq _ _ (ringChar.of_eq h) 1⟩
   rw [eq_comm, ← sub_eq_zero, sub_neg_eq_add, ← Nat.cast_one, ← Nat.cast_add] at h
   exact ((Nat.dvd_prime Nat.prime_two).mp (ringChar.dvd h)).resolve_left CharP.ringChar_ne_one
 #align neg_one_eq_one_iff neg_one_eq_one_iff

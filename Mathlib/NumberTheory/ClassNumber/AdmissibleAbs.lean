@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
+import Mathlib.Data.Real.Archimedean
 
 #align_import number_theory.class_number.admissible_abs from "leanprover-community/mathlib"@"e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b"
 
@@ -36,7 +37,7 @@ theorem exists_partition_int (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b : ℤ} (hb :
     exact mul_pos hb' hε
   have hfloor : ∀ i, 0 ≤ floor ((A i % b : ℤ) / abs b • ε : ℝ) :=
     fun _ ↦ floor_nonneg.mpr (div_nonneg (cast_nonneg.mpr (emod_nonneg _ hb)) hbε.le)
-  refine' ⟨fun i ↦ ⟨natAbs (floor ((A i % b : ℤ) / abs b • ε : ℝ)), _⟩, _⟩
+  refine ⟨fun i ↦ ⟨natAbs (floor ((A i % b : ℤ) / abs b • ε : ℝ)), ?_⟩, ?_⟩
   · rw [← ofNat_lt, natAbs_of_nonneg (hfloor i), floor_lt]
     apply lt_of_lt_of_le _ (Nat.le_ceil _)
     rw [Algebra.smul_def, eq_intCast, ← div_div, div_lt_div_right hε, div_lt_iff hb', one_mul,

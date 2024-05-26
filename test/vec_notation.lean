@@ -4,27 +4,36 @@ https://github.com/leanprover-community/mathlib/blob/fee91d74414e681a8b72cb7160e
 -/
 import Mathlib.Data.Fin.VecNotation
 
-/-! These tests are testing `PiFin.toExpr` and fail with
-`local attribute [-instance] PiFin.toExpr` -/
-
 open Lean
 open Lean.Meta
 open Qq
 
-#eval do
+set_option pp.unicode.fun false
+
+/-! These tests are testing `PiFin.toExpr` and fail with
+`local attribute [-instance] PiFin.toExpr` -/
+
+run_cmd Elab.Command.liftTermElabM do
   let x : Fin 0 → ℕ := ![]
-  let .true ← isDefEq (toExpr x) q((![] : Fin 0 → ℕ)) | failure
+  guard (← isDefEq (toExpr x) q((![] : Fin 0 → ℕ)))
 
-#eval do
+run_cmd Elab.Command.liftTermElabM do
   let x := ![1, 2, 3]
-  let .true ← isDefEq (toExpr x) q(![1, 2, 3]) | failure
+  guard (← isDefEq (toExpr x) q(![1, 2, 3]))
 
-#eval do
+run_cmd Elab.Command.liftTermElabM do
   let x := ![![1, 2], ![3, 4]]
-  let .true ← isDefEq (toExpr x) q(![![1, 2], ![3, 4]]) | failure
+  guard (← isDefEq (toExpr x) q(![![1, 2], ![3, 4]]))
 
 /-! These tests are testing `PiFin.repr` -/
 
-#eval show MetaM Unit from guard (toString (repr (![] : _ → ℕ)) = "![]")
-#eval show MetaM Unit from guard (toString (repr ![1, 2, 3]) = "![1, 2, 3]")
-#eval show MetaM Unit from guard (toString (repr ![![1, 2], ![3, 4]]) = "![![1, 2], ![3, 4]]")
+#guard (toString (repr (![] : _ → ℕ)) = "![]")
+#guard (toString (repr ![1, 2, 3]) = "![1, 2, 3]")
+#guard (toString (repr ![![1, 2], ![3, 4]]) = "![![1, 2], ![3, 4]]")
+
+/-! These tests are testing delaborators -/
+
+/-- info: fun x => ![0, 1] x : Fin 2 → ℕ -/
+#guard_msgs in #check fun x : Fin 2 => (![0, 1] : Fin 2 → ℕ) x
+/-- info: fun x => ![] x : Fin 0 → ℕ -/
+#guard_msgs in #check fun x : Fin 0 => (![] : Fin 0 → ℕ) x

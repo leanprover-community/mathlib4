@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
 import Mathlib.Analysis.Normed.Group.Completion
-import Mathlib.Analysis.NormedSpace.OperatorNorm
+import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 import Mathlib.Topology.Algebra.UniformRing
 
 #align_import analysis.normed_space.completion from "leanprover-community/mathlib"@"d3af0609f6db8691dffdc3e1fb7feb7da72698f2"
@@ -37,7 +37,6 @@ instance (priority := 100) NormedSpace.to_uniformContinuousConstSMul :
 
 instance : NormedSpace 𝕜 (Completion E) :=
   { Completion.instModule with
-    smul := (· • ·)
     norm_smul_le := fun c x =>
       induction_on x
         (isClosed_le (continuous_const_smul _).norm (continuous_const.mul continuous_norm)) fun y =>

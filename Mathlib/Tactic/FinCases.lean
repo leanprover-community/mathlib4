@@ -30,8 +30,8 @@ def getMemType {m : Type → Type} [Monad m] [MonadError m] (e : Expr) : m (Opti
     | (``List, #[α])     => return α
     | (``Multiset, #[α]) => return α
     | (``Finset, #[α])   => return α
-    | _ => throwError ("Hypothesis must be of type `x ∈ (A : List α)`, `x ∈ (A : Finset α)`,"
-        ++ " or `x ∈ (A : Multiset α)`")
+    | _ => throwError "Hypothesis must be of type `x ∈ (A : List α)`, `x ∈ (A : Finset α)`, \
+                       or `x ∈ (A : Multiset α)`"
   | _ => return none
 
 /--
@@ -73,7 +73,7 @@ partial def finCasesAt (g : MVarId) (hyp : FVarId) : MetaM (List MVarId) := g.wi
 As an example, in
 ```
 example (f : ℕ → Prop) (p : Fin 3) (h0 : f 0) (h1 : f 1) (h2 : f 2) : f p.val := by
-  fin_cases *; simp
+  fin_cases p; simp
   all_goals assumption
 ```
 after `fin_cases p; simp`, there are three goals, `f 0`, `f 1`, and `f 2`.

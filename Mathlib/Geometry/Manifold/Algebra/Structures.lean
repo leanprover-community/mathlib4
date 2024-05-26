@@ -1,5 +1,5 @@
 /-
-Copyright © 2020 Nicolò Cavalleri. All rights reserved.
+Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
@@ -53,7 +53,7 @@ instance (priority := 100) fieldSmoothRing {𝕜 : Type*} [NontriviallyNormedFie
     smooth_mul := by
       rw [smooth_iff]
       refine' ⟨continuous_mul, fun x y => _⟩
-      simp only [Prod.mk.eta, mfld_simps]
+      simp only [mfld_simps]
       rw [contDiffOn_univ]
       exact contDiff_mul }
 #align field_smooth_ring fieldSmoothRing

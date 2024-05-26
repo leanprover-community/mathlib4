@@ -59,8 +59,7 @@ open List
 
 /-- Converts an association list into a finitely supported function via `AList.lookup`, sending
 absent keys to zero. -/
-noncomputable def lookupFinsupp (l : AList fun _x : α => M) : α →₀ M
-    where
+noncomputable def lookupFinsupp (l : AList fun _x : α => M) : α →₀ M where
   support := by
     haveI := Classical.decEq α; haveI := Classical.decEq M
     exact (l.1.filter fun x => Sigma.snd x ≠ 0).keys.toFinset
@@ -76,17 +75,15 @@ noncomputable def lookupFinsupp (l : AList fun _x : α => M) : α →₀ M
 @[simp]
 theorem lookupFinsupp_apply [DecidableEq α] (l : AList fun _x : α => M) (a : α) :
     l.lookupFinsupp a = (l.lookup a).getD 0 := by
-    -- porting note: was `convert rfl`
-    simp only [lookupFinsupp, ne_eq, Finsupp.coe_mk]; congr
+    convert rfl; congr
 #align alist.lookup_finsupp_apply AList.lookupFinsupp_apply
 
 @[simp]
 theorem lookupFinsupp_support [DecidableEq α] [DecidableEq M] (l : AList fun _x : α => M) :
     l.lookupFinsupp.support = (l.1.filter fun x => Sigma.snd x ≠ 0).keys.toFinset := by
-    -- porting note: was `convert rfl`
-     simp only [lookupFinsupp, ne_eq, Finsupp.coe_mk]; congr
-     · apply Subsingleton.elim
-     · funext; congr
+  convert rfl; congr
+  · apply Subsingleton.elim
+  · funext; congr
 #align alist.lookup_finsupp_support AList.lookupFinsupp_support
 
 theorem lookupFinsupp_eq_iff_of_ne_zero [DecidableEq α] {l : AList fun _x : α => M} {a : α} {x : M}
@@ -119,7 +116,7 @@ theorem insert_lookupFinsupp [DecidableEq α] (l : AList fun _x : α => M) (a : 
 theorem singleton_lookupFinsupp (a : α) (m : M) :
     (singleton a m).lookupFinsupp = Finsupp.single a m := by
   classical
-  -- porting note: was `simp [←AList.insert_empty]` but timeout issues
+  -- porting note (#10745): was `simp [← AList.insert_empty]` but timeout issues
   simp only [← AList.insert_empty, insert_lookupFinsupp, empty_lookupFinsupp, Finsupp.zero_update]
 #align alist.singleton_lookup_finsupp AList.singleton_lookupFinsupp
 
@@ -129,10 +126,10 @@ theorem _root_.Finsupp.toAList_lookupFinsupp (f : α →₀ M) : f.toAList.looku
   classical
     by_cases h : f a = 0
     · suffices f.toAList.lookup a = none by simp [h, this]
-      · simp [lookup_eq_none, h]
+      simp [lookup_eq_none, h]
     · suffices f.toAList.lookup a = some (f a) by simp [h, this]
-      · apply mem_lookup_iff.2
-        simpa using h
+      apply mem_lookup_iff.2
+      simpa using h
 #align finsupp.to_alist_lookup_finsupp Finsupp.toAList_lookupFinsupp
 
 theorem lookupFinsupp_surjective : Function.Surjective (@lookupFinsupp α M _) := fun f =>

@@ -3,7 +3,7 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.MetricSpace.EMetricSpace
+import Mathlib.Topology.EMetricSpace.Basic
 
 #align_import topology.metric_space.metric_separated from "leanprover-community/mathlib"@"57ac39bd365c2f80589a700f9fbb664d3a1a30c2"
 
@@ -78,7 +78,7 @@ theorem mono_right {t'} (h' : IsMetricSeparated s t') (ht : t ⊆ t') : IsMetric
 theorem union_left {s'} (h : IsMetricSeparated s t) (h' : IsMetricSeparated s' t) :
     IsMetricSeparated (s ∪ s') t := by
   rcases h, h' with ⟨⟨r, r0, hr⟩, ⟨r', r0', hr'⟩⟩
-  refine' ⟨min r r', _, fun x hx y hy => hx.elim _ _⟩
+  refine ⟨min r r', ?_, fun x hx y hy => hx.elim ?_ ?_⟩
   · rw [← pos_iff_ne_zero] at r0 r0' ⊢
     exact lt_min r0 r0'
   · exact fun hx => (min_le_left _ _).trans (hr _ hx _ hy)
@@ -105,11 +105,11 @@ theorem union_right_iff {t'} :
 
 theorem finite_iUnion_left_iff {ι : Type*} {I : Set ι} (hI : I.Finite) {s : ι → Set X}
     {t : Set X} : IsMetricSeparated (⋃ i ∈ I, s i) t ↔ ∀ i ∈ I, IsMetricSeparated (s i) t := by
-  refine' Finite.induction_on hI (by simp) @fun i I _ _ hI => _
-  rw [biUnion_insert, ball_insert_iff, union_left_iff, hI]
+  refine Finite.induction_on hI (by simp) @fun i I _ _ hI => ?_
+  rw [biUnion_insert, forall_mem_insert, union_left_iff, hI]
 #align is_metric_separated.finite_Union_left_iff IsMetricSeparated.finite_iUnion_left_iff
 
-alias finite_iUnion_left_iff ↔ _ finite_iUnion_left
+alias ⟨_, finite_iUnion_left⟩ := finite_iUnion_left_iff
 #align is_metric_separated.finite_Union_left IsMetricSeparated.finite_iUnion_left
 
 theorem finite_iUnion_right_iff {ι : Type*} {I : Set ι} (hI : I.Finite) {s : Set X}
@@ -123,7 +123,7 @@ theorem finset_iUnion_left_iff {ι : Type*} {I : Finset ι} {s : ι → Set X} {
   finite_iUnion_left_iff I.finite_toSet
 #align is_metric_separated.finset_Union_left_iff IsMetricSeparated.finset_iUnion_left_iff
 
-alias finset_iUnion_left_iff ↔ _ finset_iUnion_left
+alias ⟨_, finset_iUnion_left⟩ := finset_iUnion_left_iff
 #align is_metric_separated.finset_Union_left IsMetricSeparated.finset_iUnion_left
 
 @[simp]
@@ -132,7 +132,7 @@ theorem finset_iUnion_right_iff {ι : Type*} {I : Finset ι} {s : Set X} {t : ι
   finite_iUnion_right_iff I.finite_toSet
 #align is_metric_separated.finset_Union_right_iff IsMetricSeparated.finset_iUnion_right_iff
 
-alias finset_iUnion_right_iff ↔ _ finset_iUnion_right
+alias ⟨_, finset_iUnion_right⟩ := finset_iUnion_right_iff
 #align is_metric_separated.finset_Union_right IsMetricSeparated.finset_iUnion_right
 
 end IsMetricSeparated

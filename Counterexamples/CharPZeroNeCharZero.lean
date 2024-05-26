@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Eric Wieser
 -/
 import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.PUnitInstances
 
 #align_import char_p_zero_ne_char_zero from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
 
@@ -33,7 +34,7 @@ theorem withZero_unit_charP_zero : CharP (WithZero Unit) 0 :=
 #align counterexample.with_zero_unit_char_p_zero Counterexample.withZero_unit_charP_zero
 
 theorem withZero_unit_not_charZero : ¬CharZero (WithZero Unit) := fun ⟨h⟩ =>
-  h.ne (by simp : 1 + 1 ≠ 0 + 1) (by simp)
+  h.ne (by simp : 1 + 1 ≠ 0 + 1) (by set_option simprocs false in simp)
 #align counterexample.with_zero_unit_not_char_zero Counterexample.withZero_unit_not_charZero
 
 end Counterexample

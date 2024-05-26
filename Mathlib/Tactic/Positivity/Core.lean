@@ -3,13 +3,11 @@ Copyright (c) 2022 Mario Carneiro, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 -/
-import Std.Lean.Parser
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Tactic.HaveI
-import Mathlib.Order.Basic
 import Mathlib.Algebra.Order.Invertible
-import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Int.Cast.Lemmas
 import Qq
 
 /-!
@@ -50,6 +48,19 @@ def Strictness.toString : Strictness zα pα e → String
   | nonzero _ => "nonzero"
   | none => "none"
 
+/-- Extract a proof that `e` is nonnegative, if possible, from `Strictness` information about `e`.
+-/
+def Strictness.toNonneg {e} : Strictness zα pα e → Option Q(0 ≤ $e)
+  | .positive pf => some q(le_of_lt $pf)
+  | .nonnegative pf => some pf
+  | _ => .none
+
+/-- Extract a proof that `e` is nonzero, if possible, from `Strictness` information about `e`. -/
+def Strictness.toNonzero {e} : Strictness zα pα e → Option Q($e ≠ 0)
+  | .positive pf => some q(ne_of_gt $pf)
+  | .nonzero pf => some pf
+  | _ => .none
+
 /-- An extension for `positivity`. -/
 structure PositivityExt where
   /-- Attempts to prove an expression `e : α` is `>0`, `≥0`, or `≠0`. -/
@@ -61,13 +72,16 @@ def mkPositivityExt (n : Name) : ImportM PositivityExt := do
   let { env, opts, .. } ← read
   IO.ofExcept <| unsafe env.evalConstCheck PositivityExt opts ``PositivityExt n
 
+/-- Configuration for `DiscrTree`. -/
+def discrTreeConfig : WhnfCoreConfig := {}
+
 /-- Each `positivity` extension is labelled with a collection of patterns
 which determine the expressions to which it should be applied. -/
-abbrev Entry := Array (Array (DiscrTree.Key true)) × Name
+abbrev Entry := Array (Array DiscrTree.Key) × Name
 
 /-- Environment extensions for `positivity` declarations -/
 initialize positivityExt : PersistentEnvExtension Entry (Entry × PositivityExt)
-    (List Entry × DiscrTree PositivityExt true) ←
+    (List Entry × DiscrTree PositivityExt) ←
   -- we only need this to deduplicate entries in the DiscrTree
   have : BEq PositivityExt := ⟨fun _ _ => false⟩
   let insert kss v dt := kss.foldl (fun dt ks => dt.insertCore ks v) dt
@@ -100,7 +114,7 @@ initialize registerBuiltinAttribute {
             let e ← elabTerm stx none
             let (_, _, e) ← lambdaMetaTelescope (← mkLambdaFVars (← getLCtx).getFVars e)
             return e
-        DiscrTree.mkPath e
+        DiscrTree.mkPath e discrTreeConfig
       setEnv <| positivityExt.addEntry env ((keys, declName), ext)
     | _ => throwUnsupportedSyntax
 }
@@ -200,9 +214,9 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
       haveI' w : decide ($n < 0) =Q true := ⟨⟩
       pure (.nonzero q(nz_of_isRat $p $w))
 
-/-- Attempts to prove that `e ≥ 0` using `zero_le` in a `CanonicallyOrderedAddMonoid`. -/
+/-- Attempts to prove that `e ≥ 0` using `zero_le` in a `CanonicallyOrderedAddCommMonoid`. -/
 def positivityCanon (e : Q($α)) : MetaM (Strictness zα pα e) := do
-  let _i ← synthInstanceQ (q(CanonicallyOrderedAddMonoid $α) : Q(Type u))
+  let _i ← synthInstanceQ (q(CanonicallyOrderedAddCommMonoid $α) : Q(Type u))
   assumeInstancesCommute
   pure (.nonnegative q(zero_le $e))
 
@@ -220,10 +234,9 @@ def compareHypLT (lo e : Q($α)) (p₂ : Q($lo < $e)) : MetaM (Strictness zα p�
   | .nonnegative p₁ => pure (.positive q(lt_of_le_of_lt $p₁ $p₂))
   | _ => pure .none
 
-/-- A variation on `assumption` when the hypothesis is `a = b` where `a` is a numeral. -/
-def compareHypEq (e a b : Q($α)) (p₂ : Q($a = $b)) : MetaM (Strictness zα pα e) := do
-  let .defEq _ ← isDefEqQ e b | return .none
-  match ← normNumPositivity zα pα a with
+/-- A variation on `assumption` when the hypothesis is `x = e` where `x` is a numeral. -/
+def compareHypEq (e x : Q($α)) (p₂ : Q($x = $e)) : MetaM (Strictness zα pα e) := do
+  match ← normNumPositivity zα pα x with
   | .positive p₁ => pure (.positive q(lt_of_lt_of_eq $p₁ $p₂))
   | .nonnegative p₁ => pure (.nonnegative q(le_of_le_of_eq $p₁ $p₂))
   | .nonzero p₁ => pure (.nonzero q(ne_of_ne_of_eq' $p₁ $p₂))
@@ -236,29 +249,46 @@ initialize registerTraceClass `Tactic.positivity.failure
 where `a` is a numeral. -/
 def compareHyp (e : Q($α)) (ldecl : LocalDecl) : MetaM (Strictness zα pα e) := do
   have e' : Q(Prop) := ldecl.type
+  let p : Q($e') := .fvar ldecl.fvarId
   match e' with
-  | ~q(@LE.le _ $_a $lo $hi) =>
-    guard <| ← isDefEq e hi
-    compareHypLE zα pα lo e (.fvar ldecl.fvarId)
-  | ~q(@LT.lt _ $_a $lo $hi) =>
-    guard <| ← isDefEq e hi
-    compareHypLT zα pα lo e (.fvar ldecl.fvarId)
-  | ~q(($lo : $α') = $hi) =>
-    let .true ← isDefEq α α' | return .none
-    let p : Q($lo = $hi) := .fvar ldecl.fvarId
-    match ← compareHypEq zα pα e lo hi p with
-    | .none => compareHypEq zα pα e hi lo (q(Eq.symm $p) : Expr)
-    | result => pure result
-  | ~q(($a : $α') ≠ $b) =>
-    let .true ← isDefEq α α' | return .none
-    if ← isDefEq q((0 : $α)) a then
-      let .true ← isDefEq e b | return .none
-      let p : Q(0 ≠ $e) := .fvar ldecl.fvarId
-      pure (.nonzero q(Ne.symm $p))
-    else
-      let .true ← isDefEq q((0 : $α)) b | return .none
-      let .true ← isDefEq e a | return .none
-      pure (.nonzero (.fvar ldecl.fvarId))
+  | ~q(@LE.le.{u} $β $_le $lo $hi) =>
+    let .defEq (_ : $α =Q $β) ← isDefEqQ α β | return .none
+    let .defEq _ ← isDefEqQ e hi | return .none
+    match lo with
+    | ~q(0) =>
+      assertInstancesCommute
+      return .nonnegative q($p)
+    | _ => compareHypLE zα pα lo e p
+  | ~q(@LT.lt.{u} $β $_lt $lo $hi) =>
+    let .defEq (_ : $α =Q $β) ← isDefEqQ α β | return .none
+    let .defEq _ ← isDefEqQ e hi | return .none
+    match lo with
+    | ~q(0) =>
+      assertInstancesCommute
+      return .positive q($p)
+    | _ => compareHypLT zα pα lo e p
+  | ~q(@Eq.{u+1} $α' $lhs $rhs) =>
+    let .defEq (_ : $α =Q $α') ← isDefEqQ α α' | pure .none
+    match ← isDefEqQ e rhs with
+    | .defEq _ =>
+      match lhs with
+      | ~q(0) => pure <| .nonnegative q(le_of_eq $p)
+      | _ => compareHypEq zα pα e lhs q($p)
+    | .notDefEq =>
+      let .defEq _ ← isDefEqQ e lhs | pure .none
+      match rhs with
+      | ~q(0) => pure <| .nonnegative q(ge_of_eq $p)
+      | _ => compareHypEq zα pα e rhs q(Eq.symm $p)
+  | ~q(@Ne.{u + 1} $α' $lhs $rhs) =>
+    let .defEq (_ : $α =Q $α') ← isDefEqQ α α' | pure .none
+    match lhs, rhs with
+    | ~q(0), _ =>
+      let .defEq _ ← isDefEqQ e rhs | pure .none
+      pure <| .nonzero q(Ne.symm $p)
+    | _, ~q(0) =>
+      let .defEq _ ← isDefEqQ e lhs | pure .none
+      pure <| .nonzero q($p)
+    | _, _ => pure .none
   | _ => pure .none
 
 variable {zα pα} in
@@ -286,7 +316,7 @@ def orElse (t₁ : Strictness zα pα e) (t₂ : MetaM (Strictness zα pα e)) :
 def core (e : Q($α)) : MetaM (Strictness zα pα e) := do
   let mut result := .none
   trace[Tactic.positivity] "trying to prove positivity of {e}"
-  for ext in ← (positivityExt.getState (← getEnv)).2.getMatch e do
+  for ext in ← (positivityExt.getState (← getEnv)).2.getMatch e discrTreeConfig do
     try
       result ← orElse result <| ext.eval zα pα e
     catch err =>
@@ -311,12 +341,11 @@ private inductive OrderRel : Type
 end Meta.Positivity
 namespace Meta.Positivity
 
-/-- The main entry point to the `positivity` tactic. Given a goal `goal` of the form `0 [≤/</≠] e`,
-attempts to recurse on the structure of `e` to prove the goal.
-It will either close `goal` or fail. -/
-def positivity (goal : MVarId) : MetaM Unit := do
-  let t : Q(Prop) ← withReducible goal.getType'
-  let rest {u : Level} (α : Q(Type u)) z e (relDesired : OrderRel) : MetaM Unit := do
+/-- An auxillary entry point to the `positivity` tactic. Given a proposition `t` of the form
+`0 [≤/</≠] e`, attempts to recurse on the structure of `t` to prove it. It returns a proof
+or fails. -/
+def solve (t : Q(Prop)) : MetaM Expr := do
+  let rest {u : Level} (α : Q(Type u)) z e (relDesired : OrderRel) : MetaM Expr := do
     let zα ← synthInstanceQ q(Zero $α)
     assumeInstancesCommute
     let .true ← isDefEq z q(0 : $α) | throwError "not a positivity goal"
@@ -339,7 +368,7 @@ def positivity (goal : MVarId) : MetaM Unit := do
     | .ne, .nonnegative _
     | .ne', .nonnegative _ => throw "nonzeroness" "nonnegativity"
     | _, .none => throwError "failed to prove positivity/nonnegativity/nonzeroness"
-    goal.assign p
+    pure p
   match t with
   | ~q(@LE.le $α $_a $z $e) => rest α z e .le
   | ~q(@LT.lt $α $_a $z $e) => rest α z e .lt
@@ -351,6 +380,14 @@ def positivity (goal : MVarId) : MetaM Unit := do
       let .true ← isDefEq a q((0 : $α)) | throwError "not a positivity goal"
       rest α a b .ne'
   | _ => throwError "not a positivity goal"
+
+/-- The main entry point to the `positivity` tactic. Given a goal `goal` of the form `0 [≤/</≠] e`,
+attempts to recurse on the structure of `e` to prove the goal.
+It will either close `goal` or fail. -/
+def positivity (goal : MVarId) : MetaM Unit := do
+  let t : Q(Prop) ← withReducible goal.getType'
+  let p ← solve t
+  goal.assign p
 
 end Meta.Positivity
 

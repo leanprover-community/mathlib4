@@ -15,7 +15,6 @@ then `C ⥤ D` is also preadditive.
 
 -/
 
-
 open BigOperators
 
 namespace CategoryTheory
@@ -24,12 +23,19 @@ open CategoryTheory.Limits Preadditive
 
 variable {C D : Type*} [Category C] [Category D] [Preadditive D]
 
-instance functorCategoryPreadditive : Preadditive (C ⥤ D)
-    where
+instance {F G : C ⥤ D} : Zero (F ⟶ G) where
+  zero := { app := fun X => 0 }
+
+instance {F G : C ⥤ D} : Add (F ⟶ G) where
+  add α β := { app := fun X => α.app X + β.app X }
+
+instance {F G : C ⥤ D} : Neg (F ⟶ G) where
+  neg α := { app := fun X => -α.app X }
+
+instance functorCategoryPreadditive : Preadditive (C ⥤ D) where
   homGroup F G :=
-    { add := fun α β => { app := fun X => α.app X + β.app X }
-      zero := { app := fun X => 0 }
-      neg := fun α => { app := fun X => -α.app X }
+    { nsmul := nsmulRec
+      zsmul := zsmulRec
       sub := fun α β => { app := fun X => α.app X - β.app X }
       add_assoc := by
         intros
@@ -37,30 +43,37 @@ instance functorCategoryPreadditive : Preadditive (C ⥤ D)
         apply add_assoc
       zero_add := by
         intros
+        dsimp
         ext
         apply zero_add
       add_zero := by
         intros
+        dsimp
         ext
         apply add_zero
       add_comm := by
         intros
+        dsimp
         ext
         apply add_comm
       sub_eq_add_neg := by
         intros
+        dsimp
         ext
         apply sub_eq_add_neg
       add_left_neg := by
         intros
+        dsimp
         ext
         apply add_left_neg }
   add_comp := by
     intros
+    dsimp
     ext
     apply add_comp
   comp_add := by
     intros
+    dsimp
     ext
     apply comp_add
 #align category_theory.functor_category_preadditive CategoryTheory.functorCategoryPreadditive
@@ -72,8 +85,7 @@ variable {F G : C ⥤ D}
 /-- Application of a natural transformation at a fixed object,
 as group homomorphism -/
 @[simps]
-def appHom (X : C) : (F ⟶ G) →+ (F.obj X ⟶ G.obj X)
-    where
+def appHom (X : C) : (F ⟶ G) →+ (F.obj X ⟶ G.obj X) where
   toFun α := α.app X
   map_zero' := rfl
   map_add' _ _ := rfl
@@ -108,6 +120,10 @@ theorem app_nsmul (X : C) (α : F ⟶ G) (n : ℕ) : (n • α).app X = n • α
 theorem app_zsmul (X : C) (α : F ⟶ G) (n : ℤ) : (n • α).app X = n • α.app X :=
   (appHom X : (F ⟶ G) →+ (F.obj X ⟶ G.obj X)).map_zsmul α n
 #align category_theory.nat_trans.app_zsmul CategoryTheory.NatTrans.app_zsmul
+
+@[simp]
+theorem app_units_zsmul (X : C) (α : F ⟶ G) (n : ℤˣ) : (n • α).app X = n • α.app X := by
+  apply app_zsmul
 
 @[simp]
 theorem app_sum {ι : Type*} (s : Finset ι) (X : C) (α : ι → (F ⟶ G)) :

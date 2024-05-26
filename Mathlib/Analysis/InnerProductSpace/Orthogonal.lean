@@ -3,8 +3,8 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
-import Mathlib.LinearAlgebra.BilinearForm
 import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.LinearAlgebra.SesquilinearForm
 
 #align_import analysis.inner_product_space.orthogonal from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
@@ -25,11 +25,8 @@ The proposition that two submodules are orthogonal, `Submodule.IsOrtho`, is deno
 Note this is not the same unicode symbol as `⊥` (`Bot`).
 -/
 
-
-variable {𝕜 E F : Type*} [IsROrC 𝕜]
-
+variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-
 variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
@@ -74,7 +71,7 @@ theorem inner_left_of_mem_orthogonal {u v : E} (hu : u ∈ K) (hv : v ∈ Kᗮ) 
 
 /-- A vector is in `(𝕜 ∙ u)ᗮ` iff it is orthogonal to `u`. -/
 theorem mem_orthogonal_singleton_iff_inner_right {u v : E} : v ∈ (𝕜 ∙ u)ᗮ ↔ ⟪u, v⟫ = 0 := by
-  refine' ⟨inner_right_of_mem_orthogonal (mem_span_singleton_self u), _⟩
+  refine ⟨inner_right_of_mem_orthogonal (mem_span_singleton_self u), ?_⟩
   intro hv w hw
   rw [mem_span_singleton] at hw
   obtain ⟨c, rfl⟩ := hw
@@ -202,8 +199,8 @@ theorem bot_orthogonal_eq_top : (⊥ : Submodule 𝕜 E)ᗮ = ⊤ := by
 
 @[simp]
 theorem orthogonal_eq_top_iff : Kᗮ = ⊤ ↔ K = ⊥ := by
-  refine'
-    ⟨_, by
+  refine
+    ⟨?_, by
       rintro rfl
       exact bot_orthogonal_eq_top⟩
   intro h
@@ -223,7 +220,7 @@ end Submodule
 
 @[simp]
 theorem bilinFormOfRealInner_orthogonal {E} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-    (K : Submodule ℝ E) : bilinFormOfRealInner.orthogonal K = Kᗮ :=
+    (K : Submodule ℝ E) : K.orthogonalBilin bilinFormOfRealInner = Kᗮ :=
   rfl
 #align bilin_form_of_real_inner_orthogonal bilinFormOfRealInner_orthogonal
 
@@ -420,7 +417,7 @@ theorem orthogonalFamily_iff_pairwise {ι} {V : ι → Submodule 𝕜 E} :
         forall₂_congr fun _y _hy => inner_eq_zero_symm
 #align orthogonal_family_iff_pairwise orthogonalFamily_iff_pairwise
 
-alias orthogonalFamily_iff_pairwise ↔ OrthogonalFamily.pairwise OrthogonalFamily.of_pairwise
+alias ⟨OrthogonalFamily.pairwise, OrthogonalFamily.of_pairwise⟩ := orthogonalFamily_iff_pairwise
 #align orthogonal_family.pairwise OrthogonalFamily.pairwise
 #align orthogonal_family.of_pairwise OrthogonalFamily.of_pairwise
 

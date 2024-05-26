@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Logic.Nontrivial
-import Mathlib.Algebra.NeZero
+import Mathlib.Logic.Function.Basic
+import Mathlib.Logic.Nontrivial.Defs
+import Mathlib.Tactic.SplitIfs
 
 #align_import algebra.group_with_zero.defs from "leanprover-community/mathlib"@"2f3994e1b117b1e1da49bcfb67334f33460c3ce4"
 
@@ -21,26 +22,13 @@ members.
 * `CommGroupWithZero`
 -/
 
+assert_not_exists DenselyOrdered
 
 universe u
-
-set_option autoImplicit true
 
 -- We have to fix the universe of `G₀` here, since the default argument to
 -- `GroupWithZero.div'` cannot contain a universe metavariable.
 variable {G₀ : Type u} {M₀ M₀' G₀' : Type*}
-
--- Porting note:
--- This theorem was introduced during ad-hoc porting
--- and hopefully can be removed again after `Mathlib.Algebra.Ring.Basic` is fully ported.
-theorem eq_of_sub_eq_zero' [AddGroup R] {a b : R} (h : a - b = 0) : a = b :=
-  add_right_cancel <| show a + (-b) = b + (-b) by rw [← sub_eq_add_neg, h, add_neg_self]
-
--- Porting note:
--- This theorem was introduced during ad-hoc porting
--- and hopefully can be removed again after `Mathlib.Algebra.Ring.Basic` is fully ported.
-theorem pow_succ'' [Monoid M] : ∀ (n : ℕ) (a : M), a ^ n.succ = a * a ^ n :=
-  Monoid.npow_succ
 
 /-- Typeclass for expressing that a type `M₀` with multiplication and a zero satisfies
 `0 * a = 0` and `a * 0 = 0` for all `a : M₀`. -/
@@ -65,7 +53,7 @@ theorem mul_left_cancel₀ (ha : a ≠ 0) (h : a * b = a * c) : b = c :=
   IsLeftCancelMulZero.mul_left_cancel_of_ne_zero ha h
 #align mul_left_cancel₀ mul_left_cancel₀
 
-theorem mul_right_injective₀ (ha : a ≠ 0) : Function.Injective ((· * ·) a) :=
+theorem mul_right_injective₀ (ha : a ≠ 0) : Function.Injective (a * ·) :=
   fun _ _ => mul_left_cancel₀ ha
 #align mul_right_injective₀ mul_right_injective₀
 
@@ -133,6 +121,20 @@ element, and `0` is left and right absorbing. -/
 class CommMonoidWithZero (M₀ : Type*) extends CommMonoid M₀, MonoidWithZero M₀
 #align comm_monoid_with_zero CommMonoidWithZero
 
+section CancelMonoidWithZero
+
+variable [CancelMonoidWithZero M₀] {a b c : M₀}
+
+theorem mul_left_inj' (hc : c ≠ 0) : a * c = b * c ↔ a = b :=
+  (mul_left_injective₀ hc).eq_iff
+#align mul_left_inj' mul_left_inj'
+
+theorem mul_right_inj' (ha : a ≠ 0) : a * b = a * c ↔ b = c :=
+  (mul_right_injective₀ ha).eq_iff
+#align mul_right_inj' mul_right_inj'
+
+end CancelMonoidWithZero
+
 section CommSemigroup
 
 variable [CommSemigroup M₀] [Zero M₀]
@@ -174,25 +176,58 @@ instance (priority := 100) CancelCommMonoidWithZero.toCancelMonoidWithZero
     [CancelCommMonoidWithZero M₀] : CancelMonoidWithZero M₀ :=
 { IsLeftCancelMulZero.to_isCancelMulZero (M₀ := M₀) with }
 
+/-- Prop-valued mixin for a monoid with zero to be equipped with a cancelling division.
+
+The obvious use case is groups with zero, but this condition is also satisfied by `ℕ`, `ℤ` and, more
+generally, any euclidean domain. -/
+class MulDivCancelClass (M₀ : Type*) [MonoidWithZero M₀] [Div M₀] : Prop where
+  protected mul_div_cancel (a b : M₀) : b ≠ 0 → a * b / b = a
+
+section MulDivCancelClass
+variable [MonoidWithZero M₀] [Div M₀] [MulDivCancelClass M₀] {a b : M₀}
+
+@[simp] lemma mul_div_cancel_right₀ (a : M₀) (hb : b ≠ 0) : a * b / b = a :=
+  MulDivCancelClass.mul_div_cancel _ _ hb
+#align mul_div_cancel mul_div_cancel_right₀
+
+end MulDivCancelClass
+
+section MulDivCancelClass
+variable [CommMonoidWithZero M₀] [Div M₀] [MulDivCancelClass M₀] {a b : M₀}
+
+@[simp] lemma mul_div_cancel_left₀ (b : M₀) (ha : a ≠ 0) : a * b / a = b := by
+  rw [mul_comm, mul_div_cancel_right₀ _ ha]
+#align mul_div_cancel_left mul_div_cancel_left₀
+
+end MulDivCancelClass
+
 /-- A type `G₀` is a “group with zero” if it is a monoid with zero element (distinct from `1`)
 such that every nonzero element is invertible.
 The type is required to come with an “inverse” function, and the inverse of `0` must be `0`.
 
 Examples include division rings and the ordered monoids that are the
-target of valuations in general valuation theory.-/
+target of valuations in general valuation theory. -/
 class GroupWithZero (G₀ : Type u) extends MonoidWithZero G₀, DivInvMonoid G₀, Nontrivial G₀ where
   /-- The inverse of `0` in a group with zero is `0`. -/
   inv_zero : (0 : G₀)⁻¹ = 0
   /-- Every nonzero element of a group with zero is invertible. -/
-  mul_inv_cancel (a : G₀) : a ≠ 0 → a * a⁻¹ = 1
+  protected mul_inv_cancel (a : G₀) : a ≠ 0 → a * a⁻¹ = 1
 #align group_with_zero GroupWithZero
 
 export GroupWithZero (inv_zero)
 attribute [simp] inv_zero
 
-@[simp] lemma mul_inv_cancel [GroupWithZero G₀] {a : G₀} (h : a ≠ 0) : a * a⁻¹ = 1 :=
-  GroupWithZero.mul_inv_cancel a h
+section GroupWithZero
+variable [GroupWithZero G₀] {a : G₀}
+
+@[simp] lemma mul_inv_cancel (h : a ≠ 0) : a * a⁻¹ = 1 := GroupWithZero.mul_inv_cancel a h
 #align mul_inv_cancel mul_inv_cancel
+
+-- See note [lower instance priority]
+instance (priority := 100) GroupWithZero.toMulDivCancelClass : MulDivCancelClass G₀ where
+  mul_div_cancel a b hb := by rw [div_eq_mul_inv, mul_assoc, mul_inv_cancel hb, mul_one]
+
+end GroupWithZero
 
 /-- A type `G₀` is a commutative “group with zero”
 if it is a commutative monoid with zero element (distinct from `1`)
@@ -201,35 +236,33 @@ The type is required to come with an “inverse” function, and the inverse of 
 class CommGroupWithZero (G₀ : Type*) extends CommMonoidWithZero G₀, GroupWithZero G₀
 #align comm_group_with_zero CommGroupWithZero
 
-section NeZero
+section
+variable [CancelMonoidWithZero M₀] {x : M₀}
 
-variable [MulZeroOneClass M₀] [Nontrivial M₀] {a b : M₀}
+lemma eq_zero_or_one_of_sq_eq_self (hx : x ^ 2 = x) : x = 0 ∨ x = 1 :=
+  or_iff_not_imp_left.mpr (mul_left_injective₀ · <| by simpa [sq] using hx)
 
-variable (M₀)
+end
 
-/-- In a nontrivial monoid with zero, zero and one are different. -/
-instance NeZero.one : NeZero (1 : M₀) := ⟨by
-  intro h
-  rcases exists_pair_ne M₀ with ⟨x, y, hx⟩
-  apply hx
+section GroupWithZero
+
+variable [GroupWithZero G₀] {a b c g h x : G₀}
+
+@[simp]
+theorem mul_inv_cancel_right₀ (h : b ≠ 0) (a : G₀) : a * b * b⁻¹ = a :=
   calc
-    x = 1 * x := by rw [one_mul]
-    _ = 0 := by rw [h, zero_mul]
-    _ = 1 * y := by rw [h, zero_mul]
-    _ = y := by rw [one_mul]⟩
-#align ne_zero.one NeZero.one
+    a * b * b⁻¹ = a * (b * b⁻¹) := mul_assoc _ _ _
+    _ = a := by simp [h]
+#align mul_inv_cancel_right₀ mul_inv_cancel_right₀
 
-variable {M₀}
+@[simp]
+theorem mul_inv_cancel_left₀ (h : a ≠ 0) (b : G₀) : a * (a⁻¹ * b) = b :=
+  calc
+    a * (a⁻¹ * b) = a * a⁻¹ * b := (mul_assoc _ _ _).symm
+    _ = b := by simp [h]
+#align mul_inv_cancel_left₀ mul_inv_cancel_left₀
 
-/-- Pullback a `Nontrivial` instance along a function sending `0` to `0` and `1` to `1`. -/
-theorem pullback_nonzero [Zero M₀'] [One M₀'] (f : M₀' → M₀) (zero : f 0 = 0) (one : f 1 = 1) :
-    Nontrivial M₀' :=
-  ⟨⟨0, 1, mt (congr_arg f) <| by
-    rw [zero, one]
-    exact zero_ne_one⟩⟩
-#align pullback_nonzero pullback_nonzero
-
-end NeZero
+end GroupWithZero
 
 section MulZeroClass
 

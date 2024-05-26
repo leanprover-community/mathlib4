@@ -1,6 +1,4 @@
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Tactic.NormCast
-import Mathlib.Tactic.RunCmd
 import Mathlib.Lean.Exception
 import Mathlib.Util.Time
 import Qq.MetaM
@@ -42,7 +40,7 @@ theorem bar1_works : bar1 3 4 = 3 * 4 := by decide
 
 infix:80 " ^ " => my_has_pow.pow
 
-instance dummy_pow : my_has_pow ℕ $ PLift ℤ := ⟨fun _ _ => 5⟩
+instance dummy_pow : my_has_pow ℕ <| PLift ℤ := ⟨fun _ _ => 5⟩
 
 @[to_additive bar2]
 def foo2 {α} [my_has_pow α ℕ] (x : α) (n : ℕ) (m : PLift ℤ) : α := x ^ (n ^ m)
@@ -90,12 +88,12 @@ theorem bar9_works : bar9 = 1 := by decide
 @[to_additive bar10]
 def foo10 (n m : ℕ) := HPow.hPow n m + n * m * 2 + 1 * 0 + 37 * 1 + 2
 
-theorem bar10_works : bar10 = foo10 := by rfl
+theorem bar10_works : bar10 = foo10 := rfl
 
 @[to_additive bar11]
 def foo11 (n : ℕ) (m : ℤ) := n * m * 2 + 1 * 0 + 37 * 1 + 2
 
-theorem bar11_works : bar11 = foo11 := by rfl
+theorem bar11_works : bar11 = foo11 := rfl
 
 @[to_additive bar12]
 def foo12 (_ : Nat) (_ : Int) : Fin 37 := ⟨2, by decide⟩
@@ -221,22 +219,17 @@ attribute [to_additive add_some_def] some_def
 
 run_cmd do liftCoreM <| successIfFail (getConstInfo `Test.add_some_def.in_namespace)
 
--- [todo] currently this test breaks.
--- example : (AddUnits.mk_of_add_eq_zero 0 0 (by simp) : ℕ)
---         = (AddUnits.mk_of_add_eq_zero 0 0 (by simp) : ℕ) :=
--- by norm_cast
-
 section
 
 set_option linter.unusedVariables false
--- porting note : not sure what the tests do, but the linter complains.
+-- Porting note: not sure what the tests do, but the linter complains.
 
 def foo_mul {I J K : Type} (n : ℕ) {f : I → Type} (L : Type) [∀ i, One (f i)]
   [Add I] [Mul L] : true := by trivial
 
 
 @[to_additive]
-instance pi.has_one {I : Type} {f : I → Type} [(i : I) → One $ f i] : One ((i : I) → f i) :=
+instance pi.has_one {I : Type} {f : I → Type} [(i : I) → One <| f i] : One ((i : I) → f i) :=
   ⟨fun _ => 1⟩
 
 run_cmd do
@@ -276,7 +269,7 @@ class FooClass (α) : Prop where
   refle : ∀ a : α, a = a
 
 @[to_additive]
-instance FooClass_one [One α] : FooClass α := ⟨λ _ => rfl ⟩
+instance FooClass_one [One α] : FooClass α := ⟨fun _ ↦ rfl⟩
 
 lemma one_fooClass [One α] : FooClass α := by infer_instance
 
