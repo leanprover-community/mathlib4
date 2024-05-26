@@ -147,7 +147,7 @@ theorem fourierIntegral_convergent_iff (he : Continuous e)
   exact this
 #align vector_fourier.fourier_integral_convergent_iff VectorFourier.fourierIntegral_convergent_iff
 
-@[deprecated] -- 2024-03-29
+@[deprecated (since := "2024-03-29")]
 alias fourier_integral_convergent_iff := VectorFourier.fourierIntegral_convergent_iff
 
 variable [CompleteSpace E]

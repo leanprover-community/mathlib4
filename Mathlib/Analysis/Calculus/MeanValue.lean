@@ -931,7 +931,7 @@ lemma strictMonoOn_of_hasDerivWithinAt_pos {D : Set ℝ} (hD : Convex ℝ D) {f 
   strictMonoOn_of_deriv_pos hD hf fun x hx ↦ by
     rw [deriv_eqOn isOpen_interior hf' hx]; exact hf'₀ _ hx
 
-@[deprecated] -- 2024-03-02
+@[deprecated (since := "2024-03-02")]
 alias StrictMonoOn_of_hasDerivWithinAt_pos := strictMonoOn_of_hasDerivWithinAt_pos
 
 /-- Let `f : ℝ → ℝ` be a differentiable function. If `f'` is strictly positive, then
@@ -1007,7 +1007,7 @@ lemma strictAntiOn_of_hasDerivWithinAt_neg {D : Set ℝ} (hD : Convex ℝ D) {f 
   strictAntiOn_of_deriv_neg hD hf fun x hx ↦ by
     rw [deriv_eqOn isOpen_interior hf' hx]; exact hf'₀ _ hx
 
-@[deprecated] -- 2024-03-02
+@[deprecated (since := "2024-03-02")]
 alias StrictAntiOn_of_hasDerivWithinAt_pos := strictAntiOn_of_hasDerivWithinAt_neg
 
 /-- Let `f : ℝ → ℝ` be a differentiable function. If `f'` is strictly positive, then
@@ -1016,7 +1016,7 @@ lemma strictAnti_of_hasDerivAt_neg {f f' : ℝ → ℝ} (hf : ∀ x, HasDerivAt 
     (hf' : ∀ x, f' x < 0) : StrictAnti f :=
   strictAnti_of_deriv_neg fun x ↦ by rw [(hf _).deriv]; exact hf' _
 
-@[deprecated] -- 2024-03-02
+@[deprecated (since := "2024-03-02")]
 alias strictAnti_of_hasDerivAt_pos := strictAnti_of_hasDerivAt_neg
 
 /-- Let `f` be a function continuous on a convex (or, equivalently, connected) subset `D`
