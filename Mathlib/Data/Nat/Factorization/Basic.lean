@@ -667,7 +667,7 @@ so if one of `a` or `b` is `0` then the result is `1`.
 
 Note that `factorizationLCMRight a b` is *not* `factorizationLCMLeft b a`: the difference is
 that in `factorizationLCMLeft a b` there are the primes whose exponent in `a` is bigger or equal
-than the exponent in `b`, while in `factorizationLCMRight a b` there are the primes primes whose
+than the exponent in `b`, while in `factorizationLCMRight a b` there are the primes whose
 exponent in `b` is strictly bigger than in `a`. For example `factorizationLCMLeft 2 2 = 2`, but
 `factorizationLCMRight 2 2 = 1`. -/
 def factorizationLCMRight (a b : ℕ) :=

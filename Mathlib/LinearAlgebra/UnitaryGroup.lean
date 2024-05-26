@@ -206,7 +206,7 @@ section specialUnitaryGroup
 
 variable (n) (α)
 
-/--`Matrix.specialUnitaryGroup` is the group of unitary `n` by `n` matrices where the determinant
+/-- `Matrix.specialUnitaryGroup` is the group of unitary `n` by `n` matrices where the determinant
 is 1. (This definition is only correct if 2 is invertible.)-/
 abbrev specialUnitaryGroup := unitaryGroup n α ⊓ MonoidHom.mker detMonoidHom
 
