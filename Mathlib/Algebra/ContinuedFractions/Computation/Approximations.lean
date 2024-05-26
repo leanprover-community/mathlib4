@@ -293,9 +293,9 @@ theorem le_of_succ_get?_denom {b : K}
 theorem of_denom_mono : (of v).denominators n ≤ (of v).denominators (n + 1) := by
   let g := of v
   cases' Decidable.em <| g.partialDenominators.TerminatedAt n with terminated not_terminated
-  · have : g.partialDenominators.get? n = none := by rwa [Stream'.Seq.TerminatedAt] at terminated
+  · have : g.partialDenominators.get? n = none := by rwa [Seq'.TerminatedAt] at terminated
     have : g.TerminatedAt n :=
-      terminatedAt_iff_part_denom_none.2 (by rwa [Stream'.Seq.TerminatedAt] at terminated)
+      terminatedAt_iff_part_denom_none.2 (by rwa [Seq'.TerminatedAt] at terminated)
     have : g.denominators (n + 1) = g.denominators n :=
       denominators_stable_of_terminated n.le_succ this
     rw [this]
