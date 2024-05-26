@@ -17,7 +17,6 @@ hence, we lint against it.
 *Example*: before this was discovered, `Mathlib/Topology/Category/TopCat/Basic.lean`
 contained the following code:
 ```
--- Porting note: cannot find a coercion to function otherwise
 attribute [instance] ConcreteCategory.instFunLike in
 instance (X Y : TopCat.{u}) : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe f := f
@@ -61,7 +60,7 @@ def attributeInstanceIn : Linter where run := withSetOptionIn fun stx => do
     return
   if is_attribute_instance_in stx then
     Linter.logLint linter.attributeInstanceIn stx[0] m!
-      "careful: `attribute [instance] ... in` declarations are surprising:\n\
+      "`attribute [instance] ... in` declarations are surprising:\n\
       they are **not** limited to the subsequent declaration, but define global instances\n\
       please remove the `in` or make this a `local instance` instead"
 
