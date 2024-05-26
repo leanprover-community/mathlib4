@@ -938,17 +938,30 @@ theorem lintegral_pos_iff_support {f : α → ℝ≥0∞} (hf : Measurable f) :
   simp [pos_iff_ne_zero, hf, Filter.EventuallyEq, ae_iff, Function.support]
 #align measure_theory.lintegral_pos_iff_support MeasureTheory.lintegral_pos_iff_support
 
-theorem lintegral_positive {C : Set α} (hmC : MeasurableSet C)
-    (h_nonneg : 0 < μ C) {h : α → ℝ≥0∞} (h_neq : ∀ x ∈ C, h x ≠ 0) (hm : Measurable h) :
-    0 < ∫⁻ x in C, h x ∂μ := by
-  rw [show ∫⁻ x in C, h x ∂μ = ∫⁻ x, h x ∂μ.restrict C by rfl]
-  have restrict_measure_support : μ.restrict C (Function.support h) = μ (Function.support h ∩ C) :=
-    Measure.restrict_apply' hmC
-  have inter_eq_C : Function.support h ∩ C = C := Set.inter_eq_self_of_subset_right h_neq
-  rw [congrArg (↑↑μ) inter_eq_C] at restrict_measure_support
-  rw [← restrict_measure_support] at h_nonneg
-  rw [lintegral_pos_iff_support hm]
-  exact h_nonneg
+theorem lintegral_positive_iff {C : Set α} (hmC : MeasurableSet C)
+    {h : α → ℝ≥0∞} (hm : AEMeasurable h μ) :
+    (∃ᵐ x ∂μ, x ∈ C ∧ h x ≠ 0) ↔ 0 < ∫⁻ x in C, h x ∂μ := by
+  have destruct_and : {x | x ∈ C ∧ h x ≠ 0} = {x | h x ≠ 0} ∩ C := by {
+    ext x
+    exact Iff.intro
+      (fun hx ↦ ⟨hx.2, hx.1⟩)
+      (fun hx ↦ ⟨hx.2, hx.1⟩)
+  }
+  constructor
+  · intro h_freq
+    by_contra h_contra; push_neg at h_contra
+    rw [nonpos_iff_eq_zero] at h_contra
+    rw [MeasureTheory.lintegral_eq_zero_iff' (AEMeasurable.restrict hm)] at h_contra
+    have unfold_frequently : μ {x | x ∈ C ∧ h x ≠ 0} ≠ 0 := frequently_ae_iff.mp h_freq
+    rw [destruct_and, ← Measure.restrict_apply' hmC] at unfold_frequently
+    exact unfold_frequently h_contra
+  intro h_lint
+  rw [frequently_ae_iff]
+  rw [pos_iff_ne_zero] at h_lint
+  rw [show ∫⁻ (x : α) in C, h x ∂μ ≠ 0 ↔ ¬ ∫⁻ (x : α) in C, h x ∂μ = 0 by rfl] at h_lint
+  rw [not_iff_not.2 (lintegral_eq_zero_iff' (AEMeasurable.restrict hm))] at h_lint
+  rw [show ¬h =ᶠ[(μ.restrict C).ae] 0 ↔ μ.restrict C {x | h x ≠ 0} ≠ 0 by rfl] at h_lint
+  rwa [Measure.restrict_apply' hmC, ← destruct_and] at h_lint
 
 /-- Weaker version of the monotone convergence theorem-/
 theorem lintegral_iSup_ae {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (f n))
