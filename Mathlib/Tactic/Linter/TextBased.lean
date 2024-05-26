@@ -101,11 +101,8 @@ structure ErrorContext where
 
 /-- Output the formatted error message, containing its context. -/
 def output_message (errctx : ErrorContext) : String :=
-  -- XXX: we're just porting the second branch, running on CI
-  -- generating an exceptions file (the first branch) is not implemented yet
-
-  -- We are outputting for github: duplicate path, line_nr and code,
-  -- so that they are also visible in the plaintext output.
+  -- We are outputting for github: duplicate file path, line number and error code,
+  -- so that they are also visible in the plain text output.
   let path := errctx.path
   let nr := errctx.line_number
   let code := errorCode errctx.error
@@ -119,6 +116,51 @@ def format_errors (errors : Array ErrorContext) (exceptions : Array ErrorContext
   for e in errors do
     if !exceptions.contains e then
       IO.println (output_message e)
+
+/-- Try parsing an `ErrorContext` from a string: return `some` if successful, `none` otherwise. -/
+def parse?_style_error (line : String) : Option ErrorContext := Id.run do
+  let parts := line.split (fun c ↦ c == ' ')
+  match parts with
+    | filename :: ":" :: "line" :: _line_number :: ":" :: error_code :: ":" :: error_message =>
+      -- Turn the filename into a path. XXX: is there a nicer way to do this?
+      -- Invariant: `style-exceptions.txt` always contains Unix paths
+      -- (because, for example, in practice it is updated by CI, which runs on unix).
+      -- Hence, splitting and joining on "/" is actually somewhat safe.
+      let path : System.FilePath := System.mkFilePath (filename.split (fun c ↦ c == '/'))
+      -- Parse the error kind from the error code, ugh.
+      -- XXX: can I ensure this list is kept in sync with `error_codes`?
+      let err : Option StyleError := match error_code with
+        -- I'm using "0" resp. the empty string as dummy values for parameters which do not matter.
+        -- TODO: tweak equality of style error contexts accordingly!
+        | "ERR_LIN" => some (StyleError.lineLength 0)
+        | "ERR_TAC" => some (StyleError.broadImport)
+        | "ERR_COP" => some (StyleError.copyright "")
+        | "ERR_AUT" => some (StyleError.authors)
+        | "ERR_IBY" => some StyleError.leading_by
+        | "ERR_IWH" => some StyleError.isolated_where
+        | "ERR_SEM" => some StyleError.semicolon
+        | "ERR_CLN" => some StyleError.colon
+        | "ERR_DOT" => some StyleError.dot
+        | "ERR_TWS" => some StyleError.trailingWhitespace
+        | "ERR_WIN" => some StyleError.windowsLineEndings
+        | "ERR_NUM_LIN" =>
+            -- Parse the error message in the script. `none` indicates invalid input.
+            match (error_message.get? 0, error_message.get? 3) with
+            | (some limit, some current) =>
+              match (String.toNat? limit, String.toNat? current) with
+              | (some size_limit, some current_size) =>
+                some (StyleError.fileTooLong current_size size_limit)
+              | _ => none
+            | _ => none
+        | _ => none
+      -- Omit the line number, as we don't pay use it anyway.
+      err.map fun e ↦ (ErrorContext.mk e 0 path)
+    | _ => none -- The line doesn't match the known format: continue.
+
+/-- Parse all style exceptions for a line of input.
+Return an array of all exceptions which could be parsed: invalid input is ignore. -/
+def parse_style_exceptions (lines : Array String) : Array ErrorContext := Id.run do
+  Array.filterMap (fun line ↦ parse?_style_error line) lines
 
 /-- Core logic of a text based linter: given a collection of lines,
 return an array of all style errors with line numbers. -/
@@ -322,51 +364,6 @@ def lint_file (path : System.FilePath)
     (Array.map (fun (e, n) ↦ ErrorContext.mk e n path)) (lint lines))) all_linters
   -- XXX: this list is currently not sorted: for github, that's probably fine
   format_errors (Array.flatten all_output) exceptions
-
-/-- Try parsing an `ErrorContext` from a string: return `some` if successful, `none` otherwise. -/
-def parse?_style_error (line : String) : Option ErrorContext := Id.run do
-  let parts := line.split (fun c ↦ c == ' ')
-  match parts with
-    | filename :: ":" :: "line" :: _line_number :: ":" :: error_code :: ":" :: error_message =>
-      -- Turn the filename into a path. XXX: is there a nicer way to do this?
-      -- Invariant: `style-exceptions.txt` always contains Unix paths
-      -- (because, for example, in practice it is updated by CI, which runs on unix).
-      -- Hence, splitting and joining on "/" is actually somewhat safe.
-      let path : System.FilePath := System.mkFilePath (filename.split (fun c ↦ c == '/'))
-      -- Parse the error kind from the error code, ugh.
-      -- XXX: can I ensure this list is kept in sync with `error_codes`?
-      let err : Option StyleError := match error_code with
-        -- I'm using "0" resp. the empty string as dummy values for parameters which do not matter.
-        -- TODO: tweak equality of style error contexts accordingly!
-        | "ERR_LIN" => some (StyleError.lineLength 0)
-        | "ERR_TAC" => some (StyleError.broadImport)
-        | "ERR_COP" => some (StyleError.copyright "")
-        | "ERR_AUT" => some (StyleError.authors)
-        | "ERR_IBY" => some StyleError.leading_by
-        | "ERR_IWH" => some StyleError.isolated_where
-        | "ERR_SEM" => some StyleError.semicolon
-        | "ERR_CLN" => some StyleError.colon
-        | "ERR_DOT" => some StyleError.dot
-        | "ERR_TWS" => some StyleError.trailingWhitespace
-        | "ERR_WIN" => some StyleError.windowsLineEndings
-        | "ERR_NUM_LIN" =>
-            -- Parse the error message in the script. `none` indicates invalid input.
-            match (error_message.get? 0, error_message.get? 3) with
-            | (some limit, some current) =>
-              match (String.toNat? limit, String.toNat? current) with
-              | (some size_limit, some current_size) =>
-                some (StyleError.fileTooLong current_size size_limit)
-              | _ => none
-            | _ => none
-        | _ => none
-      -- Omit the line number, as we don't pay use it anyway.
-      err.map fun e ↦ (ErrorContext.mk e 0 path)
-    | _ => none -- The line doesn't match the known format: continue.
-
-/-- Parse all style exceptions for a line of input.
-Return an array of all exceptions which could be parsed: invalid input is ignore. -/
-def parse_style_exceptions (lines : Array String) : Array ErrorContext := Id.run do
-  Array.filterMap (fun line ↦ parse?_style_error line) lines
 
 /-- Lint all files in `Mathlib.lean`. -/
 def check_all_files : IO Unit := do
