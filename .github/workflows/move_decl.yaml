@@ -21,6 +21,7 @@ jobs:
             # extract the CI run number from the unique line that matches `  href=.../job/ci_number"`
             awk -v url="${url}" -F'/' '/^ *href/ {gsub(/"/, "", $NF); printf("summary<<EOF\n%s/job/%s\nEOF", url, $NF)}')"
           printf '%s\n' "${job_no}"
+          echo "${{ github.job }}"
           printf '%s\n' "${job_no}" >> "$GITHUB_OUTPUT"
       - name: add_comment
         run: |
