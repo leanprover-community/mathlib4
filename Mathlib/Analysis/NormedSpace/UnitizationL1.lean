@@ -20,7 +20,7 @@ Note that `TrivSqZeroExt` is also equipped with the $L^1$ norm in the analogous 
 registered as an instance without the type synonym.
 
 One application of this is a straightforward proof that the quasispectrum of an element in a
-non-untal Banach algebra is compact, which can be established by passing to the unitization.
+non-unital Banach algebra is compact, which can be established by passing to the unitization.
 -/
 
 variable (𝕜 A : Type*) [NormedField 𝕜] [NonUnitalNormedRing A]
