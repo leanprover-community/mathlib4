@@ -398,7 +398,6 @@ def any (f : ∀ x, β x → Bool) (s : Finmap β) : Bool :=
     (fun _ _ _ _ => by simp_rw [Bool.or_assoc, Bool.or_comm, imp_true_iff]) false
 #align finmap.any Finmap.any
 
--- TODO: should this really return `false` if `s` is empty?
 /-- `all f s` returns `true` iff `f v = true` for all values `v` in `s`. -/
 def all (f : ∀ x, β x → Bool) (s : Finmap β) : Bool :=
   s.foldl (fun x y z => x && f y z)

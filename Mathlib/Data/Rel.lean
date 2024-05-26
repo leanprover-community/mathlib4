@@ -31,6 +31,13 @@ Relations are also known as set-valued functions, or partial multifunctions.
   related to `x` are in `s`.
 * `Rel.restrict_domain`: Domain-restriction of a relation to a subtype.
 * `Function.graph`: Graph of a function as a relation.
+
+## TODOs
+
+The `Rel.comp` function uses the notation `r • s`, rather than the more common `r ∘ s` for things
+named `comp`. This is because the latter is already used for function composition, and causes a
+clash. A better notation should be found, perhaps a variant of `r ∘r s` or `r; s`.
+
 -/
 
 variable {α β γ : Type*}
@@ -91,7 +98,6 @@ def comp (r : Rel α β) (s : Rel β γ) : Rel α γ := fun x z => ∃ y, r x y 
 #align rel.comp Rel.comp
 
 -- Porting note: the original `∘` syntax can't be overloaded here, lean considers it ambiguous.
--- TODO: Change this syntax to something nicer?
 /-- Local syntax for composition of relations. -/
 local infixr:90 " • " => Rel.comp
 
@@ -407,10 +413,8 @@ theorem Relation.is_graph_iff (r : Rel α β) : (∃! f, Function.graph f = r) �
 
 namespace Set
 
--- TODO: if image were defined with bounded quantification in corelib, the next two would
--- be definitional
 theorem image_eq (f : α → β) (s : Set α) : f '' s = (Function.graph f).image s := by
-  simp [Set.image, Rel.image]
+  rfl
 #align set.image_eq Set.image_eq
 
 theorem preimage_eq (f : α → β) (s : Set β) : f ⁻¹' s = (Function.graph f).preimage s := by
