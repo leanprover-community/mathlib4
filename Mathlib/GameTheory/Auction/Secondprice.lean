@@ -3,9 +3,10 @@ Copyright (c) 2024 Wang Haocheng. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ma Jiajun, Wang Haocheng
 -/
-import Mathlib.Data.Real.EReal
+import Mathlib.Tactic.Linarith.Lemmas
 import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Fintype.Lattice
+import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Real.Basic
 
 /-!
 # Auction Theory
@@ -63,10 +64,12 @@ lemma two_different_elements {I : Type*} (h : ∃ (i j : I), i≠ j) : ∀ (i:I)
 
 /-!###   Structure Definition  -/
 
-/-- Defines an auction with a set of participants `I`,
-a `Fintype` instance,
-an `Inhabited` instance,
-and a function `v` mapping each participant to their valuation. -/
+/-- Defines an auction with
+I : a set of participants,
+hF: a `Fintype` instance,
+hI: an `Inhabited` instance,
+v : a function mapping each participant to their valuation. -/
+
 structure Auction where
    I : Type*
    hF : Fintype I
