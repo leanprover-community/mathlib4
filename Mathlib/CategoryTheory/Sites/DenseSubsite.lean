@@ -130,7 +130,7 @@ variable {G}
 
 theorem functorPullback_pushforward_covering [Full G] {X : C}
     (T : K (G.obj X)) : (T.val.functorPullback G).functorPushforward G ∈ K (G.obj X) := by
-  refine' K.superset_covering _ (K.bind_covering T.property
+  refine K.superset_covering ?_ (K.bind_covering T.property
     fun Y f _ => G.is_cover_of_isCoverDense K Y)
   rintro Y _ ⟨Z, _, f, hf, ⟨W, g, f', ⟨rfl⟩⟩, rfl⟩
   use W; use G.preimage (f' ≫ f); use g
@@ -199,7 +199,7 @@ theorem pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
   rw [← G.map_preimage (f ≫ g₂ ≫ _)]
   erw [← α.naturality (G.preimage _).op]
   erw [← α.naturality (G.preimage _).op]
-  refine' congr_fun _ x
+  refine congr_fun ?_ x
   simp only [Functor.comp_map, ← Category.assoc, Functor.op_map, Quiver.Hom.unop_op,
     ← ℱ.map_comp, ← op_comp, G.map_preimage]
   congr 3
@@ -219,7 +219,7 @@ theorem pushforwardFamily_apply {X} (x : ℱ.obj (op X)) {Y : C} (f : G.obj Y �
   -- Porting note: congr_fun was more powerful in Lean 3; I had to explicitly supply
   -- the type of the first input here even though it's obvious (there is a unique occurrence
   -- of x on each side of the equality)
-  refine' congr_fun (_ :
+  refine congr_fun (?_ :
     (fun t => ℱ'.val.map ((Nonempty.some (_ : coverByImage G X f)).lift.op)
       (α.app (op (Nonempty.some (_ : coverByImage G X f)).1)
         (ℱ.map ((Nonempty.some (_ : coverByImage G X f)).map.op) t))) =

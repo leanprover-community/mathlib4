@@ -58,7 +58,7 @@ theorem isCompl_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) : IsCompl 
   · rw [codisjoint_iff_le_sup]
     intro x _
     rw [mem_sup']
-    refine' ⟨f x, ⟨x - f x, _⟩, add_sub_cancel _ _⟩
+    refine ⟨f x, ⟨x - f x, ?_⟩, add_sub_cancel _ _⟩
     rw [mem_ker, LinearMap.map_sub, hf, sub_self]
 #align linear_map.is_compl_of_proj LinearMap.isCompl_of_proj
 

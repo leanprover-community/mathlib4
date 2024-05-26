@@ -104,7 +104,7 @@ theorem ne_top_iff_one : I ≠ ⊤ ↔ (1 : α) ∉ I :=
 
 @[simp]
 theorem unit_mul_mem_iff_mem {x y : α} (hy : IsUnit y) : y * x ∈ I ↔ x ∈ I := by
-  refine' ⟨fun h => _, fun h => I.mul_mem_left y h⟩
+  refine ⟨fun h => ?_, fun h => I.mul_mem_left y h⟩
   obtain ⟨y', hy'⟩ := hy.exists_left_inv
   have := I.mul_mem_left y' h
   rwa [← mul_assoc, hy', one_mul] at this
@@ -561,7 +561,7 @@ theorem IsMaximal.isPrime {I : Ideal α} (H : I.IsMaximal) : I.IsPrime :=
       rcases Submodule.mem_span_insert.mp oJ with ⟨a, b, h, oe⟩
       obtain F : y * 1 = y * (a • x + b) := congr_arg (fun g : α => y * g) oe
       rw [← mul_one y, F, mul_add, mul_comm, smul_eq_mul, mul_assoc]
-      refine' Submodule.add_mem I (I.mul_mem_left a hxy) (Submodule.smul_mem I y _)
+      refine Submodule.add_mem I (I.mul_mem_left a hxy) (Submodule.smul_mem I y ?_)
       rwa [Submodule.span_eq] at h⟩
 #align ideal.is_maximal.is_prime Ideal.IsMaximal.isPrime
 
@@ -642,18 +642,18 @@ theorem pow_multiset_sum_mem_span_pow [DecidableEq α] (s : Multiset α) (n : �
   · simp
   simp only [Finset.coe_insert, Multiset.map_cons, Multiset.toFinset_cons, Multiset.sum_cons,
     Multiset.card_cons, add_pow]
-  refine' Submodule.sum_mem _ _
+  refine Submodule.sum_mem _ ?_
   intro c _hc
   rw [mem_span_insert]
   by_cases h : n + 1 ≤ c
-  · refine' ⟨a ^ (c - (n + 1)) * s.sum ^ ((Multiset.card s + 1) * n + 1 - c) *
-      ((Multiset.card s + 1) * n + 1).choose c, 0, Submodule.zero_mem _, _⟩
+  · refine ⟨a ^ (c - (n + 1)) * s.sum ^ ((Multiset.card s + 1) * n + 1 - c) *
+      ((Multiset.card s + 1) * n + 1).choose c, 0, Submodule.zero_mem _, ?_⟩
     rw [mul_comm _ (a ^ (n + 1))]
     simp_rw [← mul_assoc]
     rw [← pow_add, add_zero, add_tsub_cancel_of_le h]
   · use 0
     simp_rw [zero_mul, zero_add]
-    refine' ⟨_, _, rfl⟩
+    refine ⟨_, ?_, rfl⟩
     replace h : c ≤ n := Nat.lt_succ_iff.mp (not_le.mp h)
     have : (Multiset.card s + 1) * n + 1 - c = Multiset.card s * n + 1 + (n - c) := by
       rw [add_mul, one_mul, add_assoc, add_comm n 1, ← add_assoc, add_tsub_assoc_of_le h]
@@ -682,7 +682,7 @@ theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
   have hf : (f.support.sum fun a => f a * a) = 1 := hf -- Porting note: was `change ... at hf`
   have := sum_pow_mem_span_pow f.support (fun a => f a * a) n
   rw [hf, one_pow] at this
-  refine' span_le.mpr _ this
+  refine span_le.mpr ?_ this
   rintro _ hx
   simp_rw [Set.mem_image] at hx
   rcases hx with ⟨x, _, rfl⟩
@@ -778,7 +778,7 @@ theorem eq_bot_or_top : I = ⊥ ∨ I = ⊤ := by
 #align ideal.eq_bot_or_top Ideal.eq_bot_or_top
 
 variable (K) in
-/-- A bijection between between (left) ideals of a division ring and `{0, 1}`, sending `⊥` to `0`
+/-- A bijection between (left) ideals of a division ring and `{0, 1}`, sending `⊥` to `0`
 and `⊤` to `1`. -/
 def equivFinTwo [DecidableEq (Ideal K)] : Ideal K ≃ Fin 2 where
   toFun := fun I ↦ if I = ⊥ then 0 else 1

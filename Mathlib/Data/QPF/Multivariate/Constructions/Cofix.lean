@@ -322,9 +322,9 @@ theorem Cofix.bisim' {α : TypeVec n} {β : Type*} (Q : β → Prop) (u v : β �
     (fun x y ⟨x', Qx', xeq, yeq⟩ => by
       rcases h x' Qx' with ⟨a, f', f₀, f₁, ux'eq, vx'eq, h'⟩
       rw [liftR_iff]
-      refine'
+      refine
         ⟨a, q.P.appendContents f' f₀, q.P.appendContents f' f₁, xeq.symm ▸ ux'eq,
-          yeq.symm ▸ vx'eq, _⟩
+          yeq.symm ▸ vx'eq, ?_⟩
       intro i; cases i
       · apply h'
       · intro j
@@ -522,7 +522,7 @@ theorem corec_roll {α : TypeVec n} {X Y} {x₀ : X} (f : X → Y) (g : Y → F 
   mv_bisim x₀ with R a b x Ha Hb
   rw [Ha, Hb, Cofix.dest_corec, Cofix.dest_corec, Function.comp_apply, Function.comp_apply]
   rw [MvFunctor.map_map, ← appendFun_comp_id]
-  refine' liftR_map_last _ _ _ _ _
+  refine liftR_map_last _ _ _ _ ?_
   intro a; refine' ⟨a, rfl, rfl⟩
 #align mvqpf.corec_roll MvQPF.corec_roll
 
