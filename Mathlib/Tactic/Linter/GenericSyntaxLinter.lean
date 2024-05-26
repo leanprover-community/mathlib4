@@ -112,19 +112,20 @@ node Lean.Parser.Command.in, none
 |   |   |   |   |-node null, none
 |   |   |   |-node null, none
 -/
+#check withSetOptionIn
+
 open Command in
-private partial def withSetOptionIn' (cmd : CommandElab) : CommandElab := fun stx => do
-  if stx.getKind == ``Lean.Parser.Command.in then
-    if stx[0].getKind == ``Lean.Parser.Command.set_option then
-      let opts ← Elab.elabSetOption stx[0][1] stx[0][3]
-      withScope (fun scope => { scope with opts }) do
-        withSetOptionIn' cmd stx[2]
-    else
-      withSetOptionIn' cmd stx[2]
+partial def withoutSetOptionIn (cmd : CommandElab) : CommandElab := fun stx => do --withoutModifyingEnv do
+  if stx.getKind == ``Lean.Parser.Command.in &&
+     stx[0].getKind == ``Lean.Parser.Command.set_option then
+      --logInfo stx[2];
+      cmd stx[2]
+      logInfo m!"messages: {(← MonadState.get).messages.msgs.size}\nempty: {(← MonadState.get).messages.isEmpty}"
+--      logInfo m!"messages: {((← MonadState.get).messages.msgs.map (·.data)).toArray}"
+      --if (← MonadState.get).messages.isEmpty then logInfoAt stx  m!"no messages {((← MonadState.get).messages.msgs.map (·.data)).toArray}"
+      --else logInfo "messages"
   else
     cmd stx
-
-
 
 def is_soi : Syntax → Option Syntax
   | s@(.node _ ``Lean.Parser.Command.in _
@@ -133,8 +134,10 @@ def is_soi : Syntax → Option Syntax
   --    _,
   --    cmd
   --  ]
-    ) => dbg_trace s.getKind; some s
-  | s => dbg_trace s.getKind; none
+    ) => --dbg_trace s.getKind
+         some s
+  | _s => --dbg_trace s.getKind
+         none
 
 
 end generic
@@ -145,24 +148,41 @@ namespace Mathlib.Linter.generic
 
 /-- Gets the value of the `linter.generic` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.generic o
-
+#check StrLit
 /-- The main implementation of the generic syntax linter. -/
-def genericSyntaxLinter (contains? : Syntax → Array (Syntax × MessageData))
-    (toElab : Syntax → Option Syntax := fun _ => none) : Linter where
-  run := withSetOptionIn fun stx => do
-    unless getLinterHash (← getOptions) do
-      return
-    if (← MonadState.get).messages.hasErrors then
-      return
-    let _ ← (contains? stx).mapM fun (s, msg) =>
-      Linter.logLint linter.generic s msg
-    dbg_trace "{is_soi stx}"
-    if let some stx := toElab stx then
-      Command.elabCommand stx
-      if (← MonadState.get).messages.isEmpty then logInfoAt stx  "no messages"
+def genericSyntaxLinter --(contains? : Syntax → Array (Syntax × MessageData))
+    (toElab : Syntax → Option Syntax) : Linter where
+  run := fun stx => do --withoutSetOptionIn fun stx => do --withoutModifyingEnv do
+--    unless getLinterHash (← getOptions) do
+--      return
+--    if (← MonadState.get).messages.hasErrors then
+--      return
+--    let _ ← (contains? stx).mapM fun (s, msg) =>
+--      Linter.logLint linter.generic s msg
+--      dbg_trace "{is_soi stx}"
+      if let some stx := toElab stx then
+--      dbg_trace stx[0][3]
+--      dbg_trace (← `(true))
+--      let tr : Syntax ← `(true)
+        let options ← getOptions --Elab.elabSetOption stx[0][1] stx[0][3]
+        --let st := (← get).scopes
+--        dbg_trace options
+        let nopt := options.entries.dropLast
 
-initialize addLinter (genericSyntaxLinter (fun _ => #[]) is_soi)
+        --withoutModifyingEnv do
+   --       Command.withScope (fun scope => { scope with opts := {entries := nopt} }) do
+        --  dbg_trace "scopes {st.map (·.opts)}"
+        --withoutSetOptionIn
+        --    let _ ← Command.elabCommand stx
+        withoutSetOptionIn Command.elabCommand stx --=> do
+            if (← MonadState.get).messages.isEmpty then
+              logInfoAt stx "no messages"
+  --          else
+  --            dbg_trace "messages {((← MonadState.get).messages.msgs.size)}"
+  --            logWarning m!"messages {((← MonadState.get).messages.msgs.map (·.data)).toArray}"
+initialize addLinter (genericSyntaxLinter /-(fun _ => #[])-/ is_soi)
 
+#exit
 initialize addLinter (genericSyntaxLinter fun stx =>
   (unwanted.cDot stx).map (·, "cdots should use `·`"))
 
