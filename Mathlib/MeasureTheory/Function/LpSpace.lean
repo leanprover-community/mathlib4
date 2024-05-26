@@ -556,9 +556,7 @@ For a set `s` with `(hs : MeasurableSet s)` and `(hμs : μ s < ∞)`, we build
 
 section Indicator
 
-set_option autoImplicit true
-
-variable {c : E} {f : α → E} {hf : AEStronglyMeasurable f μ}
+variable {c : E} {f : α → E} {hf : AEStronglyMeasurable f μ} {s : Set α}
 
 theorem snormEssSup_indicator_le (s : Set α) (f : α → G) :
     snormEssSup (s.indicator f) μ ≤ snormEssSup f μ := by
@@ -585,8 +583,7 @@ theorem snormEssSup_indicator_const_eq (s : Set α) (c : G) (hμs : μ s ≠ 0) 
   rw [Set.mem_setOf_eq, Set.indicator_of_mem hx_mem]
 #align measure_theory.snorm_ess_sup_indicator_const_eq MeasureTheory.snormEssSup_indicator_const_eq
 
-theorem snorm_indicator_le (f : α → E) {s : Set α} :
-    snorm (s.indicator f) p μ ≤ snorm f p μ := by
+theorem snorm_indicator_le (f : α → E) : snorm (s.indicator f) p μ ≤ snorm f p μ := by
   refine snorm_mono_ae (eventually_of_forall fun x => ?_)
   suffices ‖s.indicator f x‖₊ ≤ ‖f x‖₊ by exact NNReal.coe_mono this
   rw [nnnorm_indicator_eq_indicator_nnnorm]
@@ -725,7 +722,7 @@ theorem exists_snorm_indicator_le (hp : p ≠ ∞) (c : E) {ε : ℝ≥0∞} (h�
   exact mul_le_mul_left' (ENNReal.rpow_le_rpow hs hp₀') _
 #align measure_theory.exists_snorm_indicator_le MeasureTheory.exists_snorm_indicator_le
 
-lemma Memℒp.piecewise [DecidablePred (· ∈ s)]
+protected lemma Memℒp.piecewise [DecidablePred (· ∈ s)] {g}
     (hs : MeasurableSet s) (hf : Memℒp f p (μ.restrict s)) (hg : Memℒp g p (μ.restrict sᶜ)) :
     Memℒp (s.piecewise f g) p μ := by
   by_cases hp_zero : p = 0
