@@ -17,6 +17,14 @@ variable {α : Type*}
 
 namespace List
 
+theorem take_range (m n : ℕ) : take m (range n) = range (min m n) := by
+  apply List.ext_get
+  · simp
+  · simp only [length_take, length_range, lt_min_iff, get_range]
+    intro i h _
+    rw [← get_take _ _ h.1, get_range]
+    simpa using h.2
+
 @[simp]
 theorem length_iterate (f : α → α) (a : α) (n : ℕ) : length (iterate f a n) = n := by
   induction n generalizing a <;> simp [*]
@@ -50,5 +58,9 @@ theorem iterate_add (f : α → α) (a : α) (m n : ℕ) :
   induction m generalizing a with
   | zero => simp
   | succ n ih => rw [iterate, add_right_comm, iterate, ih, Nat.iterate, cons_append]
+
+theorem take_iterate (f : α → α) (a : α) (m n : ℕ) :
+    take m (iterate f a n) = iterate f a (min m n) := by
+  rw [← range_map_iterate, ← range_map_iterate, ← map_take, take_range]
 
 end List
