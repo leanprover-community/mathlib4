@@ -89,7 +89,7 @@ theorem Quotient.finChoice_eq {ι : Type*} [DecidableEq ι] [Fintype ι] {α : �
 truncation type, then there is corresponding term in the truncation of the product. -/
 def Trunc.finChoice {ι : Type*} [DecidableEq ι] [Fintype ι] {α : ι → Type*}
     (f : ∀ i, Trunc (α i)) : Trunc (∀ i, α i) :=
-  Quotient.congrRight (by exact fun _ _ => ⟨fun _ => True.intro, fun _ _ => True.intro⟩)
+  Quotient.map' id (fun _ _ _ => trivial)
     (Quotient.finChoice f (S := fun _ => trueSetoid))
 
 theorem Trunc.finChoice_eq {ι : Type*} [DecidableEq ι] [Fintype ι] {α : ι → Type*}
