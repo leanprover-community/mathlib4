@@ -224,7 +224,7 @@ def map : (M →ₗ[R] M') →ₗ[R] ModSMulBy M r →ₗ[R] ModSMulBy M' r :=
       smul_mono_right r le_top
 
 @[simp]
-lemma map_apply_apply (f : M →ₗ[R] M') (x : M) :
+lemma map_apply_mk (f : M →ₗ[R] M') (x : M) :
     map r f (Submodule.Quotient.mk x) =
       (Submodule.Quotient.mk (f x) : ModSMulBy M' r) := rfl
 
@@ -248,7 +248,7 @@ lemma equivQuotTensor_naturality_mk (f : M →ₗ[R] M') (x : M) :
     equivQuotTensor M' r (map r f (Submodule.Quotient.mk x)) =
       f.lTensor (R ⧸ Ideal.span {r})
         (equivQuotTensor M r (Submodule.Quotient.mk x)) := by
-  simp_rw [equivQuotTensor, map_apply_apply, LinearEquiv.trans_apply,
+  simp_rw [equivQuotTensor, map_apply_mk, LinearEquiv.trans_apply,
     quotEquivOfEq_mk, quotTensorEquivQuotSMul_symm_mk, LinearMap.lTensor_tmul]
 
 lemma equivQuotTensor_naturality (f : M →ₗ[R] M') :
@@ -260,7 +260,7 @@ lemma equivTensorQuot_naturality_mk (f : M →ₗ[R] M') (x : M) :
     equivTensorQuot M' r (map r f (Submodule.Quotient.mk x)) =
       f.rTensor (R ⧸ Ideal.span {r})
         (equivTensorQuot M r (Submodule.Quotient.mk x)) := by
-  simp_rw [equivTensorQuot, map_apply_apply, LinearEquiv.trans_apply,
+  simp_rw [equivTensorQuot, map_apply_mk, LinearEquiv.trans_apply,
     quotEquivOfEq_mk, tensorQuotEquivQuotSMul_symm_mk, LinearMap.rTensor_tmul]
 
 lemma equivTensorQuot_naturality (f : M →ₗ[R] M') :
