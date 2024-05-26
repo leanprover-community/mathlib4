@@ -40,4 +40,9 @@ theorem mem_iterate {f : α → α} {a : α} {n : ℕ} {b : α} :
     b ∈ iterate f a n ↔ ∃ m < n, b = f^[m] a := by
   simp [List.mem_iff_get, Fin.exists_iff, eq_comm (b := b)]
 
+@[simp]
+theorem range_map_iterate (n : ℕ) (f : α → α) (a : α) :
+    (List.range n).map (f^[·] a) = List.iterate f a n := by
+  apply List.ext_get <;> simp
+
 end List
