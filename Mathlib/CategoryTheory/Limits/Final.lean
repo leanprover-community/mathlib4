@@ -813,15 +813,15 @@ theorem IsFilteredOrEmpty.of_final (F : C ⥤ D) [Final F] [IsFilteredOrEmpty C]
     let P : StructuredArrow X F → Prop := fun h => ∃ (Z : C) (q₁ : h.right ⟶ Z)
       (q₂ : Final.lift F Y ⟶ Z), h.hom ≫ F.map q₁ = f ≫ Final.homToLift F Y ≫ F.map q₂
     rsuffices ⟨Z, q₁, q₂, h⟩ : Nonempty (P (StructuredArrow.mk (g ≫ Final.homToLift F Y)))
-    · refine' ⟨F.obj (IsFiltered.coeq q₁ q₂),
-        Final.homToLift F Y ≫ F.map (q₁ ≫ IsFiltered.coeqHom q₁ q₂), _⟩
+    · refine ⟨F.obj (IsFiltered.coeq q₁ q₂),
+        Final.homToLift F Y ≫ F.map (q₁ ≫ IsFiltered.coeqHom q₁ q₂), ?_⟩
       conv_lhs => rw [IsFiltered.coeq_condition]
       simp only [F.map_comp, ← reassoc_of% h, StructuredArrow.mk_hom_eq_self, Category.assoc]
     have h₀ : P (StructuredArrow.mk (f ≫ Final.homToLift F Y)) := ⟨_, 𝟙 _, 𝟙 _, by simp⟩
-    refine' isPreconnected_induction P _ _ h₀ _
+    refine isPreconnected_induction P ?_ ?_ h₀ _
     · rintro U V h ⟨Z, q₁, q₂, hq⟩
       obtain ⟨W, q₃, q₄, hq'⟩ := IsFiltered.span q₁ h.right
-      refine' ⟨W, q₄, q₂ ≫ q₃, _⟩
+      refine ⟨W, q₄, q₂ ≫ q₃, ?_⟩
       rw [F.map_comp, ← reassoc_of% hq, ← F.map_comp, hq', F.map_comp, StructuredArrow.w_assoc]
     · rintro U V h ⟨Z, q₁, q₂, hq⟩
       exact ⟨Z, h.right ≫ q₁, q₂, by simp only [F.map_comp, StructuredArrow.w_assoc, hq]⟩

@@ -51,7 +51,7 @@ namespace Submodule
 See also `eq_bot_of_le_smul_of_le_jacobson_bot` for the special case when `J = ⊥`.  -/
 theorem eq_smul_of_le_smul_of_le_jacobson {I J : Ideal R} {N : Submodule R M} (hN : N.FG)
     (hIN : N ≤ I • N) (hIjac : I ≤ jacobson J) : N = J • N := by
-  refine' le_antisymm _ (Submodule.smul_le.2 fun _ _ _ => Submodule.smul_mem _ _)
+  refine le_antisymm ?_ (Submodule.smul_le.2 fun _ _ _ => Submodule.smul_mem _ _)
   intro n hn
   cases' Submodule.exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul I N hN hIN with r hr
   cases' exists_mul_sub_mem_of_sub_one_mem_jacobson r (hIjac hr.1) with s hs
@@ -77,8 +77,7 @@ theorem sup_eq_sup_smul_of_le_smul_of_le_jacobson {I J : Ideal R} {N N' : Submod
     (sup_le_sup_left (Submodule.smul_le.2 fun _ _ _ => Submodule.smul_mem _ _) _)
   have h_comap := Submodule.comap_injective_of_surjective (LinearMap.range_eq_top.1 N.range_mkQ)
   have : (I • N').map N.mkQ = N'.map N.mkQ := by
-    rw [← h_comap.eq_iff]
-    simpa [comap_map_eq, sup_comm, eq_comm] using hNN'
+    simpa only [← h_comap.eq_iff, comap_map_mkQ, sup_comm, eq_comm] using hNN'
   have :=
     @Submodule.eq_smul_of_le_smul_of_le_jacobson _ _ _ _ _ I J (N'.map N.mkQ) (hN'.map _)
       (by rw [← map_smul'', this]) hIJ

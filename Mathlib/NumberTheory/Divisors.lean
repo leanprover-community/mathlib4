@@ -447,7 +447,7 @@ theorem Prime.prod_divisors {α : Type*} [CommMonoid α] {p : ℕ} {f : ℕ → 
 theorem properDivisors_eq_singleton_one_iff_prime : n.properDivisors = {1} ↔ n.Prime := by
   refine ⟨?_, ?_⟩
   · intro h
-    refine' Nat.prime_def_lt''.mpr ⟨_, fun m hdvd => _⟩
+    refine Nat.prime_def_lt''.mpr ⟨?_, fun m hdvd => ?_⟩
     · match n with
       | 0 => contradiction
       | 1 => contradiction
@@ -468,7 +468,7 @@ theorem sum_properDivisors_eq_one_iff_prime : ∑ x in n.properDivisors, x = 1 �
   · cases n
     · simp [Nat.not_prime_one]
     · rw [← properDivisors_eq_singleton_one_iff_prime]
-      refine' ⟨fun h => _, fun h => h.symm ▸ sum_singleton _ _⟩
+      refine ⟨fun h => ?_, fun h => h.symm ▸ sum_singleton _ _⟩
       rw [@eq_comm (Finset ℕ) _ _]
       apply
         eq_properDivisors_of_subset_of_sum_eq_sum
@@ -559,7 +559,7 @@ theorem image_div_divisors_eq_divisors (n : ℕ) :
   · rw [mem_image]
     rintro ⟨x, hx1, hx2⟩
     rw [mem_divisors] at *
-    refine' ⟨_, hn⟩
+    refine ⟨?_, hn⟩
     rw [← hx2]
     exact div_dvd_of_dvd hx1.1
   · rw [mem_divisors, mem_image]

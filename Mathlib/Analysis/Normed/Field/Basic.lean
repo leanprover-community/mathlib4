@@ -361,7 +361,7 @@ theorem List.norm_prod_le' : ∀ {l : List α}, l ≠ [] → ‖l.prod‖ ≤ (l
   | [a], _ => by simp
   | a::b::l, _ => by
     rw [List.map_cons, List.prod_cons, @List.prod_cons _ _ _ ‖a‖]
-    refine' le_trans (norm_mul_le _ _) (mul_le_mul_of_nonneg_left _ (norm_nonneg _))
+    refine le_trans (norm_mul_le _ _) (mul_le_mul_of_nonneg_left ?_ (norm_nonneg _))
     exact List.norm_prod_le' (List.cons_ne_nil b l)
 #align list.norm_prod_le' List.norm_prod_le'
 
@@ -728,11 +728,11 @@ theorem nnnorm_pow (a : α) (n : ℕ) : ‖a ^ n‖₊ = ‖a‖₊ ^ n :=
 #align nnnorm_pow nnnorm_pow
 
 protected theorem List.norm_prod (l : List α) : ‖l.prod‖ = (l.map norm).prod :=
-  (normHom.toMonoidHom : α →* ℝ).map_list_prod _
+  map_list_prod (normHom.toMonoidHom : α →* ℝ) _
 #align list.norm_prod List.norm_prod
 
 protected theorem List.nnnorm_prod (l : List α) : ‖l.prod‖₊ = (l.map nnnorm).prod :=
-  (nnnormHom.toMonoidHom : α →* ℝ≥0).map_list_prod _
+  map_list_prod (nnnormHom.toMonoidHom : α →* ℝ≥0) _
 #align list.nnnorm_prod List.nnnorm_prod
 
 @[simp]
@@ -983,7 +983,7 @@ theorem punctured_nhds_neBot (x : α) : NeBot (𝓝[≠] x) := by
   rw [← mem_closure_iff_nhdsWithin_neBot, Metric.mem_closure_iff]
   rintro ε ε0
   rcases exists_norm_lt α ε0 with ⟨b, hb0, hbε⟩
-  refine' ⟨x + b, mt (Set.mem_singleton_iff.trans add_right_eq_self).1 <| norm_pos_iff.1 hb0, _⟩
+  refine ⟨x + b, mt (Set.mem_singleton_iff.trans add_right_eq_self).1 <| norm_pos_iff.1 hb0, ?_⟩
   rwa [dist_comm, dist_eq_norm, add_sub_cancel_left]
 #align normed_field.punctured_nhds_ne_bot NormedField.punctured_nhds_neBot
 
@@ -1081,6 +1081,14 @@ theorem norm_eq (x : ℝ≥0) : ‖(x : ℝ)‖ = x := by rw [Real.norm_eq_abs, 
 theorem nnnorm_eq (x : ℝ≥0) : ‖(x : ℝ)‖₊ = x :=
   NNReal.eq <| Real.norm_of_nonneg x.2
 #align nnreal.nnnorm_eq NNReal.nnnorm_eq
+
+lemma lipschitzWith_sub : LipschitzWith 2 (fun (p : ℝ≥0 × ℝ≥0) ↦ p.1 - p.2) := by
+  rw [← isometry_subtype_coe.lipschitzWith_iff]
+  have : Isometry (Prod.map ((↑) : ℝ≥0 → ℝ) ((↑) : ℝ≥0 → ℝ)) :=
+    isometry_subtype_coe.prod_map isometry_subtype_coe
+  convert (((LipschitzWith.prod_fst.comp this.lipschitz).sub
+    (LipschitzWith.prod_snd.comp this.lipschitz)).max_const 0)
+  norm_num
 
 end NNReal
 
