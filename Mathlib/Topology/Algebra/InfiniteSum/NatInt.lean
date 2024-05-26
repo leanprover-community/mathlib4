@@ -367,8 +367,8 @@ lemma HasProd.of_nat_of_neg_add_one {f : ℤ → M}
       rintro _ ⟨⟨i, rfl⟩, ⟨j, ⟨⟩⟩⟩
     · rw [codisjoint_iff_le_sup]
       rintro (i | j) <;> simp
-  exact
-    (Int.ofNat_injective.hasProd_range_iff.mpr hf₁).mul_isCompl this (hi₂.hasProd_range_iff.mpr hf₂)
+  exact (Nat.cast_injective.hasProd_range_iff.mpr hf₁).mul_isCompl
+    this (hi₂.hasProd_range_iff.mpr hf₂)
 #align has_sum.nonneg_add_neg HasSum.of_nat_of_neg_add_one
 
 -- deprecated 2024-03-04
