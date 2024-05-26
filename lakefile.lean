@@ -61,6 +61,11 @@ lean_exe shake where
   root := `Shake.Main
   supportInterpreter := true
 
+/-- `lake exe lint_style` runs text-based style lints -/
+lean_exe lint_style where
+  root := `Mathlib.Tactic.Linter.TextBased
+  supportInterpreter := true
+
 /-- `lake exe update_style_exceptions` update the style exceptions file. -/
 lean_exe update_style_exceptions where
   srcDir := "scripts"

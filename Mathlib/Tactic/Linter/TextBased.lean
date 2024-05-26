@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
 
-import Lean.Elab.Command
+import Cli.Basic
 import Batteries.Data.String.Basic
 import Mathlib.Init.Data.Nat.Notation
-import Lake.Build.Trace
 
 /-!
 ## Text-based linters
@@ -18,7 +17,7 @@ All of these have been rewritten from the `lint-style.py` script.
 
 -/
 
-open Lean Elab Command
+open Lean Elab
 
 /-- Possible errors that text-based linters can report. -/
 -- We collect these in one inductive type to centralise error reporting.
@@ -98,6 +97,7 @@ structure ErrorContext where
   /-- The path to the file which was linted -/
   path : System.FilePath
 
+-- TODO: docstring!
 def normalise (err : StyleError) : StyleError := match err with
   -- We do *not* care about: the line length in a too long line or the *kind* of wrong copyright.
   -- NB: keep this in sync with `parse?_style_error` below.
@@ -298,9 +298,9 @@ def isolated_by_dot_semicolon : LinterCore := fun lines ↦ Id.run do
         output := output.push (StyleError.dot, line_number) -- has an auto-fix
       if line == "." || line == "·" then
         output := output.push (StyleError.dot, line_number)
-      -- This check is *much* slower than the others, hence commented for now.
-      -- if line.containsSubstr " ;" then
-      --   output := output.push (StyleError.semicolon, line_number) -- has an auto-fix
+      -- This check seems to be slower than the others... profile, if I actually care!
+      if line.containsSubstr " ;" then
+        output := output.push (StyleError.semicolon, line_number) -- has an auto-fix
       if line.startsWith ":" then
         output := output.push (StyleError.colon, line_number)
     return output
@@ -342,17 +342,6 @@ def check_file_length (lines : Array String) (existing_limit : Option ℕ) : Opt
       return some (StyleError.fileTooLong lines.size ((Nat.div lines.size 100) * 100 + 200))
   none
 end
-
-/- current durations of all the linters, when run in isolation
-- perhaps 1s for just the copyright headers
-- checking line length is now down to 4-5s for all of mathlib: slower than I'd like,
-  but barely acceptable for now
-- contains_broad_imports was perhaps 5s
-- misc formatting: the semicolon check took ages (at least one minute for all of mathlib)
-  with that disabled, all of mathlib takes ~6-7s
-- ~5s for checking line endings
-overall: about 20-25s for all of mathlib; twice as slow as the python linter (with less work...)
--/
 
 /-- All text-based linters registered in this file. -/
 def all_linters : Array LinterCore :=
@@ -402,10 +391,19 @@ def lint_all_files (path : System.FilePath) : IO Unit := do
       else none)
     lint_file path (size_limits.get? 0) style_exceptions
 
-/-- Lint all files in `Mathlib.lean`, `Archive.lean` and `Counterexamples`. -/
-def lint_all : IO Unit := do
+/-- Implementation of the `lint_style` command line program. -/
+def lintStyleCli (_args : Cli.Parsed) : IO UInt32 := do
   for s in #["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
     lint_all_files (System.mkFilePath [s])
+  return 0
 
--- run_cmd lint_all
--- #print "all done"
+open Cli in
+/-- Setting up command line options and help text for `lake exe lint_style`. -/
+-- so far, no help options or so: perhaps that is fine?
+def lint_style : Cmd := `[Cli|
+  lint_style VIA lintStyleCli; ["0.0.1"]
+  "Run text-based style linters on Mathlib and the Archive and Counterexamples directories."
+]
+
+/-- The entry point to the `lake exe lint_style` command. -/
+def main (args : List String) : IO UInt32 := lint_style.validate args
