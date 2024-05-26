@@ -46,32 +46,32 @@ theorem terminatedAt_iff_partNum_none : g.TerminatedAt n ↔ g.partNums.get? n =
   rw [terminatedAt_iff_s_none, partNum_none_iff_s_none]
 #align generalized_continued_fraction.terminated_at_iff_part_num_none GCF.terminatedAt_iff_partNum_none
 
-theorem partDenom_none_iff_s_none : g.partDenoms.get? n = none ↔ g.s.get? n = none := by
-  cases s_nth_eq : g.s.get? n <;> simp [partDenoms, s_nth_eq]
-#align generalized_continued_fraction.part_denom_none_iff_s_none GCF.partDenom_none_iff_s_none
+theorem partDen_none_iff_s_none : g.partDens.get? n = none ↔ g.s.get? n = none := by
+  cases s_nth_eq : g.s.get? n <;> simp [partDens, s_nth_eq]
+#align generalized_continued_fraction.part_denom_none_iff_s_none GCF.partDen_none_iff_s_none
 
-theorem terminatedAt_iff_partDenom_none : g.TerminatedAt n ↔ g.partDenoms.get? n = none :=
-  by rw [terminatedAt_iff_s_none, partDenom_none_iff_s_none]
-#align generalized_continued_fraction.terminated_at_iff_part_denom_none GCF.terminatedAt_iff_partDenom_none
+theorem terminatedAt_iff_partDen_none : g.TerminatedAt n ↔ g.partDens.get? n = none :=
+  by rw [terminatedAt_iff_s_none, partDen_none_iff_s_none]
+#align generalized_continued_fraction.terminated_at_iff_part_denom_none GCF.terminatedAt_iff_partDen_none
 
 theorem partNum_eq_s_a {gp : Pair α} (s_nth_eq : g.s.get? n = some gp) :
     g.partNums.get? n = some gp.a := by simp [partNums, s_nth_eq]
 #align generalized_continued_fraction.part_num_eq_s_a GCF.partNum_eq_s_a
 
-theorem partDenom_eq_s_b {gp : Pair α} (s_nth_eq : g.s.get? n = some gp) :
-    g.partDenoms.get? n = some gp.b := by simp [partDenoms, s_nth_eq]
-#align generalized_continued_fraction.part_denom_eq_s_b GCF.partDenom_eq_s_b
+theorem partDen_eq_s_b {gp : Pair α} (s_nth_eq : g.s.get? n = some gp) :
+    g.partDens.get? n = some gp.b := by simp [partDens, s_nth_eq]
+#align generalized_continued_fraction.part_denom_eq_s_b GCF.partDen_eq_s_b
 
 theorem exists_s_a_of_partNum {a : α} (nth_partNum_eq : g.partNums.get? n = some a) :
     ∃ gp, g.s.get? n = some gp ∧ gp.a = a := by
   simpa [partNums, Stream'.Seq.map_get?] using nth_partNum_eq
 #align generalized_continued_fraction.exists_s_a_of_part_num GCF.exists_s_a_of_partNum
 
-theorem exists_s_b_of_partDenom {b : α}
-    (nth_part_denom_eq : g.partDenoms.get? n = some b) :
+theorem exists_s_b_of_partDen {b : α}
+    (nth_partDen_eq : g.partDens.get? n = some b) :
     ∃ gp, g.s.get? n = some gp ∧ gp.b = b := by
-  simpa [partDenoms, Stream'.Seq.map_get?] using nth_part_denom_eq
-#align generalized_continued_fraction.exists_s_b_of_part_denom GCF.exists_s_b_of_partDenom
+  simpa [partDens, Stream'.Seq.map_get?] using nth_partDen_eq
+#align generalized_continued_fraction.exists_s_b_of_part_denom GCF.exists_s_b_of_partDen
 
 end General
 
@@ -95,13 +95,13 @@ theorem num_eq_conts_a : g.nums n = (g.conts n).a :=
   rfl
 #align generalized_continued_fraction.num_eq_conts_a GCF.num_eq_conts_a
 
-theorem denom_eq_conts_b : g.denoms n = (g.conts n).b :=
+theorem den_eq_conts_b : g.dens n = (g.conts n).b :=
   rfl
-#align generalized_continued_fraction.denom_eq_conts_b GCF.denom_eq_conts_b
+#align generalized_continued_fraction.denom_eq_conts_b GCF.den_eq_conts_b
 
-theorem conv_eq_num_div_denom : g.convs n = g.nums n / g.denoms n :=
+theorem conv_eq_num_div_den : g.convs n = g.nums n / g.dens n :=
   rfl
-#align generalized_continued_fraction.convergent_eq_num_div_denom GCF.conv_eq_num_div_denom
+#align generalized_continued_fraction.convergent_eq_num_div_denom GCF.conv_eq_num_div_den
 
 theorem conv_eq_conts_a_div_conts_b :
     g.convs n = (g.conts n).a / (g.conts n).b :=
@@ -112,9 +112,9 @@ theorem exists_conts_a_of_num {A : K} (nth_num_eq : g.nums n = A) :
     ∃ conts, g.conts n = conts ∧ conts.a = A := by simpa
 #align generalized_continued_fraction.exists_conts_a_of_num GCF.exists_conts_a_of_num
 
-theorem exists_conts_b_of_denom {B : K} (nth_denom_eq : g.denoms n = B) :
+theorem exists_conts_b_of_den {B : K} (nth_denom_eq : g.dens n = B) :
     ∃ conts, g.conts n = conts ∧ conts.b = B := by simpa
-#align generalized_continued_fraction.exists_conts_b_of_denom GCF.exists_conts_b_of_denom
+#align generalized_continued_fraction.exists_conts_b_of_denom GCF.exists_conts_b_of_den
 
 @[simp]
 theorem zeroth_contAux_eq_one_zero : g.contsAux 0 = ⟨1, 0⟩ :=
@@ -137,18 +137,18 @@ theorem zeroth_num_eq_h : g.nums 0 = g.h :=
 #align generalized_continued_fraction.zeroth_numerator_eq_h GCF.zeroth_num_eq_h
 
 @[simp]
-theorem zeroth_denom_eq_one : g.denoms 0 = 1 :=
+theorem zeroth_den_eq_one : g.dens 0 = 1 :=
   rfl
-#align generalized_continued_fraction.zeroth_denominator_eq_one GCF.zeroth_denom_eq_one
+#align generalized_continued_fraction.zeroth_denominator_eq_one GCF.zeroth_den_eq_one
 
 @[simp]
 theorem zeroth_conv_eq_h : g.convs 0 = g.h := by
-  simp [conv_eq_num_div_denom, num_eq_conts_a, denom_eq_conts_b, div_one]
+  simp [conv_eq_num_div_den, num_eq_conts_a, den_eq_conts_b, div_one]
 #align generalized_continued_fraction.zeroth_convergent_eq_h GCF.zeroth_conv_eq_h
 
 theorem second_contAux_eq {gp : Pair K} (zeroth_s_eq : g.s.get? 0 = some gp) :
     g.contsAux 2 = ⟨gp.b * g.h + gp.a, gp.b⟩ := by
-  simp [zeroth_s_eq, contsAux, nextConts, nextDenom, nextNum]
+  simp [zeroth_s_eq, contsAux, nextConts, nextDen, nextNum]
 #align generalized_continued_fraction.second_continuant_aux_eq GCF.second_contAux_eq
 
 theorem first_cont_eq {gp : Pair K} (zeroth_s_eq : g.s.get? 0 = some gp) :
@@ -162,9 +162,9 @@ theorem first_num_eq {gp : Pair K} (zeroth_s_eq : g.s.get? 0 = some gp) :
     g.nums 1 = gp.b * g.h + gp.a := by simp [num_eq_conts_a, first_cont_eq zeroth_s_eq]
 #align generalized_continued_fraction.first_numerator_eq GCF.first_num_eq
 
-theorem first_denom_eq {gp : Pair K} (zeroth_s_eq : g.s.get? 0 = some gp) :
-    g.denoms 1 = gp.b := by simp [denom_eq_conts_b, first_cont_eq zeroth_s_eq]
-#align generalized_continued_fraction.first_denominator_eq GCF.first_denom_eq
+theorem first_den_eq {gp : Pair K} (zeroth_s_eq : g.s.get? 0 = some gp) :
+    g.dens 1 = gp.b := by simp [den_eq_conts_b, first_cont_eq zeroth_s_eq]
+#align generalized_continued_fraction.first_denominator_eq GCF.first_den_eq
 
 @[simp]
 theorem zeroth_conv'Aux_eq_zero {s : Stream'.Seq <| Pair K} :

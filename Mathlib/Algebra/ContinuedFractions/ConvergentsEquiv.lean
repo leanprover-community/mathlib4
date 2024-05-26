@@ -259,14 +259,14 @@ end WithDivisionRing
 /-- The convergents coincide in the expected way at the squashed position if the partial denominator
 at the squashed position is not zero. -/
 theorem succ_nth_conv_eq_squashGCF_nth_conv [Field K]
-    (nth_partDenom_ne_zero : ∀ {b : K}, g.partDenoms.get? n = some b → b ≠ 0) :
+    (nth_partDen_ne_zero : ∀ {b : K}, g.partDens.get? n = some b → b ≠ 0) :
     g.convs (n + 1) = (squashGCF g n).convs n := by
   cases' Decidable.em (g.TerminatedAt n) with terminatedAt_n not_terminatedAt_n
   · have : squashGCF g n = g := squashGCF_eq_self_of_terminated terminatedAt_n
     simp only [this, convs_stable_of_terminated n.le_succ terminatedAt_n]
   · obtain ⟨⟨a, b⟩, s_nth_eq⟩ : ∃ gp_n, g.s.get? n = some gp_n :=
       Option.ne_none_iff_exists'.mp not_terminatedAt_n
-    have b_ne_zero : b ≠ 0 := nth_partDenom_ne_zero (partDenom_eq_s_b s_nth_eq)
+    have b_ne_zero : b ≠ 0 := nth_partDen_ne_zero (partDen_eq_s_b s_nth_eq)
     cases n with
     | zero =>
       suffices (b * g.h + a) / b = g.h + a / b by
@@ -380,10 +380,10 @@ theorem convs_eq_convs' [LinearOrderedField K]
           exact Eq.trans (squashGCF_nth_of_lt succ_m_lt_n).symm s_mth_eq'
       -- now the result follows from the fact that the convergents coincide at the squashed position
       -- as established in `succ_nth_conv_eq_squashGCF_nth_conv`.
-      have : ∀ ⦃b⦄, g.partDenoms.get? n = some b → b ≠ 0 := by
-        intro b nth_partDenom_eq
+      have : ∀ ⦃b⦄, g.partDens.get? n = some b → b ≠ 0 := by
+        intro b nth_partDen_eq
         obtain ⟨gp, s_nth_eq, ⟨refl⟩⟩ : ∃ gp, g.s.get? n = some gp ∧ gp.b = b :=
-          exists_s_b_of_partDenom nth_partDenom_eq
+          exists_s_b_of_partDen nth_partDen_eq
         exact (ne_of_lt (s_pos (lt_add_one n) s_nth_eq).right).symm
       exact succ_nth_conv_eq_squashGCF_nth_conv @this
 #align generalized_continued_fraction.convergents_eq_convergents' GCF.convs_eq_convs'
@@ -402,7 +402,7 @@ nonrec theorem convs_eq_convs' [LinearOrderedField K] {c : RCF K} :
   apply convs_eq_convs'
   intro gp m _ s_nth_eq
   exact ⟨zero_lt_one.trans_le ((c : SCF K).property m gp.a
-    (partNum_eq_s_a s_nth_eq)).symm.le, c.property m gp.b <| partDenom_eq_s_b s_nth_eq⟩
+    (partNum_eq_s_a s_nth_eq)).symm.le, c.property m gp.b <| partDen_eq_s_b s_nth_eq⟩
 #align continued_fraction.convergents_eq_convergents' RCF.convs_eq_convs'
 
 end RCF

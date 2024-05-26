@@ -46,8 +46,8 @@ open GCF
 open scoped Topology
 
 theorem GCF.of_isSCF :
-    (of v).IsSCF := fun _ _ nth_part_num_eq =>
-  of_partNum_eq_one nth_part_num_eq
+    (of v).IsSCF := fun _ _ nth_partNum_eq =>
+  of_partNum_eq_one nth_partNum_eq
 #align generalized_continued_fraction.of_is_simple_continued_fraction GCF.of_isSCF
 
 /-- Creates the simple continued fraction of a value. -/
@@ -56,8 +56,8 @@ nonrec def SCF.of : SCF K :=
 #align simple_continued_fraction.of SCF.of
 
 theorem SCF.of_isRCF :
-    (SCF.of v).IsRCF := fun _ _ nth_part_denom_eq =>
-  lt_of_lt_of_le zero_lt_one (of_one_le_get?_partDenom nth_part_denom_eq)
+    (SCF.of v).IsRCF := fun _ _ nth_partDen_eq =>
+  lt_of_lt_of_le zero_lt_one (of_one_le_get?_partDen nth_partDen_eq)
 #align simple_continued_fraction.of_is_continued_fraction SCF.of_isRCF
 
 /-- Creates the continued fraction of a value. -/
@@ -107,18 +107,18 @@ theorem of_convergence_epsilon :
     have : v - g.convs n = 0 := sub_eq_zero.mpr this
     rw [this]
     exact mod_cast ε_pos
-  · let B := g.denoms n
-    let nB := g.denoms (n + 1)
+  · let B := g.dens n
+    let nB := g.dens (n + 1)
     have abs_v_sub_conv_le : |v - g.convs n| ≤ 1 / (B * nB) :=
       abs_sub_convs_le not_terminatedAt_n
     suffices 1 / (B * nB) < ε from lt_of_le_of_lt abs_v_sub_conv_le this
     -- show that `0 < (B * nB)` and then multiply by `B * nB` to get rid of the division
     have nB_ineq : (fib (n + 2) : K) ≤ nB :=
       haveI : ¬g.TerminatedAt (n + 1 - 1) := not_terminatedAt_n
-      succ_nth_fib_le_of_nth_denom (Or.inr this)
+      succ_nth_fib_le_of_nth_den (Or.inr this)
     have B_ineq : (fib (n + 1) : K) ≤ B :=
       haveI : ¬g.TerminatedAt (n - 1) := mt (terminated_stable n.pred_le) not_terminatedAt_n
-      succ_nth_fib_le_of_nth_denom (Or.inr this)
+      succ_nth_fib_le_of_nth_den (Or.inr this)
     have zero_lt_B : 0 < B := B_ineq.trans_lt' <| mod_cast fib_pos.2 n.succ_pos
     have nB_pos : 0 < nB := nB_ineq.trans_lt' <| mod_cast fib_pos.2 <| succ_pos _
     have zero_lt_mul_conts : 0 < B * nB := by positivity

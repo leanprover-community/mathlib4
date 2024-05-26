@@ -29,12 +29,12 @@ smaller. As a corollary, we will be able to show that `(GCF.of v).convs` converg
 
 - `GCF.of_partNum_eq_one`: shows that all partial numerators `aᵢ` are
   equal to one.
-- `GCF.exists_int_eq_of_partDenom`: shows that all partial denominators
+- `GCF.exists_int_eq_of_partDen`: shows that all partial denominators
   `bᵢ` correspond to an integer.
-- `GCF.of_one_le_get?_partDenom`: shows that `1 ≤ bᵢ`.
-- `GCF.succ_nth_fib_le_of_nthDenom`: shows that the `n`th denominator
+- `GCF.of_one_le_get?_partDen`: shows that `1 ≤ bᵢ`.
+- `GCF.succ_nth_fib_le_of_nthDen`: shows that the `n`th denominator
   `Bₙ` is greater than or equal to the `n + 1`th fibonacci number `Nat.fib (n + 1)`.
-- `GCF.le_of_succ_get?_denom`: shows that `bₙ * Bₙ ≤ Bₙ₊₁`, where `bₙ` is
+- `GCF.le_of_succ_get?_den`: shows that `bₙ * Bₙ ≤ Bₙ₊₁`, where `bₙ` is
   the `n`th partial denominator of the continued fraction.
 - `GCF.abs_sub_convs_le`: shows that
   `|v - Aₙ / Bₙ| ≤ 1 / (Bₙ * Bₙ₊₁)`, where `Aₙ` is the `n`th partial numerator.
@@ -133,22 +133,22 @@ fraction `GCF.of`.
 
 
 /-- Shows that the integer parts of the continued fraction are at least one. -/
-theorem of_one_le_get?_partDenom {b : K}
-    (nth_partDenom_eq : (of v).partDenoms.get? n = some b) : 1 ≤ b := by
+theorem of_one_le_get?_partDen {b : K}
+    (nth_partDen_eq : (of v).partDens.get? n = some b) : 1 ≤ b := by
   obtain ⟨gp_n, nth_s_eq, ⟨-⟩⟩ : ∃ gp_n, (of v).s.get? n = some gp_n ∧ gp_n.b = b :=
-    exists_s_b_of_partDenom nth_partDenom_eq
+    exists_s_b_of_partDen nth_partDen_eq
   obtain ⟨ifp_n, succ_nth_stream_eq, ifp_n_b_eq_gp_n_b⟩ :
       ∃ ifp, IntFractPair.stream v (n + 1) = some ifp ∧ (ifp.b : K) = gp_n.b :=
     IntFractPair.exists_succ_get?_stream_of_gcf_of_get?_eq_some nth_s_eq
   rw [← ifp_n_b_eq_gp_n_b]
   exact mod_cast IntFractPair.one_le_succ_nth_stream_b succ_nth_stream_eq
-#align generalized_continued_fraction.of_one_le_nth_part_denom GCF.of_one_le_get?_partDenom
+#align generalized_continued_fraction.of_one_le_nth_part_denom GCF.of_one_le_get?_partDen
 
 /--
 Shows that the partial numerators `aᵢ` of the continued fraction are equal to one and the partial
 denominators `bᵢ` correspond to integers.
 -/
-theorem of_partNum_eq_one_and_exists_int_partDenom_eq {gp : GCF.Pair K}
+theorem of_partNum_eq_one_and_exists_int_partDen_eq {gp : GCF.Pair K}
     (nth_s_eq : (of v).s.get? n = some gp) : gp.a = 1 ∧ ∃ z : ℤ, gp.b = (z : K) := by
   obtain ⟨ifp, stream_succ_nth_eq, -⟩ : ∃ ifp, IntFractPair.stream v (n + 1) = some ifp ∧ _ :=
     IntFractPair.exists_succ_get?_stream_of_gcf_of_get?_eq_some nth_s_eq
@@ -158,25 +158,25 @@ theorem of_partNum_eq_one_and_exists_int_partDenom_eq {gp : GCF.Pair K}
     have : some gp = some ⟨1, ifp.b⟩ := by rwa [nth_s_eq] at this
     injection this
   simp [this]
-#align generalized_continued_fraction.of_part_num_eq_one_and_exists_int_part_denom_eq GCF.of_partNum_eq_one_and_exists_int_partDenom_eq
+#align generalized_continued_fraction.of_part_num_eq_one_and_exists_int_part_denom_eq GCF.of_partNum_eq_one_and_exists_int_partDen_eq
 
 /-- Shows that the partial numerators `aᵢ` are equal to one. -/
 theorem of_partNum_eq_one {a : K} (nth_partNum_eq : (of v).partNums.get? n = some a) :
     a = 1 := by
   obtain ⟨gp, nth_s_eq, gp_a_eq_a_n⟩ : ∃ gp, (of v).s.get? n = some gp ∧ gp.a = a :=
     exists_s_a_of_partNum nth_partNum_eq
-  have : gp.a = 1 := (of_partNum_eq_one_and_exists_int_partDenom_eq nth_s_eq).left
+  have : gp.a = 1 := (of_partNum_eq_one_and_exists_int_partDen_eq nth_s_eq).left
   rwa [gp_a_eq_a_n] at this
 #align generalized_continued_fraction.of_part_num_eq_one GCF.of_partNum_eq_one
 
 /-- Shows that the partial denominators `bᵢ` correspond to an integer. -/
-theorem exists_int_eq_of_partDenom {b : K}
-    (nth_partDenom_eq : (of v).partDenoms.get? n = some b) : ∃ z : ℤ, b = (z : K) := by
+theorem exists_int_eq_of_partDen {b : K}
+    (nth_partDen_eq : (of v).partDens.get? n = some b) : ∃ z : ℤ, b = (z : K) := by
   obtain ⟨gp, nth_s_eq, gp_b_eq_b_n⟩ : ∃ gp, (of v).s.get? n = some gp ∧ gp.b = b :=
-    exists_s_b_of_partDenom nth_partDenom_eq
-  have : ∃ z : ℤ, gp.b = (z : K) := (of_partNum_eq_one_and_exists_int_partDenom_eq nth_s_eq).right
+    exists_s_b_of_partDen nth_partDen_eq
+  have : ∃ z : ℤ, gp.b = (z : K) := (of_partNum_eq_one_and_exists_int_partDen_eq nth_s_eq).right
   rwa [gp_b_eq_b_n] at this
-#align generalized_continued_fraction.exists_int_eq_of_part_denom GCF.exists_int_eq_of_partDenom
+#align generalized_continued_fraction.exists_int_eq_of_part_denom GCF.exists_int_eq_of_partDen
 
 /-!
 One of our next goals is to show that `bₙ * Bₙ ≤ Bₙ₊₁`. For this, we first show that the partial
@@ -222,7 +222,7 @@ theorem fib_le_of_contsAux_b :
         -- finally use the fact that `1 ≤ gp.b` to solve the goal
         suffices 1 * (fib (n + 1) : K) ≤ gp.b * pconts.b by rwa [one_mul] at this
         have one_le_gp_b : (1 : K) ≤ gp.b :=
-          of_one_le_get?_partDenom (partDenom_eq_s_b s_ppred_nth_eq)
+          of_one_le_get?_partDen (partDen_eq_s_b s_ppred_nth_eq)
         have : (0 : K) ≤ fib (n + 1) := mod_cast (fib (n + 1)).zero_le
         have : (0 : K) ≤ gp.b := le_trans zero_le_one one_le_gp_b
         mono
@@ -232,15 +232,15 @@ theorem fib_le_of_contsAux_b :
 
 /-- Shows that the `n`th denominator is greater than or equal to the `n + 1`th fibonacci number,
 that is `Nat.fib (n + 1) ≤ Bₙ`. -/
-theorem succ_nth_fib_le_of_nth_denom (hyp : n = 0 ∨ ¬(of v).TerminatedAt (n - 1)) :
-    (fib (n + 1) : K) ≤ (of v).denoms n := by
-  rw [denom_eq_conts_b, nth_cont_eq_succ_nth_contAux]
+theorem succ_nth_fib_le_of_nth_den (hyp : n = 0 ∨ ¬(of v).TerminatedAt (n - 1)) :
+    (fib (n + 1) : K) ≤ (of v).dens n := by
+  rw [den_eq_conts_b, nth_cont_eq_succ_nth_contAux]
   have : n + 1 ≤ 1 ∨ ¬(of v).TerminatedAt (n - 1) := by
     cases n with
     | zero => exact Or.inl <| le_refl 1
     | succ n => exact Or.inr (Or.resolve_left hyp n.succ_ne_zero)
   exact fib_le_of_contsAux_b this
-#align generalized_continued_fraction.succ_nth_fib_le_of_nth_denom GCF.succ_nth_fib_le_of_nth_denom
+#align generalized_continued_fraction.succ_nth_fib_le_of_nth_denom GCF.succ_nth_fib_le_of_nth_den
 
 /-! As a simple consequence, we can now derive that all denominators are nonnegative. -/
 
@@ -264,46 +264,46 @@ theorem zero_le_of_contsAux_b : 0 ≤ ((of v).contsAux n).b := by
 #align generalized_continued_fraction.zero_le_of_continuants_aux_b GCF.zero_le_of_contsAux_b
 
 /-- Shows that all denominators are nonnegative. -/
-theorem zero_le_of_denom : 0 ≤ (of v).denoms n := by
-  rw [denom_eq_conts_b, nth_cont_eq_succ_nth_contAux]; exact zero_le_of_contsAux_b
-#align generalized_continued_fraction.zero_le_of_denom GCF.zero_le_of_denom
+theorem zero_le_of_den : 0 ≤ (of v).dens n := by
+  rw [den_eq_conts_b, nth_cont_eq_succ_nth_contAux]; exact zero_le_of_contsAux_b
+#align generalized_continued_fraction.zero_le_of_denom GCF.zero_le_of_den
 
 theorem le_of_succ_succ_get?_contsAux_b {b : K}
-    (nth_partDenom_eq : (of v).partDenoms.get? n = some b) :
+    (nth_partDen_eq : (of v).partDens.get? n = some b) :
     b * ((of v).contsAux <| n + 1).b ≤ ((of v).contsAux <| n + 2).b := by
   obtain ⟨gp_n, nth_s_eq, rfl⟩ : ∃ gp_n, (of v).s.get? n = some gp_n ∧ gp_n.b = b :=
-    exists_s_b_of_partDenom nth_partDenom_eq
+    exists_s_b_of_partDen nth_partDen_eq
   simp [of_partNum_eq_one (partNum_eq_s_a nth_s_eq), zero_le_of_contsAux_b,
     GCF.contsAux_recurrence nth_s_eq rfl rfl]
 #align generalized_continued_fraction.le_of_succ_succ_nth_continuants_aux_b GCF.le_of_succ_succ_get?_contsAux_b
 
 /-- Shows that `bₙ * Bₙ ≤ Bₙ₊₁`, where `bₙ` is the `n`th partial denominator and `Bₙ₊₁` and `Bₙ` are
 the `n + 1`th and `n`th denominator of the continued fraction. -/
-theorem le_of_succ_get?_denom {b : K}
-    (nth_partDenom_eq : (of v).partDenoms.get? n = some b) :
-    b * (of v).denoms n ≤ (of v).denoms (n + 1) := by
-  rw [denom_eq_conts_b, nth_cont_eq_succ_nth_contAux]
+theorem le_of_succ_get?_den {b : K}
+    (nth_partDenom_eq : (of v).partDens.get? n = some b) :
+    b * (of v).dens n ≤ (of v).dens (n + 1) := by
+  rw [den_eq_conts_b, nth_cont_eq_succ_nth_contAux]
   exact le_of_succ_succ_get?_contsAux_b nth_partDenom_eq
-#align generalized_continued_fraction.le_of_succ_nth_denom GCF.le_of_succ_get?_denom
+#align generalized_continued_fraction.le_of_succ_nth_denom GCF.le_of_succ_get?_den
 
 /-- Shows that the sequence of denominators is monotone, that is `Bₙ ≤ Bₙ₊₁`. -/
-theorem of_denom_mono : (of v).denoms n ≤ (of v).denoms (n + 1) := by
+theorem of_den_mono : (of v).dens n ≤ (of v).dens (n + 1) := by
   let g := of v
-  cases' Decidable.em <| g.partDenoms.TerminatedAt n with terminated not_terminated
-  · have : g.partDenoms.get? n = none := by rwa [Stream'.Seq.TerminatedAt] at terminated
+  cases' Decidable.em <| g.partDens.TerminatedAt n with terminated not_terminated
+  · have : g.partDens.get? n = none := by rwa [Stream'.Seq.TerminatedAt] at terminated
     have : g.TerminatedAt n :=
-      terminatedAt_iff_partDenom_none.2 (by rwa [Stream'.Seq.TerminatedAt] at terminated)
-    have : g.denoms (n + 1) = g.denoms n :=
-      denoms_stable_of_terminated n.le_succ this
+      terminatedAt_iff_partDen_none.2 (by rwa [Stream'.Seq.TerminatedAt] at terminated)
+    have : g.dens (n + 1) = g.dens n :=
+      dens_stable_of_terminated n.le_succ this
     rw [this]
-  · obtain ⟨b, nth_partDenom_eq⟩ : ∃ b, g.partDenoms.get? n = some b :=
+  · obtain ⟨b, nth_partDen_eq⟩ : ∃ b, g.partDens.get? n = some b :=
       Option.ne_none_iff_exists'.mp not_terminated
-    have : 1 ≤ b := of_one_le_get?_partDenom nth_partDenom_eq
+    have : 1 ≤ b := of_one_le_get?_partDen nth_partDen_eq
     calc
-      g.denoms n ≤ b * g.denoms n := by
-        simpa using mul_le_mul_of_nonneg_right this zero_le_of_denom
-      _ ≤ g.denoms (n + 1) := le_of_succ_get?_denom nth_partDenom_eq
-#align generalized_continued_fraction.of_denom_mono GCF.of_denom_mono
+      g.dens n ≤ b * g.dens n := by
+        simpa using mul_le_mul_of_nonneg_right this zero_le_of_den
+      _ ≤ g.dens (n + 1) := le_of_succ_get?_den nth_partDen_eq
+#align generalized_continued_fraction.of_denom_mono GCF.of_den_mono
 
 section Determinant
 
@@ -355,8 +355,7 @@ theorem determinant_aux (hyp : n = 0 ∨ ¬(of v).TerminatedAt (n - 1)) :
 
 /-- The determinant formula `Aₙ * Bₙ₊₁ - Bₙ * Aₙ₊₁ = (-1)^(n + 1)`. -/
 theorem determinant (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
-    (of v).nums n * (of v).denoms (n + 1) -
-      (of v).denoms n * (of v).nums (n + 1) = (-1) ^ (n + 1) :=
+    (of v).nums n * (of v).dens (n + 1) -  (of v).dens n * (of v).nums (n + 1) = (-1) ^ (n + 1) :=
   determinant_aux <| Or.inr <| not_terminatedAt_n
 #align generalized_continued_fraction.determinant GCF.determinant
 
@@ -401,7 +400,7 @@ theorem sub_convs_eq {ifp : IntFractPair K}
     suffices v - A / B = (-1) ^ n / (B * (ifp.fr⁻¹ * B + pB)) by simpa [ifp_fr_ne_zero]
     -- now we can unfold `g.compExactValue` to derive the following equality for `v`
     replace g_finite_correctness : v = (pA + ifp.fr⁻¹ * A) / (pB + ifp.fr⁻¹ * B) := by
-      simpa [GCF.compExactValue, ifp_fr_ne_zero, nextConts, nextNum, nextDenom, add_comm]
+      simpa [GCF.compExactValue, ifp_fr_ne_zero, nextConts, nextNum, nextDen, add_comm]
         using g_finite_correctness
     -- let's rewrite this equality for `v` in our goal
     suffices
@@ -449,7 +448,7 @@ theorem sub_convs_eq {ifp : IntFractPair K}
 
 /-- Shows that `|v - Aₙ / Bₙ| ≤ 1 / (Bₙ * Bₙ₊₁)`. -/
 theorem abs_sub_convs_le (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
-    |v - (of v).convs n| ≤ 1 / ((of v).denoms n * ((of v).denoms <| n + 1)) := by
+    |v - (of v).convs n| ≤ 1 / ((of v).dens n * ((of v).dens <| n + 1)) := by
   -- shorthand notation
   let g := of v
   let nextConts := g.contsAux (n + 2)
@@ -464,8 +463,8 @@ theorem abs_sub_convs_le (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
   have nextConts_b_eq : nextConts.b = pred_conts.b + gp.b * conts.b := by
     simp [nextConts, contsAux_recurrence s_nth_eq pred_conts_eq conts_eq, gp_a_eq_one,
       pred_conts_eq.symm, conts_eq.symm, add_comm]
-  let denom := conts.b * (pred_conts.b + gp.b * conts.b)
-  suffices |v - g.convs n| ≤ 1 / denom by rw [nextConts_b_eq]; congr 1
+  let den := conts.b * (pred_conts.b + gp.b * conts.b)
+  suffices |v - g.convs n| ≤ 1 / den by rw [nextConts_b_eq]; congr 1
   obtain ⟨ifp_succ_n, succ_nth_stream_eq, ifp_succ_n_b_eq_gp_b⟩ :
       ∃ ifp_succ_n, IntFractPair.stream v (n + 1) = some ifp_succ_n ∧ (ifp_succ_n.b : K) = gp.b :=
     IntFractPair.exists_succ_get?_stream_of_gcf_of_get?_eq_some s_nth_eq
@@ -473,10 +472,10 @@ theorem abs_sub_convs_le (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
     ∃ ifp_n,
       IntFractPair.stream v n = some ifp_n ∧ ifp_n.fr ≠ 0 ∧ IntFractPair.of ifp_n.fr⁻¹ = ifp_succ_n
   · exact IntFractPair.succ_nth_stream_eq_some_iff.1 succ_nth_stream_eq
-  let denom' := conts.b * (pred_conts.b + ifp_n.fr⁻¹ * conts.b)
+  let den' := conts.b * (pred_conts.b + ifp_n.fr⁻¹ * conts.b)
   -- now we can use `sub_convs_eq` to simplify our goal
-  suffices |(-1) ^ n / denom'| ≤ 1 / denom by
-    have : v - g.convs n = (-1) ^ n / denom' := by
+  suffices |(-1) ^ n / den'| ≤ 1 / den by
+    have : v - g.convs n = (-1) ^ n / den' := by
       -- apply `sub_convs_eq` and simplify the result
       have tmp := sub_convs_eq stream_nth_eq
       simp only [stream_nth_fr_ne_zero, conts_eq.symm, pred_conts_eq.symm, if_false] at tmp
@@ -493,11 +492,11 @@ theorem abs_sub_convs_le (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
     fib_le_of_contsAux_b <| Or.inr this
   have zero_lt_conts_b : 0 < conts.b :=
     conts_b_ineq.trans_lt' <| mod_cast fib_pos.2 n.succ_pos
-  -- `denom'` is positive, so we can remove `|⬝|` from our goal
-  suffices 1 / denom' ≤ 1 / denom by
-    have : |(-1) ^ n / denom'| = 1 / denom' := by
-      suffices 1 / |denom'| = 1 / denom' by rwa [abs_div, abs_neg_one_pow n]
-      have : 0 < denom' := by
+  -- `den'` is positive, so we can remove `|⬝|` from our goal
+  suffices 1 / den' ≤ 1 / den by
+    have : |(-1) ^ n / den'| = 1 / den' := by
+      suffices 1 / |den'| = 1 / den' by rwa [abs_div, abs_neg_one_pow n]
+      have : 0 < den' := by
         have : 0 ≤ pred_conts.b :=
           haveI : (fib n : K) ≤ pred_conts.b :=
             haveI : ¬g.TerminatedAt (n - 2) :=
@@ -512,7 +511,7 @@ theorem abs_sub_convs_le (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
         positivity
       rw [abs_of_pos this]
     rwa [this]
-  suffices 0 < denom ∧ denom ≤ denom' from div_le_div_of_nonneg_left zero_le_one this.1 this.2
+  suffices 0 < den ∧ den ≤ den' from div_le_div_of_nonneg_left zero_le_one this.1 this.2
   constructor
   · have : 0 < pred_conts.b + gp.b * conts.b :=
       nextConts_b_ineq.trans_lt' <| mod_cast fib_pos.2 <| succ_pos _
@@ -532,21 +531,21 @@ theorem abs_sub_convs_le (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
 `GCF.abs_sub_convs_le`, but sometimes it is easier to apply and sufficient for one's use case.
  -/
 theorem abs_sub_convergents_le' {b : K}
-    (nth_partDenom_eq : (of v).partDenoms.get? n = some b) :
-    |v - (of v).convs n| ≤ 1 / (b * (of v).denoms n * (of v).denoms n) := by
+    (nth_partDen_eq : (of v).partDens.get? n = some b) :
+    |v - (of v).convs n| ≤ 1 / (b * (of v).dens n * (of v).dens n) := by
   have not_terminatedAt_n : ¬(of v).TerminatedAt n := by
-    simp [terminatedAt_iff_partDenom_none, nth_partDenom_eq]
+    simp [terminatedAt_iff_partDen_none, nth_partDen_eq]
   refine (abs_sub_convs_le not_terminatedAt_n).trans ?_
   -- One can show that `0 < (GCF.of v).denoms n` but it's easier
   -- to consider the case `(GCF.of v).denoms n = 0`.
-  rcases (zero_le_of_denom (K := K)).eq_or_gt with
-    ((hB : (GCF.of v).denoms n = 0) | hB)
+  rcases (zero_le_of_den (K := K)).eq_or_gt with
+    ((hB : (GCF.of v).dens n = 0) | hB)
   · simp only [hB, mul_zero, zero_mul, div_zero, le_refl]
   · apply one_div_le_one_div_of_le
-    · have : 0 < b := zero_lt_one.trans_le (of_one_le_get?_partDenom nth_partDenom_eq)
+    · have : 0 < b := zero_lt_one.trans_le (of_one_le_get?_partDen nth_partDen_eq)
       apply_rules [mul_pos]
     · conv_rhs => rw [mul_comm]
-      exact mul_le_mul_of_nonneg_right (le_of_succ_get?_denom nth_partDenom_eq) hB.le
+      exact mul_le_mul_of_nonneg_right (le_of_succ_get?_den nth_partDen_eq) hB.le
 #align generalized_continued_fraction.abs_sub_convergents_le' GCF.abs_sub_convergents_le'
 
 end ErrorTerm

@@ -133,9 +133,9 @@ def partNums (g : GCF α) : Stream'.Seq α :=
 #align generalized_continued_fraction.partial_numerators GCF.partNums
 
 /-- Returns the sequence of partial denominators `bᵢ` of `g`. -/
-def partDenoms (g : GCF α) : Stream'.Seq α :=
+def partDens (g : GCF α) : Stream'.Seq α :=
   g.s.map Pair.b
-#align generalized_continued_fraction.partial_denominators GCF.partDenoms
+#align generalized_continued_fraction.partial_denominators GCF.partDens
 
 /-- A gcf terminated at position `n` if its sequence terminates at position `n`. -/
 def TerminatedAt (g : GCF α) (n : ℕ) : Prop :=
@@ -249,7 +249,7 @@ A simple continued fraction is a *regular continued fraction* (rcf) if all parti
 def SCF.IsRCF [One α] [Zero α] [LT α]
     (s : SCF α) : Prop :=
   ∀ (n : ℕ) (bₙ : α),
-    (↑s : GCF α).partDenoms.get? n = some bₙ → 0 < bₙ
+    (↑s : GCF α).partDens.get? n = some bₙ → 0 < bₙ
 #align simple_continued_fraction.is_continued_fraction SCF.IsRCF
 
 variable (α)
@@ -332,16 +332,16 @@ def nextNum (a b ppredA predA : K) : K :=
 /-- Returns the next denominator `Bₙ = bₙ₋₁ * Bₙ₋₁ + aₙ₋₁ * Bₙ₋₂`, where `predB` is `Bₙ₋₁` and
 `ppredB` is `Bₙ₋₂`, `a` is `aₙ₋₁`, and `b` is `bₙ₋₁`.
 -/
-def nextDenom (aₙ bₙ ppredB predB : K) : K :=
+def nextDen (aₙ bₙ ppredB predB : K) : K :=
   bₙ * predB + aₙ * ppredB
-#align generalized_continued_fraction.next_denominator GCF.nextDenom
+#align generalized_continued_fraction.next_denominator GCF.nextDen
 
 /--
-Returns the next continuants `⟨Aₙ, Bₙ⟩` using `nextNum` and `nextDenom`, where `pred`
+Returns the next continuants `⟨Aₙ, Bₙ⟩` using `nextNum` and `nextDen`, where `pred`
 is `⟨Aₙ₋₁, Bₙ₋₁⟩`, `ppred` is `⟨Aₙ₋₂, Bₙ₋₂⟩`, `a` is `aₙ₋₁`, and `b` is `bₙ₋₁`.
 -/
 def nextConts (a b : K) (ppred pred : Pair K) : Pair K :=
-  ⟨nextNum a b ppred.a pred.a, nextDenom a b ppred.b pred.b⟩
+  ⟨nextNum a b ppred.a pred.a, nextDen a b ppred.b pred.b⟩
 #align generalized_continued_fraction.next_continuants GCF.nextConts
 
 /-- Returns the continuants `⟨Aₙ₋₁, Bₙ₋₁⟩` of `g`. -/
@@ -365,13 +365,13 @@ def nums (g : GCF K) : Stream' K :=
 #align generalized_continued_fraction.numerators GCF.nums
 
 /-- Returns the denominators `Bₙ` of `g`. -/
-def denoms (g : GCF K) : Stream' K :=
+def dens (g : GCF K) : Stream' K :=
   g.conts.map Pair.b
-#align generalized_continued_fraction.denominators GCF.denoms
+#align generalized_continued_fraction.denominators GCF.dens
 
 /-- Returns the convergents `Aₙ / Bₙ` of `g`, where `Aₙ, Bₙ` are the nth continuants of `g`. -/
 def convs (g : GCF K) : Stream' K :=
-  fun n : ℕ ↦ g.nums n / g.denoms n
+  fun n : ℕ ↦ g.nums n / g.dens n
 #align generalized_continued_fraction.convergents GCF.convs
 
 /--

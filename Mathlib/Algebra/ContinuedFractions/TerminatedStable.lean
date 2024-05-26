@@ -77,14 +77,14 @@ theorem nums_stable_of_terminated (n_le_m : n ≤ m) (terminatedAt_n : g.Termina
   simp only [num_eq_conts_a, conts_stable_of_terminated n_le_m terminatedAt_n]
 #align generalized_continued_fraction.numerators_stable_of_terminated GCF.nums_stable_of_terminated
 
-theorem denoms_stable_of_terminated (n_le_m : n ≤ m) (terminatedAt_n : g.TerminatedAt n) :
-    g.denoms m = g.denoms n := by
-  simp only [denom_eq_conts_b, conts_stable_of_terminated n_le_m terminatedAt_n]
-#align generalized_continued_fraction.denominators_stable_of_terminated GCF.denoms_stable_of_terminated
+theorem dens_stable_of_terminated (n_le_m : n ≤ m) (terminatedAt_n : g.TerminatedAt n) :
+    g.dens m = g.dens n := by
+  simp only [den_eq_conts_b, conts_stable_of_terminated n_le_m terminatedAt_n]
+#align generalized_continued_fraction.denominators_stable_of_terminated GCF.dens_stable_of_terminated
 
 theorem convs_stable_of_terminated (n_le_m : n ≤ m) (terminatedAt_n : g.TerminatedAt n) :
     g.convs m = g.convs n := by
-  simp only [convs, denoms_stable_of_terminated n_le_m terminatedAt_n,
+  simp only [convs, dens_stable_of_terminated n_le_m terminatedAt_n,
     nums_stable_of_terminated n_le_m terminatedAt_n]
 #align generalized_continued_fraction.convergents_stable_of_terminated GCF.convs_stable_of_terminated
 

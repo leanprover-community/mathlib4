@@ -27,7 +27,7 @@ theorem contsAux_recurrence {gp ppred pred : Pair K} (nth_s_eq : g.s.get? n = so
     (nth_contsAux_eq : g.contsAux n = ppred)
     (succ_nth_contsAux_eq : g.contsAux (n + 1) = pred) :
     g.contsAux (n + 2) = ⟨gp.b * pred.a + gp.a * ppred.a, gp.b * pred.b + gp.a * ppred.b⟩ :=
-  by simp [*, contsAux, nextConts, nextDenom, nextNum]
+  by simp [*, contsAux, nextConts, nextDen, nextNum]
 #align generalized_continued_fraction.continuants_aux_recurrence GCF.contsAux_recurrence
 
 theorem conts_recurrenceAux {gp ppred pred : Pair K} (nth_s_eq : g.s.get? n = some gp)
@@ -60,16 +60,16 @@ theorem nums_recurrence {gp : Pair K} {ppredA predA : K}
 #align generalized_continued_fraction.numerators_recurrence GCF.nums_recurrence
 
 /-- Shows that `Bₙ = bₙ * Bₙ₋₁ + aₙ * Bₙ₋₂`. -/
-theorem denoms_recurrence {gp : Pair K} {ppredB predB : K}
-    (succ_nth_s_eq : g.s.get? (n + 1) = some gp) (nth_denom_eq : g.denoms n = ppredB)
-    (succ_nth_denom_eq : g.denoms (n + 1) = predB) :
-    g.denoms (n + 2) = gp.b * predB + gp.a * ppredB := by
+theorem dens_recurrence {gp : Pair K} {ppredB predB : K}
+    (succ_nth_s_eq : g.s.get? (n + 1) = some gp) (nth_den_eq : g.dens n = ppredB)
+    (succ_nth_den_eq : g.dens (n + 1) = predB) :
+    g.dens (n + 2) = gp.b * predB + gp.a * ppredB := by
   obtain ⟨ppredConts, nth_conts_eq, ⟨rfl⟩⟩ : ∃ conts, g.conts n = conts ∧ conts.b = ppredB :=
-    exists_conts_b_of_denom nth_denom_eq
+    exists_conts_b_of_den nth_den_eq
   obtain ⟨predConts, succ_nth_conts_eq, ⟨rfl⟩⟩ :
       ∃ conts, g.conts (n + 1) = conts ∧ conts.b = predB :=
-    exists_conts_b_of_denom succ_nth_denom_eq
-  rw [denom_eq_conts_b, conts_recurrence succ_nth_s_eq nth_conts_eq succ_nth_conts_eq]
-#align generalized_continued_fraction.denominators_recurrence GCF.denoms_recurrence
+    exists_conts_b_of_den succ_nth_den_eq
+  rw [den_eq_conts_b, conts_recurrence succ_nth_s_eq nth_conts_eq succ_nth_conts_eq]
+#align generalized_continued_fraction.denominators_recurrence GCF.dens_recurrence
 
 end GCF

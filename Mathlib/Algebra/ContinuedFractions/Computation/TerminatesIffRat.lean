@@ -87,13 +87,13 @@ nonrec theorem exists_gcf_pair_rat_eq_of_nth_contsAux :
           cases' IH n <| lt_of_le_of_lt n.le_succ <| lt_add_one <| n + 1 with ppred_conts
             ppred_conts_eq
           obtain ⟨a_eq_one, z, b_eq_z⟩ : gp_n.a = 1 ∧ ∃ z : ℤ, gp_n.b = (z : K) :=
-            of_partNum_eq_one_and_exists_int_partDenom_eq s_ppred_nth_eq
+            of_partNum_eq_one_and_exists_int_partDen_eq s_ppred_nth_eq
           -- finally, unfold the recurrence to obtain the required rational value.
           simp only [a_eq_one, b_eq_z,
             contsAux_recurrence s_ppred_nth_eq ppred_conts_eq pred_conts_eq]
           use nextConts 1 (z : ℚ) ppred_conts pred_conts
           cases ppred_conts; cases pred_conts
-          simp [nextConts, nextNum, nextDenom])
+          simp [nextConts, nextNum, nextDen])
 #align generalized_continued_fraction.exists_gcf_pair_rat_eq_of_nth_conts_aux GCF.exists_gcf_pair_rat_eq_of_nth_contsAux
 
 theorem exists_gcf_pair_rat_eq_nth_conts :
@@ -107,18 +107,18 @@ theorem exists_rat_eq_nth_num : ∃ q : ℚ, (of v).nums n = (q : K) := by
   simp [num_eq_conts_a, nth_cont_eq]
 #align generalized_continued_fraction.exists_rat_eq_nth_numerator GCF.exists_rat_eq_nth_num
 
-theorem exists_rat_eq_nth_denom : ∃ q : ℚ, (of v).denoms n = (q : K) := by
+theorem exists_rat_eq_nth_den : ∃ q : ℚ, (of v).dens n = (q : K) := by
   rcases exists_gcf_pair_rat_eq_nth_conts v n with ⟨⟨_, b⟩, nth_cont_eq⟩
   use b
-  simp [denom_eq_conts_b, nth_cont_eq]
-#align generalized_continued_fraction.exists_rat_eq_nth_denominator GCF.exists_rat_eq_nth_denom
+  simp [den_eq_conts_b, nth_cont_eq]
+#align generalized_continued_fraction.exists_rat_eq_nth_denominator GCF.exists_rat_eq_nth_den
 
 /-- Every finite convergent corresponds to a rational number. -/
 theorem exists_rat_eq_nth_conv : ∃ q : ℚ, (of v).convs n = (q : K) := by
   rcases exists_rat_eq_nth_num v n with ⟨Aₙ, nth_num_eq⟩
-  rcases exists_rat_eq_nth_denom v n with ⟨Bₙ, nth_denom_eq⟩
+  rcases exists_rat_eq_nth_den v n with ⟨Bₙ, nth_den_eq⟩
   use Aₙ / Bₙ
-  simp [nth_num_eq, nth_denom_eq, conv_eq_num_div_denom]
+  simp [nth_num_eq, nth_den_eq, conv_eq_num_div_den]
 #align generalized_continued_fraction.exists_rat_eq_nth_convergent GCF.exists_rat_eq_nth_conv
 
 variable {v}
