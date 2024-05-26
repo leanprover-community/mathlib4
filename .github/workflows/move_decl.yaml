@@ -26,4 +26,4 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
           NUMBER: ${{ github.event.pull_request.number }}
-          BODY: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}  wfr https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}
+          BODY: [Ok, but not quite](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})  wfr https://github.com/${{ github.repository }}/actions/runs/${{ github.job_id }}
