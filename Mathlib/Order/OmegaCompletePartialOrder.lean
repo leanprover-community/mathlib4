@@ -377,22 +377,6 @@ lemma ScottContinuous.continuous' {f : α → β} (hf : ScottContinuous Set.univ
   exact ScottContinuous.LE { d | ∃ (c : Chain α), Set.range c = d } (Set.univ)
     (fun _ _ ↦ trivial) hf
 
-lemma continuous'_ScottContinuous {f : α → β} (hf : Continuous' f) :
-    ωScottContinuous f := by
-  intro d _ _ hd₃ a hda
-  rcases hd₃ with ⟨c,hc⟩
-  rw [← hc] at hda
-  rw [← hc, ωSup_eq_of_isLUB hda]
-  have e1 : f (ωSup c) = ωSup (c.map ⟨f,hf.1⟩) := by
-    rw [← (hf.2 c)]
-    simp only [OrderHom.coe_mk]
-  have e2 : f '' Set.range c = Set.range (c.map ⟨f,hf.1⟩) := by
-    simp only [map_coe, OrderHom.coe_mk]
-    exact Eq.symm (Set.range_comp f ⇑c)
-  rw [e1, e2]
-  exact isLUB_range_ωSup (c.map { toFun := f, monotone' := hf.1 })
-
-
 theorem Continuous'.to_monotone {f : α → β} (hf : Continuous' f) : Monotone f :=
   hf.fst
 #align omega_complete_partial_order.continuous'.to_monotone OmegaCompletePartialOrder.Continuous'.to_monotone
