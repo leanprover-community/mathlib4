@@ -241,8 +241,8 @@ def copyright_header : LinterCore := fun lines ↦ Id.run do
   -- The header should start and end with blank comments.
   let _ := match (start.get? 0, start.get? 4) with
   | (some "/-", some "-/") => none
-  | (some "/-", _) => return Array.mk [(StyleError.copyright none, 4)]
-  | _ => return Array.mk [(StyleError.copyright none, 0)]
+  | (some "/-", _) => return #[(StyleError.copyright none, 4)]
+  | _ => return #[(StyleError.copyright none, 0)]
 
   -- If this is given, we go over the individual lines one by one,
   -- and provide some context on what is mis-formatted (if anything).
@@ -355,8 +355,8 @@ overall: about 20-25s for all of mathlib; twice as slow as the python linter (wi
 -/
 
 /-- All text-based linters registered in this file. -/
-def all_linters : Array LinterCore := Array.mk
-  [check_line_length, contains_broad_imports, copyright_header, isolated_by_dot_semicolon,
+def all_linters : Array LinterCore :=
+  #[check_line_length, contains_broad_imports, copyright_header, isolated_by_dot_semicolon,
    line_endings]
 
 /-- Read a file, apply all text-based linters and return the formatted errors.
@@ -404,7 +404,7 @@ def lint_all_files (path : System.FilePath) : IO Unit := do
 
 /-- Lint all files in `Mathlib.lean`, `Archive.lean` and `Counterexamples`. -/
 def lint_all : IO Unit := do
-  for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
+  for s in #["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
     lint_all_files (System.mkFilePath [s])
 
 -- run_cmd lint_all
