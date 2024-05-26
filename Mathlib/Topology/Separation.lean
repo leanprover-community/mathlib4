@@ -2473,12 +2473,12 @@ theorem connectedComponent_eq_iInter_isClopen [T2Space X] [CompactSpace X] (x : 
   -- closed sets. If we can show that our intersection is a subset of any of these we can then
   -- "descend" this to show that it is a subset of either a or b.
   rcases normal_separation ha hb ab_disj with ⟨u, v, hu, hv, hau, hbv, huv⟩
-  obtain ⟨s, H⟩ : ∃ s : Set X, IsClopen s ∧ x ∈ s ∧ s ⊆ u ∪ v
-  /- Now we find a clopen set `s` around `x`, contained in `u ∪ v`. We utilize the fact that
-  `X \ u ∪ v` will be compact, so there must be some finite intersection of clopen neighbourhoods of
-  `X` disjoint to it, but a finite intersection of clopen sets is clopen so we let this be our
-  `s`. -/
-  · have H1 := (hu.union hv).isClosed_compl.isCompact.inter_iInter_nonempty
+  obtain ⟨s, H⟩ : ∃ s : Set X, IsClopen s ∧ x ∈ s ∧ s ⊆ u ∪ v := by
+    /- Now we find a clopen set `s` around `x`, contained in `u ∪ v`. We utilize the fact that
+    `X \ u ∪ v` will be compact, so there must be some finite intersection of clopen neighbourhoods
+    of `X` disjoint to it, but a finite intersection of clopen sets is clopen,
+    so we let this be our `s`. -/
+    have H1 := (hu.union hv).isClosed_compl.isCompact.inter_iInter_nonempty
       (fun s : { s : Set X // IsClopen s ∧ x ∈ s } => s) fun s => s.2.1.1
     rw [← not_disjoint_iff_nonempty_inter, imp_not_comm, not_forall] at H1
     cases' H1 (disjoint_compl_left_iff_subset.2 <| hab.trans <| union_subset_union hau hbv)

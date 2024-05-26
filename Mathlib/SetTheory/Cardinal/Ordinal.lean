@@ -1106,8 +1106,8 @@ variable [Infinite α] {α β'}
 theorem mk_perm_eq_self_power : #(Equiv.Perm α) = #α ^ #α :=
   ((mk_equiv_le_embedding α α).trans (mk_embedding_le_arrow α α)).antisymm <| by
     suffices Nonempty ((α → Bool) ↪ Equiv.Perm (α × Bool)) by
-      obtain ⟨e⟩ : Nonempty (α ≃ α × Bool)
-      · erw [← Cardinal.eq, mk_prod, lift_uzero, mk_bool,
+      obtain ⟨e⟩ : Nonempty (α ≃ α × Bool) := by
+        erw [← Cardinal.eq, mk_prod, lift_uzero, mk_bool,
           lift_natCast, mul_two, add_eq_self (aleph0_le_mk α)]
       erw [← le_def, mk_arrow, lift_uzero, mk_bool, lift_natCast 2] at this
       rwa [← power_def, power_self_eq (aleph0_le_mk α), e.permCongr.cardinal_eq]
