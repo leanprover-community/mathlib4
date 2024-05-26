@@ -33,7 +33,8 @@ introduced.
 
 universe v u
 
-attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike -- TODO remove this?
+-- This was a global instance prior to #13170. We may experiment with removing it.
+attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
 
 open CategoryTheory
 

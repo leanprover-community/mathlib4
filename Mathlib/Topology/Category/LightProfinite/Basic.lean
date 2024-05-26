@@ -26,7 +26,8 @@ universe u
 
 open CategoryTheory Limits Opposite FintypeCat
 
-attribute [local instance] ConcreteCategory.instFunLike -- TODO remove this?
+-- This was a global instance prior to #13170. We may experiment with removing it.
+attribute [local instance] ConcreteCategory.instFunLike
 
 /-- A light profinite set is one which can be written as a sequential limit of finite sets. -/
 structure LightProfinite : Type (u+1) where
