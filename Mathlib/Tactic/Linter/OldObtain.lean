@@ -58,7 +58,7 @@ def is_obtain_without_proof : Syntax → Bool
 def is_rsuffices_without_proof : Syntax → Bool
   -- Using the `rsuffices` tactic without a proof requires proving a type;
   -- a pattern is optional.
-  | `(tactic|rsuffices : $_type) | `(tactic|obtain $_pat : $_type) => true
+  | `(tactic|rsuffices : $_type) | `(tactic|rsuffices $_pat : $_type) => true
   | _ => false
 
 /-- The `oldObtain` linter emits a warning upon uses of the "stream-of-conciousness" variants
