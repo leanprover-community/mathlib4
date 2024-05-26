@@ -145,7 +145,7 @@ lemma toMonoidHom_coe (f : α →*₀ β) : f.toMonoidHom.toFun = f := rfl
 @[ext] lemma ext ⦃f g : α →*₀ β⦄ (h : ∀ x, f x = g x) : f = g := DFunLike.ext _ _ h
 #align monoid_with_zero_hom.ext MonoidWithZeroHom.ext
 
-section Deprecated
+section Deprecated -- since 2022-12-03
 
 @[deprecated DFunLike.congr_fun]
 lemma congr_fun {f g : α →*₀ β} (h : f = g) (x : α) : f x = g x := DFunLike.congr_fun h x
