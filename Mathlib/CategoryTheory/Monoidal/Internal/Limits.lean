@@ -104,7 +104,7 @@ instance forgetPreservesLimits : PreservesLimitsOfShape J (Mon_.forget C) where
 set_option linter.uppercaseLean3 false in
 #align Mon_.forget_preserves_limits Mon_.forgetPreservesLimits
 
--- We verify that we have successful created special shapes of limits in `Mon_ C`,
+-- We verify that we have successfully created special shapes of limits in `Mon_ C`,
 -- assuming that only those special shapes existed in `C`.
 
 example (D : Type _) [Category D] [MonoidalCategory D] [HasTerminal D] :
