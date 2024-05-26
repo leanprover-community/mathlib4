@@ -24,8 +24,8 @@ jobs:
         run: |
           gh pr comment "$NUMBER" --body "$BODY"
           url=${{ github.repository }}/actions/runs/${{ github.run_id }}
-          curl -s "https://github.com/${url}" | sed -n "/\\/job\\/[0-9]/{s|^ *href="\([^\"]*\)\"|\1|p}"
-          curl -s "https://github.com/${url}" | sed -n "/\\/job\\/[0-9]/{s|^ *href="\([^\"]*\)\"|summary<<EOF\n\1\nEOF|p}" >> "$GITHUB_OUTPUT"
+          curl -s "https://github.com/${url}" | sed -n '/\/job\/[0-9]/{s|^ *href="\([^"]*\)|summary<<EOF\n\1\nEOF|p}'
+          curl -s "https://github.com/${url}" | sed -n '/\/job\/[0-9]/{s|^ *href="\([^"]*\)|summary<<EOF\n\1\nEOF|p}' >> "$GITHUB_OUTPUT"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
