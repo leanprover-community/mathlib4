@@ -234,24 +234,54 @@ lemma LevyProkhorov.dist_def (μ ν : LevyProkhorov (ProbabilityMeasure Ω)) :
 
 /-- A simple sufficient condition for bounding `levyProkhorovEDist` between probability measures
 from above. The condition involves only one of two natural bounds, the other bound is for free. -/
+lemma levyProkhorovEDist_le_of_forall_le
+    (μ ν : Measure Ω) [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] (δ : ℝ≥0∞)
+    (h : ∀ ε B, δ < ε → ε < ∞ → MeasurableSet B → μ B ≤ ν (thickening ε.toReal B) + ε) :
+    levyProkhorovEDist μ ν ≤ δ := by
+  apply levyProkhorovEDist_le_of_forall μ ν δ
+  intro ε B ε_gt ε_lt_top B_mble
+  refine ⟨h ε B ε_gt ε_lt_top B_mble, ?_⟩
+  have B_subset := subset_compl_thickening_compl_thickening_self ε.toReal B
+  apply (measure_mono (μ := ν) B_subset).trans
+  rw [prob_compl_eq_one_sub isOpen_thickening.measurableSet]
+  have Tc_mble := (isOpen_thickening (δ := ε.toReal) (E := B)).isClosed_compl.measurableSet
+  specialize h ε (thickening ε.toReal B)ᶜ ε_gt ε_lt_top Tc_mble
+  rw [prob_compl_eq_one_sub isOpen_thickening.measurableSet] at h
+  have almost := add_le_add (c := μ (thickening ε.toReal B)) h rfl.le
+  rw [tsub_add_cancel_of_le prob_le_one, add_assoc] at almost
+  apply (tsub_le_tsub_right almost _).trans
+  rw [ENNReal.add_sub_cancel_left (measure_ne_top ν _), add_comm ε]
+
+/-- A simple sufficient condition for bounding `levyProkhorovDist` between probability measures
+from above. The condition involves only one of two natural bounds, the other bound is for free. -/
+lemma levyProkhorovDist_le_of_forall_le
+    (μ ν : Measure Ω) [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] {δ : ℝ} (δ_nn : 0 ≤ δ)
+    (h : ∀ ε B, δ < ε → MeasurableSet B → μ B ≤ ν (thickening ε B) + ENNReal.ofReal ε) :
+    levyProkhorovDist μ ν ≤ δ := by
+  apply toReal_le_of_le_ofReal δ_nn
+  apply levyProkhorovEDist_le_of_forall_le
+  intro ε B ε_gt ε_lt_top B_mble
+  have ε_gt' : δ < ε.toReal := by
+    refine (ofReal_lt_ofReal_iff ?_).mp ?_
+    · exact ENNReal.toReal_pos (ne_zero_of_lt ε_gt) ε_lt_top.ne
+    · simpa [ofReal_toReal_eq_iff.mpr ε_lt_top.ne] using ε_gt
+  convert h ε.toReal B ε_gt' B_mble
+  exact (ENNReal.ofReal_toReal ε_lt_top.ne).symm
+
+-- TODO: Should this be removed?
+/-- A simple sufficient condition for bounding `levyProkhorovEDist` between probability measures
+from above. The condition involves only one of two natural bounds, the other bound is for free. -/
 lemma levyProkhorovEDist_le_of_forall_add_pos_le'
     (μ ν : Measure Ω) [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] (δ : ℝ≥0∞)
     (h : ∀ ε B, 0 < ε → ε < ∞ → MeasurableSet B → μ B ≤ ν (thickening (δ + ε).toReal B) + δ + ε) :
     levyProkhorovEDist μ ν ≤ δ := by
-  apply levyProkhorovEDist_le_of_forall_add_pos_le μ ν δ
-  intro ε B ε_pos ε_lt_top B_mble
-  refine ⟨h ε B ε_pos ε_lt_top B_mble, ?_⟩
-  have B_subset := subset_compl_thickening_compl_thickening_self (δ + ε).toReal B
-  apply (measure_mono (μ := ν) B_subset).trans
-  rw [prob_compl_eq_one_sub isOpen_thickening.measurableSet]
-  have Tc_mble := (isOpen_thickening (δ := (δ + ε).toReal) (E := B)).isClosed_compl.measurableSet
-  specialize h ε (thickening (δ + ε).toReal B)ᶜ ε_pos ε_lt_top Tc_mble
-  rw [prob_compl_eq_one_sub isOpen_thickening.measurableSet] at h
-  have almost := add_le_add (c := μ (thickening (δ + ε).toReal B)) h rfl.le
-  rw [tsub_add_cancel_of_le prob_le_one, add_assoc, add_assoc] at almost
-  apply (tsub_le_tsub_right almost _).trans
-  rw [ENNReal.add_sub_cancel_left (measure_ne_top ν _), add_comm ε, ← add_assoc, add_comm δ]
+  apply levyProkhorovEDist_le_of_forall_le μ ν δ
+  intro η B η_gt η_lt_top B_mble
+  let ε := η - δ
+  simpa [show η = δ + ε from (add_tsub_cancel_of_le η_gt.le).symm, ← add_assoc]
+    using h ε B (tsub_pos_of_lt η_gt) (tsub_lt_of_lt η_lt_top) B_mble
 
+-- TODO: Should this be removed?
 /-- A simple sufficient condition for bounding `levyProkhorovDist` between probability measures
 from above. The condition involves only one of two natural bounds, the other bound is for free. -/
 lemma levyProkhorovDist_le_of_forall_add_pos_le
