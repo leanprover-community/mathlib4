@@ -64,18 +64,18 @@ lemma two_different_elements {I : Type*} (h : ∃ (i j : I), i≠ j) : ∀ (i:I)
 
 /-!###   Structure Definition  -/
 
-/-- Defines an auction with
-I : a set of participants,
-hF: a `Fintype` instance,
-hI: an `Inhabited` instance,
-v : a function mapping each participant to their valuation. -/
-
 structure Auction where
+   /-- A set of participants.-/
    I : Type*
+   /-- A `Fintype` instance. -/
    hF : Fintype I
+   /-- An `Inhabited` instance. -/
    hI: Inhabited I
+   /-- There exist at least two different participants. -/
    hP : ∃ i j : I , i ≠ j
+   /-- For any participant `i`, there exists another participant `j` who is different from `i`. -/
    hP' :  ∀ i : I , ∃ j, i ≠  j := two_different_elements hP
+   /-- A function mapping each participant to their valuation. -/
    v : I → ℝ
 
 namespace Auction
@@ -150,9 +150,11 @@ lemma gt_wins (i : a.I) (H: ∀ j , i ≠j →  b i > b j) : i = winner b := by
             intro j _
             by_cases hji : i=j
             · rw [hji]
-            ·  have hji' := H j ( by rw [ne_eq]; exact hji)
-               linarith
-         linarith
+            ·  have  := H j ( by rw [ne_eq]; exact hji)
+               simp only [ge_iff_le]
+               exact le_of_lt (H j hji)
+         simp only [maxb]
+         exact Real.partialOrder.proof_4 (b i) (Finset.sup' Finset.univ maxb.proof_1 b) H1 H2
       intro j
       constructor
       ·  intro hji
@@ -162,7 +164,7 @@ lemma gt_wins (i : a.I) (H: ∀ j , i ≠j →  b i > b j) : i = winner b := by
          by_contra hji
          have hji' := H j (by rw [ne_eq];exact hji)
          rw [hbj] at hji'
-         linarith
+         aesop
    rw [HH]
    rw [<-winner_take_max]
 
@@ -200,7 +202,7 @@ lemma b_loser_max (H: i ≠ winner b) : B b i = maxb b := by
     apply Finset.le_sup'
     simp only [Finset.mem_univ, Finset.mem_erase, and_true]
     exact (Ne.symm H)
-  linarith
+  exact Real.partialOrder.proof_4 (B b i) (Finset.sup' Finset.univ maxb.proof_1 b) H1 H2
 
 
 
@@ -262,7 +264,7 @@ theorem valuation_is_dominant (i : a.I ) : dominant i (a.v i) := by
          simp only [gt_iff_lt, not_lt] at H1
          rw [secondprice,<-H]
          have := utility_nneg b i hb
-         linarith
+         exact le_add_of_nonneg_of_le this H1
    ·  have := utility_nneg b i hb
       convert this
       simp [utility,H]
@@ -307,7 +309,7 @@ theorem first_price_has_no_dominant_strategy (i : a.I) (bi :  ℝ) : ¬ (Dominan
       apply gt_wins b' i
       intro j hj
       simp only [b,b',ite_true, Ne.symm hj, ite_false, gt_iff_lt, sub_lt_sub_iff_left]
-      linarith
+      exact one_lt_two
    have h1 := utility_first_price_winner b i winner_b
    have h2 := utility_first_price_winner b' i winner_b'
    simp [h1,h2,b,b']
