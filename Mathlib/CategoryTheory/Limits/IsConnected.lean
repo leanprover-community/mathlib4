@@ -114,7 +114,7 @@ theorem isConnected_iff_isColimit_pUnitCocone :
 universe v₂ u₂
 variable {C : Type u} {D: Type u₂} [Category.{v} C] [Category.{v₂} D]
 
-/-- The comain of a final functor is connected if and only if its codomain is connected. -/
+/-- The domain of a final functor is connected if and only if its codomain is connected. -/
 theorem isConnected_iff_of_final (F : C ⥤ D) [CategoryTheory.Functor.Final F] :
     IsConnected C ↔ IsConnected D := by
   refine Iff.trans (isConnected_iff_colimit_constPUnitFunctor_iso_pUnit.{max v u v₂ u₂} C) ?_
