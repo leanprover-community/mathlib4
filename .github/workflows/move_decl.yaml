@@ -20,14 +20,16 @@ jobs:
         #    git checkout -q master
         #    git checkout -q -
         #    printf $'summary<<EOF\n%s\nEOF' "$(./scripts/no_lost_declarations.sh short)" >> "$GITHUB_OUTPUT"
-      - name: Add_comment
+      - name: add_comment
         run: |
           gh pr comment "$NUMBER" --body "$BODY"
           url=${{ github.repository }}/actions/runs/${{ github.run_id }}
           #curl -s "https://github.com/${url}" | sed -n '/\/job\/[0-9]/{s|^ *href="\([^"]*\)|summary<<EOF\n\1\nEOF|p}'
-          curl -s "https://github.com/${url}" | sed -n '/\/job\/[0-9]/{s|^ *href=".*/job/\([[0-9]]*\)".*|summary<<EOF\n\1\nEOF|p}' >> "$GITHUB_OUTPUT"
+          job_no="$(curl -s "https://github.com/${url}" | sed -n '/\/job\/[0-9]/{s|^ *href=".*/job/\([[0-9]]*\)".*|summary<<EOF\n\1\nEOF|p}')"
+          printf '%s\n' "${job_no}"
+          printf '%s\n' "${job_no}" >> "$GITHUB_OUTPUT"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
           NUMBER: ${{ github.event.pull_request.number }}
-          BODY: Ok, but not quite https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}  jwfs https://github.com/${{ github.repository }}/actions/runs/${{ github.job_workflow_sha }}  run number ${{ github.run_number }} wfsha ${{ github.workflow_sha }} job -- ${{ github.job }} run no ${{ github.run_number }} api url ${{ github.job_name }} and also ${{ steps.Add_comment.outputs.summary }}
+          BODY: Ok, but not quite https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}  jwfs https://github.com/${{ github.repository }}/actions/runs/${{ github.job_workflow_sha }}  run number ${{ github.run_number }} wfsha ${{ github.workflow_sha }} job -- ${{ github.job }} run no ${{ github.run_number }} api url ${{ github.job }} and also ${{ steps.add_comment.outputs.summary }}
