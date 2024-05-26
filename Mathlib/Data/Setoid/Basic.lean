@@ -198,7 +198,7 @@ theorem eq_top_iff {s : Setoid α} : s = (⊤ : Setoid α) ↔ ∀ x y : α, s.R
 
 lemma sInf_equiv {S : Set (Setoid α)} {x y : α} :
     letI := sInf S
-  x ≈ y ↔ ∀ s ∈ S, s.Rel x y := Iff.rfl
+    x ≈ y ↔ ∀ s ∈ S, s.Rel x y := Iff.rfl
 
 lemma quotient_mk_sInf_eq {S : Set (Setoid α)} {x y : α} :
     Quotient.mk (sInf S) x = Quotient.mk (sInf S) y ↔ ∀ s ∈ S, s.Rel x y := by

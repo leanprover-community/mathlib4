@@ -1611,20 +1611,20 @@ namespace t2Quotient
 variable {X}
 
 instance : TopologicalSpace (t2Quotient X) :=
-inferInstanceAs <| TopologicalSpace (Quotient _)
+  inferInstanceAs <| TopologicalSpace (Quotient _)
 
 /-- The map from a topological space to its largest T2 quotient. -/
 def mk : X → t2Quotient X := Quotient.mk (t2Setoid X)
 
 lemma mk_eq {x y : X} : mk x = mk y ↔ ∀ s : Setoid X, T2Space (Quotient s) → s.Rel x y :=
-Setoid.quotient_mk_sInf_eq
+  Setoid.quotient_mk_sInf_eq
 
 variable (X)
 
 lemma surjective_mk : Surjective (mk : X → t2Quotient X) := surjective_quotient_mk _
 
 lemma continuous_mk : Continuous (mk : X → t2Quotient X) :=
-continuous_quotient_mk'
+  continuous_quotient_mk'
 
 variable {X}
 
@@ -1635,7 +1635,7 @@ protected lemma inductionOn {motive : t2Quotient X → Prop} (q : t2Quotient X)
 @[elab_as_elim]
 protected lemma inductionOn₂ [TopologicalSpace Y] {motive : t2Quotient X → t2Quotient Y → Prop}
     (q : t2Quotient X) (q' : t2Quotient Y) (h : ∀ x y, motive (mk x) (mk y)) : motive q q' :=
-Quotient.inductionOn₂ q q' h
+  Quotient.inductionOn₂ q q' h
 
 /-- The largest T2 quotient of a topological space is indeed T2. -/
 instance : T2Space (t2Quotient X) := by
@@ -1667,7 +1667,7 @@ lemma continuous_lift {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [T
 @[simp]
 lemma lift_mk {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [T2Space Y]
     {f : X → Y} (hf : Continuous f) (x : X) : lift hf (mk x) = f x :=
-Quotient.lift_mk (s := t2Setoid X) f (t2Quotient.compatible hf) x
+  Quotient.lift_mk (s := t2Setoid X) f (t2Quotient.compatible hf) x
 
 lemma unique_lift {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [T2Space Y]
     {f : X → Y} (hf : Continuous f) {g : t2Quotient X → Y} (hfg : g ∘ mk = f) :
