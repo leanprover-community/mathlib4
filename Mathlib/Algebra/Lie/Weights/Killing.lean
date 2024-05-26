@@ -229,6 +229,44 @@ lemma corootSpace_zero_eq_bot :
     simpa only [Subtype.ext_iff, LieSubalgebra.coe_bracket, ZeroMemClass.coe_zero] using this
   simp
 
+instance : InvolutiveNeg (Weight K H L) where
+  neg α := ⟨-α, by
+    by_cases hα : α.IsZero
+    · convert α.weightSpace_ne_bot; rw [hα, neg_zero]
+    · intro e
+      obtain ⟨x, hx, x_ne0⟩ := α.exists_ne_zero
+      have := mem_ker_killingForm_of_mem_rootSpace_of_forall_rootSpace_neg K L H hx
+        (fun y hy ↦ by rw [rootSpace, e] at hy; rw [hy, map_zero])
+      rw [ker_killingForm_eq_bot] at this
+      exact x_ne0 this⟩
+  neg_neg α := by ext; simp
+
+variable {K L H}
+
+@[simp]
+lemma _root_.LieModule.Weight.coe_neg {α : Weight K H L} :
+    ((-α : Weight K H L) : H → K) = -α := rfl
+
+lemma _root_.LieModule.Weight.IsZero.neg {α : Weight K H L} (h : α.IsZero) : (-α).IsZero := by
+  ext; rw [LieModule.Weight.coe_neg, h, neg_zero]
+
+@[simp]
+lemma _root_.LieModule.Weight.isZero_neg {α : Weight K H L} : (-α).IsZero ↔ α.IsZero :=
+  ⟨fun h ↦ neg_neg α ▸ h.neg, fun h ↦ h.neg⟩
+
+lemma _root_.LieModule.Weight.IsNonZero.neg {α : Weight K H L} (h : α.IsNonZero) :
+    (-α).IsNonZero := by
+  intro e; exact h (by simpa using e.neg)
+
+@[simp]
+lemma _root_.LieModule.Weight.isNonZero_neg {α : Weight K H L} : (-α).IsNonZero ↔ α.IsNonZero :=
+  LieModule.Weight.isZero_neg.not
+
+@[simp]
+lemma _root_.LieModule.Weight.toLinear_neg {α : Weight K H L} : (-α).toLinear = -α.toLinear := rfl
+
+variable (K L H)
+
 section PerfectField
 
 variable {K L H}
@@ -370,6 +408,10 @@ lemma root_apply_coroot {α : Weight K H L} (hα : α.IsNonZero) :
   rw [← Weight.coe_coe]
   simpa [coroot] using inv_mul_cancel (root_apply_cartanEquivDual_symm_ne_zero hα)
 
+@[simp]
+lemma coroot_neg (α : Weight K H L) : coroot (-α) = -coroot α := by
+  simp only [coroot, Weight.toLinear_neg, map_neg, Weight.coe_neg, Pi.neg_apply, neg_neg, smul_neg]
+
 lemma traceForm_coroot (α : Weight K H L) (x : H) :
     traceForm K H L (coroot α) x = 2 • (α <| (cartanEquivDual H).symm α)⁻¹ • α x := by
   have : cartanEquivDual H ((cartanEquivDual H).symm α) x = α x := by
@@ -383,6 +425,9 @@ lemma traceForm_coroot (α : Weight K H L) (x : H) :
   · by_contra contra
     simpa [hα, ← α.coe_coe, map_zero] using root_apply_coroot contra
   · simp [coroot, Weight.coe_toLinear_eq_zero_iff.mpr hα]
+
+@[simp]
+lemma coroot_zero [Nontrivial L] : coroot (0 : Weight K H L) = 0 := by simp [Weight.isZero_zero]
 
 lemma coe_corootSpace_eq_span_singleton (α : Weight K H L) :
     (corootSpace α).toSubmodule = K ∙ coroot α := by
