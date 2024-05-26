@@ -45,9 +45,9 @@ open Submodule Pointwise TensorProduct
 
 variable {R M M' M'' : Type*}
 
-lemma submodule [Semiring R] [AddCommMonoid M] [Module R M] (N : Submodule R M)
-    (r : R) (h : IsSMulRegular M r) : IsSMulRegular N r :=
-  isSMulRegular_of_injective_of_isSMulRegular N.subtype N.injective_subtype h
+lemma submodule [Semiring R] [AddCommMonoid M] [Module R M]
+    (N : Submodule R M) (r : R) (h : IsSMulRegular M r) : IsSMulRegular N r :=
+  h.of_injective N.subtype N.injective_subtype
 
 section Ring
 
@@ -293,11 +293,9 @@ lemma map_first_exact_on_four_term_exact_of_isSMulRegular_last
   rw [map_pointwise_smul, Submodule.map_top, inf_comm]
   refine smul_top_inf_eq_smul_of_isSMulRegular_on_quot ?_
   have := ker_liftQ_eq_bot' _ _ h₂₃.linearMap_ker_eq.symm
-  exact h.isSMulRegular_of_injective_of_isSMulRegular _ <| ker_eq_bot.mp this
+  exact h.of_injective _ (ker_eq_bot.mp this)
 
 variable (M M')
-
-open scoped TensorProduct
 
 -- TODO: Naturality for `tensorModSMulByEquivModSMulBy`
 -- and `modSMulByTensorEquivModSMulBy`
