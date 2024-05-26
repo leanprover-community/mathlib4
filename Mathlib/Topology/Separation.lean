@@ -1326,6 +1326,110 @@ theorem Set.Finite.t2_separation [T2Space X] {s : Set X} (hs : s.Finite) :
   s.pairwiseDisjoint_nhds.exists_mem_filter_basis hs nhds_basis_opens
 #align set.finite.t2_separation Set.Finite.t2_separation
 
+/-- In a `T2Space X`, for a compact set `t` and a point `x` outside `t`, there are open sets `U`,
+`V` that separate `t` and `x`.-/
+lemma separation_of_isCompact_not_mem {X : Type u_1} [TopologicalSpace X] [T2Space X] {x : X}
+    {t : Set X} (H1 : IsCompact t) (H2 : x ∉ t) :
+    ∃ (U : Set X), ∃ (V : Set X), IsOpen U ∧ IsOpen V ∧ x ∈ U ∧ t ⊆ V ∧ Disjoint U V := by
+  obtain ⟨v, hv⟩ := Filter.disjoint_iff.mp ((IsCompact.disjoint_nhdsSet_left H1).mpr
+    (fun (y : X) (p : y ∈ t) => disjoint_nhds_nhds.mpr (ne_of_mem_of_not_mem p H2)))
+  obtain ⟨u, hu⟩ := hv.2
+  obtain ⟨V, hV⟩ := mem_nhdsSet_iff_exists.mp hv.1
+  obtain ⟨U, hU⟩ := mem_nhds_iff.mp hu.1
+  use U
+  use V
+  constructor
+  exact hU.2.1
+  constructor
+  exact hV.1
+  constructor
+  exact hU.2.2
+  constructor
+  exact hV.2.1
+  exact Set.disjoint_of_subset hU.1 hV.2.2 (Disjoint.symm hu.2)
+
+/-- In a `T2Space X`, for a compact set `t` and a point `x` outside `t`, there are neighbourhoods
+`U`, `V` that separate `t` and `x`.-/
+lemma separation_of_isCompact_not_mem' {X : Type u_1} [TopologicalSpace X] [T2Space X] {x : X}
+    {t : Set X} (H1 : IsCompact t) (H2 : x ∉ t) :
+    ∃ U ∈ nhds x,  ∃ V ∈ nhdsSet t, Disjoint U V := by
+  obtain ⟨U, hU⟩ := separation_of_isCompact_not_mem H1 H2
+  obtain ⟨V, hV⟩ := hU
+  use U
+  constructor
+  · rw [mem_nhds_iff]
+    use U
+    constructor
+    exact subset_rfl
+    constructor
+    exact hV.1
+    exact hV.2.2.1
+  · use V
+    constructor
+    · apply (IsOpen.mem_nhdsSet hV.2.1).mpr hV.2.2.2.1
+    · exact hV.2.2.2.2
+
+/-- In a `T2Space X`, for disjoint compact sets `s` and `t`, there are neighbourhoods `U`, `V` that
+separate `s` and `t`.-/
+lemma separation_of_isCompact_isCompact_disjoint {X : Type u_1} [TopologicalSpace X] [T2Space X]
+    {s : Set X} {t : Set X} (H1 : IsCompact s) (H2 : IsCompact t) (H3 : Disjoint s t) :
+    SeparatedNhds s t := by
+  obtain ⟨u, hu⟩ := Filter.disjoint_iff.mp ((IsCompact.disjoint_nhdsSet_left H1).mpr
+    (fun (x : X) (p : x ∈ s) => Filter.disjoint_iff.mpr (separation_of_isCompact_not_mem' H2
+    (Set.disjoint_left.mp H3 p))))
+  obtain ⟨v, hv⟩ := hu.2
+  obtain ⟨U, hU⟩ := mem_nhdsSet_iff_exists.mp hu.1
+  obtain ⟨V, hV⟩ := mem_nhdsSet_iff_exists.mp hv.1
+  use U
+  use V
+  constructor
+  exact hU.1
+  constructor
+  exact hV.1
+  constructor
+  exact hU.2.1
+  constructor
+  exact hV.2.1
+  exact Set.disjoint_of_subset hU.2.2 hV.2.2 hv.2
+
+/-- In a `T2Space X`, for a closed set `t` and a relatively local open set `s` such that `t ⊆ s`,
+there are neighbourhoods that separate `sᶜ` and `t`.-/
+lemma t2_separation_IsOpen_IsCompact_closure_IsClosed_subset [T2Space X] {s : Set X} {t : Set X}
+    (H1 : IsOpen s) (H2 : IsCompact (closure s)) (H3 : IsClosed t) (H4 : t ⊆ s) :
+    SeparatedNhds sᶜ t := by
+-- separation of (closure s) \ s and t
+  obtain ⟨U, hU⟩ := separation_of_isCompact_isCompact_disjoint
+    (IsCompact.of_isClosed_subset H2 (IsClosed.sdiff isClosed_closure H1)
+    (Set.diff_subset (closure s) s))
+    (IsCompact.of_isClosed_subset H2 H3 (Set.Subset.trans H4 subset_closure))
+    (Set.disjoint_of_subset_right H4 Set.disjoint_sdiff_left)
+  obtain ⟨V, hV⟩ := hU
+-- `U` and `V` separate `(closure s) \ s` and `t`. We take  `U ∪ (closure s)ᶜ` and `V ∩ s`
+-- that separate `sᶜ` and `t`.
+  use U ∪ (closure s)ᶜ
+  use V ∩ s
+  constructor
+  exact IsOpen.union hV.1 (isOpen_compl_iff.mpr isClosed_closure)
+  constructor
+  exact IsOpen.inter hV.2.1 H1
+  constructor
+  rw [Set.diff_eq_compl_inter] at hV
+  intro x hx
+  by_cases hxs : x ∈ (closure s)ᶜ
+  · right
+    exact hxs
+  · left
+    push_neg at hxs
+    simp only [mem_compl_iff, not_not] at hxs
+    exact Set.mem_of_subset_of_mem hV.2.2.1 (Set.mem_inter hx hxs)
+  constructor
+  exact Set.subset_inter_iff.mpr (And.intro hV.2.2.2.1 H4)
+  rw [Set.disjoint_union_left]
+  constructor
+  exact Set.disjoint_of_subset_right (Set.inter_subset_left V s) hV.2.2.2.2
+  rw [← interior_compl]
+  exact Set.disjoint_of_subset interior_subset (Set.inter_subset_right V s) disjoint_compl_left
+
 -- see Note [lower instance priority]
 instance (priority := 100) T2Space.t1Space [T2Space X] : T1Space X :=
   t1Space_iff_disjoint_pure_nhds.mpr fun _ _ hne =>
