@@ -11,45 +11,59 @@ import Mathlib.Data.Real.Basic
 /-!
 # Auction Theory
 
-This file formalizes core concepts and results in auction theory.
+This file formalizes core concepts and results in auction theory. It includes the definitions of
+first-price and second-price auctions, as well as several fundamental results and helping lemmas.
 
 ## Main Definitions
 
 - `Auction`: Defines an auction with bidders and their valuations.
 - `maxb`: Function that computes the highest bid given a bidding function.
 - `winner`: Identifies the winner of the auction as the bidder with the highest bid.
+- `B`: Function that computes the highest bid excluding a given participant.
+- `secondprice`: Computes the second highest bid in the auction.
 - `utility`: Computes the utility of each bidder based on the outcome of the auction.
 - `dominant`: Establishes whether a strategy is dominant for a bidder.
+- `Utility.FirstPrice`: Computes the utility for a first price auction.
+- `Dominant.FirstPrice`: Defines a dominant strategy in the context of a first price auction.
 
 ## Main Results
 
+- `utility_nneg`: Utility is non-negative if the bid equals the valuation.
+- `valuation_is_dominant`: Bidding one's valuation is a dominant strategy.
+- `first_price_has_no_dominant_strategy`: There is no dominant strategy in a first price auction.
+
+## Helping Lemmas
+
+- `gt_wins`: If `i`'s bid is higher than all other bids, then `i` wins.
 - `exists_max`: There exists a participant whose bid matches the highest bid.
 - `winner_take_max`: The winner's bid is the highest.
 - `b_winner`: The winner's bid is at least the second highest bid.
-- `valuation_is_dominant`: Bidding one's valuation is a dominant strategy.
+- `utility_winner`: If `i` wins, utility is the valuation minus the second highest bid.
+- `utility_loser`: If `i` does not win, their utility is 0.
+- `b_winner_max`: The winner's bid is greater than or equal to all other bids.
+- `b_loser_max`: If `i` does not win, the highest bid excluding `i` matches the highest bid.
+- `utility_first_price_winner`: If `i` wins in a first price auction utility is valuation minus bid.
+- `utility_first_price_loser`: If `i` does not win in a first price auction, utility is 0.
 
 ## Notations
 
 - `|b|`: Represents a bidding function.
 - `maxb(b)`: The highest bid in the function `b`.
-- `B i` is the maximal bid of all participants but `i`.
+- `B i`: The maximal bid of all participants but `i`.
 
 ## Implementation Notes
 
 The structure and functions assume the existence of multiple bidders to allow for meaningful
 auction dynamics. Definitions like `winner` and `maxb` make use of Lean's `Finset` and `Classical`
-logic to handle
-potential non-constructive cases effectively.
+logic to handle potential non-constructive cases effectively.
 
 ## References
 
-- Theoretical foundations can be linked back to classical auction theory texts and papers,
-  adapting general proofs to the formalized environment of Lean.
+* [T. Roughgarden, *Twenty lectures on Algorithmic Game Theory*][roughgarden2016]
 
 ## Tags
 
 auction, game theory, economics, bidding, valuation
-
 -/
 
 open Classical
@@ -224,9 +238,6 @@ lemma utility_nneg (i: a.I) : (b i = a.v i) → utility b i ≥ 0 := by
   rw[utility]
   rw [if_neg H2]
 
-
-
-
 /-- Proves that the strategy of bidding one's valuation is a dominant strategy for `i`. -/
 theorem valuation_is_dominant (i : a.I ) : dominant i (a.v i) := by
    intro b b' hb hb'
@@ -266,7 +277,6 @@ theorem valuation_is_dominant (i : a.I ) : dominant i (a.v i) := by
       convert this
       simp [utility,H]
 
-
 /-- Computes the utility for a first price auction where the winner pays their bid. -/
 noncomputable def Utility.FirstPrice (i : a.I) : ℝ := if i = winner b then a.v i - b i else 0
 
@@ -287,7 +297,7 @@ def Dominant.FirstPrice (i : a.I) (bi : ℝ) : Prop :=
     → Utility.FirstPrice b i  ≥ Utility.FirstPrice b' i
 
 /-- Shows that there is no dominant strategy in a first price auction for any `i` and bid `bi`. -/
-theorem first_price_has_no_dominant_strategy (i : a.I) (bi :  ℝ) : ¬ (Dominant.FirstPrice i bi):=by
+theorem first_price_has_no_dominant_strategy (i : a.I) (bi : ℝ) : ¬ (Dominant.FirstPrice i bi):= by
    simp only [Dominant.FirstPrice, not_forall]
    let b := fun j => if j = i then (bi:ℝ) else bi-2
    let b' := fun j => if j = i then (bi-1:ℝ) else bi-2
