@@ -37,11 +37,9 @@ import sys
 import re
 import shutil
 
-ERR_COP = 0 # copyright header
 ERR_MOD = 2 # module docstring
 ERR_LIN = 3 # line length
 ERR_OPT = 6 # set_option
-ERR_AUT = 7 # malformed authors list
 ERR_TAC = 9 # imported Mathlib.Tactic
 ERR_IBY = 11 # isolated by
 ERR_DOT = 12 # isolated or low focusing dot
@@ -64,16 +62,12 @@ with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
     for exline in f:
         filename, _, _, _, _, errno, *extra = exline.split()
         path = ROOT_DIR / filename
-        if errno == "ERR_COP":
-            exceptions += [(ERR_COP, path, None)]
-        elif errno == "ERR_MOD":
+        if errno == "ERR_MOD":
             exceptions += [(ERR_MOD, path, None)]
         elif errno == "ERR_LIN":
             exceptions += [(ERR_LIN, path, None)]
         elif errno == "ERR_OPT":
             exceptions += [(ERR_OPT, path, None)]
-        elif errno == "ERR_AUT":
-            exceptions += [(ERR_AUT, path, None)]
         elif errno == "ERR_TAC":
             exceptions += [(ERR_TAC, path, None)]
         elif errno == "ERR_NUM_LIN":
@@ -256,34 +250,14 @@ def regular_check(lines, path):
     errors = []
     copy_started = False
     copy_done = False
-    copy_start_line_nr = 1
-    copy_lines = ""
     for line_nr, line in lines:
         if not copy_started and line == "\n":
-            errors += [(ERR_COP, copy_start_line_nr, path)]
             continue
         if not copy_started and line == "/-\n":
             copy_started = True
-            copy_start_line_nr = line_nr
             continue
-        if not copy_started:
-            errors += [(ERR_COP, line_nr, path)]
         if copy_started and not copy_done:
-            copy_lines += line
-            if "Author" in line:
-                # Validating names is not a reasonable thing to do,
-                # so we just look for the two common variations:
-                # using ' and ' between names, and a '.' at the end of line.
-                if ((not line.startswith("Authors: ")) or
-                    ("  " in line) or
-                    (" and " in line) or
-                    (line[-2] == '.')):
-                    errors += [(ERR_AUT, line_nr, path)]
             if line == "-/\n":
-                if ((not "Copyright" in copy_lines) or
-                    (not "Apache" in copy_lines) or
-                    (not "Authors: " in copy_lines)):
-                    errors += [(ERR_COP, copy_start_line_nr, path)]
                 copy_done = True
             continue
         if copy_done and line == "\n":
@@ -367,16 +341,12 @@ def format_errors(errors):
         if (errno, path.resolve(), None) in exceptions:
             continue
         new_exceptions = True
-        if errno == ERR_COP:
-            output_message(path, line_nr, "ERR_COP", "Malformed or missing copyright header")
         if errno == ERR_MOD:
             output_message(path, line_nr, "ERR_MOD", "Module docstring missing, or too late")
         if errno == ERR_LIN:
             output_message(path, line_nr, "ERR_LIN", "Line has more than 100 characters")
         if errno == ERR_OPT:
             output_message(path, line_nr, "ERR_OPT", "Forbidden set_option command")
-        if errno == ERR_AUT:
-            output_message(path, line_nr, "ERR_AUT", "Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'")
         if errno == ERR_TAC:
             output_message(path, line_nr, "ERR_TAC", "Files in mathlib cannot import the whole tactic folder")
         if errno == ERR_IBY:
