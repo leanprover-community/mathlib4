@@ -317,24 +317,14 @@ def Continuous' (f : α → β) : Prop :=
 #align omega_complete_partial_order.continuous' OmegaCompletePartialOrder.Continuous'
 
 /-- ωScottContinuous - Scott Continuous over Chains-/
-def ωScottContinuous (f : α → β) := ScottContinuous { d | ∃ (c : Chain α), Set.range c = d } f
+def ωScottContinuous (f : α → β) := DScottContinuous { d | ∃ (c : Chain α), Set.range c = d } f
 
 lemma ωScottContinuous.monotone {f : α → β} (h : ωScottContinuous f) : Monotone f :=
-  ScottContinuous.monotone
+  DScottContinuous.monotone
     { d | ∃ (c : Chain α), Set.range c = d } (by
       intros a b hab
       simp only [Set.mem_setOf_eq]
       exact pairChain a b hab) h
-
-
-lemma isLUB_of_scottContinuous {c : Chain α} {f : α → β} (hf : ScottContinuous Set.univ f) :
-    IsLUB (Set.range (Chain.map c ⟨f, (ScottContinuous.monotone Set.univ
-      (fun _ _ _ ↦ trivial) hf)⟩))
-    (f (ωSup c)) := by
-  simp only [map_coe, OrderHom.coe_mk]
-  rw [(Set.range_comp f ↑c)]
-  exact hf (Set.range_nonempty ↑c) (IsChain.directedOn (isChain_range c)) (trivial)
-    (isLUB_range_ωSup c)
 
 lemma isLUB_of_ωScottContinuous {c : Chain α} {f : α → β}
     (hf : ωScottContinuous f) :
@@ -371,10 +361,10 @@ lemma unify  {f : α → β} :
         rw [← (ωSup_eq_of_isLUB (isLUB_of_ωScottContinuous hf))]
       exact e1
 
-lemma ScottContinuous.continuous' {f : α → β} (hf : ScottContinuous Set.univ f) :
+lemma ScottContinuous.continuous' {f : α → β} (hf : ScottContinuous f) :
     Continuous' f := by
   rw [unify]
-  exact ScottContinuous.LE { d | ∃ (c : Chain α), Set.range c = d } (Set.univ)
+  exact DScottContinuous.LE { d | ∃ (c : Chain α), Set.range c = d } (Set.univ)
     (fun _ _ ↦ trivial) hf
 
 theorem Continuous'.to_monotone {f : α → β} (hf : Continuous' f) : Monotone f :=

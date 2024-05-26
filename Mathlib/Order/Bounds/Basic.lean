@@ -1694,6 +1694,9 @@ variable [Preorder α] [Preorder β] {f : α → β} {a : α}
 sets. It can be shown that a function is Scott continuous if and only if it is continuous wrt the
 Scott topology.
 
+We give a more general definition `DScottContinuous` here in order to also accomodate the Chain
+version in `Order/OmegaCompletePartialOrder`.
+
 The dual notion
 
 ```lean
@@ -1702,23 +1705,32 @@ The dual notion
 
 does not appear to play a significant role in the literature, so is omitted here.
 -/
-def ScottContinuous (D : Set (Set α)) (f : α → β) : Prop :=
+def DScottContinuous (D : Set (Set α)) (f : α → β) : Prop :=
   ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → d ∈ D → ∀ ⦃a⦄, IsLUB d a → IsLUB (f '' d) (f a)
-#align scott_continuous ScottContinuous
+#align scott_continuous DScottContinuous
 
-lemma ScottContinuous.LE (D₁ D₂ : Set (Set α)) (hD : D₁ ≤ D₂) {f : α → β}
-    (hf : ScottContinuous D₂ f) : ScottContinuous D₁ f := by
+lemma DScottContinuous.LE (D₁ D₂ : Set (Set α)) (hD : D₁ ≤ D₂) {f : α → β}
+    (hf : DScottContinuous D₂ f) : DScottContinuous D₁ f := by
   intros d hd₁ hd₂ hdD₁ a hda
   apply hf hd₁ hd₂ (hD hdD₁) hda
 
-protected theorem ScottContinuous.monotone (D : Set (Set α)) (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
-    (h : ScottContinuous D f) : Monotone f := by
+protected theorem DScottContinuous.monotone (D : Set (Set α)) (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
+    (h : DScottContinuous D f) : Monotone f := by
   refine' fun a b hab =>
     (h (insert_nonempty _ _) (directedOn_pair le_refl hab) (hD a b hab) _).1
       (mem_image_of_mem _ <| mem_insert _ _)
   rw [IsLUB, upperBounds_insert, upperBounds_singleton,
     inter_eq_self_of_subset_right (Ici_subset_Ici.2 hab)]
   exact isLeast_Ici
-#align scott_continuous.monotone ScottContinuous.monotone
+#align scott_continuous.monotone DScottContinuous.monotone
+
+/-- A function between preorders is said to be Scott continuous if it preserves `IsLUB` on directed
+sets. It can be shown that a function is Scott continuous if and only if it is continuous wrt the
+Scott topology.
+-/
+def ScottContinuous (f : α → β) := DScottContinuous univ f
+
+protected theorem ScottContinuous.monotone (h : ScottContinuous f) : Monotone f := by
+  exact DScottContinuous.monotone univ (by exact fun _ _ _ ↦ trivial) h
 
 end ScottContinuous
