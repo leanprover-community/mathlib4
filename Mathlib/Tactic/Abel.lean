@@ -127,23 +127,23 @@ open NormalExpr
 
 theorem const_add_term {α} [AddCommMonoid α] (k n x a a') (h : k + a = a') :
     k + @term α _ n x a = term n x a' := by
-  simp [h.symm, term, add_comm, add_assoc]
+  simp only [term, add_comm, h.symm, add_assoc]
 
 theorem const_add_termg {α} [AddCommGroup α] (k n x a a') (h : k + a = a') :
     k + @termg α _ n x a = termg n x a' := by
-  simp [h.symm, termg, add_comm, add_assoc]
+  simp only [termg, add_comm, h.symm, add_assoc]
 
 theorem term_add_const {α} [AddCommMonoid α] (n x a k a') (h : a + k = a') :
     @term α _ n x a + k = term n x a' := by
-  simp [h.symm, term, add_assoc]
+  simp only [term, add_assoc, h.symm]
 
 theorem term_add_constg {α} [AddCommGroup α] (n x a k a') (h : a + k = a') :
     @termg α _ n x a + k = termg n x a' := by
-  simp [h.symm, termg, add_assoc]
+  simp only [termg, add_assoc, h.symm]
 
 theorem term_add_term {α} [AddCommMonoid α] (n₁ x a₁ n₂ a₂ n' a') (h₁ : n₁ + n₂ = n')
     (h₂ : a₁ + a₂ = a') : @term α _ n₁ x a₁ + @term α _ n₂ x a₂ = term n' x a' := by
-  simp [h₁.symm, h₂.symm, term, add_nsmul, add_assoc, add_left_comm]
+  simp only [term, add_assoc, add_left_comm, h₁.symm, add_nsmul, h₂.symm]
 
 theorem term_add_termg {α} [AddCommGroup α] (n₁ x a₁ n₂ a₂ n' a')
     (h₁ : n₁ + n₂ = n') (h₂ : a₁ + a₂ = a') :
@@ -152,10 +152,10 @@ theorem term_add_termg {α} [AddCommGroup α] (n₁ x a₁ n₂ a₂ n' a')
   exact add_add_add_comm (n₁ • x) a₁ (n₂ • x) a₂
 
 theorem zero_term {α} [AddCommMonoid α] (x a) : @term α _ 0 x a = a := by
-  simp [term, zero_nsmul, one_nsmul]
+  simp only [term, zero_nsmul, zero_add]
 
 theorem zero_termg {α} [AddCommGroup α] (x a) : @termg α _ 0 x a = a := by
-  simp [termg, zero_zsmul]
+  simp only [termg, zero_zsmul, zero_add]
 
 /--
 Interpret the sum of two expressions in `abel`'s normal form.
@@ -208,20 +208,20 @@ def smul {α} [AddCommMonoid α] (n : ℕ) (x : α) : α := n • x
 def smulg {α} [AddCommGroup α] (n : ℤ) (x : α) : α := n • x
 
 theorem zero_smul {α} [AddCommMonoid α] (c) : smul c (0 : α) = 0 := by
-  simp [smul, nsmul_zero]
+  simp only [smul, nsmul_zero]
 
 theorem zero_smulg {α} [AddCommGroup α] (c) : smulg c (0 : α) = 0 := by
-  simp [smulg, zsmul_zero]
+  simp only [smulg, zsmul_zero]
 
 theorem term_smul {α} [AddCommMonoid α] (c n x a n' a')
     (h₁ : c * n = n') (h₂ : smul c a = a') :
     smul c (@term α _ n x a) = term n' x a' := by
-  simp [h₂.symm, h₁.symm, term, smul, nsmul_add, mul_nsmul']
+  simp only [smul, term, nsmul_add, h₁.symm, mul_nsmul', h₂.symm]
 
 theorem term_smulg {α} [AddCommGroup α] (c n x a n' a')
     (h₁ : c * n = n') (h₂ : smulg c a = a') :
     smulg c (@termg α _ n x a) = termg n' x a' := by
-  simp [h₂.symm, h₁.symm, termg, smulg, zsmul_add, mul_zsmul]
+  simp only [smulg, termg, zsmul_add, h₁.symm, mul_zsmul, h₂.symm]
 
 /--
 Auxiliary function for `evalSMul'`.
@@ -234,12 +234,14 @@ def evalSMul (k : Expr × ℤ) : NormalExpr → M (NormalExpr × Expr)
     return (← term' (n'.expr, k.2 * n.2) x a',
       ← iapp ``term_smul #[k.1, n.1, x.2, a, n'.expr, a', ← n'.getProof, h₂])
 
-theorem term_atom {α} [AddCommMonoid α] (x : α) : x = term 1 x 0 := by simp [term]
-theorem term_atomg {α} [AddCommGroup α] (x : α) : x = termg 1 x 0 := by simp [termg]
+theorem term_atom {α} [AddCommMonoid α] (x : α) : x = term 1 x 0 := by simp only [term,
+  one_nsmul, add_zero]
+theorem term_atomg {α} [AddCommGroup α] (x : α) : x = termg 1 x 0 := by simp only [termg,
+  one_zsmul, add_zero]
 theorem term_atom_pf {α} [AddCommMonoid α] (x x' : α) (h : x = x') : x = term 1 x' 0 := by
-  simp [term, h]
+  simp only [h, term, one_nsmul, add_zero]
 theorem term_atom_pfg {α} [AddCommGroup α] (x x' : α) (h : x = x') : x = termg 1 x' 0 := by
-  simp [termg, h]
+  simp only [h, termg, one_zsmul, add_zero]
 
 /-- Interpret an expression as an atom for `abel`'s normal form. -/
 def evalAtom (e : Expr) : M (NormalExpr × Expr) := do
@@ -264,16 +266,16 @@ theorem unfold_zsmul {α} [AddCommGroup α] (n : ℤ) (x y : α)
 
 lemma subst_into_smul {α} [AddCommMonoid α]
     (l r tl tr t) (prl : l = tl) (prr : r = tr)
-    (prt : @smul α _ tl tr = t) : smul l r = t := by simp [prl, prr, prt]
+    (prt : @smul α _ tl tr = t) : smul l r = t := by simp only [prl, prr, prt]
 
 lemma subst_into_smulg {α} [AddCommGroup α]
     (l r tl tr t) (prl : l = tl) (prr : r = tr)
-    (prt : @smulg α _ tl tr = t) : smulg l r = t := by simp [prl, prr, prt]
+    (prt : @smulg α _ tl tr = t) : smulg l r = t := by simp only [prl, prr, prt]
 
 lemma subst_into_smul_upcast {α} [AddCommGroup α]
     (l r tl zl tr t) (prl₁ : l = tl) (prl₂ : ↑tl = zl) (prr : r = tr)
     (prt : @smulg α _ zl tr = t) : smul l r = t := by
-  simp [← prt, prl₁, ← prl₂, prr, smul, smulg, natCast_zsmul]
+  simp only [smul, prl₁, prr, ← prt, smulg, ← prl₂, natCast_zsmul]
 
 lemma subst_into_add {α} [AddCommMonoid α] (l r tl tr t)
     (prl : (l : α) = tl) (prr : r = tr) (prt : tl + tr = t) : l + r = t := by
@@ -285,7 +287,7 @@ lemma subst_into_addg {α} [AddCommGroup α] (l r tl tr t)
 
 lemma subst_into_negg {α} [AddCommGroup α] (a ta t : α)
     (pra : a = ta) (prt : -ta = t) : -a = t := by
-  simp [pra, prt]
+  simp only [pra, prt]
 
 /-- Normalize a term `orig` of the form `smul e₁ e₂` or `smulg e₁ e₂`.
   Normalized terms use `smul` for monoids and `smulg` for groups,
