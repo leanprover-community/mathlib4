@@ -541,36 +541,6 @@ lemma ProbabilityMeasure.toMeasure_add_pos_gt_mem_nhds {P : ProbabilityMeasure �
   convert ENNReal.add_lt_add_right ε_ne_top hQ
   exact (tsub_add_cancel_of_le easy).symm
 
--- TODO: Move to an appropriate place.
-lemma tendsto_measure_biUnion_Iio_of_iUnion_eq_univ
-    {X : Type*} [MeasurableSpace X] {μ : Measure X} {Es : ℕ → Set X} (Es_union : ⋃ i, Es i = univ) :
-    Tendsto (μ ∘ fun n => ⋃ i, ⋃ (_ : i < n), Es i) atTop (𝓝 (μ univ)) := by
-  have Es_union_incr : Monotone (fun (n : ℕ) ↦ ⋃ i ∈ Iio n, Es i) :=
-    fun _ _ hnm ↦ biUnion_mono (Iio_subset_Iio_iff.mpr hnm) (fun _ _ ↦ le_rfl)
-  convert @tendsto_measure_iUnion X ℕ _ μ _ _ _ (fun (n : ℕ) ↦ ⋃ i ∈ Iio n, Es i) Es_union_incr
-  apply subset_antisymm _ (subset_univ _)
-  simpa only [← biUnion_iUnion, iUnion_Iio, mem_univ, iUnion_true, univ_subset_iff] using Es_union
-
--- TODO: Move to an appropriate place.
-lemma tendsto_measure_biUnion_Ici_zero_of_iUnion_eq_univ_of_pairwise_disjoint
-    {X : Type*} [MeasurableSpace X] {μ : Measure X} [IsFiniteMeasure μ]
-    {Es : ℕ → Set X} (Es_union : ⋃ i, Es i = univ) (Es_mble : ∀ i, MeasurableSet (Es i))
-    (Es_disj : Pairwise fun n m ↦ Disjoint (Es n) (Es m)) :
-    Tendsto (μ ∘ fun n => ⋃ i, ⋃ (_ : n ≤ i), Es i) atTop (𝓝 0) := by
-  have obs : ∀ n, ⋃ i, ⋃ (_ : n ≤ i), Es i = (⋃ i, ⋃ (_ : i < n), Es i)ᶜ :=
-    fun n ↦ by simpa only [mem_Iio, compl_Iio, mem_Ici]
-      using (biUnion_compl_eq_of_pairwise_disjoint_of_iUnion_eq_univ Es_union Es_disj (Iio n)).symm
-  simp_rw [obs]
-  have : Tendsto (fun n ↦ (μ univ - μ (⋃ i, ⋃ (_ : i < n), Es i))) atTop (𝓝 0) := by
-    have aux := (@ENNReal.continuous_sub_left (μ univ) (measure_ne_top _ _)).tendsto (μ univ)
-    simp only [ge_iff_le, le_refl, tsub_eq_zero_of_le] at aux
-    exact aux.comp <| tendsto_measure_biUnion_Iio_of_iUnion_eq_univ Es_union
-  convert this
-  simp only [Function.comp_apply]
-  apply measure_compl
-  · exact MeasurableSet.iUnion fun i ↦ MeasurableSet.iUnion fun _ ↦ Es_mble i
-  · exact measure_ne_top _ _
-
 lemma ProbabilityMeasure.continuous_toLevyProkhorov :
     Continuous (ProbabilityMeasure.toLevyProkhorov (Ω := Ω)) := by
 
@@ -678,7 +648,8 @@ lemma ProbabilityMeasure.continuous_toLevyProkhorov :
     have aux : P.toMeasure (⋃ j ∈ Iio N, Es j)ᶜ < ENNReal.ofReal (ε/3) := by
       have rewr : ⋃ i, ⋃ (_ : N ≤ i), Es i = (⋃ i, ⋃ (_ : i < N), Es i)ᶜ :=
         by simpa only [mem_Iio, compl_Iio, mem_Ici]
-          using (biUnion_compl_eq_of_pairwise_disjoint Es_cover Es_disjoint (Iio N)).symm
+          using (biUnion_compl_eq_of_pairwise_disjoint_of_iUnion_eq_univ
+                  Es_cover Es_disjoint (Iio N)).symm
       simpa only [mem_Iio, ← rewr] using hN
 
     -- From the choice of `Q` in a suitable neighborhood, we have `P (Gs JB) < Q (Gs JB) + ε/3`.
