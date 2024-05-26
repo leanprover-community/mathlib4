@@ -44,8 +44,8 @@ def getAll'' (git : Bool) (ml : String) : IO (Array String) := do
     else return ""
   return filtered.filter (· != "")
 
-
-def generate_style_exceptions : IO String := do
+/-- Implementation of the `update_style_exceptions` command line program. -/
+def updateStyleExceptionsCLI (_args : Cli.Parsed) : IO UInt32 := do
   -- Find all files in the mathlib directory.
   let mut all_files ← getAll'' true "Mathlib"
   -- Since we can, also extend this to the Archive and Counterexamples.
@@ -53,27 +53,18 @@ def generate_style_exceptions : IO String := do
   let cex ← getAll'' true "Counterexamples"
   all_files := (all_files.append archive).append cex
   -- Run the linter on all of them; gather the resulting exceptions and sort them.
-  -- XXX: can this be done in a more functional style? like
-  -- let output := all_files.map (fun file ↦ IO.Process.run { cmd := "python3", args := #[file] }),
-  -- but running the IO in each step?
-  let mut output : Array String := Array.mkEmpty 0
-  let mut i := 0
-  for file in all_files do
-    i := i + 1
-    -- needs about 3s for 100 files; `update_style_exceptions.sh` take 0.6s overall!
-    if i == 100 then break
-    -- TODO: can I avoid the process spawning, and call `xargs` instead?
-    let out ← IO.Process.run { cmd := "python3", args := #["scripts/lint-style.py", file] }
-    output := output.push out
-  let sorted_output := (output.filter (fun o ↦ o != "")).qsort (· < ·)
-  return "\n".intercalate sorted_output.toList
-
-/-- Implementation of the `update_style_exceptions` command line program. -/
-def updateStyleExceptionsCLI (_args : Cli.Parsed) : IO UInt32 := do
-  let output ← generate_style_exceptions
-  -- IO.println s!"full output was: {output}"
-  IO.FS.writeFile (System.mkFilePath ["scripts", "style-exceptions.txt"]) output
-  -- TODO: forward errors of the underlying script, somehow!
+  -- Call xargs, to avoid spawning a new python process for each file.
+  -- `IO.Process.output` passes empty standard input, so this actually works.
+  -- Use a large size limit, as this is a bit of a hack. 200 000 worked, so let's make it 300 000.
+  let args := #["-s", "300000", "./scripts/lint-style.py"].append all_files
+  let out ← IO.Process.output { cmd := "xargs", args := args }
+  if out.exitCode != 0 then
+    println! "error {out.exitCode} on updating style exceptions : {out.stderr}"
+    return out.exitCode
+  let lines := out.stdout.splitOn "\n"
+  let sorted_output := lines.toArray.qsort (· < ·)
+  let final := "\n".intercalate sorted_output.toList
+  IO.FS.writeFile (System.mkFilePath ["scripts", "style-exceptions.txt"]) final
   return 0
 
 open Cli in
