@@ -36,8 +36,7 @@ Relations are also known as set-valued functions, or partial multifunctions.
 
 The `Rel.comp` function uses the notation `r • s`, rather than the more common `r ∘ s` for things
 named `comp`. This is because the latter is already used for function composition, and causes a
-clash. Perhaps a better name/notation for this operation would be `Rel.join` with ⋈ as the symbol,
-by analogy with the natural join in databases.
+clash.
 
 -/
 
