@@ -46,6 +46,9 @@ See the module `Algebra.AddTorsor` for a motivating example for the name `VAdd` 
 
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
+
 universe u v w
 
 open Function

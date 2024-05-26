@@ -34,6 +34,7 @@ We also prove trivial `simp` lemmas, and define the following operations on `Mon
 assert_not_exists MonoidWithZero
 -- TODO:
 -- assert_not_exists AddMonoidWithOne
+assert_not_exists DenselyOrdered
 
 variable {A : Type*} {B : Type*} {G : Type*} {H : Type*} {M : Type*} {N : Type*} {P : Type*}
 
