@@ -358,10 +358,9 @@ lemma continuous'_eq_ωScottContinuous {f : α → β} : Continuous' f = ωScott
         rw [← (ωSup_eq_of_isLUB (isLUB_of_ωScottContinuous hf))]
       exact e1
 
-lemma ScottContinuous.continuous' {f : α → β} (hf : ScottContinuous f) :
-    Continuous' f := by
-  rw [continuous'_eq_ωScottContinuous]
-  exact DScottContinuous.LE { d | ∃ (c : Chain α), Set.range c = d } Set.univ (fun _ _ ↦ trivial) hf
+lemma ScottContinuous.continuous' {f : α → β} (hf : ScottContinuous f) : Continuous' f :=
+  continuous'_eq_ωScottContinuous.mpr (DScottContinuous.LE { d | ∃ (c : Chain α), Set.range c = d }
+  Set.univ (fun _ _ ↦ trivial) hf)
 
 theorem Continuous'.to_monotone {f : α → β} (hf : Continuous' f) : Monotone f :=
   hf.fst
