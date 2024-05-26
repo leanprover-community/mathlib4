@@ -279,7 +279,6 @@ theorem ConvexOn.exists_ge_of_centerMass (h : ConvexOn 𝕜 s f) (hw₀ : ∀ i 
     rw [← sum_smul, ← smul_le_smul_iff_of_pos_left (inv_pos.2 hw'), inv_smul_smul₀ hw'.ne', ←
       centerMass, centerMass_filter_ne_zero]
     exact h.map_centerMass_le hw₀ hw₁ hp
-  rotate_left
   rw [mem_filter] at hi
   exact ⟨i, hi.1, (smul_le_smul_iff_of_pos_left <| (hw₀ i hi.1).lt_of_ne hi.2.symm).1 hfi⟩
 #align convex_on.exists_ge_of_center_mass ConvexOn.exists_ge_of_centerMass
