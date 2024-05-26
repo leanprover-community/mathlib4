@@ -108,9 +108,28 @@ def equivMon_Comon_ : Bimon_ C ≌ Mon_ (Comon_ C) where
   unitIso := NatIso.ofComponents (fun _ => Comon_.mkIso (Mon_.mkIso (Iso.refl _)))
   counitIso := NatIso.ofComponents (fun _ => Mon_.mkIso (Comon_.mkIso (Iso.refl _)))
 
-/-! # Additional simp lemmas -/
+/-! # Additional lemmas -/
 
 variable {C}
+
+theorem one_comul (M : Bimon_ C) :
+    M.X.one ≫ M.comul.hom = (λ_ _).inv ≫ (M.X.one ⊗ M.X.one) := by
+  simp
+
+theorem mul_counit (M : Bimon_ C) :
+    M.X.mul ≫ M.counit.hom = (M.counit.hom ⊗ M.counit.hom) ≫ (λ_ _).hom := by
+  simp
+
+/-- Compatibility of the monoid and comonoid structures, in terms of morphisms in `C`. -/
+@[reassoc (attr := simp)] theorem compatibility (M : Bimon_ C) :
+    (M.comul.hom ⊗ M.comul.hom) ≫
+      (α_ _ _ _).hom ≫ M.X.X ◁ (α_ _ _ _).inv ≫
+      M.X.X ◁ (β_ M.X.X M.X.X).hom ▷ M.X.X ≫
+      M.X.X ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv ≫
+      (M.X.mul ⊗ M.X.mul) =
+    M.X.mul ≫ M.comul.hom := by
+  have := (Mon_.Hom.mul_hom M.comul).symm
+  simpa [-Mon_.Hom.mul_hom, tensor_μ] using this
 
 @[reassoc (attr := simp)] theorem comul_counit_hom (M : Bimon_ C) :
     M.comul.hom ≫ (_ ◁ M.counit.hom) = (ρ_ _).inv := by
