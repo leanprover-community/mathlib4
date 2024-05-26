@@ -204,6 +204,14 @@ theorem DenseRange.quotient [Setoid X] [TopologicalSpace X] {f : Y → X} (hf : 
   Quotient.surjective_Quotient_mk''.denseRange.comp hf continuous_coinduced_rng
 #align dense_range.quotient DenseRange.quotient
 
+theorem continuous_map_of_le {α : Type*} [TopologicalSpace α]
+    {s t : Setoid α} (h : s ≤ t) : Continuous (Setoid.map_of_le h) :=
+  continuous_coinduced_rng
+
+theorem continuous_map_sInf {α : Type*} [TopologicalSpace α]
+    {S : Set (Setoid α)} {s : Setoid α} (h : s ∈ S) : Continuous (Setoid.map_sInf h) :=
+  continuous_coinduced_rng
+
 instance {p : X → Prop} [TopologicalSpace X] [DiscreteTopology X] : DiscreteTopology (Subtype p) :=
   ⟨bot_unique fun s _ => ⟨(↑) '' s, isOpen_discrete _, preimage_image_eq _ Subtype.val_injective⟩⟩
 
