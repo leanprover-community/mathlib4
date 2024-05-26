@@ -16,8 +16,6 @@ This file defines various mathlib linters which are based on reading the source 
 In practice, only style linters will have this form.
 All of these have been rewritten from the `lint-style.py` script.
 
-FUTURE: rewrite the remaining lints
-
 -/
 
 open Lean Elab Command
@@ -56,7 +54,7 @@ inductive StyleError where
   deriving BEq
 
 /-- Create the underlying error message for a given `StyleError`. -/
-def errorMessage (err : StyleError) : String := match err with
+def StyleError.errorMessage (err : StyleError) : String := match err with
   | StyleError.lineLength n => s!"Line has {n} characters, which is more than 100"
   | StyleError.broadImport => "Files in mathlib must not import the whole tactic folder"
   | StyleError.copyright (some context) => s!"Malformed or missing copyright header: {context}"
@@ -73,8 +71,10 @@ def errorMessage (err : StyleError) : String := match err with
   | StyleError.fileTooLong current_size size_limit =>
       s!"{size_limit} file contains {current_size} lines, try to split it up"
 
-/-- The error code for a given style error. Kept in sync with `lint-style.py` for now. -/
-def errorCode (err : StyleError) : String := match err with
+/-- The error code for a given style error. Keep this in sync with `parse?_style_error` below! -/
+-- FUTURE: we're matching the old codes in `lint-style.py` for compatibility;
+-- in principle, we could also print something more readable.
+def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.lineLength _ => "ERR_LIN"
   | StyleError.broadImport => "ERR_TAC"
   | StyleError.copyright _ => "ERR_COP"
@@ -100,22 +100,22 @@ structure ErrorContext where
   deriving BEq
 
 /-- Output the formatted error message, containing its context. -/
-def output_message (errctx : ErrorContext) : String :=
+def outputMessage (errctx : ErrorContext) : String :=
   -- We are outputting for github: duplicate file path, line number and error code,
   -- so that they are also visible in the plain text output.
   let path := errctx.path
   let nr := errctx.line_number
-  let code := errorCode errctx.error
-  s!"::ERR file={path},line={nr},code={code}::{path}:{nr} {code}: {errorMessage errctx.error}"
+  let code := errctx.error.errorCode
+  s!"::ERR file={path},line={nr},code={code}::{path}:{nr} {code}: {errctx.error.errorMessage}"
 
 /-- Print information about all errors encountered to standard output. -/
-def format_errors (errors : Array ErrorContext) (exceptions : Array ErrorContext): IO Unit := do
+def formatErrors (errors : Array ErrorContext) (exceptions : Array ErrorContext): IO Unit := do
   -- XXX: `lint-style.py` was `resolve()`ing paths in the `exceptions` list;
   -- do we also need to?
   -- TODO: do I need to compare exceptions in a fancy way? for instance, are line number ignored?
   for e in errors do
     if !exceptions.contains e then
-      IO.println (output_message e)
+      IO.println (outputMessage e)
 
 /-- Try parsing an `ErrorContext` from a string: return `some` if successful, `none` otherwise. -/
 def parse?_style_error (line : String) : Option ErrorContext := Id.run do
@@ -128,7 +128,7 @@ def parse?_style_error (line : String) : Option ErrorContext := Id.run do
       -- Hence, splitting and joining on "/" is actually somewhat safe.
       let path : System.FilePath := System.mkFilePath (filename.split (fun c ↦ c == '/'))
       -- Parse the error kind from the error code, ugh.
-      -- XXX: can I ensure this list is kept in sync with `error_codes`?
+      -- TODO: keep this in sync with `StyleError.error_code` above!
       let err : Option StyleError := match error_code with
         -- I'm using "0" resp. the empty string as dummy values for parameters which do not matter.
         -- TODO: tweak equality of style error contexts accordingly!
@@ -153,12 +153,12 @@ def parse?_style_error (line : String) : Option ErrorContext := Id.run do
               | _ => none
             | _ => none
         | _ => none
-      -- Omit the line number, as we don't pay use it anyway.
+      -- Omit the line number, as we don't use it anyway.
       err.map fun e ↦ (ErrorContext.mk e 0 path)
     | _ => none -- The line doesn't match the known format: continue.
 
 /-- Parse all style exceptions for a line of input.
-Return an array of all exceptions which could be parsed: invalid input is ignore. -/
+Return an array of all exceptions which could be parsed: invalid input is ignored. -/
 def parse_style_exceptions (lines : Array String) : Array ErrorContext := Id.run do
   Array.filterMap (fun line ↦ parse?_style_error line) lines
 
@@ -359,11 +359,11 @@ def lint_file (path : System.FilePath)
   -- I'll just handle this directly.
   if let some (StyleError.fileTooLong n limit) := check_file_length lines size_limit then
     let arr := Array.mkArray1 (ErrorContext.mk (StyleError.fileTooLong n limit) 1 path)
-    format_errors arr (Array.mkEmpty 0)
+    formatErrors arr (Array.mkEmpty 0)
   let all_output := (Array.map (fun lint ↦
     (Array.map (fun (e, n) ↦ ErrorContext.mk e n path)) (lint lines))) all_linters
   -- XXX: this list is currently not sorted: for github, that's probably fine
-  format_errors (Array.flatten all_output) exceptions
+  formatErrors (Array.flatten all_output) exceptions
 
 /-- Lint all files in `Mathlib.lean`. -/
 def check_all_files : IO Unit := do
