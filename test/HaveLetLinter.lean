@@ -1,4 +1,4 @@
-import Mathlib.Tactic.HaveLetLinter
+import Mathlib.Tactic.Linter.HaveLetLinter
 import Mathlib.Tactic.Tauto
 
 /-- a tactic that simply logs an empty message.  Useful for testing the chattiness of the
