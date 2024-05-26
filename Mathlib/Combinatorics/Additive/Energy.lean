@@ -134,9 +134,8 @@ variable {s t}
 #align finset.additive_energy_eq_zero_iff Finset.addEnergy_eq_zero_iff
 
 @[to_additive] lemma mulEnergy_eq_card_filter (s t : Finset α) :
-    Eₘ[s, t] = (((s ×ˢ t) ×ˢ s ×ˢ t).filter fun ((a, b), c, d) ↦ a * b = c * d).card := by
-  refine Finset.card_congr (fun ((a, b), c, d) _ ↦ ((a, c), b, d)) (by aesop) (by aesop)
-    fun ((a, b), c, d) h ↦ ⟨((a, c), b, d), by simpa [and_and_and_comm] using h⟩
+    Eₘ[s, t] = (((s ×ˢ t) ×ˢ s ×ˢ t).filter fun ((a, b), c, d) ↦ a * b = c * d).card :=
+  card_equiv (.prodProdProdComm _ _ _ _) (by simp [and_and_and_comm])
 
 @[to_additive] lemma mulEnergy_eq_sum_sq' (s t : Finset α) :
     Eₘ[s, t] = ∑ a in s * t, ((s ×ˢ t).filter fun (x, y) ↦ x * y = a).card ^ 2 := by
