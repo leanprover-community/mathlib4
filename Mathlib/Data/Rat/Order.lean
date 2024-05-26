@@ -3,7 +3,8 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Init.Data.Bool.Lemmas
+import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.Algebra.Ring.Rat
 import Mathlib.Data.Nat.Cast.Order
 import Mathlib.Data.Rat.Defs
 

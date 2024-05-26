@@ -110,7 +110,9 @@ theorem card_sym_fin_eq_multichoose : ∀ n k : ℕ, card (Sym (Fin n) k) = mult
 theorem card_sym_eq_multichoose (α : Type*) (k : ℕ) [Fintype α] [Fintype (Sym α k)] :
     card (Sym α k) = multichoose (card α) k := by
   rw [← card_sym_fin_eq_multichoose]
-  exact card_congr (equivCongr (equivFin α))
+  -- FIXME: Without the `Fintype` namespace, why does it complain about `Finset.card_congr` being
+  -- deprecated?
+  exact Fintype.card_congr (equivCongr (equivFin α))
 #align sym.card_sym_eq_multichoose Sym.card_sym_eq_multichoose
 
 /-- The *stars and bars* lemma: the cardinality of `Sym α k` is equal to

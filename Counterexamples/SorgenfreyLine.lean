@@ -188,8 +188,9 @@ instance : TotallyDisconnectedSpace ℝₗ :=
 instance : FirstCountableTopology ℝₗ :=
   ⟨fun x => (nhds_basis_Ico_rat x).isCountablyGenerated⟩
 
-/-- Sorgenfrey line is a completely normal Hausdorff topological space. -/
-instance : T5Space ℝₗ := by
+/-- Sorgenfrey line is a completely normal topological space.
+    (Hausdorff follows as TotallyDisconnectedSpace → T₁) -/
+instance : CompletelyNormalSpace ℝₗ := by
   /-
   Let `s` and `t` be disjoint closed sets.
   For each `x ∈ s` we choose `X x` such that `Set.Ico x (X x)` is disjoint with `t`.
