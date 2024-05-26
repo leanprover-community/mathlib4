@@ -17,7 +17,16 @@ Historically, these were ported from the `lint-style.py` Python script.
 
 open Lean Elab Command
 
-namespace Mathlib.Linter.Style.SetOption
+namespace Mathlib.Linter
+
+/-- The `setOption` linter emits a warning on a `set_option` command, term or tactic
+which sets a `pp`, `profiler` or `trace` option. -/
+register_option linter.setOption : Bool := {
+  defValue := true
+  descr := "enable the `setOption` linter"
+}
+
+namespace Style.SetOption
 
 /-- Whether a syntax element is a `set_option` call:
 Return the name of the option being set, if any. -/
@@ -31,13 +40,6 @@ def parse_set_option : Syntax → Option (Ident)
 /-- Whether a given piece of syntax is a `set_option` command, tactic or term. -/
 def is_set_option : Syntax → Bool :=
   fun stx ↦ parse_set_option stx matches some _name
-
-/-- The `setOption` linter emits a warning on a `set_option` command, term or tactic
-which sets a `pp`, `profiler` or `trace` option. -/
-register_option linter.setOption : Bool := {
-  defValue := true
-  descr := "enable the `setOption` linter"
-}
 
 /-- Gets the value of the `linter.setOption` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.setOption o
@@ -66,4 +68,6 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
 
 initialize addLinter setOptionLinter
 
-end Mathlib.Linter.Style.SetOption
+end Style.SetOption
+
+end Mathlib.Linter
