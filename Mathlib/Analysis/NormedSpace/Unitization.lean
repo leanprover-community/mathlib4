@@ -18,14 +18,17 @@ two properties:
 - The embedding of `A` in `Unitization 𝕜 A` is an isometry. (i.e., `Isometry Unitization.inr`)
 
 One way to do this is to pull back the norm from `WithLp 1 (𝕜 × A)`, that is,
-`‖(k, a)‖ = ‖k‖ + ‖a‖` using `Unitization.addEquiv` (i.e., the identity map). However, when the norm
-on `A` is *regular* (i.e., `ContinuousLinearMap.mul` is an isometry), there is another natural
-choice: the pullback of the norm on `𝕜 × (A →L[𝕜] A)` under the map
+`‖(k, a)‖ = ‖k‖ + ‖a‖` using `Unitization.addEquiv` (i.e., the identity map).
+This is implemented for the type synonym `WithLp 1 (Unitization 𝕜 A)` in
+`WithLp.instUnitizationNormedAddCommGroup`, and it is shown there that this is a Banach algebra.
+However, when the norm on `A` is *regular* (i.e., `ContinuousLinearMap.mul` is an isometry), there
+is another natural choice: the pullback of the norm on `𝕜 × (A →L[𝕜] A)` under the map
 `(k, a) ↦ (k, k • 1 + ContinuousLinearMap.mul 𝕜 A a)`. It turns out that among all norms on the
 unitization satisfying the properties specified above, the norm inherited from
 `WithLp 1 (𝕜 × A)` is maximal, and the norm inherited from this pullback is minimal.
+Of course, this means that `WithLp.equiv : WithLp 1 (Unitization 𝕜 A) → Unitization 𝕜 A` can be
+upgraded to a continuous linear equivalence (when `𝕜` and `A` are complete).
 
-For possibly non-unital `RegularNormedAlgebra`s  `A` (over `𝕜`), we construct a `NormedAlgebra`
 structure on `Unitization 𝕜 A` using the pullback described above. The reason for choosing this norm
 is that for a C⋆-algebra `A` its norm is always regular, and the pullback norm on `Unitization 𝕜 A`
 is then also a C⋆-norm.
