@@ -94,7 +94,9 @@ theorem nth_stream_fr_lt_one {ifp_n : IntFractPair K}
 /-- Shows that the integer parts of the stream are at least one. -/
 theorem one_le_succ_nth_stream_b {ifp_succ_n : IntFractPair K}
     (succ_nth_stream_eq : IntFractPair.stream v (n + 1) = some ifp_succ_n) : 1 ≤ ifp_succ_n.b := by
-  obtain ⟨ifp_n, nth_stream_eq, stream_nth_fr_ne_zero, ⟨-⟩⟩ :=
+  obtain ⟨ifp_n, nth_stream_eq, stream_nth_fr_ne_zero, ⟨-⟩⟩ :
+      ∃ ifp_n, IntFractPair.stream v n = some ifp_n ∧ ifp_n.fr ≠ 0
+        ∧ IntFractPair.of ifp_n.fr⁻¹ = ifp_succ_n :=
     succ_nth_stream_eq_some_iff.1 succ_nth_stream_eq
   suffices 1 ≤ ifp_n.fr⁻¹ by rwa [IntFractPair.of, le_floor, cast_one]
   suffices ifp_n.fr ≤ 1 by
