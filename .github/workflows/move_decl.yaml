@@ -20,10 +20,11 @@ jobs:
         #    git checkout -q master
         #    git checkout -q -
         #    printf $'summary<<EOF\n%s\nEOF' "$(./scripts/no_lost_declarations.sh short)" >> "$GITHUB_OUTPUT"
-      - name: ci_run_number
+      - id: ci_run_number
         run: |
           url=${{ github.repository }}/actions/runs/${{ github.run_id }}
           curl -s "https://github.com/${url}" | sed -n "/\\/job\\/[0-9]/{s|^ *href="\([^\"]*\)\"|\1|p}"
+          curl -s "https://github.com/${url}" | sed -n "/\\/job\\/[0-9]/{s|^ *href="\([^\"]*\)\"|\1|p}" >> "$GITHUB_OUTPUT"
       - name: Add comment
         run: |
           gh pr comment "$NUMBER" --body "$BODY"
