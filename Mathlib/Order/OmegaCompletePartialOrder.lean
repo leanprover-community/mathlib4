@@ -335,7 +335,7 @@ lemma isLUB_of_ωScottContinuous {c : Chain α} {f : α → β}
   exact hf (Set.range_nonempty ↑c) (IsChain.directedOn (isChain_range c))
     (by simp only [Set.mem_setOf_eq, exists_apply_eq_apply]) (isLUB_range_ωSup c)
 
-lemma unify  {f : α → β} :
+lemma continuous'_eq_ωScottContinuous {f : α → β} :
     Continuous' f = ωScottContinuous f := by
   rw [le_antisymm_iff]
   constructor
