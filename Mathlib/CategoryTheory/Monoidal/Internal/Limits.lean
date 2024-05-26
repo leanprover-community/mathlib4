@@ -6,6 +6,7 @@ Authors: Scott Morrison
 import Mathlib.CategoryTheory.Monoidal.Internal.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Limits
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 
 #align_import category_theory.monoidal.internal.limits from "leanprover-community/mathlib"@"12921e9eaa574d0087ae4856860e6dda8690a438"
 
@@ -87,20 +88,17 @@ def limitConeIsLimit (F : J ⥤ Mon_ C) : IsLimit (limitCone F) where
 set_option linter.uppercaseLean3 false in
 #align Mon_.limit_cone_is_limit Mon_.limitConeIsLimit
 
-instance hasLimits [HasLimits C] : HasLimits (Mon_ C) where
-  has_limits_of_shape _ _ :=
-    { has_limit := fun F =>
-        HasLimit.mk
-          { cone := limitCone F
-            isLimit := limitConeIsLimit F } }
+instance hasLimits [HasLimitsOfShape J C] : HasLimitsOfShape J (Mon_ C) where
+  has_limit := fun F => HasLimit.mk
+    { cone := limitCone F
+      isLimit := limitConeIsLimit F }
 set_option linter.uppercaseLean3 false in
 #align Mon_.has_limits Mon_.hasLimits
 
 instance forgetPreservesLimits : PreservesLimitsOfShape J (Mon_.forget C) where
-    preservesLimit := fun {F} =>
-      preservesLimitOfPreservesLimitCone (limitConeIsLimit F)
-        (IsLimit.ofIsoLimit (limit.isLimit (F ⋙ Mon_.forget C))
-          (forgetMapConeLimitConeIso F).symm)
+  preservesLimit := fun {F} =>
+    preservesLimitOfPreservesLimitCone (limitConeIsLimit F)
+      (IsLimit.ofIsoLimit (limit.isLimit (F ⋙ Mon_.forget C)) (forgetMapConeLimitConeIso F).symm)
 set_option linter.uppercaseLean3 false in
 #align Mon_.forget_preserves_limits Mon_.forgetPreservesLimits
 
