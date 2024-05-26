@@ -306,9 +306,9 @@ def biUnion (πi : ∀ J : Box ι, Prepartition J) : Prepartition I where
     rintro J₁' ⟨J₁, hJ₁, hJ₁'⟩ J₂' ⟨J₂, hJ₂, hJ₂'⟩ Hne
     rw [Function.onFun, Set.disjoint_left]
     rintro x hx₁ hx₂; apply Hne
-    obtain rfl : J₁ = J₂
-    · exact π.eq_of_mem_of_mem hJ₁ hJ₂ ((πi J₁).le_of_mem hJ₁' hx₁) ((πi J₂).le_of_mem hJ₂' hx₂)
-    · exact (πi J₁).eq_of_mem_of_mem hJ₁' hJ₂' hx₁ hx₂
+    obtain rfl : J₁ = J₂ :=
+      π.eq_of_mem_of_mem hJ₁ hJ₂ ((πi J₁).le_of_mem hJ₁' hx₁) ((πi J₂).le_of_mem hJ₂' hx₂)
+    exact (πi J₁).eq_of_mem_of_mem hJ₁' hJ₂' hx₁ hx₂
 #align box_integral.prepartition.bUnion BoxIntegral.Prepartition.biUnion
 
 variable {πi πi₁ πi₂ : ∀ J : Box ι, Prepartition J}

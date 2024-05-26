@@ -646,9 +646,8 @@ theorem finset_sum_iSup_nat {α} {ι} [SemilatticeSup ι] {s : Finset α} {f : �
 
 theorem mul_iSup {ι : Sort*} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} : a * iSup f = ⨆ i, a * f i := by
   by_cases hf : ∀ i, f i = 0
-  · obtain rfl : f = fun _ => 0
-    · exact funext hf
-    · simp only [iSup_zero_eq_zero, mul_zero]
+  · obtain rfl : f = fun _ => 0 := funext hf
+    simp only [iSup_zero_eq_zero, mul_zero]
   · refine (monotone_id.const_mul' _).map_iSup_of_continuousAt ?_ (mul_zero a)
     refine ENNReal.Tendsto.const_mul tendsto_id (Or.inl ?_)
     exact mt iSup_eq_zero.1 hf
