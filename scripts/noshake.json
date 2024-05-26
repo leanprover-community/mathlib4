@@ -227,7 +227,8 @@
   ["Mathlib.Algebra.GroupPower.Order",
    "Mathlib.Algebra.Order.Group.PosPart",
    "Mathlib.Data.Int.CharZero",
-   "Mathlib.Data.Nat.Factorial.Basic"],
+   "Mathlib.Data.Nat.Factorial.Basic",
+   "Mathlib.Data.PNat.Defs"],
   "Mathlib.Tactic.NormNum.Ineq":
   ["Mathlib.Algebra.Order.Field.Defs", "Mathlib.Algebra.Order.Monoid.WithTop"],
   "Mathlib.Tactic.NormNum.BigOperators": ["Mathlib.Data.List.FinRange"],
