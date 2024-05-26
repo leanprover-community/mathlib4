@@ -323,8 +323,19 @@ def FiniteAdeleRing : Type _ := (
   } : Subalgebra K (K_hat R K))
 #align dedekind_domain.finite_adele_ring DedekindDomain.FiniteAdeleRing
 
+namespace FiniteAdeleRing
+
 instance : CommRing (FiniteAdeleRing R K) := Subalgebra.toCommRing _
 
 instance : Algebra K (FiniteAdeleRing R K) := Subalgebra.algebra _
+
+instance : Coe (FiniteAdeleRing R K) (K_hat R K) where
+  coe := fun x ↦ x.1
+
+@[ext]
+lemma ext {a₁ a₂ : FiniteAdeleRing R K} (h : (a₁ : K_hat R K) = a₂) : a₁ = a₂ :=
+  Subtype.ext h
+
+end FiniteAdeleRing
 
 end DedekindDomain
