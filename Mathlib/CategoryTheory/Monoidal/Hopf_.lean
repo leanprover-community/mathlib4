@@ -24,9 +24,9 @@ A Hopf monoid in a braided category `C` is a bimonoid object in `C` equipped wit
 -/
 structure Hopf_ where
   X : Bimon_ C
-  S : X.X.X ⟶ X.X.X
-  antipode_left : X.comul.hom ≫ (S ▷ X.X.X) ≫ X.X.mul = X.counit.hom ≫ X.X.one
-  antipode_right : X.comul.hom ≫ (X.X.X ◁ S) ≫ X.X.mul = X.counit.hom ≫ X.X.one
+  antipode : X.X.X ⟶ X.X.X
+  antipode_left : X.comul.hom ≫ (antipode ▷ X.X.X) ≫ X.X.mul = X.counit.hom ≫ X.X.one
+  antipode_right : X.comul.hom ≫ (X.X.X ◁ antipode) ≫ X.X.mul = X.counit.hom ≫ X.X.one
 
 attribute [reassoc (attr := simp)] Hopf_.antipode_left Hopf_.antipode_right
 
@@ -41,7 +41,8 @@ instance : Category (Hopf_ C) := inferInstanceAs <| Category (InducedCategory (B
 variable {C}
 
 /-- Morphisms of Hopf monoids intertwine the antipodes. -/
-theorem hom_antipode {A B : Hopf_ C} (f : A ⟶ B) : f.hom.hom ≫ B.S = A.S ≫ f.hom.hom := by
+theorem hom_antipode {A B : Hopf_ C} (f : A ⟶ B) :
+    f.hom.hom ≫ B.antipode = A.antipode ≫ f.hom.hom := by
   -- We show these elements are equal by exhibiting an element in the convolution algebra
   -- between `A` (as a comonoid) and `B` (as a monoid),
   -- such that the LHS is a left inverse, and the RHS is a right inverse.
@@ -81,7 +82,7 @@ theorem hom_antipode {A B : Hopf_ C} (f : A ⟶ B) : f.hom.hom ≫ B.S = A.S ≫
 
 theorem antipode_comul₁ (A : Hopf_ C) :
     A.X.comul.hom ≫
-      A.S ▷ A.X.X.X ≫
+      A.antipode ▷ A.X.X.X ≫
       A.X.comul.hom ▷ A.X.X.X ≫
       (α_ A.X.X.X A.X.X.X A.X.X.X).hom ≫
       A.X.X.X ◁ A.X.X.X ◁ A.X.comul.hom ≫
@@ -130,7 +131,7 @@ theorem antipode_comul₂ (A : Hopf_ C) :
       (α_ A.X.X.X A.X.X.X A.X.X.X).hom ≫
       A.X.X.X ◁ A.X.X.X ◁ A.X.comul.hom ≫
       A.X.X.X ◁ A.X.X.X ◁ (β_ A.X.X.X A.X.X.X).hom ≫
-      A.X.X.X ◁ A.X.X.X ◁ (A.S ⊗ A.S) ≫
+      A.X.X.X ◁ A.X.X.X ◁ (A.antipode ⊗ A.antipode) ≫
       A.X.X.X ◁ (α_ A.X.X.X A.X.X.X A.X.X.X).inv ≫
       A.X.X.X ◁ (β_ A.X.X.X A.X.X.X).hom ▷ A.X.X.X ≫
       A.X.X.X ◁ (α_ A.X.X.X A.X.X.X A.X.X.X).hom ≫
@@ -199,7 +200,7 @@ theorem antipode_comul₂ (A : Hopf_ C) :
   coherence
 
 theorem antipode_comul (A : Hopf_ C) :
-    A.S ≫ A.X.comul.hom = A.X.comul.hom ≫ (β_ _ _).hom ≫ (A.S ⊗ A.S) := by
+    A.antipode ≫ A.X.comul.hom = A.X.comul.hom ≫ (β_ _ _).hom ≫ (A.antipode ⊗ A.antipode) := by
   -- Again, it is a "left inverse equals right inverse" argument in the convolution monoid.
   apply left_inv_eq_right_inv
     (M := Conv ((Bimon_.toComon_ C).obj A.X) (A.X.X ⊗ A.X.X))
@@ -227,7 +228,7 @@ theorem mul_antipode₁ (A : Hopf_ C) :
       (α_ A.X.X.X (A.X.X.X ⊗ A.X.X.X) A.X.X.X).inv ≫
       (α_ A.X.X.X A.X.X.X A.X.X.X).inv ▷ A.X.X.X ≫
       A.X.X.mul ▷ A.X.X.X ▷ A.X.X.X ≫
-      A.S ▷ A.X.X.X ▷ A.X.X.X ≫
+      A.antipode ▷ A.X.X.X ▷ A.X.X.X ≫
       (α_ A.X.X.X A.X.X.X A.X.X.X).hom ≫
       A.X.X.X ◁ A.X.X.mul ≫
       A.X.X.mul =
@@ -280,7 +281,7 @@ theorem mul_antipode₂ (A : Hopf_ C) :
       A.X.X.mul ▷ A.X.X.X ▷ A.X.X.X ≫
       (α_ A.X.X.X A.X.X.X A.X.X.X).hom ≫
       A.X.X.X ◁ (β_ A.X.X.X A.X.X.X).hom ≫
-      A.X.X.X ◁ (A.S ⊗ A.S) ≫
+      A.X.X.X ◁ (A.antipode ⊗ A.antipode) ≫
       A.X.X.X ◁ A.X.X.mul ≫ A.X.X.mul =
     (A.X.counit.hom ⊗ A.X.counit.hom) ≫ (λ_ (𝟙_ C)).hom ≫ A.X.X.one := by
   slice_lhs 7 8 =>
@@ -376,7 +377,7 @@ theorem mul_antipode₂ (A : Hopf_ C) :
   coherence
 
 theorem mul_antipode (A : Hopf_ C) :
-    A.X.X.mul ≫ A.S = (A.S ⊗ A.S) ≫ (β_ _ _).hom ≫ A.X.X.mul := by
+    A.X.X.mul ≫ A.antipode = (A.antipode ⊗ A.antipode) ≫ (β_ _ _).hom ≫ A.X.X.mul := by
   -- Again, it is a "left inverse equals right inverse" argument in the convolution monoid.
   apply left_inv_eq_right_inv
     (M := Conv (((Bimon_.toComon_ C).obj A.X) ⊗ ((Bimon_.toComon_ C).obj A.X)) A.X.X)

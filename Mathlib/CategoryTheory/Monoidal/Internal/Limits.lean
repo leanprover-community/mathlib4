@@ -12,7 +12,8 @@ import Mathlib.CategoryTheory.Limits.Preserves.Basic
 /-!
 # Limits of monoid objects.
 
-If `C` has limits, so does `Mon_ C`, and the forgetful functor preserves these limits.
+If `C` has limits (of a given shape), so does `Mon_ C`,
+and the forgetful functor preserves these limits.
 
 (This could potentially replace many individual constructions for concrete categories,
 in particular `MonCat`, `SemiRingCat`, `RingCat`, and `AlgebraCat R`.)
@@ -28,7 +29,7 @@ noncomputable section
 namespace Mon_
 
 variable {J : Type v} [SmallCategory J]
-variable {C : Type u} [Category.{v} C] [HasLimits C] [MonoidalCategory.{v} C]
+variable {C : Type u} [Category.{v} C] [HasLimitsOfShape C] [MonoidalCategory.{v} C]
 
 /-- We construct the (candidate) limit of a functor `F : J ⥤ Mon_ C`
 by interpreting it as a functor `Mon_ (J ⥤ C)`,
@@ -103,5 +104,14 @@ instance forgetPreservesLimits : PreservesLimits (Mon_.forget C) where
             (forgetMapConeLimitConeIso F).symm) }
 set_option linter.uppercaseLean3 false in
 #align Mon_.forget_preserves_limits Mon_.forgetPreservesLimits
+
+-- We verify that we have successful created special shapes of limits in `Mon_ C`,
+-- assuming that only those special shapes existed in `C`.
+
+example (D : Type _) [Category D] [MonoidalCategory D] [HasTerminal D] :
+  HasTerminal (Mon_ D) := inferInstance
+
+example (D : Type _) [Category D] [MonoidalCategory D] [HasBinaryProducts D] :
+  HasBinaryProducts (Mon_ D) := inferInstance
 
 end Mon_

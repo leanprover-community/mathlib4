@@ -1,16 +1,16 @@
 /-
-Copyright (c) 2023 Lean FRO LLC. All rights reserved.
+Copyright (c) 2024 Lean FRO LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Comon_
-import Mathlib.CategoryTheory.Monoidal.OfHasFiniteProducts
+import Mathlib.CategoryTheory.Monoidal.Bimon_
+import Mathlib.CategoryTheory.Monoidal.Cartesian.Comon_
 
 /-!
-# Comonoid objects in a cartesian monoidal category.
+# Bimonoid objects in a cartesian monoidal category.
 
-The category of comonoid objects in a cartesian monoidal category is equivalent
-to the category itself, via the forgetful functor.
+The category of bimonoid objects in a cartesian monoidal category is equivalent
+to the category of monoid objects, via the forgetful functor.
 
 The inverse functor equips each object with the diagonal map as comultiplication.
 -/
