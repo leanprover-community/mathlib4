@@ -34,6 +34,9 @@ resembling the notation $R^{\times}$ for the units of a ring, which is common in
 The results here should be used to golf the basic `Group` lemmas.
 -/
 
+assert_not_exists Multiplicative
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
 
 open Function
 

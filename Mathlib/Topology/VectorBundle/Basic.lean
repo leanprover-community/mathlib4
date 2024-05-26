@@ -1,5 +1,5 @@
 /-
-Copyright © 2020 Nicolò Cavalleri. All rights reserved.
+Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Sebastien Gouezel, Heather Macbeth, Patrick Massot, Floris van Doorn
 -/
@@ -89,7 +89,7 @@ variable [AddCommMonoid F] [Module R F] [∀ x, AddCommMonoid (E x)] [∀ x, Mod
 /-- A fiberwise linear inverse to `e`. -/
 @[simps!]
 protected def symmₗ (e : Pretrivialization F (π F E)) [e.IsLinear R] (b : B) : F →ₗ[R] E b := by
-  refine' IsLinearMap.mk' (e.symm b) _
+  refine IsLinearMap.mk' (e.symm b) ?_
   by_cases hb : b ∈ e.baseSet
   · exact (((e.linear R hb).mk' _).inverse (e.symm b) (e.symm_apply_apply_mk hb) fun v ↦
       congr_arg Prod.snd <| e.apply_mk_symm hb v).isLinear
@@ -505,7 +505,7 @@ variable (R)
 theorem apply_eq_prod_continuousLinearEquivAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B)
     (hb : b ∈ e.baseSet) (z : E b) : e ⟨b, z⟩ = (b, e.continuousLinearEquivAt R b hb z) := by
   ext
-  · refine' e.coe_fst _
+  · refine e.coe_fst ?_
     rw [e.source_eq]
     exact hb
   · simp only [coe_coe, continuousLinearEquivAt_apply]

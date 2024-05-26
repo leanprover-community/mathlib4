@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2020 Kyle Miller All rights reserved.
+Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
@@ -359,7 +359,7 @@ theorem out_snd_mem (e : Sym2 α) : e.out.2 ∈ e :=
 #align sym2.out_snd_mem Sym2.out_snd_mem
 
 theorem ball {p : α → Prop} {a b : α} : (∀ c ∈ s(a, b), p c) ↔ p a ∧ p b := by
-  refine' ⟨fun h => ⟨h _ <| mem_mk_left _ _, h _ <| mem_mk_right _ _⟩, fun h c hc => _⟩
+  refine ⟨fun h => ⟨h _ <| mem_mk_left _ _, h _ <| mem_mk_right _ _⟩, fun h c hc => ?_⟩
   obtain rfl | rfl := Sym2.mem_iff.1 hc
   · exact h.1
   · exact h.2
@@ -612,7 +612,7 @@ def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2) where
         apply Sym2.Rel.swap)
   left_inv := by apply Sym2.ind; aesop (add norm unfold [Sym2.fromVector])
   right_inv x := by
-    refine' x.recOnSubsingleton fun x => _
+    refine x.recOnSubsingleton fun x => ?_
     cases' x with x hx
     cases' x with _ x
     · simp at hx

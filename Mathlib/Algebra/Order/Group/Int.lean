@@ -34,6 +34,9 @@ open Function Nat
 
 namespace Int
 
+theorem coe_nat_strictMono : StrictMono (· : ℕ → ℤ) := fun _ _ ↦ Int.ofNat_lt.2
+#align int.coe_nat_strict_mono Int.coe_nat_strictMono
+
 instance linearOrderedAddCommGroup : LinearOrderedAddCommGroup ℤ where
   __ := instLinearOrder
   __ := instAddCommGroup
