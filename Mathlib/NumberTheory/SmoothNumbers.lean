@@ -32,7 +32,7 @@ and we provide some API, in particular bounds for their cardinalities; see
 
 namespace Nat
 
-/-- `primesBelow n` is the set of primes less than `n` as a finset. -/
+/-- `primesBelow n` is the set of primes less than `n` as a `Finset`. -/
 def primesBelow (n : ℕ) : Finset ℕ := (Finset.range n).filter (fun p ↦ p.Prime)
 
 @[simp]
@@ -106,12 +106,43 @@ lemma mem_factoredNumbers' {s : Finset ℕ} {m : ℕ} :
 lemma ne_zero_of_mem_factoredNumbers {s : Finset ℕ} {m : ℕ} (h : m ∈ factoredNumbers s) : m ≠ 0 :=
   h.1
 
+/-- The `Finset` of prime factors of an `s`-factored number is contained in `s`. -/
+lemma primeFactors_subset_of_mem_factoredNumbers {s : Finset ℕ} {m : ℕ}
+    (hm : m ∈ factoredNumbers s) :
+    m.primeFactors ⊆ s := by
+  rw [mem_factoredNumbers] at hm
+  exact fun n hn ↦ hm.2 n (mem_primeFactors_iff_mem_factors.mp hn)
+
+/-- If `m ≠ 0` and the `Finset` of prime factors of `m` is contained in `s`, then `m`
+is `s`-factored. -/
+lemma mem_factoredNumbers_of_primeFactors_subset {s : Finset ℕ} {m : ℕ} (hm : m ≠ 0)
+    (hp : m.primeFactors ⊆ s) :
+    m ∈ factoredNumbers s := by
+  rw [mem_factoredNumbers]
+  exact ⟨hm, fun p hp' ↦ hp <| mem_primeFactors_iff_mem_factors.mpr hp'⟩
+
+/-- `m` is `s`-factored if and only if `m ≠ 0` and its `Finset` of prime factors
+is contained in `s`. -/
+lemma mem_factoredNumbers_iff_primeFactors_subset {s : Finset ℕ} {m : ℕ} :
+    m ∈ factoredNumbers s ↔ m ≠ 0 ∧ m.primeFactors ⊆ s :=
+  ⟨fun h ↦ ⟨ne_zero_of_mem_factoredNumbers h, primeFactors_subset_of_mem_factoredNumbers h⟩,
+   fun ⟨h₁, h₂⟩ ↦ mem_factoredNumbers_of_primeFactors_subset h₁ h₂⟩
+
 @[simp]
 lemma factoredNumbers_empty : factoredNumbers ∅ = {1} := by
   ext m
   simp only [mem_factoredNumbers, Finset.not_mem_empty, ← List.eq_nil_iff_forall_not_mem,
     factors_eq_nil, and_or_left, not_and_self_iff, ne_and_eq_iff_right zero_ne_one, false_or,
     Set.mem_singleton_iff]
+
+/-- The product of two `s`-factored numbers is again `s`-factored. -/
+lemma mul_mem_factoredNumbers {s : Finset ℕ} {m n : ℕ} (hm : m ∈ factoredNumbers s)
+    (hn : n ∈ factoredNumbers s) :
+    m * n ∈ factoredNumbers s := by
+  have hm' := primeFactors_subset_of_mem_factoredNumbers hm
+  have hn' := primeFactors_subset_of_mem_factoredNumbers hn
+  exact mem_factoredNumbers_of_primeFactors_subset (mul_ne_zero hm.1 hn.1)
+    <| primeFactors_mul hm.1 hn.1 ▸ Finset.union_subset hm' hn'
 
 /-- The product of the prime factors of `n` that are in `s` is an `s`-factored number. -/
 lemma prod_mem_factoredNumbers (s : Finset ℕ) (n : ℕ) :
@@ -245,6 +276,14 @@ lemma smoothNumbers_eq_factoredNumbers (n : ℕ) :
     smoothNumbers n = factoredNumbers (Finset.range n) := by
   simp only [smoothNumbers, ne_eq, mem_factors', and_imp, factoredNumbers, Finset.mem_range]
 
+/-- The `n`-smooth numbers agree with the `primesBelow n`-factored numbers. -/
+lemma smmoothNumbers_eq_factoredNumbers_primesBelow (n : ℕ) :
+    smoothNumbers n = factoredNumbers n.primesBelow := by
+  rw [smoothNumbers_eq_factoredNumbers]
+  refine Set.Subset.antisymm (fun m hm ↦ ?_) <| factoredNumbers_mono Finset.mem_of_mem_filter
+  simp_rw [mem_factoredNumbers'] at hm ⊢
+  exact fun p hp hp' ↦ mem_primesBelow.mpr ⟨Finset.mem_range.mp <| hm p hp hp', hp⟩
+
 /-- Membership in `Nat.smoothNumbers n` is decidable. -/
 instance (n : ℕ) : DecidablePred (· ∈ smoothNumbers n) :=
   inferInstanceAs <| DecidablePred fun x ↦ x ∈ {m | m ≠ 0 ∧ ∀ p ∈ factors m, p < n}
@@ -265,26 +304,24 @@ lemma mem_smoothNumbers_iff_forall_le {n m : ℕ} :
 lemma mem_smoothNumbers' {n m : ℕ} : m ∈ smoothNumbers n ↔ ∀ p, p.Prime → p ∣ m → p < n := by
   simp only [smoothNumbers_eq_factoredNumbers, mem_factoredNumbers', Finset.mem_range]
 
-/-- The prime factors of an `n`-smooth number are contained in the set of primes below `n`. -/
+/-- The `Finset` of prime factors of an `n`-smooth number is contained in the `Finset`
+of primes below `n`. -/
 lemma primeFactors_subset_of_mem_smoothNumbers {m n : ℕ} (hms : m ∈ n.smoothNumbers) :
     m.primeFactors ⊆ n.primesBelow :=
-  have hxle {x : ℕ} (hpf : x ∈ m.primeFactors) : x < n := by
-    obtain ⟨_, h⟩ := mem_smoothNumbers.mp hms
-    exact h x (mem_primeFactors_iff_mem_factors.mp hpf)
-  fun _ h ↦ mem_primesBelow.mpr ⟨hxle h, prime_of_mem_primeFactors h⟩
+  primeFactors_subset_of_mem_factoredNumbers <|
+    smmoothNumbers_eq_factoredNumbers_primesBelow n ▸ hms
 
-/-- `m` is an `n`-smooth number if all of its prime factors are contained in the set of
-  primes below `n`. -/
+/-- `m` is an `n`-smooth number if the `Finset` of its prime factors consists of numbers `< n`. -/
 lemma mem_smoothNumbers_of_primeFactors_subset {m n : ℕ} (hm : m ≠ 0)
-    (hp : m.primeFactors ⊆ n.primesBelow) : m ∈ n.smoothNumbers :=
-  ⟨hm, fun _ h ↦ lt_of_mem_primesBelow <| hp <| mem_primeFactors_iff_mem_factors.mpr h⟩
+    (hp : m.primeFactors ⊆ Finset.range n) : m ∈ n.smoothNumbers :=
+  smoothNumbers_eq_factoredNumbers n ▸ mem_factoredNumbers_of_primeFactors_subset hm hp
 
-/-- `m` is an `n`-smooth number iff all of its prime factors are contained in the set of
-  primes below `n` -/
+/-- `m` is an `n`-smooth number if and only if `m ≠ 0` and the `Finset` of its prime factors
+is contained in the `Finset` of primes below `n` -/
 lemma mem_smoothNumbers_iff_primeFactors_subset {m n : ℕ} :
     m ∈ n.smoothNumbers ↔ m ≠ 0 ∧ m.primeFactors ⊆ n.primesBelow :=
   ⟨fun h ↦ ⟨h.1, primeFactors_subset_of_mem_smoothNumbers h⟩,
-  fun h ↦ mem_smoothNumbers_of_primeFactors_subset h.1 h.2⟩
+   fun h ↦ mem_smoothNumbers_of_primeFactors_subset h.1 <| h.2.trans <| Finset.filter_subset ..⟩
 
 /-- Zero is never a smooth number -/
 lemma ne_zero_of_mem_smoothNumbers {n m : ℕ} (h : m ∈ smoothNumbers n) : m ≠ 0 := h.1
@@ -292,6 +329,12 @@ lemma ne_zero_of_mem_smoothNumbers {n m : ℕ} (h : m ∈ smoothNumbers n) : m �
 @[simp]
 lemma smoothNumbers_zero : smoothNumbers 0 = {1} := by
   simp only [smoothNumbers_eq_factoredNumbers, Finset.range_zero, factoredNumbers_empty]
+
+/-- The product of two `n`-smooth numbers is an `n`-smooth number. -/
+theorem mul_mem_smoothNumbers {m₁ m₂ n : ℕ}
+    (hm1 : m₁ ∈ n.smoothNumbers) (hm2 : m₂ ∈ n.smoothNumbers) : m₁ * m₂ ∈ n.smoothNumbers := by
+  rw [smoothNumbers_eq_factoredNumbers] at hm1 hm2 ⊢
+  exact mul_mem_factoredNumbers hm1 hm2
 
 /-- The product of the prime factors of `n` that are less than `N` is an `N`-smooth number. -/
 lemma prod_mem_smoothNumbers (n N : ℕ) : (n.factors.filter (· < N)).prod ∈ smoothNumbers N := by
@@ -344,14 +387,6 @@ lemma map_prime_pow_mul {F : Type*} [CommSemiring F] {f : ℕ → F}
     {m : p.smoothNumbers} :
     f (p ^ e * m) = f (p ^ e) * f m :=
   hmul <| Coprime.pow_left _ <| hp.smoothNumbers_coprime <| Subtype.mem m
-
-/-- The product of two `n`-smooth numbers is an `n`-smooth number -/
-theorem mul_mem_smoothNumbers {m₁ m₂ n : ℕ}
-    (hm1 : m₁ ∈ n.smoothNumbers) (hm2 : m₂ ∈ n.smoothNumbers) : m₁ * m₂ ∈ n.smoothNumbers :=
-  have hm1' := primeFactors_subset_of_mem_smoothNumbers hm1
-  have hm2' := primeFactors_subset_of_mem_smoothNumbers hm2
-  mem_smoothNumbers_of_primeFactors_subset (mul_ne_zero hm1.1 hm2.1)
-    <| primeFactors_mul hm1.1 hm2.1 ▸ Finset.union_subset hm1' hm2'
 
 open List Perm Equiv in
 /-- We establish the bijection from `ℕ × smoothNumbers p` to `smoothNumbers (p+1)`
