@@ -433,7 +433,7 @@ noncomputable def CokernelMapAcyclic {X Y : t₁.Heart} (hX : AcyclicObject F t�
     IsColimit ((F.FunctorFromHeartToHeart t₁ t₂).mapCokernelCofork c) := by sorry
 -- dual to previous def
 
-noncomputable def RightExactCycles_aux (S : CochainComplex t₁.Heart ℤ) {r k : ℤ}
+noncomputable def RightAcyclicCycles_aux (S : CochainComplex t₁.Heart ℤ) {r k : ℤ}
     (hr : r > 0) (hk1 : ∀ (i : ℤ), i ≤ k → IsZero (S.homology i))
     (hk2 : ∀ (i : ℤ), i ≤ k → AcyclicObject F t₁ t₂ (S.X i)) (n : ℕ) :
     (t₂.homology r).obj (F.obj (Limits.kernel (S.d k (k + 1))).1) ≅ (t₂.homology (r + n)).obj
@@ -465,12 +465,12 @@ noncomputable def RightExactCycles_aux (S : CochainComplex t₁.Heart ℤ) {r k 
     rw [← this]
     exact e
 
-lemma RightExactCyclesOfBoundedComplex (S : CochainComplex t₁.Heart ℤ) {r k : ℤ}
+lemma RightAcyclicCyclesOfBoundedComplex (S : CochainComplex t₁.Heart ℤ) {r k : ℤ}
     (hr : r > 0) (hk1 : ∀ (i : ℤ), i ≤ k → IsZero (S.homology i))
     (hk2 : ∀ (i : ℤ), i ≤ k → AcyclicObject F t₁ t₂ (S.X i)) {a : ℤ}
     (ha : ∀ (j : ℤ), j ≤ a → IsZero (S.X j)) :
     IsZero ((t₂.homology r).obj (F.obj (Limits.kernel (S.d k (k + 1))).1)) := by
-  refine IsZero.of_iso ?_ (RightExactCycles_aux F t₁ t₂ S hr hk1 hk2 (k - a).natAbs)
+  refine IsZero.of_iso ?_ (RightAcyclicCycles_aux F t₁ t₂ S hr hk1 hk2 (k - a).natAbs)
   suffices h : IsZero (kernel (S.d (k - ↑(k - a).natAbs) (k - ↑(k - a).natAbs + 1))) by
     refine Functor.map_isZero _ (Functor.map_isZero _ ?_)
     change IsZero ((fullSubcategoryInclusion _).obj _)
@@ -478,15 +478,15 @@ lemma RightExactCyclesOfBoundedComplex (S : CochainComplex t₁.Heart ℤ) {r k 
   refine IsZero.of_mono (kernel.ι (S.d (k - (k - a).natAbs) (k - (k - a).natAbs + 1))) (ha _ ?_)
   rw [tsub_le_iff_right, ← tsub_le_iff_left]; exact Int.le_natAbs
 
-lemma RightExactCyclesOfBoundedFunctor (S : CochainComplex t₁.Heart ℤ) {r k : ℤ}
+lemma RightAcyclicCyclesOfBoundedFunctor (S : CochainComplex t₁.Heart ℤ) {r k : ℤ}
     (hr : r > 0) (hk1 : ∀ (i : ℤ), i ≤ k → IsZero (S.homology i))
     (hk2 : ∀ (i : ℤ), i ≤ k → AcyclicObject F t₁ t₂ (S.X i)) {d : ℤ}
     (hd : ∀ (X : t₁.Heart) (j : ℤ), d ≤ j → IsZero ((t₂.homology j).obj (F.obj X.1))) :
     IsZero ((t₂.homology r).obj (F.obj (Limits.kernel (S.d k (k + 1))).1)) := by
-  refine IsZero.of_iso (hd _ _ ?_) (RightExactCycles_aux F t₁ t₂ S hr hk1 hk2 (d - r).natAbs)
+  refine IsZero.of_iso (hd _ _ ?_) (RightAcyclicCycles_aux F t₁ t₂ S hr hk1 hk2 (d - r).natAbs)
   rw [← tsub_le_iff_left]; exact Int.le_natAbs
 
-noncomputable def LeftExactCycles_aux (S : CochainComplex t₁.Heart ℤ) {r k : ℤ}
+noncomputable def LeftAcyclicCycles_aux (S : CochainComplex t₁.Heart ℤ) {r k : ℤ}
     (hr : r < 0) (hk1 : ∀ (i : ℤ), k < i → IsZero (S.homology i))
     (hk2 : ∀ (i : ℤ), k ≤ i → AcyclicObject F t₁ t₂ (S.X i)) (n : ℕ) :
     (t₂.homology r).obj (F.obj (Limits.kernel (S.d k (k + 1))).1) ≅ (t₂.homology (r - n)).obj
@@ -514,12 +514,12 @@ noncomputable def LeftExactCycles_aux (S : CochainComplex t₁.Heart ℤ) {r k :
     erw [← this]
     exact e.symm
 
-lemma LeftExactCyclesOfBoundedComplex (S : CochainComplex t₁.Heart ℤ) {r k : ℤ}
+lemma LeftAcyclicCyclesOfBoundedComplex (S : CochainComplex t₁.Heart ℤ) {r k : ℤ}
     (hr : r < 0) (hk1 : ∀ (i : ℤ), k < i → IsZero (S.homology i))
     (hk2 : ∀ (i : ℤ), k ≤ i → AcyclicObject F t₁ t₂ (S.X i)) {b : ℤ}
     (hb : ∀ (j : ℤ), b ≤ j → IsZero (S.X j)) :
     IsZero ((t₂.homology r).obj (F.obj (Limits.kernel (S.d k (k + 1))).1)) := by
-  refine IsZero.of_iso ?_ (LeftExactCycles_aux F t₁ t₂ S hr hk1 hk2 (b - k).natAbs)
+  refine IsZero.of_iso ?_ (LeftAcyclicCycles_aux F t₁ t₂ S hr hk1 hk2 (b - k).natAbs)
   suffices h : IsZero (kernel (S.d (k + ↑(b - k).natAbs) (k + ↑(b - k).natAbs + 1))) by
     refine Functor.map_isZero _ (Functor.map_isZero _ ?_)
     change IsZero ((fullSubcategoryInclusion _).obj _)
@@ -527,21 +527,50 @@ lemma LeftExactCyclesOfBoundedComplex (S : CochainComplex t₁.Heart ℤ) {r k :
   refine IsZero.of_mono (kernel.ι (S.d (k + (b - k).natAbs) (k + (b - k).natAbs + 1))) (hb _ ?_)
   rw [← tsub_le_iff_left]; exact Int.le_natAbs
 
-lemma LeftExactCyclesOfBoundedFunctor (S : CochainComplex t₁.Heart ℤ){r k : ℤ}
+lemma LeftAcyclicCyclesOfBoundedFunctor (S : CochainComplex t₁.Heart ℤ){r k : ℤ}
     (hr : r < 0) (hk1 : ∀ (i : ℤ), k < i → IsZero (S.homology i))
     (hk2 : ∀ (i : ℤ), k ≤ i → AcyclicObject F t₁ t₂ (S.X i)) {c : ℤ}
     (hc : ∀ (X : t₁.Heart) (j : ℤ), j ≤ c → IsZero ((t₂.homology j).obj (F.obj X.1))) :
     IsZero ((t₂.homology r).obj (F.obj (Limits.kernel (S.d k (k + 1))).1)) := by
-  refine IsZero.of_iso (hc _ _ ?_) (LeftExactCycles_aux F t₁ t₂ S hr hk1 hk2 (r - c).natAbs)
+  refine IsZero.of_iso (hc _ _ ?_) (LeftAcyclicCycles_aux F t₁ t₂ S hr hk1 hk2 (r - c).natAbs)
   rw [tsub_le_iff_left, ← tsub_le_iff_right]; exact Int.le_natAbs
 
-lemma ExactCyclesOfBoundedExactComplex (S : CochainComplex t₁.Heart ℤ) {a b k : ℤ}
+variable [NonDegenerate t₂]
+
+lemma AcyclicCyclesOfBoundedExactComplex (S : CochainComplex t₁.Heart ℤ) {a b k : ℤ}
     (hexact : ∀ (i : ℤ), IsZero (S.homology i))
     (hacy : ∀ (i : ℤ), AcyclicObject F t₁ t₂ (S.X i))
     (ha : ∀ (j : ℤ), j ≤ a → IsZero (S.X j))
     (hb : ∀ (j : ℤ), b ≤ j → IsZero (S.X j)) :
     AcyclicObject F t₁ t₂ (Limits.kernel (S.d k (k + 1))) := by
   simp only [AcyclicObject]
+  refine isHeart_of_isZero_homology t₂ _ ?_
+  intro j hj
+  rw [ne_iff_lt_or_gt] at hj
+  cases hj with
+  | inl h => exact LeftAcyclicCyclesOfBoundedComplex F t₁ t₂ S h (fun _ _ ↦ hexact _)
+               (fun _ _ ↦ hacy _) hb
+  | inr h => exact RightAcyclicCyclesOfBoundedComplex F t₁ t₂ S h (fun _ _ ↦ hexact _)
+               (fun _ _ ↦ hacy _) ha
+
+lemma AcyclicCyclesOfExactComplexAndBoundedFunctor (S : CochainComplex t₁.Heart ℤ) {a b k : ℤ}
+    (hexact : ∀ (i : ℤ), IsZero (S.homology i))
+    (hacy : ∀ (i : ℤ), AcyclicObject F t₁ t₂ (S.X i))
+    (ha : ∀ (X : t₁.Heart) (j : ℤ), j ≤ a → IsZero ((t₂.homology j).obj (F.obj X.1)))
+    (hb : ∀ (X : t₁.Heart) (j : ℤ), b ≤ j → IsZero ((t₂.homology j).obj (F.obj X.1))) :
+    AcyclicObject F t₁ t₂ (Limits.kernel (S.d k (k + 1))) := by
+  simp only [AcyclicObject]
+  refine isHeart_of_isZero_homology t₂ _ ?_
+  intro j hj
+  rw [ne_iff_lt_or_gt] at hj
+  cases hj with
+  | inl h => exact LeftAcyclicCyclesOfBoundedFunctor F t₁ t₂ S h (fun _ _ ↦ hexact _)
+               (fun _ _ ↦ hacy _) ha
+  | inr h => exact RightAcyclicCyclesOfBoundedFunctor F t₁ t₂ S h (fun _ _ ↦ hexact _)
+               (fun _ _ ↦ hacy _) hb
+
+
+
 
 #exit
 abbrev IsCohomologicalBound (a b : ℤ) := ∀ (X : t₁.Heart) (r : ℤ),

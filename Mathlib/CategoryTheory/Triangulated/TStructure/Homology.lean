@@ -1156,6 +1156,33 @@ lemma isIso_homologyFunctor_map_mor₂_of_isGE (n : ℤ) (a : ℤ) (h : n + 2 �
 
 end
 
+section NonDegenerate
+
+class NonDegenerate where
+  left (X : C) : (∀ (n : ℤ), t.IsLE X n) → IsZero X
+  right (X : C) : (∀ (n : ℤ), t.IsGE X n) → IsZero X
+
+variable [NonDegenerate t]
+
+local instance : t.HasHeart := hasHeartFullSubcategory t
+noncomputable local instance : t.HasHomology₀ := t.hasHomology₀
+noncomputable local instance : t.homology₀.ShiftSequence ℤ :=
+  Functor.ShiftSequence.tautological _ _
+
+lemma ConservativeHomology {X Y : C} (f : X ⟶ Y) (hf : ∀ (n : ℤ), IsIso ((t.homology n).map f)) :
+    IsIso f := sorry
+
+lemma isGE_of_isZero_homology (X : C) (n : ℤ)
+    (hn : ∀ (j : ℤ), j < n → IsZero ((t.homology j).obj X)) : t.IsGE X n := by sorry
+
+lemma isLE_of_isZero_homology (X : C) (n : ℤ)
+    (hn : ∀ (j : ℤ), n < j → IsZero ((t.homology j).obj X)) : t.IsLE X n := by sorry
+
+lemma isHeart_of_isZero_homology (X : C)
+    (hX : ∀ (j : ℤ), j ≠ 0 → IsZero ((t.homology j).obj X)) : t.heart X := by sorry
+
+end NonDegenerate
+
 end TStructure
 
 end Triangulated
