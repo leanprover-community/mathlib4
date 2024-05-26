@@ -326,10 +326,8 @@ lemma ωScottContinuous.monotone {f : α → β} (h : ωScottContinuous f) : Mon
       simp only [Set.mem_setOf_eq]
       exact pairChain a b hab) h
 
-lemma isLUB_of_ωScottContinuous {c : Chain α} {f : α → β}
-    (hf : ωScottContinuous f) :
-    IsLUB (Set.range (Chain.map c ⟨f, (ωScottContinuous.monotone hf)⟩))
-    (f (ωSup c)) := by
+lemma isLUB_of_ωScottContinuous {c : Chain α} {f : α → β} (hf : ωScottContinuous f) :
+    IsLUB (Set.range (Chain.map c ⟨f, (ωScottContinuous.monotone hf)⟩)) (f (ωSup c)) := by
   simp only [map_coe, OrderHom.coe_mk]
   rw [(Set.range_comp f ↑c)]
   exact hf (Set.range_nonempty ↑c) (IsChain.directedOn (isChain_range c))
@@ -362,9 +360,8 @@ lemma continuous'_eq_ωScottContinuous {f : α → β} : Continuous' f = ωScott
 
 lemma ScottContinuous.continuous' {f : α → β} (hf : ScottContinuous f) :
     Continuous' f := by
-  rw [unify]
-  exact DScottContinuous.LE { d | ∃ (c : Chain α), Set.range c = d } (Set.univ)
-    (fun _ _ ↦ trivial) hf
+  rw [continuous'_eq_ωScottContinuous]
+  exact DScottContinuous.LE { d | ∃ (c : Chain α), Set.range c = d } Set.univ (fun _ _ ↦ trivial) hf
 
 theorem Continuous'.to_monotone {f : α → β} (hf : Continuous' f) : Monotone f :=
   hf.fst
