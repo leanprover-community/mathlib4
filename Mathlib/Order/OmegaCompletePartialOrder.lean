@@ -123,8 +123,7 @@ lemma ordered_pair_exists_chain (a : α) (b : α) (hab : a ≤ b) :
   use c
   rw [le_antisymm_iff]
   constructor
-  · intros d hd
-    rcases hd with ⟨n,hn⟩
+  · intro d ⟨n,hn⟩
     cases n
     · aesop
     · aesop
@@ -321,8 +320,7 @@ lemma isLUB_of_ωScottContinuous {c : Chain α} {f : α → β} (hf : ωScottCon
 lemma continuous'_eq_ωScottContinuous {f : α → β} : Continuous' f = ωScottContinuous f := by
   rw [le_antisymm_iff]
   constructor
-  · intro hf _ _ _ hd₃ _ hda
-    rcases hd₃ with ⟨c,hc⟩
+  · intro hf _ _ _ ⟨c, hc⟩ _ hda
     rw [← hc] at hda
     rw [← hc, ωSup_eq_of_isLUB hda, ← (Set.range_comp f ⇑c)]
     have e1 : f (ωSup c) = ωSup (c.map ⟨f,hf.1⟩) := by
