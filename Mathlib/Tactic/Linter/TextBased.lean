@@ -235,7 +235,7 @@ def copyright_header : LinterCore := fun lines ↦ Id.run do
   -- By hypotheses above, start has at least five lines, so the `none` cases below are never hit.
   -- The first real line should state the copyright.
   if let some copy := start.get? 1 then
-    if !(copy.startsWith "Copyright (c) " && copy.endsWith ". All rights reserved.") then
+    if !(copy.startsWith "Copyright (c) 20" && copy.endsWith ". All rights reserved.") then
       output := output.push (StyleError.copyright "Copyright line is malformed", 2)
   -- The second line should be standard.
   let expected_second_line := "Released under Apache 2.0 license as described in the file LICENSE."
@@ -365,11 +365,10 @@ def lint_file (path : System.FilePath)
   -- XXX: this list is currently not sorted: for github, that's probably fine
   formatErrors (Array.flatten all_output) exceptions
 
-/-- Lint all files in `Mathlib.lean`. -/
-def check_all_files : IO Unit := do
-  -- Read all module names in Mathlib from `Mathlib.lean`.
-  -- The working directory is mathlib's root.
-  let allModules ← IO.FS.lines (System.mkFilePath [(toString "Mathlib.lean")])
+/-- Lint all files referenced in a given import-only file. -/
+def lint_all_files (path : System.FilePath) : IO Unit := do
+  -- Read all module names in Mathlib from the file at `path`.
+  let allModules ← IO.FS.lines path
   -- Read the style exceptions file.
   let exceptions_file ← IO.FS.lines (System.mkFilePath ["scripts/style-exceptions.txt"])
   let style_exceptions := parse_style_exceptions exceptions_file
@@ -385,5 +384,11 @@ def check_all_files : IO Unit := do
       else none)
     lint_file path (size_limits.get? 0) style_exceptions
 
---run_cmd check_all_files
+/-- Lint all files in `Mathlib.lean`, `Archive.lean` and `Counterexamples`. -/
+def lint_all : IO Unit := do
+  for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
+    lint_all_files (System.mkFilePath [s])
+
+
+-- run_cmd lint_all
 --#print "all done"
