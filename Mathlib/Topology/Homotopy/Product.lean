@@ -61,8 +61,7 @@ variable {I A : Type*} {X : I → Type*} [∀ i, TopologicalSpace (X i)] [Topolo
 -- Porting note: this definition is already in `Topology.Homotopy.Basic`
 -- /-- The product homotopy of `homotopies` between functions `f` and `g` -/
 -- @[simps]
--- def Homotopy.pi (homotopies : ∀ i, Homotopy (f i) (g i)) : Homotopy (pi f) (pi g)
---     where
+-- def Homotopy.pi (homotopies : ∀ i, Homotopy (f i) (g i)) : Homotopy (pi f) (pi g) where
 --   toFun t i := homotopies i t
 --   map_zero_left t := by ext i; simp only [pi_eval, Homotopy.apply_zero]
 --   map_one_left t := by ext i; simp only [pi_eval, Homotopy.apply_one]
