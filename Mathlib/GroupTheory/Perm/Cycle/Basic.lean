@@ -745,18 +745,16 @@ theorem IsCycle.isConj (hσ : IsCycle σ) (hτ : IsCycle τ) (h : σ.support.car
 #align equiv.perm.is_cycle.is_conj Equiv.Perm.IsCycle.isConj
 
 theorem IsCycle.isConj_iff (hσ : IsCycle σ) (hτ : IsCycle τ) :
-    IsConj σ τ ↔ σ.support.card = τ.support.card :=
-  ⟨by
-    intro h
+    IsConj σ τ ↔ σ.support.card = τ.support.card where
+  mp h := by
     obtain ⟨π, rfl⟩ := (_root_.isConj_iff).1 h
-    refine Finset.card_congr (fun a _ => π a) (fun _ ha => ?_) (fun _ _ _ _ ab => π.injective ab)
-        fun b hb => ?_
+    refine Finset.card_bij (fun a _ => π a) (fun _ ha => ?_) (fun _ _ _ _ ab => π.injective ab)
+        fun b hb ↦ ⟨π⁻¹ b, ?_, π.apply_inv_self b⟩
     · simp [mem_support.1 ha]
-    · refine ⟨π⁻¹ b, ⟨?_, π.apply_inv_self b⟩⟩
-      contrapose! hb
-      rw [mem_support, Classical.not_not] at hb
-      rw [mem_support, Classical.not_not, Perm.mul_apply, Perm.mul_apply, hb, Perm.apply_inv_self],
-    hσ.isConj hτ⟩
+    contrapose! hb
+    rw [mem_support, Classical.not_not] at hb
+    rw [mem_support, Classical.not_not, Perm.mul_apply, Perm.mul_apply, hb, Perm.apply_inv_self]
+  mpr := hσ.isConj hτ
 #align equiv.perm.is_cycle.is_conj_iff Equiv.Perm.IsCycle.isConj_iff
 
 end Conjugation

@@ -201,8 +201,8 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
         simp only [smul_eq_mul, ne_eq, mul_eq_zero, Multiset.count_eq_zero]
         rw [not_or, not_not]
         simp only [Multiset.mem_toFinset, not_not, mem_filter] }
-  refine Finset.card_congr φ ?_ ?_ ?_
-  · intro a  ha
+  refine Finset.card_bij φ ?_ ?_ ?_
+  · intro a ha
     simp only [φ, not_forall, not_exists, not_and, exists_prop, mem_filter]
     rw [mem_piAntidiagonal']
     dsimp only [ne_eq, smul_eq_mul, id_eq, eq_mpr_eq_cast, le_eq_subset, Finsupp.coe_mk]
@@ -221,7 +221,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
         apply ha.2
     · exact fun i _ => ⟨Multiset.count i a.parts, ha.1 i, rfl⟩
   · dsimp only
-    intro p₁ p₂ hp₁ hp₂ h
+    intro p₁ hp₁ p₂ hp₂ h
     apply Nat.Partition.ext
     simp only [true_and_iff, mem_univ, mem_filter] at hp₁ hp₂
     ext i

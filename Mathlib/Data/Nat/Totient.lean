@@ -156,7 +156,7 @@ theorem totient_div_of_dvd {n d : ℕ} (hnd : d ∣ n) :
   rcases d.eq_zero_or_pos with (rfl | hd0); · simp [eq_zero_of_zero_dvd hnd]
   rcases hnd with ⟨x, rfl⟩
   rw [Nat.mul_div_cancel_left x hd0]
-  apply Finset.card_congr fun k _ => d * k
+  apply Finset.card_bij fun k _ => d * k
   · simp only [mem_filter, mem_range, and_imp, Coprime]
     refine fun a ha1 ha2 => ⟨(mul_lt_mul_left hd0).2 ha1, ?_⟩
     rw [gcd_mul_left, ha2, mul_one]
