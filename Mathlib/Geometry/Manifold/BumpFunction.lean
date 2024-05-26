@@ -294,7 +294,7 @@ theorem nhds_basis_tsupport :
       (extChartAt I c).symm '' (closedBall (extChartAt I c c) f.rOut ∩ range I) := by
     rw [← map_extChartAt_symm_nhdsWithin_range I c]
     exact nhdsWithin_range_basis.map _
-  refine' this.to_hasBasis' (fun f _ => ⟨f, trivial, f.tsupport_subset_symm_image_closedBall⟩)
+  exact this.to_hasBasis' (fun f _ => ⟨f, trivial, f.tsupport_subset_symm_image_closedBall⟩)
     fun f _ => f.tsupport_mem_nhds
 #align smooth_bump_function.nhds_basis_tsupport SmoothBumpFunction.nhds_basis_tsupport
 

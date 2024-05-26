@@ -92,8 +92,8 @@ def tangentBundleCore : VectorBundleCore 𝕜 M E (atlas H M) where
       exact (i.1.extend I).right_inv hy
     · simp_rw [Function.comp_apply, i.1.extend_left_inv I hx]
   continuousOn_coordChange i j := by
-    refine' (contDiffOn_fderiv_coord_change I i j).continuousOn.comp
-      ((i.1.continuousOn_extend I).mono _) _
+    refine (contDiffOn_fderiv_coord_change I i j).continuousOn.comp
+      ((i.1.continuousOn_extend I).mono ?_) ?_
     · rw [i.1.extend_source]; exact inter_subset_left _ _
     simp_rw [← i.1.extend_image_source_inter, mapsTo_image]
   coordChange_comp := by
@@ -352,7 +352,7 @@ instance tangentBundleCore.isSmooth : (tangentBundleCore I M).IsSmooth I := by
   refine ⟨fun i j => ?_⟩
   rw [SmoothOn, contMDiffOn_iff_source_of_mem_maximalAtlas (subset_maximalAtlas I i.2),
     contMDiffOn_iff_contDiffOn]
-  · refine' ((contDiffOn_fderiv_coord_change I i j).congr fun x hx => _).mono _
+  · refine ((contDiffOn_fderiv_coord_change I i j).congr fun x hx => ?_).mono ?_
     · rw [PartialEquiv.trans_source'] at hx
       simp_rw [Function.comp_apply, tangentBundleCore_coordChange, (i.1.extend I).right_inv hx.1]
     · exact (i.1.extend_image_source_inter j.1 I).subset

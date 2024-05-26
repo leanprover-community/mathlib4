@@ -237,15 +237,15 @@ def descCApp (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) (U : (Opens 
       (colimit.desc (F ⋙ PresheafedSpace.forget C) ((PresheafedSpace.forget C).mapCocone s) _*
             limit (pushforwardDiagramToColimit F).leftOp).obj
         U := by
-  refine'
+  refine
     limit.lift _
         { pt := s.pt.presheaf.obj U
           π :=
-            { app := fun j => _
-              naturality := fun j j' f => _ } } ≫
+            { app := fun j => ?_
+              naturality := fun j j' f => ?_ } } ≫
       (limitObjIsoLimitCompEvaluation _ _).inv
   -- We still need to construct the `app` and `naturality'` fields omitted above.
-  · refine' (s.ι.app (unop j)).c.app U ≫ (F.obj (unop j)).presheaf.map (eqToHom _)
+  · refine (s.ι.app (unop j)).c.app U ≫ (F.obj (unop j)).presheaf.map (eqToHom ?_)
     dsimp
     rw [← Opens.map_comp_obj]
     simp
@@ -384,11 +384,11 @@ via taking componentwise limits.
 def colimitPresheafObjIsoComponentwiseLimit (F : J ⥤ PresheafedSpace.{_, _, v} C) [HasColimit F]
     (U : Opens (Limits.colimit F).carrier) :
     (Limits.colimit F).presheaf.obj (op U) ≅ limit (componentwiseDiagram F U) := by
-  refine'
+  refine
     ((sheafIsoOfIso (colimit.isoColimitCocone ⟨_, colimitCoconeIsColimit F⟩).symm).app
           (op U)).trans
-      _
-  refine' (limitObjIsoLimitCompEvaluation _ _).trans (Limits.lim.mapIso _)
+      ?_
+  refine (limitObjIsoLimitCompEvaluation _ _).trans (Limits.lim.mapIso ?_)
   fapply NatIso.ofComponents
   · intro X
     refine (F.obj (unop X)).presheaf.mapIso (eqToIso ?_)

@@ -289,7 +289,7 @@ nonrec def orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s]
         mk' (v +ᵥ p) s.directionᗮ := by
       rw [← vsub_right_mem_direction_iff_mem (self_mem_mk' _ _) _, direction_mk',
         vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, add_comm, add_sub_assoc]
-      refine' Submodule.add_mem _ (orthogonalProjectionFn_vsub_mem_direction_orthogonal p) _
+      refine Submodule.add_mem _ (orthogonalProjectionFn_vsub_mem_direction_orthogonal p) ?_
       rw [Submodule.mem_orthogonal']
       intro w hw
       rw [← neg_sub, inner_neg_left, orthogonalProjection_inner_eq_zero _ w hw, neg_zero]
