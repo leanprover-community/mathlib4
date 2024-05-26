@@ -197,7 +197,9 @@ theorem discr_powerBasis_eq_prod'' [IsSeparable K L] (e : Fin pb.dim ≃ (L →�
   rw [← Nat.cast_sum, ← @Finset.sum_range ℕ _ pb.dim fun i => i, sum_range_id]
   have hn : n = pb.dim := by
     rw [← AlgHom.card K L E, ← Fintype.card_fin pb.dim]
-    exact card_congr (Equiv.symm e)
+    -- FIXME: Without the `Fintype` namespace, why does it complain about `Finset.card_congr` being
+    -- deprecated?
+    exact Fintype.card_congr e.symm
   have h₂ : 2 ∣ pb.dim * (pb.dim - 1) := pb.dim.even_mul_pred_self.two_dvd
   have hne : ((2 : ℕ) : ℚ) ≠ 0 := by simp
   have hle : 1 ≤ pb.dim := by
@@ -284,13 +286,13 @@ theorem discr_mul_isIntegral_mem_adjoin [IsSeparable K L] [IsIntegrallyClosed R]
   have cramer := mulVec_cramer (traceMatrix K B.basis) fun i => trace K L (z * B.basis i)
   suffices ∀ i, ((traceMatrix K B.basis).det • B.basis.equivFun z) i ∈ (⊥ : Subalgebra R K) by
     rw [← B.basis.sum_repr z, Finset.smul_sum]
-    refine' Subalgebra.sum_mem _ fun i _ => _
+    refine Subalgebra.sum_mem _ fun i _ => ?_
     replace this := this i
     rw [← discr_def, Pi.smul_apply, mem_bot] at this
     obtain ⟨r, hr⟩ := this
     rw [Basis.equivFun_apply] at hr
     rw [← smul_assoc, ← hr, algebraMap_smul]
-    refine' Subalgebra.smul_mem _ _ _
+    refine Subalgebra.smul_mem _ ?_ _
     rw [B.basis_eq_pow i]
     exact Subalgebra.pow_mem _ (subset_adjoin (Set.mem_singleton _)) _
   intro i
@@ -299,8 +301,8 @@ theorem discr_mul_isIntegral_mem_adjoin [IsSeparable K L] [IsIntegrallyClosed R]
   rw [mulVec_mulVec, nonsing_inv_mul _ hinv, mulVec_mulVec, nonsing_inv_mul _ hinv, one_mulVec,
     one_mulVec] at cramer
   rw [← congr_fun cramer i, cramer_apply, det_apply]
-  refine'
-    Subalgebra.sum_mem _ fun σ _ => Subalgebra.zsmul_mem _ (Subalgebra.prod_mem _ fun j _ => _) _
+  refine
+    Subalgebra.sum_mem _ fun σ _ => Subalgebra.zsmul_mem _ (Subalgebra.prod_mem _ fun j _ => ?_) _
   by_cases hji : j = i
   · simp only [updateColumn_apply, hji, eq_self_iff_true, PowerBasis.coe_basis]
     exact mem_bot.2 (IsIntegrallyClosed.isIntegral_iff.1 <| isIntegral_trace (hz.mul <| hint.pow _))
