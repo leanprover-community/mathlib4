@@ -1706,6 +1706,11 @@ def ScottContinuous (D : Set (Set α)) (f : α → β) : Prop :=
   ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → d ∈ D → ∀ ⦃a⦄, IsLUB d a → IsLUB (f '' d) (f a)
 #align scott_continuous ScottContinuous
 
+lemma ScottContinuous.LE (D₁ D₂ : Set (Set α)) (hD : D₁ ≤ D₂) {f : α → β}
+    (hf : ScottContinuous D₂ f) : ScottContinuous D₁ f := by
+  intros d hd₁ hd₂ hdD₁ a hda
+  apply hf hd₁ hd₂ (hD hdD₁) hda
+
 protected theorem ScottContinuous.monotone (D : Set (Set α)) (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
     (h : ScottContinuous D f) : Monotone f := by
   refine' fun a b hab =>

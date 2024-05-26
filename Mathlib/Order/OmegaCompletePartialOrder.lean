@@ -345,13 +345,6 @@ lemma isLUB_of_ωScottContinuous {c : Chain α} {f : α → β}
   exact hf (Set.range_nonempty ↑c) (IsChain.directedOn (isChain_range c))
     (by simp only [Set.mem_setOf_eq, exists_apply_eq_apply]) (isLUB_range_ωSup c)
 
-lemma ScottContinuous.continuous' {f : α → β} (hf : ScottContinuous Set.univ f) :
-    Continuous' f := by
-  constructor
-  · intro c
-    rw [← (ωSup_eq_of_isLUB (isLUB_of_scottContinuous hf))]
-    simp only [OrderHom.coe_mk]
-
 lemma unify  {f : α → β} :
     Continuous' f = ωScottContinuous f := by
   rw [le_antisymm_iff]
@@ -377,6 +370,12 @@ lemma unify  {f : α → β} :
       have e1 : f (ωSup c) = ωSup (c.map ⟨f,ωScottContinuous.monotone hf⟩) := by
         rw [← (ωSup_eq_of_isLUB (isLUB_of_ωScottContinuous hf))]
       exact e1
+
+lemma ScottContinuous.continuous' {f : α → β} (hf : ScottContinuous Set.univ f) :
+    Continuous' f := by
+  rw [unify]
+  exact ScottContinuous.LE { d | ∃ (c : Chain α), Set.range c = d } (Set.univ)
+    (fun _ _ ↦ trivial) hf
 
 lemma continuous'_ScottContinuous {f : α → β} (hf : Continuous' f) :
     ωScottContinuous f := by
