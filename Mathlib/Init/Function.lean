@@ -45,11 +45,11 @@ def dcomp {β : α → Sort u₂} {φ : ∀ {x : α}, β x → Sort u₃} (f : �
 
 infixr:80 " ∘' " => Function.dcomp
 
-@[reducible, deprecated] -- 2024-01-13
+@[reducible, deprecated (since := "2024-01-13")]
 def compRight (f : β → β → β) (g : α → β) : β → α → β := fun b a => f b (g a)
 #align function.comp_right Function.compRight
 
-@[reducible, deprecated] -- 2024-01-13
+@[reducible, deprecated (since := "2024-01-13")]
 def compLeft (f : β → β → β) (g : α → β) : α → β → β := fun a b => f (g a) b
 #align function.comp_left Function.compLeft
 
@@ -68,7 +68,7 @@ produce a function `α → β → ζ` that applies `f` and `g` on each argument 
 -/
 -- Porting note: the ζ variable was originally constrained to `Sort u₁`, but this seems to
 -- have been an oversight.
-@[reducible, deprecated] -- 2024-01-13
+@[reducible, deprecated (since := "2024-01-13")]
 def combine (f : α → β → φ) (op : φ → δ → ζ) (g : α → β → δ) : α → β → ζ := fun x y =>
   op (f x y) (g x y)
 #align function.combine Function.combine
@@ -81,7 +81,7 @@ abbrev swap {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x
 #adaptation_note /-- nightly-2024-03-16: added to replace simp [Function.swap] -/
 theorem swap_def {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : swap f = fun y x => f x y := rfl
 
-@[reducible, deprecated] -- 2024-01-13
+@[reducible, deprecated (since := "2024-01-13")]
 def app {β : α → Sort u₂} (f : ∀ x, β x) (x : α) : β x :=
   f x
 #align function.app Function.app

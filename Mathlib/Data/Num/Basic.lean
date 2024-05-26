@@ -195,7 +195,7 @@ section deprecated
 set_option linter.deprecated false
 
 /-- `castPosNum` casts a `PosNum` into any type which has `1` and `+`. -/
-@[deprecated, coe] -- 2022-11-18
+@[deprecated (since := "2022-11-18"), coe]
 def castPosNum : PosNum → α
   | 1 => 1
   | PosNum.bit0 a => bit0 (castPosNum a)
@@ -203,7 +203,7 @@ def castPosNum : PosNum → α
 #align cast_pos_num castPosNum
 
 /-- `castNum` casts a `Num` into any type which has `0`, `1` and `+`. -/
-@[deprecated, coe] -- 2022-11-18
+@[deprecated (since := "2022-11-18"), coe]
 def castNum [Zero α] : Num → α
   | 0 => 0
   | Num.pos p => castPosNum p
@@ -674,7 +674,7 @@ set_option linter.deprecated false
 variable {α : Type*} [Zero α] [One α] [Add α] [Neg α]
 
 /-- `castZNum` casts a `ZNum` into any type which has `0`, `1`, `+` and `neg` -/
-@[deprecated, coe] -- 2022-11-18
+@[deprecated (since := "2022-11-18"), coe]
 def castZNum : ZNum → α
   | 0 => 0
   | ZNum.pos p => p
