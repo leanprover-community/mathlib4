@@ -19,7 +19,7 @@ jobs:
           url=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           job_no="$(curl -s "${url}" |
             # extract the CI run number from the unique line that matches `  href=.../job/ci_number"`
-            awk -v url="${url}" -F'/' '/^ *href/ {gsub(/"/, "", $NF); printf("summary<<EOF\n%s/job/%s\nEOF", url, $NF)}'')"
+            awk -v url="${url}" -F'/' '/^ *href/ {gsub(/"/, "", $NF); printf("summary<<EOF\n%s/job/%s\nEOF", url, $NF)}')"
           printf '%s\n' "${job_no}"
           printf '%s\n' "${job_no}" >> "$GITHUB_OUTPUT"
       - name: add_comment
