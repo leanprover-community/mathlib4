@@ -324,7 +324,7 @@ lemma continuous'_eq_ωScottContinuous {f : α → β} : Continuous' f = ωScott
   · intro hf _ _ _ hd₃ _ hda
     rcases hd₃ with ⟨c,hc⟩
     rw [← hc] at hda
-    rw [← hc, ωSup_eq_of_isLUB hda, ←(Set.range_comp f ⇑c)]
+    rw [← hc, ωSup_eq_of_isLUB hda, ← (Set.range_comp f ⇑c)]
     have e1 : f (ωSup c) = ωSup (c.map ⟨f,hf.1⟩) := by
       rw [← (hf.2 c), OrderHom.coe_mk]
     rw [e1]
