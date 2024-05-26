@@ -44,6 +44,8 @@ namespace Function
 ### Injective
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
 
 namespace Injective
 
