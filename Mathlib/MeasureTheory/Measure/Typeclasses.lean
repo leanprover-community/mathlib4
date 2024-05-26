@@ -184,6 +184,49 @@ theorem ae_mem_iff_measure_eq [IsFiniteMeasure μ] {s : Set α} (hs : NullMeasur
   ae_iff_measure_eq hs
 #align measure_theory.ae_mem_iff_measure_eq MeasureTheory.ae_mem_iff_measure_eq
 
+lemma tendsto_measure_biUnion_Iio {Es : ℕ → Set α} :
+    Tendsto (μ ∘ fun n => ⋃ i, ⋃ (_ : i < n), Es i) atTop (𝓝 (μ (⋃ i, Es i))) := by
+  let Us : ℕ → Set α := fun n ↦ ⋃ i, ⋃ (_ : i < n), Es i
+  have Us_incr : Monotone Us :=
+    fun _ _ hnm ↦ biUnion_mono (Iio_subset_Iio_iff.mpr hnm) (fun _ _ ↦ le_rfl)
+  have same : ⋃ i, Us i = ⋃ i, Es i := by
+    apply subset_antisymm ?_ ?_
+    · exact iUnion_subset fun n ↦ by
+        simpa only [iUnion_subset_iff, Us] using fun i _ ↦ subset_iUnion_of_subset i fun _ a ↦ a
+    · exact iUnion_subset fun n ↦
+        subset_trans (subset_biUnion_of_mem (show n ∈ Iio (n+1) by simp)) (subset_iUnion Us (n+1))
+  simpa [same] using tendsto_measure_iUnion (μ := μ) Us_incr
+
+lemma tendsto_measure_biUnion_Iio_of_iUnion_eq_univ {Es : ℕ → Set α} (Es_union : ⋃ i, Es i = univ) :
+    Tendsto (μ ∘ fun n => ⋃ i, ⋃ (_ : i < n), Es i) atTop (𝓝 (μ univ)) := by
+  convert tendsto_measure_biUnion_Iio
+  exact Es_union.symm
+  --have Es_union_incr : Monotone (fun (n : ℕ) ↦ ⋃ i ∈ Iio n, Es i) :=
+  --  fun _ _ hnm ↦ biUnion_mono (Iio_subset_Iio_iff.mpr hnm) (fun _ _ ↦ le_rfl)
+  --convert tendsto_measure_iUnion (μ := μ) Es_union_incr
+  --apply subset_antisymm _ (subset_univ _)
+  --simpa only [← biUnion_iUnion, iUnion_Iio, mem_univ, iUnion_true, univ_subset_iff] using Es_union
+
+-- TODO: Move to an appropriate place.
+lemma tendsto_measure_biUnion_Ici_zero_of_iUnion_eq_univ_of_pairwise_disjoint
+    {X : Type*} [MeasurableSpace X] {μ : Measure X} [IsFiniteMeasure μ]
+    {Es : ℕ → Set X} (Es_union : ⋃ i, Es i = univ) (Es_mble : ∀ i, MeasurableSet (Es i))
+    (Es_disj : Pairwise fun n m ↦ Disjoint (Es n) (Es m)) :
+    Tendsto (μ ∘ fun n => ⋃ i, ⋃ (_ : n ≤ i), Es i) atTop (𝓝 0) := by
+  have obs : ∀ n, ⋃ i, ⋃ (_ : n ≤ i), Es i = (⋃ i, ⋃ (_ : i < n), Es i)ᶜ :=
+    fun n ↦ by simpa only [mem_Iio, compl_Iio, mem_Ici]
+      using (biUnion_compl_eq_of_pairwise_disjoint_of_iUnion_eq_univ Es_union Es_disj (Iio n)).symm
+  simp_rw [obs]
+  have : Tendsto (fun n ↦ (μ univ - μ (⋃ i, ⋃ (_ : i < n), Es i))) atTop (𝓝 0) := by
+    have aux := (@ENNReal.continuous_sub_left (μ univ) (measure_ne_top _ _)).tendsto (μ univ)
+    simp only [ge_iff_le, le_refl, tsub_eq_zero_of_le] at aux
+    exact aux.comp <| tendsto_measure_biUnion_Iio_of_iUnion_eq_univ Es_union
+  convert this
+  simp only [Function.comp_apply]
+  apply measure_compl
+  · exact MeasurableSet.iUnion fun i ↦ MeasurableSet.iUnion fun _ ↦ Es_mble i
+  · exact measure_ne_top _ _
+
 open scoped symmDiff
 
 theorem abs_toReal_measure_sub_le_measure_symmDiff'
