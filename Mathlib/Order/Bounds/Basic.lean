@@ -1710,9 +1710,8 @@ def DScottContinuous (D : Set (Set α)) (f : α → β) : Prop :=
 #align scott_continuous DScottContinuous
 
 lemma DScottContinuous.LE (D₁ D₂ : Set (Set α)) (hD : D₁ ≤ D₂) {f : α → β}
-    (hf : DScottContinuous D₂ f) : DScottContinuous D₁ f := by
-  intros d hd₁ hd₂ hdD₁ a hda
-  apply hf hd₁ hd₂ (hD hdD₁) hda
+    (hf : DScottContinuous D₂ f) : DScottContinuous D₁ f :=
+  fun _ hd₁ hd₂ hdD₁ _ hda => hf hd₁ hd₂ (hD hdD₁) hda
 
 protected theorem DScottContinuous.monotone (D : Set (Set α)) (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
     (h : DScottContinuous D f) : Monotone f := by
