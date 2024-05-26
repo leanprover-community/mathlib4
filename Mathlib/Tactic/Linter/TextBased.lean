@@ -188,7 +188,7 @@ section
 We allow #aligns or URLs to be longer, though.
 -/
 def check_line_length : LinterCore := fun lines ↦ Id.run do
-  -- FIXME: benchmark this; does the Array -> List conversion matter? (perhaps not)
+  -- XXX: does the Array -> List conversion matter for performance?
   let errors := (lines.toList.enumFrom 1).filterMap (fun (line_number, line) ↦
     if line.length > 101 && !(line.startsWith "#align" || line.containsSubstr "http")  then
       some (StyleError.lineLength line.length, line_number)
@@ -310,7 +310,7 @@ def isolated_by_dot_semicolon : LinterCore := fun lines ↦ Id.run do
 Assumes the lines are not newline-terminated. -/
 def line_endings : LinterCore := fun lines ↦ Id.run do
   let mut output := Array.mkEmpty 0
-  -- FIXME: benchmark this; does the Array -> List conversion matter?
+  -- XXX: does the Array -> List conversion matter for performance?
   for (line_number, line) in lines.toList.enumFrom 1 do
     if line.back == '\r' then
       output := output.push (StyleError.windowsLineEndings, line_number)
@@ -384,9 +384,12 @@ def lint_file (path : System.FilePath)
 def lint_all_files (path : System.FilePath) : IO Unit := do
   -- Read all module names in Mathlib from the file at `path`.
   let allModules ← IO.FS.lines path
-  -- Read the style exceptions file.
+  -- Read the style exceptions file: during the transition period,
+  -- we also have a file with exceptions just for the "new" linter (i.e., this one).
   let exceptions_file ← IO.FS.lines (System.mkFilePath ["scripts/style-exceptions.txt"])
-  let style_exceptions := parse_style_exceptions exceptions_file
+  let mut style_exceptions := parse_style_exceptions exceptions_file
+  let extra_file ← IO.FS.lines (System.mkFilePath ["scripts/style-exceptions-new.txt"])
+  style_exceptions := style_exceptions.append (parse_style_exceptions extra_file)
   for module in allModules do
     let module := module.stripPrefix "import "
     -- Convert the module name to a file name, then lint that file.
@@ -404,6 +407,5 @@ def lint_all : IO Unit := do
   for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
     lint_all_files (System.mkFilePath [s])
 
-
 -- run_cmd lint_all
---#print "all done"
+-- #print "all done"
