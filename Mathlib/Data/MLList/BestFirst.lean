@@ -94,7 +94,7 @@ variable {α : Type} {prio : α → Thunk ω} {ε : α → Type} [LinearOrder ω
   [I : ∀ a : α, WellFoundedGT (range (bound (prio a) : ε a → ω))]
   {m : Type → Type} [Monad m] {β : Type}
 
-/-- Calculate the current best lower bound for the the priority of a node. -/
+/-- Calculate the current best lower bound for the priority of a node. -/
 def BestFirstNode.estimate (n : BestFirstNode prio ε) : ω := bound (prio n.key) n.estimator
 
 instance [Ord ω] [Ord α] : Ord (BestFirstNode prio ε) where

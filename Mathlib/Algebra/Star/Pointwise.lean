@@ -13,7 +13,7 @@ import Mathlib.Data.Set.Pointwise.Basic
 # Pointwise star operation on sets
 
 This file defines the star operation pointwise on sets and provides the basic API.
-Besides basic facts about about how the star operation acts on sets (e.g., `(s ∩ t)⋆ = s⋆ ∩ t⋆`),
+Besides basic facts about how the star operation acts on sets (e.g., `(s ∩ t)⋆ = s⋆ ∩ t⋆`),
 if `s t : Set α`, then under suitable assumption on `α`, it is shown
 
 * `(s + t)⋆ = s⋆ + t⋆`

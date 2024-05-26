@@ -198,7 +198,7 @@ It returns
 * the name of the relation (`Eq` or `LE.le`), or else `.anonymous` if it's none of these.
 * either
   * `.inl zero`, `.inl one`, or `.inl many` if the polynomial in a numeral
-  * or `.inr` of the the head symbol of `f`
+  * or `.inr` of the head symbol of `f`
   * or `.inl .anonymous` if inapplicable
 * if it exists, whether the `rhs` is a metavariable
 * if the LHS is `coeff f d`, whether `d` is a metavariable

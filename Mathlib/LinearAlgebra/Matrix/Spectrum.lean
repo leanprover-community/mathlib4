@@ -85,7 +85,7 @@ theorem star_eigenvectorUnitary_mulVec (j : n) :
     (star (eigenvectorUnitary hA : Matrix n n 𝕜)) *ᵥ ⇑(hA.eigenvectorBasis j) = Pi.single j 1 := by
   rw [← eigenvectorUnitary_mulVec, mulVec_mulVec, unitary.coe_star_mul_self, one_mulVec]
 
-/--Unitary diagonalization of a Hermitian matrix.-/
+/-- Unitary diagonalization of a Hermitian matrix. -/
 theorem star_mul_self_mul_eq_diagonal :
     (star (eigenvectorUnitary hA : Matrix n n 𝕜)) * A * (eigenvectorUnitary hA : Matrix n n 𝕜)
       = diagonal (RCLike.ofReal ∘ hA.eigenvalues) := by

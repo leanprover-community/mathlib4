@@ -202,7 +202,7 @@ set_option linter.uppercaseLean3 false in
 attribute [nolint simpNF]
   AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.structurePresheafInCommRing_map_apply
 
-/-- Some glue, verifying that that structure presheaf valued in `CommRing` agrees with the `Type`
+/-- Some glue, verifying that the structure presheaf valued in `CommRing` agrees with the `Type`
 valued structure presheaf. -/
 def structurePresheafCompForget :
     structurePresheafInCommRing 𝒜 ⋙ forget CommRingCat ≅ (structureSheafInType 𝒜).1 :=

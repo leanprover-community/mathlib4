@@ -778,7 +778,7 @@ theorem eq_bot_or_top : I = ⊥ ∨ I = ⊤ := by
 #align ideal.eq_bot_or_top Ideal.eq_bot_or_top
 
 variable (K) in
-/-- A bijection between between (left) ideals of a division ring and `{0, 1}`, sending `⊥` to `0`
+/-- A bijection between (left) ideals of a division ring and `{0, 1}`, sending `⊥` to `0`
 and `⊤` to `1`. -/
 def equivFinTwo [DecidableEq (Ideal K)] : Ideal K ≃ Fin 2 where
   toFun := fun I ↦ if I = ⊥ then 0 else 1

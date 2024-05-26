@@ -946,7 +946,7 @@ theorem IsLUB.mul_right {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
     IsLUB ((fun b => b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
 #align is_lub.mul_right IsLUB.mul_right
 
-/-! ### Miscellaneous lemmmas -/
+/-! ### Miscellaneous lemmas -/
 
 
 theorem mul_sub_mul_div_mul_neg_iff (hc : c ≠ 0) (hd : d ≠ 0) :
