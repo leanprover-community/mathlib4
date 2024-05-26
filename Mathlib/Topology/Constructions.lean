@@ -204,6 +204,14 @@ theorem DenseRange.quotient [Setoid X] [TopologicalSpace X] {f : Y → X} (hf : 
   Quotient.surjective_Quotient_mk''.denseRange.comp hf continuous_coinduced_rng
 #align dense_range.quotient DenseRange.quotient
 
+theorem continuous_map_of_le {α : Type*} [TopologicalSpace α]
+    {s t : Setoid α} (h : s ≤ t) : Continuous (Setoid.map_of_le h) :=
+  continuous_coinduced_rng
+
+theorem continuous_map_sInf {α : Type*} [TopologicalSpace α]
+    {S : Set (Setoid α)} {s : Setoid α} (h : s ∈ S) : Continuous (Setoid.map_sInf h) :=
+  continuous_coinduced_rng
+
 instance {p : X → Prop} [TopologicalSpace X] [DiscreteTopology X] : DiscreteTopology (Subtype p) :=
   ⟨bot_unique fun s _ => ⟨(↑) '' s, isOpen_discrete _, preimage_image_eq _ Subtype.val_injective⟩⟩
 
@@ -744,7 +752,7 @@ theorem exists_nhds_square {s : Set (X × X)} {x : X} (hx : s ∈ 𝓝 (x, x)) :
 /-- `Prod.fst` maps neighborhood of `x : X × Y` within the section `Prod.snd ⁻¹' {x.2}`
 to `𝓝 x.1`. -/
 theorem map_fst_nhdsWithin (x : X × Y) : map Prod.fst (𝓝[Prod.snd ⁻¹' {x.2}] x) = 𝓝 x.1 := by
-  refine' le_antisymm (continuousAt_fst.mono_left inf_le_left) fun s hs => _
+  refine le_antisymm (continuousAt_fst.mono_left inf_le_left) fun s hs => ?_
   rcases x with ⟨x, y⟩
   rw [mem_map, nhdsWithin, mem_inf_principal, mem_nhds_prod_iff] at hs
   rcases hs with ⟨u, hu, v, hv, H⟩
@@ -765,7 +773,7 @@ theorem isOpenMap_fst : IsOpenMap (@Prod.fst X Y) :=
 /-- `Prod.snd` maps neighborhood of `x : X × Y` within the section `Prod.fst ⁻¹' {x.1}`
 to `𝓝 x.2`. -/
 theorem map_snd_nhdsWithin (x : X × Y) : map Prod.snd (𝓝[Prod.fst ⁻¹' {x.1}] x) = 𝓝 x.2 := by
-  refine' le_antisymm (continuousAt_snd.mono_left inf_le_left) fun s hs => _
+  refine le_antisymm (continuousAt_snd.mono_left inf_le_left) fun s hs => ?_
   rcases x with ⟨x, y⟩
   rw [mem_map, nhdsWithin, mem_inf_principal, mem_nhds_prod_iff] at hs
   rcases hs with ⟨u, hu, v, hv, H⟩
@@ -792,7 +800,7 @@ theorem isOpen_prod_iff' {s : Set X} {t : Set Y} :
   · have st : s.Nonempty ∧ t.Nonempty := prod_nonempty_iff.1 h
     constructor
     · intro (H : IsOpen (s ×ˢ t))
-      refine' Or.inl ⟨_, _⟩
+      refine Or.inl ⟨?_, ?_⟩
       · show IsOpen s
         rw [← fst_image_prod s st.2]
         exact isOpenMap_fst _ H
@@ -1524,7 +1532,7 @@ theorem pi_generateFrom_eq_finite {π : ι → Type*} {g : ∀ a, Set (Set (π a
       generateFrom { t | ∃ s : ∀ a, Set (π a), (∀ a, s a ∈ g a) ∧ t = pi univ s } := by
   cases nonempty_fintype ι
   rw [pi_generateFrom_eq]
-  refine' le_antisymm (generateFrom_anti _) (le_generateFrom _)
+  refine le_antisymm (generateFrom_anti ?_) (le_generateFrom ?_)
   · exact fun s ⟨t, ht, Eq⟩ => ⟨t, Finset.univ, by simp [ht, Eq]⟩
   · rintro s ⟨t, i, ht, rfl⟩
     letI := generateFrom { t | ∃ s : ∀ a, Set (π a), (∀ a, s a ∈ g a) ∧ t = pi univ s }
