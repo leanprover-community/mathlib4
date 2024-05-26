@@ -140,7 +140,7 @@ theorem Subgroup.exists_finiteIndex_of_leftCoset_cover_aux
       refine ⟨i, fun hij => hx i hij ?_, ?_⟩
       . rwa [hi, QuotientGroup.eq, hij, mul_inv_rev, inv_mul_cancel_right,
           Subgroup.inv_mem_iff, ← SetLike.mem_coe, ← mem_leftCoset_iff]
-      . simpa [mem_leftCoset_iff, SetLike.mem_coe, QuotientGroup.eq, mul_assoc] using hi
+      · simpa [mem_leftCoset_iff, SetLike.mem_coe, QuotientGroup.eq, mul_assoc] using hi
     -- Thus `G` can also be covered by a finite union `U k, f k • K k` of left cosets
     -- of the subgroups `H k ≠ H j`.
     let κ := ↥(Finset.univ.filter (H · ≠ H j)) × Option ↥(Finset.univ.filter (H · = H j))
