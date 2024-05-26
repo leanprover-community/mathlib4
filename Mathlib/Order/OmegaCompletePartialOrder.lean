@@ -321,15 +321,12 @@ lemma continuous'_eq_ωScottContinuous {f : α → β} : Continuous' f = ωScott
   rw [le_antisymm_iff]
   constructor
   · intro hf _ _ _ ⟨c, hc⟩ _ hda
-    rw [← hc] at hda
-    rw [← hc, ωSup_eq_of_isLUB hda, ← (Set.range_comp f ⇑c)]
-    have e1 : f (ωSup c) = ωSup (c.map ⟨f,hf.1⟩) := by
-      rw [← (hf.2 c), OrderHom.coe_mk]
-    rw [e1]
-    exact isLUB_range_ωSup (c.map { toFun := f, monotone' := hf.1 })
+    convert isLUB_range_ωSup (c.map { toFun := f, monotone' := hf.1 })
+    · rw [map_coe, OrderHom.coe_mk, ← hc, ← (Set.range_comp f ⇑c)]
+    · rw [← hc] at hda
+      rw [← (hf.2 c), OrderHom.coe_mk, ωSup_eq_of_isLUB hda]
   · intro hf
     exact ⟨ωScottContinuous.monotone hf, fun _ => (ωSup_eq_of_isLUB (isLUB_of_ωScottContinuous hf))⟩
-
 
 lemma ScottContinuous.continuous' {f : α → β} (hf : ScottContinuous f) : Continuous' f :=
   continuous'_eq_ωScottContinuous.mpr (DScottContinuous.LE { d | ∃ (c : Chain α), Set.range c = d }
