@@ -6,6 +6,7 @@ Authors: Damiano Testa
 
 import Lean.Elab.Command
 import Lean.Linter.Util
+import Batteries.Data.List.Basic
 import Mathlib.Tactic.Lemma
 
 /-!
@@ -43,28 +44,30 @@ def getRefine' : Syntax → Array (Syntax × SourceInfo × Array Syntax)
   | _ => default
 
 /-- converts
-* `theorem x ...` to  `some (example ... , x)`,
-* `lemma x ...`   to  `some (example ... , x)`,
-* `example ...`   to ``some (example ... , `example)``,
-*  everything else goes to `none`.
+* `theorem x ...`  to `example ...`,
+* `lemma x ...`    to `example ...`,
+* `instance x ...` to `example ...`,
+*  everything else goes to itself.
+
+This avoids producing two declarations with the same name in the environment.
 -/
 def toExample {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation m] :
-    Syntax → m (Option (Syntax × Syntax))
-  | `($dm:declModifiers theorem $did:declId $ds* : $t $dv:declVal) => do
-    return some (← `($dm:declModifiers example $ds* : $t $dv:declVal), did.raw[0])
-  | `($dm:declModifiers lemma $did:declId $ds* : $t $dv:declVal) => do
-    return some (← `($dm:declModifiers example $ds* : $t $dv:declVal), did.raw[0])
-  | `($dm:declModifiers example $ds:optDeclSig $dv:declVal) => do
-    return some (← `($dm:declModifiers example $ds $dv:declVal), mkIdent `example)
-  | _ => return none
+    Syntax → m (Option Syntax)
+  | `($dm:declModifiers theorem $_did:declId $ds* : $t $dv:declVal) => do
+    return some (← `($dm:declModifiers example $ds* : $t $dv:declVal))
+  | `($dm:declModifiers lemma $_did:declId $ds* : $t $dv:declVal) => do
+    return some (← `($dm:declModifiers example $ds* : $t $dv:declVal))
+  | `($dm:declModifiers instance $_did:declId $ds* : $t $dv:declVal) => do
+    return some (← `($dm:declModifiers example $ds* : $t $dv:declVal))
+  | s => return some s
 
 /-- replaces each `refine'` by `refine` in succession in `cmd` and, each time, catches the errors
 of missing `?`, collecting their positions.  Eventually, it returns an array of pairs
 `(true/false, position)`, where
-* `true` means that the `position` is the beginning of `refine'` and
-* `false` means that the `position` is a missing `?`.
+* `1` means that the `position` is the beginning of `refine'` and
+* `0` means that the `position` is a missing `?`.
 -/
-def getQuestions (cmd : Syntax) : Command.CommandElabM (Array (Bool × Position)) := do
+def getQuestions (cmd : Syntax) : Command.CommandElabM (Array (Nat × Position)) := do
   let s ← get
   let fm ← getFileMap
   let refine's := getRefine' cmd
@@ -76,13 +79,16 @@ def getQuestions (cmd : Syntax) : Command.CommandElabM (Array (Bool × Position)
       return (r, ncm)
   let mut poss := #[]
   for (r, ncmd) in newCmds do
-    if let some (exm, _) ← toExample ncmd then
+    if let some exm ← toExample ncmd then
       Elab.Command.elabCommand exm
       let msgs := (← get).messages.msgs
       let ph := msgs.filter (fun m => isSyntPlaceHolder m.data)
       if ! ph.toArray.isEmpty then
-        poss := poss ++
-          (ph.map (false, ·.pos)).toArray.push (true, fm.toPosition (r.getPos?.getD default))
+        -- a repetition in `Position`s is an indication that `refine` cannot replace `refine'`
+        let positions := (ph.map (·.pos)).toList
+        if positions == positions.eraseDup then
+          poss := poss ++
+            (ph.map (0, ·.pos)).toArray.push (1, fm.toPosition (r.getPos?.getD default))
     set s
   return poss
 
@@ -92,7 +98,7 @@ def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.refine'To
 /-- Reports the positions of missing `?`. -/
 def refine'ToRefineLinter : Linter where run stx := do
   if getLinterHash (← getOptions) then
-    let (pos) ← getQuestions stx
+    let pos ← getQuestions stx
     if pos != #[] then dbg_trace s!"{pos}"
 
 initialize addLinter refine'ToRefineLinter
