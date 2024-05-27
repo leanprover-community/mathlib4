@@ -6,9 +6,9 @@ Authors: Martin Dvorak
 import Mathlib.Order.Basic
 import Mathlib.Algebra.Group.Pi.Basic
 /-!
-# TODO
+# Interaction between `Sum.elim` and `≤`
 
-Interaction between `Sum.elim` and `≤`
+This file provides basic API for part-wise comparison of `Sum.elim` vectors.
 -/
 
 namespace Sum
@@ -22,7 +22,7 @@ lemma elim_le_elim_iff (u₁ v₁ : α₁ → β) (u₂ v₂ : α₂ → β) :
 
 lemma const_le_elim_iff (b : β) (v₁ : α₁ → β) (v₂ : α₂ → β) :
     (Function.const _ b) ≤ Sum.elim v₁ v₂ ↔ (Function.const _ b) ≤ v₁ ∧ (Function.const _ b) ≤ v₂ :=
-  elim_const_const _ ▸ elim_le_elim_iff _ _ _ _
+  elim_const_const b ▸ elim_le_elim_iff ..
 
 @[to_additive]
 lemma one_le_elim_iff [One β] (v₁ : α₁ → β) (v₂ : α₂ → β) :
@@ -31,7 +31,7 @@ lemma one_le_elim_iff [One β] (v₁ : α₁ → β) (v₂ : α₂ → β) :
 
 lemma elim_le_const_iff (b : β) (u₁ : α₁ → β) (u₂ : α₂ → β) :
     Sum.elim u₁ u₂ ≤ (Function.const _ b) ↔ u₁ ≤ (Function.const _ b) ∧ u₂ ≤ (Function.const _ b) :=
-  elim_const_const _ ▸ elim_le_elim_iff _ _ _ _
+  elim_const_const b ▸ elim_le_elim_iff ..
 
 @[to_additive]
 lemma elim_le_one_iff [One β] (u₁ : α₁ → β) (u₂ : α₂ → β) :
