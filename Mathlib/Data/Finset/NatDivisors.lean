@@ -41,5 +41,5 @@ lemma Multiset.nat_divisors_prod (s : Multiset ℕ) : divisors s.prod = (s.map d
   map_multiset_prod Nat.divisorsHom s
 
 lemma Finset.nat_divisors_prod {ι : Type*} (s : Finset ι) (f : ι → ℕ) :
-    divisors (∏ i in s, f i) = ∏ i in s, divisors (f i) :=
+    divisors (∏ i ∈ s, f i) = ∏ i ∈ s, divisors (f i) :=
   map_prod Nat.divisorsHom f s
