@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Sites.LeftExact
+import Mathlib.CategoryTheory.Sites.PreservesSheafification
 import Mathlib.CategoryTheory.Sites.Subsheaf
 import Mathlib.CategoryTheory.Sites.Whiskering
 
@@ -173,30 +174,27 @@ instance (F : Cᵒᵖ ⥤ Type w) (G : GrothendieckTopology.Subpresheaf F) :
 
 section
 
-variable {E : Type u'} [Category.{max u v} E] [ConcreteCategory E]
-  [PreservesLimits (forget E)]
-  [∀ (P : Cᵒᵖ ⥤ E) (X : C) (S : J.Cover X),
-    HasMultiequalizer (GrothendieckTopology.Cover.index S P)]
-  [∀ (X : C), HasColimitsOfShape (GrothendieckTopology.Cover J X)ᵒᵖ E]
-  [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget E)] [(forget E).ReflectsIsomorphisms]
+open GrothendieckTopology.Plus
 
-variable (P : Cᵒᵖ ⥤ E)
-
-open GrothendieckTopology Plus
-
-instance isLocallyInjective_toPlus : IsLocallyInjective J (J.toPlus P) where
+instance isLocallyInjective_toPlus (P : Cᵒᵖ ⥤ Type max u v) :
+    IsLocallyInjective J (J.toPlus P) where
   equalizerSieve_mem {X} x y h := by
     erw [toPlus_eq_mk, toPlus_eq_mk, eq_mk_iff_exists] at h
     obtain ⟨W, h₁, h₂, eq⟩ := h
     exact J.superset_covering (fun Y f hf => congr_fun (congr_arg Subtype.val eq) ⟨Y, f, hf⟩) W.2
 
-instance isLocallyInjective_toSheafify : IsLocallyInjective J (J.toSheafify P) := by
+instance isLocallyInjective_toSheafify (P : Cᵒᵖ ⥤ Type max u v) :
+    IsLocallyInjective J (J.toSheafify P) := by
   dsimp [GrothendieckTopology.toSheafify]
   rw [GrothendieckTopology.plusMap_toPlus]
   infer_instance
 
-instance isLocallyInjective_toSheafify' : IsLocallyInjective J (toSheafify J P) := by
-  rw [← toSheafify_plusPlusIsoSheafify_hom]
+instance isLocallyInjective_toSheafify' [ConcreteCategory.{max u v} D]
+    (P : Cᵒᵖ ⥤ D) [HasWeakSheafify J D] [J.HasSheafCompose (forget D)]
+    [J.PreservesSheafification (forget D)] :
+    IsLocallyInjective J (toSheafify J P) := by
+  rw [← isLocallyInjective_forget_iff, ← sheafComposeIso_hom_fac,
+    ← toSheafify_plusPlusIsoSheafify_hom]
   infer_instance
 
 end
