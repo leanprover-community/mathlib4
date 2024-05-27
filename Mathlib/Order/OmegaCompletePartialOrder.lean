@@ -929,10 +929,6 @@ def iterateChain (f : α →o α) (x : α) (h : x ≤ f x) :Chain α :=
 
 variable (f : α →𝒄 α) (x : α)
 
-theorem iterateChain_succ_apply' (h : x ≤ f x) (n : ℕ) :
-    iterateChain f x h (n.succ) = f (iterateChain f x h n) := by
-  apply Function.iterate_succ_apply'
-
 /-- The supremum of iterating a function on x arbitrary often is a fixed point -/
 theorem ωSup_repeat_mem_fixedPoint (h : x ≤ f x) :
     ωSup (iterateChain f x h) ∈ fixedPoints f := by
@@ -941,7 +937,10 @@ theorem ωSup_repeat_mem_fixedPoint (h : x ≤ f x) :
   · apply ωSup_le
     intro n
     simp only [Chain.map_coe, OrderHomClass.coe_coe, comp_apply]
-    rw [← iterateChain_succ_apply']
+    have : iterateChain f x h (n.succ) = f (iterateChain f x h n) := by {
+      apply Function.iterate_succ_apply'
+    }
+    rw [← this]
     apply le_ωSup
   · apply ωSup_le
     intro n
@@ -952,8 +951,9 @@ theorem ωSup_repeat_mem_fixedPoint (h : x ≤ f x) :
       rw [this]
       apply le_ωSup
     case a.a.succ n =>
-      rw [iterateChain_succ_apply']
-      have : f ((iterateChain f x h) n) = (iterateChain f x h).map f n := rfl
+      have : iterateChain f x h (n.succ) = (iterateChain f x h).map f n := by {
+        apply Function.iterate_succ_apply'
+      }
       rw [this]
       apply le_ωSup
 
@@ -966,7 +966,10 @@ theorem ωSup_repeat_le_prefixedPoint (h : x ≤ f x) {a : α}
   induction n with
   | zero => exact h_x_le_a
   | succ n h_ind =>
-    rw [iterateChain_succ_apply']
+    have : iterateChain f x h (n.succ) = f (iterateChain f x h n) := by {
+      apply Function.iterate_succ_apply'
+    }
+    rw [this]
     exact le_trans (f.monotone h_ind) h_a
 
 /-- The supremum of iterating a function on x arbitrary often is smaller than any fixed point-/
