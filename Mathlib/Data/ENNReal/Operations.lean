@@ -531,12 +531,11 @@ theorem ofReal_sum_of_nonneg {s : Finset α} {f : α → ℝ} (hf : ∀ i, i ∈
 
 theorem sum_lt_sum_of_nonempty {s : Finset α} (hs : s.Nonempty) {f g : α → ℝ≥0∞}
     (Hlt : ∀ i ∈ s, f i < g i) : ∑ i ∈ s, f i < ∑ i ∈ s, g i := by
-  induction' hs using Finset.Nonempty.cons_induction with a a s as _ IH
-  · simp [Hlt _ (Finset.mem_singleton_self _)]
-  · simp only [as, Finset.sum_cons, not_false_iff]
-    exact
-      ENNReal.add_lt_add (Hlt _ (Finset.mem_cons_self _ _))
-        (IH fun i hi => Hlt _ (Finset.mem_cons.2 <| Or.inr hi))
+  induction hs using Finset.Nonempty.cons_induction with
+  | singleton => simp [Hlt _ (Finset.mem_singleton_self _)]
+  | cons _ _ _ ih =>
+    simp only [Finset.sum_cons, forall_mem_cons] at Hlt ⊢
+    exact ENNReal.add_lt_add Hlt.1 (ih Hlt.2)
 #align ennreal.sum_lt_sum_of_nonempty ENNReal.sum_lt_sum_of_nonempty
 
 theorem exists_le_of_sum_le {s : Finset α} (hs : s.Nonempty) {f g : α → ℝ≥0∞}
