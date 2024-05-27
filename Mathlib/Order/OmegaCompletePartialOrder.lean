@@ -304,10 +304,10 @@ def Continuous' (f : α → β) : Prop :=
 #align omega_complete_partial_order.continuous' OmegaCompletePartialOrder.Continuous'
 
 /-- ωScottContinuous - Scott Continuous over Chains-/
-def ωScottContinuous (f : α → β) := DScottContinuous (Set.range fun c : Chain α => Set.range c) f
+def ωScottContinuous (f : α → β) := ScottContinuousOn (Set.range fun c : Chain α => Set.range c) f
 
 lemma ωScottContinuous.monotone {f : α → β} (h : ωScottContinuous f) : Monotone f :=
-  DScottContinuous.monotone _ (fun a b hab => by exact ordered_pair_exists_chain a b hab) h
+  ScottContinuousOn.monotone _ (fun a b hab => by exact ordered_pair_exists_chain a b hab) h
 
 lemma ωScottContinuous.isLUB {c : Chain α} {f : α → β} (hf : ωScottContinuous f) :
     IsLUB (Set.range (Chain.map c ⟨f, (ωScottContinuous.monotone hf)⟩)) (f (ωSup c)) := by
@@ -327,8 +327,8 @@ lemma continuous'_iff_ωScottContinuous {f : α → β} : Continuous' f ↔ ωSc
     exact ⟨ωScottContinuous.monotone hf, fun _ => (ωSup_eq_of_isLUB (ωScottContinuous.isLUB hf))⟩
 
 lemma ScottContinuous.continuous' {f : α → β} (hf : ScottContinuous f) : Continuous' f :=
-  continuous'_iff_ωScottContinuous.mpr (DScottContinuous.mono _ _ (fun _ _ ↦ trivial)
-    (dscottContinuous_univ.mpr hf))
+  continuous'_iff_ωScottContinuous.mpr (ScottContinuousOn.mono _ _ (fun _ _ ↦ trivial)
+    (scottContinuousOn_univ.mpr hf))
 
 theorem Continuous'.to_monotone {f : α → β} (hf : Continuous' f) : Monotone f :=
   hf.fst

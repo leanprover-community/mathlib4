@@ -1690,37 +1690,32 @@ lemma BddBelow.range_comp {γ : Type*} [Preorder β] [Preorder γ] {f : α → �
 section ScottContinuous
 variable [Preorder α] [Preorder β] {f : α → β} {a : α}
 
-/-- A function between preorders is said to be Scott continuous if it preserves `IsLUB` on directed
-sets. It can be shown that a function is Scott continuous if and only if it is continuous wrt the
-Scott topology.
-
-We give a more general definition `DScottContinuous` here in order to also accomodate the Chain
-version in `Order/OmegaCompletePartialOrder`.
+/-- A function between preorders is said to be Scott continuous on a set `D` of directed sets if it
+preserves `IsLUB` on elements of `D`.
 
 The dual notion
 
 ```lean
-∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≥ ·) d → ∀ ⦃a⦄, IsGLB d a → IsGLB (f '' d) (f a)
+∀ ⦃d : Set α⦄, d ∈ D →  d.Nonempty → DirectedOn (· ≥ ·) d → ∀ ⦃a⦄, IsGLB d a → IsGLB (f '' d) (f a)
 ```
 
 does not appear to play a significant role in the literature, so is omitted here.
 -/
-def DScottContinuous (D : Set (Set α)) (f : α → β) : Prop :=
+def ScottContinuousOn (D : Set (Set α)) (f : α → β) : Prop :=
   ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → IsLUB (f '' d) (f a)
 
-lemma DScottContinuous.mono (D₁ D₂ : Set (Set α)) (hD : D₁ ⊆ D₂) {f : α → β}
-    (hf : DScottContinuous D₂ f) : DScottContinuous D₁ f :=
+lemma ScottContinuousOn.mono (D₁ D₂ : Set (Set α)) (hD : D₁ ⊆ D₂) {f : α → β}
+    (hf : ScottContinuousOn D₂ f) : ScottContinuousOn D₁ f :=
   fun _  hdD₁ hd₁ hd₂ _ hda => hf (hD hdD₁) hd₁ hd₂ hda
 
-protected theorem DScottContinuous.monotone (D : Set (Set α)) (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
-    (h : DScottContinuous D f) : Monotone f := by
+protected theorem ScottContinuousOn.monotone (D : Set (Set α)) (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
+    (h : ScottContinuousOn D f) : Monotone f := by
   refine' fun a b hab =>
     (h (hD a b hab) (insert_nonempty _ _) (directedOn_pair le_refl hab) _).1
       (mem_image_of_mem _ <| mem_insert _ _)
   rw [IsLUB, upperBounds_insert, upperBounds_singleton,
     inter_eq_self_of_subset_right (Ici_subset_Ici.2 hab)]
   exact isLeast_Ici
-#align scott_continuous.monotone DScottContinuous.monotone
 
 /-- A function between preorders is said to be Scott continuous if it preserves `IsLUB` on directed
 sets. It can be shown that a function is Scott continuous if and only if it is continuous wrt the
@@ -1730,10 +1725,11 @@ def ScottContinuous (f : α → β) : Prop :=
   ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → IsLUB (f '' d) (f a)
 #align scott_continuous ScottContinuous
 
-@[simp] lemma dscottContinuous_univ : DScottContinuous univ f ↔ ScottContinuous f := by
-  simp [DScottContinuous, ScottContinuous]
+@[simp] lemma scottContinuousOn_univ : ScottContinuousOn univ f ↔ ScottContinuous f := by
+  simp [ScottContinuousOn, ScottContinuous]
 
-protected theorem ScottContinuous.monotone (h : ScottContinuous f) : Monotone f := by
-  apply DScottContinuous.monotone univ (by exact fun _ _ _ ↦ trivial) (dscottContinuous_univ.mpr h)
+protected theorem ScottContinuous.monotone (h : ScottContinuous f) : Monotone f :=
+  ScottContinuousOn.monotone univ (by exact fun _ _ _ ↦ trivial) (scottContinuousOn_univ.mpr h)
+#align scott_continuous.monotone ScottContinuous.monotone
 
 end ScottContinuous
