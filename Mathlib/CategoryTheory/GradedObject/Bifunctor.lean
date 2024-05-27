@@ -87,7 +87,7 @@ lemma mapBifunctorMapObj_ext {X : GradedObject I C₁} {Y : GradedObject J C₂}
     {f g : mapBifunctorMapObj F p X Y k ⟶ A}
     (h : ∀ (i : I) (j : J) (hij : p ⟨i, j⟩ = k),
       ιMapBifunctorMapObj F p X Y i j k hij ≫ f = ιMapBifunctorMapObj F p X Y i j k hij ≫ g) :
-      f = g := by
+    f = g := by
   apply mapObj_ext
   rintro ⟨i, j⟩ hij
   exact h i j hij
