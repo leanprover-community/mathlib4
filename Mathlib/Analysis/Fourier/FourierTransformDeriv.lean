@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alex Kontorovich, David Loeffler, Heather Macbeth
+Authors: Alex Kontorovich, David Loeffler, Heather Macbeth, Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Calculus.ParametricIntegral
 import Mathlib.Analysis.Fourier.AddCircle
@@ -367,10 +367,10 @@ lemma norm_iteratedFDeriv_fourierPowSMulRight
     · rw [show ‖L‖ ^ n = ‖L‖ ^ (m + (n - m)) by rw [Nat.add_sub_cancel' hm], pow_add]
       ring
     · simp [Nat.descFactorial_eq_zero_iff_lt.mpr hm]
-  have A : ContDiff ℝ K (fun y ↦ T (fun _ ↦ L y)) := 
+  have A : ContDiff ℝ K (fun y ↦ T (fun _ ↦ L y)) :=
     (ContinuousMultilinearMap.contDiff _).comp (contDiff_pi.2 fun _ ↦ L.contDiff)
-  rw [iteratedFDeriv_const_smul_apply' (hf := (smulRightL ℝ (fun _ ↦ W) 
-    E).isBoundedBilinearMap.contDiff.comp₂ (A.of_le hk) (hf.of_le hk)), 
+  rw [iteratedFDeriv_const_smul_apply' (hf := (smulRightL ℝ (fun _ ↦ W)
+    E).isBoundedBilinearMap.contDiff.comp₂ (A.of_le hk) (hf.of_le hk)),
     norm_smul (β := V [×k]→L[ℝ] (W [×n]→L[ℝ] E))]
   simp only [norm_pow, norm_neg, norm_mul, RCLike.norm_ofNat, Complex.norm_eq_abs, abs_ofReal,
     _root_.abs_of_nonneg pi_nonneg, abs_I, mul_one, mul_assoc]
