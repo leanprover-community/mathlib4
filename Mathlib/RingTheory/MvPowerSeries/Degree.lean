@@ -258,6 +258,31 @@ theorem totalDegree_add_eq_right_of_totalDegree_lt (h : ψ.totalDegree < φ.tota
     (ψ + φ).totalDegree = φ.totalDegree := by
   rw [add_comm, totalDegree_add_eq_left_of_totalDegree_lt h]
 
+variable (σ R)
+
+/-- The subalgebra of `MvPowerSeries`s with bounded degree. -/
+def boundedDegreeSubalgebra : Subalgebra R (MvPowerSeries σ R) where
+  carrier := setOf HasBoundedDegree
+  algebraMap_mem' r := by
+    use 0
+    rw [totalDegree_le_DegreeBound_iff]
+    apply le_of_eq (totalDegree_C r)
+  mul_mem' := by
+    intro a b ⟨na, ha⟩ ⟨nb, hb⟩
+    use na + nb
+    rw [totalDegree_le_DegreeBound_iff] at *
+    apply le_trans totalDegree_mul (add_le_add ha hb)
+  add_mem' := by
+    rintro a b ⟨na, ha⟩ ⟨nb, hb⟩
+    use max na nb
+    rw [totalDegree_le_DegreeBound_iff] at *
+    apply le_trans totalDegree_add
+    apply max_le
+    · apply le_trans ha
+      exact_mod_cast le_max_left na nb
+    · apply le_trans hb
+      exact_mod_cast le_max_right na nb
+
 end MvPowerSeries
 
 end Degree
