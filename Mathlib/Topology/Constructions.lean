@@ -281,8 +281,8 @@ instance : TopologicalSpace (CofiniteTopology X) where
     exact (hs ⟨x, hxs⟩).union (ht ⟨x, hxt⟩)
   isOpen_sUnion := by
     rintro s h ⟨x, t, hts, hzt⟩
-    rw [Set.compl_sUnion]
-    exact Set.Finite.sInter (mem_image_of_mem _ hts) (h t hts ⟨x, hzt⟩)
+    rw [compl_sUnion]
+    exact Finite.sInter (mem_image_of_mem _ hts) (h t hts ⟨x, hzt⟩)
 
 theorem isOpen_iff {s : Set (CofiniteTopology X)} : IsOpen s ↔ s.Nonempty → sᶜ.Finite :=
   Iff.rfl
@@ -675,8 +675,8 @@ alias Continuous.along_snd := Continuous.curry_right
 theorem prod_generateFrom_generateFrom_eq {X Y : Type*} {s : Set (Set X)} {t : Set (Set Y)}
     (hs : ⋃₀ s = univ) (ht : ⋃₀ t = univ) :
     @instTopologicalSpaceProd X Y (generateFrom s) (generateFrom t) =
-      generateFrom (image2 (· ×ˢ ·) s t) :=
-  let G := generateFrom  (image2  (· ×ˢ ·) s t)
+      generateFrom (image2 (·  ×ˢ ·) s t) :=
+  let G := generateFrom  (image2  (·  ×ˢ ·) s t)
   le_antisymm
     (le_generateFrom fun g ⟨u, hu, v, hv, g_eq⟩ =>
       g_eq.symm ▸
@@ -804,12 +804,12 @@ theorem isOpen_prod_iff' {s : Set X} {t : Set Y} :
 #align is_open_prod_iff' isOpen_prod_iff'
 
 theorem closure_prod_eq {s : Set X} {t : Set Y} : closure (s ×ˢ t) = closure s ×ˢ closure t :=
-  Set.ext fun ⟨a, b⟩ => by
+  ext fun ⟨a, b⟩ => by
     simp_rw [mem_prod, mem_closure_iff_nhdsWithin_neBot, nhdsWithin_prod_eq, prod_neBot]
 #align closure_prod_eq closure_prod_eq
 
 theorem interior_prod_eq (s : Set X) (t : Set Y) : interior (s ×ˢ t) = interior s ×ˢ interior t :=
-  Set.ext fun ⟨a, b⟩ => by simp only [mem_interior_iff_mem_nhds, mem_prod, prod_mem_nhds_iff]
+  ext fun ⟨a, b⟩ => by simp only [mem_interior_iff_mem_nhds, mem_prod, prod_mem_nhds_iff]
 #align interior_prod_eq interior_prod_eq
 
 theorem frontier_prod_eq (s : Set X) (t : Set Y) :
@@ -1194,7 +1194,7 @@ theorem Embedding.codRestrict {e : X → Y} (he : Embedding e) (s : Set Y) (hs :
   embedding_of_embedding_compose (he.continuous.codRestrict hs) continuous_subtype_val he
 #align embedding.cod_restrict Embedding.codRestrict
 
-theorem embedding_inclusion {s t : Set X} (h : s ⊆ t) : Embedding (Set.inclusion h) :=
+theorem embedding_inclusion {s t : Set X} (h : s ⊆ t) : Embedding (inclusion h) :=
   embedding_subtype_val.codRestrict _ _
 #align embedding_inclusion embedding_inclusion
 
@@ -1211,7 +1211,7 @@ theorem DiscreteTopology.preimage_of_continuous_injective {X Y : Type*} [Topolog
     [TopologicalSpace Y] (s : Set Y) [DiscreteTopology s] {f : X → Y} (hc : Continuous f)
     (hinj : Function.Injective f) : DiscreteTopology (f ⁻¹' s) :=
   DiscreteTopology.of_continuous_injective (β := s) (Continuous.restrict
-    (by exact fun _ x ↦ x) hc) ((Set.MapsTo.restrict_inj _).mpr <| Set.injOn_of_injective hinj _)
+    (by exact fun _ x ↦ x) hc) ((MapsTo.restrict_inj _).mpr <| injOn_of_injective hinj _)
 
 end Subtype
 
@@ -1349,7 +1349,7 @@ lemma Pi.induced_restrict (S : Set ι) :
     induced (S.restrict) Pi.topologicalSpace =
     ⨅ i ∈ S, induced (eval i) (T i) := by
   simp (config := { unfoldPartialApp := true }) [← iInf_subtype'', ← induced_precomp' ((↑) : S → ι),
-    Set.restrict]
+    restrict]
 
 lemma Pi.induced_restrict_sUnion (𝔖 : Set (Set ι)) :
     induced (⋃₀ 𝔖).restrict (Pi.topologicalSpace (Y := fun i : (⋃₀ 𝔖) ↦ π i)) =
@@ -1422,27 +1422,27 @@ theorem isOpen_pi_iff {s : Set (∀ a, π a)} :
   refine forall₂_congr fun a _ => ⟨?_, ?_⟩
   · rintro ⟨I, t, ⟨h1, h2⟩⟩
     refine ⟨I, fun a => eval a '' (I : Set ι).pi fun a => (h1 a).choose, fun i hi => ?_, ?_⟩
-    · simp_rw [Set.eval_image_pi (Finset.mem_coe.mpr hi)
+    · simp_rw [eval_image_pi (Finset.mem_coe.mpr hi)
           (pi_nonempty_iff.mpr fun i => ⟨_, fun _ => (h1 i).choose_spec.2.2⟩)]
       exact (h1 i).choose_spec.2
     · exact Subset.trans
-        (Set.pi_mono fun i hi => (Set.eval_image_pi_subset hi).trans (h1 i).choose_spec.1) h2
+        (pi_mono fun i hi => (eval_image_pi_subset hi).trans (h1 i).choose_spec.1) h2
   · rintro ⟨I, t, ⟨h1, h2⟩⟩
-    refine ⟨I, fun a => ite (a ∈ I) (t a) Set.univ, fun i => ?_, ?_⟩
+    refine ⟨I, fun a => ite (a ∈ I) (t a) univ, fun i => ?_, ?_⟩
     · by_cases hi : i ∈ I
       · use t i
         simp_rw [if_pos hi]
         exact ⟨Subset.rfl, (h1 i) hi⟩
-      · use Set.univ
+      · use univ
         simp_rw [if_neg hi]
         exact ⟨Subset.rfl, isOpen_univ, mem_univ _⟩
-    · rw [← Set.univ_pi_ite]
-      simp only [← ite_and, ← Finset.mem_coe, and_self_iff, Set.univ_pi_ite, h2]
+    · rw [← univ_pi_ite]
+      simp only [← ite_and, ← Finset.mem_coe, and_self_iff, univ_pi_ite, h2]
 #align is_open_pi_iff isOpen_pi_iff
 
 theorem isOpen_pi_iff' [Finite ι] {s : Set (∀ a, π a)} :
     IsOpen s ↔
-      ∀ f, f ∈ s → ∃ u : ∀ a, Set (π a), (∀ a, IsOpen (u a) ∧ f a ∈ u a) ∧ Set.univ.pi u ⊆ s := by
+      ∀ f, f ∈ s → ∃ u : ∀ a, Set (π a), (∀ a, IsOpen (u a) ∧ f a ∈ u a) ∧ univ.pi u ⊆ s := by
   cases nonempty_fintype ι
   rw [isOpen_iff_nhds]
   simp_rw [le_principal_iff, nhds_pi, Filter.mem_pi', mem_nhds_iff]
@@ -1451,8 +1451,8 @@ theorem isOpen_pi_iff' [Finite ι] {s : Set (∀ a, π a)} :
     refine
       ⟨fun i => (h1 i).choose,
         ⟨fun i => (h1 i).choose_spec.2,
-          (Set.pi_mono fun i _ => (h1 i).choose_spec.1).trans (Subset.trans ?_ h2)⟩⟩
-    rw [← Set.pi_inter_compl (I : Set ι)]
+          (pi_mono fun i _ => (h1 i).choose_spec.1).trans (Subset.trans ?_ h2)⟩⟩
+    rw [← pi_inter_compl (I : Set ι)]
     exact inter_subset_left _ _
   · exact fun ⟨u, ⟨h1, _⟩⟩ =>
       ⟨Finset.univ, u, ⟨fun i => ⟨u i, ⟨rfl.subset, h1 i⟩⟩, by rwa [Finset.coe_univ]⟩⟩
@@ -1586,12 +1586,12 @@ theorem isOpenMap_sigmaMk {i : ι} : IsOpenMap (@Sigma.mk ι σ i) := by
   rw [isOpen_sigma_iff]
   intro j
   rcases eq_or_ne j i with (rfl | hne)
-  · rwa [Set.preimage_image_eq _ sigma_mk_injective]
+  · rwa [preimage_image_eq _ sigma_mk_injective]
   · rw [preimage_image_sigmaMk_of_ne hne]
     exact isOpen_empty
 #align is_open_map_sigma_mk isOpenMap_sigmaMk
 
-theorem isOpen_range_sigmaMk {i : ι} : IsOpen (Set.range (@Sigma.mk ι σ i)) :=
+theorem isOpen_range_sigmaMk {i : ι} : IsOpen (range (@Sigma.mk ι σ i)) :=
   isOpenMap_sigmaMk.isOpen_range
 #align is_open_range_sigma_mk isOpen_range_sigmaMk
 
@@ -1600,12 +1600,12 @@ theorem isClosedMap_sigmaMk {i : ι} : IsClosedMap (@Sigma.mk ι σ i) := by
   rw [isClosed_sigma_iff]
   intro j
   rcases eq_or_ne j i with (rfl | hne)
-  · rwa [Set.preimage_image_eq _ sigma_mk_injective]
+  · rwa [preimage_image_eq _ sigma_mk_injective]
   · rw [preimage_image_sigmaMk_of_ne hne]
     exact isClosed_empty
 #align is_closed_map_sigma_mk isClosedMap_sigmaMk
 
-theorem isClosed_range_sigmaMk {i : ι} : IsClosed (Set.range (@Sigma.mk ι σ i)) :=
+theorem isClosed_range_sigmaMk {i : ι} : IsClosed (range (@Sigma.mk ι σ i)) :=
   isClosedMap_sigmaMk.isClosed_range
 #align is_closed_range_sigma_mk isClosed_range_sigmaMk
 
@@ -1667,7 +1667,7 @@ theorem inducing_sigma {f : Sigma σ → X} :
   refine ⟨fun h ↦ ⟨fun i ↦ h.comp embedding_sigmaMk.1, fun i ↦ ?_⟩, ?_⟩
   · rcases h.isOpen_iff.1 (isOpen_range_sigmaMk (i := i)) with ⟨U, hUo, hU⟩
     refine ⟨U, hUo, ?_⟩
-    simpa [Set.ext_iff] using hU
+    simpa [ext_iff] using hU
   · refine fun ⟨h₁, h₂⟩ ↦ inducing_iff_nhds.2 fun ⟨i, x⟩ ↦ ?_
     rw [Sigma.nhds_mk, (h₁ i).nhds_eq_comap, comp_apply, ← comap_comap, map_comap_of_mem]
     rcases h₂ i with ⟨U, hUo, hU⟩
@@ -1780,7 +1780,7 @@ theorem Filter.eventually_nhdsSet_prod_iff {p : X × Y → Prop} :
       ∀ x ∈ s, ∀ y ∈ t,
           ∃ px : X → Prop, (∀ᶠ x' in 𝓝 x, px x') ∧ ∃ py : Y → Prop, (∀ᶠ y' in 𝓝 y, py y') ∧
             ∀ {x : X}, px x → ∀ {y : Y}, py y → p (x, y) := by
-  simp_rw [eventually_nhdsSet_iff_forall, Set.forall_prod_set, nhds_prod_eq, eventually_prod_iff]
+  simp_rw [eventually_nhdsSet_iff_forall, forall_prod_set, nhds_prod_eq, eventually_prod_iff]
 
 theorem Filter.Eventually.prod_nhdsSet {p : X × Y → Prop} {px : X → Prop} {py : Y → Prop}
     (hp : ∀ {x : X}, px x → ∀ {y : Y}, py y → p (x, y)) (hs : ∀ᶠ x in 𝓝ˢ s, px x)
