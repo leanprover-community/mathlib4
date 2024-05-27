@@ -167,7 +167,7 @@ lemma summable_one_div_norm_rpow {k : ℝ} (hk : 2 < k) :
 /-- The sum defining the Eisenstein series (of weight `k` and level `Γ(N)` with congruence
 condition `a : Fin 2 → ZMod N`) converges locally uniformly on `ℍ`. -/
 theorem eisensteinSeries_tendstoLocallyUniformly {k : ℤ} (hk : 3 ≤ k) {N : ℕ} (a : Fin 2 → ZMod N) :
-    TendstoLocallyUniformly (fun (s : Finset (gammaSet N a)) ↦ (∑ x in s, eisSummand k x ·))
+    TendstoLocallyUniformly (fun (s : Finset (gammaSet N a)) ↦ (∑ x ∈ s, eisSummand k x ·))
       (eisensteinSeries a k ·) Filter.atTop := by
   have hk' : (2 : ℝ) < k := by norm_cast
   have p_sum : Summable fun x : gammaSet N a ↦ ‖x.val‖ ^ (-k) :=
