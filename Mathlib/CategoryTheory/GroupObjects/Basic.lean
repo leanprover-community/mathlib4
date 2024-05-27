@@ -20,8 +20,10 @@ structure GroupObject where
   mul_one : prod.map (𝟙 X) one ≫ mul = (prod.rightUnitor X).hom := by aesop_cat
   mul_assoc : prod.map mul (𝟙 X) ≫ mul =
     (Limits.prod.associator X X X).hom ≫ prod.map (𝟙 X) mul ≫ mul := by aesop_cat
-  mul_left_inv : prod.lift inv (𝟙 X) ≫ mul = 𝟙 X := by aesop_cat
-  mul_right_inv : prod.lift (𝟙 X) inv ≫ mul = 𝟙 X := by aesop_cat
+  mul_left_inv : prod.lift inv (𝟙 X) ≫ mul = (Limits.uniqueToTerminal X).default ≫ one :=
+    by aesop_cat
+  mul_right_inv : prod.lift (𝟙 X) inv ≫ mul = (Limits.uniqueToTerminal X).default ≫ one :=
+    by aesop_cat
 
 attribute [reassoc] GroupObject.one_mul GroupObject.mul_one
 
@@ -168,6 +170,50 @@ instance uniqueHomFromTrivial (A : GroupObject C) : Unique (trivial C ⟶ A) whe
     ext; simp
     rw [← Category.id_comp f.hom]
     erw [f.one_hom]
+
+
+/- The Yoneda embedding.-/
+
+def HomAsGroup (X : C) (G : GroupObject C) : Group (X ⟶ G.X) where
+  mul f g := prod.lift f g ≫ G.mul
+  mul_assoc f g h := by
+    change prod.lift (_ ≫ G.mul) _ ≫ G.mul = prod.lift _ (_ ≫ G.mul) ≫ G.mul
+    have h₁ : prod.lift (prod.lift f g ≫ G.mul) h = prod.lift (prod.lift f g) h ≫
+        prod.map G.mul (𝟙 G.X) := by simp only [prod.lift_map, Category.comp_id]
+    have h₂ : prod.lift f (prod.lift g h ≫ G.mul) = prod.lift f (prod.lift g h) ≫
+        prod.map (𝟙 G.X) G.mul := by simp only [prod.lift_map, Category.comp_id]
+    rw [h₁, h₂, Category.assoc, Category.assoc, G.mul_assoc]
+    rw [← Category.assoc]; congr 1
+    simp only [prod.associator_hom, prod.comp_lift, limit.lift_π_assoc, BinaryFan.mk_pt,
+      pair_obj_left, BinaryFan.π_app_left, BinaryFan.mk_fst, limit.lift_π, BinaryFan.π_app_right,
+      BinaryFan.mk_snd]
+  one := (Limits.uniqueToTerminal X).default ≫ G.one
+  one_mul f := by
+    change _ ≫ G.mul = _
+    have : ∀ (h : X ⟶ ⊤_ C), prod.lift (h ≫ G.one) f = prod.lift h f ≫
+      prod.map G.one (𝟙 _) := by simp only [prod.lift_map, Category.comp_id, implies_true]
+    erw [this]
+    rw [Category.assoc, G.one_mul]
+    simp only [prod.leftUnitor_hom, limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_right,
+      BinaryFan.mk_snd]
+  mul_one f := by
+    change _ ≫ G.mul = _
+    have : ∀ (h : X ⟶ ⊤_ C), prod.lift f (h ≫ G.one) = prod.lift f h ≫
+      prod.map (𝟙 _) G.one := by simp only [prod.lift_map, Category.comp_id, implies_true]
+    erw [this]
+    rw [Category.assoc, G.mul_one]
+    simp only [prod.rightUnitor_hom, limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_left,
+      BinaryFan.mk_fst]
+  inv f := f ≫ G.inv
+  mul_left_inv f := by
+    change prod.lift (_ ≫ G.inv) _ ≫ G.mul = _
+    have : prod.lift (f ≫ G.inv) f = f ≫ prod.lift G.inv (𝟙 _) := by
+      simp only [prod.comp_lift, Category.comp_id]
+    rw [this, Category.assoc, G.mul_left_inv, ← Category.assoc,
+      Subsingleton.elim (f ≫ default) default]
+    rfl
+
+
 
 
 theorem inv_hom {G H : GroupObject C} (f : G ⟶ H) :
