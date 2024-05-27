@@ -153,7 +153,7 @@ theorem cond_inter_self (hms : MeasurableSet s) (t : Set Ω) : μ[s ∩ t|s] = �
 #align probability_theory.cond_inter_self ProbabilityTheory.cond_inter_self
 
 theorem inter_pos_of_cond_ne_zero (hms : MeasurableSet s) (hcst : μ[t|s] ≠ 0) : 0 < μ (s ∩ t) := by
-  refine pos_iff_ne_zero.mpr (right_ne_zero_of_mul ?_)
+  refine' pos_iff_ne_zero.mpr (right_ne_zero_of_mul _)
   · exact (μ s)⁻¹
   convert hcst
   simp [hms, Set.inter_comm, cond]
