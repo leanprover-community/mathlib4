@@ -32,7 +32,7 @@ abbrev SimplexAlgorithmM := ExceptT SimplexAlgorithmException <| StateM SimplexA
 --   dbg_trace s!"free: {table.free}"
 --   dbg_trace s!"basic: {table.basic}"
 --   for ⟨b, b_idx⟩ in table.basic.zipWithIndex do
---     let arr : List Rat := (List.range table.free.size).map fun idx => table.mat[b_idx]!.findD idx 0
+--    let arr : List Rat := (List.range table.free.size).map fun idx => table.mat[b_idx]!.findD idx 0
 --     dbg_trace arr
 --   dbg_trace "~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
@@ -87,7 +87,8 @@ def chooseEnteringVar : SimplexAlgorithmM Nat := do
   let mut enterIdxOpt : Option Nat := .none -- index of entering variable in the `free` array
   let mut minIdx := 0
   for i in [:(← get).table.free.size - 1] do
-    if (← get).table.mat[0]!.findD i 0 > 0 && (enterIdxOpt.isNone || (← get).table.free[i]! < minIdx) then
+    if (← get).table.mat[0]!.findD i 0 > 0 &&
+        (enterIdxOpt.isNone || (← get).table.free[i]! < minIdx) then
       enterIdxOpt := i
       minIdx := (← get).table.free[i]!
 

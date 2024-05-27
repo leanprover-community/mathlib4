@@ -77,7 +77,8 @@ def extractSolution (table : Table) : Array Rat := Id.run do
   return ans
 
 -- /--
--- Finds a nonnegative vector `v`, such that `A v = 0` and some of its coordinates from `strictCoords`
+-- Finds a nonnegative vector `v`, such that `A v = 0` and some of its coordinates from
+-- `strictCoords`
 -- are positive, in the case such `v` exists. If not, returns zero vector. The latter prevents
 -- `linarith` from doing useless post-processing.
 -- -/
@@ -98,7 +99,7 @@ def extractSolution (table : Table) : Array Rat := Id.run do
 --     runSimplexAlgorithm
 --     return extractSolution (← get).table
 --   catch
---   | .infeasible => return Array.mkArray ((← get).table.basic.size + (← get).table.free.size - 3) 0
+--  | .infeasible => return Array.mkArray ((← get).table.basic.size + (← get).table.free.size - 3) 0
 
 /-- TODO: write docs -/
 def findPositiveVectorSparse {n m : Nat} (A : SparseMatrix n m) (strictIndexes : List Nat) :
