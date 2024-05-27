@@ -741,8 +741,8 @@ def orderIsoPUnitSumLex : WithBot α ≃o PUnit ⊕ₗ α :=
     simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk,
       Equiv.sumComm_apply, swap, Lex.toLex_le_toLex, le_refl]
     rcases a with (a | _) <;> rcases b with (b | _)
-    · simp only [elim_inr, lex_inl_inl, none_le]
-    · simp only [elim_inr, elim_inl, Lex.sep, none_le]
+    · simp only [elim_inr, lex_inl_inl, bot_le, none_eq_bot]
+    · simp only [elim_inr, elim_inl, Lex.sep, bot_le, none_eq_bot]
     · simp only [elim_inl, elim_inr, lex_inr_inl, false_iff]
       exact not_coe_le_bot _
     · simp only [elim_inl, lex_inr_inr, coe_le_coe, WithBot.some_eq_coe]
