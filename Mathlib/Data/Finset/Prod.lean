@@ -22,6 +22,7 @@ This file defines finset constructions on the product type `α × β`. Beware no
   `a, b ∈ s` and `a ≠ b`.
 -/
 
+assert_not_exists MonoidWithZero
 
 open Multiset
 

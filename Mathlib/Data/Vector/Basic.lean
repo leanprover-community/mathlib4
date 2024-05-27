@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.BigOperators.Group.List
-import Mathlib.Data.Vector
+import Mathlib.Data.Vector.Defs
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.InsertNth
@@ -160,8 +160,7 @@ def _root_.Equiv.vectorEquivFin (α : Type*) (n : ℕ) : Vector α n ≃ (Fin n 
   ⟨Vector.get, Vector.ofFn, Vector.ofFn_get, fun f => funext <| Vector.get_ofFn f⟩
 #align equiv.vector_equiv_fin Equiv.vectorEquivFin
 
-theorem get_tail (x : Vector α n) (i) :
-    x.tail.get i = x.get ⟨i.1 + 1, lt_tsub_iff_right.mp i.2⟩ := by
+theorem get_tail (x : Vector α n) (i) : x.tail.get i = x.get ⟨i.1 + 1, by omega⟩ := by
   cases' i with i ih; dsimp
   rcases x with ⟨_ | _, h⟩ <;> try rfl
   rw [List.length] at h
@@ -776,9 +775,7 @@ theorem replicate_succ (val : α) :
 section Append
 variable (ys : Vector α m)
 
-@[simp]
-theorem get_append_cons_zero : get (append (x ::ᵥ xs) ys) ⟨0, by simp⟩ = x :=
-  rfl
+@[simp] lemma get_append_cons_zero : get (append (x ::ᵥ xs) ys) ⟨0, by omega⟩ = x := rfl
 
 @[simp]
 theorem get_append_cons_succ {i : Fin (n + m)} {h} :
