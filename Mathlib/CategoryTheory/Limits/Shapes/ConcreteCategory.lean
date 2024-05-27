@@ -18,7 +18,7 @@ the preservation of products and pullbacks in order to describe these limits in 
 concrete category `C`.
 
 If `F : J → C` is a family of objects in `C`, we define a bijection
-`Limits.Concrete.productEquiv F : (forget C).obj (∏ F) ≃ ∀ j, F j`.
+`Limits.Concrete.productEquiv F : (forget C).obj (∏ᶜ F) ≃ ∀ j, F j`.
 
 Similarly, if `f₁ : X₁ ⟶ S` and `f₂ : X₂ ⟶ S` are two morphisms, the elements
 in `pullback f₁ f₂` are identified by `Limits.Concrete.pullbackEquiv`
@@ -44,13 +44,13 @@ section ProductEquiv
 variable [ConcreteCategory.{max w v} C] {J : Type w} (F : J → C)
   [HasProduct F] [PreservesLimit (Discrete.functor F) (forget C)]
 
-/-- The equivalence `(forget C).obj (∏ F) ≃ ∀ j, F j` if `F : J → C` is a family of objects
+/-- The equivalence `(forget C).obj (∏ᶜ F) ≃ ∀ j, F j` if `F : J → C` is a family of objects
 in a concrete category `C`. -/
-noncomputable def productEquiv : (forget C).obj (∏ F) ≃ ∀ j, F j :=
+noncomputable def productEquiv : (forget C).obj (∏ᶜ F) ≃ ∀ j, F j :=
   ((PreservesProduct.iso (forget C) F) ≪≫ (Types.productIso.{w, v} (fun j => F j))).toEquiv
 
 @[simp]
-lemma productEquiv_apply_apply (x : (forget C).obj (∏ F)) (j : J) :
+lemma productEquiv_apply_apply (x : (forget C).obj (∏ᶜ F)) (j : J) :
     productEquiv F x j = Pi.π F j x :=
   congr_fun (piComparison_comp_π (forget C) F j) x
 
@@ -70,7 +70,7 @@ variable {J : Type w} (f : J → C) [HasProduct f] {D : Type t} [Category.{r} D]
   [PreservesLimitsOfShape WalkingCospan (forget D)]
   [PreservesLimit (Discrete.functor fun b ↦ F.toPrefunctor.obj (f b)) (forget D)]
 
-lemma Pi.map_ext (x y : F.obj (∏ f : C))
+lemma Pi.map_ext (x y : F.obj (∏ᶜ f : C))
     (h : ∀ i, F.map (Pi.π f i) x = F.map (Pi.π f i) y) : x = y := by
   apply ConcreteCategory.injective_of_mono_of_preservesPullback (PreservesProduct.iso F f).hom
   apply @Concrete.limit_ext.{w, r, t} D
