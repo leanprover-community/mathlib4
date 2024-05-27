@@ -67,7 +67,7 @@ theorem coeffIntegerNormalization_mem_support (p : S[X]) (i : ℕ)
 /-- `integerNormalization g` normalizes `g` to have integer coefficients
 by clearing the denominators -/
 noncomputable def integerNormalization (p : S[X]) : R[X] :=
-  ∑ i in p.support, monomial i (coeffIntegerNormalization M p i)
+  ∑ i ∈ p.support, monomial i (coeffIntegerNormalization M p i)
 #align is_localization.integer_normalization IsLocalization.integerNormalization
 
 @[simp]

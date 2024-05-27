@@ -127,7 +127,7 @@ theorem le_two_mul_of_factorization_centralBinom_pos
 
 /-- A binomial coefficient is the product of its prime factors, which are at most `n`. -/
 theorem prod_pow_factorization_choose (n k : ℕ) (hkn : k ≤ n) :
-    (∏ p in Finset.range (n + 1), p ^ (Nat.choose n k).factorization p) = choose n k := by
+    (∏ p ∈ Finset.range (n + 1), p ^ (Nat.choose n k).factorization p) = choose n k := by
   conv => -- Porting note: was `nth_rw_rhs`
     rhs
     rw [← factorization_prod_pow_eq_self (choose_pos hkn).ne']
@@ -144,7 +144,7 @@ theorem prod_pow_factorization_choose (n k : ℕ) (hkn : k ≤ n) :
 /-- The `n`th central binomial coefficient is the product of its prime factors, which are
 at most `2n`. -/
 theorem prod_pow_factorization_centralBinom (n : ℕ) :
-    (∏ p in Finset.range (2 * n + 1), p ^ (centralBinom n).factorization p) = centralBinom n := by
+    (∏ p ∈ Finset.range (2 * n + 1), p ^ (centralBinom n).factorization p) = centralBinom n := by
   apply prod_pow_factorization_choose
   omega
 #align nat.prod_pow_factorization_central_binom Nat.prod_pow_factorization_centralBinom

@@ -1096,13 +1096,13 @@ namespace Finset
 variable [Semiring α] [AddCommMonoid β] [Module α β] {s : Finset ι} {σ : Perm ι}
 
 theorem sum_smul_sum_eq_sum_perm (hσ : σ.IsCycleOn s) (f : ι → α) (g : ι → β) :
-    ((∑ i in s, f i) • ∑ i in s, g i) = ∑ k in range s.card, ∑ i in s, f i • g ((σ ^ k) i) := by
+    ((∑ i ∈ s, f i) • ∑ i ∈ s, g i) = ∑ k ∈ range s.card, ∑ i ∈ s, f i • g ((σ ^ k) i) := by
   simp_rw [sum_smul_sum, product_self_eq_disjiUnion_perm hσ, sum_disjiUnion, sum_map]
   rfl
 #align finset.sum_smul_sum_eq_sum_perm Finset.sum_smul_sum_eq_sum_perm
 
 theorem sum_mul_sum_eq_sum_perm (hσ : σ.IsCycleOn s) (f g : ι → α) :
-    ((∑ i in s, f i) * ∑ i in s, g i) = ∑ k in range s.card, ∑ i in s, f i * g ((σ ^ k) i) :=
+    ((∑ i ∈ s, f i) * ∑ i ∈ s, g i) = ∑ k ∈ range s.card, ∑ i ∈ s, f i * g ((σ ^ k) i) :=
   sum_smul_sum_eq_sum_perm hσ f g
 #align finset.sum_mul_sum_eq_sum_perm Finset.sum_mul_sum_eq_sum_perm
 

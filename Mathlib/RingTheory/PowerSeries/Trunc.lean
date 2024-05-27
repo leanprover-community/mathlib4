@@ -38,7 +38,7 @@ open Finset Nat
 
 /-- The `n`th truncation of a formal power series to a polynomial -/
 def trunc (n : ℕ) (φ : R⟦X⟧) : R[X] :=
-  ∑ m in Ico 0 n, Polynomial.monomial m (coeff R m φ)
+  ∑ m ∈ Ico 0 n, Polynomial.monomial m (coeff R m φ)
 #align power_series.trunc PowerSeries.trunc
 
 theorem coeff_trunc (m) (n) (φ : R⟦X⟧) :
@@ -106,7 +106,7 @@ theorem degree_trunc_lt (f : R⟦X⟧) (n) : (trunc n f).degree < n := by
   · rfl
 
 theorem eval₂_trunc_eq_sum_range {S : Type*} [Semiring S] (s : S) (G : R →+* S) (n) (f : R⟦X⟧) :
-    (trunc n f).eval₂ G s = ∑ i in range n, G (coeff R i f) * s ^ i := by
+    (trunc n f).eval₂ G s = ∑ i ∈ range n, G (coeff R i f) * s ^ i := by
   cases n with
   | zero =>
     rw [trunc_zero', range_zero, sum_empty, eval₂_zero]

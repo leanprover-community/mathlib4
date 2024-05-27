@@ -258,7 +258,7 @@ theorem Multiset.prod_eq_prod_coe [CommMonoid α] (m : Multiset α) : m.prod = �
 
 @[to_additive]
 theorem Multiset.prod_eq_prod_toEnumFinset [CommMonoid α] (m : Multiset α) :
-    m.prod = ∏ x in m.toEnumFinset, x.1 := by
+    m.prod = ∏ x ∈ m.toEnumFinset, x.1 := by
   congr
   simp
 #align multiset.prod_eq_prod_to_enum_finset Multiset.prod_eq_prod_toEnumFinset
@@ -266,7 +266,7 @@ theorem Multiset.prod_eq_prod_toEnumFinset [CommMonoid α] (m : Multiset α) :
 
 @[to_additive]
 theorem Multiset.prod_toEnumFinset {β : Type*} [CommMonoid β] (m : Multiset α) (f : α → ℕ → β) :
-    ∏ x in m.toEnumFinset, f x.1 x.2 = ∏ x : m, f x x.2 := by
+    ∏ x ∈ m.toEnumFinset, f x.1 x.2 = ∏ x : m, f x x.2 := by
   rw [Fintype.prod_equiv m.coeEquiv (fun x ↦ f x x.2) fun x ↦ f x.1.1 x.1.2]
   · rw [← m.toEnumFinset.prod_coe_sort fun x ↦ f x.1 x.2]
   · intro x

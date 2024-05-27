@@ -124,7 +124,7 @@ lemma aleph0_le_rank_of_isEmpty_oreSet (hS : IsEmpty (OreLocalization.OreSet R�
   refine Cardinal.aleph0_le.mpr fun n ↦ ?_
   suffices LinearIndependent Rᵐᵒᵖ (fun (i : Fin n) ↦ s ^ (i : ℕ) * r) by
     simpa using this.cardinal_lift_le_rank
-  suffices ∀ (g : ℕ → Rᵐᵒᵖ) (x), (∑ i in Finset.range n, g i • (s ^ (i + x) * r)) = 0 →
+  suffices ∀ (g : ℕ → Rᵐᵒᵖ) (x), (∑ i ∈ Finset.range n, g i • (s ^ (i + x) * r)) = 0 →
       ∀ i < n, g i = 0 by
     refine Fintype.linearIndependent_iff.mpr fun g hg i ↦ ?_
     simpa only [dif_pos i.prop] using this (fun i ↦ if h : i < n then g ⟨i, h⟩ else 0) 0

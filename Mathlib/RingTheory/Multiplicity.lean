@@ -591,7 +591,7 @@ protected theorem mul {p a b : α} (hp : Prime p) :
 #align multiplicity.mul multiplicity.mul
 
 theorem Finset.prod {β : Type*} {p : α} (hp : Prime p) (s : Finset β) (f : β → α) :
-    multiplicity p (∏ x in s, f x) = ∑ x in s, multiplicity p (f x) := by
+    multiplicity p (∏ x ∈ s, f x) = ∑ x ∈ s, multiplicity p (f x) := by
   classical
     induction' s using Finset.induction with a s has ih h
     · simp only [Finset.sum_empty, Finset.prod_empty]

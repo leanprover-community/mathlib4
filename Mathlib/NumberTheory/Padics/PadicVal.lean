@@ -485,11 +485,11 @@ open BigOperators
 /-- A finite sum of rationals with positive `p`-adic valuation has positive `p`-adic valuation
 (if the sum is non-zero). -/
 theorem sum_pos_of_pos {n : ℕ} {F : ℕ → ℚ} (hF : ∀ i, i < n → 0 < padicValRat p (F i))
-    (hn0 : ∑ i in Finset.range n, F i ≠ 0) : 0 < padicValRat p (∑ i in Finset.range n, F i) := by
+    (hn0 : ∑ i ∈ Finset.range n, F i ≠ 0) : 0 < padicValRat p (∑ i ∈ Finset.range n, F i) := by
   induction' n with d hd
   · exact False.elim (hn0 rfl)
   · rw [Finset.sum_range_succ] at hn0 ⊢
-    by_cases h : ∑ x : ℕ in Finset.range d, F x = 0
+    by_cases h : ∑ x ∈ Finset.range d, F x = 0
     · rw [h, zero_add]
       exact hF d (lt_add_one _)
     · refine lt_of_lt_of_le ?_ (min_le_padicValRat_add hn0)
@@ -501,7 +501,7 @@ theorem sum_pos_of_pos {n : ℕ} {F : ℕ → ℚ} (hF : ∀ i, i < n → 0 < pa
 number, then the p-adic valuation of their sum is also greater than the same rational number. -/
 theorem lt_sum_of_lt {p j : ℕ} [hp : Fact (Nat.Prime p)] {F : ℕ → ℚ} {S : Finset ℕ}
     (hS : S.Nonempty) (hF : ∀ i, i ∈ S → padicValRat p (F j) < padicValRat p (F i))
-    (hn1 : ∀ i : ℕ, 0 < F i) : padicValRat p (F j) < padicValRat p (∑ i in S, F i) := by
+    (hn1 : ∀ i : ℕ, 0 < F i) : padicValRat p (F j) < padicValRat p (∑ i ∈ S, F i) := by
   induction' hS using Finset.Nonempty.cons_induction with k s S' Hnot Hne Hind
   · rw [Finset.sum_singleton]
     exact hF k (by simp)
@@ -707,7 +707,7 @@ largest multiple of `p` below `n`, i.e. `(p * ⌊n / p⌋)!`. -/
 The `p`-adic valuation of `n!` is the sum of the quotients `n / p ^ i`. This sum is expressed
 over the finset `Ico 1 b` where `b` is any bound greater than `log p n`. -/
 theorem padicValNat_factorial {n b : ℕ} [hp : Fact p.Prime] (hnb : log p n < b) :
-    padicValNat p (n !) = ∑ i in Finset.Ico 1 b, n / p ^ i :=
+    padicValNat p (n !) = ∑ i ∈ Finset.Ico 1 b, n / p ^ i :=
   PartENat.natCast_inj.mp ((padicValNat_def' (Nat.Prime.ne_one hp.out) <| factorial_pos _) ▸
       Prime.multiplicity_factorial hp.out hnb)
 

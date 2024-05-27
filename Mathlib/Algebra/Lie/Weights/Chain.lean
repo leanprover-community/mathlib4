@@ -190,8 +190,8 @@ lemma exists_forall_mem_corootSpace_smul_add_eq_zero
     (hα : α ≠ 0) (hχ : weightSpace M χ ≠ ⊥) :
     ∃ a b : ℤ, 0 < b ∧ ∀ x ∈ corootSpace α, (a • α + b • χ) x = 0 := by
   obtain ⟨p, hp₀, q, hq₀, hp, hq⟩ := exists₂_weightSpace_smul_add_eq_bot M α χ hα
-  let a := ∑ i in Finset.Ioo p q, finrank R (weightSpace M (i • α + χ)) • i
-  let b := ∑ i in Finset.Ioo p q, finrank R (weightSpace M (i • α + χ))
+  let a := ∑ i ∈ Finset.Ioo p q, finrank R (weightSpace M (i • α + χ)) • i
+  let b := ∑ i ∈ Finset.Ioo p q, finrank R (weightSpace M (i • α + χ))
   have hb : 0 < b := by
     replace hχ : Nontrivial (weightSpace M χ) := by rwa [LieSubmodule.nontrivial_iff_ne_bot]
     refine Finset.sum_pos' (fun _ _ ↦ zero_le _) ⟨0, Finset.mem_Ioo.mpr ⟨hp₀, hq₀⟩, ?_⟩

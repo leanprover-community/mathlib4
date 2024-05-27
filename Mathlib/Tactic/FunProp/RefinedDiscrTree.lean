@@ -23,7 +23,7 @@ I document here what features are not in the original:
   De Bruijn index to identify it.
 
   For example, this allows for more specific matching with the left hand side of
-  `∑ i in range n, i = n * (n - 1) / 2`, which is indexed by
+  `∑ i ∈ range n, i = n * (n - 1) / 2`, which is indexed by
   `[⟨Finset.sum, 5⟩, ⟨Nat, 0⟩, ⟨Nat, 0⟩, *0, ⟨Finset.Range, 1⟩, *1, λ, ⟨#0, 0⟩]`.
 
 - The key `Key.star` takes a `Nat` identifier as an argument. For example,

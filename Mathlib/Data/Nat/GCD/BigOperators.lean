@@ -36,11 +36,11 @@ theorem coprime_multiset_prod_right_iff {k : ℕ} {m : Multiset ℕ} :
   induction m using Quotient.inductionOn; simpa using coprime_list_prod_right_iff
 
 theorem coprime_prod_left_iff {t : Finset ι} {s : ι → ℕ} {x : ℕ} :
-    Coprime (∏ i in t, s i) x ↔ ∀ i ∈ t, Coprime (s i) x := by
+    Coprime (∏ i ∈ t, s i) x ↔ ∀ i ∈ t, Coprime (s i) x := by
   simpa using coprime_multiset_prod_left_iff (m := t.val.map s)
 
 theorem coprime_prod_right_iff {x : ℕ} {t : Finset ι} {s : ι → ℕ} :
-    Coprime x (∏ i in t, s i) ↔ ∀ i ∈ t, Coprime x (s i) := by
+    Coprime x (∏ i ∈ t, s i) ↔ ∀ i ∈ t, Coprime x (s i) := by
   simpa using coprime_multiset_prod_right_iff (m := t.val.map s)
 
 /-- See `IsCoprime.prod_left` for the corresponding lemma about `IsCoprime` -/

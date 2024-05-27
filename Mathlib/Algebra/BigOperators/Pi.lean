@@ -39,7 +39,7 @@ end Pi
 
 @[to_additive (attr := simp)]
 theorem Finset.prod_apply {α : Type*} {β : α → Type*} {γ} [∀ a, CommMonoid (β a)] (a : α)
-    (s : Finset γ) (g : γ → ∀ a, β a) : (∏ c in s, g c) a = ∏ c in s, g c a :=
+    (s : Finset γ) (g : γ → ∀ a, β a) : (∏ c ∈ s, g c) a = ∏ c ∈ s, g c a :=
   map_prod (Pi.evalMonoidHom β a) _ _
 #align finset.prod_apply Finset.prod_apply
 #align finset.sum_apply Finset.sum_apply
@@ -47,7 +47,7 @@ theorem Finset.prod_apply {α : Type*} {β : α → Type*} {γ} [∀ a, CommMono
 /-- An 'unapplied' analogue of `Finset.prod_apply`. -/
 @[to_additive "An 'unapplied' analogue of `Finset.sum_apply`."]
 theorem Finset.prod_fn {α : Type*} {β : α → Type*} {γ} [∀ a, CommMonoid (β a)] (s : Finset γ)
-    (g : γ → ∀ a, β a) : ∏ c in s, g c = fun a ↦ ∏ c in s, g c a :=
+    (g : γ → ∀ a, β a) : ∏ c ∈ s, g c = fun a ↦ ∏ c ∈ s, g c a :=
   funext fun _ ↦ Finset.prod_apply _ _ _
 #align finset.prod_fn Finset.prod_fn
 #align finset.sum_fn Finset.sum_fn
@@ -61,7 +61,7 @@ theorem Fintype.prod_apply {α : Type*} {β : α → Type*} {γ : Type*} [Fintyp
 
 @[to_additive prod_mk_sum]
 theorem prod_mk_prod {α β γ : Type*} [CommMonoid α] [CommMonoid β] (s : Finset γ) (f : γ → α)
-    (g : γ → β) : (∏ x in s, f x, ∏ x in s, g x) = ∏ x in s, (f x, g x) :=
+    (g : γ → β) : (∏ x ∈ s, f x, ∏ x ∈ s, g x) = ∏ x ∈ s, (f x, g x) :=
   haveI := Classical.decEq γ
   Finset.induction_on s rfl (by simp (config := { contextual := true }) [Prod.ext_iff])
 #align prod_mk_prod prod_mk_prod
@@ -131,13 +131,13 @@ namespace Prod
 variable {α β γ : Type*} [CommMonoid α] [CommMonoid β] {s : Finset γ} {f : γ → α × β}
 
 @[to_additive]
-theorem fst_prod : (∏ c in s, f c).1 = ∏ c in s, (f c).1 :=
+theorem fst_prod : (∏ c ∈ s, f c).1 = ∏ c ∈ s, (f c).1 :=
   map_prod (MonoidHom.fst α β) f s
 #align prod.fst_prod Prod.fst_prod
 #align prod.fst_sum Prod.fst_sum
 
 @[to_additive]
-theorem snd_prod : (∏ c in s, f c).2 = ∏ c in s, (f c).2 :=
+theorem snd_prod : (∏ c ∈ s, f c).2 = ∏ c ∈ s, (f c).2 :=
   map_prod (MonoidHom.snd α β) f s
 #align prod.snd_prod Prod.snd_prod
 #align prod.snd_sum Prod.snd_sum

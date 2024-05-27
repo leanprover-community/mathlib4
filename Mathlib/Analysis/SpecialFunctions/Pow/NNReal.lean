@@ -167,7 +167,7 @@ lemma multiset_prod_map_rpow {ι} (s : Multiset ι) (f : ι → ℝ≥0) (r : �
 
 /-- `rpow` version of `Finset.prod_pow` for `ℝ≥0`. -/
 lemma finset_prod_rpow {ι} (s : Finset ι) (f : ι → ℝ≥0) (r : ℝ) :
-    (∏ i in s, f i ^ r) = (∏ i in s, f i) ^ r :=
+    (∏ i ∈ s, f i ^ r) = (∏ i ∈ s, f i) ^ r :=
   multiset_prod_map_rpow _ _ _
 
 -- note: these don't really belong here, but they're much easier to prove in terms of the above
@@ -200,7 +200,7 @@ theorem _root_.Real.multiset_prod_map_rpow {ι} (s : Multiset ι) (f : ι → �
 /-- `rpow` version of `Finset.prod_pow`. -/
 theorem _root_.Real.finset_prod_rpow
     {ι} (s : Finset ι) (f : ι → ℝ) (hs : ∀ i ∈ s, 0 ≤ f i) (r : ℝ) :
-    (∏ i in s, f i ^ r) = (∏ i in s, f i) ^ r :=
+    (∏ i ∈ s, f i ^ r) = (∏ i ∈ s, f i) ^ r :=
   Real.multiset_prod_map_rpow s.val f hs r
 
 end Real
@@ -614,7 +614,7 @@ theorem coe_mul_rpow (x y : ℝ≥0) (z : ℝ) : ((x : ℝ≥0∞) * y) ^ z = (x
 #align ennreal.coe_mul_rpow ENNReal.coe_mul_rpow
 
 theorem prod_coe_rpow {ι} (s : Finset ι) (f : ι → ℝ≥0) (r : ℝ) :
-    ∏ i in s, (f i : ℝ≥0∞) ^ r = ((∏ i in s, f i : ℝ≥0) : ℝ≥0∞) ^ r := by
+    ∏ i ∈ s, (f i : ℝ≥0∞) ^ r = ((∏ i ∈ s, f i : ℝ≥0) : ℝ≥0∞) ^ r := by
   induction s using Finset.induction with
   | empty => simp
   | insert hi ih => simp_rw [prod_insert hi, ih, ← coe_mul_rpow, coe_mul]
@@ -628,7 +628,7 @@ theorem mul_rpow_of_nonneg (x y : ℝ≥0∞) {z : ℝ} (hz : 0 ≤ z) : (x * y)
 #align ennreal.mul_rpow_of_nonneg ENNReal.mul_rpow_of_nonneg
 
 theorem prod_rpow_of_ne_top {ι} {s : Finset ι} {f : ι → ℝ≥0∞} (hf : ∀ i ∈ s, f i ≠ ∞) (r : ℝ) :
-    ∏ i in s, f i ^ r = (∏ i in s, f i) ^ r := by
+    ∏ i ∈ s, f i ^ r = (∏ i ∈ s, f i) ^ r := by
   induction s using Finset.induction with
   | empty => simp
   | @insert i s hi ih =>
@@ -637,7 +637,7 @@ theorem prod_rpow_of_ne_top {ι} {s : Finset ι} {f : ι → ℝ≥0∞} (hf : �
     apply prod_lt_top h2f |>.ne
 
 theorem prod_rpow_of_nonneg {ι} {s : Finset ι} {f : ι → ℝ≥0∞} {r : ℝ} (hr : 0 ≤ r) :
-    ∏ i in s, f i ^ r = (∏ i in s, f i) ^ r := by
+    ∏ i ∈ s, f i ^ r = (∏ i ∈ s, f i) ^ r := by
   induction s using Finset.induction with
   | empty => simp
   | insert hi ih => simp_rw [prod_insert hi, ih, ← mul_rpow_of_nonneg _ _ hr]

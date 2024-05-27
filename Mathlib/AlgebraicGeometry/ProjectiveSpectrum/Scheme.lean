@@ -382,7 +382,7 @@ theorem carrier.add_mem (q : Spec.T A⁰_ f) {a b : A} (ha : a ∈ carrier f_deg
   · rw [(_ : m * i = _)]
     apply GradedMonoid.toGradedMul.mul_mem (i := (j-m) • i) (j := (m + m - j) • i) <;> mem_tac_aux
     rw [← add_smul]; congr; zify [le_of_not_lt h2, le_of_not_le h1]; abel
-  convert_to ∑ i in range (m + m + 1), g i ∈ q.1; swap
+  convert_to ∑ i ∈ range (m + m + 1), g i ∈ q.1; swap
   · refine q.1.sum_mem fun j _ => nsmul_mem ?_ _; split_ifs
     exacts [q.1.zero_mem, q.1.mul_mem_left _ (hb i), q.1.mul_mem_right _ (ha i)]
   rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk'']

@@ -129,21 +129,21 @@ theorem linearIndependent_iff : LinearIndependent R v ↔ ∀ l, Finsupp.total �
 
 theorem linearIndependent_iff' :
     LinearIndependent R v ↔
-      ∀ s : Finset ι, ∀ g : ι → R, ∑ i in s, g i • v i = 0 → ∀ i ∈ s, g i = 0 :=
+      ∀ s : Finset ι, ∀ g : ι → R, ∑ i ∈ s, g i • v i = 0 → ∀ i ∈ s, g i = 0 :=
   linearIndependent_iff.trans
     ⟨fun hf s g hg i his =>
       have h :=
-        hf (∑ i in s, Finsupp.single i (g i)) <| by
+        hf (∑ i ∈ s, Finsupp.single i (g i)) <| by
           simpa only [map_sum, Finsupp.total_single] using hg
       calc
         g i = (Finsupp.lapply i : (ι →₀ R) →ₗ[R] R) (Finsupp.single i (g i)) := by
           { rw [Finsupp.lapply_apply, Finsupp.single_eq_same] }
-        _ = ∑ j in s, (Finsupp.lapply i : (ι →₀ R) →ₗ[R] R) (Finsupp.single j (g j)) :=
+        _ = ∑ j ∈ s, (Finsupp.lapply i : (ι →₀ R) →ₗ[R] R) (Finsupp.single j (g j)) :=
           Eq.symm <|
             Finset.sum_eq_single i
               (fun j _hjs hji => by rw [Finsupp.lapply_apply, Finsupp.single_eq_of_ne hji])
               fun hnis => hnis.elim his
-        _ = (∑ j in s, Finsupp.single j (g j)) i := (map_sum ..).symm
+        _ = (∑ j ∈ s, Finsupp.single j (g j)) i := (map_sum ..).symm
         _ = 0 := DFunLike.ext_iff.1 h i,
       fun hf l hl =>
       Finsupp.ext fun i =>
@@ -153,7 +153,7 @@ theorem linearIndependent_iff' :
 theorem linearIndependent_iff'' :
     LinearIndependent R v ↔
       ∀ (s : Finset ι) (g : ι → R), (∀ i ∉ s, g i = 0) →
-        ∑ i in s, g i • v i = 0 → ∀ i, g i = 0 := by
+        ∑ i ∈ s, g i • v i = 0 → ∀ i, g i = 0 := by
   classical
   exact linearIndependent_iff'.trans
     ⟨fun H s g hg hv i => if his : i ∈ s then H s g hv i his else hg i his, fun H s g hg i hi => by
@@ -165,7 +165,7 @@ theorem linearIndependent_iff'' :
 
 theorem not_linearIndependent_iff :
     ¬LinearIndependent R v ↔
-      ∃ s : Finset ι, ∃ g : ι → R, ∑ i in s, g i • v i = 0 ∧ ∃ i ∈ s, g i ≠ 0 := by
+      ∃ s : Finset ι, ∃ g : ι → R, ∑ i ∈ s, g i • v i = 0 ∧ ∃ i ∈ s, g i ≠ 0 := by
   rw [linearIndependent_iff']
   simp only [exists_prop, not_forall]
 #align not_linear_independent_iff not_linearIndependent_iff
@@ -317,7 +317,7 @@ the original family. -/
 theorem LinearIndependent.of_comp (f : M →ₗ[R] M') (hfv : LinearIndependent R (f ∘ v)) :
     LinearIndependent R v :=
   linearIndependent_iff'.2 fun s g hg i his =>
-    have : (∑ i : ι in s, g i • f (v i)) = 0 := by
+    have : (∑ i ∈ s, g i • f (v i)) = 0 := by
       simp_rw [← map_smul, ← map_sum, hg, f.map_zero]
     linearIndependent_iff'.1 hfv s g this i his
 #align linear_independent.of_comp LinearIndependent.of_comp
@@ -457,7 +457,7 @@ theorem linearDependent_comp_subtype' {s : Set ι} :
 /-- A version of `linearDependent_comp_subtype'` with `Finsupp.total` unfolded. -/
 theorem linearDependent_comp_subtype {s : Set ι} :
     ¬LinearIndependent R (v ∘ (↑) : s → M) ↔
-      ∃ f : ι →₀ R, f ∈ Finsupp.supported R R s ∧ ∑ i in f.support, f i • v i = 0 ∧ f ≠ 0 :=
+      ∃ f : ι →₀ R, f ∈ Finsupp.supported R R s ∧ ∑ i ∈ f.support, f i • v i = 0 ∧ f ≠ 0 :=
   linearDependent_comp_subtype'
 #align linear_dependent_comp_subtype linearDependent_comp_subtype
 
@@ -771,8 +771,8 @@ theorem linearIndependent_sum {v : Sum ι ι' → M} :
   rw [linearIndependent_iff'] at *
   intro s g hg i hi
   have :
-    ((∑ i in s.preimage Sum.inl (Sum.inl_injective.injOn _), (fun x => g x • v x) (Sum.inl i)) +
-        ∑ i in s.preimage Sum.inr (Sum.inr_injective.injOn _), (fun x => g x • v x) (Sum.inr i)) =
+    ((∑ i ∈ s.preimage Sum.inl (Sum.inl_injective.injOn _), (fun x => g x • v x) (Sum.inl i)) +
+        ∑ i ∈ s.preimage Sum.inr (Sum.inr_injective.injOn _), (fun x => g x • v x) (Sum.inr i)) =
       0 := by
     -- Porting note: `g` must be specified.
     rw [Finset.sum_preimage' (g := fun x => g x • v x),
@@ -1144,31 +1144,31 @@ theorem linearIndependent_monoidHom (G : Type*) [Monoid G] (L : Type*) [CommRing
             ih (fun j => g j * j x - g j * a x)
               (funext fun y : G => calc
                 -- After that, it's just a chase scene.
-                (∑ i in s, ((g i * i x - g i * a x) • (i : G → L))) y =
-                    ∑ i in s, (g i * i x - g i * a x) * i y :=
+                (∑ i ∈ s, ((g i * i x - g i * a x) • (i : G → L))) y =
+                    ∑ i ∈ s, (g i * i x - g i * a x) * i y :=
                   Finset.sum_apply ..
-                _ = ∑ i in s, (g i * i x * i y - g i * a x * i y) :=
+                _ = ∑ i ∈ s, (g i * i x * i y - g i * a x * i y) :=
                   Finset.sum_congr rfl fun _ _ => sub_mul ..
-                _ = (∑ i in s, g i * i x * i y) - ∑ i in s, g i * a x * i y :=
+                _ = (∑ i ∈ s, g i * i x * i y) - ∑ i ∈ s, g i * a x * i y :=
                   Finset.sum_sub_distrib
                 _ =
-                    (g a * a x * a y + ∑ i in s, g i * i x * i y) -
-                      (g a * a x * a y + ∑ i in s, g i * a x * i y) :=
+                    (g a * a x * a y + ∑ i ∈ s, g i * i x * i y) -
+                      (g a * a x * a y + ∑ i ∈ s, g i * a x * i y) :=
                   by rw [add_sub_add_left_eq_sub]
                 _ =
-                    (∑ i in insert a s, g i * i x * i y) -
-                      ∑ i in insert a s, g i * a x * i y :=
+                    (∑ i ∈ insert a s, g i * i x * i y) -
+                      ∑ i ∈ insert a s, g i * a x * i y :=
                   by rw [Finset.sum_insert has, Finset.sum_insert has]
                 _ =
-                    (∑ i in insert a s, g i * i (x * y)) -
-                      ∑ i in insert a s, a x * (g i * i y) :=
+                    (∑ i ∈ insert a s, g i * i (x * y)) -
+                      ∑ i ∈ insert a s, a x * (g i * i y) :=
                   congr
                     (congr_arg Sub.sub
                       (Finset.sum_congr rfl fun i _ => by rw [i.map_mul, mul_assoc]))
                     (Finset.sum_congr rfl fun _ _ => by rw [mul_assoc, mul_left_comm])
                 _ =
-                    (∑ i in insert a s, (g i • (i : G → L))) (x * y) -
-                      a x * (∑ i in insert a s, (g i • (i : G → L))) y :=
+                    (∑ i ∈ insert a s, (g i • (i : G → L))) (x * y) -
+                      a x * (∑ i ∈ insert a s, (g i • (i : G → L))) y :=
                   by rw [Finset.sum_apply, Finset.sum_apply, Finset.mul_sum]; rfl
                 _ = 0 - a x * 0 := by rw [hg]; rfl
                 _ = 0 := by rw [mul_zero, sub_zero]
@@ -1193,7 +1193,7 @@ theorem linearIndependent_monoidHom (G : Type*) [Monoid G] (L : Type*) [CommRing
           calc
             g a = g a * 1 := (mul_one _).symm
             _ = (g a • (a : G → L)) 1 := by rw [← a.map_one]; rfl
-            _ = (∑ i in insert a s, (g i • (i : G → L))) 1 := by
+            _ = (∑ i ∈ insert a s, (g i • (i : G → L))) 1 := by
               rw [Finset.sum_eq_single a]
               · intro i his hia
                 rw [Finset.mem_insert] at his
