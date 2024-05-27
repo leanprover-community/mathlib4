@@ -8,6 +8,7 @@ import Mathlib.Order.Atoms
 
 #align_import order.atoms.finite from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
+
 /-!
 # Atoms, Coatoms, Simple Lattices, and Finiteness
 
