@@ -948,21 +948,21 @@ theorem Multiset.aemeasurable_prod (s : Multiset (α → M)) (hs : ∀ f ∈ s, 
 
 @[to_additive (attr := measurability)]
 theorem Finset.measurable_prod' (s : Finset ι) (hf : ∀ i ∈ s, Measurable (f i)) :
-    Measurable (∏ i in s, f i) :=
+    Measurable (∏ i ∈ s, f i) :=
   Finset.prod_induction _ _ (fun _ _ => Measurable.mul) (@measurable_one M _ _ _ _) hf
 #align finset.measurable_prod' Finset.measurable_prod'
 #align finset.measurable_sum' Finset.measurable_sum'
 
 @[to_additive (attr := measurability)]
 theorem Finset.measurable_prod (s : Finset ι) (hf : ∀ i ∈ s, Measurable (f i)) :
-    Measurable fun a => ∏ i in s, f i a := by
+    Measurable fun a => ∏ i ∈ s, f i a := by
   simpa only [← Finset.prod_apply] using s.measurable_prod' hf
 #align finset.measurable_prod Finset.measurable_prod
 #align finset.measurable_sum Finset.measurable_sum
 
 @[to_additive (attr := measurability)]
 theorem Finset.aemeasurable_prod' (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurable (f i) μ) :
-    AEMeasurable (∏ i in s, f i) μ :=
+    AEMeasurable (∏ i ∈ s, f i) μ :=
   Multiset.aemeasurable_prod' _ fun _g hg =>
     let ⟨_i, hi, hg⟩ := Multiset.mem_map.1 hg
     hg ▸ hf _ hi
@@ -971,7 +971,7 @@ theorem Finset.aemeasurable_prod' (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurabl
 
 @[to_additive (attr := measurability)]
 theorem Finset.aemeasurable_prod (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurable (f i) μ) :
-    AEMeasurable (fun a => ∏ i in s, f i a) μ := by
+    AEMeasurable (fun a => ∏ i ∈ s, f i a) μ := by
   simpa only [← Finset.prod_apply] using s.aemeasurable_prod' hf
 #align finset.ae_measurable_prod Finset.aemeasurable_prod
 #align finset.ae_measurable_sum Finset.aemeasurable_sum
