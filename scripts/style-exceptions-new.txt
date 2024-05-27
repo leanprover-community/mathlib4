@@ -1,5 +1,6 @@
 -- Style exceptions specific to the "new" linter in Lean: until the old linter is still around, we keep these in a separate file.
 -- If possible, put style exceptions into `style-exceptions.txt`.
+-- This is also why this file is not updated automatically.
 
 -- Three cases of a commented #align; that's fine, I guess.
 Mathlib/Algebra/Category/ModuleCat/Monoidal/Basic.lean : line 133 : ERR_LIN : Line has 113 characters, which is more than 100
@@ -17,9 +18,5 @@ Archive/Sensitivity.lean : line 2 : ERR_COP : Malformed or missing copyright hea
 Archive/Sensitivity.lean : line 3 : ERR_COP : Malformed or missing copyright header: Second line should be "Released under Apache 2.0 license as described in the file LICENSE."
 Archive/Sensitivity.lean : line 4 : ERR_COP : Malformed or missing copyright header: The third line should describe the file's main authors
 
--- TODO: these files are missing copyright *years*
-Mathlib/Algebra/Polynomial/PartialFractions.lean : line 2 : ERR_COP : Malformed or missing copyright header: Copyright line is malformed
-Mathlib/Analysis/Complex/Basic.lean : line 2 : ERR_COP : Malformed or missing copyright header: Copyright line is malformed
-Mathlib/Analysis/Complex/OperatorNorm.lean : line 2 : ERR_COP : Malformed or missing copyright header: Copyright line is malformed
-Mathlib/Analysis/Complex/RealDeriv.lean : line 2 : ERR_COP : Malformed or missing copyright header: Copyright line is malformed
-Mathlib/CategoryTheory/Limits/Shapes/Equivalence.lean : line 2 : ERR_COP : Malformed or missing copyright header: Copyright line is malformed
+-- The "grep for  ;" check finds itself.
+Mathlib/Tactic/Linter/TextBased.lean : line 301 : ERR_SEM : Line contains a space before a semicolon
