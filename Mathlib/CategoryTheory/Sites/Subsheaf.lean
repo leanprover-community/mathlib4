@@ -247,8 +247,8 @@ theorem Subpresheaf.sheafify_isSheaf (hF : Presieve.IsSheaf J F) :
         (hx (g₁ ≫ i₁ _ _ S₁) (g₂ ≫ i₁ _ _ S₂) (hi₂ _ _ S₁) (hi₂ _ _ S₂)
         (by simp only [Category.assoc, h₂, e]))
   obtain ⟨t, ht, ht'⟩ := hF _ (J.bind_covering hS fun V i hi => (x i hi).2) _ this
-  refine' ⟨⟨t, _⟩, (H ⟨t, _⟩).mpr ht, fun y hy => Subtype.ext (ht' _ ((H _).mp hy))⟩
-  refine' J.superset_covering _ (J.bind_covering hS fun V i hi => (x i hi).2)
+  refine ⟨⟨t, _⟩, (H ⟨t, ?_⟩).mpr ht, fun y hy => Subtype.ext (ht' _ ((H _).mp hy))⟩
+  refine J.superset_covering ?_ (J.bind_covering hS fun V i hi => (x i hi).2)
   intro V i hi
   dsimp
   rw [ht _ hi]
