@@ -127,11 +127,12 @@ def copyright_header : LinterCore := fun lines ↦ Id.run do
 
 
 /-- Whether a collection of lines consists *only* of imports:
-in practice, this means it's an imports-only file and exempt from file length linting. -/
+in practice, this means it's an imports-only file and exempt from almost all linting. -/
 def is_imports_only_file (lines : Array String) : Bool :=
   -- The Python version also excluded comments: since the import-only files are
   -- automatically generated and don't contains comments, this is in fact not necessary.
-  lines.all (fun line ↦ line.startsWith "import ")
+  -- XXX: also implement parsing of multi-line comments.
+  lines.all (fun line ↦ line.startsWith "import " || line == "" || line.startsWith "-- ")
 
 end
 
@@ -157,6 +158,10 @@ def lint_all_files (path : System.FilePath) : IO Unit := do
   let allModules ← IO.FS.lines path
   for module in allModules do
     let module := module.stripPrefix "import "
+    -- Exclude `Archive.Sensitivity` and `Mathlib.Tactic.Linter` for now.
+    -- FUTURE: replace this by proper parsing of style exceptions.
+    if #["Archive.Sensitivity", "Mathlib.Tactic.Linter"].contains module then
+      continue
     -- Convert the module name to a file name, then lint that file.
     let path := (System.mkFilePath (module.split fun c ↦ (c == '.'))).addExtension "lean"
     lint_file path
