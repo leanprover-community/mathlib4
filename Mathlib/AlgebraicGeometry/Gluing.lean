@@ -95,7 +95,7 @@ variable (D : GlueData.{u})
 
 local notation "𝖣" => D.toGlueData
 
-/-- The glue data of locally ringed spaces spaces associated to a family of glue data of schemes. -/
+/-- The glue data of locally ringed spaces associated to a family of glue data of schemes. -/
 abbrev toLocallyRingedSpaceGlueData : LocallyRingedSpace.GlueData :=
   { f_open := D.f_open
     toGlueData := 𝖣.mapGlueData forgetToLocallyRingedSpace }
