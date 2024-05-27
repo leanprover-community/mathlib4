@@ -348,7 +348,7 @@ theorem measurable_of_isClosed' {f : δ → γ}
 
 instance nhds_isMeasurablyGenerated (a : α) : (𝓝 a).IsMeasurablyGenerated := by
   rw [nhds, iInf_subtype']
-  refine' @Filter.iInf_isMeasurablyGenerated α _ _ _ fun i => _
+  refine @Filter.iInf_isMeasurablyGenerated α _ _ _ fun i => ?_
   exact i.2.2.measurableSet.principal_isMeasurablyGenerated
 #align nhds_is_measurably_generated nhds_isMeasurablyGenerated
 
@@ -386,7 +386,7 @@ instance Pi.opensMeasurableSpace {ι : Type*} {π : ι → Type*} [Countable ι]
   rw [borel_eq_generateFrom_of_subbasis this]
   apply generateFrom_le
   rintro _ ⟨s, i, hi, rfl⟩
-  refine' MeasurableSet.pi i.countable_toSet fun a ha => IsOpen.measurableSet _
+  refine MeasurableSet.pi i.countable_toSet fun a ha => IsOpen.measurableSet ?_
   rw [eq_generateFrom_countableBasis (π a)]
   exact .basic _ (hi a ha)
 #align pi.opens_measurable_space Pi.opensMeasurableSpace

@@ -281,7 +281,7 @@ instance base_change [FormallySmooth R A] : FormallySmooth B (B ⊗[R] A) := by
   intro C _ _ I hI f
   letI := ((algebraMap B C).comp (algebraMap R B)).toAlgebra
   haveI : IsScalarTower R B C := IsScalarTower.of_algebraMap_eq' rfl
-  refine' ⟨TensorProduct.productLeftAlgHom (Algebra.ofId B C) _, _⟩
+  refine ⟨TensorProduct.productLeftAlgHom (Algebra.ofId B C) ?_, ?_⟩
   · exact FormallySmooth.lift I ⟨2, hI⟩ ((f.restrictScalars R).comp TensorProduct.includeRight)
   · apply AlgHom.restrictScalars_injective R
     apply TensorProduct.ext'
