@@ -324,7 +324,7 @@ theorem ext {f g : A ≃⋆+* B} (h : ∀ a, f a = g a) : f = g :=
 theorem ext_iff {f g : A ≃⋆+* B} : f = g ↔ ∀ a, f a = g a :=
   DFunLike.ext_iff
 
-/-- The identity map as a *-ring isomorphism. -/
+/-- The identity map as a star ring isomorphism. -/
 @[refl]
 def refl : A ≃⋆+* A :=
   { RingEquiv.refl A with
@@ -337,7 +337,7 @@ instance : Inhabited (A ≃⋆+* A) :=
 theorem coe_refl : ⇑(refl : A ≃⋆+* A) = id :=
   rfl
 
-/-- The inverse of a *-ring isomorphism is a *-ring isomorphism. -/
+/-- The inverse of a star ring isomorphism is a star ring isomorphism. -/
 @[symm]
 nonrec def symm (e : A ≃⋆+* B) : B ≃⋆+* A :=
   { e.symm with
