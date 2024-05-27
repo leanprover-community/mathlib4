@@ -3113,10 +3113,7 @@ import Mathlib.NumberTheory.Modular
 import Mathlib.NumberTheory.ModularForms.Basic
 import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
-<<<<<<< HEAD
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.IsBoundedAtImInfty
-=======
->>>>>>> origin/master
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.MDifferentiable
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConvergence
 import Mathlib.NumberTheory.ModularForms.Identities
