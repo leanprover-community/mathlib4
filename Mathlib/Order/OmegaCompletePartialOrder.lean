@@ -296,11 +296,6 @@ def Continuous (f : α →o β) : Prop :=
   ∀ c : Chain α, f (ωSup c) = ωSup (c.map f)
 #align omega_complete_partial_order.continuous OmegaCompletePartialOrder.Continuous
 
-/-- `Continuous' f` asserts that `f` is both monotone and continuous. -/
-def Continuous' (f : α → β) : Prop :=
-  ∃ hf : Monotone f, Continuous ⟨f, hf⟩
-#align omega_complete_partial_order.continuous' OmegaCompletePartialOrder.Continuous'
-
 /-- ωScottContinuous - Scott Continuous over Chains-/
 def ωScottContinuous (f : α → β) := ScottContinuousOn (Set.range fun c : Chain α => Set.range c) f
 
