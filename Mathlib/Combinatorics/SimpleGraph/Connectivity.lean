@@ -932,7 +932,7 @@ variable {x y : V} -- TODO: rename to u, v, w instead?
     (p.copy hx hy).Nil = p.Nil := by
   subst_vars; rfl
 
-lemma support_tail {p : G.Walk v v} (hp : ¬p.Nil) :
+@[simp] lemma support_tail (p : G.Walk v v) (hp : ¬p.Nil) :
     (p.tail hp).support = p.support.tail := by
   rw [← cons_support_tail p hp, List.tail_cons]
 
