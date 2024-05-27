@@ -233,7 +233,7 @@ lemma mulIndicator_le {s : Set α} {f g : α → M} (hfg : ∀ a ∈ s, f a ≤ 
 
 end CanonicallyOrderedCommMonoid
 
-section LinearOrderedAddCommGroup
+section LinearOrderedCommGroup
 variable [LinearOrderedCommGroup M]
 
 open scoped symmDiff
@@ -243,5 +243,5 @@ lemma mabs_mulIndicator_symmDiff (s t : Set α) (f : α → M) (x : α) :
     |mulIndicator (s ∆ t) f x|ₘ = |mulIndicator s f x / mulIndicator t f x|ₘ :=
   apply_mulIndicator_symmDiff mabs_inv s t f x
 
-end LinearOrderedAddCommGroup
+end LinearOrderedCommGroup
 end Set
