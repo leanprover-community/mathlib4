@@ -7,7 +7,7 @@ import Mathlib.KolmogorovExtension4.DependsOn
 import Mathlib.MeasureTheory.Integral.Marginal
 import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 
-open Set MeasureTheory Filter Topology ENNReal Finset symmDiff
+open Set MeasureTheory Filter Topology ENNReal Finset symmDiff BigOperators
 
 variable {ι : Type*} {α : ι → Type*}
 
