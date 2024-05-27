@@ -6,7 +6,6 @@ Authors: Joseph Myers
 import Mathlib.Init.Core
 import Mathlib.LinearAlgebra.AffineSpace.Basis
 import Mathlib.LinearAlgebra.FiniteDimensional
-import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 
 #align_import linear_algebra.affine_space.finite_dimensional from "leanprover-community/mathlib"@"67e606eaea14c7854bdc556bd53d98aefdf76ec0"
 
@@ -154,7 +153,7 @@ theorem finrank_vectorSpan_image_finset_le [DecidableEq P] (p : ι → P) (s : F
     apply Nat.succ_pos
   rcases hn with ⟨p₁, hp₁⟩
   rw [vectorSpan_eq_span_vsub_finset_right_ne k hp₁]
-  refine' le_trans (finrank_span_finset_le_card (((s.image p).erase p₁).image fun p => p -ᵥ p₁)) _
+  refine le_trans (finrank_span_finset_le_card (((s.image p).erase p₁).image fun p => p -ᵥ p₁)) ?_
   rw [Finset.card_image_of_injective _ (vsub_left_injective p₁), Finset.card_erase_of_mem hp₁,
     tsub_le_iff_right, ← hc]
   apply Finset.card_image_le
@@ -302,7 +301,7 @@ theorem AffineIndependent.affineSpan_image_finset_eq_of_le_of_card_eq_finrank_ad
   have hn : s.Nonempty := by
     rw [← Finset.card_pos, hc]
     apply Nat.succ_pos
-  refine' eq_of_direction_eq_of_nonempty_of_le _ ((hn.image p).to_set.affineSpan k) hle
+  refine eq_of_direction_eq_of_nonempty_of_le ?_ ((hn.image p).to_set.affineSpan k) hle
   have hd := direction_le hle
   rw [direction_affineSpan] at hd ⊢
   exact hi.vectorSpan_image_finset_eq_of_le_of_card_eq_finrank_add_one hd hc
@@ -650,7 +649,7 @@ theorem collinear_insert_insert_insert_of_mem_affineSpan_pair {p₁ p₂ p₃ p�
 theorem collinear_insert_insert_insert_left_of_mem_affineSpan_pair {p₁ p₂ p₃ p₄ p₅ : P}
     (h₁ : p₁ ∈ line[k, p₄, p₅]) (h₂ : p₂ ∈ line[k, p₄, p₅]) (h₃ : p₃ ∈ line[k, p₄, p₅]) :
     Collinear k ({p₁, p₂, p₃, p₄} : Set P) := by
-  refine' (collinear_insert_insert_insert_of_mem_affineSpan_pair h₁ h₂ h₃).subset _
+  refine (collinear_insert_insert_insert_of_mem_affineSpan_pair h₁ h₂ h₃).subset ?_
   repeat apply Set.insert_subset_insert
   simp
 #align collinear_insert_insert_insert_left_of_mem_affine_span_pair collinear_insert_insert_insert_left_of_mem_affineSpan_pair
@@ -659,7 +658,7 @@ theorem collinear_insert_insert_insert_left_of_mem_affineSpan_pair {p₁ p₂ p�
 theorem collinear_triple_of_mem_affineSpan_pair {p₁ p₂ p₃ p₄ p₅ : P} (h₁ : p₁ ∈ line[k, p₄, p₅])
     (h₂ : p₂ ∈ line[k, p₄, p₅]) (h₃ : p₃ ∈ line[k, p₄, p₅]) :
     Collinear k ({p₁, p₂, p₃} : Set P) := by
-  refine' (collinear_insert_insert_insert_left_of_mem_affineSpan_pair h₁ h₂ h₃).subset _
+  refine (collinear_insert_insert_insert_left_of_mem_affineSpan_pair h₁ h₂ h₃).subset ?_
   simp [Set.insert_subset_insert]
 #align collinear_triple_of_mem_affine_span_pair collinear_triple_of_mem_affineSpan_pair
 
@@ -675,7 +674,7 @@ variable {k}
 /-- The `vectorSpan` of coplanar points is finite-dimensional. -/
 theorem Coplanar.finiteDimensional_vectorSpan {s : Set P} (h : Coplanar k s) :
     FiniteDimensional k (vectorSpan k s) := by
-  refine' IsNoetherian.iff_fg.1 (IsNoetherian.iff_rank_lt_aleph0.2 (lt_of_le_of_lt h _))
+  refine IsNoetherian.iff_fg.1 (IsNoetherian.iff_rank_lt_aleph0.2 (lt_of_le_of_lt h ?_))
   exact Cardinal.lt_aleph0.2 ⟨2, rfl⟩
 #align coplanar.finite_dimensional_vector_span Coplanar.finiteDimensional_vectorSpan
 
@@ -766,8 +765,8 @@ theorem finrank_vectorSpan_insert_le (s : AffineSubspace k P) (p : P) :
     rw [← finrank_bot k V]
     convert rfl <;> simp
   · rw [affineSpan_coe, direction_affineSpan_insert hp₀, add_comm]
-    refine' (Submodule.finrank_add_le_finrank_add_finrank _ _).trans (add_le_add_right _ _)
-    refine' finrank_le_one ⟨p -ᵥ p₀, Submodule.mem_span_singleton_self _⟩ fun v => _
+    refine (Submodule.finrank_add_le_finrank_add_finrank _ _).trans (add_le_add_right ?_ _)
+    refine finrank_le_one ⟨p -ᵥ p₀, Submodule.mem_span_singleton_self _⟩ fun v => ?_
     have h := v.property
     rw [Submodule.mem_span_singleton] at h
     rcases h with ⟨c, hc⟩
@@ -783,7 +782,7 @@ one. -/
 theorem finrank_vectorSpan_insert_le_set (s : Set P) (p : P) :
     finrank k (vectorSpan k (insert p s)) ≤ finrank k (vectorSpan k s) + 1 := by
   rw [← direction_affineSpan, ← affineSpan_insert_affineSpan, direction_affineSpan]
-  refine' (finrank_vectorSpan_insert_le _ _).trans (add_le_add_right _ _)
+  refine (finrank_vectorSpan_insert_le _ _).trans (add_le_add_right ?_ _)
   rw [direction_affineSpan]
 #align finrank_vector_span_insert_le_set finrank_vectorSpan_insert_le_set
 

@@ -88,7 +88,7 @@ theorem IsClosable.leIsClosable {f g : E →ₗ.[R] F} (hf : f.IsClosable) (hfg 
 /-- The closure is unique. -/
 theorem IsClosable.existsUnique {f : E →ₗ.[R] F} (hf : f.IsClosable) :
     ∃! f' : E →ₗ.[R] F, f.graph.topologicalClosure = f'.graph := by
-  refine' exists_unique_of_exists_of_unique hf fun _ _ hy₁ hy₂ => eq_of_eq_graph _
+  refine exists_unique_of_exists_of_unique hf fun _ _ hy₁ hy₂ => eq_of_eq_graph ?_
   rw [← hy₁, ← hy₂]
 #align linear_pmap.is_closable.exists_unique LinearPMap.IsClosable.existsUnique
 
@@ -118,7 +118,7 @@ theorem IsClosable.graph_closure_eq_closure_graph {f : E →ₗ.[R] F} (hf : f.I
 /-- A `LinearPMap` is contained in its closure. -/
 theorem le_closure (f : E →ₗ.[R] F) : f ≤ f.closure := by
   by_cases hf : f.IsClosable
-  · refine' le_of_le_graph _
+  · refine le_of_le_graph ?_
     rw [← hf.graph_closure_eq_closure_graph]
     exact (graph f).le_topologicalClosure
   rw [closure_def' hf]
@@ -126,7 +126,7 @@ theorem le_closure (f : E →ₗ.[R] F) : f ≤ f.closure := by
 
 theorem IsClosable.closure_mono {f g : E →ₗ.[R] F} (hg : g.IsClosable) (h : f ≤ g) :
     f.closure ≤ g.closure := by
-  refine' le_of_le_graph _
+  refine le_of_le_graph ?_
   rw [← (hg.leIsClosable h).graph_closure_eq_closure_graph]
   rw [← hg.graph_closure_eq_closure_graph]
   exact Submodule.topologicalClosure_mono (le_graph_of_le h)
@@ -167,7 +167,7 @@ theorem hasCore_def {f : E →ₗ.[R] F} {S : Submodule R E} (h : f.HasCore S) :
 
 Note that we don't require that `f` is closable, due to the definition of the closure. -/
 theorem closureHasCore (f : E →ₗ.[R] F) : f.closure.HasCore f.domain := by
-  refine' ⟨f.le_closure.1, _⟩
+  refine ⟨f.le_closure.1, ?_⟩
   congr
   ext x y hxy
   · simp only [domRestrict_domain, Submodule.mem_inf, and_iff_left_iff_imp]
