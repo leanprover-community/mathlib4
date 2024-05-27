@@ -17,6 +17,8 @@ Of course, one could generalize to maps between pointed topological spaces, but 
 the purpose of this type.
 -/
 
+open Set Function
+
 /-- The type of continuous maps which map zero to zero. -/
 structure ContinuousMapZero (X R : Type*) [Zero X] [Zero R] [TopologicalSpace X]
     [TopologicalSpace R] extends C(X, R) where
@@ -34,12 +36,7 @@ variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace R]
 
 instance instFunLike : FunLike C(X, R)₀ X R where
   coe f := f.toFun
-  coe_injective' f g h := by
-    cases f
-    cases g
-    congr
-    apply DFunLike.coe_injective'
-    exact h
+  coe_injective' _ _ h := congr(⟨⟨$(h), _⟩, _⟩)
 
 instance instContinuousMapClass : ContinuousMapClass C(X, R)₀ X R where
   map_continuous f := f.continuous
@@ -52,6 +49,13 @@ lemma ext {f g : C(X, R)₀} (h : ∀ x, f x = g x) : f = g := DFunLike.ext f g 
 
 @[simp]
 lemma coe_mk {f : C(X, R)} {h0 : f 0 = 0} : ⇑(mk f h0) = f := rfl
+
+lemma toContinuousMap_injective [Zero R] : Injective (toContinuousMap (X := X) (R := R)) :=
+  fun _ _ h ↦ congr(.mk $(h) _)
+
+lemma range_toContinuousMap : range (toContinuousMap (X := X) (R := R)) =
+    {f : C(X, R) | f 0 = 0} :=
+  Set.ext fun f ↦ ⟨fun ⟨f', hf'⟩ ↦ hf' ▸ map_zero f', fun hf ↦ ⟨⟨f, hf⟩, rfl⟩⟩
 
 /-- Composition of continuous maps which map zero to zero. -/
 def comp (g : C(Y, R)₀) (f : C(X, Y)₀) : C(X, R)₀ where
@@ -66,37 +70,64 @@ instance instPartialOrder [PartialOrder R] : PartialOrder C(X, R)₀ :=
 
 lemma le_def [PartialOrder R] (f g : C(X, R)₀) : f ≤ g ↔ ∀ x, f x ≤ g x := Iff.rfl
 
+protected instance instTopologicalSpace : TopologicalSpace C(X, R)₀ :=
+  TopologicalSpace.induced toContinuousMap inferInstance
+
+lemma embedding_toContinuousMap : Embedding (toContinuousMap (X := X) (R := R)) where
+  induced := rfl
+  inj _ _ h := ext fun x ↦ congr($(h) x)
+
+instance [T0Space R] : T0Space C(X, R)₀ := embedding_toContinuousMap.t0Space
+instance [T1Space R] : T1Space C(X, R)₀ := embedding_toContinuousMap.t1Space
+instance [T2Space R] : T2Space C(X, R)₀ := embedding_toContinuousMap.t2Space
+
+lemma closedEmbedding_toContinuousMap [T1Space R] :
+    ClosedEmbedding (toContinuousMap (X := X) (R := R)) where
+  toEmbedding := embedding_toContinuousMap
+  isClosed_range := by
+    rw [range_toContinuousMap]
+    exact isClosed_singleton.preimage <| ContinuousMap.continuous_eval_const 0
+
 end Basic
 
-section Semiring
+section Algebra
 
 variable {X R : Type*} [Zero X] [TopologicalSpace X]
-variable [CommSemiring R] [TopologicalSpace R] [TopologicalSemiring R]
+variable [TopologicalSpace R]
 
-instance instZero : Zero C(X, R)₀ where
+instance instZero [Zero R] : Zero C(X, R)₀ where
   zero := ⟨0, rfl⟩
 
-instance instAdd : Add C(X, R)₀ where
+@[simp] lemma coe_zero [Zero R] : ⇑(0 : C(X, R)₀) = 0 := rfl
+
+instance instAdd [AddZeroClass R] [ContinuousAdd R] : Add C(X, R)₀ where
   add f g := ⟨f + g, by simp⟩
 
-instance instMul : Mul C(X, R)₀ where
+@[simp] lemma coe_add [AddZeroClass R] [ContinuousAdd R] (f g : C(X, R)₀) : ⇑(f + g) = f + g := rfl
+
+instance instMul [MulZeroClass R] [ContinuousMul R] : Mul C(X, R)₀ where
   mul f g := ⟨f * g, by simp⟩
 
-instance instSMul {M : Type*} [SMulZeroClass M R] [ContinuousConstSMul M R] :
+@[simp] lemma coe_mul [MulZeroClass R] [ContinuousMul R] (f g : C(X, R)₀) : ⇑(f * g) = f * g := rfl
+
+instance instSMul {M : Type*} [Zero R] [SMulZeroClass M R] [ContinuousConstSMul M R] :
     SMul M C(X, R)₀ where
   smul m f := ⟨m • f, by simp⟩
 
-lemma toContinuousMap_injective :
-    Function.Injective (toContinuousMap (X := X) (R := R)) :=
-  fun f g h ↦ by refine congr(.mk $(h) ?_); exacts [f.map_zero', g.map_zero']
+@[simp] lemma coe_smul {M : Type*} [Zero R] [SMulZeroClass M R] [ContinuousConstSMul M R]
+    (m : M) (f : C(X, R)₀) : ⇑(m • f) = m • f := rfl
+
+section Semiring
+
+variable [CommSemiring R] [TopologicalSemiring R]
 
 instance instNonUnitalCommSemiring : NonUnitalCommSemiring C(X, R)₀ :=
-  (toContinuousMap_injective (X := X) (R := R)).nonUnitalCommSemiring
+  toContinuousMap_injective.nonUnitalCommSemiring
     _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 instance instModule {M : Type*} [Semiring M] [Module M R] [ContinuousConstSMul M R] :
     Module M C(X, R)₀ :=
-  (toContinuousMap_injective (X := X) (R := R)).module M
+  toContinuousMap_injective.module M
     { toFun := _, map_add' := fun _ _ ↦ rfl, map_zero' := rfl } (fun _ _ ↦ rfl)
 
 instance instSMulCommClass {M N : Type*} [SMulZeroClass M R] [ContinuousConstSMul M R]
@@ -115,14 +146,17 @@ instance instStarRing [StarRing R] [ContinuousStar R] : StarRing C(X, R)₀ wher
   star_mul _ _ := ext fun _ ↦ star_mul ..
   star_add _ _ := ext fun _ ↦ star_add ..
 
-instance instTopologicalSpace : TopologicalSpace C(X, R)₀ :=
-  TopologicalSpace.induced toContinuousMap inferInstance
+@[simp] lemma coe_star [StarRing R] [ContinuousStar R] (f : C(X, R)₀) : ⇑(star f) = star ⇑f := rfl
+
+instance instCanLift : CanLift C(X, R) C(X, R)₀ (↑) (fun f ↦ f 0 = 0) where
+  prf f hf := ⟨⟨f, hf⟩, rfl⟩
 
 end Semiring
 
+section Ring
+
 variable {X R : Type*} [Zero X] [TopologicalSpace X]
 variable [CommRing R] [TopologicalSpace R] [TopologicalRing R]
-section Ring
 
 instance instSub : Sub C(X, R)₀ where
   sub f g := ⟨f - g, by simp⟩
@@ -131,9 +165,29 @@ instance instNeg : Neg C(X, R)₀ where
   neg f := ⟨-f, by simp⟩
 
 instance instNonUnitalCommRing : NonUnitalCommRing C(X, R)₀ :=
-  (toContinuousMap_injective (X := X) (R := R)).nonUnitalCommRing _ rfl
+  toContinuousMap_injective.nonUnitalCommRing _ rfl
   (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 end Ring
+
+end Algebra
+
+section UniformSpace
+
+variable {X R : Type*} [Zero X] [TopologicalSpace X]
+variable [Zero R] [UniformSpace R]
+
+protected instance instUniformSpace : UniformSpace C(X, R)₀ := .comap toContinuousMap inferInstance
+
+lemma uniformEmbedding_toContinuousMap :
+    UniformEmbedding (toContinuousMap (X := X) (R := R)) where
+  comap_uniformity := rfl
+  inj _ _ h := ext fun x ↦ congr($(h) x)
+
+instance [T1Space R] [CompleteSpace C(X, R)] : CompleteSpace C(X, R)₀ :=
+  completeSpace_iff_isComplete_range uniformEmbedding_toContinuousMap.toUniformInducing
+    |>.mpr closedEmbedding_toContinuousMap.isClosed_range.isComplete
+
+end UniformSpace
 
 end ContinuousMapZero
