@@ -28,7 +28,7 @@ Of course, we cannot *define* these functions by the above formulae (since exist
 analytic continuation is not at all obvious); we in fact construct them as Mellin transforms of
 various versions of the Jacobi theta function.
 
-## Main definitions and theorems
+## Main definitions and theorems
 
 * `completedHurwitzZetaOdd`: the completed Hurwitz zeta function
 * `completedSinZeta`: the completed cosine zeta function
@@ -541,7 +541,7 @@ lemma hasSum_nat_sinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
   · simp only [Nat.cast_zero, Int.sign_zero, Int.cast_zero, mul_zero, zero_mul, neg_zero,
       sub_self, zero_div, zero_add]
 
-/-- Reformulation of `hasSum_nat_cosZeta` using `LSeriesHasSum`. -/
+/-- Reformulation of `hasSum_nat_sinZeta` using `LSeriesHasSum`. -/
 lemma LSeriesHasSum_sin (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     LSeriesHasSum (Real.sin <| 2 * π * a * ·) s (sinZeta a s) := by
   refine (hasSum_nat_sinZeta a hs).congr_fun (fun n ↦ ?_)
