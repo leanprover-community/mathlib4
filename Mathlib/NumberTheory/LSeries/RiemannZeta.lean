@@ -21,8 +21,8 @@ import Mathlib.Analysis.Complex.RemovableSingularity
   `Λ₀(s) = Λ(s) + 1 / (s - 1) - 1 / s` wherever the RHS is defined.
 
 Note that mathematically `ζ(s)` is undefined at `s = 1`, while `Λ(s)` is undefined at both `s = 0`
-and `s = 1`. Our construction assigns some values at these points (which are not arbitrary, but
-I haven't checked exactly what they are).
+and `s = 1`. Our construction assigns some values at these points; exact formulae involving the
+Euler-Mascheroni constant will follow in a subsequent PR.
 
 ## Main results:
 
@@ -41,7 +41,7 @@ I haven't checked exactly what they are).
 
 ## Outline of proofs:
 
-These results are mostly special cases of more general results for Hurwitz zeta functions proved
+These results are mostly special cases of more general results for even Hurwitz zeta functions from
 in `Mathlib.NumberTheory.LSeries.HurwitzZetaEven`.
 -/
 
@@ -51,6 +51,8 @@ open MeasureTheory Set Filter Asymptotics TopologicalSpace Real Asymptotics Clas
 open Complex hiding exp norm_eq_abs abs_of_nonneg abs_two continuous_exp
 
 open scoped Topology Real Nat
+
+set_option profiler true
 
 noncomputable section
 
@@ -177,15 +179,13 @@ def RiemannHypothesis : Prop :=
 theorem completedZeta_eq_tsum_of_one_lt_re {s : ℂ} (hs : 1 < re s) :
     completedRiemannZeta s = (π : ℂ) ^ (-s / 2) * Gamma (s / 2) *
     ∑' n : ℕ, 1 / (n : ℂ) ^ s := by
-  convert (hasSum_nat_completedCosZeta 0 hs).tsum_eq.symm
-  · ext1 x
-    rw [QuotientAddGroup.mk_zero, completedCosZeta_zero]
-  · have : s ≠ 0 := fun h ↦ (not_lt.mpr zero_le_one) (zero_re ▸ h ▸ hs)
-    simp_rw [← tsum_mul_left, mul_zero, zero_mul, Real.cos_zero, ofReal_one, mul_one,
-      mul_one_div]
-    congr 1 with n
-    split_ifs with h <;>
-    simp only [Gammaℝ_def, h, Nat.cast_zero, zero_cpow this, div_zero]
+  have := (hasSum_nat_completedCosZeta 0 hs).tsum_eq.symm
+  simp only [QuotientAddGroup.mk_zero, completedCosZeta_zero] at this
+  simp only [this, Gammaℝ_def, mul_zero, zero_mul, Real.cos_zero, ofReal_one, mul_one, mul_one_div,
+    ← tsum_mul_left]
+  congr 1 with n
+  split_ifs with h <;>
+  simp only [h, Nat.cast_zero, zero_cpow (Complex.ne_zero_of_one_lt_re hs), div_zero, mul_zero]
 #align completed_zeta_eq_tsum_of_one_lt_re completedZeta_eq_tsum_of_one_lt_re
 
 /-- The Riemann zeta function agrees with the naive Dirichlet-series definition when the latter
@@ -193,9 +193,8 @@ converges. (Note that this is false without the assumption: when `re s ≤ 1` th
 and we use a different definition to obtain the analytic continuation to all `s`.) -/
 theorem zeta_eq_tsum_one_div_nat_cpow {s : ℂ} (hs : 1 < re s) :
     riemannZeta s = ∑' n : ℕ, 1 / (n : ℂ) ^ s := by
-  convert (hasSum_nat_cosZeta 0 hs).tsum_eq.symm using 3 with n
-  · rw [QuotientAddGroup.mk_zero, cosZeta_zero]
-  · simp_rw [mul_zero, zero_mul, Real.cos_zero, ofReal_one]
+  simpa only [QuotientAddGroup.mk_zero, cosZeta_zero, mul_zero, zero_mul, Real.cos_zero,
+    ofReal_one] using (hasSum_nat_cosZeta 0 hs).tsum_eq.symm
 #align zeta_eq_tsum_one_div_nat_cpow zeta_eq_tsum_one_div_nat_cpow
 
 /-- Alternate formulation of `zeta_eq_tsum_one_div_nat_cpow` with a `+ 1` (to avoid relying
