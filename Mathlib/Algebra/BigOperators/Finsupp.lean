@@ -101,16 +101,15 @@ theorem prod_comm (f : α →₀ M) (g : β →₀ M') (h : α → M → β → 
 
 @[to_additive (attr := simp)]
 theorem prod_ite_eq [DecidableEq α] (f : α →₀ M) (a : α) (b : α → M → N) :
-    (f.prod fun x v => ite (a = x) (b x v) 1) = ite (a ∈ f.support) (b a (f a)) 1 := by
+    (f.prod fun x v => if a = x then b x v else 1) = if a ∈ f.support then b a (f a) else 1 := by
   dsimp [Finsupp.prod]
   rw [f.support.prod_ite_eq]
 #align finsupp.prod_ite_eq Finsupp.prod_ite_eq
 #align finsupp.sum_ite_eq Finsupp.sum_ite_eq
 
-@[to_additive (attr := simp)]
 theorem prod_ite_eq_iff [DecidableEq α] (f : α →₀ M) (a : α) (b : α → M → N)
     {p : α → Prop} [DecidablePred p] (h : ∀ x ∈ f.support, p x ↔ a = x) :
-    (f.prod fun x v => ite (p x) (b x v) 1) = ite (a ∈ f.support) (b a (f a)) 1 := by
+    (f.prod fun x v => if p x then b x v else 1) = if a ∈ f.support then b a (f a) else 1 := by
   dsimp [Finsupp.prod]
   rw [f.support.prod_ite_eq_iff _ _ h]
 
