@@ -4,6 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
 
+
+/-!
+# Second-countability of pseduometrizable Lindelöf spaces
+
+Factored out from `Mathlib.Topology.Compactness.Lindelof`
+to avoid circular dependencies.
+-/
+
 import Mathlib.Topology.Metrizable.Basic
 import Mathlib.Topology.Compactness.Lindelof
 
