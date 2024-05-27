@@ -16,13 +16,22 @@ jobs:
           fetch-depth: 0
       - id: job_is
         run: |
+          url=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          curl -s "${url}" |
+            # extract the CI run number from the unique line that matches `  href=".../job/[job number]"`
+            awk -v url="${url}" -F'/' '
+              /^ *href/ {
+                gsub(/"/, "", $NF)
+                printf("summary<<EOF\n%s/job/%s\nEOF", url, $NF)
+              }' >> "$GITHUB_OUTPUT"
+
           #url=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           #job_no="$(curl -s "${url}" |
           #  # extract the CI run number from the unique line that matches `  href=.../job/ci_number"`
           #  awk -v jn0= "${{ github.job }}" -v url="${url}" -F'/' '/^ *href/ {gsub(/"/, "", $NF); printf("summary<<EOF\n%s\nEOF", jno)}')"
           #printf '%s\n%s\n' "${job_no}" "${{ github.job }}"
           #echo
-          printf 'summary<<EOF\n%s\nEOF\n' ${{ github.job }} >> "$GITHUB_OUTPUT"
+          #printf 'summary<<EOF\n%s\nEOF\n' ${{ github.job }} >> "$GITHUB_OUTPUT"
       - name: add_comment
         run: |
           gh pr comment "$NUMBER" --body "$BODY"
