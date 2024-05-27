@@ -878,7 +878,8 @@ lemma not_nil_iff {p : G.Walk v w} :
   cases p <;> simp [*]
 
 /-- A walk with its endpoints defeq is `Nil` if and only if it is equal to `nil`. -/
-lemma Nil_iff_eq_nil : ∀ {p : G.Walk v v}, p.Nil ↔ p = nil
+@[simp]
+lemma nil_iff_eq_nil : ∀ {p : G.Walk v v}, p.Nil ↔ p = nil
   | .nil | .cons _ _ => by simp
 
 lemma Nil.eq_nil {p : G.Walk v v} (hp : p.Nil) : p = Walk.nil := Nil_iff_eq_nil.1 hp
