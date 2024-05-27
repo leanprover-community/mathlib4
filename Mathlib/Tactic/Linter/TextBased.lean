@@ -140,22 +140,28 @@ end
 def all_linters : Array LinterCore := Array.mk
   [copyright_header]
 
-/-- Read a file, apply all text-based linters and return the formatted errors. -/
-def lint_file (path : System.FilePath) : IO Unit := do
+/-- Read a file, apply all text-based linters and return the formatted errors.
+
+Return `true` if there were new errors (and `false` otherwise). -/
+def lint_file (path : System.FilePath) : IO Bool := do
   let lines ← IO.FS.lines path
   -- We don't need to run any checks on imports-only files.
   -- NB. The Python script used to still run a few linters; this is in fact not necessary.
   if is_imports_only_file lines then
-    return
+    return false
   let all_output := (Array.map (fun lint ↦
     (Array.map (fun (e, n) ↦ ErrorContext.mk e n path)) (lint lines))) all_linters
   -- XXX: this list is currently not sorted: for github, that's probably fine
-  formatErrors (Array.flatten all_output)
+  let errors := Array.flatten all_output
+  formatErrors errors
+  return errors.size > 0
 
-/-- Lint all files referenced in a given import-only file. -/
-def lint_all_files (path : System.FilePath) : IO Unit := do
+/-- Lint all files referenced in a given import-only file.
+Return the number of files which had new style errors. -/
+def lint_all_files (path : System.FilePath) : IO UInt32 := do
   -- Read all module names in Mathlib from the file at `path`.
   let allModules ← IO.FS.lines path
+  let mut number_error_files := 0
   for module in allModules do
     let module := module.stripPrefix "import "
     -- Exclude `Archive.Sensitivity` and `Mathlib.Tactic.Linter` for now.
@@ -164,26 +170,26 @@ def lint_all_files (path : System.FilePath) : IO Unit := do
       continue
     -- Convert the module name to a file name, then lint that file.
     let path := (System.mkFilePath (module.split fun c ↦ (c == '.'))).addExtension "lean"
-    lint_file path
-
-/-- Lint all files in `Mathlib.lean`, `Archive.lean` and `Counterexamples.lean`. -/
-def lint_all : IO Unit := do
-  for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
-    lint_all_files (System.mkFilePath [s])
+    let e ← lint_file path
+    if e then
+      number_error_files := number_error_files + 1
+  return number_error_files
 
 
 /-- Implementation of the `lint_style` command line program. -/
 def lintStyleCli (_args : Cli.Parsed) : IO UInt32 := do
-  for s in #["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
-    lint_all_files (System.mkFilePath [s])
-  return 0
+  let mut number_error_files := 0
+  for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
+    let n ← lint_all_files (System.mkFilePath [s])
+    number_error_files := number_error_files + n
+  return number_error_files
 
 open Cli in
 /-- Setting up command line options and help text for `lake exe lint_style`. -/
 -- so far, no help options or so: perhaps that is fine?
 def lint_style : Cmd := `[Cli|
   lint_style VIA lintStyleCli; ["0.0.1"]
-  "Run text-based style linters on Mathlib and the Archive and Counterexamples directories."
+  "Run text-based style linters on every Lean file in Mathlib/, Archive/ and Counterexamples/."
 ]
 
 /-- The entry point to the `lake exe lint_style` command. -/
