@@ -80,8 +80,8 @@ cardinal number, cardinal arithmetic, cardinal exponentiation, aleph,
 Cantor's theorem, König's theorem, Konig's theorem
 -/
 
-assert_not_exists Module
 assert_not_exists Field
+assert_not_exists Module
 
 open scoped Classical
 open Function Set Order BigOperators
