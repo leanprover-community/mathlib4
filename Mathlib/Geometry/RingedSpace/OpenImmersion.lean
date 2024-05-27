@@ -261,7 +261,7 @@ theorem app_inv_app' (U : Opens Y) (hU : (U : Set Y) ⊆ Set.range f.base) :
               apply le_antisymm
               · exact Set.image_preimage_subset f.base U.1
               · rw [← SetLike.coe_subset_coe]
-                refine' LE.le.trans_eq _ (@Set.image_preimage_eq_inter_range _ _ f.base U.1).symm
+                refine LE.le.trans_eq ?_ (@Set.image_preimage_eq_inter_range _ _ f.base U.1).symm
                 exact Set.subset_inter_iff.mpr ⟨fun _ h => h, hU⟩)).op :=
   by erw [← Category.assoc]; rw [IsIso.comp_inv_eq, f.c.naturality]; congr
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.app_inv_app' AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.app_inv_app'
@@ -995,9 +995,9 @@ def pullbackConeOfLeftIsLimit : IsLimit (pullbackConeOfLeft f g) :=
   PullbackCone.isLimitAux' _ fun s => by
     refine' ⟨LocallyRingedSpace.Hom.mk (PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftLift
         f.1 g.1 (PullbackCone.mk _ _ (congr_arg LocallyRingedSpace.Hom.val s.condition))) _,
-      LocallyRingedSpace.Hom.ext _ _
+      LocallyRingedSpace.Hom.ext ?_ _
         (PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftLift_fst f.1 g.1 _),
-      LocallyRingedSpace.Hom.ext _ _
+      LocallyRingedSpace.Hom.ext ?_ _
           (PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftLift_snd f.1 g.1 _), _⟩
     · intro x
       have :=

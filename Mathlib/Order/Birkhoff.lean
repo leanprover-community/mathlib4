@@ -68,7 +68,7 @@ variable {s : UpperSet α}
 variable [Finite α]
 
 @[simp] lemma infIrred_iff_of_finite : InfIrred s ↔ ∃ a, Ici a = s := by
-  refine' ⟨fun hs ↦ _, _⟩
+  refine ⟨fun hs ↦ ?_, ?_⟩
   · obtain ⟨a, ha, has⟩ := (s : Set α).toFinite.exists_minimal_wrt id _ (coe_nonempty.2 hs.ne_top)
     exact ⟨a, (hs.2 <| erase_inf_Ici ha <| by simpa [eq_comm] using has).resolve_left
       (lt_erase.2 ha).ne'⟩
@@ -81,7 +81,7 @@ namespace LowerSet
 variable {s : LowerSet α}
 
 @[simp] lemma supIrred_Iic (a : α) : SupIrred (Iic a) := by
-  refine' ⟨fun h ↦ Iic_ne_bot h.eq_bot, fun s t hst ↦ _⟩
+  refine ⟨fun h ↦ Iic_ne_bot h.eq_bot, fun s t hst ↦ ?_⟩
   have := mem_Iic_iff.2 (le_refl a)
   rw [← hst] at this
   exact this.imp (fun ha ↦ (le_sup_left.trans_eq hst).antisymm <| Iic_le.2 ha) fun ha ↦
@@ -90,7 +90,7 @@ variable {s : LowerSet α}
 variable [Finite α]
 
 @[simp] lemma supIrred_iff_of_finite : SupIrred s ↔ ∃ a, Iic a = s := by
-  refine' ⟨fun hs ↦ _, _⟩
+  refine ⟨fun hs ↦ ?_, ?_⟩
   · obtain ⟨a, ha, has⟩ := (s : Set α).toFinite.exists_maximal_wrt id _ (coe_nonempty.2 hs.ne_bot)
     exact ⟨a, (hs.2 <| erase_sup_Iic ha <| by simpa [eq_comm] using has).resolve_left
       (erase_lt.2 ha).ne⟩

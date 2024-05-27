@@ -196,6 +196,25 @@ theorem eq_top_iff {s : Setoid α} : s = (⊤ : Setoid α) ↔ ∀ x y : α, s.R
   simp only [Pi.top_apply, Prop.top_eq_true, forall_true_left]
 #align setoid.eq_top_iff Setoid.eq_top_iff
 
+lemma sInf_equiv {S : Set (Setoid α)} {x y : α} :
+    letI := sInf S
+    x ≈ y ↔ ∀ s ∈ S, s.Rel x y := Iff.rfl
+
+lemma quotient_mk_sInf_eq {S : Set (Setoid α)} {x y : α} :
+    Quotient.mk (sInf S) x = Quotient.mk (sInf S) y ↔ ∀ s ∈ S, s.Rel x y := by
+  simp
+  rfl
+
+/-- The map induced between quotients by a setoid inequality. -/
+def map_of_le {s t : Setoid α} (h : s ≤ t) : Quotient s → Quotient t :=
+  Quotient.map' id h
+
+/-- The map from the quotient of the infimum of a set of setoids into the quotient
+by an element of this set. -/
+def map_sInf {S : Set (Setoid α)} {s : Setoid α} (h : s ∈ S) :
+    Quotient (sInf S) → Quotient s :=
+  Setoid.map_of_le fun _ _ a ↦ a s h
+
 /-- The inductively defined equivalence closure of a binary relation r is the infimum
     of the set of all equivalence relations containing r. -/
 theorem eqvGen_eq (r : α → α → Prop) :

@@ -114,7 +114,7 @@ theorem swap_induction_on [Finite α] {P : Perm α → Prop} (f : Perm α) :
 
 theorem closure_isSwap [Finite α] : Subgroup.closure { σ : Perm α | IsSwap σ } = ⊤ := by
   cases nonempty_fintype α
-  refine' eq_top_iff.mpr fun x _ => _
+  refine eq_top_iff.mpr fun x _ => ?_
   obtain ⟨h1, h2⟩ := Subtype.mem (truncSwapFactors x).out
   rw [← h1]
   exact Subgroup.list_prod_mem _ fun y hy => Subgroup.subset_closure (h2 y hy)
@@ -536,18 +536,18 @@ theorem prod_prodExtendRight {α : Type*} [DecidableEq α] (σ : α → Perm β)
     rw [prod_eq, prodCongrRight_apply]
   clear mem_l
   induction' l with a' l ih
-  · refine' Or.inr ⟨List.not_mem_nil _, _⟩
+  · refine Or.inr ⟨List.not_mem_nil _, ?_⟩
     rw [List.map_nil, List.prod_nil, one_apply]
   rw [List.map_cons, List.prod_cons, mul_apply]
   rcases ih (List.nodup_cons.mp hl).2 with (⟨mem_l, prod_eq⟩ | ⟨not_mem_l, prod_eq⟩) <;>
     rw [prod_eq]
-  · refine' Or.inl ⟨List.mem_cons_of_mem _ mem_l, _⟩
+  · refine Or.inl ⟨List.mem_cons_of_mem _ mem_l, ?_⟩
     rw [prodExtendRight_apply_ne _ fun h : a = a' => (List.nodup_cons.mp hl).1 (h ▸ mem_l)]
   by_cases ha' : a = a'
   · rw [← ha'] at *
-    refine' Or.inl ⟨l.mem_cons_self a, _⟩
+    refine Or.inl ⟨l.mem_cons_self a, ?_⟩
     rw [prodExtendRight_apply_eq]
-  · refine' Or.inr ⟨fun h => not_or_of_not ha' not_mem_l ((List.mem_cons).mp h), _⟩
+  · refine Or.inr ⟨fun h => not_or_of_not ha' not_mem_l ((List.mem_cons).mp h), ?_⟩
     rw [prodExtendRight_apply_ne _ ha']
 #align equiv.perm.prod_prod_extend_right Equiv.Perm.prod_prodExtendRight
 
@@ -570,13 +570,13 @@ theorem sign_prodCongrRight (σ : α → Perm β) : sign (prodCongrRight σ) = �
     apply eq_top_iff.mpr
     intro b _
     exact List.mem_toFinset.mpr (mem_l b)
-  rw [← prod_prodExtendRight σ hl mem_l, sign.map_list_prod, List.map_map, ← l_to_finset,
+  rw [← prod_prodExtendRight σ hl mem_l, map_list_prod sign, List.map_map, ← l_to_finset,
     List.prod_toFinset _ hl]
   simp_rw [← fun a => sign_prodExtendRight a (σ a), Function.comp]
 #align equiv.perm.sign_prod_congr_right Equiv.Perm.sign_prodCongrRight
 
 theorem sign_prodCongrLeft (σ : α → Perm β) : sign (prodCongrLeft σ) = ∏ k, sign (σ k) := by
-  refine' (sign_eq_sign_of_equiv _ _ (prodComm β α) _).trans (sign_prodCongrRight σ)
+  refine (sign_eq_sign_of_equiv _ _ (prodComm β α) ?_).trans (sign_prodCongrRight σ)
   rintro ⟨b, α⟩
   rfl
 #align equiv.perm.sign_prod_congr_left Equiv.Perm.sign_prodCongrLeft

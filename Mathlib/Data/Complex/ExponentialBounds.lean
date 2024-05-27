@@ -19,17 +19,17 @@ open IsAbsoluteValue Finset CauSeq Complex
 
 theorem exp_one_near_10 : |exp 1 - 2244083 / 825552| ≤ 1 / 10 ^ 10 := by
   apply exp_approx_start
-  iterate 13 refine' exp_1_approx_succ_eq (by norm_num1; rfl) (by norm_cast) _
+  iterate 13 refine exp_1_approx_succ_eq (by norm_num1; rfl) (by norm_cast) ?_
   norm_num1
-  refine' exp_approx_end' _ (by norm_num1; rfl) _ (by norm_cast) (by simp) _
+  refine exp_approx_end' _ (by norm_num1; rfl) _ (by norm_cast) (by simp) ?_
   rw [_root_.abs_one, abs_of_pos] <;> norm_num1
 #align real.exp_one_near_10 Real.exp_one_near_10
 
 theorem exp_one_near_20 : |exp 1 - 363916618873 / 133877442384| ≤ 1 / 10 ^ 20 := by
   apply exp_approx_start
-  iterate 21 refine' exp_1_approx_succ_eq (by norm_num1; rfl) (by norm_cast) _
+  iterate 21 refine exp_1_approx_succ_eq (by norm_num1; rfl) (by norm_cast) ?_
   norm_num1
-  refine' exp_approx_end' _ (by norm_num1; rfl) _ (by norm_cast) (by simp) _
+  refine exp_approx_end' _ (by norm_num1; rfl) _ (by norm_cast) (by simp) ?_
   rw [_root_.abs_one, abs_of_pos] <;> norm_num1
 #align real.exp_one_near_20 Real.exp_one_near_20
 
@@ -43,14 +43,14 @@ theorem exp_one_lt_d9 : exp 1 < 2.7182818286 :=
 
 theorem exp_neg_one_gt_d9 : 0.36787944116 < exp (-1) := by
   rw [exp_neg, lt_inv _ (exp_pos _)]
-  · refine' lt_of_le_of_lt (sub_le_iff_le_add.1 (abs_sub_le_iff.1 exp_one_near_10).1) _
+  · refine lt_of_le_of_lt (sub_le_iff_le_add.1 (abs_sub_le_iff.1 exp_one_near_10).1) ?_
     norm_num
   · norm_num
 #align real.exp_neg_one_gt_d9 Real.exp_neg_one_gt_d9
 
 theorem exp_neg_one_lt_d9 : exp (-1) < 0.3678794412 := by
   rw [exp_neg, inv_lt (exp_pos _)]
-  · refine' lt_of_lt_of_le _ (sub_le_comm.1 (abs_sub_le_iff.1 exp_one_near_10).2)
+  · refine lt_of_lt_of_le ?_ (sub_le_comm.1 (abs_sub_le_iff.1 exp_one_near_10).2)
     norm_num
   · norm_num
 #align real.exp_neg_one_lt_d9 Real.exp_neg_one_lt_d9

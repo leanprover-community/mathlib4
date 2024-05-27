@@ -96,7 +96,7 @@ theorem support_integralNormalization {f : R[X]} :
     (integralNormalization f).support = f.support := by
   by_cases hf : f = 0; · simp [hf]
   ext i
-  refine' ⟨fun h => integralNormalization_support h, _⟩
+  refine ⟨fun h => integralNormalization_support h, ?_⟩
   simp only [integralNormalization_coeff, mem_support_iff]
   intro hfi
   split_ifs with hi <;> simp [hf, hfi, hi]
