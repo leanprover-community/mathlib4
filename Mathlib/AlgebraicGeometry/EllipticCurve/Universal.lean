@@ -75,9 +75,6 @@ lemma Poly.two_ne_zero : (2 : Poly) ≠ 0 :=
   Polynomial.C_ne_zero.mpr <| Polynomial.C_ne_zero.mpr fun h ↦ two_ne_zero' (α := ℤ) <|
     MvPolynomial.C_injective _ _ <| by rwa [← MvPolynomial.C_0] at h
 
-instance : NoZeroSMulDivisors ℤ Poly := sorry
-instance : NoZeroSMulDivisors ℕ Poly := sorry
-
 /-- The obvious ring homomorphism from the polynomial ring in 7 variables to the universal field. -/
 def polyToField : Poly →+* Universal.Field := (algebraMap Universal.Ring _).comp <| AdjoinRoot.mk _
 

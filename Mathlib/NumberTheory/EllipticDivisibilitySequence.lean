@@ -425,22 +425,22 @@ theorem rel₄_of_anti_oddRec_evenRec (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
     (oddRec : ∀ m ≥ 2, OddRec W m) (evenRec : ∀ m ≥ 3, EvenRec W m) :
     ∀ ⦃a b c d : ℤ⦄, Rel₄OfValid W a b c d :=
   -- apply induction on `a`
-  strong_induction 6 -- if `a < 6` the conclusion holds vacuously
+  strong_induction 6 -- if a < 6 the conclusion holds vacuously
     (fun a ha b c d same anti ↦ ((same.six_le_of_strictAnti₄ anti).not_lt ha).elim)
     -- otherwise, it suffices to deal with the "minimal" case `c = cMin a` and `d = dMin a`
     fun a h6 ih ↦ rel₄_of_min₂ one two fun {a' b} haa same anti ↦ by
   obtain ha'|ha' := haa.lt_or_eq
-  · -- if `a' < a`, apply the inductive hypothesis
+  · -- if a' < a, apply the inductive hypothesis
     exact ih _ ha' same anti
   obtain hba|rfl := lt_or_eq_of_le <| show b + 2 ≤ a' from
     (lt_iff_add_two_le_of_even_sub <| (negOnePow_eq_iff _ _).1 same.1).1 anti.2.2.2
-  · -- if `b + 2 < a'`, apply `transf` and then the inductive hypothesis is applicable
+  · -- if b + 2 < a', apply `transf` and then the inductive hypothesis is applicable
     rw [← same.rel₄_transf]
     refine ih _ ?_ same.transf (same.strictAnti₄_transf anti)
     rw [avg₄, sub_lt_iff_lt_add, Int.ediv_lt_iff_lt_mul zero_lt_two, ← ha', cMin]
     linarith only [hba]
   obtain ⟨m, rfl|rfl⟩ := b.even_or_odd'
-  -- the `b + 2 = a'` case is handled by oddRec or evenRec depending on the parity of `b`
+  -- the b + 2 = a' case is handled by oddRec or evenRec depending on the parity of `b`
   · have ea : Even a := by rw [← ha']; exact (even_two_mul _).add even_two
     simp_rw [cMin, dMin, if_pos ea]
     convert (rel₃_iff₄ W (m + 1) m 1).mp ((rel₃_iff_oddRec W m).mpr <| oddRec _ ?_) using 2
@@ -950,12 +950,10 @@ section map
 
 variable {b c d : R}
 
-lemma map_preNormEDS' (n : ℕ) : f (preNormEDS' b c d n) = preNormEDS' (f b) (f c) (f d) n := by
-  refine normEDSRec' (map_zero f) (map_one f) (map_one f) rfl rfl ?_ ?_ n <;> intro m ih
-  on_goal 1 => simp_rw [preNormEDS'_even]; rw [← ih _ (by linarith only)]
-  on_goal 2 => simp_rw [preNormEDS'_odd]
-  all_goals rw [← ih, ← ih, ← ih, ← ih]; simp [apply_ite f]
-  all_goals linarith only
+lemma map_preNormEDS' (n : ℕ) : f (preNormEDS' b c d n) = preNormEDS' (f b) (f c) (f d) n :=
+  normEDSRec (map_zero f) (map_one f) (map_one f) rfl rfl
+    (fun m h₁ h₂ h₃ h₄ h₅ ↦ by simp [preNormEDS'_even, h₁, h₂, h₃, h₄, h₅])
+    (fun m h₁ h₂ h₃ h₄ ↦ by simp [preNormEDS'_odd, h₁, h₂, h₃, h₄, apply_ite f]) n
 
 lemma map_preNormEDS (n : ℤ) : f (preNormEDS b c d n) = preNormEDS (f b) (f c) (f d) n := by
   simp_rw [preNormEDS, map_mul, map_intCast, map_preNormEDS']
