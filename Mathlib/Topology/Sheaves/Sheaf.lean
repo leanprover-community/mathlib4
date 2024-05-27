@@ -54,7 +54,7 @@ The equivalent formulations of the sheaf condition on `presheaf C X` are as foll
 
 2. `TopCat.Presheaf.IsSheafEqualizerProducts`: (requires `C` to have all products)
   For each open cover `{ Uᵢ }` of `U`, `F(U) ⟶ ∏ᶜ F(Uᵢ)` is the equalizer of the two morphisms
-  `∏ F(Uᵢ) ⟶ ∏ F(Uᵢ ∩ Uⱼ)`.
+  `∏ᶜ F(Uᵢ) ⟶ ∏ᶜ F(Uᵢ ∩ Uⱼ)`.
   See `TopCat.Presheaf.isSheaf_iff_isSheafEqualizerProducts`.
 
 3. `TopCat.Presheaf.IsSheafOpensLeCover`:
