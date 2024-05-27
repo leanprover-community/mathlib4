@@ -47,7 +47,7 @@ lemma IsHamiltonian.support_toFinset (hp : p.IsHamiltonian) : p.support.toFinset
 /-- The length of a hamiltonian path is one less than the number of vertices of the graph. -/
 lemma IsHamiltonian.length_eq (hp : p.IsHamiltonian) : p.length = Fintype.card α - 1 :=
   eq_tsub_of_add_eq $ by
-    rw [← length_support, ← List.toFinset_sum_count_eq, Finset.sum_congr rfl fun _ _ ↦ hp _,
+    rw [← length_support, ← List.sum_toFinset_count_eq, Finset.sum_congr rfl fun _ _ ↦ hp _,
       ← card_eq_sum_ones, hp.support_toFinset, card_univ]
 
 /-- Hamiltonian paths are paths. -/
@@ -64,7 +64,7 @@ lemma IsPath.isHamiltonian_iff (hp : p.IsPath) : p.IsHamiltonian ↔ ∀ w, w �
 
 /-- A hamiltonian cycle is a cycle that visits every vertex once. -/
 structure IsHamiltonianCycle (p : G.Walk a a) extends p.IsCycle : Prop :=
-  isHamiltonian_tail : (p.tail toIsCycle.not_Nil).IsHamiltonian
+  isHamiltonian_tail : (p.tail toIsCycle.not_nil).IsHamiltonian
 
 variable {p : G.Walk a a}
 
@@ -87,7 +87,7 @@ lemma IsHamiltonianCycle.map {H : SimpleGraph β} (f : G →g H) (hf : Bijective
     exact hp.isHamiltonian_tail _
 
 lemma IsHamiltonianCycle_def {p : G.Walk a a} :
-    p.IsHamiltonianCycle ↔ ∃ h : p.IsCycle, (p.tail h.not_Nil).IsHamiltonian :=
+    p.IsHamiltonianCycle ↔ ∃ h : p.IsCycle, (p.tail h.not_nil).IsHamiltonian :=
   ⟨fun ⟨h, h'⟩ ↦ ⟨h, h'⟩, fun ⟨h, h'⟩ ↦ ⟨h, h'⟩⟩
 
 lemma IsHamiltonianCycle_iff {p : G.Walk a a} :
@@ -96,12 +96,12 @@ lemma IsHamiltonianCycle_iff {p : G.Walk a a} :
 
 /-- A hamiltonian cycle visits every vertex. -/
 lemma IsHamiltonianCycle.mem_support (p : G.Walk a a) (hp : p.IsHamiltonianCycle) (b : α) :
-    b ∈ p.support := List.mem_of_mem_tail <| support_tail _ ▸ hp.isHamiltonian_tail.mem_support _
+    b ∈ p.support := List.mem_of_mem_tail <| support_tail p _ ▸ hp.isHamiltonian_tail.mem_support _
 
 /-- The length of a hamiltonian cycle is the number of vertices. -/
 lemma IsHamiltonianCycle.length_eq {p : G.Walk a a} (hp : p.IsHamiltonianCycle) :
     p.length = Fintype.card α := by
-  rw [← length_tail_add_one hp.not_Nil, hp.isHamiltonian_tail.length_eq, Nat.sub_add_cancel]
+  rw [← length_tail_add_one hp.not_nil, hp.isHamiltonian_tail.length_eq, Nat.sub_add_cancel]
   rw [Nat.succ_le, Fintype.card_pos_iff]
   exact ⟨a⟩
 
