@@ -70,7 +70,7 @@ theorem eq [DecidableEq ι] [∀ (S : Finset ι) i, Decidable (i ∈ S)]
 
 theorem Finset.Icc_eq_left_union (h : k ≤ N) : Finset.Icc k N = {k} ∪ (Finset.Icc (k + 1) N) := by
   ext x
-  simp
+  simp only [mem_Icc, mem_union, mem_singleton]
   refine ⟨fun ⟨h1, h2⟩ ↦ ?_, ?_⟩
   · by_cases hxk : x = k
     · exact Or.inl hxk
@@ -190,13 +190,13 @@ theorem firstLemma (A : ℕ → Set ((n : ℕ) → X n)) (A_mem : ∀ n, A n ∈
   set μ_proj := isProjectiveMeasureFamily_pi μ
   let χ := fun n ↦ (A n).indicator (1 : (∀ n, X n) → ℝ≥0∞)
   have concl x n : kolContent μ_proj (A n) = (∫⋯∫⁻_Finset.Icc 0 (N n), χ n ∂μ) x := by
-    simp only [χ, A_eq]
+    simp_rw [χ, A_eq]
     exact eq μ (Finset.Icc 0 (N n)) (mS n) x
   have mχ n : Measurable (χ n) := by
-    simp only [χ, A_eq]
+    simp_rw [χ, A_eq]
     exact (measurable_indicator_const_iff 1).2 <| measurableSet_cylinder _ _ (mS n)
   have χ_dep n : DependsOn (χ n) (Finset.Icc 0 (N n)) := by
-    simp only [χ, A_eq]
+    simp_rw [χ, A_eq]
     exact dependsOn_cylinder_indicator _ _
   have lma_const x y n : (∫⋯∫⁻_Finset.Icc 0 (N n), χ n ∂μ) x =
       (∫⋯∫⁻_Finset.Icc 0 (N n), χ n ∂μ) y := by
@@ -488,7 +488,7 @@ theorem thirdLemma (A : ℕ → Set (∀ i, X i)) (A_mem : ∀ n, A n ∈ cylind
   · have count_t : Countable t := Set.countable_iUnion (fun n ↦ (s n).countable_toSet)
     obtain ⟨φ, -⟩ := Classical.exists_true_of_nonempty (α := ℕ ≃ t) nonempty_equiv_of_countable
     refine secondLemma (fun i : t ↦ μ i) φ B (fun n ↦ ?_) B_anti B_inter
-    simp
+    simp only [mem_cylinders, exists_prop]
     exact ⟨u n, T n, mT n, rfl⟩
 
 theorem kolContent_sigma_subadditive ⦃f : ℕ → Set ((i : ι) → X i)⦄ (hf : ∀ n, f n ∈ cylinders X)
