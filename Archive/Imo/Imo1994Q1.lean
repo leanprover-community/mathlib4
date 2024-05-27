@@ -51,14 +51,14 @@ open Imo1994Q1
 theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : A.card = m + 1)
     (hrange : ∀ a ∈ A, 0 < a ∧ a ≤ n)
     (hadd : ∀ a ∈ A, ∀ b ∈ A, a + b ≤ n → a + b ∈ A) :
-    (m + 1) * (n + 1) ≤ 2 * ∑ x in A, x := by
+    (m + 1) * (n + 1) ≤ 2 * ∑ x ∈ A, x := by
   set a := orderEmbOfFin A hm
   -- We sort the elements of `A`
   have ha : ∀ i, a i ∈ A := fun i => orderEmbOfFin_mem A hm i
   set rev := Equiv.subLeft (Fin.last m)
   -- `i ↦ m-i`
   -- We reindex the sum by fin (m+1)
-  have : ∑ x in A, x = ∑ i : Fin (m + 1), a i := by
+  have : ∑ x ∈ A, x = ∑ i : Fin (m + 1), a i := by
     convert sum_image (α := ℕ) (β := ℕ) fun x _ y _ => (OrderEmbedding.eq_iff_eq a).1
     rw [← coe_inj]; simp [a]
   rw [this]; clear this

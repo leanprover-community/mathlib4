@@ -3,7 +3,7 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Function.Indicator
+import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
@@ -13,6 +13,8 @@ import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 This file relates the support of a function to order constructions.
 -/
+
+assert_not_exists MonoidWithZero
 
 open Set
 
@@ -231,14 +233,15 @@ lemma mulIndicator_le {s : Set α} {f g : α → M} (hfg : ∀ a ∈ s, f a ≤ 
 
 end CanonicallyOrderedCommMonoid
 
-section LinearOrderedAddCommGroup
-variable [LinearOrderedAddCommGroup M]
+section LinearOrderedCommGroup
+variable [LinearOrderedCommGroup M]
 
 open scoped symmDiff
 
-lemma abs_indicator_symmDiff (s t : Set α) (f : α → M) (x : α) :
-    |indicator (s ∆ t) f x| = |indicator s f x - indicator t f x| :=
-  apply_indicator_symmDiff abs_neg s t f x
+@[to_additive]
+lemma mabs_mulIndicator_symmDiff (s t : Set α) (f : α → M) (x : α) :
+    |mulIndicator (s ∆ t) f x|ₘ = |mulIndicator s f x / mulIndicator t f x|ₘ :=
+  apply_mulIndicator_symmDiff mabs_inv s t f x
 
-end LinearOrderedAddCommGroup
+end LinearOrderedCommGroup
 end Set
