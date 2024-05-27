@@ -27,8 +27,7 @@ instance : Inhabited Int where
 
 set_option linter.attributeInstanceIn false in
 /--
-warning: `attribute [instance] ... in` declarations are surprising:
-they are **not** limited to the subsequent declaration, but define global instances
+warning: Despite the `in`, the attribute 'instance 1100' is added globally to 'Int.add'
 please remove the `in` or make this a `local instance` instead
 note: this linter can be disabled with `set_option linter.attributeInstanceIn false`
 -/
@@ -42,8 +41,7 @@ instance : Inhabited Int where
 
 set_option linter.attributeInstanceIn false in
 /--
-warning: `attribute [instance] ... in` declarations are surprising:
-they are **not** limited to the subsequent declaration, but define global instances
+warning: Despite the `in`, the attribute 'instance' is added globally to 'Int.add'
 please remove the `in` or make this a `local instance` instead
 note: this linter can be disabled with `set_option linter.attributeInstanceIn false`
 -/
@@ -53,23 +51,43 @@ attribute [instance] Int.add in
 instance : Inhabited Int where
   default := 0
 
+set_option linter.attributeInstanceIn false in
 #guard_msgs in
--- non-`instance` attributes are allowed with `in`
+/--
+warning: Despite the `in`, the attribute 'simp' is added globally to 'Int.add'
+please remove the `in` or make this a `local instance` instead
+note: this linter can be disabled with `set_option linter.attributeInstanceIn false`
+-/
 #guard_msgs in
+set_option linter.attributeInstanceIn true in
 attribute [simp] Int.add in
 instance : Inhabited Int where
   default := 0
 
--- Here's another example, with nested attributes.
-def foo := True
+namespace X
 
+-- Here's another example, with nested attributes.
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
+theorem foo (x y : Nat) : x = y := sorry
+
+set_option linter.attributeInstanceIn false in
+#guard_msgs in
+/--
+warning: Despite the `in`, the attribute 'simp' is added globally to 'foo'
+please remove the `in` or make this a `local instance` instead
+note: this linter can be disabled with `set_option linter.attributeInstanceIn false`
+---
+warning: Despite the `in`, the attribute 'ext' is added globally to 'foo'
+please remove the `in` or make this a `local instance` instead
+note: this linter can be disabled with `set_option linter.attributeInstanceIn false`
+-/
 #guard_msgs in
 -- TODO: where's the docBlame linter defined? what do I need to import?
 --attribute [nolint docBlame] foo in
-attribute [simp] foo in
+set_option linter.attributeInstanceIn true in
+attribute [simp, local simp, ext, scoped instance, -simp, -ext] foo in
 def bar := False
-
-namespace X
 
 #guard_msgs in
 -- `local instance` is allowed with `in`
@@ -99,10 +117,10 @@ end X
 
 -- Omitting the `in` is also fine.
 
-attribute [local instance 42] foo
+attribute [local instance 42] X.foo
 
 -- Global instance without the `in` are also left alone.
-attribute [instance 20000] foo
+attribute [instance 20000] X.foo
 
 namespace X
 
