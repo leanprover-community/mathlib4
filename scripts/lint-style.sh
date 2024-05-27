@@ -41,6 +41,8 @@ git ls-files 'Mathlib/*.lean' | xargs ./scripts/lint-style.py "$@"
 git ls-files 'Archive/*.lean' | xargs ./scripts/lint-style.py "$@"
 git ls-files 'Counterexamples/*.lean' | xargs ./scripts/lint-style.py "$@"
 
+# Also call the in-progress Lean rewrite of these Python lints: do this in the build step.
+
 # 2. Global checks on the mathlib repository
 
 # 2.1 Check for executable bit on Lean files
