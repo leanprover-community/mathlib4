@@ -285,6 +285,9 @@ theorem C_neg (n : ℤ) : C R (-n) = C R n := by
     have h₂ := C_sub_one R (-n)
     linear_combination (norm := ring_nf) (X:R[X]) * ih1 - ih2 + h₁ - h₂
 
+theorem C_natAbs (n : ℤ) : C R n.natAbs = C R n := by
+  obtain h | h := Int.natAbs_eq n <;> nth_rw 2 [h]; simp
+
 theorem C_neg_two : C R (-2) = X ^ 2 - 2 := by simp [C_two]
 
 theorem C_comp_two_mul_X (n : ℤ) : (C R n).comp (2 * X) = 2 * T R n := by
