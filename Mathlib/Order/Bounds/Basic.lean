@@ -1706,7 +1706,7 @@ The dual notion
 does not appear to play a significant role in the literature, so is omitted here.
 -/
 def DScottContinuous (D : Set (Set α)) (f : α → β) : Prop :=
-  ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → d ∈ D → ∀ ⦃a⦄, IsLUB d a → IsLUB (f '' d) (f a)
+  ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → IsLUB (f '' d) (f a)
 
 lemma DScottContinuous.mono (D₁ D₂ : Set (Set α)) (hD : D₁ ⊆ D₂) {f : α → β}
     (hf : DScottContinuous D₂ f) : DScottContinuous D₁ f :=
