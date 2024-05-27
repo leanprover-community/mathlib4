@@ -121,19 +121,14 @@ def pair (a b : α) (hab : a ≤ b) : Chain α :=
     | 0 => a
     | _ => b, fun _ _ _ => by aesop⟩
 
-@[simp] lemma range_pair (a b : α) (hab : a ≤ b) :
-    Set.range (pair a b hab) = {a , b} := by
-  ext; simp [pair, Nat.and_forall_succ]
-  rw [le_antisymm_iff]
-  constructor
-  · intro d ⟨n,hn⟩
-    cases n
-    · aesop
-    · aesop
-  · intros d hd
-    cases' hd with ha hb
-    · use 0; rw [ha]; rfl
-    · use 1; rw [hb]; rfl
+lemma pair_zero (a b : α) (hab : a ≤ b) : pair a b hab 0 = a := rfl
+
+lemma pair_n_plus_one (a b : α) (hab : a ≤ b) (n : ℕ) : pair a b hab (n + 1) = b := rfl
+
+@[simp] lemma range_pair (a b : α) (hab : a ≤ b) : Set.range (pair a b hab) = {a, b} := by
+  ext;
+  exact Nat.or_exists_succ.symm.trans (by simp_rw [pair_zero, pair_n_plus_one]; aesop)
+
 
 /-- `map` function for `Chain` -/
 -- Porting note: `simps` doesn't work with type synonyms
@@ -311,7 +306,7 @@ def ωScottContinuous (f : α → β) := ScottContinuousOn (Set.range fun c : Ch
 
 lemma ωScottContinuous.monotone {f : α → β} (h : ωScottContinuous f) : Monotone f :=
   ScottContinuousOn.monotone _ (fun a b hab => by
-    use ordered_pair_to_chain a b hab; exact ordered_pair_to_chain_range a b hab) h
+    use pair a b hab; exact range_pair a b hab) h
 
 lemma ωScottContinuous.isLUB {c : Chain α} {f : α → β} (hf : ωScottContinuous f) :
     IsLUB (Set.range (Chain.map c ⟨f, (ωScottContinuous.monotone hf)⟩)) (f (ωSup c)) := by
