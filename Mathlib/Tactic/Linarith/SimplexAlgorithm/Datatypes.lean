@@ -37,6 +37,17 @@ structure SparseMatrix (n m : Nat) where
   /-- TODO: write docs -/
   data : Array <| Lean.HashMap Nat Rat
 
+instance (n m : Nat) : GetElem (SparseMatrix n m) Nat (Lean.HashMap Nat Rat) fun _ i => i < n where
+  getElem mat i _ := mat.data[i]!
+
+-- instance (n m : Nat) : ToString <| SparseMatrix n m where
+--   toString mat := Id.run do
+--     let mut s := ""
+--     for row in mat.data do
+--       let arr : List Rat := (List.range m).map fun idx => row.findD idx 0
+--       s := s ++ s!"{arr}\n"
+--     return s
+
 /--
 `Table` is a structure Simplex Algorithm operates on. The `i`-th row of `mat` expresses the
 variable `basic[i]` as a linear combination of variables from `free`.
@@ -47,6 +58,6 @@ structure Table where
   /-- Array containing the free variables' indexes -/
   free : Array Nat
   /-- Matrix of coefficients the basic variables expressed through the free ones. -/
-  mat : Matrix basic.size free.size
+  mat : SparseMatrix basic.size free.size
 
 end Linarith.SimplexAlgorithm

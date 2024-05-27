@@ -45,12 +45,12 @@ end SimplexAlgorithm
 
 open SimplexAlgorithm
 
-/-- An oracle that uses the simplex algorithm. -/
-def CertificateOracle.simplexAlgorithm' : CertificateOracle where
-  produceCertificate hyps maxVar := do
-    let ⟨A, strictIndexes⟩ := preprocess hyps maxVar
-    let vec := findPositiveVector A strictIndexes
-    return postprocess vec
+-- /-- An oracle that uses the simplex algorithm. -/
+-- def CertificateOracle.simplexAlgorithm' : CertificateOracle where
+--   produceCertificate hyps maxVar := do
+--     let ⟨A, strictIndexes⟩ := preprocess hyps maxVar
+--     let vec := findPositiveVector A strictIndexes
+--     return postprocess vec
 
 
 /-- TODO: write docs -/

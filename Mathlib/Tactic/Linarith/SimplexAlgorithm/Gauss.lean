@@ -83,7 +83,7 @@ def getTableImp {n m : Nat} : GaussM n m Table := do
   return {
     free := free
     basic := basic
-    mat := ⟨ansData⟩
+    mat := ⟨#[Lean.HashMap.empty]⟩ --ansData
   }
 
 /--

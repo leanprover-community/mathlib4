@@ -86,12 +86,20 @@ def getTableImp {n m : Nat} : GaussM n m Table := do
   for i in [col:m] do
     free := free.push i
 
-  let ansData : Array (Array Rat) := ← do
+  let ansData : Array (Lean.HashMap Nat Rat) := ← do
     let mat := (← get)
-    return Array.ofFn (fun row : Fin row => free.map fun f => -mat.data[row]!.findD f 0)
+    /- dense -/
+    -- return Array.ofFn (fun b : Fin row => free.map fun f => -mat.data[b]!.findD f 0)
+    /- sparse -/
+    return Array.ofFn (fun b : Fin row => Lean.HashMap.ofList <| Array.toList <|
+      free.zipWithIndex.filterMap fun ⟨f, idx⟩ =>
+        match mat.data[b]!.find? f with
+        | .some v => .some ⟨idx, -v⟩
+        | .none => .none
+      )
 
   -- dbg_trace s!"free : {free}; basic : {basic}"
-  -- dbg_trace ansData
+  -- dbg_trace (← get)
   return {
     free := free
     basic := basic

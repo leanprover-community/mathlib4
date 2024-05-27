@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasily Nesterov
 -/
 import Mathlib.Tactic.Linarith.SimplexAlgorithm.SimplexAlgorithm
-import Mathlib.Tactic.Linarith.SimplexAlgorithm.Gauss
+-- import Mathlib.Tactic.Linarith.SimplexAlgorithm.Gauss
 import Mathlib.Tactic.Linarith.SimplexAlgorithm.GaussSparse
 
 /-!
@@ -73,32 +73,32 @@ def stateLPSparse {n m : Nat} (A : SparseMatrix n m) (strictIndexes : List Nat) 
 def extractSolution (table : Table) : Array Rat := Id.run do
   let mut ans : Array Rat := Array.mkArray (table.basic.size + table.free.size - 3) 0
   for i in [1:table.mat.data.size] do
-    ans := ans.set! (table.basic[i]! - 2) table.mat.data[i]!.back
+    ans := ans.set! (table.basic[i]! - 2) <| table.mat.data[i]!.findD (table.free.size - 1) 0
   return ans
 
-/--
-Finds a nonnegative vector `v`, such that `A v = 0` and some of its coordinates from `strictCoords`
-are positive, in the case such `v` exists. If not, returns zero vector. The latter prevents
-`linarith` from doing useless post-processing.
--/
-def findPositiveVector {n m : Nat} (A : Matrix n m) (strictIndexes : List Nat) : Array Rat :=
-  /- State the linear programming problem. -/
-  let B := stateLP A strictIndexes
+-- /--
+-- Finds a nonnegative vector `v`, such that `A v = 0` and some of its coordinates from `strictCoords`
+-- are positive, in the case such `v` exists. If not, returns zero vector. The latter prevents
+-- `linarith` from doing useless post-processing.
+-- -/
+-- def findPositiveVector {n m : Nat} (A : Matrix n m) (strictIndexes : List Nat) : Array Rat :=
+--   /- State the linear programming problem. -/
+--   let B := stateLP A strictIndexes
 
-  /- Using Gaussian elimination split variable into free and basic forming the table that will be
-  operated by Simplex Algorithm.  -/
-  let initTable := Gauss.getTable B
+--   /- Using Gaussian elimination split variable into free and basic forming the table that will be
+--   operated by Simplex Algorithm.  -/
+--   let initTable := Gauss.getTable B
 
-  /- Run Simplex Algorithm and extract the solution. -/
-  (go.run ⟨initTable⟩).fst.toOption.get!
-where
-  /-- TODO: write docs -/
-  go : SimplexAlgorithmM <| Array Rat := do
-  try
-    runSimplexAlgorithm
-    return extractSolution (← get).table
-  catch
-  | .infeasible => return Array.mkArray ((← get).table.basic.size + (← get).table.free.size - 3) 0
+--   /- Run Simplex Algorithm and extract the solution. -/
+--   (go.run ⟨initTable⟩).fst.toOption.get!
+-- where
+--   /-- TODO: write docs -/
+--   go : SimplexAlgorithmM <| Array Rat := do
+--   try
+--     runSimplexAlgorithm
+--     return extractSolution (← get).table
+--   catch
+--   | .infeasible => return Array.mkArray ((← get).table.basic.size + (← get).table.free.size - 3) 0
 
 /-- TODO: write docs -/
 def findPositiveVectorSparse {n m : Nat} (A : SparseMatrix n m) (strictIndexes : List Nat) :
