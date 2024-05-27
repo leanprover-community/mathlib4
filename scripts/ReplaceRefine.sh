@@ -4,6 +4,7 @@ mkPythonFile () {
   grep -v '^add_question_mark' "${pyScript}"
   sed '
     /^info/d
+    /Build completed successfully/d
     s=\.=/=g
     s|ℹ .* \(.*\)|input_file = '"'"'\1.lean'"'"'\noutput_file = '"'"'\1.lean1'"'"'\nlines_columns = |
     s=(0, ⟨=(0, =g
