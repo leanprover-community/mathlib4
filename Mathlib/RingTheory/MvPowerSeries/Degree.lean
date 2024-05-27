@@ -204,7 +204,14 @@ theorem totalDegree_pow (n : ℕ) : (φ ^ n).totalDegree ≤ n * φ.totalDegree 
 @[simp]
 theorem totalDegree_monomial (s : σ →₀ ℕ) {r : R} (hr : r ≠ 0) :
     (monomial _ s r : MvPowerSeries σ R).totalDegree = s.sum fun _ ↦ id := by
-  sorry
+  apply le_antisymm
+  · rw [← totalDegree_le_DegreeBound_iff]
+    intro t ht
+    simp only [coeff_monomial, ne_eq, ite_eq_right_iff, hr, imp_false, not_not] at ht
+    rw [ht]
+  · apply le_totalDegree
+    show coeff R s (monomial _ s r) ≠ 0
+    simp [coeff_monomial, hr]
 
 theorem totalDegree_monomial_le (s : σ →₀ ℕ) (r : R) :
     (monomial _ s r).totalDegree ≤ s.sum fun _ ↦ id := by
@@ -221,13 +228,6 @@ theorem totalDegree_X_pow [Nontrivial R] (i : σ) (n : ℕ) :
     · simp only [totalDegree_X, mul_one, le_refl]
   · sorry
 
-theorem totalDegree_le_of_support_subset' (h : ∀ s, ∃ t, s ≤ t ∧ (ψ t ≠ 0 → φ t ≠ 0)) :
-    totalDegree ψ ≤ totalDegree φ := by
-  sorry
-
-theorem lt_of_totalDegree_iff : ψ.totalDegree < φ.totalDegree ↔ (∀ s, ψ s ≠ 0 → ∃ t, s ≤ t ∧ ψ t = 0 ∧ φ t ≠ 0) := by
-  sorry
-
 theorem totalDegree_add_eq_left_of_totalDegree_lt (h : ψ.totalDegree < φ.totalDegree) :
     (φ + ψ).totalDegree = φ.totalDegree := by
     have hmax : (φ + ψ).totalDegree ≤ max φ.totalDegree ψ.totalDegree := totalDegree_add
@@ -236,26 +236,26 @@ theorem totalDegree_add_eq_left_of_totalDegree_lt (h : ψ.totalDegree < φ.total
       exact le_of_lt h
     rw [hmaxphi] at hmax
     apply le_antisymm hmax
-    apply totalDegree_le_of_support_subset'
-    intro s
-    by_cases hs : ψ s = 0
-    · use s
-      constructor
-      · simp only [le_refl]
-      · intro hφ
-        have : (φ + ψ) s = φ s + ψ s := rfl
-        simp only [this, hs, add_zero, ne_eq]
-        exact hφ
-    · rw [lt_of_totalDegree_iff] at h
-      have := h s hs
-      obtain ⟨t,ht⟩ := this
-      use t
-      simp only [ht, ne_eq, not_false_eq_true, forall_true_left, true_and]
-      intro hsum
-      apply ht.2.2
-      have : (φ + ψ) t = φ t + ψ t := rfl
-      rw [ht.2.1, add_zero] at this
-      rw [← this, hsum]
+    rw [totalDegreeBound_le]
+    intro n hn s hs
+    by_cases hs0 : (coeff R s) ψ = 0
+    · apply hn s
+      simp [hs, hs0]
+    · have : ¬ HasDegreeBound ψ.totalDegree φ := by
+        by_contra hphi
+        apply totalDegree_le_DegreeBound at hphi
+        exact lt_irrefl _ (lt_of_le_of_lt hphi h)
+      simp only [HasDegreeBound_def, ne_eq, id_eq, not_forall, not_le,
+        exists_prop] at this
+      obtain ⟨t, ht_phi, ht_psi⟩ := this
+      have coeff_ne_zero : coeff R t (φ + ψ) ≠ 0 := by
+        have : coeff R t ψ = 0 := by
+          by_contra hpsi
+          apply le_totalDegree at hpsi
+          exact lt_irrefl _ (lt_of_le_of_lt hpsi ht_psi)
+        simp [ht_phi, this]
+      exact le_of_lt (lt_of_lt_of_le (lt_of_le_of_lt (hasDegreeBound_degree s hs0) ht_psi)
+        (hn t coeff_ne_zero))
 
 theorem totalDegree_add_eq_right_of_totalDegree_lt (h : ψ.totalDegree < φ.totalDegree):
     (ψ + φ).totalDegree = φ.totalDegree := by
