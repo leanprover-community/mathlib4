@@ -502,7 +502,7 @@ theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson :=
   rw [← Ideal.neg_mem_iff, Ideal.mem_jacobson_bot]
   intro y
   rw [add_comm]
-  let f : ℕ → R := fun n => ∑ i in range n, (x * y) ^ i
+  let f : ℕ → R := fun n => ∑ i ∈ range n, (x * y) ^ i
   have hf : ∀ m n, m ≤ n → f m ≡ f n [SMOD I ^ m • (⊤ : Submodule R R)] := by
     intro m n h
     simp only [f, Algebra.id.smul_eq_mul, Ideal.mul_top, SModEq.sub_mem]

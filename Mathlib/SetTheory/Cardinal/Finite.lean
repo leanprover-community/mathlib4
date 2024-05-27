@@ -256,7 +256,7 @@ theorem card_image_of_injective {α : Type u} {β : Type v} (f : α → β) (s :
   card_image_of_injOn (Set.injOn_of_injective h s)
 #align part_enat.card_image_of_injective PartENat.card_image_of_injective
 
--- Should I keeep the 6 following lemmas ?
+-- Should I keep the 6 following lemmas ?
 -- TODO: Add ofNat, zero, and one versions for simp confluence
 @[simp]
 theorem _root_.Cardinal.natCast_le_toPartENat_iff {n : ℕ} {c : Cardinal} :
