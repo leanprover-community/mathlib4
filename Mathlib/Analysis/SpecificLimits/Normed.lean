@@ -552,7 +552,7 @@ theorem geom_series_mul_shift (x : R) (h : ‖x‖ < 1) :
     rw [geom_series_succ x h]
     apply Tendsto.sub_const
     simp only [sum_range_succ]
-    have hp : tsum (fun (i : ℕ)=> x^i) = tsum (fun (i : ℕ)=> x^i) + 0 := by exact (add_zero _).symm
+    have hp : tsum (fun (i : ℕ) => x^i) = tsum (fun (i : ℕ) => x^i) + 0 := (add_zero _).symm
     rw [hp]
     apply Tendsto.add ((NormedRing.summable_geometric_of_norm_lt_one x h).hasSum.tendsto_sum_nat)
       (tendsto_pow_atTop_nhds_zero_of_norm_lt_one h)
