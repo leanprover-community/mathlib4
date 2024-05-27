@@ -1193,7 +1193,7 @@ noncomputable local instance : t.HasHomology₀ := t.hasHomology₀
 noncomputable local instance : t.homology₀.ShiftSequence ℤ :=
   Functor.ShiftSequence.tautological _ _
 
-lemma ConservativeHomology (X : C) (hX : ∀ (n : ℤ), IsZero ((t.homology n).obj X)) :
+lemma ConservativeHomologyObject (X : C) (hX : ∀ (n : ℤ), IsZero ((t.homology n).obj X)) :
     IsZero X := by
   obtain ⟨A, B, hA, hB, f, g, h, DT⟩ := t.exists_triangle_zero_one X
   erw [Triangle.isZero₂_iff _ DT]
@@ -1243,8 +1243,26 @@ lemma ConservativeHomology (X : C) (hX : ∀ (n : ℤ), IsZero ((t.homology n).o
         refine IsZero.of_iso ?_ (asIso ((t.homology (n + 1)).map g)).symm
         exact hX _
 
-
-
+lemma ConservativeHomologyMap {X Y : C} (f : X ⟶ Y) (hf : ∀ (n : ℤ), IsIso ((t.homology n).map f)) :
+    IsIso f := by
+  obtain ⟨Z, g, h, DT⟩ := distinguished_cocone_triangle f
+  have := Triangle.isZero₃_iff_isIso₁ _ DT
+  simp only [Triangle.mk_obj₃, Triangle.mk_obj₁, Triangle.mk_obj₂, Triangle.mk_mor₁] at this
+  rw [← this]
+  refine t.ConservativeHomologyObject _ ?_
+  intro n
+  have h1 : (t.homology n).map g = 0 := by
+    refine Epi.left_cancellation (f := (t.homology n).map f) ((t.homology n).map g) 0 ?_
+    rw [← Functor.map_comp]
+    erw [comp_distTriang_mor_zero₁₂ _ DT]
+    simp only [Functor.map_zero, comp_zero]
+  have h2 : Mono (t.homologyδ (Triangle.mk f g h) n (n + 1) rfl) :=
+    (t.homology_exact₃ _ DT n (n + 1) rfl).mono_g h1
+  have h3 : t.homologyδ (Triangle.mk f g h) n (n + 1) rfl = 0 := by
+    refine Mono.right_cancellation (f := (t.homology (n + 1)).map f) _ _ ?_
+    erw [t.homologyδ_comp _ DT n (n + 1) rfl]
+    simp only [Triangle.mk_obj₃, zero_comp]
+  exact CategoryTheory.Limits.IsZero.of_mono_eq_zero _ h3
 
 
 #exit
