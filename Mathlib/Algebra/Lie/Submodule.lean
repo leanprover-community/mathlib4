@@ -220,6 +220,9 @@ theorem coe_bracket (x : L) (m : N) : (↑⁅x, m⁆ : M) = ⁅x, ↑m⁆ :=
   rfl
 #align lie_submodule.coe_bracket LieSubmodule.coe_bracket
 
+instance [Subsingleton M] : Unique (LieSubmodule R L M) :=
+  ⟨⟨0⟩, fun _ ↦ (coe_toSubmodule_eq_iff _ _).mp (Subsingleton.elim _ _)⟩
+
 end LieSubmodule
 
 section LieIdeal
