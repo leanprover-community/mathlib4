@@ -79,71 +79,37 @@ instance pointwise_central_scalar [MulSemiringAction Mᵐᵒᵖ R] [IsCentralSca
 
 end Monoid
 
--- TODO
-/-
 section Group
 
 variable [Group M] [CommRing R] [MulSemiringAction M R]
+
 
 open Pointwise
 
 @[simp]
 theorem smul_mem_pointwise_smul_iff {a : M} {S : Ideal R} {x : R} : a • x ∈ a • S ↔ x ∈ S :=
-  smul_mem_smul_set_iff
+  ⟨fun h => by simpa using smul_mem_pointwise_smul a⁻¹ _ _ h, smul_mem_pointwise_smul _ _ _⟩
 
 theorem mem_pointwise_smul_iff_inv_smul_mem {a : M} {S : Ideal R} {x : R} :
     x ∈ a • S ↔ a⁻¹ • x ∈ S :=
-  mem_smul_set_iff_inv_smul_mem
+  ⟨fun h => by simpa using smul_mem_pointwise_smul a⁻¹ _ _ h,
+    fun h => by simpa using smul_mem_pointwise_smul a _ _ h⟩
 
-theorem mem_inv_pointwise_smul_iff {a : M} {S : Ideal R} {x : R} : x ∈ a⁻¹ • S ↔ a • x ∈ S :=
-  mem_inv_smul_set_iff
+theorem mem_inv_pointwise_smul_iff {a : M} {S : Ideal R} {x : R} : x ∈ a⁻¹ • S ↔ a • x ∈ S := by
+  rw [mem_pointwise_smul_iff_inv_smul_mem, inv_inv]
 
 @[simp]
 theorem pointwise_smul_le_pointwise_smul_iff {a : M} {S T : Ideal R} : a • S ≤ a • T ↔ S ≤ T :=
-  set_smul_subset_set_smul_iff
+  ⟨fun h => by simpa using smul_mono_right a⁻¹ h, fun h => smul_mono_right a h⟩
 
-theorem pointwise_smul_subset_iff {a : M} {S T : Ideal R} : a • S ≤ T ↔ S ≤ a⁻¹ • T :=
-  set_smul_subset_iff
+theorem pointwise_smul_subset_iff {a : M} {S T : Ideal R} : a • S ≤ T ↔ S ≤ a⁻¹ • T := by
+  rw [← pointwise_smul_le_pointwise_smul_iff (a := a⁻¹), inv_smul_smul]
 
-theorem subset_pointwise_smul_iff {a : M} {S T : Ideal R} : S ≤ a • T ↔ a⁻¹ • S ≤ T :=
-  subset_set_smul_iff
+theorem subset_pointwise_smul_iff {a : M} {S T : Ideal R} : S ≤ a • T ↔ a⁻¹ • S ≤ T := by
+  rw [← pointwise_smul_le_pointwise_smul_iff (a := a⁻¹), inv_smul_smul]
 
 /-! TODO: add `equivSMul` like we have for subgroup. -/
 
-
 end Group
-
-section GroupWithZero
-
-variable [GroupWithZero M] [CommRing R] [MulSemiringAction M R]
-
-open Pointwise
-
-@[simp]
-theorem smul_mem_pointwise_smul_iff₀ {a : M} (ha : a ≠ 0) (S : Ideal R) (x : R) :
-    a • x ∈ a • S ↔ x ∈ S :=
-  smul_mem_smul_set_iff₀ ha (S : Set R) x
-
-theorem mem_pointwise_smul_iff_inv_smul_mem₀ {a : M} (ha : a ≠ 0) (S : Ideal R) (x : R) :
-    x ∈ a • S ↔ a⁻¹ • x ∈ S :=
-  mem_smul_set_iff_inv_smul_mem₀ ha (S : Set R) x
-
-theorem mem_inv_pointwise_smul_iff₀ {a : M} (ha : a ≠ 0) (S : Ideal R) (x : R) :
-    x ∈ a⁻¹ • S ↔ a • x ∈ S :=
-  mem_inv_smul_set_iff₀ ha (S : Set R) x
-
-@[simp]
-theorem pointwise_smul_le_pointwise_smul_iff₀ {a : M} (ha : a ≠ 0) {S T : Ideal R} :
-    a • S ≤ a • T ↔ S ≤ T :=
-  set_smul_subset_set_smul_iff₀ ha
-
-theorem pointwise_smul_le_iff₀ {a : M} (ha : a ≠ 0) {S T : Ideal R} : a • S ≤ T ↔ S ≤ a⁻¹ • T :=
-  set_smul_subset_iff₀ ha
-
-theorem le_pointwise_smul_iff₀ {a : M} (ha : a ≠ 0) {S T : Ideal R} : S ≤ a • T ↔ a⁻¹ • S ≤ T :=
-  subset_set_smul_iff₀ ha
-
-end GroupWithZero
---/
 
 end Ideal
