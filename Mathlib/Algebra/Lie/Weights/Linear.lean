@@ -68,6 +68,10 @@ def toLinear : L →ₗ[R] R where
 instance instCoeLinearMap : CoeOut (Weight R L M) (L →ₗ[R] R) where
   coe := Weight.toLinear R L M
 
+instance instLinearMapClass : LinearMapClass (Weight R L M) R L R where
+  map_add χ := LinearWeights.map_add χ χ.weightSpace_ne_bot
+  map_smulₛₗ χ := LinearWeights.map_smul χ χ.weightSpace_ne_bot
+
 variable {R L M χ}
 
 @[simp]

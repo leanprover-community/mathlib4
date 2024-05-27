@@ -64,7 +64,7 @@ def spanEval : Ideal (MvPolynomial (MonicIrreducible k) k) :=
 splitting field of the product of the polynomials sending each indeterminate `x_f` represented by
 the polynomial `f` in the finset to a root of `f`. -/
 def toSplittingField (s : Finset (MonicIrreducible k)) :
-    MvPolynomial (MonicIrreducible k) k →ₐ[k] SplittingField (∏ x in s, x : k[X]) :=
+    MvPolynomial (MonicIrreducible k) k →ₐ[k] SplittingField (∏ x ∈ s, x : k[X]) :=
   MvPolynomial.aeval fun f =>
     if hf : f ∈ s then
       rootOfSplits _

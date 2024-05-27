@@ -174,7 +174,7 @@ theorem le_orthogonal_orthogonal (b : B.IsRefl) : N ≤ B.orthogonal (B.orthogon
 theorem span_singleton_inf_orthogonal_eq_bot {B : BilinForm K V} {x : V} (hx : ¬B.IsOrtho x x) :
     (K ∙ x) ⊓ B.orthogonal (K ∙ x) = ⊥ := by
   rw [← Finset.coe_singleton]
-  refine' eq_bot_iff.2 fun y h => _
+  refine eq_bot_iff.2 fun y h => ?_
   rcases mem_span_finset.1 h.1 with ⟨μ, rfl⟩
   have := h.2 x ?_
   · rw [Finset.sum_singleton] at this ⊢
@@ -223,7 +223,7 @@ theorem nondegenerateRestrictOfDisjointOrthogonal (B : BilinForm R₁ M₁) (b :
     {W : Submodule R₁ M₁} (hW : Disjoint W (B.orthogonal W)) : (B.restrict W).Nondegenerate := by
   rintro ⟨x, hx⟩ b₁
   rw [Submodule.mk_eq_zero, ← Submodule.mem_bot R₁]
-  refine' hW.le_bot ⟨hx, fun y hy => _⟩
+  refine hW.le_bot ⟨hx, fun y hy => ?_⟩
   specialize b₁ ⟨y, hy⟩
   simp only [restrict_apply, domRestrict_apply] at b₁
   exact isOrtho_def.mpr (b x y b₁)
@@ -235,7 +235,7 @@ theorem iIsOrtho.not_isOrtho_basis_self_of_nondegenerate {n : Type w} [Nontrivia
     {B : BilinForm R M} {v : Basis n R M} (h : B.iIsOrtho v) (hB : B.Nondegenerate) (i : n) :
     ¬B.IsOrtho (v i) (v i) := by
   intro ho
-  refine' v.ne_zero i (hB (v i) fun m => _)
+  refine v.ne_zero i (hB (v i) fun m => ?_)
   obtain ⟨vi, rfl⟩ := v.repr.symm.surjective m
   rw [Basis.repr_symm_apply, Finsupp.total_apply, Finsupp.sum, sum_right]
   apply Finset.sum_eq_zero
@@ -253,7 +253,7 @@ iff the basis has no elements which are self-orthogonal. -/
 theorem iIsOrtho.nondegenerate_iff_not_isOrtho_basis_self {n : Type w} [Nontrivial R]
     [NoZeroDivisors R] (B : BilinForm R M) (v : Basis n R M) (hO : B.iIsOrtho v) :
     B.Nondegenerate ↔ ∀ i, ¬B.IsOrtho (v i) (v i) := by
-  refine' ⟨hO.not_isOrtho_basis_self_of_nondegenerate, fun ho m hB => _⟩
+  refine ⟨hO.not_isOrtho_basis_self_of_nondegenerate, fun ho m hB => ?_⟩
   obtain ⟨vi, rfl⟩ := v.repr.symm.surjective m
   rw [LinearEquiv.map_eq_zero_iff]
   ext i
@@ -336,41 +336,44 @@ theorem finrank_add_finrank_orthogonal (b₁ : B.IsRefl) :
 
 /-- A subspace is complement to its orthogonal complement with respect to some
 reflexive bilinear form if that bilinear form restricted on to the subspace is nondegenerate. -/
-theorem restrict_nondegenerate_of_isCompl_orthogonal
+theorem isCompl_orthogonal_of_restrict_nondegenerate
     (b₁ : B.IsRefl) (b₂ : (B.restrict W).Nondegenerate) : IsCompl W (B.orthogonal W) := by
   have : W ⊓ B.orthogonal W = ⊥ := by
     rw [eq_bot_iff]
     intro x hx
     obtain ⟨hx₁, hx₂⟩ := mem_inf.1 hx
-    refine' Subtype.mk_eq_mk.1 (b₂ ⟨x, hx₁⟩ _)
+    refine Subtype.mk_eq_mk.1 (b₂ ⟨x, hx₁⟩ ?_)
     rintro ⟨n, hn⟩
     simp only [restrict_apply, domRestrict_apply]
     exact b₁ n x (b₁ x n (b₁ n x (hx₂ n hn)))
-  refine' IsCompl.of_eq this (eq_top_of_finrank_eq <| (finrank_le _).antisymm _)
+  refine IsCompl.of_eq this (eq_top_of_finrank_eq <| (finrank_le _).antisymm ?_)
   conv_rhs => rw [← add_zero (finrank K _)]
   rw [← finrank_bot K V, ← this, finrank_sup_add_finrank_inf_eq,
     finrank_add_finrank_orthogonal b₁]
   exact le_self_add
-#align bilin_form.restrict_nondegenerate_of_is_compl_orthogonal LinearMap.BilinForm.restrict_nondegenerate_of_isCompl_orthogonal
+#align bilin_form.restrict_nondegenerate_of_is_compl_orthogonal LinearMap.BilinForm.isCompl_orthogonal_of_restrict_nondegenerate
+
+@[deprecated (since := "2024-05-24")]
+alias restrict_nondegenerate_of_isCompl_orthogonal := isCompl_orthogonal_of_restrict_nondegenerate
 
 /-- A subspace is complement to its orthogonal complement with respect to some reflexive bilinear
 form if and only if that bilinear form restricted on to the subspace is nondegenerate. -/
 theorem restrict_nondegenerate_iff_isCompl_orthogonal
     (b₁ : B.IsRefl) : (B.restrict W).Nondegenerate ↔ IsCompl W (B.orthogonal W) :=
-  ⟨fun b₂ => restrict_nondegenerate_of_isCompl_orthogonal b₁ b₂, fun h =>
+  ⟨fun b₂ => isCompl_orthogonal_of_restrict_nondegenerate b₁ b₂, fun h =>
     B.nondegenerateRestrictOfDisjointOrthogonal b₁ h.1⟩
 #align bilin_form.restrict_nondegenerate_iff_is_compl_orthogonal LinearMap.BilinForm.restrict_nondegenerate_iff_isCompl_orthogonal
 
 lemma orthogonal_eq_top_iff (b₁ : B.IsRefl) (b₂ : (B.restrict W).Nondegenerate) :
     B.orthogonal W = ⊤ ↔ W = ⊥ := by
   refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
-  have := (B.restrict_nondegenerate_of_isCompl_orthogonal b₁ b₂).inf_eq_bot
+  have := (B.isCompl_orthogonal_of_restrict_nondegenerate b₁ b₂).inf_eq_bot
   rwa [h, inf_top_eq] at this
 
 lemma eq_top_of_restrict_nondegenerate_of_orthogonal_eq_bot
     (b₁ : B.IsRefl) (b₂ : (B.restrict W).Nondegenerate) (b₃ : B.orthogonal W = ⊥) :
     W = ⊤ := by
-  have := (B.restrict_nondegenerate_of_isCompl_orthogonal b₁ b₂).sup_eq_top
+  have := (B.isCompl_orthogonal_of_restrict_nondegenerate b₁ b₂).sup_eq_top
   rwa [b₃, sup_bot_eq] at this
 
 lemma orthogonal_eq_bot_iff
@@ -402,7 +405,7 @@ the span of a singleton is also non-degenerate. -/
 theorem restrictOrthogonalSpanSingletonNondegenerate (B : BilinForm K V) (b₁ : B.Nondegenerate)
     (b₂ : B.IsRefl) {x : V} (hx : ¬B.IsOrtho x x) :
     Nondegenerate <| B.restrict <| B.orthogonal (K ∙ x) := by
-  refine' fun m hm => Submodule.coe_eq_zero.1 (b₁ m.1 fun n => _)
+  refine fun m hm => Submodule.coe_eq_zero.1 (b₁ m.1 fun n => ?_)
   have : n ∈ (K ∙ x) ⊔ B.orthogonal (K ∙ x) :=
     (span_singleton_sup_orthogonal_eq_top hx).symm ▸ Submodule.mem_top
   rcases Submodule.mem_sup.1 this with ⟨y, hy, z, hz, rfl⟩
