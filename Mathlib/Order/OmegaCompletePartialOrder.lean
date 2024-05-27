@@ -121,11 +121,11 @@ def pair (a b : α) (hab : a ≤ b) : Chain α :=
     | 0 => a
     | _ => b, fun _ _ _ => by aesop⟩
 
-lemma pair_zero (a b : α) (hab : a ≤ b) : pair a b hab 0 = a := rfl
+lemma pair_zero (a b : α) (hab) : pair a b hab 0 = a := rfl
 
-lemma pair_n_plus_one (a b : α) (hab : a ≤ b) (n : ℕ) : pair a b hab (n + 1) = b := rfl
+lemma pair_n_plus_one (a b : α) (hab) (n : ℕ) : pair a b hab (n + 1) = b := rfl
 
-@[simp] lemma range_pair (a b : α) (hab : a ≤ b) : Set.range (pair a b hab) = {a, b} := by
+@[simp] lemma range_pair (a b : α) (hab) : Set.range (pair a b hab) = {a, b} := by
   ext;
   exact Nat.or_exists_succ.symm.trans (by simp_rw [pair_zero, pair_n_plus_one]; aesop)
 
