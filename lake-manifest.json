@@ -58,7 +58,7 @@
   {"url": "https://github.com/kmill/LeanTeX",
    "type": "git",
    "subDir": null,
-   "rev": "9714ffc626700041a7ac1b43b012e0be0db19b84",
+   "rev": "b1a7bf06d552360b0b96d47f234a8271cf48f0d1",
    "name": "LeanTeX",
    "manifestFile": "lake-manifest.json",
    "inputRev": "main",
