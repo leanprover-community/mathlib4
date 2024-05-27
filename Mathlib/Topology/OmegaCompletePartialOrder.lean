@@ -48,11 +48,12 @@ variable (α : Type u) [OmegaCompletePartialOrder α]
 /-- The characteristic function of open sets is monotone and preserves
 the limits of chains. -/
 def IsOpen (s : Set α) : Prop :=
-  Continuous' fun x ↦ x ∈ s
+  ωScottContinuous fun x ↦ x ∈ s
 #align Scott.is_open Scott.IsOpen
 
 theorem isOpen_univ : IsOpen α univ :=
-  ⟨fun _ _ _ _ ↦ mem_univ _, @CompleteLattice.top_continuous α Prop _ _⟩
+  continuous'_iff_ωScottContinuous.mp
+    ⟨fun _ _ _ _ ↦ mem_univ _, @CompleteLattice.top_continuous α Prop _ _⟩
 #align Scott.is_open_univ Scott.isOpen_univ
 
 theorem IsOpen.inter (s t : Set α) : IsOpen α s → IsOpen α t → IsOpen α (s ∩ t) :=
@@ -66,7 +67,7 @@ theorem isOpen_sUnion (s : Set (Set α)) (hs : ∀ t ∈ s, IsOpen α t) : IsOpe
     SetCoe.exists, iSup_Prop_eq, mem_setOf_eq, mem_sUnion]
 #align Scott.is_open_sUnion Scott.isOpen_sUnion
 
-theorem IsOpen.isUpperSet {s : Set α} (hs : IsOpen α s) : IsUpperSet s := hs.fst
+theorem IsOpen.isUpperSet {s : Set α} (hs : IsOpen α s) : IsUpperSet s := hs.monotone
 
 end Scott
 
@@ -115,12 +116,14 @@ theorem isωSup_ωSup {α} [OmegaCompletePartialOrder α] (c : Chain α) : IsωS
 
 theorem scottContinuous_of_continuous {α β} [OmegaCompletePartialOrder α]
     [OmegaCompletePartialOrder β] (f : Scott α → Scott β) (hf : Continuous f) :
-    OmegaCompletePartialOrder.Continuous' f := by
+    OmegaCompletePartialOrder.ωScottContinuous f := by
+  rw [← continuous'_iff_ωScottContinuous]
   have h : Monotone f := fun x y h ↦ by
     have hf : IsUpperSet {x | ¬f x ≤ f y} := ((notBelow_isOpen (f y)).preimage hf).isUpperSet
     simpa only [mem_setOf_eq, le_refl, not_true, imp_false, not_not] using hf h
   refine ⟨h, fun c ↦ eq_of_forall_ge_iff fun z ↦ ?_⟩
-  rcases (notBelow_isOpen z).preimage hf with ⟨hf, hf'⟩
+  rcases (notBelow_isOpen z).preimage hf with hf''
+  let hf' := (continuous'_iff_ωScottContinuous.mpr hf'').2
   specialize hf' c
   simp only [OrderHom.coe_mk, mem_preimage, notBelow, mem_setOf_eq] at hf'
   rw [← not_iff_not]
@@ -131,10 +134,13 @@ theorem scottContinuous_of_continuous {α β} [OmegaCompletePartialOrder α]
 
 theorem continuous_of_scottContinuous {α β} [OmegaCompletePartialOrder α]
     [OmegaCompletePartialOrder β] (f : Scott α → Scott β)
-    (hf : OmegaCompletePartialOrder.Continuous' f) : Continuous f := by
+    (hf : ωScottContinuous f) : Continuous f := by
   rw [continuous_def]
   intro s hs
-  change Continuous' (s ∘ f)
+  change ωScottContinuous (s ∘ f)
+  change ωScottContinuous s at hs
+  rw [← continuous'_iff_ωScottContinuous] at hf
+  rw [← continuous'_iff_ωScottContinuous] at hs
   cases' hs with hs hs'
   cases' hf with hf hf'
   apply Continuous.of_bundled
