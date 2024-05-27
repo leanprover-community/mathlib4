@@ -116,7 +116,7 @@ lemma isChain_range : IsChain (· ≤ ·) (Set.range c) := Monotone.isChain_rang
 lemma directed : Directed (· ≤ ·) c := directedOn_range.2 c.isChain_range.directedOn
 
 /-- An example of a `Chain` constructed from an ordered pair. -/
-def ordered_pair_to_chain (a : α) (b : α) (hab : a ≤ b) : Chain α :=
+def pair (a b : α) (hab : a ≤ b) : Chain α :=
   ⟨fun n => match n with
     | 0 => a
     | _ => b, fun _ _ _ => by aesop⟩
