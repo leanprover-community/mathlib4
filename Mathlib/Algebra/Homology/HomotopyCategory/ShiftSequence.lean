@@ -119,7 +119,7 @@ instance {K L : CochainComplex C ℤ} (φ : K ⟶ L) (n : ℤ) [QuasiIso φ] :
     QuasiIso (φ⟦n⟧') where
   quasiIsoAt a := by
     rw [quasiIsoAt_iff_isIso_homologyMap]
-    refine (NatIso.isIso_map_iff
+    apply (NatIso.isIso_map_iff
       ((homologyFunctor C (ComplexShape.up ℤ) 0).shiftIso n a (n + a) rfl) φ).2 ?_
     change IsIso (homologyMap φ _)
     infer_instance
