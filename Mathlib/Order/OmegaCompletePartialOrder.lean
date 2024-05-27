@@ -307,7 +307,7 @@ def Continuous' (f : α → β) : Prop :=
 def ωScottContinuous (f : α → β) := DScottContinuous (range fun c : Chain α => Set.range c = d) f
 
 lemma ωScottContinuous.monotone {f : α → β} (h : ωScottContinuous f) : Monotone f :=
-  DScottContinuous.monotone { d | ∃ (c : Chain α), Set.range c = d }
+  DScottContinuous.monotone _
   (fun a b hab => ordered_pair_exists_chain a b hab) h
 
 lemma ωScottContinuous.isLUB {c : Chain α} {f : α → β} (hf : ωScottContinuous f) :
