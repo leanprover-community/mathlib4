@@ -290,8 +290,8 @@ theorem ker_toZMod : RingHom.ker (toZMod : ℤ_[p] →+* ZMod p) = maximalIdeal 
     rw [← sub_zero x] at h
     dsimp [toZMod, toZModHom]
     convert zmod_congr_of_sub_mem_max_ideal x _ 0 _ h
-    norm_cast
-    apply sub_zmodRepr_mem
+    · norm_cast
+    · apply sub_zmodRepr_mem
 #align padic_int.ker_to_zmod PadicInt.ker_toZMod
 
 /-- `appr n x` gives a value `v : ℕ` such that `x` and `↑v : ℤ_p` are congruent mod `p^n`.
@@ -510,7 +510,7 @@ theorem isCauSeq_nthHom (r : R) : IsCauSeq (padicNorm p) fun n => nthHom f r n :
   obtain ⟨k, hk⟩ : ∃ k : ℕ, (p : ℚ) ^ (-((k : ℕ) : ℤ)) < ε := exists_pow_neg_lt_rat p hε
   use k
   intro j hj
-  refine' lt_of_le_of_lt _ hk
+  refine lt_of_le_of_lt ?_ hk
   -- Need to do beta reduction first, as `norm_cast` doesn't.
   -- Added to adapt to leanprover/lean4#2734.
   beta_reduce

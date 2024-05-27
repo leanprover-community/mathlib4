@@ -1,5 +1,5 @@
 /-
-Copyright © 2024 Frédéric Marbach. All rights reserved.
+Copyright (c) 2024 Frédéric Marbach. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Marbach
 -/
@@ -327,7 +327,7 @@ variable (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
 @[simps!]
 def inner : M →ₗ[R] LieDerivation R L M where
   toFun m :=
-    { __ := (LieModule.toEndomorphism R L M : L →ₗ[R] Module.End R M).flip m
+    { __ := (LieModule.toEnd R L M : L →ₗ[R] Module.End R M).flip m
       leibniz' := by simp }
   map_add' m n := by ext; simp
   map_smul' t m := by ext; simp

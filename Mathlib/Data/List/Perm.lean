@@ -316,7 +316,7 @@ end
 #align list.perm_append_right_iff List.perm_append_right_iff
 
 theorem perm_option_to_list {o₁ o₂ : Option α} : o₁.toList ~ o₂.toList ↔ o₁ = o₂ := by
-  refine' ⟨fun p => _, fun e => e ▸ Perm.refl _⟩
+  refine ⟨fun p => ?_, fun e => e ▸ Perm.refl _⟩
   cases' o₁ with a <;> cases' o₂ with b; · rfl
   · cases p.length_eq
   · cases p.length_eq
@@ -490,7 +490,7 @@ theorem Perm.inter_append {l t₁ t₂ : List α} (h : Disjoint t₁ t₂) :
     by_cases h₂ : x ∈ t₂
     · simp only [*, inter_cons_of_not_mem, false_or_iff, mem_append, inter_cons_of_mem,
         not_false_iff]
-      refine' Perm.trans (Perm.cons _ l_ih) _
+      refine Perm.trans (Perm.cons _ l_ih) ?_
       change [x] ++ xs ∩ t₁ ++ xs ∩ t₂ ~ xs ∩ t₁ ++ ([x] ++ xs ∩ t₂)
       rw [← List.append_assoc]
       solve_by_elim [Perm.append_right, perm_append_comm]
@@ -523,7 +523,7 @@ theorem Perm.bind_left (l : List α) {f g : α → List β} (h : ∀ a ∈ l, f 
 theorem bind_append_perm (l : List α) (f g : α → List β) :
     l.bind f ++ l.bind g ~ l.bind fun x => f x ++ g x := by
   induction' l with a l IH <;> simp
-  refine' (Perm.trans _ (IH.append_left _)).append_left _
+  refine (Perm.trans ?_ (IH.append_left _)).append_left _
   rw [← append_assoc, ← append_assoc]
   exact perm_append_comm.append_right _
 #align list.bind_append_perm List.bind_append_perm
@@ -567,7 +567,7 @@ theorem perm_lookmap (f : α → Option α) {l₁ l₂ : List α}
     · simp [lookmap_cons_some _ _ h₁, lookmap_cons_some _ _ h₂]
       rcases (pairwise_cons.1 H).1 _ (mem_cons.2 (Or.inl rfl)) _ h₂ _ h₁ with ⟨rfl, rfl⟩
       exact Perm.refl _
-  · refine' (IH₁ H).trans (IH₂ ((p₁.pairwise_iff _).1 H))
+  · refine (IH₁ H).trans (IH₂ ((p₁.pairwise_iff ?_).1 H))
     intro x y h c hc d hd
     rw [@eq_comm _ y, @eq_comm _ c]
     apply h d hd c hc
@@ -619,7 +619,7 @@ section Permutations
 theorem perm_of_mem_permutationsAux :
     ∀ {ts is l : List α}, l ∈ permutationsAux ts is → l ~ ts ++ is := by
   show ∀ (ts is l : List α), l ∈ permutationsAux ts is → l ~ ts ++ is
-  refine' permutationsAux.rec (by simp) _
+  refine permutationsAux.rec (by simp) ?_
   introv IH1 IH2 m
   rw [permutationsAux_cons, permutations, mem_foldr_permutationsAux2] at m
   rcases m with (m | ⟨l₁, l₂, m, _, rfl⟩)
@@ -639,7 +639,7 @@ theorem perm_of_mem_permutations {l₁ l₂ : List α} (h : l₁ ∈ permutation
 
 theorem length_permutationsAux :
     ∀ ts is : List α, length (permutationsAux ts is) + is.length ! = (length ts + length is)! := by
-  refine' permutationsAux.rec (by simp) _
+  refine permutationsAux.rec (by simp) ?_
   intro t ts is IH1 IH2
   have IH2 : length (permutationsAux is nil) + 1 = is.length ! := by simpa using IH2
   simp only [factorial, Nat.mul_comm, add_eq] at IH1
@@ -663,7 +663,7 @@ theorem mem_permutationsAux_of_perm :
       l ~ is ++ ts → (∃ (is' : _) (_ : is' ~ is), l = is' ++ ts) ∨ l ∈ permutationsAux ts is := by
   show ∀ (ts is l : List α),
       l ~ is ++ ts → (∃ (is' : _) (_ : is' ~ is), l = is' ++ ts) ∨ l ∈ permutationsAux ts is
-  refine' permutationsAux.rec (by simp) _
+  refine permutationsAux.rec (by simp) ?_
   intro t ts is IH1 IH2 l p
   rw [permutationsAux_cons, mem_foldr_permutationsAux2]
   rcases IH1 _ (p.trans perm_middle) with (⟨is', p', e⟩ | m)
@@ -707,10 +707,10 @@ theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
     simp only [map_bind, permutations'Aux]
     show List.bind (permutations'Aux _ l) (fun a => ([b' :: c :: a] ++
       map (cons c) (permutations'Aux _ a))) ~ _
-    refine' (bind_append_perm _ (fun x => [b' :: c :: x]) _).symm.trans _
+    refine (bind_append_perm _ (fun x => [b' :: c :: x]) _).symm.trans ?_
     rw [← map_eq_bind, ← bind_map]
     exact Perm.refl _
-  refine' (((this _ _).append_left _).trans _).trans ((this _ _).append_left _).symm
+  refine (((this _ _).append_left _).trans ?_).trans ((this _ _).append_left _).symm
   rw [← append_assoc, ← append_assoc]
   exact perm_append_comm.append (ih.map _)
 #align list.perm_permutations'_aux_comm List.perm_permutations'Aux_comm
@@ -729,17 +729,17 @@ theorem Perm.permutations' {s t : List α} (p : s ~ t) : permutations' s ~ permu
 theorem permutations_perm_permutations' (ts : List α) : ts.permutations ~ ts.permutations' := by
   obtain ⟨n, h⟩ : ∃ n, length ts < n := ⟨_, Nat.lt_succ_self _⟩
   induction' n with n IH generalizing ts; · cases h
-  refine' List.reverseRecOn ts (fun _ => _) (fun ts t _ h => _) h; · simp [permutations]
+  refine List.reverseRecOn ts (fun _ => ?_) (fun ts t _ h => ?_) h; · simp [permutations]
   rw [← concat_eq_append, length_concat, Nat.succ_lt_succ_iff] at h
   have IH₂ := (IH ts.reverse (by rwa [length_reverse])).trans (reverse_perm _).permutations'
   simp only [permutations_append, foldr_permutationsAux2, permutationsAux_nil,
     permutationsAux_cons, append_nil]
-  refine'
+  refine
     (perm_append_comm.trans ((IH₂.bind_right _).append ((IH _ h).map _))).trans
-      (Perm.trans _ perm_append_comm.permutations')
+      (Perm.trans ?_ perm_append_comm.permutations')
   rw [map_eq_bind, singleton_append, permutations']
-  refine' (bind_append_perm _ _ _).trans _
-  refine' Perm.of_eq _
+  refine (bind_append_perm _ _ _).trans ?_
+  refine Perm.of_eq ?_
   congr
   funext _
   rw [permutations'Aux_eq_permutationsAux2, permutationsAux2_append]
@@ -778,6 +778,7 @@ theorem get_permutations'Aux (s : List α) (x : α) (n : ℕ)
     · simpa [get] using IH _ _
 #align list.nth_le_permutations'_aux List.get_permutations'Aux
 
+set_option linter.deprecated false in
 @[deprecated get_permutations'Aux] -- 2024-04-23
 theorem nthLe_permutations'Aux (s : List α) (x : α) (n : ℕ)
     (hn : n < length (permutations'Aux x s)) :
@@ -827,7 +828,7 @@ theorem nodup_permutations'Aux_of_not_mem (s : List α) (x : α) (hx : x ∉ s) 
   · simp
   · simp only [not_or, mem_cons] at hx
     simp only [permutations'Aux, nodup_cons, mem_map, cons.injEq, exists_eq_right_right, not_and]
-    refine' ⟨fun _ => Ne.symm hx.left, _⟩
+    refine ⟨fun _ => Ne.symm hx.left, ?_⟩
     rw [nodup_map_iff]
     · exact IH hx.right
     · simp

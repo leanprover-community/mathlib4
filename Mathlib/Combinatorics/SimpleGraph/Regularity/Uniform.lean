@@ -69,7 +69,7 @@ instance IsUniform.instDecidableRel : DecidableRel (G.IsUniform ε) := by
 
 theorem IsUniform.mono {ε' : 𝕜} (h : ε ≤ ε') (hε : IsUniform G ε s t) : IsUniform G ε' s t :=
   fun s' hs' t' ht' hs ht => by
-  refine' (hε hs' ht' (le_trans _ hs) (le_trans _ ht)).trans_le h <;> gcongr
+  refine (hε hs' ht' (le_trans ?_ hs) (le_trans ?_ ht)).trans_le h <;> gcongr
 #align simple_graph.is_uniform.mono SimpleGraph.IsUniform.mono
 
 theorem IsUniform.symm : Symmetric (IsUniform G ε) := fun s t h t' ht' s' hs' ht hs => by
@@ -211,7 +211,6 @@ namespace Finpartition
 
 /-- The pairs of parts of a partition `P` which are not `ε`-dense in a graph `G`. Note that we
 dismiss the diagonal. We do not care whether `s` is `ε`-dense with itself. -/
-@[pp_dot]
 def sparsePairs (ε : 𝕜) : Finset (Finset α × Finset α) :=
   P.parts.offDiag.filter fun (u, v) ↦ G.edgeDensity u v < ε
 
@@ -225,7 +224,6 @@ lemma sparsePairs_mono {ε ε' : 𝕜} (h : ε ≤ ε') : P.sparsePairs G ε ⊆
 
 /-- The pairs of parts of a partition `P` which are not `ε`-uniform in a graph `G`. Note that we
 dismiss the diagonal. We do not care whether `s` is `ε`-uniform with itself. -/
-@[pp_dot]
 def nonUniforms (ε : 𝕜) : Finset (Finset α × Finset α) :=
   P.parts.offDiag.filter fun (u, v) ↦ ¬G.IsUniform ε u v
 #align finpartition.non_uniforms Finpartition.nonUniforms
@@ -262,8 +260,8 @@ lemma bot_isUniform (hε : 0 < ε) : (⊥ : Finpartition A).IsUniform G ε := by
 
 lemma isUniform_one : P.IsUniform G (1 : 𝕜) := by
   rw [IsUniform, mul_one, Nat.cast_le]
-  refine' (card_filter_le _
-    (fun uv => ¬SimpleGraph.IsUniform G 1 (Prod.fst uv) (Prod.snd uv))).trans _
+  refine (card_filter_le _
+    (fun uv => ¬SimpleGraph.IsUniform G 1 (Prod.fst uv) (Prod.snd uv))).trans ?_
   rw [offDiag_card, Nat.mul_sub_left_distrib, mul_one]
 #align finpartition.is_uniform_one Finpartition.isUniform_one
 
@@ -451,7 +449,7 @@ lemma unreduced_edges_subset :
   obtain ⟨U, hU, hx⟩ := P.exists_mem hx
   obtain ⟨V, hV, hy⟩ := P.exists_mem hy
   obtain rfl | hUV := eq_or_ne U V
-  { exact Or.inr (Or.inl ⟨U, hU, hx, hy, G.ne_of_adj h⟩) }
+  · exact Or.inr (Or.inl ⟨U, hU, hx, hy, G.ne_of_adj h⟩)
   by_cases h₂ : G.IsUniform (ε/8) U V
   · exact Or.inr $ Or.inr ⟨U, V, hU, hV, hUV, h' _ hU _ hV hx hy hUV h₂, hx, hy, h⟩
   · exact Or.inl ⟨U, V, hU, hV, hUV, h₂, hx, hy⟩

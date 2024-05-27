@@ -35,8 +35,7 @@ variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 variable {p q r : R[X]}
 
 /-- Note that this instance also provides `Algebra R R[X]`. -/
-instance algebraOfAlgebra : Algebra R A[X]
-    where
+instance algebraOfAlgebra : Algebra R A[X] where
   smul_def' r p :=
     toFinsupp_injective <| by
       dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply]
@@ -112,12 +111,12 @@ variable {R}
 instance subalgebraNontrivial [Nontrivial A] : Nontrivial (Subalgebra R A[X]) :=
   ⟨⟨⊥, ⊤, by
       rw [Ne, SetLike.ext_iff, not_forall]
-      refine' ⟨X, _⟩
+      refine ⟨X, ?_⟩
       simp only [Algebra.mem_bot, not_exists, Set.mem_range, iff_true_iff, Algebra.mem_top,
         algebraMap_apply, not_forall]
       intro x
       rw [ext_iff, not_forall]
-      refine' ⟨1, _⟩
+      refine ⟨1, ?_⟩
       simp [coeff_C]⟩⟩
 
 @[simp]
@@ -178,7 +177,7 @@ def aeval : R[X] →ₐ[R] A :=
 
 @[simp]
 theorem adjoin_X : Algebra.adjoin R ({X} : Set R[X]) = ⊤ := by
-  refine' top_unique fun p _hp => _
+  refine top_unique fun p _hp => ?_
   set S := Algebra.adjoin R ({X} : Set R[X])
   rw [← sum_monomial_eq p]; simp only [← smul_X_eq_monomial, Sum]
   exact S.sum_mem fun n _hn => S.smul_mem (S.pow_mem (Algebra.subset_adjoin rfl) _) _
@@ -261,9 +260,9 @@ theorem aeval_mul : aeval x (p * q) = aeval x p * aeval x q :=
 
 theorem comp_eq_aeval : p.comp q = aeval q p := rfl
 
-theorem aeval_comp {A : Type*} [CommSemiring A] [Algebra R A] (x : A) :
+theorem aeval_comp {A : Type*} [Semiring A] [Algebra R A] (x : A) :
     aeval x (p.comp q) = aeval (aeval x q) p :=
-  eval₂_comp (algebraMap R A)
+  eval₂_comp' x p q
 #align polynomial.aeval_comp Polynomial.aeval_comp
 
 /-- Two polynomials `p` and `q` such that `p(q(X))=X` and `q(p(X))=X`
@@ -301,7 +300,7 @@ theorem eval_unique (φ : R[X] →ₐ[R] A) (p) : φ p = eval₂ (algebraMap R A
 theorem aeval_algHom_apply {F : Type*} [FunLike F A B] [AlgHomClass F R A B]
     (f : F) (x : A) (p : R[X]) :
     aeval (f x) p = f (aeval x p) := by
-  refine' Polynomial.induction_on p (by simp [AlgHomClass.commutes]) (fun p q hp hq => _)
+  refine Polynomial.induction_on p (by simp [AlgHomClass.commutes]) (fun p q hp hq => ?_)
     (by simp [AlgHomClass.commutes])
   rw [map_add, hp, hq, ← map_add, ← map_add]
 #align polynomial.aeval_alg_hom_apply Polynomial.aeval_algHom_apply
@@ -496,7 +495,7 @@ theorem dvd_term_of_dvd_eval_of_dvd_terms {z p : S} {f : S[X]} (i : ℕ) (dvd_ev
   by_cases hi : i ∈ f.support
   · rw [eval, eval₂_eq_sum, sum_def] at dvd_eval
     rw [← Finset.insert_erase hi, Finset.sum_insert (Finset.not_mem_erase _ _)] at dvd_eval
-    refine' (dvd_add_left _).mp dvd_eval
+    refine (dvd_add_left ?_).mp dvd_eval
     apply Finset.dvd_sum
     intro j hj
     exact dvd_terms j (Finset.ne_of_mem_erase hj)

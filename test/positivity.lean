@@ -196,6 +196,10 @@ example (hq : 0 ≤ q) : 0 ≤ q.num := by positivity
 
 end
 
+example (a : ℤ) : 0 ≤ a⁺ := by positivity
+example (a : ℤ) (ha : 0 < a) : 0 < a⁺ := by positivity
+example (a : ℤ) : 0 ≤ a⁻ := by positivity
+
 /-! ### Exponentiation -/
 
 example [OrderedSemiring α] [Nontrivial α] (a : α) : 0 < a ^ 0 := by positivity
@@ -278,6 +282,7 @@ example : 0 ≤ max (-3 : ℤ) 5 := by positivity
 --   [OrderedSMul α β] {a : α} (ha : 0 < a) {b : β} (hb : 0 < b) : 0 ≤ a • b := by positivity
 
 example (n : ℕ) : 0 < n.succ := by positivity
+example (n : ℕ+) : 0 < (↑n : ℕ) := by positivity
 example (n : ℕ) : 0 < n ! := by positivity
 example (n k : ℕ) : 0 < (n+1).ascFactorial k := by positivity
 
