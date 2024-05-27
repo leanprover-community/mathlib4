@@ -106,7 +106,11 @@ lemma lie_h_pow_toEnd_f (n : ℕ) :
     congr
     ring
 
-lemma lie_f_pow_toEnd_f (n : ℕ) :
+-- Although this is true by definition, we include this lemma (and the assumption) to mirror the API
+-- for `lie_h_pow_toEnd_f` and `lie_e_pow_succ_toEnd_f`.
+set_option linter.unusedVariables false in
+@[nolint unusedArguments]
+lemma lie_f_pow_toEnd_f (P : HasPrimitiveVectorWith t m μ) (n : ℕ) :
     ⁅f, ψ n⁆ = ψ (n + 1) := by
   simp [pow_succ']
 
@@ -117,7 +121,7 @@ lemma lie_e_pow_succ_toEnd_f (n : ℕ) :
       pow_zero, LinearMap.one_apply, leibniz_lie e, t.lie_e_f, P.lie_e, P.lie_h, lie_zero,
       add_zero]
   · rw [pow_succ', LinearMap.mul_apply, toEnd_apply_apply, leibniz_lie e, t.lie_e_f,
-      lie_h_pow_toEnd_f P, ih, lie_smul, lie_f_pow_toEnd_f, ← add_smul,
+      lie_h_pow_toEnd_f P, ih, lie_smul, lie_f_pow_toEnd_f P, ← add_smul,
       Nat.cast_add, Nat.cast_one]
     congr
     ring
@@ -140,6 +144,33 @@ lemma exists_nat [IsNoetherian R M] [NoZeroSMulDivisors R M] [IsDomain R] [CharZ
     (fun ⟨s, hs⟩ ↦ ψ Classical.choose hs)
     (fun ⟨r, hr⟩ ↦ by simp [lie_h_pow_toEnd_f P, Classical.choose_spec hr, contra,
       Module.End.HasEigenvector, Module.End.mem_eigenspace_iff])).finite
+
+lemma pow_toEnd_f_ne_zero_of_eq_nat
+    [CharZero R] [NoZeroSMulDivisors R M]
+    {n : ℕ} (hn : μ = n) {i} (hi : i ≤ n) : (ψ i) ≠ 0 := by
+  intro H
+  induction i
+  · exact P.ne_zero (by simpa using H)
+  · next i IH =>
+    have : ((i + 1) * (n - i) : ℤ) • (toEnd R L M f ^ i) m = 0 := by
+      have := congr_arg (⁅e, ·⁆) H
+      simpa [zsmul_eq_smul_cast R, P.lie_e_pow_succ_toEnd_f, hn] using this
+    rw [zsmul_eq_smul_cast R, smul_eq_zero, Int.cast_eq_zero, mul_eq_zero, sub_eq_zero,
+      Nat.cast_inj, ← @Nat.cast_one ℤ, ← Nat.cast_add, Nat.cast_eq_zero] at this
+    simp only [add_eq_zero, one_ne_zero, and_false, false_or] at this
+    exact (hi.trans_eq (this.resolve_right (IH (i.le_succ.trans hi)))).not_lt i.lt_succ_self
+
+lemma pow_toEnd_f_eq_zero_of_eq_nat
+    [IsNoetherian R M] [NoZeroSMulDivisors R M] [IsDomain R] [CharZero R]
+    {n : ℕ} (hn : μ = n) : (ψ (n + 1)) = 0 := by
+  by_contra h
+  have : t.HasPrimitiveVectorWith (ψ (n + 1)) (n - 2 * (n + 1) : R) :=
+    { ne_zero := h
+      lie_h := (P.lie_h_pow_toEnd_f _).trans (by simp [hn])
+      lie_e := (P.lie_e_pow_succ_toEnd_f _).trans (by simp [hn]) }
+  obtain ⟨m, hm⟩ := this.exists_nat
+  have : (n : ℤ) < m + 2 * (n + 1) := by linarith
+  exact this.ne (Int.cast_injective (α := R) <| by simpa [sub_eq_iff_eq_add] using hm)
 
 end HasPrimitiveVectorWith
 
