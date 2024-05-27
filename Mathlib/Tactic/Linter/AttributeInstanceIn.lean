@@ -60,13 +60,6 @@ namespace attributeInstanceLinter
 def getLinterAttributeInstanceIn (o : Options) : Bool :=
   Linter.getLinterValue linter.attributeInstanceIn o
 
-/-- Whether a syntax element is adding an `instance` attribute without a `local` modifier. -/
-def is_attribute_instance_in (stx : Syntax) : Bool :=
-  match stx with
-  | `(command|attribute [instance] $_decl:ident in $_) => true
-  | `(command|attribute [instance $_priority] $_decl:ident in $_) => true
-  | _ => false
-
 /--
 `getAttrInstance cmd` assumes that `cmd` represents a `attribute [...] id in ...` command.
 If this is the case, then it returns `(id, #[non-local nor scoped attributes])`.
