@@ -103,6 +103,9 @@ theorem completedRiemannZeta₀_one_sub (s : ℂ) :
   rw [← completedHurwitzZetaEven₀_zero, ← completedCosZeta₀_zero, completedHurwitzZetaEven₀_one_sub]
 #align riemann_completed_zeta₀_one_sub completedRiemannZeta₀_one_sub
 
+@[deprecated completedRiemannZeta₀_one_sub (since := "2024-05-27")]
+alias riemannCompletedZeta₀_one_sub := completedRiemannZeta₀_one_sub
+
 /-- Riemann zeta functional equation, formulated for `Λ`: for any complex `s` we have
 `Λ (1 - s) = Λ s`. -/
 theorem completedRiemannZeta_one_sub (s : ℂ) :
@@ -222,3 +225,21 @@ theorem zeta_nat_eq_tsum_of_gt_one {k : ℕ} (hk : 1 < k) :
 /-- The residue of `ζ(s)` at `s = 1` is equal to 1. -/
 lemma riemannZeta_residue_one : Tendsto (fun s ↦ (s - 1) * riemannZeta s) (𝓝[≠] 1) (𝓝 1) := by
   exact hurwitzZetaEven_residue_one 0
+
+/- naming scheme was changed from from `riemannCompletedZeta` to `completedRiemannZeta`; add
+aliases for the old names -/
+section aliases
+
+@[deprecated completedRiemannZeta₀ (since := "2024-05-27")]
+noncomputable alias riemannCompletedZeta₀ := completedRiemannZeta₀
+
+@[deprecated completedRiemannZeta (since := "2024-05-27")]
+noncomputable alias riemannCompletedZeta := completedRiemannZeta
+
+@[deprecated completedRiemannZeta_one_sub (since := "2024-05-27")]
+alias riemannCompletedZeta_one_sub := completedRiemannZeta_one_sub
+
+@[deprecated completedRiemannZeta_residue_one (since := "2024-05-27")]
+alias riemannCompletedZeta_residue_one := completedRiemannZeta_residue_one
+
+end aliases
