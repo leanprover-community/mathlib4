@@ -360,7 +360,6 @@ variable [ContinuousMul M]
 lemma HasProd.of_nat_of_neg_add_one {f : ℤ → M}
     (hf₁ : HasProd (fun n : ℕ ↦ f n) m) (hf₂ : HasProd (fun n : ℕ ↦ f (-(n + 1))) m') :
     HasProd f (m * m') := by
-  have hi₁ : Injective ((↑) : ℕ → ℤ) := @Int.ofNat.inj
   have hi₂ : Injective Int.negSucc := @Int.negSucc.inj
   have : IsCompl (Set.range ((↑) : ℕ → ℤ)) (Set.range Int.negSucc) := by
     constructor
@@ -368,7 +367,8 @@ lemma HasProd.of_nat_of_neg_add_one {f : ℤ → M}
       rintro _ ⟨⟨i, rfl⟩, ⟨j, ⟨⟩⟩⟩
     · rw [codisjoint_iff_le_sup]
       rintro (i | j) <;> simp
-  exact (hi₁.hasProd_range_iff.mpr hf₁).mul_isCompl this (hi₂.hasProd_range_iff.mpr hf₂)
+  exact (Nat.cast_injective.hasProd_range_iff.mpr hf₁).mul_isCompl
+    this (hi₂.hasProd_range_iff.mpr hf₂)
 #align has_sum.nonneg_add_neg HasSum.of_nat_of_neg_add_one
 
 -- deprecated 2024-03-04
