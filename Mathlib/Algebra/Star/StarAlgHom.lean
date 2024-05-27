@@ -843,7 +843,7 @@ theorem ext_iff {f g : A ≃⋆ₐ[R] B} : f = g ↔ ∀ a, f a = g a :=
   DFunLike.ext_iff
 #align star_alg_equiv.ext_iff StarAlgEquiv.ext_iff
 
-/-- Star algebra equivalences are reflexive. -/
+/-- The identity map is a star algebra isomorphism. -/
 @[refl]
 def refl : A ≃⋆ₐ[R] A :=
   { RingEquiv.refl A with
@@ -860,7 +860,7 @@ theorem coe_refl : ⇑(refl : A ≃⋆ₐ[R] A) = id :=
 #align star_alg_equiv.coe_refl StarAlgEquiv.coe_refl
 
 -- Porting note: changed proof a bit by using `EquivLike` to avoid lots of coercions
-/-- Star algebra equivalences are symmetric. -/
+/-- The inverse of a star algebra isomorphism is a star algebra isomorphism. -/
 @[symm]
 nonrec def symm (e : A ≃⋆ₐ[R] B) : B ≃⋆ₐ[R] A :=
   { e.symm with
@@ -931,7 +931,7 @@ theorem symm_to_ringEquiv (e : A ≃⋆ₐ[R] B) : (e.symm : B ≃+* A) = (e : A
   rfl
 #align star_alg_equiv.symm_to_ring_equiv StarAlgEquiv.symm_to_ringEquiv
 
-/-- Star algebra equivalences are transitive. -/
+/-- Transitivity of `StarAlgEquiv`. -/
 @[trans]
 def trans (e₁ : A ≃⋆ₐ[R] B) (e₂ : B ≃⋆ₐ[R] C) : A ≃⋆ₐ[R] C :=
   { e₁.toRingEquiv.trans
