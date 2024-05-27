@@ -324,7 +324,7 @@ theorem ext {f g : A ≃⋆+* B} (h : ∀ a, f a = g a) : f = g :=
 theorem ext_iff {f g : A ≃⋆+* B} : f = g ↔ ∀ a, f a = g a :=
   DFunLike.ext_iff
 
-/-- Star ring equivalences are reflexive. -/
+/-- The identity map as a *-ring isomorphism. -/
 @[refl]
 def refl : A ≃⋆+* A :=
   { RingEquiv.refl A with
@@ -337,7 +337,7 @@ instance : Inhabited (A ≃⋆+* A) :=
 theorem coe_refl : ⇑(refl : A ≃⋆+* A) = id :=
   rfl
 
-/-- Star ring equivalences are symmetric. -/
+/-- The inverse of a *-ring isomorphism is a *-ring isomorphism. -/
 @[symm]
 nonrec def symm (e : A ≃⋆+* B) : B ≃⋆+* A :=
   { e.symm with
@@ -370,7 +370,7 @@ theorem symm_bijective : Function.Bijective (symm : (A ≃⋆+* B) → B ≃⋆+
 theorem refl_symm : (StarRingEquiv.refl : A ≃⋆+* A).symm = StarRingEquiv.refl :=
   rfl
 
-/-- Star ring equivalences are transitive. -/
+/-- Transitivity of `StarRingEquiv`. -/
 @[trans]
 def trans (e₁ : A≃⋆+* B) (e₂ : B ≃⋆+* C) : A ≃⋆+* C :=
   { e₁.toRingEquiv.trans
