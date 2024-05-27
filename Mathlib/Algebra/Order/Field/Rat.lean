@@ -32,15 +32,6 @@ instance instLinearOrderedField : LinearOrderedField ℚ where
     rw [← NNRat.den_coe, ← Int.cast_natCast q.num, ← NNRat.num_coe]; exact(num_div_den _).symm
   ratCast_def q := (num_div_den _).symm
 
-/-!
-### Extra instances to short-circuit type class resolution
-
-These also prevent non-computable instances being used to construct these instances non-computably.
--/
-
-instance instDivisionRing : DivisionRing ℚ := inferInstance
-instance instField        : Field ℚ        := inferInstance
-
 end Rat
 
 -- The `LinearOrderedSemifield` and `LinearOrderedCommGroupWithZero` instances are shortcut
