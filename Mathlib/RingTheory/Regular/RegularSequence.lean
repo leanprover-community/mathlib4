@@ -699,13 +699,16 @@ lemma ModSMulBy.map_first_exact_on_four_term_right_exact_of_isSMulRegular_last
     (h₁₂ : Exact f₁ f₂) (h₂₃ : Exact f₂ f₃) (h₃ : Surjective f₃)
     (h : IsWeaklyRegular M₃ rs) : Exact (map rs f₁) (map rs f₂) := by
   induction' h with _ _ _ N _ _ r rs h _ ih generalizing M M' M₂
-  · apply (Exact.iff_of_ladder_linearEquiv (Eq.symm ?_) (Eq.symm ?_)).mp h₁₂
-    any_goals apply nilEquivSelf_naturality
+  · have H₁ := (nilEquivSelf_naturality f₁).symm
+    have H₂ := (nilEquivSelf_naturality f₂).symm
+    exact (Exact.iff_of_ladder_linearEquiv H₁ H₂).mp h₁₂
   · specialize ih
       (_root_.ModSMulBy.map_first_exact_on_four_term_exact_of_isSMulRegular_last h₁₂ h₂₃ h)
       (_root_.ModSMulBy.map_exact r h₂₃ h₃) (_root_.ModSMulBy.map_surjective r h₃)
-    apply (Exact.iff_of_ladder_linearEquiv (Eq.symm ?_) (Eq.symm ?_)).mp ih
-    any_goals apply consEquivQuotTailQuotHead_naturality
+    have H₁ := (consEquivQuotTailQuotHead_naturality r rs f₁).symm
+    have H₂ := (consEquivQuotTailQuotHead_naturality r rs f₂).symm
+    exact (Exact.iff_of_ladder_linearEquiv H₁ H₂).mp ih
+
 -- todo: modding out a complex by a regular sequence (prop 1.1.5 in B&H)
 
 open LinearMap in
@@ -718,8 +721,7 @@ private lemma IsWeaklyRegular.swap {a b : R} (h1 : IsWeaklyRegular M [a, b])
   specialize h2 (le_antisymm ?_ (smul_le_self_of_tower a (torsionBy R M b)))
   · refine le_of_eq_of_le ?_ <|
       IsSMulRegular.smul_top_inf_eq_smul_of_isSMulRegular_on_quot <|
-        ha.isSMulRegular_of_injective_of_isSMulRegular _ <|
-          ker_eq_bot.mp <| ker_liftQ_eq_bot' _ (lsmul R M b) rfl
+        ha.of_injective _ <| ker_eq_bot.mp <| ker_liftQ_eq_bot' _ (lsmul R M b) rfl
     rw [← (IsSMulRegular.isSMulRegular_on_quot_iff_lsmul_comap_eq _ _).mp hb]
     exact (inf_eq_right.mpr (ker_le_comap _)).symm
   · rwa [ha.isSMulRegular_on_quot_iff_smul_top_inf_eq_smul_of_isSMulRegular, inf_comm, smul_comm,
@@ -727,14 +729,15 @@ private lemma IsWeaklyRegular.swap {a b : R} (h1 : IsWeaklyRegular M [a, b])
 
 -- TODO: Equivalence of permutability of regular sequences to regularity of
 -- subsequences and regularity on poly ring. See [07DW] in stacks project
+-- We need a theory of multivariate polynomial modules first
 
-open ModSMulBy in open scoped List in
+open ModSMulBy List in
 lemma IsWeaklyRegular.prototype_perm {rs : List R} (h : IsWeaklyRegular M rs)
     {rs'} (h'' : rs ~ rs') (h' : ∀ a b rs', (a :: b :: rs') <+~ rs →
       let K := torsionBy R (Sequence.ModSMulBy M rs') b; K = a • K → K = ⊥) :
     IsWeaklyRegular M rs' :=
   ((nilEquivSelf R M).isWeaklyRegular_congr rs').mp <|
-    aux [] h'' (.refl rs) (h''.symm.subperm) <|
+    (aux [] h'' (.refl rs) (h''.symm.subperm)) <|
       ((nilEquivSelf R M).isWeaklyRegular_congr rs).mpr h
   where aux {rs₁ rs₂} (rs₀ : List R)
     (h₁₂ : rs₁ ~ rs₂) (H₁ : rs₀ ++ rs₁ <+~ rs) (H₃ : rs₀ ++ rs₂ <+~ rs)
@@ -743,17 +746,17 @@ lemma IsWeaklyRegular.prototype_perm {rs : List R} (h : IsWeaklyRegular M rs)
   induction h₁₂ generalizing rs₀ with
   | nil => exact .nil R _
   | cons r _ ih =>
-    let e := (equivOfPerm M (List.perm_append_singleton r rs₀).symm) ≪≫ₗ
+    let e := (equivOfPerm M (perm_append_singleton r rs₀).symm) ≪≫ₗ
       appendEquivQuotQuot _ _ _ ≪≫ₗ quotEquivOfEq _ _ (singleton_smul r ⊤)
     simp only [isWeaklyRegular_cons_iff, ← e.isWeaklyRegular_congr] at h ⊢
     refine h.imp_right (ih (r :: rs₀) ?_ ?_)
-    <;> refine List.perm_middle.subperm_right.mp ?_ <;> assumption
+    <;> refine perm_middle.subperm_right.mp ?_ <;> assumption
   | swap a b =>
     erw [isWeaklyRegular_append_iff _ [_, _]] at h ⊢
     rw [(equivOfPerm _ (.swap a b [])).isWeaklyRegular_congr] at h
-    rw [List.append_cons, List.append_cons, List.append_assoc _ [b] [a]] at H₁
-    apply (List.sublist_append_left (rs₀ ++ [b, a]) _).subperm.trans at H₁
-    apply List.perm_append_comm.subperm.trans at H₁
+    rw [append_cons, append_cons, append_assoc _ [b] [a]] at H₁
+    apply (sublist_append_left (rs₀ ++ [b, a]) _).subperm.trans at H₁
+    apply perm_append_comm.subperm.trans at H₁
     exact h.imp_left (swap · (h' b a rs₀ H₁))
   | trans h₁₂ _ ih₁₂ ih₂₃ =>
     have H₂ := (h₁₂.append_left rs₀).subperm_right.mp H₁
