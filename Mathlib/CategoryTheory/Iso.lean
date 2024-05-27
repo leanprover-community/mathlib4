@@ -631,12 +631,12 @@ theorem map_inv (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) [IsIso f] : F.map (inv f) 
   simp [← F.map_comp]
 #align category_theory.functor.map_inv CategoryTheory.Functor.map_inv
 
-@[reassoc (attr := simp)]
+@[reassoc]
 theorem map_hom_inv (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) [IsIso f] :
     F.map f ≫ F.map (inv f) = 𝟙 (F.obj X) := by simp
 #align category_theory.functor.map_hom_inv CategoryTheory.Functor.map_hom_inv
 
-@[reassoc (attr := simp)]
+@[reassoc]
 theorem map_inv_hom (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) [IsIso f] :
     F.map (inv f) ≫ F.map f = 𝟙 (F.obj Y) := by simp
 #align category_theory.functor.map_inv_hom CategoryTheory.Functor.map_inv_hom
