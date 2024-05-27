@@ -80,7 +80,7 @@ theorem sup_singleton {b : β} : ({b} : Finset β).sup f = f b :=
 theorem sup_sup : s.sup (f ⊔ g) = s.sup f ⊔ s.sup g := by
   induction s using Finset.cons_induction with
   | empty => rw [sup_empty, sup_empty, sup_empty, bot_sup_eq]
-  | cons _ ih =>
+  | cons _ _ _ ih =>
     rw [sup_cons, sup_cons, sup_cons, ih]
     exact sup_sup_sup_comm _ _ _ _
 #align finset.sup_sup Finset.sup_sup
@@ -202,7 +202,7 @@ theorem sup_sdiff_right {α β : Type*} [GeneralizedBooleanAlgebra α] (s : Fins
     (a : α) : (s.sup fun b => f b \ a) = s.sup f \ a := by
   induction s using Finset.cons_induction with
   | empty => rw [sup_empty, sup_empty, bot_sdiff]
-  | cons _ h => rw [sup_cons, sup_cons, h, sup_sdiff]
+  | cons _ _ _ h => rw [sup_cons, sup_cons, h, sup_sdiff]
 #align finset.sup_sdiff_right Finset.sup_sdiff_right
 
 theorem comp_sup_eq_sup_comp [SemilatticeSup γ] [OrderBot γ] {s : Finset β} {f : β → α} (g : α → γ)
@@ -246,7 +246,7 @@ theorem sup_induction {p : α → Prop} (hb : p ⊥) (hp : ∀ a₁, p a₁ → 
     (hs : ∀ b ∈ s, p (f b)) : p (s.sup f) := by
   induction s using Finset.cons_induction with
   | empty => exact hb
-  | cons _ ih =>
+  | cons _ _ _ ih =>
     simp only [sup_cons, forall_mem_cons] at hs ⊢
     exact hp _ hs.1 _ (ih hs.2)
 #align finset.sup_induction Finset.sup_induction
@@ -532,7 +532,7 @@ theorem sup_inf_distrib_left (s : Finset ι) (f : ι → α) (a : α) :
     a ⊓ s.sup f = s.sup fun i => a ⊓ f i := by
   induction s using Finset.cons_induction with
   | empty => simp_rw [Finset.sup_empty, inf_bot_eq]
-  | cons _ h => rw [sup_cons, sup_cons, inf_sup_left, h]
+  | cons _ _ _ h => rw [sup_cons, sup_cons, inf_sup_left, h]
 #align finset.sup_inf_distrib_left Finset.sup_inf_distrib_left
 
 theorem sup_inf_distrib_right (s : Finset ι) (f : ι → α) (a : α) :
@@ -635,21 +635,21 @@ theorem sup_sdiff_left (s : Finset ι) (f : ι → α) (a : α) :
     (s.sup fun b => a \ f b) = a \ s.inf f := by
   induction s using Finset.cons_induction with
   | empty => rw [sup_empty, inf_empty, sdiff_top]
-  | cons _ h => rw [sup_cons, inf_cons, h, sdiff_inf]
+  | cons _ _ _ h => rw [sup_cons, inf_cons, h, sdiff_inf]
 #align finset.sup_sdiff_left Finset.sup_sdiff_left
 
 theorem inf_sdiff_left (hs : s.Nonempty) (f : ι → α) (a : α) :
     (s.inf fun b => a \ f b) = a \ s.sup f := by
   induction hs using Finset.Nonempty.cons_induction with
   | singleton => rw [sup_singleton, inf_singleton]
-  | cons _ _ _ ih => rw [sup_cons, inf_cons, ih, sdiff_sup]
+  | cons _ _ _ _ ih => rw [sup_cons, inf_cons, ih, sdiff_sup]
 #align finset.inf_sdiff_left Finset.inf_sdiff_left
 
 theorem inf_sdiff_right (hs : s.Nonempty) (f : ι → α) (a : α) :
     (s.inf fun b => f b \ a) = s.inf f \ a := by
   induction hs using Finset.Nonempty.cons_induction with
   | singleton => rw [inf_singleton, inf_singleton]
-  | cons _ _ _ ih => rw [inf_cons, inf_cons, ih, inf_sdiff]
+  | cons _ _ _ _ ih => rw [inf_cons, inf_cons, ih, inf_sdiff]
 #align finset.inf_sdiff_right Finset.inf_sdiff_right
 
 theorem inf_himp_right (s : Finset ι) (f : ι → α) (a : α) :
@@ -1246,7 +1246,7 @@ theorem sup'_inf_distrib_left (f : ι → α) (a : α) :
     a ⊓ s.sup' hs f = s.sup' hs fun i ↦ a ⊓ f i := by
   induction hs using Finset.Nonempty.cons_induction with
   | singleton => simp
-  | cons _ _ hs ih => simp_rw [sup'_cons hs, inf_sup_left, ih]
+  | cons _ _ _ hs ih => simp_rw [sup'_cons hs, inf_sup_left, ih]
 #align finset.sup'_inf_distrib_left Finset.sup'_inf_distrib_left
 
 theorem sup'_inf_distrib_right (f : ι → α) (a : α) : s.sup' hs f ⊓ a = s.sup' hs fun i => f i ⊓ a :=
@@ -1313,7 +1313,7 @@ theorem lt_inf'_iff : a < s.inf' H f ↔ ∀ i ∈ s, a < f i :=
 theorem exists_mem_eq_sup' (f : ι → α) : ∃ i, i ∈ s ∧ s.sup' H f = f i := by
   induction H using Finset.Nonempty.cons_induction with
   | singleton c =>  exact ⟨c, mem_singleton_self c, rfl⟩
-  | @cons c s hcs hs ih =>
+  | cons c s hcs hs ih =>
     rcases ih with ⟨b, hb, h'⟩
     rw [sup'_cons hs, h']
     cases le_total (f b) (f c) with
