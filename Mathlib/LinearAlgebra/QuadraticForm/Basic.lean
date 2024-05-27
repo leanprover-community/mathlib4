@@ -464,13 +464,13 @@ section Sum
 
 @[simp]
 theorem coeFn_sum {ι : Type*} (Q : ι → QuadraticForm R M) (s : Finset ι) :
-    ⇑(∑ i in s, Q i) = ∑ i in s, ⇑(Q i) :=
+    ⇑(∑ i ∈ s, Q i) = ∑ i ∈ s, ⇑(Q i) :=
   map_sum coeFnAddMonoidHom Q s
 #align quadratic_form.coe_fn_sum QuadraticForm.coeFn_sum
 
 @[simp]
 theorem sum_apply {ι : Type*} (Q : ι → QuadraticForm R M) (s : Finset ι) (x : M) :
-    (∑ i in s, Q i) x = ∑ i in s, Q i x :=
+    (∑ i ∈ s, Q i) x = ∑ i ∈ s, Q i x :=
   map_sum (evalAddMonoidHom x : _ →+ R) Q s
 #align quadratic_form.sum_apply QuadraticForm.sum_apply
 
@@ -733,7 +733,7 @@ theorem toQuadraticForm_multiset_sum (B : Multiset (BilinForm R M)) :
 
 @[simp]
 theorem toQuadraticForm_sum {ι : Type*} (s : Finset ι) (B : ι → BilinForm R M) :
-    (∑ i in s, B i).toQuadraticForm = ∑ i in s, (B i).toQuadraticForm :=
+    (∑ i ∈ s, B i).toQuadraticForm = ∑ i ∈ s, (B i).toQuadraticForm :=
   map_sum (toQuadraticFormAddMonoidHom R M) B s
 #align bilin_form.to_quadratic_form_sum LinearMap.BilinForm.toQuadraticForm_sum
 

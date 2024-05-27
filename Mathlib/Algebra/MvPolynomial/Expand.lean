@@ -48,7 +48,7 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem expand_monomial (p : ℕ) (d : σ →₀ ℕ) (r : R) :
-    expand p (monomial d r) = C r * ∏ i in d.support, (X i ^ p) ^ d i :=
+    expand p (monomial d r) = C r * ∏ i ∈ d.support, (X i ^ p) ^ d i :=
   bind₁_monomial _ _ _
 #align mv_polynomial.expand_monomial MvPolynomial.expand_monomial
 
