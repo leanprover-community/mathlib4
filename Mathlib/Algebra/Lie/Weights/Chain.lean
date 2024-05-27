@@ -295,12 +295,12 @@ lemma weightSpace_neg_zsmul_add_ne_bot {n : ℕ} (hn : n ≤ chainBotCoeff α β
     weightSpace M ((-n : ℤ) • α + β : L → R) ≠ ⊥ := by
   apply weightSpace_zsmul_add_ne_bot α β <;> omega
 
-/-- This is the first weight in an `α`-chain through `β`. -/
+/-- The last weight in an `α`-chain through `β`. -/
 noncomputable
 def chainTop (α : L → R) (β : Weight R L M) : Weight R L M :=
   ⟨chainTopCoeff α β • α + β, weightSpace_nsmul_add_ne_bot_of_le α β le_rfl⟩
 
-/-- This is the first weight in an `α`-chain through `β`. -/
+/-- The first weight in an `α`-chain through `β`. -/
 noncomputable
 def chainBot (α : L → R) (β : Weight R L M) : Weight R L M :=
   ⟨(- chainBotCoeff α β : ℤ) • α + β, weightSpace_neg_zsmul_add_ne_bot α β le_rfl⟩
