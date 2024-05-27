@@ -1264,12 +1264,17 @@ lemma ConservativeHomologyMap {X Y : C} (f : X ⟶ Y) (hf : ∀ (n : ℤ), IsIso
     simp only [Triangle.mk_obj₃, zero_comp]
   exact CategoryTheory.Limits.IsZero.of_mono_eq_zero _ h3
 
+lemma isGE_of_isZero_homology (X : C) (n : ℤ)
+    (hn : ∀ (j : ℤ), j < n → IsZero ((t.homology j).obj X)) : t.IsGE X n := by
+  obtain ⟨A, B, hA, hB, f, g, h, DT⟩ := t.exists_triangle X (n - 1) n (by linarith)
+  refine {ge := ClosedUnderIsomorphisms.of_iso ?_ hB}
+  have : IsIso g := by
+    erw [← Triangle.isZero₁_iff_isIso₂ _ DT]
+    refine t.ConservativeHomologyObject _ ?_
+    sorry
+  exact (asIso g).symm
 
 #exit
-
-
-lemma isGE_of_isZero_homology (X : C) (n : ℤ)
-    (hn : ∀ (j : ℤ), j < n → IsZero ((t.homology j).obj X)) : t.IsGE X n := by sorry
 
 lemma isLE_of_isZero_homology (X : C) (n : ℤ)
     (hn : ∀ (j : ℤ), n < j → IsZero ((t.homology j).obj X)) : t.IsLE X n := by sorry
