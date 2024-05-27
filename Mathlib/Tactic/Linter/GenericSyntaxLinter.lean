@@ -116,17 +116,37 @@ node Lean.Parser.Command.in, none
 
 open Command in
 partial def withoutSetOptionIn (cmd : CommandElab) : CommandElab := fun stx => do --withoutModifyingEnv do
+  let mut ms := 0
+  let s ← get
   if stx.getKind == ``Lean.Parser.Command.in &&
-     stx[0].getKind == ``Lean.Parser.Command.set_option then
+    stx[0].getKind == ``Lean.Parser.Command.set_option then
+      dbg_trace "inside"
       --logInfo stx[2];
+      --logInfo ""
+      --logWarning ""
       cmd stx[2]
-      logInfo m!"messages: {(← MonadState.get).messages.msgs.size}\nempty: {(← MonadState.get).messages.isEmpty}"
+      --logWarning m!"{ms}, {(← get).messages.isEmpty}"
+--      logInfo m!"messages: {(← MonadState.get).messages.msgs.size}\nempty: {(← MonadState.get).messages.isEmpty}"
 --      logInfo m!"messages: {((← MonadState.get).messages.msgs.map (·.data)).toArray}"
       --if (← MonadState.get).messages.isEmpty then logInfoAt stx  m!"no messages {((← MonadState.get).messages.msgs.map (·.data)).toArray}"
       --else logInfo "messages"
-  else
-    cmd stx
 
+      --logInfo m!"{ms}, {(← get).messages.isEmpty}"
+      ms := ms + (← get).messages.msgs.size --+ if ! (← get).messages.isEmpty then 1 else 0
+--  set s
+  if ms == 0 then logWarningAt stx "unused `set_option`"
+  dbg_trace ms
+elab "ws " cmd:command : command => withoutSetOptionIn Command.elabCommand cmd
+
+ws
+set_option linter.unusedVariables false in
+example {n : Nat} : n = n := rfl
+
+ws
+set_option linter.unusedVariables false in
+example {n : Nat} : true := have := 0 ; rfl
+
+#exit
 def is_soi : Syntax → Option Syntax
   | s@(.node _ ``Lean.Parser.Command.in _
   --#[
