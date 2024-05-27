@@ -6,8 +6,8 @@ mkPythonFile () {
     /^info/d
     s=\.=/=g
     s|ℹ .* \(.*\)|input_file = '"'"'\1.lean'"'"'\noutput_file = '"'"'\1.lean1'"'"'\nlines_columns = |
-    s=(false, ⟨=(0, =g
-    s=(true, ⟨=(1, =g
+    s=(0, ⟨=(0, =g
+    s=(1, ⟨=(1, =g
     s=⟩==g' "${buildReport}" |
   sed -z '
     s=]\n#\[=, =g
