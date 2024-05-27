@@ -370,9 +370,7 @@ end UniformIntegrable
 then `X'` and `Y'` are independent. -/
 lemma indepFun_of_identDistrib_pair
     {μ : Measure γ} {μ' : Measure δ} [IsFiniteMeasure μ] [IsFiniteMeasure μ']
-    {X : γ → α} {X' : δ → α} {Y : γ → β} {Y' : δ → β} --(hX : AEMeasurable X μ)
-    --(hX' : AEMeasurable X' μ') (hY : AEMeasurable Y μ) (hY' : AEMeasurable Y' μ')
-    (h_indep : IndepFun X Y μ)
+    {X : γ → α} {X' : δ → α} {Y : γ → β} {Y' : δ → β} (h_indep : IndepFun X Y μ)
     (h_ident : IdentDistrib (fun ω ↦ (X ω, Y ω)) (fun ω ↦ (X' ω, Y' ω)) μ μ') :
     IndepFun X' Y' μ' := by
   have hX : AEMeasurable X μ := by
