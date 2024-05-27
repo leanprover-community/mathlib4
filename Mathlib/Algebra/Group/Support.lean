@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Prod
-import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Order.Cover
 
 #align_import algebra.support from "leanprover-community/mathlib"@"29cb56a7b35f72758b05a30490e1f10bd62c35c1"
@@ -16,27 +15,22 @@ In this file we define `Function.support f = {x | f x ≠ 0}` and prove its basi
 We also define `Function.mulSupport f = {x | f x ≠ 1}`.
 -/
 
+assert_not_exists MonoidWithZero
 
 open Set
 
 namespace Function
 
-variable {α β A B M N P R S G M₀ G₀ : Type*} {ι : Sort*}
+variable {α β A B M N P G : Type*}
 
 section One
-
 variable [One M] [One N] [One P]
 
-/-- `support` of a function is the set of points `x` such that `f x ≠ 0`. -/
-def support [Zero A] (f : α → A) : Set α :=
-  { x | f x ≠ 0 }
-#align function.support Function.support
-
 /-- `mulSupport` of a function is the set of points `x` such that `f x ≠ 1`. -/
-@[to_additive existing]
-def mulSupport (f : α → M) : Set α :=
-  { x | f x ≠ 1 }
+@[to_additive "`support` of a function is the set of points `x` such that `f x ≠ 0`."]
+def mulSupport (f : α → M) : Set α := {x | f x ≠ 1}
 #align function.mul_support Function.mulSupport
+#align function.support Function.support
 
 @[to_additive]
 theorem mulSupport_eq_preimage (f : α → M) : mulSupport f = f ⁻¹' {1}ᶜ :=
@@ -302,104 +296,6 @@ theorem mulSupport_div : (mulSupport fun x => f x / g x) ⊆ mulSupport f ∪ mu
 #align function.support_sub Function.support_sub
 
 end DivisionMonoid
-
-section ZeroOne
-
-variable (R) [Zero R] [One R] [NeZero (1 : R)]
-
-@[simp]
-theorem support_one : support (1 : α → R) = univ :=
-  support_const one_ne_zero
-#align function.support_one Function.support_one
-
-@[simp]
-theorem mulSupport_zero : mulSupport (0 : α → R) = univ :=
-  mulSupport_const zero_ne_one
-#align function.mul_support_zero Function.mulSupport_zero
-
-end ZeroOne
-
-section MulZeroClass
-variable [MulZeroClass M]
-
---@[simp] Porting note: removing simp, bad lemma LHS not in normal form
-theorem support_mul_subset_left (f g : α → M) :
-    (support fun x => f x * g x) ⊆ support f := fun x hfg hf => hfg <| by simp only [hf, zero_mul]
-#align function.support_mul_subset_left Function.support_mul_subset_left
-
---@[simp] Porting note: removing simp, bad lemma LHS not in normal form
-theorem support_mul_subset_right (f g : α → M) :
-    (support fun x => f x * g x) ⊆ support g := fun x hfg hg => hfg <| by simp only [hg, mul_zero]
-#align function.support_mul_subset_right Function.support_mul_subset_right
-
-variable [NoZeroDivisors M]
-
-@[simp] lemma support_mul (f g : α → M) :
-    (support fun x => f x * g x) = support f ∩ support g := ext fun x ↦ by simp [not_or]
-#align function.support_mul Function.support_mul
-
-@[simp] lemma support_mul' (f g : α → M) : support (f * g) = support f ∩ support g :=
-  support_mul _ _
-
-end MulZeroClass
-
-section MonoidWithZero
-variable [MonoidWithZero M] [NoZeroDivisors M] {n : ℕ}
-
-@[simp] lemma support_pow (f : α → M) (hn : n ≠ 0) : support (fun a ↦ f a ^ n) = support f := by
-  ext; exact (pow_eq_zero_iff hn).not
-
-@[simp] lemma support_pow' (f : α → M) (hn : n ≠ 0) : support (f ^ n) = support f :=
-  support_pow _ hn
-
-end MonoidWithZero
-
-section GroupWithZero
-variable [GroupWithZero G₀]
-
-@[simp] lemma support_inv (f : α → G₀) : support (fun a ↦ (f a)⁻¹) = support f :=
-  Set.ext fun _ => not_congr inv_eq_zero
-#align function.support_inv Function.support_inv
-
-@[simp] lemma support_inv' (f : α → G₀) : support f⁻¹ = support f := support_inv _
-
-@[simp] lemma support_div (f g : α → G₀) : support (fun a ↦ f a / g a) = support f ∩ support g := by
-  simp [div_eq_mul_inv]
-#align function.support_div Function.support_div
-
-@[simp] lemma support_div' (f g : α → G₀) : support (f / g) = support f ∩ support g :=
-  support_div _ _
-
-end GroupWithZero
-
-theorem mulSupport_one_add [One R] [AddLeftCancelMonoid R] (f : α → R) :
-    (mulSupport fun x => 1 + f x) = support f :=
-  Set.ext fun _ => not_congr add_right_eq_self
-#align function.mul_support_one_add Function.mulSupport_one_add
-
-theorem mulSupport_one_add' [One R] [AddLeftCancelMonoid R] (f : α → R) :
-    mulSupport (1 + f) = support f :=
-  mulSupport_one_add f
-#align function.mul_support_one_add' Function.mulSupport_one_add'
-
-theorem mulSupport_add_one [One R] [AddRightCancelMonoid R] (f : α → R) :
-    (mulSupport fun x => f x + 1) = support f :=
-  Set.ext fun _ => not_congr add_left_eq_self
-#align function.mul_support_add_one Function.mulSupport_add_one
-
-theorem mulSupport_add_one' [One R] [AddRightCancelMonoid R] (f : α → R) :
-    mulSupport (f + 1) = support f :=
-  mulSupport_add_one f
-#align function.mul_support_add_one' Function.mulSupport_add_one'
-
-theorem mulSupport_one_sub' [One R] [AddGroup R] (f : α → R) : mulSupport (1 - f) = support f := by
-  rw [sub_eq_add_neg, mulSupport_one_add', support_neg']
-#align function.mul_support_one_sub' Function.mulSupport_one_sub'
-
-theorem mulSupport_one_sub [One R] [AddGroup R] (f : α → R) :
-    (mulSupport fun x => 1 - f x) = support f :=
-  mulSupport_one_sub' f
-#align function.mul_support_one_sub Function.mulSupport_one_sub
 
 end Function
 
