@@ -274,6 +274,9 @@ In a semisimple Lie algebra,
 Lie ideals that are contained in the supremum of a collection of atoms
 are themselves the supremum of a subcollection of those atoms.
 
+This is a key result in showing that the lattice of ideals in a semisimple Lie algebra
+is atomistic, complemented, and distributive.
+
 The proof is by a compactness argument, reducing to finite collections of atoms.
 In the finite case, the proof is given in `atomistic_of_finset`.
 -/
@@ -309,7 +312,7 @@ lemma atomistic (J : LieIdeal R L) (hJ : J ≤ sSup S) : ∃ T ⊆ S, J = sSup T
 
 lemma isAtomistic_of_sSup_eq_top (h : sSup S = ⊤) : IsAtomistic (LieIdeal R L) := by
   refine ⟨fun J ↦ ?_⟩
-  obtain ⟨s, hs, hs'⟩ := atomistic hS J (by aesop)
+  obtain ⟨s, hs, hs'⟩ := atomistic hS J (h ▸ le_top)
   exact ⟨s, hs', fun I hI ↦ hS.isAtom I (hs hI)⟩
 
 lemma complementedLattice_of_sSup_eq_top (h : sSup S = ⊤) : ComplementedLattice (LieIdeal R L) := by
