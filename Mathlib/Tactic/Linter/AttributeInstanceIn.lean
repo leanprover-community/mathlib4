@@ -48,6 +48,24 @@ def is_attribute_instance_in (stx : Syntax) : Bool :=
   | `(command|attribute [instance $_priority] $_decl:ident in $_) => true
   | _ => false
 
+/--
+`getAttrInstance cmd` assumes that `cmd` represents a `attribute [...] id in ...` command.
+If this is the case, then it returns `(id, #[non-local nor scoped attributes])`.
+Otherwise, it returns `default`.
+-/
+def getAttrInstance : Syntax → Syntax × Array Syntax
+  | `(attribute [$x,*] $id in $_) =>
+    let xs := x.getElems.map (·.raw)
+    let xs := xs.filter fun a => match a with
+      | .node _ ``Lean.Parser.Command.eraseAttr _ => false
+      | .node _ ``Lean.Parser.Term.attrInstance #[
+        .node _ ``Lean.Parser.Term.attrKind #[
+          .node _ _ #[.node _ scopedOrLocal _]], _attr] =>
+        ! scopedOrLocal ∈ [``Lean.Parser.Term.scoped, ``Lean.Parser.Term.local]
+      | _ => true
+    (id, xs)
+  | _ => default
+
 /-- The `attributeInstanceLinter` linter flags any occurrence of `attribute [instance] name in`,
 including scoped or with instance priority: despite the `in`, these define *global* instances,
 which can be rather misleading.
@@ -58,10 +76,11 @@ def attributeInstanceIn : Linter where run := withSetOptionIn fun stx => do
     return
   if (← MonadState.get).messages.hasErrors then
     return
-  if is_attribute_instance_in stx then
-    Linter.logLint linter.attributeInstanceIn stx[0] m!
-      "`attribute [instance] ... in` declarations are surprising:\n\
-      they are **not** limited to the subsequent declaration, but define global instances\n\
+  if let some stx := stx.find? fun s => (getAttrInstance s).2.isEmpty then
+    let (id, nonScopedNorLocal) := getAttrInstance stx
+    let _ ← nonScopedNorLocal.mapM fun attr =>
+    Linter.logLint linter.attributeInstanceIn attr m!
+    "Despite the `in`, the attribute '{attr}' added globally to '{id}'\n\
       please remove the `in` or make this a `local instance` instead"
 
 initialize addLinter attributeInstanceIn
