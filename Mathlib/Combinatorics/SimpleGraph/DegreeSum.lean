@@ -118,8 +118,8 @@ theorem sum_degrees_eq_twice_card_edges : ∑ v, G.degree v = 2 * G.edgeFinset.c
 lemma two_mul_card_edgeFinset :
     2 * G.edgeFinset.card = (univ.filter fun (x, y) ↦ G.Adj x y).card := by
   rw [← dart_card_eq_twice_card_edges, ← card_univ]
-  refine card_congr (fun d _ ↦ (d.fst, d.snd)) (by simp) (by simp [Dart.ext_iff, ← and_imp]) ?_
-  exact fun xy h ↦ ⟨⟨xy, (mem_filter.1 h).2⟩, mem_univ _, Prod.mk.eta⟩
+  refine card_bij' (fun d _ ↦ (d.fst, d.snd)) (fun xy h ↦ ⟨xy, (mem_filter.1 h).2⟩) ?_ ?_ ?_ ?_
+    <;> simp
 
 end DegreeSum
 
@@ -156,7 +156,7 @@ theorem odd_card_odd_degree_vertices_ne [Fintype V] [DecidableEq V] [DecidableRe
     rw [and_comm]
   simp only [hc, filter_congr]
   rw [← filter_filter, filter_ne', card_erase_of_mem]
-  · refine' ⟨k - 1, tsub_eq_of_eq_add <| hg.trans _⟩
+  · refine ⟨k - 1, tsub_eq_of_eq_add <| hg.trans ?_⟩
     rw [add_assoc, one_add_one_eq_two, ← Nat.mul_succ, ← two_mul]
     congr
     omega

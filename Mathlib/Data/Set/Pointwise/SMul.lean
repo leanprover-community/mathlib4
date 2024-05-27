@@ -808,7 +808,7 @@ theorem zero_mem_smul_set (h : (0 : β) ∈ t) : (0 : β) ∈ a • t := ⟨0, h
 variable [Zero α] [NoZeroSMulDivisors α β]
 
 theorem zero_mem_smul_set_iff (ha : a ≠ 0) : (0 : β) ∈ a • t ↔ (0 : β) ∈ t := by
-  refine' ⟨_, zero_mem_smul_set⟩
+  refine ⟨?_, zero_mem_smul_set⟩
   rintro ⟨b, hb, h⟩
   rwa [(eq_zero_or_eq_zero_of_smul_eq_zero h).resolve_left ha] at hb
 #align set.zero_mem_smul_set_iff Set.zero_mem_smul_set_iff

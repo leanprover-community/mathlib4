@@ -107,7 +107,7 @@ theorem Nat.Prime.mod_four_ne_three_of_dvd_isSquare_neg_one {p n : ℕ} (hpp : p
 `n` is not divisible by a prime `q` such that `q % 4 = 3`. -/
 theorem ZMod.isSquare_neg_one_iff {n : ℕ} (hn : Squarefree n) :
     IsSquare (-1 : ZMod n) ↔ ∀ {q : ℕ}, q.Prime → q ∣ n → q % 4 ≠ 3 := by
-  refine' ⟨fun H q hqp hqd => hqp.mod_four_ne_three_of_dvd_isSquare_neg_one hqd H, fun H => _⟩
+  refine ⟨fun H q hqp hqd => hqp.mod_four_ne_three_of_dvd_isSquare_neg_one hqd H, fun H => ?_⟩
   induction' n using induction_on_primes with p n hpp ih
   · exact False.elim (hn.ne_zero rfl)
   · exact ⟨0, by simp only [mul_zero, eq_iff_true_of_subsingleton]⟩
@@ -126,9 +126,9 @@ theorem ZMod.isSquare_neg_one_iff' {n : ℕ} (hn : Squarefree n) :
     IsSquare (-1 : ZMod n) ↔ ∀ {q : ℕ}, q ∣ n → q % 4 ≠ 3 := by
   have help : ∀ a b : ZMod 4, a ≠ 3 → b ≠ 3 → a * b ≠ 3 := by decide
   rw [ZMod.isSquare_neg_one_iff hn]
-  refine' ⟨_, fun H q _ => H⟩
+  refine ⟨?_, fun H q _ => H⟩
   intro H
-  refine' @induction_on_primes _ _ _ (fun p q hp hq hpq => _)
+  refine @induction_on_primes _ ?_ ?_ (fun p q hp hq hpq => ?_)
   · exact fun _ => by norm_num
   · exact fun _ => by norm_num
   · replace hp := H hp (dvd_of_mul_right_dvd hpq)
@@ -217,7 +217,7 @@ theorem Nat.eq_sq_add_sq_iff {n : ℕ} :
   · exact ⟨fun _ q _ _ => (@padicValNat.zero q).symm ▸ even_zero, fun _ => ⟨0, 0, rfl⟩⟩
   -- now `0 < n`
   rw [Nat.eq_sq_add_sq_iff_eq_sq_mul]
-  refine' ⟨fun H q hq h => _, fun H => _⟩
+  refine ⟨fun H q hq h => ?_, fun H => ?_⟩
   · obtain ⟨a, b, h₁, h₂⟩ := H
     have hqb := padicValNat.eq_zero_of_not_dvd fun hf =>
       (hq.mod_four_ne_three_of_dvd_isSquare_neg_one hf h₂) h
@@ -229,8 +229,8 @@ theorem Nat.eq_sq_add_sq_iff {n : ℕ} :
     simp_rw [h₁, padicValNat.mul ha₂ hb, padicValNat.pow 2 ha, hqb, add_zero]
     exact even_two_mul _
   · obtain ⟨b, a, hb₀, ha₀, hab, hb⟩ := Nat.sq_mul_squarefree_of_pos hn₀
-    refine' ⟨a, b, hab.symm, (ZMod.isSquare_neg_one_iff hb).mpr fun {q} hqp hqb hq4 => _⟩
-    refine' Nat.odd_iff_not_even.mp _ (H hqp hq4)
+    refine ⟨a, b, hab.symm, (ZMod.isSquare_neg_one_iff hb).mpr fun {q} hqp hqb hq4 => ?_⟩
+    refine Nat.odd_iff_not_even.mp ?_ (H hqp hq4)
     have hqb' : padicValNat q b = 1 :=
       b.factorization_def hqp ▸ le_antisymm (hb.natFactorization_le_one _)
         ((hqp.dvd_iff_one_le_factorization hb₀.ne').mp hqb)

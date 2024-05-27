@@ -113,7 +113,7 @@ lemma ab_exact_iff_range_eq_ker : S.Exact ↔ S.f.range = S.g.ker := by
   rw [ab_exact_iff_ker_le_range]
   constructor
   · intro h
-    refine' le_antisymm _ h
+    refine le_antisymm ?_ h
     rintro _ ⟨x₁, rfl⟩
     erw [AddMonoidHom.mem_ker, ← comp_apply, S.zero]
     rfl
