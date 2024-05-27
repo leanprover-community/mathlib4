@@ -206,7 +206,7 @@ theorem expand_aeval {A : Type*} [Semiring A] [Algebra R A] (p : ℕ) (P : R[X])
 
 /-- The opposite of `expand`: sends `∑ aₙ xⁿᵖ` to `∑ aₙ xⁿ`. -/
 noncomputable def contract (p : ℕ) (f : R[X]) : R[X] :=
-  ∑ n in range (f.natDegree + 1), monomial n (f.coeff (n * p))
+  ∑ n ∈ range (f.natDegree + 1), monomial n (f.coeff (n * p))
 #align polynomial.contract Polynomial.contract
 
 theorem coeff_contract {p : ℕ} (hp : p ≠ 0) (f : R[X]) (n : ℕ) :
