@@ -63,23 +63,23 @@ def booleanAlgebra_of_complemented [BoundedOrder α] [ComplementedLattice α] : 
 end DistribLattice
 
 -- move this to `Mathlib.Order.ConditionallyCompleteLattice.Basic`
-namespace CompleteDistribLattice
+-- namespace CompleteDistribLattice
 
-variable (α : Type*) [CompleteDistribLattice α]
+-- variable (α : Type*) [CompleteDistribLattice α]
 
-/--
-An alternative constructor for complete boolean algebras:
-a complete distributive lattice that is complemented is a complete boolean algebra.
+-- /--
+-- An alternative constructor for complete boolean algebras:
+-- a complete distributive lattice that is complemented is a complete boolean algebra.
 
-This is not an instance, because it creates data using choice.
--/
-noncomputable
-def completeBooleanAlgebra_of_complemented [ComplementedLattice α] :
-    CompleteBooleanAlgebra α where
-  __ := (inferInstanceAs (CompleteDistribLattice α))
-  __ := DistribLattice.booleanAlgebra_of_complemented α
+-- This is not an instance, because it creates data using choice.
+-- -/
+-- noncomputable
+-- def completeBooleanAlgebra_of_complemented [ComplementedLattice α] :
+--     CompleteBooleanAlgebra α where
+--   __ := (inferInstanceAs (CompleteDistribLattice α))
+--   __ := DistribLattice.booleanAlgebra_of_complemented α
 
-end CompleteDistribLattice
+-- end CompleteDistribLattice
 
 
 -- move this
