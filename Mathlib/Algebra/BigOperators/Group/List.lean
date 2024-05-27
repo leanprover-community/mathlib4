@@ -448,6 +448,36 @@ lemma prod_mul_prod_eq_prod_zipWith_of_length_eq (l l' : List M) (h : l.length =
 #align list.prod_mul_prod_eq_prod_zip_with_of_length_eq List.prod_mul_prod_eq_prod_zipWith_of_length_eq
 #align list.sum_add_sum_eq_sum_zip_with_of_length_eq List.sum_add_sum_eq_sum_zipWith_of_length_eq
 
+@[to_additive]
+lemma prod_map_ite (p : α → Prop) [DecidablePred p] (f g : α → M) (l : List α) :
+    (l.map fun a ↦ if p a then f a else g a).prod =
+      ((l.filter p).map f).prod * ((l.filter fun a ↦ ¬p a).map g).prod := by
+  induction l with
+  | nil => simp
+  | cons x xs ih =>
+    simp only [map_cons, filter_cons, prod_cons, nodup_cons, ne_eq, mem_cons, count_cons] at ih ⊢
+    rw [ih]
+    clear ih
+    by_cases hx : p x
+    · simp only [hx, ↓reduceIte, decide_not, decide_True, map_cons, prod_cons, not_true_eq_false,
+        decide_False, Bool.false_eq_true]
+      exact
+        Eq.symm
+          (mul_assoc (f x) (map f (filter (fun a ↦ decide (p a)) xs)).prod
+            (map g (filter (fun a ↦ !decide (p a)) xs)).prod)
+    · simp only [hx, ↓reduceIte, decide_not, decide_False, Bool.false_eq_true, not_false_eq_true,
+        decide_True, map_cons, prod_cons]
+      exact
+        mul_left_comm (g x) (map f (filter (fun a ↦ decide (p a)) xs)).prod
+          (map g (filter (fun a ↦ !decide (p a)) xs)).prod
+
+@[to_additive]
+lemma prod_map_filter_mul_prod_map_filter_not (p : α → Prop) [DecidablePred p] (f : α → M)
+    (l : List α) :
+    ((l.filter p).map f).prod * ((l.filter (fun x => ¬p x)).map f).prod = (l.map f).prod := by
+  rw [← prod_map_ite]
+  simp only [ite_self]
+
 end CommMonoid
 
 @[to_additive]
