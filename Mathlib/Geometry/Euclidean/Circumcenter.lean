@@ -476,6 +476,10 @@ theorem orthogonalProjection_eq_circumcenter_of_exists_dist_eq {n : ℕ} (s : Si
     s.eq_circumcenter_of_dist_eq (orthogonalProjection_mem p) fun i => hr _ (Set.mem_range_self i)
 #align affine.simplex.orthogonal_projection_eq_circumcenter_of_exists_dist_eq Affine.Simplex.orthogonalProjection_eq_circumcenter_of_exists_dist_eq
 
+@[simp] theorem orthogonalProjection_eq_point (s : Simplex ℝ P 0) (p : P) :
+    ↑(s.orthogonalProjectionSpan p) = s.points 0 := by
+  rw [orthogonalProjection_eq_circumcenter_of_exists_dist_eq, circumcenter_eq_point]
+  simp [Unique.forall_iff]
 /-- If a point has the same distance from all vertices of a simplex,
 the orthogonal projection of that point onto the subspace spanned by
 that simplex is its circumcenter.  -/
