@@ -11,22 +11,26 @@ import Lake.CLI.Main
 # Script to create a file importing all files from a folder
 
 This file declares a command to gather all Lean files from a folder into a single Lean file.
+
+TODO:
+`getLeanLibs` contains a hard-coded choice of which dependencies should be built and which ones
+should not.  Could this be made more structural and robust, possibly with extra `Lake` support?
 -/
 
 open Lean System.FilePath
 
 /-- `getAll git ml` takes all `.lean` files in the dir `ml` (recursing into sub-dirs) and
-returns the string
+returns the `Array` of `String`s
 ```
-import file₁
-...
-import fileₙ
+#[file₁, ..., fileₙ]
 ```
+where each `fileᵢ` is of the form `"Mathlib.Algebra.Algebra.Basic"`.
+
 The input `git` is a `Bool`ean flag:
 * `true` means that the command uses `git ls-files` to find the relevant files;
 * `false` means that the command recursively scans all dirs searching for `.lean` files.
 -/
-def getAll (git : Bool) (ml : String) : IO String := do
+def getAll (git : Bool) (ml : String) : IO (Array String) := do
   let ml.lean := addExtension ⟨ml⟩ "lean"  -- for example, `Mathlib.lean`
   let allModules : Array System.FilePath ← (do
     if git then
@@ -40,9 +44,9 @@ def getAll (git : Bool) (ml : String) : IO String := do
   let withImport ← files.mapM fun f => do
     -- this check is helpful in case the `git` option is on and a local file has been removed
     if ← pathExists f then
-      return "import " ++ (← moduleNameOfFileName f none).toString
+      return (← moduleNameOfFileName f none).toString
     else return ""
-  return ("\n".intercalate (withImport.filter (· != "")).toList).push '\n'
+  return withImport.filter (· != "")
 
 open Lake in
 /-- `getLeanLibs` returns the names (as an `Array` of `String`s) of all the libraries
@@ -76,7 +80,8 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
   let mut updates := 0
   for d in libs.reverse do  -- reverse to create `Mathlib/Tactic.lean` before `Mathlib.lean`
     let fileName := addExtension d "lean"
-    let fileContent ← getAll git d
+    let allFiles ← getAll git d
+    let fileContent := ("\n".intercalate (allFiles.map ("import " ++ ·)).toList).push '\n'
     if !(← pathExists fileName) then
       IO.println s!"Creating '{fileName}'"
       updates := updates + 1

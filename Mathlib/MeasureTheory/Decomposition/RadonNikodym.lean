@@ -337,9 +337,8 @@ lemma setIntegral_toReal_rnDeriv_eq_withDensity' [SigmaFinite μ]
     simp
   · exact ae_restrict_of_ae (Measure.rnDeriv_lt_top _ _)
 
-@[deprecated]
-alias set_integral_toReal_rnDeriv_eq_withDensity' :=
-  setIntegral_toReal_rnDeriv_eq_withDensity' -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_toReal_rnDeriv_eq_withDensity' := setIntegral_toReal_rnDeriv_eq_withDensity'
 
 lemma setIntegral_toReal_rnDeriv_eq_withDensity [SigmaFinite μ] [SFinite ν] (s : Set α) :
     ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν = (ν.withDensity (μ.rnDeriv ν) s).toReal := by
@@ -348,9 +347,8 @@ lemma setIntegral_toReal_rnDeriv_eq_withDensity [SigmaFinite μ] [SFinite ν] (s
     simp
   · exact ae_restrict_of_ae (Measure.rnDeriv_lt_top _ _)
 
-@[deprecated]
-alias set_integral_toReal_rnDeriv_eq_withDensity :=
-  setIntegral_toReal_rnDeriv_eq_withDensity -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_toReal_rnDeriv_eq_withDensity := setIntegral_toReal_rnDeriv_eq_withDensity
 
 lemma setIntegral_toReal_rnDeriv_le [SigmaFinite μ] {s : Set α} (hμs : μ s ≠ ∞) :
     ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν ≤ (μ s).toReal := by
@@ -369,9 +367,8 @@ lemma setIntegral_toReal_rnDeriv_le [SigmaFinite μ] {s : Set α} (hμs : μ s �
         · apply withDensity_rnDeriv_le
   _ = (μ s).toReal := by rw [measure_toMeasurable s]
 
-@[deprecated]
-alias set_integral_toReal_rnDeriv_le :=
-  setIntegral_toReal_rnDeriv_le -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_toReal_rnDeriv_le := setIntegral_toReal_rnDeriv_le
 
 lemma setIntegral_toReal_rnDeriv' [SigmaFinite μ] [HaveLebesgueDecomposition μ ν]
     (hμν : μ ≪ ν) {s : Set α} (hs : MeasurableSet s) :
@@ -379,17 +376,15 @@ lemma setIntegral_toReal_rnDeriv' [SigmaFinite μ] [HaveLebesgueDecomposition μ
   rw [setIntegral_toReal_rnDeriv_eq_withDensity' hs, Measure.withDensity_rnDeriv_eq _ _ hμν]
 #align measure_theory.measure.with_density_rn_deriv_to_real_eq MeasureTheory.Measure.setIntegral_toReal_rnDeriv'
 
-@[deprecated]
-alias set_integral_toReal_rnDeriv' :=
-  setIntegral_toReal_rnDeriv' -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_toReal_rnDeriv' := setIntegral_toReal_rnDeriv'
 
 lemma setIntegral_toReal_rnDeriv [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) (s : Set α) :
     ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν = (μ s).toReal := by
   rw [setIntegral_toReal_rnDeriv_eq_withDensity s, Measure.withDensity_rnDeriv_eq _ _ hμν]
 
-@[deprecated]
-alias set_integral_toReal_rnDeriv :=
-  setIntegral_toReal_rnDeriv -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_toReal_rnDeriv := setIntegral_toReal_rnDeriv
 
 lemma integral_toReal_rnDeriv [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
     ∫ x, (μ.rnDeriv ν x).toReal ∂ν = (μ Set.univ).toReal := by

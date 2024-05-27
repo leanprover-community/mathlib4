@@ -69,9 +69,6 @@ function space, almost everywhere equal, `L⁰`, ae_eq_fun
 
 -/
 
-set_option autoImplicit true
-
-
 noncomputable section
 
 open scoped Classical
@@ -242,7 +239,7 @@ end compQuasiMeasurePreserving
 
 section compMeasurePreserving
 
-variable [MeasurableSpace β] {ν : MeasureTheory.Measure β}
+variable [MeasurableSpace β] {ν : MeasureTheory.Measure β} {f : α → β} {g : β → γ}
 
 /-- Composition of an almost everywhere equal function and a quasi measure preserving function.
 
@@ -252,8 +249,7 @@ def compMeasurePreserving (g : β →ₘ[ν] γ) (f : α → β) (hf : MeasurePr
   g.compQuasiMeasurePreserving f hf.quasiMeasurePreserving
 
 @[simp]
-theorem compMeasurePreserving_mk {g : β → γ} (hg : AEStronglyMeasurable g ν)
-    (hf : MeasurePreserving f μ ν) :
+theorem compMeasurePreserving_mk (hg : AEStronglyMeasurable g ν) (hf : MeasurePreserving f μ ν) :
     (mk g hg).compMeasurePreserving f hf =
       mk (g ∘ f) (hg.comp_quasiMeasurePreserving hf.quasiMeasurePreserving) :=
   rfl
@@ -292,6 +288,12 @@ theorem coeFn_comp (g : β → γ) (hg : Continuous g) (f : α →ₘ[μ] β) : 
   rw [comp_eq_mk]
   apply coeFn_mk
 #align measure_theory.ae_eq_fun.coe_fn_comp MeasureTheory.AEEqFun.coeFn_comp
+
+theorem comp_compQuasiMeasurePreserving [MeasurableSpace β] {ν} (g : γ → δ) (hg : Continuous g)
+    (f : β →ₘ[ν] γ) {φ : α → β} (hφ : Measure.QuasiMeasurePreserving φ μ ν) :
+    (comp g hg f).compQuasiMeasurePreserving φ hφ =
+      comp g hg (f.compQuasiMeasurePreserving φ hφ) := by
+  rcases f; rfl
 
 section CompMeasurable
 
@@ -449,6 +451,19 @@ theorem toGerm_eq (f : α →ₘ[μ] β) : f.toGerm = (f : α → β) := by rw [
 theorem toGerm_injective : Injective (toGerm : (α →ₘ[μ] β) → Germ μ.ae β) := fun f g H =>
   ext <| Germ.coe_eq.1 <| by rwa [← toGerm_eq, ← toGerm_eq]
 #align measure_theory.ae_eq_fun.to_germ_injective MeasureTheory.AEEqFun.toGerm_injective
+
+@[simp]
+theorem compQuasiMeasurePreserving_toGerm [MeasurableSpace β] {f : α → β} {ν}
+    (g : β →ₘ[ν] γ) (hf : Measure.QuasiMeasurePreserving f μ ν) :
+    (g.compQuasiMeasurePreserving f hf).toGerm = g.toGerm.compTendsto f hf.tendsto_ae := by
+  rcases g; rfl
+
+@[simp]
+theorem compMeasurePreserving_toGerm [MeasurableSpace β] {f : α → β} {ν}
+    (g : β →ₘ[ν] γ) (hf : MeasurePreserving f μ ν) :
+    (g.compMeasurePreserving f hf).toGerm =
+      g.toGerm.compTendsto f hf.quasiMeasurePreserving.tendsto_ae :=
+  compQuasiMeasurePreserving_toGerm _ _
 
 theorem comp_toGerm (g : β → γ) (hg : Continuous g) (f : α →ₘ[μ] β) :
     (comp g hg f).toGerm = f.toGerm.map g :=

@@ -479,7 +479,7 @@ theorem tendsto_normalize_testAgainstNN_of_tendsto {γ : Type*} {F : Filter γ}
   have lim_pair :
     Tendsto (fun i => (⟨(μs i).mass⁻¹, (μs i).testAgainstNN f⟩ : ℝ≥0 × ℝ≥0)) F
       (𝓝 ⟨μ.mass⁻¹, μ.testAgainstNN f⟩) := by
-    refine' (Prod.tendsto_iff _ _).mpr ⟨_, _⟩
+    refine (Prod.tendsto_iff _ _).mpr ⟨?_, ?_⟩
     · exact (continuousOn_inv₀.continuousAt aux).tendsto.comp lim_mass
     · exact tendsto_iff_forall_testAgainstNN_tendsto.mp μs_lim f
   exact tendsto_mul.comp lim_pair
