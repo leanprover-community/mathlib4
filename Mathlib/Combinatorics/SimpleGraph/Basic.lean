@@ -565,7 +565,7 @@ which is necessary since when `v = w` the existential
 `∃ (e ∈ G.edgeSet), v ∈ e ∧ w ∈ e` is satisfied by every edge
 incident to `v`. -/
 theorem adj_iff_exists_edge {v w : V} : G.Adj v w ↔ v ≠ w ∧ ∃ e ∈ G.edgeSet, v ∈ e ∧ w ∈ e := by
-  refine' ⟨fun _ => ⟨G.ne_of_adj ‹_›, s(v, w), by simpa⟩, _⟩
+  refine ⟨fun _ => ⟨G.ne_of_adj ‹_›, s(v, w), by simpa⟩, ?_⟩
   rintro ⟨hne, e, he, hv⟩
   rw [Sym2.mem_and_mem_iff hne] at hv
   subst e
@@ -738,7 +738,7 @@ theorem incidenceSet_inter_incidenceSet_subset (h : a ≠ b) :
 
 theorem incidenceSet_inter_incidenceSet_of_adj (h : G.Adj a b) :
     G.incidenceSet a ∩ G.incidenceSet b = {s(a, b)} := by
-  refine' (G.incidenceSet_inter_incidenceSet_subset <| h.ne).antisymm _
+  refine (G.incidenceSet_inter_incidenceSet_subset <| h.ne).antisymm ?_
   rintro _ (rfl : _ = s(a, b))
   exact ⟨G.mk'_mem_incidenceSet_left_iff.2 h, G.mk'_mem_incidenceSet_right_iff.2 h⟩
 #align simple_graph.incidence_set_inter_incidence_set_of_adj SimpleGraph.incidenceSet_inter_incidenceSet_of_adj
@@ -782,7 +782,7 @@ theorem adj_incidenceSet_inter {v : V} {e : Sym2 V} (he : e ∈ G.edgeSet) (h : 
     G.incidenceSet v ∩ G.incidenceSet (Sym2.Mem.other h) = {e} := by
   ext e'
   simp only [incidenceSet, Set.mem_sep_iff, Set.mem_inter_iff, Set.mem_singleton_iff]
-  refine' ⟨fun h' => _, _⟩
+  refine ⟨fun h' => ?_, ?_⟩
   · rw [← Sym2.other_spec h]
     exact (Sym2.mem_and_mem_iff (edge_other_ne G he h).symm).mp ⟨h'.1.2, h'.2.2⟩
   · rintro rfl

@@ -147,7 +147,7 @@ theorem _root_.AlgHomClass.unitization_injective' {F R S A : Type*} [CommRing R]
     (s : S) (h : ∀ r, r ≠ 0 → algebraMap R A r ∉ s)
     [FunLike F (Unitization R s) A] [AlgHomClass F R (Unitization R s) A]
     (f : F) (hf : ∀ x : s, f x = x) : Function.Injective f := by
-  refine' (injective_iff_map_eq_zero f).mpr fun x hx => _
+  refine (injective_iff_map_eq_zero f).mpr fun x hx => ?_
   induction' x using Unitization.ind with r a
   simp_rw [map_add, hf, ← Unitization.algebraMap_eq_inl, AlgHomClass.commutes] at hx
   rw [add_eq_zero_iff_eq_neg] at hx ⊢

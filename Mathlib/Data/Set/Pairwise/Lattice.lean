@@ -93,10 +93,10 @@ theorem PairwiseDisjoint.prod_left {f : ι × ι' → α}
   rintro ⟨i, i'⟩ hi ⟨j, j'⟩ hj h
   rw [mem_prod] at hi hj
   obtain rfl | hij := eq_or_ne i j
-  · refine' (ht hi.2 hj.2 <| (Prod.mk.inj_left _).ne_iff.1 h).mono _ _
+  · refine (ht hi.2 hj.2 <| (Prod.mk.inj_left _).ne_iff.1 h).mono ?_ ?_
     · convert le_iSup₂ (α := α) i hi.1; rfl
     · convert le_iSup₂ (α := α) i hj.1; rfl
-  · refine' (hs hi.1 hj.1 hij).mono _ _
+  · refine (hs hi.1 hj.1 hij).mono ?_ ?_
     · convert le_iSup₂ (α := α) i' hi.2; rfl
     · convert le_iSup₂ (α := α) j' hj.2; rfl
 #align set.pairwise_disjoint.prod_left Set.PairwiseDisjoint.prod_left
@@ -111,9 +111,9 @@ theorem pairwiseDisjoint_prod_left {s : Set ι} {t : Set ι'} {f : ι × ι' →
     (s ×ˢ t : Set (ι × ι')).PairwiseDisjoint f ↔
       (s.PairwiseDisjoint fun i => ⨆ i' ∈ t, f (i, i')) ∧
         t.PairwiseDisjoint fun i' => ⨆ i ∈ s, f (i, i') := by
-  refine'
-        ⟨fun h => ⟨fun i hi j hj hij => _, fun i hi j hj hij => _⟩, fun h => h.1.prod_left h.2⟩ <;>
-      simp_rw [Function.onFun, iSup_disjoint_iff, disjoint_iSup_iff] <;>
+  refine
+      ⟨fun h => ⟨fun i hi j hj hij => ?_, fun i hi j hj hij => ?_⟩, fun h => h.1.prod_left h.2⟩ <;>
+    simp_rw [Function.onFun, iSup_disjoint_iff, disjoint_iSup_iff] <;>
     intro i' hi' j' hj'
   · exact h (mk_mem_prod hi hi') (mk_mem_prod hj hj') (ne_of_apply_ne Prod.fst hij)
   · exact h (mk_mem_prod hi' hi) (mk_mem_prod hj' hj) (ne_of_apply_ne Prod.snd hij)
@@ -123,9 +123,9 @@ end Frame
 
 theorem biUnion_diff_biUnion_eq {s t : Set ι} {f : ι → Set α} (h : (s ∪ t).PairwiseDisjoint f) :
     ((⋃ i ∈ s, f i) \ ⋃ i ∈ t, f i) = ⋃ i ∈ s \ t, f i := by
-  refine'
+  refine
     (biUnion_diff_biUnion_subset f s t).antisymm
-      (iUnion₂_subset fun i hi a ha => (mem_diff _).2 ⟨mem_biUnion hi.1 ha, _⟩)
+      (iUnion₂_subset fun i hi a ha => (mem_diff _).2 ⟨mem_biUnion hi.1 ha, ?_⟩)
   rw [mem_iUnion₂]; rintro ⟨j, hj, haj⟩
   exact (h (Or.inl hi.1) (Or.inr hj) (ne_of_mem_of_not_mem hj hi.2).symm).le_bot ⟨ha, haj⟩
 #align set.bUnion_diff_bUnion_eq Set.biUnion_diff_biUnion_eq

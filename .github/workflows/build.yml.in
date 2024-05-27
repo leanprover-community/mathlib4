@@ -206,12 +206,6 @@ jobs:
             lake build --no-build
           fi
 
-      - name: find `#`-commands
-        id: hash_commands
-        run: |
-          chmod u+x scripts/lint_hash_commands.sh
-          ./scripts/lint_hash_commands.sh
-
       - name: build archive
         id: archive
         run: |
