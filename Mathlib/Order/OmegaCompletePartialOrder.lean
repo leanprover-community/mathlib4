@@ -121,8 +121,9 @@ def pair (a b : α) (hab : a ≤ b) : Chain α :=
     | 0 => a
     | _ => b, fun _ _ _ => by aesop⟩
 
-lemma ordered_pair_to_chain_range (a : α) (b : α) (hab : a ≤ b) :
-    Set.range (ordered_pair_to_chain a b hab) = {a , b} :=  by
+@[simp] lemma range_pair (a b : α) (hab : a ≤ b) :
+    Set.range (pair a b hab) = {a , b} := by
+  ext; simp [pair, Nat.and_forall_succ]
   rw [le_antisymm_iff]
   constructor
   · intro d ⟨n,hn⟩
