@@ -134,10 +134,7 @@ lemma IsHamiltonian.connected (hG : G.IsHamiltonian) : G.Connected where
     obtain ⟨c, p, hp⟩ := hG Fintype.one_lt_card.ne'
     have a_mem := Walk.IsHamiltonianCycle.mem_support p hp a
     have b_mem := Walk.IsHamiltonianCycle.mem_support p hp b
-    have walk_a := p.takeUntil a a_mem
-    have walk_b := p.takeUntil b b_mem
-    have walk_a_b := (id walk_a.reverse).append walk_b
-    exact Walk.reachable walk_a_b
+    exact ((p.takeUntil a a_mem).reverse.append $ p.takeUntil b b_mem).reachable 
   nonempty := not_isEmpty_iff.1 fun _ ↦ by simpa using hG $ by simp [@Fintype.card_eq_zero]
 
 end SimpleGraph
